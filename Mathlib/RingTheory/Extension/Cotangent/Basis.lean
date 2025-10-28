@@ -8,11 +8,20 @@ import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 import Mathlib.RingTheory.Extension.Cotangent.LocalizationAway
 
 /-!
+# Basis of cotangent space can be realized as a presentation
 
+Let `S` be a finitely presented `R`-algebra and suppose `P : R[X] → S` generates `S` with
+kernel `I`.
+
+In this file we show that if `I/I²` is free, there exists an `R`-presentation `P'` of `S`
+extending `P` with kernel `I'`, such that `I'/I'²` is free on the images of the relations of `P'`.
+
+## References
+
+- https://stacks.math.columbia.edu/tag/07CF
 -/
 
 open Pointwise MvPolynomial TensorProduct
-
 namespace Algebra.Generators
 
 variable {R : Type*} {S : Type*} [CommRing R] [CommRing S] [Algebra R S] {σ : Type*}
@@ -109,11 +118,10 @@ def tensorCotangentHom : S ⊗[D.T] D.presLeft.toExtension.Cotangent →ₗ[S] P
 lemma tensorCotangentHom_tmul (x : D.presLeft.toExtension.ker) :
     D.tensorCotangentHom (1 ⊗ₜ[D.T] Extension.Cotangent.mk x) =
       .mk ⟨x.val, D.ker_presLeft_le x.2⟩ := by
-  simp only [tensorCotangentHom, LinearMap.liftBaseChange_tmul, one_smul, presLeft]
-  rw [Extension.Cotangent.map_mk]
-  congr 2
-  rw [Generators.Hom.toExtensionHom_toAlgHom_apply, toAlgHom_fhom]
-  simp only [AlgHom.coe_id, id_eq]
+  simp only [tensorCotangentHom, LinearMap.liftBaseChange_tmul, one_smul, presLeft,
+    Extension.Cotangent.map_mk, Extension.Hom.toAlgHom_apply, Hom.toExtensionHom_toRingHom,
+    toAlgHom_fhom, AlgHom.toRingHom_eq_coe, AlgHom.id_toRingHom]
+  rfl
 
 /-- The backwards direction of the isomorphism `S ⊗[T] J/J² ≃ₗ[S] I/I²`. -/
 def tensorCotangentInv : P.toExtension.Cotangent →ₗ[S] S ⊗[D.T] D.presLeft.toExtension.Cotangent :=
@@ -137,20 +145,10 @@ def tensorCotangentEquiv :
   · refine b.ext fun i ↦ ?_
     simpa only [LinearMap.coe_comp, Function.comp_apply, tensorCotangentInv_apply,
       tensorCotangentHom_tmul] using D.hf (b i)
-  · ext x
-    have : x ∈ Submodule.span D.T (.range <| fun i ↦ Extension.Cotangent.mk (D.kerGen i)) :=
-      D.hspan ▸ trivial
-    simp only [AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_comp, curry_apply,
-      LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply, LinearMap.id_coe,
-      id_eq]
-    induction this using Submodule.span_induction with
-    | mem x hx =>
-      obtain ⟨i, rfl⟩ := hx
-      rw [tensorCotangentHom_tmul, kerGen, D.hf]
-      simp
-    | zero => simp
-    | add x y _ _ hx hy => simp [hx, hy, tmul_add]
-    | smul a x _ hx => simp [hx]
+  · ext : 2
+    refine LinearMap.ext_on_range D.hspan fun i ↦ ?_
+    simp [-toExtension_commRing, -toExtension_Ring, -toExtension_algebra₂, tensorCotangentHom_tmul,
+      kerGen, D.hf]
 
 lemma tensorCotangentEquiv_symm_apply (i : σ) :
     D.tensorCotangentEquiv.symm (b i) = 1 ⊗ₜ Extension.Cotangent.mk (D.kerGen i) :=
@@ -165,37 +163,33 @@ def presRight : Presentation D.T S Unit Unit :=
 def pres : Presentation R S (Unit ⊕ ι) (Unit ⊕ σ) :=
   D.presRight.comp D.presLeft
 
-lemma heq [Nontrivial S] :
-    ((Generators.localizationAway _ D.gbar).ofComp D.presLeft.toGenerators).toAlgHom
-        (D.pres.relation (Sum.inl ())) = C D.gbar * X () - 1 := by
-  have : Nontrivial D.T := inferInstance
-  dsimp only [T, Generators.toExtension_Ring, Generators.toExtension_commRing] at this
-  classical
-  rw [pres, presLeft, presRight, Presentation.relation_comp_localizationAway_inl]
-  · exact Generators.toAlgHom_ofComp_localizationAway _ _
-  · rw [Presentation.naive, Generators.naive_σ]
-    simp
-  · rw [Presentation.naive, Generators.naive_σ]
-    simp
-
-lemma heq' [Nontrivial S] :
+lemma map_ofComp_mk [Nontrivial S] :
     (Extension.Cotangent.map
-      ((Generators.localizationAway S D.gbar).ofComp D.presLeft.toGenerators).toExtensionHom)
+      ((localizationAway S D.gbar).ofComp D.presLeft.toGenerators).toExtensionHom)
       (Extension.Cotangent.mk ⟨D.pres.relation (Sum.inl ()), D.pres.relation_mem_ker _⟩) =
       Generators.cMulXSubOneCotangent S D.gbar := by
-  simp_rw [Extension.Cotangent.map_mk, Generators.Hom.toExtensionHom_toAlgHom_apply, D.heq]
+  simp_rw [Extension.Cotangent.map_mk, Generators.Hom.toExtensionHom_toAlgHom_apply]
+  congr 2
+  have : Nontrivial D.T := inferInstance
+  dsimp only [T, Generators.toExtension_Ring, Generators.toExtension_commRing] at this
+  rw [pres, presLeft, presRight, Presentation.relation_comp_localizationAway_inl]
+  · exact Generators.toAlgHom_ofComp_localizationAway _ _
+  · rw [Presentation.naive, Generators.naive_σ];
+    simp
+  · rw [Presentation.naive, Generators.naive_σ]
+    simp
 
 /-- The cotangent space of the constructed presentation is isomorphic
 to `(g X - 1)/(g X - 1)² × S ⊗[T] J/J²`. -/
 def cotangentEquivProd [Nontrivial S] : D.pres.toExtension.Cotangent ≃ₗ[S]
     D.presRight.toExtension.Cotangent × S ⊗[D.T] D.presLeft.toExtension.Cotangent :=
-  (D.presLeft.cotangentCompLocalizationAwayEquiv (T := S) D.gbar D.heq') ≪≫ₗ
+  (D.presLeft.cotangentCompLocalizationAwayEquiv (T := S) D.gbar D.map_ofComp_mk) ≪≫ₗ
     LinearEquiv.prodComm _ _ _
 
 lemma cotangentEquivProd_symm_apply [Nontrivial S] (x : D.presRight.toExtension.Cotangent)
       (y : S ⊗[D.T] D.presLeft.toExtension.Cotangent) :
     D.cotangentEquivProd.symm (x, y) =
-      (D.presLeft.cotangentCompLocalizationAwayEquiv (T := S) D.gbar D.heq').symm (y, x) :=
+      (D.presLeft.cotangentCompLocalizationAwayEquiv (T := S) D.gbar D.map_ofComp_mk).symm (y, x) :=
   rfl
 
 /-- The basis of `S ⊗[T] J/J²` induced from the basis on `I/I²`. -/
