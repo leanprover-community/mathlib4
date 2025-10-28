@@ -189,6 +189,7 @@ lemma uncenteredCovarianceBilinDual_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L�
 @[deprecated (since := "2025-10-10")] alias uncenteredCovarianceBilin_of_not_memLp :=
   uncenteredCovarianceBilinDual_of_not_memLp
 
+@[simp]
 lemma uncenteredCovarianceBilinDual_zero : uncenteredCovarianceBilinDual (0 : Measure E) = 0 := by
   ext
   have : Subsingleton (Lp ℝ 2 (0 : Measure E)) := ⟨fun x y ↦ Lp.ext_iff.2 rfl⟩
@@ -260,6 +261,14 @@ lemma covarianceBilinDual_comm (L₁ L₂ : StrongDual ℝ E) :
   · have h' : MemLp id 2 (Measure.map (fun x ↦ x - ∫ (x : E), x ∂μ) μ) :=
       (measurableEmbedding_subRight _).memLp_map_measure_iff.mpr <| h.sub (memLp_const _)
     simp_rw [covarianceBilinDual, uncenteredCovarianceBilinDual_apply h', mul_comm (L₁ _)]
+  · simp [h]
+
+@[simp]
+lemma covarianceBilinDual_self_nonneg (L : StrongDual ℝ E) : 0 ≤ covarianceBilinDual μ L L := by
+  by_cases h : MemLp id 2 μ
+  · simp only [covarianceBilinDual, uncenteredCovarianceBilinDual,
+      ContinuousLinearMap.bilinearComp_apply, IsBoundedBilinearMap.toContinuousLinearMap_apply]
+    exact real_inner_self_nonneg
   · simp [h]
 
 variable [CompleteSpace E]
