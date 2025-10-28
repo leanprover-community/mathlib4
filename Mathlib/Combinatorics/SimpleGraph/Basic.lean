@@ -814,4 +814,18 @@ def incidenceSetEquivNeighborSet (v : V) : G.incidenceSet v ≃ G.neighborSet v 
 
 end Incidence
 
+section Subsingleton
+
+protected theorem subsingleton_iff : Subsingleton (SimpleGraph V) ↔ Subsingleton V := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ Unique.instSubsingleton⟩
+  contrapose! h
+  exact instNontrivial
+
+protected theorem nontrivial_iff : Nontrivial (SimpleGraph V) ↔ Nontrivial V := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ instNontrivial⟩
+  contrapose! h
+  exact Unique.instSubsingleton
+
+end Subsingleton
+
 end SimpleGraph
