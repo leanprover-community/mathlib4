@@ -81,29 +81,31 @@ lemma covarianceBilin_apply_eq_cov [CompleteSpace E] [IsFiniteMeasure μ]
   rw [covarianceBilin_eq_covarianceBilinDual, covarianceBilinDual_eq_covariance h]
   rfl
 
-lemma covarianceBilin_real {μ : Measure ℝ} [IsFiniteMeasure μ] (h : MemLp id 2 μ) (x y : ℝ) :
+lemma covarianceBilin_real {μ : Measure ℝ} [IsFiniteMeasure μ] (x y : ℝ) :
     covarianceBilin μ x y = x * y * Var[id; μ] := by
-  simp only [covarianceBilin_apply_eq_cov h, RCLike.inner_apply, conj_trivial, mul_comm]
-  rw [covariance_mul_left, covariance_mul_right, ← mul_assoc, covariance_self aemeasurable_id']
-  rfl
+  by_cases h : MemLp id 2 μ
+  · simp only [covarianceBilin_apply_eq_cov h, RCLike.inner_apply, conj_trivial, mul_comm]
+    rw [covariance_mul_left, covariance_mul_right, ← mul_assoc, covariance_self aemeasurable_id']
+    rfl
+  · simp [h, variance_of_not_memLp, aestronglyMeasurable_id]
 
-lemma covarianceBilin_real_self {μ : Measure ℝ} [IsFiniteMeasure μ] (h : MemLp id 2 μ) (x : ℝ) :
+lemma covarianceBilin_real_self {μ : Measure ℝ} [IsFiniteMeasure μ] (x : ℝ) :
     covarianceBilin μ x x = x ^ 2 * Var[id; μ] := by
-  rw [covarianceBilin_real h, pow_two]
+  rw [covarianceBilin_real, pow_two]
 
 @[simp]
-lemma covarianceBilin_self_nonneg [CompleteSpace E] [IsFiniteMeasure μ] (x : E) :
+lemma covarianceBilin_self_nonneg [IsFiniteMeasure μ] (x : E) :
     0 ≤ covarianceBilin μ x x := by
   simp [covarianceBilin]
 
-lemma isPosSemidef_covarianceBilin [CompleteSpace E] [IsFiniteMeasure μ] :
+lemma isPosSemidef_covarianceBilin [IsFiniteMeasure μ] :
     (covarianceBilin μ).toBilinForm.IsPosSemidef where
   eq := covarianceBilin_comm
   nonneg := covarianceBilin_self_nonneg
 
 lemma covarianceBilin_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
-    [MeasurableSpace F] [BorelSpace F] [CompleteSpace E] [FiniteDimensional ℝ F]
-    [IsFiniteMeasure μ] (h : MemLp id 2 μ) (L : E →L[ℝ] F) (u v : F) :
+    [MeasurableSpace F] [BorelSpace F] [SecondCountableTopology F] [CompleteSpace F]
+    [CompleteSpace E] [IsFiniteMeasure μ] (h : MemLp id 2 μ) (L : E →L[ℝ] F) (u v : F) :
     covarianceBilin (μ.map L) u v = covarianceBilin μ (L.adjoint u) (L.adjoint v) := by
   rw [covarianceBilin_apply, covarianceBilin_apply h]
   · simp_rw [id, L.integral_id_map (h.integrable (by simp))]
@@ -175,7 +177,14 @@ section covarianceOperator
 
 variable [CompleteSpace E]
 
-/-- The covariance operator of the measure `μ`. -/
+/-- The covariance operator of the measure `μ`. This is the bounded operator `F : E →L[ℝ] E`
+associated to the continuous bilinear form `B : E →L[ℝ] E →L[ℝ] ℝ` such that
+`B x y = ∫ z, ⟪x, z⟫ * ⟪y, z⟫ ∂μ` (see `covarianceOperator_inner`). Namely we have
+`B x y = ⟪F x, y⟫`.
+
+Note that the bilinear form `B` is the _uncentered_ covariance bilinear form associated to the
+measure `µ`, which is not to be confused with the covariance bilinear form defined earlier in this
+file as `covarianceBilin μ`. -/
 noncomputable def covarianceOperator (μ : Measure E) : E →L[ℝ] E :=
   continuousLinearMapOfBilin <| ContinuousLinearMap.bilinearComp (uncenteredCovarianceBilinDual μ)
     (toDualMap ℝ E).toContinuousLinearMap (toDualMap ℝ E).toContinuousLinearMap
