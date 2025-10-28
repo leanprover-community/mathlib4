@@ -24,6 +24,7 @@ variable [IsIntegralClosure 𝒪 ℤ K]
 
 open nonZeroDivisors
 
+variable (K 𝒪) in
 lemma NumberField.absNorm_differentIdeal [Module.Free ℤ 𝒪] [IsDedekindDomain 𝒪] :
     (differentIdeal ℤ 𝒪).absNorm = (discr K).natAbs := by
   have := IsIntegralClosure.isFractionRing_of_finite_extension ℤ ℚ K 𝒪
@@ -63,14 +64,15 @@ lemma NumberField.absNorm_differentIdeal [Module.Free ℤ 𝒪] [IsDedekindDomai
     simp [b', Module.Basis.toMatrix_apply, mul_comm (RingOfIntegers.basis K i),
       b, integralBasis_apply, ← map_mul, Algebra.trace_localization ℤ ℤ⁰]
 
+variable (K 𝒪) in
 lemma NumberField.discr_mem_differentIdeal [Module.Free ℤ 𝒪] [IsDedekindDomain 𝒪] :
     ↑(discr K) ∈ differentIdeal ℤ 𝒪 := by
   have := (differentIdeal ℤ 𝒪).absNorm_mem
   cases (discr K).natAbs_eq with
   | inl h =>
-    rwa [absNorm_differentIdeal (K := K), ← Int.cast_natCast, ← h] at this
+    rwa [absNorm_differentIdeal K, ← Int.cast_natCast, ← h] at this
   | inr h =>
-    rwa [absNorm_differentIdeal (K := K), ← Int.cast_natCast, Int.eq_neg_comm.mp h,
+    rwa [absNorm_differentIdeal K, ← Int.cast_natCast, Int.eq_neg_comm.mp h,
       Int.cast_neg, neg_mem_iff] at this
 
 lemma NumberField.not_dvd_discr_iff_forall_liesOver {p : ℤ} (hp : Prime p) :
@@ -85,11 +87,11 @@ lemma NumberField.not_dvd_discr_iff_forall_liesOver {p : ℤ} (hp : Prime p) :
   constructor
   · intro H P hP hP' hP''
     have := Ideal.absNorm_dvd_absNorm_of_le (Ideal.dvd_iff_le.mp hP'')
-    rw [absNorm_differentIdeal (K := K), ← Ideal.pow_inertiaDeg_eq_absNorm P hp,
+    rw [absNorm_differentIdeal K, ← Ideal.pow_inertiaDeg_eq_absNorm P hp,
       ← Int.natAbs_pow, Int.natAbs_dvd_natAbs] at this
     exact H (.trans (dvd_pow_self _ (Ideal.inertiaDeg_pos' ..).ne') this)
   · intro H h
-    rw [← Int.dvd_natAbs, ← absNorm_differentIdeal (𝒪 := 𝒪)] at h
+    rw [← Int.dvd_natAbs, ← absNorm_differentIdeal K 𝒪] at h
     obtain ⟨P, hP, h₁, h₂⟩ := Ideal.exists_isMaximal_dvd_of_dvd_absNorm hp _ h
     exact H P hP ⟨h₁.symm⟩ h₂
 
