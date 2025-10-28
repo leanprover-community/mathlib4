@@ -93,11 +93,11 @@ lemma covarianceBilin_real_self {μ : Measure ℝ} [IsFiniteMeasure μ] (x : ℝ
   rw [covarianceBilin_real, pow_two]
 
 @[simp]
-lemma covarianceBilin_self_nonneg [CompleteSpace E] [IsFiniteMeasure μ] (x : E) :
+lemma covarianceBilin_self_nonneg [IsFiniteMeasure μ] (x : E) :
     0 ≤ covarianceBilin μ x x := by
   simp [covarianceBilin]
 
-lemma isPosSemidef_covarianceBilin [CompleteSpace E] [IsFiniteMeasure μ] :
+lemma isPosSemidef_covarianceBilin [IsFiniteMeasure μ] :
     (covarianceBilin μ).toBilinForm.IsPosSemidef where
   eq := covarianceBilin_comm
   nonneg := covarianceBilin_self_nonneg
