@@ -188,7 +188,7 @@ def InnerProductSpace.toCore [NormedAddCommGroup E] [c : InnerProductSpace 𝕜 
       rw [← InnerProductSpace.norm_sq_eq_re_inner]
       apply sq_nonneg
     definite := fun x hx =>
-      norm_eq_zero.1 <| pow_eq_zero (n := 2) <| by
+      norm_eq_zero.1 <| eq_zero_of_pow_eq_zero (n := 2) <| by
         rw [InnerProductSpace.norm_sq_eq_re_inner (𝕜 := 𝕜) x, hx, map_zero] }
 
 namespace InnerProductSpace.Core
