@@ -348,8 +348,7 @@ end
 section
 
 variable {X Y Z : C₁} [HasSmallLocalizedHom.{w} W₁ X Y] [HasSmallLocalizedHom.{w} W₁ Y Z]
-  [HasSmallLocalizedHom.{w} W₁ X Z]
-  {X' Y' Z' : C₂}
+  [HasSmallLocalizedHom.{w} W₁ X Z] {X' Y' Z' : C₂}
   [HasSmallLocalizedHom.{w'} W₂ X' X'] [HasSmallLocalizedHom.{w'} W₂ Y' Y']
   [HasSmallLocalizedHom.{w'} W₂ Z' Z'] [HasSmallLocalizedHom.{w'} W₂ X' Y']
   [HasSmallLocalizedHom.{w'} W₂ Y' Z'] [HasSmallLocalizedHom.{w'} W₂ X' Z']
