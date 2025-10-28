@@ -35,6 +35,7 @@ namespace Measure
 /-! ### Restricting a measure -/
 
 /-- Restrict a measure `μ` to a set `s` as an `ℝ≥0∞`-linear map. -/
+@[irreducible]
 noncomputable def restrictₗ {m0 : MeasurableSpace α} (s : Set α) : Measure α →ₗ[ℝ≥0∞] Measure α :=
   liftLinear (OuterMeasure.restrict s) fun μ s' hs' t => by
     suffices μ (s ∩ t) = μ (s ∩ t ∩ s') + μ ((s ∩ t) \ s') by
@@ -58,6 +59,7 @@ theorem restrict_toOuterMeasure_eq_toOuterMeasure_restrict (h : MeasurableSet s)
     toMeasure_toOuterMeasure, OuterMeasure.restrict_trim h, μ.trimmed]
 
 theorem restrict_apply₀ (ht : NullMeasurableSet t (μ.restrict s)) : μ.restrict s t = μ (t ∩ s) := by
+  rw [restrict, restrictₗ] at ht
   rw [← restrictₗ_apply, restrictₗ, liftLinear_apply₀ _ ht, OuterMeasure.restrict_apply,
     coe_toOuterMeasure]
 
@@ -500,9 +502,9 @@ theorem restrict_biUnion {s : ι → Set α} {T : Set ι} (hT : Countable T)
   exact restrict_iUnion (fun i j hij ↦ hd i.coe_prop j.coe_prop (Subtype.coe_ne_coe.mpr hij)) (hm ·)
 
 theorem restrict_biUnion_finset {s : ι → Set α} {T : Finset ι}
-    (hd : T.toSet.Pairwise (Disjoint on s)) (hm : ∀ i, MeasurableSet (s i)) :
+    (hd : (T : Set ι).Pairwise (Disjoint on s)) (hm : ∀ i, MeasurableSet (s i)) :
     μ.restrict (⋃ i ∈ T, s i) = sum fun (i : T) => μ.restrict (s i) :=
-  restrict_biUnion (T := T.toSet) Finite.to_countable hd hm
+  restrict_biUnion (T := (T : Set ι)) Finite.to_countable hd hm
 
 theorem restrict_iUnion_le [Countable ι] {s : ι → Set α} :
     μ.restrict (⋃ i, s i) ≤ sum fun i => μ.restrict (s i) :=
@@ -1083,7 +1085,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       rw [Summable.tsum_finsetSum (fun _ _ ↦ ENNReal.summable)]
       congr with i
       rw [tsum_subtype (G i) (fun C ↦ (μ.restrict (P C)) t)]
-    _ = ∑ C ∈ Cs, ∑ i ∈ F, C.toSet.indicator (fun _ ↦ (μ.restrict (P C)) t) i := by
+    _ = ∑ C ∈ Cs, ∑ i ∈ F, (C : Set ι).indicator (fun _ ↦ (μ.restrict (P C)) t) i := by
       rw [sum_eq_tsum_indicator]
       congr with C
       by_cases hC : C ∈ F.powerset <;> by_cases hC' : C = ∅ <;>
@@ -1093,12 +1095,12 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       refine sum_le_sum fun C hC ↦ ?_
       by_cases hPC : P C = ∅
       · simp [hPC]
-      have hCM : C.toSet.encard ≤ M :=
+      have hCM : (C : Set ι).encard ≤ M :=
         have ⟨x, hx⟩ := Set.nonempty_iff_ne_empty.mpr hPC
         (encard_mono (mem_iInter₂.mp hx.1)).trans (hs x)
       exact nsmul_le_nsmul_left (zero_le _) <| calc {a ∈ F | a ∈ C}.card
         _ ≤ C.card := card_mono <| fun i hi ↦ (F.mem_filter.mp hi).2
-        _ = C.toSet.ncard := (ncard_coe_finset C).symm
+        _ = (C : Set ι).ncard := (ncard_coe_finset C).symm
         _ ≤ M := ENat.toNat_le_of_le_coe hCM
     _ = M • (μ.restrict (⋃ C ∈ Cs, (P C)) t) := by
       rw [← smul_sum, ← Cs.tsum_subtype, μ.restrict_biUnion_finset _ P_meas, Measure.sum_apply _ ht]
