@@ -581,7 +581,7 @@ instance preservesBinaryProducts :
 instance preservesFiniteProducts : PreservesFiniteProducts hoFunctor :=
   Limits.PreservesFiniteProducts.of_preserves_binary_and_terminal _
 
-/-- A product preserving functor between cartesian closed categories is monoidal. -/
+/-- The homotopy category functor `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` is (cartesian) monoidal. -/
 noncomputable instance Monoidal : Monoidal hoFunctor :=
   Monoidal.ofChosenFiniteProducts hoFunctor
 
