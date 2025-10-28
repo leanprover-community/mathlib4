@@ -81,8 +81,9 @@ operations on filters, without directly manipulating entourages.
 
 ## Notation
 
-Localized in `Uniformity`, we have the notation `𝓤 X` for the uniformity on a uniform space `X`,
-and `○` for composition of relations, seen as terms with type `Set (X × X)`.
+Localized in `Uniformity`, we have the notation `𝓤 X` for the uniformity on a uniform space `X`.
+The notation `○` for composition of relations, seen as terms with type `SetRel X X`, is localized
+in `SetRel`.
 
 ## Implementation notes
 
