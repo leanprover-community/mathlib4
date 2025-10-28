@@ -21,8 +21,10 @@ order on matrices on `ℝ` or `ℂ`.
   and `xᴴMx` is nonnegative for all `x`.
 * `Matrix.PosDef` : a matrix `M : Matrix n n R` is positive definite if it is Hermitian and `xᴴMx`
   is greater than zero for all nonzero `x`.
-* `Matrix.PosDef.innerProductSpace`: the inner product on `n → 𝕜` induced by a positive definite
-  matrix `M`, and is given by `⟪x, y⟫ = xᴴMy`.
+* `Matrix.PosSemidef.innerProductSpace`: the pre-inner product space on `n → 𝕜` induced by a
+  positive semi-definite matrix `M`, and is given by `⟪x, y⟫ = xᴴMy`.
+* `Matrix.PosDef.innerProductSpace`: the inner product space on `n → 𝕜` induced by a
+  positive definite matrix `M`, and is given by `⟪x, y⟫ = xᴴMy`.
 
 ## Main results
 
@@ -632,12 +634,13 @@ noncomputable abbrev PosDef.normedAddCommGroup (M : Matrix n n 𝕜) (hM : M.Pos
       by_contra! h
       simpa [hx, lt_irrefl, dotProduct_comm] using hM.re_dotProduct_pos h }
 
-/-- A positive semi-definite matrix `M` induces an inner product `⟪x, y⟫ = xᴴMy`. -/
+/-- A positive semi-definite matrix `M` induces a pre-inner product space given by
+`⟪x, y⟫ = xᴴMy`. -/
 def PosSemidef.innerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
     @InnerProductSpace 𝕜 (n → 𝕜) _ hM.seminormedAddCommGroup :=
   InnerProductSpace.ofCore _
 
-/-- A positive definite matrix `M` induces an inner product `⟪x, y⟫ = xᴴMy`. -/
+/-- A positive definite matrix `M` induces an inner product space given by `⟪x, y⟫ = xᴴMy`. -/
 def PosDef.innerProductSpace (M : Matrix n n 𝕜) (hM : M.PosDef) :
     @InnerProductSpace 𝕜 (n → 𝕜) _ hM.normedAddCommGroup.toSeminormedAddCommGroup :=
   hM.posSemidef.innerProductSpace
