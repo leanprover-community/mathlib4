@@ -180,7 +180,9 @@ def coeff (n : ℕ) : Perfection R p →+* R where
   map_zero' := rfl
   map_add' _ _ := rfl
 
-/-- The `p`-th root of an element of the perfection. -/
+/-- The `p`-th root of an element of the perfection.
+
+The preferred way to use this is `(frobeniusEquiv (Perfection R p) p).symm`. -/
 def pthRoot : Perfection R p →+* Perfection R p where
   __ := pthRootMonoidHom R p
   map_zero' := rfl
@@ -191,6 +193,8 @@ variable {R p}
 @[simp] lemma coeffMonoidHom_eq_coeff (n : ℕ) : ⇑(coeffMonoidHom R p n) = coeff R p n := rfl
 
 @[simp] lemma pthRootMonoidHom_eq_pthRoot : ⇑(pthRootMonoidHom R p) = pthRoot R p := rfl
+
+lemma coeff_toMonoidHom (n : ℕ) : (coeff R p n).toMonoidHom = coeffMonoidHom R p n := rfl
 
 @[ext]
 theorem ext {f g : Perfection R p} (h : ∀ n, coeff R p n f = coeff R p n g) : f = g :=
