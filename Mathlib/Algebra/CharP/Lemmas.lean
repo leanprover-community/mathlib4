@@ -9,6 +9,13 @@ import Mathlib.Data.Nat.Choose.Sum
 
 /-!
 # Characteristic of semirings
+
+## Implementation Notes
+
+In the lemma `add_pow_prime_pow_eq` and its variants, we take a sum indexed by `Ioo 0 (p ^ n)`. This
+is done intentionally so that we can exclude the `0`-th and `p^n`-th terms from the sum, so that
+the rest of the terms are divisible by `p * x * y`.
+
 -/
 
 assert_not_exists Algebra LinearMap orderOf
