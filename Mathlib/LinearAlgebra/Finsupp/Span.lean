@@ -68,6 +68,22 @@ theorem span_single_image (s : Set M) (a : α) :
     Submodule.span R (single a '' s) = (Submodule.span R s).map (lsingle a : M →ₗ[R] α →₀ M) := by
   rw [← span_image]; rfl
 
+lemma range_lmapDomain {β : Type*} (u : α → β) :
+    LinearMap.range (lmapDomain R R u) = .span R (.range fun x ↦ single (u x) 1) := by
+  refine le_antisymm ?_ ?_
+  · rintro x ⟨x, rfl⟩
+    induction x using induction_linear with
+    | single i s =>
+        rw [lmapDomain_apply, mapDomain_single, ← Finsupp.smul_single_one]
+        exact Submodule.smul_mem _ _ (Submodule.subset_span ⟨i, rfl⟩)
+    | zero => simp
+    | add f g hf hg =>
+        rw [map_add]
+        exact Submodule.add_mem _ hf hg
+  · rw [Submodule.span_le, Set.range_subset_iff]
+    intro i
+    exact ⟨Finsupp.single i 1, by simp⟩
+
 end Finsupp
 
 variable {R : Type*} {M : Type*} {N : Type*}

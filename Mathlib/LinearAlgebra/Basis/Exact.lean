@@ -5,6 +5,7 @@ Authors: Christian Merten
 -/
 import Mathlib.Algebra.Exact
 import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.LinearAlgebra.Projection
 
 /-!
 # Basis from a split exact sequence
@@ -23,6 +24,8 @@ variable [Module R M] [Module R K] [Module R P]
 variable {f : K →ₗ[R] M} {g : M →ₗ[R] P} {s : M →ₗ[R] K}
 variable (hs : s ∘ₗ f = LinearMap.id) (hfg : Function.Exact f g)
 variable {ι κ σ : Type*} {v : ι → M} {a : κ → ι} {b : σ → ι}
+
+section
 include hs hfg
 
 lemma LinearIndependent.linearIndependent_of_exact_of_retraction
@@ -91,3 +94,39 @@ noncomputable def Module.Basis.ofSplitExact (hg : Function.Surjective g) (v : Ba
     Basis κ R P :=
   .mk (v.linearIndependent.linearIndependent_of_exact_of_retraction hs hfg hainj hsa)
     (Submodule.top_le_span_of_exact_of_retraction hs hfg hg hsa hlib hab (by rw [v.span_eq]))
+
+end
+
+section
+include hfg
+
+lemma Submodule.linearProjOfIsCompl_comp_surjective_of_exact
+    {p q : Submodule R M} (hpq : IsCompl p q)
+    (hmap : Submodule.map g q = ⊤) :
+    Function.Surjective (Submodule.linearProjOfIsCompl p q hpq ∘ₗ f) := by
+  rw [Set.surjective_iff_surjOn_univ, LinearMap.coe_comp, Set.surjOn_comp_iff, Set.image_univ]
+  rw [← LinearMap.coe_range, ← Submodule.top_coe (R := R), LinearMap.surjOn_iff_le_map,
+    ← hfg.linearMap_ker_eq]
+  intro x triv
+  obtain ⟨a, haq, ha⟩ : g x.val ∈ q.map g := by rwa [hmap]
+  exact ⟨x - a, by simp [← ha], by simpa⟩
+
+lemma Submodule.linearProjOfIsCompl_comp_bijective_of_exact
+    (hf : Function.Injective f) {p q : Submodule R M} (hpq : IsCompl p q)
+    (hker : Disjoint (LinearMap.ker g) q) (hmap : Submodule.map g q = ⊤) :
+    Function.Bijective (Submodule.linearProjOfIsCompl p q hpq ∘ₗ f) := by
+  refine ⟨?_, Submodule.linearProjOfIsCompl_comp_surjective_of_exact hfg _ hmap⟩
+  rwa [LinearMap.coe_comp, Set.InjOn.injective_iff ↑(LinearMap.range f) _ subset_rfl]
+  simpa [← LinearMap.disjoint_ker_iff_injOn, ← hfg.linearMap_ker_eq]
+
+lemma LinearMap.linearProjOfIsCompl_comp_bijective_of_exact
+    (hf : Function.Injective f) {q : Submodule R M} {E : Type*} [AddCommGroup E] [Module R E]
+    {i : E →ₗ[R] M} (hi : Function.Injective i) (h : IsCompl (LinearMap.range i) q)
+    (hker : Disjoint (LinearMap.ker g) q) (hmap : Submodule.map g q = ⊤) :
+    Function.Bijective (LinearMap.linearProjOfIsCompl q i hi h ∘ₗ f) := by
+  rw [LinearMap.linearProjOfIsCompl, LinearMap.comp_assoc, LinearMap.coe_comp,
+      Function.Bijective.of_comp_iff]
+  · exact (LinearEquiv.ofInjective i hi).symm.bijective
+  · exact Submodule.linearProjOfIsCompl_comp_bijective_of_exact hfg hf h hker hmap
+
+end
