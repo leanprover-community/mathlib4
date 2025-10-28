@@ -585,24 +585,27 @@ section
 
 lemma GradedPiece.HEq_one_smul {i : ιM} (x : GradedPiece FM FM_lt i) :
     HEq ((1 : GradedPiece F F_lt 0) • x) x := by
-  induction' x using GradedPiece.induction_on with rx
+  induction x using GradedPiece.induction_on
+  rename_i rx
   exact HEq_eq_mk_eq FM FM_lt (zero_vadd ι i) (MulAction.one_smul rx.1) _ _
     (gradedSMul_def F F_lt FM FM_lt (1 : F 0) rx) rfl
 
 theorem GradedPiece.smul_add {i : ι} {j : ιM} (a : GradedPiece F F_lt i)
     (b c : GradedPiece FM FM_lt j) : a • (b + c) = a • b + a • c := by
-  induction' a using GradedPiece.induction_on with ra
-  induction' b using GradedPiece.induction_on with rb
-  induction' c using GradedPiece.induction_on with rc
+  induction a using GradedPiece.induction_on
+  induction b using GradedPiece.induction_on
+  induction c using GradedPiece.induction_on
+  rename_i ra rb rc
   simp only [← map_add, mk_smul]
   congr
   exact SetCoe.ext (_root_.smul_add ra.1 rb.1 rc.1)
 
 theorem GradedPiece.add_smul {i : ι} {j : ιM} (a b : GradedPiece F F_lt i)
     (c : GradedPiece FM FM_lt j) : (a + b) • c = a • c + b • c := by
-  induction' a using GradedPiece.induction_on with ra
-  induction' b using GradedPiece.induction_on with rb
-  induction' c using GradedPiece.induction_on with rc
+  induction a using GradedPiece.induction_on
+  induction b using GradedPiece.induction_on
+  induction c using GradedPiece.induction_on
+  rename_i ra rb rc
   simp only [← map_add, mk_smul]
   congr
   exact SetCoe.ext (_root_.add_smul ra.1 rb.1 rc.1)
@@ -626,9 +629,10 @@ theorem GradedPiece.zero_smul {i : ι} {j : ιM} (a : GradedPiece FM FM_lt j) :
 lemma GradedPiece.HEq_mul_smul [hasGMul F F_lt] {i j : ι} {k : ιM}
     (a : GradedPiece F F_lt i) (b : GradedPiece F F_lt j) (c : GradedPiece FM FM_lt k) :
     HEq ((a * b) • c) (a • (b • c)) := by
-  induction' a using GradedPiece.induction_on with ra
-  induction' b using GradedPiece.induction_on with rb
-  induction' c using GradedPiece.induction_on with rc
+  induction a using GradedPiece.induction_on
+  induction b using GradedPiece.induction_on
+  induction c using GradedPiece.induction_on
+  rename_i ra rb rc
   exact HEq_eq_mk_eq FM FM_lt (add_vadd i j k) (mul_smul ra.1 rb.1 rc.1) _ _
     (gradedSMul_def F F_lt FM FM_lt (ra * rb) rc) (gradedSMul_def F F_lt FM FM_lt ra (rb • rc))
 
