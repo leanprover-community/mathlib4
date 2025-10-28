@@ -590,7 +590,9 @@ lemma IsLeftCancelSMul.left_cancel {G P} [SMul G P] [IsLeftCancelSMul G P] (a : 
 instance [LeftCancelMonoid G] : IsLeftCancelSMul G G where
   left_cancel' := IsLeftCancelMul.mul_left_cancel
 
-/-- A vector addition is cancellative if it is pointwise injective on the left and right. -/
+/-- A vector addition is cancellative if it is pointwise injective on the left and right.
+
+A group action is cancellative in this sense if and only if it is **free**. -/
 class IsCancelVAdd [VAdd G P] : Prop extends IsLeftCancelVAdd G P where
   protected right_cancel' : ∀ (a b : G) (c : P), a +ᵥ c = b +ᵥ c → a = b
 
