@@ -586,6 +586,10 @@ lemma HasMFDerivAt.prodMap {p : M × M'} {f : M → N} {g : M' → N'}
   · rw [mfderivWithin_univ]; exact hf.mfderiv
   · rw [mfderivWithin_univ]; exact hg.mfderiv
 
+-- Note: this lemma does not apply easily to an arbitrary subset `s ⊆ M × M'` as
+-- unique differentiability on `(Prod.fst '' s)` and `(Prod.snd '' s)` does not imply
+-- unique differentiability on `s`: a priori, `(Prod.fst '' s) × (Prod.fst '' s)`
+-- could be a strict superset of `s`.
 lemma mfderivWithin_prodMap {p : M × M'} {t : Set M'} {f : M → N} {g : M' → N'}
     (hf : MDifferentiableWithinAt I J f s p.1) (hg : MDifferentiableWithinAt I' J' g t p.2)
     (hs : UniqueMDiffWithinAt I s p.1) (ht : UniqueMDiffWithinAt I' t p.2) :
