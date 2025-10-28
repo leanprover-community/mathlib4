@@ -203,7 +203,7 @@ def Mathlib.TacticAnalysis.mergeWithGrind : TacticAnalysis.Config where
           preI.tacI.stx.getKind ∉ mergeWithGrindAllowed then
         if let [goal] := preI.tacI.goalsBefore then
           let goals ← try
-            preI.ctxI.runTacticCode preI.tacI goal postI.tacI.stx
+            preI.runTacticCode goal postI.tacI.stx
           catch _e =>
             pure [goal]
           if goals.isEmpty then
@@ -238,7 +238,7 @@ def Mathlib.TacticAnalysis.terminalToGrind : TacticAnalysis.Config where
           let seq ← `(tactic| $suffix.toArray;*)
           let (oldGoals, heartbeats) ← withHeartbeats <|
             try
-              i.ctxI.runTacticCode i.tacI goal seq
+              i.runTacticCode goal seq
             catch _e =>
               pure [goal]
           if !oldGoals.isEmpty then
@@ -250,7 +250,7 @@ def Mathlib.TacticAnalysis.terminalToGrind : TacticAnalysis.Config where
           let tac ← `(tactic| grind)
           let (newGoals, heartbeats) ← withHeartbeats <|
             try
-              i.ctxI.runTacticCode i.tacI goal tac
+              i.runTacticCode goal tac
             catch _e =>
               pure [goal]
           newHeartbeats := heartbeats
@@ -290,7 +290,7 @@ def Mathlib.TacticAnalysis.tryAtEachStep (tac : Syntax → MVarId → CommandEla
         if (hash goal) % fraction = 0 then
           let tac ← tac i.tacI.stx goal
           let goalsAfter ← try
-            i.ctxI.runTacticCode i.tacI goal tac
+            i.runTacticCode goal tac
           catch _e =>
             pure [goal]
           if goalsAfter.isEmpty then

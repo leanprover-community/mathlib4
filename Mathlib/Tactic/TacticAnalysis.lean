@@ -56,6 +56,13 @@ structure TacticNode where
   /-- This tactic is allowed to fail because it is in a `try`/`anyGoals`/etc block. -/
   mayFail : Bool
 
+/-- Run tactic code, given by a piece of syntax, in the context of a tactic info node.
+
+Convenience abbreviation for `ContextInfo.runTacticCode`. -/
+abbrev TacticNode.runTacticCode (i : TacticNode) :
+    MVarId → Syntax → CommandElabM (List MVarId) :=
+  i.ctxI.runTacticCode i.tacI
+
 /-- Stores the configuration for a tactic analysis pass.
 
 This provides the low-level interface into the tactic analysis framework.
@@ -299,7 +306,7 @@ def testTacticSeq (config : ComplexConfig) (tacticSeq : Array (TSyntax `tactic))
     if let [goal] := i.tacI.goalsBefore then
       let (oldGoals, oldHeartbeats) ← withHeartbeats <|
         try
-          i.ctxI.runTacticCode i.tacI goal stx
+          i.runTacticCode goal stx
         catch e =>
           if !i.mayFail then
             logWarning m!"original tactic '{stx}' failed: {e.toMessageData}"
