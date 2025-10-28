@@ -3,11 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Algebra.Order.Ring.Cast
 import Mathlib.Data.Finset.Order
-import Mathlib.Data.Int.Interval
 import Mathlib.Order.Filter.AtTopBot.Basic
 import Mathlib.Order.Filter.Finite
+import Mathlib.Order.Interval.Finset.Defs
 
 /-!
 # `Filter.atTop` and `Filter.atBot` filters and finite sets.
