@@ -85,3 +85,5 @@ theorem tendsto_finset_Iic_atTop_atTop [Preorder α] [LocallyFiniteOrderBot α] 
 theorem tendsto_finset_Ici_atBot_atTop [Preorder α] [LocallyFiniteOrderTop α] :
     Tendsto (Finset.Ici (α := α)) atBot atTop :=
   tendsto_finset_Iic_atTop_atTop (α := αᵒᵈ)
+
+end Filter

@@ -7,7 +7,7 @@ Authors: Chris Birkbeck
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Group.EvenFunction
 import Mathlib.Data.Int.Interval
-import Mathlib.Tactic
+import Mathlib.Tactic.Zify
 
 /-!
 # Sums/products over integer intervals
