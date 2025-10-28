@@ -105,7 +105,7 @@ lemma IsAtom.ne_iff_eq_bot (ha : IsAtom a) (hba : b ≤ a) : b ≠ a ↔ b = ⊥
   mpr := by rintro rfl; exact ha.ne_bot.symm
 
 lemma IsAtom.ne_bot_iff_eq (ha : IsAtom a) (hba : b ≤ a) : b ≠ ⊥ ↔ b = a :=
-   (ha.ne_iff_eq_bot hba).not_right.symm
+  (ha.ne_iff_eq_bot hba).not_right.symm
 
 theorem IsAtom.Iic_eq (h : IsAtom a) : Set.Iic a = {⊥, a} :=
   Set.ext fun _ => h.le_iff
@@ -201,7 +201,7 @@ lemma IsCoatom.ne_iff_eq_top (ha : IsCoatom a) (hab : a ≤ b) : b ≠ a ↔ b =
   mpr := by rintro rfl; exact ha.ne_top.symm
 
 lemma IsCoatom.ne_top_iff_eq (ha : IsCoatom a) (hab : a ≤ b) : b ≠ ⊤ ↔ b = a :=
-   (ha.ne_iff_eq_top hab).not_right.symm
+  (ha.ne_iff_eq_top hab).not_right.symm
 
 theorem IsCoatom.Ici_eq (h : IsCoatom a) : Set.Ici a = {⊤, a} :=
   h.dual.Iic_eq
@@ -549,6 +549,9 @@ end BooleanAlgebra
 
 namespace CompleteBooleanAlgebra
 
+/-- Every atomic complete Boolean algebra is completely atomic.
+
+This is not made an instance to avoid typeclass loops. -/
 -- See note [reducible non-instances]
 abbrev toCompleteAtomicBooleanAlgebra {α} [CompleteBooleanAlgebra α] [IsAtomic α] :
     CompleteAtomicBooleanAlgebra α where
@@ -624,7 +627,7 @@ theorem le_iff_atom_le_imp {a b : α} : a ≤ b ↔ ∀ c : α, IsAtom c → c �
 theorem eq_iff_atom_le_iff {a b : α} : a = b ↔ ∀ c, IsAtom c → (c ≤ a ↔ c ≤ b) := by
   refine ⟨fun h => by simp [h], fun h => ?_⟩
   rw [le_antisymm_iff, le_iff_atom_le_imp, le_iff_atom_le_imp]
-  aesop
+  simp_all
 
 end IsAtomistic
 
@@ -751,7 +754,7 @@ This is not an instance to prevent loops. -/
 protected def IsSimpleOrder.linearOrder [DecidableEq α] : LinearOrder α :=
   { (inferInstance : PartialOrder α) with
     le_total := fun a b => by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
-    -- Note from #23976: do we want this inlined or should this be a separate definition?
+    -- Note from https://github.com/leanprover-community/mathlib4/issues/23976: do we want this inlined or should this be a separate definition?
     toDecidableLE := fun a b =>
       if ha : a = ⊥ then isTrue (ha.le.trans bot_le)
       else

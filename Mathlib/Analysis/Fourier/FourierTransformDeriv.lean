@@ -45,7 +45,7 @@ We introduce two convenience definitions:
   This is essentially `ContinuousLinearMap.smulRight`, up to the factor `- 2πI` designed to make
   sure that the Fourier integral of `fourierSMulRight L f` is the derivative of the Fourier
   integral of `f`.
-* `VectorFourier.fourierPowSMulRight` is the higher order analogue for higher derivatives:
+* `VectorFourier.fourierPowSMulRight` is the higher-order analogue for higher derivatives:
   `fourierPowSMulRight L f v n` is informally `(-(2 * π * I))^n (L v ⬝)^n • f v`, in
   the space of continuous multilinear maps `W [×n]→L[ℝ] E`.
 
@@ -265,8 +265,7 @@ theorem fourierIntegral_fderiv [MeasurableSpace V] [BorelSpace V] [FiniteDimensi
   have A x : fderiv ℝ g x y = - 2 * ↑π * I * L y w * g x :=
     fderiv_fourierChar_neg_bilinear_left_apply _ _ _ _
   rw [integral_smul_fderiv_eq_neg_fderiv_smul_of_integrable, ← integral_neg]
-  · congr with x
-    simp only [A, neg_mul, neg_smul, neg_neg]
+  · simp only [A, neg_mul, neg_smul, neg_neg]
   · have : Integrable (fun x ↦ (-(2 * ↑π * I * ↑((L y) w)) • ((g x : ℂ) • f x))) μ :=
       ((fourierIntegral_convergent_iff' _ _).2 hf).smul _
     convert this using 2 with x
@@ -412,9 +411,9 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
     gcongr with i hi
     · rw [← Nat.cast_pow, Nat.cast_le]
       calc n.descFactorial i ≤ n ^ i := Nat.descFactorial_le_pow _ _
-      _ ≤ (n + 1) ^ i := by gcongr; omega
+      _ ≤ (n + 1) ^ i := by gcongr; cutsat
       _ ≤ (n + 1) ^ k := by gcongr; exacts [le_add_self, Finset.mem_range_succ_iff.mp hi]
-    · exact hv _ (by omega) _ (by omega)
+    · exact hv _ (by cutsat) _ (by cutsat)
   _ = (2 * n + 2) ^ k * (‖L‖^n * C) := by
     simp only [← Finset.sum_mul, ← Nat.cast_sum, Nat.sum_range_choose, mul_one, ← mul_assoc,
       Nat.cast_pow, Nat.cast_ofNat, Nat.cast_add, Nat.cast_one, ← mul_pow, mul_add]
@@ -747,7 +746,7 @@ lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le
   rcases eq_or_ne w 0 with rfl | hw
   · simp [hn]
     positivity
-  rw [mul_le_mul_left (pow_pos (by simp [hw]) n)] at Z
+  rw [mul_le_mul_iff_right₀ (pow_pos (by simp [hw]) n)] at Z
   apply Z.trans
   conv_rhs => rw [← mul_one π]
   simp only [mul_assoc]

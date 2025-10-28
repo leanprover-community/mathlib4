@@ -200,7 +200,6 @@ theorem IsLimit.hom_ext {t : PullbackCone f g} (ht : IsLimit t) {W : C} {k l : W
     (h₀ : k ≫ fst t = l ≫ fst t) (h₁ : k ≫ snd t = l ≫ snd t) : k = l :=
   ht.hom_ext <| equalizer_ext _ h₀ h₁
 
--- Porting note: `IsLimit.lift` and the two following simp lemmas were introduced to ease the port
 /-- If `t` is a limit pullback cone over `f` and `g` and `h : W ⟶ X` and `k : W ⟶ Y` are such that
 `h ≫ f = k ≫ g`, then we get `l : W ⟶ t.pt`, which satisfies `l ≫ fst t = h`
 and `l ≫ snd t = k`, see `IsLimit.lift_fst` and `IsLimit.lift_snd`. -/
@@ -305,10 +304,10 @@ abbrev inl (t : PushoutCocone f g) : Y ⟶ t.pt :=
 abbrev inr (t : PushoutCocone f g) : Z ⟶ t.pt :=
   t.ι.app WalkingSpan.right
 
-@[simp]
+-- This cannot be `@[simp]` because `c.inl` is reducibly defeq to the LHS.
 theorem ι_app_left (c : PushoutCocone f g) : c.ι.app WalkingSpan.left = c.inl := rfl
 
-@[simp]
+-- This cannot be `@[simp]` because `c.inr` is reducibly defeq to the LHS.
 theorem ι_app_right (c : PushoutCocone f g) : c.ι.app WalkingSpan.right = c.inr := rfl
 
 @[simp]
@@ -401,7 +400,6 @@ theorem IsColimit.hom_ext {t : PushoutCocone f g} (ht : IsColimit t) {W : C} {k 
     (h₀ : inl t ≫ k = inl t ≫ l) (h₁ : inr t ≫ k = inr t ≫ l) : k = l :=
   ht.hom_ext <| coequalizer_ext _ h₀ h₁
 
--- Porting note: `IsColimit.desc` and the two following simp lemmas were introduced to ease the port
 /-- If `t` is a colimit pushout cocone over `f` and `g` and `h : Y ⟶ W` and `k : Z ⟶ W` are
 morphisms satisfying `f ≫ h = g ≫ k`, then we have a factorization `l : t.pt ⟶ W` such that
 `inl t ≫ l = h` and `inr t ≫ l = k`, see `IsColimit.inl_desc` and `IsColimit.inr_desc`. -/

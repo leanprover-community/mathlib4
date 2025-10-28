@@ -40,7 +40,7 @@ namespace CategoryTheory.IsGrothendieckAbelian
 variable {C : Type u} [Category.{v} C] [Abelian C] [IsGrothendieckAbelian.{v} C]
 
 instance {G : C} : (preadditiveCoyonedaObj G).IsRightAdjoint :=
-  isRightAdjoint_of_preservesLimits_of_isCoseparating (isCoseparator_coseparator _) _
+  isRightAdjoint_of_preservesLimits_of_isCoseparating.{v} (isCoseparator_coseparator _) _
 
 /-- The left adjoint of the functor `Hom(G, ·)`, which can be thought of as `· ⊗ G`. -/
 noncomputable def tensorObj (G : C) : ModuleCat (End G)ᵐᵒᵖ ⥤ C :=

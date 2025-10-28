@@ -5,6 +5,11 @@ Authors: Mario Carneiro, Kim Morrison, Violeta Hernández Palacios, Junyan Xu, T
 -/
 import Mathlib.Logic.Hydra
 import Mathlib.SetTheory.Surreal.Basic
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Surreal.Multiplication` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 ### Surreal multiplication
@@ -419,7 +424,7 @@ theorem P3_of_lt {y₁ y₂} (h : ∀ i, IH3 x₁ (x₂.moveLeft i) x₂ y₁ y�
 /-- The main chunk of Theorem 8 in [Conway2001] / Theorem 3.8 in [SchleicherStoll]. -/
 theorem main (a : Args) : a.Numeric → P124 a := by
   apply argsRel_wf.induction a
-  intros a ih ha
+  intro a ih ha
   replace ih : ∀ a', ArgsRel a' a → P124 a' := fun a' hr ↦ ih a' hr (hr.numeric_closed ha)
   cases a with
   /- P1 -/

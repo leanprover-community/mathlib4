@@ -83,9 +83,10 @@ theorem isCancelMulZero_iff_forall_isRegular {M₀} [Mul M₀] [Zero M₀] :
   exact forall₂_congr fun _ _ ↦ isRegular_iff.symm
 
 /-- Predicate typeclass for expressing that `a * b = 0` implies `a = 0` or `b = 0`
-for all `a` and `b` of type `G₀`. -/
-class NoZeroDivisors (M₀ : Type*) [Mul M₀] [Zero M₀] : Prop where
-  /-- For all `a` and `b` of `G₀`, `a * b = 0` implies `a = 0` or `b = 0`. -/
+for all `a` and `b` of type `M₀`. It is weaker than `IsCancelMulZero` in general,
+but equivalent to it if `M₀` is a (not necessarily unital or associative) ring. -/
+@[mk_iff] class NoZeroDivisors (M₀ : Type*) [Mul M₀] [Zero M₀] : Prop where
+  /-- For all `a` and `b` of `M₀`, `a * b = 0` implies `a = 0` or `b = 0`. -/
   eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : M₀}, a * b = 0 → a = 0 ∨ b = 0
 
 export NoZeroDivisors (eq_zero_or_eq_zero_of_mul_eq_zero)
@@ -173,7 +174,7 @@ instance (priority := 100) CancelCommMonoidWithZero.toCancelMonoidWithZero
 /-- Prop-valued mixin for a monoid with zero to be equipped with a cancelling division.
 
 The obvious use case is groups with zero, but this condition is also satisfied by `ℕ`, `ℤ` and, more
-generally, any euclidean domain. -/
+generally, any Euclidean domain. -/
 class MulDivCancelClass (M₀ : Type*) [MonoidWithZero M₀] [Div M₀] : Prop where
   protected mul_div_cancel (a b : M₀) : b ≠ 0 → a * b / b = a
 
@@ -259,6 +260,21 @@ theorem mul_eq_zero_of_left {a : M₀} (h : a = 0) (b : M₀) : a * b = 0 := h.s
 
 theorem mul_eq_zero_of_right (a : M₀) {b : M₀} (h : b = 0) : a * b = 0 := h.symm ▸ mul_zero a
 
+lemma noZeroDivisors_iff_right_eq_zero_of_mul :
+    NoZeroDivisors M₀ ↔ ∀ x : M₀, x ≠ 0 → ∀ y, x * y = 0 → y = 0 := by
+  simp only [noZeroDivisors_iff, or_iff_not_imp_left]
+  exact ⟨fun h a ha b eq ↦ h eq ha, fun h a b eq ha ↦ h a ha b eq⟩
+
+lemma noZeroDivisors_iff_left_eq_zero_of_mul :
+    NoZeroDivisors M₀ ↔ ∀ x : M₀, x ≠ 0 → ∀ y, y * x = 0 → y = 0 := by
+  simp only [noZeroDivisors_iff, or_iff_not_imp_right]
+  exact ⟨fun h b hb a eq ↦ h eq hb, fun h a b eq hb ↦ h b hb a eq⟩
+
+lemma noZeroDivisors_iff_eq_zero_of_mul :
+    NoZeroDivisors M₀ ↔ ∀ x : M₀, x ≠ 0 → (∀ y, x * y = 0 → y = 0) ∧ (∀ y, y * x = 0 → y = 0) := by
+  simp only [forall_and, ← noZeroDivisors_iff_right_eq_zero_of_mul,
+    ← noZeroDivisors_iff_left_eq_zero_of_mul, and_self]
+
 variable [NoZeroDivisors M₀] {a b : M₀}
 
 /-- If `α` has no zero divisors, then the product of two elements equals zero iff one of them
@@ -266,7 +282,7 @@ equals zero. -/
 @[simp]
 theorem mul_eq_zero : a * b = 0 ↔ a = 0 ∨ b = 0 :=
   ⟨eq_zero_or_eq_zero_of_mul_eq_zero,
-    fun o => o.elim (fun h => mul_eq_zero_of_left h b) (mul_eq_zero_of_right a)⟩
+    fun o ↦ o.elim (fun h ↦ mul_eq_zero_of_left h b) (mul_eq_zero_of_right a)⟩
 
 /-- If `α` has no zero divisors, then the product of two elements equals zero iff one of them
 equals zero. -/

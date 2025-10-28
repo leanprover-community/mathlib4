@@ -66,25 +66,22 @@ def mapFun (f : α → β) : 𝕎 α → 𝕎 β := fun x => mk _ (f ∘ x.coeff
 
 namespace mapFun
 
--- Porting note: switched the proof to tactic mode. I think that `ext` was the issue.
-theorem injective (f : α → β) (hf : Injective f) : Injective (mapFun f : 𝕎 α → 𝕎 β) := by
-  intros _ _ h
-  ext p
-  exact hf (congr_arg (fun x => coeff x p) h :)
+theorem injective (f : α → β) (hf : Injective f) : Injective (mapFun f : 𝕎 α → 𝕎 β) :=
+  fun _ _ h => ext fun n => hf (congr_arg (fun x => coeff x n) h :)
 
 theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 𝕎 α → 𝕎 β) := fun x =>
   ⟨mk _ fun n => Classical.choose <| hf <| x.coeff n,
     by ext n; simp only [mapFun, coeff_mk, comp_apply, Classical.choose_spec (hf (x.coeff n))]⟩
 
 /-- Auxiliary tactic for showing that `mapFun` respects the ring operations. -/
--- porting note: a very crude port.
 macro "map_fun_tac" : tactic => `(tactic| (
+  -- TODO: the Lean 3 version of this tactic was more functional
   ext n
   simp only [mapFun, mk, comp_apply, zero_coeff, map_zero,
-    -- Porting note: the lemmas on the next line do not have the `simp` tag in mathlib4
+    -- the lemmas on the next line do not have the `simp` tag in mathlib4
     add_coeff, sub_coeff, mul_coeff, neg_coeff, nsmul_coeff, zsmul_coeff, pow_coeff,
     peval, map_aeval, algebraMap_int_eq, coe_eval₂Hom] <;>
-  try { cases n <;> simp <;> done } <;> -- Porting note: this line solves `one`
+  try { cases n <;> simp <;> done } <;> -- this line solves `one`
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl <;>
   ext ⟨i, k⟩ <;>
     fin_cases i <;> rfl))

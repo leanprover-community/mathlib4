@@ -13,10 +13,10 @@ This file defines various properties of bilinear forms, including reflexivity, s
 alternativity, adjoint, and non-degeneracy.
 For orthogonality, see `Mathlib/LinearAlgebra/BilinearForm/Orthogonal.lean`.
 
-## Notations
+## Notation
 
 Given any term `B` of type `BilinForm`, due to a coercion, can use
-the notation `B x y` to refer to the function field, ie. `B x y = B.bilin x y`.
+the notation `B x y` to refer to the function field, i.e. `B x y = B.bilin x y`.
 
 In this file we use the following type variables:
 - `M`, `M'`, ... are modules over the commutative semiring `R`,
@@ -172,6 +172,62 @@ lemma isSymm_iff_basis {ι : Type*} (b : Basis ι R M) :
     obtain ⟨j, rfl⟩ := iy h₂
     rw [h]
 
+/-! ### Positive semidefinite bilinear forms -/
+
+section PositiveSemidefinite
+
+/-- A bilinear form `B` is **nonnegative** if for any `x` we have `0 ≤ B x x`. -/
+structure IsNonneg [LE R] (B : BilinForm R M) where
+  nonneg : ∀ x, 0 ≤ B x x
+
+lemma isNonneg_def [LE R] {B : BilinForm R M} : B.IsNonneg ↔ ∀ x, 0 ≤ B x x :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+
+/-- A bilinear form is nonnegative if and only if it is nonnegative as a sesquilinear form. -/
+lemma isNonneg_iff [LE R] {B : BilinForm R M} : B.IsNonneg ↔ LinearMap.IsNonneg B :=
+  isNonneg_def.trans LinearMap.isNonneg_def.symm
+
+@[simp]
+lemma isNonneg_zero [Preorder R] : IsNonneg (0 : BilinForm R M) :=
+  isNonneg_iff.2 LinearMap.isNonneg_zero
+
+protected lemma IsNonneg.add [Preorder R] [AddLeftMono R] {B C : BilinForm R M}
+    (hB : B.IsNonneg) (hC : C.IsNonneg) : (B + C).IsNonneg where
+  nonneg x := add_nonneg (hB.nonneg x) (hC.nonneg x)
+
+protected lemma IsNonneg.smul [Preorder R] [PosMulMono R] {B : BilinForm R M} {c : R}
+    (hB : B.IsNonneg) (hc : 0 ≤ c) : (c • B).IsNonneg where
+  nonneg x := mul_nonneg hc (hB.nonneg x)
+
+/-- A bilinear form `B` is **positive semidefinite** if it is symmetric and nonnegative. -/
+structure IsPosSemidef [LE R] (B : BilinForm R M) extends
+  isSymm : B.IsSymm,
+  isNonneg : B.IsNonneg
+
+variable {B : BilinForm R M}
+
+lemma isPosSemidef_def [LE R] : B.IsPosSemidef ↔ B.IsSymm ∧ B.IsNonneg :=
+  ⟨fun h ↦ ⟨h.isSymm, h.isNonneg⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, h₂⟩⟩
+
+/-- A bilinear form is positive semidefinite if and only if it is positive semidefinite
+  as a sesquilinear form. -/
+lemma isPosSemidef_iff [LE R] {B : BilinForm R M} : B.IsPosSemidef ↔ LinearMap.IsPosSemidef B :=
+  isPosSemidef_def.trans <| (isSymm_iff.and isNonneg_iff).trans LinearMap.isPosSemidef_def.symm
+
+@[simp]
+lemma isPosSemidef_zero [Preorder R] : IsPosSemidef (0 : BilinForm R M) :=
+  isPosSemidef_iff.2 LinearMap.isPosSemidef_zero
+
+protected lemma IsPosSemidef.add [Preorder R] [AddLeftMono R] {B C : BilinForm R M}
+    (hB : B.IsPosSemidef) (hC : C.IsPosSemidef) : (B + C).IsPosSemidef :=
+  isPosSemidef_iff.2 ((isPosSemidef_iff.1 hB).add (isPosSemidef_iff.1 hC))
+
+protected lemma IsPosSemidef.smul [Preorder R] [PosMulMono R] {B : BilinForm R M} {c : R}
+    (hB : B.IsPosSemidef) (hc : 0 ≤ c) : (c • B).IsPosSemidef :=
+  isPosSemidef_def.2 ⟨hB.isSymm.smul c, hB.isNonneg.smul hc⟩
+
+end PositiveSemidefinite
+
 /-- The proposition that a bilinear form is alternating -/
 def IsAlt (B : BilinForm R M) : Prop := LinearMap.IsAlt B
 
@@ -318,45 +374,58 @@ noncomputable def dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basi
   haveI := FiniteDimensional.of_fintype_basis b
   b.dualBasis.map (B.toDual hB).symm
 
+variable {B : BilinForm K V}
+
 @[simp]
-theorem dualBasis_repr_apply
-    (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (x i) :
+theorem dualBasis_repr_apply (hB : B.Nondegenerate) (b : Basis ι K V) (x i) :
     (B.dualBasis hB b).repr x i = B x (b i) := by
   have := FiniteDimensional.of_fintype_basis b
   rw [dualBasis, Basis.map_repr, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
     Basis.dualBasis_repr, toDual_def]
 
-theorem apply_dualBasis_left (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (i j) :
+theorem apply_dualBasis_left (hB : B.Nondegenerate) (b : Basis ι K V) (i j) :
     B (B.dualBasis hB b i) (b j) = if j = i then 1 else 0 := by
   have := FiniteDimensional.of_fintype_basis b
   rw [dualBasis, Basis.map_apply, Basis.coe_dualBasis, ← toDual_def hB,
     LinearEquiv.apply_symm_apply, Basis.coord_apply, Basis.repr_self, Finsupp.single_apply]
 
-theorem apply_dualBasis_right (B : BilinForm K V) (hB : B.Nondegenerate) (sym : B.IsSymm)
+theorem apply_dualBasis_right (hB : B.Nondegenerate) (sym : B.IsSymm)
     (b : Basis ι K V) (i j) : B (b i) (B.dualBasis hB b j) = if i = j then 1 else 0 := by
   rw [sym.eq, apply_dualBasis_left]
 
 @[simp]
-lemma dualBasis_dualBasis_flip [FiniteDimensional K V]
-    (B : BilinForm K V) (hB : B.Nondegenerate) {ι : Type*}
-    [Finite ι] [DecidableEq ι] (b : Basis ι K V) :
+lemma dualBasis_dualBasis_flip [FiniteDimensional K V] (hB : B.Nondegenerate) (b : Basis ι K V) :
     B.dualBasis hB (B.flip.dualBasis hB.flip b) = b := by
   ext i
   refine LinearMap.ker_eq_bot.mp hB.ker_eq_bot ((B.flip.dualBasis hB.flip b).ext (fun j ↦ ?_))
   simp_rw [apply_dualBasis_left, ← B.flip_apply, apply_dualBasis_left, @eq_comm _ i j]
 
 @[simp]
-lemma dualBasis_flip_dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
-    [Finite ι] [DecidableEq ι] [FiniteDimensional K V] (b : Basis ι K V) :
+lemma dualBasis_flip_dualBasis (hB : B.Nondegenerate) [FiniteDimensional K V] (b : Basis ι K V) :
     B.flip.dualBasis hB.flip (B.dualBasis hB b) = b :=
-  dualBasis_dualBasis_flip _ hB.flip b
+  dualBasis_dualBasis_flip hB.flip b
 
 @[simp]
-lemma dualBasis_dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (hB' : B.IsSymm) {ι}
-    [Finite ι] [DecidableEq ι] [FiniteDimensional K V] (b : Basis ι K V) :
+lemma dualBasis_dualBasis (hB : B.Nondegenerate) (hB' : B.IsSymm) [FiniteDimensional K V]
+    (b : Basis ι K V) :
     B.dualBasis hB (B.dualBasis hB b) = b := by
-  convert dualBasis_dualBasis_flip _ hB.flip b
+  convert dualBasis_dualBasis_flip hB.flip b
   rwa [eq_comm, ← isSymm_iff_flip]
+
+lemma dualBasis_involutive (hB : B.Nondegenerate) (hB' : B.IsSymm) [FiniteDimensional K V] :
+    Function.Involutive (B.dualBasis hB : Basis ι K V → Basis ι K V) :=
+  fun b ↦ dualBasis_dualBasis hB hB' b
+
+lemma dualBasis_injective (hB : B.Nondegenerate) (hB' : B.IsSymm) [FiniteDimensional K V] :
+    Function.Injective (B.dualBasis hB : Basis ι K V → Basis ι K V) :=
+  (B.dualBasis_involutive hB hB').injective
+
+@[simp]
+theorem dualBasis_eq_iff (hB : B.Nondegenerate) (b : Basis ι K V) (v : ι → V) :
+    B.dualBasis hB b = v ↔ ∀ i j, B (v i) (b j) = if j = i then 1 else 0 :=
+  ⟨fun h _ _ ↦ by rw [← h, apply_dualBasis_left],
+    fun h ↦ funext fun _ ↦ (B.dualBasis hB b).ext_elem_iff.mpr fun _ ↦ by
+      rw [dualBasis_repr_apply, dualBasis_repr_apply, apply_dualBasis_left, h]⟩
 
 end DualBasis
 

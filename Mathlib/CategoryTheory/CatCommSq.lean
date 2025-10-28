@@ -154,7 +154,6 @@ lemma vInv_vInv (h : CatCommSq T L.functor R.functor B) :
   rw [vInv_iso_inv_app]
   rw [← cancel_mono (B.map (L.functor.map (NatTrans.app L.unitIso.hom X)))]
   rw [← Functor.comp_map]
-  erw [← (iso T L.functor R.functor B).hom.naturality (L.unitIso.hom.app X)]
   dsimp
   simp only [Functor.map_comp, Equivalence.fun_inv_map, Functor.comp_obj,
     Functor.id_obj, assoc, Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app, comp_id]

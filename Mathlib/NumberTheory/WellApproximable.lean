@@ -64,8 +64,8 @@ open scoped MeasureTheory Topology Pointwise
 
 /-- In a seminormed group `A`, given `n : ℕ` and `δ : ℝ`, `approxOrderOf A n δ` is the set of
 elements within a distance `δ` of a point of order `n`. -/
-@[to_additive "In a seminormed additive group `A`, given `n : ℕ` and `δ : ℝ`,
-`approxAddOrderOf A n δ` is the set of elements within a distance `δ` of a point of order `n`."]
+@[to_additive /-- In a seminormed additive group `A`, given `n : ℕ` and `δ : ℝ`,
+`approxAddOrderOf A n δ` is the set of elements within a distance `δ` of a point of order `n`. -/]
 def approxOrderOf (A : Type*) [SeminormedGroup A] (n : ℕ) (δ : ℝ) : Set A :=
   thickening δ {y | orderOf y = n}
 
@@ -77,10 +77,10 @@ theorem mem_approxOrderOf_iff {A : Type*} [SeminormedGroup A] {n : ℕ} {δ : �
 /-- In a seminormed group `A`, given a sequence of distances `δ₁, δ₂, ...`, `wellApproximable A δ`
 is the limsup as `n → ∞` of the sets `approxOrderOf A n δₙ`. Thus, it is the set of points that
 lie in infinitely many of the sets `approxOrderOf A n δₙ`. -/
-@[to_additive addWellApproximable "In a seminormed additive group `A`, given a sequence of
+@[to_additive addWellApproximable /-- In a seminormed additive group `A`, given a sequence of
 distances `δ₁, δ₂, ...`, `addWellApproximable A δ` is the limsup as `n → ∞` of the sets
 `approxAddOrderOf A n δₙ`. Thus, it is the set of points that lie in infinitely many of the sets
-`approxAddOrderOf A n δₙ`."]
+`approxAddOrderOf A n δₙ`. -/]
 def wellApproximable (A : Type*) [SeminormedGroup A] (δ : ℕ → ℝ) : Set A :=
   blimsup (fun n => approxOrderOf A n (δ n)) atTop fun n => 0 < n
 

@@ -19,9 +19,9 @@ of `α`/`Set α` on `Set β`.
 
 ## Implementation notes
 
-* We put all instances in the locale `Pointwise`, so that these instances are not available by
+* We put all instances in the scope `Pointwise`, so that these instances are not available by
   default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
-  since we expect the locale to be open whenever the instances are actually used (and making the
+  since we expect the scope to be open whenever the instances are actually used (and making the
   instances reducible changes the behavior of `simp`.
 -/
 
@@ -168,15 +168,15 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
 /-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of `Set α`
 on `Set β`. -/
 @[to_additive
-"An additive action of an additive monoid `α` on a type `β` gives an additive action of `Set α`
-on `Set β`"]
+/-- An additive action of an additive monoid `α` on a type `β` gives an additive action of `Set α`
+on `Set β` -/]
 protected noncomputable def mulAction [Monoid α] [MulAction α β] : MulAction (Set α) (Set β) where
   mul_smul _ _ _ := image2_assoc mul_smul
   one_smul s := image2_singleton_left.trans <| by simp_rw [one_smul, image_id']
 
 /-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `Set β`. -/
 @[to_additive
-      "An additive action of an additive monoid on a type `β` gives an additive action on `Set β`."]
+/-- An additive action of an additive monoid on a type `β` gives an additive action on `Set β`. -/]
 protected def mulActionSet [Monoid α] [MulAction α β] : MulAction α (Set β) where
   mul_smul _ _ _ := by simp only [← image_smul, image_image, ← mul_smul]
   one_smul _ := by simp only [← image_smul, one_smul, image_id']
@@ -318,10 +318,11 @@ lemma disjoint_smul_set_right : Disjoint s (a • t) ↔ Disjoint (a⁻¹ • s)
 
 This is useful to show that the intersection of approximate subgroups is an approximate subgroup. -/
 @[to_additive
-"Any intersection of translates of two sets `s` and `t` can be covered by a single translate of
+/-- Any intersection of translates of two sets `s` and `t` can be covered by a single translate of
 `(-s + s) ∩ (-t + t)`.
 
-This is useful to show that the intersection of approximate subgroups is an approximate subgroup."]
+This is useful to show that the intersection of approximate subgroups is an approximate subgroup.
+-/]
 lemma exists_smul_inter_smul_subset_smul_inv_mul_inter_inv_mul (s t : Set α) (a b : α) :
     ∃ z : α, a • s ∩ b • t ⊆ z • ((s⁻¹ * s) ∩ (t⁻¹ * t)) := by
   obtain hAB | ⟨z, hzA, hzB⟩ := (a • s ∩ b • t).eq_empty_or_nonempty
