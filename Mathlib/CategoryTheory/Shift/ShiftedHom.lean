@@ -174,6 +174,15 @@ lemma map_comp {a b c : M} (f : ShiftedHom X Y a) (g : ShiftedHom Y Z b)
   simp only [Functor.comp_map, F.commShiftIso_add' h, Functor.CommShift.isoAdd'_hom_app,
     ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.comp_obj, comp_id]
 
+lemma map_mk₀ (a : M) (ha : a = 0) (f : X ⟶ Y) (F : C ⥤ D) [F.CommShift M] :
+    (ShiftedHom.mk₀ a ha f).map F = ShiftedHom.mk₀ a ha (F.map f) := by
+  dsimp [mk₀, map]
+  rw [Functor.commShiftIso_zero' F M a ha]
+  simp only [Functor.map_comp, Functor.CommShift.isoZero'_hom_app, assoc]
+  nth_rw 2 [← assoc]
+  rw [← F.map_comp]
+  simp
+
 section Linear
 
 variable {R : Type*} [Ring R] [Preadditive C] [Linear R C]

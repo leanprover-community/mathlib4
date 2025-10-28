@@ -84,7 +84,7 @@ instance [F.Linear R] : Functor.Linear R (F.mapHomotopyCategory (ComplexShape.up
       Functor.map_smul]
     rfl
 
-instance hi [F.Linear R] [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} D] :
+instance [F.Linear R] [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} D] :
     F.mapDerivedCategory.Linear R := by
   rw [← Localization.functor_linear_iff DerivedCategory.Qh
     (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)) R
