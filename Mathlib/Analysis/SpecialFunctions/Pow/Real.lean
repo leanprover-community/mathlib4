@@ -596,21 +596,19 @@ theorem rpow_le_rpow_of_exponent_le (hx : 1 ≤ x) (hyz : y ≤ z) : x ^ y ≤ x
   repeat' rw [rpow_def_of_pos (lt_of_lt_of_le zero_lt_one hx)]
   rw [exp_le_exp]; exact mul_le_mul_of_nonneg_left hyz (log_nonneg hx)
 
-theorem rpow_lt_rpow_of_exponent_neg {x y z : ℝ} (hy : 0 < y) (hxy : y < x) (hz : z < 0) :
-    x ^ z < y ^ z :=
-  rpow_lt_rpow_of_neg hy hxy hz
+@[deprecated (since := "2025-10-28")] alias rpow_lt_rpow_of_exponent_neg :=
+  rpow_lt_rpow_of_neg
 
 theorem strictAntiOn_rpow_Ioi_of_exponent_neg {r : ℝ} (hr : r < 0) :
     StrictAntiOn (fun (x : ℝ) => x ^ r) (Set.Ioi 0) :=
-  fun _ ha _ _ hab => rpow_lt_rpow_of_exponent_neg ha hab hr
+  fun _ ha _ _ hab => rpow_lt_rpow_of_neg ha hab hr
 
-theorem rpow_le_rpow_of_exponent_nonpos {x y : ℝ} (hy : 0 < y) (hxy : y ≤ x) (hz : z ≤ 0) :
-    x ^ z ≤ y ^ z :=
-  rpow_le_rpow_of_nonpos hy hxy hz
+@[deprecated (since := "2025-10-28")] alias rpow_le_rpow_of_exponent_nonpos :=
+  rpow_le_rpow_of_nonpos
 
 theorem antitoneOn_rpow_Ioi_of_exponent_nonpos {r : ℝ} (hr : r ≤ 0) :
     AntitoneOn (fun (x : ℝ) => x ^ r) (Set.Ioi 0) :=
-  fun _ ha _ _ hab => rpow_le_rpow_of_exponent_nonpos ha hab hr
+  fun _ ha _ _ hab => rpow_le_rpow_of_nonpos ha hab hr
 
 @[simp]
 theorem rpow_le_rpow_left_iff (hx : 1 < x) : x ^ y ≤ x ^ z ↔ y ≤ z := by
