@@ -133,6 +133,14 @@ lemma epi_of_flat_of_surjective (f : X ⟶ Y) [Flat f] [Surjective f] : Epi f :=
       (Flat.stalkMap f x) (f.toLRSHom.prop x)
   exact ‹RingHom.FaithfullyFlat _›.injective
 
+lemma flat_and_surjective_iff_faithfullyFlat_of_isAffine [IsAffine X] [IsAffine Y] :
+    Flat f ∧ Surjective f ↔ f.appTop.hom.FaithfullyFlat := by
+  rw [RingHom.FaithfullyFlat.iff_flat_and_comap_surjective,
+    MorphismProperty.arrow_mk_iso_iff @Surjective (arrowIsoSpecΓOfIsAffine f),
+    MorphismProperty.arrow_mk_iso_iff @Flat (arrowIsoSpecΓOfIsAffine f),
+    ← HasRingHomProperty.Spec_iff (P := @Flat), surjective_iff]
+  rfl
+
 end Flat
 
 end AlgebraicGeometry
