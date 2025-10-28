@@ -79,8 +79,8 @@ def localGeneratorsData {M : SheafOfModules.{u} R} (q : M.QuasicoherentData) :
   coversTop := q.coversTop
   generators i := (q.presentation i).generators
 
-/-- A (local) presentation of a sheaf of module `M` is a finite presentation, if
-each given presentation of `M.over (X i)` is a finite presentation. -/
+/-- A (local) presentation of a sheaf of module `M` is a finite presentation
+if each given presentation of `M.over (X i)` is a finite presentation. -/
 class IsFinitePresentation {M : SheafOfModules.{u} R} (q : M.QuasicoherentData) : Prop where
   isFinite_presentation (i : q.I) : (q.presentation i).IsFinite := by infer_instance
 
