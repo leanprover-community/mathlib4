@@ -7,12 +7,10 @@ import Mathlib.Algebra.Star.Module
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
-
 # Star structure on tensor products
 
 This file defines the `Star` structure on tensor products. This also
 defines the `StarAddMonoid` and `StarModule` instances for tensor products.
-
 -/
 
 namespace TensorProduct
