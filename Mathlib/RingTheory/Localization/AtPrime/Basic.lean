@@ -70,9 +70,9 @@ theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
       have : ∀ {r : R} {s : P.primeCompl}, mk' S r s ∈ nonunits S → r ∈ P := fun {r s} =>
         not_imp_comm.1 fun nr => isUnit_iff_exists_inv.2 ⟨mk' S ↑s (⟨r, nr⟩ : P.primeCompl),
           mk'_mul_mk'_eq_one' _ _ <| show r ∈ P.primeCompl from nr⟩
-      rcases mk'_surjective P.primeCompl x with ⟨rx, sx, hrx⟩
-      rcases mk'_surjective P.primeCompl y with ⟨ry, sy, hry⟩
-      rcases mk'_surjective P.primeCompl z with ⟨rz, sz, hrz⟩
+      rcases exists_mk'_eq P.primeCompl x with ⟨rx, sx, hrx⟩
+      rcases exists_mk'_eq P.primeCompl y with ⟨ry, sy, hry⟩
+      rcases exists_mk'_eq P.primeCompl z with ⟨rz, sz, hrz⟩
       rw [← hrx, ← hry, ← hrz, ← mk'_add, ← mk'_mul, ← mk'_self S P.primeCompl.one_mem] at hxyz
       rw [← hrx] at hx
       rw [← hry] at hy
@@ -240,7 +240,7 @@ theorem localRingHom_mk' (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.
 theorem isLocalHom_localRingHom (J : Ideal P) [hJ : J.IsPrime] (f : R →+* P)
     (hIJ : I = J.comap f) : IsLocalHom (localRingHom I J f hIJ) :=
   IsLocalHom.mk fun x hx => by
-    rcases IsLocalization.mk'_surjective I.primeCompl x with ⟨r, s, rfl⟩
+    rcases IsLocalization.exists_mk'_eq I.primeCompl x with ⟨r, s, rfl⟩
     rw [localRingHom_mk'] at hx
     rw [AtPrime.isUnit_mk'_iff] at hx ⊢
     exact fun hr => hx ((SetLike.ext_iff.mp hIJ r).mp hr)
