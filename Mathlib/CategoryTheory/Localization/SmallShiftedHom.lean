@@ -173,6 +173,11 @@ noncomputable def equiv [HasSmallLocalizedShiftedHom.{w} W M X Y] {m : M} :
     SmallShiftedHom.{w} W X Y m ≃ ShiftedHom (L.obj X) (L.obj Y) m :=
   (SmallHom.equiv W L).trans ((L.commShiftIso m).app Y).homToEquiv
 
+lemma equiv_apply [HasSmallLocalizedShiftedHom.{w} W M X Y] {m : M}
+    (f : SmallShiftedHom.{w} W X Y m) :
+    equiv W L f = (SmallHom.equiv W L) f ≫ ((L.commShiftIso m).app Y).hom :=
+  rfl
+
 section
 variable [W.IsCompatibleWithShift M]
 
@@ -308,15 +313,17 @@ lemma equiv_smallShiftedHomMap (G : D₁ ⥤ D₂) [G.CommShift M]
           ((ShiftedHom.mk₀ 0 rfl (e.inv.app _ ≫ L₂.map eY.hom)))
           (zero_add m)) (add_zero m) := by
   have := hasSmallLocalizedHom_of_hasSmallLocalizedShiftedHom₀.{w''} W₂ M X₂ X₂
-  dsimp [smallShiftedHomMap, SmallShiftedHom.equiv]
-  erw [Iso.homToEquiv_apply, Iso.homToEquiv_apply,
-    Φ.equiv_smallHomMap' L₁ L₂ _ _ G e f]
-  simp only [Functor.comp_obj, NatTrans.app_shift, Functor.commShiftIso_comp_hom_app,
-    Functor.commShiftIso_comp_inv_app, assoc, Iso.trans_hom, Iso.app_hom, Functor.mapIso_hom,
-    Functor.map_comp, Functor.commShiftIso_hom_naturality, ShiftedHom.map, ShiftedHom.comp_mk₀,
-    ShiftedHom.mk₀_comp]
-  congr 3
-  simp [← Functor.map_comp_assoc, -Functor.map_comp]
+  apply ((L₂.commShiftIso m).app Y₂).homToEquiv.symm.injective
+  simp only [Functor.comp_obj, SmallShiftedHom.equiv_apply, Iso.app_hom,
+    Iso.homToEquiv_symm_apply, Iso.app_inv, assoc, Iso.hom_inv_id_app, comp_id]
+  refine (Φ.equiv_smallHomMap' L₁ L₂ _ _ G e f).trans ?_
+  simp only [Functor.comp_obj, NatTrans.app_shift,
+    Functor.commShiftIso_comp_hom_app, Functor.commShiftIso_comp_inv_app, assoc,
+    Iso.trans_hom, Iso.app_hom, Functor.mapIso_hom, Functor.map_comp, ShiftedHom.map,
+    ShiftedHom.comp_mk₀, ShiftedHom.mk₀_comp,
+    Functor.commShiftIso_inv_naturality]
+  nth_rw 2 [← Functor.map_comp_assoc]
+  simp
 
 variable [W₁.IsCompatibleWithShift M] [W₂.IsCompatibleWithShift M]
 
