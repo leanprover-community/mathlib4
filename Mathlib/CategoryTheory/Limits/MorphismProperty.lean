@@ -114,11 +114,6 @@ instance Over.closedUnderLimitsOfShape_discrete_empty [P.ContainsIdentities] [P.
     (P.overObj (X := X)).IsClosedUnderLimitsOfShape (Discrete PEmpty.{1}) :=
   CostructuredArrow.closedUnderLimitsOfShape_discrete_empty P
 
-instance [P.RespectsIso] [P.ContainsIdentities] :
-    (MorphismProperty.commaObj (𝟭 T) (Functor.fromPUnit.{0} X) P).IsClosedUnderLimitsOfShape
-      (Discrete PEmpty.{1}) :=
-  Over.closedUnderLimitsOfShape_discrete_empty _
-
 /-- Let `P` be stable under composition and base change. If `P` satisfies cancellation on the right,
 the subcategory of `Over X` defined by `P` is closed under pullbacks.
 
