@@ -63,7 +63,7 @@ theorem IsNoetherianRing.of_prime (H : ∀ I : Ideal R, I.IsPrime → I.FG) :
     IsNoetherianRing R := by
   refine ⟨isOka_fg.forall_of_forall_prime' (fun C hC₁ hC₂ I hI h ↦ ⟨sSup C, ?_, h⟩) H⟩
   obtain ⟨G, hG⟩ := h
-  obtain ⟨J, J_mem_C, G_subset_J⟩ : ∃ J ∈ C, G.toSet ⊆ J := by
+  obtain ⟨J, J_mem_C, G_subset_J⟩ : ∃ J ∈ C, (G : Set R) ⊆ J := by
     refine hC₂.directedOn.exists_mem_subset_of_finset_subset_biUnion ⟨I, hI⟩ (fun _ hx ↦ ?_)
     simp only [Set.mem_iUnion, SetLike.mem_coe, exists_prop]
     exact (Submodule.mem_sSup_of_directed ⟨I, hI⟩ hC₂.directedOn).1 <| hG ▸ subset_span hx
