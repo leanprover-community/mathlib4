@@ -85,17 +85,3 @@ theorem tendsto_finset_Iic_atTop_atTop [Preorder α] [LocallyFiniteOrderBot α] 
 theorem tendsto_finset_Ici_atBot_atTop [Preorder α] [LocallyFiniteOrderTop α] :
     Tendsto (Finset.Ici (α := α)) atBot atTop :=
   tendsto_finset_Iic_atTop_atTop (α := αᵒᵈ)
-
-open Filter Function Finset
-
-lemma Finset.tendsto_Ico_atTop_atTop : Tendsto (fun N ↦ Finset.Ico (-N) N) atTop atTop := by
-  apply tendsto_atTop_finset_of_monotone (fun _ _ _ ↦ Ico_subset_Ico (by omega) (by gcongr))
-  exact fun x ↦ ⟨x.natAbs + 1, by simpa using ⟨by apply le_trans _ (add_abs_nonneg x); omega,
-    Int.lt_add_one_iff.mpr (le_abs_self x)⟩⟩
-
-lemma Finset.tendsto_Ioc_atTop_atTop : Tendsto (fun N ↦ Finset.Ioc (-N) N) atTop atTop := by
-  apply tendsto_atTop_finset_of_monotone (fun _ _ _ ↦ Ioc_subset_Ioc (by omega) (by gcongr))
-  exact fun x ↦ ⟨x.natAbs + 1, by simpa using ⟨by apply le_trans _ (add_abs_nonneg x); omega,
-    (Int.lt_add_one_iff.mpr (le_abs_self x)).le⟩⟩
-
-end Filter

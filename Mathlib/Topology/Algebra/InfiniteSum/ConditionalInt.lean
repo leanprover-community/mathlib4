@@ -1,0 +1,159 @@
+/-
+Copyright (c) 2025 Chris Birkbeck. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Birkbeck
+-/
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Interval
+import Mathlib.Algebra.Order.Ring.Star
+import Mathlib.Order.Filter.AtTopBot.Interval
+import Mathlib.Topology.Algebra.InfiniteSum.Defs
+import Mathlib.Topology.Algebra.Monoid.Defs
+
+/-!
+# Sums over symmetric integer intervals
+
+This file contains some lemmas about sums over symmetric integer intervals `Ixx -N N` used, for
+example in the definition of the Eisenstein series `E2`.
+In particular we define `symmetricIcc`, `symmetricIco`, `symmetricIoc` as `SummationFilter`s
+ corresponding to the intervals `Icc -N N`, `Ico -N N`, `Ioc -N N` respectively.
+We also prove that these filters are all `NeBot` and `LeAtTop`.
+
+-/
+
+open Finset Topology Function Filter SummationFilter
+
+variable (G : Type*) [Neg G] [Preorder G] [LocallyFiniteOrder G]
+
+namespace SummationFilter
+
+section IntervalFilters
+
+/-- The SummationFilter on Locally finite order `G` corresponding to the symmetric
+intervals `Icc (-N) N`· -/
+@[simps]
+def symmetricIcc : SummationFilter G where
+  filter := atTop.map (fun g ↦ Icc (-g) g)
+
+/-- The SummationFilter on Locally finite order `G` corresponding to the symmetric
+intervals `Ioo (-N) N`· -/
+@[simps]
+def symmetricIoo : SummationFilter G where
+  filter := atTop.map (fun g ↦ Ioo (-g) g)
+
+/-- The SummationFilter on `G` corresponding to the intervals `Ico (-N) N`. -/
+def symmetricIco : SummationFilter G where
+  filter := atTop.map (fun N ↦ Ico (-N) N)
+
+/-- The SummationFilter on `G` corresponding to the intervals `Ioc (-N) N`. -/
+def symmetricIoc : SummationFilter G where
+  filter := atTop.map (fun N ↦ Ioc (-N) N)
+
+variable [(atTop : Filter G).NeBot]
+
+instance : (symmetricIcc G).NeBot where
+  ne_bot := by simp [symmetricIcc, Filter.NeBot.map]
+
+instance : (symmetricIco G).NeBot where
+  ne_bot := by simp [symmetricIco, Filter.NeBot.map]
+
+instance : (symmetricIoc G).NeBot where
+  ne_bot := by simp [symmetricIoc, Filter.NeBot.map]
+
+instance : (symmetricIoo G).NeBot where
+  ne_bot := by simp [symmetricIoo, Filter.NeBot.map]
+
+section LeAtTop
+
+variable {G : Type*} [AddCommGroup G] [PartialOrder G] [IsOrderedAddMonoid G] [LocallyFiniteOrder G]
+
+lemma symmetricIcc_le_Conditional :
+    (symmetricIcc G).filter ≤ (conditional G).filter :=
+  Filter.map_mono (tendsto_neg_atTop_atBot.prodMk tendsto_id)
+
+instance : (symmetricIcc G).LeAtTop where
+  le_atTop := le_trans symmetricIcc_le_Conditional (conditional G).le_atTop
+
+variable [NoTopOrder G] [NoBotOrder G]
+
+instance : (symmetricIco G).LeAtTop where
+  le_atTop := by
+    rw [symmetricIco, map_le_iff_le_comap, ← @tendsto_iff_comap]
+    exact tendsto_Ico_neg_atTop_atTop
+
+instance : (symmetricIoc G).LeAtTop where
+  le_atTop := by
+    rw [symmetricIoc, map_le_iff_le_comap, ← @tendsto_iff_comap]
+    exact tendsto_Ioc_neg_atTop_atTop
+
+instance : (symmetricIoo G).LeAtTop where
+  le_atTop := by
+    rw [symmetricIoo, map_le_iff_le_comap, ← @tendsto_iff_comap]
+    exact tendsto_Ioo_neg_atTop_atTop
+
+end LeAtTop
+
+end IntervalFilters
+section Int
+
+variable {α : Type*} {f : ℤ → α} [CommGroup α] [TopologicalSpace α] [ContinuousMul α]
+
+/-- The SummationFilter on `ℤ` corresponding to the intervals `Icc -N N`. Note that this is
+the same as the limit over open intervals `Ioo -N N` (see `symCondInt_eq_map_symmetricIoo_Int`). -/
+abbrev symCondInt : SummationFilter ℤ := symmetricIcc ℤ
+
+lemma symCondInt_eq_map_Icc_nat :
+    symCondInt.filter = atTop.map (fun N : ℕ ↦ Icc (-(N : ℤ)) N) := by
+  simp [← Nat.map_cast_int_atTop, Function.comp_def]
+
+lemma symCondInt_eq_map_symmetricIoo_Int : symCondInt.filter = (symmetricIoo ℤ).filter := by
+  ext s
+  simp only [symmetricIcc, ← Nat.map_cast_int_atTop, Filter.map_map, Filter.mem_map, mem_atTop_sets,
+    ge_iff_le, Set.mem_preimage, comp_apply, symmetricIoo_filter]
+  refine ⟨fun ⟨a, ha⟩ ↦ ⟨a + 1, fun b hb ↦ ?_⟩, fun ⟨a, ha⟩ ↦ ⟨a - 1, fun b hb ↦ ?_⟩⟩ <;>
+  [ convert ha (b - 1) (by grind) using 1; convert ha (b + 1) (by grind) using 1 ] <;>
+  simpa [Finset.ext_iff] using by grind
+
+@[to_additive]
+lemma HasProd.hasProd_IcoFilter_of_hasProd_symCondInt {a : α} (hf : HasProd f a symCondInt)
+    (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) :
+    HasProd f a (symmetricIco ℤ) := by
+  simp only [HasProd, tendsto_map'_iff, symCondInt_eq_map_Icc_nat,
+    ← Nat.map_cast_int_atTop, symmetricIco] at *
+  apply tendsto_of_div_tendsto_one _ hf
+  simpa [Pi.div_def, fun N : ℕ ↦ prod_Icc_eq_prod_Ico_succ f (show (-N : ℤ) ≤ N by omega)]
+    using hf2
+
+@[to_additive]
+lemma multipliable_symmetricIco_of_multiplible_symCondInt
+    (hf : Multipliable f symCondInt) (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) :
+    Multipliable f (symmetricIco ℤ) :=
+  (hf.hasProd.hasProd_IcoFilter_of_hasProd_symCondInt hf2).multipliable
+
+@[to_additive]
+lemma tprod_symCondInt_eq_tprod_symmetricIco [T2Space α]
+    (hf : Multipliable f symCondInt) (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) :
+    ∏'[symmetricIco ℤ] b, f b = ∏'[symCondInt] b, f b :=
+  (hf.hasProd.hasProd_IcoFilter_of_hasProd_symCondInt hf2).tprod_eq
+
+@[to_additive]
+lemma hasProd_symCondInt_iff {α : Type*} [CommMonoid α] [TopologicalSpace α]
+    {f : ℤ → α} {a : α} : HasProd f a symCondInt ↔
+    Tendsto (fun N : ℕ ↦ ∏ n ∈ Icc (-(N : ℤ)) N, f n) atTop (𝓝 a) := by
+  simp [HasProd, symCondInt, ← Nat.map_cast_int_atTop, comp_def]
+
+@[to_additive]
+lemma hasProd_symmetricIco_Int_iff {α : Type*} [CommMonoid α] [TopologicalSpace α]
+    {f : ℤ → α} {a : α} : HasProd f a (symmetricIco ℤ) ↔
+    Tendsto (fun N : ℕ ↦ ∏ n ∈ Finset.Ico (-(N : ℤ)) (N : ℤ), f n) atTop (𝓝 a) := by
+  simp [HasProd, symmetricIco, ← Nat.map_cast_int_atTop, comp_def]
+
+@[to_additive]
+lemma hasProd_symmetricIoc_Int_iff {α : Type*} [CommMonoid α] [TopologicalSpace α]
+    {f : ℤ → α} {a : α} : HasProd f a (symmetricIoc ℤ) ↔
+    Tendsto (fun N : ℕ ↦ ∏ n ∈ Finset.Ioc (-(N : ℤ)) (N : ℤ), f n) atTop (𝓝 a) := by
+  simp [HasProd, symmetricIoc, ← Nat.map_cast_int_atTop, comp_def]
+
+end Int
+
+end SummationFilter
