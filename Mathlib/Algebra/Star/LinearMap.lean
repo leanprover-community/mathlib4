@@ -98,8 +98,8 @@ theorem _root_.TensorProduct.intrinsicStar_map (f : E →ₗ[R] F) (g : G →ₗ
     star (TensorProduct.map f g) = TensorProduct.map (star f) (star g) :=
   TensorProduct.ext' fun _ _ ↦ by simp
 
-theorem intrinsicStar_lTensor (f : E →ₗ[R] F) :
-    star (lTensor G f) = lTensor G (star f) := by
+theorem intrinsicStar_lTensor (f : F →ₗ[R] G) :
+    star (lTensor E f) = lTensor E (star f) := by
   simp [lTensor, TensorProduct.intrinsicStar_map]
 
 theorem intrinsicStar_rTensor (f : E →ₗ[R] F) :
