@@ -36,7 +36,7 @@ as `‖x‖ → ∞`.
 -/
 theorem hasTemperateGrowth_iff_isBigO {f : E → F} :
     f.HasTemperateGrowth ↔ ContDiff ℝ ∞ f ∧
-      ∀ n, ∃ k, iteratedFDeriv ℝ n f =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k):= by
+      ∀ n, ∃ k, iteratedFDeriv ℝ n f =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k) := by
   simp_rw [Asymptotics.isBigO_top]
   congrm ContDiff ℝ ∞ f ∧ (∀ n, ∃ k C, ∀ x, _ ≤ C * ?_)
   rw [norm_pow, Real.norm_of_nonneg (by positivity)]
