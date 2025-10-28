@@ -17,13 +17,19 @@ be used in the proof of the Special Adjoint Functor Theorem.
 namespace CategoryTheory
 
 -- morphism levels before object levels. See note [category theory universes].
-universe v₁ v₂ u₁ u₂
+universe w v₁ v₂ u₁ u₂
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace StructuredArrow
 
 variable {S : D} {T : C ⥤ D}
+
+instance [Small.{w} C] [LocallySmall.{w} D] : Small.{w} (StructuredArrow S T) :=
+  small_of_surjective (f := fun (f : Σ (X : C), S ⟶ T.obj X) ↦ StructuredArrow.mk f.2)
+    (fun f ↦ by
+      obtain ⟨X, f, rfl⟩ := f.mk_surjective
+      exact ⟨⟨X, f⟩, rfl⟩)
 
 instance small_inverseImage_proj_of_locallySmall
     {P : ObjectProperty C} [ObjectProperty.Small.{v₁} P] [LocallySmall.{v₁} D] :
@@ -44,6 +50,12 @@ end StructuredArrow
 namespace CostructuredArrow
 
 variable {S : C ⥤ D} {T : D}
+
+instance [Small.{w} C] [LocallySmall.{w} D] : Small.{w} (CostructuredArrow S T) :=
+  small_of_surjective (f := fun (f : Σ (X : C), S.obj X ⟶ T) ↦ CostructuredArrow.mk f.2)
+    (fun f ↦ by
+      obtain ⟨X, f, rfl⟩ := f.mk_surjective
+      exact ⟨⟨X, f⟩, rfl⟩)
 
 instance small_inverseImage_proj_of_locallySmall
     {P : ObjectProperty C} [ObjectProperty.Small.{v₁} P] [LocallySmall.{v₁} D] :

@@ -1111,6 +1111,9 @@ variable (F : C ⥤ D) (G : C' ⥤ D')
 instance [F.Final] [G.Final] : (F.prod G).Final where
   out := fun ⟨d, d'⟩ => isConnected_of_equivalent (StructuredArrow.prodEquivalence d d' F G).symm
 
+instance [F.Initial] [G.Initial] : (F.prod G).Initial where
+  out := fun ⟨d, d'⟩ => isConnected_of_equivalent (CostructuredArrow.prodEquivalence F G d d').symm
+
 end Prod
 
 namespace ObjectProperty
