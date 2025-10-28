@@ -216,7 +216,6 @@
   "Mathlib.Topology.Order.LeftRightNhds":
   ["Mathlib.Algebra.Ring.Pointwise.Set"],
   "Mathlib.Topology.Instances.CantorSet": ["Mathlib.Data.Stream.Init"],
-  "Mathlib.Topology.Germ": ["Mathlib.Analysis.Normed.Module.Basic"],
   "Mathlib.Topology.Instances.ENNReal.Lemmas": ["Mathlib.Tactic.Bound"],
   "Mathlib.Topology.DiscreteSubset": ["Mathlib.Tactic.TautoSet"],
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
