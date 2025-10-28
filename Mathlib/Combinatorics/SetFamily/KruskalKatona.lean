@@ -42,11 +42,6 @@ The key results proved here are:
 kruskal-katona, kruskal, katona, shadow, initial segments, intersecting
 -/
 
--- TODO: There's currently a diamond. See https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/DecidableEq.20diamond.20on.20Fin
--- import Mathlib.Order.Fin.Basic
--- example (n : ℕ) : instDecidableEqFin n = instDecidableEq_mathlib := rfl
-attribute [-instance] instDecidableEqFin
-
 open Nat
 open scoped FinsetFamily
 
