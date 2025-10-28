@@ -259,6 +259,12 @@ lemma CodescendsAlong.includeRight (hPQ : CodescendsAlong P Q) (h : Q (algebraMa
   let _ : Algebra T (S ⊗[R] T) := Algebra.TensorProduct.rightAlgebra
   apply hPQ R S T (S ⊗[R] T) h H
 
+variable {Q} {P' : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+
+lemma CodescendsAlong.and (hP : CodescendsAlong P Q) (hP' : CodescendsAlong P' Q) :
+    CodescendsAlong (fun f ↦ P f ∧ P' f) Q :=
+  fun _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ h₁ h₂ ↦ ⟨hP _ _ _ _ h₁ h₂.1, hP' _ _ _ _ h₁ h₂.2⟩
+
 end Descent
 
 end RingHom
