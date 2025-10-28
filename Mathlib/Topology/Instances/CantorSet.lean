@@ -313,3 +313,64 @@ theorem cantorSet_eq_zero_two_ofDigits :
     exact ofDigits_zero_two_sequence_mem_cantorSet ha.left
 
 end ternary02
+
+/-!
+## The Cantor set is homeomorphic to `ℕ → Bool`
+-/
+
+open Real
+
+/-- Canonical bijection between the Cantor set and infinite binary tree. -/
+noncomputable def cantorSet_equiv_nat_to_bool : cantorSet ≃ (ℕ → Bool) where
+  toFun := fun ⟨x, h⟩ ↦ (cantorToBinary x).get
+  invFun (y : ℕ → Bool) :=
+    let x : ℝ := ofDigits (Pi.map (fun _ b ↦ cond b 2 0) y)
+    have hx : x ∈ cantorSet := by
+      simp only [x]
+      apply ofDigits_zero_two_sequence_mem_cantorSet
+      intro n
+      simp only [Fin.isValue, Pi.map_apply, ne_eq]
+      cases y n <;> simp
+    ⟨x, hx⟩
+  left_inv := by
+    intro ⟨x, hx⟩
+    simp only [Fin.isValue, Subtype.mk.injEq]
+    exact ofDigits_cantorToTernary hx
+  right_inv := by
+    intro y
+    simp only [Fin.isValue]
+    set x := @ofDigits 3 (Pi.map (fun _ b ↦ cond b 2 0) y)
+    have hx : x ∈ cantorSet := by
+      apply ofDigits_zero_two_sequence_mem_cantorSet
+      intro n
+      simp only [Fin.isValue, Pi.map_apply, ne_eq]
+      cases y n <;> simp
+    have := ofDigits_cantorToTernary hx
+    conv at this => rhs; unfold x
+    apply ofDigits_zero_two_sequence_unique at this
+    rotate_left
+    · exact fun n ↦ cantorToTernary_ne_one
+    · intro n
+      simp only [Fin.isValue, Pi.map_apply, ne_eq]
+      cases y n <;> simp
+    ext n
+    apply congrFun (a := n) at this
+    simp only [cantorToTernary, Fin.isValue, Stream'.get_map, Pi.map_apply] at this
+    generalize (cantorToBinary x).get n = a at this
+    generalize y n = b at this
+    cases a <;> cases b <;> first | rfl | simp at this
+
+/-- Canonical homeomorphism between the Cantor set and `ℕ → Bool`. -/
+noncomputable def cantorSet_homeomorph_nat_to_bool : cantorSet ≃ₜ (ℕ → Bool) :=
+  Homeomorph.symm <| Continuous.homeoOfEquivCompactToT2 (f := cantorSet_equiv_nat_to_bool.symm) (by
+    simp only [cantorSet_equiv_nat_to_bool, Fin.isValue, Equiv.coe_fn_symm_mk]
+    apply Continuous.subtype_mk
+    change Continuous (ofDigits ∘ (fun x ↦ Pi.map (fun x b ↦ bif b then 2 else 0) x))
+    apply Continuous.comp ofDigits_continuous
+    have : (fun x ↦ Pi.map (fun (_ : ℕ) b ↦ bif b then (2 : Fin 3) else 0) x) =
+        (Pi.map (fun x b ↦ bif b then (2 : Fin 3) else 0)) := by
+      eta_expand
+      rfl
+    rw [this]
+    exact Continuous.piMap (fun _ ↦ continuous_of_discreteTopology)
+  )

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 import Mathlib.Algebra.Order.Floor.Semifield
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Tactic.Rify
 
@@ -153,5 +154,31 @@ theorem ofDigits_digits {b : ℕ} [NeZero b] {x : ℝ} (hb : 1 < b) (hx : x ∈ 
   rw [← Summable.hasSum_iff]
   · exact hasSum_ofDigitsTerm_digits x hb hx
   · exact summable_ofDigitsTerm
+
+theorem ofDigits_continuous {b : ℕ} : Continuous (@ofDigits b) := by
+  by_cases hb0 : b = 0
+  · subst hb0
+    fun_prop
+  by_cases hb : b = 1
+  · subst hb
+    fun_prop
+  replace hb : 1 < b := by
+    omega
+  rify at hb0 hb
+  unfold ofDigits
+  apply continuous_tsum (u := fun i ↦ (b : ℝ)⁻¹ ^ i)
+  · intro i
+    simp [ofDigitsTerm]
+    fun_prop
+  · apply summable_geometric_of_lt_one (by positivity) ((inv_lt_one_of_one_lt₀ hb))
+  · intro n x
+    simp [abs_of_nonneg ofDigitsTerm_nonneg]
+    apply le_trans ofDigitsTerm_le
+    calc
+      _ ≤ b * ((b : ℝ) ^ (n + 1))⁻¹ := by
+        gcongr
+        linarith
+      _ = _ := by
+        grind
 
 end Real
