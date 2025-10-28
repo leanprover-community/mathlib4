@@ -153,6 +153,10 @@ def Iso.mk {α β : PartOrdEmb.{u}} (e : α ≃o β) : α ≅ β where
   hom := ofHom e
   inv := ofHom e.symm
 
+/-- The order isomorphism induced by an isomorphism in `PartOrdEmb`. -/
+def orderIsoOfIso {α β : PartOrdEmb.{u}} (e : α ≅ β) :
+    α ≃o β := sorry
+
 /-- `OrderDual` as a functor. -/
 @[simps map]
 def dual : PartOrdEmb ⥤ PartOrdEmb where

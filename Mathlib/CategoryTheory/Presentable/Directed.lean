@@ -3,7 +3,7 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
+import Mathlib.CategoryTheory.Presentable.Basic
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.MorphismProperty.Basic
 import Mathlib.CategoryTheory.Filtered.Final
@@ -586,5 +586,14 @@ lemma IsFiltered.exists_directed
   obtain ⟨α, _, _, F, _⟩ := IsCardinalFiltered.exists_cardinal_directed J .aleph0
   have : IsFiltered α := by rwa [← isCardinalFiltered_aleph0_iff.{w}]
   exact ⟨α, _, IsFiltered.isDirected _, nonempty, F, inferInstance⟩
+
+lemma HasCardinalFilteredColimits.mk' {C : Type u} [Category.{v} C]
+    {κ : Cardinal.{w}} [Fact κ.IsRegular]
+    (hC : ∀ (α : Type w) [PartialOrder α] [IsCardinalFiltered α κ],
+      HasColimitsOfShape α C) :
+    HasCardinalFilteredColimits C κ where
+  hasColimitsOfShape J _ _ := by
+    obtain ⟨α, _, _, F, _⟩ := IsCardinalFiltered.exists_cardinal_directed J κ
+    exact Functor.Final.hasColimitsOfShape_of_final F
 
 end CategoryTheory
