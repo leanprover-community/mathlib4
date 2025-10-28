@@ -228,13 +228,16 @@ instance _root_.Limits.Types.chosenPullback {X Y : Type u} (f : Y ⟶ X) :
     simp
     exact Over.homMk (fun p => p.1.1)
 
-variable {X Y Z : Type} (f : Y → X) (g : Z → X)
+variable {X Y Z : Type u} {f : Y → X} {g : Z → X}
 
-example : pullbackObj (C:= Type) f g = Types.PullbackObj f g := rfl
+example : pullbackObj (C:= Type u) f g = Types.PullbackObj f g := rfl
 
-example : fst (C:= Type) g f = fun p => p.1.1 := by rfl
+example : fst (C:= Type u) g f = fun p => p.1.1 := by rfl
 
-example : snd (C:= Type) g f = fun p => p.1.2 := by rfl
+example : snd (C:= Type u) g f = fun p => p.1.2 := by rfl
+
+example {W : Type u} {a : W → Y} {b : W → Z} {h : ∀ w : W, f (a w) = g (b w)} :
+    lift (C:= Type u) a b (types_ext _ _ h) = fun w => ⟨(a w, b w), h w⟩ := by rfl
 
 end ChosenPullbackForTypes
 
