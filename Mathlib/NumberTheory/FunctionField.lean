@@ -216,8 +216,7 @@ theorem inftyValuation.X_inv : inftyValuation Fq (1 / RatFunc.X) = exp (-1) := b
 -- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/.60synthInstance.2EmaxHeartbeats.60.20error.20but.20only.20in.20.60simpNF.60
 theorem inftyValuation.polynomial {p : Fq[X]} (hp : p ≠ 0) :
     inftyValuationDef Fq (algebraMap Fq[X] (RatFunc Fq) p) = exp (p.natDegree : ℤ) := by
-  grind [FaithfulSMul.algebraMap_eq_zero_iff, FunctionField.inftyValuation_of_nonzero,
-    RatFunc.intDegree_polynomial]
+  rw [inftyValuationDef, if_neg (by simpa), RatFunc.intDegree_polynomial]
 
 /-- The valued field `Fq(t)` with the valuation at infinity. -/
 def inftyValuedFqt : Valued (RatFunc Fq) ℤᵐ⁰ :=
