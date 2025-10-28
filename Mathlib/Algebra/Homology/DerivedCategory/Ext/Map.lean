@@ -98,34 +98,99 @@ end ShiftedHom
 
 section Ext
 
+open Localization
+
+/-- The commute of `CochainComplex.singleFunctor` with `F` and `F.mapDerivedCategory`. -/
+noncomputable def Functor.mapCochainComplexSingleFunctor (n : ℤ) :
+    (CochainComplex.singleFunctor C n) ⋙ F.mapHomologicalComplex (ComplexShape.up ℤ) ≅
+      F ⋙ (CochainComplex.singleFunctor D n) :=
+  HomologicalComplex.singleMapHomologicalComplex F (ComplexShape.up ℤ) n
+
 /-- The map between `Ext` induced by `F.mapShiftedHomAddHom`. -/
-noncomputable def Functor.mapExt [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
-    Ext.{w} X Y n → Ext.{w'} (F.obj X) (F.obj Y) n :=
-  letI := HasDerivedCategory.standard C
-  letI := HasDerivedCategory.standard D
-  (Ext.homEquiv.symm ∘ (F.mapShiftedHom X Y n)) ∘ Ext.homEquiv
+noncomputable def Functor.mapExt [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ)
+    (f : Ext.{w} X Y n) : Ext.{w'} (F.obj X) (F.obj Y) n := by
+  let _ : (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
+    (ComplexShape.up ℤ)).functor.CommShift ℤ :=
+    CategoryTheory.Functor.commShiftMapCochainComplex F
+  let _ : Localization.HasSmallLocalizedShiftedHom.{w'}
+    (HomologicalComplex.quasiIso D (ComplexShape.up ℤ)) ℤ
+    (((F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism (ComplexShape.up ℤ)).functor.obj
+          ((CochainComplex.singleFunctor C 0).obj X)))
+      (((F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism (ComplexShape.up ℤ)).functor.obj
+          ((CochainComplex.singleFunctor C 0).obj Y))) := sorry
+  let _ : Localization.HasSmallLocalizedHom.{w'}
+    (HomologicalComplex.quasiIso D (ComplexShape.up ℤ))
+    ((F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism (ComplexShape.up ℤ)).functor.obj
+      ((shiftFunctor (HomologicalComplex C (ComplexShape.up ℤ)) (n : ℤ)).obj
+      ((CochainComplex.singleFunctor C 0).obj Y)))
+    ((shiftFunctor (HomologicalComplex D (ComplexShape.up ℤ)) (n : ℤ)).obj
+      ((F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism (ComplexShape.up ℤ)).functor.obj
+        ((CochainComplex.singleFunctor C 0).obj Y))) := sorry
+  let _ : HasSmallLocalizedHom.{w'} (HomologicalComplex.quasiIso D (ComplexShape.up ℤ))
+    ((F ⋙ CochainComplex.singleFunctor D 0).obj X)
+    ((CochainComplex.singleFunctor C 0 ⋙ F.mapHomologicalComplex (ComplexShape.up ℤ)).obj X) :=
+    sorry
+  let _ : HasSmallLocalizedHom.{w'} (HomologicalComplex.quasiIso D (ComplexShape.up ℤ))
+    ((CochainComplex.singleFunctor C 0 ⋙ F.mapHomologicalComplex (ComplexShape.up ℤ)).obj X)
+    ((shiftFunctor (HomologicalComplex D (ComplexShape.up ℤ)) (n : ℤ)).obj
+      ((F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism (ComplexShape.up ℤ)).functor.obj
+        ((CochainComplex.singleFunctor C 0).obj Y))) :=
+    sorry
+  let _ : HasSmallLocalizedHom.{w'} (HomologicalComplex.quasiIso D (ComplexShape.up ℤ))
+    ((F ⋙ CochainComplex.singleFunctor D 0).obj X)
+    ((shiftFunctor (HomologicalComplex D (ComplexShape.up ℤ)) (n : ℤ)).obj
+      ((F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism (ComplexShape.up ℤ)).functor.obj
+        ((CochainComplex.singleFunctor C 0).obj Y))) :=
+    sorry
+  let _ : HasSmallLocalizedHom.{w'} (HomologicalComplex.quasiIso D (ComplexShape.up ℤ))
+    ((CochainComplex.singleFunctor C 0 ⋙ F.mapHomologicalComplex (ComplexShape.up ℤ)).obj Y)
+    ((F ⋙ CochainComplex.singleFunctor D 0).obj Y) := sorry
+  let _ : HasSmallLocalizedHom.{w'} (HomologicalComplex.quasiIso D (ComplexShape.up ℤ))
+    ((shiftFunctor (HomologicalComplex D (ComplexShape.up ℤ)) (n : ℤ)).obj
+      ((F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism (ComplexShape.up ℤ)).functor.obj
+        ((CochainComplex.singleFunctor C 0).obj Y)))
+    ((shiftFunctor (HomologicalComplex D (ComplexShape.up ℤ)) (n : ℤ)).obj
+    ((F ⋙ CochainComplex.singleFunctor D 0).obj Y)) := sorry
+  let _ : HasSmallLocalizedHom.{w'} (HomologicalComplex.quasiIso D (ComplexShape.up ℤ))
+    ((F ⋙ CochainComplex.singleFunctor D 0).obj X)
+    ((shiftFunctor (HomologicalComplex D (ComplexShape.up ℤ)) (n : ℤ)).obj
+    ((F ⋙ CochainComplex.singleFunctor D 0).obj Y)) :=
+    sorry
+  let _ : HasSmallLocalizedHom.{w'} (HomologicalComplex.quasiIso D (ComplexShape.up ℤ))
+    ((shiftFunctor (HomologicalComplex D (ComplexShape.up ℤ)) (n : ℤ)).obj
+      ((CochainComplex.singleFunctor C 0 ⋙ F.mapHomologicalComplex (ComplexShape.up ℤ)).obj Y))
+    ((shiftFunctor (HomologicalComplex D (ComplexShape.up ℤ)) (n : ℤ)).obj
+    ((F ⋙ CochainComplex.singleFunctor D 0).obj Y)) := sorry
+  let _ : HasSmallLocalizedHom.{w'} (HomologicalComplex.quasiIso D (ComplexShape.up ℤ))
+    ((shiftFunctor (HomologicalComplex D (ComplexShape.up ℤ)) (n : ℤ)).obj
+      ((F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism (ComplexShape.up ℤ)).functor.obj
+        ((CochainComplex.singleFunctor C 0).obj Y)))
+    ((shiftFunctor (HomologicalComplex D (ComplexShape.up ℤ)) (n : ℤ)).obj
+      ((CochainComplex.singleFunctor D 0).obj (F.obj Y))) := sorry
+  let _ : HasSmallLocalizedHom.{w'} (HomologicalComplex.quasiIso D (ComplexShape.up ℤ))
+    ((F ⋙ CochainComplex.singleFunctor D 0).obj X)
+    ((shiftFunctor (HomologicalComplex D (ComplexShape.up ℤ)) (n : ℤ)).obj
+      ((CochainComplex.singleFunctor D 0).obj (F.obj Y))) := sorry
+  exact ((SmallHom.mk _ ((F.mapCochainComplexSingleFunctor 0).inv.app X)).comp
+    (LocalizerMorphism.smallShiftedHomMap
+    (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism (ComplexShape.up ℤ)) f)).comp
+    ((SmallHom.mk _ ((F.mapCochainComplexSingleFunctor 0).hom.app Y)).shift (n : ℤ))
 
 /-- The additive homomorphism between `Ext` induced by `F.mapShiftedHomAddHom`. -/
 noncomputable def Functor.mapExtAddHom [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
     Ext.{w} X Y n →+ Ext.{w'} (F.obj X) (F.obj Y) n :=
-  letI := HasDerivedCategory.standard C
-  letI := HasDerivedCategory.standard D
-  (Ext.homAddEquiv.symm.toAddMonoidHom.comp (F.mapShiftedHomAddHom X Y n)).comp
-    Ext.homAddEquiv.toAddMonoidHom
+  sorry
 
 @[simp]
 lemma Functor.mapExtAddHom_coe [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
-    F.mapExtAddHom X Y n = F.mapExt X Y n := rfl
+    F.mapExtAddHom X Y n = F.mapExt X Y n := sorry
 
 variable (R : Type*) [Ring R] [CategoryTheory.Linear R C] [CategoryTheory.Linear R D] [F.Linear R]
 
 /-- Upgrade of `F.mapExtAddHom` assuming `F` is linear. -/
 noncomputable def Functor.mapExtLinearMap [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
     Ext.{w} X Y n →ₗ[R] Ext.{w'} (F.obj X) (F.obj Y) n :=
-  letI := HasDerivedCategory.standard C
-  letI := HasDerivedCategory.standard D
-  (Ext.homLinearEquiv.symm.toLinearMap.comp (F.mapShiftedHomLinearMap R X Y n)).comp
-    Ext.homLinearEquiv.toLinearMap
+  sorry
 
 @[simp]
 lemma Functor.mapExtLinearMap_toAddMonoidHom [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
