@@ -129,21 +129,13 @@ instance Over.closedUnderLimitsOfShape_pullback [HasPullbacks T]
     (P.overObj (X := X)).IsClosedUnderLimitsOfShape WalkingCospan where
   limitsOfShape_le := by
     rintro Y ⟨p⟩
-    have ip := p.π.app .left
     have h := IsPullback.of_isLimit_cone <|
         Limits.isLimitOfPreserves (CategoryTheory.Over.forget X) p.isLimit
-    dsimp at h
     rw [MorphismProperty.overObj_iff,
       show Y.hom = (p.π.app .left).left ≫ (p.diag.obj .left).hom by simp]
     apply P.comp_mem _ _ (P.of_isPullback h.flip ?_) (p.prop_diag_obj _)
     exact P.of_postcomp _ (p.diag.obj WalkingCospan.one).hom (p.prop_diag_obj .one)
       (by simpa using p.prop_diag_obj .right)
-
-instance [HasPullbacks T] [P.IsStableUnderComposition]
-    [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] :
-    (MorphismProperty.commaObj (𝟭 T) (Functor.fromPUnit.{0} X) P).IsClosedUnderLimitsOfShape
-      WalkingCospan :=
-  Over.closedUnderLimitsOfShape_pullback _
 
 end
 
@@ -152,11 +144,10 @@ namespace MorphismProperty.Over
 variable (X : T)
 
 noncomputable instance [P.ContainsIdentities] [P.RespectsIso] :
-    CreatesLimitsOfShape (Discrete PEmpty.{1}) (Over.forget P ⊤ X) :=
-  haveI : HasLimitsOfShape (Discrete PEmpty.{1}) (Comma (𝟭 T) (Functor.fromPUnit X)) := by
-    change HasLimitsOfShape _ (Over X)
-    infer_instance
-  forgetCreatesLimitsOfShapeOfClosed _
+    CreatesLimitsOfShape (Discrete PEmpty.{1}) (Over.forget P ⊤ X) := by
+  apply (config := { allowSynthFailures := true }) forgetCreatesLimitsOfShapeOfClosed
+  · exact inferInstanceAs (HasLimitsOfShape _ (Over X))
+  · apply Over.closedUnderLimitsOfShape_discrete_empty _
 
 variable {X} in
 instance [P.ContainsIdentities] (Y : P.Over ⊤ X) :
@@ -181,18 +172,19 @@ instance [P.ContainsIdentities] : HasTerminal (P.Over ⊤ X) :=
 `Over.forget P ⊤ X` creates pullbacks. -/
 noncomputable instance createsLimitsOfShape_walkingCospan [HasPullbacks T]
     [P.IsStableUnderComposition] [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] :
-    CreatesLimitsOfShape WalkingCospan (Over.forget P ⊤ X) :=
-  haveI : HasLimitsOfShape WalkingCospan (Comma (𝟭 T) (Functor.fromPUnit X)) :=
-    inferInstanceAs <| HasLimitsOfShape WalkingCospan (Over X)
-  forgetCreatesLimitsOfShapeOfClosed P
+    CreatesLimitsOfShape WalkingCospan (Over.forget P ⊤ X) := by
+  apply (config := { allowSynthFailures := true }) forgetCreatesLimitsOfShapeOfClosed
+  · exact inferInstanceAs (HasLimitsOfShape WalkingCospan (Over X))
+  · apply Over.closedUnderLimitsOfShape_pullback
 
 /-- If `P` is stable under composition, base change and satisfies post-cancellation,
 `P.Over ⊤ X` has pullbacks -/
 instance (priority := 900) hasPullbacks [HasPullbacks T] [P.IsStableUnderComposition]
-    [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] : HasPullbacks (P.Over ⊤ X) :=
-  haveI : HasLimitsOfShape WalkingCospan (Comma (𝟭 T) (Functor.fromPUnit X)) :=
-    inferInstanceAs <| HasLimitsOfShape WalkingCospan (Over X)
-  hasLimitsOfShape_of_closedUnderLimitsOfShape P
+    [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] : HasPullbacks (P.Over ⊤ X) := by
+  apply (config := { allowSynthFailures := true })
+    hasLimitsOfShape_of_closedUnderLimitsOfShape
+  · exact inferInstanceAs (HasLimitsOfShape WalkingCospan (Over X))
+  · apply Over.closedUnderLimitsOfShape_pullback
 
 end MorphismProperty.Over
 
