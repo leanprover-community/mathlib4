@@ -431,24 +431,6 @@ theorem coe_algebraMap : ⇑(algebraMap R (QuadraticAlgebra R a b)) = coe := rfl
 theorem smul_coe (r1 r2 : R) :
     r1 • (r2 : QuadraticAlgebra R a b) = ↑(r1 * r2) := by rw [coe_mul, coe_mul_eq_smul]
 
-theorem coe_dvd_iff {r : R} {z : QuadraticAlgebra R a b} :
-    (r : QuadraticAlgebra R a b) ∣ z ↔ r ∣ z.re ∧ r ∣ z.im := by
-  constructor
-  · rintro ⟨x, rfl⟩
-    simp [dvd_mul_right]
-  · rintro ⟨⟨r, hr⟩, ⟨i, hi⟩⟩
-    use ⟨r, i⟩
-    simp [QuadraticAlgebra.ext_iff, hr, hi]
-
-@[simp, norm_cast]
-theorem coe_dvd_iff_dvd {z w : R} :
-    (z : QuadraticAlgebra R a b) ∣ w ↔ z ∣ w := by
-  rw [coe_dvd_iff]
-  constructor
-  · rintro ⟨hx, -⟩
-    simpa using hx
-  · simp
-
 end CommSemiring
 
 section CommRing
