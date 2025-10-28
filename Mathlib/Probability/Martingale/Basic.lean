@@ -5,6 +5,7 @@ Authors: Rémy Degenne, Kexing Ying
 -/
 import Mathlib.Probability.Notation
 import Mathlib.Probability.Process.Stopping
+import Mathlib.Probability.Process.Predictable
 
 /-!
 # Martingales
@@ -443,6 +444,43 @@ theorem Martingale.eq_zero_of_predictable [SigmaFiniteFiltration μ 𝒢] {f : �
     exact ((Germ.coe_eq.mp (congr_arg Germ.ofFun <| condExp_of_stronglyMeasurable (𝒢.le _) (hfadp _)
       (hfmgle.integrable _))).symm.trans (hfmgle.2 k (k + 1) k.le_succ)).trans ih
 
+section
+
+variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
+
+/-- A predictable submartingale is a.e. greater equal than its initial state. -/
+theorem Submartingale.zero_le_of_predictable' [Preorder E] [SigmaFiniteFiltration μ 𝒢]
+    {f : ℕ → Ω → E} (hfmgle : Submartingale f 𝒢 μ) (hfadp : IsPredictable 𝒢 f) (n : ℕ) :
+    f 0 ≤ᵐ[μ] f n := by
+  induction n with
+  | zero => rfl
+  | succ k ih =>
+    exact ih.trans ((hfmgle.2.1 k (k + 1) k.le_succ).trans_eq <| Germ.coe_eq.mp <|
+      congr_arg Germ.ofFun <| condExp_of_stronglyMeasurable (𝒢.le _)
+      (hfadp.measurable_add_one _).stronglyMeasurable <| hfmgle.integrable _)
+
+/-- A predictable supermartingale is a.e. less equal than its initial state. -/
+theorem Supermartingale.le_zero_of_predictable' [Preorder E] [SigmaFiniteFiltration μ 𝒢]
+    {f : ℕ → Ω → E} (hfmgle : Supermartingale f 𝒢 μ) (hfadp : IsPredictable 𝒢 f)
+    (n : ℕ) : f n ≤ᵐ[μ] f 0 := by
+  induction n with
+  | zero => rfl
+  | succ k ih =>
+    exact ((Germ.coe_eq.mp <| congr_arg Germ.ofFun <| condExp_of_stronglyMeasurable (𝒢.le _)
+      (hfadp.measurable_add_one _).stronglyMeasurable <|
+        hfmgle.integrable _).symm.trans_le (hfmgle.2.1 k (k + 1) k.le_succ)).trans ih
+
+/-- A predictable martingale is a.e. equal to its initial state. -/
+theorem Martingale.eq_zero_of_predictable' [SigmaFiniteFiltration μ 𝒢] {f : ℕ → Ω → E}
+    (hfmgle : Martingale f 𝒢 μ) (hfadp : IsPredictable 𝒢 f) (n : ℕ) : f n =ᵐ[μ] f 0 := by
+  induction n with
+  | zero => rfl
+  | succ k ih =>
+    exact ((Germ.coe_eq.mp (congr_arg Germ.ofFun <| condExp_of_stronglyMeasurable (𝒢.le _)
+      (hfadp.measurable_add_one _).stronglyMeasurable
+      (hfmgle.integrable _))).symm.trans (hfmgle.2 k (k + 1) k.le_succ)).trans ih
+
+end
 namespace Submartingale
 
 protected theorem integrable_stoppedValue [LE E] {f : ℕ → Ω → E} (hf : Submartingale f 𝒢 μ)
