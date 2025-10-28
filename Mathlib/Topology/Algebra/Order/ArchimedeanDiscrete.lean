@@ -16,65 +16,10 @@ This file contains some supplements to the results in `Mathlib.Topology.Algebra.
 involving discreteness of subgroups, which require heavier imports.
 -/
 
-/-- Any non-trivial linearly ordered archimedean additive group is either cyclic, or densely
-ordered, exclusively. -/
-lemma LinearOrderedAddCommGroup.isAddCyclic_iff_not_denselyOrdered {A : Type*}
-    [AddCommGroup A] [LinearOrder A] [IsOrderedAddMonoid A] [Archimedean A] [Nontrivial A] :
-    IsAddCyclic A ↔ ¬ DenselyOrdered A := by
-  rw [← discrete_iff_not_denselyOrdered]
-  constructor
-  · rintro ⟨g, hg⟩
-    constructor
-    apply int_orderAddMonoidIso_of_isLeast_pos (x := |g|)
-    constructor
-    · rw [Set.mem_setOf, abs_pos]
-      rintro rfl
-      obtain ⟨h, hh⟩ := exists_ne (0 : A)
-      obtain ⟨n, rfl⟩ := hg h
-      simp at hh
-    · refine mem_lowerBounds.mpr fun x hx ↦ ?_
-      obtain ⟨n, rfl⟩ := hg x
-      rw [← abs_eq_self.mpr hx.le, abs_zsmul]
-      exact le_smul_of_one_le_left (abs_nonneg _) (Int.one_le_abs fun hn ↦ by simp_all)
-  · rintro ⟨e⟩
-    exact e.isAddCyclic.mpr inferInstance
-
-/-- Any non-trivial linearly ordered mul-archimedean group is either cyclic, or densely ordered,
-exclusively. -/
-@[to_additive existing]
-lemma LinearOrderedCommGroup.isCyclic_iff_not_denselyOrdered {G : Type*}
-    [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [MulArchimedean G] [Nontrivial G] :
-    IsCyclic G ↔ ¬ DenselyOrdered G := by
-  rw [← discrete_iff_not_denselyOrdered]
-  constructor
-  · rintro ⟨g, hg⟩
-    constructor
-    apply multiplicative_int_orderMonoidIso_of_isLeast_one_lt (x := |g|ₘ)
-    constructor
-    · rw [Set.mem_setOf, one_lt_mabs]
-      rintro rfl
-      obtain ⟨h, hh⟩ := exists_ne (1 : G)
-      obtain ⟨n, rfl⟩ := hg h
-      simp at hh
-    · refine mem_lowerBounds.mpr fun x hx ↦ ?_
-      obtain ⟨n, rfl⟩ := hg x
-      rw [← mabs_eq_self.mpr hx.le, mabs_zpow]
-      conv_lhs => rw [← zpow_one |g|ₘ]
-      exact zpow_le_zpow_right (one_le_mabs _) (Int.one_le_abs fun hn ↦ by simp_all)
-  · rintro ⟨e⟩
-    exact e.isCyclic.mpr inferInstance
-
 namespace Subgroup
 
 variable {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
-
--- this does not really belong thematically to this file, but it is not easy to find a place for it
--- without big import increases
-@[to_additive (attr := simp)]
-lemma zpowers_mabs (g : G) : zpowers |g|ₘ = zpowers g := by
-  rcases mabs_cases g with h | h <;> simp only [h, zpowers_inv]
-
-variable [TopologicalSpace G] [OrderTopology G]
+  [TopologicalSpace G] [OrderTopology G]
 
 /-- In a linearly ordered group with the order topology, the powers of a single element form a
 discrete subgroup. -/

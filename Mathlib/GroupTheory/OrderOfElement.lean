@@ -769,6 +769,10 @@ lemma not_isMulTorsionFree_iff_isOfFinOrder :
     ¬ IsMulTorsionFree G ↔ ∃ a ≠ (1 : G), IsOfFinOrder a := by
   simp [isMulTorsionFree_iff_not_isOfFinOrder]
 
+@[to_additive (attr := simp)]
+lemma zpowers_mabs [LinearOrder G] [IsOrderedMonoid G] (g : G) : zpowers |g|ₘ = zpowers g := by
+  rcases mabs_cases g with h | h <;> simp only [h, zpowers_inv]
+
 end CommGroup
 
 section FiniteMonoid
