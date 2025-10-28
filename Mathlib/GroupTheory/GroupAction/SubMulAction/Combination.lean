@@ -68,10 +68,26 @@ instance : SetLike (n.Combination α) α where
 theorem coe_coe {s : n.Combination α} :
     ((s : Finset α) : Set α) = s := rfl
 
-theorem mem_coe_iff {s : Nat.Combination α n} {a : α} : a ∈ (s : Finset α) ↔ a ∈ s:= .rfl
+theorem mem_coe_iff {s : Nat.Combination α n} {a : α} : a ∈ (s : Finset α) ↔ a ∈ s := .rfl
 
 theorem eq_iff_subset : s = t ↔ (s : Finset α) ⊆ (t : Finset α) := by
   rw [Finset.subset_iff_eq_of_card_le (t.prop.trans_le s.prop.ge), Subtype.ext_iff]
+
+theorem exists_mem_notMem (hn : 1 ≤ n) (hα : n < ENat.card α) {a b : α} (hab : a ≠ b) :
+    ∃ s : n.Combination α, a ∈ s ∧ b ∉ s := by
+  have ha' : n ≤ Set.encard {b}ᶜ := by
+    rw [← not_lt, ← ENat.add_lt_add_iff_left (k := 1) _, not_lt]
+    rwa [← Set.encard_singleton b, Set.encard_add_encard_compl,
+      Set.encard_singleton, Set.encard_univ, add_comm,
+      ENat.add_one_le_iff]
+    all_goals { exact ENat.coe_ne_top _}
+  obtain ⟨s, has, has', hs⟩ :=
+    Set.exists_superset_subset_encard_eq (s := {a}) (by simp [Ne.symm hab]) (by simpa) ha'
+  simp only [Set.singleton_subset_iff, Set.subset_compl_singleton_iff] at has has'
+  letI : Set.Finite s := Set.finite_of_encard_eq_coe hs
+  use ⟨Set.Finite.toFinset this, by
+      rw [mem_iff, ←ENat.coe_inj, ← hs, this.encard_eq_coe_toFinset_card]⟩
+  simp [← mem_coe_iff, has, has']
 
 variable (α n) in
 /-- `Nat.Combination α n` as a `SubMulAction` of `Finset α`. -/
@@ -101,72 +117,69 @@ theorem addAction_faithful {G : Type*} [AddGroup G] {α : Type*} [AddAction G α
     [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α)
     {g : G} (hg : (AddAction.toPerm g : Equiv.Perm α) ≠ 1) :
     ∃ s : n.Combination α, g +ᵥ s ≠ s := by
-  classical
   have : ∃ (a : α), (g +ᵥ a : α) ≠ a := by
     by_contra! h
     apply hg
     ext a
     simpa only using h a
   obtain ⟨a, ha⟩ := this
-  suffices ∃ (s : Set α), s.encard = n ∧ a ∈ s ∧ g +ᵥ a ∉ s by
-    obtain ⟨s, hs, has, has'⟩ := this
-    have : Set.Finite s := Set.finite_of_encard_eq_coe hs
-    use ⟨Set.Finite.toFinset this, by
-      rw [mem_iff, ←ENat.coe_inj, ← hs, this.encard_eq_coe_toFinset_card]⟩
-    rw [ne_eq, Subtype.ext_iff, coe_vadd]
-    simp only [← Finset.coe_inj, Set.Finite.coe_toFinset, Finset.coe_vadd_finset]
-    intro h
-    apply has'
-    rw [← h]
-    exact Set.vadd_mem_vadd_set has
-  have hα' : n ≤ Set.encard ({g +ᵥ a}ᶜ) := by
-    rw [← not_lt, ← ENat.add_lt_add_iff_left (k := 1) _, not_lt]
-    rwa [← Set.encard_singleton (g +ᵥ a), Set.encard_add_encard_compl,
-      Set.encard_singleton, Set.encard_univ, add_comm,
-      ENat.add_one_le_iff]
-    all_goals { exact ENat.coe_ne_top _}
-  obtain ⟨s, has, has', hs⟩ :=
-    Set.exists_superset_subset_encard_eq (s := {a})
-      (by simpa only [Set.subset_compl_singleton_iff, Set.mem_singleton_iff])
-      (by rwa [Set.encard_singleton, ← Nat.cast_one, Nat.cast_le])
-      hα'
-  simp only [Set.singleton_subset_iff, Set.subset_compl_singleton_iff] at has has'
-  use s, hs
+  obtain ⟨s, has, has'⟩ := exists_mem_notMem hn hα (Ne.symm ha)
+  use s
+  intro h
+  apply has'
+  rwa [← h, ← mem_coe_iff, coe_vadd, vadd_mem_vadd_finset_iff, mem_coe_iff]
+
+theorem faithfulVAdd {G : Type*} [AddGroup G] {α : Type*} [AddAction G α] {n : ℕ}
+    [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α)
+    [FaithfulVAdd G α] :
+    FaithfulVAdd G (n.Combination α) := ⟨fun {g₁ g₂} h ↦ by
+  simp only [vadd_eq_iff_eq_neg_vadd, vadd_vadd] at h
+  rw [← neg_inj, ← sub_eq_zero, sub_neg_eq_add]
+  set g := -g₁ + g₂
+  by_contra! h'
+  have hg : (AddAction.toPerm g : Equiv.Perm α) ≠ 1 := by
+    intro K
+    simp only [Equiv.Perm.ext_iff, Equiv.Perm.coe_one, id_eq] at K
+    apply h'
+    apply FaithfulVAdd.eq_of_vadd_eq_vadd (P := α)
+    simpa using K
+  obtain ⟨s, hs⟩ := addAction_faithful hn hα hg
+  apply hs
+  rw [← h]⟩
 
 theorem mulAction_faithful [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α)
     {g : G} (hg : (MulAction.toPerm g : Equiv.Perm α) ≠ 1) :
     ∃ s : n.Combination α, g • s ≠ s := by
-  classical
   have : ∃ (a : α), (g • a : α) ≠ a := by
     by_contra! h
     apply hg
     ext a
     simpa only using h a
   obtain ⟨a, ha⟩ := this
-  suffices ∃ (s : Set α), s.encard = n ∧ a ∈ s ∧ g • a ∉ s by
-    obtain ⟨s, hs, has, has'⟩ := this
-    have : Set.Finite s := Set.finite_of_encard_eq_coe hs
-    use ⟨Set.Finite.toFinset this, by
-      rw [mem_iff, ←ENat.coe_inj, ← hs, this.encard_eq_coe_toFinset_card]⟩
-    rw [ne_eq, Subtype.ext_iff, coe_smul]
-    simp only [← Finset.coe_inj, Set.Finite.coe_toFinset, Finset.coe_smul_finset]
-    intro h
-    apply has'
-    rw [← h]
-    exact Set.smul_mem_smul_set has
-  have hα' : n ≤ Set.encard ({g • a}ᶜ) := by
-    rw [← not_lt, ← ENat.add_lt_add_iff_left (k := 1) _, not_lt]
-    rwa [← Set.encard_singleton (g • a), Set.encard_add_encard_compl,
-      Set.encard_singleton, Set.encard_univ, add_comm,
-      ENat.add_one_le_iff]
-    all_goals { exact ENat.coe_ne_top _}
-  obtain ⟨s, has, has', hs⟩ :=
-    Set.exists_superset_subset_encard_eq (s := {a})
-      (by simpa only [Set.subset_compl_singleton_iff, Set.mem_singleton_iff])
-      (by rwa [Set.encard_singleton, ← Nat.cast_one, Nat.cast_le])
-      hα'
-  simp only [Set.singleton_subset_iff, Set.subset_compl_singleton_iff] at has has'
-  use s, hs
+  obtain ⟨s, has, has'⟩ := exists_mem_notMem hn hα (Ne.symm ha)
+  use s
+  intro h
+  apply has'
+  rwa [← h, ← mem_coe_iff, coe_smul, smul_mem_smul_finset_iff, mem_coe_iff]
+
+theorem faithfulSMul [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α)
+    [FaithfulSMul G α] :
+    FaithfulSMul G (n.Combination α) := ⟨fun {g₁ g₂} h ↦ by
+  simp only [smul_eq_iff_eq_inv_smul, smul_smul] at h
+  rw [← inv_inj, ← div_eq_one, div_inv_eq_mul]
+  set g := g₁⁻¹ * g₂
+  by_contra! h'
+  have hg : (MulAction.toPerm g : Equiv.Perm α) ≠ 1 := by
+    intro K
+    simp only [Equiv.Perm.ext_iff, Equiv.Perm.coe_one, id_eq] at K
+    apply h'
+    apply FaithfulSMul.eq_of_smul_eq_smul (α := α)
+    simpa using K
+  obtain ⟨s, hs⟩ := mulAction_faithful hn hα hg
+  apply hs
+  rw [← h]⟩
+
+attribute [to_additive existing] faithfulSMul
 
 variable (α G)
 
