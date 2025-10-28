@@ -37,18 +37,7 @@ universe u v w
 
 open MulOpposite
 
-/-- Notation typeclass (with no default notation!) for an algebraic structure with a star operation.
--/
-class Star (R : Type u) where
-  star : R → R
-
 variable {R : Type u}
-
-export Star (star)
-
-/-- A star operation (e.g. complex conjugate).
--/
-add_decl_doc star
 
 /-- `StarMemClass S G` states `S` is a type of subsets `s ⊆ G` closed under star. -/
 class StarMemClass (S R : Type*) [Star R] [SetLike S R] : Prop where
@@ -154,6 +143,8 @@ alias ⟨_, Commute.star_star⟩ := commute_star_star
 
 theorem commute_star_comm {x y : R} : Commute (star x) y ↔ Commute x (star y) := by
   rw [← commute_star_star, star_star]
+
+alias ⟨Commute.star_right, Commute.star_left⟩ := commute_star_comm
 
 end StarMul
 
@@ -308,7 +299,7 @@ def starRingAut : RingAut R := { starAddEquiv, starMulAut (R := R) with toFun :=
 
 variable (R) in
 /-- `star` as a ring endomorphism, for commutative `R`. This is used to denote complex
-conjugation, and is available under the notation `conj` in the locale `ComplexConjugate`.
+conjugation, and is available under the notation `conj` in the scope `ComplexConjugate`.
 
 Note that this is the preferred form (over `starRingAut`, available under the same hypotheses)
 because the notation `E →ₗ⋆[R] F` for an `R`-conjugate-linear map (short for
@@ -324,14 +315,7 @@ For example, for complex conjugation, we don't want simp to turn `conj x`
 into the bare function `star x` automatically since most lemmas are about `conj x`. -/
 theorem starRingEnd_apply (x : R) : starRingEnd R x = star x := rfl
 
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute due to report by linter:
-
-simp can prove this:
-  by simp only [RingHomCompTriple.comp_apply, RingHom.id_apply]
-One of the lemmas above could be a duplicate.
-If that's not the case try reordering lemmas or adding @[priority].
--/
--- @[simp]
+-- Not `@[simp]` because `simp` can already prove it.
 theorem starRingEnd_self_apply (x : R) : starRingEnd R (starRingEnd R x) = x := star_star x
 
 instance RingHom.involutiveStar {S : Type*} [NonAssocSemiring S] : InvolutiveStar (S →+* R) where
@@ -385,7 +369,7 @@ instance Int.instStarRing : StarRing ℤ := starRingOfComm
 instance Nat.instTrivialStar : TrivialStar ℕ := ⟨fun _ ↦ rfl⟩
 instance Int.instTrivialStar : TrivialStar ℤ := ⟨fun _ ↦ rfl⟩
 
-/-- A star module `A` over a star ring `R` is a module which is a star add monoid,
+/-- A star module `A` over a star ring `R` is a module which is a star additive monoid,
 and the two star structures are compatible in the sense
 `star (r • a) = star r • star a`.
 

@@ -201,8 +201,8 @@ lemma continuous_toENNReal : Continuous EReal.toENNReal := by
   by_cases h_bot : x = ⊥
   · refine tendsto_nhds_of_eventually_eq ?_
     rw [h_bot, nhds_bot_basis.eventually_iff]
-    simp [toReal_bot, ENNReal.ofReal_zero, ENNReal.ofReal_eq_zero, true_and]
-    exact ⟨0, fun _ hx ↦ toReal_nonpos hx.le⟩
+    simpa [toReal_bot, ENNReal.ofReal_zero, ENNReal.ofReal_eq_zero, true_and] using
+      ⟨0, fun _ hx ↦ toReal_nonpos hx.le⟩
   refine ENNReal.continuous_ofReal.continuousAt.comp' <| continuousOn_toReal.continuousAt
     <| (toFinite _).isClosed.compl_mem_nhds ?_
   simp_all only [mem_compl_iff, mem_singleton_iff, mem_insert_iff, or_self, not_false_eq_true]
@@ -250,10 +250,10 @@ section LimInfSup
 
 variable {α : Type*} {f : Filter α} {u v : α → EReal}
 
-lemma liminf_neg : liminf (- v) f = - limsup v f :=
+lemma liminf_neg : liminf (-v) f = -limsup v f :=
   EReal.negOrderIso.limsup_apply.symm
 
-lemma limsup_neg : limsup (- v) f = - liminf v f :=
+lemma limsup_neg : limsup (-v) f = -liminf v f :=
   EReal.negOrderIso.liminf_apply.symm
 
 lemma le_liminf_add : (liminf u f) + (liminf v f) ≤ liminf (u + v) f := by
@@ -469,7 +469,7 @@ private lemma continuousAt_mul_top_top :
   rw [_root_.eventually_nhds_iff]
   use (Set.Ioi ((max x 0) : EReal)) ×ˢ (Set.Ioi 1)
   split_ands
-  · intros p p_in_prod
+  · intro p p_in_prod
     simp only [Set.mem_prod, Set.mem_Ioi, max_lt_iff] at p_in_prod
     rcases p_in_prod with ⟨⟨p1_gt_x, p1_pos⟩, p2_gt_1⟩
     have := mul_le_mul_of_nonneg_left (le_of_lt p2_gt_1) (le_of_lt p1_pos)
@@ -484,9 +484,9 @@ private lemma continuousAt_mul_top_pos {a : ℝ} (h : 0 < a) :
   simp only [ContinuousAt, EReal.top_mul_coe_of_pos h, EReal.tendsto_nhds_top_iff_real]
   intro x
   rw [_root_.eventually_nhds_iff]
-  use (Set.Ioi ((2*(max (x+1) 0)/a : ℝ) : EReal)) ×ˢ (Set.Ioi ((a/2 : ℝ) : EReal))
+  use (Set.Ioi ((2 * (max (x + 1) 0) / a : ℝ) : EReal)) ×ˢ (Set.Ioi ((a / 2 : ℝ) : EReal))
   split_ands
-  · intros p p_in_prod
+  · intro p p_in_prod
     simp only [Set.mem_prod, Set.mem_Ioi] at p_in_prod
     rcases p_in_prod with ⟨p1_gt, p2_gt⟩
     have p1_pos : 0 < p.1 := by
@@ -494,7 +494,7 @@ private lemma continuousAt_mul_top_pos {a : ℝ} (h : 0 < a) :
       rw [EReal.coe_nonneg]
       apply mul_nonneg _ (le_of_lt (inv_pos_of_pos h))
       simp only [Nat.ofNat_pos, mul_nonneg_iff_of_pos_left, le_max_iff, le_refl, or_true]
-    have a2_pos : 0 < ((a/2 : ℝ) : EReal) := by rw [EReal.coe_pos]; linarith
+    have a2_pos : 0 < ((a / 2 : ℝ) : EReal) := by rw [EReal.coe_pos]; linarith
     have lock := mul_le_mul_of_nonneg_right (le_of_lt p1_gt) (le_of_lt a2_pos)
     have key := mul_le_mul_of_nonneg_left (le_of_lt p2_gt) (le_of_lt p1_pos)
     replace lock := le_trans lock key

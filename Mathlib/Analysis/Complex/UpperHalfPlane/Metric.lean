@@ -117,7 +117,7 @@ open Complex
 
 theorem cosh_dist' (z w : ℍ) :
     Real.cosh (dist z w) = ((z.re - w.re) ^ 2 + z.im ^ 2 + w.im ^ 2) / (2 * z.im * w.im) := by
-  field_simp [cosh_dist, Complex.dist_eq, Complex.sq_norm, normSq_apply]
+  simp [field, cosh_dist, Complex.dist_eq, Complex.sq_norm, normSq_apply]
   ring
 
 /-- Euclidean center of the circle with center `z` and radius `r` in the hyperbolic metric. -/

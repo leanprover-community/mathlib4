@@ -32,34 +32,38 @@ and finally quotienting by the reducibility relation.
 
 open Set Function
 
-namespace CategoryTheory
+namespace Quiver
 
-namespace Groupoid
-
-namespace Free
+open CategoryTheory
 
 universe u v u' v' u'' v''
 
 variable {V : Type u} [Quiver.{v + 1} V]
 
 /-- Shorthand for the "forward" arrow corresponding to `f` in `paths <| symmetrify V` -/
-abbrev _root_.Quiver.Hom.toPosPath {X Y : V} (f : X ⟶ Y) :
+abbrev Hom.toPosPath {X Y : V} (f : X ⟶ Y) :
     (CategoryTheory.Paths.categoryPaths <| Quiver.Symmetrify V).Hom X Y :=
   f.toPos.toPath
 
 /-- Shorthand for the "forward" arrow corresponding to `f` in `paths <| symmetrify V` -/
-abbrev _root_.Quiver.Hom.toNegPath {X Y : V} (f : X ⟶ Y) :
+abbrev Hom.toNegPath {X Y : V} (f : X ⟶ Y) :
     (CategoryTheory.Paths.categoryPaths <| Quiver.Symmetrify V).Hom Y X :=
   f.toNeg.toPath
 
 /-- The "reduction" relation -/
-inductive redStep : HomRel (Paths (Quiver.Symmetrify V))
+inductive FreeGroupoid.redStep : HomRel (Paths (Quiver.Symmetrify V))
   | step (X Z : Quiver.Symmetrify V) (f : X ⟶ Z) :
     redStep (𝟙 ((Paths.of (Quiver.Symmetrify V)).obj X)) (f.toPath ≫ (Quiver.reverse f).toPath)
 
 /-- The underlying vertices of the free groupoid -/
-def _root_.CategoryTheory.FreeGroupoid (V) [Q : Quiver V] :=
-  Quotient (@redStep V Q)
+def FreeGroupoid (V) [Q : Quiver V] :=
+  CategoryTheory.Quotient (@FreeGroupoid.redStep V Q)
+
+@[deprecated (since := "2025-10-02")] alias _root_.CategoryTheory.FreeGroupoid := FreeGroupoid
+
+namespace FreeGroupoid
+
+open Quiver
 
 instance {V} [Quiver V] [Nonempty V] : Nonempty (FreeGroupoid V) := by
   inhabit V; exact ⟨⟨@default V _⟩⟩
@@ -85,7 +89,7 @@ theorem congr_comp_reverse {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
   | cons q f ih =>
     simp only [Quiver.Path.reverse]
     fapply EqvGen.trans
-    -- Porting note: `Quiver.Path.*` and `Quiver.Hom.*` notation not working
+    -- Porting note: dot notation for `Quiver.Path.*` and `Quiver.Hom.*` not working
     · exact q ≫ Quiver.Path.reverse q
     · apply EqvGen.symm
       apply EqvGen.rel
@@ -117,7 +121,7 @@ def quotInv {X Y : FreeGroupoid V} (f : X ⟶ Y) : Y ⟶ X :=
   Quot.liftOn f (fun pp => Quot.mk _ <| pp.reverse) fun pp qq con =>
     Quot.sound <| congr_reverse pp qq con
 
-instance _root_.CategoryTheory.FreeGroupoid.instGroupoid : Groupoid (FreeGroupoid V) where
+instance instGroupoid : Groupoid (FreeGroupoid V) where
   inv := quotInv
   inv_comp p := Quot.inductionOn p fun pp => congr_reverse_comp pp
   comp_inv p := Quot.inductionOn p fun pp => congr_comp_reverse pp
@@ -137,7 +141,7 @@ variable {V' : Type u'} [Groupoid V']
 
 /-- The lift of a prefunctor to a groupoid, to a functor from `FreeGroupoid V` -/
 def lift (φ : V ⥤q V') : FreeGroupoid V ⥤ V' :=
-  Quotient.lift _ (Paths.lift <| Quiver.Symmetrify.lift φ) <| by
+  CategoryTheory.Quotient.lift _ (Paths.lift <| Quiver.Symmetrify.lift φ) <| by
     rintro _ _ _ _ ⟨X, Y, f⟩
     -- Porting note: `simp` does not work, so manually `rewrite`
     erw [Paths.lift_nil, Paths.lift_cons, Quiver.Path.comp_nil, Paths.lift_toPath,
@@ -159,19 +163,23 @@ theorem lift_unique (φ : V ⥤q V') (Φ : FreeGroupoid V ⥤ V') (hΦ : of V �
     exact hΦ
   · rintro X Y f
     simp only [← Functor.toPrefunctor_comp, Prefunctor.comp_map, Paths.of_map]
-    change Φ.map (inv ((Quotient.functor redStep).toPrefunctor.map f.toPath)) =
-      inv (Φ.map ((Quotient.functor redStep).toPrefunctor.map f.toPath))
+    change Φ.map (Groupoid.inv ((Quotient.functor redStep).toPrefunctor.map f.toPath)) =
+      Groupoid.inv (Φ.map ((Quotient.functor redStep).toPrefunctor.map f.toPath))
     have := Functor.map_inv Φ ((Quotient.functor redStep).toPrefunctor.map f.toPath)
-    convert this <;> simp only [inv_eq_inv]
+    convert this <;> simp only [Groupoid.inv_eq_inv]
 
 end UniversalProperty
 
+end FreeGroupoid
+
 section Functoriality
+
+open FreeGroupoid
 
 variable {V' : Type u'} [Quiver.{v' + 1} V'] {V'' : Type u''} [Quiver.{v'' + 1} V'']
 
 /-- The functor of free groupoid induced by a prefunctor of quivers -/
-def _root_.CategoryTheory.freeGroupoidFunctor (φ : V ⥤q V') : FreeGroupoid V ⥤ FreeGroupoid V' :=
+def freeGroupoidFunctor (φ : V ⥤q V') : FreeGroupoid V ⥤ FreeGroupoid V' :=
   lift (φ ⋙q of V')
 
 theorem freeGroupoidFunctor_id :
@@ -186,8 +194,4 @@ theorem freeGroupoidFunctor_comp (φ : V ⥤q V') (φ' : V' ⥤q V'') :
 
 end Functoriality
 
-end Free
-
-end Groupoid
-
-end CategoryTheory
+end Quiver

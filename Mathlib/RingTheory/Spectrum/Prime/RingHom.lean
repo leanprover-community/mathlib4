@@ -5,7 +5,7 @@ Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
 import Mathlib.RingTheory.Spectrum.Prime.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Functoriality of the prime spectrum
@@ -291,3 +291,13 @@ lemma PrimeSpectrum.residueField_specComap (I : PrimeSpectrum R) :
   exact PrimeSpectrum.ext (Ideal.ext fun x ↦ Ideal.algebraMap_residueField_eq_zero)
 
 end ResidueField
+
+variable {R S} in
+theorem IsLocalHom.of_specComap_surjective [CommSemiring R] [CommSemiring S] (f : R →+* S)
+    (hf : Function.Surjective f.specComap) : IsLocalHom f where
+  map_nonunit x hfx := by
+    by_contra hx
+    obtain ⟨p, hp, _⟩ := exists_max_ideal_of_mem_nonunits hx
+    obtain ⟨⟨q, hqp⟩, hq⟩ := hf ⟨p, hp.isPrime⟩
+    simp only [PrimeSpectrum.mk.injEq] at hq
+    exact hqp.ne_top (q.eq_top_of_isUnit_mem (q.mem_comap.mp (by rwa [hq])) hfx)

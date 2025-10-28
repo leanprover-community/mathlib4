@@ -197,8 +197,9 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
   obtain ⟨n, hn⟩ : ∃ n, u n < w := ((tendsto_order.1 u_lim).2 w (ENNReal.coe_pos.1 w_pos)).exists
   filter_upwards [hx n, h'x, v.eventually_measure_lt_top x]
   intro a ha μa_pos μa_lt_top
-  rw [ENNReal.div_lt_iff (Or.inl μa_pos.ne') (Or.inl μa_lt_top.ne)]
-  exact ha.trans_le (mul_le_mul_right' ((ENNReal.coe_le_coe.2 hn.le).trans w_lt.le) _)
+  grw [ENNReal.div_lt_iff (.inl μa_pos.ne') (.inl μa_lt_top.ne), ha, hn]
+  gcongr
+  exact μa_lt_top.ne
 
 section AbsolutelyContinuous
 
@@ -251,10 +252,7 @@ theorem ae_tendsto_div : ∀ᵐ x ∂μ, ∃ c, Tendsto (fun a => ρ a / μ a) (
       exact ENNReal.mul_le_of_le_div ha.le
   have B : ∀ᵐ x ∂μ, ∀ c ∈ w, ∀ d ∈ w, c < d →
       ¬((∃ᶠ a in v.filterAt x, ρ a / μ a < c) ∧ ∃ᶠ a in v.filterAt x, d < ρ a / μ a) := by
-    #adaptation_note /-- 2024-04-23
-    The next two lines were previously just `simpa only [ae_ball_iff w_count, ae_all_iff]` -/
-    rw [ae_ball_iff w_count]; intro x hx; rw [ae_ball_iff w_count]; revert x
-    simpa only [ae_all_iff]
+    simpa only [ae_ball_iff w_count, ae_all_iff]
   filter_upwards [B]
   intro x hx
   exact tendsto_of_no_upcrossings w_dense hx
@@ -625,8 +623,7 @@ theorem le_mul_withDensity {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
         simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter]
       _ ≤ ∫⁻ x in s ∩ f ⁻¹' I, t * f x ∂μ := by
         apply lintegral_mono_ae ((ae_restrict_iff' M).2 (Eventually.of_forall fun x hx => ?_))
-        rw [add_comm, ENNReal.zpow_add t_ne_zero ENNReal.coe_ne_top, zpow_one]
-        exact mul_le_mul_left' hx.2.1 _
+        grw [add_comm, ENNReal.zpow_add t_ne_zero ENNReal.coe_ne_top, zpow_one, hx.2.1]
       _ = t * ∫⁻ x in s ∩ f ⁻¹' I, f x ∂μ := lintegral_const_mul _ f_meas
   calc
     ρ s =
@@ -785,10 +782,7 @@ theorem ae_tendsto_lintegral_enorm_sub_div'_of_integrable {f : α → E} (hf : I
       ∀ᵉ (n : ℕ) (c ∈ t),
         Tendsto (fun a => (∫⁻ y in a, ‖f y - (A.set n).indicator (fun _ => c) y‖ₑ ∂μ) / μ a)
           (v.filterAt x) (𝓝 ‖f x - (A.set n).indicator (fun _ => c) x‖ₑ) := by
-    #adaptation_note /-- 2024-04-23
-    The next two lines were previously just `simp_rw [ae_all_iff, ae_ball_iff t_count]`. -/
-    simp_rw [ae_all_iff]
-    intro x; rw [ae_ball_iff t_count]; revert x
+    simp_rw [ae_all_iff, ae_ball_iff t_count]
     intro n c _
     apply ae_tendsto_lintegral_div'
     · refine (h'f.sub ?_).enorm
@@ -839,10 +833,6 @@ theorem ae_tendsto_lintegral_enorm_sub_div'_of_integrable {f : α → E} (hf : I
         gcongr
     _ = ε * μ a := by rw [← add_mul, ENNReal.add_halves]
 
-@[deprecated (since := "2025-01-22")]
-alias ae_tendsto_lintegral_nnnorm_sub_div'_of_integrable :=
-  ae_tendsto_lintegral_enorm_sub_div'_of_integrable
-
 theorem ae_tendsto_lintegral_enorm_sub_div_of_integrable {f : α → E} (hf : Integrable f μ) :
     ∀ᵐ x ∂μ, Tendsto (fun a => (∫⁻ y in a, ‖f y - f x‖ₑ ∂μ) / μ a) (v.filterAt x) (𝓝 0) := by
   have I : Integrable (hf.1.mk f) μ := hf.congr hf.1.ae_eq_mk
@@ -855,10 +845,6 @@ theorem ae_tendsto_lintegral_enorm_sub_div_of_integrable {f : α → E} (hf : In
   apply ae_restrict_of_ae
   filter_upwards [hf.1.ae_eq_mk] with y hy
   rw [hy, h'x]
-
-@[deprecated (since := "2025-01-22")]
-alias ae_tendsto_lintegral_nnnorm_sub_div_of_integrable :=
-  ae_tendsto_lintegral_enorm_sub_div_of_integrable
 
 theorem ae_tendsto_lintegral_enorm_sub_div {f : α → E} (hf : LocallyIntegrable f μ) :
     ∀ᵐ x ∂μ, Tendsto (fun a => (∫⁻ y in a, ‖f y - f x‖ₑ ∂μ) / μ a) (v.filterAt x) (𝓝 0) := by

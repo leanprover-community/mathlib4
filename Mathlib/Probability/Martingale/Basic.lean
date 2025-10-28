@@ -75,7 +75,7 @@ theorem martingale_const_fun [OrderBot ι] (ℱ : Filtration ι m0) (μ : Measur
 
 variable (E) in
 theorem martingale_zero (ℱ : Filtration ι m0) (μ : Measure Ω) : Martingale (0 : ι → Ω → E) ℱ μ :=
-  ⟨adapted_zero E ℱ, fun i j _ => by rw [Pi.zero_apply, condExp_zero]; simp⟩
+  ⟨adapted_zero E ℱ, fun i j _ => by simp⟩
 
 namespace Martingale
 
@@ -88,8 +88,6 @@ protected theorem stronglyMeasurable (hf : Martingale f ℱ μ) (i : ι) :
 
 theorem condExp_ae_eq (hf : Martingale f ℱ μ) {i j : ι} (hij : i ≤ j) : μ[f j|ℱ i] =ᵐ[μ] f i :=
   hf.2 i j hij
-
-@[deprecated (since := "2025-01-21")] alias condexp_ae_eq := condExp_ae_eq
 
 protected theorem integrable (hf : Martingale f ℱ μ) (i : ι) : Integrable (f i) μ :=
   integrable_condExp.congr (hf.condExp_ae_eq (le_refl i))
@@ -133,8 +131,6 @@ theorem martingale_condExp (f : Ω → E) (ℱ : Filtration ι m0) (μ : Measure
     [SigmaFiniteFiltration μ ℱ] : Martingale (fun i => μ[f|ℱ i]) ℱ μ :=
   ⟨fun _ => stronglyMeasurable_condExp, fun _ j hij => condExp_condExp_of_le (ℱ.mono hij) (ℱ.le j)⟩
 
-@[deprecated (since := "2025-01-21")] alias martingale_condexp := martingale_condExp
-
 namespace Supermartingale
 
 protected theorem adapted [LE E] (hf : Supermartingale f ℱ μ) : Adapted ℱ f :=
@@ -150,8 +146,6 @@ protected theorem integrable [LE E] (hf : Supermartingale f ℱ μ) (i : ι) : I
 theorem condExp_ae_le [LE E] (hf : Supermartingale f ℱ μ) {i j : ι} (hij : i ≤ j) :
     μ[f j|ℱ i] ≤ᵐ[μ] f i :=
   hf.2.1 i j hij
-
-@[deprecated (since := "2025-01-21")] alias condexp_ae_le := condExp_ae_le
 
 theorem setIntegral_le [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → ℝ} (hf : Supermartingale f ℱ μ)
     {i j : ι} (hij : i ≤ j) {s : Set Ω} (hs : MeasurableSet[ℱ i] s) :
@@ -196,8 +190,6 @@ protected theorem integrable [LE E] (hf : Submartingale f ℱ μ) (i : ι) : Int
 theorem ae_le_condExp [LE E] (hf : Submartingale f ℱ μ) {i j : ι} (hij : i ≤ j) :
     f i ≤ᵐ[μ] μ[f j|ℱ i] :=
   hf.2.1 i j hij
-
-@[deprecated (since := "2025-01-21")] alias ae_le_condexp := ae_le_condExp
 
 theorem add [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ)
     (hg : Submartingale g ℱ μ) : Submartingale (f + g) ℱ μ := by
@@ -307,7 +299,7 @@ theorem sub_martingale [Preorder E] [AddLeftMono E]
 section
 
 variable {F : Type*} [NormedAddCommGroup F] [Lattice F] [NormedSpace ℝ F] [CompleteSpace F]
-  [OrderedSMul ℝ F]
+  [IsOrderedModule ℝ F]
 
 theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Supermartingale f ℱ μ) :
     Supermartingale (c • f) ℱ μ := by
@@ -318,7 +310,7 @@ theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Superma
 theorem smul_nonpos [IsOrderedAddMonoid F] {f : ι → Ω → F} {c : ℝ}
     (hc : c ≤ 0) (hf : Supermartingale f ℱ μ) :
     Submartingale (c • f) ℱ μ := by
-  rw [← neg_neg c, (by ext (i x); simp : - -c • f = -(-c • f))]
+  rw [← neg_neg c, neg_smul]
   exact (hf.smul_nonneg <| neg_nonneg.2 hc).neg
 
 end
@@ -330,16 +322,16 @@ namespace Submartingale
 section
 
 variable {F : Type*} [NormedAddCommGroup F] [Lattice F] [IsOrderedAddMonoid F]
-  [NormedSpace ℝ F] [CompleteSpace F] [OrderedSMul ℝ F]
+  [NormedSpace ℝ F] [CompleteSpace F] [IsOrderedModule ℝ F]
 
 theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Submartingale f ℱ μ) :
     Submartingale (c • f) ℱ μ := by
-  rw [← neg_neg c, (by ext (i x); simp : - -c • f = -(c • -f))]
+  rw [← neg_neg (c • f), ← smul_neg]
   exact Supermartingale.neg (hf.neg.smul_nonneg hc)
 
 theorem smul_nonpos {f : ι → Ω → F} {c : ℝ} (hc : c ≤ 0) (hf : Submartingale f ℱ μ) :
     Supermartingale (c • f) ℱ μ := by
-  rw [← neg_neg c, (by ext (i x); simp : - -c • f = -(-c • f))]
+  rw [← neg_neg c, neg_smul]
   exact (hf.smul_nonneg <| neg_nonneg.2 hc).neg
 
 end
@@ -454,7 +446,7 @@ theorem Martingale.eq_zero_of_predictable [SigmaFiniteFiltration μ 𝒢] {f : �
 namespace Submartingale
 
 protected theorem integrable_stoppedValue [LE E] {f : ℕ → Ω → E} (hf : Submartingale f 𝒢 μ)
-    {τ : Ω → ℕ} (hτ : IsStoppingTime 𝒢 τ) {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) :
+    {τ : Ω → ℕ∞} (hτ : IsStoppingTime 𝒢 τ) {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) :
     Integrable (stoppedValue f τ) μ :=
   integrable_stoppedValue ℕ hτ hf.integrable hbdd
 

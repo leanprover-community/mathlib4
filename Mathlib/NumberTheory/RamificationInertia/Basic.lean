@@ -134,7 +134,7 @@ variable (p) in
 lemma ramificationIdx_comap_eq [Algebra R S] (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
     ramificationIdx (algebraMap R S) p (P.comap e) = ramificationIdx (algebraMap R S₁) p P := by
   dsimp only [ramificationIdx]
-  congr
+  congr 1
   ext n
   simp only [Set.mem_setOf_eq, Ideal.map_le_iff_le_comap]
   rw [← comap_coe e, ← e.toRingEquiv_toRingHom, comap_coe, ← RingEquiv.symm_symm (e : S ≃+* S₁),
@@ -201,6 +201,17 @@ theorem ramificationIdx_eq_normalizedFactors_count [DecidableEq (Ideal S)]
       Multiset.nsmul_singleton, ← Multiset.le_count_iff_replicate_le]
   exact (Nat.lt_succ_self _).not_ge
 
+theorem ramificationIdx_eq_multiplicity (hp : map f p ≠ ⊥) (hP : P.IsPrime) :
+    ramificationIdx f p P = multiplicity P (Ideal.map f p) := by
+  classical
+  by_cases hP₂ : P = ⊥
+  · rw [hP₂, ← Ideal.zero_eq_bot, multiplicity_zero_eq_zero_of_ne_zero _ hp]
+    exact Ideal.ramificationIdx_of_not_le (mt le_bot_iff.mp hp)
+  rw [multiplicity_eq_of_emultiplicity_eq_some]
+  rw [ramificationIdx_eq_normalizedFactors_count hp hP hP₂, ← normalize_eq P,
+    ← UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors _ hp, normalize_eq]
+  exact irreducible_iff_prime.mpr <| prime_of_isPrime hP₂ hP
+
 theorem ramificationIdx_eq_factors_count [DecidableEq (Ideal S)]
     (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (hP0 : P ≠ ⊥) :
     ramificationIdx f p P = (factors (map f p)).count P := by
@@ -219,14 +230,19 @@ theorem ramificationIdx_ne_zero (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (le : m
     exists_mem_normalizedFactors_of_dvd hp0 hPirr (Ideal.dvd_iff_le.mpr le)
   rwa [Multiset.count_ne_zero, associated_iff_eq.mp P'_eq]
 
+theorem ramificationIdx_ne_zero_of_liesOver [Algebra R S] [NoZeroSMulDivisors R S]
+    (P : Ideal S) [hP : P.IsPrime] {p : Ideal R} (hp : p ≠ ⊥) [hPp : P.LiesOver p] :
+    ramificationIdx (algebraMap R S) p P ≠ 0 :=
+  IsDedekindDomain.ramificationIdx_ne_zero (map_ne_bot_of_ne_bot hp) hP <|
+    map_le_iff_le_comap.mpr <| le_of_eq <| (liesOver_iff _ _).mp hPp
+
 open IsLocalRing in
 lemma ramificationIdx_eq_one_iff
     [Algebra R S] {p : Ideal R} {P : Ideal S} [P.IsPrime]
     (hp : P ≠ ⊥) (hpP : p.map (algebraMap R S) ≤ P) :
     ramificationIdx (algebraMap R S) p P = 1 ↔
       p.map (algebraMap R (Localization.AtPrime P)) = maximalIdeal (Localization.AtPrime P) := by
-  refine ⟨?_, ramificationIdx_eq_one_of_map_localization hpP hp
-    (primeCompl_le_nonZeroDivisors _)⟩
+  refine ⟨?_, ramificationIdx_eq_one_of_map_localization hpP hp (primeCompl_le_nonZeroDivisors _)⟩
   let Sₚ := Localization.AtPrime P
   rw [← not_ne_iff (b := 1), ramificationIdx_ne_one_iff hpP, pow_two]
   intro H₁
@@ -235,6 +251,7 @@ lemma ramificationIdx_eq_one_iff
   rw [IsScalarTower.algebraMap_eq _ S, ← Ideal.map_map, ha, Ideal.map_mul,
     Localization.AtPrime.map_eq_maximalIdeal]
   convert Ideal.mul_top _
+  on_goal 2 => infer_instance
   rw [← not_ne_iff, IsLocalization.map_algebraMap_ne_top_iff_disjoint P.primeCompl]
   simpa [primeCompl, Set.disjoint_compl_left_iff_subset]
 
@@ -273,10 +290,12 @@ theorem inertiaDeg_algebraMap [P.LiesOver p] [p.IsMaximal] :
   nontriviality S ⧸ P using inertiaDeg_of_subsingleton, finrank_zero_of_subsingleton
   rw [inertiaDeg, dif_pos (over_def P p).symm]
 
-theorem inertiaDeg_pos [p.IsMaximal] [Module.Finite R S]
-    [P.LiesOver p] : 0 < inertiaDeg p P :=
+theorem inertiaDeg_pos [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : 0 < inertiaDeg p P :=
   haveI : Nontrivial (S ⧸ P) := Quotient.nontrivial_of_liesOver_of_isPrime P p
   finrank_pos.trans_eq (inertiaDeg_algebraMap p P).symm
+
+theorem inertiaDeg_ne_zero [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : inertiaDeg p P ≠ 0 :=
+  (Nat.ne_of_lt (inertiaDeg_pos p P)).symm
 
 lemma inertiaDeg_comap_eq (e : S ≃ₐ[R] S₁) (P : Ideal S₁) [p.IsMaximal] :
     inertiaDeg p (P.comap e) = inertiaDeg p P := by
@@ -300,7 +319,8 @@ end DecEq
 section absNorm
 
 /-- The absolute norm of an ideal `P` above a rational prime `p` is
-`|p| ^ ((span {p}).inertiaDeg P)`. -/
+`|p| ^ ((span {p}).inertiaDeg P)`.
+See `absNorm_eq_pow_inertiaDeg'` for a version with `p` of type `ℕ`. -/
 lemma absNorm_eq_pow_inertiaDeg [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℤ}
     (P : Ideal R) [P.LiesOver (span {p})] (hp : Prime p) :
     absNorm P = p.natAbs ^ ((span {p}).inertiaDeg P) := by
@@ -311,6 +331,14 @@ lemma absNorm_eq_pow_inertiaDeg [IsDedekindDomain R] [Module.Free ℤ R] [Module
   rw [inertiaDeg_algebraMap, absNorm_apply, Submodule.cardQuot_apply,
     Module.natCard_eq_pow_finrank (K := ℤ ⧸ span {p})]
   simp [Nat.card_congr (Int.quotientSpanEquivZMod p).toEquiv]
+
+/-- The absolute norm of an ideal `P` above a rational (positive) prime `p` is
+`p ^ ((span {p}).inertiaDeg P)`.
+See `absNorm_eq_pow_inertiaDeg` for a version with `p` of type `ℤ`. -/
+lemma absNorm_eq_pow_inertiaDeg' [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℕ}
+    (P : Ideal R) [P.LiesOver (span {(p : ℤ)})] (hp : p.Prime) :
+    absNorm P = p ^ ((span {(p : ℤ)}).inertiaDeg P) :=
+  absNorm_eq_pow_inertiaDeg P ( Nat.prime_iff_prime_int.mp hp)
 
 end absNorm
 section FinrankQuotientMap
@@ -853,10 +881,9 @@ is maximal. -/
 theorem sum_ramification_inertia (K L : Type*) [Field K] [Field L] [IsDedekindDomain R]
     [Algebra R K] [IsFractionRing R K] [Algebra S L] [IsFractionRing S L] [Algebra K L]
     [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] [Module.Finite R S]
-    [p.IsMaximal] (hp0 : p ≠ ⊥) :
-    (∑ P ∈ (factors (map (algebraMap R S) p)).toFinset,
-        ramificationIdx (algebraMap R S) p P * inertiaDeg p P) =
-      finrank K L := by
+    {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
+    ∑ P ∈ primesOverFinset p S,
+        ramificationIdx (algebraMap R S) p P * inertiaDeg p P = finrank K L := by
   set e := ramificationIdx (algebraMap R S) p
   set f := inertiaDeg p (S := S)
   calc
@@ -875,6 +902,18 @@ theorem sum_ramification_inertia (K L : Type*) [Field K] [Field L] [IsDedekindDo
     rwa [Ne, Ideal.map_eq_bot_iff_le_ker, (RingHom.injective_iff_ker_eq_bot _).mp <|
       algebraMap_injective_of_field_isFractionRing R S K L, le_bot_iff]
   · exact finrank_quotient_map p K L
+
+/-- `Ideal.sum_ramification_inertia`, in the local (DVR) case. -/
+lemma ramificationIdx_mul_inertiaDeg_of_isLocalRing
+    (K L : Type*) [Field K] [Field L] [IsLocalRing S]
+    [IsDedekindDomain R] [Algebra R K] [IsFractionRing R K] [Algebra S L]
+    [IsFractionRing S L] [Algebra K L] [Algebra R L] [IsScalarTower R S L]
+    [IsScalarTower R K L] [Module.Finite R S] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
+    ramificationIdx (algebraMap R S) p (IsLocalRing.maximalIdeal S) *
+      p.inertiaDeg (IsLocalRing.maximalIdeal S) = Module.finrank K L := by
+  have := FaithfulSMul.of_field_isFractionRing R S K L
+  simp_rw [← sum_ramification_inertia S K L hp0, IsLocalRing.primesOverFinset_eq S hp0,
+    Finset.sum_singleton]
 
 end FactorsMap
 
