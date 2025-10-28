@@ -13,7 +13,7 @@ which calculate the product and sum of elements of a list
 and `List.alternatingProd`, `List.alternatingSum`, their alternating counterparts.
 -/
 
-variable {ι α β M N P G : Type*}
+variable {ι M N : Type*}
 
 namespace List
 section Defs
@@ -42,14 +42,14 @@ end Defs
 
 section Mul
 
-variable [Mul M] [One M] {l : List M} {a : M}
+variable [Mul M] [One M] {a : M} {l : List M}
 
 @[to_additive existing, simp]
 theorem prod_nil : ([] : List M).prod = 1 :=
   rfl
 
 @[to_additive existing, simp]
-theorem prod_cons {a} {l : List M} : (a :: l).prod = a * l.prod := rfl
+theorem prod_cons : (a :: l).prod = a * l.prod := rfl
 
 @[to_additive]
 lemma prod_induction
@@ -77,8 +77,7 @@ theorem prod_one_cons : (1 :: l).prod = l.prod := by
   rw [prod, foldr, one_mul]
 
 @[to_additive]
-theorem prod_map_one {l : List ι} :
-    (l.map fun _ => (1 : M)).prod = 1 := by
+theorem prod_map_one : (l.map fun _ => (1 : M)).prod = 1 := by
   induction l with
   | nil => rfl
   | cons hd tl ih => rw [map_cons, prod_one_cons, ih]
@@ -87,7 +86,7 @@ end MulOneClass
 
 section Monoid
 
-variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
+variable [Monoid M] [Monoid N]
 
 @[to_additive]
 theorem prod_eq_foldr {l : List M} : l.prod = foldr (· * ·) 1 l := rfl
