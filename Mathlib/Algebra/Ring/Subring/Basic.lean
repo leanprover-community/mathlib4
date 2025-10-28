@@ -69,32 +69,32 @@ variable [Ring S] [Ring T]
 namespace Subring
 variable {s t : Subring R}
 
-@[mono]
+@[gcongr, mono]
 theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : Subring R → Subsemiring R) :=
   fun _ _ => id
 
-@[mono]
+@[gcongr, mono]
 theorem toSubsemiring_mono : Monotone (toSubsemiring : Subring R → Subsemiring R) :=
   toSubsemiring_strictMono.monotone
 
-@[gcongr]
+@[deprecated toSubsemiring_strictMono (since := "2025-10-20")]
 lemma toSubsemiring_lt_toSubsemiring (hst : s < t) : s.toSubsemiring < t.toSubsemiring := hst
 
-@[gcongr]
+@[deprecated toSubsemiring_mono (since := "2025-10-20")]
 lemma toSubsemiring_le_toSubsemiring (hst : s ≤ t) : s.toSubsemiring ≤ t.toSubsemiring := hst
 
-@[mono]
+@[gcongr, mono]
 theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → AddSubgroup R) :=
   fun _ _ => id
 
-@[mono]
+@[gcongr, mono]
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Subring R → AddSubgroup R) :=
   toAddSubgroup_strictMono.monotone
 
-@[gcongr]
+@[deprecated toAddSubgroup_strictMono (since := "2025-10-20")]
 lemma toAddSubgroup_lt_toAddSubgroup (hst : s < t) : s.toAddSubgroup < t.toAddSubgroup := hst
 
-@[gcongr]
+@[deprecated toAddSubgroup_mono (since := "2025-10-20")]
 lemma toAddSubgroup_le_toAddSubgroup (hst : s ≤ t) : s.toAddSubgroup ≤ t.toAddSubgroup := hst
 
 @[mono]
@@ -152,7 +152,7 @@ instance : Top (Subring R) :=
 theorem mem_top (x : R) : x ∈ (⊤ : Subring R) :=
   Set.mem_univ x
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_top : ((⊤ : Subring R) : Set R) = Set.univ :=
   rfl
 
@@ -277,6 +277,7 @@ instance : Bot (Subring R) :=
 instance : Inhabited (Subring R) :=
   ⟨⊥⟩
 
+@[norm_cast]
 theorem coe_bot : ((⊥ : Subring R) : Set R) = Set.range ((↑) : ℤ → R) :=
   RingHom.coe_range (Int.castRingHom R)
 
@@ -291,7 +292,7 @@ instance : Min (Subring R) :=
   ⟨fun s t =>
     { s.toSubmonoid ⊓ t.toSubmonoid, s.toAddSubgroup ⊓ t.toAddSubgroup with carrier := s ∩ t }⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_inf (p p' : Subring R) : ((p ⊓ p' : Subring R) : Set R) = (p : Set R) ∩ p' :=
   rfl
 

@@ -90,6 +90,8 @@ lemma coxeterWeightIn_mem_set_of_isCrystallographic :
   cutsat
 
 variable [IsDomain R]
+-- This makes an `IsAddTorsionFree R` instance available, which `grind` needs below.
+open scoped IsDomain
 
 lemma pairingIn_pairingIn_mem_set_of_isCrystallographic :
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
@@ -233,6 +235,21 @@ lemma root_add_root_mem_of_pairingIn_neg (h : P.pairingIn ℤ i j < 0) (h' : α 
   replace h : 0 < P.pairingIn ℤ i (-j) := by simpa
   replace h' : i ≠ -j := by contrapose! h'; simp [h']
   simpa using P.root_sub_root_mem_of_pairingIn_pos h h'
+
+lemma pairingIn_eq_zero_of_add_notMem_of_sub_notMem (hp : i ≠ j) (hn : α i ≠ -α j)
+    (h_add : α i + α j ∉ Φ) (h_sub : α i - α j ∉ Φ) :
+    P.pairingIn ℤ i j = 0 := by
+  apply le_antisymm
+  · contrapose! h_sub
+    exact root_sub_root_mem_of_pairingIn_pos P h_sub hp
+  · contrapose! h_add
+    exact root_add_root_mem_of_pairingIn_neg P h_add hn
+
+lemma pairing_eq_zero_of_add_notMem_of_sub_notMem (hp : i ≠ j) (hn : α i ≠ -α j)
+    (h_add : α i + α j ∉ Φ) (h_sub : α i - α j ∉ Φ) :
+    P.pairing i j = 0 := by
+  rw [← P.algebraMap_pairingIn ℤ, P.pairingIn_eq_zero_of_add_notMem_of_sub_notMem hp hn h_add h_sub,
+    map_zero]
 
 omit [Finite ι] in
 lemma root_mem_submodule_iff_of_add_mem_invtSubmodule

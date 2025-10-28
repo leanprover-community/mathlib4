@@ -53,8 +53,10 @@ namespace ComonObj
 
 attribute [reassoc (attr := simp)] counit_comul comul_counit comul_assoc
 
+/-- The canonical comonoid structure on the monoidal unit.
+This is not a global instance to avoid conflicts with other comonoid structures. -/
 @[simps]
-instance (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] : ComonObj (𝟙_ C) where
+def instTensorUnit (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] : ComonObj (𝟙_ C) where
   counit := 𝟙 _
   comul := (λ_ _).inv
   counit_comul := by simp
@@ -102,6 +104,7 @@ attribute [instance] Comon.comon
 
 namespace Comon
 
+attribute [local instance] ComonObj.instTensorUnit in
 variable (C) in
 /-- The trivial comonoid object. We later show this is terminal in `Comon C`.
 -/
@@ -442,3 +445,16 @@ def mapComon (F : C ⥤ D) [F.OplaxMonoidal] : Comon C ⥤ Comon D where
 -- and so can't state `mapComonFunctor : OplaxMonoidalFunctor C D ⥤ Comon C ⥤ Comon D`.
 
 end CategoryTheory.Functor
+
+section
+variable [BraidedCategory.{v₁} C]
+
+/-- Predicate for a comonoid object to be commutative. -/
+class IsCommComonObj (X : C) [ComonObj X] where
+  comul_comm (X) : Δ ≫ (β_ X X).hom = Δ := by cat_disch
+
+open scoped ComonObj
+
+attribute [reassoc (attr := simp)] IsCommComonObj.comul_comm
+
+end

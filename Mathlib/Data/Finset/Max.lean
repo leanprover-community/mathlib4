@@ -53,9 +53,8 @@ lemma max_pair (a b : α) :
     Finset.max {a, b} = max (↑a) (↑b) := by
   simp
 
-theorem max_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.max = b := by
-  obtain ⟨b, h, _⟩ := le_sup (α := WithBot α) h _ rfl
-  exact ⟨b, h⟩
+theorem max_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.max = b :=
+  let ⟨b, h, _⟩ := WithBot.le_iff_forall.1 (le_sup (α := WithBot α) h) _ rfl; ⟨b, h⟩
 
 theorem max_of_nonempty {s : Finset α} (h : s.Nonempty) : ∃ a : α, s.max = a :=
   let ⟨_, h⟩ := h
@@ -140,9 +139,8 @@ lemma min_pair (a b : α) :
     Finset.min {a, b} = min (↑a) (↑b) := by
   simp
 
-theorem min_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.min = b := by
-  obtain ⟨b, h, _⟩ := inf_le (α := WithTop α) h _ rfl
-  exact ⟨b, h⟩
+theorem min_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.min = b :=
+  let ⟨b, h, _⟩ := WithTop.le_iff_forall.1 (inf_le (α := WithTop α) h) _ rfl; ⟨b, h⟩
 
 theorem min_of_nonempty {s : Finset α} (h : s.Nonempty) : ∃ a : α, s.min = a :=
   let ⟨_, h⟩ := h
@@ -282,19 +280,19 @@ theorem min'_union {s₁ s₂ : Finset α} (h₁ : s₁.Nonempty) (h₂ : s₂.N
 
 theorem map_ofDual_min (s : Finset αᵒᵈ) : s.min.map ofDual = (s.image ofDual).max := by
   rw [max_eq_sup_withBot, sup_image]
-  exact congr_fun Option.map_id _
+  exact congr_fun WithBot.map_id _
 
 theorem map_ofDual_max (s : Finset αᵒᵈ) : s.max.map ofDual = (s.image ofDual).min := by
   rw [min_eq_inf_withTop, inf_image]
-  exact congr_fun Option.map_id _
+  exact congr_fun WithTop.map_id _
 
 theorem map_toDual_min (s : Finset α) : s.min.map toDual = (s.image toDual).max := by
   rw [max_eq_sup_withBot, sup_image]
-  exact congr_fun Option.map_id _
+  exact congr_fun WithBot.map_id _
 
 theorem map_toDual_max (s : Finset α) : s.max.map toDual = (s.image toDual).min := by
   rw [min_eq_inf_withTop, inf_image]
-  exact congr_fun Option.map_id _
+  exact congr_fun WithTop.map_id _
 
 theorem ofDual_min' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (min' s hs) = max' (s.image ofDual) (hs.image _) := by

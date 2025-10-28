@@ -144,7 +144,7 @@ theorem mem_span_iff {N : Type*} [AddCommMonoid N] [Module R N] [Module S N] [Is
       · rw [← mul_one (1 : R), mk'_mul, mul_assoc, mk'_spec, map_one, mul_one, mul_one]
       · rw [← mul_one (1 : R), mk'_mul, mul_right_comm, mk'_spec, map_one, mul_one, one_mul]
     · rintro a _ _ ⟨y, hy, z, rfl⟩
-      obtain ⟨y', z', rfl⟩ := mk'_surjective M a
+      obtain ⟨y', z', rfl⟩ := exists_mk'_eq M a
       refine ⟨y' • y, Submodule.smul_mem _ _ hy, z' * z, ?_⟩
       rw [← IsScalarTower.algebraMap_smul S y', smul_smul, ← mk'_mul, smul_smul,
         mul_comm (mk' S _ _), mul_mk'_eq_mk'_of_mul]
