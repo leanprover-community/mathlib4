@@ -5,7 +5,15 @@ Authors: Kenny Lau
 -/
 import Mathlib.RingTheory.AdicCompletion.Algebra
 
-/-! # Evaluating an element of adic completion -/
+/-! # The limit of an element of adic completion
+
+For an I-adically complete M we define `limit : AdicCompletion I M ≃ₗ[R] M`. It is intended to be
+used together with `AdicCompletion.mk : AdicCauchySequence I M →ₗ[R] AdicCompletion I M`.
+
+We also introduce `adicExpansion (ϖ : R) (hϖ : ϖ ∈ I) : (ℕ → M) →ₗ[R] AdicCauchySequence I M`,
+which sends a sequence `a : ℕ → M` to the Cauchy sequence `∑ ϖ ^ i • a i`.
+
+-/
 
 variable {R : Type*} [CommRing R] (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
 variable [IsAdicComplete I M]
