@@ -233,7 +233,7 @@ theorem one_lt_of_lt {a b : ℕ+} (hab : a < b) : 1 < b := bot_le.trans_lt hab
 
 theorem add_one (a : ℕ+) : a + 1 = succPNat a := rfl
 
-theorem lt_succ_self (a : ℕ+) : a < succPNat a := lt.base a
+theorem lt_succ_self (a : ℕ+) : a < succPNat a := lt_add_one a
 
 /-- Subtraction a - b is defined in the obvious way when
   a > b, and by a - b = 1 if a ≤ b.

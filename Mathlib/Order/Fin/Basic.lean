@@ -58,7 +58,7 @@ theorem compare_eq_compare_val (a b : Fin n) : compare a b = compare a.val b.val
 
 instance instLinearOrder : LinearOrder (Fin n) :=
   Fin.val_injective.linearOrder _
-    Fin.le_iff_val_le_val Fin.lt_iff_val_lt_val coe_min coe_max compare_eq_compare_val
+    Fin.le_iff_val_le_val Fin.lt_def coe_min coe_max compare_eq_compare_val
 
 instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
   top := rev 0
@@ -418,6 +418,6 @@ map. In this lemma we state that for each `i : Fin n` we have `(e i : ℕ) = (i 
     specialize h _ this (e.symm _).is_lt
     simp only [Fin.eta, OrderIso.apply_symm_apply] at h
     rwa [h]
-  · rwa [← h j hj (hj.trans hi), ← lt_iff_val_lt_val, e.lt_iff_lt]
+  · rwa [← h j hj (hj.trans hi), ← lt_def, e.lt_iff_lt]
 
 end Fin

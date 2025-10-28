@@ -301,7 +301,7 @@ theorem unitsMulComplexConjInv_apply (u : (𝓞 K)ˣ) :
 @[simp]
 theorem unitsMulComplexConjInv_apply_torsion (ζ : torsion K) :
     unitsMulComplexConjInv K ζ = ζ ^ 2 :=
-  Subtype.eq <| by simp [unitsMulComplexConjInv_apply, unitsComplexConj_torsion, pow_two]
+  Subtype.ext <| by simp [unitsMulComplexConjInv_apply, unitsComplexConj_torsion, pow_two]
 
 /--
 The action of `unitsMulComplexConjInv` of the torsion is the same as the 2-power map.

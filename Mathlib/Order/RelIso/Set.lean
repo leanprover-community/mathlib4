@@ -101,7 +101,7 @@ instance (r : α → α → Prop) [IsIrrefl α r] (p : α → Prop) : IsIrrefl _
   ⟨fun x => @IsIrrefl.irrefl α r _ x⟩
 
 instance (r : α → α → Prop) [IsTrichotomous α r] (p : α → Prop) : IsTrichotomous _ (Subrel r p) :=
-  ⟨fun x y => by rw [Subtype.eq_iff]; exact @IsTrichotomous.trichotomous α r _ x y⟩
+  ⟨fun x y => by rw [Subtype.ext_iff]; exact @IsTrichotomous.trichotomous α r _ x y⟩
 
 instance (r : α → α → Prop) [IsWellFounded α r] (p : α → Prop) : IsWellFounded _ (Subrel r p) :=
   (Subrel.relEmbedding r p).isWellFounded

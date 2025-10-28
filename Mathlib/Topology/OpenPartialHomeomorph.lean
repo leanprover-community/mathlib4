@@ -1159,7 +1159,7 @@ def homeomorphOfImageSubsetSource {s : Set X} {t : Set Y} (hs : s ⊆ e.source) 
   { toFun := MapsTo.restrict e s t h₁
     invFun := MapsTo.restrict e.symm t s h₃
     left_inv := fun a => Subtype.ext (e.left_inv (hs a.2))
-    right_inv := fun b => Subtype.eq <| e.right_inv (h₂ b.2)
+    right_inv := fun b => Subtype.ext <| e.right_inv (h₂ b.2)
     continuous_toFun := (e.continuousOn.mono hs).mapsToRestrict h₁
     continuous_invFun := (e.continuousOn_symm.mono h₂).mapsToRestrict h₃ }
 

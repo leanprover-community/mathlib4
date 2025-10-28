@@ -1296,7 +1296,7 @@ theorem sigmaToiUnion_injective (h : Pairwise (Disjoint on t)) :
       by_contradiction fun ne =>
         have : b₁ ∈ t a₁ ∩ t a₂ := ⟨h₁, b_eq.symm ▸ h₂⟩
         (h ne).le_bot this
-    Sigma.eq a_eq <| Subtype.eq <| by subst b_eq; subst a_eq; rfl
+    Sigma.eq a_eq <| Subtype.ext <| by subst b_eq; subst a_eq; rfl
 
 theorem sigmaToiUnion_bijective (h : Pairwise (Disjoint on t)) :
     Bijective (sigmaToiUnion t) :=

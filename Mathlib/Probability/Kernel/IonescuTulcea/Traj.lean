@@ -111,7 +111,7 @@ def iterateInduction {a : ℕ} (x : Π i : Iic a, X i)
   | k + 1 => if h : k + 1 ≤ a
       then x ⟨k + 1, mem_Iic.2 h⟩
       else ind k (fun i ↦ iterateInduction x ind i)
-  decreasing_by exact Nat.lt_succ.2 (mem_Iic.1 i.2)
+  decreasing_by exact Nat.lt_succ_iff.2 (mem_Iic.1 i.2)
 
 lemma frestrictLe_iterateInduction {a : ℕ} (x : Π i : Iic a, X i)
     (ind : (n : ℕ) → (Π i : Iic n, X i) → X (n + 1)) :

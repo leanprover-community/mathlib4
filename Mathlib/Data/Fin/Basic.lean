@@ -196,7 +196,7 @@ lemma cast_injective {k l : ℕ} (h : k = l) : Injective (Fin.cast h) :=
 theorem last_pos' [NeZero n] : 0 < last n := n.pos_of_neZero
 
 theorem one_lt_last [NeZero n] : 1 < last (n + 1) := by
-  rw [lt_iff_val_lt_val, val_one, val_last, Nat.lt_add_left_iff_pos, Nat.pos_iff_ne_zero]
+  rw [lt_def, val_one, val_last, Nat.lt_add_left_iff_pos, Nat.pos_iff_ne_zero]
   exact NeZero.ne n
 
 end Order
@@ -382,7 +382,7 @@ lemma natCast_le_natCast (han : a ≤ n) (hbn : b ≤ n) : (a : Fin (n + 1)) ≤
   simp [le_iff_val_le_val, -val_fin_le, Nat.mod_eq_of_lt, han, hbn]
 
 lemma natCast_lt_natCast (han : a ≤ n) (hbn : b ≤ n) : (a : Fin (n + 1)) < b ↔ a < b := by
-  rw [← Nat.lt_succ_iff] at han hbn; simp [lt_iff_val_lt_val, Nat.mod_eq_of_lt, han, hbn]
+  rw [← Nat.lt_succ_iff] at han hbn; simp [lt_def, Nat.mod_eq_of_lt, han, hbn]
 
 lemma natCast_mono (hbn : b ≤ n) (hab : a ≤ b) : (a : Fin (n + 1)) ≤ b :=
   (natCast_le_natCast (hab.trans hbn) hbn).2 hab
