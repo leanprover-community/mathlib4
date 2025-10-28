@@ -286,8 +286,10 @@ theorem injOn_insert {f : α → β} {s : Set α} {a : α} (has : a ∉ s) :
   rw [← union_singleton, injOn_union (disjoint_singleton_right.2 has)]
   simp
 
-theorem injective_iff_injOn_univ : Injective f ↔ InjOn f univ :=
-  ⟨fun h _ _ _ _ hxy => h hxy, fun h _ _ heq => h trivial trivial heq⟩
+@[simp] lemma injOn_univ : InjOn f univ ↔ Injective f := by simp [InjOn, Injective]
+
+@[deprecated injOn_univ (since := "2025-10-27")]
+theorem injective_iff_injOn_univ : Injective f ↔ InjOn f univ := injOn_univ.symm
 
 theorem injOn_of_injective (h : Injective f) {s : Set α} : InjOn f s := fun _ _ _ _ hxy => h hxy
 
