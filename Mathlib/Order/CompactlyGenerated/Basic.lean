@@ -215,7 +215,7 @@ theorem IsSupFiniteCompact.isSupClosedCompact (h : IsSupFiniteCompact α) :
 theorem IsSupClosedCompact.wellFoundedGT (h : IsSupClosedCompact α) :
     WellFoundedGT α where
   wf := by
-    refine RelEmbedding.wellFounded_iff_no_descending_seq.mpr ⟨fun a => ?_⟩
+    refine RelEmbedding.wellFounded_iff_isEmpty.mpr ⟨fun a => ?_⟩
     suffices sSup (Set.range a) ∈ Set.range a by
       obtain ⟨n, hn⟩ := Set.mem_range.mp this
       have h' : sSup (Set.range a) < a (n + 1) := by
@@ -312,7 +312,7 @@ theorem WellFoundedLT.finite_of_sSupIndep [WellFoundedLT α] {s : Set α}
     iSup₂_le fun i hi ↦ le_iSup₂_of_le i (n.le_succ.trans hi) le_rfl⟩
   have lt n : a (n + 1) < a n := (Disjoint.right_lt_sup_of_left_ne_bot
     ((hs (e n).2.1).mono_right <| iSup₂_le fun i hi ↦ le_sSup ?_) (e n).2.2).trans_le (sup_le n)
-  · exact (RelEmbedding.natGT a lt).not_wellFounded_of_decreasing_seq wellFounded_lt
+  · exact (RelEmbedding.natGT a lt).not_wellFounded wellFounded_lt
   exact ⟨(e i).2.1, fun h ↦ n.lt_succ_self.not_ge <| hi.trans_eq <| e.2 <| Subtype.val_injective h⟩
 
 theorem WellFoundedLT.finite_ne_bot_of_iSupIndep [WellFoundedLT α]
@@ -510,6 +510,28 @@ section
 
 variable [IsModularLattice α] [IsCompactlyGenerated α]
 
+/--
+If each family `f i` is `iSupIndep`, then the family of pointwise infima
+`k ↦ ⨅ i, f i (k i)` is also `iSupIndep`.
+-/
+theorem iSupIndep.iInf {ι : Type*} {κ : ι → Type*} (f : (i : ι) → κ i → α)
+    (h_indep : ∀ i : ι, iSupIndep (f i)) : iSupIndep (fun k : (i : ι) → κ i ↦ ⨅ i, f i (k i)) := by
+  rw [iSupIndep_iff_supIndep_of_injOn (iSupIndep.injOn_iInf _ h_indep)]
+  intro s
+  induction s using Finset.strongInduction with
+  | H s ih =>
+    by_cases hs : 1 < s.card; swap
+    · by_cases hcard0 : s.card = 0 <;> grind [Finset.card_eq_zero, Finset.card_eq_one]
+    · obtain ⟨k₁, k₂, _, _, h⟩ := Finset.one_lt_card_iff.mp hs
+      obtain ⟨i, hi⟩ : ∃ i : ι, k₁ i ≠ k₂ i := Function.ne_iff.mp h
+      classical
+      rw [← Finset.image_biUnion_filter_eq s (· i)]
+      refine Finset.SupIndep.biUnion ?_ (by grind)
+      apply ((h_indep i).supIndep' _).mono
+      simp_rw [Finset.sup_le_iff, Finset.mem_filter, and_imp]
+      rintro _ _ _ _ rfl
+      exact iInf_le _ _
+
 instance (priority := 100) isAtomic_of_complementedLattice [ComplementedLattice α] : IsAtomic α :=
   ⟨fun b => by
     by_cases h : { c : α | CompleteLattice.IsCompactElement c ∧ c ≤ b } ⊆ {⊥}
@@ -548,7 +570,7 @@ instance (priority := 100) isAtomistic_of_complementedLattice [ComplementedLatti
 
 /-!
 Now we will prove that a compactly generated modular atomistic lattice is a complemented lattice.
-Most explicitly, every element is the complement of a supremum of indepedendent atoms.
+Most explicitly, every element is the complement of a supremum of independent atoms.
 -/
 
 /-- In an atomic lattice, every element `b` has a complement of the form `sSup s` relative to a
@@ -575,7 +597,7 @@ theorem exists_sSupIndep_disjoint_sSup_atoms (b c : α) (hbc : b ≤ c)
   simp_rw [maximal_subset_iff] at zorn
   obtain ⟨s, ⟨s_ind, b_inf_Sup_s, s_atoms⟩, s_max⟩ := zorn
   refine ⟨s, s_ind, b_inf_Sup_s, le_antisymm ?_ ?_, fun a ha ↦ (s_atoms a ha).1⟩
-  · aesop
+  · simp_all
   rw [← h, sSup_le_iff]
   intro a ha
   rw [← inf_eq_left]

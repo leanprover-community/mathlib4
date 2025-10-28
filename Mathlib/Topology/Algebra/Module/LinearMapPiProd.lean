@@ -10,7 +10,7 @@ import Mathlib.Topology.Algebra.Module.LinearMap
 # Continuous linear maps on products and Pi types
 -/
 
-assert_not_exists Star.star
+assert_not_exists TrivialStar
 
 open LinearMap (ker range)
 open Topology Filter Pointwise
@@ -32,7 +32,7 @@ variable
   {M₃ : Type*} [TopologicalSpace M₃] [AddCommMonoid M₃] [Module R M₃]
   {M₄ : Type*} [TopologicalSpace M₄] [AddCommMonoid M₄] [Module R M₄]
 
-/-- The cartesian product of two bounded linear maps, as a bounded linear map. -/
+/-- The Cartesian product of two bounded linear maps, as a bounded linear map. -/
 protected def prod (f₁ : M₁ →L[R] M₂) (f₂ : M₁ →L[R] M₃) :
     M₁ →L[R] M₂ × M₃ :=
   ⟨(f₁ : M₁ →ₗ[R] M₂).prod f₂, f₁.2.prodMk f₂.2⟩
@@ -53,11 +53,11 @@ variable (R M₁ M₂)
 
 /-- The left injection into a product is a continuous linear map. -/
 def inl : M₁ →L[R] M₁ × M₂ :=
-  (id R M₁).prod 0
+  (ContinuousLinearMap.id R M₁).prod 0
 
 /-- The right injection into a product is a continuous linear map. -/
 def inr : M₂ →L[R] M₁ × M₂ :=
-  (0 : M₂ →L[R] M₁).prod (id R M₂)
+  (0 : M₂ →L[R] M₁).prod (.id R M₂)
 
 end
 
@@ -116,7 +116,7 @@ theorem coe_snd' : ⇑(snd R M₁ M₂) = Prod.snd :=
   rfl
 
 @[simp]
-theorem fst_prod_snd : (fst R M₁ M₂).prod (snd R M₁ M₂) = id R (M₁ × M₂) :=
+theorem fst_prod_snd : (fst R M₁ M₂).prod (snd R M₁ M₂) = .id R (M₁ × M₂) :=
   ext fun ⟨_x, _y⟩ => rfl
 
 @[simp]
@@ -211,7 +211,7 @@ def _root_.Pi.compRightL {α : Type*} (f : α → ι) : ((i : ι) → φ i) →L
   toFun := fun v i ↦ v (f i)
   map_add' := by intros; ext; simp
   map_smul' := by intros; ext; simp
-  cont := by continuity
+  cont := by fun_prop
 
 @[simp] lemma _root_.Pi.compRightL_apply {α : Type*} (f : α → ι) (v : (i : ι) → φ i) (i : α) :
     Pi.compRightL R φ f v i = v (f i) := rfl
@@ -221,6 +221,10 @@ def _root_.Pi.compRightL {α : Type*} (f : α → ι) : ((i : ι) → φ i) →L
 def single [DecidableEq ι] (i : ι) : φ i →L[R] (∀ i, φ i) where
   toLinearMap := .single R φ i
   cont := continuous_single _
+
+lemma sum_comp_single [Fintype ι] [DecidableEq ι] (L : (Π i, φ i) →L[R] M) (v : Π i, φ i) :
+    ∑ i, L.comp (.single R φ i) (v i) = L v := by
+  simp [← map_sum, LinearMap.sum_single_apply]
 
 end Pi
 
@@ -269,7 +273,9 @@ variable (S : Type*) [Semiring S]
   [Module S M₂] [ContinuousAdd M₂] [SMulCommClass R S M₂] [ContinuousConstSMul S M₂]
   [Module S M₃] [ContinuousAdd M₃] [SMulCommClass R S M₃] [ContinuousConstSMul S M₃]
 
-/-- `ContinuousLinearMap.prod` as a `LinearEquiv`. -/
+/-- `ContinuousLinearMap.prod` as a `LinearEquiv`.
+
+See `ContinuousLinearMap.prodL` for the `ContinuousLinearEquiv` version. -/
 @[simps apply]
 def prodₗ : ((M →L[R] M₂) × (M →L[R] M₃)) ≃ₗ[S] M →L[R] M₂ × M₃ :=
   { prodEquiv with
@@ -320,9 +326,8 @@ lemma coprod_inl_inr : ContinuousLinearMap.coprod (.inl R M N) (.inr R M N) = .i
 their domains.
 See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
 
-TODO: Upgrade this to a `ContinuousLinearEquiv`. This should be true for any topological
-vector space over a normed field thanks to `ContinuousLinearMap.precomp` and
-`ContinuousLinearMap.postcomp`. -/
+See `ContinuousLinearMap.coprodEquivL` for the `ContinuousLinearEquiv` version.
+-/
 @[simps]
 def coprodEquiv [ContinuousAdd M₁] [ContinuousAdd M₂] [Semiring S] [Module S M]
     [ContinuousConstSMul S M] [SMulCommClass R S M] :

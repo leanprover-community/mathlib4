@@ -147,7 +147,7 @@ theorem unitCompPartialBijective_symm_natural [Reflective i] (A : C) {B B' : C} 
 theorem unitCompPartialBijective_natural [Reflective i] (A : C) {B B' : C} (h : B ⟶ B')
     (hB : i.essImage B) (hB' : i.essImage B') (f : A ⟶ B) :
     (unitCompPartialBijective A hB') (f ≫ h) = unitCompPartialBijective A hB f ≫ h := by
-  rw [← Equiv.eq_symm_apply, unitCompPartialBijective_symm_natural A h, Equiv.symm_apply_apply]
+  rw [← Equiv.eq_symm_apply, unitCompPartialBijective_symm_natural A h hB, Equiv.symm_apply_apply]
 
 instance [Reflective i] (X : Functor.EssImageSubcategory i) :
     IsIso (NatTrans.app (reflectorAdjunction i).unit X.obj) :=

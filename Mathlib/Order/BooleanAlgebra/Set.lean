@@ -9,7 +9,7 @@ import Mathlib.Order.BooleanAlgebra.Basic
 /-!
 # Boolean algebra of sets
 
-This file proves that `Set α` is a boolean algebra, and proves results about set difference and
+This file proves that `Set α` is a Boolean algebra, and proves results about set difference and
 complement.
 
 ## Notation
@@ -369,7 +369,7 @@ lemma disjoint_sdiff_left : Disjoint (t \ s) s := disjoint_sdiff_self_left
 
 lemma disjoint_sdiff_right : Disjoint s (t \ s) := disjoint_sdiff_self_right
 
--- TODO: prove this in terms of a boolean algebra lemma
+-- TODO: prove this in terms of a Boolean algebra lemma
 lemma disjoint_sdiff_inter : Disjoint (s \ t) (s ∩ t) :=
   disjoint_of_subset_right inter_subset_right disjoint_sdiff_left
 
@@ -401,23 +401,16 @@ lemma subset_insert_diff_singleton (x : α) (s : Set α) : s ⊆ insert x (s \ {
   rw [← diff_singleton_subset_iff]
 
 lemma diff_insert_of_notMem (h : a ∉ s) : s \ insert a t = s \ t := by
-  refine Subset.antisymm (diff_subset_diff (refl _) (subset_insert ..)) fun y hy ↦ ?_
-  simp only [mem_diff, mem_insert_iff, not_or] at hy ⊢
-  exact ⟨hy.1, fun hxy ↦ h <| hxy ▸ hy.1, hy.2⟩
+  grind
 
 @[deprecated (since := "2025-05-23")] alias diff_insert_of_not_mem := diff_insert_of_notMem
 
 @[simp]
 lemma insert_diff_of_mem (s) (h : a ∈ t) : insert a s \ t = s \ t := by
-  ext
-  constructor <;> simp +contextual [or_imp, h]
+  grind
 
 lemma insert_diff_of_notMem (s) (h : a ∉ t) : insert a s \ t = insert a (s \ t) := by
-  classical
-  ext x
-  by_cases h' : x ∈ t
-  · simp [h', ne_of_mem_of_not_mem h' h]
-  · simp [h']
+  grind
 
 @[deprecated (since := "2025-05-23")] alias insert_diff_of_not_mem := insert_diff_of_notMem
 
@@ -427,7 +420,7 @@ lemma insert_diff_self_of_notMem (h : a ∉ s) : insert a s \ {a} = s := by
 @[deprecated (since := "2025-05-23")]
 alias insert_diff_self_of_not_mem := insert_diff_self_of_notMem
 
-lemma insert_diff_self_of_mem (ha : a ∈ s) : insert a (s \ {a}) = s := by
+@[simp] lemma insert_diff_self_of_mem (ha : a ∈ s) : insert a (s \ {a}) = s := by
   ext; simp +contextual [or_and_left, em, ha]
 
 lemma insert_diff_subset : insert a s \ t ⊆ insert a (s \ t) := by
@@ -464,10 +457,7 @@ lemma mem_diff_singleton_empty {t : Set (Set α)} : s ∈ t \ {∅} ↔ s ∈ t 
   mem_diff_singleton.trans <| and_congr_right' nonempty_iff_ne_empty.symm
 
 lemma subset_insert_iff : s ⊆ insert a t ↔ s ⊆ t ∨ (a ∈ s ∧ s \ {a} ⊆ t) := by
-  rw [← diff_singleton_subset_iff]
-  by_cases hx : a ∈ s
-  · rw [and_iff_right hx, or_iff_right_of_imp diff_subset.trans]
-  rw [diff_singleton_eq_self hx, or_iff_left_of_imp And.right]
+  grind
 
 lemma pair_diff_left (hab : a ≠ b) : ({a, b} : Set α) \ {a} = {b} := by
   rw [insert_diff_of_mem _ (mem_singleton a), diff_singleton_eq_self (by simpa)]

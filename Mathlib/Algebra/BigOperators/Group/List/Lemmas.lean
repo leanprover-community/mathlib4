@@ -51,8 +51,8 @@ theorem prod_isUnit_iff {M : Type*} [CommMonoid M] {L : List M} :
 
 /-- If elements of a list commute with each other, then their product does not
 depend on the order of elements. -/
-@[to_additive "If elements of a list additively commute with each other, then their sum does not
-depend on the order of elements."]
+@[to_additive /-- If elements of a list additively commute with each other, then their sum does not
+depend on the order of elements. -/]
 lemma Perm.prod_eq' (h : l₁ ~ l₂) (hc : l₁.Pairwise Commute) : l₁.prod = l₂.prod := by
   refine h.foldr_eq' ?_ _
   apply Pairwise.forall_of_forall
@@ -113,9 +113,9 @@ namespace List
 
 lemma length_sigma {σ : α → Type*} (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
     length (l₁.sigma l₂) = (l₁.map fun a ↦ length (l₂ a)).sum := by
-  induction' l₁ with x l₁ IH
-  · rfl
-  · simp only [sigma_cons, length_append, length_map, IH, map, sum_cons]
+  induction l₁ with
+  | nil => rfl
+  | cons x l₁ IH => simp only [sigma_cons, length_append, length_map, IH, map, sum_cons]
 
 lemma ranges_flatten : ∀ (l : List ℕ), l.ranges.flatten = range l.sum
   | [] => rfl
@@ -138,7 +138,7 @@ lemma drop_take_succ_flatten_eq_getElem (L : List (List α)) (i : Nat) (h : i < 
   have : (L.map length).take i = ((L.take (i + 1)).map length).take i := by
     simp [map_take, take_take, Nat.min_eq_left]
   simp only [this, take_sum_flatten, drop_sum_flatten,
-    drop_take_succ_eq_cons_getElem, h, flatten, append_nil]
+    drop_take_succ_eq_cons_getElem, h, flatten_nil, flatten_cons, append_nil]
 
 end List
 
