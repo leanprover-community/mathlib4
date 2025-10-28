@@ -115,11 +115,8 @@ private def findSomeLocalHyp? {α} (p : Expr → Expr → MetaM (Option α)) : M
     let type ← whnfR <| ← instantiateMVars decl.type
     p decl.toExpr type
 
-end Elab
-
-open Elab in
 /--
-Elaborator for sections in a fibre bundle: if an expression `e` is a section
+Utility for sections in a fibre bundle: if an expression `e` is a section
 `s : Π x : M, V x` as a dependent function, convert it to a non-dependent function into the total
 space. This handles the cases of
 - sections of a trivial bundle
@@ -127,13 +124,20 @@ space. This handles the cases of
 - sections of an explicit fibre bundle
 - turning a bare function `E → E'` into a section of the trivial bundle `Bundle.Trivial E E'`
 
-This elaborator searches the local context for suitable hypotheses for the above cases by matching
+This searches the local context for suitable hypotheses for the above cases by matching
 on the expression structure, avoiding `isDefEq`. Therefore, it is (hopefully) fast enough to always
 run.
 
-Re-usable MetaM component for use in the `T%` elaborator. -/
+All applications of `e` in the resulting expression are beta-reduced.
+
+If none of the handled cases apply, we simply return `e` (after beta-reducing).
+
+Behavior can be traced with `set_option Elab.DiffGeo.TotalSpaceMk true`.
+
+This function is used for implementing the `T%` elaborator.
+-/
 -- TODO: document how this elaborator works, any gotchas, etc.
-private def totalSpaceElab (e : Expr) : MetaM Expr := do
+def totalSpaceMk (e : Expr) : MetaM Expr := do
   let etype ← whnf <| ← instantiateMVars <| ← inferType e
   match etype with
   | .forallE x base tgt _ => withLocalDeclD x base fun x ↦ do
@@ -180,6 +184,8 @@ private def totalSpaceElab (e : Expr) : MetaM Expr := do
         mkLambdaFVars #[x] body
   | _ => return e.headBeta
 
+end Elab
+
 open Elab in
 /--
 Elaborator for sections in a fibre bundle: converts a section `s : Π x : M, V x` as a dependent
@@ -192,9 +198,11 @@ function to a non-dependent function into the total space. This handles the case
 This elaborator searches the local context for suitable hypotheses for the above cases by matching
 on the expression structure, avoiding `isDefEq`. Therefore, it is (hopefully) fast enough to always
 run.
+
+Behavior can be traced with `set_option Elab.DiffGeo.TotalSpaceMk true`.
 -/
 scoped elab:max "T% " t:term : term => do
-  totalSpaceElab (← Term.elabTerm t none)
+  totalSpaceMk (← Term.elabTerm t none)
 
 namespace Elab
 
