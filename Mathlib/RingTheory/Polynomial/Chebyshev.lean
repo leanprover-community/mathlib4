@@ -335,6 +335,8 @@ theorem U_degree_nat [Nontrivial R] [NoZeroDivisors R] (hR : ringChar R ≠ 2) (
   induction n using Nat.twoStepInduction with
   | zero => simp
   | one =>
+    norm_cast
+    rw [U_one]
     change (C (2:R) * X).degree = 1
     exact degree_C_mul_X (Ring.two_ne_zero hR)
   | more n ih1 ih2 =>

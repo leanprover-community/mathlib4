@@ -192,7 +192,7 @@ private lemma convex_combination {n : ℕ} (hn : n ≠ 0)
   have hinj : Set.InjOn (fun (i : ℕ) => cos (i * π / n)) (Finset.Icc 0 n) := by
     intro i hi j hj h
     dsimp at h
-    suffices i * π / n = j * π / n by field_simp at this; exact this
+    suffices i * π / n = j * π / n by field_simp at this; norm_cast at this
     apply injOn_cos
     · apply node_in_range hn; simp at hi; exact hi
     · apply node_in_range hn; simp at hj; exact hj

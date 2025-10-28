@@ -211,7 +211,7 @@ theorem T_eq_zero_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     constructor; · rw [hx]
     apply cos_eq_zero_iff.mpr
     use k
-    field_simp; ring
+    field_simp
 
 noncomputable def T_roots (n : ℕ) : Finset ℝ :=
   (Finset.Ico 0 n).image (fun (k : ℕ) => cos ((2 * k + 1) * π / (2 * n)))
@@ -249,11 +249,12 @@ theorem T_roots_card (n : ℕ) : (T_roots n).card = n := by
   intro h
   have : (2 * k₁ + 1) * π / (2 * n) = (2 * k₂ + 1) * π / (2 * n) := by
     apply injOn_cos
-    exact this hk₁
-    exact this hk₂
+    · exact this hk₁
+    · exact this hk₂
     exact h
   field_simp at this
-  exact this
+  norm_cast at this
+  linarith
 
 theorem T_roots_eq {n : ℕ} (hn : n ≠ 0) : (T ℝ n).roots = (T_roots n).val := by
   have hS : ∀ x ∈ T_roots n, (T ℝ n).eval x = 0 := by
@@ -286,7 +287,7 @@ theorem T_eq_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     constructor; · rw [hx]
     apply (cos_eq_one_iff _).mpr
     use k
-    field_simp; ring
+    field_simp
 
 theorem T_eq_neg_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
   (T ℝ n).eval x = -1 ↔ ∃ (k : ℤ), x = cos ((2 * k + 1) * π / n) := by
@@ -367,11 +368,11 @@ theorem T_extrema_card (n : ℤ) : (T_extrema n).card = n.natAbs + 1 := by
     intro h
     have : k₁ * π / n.natAbs = k₂ * π / n.natAbs := by
       apply injOn_cos
-      exact this hk₁
-      exact this hk₂
+      · exact this hk₁
+      · exact this hk₂
       exact h
     field_simp at this
-    exact this
+    norm_cast at this
 
 theorem T_extrema_eq_nat {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
   |(T ℝ n).eval x| = 1 ↔ x ∈ T_extrema n := by
@@ -385,7 +386,7 @@ theorem T_extrema_eq_nat {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
     let r := k / (2 * n)
     have l_nonneg : 0 ≤ l := by exact k.emod_nonneg (by omega)
     have l_lt : l < 2 * n := by exact k.emod_lt_of_pos (by omega)
-    have k_eq : k = l + r * (2 * n) := by have := k.ediv_add_emod (2 * n); linarith
+    have k_eq : k = l + r * (2 * n) := by have := k.mul_ediv_add_emod (2 * n); linarith
     let l' := l.toNat
     have hl' : l' = l := by omega
     by_cases l ≤ n
@@ -398,8 +399,9 @@ theorem T_extrema_eq_nat {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
       use r
       left
       field_simp
-      rw [k_eq, ← hl']
-      push_cast; ring
+      rw [k_eq, ← hl', Int.natAbs_cast]
+      push_cast
+      ring
     case neg =>
       use 2 * n - l'
       constructor
@@ -410,7 +412,9 @@ theorem T_extrema_eq_nat {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
       right
       field_simp
       rw [k_eq, ← hl', Nat.cast_sub (by omega)]
-      push_cast; ring
+      rw [Int.natAbs_cast]
+      push_cast
+      ring
   · intro h
     unfold T_extrema at h
     obtain ⟨k, hk, hx⟩ := Finset.mem_image.mp h
@@ -468,7 +472,7 @@ theorem U_eq_zero_if (n : ℕ) {k : ℕ} (hk1 : 1 ≤ k) (hkn : k ≤ n) :
   suffices l * (n + 1) ≠ k by
     contrapose! this
     suffices l * (n + 1) = (k : ℝ) by norm_cast; norm_cast at this
-    linear_combination (norm := (field_simp; ring)) this / π
+    linear_combination (norm := (field_simp; ring)) this * (n + 1) / π
   by_contra! h
   by_cases l ≤ 0
   case pos hl =>
@@ -508,11 +512,11 @@ theorem U_roots_card (n : ℕ) : (U_roots n).card = n := by
   intro h
   have : k₁ * π / (n + 1) = k₂ * π / (n + 1) := by
     apply injOn_cos
-    exact this hk₁
-    exact this hk₂
+    · exact this hk₁
+    · exact this hk₂
     exact h
   field_simp at this
-  exact this
+  norm_cast at this
 
 theorem U_roots_eq (n : ℕ) : (U ℝ n).roots = (U_roots n).val := by
   have hS : ∀ x ∈ U_roots n, (U ℝ n).eval x = 0 := by
