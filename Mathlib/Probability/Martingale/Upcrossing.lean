@@ -379,13 +379,14 @@ theorem Adapted.upcrossingStrat_adapted (hf : Adapted ℱ f) :
 theorem Submartingale.sum_upcrossingStrat_mul [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (a b : ℝ) (N : ℕ) : Submartingale (fun n : ℕ =>
       ∑ k ∈ Finset.range n, upcrossingStrat a b f N k * (f (k + 1) - f k)) ℱ μ :=
-  hf.sum_mul_sub hf.adapted.upcrossingStrat_adapted (fun _ _ => upcrossingStrat_le_one) fun _ _ =>
-    upcrossingStrat_nonneg
+  hf.sum_mul_sub_nat hf.adapted.upcrossingStrat_adapted (fun _ _ => upcrossingStrat_le_one)
+    fun _ _ => upcrossingStrat_nonneg
 
 theorem Submartingale.sum_sub_upcrossingStrat_mul [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (a b : ℝ) (N : ℕ) : Submartingale (fun n : ℕ =>
       ∑ k ∈ Finset.range n, (1 - upcrossingStrat a b f N k) * (f (k + 1) - f k)) ℱ μ := by
-  refine hf.sum_mul_sub (fun n => (adapted_const ℱ 1 n).sub (hf.adapted.upcrossingStrat_adapted n))
+  refine hf.sum_mul_sub_nat
+    (fun n ↦ (adapted_const ℱ 1 n).sub (hf.adapted.upcrossingStrat_adapted n))
     (?_ : ∀ n ω, (1 - upcrossingStrat a b f N n) ω ≤ 1) ?_
   · exact fun n ω => sub_le_self _ upcrossingStrat_nonneg
   · intro n ω
