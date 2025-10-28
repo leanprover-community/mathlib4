@@ -516,6 +516,18 @@ abbrev LinearMap.equivOfDetNeZero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCo
     [FiniteDimensional 𝕜 M] (f : M →ₗ[𝕜] M) (hf : LinearMap.det f ≠ 0) : M ≃ₗ[𝕜] M :=
   LinearMap.equivOfIsUnitDet (f := f) (Ne.isUnit hf)
 
+theorem LinearMap.coe_equivOfDetNeZero {𝕜 : Type*} [Field 𝕜]
+    {M : Type*} [AddCommGroup M] [Module 𝕜 M] [FiniteDimensional 𝕜 M]
+    (f : M →ₗ[𝕜] M) (hf : LinearMap.det f ≠ 0) :
+    (LinearMap.equivOfDetNeZero f hf : M →ₗ[𝕜] M) = f := by
+  simp only [LinearMap.equivOfDetNeZero, coe_equivOfIsUnitDet]
+
+theorem LinearMap.equivOfDetNeZero_apply {𝕜 : Type*} [Field 𝕜]
+    {M : Type*} [AddCommGroup M] [Module 𝕜 M] [FiniteDimensional 𝕜 M]
+    (f : M →ₗ[𝕜] M) (hf : LinearMap.det f ≠ 0) (x : M) :
+    (LinearMap.equivOfDetNeZero f hf : M →ₗ[𝕜] M) x = f x := by
+  simp only [coe_equivOfDetNeZero]
+
 theorem LinearMap.associated_det_of_eq_comp (e : M ≃ₗ[R] M) (f f' : M →ₗ[R] M)
     (h : ∀ x, f x = f' (e x)) : Associated (LinearMap.det f) (LinearMap.det f') := by
   suffices Associated (LinearMap.det (f' ∘ₗ ↑e)) (LinearMap.det f') by
