@@ -299,18 +299,18 @@ theorem Iso.connected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃g H
 theorem connected_or_compl_connected [Nonempty V] : G.Connected ∨ Gᶜ.Connected := by
   have ⟨v₀⟩ := ‹Nonempty V›
   by_cases hreach₀ : ∀ v, G.Reachable v₀ v
-  · exact Or.inl <| G.connected_iff_exists_forall_reachable.mpr ⟨v₀, hreach₀⟩
-  refine Or.inr <| Gᶜ.connected_iff_exists_forall_reachable.mpr ⟨v₀, fun v ↦ ?_⟩
+  · exact .inl <| G.connected_iff_exists_forall_reachable.mpr ⟨v₀, hreach₀⟩
+  refine .inr <| Gᶜ.connected_iff_exists_forall_reachable.mpr ⟨v₀, fun v ↦ ?_⟩
   have ⟨v₁, hreach₁⟩ := not_forall.mp hreach₀
   have hcadj₁ : Gᶜ.Adj v₀ v₁ :=
     ⟨fun heq ↦ heq ▸ hreach₁ <| Reachable.refl _, mt Adj.reachable hreach₁⟩
   by_cases hreach : G.Reachable v₀ v
   · by_cases heq : v = v₁
-    · exact heq ▸ Adj.reachable hcadj₁
+    · exact heq ▸ hcadj₁.reachable
     have : Gᶜ.Adj v v₁ := ⟨heq, fun hadj ↦ hreach₁ <| hreach.trans hadj.reachable⟩
     exact hcadj₁.reachable.trans this.reachable.symm
   by_cases heq : v₀ = v
-  · exact heq ▸ Reachable.refl _
+  · exact heq ▸ .refl _
   exact Adj.reachable ⟨heq, mt Adj.reachable hreach⟩
 
 /-- The quotient of `V` by the `SimpleGraph.Reachable` relation gives the connected
