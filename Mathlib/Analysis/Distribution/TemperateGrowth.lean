@@ -68,7 +68,7 @@ theorem HasTemperateGrowth.isBigO_uniform {f : E → F}
   · simp
   · exact Finset.le_sup (by simpa [← Finset.mem_range_succ_iff] using hn)
 
-theorem HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f : E → F}
+theorem HasTemperateGrowth.norm_iteratedFDeriv_le_uniform {f : E → F}
     (hf_temperate : f.HasTemperateGrowth) (n : ℕ) :
     ∃ (k : ℕ) (C : ℝ), 0 ≤ C ∧ ∀ N ≤ n, ∀ x : E, ‖iteratedFDeriv ℝ N f x‖ ≤ C * (1 + ‖x‖) ^ k := by
   rcases hf_temperate.isBigO_uniform n with ⟨k, hk⟩
