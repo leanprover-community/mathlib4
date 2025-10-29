@@ -3,7 +3,8 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Filter.Bases
+import Mathlib.Order.Filter.Bases.Basic
+import Mathlib.Order.Filter.Prod
 
 /-!
 # N-ary maps of filter
@@ -58,13 +59,13 @@ theorem map₂_mk_eq_prod (f : Filter α) (g : Filter β) : map₂ Prod.mk f g =
   simp only [← map_prod_eq_map₂, map_id']
 
 protected lemma HasBasis.map₂ {ι ι' : Type*} {p : ι → Prop} {q : ι' → Prop} {s t}
-    (hf : f.HasBasis p s) (hg : g.HasBasis q t) (m : α → β → γ) :
+    (m : α → β → γ) (hf : f.HasBasis p s) (hg : g.HasBasis q t) :
     (map₂ m f g).HasBasis (fun i : ι × ι' ↦ p i.1 ∧ q i.2) fun i ↦ image2 m (s i.1) (t i.2) := by
   simpa only [← map_prod_eq_map₂, ← image_prod] using (hf.prod hg).map _
 
 lemma hasBasis_map₂ :
     (map₂ m f g).HasBasis (fun s : Set α × Set β ↦ s.1 ∈ f ∧ s.2 ∈ g) fun s ↦ image2 m s.1 s.2 :=
-  f.basis_sets.map₂ g.basis_sets m
+  f.basis_sets.map₂ m g.basis_sets
 
 -- lemma image2_mem_map₂_iff (hm : injective2 m) : image2 m s t ∈ map₂ m f g ↔ s ∈ f ∧ t ∈ g :=
 -- ⟨by { rintro ⟨u, v, hu, hv, h⟩, rw image2_subset_image2_iff hm at h,
