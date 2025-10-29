@@ -19,43 +19,6 @@ import Mathlib.Topology.Algebra.Polynomial
 * `min_abs_of_monic_extrema` characterizes the equality case
 -/
 
-namespace Polynomial
-
-open Finset
-
-variable {F : Type*} [Field F] {ι : Type*} [DecidableEq ι] {s : Finset ι}
-
-theorem C_prod (c : ι → F) :
-  ∏ i ∈ s, C (c i) = C (∏ i ∈ s, (c i)) := by
-  induction s using Finset.induction
-  case empty => simp
-  case insert a t ha hind =>
-    rw [prod_insert ha, hind, prod_insert ha, C_mul]
-
-theorem degree_of_linear_product (c : ι → F) :
-  (∏ i ∈ s, (X - C (c i))).degree = ↑(s.card) := by
-  induction s using Finset.induction
-  case empty => simp
-  case insert a t ha hind =>
-  rw [prod_insert ha, card_insert_of_notMem ha]
-  rw [degree_mul, hind, degree_X_sub_C, add_comm]
-  push_cast; rfl
-
-theorem coeff_of_linear_product (c : ι → F) :
-  (∏ i ∈ s, (X - C (c i))).coeff #s = 1 := by
-  induction s using Finset.induction
-  case empty => simp
-  case insert a t ha hind =>
-  rw [prod_insert ha, card_insert_of_notMem ha]
-  rw [sub_mul, coeff_sub, coeff_X_mul, hind, coeff_C_mul]
-  suffices (∏ i ∈ t, (X - C (c i))).coeff (#t + 1) = 0 by simp [this]
-  apply coeff_eq_zero_of_degree_lt
-  rw [degree_of_linear_product]
-  apply Nat.cast_lt.mpr
-  omega
-
-end Polynomial
-
 namespace Lagrange
 
 open Polynomial
@@ -80,10 +43,12 @@ theorem basis_topCoeff {s : Finset ι} {v : ι → F} {i : ι} (hi : i ∈ s) :
   (Lagrange.basis s v i).coeff (s.card - 1) = (∏ j ∈ s.erase i, ((v i) - (v j)))⁻¹ := by
   rw [Lagrange.basis]
   unfold basisDivisor
-  rw [Finset.prod_mul_distrib, ← Finset.prod_inv_distrib, C_prod, coeff_C_mul]
-  suffices s.card - 1 = (s.erase i).card by
-    rw [this, coeff_of_linear_product, mul_one]
-  rw [Finset.card_erase_of_mem hi]
+  rw [Finset.prod_mul_distrib, ← Finset.prod_inv_distrib, ←map_prod, coeff_C_mul]
+  rw [← Finset.card_erase_of_mem hi]
+  have : (∏ j ∈ s.erase i, (X - C (v j))).Monic := monic_prod_X_sub_C _ _
+  have := this.coeff_natDegree
+  rw [natDegree_finset_prod_X_sub_C_eq_card] at this
+  rw [this, mul_one]
 
 theorem interpolate_leadingCoeff [DecidableEq F] (s : Finset ι) (v : ι → F) (hvs : Set.InjOn v s)
   {P : Polynomial F} (hP : s.card = P.degree + 1) :
