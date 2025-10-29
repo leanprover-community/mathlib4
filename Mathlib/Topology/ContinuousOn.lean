@@ -1433,7 +1433,7 @@ lemma Continuous.tendsto_nhdsSet_nhds
   exact h.tendsto_nhdsSet h'
 
 /-!
-## Properties of the `nhdsSetWithin`-filter
+## The `nhdsSetWithin`-filter
 -/
 
 @[gcongr, mono]
@@ -1464,8 +1464,23 @@ lemma nhdsSetWithin_univ {s : Set α} : 𝓝ˢ[univ] s = 𝓝ˢ s := by
   simp [nhdsSetWithin]
 
 @[simp]
+lemma nhdsSetWithin_univ' {s : Set α} : 𝓝ˢ[s] univ = 𝓟 s := by
+  simp [nhdsSetWithin]
+
+@[simp]
 lemma nhdsSetWithin_self {s : Set α} : 𝓝ˢ[s] s = 𝓟 s := by
   simp [nhdsSetWithin, principal_le_nhdsSet]
+
+@[simp]
+lemma nhdsSetWithin_empty {s : Set α} : 𝓝ˢ[∅] s = ⊥ := by
+  simp [nhdsSetWithin]
+
+@[simp]
+lemma nhdsSetWithin_empty' {s : Set α} : 𝓝ˢ[s] ∅ = ⊥ := by
+  simp [nhdsSetWithin]
+
+lemma principal_inter_le_nhdsSetWithin {s t : Set α} : 𝓟 (s ∩ t) ≤ 𝓝ˢ[t] s := by
+  simpa [nhdsSetWithin] using inf_le_of_left_le (b := 𝓟 t) <| principal_le_nhdsSet
 
 lemma nhdsSetWithin_prod_le {s s' : Set α} {t t' : Set β} :
     𝓝ˢ[s' ×ˢ t'] (s ×ˢ t) ≤ 𝓝ˢ[s'] s ×ˢ 𝓝ˢ[t'] t := by
@@ -1487,3 +1502,11 @@ of `s ∩ f ⁻¹' t` within `s`. -/
 lemma ContinuousOn.preimage_mem_nhdsSetWithin_of_mem_nhdsSet {f : α → β} {s : Set α}
     (hf : ContinuousOn f s) {t u : Set β} (h : u ∈ 𝓝ˢ t) : f ⁻¹' u ∈ 𝓝ˢ[s] (s ∩ f ⁻¹' t) := by
   simpa [h] using ContinuousOn.preimage_mem_nhdsSetWithin hf (t := t) (u := u) (t' := univ)
+
+lemma Continuous.preimage_mem_nhdsSetWithin {f : α → β} (hf : Continuous f) {s u s' : Set β}
+    (h : u ∈ 𝓝ˢ[s'] s) : f ⁻¹' u ∈ 𝓝ˢ[f ⁻¹' s'] (f ⁻¹' s) := by
+  simpa using (hf.continuousOn (s := univ)).preimage_mem_nhdsSetWithin h
+
+lemma Continuous.preimage_mem_nhdsSet {f : α → β} (hf : Continuous f) {s u : Set β}
+    (h : u ∈ 𝓝ˢ s) : f ⁻¹' u ∈ 𝓝ˢ (f ⁻¹' s) := by
+  simpa [h] using hf.preimage_mem_nhdsSetWithin (s := s) (u := u) (s' := univ)
