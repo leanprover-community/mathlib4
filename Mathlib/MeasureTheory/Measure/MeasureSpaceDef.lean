@@ -245,7 +245,7 @@ theorem measure_union_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s ∪
   (measure_union_lt_top hs.lt_top ht.lt_top).ne
 
 open scoped symmDiff in
-@[aesop (rule_sets := [finiteness]) unsafe apply]
+@[aesop (rule_sets := [finiteness]) unsafe 95% apply]
 theorem measure_symmDiff_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s ∆ t) ≠ ∞ :=
   ne_top_of_le_ne_top (by finiteness) <| measure_mono symmDiff_subset_union
 
