@@ -8,7 +8,7 @@ import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing
 /-!
 # Helper structure in order to construct pairings
 
-In this file, we introduce an helper structure `Subcomplex.PairingCore`
+In this file, we introduce a helper structure `Subcomplex.PairingCore`
 in order to construct a pairing for a subcomplex of a simplicial set.
 The main differences with `Subcomplex.Pairing` are that we provide
 an index type `ι` in order to parametrize type (I) and type (II) simplices,
@@ -44,7 +44,7 @@ structure PairingCore where
   injective_type₁' {s t : ι} (h : S.mk (simplex s) = S.mk (simplex t)) : s = t
   injective_type₂' {s t : ι}
     (h : S.mk (X.δ (index s) (simplex s)) = S.mk (X.δ (index t) (simplex t))) : s = t
-  type₁_neq_type₂' (s t : ι) : S.mk (simplex s) ≠ S.mk (X.δ (index t) (simplex t))
+  type₁_ne_type₂' (s t : ι) : S.mk (simplex s) ≠ S.mk (X.δ (index t) (simplex t))
   surjective' (x : A.N) :
     ∃ (s : ι), x.toS = S.mk (simplex s) ∨ x.toS = S.mk (X.δ (index s) (simplex s))
 
@@ -75,7 +75,7 @@ noncomputable def Pairing.pairingCore (P : A.Pairing) [P.IsProper] :
     rw [(P.isUniquelyCodimOneFace s).δ_index rfl,
       (P.isUniquelyCodimOneFace t).δ_index rfl] at h
     rwa [Subtype.ext_iff, N.ext_iff, SSet.N.ext_iff]
-  type₁_neq_type₂' s t h := (P.neq (P.p s) t) (by
+  type₁_ne_type₂' s t h := (P.ne (P.p s) t) (by
     rw [(P.isUniquelyCodimOneFace t).δ_index rfl] at h
     rwa [← (P.p s).1.cast_eq_self (P.isUniquelyCodimOneFace s).dim_eq,
       N.ext_iff, SSet.N.ext_iff])
@@ -109,8 +109,8 @@ lemma injective_type₁ : Function.Injective h.type₁ :=
 lemma injective_type₂ : Function.Injective h.type₂ :=
   fun s t hst ↦ h.injective_type₂' (by rwa [Subcomplex.N.ext_iff, SSet.N.ext_iff] at hst)
 
-lemma type₁_neq_type₂ (s t : h.ι) : h.type₁ s ≠ h.type₂ t := by
-  simpa only [ne_eq, N.ext_iff, SSet.N.ext_iff] using h.type₁_neq_type₂' s t
+lemma type₁_ne_type₂ (s t : h.ι) : h.type₁ s ≠ h.type₂ t := by
+  simpa only [ne_eq, N.ext_iff, SSet.N.ext_iff] using h.type₁_ne_type₂' s t
 
 lemma surjective (x : A.N) :
     ∃ (s : h.ι), x = h.type₁ s ∨ x = h.type₂ s := by
@@ -142,7 +142,7 @@ noncomputable def pairing : A.Pairing where
     simp only [I, II, Set.mem_inter_iff, Set.mem_range, Set.mem_empty_iff_false,
       iff_false, not_and, not_exists, forall_exists_index]
     rintro t rfl s
-    exact (h.type₁_neq_type₂ t s).symm
+    exact (h.type₁_ne_type₂ t s).symm
   union := by
     ext s
     have := h.surjective s

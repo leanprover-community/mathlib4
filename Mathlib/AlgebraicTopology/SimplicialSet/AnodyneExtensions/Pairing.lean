@@ -109,7 +109,7 @@ lemma exists_or (x : A.N) :
     exact ⟨y, Or.inr (by rw [hy])⟩
   · exact ⟨⟨_, h⟩, Or.inl rfl⟩
 
-lemma neq (x : P.I) (y : P.II) :
+lemma ne (x : P.I) (y : P.II) :
     x.1 ≠ y.1 := by
   obtain ⟨x, hx⟩ := x
   obtain ⟨y, hy⟩ := y
