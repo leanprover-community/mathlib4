@@ -6,6 +6,7 @@ Authors: Sina Hazratpour
 import Mathlib.CategoryTheory.Comma.Over.Pullback
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+import Mathlib.CategoryTheory.Adjunction.Unique
 
 /-!
 # Chosen pullbacks
@@ -191,17 +192,23 @@ theorem lift_fst : lift a b h ≫ fst f g = a := by
 theorem lift_snd : lift a b h ≫ snd f g = b := by
   simp [lift]
 
-theorem isPullback {Y Z X : C} (f : Y ⟶ X) (g : Z ⟶ X) [ChosenPullback g] :
-    IsPullback (fst f g) (snd f g) f g where
+end Lift
+
+variable (f g)
+
+theorem isPullback : IsPullback (fst f g) (snd f g) f g where
   w := condition
   isLimit' :=
     ⟨PullbackCone.IsLimit.mk _ (fun s ↦ lift s.fst s.snd s.condition)
       (by simp) (by simp) (by aesop)⟩
 
-theorem hasPullbackAlong {g : Z ⟶ X} [ChosenPullback g] : HasPullbacksAlong g :=
-  fun f => (isPullback f g).hasPullback
+instance hasPullbackAlong : HasPullbacksAlong g := fun f => (isPullback f g).hasPullback
 
-end Lift
+/-- The computable `ChosenPullback.pullback g` is naturally isomorphic to the noncomputable
+`Over.pullback g`. -/
+@[simps!]
+noncomputable def pullback_iso_overPullback : ChosenPullback.pullback g ≅ Over.pullback g :=
+  (ChosenPullback.mapPullbackAdj g).rightAdjointUniq (Over.mapPullbackAdj g)
 
 end PullbackFromChosenPullbacks
 
