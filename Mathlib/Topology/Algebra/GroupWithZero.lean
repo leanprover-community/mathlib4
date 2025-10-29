@@ -148,6 +148,7 @@ end GroupWithZero
 
 section NhdsInv
 
+open scoped Pointwise
 variable [GroupWithZero G₀] [TopologicalSpace G₀] [ContinuousInv₀ G₀] {x : G₀}
 
 lemma nhds_inv₀ (hx : x ≠ 0) : 𝓝 x⁻¹ = (𝓝 x)⁻¹ := by
