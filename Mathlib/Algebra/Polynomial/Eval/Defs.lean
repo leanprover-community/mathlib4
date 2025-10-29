@@ -593,6 +593,9 @@ theorem coe_evalRingHom (r : R) : (evalRingHom r : R[X] → R) = eval r :=
 theorem eval_pow (n : ℕ) : (p ^ n).eval x = p.eval x ^ n :=
   eval₂_pow _ _ _
 
+theorem eval_X_pow (n : ℕ) : (X ^ n : R[X]).eval x = x ^ n := by
+  simp
+
 @[simp]
 theorem eval_comp : (p.comp q).eval x = p.eval (q.eval x) := by
   induction p using Polynomial.induction_on' with
