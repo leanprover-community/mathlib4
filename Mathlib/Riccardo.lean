@@ -11,5 +11,5 @@ theorem unit_inv_conj_is_root_of_unity [IsTotallyComplex K]
   rw [← unitsMulComplexConjInv_apply]
   have := index_unitsMulComplexConjInv_range_dvd K
   have : ∀ ζ, ζ ^ 2 ∈ (unitsMulComplexConjInv K).range := sorry
-  
+
   sorry
