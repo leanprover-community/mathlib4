@@ -84,6 +84,14 @@ def precompose (c : CoconeTypes.{w₁} F) {G : J ⥤ Type w₀'} (app : ∀ j, G
   ι_naturality f := by
     rw [Function.comp_assoc, naturality, ← Function.comp_assoc, ι_naturality]
 
+/-- Given `F : J ⥤ w₀`, `c : F.CoconeTypes` and `G : J' ⥤ J`, this is
+the induced cocone in `(G ⋙ F).CoconeTypes`. -/
+@[simps]
+def precomp (c : CoconeTypes.{w₁} F) {J' : Type*} [Category J'] (G : J' ⥤ J) :
+    CoconeTypes.{w₁} (G ⋙ F) where
+  pt := c.pt
+  ι _ := c.ι _
+
 end CoconeTypes
 
 /-- Given `F : J ⥤ Type w₀`, this is the relation `Σ j, F.obj j` which
