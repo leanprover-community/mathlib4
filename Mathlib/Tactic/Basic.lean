@@ -125,6 +125,33 @@ elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
 
 attribute [pp_with_univ] ULift PUnit PEmpty
 
+/-- Result of `withResetServerInfo`. -/
+structure withResetServerInfo.Result (α : Type) where
+  /-- Return value of the executed tactic. -/
+  result? : Option α
+  /-- Messages produced by the executed tactic. -/
+  msgs    : MessageLog
+  /-- Info trees produced by the executed tactic, wrapped in `CommandContextInfo.save`. -/
+  trees   : PersistentArray InfoTree
+
+/--
+Runs a tactic, returning any new messages and info trees rather than adding them to the state.
+-/
+def withResetServerInfo {α : Type} (t : TacticM α) :
+    TacticM (withResetServerInfo.Result α) := do
+  let (savedMsgs, savedTrees) ← modifyGetThe Core.State fun st =>
+    ((st.messages, st.infoState.trees), { st with messages := {}, infoState.trees := {} })
+  Prod.snd <$> MonadFinally.tryFinally' t fun result? => do
+    let msgs  ← Core.getMessageLog
+    let ist   ← getInfoState
+    let trees ← ist.trees.mapM fun tree => do
+      let tree := tree.substitute ist.assignment
+      let ctx := .commandCtx <| ← CommandContextInfo.save
+      return InfoTree.context ctx tree
+    modifyThe Core.State fun st =>
+      { st with messages := savedMsgs, infoState.trees := savedTrees }
+    return { result?, msgs, trees }
+
 end Mathlib.Tactic
 
 /-- A mathlib library note: the note's content should be contained in its doc-string. -/
