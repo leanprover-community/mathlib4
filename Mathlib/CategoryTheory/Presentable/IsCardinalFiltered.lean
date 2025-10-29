@@ -218,15 +218,15 @@ instance isCardinalFiltered_prod (J₁ : Type u) (J₂ : Type u')
     exact
       { pt := (c₁.pt, c₂.pt)
         ι.app i := (c₁.ι.app i, c₂.ι.app i)
-        ι.naturality i j f := by
+        ι.naturality {i j} f := by
           ext
           · simpa using c₁.w f
-          · simpa using c₂.w f}⟩
+          · simpa using c₂.w f }⟩
 
 instance isCardinalFiltered_pi {ι : Type u'} (J : ι → Type u) [∀ i, Category.{v} (J i)]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] [∀ i, IsCardinalFiltered (J i) κ] :
     IsCardinalFiltered (∀ i, J i) κ where
-  nonempty_cocone {C _} F hC := ⟨by
+  nonempty_cocone F hC := ⟨by
     let c (i : ι) := cocone (F ⋙ Pi.eval J i) hC
     exact
       { pt i := (c i).pt

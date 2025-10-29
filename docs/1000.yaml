@@ -80,6 +80,12 @@ Q179208:
 
 Q179467:
   title: Fourier theorem
+  decls:
+    - MeasureTheory.Integrable.fourier_inversion
+    - Continuous.fourier_inversion
+  authors: Sébastien Gouezel
+  date: 2024
+  comment: "The wikipedia page is really vague; it's not clear what is meant here. While mathlib has some material already, there is space for more advanced results."
 
 Q179692:
   title: Independence of the axiom of choice
@@ -2957,6 +2963,9 @@ Q5163116:
 
 Q5165492:
   title: Continuous mapping theorem
+  decl: MeasureTheory.TendstoInDistribution.continuous_comp
+  authors: Rémy Degenne
+  date: 2025
 
 Q5166389:
   title: Van Vleck's theorem
