@@ -249,4 +249,3 @@ theorem extendOfNorm_opNorm_le (h_inj : LinearMap.ker e = ⊥)
 end NormedField
 
 end LinearMap
-
