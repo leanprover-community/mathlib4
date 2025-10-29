@@ -287,7 +287,7 @@ theorem sum_eq_one_iff (d : α →₀ ℕ) : sum d (fun _ n ↦ n) = 1 ↔ ∃ a
   refine ⟨fun h1 ↦ ?_, ?_⟩
   · have hd0 : d ≠ 0 := (by simp [·] at h1)
     obtain ⟨a, ha⟩ := ne_iff.mp hd0
-    obtain ⟨hda, hda'⟩ : d a = 1 ∧ ∀ (i : α), ¬i = a → d i = 0 := by
+    obtain ⟨hda, hda'⟩ : d a = 1 ∧ ∀ i ≠ a, d i = 0 := by
       rw [← add_sum_erase' _ a _ (fun _ ↦ rfl), Nat.add_eq_one_iff, or_iff_not_imp_left] at h1
       simp_all +contextual [sum, support_erase, sum_eq_zero_iff, mem_erase, erase_ne]
     use a
