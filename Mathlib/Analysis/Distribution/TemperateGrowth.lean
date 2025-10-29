@@ -15,11 +15,12 @@ open scoped Nat NNReal ContDiff
 
 open Asymptotics
 
-variable {D E F : Type*}
-variable [NormedAddCommGroup E] [NormedSpace ℝ E]
-variable [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {E F : Type*}
 
 namespace Function
+
+variable [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 /-- A function is called of temperate growth if it is smooth and all iterated derivatives are
 polynomially bounded. -/
@@ -111,7 +112,7 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
 
 end Function
 
-variable [NormedAddCommGroup D] [MeasurableSpace D]
+variable [NormedAddCommGroup E] [MeasurableSpace E]
 
 namespace MeasureTheory.Measure
 
@@ -120,27 +121,27 @@ open scoped ENNReal
 
 /-- A measure `μ` has temperate growth if there is an `n : ℕ` such that `(1 + ‖x‖) ^ (- n)` is
 `μ`-integrable. -/
-class HasTemperateGrowth (μ : Measure D) : Prop where
+class HasTemperateGrowth (μ : Measure E) : Prop where
   exists_integrable : ∃ (n : ℕ), Integrable (fun x ↦ (1 + ‖x‖) ^ (- (n : ℝ))) μ
 
 open Classical in
 /-- An integer exponent `l` such that `(1 + ‖x‖) ^ (-l)` is integrable if `μ` has
 temperate growth. -/
-def integrablePower (μ : Measure D) : ℕ :=
+def integrablePower (μ : Measure E) : ℕ :=
   if h : μ.HasTemperateGrowth then h.exists_integrable.choose else 0
 
 lemma integrable_pow_neg_integrablePower
-    (μ : Measure D) [h : μ.HasTemperateGrowth] :
+    (μ : Measure E) [h : μ.HasTemperateGrowth] :
     Integrable (fun x ↦ (1 + ‖x‖) ^ (- (μ.integrablePower : ℝ))) μ := by
   simpa [Measure.integrablePower, h] using h.exists_integrable.choose_spec
 
-instance _root_.MeasureTheory.IsFiniteMeasure.instHasTemperateGrowth {μ : Measure D}
+instance _root_.MeasureTheory.IsFiniteMeasure.instHasTemperateGrowth {μ : Measure E}
     [h : IsFiniteMeasure μ] : μ.HasTemperateGrowth := ⟨⟨0, by simp⟩⟩
 
-variable [NormedSpace ℝ D] [FiniteDimensional ℝ D] [BorelSpace D] in
-instance IsAddHaarMeasure.instHasTemperateGrowth {μ : Measure D}
+variable [NormedSpace ℝ E] [FiniteDimensional ℝ E] [BorelSpace E] in
+instance IsAddHaarMeasure.instHasTemperateGrowth {μ : Measure E}
     [h : μ.IsAddHaarMeasure] : μ.HasTemperateGrowth :=
-  ⟨⟨finrank ℝ D + 1, by apply integrable_one_add_norm; norm_num⟩⟩
+  ⟨⟨finrank ℝ E + 1, by apply integrable_one_add_norm; norm_num⟩⟩
 
 /-- Pointwise inequality to control `x ^ k * f` in terms of `1 / (1 + x) ^ l` if one controls both
 `f` (with a bound `C₁`) and `x ^ (k + l) * f` (with a bound `C₂`). This will be used to check
@@ -172,17 +173,16 @@ lemma _root_.pow_mul_le_of_le_of_pow_mul_le {C₁ C₂ : ℝ} {k l : ℕ} {x f :
       · exact Real.rpow_le_rpow_of_nonpos (by linarith) (by linarith) (by simp)
       · exact h₂.trans (by linarith)
 
-variable [BorelSpace D] [SecondCountableTopology D] in
+variable [NormedAddCommGroup F]
+
+variable [BorelSpace E] [SecondCountableTopology E] in
 /-- Given a function such that `f` and `x ^ (k + l) * f` are bounded for a suitable `l`, then
 `x ^ k * f` is integrable. The bounds are not relevant for the integrability conclusion, but they
 are relevant for bounding the integral in `integral_pow_mul_le_of_le_of_pow_mul_le`. We formulate
 the two lemmas with the same set of assumptions for ease of applications. -/
--- We redeclare `E` here to avoid the `NormedSpace ℝ E` typeclass available throughout this file.
-lemma _root_.integrable_of_le_of_pow_mul_le
-    {E : Type*} [NormedAddCommGroup E]
-    {μ : Measure D} [μ.HasTemperateGrowth] {f : D → E} {C₁ C₂ : ℝ} {k : ℕ}
-    (hf : ∀ x, ‖f x‖ ≤ C₁) (h'f : ∀ x, ‖x‖ ^ (k + μ.integrablePower) * ‖f x‖ ≤ C₂)
-    (h''f : AEStronglyMeasurable f μ) :
+lemma _root_.integrable_of_le_of_pow_mul_le {μ : Measure E} [μ.HasTemperateGrowth] {f : E → F}
+    {C₁ C₂ : ℝ} {k : ℕ} (hf : ∀ x, ‖f x‖ ≤ C₁)
+    (h'f : ∀ x, ‖x‖ ^ (k + μ.integrablePower) * ‖f x‖ ≤ C₂) (h''f : AEStronglyMeasurable f μ) :
     Integrable (fun x ↦ ‖x‖ ^ k * ‖f x‖) μ := by
   apply ((integrable_pow_neg_integrablePower μ).const_mul (2 ^ μ.integrablePower * (C₁ + C₂))).mono'
   · exact AEStronglyMeasurable.mul (aestronglyMeasurable_id.norm.pow _) h''f.norm
@@ -194,8 +194,7 @@ lemma _root_.integrable_of_le_of_pow_mul_le
 one can bound explicitly the integral of `x ^ k * f`. -/
 -- We redeclare `E` here to avoid the `NormedSpace ℝ E` typeclass available throughout this file.
 lemma _root_.integral_pow_mul_le_of_le_of_pow_mul_le
-    {E : Type*} [NormedAddCommGroup E]
-    {μ : Measure D} [μ.HasTemperateGrowth] {f : D → E} {C₁ C₂ : ℝ} {k : ℕ}
+    {μ : Measure E} [μ.HasTemperateGrowth] {f : E → F} {C₁ C₂ : ℝ} {k : ℕ}
     (hf : ∀ x, ‖f x‖ ≤ C₁) (h'f : ∀ x, ‖x‖ ^ (k + μ.integrablePower) * ‖f x‖ ≤ C₂) :
     ∫ x, ‖x‖ ^ k * ‖f x‖ ∂μ ≤ 2 ^ μ.integrablePower *
       (∫ x, (1 + ‖x‖) ^ (- (μ.integrablePower : ℝ)) ∂μ) * (C₁ + C₂) := by
@@ -210,7 +209,7 @@ lemma _root_.integral_pow_mul_le_of_le_of_pow_mul_le
 /-- For any `HasTemperateGrowth` measure and `p`, there exists an integer power `k` such that
 `(1 + ‖x‖) ^ (-k)` is in `L^p`. -/
 theorem HasTemperateGrowth.exists_eLpNorm_lt_top (p : ℝ≥0∞)
-    {μ : Measure D} (hμ : μ.HasTemperateGrowth) :
+    {μ : Measure E} (hμ : μ.HasTemperateGrowth) :
     ∃ k : ℕ, eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ < ⊤ := by
   cases p with
   | top => exact ⟨0, eLpNormEssSup_lt_top_of_ae_bound (C := 1) (by simp)⟩
@@ -218,7 +217,7 @@ theorem HasTemperateGrowth.exists_eLpNorm_lt_top (p : ℝ≥0∞)
     cases eq_or_ne (p : ℝ≥0∞) 0 with
     | inl hp => exact ⟨0, by simp [hp]⟩
     | inr hp =>
-      have h_one_add (x : D) : 0 < 1 + ‖x‖ := lt_add_of_pos_of_le zero_lt_one (norm_nonneg x)
+      have h_one_add (x : E) : 0 < 1 + ‖x‖ := lt_add_of_pos_of_le zero_lt_one (norm_nonneg x)
       have hp_pos : 0 < (p : ℝ) := by simpa [zero_lt_iff] using hp
       rcases hμ.exists_integrable with ⟨l, hl⟩
       let k := ⌈(l / p : ℝ)⌉₊
