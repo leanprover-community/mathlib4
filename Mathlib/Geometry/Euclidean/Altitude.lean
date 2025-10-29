@@ -51,8 +51,8 @@ theorem altitude_def {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1)) :
         affineSpan ℝ (Set.range s.points) :=
   rfl
 
-lemma altitude_reindex {m n : ℕ} [NeZero m] [NeZero n] (s : Simplex ℝ P n)
-    (e : Fin (n + 1) ≃ Fin (m + 1)) : (s.reindex e).altitude = s.altitude ∘ e.symm := by
+lemma altitude_reindex {m n : ℕ} (s : Simplex ℝ P n) (e : Fin (n + 1) ≃ Fin (m + 1)) :
+    (s.reindex e).altitude = s.altitude ∘ e.symm := by
   ext i
   simp_rw [altitude, reindex_points, Set.image_comp, Equiv.image_compl]
   simp [altitude]
