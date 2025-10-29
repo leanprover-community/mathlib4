@@ -292,6 +292,10 @@ instance [PreservesLimits (forget D)] [HasFiniteLimits D]
     HasSheafify J D :=
   HasSheafify.mk' J D (plusPlusAdjunction J D)
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
+instance : HasSheafify J (Type max u v) := by
+  infer_instance
+
 end
 
 variable {D : Type w} [Category.{w'} D]
