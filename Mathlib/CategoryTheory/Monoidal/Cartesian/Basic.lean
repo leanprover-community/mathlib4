@@ -787,6 +787,14 @@ end prodComparison
 
 end CartesianMonoidalCategoryComparison
 
+/-- In a cartesian monoidal category, `tensorLeft X` is naturally isomorphic `prod.functor.obj X`.
+-/
+noncomputable def tensorLeftIsoProd [HasBinaryProducts C] (X : C) :
+    MonoidalCategory.tensorLeft X ≅ prod.functor.obj X :=
+  NatIso.ofComponents fun Y ↦
+    (CartesianMonoidalCategory.tensorProductIsBinaryProduct X Y).conePointUniqueUpToIso
+      (limit.isLimit _)
+
 open Limits
 
 variable {P : ObjectProperty C}
