@@ -76,15 +76,19 @@ theorem fib_add_one (n : ℤ) : fib (n + 1) = fib (n + 2) - fib n := by
   obtain ⟨n, (rfl | rfl)⟩ := n.eq_nat_or_neg <;> simp [fib_neg_natCast]
 
 -- auxiliary for `fib_add`
-theorem fib_natCast_add_natCast (m n : ℕ) :
-    fib (m + n) = fib (m - 1) * fib n + fib m * fib (n + 1) := by
-  if hm : m = 0 then simp [hm] else
-  obtain ⟨m, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hm
-  simp_rw [← natCast_add, ← natCast_add_one, add_assoc, add_comm,
-    fib_natCast, ← add_assoc, Nat.fib_add]
-  simp [add_comm]
+theorem fib_natCast_add : ∀ (m : ℕ) (n : ℤ), fib (m + n) = fib (m - 1) * fib n + fib m * fib (n + 1)
+  | 0, _ => by simp
+  | 1, _ => by simp [add_comm]
+  | m + 2, n => by
+      calc _ = fib (m + n) + fib (m + n + 1) := by grind [fib_add_two]
+        _ = fib (m - 1) * fib n + fib m * fib (n + 1) + fib ((m + 1 : ℕ) + n) := by
+          rw [fib_natCast_add]; grind
+        _ = fib (m - 1) * fib n + fib m * fib (n + 1) + fib m * fib n +
+            fib (m + 1) * fib (n + 1) := by rw [fib_natCast_add]; grind
+        _ = (fib (m - 1) + fib m) * fib n + (fib m + fib (m + 1)) * fib (n + 1) := by grind
+        _ = fib (m + 1) * fib n + fib (m + 2) * fib (n + 1) := by grind [fib_add_two]
+        _ = _ := by grind
 
--- TODO: `fib_natCast_sub_natCast`,
--- `fib_add`, `fib_two_mul`, `fib_two_mul_add_one'`, `fib_two_mul_add_two`, `fib_dvd`, ...
+-- TODO: `fib_add`, `fib_two_mul`, `fib_two_mul_add_one'`, `fib_two_mul_add_two`, `fib_dvd`, ...
 
 end Int
