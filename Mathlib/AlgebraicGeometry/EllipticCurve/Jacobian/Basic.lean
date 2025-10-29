@@ -437,7 +437,7 @@ lemma Y_ne_zero_of_Z_eq_zero [NoZeroDivisors R] {P : Fin 3 → R} (hP : W'.Nonsi
   have hPx : P x ≠ 0 := X_ne_zero_of_Z_eq_zero hP hPz
   intro hPy
   rw [nonsingular_of_Z_eq_zero hPz, equation_of_Z_eq_zero hPz, hPy, zero_pow two_ne_zero] at hP
-  exact hPx <| pow_eq_zero hP.left.symm
+  exact hPx <| eq_zero_of_pow_eq_zero hP.left.symm
 
 lemma isUnit_Y_of_Z_eq_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z = 0) : IsUnit (P y) :=
   (Y_ne_zero_of_Z_eq_zero hP hPz).isUnit

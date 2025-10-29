@@ -93,23 +93,23 @@ theorem weird_seventy : Weird 70 := by
 lemma deficient_iff_not_abundant_and_not_perfect (hn : n ≠ 0) :
     Deficient n ↔ ¬ Abundant n ∧ ¬ Perfect n := by
   dsimp only [Perfect, Abundant, Deficient]
-  omega
+  cutsat
 
 lemma perfect_iff_not_abundant_and_not_deficient (hn : 0 ≠ n) :
     Perfect n ↔ ¬ Abundant n ∧ ¬ Deficient n := by
   dsimp only [Perfect, Abundant, Deficient]
-  omega
+  cutsat
 
 lemma abundant_iff_not_perfect_and_not_deficient (hn : 0 ≠ n) :
     Abundant n ↔ ¬ Perfect n ∧ ¬ Deficient n := by
   dsimp only [Perfect, Abundant, Deficient]
-  omega
+  cutsat
 
 /-- A positive natural number is either deficient, perfect, or abundant -/
 theorem deficient_or_perfect_or_abundant (hn : 0 ≠ n) :
     Deficient n ∨ Abundant n ∨ Perfect n := by
   dsimp only [Perfect, Abundant, Deficient]
-  omega
+  cutsat
 
 theorem Perfect.pseudoperfect (h : Perfect n) : Pseudoperfect n :=
   ⟨h.2, ⟨properDivisors n, ⟨fun ⦃_⦄ a ↦ a, h.1⟩⟩⟩
@@ -151,7 +151,7 @@ theorem Prime.deficient_pow (h : Prime n) : Deficient (n ^ m) := by
           exact ⟨x, Nat.le_of_succ_le hx, rfl⟩
         · rw [← hy]
           exact (Nat.pow_lt_pow_iff_right (Prime.two_le h)).mpr hx
-    have h2 : ∑ i ∈ image (fun x => n ^ x) (range m), i = ∑ i ∈ range m, n^i := by
+    have h2 : ∑ i ∈ image (fun x => n ^ x) (range m), i = ∑ i ∈ range m, n ^ i := by
       rw [Finset.sum_image]
       rintro x _ y _
       apply pow_injective_of_not_isUnit h.not_isUnit <| Prime.ne_zero h
