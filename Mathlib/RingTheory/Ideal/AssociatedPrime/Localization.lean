@@ -43,7 +43,7 @@ lemma mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule
     simp [eqtop, Ideal.comap_top, Ideal.isPrime_iff] at hp
   · use f x
     ext t
-    rcases IsLocalization.mk'_surjective S t with ⟨r, s, hrs⟩
+    rcases IsLocalization.exists_mk'_eq S t with ⟨r, s, hrs⟩
     rw [← IsLocalizedModule.mk'_one S, ← hrs, mem_ker, toSpanSingleton_apply,
       IsLocalizedModule.mk'_smul_mk', mul_one, IsLocalizedModule.mk'_eq_zero']
     refine ⟨fun h ↦ ?_, fun ⟨t, ht⟩ ↦ ?_⟩
