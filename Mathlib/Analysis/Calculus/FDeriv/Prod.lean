@@ -341,6 +341,14 @@ protected theorem HasStrictFDerivAt.prodMap (hf : HasStrictFDerivAt f f' p.1)
   (hf.comp p hasStrictFDerivAt_fst).prodMk (hf₂.comp p hasStrictFDerivAt_snd)
 
 @[fun_prop]
+protected theorem HasFDerivWithinAt.prodMap {s : Set <| E × G}
+    (hf : HasFDerivWithinAt f f' (Prod.fst '' s) p.1)
+    (hf₂ : HasFDerivWithinAt f₂ f₂' (Prod.snd '' s) p.2) :
+    HasFDerivWithinAt (Prod.map f f₂) (f'.prodMap f₂') s p :=
+  (hf.comp _ hasFDerivWithinAt_fst mapsTo_fst_prod).prodMk
+    (hf₂.comp _ hasFDerivWithinAt_snd mapsTo_snd_prod) |>.mono (by grind)
+
+@[fun_prop]
 protected theorem HasFDerivAt.prodMap (hf : HasFDerivAt f f' p.1) (hf₂ : HasFDerivAt f₂ f₂' p.2) :
     HasFDerivAt (Prod.map f f₂) (f'.prodMap f₂') p :=
   (hf.comp p hasFDerivAt_fst).prodMk (hf₂.comp p hasFDerivAt_snd)
