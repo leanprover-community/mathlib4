@@ -68,7 +68,7 @@ instance Category.opposite : Category.{v₁} Cᵒᵖ where
   comp f g := (g.unop ≫ f.unop).op
   id X := (𝟙 (unop X)).op
 
-@[simp, reassoc]
+@[simp, reassoc, grind =]
 theorem op_comp {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g).op = g.op ≫ f.op :=
   rfl
 
