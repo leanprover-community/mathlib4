@@ -13,6 +13,10 @@ In this file we define a typeclass `HasOuterApproxClosed` for topological spaces
 functions of closed sets have sequences of bounded continuous functions approximating them from
 above. All pseudo-emetrizable spaces have this property, see `instHasOuterApproxClosed`.
 
+In spaces with the `HasOuterApproxClosed` property, finite Borel measures are uniquely characterized
+by the integrals of bounded continuous functions. Also weak convergence of finite measures and
+convergence in distribution for random variables behave somewhat well in spaces with this property.
+
 ## Main definitions
 
 * `HasOuterApproxClosed`: the typeclass for topological spaces in which indicator functions of
