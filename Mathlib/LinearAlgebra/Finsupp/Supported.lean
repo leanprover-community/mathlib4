@@ -81,7 +81,7 @@ theorem supported_eq_span_single (s : Set α) :
 
 theorem span_le_supported_biUnion_support (s : Set (α →₀ M)) :
     span R s ≤ supported M R (⋃ x ∈ s, x.support) :=
-  span_le.mpr fun _ h ↦ subset_biUnion_of_mem h (u := (SetLike.coe ·.support))
+  span_le.mpr fun _ h ↦ subset_biUnion_of_mem h (u := (SetLike.coe ·.support)) -- TODO
 
 variable (M)
 
