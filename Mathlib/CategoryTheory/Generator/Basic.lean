@@ -57,7 +57,7 @@ See the files `CategoryTheory.Generator.Presheaf` and `CategoryTheory.Generator.
 -/
 
 
-universe w v₁ v₂ u₁ u₂
+universe w' w v₁ v₂ u₁ u₂
 
 open CategoryTheory.Limits Opposite
 
