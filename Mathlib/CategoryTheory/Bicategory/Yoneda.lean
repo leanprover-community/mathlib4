@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Calle Sönne. All rights reserved.
+Copyright (c) 2025 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
@@ -17,8 +17,6 @@ import Mathlib.CategoryTheory.Bicategory.Coherence
 # 2-Yoneda embedding
 
 -/
-
--- TODO: some API need to be added to prelax refactor
 
 namespace CategoryTheory
 
@@ -57,7 +55,7 @@ def representable (x : B) : Pseudofunctor Bᵒᵖ Cat.{v₁, v₁} where
 @[simps]
 def StrongNatTrans.representable {x y : B} (f : x ⟶ y) : representable x ⟶ representable y where
   app z := (precomp z f.op)
-  naturality {a b} g := {
+  naturality {a b} g := { -- TODO: Cat.NatIso.mk? Or just NatIso.mk?
     hom := Cat.NatTrans.mk' fun h ↦ (α_ f.op h g).inv
     inv := Cat.NatTrans.mk' fun h ↦ (α_ f.op h g).hom }
 
