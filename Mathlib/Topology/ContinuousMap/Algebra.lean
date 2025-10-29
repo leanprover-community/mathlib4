@@ -819,7 +819,6 @@ lemma smul_apply' (f : C(α, R)) (g : C(α, M)) (x : α) :
 
 instance module' [IsTopologicalSemiring R] [ContinuousAdd M] :
     Module C(α, R) C(α, M) where
-  smul := (· • ·)
   smul_add c f g := by ext x; exact smul_add (c x) (f x) (g x)
   add_smul c₁ c₂ f := by ext x; exact add_smul (c₁ x) (c₂ x) (f x)
   mul_smul c₁ c₂ f := by ext x; exact mul_smul (c₁ x) (c₂ x) (f x)
