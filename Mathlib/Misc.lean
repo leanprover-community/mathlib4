@@ -1,5 +1,59 @@
 import Mathlib
 
+section Nat
+
+theorem Nat.two_le_div_of_dvd {a b : ℕ} (h₁ : b ∣ a) (h₂ : b ≠ a) (h₃ : a ≠ 0) :
+    2 ≤ a / b := by
+  obtain ⟨c, rfl⟩ := h₁
+  have hb : 0 < b := by grind
+  rw [Nat.mul_div_cancel_left _ hb]
+  exact (Nat.two_le_iff c).mpr ⟨by grind, by grind⟩
+
+end Nat
+
+section IsPrimitiveRoot
+
+theorem IsPrimitiveRoot.pow_div_gcd {M : Type*} [CommMonoid M] {ζ : M} {n a : ℕ} (ha : a ≠ 0)
+    (h : IsPrimitiveRoot ζ n) : IsPrimitiveRoot (ζ ^ a) (n / n.gcd a) := by
+  rw [IsPrimitiveRoot.iff_orderOf, orderOf_pow' _ ha, h.eq_orderOf]
+
+end IsPrimitiveRoot
+
+section gaussSum
+
+def gaussSum_map {R R' R'' : Type*} [CommRing R] [Fintype R] [CommRing R'] [CommRing R'']
+    (χ : MulChar R R') (ψ : AddChar R R') (f : R' →+* R'') :
+    f (gaussSum χ ψ) = gaussSum (χ.ringHomComp f) (f.compAddChar ψ) := by
+  unfold gaussSum
+  simp [map_sum, map_mul]
+
+@[simp]
+theorem MulChar.one_apply_zero {R : Type*} [Nontrivial R] [CommMonoidWithZero R] {R' : Type*}
+    [CommMonoidWithZero R'] : (1 : MulChar R R') 0 = 0 := dif_neg not_isUnit_zero
+
+theorem gaussSum_one {R : Type*} [CommRing R] [Fintype R] [DecidableEq R] {R' : Type*}
+    [CommRing R'] : gaussSum (1 : MulChar R R') (1 : AddChar R R') = (Fintype.card Rˣ) := by
+  classical
+  simp [gaussSum, MulChar.sum_one_eq_card_units]
+
+theorem gaussSum_one_left {R : Type*} [Field R] [Fintype R] {R' : Type*} [CommRing R'] [IsDomain R']
+    (ψ : AddChar R R') : gaussSum 1 ψ = if ψ = 0 then (Fintype.card R : R') - 1 else -1 := by
+  classical
+  rw [gaussSum, ← Finset.univ.add_sum_erase _ (Finset.mem_univ 0), MulChar.one_apply_zero,
+    zero_mul, zero_add]
+  have : ∀ x ∈ Finset.univ.erase (0 : R), (1 : MulChar R R') x = 1 := by
+    intro x hx
+    exact MulChar.one_apply <| isUnit_iff_ne_zero.mpr <| Finset.ne_of_mem_erase hx
+  simp_rw +contextual [this, one_mul]
+  rw [Finset.sum_erase_eq_sub (Finset.mem_univ 0), AddChar.map_zero_eq_one, AddChar.sum_eq_ite,
+    ite_sub, zero_sub]
+
+theorem gaussSum_one_right {R : Type*} [CommRing R] [Fintype R] {R' : Type*} [CommRing R']
+    [IsDomain R'] {χ : MulChar R R'} (hχ : χ ≠ 1) : gaussSum χ 1 = 0 := by
+  simpa [gaussSum] using MulChar.sum_eq_zero_of_ne_one hχ
+
+end gaussSum
+
 section NumberField
 
 open NumberField
@@ -348,31 +402,6 @@ open Ideal in
 theorem Int.mem_ideal_of_liesOver_span {R : Type*} [Ring R] (d : ℤ) (I : Ideal R)
     [h : I.LiesOver (span {d})] : (d : R) ∈ I := by
   simp [Int.cast_mem_ideal_iff, ← (liesOver_iff _ _).mp h]
-
-@[simp]
-theorem MulChar.one_apply_zero {R : Type*} [Nontrivial R] [CommMonoidWithZero R] {R' : Type*}
-    [CommMonoidWithZero R'] : (1 : MulChar R R') 0 = 0 := dif_neg not_isUnit_zero
-
-theorem gaussSum_one {R : Type*} [CommRing R] [Fintype R] [DecidableEq R] {R' : Type*}
-    [CommRing R'] : gaussSum (1 : MulChar R R') (1 : AddChar R R') = (Fintype.card Rˣ) := by
-  classical
-  simp [gaussSum, MulChar.sum_one_eq_card_units]
-
-theorem gaussSum_one_left {R : Type*} [Field R] [Fintype R] {R' : Type*} [CommRing R'] [IsDomain R']
-    (ψ : AddChar R R') : gaussSum 1 ψ = if ψ = 0 then (Fintype.card R : R') - 1 else -1 := by
-  classical
-  rw [gaussSum, ← Finset.univ.add_sum_erase _ (Finset.mem_univ 0), MulChar.one_apply_zero,
-    zero_mul, zero_add]
-  have : ∀ x ∈ Finset.univ.erase (0 : R), (1 : MulChar R R') x = 1 := by
-    intro x hx
-    exact MulChar.one_apply <| isUnit_iff_ne_zero.mpr <| Finset.ne_of_mem_erase hx
-  simp_rw +contextual [this, one_mul]
-  rw [Finset.sum_erase_eq_sub (Finset.mem_univ 0), AddChar.map_zero_eq_one, AddChar.sum_eq_ite,
-    ite_sub, zero_sub]
-
-theorem gaussSum_one_right {R : Type*} [CommRing R] [Fintype R] {R' : Type*} [CommRing R']
-    [IsDomain R'] {χ : MulChar R R'} (hχ : χ ≠ 1) : gaussSum χ 1 = 0 := by
-  simpa [gaussSum] using MulChar.sum_eq_zero_of_ne_one hχ
 
 theorem Nat.eq_or_eq_of_totient_eq_totient {a b : ℕ} (h : a ∣ b) (h' : a.totient = b.totient) :
     a = b ∨ 2 * a = b := by
