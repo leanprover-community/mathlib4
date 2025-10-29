@@ -61,7 +61,7 @@ end
 section
 
 variable [(PresheafOfModules.pushforward.{v} φ.val).IsRightAdjoint]
-  [HasWeakSheafify K AddCommGrp.{v}] [K.WEqualsLocallyBijective AddCommGrp.{v}]
+  [HasWeakSheafify K AddCommGrpCat.{v}] [K.WEqualsLocallyBijective AddCommGrpCat.{v}]
 
 namespace PullbackConstruction
 
@@ -103,7 +103,7 @@ noncomputable def pullbackIso :
 
 section
 
-variable [HasWeakSheafify J AddCommGrp.{v}] [J.WEqualsLocallyBijective AddCommGrp.{v}]
+variable [HasWeakSheafify J AddCommGrpCat.{v}] [J.WEqualsLocallyBijective AddCommGrpCat.{v}]
 
 /-- The pullback of (pre)sheaves of modules commutes with the sheafification. -/
 noncomputable def sheafificationCompPullback :

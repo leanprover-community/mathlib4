@@ -34,7 +34,7 @@ For more results about the category of cones, see `cone_category.lean`.
 -/
 
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
 open CategoryTheory
@@ -109,7 +109,7 @@ section
 
 Example: if `J` is a category coming from a poset then the data required to make
 a term of type `Cone F` is morphisms `πⱼ : c.pt ⟶ F j` for all `j : J` and,
-for all `i ≤ j` in `J`, morphisms `πᵢⱼ : F i ⟶ F j` such that `πᵢ ≫ πᵢⱼ = πᵢ`.
+for all `i ≤ j` in `J`, morphisms `πᵢⱼ : F i ⟶ F j` such that `πᵢ ≫ πᵢⱼ = πⱼ`.
 
 `Cone F` is equivalent, via `cone.equiv` below, to `Σ X, F.cones.obj X`.
 -/
