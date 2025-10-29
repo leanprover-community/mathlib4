@@ -82,6 +82,11 @@ lemma mult_comap_le (f : k →+* K) (w : InfinitePlace K) : mult (w.comap f) ≤
   · exact (h₁ (h₂.comap _)).elim
   all_goals decide
 
+lemma comap_embedding_of_isReal (f : k →+* K) {w : InfinitePlace K} (h : (w.comap f).IsReal) :
+    (w.comap f).embedding = w.embedding.comp f := by
+  rw [← mk_embedding w, comap_mk, mk_embedding, embedding_mk_eq_of_isReal
+    (by rwa [← isReal_mk_iff, ← comap_mk, mk_embedding])]
+
 variable [Algebra k K] (σ : Gal(K/k)) (w : InfinitePlace K)
 variable (k K)
 
@@ -514,3 +519,53 @@ lemma IsUnramifiedAtInfinitePlaces.card_infinitePlace [NumberField k] [NumberFie
   · exact Finset.compl_univ
   simp only [Finset.mem_univ, forall_true_left]
   exact InfinitePlace.isUnramifiedIn K
+
+namespace NumberField.InfinitePlace
+
+open ComplexEmbedding
+
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] (w : InfinitePlace L) (v : InfinitePlace K)
+
+/-- An infinite place `w` of `L / K` lies over the infinite place `v` of `K` if `v` is the
+restriction of `w` to `K`. -/
+class LiesOver : Prop where
+  comap_eq' : w.comap (algebraMap K L) = v
+
+namespace LiesOver
+
+variable [w.LiesOver v]
+
+theorem comap_eq : w.comap (algebraMap K L) = v := LiesOver.comap_eq'
+
+theorem mk_embedding_comp : InfinitePlace.mk (w.embedding.comp (algebraMap K L)) = v := by
+  rw [← comap_mk, w.mk_embedding, comap_eq w v]
+
+theorem embedding_comp_eq_or_conjugate_embedding_comp_eq :
+    w.embedding.comp (algebraMap K L) = v.embedding ∨
+      (conjugate w.embedding).comp (algebraMap K L) = v.embedding := by
+  cases embedding_mk_eq (w.embedding.comp (algebraMap K L)) with
+  | inl hl => exact .inl (hl ▸ congrArg embedding (mk_embedding_comp w v))
+  | inr hr => simpa using .inr (hr ▸ congrArg embedding (mk_embedding_comp w v))
+
+theorem embedding_conjugate_comp_eq (h : ¬w.embedding.comp (algebraMap K L) = v.embedding) :
+    (conjugate w.embedding).comp (algebraMap K L) = v.embedding :=
+   (embedding_comp_eq_or_conjugate_embedding_comp_eq w v).resolve_left h
+
+theorem embedding_comp_eq (h : ¬(conjugate w.embedding).comp (algebraMap K L) = v.embedding) :
+    w.embedding.comp (algebraMap K L) = v.embedding :=
+  (embedding_comp_eq_or_conjugate_embedding_comp_eq w v).resolve_right h
+
+variable {v}
+
+theorem isComplex_of_isComplex_under (hv : v.IsComplex) : w.IsComplex := by
+  rw [isComplex_iff, ComplexEmbedding.isReal_iff, RingHom.ext_iff, not_forall] at hv ⊢
+  let ⟨x, hx⟩ := hv
+  use algebraMap K L x
+  rw [← comap_eq w v, ← mk_embedding w, comap_mk] at hx
+  rcases embedding_mk_eq (w.embedding.comp (algebraMap K L)) with (_ | _) <;> aesop
+
+theorem isReal_of_isReal_over (hw : w.IsReal) : v.IsReal := by
+  rw [← not_isComplex_iff_isReal] at hw ⊢
+  exact mt (isComplex_of_isComplex_under w) hw
+
+end NumberField.InfinitePlace.LiesOver
