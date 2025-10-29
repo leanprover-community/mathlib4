@@ -239,7 +239,7 @@ theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : i.castSucc < j)
   rw [← δ_comp_δ]
   · rw [Fin.succ_pred]
   · simpa only [Fin.le_iff_val_le_val, ← Nat.lt_succ_iff, Nat.succ_eq_add_one, ← Fin.val_succ,
-      j.succ_pred, Fin.lt_iff_val_lt_val] using H
+      j.succ_pred, Fin.lt_def] using H
 
 theorem δ_comp_δ'' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : i ≤ Fin.castSucc j) :
     δ (i.castLT (Nat.lt_of_le_of_lt (Fin.le_iff_val_le_val.mp H) j.is_lt)) ≫ δ j.succ =
@@ -288,7 +288,7 @@ theorem δ_comp_σ_self {n} {i : Fin (n + 1)} :
   ext ⟨j, hj⟩
   simp? at hj says simp only [len_mk] at hj
   dsimp [σ, δ, Fin.predAbove, Fin.succAbove]
-  simp only [Fin.lt_iff_val_lt_val, Fin.dite_val, Fin.ite_val, Fin.coe_pred]
+  simp only [Fin.lt_def, Fin.dite_val, Fin.ite_val, Fin.coe_pred]
   split_ifs
   any_goals simp
   all_goals cutsat
@@ -578,6 +578,9 @@ instance (x : SimplexCategory) (n : ℕ) : OfNat (ToType x) n :=
 
 lemma toType_apply (x : SimplexCategory) : ToType x = Fin (x.len + 1) := rfl
 
+@[simp]
+lemma concreteCategoryHom_id (n : SimplexCategory) : ConcreteCategory.hom (𝟙 n) = .id := rfl
+
 end Concrete
 
 section EpiMono
@@ -728,7 +731,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋
       exact Fin.lt_succ
     · dsimp [δ]
       rw [Fin.succAbove_of_le_castSucc i.succ _]
-      simp only [Fin.lt_iff_val_lt_val, Fin.le_iff_val_le_val, Fin.val_succ, Fin.coe_castSucc,
+      simp only [Fin.lt_def, Fin.le_iff_val_le_val, Fin.val_succ, Fin.coe_castSucc,
         Nat.lt_succ_iff, Fin.ext_iff] at h' h'' ⊢
       cutsat
 

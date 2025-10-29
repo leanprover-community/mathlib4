@@ -111,7 +111,7 @@ theorem mk_le_of_surjective {α β : Type u} {f : α → β} (hf : Surjective f)
 
 theorem le_mk_iff_exists_set {c : Cardinal} {α : Type u} : c ≤ #α ↔ ∃ p : Set α, #p = c :=
   ⟨inductionOn c fun _ ⟨⟨f, hf⟩⟩ => ⟨Set.range f, (Equiv.ofInjective f hf).cardinal_eq.symm⟩,
-    fun ⟨_, e⟩ => e ▸ ⟨⟨Subtype.val, fun _ _ => Subtype.eq⟩⟩⟩
+    fun ⟨_, e⟩ => e ▸ ⟨⟨Subtype.val, fun _ _ => Subtype.ext⟩⟩⟩
 
 theorem mk_subtype_le {α : Type u} (p : α → Prop) : #(Subtype p) ≤ #α :=
   ⟨Embedding.subtype p⟩
@@ -211,10 +211,6 @@ private theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := 
   simp
 
 instance commSemiring : CommSemiring Cardinal.{u} where
-  zero := 0
-  one := 1
-  add := (· + ·)
-  mul := (· * ·)
   zero_add a := inductionOn a fun α => mk_congr <| Equiv.emptySum _ α
   add_zero a := inductionOn a fun α => mk_congr <| Equiv.sumEmpty α _
   add_assoc a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumAssoc α β γ
@@ -457,9 +453,12 @@ theorem not_isStrongLimit_zero : ¬ IsStrongLimit (0 : Cardinal) :=
 
 /-! ### Indexed cardinal `sum` -/
 
-theorem le_sum {ι} (f : ι → Cardinal) (i) : f i ≤ sum f := by
+theorem lift_le_sum {ι : Type u} (f : ι → Cardinal.{v}) (i) : lift.{u, v} (f i) ≤ sum f := by
   rw [← Quotient.out_eq (f i)]
-  exact ⟨⟨fun a => ⟨i, a⟩, fun a b h => by injection h⟩⟩
+  exact ⟨⟨fun a => ⟨i, a.down⟩, fun a b h => by simpa using h⟩⟩
+
+theorem le_sum {ι : Type u} (f : ι → Cardinal.{max u v}) (i) : f i ≤ sum f := by
+  simpa [← lift_umax] using lift_le_sum f i
 
 theorem iSup_le_sum {ι} (f : ι → Cardinal) : iSup f ≤ sum f :=
   ciSup_le' <| le_sum _

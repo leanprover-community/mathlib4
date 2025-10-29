@@ -253,12 +253,12 @@ theorem StrictAnti.isMin_of_apply (hf : StrictAnti f) (ha : IsMax (f a)) : IsMin
     let ⟨_, hb⟩ := not_isMin_iff.1 h
     (hf hb).not_isMax ha
 
-lemma StrictMono.add_le_nat {f : ℕ → ℕ} (hf : StrictMono f) (m n : ℕ) : m + f n ≤ f (m + n)  := by
+lemma StrictMono.add_le_nat {f : ℕ → ℕ} (hf : StrictMono f) (m n : ℕ) : m + f n ≤ f (m + n) := by
   rw [Nat.add_comm m, Nat.add_comm m]
   induction m with
   | zero => rw [Nat.add_zero, Nat.add_zero]
   | succ m ih =>
-    rw [← Nat.add_assoc, ← Nat.add_assoc, Nat.succ_le]
+    rw [← Nat.add_assoc, ← Nat.add_assoc, Nat.succ_le_iff]
     exact ih.trans_lt (hf (n + m).lt_succ_self)
 
 protected theorem StrictMono.ite' (hf : StrictMono f) (hg : StrictMono g) {p : α → Prop}

@@ -54,9 +54,8 @@ instance Rat.instZeroLEOneClass : ZeroLEOneClass ℚ where
   zero_le_one := rfl
 
 instance Rat.instPosMulMono : PosMulMono ℚ where
-  elim := fun r p q h => by
-    simp only [mul_comm]
-    simpa [sub_mul, sub_nonneg] using Rat.mul_nonneg (sub_nonneg.2 h) r.2
+  mul_le_mul_of_nonneg_left r hr p q hpq := by
+    simpa [mul_sub, sub_nonneg] using Rat.mul_nonneg hr (sub_nonneg.2 hpq)
 
 deriving instance CommSemiring for NNRat
 deriving instance LinearOrder for NNRat
@@ -351,14 +350,15 @@ theorem ext_num_den_iff : p = q ↔ p.num = q.num ∧ p.den = q.den :=
 
 See also `Rat.divInt` and `mkRat`. -/
 def divNat (n d : ℕ) : ℚ≥0 :=
-  ⟨.divInt n d, Rat.divInt_nonneg (Int.ofNat_zero_le n) (Int.ofNat_zero_le d)⟩
+  ⟨.divInt n d, Rat.divInt_nonneg (Int.natCast_nonneg n) (Int.natCast_nonneg d)⟩
 
 variable {n₁ n₂ d₁ d₂ : ℕ}
 
 @[simp, norm_cast] lemma coe_divNat (n d : ℕ) : (divNat n d : ℚ) = .divInt n d := rfl
 
 lemma mk_divInt (n d : ℕ) :
-    ⟨.divInt n d, Rat.divInt_nonneg (Int.ofNat_zero_le n) (Int.ofNat_zero_le d)⟩ = divNat n d := rfl
+    ⟨.divInt n d, Rat.divInt_nonneg (Int.natCast_nonneg n) (Int.natCast_nonneg d)⟩ =
+      divNat n d := rfl
 
 lemma divNat_inj (h₁ : d₁ ≠ 0) (h₂ : d₂ ≠ 0) : divNat n₁ d₁ = divNat n₂ d₂ ↔ n₁ * d₂ = n₂ * d₁ := by
   rw [← coe_inj]; simp [Rat.mkRat_eq_iff, h₁, h₂]; norm_cast

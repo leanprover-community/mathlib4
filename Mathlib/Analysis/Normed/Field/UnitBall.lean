@@ -69,8 +69,8 @@ protected theorem Metric.unitBall.coe_eq_zero [Zero 𝕜] [PseudoMetricSpace �
 
 instance Metric.unitBall.instSemigroupWithZero [NonUnitalSeminormedRing 𝕜] :
     SemigroupWithZero (ball (0 : 𝕜) 1) where
-  zero_mul _ := Subtype.eq <| zero_mul _
-  mul_zero _ := Subtype.eq <| mul_zero _
+  zero_mul _ := Subtype.ext <| zero_mul _
+  mul_zero _ := Subtype.ext <| mul_zero _
 
 instance Metric.unitBall.instIsLeftCancelMulZero [NonUnitalSeminormedRing 𝕜]
     [IsLeftCancelMulZero 𝕜] : IsLeftCancelMulZero (ball (0 : 𝕜) 1) :=
@@ -130,8 +130,8 @@ protected lemma Metric.unitClosedBall.coe_eq_zero [Zero 𝕜] [PseudoMetricSpace
 
 instance Metric.unitClosedBall.instSemigroupWithZero [NonUnitalSeminormedRing 𝕜] :
     SemigroupWithZero (closedBall (0 : 𝕜) 1) where
-  zero_mul _ := Subtype.eq <| zero_mul _
-  mul_zero _ := Subtype.eq <| mul_zero _
+  zero_mul _ := Subtype.ext <| zero_mul _
+  mul_zero _ := Subtype.ext <| mul_zero _
 
 /-- Closed unit ball in a seminormed ring as a bundled `Submonoid`. -/
 def Submonoid.unitClosedBall (𝕜 : Type*) [SeminormedRing 𝕜] [NormOneClass 𝕜] : Submonoid 𝕜 :=
@@ -270,7 +270,7 @@ theorem unitSphereToUnits_apply_coe [NormedDivisionRing 𝕜] (x : sphere (0 : �
 
 theorem unitSphereToUnits_injective [NormedDivisionRing 𝕜] :
     Function.Injective (unitSphereToUnits 𝕜) := fun x y h =>
-  Subtype.eq <| by convert congr_arg Units.val h
+  Subtype.ext <| by convert congr_arg Units.val h
 
 instance Metric.unitSphere.instGroup [NormedDivisionRing 𝕜] : Group (sphere (0 : 𝕜) 1) :=
   unitSphereToUnits_injective.group (unitSphereToUnits 𝕜) (Units.ext rfl)

@@ -312,7 +312,7 @@ lemma genWeightSpace_nsmul_add_ne_bot_of_le {n} (hn : n ≤ chainTopCoeff α β)
   by_cases hα : α = 0
   · rw [hα, smul_zero, zero_add]; exact β.genWeightSpace_ne_bot
   classical
-  rw [← Nat.lt_succ, Nat.succ_eq_add_one, chainTopCoeff_add_one _ _ hα] at hn
+  rw [← Nat.lt_succ_iff, Nat.succ_eq_add_one, chainTopCoeff_add_one _ _ hα] at hn
   exact Nat.find_min (eventually_genWeightSpace_smul_add_eq_bot M α β hα).exists hn
 
 lemma genWeightSpace_zsmul_add_ne_bot {n : ℤ}

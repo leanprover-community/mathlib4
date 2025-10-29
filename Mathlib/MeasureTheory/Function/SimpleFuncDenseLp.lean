@@ -402,7 +402,7 @@ section Instances
 
 
 protected theorem eq' {f g : Lp.simpleFunc E p μ} : (f : α →ₘ[μ] E) = (g : α →ₘ[μ] E) → f = g :=
-  Subtype.eq ∘ Subtype.eq
+  Subtype.ext ∘ Subtype.ext
 
 /-! Implementation note:  If `Lp.simpleFunc E p μ` were defined as a `𝕜`-submodule of `Lp E p μ`,
 then the next few lemmas, putting a normed `𝕜`-group structure on `Lp.simpleFunc E p μ`, would be
@@ -703,11 +703,6 @@ variable {G : Type*} [NormedAddCommGroup G]
 
 theorem coeFn_le [PartialOrder G] (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← Lp.coeFn_le]
-
-instance instAddLeftMono [PartialOrder G] [IsOrderedAddMonoid G] :
-    AddLeftMono (Lp.simpleFunc G p μ) := by
-  refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
-  exact add_le_add_left hg₁₂ f
 
 variable (p μ G)
 

@@ -207,6 +207,10 @@ theorem singleton_nonempty (a : α) : ({a} : Set α).Nonempty :=
 theorem singleton_ne_empty (a : α) : ({a} : Set α) ≠ ∅ :=
   (singleton_nonempty _).ne_empty
 
+@[simp]
+theorem empty_ne_singleton (a : α) : ∅ ≠ ({a} : Set α) :=
+  (singleton_ne_empty a).symm
+
 theorem empty_ssubset_singleton : (∅ : Set α) ⊂ {a} :=
   (singleton_nonempty _).empty_ssubset
 
@@ -251,7 +255,7 @@ theorem notMem_singleton_empty {s : Set α} : s ∉ ({∅} : Set (Set α)) ↔ s
 @[deprecated (since := "2025-05-24")] alias nmem_singleton_empty := notMem_singleton_empty
 
 instance uniqueSingleton (a : α) : Unique (↥({a} : Set α)) :=
-  ⟨⟨⟨a, mem_singleton a⟩⟩, fun ⟨_, h⟩ => Subtype.eq h⟩
+  ⟨⟨⟨a, mem_singleton a⟩⟩, fun ⟨_, h⟩ => Subtype.ext h⟩
 
 theorem eq_singleton_iff_unique_mem : s = {a} ↔ a ∈ s ∧ ∀ x ∈ s, x = a :=
   Subset.antisymm_iff.trans <| and_comm.trans <| and_congr_left' singleton_subset_iff
@@ -292,7 +296,7 @@ theorem Nonempty.subset_singleton_iff (h : s.Nonempty) : s ⊆ {a} ↔ s = {a} :
 theorem ssubset_singleton_iff {s : Set α} {x : α} : s ⊂ {x} ↔ s = ∅ := by
   rw [ssubset_iff_subset_ne, subset_singleton_iff_eq, or_and_right, and_not_self_iff, or_false,
     and_iff_left_iff_imp]
-  exact fun h => h ▸ (singleton_ne_empty _).symm
+  exact fun h => h ▸ empty_ne_singleton _
 
 theorem eq_empty_of_ssubset_singleton {s : Set α} {x : α} (hs : s ⊂ {x}) : s = ∅ :=
   ssubset_singleton_iff.1 hs

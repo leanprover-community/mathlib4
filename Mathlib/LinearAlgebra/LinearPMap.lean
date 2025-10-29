@@ -224,7 +224,7 @@ instance inhabited : Inhabited (E →ₗ.[R] F) :=
 
 instance semilatticeInf : SemilatticeInf (E →ₗ.[R] F) where
   le := (· ≤ ·)
-  le_refl f := ⟨le_refl f.domain, fun _ _ h => Subtype.eq h ▸ rfl⟩
+  le_refl f := ⟨le_refl f.domain, fun _ _ h => Subtype.ext h ▸ rfl⟩
   le_trans := fun _ _ _ ⟨fg_le, fg_eq⟩ ⟨gh_le, gh_eq⟩ =>
     ⟨le_trans fg_le gh_le, fun x _ hxz =>
       have hxy : (x : E) = inclusion fg_le x := rfl
@@ -237,16 +237,16 @@ instance semilatticeInf : SemilatticeInf (E →ₗ.[R] F) where
       ⟨fg_le hx, fh_le hx,
       (fg_eq (x := ⟨x, hx⟩) rfl).symm.trans (fh_eq rfl)⟩,
       fun x ⟨y, yg, hy⟩ h => fg_eq h⟩
-  inf_le_left f _ := ⟨fun _ hx => hx.fst, fun _ _ h => congr_arg f <| Subtype.eq <| h⟩
+  inf_le_left f _ := ⟨fun _ hx => hx.fst, fun _ _ h => congr_arg f <| Subtype.ext <| h⟩
   inf_le_right _ g :=
-    ⟨fun _ hx => hx.snd.fst, fun ⟨_, _, _, hx⟩ _ h => hx.trans <| congr_arg g <| Subtype.eq <| h⟩
+    ⟨fun _ hx => hx.snd.fst, fun ⟨_, _, _, hx⟩ _ h => hx.trans <| congr_arg g <| Subtype.ext <| h⟩
 
 instance orderBot : OrderBot (E →ₗ.[R] F) where
   bot := ⊥
   bot_le f :=
     ⟨bot_le, fun x y h => by
-      have hx : x = 0 := Subtype.eq ((mem_bot R).1 x.2)
-      have hy : y = 0 := Subtype.eq (h.symm.trans (congr_arg _ hx))
+      have hx : x = 0 := Subtype.ext ((mem_bot R).1 x.2)
+      have hy : y = 0 := Subtype.ext (h.symm.trans (congr_arg _ hx))
       rw [hx, hy, map_zero, map_zero]⟩
 
 theorem le_of_eqLocus_ge {f g : E →ₗ.[R] F} (H : f.domain ≤ f.eqLocus g) : f ≤ g :=
@@ -327,8 +327,8 @@ protected theorem sup_le {f g h : E →ₗ.[R] F}
 theorem sup_h_of_disjoint (f g : E →ₗ.[R] F) (h : Disjoint f.domain g.domain) (x : f.domain)
     (y : g.domain) (hxy : (x : E) = y) : f x = g y := by
   rw [disjoint_def] at h
-  have hy : y = 0 := Subtype.eq (h y (hxy ▸ x.2) y.2)
-  have hx : x = 0 := Subtype.eq (hxy.trans <| congr_arg _ hy)
+  have hy : y = 0 := Subtype.ext (h y (hxy ▸ x.2) y.2)
+  have hx : x = 0 := Subtype.ext (hxy.trans <| congr_arg _ hy)
   simp [*]
 
 /-! ### Algebraic operations -/
@@ -374,7 +374,6 @@ instance instIsScalarTower [SMul M N] [IsScalarTower M N F] : IsScalarTower M N 
   ⟨fun a b f => ext' <| smul_assoc a b f.toFun⟩
 
 instance instMulAction : MulAction M (E →ₗ.[R] F) where
-  smul := (· • ·)
   one_smul := fun ⟨_s, f⟩ => ext' <| one_smul M f
   mul_smul a b f := ext' <| mul_smul a b f.toFun
 

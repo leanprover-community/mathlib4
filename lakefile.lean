@@ -159,6 +159,17 @@ post_update pkg do
   if rootPkg.name = pkg.name then
     return -- do not run in Mathlib itself
   if (← IO.getEnv "MATHLIB_NO_CACHE_ON_UPDATE") != some "1" then
+    -- Check if Lake version matches toolchain version
+    let toolchainFile := rootPkg.dir / "lean-toolchain"
+    let toolchainContent ← IO.FS.readFile toolchainFile
+    let toolchainVersion := match toolchainContent.trim.splitOn ":" with
+      | [_, version] => version
+      | _ => toolchainContent.trim  -- fallback to full content if format is unexpected
+    if Lean.versionString ≠ toolchainVersion then
+      IO.println s!"Not running `lake exe cache get` yet, \
+        as the `lake` version does not match the toolchain version in the project.\n\
+        You should run `lake exe cache get` manually."
+      return
     let exeFile ← runBuild cache.fetch
     -- Run the command in the root package directory,
     -- which is the one that holds the .lake folder and lean-toolchain file.

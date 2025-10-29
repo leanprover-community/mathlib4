@@ -163,7 +163,7 @@ lemma ramificationIdx_ne_one_iff (hp : map f p ≤ P) :
     have := Nat.find_min H (m := 1) (by omega)
     push_neg at this
     obtain ⟨k, hk, h1k⟩ := this
-    exact hk.trans (Ideal.pow_le_pow_right (Nat.succ_le.mpr h1k))
+    exact hk.trans (Ideal.pow_le_pow_right (Nat.succ_le_iff.mpr h1k))
   · intro he
     have := Nat.find_spec H 2 he
     omega
@@ -242,8 +242,7 @@ lemma ramificationIdx_eq_one_iff
     (hp : P ≠ ⊥) (hpP : p.map (algebraMap R S) ≤ P) :
     ramificationIdx (algebraMap R S) p P = 1 ↔
       p.map (algebraMap R (Localization.AtPrime P)) = maximalIdeal (Localization.AtPrime P) := by
-  refine ⟨?_, ramificationIdx_eq_one_of_map_localization hpP hp
-    (primeCompl_le_nonZeroDivisors _)⟩
+  refine ⟨?_, ramificationIdx_eq_one_of_map_localization hpP hp (primeCompl_le_nonZeroDivisors _)⟩
   let Sₚ := Localization.AtPrime P
   rw [← not_ne_iff (b := 1), ramificationIdx_ne_one_iff hpP, pow_two]
   intro H₁
@@ -252,6 +251,7 @@ lemma ramificationIdx_eq_one_iff
   rw [IsScalarTower.algebraMap_eq _ S, ← Ideal.map_map, ha, Ideal.map_mul,
     Localization.AtPrime.map_eq_maximalIdeal]
   convert Ideal.mul_top _
+  on_goal 2 => infer_instance
   rw [← not_ne_iff, IsLocalization.map_algebraMap_ne_top_iff_disjoint P.primeCompl]
   simpa [primeCompl, Set.disjoint_compl_left_iff_subset]
 
@@ -319,7 +319,8 @@ end DecEq
 section absNorm
 
 /-- The absolute norm of an ideal `P` above a rational prime `p` is
-`|p| ^ ((span {p}).inertiaDeg P)`. -/
+`|p| ^ ((span {p}).inertiaDeg P)`.
+See `absNorm_eq_pow_inertiaDeg'` for a version with `p` of type `ℕ`. -/
 lemma absNorm_eq_pow_inertiaDeg [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℤ}
     (P : Ideal R) [P.LiesOver (span {p})] (hp : Prime p) :
     absNorm P = p.natAbs ^ ((span {p}).inertiaDeg P) := by
@@ -330,6 +331,14 @@ lemma absNorm_eq_pow_inertiaDeg [IsDedekindDomain R] [Module.Free ℤ R] [Module
   rw [inertiaDeg_algebraMap, absNorm_apply, Submodule.cardQuot_apply,
     Module.natCard_eq_pow_finrank (K := ℤ ⧸ span {p})]
   simp [Nat.card_congr (Int.quotientSpanEquivZMod p).toEquiv]
+
+/-- The absolute norm of an ideal `P` above a rational (positive) prime `p` is
+`p ^ ((span {p}).inertiaDeg P)`.
+See `absNorm_eq_pow_inertiaDeg` for a version with `p` of type `ℤ`. -/
+lemma absNorm_eq_pow_inertiaDeg' [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℕ}
+    (P : Ideal R) [P.LiesOver (span {(p : ℤ)})] (hp : p.Prime) :
+    absNorm P = p ^ ((span {(p : ℤ)}).inertiaDeg P) :=
+  absNorm_eq_pow_inertiaDeg P ( Nat.prime_iff_prime_int.mp hp)
 
 end absNorm
 section FinrankQuotientMap

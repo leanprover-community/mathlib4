@@ -96,7 +96,7 @@ theorem mul_fromLeftInv (x : S.leftInv) : (x : M) * S.fromLeftInv x = 1 :=
 
 @[to_additive (attr := simp)]
 theorem fromLeftInv_one : S.fromLeftInv 1 = 1 :=
-  (one_mul _).symm.trans (Subtype.eq <| S.mul_fromLeftInv 1)
+  (one_mul _).symm.trans (Subtype.ext <| S.mul_fromLeftInv 1)
 
 end Monoid
 

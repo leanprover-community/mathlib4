@@ -205,7 +205,7 @@ def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α 
       (show isSome (decode₂ α n.1) by obtain ⟨x, hx⟩ := n.2; rw [← hx, encodek₂]; exact rfl)
   left_inv a := by dsimp; rw [← Option.some_inj, Option.some_get, encodek₂]
   right_inv := fun ⟨n, x, hx⟩ => by
-    apply Subtype.eq
+    apply Subtype.ext
     dsimp
     conv =>
       rhs

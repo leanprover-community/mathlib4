@@ -101,7 +101,7 @@ instance (r : α → α → Prop) [IsIrrefl α r] (p : α → Prop) : IsIrrefl _
   ⟨fun x => @IsIrrefl.irrefl α r _ x⟩
 
 instance (r : α → α → Prop) [IsTrichotomous α r] (p : α → Prop) : IsTrichotomous _ (Subrel r p) :=
-  ⟨fun x y => by rw [Subtype.eq_iff]; exact @IsTrichotomous.trichotomous α r _ x y⟩
+  ⟨fun x y => by rw [Subtype.ext_iff]; exact @IsTrichotomous.trichotomous α r _ x y⟩
 
 instance (r : α → α → Prop) [IsWellFounded α r] (p : α → Prop) : IsWellFounded _ (Subrel r p) :=
   (Subrel.relEmbedding r p).isWellFounded
@@ -111,6 +111,13 @@ instance (r : α → α → Prop) [IsStrictOrder α r] (p : α → Prop) : IsStr
 instance (r : α → α → Prop) [IsWellOrder α r] (p : α → Prop) : IsWellOrder _ (Subrel r p) where
 
 end Subrel
+
+/-- If a proposition holds for all elements, then the `Subrel` is equivalent to the original
+relation. -/
+@[simps! apply symm_apply]
+def RelIso.subrelUnivIso {p : α → Prop} (h : ∀ x, p x) : Subrel r p ≃r r where
+  toEquiv := Equiv.subtypeUnivEquiv h
+  map_rel_iff' := by simp
 
 /-- Restrict the codomain of a relation embedding. -/
 def RelEmbedding.codRestrict (p : Set β) (f : r ↪r s) (H : ∀ a, f a ∈ p) : r ↪r Subrel s (· ∈ p) :=

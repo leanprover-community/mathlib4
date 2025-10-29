@@ -695,7 +695,7 @@ lemma bijOn_of_subsingleton [Subsingleton α] (f : α → α) (s : Set α) : Bij
 theorem BijOn.bijective (h : BijOn f s t) : Bijective (h.mapsTo.restrict f s t) :=
   ⟨fun x y h' => Subtype.ext <| h.injOn x.2 y.2 <| Subtype.ext_iff.1 h', fun ⟨_, hy⟩ =>
     let ⟨x, hx, hxy⟩ := h.surjOn hy
-    ⟨⟨x, hx⟩, Subtype.eq hxy⟩⟩
+    ⟨⟨x, hx⟩, Subtype.ext hxy⟩⟩
 
 theorem bijective_iff_bijOn_univ : Bijective f ↔ BijOn f univ univ :=
   Iff.intro
@@ -959,7 +959,7 @@ theorem _root_.Function.invFunOn_injOn_image [Nonempty α] (f : α → β) (s : 
 
 theorem _root_.Function.invFunOn_image_image_subset [Nonempty α] (f : α → β) (s : Set α) :
     (invFunOn f s) '' (f '' s) ⊆ s := by
-  rintro _ ⟨_, ⟨x,hx,rfl⟩, rfl⟩; exact invFunOn_apply_mem hx
+  rintro _ ⟨_, ⟨x, hx, rfl⟩, rfl⟩; exact invFunOn_apply_mem hx
 
 theorem SurjOn.rightInvOn_invFunOn [Nonempty α] (h : SurjOn f s t) :
     RightInvOn (invFunOn f s) f t := fun _y hy => invFunOn_eq <| h hy
@@ -1010,7 +1010,7 @@ variable (f s)
 lemma exists_subset_bijOn : ∃ s' ⊆ s, BijOn f s' (f '' s) :=
   surjOn_iff_exists_bijOn_subset.mp (surjOn_image f s)
 
-lemma exists_image_eq_and_injOn : ∃ u, f '' u =  f '' s ∧ InjOn f u :=
+lemma exists_image_eq_and_injOn : ∃ u, f '' u = f '' s ∧ InjOn f u :=
   let ⟨u, _, hfu⟩ := exists_subset_bijOn s f
   ⟨u, hfu.image_eq, hfu.injOn⟩
 

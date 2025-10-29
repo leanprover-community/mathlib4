@@ -304,7 +304,7 @@ lemma IsChain.cons_of_ne_nil {x : α} {l : List α} (l_ne_nil : l ≠ [])
     (hl : IsChain R l) (h : R x (l.head l_ne_nil)) : IsChain R (x :: l) := by
   refine hl.cons fun y hy ↦ ?_
   convert h
-  simpa [l.head?_eq_head l_ne_nil] using hy.symm
+  simpa [l.head?_eq_some_head l_ne_nil] using hy.symm
 
 @[deprecated (since := "2025-09-24")] alias Chain'.cons_of_ne_nil := IsChain.cons_of_ne_nil
 

@@ -22,9 +22,8 @@ As such this function is not to be considered reliable, especially after future 
 This should be used with caution and basically only for demo / testing purposes
 and not in compiled code without further testing. -/
 def sleepAtLeastHeartbeats (n : Nat) : IO Unit := do
-  let i ← IO.getNumHeartbeats
-  while (← IO.getNumHeartbeats) < i + n do
-    continue
+  -- TODO: adjust docstring
+  IO.addHeartbeats n
 
 /-- do nothing for at least n heartbeats -/
 elab "sleep_heartbeats " n:num : tactic => do

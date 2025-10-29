@@ -410,6 +410,40 @@ theorem prod_Ioi_zero (f : Fin (n + 1) → M) :
 
 end succ
 
+/-- The product of `g i j` over `i j : Fin (n + 1)`, `i ≠ j`,
+is equal to the product of `g i j * g j i` over `i < j`.
+
+The additive version of this lemma is useful for some proofs about differential forms.
+In this application, the function has the signature `f : Fin (n + 1) → Fin n → M`,
+where `f i j` means `g i (Fin.succAbove i j)` in the informal statements.
+
+Similarly, the product of `g i j * g j i` over `i < j`
+is written as `f (Fin.castSucc i) j * f (Fin.succ j) i` over `i j : Fin n`, `j ≥ i`.
+-/
+@[to_additive /-- The sum of `g i j` over `i j : Fin (n + 1)`, `i ≠ j`,
+is equal to the sum of `g i j + g j i` over `i < j`.
+
+This lemma is useful for some proofs about differential forms.
+In this application, the function has the signature `f : Fin (n + 1) → Fin n → M`,
+where `f i j` means `g i (Fin.succAbove i j)` in the informal statements.
+
+Similarly, the sum of `g i j + g j i` over `i < j`
+is written as `f (Fin.castSucc i) j + f (Fin.succ j) i` over `i j : Fin n`, `j ≥ i`.
+-/]
+theorem prod_prod_eq_prod_triangle_mul (f : Fin (n + 1) → Fin n → M) :
+    ∏ i, ∏ j, f i j = ∏ i : Fin n, ∏ j ≥ i, (f i.castSucc j * f j.succ i) := calc
+  _ = (∏ i, ∏ j with i ≤ j.castSucc, f i j) * ∏ i, ∏ j with j.castSucc < i, f i j := by
+    simp only [← Finset.prod_mul_distrib, ← not_le, Finset.prod_filter_mul_prod_filter_not]
+  _ = (∏ i, ∏ j ≥ i, f i.castSucc j) * ∏ i, ∏ j ≤ i, f i.succ j := by
+    rw [Fin.prod_univ_castSucc, Fin.prod_univ_succ]
+    simp [Finset.filter_le_eq_Ici, Finset.filter_ge_eq_Iic]
+  _ = (∏ i, ∏ j ≥ i, f i.castSucc j) * ∏ i, ∏ j ≥ i, f j.succ i := by
+    congr 1
+    apply Finset.prod_comm'
+    simp
+  _ = ∏ i : Fin n, ∏ j ≥ i, (f i.castSucc j * f j.succ i) := by
+    simp only [Finset.prod_mul_distrib]
+
 end CommMonoid
 
 theorem sum_pow_mul_eq_add_pow {n : ℕ} {R : Type*} [CommSemiring R] (a b : R) :
@@ -442,7 +476,7 @@ theorem partialProd_zero (f : Fin n → M) : partialProd f 0 = 1 := by simp [par
 @[to_additive]
 theorem partialProd_succ (f : Fin n → M) (j : Fin n) :
     partialProd f j.succ = partialProd f (Fin.castSucc j) * f j := by
-  simp [partialProd, List.take_succ]
+  simp [partialProd, List.take_add_one]
 
 @[to_additive]
 theorem partialProd_succ' (f : Fin (n + 1) → M) (j : Fin (n + 1)) :
