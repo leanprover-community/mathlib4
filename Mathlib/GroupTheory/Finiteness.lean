@@ -577,12 +577,11 @@ theorem CommMonoid.fg_of_wellQuasiOrderedLE : Monoid.FG M where
   fg_top := Submonoid.fg_of_divisive (by simp)
 
 /-- If `f` `g` are homomorphisms from a canonically ordered and well-quasi-ordered monoid `M` to a
-cancellative additive monoid `N`, the submonoid of `M` on which `f` and `g` agree is finitely
-generated. -/
+cancellative monoid `N`, the submonoid of `M` on which `f` and `g` agree is finitely generated. -/
 @[to_additive /-- If `f` `g` are homomorphisms from a canonically ordered and well-quasi-ordered
-additive monoid `M` to a cancellative monoid `N`, the submonoid of `M` on which `f` and `g` agree is
-finitely generated. When `M` and `N` are `ℕ ^ k`, this is also known as a version of **Gordan's
-lemma**. -/]
+additive monoid `M` to a cancellative additive monoid `N`, the submonoid of `M` on which `f` and `g`
+agree is finitely generated. When `M` and `N` are `ℕ ^ k`, this is also known as a version of
+**Gordan's lemma**. -/]
 theorem Submonoid.fg_eqLocusM [Monoid N] [IsCancelMul N] (f g : M →* N) : (f.eqLocusM g).FG :=
   fg_of_divisive (by simp_all)
 
