@@ -163,8 +163,10 @@ variable [Inv α] {f g : Filter α} {s : Set α} {a : α}
 
 /-- The inverse of a filter is the pointwise preimage under `⁻¹` of its sets. -/
 @[to_additive /-- The negation of a filter is the pointwise preimage under `-` of its sets. -/]
-instance instInv : Inv (Filter α) :=
+def instInv : Inv (Filter α) :=
   ⟨map Inv.inv⟩
+
+scoped[Pointwise] attribute [instance] instInv instNeg
 
 @[to_additive (attr := simp)]
 protected theorem map_inv : f.map Inv.inv = f⁻¹ :=
@@ -211,6 +213,14 @@ protected lemma comap_inv : comap Inv.inv f = f⁻¹ :=
 @[to_additive]
 theorem inv_mem_inv (hs : s ∈ f) : s⁻¹ ∈ f⁻¹ := by rwa [mem_inv, inv_preimage, inv_inv]
 
+@[to_additive]
+protected theorem HasBasis.inv {ι : Sort*} {p : ι → Prop} {s : ι → Set α}
+    (h : f.HasBasis p s) : f⁻¹.HasBasis p fun i ↦ (s i)⁻¹ := by
+  simpa using h.map Inv.inv
+
+@[to_additive]
+theorem hasBasis_inv : f⁻¹.HasBasis (· ∈ f) (·⁻¹) := f.basis_sets.inv
+
 /-- Inversion is involutive on `Filter α` if it is on `α`. -/
 @[to_additive /-- Negation is involutive on `Filter α` if it is on `α`. -/]
 protected def instInvolutiveInv : InvolutiveInv (Filter α) :=
@@ -252,6 +262,17 @@ protected def instMul : Mul (Filter α) :=
   fun f g => { map₂ (· * ·) f g with sets := { s | ∃ t₁ ∈ f, ∃ t₂ ∈ g, t₁ * t₂ ⊆ s } }⟩
 
 scoped[Pointwise] attribute [instance] Filter.instMul Filter.instAdd
+
+@[to_additive]
+theorem HasBasis.mul {ιf ιg : Type*} {pf : ιf → Prop} {sf : ιf → Set α}
+    {pg : ιg → Prop} {sg : ιg → Set α} (hf : f.HasBasis pf sf) (hg : g.HasBasis pg sg) :
+    (f * g).HasBasis (fun i : ιf × ιg ↦ pf i.1 ∧ pg i.2) fun i ↦ sf i.1 * sg i.2 :=
+  hf.map₂ (· * ·) hg
+
+@[to_additive]
+theorem hasBasis_mul :
+    (f * g).HasBasis (fun st : Set α × Set α ↦ st.1 ∈ f ∧ st.2 ∈ g) (fun st ↦ st.1 * st.2) :=
+  f.basis_sets.mul g.basis_sets
 
 @[to_additive (attr := simp)]
 theorem map₂_mul : map₂ (· * ·) f g = f * g :=
@@ -356,6 +377,17 @@ protected def instDiv : Div (Filter α) :=
   fun f g => { map₂ (· / ·) f g with sets := { s | ∃ t₁ ∈ f, ∃ t₂ ∈ g, t₁ / t₂ ⊆ s } }⟩
 
 scoped[Pointwise] attribute [instance] Filter.instDiv Filter.instSub
+
+@[to_additive]
+theorem HasBasis.div {ιf ιg : Type*} {pf : ιf → Prop} {sf : ιf → Set α}
+    {pg : ιg → Prop} {sg : ιg → Set α} (hf : f.HasBasis pf sf) (hg : g.HasBasis pg sg) :
+    (f / g).HasBasis (fun i : ιf × ιg ↦ pf i.1 ∧ pg i.2) fun i ↦ sf i.1 / sg i.2 :=
+  hf.map₂ (· / ·) hg
+
+@[to_additive]
+theorem hasBasis_div :
+    (f / g).HasBasis (fun st : Set α × Set α ↦ st.1 ∈ f ∧ st.2 ∈ g) (fun st ↦ st.1 / st.2) :=
+  f.basis_sets.div g.basis_sets
 
 @[to_additive (attr := simp)]
 theorem map₂_div : map₂ (· / ·) f g = f / g :=
@@ -761,6 +793,17 @@ protected def instSMul : SMul (Filter α) (Filter β) :=
   fun f g => { map₂ (· • ·) f g with sets := { s | ∃ t₁ ∈ f, ∃ t₂ ∈ g, t₁ • t₂ ⊆ s } }⟩
 
 scoped[Pointwise] attribute [instance] Filter.instSMul Filter.instVAdd
+
+@[to_additive]
+theorem HasBasis.smul {ιf ιg : Type*} {pf : ιf → Prop} {sf : ιf → Set α}
+    {pg : ιg → Prop} {sg : ιg → Set β} (hf : f.HasBasis pf sf) (hg : g.HasBasis pg sg) :
+    (f • g).HasBasis (fun i : ιf × ιg ↦ pf i.1 ∧ pg i.2) fun i ↦ sf i.1 • sg i.2 :=
+  hf.map₂ (· • ·) hg
+
+theorem hasBasis_smul :
+    (f • g).HasBasis (fun st : Set α × Set β ↦ st.1 ∈ f ∧ st.2 ∈ g) (fun st ↦ st.1 • st.2) :=
+  f.basis_sets.smul g.basis_sets
+
 
 @[to_additive (attr := simp)]
 theorem map₂_smul : map₂ (· • ·) f g = f • g :=
