@@ -50,13 +50,9 @@ structure IsExtension (i : N →ₗ⁅R⁆ L) (p : L →ₗ⁅R⁆ M) : Prop whe
   range_eq_top : p.range = ⊤
   exact : i.range = p.ker
 
-lemma range_eq_ker_iff (i : N →ₗ⁅R⁆ L) (p : L →ₗ⁅R⁆ M) : i.range = p.ker ↔ Function.Exact i p := by
-  constructor
-  · intro h x
-    rw [← LieHom.coe_range, h]
-    rfl
-  · intro h
-    exact (LieSubalgebra.ext (LieIdeal.toLieSubalgebra R L p.ker) i.range h).symm
+lemma _root_.LieHom.range_eq_ker_iff (i : N →ₗ⁅R⁆ L) (p : L →ₗ⁅R⁆ M) :
+    i.range = p.ker ↔ Function.Exact i p :=
+  ⟨fun h x ↦ by simp [← LieHom.coe_range, h], fun h ↦ (p.ker.toLieSubalgebra.ext i.range h).symm⟩
 
 variable (R N M) in
 /-- The type of all Lie extensions of `M` by `N`.  That is, short exact sequences of `R`-Lie algebra
@@ -96,8 +92,6 @@ lemma IsExtension.range_eq_ker (i : N →ₗ⁅R⁆ L) (p : L →ₗ⁅R⁆ M) (
 end IsExtension
 
 namespace Extension
-
-section
 
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing N] [LieAlgebra R N] [LieRing M]
 [LieAlgebra R M] (E : Extension R N M)
@@ -214,52 +208,54 @@ instance : Group (E.Equiv E) where
 
 end Equiv
 
-end
+end Extension
 
 section Algebra
 
 open LieModule.Cohomology
 
-variable [CommRing R] [LieRing M] [LieAlgebra R M]
+variable [CommRing R] [LieRing L] [LieAlgebra R L]
 
 /-- A one-field structure giving a type synonym for a direct product. We use this to describe an
 alternative Lie algebra structure on the product, where the bracket is shifted by a 2-cocycle. -/
-structure ofTwoCocycleAlg {R M N} [CommRing R] [LieRing M] [LieAlgebra R M] [AddCommGroup N]
-    [Module R N] [LieRingModule M N] [LieModule R M N]
-    (c : twoCocycle R M N) where
+structure ofTwoCocycle {R L M} [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M]
+    [Module R M] [LieRingModule L M] [LieModule R L M]
+    (c : twoCocycle R L M) where
   /-- The underlying type. -/
-  carrier : M × N
+  carrier : L × M
 
-variable [AddCommGroup N] [Module R N] [LieRingModule M N] [LieModule R M N]
-(c : twoCocycle R M N)
+namespace twoCocycle
+
+variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+(c : twoCocycle R L M)
 
 /-- An equivalence between the direct product and the corresponding one-field structure. This is
 used to transfer the additive and scalar-multiple structure on the direct product to the type
 synonym. -/
-def ofProd : M × N ≃ ofTwoCocycleAlg c where
+def ofProd : L × M ≃ ofTwoCocycle c where
   toFun a := ⟨ a ⟩
   invFun a := a.carrier
 
 -- transport instances along equivalence!
-instance : AddCommGroup (ofTwoCocycleAlg c) := (ofProd c).symm.addCommGroup
+instance : AddCommGroup (ofTwoCocycle c) := (ofProd c).symm.addCommGroup
 
-instance : Module R (ofTwoCocycleAlg c) := (ofProd c).symm.module R
+instance : Module R (ofTwoCocycle c) := (ofProd c).symm.module R
 
-@[simp] lemma of_zero : ofProd c (0 : M × N) = 0 := rfl
-@[simp] lemma of_add (x y : M × N) : ofProd c (x + y) = ofProd c x + ofProd c y := rfl
-@[simp] lemma of_smul (r : R) (x : M × N) : (ofProd c) (r • x) = r • ofProd c x := rfl
+@[simp] lemma of_zero : ofProd c (0 : L × M) = 0 := rfl
+@[simp] lemma of_add (x y : L × M) : ofProd c (x + y) = ofProd c x + ofProd c y := rfl
+@[simp] lemma of_smul (r : R) (x : L × M) : (ofProd c) (r • x) = r • ofProd c x := rfl
 
-@[simp] lemma of_symm_zero : (ofProd c).symm (0 : ofTwoCocycleAlg c) = 0 := rfl
-@[simp] lemma of_symm_add (x y : ofTwoCocycleAlg c) :
+@[simp] lemma of_symm_zero : (ofProd c).symm (0 : ofTwoCocycle c) = 0 := rfl
+@[simp] lemma of_symm_add (x y : ofTwoCocycle c) :
   (ofProd c).symm (x + y) = (ofProd c).symm x + (ofProd c).symm y := rfl
-@[simp] lemma of_symm_smul (r : R) (x : ofTwoCocycleAlg c) :
+@[simp] lemma of_symm_smul (r : R) (x : ofTwoCocycle c) :
   (ofProd c).symm (r • x) = r • (ofProd c).symm x := rfl
 
-@[simp] lemma of_nsmul (n : ℕ) (x : M × N) : (ofProd c) (n • x) = n • (ofProd c) x := rfl
-@[simp] lemma of_symm_nsmul (n : ℕ) (x : ofTwoCocycleAlg c) :
+@[simp] lemma of_nsmul (n : ℕ) (x : L × M) : (ofProd c) (n • x) = n • (ofProd c) x := rfl
+@[simp] lemma of_symm_nsmul (n : ℕ) (x : ofTwoCocycle c) :
   (ofProd c).symm (n • x) = n • (ofProd c).symm x := rfl
 
-instance : LieRing (ofTwoCocycleAlg c) where
+instance : LieRing (ofTwoCocycle c) where
   bracket x y := ofProd c (⁅((ofProd c).symm x).1, ((ofProd c).symm y).1⁆,
     c.1.val ((ofProd c).symm x).1 ((ofProd c).symm y).1 +
     ⁅((ofProd c).symm x).1, ((ofProd c).symm y).2⁆ - ⁅((ofProd c).symm y).1, ((ofProd c).symm x).2⁆)
@@ -282,7 +278,7 @@ instance : LieRing (ofTwoCocycleAlg c) where
       sub_add_cancel, Prod.mk.injEq, true_and, lie_add, lie_sub]
     have hc := c.2
     rw [mem_twoCocycle_iff] at hc
-    have := d₂₃_apply R M N c ((ofProd c).symm x).1 ((ofProd c).symm y).1 ((ofProd c).symm z).1
+    have := d₂₃_apply R L M c ((ofProd c).symm x).1 ((ofProd c).symm y).1 ((ofProd c).symm z).1
     simp only [hc, LinearMap.zero_apply] at this
     rw [← twoCochain_skew _ _ ⁅((ofProd c).symm x).1, ((ofProd c).symm z).1⁆,
       ← twoCochain_skew _ _ ⁅((ofProd c).symm y).1, ((ofProd c).symm z).1⁆, eq_sub_iff_add_eq,
@@ -290,35 +286,35 @@ instance : LieRing (ofTwoCocycleAlg c) where
     rw [this]
     abel
 
-lemma bracket_ofTwoCocycleAlg {c : twoCocycle R M N} (x y : ofTwoCocycleAlg c) :
+lemma bracket {c : twoCocycle R L M} (x y : ofTwoCocycle c) :
     ⁅x, y⁆ = ofProd c (⁅((ofProd c).symm x).1, ((ofProd c).symm y).1⁆,
       c.1.val ((ofProd c).symm x).1 ((ofProd c).symm y).1 +
       ⁅((ofProd c).symm x).1, ((ofProd c).symm y).2⁆ -
       ⁅((ofProd c).symm y).1, ((ofProd c).symm x).2⁆) :=
   rfl
 
-instance : LieAlgebra R (ofTwoCocycleAlg c) where
+instance : LieAlgebra R (ofTwoCocycle c) where
   lie_smul r x y := by
-    simp only [bracket_ofTwoCocycleAlg]
+    simp only [bracket]
     exact Equiv.congr_arg (by simp [← smul_add, smul_sub])
 
 /-- The Lie algebra map from a central extension derived from a 2-cocycle. -/
 @[simps]
-def twoCocycleProj : (ofTwoCocycleAlg c) →ₗ⁅R⁆ M where
+def twoCocycleProj : (ofTwoCocycle c) →ₗ⁅R⁆ L where
   toLinearMap := {
     toFun x := ((ofProd c).symm x).1
     map_add' _ _ := by simp
     map_smul' _ _ := by simp }
-  map_lie' {x y} := by simp [bracket_ofTwoCocycleAlg]
+  map_lie' {x y} := by simp [bracket]
 
 lemma surjective_of_cocycle : Function.Surjective (twoCocycleProj c) :=
   fun x ↦ Exists.intro ((ofProd c) (x, 0)) rfl
 
 /-- An equivalence of extended Lie algebras induced by translation by a coboundary. -/
 @[simps]
-def LieEquiv.ofCoboundary (c' : twoCocycle R M N) (x : oneCochain R M N)
-    (h : c' = c + d₁₂ R M N x) :
-    LieEquiv R (ofTwoCocycleAlg c) (ofTwoCocycleAlg c') where
+def LieEquiv.ofCoboundary (c' : twoCocycle R L M) (x : oneCochain R L M)
+    (h : c' = c + d₁₂ R L M x) :
+    LieEquiv R (ofTwoCocycle c) (ofTwoCocycle c') where
   toFun y := ofProd c' (((ofProd c).symm y).1, ((ofProd c).symm y).2 - x ((ofProd c).symm y).1)
   map_add' _ _ := by
     simp only [← of_add]
@@ -328,38 +324,42 @@ def LieEquiv.ofCoboundary (c' : twoCocycle R M N) (x : oneCochain R M N)
     simp [smul_sub]
   map_lie' {a b} := by
     refine (Equiv.apply_eq_iff_eq_symm_apply (ofProd c')).mpr ?_
-    simp only [bracket_ofTwoCocycleAlg, Equiv.symm_apply_apply, h, Submodule.coe_add,
-      LinearMap.add_apply, Prod.mk.injEq, true_and]
-    simp only [twoCochain_val_apply (d₁₂ R M N x), d₁₂_apply_apply, lie_sub]
+    simp only [bracket, Equiv.symm_apply_apply, h, Submodule.coe_add, LinearMap.add_apply,
+      Prod.mk.injEq, true_and]
+    simp only [twoCochain_val_apply (d₁₂ R L M x), d₁₂_apply_apply, lie_sub]
     abel
   invFun z := ofProd c (((ofProd c').symm z).1, ((ofProd c').symm z).2 + x ((ofProd c').symm z).1)
   left_inv y := by simp
   right_inv z := by simp
 
+end twoCocycle
+
 end Algebra
+
+namespace Extension
 
 section ofTwoCocycle
 
-open LieModule.Cohomology
+open LieModule.Cohomology twoCocycle
 
-variable [CommRing R] [LieRing M] [LieAlgebra R M] [LieRing N] [LieAlgebra R N] [IsLieAbelian N]
-[LieRingModule M N] [LieModule R M N] (c : twoCocycle R M N)
+variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing M] [LieAlgebra R M] [IsLieAbelian M]
+[LieRingModule L M] [LieModule R L M] (c : twoCocycle R L M)
 
 /-- An extension of Lie algebras defined by a 2-cocycle. -/
-def ofTwoCocycle : Extension R N M where
-  L := ofTwoCocycleAlg c
+def ofTwoCocycle : Extension R M L where
+  L := LieAlgebra.ofTwoCocycle c
   instLieRing := inferInstance
   instLieAlgebra := inferInstance
   incl :=
     { toFun x := ofProd c (0, x)
       map_add' _ _ := by simp [← of_add]
       map_smul' _ _ := by simp [← of_smul]
-      map_lie' {_ _} := by simp [bracket_ofTwoCocycleAlg] }
+      map_lie' {_ _} := by simp [bracket] }
   proj :=
     { toFun x := ((ofProd c).symm x).1
       map_add' _ _ := by simp
       map_smul' _ _ := by simp
-      map_lie' {_ _} := by simp [bracket_ofTwoCocycleAlg] }
+      map_lie' {_ _} := by simp [bracket] }
   IsExtension :=
     { ker_eq_bot := by
         rw [LieHom.ker_eq_bot]
@@ -388,29 +388,29 @@ instance : LieRing (ofTwoCocycle c).L := (ofTwoCocycle c).instLieRing
 instance : LieAlgebra R (ofTwoCocycle c).L := (ofTwoCocycle c).instLieAlgebra
 
 /-- The Lie algebra isomorphism given by the type synonym. -/
-def ofAlg : ofTwoCocycleAlg c ≃ₗ⁅R⁆ (ofTwoCocycle c).L := LieEquiv.refl
+def ofAlg : LieAlgebra.ofTwoCocycle c ≃ₗ⁅R⁆ (ofTwoCocycle c).L := LieEquiv.refl
 
 lemma bracket_ofTwoCocycle (x y : (ofTwoCocycle c).L) :
     ⁅x, y⁆ = ofAlg c ⁅(ofAlg c).symm x, (ofAlg c).symm y⁆ := rfl
 
 end ofTwoCocycle
 
-variable [CommRing R] [LieRing M] [LieAlgebra R M] [LieRing N] [LieAlgebra R N]
+variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing M] [LieAlgebra R M]
 
 open LieModule.Cohomology
 
-lemma apply_sub_apply_mem_ker (E : Extension R N M) {s₁ s₂ : M →ₗ[R] E.L}
+lemma apply_sub_apply_mem_ker (E : Extension R M L) {s₁ s₂ : L →ₗ[R] E.L}
     (hs₁ : Function.LeftInverse E.proj s₁) (hs₂ : Function.LeftInverse E.proj s₂)
-    (a : M) :
+    (a : L) :
     (s₁ a) - (s₂ a) ∈ LinearMap.ker E.proj.toLinearMap := by
   rw [LinearMap.mem_ker, LieHom.coe_toLinearMap, map_sub, hs₁, hs₂, sub_eq_zero]
 
 /-- The 1-cochain attached to a pair of splittings of an extension. -/
 @[simps]
-def oneCochain_of_two_splitting (E : Extension R N M) {s₁ s₂ : M →ₗ[R] E.L}
+def oneCochain_of_two_splitting (E : Extension R M L) {s₁ s₂ : L →ₗ[R] E.L}
     (hs₁ : Function.LeftInverse E.proj s₁) (hs₂ : Function.LeftInverse E.proj s₂) :
-    oneCochain R M N where
-  toFun m := E.sectLeft (E.projInclEquiv ⟨(s₁ m) - (s₂ m), E.apply_sub_apply_mem_ker hs₁ hs₂ m⟩)
+    oneCochain R L M where
+  toFun x := E.sectLeft (E.projInclEquiv ⟨(s₁ x) - (s₂ x), E.apply_sub_apply_mem_ker hs₁ hs₂ x⟩)
   map_add' _ _ := by
     rw [← map_add, ← map_add, AddMemClass.mk_add_mk, EquivLike.apply_eq_iff_eq,
       EquivLike.apply_eq_iff_eq]

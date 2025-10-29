@@ -106,20 +106,20 @@ lemma bracket_sub_bracket_mem_kernel {s : M →ₗ[R] S.L} (hs : Function.LeftIn
 end IsCentral
 
 section ofTwoCocycle
-open LieModule.Cohomology
+open LieModule.Cohomology twoCocycle
 
 variable [LieRing M] [LieAlgebra R M] [LieRing N] [LieAlgebra R N] [LieRingModule M N]
 [LieModule R M N] (h : IsLieAbelian N) (c : twoCocycle R M N)
 
 /-- The Lie algebra map inclusion of a central extension derived from a 2-cocycle. -/
 @[simps]
-def twoCocycleIncl : N →ₗ⁅R⁆ (ofTwoCocycleAlg c) where
+def twoCocycleIncl : N →ₗ⁅R⁆ (LieAlgebra.ofTwoCocycle c) where
   toLinearMap := {
     toFun v := ofProd c (0, v)
     map_add' _ _ := by
       rw [← of_add, Prod.zero_mk_add_zero_mk]
     map_smul' _ _ := by rw [← of_smul, Equiv.apply_eq_iff_eq, RingHom.id_apply, Prod.smul_zero_mk]}
-  map_lie' {x y} := by simp [bracket_ofTwoCocycleAlg]
+  map_lie' {x y} := by simp [twoCocycle.bracket]
 
 @[simp]
 lemma twoCocycleProj_ofAlg_symm :
@@ -159,7 +159,7 @@ lemma leftInverse_ofTwoCocycle_proj_sectionTwoCocycle :
 lemma bracket_sectionTwoCocycleRight (x y : M) :
     ⁅sectionTwoCocycleRight h c x, sectionTwoCocycleRight h c y⁆ =
       sectionTwoCocycleRight h c ⁅x, y⁆ + (ofTwoCocycle c).incl (c.val x y) := by
-  simp only [bracket_ofTwoCocycle, bracket_ofTwoCocycleAlg, twoCochain_val_apply]
+  simp only [bracket_ofTwoCocycle, bracket, twoCochain_val_apply]
   simp only [← ofAlg_twoCocycleIncl, ofAlg_symm_sectionTwoCocycleRight_apply h c,
     Equiv.symm_apply_apply]
   rw [sectionTwoCocycleRight_apply h c, LieHom.coe_comp,LieEquiv.coe_toLieHom, Function.comp_apply]
@@ -186,7 +186,7 @@ lemma isCentral_ofTwoCocycle [LieModule.IsTrivial M N] : (ofTwoCocycle c).IsCent
   intro x hx
   have : ((ofProd c).symm ((ofAlg c).symm x)).1 = 0 := by exact hx
   intro y
-  simp [bracket_ofTwoCocycle, bracket_ofTwoCocycleAlg, this, Prod.mk_zero_zero]
+  simp [bracket_ofTwoCocycle, bracket, this, Prod.mk_zero_zero]
 
 /-- An equivalence of extensions induced by a coboundary translation. -/
 @[simps]

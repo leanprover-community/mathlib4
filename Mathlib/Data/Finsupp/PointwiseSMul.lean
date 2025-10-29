@@ -31,8 +31,9 @@ namespace Finsupp
 
 theorem finite_vaddAntidiagonal [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [Zero V]
     (f : G →₀ R) (x : P → V) (p : P) :
-    Set.Finite (Set.vaddAntidiagonal f.support.toSet x.support p) := by
-  refine Set.Finite.of_injOn (f := Prod.fst) (t := f.support.toSet) ?_ ?_ f.support.finite_toSet
+    Set.Finite (Set.vaddAntidiagonal (SetLike.coe f.support) x.support p) := by
+  refine Set.Finite.of_injOn (f := Prod.fst) (t := SetLike.coe f.support) ?_ ?_
+    f.support.finite_toSet
   · intro _ ⟨h, _⟩
     exact h
   · intro _ ⟨_, _, h13⟩ gh' ⟨_, _, h23⟩ h

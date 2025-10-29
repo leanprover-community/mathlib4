@@ -527,7 +527,7 @@ theorem choose_eq_sum_choose_smul [Ring R] [BinomialRing R] {r : R} {n k : ℕ} 
     choose r n = ∑ m ∈ range (k + 1), k.choose m • choose (r - k) (n - m) := by
   nth_rw 1 [← add_sub_cancel (k : R) r]
   rw [add_choose_eq _ (Nat.cast_commute k (r - ↑k)), Nat.sum_antidiagonal_eq_sum_range_succ_mk]
-  refine (sum_of_injOn id (Set.injOn_id (range (k + 1)).toSet) ?_ ?_ ?_).symm
+  refine (sum_of_injOn id (Set.injOn_id (SetLike.coe (range (k + 1)))) ?_ ?_ ?_).symm
   · intro m hm
     simp_all only [coe_range, Set.mem_Iio, Nat.succ_eq_add_one, id_eq]
     exact lt_add_of_lt_add_right hm h

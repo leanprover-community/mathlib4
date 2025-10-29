@@ -285,7 +285,7 @@ theorem meval_C [CommSemiring R] {g : Γ} (hg : 0 < g) (r s : R) :
     have hng : ¬ n • g = 0 • g :=
       fun hn1 => h0 (StrictMono.injective (nsmul_left_strictMono hg) hn1)
     simp only [zero_nsmul] at hng
-    simp [PowerSeries.coeff_C, hng, h0]
+    simp [PowerSeries.coeff_C, h0, coeff_single_of_ne hng]
   · rw [meval_notin_range hg r _ h, C_apply, coeff_single_of_ne
       fun hgg' => h (Exists.intro 0 (by simp [hgg']))]
 
