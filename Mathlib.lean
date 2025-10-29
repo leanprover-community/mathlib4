@@ -5858,6 +5858,8 @@ import Mathlib.RingTheory.PicardGroup
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Polynomial.Bernstein
 import Mathlib.RingTheory.Polynomial.Chebyshev
+import Mathlib.RingTheory.Polynomial.ChebyshevReal.Basic
+import Mathlib.RingTheory.Polynomial.ChebyshevReal.Monic
 import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.Polynomial.ContentIdeal
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
