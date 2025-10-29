@@ -435,6 +435,7 @@ namespace unitary
 @[deprecated (since := "2025-10-29")] alias star_eq_inv := Unitary.star_eq_inv
 @[deprecated (since := "2025-10-29")] alias star_eq_inv' := Unitary.star_eq_inv'
 @[deprecated (since := "2025-10-29")] alias toUnits := Unitary.toUnits
+@[deprecated (since := "2025-10-29")] alias val_toUnits_apply := Unitary.val_toUnits_apply
 @[deprecated (since := "2025-10-29")] alias toUnits_injective := Unitary.toUnits_injective
 @[deprecated (since := "2025-10-29")] alias mul_left_inj := Unitary.mul_left_inj
 @[deprecated (since := "2025-10-29")] alias mul_right_inj := Unitary.mul_right_inj
