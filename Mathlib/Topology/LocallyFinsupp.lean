@@ -5,9 +5,11 @@ Authors: Stefan Kebekus
 -/
 import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.Algebra.Group.Support
+import Mathlib.Algebra.Order.Group.PosPart
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Pi
-import Mathlib.Topology.Separation.Hausdorff
 import Mathlib.Topology.DiscreteSubset
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Type of functions with locally finite support
@@ -41,7 +43,7 @@ structure Function.locallyFinsuppWithin [Zero Y] where
   toFun : X → Y
   /-- A proof that the support of `toFun` is contained in `U` -/
   supportWithinDomain' : toFun.support ⊆ U
-  /-- A proof the the support is locally finite within `U` -/
+  /-- A proof that the support is locally finite within `U` -/
   supportLocallyFiniteWithinDomain' : ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ toFun.support)
 
 variable (X Y) in
@@ -305,7 +307,10 @@ instance [SemilatticeInf Y] [Zero Y] : Min (locallyFinsuppWithin U Y) where
 lemma min_apply [SemilatticeInf Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} {x : X} :
     min D₁ D₂ x = min (D₁ x) (D₂ x) := rfl
 
-instance [Lattice Y] [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
+section Lattice
+variable [Lattice Y]
+
+instance [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
   le := (· ≤ ·)
   lt := (· < ·)
   le_refl := by simp [le_def]
@@ -322,12 +327,48 @@ instance [Lattice Y] [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
   inf_le_right D₁ D₂ := fun x ↦ by simp
   le_inf D₁ D₂ D₃ h₁₃ h₂₃ := fun x ↦ by simp [h₁₃ x, h₂₃ x]
 
+variable [AddCommGroup Y]
+
+@[simp] lemma posPart_apply (a : locallyFinsuppWithin U Y) (x : X) : a⁺ x = (a x)⁺ := rfl
+@[simp] lemma negPart_apply (a : locallyFinsuppWithin U Y) (x : X) : a⁻ x = (a x)⁻ := rfl
+
+end Lattice
+
+section LinearOrder
+variable [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y]
+
 /--
 Functions with locally finite support within `U` form an ordered commutative group.
 -/
-instance [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y] :
-    IsOrderedAddMonoid (locallyFinsuppWithin U Y) where
+instance : IsOrderedAddMonoid (locallyFinsuppWithin U Y) where
   add_le_add_left := fun _ _ _ _ ↦ by simpa [le_def]
+
+/--
+Taking the positive part of a function with locally finite support commutes with
+scalar multiplication by a natural number.
+-/
+@[simp]
+theorem nsmul_posPart (n : ℕ) (f : locallyFinsuppWithin U Y) : (n • f)⁺ = n • f⁺ := by
+  ext x
+  simp only [posPart, max_apply, coe_nsmul, Pi.smul_apply, coe_zero, Pi.zero_apply]
+  by_cases h : f x < 0
+  · simpa [max_eq_right_of_lt h] using nsmul_le_nsmul_right h.le n
+  · simpa [not_lt.1 h] using nsmul_nonneg (not_lt.1 h) n
+
+/--
+Taking the negative part of a function with locally finite support commutes with
+scalar multiplication by a natural number.
+-/
+@[simp]
+theorem nsmul_negPart (n : ℕ) (f : locallyFinsuppWithin U Y) : (n • f)⁻ = n • f⁻ := by
+  ext x
+  simp only [negPart, max_apply, coe_neg, coe_nsmul, Pi.neg_apply, Pi.smul_apply, coe_zero,
+    Pi.zero_apply]
+  by_cases h : -f x < 0
+  · simpa [max_eq_right_of_lt h] using nsmul_le_nsmul_right h.le n
+  · simpa [not_lt.1 h] using nsmul_nonneg (not_lt.1 h) n
+
+end LinearOrder
 
 /-!
 ## Restriction
