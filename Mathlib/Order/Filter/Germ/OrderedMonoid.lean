@@ -28,7 +28,7 @@ variable {α : Type*} {β : Type*} {l : Filter α}
 instance instIsOrderedMonoid [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β] :
     IsOrderedMonoid (Germ l β) where
   mul_le_mul_left f g := inductionOn₂ f g fun _ _ H h ↦ inductionOn h fun _ ↦ H.mono
-    fun _ H ↦ mul_le_mul_left' H _
+    fun _ H ↦ by dsimp; gcongr
 
 @[to_additive]
 instance instIsOrderedCancelMonoid [CommMonoid β] [PartialOrder β] [IsOrderedCancelMonoid β] :

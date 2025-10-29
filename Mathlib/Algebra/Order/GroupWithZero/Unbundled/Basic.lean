@@ -109,20 +109,22 @@ local notation3 "α>0" => { x : α // 0 < x }
 variable [PartialOrder α]
 
 theorem posMulMono_iff_covariant_pos :
-    PosMulMono α ↔ CovariantClass α>0 α (fun x y => x * y) (· ≤ ·) :=
-  ⟨@PosMulMono.to_covariantClass_pos_mul_le _ _ _ _, fun h =>
-    { elim a b c h := by
-        obtain ha | ha := a.prop.eq_or_lt
+    PosMulMono α ↔ CovariantClass α>0 α (fun x y => x * y) (· ≤ ·) where
+  mp _ := PosMulMono.to_covariantClass_pos_mul_le
+  mpr h :=
+    { mul_le_mul_of_nonneg_left a ha b c hbc := by
+        obtain ha | ha := ha.eq_or_lt
         · simp [← ha]
-        · exact @CovariantClass.elim α>0 α (fun x y => x * y) (· ≤ ·) _ ⟨_, ha⟩ _ _ h }⟩
+        · exact @CovariantClass.elim α>0 α (fun x y => x * y) (· ≤ ·) _ ⟨_, ha⟩ _ _ hbc }
 
 theorem mulPosMono_iff_covariant_pos :
-    MulPosMono α ↔ CovariantClass α>0 α (fun x y => y * x) (· ≤ ·) :=
-  ⟨@MulPosMono.to_covariantClass_pos_mul_le _ _ _ _, fun h =>
-    { elim a b c h := by
-        obtain ha | ha := a.prop.eq_or_lt
+    MulPosMono α ↔ CovariantClass α>0 α (fun x y => y * x) (· ≤ ·) where
+  mp _ := MulPosMono.to_covariantClass_pos_mul_le
+  mpr h :=
+    { mul_le_mul_of_nonneg_right a ha b c hbc := by
+        obtain ha | ha := ha.eq_or_lt
         · simp [← ha]
-        · exact @CovariantClass.elim α>0 α (fun x y => y * x) (· ≤ ·) _ ⟨_, ha⟩ _ _ h }⟩
+        · exact @CovariantClass.elim α>0 α (fun x y => y * x) (· ≤ ·) _ ⟨_, ha⟩ _ _ hbc }
 
 theorem posMulReflectLT_iff_contravariant_pos :
     PosMulReflectLT α ↔ ContravariantClass α>0 α (fun x y => x * y) (· < ·) :=
@@ -705,15 +707,15 @@ section PartialOrder
 variable [PartialOrder α]
 
 theorem PosMulMono.toPosMulStrictMono [PosMulMono α] : PosMulStrictMono α where
-  elim := fun x _ _ h => (mul_le_mul_of_nonneg_left h.le x.2.le).lt_of_ne
-    (h.ne ∘ mul_left_cancel₀ x.2.ne')
+  mul_lt_mul_of_pos_left _a ha _b _c hbc :=
+    (mul_le_mul_of_nonneg_left hbc.le ha.le).lt_of_ne (hbc.ne ∘ mul_left_cancel₀ ha.ne')
 
 theorem posMulMono_iff_posMulStrictMono : PosMulMono α ↔ PosMulStrictMono α :=
   ⟨@PosMulMono.toPosMulStrictMono α _ _, @PosMulStrictMono.toPosMulMono α _ _⟩
 
 theorem MulPosMono.toMulPosStrictMono [MulPosMono α] : MulPosStrictMono α where
-  elim := fun x _ _ h => (mul_le_mul_of_nonneg_right h.le x.2.le).lt_of_ne
-    (h.ne ∘ mul_right_cancel₀ x.2.ne')
+  mul_lt_mul_of_pos_right _a ha _b _c hbc :=
+    (mul_le_mul_of_nonneg_right hbc.le ha.le).lt_of_ne (hbc.ne ∘ mul_right_cancel₀ ha.ne')
 
 theorem mulPosMono_iff_mulPosStrictMono : MulPosMono α ↔ MulPosStrictMono α :=
   ⟨@MulPosMono.toMulPosStrictMono α _ _, @MulPosStrictMono.toMulPosMono α _ _⟩
@@ -829,10 +831,8 @@ lemma one_div_nonneg : 0 ≤ 1 / a ↔ 0 ≤ a := one_div a ▸ inv_nonneg
 variable (G₀) in
 /-- For a group with zero, `PosMulReflectLT G₀` implies `PosMulStrictMono G₀`. -/
 theorem PosMulReflectLT.toPosMulStrictMono : PosMulStrictMono G₀ where
-  elim := by
-    rintro ⟨a, ha⟩ b c hlt
-    apply lt_of_mul_lt_mul_left _ (inv_pos_of_pos ha).le
-    simpa [ha.ne']
+  mul_lt_mul_of_pos_left a ha b c hbc :=
+    lt_of_mul_lt_mul_left (by simpa [ha.ne']) (inv_pos_of_pos ha).le
 
 variable (G₀) in
 /-- For a group with zero, `PosMulReflectLT G₀`
@@ -1061,10 +1061,8 @@ lemma inv_pos : 0 < a⁻¹ ↔ 0 < a := by
 variable (G₀) in
 /-- For a group with zero, `MulPosReflectLT G₀` implies `MulPosStrictMono G₀`. -/
 theorem _root_.MulPosReflectLT.toMulPosStrictMono : MulPosStrictMono G₀ where
-  elim := by
-    rintro ⟨a, ha⟩ b c hlt
-    apply lt_of_mul_lt_mul_right _ (inv_pos.2 ha).le
-    simpa [ha.ne']
+  mul_lt_mul_of_pos_right a ha b c hbc :=
+    lt_of_mul_lt_mul_right (by simpa [ha.ne']) (inv_pos.2 ha).le
 
 lemma inv_nonneg : 0 ≤ a⁻¹ ↔ 0 ≤ a := by simp only [le_iff_eq_or_lt, inv_pos, zero_eq_inv]
 
