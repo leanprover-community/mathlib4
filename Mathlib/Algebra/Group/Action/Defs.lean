@@ -612,6 +612,11 @@ lemma IsCancelSMul.right_cancel {G P} [SMul G P] [IsCancelSMul G P] (a b : G) (c
     a • c = b • c → a = b := IsCancelSMul.right_cancel' a b c
 
 @[to_additive]
+lemma IsCancelSMul.eq_one_of_smul {G P} [Monoid G] [MulAction G P] [IsCancelSMul G P] {g : G}
+    {x : P} (h : g • x = x) : g = 1 :=
+  IsCancelSMul.right_cancel g 1 x ((one_smul G x).symm ▸ h)
+
+@[to_additive]
 instance [CancelMonoid G] : IsCancelSMul G G where
   left_cancel' := IsLeftCancelMul.mul_left_cancel
   right_cancel' _ _ _ := mul_right_cancel
