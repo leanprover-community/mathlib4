@@ -84,6 +84,16 @@ variable (M) in
 theorem stepSet_singleton (s : σ) (a : α) : M.stepSet {s} a = M.step s a := by
   simp [stepSet]
 
+theorem stepSet_union {S1 S2 : Set σ} {a : α} :
+    M.stepSet (S1 ∪ S2) a = M.stepSet S1 a ∪ M.stepSet S2 a := by
+  ext s
+  simp [mem_stepSet]
+  constructor
+  · rintro ⟨s', (h1 | h2), hstep⟩
+    · left; tauto
+    · right; tauto
+  · rintro (⟨s', h, hstep⟩ | ⟨s', h, hstep⟩) <;> exists s' <;> tauto
+
 variable (M) in
 @[simp]
 theorem stepSet_union {S T : Set σ} {a : α} :
