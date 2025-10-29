@@ -230,7 +230,8 @@ theorem normalized_T_eval (n : ℕ) (x : ℝ) :
   rw [eval_mul, eval_C]
   field_simp
 
-theorem min_abs_of_monic_extrema {n : ℕ} (hn : n ≠ 0) (P : ℝ[X]) (Pdeg : P.degree = n) (Pmonic : P.Monic) :
+theorem min_abs_of_monic_extrema {n : ℕ} (hn : n ≠ 0) (P : ℝ[X])
+    (Pdeg : P.degree = n) (Pmonic : P.Monic) :
     1/2^(n - 1) = sSup { abs (P.eval x) | x ∈ Set.Icc (-1) 1 } ↔ P = normalized_T n := by
   constructor
   case mp =>
