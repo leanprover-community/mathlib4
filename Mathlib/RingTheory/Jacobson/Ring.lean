@@ -201,8 +201,8 @@ def IsLocalization.orderIsoOfMaximal [IsJacobsonRing R] :
     { p : Ideal S // p.IsMaximal } ≃o { p : Ideal R // p.IsMaximal ∧ y ∉ p } where
   toFun p := ⟨Ideal.comap (algebraMap R S) p.1, (isMaximal_iff_isMaximal_disjoint S y p.1).1 p.2⟩
   invFun p := ⟨Ideal.map (algebraMap R S) p.1, isMaximal_of_isMaximal_disjoint y p.1 p.2.1 p.2.2⟩
-  left_inv J := Subtype.eq (map_comap (powers y) S J)
-  right_inv I := Subtype.eq (comap_map_of_isPrime_disjoint _ _ I.1 (IsMaximal.isPrime I.2.1)
+  left_inv J := Subtype.ext (map_comap (powers y) S J)
+  right_inv I := Subtype.ext (comap_map_of_isPrime_disjoint _ _ I.1 (IsMaximal.isPrime I.2.1)
     ((disjoint_powers_iff_notMem y I.2.1.isPrime.isRadical).2 I.2.2))
   map_rel_iff' {I I'} := ⟨fun h => show I.val ≤ I'.val from
     map_comap (powers y) S I.val ▸ map_comap (powers y) S I'.val ▸ Ideal.map_mono h,

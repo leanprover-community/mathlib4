@@ -336,7 +336,7 @@ theorem of_card_lt [Finite Y] [IsPretransitive H Y] [IsPreprimitive G X]
   rw [IsTrivialBlock, or_iff_not_imp_right]
   intro hB_ne_top
   -- we need Set.Subsingleton B ↔ Set.ncard B ≤ 1
-  suffices Set.ncard B < 2 by simpa [Nat.lt_succ] using this
+  suffices Set.ncard B < 2 by simpa [Nat.lt_succ_iff] using this
   -- We reduce to proving that (Set.range f).ncard ≤ (orbit N B).ncard
   apply lt_of_mul_lt_mul_right (lt_of_le_of_lt _ hf') (zero_le _)
   simp only [← hB.ncard_block_mul_ncard_orbit_eq hB']

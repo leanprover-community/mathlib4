@@ -253,7 +253,7 @@ lemma schnirelmannDensity_setOf_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
   rw [card_image_of_injective, Nat.card_Icc, Nat.sub_zero, div_le_iff₀ (Nat.cast_pos.2 hm'),
     ← Nat.cast_mul, Nat.cast_le, add_one_mul (α := ℕ)]
   · have := @Nat.lt_div_mul_add n.pred m hm'
-    rwa [← Nat.succ_le, Nat.succ_pred hn.ne'] at this
+    rwa [← Nat.succ_le_iff, Nat.succ_pred hn.ne'] at this
   intro a b
   simp [hm'.ne']
 

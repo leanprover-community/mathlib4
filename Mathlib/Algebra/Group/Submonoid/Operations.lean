@@ -719,13 +719,13 @@ theorem restrict_mrange (f : M →* N) : mrange (f.restrict S) = S.map f := by
 def codRestrict {S} [SetLike S N] [SubmonoidClass S N] (f : M →* N) (s : S) (h : ∀ x, f x ∈ s) :
     M →* s where
   toFun n := ⟨f n, h n⟩
-  map_one' := Subtype.eq f.map_one
-  map_mul' x y := Subtype.eq (f.map_mul x y)
+  map_one' := Subtype.ext f.map_one
+  map_mul' x y := Subtype.ext (f.map_mul x y)
 
 @[to_additive (attr := simp)]
 lemma injective_codRestrict {S} [SetLike S N] [SubmonoidClass S N] (f : M →* N) (s : S)
     (h : ∀ x, f x ∈ s) : Function.Injective (f.codRestrict s h) ↔ Function.Injective f :=
-  ⟨fun H _ _ hxy ↦ H <| Subtype.eq hxy, fun H _ _ hxy ↦ H (congr_arg Subtype.val hxy)⟩
+  ⟨fun H _ _ hxy ↦ H <| Subtype.ext hxy, fun H _ _ hxy ↦ H (congr_arg Subtype.val hxy)⟩
 
 /-- Restriction of a monoid hom to its range interpreted as a submonoid. -/
 @[to_additive /-- Restriction of an `AddMonoid` hom to its range interpreted as a submonoid. -/]
@@ -817,8 +817,8 @@ lemma mker_snd : mker (snd M N) = .prod ⊤ ⊥ := SetLike.ext fun _ => (iff_of_
 def submonoidComap (f : M →* N) (N' : Submonoid N) :
     N'.comap f →* N' where
   toFun x := ⟨f x, x.2⟩
-  map_one' := Subtype.eq f.map_one
-  map_mul' x y := Subtype.eq (f.map_mul x y)
+  map_one' := Subtype.ext f.map_one
+  map_mul' x y := Subtype.ext (f.map_mul x y)
 
 @[to_additive]
 lemma submonoidComap_surjective_of_surjective (f : M →* N) (N' : Submonoid N) (hf : Surjective f) :
@@ -835,8 +835,8 @@ See `MulEquiv.SubmonoidMap` for a variant for `MulEquiv`s. -/
   for a variant for `AddEquiv`s. -/]
 def submonoidMap (f : M →* N) (M' : Submonoid M) : M' →* M'.map f where
   toFun x := ⟨f x, ⟨x, x.2, rfl⟩⟩
-  map_one' := Subtype.eq <| f.map_one
-  map_mul' x y := Subtype.eq <| f.map_mul x y
+  map_one' := Subtype.ext <| f.map_one
+  map_mul' x y := Subtype.ext <| f.map_mul x y
 
 @[to_additive]
 theorem submonoidMap_surjective (f : M →* N) (M' : Submonoid M) :

@@ -316,7 +316,7 @@ lemma le_nth_of_monotoneOn_of_surjOn {p : ℕ → Prop} (f : ℕ → ℕ)
     rintro b ⟨hb, h⟩
     rcases hsurj hb with ⟨m, hm, rfl⟩
     apply hmono hn hm
-    rw [Nat.succ_le]
+    rw [Nat.succ_le_iff]
     apply hmono.reflect_lt <;> grind
 
 /-- `Nat.nth p` is the unique strictly monotone function whose image is `setOf p`. -/

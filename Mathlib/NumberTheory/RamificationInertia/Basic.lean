@@ -163,7 +163,7 @@ lemma ramificationIdx_ne_one_iff (hp : map f p ≤ P) :
     have := Nat.find_min H (m := 1) (by omega)
     push_neg at this
     obtain ⟨k, hk, h1k⟩ := this
-    exact hk.trans (Ideal.pow_le_pow_right (Nat.succ_le.mpr h1k))
+    exact hk.trans (Ideal.pow_le_pow_right (Nat.succ_le_iff.mpr h1k))
   · intro he
     have := Nat.find_spec H 2 he
     omega

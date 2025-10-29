@@ -373,7 +373,7 @@ theorem mem_factors'_of_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) (hd 
     Subtype.mk (Associates.mk p) (irreducible_mk.2 hp) ∈ factors' a := by
   obtain ⟨q, hq, hpq⟩ := exists_mem_factors_of_dvd ha0 hp hd
   apply Multiset.mem_pmap.mpr; use q; use hq
-  exact Subtype.eq (Eq.symm (mk_eq_mk_iff_associated.mpr hpq))
+  exact Subtype.ext (Eq.symm (mk_eq_mk_iff_associated.mpr hpq))
 
 theorem mem_factors'_iff_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
     Subtype.mk (Associates.mk p) (irreducible_mk.2 hp) ∈ factors' a ↔ p ∣ a := by
