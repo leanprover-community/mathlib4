@@ -110,7 +110,7 @@ instance instContinuousFunctionalCalculus :
       apply Set.eq_of_subset_of_subset
       · rw [← ContinuousMap.spectrum_eq_range f]
         apply AlgHom.spectrum_apply_subset
-      · rw [cfcAux_apply, spectrum.unitary_star_right_conjugate]
+      · rw [cfcAux_apply, unitary.spectrum_star_right_conjugate]
         rintro - ⟨x, rfl⟩
         apply spectrum.of_algebraMap_mem 𝕜
         simp only [Function.comp_apply, Set.mem_range, spectrum_diagonal]
