@@ -204,7 +204,7 @@ theorem mul_star_self_of_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : x
 /-- See `star_mem_iff` for both directions. -/
 theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : star x ∈ pinGroup Q := by
   rw [mem_iff] at hx ⊢
-  refine ⟨?_, unitary.star_mem hx.2⟩
+  refine ⟨?_, Unitary.star_mem hx.2⟩
   rcases hx with ⟨⟨y, hy₁, hy₂⟩, _hx₂, hx₃⟩
   simp only [Subgroup.coe_toSubmonoid, SetLike.mem_coe] at hy₁
   simp only [Units.coeHom_apply] at hy₂
