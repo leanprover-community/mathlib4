@@ -29,10 +29,7 @@ open Opposite
 
 namespace Pseudofunctor
 
--- TODO: can we make grind do this?
-/-- Tactic which does `simp [← Quiver.Hom.comp_toLoc, ← op_comp]` before applying `aesop`. -/
-macro "aesoptoloc" : tactic =>
-  `(tactic|(simp [← Quiver.Hom.comp_toLoc, ← op_comp] <;> aesop))
+attribute [local grind =] op_comp Quiver.Hom.comp_toLoc
 
 open LocallyDiscreteOpToCat
 
@@ -119,14 +116,15 @@ over the `X i`. -/
 def ofObj (M : F.obj (.mk (op S))) : F.DescentData f where
   obj i := (F.map (f i).op.toLoc).obj M
   hom Y q i₁ i₂ f₁ f₂ hf₁ hf₂ :=
-    (F.mapComp' (f i₁).op.toLoc f₁.op.toLoc q.op.toLoc (by aesoptoloc)).inv.app _ ≫
-      (F.mapComp' (f i₂).op.toLoc f₂.op.toLoc q.op.toLoc (by aesoptoloc)).hom.app _
+    (F.mapComp' (f i₁).op.toLoc f₁.op.toLoc q.op.toLoc (by grind)).inv.app _ ≫
+      (F.mapComp' (f i₂).op.toLoc f₂.op.toLoc q.op.toLoc (by grind)).hom.app _
   pullHom_hom Y' Y g q q' hq i₁ i₂ f₁ f₂ hf₁ hf₂ gf₁ gf₂ hgf₁ hgf₂ := by
     simp only [pullHom, Functor.map_comp, Category.assoc,
       F.mapComp'₀₁₃_inv_app (f i₁).op.toLoc f₁.op.toLoc g.op.toLoc q.op.toLoc
-        gf₁.op.toLoc q'.op.toLoc (by aesoptoloc) (by aesoptoloc) (by aesoptoloc),
+        gf₁.op.toLoc q'.op.toLoc (by grind) (by grind) (by grind),
       F.mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom_app (f i₂).op.toLoc f₂.op.toLoc g.op.toLoc
-      q.op.toLoc gf₂.op.toLoc q'.op.toLoc (by aesoptoloc) (by aesoptoloc) (by aesoptoloc)]
+      q.op.toLoc gf₂.op.toLoc q'.op.toLoc (by
+        grind) (by grind) (by grind)]
 
 /-- Constructor for isomorphisms in `Pseudofunctor.DescentData`. -/
 @[simps]
