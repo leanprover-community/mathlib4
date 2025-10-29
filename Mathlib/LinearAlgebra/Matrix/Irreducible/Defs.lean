@@ -24,22 +24,23 @@ matrix (like powers) into graph-theoretic properties of its quiver (like theexis
     `0 < A i j`.
 *   `Matrix.IsIrreducible A`: A matrix `A` is defined as irreducible if it is entrywise nonnegative
     and its associated quiver `toQuiver A` is strongly connected. The theorem
-    `irreducible_iff_exists_pow_pos` proves this graph-theoretic definition is equivalent to the
-    algebraic one in seneta2006 (Def 1.6, p.18): for every pair of indices `(i, j)`, there exists a
-    positive integer `k` such that `(A ^ k) i j > 0`.
+    `Matrix.isIrreducible_iff_exists_pow_pos` proves this graph-theoretic definition is equivalent
+    to the algebraic one in seneta2006 (Def 1.6, p.18): for every pair of indices `(i, j)`, there
+    exists a positive integer `k` such that `(A ^ k) i j > 0`.
 *   `Matrix.IsPrimitive A`: A matrix `A` is primitive if it is nonnegative and some power `A ^ k`
     is strictly positive (all entries are `> 0`), (seneta2006, Definition 1.1, p.14).
 
 ## Main results
 
-*   `pow_entry_pos_iff_exists_path`: Establishes the link between matrix powers and graph theory:
+*   `Matrix.pow_apply_pos_iff_nonempty_path`: Establishes the link between matrix powers and graph
+      theory:
     `(A ^ k) i j > 0` if and only if there is a path of length `k` from `i` to `j` in `toQuiver A`.
-*   `irreducible_iff_exists_pow_pos`: Shows the equivalence between the graph-theoretic definition
-    of irreducibility (strong connectivity) and the algebraic one (existence of a positive entry
-    in some power).
-*   `IsPrimitive.to_IsIrreducible`: Proves that a primitive matrix is also irreducible
+*   `Matrix.isIrreducible_iff_exists_pow_pos`: Shows the equivalence between the graph-theoretic
+      definition of irreducibility (strong connectivity) and the algebraic one (existence of a
+      positive entry in some power).
+*   `Matrix.IsPrimitive.to_IsIrreducible`: Proves that a primitive matrix is also irreducible
       (Seneta, p.14).
-*   `IsIrreducible.transpose`: Shows that the irreducibility property is preserved under
+*   `Matrix.IsIrreducible.transpose`: Shows that the irreducibility property is preserved under
     transposition.
 
 ## Implementation notes
@@ -175,11 +176,7 @@ theorem IsPrimitive.isIrreducible
     (h_prim : IsPrimitive A) : IsIrreducible A := by
   obtain ⟨h_nonneg, k, hk_pos, hk_all⟩ := h_prim
   rw [isIrreducible_iff_exists_pow_pos h_nonneg]
-  intro i j; simp_all only [gt_iff_lt]
-  apply Exists.intro
-  · apply And.intro
-    · exact hk_pos
-    · simp_all only
+  aesop
 
 /-! ## Transposition -/
 
@@ -198,12 +195,12 @@ def transposePath {i j : n} (p : @Quiver.Path n A.toQuiver i j) :
 
 /-- Irreducibility is invariant under transpose. -/
 theorem IsIrreducible.transpose (hA : IsIrreducible A) : IsIrreducible Aᵀ := by
-  have hA_T_nonneg : ∀ i j, 0 ≤ (Aᵀ) i j := fun i j => by
+  have hA_T_nonneg : ∀ i j, 0 ≤ Aᵀ i j := fun i j => by
     simpa [Matrix.transpose_apply] using hA.nonneg j i
   refine ⟨hA_T_nonneg, ?_⟩
   intro i j
   letI : Quiver n := toQuiver A
-  obtain ⟨p, hp_pos⟩ := hA.2 j i
+  obtain ⟨p, hp_pos⟩ := hA.connected j i
   cases p with
   | nil =>
       exact False.elim ((lt_irrefl (0 : Nat)) (by simp [Quiver.Path.length] at hp_pos))
