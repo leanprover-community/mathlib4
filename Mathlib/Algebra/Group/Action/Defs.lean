@@ -48,10 +48,7 @@ open Function (Injective Surjective)
 
 variable {M N G H α β γ δ : Type*}
 
-/-- See also `AddMonoid.toAddAction` -/
-instance (priority := 910) Add.toVAdd (α : Type*) [Add α] : VAdd α α := ⟨(· + ·)⟩
-
-attribute [to_additive existing Add.toVAdd] instSMulOfMul
+attribute [to_additive Add.toVAdd /-- See also `AddMonoid.toAddAction` -/] instSMulOfMul
 
 -- see Note [lower instance priority]
 /-- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
