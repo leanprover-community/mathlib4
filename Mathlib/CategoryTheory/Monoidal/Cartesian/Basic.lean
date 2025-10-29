@@ -45,7 +45,7 @@ universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
 open MonoidalCategory Limits
 
-/- A monoidal category is semicartesian if the unit for the tensor product is a terminal object. -/
+/-- A monoidal category is semicartesian if the unit for the tensor product is a terminal object. -/
 class SemiCartesianMonoidalCategory (C : Type u) [Category.{v} C] extends MonoidalCategory C where
   /-- The tensor unit is a terminal object. -/
   isTerminalTensorUnit : IsTerminal (𝟙_ C)
@@ -176,6 +176,8 @@ end ofChosenFiniteProducts
 
 open ofChosenFiniteProducts
 
+/-- Constructs an instance of `SemiCartesianMonoidalCategory C` given a terminal object and
+limit cones over arbitrary pairs of objects. -/
 abbrev _root_.SemiCartesianMonoidalCategory.ofChosenFiniteProducts :
     SemiCartesianMonoidalCategory C :=
    letI : MonoidalCategoryStruct C := {
@@ -207,7 +209,7 @@ abbrev _root_.SemiCartesianMonoidalCategory.ofChosenFiniteProducts :
     (BinaryFan.mk _ _) ⟨.right⟩).trans (Category.comp_id _)).symm
   }
 
-/-- Construct an instance of `CartesianMonoidalCategory C` given a terminal object and limit cones
+/-- Constructs an instance of `CartesianMonoidalCategory C` given a terminal object and limit cones
 over arbitrary pairs of objects. -/
 abbrev ofChosenFiniteProducts : CartesianMonoidalCategory C :=
   letI : SemiCartesianMonoidalCategory C :=
@@ -222,7 +224,7 @@ abbrev ofChosenFiniteProducts : CartesianMonoidalCategory C :=
   }
 
 omit 𝒯 in
-/-- Construct an instance of `CartesianMonoidalCategory C` given the existence of finite products
+/-- Constructs an instance of `CartesianMonoidalCategory C` given the existence of finite products
 in `C`. -/
 noncomputable abbrev ofHasFiniteProducts [HasFiniteProducts C] : CartesianMonoidalCategory C :=
   .ofChosenFiniteProducts (getLimitCone (.empty C)) (getLimitCone <| pair · ·)
@@ -236,7 +238,7 @@ variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
 open MonoidalCategory SemiCartesianMonoidalCategory
 
 /--
-Construct a morphism to the product given its two components.
+Constructs a morphism to the product given its two components.
 -/
 def lift {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) : T ⟶ X ⊗ Y :=
   (BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).1
