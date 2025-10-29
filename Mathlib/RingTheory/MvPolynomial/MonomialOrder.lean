@@ -631,16 +631,16 @@ lemma leadingTerm_zero : m.leadingTerm (0 : MvPolynomial σ R) = 0 := by
   rw [leadingTerm_eq_zero_iff]
 
 /--
-The leading terms of non-zero polynomials within a set `B` is equal to the leading terms
-of all polynomials in B, excluding zero.
+The set of leading terms of non-zero polynomials within a set `B` is equal to the set of
+leading terms of all polynomials within `B`, excluding zero.
 -/
 lemma image_leadingTerm_sdiff_singleton_zero (B : Set (MvPolynomial σ R)) :
     m.leadingTerm '' (B \ {0}) = (m.leadingTerm '' B) \ {0} := by
   aesop
 
 /--
-The leading terms of a Set `B` inserted zero polynomial equal to leading terms of `B`
-inserted zero polynomial
+The set of leading terms of zero and polynomials within a set `B` is equal to the set of
+zero and leading terms of polynomials within `B`.
 -/
 lemma image_leadingTerm_insert_zero (B : Set (MvPolynomial σ R)) :
     m.leadingTerm '' (insert (0 : MvPolynomial σ R) B) = insert 0 (m.leadingTerm '' B) := by
