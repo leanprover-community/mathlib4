@@ -354,7 +354,7 @@ theorem ι_colimitIso_inv [HasColimit G] (X : C) :
   simp [colimitIso]
 
 /-- A pointfree version of `colimitIso`, stating that whiskering by `F` followed by taking the
-colimit is isomorpic to taking the colimit on the codomain of `F`. -/
+colimit is isomorphic to taking the colimit on the codomain of `F`. -/
 def colimIso [HasColimitsOfShape D E] [HasColimitsOfShape C E] :
     (whiskeringLeft _ _ _).obj F ⋙ colim ≅ colim (J := D) (C := E) :=
   NatIso.ofComponents (fun G => colimitIso F G) fun f => by
@@ -695,7 +695,7 @@ def limitIso [HasLimit G] : limit (F ⋙ G) ≅ limit G :=
   (asIso (limit.pre G F)).symm
 
 /-- A pointfree version of `limitIso`, stating that whiskering by `F` followed by taking the
-limit is isomorpic to taking the limit on the codomain of `F`. -/
+limit is isomorphic to taking the limit on the codomain of `F`. -/
 def limIso [HasLimitsOfShape D E] [HasLimitsOfShape C E] :
     (whiskeringLeft _ _ _).obj F ⋙ lim ≅ lim (J := D) (C := E) :=
   Iso.symm <| NatIso.ofComponents (fun G => (limitIso F G).symm) fun f => by
@@ -1053,7 +1053,7 @@ instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final :=
 
 open Limits
 
-/-- A natural transformation `α : F ⟶ G` between functors `F G : C ⥤ Cat` which is is final on each
+/-- A natural transformation `α : F ⟶ G` between functors `F G : C ⥤ Cat` which is final on each
 fiber `(α.app X)` induces an equivalence of fiberwise colimits of `map α ⋙ H` and `H` for each
 functor `H : Grothendieck G ⥤ Type`. -/
 def Grothendieck.fiberwiseColimitMapCompEquivalence {C : Type u₁} [Category.{v₁} C]

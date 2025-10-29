@@ -154,7 +154,7 @@ section
 
 variable [∀ (F : C₁ ⥤ D), L.HasLeftKanExtension F] [∀ (F : C₂ ⥤ D), R.HasLeftKanExtension F]
 
-/-- The base change natural transformation for left Kan extension associated to
+/-- The base change natural transformation for left Kan extensions associated to
 a 2-square. -/
 @[simps -isSimp]
 noncomputable def lanBaseChange :
