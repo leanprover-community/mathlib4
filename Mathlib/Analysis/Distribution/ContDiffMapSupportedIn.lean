@@ -285,7 +285,7 @@ protected def of_support_subset {f : E → F} (hf : ContDiff ℝ n f) (hsupp : s
 section Module
 
 instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-    Module R 𝓓^{n}_{K}(E, F) :=
+    Module R 𝓓^{n}_{K}(E, F) := fast_instance%
   (coeHom_injective n K).module R (coeHom E F n K) fun _ _ ↦ rfl
 
 end Module
