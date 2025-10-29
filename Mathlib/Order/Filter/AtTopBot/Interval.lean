@@ -70,13 +70,8 @@ end Symmetric
 
 section NatCast
 
-variable {R : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R]
-
-instance [Nontrivial R] : NoMaxOrder R := ⟨fun a ↦ ⟨a + 1, by simp⟩⟩
-
-instance [Nontrivial R] : NoMinOrder R := ⟨fun a ↦ ⟨a - 1, by simp⟩⟩
-
-variable [LocallyFiniteOrder R] [Archimedean R]
+variable {R : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R] [LocallyFiniteOrder R]
+  [Archimedean R]
 
 lemma tendsto_Icc_neg :
     Tendsto (fun n : ℕ ↦ Icc (-n : R) n) atTop atTop :=

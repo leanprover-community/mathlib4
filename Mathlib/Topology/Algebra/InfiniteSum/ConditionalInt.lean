@@ -15,8 +15,8 @@ import Mathlib.Topology.Algebra.Monoid.Defs
 
 This file contains some lemmas about sums over symmetric integer intervals `Ixx -N N` used, for
 example in the definition of the Eisenstein series `E2`.
-In particular we define `symmetricIcc`, `symmetricIco`, `symmetricIoc` as `SummationFilter`s
- corresponding to the intervals `Icc -N N`, `Ico -N N`, `Ioc -N N` respectively.
+In particular we define `symmetricIcc`, `symmetricIco`, `symmetricIoc` and `symmetricIoo` as
+`SummationFilter`s corresponding to the intervals `Icc -N N`, `Ico -N N`, `Ioc -N N` respectively.
 We also prove that these filters are all `NeBot` and `LeAtTop`.
 
 -/
@@ -29,23 +29,28 @@ namespace SummationFilter
 
 section IntervalFilters
 
-/-- The SummationFilter on Locally finite order `G` corresponding to the symmetric
+/-- The SummationFilter on a locally finite order `G` corresponding to the symmetric
 intervals `Icc (-N) N`· -/
 @[simps]
 def symmetricIcc : SummationFilter G where
   filter := atTop.map (fun g ↦ Icc (-g) g)
 
-/-- The SummationFilter on Locally finite order `G` corresponding to the symmetric
-intervals `Ioo (-N) N`· -/
+/-- The SummationFilter on a locally finite order `G` corresponding to the symmetric
+intervals `Ioo (-N) N`· Note that for `G` with `NoBotOrder` and `NoTopOrder` this coincides with
+`symmetricIcc` so one should use that. -/
 @[simps]
 def symmetricIoo : SummationFilter G where
   filter := atTop.map (fun g ↦ Ioo (-g) g)
 
-/-- The SummationFilter on `G` corresponding to the intervals `Ico (-N) N`. -/
+/-- The SummationFilter on a locally finite order `G` corresponding to the symmetric
+intervals `Ico (-N) N`· -/
+@[simps]
 def symmetricIco : SummationFilter G where
   filter := atTop.map (fun N ↦ Ico (-N) N)
 
-/-- The SummationFilter on `G` corresponding to the intervals `Ioc (-N) N`. -/
+/-- The SummationFilter on a locally finite order `G` corresponding to the symmetric
+intervals `Ioc (-N) N`· -/
+@[simps]
 def symmetricIoc : SummationFilter G where
   filter := atTop.map (fun N ↦ Ioc (-N) N)
 
@@ -98,15 +103,11 @@ section Int
 
 variable {α : Type*} {f : ℤ → α} [CommGroup α] [TopologicalSpace α] [ContinuousMul α]
 
-/-- The SummationFilter on `ℤ` corresponding to the intervals `Icc -N N`. Note that this is
-the same as the limit over open intervals `Ioo -N N` (see `symCondInt_eq_map_symmetricIoo_Int`). -/
-abbrev symCondInt : SummationFilter ℤ := symmetricIcc ℤ
-
-lemma symCondInt_eq_map_Icc_nat :
-    symCondInt.filter = atTop.map (fun N : ℕ ↦ Icc (-(N : ℤ)) N) := by
+lemma symmetricIcc_eq_map_Icc_nat :
+    (symmetricIcc ℤ).filter = atTop.map (fun N : ℕ ↦ Icc (-(N : ℤ)) N) := by
   simp [← Nat.map_cast_int_atTop, Function.comp_def]
 
-lemma symCondInt_eq_map_symmetricIoo_Int : symCondInt.filter = (symmetricIoo ℤ).filter := by
+lemma symmetricIcc_eq_symmetricIoo_int : (symmetricIcc ℤ).filter = (symmetricIoo ℤ).filter := by
   ext s
   simp only [symmetricIcc, ← Nat.map_cast_int_atTop, Filter.map_map, Filter.mem_map, mem_atTop_sets,
     ge_iff_le, Set.mem_preimage, comp_apply, symmetricIoo_filter]
@@ -115,41 +116,41 @@ lemma symCondInt_eq_map_symmetricIoo_Int : symCondInt.filter = (symmetricIoo ℤ
   simpa [Finset.ext_iff] using by grind
 
 @[to_additive]
-lemma HasProd.hasProd_IcoFilter_of_hasProd_symCondInt {a : α} (hf : HasProd f a symCondInt)
-    (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) :
+lemma HasProd.hasProd_symmetricIco_of_hasProd_symmetricIcc {a : α}
+    (hf : HasProd f a (symmetricIcc ℤ)) (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) :
     HasProd f a (symmetricIco ℤ) := by
-  simp only [HasProd, tendsto_map'_iff, symCondInt_eq_map_Icc_nat,
+  simp only [HasProd, tendsto_map'_iff, symmetricIcc_eq_map_Icc_nat,
     ← Nat.map_cast_int_atTop, symmetricIco] at *
   apply tendsto_of_div_tendsto_one _ hf
-  simpa [Pi.div_def, fun N : ℕ ↦ prod_Icc_eq_prod_Ico_succ f (show (-N : ℤ) ≤ N by omega)]
+  simpa [Pi.div_def, fun N : ℕ ↦ prod_Icc_eq_prod_Ico_mul f (show (-N : ℤ) ≤ N by omega)]
     using hf2
 
 @[to_additive]
-lemma multipliable_symmetricIco_of_multiplible_symCondInt
-    (hf : Multipliable f symCondInt) (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) :
+lemma multipliable_symmetricIco_of_multiplible_symmetricIcc
+    (hf : Multipliable f (symmetricIcc ℤ)) (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) :
     Multipliable f (symmetricIco ℤ) :=
-  (hf.hasProd.hasProd_IcoFilter_of_hasProd_symCondInt hf2).multipliable
+  (hf.hasProd.hasProd_symmetricIco_of_hasProd_symmetricIcc hf2).multipliable
 
 @[to_additive]
-lemma tprod_symCondInt_eq_tprod_symmetricIco [T2Space α]
-    (hf : Multipliable f symCondInt) (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) :
-    ∏'[symmetricIco ℤ] b, f b = ∏'[symCondInt] b, f b :=
-  (hf.hasProd.hasProd_IcoFilter_of_hasProd_symCondInt hf2).tprod_eq
+lemma tprod_symmetricIcc_eq_tprod_symmetricIco [T2Space α]
+    (hf : Multipliable f (symmetricIcc ℤ)) (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) :
+    ∏'[symmetricIco ℤ] b, f b = ∏'[symmetricIcc ℤ] b, f b :=
+  (hf.hasProd.hasProd_symmetricIco_of_hasProd_symmetricIcc hf2).tprod_eq
 
 @[to_additive]
-lemma hasProd_symCondInt_iff {α : Type*} [CommMonoid α] [TopologicalSpace α]
-    {f : ℤ → α} {a : α} : HasProd f a symCondInt ↔
+lemma hasProd_symmetricIcc_iff {α : Type*} [CommMonoid α] [TopologicalSpace α]
+    {f : ℤ → α} {a : α} : HasProd f a (symmetricIcc ℤ) ↔
     Tendsto (fun N : ℕ ↦ ∏ n ∈ Icc (-(N : ℤ)) N, f n) atTop (𝓝 a) := by
-  simp [HasProd, symCondInt, ← Nat.map_cast_int_atTop, comp_def]
+  simp [HasProd, symmetricIcc, ← Nat.map_cast_int_atTop, comp_def]
 
 @[to_additive]
-lemma hasProd_symmetricIco_Int_iff {α : Type*} [CommMonoid α] [TopologicalSpace α]
+lemma hasProd_symmetricIco_int_iff {α : Type*} [CommMonoid α] [TopologicalSpace α]
     {f : ℤ → α} {a : α} : HasProd f a (symmetricIco ℤ) ↔
     Tendsto (fun N : ℕ ↦ ∏ n ∈ Finset.Ico (-(N : ℤ)) (N : ℤ), f n) atTop (𝓝 a) := by
   simp [HasProd, symmetricIco, ← Nat.map_cast_int_atTop, comp_def]
 
 @[to_additive]
-lemma hasProd_symmetricIoc_Int_iff {α : Type*} [CommMonoid α] [TopologicalSpace α]
+lemma hasProd_symmetricIoc_int_iff {α : Type*} [CommMonoid α] [TopologicalSpace α]
     {f : ℤ → α} {a : α} : HasProd f a (symmetricIoc ℤ) ↔
     Tendsto (fun N : ℕ ↦ ∏ n ∈ Finset.Ioc (-(N : ℤ)) (N : ℤ), f n) atTop (𝓝 a) := by
   simp [HasProd, symmetricIoc, ← Nat.map_cast_int_atTop, comp_def]
