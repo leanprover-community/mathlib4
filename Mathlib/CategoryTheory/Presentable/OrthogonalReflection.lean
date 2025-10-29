@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Presentable.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 import Mathlib.CategoryTheory.Localization.Bousfield
 import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
@@ -16,7 +15,29 @@ import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 Given `W : MorphismProperty C` (which should be small) and assuming the existence
 of certain colimits in `C`, we construct a morphism `toSucc W Z : Z ⟶ succ W Z` for
 any `Z : C`. This morphism belongs to `LeftBousfield.W W.isLocal` and
-is an isomorphism iff `Z` belongs to `W.isLocal`.
+is an isomorphism iff `Z` belongs to `W.isLocal` (see the lemma `isIso_toSucc_iff`).
+The morphism `toSucc W Z : Z ⟶ succ W Z` is defined as a composition
+of two morphisms that are roughly described as follows:
+* `toStep W Z : Z ⟶ step W Z`: for any morphism `f : X ⟶ Y` satisfying `W`
+and any morphism `X ⟶ Z`, we "attach" a morphism `Y ⟶ step W Z` (using
+coproducts and a pushout in essentially the same way as it is done in
+the file `CategoryTheory.SmallObject.Construction` for the small object
+argument);
+* `fromStep W Z : step W Z ⟶ succ W Z`: this morphism coequalizes all pairs
+of morphisms `g₁ g₂ : Y ⟶ step W Z` such that there is a `f : X ⟶ Y`
+satisfying `W` such that `f ≫ g₁ = f ≫ g₂`.
+
+The morphism `toSucc W Z : Z ⟶ succ W Z` is a variant of the (wrong) definition
+p. 32 in the book by Adámek and Rosický. In this book, a slightly different object
+as `succ W Z` is defined directly as a colimit of an intricate diagram, but
+contrary to what is stated on p. 33, it does not satisfy `isIso_toSucc_iff`.
+The author of this file was unable to not understand the attempt of the authors
+to fix this mistake in the errata to this book. This led to the definition
+in two steps outlined above.
+
+In future PRs, we will apply a transfinite induction to this construction in
+order to obtain a left adjoint to the inclusion of the full subcategory
+of `W`-local objects under suitable assumptions (TODO).
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
@@ -55,7 +76,8 @@ namespace OrthogonalReflection
 
 variable (Z : C)
 
-/-- The index type parametrising the data of a morphism `f : X ⟶ Y` satisfying `W`
+/-- Given `W : MorphismProperty C` and `Z : C`, this is the index type
+parametrising the data of a morphism `f : X ⟶ Y` satisfying `W`
 and a morphism `X ⟶ Z`. -/
 def D₁ : Type _ := Σ (f : W.toSet), f.1.left ⟶ Z
 
@@ -80,14 +102,16 @@ noncomputable abbrev D₁.l : ∐ (obj₁ (W := W) (Z := Z)) ⟶ Z :=
 variable {W Z} in
 /-- The inclusion of a summand in `∐ obj₁`. -/
 noncomputable abbrev D₁.ιLeft {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
-    X ⟶ ∐ (obj₁ (W := W) (Z := Z)) :=
+    X ⟶ ∐ obj₁ (W := W) (Z := Z) :=
   Sigma.ι (obj₁ (W := W) (Z := Z)) ⟨⟨Arrow.mk f, hf⟩, g⟩
 
 variable {W Z} in
 @[reassoc]
 lemma D₁.ιLeft_comp_l {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
-    D₁.ιLeft f hf g ≫ D₁.l W Z = g := by
-  apply Sigma.ι_desc
+    D₁.ιLeft f hf g ≫ D₁.l W Z = g :=
+  Sigma.ι_desc _ _
+
+section
 
 variable [HasCoproduct (D₁.obj₂ (W := W) (Z := Z))]
 
@@ -195,7 +219,7 @@ lemma leftBousfieldW_isLocal_toSucc :
     LeftBousfield.W W.isLocal (toSucc W Z) := by
   refine fun T hT ↦ ⟨fun φ₁ φ₂ h ↦ ?_, fun g ↦ ?_⟩
   · ext ⟨⟩
-    simp at h
+    simp only [Category.assoc] at h
     dsimp
     ext d
     · apply (hT d.1.1.hom d.1.2).1
@@ -224,15 +248,18 @@ lemma isIso_toSucc_iff :
     ext d
     · simp only [Category.assoc] at hf
       simp only [Category.comp_id, ← Category.assoc]
-      apply D₂.condition _ d.1.2
-      simp
-      rw [← D₁.ι_comp_t_assoc, pushout.condition_assoc, reassoc_of% hf,
+      refine D₂.condition _ d.1.2 ?_
+      rw [Category.assoc, Category.assoc, Category.assoc,
+        ← D₁.ι_comp_t_assoc, pushout.condition_assoc, reassoc_of% hf,
         ← D₁.ι_comp_t_assoc, pushout.condition]
     · simp [reassoc_of% hf]
 
+end
+
 open SmallObject
 
-variable [∀ Z, HasCoproduct (D₁.obj₁ (W := W) (Z := Z))]
+variable [HasPushouts C]
+  [∀ Z, HasCoproduct (D₁.obj₁ (W := W) (Z := Z))]
   [∀ Z, HasCoproduct (D₁.obj₂ (W := W) (Z := Z))]
   [∀ Z, HasMulticoequalizer (D₂.multispanIndex W Z)]
 
