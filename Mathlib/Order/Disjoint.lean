@@ -679,7 +679,7 @@ theorem mk_inf_mk {a b : α} (ha : IsComplemented a) (hb : IsComplemented b) :
     (⟨a, ha⟩ ⊓ ⟨b, hb⟩ : Complementeds α) = ⟨a ⊓ b, ha.inf hb⟩ := rfl
 
 instance : DistribLattice (Complementeds α) :=
-  Complementeds.coe_injective.distribLattice _ coe_sup coe_inf
+  Complementeds.coe_injective.distribLattice _ .rfl .rfl coe_sup coe_inf
 
 @[simp, norm_cast]
 theorem disjoint_coe : Disjoint (a : α) b ↔ Disjoint a b := by
