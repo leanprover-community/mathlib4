@@ -116,7 +116,7 @@ theorem colex_le_iff_of_unique [Unique ι] [∀ i, PartialOrder (α i)] {x y : C
 
 section LinearOrder
 
-variable [H : ∀ i, LinearOrder (α i)]
+variable [∀ i, LinearOrder (α i)]
 
 /-- Auxiliary helper to case split computably. There is no need for this to be public, as it
 can be written with `Or.by_cases` on `lt_trichotomy` once the instances below are constructed. -/
