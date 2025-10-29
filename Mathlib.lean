@@ -1568,6 +1568,7 @@ import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 import Mathlib.Analysis.Calculus.Rademacher
 import Mathlib.Analysis.Calculus.SmoothSeries
+import Mathlib.Analysis.Calculus.TangentCone
 import Mathlib.Analysis.Calculus.TangentCone.Basic
 import Mathlib.Analysis.Calculus.TangentCone.Defs
 import Mathlib.Analysis.Calculus.TangentCone.DimOne
