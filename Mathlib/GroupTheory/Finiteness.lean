@@ -534,14 +534,16 @@ end AddGroup
 
 section WellQuasiOrderedLE
 
-variable {M N : Type*} [AddCommMonoid M] [PartialOrder M] [WellQuasiOrderedLE M]
-  [IsOrderedCancelAddMonoid M] [CanonicallyOrderedAdd M]
+variable {M N : Type*} [CommMonoid M] [PartialOrder M] [WellQuasiOrderedLE M]
+  [IsOrderedCancelMonoid M] [CanonicallyOrderedMul M]
 
-/-- In a canonically ordered and well-quasi-ordered monoid (typical example is `ℕ ^ k`), any
-subtractive submonoid is finitely generated. -/
-theorem AddSubmonoid.fg_of_subtractive {P : AddSubmonoid M} (hP : ∀ x ∈ P, ∀ y, x + y ∈ P → y ∈ P) :
+/-- In a canonically ordered and well-quasi-ordered monoid, any divisive submonoid is finitely
+generated. -/
+@[to_additive fg_of_subtractive /-- In a canonically ordered and well-quasi-ordered additive monoid
+(typical example is `ℕ ^ k`), any subtractive submonoid is finitely generated. -/]
+theorem Submonoid.fg_of_divisive {P : Submonoid M} (hP : ∀ x ∈ P, ∀ y, x * y ∈ P → y ∈ P) :
     P.FG := by
-  have hpwo := Set.isPWO_of_wellQuasiOrderedLE { x | x ∈ P ∧ x ≠ 0 }
+  have hpwo := Set.isPWO_of_wellQuasiOrderedLE { x | x ∈ P ∧ x ≠ 1 }
   rw [fg_iff]
   refine ⟨_, ?_, (setOf_minimal_antichain _).finite_of_partiallyWellOrderedOn
     (hpwo.mono (setOf_minimal_subset _))⟩
@@ -551,31 +553,36 @@ theorem AddSubmonoid.fg_of_subtractive {P : AddSubmonoid M} (hP : ∀ x ∈ P, �
     rw [← P.closure_eq]
     exact closure_mono ((setOf_minimal_subset _).trans fun _ => And.left) hx
   · intro hx₁
-    by_cases hx₂ : x = 0
+    by_cases hx₂ : x = 1
     · simp [hx₂]
     refine hpwo.wellFoundedOn.induction ⟨hx₁, hx₂⟩ fun y ⟨hy₁, hy₂⟩ ih => ?_
     simp only [Set.mem_setOf_eq, and_imp] at ih
-    by_cases hy₃ : Minimal (· ∈ { x | x ∈ P ∧ x ≠ 0 }) y
+    by_cases hy₃ : Minimal (· ∈ { x | x ∈ P ∧ x ≠ 1 }) y
     · exact mem_closure_of_mem hy₃
     rcases exists_lt_of_not_minimal ⟨hy₁, hy₂⟩ hy₃ with ⟨z, hz₁, hz₂, hz₃⟩
-    rcases exists_add_of_le hz₁.le with ⟨y, rfl⟩
-    apply add_mem
+    rcases exists_mul_of_le hz₁.le with ⟨y, rfl⟩
+    apply mul_mem
     · exact ih _ hz₂ hz₃ hz₁.le hz₁.not_ge
     apply ih
     · exact hP _ hz₂ _ hy₁
-    · exact (pos_of_lt_add_right hz₁).ne.symm
-    · exact le_add_self
-    · rw [add_le_iff_nonpos_left]
-      exact (pos_of_ne_zero hz₃).not_ge
+    · exact (one_lt_of_lt_mul_right hz₁).ne.symm
+    · exact le_mul_self
+    · rw [mul_le_iff_le_one_left']
+      exact (one_lt_of_ne_one hz₃).not_ge
 
 /-- A canonically ordered and well-quasi-ordered monoid must be finitely generated. -/
-theorem AddMonoid.fg_of_wellQuasiOrderedLE : AddMonoid.FG M where
-  fg_top := AddSubmonoid.fg_of_subtractive (by simp)
+@[to_additive /-- A canonically ordered and well-quasi-ordered additive monoid must be finitely
+generated. -/]
+theorem CommMonoid.fg_of_wellQuasiOrderedLE : Monoid.FG M where
+  fg_top := Submonoid.fg_of_divisive (by simp)
 
 /-- If `f` `g` are homomorphisms from a canonically ordered and well-quasi-ordered monoid `M` to a
-cancellative monoid `N`, the submonoid of `M` on which `f` and `g` agree is finitely generated. When
-`M` and `N` are `ℕ ^ k`, this is also known as a version of **Gordan's lemma**. -/
-theorem AddSubmonoid.fg_eqLocusM [AddMonoid N] [IsCancelAdd N] (f g : M →+ N) : (f.eqLocusM g).FG :=
-  fg_of_subtractive (by simp_all)
+cancellative monoid `N`, the submonoid of `M` on which `f` and `g` agree is finitely generated. -/
+@[to_additive /-- If `f` `g` are homomorphisms from a canonically ordered and well-quasi-ordered
+additive monoid `M` to a cancellative monoid `N`, the submonoid of `M` on which `f` and `g` agree is
+finitely generated. When `M` and `N` are `ℕ ^ k`, this is also known as a version of **Gordan's
+lemma**. -/]
+theorem Submonoid.fg_eqLocusM [Monoid N] [IsCancelMul N] (f g : M →* N) : (f.eqLocusM g).FG :=
+  fg_of_divisive (by simp_all)
 
 end WellQuasiOrderedLE
