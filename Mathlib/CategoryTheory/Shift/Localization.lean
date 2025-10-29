@@ -242,4 +242,72 @@ instance NatTrans.commShift_iso_hom_of_localization :
 
 end
 
+namespace LocalizerMorphism
+
+open Localization
+
+variable {C₁ C₂ : Type*} [Category C₁] [Category C₂]
+  {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂} (Φ : LocalizerMorphism W₁ W₂)
+  {M : Type*} [AddMonoid M] [HasShift C₁ M] [HasShift C₂ M]
+  [Φ.functor.CommShift M]
+  {D₁ D₂ : Type*} [Category D₁] [Category D₂]
+  (L₁ : C₁ ⥤ D₁) [L₁.IsLocalization W₁] (L₂ : C₂ ⥤ D₂)
+  [HasShift D₁ M] [HasShift D₂ M] [L₁.CommShift M] [L₂.CommShift M]
+
+section
+
+variable (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G)
+
+variable (M) in
+/-- This is the commutation of a functor `G` to shifts by an additive monoid `M` when
+`e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G` is an isomorphism, `Φ` is a localizer morphism and
+`L₁` is a localization functor. We assume that all categories involved
+are equipped with shifts and that `L₁`, `L₂` and `Φ.functor` commute to them. -/
+noncomputable def commShift : G.CommShift M := by
+  letI : Localization.Lifting L₁ W₁ (Φ.functor ⋙ L₂) G := ⟨e.symm⟩
+  exact Functor.commShiftOfLocalization L₁ W₁ M (Φ.functor ⋙ L₂) G
+
+@[reassoc]
+lemma commShift_iso_hom_app (m : M) (X : C₁) :
+    letI := Φ.commShift M L₁ L₂ G e
+    (G.commShiftIso m).hom.app (L₁.obj X) =
+      G.map ((L₁.commShiftIso m).inv.app X) ≫ e.inv.app _ ≫
+        L₂.map ((Φ.functor.commShiftIso m).hom.app X) ≫
+        (L₂.commShiftIso m).hom.app _ ≫ (e.hom.app X)⟦m⟧' := by
+  simp [Functor.commShiftOfLocalization_iso_hom_app,
+    Functor.commShiftIso_comp_hom_app]
+
+@[reassoc]
+lemma commShift_iso_inv_app (m : M) (X : C₁) :
+    letI := Φ.commShift M L₁ L₂ G e
+    (G.commShiftIso m).inv.app (L₁.obj X) =
+      (e.inv.app X)⟦m⟧' ≫ (L₂.commShiftIso m).inv.app _ ≫
+        L₂.map ((Φ.functor.commShiftIso m).inv.app X) ≫ e.hom.app _ ≫
+          G.map ((L₁.commShiftIso m).hom.app X) := by
+  simp [Functor.commShiftOfLocalization_iso_inv_app,
+    Functor.commShiftIso_comp_inv_app]
+
+lemma natTransCommShift_hom :
+    letI := Φ.commShift M L₁ L₂ G e
+    NatTrans.CommShift e.hom M := by
+  letI := Φ.commShift M L₁ L₂ G e
+  refine ⟨fun m ↦ ?_⟩
+  ext X
+  simp [Functor.commShiftIso_comp_hom_app, commShift_iso_hom_app, ← Functor.map_comp_assoc]
+
+end
+
+variable [W₁.IsCompatibleWithShift M] [W₂.IsCompatibleWithShift M]
+  [L₂.IsLocalization W₂]
+
+noncomputable instance : (Φ.localizedFunctor L₁ L₂).CommShift M :=
+  Φ.commShift M L₁ L₂ _ (CatCommSq.iso ..)
+
+instance :
+    NatTrans.CommShift (CatCommSq.iso Φ.functor W₁.Q W₂.Q
+      (Φ.localizedFunctor W₁.Q W₂.Q)).hom M :=
+  natTransCommShift_hom ..
+
+end LocalizerMorphism
+
 end CategoryTheory
