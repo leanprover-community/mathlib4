@@ -37,8 +37,7 @@ theorem reCLM_norm : ‖reCLM‖ = 1 :=
       _ ≤ ‖reCLM‖ := unit_le_opNorm _ _ (by simp)
 
 @[simp]
-theorem reCLM_enorm : ‖reCLM‖ₑ = 1 := by
-  simp [← ofReal_norm]
+theorem reCLM_enorm : ‖reCLM‖ₑ = 1 := by simp [← ofReal_norm]
 
 @[simp]
 theorem reCLM_nnnorm : ‖reCLM‖₊ = 1 :=
@@ -52,8 +51,7 @@ theorem imCLM_norm : ‖imCLM‖ = 1 :=
       _ ≤ ‖imCLM‖ := unit_le_opNorm _ _ (by simp)
 
 @[simp]
-theorem imCLM_enorm : ‖imCLM‖ₑ = 1 := by
-  simp [← ofReal_norm]
+theorem imCLM_enorm : ‖imCLM‖ₑ = 1 := by simp [← ofReal_norm]
 
 @[simp]
 theorem imCLM_nnnorm : ‖imCLM‖₊ = 1 :=
@@ -64,8 +62,7 @@ theorem conjCLE_norm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖ = 1 :=
   conjLIE.toLinearIsometry.norm_toContinuousLinearMap
 
 @[simp]
-theorem conjCLE_enorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖ₑ = 1 := by
-  simp [← ofReal_norm]
+theorem conjCLE_enorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖ₑ = 1 := by simp [← ofReal_norm]
 
 @[simp]
 theorem conjCLE_nnorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖₊ = 1 :=
@@ -76,8 +73,7 @@ theorem ofRealCLM_norm : ‖ofRealCLM‖ = 1 :=
   ofRealLI.norm_toContinuousLinearMap
 
 @[simp]
-theorem ofRealCLM_enorm : ‖ofRealCLM‖ₑ = 1 := by
-  simp [← ofReal_norm]
+theorem ofRealCLM_enorm : ‖ofRealCLM‖ₑ = 1 := by simp [← ofReal_norm]
 
 @[simp]
 theorem ofRealCLM_nnnorm : ‖ofRealCLM‖₊ = 1 :=
