@@ -101,6 +101,15 @@ def cartesianMonoidalCategoryToTerminal [CartesianMonoidalCategory C] {X : C} (f
           · simpa using k.w.symm
           · aesop } }
 
+/-- In cartesian monoidal categories, the first product projections `fst` have chosen pullbacks. -/
+@[simps]
+def cartesianMonoidalCategoryFst [CartesianMonoidalCategory C] {X Y : C} :
+    ChosenPullback (fst X Y : X ⊗ Y ⟶ X) where
+  pullback.obj Z := Over.mk (Z.hom ▷ Y)
+  pullback.map g := Over.homMk (g.left ▷ Y)
+  mapPullbackAdj.unit.app T := Over.homMk (lift (𝟙 _) (T.hom ≫ snd _ _))
+  mapPullbackAdj.counit.app U := Over.homMk (fst _ _)
+
 /-- In cartesian monoidal categories, the second product projections `snd` have chosen pullbacks. -/
 @[simps]
 def cartesianMonoidalCategorySnd [CartesianMonoidalCategory C] {X Y : C} :
