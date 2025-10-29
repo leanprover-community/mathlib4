@@ -80,7 +80,7 @@ section max
 variable {K : Type u'} (S : K → J) (hS : HasCardinalLT K κ)
 
 /-- If `S : K → J` is a family of objects of cardinality `< κ` in a `κ`-filtered category,
-this is a  choice of objects in `J` which is the target of a map from any of
+this is a choice of objects in `J` which is the target of a map from any of
 the objects `S k`. -/
 noncomputable def max : J :=
   (cocone (Discrete.functor S) (by simpa using hS)).pt
@@ -218,15 +218,15 @@ instance isCardinalFiltered_prod (J₁ : Type u) (J₂ : Type u')
     exact
       { pt := (c₁.pt, c₂.pt)
         ι.app i := (c₁.ι.app i, c₂.ι.app i)
-        ι.naturality i j f := by
+        ι.naturality {i j} f := by
           ext
           · simpa using c₁.w f
-          · simpa using c₂.w f}⟩
+          · simpa using c₂.w f }⟩
 
 instance isCardinalFiltered_pi {ι : Type u'} (J : ι → Type u) [∀ i, Category.{v} (J i)]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] [∀ i, IsCardinalFiltered (J i) κ] :
     IsCardinalFiltered (∀ i, J i) κ where
-  nonempty_cocone {C _} F hC := ⟨by
+  nonempty_cocone F hC := ⟨by
     let c (i : ι) := cocone (F ⋙ Pi.eval J i) hC
     exact
       { pt i := (c i).pt
