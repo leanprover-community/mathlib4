@@ -3,9 +3,8 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 import Mathlib.Analysis.Normed.Ring.WithAbs
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 
 /-!
 # Ramification of infinite places of a number field
