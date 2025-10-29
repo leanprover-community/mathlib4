@@ -161,7 +161,7 @@ def subsemiring (R : Type*) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime] [Char
     Subsemiring (ℕ → R) where
   __ := submonoid R p
   zero_mem' _ := zero_pow hp.1.ne_zero
-  add_mem' hf hg n := (frobenius_add R p _ _).trans congr($(hf n) + $(hg n))
+  add_mem' hf hg n := (map_add (frobenius R p) _ _).trans congr($(hf n) + $(hg n))
 
 @[deprecated (since := "2025-10-28")]
 alias _root_.Ring.perfectionSubsemiring := subsemiring
@@ -288,7 +288,7 @@ section CommRing
 def subring (R : Type*) [CommRing R] (p : ℕ) [hp : Fact p.Prime] [CharP R p] :
     Subring (ℕ → R) where
   __ := subsemiring R p
-  neg_mem' hf n := (frobenius_neg p _).trans congr(-$(hf n))
+  neg_mem' hf n := (map_neg (frobenius R p) _).trans congr(-$(hf n))
 
 @[deprecated (since := "2025-10-28")]
 alias _root_.Ring.perfectionSubring := subring
