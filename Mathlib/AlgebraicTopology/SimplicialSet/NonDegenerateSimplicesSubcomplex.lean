@@ -53,6 +53,11 @@ lemma ext_iff (x y : A.N) :
     x = y ↔ x.toN = y.toN := by
   grind [cases SSet.Subcomplex.N]
 
+instance : PartialOrder A.N :=
+  PartialOrder.lift toN (fun _ _ ↦ by simp [ext_iff])
+
+lemma le_iff {x y : A.N} : x ≤ y ↔ x.toN ≤ y.toN :=
+  Iff.rfl
 section
 
 variable (s : A.N) {d : ℕ} (hd : s.dim = d)
