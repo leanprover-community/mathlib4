@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Sites.ConstantSheaf
 import Mathlib.CategoryTheory.Sites.Equivalence
 import Mathlib.Condensed.Basic
 import Mathlib.Condensed.Light.Basic
+import Mathlib.Condensed.Light.Instances
 /-!
 
 # Discrete-underlying adjunction
@@ -21,7 +22,7 @@ functor from `Condensed C` to `C`.
 We also give the variant `LightCondensed.discreteUnderlyingAdj` for light condensed objects.
 
 The file `Mathlib/Condensed/Discrete/Characterization.lean` defines a predicate `IsDiscrete` on
-condensed and and light condensed objects, and provides several conditions on a (light) condensed
+condensed and light condensed objects, and provides several conditions on a (light) condensed
 set or module that characterize it as discrete.
 -/
 
@@ -84,7 +85,6 @@ noncomputable def discreteUnderlyingAdj : discrete C ⊣ underlying C :=
 
 end LightCondensed
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- A version of `LightCondensed.discrete` in the `LightCondSet` namespace -/
 noncomputable abbrev LightCondSet.discrete := LightCondensed.discrete (Type u)
 
