@@ -26,8 +26,8 @@ open Polynomial
 variable {F : Type*} [Field F] {ι : Type*} [DecidableEq ι]
 
 theorem interpolate_poly [DecidableEq F] {s : Finset ι} {v : ι → F} (hvs : Set.InjOn v s)
-  {P : Polynomial F} (hP : P.degree < s.card) :
-  (interpolate s v) (fun (i : ι) => P.eval (v i)) = P := by
+    {P : Polynomial F} (hP : P.degree < s.card) :
+    (interpolate s v) (fun (i : ι) => P.eval (v i)) = P := by
   let t : Finset F := s.image v
   have ht : t.card = s.card := Finset.card_image_iff.mpr hvs
   apply eq_of_degrees_lt_of_eval_finset_eq t
@@ -40,7 +40,7 @@ theorem interpolate_poly [DecidableEq F] {s : Finset ι} {v : ι → F} (hvs : S
     rw [← hx, eval_interpolate_at_node _ hvs hi]
 
 theorem basis_topCoeff {s : Finset ι} {v : ι → F} {i : ι} (hi : i ∈ s) :
-  (Lagrange.basis s v i).coeff (s.card - 1) = (∏ j ∈ s.erase i, ((v i) - (v j)))⁻¹ := by
+    (Lagrange.basis s v i).coeff (s.card - 1) = (∏ j ∈ s.erase i, ((v i) - (v j)))⁻¹ := by
   rw [Lagrange.basis]
   unfold basisDivisor
   rw [Finset.prod_mul_distrib, ← Finset.prod_inv_distrib, ←map_prod, coeff_C_mul]
@@ -51,8 +51,8 @@ theorem basis_topCoeff {s : Finset ι} {v : ι → F} {i : ι} (hi : i ∈ s) :
   rw [this, mul_one]
 
 theorem interpolate_leadingCoeff [DecidableEq F] (s : Finset ι) (v : ι → F) (hvs : Set.InjOn v s)
-  {P : Polynomial F} (hP : s.card = P.degree + 1) :
-  P.leadingCoeff = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, ((v i) - (v j)) := by
+    {P : Polynomial F} (hP : s.card = P.degree + 1) :
+    P.leadingCoeff = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, ((v i) - (v j)) := by
   have P_degree : P.degree = ↑(s.card - 1) := by
     cases h : P.degree
     case bot => rw [h] at hP; simp at hP
@@ -80,15 +80,14 @@ namespace Polynomial.Chebyshev
 open Polynomial
 open Real
 
-private lemma node_in_range {n j : ℕ} (hn : n ≠ 0) (hj : j ≤ n) :
-  j * π / n ∈ Set.Icc 0 π := by
+private lemma node_in_range {n j : ℕ} (hn : n ≠ 0) (hj : j ≤ n) : j * π / n ∈ Set.Icc 0 π := by
   constructor
   · positivity
   · calc j * π / n ≤ n * π / n := by gcongr
     _ = π := by rw [mul_div_assoc, mul_div_cancel₀]; convert hn; exact Nat.cast_eq_zero
 
 private lemma node_product_positive {n : ℕ} {i : ℕ} (hi : i ∈ Finset.Icc 0 n) :
-  (-1)^i * ∏ j ∈ (Finset.Icc 0 n).erase i, (cos (i * π / n) - cos (j * π / n)) > 0 := by
+    (-1)^i * ∏ j ∈ (Finset.Icc 0 n).erase i, (cos (i * π / n) - cos (j * π / n)) > 0 := by
   by_cases n = 0
   case pos hn =>
     subst hn
@@ -143,12 +142,11 @@ private lemma node_product_positive {n : ℕ} {i : ℕ} (hi : i ∈ Finset.Icc 0
   replace hj₂ := Finset.mem_Ioc.mp hj₂
   linarith
 
-private lemma convex_combination {n : ℕ} (hn : n ≠ 0)
-  {P : ℝ[X]} (hP : P.degree = n) :
-  ∃ (c : ℕ → ℝ),
-    (∀ i ∈ Finset.Icc 0 n, 0 < c i) ∧
-    (∑ i ∈ Finset.Icc 0 n, c i = 2^(n - 1)) ∧
-    (∑ i ∈ Finset.Icc 0 n, (c i) * ((-1)^i * P.eval (cos (i * π / n))) = P.leadingCoeff) := by
+private lemma convex_combination {n : ℕ} (hn : n ≠ 0) {P : ℝ[X]} (hP : P.degree = n) :
+    ∃ (c : ℕ → ℝ),
+      (∀ i ∈ Finset.Icc 0 n, 0 < c i) ∧
+      (∑ i ∈ Finset.Icc 0 n, c i = 2^(n - 1)) ∧
+      (∑ i ∈ Finset.Icc 0 n, (c i) * ((-1)^i * P.eval (cos (i * π / n))) = P.leadingCoeff) := by
   use fun i => ((-1)^i * ∏ j ∈ (Finset.Icc 0 n).erase i, (cos (i * π / n) - cos (j * π / n)))⁻¹
   constructor
   · intro i hi
@@ -182,8 +180,7 @@ private lemma convex_combination {n : ℕ} (hn : n ≠ 0)
     · exact hinj
     · simp [hP]
 
-theorem bddAbove_poly_interval (P : ℝ[X]) :
-  BddAbove { abs (P.eval x) | x ∈ Set.Icc (-1) 1 } := by
+theorem bddAbove_poly_interval (P : ℝ[X]) : BddAbove { abs (P.eval x) | x ∈ Set.Icc (-1) 1 } := by
   have hK : IsCompact (Set.Icc (-1 : ℝ) 1) := isCompact_Icc
   have hcont : ContinuousOn (fun x => abs (P.eval x)) (Set.Icc (-1) 1) := by
     apply Continuous.continuousOn
@@ -193,7 +190,7 @@ theorem bddAbove_poly_interval (P : ℝ[X]) :
   exact IsCompact.bddAbove_image hK hcont
 
 private lemma pointwise_bound (P : ℝ[X]) (n i : ℕ) :
-  (-1)^i * P.eval (cos (i * π / n)) ≤ sSup { abs (P.eval x) | x ∈ Set.Icc (-1) 1 } := by
+    (-1)^i * P.eval (cos (i * π / n)) ≤ sSup { abs (P.eval x) | x ∈ Set.Icc (-1) 1 } := by
   suffices abs (P.eval (cos (i * π / n))) ≤ sSup { abs (P.eval x) | x ∈ Set.Icc (-1) 1 } by
     cases neg_one_pow_eq_or ℝ i with
     | inl h => rw [h, one_mul]; exact (abs_le'.mp this).1
@@ -207,9 +204,8 @@ private lemma pointwise_bound (P : ℝ[X]) (n i : ℕ) :
     exact abs_cos_le_one _
   rfl
 
-theorem min_abs_of_monic {n : ℕ} (hn : n ≠ 0)
-  (P : ℝ[X]) (Pdeg : P.degree = n) (Pmonic : P.Monic) :
-  1/2^(n - 1) ≤ sSup { abs (P.eval x) | x ∈ Set.Icc (-1) 1 } := by
+theorem min_abs_of_monic {n : ℕ} (hn : n ≠ 0) (P : ℝ[X]) (Pdeg : P.degree = n) (Pmonic : P.Monic) :
+    1/2^(n - 1) ≤ sSup { abs (P.eval x) | x ∈ Set.Icc (-1) 1 } := by
   set M := sSup { abs (P.eval x) | x ∈ Set.Icc (-1) 1 }
   suffices 1 ≤ M * 2^(n - 1) by calc
     1/2^(n - 1) ≤ (M * 2^(n - 1))/2^(n - 1) := by gcongr
@@ -229,14 +225,13 @@ noncomputable def normalized_T (n : ℕ) : ℝ[X] := (Polynomial.C (1 / 2^(n - 1
 
 @[simp]
 theorem normalized_T_eval (n : ℕ) (x : ℝ) :
-  (normalized_T n).eval x = ((T ℝ n).eval x) / 2^(n - 1) := by
+    (normalized_T n).eval x = ((T ℝ n).eval x) / 2^(n - 1) := by
   unfold normalized_T
   rw [eval_mul, eval_C]
   field_simp
 
-theorem min_abs_of_monic_extrema {n : ℕ} (hn : n ≠ 0)
-  (P : ℝ[X]) (Pdeg : P.degree = n) (Pmonic : P.Monic) :
-  1/2^(n - 1) = sSup { abs (P.eval x) | x ∈ Set.Icc (-1) 1 } ↔ P = normalized_T n := by
+theorem min_abs_of_monic_extrema {n : ℕ} (hn : n ≠ 0) (P : ℝ[X]) (Pdeg : P.degree = n) (Pmonic : P.Monic) :
+    1/2^(n - 1) = sSup { abs (P.eval x) | x ∈ Set.Icc (-1) 1 } ↔ P = normalized_T n := by
   constructor
   case mp =>
     intro h

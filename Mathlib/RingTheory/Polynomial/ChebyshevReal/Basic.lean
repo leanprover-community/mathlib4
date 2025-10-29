@@ -33,8 +33,7 @@ namespace Polynomial
 
 theorem roots_of_zeroes_of_card
   {R : Type _} [CommRing R] [IsDomain R] {p : Polynomial R} {S : Finset R}
-  (hS : ∀ x ∈ S, p.eval x = 0) (hcard : S.card = p.degree) :
-  p.roots = S.val := by
+  (hS : ∀ x ∈ S, p.eval x = 0) (hcard : S.card = p.degree) : p.roots = S.val := by
   have hp : p ≠ 0 := by contrapose! hcard; simp [hcard]
   symm; apply Multiset.eq_of_le_of_card_le
   · apply Finset.val_le_iff_val_subset.mpr
@@ -64,26 +63,23 @@ theorem T_leadingCoeff_real (n : ℤ) : (T ℝ n).leadingCoeff = 2^(n.natAbs - 1
   exact T_leadingCoeff ℝ n
 
 theorem T_bounded_of_bounded (n : ℤ) {x : ℝ} (hx : x ∈ Set.Icc (-1) 1) :
-  (T ℝ n).eval x ∈ Set.Icc (-1) 1 := by
+    (T ℝ n).eval x ∈ Set.Icc (-1) 1 := by
   rw [Set.mem_Icc] at hx
   rw [←cos_arccos hx.1 hx.2, T_real_cos]
   apply cos_mem_Icc
 
-theorem T_bounded_of_bounded' (n : ℤ) {x : ℝ} (hx : |x| ≤ 1) :
-  |(T ℝ n).eval x| ≤ 1 := by
+theorem T_bounded_of_bounded' (n : ℤ) {x : ℝ} (hx : |x| ≤ 1) : |(T ℝ n).eval x| ≤ 1 := by
   apply abs_le.mpr
   rw [←Set.mem_Icc]
   apply T_bounded_of_bounded n
   rw [Set.mem_Icc]
   exact abs_le.mp hx
 
-theorem T_ge_of_ge_one (n : ℤ) {x : ℝ} (hx : x ≥ 1) :
-  (T ℝ n).eval x ≥ 1 := by
+theorem T_ge_of_ge_one (n : ℤ) {x : ℝ} (hx : x ≥ 1) : (T ℝ n).eval x ≥ 1 := by
   rw [←cosh_arcosh hx, T_real_cosh]
   apply one_le_cosh
 
-theorem T_gt_of_gt_one {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : x > 1) :
-  (T ℝ n).eval x > 1 := by
+theorem T_gt_of_gt_one {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : x > 1) : (T ℝ n).eval x > 1 := by
   rw [←cosh_arcosh (le_of_lt hx), T_real_cosh]
   apply one_lt_cosh.mpr
   apply mul_ne_zero_iff.mpr
@@ -94,8 +90,7 @@ theorem T_gt_of_gt_one {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : x > 1) :
   subst this
   exact (lt_self_iff_false 1).mp hx
 
-theorem T_ge_of_le_neg_one (n : ℤ) {x : ℝ} (hx : x ≤ -1) :
-  n.negOnePow * (T ℝ n).eval x ≥ 1 := by
+theorem T_ge_of_le_neg_one (n : ℤ) {x : ℝ} (hx : x ≤ -1) : n.negOnePow * (T ℝ n).eval x ≥ 1 := by
   rw [←neg_neg x, T_eval_neg, ←mul_assoc]
   norm_cast
   rw [←Int.negOnePow_add, ←two_mul, Int.negOnePow_two_mul]
@@ -104,7 +99,7 @@ theorem T_ge_of_le_neg_one (n : ℤ) {x : ℝ} (hx : x ≤ -1) :
   linarith
 
 theorem T_gt_of_lt_neg_one {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : x < -1) :
-  n.negOnePow * (T ℝ n).eval x > 1 := by
+    n.negOnePow * (T ℝ n).eval x > 1 := by
   rw [←neg_neg x, T_eval_neg, ←mul_assoc]
   norm_cast
   rw [←Int.negOnePow_add, ←two_mul, Int.negOnePow_two_mul]
@@ -112,8 +107,7 @@ theorem T_gt_of_lt_neg_one {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : x < -1) :
   apply T_gt_of_gt_one hn
   linarith
 
-theorem T_abs_ge_of_abs_ge (n : ℤ) {x : ℝ} (hx : |x| ≥ 1) :
-  |(T ℝ n).eval x| ≥ 1 := by
+theorem T_abs_ge_of_abs_ge (n : ℤ) {x : ℝ} (hx : |x| ≥ 1) : |(T ℝ n).eval x| ≥ 1 := by
   apply le_abs.mpr
   cases le_abs.mp hx with
   | inl hx =>
@@ -136,8 +130,7 @@ theorem T_abs_ge_of_abs_ge (n : ℤ) {x : ℝ} (hx : |x| ≥ 1) :
       rw [neg_one_mul] at this
       exact this
 
-theorem T_abs_gt_of_abs_gt {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : |x| > 1) :
-  |(T ℝ n).eval x| > 1 := by
+theorem T_abs_gt_of_abs_gt {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : |x| > 1) : |(T ℝ n).eval x| > 1 := by
   apply lt_abs.mpr
   cases lt_abs.mp hx with
   | inl hx =>
@@ -160,14 +153,13 @@ theorem T_abs_gt_of_abs_gt {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : |x| > 1) :
       rw [neg_one_mul] at this
       exact this
 
-theorem T_bounded_iff_bounded {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
-  |x| ≤ 1 ↔ |(T ℝ n).eval x| ≤ 1 := by
+theorem T_bounded_iff_bounded {n : ℤ} (hn : n ≠ 0) (x : ℝ) : |x| ≤ 1 ↔ |(T ℝ n).eval x| ≤ 1 := by
   constructor
   · intro hx; exact T_bounded_of_bounded' n hx
   · intro hx; contrapose! hx; exact T_abs_gt_of_abs_gt hn hx
 
 theorem T_eq_cos_of_bounded {n : ℤ} (hn : n ≠ 0) {y : ℝ} (hy : |y| ≤ 1) (x : ℝ) :
-  (T ℝ n).eval x = y ↔ ∃ θ, cos θ = x ∧ cos (n * θ) = y := by
+    (T ℝ n).eval x = y ↔ ∃ θ, cos θ = x ∧ cos (n * θ) = y := by
   constructor
   · intro h
     have hx : |x| ≤ 1 := by
@@ -183,7 +175,7 @@ theorem T_eq_cos_of_bounded {n : ℤ} (hn : n ≠ 0) {y : ℝ} (hy : |y| ≤ 1) 
     rw [← hx, T_real_cos, hy]
 
 theorem T_eq_zero_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
-  (T ℝ n).eval x = 0 ↔ ∃ (k : ℤ), x = cos ((2 * k + 1) * π / (2 * n)) := by
+    (T ℝ n).eval x = 0 ↔ ∃ (k : ℤ), x = cos ((2 * k + 1) * π / (2 * n)) := by
   rw [T_eq_cos_of_bounded hn (show |0| ≤ 1 by norm_num)]
   constructor
   · rintro ⟨θ, hx, h0⟩
@@ -260,7 +252,7 @@ theorem T_roots_eq {n : ℕ} (hn : n ≠ 0) : (T ℝ n).roots = (T_roots n).val 
   apply roots_of_zeroes_of_card hS hcard
 
 theorem T_eq_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
-  (T ℝ n).eval x = 1 ↔ ∃ (k : ℤ), x = cos (2 * k * π / n) := by
+    (T ℝ n).eval x = 1 ↔ ∃ (k : ℤ), x = cos (2 * k * π / n) := by
   rw [T_eq_cos_of_bounded hn (show |1| ≤ 1 by norm_num)]
   constructor
   · rintro ⟨θ, hx, h1⟩
@@ -277,7 +269,7 @@ theorem T_eq_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     field_simp
 
 theorem T_eq_neg_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
-  (T ℝ n).eval x = -1 ↔ ∃ (k : ℤ), x = cos ((2 * k + 1) * π / n) := by
+    (T ℝ n).eval x = -1 ↔ ∃ (k : ℤ), x = cos ((2 * k + 1) * π / n) := by
   rw [T_eq_cos_of_bounded hn (show |-1| ≤ 1 by norm_num)]
   constructor
   · rintro ⟨θ, hx, h1⟩
@@ -293,8 +285,7 @@ theorem T_eq_neg_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     use k
     field_simp; ring
 
-theorem T_node_eval {n : ℤ} (hn : n ≠ 0) (k : ℤ) :
-  (T ℝ n).eval (cos (k * π / n)) = (-1)^k := by
+theorem T_node_eval {n : ℤ} (hn : n ≠ 0) (k : ℤ) : (T ℝ n).eval (cos (k * π / n)) = (-1)^k := by
   rw [T_real_cos]
   trans cos (k * π)
   · congr 1; field_simp
@@ -303,7 +294,7 @@ theorem T_node_eval {n : ℤ} (hn : n ≠ 0) (k : ℤ) :
     _ = (-1)^k := by rw [cos_zero, mul_one]
 
 theorem T_abs_eq_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
-  |(T ℝ n).eval x| = 1 ↔ ∃ (k : ℤ), x = cos (k * π / n) := by
+    |(T ℝ n).eval x| = 1 ↔ ∃ (k : ℤ), x = cos (k * π / n) := by
   constructor
   · intro h
     cases (abs_eq (by norm_num)).mp h with
@@ -361,8 +352,7 @@ theorem T_extrema_card (n : ℤ) : (T_extrema n).card = n.natAbs + 1 := by
     field_simp at this
     norm_cast at this
 
-theorem T_extrema_eq_nat {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
-  |(T ℝ n).eval x| = 1 ↔ x ∈ T_extrema n := by
+theorem T_extrema_eq_nat {n : ℕ} (hn : n ≠ 0) (x : ℝ) : |(T ℝ n).eval x| = 1 ↔ x ∈ T_extrema n := by
   have hn' : (n : ℤ) ≠ 0 := by omega
   constructor
   · intro h
@@ -410,8 +400,7 @@ theorem T_extrema_eq_nat {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
     rw [← hx]
     simp
 
-theorem T_extrema_eq {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
-  |(T ℝ n).eval x| = 1 ↔ x ∈ T_extrema n := by
+theorem T_extrema_eq {n : ℤ} (hn : n ≠ 0) (x : ℝ) : |(T ℝ n).eval x| = 1 ↔ x ∈ T_extrema n := by
   obtain ⟨m, hmn⟩ := n.eq_nat_or_neg
   have hm : m ≠ 0 := by omega
   cases hmn with
@@ -430,18 +419,17 @@ theorem U_natDegree_nat_real (n : ℕ) : (U ℝ n).natDegree = n := by
   exact U_natDegree_nat ℝ n
 
 theorem U_degree_ne_neg_one_real (n : ℤ) (hn : n ≠ -1) :
-  (U ℝ n).degree = ↑((n + 1).natAbs - 1) := by
+    (U ℝ n).degree = ↑((n + 1).natAbs - 1) := by
   exact U_degree_ne_neg_one ℝ n hn
 
-theorem U_natDegree_real (n : ℤ) :
-  (U ℝ n).natDegree = (n + 1).natAbs - 1 := by
+theorem U_natDegree_real (n : ℤ) : (U ℝ n).natDegree = (n + 1).natAbs - 1 := by
   exact U_natDegree ℝ n
 
 theorem U_leadingCoeff_nat_real (n : ℕ) : (U ℝ n).leadingCoeff = 2^n := by
   exact U_leadingCoeff_nat ℝ n
 
 theorem U_eq_zero_if (n : ℕ) {k : ℕ} (hk1 : 1 ≤ k) (hkn : k ≤ n) :
-  (U ℝ n).eval (cos (k * π / (n + 1))) = 0 := by
+    (U ℝ n).eval (cos (k * π / (n + 1))) = 0 := by
   have hn1 : (n + 1 : ℝ) ≠ 0 := by norm_cast
   have hpi := Real.pi_ne_zero
   have := U_real_cos (k * π / (n + 1)) n
@@ -515,7 +503,7 @@ theorem U_roots_eq (n : ℕ) : (U ℝ n).roots = (U_roots n).val := by
   apply roots_of_zeroes_of_card hS hcard
 
 theorem U_eq_zero_iff (n : ℕ) (x : ℝ) :
-  (U ℝ n).eval x = 0 ↔ ∃ (k : ℕ), 1 ≤ k ∧ k ≤ n ∧ x = cos (k * π / (n + 1)) := by
+    (U ℝ n).eval x = 0 ↔ ∃ (k : ℕ), 1 ≤ k ∧ k ≤ n ∧ x = cos (k * π / (n + 1)) := by
   change (U ℝ n).IsRoot x ↔ ∃ (k : ℕ), 1 ≤ k ∧ k ≤ n ∧ x = cos (k * π / (n + 1))
   have : U ℝ n ≠ 0 := by
     by_contra! h

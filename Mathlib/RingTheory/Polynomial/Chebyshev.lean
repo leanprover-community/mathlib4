@@ -129,7 +129,6 @@ theorem T_neg_one : T R (-1) = X := by
   suffices 2 * X - X = X by simpa
   ring
 
-
 theorem T_two : T R 2 = 2 * X ^ 2 - 1 := by
   unfold T; simp [pow_two, mul_assoc]
 
@@ -178,8 +177,7 @@ theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
     ring
 
 @[simp]
-theorem T_degree [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
-  (T R n).degree = n.natAbs := by
+theorem T_degree [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).degree = n.natAbs := by
   induction n using Chebyshev.induct' with
   | zero => simp
   | one => simp
@@ -195,13 +193,12 @@ theorem T_degree [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
   | neg n ih => rw [T_neg, ih]; simp
 
 @[simp]
-theorem T_natDegree [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
-  (T R n).natDegree = n.natAbs :=
+theorem T_natDegree [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).natDegree = n.natAbs :=
   natDegree_eq_of_degree_eq_some (T_degree R n)
 
 @[simp]
 theorem T_leadingCoeff [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
-  (T R n).leadingCoeff = 2^(n.natAbs - 1) := by
+    (T R n).leadingCoeff = 2^(n.natAbs - 1) := by
   induction n using Chebyshev.induct' with
   | zero => simp
   | one => simp
@@ -328,8 +325,7 @@ theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := 
     ring
 
 @[simp]
-theorem U_degree_nat [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
-  (U R n).degree = n := by
+theorem U_degree_nat [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).degree = n := by
   induction n using Nat.twoStepInduction with
   | zero => simp
   | one =>
@@ -349,8 +345,7 @@ theorem U_degree_nat [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
     · rw [ih1, this]; norm_cast; omega
 
 @[simp]
-theorem U_natDegree_nat [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
-  (U R n).natDegree = n :=
+theorem U_natDegree_nat [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).natDegree = n :=
   natDegree_eq_of_degree_eq_some (U_degree_nat R n)
 
 theorem U_degree_neg_one : (U R (-1)).degree = ⊥ := by simp
@@ -358,7 +353,7 @@ theorem U_degree_neg_one : (U R (-1)).degree = ⊥ := by simp
 theorem U_natDegree_neg_one : (U R (-1)).natDegree = 0 := by simp
 
 theorem U_degree_ne_neg_one [IsDomain R] [NeZero (2 : R)] (n : ℤ) (hn : n ≠ -1) :
-  (U R n).degree = ↑((n + 1).natAbs - 1) := by
+    (U R n).degree = ↑((n + 1).natAbs - 1) := by
   obtain ⟨m, hn⟩ := n.eq_nat_or_neg
   cases hn with
   | inl hn => subst hn; rw [U_degree_nat R m]; norm_cast
@@ -375,14 +370,13 @@ theorem U_degree_ne_neg_one [IsDomain R] [NeZero (2 : R)] (n : ℤ) (hn : n ≠ 
         · rw [U_degree_nat R m]; norm_cast
 
 theorem U_natDegree [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
-  (U R n).natDegree = (n + 1).natAbs - 1 := by
+    (U R n).natDegree = (n + 1).natAbs - 1 := by
   by_cases n = -1
   case pos hn => subst hn; simp
   case neg hn => exact natDegree_eq_of_degree_eq_some (U_degree_ne_neg_one R n hn)
 
 @[simp]
-theorem U_leadingCoeff_nat [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
-  (U R n).leadingCoeff = 2^n := by
+theorem U_leadingCoeff_nat [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).leadingCoeff = 2^n := by
   have : leadingCoeff (2 : R[X]) = 2 := by
     change leadingCoeff (C 2) = 2
     rw [leadingCoeff_C]
