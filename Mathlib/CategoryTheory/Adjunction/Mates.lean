@@ -495,6 +495,7 @@ theorem conjugateEquiv_mateEquiv_vcomp {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ :
     comp_id] at vcompb
   simpa [mateEquiv]
 
+@[simp]
 lemma conjugateEquiv_associator_hom
     {L₀₁ : A ⥤ B} {R₁₀ : B ⥤ A} {L₁₂ : B ⥤ C} {R₂₁ : C ⥤ B}
     {L₂₃ : C ⥤ D} {R₃₂ : D ⥤ C} (adj₀₁ : L₀₁ ⊣ R₁₀) (adj₁₂ : L₁₂ ⊣ R₂₁)
@@ -507,18 +508,21 @@ lemma conjugateEquiv_associator_hom
     Adjunction.comp_counit_app, Category.id_comp]
   simp
 
+@[simp]
 lemma conjugateEquiv_leftUnitor_hom
     {L : A ⥤ B} {R : B ⥤ A} (adj : L ⊣ R) :
     conjugateEquiv adj (id.comp adj) (leftUnitor L).hom =
       (rightUnitor R).inv := by
   cat_disch
 
+@[simp]
 lemma conjugateEquiv_rightUnitor_hom
     {L : A ⥤ B} {R : B ⥤ A} (adj : L ⊣ R) :
     conjugateEquiv adj (adj.comp id) (rightUnitor L).hom =
       (leftUnitor R).inv := by
   cat_disch
 
+@[simp]
 lemma conjugateEquiv_whiskerLeft
     {L₁ L₂ : B ⥤ C} {R₁ R₂ : C ⥤ B} {L : A ⥤ B} {R : B ⥤ A}
     (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj : L ⊣ R) (τ : L₂ ⟶ L₁) :
@@ -530,6 +534,7 @@ lemma conjugateEquiv_whiskerLeft
   simp only [comp_obj, id_obj, Functor.map_comp] at h₁ h₂
   simp [← reassoc_of% h₁, reassoc_of% h₂]
 
+@[simp]
 lemma conjugateEquiv_whiskerRight
     {L₁ L₂ : A ⥤ B} {R₁ R₂ : B ⥤ A} {L : B ⥤ C} {R : C ⥤ B}
     (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj : L ⊣ R) (τ : L₂ ⟶ L₁) :
