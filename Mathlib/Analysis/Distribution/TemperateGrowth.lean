@@ -74,11 +74,11 @@ theorem HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f : E → F}
   rcases hf_temperate.isBigO_uniform n with ⟨k, hk⟩
   set F := fun x (N : Fin (n+1)) ↦ iteratedFDeriv ℝ N f x
   have : F =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k) := by
-    simp_rw [F, isBigO_pi, Fin.forall_iff, Nat.lt_succ]
+    simp_rw [F, isBigO_pi, Fin.forall_iff, Nat.lt_succ_iff]
     exact hk
   rcases this.exists_nonneg with ⟨C, C_nonneg, hC⟩
   simp (discharger := positivity) only [isBigOWith_top, Real.norm_of_nonneg,
-    pi_norm_le_iff_of_nonneg, Fin.forall_iff, Nat.lt_succ] at hC
+    pi_norm_le_iff_of_nonneg, Fin.forall_iff, Nat.lt_succ_iff] at hC
   exact ⟨k, C, C_nonneg, fun N hN x ↦ hC x N hN⟩
 
 lemma HasTemperateGrowth.of_fderiv {f : E → F}
