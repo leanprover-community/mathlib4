@@ -52,19 +52,29 @@ universe u v w x
 
 noncomputable section
 
-section Field
+section FiniteDimensional
 
-variable {𝕜 E F : Type*} [Field 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-  [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
-  [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+variable {𝕜 E F : Type*}
+  [AddCommGroup E] [TopologicalSpace E]
+  [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
 
 /-- The space of continuous linear maps between finite-dimensional spaces is finite-dimensional. -/
-instance [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] : FiniteDimensional 𝕜 (E →L[𝕜] F) :=
-  FiniteDimensional.of_injective (ContinuousLinearMap.coeLM 𝕜 : (E →L[𝕜] F) →ₗ[𝕜] E →ₗ[𝕜] F)
+instance ContinuousLinearMap.instModuleFinite [CommRing 𝕜] [Module 𝕜 E] [Module.Finite 𝕜 E]
+    [Module 𝕜 F] [IsNoetherian 𝕜 F] [ContinuousConstSMul 𝕜 F] :
+    Module.Finite 𝕜 (E →L[𝕜] F) :=
+  .of_injective (ContinuousLinearMap.coeLM 𝕜 : (E →L[𝕜] F) →ₗ[𝕜] E →ₗ[𝕜] F)
     ContinuousLinearMap.coe_injective
 
-end Field
+/-- The space of continuous linear maps between finite-dimensional spaces is finite-dimensional.
+
+This theorem is here to match searches looking for `FiniteDimensional` instead of `Module.Finite`.
+We use a strictly more general `ContinuousLinearMap.instModuleFinite` as an instance. -/
+protected theorem ContinuousLinearMap.finiteDimensional [Field 𝕜] [Module 𝕜 E]
+    [FiniteDimensional 𝕜 E] [Module 𝕜 F] [FiniteDimensional 𝕜 F] [ContinuousConstSMul 𝕜 F] :
+    FiniteDimensional 𝕜 (E →L[𝕜] F) :=
+  inferInstance
+
+end FiniteDimensional
 
 section NormedField
 
