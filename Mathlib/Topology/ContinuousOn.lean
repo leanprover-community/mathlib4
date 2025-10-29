@@ -1486,6 +1486,36 @@ lemma nhdsSetWithin_prod_le {s s' : Set α} {t t' : Set β} :
     𝓝ˢ[s' ×ˢ t'] (s ×ˢ t) ≤ 𝓝ˢ[s'] s ×ˢ 𝓝ˢ[t'] t := by
   simpa [nhdsSetWithin, ← prod_inf_prod] using inf_le_of_left_le <| nhdsSet_prod_le _ _
 
+theorem mem_nhdsSet_induced {α β : Type*} {t : TopologicalSpace β} (f : α → β) (s u : Set α) :
+    u ∈ @nhdsSet α (t.induced f) s ↔ ∃ v ∈ 𝓝ˢ (f '' s), f ⁻¹' v ⊆ u := by
+  letI := t.induced f
+  simp_rw [mem_nhdsSet_iff_exists, isOpen_induced_iff]
+  refine ⟨fun ⟨v, ⟨v', hv'⟩, hv⟩ ↦ ?_, fun ⟨v, ⟨v', hv'⟩, hv⟩ ↦ ?_⟩
+  · refine ⟨v', ⟨v', hv'.1, ?_, subset_rfl⟩, hv'.2.trans_subset hv.2⟩
+    exact (image_mono hv.1).trans (by simp [hv'])
+  · exact ⟨f ⁻¹' v', ⟨v', hv'.1, rfl⟩, image_subset_iff.1 hv'.2.1, (preimage_mono hv'.2.2).trans hv⟩
+
+theorem nhdsSet_induced {α β : Type*} {t : TopologicalSpace β} (f : α → β) (s : Set α) :
+    @nhdsSet α (t.induced f) s = comap f (𝓝ˢ (f '' s)) := by
+  ext s
+  rw [mem_nhdsSet_induced, mem_comap]
+
+theorem map_nhdsSet_induced_eq {α β : Type*} {t : TopologicalSpace β} {f : α → β} (s : Set α) :
+    map f (@nhdsSet α (t.induced f) s) = 𝓝ˢ[range f] (f '' s) := by
+  rw [nhdsSet_induced, Filter.map_comap, nhdsSetWithin]
+
+lemma Topology.IsInducing.map_nhdsSet_eq (hf : IsInducing f) (s : Set α) :
+    (𝓝ˢ s).map f = 𝓝ˢ[range f] (f '' s) :=
+  hf.eq_induced ▸ map_nhdsSet_induced_eq s
+
+lemma map_nhdsSet_subtype_val {s : Set α} (t : Set s) :
+    map (↑) (𝓝ˢ t) = 𝓝ˢ[s] ((↑) '' t) := by
+  rw [IsInducing.subtypeVal.map_nhdsSet_eq, Subtype.range_val]
+
+lemma mem_nhdsSet_subtype_iff_nhdsSetWithin {s : Set α} {t u : Set s} :
+    u ∈ 𝓝ˢ t ↔ (↑) '' u ∈ 𝓝ˢ[s] ((↑) '' t) := by
+  rw [← map_nhdsSet_subtype_val, image_mem_map_iff Subtype.val_injective]
+
 lemma ContinuousOn.preimage_mem_nhdsSetWithin {f : α → β} {s : Set α}
     (hf : ContinuousOn f s) {t u t' : Set β} (h : u ∈ 𝓝ˢ[t'] t) :
     f ⁻¹' u ∈ 𝓝ˢ[s ∩ f ⁻¹' t'] (s ∩ f ⁻¹' t) := by
