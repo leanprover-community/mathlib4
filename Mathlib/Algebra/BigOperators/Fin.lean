@@ -476,7 +476,7 @@ theorem partialProd_zero (f : Fin n → M) : partialProd f 0 = 1 := by simp [par
 @[to_additive]
 theorem partialProd_succ (f : Fin n → M) (j : Fin n) :
     partialProd f j.succ = partialProd f (Fin.castSucc j) * f j := by
-  simp [partialProd, List.take_succ]
+  simp [partialProd, List.take_add_one]
 
 @[to_additive]
 theorem partialProd_succ' (f : Fin (n + 1) → M) (j : Fin (n + 1)) :

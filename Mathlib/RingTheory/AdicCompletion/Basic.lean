@@ -232,7 +232,7 @@ lemma val_smul_apply [SMul S R] [SMul S M] [IsScalarTower S R M] (s : S) (f : Ad
     (n : ℕ) : (s • f).val n = s • f.val n := rfl
 
 @[ext]
-lemma ext {x y : AdicCompletion I M} (h : ∀ n, x.val n = y.val n) : x = y := Subtype.eq <| funext h
+lemma ext {x y : AdicCompletion I M} (h : ∀ n, x.val n = y.val n) : x = y := Subtype.ext <| funext h
 
 variable (I M)
 
@@ -419,7 +419,7 @@ theorem smul_apply (n : ℕ) (r : R) (f : AdicCauchySequence I M) : (r • f) n 
 
 @[ext]
 theorem ext {x y : AdicCauchySequence I M} (h : ∀ n, x n = y n) : x = y :=
-  Subtype.eq <| funext h
+  Subtype.ext <| funext h
 
 /-- The defining property of an adic Cauchy sequence unwrapped. -/
 theorem mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (f : AdicCauchySequence I M) :

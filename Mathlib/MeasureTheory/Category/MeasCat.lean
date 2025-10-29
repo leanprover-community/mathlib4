@@ -83,29 +83,30 @@ the restriction of `Measure` to (sub-)probability space.)
 def Measure : MeasCat ⥤ MeasCat where
   obj X := of (@MeasureTheory.Measure X.1 X.2)
   map f := ⟨Measure.map (⇑f), Measure.measurable_map f.1 f.2⟩
-  map_id X := Subtype.eq <| funext fun μ => @Measure.map_id X.carrier X.str μ
-  map_comp := fun ⟨_, hf⟩ ⟨_, hg⟩ => Subtype.eq <| funext fun _ => (Measure.map_map hg hf).symm
+  map_id X := Subtype.ext <| funext fun μ => @Measure.map_id X.carrier X.str μ
+  map_comp := fun ⟨_, hf⟩ ⟨_, hg⟩ => Subtype.ext <| funext fun _ => (Measure.map_map hg hf).symm
 
 /-- The Giry monad, i.e. the monadic structure associated with `Measure`. -/
 def Giry : CategoryTheory.Monad MeasCat where
   toFunctor := Measure
   η :=
     { app := fun X => ⟨@Measure.dirac X.1 X.2, Measure.measurable_dirac⟩
-      naturality := fun _ _ ⟨_, hf⟩ => Subtype.eq <| funext fun a => (Measure.map_dirac hf a).symm }
+      naturality :=
+        fun _ _ ⟨_, hf⟩ => Subtype.ext <| funext fun a => (Measure.map_dirac hf a).symm }
   μ :=
     { app := fun X => ⟨@Measure.join X.1 X.2, Measure.measurable_join⟩
-      naturality := fun _ _ ⟨_, hf⟩ => Subtype.eq <| funext fun μ => Measure.join_map_map hf μ }
-  assoc _ := Subtype.eq <| funext fun _ => Measure.join_map_join _
-  left_unit _ := Subtype.eq <| funext fun _ => Measure.join_dirac _
-  right_unit _ := Subtype.eq <| funext fun _ => Measure.join_map_dirac _
+      naturality := fun _ _ ⟨_, hf⟩ => Subtype.ext <| funext fun μ => Measure.join_map_map hf μ }
+  assoc _ := Subtype.ext <| funext fun _ => Measure.join_map_join _
+  left_unit _ := Subtype.ext <| funext fun _ => Measure.join_dirac _
+  right_unit _ := Subtype.ext <| funext fun _ => Measure.join_map_dirac _
 
 /-- An example for an algebra on `Measure`: the nonnegative Lebesgue integral is a hom, behaving
 nicely under the monad operations. -/
 def Integral : Giry.Algebra where
   A := MeasCat.of ℝ≥0∞
   a := ⟨fun m : MeasureTheory.Measure ℝ≥0∞ ↦ ∫⁻ x, x ∂m, Measure.measurable_lintegral measurable_id⟩
-  unit := Subtype.eq <| funext fun _ : ℝ≥0∞ => lintegral_dirac' _ measurable_id
-  assoc := Subtype.eq <| funext fun μ : MeasureTheory.Measure (MeasureTheory.Measure ℝ≥0∞) ↦
+  unit := Subtype.ext <| funext fun _ : ℝ≥0∞ => lintegral_dirac' _ measurable_id
+  assoc := Subtype.ext <| funext fun μ : MeasureTheory.Measure (MeasureTheory.Measure ℝ≥0∞) ↦
     show ∫⁻ x, x ∂μ.join = ∫⁻ x, x ∂Measure.map (fun m => ∫⁻ x, x ∂m) μ by
       rw [Measure.lintegral_join, lintegral_map] <;>
         apply_rules [Measurable.aemeasurable, measurable_id, Measure.measurable_lintegral]
