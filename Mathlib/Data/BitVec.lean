@@ -24,7 +24,7 @@ variable {w : Nat}
 
 -- TODO: move to the Lean4 repository.
 open Fin.CommRing in
-theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = ↑z := by
+theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2 ^ w)) = ↑z := by
   cases w
   case zero =>
     simp only [eq_nil]
