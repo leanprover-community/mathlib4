@@ -123,8 +123,7 @@ def ofObj (M : F.obj (.mk (op S))) : F.DescentData f where
       F.mapComp'₀₁₃_inv_app (f i₁).op.toLoc f₁.op.toLoc g.op.toLoc q.op.toLoc
         gf₁.op.toLoc q'.op.toLoc (by grind) (by grind) (by grind),
       F.mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom_app (f i₂).op.toLoc f₂.op.toLoc g.op.toLoc
-      q.op.toLoc gf₂.op.toLoc q'.op.toLoc (by
-        grind) (by grind) (by grind)]
+      q.op.toLoc gf₂.op.toLoc q'.op.toLoc (by grind) (by grind) (by grind)]
 
 /-- Constructor for isomorphisms in `Pseudofunctor.DescentData`. -/
 @[simps]
