@@ -21,7 +21,7 @@ provides the data of a pullback functor `Over X ⥤ Over Y` as a right adjoint t
   composition of morphisms with chosen pullbacks have chosen pullbacks.
 
 -  `Over.ChosenPullback.isPullback` proves that for morphisms `f` and `g` with the same codomain,
-  the object `Over.ChosenPullback.pullbackObj f g` togethe with morphisms
+  the object `Over.ChosenPullback.pullbackObj f g` together with morphisms
   `Over.ChosenPullback.fst f g` and `Over.ChosenPullback.snd f g` form a pullback square
   over `f` and `g`.
 
