@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fox Thomson, Maja Kądziołka
+Authors: Fox Thomson, Maja Kądziołka, Chris Wong, Rudy Peterson
 -/
 module
 
@@ -84,6 +84,16 @@ variable (M) in
 theorem stepSet_singleton (s : σ) (a : α) : M.stepSet {s} a = M.step s a := by
   simp [stepSet]
 
+theorem stepSet_union {S1 S2 : Set σ} {a : α} :
+    M.stepSet (S1 ∪ S2) a = M.stepSet S1 a ∪ M.stepSet S2 a := by
+  ext s
+  simp [mem_stepSet]
+  constructor
+  · rintro ⟨s', (h1 | h2), hstep⟩
+    · left; tauto
+    · right; tauto
+  · rintro (⟨s', h, hstep⟩ | ⟨s', h, hstep⟩) <;> exists s' <;> tauto
+
 variable (M) in
 /-- `M.evalFrom S x` computes all possible paths through `M` with input `x` starting at an element
   of `S`. -/
@@ -107,9 +117,19 @@ theorem evalFrom_cons (S : Set σ) (a : α) (x : List α) :
   rfl
 
 @[simp]
+theorem evalFrom_append (S : Set σ) (x y : List α) :
+    M.evalFrom S (x ++ y) = M.evalFrom (M.evalFrom S x) y := by
+  simp only [evalFrom, List.foldl_append]
+
 theorem evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
     M.evalFrom S (x ++ [a]) = M.stepSet (M.evalFrom S x) a := by
-  simp only [evalFrom, List.foldl_append, List.foldl_cons, List.foldl_nil]
+  simp only [evalFrom_append, evalFrom_cons, evalFrom_nil]
+
+theorem evalFrom_union (S1 S2 : Set σ) (x : List α) :
+    M.evalFrom (S1 ∪ S2) x = M.evalFrom S1 x ∪ M.evalFrom S2 x := by
+  induction x generalizing S1 S2
+  case nil => simp
+  case cons a x ih => simp [stepSet_union, ih]
 
 variable (M) in
 @[simp]
@@ -127,6 +147,52 @@ theorem mem_evalFrom_iff_exists {s : σ} {S : Set σ} {x : List α} :
     s ∈ M.evalFrom S x ↔ ∃ t ∈ S, s ∈ M.evalFrom {t} x := by
   rw [evalFrom_eq_biUnion_singleton]
   simp
+
+variable (M) in
+/-- `M.acceptsFrom S` is the language of `x` such that there is an accept state
+in `M.evalFrom S x`. -/
+def acceptsFrom (S : Set σ) : Language α := {x | ∃ s ∈ M.accept, s ∈ M.evalFrom S x}
+
+theorem mem_acceptsFrom {S : Set σ} {x : List α} :
+    x ∈ M.acceptsFrom S ↔ ∃ s ∈ M.accept, s ∈ M.evalFrom S x := by
+  rfl
+
+@[simp]
+theorem mem_acceptsFrom_nil {S : Set σ} : [] ∈ M.acceptsFrom S ↔ ∃ s ∈ S, s ∈ M.accept := by
+  simp [mem_acceptsFrom]; tauto
+
+@[simp]
+theorem mem_acceptsFrom_cons {S : Set σ} {a : α} {x : List α} :
+    a :: x ∈ M.acceptsFrom S ↔ x ∈ M.acceptsFrom (M.stepSet S a) := by
+  simp [mem_acceptsFrom]
+
+@[simp]
+theorem mem_acceptsFrom_append {S : Set σ} {x y : List α} :
+    x ++ y ∈ M.acceptsFrom S ↔ y ∈ M.acceptsFrom (M.evalFrom S x) := by
+  simp [mem_acceptsFrom]
+
+theorem acceptsFrom_union {S1 S2 : Set σ} :
+    M.acceptsFrom (S1 ∪ S2) = M.acceptsFrom S1 + M.acceptsFrom S2 := by
+  rw [Language.add_def]; ext x
+  rw [Set.mem_union]; simp_rw [↑mem_acceptsFrom, evalFrom_union]
+  constructor
+  · rintro ⟨s, hs, h | h⟩
+    · left; tauto
+    · right; tauto
+  · rintro (⟨s, hs, h⟩ | ⟨s, hs, h⟩) <;> exists s <;> tauto
+
+theorem mem_acceptsFrom_biUnion {ι : Type*} (t : Set ι) (f : ι → Set σ) (x : List α) :
+    x ∈ M.acceptsFrom (⋃ i ∈ t, f i) ↔ x ∈ ⋃ i ∈ t, M.acceptsFrom (f i) := by
+  simp [acceptsFrom]; rw [Set.mem_setOf]; tauto
+
+theorem mem_acceptsFrom_setOf_fact {S : Set σ} {p : Prop} {x : List α} :
+    x ∈ M.acceptsFrom {s ∈ S | p} ↔ x ∈ M.acceptsFrom S ∧ p := by
+  induction x generalizing S <;> simp
+  case nil => tauto
+  case cons a x ih =>
+    have h : M.stepSet {s ∈ S | p} a = {s ∈ M.stepSet S a | p} := by
+      ext s; simp [stepSet]; tauto
+    rw [h, ih]
 
 variable (M) in
 /-- `M.eval x` computes all possible paths though `M` with input `x` starting at an element of
@@ -154,6 +220,9 @@ variable (M) in
 def accepts : Language α := {x | ∃ S ∈ M.accept, S ∈ M.eval x}
 
 theorem mem_accepts {x : List α} : x ∈ M.accepts ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by
+  rfl
+
+theorem accepts_acceptsFrom : M.accepts = M.acceptsFrom M.start := by
   rfl
 
 variable (M) in
