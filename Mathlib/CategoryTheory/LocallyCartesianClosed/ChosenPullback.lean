@@ -132,8 +132,7 @@ abbrev fst' := (mapPullbackAdj g).counit.app (Over.mk f)
 /-- The first projection from the chosen pullback along `g` of `f` to the domain of `f`. -/
 abbrev fst : pullbackObj f g ⟶ Y := fst' f g |>.left
 
-theorem fst'_left : (fst' f g).left = fst f g := by
-  rfl
+theorem fst'_left : (fst' f g).left = fst f g := rfl
 
 /-- The second projection from the chosen pullback along `g` of `f` to the domain of `g`. -/
 abbrev snd : pullbackObj f g ⟶ Z := (pullback g).obj (Over.mk f) |>.hom
