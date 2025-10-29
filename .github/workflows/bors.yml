@@ -25,8 +25,7 @@ env:
 concurrency:
   # label each workflow run; only the latest with each label will run
   # workflows on master get more expressive labels
-  group: ${{ github.workflow }}-${{ github.ref }}.
-    ${{ ( contains(fromJSON( '["refs/heads/master", "refs/heads/staging"]'), github.ref ) && github.run_id) || ''}}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ (contains(fromJSON('["refs/heads/master", "refs/heads/staging"]'), github.ref) && github.run_id) || '' }}
   # cancel any running workflow with the same label
   cancel-in-progress: true
 
@@ -563,8 +562,9 @@ jobs:
 
       - name: build everything
         # make sure everything is available for test/import_all.lean
+        # and that miscellaneous executables still work
         run: |
-          lake build Batteries Qq Aesop ProofWidgets Plausible
+          lake build Batteries Qq Aesop ProofWidgets Plausible pole unused
 
       - name: build AesopTest (nightly-testing only)
         # Only run on the mathlib4-nightly-testing repository
