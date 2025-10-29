@@ -39,7 +39,7 @@ theorem _root_.Set.disjSum_toFinset {α β : Type*} (s : Set α) (t : Set β)
 
 @[simp]
 theorem _root_.Finset.coe_disjSum {α β : Type*} (s : Finset α) (t : Finset β) :
-    (s.disjSum t : Set (α ⊕ β)) = s.toSet.disjSum t.toSet := by
+    (s.disjSum t : Set (α ⊕ β)) = s.disjSum t := by
   ext ; aesop (add simp [disjSum, Set.disjSum, Finset.disjSum])
 
 theorem _root_.Set.MapsTo.sumElim {α β γ : Type*} {f : α → γ} {g : β → γ} {r : Set α}
@@ -126,7 +126,8 @@ theorem mapsTo_embeddingConjugateIte (v : InfinitePlace K) :
   by_cases h : IsExtension v.embedding w.embedding
   · simpa [embeddingConjugateIte_pos L h] using mem_unmixedEmbeddingsOver.2 ⟨h, hw.isUnmixed⟩
   · simpa [embeddingConjugateIte_neg L h] using mem_unmixedEmbeddingsOver.2
-      ⟨LiesOver.embedding_conjugate_comp_eq w v h, hw.isUnmixed_conjugate⟩
+      ⟨(LiesOver.embedding_comp_eq_or_conjugate_embedding_comp_eq w v).resolve_left h,
+        hw.isUnmixed_conjugate⟩
 
 theorem surjOn_embeddingConjugateIte (v : InfinitePlace K) :
     Set.SurjOn (embeddingConjugateIte L v) (unramifiedPlacesOver L v)
@@ -159,7 +160,7 @@ variable {K : Type*} [Field K] {v : InfinitePlace K}
 variable {L : Type*} [Field L] [Algebra K L]
 
 variable (v) in
-theorem finrank_eq_two_of_isRamified (w : InfinitePlace L) [w.LiesOver v] (h : w.IsRamified K) :
+theorem finrank_eq_two_of_isRamified (w : InfinitePlace L) [w.1.LiesOver v.1] (h : w.IsRamified K) :
     Module.finrank v.Completion w.Completion = 2 := by
   rw [Algebra.finrank_eq_of_equiv_equiv (ringEquivRealOfIsReal <| h.liesOver_isReal_under w v)
       (ringEquivComplexOfIsComplex h.isComplex) (by simp [RingHom.ext_iff,
@@ -171,7 +172,8 @@ variable {L : Type*} [Field L] [Algebra K L]
 variable (v) in
 /-- If `w` is an unramified extension of `v` and both infinite places are complex then
 the `v.Completion`-dimension of `w.Completion` is `1`. -/
-theorem finrank_eq_one_of_isUnramified (w : InfinitePlace L) [w.LiesOver v] (h : w.IsUnramified K) :
+theorem finrank_eq_one_of_isUnramified (w : InfinitePlace L) [w.1.LiesOver v.1]
+    (h : w.IsUnramified K) :
     Module.finrank v.Completion w.Completion = 1 := by
   by_cases hv : v.IsReal
   · rw [Algebra.finrank_eq_of_equiv_equiv (ringEquivRealOfIsReal hv) (ringEquivRealOfIsReal
@@ -180,11 +182,11 @@ theorem finrank_eq_one_of_isUnramified (w : InfinitePlace L) [w.LiesOver v] (h :
   · have hv : v.IsComplex := not_isReal_iff_isComplex.1 hv
     cases LiesOver.embedding_comp_eq_or_conjugate_embedding_comp_eq w v with
     | inl hl => rw [Algebra.finrank_eq_of_equiv_equiv (ringEquivComplexOfIsComplex hv)
-        (ringEquivComplexOfIsComplex (LiesOver.isComplex_of_isComplex_under hv))
+        (ringEquivComplexOfIsComplex (LiesOver.isComplex_of_isComplex_under _ hv))
         (RingHom.ext fun _ ↦ by simp [← LiesOver.extensionEmbedding_algebraMap _ hl]),
         Module.finrank_self]
     | inr hr => rw [Algebra.finrank_eq_of_equiv_equiv (ringEquivComplexOfIsComplex hv)
-        ((ringEquivComplexOfIsComplex (LiesOver.isComplex_of_isComplex_under hv)).trans
+        ((ringEquivComplexOfIsComplex (LiesOver.isComplex_of_isComplex_under _ hv)).trans
           (starRingAut (R := ℂ)))
         (RingHom.ext fun _ ↦ by simp [← LiesOver.conjugate_extensionEmbedding_algebraMap _ hr]),
         Module.finrank_self]
@@ -208,14 +210,14 @@ theorem ncard_isUnramified_add_two_mul_ncard_isRamified [NumberField K] [NumberF
 variable {L} in
 open scoped Classical in
 protected def inertiaDeg (w : InfinitePlace L) : ℕ :=
-  if _ : w.LiesOver v then (⊥ : Ideal v.Completion).inertiaDeg (⊥ : Ideal w.Completion) else 0
+  if _ : w.1.LiesOver v.1 then (⊥ : Ideal v.Completion).inertiaDeg (⊥ : Ideal w.Completion) else 0
 
-theorem inertiaDeg_of_liesOver (w : InfinitePlace L) [w.LiesOver v] :
+theorem inertiaDeg_of_liesOver (w : InfinitePlace L) [w.1.LiesOver v.1] :
     v.inertiaDeg w = (⊥ : Ideal v.Completion).inertiaDeg (⊥ : Ideal w.Completion) := by
   simp [InfinitePlace.inertiaDeg, dif_pos]
 
 variable {L} in
-theorem inertiaDeg_eq_finrank (v : InfinitePlace K) (w : InfinitePlace L) [w.LiesOver v] :
+theorem inertiaDeg_eq_finrank (v : InfinitePlace K) (w : InfinitePlace L) [w.1.LiesOver v.1] :
     v.inertiaDeg w = Module.finrank v.Completion w.Completion := by
   simp only [inertiaDeg_of_liesOver, Ideal.inertiaDeg, Ideal.comap_bot_of_injective _ <|
     FaithfulSMul.algebraMap_injective v.Completion w.Completion]

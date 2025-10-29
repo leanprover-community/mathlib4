@@ -218,7 +218,7 @@ namespace LiesOver
 
 open Completion
 
-variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) {v} [w.LiesOver v]
+variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) {v} [w.1.LiesOver v.1]
 
 instance : Algebra v.Completion w.Completion :=
   mapOfComp (L := WithAbs w.1)
@@ -226,7 +226,7 @@ instance : Algebra v.Completion w.Completion :=
       |>.toAlgebra
 
 -- shortcut required because of low priority of GroupWithZero.toNoZeroSMulDivisors
-instance [w.LiesOver v] : NoZeroSMulDivisors v.Completion w.Completion :=
+instance [w.1.LiesOver v.1] : NoZeroSMulDivisors v.Completion w.Completion :=
   GroupWithZero.toNoZeroSMulDivisors
 
 @[simp]
