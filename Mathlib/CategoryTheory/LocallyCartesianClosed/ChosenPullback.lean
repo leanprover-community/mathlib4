@@ -141,8 +141,7 @@ abbrev snd : pullbackObj f g ⟶ Z := (pullback g).obj (Over.mk f) |>.hom
 abbrev snd' : (Over.map g).obj ((pullback g).obj (Over.mk f)) ⟶ (Over.mk g) :=
   Over.homMk (snd f g)
 
-theorem snd'_left : (snd' f g).left = snd f g := by
-  rfl
+theorem snd'_left : (snd' f g).left = snd f g := rfl
 
 variable {f g}
 
