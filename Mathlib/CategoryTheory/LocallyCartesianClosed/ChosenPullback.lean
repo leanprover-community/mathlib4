@@ -20,8 +20,10 @@ provides the data of a pullback functor `Over X ⥤ Over Y` as a right adjoint t
 - We prove that `ChosenPullback` has good closure properties, e.g., isos have chosen pullbacks, and
   composition of morphisms with chosen pullbacks have chosen pullbacks.
 
-- `Over.ChosenPullback.isPullback` proves that the reindexing squares of an instance of
-  `ChosenPullback g` are pullback squares.
+-  `Over.ChosenPullback.isPullback` proves that for morphisms `f` and `g` with the same codomain,
+  the object `Over.ChosenPullback.pullbackObj f g` togethe with morphisms
+  `Over.ChosenPullback.fst f g` and `Over.ChosenPullback.snd f g` form a pullback square
+  over `f` and `g`.
 
 - We prove that in cartesian monoidal categories, morphisms to the terminal object and the product
   projections have chosen pullbacks.
