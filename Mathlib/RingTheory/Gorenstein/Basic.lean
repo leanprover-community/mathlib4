@@ -664,7 +664,7 @@ lemma isLocalization_map_of_disjoint (S : Submonoid R) (A : Type*) [CommRing A] 
     [Module A Mp] [IsScalarTower R A Mp] :
     IsLocalizedModule.AtPrime p (isLocalization_map_of_disjoint_map S A p f g) where
   map_units x := by
-    rcases IsLocalization.mk'_surjective S x.1 with ⟨r, s, hrs⟩
+    rcases IsLocalization.exists_mk'_eq S x.1 with ⟨r, s, hrs⟩
     rw [← hrs, IsLocalization.mk'_eq_mul_mk'_one, map_mul, ← IsScalarTower.algebraMap_apply]
     apply IsUnit.mul _ ((isUnit_of_invertible (IsLocalization.mk' A 1 s)).map _)
     have nmem : r ∈ (p.comap (algebraMap R A)).primeCompl := by
