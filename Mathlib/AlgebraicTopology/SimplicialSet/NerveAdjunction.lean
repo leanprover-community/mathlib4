@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Emily Riehl, Joël Riou
 import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
 import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
-import Mathlib.CategoryTheory.Closed.FunctorToTypes
+import Mathlib.CategoryTheory.Closed.Monoidal.FunctorToTypes
 import Mathlib.CategoryTheory.Limits.Presheaf
 /-!
 
