@@ -21,7 +21,7 @@ Over X ⥤ Over (F.obj X)
 ```
 
 We show that this square is Guitart exact if for all `Y : C`, the binary product `X ⨯ Y`
-exists and `F` commutes to it.
+exists and `F` commutes with it.
 
 -/
 
