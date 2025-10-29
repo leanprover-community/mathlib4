@@ -179,7 +179,7 @@ def lift : W ⟶ pullbackObj f g :=
 theorem lift_fst : lift a b h ≫ fst f g = a := by
   let adj := mapPullbackAdj g
   let a' : (Over.map g).obj (Over.mk b) ⟶ Over.mk f := Over.homMk a h
-  have : (Over.map g).map (adj.homEquiv (Over.mk b) (Over.mk f) (Over.homMk a) ≫ fst' f g = a' := by
+  have : (Over.map g).map (adj.homEquiv (.mk b) (.mk f) (Over.homMk a)) ≫ fst' f g = a' := by
     simp [← Adjunction.homEquiv_counit]
     aesop
   exact congr_arg CommaMorphism.left this
