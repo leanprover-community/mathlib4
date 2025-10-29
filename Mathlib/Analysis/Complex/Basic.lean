@@ -245,6 +245,9 @@ theorem conjCLE_apply (z : ℂ) : conjCLE z = conj z :=
 def ofRealLI : ℝ →ₗᵢ[ℝ] ℂ :=
   ⟨ofRealAm.toLinearMap, norm_real⟩
 
+@[simp]
+theorem ofRealLI_apply (x : ℝ) : ofRealLI x = x := rfl
+
 theorem isometry_ofReal : Isometry ((↑) : ℝ → ℂ) :=
   ofRealLI.isometry
 
