@@ -57,7 +57,7 @@ See the files `CategoryTheory.Generator.Presheaf` and `CategoryTheory.Generator.
 -/
 
 
-universe w v₁ v₂ u₁ u₂
+universe w' w v₁ v₂ u₁ u₂
 
 open CategoryTheory.Limits Opposite
 
@@ -69,19 +69,19 @@ namespace ObjectProperty
 
 variable (P : ObjectProperty C)
 
-/-- We say that `P : ObjectProperty C` is a separating set if the functors `C(G, -)`
+/-- We say that `P : ObjectProperty C` is separating if the functors `C(G, -)`
 for `G : C` such that `P G` are collectively faithful,
 i.e., if `h ≫ f = h ≫ g` for all `h` with domain in `𝒢` implies `f = g`. -/
 def IsSeparating : Prop :=
   ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), (∀ (G : C) (_ : P G) (h : G ⟶ X), h ≫ f = h ≫ g) → f = g
 
-/-- We say that `P : ObjectProperty C` is a coseparating set if the functors `C(-, G)`
+/-- We say that `P : ObjectProperty C` is coseparating if the functors `C(-, G)`
 for `G : C` such that `P G` are collectively faithful,
 i.e., if `f ≫ h = g ≫ h` for all `h` with codomain in `𝒢` implies `f = g`. -/
 def IsCoseparating : Prop :=
   ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), (∀ (G : C) (_ : P G) (h : Y ⟶ G), f ≫ h = g ≫ h) → f = g
 
-/-- We say that `P : ObjectProperty C` is a detecting set if the functors `C(G, -)`
+/-- We say that `P : ObjectProperty C` is detecting if the functors `C(G, -)`
 for `G : C` such that `P G` collectively reflect isomorphisms,
 i.e., if any `h` with domain `G` that `P G` uniquely factors through `f`,
 then `f` is an isomorphism. -/
@@ -89,7 +89,7 @@ def IsDetecting : Prop :=
   ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ (G : C) (_ : P G),
     ∀ (h : G ⟶ Y), ∃! h' : G ⟶ X, h' ≫ f = h) → IsIso f
 
-/-- We say that `P : ObjectProperty C` is a codetecting set if the functors `C(-, G)`
+/-- We say that `P : ObjectProperty C` is codetecting if the functors `C(-, G)`
 for `G : C` such that `P G` collectively reflect isomorphisms,
 i.e., if any `h` with codomain `G` such that `P G` uniquely factors through `f`,
 then `f` is an isomorphism. -/
@@ -311,14 +311,14 @@ lemma IsCoseparating.mk_of_exists_mono
     (fun i ↦ by simpa using h _ (hs i) (j ≫ c.proj i))
 
 lemma IsSeparating.mk_of_exists_colimitsOfShape
-    (hP : ∀ (X : C), ∃ (J : Type w) (_ : SmallCategory J), Nonempty (P.ColimitOfShape J X)) :
+    (hP : ∀ (X : C), ∃ (J : Type w) (_ : Category.{w'} J), Nonempty (P.ColimitOfShape J X)) :
     P.IsSeparating := by
   intro X Y f g h
   obtain ⟨J, _, ⟨p⟩⟩ := hP X
   exact p.isColimit.hom_ext (fun j ↦ h _ (p.prop_diag_obj _) _)
 
 lemma IsCoseparating.mk_of_exists_limitsOfShape
-    (hP : ∀ (X : C), ∃ (J : Type w) (_ : SmallCategory J), Nonempty (P.LimitOfShape J X)) :
+    (hP : ∀ (X : C), ∃ (J : Type w) (_ : Category.{w'} J), Nonempty (P.LimitOfShape J X)) :
     P.IsCoseparating := by
   intro X Y f g h
   obtain ⟨J, _, ⟨p⟩⟩ := hP Y
