@@ -65,7 +65,7 @@ theorem valuation_isEquiv_inftyValuation_of_one_lt_valuation_X
   intro f
   by_cases hf : f = 0
   · simp_all
-  · have hlt' : 1 < inftyValuation Fq X := by simp [← ofAdd_zero, exp]
+  · have hlt' : 1 < inftyValuation Fq X := by simp [← exp_zero]
     rw [valuation_eq_valuation_X_zpow_intDegree_of_one_lt_valuation_X h hlt hf,
       valuation_eq_valuation_X_zpow_intDegree_of_one_lt_valuation_X
         (fun _ ha ↦ by simp [inftyValuation.C _ ha]) hlt' hf,
@@ -251,8 +251,8 @@ theorem valuation_isEquiv_valuationIdeal_adic_of_valuation_X_le_one [IsRankOneDi
       have hp0 : p ≠ 0 := by simp_all
       set pi := πᵥ with hpi_def
       have hpi : v.IsUniformizer (pi : RatFunc Fq) := uniformizingPolynomial_isUniformizer hle h
-      simp only [map_div₀, valuation_of_algebraMap, intValuation_def, ofAdd_neg, coe_inv,
-        if_neg hp0, if_neg hq0, div_inv_eq_mul]
+      simp only [map_div₀, valuation_of_algebraMap, intValuation_def, exp_neg, if_neg hp0,
+        if_neg hq0, div_inv_eq_mul]
       rw [valuation_eq_valuation_πᵥ_pow_of_valuation_X_le_one hle h p hp0,
         valuation_eq_valuation_πᵥ_pow_of_valuation_X_le_one hle h q hq0]
       simp_all [div_le_one₀, inv_mul_le_one₀,
@@ -268,7 +268,9 @@ theorem adicValuation_not_isEquiv_infty_valuation [DecidableEq (RatFunc Fq)]
   simp only [isEquiv_iff_val_lt_one, not_forall]
   use 1/X
   simp only [_root_.not_iff, not_lt]
-  have hlt : inftyValuation Fq (1/X) < 1 := by simp [inv_lt_one_iff₀, ← ofAdd_zero, exp]
+  have hlt : inftyValuation Fq (1/X) < 1 := by
+    rw [one_div, map_inv₀, inftyValuation.X, inv_lt_one_iff₀]
+    simp [← exp_zero]
   have hge : 1 ≤ (p.valuation (RatFunc Fq)) (1/X) := by
     simp only [one_div, map_inv₀, one_le_inv_iff₀]
     exact ⟨lt_of_le_of_ne zero_le' (Ne.symm ((p.valuation _).ne_zero_iff.mpr X_ne_zero)),
