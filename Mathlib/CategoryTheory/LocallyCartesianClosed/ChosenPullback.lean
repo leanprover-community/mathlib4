@@ -160,13 +160,11 @@ theorem hom_ext {W : C} {φ₁ φ₂ : W ⟶ pullbackObj f g} (h₁ : φ₁ ≫ 
   let U : Over Z := Over.mk (φ₁ ≫ snd f g)
   let φ₁' : U ⟶ (pullback g).obj (Over.mk f) := Over.homMk φ₁
   let φ₂' : U ⟶ (pullback g).obj (Over.mk f) := Over.homMk φ₂ (by simpa using h₂.symm)
-  have : (adj.homEquiv U _).symm φ₁' = (adj.homEquiv U _).symm φ₂' := by
+  have : φ₁' = φ₂' := by
+    apply (adj.homEquiv U _).symm.injective
     simp [adj.homEquiv_symm_apply]
     apply (forget X).map_injective
     simpa using h₁
-  have : φ₁' = φ₂' := by
-    apply (adj.homEquiv U _).symm.injective
-    exact this
   apply congr_arg CommaMorphism.left this
 
 section Lift
