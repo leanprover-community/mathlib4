@@ -1188,11 +1188,8 @@ section lift
 /-- A type endowed with `⊔` is a `SemilatticeSup`, if it admits an injective map that
 preserves `⊔` to a `SemilatticeSup`.
 
-See `Function.Injective.semilatticeSup` for a version that automatically constructs the `≤` and `<`
-instances.
-
 See note [reducible non-instances]. -/
-protected abbrev Function.Injective.semilatticeSup' [Max α] [LE α] [LT α] [SemilatticeSup β]
+protected abbrev Function.Injective.semilatticeSup [Max α] [LE α] [LT α] [SemilatticeSup β]
     (f : α → β) (hf_inj : Function.Injective f)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) :
@@ -1210,27 +1207,11 @@ protected abbrev Function.Injective.semilatticeSup' [Max α] [LE α] [LT α] [Se
     rw [map_sup]
     exact sup_le ha hb
 
-/-- A type endowed with `⊔` is a `SemilatticeSup`, if it admits an injective map that
-preserves `⊔` to a `SemilatticeSup`.
-
-See `Function.Injective.semilatticeSup'` for a version that also allows overriding the `≤` and `<`
-instances.
-
-See note [reducible non-instances]. -/
-protected abbrev Function.Injective.semilatticeSup [Max α] [SemilatticeSup β] (f : α → β)
-    (hf_inj : Function.Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) :
-    SemilatticeSup α where
-  __ := PartialOrder.lift f hf_inj
-  __ := Function.Injective.semilatticeSup' f hf_inj .rfl .rfl map_sup
-
 /-- A type endowed with `⊓` is a `SemilatticeInf`, if it admits an injective map that
 preserves `⊓` to a `SemilatticeInf`.
 
-See `Function.Injective.semilatticeInf` for a version that automatically constructs the `≤` and `<`
-instances.
-
 See note [reducible non-instances]. -/
-protected abbrev Function.Injective.semilatticeInf' [Min α] [LE α] [LT α] [SemilatticeInf β]
+protected abbrev Function.Injective.semilatticeInf [Min α] [LE α] [LT α] [SemilatticeInf β]
     (f : α → β) (hf_inj : Function.Injective f)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :
@@ -1248,27 +1229,11 @@ protected abbrev Function.Injective.semilatticeInf' [Min α] [LE α] [LT α] [Se
     rw [map_inf]
     exact le_inf ha hb
 
-/-- A type endowed with `⊓` is a `SemilatticeInf`, if it admits an injective map that
-preserves `⊓` to a `SemilatticeInf`.
-
-See `Function.Injective.semilatticeInf'` for a version that also allows overriding the `≤` and `<`
-instances.
-
-See note [reducible non-instances]. -/
-protected abbrev Function.Injective.semilatticeInf [Min α] [SemilatticeInf β] (f : α → β)
-    (hf_inj : Function.Injective f) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :
-    SemilatticeInf α where
-  __ := PartialOrder.lift f hf_inj
-  __ := Function.Injective.semilatticeInf' f hf_inj .rfl .rfl map_inf
-
 /-- A type endowed with `⊔` and `⊓` is a `Lattice`, if it admits an injective map that
 preserves `⊔` and `⊓` to a `Lattice`.
 
-See `Function.Injective.lattice` for a version that also allows overriding the `≤` and `<`
-instances.
-
 See note [reducible non-instances]. -/
-protected abbrev Function.Injective.lattice' [Max α] [Min α] [LE α] [LT α] [Lattice β]
+protected abbrev Function.Injective.lattice [Max α] [Min α] [LE α] [LT α] [Lattice β]
     (f : α → β) (hf_inj : Function.Injective f)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :
@@ -1276,28 +1241,16 @@ protected abbrev Function.Injective.lattice' [Max α] [Min α] [LE α] [LT α] [
   __ := hf_inj.semilatticeSup' f le lt map_sup
   __ := hf_inj.semilatticeInf' f le lt map_inf
 
-/-- A type endowed with `⊔` and `⊓` is a `Lattice`, if it admits an injective map that
-preserves `⊔` and `⊓` to a `Lattice`.
-
-See `Function.Injective.lattice'` for a version that also allows overriding the `≤` and `<`
-instances.
-
-See note [reducible non-instances]. -/
-protected abbrev Function.Injective.lattice [Max α] [Min α] [Lattice β] (f : α → β)
-    (hf_inj : Function.Injective f)
-    (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :
-    Lattice α where
-  __ := hf_inj.semilatticeSup f map_sup
-  __ := hf_inj.semilatticeInf f map_inf
-
 /-- A type endowed with `⊔` and `⊓` is a `DistribLattice`, if it admits an injective map that
 preserves `⊔` and `⊓` to a `DistribLattice`.
+
 See note [reducible non-instances]. -/
-protected abbrev Function.Injective.distribLattice [Max α] [Min α] [DistribLattice β] (f : α → β)
-    (hf_inj : Function.Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
-    (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :
+protected abbrev Function.Injective.distribLattice [Max α] [Min α] [DistribLattice β]
+    (f : α → β) (hf_inj : Function.Injective f)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
+    (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :
     DistribLattice α where
-  __ := hf_inj.lattice f map_sup map_inf
+  __ := hf_inj.lattice f le lt map_sup map_inf
   le_sup_inf a b c := by
     change f ((a ⊔ b) ⊓ (a ⊔ c)) ≤ f (a ⊔ b ⊓ c)
     rw [map_inf, map_sup, map_sup, map_sup, map_inf]
