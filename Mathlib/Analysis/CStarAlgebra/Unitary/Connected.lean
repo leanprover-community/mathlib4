@@ -112,7 +112,7 @@ lemma Unitary.norm_sub_one_lt_two_iff {u : A} (hu : u ∈ unitary A) :
 lemma Unitary.spectrum_subset_slitPlane_iff_norm_lt_two {u : A} (hu : u ∈ unitary A) :
     spectrum ℂ u ⊆ slitPlane ↔ ‖u - 1‖ < 2 := by
   simp [subset_slitPlane_iff_of_subset_sphere (spectrum.subset_circle_of_unitary hu),
-    Unitary.norm_sub_one_lt_two_iff hu]
+    norm_sub_one_lt_two_iff hu]
 
 @[deprecated (since := "2025-10-29")] alias unitary.spectrum_subset_slitPlane_iff_norm_lt_two :=
   Unitary.spectrum_subset_slitPlane_iff_norm_lt_two
