@@ -5947,7 +5947,6 @@ import Mathlib.RingTheory.RegularLocalRing.Defs
 import Mathlib.RingTheory.RegularLocalRing.GlobalDimension
 import Mathlib.RingTheory.RegularLocalRing.RegularRing.Basic
 import Mathlib.RingTheory.RegularLocalRing.RegularRing.GlobalDimension
-import Mathlib.RingTheory.RegularLocalRing.RegularRing.Basic
 import Mathlib.RingTheory.RingHom.Bijective
 import Mathlib.RingTheory.RingHom.Etale
 import Mathlib.RingTheory.RingHom.FaithfullyFlat
