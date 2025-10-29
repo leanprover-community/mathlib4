@@ -268,7 +268,7 @@ theorem ofScalars_radius_eq_zero_of_tendsto [NormOneClass E]
   rw [← coe_zero, coe_le_coe]
   have := FormalMultilinearSeries.summable_norm_mul_pow _ hr
   contrapose! this
-  apply not_summable_of_ratio_norm_eventually_ge one_lt_two
+  apply not_summable_of_ratio_norm_eventually_ge ENNReal.one_lt_two
   · contrapose! hc
     apply not_tendsto_atTop_of_tendsto_nhds (a:=0)
     rw [not_frequently] at hc
