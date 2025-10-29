@@ -317,3 +317,83 @@ noncomputable def _root_.Matrix.SpecialLinearGroup.toLin_equiv
     (SpecialLinearGroup.congr_linEquiv (b.repr.trans (Finsupp.linearEquivFunOnFinite R R n)).symm)
 
 end Matrix
+
+namespace SpecialLinearGroup
+
+section center
+
+
+theorem center_eq_bot_of_subsingleton [Subsingleton R] :
+    Subgroup.center (SpecialLinearGroup R V) = ⊥ :=
+  Subgroup.eq_bot_of_subsingleton _
+
+variable [Module.Free R V] [Module.Finite R V] [Nontrivial R]
+
+theorem center_eq_bot_of_finrank_le_one (h : Module.finrank R V ≤ 1) :
+    Subgroup.center (SpecialLinearGroup R V) = ⊥ := by
+  let b := Module.Free.chooseBasis R V
+  haveI : Subsingleton (Module.Free.ChooseBasisIndex R V) := by
+    rwa [← @Finite.card_le_one_iff_subsingleton,
+      Nat.card_eq_fintype_card, ← Module.finrank_eq_card_basis b]
+  have : Subsingleton (Subgroup.center
+    (Matrix.SpecialLinearGroup (Module.Free.ChooseBasisIndex R V) R)) := by
+    infer_instance
+  rw [Equiv.subsingleton_congr
+    (Subgroup.centerCongr (Matrix.SpecialLinearGroup.toLin_equiv b)).toEquiv] at this
+  apply Subgroup.eq_bot_of_subsingleton
+
+theorem mem_center_iff {g : SpecialLinearGroup R V} :
+    g ∈ Subgroup.center (SpecialLinearGroup R V) ↔
+      ∃ (r : R), r ^ (Module.finrank R V) = 1 ∧
+        (g : V →ₗ[R] V) = r • LinearMap.id := by
+  let b := Module.Free.chooseBasis R V
+  letI _ := Module.Free.ChooseBasisIndex.fintype R V
+  rw [Module.finrank_eq_card_basis b]
+  let e := (Matrix.SpecialLinearGroup.toLin_equiv b).symm
+  rw [← show e g ∈ Subgroup.center _ ↔ g ∈ Subgroup.center _ from by
+    exact MulEquivClass.apply_mem_center_iff e]
+  rw [Matrix.SpecialLinearGroup.mem_center_iff]
+  apply exists_congr
+  intro r
+  apply and_congr
+  · simp
+  simp [e]
+  suffices ((Matrix.SpecialLinearGroup.toLin_equiv b).symm g) =
+    Matrix.of fun i j ↦ (b.repr (g (b j))) i by
+    simp only [this]
+    rw [← (LinearMap.toMatrix b b).injective.eq_iff]
+    simp only [← Matrix.ext_iff, Matrix.of_apply]
+    apply forall₂_congr
+    intro i j
+    simp [Matrix.diagonal, LinearMap.toMatrix_apply,
+      Finsupp.single, Pi.single_apply, Iff.symm eq_comm]
+  simp [Matrix.SpecialLinearGroup.toLin_equiv, Matrix.SpecialLinearGroup.toLin'_equiv,
+    LinearMap.toMatrix', congr_linEquiv]
+
+example (r : R) : LinearMap.det (r • LinearMap.id : V →ₗ[R] V) = r ^ (Module.finrank R V) := by
+  simp only [LinearMap.det_smul, LinearMap.det_id, mul_one]
+/-- The isomorphism between the roots of unity and the center of the special linear group. -/
+noncomputable def center_equiv_rootsOfUnity :
+    (Subgroup.center (SpecialLinearGroup R V)) ≃*
+      ↥(rootsOfUnity (max (Module.finrank R V) 1) R) where
+  toFun g := sorry
+  invFun r := ⟨⟨LinearMap.equivOfIsUnitDet (M := V) (R := R)
+      (f := ((r : Rˣ) : R) • LinearMap.id) (by
+      simp [LinearMap.det_smul, IsUnit.pow]), by
+      simp [← Units.val_inj, LinearEquiv.coe_det]
+      have := r.prop
+      rw [mem_rootsOfUnity, ← Units.val_inj, Units.val_pow_eq_pow_val, Units.val_one] at this
+      rcases max_cases (Module.finrank R V) 1 with ⟨h, h'⟩ |  ⟨h, h'⟩
+      · simp_rw [h] at this
+        exact this
+      · simp_rw [h, pow_one] at this
+        simp [this]⟩, sorry⟩
+  left_inv g := sorry
+  right_inv r := sorry
+  map_mul' g h := sorry
+
+end center
+
+end SpecialLinearGroup
+
+
