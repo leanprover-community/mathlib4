@@ -10,9 +10,9 @@ import Mathlib.CategoryTheory.Adjunction.Mates
 
 In this file, given isomorphisms between compositions of right adjoint functors,
 we obtain isomorphisms between the corresponding compositions of the left adjoint functors,
-and show that the left adjoint functors satisfies properties similar to the left/right
+and show that the left adjoint functors satisfy properties similar to the left/right
 unitality and the associativity of pseudofunctors if the right adjoint functors
-satisfies the corresponding properties.
+satisfy the corresponding properties.
 
 This is used in `Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback` to study
 the behaviour with respect to composition of the pullback functors on presheaves
