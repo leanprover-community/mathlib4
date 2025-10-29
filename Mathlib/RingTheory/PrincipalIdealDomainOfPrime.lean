@@ -49,3 +49,10 @@ theorem IsPrincipalIdealRing.of_prime (H : ∀ P : Ideal R, P.IsPrime → P.IsPr
   refine ⟨isOka_isPrincipal.forall_of_forall_prime (fun I hI ↦ exists_maximal_not_isPrincipal ?_) H⟩
   rw [isPrincipalIdealRing_iff, not_forall]
   exact ⟨I, hI⟩
+
+/-- If all prime ideals in a commutative ring that are not `(0)` are principal,
+so are all other ideals. -/
+theorem IsPrincipalIdealRing.of_prime_ne_bot
+    (H : ∀ P : Ideal R, P.IsPrime → P ≠ ⊥ → P.IsPrincipal) :
+    IsPrincipalIdealRing R :=
+  .of_prime fun P hp ↦ (eq_or_ne P ⊥).elim (· ▸ inferInstance) <| H _ hp
