@@ -70,9 +70,11 @@ lemma coe_iterateFrobenius_mul : iterateFrobenius R p (m * n) = (iterateFrobeniu
 
 variable {R}
 
+@[deprecated map_mul (since := "2025-10-28")]
 lemma frobenius_mul : frobenius R p (x * y) = frobenius R p x * frobenius R p y :=
   map_mul (frobenius R p) x y
 
+@[deprecated map_one (since := "2025-10-28")]
 lemma frobenius_one : frobenius R p 1 = 1 := one_pow _
 
 lemma MonoidHom.map_frobenius : f (frobenius R p x) = frobenius S p (f x) := map_pow f x p
@@ -129,12 +131,15 @@ theorem LinearMap.frobenius_def [Algebra R S] (x : S) : frobenius R S p x = x ^ 
 theorem LinearMap.iterateFrobenius_def [Algebra R S] (n : ℕ) (x : S) :
     iterateFrobenius R S p n x = x ^ p ^ n := rfl
 
+@[deprecated map_zero (since := "2025-10-28")]
 theorem frobenius_zero : frobenius R p 0 = 0 :=
   (frobenius R p).map_zero
 
+@[deprecated map_add (since := "2025-10-28")]
 theorem frobenius_add : frobenius R p (x + y) = frobenius R p x + frobenius R p y :=
   (frobenius R p).map_add x y
 
+@[deprecated map_natCast (since := "2025-10-28")]
 theorem frobenius_natCast (n : ℕ) : frobenius R p n = n :=
   map_natCast (frobenius R p) n
 
@@ -144,8 +149,10 @@ section CommRing
 
 variable {R : Type*} [CommRing R] (p : ℕ) [ExpChar R p] (x y : R)
 
+@[deprecated map_neg (since := "2025-10-28")]
 lemma frobenius_neg : frobenius R p (-x) = -frobenius R p x := map_neg ..
 
+@[deprecated map_sub (since := "2025-10-28")]
 lemma frobenius_sub : frobenius R p (x - y) = frobenius R p x - frobenius R p y := map_sub ..
 
 end CommRing

@@ -115,7 +115,7 @@ private theorem mul_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
   match x1, x2, H with
   | _, _, R.intro n x =>
     Quot.sound <| by
-      rw [← iterate_succ_apply, iterate_succ_apply', iterate_succ_apply', ← frobenius_mul,
+      rw [← iterate_succ_apply, iterate_succ_apply', iterate_succ_apply', ← map_mul,
         Nat.succ_add]
       apply R.intro
 
@@ -125,7 +125,7 @@ private theorem mul_aux_right (x y1 y2 : ℕ × K) (H : R K p y1 y2) :
   match y1, y2, H with
   | _, _, R.intro n y =>
     Quot.sound <| by
-      rw [← iterate_succ_apply, iterate_succ_apply', iterate_succ_apply', ← frobenius_mul]
+      rw [← iterate_succ_apply, iterate_succ_apply', iterate_succ_apply', ← map_mul]
       apply R.intro
 
 instance instMul : Mul (PerfectClosure K p) :=
@@ -179,7 +179,7 @@ private theorem add_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
   match x1, x2, H with
   | _, _, R.intro n x =>
     Quot.sound <| by
-      rw [← iterate_succ_apply, iterate_succ_apply', iterate_succ_apply', ← frobenius_add,
+      rw [← iterate_succ_apply, iterate_succ_apply', iterate_succ_apply', ← map_add,
         Nat.succ_add]
       apply R.intro
 
@@ -189,7 +189,7 @@ private theorem add_aux_right (x y1 y2 : ℕ × K) (H : R K p y1 y2) :
   match y1, y2, H with
   | _, _, R.intro n y =>
     Quot.sound <| by
-      rw [← iterate_succ_apply, iterate_succ_apply', iterate_succ_apply', ← frobenius_add]
+      rw [← iterate_succ_apply, iterate_succ_apply', iterate_succ_apply', ← map_add]
       apply R.intro
 
 instance instAdd : Add (PerfectClosure K p) :=
@@ -211,7 +211,7 @@ theorem mk_add_mk (x y : ℕ × K) :
 instance instNeg : Neg (PerfectClosure K p) :=
   ⟨Quot.lift (fun x : ℕ × K => mk K p (x.1, -x.2)) fun x y (H : R K p x y) =>
       match x, y, H with
-      | _, _, R.intro n x => Quot.sound <| by rw [← frobenius_neg]; apply R.intro⟩
+      | _, _, R.intro n x => Quot.sound <| by rw [← map_neg]; apply R.intro⟩
 
 @[simp]
 theorem neg_mk (x : ℕ × K) : -mk K p x = mk K p (x.1, -x.2) :=
@@ -237,7 +237,7 @@ theorem mk_zero_right (n : ℕ) : mk K p (n, 0) = 0 := by
     rw [← ih]
     apply (Quot.sound _).symm
     have := R.intro (p := p) n (0 : K)
-    rwa [frobenius_zero K p] at this
+    rwa [map_zero] at this
 
 theorem R.sound (m n : ℕ) (x y : K) (H : (frobenius K p)^[m] x = y) :
     mk K p (n, x) = mk K p (m + n, y) := by
@@ -349,7 +349,7 @@ theorem natCast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) := by
   | succ n ih =>
     rw [ih]; apply Quot.sound
     suffices R K p (n, (x : K)) (Nat.succ n, frobenius K p (x : K)) by
-      rwa [frobenius_natCast K p x] at this
+      rwa [map_natCast] at this
     apply R.intro
 
 theorem intCast (x : ℤ) : (x : PerfectClosure K p) = mk K p (0, x) := by
@@ -359,7 +359,7 @@ theorem natCast_eq_iff (x y : ℕ) : (x : PerfectClosure K p) = y ↔ (x : K) = 
   constructor <;> intro H
   · rw [natCast K p 0, natCast K p 0, mk_eq_iff] at H
     obtain ⟨z, H⟩ := H
-    simpa only [zero_add, iterate_fixed (frobenius_natCast K p _)] using H
+    simpa only [zero_add, iterate_fixed (map_natCast _ _)] using H
   rw [natCast K p 0, natCast K p 0, H]
 
 instance instCharP : CharP (PerfectClosure K p) p := by
