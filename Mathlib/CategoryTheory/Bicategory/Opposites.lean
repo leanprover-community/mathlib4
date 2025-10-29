@@ -146,19 +146,6 @@ It is defined as follows.
 * The 2-morphisms `f ⟶ g` in `Bᵒᵖ` are the 2-morphisms `f ⟶ g` in `B`. In other words, the
   directions of the 2-morphisms are preserved.
 -/
-/-
-
-  [
-   homCategory,
-   whiskerLeft,
-   whiskerRight,
-   associator,
-   leftUnitor,
-   rightUnitor,
-   Hom,
-   id,
-   comp]
--/
 @[simps! homCategory_id_unop2 homCategory_comp_unop2 whiskerLeft_unop2 whiskerLeft_unop2
   associator_hom_unop2 associator_inv_unop2 leftUnitor_hom_unop2 leftUnitor_inv_unop2
   rightUnitor_hom_unop2 rightUnitor_inv_unop2]
@@ -175,6 +162,34 @@ instance bicategory : Bicategory.{w, v} Bᵒᵖ where
   pentagon f g h i := by apply congrArg op2; simp
   triangle f g := by apply congrArg op2; simp
 
-/- attribute [-simp] -/
+@[simp]
+lemma op2_whiskerLeft {a b c : B} {f : a ⟶ b} {g g' : b ⟶ c} (η : g ⟶ g') :
+    op2 (f ◁ η) = (op2 η) ▷ f.op :=
+  rfl
+
+@[simp]
+lemma op2_whiskerRight {a b c : B} {f f' : a ⟶ b} {g : b ⟶ c} (η : f ⟶ f') :
+    op2 (η ▷ g) = g.op ◁ (op2 η) :=
+  rfl
+
+@[simp]
+lemma op2_associator {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+    (α_ f g h).op2 = (α_ h.op g.op f.op).symm :=
+  rfl
+
+@[simp]
+lemma op2_leftUnitor {a b : B} (f : a ⟶ b) :
+    (λ_ f).op2 = ρ_ f.op :=
+  rfl
+
+@[simp]
+lemma op2_rightUnitor {a b : B} (f : a ⟶ b) :
+    (ρ_ f).op2 = λ_ f.op :=
+  rfl
+
+@[simp]
+lemma op2_rightUnitor_hom {a b : B} (f : a ⟶ b) :
+    op2 (ρ_ f).hom = (λ_ f.op).hom :=
+  rfl
 
 end Bicategory.Opposite

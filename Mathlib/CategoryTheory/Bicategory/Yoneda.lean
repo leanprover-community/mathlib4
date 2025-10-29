@@ -39,13 +39,10 @@ open NatTrans
 -- TODO: small when?!
 variable {B : Type u₁} [LocallySmallBicategory.{v₁} B]
 
-#check Cat.comp_app
-
 attribute [local simp] Cat.associator_hom_app Cat.associator_inv_app
   Cat.leftUnitor_hom_app Cat.rightUnitor_hom_app
   Cat.leftUnitor_inv_app Cat.rightUnitor_inv_app
 
--- TODO: most lemmas should be automatic if I add local simp lemmas
 @[simps]
 def representable (x : B) : Pseudofunctor Bᵒᵖ Cat.{v₁, v₁} where
   -- On objects:
@@ -64,20 +61,11 @@ def StrongNatTrans.representable {x y : B} (f : x ⟶ y) : representable x ⟶ r
     hom := Cat.NatTrans.mk' fun h ↦ (α_ f.op h g).inv
     inv := Cat.NatTrans.mk' fun h ↦ (α_ f.op h g).hom }
 
--- TODO: invertible if f is?
+-- TODO:4 invertible if f is?
 @[simps]
 def Modification.representable {x y : B} {f g : x ⟶ y} (η : f ⟶ g) :
     Modification (StrongNatTrans.representable f) (StrongNatTrans.representable g) where
-  -- should this be expressed in terms of precomposing somewhere?
-  app a := {
-    app := ((op2 η) ▷ ·)
-      -- TODO: rw suggested some yoneda here... Can yoneda be used higher up
-      -- here somewhere?
-    naturality := by intros; apply whisker_exchange
-  }
-  naturality h := by
-    ext x
-    apply associator_inv_naturality_left
+  app a := (precomposing _ _ _).map (op2 η)
 
 @[simps]
 def yoneda.prelaxFunctor : PrelaxFunctor B (Pseudofunctor Bᵒᵖ Cat.{v₁, v₁}) where
@@ -85,29 +73,11 @@ def yoneda.prelaxFunctor : PrelaxFunctor B (Pseudofunctor Bᵒᵖ Cat.{v₁, v�
   map f := StrongNatTrans.representable f
   map₂ η := Modification.representable η
 
+@[simps]
 def yoneda : Pseudofunctor B (Pseudofunctor Bᵒᵖ Cat.{v₁, v₁}) where
   toPrelaxFunctor := yoneda.prelaxFunctor
   mapId a := isoMk (fun b => leftUnitorNatIso (op a) b)
-  mapComp f g := isoMk
-      (fun b ↦ associatorNatIsoRight _ _ b)
-        <| by
-    intro a b h
-    ext x
-    simp
-    erw [pentagon_hom_inv_inv_inv_hom g.op f.op x h] -- TODO. simp lemma so should be automatic
-    rfl
-  -- these should all be proven generally?
-  map₂_whisker_left := by
-    intros a b c f g h η
-    ext d x
-    simp
-    slice_rhs 2 4 =>
-      rw [associator_naturality_left, ← assoc, Iso.inv_hom_id, id_comp]
-    sorry -- almost done...!
-  map₂_whisker_right := sorry
-  map₂_associator := sorry
-  map₂_left_unitor := sorry
-  map₂_right_unitor := sorry
+  mapComp f g := isoMk (fun b ↦ associatorNatIsoRight g.op f.op b)
 
 end Bicategory
 
