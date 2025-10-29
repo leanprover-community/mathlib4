@@ -171,7 +171,7 @@ section Lift
 variable {W : C} (a : W ⟶ Y) (b : W ⟶ Z) (h : a ≫ f = b ≫ g)
 
 /-- Given morphisms `a : W ⟶ Y` and `b : W ⟶ Z` satisfying `a ≫ f = b ≫ g`,
-constructs the unique morphism `W ⟶ pullbackObj f g`. -/
+constructs the unique morphism `W ⟶ pullbackObj f g` which lifts `a` and `b`. -/
 def lift : W ⟶ pullbackObj f g :=
   (((mapPullbackAdj g).homEquiv (Over.mk b) (Over.mk f)) (Over.homMk a)).left
 
