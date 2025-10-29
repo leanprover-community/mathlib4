@@ -11,6 +11,7 @@ import Mathlib.Topology.Constructions
 This file develops API on the relative versions
 
 * `nhdsWithin`          of `nhds`
+* `nhdsSetWithin`       of `nhdsSet`
 * `ContinuousOn`        of `Continuous`
 * `ContinuousWithinAt`  of `ContinuousAt`
 
@@ -23,7 +24,8 @@ equipped with the subspace topology.
 
 * `𝓝 x`: the filter of neighborhoods of a point `x`;
 * `𝓟 s`: the principal filter of a set `s`;
-* `𝓝[s] x`: the filter `nhdsWithin x s` of neighborhoods of a point `x` within a set `s`.
+* `𝓝[s] x`: the filter `nhdsWithin x s` of neighborhoods of a point `x` within a set `s`;
+* `𝓝ˢ[t] s`: the filter `nhdsWithin s t` of neighborhoods of a set `s` within a set `t`.
 
 -/
 
@@ -1429,3 +1431,59 @@ lemma Continuous.tendsto_nhdsSet_nhds
     Tendsto f (𝓝ˢ s) (𝓝 b) := by
   rw [← nhdsSet_singleton]
   exact h.tendsto_nhdsSet h'
+
+/-!
+## Properties of the `nhdsSetWithin`-filter
+-/
+
+@[gcongr, mono]
+lemma nhdsSetWithin_mono_left {s s' t : Set α} (h : s ⊆ s') : 𝓝ˢ[t] s ≤ 𝓝ˢ[t] s' :=
+  inf_le_inf_right _ <| nhdsSet_mono h
+
+@[gcongr, mono]
+lemma nhdsSetWithin_mono_right {s t t' : Set α} (h : t ⊆ t') : 𝓝ˢ[t] s ≤ 𝓝ˢ[t'] s :=
+  inf_le_inf_left _ <| principal_mono.2 h
+
+lemma nhdsSetWithin_hasBasis {ι : Sort*} {p : ι → Prop} {s' : ι → Set α} {s : Set α}
+    (h : (𝓝ˢ s).HasBasis p s') (t : Set α) : (𝓝ˢ[t] s).HasBasis p fun i => s' i ∩ t :=
+  h.inf_principal t
+
+lemma nhdsSetWithin_basis_open (s t : Set α) :
+    (𝓝ˢ[t] s).HasBasis (fun u => IsOpen u ∧ s ⊆ u) fun u => u ∩ t :=
+  nhdsSetWithin_hasBasis (hasBasis_nhdsSet s) t
+
+lemma mem_nhdsSetWithin {s t u : Set α} : u ∈ 𝓝ˢ[t] s ↔ ∃ v, IsOpen v ∧ s ⊆ v ∧ v ∩ t ⊆ u := by
+  simpa [and_assoc] using (nhdsSetWithin_basis_open s t).mem_iff
+
+@[simp]
+lemma nhdsSetWithin_singleton {x : α} {s : Set α} : 𝓝ˢ[s] {x} = 𝓝[s] x := by
+  simp [nhdsSetWithin, nhdsWithin]
+
+@[simp]
+lemma nhdsSetWithin_univ {s : Set α} : 𝓝ˢ[univ] s = 𝓝ˢ s := by
+  simp [nhdsSetWithin]
+
+@[simp]
+lemma nhdsSetWithin_self {s : Set α} : 𝓝ˢ[s] s = 𝓟 s := by
+  simp [nhdsSetWithin, principal_le_nhdsSet]
+
+lemma nhdsSetWithin_prod_le {s s' : Set α} {t t' : Set β} :
+    𝓝ˢ[s' ×ˢ t'] (s ×ˢ t) ≤ 𝓝ˢ[s'] s ×ˢ 𝓝ˢ[t'] t := by
+  simpa [nhdsSetWithin, ← prod_inf_prod] using inf_le_of_left_le <| nhdsSet_prod_le _ _
+
+lemma ContinuousOn.preimage_mem_nhdsSetWithin {f : α → β} {s : Set α}
+    (hf : ContinuousOn f s) {t u t' : Set β} (h : u ∈ 𝓝ˢ[t'] t) :
+    f ⁻¹' u ∈ 𝓝ˢ[s ∩ f ⁻¹' t'] (s ∩ f ⁻¹' t) := by
+  have ⟨v, hv⟩ := mem_nhdsSetWithin.1 h
+  have ⟨w, hw⟩ := continuousOn_iff'.1 hf v hv.1
+  refine mem_nhdsSetWithin.2 ⟨w, hw.1, ?_, ?_⟩
+  · exact (inter_comm _ _).trans_subset <| (inter_subset_inter_left _ <| preimage_mono hv.2.1).trans
+      (hw.2.trans_subset inter_subset_left)
+  · rw [← inter_assoc, ← hw.2, inter_comm _ s, inter_assoc, ← preimage_inter]
+    exact inter_subset_right.trans <| preimage_mono hv.2.2
+
+/-- If `f` is continuous on `s` and `u` is a neighbourhood of `t`, then `f ⁻¹' u` is a neighbourhood
+of `s ∩ f ⁻¹' t` within `s`. -/
+lemma ContinuousOn.preimage_mem_nhdsSetWithin_of_mem_nhdsSet {f : α → β} {s : Set α}
+    (hf : ContinuousOn f s) {t u : Set β} (h : u ∈ 𝓝ˢ t) : f ⁻¹' u ∈ 𝓝ˢ[s] (s ∩ f ⁻¹' t) := by
+  simpa [h] using ContinuousOn.preimage_mem_nhdsSetWithin hf (t := t) (u := u) (t' := univ)
