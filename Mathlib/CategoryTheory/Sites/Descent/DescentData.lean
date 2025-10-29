@@ -29,8 +29,6 @@ open Opposite
 
 namespace Pseudofunctor
 
-attribute [local grind =] op_comp Quiver.Hom.comp_toLoc
-
 open LocallyDiscreteOpToCat
 
 variable {C : Type u} [Category.{v} C] (F : Pseudofunctor (LocallyDiscrete Cᵒᵖ) Cat.{v', u'})
