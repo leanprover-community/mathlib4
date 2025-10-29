@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
-import Mathlib.MeasureTheory.Integral.Prod
+import Mathlib.Topology.MetricSpace.ThickenedIndicator
 
 /-!
 # Spaces where indicators of closed sets have decreasing approximations by continuous functions
@@ -12,13 +12,6 @@ import Mathlib.MeasureTheory.Integral.Prod
 In this file we define a typeclass `HasOuterApproxClosed` for topological spaces in which indicator
 functions of closed sets have sequences of bounded continuous functions approximating them from
 above. All pseudo-emetrizable spaces have this property, see `instHasOuterApproxClosed`.
-
-In spaces with the `HasOuterApproxClosed` property, finite Borel measures are uniquely characterized
-by the integrals of bounded continuous functions. Also weak convergence of finite measures and
-convergence in distribution for random variables behave somewhat well in spaces with this property.
-
-Finite measures over products of such spaces are characterized by the integrals of products of
-bounded continuous functions.
 
 ## Main definitions
 
@@ -34,11 +27,6 @@ bounded continuous functions.
   closed set tend to the measure of the set.
 * `ext_of_forall_lintegral_eq_of_IsFiniteMeasure`: Two finite measures are equal if the integrals
   of all bounded continuous functions with respect to both agree.
-* `ext_of_integral_mul_boundedContinuousFunction`: A finite measure on a product space is
-  characterized by the integrals of products of real and bounded continuous functions.
-* `Measure.eq_prod_of_integral_mul_boundedContinuousFunction`: The product of two finite measures
-  `μ` and `ν` is the only finite measure `ξ` such that for all real bounded continuous functions
-  `f` and `g` we have `∫ z, f z.1 * g z.2 ∂ξ = ∫ x, f x ∂μ * ∫ y, g y ∂ν`.
 
 -/
 
