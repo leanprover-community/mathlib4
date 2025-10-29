@@ -856,46 +856,34 @@ theorem sign_two_zsmul_eq_sign_iff {θ : Angle} :
 lemma abs_toReal_add_abs_toReal_eq_pi_of_two_nsmul_add_eq_zero_of_sign_eq {θ ψ : Angle}
     (h : (2 : ℕ) • (θ + ψ) = 0) (hs : θ.sign = ψ.sign) (h0 : θ.sign ≠ 0) :
     |θ.toReal| + |ψ.toReal| = π := by
-  rw [two_nsmul_eq_zero_iff] at h
-  rcases h with h | h
-  · rw [add_eq_zero_iff_eq_neg] at h
-    simp_all
+  rcases two_nsmul_eq_zero_iff.mp h with h | h
+  · simp_all [add_eq_zero_iff_eq_neg.mp h]
   rw [← coe_toReal θ, ← coe_toReal ψ, ← coe_add] at h
   suffices |θ.toReal + ψ.toReal| = π by
     rw [← this, eq_comm, abs_add_eq_add_abs_iff]
-    have h0' : ψ.sign ≠ 0 := hs ▸ h0
     have hθ := sign_toReal (sign_ne_zero_iff.1 h0).2
-    have hψ := sign_toReal (sign_ne_zero_iff.1 h0').2
-    have hθs : θ.sign = -1 ∨ θ.sign = 1 := by
-      simpa [h0] using θ.sign.trichotomy
-    rcases hθs with hθs | hθs
+    have hψ := sign_toReal (sign_ne_zero_iff.1 (hs ▸ h0)).2
+    obtain hθs | hθs := (by simpa [h0] using θ.sign.trichotomy : θ.sign = -1 ∨ θ.sign = 1)
     · rw [hθs, eq_comm, ← toReal_neg_iff_sign_neg] at hs
-      rw [← toReal_neg_iff_sign_neg] at hθs
-      exact .inr ⟨hθs.le, hs.le⟩
+      exact .inr ⟨(toReal_neg_iff_sign_neg.mpr hθs).le, hs.le⟩
     · simp [toReal_nonneg_iff_sign_nonneg, hs.symm, hθs]
   rw [abs_eq pi_nonneg]
-  rw [angle_eq_iff_two_pi_dvd_sub] at h
-  rcases h with ⟨k, hk⟩
+  rcases angle_eq_iff_two_pi_dvd_sub.mp h with ⟨k, hk⟩
   rw [sub_eq_iff_eq_add] at hk
   have hu : θ.toReal + ψ.toReal ≤ 2 * π := by linarith [toReal_le_pi θ, toReal_le_pi ψ]
   have hn : -2 * π < θ.toReal + ψ.toReal := by linarith [neg_pi_lt_toReal θ, neg_pi_lt_toReal ψ]
+  rw [hk] at hu hn
   have hk0 : k ≤ 0 := by
-    rw [hk] at hu
     by_contra hk1
-    have hk1' : 1 ≤ k := by cutsat
-    grw [← hk1'] at hu
-    simp only [Int.cast_one, mul_one, add_le_iff_nonpos_right] at hu
+    grw [← show 1 ≤ k by cutsat] at hu
+    simp only [Int.cast_one] at hu
     linarith [pi_pos]
   have hkn1 : -1 ≤ k := by
-    rw [hk] at hn
     by_contra hkn2
-    have hkn2' : k ≤ -2 := by cutsat
-    grw [hkn2'] at hn
-    simp only [neg_mul, Int.reduceNeg, Int.cast_neg, Int.cast_ofNat, mul_neg, lt_neg_add_iff_add_lt,
-      add_neg_lt_iff_lt_add] at hn
+    grw [show k ≤ -2 by cutsat] at hn
+    simp only [Int.cast_neg, Int.cast_ofNat] at hn
     linarith [pi_pos]
-  have hkn10 : k = -1 ∨ k = 0 := by cutsat
-  rcases hkn10 with rfl | rfl <;> grind
+  obtain rfl | rfl := (by cutsat : k = -1 ∨ k = 0) <;> grind
 
 lemma abs_toReal_add_abs_toReal_eq_pi_of_two_zsmul_add_eq_zero_of_sign_eq {θ ψ : Angle}
     (h : (2 : ℤ) • (θ + ψ) = 0) (hs : θ.sign = ψ.sign) (h0 : θ.sign ≠ 0) :
