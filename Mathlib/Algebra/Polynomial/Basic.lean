@@ -40,7 +40,7 @@ Polynomials are defined using `R[ℕ]`, where `R` is a semiring.
 The variable `X` commutes with every polynomial `p`: lemma `X_mul` proves the identity
 `X * p = p * X`.  The relationship to `R[ℕ]` is through a structure
 to make polynomials irreducible from the point of view of the kernel. Most operations
-are irreducible since Lean can not compute anyway with `AddMonoidAlgebra`. There are two
+are irreducible since Lean cannot compute anyway with `AddMonoidAlgebra`. There are two
 exceptions that we make semireducible:
 * The zero polynomial, so that its coefficients are definitionally equal to `0`.
 * The scalar action, to permit typeclass search to unfold it to resolve potential instance
@@ -199,13 +199,10 @@ theorem toFinsupp_one : (1 : R[X]).toFinsupp = 1 :=
 
 @[simp]
 theorem toFinsupp_add (a b : R[X]) : (a + b).toFinsupp = a.toFinsupp + b.toFinsupp := by
-  cases a
-  cases b
   rw [← ofFinsupp_add]
 
 @[simp]
 theorem toFinsupp_neg {R : Type u} [Ring R] (a : R[X]) : (-a).toFinsupp = -a.toFinsupp := by
-  cases a
   rw [← ofFinsupp_neg]
 
 @[simp]
@@ -216,8 +213,6 @@ theorem toFinsupp_sub {R : Type u} [Ring R] (a b : R[X]) :
 
 @[simp]
 theorem toFinsupp_mul (a b : R[X]) : (a * b).toFinsupp = a.toFinsupp * b.toFinsupp := by
-  cases a
-  cases b
   rw [← ofFinsupp_mul]
 
 @[simp]
@@ -232,7 +227,6 @@ theorem toFinsupp_smul {S : Type*} [SMulZeroClass S R] (a : S) (b : R[X]) :
 
 @[simp]
 theorem toFinsupp_pow (a : R[X]) (n : ℕ) : (a ^ n).toFinsupp = a.toFinsupp ^ n := by
-  cases a
   rw [← ofFinsupp_pow]
 
 theorem _root_.IsSMulRegular.polynomial {S : Type*} [SMulZeroClass S R] {a : S}
@@ -596,13 +590,14 @@ theorem coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 := by
 theorem coeff_monomial_same (n : ℕ) (c : R) : (monomial n c).coeff n = c :=
   Finsupp.single_eq_same
 
-theorem coeff_monomial_of_ne {m n : ℕ} (c : R) (h : n ≠ m) : (monomial n c).coeff m = 0 :=
+theorem coeff_monomial_of_ne {m n : ℕ} (c : R) (h : m ≠ n) : (monomial n c).coeff m = 0 :=
   Finsupp.single_eq_of_ne h
 
 @[simp]
 theorem coeff_zero (n : ℕ) : coeff (0 : R[X]) n = 0 :=
   rfl
 
+@[aesop simp]
 theorem coeff_one {n : ℕ} : coeff (1 : R[X]) n = if n = 0 then 1 else 0 := by
   simp_rw [eq_comm (a := n) (b := 0)]
   exact coeff_monomial
@@ -622,6 +617,7 @@ theorem coeff_X_zero : coeff (X : R[X]) 0 = 0 :=
 @[simp]
 theorem coeff_monomial_succ : coeff (monomial (n + 1) a) 0 = 0 := by simp [coeff_monomial]
 
+@[aesop simp]
 theorem coeff_X : coeff (X : R[X]) n = if 1 = n then 1 else 0 :=
   coeff_monomial
 
@@ -637,6 +633,7 @@ theorem notMem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
 
 @[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
 
+@[aesop simp]
 theorem coeff_C : coeff (C a) n = ite (n = 0) a 0 := by
   convert coeff_monomial (a := a) (m := n) (n := 0) using 2
   simp [eq_comm]
@@ -847,7 +844,6 @@ theorem sum_eq_of_subset {S : Type*} [AddCommMonoid S] {p : R[X]} (f : ℕ → R
 theorem mul_eq_sum_sum :
     p * q = ∑ i ∈ p.support, q.sum fun j a => (monomial (i + j)) (p.coeff i * a) := by
   apply toFinsupp_injective
-  rcases p with ⟨⟩; rcases q with ⟨⟩
   simp_rw [sum, coeff, toFinsupp_sum, support, toFinsupp_mul, toFinsupp_monomial,
     AddMonoidAlgebra.mul_def, Finsupp.sum]
 
@@ -953,7 +949,6 @@ theorem support_erase (p : R[X]) (n : ℕ) : support (p.erase n) = (support p).e
 
 theorem monomial_add_erase (p : R[X]) (n : ℕ) : monomial n (coeff p n) + p.erase n = p :=
   toFinsupp_injective <| by
-    rcases p with ⟨⟩
     rw [toFinsupp_add, toFinsupp_monomial, toFinsupp_erase, coeff]
     exact Finsupp.single_add_erase _ _
 
@@ -989,7 +984,6 @@ def update (p : R[X]) (n : ℕ) (a : R) : R[X] :=
 theorem coeff_update (p : R[X]) (n : ℕ) (a : R) :
     (p.update n a).coeff = Function.update p.coeff n a := by
   ext
-  cases p
   simp only [coeff, update, Function.update_apply, coe_update]
 
 theorem coeff_update_apply (p : R[X]) (n : ℕ) (a : R) (i : ℕ) :
@@ -1011,7 +1005,6 @@ theorem update_zero_eq_erase (p : R[X]) (n : ℕ) : p.update n 0 = p.erase n := 
 theorem support_update (p : R[X]) (n : ℕ) (a : R) [Decidable (a = 0)] :
     support (p.update n a) = if a = 0 then p.support.erase n else insert n p.support := by
   classical
-    cases p
     simp only [support, update, Finsupp.support_update]
     congr
 
@@ -1040,13 +1033,13 @@ theorem coeffs_one : coeffs (1 : R[X]) ⊆ {1} := by
   simp_rw [coeffs, Finset.image_subset_iff]
   simp_all [coeff_one]
 
-theorem coeff_mem_coeffs (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n ∈ p.coeffs := by
+theorem coeff_mem_coeffs {p : R[X]} {n : ℕ} (h : p.coeff n ≠ 0) : p.coeff n ∈ p.coeffs := by
   classical
   simp only [coeffs, mem_support_iff, Finset.mem_image, Ne]
   exact ⟨n, h, rfl⟩
 
 @[simp]
-theorem coeffs_empty_iff (p : R[X]) : coeffs p = ∅ ↔ p = 0 := by
+theorem coeffs_empty_iff {p : R[X]} : coeffs p = ∅ ↔ p = 0 := by
   refine ⟨?_, fun h ↦ by simp [h]⟩
   contrapose!
   intro h
@@ -1054,7 +1047,11 @@ theorem coeffs_empty_iff (p : R[X]) : coeffs p = ∅ ↔ p = 0 := by
   obtain ⟨n, hn⟩ := h
   rw [mem_support_iff] at hn
   rw [← nonempty_iff_ne_empty]
-  exact ⟨p.coeff n, coeff_mem_coeffs p n hn⟩
+  exact ⟨p.coeff n, coeff_mem_coeffs hn⟩
+
+@[simp]
+theorem coeffs_nonempty_iff {p : R[X]} : p.coeffs.Nonempty ↔ p ≠ 0 := by
+  simp [Finset.nonempty_iff_ne_empty]
 
 theorem coeffs_monomial (n : ℕ) {c : R} (hc : c ≠ 0) : (monomial n c).coeffs = {c} := by
   rw [coeffs, support_monomial n hc]
@@ -1168,6 +1165,13 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R[X] where
 
 instance [IsCancelAdd R] [IsDomain R] : IsDomain R[X] where
 
+/-- See also `Polynomial.isCancelMulZero_iff`: in order for `R[X]` to have cancellative
+multiplication (stronger than `NoZeroDivisors` in general, but equivalent if `R` is a ring),
+`R` must have both cancellative multiplication and cancellative addition. -/
+theorem noZeroDivisors_iff : NoZeroDivisors R[X] ↔ NoZeroDivisors R where
+  mp _ := C_injective.noZeroDivisors _ C_0 fun _ _ ↦ C_mul
+  mpr _ := inferInstance
+
 end Semiring
 
 section DivisionSemiring
@@ -1210,7 +1214,7 @@ protected instance repr [Repr R] [DecidableEq R] : Repr R[X] :=
           if coeff p n = 1
           then (80, "X ^ " ++ Nat.repr n)
           else (70, "C " ++ reprArg (coeff p n) ++ " * X ^ " ++ Nat.repr n))
-      (p.support.sort (· ≤ ·))
+      p.support.sort
     match termPrecAndReprs with
     | [] => "0"
     | [(tprec, t)] => if prec ≥ tprec then Lean.Format.paren t else t

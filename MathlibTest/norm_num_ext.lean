@@ -7,10 +7,12 @@ import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.ModEq
 import Mathlib.Tactic.NormNum.NatFactorial
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
+import Mathlib.Tactic.NormNum.Parity
 import Mathlib.Tactic.NormNum.Prime
 import Mathlib.Data.Rat.Floor
 import Mathlib.Tactic.NormNum.LegendreSymbol
@@ -24,6 +26,9 @@ import Mathlib.Tactic.Simproc.Factors
 
 Some tests of unported extensions are still commented out.
 -/
+
+-- The default is very low, and we want to test performance on large numbers.
+set_option exponentiation.threshold 2000
 
 -- set_option profiler true
 -- set_option trace.profiler true
@@ -430,6 +435,11 @@ example : ⌈(2 : R)⌉ = 2 := by norm_num
 example : ⌈(15 / 16 : K)⌉ + 1 = 2 := by norm_num
 example : ⌈(-15 / 16 : K)⌉ + 1 = 1 := by norm_num
 
+example : Int.fract (2 : R) = 0 := by norm_num
+example : Int.fract (16 / 15 : K) = 1 / 15 := by norm_num
+example : Int.fract (3.7 : ℚ) = 0.7 := by norm_num
+example : Int.fract (-3.7 : ℚ) = 0.3 := by norm_num
+
 end floor
 
 section jacobi
@@ -454,6 +464,24 @@ example : legendreSym 1000003 7 = -1 := by norm_num1
 
 end jacobi
 
+section even_odd
+
+example : Even 16 := by norm_num1
+example : ¬Even 17 := by norm_num1
+example : Even (16 : ℤ) := by norm_num1
+example : ¬Even (17 : ℤ) := by norm_num1
+example : Even (-20 : ℤ) := by norm_num1
+example : ¬Even (-21 : ℤ) := by norm_num1
+
+example : Odd 5 := by norm_num1
+example : ¬Odd 4 := by norm_num1
+example : Odd (5 : ℤ) := by norm_num1
+example : ¬Odd (4 : ℤ) := by norm_num1
+example : Odd (-5 : ℤ) := by norm_num1
+example : ¬Odd (-4 : ℤ) := by norm_num1
+
+end even_odd
+
 section mod
 
 example : (5 : ℕ) % 4 = 1 := by norm_num1
@@ -477,6 +505,19 @@ example : (2 : ℤ) ∣ 4 := by norm_num1
 example : ¬ (2 : ℤ) ∣ 5 := by norm_num1
 example : (553105253 : ℤ) ∣ 553105253 * 776531401 := by norm_num1
 example : ¬ (553105253 : ℤ) ∣ 553105253 * 776531401 + 1 := by norm_num1
+
+example : 10 ≡ 7 [MOD 3] := by norm_num1
+example : ¬ (10 ≡ 7 [MOD 5]) := by norm_num1
+
+example : 10 ≡ 7 [ZMOD 3] := by norm_num1
+example : ¬ (10 ≡ 7 [ZMOD 5]) := by norm_num1
+example : -3 ≡ 7 [ZMOD 5] := by norm_num1
+example : ¬ (-3 ≡ 7 [ZMOD 50]) := by norm_num1
+
+example : 10 ≡ 7 [ZMOD -3] := by norm_num1
+example : ¬ (10 ≡ 7 [ZMOD -5]) := by norm_num1
+example : -3 ≡ 7 [ZMOD -5] := by norm_num1
+example : ¬ (-3 ≡ 7 [ZMOD -50]) := by norm_num1
 
 end mod
 

@@ -3,6 +3,7 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+import Mathlib.Algebra.CharP.Algebra
 import Mathlib.FieldTheory.RatFunc.Defs
 import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.Algebraic.Integral
@@ -264,10 +265,8 @@ variable (K) [CommRing K]
 This is an intermediate step on the way to the full instance `RatFunc.instCommRing`.
 -/
 def instCommMonoid : CommMonoid (RatFunc K) where
-  mul := (· * ·)
   mul_assoc := by frac_tac
   mul_comm := by frac_tac
-  one := 1
   one_mul := by frac_tac
   mul_one := by frac_tac
   npow := npowRec
@@ -277,15 +276,11 @@ def instCommMonoid : CommMonoid (RatFunc K) where
 This is an intermediate step on the way to the full instance `RatFunc.instCommRing`.
 -/
 def instAddCommGroup : AddCommGroup (RatFunc K) where
-  add := (· + ·)
   add_assoc := by frac_tac
   add_comm := by frac_tac
-  zero := 0
   zero_add := by frac_tac
   add_zero := by frac_tac
-  neg := Neg.neg
   neg_add_cancel := by frac_tac
-  sub := Sub.sub
   sub_eq_add_neg := by frac_tac
   nsmul := (· • ·)
   nsmul_zero := by smul_tac
@@ -297,15 +292,10 @@ def instAddCommGroup : AddCommGroup (RatFunc K) where
 
 instance instCommRing : CommRing (RatFunc K) :=
   { instCommMonoid K, instAddCommGroup K with
-    zero := 0
-    sub := Sub.sub
     zero_mul := by frac_tac
     mul_zero := by frac_tac
     left_distrib := by frac_tac
     right_distrib := by frac_tac
-    one := 1
-    nsmul := (· • ·)
-    zsmul := (· • ·)
     npow := npowRec }
 
 variable {K}
@@ -320,7 +310,7 @@ variable [FunLike F R[X] S[X]]
 open scoped Classical in
 /-- Lift a monoid homomorphism that maps polynomials `φ : R[X] →* S[X]`
 to a `RatFunc R →* RatFunc S`,
-on the condition that `φ` maps non zero divisors to non zero divisors,
+on the condition that `φ` maps non-zero-divisors to non-zero-divisors,
 by mapping both the numerator and denominator and quotienting them. -/
 def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) :
     RatFunc R →* RatFunc S where
@@ -367,7 +357,7 @@ theorem map_injective [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S
 
 /-- Lift a ring homomorphism that maps polynomials `φ : R[X] →+* S[X]`
 to a `RatFunc R →+* RatFunc S`,
-on the condition that `φ` maps non zero divisors to non zero divisors,
+on the condition that `φ` maps non-zero-divisors to non-zero-divisors,
 by mapping both the numerator and denominator and quotienting them. -/
 def mapRingHom [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) :
     RatFunc R →+* RatFunc S :=
@@ -392,7 +382,7 @@ theorem coe_mapRingHom_eq_coe_map [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X
 
 -- TODO: Generalize to `FunLike` classes,
 /-- Lift a monoid with zero homomorphism `R[X] →*₀ G₀` to a `RatFunc R →*₀ G₀`
-on the condition that `φ` maps non zero divisors to non zero divisors,
+on the condition that `φ` maps non-zero-divisors to non-zero-divisors,
 by mapping both the numerator and denominator and quotienting them. -/
 def liftMonoidWithZeroHom (φ : R[X] →*₀ G₀) (hφ : R[X]⁰ ≤ G₀⁰.comap φ) : RatFunc R →*₀ G₀ where
   toFun f :=
@@ -474,7 +464,6 @@ variable (K)
 @[stacks 09FK]
 instance instField [IsDomain K] : Field (RatFunc K) where
   inv_zero := by frac_tac
-  div := (· / ·)
   div_eq_mul_inv := by frac_tac
   mul_inv_cancel _ := mul_inv_cancel
   zpow := zpowRec
@@ -498,7 +487,6 @@ instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R (RatFunc K) w
     map_mul' x y := by simp only [mk_one', RingHom.map_mul, ofFractionRing_mul]
     map_one' := by simp only [mk_one', RingHom.map_one, ofFractionRing_one]
     map_zero' := by simp only [mk_one', RingHom.map_zero, ofFractionRing_zero] }
-  smul := (· • ·)
   smul_def' c x := by
     induction x using RatFunc.induction_on' with | _ p q hq
     rw [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, mk_one', ← mk_smul,
@@ -521,6 +509,18 @@ theorem mk_one (x : K[X]) : RatFunc.mk x 1 = algebraMap _ _ x :=
 theorem ofFractionRing_algebraMap (x : K[X]) :
     ofFractionRing (algebraMap _ (FractionRing K[X]) x) = algebraMap _ _ x := by
   rw [← mk_one, mk_one']
+
+variable (K) in
+/--
+The equivalence between `RatFunc K` and the field of fractions of `K[X]`
+-/
+@[simps! apply]
+def toFractionRingAlgEquiv (R : Type*) [CommSemiring R] [Algebra R K[X]] :
+    RatFunc K ≃ₐ[R] FractionRing K[X] where
+  __ := RatFunc.toFractionRingRingEquiv K
+  commutes' r := by
+    change (RatFunc.mk (algebraMap R K[X] r) 1).toFractionRing = _
+    rw [mk_one']; rfl
 
 @[simp]
 theorem mk_eq_div (p q : K[X]) : RatFunc.mk p q = algebraMap _ _ p / algebraMap _ _ q := by
@@ -604,7 +604,7 @@ variable {L R S : Type*} [Field L] [CommRing R] [IsDomain R] [CommSemiring S] [A
 
 /-- Lift an algebra homomorphism that maps polynomials `φ : K[X] →ₐ[S] R[X]`
 to a `RatFunc K →ₐ[S] RatFunc R`,
-on the condition that `φ` maps non zero divisors to non zero divisors,
+on the condition that `φ` maps non-zero-divisors to non-zero-divisors,
 by mapping both the numerator and denominator and quotienting them. -/
 def mapAlgHom (φ : K[X] →ₐ[S] R[X]) (hφ : K[X]⁰ ≤ R[X]⁰.comap φ) : RatFunc K →ₐ[S] RatFunc R :=
   { mapRingHom φ hφ with
@@ -648,13 +648,13 @@ variable (K)
 
 /-- `RatFunc K` is the field of fractions of the polynomials over `K`. -/
 instance : IsFractionRing K[X] (RatFunc K) where
-  map_units' y := by
+  map_units y := by
     rw [← ofFractionRing_algebraMap]
     exact (toFractionRingRingEquiv K).symm.toRingHom.isUnit_map (IsLocalization.map_units _ y)
   exists_of_eq {x y} := by
     rw [← ofFractionRing_algebraMap, ← ofFractionRing_algebraMap]
     exact fun h ↦ IsLocalization.exists_of_eq ((toFractionRingRingEquiv K).symm.injective h)
-  surj' := by
+  surj := by
     rintro ⟨z⟩
     convert IsLocalization.surj K[X]⁰ z
     simp only [← ofFractionRing_algebraMap, ← ofFractionRing_mul,
@@ -772,6 +772,35 @@ theorem finrank_ratFunc_ratFunc : Module.finrank (RatFunc k) (RatFunc K) = Modul
 end rank
 
 end lift
+
+section IsScalarTower
+
+/-- Let `RatFunc A / A[X] / R / R₀` be a tower. If `A[X] / R / R₀` is a scalar tower
+then so is `RatFunc A / R / R₀`. -/
+instance (R₀ R A : Type*) [CommSemiring R₀] [CommSemiring R] [CommRing A] [IsDomain A]
+    [Algebra R₀ A[X]] [SMul R₀ R] [Algebra R A[X]] [IsScalarTower R₀ R A[X]] :
+    IsScalarTower R₀ R (RatFunc A) := IsScalarTower.to₁₂₄ _ _ A[X] _
+
+/-- Let `K / RatFunc A / A[X] / R` be a tower. If `K / A[X] / R` is a scalar tower
+then so is `K / RatFunc A / R`. -/
+instance (R A K : Type*) [CommRing A] [IsDomain A] [Field K] [Algebra A[X] K]
+    [FaithfulSMul A[X] K] [CommSemiring R] [Algebra R A[X]] [SMul R K] [IsScalarTower R A[X] K] :
+    IsScalarTower R (RatFunc A) K :=
+  IsScalarTower.to₁₃₄ _ A[X] _ _
+
+/-- Let `K / k / RatFunc A / A[X]` be a tower. If `K / k / A[X]` is a scalar tower
+then so is `K / k / RatFunc A`. -/
+instance (A k K : Type*) [CommRing A] [IsDomain A] [Field k] [Field K] [Algebra A[X] k]
+    [Algebra A[X] K] [SMul k K] [FaithfulSMul A[X] k] [FaithfulSMul A[X] K]
+    [IsScalarTower A[X] k K] : IsScalarTower (RatFunc A) k K where
+  smul_assoc a b c := by
+    induction a using RatFunc.induction_on with | f p q hq =>
+    rw [← smul_right_inj hq]
+    simp_rw [← smul_assoc, Algebra.smul_def q]
+    field_simp [hq]
+    simp
+
+end IsScalarTower
 
 end IsDomain
 
@@ -1052,5 +1081,18 @@ theorem num_mul_denom_add_denom_mul_num_ne_zero {x y : RatFunc K} (hxy : x + y �
   exact (mul_ne_zero (num_ne_zero hxy) (mul_ne_zero x.denom_ne_zero y.denom_ne_zero)) h
 
 end NumDenom
+
+section Char
+
+instance [Field K] {p : ℕ} [CharP K p] : CharP (RatFunc K) p :=
+  charP_of_injective_algebraMap' K p
+
+instance [Field K] {p : ℕ} [ExpChar K p] : ExpChar (RatFunc K) p :=
+  ExpChar.of_injective_algebraMap' K p
+
+instance [Field K] [CharZero K] : CharZero (RatFunc K) :=
+  Algebra.charZero_of_charZero K _
+
+end Char
 
 end RatFunc

@@ -32,8 +32,7 @@ env:
 concurrency:
   # label each workflow run; only the latest with each label will run
   # workflows on master get more expressive labels
-  group: ${{ github.workflow }}-${{ github.ref }}.
-    ${{ ( contains(fromJSON( '["refs/heads/master", "refs/heads/staging"]'), github.ref ) && github.run_id) || ''}}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ (contains(fromJSON('["refs/heads/master", "refs/heads/staging"]'), github.ref) && github.run_id) || '' }}
   # cancel any running workflow with the same label
   cancel-in-progress: true
 
@@ -149,8 +148,23 @@ jobs:
       - name: set LEAN_SRC_PATH
         shell: bash
         run: |
-          # Construct the LEAN_SRC_PATH using the toolchain directory
-          LEAN_SRC_PATH=".:$TOOLCHAIN_DIR/src/lean/lake:.lake/packages/Cli:.lake/packages/batteries:.lake/packages/Qq:.lake/packages/aesop:.lake/packages/proofwidgets:.lake/packages/importGraph:.lake/packages/LeanSearchClient:.lake/packages/plausible"
+          cd pr-branch
+
+          # Start with the base paths
+          LEAN_SRC_PATH=".:$TOOLCHAIN_DIR/src/lean/lake"
+
+          # Extract package names from lake-manifest.json and validate them
+          # Only allow A-Z, a-z, 0-9, _, and - characters
+          # Build the LEAN_SRC_PATH by appending each validated package
+          PACKAGE_NAMES=$(jq -r '.packages[].name' lake-manifest.json)
+          for pkg in $PACKAGE_NAMES; do
+            if [[ "$pkg" =~ ^[A-Za-z0-9_-]+$ ]]; then
+              LEAN_SRC_PATH="$LEAN_SRC_PATH:.lake/packages/$pkg"
+            else
+              echo "Warning: Skipping invalid package name: $pkg"
+            fi
+          done
+
           echo "LEAN_SRC_PATH=$LEAN_SRC_PATH"
 
           # Set it as an environment variable for subsequent steps
@@ -202,6 +216,33 @@ jobs:
         run: |
           cd pr-branch
           lake env
+
+      - name: validate lake-manifest.json inputRevs
+        # Only enforce this on the main mathlib4 repository, not on nightly-testing
+        if: github.repository == 'leanprover-community/mathlib4'
+        shell: bash
+        run: |
+          cd pr-branch
+
+          # Check that all inputRevs in lake-manifest.json match the required pattern
+          echo "Validating lake-manifest.json inputRevs..."
+
+          # Extract all inputRevs from the manifest
+          invalid_revs=$(jq -r '.packages[].inputRev // empty' lake-manifest.json | \
+            grep -v -E '^(main|master|v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?)$' || true)
+
+          if [ -n "$invalid_revs" ]; then
+            echo "❌ Error: Found invalid inputRevs in lake-manifest.json:"
+            echo "$invalid_revs"
+            echo ""
+            echo "All inputRevs must be one of:"
+            echo "  - 'main'"
+            echo "  - 'master'"
+            echo "  - 'vX.Y.Z' (semantic version, e.g., v1.2.3 or v1.2.3-pre)"
+            exit 1
+          else
+            echo "✅ All inputRevs in lake-manifest.json are valid"
+          fi
 
       - name: get cache (1/3 - setup and initial fetch)
         id: get_cache_part1_setup
@@ -294,7 +335,7 @@ jobs:
             !pr-branch/.git/
 
       # The cache secrets are available here, so we must not run any untrusted code.
-      - name: upload cache
+      - name: Upload cache to Azure
         # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
         # but not if any earlier step failed or was cancelled.
         # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Some.20files.20not.20found.20in.20the.20cache/near/407183836
@@ -305,7 +346,6 @@ jobs:
 
           # Trim trailing whitespace from secrets to prevent issues with accidentally added spaces
           export MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
-          export MATHLIB_CACHE_S3_TOKEN="${MATHLIB_CACHE_S3_TOKEN_RAW%"${MATHLIB_CACHE_S3_TOKEN_RAW##*[![:space:]]}"}"
 
           # Use the trusted cache tool from master-branch
           # TODO: this is not doing anything currently, and needs to be integrated with put-unpacked
@@ -313,10 +353,11 @@ jobs:
           # run this in CI if it gets an incorrect lake hash for existing cache files somehow
           # ../master-branch/.lake/build/bin/cache put!
           # do not try to upload files just downloaded
-          ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked
+
+          echo "Uploading cache to Azure..."
+          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked
         env:
           MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
-          MATHLIB_CACHE_S3_TOKEN_RAW: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
       # Note: we should not be including `Archive` and `Counterexamples` in the cache.
       # We do this for now for the sake of not rebuilding them in every CI run
@@ -359,20 +400,19 @@ jobs:
           exit 1
 
       # The cache secrets are available here, so we must not run any untrusted code.
-      - name: put archive and counterexamples cache
+      - name: Upload Archive and Counterexamples cache to Azure
         shell: bash
         run: |
           cd pr-branch
 
           # Trim trailing whitespace from secrets to prevent issues with accidentally added spaces
           export MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
-          export MATHLIB_CACHE_S3_TOKEN="${MATHLIB_CACHE_S3_TOKEN_RAW%"${MATHLIB_CACHE_S3_TOKEN_RAW##*[![:space:]]}"}"
 
-          ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put Archive.lean
-          ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put Counterexamples.lean
+          echo "Uploading Archive and Counterexamples cache to Azure..."
+          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Archive.lean
+          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Counterexamples.lean
         env:
           MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
-          MATHLIB_CACHE_S3_TOKEN_RAW: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
       - name: Check {Mathlib, Tactic, Counterexamples, Archive}.lean
         if: always()
@@ -477,17 +517,15 @@ jobs:
         with:
           auto-config: false # Don't run `lake build`, `lake test`, or `lake lint` automatically.
           use-github-cache: false
-          use-mathlib-cache: true
+          use-mathlib-cache: false # This can be re-enabled once we are confident in the cache again.
           reinstall-transient-toolchain: true
 
-      # TODO: this step should not be necessary, "Configure Lean" above should already achieve this.
       - name: get cache for Mathlib
         run: |
           # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.
           lake exe cache get
           # Run again with --repo, so ensure we actually get the oleans.
           lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get
-
 
       - name: get cache for Archive and Counterexamples
         run: |
@@ -499,13 +537,13 @@ jobs:
       - name: verify that everything was available in the cache
         run: |
           echo "::group::{verify Mathlib cache}"
-          lake build --no-build -v Mathlib
+          lake build --no-build --rehash -v Mathlib
           echo "::endgroup::"
           echo "::group::{verify Archive cache}"
-          lake build --no-build -v Archive
+          lake build --no-build --rehash -v Archive
           echo "::endgroup::"
           echo "::group::{verify Counterexamples cache}"
-          lake build --no-build -v Counterexamples
+          lake build --no-build --rehash -v Counterexamples
           echo "::endgroup::"
 
       - name: check declarations in db files
@@ -531,8 +569,15 @@ jobs:
 
       - name: build everything
         # make sure everything is available for test/import_all.lean
+        # and that miscellaneous executables still work
         run: |
-          lake build Batteries Qq Aesop ProofWidgets Plausible
+          lake build Batteries Qq Aesop ProofWidgets Plausible pole unused
+
+      - name: build AesopTest (nightly-testing only)
+        # Only run on the mathlib4-nightly-testing repository
+        if: github.repository == 'leanprover-community/mathlib4-nightly-testing'
+        run: |
+          lake build AesopTest
 
       # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
       # Instead we run it in a cron job on master: see `lean4checker.yml`.
@@ -568,21 +613,11 @@ jobs:
     if: github.repository == 'leanprover-community/mathlib4' || github.repository == 'leanprover-community/mathlib4-nightly-testing'
     runs-on: ubuntu-latest
     steps:
-      - uses: leanprover-community/lint-style-action@d29fb3b12c1c834450680b3c544f63fe0237a2e2 # 2025-06-20
+      - uses: leanprover-community/lint-style-action@a7e7428fa44f9635d6eb8e01919d16fd498d387a # 2025-08-18
         with:
           mode: check
           lint-bib-file: true
           ref: ${{ github.sha }}
-
-  build_and_lint:
-    name: CI Success
-    if: github.repository == 'leanprover-community/mathlib4' || github.repository == 'leanprover-community/mathlib4-nightly-testing'
-    needs: [style_lint, post_steps]
-    runs-on: ubuntu-latest
-    steps:
-      - name: succeed
-        run: |
-          echo "Success: Required build and lint checks completed!"
 
   final:
     name: Post-CI job
@@ -590,11 +625,8 @@ jobs:
     needs: [style_lint, build, post_steps]
     runs-on: ubuntu-latest
     steps:
-      # This action is used to determine the PR metadata in the event of a push.
-      # If it is called from a PR from a fork, it will find nothing/irrelevant data.
-      - if: github.event_name != 'pull_request_target'
-        id: PR_from_push
-        uses: 8BitJonny/gh-get-current-pr@08e737c57a3a4eb24cec6487664b243b77eb5e36 # 3.0.0
+      - id: PR_from_push
+        uses: 8BitJonny/gh-get-current-pr@4056877062a1f3b624d5d4c2bedefa9cf51435c9 # 4.0.0
         # TODO: this may not work properly if the same commit is pushed to multiple branches:
         # https://github.com/8BitJonny/gh-get-current-pr/issues/8
         with:
@@ -602,6 +634,7 @@ jobs:
           # Only return if PR is still open
           filterOutClosed: true
 
+      # TODO: delete this step and rename `PR_from_push` to `PR` if the above step seems to work properly
       # Combine the output from the previous action with the metadata supplied by GitHub itself.
       # Note that if we fall back to github.event.pull_request data, the list of labels is generated when this workflow is triggered
       # and not updated afterwards!

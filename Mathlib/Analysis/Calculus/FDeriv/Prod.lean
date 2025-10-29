@@ -8,13 +8,13 @@ import Mathlib.Analysis.Calculus.FDeriv.Const
 import Mathlib.Analysis.Calculus.FDeriv.Linear
 
 /-!
-# Derivative of the cartesian product of functions
+# Derivative of the Cartesian product of functions
 
 For detailed documentation of the Fréchet derivative,
 see the module docstring of `Analysis/Calculus/FDeriv/Basic.lean`.
 
 This file contains the usual formulas (and existence assertions) for the derivative of
-cartesian products of functions, and functions into Pi-types.
+Cartesian products of functions, and functions into Pi-types.
 -/
 
 
@@ -38,7 +38,7 @@ variable {L L₁ L₂ : Filter E}
 
 section CartesianProduct
 
-/-! ### Derivative of the cartesian product of two functions -/
+/-! ### Derivative of the Cartesian product of two functions -/
 
 
 section Prod
@@ -339,6 +339,14 @@ variable {f₂ : G → G'} {f₂' : G →L[𝕜] G'} {y : G} (p : E × G)
 protected theorem HasStrictFDerivAt.prodMap (hf : HasStrictFDerivAt f f' p.1)
     (hf₂ : HasStrictFDerivAt f₂ f₂' p.2) : HasStrictFDerivAt (Prod.map f f₂) (f'.prodMap f₂') p :=
   (hf.comp p hasStrictFDerivAt_fst).prodMk (hf₂.comp p hasStrictFDerivAt_snd)
+
+@[fun_prop]
+protected theorem HasFDerivWithinAt.prodMap {s : Set <| E × G}
+    (hf : HasFDerivWithinAt f f' (Prod.fst '' s) p.1)
+    (hf₂ : HasFDerivWithinAt f₂ f₂' (Prod.snd '' s) p.2) :
+    HasFDerivWithinAt (Prod.map f f₂) (f'.prodMap f₂') s p :=
+  (hf.comp _ hasFDerivWithinAt_fst mapsTo_fst_prod).prodMk
+    (hf₂.comp _ hasFDerivWithinAt_snd mapsTo_snd_prod) |>.mono (by grind)
 
 @[fun_prop]
 protected theorem HasFDerivAt.prodMap (hf : HasFDerivAt f f' p.1) (hf₂ : HasFDerivAt f₂ f₂' p.2) :

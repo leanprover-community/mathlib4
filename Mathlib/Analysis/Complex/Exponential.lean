@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 -/
 import Mathlib.Algebra.CharP.Defs
+import Mathlib.Analysis.Complex.Norm
 import Mathlib.Algebra.Order.CauSeq.BigOperators
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Data.Complex.BigOperators
-import Mathlib.Data.Complex.Norm
 import Mathlib.Data.Nat.Choose.Sum
 
 /-!
@@ -39,8 +39,6 @@ theorem isCauSeq_norm_exp (z : ℂ) :
         norm_natCast]
       gcongr
       exact le_trans hm (Nat.le_succ _)
-
-@[deprecated (since := "2025-02-16")] alias isCauSeq_abs_exp := isCauSeq_norm_exp
 
 noncomputable section
 
@@ -95,9 +93,10 @@ theorem exp_zero : exp 0 = 1 := by
   rcases j with - | j
   · exact absurd hj (not_le_of_gt zero_lt_one)
   · dsimp [exp']
-    induction' j with j ih
-    · simp
-    · rw [← ih (by simp)]
+    induction j with
+    | zero => simp
+    | succ j ih =>
+      rw [← ih (by simp)]
       simp only [sum_range_succ, pow_succ]
       simp
 
@@ -141,6 +140,11 @@ theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℂ) :
 
 lemma exp_nsmul (x : ℂ) (n : ℕ) : exp (n • x) = exp x ^ n :=
   @MonoidHom.map_pow (Multiplicative ℂ) ℂ _ _  expMonoidHom _ _
+
+/-- This is a useful version of `exp_nsmul` for q-expansions of modular forms. -/
+lemma exp_nsmul' (x a p : ℂ) (n : ℕ) : exp (a * n * x / p) = exp (a * x / p) ^ n := by
+  rw [← Complex.exp_nsmul]
+  ring_nf
 
 theorem exp_nat_mul (x : ℂ) : ∀ n : ℕ, exp (n * x) = exp x ^ n
   | 0 => by rw [Nat.cast_zero, zero_mul, exp_zero, pow_zero]
@@ -284,20 +288,20 @@ theorem abs_exp (x : ℝ) : |exp x| = exp x :=
 lemma exp_abs_le (x : ℝ) : exp |x| ≤ exp x + exp (-x) := by
   cases le_total x 0 <;> simp [abs_of_nonpos, abs_of_nonneg, exp_nonneg, *]
 
-@[mono]
+@[mono, gcongr]
 theorem exp_strictMono : StrictMono exp := fun x y h => by
   rw [← sub_add_cancel y x, Real.exp_add]
   exact (lt_mul_iff_one_lt_left (exp_pos _)).2
       (lt_of_lt_of_le (by linarith) (add_one_le_exp_of_nonneg (by linarith)))
 
-@[gcongr]
+@[deprecated exp_strictMono (since := "2025-10-20")]
 theorem exp_lt_exp_of_lt {x y : ℝ} (h : x < y) : exp x < exp y := exp_strictMono h
 
-@[mono]
+@[gcongr, mono]
 theorem exp_monotone : Monotone exp :=
   exp_strictMono.monotone
 
-@[gcongr, bound]
+@[bound] -- temporary lemma for the `bound` tactic
 theorem exp_le_exp_of_le {x y : ℝ} (h : x ≤ y) : exp x ≤ exp y := exp_monotone h
 
 @[simp]
@@ -457,7 +461,7 @@ lemma norm_exp_sub_sum_le_exp_norm_sub_sum (x : ℂ) (n : ℕ) :
     rw [sum_range_sub_sum_range hj, sum_range_sub_sum_range hj]
     refine (IsAbsoluteValue.abv_sum norm ..).trans_eq ?_
     congr with i
-    simp [Complex.norm_pow]
+    simp [Complex.norm_pow, Complex.norm_natCast]
   _ ≤ Real.exp ‖x‖ - ∑ m ∈ range n, ‖x‖ ^ m / m.factorial := by
     gcongr
     exact Real.sum_le_exp_of_nonneg (norm_nonneg _) _
@@ -507,14 +511,6 @@ lemma norm_exp_sub_sum_le_norm_mul_exp (x : ℂ) (n : ℕ) :
       refine Real.sum_le_exp_of_nonneg ?_ _
       exact norm_nonneg _
 
-@[deprecated (since := "2025-02-16")] alias abs_exp_sub_one_le := norm_exp_sub_one_le
-@[deprecated (since := "2025-02-16")] alias abs_exp_sub_one_sub_id_le := norm_exp_sub_one_sub_id_le
-@[deprecated (since := "2025-02-16")] alias  abs_exp_sub_sum_le_exp_abs_sub_sum :=
-  norm_exp_sub_sum_le_exp_norm_sub_sum
-@[deprecated (since := "2025-02-16")] alias abs_exp_le_exp_abs := norm_exp_le_exp_norm
-@[deprecated (since := "2025-02-16")] alias abs_exp_sub_sum_le_abs_mul_exp :=
-  norm_exp_sub_sum_le_norm_mul_exp
-
 end Complex
 
 namespace Real
@@ -548,7 +544,7 @@ theorem abs_exp_sub_one_sub_id_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1 - x| �
   exact_mod_cast Complex.norm_exp_sub_one_sub_id_le this
 
 /-- A finite initial segment of the exponential series, followed by an arbitrary tail.
-For fixed `n` this is just a linear map wrt `r`, and each map is a simple linear function
+For fixed `n` this is just a linear map w.r.t. `r`, and each map is a simple linear function
 of the previous (see `expNear_succ`), with `expNear n x r ⟶ exp x` as `n ⟶ ∞`,
 for any `r`. -/
 noncomputable def expNear (n : ℕ) (x r : ℝ) : ℝ :=
@@ -559,8 +555,8 @@ theorem expNear_zero (x r) : expNear 0 x r = r := by simp [expNear]
 
 @[simp]
 theorem expNear_succ (n x r) : expNear (n + 1) x r = expNear n x (1 + x / (n + 1) * r) := by
-  simp [expNear, range_succ, mul_add, add_left_comm, add_assoc, pow_succ, div_eq_mul_inv,
-      Nat.factorial]
+  simp [expNear, range_add_one, mul_add, add_left_comm, add_assoc, pow_succ, div_eq_mul_inv,
+    Nat.factorial]
   ac_rfl
 
 theorem expNear_sub (n x r₁ r₂) : expNear n x r₁ -
@@ -571,14 +567,14 @@ theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) 
     |exp x - expNear m x 0| ≤ |x| ^ m / m.factorial * ((m + 1) / m) := by
   simp only [expNear, mul_zero, add_zero]
   convert exp_bound (n := m) h ?_ using 1
-  · field_simp [mul_comm]
-  · omega
+  · simp [field]
+  · cutsat
 
 theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a₂ b₂ : ℝ)
     (e : |1 + x / m * a₂ - a₁| ≤ b₁ - |x| / m * b₂)
     (h : |exp x - expNear m x a₂| ≤ |x| ^ m / m.factorial * b₂) :
     |exp x - expNear n x a₁| ≤ |x| ^ n / n.factorial * b₁ := by
-  refine (abs_sub_le _ _ _).trans ((add_le_add_right h _).trans ?_)
+  grw [abs_sub_le, h]
   subst e₁; rw [expNear_succ, expNear_sub, abs_mul]
   convert mul_le_mul_of_nonneg_left (a := |x| ^ n / ↑(Nat.factorial n))
       (le_sub_iff_add_le'.1 e) ?_ using 1
@@ -597,7 +593,8 @@ theorem exp_1_approx_succ_eq {n} {a₁ b₁ : ℝ} {m : ℕ} (en : n + 1 = m) {r
     |exp 1 - expNear n 1 a₁| ≤ |1| ^ n / n.factorial * b₁ := by
   subst er
   refine exp_approx_succ _ en _ _ ?_ h
-  field_simp [show (m : ℝ) ≠ 0 by norm_cast; omega]
+  field_simp [show (m : ℝ) ≠ 0 by norm_cast; cutsat]
+  simp
 
 theorem exp_approx_start (x a b : ℝ) (h : |exp x - expNear 0 x a| ≤ |x| ^ 0 / Nat.factorial 0 * b) :
     |exp x - a| ≤ b := by simpa using h
@@ -684,7 +681,5 @@ namespace Complex
 theorem norm_exp_ofReal (x : ℝ) : ‖exp x‖ = Real.exp x := by
   rw [← ofReal_exp]
   exact Complex.norm_of_nonneg (le_of_lt (Real.exp_pos _))
-
-@[deprecated (since := "2025-02-16")] alias abs_exp_ofReal := norm_exp_ofReal
 
 end Complex
