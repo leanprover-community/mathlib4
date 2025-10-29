@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 James Arthur. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: James Arthur, Chris Hughes, Shing Tak Lam
+Authors: James Arthur, Chris Hughes, Shing Tak Lam, Yuval Filmus
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
@@ -11,10 +11,13 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 In this file we prove that sinh is bijective and hence has an
 inverse, arsinh.
+We also define a partial inverse of cosh, arcosh.
 
 ## Main definitions
 
 - `Real.arsinh`: The inverse function of `Real.sinh`.
+
+- `Real.arcosh`: A partial inverse function of `Real.cosh`.
 
 - `Real.sinhEquiv`, `Real.sinhOrderIso`, `Real.sinhHomeomorph`: `Real.sinh` as an `Equiv`,
   `OrderIso`, and `Homeomorph`, respectively.
@@ -30,9 +33,14 @@ inverse, arsinh.
   continuous, differentiable, and continuously differentiable; we also provide dot notation
   convenience lemmas like `Filter.Tendsto.arsinh` and `ContDiffAt.arsinh`.
 
+## TODO
+
+* Prove more properties of arcosh
+
 ## Tags
 
 arsinh, arcsinh, argsinh, asinh, sinh injective, sinh bijective, sinh surjective
+arcosh, arccosh, argcosh, acosh
 -/
 
 
@@ -171,6 +179,21 @@ theorem contDiff_arsinh {n : ℕ∞} : ContDiff ℝ n arsinh :=
 @[continuity]
 theorem continuous_arsinh : Continuous arsinh :=
   sinhHomeomorph.symm.continuous
+
+/-- `arcosh` is defined using a logarithm, `arcosh x = log (x + sqrt(x^2 - 1))`. -/
+@[pp_nodot]
+def arcosh (x : ℝ) :=
+  log (x + √(x ^ 2 - 1))
+
+@[simp]
+theorem cosh_arcosh {x : ℝ} (hx : 1 ≤ x) : cosh (arcosh x) = x := by
+  unfold arcosh
+  have : 0 < x + sqrt (x^2 - 1) := by positivity
+  rw [cosh_eq, exp_neg, exp_log this]
+  field_simp; ring_nf
+  rw [sq_sqrt]
+  · ring
+  · nlinarith
 
 end Real
 

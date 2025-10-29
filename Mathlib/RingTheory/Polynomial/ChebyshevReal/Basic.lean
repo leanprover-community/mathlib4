@@ -11,6 +11,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev
+import Mathlib.Analysis.SpecialFunctions.Arsinh
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
@@ -76,33 +77,20 @@ theorem T_bounded_of_bounded' (n : ℤ) {x : ℝ} (hx : |x| ≤ 1) :
   rw [Set.mem_Icc]
   exact abs_le.mp hx
 
-/-- Inverse of `arccos`. -/
-noncomputable def arccosh (x : ℝ) : ℝ := log (x + sqrt (x^2 - 1))
-
-@[simp]
-theorem cosh_arccosh {x : ℝ} (hx : 1 ≤ x) : cosh (arccosh x) = x := by
-  unfold arccosh
-  have : 0 < x + sqrt (x^2 - 1) := by positivity
-  rw [cosh_eq, exp_neg, exp_log this]
-  field_simp; ring_nf
-  rw [sq_sqrt]
-  · ring
-  · linarith [show 1 ≤ x^2 from one_le_pow₀ hx]
-
 theorem T_ge_of_ge_one (n : ℤ) {x : ℝ} (hx : x ≥ 1) :
   (T ℝ n).eval x ≥ 1 := by
-  rw [←cosh_arccosh hx, T_real_cosh]
+  rw [←cosh_arcosh hx, T_real_cosh]
   apply one_le_cosh
 
 theorem T_gt_of_gt_one {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : x > 1) :
   (T ℝ n).eval x > 1 := by
-  rw [←cosh_arccosh (le_of_lt hx), T_real_cosh]
+  rw [←cosh_arcosh (le_of_lt hx), T_real_cosh]
   apply one_lt_cosh.mpr
   apply mul_ne_zero_iff.mpr
   constructor
   · norm_cast
   by_contra! h
-  have : x = 1 := by rw [←cosh_arccosh (le_of_lt hx), h, cosh_zero]
+  have : x = 1 := by rw [←cosh_arcosh (le_of_lt hx), h, cosh_zero]
   subst this
   exact (lt_self_iff_false 1).mp hx
 
