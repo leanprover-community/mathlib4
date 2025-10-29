@@ -14,6 +14,7 @@ In this file we show that a Dedekind domain that is a unique factorisation domai
 principal ideal domain.
 -/
 
+-- not an instance because this might cause a timeout
 theorem IsPrincipalIdealRing.of_isDedekindDomain_of_uniqueFactorizationMonoid
     (R : Type*) [CommRing R] [IsDedekindDomain R] [UniqueFactorizationMonoid R] :
     IsPrincipalIdealRing R := by
