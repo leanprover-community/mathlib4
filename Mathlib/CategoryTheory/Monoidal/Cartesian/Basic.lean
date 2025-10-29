@@ -45,6 +45,45 @@ universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
 open MonoidalCategory Limits
 
+/- A monoidal category is semicartesian if the unit for the tensor product is a terminal object. -/
+class SemiCartesianMonoidalCategory (C : Type u) [Category.{v} C] extends MonoidalCategory C where
+  /-- The tensor unit is a terminal object. -/
+  isTerminalTensorUnit : IsTerminal (𝟙_ C)
+  /-- The first projection from the product. -/
+  fst (X Y : C) : X ⊗ Y ⟶ X
+  /-- The second projection from the product. -/
+  snd (X Y : C) : X ⊗ Y ⟶ Y
+  fst_def (X Y : C) : fst X Y = X ◁ isTerminalTensorUnit.from Y ≫ (ρ_ X).hom := by cat_disch
+  snd_def (X Y : C) : snd X Y = isTerminalTensorUnit.from X ▷ Y ≫ (λ_ Y).hom := by cat_disch
+
+namespace SemiCartesianMonoidalCategory
+
+variable {C : Type u} [Category.{v} C] [SemiCartesianMonoidalCategory C]
+
+/-- The unique map to the terminal object. -/
+def toUnit (X : C) : X ⟶ 𝟙_ C := isTerminalTensorUnit.from X
+
+instance (X : C) : Unique (X ⟶ 𝟙_ C) := isTerminalEquivUnique _ _ isTerminalTensorUnit _
+
+lemma default_eq_toUnit (X : C) : default = toUnit X := rfl
+
+/--
+This lemma follows from the preexisting `Unique` instance, but
+it is often convenient to use it directly as `apply toUnit_unique` forcing
+lean to do the necessary elaboration.
+-/
+@[ext]
+lemma toUnit_unique {X : C} (f g : X ⟶ 𝟙_ _) : f = g :=
+  Subsingleton.elim _ _
+
+@[simp] lemma toUnit_unit : toUnit (𝟙_ C) = 𝟙 (𝟙_ C) := toUnit_unique ..
+
+@[reassoc (attr := simp)]
+theorem comp_toUnit {X Y : C} (f : X ⟶ Y) : f ≫ toUnit Y = toUnit X :=
+  toUnit_unique _ _
+
+end SemiCartesianMonoidalCategory
+
 variable (C) in
 /--
 An instance of `CartesianMonoidalCategory C` bundles an explicit choice of a binary
@@ -53,21 +92,17 @@ product of two objects of `C`, and a terminal object in `C`.
 Users should use the monoidal notation: `X ⊗ Y` for the product and `𝟙_ C` for
 the terminal object.
 -/
-class CartesianMonoidalCategory (C : Type u) [Category.{v} C] extends MonoidalCategory C where
-  /-- The tensor unit is a terminal object. -/
-  isTerminalTensorUnit : IsTerminal (𝟙_ C)
-  /-- The first projection from the product. -/
-  fst (X Y : C) : X ⊗ Y ⟶ X
-  /-- The second projection from the product. -/
-  snd (X Y : C) : X ⊗ Y ⟶ Y
+class CartesianMonoidalCategory (C : Type u) [Category.{v} C] extends
+    SemiCartesianMonoidalCategory C where
   /-- The monoidal product is the categorical product. -/
   tensorProductIsBinaryProduct (X Y : C) : IsLimit <| BinaryFan.mk (fst X Y) (snd X Y)
-  fst_def (X Y : C) : fst X Y = X ◁ isTerminalTensorUnit.from Y ≫ (ρ_ X).hom := by cat_disch
-  snd_def (X Y : C) : snd X Y = isTerminalTensorUnit.from X ▷ Y ≫ (λ_ Y).hom := by cat_disch
 
 @[deprecated (since := "2025-05-15")] alias ChosenFiniteProducts := CartesianMonoidalCategory
 
 namespace CartesianMonoidalCategory
+
+export SemiCartesianMonoidalCategory (isTerminalTensorUnit fst snd fst_def snd_def toUnit
+  toUnit_unique toUnit_unit comp_toUnit comp_toUnit_assoc default_eq_toUnit)
 
 variable {C : Type u} [Category.{v} C]
 
@@ -141,10 +176,9 @@ end ofChosenFiniteProducts
 
 open ofChosenFiniteProducts
 
-/-- Construct an instance of `CartesianMonoidalCategory C` given a terminal object and limit cones
-over arbitrary pairs of objects. -/
-abbrev ofChosenFiniteProducts : CartesianMonoidalCategory C :=
-  letI : MonoidalCategoryStruct C := {
+abbrev _root_.SemiCartesianMonoidalCategory.ofChosenFiniteProducts :
+    SemiCartesianMonoidalCategory C :=
+   letI : MonoidalCategoryStruct C := {
     tensorUnit := 𝒯.cone.pt
     tensorObj := tensorObj ℬ
     tensorHom := tensorHom ℬ
@@ -167,16 +201,24 @@ abbrev ofChosenFiniteProducts : CartesianMonoidalCategory C :=
     .ofUniqueHom (𝒯.isLimit.lift <| asEmptyCone ·) fun _ _ ↦ 𝒯.isLimit.hom_ext (by simp)
   fst X Y := BinaryFan.fst (ℬ X Y).cone
   snd X Y := BinaryFan.snd (ℬ X Y).cone
+  fst_def X Y := (((ℬ X 𝒯.cone.pt).isLimit.fac
+    (BinaryFan.mk _ _) ⟨.left⟩).trans (Category.comp_id _)).symm
+  snd_def X Y := (((ℬ 𝒯.cone.pt Y).isLimit.fac
+    (BinaryFan.mk _ _) ⟨.right⟩).trans (Category.comp_id _)).symm
+  }
+
+/-- Construct an instance of `CartesianMonoidalCategory C` given a terminal object and limit cones
+over arbitrary pairs of objects. -/
+abbrev ofChosenFiniteProducts : CartesianMonoidalCategory C :=
+  letI : SemiCartesianMonoidalCategory C :=
+    SemiCartesianMonoidalCategory.ofChosenFiniteProducts 𝒯 ℬ
+  {
   tensorProductIsBinaryProduct X Y := BinaryFan.IsLimit.mk _
     (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).1)
     (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).2.1)
     (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).2.2)
     (fun f g m hf hg ↦
       BinaryFan.IsLimit.hom_ext (ℬ X Y).isLimit (by simpa using hf) (by simpa using hg))
-  fst_def X Y := (((ℬ X 𝒯.cone.pt).isLimit.fac
-    (BinaryFan.mk _ _) ⟨.left⟩).trans (Category.comp_id _)).symm
-  snd_def X Y := (((ℬ 𝒯.cone.pt Y).isLimit.fac
-    (BinaryFan.mk _ _) ⟨.right⟩).trans (Category.comp_id _)).symm
   }
 
 omit 𝒯 in
@@ -191,31 +233,7 @@ end OfChosenFiniteProducts
 
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
 
-open MonoidalCategory
-
-/--
-The unique map to the terminal object.
--/
-def toUnit (X : C) : X ⟶ 𝟙_ C := isTerminalTensorUnit.from _
-
-instance (X : C) : Unique (X ⟶ 𝟙_ C) := isTerminalEquivUnique _ _ isTerminalTensorUnit _
-
-lemma default_eq_toUnit (X : C) : default = toUnit X := rfl
-
-/--
-This lemma follows from the preexisting `Unique` instance, but
-it is often convenient to use it directly as `apply toUnit_unique` forcing
-lean to do the necessary elaboration.
--/
-@[ext]
-lemma toUnit_unique {X : C} (f g : X ⟶ 𝟙_ _) : f = g :=
-  Subsingleton.elim _ _
-
-@[simp] lemma toUnit_unit : toUnit (𝟙_ C) = 𝟙 (𝟙_ C) := toUnit_unique ..
-
-@[reassoc (attr := simp)]
-theorem comp_toUnit {X Y : C} (f : X ⟶ Y) : f ≫ toUnit Y = toUnit X :=
-  toUnit_unique _ _
+open MonoidalCategory SemiCartesianMonoidalCategory
 
 /--
 Construct a morphism to the product given its two components.
@@ -796,7 +814,7 @@ instance fullSubcategory
 
 end CartesianMonoidalCategory
 
-open MonoidalCategory CartesianMonoidalCategory
+open MonoidalCategory CartesianMonoidalCategory SemiCartesianMonoidalCategory
 
 variable
   {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory C]
