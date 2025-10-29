@@ -56,7 +56,7 @@ theorem measureReal_zero_apply (s : Set α) : (0 : Measure α).real s = 0 := rfl
 
 @[simp]
 theorem measureReal_univ_pos [IsFiniteMeasure μ] [NeZero μ] : 0 < μ.real Set.univ :=
-  ENNReal.toReal_pos (NeZero.ne (μ Set.univ)) (measure_ne_top μ univ)
+  ENNReal.toReal_pos (NeZero.ne (μ Set.univ)) (by finiteness)
 
 theorem measureReal_univ_ne_zero [IsFiniteMeasure μ] [NeZero μ] : μ.real Set.univ ≠ 0 :=
   measureReal_univ_pos.ne'

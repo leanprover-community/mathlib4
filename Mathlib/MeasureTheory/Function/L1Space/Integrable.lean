@@ -311,7 +311,7 @@ open scoped Classical in
 theorem integrable_average [IsFiniteMeasure μ] {f : α → ε} :
     Integrable f ((μ univ)⁻¹ • μ) ↔ Integrable f μ :=
   (eq_or_ne μ 0).by_cases (fun h => by simp [h]) fun h =>
-    integrable_smul_measure (ENNReal.inv_ne_zero.2 <| measure_ne_top _ _)
+    integrable_smul_measure (ENNReal.inv_ne_zero.2 <| by finiteness)
       (ENNReal.inv_ne_top.2 <| mt Measure.measure_univ_eq_zero.1 h)
 
 end
