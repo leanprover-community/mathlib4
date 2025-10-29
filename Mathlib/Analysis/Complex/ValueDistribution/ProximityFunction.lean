@@ -106,4 +106,23 @@ theorem proximity_sub_proximity_inv_eq_circleAverage {f : ℂ → ℂ} (h₁f : 
   · simp_rw [← norm_inv]
     apply circleIntegrable_posLog_norm_meromorphicOn (h₁f.inv.mono_set (by tauto))
 
+/--
+For natural numbers `n`, the proximity function of `f ^ n` at `⊤` equals `n` times the proximity
+function of `f` at `⊤`.
+-/
+@[simp] theorem proximity_pow_top {f : ℂ → ℂ} {n : ℕ} :
+    proximity (f ^ n) ⊤ = n • (proximity f ⊤) := by
+  simp only [proximity, reduceDIte, Pi.pow_apply, norm_pow, posLog_pow, nsmul_eq_mul]
+  ext _
+  rw [Pi.mul_apply, Pi.natCast_apply, ← smul_eq_mul, ← circleAverage_fun_smul]
+  rfl
+
+/--
+For natural numbers `n`, the proximity function of `f ^ n` at `0` equals `n` times the proximity
+function of `f` at `0`.
+-/
+@[simp] theorem proximity_pow_zero {f : ℂ → ℂ} {n : ℕ} :
+    proximity (f ^ n) 0 = n • (proximity f 0) := by
+  rw [← proximity_inv, ← proximity_inv, (by aesop : (f ^ n)⁻¹ = f⁻¹ ^ n), proximity_pow_top]
+
 end ValueDistribution

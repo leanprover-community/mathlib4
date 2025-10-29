@@ -36,7 +36,6 @@ Approximation*][MR3156076] for a detailed discussion.
 - For `𝕜 = ℂ`, add the integral presentation of the logarithmic counting function
 - Discuss the counting function for rational functions, add a forward reference to the upcoming
   converse, formulated in terms of the Nevanlinna height.
-- Counting function of powers.
 -/
 
 open MeromorphicOn Metric Real Set
@@ -233,5 +232,21 @@ function counting poles.
 @[simp] theorem logCounting_sub_const (hf : MeromorphicOn f univ) :
     logCounting (f - fun _ ↦ a₀) ⊤ = logCounting f ⊤ := by
   simpa [sub_eq_add_neg] using logCounting_add_const hf
+
+/--
+For natural numbers `n`, the counting function counting zeros of `f ^ n` equals `n` times the
+counting function counting zeros of `f`.
+-/
+@[simp] theorem logCounting_pow_zero {f : 𝕜 → 𝕜} {n : ℕ} (hf : MeromorphicOn f Set.univ) :
+    logCounting (f ^ n) 0 = n • logCounting f 0 := by
+  simp [logCounting, divisor_fun_pow hf n]
+
+/--
+For natural numbers `n`, the counting function counting poles of `f ^ n` equals `n` times the
+counting function counting poles of `f`.
+-/
+@[simp] theorem logCounting_pow_top {f : 𝕜 → 𝕜} {n : ℕ} (hf : MeromorphicOn f Set.univ) :
+    logCounting (f ^ n) ⊤ = n • logCounting f ⊤ := by
+  simp [logCounting, divisor_pow hf n]
 
 end ValueDistribution

@@ -62,4 +62,22 @@ lemma characteristic_sub_characteristic_eq_proximity_sub_proximity (h : Meromorp
     characteristic f ⊤ - characteristic (f · - a₀) ⊤ = proximity f ⊤ - proximity (f · - a₀) ⊤ := by
   simp [← Pi.sub_def, characteristic, logCounting_sub_const h]
 
+/--
+For natural numbers `n`, the counting function counting zeros of `f ^ n` equals `n` times the
+counting function counting zeros of `f`.
+-/
+@[simp]
+theorem characteristic_pow_zero {f : ℂ → ℂ} {n : ℕ} (hf : MeromorphicOn f Set.univ) :
+    characteristic (f ^ n) 0 = n • characteristic f 0 := by
+  simp_all [characteristic]
+
+/--
+For natural numbers `n`, the counting function counting poles of `f ^ n` equals `n` times the
+counting function counting poles of `f`.
+-/
+@[simp]
+theorem characteristic_pow_top {f : ℂ → ℂ} {n : ℕ} (hf : MeromorphicOn f Set.univ) :
+    characteristic (f ^ n) ⊤ = n • characteristic f ⊤ := by
+  simp_all [characteristic]
+
 end ValueDistribution
