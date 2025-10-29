@@ -164,7 +164,7 @@ theorem hom_ext {W : C} {φ₁ φ₂ : W ⟶ pullbackObj f g} (h₁ : φ₁ ≫ 
     apply (adj.homEquiv U _).symm.injective
     apply (forget X).map_injective
     simpa using h₁
-  apply congr_arg CommaMorphism.left this
+  exact congr_arg CommaMorphism.left this
 
 section Lift
 
