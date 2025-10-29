@@ -32,8 +32,7 @@ env:
 concurrency:
   # label each workflow run; only the latest with each label will run
   # workflows on master get more expressive labels
-  group: ${{ github.workflow }}-${{ github.ref }}.
-    ${{ ( contains(fromJSON( '["refs/heads/master", "refs/heads/staging"]'), github.ref ) && github.run_id) || ''}}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ (contains(fromJSON('["refs/heads/master", "refs/heads/staging"]'), github.ref) && github.run_id) || '' }}
   # cancel any running workflow with the same label
   cancel-in-progress: true
 
@@ -149,8 +148,23 @@ jobs:
       - name: set LEAN_SRC_PATH
         shell: bash
         run: |
-          # Construct the LEAN_SRC_PATH using the toolchain directory
-          LEAN_SRC_PATH=".:$TOOLCHAIN_DIR/src/lean/lake:.lake/packages/Cli:.lake/packages/batteries:.lake/packages/Qq:.lake/packages/aesop:.lake/packages/proofwidgets:.lake/packages/importGraph:.lake/packages/LeanSearchClient:.lake/packages/plausible:.lake/packages/requests:.lake/packages/openAI_client:.lake/packages/reap"
+          cd pr-branch
+
+          # Start with the base paths
+          LEAN_SRC_PATH=".:$TOOLCHAIN_DIR/src/lean/lake"
+
+          # Extract package names from lake-manifest.json and validate them
+          # Only allow A-Z, a-z, 0-9, _, and - characters
+          # Build the LEAN_SRC_PATH by appending each validated package
+          PACKAGE_NAMES=$(jq -r '.packages[].name' lake-manifest.json)
+          for pkg in $PACKAGE_NAMES; do
+            if [[ "$pkg" =~ ^[A-Za-z0-9_-]+$ ]]; then
+              LEAN_SRC_PATH="$LEAN_SRC_PATH:.lake/packages/$pkg"
+            else
+              echo "Warning: Skipping invalid package name: $pkg"
+            fi
+          done
+
           echo "LEAN_SRC_PATH=$LEAN_SRC_PATH"
 
           # Set it as an environment variable for subsequent steps
@@ -345,37 +359,6 @@ jobs:
         env:
           MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
 
-      # The cache secrets are available here, so we must not run any untrusted code.
-      - name: Upload cache to Cloudflare
-        id: cloudflare-upload-mathlib
-        if: ${{ always() && steps.get.outcome == 'success' }}
-        continue-on-error: true
-        shell: bash
-        run: |
-          cd pr-branch
-
-          # Trim trailing whitespace from secrets to prevent issues with accidentally added spaces
-          export MATHLIB_CACHE_S3_TOKEN="${MATHLIB_CACHE_S3_TOKEN_RAW%"${MATHLIB_CACHE_S3_TOKEN_RAW##*[![:space:]]}"}"
-
-          echo "Uploading cache to Cloudflare..."
-          USE_FRO_CACHE=1 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked
-        env:
-          MATHLIB_CACHE_S3_TOKEN_RAW: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
-
-      - name: Report Cloudflare upload failure on Zulip
-        if: steps.cloudflare-upload-mathlib.outcome == 'failure'
-        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
-        with:
-          api-key: ${{ secrets.ZULIP_API_KEY }}
-          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
-          organization-url: 'https://leanprover.zulipchat.com'
-          to: 'nightly-testing'
-          type: 'stream'
-          topic: 'Cloudflare cache upload failure'
-          content: |
-            ❌ Cloudflare cache upload (Mathlib) [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for PR #${{ github.event.pull_request.number || 'push' }} on commit ${{ github.sha }}
-        continue-on-error: true
-
       # Note: we should not be including `Archive` and `Counterexamples` in the cache.
       # We do this for now for the sake of not rebuilding them in every CI run
       # even when they are not touched.
@@ -430,36 +413,6 @@ jobs:
           USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Counterexamples.lean
         env:
           MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
-
-      - name: Upload Archive and Counterexamples cache to Cloudflare
-        id: cloudflare-upload-archive
-        continue-on-error: true
-        shell: bash
-        run: |
-          cd pr-branch
-
-          # Trim trailing whitespace from secrets to prevent issues with accidentally added spaces
-          export MATHLIB_CACHE_S3_TOKEN="${MATHLIB_CACHE_S3_TOKEN_RAW%"${MATHLIB_CACHE_S3_TOKEN_RAW##*[![:space:]]}"}"
-
-          echo "Uploading Archive and Counterexamples cache to Cloudflare..."
-          USE_FRO_CACHE=1 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Archive.lean
-          USE_FRO_CACHE=1 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Counterexamples.lean
-        env:
-          MATHLIB_CACHE_S3_TOKEN_RAW: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
-
-      - name: Report Cloudflare Archive/Counterexamples upload failure on Zulip
-        if: steps.cloudflare-upload-archive.outcome == 'failure'
-        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
-        with:
-          api-key: ${{ secrets.ZULIP_API_KEY }}
-          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
-          organization-url: 'https://leanprover.zulipchat.com'
-          to: 'nightly-testing'
-          type: 'stream'
-          topic: 'Cloudflare cache upload failure'
-          content: |
-            ❌ Cloudflare cache upload (Archive/Counterexamples) [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for PR #${{ github.event.pull_request.number || 'push' }} on commit ${{ github.sha }}
-        continue-on-error: true
 
       - name: Check {Mathlib, Tactic, Counterexamples, Archive}.lean
         if: always()
@@ -567,29 +520,6 @@ jobs:
           use-mathlib-cache: false # This can be re-enabled once we are confident in the cache again.
           reinstall-transient-toolchain: true
 
-      - name: retrieve and test the Cloudflare caches, but don't fail, just report to Zulip, if anything goes wrong
-        id: cloudflare-cache
-        continue-on-error: true
-        run: |
-          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get
-          lake build --no-build -v Mathlib
-          lake exe cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get Archive Counterexamples
-          lake build --no-build -v Archive Counterexamples
-
-      - name: Report Cloudflare cache failure on Zulip
-        if: steps.cloudflare-cache.outcome == 'failure'
-        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
-        with:
-          api-key: ${{ secrets.ZULIP_API_KEY }}
-          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
-          organization-url: 'https://leanprover.zulipchat.com'
-          to: 'nightly-testing'
-          type: 'stream'
-          topic: 'Cloudflare cache failure'
-          content: |
-            ❌ Cloudflare cache retrieval/test [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for PR #${{ github.event.pull_request.number || 'push' }} on commit ${{ github.sha }}
-        continue-on-error: true
-
       - name: get cache for Mathlib
         run: |
           # Run once without --repo, so we can diagnose what `lake exe cache get` wants to do by itself.
@@ -639,8 +569,9 @@ jobs:
 
       - name: build everything
         # make sure everything is available for test/import_all.lean
+        # and that miscellaneous executables still work
         run: |
-          lake build Batteries Qq Aesop ProofWidgets Plausible
+          lake build Batteries Qq Aesop ProofWidgets Plausible pole unused
 
       - name: build AesopTest (nightly-testing only)
         # Only run on the mathlib4-nightly-testing repository
