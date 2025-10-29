@@ -457,7 +457,7 @@ lemma coinvariantsTensorFreeToFinsupp_mk_tmul_single (x : A) (i : α) (g : G) (r
     DFunLike.coe (F := (A.ρ.tprod (Representation.free k G α)).Coinvariants →ₗ[k] α →₀ A.V)
       (coinvariantsTensorFreeToFinsupp A α) (Coinvariants.mk _ (x ⊗ₜ single i (single g r))) =
       single i (r • A.ρ g⁻¹ x) := by
-  simp [tensorObj_def, ModuleCat.MonoidalCategory.tensorObj, coinvariantsTensorFreeToFinsupp,
+  simp [tensorObj_carrier, coinvariantsTensorFreeToFinsupp,
     Coinvariants.map, finsuppTensorRight, TensorProduct.finsuppRight]
 
 variable (A α)
@@ -477,8 +477,7 @@ lemma finsuppToCoinvariantsTensorFree_single (i : α) (x : A) :
     DFunLike.coe (F := (α →₀ A.V) →ₗ[k] (A.ρ.tprod (Representation.free k G α)).Coinvariants)
       (finsuppToCoinvariantsTensorFree A α) (single i x) =
       Coinvariants.mk _ (x ⊗ₜ single i (single (1 : G) (1 : k))) := by
-  simp [finsuppToCoinvariantsTensorFree, Coinvariants.map, ModuleCat.MonoidalCategory.tensorObj,
-    tensorObj_def]
+  simp [finsuppToCoinvariantsTensorFree, Coinvariants.map, tensorObj_carrier]
 
 variable (A α)
 
