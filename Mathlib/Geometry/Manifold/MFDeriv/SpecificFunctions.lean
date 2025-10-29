@@ -633,14 +633,8 @@ theorem tangentMapWithin_prodSnd {s : Set (M × M')} {p : TangentBundle (I.prod 
 @[deprecated (since := "2025-04-18")]
 alias tangentMapWithin_prod_snd := tangentMapWithin_prodSnd
 
-theorem MDifferentiableAt.mfderiv_prod {f : M → M'} {g : M → M''} {x : M}
-    (hf : MDifferentiableAt I I' f x) (hg : MDifferentiableAt I I'' g x) :
-    mfderiv I (I'.prod I'') (fun x => (f x, g x)) x =
-      (mfderiv I I' f x).prod (mfderiv I I'' g x) := by
-  classical
-  simp_rw [mfderiv, if_pos (hf.prodMk hg), if_pos hf, if_pos hg]
-  exact hf.differentiableWithinAt_writtenInExtChartAt.fderivWithin_prodMk
-    hg.differentiableWithinAt_writtenInExtChartAt (I.uniqueDiffOn _ (mem_range_self _))
+-- Kept as an alias for discoverability.
+alias MDifferentiableAt.mfderiv_prod := mfderiv_prodMk
 
 theorem mfderiv_prod_left {x₀ : M} {y₀ : M'} :
     mfderiv I (I.prod I') (fun x => (x, y₀)) x₀ =
