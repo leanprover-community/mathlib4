@@ -355,7 +355,7 @@ planes. -/
 theorem altitude_eq_mongePlane (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
     (h₂₃ : i₂ ≠ i₃) : t.altitude i₁ = t.mongePlane i₂ i₃ := by
   have hs : ({i₂, i₃}ᶜ : Finset (Fin 3)) = {i₁} := by decide +revert
-  have he : ({i₁}ᶜ : Set (Fin 3)) = {i₂, i₃} := by grind
+  have he : ({i₁}ᶜ : Set (Fin 3)) = {i₂, i₃} := by ext; decide +revert
   rw [mongePlane_def, altitude_def, direction_affineSpan, hs, he, centroid_singleton,
     vectorSpan_image_eq_span_vsub_set_left_ne ℝ _ (Set.mem_insert i₂ _)]
   simp [h₂₃]
@@ -457,7 +457,10 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
       ⟨t₁.points i₃, mem_affineSpan ℝ ⟨j₃, h₃⟩, mem_affineSpan ℝ (Set.mem_range_self _)⟩
     refine Submodule.eq_of_le_of_finrank_eq (direction_le (affineSpan_le_of_subset_coe ?_))
       ?_
-    · have hu : (Set.univ : Set (Fin 3)) = {j₁, j₂, j₃} := by grind
+    · have hu : (Set.univ : Set (Fin 3)) = {j₁, j₂, j₃} := by
+        clear h₁ h₂ h₃
+        ext
+        decide +revert
       rw [← Set.image_univ, hu, Set.image_insert_eq, Set.image_insert_eq, Set.image_singleton, h₁,
         h₂, h₃, Set.insert_subset_iff, Set.insert_subset_iff, Set.singleton_subset_iff]
       exact
@@ -468,12 +471,18 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
         t₂.independent.finrank_vectorSpan (Fintype.card_fin _)]
   rw [he]
   use mem_affineSpan ℝ (Set.mem_range_self _)
-  have hu : ({j₂}ᶜ : Set _) = {j₁, j₃} := by grind
+  have hu : ({j₂}ᶜ : Set _) = {j₁, j₃} := by
+    clear h₁ h₂ h₃
+    ext
+    decide +revert
   rw [hu, Set.image_insert_eq, Set.image_singleton, h₁, h₃]
   have hle : (t₁.altitude i₃).directionᗮ ≤ line[ℝ, t₁.orthocenter, t₁.points i₃].directionᗮ :=
     Submodule.orthogonal_le (direction_le (affineSpan_orthocenter_point_le_altitude _ _))
   refine hle ((t₁.vectorSpan_isOrtho_altitude_direction i₃) ?_)
-  have hui : ({i₃}ᶜ : Set _) = {i₁, i₂} := by grind
+  have hui : ({i₃}ᶜ : Set _) = {i₁, i₂} := by
+    clear hle h₂ h₃
+    ext
+    decide +revert
   rw [hui, Set.image_insert_eq, Set.image_singleton]
   exact vsub_mem_vectorSpan ℝ (Set.mem_insert _ _) (Set.mem_insert_of_mem _ (Set.mem_singleton _))
 
