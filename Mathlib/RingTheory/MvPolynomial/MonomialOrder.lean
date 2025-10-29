@@ -712,8 +712,13 @@ theorem degree_sub_leadingTerm (f : MvPolynomial σ R) :
   simp [leadingTerm, leadingCoeff] at h
 
 theorem degree_sub_leadingTerm_lt_degree {f : MvPolynomial σ R} (h : f - m.leadingTerm f ≠ 0) :
-    m.degree (f - m.leadingTerm f) ≺[m] m.degree f :=
-  (or_iff_left h).mp <| m.degree_sub_leadingTerm f
+    m.degree (f - m.leadingTerm f) ≺[m] m.degree f := by
+  classical
+  apply lt_of_le_of_ne (m.degree_sub_leadingTerm_le f) ?_
+  simp_intro h'
+  apply m.degree_mem_support at h
+  rw [h', mem_support_iff] at h
+  simp [leadingTerm, leadingCoeff] at h
 
 theorem degree_sub_leadingTerm_lt_iff {f : MvPolynomial σ R} :
     m.degree (f - m.leadingTerm f) ≺[m] m.degree f ↔ m.degree f ≠ 0 := by
