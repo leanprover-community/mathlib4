@@ -459,6 +459,9 @@ variable {s t : Set α} {a : α}
 @[simp] lemma covBy_insert (ha : a ∉ s) : s ⋖ insert a s :=
   (wcovBy_insert _ _).covBy_of_lt <| ssubset_insert ha
 
+@[simp] lemma empty_covBy_singleton (a : α) : ∅ ⋖ ({a} : Set α) :=
+  insert_empty_eq (β := Set α) a ▸ covBy_insert <| notMem_empty a
+
 @[simp] lemma sdiff_singleton_covBy (ha : a ∈ s) : s \ {a} ⋖ s :=
   ⟨sdiff_lt (singleton_subset_iff.2 ha) <| singleton_ne_empty _, (sdiff_singleton_wcovBy _ _).2⟩
 

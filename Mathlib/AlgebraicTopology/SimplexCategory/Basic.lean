@@ -578,6 +578,9 @@ instance (x : SimplexCategory) (n : ℕ) : OfNat (ToType x) n :=
 
 lemma toType_apply (x : SimplexCategory) : ToType x = Fin (x.len + 1) := rfl
 
+@[simp]
+lemma concreteCategoryHom_id (n : SimplexCategory) : ConcreteCategory.hom (𝟙 n) = .id := rfl
+
 end Concrete
 
 section EpiMono
