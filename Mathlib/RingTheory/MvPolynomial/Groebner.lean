@@ -662,22 +662,16 @@ lemma isGroebnerBasis_erase_zero (G : Finset (MvPolynomial σ R)) (I : Ideal (Mv
 
 open Classical in
 @[simp]
-lemma isGroebnerBasis_union_singleton_zero (G : Finset (MvPolynomial σ R))
+lemma isGroebnerBasis_insert_zero (G : Finset (MvPolynomial σ R))
     (I : Ideal (MvPolynomial σ R)) :
-    m.IsGroebnerBasis (G ∪ {0}) I ↔ m.IsGroebnerBasis G I := by
+    m.IsGroebnerBasis (insert 0 G) I ↔ m.IsGroebnerBasis G I := by
   unfold IsGroebnerBasis
   congr! 1
   · constructor
     · intro h x hx
       apply h
-      refine Finset.mem_coe.mpr ?_
-      exact Finset.mem_union_left {0} hx
-    · intro hGI
-      push_cast
-      rw [Set.union_subset_iff]
-      constructor
-      · exact hGI
-      · exact Set.singleton_subset_iff.mpr (Submodule.zero_mem _)
+      simp [hx]
+    · simp [Set.insert_subset_iff]
   · simp [m.span_leadingTerm_insert_zero]
 
 variable {m} in
