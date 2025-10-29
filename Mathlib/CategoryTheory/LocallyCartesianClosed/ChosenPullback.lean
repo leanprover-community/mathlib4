@@ -183,7 +183,7 @@ theorem lift_fst : lift a b h ≫ fst f g = a := by
   have : (Over.map g).map l' ≫ fst' f g = a' := by
     simp [← Adjunction.homEquiv_counit]
     aesop
-  apply congr_arg CommaMorphism.left this
+  exact congr_arg CommaMorphism.left this
 
 @[reassoc (attr := simp)]
 theorem lift_snd : lift a b h ≫ snd f g = b := by
