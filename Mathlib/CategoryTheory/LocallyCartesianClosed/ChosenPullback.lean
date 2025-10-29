@@ -198,6 +198,9 @@ theorem isPullback {Y Z X : C} (f : Y ⟶ X) (g : Z ⟶ X) [ChosenPullback g] :
     ⟨PullbackCone.IsLimit.mk _ (fun s ↦ lift s.fst s.snd s.condition)
       (by simp) (by simp) (by aesop)⟩
 
+theorem hasPullbackAlong {g : Z ⟶ X} [ChosenPullback g] : HasPullbacksAlong g :=
+  fun f => (isPullback f g).hasPullback
+
 end Lift
 
 end PullbackFromChosenPullbacks
