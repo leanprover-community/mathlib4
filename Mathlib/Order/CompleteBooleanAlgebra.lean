@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Logic.Equiv.Set
+import Mathlib.Logic.Pairwise
 import Mathlib.Order.CompleteLattice.Lemmas
 import Mathlib.Order.Directed
 import Mathlib.Order.GaloisConnection.Basic
@@ -323,6 +324,23 @@ theorem iSup_iInf_eq [CompletelyDistribLattice α] {f : ∀ a, κ a → α} :
     (⨆ a, ⨅ b, f a b) = ⨅ g : ∀ a, κ a, ⨆ a, f a (g a) :=
   CompletelyDistribLattice.MinimalAxioms.of.iSup_iInf_eq _
 
+theorem biSup_iInter_of_pairwise_disjoint [CompletelyDistribLattice α] {ι κ : Type*}
+    [hκ : Nonempty κ] {f : ι → α} (h : Pairwise (Disjoint on f)) (s : κ → Set ι) :
+    (⨆ i ∈ (⋂ j, s j), f i) = ⨅ j, (⨆ i ∈ s j, f i) := by
+  rcases hκ with ⟨j⟩
+  simp_rw [iInf_iSup_eq, mem_iInter]
+  refine le_antisymm
+    (iSup₂_le fun i hi ↦ le_iSup₂_of_le (fun _ ↦ i) hi (le_iInf fun _ ↦ le_rfl))
+    (iSup₂_le fun I hI ↦ ?_)
+  by_cases H : ∀ k, I k = I j
+  · exact le_iSup₂_of_le (I j) (fun k ↦ (H k) ▸ (hI k)) (iInf_le _ _)
+  · push_neg at H
+    rcases H with ⟨k, hk⟩
+    calc ⨅ k, f (I k)
+    _ ≤ f (I k) ⊓ f (I j) := le_inf (iInf_le _ _) (iInf_le _ _)
+    _ = ⊥ := (h hk).eq_bot
+    _ ≤ _ := bot_le
+
 instance (priority := 100) CompletelyDistribLattice.toCompleteDistribLattice
     [CompletelyDistribLattice α] : CompleteDistribLattice α where
   __ := ‹CompletelyDistribLattice α›
@@ -392,6 +410,17 @@ theorem biSup_inf_biSup {ι ι' : Type*} {f : ι → α} {g : ι' → α} {s : S
 
 theorem sSup_inf_sSup : sSup s ⊓ sSup t = ⨆ p ∈ s ×ˢ t, (p : α × α).1 ⊓ p.2 := by
   simp only [sSup_eq_iSup, biSup_inf_biSup]
+
+theorem biSup_inter_of_pairwise_disjoint {ι : Type*} {f : ι → α}
+    (h : Pairwise (Disjoint on f)) (s t : Set ι) :
+    (⨆ i ∈ (s ∩ t), f i) = (⨆ i ∈ s, f i) ⊓ (⨆ i ∈ t, f i) := by
+  rw [biSup_inf_biSup]
+  refine le_antisymm
+    (iSup₂_le fun i ⟨his, hit⟩ ↦ le_iSup₂_of_le ⟨i, i⟩ ⟨his, hit⟩ (le_inf le_rfl le_rfl))
+    (iSup₂_le fun ⟨i, j⟩ ⟨his, hjs⟩ ↦ ?_)
+  by_cases hij : i = j
+  · exact le_iSup₂_of_le i ⟨his, hij ▸ hjs⟩ inf_le_left
+  · simp [h hij |>.eq_bot]
 
 theorem iSup_disjoint_iff {f : ι → α} : Disjoint (⨆ i, f i) a ↔ ∀ i, Disjoint (f i) a := by
   simp only [disjoint_iff, iSup_inf_eq, iSup_eq_bot]
