@@ -116,4 +116,3 @@ end NormedField
 end Extend
 
 end ContinuousLinearMap
-
