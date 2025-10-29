@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 In this file, given a property `P` of objects in a category `C` and
 family of categories `J : α → Type _`, we introduce the closure
 `P.colimitsClosure J` of `P` under colimits of shapes `J a` for all `a : α`,
-and under certain smallness assumptions, we show that its essentially small.
+and under certain smallness assumptions, we show that it is essentially small.
 
 (We deduce these results about the closure under colimits by dualising the
 results in the file `ObjectProperty.LimitsClosure`.)
