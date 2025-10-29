@@ -4,9 +4,9 @@
     {
       "label": "Aristotle: Prove Current File",
       "type": "shell",
-      "command": "python3",
+      "command": "aristotle",
       "args": [
-        "${workspaceFolder}/scripts/aristotle/prove.py",
+        "prove-from-file",
         "${file}"
       ],
       "problemMatcher": [],
@@ -20,11 +20,11 @@
     {
       "label": "Aristotle: Prove Current File (Custom Output)",
       "type": "shell",
-      "command": "python3",
+      "command": "aristotle",
       "args": [
-        "${workspaceFolder}/scripts/aristotle/prove.py",
+        "prove-from-file",
         "${file}",
-        "--output",
+        "--output-file",
         "${input:outputPath}"
       ],
       "problemMatcher": [],

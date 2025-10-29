@@ -36,8 +36,9 @@ to learn about it as well!
 
 **Automated theorem proving**
 - `aristotle`
-  Integration with the Aristotle API for automated theorem proving. Contains Python scripts
-  and documentation for submitting Lean files to Aristotle's automated proof generation service.
+  Integration with the Aristotle API for automated theorem proving. Contains VSCode task
+  configuration and documentation for using the `aristotlelib` CLI to submit Lean files to
+  Aristotle's automated proof generation service.
   See `scripts/aristotle/README.md` for detailed usage instructions and setup.
 
 **Tools for manual maintenance**
