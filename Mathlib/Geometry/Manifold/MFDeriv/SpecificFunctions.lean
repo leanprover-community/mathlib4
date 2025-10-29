@@ -222,6 +222,21 @@ theorem HasMFDerivWithinAt.prodMk {f : M → M'} {g : M → M''}
     HasMFDerivWithinAt I (I'.prod I'') (fun y ↦ (f y, g y)) s x (df.prod dg) :=
   ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
+lemma mfderivWithin_prodMk {f : M → M'} {g : M → M''}
+    (hf : MDifferentiableWithinAt I I' f s x) (hg : MDifferentiableWithinAt I I'' g s x)
+    (hs : UniqueMDiffWithinAt I s x) :
+    mfderivWithin I (I'.prod I'') (fun x => (f x, g x)) s x
+      = (mfderivWithin I I' f s x).prod (mfderivWithin I I'' g s x) :=
+  (hf.hasMFDerivWithinAt.prodMk hg.hasMFDerivWithinAt).mfderivWithin hs
+
+lemma mfderiv_prodMk {f : M → M'} {g : M → M''}
+    (hf : MDifferentiableAt I I' f x) (hg : MDifferentiableAt I I'' g x) :
+    mfderiv I (I'.prod I'') (fun x => (f x, g x)) x
+      = (mfderiv I I' f x).prod (mfderiv I I'' g x) := by
+  simp_rw [← mfderivWithin_univ]
+  exact mfderivWithin_prodMk hf.mdifferentiableWithinAt hg.mdifferentiableWithinAt
+    (uniqueMDiffWithinAt_univ I)
+
 theorem MDifferentiableAt.prodMk {f : M → M'} {g : M → M''} (hf : MDifferentiableAt I I' f x)
     (hg : MDifferentiableAt I I'' g x) :
     MDifferentiableAt I (I'.prod I'') (fun x => (f x, g x)) x :=
@@ -490,6 +505,64 @@ theorem MDifferentiableOn.prodMap (hf : MDifferentiableOn I I' f s)
 theorem MDifferentiable.prodMap (hf : MDifferentiable I I' f) (hg : MDifferentiable J J' g) :
     MDifferentiable (I.prod J) (I'.prod J') (Prod.map f g) := fun p ↦
   (hf p.1).prodMap' (hg p.2)
+
+lemma HasMFDerivWithinAt.prodMap {s : Set <| M × M'} {p : M × M'} {f : M → N} {g : M' → N'}
+    {df : TangentSpace I p.1 →L[𝕜] TangentSpace J (f p.1)}
+    (hf : HasMFDerivWithinAt I J f (Prod.fst '' s) p.1 df)
+    {dg : TangentSpace I' p.2 →L[𝕜] TangentSpace J' (g p.2)}
+    (hg : HasMFDerivWithinAt I' J' g (Prod.snd '' s) p.2 dg) :
+    HasMFDerivWithinAt (I.prod I') (J.prod J') (Prod.map f g) s p (df.prodMap dg) := by
+  refine ⟨hf.1.prodMap hg.1 |>.mono (by grind), ?_⟩
+  have better : ((extChartAt (I.prod I') p).symm ⁻¹' s ∩ range ↑(I.prod I')) ⊆
+      ((extChartAt I p.1).symm ⁻¹' (Prod.fst '' s) ∩ range I) ×ˢ
+        ((extChartAt I' p.2).symm ⁻¹' (Prod.snd '' s) ∩ range I') := by
+    simp only [mfld_simps]
+    rw [range_prodMap, I.toPartialEquiv.prod_symm, (chartAt H p.1).toPartialEquiv.prod_symm]
+    -- This is very tedious; a nicer proof is welcome!
+    intro p₀ ⟨hp₀, ⟨hp₁₁, hp₁₂⟩⟩
+    refine ⟨⟨?_, by assumption⟩, ⟨?_, by assumption⟩⟩
+    · simp_all
+      use (chartAt H' p.2).symm <| I'.symm p₀.2
+    · simp_all
+      use (chartAt H p.1).symm <| I.symm p₀.1
+  rw [writtenInExtChart_prod]
+  apply HasFDerivWithinAt.mono ?_ better
+  apply HasFDerivWithinAt.prodMap
+  exacts [hf.2.mono (fst_image_prod_subset ..), hg.2.mono (snd_image_prod_subset ..)]
+
+lemma HasMFDerivAt.prodMap {p : M × M'} {f : M → N} {g : M' → N'}
+    {df : TangentSpace I p.1 →L[𝕜] TangentSpace J (f p.1)} (hf : HasMFDerivAt I J f p.1 df)
+    {dg : TangentSpace I' p.2 →L[𝕜] TangentSpace J' (g p.2)} (hg : HasMFDerivAt I' J' g p.2 dg) :
+    HasMFDerivAt (I.prod I') (J.prod J') (Prod.map f g) p
+      ((mfderiv I J f p.1).prodMap (mfderiv I' J' g p.2)) := by
+  simp_rw [← hasMFDerivWithinAt_univ, ← mfderivWithin_univ, ← univ_prod_univ]
+  convert hf.hasMFDerivWithinAt.prodMap hg.hasMFDerivWithinAt
+  · rw [mfderivWithin_univ]; exact hf.mfderiv
+  · rw [mfderivWithin_univ]; exact hg.mfderiv
+
+-- Note: this lemma does not apply easily to an arbitrary subset `s ⊆ M × M'` as
+-- unique differentiability on `(Prod.fst '' s)` and `(Prod.snd '' s)` does not imply
+-- unique differentiability on `s`: a priori, `(Prod.fst '' s) × (Prod.fst '' s)`
+-- could be a strict superset of `s`.
+lemma mfderivWithin_prodMap {p : M × M'} {t : Set M'} {f : M → N} {g : M' → N'}
+    (hf : MDifferentiableWithinAt I J f s p.1) (hg : MDifferentiableWithinAt I' J' g t p.2)
+    (hs : UniqueMDiffWithinAt I s p.1) (ht : UniqueMDiffWithinAt I' t p.2) :
+    mfderivWithin (I.prod I') (J.prod J') (Prod.map f g) (s ×ˢ t) p
+      = (mfderivWithin I J f s p.1).prodMap (mfderivWithin I' J' g t p.2) := by
+  have hf' : HasMFDerivWithinAt I J f (Prod.fst '' s ×ˢ t) p.1 (mfderivWithin I J f s p.1) := by
+    apply hf.hasMFDerivWithinAt.mono (by grind)
+  have hg' : HasMFDerivWithinAt I' J' g (Prod.snd '' s ×ˢ t) p.2 (mfderivWithin I' J' g t p.2) := by
+    apply hg.hasMFDerivWithinAt.mono (by grind)
+  apply (hf'.prodMap hg').mfderivWithin (hs.prod ht)
+
+lemma mfderiv_prodMap {p : M × M'} {f : M → N} {g : M' → N'}
+    (hf : MDifferentiableAt I J f p.1) (hg : MDifferentiableAt I' J' g p.2) :
+    mfderiv (I.prod I') (J.prod J') (Prod.map f g) p
+      = (mfderiv I J f p.1).prodMap (mfderiv I' J' g p.2) := by
+  simp_rw [← mfderivWithin_univ]
+  rw [← univ_prod_univ]
+  exact mfderivWithin_prodMap hf.mdifferentiableWithinAt hg.mdifferentiableWithinAt
+    (uniqueMDiffWithinAt_univ I) (uniqueMDiffWithinAt_univ I')
 
 end prodMap
 
