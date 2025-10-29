@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Limits.Final
 /-!
 # Existence of pointwise right derived functors via derivability structures
 
-In this file, we show how right derivability structure can be used in
+In this file, we show how a right derivability structure can be used in
 order to construct (pointwise) right derived functors.
 Let `Φ` be a right derivability structure from `W₁ : MorphismProperty C₁`
 to `W₂ : MorphismProperty C₂`. Let `F : C₂ ⥤ H` be a functor.
