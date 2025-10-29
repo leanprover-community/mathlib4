@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Attila Gáspár
 -/
 import Mathlib.Topology.Sets.Compacts
+import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
@@ -73,6 +74,18 @@ theorem hausdorffEntourage_comp (U V : SetRel α α) :
 instance isTrans_hausdorffEntourage (U : SetRel α α) [hU : U.IsTrans] :
     (hausdorffEntourage U).IsTrans := by
   grw [isTrans_iff_comp_subset_self, ← hausdorffEntourage_comp, comp_subset_self]
+
+theorem TotallyBounded.exists_prodMk_finset_mem_hausdorffEntourage [UniformSpace α]
+    {s : Set α} (hs : TotallyBounded s) {U : SetRel α α} (hU : U ∈ 𝓤 α) :
+    ∃ t : Finset α, (↑t, s) ∈ hausdorffEntourage U := by
+  obtain ⟨t, ht₁, ht₂⟩ := hs _ (symm_le_uniformity hU)
+  lift t to Finset α using ht₁
+  classical
+  refine ⟨{x ∈ t | ∃ y ∈ s, (x, y) ∈ U}, ?_⟩
+  rw [Finset.coe_filter]
+  refine ⟨fun _ h => h.2, fun x hx => ?_⟩
+  obtain ⟨y, hy, hxy⟩ := Set.mem_iUnion₂.mp (ht₂ hx)
+  exact ⟨y, ⟨hy, x, hx, hxy⟩, hxy⟩
 
 end hausdorffEntourage
 
@@ -154,8 +167,41 @@ end TopologicalSpace.Closeds
 
 namespace TopologicalSpace.Compacts
 
+open UniformSpace in
 instance uniformSpace : UniformSpace (Compacts α) :=
-  .comap SetLike.coe .hausdorff
+  .replaceTopology (.comap SetLike.coe .hausdorff) <| by
+    -- We need to show that the Hausdorff uniformity induces the Vietoris topology
+    refine le_antisymm (le_of_nhds_le_nhds fun K => ?_) ?_
+    · simp_rw [nhds_eq_comap_uniformity]
+      change _ ≤ Filter.comap _ (Filter.comap _ (Filter.lift' _ _))
+      rw [Filter.comap_comap,
+        uniformity_hasBasis_open.lift' monotone_hausdorffEntourage |>.comap _ |>.ge_iff]
+      intro U ⟨hU₁, hU₂⟩
+      simp_rw [Function.comp_id, hausdorffEntourage, Set.preimage_setOf_eq, Function.comp,
+        Set.setOf_and]
+      have : U.IsRefl := ⟨fun _ => refl_mem_uniformity hU₁⟩
+      refine Filter.inter_mem ?_ <| (isOpen_subsets_of_isOpen hU₂.relImage).mem_nhds <|
+        SetRel.self_subset_image _
+      obtain ⟨V : SetRel α α, hV₁, hV₂, _, hVU⟩ := comp_open_symm_mem_uniformity_sets hU₁
+      obtain ⟨s, hs₁, hs₂⟩ :=
+        K.isCompact.totallyBounded.exists_prodMk_finset_mem_hausdorffEntourage hV₁
+      dsimp only at hs₁ hs₂
+      filter_upwards [(Filter.eventually_all_finset s).mpr fun x hx =>
+        isOpen_inter_nonempty_of_isOpen (isOpen_ball x hV₂) |>.eventually_mem (hs₁ hx)] with L hL
+      grw [hs₂, ← SetRel.preimage_eq_image, ← hVU, SetRel.preimage_comp]
+      gcongr
+      exact hL
+    · apply le_generateFrom
+      rintro _ (⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩)
+      · simp_rw [isOpen_iff_mem_nhds, UniformSpace.mem_nhds_iff]
+        intro K hK
+        obtain ⟨V, hV₁, hV₂⟩ :=
+          K.isCompact.nhdsSet_basis_uniformity (𝓤 _).basis_sets
+            |>.mem_iff.mp (hU.mem_nhdsSet.mpr hK)
+        rw [Set.iUnion₂_subset_iff] at hV₂
+        exact ⟨_, Filter.preimage_mem_comap (Filter.mem_lift' hV₁),
+          fun L ⟨_, hL⟩ x hx => (hL hx).elim fun y ⟨hy, hyx⟩ => hV₂ y hy hyx⟩
+      · exact isOpen_induced (hausdorff.isOpen_inter_nonempty_of_isOpen hU)
 
 theorem uniformity_def :
     𝓤 (Compacts α) = .comap (Prod.map (↑) (↑)) ((𝓤 α).lift' hausdorffEntourage) :=
@@ -173,20 +219,17 @@ theorem isUniformEmbedding_coe : IsUniformEmbedding ((↑) : Compacts α → Set
 theorem uniformContinuous_coe : UniformContinuous ((↑) : Compacts α → Set α) :=
   isUniformEmbedding_coe.uniformContinuous
 
-theorem isOpen_inter_nonempty_of_isOpen {s : Set α} (hs : IsOpen s) :
-    IsOpen {t : Compacts α | ((t : Set α) ∩ s).Nonempty} :=
-  isOpen_induced (UniformSpace.hausdorff.isOpen_inter_nonempty_of_isOpen hs)
-
-theorem isClosed_subsets_of_isClosed {s : Set α} (hs : IsClosed s) :
-    IsClosed {t : Compacts α | (t : Set α) ⊆ s} :=
-  isClosed_induced (UniformSpace.hausdorff.isClosed_subsets_of_isClosed hs)
-
 end TopologicalSpace.Compacts
 
 namespace TopologicalSpace.NonemptyCompacts
 
 instance uniformSpace : UniformSpace (NonemptyCompacts α) :=
-  .comap SetLike.coe .hausdorff
+  .replaceTopology (.comap SetLike.coe .hausdorff) <| by
+    rw [isEmbedding_toCompacts.eq_induced]
+    change (Compacts.uniformSpace.comap toCompacts).toTopologicalSpace = _
+    congr 1
+    ext1
+    exact Filter.comap_comap
 
 theorem uniformity_def :
     𝓤 (NonemptyCompacts α) = .comap (Prod.map (↑) (↑)) ((𝓤 α).lift' hausdorffEntourage) :=
@@ -226,17 +269,5 @@ theorem isUniformEmbedding_toCompacts : IsUniformEmbedding (toCompacts (α := α
 
 theorem uniformContinuous_toCompacts : UniformContinuous (toCompacts (α := α)) :=
   isUniformEmbedding_toCompacts.uniformContinuous
-
-@[fun_prop]
-theorem continuous_toCompacts : Continuous (toCompacts (α := α)) :=
-  uniformContinuous_toCompacts.continuous
-
-theorem isOpen_inter_nonempty_of_isOpen {s : Set α} (hs : IsOpen s) :
-    IsOpen {t : NonemptyCompacts α | ((t : Set α) ∩ s).Nonempty} :=
-  isOpen_induced (UniformSpace.hausdorff.isOpen_inter_nonempty_of_isOpen hs)
-
-theorem isClosed_subsets_of_isClosed {s : Set α} (hs : IsClosed s) :
-    IsClosed {t : NonemptyCompacts α | (t : Set α) ⊆ s} :=
-  isClosed_induced (UniformSpace.hausdorff.isClosed_subsets_of_isClosed hs)
 
 end TopologicalSpace.NonemptyCompacts

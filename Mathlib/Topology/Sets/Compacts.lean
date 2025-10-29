@@ -22,7 +22,7 @@ For a topological space `α`,
 -/
 
 
-open Set
+open Set Topology
 
 variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
@@ -209,6 +209,34 @@ theorem singleton_prod_singleton (x : α) (y : β) :
     Compacts.prod {x} {y} = {(x, y)} :=
   Compacts.ext Set.singleton_prod_singleton
 
+/-- The Vietoris topology on the compact subsets of a topological space. -/
+instance topology : TopologicalSpace (Compacts α) :=
+  .generateFrom <|
+    (fun U => {K | (K : Set α) ⊆ U}) '' {U | IsOpen U} ∪
+    (fun V => {K | ((K : Set α) ∩ V).Nonempty}) '' {V | IsOpen V}
+
+theorem isOpen_subsets_of_isOpen {U : Set α} (h : IsOpen U) :
+    IsOpen {K : Compacts α | (K : Set α) ⊆ U} :=
+  isOpen_generateFrom_of_mem <| .inl ⟨U, h, rfl⟩
+
+theorem isOpen_inter_nonempty_of_isOpen {U : Set α} (h : IsOpen U) :
+    IsOpen {K : Compacts α | ((K : Set α) ∩ U).Nonempty} :=
+  isOpen_generateFrom_of_mem <| .inr ⟨U, h, rfl⟩
+
+theorem isClosed_subsets_of_isClosed {F : Set α} (h : IsClosed F) :
+    IsClosed {K : Compacts α | (K : Set α) ⊆ F} := by
+  simp_rw [← isOpen_compl_iff, Set.compl_setOf, ← Set.inter_compl_nonempty_iff]
+  exact isOpen_inter_nonempty_of_isOpen h.isOpen_compl
+
+theorem isClosed_inter_nonempty_of_isClosed {F : Set α} (h : IsClosed F) :
+    IsClosed {K : Compacts α | ((K : Set α) ∩ F).Nonempty} := by
+  simp_rw +singlePass [← compl_compl F, Set.inter_compl_nonempty_iff, ← Set.compl_setOf]
+  exact (isOpen_subsets_of_isOpen h.isOpen_compl).isClosed_compl
+
+theorem isClopen_singleton_bot : IsClopen {(⊥ : Compacts α)} := by
+  simp_rw [← Set.setOf_eq_eq_singleton, ← SetLike.coe_set_eq, coe_bot, ← subset_empty_iff]
+  exact ⟨isClosed_subsets_of_isClosed isClosed_empty, isOpen_subsets_of_isOpen isOpen_empty⟩
+
 -- todo: add `pi`
 
 end Compacts
@@ -241,6 +269,14 @@ protected theorem nonempty (s : NonemptyCompacts α) : (s : Set α).Nonempty :=
 
 theorem toCompacts_injective : Function.Injective (toCompacts (α := α)) :=
   .of_comp (f := SetLike.coe) SetLike.coe_injective
+
+theorem range_toCompacts : Set.range (toCompacts (α := α)) = {⊥}ᶜ := by
+  ext K
+  simp_rw [Set.mem_compl_singleton_iff, ← SetLike.coe_set_eq.ne, Compacts.coe_bot,
+    ← Set.nonempty_iff_ne_empty]
+  refine ⟨?_, fun h => ⟨⟨K, h⟩, rfl⟩⟩
+  rintro ⟨K, _, rfl⟩
+  exact K.nonempty
 
 /-- Reinterpret a nonempty compact as a closed set. -/
 def toCloseds [T2Space α] (s : NonemptyCompacts α) : Closeds α :=
@@ -331,6 +367,53 @@ theorem coe_prod (K : NonemptyCompacts α) (L : NonemptyCompacts β) :
 theorem singleton_prod_singleton (x : α) (y : β) :
     NonemptyCompacts.prod {x} {y} = {(x, y)} :=
   NonemptyCompacts.ext Set.singleton_prod_singleton
+
+/-- The Vietoris topology on the nonempty compact subsets of a topological space. -/
+instance topology : TopologicalSpace (NonemptyCompacts α) :=
+  TopologicalSpace.generateFrom
+    ((fun U => {K : NonemptyCompacts α | (K : Set α) ⊆ U}) '' {U | IsOpen U} ∪
+    (fun V => {K : NonemptyCompacts α | ((K : Set α) ∩ V).Nonempty}) '' {V | IsOpen V})
+
+@[fun_prop]
+theorem isEmbedding_toCompacts : IsEmbedding (toCompacts (α := α)) where
+  injective := toCompacts_injective
+  eq_induced := by
+    simp_rw [topology, Compacts.topology, induced_generateFrom_eq, image_union, image_image,
+      preimage_setOf_eq, coe_toCompacts]
+
+@[fun_prop]
+theorem continuous_toCompacts : Continuous (toCompacts (α := α)) :=
+  isEmbedding_toCompacts.continuous
+
+@[fun_prop]
+theorem isClosedEmbedding_toCompacts : IsClosedEmbedding (toCompacts (α := α)) where
+  __ := isEmbedding_toCompacts
+  isClosed_range := by
+    rw [range_toCompacts]
+    exact Compacts.isClopen_singleton_bot.compl.isClosed
+
+@[fun_prop]
+theorem isOpenEmbedding_toCompacts : IsOpenEmbedding (toCompacts (α := α)) where
+  __ := isEmbedding_toCompacts
+  isOpen_range := by
+    rw [range_toCompacts]
+    exact Compacts.isClopen_singleton_bot.compl.isOpen
+
+theorem isOpen_subsets_of_isOpen {U : Set α} (h : IsOpen U) :
+    IsOpen {K : NonemptyCompacts α | (K : Set α) ⊆ U} :=
+  (Compacts.isOpen_subsets_of_isOpen h).preimage continuous_toCompacts
+
+theorem isOpen_inter_nonempty_of_isOpen {U : Set α} (h : IsOpen U) :
+    IsOpen {K : NonemptyCompacts α | ((K : Set α) ∩ U).Nonempty} :=
+  (Compacts.isOpen_inter_nonempty_of_isOpen h).preimage continuous_toCompacts
+
+theorem isClosed_subsets_of_isClosed {F : Set α} (h : IsClosed F) :
+    IsClosed {K : NonemptyCompacts α | (K : Set α) ⊆ F} :=
+  (Compacts.isClosed_subsets_of_isClosed h).preimage continuous_toCompacts
+
+theorem isClosed_inter_nonempty_of_isClosed {F : Set α} (h : IsClosed F) :
+    IsClosed {K : NonemptyCompacts α | ((K : Set α) ∩ F).Nonempty} :=
+  (Compacts.isClosed_inter_nonempty_of_isClosed h).preimage continuous_toCompacts
 
 end NonemptyCompacts
 
