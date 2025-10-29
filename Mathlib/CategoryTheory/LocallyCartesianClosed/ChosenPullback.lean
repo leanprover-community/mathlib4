@@ -49,7 +49,7 @@ class ChosenPullback {Y X : C} (f : Y ⟶ X) where
 namespace ChosenPullback
 
 /-- `ChosenPullback (Over.mk f).hom` from  `ChosenPullback f`. -/
-def ofOverMk {Y X : C} (f : Y ⟶ X) [ChosenPullback f] : ChosenPullback (Over.mk f).hom :=
+def overMkHom {Y X : C} (f : Y ⟶ X) [ChosenPullback f] : ChosenPullback (Over.mk f).hom :=
   inferInstanceAs (ChosenPullback f)
 
 /-- Relating the existing noncomputable `HasPullbacksAlong` typeclass to `ChosenPullback`. -/
