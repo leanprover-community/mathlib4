@@ -1,5 +1,6 @@
 import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 import Mathlib.Probability.Independence.Integration
+import Mathlib.Probability.Independence.Process
 
 open MeasureTheory Measure ProbabilityTheory ENNReal
 open scoped BoundedContinuousFunction
@@ -20,6 +21,58 @@ lemma indepFun_of_boundedContinuousFunction [IsFiniteMeasure P]
   any_goals fun_prop
   exact (f.continuous.aestronglyMeasurable.comp_measurable measurable_fst).mul
     (g.continuous.aestronglyMeasurable.comp_measurable measurable_snd)
+
+lemma indepSet_iff_compl_indepSet {A B : Set Ω} (hA : MeasurableSet A) (hB : MeasurableSet B)
+    [IsZeroOrProbabilityMeasure P] :
+    IndepSet A B P ↔ IndepSet Aᶜ B P := by
+  obtain rfl | _ : P = 0 ∨ IsProbabilityMeasure P := by
+    obtain h | h := IsZeroOrProbabilityMeasure.measure_univ (μ := P)
+    · simp_all
+    · exact Or.inr ⟨h⟩
+  · simp_rw [IndepSet]
+    simp
+  suffices ∀ A B, MeasurableSet A → MeasurableSet B → IndepSet A B P → IndepSet Aᶜ B P by
+    refine ⟨this A B hA hB, fun h ↦ ?_⟩
+    convert this _ _ hA.compl hB h
+    simp
+  intro A B hA hB hAB
+  rw [indepSet_iff_measure_inter_eq_mul hA.compl hB P]
+  rw [indepSet_iff_measure_inter_eq_mul hA hB P] at hAB
+  calc
+    P (Aᶜ ∩ B) = P (B \ (A ∩ B)) := by congr 1; grind
+    _ = P B - P (A ∩ B) := by rw [measure_diff (by grind) (by measurability) (by simp)]
+    _ = P B - P A * P B := by rw [hAB]
+    _ = (1 - P A) * P B := by rw [ENNReal.sub_mul (by simp)]; simp
+    _ = P Aᶜ * P B := by rw [measure_compl hA (by simp)]; simp
+
+
+lemma singleton_indepSets_comap_iff_indicator_indepFun (mX : Measurable X) {A : Set Ω}
+    (hA : MeasurableSet A) [hP : IsProbabilityMeasure P] :
+    IndepSets {A} {s | MeasurableSet[mE.comap X] s} P ↔
+    (A.indicator (1 : Ω → ℝ)) ⟂ᵢ[P] X where
+  mp h := by
+    rw [IndepFun_iff]
+    rintro - - ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
+    classical
+    by_cases h0 : 0 ∈ s <;> by_cases h1 : 1 ∈ s
+    · have : A.indicator 1 ⁻¹' s = Set.univ := by
+        ext
+        simp only [Set.mem_preimage, Set.indicator_apply, Pi.one_apply, Set.mem_univ, iff_true]
+        split_ifs <;> simp_all
+      rw [this]
+      simp
+    · have : A.indicator 1 ⁻¹' s = Aᶜ := by
+        ext
+        simp only [Set.mem_preimage, Set.indicator_apply, Pi.ofNat_apply, Set.mem_compl_iff]
+        split_ifs <;> simp_all
+      rw [this]
+      have : IndepSet Aᶜ (X ⁻¹' t) P := by
+        rw [← indepSet_iff_compl_indepSet hA (mX ht)]
+        apply IndepSets.indepSet_of_mem (μ := P) (h_indep := h)
+        -- Ω mΩ A (X ⁻¹' t) {A} {s | MeasurableSet[mE.comap X] s}
+        --   (Set.mem_singleton A) ⟨t, ht, rfl⟩ hA (mX ht) P inferInstance h
+        -- refine h.indepSet_of_mem _ _ (by simp) ⟨t, ht, rfl⟩ ?_ ?_ P
+      simp
 
 lemma indepSets_singleton_comap_of_boundedContinuousFunction [IsProbabilityMeasure P]
     (mX : AEMeasurable X P) {A : Set Ω}
