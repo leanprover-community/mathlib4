@@ -28,9 +28,42 @@ universe u₁ u₂ u₃ u₄
 
 open scoped NNReal
 
+<<<<<<< HEAD
 /-- The perfection of a monoid `α`, defined to be the projective limit of `α` using the `p`-th
 power maps `α → α` indexed by the natural numbers, implemented as
 `{ f : ℕ → M | ∀ n, f (n + 1) ^ p = f n }`.
+=======
+/-- The perfection of a monoid `M`, defined to be the projective limit of `M`
+using the `p`-th power maps `M → M` indexed by the natural numbers, implemented as
+`{ f : ℕ → M | ∀ n, f (n + 1) ^ p = f n }`. -/
+def Monoid.perfection (M : Type u₁) [CommMonoid M] (p : ℕ) : Submonoid (ℕ → M) where
+  carrier := { f | ∀ n, f (n + 1) ^ p = f n }
+  one_mem' _ := one_pow _
+  mul_mem' hf hg n := (mul_pow _ _ _).trans <| congr_arg₂ _ (hf n) (hg n)
+
+/-- The perfection of a ring `R` with characteristic `p`, as a subsemiring,
+defined to be the projective limit of `R` using the Frobenius maps `R → R`
+indexed by the natural numbers, implemented as `{ f : ℕ → R | ∀ n, f (n + 1) ^ p = f n }`. -/
+def Ring.perfectionSubsemiring (R : Type u₁) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime]
+    [CharP R p] : Subsemiring (ℕ → R) :=
+  { Monoid.perfection R p with
+    zero_mem' := fun _ ↦ zero_pow hp.1.ne_zero
+    add_mem' := fun hf hg n => (map_add (frobenius R p) _ _).trans <| congr_arg₂ _ (hf n) (hg n) }
+
+/-- The perfection of a ring `R` with characteristic `p`, as a subring,
+defined to be the projective limit of `R` using the Frobenius maps `R → R`
+indexed by the natural numbers, implemented as `{ f : ℕ → R | ∀ n, f (n + 1) ^ p = f n }`. -/
+def Ring.perfectionSubring (R : Type u₁) [CommRing R] (p : ℕ) [hp : Fact p.Prime] [CharP R p] :
+    Subring (ℕ → R) :=
+  (Ring.perfectionSubsemiring R p).toSubring fun n => by
+    simp_rw [← frobenius_def, Pi.neg_apply, Pi.one_apply, RingHom.map_neg, RingHom.map_one]
+
+/-- The perfection of a ring `R` with characteristic `p`,
+defined to be the projective limit of `R` using the Frobenius maps `R → R`
+indexed by the natural numbers, implemented as `{f : ℕ → R // ∀ n, f (n + 1) ^ p = f n}`. -/
+def Ring.Perfection (R : Type u₁) [CommSemiring R] (p : ℕ) : Type u₁ :=
+  { f // ∀ n : ℕ, (f : ℕ → R) (n + 1) ^ p = f n }
+>>>>>>> origin/master
 
 If `α` is a ring with characteristic `p` and `p` is prime, `Perfection α p` is also a ring. -/
 def Perfection (α : Type u₁) [Pow α ℕ] (p : ℕ) : Type u₁ :=
