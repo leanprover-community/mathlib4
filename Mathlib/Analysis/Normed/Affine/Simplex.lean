@@ -169,7 +169,12 @@ lemma equilateral_iff_dist_eq_and_dist_eq {t : Triangle R P} {i₁ i₂ i₃ : F
     have hi : (i = i₁ ∧ j = i₂) ∨ (i = i₂ ∧ j = i₁) ∨ (i = i₁ ∧ j = i₃) ∨
       (i = i₃ ∧ j = i₁) ∨ (i = i₂ ∧ j = i₃) ∨ (i = i₃ ∧ j = i₂) := by
       clear h
-      decide +revert
+      #adaptation_note
+      /--
+      https://github.com/leanprover/lean4/pull/10934 (part of nightly-2025-10-28)
+      broke the previous `decide +revert` proof, which was much more efficient.
+      -/
+      fin_cases i <;> fin_cases j <;> fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;> simp_all
     rcases h with ⟨h₁, h₂⟩
     rcases hi with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩| ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
     · rfl
