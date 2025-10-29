@@ -177,13 +177,13 @@ private lemma num_add_int_gcd_den_eq_one (q : ℚ) (z : ℤ) :
   q.reduced ▸ Int.gcd_add_mul_right_left _ _ _
 
 theorem den_add_int (q : ℚ) (z : ℤ) : (q + z).den = q.den := by
-  simp [add_den_eq, num_add_int_gcd_den_eq_one]
+  simp [den_add, num_add_int_gcd_den_eq_one]
 
 theorem num_add_int (q : ℚ) (z : ℤ) : (q + z).num = q.num + z * q.den := by
-  simp [add_num_eq, num_add_int_gcd_den_eq_one]
+  simp [num_add, num_add_int_gcd_den_eq_one]
 
 theorem den_eq_den_of_den_add_eq_one {q r : ℚ} (h : (q + r).den = 1) : q.den = r.den := by
-  rw [← add_sub_cancel_right q r, sub_eq_add_neg, ← (den_eq_one_iff _).mp h, add_comm, add_int_den,
+  rw [← add_sub_cancel_right q r, sub_eq_add_neg, ← (den_eq_one_iff _).mp h, add_comm, den_add_int,
   den_neg_eq_den]
 
 theorem isSquare_iff {q : ℚ} : IsSquare q ↔ IsSquare q.num ∧ IsSquare q.den := by
