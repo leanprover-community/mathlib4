@@ -177,12 +177,8 @@ theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
       Int.negOnePow_sub]
     ring
 
-instance [NeZero (2 : R)] : Nontrivial R := { exists_pair_ne := ⟨2, 0, two_ne_zero⟩ }
-
-instance [IsCancelMulZero R] : NoZeroDivisors R := IsLeftCancelMulZero.to_noZeroDivisors R
-
 @[simp]
-theorem T_degree [IsCancelMulZero R] [NeZero (2 : R)] (n : ℤ) :
+theorem T_degree [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
   (T R n).degree = n.natAbs := by
   induction n using Chebyshev.induct' with
   | zero => simp
@@ -199,12 +195,12 @@ theorem T_degree [IsCancelMulZero R] [NeZero (2 : R)] (n : ℤ) :
   | neg n ih => rw [T_neg, ih]; simp
 
 @[simp]
-theorem T_natDegree [IsCancelMulZero R] [NeZero (2 : R)] (n : ℤ) :
+theorem T_natDegree [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
   (T R n).natDegree = n.natAbs :=
   natDegree_eq_of_degree_eq_some (T_degree R n)
 
 @[simp]
-theorem T_leadingCoeff [IsCancelMulZero R] [NeZero (2 : R)] (n : ℤ) :
+theorem T_leadingCoeff [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
   (T R n).leadingCoeff = 2^(n.natAbs - 1) := by
   induction n using Chebyshev.induct' with
   | zero => simp
@@ -332,7 +328,7 @@ theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := 
     ring
 
 @[simp]
-theorem U_degree_nat [IsCancelMulZero R] [NeZero (2 : R)] (n : ℕ) :
+theorem U_degree_nat [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
   (U R n).degree = n := by
   induction n using Nat.twoStepInduction with
   | zero => simp
@@ -353,7 +349,7 @@ theorem U_degree_nat [IsCancelMulZero R] [NeZero (2 : R)] (n : ℕ) :
     · rw [ih1, this]; norm_cast; omega
 
 @[simp]
-theorem U_natDegree_nat [IsCancelMulZero R] [NeZero (2 : R)] (n : ℕ) :
+theorem U_natDegree_nat [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
   (U R n).natDegree = n :=
   natDegree_eq_of_degree_eq_some (U_degree_nat R n)
 
@@ -361,7 +357,7 @@ theorem U_degree_neg_one : (U R (-1)).degree = ⊥ := by simp
 
 theorem U_natDegree_neg_one : (U R (-1)).natDegree = 0 := by simp
 
-theorem U_degree_ne_neg_one [IsCancelMulZero R] [NeZero (2 : R)] (n : ℤ) (hn : n ≠ -1) :
+theorem U_degree_ne_neg_one [IsDomain R] [NeZero (2 : R)] (n : ℤ) (hn : n ≠ -1) :
   (U R n).degree = ↑((n + 1).natAbs - 1) := by
   obtain ⟨m, hn⟩ := n.eq_nat_or_neg
   cases hn with
@@ -378,14 +374,14 @@ theorem U_degree_ne_neg_one [IsCancelMulZero R] [NeZero (2 : R)] (n : ℤ) (hn :
         · congr; omega
         · rw [U_degree_nat R m]; norm_cast
 
-theorem U_natDegree [IsCancelMulZero R] [NeZero (2 : R)] (n : ℤ) :
+theorem U_natDegree [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
   (U R n).natDegree = (n + 1).natAbs - 1 := by
   by_cases n = -1
   case pos hn => subst hn; simp
   case neg hn => exact natDegree_eq_of_degree_eq_some (U_degree_ne_neg_one R n hn)
 
 @[simp]
-theorem U_leadingCoeff_nat [IsCancelMulZero R] [NeZero (2 : R)] (n : ℕ) :
+theorem U_leadingCoeff_nat [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
   (U R n).leadingCoeff = 2^n := by
   have : leadingCoeff (2 : R[X]) = 2 := by
     change leadingCoeff (C 2) = 2
