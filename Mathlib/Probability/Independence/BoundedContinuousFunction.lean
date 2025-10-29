@@ -68,11 +68,29 @@ lemma singleton_indepSets_comap_iff_indicator_indepFun (mX : Measurable X) {A : 
       rw [this]
       have : IndepSet Aᶜ (X ⁻¹' t) P := by
         rw [← indepSet_iff_compl_indepSet hA (mX ht)]
-        apply IndepSets.indepSet_of_mem (μ := P) (h_indep := h)
-        -- Ω mΩ A (X ⁻¹' t) {A} {s | MeasurableSet[mE.comap X] s}
-        --   (Set.mem_singleton A) ⟨t, ht, rfl⟩ hA (mX ht) P inferInstance h
-        -- refine h.indepSet_of_mem _ _ (by simp) ⟨t, ht, rfl⟩ ?_ ?_ P
+        exact IndepSets.indepSet_of_mem {A} {s | MeasurableSet[mE.comap X] s}
+          (by simp) ⟨t, ht, rfl⟩ hA (mX ht) P h
+      exact this.measure_inter_eq_mul
+    · have : A.indicator 1 ⁻¹' s = A := by
+        ext
+        simp only [Set.mem_preimage, Set.indicator_apply, Pi.one_apply]
+        split_ifs <;> simp_all
+      rw [this]
+      exact (IndepSets_iff _ _ P).1 h _ _ (by simp) ⟨t, ht, rfl⟩
+    · have : A.indicator 1 ⁻¹' s = ∅ := by
+        ext
+        simp only [Set.mem_preimage, Set.indicator_apply, Pi.one_apply, Set.mem_empty_iff_false,
+          iff_false]
+        split_ifs <;> simp_all
+      rw [this]
       simp
+  mpr h := by
+    rw [IndepSets_iff]
+    rintro s - hs ⟨t, ht, rfl⟩
+    rw [Set.mem_singleton_iff.1 hs]
+    have hA' : A = A.indicator (1 : Ω → ℝ) ⁻¹' {1} := by ext; simp [Set.indicator]
+    rw [hA']
+    exact h.measure_inter_preimage_eq_mul _ _ (by simp) ht
 
 lemma indepSets_singleton_comap_of_boundedContinuousFunction [IsProbabilityMeasure P]
     (mX : AEMeasurable X P) {A : Set Ω}
