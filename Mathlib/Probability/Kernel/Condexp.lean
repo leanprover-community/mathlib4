@@ -207,7 +207,7 @@ theorem integrable_toReal_condExpKernel {s : Set Ω} (hs : MeasurableSet s) :
 end Integrability
 
 lemma condExpKernel_ae_eq_condExp' {s : Set Ω} (hs : MeasurableSet s) :
-    (fun ω ↦ (condExpKernel μ m ω).real s) =ᵐ[μ] μ⟦s | m ⊓ mΩ⟧ := by
+    (fun ω ↦ (condExpKernel μ m ω).real s) =ᵐ[μ] μ⟦s|m ⊓ mΩ⟧ := by
   rcases isEmpty_or_nonempty Ω with h | h
   · have : μ = 0 := Measure.eq_zero_of_isEmpty μ
     simpa [this] using trivial
@@ -219,12 +219,12 @@ lemma condExpKernel_ae_eq_condExp' {s : Set Ω} (hs : MeasurableSet s) :
 
 lemma condExpKernel_ae_eq_condExp
     (hm : m ≤ mΩ) {s : Set Ω} (hs : MeasurableSet s) :
-    (fun ω ↦ (condExpKernel μ m ω).real s) =ᵐ[μ] μ⟦s | m⟧ :=
+    (fun ω ↦ (condExpKernel μ m ω).real s) =ᵐ[μ] μ⟦s|m⟧ :=
   (condExpKernel_ae_eq_condExp' hs).trans (by rw [inf_of_le_left hm])
 
 lemma condExpKernel_ae_eq_trim_condExp
     (hm : m ≤ mΩ) {s : Set Ω} (hs : MeasurableSet s) :
-    (fun ω ↦ (condExpKernel μ m ω).real s) =ᵐ[μ.trim hm] μ⟦s | m⟧ := by
+    (fun ω ↦ (condExpKernel μ m ω).real s) =ᵐ[μ.trim hm] μ⟦s|m⟧ := by
   simp_rw [measureReal_def]
   rw [(measurable_condExpKernel hs).ennreal_toReal.stronglyMeasurable.ae_eq_trim_iff hm
     stronglyMeasurable_condExp]
@@ -291,7 +291,7 @@ variable {s t : Set Ω} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpac
 omit [StandardBorelSpace Ω]
 
 lemma condExp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf : Integrable f μ) :
-    μ[f | generateFrom {s}] =ᵐ[μ.restrict s] fun _ ↦ ∫ x, f x ∂μ[|s] := by
+    μ[f|generateFrom {s}] =ᵐ[μ.restrict s] fun _ ↦ ∫ x, f x ∂μ[|s] := by
   by_cases hμs : μ s = 0
   · rw [Measure.restrict_eq_zero.2 hμs]
     rfl
@@ -321,7 +321,7 @@ lemma condExp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf :
         exact (measureReal_ne_zero_iff (by finiteness)).2 hμs
 
 lemma condExp_set_generateFrom_singleton (hs : MeasurableSet s) (ht : MeasurableSet t) :
-    μ⟦t | generateFrom {s}⟧ =ᵐ[μ.restrict s] fun _ ↦ μ[|s].real t := by
+    μ⟦t|generateFrom {s}⟧ =ᵐ[μ.restrict s] fun _ ↦ μ[|s].real t := by
   rw [← integral_indicator_one ht]
   exact condExp_generateFrom_singleton hs <| Integrable.indicator (integrable_const 1) ht
 
@@ -330,7 +330,7 @@ lemma condExpKernel_singleton_ae_eq_cond [StandardBorelSpace Ω] (hs : Measurabl
     ∀ᵐ ω ∂μ.restrict s,
       condExpKernel μ (generateFrom {s}) ω t = μ[t|s] := by
   have : (fun ω ↦ (condExpKernel μ (generateFrom {s}) ω).real t) =ᵐ[μ.restrict s]
-      μ⟦t | generateFrom {s}⟧ :=
+      μ⟦t|generateFrom {s}⟧ :=
     ae_restrict_le <| condExpKernel_ae_eq_condExp
       (generateFrom_singleton_le hs) ht
   filter_upwards [condExp_set_generateFrom_singleton hs ht, this] with ω hω₁ hω₂

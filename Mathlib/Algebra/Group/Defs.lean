@@ -11,7 +11,7 @@ import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Logic.Function.Defs
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.OfNat
-import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.Basic
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -228,10 +228,16 @@ attribute [to_additive] CommSemigroup
 
 section CommMagma
 
-variable [CommMagma G]
+variable [CommMagma G] {a : G}
 
 @[to_additive]
 theorem mul_comm : ∀ a b : G, a * b = b * a := CommMagma.mul_comm
+
+@[simp] lemma isLeftRegular_iff_isRegular : IsLeftRegular a ↔ IsRegular a := by
+  simp [isRegular_iff, IsLeftRegular, IsRightRegular, mul_comm]
+
+@[simp] lemma isRightRegular_iff_isRegular : IsRightRegular a ↔ IsRegular a := by
+  simp [isRegular_iff, IsLeftRegular, IsRightRegular, mul_comm]
 
 /-- Any `CommMagma G` that satisfies `IsRightCancelMul G` also satisfies `IsLeftCancelMul G`. -/
 @[to_additive AddCommMagma.IsRightCancelAdd.toIsLeftCancelAdd /-- Any `AddCommMagma G` that
@@ -265,7 +271,7 @@ end CommMagma
 @[ext]
 class LeftCancelSemigroup (G : Type u) extends Semigroup G, IsLeftCancelMul G
 
-library_note "lower cancel priority" /--
+library_note2 «lower cancel priority» /--
 We lower the priority of inheriting from cancellative structures.
 This attempts to avoid expensive checks involving bundling and unbundling with the `IsDomain` class.
 since `IsDomain` already depends on `Semiring`, we can synthesize that one first.
@@ -378,7 +384,7 @@ include hn ha
 
 end
 
-library_note "forgetful inheritance"/--
+library_note2 «forgetful inheritance» /--
 Suppose that one can put two mathematical structures on a type, a rich one `R` and a poor one
 `P`, and that one can deduce the poor structure from the rich structure through a map `F` (called a
 forgetful functor) (think `R = MetricSpace` and `P = TopologicalSpace`). A possible
