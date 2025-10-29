@@ -7,6 +7,7 @@ import Mathlib.Algebra.Azumaya.Defs
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.RingTheory.Finiteness.Basic
 import Mathlib.GroupTheory.GroupAction.Hom
+import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Basic properties of Azumaya algebras
@@ -40,7 +41,7 @@ lemma AlgHom.mulLeftRight_bij [h : IsAzumaya R A] :
 /-- The "canonical" isomorphism between `R ⊗ Rᵒᵖ` and `End R R` which is equal
   to `AlgHom.mulLeftRight R R`. -/
 abbrev tensorEquivEnd : R ⊗[R] Rᵐᵒᵖ ≃ₐ[R] Module.End R R :=
-  Algebra.TensorProduct.lid R Rᵐᵒᵖ|>.trans <| .moduleEndSelf R
+  Algebra.TensorProduct.lid R Rᵐᵒᵖ |>.trans <| .moduleEndSelf R
 
 lemma coe_tensorEquivEnd : tensorEquivEnd R = AlgHom.mulLeftRight R R := by
   ext; simp
