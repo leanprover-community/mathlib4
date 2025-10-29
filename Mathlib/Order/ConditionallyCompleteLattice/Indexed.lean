@@ -418,7 +418,7 @@ theorem cbiSup_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : �
         exact le_ciSup H _
       · simp [hi]
     · apply sup_le
-      · rcases isEmpty_or_nonempty (Subtype p) with hp|hp
+      · rcases isEmpty_or_nonempty (Subtype p) with hp | hp
         · rw [iSup_of_empty']
           convert le_ciSup B i₀
           simp [hi₀]
