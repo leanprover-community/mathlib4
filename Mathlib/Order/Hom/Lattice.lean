@@ -288,8 +288,11 @@ instance : Max (SupHom α β) :=
       rw [Pi.sup_apply, map_sup, map_sup]
       exact sup_sup_sup_comm _ _ _ _⟩⟩
 
+instance : PartialOrder (SupHom α β) :=
+  PartialOrder.lift _ DFunLike.coe_injective
+
 instance : SemilatticeSup (SupHom α β) :=
-  (DFunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 instance [Bot β] : Bot (SupHom α β) :=
   ⟨SupHom.const α ⊥⟩
@@ -470,8 +473,11 @@ instance : Min (InfHom α β) :=
       rw [Pi.inf_apply, map_inf, map_inf]
       exact inf_inf_inf_comm _ _ _ _⟩⟩
 
+instance : PartialOrder (InfHom α β) :=
+  PartialOrder.lift _ DFunLike.coe_injective
+
 instance : SemilatticeInf (InfHom α β) :=
-  (DFunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
+  DFunLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 instance [Bot β] : Bot (InfHom α β) :=
   ⟨InfHom.const α ⊥⟩
