@@ -315,59 +315,59 @@ namespace Function.Injective
 
 -- See note [reducible non-instances]
 /-- Pullback an `IdemSemiring` instance along an injective function. -/
-protected abbrev idemSemiring [IdemSemiring α] [Zero β] [One β] [Add β] [Mul β] [Pow β ℕ] [SMul ℕ β]
-    [NatCast β] [Max β] [Bot β] (f : β → α) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
+protected abbrev idemSemiring [IdemSemiring α] [LE β] [LT β] [Zero β] [One β]
+    [Add β] [Mul β] [Pow β ℕ] [SMul ℕ β] [NatCast β] [Max β] [Bot β] (f : β → α)
+    (hf : Injective f) (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
+    (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥) :
-    IdemSemiring β :=
-  { hf.semiring f zero one add mul nsmul npow natCast, hf.semilatticeSup _ sup,
-    ‹Bot β› with
-    add_eq_sup := fun a b ↦ hf <| by rw [sup, add, add_eq_sup]
-    bot := ⊥
-    bot_le := fun a ↦ bot.trans_le <| @bot_le _ _ _ <| f a }
+    IdemSemiring β where
+  __ := hf.semiring f zero one add mul nsmul npow natCast
+  __ := hf.semilatticeSup _ le lt sup
+  add_eq_sup a b := hf <| by rw [sup, add, add_eq_sup]
+  bot_le a := le.1 <| bot.trans_le bot_le
 
 -- See note [reducible non-instances]
 /-- Pullback an `IdemCommSemiring` instance along an injective function. -/
-protected abbrev idemCommSemiring [IdemCommSemiring α] [Zero β] [One β] [Add β] [Mul β] [Pow β ℕ]
-    [SMul ℕ β] [NatCast β] [Max β] [Bot β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
-    (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
+protected abbrev idemCommSemiring [IdemCommSemiring α] [LE β] [LT β] [Zero β] [One β]
+    [Add β] [Mul β] [Pow β ℕ] [SMul ℕ β] [NatCast β] [Max β] [Bot β] (f : β → α)
+    (hf : Injective f) (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
+    (zero : f 0 = 0) (one : f 1 = 1)
+    (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥) :
-    IdemCommSemiring β :=
-  { hf.commSemiring f zero one add mul nsmul npow natCast,
-    hf.idemSemiring f zero one add mul nsmul npow natCast sup bot with }
+    IdemCommSemiring β where
+  __ := hf.commSemiring f zero one add mul nsmul npow natCast
+  __ := hf.idemSemiring f le lt zero one add mul nsmul npow natCast sup bot
 
 -- See note [reducible non-instances]
 /-- Pullback a `KleeneAlgebra` instance along an injective function. -/
-protected abbrev kleeneAlgebra [KleeneAlgebra α] [Zero β] [One β] [Add β] [Mul β] [Pow β ℕ]
-    [SMul ℕ β] [NatCast β] [Max β] [Bot β] [KStar β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
-    (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
+protected abbrev kleeneAlgebra [KleeneAlgebra α] [LE β] [LT β] [Zero β] [One β]
+    [Add β] [Mul β] [Pow β ℕ] [SMul ℕ β] [NatCast β] [Max β] [Bot β] [KStar β] (f : β → α)
+    (hf : Injective f) (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
+    (zero : f 0 = 0) (one : f 1 = 1)
+    (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥)
-    (kstar : ∀ a, f a∗ = (f a)∗) : KleeneAlgebra β :=
-  { hf.idemSemiring f zero one add mul nsmul npow natCast sup bot,
-    ‹KStar β› with
-    one_le_kstar := fun a ↦ one.trans_le <| by
-      rw [kstar]
-      exact one_le_kstar
-    mul_kstar_le_kstar := fun a ↦ by
-      change f _ ≤ _
-      rw [mul, kstar]
-      exact mul_kstar_le_kstar
-    kstar_mul_le_kstar := fun a ↦ by
-      change f _ ≤ _
-      rw [mul, kstar]
-      exact kstar_mul_le_kstar
-    mul_kstar_le_self := fun a b (h : f _ ≤ _) ↦ by
-      change f _ ≤ _
-      rw [mul, kstar]
-      rw [mul] at h
-      exact mul_kstar_le_self h
-    kstar_mul_le_self := fun a b (h : f _ ≤ _) ↦ by
-      change f _ ≤ _
-      rw [mul, kstar]
-      rw [mul] at h
-      exact kstar_mul_le_self h }
+    (kstar : ∀ a, f a∗ = (f a)∗) : KleeneAlgebra β where
+  __ := hf.idemSemiring f le lt zero one add mul nsmul npow natCast sup bot
+  one_le_kstar a := by
+    rw [← le, one, kstar]
+    exact one_le_kstar
+  mul_kstar_le_kstar a := by
+    rw [← le, mul, kstar]
+    exact mul_kstar_le_kstar
+  kstar_mul_le_kstar a := by
+    rw [← le, mul, kstar]
+    exact kstar_mul_le_kstar
+  mul_kstar_le_self a b h := by
+    rw [← le, mul, kstar]
+    rw [← le, mul] at h
+    exact mul_kstar_le_self h
+  kstar_mul_le_self a b h := by
+    rw [← le, mul, kstar]
+    rw [← le, mul] at h
+    exact kstar_mul_le_self h
 
 end Function.Injective

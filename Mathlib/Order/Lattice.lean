@@ -1189,7 +1189,6 @@ section lift
 
 /-- A type endowed with `⊔` is a `SemilatticeSup`, if it admits an injective map that
 preserves `⊔` to a `SemilatticeSup`.
-
 See note [reducible non-instances]. -/
 protected abbrev Function.Injective.semilatticeSup [Max α] [LE α] [LT α] [SemilatticeSup β]
     (f : α → β) (hf_inj : Function.Injective f)
@@ -1211,7 +1210,6 @@ protected abbrev Function.Injective.semilatticeSup [Max α] [LE α] [LT α] [Sem
 
 /-- A type endowed with `⊓` is a `SemilatticeInf`, if it admits an injective map that
 preserves `⊓` to a `SemilatticeInf`.
-
 See note [reducible non-instances]. -/
 protected abbrev Function.Injective.semilatticeInf [Min α] [LE α] [LT α] [SemilatticeInf β]
     (f : α → β) (hf_inj : Function.Injective f)
@@ -1233,7 +1231,6 @@ protected abbrev Function.Injective.semilatticeInf [Min α] [LE α] [LT α] [Sem
 
 /-- A type endowed with `⊔` and `⊓` is a `Lattice`, if it admits an injective map that
 preserves `⊔` and `⊓` to a `Lattice`.
-
 See note [reducible non-instances]. -/
 protected abbrev Function.Injective.lattice [Max α] [Min α] [LE α] [LT α] [Lattice β]
     (f : α → β) (hf_inj : Function.Injective f)
@@ -1245,7 +1242,6 @@ protected abbrev Function.Injective.lattice [Max α] [Min α] [LE α] [LT α] [L
 
 /-- A type endowed with `⊔` and `⊓` is a `DistribLattice`, if it admits an injective map that
 preserves `⊔` and `⊓` to a `DistribLattice`.
-
 See note [reducible non-instances]. -/
 protected abbrev Function.Injective.distribLattice [Max α] [Min α] [LE α] [LT α] [DistribLattice β]
     (f : α → β) (hf_inj : Function.Injective f)
