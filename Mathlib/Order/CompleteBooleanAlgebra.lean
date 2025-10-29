@@ -677,145 +677,161 @@ section lift
 
 -- See note [reducible non-instances]
 /-- Pullback an `Order.Frame.MinimalAxioms` along an injection. -/
-protected abbrev Function.Injective.frameMinimalAxioms [Max α] [Min α] [SupSet α] [InfSet α] [Top α]
-    [Bot α] (minAx : Frame.MinimalAxioms β) (f : α → β) (hf : Injective f)
+protected abbrev Function.Injective.frameMinimalAxioms [Max α] [Min α] [LE α] [LT α]
+    [SupSet α] [InfSet α] [Top α] [Bot α] (minAx : Frame.MinimalAxioms β)
+    (f : α → β) (hf : Injective f)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) : Frame.MinimalAxioms α where
-  __ := hf.completeLattice f map_sup map_inf map_sSup map_sInf map_top map_bot
+  __ := hf.completeLattice f le lt map_sup map_inf map_sSup map_sInf map_top map_bot
   inf_sSup_le_iSup_inf a s := by
-    change f (a ⊓ sSup s) ≤ f _
-    rw [← sSup_image, map_inf, map_sSup s, minAx.inf_iSup₂_eq]
+    rw [← le, ← sSup_image, map_inf, map_sSup s, minAx.inf_iSup₂_eq]
     simp_rw [← map_inf]
     exact ((map_sSup _).trans iSup_image).ge
 
 -- See note [reducible non-instances]
 /-- Pullback an `Order.Coframe.MinimalAxioms` along an injection. -/
-protected abbrev Function.Injective.coframeMinimalAxioms [Max α] [Min α] [SupSet α] [InfSet α]
-    [Top α] [Bot α] (minAx : Coframe.MinimalAxioms β) (f : α → β) (hf : Injective f)
+protected abbrev Function.Injective.coframeMinimalAxioms [Max α] [Min α] [LE α] [LT α]
+    [SupSet α] [InfSet α] [Top α] [Bot α] (minAx : Coframe.MinimalAxioms β)
+    (f : α → β) (hf : Injective f)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) : Coframe.MinimalAxioms α where
-  __ := hf.completeLattice f map_sup map_inf map_sSup map_sInf map_top map_bot
+  __ := hf.completeLattice f le lt map_sup map_inf map_sSup map_sInf map_top map_bot
   iInf_sup_le_sup_sInf a s := by
-    change f _ ≤ f (a ⊔ sInf s)
-    rw [← sInf_image, map_sup, map_sInf s, minAx.sup_iInf₂_eq]
+    rw [← le, ← sInf_image, map_sup, map_sInf s, minAx.sup_iInf₂_eq]
     simp_rw [← map_sup]
     exact ((map_sInf _).trans iInf_image).le
 
 -- See note [reducible non-instances]
 /-- Pullback an `Order.Frame` along an injection. -/
-protected abbrev Function.Injective.frame [Max α] [Min α] [SupSet α] [InfSet α] [Top α] [Bot α]
-    [HasCompl α] [HImp α] [Frame β] (f : α → β) (hf : Injective f)
+protected abbrev Function.Injective.frame [Max α] [Min α] [LE α] [LT α] [SupSet α] [InfSet α]
+    [Top α] [Bot α] [HasCompl α] [HImp α] [Frame β] (f : α → β) (hf : Injective f)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)
     (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) : Frame α where
-  __ := hf.frameMinimalAxioms .of f map_sup map_inf map_sSup map_sInf map_top map_bot
-  __ := hf.heytingAlgebra f map_sup map_inf map_top map_bot map_compl map_himp
+  __ := hf.frameMinimalAxioms .of f le lt map_sup map_inf map_sSup map_sInf map_top map_bot
+  __ := hf.heytingAlgebra f le lt map_sup map_inf map_top map_bot map_compl map_himp
 
 -- See note [reducible non-instances]
 /-- Pullback an `Order.Coframe` along an injection. -/
-protected abbrev Function.Injective.coframe [Max α] [Min α] [SupSet α] [InfSet α] [Top α] [Bot α]
-    [HNot α] [SDiff α] [Coframe β] (f : α → β) (hf : Injective f)
+protected abbrev Function.Injective.coframe [Max α] [Min α] [LE α] [LT α] [SupSet α] [InfSet α]
+    [Top α] [Bot α] [HNot α] [SDiff α] [Coframe β] (f : α → β) (hf : Injective f)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_hnot : ∀ a, f (￢a) = ￢f a)
     (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) : Coframe α where
-  __ := hf.coframeMinimalAxioms .of f map_sup map_inf map_sSup map_sInf map_top map_bot
-  __ := hf.coheytingAlgebra f map_sup map_inf map_top map_bot map_hnot map_sdiff
+  __ := hf.coframeMinimalAxioms .of f le lt map_sup map_inf map_sSup map_sInf map_top map_bot
+  __ := hf.coheytingAlgebra f le lt map_sup map_inf map_top map_bot map_hnot map_sdiff
 
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteDistribLattice.MinimalAxioms` along an injection. -/
-protected abbrev Function.Injective.completeDistribLatticeMinimalAxioms [Max α] [Min α] [SupSet α]
-    [InfSet α] [Top α] [Bot α] (minAx : CompleteDistribLattice.MinimalAxioms β) (f : α → β)
-    (hf : Injective f) (map_sup : let _ := minAx.toCompleteLattice
-      ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : let _ := minAx.toCompleteLattice
-      ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_sSup : let _ := minAx.toCompleteLattice
-      ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : let _ := minAx.toCompleteLattice
-      ∀ s, f (sInf s) = ⨅ a ∈ s, f a) (map_top : let _ := minAx.toCompleteLattice
-      f ⊤ = ⊤) (map_bot : let _ := minAx.toCompleteLattice
-      f ⊥ = ⊥) :
+protected abbrev Function.Injective.completeDistribLatticeMinimalAxioms [Max α] [Min α]
+    [LE α] [LT α] [SupSet α] [InfSet α] [Top α] [Bot α]
+    (minAx : CompleteDistribLattice.MinimalAxioms β) (f : α → β) (hf : Injective f)
+    (le : let _ := minAx.toCompleteLattice; ∀ {x y}, f x ≤ f y ↔ x ≤ y)
+    (lt : let _ := minAx.toCompleteLattice; ∀ {x y}, f x < f y ↔ x < y)
+    (map_sup : let _ := minAx.toCompleteLattice; ∀ a b, f (a ⊔ b) = f a ⊔ f b)
+    (map_inf : let _ := minAx.toCompleteLattice; ∀ a b, f (a ⊓ b) = f a ⊓ f b)
+    (map_sSup : let _ := minAx.toCompleteLattice; ∀ s, f (sSup s) = ⨆ a ∈ s, f a)
+    (map_sInf : let _ := minAx.toCompleteLattice; ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
+    (map_top : let _ := minAx.toCompleteLattice; f ⊤ = ⊤)
+    (map_bot : let _ := minAx.toCompleteLattice; f ⊥ = ⊥) :
     CompleteDistribLattice.MinimalAxioms α where
-  __ := hf.frameMinimalAxioms minAx.toFrame f map_sup map_inf map_sSup map_sInf map_top map_bot
-  __ := hf.coframeMinimalAxioms minAx.toCoframe f map_sup map_inf map_sSup map_sInf map_top map_bot
+  __ := hf.frameMinimalAxioms minAx.toFrame f
+    le lt map_sup map_inf map_sSup map_sInf map_top map_bot
+  __ := hf.coframeMinimalAxioms minAx.toCoframe f
+    le lt map_sup map_inf map_sSup map_sInf map_top map_bot
 
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteDistribLattice` along an injection. -/
-protected abbrev Function.Injective.completeDistribLattice [Max α] [Min α] [SupSet α] [InfSet α]
-    [Top α] [Bot α] [HasCompl α] [HImp α] [HNot α] [SDiff α] [CompleteDistribLattice β] (f : α → β)
-    (hf : Injective f)
+protected abbrev Function.Injective.completeDistribLattice [Max α] [Min α]
+    [LE α] [LT α] [SupSet α] [InfSet α] [Top α] [Bot α] [HasCompl α] [HImp α] [HNot α] [SDiff α]
+    [CompleteDistribLattice β] (f : α → β) (hf : Injective f)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥)
     (map_compl : ∀ a, f aᶜ = (f a)ᶜ) (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b)
     (map_hnot : ∀ a, f (￢a) = ￢f a) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
     CompleteDistribLattice α where
-  __ := hf.frame f map_sup map_inf map_sSup map_sInf map_top map_bot map_compl map_himp
-  __ := hf.coframe f map_sup map_inf map_sSup map_sInf map_top map_bot map_hnot map_sdiff
+  __ := hf.frame f le lt map_sup map_inf map_sSup map_sInf map_top map_bot map_compl map_himp
+  __ := hf.coframe f le lt map_sup map_inf map_sSup map_sInf map_top map_bot map_hnot map_sdiff
 
 -- See note [reducible non-instances]
 /-- Pullback a `CompletelyDistribLattice.MinimalAxioms` along an injection. -/
-protected abbrev Function.Injective.completelyDistribLatticeMinimalAxioms [Max α] [Min α] [SupSet α]
-    [InfSet α] [Top α] [Bot α] (minAx : CompletelyDistribLattice.MinimalAxioms β) (f : α → β)
-    (hf : Injective f) (map_sup : let _ := minAx.toCompleteLattice
-      ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : let _ := minAx.toCompleteLattice
-      ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_sSup : let _ := minAx.toCompleteLattice
-      ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : let _ := minAx.toCompleteLattice
-      ∀ s, f (sInf s) = ⨅ a ∈ s, f a) (map_top : let _ := minAx.toCompleteLattice
-      f ⊤ = ⊤) (map_bot : let _ := minAx.toCompleteLattice
-      f ⊥ = ⊥) :
+protected abbrev Function.Injective.completelyDistribLatticeMinimalAxioms [Max α] [Min α]
+    [LE α] [LT α] [SupSet α] [InfSet α] [Top α] [Bot α]
+    (minAx : CompletelyDistribLattice.MinimalAxioms β) (f : α → β) (hf : Injective f)
+    (le : let _ := minAx.toCompleteLattice; ∀ {x y}, f x ≤ f y ↔ x ≤ y)
+    (lt : let _ := minAx.toCompleteLattice; ∀ {x y}, f x < f y ↔ x < y)
+    (map_sup : let _ := minAx.toCompleteLattice; ∀ a b, f (a ⊔ b) = f a ⊔ f b)
+    (map_inf : let _ := minAx.toCompleteLattice; ∀ a b, f (a ⊓ b) = f a ⊓ f b)
+    (map_sSup : let _ := minAx.toCompleteLattice; ∀ s, f (sSup s) = ⨆ a ∈ s, f a)
+    (map_sInf : let _ := minAx.toCompleteLattice; ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
+    (map_top : let _ := minAx.toCompleteLattice; f ⊤ = ⊤)
+    (map_bot : let _ := minAx.toCompleteLattice; f ⊥ = ⊥) :
     CompletelyDistribLattice.MinimalAxioms α where
-  __ := hf.completeDistribLatticeMinimalAxioms minAx.toCompleteDistribLattice f map_sup map_inf
-    map_sSup map_sInf map_top map_bot
+  __ := hf.completeDistribLatticeMinimalAxioms minAx.toCompleteDistribLattice f
+    le lt map_sup map_inf map_sSup map_sInf map_top map_bot
   iInf_iSup_eq g := hf <| by
     simp_rw [iInf, map_sInf, iInf_range, iSup, map_sSup, iSup_range, map_sInf, iInf_range,
       minAx.iInf_iSup_eq']
 
 -- See note [reducible non-instances]
 /-- Pullback a `CompletelyDistribLattice` along an injection. -/
-protected abbrev Function.Injective.completelyDistribLattice [Max α] [Min α] [SupSet α] [InfSet α]
-    [Top α] [Bot α] [HasCompl α] [HImp α] [HNot α] [SDiff α] [CompletelyDistribLattice β]
-    (f : α → β) (hf : Injective f)
+protected abbrev Function.Injective.completelyDistribLattice [Max α] [Min α]
+    [LE α] [LT α] [SupSet α] [InfSet α] [Top α] [Bot α] [HasCompl α] [HImp α] [HNot α] [SDiff α]
+    [CompletelyDistribLattice β] (f : α → β) (hf : Injective f)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥)
     (map_compl : ∀ a, f aᶜ = (f a)ᶜ) (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b)
     (map_hnot : ∀ a, f (￢a) = ￢f a) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
     CompletelyDistribLattice α where
-  __ := hf.completeLattice f map_sup map_inf map_sSup map_sInf map_top map_bot
-  __ := hf.biheytingAlgebra f map_sup map_inf map_top map_bot map_compl map_hnot map_himp map_sdiff
+  __ := hf.completeLattice f le lt map_sup map_inf map_sSup map_sInf map_top map_bot
+  __ := hf.biheytingAlgebra f
+    le lt map_sup map_inf map_top map_bot map_compl map_hnot map_himp map_sdiff
   iInf_iSup_eq g := hf <| by
     simp_rw [iInf, map_sInf, iInf_range, iSup, map_sSup, iSup_range, map_sInf, iInf_range,
       iInf_iSup_eq]
 
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteBooleanAlgebra` along an injection. -/
-protected abbrev Function.Injective.completeBooleanAlgebra [Max α] [Min α] [SupSet α] [InfSet α]
-    [Top α] [Bot α] [HasCompl α] [HImp α] [SDiff α] [CompleteBooleanAlgebra β] (f : α → β)
-    (hf : Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
-    (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a)
-    (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥)
+protected abbrev Function.Injective.completeBooleanAlgebra [Max α] [Min α]
+    [LE α] [LT α] [SupSet α] [InfSet α] [Top α] [Bot α] [HasCompl α] [HImp α] [SDiff α]
+    [CompleteBooleanAlgebra β] (f : α → β) (hf : Injective f)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
+    (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
+    (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
+    (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥)
     (map_compl : ∀ a, f aᶜ = (f a)ᶜ) (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b)
     (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
     CompleteBooleanAlgebra α where
-  __ := hf.completeLattice f map_sup map_inf map_sSup map_sInf map_top map_bot
-  __ := hf.booleanAlgebra f map_sup map_inf map_top map_bot map_compl map_sdiff map_himp
+  __ := hf.completeLattice f le lt map_sup map_inf map_sSup map_sInf map_top map_bot
+  __ := hf.booleanAlgebra f le lt map_sup map_inf map_top map_bot map_compl map_sdiff map_himp
 
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteAtomicBooleanAlgebra` along an injection. -/
-protected abbrev Function.Injective.completeAtomicBooleanAlgebra [Max α] [Min α] [SupSet α]
-    [InfSet α] [Top α] [Bot α] [HasCompl α] [HImp α] [HNot α] [SDiff α]
+protected abbrev Function.Injective.completeAtomicBooleanAlgebra [Max α] [Min α]
+    [LE α] [LT α] [SupSet α] [InfSet α] [Top α] [Bot α] [HasCompl α] [HImp α] [HNot α] [SDiff α]
     [CompleteAtomicBooleanAlgebra β] (f : α → β) (hf : Injective f)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥)
     (map_compl : ∀ a, f aᶜ = (f a)ᶜ) (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b)
     (map_hnot : ∀ a, f (￢a) = ￢f a) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
     CompleteAtomicBooleanAlgebra α where
-  __ := hf.completelyDistribLattice f map_sup map_inf map_sSup map_sInf map_top map_bot map_compl
-    map_himp map_hnot map_sdiff
-  __ := hf.booleanAlgebra f map_sup map_inf map_top map_bot map_compl map_sdiff map_himp
+  __ := hf.completelyDistribLattice f
+    le lt map_sup map_inf map_sSup map_sInf map_top map_bot map_compl map_himp map_hnot map_sdiff
+  __ := hf.booleanAlgebra f le lt map_sup map_inf map_top map_bot map_compl map_sdiff map_himp
 
 end lift
 
