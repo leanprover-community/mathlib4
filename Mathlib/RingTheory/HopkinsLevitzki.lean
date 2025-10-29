@@ -103,6 +103,18 @@ theorem isNoetherian_iff_isArtinian : IsNoetherian R M ↔ IsArtinian R M :=
     fun M _ _ _ _ h h' ↦ let N : Submodule R M := Ring.jacobson R • ⊤; by
       simp_rw [isNoetherian_iff_submodule_quotient N, isArtinian_iff_submodule_quotient N, N, h, h']
 
+theorem isNoetherian_iff_finite_of_jacobson_fg (fg : (Ring.jacobson R).FG) :
+    IsNoetherian R M ↔ Module.Finite R M :=
+  ⟨fun _ ↦ inferInstance, IsSemiprimaryRing.induction R R M
+    (P := fun M ↦ Module.Finite R M → IsNoetherian R M)
+    (fun M _ _ _ _ _ _ ↦ (IsSemisimpleModule.finite_tfae.out 0 1).mp)
+    fun M _ _ _ _ hs hq fin ↦ (isNoetherian_iff_submodule_quotient (Ring.jacobson R • ⊤)).mpr
+      ⟨hs (Module.Finite.iff_fg.mpr (.smul fg fin.1)), hq inferInstance⟩⟩
+
+theorem isNoetherianRing_iff_jacobson_fg : IsNoetherianRing R ↔ (Ring.jacobson R).FG :=
+  ⟨fun _ ↦ IsNoetherian.noetherian .., fun fg ↦
+    (IsSemiprimaryRing.isNoetherian_iff_finite_of_jacobson_fg fg).mpr inferInstance⟩
+
 end IsSemiprimaryRing
 
 theorem IsArtinianRing.tfae [IsArtinianRing R] :
