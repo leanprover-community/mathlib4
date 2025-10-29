@@ -181,6 +181,8 @@ instance : Add 𝓓^{n}_{K}(E, F) where
     rw [← add_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
+-- TODO:  can this and the next lemma be auto-generated, e.g. using `simps`?
+-- Investigate the same question for `zero` above and `sub` , `neg` and `smul` below.
 @[simp]
 lemma coe_add (f g : 𝓓^{n}_{K}(E, F)) : (f + g : 𝓓^{n}_{K}(E, F)) = (f : E → F) + g :=
   rfl
@@ -273,10 +275,19 @@ protected theorem hasCompactSupport (f : 𝓓^{n}_{K}(E, F)) : HasCompactSupport
 
 /-- Inclusion of unbundled `n`-times continuously differentiable function with support included
 in a compact `K` into the space `𝓓^{n}_{K}`. -/
+@[simps]
 protected def of_support_subset {f : E → F} (hf : ContDiff ℝ n f) (hsupp : support f ⊆ K) :
     𝓓^{n}_{K}(E, F) where
   toFun := f
   contDiff' := hf
   zero_on_compl' := support_subset_iff'.mp hsupp
+
+section Module
+
+instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+    Module R 𝓓^{n}_{K}(E, F) :=
+  (coeHom_injective n K).module R (coeHom E F n K) fun _ _ ↦ rfl
+
+end Module
 
 end ContDiffMapSupportedIn

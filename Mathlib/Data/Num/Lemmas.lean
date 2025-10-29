@@ -337,8 +337,6 @@ scoped macro (name := transfer) "transfer" : tactic => `(tactic|
     (intros; transfer_rw; try simp))
 
 instance addMonoid : AddMonoid Num where
-  add := (· + ·)
-  zero := 0
   zero_add := zero_add
   add_zero := add_zero
   add_assoc := by transfer
@@ -347,14 +345,12 @@ instance addMonoid : AddMonoid Num where
 instance addMonoidWithOne : AddMonoidWithOne Num :=
   { Num.addMonoid with
     natCast := Num.ofNat'
-    one := 1
     natCast_zero := ofNat'_zero
     natCast_succ := fun _ => ofNat'_succ }
 
 instance commSemiring : CommSemiring Num where
   __ := Num.addMonoid
   __ := Num.addMonoidWithOne
-  mul := (· * ·)
   npow := @npowRec Num ⟨1⟩ ⟨(· * ·)⟩
   mul_zero _ := by rw [← to_nat_inj, mul_to_nat, cast_zero, mul_zero]
   zero_mul _ := by rw [← to_nat_inj, mul_to_nat, cast_zero, zero_mul]
@@ -388,17 +384,17 @@ instance linearOrder : LinearOrder Num :=
     -- See https://github.com/leanprover/lean4/issues/2343
     toDecidableEq := instDecidableEqNum }
 
-instance isStrictOrderedRing : IsStrictOrderedRing Num :=
-  { zero_le_one := by decide
-    mul_lt_mul_of_pos_left := by
-      intro a b c
-      transfer_rw
-      apply mul_lt_mul_of_pos_left
-    mul_lt_mul_of_pos_right := by
-      intro a b c
-      transfer_rw
-      apply mul_lt_mul_of_pos_right
-    exists_pair_ne := ⟨0, 1, by decide⟩ }
+instance isStrictOrderedRing : IsStrictOrderedRing Num where
+  zero_le_one := by decide
+  exists_pair_ne := ⟨0, 1, by decide⟩
+  mul_lt_mul_of_pos_left a ha b c := by
+    revert ha
+    transfer_rw
+    apply flip mul_lt_mul_of_pos_left
+  mul_lt_mul_of_pos_right a ha b c := by
+    revert ha
+    transfer_rw
+    apply flip mul_lt_mul_of_pos_right
 
 @[norm_cast]
 theorem add_of_nat (m n) : ((m + n : ℕ) : Num) = m + n :=
@@ -521,13 +517,10 @@ scoped macro (name := transfer) "transfer" : tactic => `(tactic|
     (intros; transfer_rw; try simp [add_comm, add_left_comm, mul_comm, mul_left_comm]))
 
 instance addCommSemigroup : AddCommSemigroup PosNum where
-  add := (· + ·)
   add_assoc := by transfer
   add_comm := by transfer
 
 instance commMonoid : CommMonoid PosNum where
-  mul := (· * ·)
-  one := (1 : PosNum)
   npow := @npowRec PosNum ⟨1⟩ ⟨(· * ·)⟩
   mul_assoc := by transfer
   one_mul := by transfer
@@ -535,8 +528,6 @@ instance commMonoid : CommMonoid PosNum where
   mul_comm := by transfer
 
 instance distrib : Distrib PosNum where
-  add := (· + ·)
-  mul := (· * ·)
   left_distrib := by transfer; simp [mul_add]
   right_distrib := by transfer; simp [mul_add, mul_comm]
 
@@ -778,7 +769,7 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
   · rw [fnn]
     have this b (n : PosNum) : (cond b (↑n) 0 : ℕ) = ↑(cond b (pos n) 0 : Num) := by
       cases b <;> rfl
-    have this' b (n : PosNum) : ↑ (pos (PosNum.bit b n)) = Nat.bit b ↑n := by
+    have this' b (n : PosNum) : ↑(pos (PosNum.bit b n)) = Nat.bit b ↑n := by
       cases b <;> simp
     induction m generalizing n with | one => ?_ | bit1 m IH => ?_ | bit0 m IH => ?_ <;>
     obtain - | n | n := n
