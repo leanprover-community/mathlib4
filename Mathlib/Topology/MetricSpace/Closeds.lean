@@ -221,6 +221,9 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
       apply mem_iUnion₂.2
       exact ⟨t, ‹t ∈ F›, this⟩⟩
 
+theorem Closeds.isometry_singleton : Isometry (Closeds.singleton (α := α)) :=
+  fun _ _ => hausdorffEdist_singleton
+
 namespace NonemptyCompacts
 
 /-- In an emetric space, the type of non-empty compact subsets is an emetric space,
@@ -382,6 +385,9 @@ instance secondCountableTopology [SecondCountableTopology α] :
       -- we have proved that `d` is a good approximation of `t` as requested
       exact ⟨d, ‹d ∈ v›, Dtc⟩
   UniformSpace.secondCountable_of_separable (NonemptyCompacts α)
+
+theorem isometry_singleton : Isometry ({·} : α → NonemptyCompacts α) :=
+  fun _ _ => hausdorffEdist_singleton
 
 end NonemptyCompacts
 
