@@ -63,7 +63,7 @@ noncomputable def ofHasPullbacksAlong {Y X : C} (f : Y ⟶ X) [HasPullbacksAlong
 
 /-- The identity morphism has a chosen pullback. -/
 @[simps]
-def id {X : C} : ChosenPullback (𝟙 X) where
+def id (X : C) : ChosenPullback (𝟙 X) where
   pullback := 𝟭 _
   mapPullbackAdj := (Adjunction.id).ofNatIsoLeft (Over.mapId _).symm
 
