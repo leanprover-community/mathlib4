@@ -31,9 +31,8 @@ functions `f : X → ℝ` and `g : Y → ℝ` we have
 bounded continuous function, product measure
 -/
 
-section Prod
-
-open MeasurableSpace
+open BoundedContinuousFunction MeasureTheory Topology Filter Set ENNReal NNReal MeasurableSpace
+open scoped Topology ENNReal NNReal
 
 namespace Measure
 
@@ -130,5 +129,3 @@ lemma eq_prod_of_integral_mul_boundedContinuousFunction
   ext_of_integral_mul_boundedContinuousFunction fun f g ↦ by rw [h, integral_prod_mul]
 
 end Measure
-
-end Prod
