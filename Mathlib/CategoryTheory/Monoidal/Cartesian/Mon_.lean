@@ -123,7 +123,7 @@ def MonObj.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget _)
 @[deprecated (since := "2025-03-07")]
 alias MonObjOfRepresentableBy := MonObj.ofRepresentableBy
 
-@[deprecated (since := "2025-09-09")] alias Mon_ClassOfRepresentableBy := MonObjOfRepresentableBy
+@[deprecated (since := "2025-09-09")] alias Mon_ClassOfRepresentableBy := MonObj.ofRepresentableBy
 
 /-- If `M` is a monoid object, then `Hom(X, M)` has a monoid structure. -/
 abbrev Hom.monoid : Monoid (X ⟶ M) where
@@ -268,7 +268,7 @@ alias MonObjOfRepresentableBy_yonedaMonObjRepresentableBy :=
 
 @[deprecated (since := "2025-09-09")]
 alias Mon_ClassOfRepresentableBy_yonedaMonObjRepresentableBy :=
-  MonObjOfRepresentableBy_yonedaMonObjRepresentableBy
+  MonObj.ofRepresentableBy_yonedaMonObjRepresentableBy
 
 /-- The yoneda embedding for `Mon_C` is fully faithful. -/
 def yonedaMonFullyFaithful : yonedaMon (C := C).FullyFaithful where

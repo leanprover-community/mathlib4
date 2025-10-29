@@ -28,7 +28,7 @@ open scoped Finset
 theorem Finset.exists_disjoint_union_of_even_card [DecidableEq α] {s : Finset α} (he : Even #s) :
     ∃ (t u : Finset α), t ∪ u = s ∧ Disjoint t u ∧ #t = #u :=
   let ⟨n, hn⟩ := he
-  let ⟨t, ht, ht'⟩ := exists_subset_card_eq (show n ≤ #s by omega)
+  let ⟨t, ht, ht'⟩ := exists_subset_card_eq (show n ≤ #s by cutsat)
   ⟨t, s \ t, by simp [card_sdiff_of_subset, disjoint_sdiff, *]⟩
 
 theorem Finset.exists_disjoint_union_of_even_card_iff [DecidableEq α] (s : Finset α) :
@@ -82,7 +82,7 @@ theorem exists_union_disjoint_cardinal_eq_of_even (he : Even s.ncard) :
   classical
   rw [ncard_eq_toFinset_card s hs] at he
   obtain ⟨t, u, hutu, hdtu, hctu⟩ := Finset.exists_disjoint_union_of_even_card he
-  use t.toSet, u.toSet
+  use t, u
   simp [← Finset.coe_union, *]
 
 theorem exists_union_disjoint_ncard_eq_of_even (he : Even s.ncard) :

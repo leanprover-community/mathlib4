@@ -183,27 +183,18 @@ lemma findGreatest_eq_iff :
     rw [eq_comm, Iff.comm]
     simp only [Nat.le_zero, ne_eq, findGreatest_zero, and_iff_left_iff_imp]
     rintro rfl
-    exact ⟨fun h ↦ (h rfl).elim, fun n hlt heq ↦ by omega⟩
+    exact ⟨fun h ↦ (h rfl).elim, fun n hlt heq ↦ by cutsat⟩
   | succ k ihk =>
     by_cases hk : P (k + 1)
     · rw [findGreatest_eq hk]
       constructor
       · rintro rfl
-        exact ⟨le_refl _, fun _ ↦ hk, fun n hlt hle ↦ by omega⟩
+        exact ⟨le_refl _, fun _ ↦ hk, fun n hlt hle ↦ by cutsat⟩
       · rintro ⟨hle, h0, hm⟩
         rcases Decidable.lt_or_eq_of_le hle with hlt | rfl
         exacts [(hm hlt (le_refl _) hk).elim, rfl]
     · rw [findGreatest_of_not hk, ihk]
-      constructor
-      · rintro ⟨hle, hP, hm⟩
-        refine ⟨le_trans hle k.le_succ, hP, fun n hlt hle ↦ ?_⟩
-        rcases Decidable.lt_or_eq_of_le hle with hlt' | rfl
-        exacts [hm hlt <| Nat.lt_succ_iff.1 hlt', hk]
-      · rintro ⟨hle, hP, hm⟩
-        refine ⟨Nat.lt_succ_iff.1 (lt_of_le_of_ne hle ?_), hP,
-          fun n hlt hle ↦ hm hlt (le_trans hle k.le_succ)⟩
-        rintro rfl
-        exact hk (hP k.succ_ne_zero)
+      grind
 
 lemma findGreatest_eq_zero_iff : Nat.findGreatest P k = 0 ↔ ∀ ⦃n⦄, 0 < n → n ≤ k → ¬P n := by
   simp [findGreatest_eq_iff]

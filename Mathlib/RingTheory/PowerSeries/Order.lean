@@ -140,7 +140,7 @@ theorem min_order_le_order_add (φ ψ : R⟦X⟧) : min (order φ) (order ψ) �
   refine le_order _ _ ?_
   simp +contextual [coeff_of_lt_order]
 
-private theorem order_add_of_order_eq.aux (φ ψ : R⟦X⟧)
+private theorem order_add_of_order_ne.aux (φ ψ : R⟦X⟧)
     (H : order φ < order ψ) : order (φ + ψ) ≤ order φ ⊓ order ψ := by
   suffices order (φ + ψ) = order φ by
     rw [le_inf_iff, this]
@@ -157,12 +157,14 @@ private theorem order_add_of_order_eq.aux (φ ψ : R⟦X⟧)
 
 /-- The order of the sum of two formal power series
 is the minimum of their orders if their orders differ. -/
-theorem order_add_of_order_eq (φ ψ : R⟦X⟧) (h : order φ ≠ order ψ) :
+theorem order_add_of_order_ne (φ ψ : R⟦X⟧) (h : order φ ≠ order ψ) :
     order (φ + ψ) = order φ ⊓ order ψ := by
   refine le_antisymm ?_ (min_order_le_order_add _ _)
   rcases h.lt_or_gt with (φ_lt_ψ | ψ_lt_φ)
-  · apply order_add_of_order_eq.aux _ _ φ_lt_ψ
-  · simpa only [add_comm, inf_comm] using order_add_of_order_eq.aux _ _ ψ_lt_φ
+  · apply order_add_of_order_ne.aux _ _ φ_lt_ψ
+  · simpa only [add_comm, inf_comm] using order_add_of_order_ne.aux _ _ ψ_lt_φ
+
+@[deprecated (since := "2025-09-17")] alias order_add_of_order_eq := order_add_of_order_ne
 
 /-- The order of the product of two formal power series
 is at least the sum of their orders. -/
@@ -182,10 +184,13 @@ theorem le_order_mul (φ ψ : R⟦X⟧) : order φ + order ψ ≤ order (φ * ψ
 theorem le_order_pow (φ : R⟦X⟧) (n : ℕ) : n • order φ ≤ order (φ ^ n) := by
   induction n with
   | zero => simp
-  | succ n hn =>
-    simp only [add_smul, one_smul, pow_succ]
-    apply le_trans _ (le_order_mul _ _)
-    exact add_le_add_right hn φ.order
+  | succ n ih => grw [add_smul, one_smul, pow_succ, ih, le_order_mul]
+
+theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*} (φ : ι → R⟦X⟧) (s : Finset ι) :
+    ∑ i ∈ s, (φ i).order ≤ (∏ i ∈ s, φ i).order := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha ih => grw [Finset.sum_cons ha, Finset.prod_cons ha, ih, le_order_mul]
 
 alias order_mul_ge := le_order_mul
 
@@ -218,7 +223,7 @@ theorem coeff_mul_of_lt_order {φ ψ : R⟦X⟧} {n : ℕ} (h : ↑n < ψ.order)
   refine mul_eq_zero_of_right (coeff x.fst φ) (coeff_of_lt_order x.snd (lt_of_le_of_lt ?_ h))
   rw [mem_antidiagonal] at hx
   norm_cast
-  omega
+  cutsat
 
 theorem coeff_mul_one_sub_of_lt_order {R : Type*} [Ring R] {φ ψ : R⟦X⟧} (n : ℕ)
     (h : ↑n < ψ.order) : coeff n (φ * (1 - ψ)) = coeff n φ := by
@@ -235,6 +240,12 @@ theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ)
     simp only [Finset.mem_insert, forall_eq_or_imp] at t
     rw [Finset.prod_insert ha, ← mul_assoc, mul_right_comm, coeff_mul_one_sub_of_lt_order _ t.1]
     exact ih t.2
+
+@[simp]
+theorem order_neg {R : Type*} [Ring R] (φ : PowerSeries R) : (-φ).order = φ.order := by
+  by_contra! h
+  have : φ = 0 := by simpa using (order_add_of_order_ne _ _ h).symm
+  simp [this] at h
 
 /-- Given a non-zero power series `f`, `divXPowOrder f` is the power series obtained by
 dividing out the largest power of X that divides `f`, that is its order -/
@@ -377,6 +388,12 @@ theorem order_pow [Nontrivial R] (φ : R⟦X⟧) (n : ℕ) :
   | zero => simp
   | succ n hn =>
     simp only [add_smul, one_smul, pow_succ, order_mul, hn]
+
+theorem order_prod {R : Type*} [CommSemiring R] [NoZeroDivisors R] [Nontrivial R] {ι : Type*}
+    (φ : ι → R⟦X⟧) (s : Finset ι) : (∏ i ∈ s, φ i).order = ∑ i ∈ s, (φ i).order := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha ih => rw [Finset.sum_cons ha, Finset.prod_cons ha, order_mul, ih]
 
 /-- The operation of dividing a power series by the largest possible power of `X`
 preserves multiplication. -/
