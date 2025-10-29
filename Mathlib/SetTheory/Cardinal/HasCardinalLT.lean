@@ -168,9 +168,7 @@ lemma hasCardinalLT_iUnion
     {ι : Type*} {X : Type*} (S : ι → Set X) {κ : Cardinal} [Fact κ.IsRegular]
     (hι : HasCardinalLT ι κ) (hS : ∀ i, HasCardinalLT (S i) κ) :
     HasCardinalLT (⋃ i, S i) κ := by
-  convert hasCardinalLT_subtype_iSup S hι hS using 2
-  ext x
-  change _ ↔ ((⨆ i, S i) : X → Prop) x
+  convert show HasCardinalLT (setOf ((⨆ i, S i))) κ from hasCardinalLT_subtype_iSup S hι hS
   aesop
 
 /-- The particular case of `hasCardinatLT_prod` when all the inputs are in the

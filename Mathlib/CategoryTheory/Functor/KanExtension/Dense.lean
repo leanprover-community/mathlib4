@@ -134,7 +134,8 @@ lemma isDense_iff_fullyFaithful_restrictedULiftYoneda [F.Full] :
 open ObjectProperty in
 lemma isStrongGenerator_of_isDense [F.IsDense] :
     IsStrongGenerator (.ofObj F.obj) :=
-  (IsStrongGenerator.mk_of_exists_colimitsOfShape.{max u₁ u₂ v₁ v₂} (fun Y ↦ ⟨_, _, ⟨{
+  (IsStrongGenerator.mk_of_exists_colimitsOfShape.{max u₁ u₂ v₁ v₂,
+      max u₁ v₁ v₂} (fun Y ↦ ⟨_, _, ⟨{
     ι := _
     diag := _
     isColimit := (IsColimit.whiskerEquivalence (F.denseAt Y)

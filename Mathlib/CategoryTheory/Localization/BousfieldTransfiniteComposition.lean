@@ -25,10 +25,10 @@ variable {C : Type u} [Category.{v} C]
 
 namespace Localization.LeftBousfield
 
-variable (P : ObjectProperty C) (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J]
-  [WellFoundedLT J]
+variable (P : ObjectProperty C)
 
-instance : (W P).IsStableUnderTransfiniteCompositionOfShape J where
+instance (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J] :
+    (W P).IsStableUnderTransfiniteCompositionOfShape J where
   le := fun X Y f ⟨hf⟩ Z hZ ↦ by
     refine ⟨fun g₁ g₂ h ↦ hf.isColimit.hom_ext (fun j ↦ ?_), fun g ↦ ?_⟩
     · dsimp at h ⊢

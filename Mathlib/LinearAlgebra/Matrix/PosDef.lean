@@ -11,20 +11,25 @@ import Mathlib.LinearAlgebra.QuadraticForm.Basic
 /-! # Positive Definite Matrices
 
 This file defines positive (semi)definite matrices and connects the notion to positive definiteness
-of quadratic forms. Most results require `𝕜 = ℝ` or `ℂ`.
+of quadratic forms.
+In `Mathlib/Analysis/Matrix/Order.lean`, positive semi-definiteness is used to define the partial
+order on matrices on `ℝ` or `ℂ`.
 
 ## Main definitions
 
-* `Matrix.PosDef` : a matrix `M : Matrix n n 𝕜` is positive definite if it is Hermitian and `xᴴMx`
-  is greater than zero for all nonzero `x`.
-* `Matrix.PosSemidef` : a matrix `M : Matrix n n 𝕜` is positive semidefinite if it is Hermitian
+* `Matrix.PosSemidef` : a matrix `M : Matrix n n R` is positive semidefinite if it is Hermitian
   and `xᴴMx` is nonnegative for all `x`.
+* `Matrix.PosDef` : a matrix `M : Matrix n n R` is positive definite if it is Hermitian and `xᴴMx`
+  is greater than zero for all nonzero `x`.
+* `Matrix.InnerProductSpace.ofMatrix`: the inner product on `n → 𝕜` induced by a positive definite
+  matrix `M`, and is given by `⟪x, y⟫ = xᴴMy`.
 
 ## Main results
 
 * `Matrix.PosSemidef.fromBlocks₁₁` and `Matrix.PosSemidef.fromBlocks₂₂`: If a matrix `A` is
   positive definite, then `[A B; Bᴴ D]` is positive semidefinite if and only if `D - Bᴴ A⁻¹ B` is
   positive semidefinite.
+* `Matrix.PosDef.isUnit`: A positive definite matrix in a field is invertible.
 -/
 
 open scoped ComplexOrder
@@ -261,7 +266,7 @@ variable [DecidableEq n] {U x : Matrix n n R}
 /-- For an invertible matrix `U`, `star U * x * U` is positive semi-definite iff `x` is.
 This works on any ⋆-ring with a partial order.
 
-See `IsUnit.conjugate_nonneg_iff'` for  a similar statement for star-ordered rings. -/
+See `IsUnit.conjugate_nonneg_iff'` for a similar statement for star-ordered rings. -/
 theorem IsUnit.posSemidef_conjugate_iff' (hU : IsUnit U) :
     PosSemidef (star U * x * U) ↔ x.PosSemidef := by
   simp_rw [PosSemidef, isHermitian_iff_isSelfAdjoint, hU.isSelfAdjoint_conjugate_iff',
@@ -274,7 +279,7 @@ open Matrix in
 /-- For an invertible matrix `U`, `U * x * star U` is positive semi-definite iff `x` is.
 This works on any ⋆-ring with a partial order.
 
-See `IsUnit.conjugate_nonneg_iff` for  a similar statement for star-ordered rings. -/
+See `IsUnit.conjugate_nonneg_iff` for a similar statement for star-ordered rings. -/
 theorem IsUnit.posSemidef_conjugate_iff (hU : IsUnit U) :
     PosSemidef (U * x * star U) ↔ x.PosSemidef := by simpa using hU.star.posSemidef_conjugate_iff'
 
@@ -519,7 +524,7 @@ variable [DecidableEq n] {x U : Matrix n n R}
 /-- For an invertible matrix `U`, `star U * x * U` is positive definite iff `x` is.
 This works on any ⋆-ring with a partial order.
 
-See `IsUnit.isStrictlyPositive_conjugate_iff'` for  a similar statement for star-ordered rings.
+See `IsUnit.isStrictlyPositive_conjugate_iff'` for a similar statement for star-ordered rings.
 For matrices, positive definiteness is equivalent to strict positivity when the underlying field is
 `ℝ` or `ℂ` (see `Matrix.isStrictlyPositive_iff_posDef`). -/
 theorem _root_.Matrix.IsUnit.posDef_conjugate_iff' (hU : IsUnit U) :
@@ -536,7 +541,7 @@ open Matrix in
 /-- For an invertible matrix `U`, `U * x * star U` is positive definite iff `x` is.
 This works on any ⋆-ring with a partial order.
 
-See `IsUnit.isStrictlyPositive_conjugate_iff` for  a similar statement for star-ordered rings.
+See `IsUnit.isStrictlyPositive_conjugate_iff` for a similar statement for star-ordered rings.
 For matrices, positive definiteness is equivalent to strict positivity when the underlying field is
 `ℝ` or `ℂ` (see `Matrix.isStrictlyPositive_iff_posDef`). -/
 theorem _root_.Matrix.IsUnit.posDef_conjugate_iff (hU : IsUnit U) :
