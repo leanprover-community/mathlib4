@@ -13,7 +13,29 @@ import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 Given `W : MorphismProperty C` (which should be small) and assuming the existence
 of certain colimits in `C`, we construct a morphism `toSucc W Z : Z ⟶ succ W Z` for
 any `Z : C`. This morphism belongs to `LeftBousfield.W W.isLocal` and
-is an isomorphism iff `Z` belongs to `W.isLocal`.
+is an isomorphism iff `Z` belongs to `W.isLocal` (see the lemma `isIso_toSucc_iff`).
+The morphism `toSucc W Z : Z ⟶ succ W Z` is defined as a composition
+of two morphisms that are roughly described as follows:
+* `toStep W Z : Z ⟶ step W Z`: for any morphism `f : X ⟶ Y` satisfying `W`
+and any morphism `X ⟶ Z`, we "attach" a morphism `Y ⟶ step W Z` (using
+coproducts and a pushout in essentially the same way as it is done in
+the file `CategoryTheory.SmallObject.Construction` for the small object
+argument);
+* `fromStep W Z : step W Z ⟶ succ W Z`: this morphism coequalizes all pairs
+of morphisms `g₁ g₂ : Y ⟶ step W Z` such that there is a `f : X ⟶ Y`
+satisfying `W` such that `f ≫ g₁ = f ≫ g₂`.
+
+The morphism `toSucc W Z : Z ⟶ succ W Z` is a variant of the (wrong) definition
+p. 32 in the book by Adámek and Rosický. In this book, a slightly different object
+as `succ W Z` is defined directly as a colimit of an intricate diagram, but
+contrary to what is stated on p. 33, it does not satisfy `isIso_toSucc_iff`.
+The author of this file was unable to not understand the attempt of the authors
+to fix this mistake in the errata to this book. This led to the definition
+in two steps outlined above.
+
+In future PRs, we will apply a transfinite induction to this construction in
+order to obtain a left adjoint to the inclusion of the full subcategory
+of `W`-local objects under suitable assumptions (TODO).
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
