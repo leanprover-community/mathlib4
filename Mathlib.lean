@@ -2579,8 +2579,6 @@ import Mathlib.CategoryTheory.Localization.LocallySmall
 import Mathlib.CategoryTheory.Localization.Monoidal
 import Mathlib.CategoryTheory.Localization.Monoidal.Basic
 import Mathlib.CategoryTheory.Localization.Monoidal.Braided
-import Mathlib.CategoryTheory.Localization.Monoidal.Basic
-import Mathlib.CategoryTheory.Localization.Monoidal.Braided
 import Mathlib.CategoryTheory.Localization.Opposite
 import Mathlib.CategoryTheory.Localization.Pi
 import Mathlib.CategoryTheory.Localization.Preadditive
@@ -2640,6 +2638,7 @@ import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Complete
 import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Groupoid
 import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 import Mathlib.CategoryTheory.Monoidal.Closed.Ideal
+import Mathlib.CategoryTheory.Monoidal.Closed.Transport
 import Mathlib.CategoryTheory.Monoidal.Closed.Types
 import Mathlib.CategoryTheory.Monoidal.Closed.Zero
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
