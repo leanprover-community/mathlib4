@@ -15,13 +15,13 @@ a minimum number of equalities.
 
 ## Main Definitions
 
-* `Field.ofMinimalAxioms`: Define a `Field` structure on a Type by proving a minimized set of axioms
+* `Field.ofMinimalAxioms`: Define a `Field` structure on a Type by proving a minimal set of axioms
 
 -/
 
 universe u
 
-/-- Define a `Field` structure on a Type by proving a minimized set of axioms.
+/-- Define a `Field` structure on a Type by proving a minimal set of axioms.
 Note that this uses the default definitions for `npow`, `nsmul`, `zsmul`, `div` and `sub`.
 See note [reducible non-instances]. -/
 abbrev Field.ofMinimalAxioms (K : Type u)
