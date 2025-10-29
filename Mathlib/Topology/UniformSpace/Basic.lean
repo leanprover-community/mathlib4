@@ -53,6 +53,19 @@ lemma IsOpen.relComp [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpa
     arg 1; equals ⋃ b, (fun p => (p.1, b)) ⁻¹' s ∩ (fun p => (b, p.2)) ⁻¹' t => ext ⟨_, _⟩; simp
   exact isOpen_iUnion fun a ↦ hs.preimage (by fun_prop) |>.inter <| ht.preimage (by fun_prop)
 
+lemma IsOpen.relInv [TopologicalSpace α] [TopologicalSpace β]
+    {s : SetRel α β} (hs : IsOpen s) : IsOpen s.inv :=
+  hs.preimage continuous_swap
+
+lemma IsOpen.relImage [TopologicalSpace α] [TopologicalSpace β]
+    {s : SetRel α β} (hs : IsOpen s) {t : Set α} : IsOpen (s.image t) := by
+  simp_rw [SetRel.image, ← exists_prop, Set.setOf_exists]
+  exact isOpen_biUnion fun _ _ => hs.preimage <| .prodMk_right _
+
+lemma IsOpen.relPreimage [TopologicalSpace α] [TopologicalSpace β]
+    {s : SetRel α β} (hs : IsOpen s) {t : Set β} : IsOpen (s.preimage t) :=
+  hs.relInv.relImage
+
 section UniformSpace
 
 variable [UniformSpace α]
