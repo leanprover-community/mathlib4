@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 # Structured arrows when the target category is discrete
 
 When `T` is a type with a unique element `t`, we show that
-if `F : C ⥤ Discrete T`, when the categories
+if `F : C ⥤ Discrete T`, then the categories
 `StructuredArrow (Discrete.mk t) F` and
 `CostructuredArrow (Discrete.mk t) F` are equivalent to `C`.
 
