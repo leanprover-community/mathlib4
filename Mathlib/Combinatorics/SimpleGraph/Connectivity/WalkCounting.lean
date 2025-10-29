@@ -176,6 +176,10 @@ end LocallyFinite
 
 instance [Finite V] : Finite G.ConnectedComponent := Quot.finite _
 
+theorem ConnectedComponent.card_le_card_of_le [Finite V] {G G' : SimpleGraph V} (h : G ≤ G') :
+    Nat.card G'.ConnectedComponent ≤ Nat.card G.ConnectedComponent :=
+  Nat.card_le_card_of_surjective _ <| ConnectedComponent.surjective_map_ofLE h
+
 section Fintype
 
 variable [DecidableEq V] [Fintype V] [DecidableRel G.Adj]
