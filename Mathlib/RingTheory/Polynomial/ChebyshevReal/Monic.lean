@@ -259,6 +259,7 @@ theorem min_abs_of_monic {n : ℕ} (hn : n ≠ 0)
     _ = M * 2^(n - 1) := by
       rw [← Finset.sum_mul, mul_comm, hsum]
 
+/-- `normalized_T n` is `T n` normalized to a monic polynomial. -/
 noncomputable def normalized_T (n : ℕ) : ℝ[X] := (Polynomial.C (1 / 2^(n - 1))) * T ℝ n
 
 @[simp]

@@ -53,15 +53,12 @@ namespace Polynomial.Chebyshev
 open Polynomial
 open Real
 
-@[simp]
 theorem T_degree_real (n : ℤ) : (T ℝ n).degree = n.natAbs := by
   exact T_degree ℝ (by simp) n
 
-@[simp]
 theorem T_natDegree_real (n : ℤ) : (T ℝ n).natDegree = n.natAbs := by
   exact T_natDegree ℝ (by simp) n
 
-@[simp]
 theorem T_leadingCoeff_real (n : ℤ) : (T ℝ n).leadingCoeff = 2^(n.natAbs - 1) := by
   exact T_leadingCoeff ℝ (by simp) n
 
@@ -79,6 +76,7 @@ theorem T_bounded_of_bounded' (n : ℤ) {x : ℝ} (hx : |x| ≤ 1) :
   rw [Set.mem_Icc]
   exact abs_le.mp hx
 
+/-- Inverse of `arccos`. -/
 noncomputable def arccosh (x : ℝ) : ℝ := log (x + sqrt (x^2 - 1))
 
 @[simp]
@@ -213,6 +211,7 @@ theorem T_eq_zero_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     use k
     field_simp
 
+/-- `T_roots n` is the set of roots of `T n`. -/
 noncomputable def T_roots (n : ℕ) : Finset ℝ :=
   (Finset.Ico 0 n).image (fun (k : ℕ) => cos ((2 * k + 1) * π / (2 * n)))
 
@@ -306,7 +305,6 @@ theorem T_eq_neg_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     use k
     field_simp; ring
 
-@[simp]
 theorem T_node_eval {n : ℤ} (hn : n ≠ 0) (k : ℤ) :
   (T ℝ n).eval (cos (k * π / n)) = (-1)^k := by
   rw [T_real_cos]
@@ -335,6 +333,7 @@ theorem T_abs_eq_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     · congr 2; field_simp
     exact abs_cos_int_mul_pi _
 
+/-- `T_extrema n` is the set of extremal points of `T n` in [-1, 1]. -/
 noncomputable def T_extrema (n : ℤ) : Finset ℝ :=
   (Finset.Icc 0 n.natAbs).image (fun (k : ℕ) => cos (k * π / n.natAbs))
 
@@ -436,25 +435,20 @@ theorem T_extrema_eq {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     unfold T_extrema
     simp
 
-@[simp]
 theorem U_degree_nat_real (n : ℕ) : (U ℝ n).degree = n := by
   exact U_degree_nat ℝ (by simp) n
 
-@[simp]
 theorem U_natDegree_nat_real (n : ℕ) : (U ℝ n).natDegree = n := by
   exact U_natDegree_nat ℝ (by simp) n
 
-@[simp]
 theorem U_degree_ne_neg_one_real (n : ℤ) (hn : n ≠ -1) :
   (U ℝ n).degree = ↑((n + 1).natAbs - 1) := by
   exact U_degree_ne_neg_one ℝ (by simp) n hn
 
-@[simp]
 theorem U_natDegree_real (n : ℤ) :
   (U ℝ n).natDegree = (n + 1).natAbs - 1 := by
   exact U_natDegree ℝ (by simp) n
 
-@[simp]
 theorem U_leadingCoeff_nat_real (n : ℕ) : (U ℝ n).leadingCoeff = 2^n := by
   exact U_leadingCoeff_nat ℝ (by simp) n
 
@@ -485,6 +479,7 @@ theorem U_eq_zero_if (n : ℕ) {k : ℕ} (hk1 : 1 ≤ k) (hkn : k ≤ n) :
         _ = (n + 1) := by rw [one_mul]
     linarith
 
+/-- `U_roots n` is the set of roots of `U n`. -/
 noncomputable def U_roots (n : ℕ) : Finset ℝ :=
   (Finset.Icc 1 n).image (fun (k : ℕ) => cos (k * π / (n + 1)))
 
