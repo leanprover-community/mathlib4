@@ -14,14 +14,14 @@ lemma indepFun_of_boundedContinuousFunction [IsFiniteMeasure P]
     (h : ∀ (f : E →ᵇ ℝ) (g : F →ᵇ ℝ), P[(f ∘ X) * (g ∘ Y)] = P[f ∘ X] * P[g ∘ Y]) :
     X ⟂ᵢ[P] Y := by
   rw [indepFun_iff_map_prod_eq_prod_map_map mX mY]
-  refine eq_prod_of_boundedContinuousFunction fun f g ↦ ?_
+  refine eq_prod_of_integral_mul_boundedContinuousFunction fun f g ↦ ?_
   rw [integral_map, integral_map, integral_map]
   · exact h f g
   any_goals fun_prop
   exact (f.continuous.aestronglyMeasurable.comp_measurable measurable_fst).mul
     (g.continuous.aestronglyMeasurable.comp_measurable measurable_snd)
 
-lemma indepSet_comap_of_boundedContinuousFunction [IsProbabilityMeasure P]
+lemma indepSets_singleton_comap_of_boundedContinuousFunction [IsProbabilityMeasure P]
     (mX : AEMeasurable X P) {A : Set Ω}
     (hA : MeasurableSet A) (h : ∀ f : E →ᵇ ℝ, ∫ ω in A, f (X ω) ∂P = P.real A * P[f ∘ X]) :
     IndepSets {A} {s | MeasurableSet[mE.comap X] s} P := by
@@ -80,3 +80,19 @@ lemma indepSet_comap_of_boundedContinuousFunction [IsProbabilityMeasure P]
       split_ifs
       swap; · simp only [abs_zero]; positivity
       grw [abs_mul, g.abs_apply_le_norm]
+
+lemma indepSets_comap_of_boundedContinuousFunction [IsProbabilityMeasure P]
+    (mX : AEMeasurable X P) {A : Set (Set Ω)}
+    (hA : ∀ s ∈ A, MeasurableSet s)
+    (h : ∀ s ∈ A, ∀ f : E →ᵇ ℝ, ∫ ω in s, f (X ω) ∂P = P.real s * P[f ∘ X]) :
+    IndepSets A {s | MeasurableSet[mE.comap X] s} P := by
+  rw [← A.biUnion_of_singleton]
+  exact IndepSets.biUnion fun s hs ↦
+    indepSets_singleton_comap_of_boundedContinuousFunction mX (hA s hs) (h s hs)
+
+lemma indep_comap_of_boundedContinuousFunction (hm : m ≤ mΩ) [IsProbabilityMeasure P]
+    (mX : AEMeasurable X P)
+    (h : ∀ s, MeasurableSet[m] s → ∀ f : E →ᵇ ℝ, ∫ ω in s, f (X ω) ∂P = P.real s * P[f ∘ X]) :
+    Indep m (mE.comap X) P :=
+  (Indep_iff_IndepSets ..).2 <|
+    indepSets_comap_of_boundedContinuousFunction mX (fun s hs ↦ hm s hs) h
