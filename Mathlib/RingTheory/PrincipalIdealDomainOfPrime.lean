@@ -55,4 +55,4 @@ so are all other ideals. -/
 theorem IsPrincipalIdealRing.of_prime_ne_bot
     (H : ∀ P : Ideal R, P.IsPrime → P ≠ ⊥ → P.IsPrincipal) :
     IsPrincipalIdealRing R :=
-  .of_prime fun P hp ↦ (eq_or_ne P ⊥).elim (· ▸ inferInstance) (H _ hp ·)
+  .of_prime fun P hp ↦ (eq_or_ne P ⊥).elim (· ▸ inferInstance) <| H _ hp
