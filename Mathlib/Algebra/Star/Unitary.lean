@@ -44,7 +44,7 @@ def unitary (R : Type*) [Monoid R] [StarMul R] : Submonoid R where
 
 variable {R : Type*}
 
-namespace unitary
+namespace Unitary
 
 section Monoid
 
@@ -127,7 +127,7 @@ theorem toUnits_injective : Function.Injective (toUnits : unitary R → Rˣ) := 
 
 theorem _root_.IsUnit.mem_unitary_iff_star_mul_self {u : R} (hu : IsUnit u) :
     u ∈ unitary R ↔ star u * u = 1 := by
-  rw [unitary.mem_iff, and_iff_left_of_imp fun h_mul => ?_]
+  rw [mem_iff, and_iff_left_of_imp fun h_mul => ?_]
   lift u to Rˣ using hu
   exact left_inv_eq_right_inv h_mul u.mul_inv ▸ u.mul_inv
 
@@ -142,13 +142,13 @@ alias ⟨_, _root_.IsUnit.mem_unitary_of_mul_star_self⟩ := IsUnit.mem_unitary_
 for all `x` and `y` in `R`. -/
 protected theorem mul_left_inj {x y : R} (U : unitary R) :
     x * U = y * U ↔ x = y :=
-  unitary.val_toUnits_apply U ▸ Units.mul_left_inj _
+  val_toUnits_apply U ▸ Units.mul_left_inj _
 
 /-- For unitary `U` in a star-monoid `R`, `U * x = U * y` if and only if `x = y`
 for all `x` and `y` in `R`. -/
 protected theorem mul_right_inj {x y : R} (U : unitary R) :
     U * x = U * y ↔ x = y :=
-  unitary.val_toUnits_apply U ▸ Units.mul_right_inj _
+  val_toUnits_apply U ▸ Units.mul_right_inj _
 
 lemma mul_inv_mem_iff {G : Type*} [Group G] [StarMul G] (a b : G) :
     a * b⁻¹ ∈ unitary G ↔ star a * a = star b * b := by
@@ -161,7 +161,7 @@ lemma inv_mul_mem_iff {G : Type*} [Group G] [StarMul G] (a b : G) :
 
 theorem _root_.Units.unitary_eq : unitary Rˣ = (unitary R).comap (Units.coeHom R) := by
   ext
-  simp [unitary.mem_iff, Units.ext_iff]
+  simp [mem_iff, Units.ext_iff]
 
 /-- In a star monoid, the product `a * b⁻¹` of units is unitary if `star a * a = star b * b`. -/
 protected lemma _root_.Units.mul_inv_mem_unitary (a b : Rˣ) :
@@ -185,14 +185,14 @@ lemma _root_.isStarNormal_of_mem_unitary {u : R} (hu : u ∈ unitary R) : IsStar
 
 end Monoid
 
-end unitary
+end Unitary
 
 section Group
 
 variable {G : Type*} [Group G] [StarMul G]
 
-theorem unitary.inv_mem {g : G} (hg : g ∈ unitary G) : g⁻¹ ∈ unitary G := by
-  simp_rw [unitary.mem_iff, star_inv, ← mul_inv_rev, inv_eq_one] at *
+theorem Unitary.inv_mem {g : G} (hg : g ∈ unitary G) : g⁻¹ ∈ unitary G := by
+  simp_rw [mem_iff, star_inv, ← mul_inv_rev, inv_eq_one] at *
   exact hg.symm
 
 variable (G) in
@@ -203,7 +203,7 @@ This situation naturally arises when considering the unitary elements as a
 subgroup of the group of units of a star monoid. -/
 def unitarySubgroup : Subgroup G where
   toSubmonoid := unitary G
-  inv_mem' := unitary.inv_mem
+  inv_mem' := Unitary.inv_mem
 
 @[simp]
 theorem unitarySubgroup_toSubmonoid : (unitarySubgroup G).toSubmonoid = unitary G := rfl
@@ -212,12 +212,12 @@ theorem unitarySubgroup_toSubmonoid : (unitarySubgroup G).toSubmonoid = unitary 
 theorem mem_unitarySubgroup_iff {g : G} : g ∈ unitarySubgroup G ↔ g ∈ unitary G :=
   Iff.rfl
 
-nonrec theorem unitary.inv_mem_iff {g : G} : g⁻¹ ∈ unitary G ↔ g ∈ unitary G :=
+nonrec theorem Unitary.inv_mem_iff {g : G} : g⁻¹ ∈ unitary G ↔ g ∈ unitary G :=
   inv_mem_iff (H := unitarySubgroup G)
 
 end Group
 
-namespace unitary
+namespace Unitary
 
 section SMul
 
@@ -276,7 +276,7 @@ variable {R S T : Type*} [Monoid R] [StarMul R] [Monoid S] [StarMul S] [Monoid T
 
 lemma map_mem {F : Type*} [FunLike F R S] [StarHomClass F R S] [MonoidHomClass F R S]
     (f : F) {r : R} (hr : r ∈ unitary R) : f r ∈ unitary S := by
-  rw [unitary.mem_iff] at hr
+  rw [mem_iff] at hr
   simpa [map_star, map_mul] using And.intro congr(f $(hr.1)) congr(f $(hr.2))
 
 /-- The star monoid homomorphism between unitary subgroups induced by a star monoid homomorphism of
@@ -408,7 +408,7 @@ variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A] [StarMul A]
 @[simp]
 lemma spectrum_star_right_conjugate {a : A} {U : unitary A} :
     spectrum R (U * a * (star U : A)) = spectrum R a :=
-  spectrum.units_conjugate (u := unitary.toUnits U)
+  spectrum.units_conjugate (u := toUnits U)
 
 /-- Unitary conjugation preserves the spectrum, star on left. -/
 @[simp]
@@ -416,18 +416,63 @@ lemma spectrum_star_left_conjugate {a : A} {U : unitary A} :
     spectrum R ((star U : A) * a * U) = spectrum R a := by
   simpa using spectrum_star_right_conjugate (U := star U)
 
-@[deprecated (since := "2025-10-20")] alias spectrum.unitary_conjugate :=
-  spectrum_star_right_conjugate
-@[deprecated (since := "2025-10-20")] alias spectrum.unitary_conjugate' :=
-  spectrum_star_left_conjugate
-
 end UnitaryConjugate
+
+end Unitary
+
+namespace unitary
+
+@[deprecated (since := "2025-10-29")] alias mem_iff := Unitary.mem_iff
+@[deprecated (since := "2025-10-29")] alias star_mul_self_of_mem := Unitary.star_mul_self_of_mem
+@[deprecated (since := "2025-10-29")] alias mul_star_self_of_mem := Unitary.mul_star_self_of_mem
+@[deprecated (since := "2025-10-29")] alias star_mem := Unitary.star_mem
+@[deprecated (since := "2025-10-29")] alias star_mem_iff := Unitary.star_mem_iff
+@[deprecated (since := "2025-10-29")] alias coe_star := Unitary.coe_star
+@[deprecated (since := "2025-10-29")] alias coe_star_mul_self := Unitary.coe_star_mul_self
+@[deprecated (since := "2025-10-29")] alias coe_mul_star_self := Unitary.coe_mul_star_self
+@[deprecated (since := "2025-10-29")] alias star_mul_self := Unitary.star_mul_self
+@[deprecated (since := "2025-10-29")] alias mul_star_self := Unitary.mul_star_self
+@[deprecated (since := "2025-10-29")] alias star_eq_inv := Unitary.star_eq_inv
+@[deprecated (since := "2025-10-29")] alias star_eq_inv' := Unitary.star_eq_inv'
+@[deprecated (since := "2025-10-29")] alias toUnits := Unitary.toUnits
+@[deprecated (since := "2025-10-29")] alias toUnits_injective := Unitary.toUnits_injective
+@[deprecated (since := "2025-10-29")] alias mul_left_inj := Unitary.mul_left_inj
+@[deprecated (since := "2025-10-29")] alias mul_right_inj := Unitary.mul_right_inj
+@[deprecated (since := "2025-10-29")] alias mul_inv_mem_iff := Unitary.mul_inv_mem_iff
+@[deprecated (since := "2025-10-29")] alias inv_mul_mem_iff := Unitary.inv_mul_mem_iff
+@[deprecated (since := "2025-10-29")] alias inv_mem := Unitary.inv_mem
+@[deprecated (since := "2025-10-29")] alias smul_mem_of_mem := Unitary.smul_mem_of_mem
+@[deprecated (since := "2025-10-29")] alias smul_mem := Unitary.smul_mem
+@[deprecated (since := "2025-10-29")] alias coe_smul := Unitary.coe_smul
+@[deprecated (since := "2025-10-29")] alias map_mem := Unitary.map_mem
+@[deprecated (since := "2025-10-29")] alias map := Unitary.map
+@[deprecated (since := "2025-10-29")] alias coe_map := Unitary.coe_map
+@[deprecated (since := "2025-10-29")] alias coe_map_star := Unitary.coe_map_star
+@[deprecated (since := "2025-10-29")] alias map_id := Unitary.map_id
+@[deprecated (since := "2025-10-29")] alias map_comp := Unitary.map_comp
+@[deprecated (since := "2025-10-29")] alias map_injective := Unitary.map_injective
+@[deprecated (since := "2025-10-29")] alias toUnits_comp_map := Unitary.toUnits_comp_map
+@[deprecated (since := "2025-10-29")] alias mapEquiv := Unitary.mapEquiv
+@[deprecated (since := "2025-10-29")] alias mapEquiv_refl := Unitary.mapEquiv_refl
+@[deprecated (since := "2025-10-29")] alias mapEquiv_symm := Unitary.mapEquiv_symm
+@[deprecated (since := "2025-10-29")] alias mapEquiv_trans := Unitary.mapEquiv_trans
+@[deprecated (since := "2025-10-29")] alias toMonoidHom_mapEquiv := Unitary.toMonoidHom_mapEquiv
+@[deprecated (since := "2025-10-29")] alias mem_iff_star_mul_self := Unitary.mem_iff_star_mul_self
+@[deprecated (since := "2025-10-29")] alias mem_iff_self_mul_star := Unitary.mem_iff_self_mul_star
+@[deprecated (since := "2025-10-29")] alias coe_inv := Unitary.coe_inv
+@[deprecated (since := "2025-10-29")] alias coe_div := Unitary.coe_div
+@[deprecated (since := "2025-10-29")] alias coe_zpow := Unitary.coe_zpow
+@[deprecated (since := "2025-10-29")] alias coe_neg := Unitary.coe_neg
+@[deprecated (since := "2025-10-20")] alias spectrum.unitary_conjugate :=
+  Unitary.spectrum_star_right_conjugate
+@[deprecated (since := "2025-10-20")] alias spectrum.unitary_conjugate' :=
+  Unitary.spectrum_star_left_conjugate
 
 end unitary
 
 theorem IsStarProjection.two_mul_sub_one_mem_unitary {R : Type*} [Ring R] [StarRing R] {p : R}
     (hp : IsStarProjection p) : 2 * p - 1 ∈ unitary R := by
-  simp only [two_mul, unitary.mem_iff, star_sub, star_add,
+  simp only [two_mul, Unitary.mem_iff, star_sub, star_add,
     hp.isSelfAdjoint.star_eq, star_one, mul_sub, mul_add,
     sub_mul, add_mul, hp.isIdempotentElem.eq, one_mul, add_sub_cancel_right,
     mul_one, sub_sub_cancel, and_self]
