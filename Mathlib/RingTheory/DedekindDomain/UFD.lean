@@ -14,7 +14,7 @@ In this file we show that a Dedekind domain that is a unique factorisation domai
 principal ideal domain.
 -/
 
-instance IsPrincipalIdealRing.of_isDedekindDomain_of_uniqueFactorizationMonoid
+theorem IsPrincipalIdealRing.of_isDedekindDomain_of_uniqueFactorizationMonoid
     (R : Type*) [CommRing R] [IsDedekindDomain R] [UniqueFactorizationMonoid R] :
     IsPrincipalIdealRing R := by
   refine .of_prime_ne_bot fun P hp hp₀ ↦ ?_
