@@ -37,7 +37,7 @@ we do not require that target categories are groupoids.
 for `J`, the functor `F.obj S` to the category of objects in `F.obj (X i)` for all `i`
 equipped with a descent datum is fully faithful.
 * Define a typeclass `IsStack` (extending `IsPrestack`?)
-by saying that the functors mentionned above are essentially surjective.
+by saying that the functors mentioned above are essentially surjective.
 
 ## References
 * [Jean Giraud, *Cohomologie non abélienne*][giraud1971]
