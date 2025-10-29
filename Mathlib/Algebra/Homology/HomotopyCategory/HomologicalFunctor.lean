@@ -15,7 +15,7 @@ then `homologyFunctor C (ComplexShape.up ℤ) n` is a homological functor
 `HomotopyCategory C (ComplexShape.up ℤ) ⥤ C`. As distinguished triangles
 in the homotopy category can be characterized in terms of degreewise split
 short exact sequences of cochain complexes, this follows from the homology
-sequence of a short exact sequences of homological complexes.
+sequence associated to a short exact sequence of homological complexes.
 
 -/
 
