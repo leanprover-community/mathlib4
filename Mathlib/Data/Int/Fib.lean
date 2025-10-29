@@ -45,6 +45,12 @@ theorem fib_neg_natCast (n : ℕ) : fib (-n) = (-1) ^ (n + 1) * n.fib := by
   · simp [fib, hn, pow_add]
   · simp [fib_of_odd, hn]
 
+theorem coe_fib_neg (n : ℤ) : (fib (-n) : ℚ) = (-1) ^ (n + 1) * fib n := by
+  obtain ⟨n, (rfl | rfl)⟩ := n.eq_nat_or_neg
+  · exact_mod_cast fib_neg_natCast _
+  · rw [fib_neg_natCast, pow_add, Rat.zpow_add (by simp)]
+    simp
+
 theorem fib_add_two (n : ℤ) : fib (n + 2) = fib n + fib (n + 1) := by
   rcases n with (n | n)
   · dsimp
