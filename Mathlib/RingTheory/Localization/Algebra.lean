@@ -49,7 +49,7 @@ lemma IsLocalization.ker_map (hT : Submonoid.map g M = T) :
     RingHom.ker (IsLocalization.map Q g (hT.symm ▸ M.le_comap_map) : S →+* Q) =
       (RingHom.ker g).map (algebraMap R S) := by
   ext x
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M x
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq M x
   simp [RingHom.mem_ker, IsLocalization.map_mk', IsLocalization.mk'_eq_zero_iff,
     IsLocalization.mk'_mem_map_algebraMap_iff, ← hT]
 
@@ -103,7 +103,7 @@ instance isLocalization_algebraMapSubmonoid_map_algHom (f : A →ₐ[R] B) :
 /-- An algebra map `A →ₐ[R] B` induces an algebra map on localizations `Aₚ →ₐ[Rₚ] Bₚ`. -/
 noncomputable def mapₐ (f : A →ₐ[R] B) : Aₚ →ₐ[Rₚ] Bₚ :=
   ⟨IsLocalization.map Bₚ f.toRingHom (Algebra.algebraMapSubmonoid_le_comap M f), fun r ↦ by
-    obtain ⟨a, m, rfl⟩ := IsLocalization.mk'_surjective M r
+    obtain ⟨a, m, rfl⟩ := IsLocalization.exists_mk'_eq M r
     simp [algebraMap_mk' (S := A), algebraMap_mk' (S := B), map_mk']⟩
 
 @[simp]
@@ -118,6 +118,40 @@ lemma mapₐ_injective_of_injective (f : A →ₐ[R] B) (hf : Function.Injective
 lemma mapₐ_surjective_of_surjective (f : A →ₐ[R] B) (hf : Function.Surjective f) :
     Function.Surjective (mapₐ M Rₚ Aₚ Bₚ f) :=
   IsLocalization.map_surjective_of_surjective _ _ _ hf
+
+section
+
+/-- Localizing the underlying linear map of `A →ₐ[R] B` in the sense of `IsLocalizedModule`
+is the same as taking the underlying linear map of the localization in the sense of
+`IsLocalization`. -/
+lemma mapExtendScalars_eq_toLinearMap_mapₐ (f : A →ₐ[R] B) :
+    IsLocalizedModule.mapExtendScalars M (IsScalarTower.toAlgHom R A Aₚ).toLinearMap
+      (IsScalarTower.toAlgHom R B Bₚ).toLinearMap Rₚ f.toLinearMap =
+      (IsLocalization.mapₐ M Rₚ Aₚ Bₚ f).toLinearMap := by
+  refine LinearMap.restrictScalars_injective R ?_
+  apply IsLocalizedModule.linearMap_ext M
+    (IsScalarTower.toAlgHom R A Aₚ).toLinearMap
+    ((IsScalarTower.toAlgHom R B Bₚ).toLinearMap)
+  ext x
+  rw [LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply,
+    IsLocalizedModule.mapExtendScalars_apply_apply, IsLocalizedModule.map_apply]
+  simp
+
+/-- Less linear version of `mapExtendScalars_eq_toLinearMap_mapₐ`.
+For a version where `R = A`, see `map_linearMap_eq_toLinearMap_mapₐ`. -/
+lemma map_eq_toLinearMap_mapₐ (f : A →ₐ[R] B) :
+    IsLocalizedModule.map M (IsScalarTower.toAlgHom R A Aₚ).toLinearMap
+      (IsScalarTower.toAlgHom R B Bₚ).toLinearMap f.toLinearMap =
+      (IsLocalization.mapₐ M Rₚ Aₚ Bₚ f).toLinearMap := by
+  ext x
+  exact DFunLike.congr_fun (mapExtendScalars_eq_toLinearMap_mapₐ M Rₚ Aₚ Bₚ f) x
+
+lemma map_linearMap_eq_toLinearMap_mapₐ :
+    IsLocalizedModule.map M (Algebra.linearMap R Rₚ) (IsScalarTower.toAlgHom R A Aₚ).toLinearMap
+      (Algebra.linearMap R A) = (IsLocalization.mapₐ M Rₚ Rₚ Aₚ (Algebra.ofId R A)).toLinearMap :=
+  map_eq_toLinearMap_mapₐ M Rₚ Rₚ Aₚ (Algebra.ofId R A)
+
+end
 
 end IsLocalization
 

@@ -177,7 +177,7 @@ theorem map_destutter {f : α → β} : ∀ {l : List α}, (∀ a ∈ l, ∀ b �
 
 /-- For a injective function `f`, `destutter' (·≠·)` commutes with `map f`. -/
 theorem map_destutter_ne {f : α → β} (h : Injective f) [DecidableEq α] [DecidableEq β] :
-    (l.destutter (·≠·)).map f = (l.map f).destutter (·≠·) :=
+    (l.destutter (· ≠ ·)).map f = (l.map f).destutter (· ≠ ·) :=
   map_destutter fun _ _ _ _ ↦ h.ne_iff.symm
 
 /-- `destutter'` on a relation like ≠ or <, whose negation is transitive, has length monotone

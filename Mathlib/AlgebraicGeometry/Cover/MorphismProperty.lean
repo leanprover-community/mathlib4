@@ -106,7 +106,7 @@ def coverOfIsIso [P.ContainsIdentities] [P.RespectsIso] {X Y : Scheme.{u}} (f : 
     [IsIso f] : Cover.{v} (precoverage P) Y :=
   .mkOfCovers PUnit (fun _ ↦ X)
     (fun _ ↦ f)
-    (fun x ↦ ⟨⟨⟩, (inv f).base x, by simp [← comp_base_apply]⟩)
+    (fun x ↦ ⟨⟨⟩, (inv f).base x, by simp [← Hom.comp_apply]⟩)
     (fun _ ↦ P.of_isIso f)
 
 instance : JointlySurjective (precoverage P) where
@@ -237,6 +237,9 @@ def Cover.ulift (𝒰 : Cover.{v} (precoverage P) X) : Cover.{u} (precoverage P)
     rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ?_, fun i ↦ 𝒰.map_prop _⟩
     use x, (𝒰.exists_eq x).choose_spec.choose, (𝒰.exists_eq x).choose_spec.choose_spec
+
+instance : Precoverage.Small.{u} (precoverage P) where
+  zeroHypercoverSmall {S} 𝒰 := ⟨S, Cover.idx 𝒰, (Cover.ulift 𝒰).mem₀⟩
 
 section category
 
