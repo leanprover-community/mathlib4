@@ -80,7 +80,7 @@ variable {K' : Type u} [Field K'] [Algebra R K'] [IsAlgClosed K']
 variable {ι' : Type u} (v' : ι' → K')
 
 /-- The cardinality of an algebraically closed `R`-algebra is less than or equal to
-the maximum of of the cardinality of `R`, the cardinality of a transcendence basis and
+the maximum of the cardinality of `R`, the cardinality of a transcendence basis and
 `ℵ₀`
 
 For a simpler, but less universe-polymorphic statement, see
@@ -101,7 +101,7 @@ theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
     _ = _ := by simp
 
 /-- The cardinality of an algebraically closed `R`-algebra is less than or equal to
-the maximum of of the cardinality of `R`, the cardinality of a transcendence basis and
+the maximum of the cardinality of `R`, the cardinality of a transcendence basis and
 `ℵ₀`
 
 A less-universe polymorphic, but simpler statement of
