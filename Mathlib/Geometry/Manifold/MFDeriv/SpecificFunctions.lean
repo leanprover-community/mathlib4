@@ -660,6 +660,70 @@ theorem mfderiv_prod_eq_add_apply {f : M × M' → M''} {p : M × M'} {v : Tange
 
 end Prod
 
+section disjointUnion
+
+variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ∞}
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  {J : Type*} {J : ModelWithCorners 𝕜 E' H'}
+  {N N' : Type*} [TopologicalSpace N] [TopologicalSpace N'] [ChartedSpace H' N] [ChartedSpace H' N']
+
+open Topology
+
+variable {f : M → N} (g : M' → N') {s : Set M} {t : Set M'} {p : M} {q : M'}
+
+theorem hasMFDerivWithinAt_inl :
+    HasMFDerivWithinAt I I (@Sum.inl M M') s p
+      (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := sorry
+
+theorem hasMFDerivAt_inl :
+    HasMFDerivAt I I (@Sum.inl M M') p (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
+  sorry -- use the previous lemma
+
+-- Should be analogous to the inl lemmas.
+theorem hasMFDerivWithinAt_inr :
+    HasMFDerivWithinAt I I (@Sum.inr M M') t q
+      (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := sorry
+
+theorem hasMFDerivAt_inr :
+    HasMFDerivAt I I (@Sum.inr M M') q (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := sorry
+
+--@[simp, mfld_simps]
+theorem mfderivWithin_sumInl  :
+    mfderivWithin I I (@Sum.inl M M') s p = ContinuousLinearMap.id 𝕜 (TangentSpace I p) := sorry
+  -- deduce from the HasMFDerivWithinAt lemma above
+
+theorem mfderiv_sumInl  :
+    mfderiv I I (@Sum.inl M M') p = ContinuousLinearMap.id 𝕜 (TangentSpace I p) := by
+  sorry -- can be deduced from the mfderivWithin version
+
+theorem mfderivWithin_sumInr  :
+    mfderivWithin I I (@Sum.inr M M') t q = ContinuousLinearMap.id 𝕜 (TangentSpace I q) := sorry
+
+theorem mfderiv_sumInr  :
+    mfderiv I I (@Sum.inr M M') q = ContinuousLinearMap.id 𝕜 (TangentSpace I q) := sorry
+
+-- These are the eventual sorries that would be nice to have.
+-- Use Sum.map f g ∘ Sum.inl = Sum.inl ∘ f, etc.
+-- I'm happy to prove these myself, or leave them to you!
+-- Of course, bonus points for proving `HasMFDeriv(Within)At` versions for these first.
+@[simp, mfld_simps]
+theorem mfderivWithin_sumMap_at_inl (hf : MDifferentiableWithinAt I J f s p) :
+    mfderivWithin I J (Sum.map f g) (Sum.inl '' s) (Sum.inl p) = mfderivWithin I J f s p := sorry
+
+@[simp, mfld_simps]
+theorem mfderivWithin_sumMap_at_inr (hg : MDifferentiableWithinAt I J g t q) :
+    mfderivWithin I J (Sum.map f g) (Sum.inr '' t) (Sum.inr q) = mfderivWithin I J g t q := sorry
+
+@[simp, mfld_simps]
+theorem mfderiv_sumMap_at_inl {f : M → N} (g : M' → N') {p : M} (hf : MDifferentiableAt I J f p) :
+    mfderiv I J (Sum.map f g) (Sum.inl p) = mfderiv I J f p := sorry
+
+@[simp, mfld_simps]
+theorem mfderiv_sumMap_at_inr (f : M → N) {g : M' → N'} {p : M'} (hg : MDifferentiableAt I J g p) :
+    mfderiv I J (Sum.map f g) (Sum.inr p) = mfderiv I J g p := sorry
+
+end disjointUnion
+
 section Arithmetic
 
 /-! #### Arithmetic
