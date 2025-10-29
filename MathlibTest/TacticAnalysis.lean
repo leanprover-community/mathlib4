@@ -1,5 +1,6 @@
 import Mathlib.Tactic.TacticAnalysis.Declarations
 import Mathlib.Tactic.AdaptationNote
+import Lean.PremiseSelection
 
 section terminalReplacement
 
@@ -138,3 +139,53 @@ example : ∀ a b : Unit, a = b := by
   rfl
 
 end introMerge
+
+section tryAtEachStep
+
+section
+set_option linter.tacticAnalysis.tryAtEachStepGrind true
+
+/-- info: `rfl` can be replaced with `grind` -/
+#guard_msgs in
+example : 1 + 1 = 2 := by
+  rfl
+
+/--
+info: `skip` can be replaced with `grind`
+---
+info: `rfl` can be replaced with `grind`
+---
+warning: 'skip' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : 1 + 1 = 2 := by
+  skip
+  rfl
+
+end
+
+section
+
+def P (_ : Nat) := True
+theorem p : P 37 := trivial
+
+set_premise_selector fun _ _ => pure #[{ name := `p, score := 1.0 }]
+
+-- FIXME: remove this one `grind +premises` lands.
+macro_rules | `(tactic| grind +premises) => `(tactic| grind [p])
+
+example : P 37 := by
+  grind +premises
+
+set_option linter.tacticAnalysis.tryAtEachStepGrindPremises true
+
+/-- info: `trivial` can be replaced with `grind +premises✝` -/
+#guard_msgs in
+example : P 37 := by
+  trivial
+
+end
+
+end tryAtEachStep
