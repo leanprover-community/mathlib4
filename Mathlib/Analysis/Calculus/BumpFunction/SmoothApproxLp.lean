@@ -88,8 +88,7 @@ theorem exist_sub_eLpNorm_le_of_continuous (μ : Measure E := by volume_tac) [μ
   by_cases hf : f = 0
   -- Later, we need that the support is non-empty, so we treat the trivial case `f = 0` first.
   · use 0
-    simp only [HasCompactSupport.zero, hf, sub_self, eLpNorm_zero, zero_le, and_true, true_and]
-    exact contDiff_const
+    simpa [HasCompactSupport.zero, hf] using contDiff_const
   set s := Metric.cthickening 1 (tsupport f)
   have hs₁ : IsCompact s := h₁.cthickening
   have hs₁' : μ s ≠ ⊤ := hs₁.measure_lt_top.ne
@@ -97,9 +96,8 @@ theorem exist_sub_eLpNorm_le_of_continuous (μ : Measure E := by volume_tac) [μ
     -- Since `f` is not the zero function `s` has positive measure
     apply ENNReal.toReal_pos _ hs₁'
     apply (MeasureTheory.pos_mono (Metric.thickening_subset_cthickening _ _) _).ne'
-    refine Metric.isOpen_thickening.measure_pos μ ?_
-    rw [Metric.thickening_nonempty_iff]
-    refine ⟨zero_lt_one, ?_⟩
+    apply Metric.isOpen_thickening.measure_pos μ
+    apply (Metric.thickening_nonempty_iff.mpr ⟨zero_lt_one, ?_⟩)
     rw [← tsupport_eq_empty_iff] at hf
     exact Set.nonempty_iff_ne_empty.mpr hf
   set ε' := ε * (μ s).toReal ^ (- p.toReal⁻¹)
