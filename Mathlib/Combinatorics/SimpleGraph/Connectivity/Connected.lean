@@ -795,4 +795,80 @@ theorem IsBridge.anti_of_mem_edgeSet {G' : SimpleGraph V} {e : Sym2 V} (hle : G 
 
 end BridgeEdges
 
+/-!
+### 2-reachability
+
+In this section, we prove results about 2-connected components of a graph, but without naming them.
+
+#### TODO
+
+Should we explicitly have
+```
+def IsTwoEdgeReachable (u v : V) : Prop := ∀ e, (G.deleteEdges {e}).Reachable u v
+```
+? This is equivalent to the less idiomatic condition
+`∃ x, ¬ (G.deleteEdges {s(x, y)}).Reachable u y` we use below.
+-/
+
+namespace Walk
+variable {u v x y : V} {w : G.Walk u v}
+
+/-- A walk between two vertices separated by a set of edges must go through one of those edges. -/
+lemma exists_mem_edges_of_not_reachable_deleteEdges (w : G.Walk u v) {s : Set (Sym2 V)}
+    (huv : ¬ (G.deleteEdges s).Reachable u v) : ∃ e ∈ s, e ∈ w.edges := by
+  contrapose! huv; exact ⟨w.toDeleteEdges _ fun _ ↦ imp_not_comm.1 <| huv _⟩
+
+/-- A walk between two vertices separated by a set of edges must go through one of those edges. -/
+lemma mem_edges_of_not_reachable_deleteEdges (w : G.Walk u v) {e : Sym2 V}
+    (huv : ¬ (G.deleteEdges {e}).Reachable u v) : e ∈ w.edges := by
+  simpa using w.exists_mem_edges_of_not_reachable_deleteEdges huv
+
+lemma IsTrail.disjoint_edges_takeUntil_dropUntil [DecidableEq V] (hw : w.IsTrail)
+    (hx : x ∈ w.support) : (w.takeUntil x hx).edges.Disjoint (w.dropUntil x hx).edges := by
+  have := hw.edges_nodup
+  rw [← w.take_spec hx, edges_append] at this
+  exact this.disjoint
+
+/-- A trail doesn't go through an edge that disconnects one of its endpoints from the endpoints of
+the trail. -/
+lemma IsTrail.not_mem_edges_of_not_reachable (hw : w.IsTrail)
+    (huy : ¬ (G.deleteEdges {s(x, y)}).Reachable u y)
+    (hvy : ¬ (G.deleteEdges {s(x, y)}).Reachable v y) : s(x, y) ∉ w.edges := by
+  classical
+  exact fun hxy ↦ hw.disjoint_edges_takeUntil_dropUntil (w.snd_mem_support_of_mem_edges hxy)
+    ((w.takeUntil y _).mem_edges_of_not_reachable_deleteEdges huy)
+    (by simpa using (w.dropUntil y _).reverse.mem_edges_of_not_reachable_deleteEdges hvy)
+
+/-- A trail doesn't go through a vertex that is disconnected from its endpoints by an edge. -/
+lemma IsTrail.not_mem_support_of_not_reachable (hw : w.IsTrail)
+    (huy : ¬ (G.deleteEdges {s(x, y)}).Reachable u y)
+    (hvy : ¬ (G.deleteEdges {s(x, y)}).Reachable v y) : y ∉ w.support := by
+  classical
+  exact fun hy ↦ hw.not_mem_edges_of_not_reachable huy hvy <| w.edges_takeUntil_subset hy <|
+    mem_edges_of_not_reachable_deleteEdges (w.takeUntil y hy) huy
+
+/-- A trail doesn't go through any leaf vertex, except possibly at its endpoints. -/
+lemma IsTrail.not_mem_support_of_subsingleton_neighborSet (hw : w.IsTrail) (hxu : x ≠ u)
+    (hxv : x ≠ v) (hx : (G.neighborSet x).Subsingleton) : x ∉ w.support := by
+  rintro hxw
+  obtain ⟨y, -, hxy⟩ := adj_of_mem_walk_support w (by rintro ⟨⟩; simp_all) hxw
+  refine hw.not_mem_support_of_not_reachable (x := y) ?_ ?_ hxw <;>
+  · rintro ⟨p⟩
+    obtain ⟨hx₂, -, hy₂⟩ : G.Adj x p.penultimate ∧ _ ∧ ¬p.penultimate = y := by
+      simpa using p.reverse.adj_snd (not_nil_of_ne ‹_›)
+    exact hy₂ <| hx hx₂ hxy
+
+end Walk
+
+/-- Removing leaves from a connected graph keeps it connected. -/
+lemma Preconnected.induce_of_degree_eq_one (hG : G.Preconnected) {s : Set V}
+    (hs : ∀ v ∉ s, (G.neighborSet v).Subsingleton) : (G.induce s).Preconnected := by
+  rintro ⟨u, hu⟩ ⟨v, hv⟩
+  obtain ⟨p, hp⟩ := hG.exists_isPath u v
+  constructor
+  convert p.induce s _
+  rintro w hwp
+  by_contra hws
+  exact hp.not_mem_support_of_subsingleton_neighborSet (by grind) (by grind) (hs _ hws) hwp
+
 end SimpleGraph
