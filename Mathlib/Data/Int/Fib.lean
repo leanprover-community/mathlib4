@@ -91,31 +91,25 @@ private theorem fib_natCast_add :
   | 0, _ => by simp
   | 1, _ => by simp [add_comm]
   | m + 2, n => by
-      calc _ = fib (m + n) + fib (m + n + 1) := by grind [fib_add_two]
-        _ = fib (m - 1) * fib n + fib m * fib (n + 1) + fib ((m + 1 : ℕ) + n) := by
-          rw [fib_natCast_add]; grind
-        _ = fib (m - 1) * fib n + fib m * fib (n + 1) + fib m * fib n +
-            fib (m + 1) * fib (n + 1) := by rw [fib_natCast_add]; grind
-        _ = (fib (m - 1) + fib m) * fib n + (fib m + fib (m + 1)) * fib (n + 1) := by grind
-        _ = fib (m + 1) * fib n + fib (m + 2) * fib (n + 1) := by grind [fib_add_two]
-        _ = _ := by grind
+    calc _ = fib (m + n) + fib (m + n + 1) := by grind [fib_add_two]
+      _ = fib (m - 1) * fib n + fib m * fib (n + 1) + fib ((m + 1 : ℕ) + n) := by
+        rw [fib_natCast_add]; grind
+      _ = fib (m - 1) * fib n + fib m * fib (n + 1) + fib m * fib n +
+          fib (m + 1) * fib (n + 1) := by rw [fib_natCast_add]; grind
+      _ = _ := by grind [fib_add_two]
 
 -- auxiliary for `fib_add`
 private theorem fib_add_natCast :
     ∀ (m : ℤ) (n : ℕ), fib (m + n) = fib (m - 1) * fib n + fib m * fib (n + 1)
   | _, 0 => by simp
-  | _, 1 => by
-      simp only [Nat.cast_one, fib_one, mul_one, reduceAdd, fib_two, add_comm]
-      grind [fib_add_two]
+  | _, 1 => by grind [fib_add_two, fib_two, fib_one]
   | n, m + 2 =>
-      calc _ = fib (m + n) + fib (m + n + 1) := by grind [fib_add_two]
-        _ = fib (m - 1) * fib n + fib m * fib (n + 1) + fib ((m + 1 : ℕ) + n) := by
-          rw [fib_natCast_add]; grind
-        _ = fib (m - 1) * fib n + fib m * fib (n + 1) + fib m * fib n +
-            fib (m + 1) * fib (n + 1) := by rw [fib_natCast_add]; grind
-        _ = (fib (m - 1) + fib m) * fib n + (fib m + fib (m + 1)) * fib (n + 1) := by grind
-        _ = fib (n - 1) * fib (m + 2) + fib n * fib (m + 3) := by grind [fib_add_two]
-        _ = _ := by grind
+    calc _ = fib (m + n) + fib (m + n + 1) := by grind [fib_add_two]
+      _ = fib (m - 1) * fib n + fib m * fib (n + 1) + fib ((m + 1 : ℕ) + n) := by
+        rw [fib_natCast_add]; grind
+      _ = fib (m - 1) * fib n + fib m * fib (n + 1) + fib m * fib n +
+          fib (m + 1) * fib (n + 1) := by rw [fib_natCast_add]; grind
+      _ = _ := by grind [fib_add_two]
 
 -- auxiliary for `fib_add`
 private theorem fib_neg_natCast_add_neg_natCast :
@@ -123,15 +117,12 @@ private theorem fib_neg_natCast_add_neg_natCast :
   | _, 0 => by simp
   | _, 1 => by simp [sub_eq_neg_add, add_comm]
   | m, n + 2 =>
-      calc _ = fib (-m + -n) - fib (-m + -(n + 1 : ℕ)) := by grind [fib_add_two]
-        _ = fib (-m - 1) * fib (-n) + fib (-m) * fib (-n + 1) -
-            fib (-m - 1) * fib (-n - 1) - fib (-m) * fib (-n) := by
-          conv_lhs => rw [fib_neg_natCast_add_neg_natCast,
-            fib_neg_natCast_add_neg_natCast]
-          grind
-        _ = fib (-m - 1) * (fib (-n) - fib (-n - 1)) +
-            fib (-m) * (fib (-n + 1) - fib (-n)) := by grind [fib_add_two]
-        _ = _ := by grind [fib_add_two]
+    calc _ = fib (-m + -n) - fib (-m + -(n + 1 : ℕ)) := by grind [fib_add_two]
+      _ = fib (-m - 1) * fib (-n) + fib (-m) * fib (-n + 1) -
+          fib (-m - 1) * fib (-n - 1) - fib (-m) * fib (-n) := by
+        conv_lhs => rw [fib_neg_natCast_add_neg_natCast, fib_neg_natCast_add_neg_natCast]
+        grind
+      _ = _ := by grind [fib_add_two]
 
 theorem fib_add (m n : ℤ) : fib (m + n) = fib (m - 1) * fib n + fib m * fib (n + 1) := by
   obtain ⟨m, (rfl | rfl)⟩ := m.eq_nat_or_neg
