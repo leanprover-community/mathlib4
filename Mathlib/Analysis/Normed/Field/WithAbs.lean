@@ -44,9 +44,9 @@ instance [Algebra R R'] [Algebra.IsSeparable R R'] (v : AbsoluteValue R S) :
 
 end more_instances
 
--- Note that AbsoluteValue.tendsto_div_one_add_pow_nhds_one would follow from the below
--- result if WithAbs v had a topology for general value rings S. Currently WithAbs v only has
--- a topology when S = ℝ.
+/- Note that `AbsoluteValue.tendsto_div_one_add_pow_nhds_one` would follow from the below
+result if `WithAbs v` had a topology for general value rings `S`. Currently `WithAbs v` only has
+a topology when `S = ℝ`. -/
 theorem tendsto_one_div_one_add_pow_nhds_one {R : Type*} [Field R] {v : AbsoluteValue R ℝ}
     {a : R} (ha : v a < 1) :
     atTop.Tendsto (fun n ↦ (WithAbs.equiv v).symm (1 / (1 + a ^ n))) (𝓝 1) := by
