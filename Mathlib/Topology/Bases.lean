@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Data.Set.Constructions
 import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 import Mathlib.Topology.Constructions
-import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.NhdsWithin
 
 /-!
 # Bases of topologies. Countability axioms.

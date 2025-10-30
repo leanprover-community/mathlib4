@@ -6917,6 +6917,7 @@ import Mathlib.Topology.NatEmbedding
 import Mathlib.Topology.Neighborhoods
 import Mathlib.Topology.NhdsKer
 import Mathlib.Topology.NhdsSet
+import Mathlib.Topology.NhdsWithin
 import Mathlib.Topology.NoetherianSpace
 import Mathlib.Topology.OmegaCompletePartialOrder
 import Mathlib.Topology.OpenPartialHomeomorph
