@@ -599,7 +599,7 @@ theorem ofLinearEquiv_apply (A : V ≃ₗ[k] V) (f₀ g₀ : P) (x : P) :
 
 @[simp]
 theorem ofLinearEquiv_refl (p : P) :
-    ofLinearEquiv (LinearEquiv.refl k V) p p = AffineEquiv.refl k P := by
+    ofLinearEquiv (.refl k V) p p = .refl k P := by
   ext x
   simp [ofLinearEquiv_apply]
 
