@@ -11,7 +11,9 @@ on:
   schedule:
     - cron: '0 0 * * *'   # Runs at 00:00 UTC every day
   workflow_dispatch:
-
+  push: # DELETE THIS BEFORE MERGING!
+    branches:
+      - '2025-10-30-daily-zulip'
 env:
   DEFAULT_BRANCH: master
   TAG_PATTERN: '^nightly-testing-[0-9]{4}-[0-9]{2}-[0-9]{2}$'
