@@ -14,7 +14,7 @@ basic properties about absolutely continuous functions.
 
 A function `f` is *absolutely continuous* on `uIcc a b` if for any `ε > 0`, there is `δ > 0` such
 that for any finite disjoint collection of intervals `uIoc (a i) (b i)` for `i < n` where `a i`,
-`b i` are all in `uIcc a b` for `i < n`,  if `∑ i ∈ range n, dist (a i) (b i) < δ`, then
+`b i` are all in `uIcc a b` for `i < n`, if `∑ i ∈ range n, dist (a i) (b i) < δ`, then
 `∑ i ∈ range n, dist (f (a i)) (f (b i)) < ε`.
 
 We give a filter version of the definition of absolutely continuous functions in
@@ -107,7 +107,7 @@ def _root_.AbsolutelyContinuousOnInterval (f : ℝ → X) (a b : ℝ) :=
 /-- The traditional `ε`-`δ` definition of absolutely continuous: A function `f` is
 *absolutely continuous* on `uIcc a b` if for any `ε > 0`, there is `δ > 0` such that for
 any finite disjoint collection of intervals `uIoc (a i) (b i)` for `i < n` where `a i`, `b i` are
-all in `uIcc a b` for `i < n`,  if `∑ i ∈ range n, dist (a i) (b i) < δ`, then
+all in `uIcc a b` for `i < n`, if `∑ i ∈ range n, dist (a i) (b i) < δ`, then
 `∑ i ∈ range n, dist (f (a i)) (f (b i)) < ε`. -/
 theorem _root_.absolutelyContinuousOnInterval_iff (f : ℝ → X) (a b : ℝ) :
     AbsolutelyContinuousOnInterval f a b ↔
