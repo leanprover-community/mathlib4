@@ -645,12 +645,7 @@ lemma growsPolynomially_log : GrowsPolynomially Real.log := by
   refine ⟨?lb, ?ub⟩
   case lb => calc
     1 / 2 * Real.log x = Real.log x + (-1 / 2) * Real.log x := by ring
-      _ ≤ Real.log x + Real.log b := by
-              gcongr
-              rw [neg_div, neg_mul, ← neg_le]
-              refine le_of_lt (hx x ?_)
-              calc b * x ≤ 1 * x := by gcongr; exact le_of_lt hb.2
-                       _ = x := by rw [one_mul]
+      _ ≤ Real.log x + Real.log b := by grind
       _ = Real.log (b * x) := by rw [← Real.log_mul (by positivity) (by positivity), mul_comm]
       _ ≤ Real.log u := by gcongr; exact hu.1
   case ub =>
