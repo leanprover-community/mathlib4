@@ -582,7 +582,7 @@ namespace AffineEquiv
 section ofLinearEquiv
 
 variable {k V P : Type*}
-variable [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P]
+variable [Ring k] [AddCommGroup V] [Module k V] [AddTorsor V P]
 
 /-- Construct an affine equivalence from a linear equivalence and two base points.
 
