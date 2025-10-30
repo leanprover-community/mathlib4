@@ -827,6 +827,7 @@ import Mathlib.Algebra.Order.CompleteField
 import Mathlib.Algebra.Order.Disjointed
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Canonical
+import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Field.GeomSum
 import Mathlib.Algebra.Order.Field.InjSurj
 import Mathlib.Algebra.Order.Field.Pi
