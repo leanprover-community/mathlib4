@@ -3,7 +3,7 @@ Copyright (c) 2025 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Anatole Dedecker, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 
 
@@ -15,7 +15,7 @@ open scoped Nat NNReal ContDiff
 
 open Asymptotics
 
-variable {E F : Type*}
+variable {𝕜 R D E F G : Type*}
 
 namespace Function
 
@@ -69,7 +69,7 @@ theorem HasTemperateGrowth.isBigO_uniform {f : E → F}
   · simp
   · exact Finset.le_sup (by simpa [← Finset.mem_range_succ_iff] using hn)
 
-theorem HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f : E → F}
+theorem HasTemperateGrowth.norm_iteratedFDeriv_le_uniform {f : E → F}
     (hf_temperate : f.HasTemperateGrowth) (n : ℕ) :
     ∃ (k : ℕ) (C : ℝ), 0 ≤ C ∧ ∀ N ≤ n, ∀ x : E, ‖iteratedFDeriv ℝ N f x‖ ≤ C * (1 + ‖x‖) ^ k := by
   rcases hf_temperate.isBigO_uniform n with ⟨k, hk⟩
@@ -81,6 +81,10 @@ theorem HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f : E → F}
   simp (discharger := positivity) only [isBigOWith_top, Real.norm_of_nonneg,
     pi_norm_le_iff_of_nonneg, Fin.forall_iff, Nat.lt_succ] at hC
   exact ⟨k, C, C_nonneg, fun N hN x ↦ hC x N hN⟩
+
+@[deprecated (since := "2025-10-30")]
+alias HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux :=
+  HasTemperateGrowth.norm_iteratedFDeriv_le_uniform
 
 lemma HasTemperateGrowth.of_fderiv {f : E → F}
     (h'f : Function.HasTemperateGrowth (fderiv ℝ f)) (hf : Differentiable ℝ f) {k : ℕ} {C : ℝ}
@@ -102,6 +106,52 @@ lemma HasTemperateGrowth.zero :
 lemma HasTemperateGrowth.const (c : F) :
     Function.HasTemperateGrowth (fun _ : E ↦ c) :=
   .of_fderiv (by simpa using .zero) (differentiable_const c) (k := 0) (C := ‖c‖) (fun x ↦ by simp)
+
+section Multiplication
+
+variable [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
+  [NormedAddCommGroup D] [NormedSpace ℝ D]
+  [NormedAddCommGroup G] [NormedSpace ℝ G]
+  [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
+
+/-- The product of two functions of temperate growth is again of temperate growth.
+
+Version for bilinear maps. -/
+theorem _root_.ContinuousLinearMap.bilinear_hasTemperateGrowth [NormedSpace 𝕜 E]
+    (B : E →L[𝕜] F →L[𝕜] G) {f : D → E} {g : D → F} (hf : f.HasTemperateGrowth)
+    (hg : g.HasTemperateGrowth) : (fun x ↦ B (f x) (g x)).HasTemperateGrowth := by
+  rw [Function.hasTemperateGrowth_iff_isBigO]
+  constructor
+  · apply (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp (hf.1.prodMk hg.1)
+  intro n
+  rcases hf.isBigO_uniform n with ⟨k1, h1⟩
+  rcases hg.isBigO_uniform n with ⟨k2, h2⟩
+  use k1 + k2
+  have estimate (x : D) : ‖iteratedFDeriv ℝ n (fun x ↦ B (f x) (g x)) x‖ ≤
+      ‖B‖ * ∑ i ∈ Finset.range (n+1), (n.choose i) *
+        ‖iteratedFDeriv ℝ i f x‖ * ‖iteratedFDeriv ℝ (n-i) g x‖ := by
+    refine (B.bilinearRestrictScalars ℝ).norm_iteratedFDeriv_le_of_bilinear hf.1 hg.1 x ?_
+    exact WithTop.coe_le_coe.mpr le_top
+  refine (IsBigO.of_norm_le estimate).trans (.const_mul_left (.sum fun i hi ↦ ?_) _)
+  simp_rw [mul_assoc, pow_add]
+  refine .const_mul_left (.mul (h1 i ?_).norm_left (h2 (n-i) ?_).norm_left) _ <;>
+  grind
+
+/-- The product of two functions of temperate growth is again of temperate growth.
+
+Version for scalar multiplication. -/
+theorem _root_.Function.HasTemperateGrowth.smul {f : E → 𝕜} {g : E → F} (hf : f.HasTemperateGrowth)
+    (hg : g.HasTemperateGrowth) : (f • g).HasTemperateGrowth :=
+  (ContinuousLinearMap.lsmul ℝ 𝕜).bilinear_hasTemperateGrowth hf hg
+
+variable [NormedRing R] [NormedAlgebra ℝ R]
+
+/-- The product of two functions of temperate growth is again of temperate growth. -/
+theorem _root_.Function.HasTemperateGrowth.mul {f g : E → R} (hf : f.HasTemperateGrowth)
+    (hg : g.HasTemperateGrowth) : (f * g).HasTemperateGrowth :=
+  (ContinuousLinearMap.mul ℝ R).bilinear_hasTemperateGrowth hf hg
+
+end Multiplication
 
 lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
     Function.HasTemperateGrowth f := by
