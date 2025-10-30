@@ -197,9 +197,9 @@ open ENNReal
 
 variable {X : Type*} (m : PseudoEMetricSpace X) (d : X → X → ℝ≥0∞) (hd : d = edist)
 
-/-- Build new pseudoemetric space from an old one where the edistance uniform structure is provably
-(but typically non-definitionally) equal to some given distance structure. We also provide
-convenience versions for PseudoMetric, Emetric and Metric spaces. -/
+/-- Build new pseudoemetric space from an old one where the edistance is provably (but typically 
+non-definitionally) equal to some given edistance. We also provide convenience versions for
+PseudoMetric, Emetric and Metric spaces. -/
 -- See note [forgetful inheritance]
 -- See note [reducible non-instances]
 abbrev replaceEDist : PseudoEMetricSpace X where
@@ -221,9 +221,9 @@ end PseudoEMetricSpace
 namespace PseudoMetricSpace
 variable {X : Type*} (m : PseudoMetricSpace X) (d : X → X → ℝ) (hd : d = dist)
 
-/-- Build new pseudometric space from an old one where the distance uniform and bornology
-structures are provably (but typically non-definitionally) equal to some given distance
-structure. We also provide convenience versions for PseudoEMetric, Emetric and Metric spaces. -/
+/-- Build new pseudometric space from an old one where the distance are provably (but typically
+non-definitionally) equal to some given distance. We also provide convenience versions for
+PseudoEMetric, Emetric and Metric spaces. -/
 -- See note [forgetful inheritance]
 -- See note [reducible non-instances]
 abbrev replaceDist : PseudoMetricSpace X where
@@ -254,9 +254,9 @@ open ENNReal
 
 variable {X : Type*} (m : EMetricSpace X) (d : X → X → ℝ≥0∞) (hd : d = edist)
 
-/-- Build new emetric space from an old one where the edistance uniform structure is provably
-(but typically non-definitionally) equal to some given distance structure. We also provide
-convenience versions for PseudoEMetric, PseudoMetric and Metric spaces. -/
+/-- Build new emetric space from an old one where the edistance is provably (but typically
+non-definitionally) equal to some given edistance. We also provide convenience versions for
+PseudoEMetric, PseudoMetric and Metric spaces. -/
 -- See note [forgetful inheritance]
 -- See note [reducible non-instances]
 abbrev replaceEDist : EMetricSpace X where
@@ -277,9 +277,9 @@ end EMetricSpace
 namespace MetricSpace
 variable {X : Type*} (m : MetricSpace X) (d : X → X → ℝ) (hd : d = dist)
 
-/-- Build new metric space from an old one where the distance uniform and bornology structures
-are provably (but typically non-definitionally) equal to some given distance structure.
-We also provide convenience versions for PseudoEMetric, PseudoMatric and EMetric spaces. -/
+/-- Build new metric space from an old one where the distance are provably (but typically
+non-definitionally) equal to some given distance. We also provide convenience versions for
+PseudoEMetric, PseudoMatric and EMetric spaces. -/
 -- See note [forgetful inheritance]
 -- See note [reducible non-instances]
 abbrev replaceDist : MetricSpace X where
