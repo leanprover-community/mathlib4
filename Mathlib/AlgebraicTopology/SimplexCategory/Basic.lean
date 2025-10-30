@@ -275,7 +275,7 @@ theorem δ_comp_σ_of_le {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ j.ca
   · rw [Fin.succAbove_of_castSucc_lt _ _ (Fin.castSucc_lt_castSucc_iff.mpr hik)]
     have hjk := H.trans_lt' hik
     rw [Fin.predAbove_of_le_castSucc _ _ (Fin.castSucc_le_castSucc_iff.mpr
-      (hjk.trans (Fin.castSucc_lt_succ _)).le),
+      (hjk.trans Fin.castSucc_lt_succ).le),
       Fin.predAbove_of_le_castSucc _ _ hjk.le, Fin.castPred_castSucc, Fin.succAbove_of_castSucc_lt,
       Fin.castSucc_castPred]
     rwa [Fin.castSucc_castPred]
