@@ -48,12 +48,8 @@ inductive DirectLimit.Eqv : DirectSum ι G → DirectSum ι G → Prop
     Eqv (DirectSum.lof R ι G i x) (DirectSum.lof R ι G j <| f i j h x)
 
 /-- The congruence relation to quotient the direct sum by to obtain the direct limit. -/
-def DirectLimit.moduleCon [DecidableEq ι] : ModuleCon R (DirectSum ι G) where
-  toAddCon := addConGen (Eqv f)
-  smul r _ _ h := by
-    refine ((addConGen (Eqv f)).comap (smulAddHom R _ r) <| by simp).addConGen_le ?_ h
-    rintro _ _ ⟨⟩
-    simpa only [smulAddHom_apply, AddCon.comap_rel, ← map_smul] using .of _ _ (.of_map ..)
+def DirectLimit.moduleCon [DecidableEq ι] : ModuleCon R (DirectSum ι G) :=
+  SMulCon.addConGen' (Eqv f) <| by rintro _ _ _ ⟨⟩; simpa only [← map_smul] using .of_map ..
 
 variable (G)
 
