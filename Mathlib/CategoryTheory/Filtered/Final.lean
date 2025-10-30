@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Filtered.Connected
+import Mathlib.CategoryTheory.Limits.Final.Connected
 import Mathlib.CategoryTheory.Limits.Types.Filtered
 import Mathlib.CategoryTheory.Limits.Sifted
 
@@ -436,25 +437,19 @@ end Pi
 
 section Prod
 
-open IsFiltered in
-instance final_fst [IsFilteredOrEmpty C] [IsFiltered D] : (Prod.fst C D).Final := by
-  apply Functor.final_of_exists_of_isFiltered
-  · exact fun c => ⟨(c, nonempty.some), ⟨𝟙 c⟩⟩
-  · intro c ⟨c', d'⟩ f g
-    exact ⟨(coeq f g, d'), (coeqHom f g, 𝟙 d'), coeq_condition _ _⟩
+namespace IsFiltered
 
-instance final_snd [IsFiltered C] [IsFilteredOrEmpty D] : (Prod.snd C D).Final :=
-  inferInstanceAs ((Prod.braiding C D).functor ⋙ Prod.fst D C).Final
+attribute [local instance] IsFiltered.isConnected IsCofiltered.isConnected
 
-open IsCofiltered in
-instance initial_fst [IsCofilteredOrEmpty C] [IsCofiltered D] : (Prod.fst C D).Initial := by
-  apply Functor.initial_of_exists_of_isCofiltered
-  · exact fun c => ⟨(c, nonempty.some), ⟨𝟙 c⟩⟩
-  · intro c ⟨c', d'⟩ f g
-    exact ⟨(eq f g, d'), (eqHom f g, 𝟙 d'), eq_condition _ _⟩
+instance final_fst [IsFiltered D] : (Prod.fst C D).Final := inferInstance
 
-instance initial_snd [IsCofiltered C] [IsCofilteredOrEmpty D] : (Prod.snd C D).Initial :=
-  inferInstanceAs ((Prod.braiding C D).functor ⋙ Prod.fst D C).Initial
+instance final_snd [IsFiltered C] : (Prod.snd C D).Final := inferInstance
+
+instance initial_fst [IsCofiltered D] : (Prod.fst C D).Initial := inferInstance
+
+instance initial_snd [IsCofiltered C] : (Prod.snd C D).Initial := inferInstance
+
+end IsFiltered
 
 end Prod
 
