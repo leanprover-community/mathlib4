@@ -219,6 +219,8 @@ We prove formulae about the forward difference operator applied to polynomials:
 * `fwdDiff_iter_sum_mul_pow_eq_zero` :
   The `n`-th forward difference of a polynomial of degree `< n` is zero (formulated using explicit
     sums over `range n`.
+* `sum_shift_eq_fwdDiff_iter` :
+  A formula for the sum of a polynomial sequence, which generalizes **Faulhaber's formula**.
 -/
 
 variable {R : Type*} [CommRing R]
@@ -285,3 +287,23 @@ theorem fwdDiff_iter_sum_mul_pow_eq_zero {n : ℕ} (P : ℕ → R) :
     ← Pi.smul_def, fwdDiff_iter_const_smul, ← sum_fn]
   exact sum_eq_zero fun i hi ↦ smul_eq_zero_of_right _ <| fwdDiff_iter_pow_eq_zero_of_lt
     <| mem_range.mp hi
+
+/-!
+## Forward differences of polynomials
+
+We prove formulae about the forward difference operator applied to polynomials:
+* A formula for the sum of a polynomial sequence, which generalizes **Faulhaber's formula**.
+-/
+
+theorem sum_shift_eq_fwdDiff_iter (f : M → G) (n : ℕ) (y : M) (hn : n > 0) :
+    ∑ k ∈ range n, f (y + k • h) = ∑ k ∈ range (n + 1), n.choose (k + 1) • Δ_[h]^[k] f y := by
+  conv => enter [1, 2, x]; rw [shift_eq_sum_fwdDiff_iter (f := f) (n := x) (y := y)]; simp
+  have sum_extend_inner_range : ∑ x ∈ Finset.range n, ∑ k ∈ Finset.range (x + 1), (x.choose k) • Δ_[h]^[k] f y =
+    ∑ k ∈ range n, ∑ x ∈ Ico k n, (x.choose k) • (Δ_[h]^[k]) f y:= by
+    rw [range_eq_Ico]
+    rw [sum_Ico_Ico_comm]
+  rw [sum_extend_inner_range]
+  simp [← sum_smul]
+  rw [sum_range_add]; simp
+  congr 1; ext x
+  rw [show n = n - 1 + 1 by omega, Finset.Ico_add_one_right_eq_Icc, Nat.sum_Icc_choose]
