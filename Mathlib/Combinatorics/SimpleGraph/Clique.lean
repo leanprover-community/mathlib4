@@ -359,7 +359,7 @@ noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
     apply Iso.completeGraph
     simpa using (Fintype.equivFin h.choose).symm
   rw [← ha] at this
-  convert (Embedding.induce ↑h.choose.toSet).comp this.toEmbedding
+  convert (Embedding.induce ↑h.choose).comp this.toEmbedding
   exact hb.symm
 
 theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty (completeGraph (Fin n) ↪g G) :=

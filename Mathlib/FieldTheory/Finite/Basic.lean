@@ -326,7 +326,7 @@ variable (R) [CommRing R] [Algebra K R]
   map_add' _ _ := by
     obtain ⟨p, _, _, hp, card_eq⟩ := card' K
     nontriviality R
-    have : CharP R p := charP_of_injective_algebraMap' K R p
+    have : CharP R p := charP_of_injective_algebraMap' K p
     have : ExpChar R p := .prime hp
     simp only [OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, powMonoidHom_apply, card_eq]
     exact add_pow_expChar_pow ..

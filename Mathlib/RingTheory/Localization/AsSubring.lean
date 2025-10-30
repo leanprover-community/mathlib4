@@ -49,7 +49,7 @@ theorem mem_range_mapToFractionRing_iff (B : Type*) [CommRing B] [Algebra A B] [
       ∃ (a s : A) (hs : s ∈ S), x = IsLocalization.mk' K a ⟨s, hS hs⟩ :=
   ⟨by
     rintro ⟨x, rfl⟩
-    obtain ⟨a, s, rfl⟩ := IsLocalization.mk'_surjective S x
+    obtain ⟨a, s, rfl⟩ := IsLocalization.exists_mk'_eq S x
     use a, s, s.2
     apply IsLocalization.lift_mk', by
     rintro ⟨a, s, hs, rfl⟩

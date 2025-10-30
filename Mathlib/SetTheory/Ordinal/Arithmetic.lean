@@ -567,7 +567,6 @@ instance monoid : Monoid Ordinal.{u} where
       (fun ⟨α, r, _⟩ ⟨β, s, _⟩ => ⟦⟨β × α, Prod.Lex s r, inferInstance⟩⟧ :
         WellOrder → WellOrder → Ordinal)
       fun ⟨_, _, _⟩ _ _ _ ⟨f⟩ ⟨g⟩ => Quot.sound ⟨RelIso.prodLexCongr g f⟩
-  one := 1
   mul_assoc a b c :=
     Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ =>
       Eq.symm <|
@@ -606,7 +605,6 @@ private theorem mul_eq_zero' {a b : Ordinal} : a * b = 0 ↔ a = 0 ∨ b = 0 :=
 
 instance monoidWithZero : MonoidWithZero Ordinal :=
   { Ordinal.monoid with
-    zero := 0
     mul_zero := fun _a => mul_eq_zero'.2 <| Or.inr rfl
     zero_mul := fun _a => mul_eq_zero'.2 <| Or.inl rfl }
 
@@ -730,7 +728,7 @@ theorem lt_mul_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit c) :
 alias lt_mul_of_limit := lt_mul_iff_of_isSuccLimit
 
 instance : PosMulStrictMono Ordinal where
-  elim a _b _c h := (isNormal_mul_right a.2).strictMono h
+  mul_lt_mul_of_pos_left _a ha := (isNormal_mul_right ha).strictMono
 
 @[deprecated mul_lt_mul_iff_right₀ (since := "2025-08-26")]
 theorem mul_lt_mul_iff_left {a b c : Ordinal} (a0 : 0 < a) : a * b < a * c ↔ b < c :=

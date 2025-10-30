@@ -112,6 +112,13 @@ instance (r : α → α → Prop) [IsWellOrder α r] (p : α → Prop) : IsWellO
 
 end Subrel
 
+/-- If a proposition holds for all elements, then the `Subrel` is equivalent to the original
+relation. -/
+@[simps! apply symm_apply]
+def RelIso.subrelUnivIso {p : α → Prop} (h : ∀ x, p x) : Subrel r p ≃r r where
+  toEquiv := Equiv.subtypeUnivEquiv h
+  map_rel_iff' := by simp
+
 /-- Restrict the codomain of a relation embedding. -/
 def RelEmbedding.codRestrict (p : Set β) (f : r ↪r s) (H : ∀ a, f a ∈ p) : r ↪r Subrel s (· ∈ p) :=
   ⟨f.toEmbedding.codRestrict p H, f.map_rel_iff'⟩

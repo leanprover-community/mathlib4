@@ -357,7 +357,7 @@ noncomputable def finsetClopens [CompactSpace X]
 
 /-- A helper lemma to prove that `finsetClopens X` is injective, see `finsetClopens_inj`. -/
 lemma comp_finsetClopens [CompactSpace X] :
-    (Set.image (fun (t : Clopens X) ↦ t.carrier) ∘ Finset.toSet) ∘
+    (Set.image (fun (t : Clopens X) ↦ t.carrier) ∘ (↑)) ∘
       finsetClopens X = fun ⟨f, _⟩ ↦ f.classes := by
   ext d
   simp only [Setoid.classes, Set.mem_setOf_eq, Function.comp_apply,
@@ -372,7 +372,7 @@ lemma comp_finsetClopens [CompactSpace X] :
 /-- `finsetClopens X` is injective. -/
 theorem finsetClopens_inj [CompactSpace X] :
     (finsetClopens X).Injective := by
-  apply Function.Injective.of_comp (f := Set.image (fun (t : Clopens X) ↦ t.carrier) ∘ Finset.toSet)
+  apply Function.Injective.of_comp (f := Set.image (fun (t : Clopens X) ↦ t.carrier) ∘ (↑))
   rw [comp_finsetClopens]
   intro ⟨_, _⟩ ⟨_, _⟩ h
   congr

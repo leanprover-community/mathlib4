@@ -15,6 +15,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 open CategoryTheory Category Limits MonoidalCategory CartesianMonoidalCategory Mon Grp CommMon
 open MonObj
 
+namespace CategoryTheory
 variable (C : Type u₁) [Category.{v₁} C] [CartesianMonoidalCategory.{v₁} C] [BraidedCategory C]
 
 /-- A commutative group object internal to a Cartesian monoidal category. -/
@@ -184,7 +185,6 @@ instance : HasInitial (CommGrp C) :=
 
 end CommGrp
 
-namespace CategoryTheory
 variable {C}
   {D : Type u₂} [Category.{v₂} D] [CartesianMonoidalCategory D] [BraidedCategory D]
   {E : Type u₃} [Category.{v₃} E] [CartesianMonoidalCategory E] [BraidedCategory E]

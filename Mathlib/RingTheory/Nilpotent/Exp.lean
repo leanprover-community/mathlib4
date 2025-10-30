@@ -11,7 +11,7 @@ import Mathlib.Algebra.Module.Rat
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.TensorProduct.Maps
 import Mathlib.Tactic.FieldSimp
 
 /-!
@@ -142,7 +142,7 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
     (fun ij ↦ ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2))
   rw [z₂, add_zero] at split₂
   rw [← split₂] at s₁
-  have restrict: ∑ ij ∈ R2N ×ˢ R2N with ij.1 ≤ N ∧ ij.2 ≤ N,
+  have restrict : ∑ ij ∈ R2N ×ˢ R2N with ij.1 ≤ N ∧ ij.2 ≤ N,
       ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) =
         ∑ ij ∈ RN ×ˢ RN, ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
     apply sum_congr
@@ -175,12 +175,12 @@ theorem exp_mul_exp_neg_self {a : A} (h : IsNilpotent a) :
   simp [← exp_add_of_commute (Commute.neg_right rfl) h h.neg]
 
 theorem exp_neg_mul_exp_self {a : A} (h : IsNilpotent a) :
-    exp (- a) * exp a = 1 := by
+    exp (-a) * exp a = 1 := by
   simp [← exp_add_of_commute (Commute.neg_left rfl) h.neg h]
 
 theorem isUnit_exp {a : A} (h : IsNilpotent a) : IsUnit (exp a) := by
   apply isUnit_iff_exists.2
-  use exp (- a)
+  use exp (-a)
   exact ⟨exp_mul_exp_neg_self h, exp_neg_mul_exp_self h⟩
 
 @[deprecated (since := "2025-03-11")]

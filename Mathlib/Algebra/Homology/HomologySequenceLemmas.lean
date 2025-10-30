@@ -17,7 +17,7 @@ of the homology sequence of `S₁` and `S₂` with respect to `φ`
 
 Then, we shall show in this file that if two out of the three maps `φ.τ₁`,
 `φ.τ₂`, `φ.τ₃` are quasi-isomorphisms, then the third is. We also obtain
-more specific separate lemmas which gives sufficient condition for one
+more specific separate lemmas which give sufficient conditions for one
 of these three morphisms to induce a mono/epi/iso in a given degree
 in terms of properties of the two others in the same or neighboring degrees.
 

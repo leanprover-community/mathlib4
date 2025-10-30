@@ -149,8 +149,7 @@ theorem d_eq [DecidableEq G] :
       ((barComplex k G).coinvariantsTensorObj A).d (n + 1) n ≫
       (coinvariantsTensorFreeLEquiv A (Fin n → G)).toModuleIso.hom := by
   ext : 3
-  simp [d_single (k := k), ModuleCat.MonoidalCategory.tensorObj,
-    ModuleCat.MonoidalCategory.whiskerLeft, tensorObj_def, whiskerLeft_def, TensorProduct.tmul_add,
+  simp [d_single (k := k), tensorObj_carrier, whiskerLeft_def, TensorProduct.tmul_add,
     TensorProduct.tmul_sum, barComplex.d_single (k := k)]
 
 end inhomogeneousChains
@@ -164,8 +163,8 @@ noncomputable abbrev inhomogeneousChains :
     (fun n => inhomogeneousChains.d A n) fun n => by
     classical
     simp only [inhomogeneousChains.d_eq]
-    slice_lhs 3 4 => { rw [Iso.hom_inv_id] }
-    slice_lhs 2 4 => { rw [Category.id_comp, ((barComplex k G).coinvariantsTensorObj A).d_comp_d] }
+    slice_lhs 3 4 => rw [Iso.hom_inv_id]
+    slice_lhs 2 4 => rw [Category.id_comp, ((barComplex k G).coinvariantsTensorObj A).d_comp_d]
     simp
 
 open inhomogeneousChains

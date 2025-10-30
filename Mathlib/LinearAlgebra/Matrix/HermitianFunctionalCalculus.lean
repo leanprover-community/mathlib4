@@ -54,7 +54,7 @@ noncomputable def cfcAux : C(spectrum ℝ A, ℝ) →⋆ₐ[ℝ] (Matrix n n �
   map_mul' f g := by
     have {a b c d e f : Matrix n n 𝕜} : (a * b * c) * (d * e * f) = a * (b * (c * d) * e) * f := by
       simp only [mul_assoc]
-    simp only [this, ContinuousMap.coe_mul, SetLike.coe_mem, unitary.star_mul_self_of_mem, mul_one,
+    simp only [this, ContinuousMap.coe_mul, SetLike.coe_mem, Unitary.star_mul_self_of_mem, mul_one,
       diagonal_mul_diagonal, Function.comp_apply]
     congr! with i
     simp
@@ -64,8 +64,8 @@ noncomputable def cfcAux : C(spectrum ℝ A, ℝ) →⋆ₐ[ℝ] (Matrix n n �
     simp
   commutes' r := by
     simp only [Function.comp_def, algebraMap_apply, smul_eq_mul, mul_one]
-    rw [← mul_one (algebraMap _ _ _), ← unitary.coe_mul_star_self hA.eigenvectorUnitary,
-      ← Algebra.left_comm, unitary.coe_star, mul_assoc]
+    rw [← mul_one (algebraMap _ _ _), ← Unitary.coe_mul_star_self hA.eigenvectorUnitary,
+      ← Algebra.left_comm, Unitary.coe_star, mul_assoc]
     congr!
   map_star' f := by
     simp only [star_trivial, StarMul.star_mul, star_star, star_eq_conjTranspose (diagonal _),
@@ -84,7 +84,7 @@ lemma isClosedEmbedding_cfcAux : IsClosedEmbedding hA.cfcAux := by
         = (0 : Matrix n n 𝕜) := by
     simp only [LinearMap.coe_coe, cfcAux_apply] at hf
     replace hf := congr($(hf) * (eigenvectorUnitary hA : Matrix n n 𝕜))
-    simp only [mul_assoc, SetLike.coe_mem, unitary.star_mul_self_of_mem, mul_one, zero_mul] at hf
+    simp only [mul_assoc, SetLike.coe_mem, Unitary.star_mul_self_of_mem, mul_one, zero_mul] at hf
     simpa [← mul_assoc] using congr((star hA.eigenvectorUnitary : Matrix n n 𝕜) * $(hf))
   ext x
   simp only [ContinuousMap.zero_apply]
@@ -110,7 +110,7 @@ instance instContinuousFunctionalCalculus :
       apply Set.eq_of_subset_of_subset
       · rw [← ContinuousMap.spectrum_eq_range f]
         apply AlgHom.spectrum_apply_subset
-      · rw [cfcAux_apply, unitary.spectrum.unitary_conjugate]
+      · rw [cfcAux_apply, Unitary.spectrum_star_right_conjugate]
         rintro - ⟨x, rfl⟩
         apply spectrum.of_algebraMap_mem 𝕜
         simp only [Function.comp_apply, Set.mem_range, spectrum_diagonal]

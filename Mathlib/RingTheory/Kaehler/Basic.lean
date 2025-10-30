@@ -458,8 +458,8 @@ instance KaehlerDifferential.finite [EssFiniteType R S] :
   refine ⟨⟨s, top_le_iff.mp ?_⟩⟩
   rw [← span_range_derivation, Submodule.span_le]
   rintro _ ⟨x, rfl⟩
-  have : ∀ x ∈ adjoin R (EssFiniteType.finset R S).toSet,
-      .D _ _ x ∈ Submodule.span S s.toSet := by
+  have : ∀ x ∈ adjoin R (EssFiniteType.finset R S : Set S),
+      .D _ _ x ∈ Submodule.span S (s : Set Ω[S⁄R]) := by
     intro x hx
     refine adjoin_induction ?_ ?_ ?_ ?_ hx
     · exact fun x hx ↦ Submodule.subset_span (Finset.mem_image_of_mem _ hx)

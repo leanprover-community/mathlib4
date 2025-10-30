@@ -178,8 +178,7 @@ instance : IsGaussian (μ.map (fun x ↦ -x)) := by
 instance (c : E) : IsGaussian (μ.map (fun x ↦ c - x)) := by
   simp_rw [sub_eq_add_neg]
   suffices IsGaussian ((μ.map (fun x ↦ -x)).map (fun x ↦ c + x)) by
-    rw [Measure.map_map (by fun_prop) (by fun_prop)] at this
-    convert this using 1
+    rwa [Measure.map_map (by fun_prop) (by fun_prop), Function.comp_def] at this
   infer_instance
 
 /-- A product of Gaussian distributions is Gaussian. -/
@@ -188,11 +187,9 @@ instance [SecondCountableTopologyEither E F] {ν : Measure F} [IsGaussian ν] :
   refine isGaussian_of_charFunDual_eq fun L ↦ ?_
   rw [charFunDual_prod, IsGaussian.charFunDual_eq, IsGaussian.charFunDual_eq, ← Complex.exp_add]
   congr
-  let L₁ := L.comp (.inl ℝ E F)
-  let L₂ := L.comp (.inr ℝ E F)
-  suffices μ[L₁] * I - Var[L₁; μ] / 2 + (ν[L₂] * I - Var[L₂; ν] / 2)
-      = (μ.prod ν)[L] * I - Var[L; μ.prod ν] / 2 by convert this
-  rw [sub_add_sub_comm, ← add_mul]
+  let (eq := hL₁) L₁ := L.comp (.inl ℝ E F)
+  let (eq := hL₂) L₂ := L.comp (.inr ℝ E F)
+  rw [← hL₁, ← hL₂, sub_add_sub_comm, ← add_mul]
   congr
   · simp_rw [integral_complex_ofReal]
     rw [integral_continuousLinearMap_prod' (IsGaussian.integrable_dual μ (L.comp (.inl ℝ E F)))

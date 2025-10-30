@@ -145,7 +145,7 @@ instance : SemilatticeInf (IdealSheafData X) where
       have inst := U.2.isLocalization_basicOpen f
       rw [← I.map_ideal_basicOpen U f, ← J.map_ideal_basicOpen U f, this]
       ext x
-      obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective (.powers f) x
+      obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq (.powers f) x
       simp only [IsLocalization.mk'_mem_map_algebraMap_iff, Submonoid.mem_powers_iff, Ideal.mem_inf,
         exists_exists_eq_and]
       refine ⟨fun ⟨n, h₁, h₂⟩ ↦ ⟨⟨n, h₁⟩, ⟨n, h₂⟩⟩, ?_⟩
@@ -588,7 +588,7 @@ lemma Hom.ker_apply (f : X.Hom Y) [QuasiCompact f] (U : Y.affineOpens) :
     exact Ideal.ker_le_comap _ hx
   · intro x hx
     have := U.2.isLocalization_basicOpen s
-    obtain ⟨x, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.mk'_surjective (.powers s) x
+    obtain ⟨x, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (.powers s) x
     refine (IsLocalization.mk'_mem_map_algebraMap_iff _ _ _ _ _).mpr ?_
     suffices ∃ (V : X.Opens) (hV : V = X.basicOpen ((f.app U).hom s)),
         letI := hV.trans_le (X.basicOpen_le _); ((f.app U).hom x |_ V) = 0 by
@@ -766,6 +766,12 @@ def kerFunctor (Y : Scheme.{u}) : (Over Y)ᵒᵖ ⥤ IdealSheafData Y where
     OrderDual.toDual_le_toDual, ← Over.w hfg.unop] using hfg.unop.left.le_ker_comp f.unop.hom
   map_id _ := Subsingleton.elim _ _
   map_comp _ _ := Subsingleton.elim _ _
+
+variable (X) in
+@[simp]
+lemma ker_toSpecΓ [CompactSpace X] : X.toSpecΓ.ker = ⊥ := by
+  apply IdealSheafData.ext_of_isAffine
+  simpa using RingHom.ker_coe_equiv (ΓSpecIso Γ(X, ⊤)).commRingCatIsoToRingEquiv
 
 end ker
 

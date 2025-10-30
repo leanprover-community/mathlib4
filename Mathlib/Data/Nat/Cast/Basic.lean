@@ -189,6 +189,7 @@ instance instNatCast : NatCast (∀ a, π a) where natCast n _ := n
 theorem natCast_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
   rfl
 
+@[push ←]
 theorem natCast_def (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
   rfl
 
@@ -204,6 +205,7 @@ instance (priority := low) instOfNat (n : ℕ) [∀ i, OfNat (π i) n] : OfNat (
 @[simp]
 theorem ofNat_apply (n : ℕ) [∀ i, OfNat (π i) n] (a : α) : (ofNat(n) : ∀ a, π a) a = ofNat(n) := rfl
 
+@[push ←]
 lemma ofNat_def (n : ℕ) [∀ i, OfNat (π i) n] : (ofNat(n) : ∀ a, π a) = fun _ ↦ ofNat(n) := rfl
 
 end OfNat

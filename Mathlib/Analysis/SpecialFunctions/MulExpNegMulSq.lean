@@ -118,15 +118,7 @@ theorem lipschitzWith_one_mulExpNegMulSq (hε : 0 < ε) :
 
 theorem mulExpNegMulSq_eq_sqrt_mul_mulExpNegMulSq_one (hε : 0 < ε) (x : ℝ) :
     mulExpNegMulSq ε x = (√ε)⁻¹ * mulExpNegMulSq 1 (sqrt ε * x) := by
-  simp only [mulExpNegMulSq, one_mul]
-  have h : √ε * x * (√ε * x) = ε * x * x := by
-    ring_nf
-    rw [sq_sqrt hε.le, mul_comm]
-  rw [h, eq_inv_mul_iff_mul_eq₀ _]
-  · ring_nf
-  · intro h
-    rw [← pow_eq_zero_iff (Ne.symm (Nat.zero_ne_add_one 1)), sq_sqrt hε.le] at h
-    linarith
+  grind [mulExpNegMulSq]
 
 /-- For fixed `ε > 0`, the mapping `x ↦ mulExpNegMulSq ε x` is bounded by `(√ε)⁻¹ -/
 theorem abs_mulExpNegMulSq_le (hε : 0 < ε) {x : ℝ} : |mulExpNegMulSq ε x| ≤ (√ε)⁻¹ := by

@@ -122,7 +122,7 @@ open Finset in
 theorem coe_finsetWalkLengthLT_eq (n : ℕ) (u v : V) :
     (G.finsetWalkLengthLT n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length < n} := by
   ext p
-  simp [finsetWalkLengthLT, mem_coe, mem_finsetWalkLength_iff]
+  simp [finsetWalkLengthLT, mem_finsetWalkLength_iff]
 
 variable {G} in
 theorem mem_finsetWalkLengthLT_iff {n : ℕ} {u v : V} {p : G.Walk u v} :
@@ -175,6 +175,10 @@ instance fintypeSubtypePathLengthLT (u v : V) (n : ℕ) :
 end LocallyFinite
 
 instance [Finite V] : Finite G.ConnectedComponent := Quot.finite _
+
+theorem ConnectedComponent.card_le_card_of_le [Finite V] {G G' : SimpleGraph V} (h : G ≤ G') :
+    Nat.card G'.ConnectedComponent ≤ Nat.card G.ConnectedComponent :=
+  Nat.card_le_card_of_surjective _ <| ConnectedComponent.surjective_map_ofLE h
 
 section Fintype
 

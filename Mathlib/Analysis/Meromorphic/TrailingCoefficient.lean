@@ -12,7 +12,8 @@ This file defines the trailing coefficient of a meromorphic function. If `f` is 
 point `x`, the trailing coefficient is defined as the (unique!) value `g x` for a presentation of
 `f` in the form `(z - x) ^ order • g z` with `g` analytic at `x`.
 
-The lemma `meromorphicTrailingCoeffAt_eq_limit` expresses the trailing coefficient as a limit.
+The lemma `MeromorphicAt.tendsto_nhds_meromorphicTrailingCoeffAt` expresses the trailing coefficient
+as a limit.
 -/
 
 variable

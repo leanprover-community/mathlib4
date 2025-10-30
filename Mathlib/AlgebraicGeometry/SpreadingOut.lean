@@ -64,7 +64,7 @@ lemma injective_germ_basicOpen (U : X.Opens) (hU : IsAffineOpen U)
   rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero] at H ⊢
   intro t ht
   have := hU.isLocalization_basicOpen f
-  obtain ⟨t, s, rfl⟩ := IsLocalization.mk'_surjective (.powers f) t
+  obtain ⟨t, s, rfl⟩ := IsLocalization.exists_mk'_eq (.powers f) t
   rw [← RingHom.mem_ker, IsLocalization.mk'_eq_mul_mk'_one, Ideal.mul_unit_mem_iff_mem,
     RingHom.mem_ker, RingHom.algebraMap_toAlgebra, TopCat.Presheaf.germ_res_apply] at ht
   swap; · exact @isUnit_of_invertible _ _ _ (@IsLocalization.invertible_mk'_one ..)
@@ -136,7 +136,7 @@ lemma Scheme.IsGermInjective.Spec
     exact (isAffineOpen_top (Spec R)).basicOpen _
   rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero]
   intro x hx
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq
     (S := ((Spec.structureSheaf R).val.obj (.op <| PrimeSpectrum.basicOpen f))) (.powers f) x
   rw [← RingHom.mem_ker, IsLocalization.mk'_eq_mul_mk'_one, Ideal.mul_unit_mem_iff_mem,
     RingHom.mem_ker, RingHom.algebraMap_toAlgebra] at hx

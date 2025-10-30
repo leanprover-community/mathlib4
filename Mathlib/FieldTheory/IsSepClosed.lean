@@ -171,7 +171,7 @@ variable (k) {K}
 
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → Separable p → ∃ x, p.eval x = 0) :
     IsSepClosed k := by
-  refine ⟨fun p hsep ↦ Or.inr ?_⟩
+  refine ⟨fun p hsep ↦ factors_iff_splits.mpr <| Or.inr ?_⟩
   intro q hq hdvd
   simp only [map_id] at hdvd
   have hlc : IsUnit (leadingCoeff q)⁻¹ := IsUnit.inv <| Ne.isUnit <|

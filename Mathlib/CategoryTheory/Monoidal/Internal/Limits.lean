@@ -24,6 +24,7 @@ universe v u w
 
 noncomputable section
 
+namespace CategoryTheory
 namespace Mon
 
 variable {J : Type w} [SmallCategory J]
@@ -85,3 +86,4 @@ instance forget_preservesLimitsOfShape : PreservesLimitsOfShape J (Mon.forget C)
       (IsLimit.ofIsoLimit (limit.isLimit (F ⋙ Mon.forget C)) (forgetMapConeLimitConeIso F).symm)
 
 end Mon
+end CategoryTheory

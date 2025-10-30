@@ -69,7 +69,9 @@ instance {C : Type v} [SmallCategory.{v} C] (J : GrothendieckTopology C)
     (A : Type u₁) [Category.{v} A] [Abelian A] [IsGrothendieckAbelian.{v} A]
     [HasSheafify J A] : IsGrothendieckAbelian.{v} (Sheaf J A) where
 
-instance {C : Type (v + 1)} [LargeCategory C] [EssentiallySmall.{v} C]
+attribute [local instance] hasSheafifyEssentiallySmallSite in
+lemma isGrothendieckAbelian_of_essentiallySmall
+    {C : Type u₂} [Category.{v} C] [EssentiallySmall.{v} C]
     (J : GrothendieckTopology C)
     (A : Type u₁) [Category.{v} A] [Abelian A] [IsGrothendieckAbelian.{v} A]
     [HasSheafify ((equivSmallModel C).inverse.inducedTopology J) A] :

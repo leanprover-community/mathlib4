@@ -310,23 +310,19 @@ theorem real_smul {x : ℝ} {z : ℂ} : x • z = x * z :=
 
 end SMul
 
-instance addCommGroup : AddCommGroup ℂ :=
-  { zero := (0 : ℂ)
-    add := (· + ·)
-    neg := Neg.neg
-    sub := Sub.sub
-    nsmul := fun n z => n • z
-    zsmul := fun n z => n • z
-    zsmul_zero' := by intros; ext <;> simp [smul_re, smul_im]
-    nsmul_zero := by intros; ext <;> simp [smul_re, smul_im]
-    nsmul_succ := by intros; ext <;> simp [smul_re, smul_im] <;> ring
-    zsmul_succ' := by intros; ext <;> simp [smul_re, smul_im] <;> ring
-    zsmul_neg' := by intros; ext <;> simp [smul_re, smul_im] <;> ring
-    add_assoc := by intros; ext <;> simp <;> ring
-    zero_add := by intros; ext <;> simp
-    add_zero := by intros; ext <;> simp
-    add_comm := by intros; ext <;> simp <;> ring
-    neg_add_cancel := by intros; ext <;> simp }
+instance addCommGroup : AddCommGroup ℂ where
+  nsmul := (· • ·)
+  zsmul := (· • ·)
+  zsmul_zero' := by intros; ext <;> simp [smul_re, smul_im]
+  nsmul_zero := by intros; ext <;> simp [smul_re, smul_im]
+  nsmul_succ := by intros; ext <;> simp [smul_re, smul_im] <;> ring
+  zsmul_succ' := by intros; ext <;> simp [smul_re, smul_im] <;> ring
+  zsmul_neg' := by intros; ext <;> simp [smul_re, smul_im] <;> ring
+  add_assoc := by intros; ext <;> simp <;> ring
+  zero_add := by intros; ext <;> simp
+  add_zero := by intros; ext <;> simp
+  add_comm := by intros; ext <;> simp <;> ring
+  neg_add_cancel := by intros; ext <;> simp
 
 /-! ### Casts -/
 
@@ -360,12 +356,10 @@ instance addGroupWithOne : AddGroupWithOne ℂ :=
     natCast_zero := by ext <;> simp
     natCast_succ _ := by ext <;> simp
     intCast_ofNat _ := by ext <;> simp
-    intCast_negSucc _ := by ext <;> simp
-    one := 1 }
+    intCast_negSucc _ := by ext <;> simp }
 
 instance commRing : CommRing ℂ :=
   { addGroupWithOne with
-    mul := (· * ·)
     npow := @npowRec _ ⟨(1 : ℂ)⟩ ⟨(· * ·)⟩
     add_comm := by intros; ext <;> simp <;> ring
     left_distrib := by intros; ext <;> simp [mul_re, mul_im] <;> ring

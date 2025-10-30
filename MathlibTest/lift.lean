@@ -234,3 +234,12 @@ example {x : WithTop ℕ} (hx : x ≠ ⊤) (P : WithTop ℕ → Prop) (h : P x) 
   lift x to ℕ using hx with u hu
   trace_state
   exact h
+
+/-! Test that the `h` in `using h` is not cleared if the goal depends on it. -/
+
+set_option linter.unusedVariables false in
+def foo (n : Int) (hn : 0 ≤ n) : Int := n
+
+example (n : Int) (hn : 0 ≤ n) : foo n hn = n := by
+  lift n to Nat using hn
+  rfl

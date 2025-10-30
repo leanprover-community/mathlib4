@@ -188,9 +188,7 @@ private theorem nsmul_succ' (n : ℕ) (x : LocalizedModule S M) : n.succ • x =
   LocalizedModule.induction_on (fun _ _ => rfl) x
 
 instance : AddCommMonoid (LocalizedModule S M) where
-  add := (· + ·)
   add_assoc := add_assoc'
-  zero := 0
   zero_add := zero_add'
   add_zero := add_zero'
   nsmul := (· • ·)
@@ -371,7 +369,6 @@ private theorem zero_smul_aux (p : LocalizedModule S M) : (0 : T) • p = 0 := b
     mk'_smul_mk, zero_smul, zero_mk]
 
 noncomputable instance isModule : Module T (LocalizedModule S M) where
-  smul := (· • ·)
   one_smul := one_smul_aux
   mul_smul := mul_smul_aux
   smul_add := smul_add_aux
@@ -1363,7 +1360,7 @@ theorem noZeroSMulDivisors (S : Submonoid R) [NoZeroSMulDivisors R M] [IsLocaliz
     [IsLocalizedModule S f] : NoZeroSMulDivisors A N := by
   rw [noZeroSMulDivisors_iff]
   intro c x hcx
-  obtain ⟨a, s, rfl⟩ := IsLocalization.mk'_surjective S c
+  obtain ⟨a, s, rfl⟩ := IsLocalization.exists_mk'_eq S c
   obtain ⟨⟨m, t⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f x
   rw [Function.uncurry_apply_pair] at hcx ⊢
   rw [mk'_smul_mk', mk'_eq_zero, IsLocalizedModule.eq_zero_iff S] at hcx

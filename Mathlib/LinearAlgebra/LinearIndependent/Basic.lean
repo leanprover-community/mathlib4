@@ -209,7 +209,7 @@ theorem linearIndependent_span (hs : LinearIndependent R v) :
 theorem linearIndependent_finset_map_embedding_subtype (s : Set M)
     (li : LinearIndependent R ((↑) : s → M)) (t : Finset s) :
     LinearIndependent R ((↑) : Finset.map (Embedding.subtype s) t → M) :=
-  li.comp (fun _ ↦ ⟨_, _⟩) <| by intro; aesop
+  li.comp (fun _ ↦ ⟨_, by aesop⟩) <| by intro; simp
 
 section Indexed
 

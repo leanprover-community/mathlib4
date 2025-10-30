@@ -226,6 +226,11 @@ theorem measure_biUnion_lt_top {s : Set β} {f : β → Set α} (hs : s.Finite)
     rw [Finite.mem_toFinset]
   · simpa only [ENNReal.sum_lt_top, Finite.mem_toFinset]
 
+@[aesop (rule_sets := [finiteness]) safe apply]
+theorem measure_biUnion_ne_top {s : Set β} {f : β → Set α} (hs : s.Finite)
+    (hfin : ∀ i ∈ s, μ (f i) ≠ ∞) : μ (⋃ i ∈ s, f i) ≠ ∞ :=
+  (measure_biUnion_lt_top hs (fun i hi ↦ Ne.lt_top (hfin i hi ·))).ne
+
 theorem measure_union_lt_top (hs : μ s < ∞) (ht : μ t < ∞) : μ (s ∪ t) < ∞ :=
   (measure_union_le s t).trans_lt (ENNReal.add_lt_top.mpr ⟨hs, ht⟩)
 
@@ -235,12 +240,14 @@ theorem measure_union_lt_top_iff : μ (s ∪ t) < ∞ ↔ μ s < ∞ ∧ μ t < 
   · exact (measure_mono Set.subset_union_left).trans_lt h
   · exact (measure_mono Set.subset_union_right).trans_lt h
 
+@[aesop (rule_sets := [finiteness]) safe apply]
 theorem measure_union_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s ∪ t) ≠ ∞ :=
   (measure_union_lt_top hs.lt_top ht.lt_top).ne
 
 open scoped symmDiff in
+@[aesop (rule_sets := [finiteness]) unsafe 95% apply]
 theorem measure_symmDiff_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s ∆ t) ≠ ∞ :=
-  ne_top_of_le_ne_top (measure_union_ne_top hs ht) <| measure_mono symmDiff_subset_union
+  ne_top_of_le_ne_top (by finiteness) <| measure_mono symmDiff_subset_union
 
 @[simp]
 theorem measure_union_eq_top_iff : μ (s ∪ t) = ∞ ↔ μ s = ∞ ∨ μ t = ∞ :=
@@ -257,11 +264,19 @@ theorem measure_lt_top_of_subset (hst : t ⊆ s) (hs : μ s ≠ ∞) : μ t < �
 theorem measure_ne_top_of_subset (h : t ⊆ s) (ht : μ s ≠ ∞) : μ t ≠ ∞ :=
   (measure_lt_top_of_subset h ht).ne
 
-theorem measure_inter_lt_top_of_left_ne_top (hs_finite : μ s ≠ ∞) : μ (s ∩ t) < ∞ :=
-  measure_lt_top_of_subset inter_subset_left hs_finite
+@[aesop (rule_sets := [finiteness]) unsafe apply]
+theorem measure_inter_ne_top_of_left_ne_top (hs_finite : μ s ≠ ∞) : μ (s ∩ t) ≠ ∞ :=
+  measure_ne_top_of_subset inter_subset_left hs_finite
 
-theorem measure_inter_lt_top_of_right_ne_top (ht_finite : μ t ≠ ∞) : μ (s ∩ t) < ∞ :=
-  measure_lt_top_of_subset inter_subset_right ht_finite
+theorem measure_inter_lt_top_of_left_ne_top (hs_finite : μ s ≠ ∞) : μ (s ∩ t) < ∞ := by
+  finiteness
+
+@[aesop (rule_sets := [finiteness]) unsafe apply]
+theorem measure_inter_ne_top_of_right_ne_top (ht_finite : μ t ≠ ∞) : μ (s ∩ t) ≠ ∞ :=
+  measure_ne_top_of_subset inter_subset_right ht_finite
+
+theorem measure_inter_lt_top_of_right_ne_top (ht_finite : μ t ≠ ∞) : μ (s ∩ t) < ∞ := by
+  finiteness
 
 theorem measure_inter_null_of_null_right (S : Set α) {T : Set α} (h : μ T = 0) : μ (S ∩ T) = 0 :=
   measure_mono_null inter_subset_right h

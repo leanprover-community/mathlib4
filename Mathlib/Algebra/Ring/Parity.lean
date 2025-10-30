@@ -311,18 +311,15 @@ namespace Involutive
 
 variable {α : Type*} {f : α → α} {n : ℕ}
 
-section
-
-lemma iterate_bit0 (hf : Involutive f) (n : ℕ) : f^[2 * n] = id := by
-  rw [iterate_mul, involutive_iff_iter_2_eq_id.1 hf, iterate_id]
-
-lemma iterate_bit1 (hf : Involutive f) (n : ℕ) : f^[2 * n + 1] = f := by
-  rw [← succ_eq_add_one, iterate_succ, hf.iterate_bit0, id_comp]
-
-end
-
 lemma iterate_two_mul (hf : Involutive f) (n : ℕ) : f^[2 * n] = id := by
   rw [iterate_mul, involutive_iff_iter_2_eq_id.1 hf, iterate_id]
+
+@[deprecated (since := "2025-10-28")] alias iterate_bit0 := iterate_two_mul
+
+lemma iterate_two_mul_add_one (hf : Involutive f) (n : ℕ) : f^[2 * n + 1] = f := by
+  rw [iterate_succ, hf.iterate_two_mul, id_comp]
+
+@[deprecated (since := "2025-10-28")] alias iterate_bit1 := iterate_two_mul_add_one
 
 lemma iterate_even (hf : Involutive f) (hn : Even n) : f^[n] = id := by
   obtain ⟨m, rfl⟩ := hn

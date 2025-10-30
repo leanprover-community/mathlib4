@@ -103,7 +103,7 @@ theorem Convex.exists_subset_interior_convexHull_finset_of_isCompact
   lift u to Finset E using hu₂
   refine ⟨Finset.univ.image b + u, ?_, ?_⟩
   all_goals rw [Finset.coe_add, Finset.coe_image, Finset.coe_univ, Set.image_univ, convexHull_add]
-  · grw [hu₃, ← subset_interior_add_left, Set.iUnion₂_subset_iff, ← subset_convexHull _ u.toSet]
+  · grw [hu₃, ← subset_interior_add_left, Set.iUnion₂_subset_iff, ← subset_convexHull _ (u : Set E)]
     intros
     gcongr
     simpa
