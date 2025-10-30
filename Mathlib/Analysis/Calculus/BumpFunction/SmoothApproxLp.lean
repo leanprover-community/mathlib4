@@ -56,7 +56,7 @@ theorem exist_support_subset_cthickening {μ : Measure E} [μ.IsAddHaarMeasure] 
     (hp₂ : 1 ≤ p) {ε : ℝ} (hε : 0 < ε) {f : E → F}
     (h₁ : HasCompactSupport f) (h₂ : Continuous f) (h₃ : MemLp f p μ) :
     ∃ (g : E → F), HasCompactSupport g ∧ ContDiff ℝ ∞ g ∧
-      g.support ⊆ Metric.cthickening 1 (tsupport f) ∧ ∀ x, dist (g x) (f x) ≤ ε := by
+      g.support ⊆ Metric.cthickening 1 (tsupport f) ∧ ∀ x, dist (f x) (g x) ≤ ε := by
   have := h₁.uniformContinuous_of_continuous h₂
   rw [Metric.uniformContinuous_iff] at this
   rcases this ε hε with ⟨δ', hδ', h⟩
@@ -74,6 +74,7 @@ theorem exist_support_subset_cthickening {μ : Measure E} [μ.IsAddHaarMeasure] 
       zero_vadd, Metric.thickening_mono hδ₂, Metric.thickening_subset_cthickening,
       Metric.cthickening_subset_of_subset]
     exact subset_tsupport f
+  rw [dist_comm]
   apply ContDiffBump.dist_normed_convolution_le h₃.1
   intro x₀ hx₀
   exact (h (lt_of_lt_of_le hx₀ inf_le_left)).le
@@ -84,7 +85,7 @@ theorem exist_sub_eLpNorm_le_of_continuous (μ : Measure E := by volume_tac) [μ
     {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {ε : ℝ}
     (hε : 0 < ε) {f : E → F} (h₁ : HasCompactSupport f) (h₂ : Continuous f) :
     ∃ (g : E → F), HasCompactSupport g ∧ ContDiff ℝ ∞ g ∧
-    eLpNorm (g - f) p μ ≤ ENNReal.ofReal ε := by
+    eLpNorm (f - g) p μ ≤ ENNReal.ofReal ε := by
   by_cases hf : f = 0
   -- Later, we need that the support is non-empty, so we treat the trivial case `f = 0` first.
   · use 0
@@ -115,12 +116,10 @@ theorem exist_sub_eLpNorm_le_of_continuous (μ : Measure E := by volume_tac) [μ
   obtain ⟨g, hg₁, hg₂, hg₃, hg₄⟩ := h₁.exist_support_subset_cthickening hp₂ hε' h₂
     (h₁.memLp_of_continuous μ h₂)
   have hf : Function.support f ⊆ Metric.cthickening 1 (tsupport f) := by
-    simp only [Function.support_subset_iff, ne_eq, Metric.mem_cthickening_iff, ENNReal.ofReal_one]
     intro x hx
-    rw [EMetric.infEdist_zero_of_mem (subset_tsupport _ hx)]
-    exact zero_le_one
+    simp [EMetric.infEdist_zero_of_mem (subset_tsupport _ hx)]
   exact ⟨g, hg₁, hg₂,
-    (eLpNorm_sub_le_of_dist_bdd' μ hp hε'.le hg₄ hs₁.measurableSet hg₃ hf).trans hε₂⟩
+    (eLpNorm_sub_le_of_dist_bdd' μ hp hε'.le hg₄ hs₁.measurableSet hf hg₃).trans hε₂⟩
 
 /-- Every `Lp` function can be approximated by a smooth compactly supported function provided that
 `p < ∞`. -/
@@ -136,7 +135,7 @@ theorem _root_.MeasureTheory.MemLp.exist_sub_eLpNorm_le {μ : Measure E} [μ.IsA
   refine ⟨g', hg'₁, hg'₂, ?_⟩
   have : f - g' = (f - g) - (g' - g) := by simp
   grw [this, eLpNorm_sub_le (hf.aestronglyMeasurable.sub hg₄.aestronglyMeasurable)
-    (hg'₂.continuous.aestronglyMeasurable.sub hg₄.aestronglyMeasurable) hp₂, hg₂, hg'₃]
-  rw [← ENNReal.ofReal_add hε₂.le hε₂.le, add_halves]
+    (hg'₂.continuous.aestronglyMeasurable.sub hg₄.aestronglyMeasurable) hp₂, hg₂,
+    eLpNorm_sub_comm, hg'₃, ← ENNReal.ofReal_add hε₂.le hε₂.le, add_halves]
 
 end HasCompactSupport
