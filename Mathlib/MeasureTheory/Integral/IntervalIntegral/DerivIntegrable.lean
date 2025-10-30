@@ -31,7 +31,7 @@ open scoped Topology
 /-- If `f` is monotone on `[a, b]`, then `f'` is the limit of `G n` a.e. on `[a, b]`, where each
 `G n` is `AEStronglyMeasurable` and the liminf of the lower Lebesgue integral of `‖G n ·‖ₑ` is at
 most `f b - f a`. -/
-lemma MonotoneOn.exists_tendsto_atTop_aestronglyMeasurable_liminf_le
+lemma MonotoneOn.exists_tendsto_deriv_liminf_lintegral_enorm_le
     {f : ℝ → ℝ} {a b : ℝ} (hab : a ≤ b) (hf : MonotoneOn f (Icc a b)) :
     ∃ G : (ℕ → ℝ → ℝ), (∀ᵐ x ∂volume.restrict (Icc a b),
       Filter.Tendsto (fun (n : ℕ) ↦ G n x) Filter.atTop (𝓝 (deriv f x))) ∧
@@ -148,7 +148,7 @@ theorem BoundedVariationOn.intervalIntegrable_deriv {f : ℝ → ℝ} {a b : ℝ
   replace hx₂ := (hx₂ hx₅).differentiableAt hx₆ |>.hasDerivAt
   exact (hx₁.sub hx₂).deriv.symm
 
-/-- If `f` is absolute continuous on `uIcc a b`, then `f'` is interval integrable on `a..b`. -/
+/-- If `f` is absolutely continuous on `uIcc a b`, then `f'` is interval integrable on `a..b`. -/
 theorem AbsolutelyContinuousOnInterval.intervalIntegrable_deriv {f : ℝ → ℝ} {a b : ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) :
     IntervalIntegrable (deriv f) volume a b :=

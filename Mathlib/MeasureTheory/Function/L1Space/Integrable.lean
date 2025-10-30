@@ -1217,9 +1217,9 @@ section Limit
 
 /-- If `G n` tends to `f` a.e. and each `‖G n ·‖ₑ` is `AEMeasurable`, then the lower Lebesgue
 integral of `‖f ·‖ₑ` is at most the liminf of the lower Lebesgue integral of `‖G n ·‖ₑ`. -/
-theorem lintegral_bound_of_tendsto_atTop_aemeasurable_enorm
+theorem lintegral_enorm_le_liminf_of_tendsto
     {G : ℕ → ℝ → ℝ} {f : ℝ → ℝ} {μ : Measure ℝ}
-    (hGf : ∀ᵐ x ∂μ, Filter.Tendsto (fun (n : ℕ) ↦ G n x) Filter.atTop (𝓝 (f x)))
+    (hGf : ∀ᵐ x ∂μ, Tendsto (fun (n : ℕ) ↦ G n x) atTop (𝓝 (f x)))
     (hG : ∀ (n : ℕ), AEMeasurable (fun x ↦ ‖G n x‖ₑ) μ) :
     ∫⁻ x, ‖f x‖ₑ ∂μ ≤ liminf (fun n ↦ ∫⁻ x, ‖G n x‖ₑ ∂μ) atTop :=
   lintegral_congr_ae (by filter_upwards [hGf] with x hx using hx.enorm.liminf_eq) ▸

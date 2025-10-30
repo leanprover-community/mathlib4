@@ -181,10 +181,8 @@ lemma MonotoneOn.derivWithin_nonneg (hg : MonotoneOn g s) :
 /-- The derivative at the interior of a set of a monotone function is nonnegative. -/
 lemma MonotoneOn.deriv_nonneg (hg : MonotoneOn g s) (hs : s ∈ 𝓝 x) :
     0 ≤ deriv g x := by
-  by_cases hd : DifferentiableAt 𝕜 g x; swap
-  · simp [deriv_zero_of_not_differentiableAt hd]
-  rw [hd.differentiableWithinAt.hasDerivWithinAt.hasDerivAt hs |>.deriv]
-  exact MonotoneOn.derivWithin_nonneg hg
+  rw [← derivWithin_of_mem_nhds hs]
+  exact hg.derivWithin_nonneg
 
 /-- If a monotone function has a derivative, then this derivative is nonnegative. -/
 lemma HasDerivAt.nonneg_of_monotone (hd : HasDerivAt g g' x) (hg : Monotone g) : 0 ≤ g' := by
