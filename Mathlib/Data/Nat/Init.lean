@@ -261,22 +261,6 @@ lemma strongRec'_spec {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) 
     n.strongRec' H = H n fun m _ ↦ m.strongRec' H :=
   congrArg (H n) <| by ext m lt; apply strongRecAux_spec
 
-section fix
-
-variable {α : Sort*} {motive : α → Sort*} (h : α → Nat)
-  (F : (x : α) → ((y : α) → InvImage (· < ·) h y x → motive y) → motive x)
-
-protected def fix (x : α) : motive x :=
-  let go : ∀ n a, h a = n → motive a :=
-    Nat.strongRec' fun _ ih _ eq ↦ F _ fun _ lt ↦ ih _ (lt_of_lt_of_eq lt eq) _ rfl
-  go _ _ rfl
-
-theorem fix_eq (x : α) : Nat.fix h F x = F x (fun y _ => Nat.fix h F y) := by
-  dsimp only [Nat.fix]
-  rw [strongRec'_spec]
-
-end fix
-
 /-- Recursion principle based on `<` applied to some natural number. -/
 @[elab_as_elim]
 def strongRecOn' {P : ℕ → Sort*} (n : ℕ) (h : ∀ n, (∀ m < n, P m) → P n) : P n :=
