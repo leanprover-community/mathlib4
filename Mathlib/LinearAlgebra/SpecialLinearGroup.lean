@@ -417,6 +417,11 @@ theorem mem_center_iff_spec {g : SpecialLinearGroup R V}
 example (r : R) : LinearMap.det (r • LinearMap.id : V →ₗ[R] V) = r ^ (Module.finrank R V) := by
   simp only [LinearMap.det_smul, LinearMap.det_id, mul_one]
 
+/- TODO : delete this auxiliary definition
+and put it in the definition of `center_equiv_rootsOfUnity.
+How can one access to the definition of one already defined term in a structure
+while one is still definining it? -/
+/-- The inverse map for the equivalence `SpecialLinearGroup.center_equiv_rootsOfUnity`. -/
 noncomputable def center_equiv_rootsOfUnity_invFun
     (r : rootsOfUnity (max (Module.finrank R V) 1) R) :
     Subgroup.center (SpecialLinearGroup R V) :=
