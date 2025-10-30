@@ -131,6 +131,10 @@ theorem fib_add (m n : ℤ) : fib (m + n) = fib (m - 1) * fib n + fib m * fib (n
     · exact fib_add_natCast _ _
     · exact fib_neg_natCast_add_neg_natCast _ _
 
--- TODO: `fib_two_mul`, `fib_two_mul_add_one`, `fib_two_mul_add_two`, `fib_dvd`, ...
+theorem fib_two_mul_add_one (n : ℤ) : fib (2 * n + 1) = fib (n + 1) ^ 2 + fib n ^ 2 := by
+  have := fib_add (n + 1) n
+  grind
+
+-- TODO: `fib_two_mul`, `fib_two_mul_add_two`, `fib_dvd`, ...
 
 end Int
