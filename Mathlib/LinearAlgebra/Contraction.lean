@@ -91,13 +91,13 @@ theorem zero_prodMap_dualTensorHom (g : Module.Dual R N) (q : Q) :
     simp only [coe_comp, coe_inr, Function.comp_apply, prodMap_apply, dualTensorHom_apply,
       snd_apply, Prod.smul_mk, LinearMap.zero_apply, smul_zero]
 
+attribute [-ext] AlgebraTensorModule.curry_injective in
 theorem map_dualTensorHom (f : Module.Dual R M) (p : P) (g : Module.Dual R N) (q : Q) :
     TensorProduct.map (dualTensorHom R M P (f ⊗ₜ[R] p)) (dualTensorHom R N Q (g ⊗ₜ[R] q)) =
       dualTensorHom R (M ⊗[R] N) (P ⊗[R] Q) (dualDistrib R M N (f ⊗ₜ g) ⊗ₜ[R] (p ⊗ₜ[R] q)) := by
   ext m n
-  simp only [AlgebraTensorModule.curry_apply, curry_apply, coe_restrictScalars, map_tmul,
-    dualTensorHom_apply, tmul_smul, dualDistrib_apply]
-  simp [← smul_tmul_smul]
+  simp only [compr₂ₛₗ_apply, mk_apply, map_tmul, dualTensorHom_apply, dualDistrib_apply,
+    ← smul_tmul_smul]
 
 @[simp]
 theorem comp_dualTensorHom (f : Module.Dual R M) (n : N) (g : Module.Dual R N) (p : P) :
@@ -119,6 +119,7 @@ theorem toMatrix_dualTensorHom {m : Type*} {n : Type*} [Fintype m] [Finite n] [D
   rw [and_iff_not_or_not, Classical.not_not] at hij
   rcases hij with hij | hij <;> simp [hij]
 
+attribute [-ext] AlgebraTensorModule.curry_injective in
 /-- If `M` is free, the natural linear map $M^* ⊗ N → Hom(M, N)$ is an equivalence. This function
 provides this equivalence in return for a basis of `M`. -/
 -- We manually create simp-lemmas because `@[simps]` generates a malformed lemma
@@ -132,10 +133,9 @@ noncomputable def dualTensorHomEquivOfBasis : Module.Dual R M ⊗[R] N ≃ₗ[R]
         f.map_smul, _root_.map_sum (dualTensorHom R M N), ← _root_.map_sum f, b.sum_repr])
     (by
       ext f m
-      simp only [Basis.coe_dualBasis, AlgebraTensorModule.curry_apply, restrictScalars_comp,
-        curry_apply, coe_comp, coe_restrictScalars, coeFn_sum, Function.comp_apply,
-        Finset.sum_apply, applyₗ_apply_apply, dualTensorHom_apply, map_smul, mk_apply, id_coe,
-        id_eq, smul_tmul', ← sum_tmul, Basis.sum_dual_apply_smul_coord])
+      simp only [applyₗ_apply_apply, coeFn_sum, dualTensorHom_apply, mk_apply, id_coe, _root_.id,
+        Fintype.sum_apply, Function.comp_apply, Basis.coe_dualBasis, coe_comp, compr₂ₛₗ_apply,
+        tmul_smul, smul_tmul', ← sum_tmul, Basis.sum_dual_apply_smul_coord])
 
 @[simp]
 theorem dualTensorHomEquivOfBasis_apply (x : Module.Dual R M ⊗[R] N) :
@@ -200,6 +200,7 @@ noncomputable def rTensorHomEquivHomRTensor : (M →ₗ[R] P) ⊗[R] Q ≃ₗ[R]
   congr (dualTensorHomEquiv R M P).symm (LinearEquiv.refl R Q) ≪≫ₗ TensorProduct.assoc R _ P Q ≪≫ₗ
     dualTensorHomEquiv R M _
 
+attribute [-ext] AlgebraTensorModule.curry_injective in
 @[simp]
 theorem lTensorHomEquivHomLTensor_toLinearMap :
     (lTensorHomEquivHomLTensor R M P Q).toLinearMap = lTensorHomToHomLTensor (.id R) M P Q := by
@@ -207,13 +208,12 @@ theorem lTensorHomEquivHomLTensor_toLinearMap :
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine (cancel_right h).1 ?_
   ext f q m
-  simp only [LinearEquiv.comp_coe, AlgebraTensorModule.curry_apply, curry_apply,
-    coe_restrictScalars, LinearEquiv.coe_coe, LinearEquiv.trans_apply, restrictScalars_comp,
-    coe_comp, Function.comp_apply, lTensorHomEquivHomLTensor, dualTensorHomEquiv, congr_tmul,
-    LinearEquiv.refl_apply, dualTensorHomEquivOfBasis_apply, LinearEquiv.trans_apply,
-    dualTensorHomEquivOfBasis_symm_cancel_left, leftComm_tmul, dualTensorHom_apply,
-    lTensorHomToHomLTensor_apply, tmul_smul, e]
+  simp only [e, lTensorHomEquivHomLTensor, dualTensorHomEquiv, LinearEquiv.comp_coe, compr₂ₛₗ_apply,
+    mk_apply, LinearEquiv.coe_coe, LinearEquiv.trans_apply, congr_tmul, LinearEquiv.refl_apply,
+    dualTensorHomEquivOfBasis_apply, dualTensorHomEquivOfBasis_symm_cancel_left, leftComm_tmul,
+    dualTensorHom_apply, coe_comp, Function.comp_apply, lTensorHomToHomLTensor_apply, tmul_smul]
 
+attribute [-ext] AlgebraTensorModule.curry_injective in
 @[simp]
 theorem rTensorHomEquivHomRTensor_toLinearMap :
     (rTensorHomEquivHomRTensor R M P Q).toLinearMap = rTensorHomToHomRTensor (.id R) M P Q := by
@@ -221,12 +221,11 @@ theorem rTensorHomEquivHomRTensor_toLinearMap :
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine (cancel_right h).1 ?_
   ext f p q m
-  simp only [LinearEquiv.comp_coe, AlgebraTensorModule.curry_apply, curry_apply,
-    coe_restrictScalars, LinearEquiv.coe_coe, LinearEquiv.trans_apply, restrictScalars_comp,
-    coe_comp, Function.comp_apply, rTensorHomEquivHomRTensor, dualTensorHomEquiv, congr_tmul,
-    dualTensorHomEquivOfBasis_apply, LinearEquiv.refl_apply, LinearEquiv.trans_apply,
-    dualTensorHomEquivOfBasis_symm_cancel_left, assoc_tmul, dualTensorHom_apply, smul_tmul',
-    rTensorHomToHomRTensor_apply, e]
+  simp only [e, rTensorHomEquivHomRTensor, dualTensorHomEquiv, compr₂ₛₗ_apply, mk_apply, coe_comp,
+    LinearEquiv.coe_toLinearMap, Function.comp_apply,
+    dualTensorHomEquivOfBasis_apply, LinearEquiv.trans_apply, congr_tmul,
+    dualTensorHomEquivOfBasis_symm_cancel_left, LinearEquiv.refl_apply, assoc_tmul,
+    dualTensorHom_apply, rTensorHomToHomRTensor_apply, smul_tmul']
 
 variable {R M N P Q}
 
@@ -251,15 +250,16 @@ noncomputable def homTensorHomEquiv : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) ≃
       (LinearEquiv.refl R M).arrowCongr (lTensorHomEquivHomLTensor R N _ Q) ≪≫ₗ
     lift.equiv _ M N _
 
+attribute [-ext] AlgebraTensorModule.curry_injective in
 @[simp]
 theorem homTensorHomEquiv_toLinearMap :
     (homTensorHomEquiv R M N P Q).toLinearMap = homTensorHomMap (.id R) M N P Q := by
   ext m n
-  simp only [AlgebraTensorModule.curry_apply, curry_apply, coe_restrictScalars, LinearEquiv.coe_coe,
-    homTensorHomMap_apply, map_tmul, homTensorHomEquiv, LinearEquiv.trans_apply,
-    rTensorHomEquivHomRTensor_apply, lift.equiv_apply, LinearEquiv.arrowCongr_apply,
-    LinearEquiv.refl_symm, LinearEquiv.refl_apply, rTensorHomToHomRTensor_apply,
-    lTensorHomEquivHomLTensor_apply, lTensorHomToHomLTensor_apply]
+  simp only [homTensorHomEquiv, compr₂ₛₗ_apply, mk_apply, LinearEquiv.coe_toLinearMap,
+    LinearEquiv.trans_apply, lift.equiv_apply, LinearEquiv.arrowCongr_apply, LinearEquiv.refl_symm,
+    LinearEquiv.refl_apply, rTensorHomEquivHomRTensor_apply, lTensorHomEquivHomLTensor_apply,
+    lTensorHomToHomLTensor_apply, rTensorHomToHomRTensor_apply, homTensorHomMap_apply,
+    map_tmul]
 
 variable {R M N P Q}
 
