@@ -495,7 +495,8 @@ theorem valuation_X_pow (s : ℕ) :
 theorem valuation_single_zpow (s : ℤ) :
     Valued.v (HahnSeries.single s (1 : K) : K⸨X⸩) = exp (-(s : ℤ)) := by
   obtain s | s := s
-  · rw [Int.ofNat_eq_natCast, ← HahnSeries.ofPowerSeries_X_pow, PowerSeries.coe_pow, valuation_X_pow]
+  · rw [Int.ofNat_eq_natCast, ← HahnSeries.ofPowerSeries_X_pow, PowerSeries.coe_pow,
+      valuation_X_pow]
   · rw [Int.negSucc_eq, ← inv_inj, ← map_inv₀, inv_single, neg_neg, ← Int.natCast_succ, inv_one,
       ← HahnSeries.ofPowerSeries_X_pow, PowerSeries.coe_pow, valuation_X_pow, exp_neg]
 
