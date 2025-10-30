@@ -17,7 +17,7 @@ satisfies the corresponding properties.
 This is used in `Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback` to study
 the behaviour with respect to composition of the pullback functors on presheaves
 of modules, by reducing these definitions and properties to the (obvious) case of the
-pushforward functors. Similar results shall be obtainted for sheaves of modules (TODO).
+pushforward functors. Similar results shall be obtained for sheaves of modules (TODO).
 
 -/
 
@@ -36,13 +36,13 @@ variable {F : C₀ ⥤ C₀} {G : C₀ ⥤ C₀} (adj : F ⊣ G) (e : G ≅ 𝟭
 /-- If a right adjoint functor is isomorphic to the identity functor,
 so is the left adjoint. -/
 @[simps! -isSimp]
-def leftAdjointIdIso : F ≅ 𝟭 C₀ := (conjugateIsoEquiv .id adj).symm e.symm
+def leftAdjointIdIso {F : C₀ ⥤ C₀} {G : C₀ ⥤ C₀} (adj : F ⊣ G) (e : G ≅ 𝟭 C₀) :
+    F ≅ 𝟭 C₀ := (conjugateIsoEquiv .id adj).symm e.symm
 
 @[simp]
 lemma conjugateEquiv_leftAdjointIdIso_hom :
     conjugateEquiv .id adj (leftAdjointIdIso adj e).hom = e.inv := by
-  dsimp only [leftAdjointIdIso]
-  simp
+  simp [leftAdjointIdIso]
 
 end
 

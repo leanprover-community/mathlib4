@@ -56,7 +56,7 @@ variable (X) in
 /-- The category of sheaves of modules over a scheme. -/
 abbrev Modules := SheafOfModules.{u} X.ringCatSheaf
 
-example : HasSheafify (Opens.grothendieckTopology X) AddCommGrp.{u} :=
+example : HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{u} :=
   inferInstance
 
 instance : Abelian X.Modules := inferInstance
@@ -186,9 +186,10 @@ noncomputable def pseudofunctor :
     (fun _ ↦ by ext : 1; apply pseudofunctor_left_unitality)
     (fun _ ↦ by ext : 1; apply pseudofunctor_right_unitality)
 
-set_option maxHeartbeats 400000 in -- this is slow
-attribute [simps! obj_obj map_l map_r map_adj mapId_hom_τl mapId_hom_τr mapId_inv_τl mapId_inv_τr
-  mapComp_hom_τl mapComp_hom_τr mapComp_inv_τl mapComp_inv_τr] pseudofunctor
+attribute [simps! obj_obj map_l map_r map_adj] pseudofunctor
+attribute [simps! mapId_hom_τl mapId_hom_τr mapId_inv_τl mapId_inv_τr] pseudofunctor
+attribute [simps! mapComp_hom_τl mapComp_hom_τr] pseudofunctor
+attribute [simps! mapComp_inv_τl mapComp_inv_τr] pseudofunctor
 
 end Modules
 

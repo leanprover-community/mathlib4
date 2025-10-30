@@ -295,7 +295,7 @@ instance {D : Type*} [Category.{max v u} D] {FD : D → D → Type*} {CD : D →
     [∀ (J : MulticospanShape.{max v u, max v u}),
       Limits.HasLimitsOfShape (Limits.WalkingMulticospan J) D]
     [(forget D).ReflectsIsomorphisms] : PreservesSheafification J (forget D) :=
-  instPreservesSheafification _ _
+  inferInstance
 
 end GrothendieckTopology
 
