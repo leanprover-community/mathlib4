@@ -81,6 +81,10 @@ theorem HasTemperateGrowth.norm_iteratedFDeriv_le_uniform {f : E → F}
     pi_norm_le_iff_of_nonneg, Fin.forall_iff, Nat.lt_succ] at hC
   exact ⟨k, C, C_nonneg, fun N hN x ↦ hC x N hN⟩
 
+@[deprecated (since := "2025-10-30")]
+alias HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux :=
+  HasTemperateGrowth.norm_iteratedFDeriv_le_uniform
+
 lemma HasTemperateGrowth.of_fderiv {f : E → F}
     (h'f : Function.HasTemperateGrowth (fderiv ℝ f)) (hf : Differentiable ℝ f) {k : ℕ} {C : ℝ}
     (h : ∀ x, ‖f x‖ ≤ C * (1 + ‖x‖) ^ k) :
