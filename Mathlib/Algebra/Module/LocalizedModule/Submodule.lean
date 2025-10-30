@@ -53,7 +53,7 @@ This is the localization of an `R`-submodule of `M` viewed as an `S`-submodule o
 def localized' : Submodule S N where
   __ := localized₀ p f M'
   smul_mem' := fun r x ⟨m, hm, s, hx⟩ ↦ by
-    have ⟨y, t, hyt⟩ := IsLocalization.mk'_surjective p r
+    have ⟨y, t, hyt⟩ := IsLocalization.exists_mk'_eq p r
     exact ⟨y • m, M'.smul_mem y hm, t * s, by simp [← hyt, ← hx, IsLocalizedModule.mk'_smul_mk']⟩
 
 lemma mem_localized₀ (x : N) :
