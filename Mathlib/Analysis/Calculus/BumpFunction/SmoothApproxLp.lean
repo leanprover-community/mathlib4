@@ -24,7 +24,7 @@ variable {α β E F : Type*} [MeasurableSpace E] [NormedAddCommGroup F]
 open scoped Nat NNReal ContDiff
 open MeasureTheory Pointwise ENNReal
 
-theorem MeasureTheory.sub_eLpNorm_le_of_dist_bdd (μ : Measure E := by volume_tac)
+theorem MeasureTheory.eLpNorm_sub_le_of_dist_bdd' (μ : Measure E := by volume_tac)
     {p : ℝ≥0∞} (hp : p ≠ ⊤) {c : ℝ} (hc : 0 ≤ c) {f g : E → F} {s : Set E}
     (h : ∀ x, dist (f x) (g x) ≤ c) (hs : MeasurableSet s) (hs₁ : f.support ⊆ s)
     (hs₂ : g.support ⊆ s) :
@@ -33,7 +33,7 @@ theorem MeasureTheory.sub_eLpNorm_le_of_dist_bdd (μ : Measure E := by volume_ta
     rw [Set.indicator_eq_self]
     exact (Function.support_sub _ _).trans (Set.union_subset hs₁ hs₂)
   rw [← hs₃]
-  exact sub_indicator_eLpNorm_le_of_dist_bdd μ hp hs hc (fun x _ ↦ h x)
+  exact eLpNorm_indicator_sub_le_of_dist_bdd μ hp hs hc (fun x _ ↦ h x)
 
 namespace HasCompactSupport
 
@@ -81,7 +81,7 @@ theorem exist_support_subset_cthickening {μ : Measure E} [μ.IsAddHaarMeasure] 
 
 /-- For every continuous compactly supported function `f`there exists a smooth compactly supported
 function `g` such that `f - g` is arbitrary small in the `Lp`-norm for `p < ∞`. -/
-theorem exist_sub_eLpNorm_le_of_continuous (μ : Measure E := by volume_tac) [μ.IsAddHaarMeasure]
+theorem exist_eLpNorm_sub_le_of_continuous (μ : Measure E := by volume_tac) [μ.IsAddHaarMeasure]
     {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {ε : ℝ}
     (hε : 0 < ε) {f : E → F} (h₁ : HasCompactSupport f) (h₂ : Continuous f) :
     ∃ (g : E → F), HasCompactSupport g ∧ ContDiff ℝ ∞ g ∧
@@ -119,11 +119,11 @@ theorem exist_sub_eLpNorm_le_of_continuous (μ : Measure E := by volume_tac) [μ
     intro x hx
     simp [EMetric.infEdist_zero_of_mem (subset_tsupport _ hx)]
   exact ⟨g, hg₁, hg₂,
-    (sub_eLpNorm_le_of_dist_bdd μ hp hε'.le hg₄ hs₁.measurableSet hf hg₃).trans hε₂⟩
+    (eLpNorm_sub_le_of_dist_bdd' μ hp hε'.le hg₄ hs₁.measurableSet hf hg₃).trans hε₂⟩
 
 /-- Every `Lp` function can be approximated by a smooth compactly supported function provided that
 `p < ∞`. -/
-theorem _root_.MeasureTheory.MemLp.exist_sub_eLpNorm_le {μ : Measure E} [μ.IsAddHaarMeasure]
+theorem _root_.MeasureTheory.MemLp.exist_eLpNorm_sub_le {μ : Measure E} [μ.IsAddHaarMeasure]
     {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {f : E → F} (hf : MemLp f p μ) {ε : ℝ} (hε : 0 < ε) :
     ∃ g, HasCompactSupport g ∧ ContDiff ℝ ∞ g ∧ eLpNorm (f - g) p μ ≤ ENNReal.ofReal ε := by
   -- We use a standard ε/2 argument to deduce the result from the approximation for
@@ -131,7 +131,7 @@ theorem _root_.MeasureTheory.MemLp.exist_sub_eLpNorm_le {μ : Measure E} [μ.IsA
   have hε₂ : 0 < ε/2 := by positivity
   have hε₂' : 0 < ENNReal.ofReal (ε/2) := by positivity
   obtain ⟨g, hg₁, hg₂, hg₃, hg₄⟩ := hf.exists_hasCompactSupport_eLpNorm_sub_le hp hε₂'.ne'
-  obtain ⟨g', hg'₁, hg'₂, hg'₃⟩ := hg₁.exist_sub_eLpNorm_le_of_continuous μ hp hp₂ hε₂ hg₃
+  obtain ⟨g', hg'₁, hg'₂, hg'₃⟩ := hg₁.exist_eLpNorm_sub_le_of_continuous μ hp hp₂ hε₂ hg₃
   refine ⟨g', hg'₁, hg'₂, ?_⟩
   have : f - g' = (f - g) - (g' - g) := by simp
   grw [this, eLpNorm_sub_le (hf.aestronglyMeasurable.sub hg₄.aestronglyMeasurable)
