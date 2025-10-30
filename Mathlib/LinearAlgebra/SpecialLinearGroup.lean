@@ -347,6 +347,12 @@ noncomputable def _root_.Matrix.SpecialLinearGroup.toLin_equiv
   Matrix.SpecialLinearGroup.toLin'_equiv.trans
     (SpecialLinearGroup.congr_linEquiv (b.repr.trans (Finsupp.linearEquivFunOnFinite R R n)).symm)
 
+theorem _root_.Matrix.SpecialLinearGroup.toLin_equiv.toLinearMap_eq
+    (b : Module.Basis n R V) (g : Matrix.SpecialLinearGroup n R) :
+    (Matrix.SpecialLinearGroup.toLin_equiv b g : V →ₗ[R] V) =
+        (Matrix.toLin b b g) :=
+  rfl
+
 end Matrix
 
 namespace SpecialLinearGroup
@@ -538,14 +544,18 @@ theorem center_equiv_rootsOfUnity_symm_apply
     center_equiv_rootsOfUnity_invFun, LinearMap.coe_equivOfIsUnitDet]
   congr
 
-#check center_equiv_rootsOfUnity
+section
+
+open Subgroup Matrix
+
+variable {n : Type*} [Fintype n] [DecidableEq n] {R : Type*} [CommRing R]
+
+variable [Nontrivial R]
+variable {V : Type*} [AddCommGroup V] [Module R V] [Module.Free R V] [Module.Finite R V]
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Module.Basis ι R V)
 
-#check Subgroup.centerCongr (Matrix.SpecialLinearGroup.toLin_equiv b)
-
-#check (Subgroup.centerCongr (Matrix.SpecialLinearGroup.toLin_equiv b)).trans
-  center_equiv_rootsOfUnity
-
+-- compare with `Matrix.SpecialLinearGroup.center_equiv_rootsOfUnity`
+-- TODO : golf!
 example (g) : ((Subgroup.centerCongr (Matrix.SpecialLinearGroup.toLin_equiv b)).trans
     center_equiv_rootsOfUnity g).val =
     Matrix.SpecialLinearGroup.center_equiv_rootsOfUnity g := by
@@ -560,14 +570,14 @@ example (g) : ((Subgroup.centerCongr (Matrix.SpecialLinearGroup.toLin_equiv b)).
     rw [not_subsingleton_iff_nontrivial] at hV
     have := Module.Free.instFaithfulSMulOfNontrivial R V
     suffices (((((Subgroup.centerCongr (Matrix.SpecialLinearGroup.toLin_equiv b)).trans
-    center_equiv_rootsOfUnity g).val : R) • LinearMap.id) : V →ₗ[R] V) =
-      ((Matrix.SpecialLinearGroup.center_equiv_rootsOfUnity g).val : R) • LinearMap.id by
-        rw [← Units.val_inj]
-        apply FaithfulSMul.eq_of_smul_eq_smul (α := V)
-        simp only [MulEquiv.trans_apply, LinearMap.ext_iff, LinearMap.smul_apply, LinearMap.id_coe,
-          id_eq] at this
-        intro x
-        erw [this]
+      center_equiv_rootsOfUnity g).val : R) • LinearMap.id) : V →ₗ[R] V) =
+        ((Matrix.SpecialLinearGroup.center_equiv_rootsOfUnity g).val : R) • LinearMap.id by
+      rw [← Units.val_inj]
+      apply FaithfulSMul.eq_of_smul_eq_smul (α := V)
+      intro x
+      simp only [MulEquiv.trans_apply, LinearMap.ext_iff, LinearMap.smul_apply, LinearMap.id_coe,
+        id_eq] at this
+      erw [this]
     simp only [MulEquiv.trans_apply]
     have hgg' := Subgroup.centerCongr_apply_coe (Matrix.SpecialLinearGroup.toLin_equiv b) g
     set g' := ((Subgroup.centerCongr (Matrix.SpecialLinearGroup.toLin_equiv b)) g)
@@ -575,20 +585,15 @@ example (g) : ((Subgroup.centerCongr (Matrix.SpecialLinearGroup.toLin_equiv b)).
     simp only [LinearMap.smul_apply, LinearMap.id_coe, id_eq]
     erw [center_equiv_rootsOfUnity_apply_apply _ x]
     simp only
-    simp [Matrix.SpecialLinearGroup.center_equiv_rootsOfUnity]
-    simp [Or.by_cases]
-    rw [dif_neg hι, hgg']
+    rw [← Subtype.coe_inj, ← LinearEquiv.toLinearMap_inj, LinearMap.ext_iff] at hgg'
+    erw [hgg' x]
+    specialize hgg' x
+    rw [Matrix.SpecialLinearGroup.toLin_equiv.toLinearMap_eq,
+      Matrix.SpecialLinearGroup.eq_scalar_center_equiv_rootsOfUnity g,
+      Matrix.toLin_scalar]
     simp
-    sorry
 
-
-example : False := by
-    let e := center_equiv_rootsOfUnity (R := R) (V := V)
-    let f := Subgroup.centerCongr (Matrix.SpecialLinearGroup.toLin_equiv b)
-    let g := f.trans e
-    let h := Matrix.SpecialLinearGroup.center_equiv_rootsOfUnity (n := ι) (R := R)
-    sorry
-
+end
 
 end center
 
