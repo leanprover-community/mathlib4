@@ -22,6 +22,7 @@ universe v₁ v₂ u₁ u₂ u
 
 open CategoryTheory MonoidalCategory
 
+namespace CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory C]
 
 open scoped MonObj ComonObj
@@ -461,4 +462,4 @@ theorem antipode_antipode (A : C) [HopfObj A] (comm : (β_ _ _).hom ≫ μ[A] = 
 
 end HopfObj
 
-end
+end CategoryTheory

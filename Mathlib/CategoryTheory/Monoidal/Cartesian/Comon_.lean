@@ -19,6 +19,7 @@ universe v u
 
 noncomputable section
 
+namespace CategoryTheory
 variable (C : Type u) [Category.{v} C] [CartesianMonoidalCategory C]
 
 attribute [local simp] leftUnitor_hom rightUnitor_hom
@@ -71,3 +72,5 @@ to the category itself, via the forgetful functor.
   inverse := cartesianComon C
   unitIso := NatIso.ofComponents isoCartesianComon
   counitIso := NatIso.ofComponents (fun _ => .refl _)
+
+end CategoryTheory
