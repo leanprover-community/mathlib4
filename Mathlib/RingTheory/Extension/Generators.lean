@@ -664,7 +664,7 @@ lemma ker_comp_eq_sup (Q : Generators S T ι') (P : Generators R S ι) :
 
 lemma toAlgHom_ofComp_localizationAway (g : S) [IsLocalization.Away g T] :
     ((localizationAway T g).ofComp P).toAlgHom
-      ((rename Sum.inr) (P.σ g) * X (Sum.inl ()) - 1) = C g * X () - 1 := by
+      (rename Sum.inr (P.σ g) * X (Sum.inl ()) - 1) = C g * X () - 1 := by
   simp [Generators.Hom.toAlgHom, Generators.ofComp, aeval_rename]
 
 end Hom
