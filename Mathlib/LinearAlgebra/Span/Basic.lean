@@ -428,21 +428,14 @@ theorem _root_.LinearMap.exists_ne_zero_of_sSup_eq {N : Submodule R M} {f : N �
     by rw [sSup_eq_iSup] at hs; rw [sSup_image, ← hs, biSup_comap_subtype_eq_top]
   ⟨m, hm, fun eq ↦ ne (LinearMap.ext fun x ↦ congr($eq ⟨x, x.2⟩))⟩
 
-lemma comap_span_range_comp_of_injective {f : M →ₛₗ[σ₁₂] M₂} [RingHomSurjective σ₁₂]
-    {ι : Type*} (hf : Function.Injective f) (x : ι → M) :
-    comap f (span R₂ (.range <| f ∘ x)) = span R (.range x) := by
-  refine map_injective_of_injective hf ?_
-  rw [map_comap_eq_self, map_span, Set.range_comp]
-  simp [span_le, Set.range_subset_iff]
-
 lemma span_range_subtype_eq_top_iff {ι : Type*} (p : Submodule R M) {s : ι → M}
     (hs : ∀ i, s i ∈ p) :
-    span R (Set.range <| fun i ↦ (⟨s i, hs i⟩ : p)) = ⊤ ↔ span R (Set.range s) = p := by
+    span R (Set.range fun i ↦ (⟨s i, hs i⟩ : p)) = ⊤ ↔ span R (Set.range s) = p := by
   rw [← (map_injective_of_injective p.injective_subtype).eq_iff]
   simp [map_span, ← Set.range_comp, Function.comp_def]
 
 lemma comap_le_comap_iff_of_le_range {f : M →ₛₗ[σ₁₂] M₂} [RingHomSurjective σ₁₂]
-    {p q : Submodule R₂ M₂} (hp : p ≤ LinearMap.range f) (hq : q ≤ LinearMap.range f) :
+    {p q : Submodule R₂ M₂} (hp : p ≤ LinearMap.range f) :
     p.comap f ≤ q.comap f ↔ p ≤ q := by
   rw [← Submodule.map_le_iff_le_comap, Submodule.map_comap_eq_of_le hp]
 
