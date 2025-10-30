@@ -89,10 +89,14 @@ lemma _root_.LinearMap.map_mul_of_map_mul_tmul {f : A ⊗[R] B →ₗ[S] C}
     exact hf _ _ _ _) x y
 
 /-- Build an algebra morphism from a linear map out of a tensor product, and evidence that on pure
-tensors, it preserves multiplication and the identity. -/
+tensors, it preserves multiplication and the identity.
+
+Note that we state `h_one` using `1 ⊗ₜ[R] 1` instead of `1` so that lemmas about `f` applied to pure
+tensors can be directly applied by the caller (without needing `TensorProduct.one_def`).
+-/
 def algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[S] C)
-    (h_mul : ∀ (a₁ a₂ : A) (b₁ b₂ : B), f ((a₁ * a₂) ⊗ₜ (b₁ * b₂)) = f (a₁ ⊗ₜ b₁) * f (a₂ ⊗ₜ b₂)) :
-    A ⊗[R] B →ₐ[S] C :=
+    (h_mul : ∀ (a₁ a₂ : A) (b₁ b₂ : B), f ((a₁ * a₂) ⊗ₜ (b₁ * b₂)) = f (a₁ ⊗ₜ b₁) * f (a₂ ⊗ₜ b₂))
+    (h_one : f (1 ⊗ₜ[R] 1) = 1) : A ⊗[R] B →ₐ[S] C :=
   AlgHom.ofLinearMap f h_one (f.map_mul_of_map_mul_tmul h_mul)
 
 @[simp]
@@ -101,15 +105,19 @@ theorem algHomOfLinearMapTensorProduct_apply (f h_mul h_one x) :
   rfl
 
 /-- Build an algebra equivalence from a linear equivalence out of a tensor product, and evidence
-that on pure tensors, it preserves multiplication and the identity. -/
+that on pure tensors, it preserves multiplication and the identity.
+
+Note that we state `h_one` using `1 ⊗ₜ[R] 1` instead of `1` so that lemmas about `f` applied to pure
+tensors can be directly applied by the caller (without needing `TensorProduct.one_def`).
+-/
 def algEquivOfLinearEquivTensorProduct (f : A ⊗[R] B ≃ₗ[S] C)
-    (h_mul : ∀ (a₁ a₂ : A) (b₁ b₂ : B), f ((a₁ * a₂) ⊗ₜ (b₁ * b₂)) = f (a₁ ⊗ₜ b₁) * f (a₂ ⊗ₜ b₂)) :
-    A ⊗[R] B ≃ₐ[S] C :=
+    (h_mul : ∀ (a₁ a₂ : A) (b₁ b₂ : B), f ((a₁ * a₂) ⊗ₜ (b₁ * b₂)) = f (a₁ ⊗ₜ b₁) * f (a₂ ⊗ₜ b₂))
+    (h_one : f (1 ⊗ₜ[R] 1) = 1) : A ⊗[R] B ≃ₐ[S] C :=
   { algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[S] C) h_mul h_one, f with }
 
 @[simp]
-theorem algEquivOfLinearEquivTensorProduct_apply (f h_mul x) :
-    (algEquivOfLinearEquivTensorProduct f h_mul : A ⊗[R] B ≃ₐ[S] C) x = f x :=
+theorem algEquivOfLinearEquivTensorProduct_apply (f h_mul h_one x) :
+    (algEquivOfLinearEquivTensorProduct f h_mul h_one : A ⊗[R] B ≃ₐ[S] C) x = f x :=
   rfl
 
 variable [Algebra R C]
@@ -213,6 +221,7 @@ protected nonrec def lid : R ⊗[R] A ≃ₐ[R] A :=
     simp only [mul_smul, lid_tmul, Algebra.smul_mul_assoc, Algebra.mul_smul_comm]
     simp_rw [← mul_smul, mul_comm]
     simp)
+    (by simp [Algebra.smul_def])
 
 @[simp] theorem lid_toLinearEquiv :
     (TensorProduct.lid R A).toLinearEquiv = _root_.TensorProduct.lid R A := rfl
@@ -234,6 +243,7 @@ Note that if `A` is commutative this can be instantiated with `S = A`.
 protected nonrec def rid : A ⊗[R] R ≃ₐ[S] A :=
   algEquivOfLinearEquivTensorProduct (AlgebraTensorModule.rid R S A)
     (fun a₁ a₂ r₁ r₂ => smul_mul_smul_comm r₁ a₁ r₂ a₂ |>.symm)
+    (one_smul R _)
 
 @[simp] theorem rid_toLinearEquiv :
     (TensorProduct.rid R S A).toLinearEquiv = AlgebraTensorModule.rid R S A := rfl
@@ -310,7 +320,7 @@ unseal mul in
 /-- The tensor product of R-algebras is commutative, up to algebra isomorphism.
 -/
 protected def comm : A ⊗[R] B ≃ₐ[R] B ⊗[R] A :=
-  algEquivOfLinearEquivTensorProduct (_root_.TensorProduct.comm R A B) (fun _ _ _ _ => rfl)
+  algEquivOfLinearEquivTensorProduct (_root_.TensorProduct.comm R A B) (fun _ _ _ _ => rfl) rfl
 
 @[simp] theorem comm_toLinearEquiv :
     (Algebra.TensorProduct.comm R A B).toLinearEquiv = _root_.TensorProduct.comm R A B := rfl
