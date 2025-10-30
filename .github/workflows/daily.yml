@@ -34,6 +34,25 @@ jobs:
       - name: Checkout branch or tag
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
+      # this step needs to be run here while we have `mathlib4` checked out,
+      # or else `gh run view` will try to look for runs in `mathlib4-nightly-testing`
+      - name: Get URLs
+        id: urls
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          lean4checker_url=$(gh run view ${{ github.run_id }} --json jobs --jq '
+            .jobs[] | select(.name == "check-lean4checker (${{ matrix.branch_type }})")
+            | (.url + (.steps[] | select(.name == "Check environments using lean4checker")
+              | "#step:\(.number):1"))')
+          echo "lean4checker_url=$lean4checker_url" | tee -a "$GITHUB_OUTPUT"
+
+          mathlib_test_executable_url=$(gh run view ${{ github.run_id }} --json jobs --jq '
+            .jobs[] | select(.name == "check-lean4checker (${{ matrix.branch_type }})")
+            | (.url + (.steps[] | select(.name == "Run mathlib_test_executable")
+              | "#step:\(.number):1"))')
+          echo "mathlib_test_executable_url=$mathlib_test_executable_url" | tee -a "$GITHUB_OUTPUT"
+
       - name: Fetch latest tags (if nightly)
         if: matrix.branch_type == 'nightly'
         run: |
@@ -102,23 +121,6 @@ jobs:
         continue-on-error: true
         run: |
           lake exe mathlib_test_executable
-
-      - name: Get URLs
-        id: urls
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          lean4checker_url=$(gh run view ${{ github.run_id }} --json jobs --jq '
-            .jobs[] | select(.name == "check-lean4checker (${{ matrix.branch_type }})")
-            | (.url + (.steps[] | select(.name == "Check environments using lean4checker")
-              | "#step:\(.number):1"))')
-          echo "lean4checker_url=$lean4checker_url" >> "$GITHUB_OUTPUT"
-
-          mathlib_test_executable_url=$(gh run view ${{ github.run_id }} --json jobs --jq '
-            .jobs[] | select(.name == "check-lean4checker (${{ matrix.branch_type }})")
-            | (.url + (.steps[] | select(.name == "Run mathlib_test_executable")
-              | "#step:\(.number):1"))')
-          echo "mathlib_test_executable_url=$mathlib_test_executable_url" >> "$GITHUB_OUTPUT"
 
       - name: Post success message for lean4checker on Zulip
         if: steps.lean4checker.outcome == 'success'
