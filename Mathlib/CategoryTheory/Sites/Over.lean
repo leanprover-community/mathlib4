@@ -279,7 +279,7 @@ def overMapPullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
 lemma overMapPullback_comp_id {X Y : C} (f : X ⟶ Y) :
     (J.overMapPullbackComp A f (𝟙 Y)).inv ≫
       Functor.whiskerRight (J.overMapPullbackId A Y).hom _ ≫ (Functor.leftUnitor _).hom =
-        (overMapPullbackCongr _ _ (by simp)).hom := by
+    (overMapPullbackCongr _ _ (by simp)).hom := by
   ext
   dsimp
   simp only [overMapPullbackComp_inv_app_val_app, overMapPullbackId_hom_app_val_app, comp_id,
@@ -291,7 +291,7 @@ lemma overMapPullback_comp_id {X Y : C} (f : X ⟶ Y) :
 lemma overMapPullback_id_comp {X Y : C} (f : X ⟶ Y) :
     (J.overMapPullbackComp A (𝟙 X) f).inv ≫
       Functor.whiskerLeft _ (J.overMapPullbackId A X).hom ≫ (Functor.rightUnitor _).hom =
-        (overMapPullbackCongr _ _ (by simp)).hom := by
+    (overMapPullbackCongr _ _ (by simp)).hom := by
   ext
   dsimp
   simp only [overMapPullbackComp_inv_app_val_app, overMapPullbackId_hom_app_val_app,
@@ -304,10 +304,10 @@ lemma overMapPullback_id_comp {X Y : C} (f : X ⟶ Y) :
 lemma overMapPullback_assoc {X Y Z T : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ T) :
     (J.overMapPullbackComp A f (g ≫ h)).inv ≫
       Functor.whiskerRight (J.overMapPullbackComp A g h).inv _ ≫
-      (Functor.associator _ _ _).hom ≫
-        Functor.whiskerLeft _ (J.overMapPullbackComp A f g).hom ≫
-          (J.overMapPullbackComp A (f ≫ g) h).hom =
-        (overMapPullbackCongr _ _ (by simp)).hom := by
+        (Functor.associator _ _ _).hom ≫
+          Functor.whiskerLeft _ (J.overMapPullbackComp A f g).hom ≫
+            (J.overMapPullbackComp A (f ≫ g) h).hom =
+    (overMapPullbackCongr _ _ (by simp)).hom := by
   ext
   dsimp
   simp only [overMapPullbackComp_inv_app_val_app, overMapPullbackComp_hom_app_val_app,
