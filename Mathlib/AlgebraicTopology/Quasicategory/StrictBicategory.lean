@@ -50,20 +50,21 @@ instance QCat.SimplicialCat : SimplicialCategory QCat where
  comp X Y Z := { app := fun _ ⟨f, g⟩ => f.comp g }
  homEquiv := Functor.natTransEquiv.symm
 
+/-- A type synonym for `C`, thought of as the objects of the quotient category. -/
+def Quotient.equiv {C : Type _} [Category C] (r : HomRel C) : Quotient r ≃ C where
+  toFun x := x.1
+  invFun x := ⟨x⟩
+
+def hoFunctor_obj_equiv (X : SSet) : hoFunctor.obj X ≃ X _⦋0⦌ :=
+  (Quotient.equiv _).trans (Quotient.equiv _)
+
 theorem hoFunctor_normal (X : SSet.{u}) : Function.Bijective
     fun (f : 𝟙_ SSet ⟶ X) => Functor.LaxMonoidal.ε hoFunctor ≫ hoFunctor.map f := by
-  refine Function.bijective_iff_has_inverse.mpr ⟨?_, ?_, ?_⟩
-  · intro F
-    let eq₁ : 𝟙_ Cat ⥤ (hoFunctor.obj X) ≃ hoFunctor.obj X :=
-      Cat.fromChosenTerminalEquiv.{u,u, u,u} (C := hoFunctor.obj X)
-    let thing := eq₁.toFun F
-    let eq₂ : (𝟙_ SSet ⟶ X) ≃ X _⦋0⦌ := SSet.unitHomEquiv X
-    let eq₃ : X _⦋0⦌ ≃ hoFunctor.obj X := sorry
-    let equiv := eq₂.trans (eq₃.trans eq₁.symm)
-    apply eq₂.invFun
-    sorry
-  · sorry
-  · sorry
+  let equiv := (SSet.unitHomEquiv X).trans <|
+    (hoFunctor_obj_equiv.{u} X).symm.trans Cat.fromChosenTerminalEquiv.symm
+  convert ← equiv.bijective with f
+  simp [equiv]
+  rw [Equiv.symm_apply_eq, ← Equiv.eq_symm_apply]; rfl
 
 /-- `QCat` obtains a `Cat`-enriched ordinary category structure by applying `hoFunctor` to the
 hom objects in its `SSet`-enriched ordinary structure. -/
@@ -97,9 +98,9 @@ noncomputable instance QCat.bicategory : Bicategory QCat := by
   apply CatEnrichedOrdinary.instBicategory
 
 /-- The strict bicategory of quasicategories extracted from `QCat.CatEnrichedOrdinaryCat`. -/
-noncomputable instance QCat.strictBicategory : Bicategory.Strict QCat := by sorry
-  -- have : EnrichedOrdinaryCategory Cat (ObjectProperty.FullSubcategory Quasicategory) :=
-  --    QCat.CatEnrichedOrdinaryCat
-  -- CatEnrichedOrdinary.instStrict
+noncomputable instance QCat.strictBicategory : Bicategory.Strict QCat :=
+  let : EnrichedOrdinaryCategory Cat (ObjectProperty.FullSubcategory Quasicategory) :=
+    QCat.CatEnrichedOrdinaryCat
+  CatEnrichedOrdinary.instStrict
 
 end CategoryTheory
