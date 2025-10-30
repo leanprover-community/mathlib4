@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Analysis.Complex.Polynomial.UnitTrinomial
+import Mathlib.FieldTheory.Finite.GaloisField
 import Mathlib.FieldTheory.Galois.IsGaloisGroup
 import Mathlib.FieldTheory.KrullTopology
 import Mathlib.FieldTheory.Relrank
@@ -183,20 +184,39 @@ open IsGaloisGroup
 
 open NumberField
 
-instance (K : Type*) [Field K] [NumberField K]
-    (G : Type*) [Group G] [MulSemiringAction G K] : MulSemiringAction G (𝓞 K) where
-  smul := fun g x ↦ ⟨g • (x : K), sorry⟩
-  one_smul := sorry
-  mul_smul := sorry
-  smul_zero := sorry
-  smul_add := sorry
-  smul_one := sorry
-  smul_mul := sorry
+instance (R K : Type*) [CommRing R] [CommRing K] [Algebra R K]
+    (G : Type*) [Group G] [MulSemiringAction G K] [SMulCommClass G R K] :
+    MulSemiringAction G (integralClosure R K) where
+  smul := fun g x ↦ ⟨g • (x : K), x.2.map (MulSemiringAction.toAlgHom R K g)⟩
+  one_smul x := by ext; exact one_smul G (x : K)
+  mul_smul g h x := by ext; exact mul_smul g h (x : K)
+  smul_zero g := by ext; exact smul_zero g
+  smul_add g x y := by ext; exact smul_add g (x : K) (y : K)
+  smul_one g := by ext; exact smul_one g
+  smul_mul g x y := by ext; exact smul_mul' g (x : K) (y : K)
 
-instance inst4 (K L : Type*) [Field K] [Field L] [NumberField K] [NumberField L] [Algebra K L]
+instance {G K : Type*} [Group G] [Field K] [NumberField K] [MulSemiringAction G K] :
+    MulSemiringAction G (𝓞 K) :=
+  inferInstanceAs (MulSemiringAction G (integralClosure _ _))
+
+instance (K L : Type*) [Field K] [Field L] [NumberField K] [NumberField L] [Algebra K L]
     (G : Type*) [Group G] [MulSemiringAction G L] [IsGaloisGroup G K L] :
-    IsGaloisGroup G (𝓞 K) (𝓞 L) := by
-  sorry
+    IsGaloisGroup G (𝓞 K) (𝓞 L) :=
+  IsGaloisGroup.of_isFractionRing G (𝓞 K) (𝓞 L) K L (fun _ _ ↦ rfl)
+
+instance (L : Type*) [Field L] [NumberField L]
+    (G : Type*) [Group G] [MulSemiringAction G L] [IsGaloisGroup G ℚ L] :
+    IsGaloisGroup G ℤ (𝓞 L) :=
+  IsGaloisGroup.of_isFractionRing G ℤ (𝓞 L) ℚ L (fun _ _ ↦ rfl)
+
+instance tada1 {K : Type*} [Field K] [NumberField K] (m : Ideal (𝓞 K)) [m.IsMaximal] :
+    Finite (𝓞 K ⧸ m) :=
+  m.finiteQuotientOfFreeOfNeBot (m.bot_lt_of_maximal (RingOfIntegers.not_isField K)).ne'
+
+theorem Ideal.IsMaximal.ne_bot_of_isIntegral_int {R : Type*} [CommRing R]
+    [CharZero R] [Algebra.IsIntegral ℤ R] (I : Ideal R) [I.IsMaximal] : I ≠ ⊥ :=
+  Ring.ne_bot_of_isMaximal_of_not_isField ‹_› fun h ↦ Int.not_isField
+    (isField_of_isIntegral_of_isField (FaithfulSMul.algebraMap_injective ℤ R) h)
 
 theorem genthm₀ (K : Type*) [Field K] [NumberField K]
     (G : Type*) [Group G] [MulSemiringAction G K]
@@ -204,48 +224,40 @@ theorem genthm₀ (K : Type*) [Field K] [NumberField K]
     ⨆ m : MaximalSpectrum (𝓞 K), m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
   have : Finite G := IsGaloisGroup.finite G ℚ K
   set H : Subgroup G := ⨆ m : MaximalSpectrum (𝓞 K), m.asIdeal.toAddSubgroup.inertia G
-  rw [eq_top_iff, ← fixingSubgroup_fixedPoints G ℚ K H, ← le_fixedPoints_iff_le_fixingSubgroup,
-    fixedPoints_top, le_bot_iff]
   set F : IntermediateField ℚ K := FixedPoints.intermediateField H
-  have h : ∀ m : MaximalSpectrum (𝓞 K), m.asIdeal.toAddSubgroup.inertia G ≤ H := le_iSup _
-  replace h (m : MaximalSpectrum (𝓞 K)) : Nat.card (m.asIdeal.toAddSubgroup.inertia H) =
-      Nat.card (m.asIdeal.toAddSubgroup.inertia G) := by
-    rw [← Subgroup.map_subgroupOf_eq_of_le (h m), Subgroup.card_subtype,
+  suffices Module.finrank ℚ F ≤ 1 by
+    rw [eq_top_iff, ← fixingSubgroup_fixedPoints G ℚ K H, ← le_fixedPoints_iff_le_fixingSubgroup,
+      fixedPoints_top, le_bot_iff, ← IntermediateField.finrank_eq_one_iff]
+    exact le_antisymm this Module.finrank_pos
+  suffices h : ∀ (m : Ideal (𝓞 F)) (hm : m.IsMaximal), Algebra.IsUnramifiedAt ℤ m by
+    contrapose! h
+    obtain ⟨p, h1, h2, h3⟩ := NumberField.exists_not_isUramifiedAt_int (𝒪 := 𝓞 F) h
+    exact ⟨p, h1, h3⟩
+  intro m _
+  have hm2 := Ideal.IsMaximal.ne_bot_of_isIntegral_int m
+  rw [Algebra.isUnramifiedAt_iff_of_isDedekindDomain hm2]
+  obtain ⟨m, hm, ⟨rfl⟩⟩ := Ideal.exists_ideal_liesOver_maximal_of_isIntegral m (𝓞 K)
+  rw [Ideal.under_under]
+  have hm1 := Ideal.IsMaximal.ne_bot_of_isIntegral_int (m.under ℤ)
+  have h : m.toAddSubgroup.inertia G ≤ H :=
+    le_iSup (fun m : MaximalSpectrum (𝓞 K) ↦ m.asIdeal.toAddSubgroup.inertia G) ⟨m, hm⟩
+  replace h : Nat.card (m.toAddSubgroup.inertia H) = Nat.card (m.toAddSubgroup.inertia G) := by
+    rw [← Subgroup.map_subgroupOf_eq_of_le h, Subgroup.card_subtype,
       AddSubgroup.subgroupOf_inertia]
-  replace h (m : MaximalSpectrum (𝓞 K)) :
-    Ideal.ramificationIdx (algebraMap (𝓞 F) (𝓞 K)) (m.asIdeal.under (𝓞 F)) m.asIdeal =
-      Ideal.ramificationIdx (algebraMap (𝓞 ℚ) (𝓞 K)) (m.asIdeal.under (𝓞 ℚ)) m.asIdeal := by
-    have hm := (m.asIdeal.bot_lt_of_maximal (RingOfIntegers.not_isField K)).ne'
-    have : IsGalois ℚ K := IsGaloisGroup.isGalois G ℚ K
-    -- These sorrys can be removed with an `IsDedekindDomain` assumption on `card_inertiaSubgroup`.
-    have : Algebra.IsSeparable (𝓞 F ⧸ Ideal.under (𝓞 F) m.asIdeal) (𝓞 K ⧸ m.asIdeal) := sorry
-    have : Algebra.IsSeparable (𝓞 ℚ ⧸ Ideal.under (𝓞 ℚ) m.asIdeal) (𝓞 K ⧸ m.asIdeal) := sorry
-    rw [← Ideal.ramificationIdxIn_eq_ramificationIdx (m.asIdeal.under (𝓞 F)) m.asIdeal F K]
-    rw [← Ideal.ramificationIdxIn_eq_ramificationIdx (m.asIdeal.under (𝓞 ℚ)) m.asIdeal ℚ K]
-    rw [← Ideal.card_inertia_eq_ramificationIdxIn (G := H) F K (m.asIdeal.under (𝓞 F)) ?_
-      m.asIdeal]
-    rw [← Ideal.card_inertia_eq_ramificationIdxIn (G := G) ℚ K (m.asIdeal.under (𝓞 ℚ)) ?_
-      m.asIdeal]
-    apply h
-    all_goals intro h; exact hm (m.asIdeal.eq_bot_of_liesOver_bot (h := ⟨h.symm⟩))
-  -- switch over from 𝓞 ℚ to ℤ at some point
-  replace h (m : MaximalSpectrum (𝓞 F)) :
-      Ideal.ramificationIdx (algebraMap ℤ (𝓞 F)) (m.asIdeal.under ℤ) m.asIdeal = 1 := by
-    let q : MaximalSpectrum (𝓞 K) := sorry
-    have key := @Ideal.ramificationIdx_algebra_tower ℤ (𝓞 F) (𝓞 K) _ _ _ _ _ _ _ _ _
-      (m.asIdeal.under ℤ) m.asIdeal q.asIdeal _ _
-    sorry
-  replace h (m : MaximalSpectrum (𝓞 F)) : Algebra.IsUnramifiedAt ℤ m.asIdeal := by
-    rw [Algebra.isUnramifiedAt_iff_of_isDedekindDomain]
-    · exact h m
-    · exact (m.asIdeal.bot_lt_of_maximal (RingOfIntegers.not_isField F)).ne'
-  suffices Module.finrank ℚ F ≤ 1 from
-    IntermediateField.finrank_eq_one_iff.mp (le_antisymm this Module.finrank_pos)
-  contrapose! h
-  obtain ⟨p, h1, h2, h3⟩ := NumberField.exists_not_isUramifiedAt_int (𝒪 := 𝓞 F) h
-  exact ⟨⟨p, h1⟩, h3⟩
+  let := Ideal.Quotient.field m
+  let := Ideal.Quotient.field (m.under (𝓞 F))
+  let := Ideal.Quotient.field (m.under ℤ)
+  -- todo: clean up once #30934 is merged
+  have : IsGalois ℚ K := IsGaloisGroup.isGalois G ℚ K
+  rw [Ideal.card_inertia_eq_ramificationIdxIn F K (m.under (𝓞 F)) hm2 m,
+    Ideal.card_inertia_eq_ramificationIdxIn ℚ K (m.under ℤ) hm1 m,
+    Ideal.ramificationIdxIn_eq_ramificationIdx (m.under (𝓞 F)) m F K,
+    Ideal.ramificationIdxIn_eq_ramificationIdx (m.under ℤ) m ℚ K] at h
+  have key := Ideal.ramificationIdx_algebra_tower (Ideal.map_ne_bot_of_ne_bot hm2)
+    (Ideal.map_ne_bot_of_ne_bot hm1) Ideal.map_comap_le
+  rwa [h, right_eq_mul₀ (Ideal.IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver m hm1)] at key
 
--- generalize from `𝓞 K` to `IsIntegralClosure`.
+-- generalize from `𝓞 K` to `IsIntegralClosure`?
 theorem genthm (K : Type*) [Field K] [NumberField K]
     (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K]
     (G : Type*) [Group G] [MulSemiringAction G K]
