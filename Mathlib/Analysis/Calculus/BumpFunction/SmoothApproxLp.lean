@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
 import Mathlib.MeasureTheory.Function.ContinuousMapDense
-import Mathlib.Analysis.Calculus.BumpFunction.SmoothApprox
 import Mathlib.MeasureTheory.Function.UniformIntegrable
+import Mathlib.Analysis.Calculus.BumpFunction.Convolution
 import Mathlib.Tactic.MoveAdd
 
 /-!

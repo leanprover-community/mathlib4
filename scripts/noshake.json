@@ -530,6 +530,8 @@
   "Mathlib.Analysis.Convex.Star": ["Mathlib.Algebra.Order.Module.Synonym"],
   "Mathlib.Analysis.Convex.Basic":
   ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
+  "Mathlib.Analysis.Calculus.BumpFunction.SmoothApproxLp":
+  ["Mathlib.Tactic.MoveAdd"],
   "Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital":
   ["Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital"],
   "Mathlib.AlgebraicTopology.SimplexCategory.Defs":
