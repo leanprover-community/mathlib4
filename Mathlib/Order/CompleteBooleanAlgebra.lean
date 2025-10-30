@@ -336,7 +336,7 @@ theorem biSup_iInter_of_pairwise_disjoint [CompletelyDistribLattice α] {ι κ :
   · exact le_iSup₂_of_le (I j) (fun k ↦ (H k) ▸ (hI k)) (iInf_le _ _)
   · push_neg at H
     rcases H with ⟨k, hk⟩
-    calc ⨅ k, f (I k)
+    calc ⨅ l, f (I l)
     _ ≤ f (I k) ⊓ f (I j) := le_inf (iInf_le _ _) (iInf_le _ _)
     _ = ⊥ := (h hk).eq_bot
     _ ≤ _ := bot_le
