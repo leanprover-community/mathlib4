@@ -172,23 +172,15 @@ instance : Zero 𝓓^{n}_{K}(E, F) where
 lemma coe_zero : (0 : 𝓓^{n}_{K}(E, F)) = (0 : E → F) :=
   rfl
 
-@[simp]
-lemma zero_apply (x : E) : (0 : 𝓓^{n}_{K}(E, F)) x = 0 :=
-  rfl
-
 instance : Add 𝓓^{n}_{K}(E, F) where
   add f g := .mk (f + g) (f.contDiff.add g.contDiff) <| by
     rw [← add_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
--- TODO:  can this and the next lemma be auto-generated, e.g. using `simps`?
+-- TODO: can this lemma be auto-generated, e.g. using `simps`?
 -- Investigate the same question for `zero` above and `sub` , `neg` and `smul` below.
 @[simp]
 lemma coe_add (f g : 𝓓^{n}_{K}(E, F)) : (f + g : 𝓓^{n}_{K}(E, F)) = (f : E → F) + g :=
-  rfl
-
-@[simp]
-lemma add_apply (f g : 𝓓^{n}_{K}(E, F)) (x : E) : (f + g) x = f x + g x :=
   rfl
 
 instance : Neg 𝓓^{n}_{K}(E, F) where
@@ -200,10 +192,6 @@ instance : Neg 𝓓^{n}_{K}(E, F) where
 lemma coe_neg (f : 𝓓^{n}_{K}(E, F)) : (-f : 𝓓^{n}_{K}(E, F)) = (-f : E → F) :=
   rfl
 
-@[simp]
-theorem neg_apply {f : 𝓓^{n}_{K}(E, F)} {x : E} : (-f) x = - f x :=
-  rfl
-
 instance instSub : Sub 𝓓^{n}_{K}(E, F) where
   sub f g := .mk (f - g) (f.contDiff.sub g.contDiff) <| by
     rw [← sub_zero 0]
@@ -211,10 +199,6 @@ instance instSub : Sub 𝓓^{n}_{K}(E, F) where
 
 @[simp]
 lemma coe_sub (f g : 𝓓^{n}_{K}(E, F)) : (f - g : 𝓓^{n}_{K}(E, F)) = (f : E → F) - g :=
-  rfl
-
-@[simp]
-theorem sub_apply {f g : 𝓓^{n}_{K}(E, F)} {x : E} : (f - g) x = f x - g x :=
   rfl
 
 instance instSMul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
@@ -226,11 +210,6 @@ instance instSMul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [Continu
 @[simp]
 lemma coe_smul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
     (c : R) (f : 𝓓^{n}_{K}(E, F)) : (c • f : 𝓓^{n}_{K}(E, F)) = c • (f : E → F) :=
-  rfl
-
-@[simp]
-lemma smul_apply {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
-    (c : R) (f : 𝓓^{n}_{K}(E, F)) (x : E) : (c • f) x = c • (f x) :=
   rfl
 
 instance : AddCommGroup 𝓓^{n}_{K}(E, F) :=
