@@ -198,6 +198,7 @@ Note that this should be spelled `≤`. -/
 def IsSubgraph (x y : SimpleGraph V) : Prop :=
   ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w
 
+/-- For graphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
 instance : LE (SimpleGraph V) :=
   ⟨IsSubgraph⟩
 
@@ -290,11 +291,11 @@ theorem iInf_adj_of_nonempty [Nonempty ι] {f : ι → SimpleGraph V} :
     (⨅ i, f i).Adj a b ↔ ∀ i, (f i).Adj a b := by
   rw [iInf, sInf_adj_of_nonempty (Set.range_nonempty _), Set.forall_mem_range]
 
-/-- For graphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
+instance : PartialOrder (SimpleGraph V) :=
+  PartialOrder.lift _ adj_injective
+
 instance distribLattice : DistribLattice (SimpleGraph V) :=
-  { show DistribLattice (SimpleGraph V) from
-      adj_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl with
-    le := fun G H => ∀ ⦃a b⦄, G.Adj a b → H.Adj a b }
+    adj_injective.distribLattice _ .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGraph V) :=
   { SimpleGraph.distribLattice with

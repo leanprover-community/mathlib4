@@ -377,7 +377,7 @@ theorem coe_sdiff (s t : L.DefinableSet A α) :
 lemma coe_himp (s t : L.DefinableSet A α) : ↑(s ⇨ t) = (s ⇨ t : Set (α → M)) := rfl
 
 noncomputable instance instBooleanAlgebra : BooleanAlgebra (L.DefinableSet A α) :=
-  Function.Injective.booleanAlgebra (α := L.DefinableSet A α) _ Subtype.coe_injective
+  Function.Injective.booleanAlgebra _ Subtype.coe_injective .rfl .rfl
     coe_sup coe_inf coe_top coe_bot coe_compl coe_sdiff coe_himp
 
 end DefinableSet
