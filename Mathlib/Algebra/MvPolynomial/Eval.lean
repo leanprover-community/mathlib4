@@ -671,8 +671,7 @@ theorem aeval_prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) 
 lemma aeval_C_comp_left {ι S : Type*} [CommSemiring S] [Algebra R S]
     (f : σ → S) (p : MvPolynomial σ R) :
     aeval (C (σ := ι) ∘ f) p = C (aeval f p) :=
-  rw [← MvPolynomial.algebraMap_eq, Function.comp_def]
-  simp_rw [← IsScalarTower.toAlgHom_apply R S (MvPolynomial ι S), comp_aeval_apply]
+  aeval_algebraMap_apply ..
 
 variable (R)
 
