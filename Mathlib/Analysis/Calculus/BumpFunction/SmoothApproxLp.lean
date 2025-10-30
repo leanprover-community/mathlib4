@@ -12,33 +12,37 @@ import Mathlib.Tactic.MoveAdd
 
 # Density of smooth compactly supported functions in `Lp`
 
+In this file, we prove that `Lp` functions can be approximated by smooth compactly supported
+functions for `p < ∞`.
+
+This result is recorded in `MeasureTheory.MemLp.exist_sub_eLpNorm_le`.
 -/
 
 
-variable {𝕜 𝕜' D E F G R V : Type*}
+variable {E F : Type*}
   [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [FiniteDimensional ℝ E]
   [NormedAddCommGroup F]
 
 open scoped Nat NNReal ContDiff
 open MeasureTheory Pointwise ENNReal
 
-variable {μ : Measure E} [μ.IsAddHaarMeasure]
+namespace HasCompactSupport
 
 variable [OpensMeasurableSpace E] in
 /-- Every continuous compactly supported function is in `Lp` for every `p`. -/
-theorem HasCompactSupport.memLp_of_continuous {p : ℝ≥0∞} {f : E → F} (h₁ : HasCompactSupport f)
-    (h₂ : Continuous f) : MemLp f p μ := by
+theorem memLp_of_continuous (μ : Measure E := by volume_tac) [IsFiniteMeasureOnCompacts μ]
+    {p : ℝ≥0∞} {f : E → F} (h₁ : HasCompactSupport f) (h₂ : Continuous f) : MemLp f p μ := by
   obtain ⟨x₀, hx₀⟩ := h₂.norm.exists_forall_ge_of_hasCompactSupport h₁.norm
   exact h₁.memLp_of_bound h₂.aestronglyMeasurable ‖f x₀‖ (ae_of_all _ hx₀)
 
-variable [BorelSpace E]
-  [CompleteSpace F] [NormedSpace ℝ F]
+variable [BorelSpace E] [CompleteSpace F] [NormedSpace ℝ F]
 
 /-- For every continuous compactly supported function `f`, there exists a smooth compactly supported
 function `g` that increases the support by `1` and `dist (g x) (f x)` is arbitrary small.
 
 The function `g` is explicitly constructed using convolution with a bump function. -/
-theorem exist_eLpNorm₁ {p : ℝ≥0∞} (hp₂ : 1 ≤ p) {ε : ℝ} (hε : 0 < ε) {f : E → F}
+theorem exist_support_subset_cthickening {μ : Measure E} [μ.IsAddHaarMeasure] {p : ℝ≥0∞}
+    (hp₂ : 1 ≤ p) {ε : ℝ} (hε : 0 < ε) {f : E → F}
     (h₁ : HasCompactSupport f) (h₂ : Continuous f) (h₃ : MemLp f p μ) :
     ∃ (g : E → F), HasCompactSupport g ∧ ContDiff ℝ ∞ g ∧
       g.support ⊆ Metric.cthickening 1 (tsupport f) ∧ ∀ x, dist (g x) (f x) ≤ ε := by
@@ -65,11 +69,13 @@ theorem exist_eLpNorm₁ {p : ℝ≥0∞} (hp₂ : 1 ≤ p) {ε : ℝ} (hε : 0 
 
 /-- For every continuous compactly supported function `f`there exists a smooth compactly supported
 function `g` such that `f - g` is arbitrary small in the `Lp`-norm for `p < ∞`. -/
-theorem exist_eLpNorm₂ {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {ε : ℝ} (hε : 0 < ε) {f : E → F}
-    (h₁ : HasCompactSupport f) (h₂ : Continuous f) (h₃ : MemLp f p μ) :
+theorem exist_sub_eLpNorm_le_of_continuous (μ : Measure E := by volume_tac) [μ.IsAddHaarMeasure]
+    {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {ε : ℝ}
+    (hε : 0 < ε) {f : E → F} (h₁ : HasCompactSupport f) (h₂ : Continuous f) :
     ∃ (g : E → F), HasCompactSupport g ∧ ContDiff ℝ ∞ g ∧
     eLpNorm (g - f) p μ ≤ ENNReal.ofReal ε := by
   by_cases hf : f = 0
+  -- Later, we need that the support is non-empty, so we treat the trivial case `f = 0` first.
   · use 0
     simp only [HasCompactSupport.zero, hf, sub_self, eLpNorm_zero, zero_le, and_true, true_and]
     exact contDiff_const
@@ -77,6 +83,7 @@ theorem exist_eLpNorm₂ {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {ε
   have hs₁ : IsCompact s := h₁.cthickening
   have hs₁' : μ s ≠ ⊤ := hs₁.measure_lt_top.ne
   have hs₂ : 0 < (μ s).toReal := by
+    -- Since `f` is not the zero function `s` has positive measure
     apply ENNReal.toReal_pos _ hs₁'
     apply (MeasureTheory.pos_mono (Metric.thickening_subset_cthickening _ _) _).ne'
     refine Metric.isOpen_thickening.measure_pos μ ?_
@@ -96,7 +103,8 @@ theorem exist_eLpNorm₂ {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {ε
     move_mul [ε]
     rw [← Real.rpow_add, one_div, neg_add_cancel, Real.rpow_zero, one_mul]
     exact hs₂
-  obtain ⟨g, hg₁, hg₂, hg₃, hg₄⟩ := exist_eLpNorm₁ hp₂ hε' h₁ h₂ h₃
+  obtain ⟨g, hg₁, hg₂, hg₃, hg₄⟩ := h₁.exist_support_subset_cthickening hp₂ hε' h₂
+    (h₁.memLp_of_continuous μ h₂)
   refine ⟨g, hg₁, hg₂, ?_⟩
   have hs₃ : s.indicator (g - f) = g - f := by
     rw [Set.indicator_eq_self]
@@ -110,16 +118,19 @@ theorem exist_eLpNorm₂ {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {ε
 
 /-- Every `Lp` function can be approximated by a smooth compactly supported function provided that
 `p < ∞`. -/
-theorem exist_eLpNorm₃ {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {f : E → F} (hf : MemLp f p μ)
-    {ε : ℝ} (hε : 0 < ε) :
-    ∃ g, eLpNorm (f - g) p μ ≤ ENNReal.ofReal ε ∧ HasCompactSupport g ∧ ContDiff ℝ ∞ g := by
+theorem _root_.MeasureTheory.MemLp.exist_sub_eLpNorm_le {μ : Measure E} [μ.IsAddHaarMeasure]
+    {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {f : E → F} (hf : MemLp f p μ) {ε : ℝ} (hε : 0 < ε) :
+    ∃ g, HasCompactSupport g ∧ ContDiff ℝ ∞ g ∧ eLpNorm (f - g) p μ ≤ ENNReal.ofReal ε := by
+  -- We use a standard ε/2 argument to deduce the result from the approximation for
+  -- continuous compactly supported functions.
   have hε₂ : 0 < ε/2 := by positivity
   have hε₂' : 0 < ENNReal.ofReal (ε/2) := by positivity
   obtain ⟨g, hg₁, hg₂, hg₃, hg₄⟩ := hf.exists_hasCompactSupport_eLpNorm_sub_le hp hε₂'.ne'
-  obtain ⟨g', hg'₁, hg'₂, hg'₃⟩ := exist_eLpNorm₂ hp hp₂ hε₂ hg₁ hg₃ hg₄
-  have hg'₄ : MemLp g' p μ := hg'₁.memLp_of_continuous hg'₂.continuous
-  refine ⟨g', ?_, hg'₁, hg'₂⟩
+  obtain ⟨g', hg'₁, hg'₂, hg'₃⟩ := hg₁.exist_sub_eLpNorm_le_of_continuous μ hp hp₂ hε₂ hg₃
+  refine ⟨g', hg'₁, hg'₂, ?_⟩
   have : f - g' = (f - g) - (g' - g) := by simp
   grw [this, eLpNorm_sub_le (hf.aestronglyMeasurable.sub hg₄.aestronglyMeasurable)
-    (hg'₄.aestronglyMeasurable.sub hg₄.aestronglyMeasurable) hp₂, hg₂, hg'₃]
+    (hg'₂.continuous.aestronglyMeasurable.sub hg₄.aestronglyMeasurable) hp₂, hg₂, hg'₃]
   rw [← ENNReal.ofReal_add hε₂.le hε₂.le, add_halves]
+
+end HasCompactSupport
