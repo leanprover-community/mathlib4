@@ -696,7 +696,8 @@ variable {E F G : Type*}
 
 variable (E F σ) in
 /-- The topology of compact convergence on `E →L[𝕜] F`. -/
-def CompactConvergenceCLM [TopologicalSpace E] [TopologicalSpace F] := E →SL[σ] F
+abbrev CompactConvergenceCLM [TopologicalSpace E] [TopologicalSpace F] :=
+  UniformConvergenceCLM σ F {(S : Set E) | IsCompact S}
 
 @[inherit_doc]
 scoped[CompactConvergenceCLM] notation
@@ -704,45 +705,12 @@ scoped[CompactConvergenceCLM] notation
 
 namespace CompactConvergenceCLM
 
-instance instFunLike [TopologicalSpace E] [TopologicalSpace F] :
-    FunLike (CompactConvergenceCLM σ E F) E F :=
-  ContinuousLinearMap.funLike
-
-instance instContinuousSemilinearMapClass [TopologicalSpace E] [TopologicalSpace F] :
-    ContinuousSemilinearMapClass (CompactConvergenceCLM σ E F) σ E F :=
-  ContinuousLinearMap.continuousSemilinearMapClass
-
-instance instAddCommGroup [TopologicalSpace E] [TopologicalSpace F] [IsTopologicalAddGroup F] :
-    AddCommGroup (E →SL_c[σ] F) := ContinuousLinearMap.addCommGroup
-
-instance instModule [TopologicalSpace E] [TopologicalSpace F]
-    (R : Type*) [Semiring R] [Module R F] [SMulCommClass 𝕜₂ R F]
-    [ContinuousConstSMul R F] [IsTopologicalAddGroup F] :
-    Module R (E →SL_c[σ] F) := ContinuousLinearMap.module
-
-/-- The topology of compact convergence on `E →L[𝕜] F`. -/
-instance topologicalSpace [TopologicalSpace E] [TopologicalSpace F] [IsTopologicalAddGroup F] :
-    TopologicalSpace (CompactConvergenceCLM σ E F) :=
-  UniformConvergenceCLM.instTopologicalSpace σ F { S | IsCompact S }
-
-instance topologicalAddGroup [TopologicalSpace E] [TopologicalSpace F] [IsTopologicalAddGroup F] :
-    IsTopologicalAddGroup (E →SL_c[σ] F) :=
-  UniformConvergenceCLM.instIsTopologicalAddGroup σ F _
-
 instance continuousSMul [RingHomSurjective σ] [RingHomIsometric σ]
     [UniformSpace E] [IsUniformAddGroup E] [TopologicalSpace F] [IsTopologicalAddGroup F]
     [ContinuousSMul 𝕜₁ E] [ContinuousSMul 𝕜₂ F] :
     ContinuousSMul 𝕜₂ (E →SL_c[σ] F) :=
   UniformConvergenceCLM.continuousSMul σ F { S | IsCompact S }
     (fun _ hs => hs.totallyBounded.isVonNBounded 𝕜₁)
-
-instance uniformSpace [TopologicalSpace E] [UniformSpace F] [IsUniformAddGroup F] :
-    UniformSpace (E →SL_c[σ] F) :=
-  UniformConvergenceCLM.instUniformSpace σ F { S | IsVonNBounded 𝕜₁ S }
-
-instance isUniformAddGroup [TopologicalSpace E] [UniformSpace F] [IsUniformAddGroup F] :
-    IsUniformAddGroup (E →SL_c[σ] F) :=
-  UniformConvergenceCLM.instIsUniformAddGroup σ F _
 
 instance instContinuousEvalConst [TopologicalSpace E] [TopologicalSpace F]
     [IsTopologicalAddGroup F] : ContinuousEvalConst (E →SL_c[σ] F) E F :=
