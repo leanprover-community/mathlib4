@@ -563,7 +563,7 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom_single (f : Fin (n + 1) → G) (a :
     (diagonalSuccIsoTensorTrivial k G n).hom.hom.hom (single f a) =
       single (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) a := by
   simp [diagonalSuccIsoTensorTrivial, whiskerLeft_def, tensorObj_carrier,
-    whiskerLeft_def, types_tensorObj_def, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul,
+    types_tensorObj_def, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul,
     ModuleCat.hom_id (M := .of _ _), Action.ofMulAction_V]
 
 theorem diagonalSuccIsoTensorTrivial_inv_hom_single_single (g : G) (f : Fin n → G) (a b : k) :

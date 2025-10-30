@@ -36,6 +36,6 @@ instance : BraidedCategory (QuadraticModuleCat.{u} R) :=
 instance : (forget₂ (QuadraticModuleCat R) (ModuleCat R)).Braided where
 
 instance instSymmetricCategory : SymmetricCategory (QuadraticModuleCat.{u} R) :=
-  symmetricCategoryOfFaithful (forget₂ (QuadraticModuleCat R) (ModuleCat R))
+  .ofFaithful (forget₂ (QuadraticModuleCat R) (ModuleCat R))
 
 end QuadraticModuleCat

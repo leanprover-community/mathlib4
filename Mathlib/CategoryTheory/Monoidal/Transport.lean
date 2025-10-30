@@ -24,8 +24,6 @@ with respect to the new monoidal structure on `D`.
 
 universe v₁ v₂ u₁ u₂
 
-noncomputable section
-
 open CategoryTheory
 
 open CategoryTheory.Category
@@ -188,10 +186,10 @@ instance : (equivalenceTransported e).inverse.Monoidal := by
 instance : (equivalenceTransported e).symm.functor.Monoidal :=
   inferInstanceAs (equivalenceTransported e).inverse.Monoidal
 
-instance : (equivalenceTransported e).functor.Monoidal :=
+noncomputable instance : (equivalenceTransported e).functor.Monoidal :=
   (equivalenceTransported e).symm.inverseMonoidal
 
-instance : (equivalenceTransported e).symm.inverse.Monoidal :=
+noncomputable instance : (equivalenceTransported e).symm.inverse.Monoidal :=
   inferInstanceAs (equivalenceTransported e).functor.Monoidal
 
 instance : (equivalenceTransported e).symm.IsMonoidal := by
