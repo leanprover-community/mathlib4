@@ -84,7 +84,7 @@ theorem rel_join {r : α → β → Prop} {s t} (h : Rel (Rel r) s t) : Rel r s.
   | zero => simp
   | cons hab hst ih => simpa using hab.add ih
 
-lemma filter_join (S : Multiset (Multiset α)) (p : α → Prop) [DecidablePred p] :
+theorem filter_join (S : Multiset (Multiset α)) (p : α → Prop) [DecidablePred p] :
     filter p (join S) = join (map (filter p) S) := by
   induction S using Multiset.induction with
   | empty => simp
