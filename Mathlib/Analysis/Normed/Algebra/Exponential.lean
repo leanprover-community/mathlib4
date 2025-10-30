@@ -103,7 +103,7 @@ theorem expSeries_eq_ofScalars : expSeries 𝕂 𝔸 = ofScalars 𝔸 fun n ↦ 
 
 variable {𝕂 𝔸}
 
-open Classical in
+open scoped Classical in
 /-- `NormedSpace.exp : 𝔸 → 𝔸` is the exponential map determined by the action of `𝕂` on `𝔸`.
 
 It is defined as the sum of the `FormalMultilinearSeries` `expSeries 𝕂 𝔸`.
@@ -556,14 +556,17 @@ theorem exp_units_conj (y : 𝔸ˣ) (x : 𝔸) : exp (y * x * ↑y⁻¹ : 𝔸) 
 theorem exp_units_conj' (y : 𝔸ˣ) (x : 𝔸) : exp (↑y⁻¹ * x * y) = ↑y⁻¹ * exp x * y :=
   exp_units_conj _ _
 
+@[simp]
 theorem _root_.Prod.fst_exp [NormedAlgebra ℚ 𝔹] [CompleteSpace 𝔹] (x : 𝔸 × 𝔹) :
     (exp x).fst = exp x.fst :=
   map_exp (RingHom.fst 𝔸 𝔹) continuous_fst x
 
+@[simp]
 theorem _root_.Prod.snd_exp [NormedAlgebra ℚ 𝔹] [CompleteSpace 𝔹] (x : 𝔸 × 𝔹) :
     (exp x).snd = exp x.snd :=
   map_exp (RingHom.snd 𝔸 𝔹) continuous_snd x
 
+@[simp]
 theorem _root_.Pi.coe_exp {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [∀ i, NormedRing (𝔸 i)]
     [∀ i, NormedAlgebra ℚ (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) (i : ι) :
     exp x i = exp (x i) :=
