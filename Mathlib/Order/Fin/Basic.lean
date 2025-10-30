@@ -185,8 +185,7 @@ lemma strictMono_addNat (m) : StrictMono ((addNat · m) : Fin n → Fin (n + m))
 
 lemma strictMono_succAbove (p : Fin (n + 1)) : StrictMono (succAbove p) :=
   strictMono_castSucc.ite strictMono_succ
-    (fun _ _ hij hj => (castSucc_lt_castSucc_iff.mpr hij).trans hj) fun i =>
-    (castSucc_lt_succ i).le
+    (fun _ _ hij hj => (castSucc_lt_castSucc_iff.mpr hij).trans hj) fun _ => castSucc_lt_succ.le
 
 variable {p : Fin (n + 1)} {i j : Fin n}
 
