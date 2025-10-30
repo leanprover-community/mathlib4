@@ -195,7 +195,7 @@ theorem index_of_argmax :
       simp_all
     rw [h] at hm
     dsimp only at hm
-    simp only [cond_eq_if, beq_iff_eq]
+    simp only [cond_eq_ite, beq_iff_eq]
     obtain ha | ha := ha <;> split_ifs at hm <;> injection hm with hm <;> subst hm
     · cases not_le_of_gt ‹_› ‹_›
     · rw [if_pos rfl]
