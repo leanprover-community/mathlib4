@@ -84,6 +84,12 @@ theorem rel_join {r : α → β → Prop} {s t} (h : Rel (Rel r) s t) : Rel r s.
   | zero => simp
   | cons hab hst ih => simpa using hab.add ih
 
+lemma filter_join (S : Multiset (Multiset α)) (p : α → Prop) [DecidablePred p] :
+    filter p (join S) = join (map (filter p) S) := by
+  induction S using Multiset.induction with
+  | empty => simp
+  | cons _ _ ih => simp [ih]
+
 /-! ### Bind -/
 
 
@@ -164,6 +170,18 @@ theorem bind_bind (m : Multiset α) (n : Multiset β) {f : α → β → Multise
 theorem bind_map_comm (m : Multiset α) (n : Multiset β) {f : α → β → γ} :
     ((bind m) fun a => n.map fun b => f a b) = (bind n) fun b => m.map fun a => f a b :=
   Multiset.induction_on m (by simp) (by simp +contextual)
+
+theorem bind_filter (m : Multiset α) (p : α → Prop) (f : α → Multiset β) [DecidablePred p] :
+    bind (filter p m) f = bind m (fun a => if p a then f a else 0) := by
+  induction m using Multiset.induction
+  case empty => simp
+  case cons a m ih =>
+    simp [filter_cons, ih]
+    split_ifs with h <;> simp
+
+theorem filter_bind (m : Multiset α) (f : α → Multiset β) (p : β → Prop) [DecidablePred p] :
+    filter p (bind m f) = bind m (fun a => filter p (f a)) := by
+  simp [bind, filter_join]
 
 @[to_additive (attr := simp)]
 theorem prod_bind [CommMonoid β] (s : Multiset α) (t : α → Multiset β) :
