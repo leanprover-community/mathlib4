@@ -263,9 +263,8 @@ variable {R}
 `A` and `B` factors via `R ⧸ I`. -/
 @[simps! apply]
 def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
-    (f : A ≃ₐ[R] B) : A ≃ₐ[S] B where
-  toRingEquiv := f
-  commutes' := (f.toAlgHom.extendScalarsOfSurjective h).commutes'
+    (f : A ≃ₐ[R] B) : A ≃ₐ[S] B :=
+  .ofCommutes f (f.toAlgHom.extendScalarsOfSurjective h).commutes'
 
 @[simp]
 lemma restrictScalars_extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
