@@ -382,18 +382,13 @@ namespace SpecialLinearGroup
 
 section center
 
-
-theorem center_eq_bot_of_subsingleton [Subsingleton R] :
-    Subgroup.center (SpecialLinearGroup R V) = ⊥ :=
-  Subgroup.eq_bot_of_subsingleton _
-
 variable [Module.Free R V] [Module.Finite R V] [Nontrivial R]
 
 theorem center_eq_bot_of_finrank_le_one (h : Module.finrank R V ≤ 1) :
     Subgroup.center (SpecialLinearGroup R V) = ⊥ := by
   let b := Module.Free.chooseBasis R V
-  haveI : Subsingleton (Module.Free.ChooseBasisIndex R V) := by
-    rwa [← @Finite.card_le_one_iff_subsingleton,
+  have : Subsingleton (Module.Free.ChooseBasisIndex R V) := by
+    rwa [← Finite.card_le_one_iff_subsingleton,
       Nat.card_eq_fintype_card, ← Module.finrank_eq_card_basis b]
   have : Subsingleton (Subgroup.center
     (Matrix.SpecialLinearGroup (Module.Free.ChooseBasisIndex R V) R)) := by
@@ -407,17 +402,15 @@ theorem mem_center_iff {g : SpecialLinearGroup R V} :
       ∃ (r : R), r ^ (Module.finrank R V) = 1 ∧
         (g : V →ₗ[R] V) = r • LinearMap.id := by
   let b := Module.Free.chooseBasis R V
-  letI _ := Module.Free.ChooseBasisIndex.fintype R V
+  let := Module.Free.ChooseBasisIndex.fintype R V
   rw [Module.finrank_eq_card_basis b]
   let e := (Matrix.SpecialLinearGroup.toLin_equiv b).symm
-  rw [← show e g ∈ Subgroup.center _ ↔ g ∈ Subgroup.center _ from by
-    exact MulEquivClass.apply_mem_center_iff e]
+  rw [← show e g ∈ Subgroup.center _ ↔ g ∈ Subgroup.center _ from
+    MulEquivClass.apply_mem_center_iff e]
   rw [Matrix.SpecialLinearGroup.mem_center_iff]
   apply exists_congr
-  intro r
-  apply and_congr
-  · simp
-  simp [e]
+  simp only [Matrix.scalar_apply, and_congr_right_iff, e]
+  intro r hr
   suffices ((Matrix.SpecialLinearGroup.toLin_equiv b).symm g) =
     Matrix.of fun i j ↦ (b.repr (g (b j))) i by
     simp only [this]
@@ -428,7 +421,7 @@ theorem mem_center_iff {g : SpecialLinearGroup R V} :
     simp [Matrix.diagonal, LinearMap.toMatrix_apply,
       Finsupp.single, Pi.single_apply, Iff.symm eq_comm]
   simp [Matrix.SpecialLinearGroup.toLin_equiv, Matrix.SpecialLinearGroup.toLin'_equiv,
-    LinearMap.toMatrix', congr_linEquiv]
+    LinearMap.toMatrix', congr_linearEquiv]
 
 theorem mem_center_iff_spec {g : SpecialLinearGroup R V}
     (hg : g ∈ Subgroup.center (SpecialLinearGroup R V)) (x : V) :
@@ -574,7 +567,7 @@ theorem center_equiv_rootsOfUnity_symm_apply
 
 section
 
-open Subgroup Matrix
+open Subgroup Matrix Matrix.SpecialLinearGroup
 
 variable {n : Type*} [Fintype n] [DecidableEq n] {R : Type*} [CommRing R]
 
@@ -584,9 +577,9 @@ variable {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Module.Basis ι R V)
 
 -- compare with `Matrix.SpecialLinearGroup.center_equiv_rootsOfUnity`
 -- TODO : golf!
-example (g) : ((Subgroup.centerCongr (Matrix.SpecialLinearGroup.toLin_equiv b)).trans
-    center_equiv_rootsOfUnity g).val =
-    Matrix.SpecialLinearGroup.center_equiv_rootsOfUnity g := by
+theorem centerCongr_toLin_equiv_trans_center_equiv_rootsOfUnity_eq (g) :
+    ((centerCongr (toLin_equiv b)).trans center_equiv_rootsOfUnity g).val =
+      Matrix.SpecialLinearGroup.center_equiv_rootsOfUnity g := by
   by_cases hV : Subsingleton V
   · convert Eq.refl (1 : Rˣ) <;>
     · apply rootsOfUnity.eq_one
