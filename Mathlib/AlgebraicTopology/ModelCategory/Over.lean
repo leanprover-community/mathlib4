@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.ModelCategory.Basic
 import Mathlib.CategoryTheory.MorphismProperty.Comma
+import Mathlib.CategoryTheory.LiftingProperties.Over
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
 
 /-!
@@ -17,20 +18,6 @@ universe v u
 open CategoryTheory
 
 variable {C : Type u} [Category.{v} C] (S : C)
-
--- to be moved
-variable {S} in
-lemma CategoryTheory.CommSq.HasLift.over {X₁ X₂ X₃ X₄ : Over S}
-    {t : X₁ ⟶ X₂} {l : X₁ ⟶ X₃} {r : X₂ ⟶ X₄} {b : X₃ ⟶ X₄} {sq : CommSq t l r b}
-    [CommSq.HasLift (f := t.left) (i := l.left) (p := r.left) (g := b.left)
-      (sq.map (Over.forget _))] :
-    sq.HasLift := by
-  let sq' := sq.map (Over.forget _)
-  dsimp at sq'
-  exact ⟨⟨{
-    l := Over.homMk sq'.lift
-      (by rw [← Over.w b, ← sq'.fac_right_assoc, Over.w r])
-  }⟩⟩
 
 namespace HomotopicalAlgebra
 
@@ -117,26 +104,6 @@ lemma trivialFibrations_over_eq
     [CategoryWithWeakEquivalences C] [CategoryWithFibrations C] :
     trivialFibrations (Over S) = (trivialFibrations C).over := rfl
 
--- to be moved
-variable {S} in
-lemma _root_.CategoryTheory.HasLiftingProperty.over {A B X Y : Over S}
-    (i : A ⟶ B) (p : X ⟶ Y) [HasLiftingProperty i.left p.left] :
-    HasLiftingProperty i p := ⟨fun _ ↦ .over⟩
-
--- to be moved
-instance _root_.CategoryTheory.MorphismProperty.HasFactorization.over
-    (W₁ W₂ : MorphismProperty C) [W₁.HasFactorization W₂] (S : C) :
-    (W₁.over (X := S)).HasFactorization W₂.over where
-  nonempty_mapFactorizationData {X Y} f := by
-    let hf := W₁.factorizationData W₂ f.left
-    exact ⟨{
-      Z := Over.mk (hf.p ≫ Y.hom)
-      i := Over.homMk hf.i
-      p := Over.homMk hf.p
-      hi := hf.hi
-      hp := hf.hp
-    }⟩
-
 instance [CategoryWithWeakEquivalences C]
     [(weakEquivalences C).HasTwoOutOfThreeProperty] :
     (weakEquivalences (Over S)).HasTwoOutOfThreeProperty := by
@@ -161,7 +128,7 @@ instance [(cofibrations C).HasFactorization (trivialFibrations C)] :
 end
 
 instance ModelCategory.over [ModelCategory C] : ModelCategory (Over S) where
-  cm4a _ _ _ _ _ := CategoryTheory.HasLiftingProperty.over _ _
-  cm4b _ _ _ _ _ := CategoryTheory.HasLiftingProperty.over _ _
+  cm4a _ _ _ _ _ := .over _ _
+  cm4b _ _ _ _ _ := .over _ _
 
 end HomotopicalAlgebra

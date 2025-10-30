@@ -5,6 +5,7 @@ Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Comma.Over.Basic
 import Mathlib.CategoryTheory.MorphismProperty.Composition
+import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 /-!
 # Subcategories of comma categories defined by morphism properties
@@ -487,5 +488,19 @@ lemma Under.w {A B : P.Under Q X} (f : A ⟶ B) :
   simp
 
 end Under
+
+instance HasFactorization.over
+    {C : Type*} [Category C] (W₁ W₂ : MorphismProperty C)
+    [W₁.HasFactorization W₂] (S : C) :
+    (W₁.over (X := S)).HasFactorization W₂.over where
+  nonempty_mapFactorizationData {X Y} f := by
+    let hf := W₁.factorizationData W₂ f.left
+    exact ⟨{
+      Z := .mk (hf.p ≫ Y.hom)
+      i := CategoryTheory.Over.homMk hf.i
+      p := CategoryTheory.Over.homMk hf.p
+      hi := hf.hi
+      hp := hf.hp
+    }⟩
 
 end CategoryTheory.MorphismProperty
