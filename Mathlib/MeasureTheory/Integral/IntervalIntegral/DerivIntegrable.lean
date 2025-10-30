@@ -79,11 +79,10 @@ theorem MonotoneOn.intervalIntegrable_deriv {f : ℝ → ℝ} {a b : ℝ}
   wlog hab : a ≤ b generalizing a b with h
   · exact h (uIcc_comm a b ▸ hf) (by linarith) |>.symm
   rw [uIcc_of_le hab] at hf
-  obtain ⟨G, hGf, hG, hG'⟩ := hf.exists_tendsto_atTop_aestronglyMeasurable_liminf_le hab
+  obtain ⟨G, hGf, hG, hG'⟩ := hf.exists_tendsto_deriv_liminf_lintegral_enorm_le hab
   have hG'₀ : liminf (fun (n : ℕ) ↦ ∫⁻ (x : ℝ) in Icc a b, ‖G n x‖ₑ) atTop ≠ ⊤ :=
     lt_of_le_of_lt hG' ENNReal.ofReal_lt_top |>.ne_top
-  have integrable_f_deriv := integrable_of_tendsto_atTop_aestronglyMeasurable_liminf_ne_top
-    hGf hG hG'₀
+  have integrable_f_deriv := integrable_of_tendsto hGf hG hG'₀
   exact (intervalIntegrable_iff_integrableOn_Icc_of_le hab).mpr integrable_f_deriv
 
 /-- If `f` is monotone on `a..b`, then `f'` is interval integrable on `a..b` and the integral of
@@ -99,13 +98,12 @@ theorem MonotoneOn.intervalIntegral_deriv_bound {f : ℝ → ℝ} {a b : ℝ}
     simp only [neg_zero, neg_sub]
     rwa [uIcc_of_le (by linarith)] at h
   rw [uIcc_of_le hab] at hf
-  obtain ⟨G, hGf, hG, hG'⟩ := hf.exists_tendsto_atTop_aestronglyMeasurable_liminf_le hab
+  obtain ⟨G, hGf, hG, hG'⟩ := hf.exists_tendsto_deriv_liminf_lintegral_enorm_le hab
   have h₁ : ∀ᵐ x, x ≠ a := by simp [ae_iff, measure_singleton]
   have h₂ : ∀ᵐ x, x ≠ b := by simp [ae_iff, measure_singleton]
   have hG'₀ : liminf (fun (n : ℕ) ↦ ∫⁻ (x : ℝ) in Icc a b, ‖G n x‖ₑ) atTop ≠ ⊤ :=
     lt_of_le_of_lt hG' ENNReal.ofReal_lt_top |>.ne_top
-  have integrable_f_deriv := integrable_of_tendsto_atTop_aestronglyMeasurable_liminf_ne_top
-    hGf hG hG'₀
+  have integrable_f_deriv := integrable_of_tendsto hGf hG hG'₀
   rw [MeasureTheory.ae_restrict_iff' (by simp)] at hGf
   rw [← uIcc_of_le hab] at hGf hG hG'
   have : f a ≤ f b := hf (by simp [hab]) (by simp [hab]) hab
@@ -117,7 +115,7 @@ theorem MonotoneOn.intervalIntegral_deriv_bound {f : ℝ → ℝ} {a b : ℝ}
     rw [Filter.EventuallyLE, MeasureTheory.ae_restrict_iff' (by simp)]
     filter_upwards [h₁, h₂] with x _ _ _
     exact f_deriv_nonneg (by grind [Icc_diff_both])
-  · have ebound := lintegral_bound_of_tendsto_atTop_aestronglyMeasurable
+  · have ebound := lintegral_enorm_le_liminf_of_tendsto'
       ((MeasureTheory.ae_restrict_iff' (by measurability) |>.mpr hGf)) hG
     grw [hG'] at ebound
     rw [uIcc_of_le hab,

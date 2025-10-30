@@ -1227,25 +1227,23 @@ theorem lintegral_enorm_le_liminf_of_tendsto
 
 /-- If `G n` tends to `f` a.e. and each `G n` is `AEStronglyMeasurable`, then the lower Lebesgue
 integral of `‖f ·‖ₑ` is at most the liminf of the lower Lebesgue integral of `‖G n ·‖ₑ`. -/
-theorem lintegral_bound_of_tendsto_atTop_aestronglyMeasurable
+theorem lintegral_enorm_le_liminf_of_tendsto'
     {G : ℕ → ℝ → ℝ} {f : ℝ → ℝ} {μ : Measure ℝ}
-    (hGf : ∀ᵐ x ∂μ, Filter.Tendsto (fun (n : ℕ) ↦ G n x) Filter.atTop (𝓝 (f x)))
+    (hGf : ∀ᵐ x ∂μ, Tendsto (fun (n : ℕ) ↦ G n x) atTop (𝓝 (f x)))
     (hG : ∀ (n : ℕ), AEStronglyMeasurable (G n) μ) :
     ∫⁻ x, ‖f x‖ₑ ∂μ ≤ liminf (fun n ↦ ∫⁻ x, ‖G n x‖ₑ ∂μ) atTop :=
-  lintegral_bound_of_tendsto_atTop_aemeasurable_enorm hGf
-    (fun n ↦ (hG n).aemeasurable.enorm)
+  lintegral_enorm_le_liminf_of_tendsto hGf (fun n ↦ (hG n).aemeasurable.enorm)
 
 /-- If `G n` tends to `f` a.e., each `G n` is `AEStronglyMeasurable` and the liminf of the lower
 Lebesgue integral of `‖G n ·‖ₑ` is finite, then `f` is Lebesgue integrable. -/
-theorem integrable_of_tendsto_atTop_aestronglyMeasurable_liminf_ne_top
+theorem integrable_of_tendsto
     {G : ℕ → ℝ → ℝ} {f : ℝ → ℝ} {μ : Measure ℝ}
-    (hGf : ∀ᵐ x ∂μ, Filter.Tendsto (fun (n : ℕ) ↦ G n x) Filter.atTop (𝓝 (f x)))
+    (hGf : ∀ᵐ x ∂μ, Tendsto (fun (n : ℕ) ↦ G n x) atTop (𝓝 (f x)))
     (hG : ∀ (n : ℕ), AEStronglyMeasurable (G n) μ)
     (hG' : liminf (fun n ↦ ∫⁻ x, ‖G n x‖ₑ ∂μ) atTop ≠ ⊤) :
     Integrable f μ :=
   ⟨aestronglyMeasurable_of_tendsto_ae _ hG hGf,
-   lt_of_le_of_lt (lintegral_bound_of_tendsto_atTop_aestronglyMeasurable hGf hG)
-    hG'.lt_top⟩
+   lt_of_le_of_lt (lintegral_enorm_le_liminf_of_tendsto' hGf hG) hG'.lt_top⟩
 
 end Limit
 
