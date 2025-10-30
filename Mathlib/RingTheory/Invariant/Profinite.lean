@@ -116,6 +116,8 @@ lemma Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor_aux
   simpa only [Ideal.pointwise_smul_eq_comap,
     ← Ideal.comap_coe (F := RingEquiv _ _), Ideal.comap_comap] using hx
 
+set_option maxHeartbeats 200700 in
+-- needed for some reason
 /-- (Implementation)
 The functor taking an open normal subgroup `N ≤ G` to the set of lifts of `σ` in `G ⧸ N`.
 We will show that its inverse limit is nonempty to conclude that there exists a lift in `G`. -/
