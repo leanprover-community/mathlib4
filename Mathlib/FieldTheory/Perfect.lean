@@ -154,6 +154,13 @@ theorem frobeniusEquiv_symm_comp_frobenius :
 theorem frobeniusEquiv_symm_pow_p (x : R) : ((frobeniusEquiv R p).symm x) ^ p = x :=
   frobenius_apply_frobeniusEquiv_symm R p x
 
+@[simp]
+theorem iterate_frobeniusEquiv_symm_pow_p_pow (x : R) (n : ℕ) :
+    ((frobeniusEquiv R p).symm ^[n]) x ^ (p ^ n) = x := by
+  induction n generalizing x with
+  | zero => simp
+  | succ n ih => simp [pow_succ, pow_mul, ih]
+
 theorem injective_pow_p {x y : R} (h : x ^ p = y ^ p) : x = y := (frobeniusEquiv R p).injective h
 
 lemma polynomial_expand_eq (f : R[X]) :
