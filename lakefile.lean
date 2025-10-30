@@ -17,7 +17,7 @@ require "leanprover-community" / "proofwidgets" @ git "v0.0.74" -- ProofWidgets 
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
-require "JOSHCLUNE" / "Hammer" @ git "main" from git "https://github.com/JOSHCLUNE/LeanHammer"
+require "JOSHCLUNE" / "Hammer" from git "https://github.com/JOSHCLUNE/LeanHammer" @ "main"
 
 /-!
 ## Options for building mathlib
