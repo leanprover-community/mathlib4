@@ -151,7 +151,6 @@ theorem condition : fst f g ≫ f = snd f g ≫ g :=
   Over.w (fst' f g)
 
 variable (f g) in
-
 @[ext]
 theorem hom_ext {W : C} {φ₁ φ₂ : W ⟶ pullbackObj f g} (h₁ : φ₁ ≫ fst _ _ = φ₂ ≫ fst _ _)
     (h₂ : φ₁ ≫ snd _ _ = φ₂ ≫ snd _ _) :
