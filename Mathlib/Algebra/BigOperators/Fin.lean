@@ -517,11 +517,11 @@ lemma partialProd_contractNth {G : Type*} [Monoid G] {n : ℕ}
       simp only [lt_def, coe_castSucc, val_succ] <;>
       omega
     · rw [succAbove_of_castSucc_lt, contractNth_apply_of_eq _ _ _ _ h,
-        succAbove_of_le_castSucc, castSucc_fin_succ, partialProd_succ, mul_assoc] <;>
+        succAbove_of_le_castSucc, castSucc_succ, partialProd_succ, mul_assoc] <;>
       simp only [castSucc_lt_succ_iff, le_def, coe_castSucc] <;>
       omega
     · rw [succAbove_of_le_castSucc, succAbove_of_le_castSucc, contractNth_apply_of_gt _ _ _ _ h,
-        castSucc_fin_succ] <;>
+        castSucc_succ] <;>
       simp only [le_def, val_succ, coe_castSucc] <;>
       omega
 
@@ -547,13 +547,13 @@ theorem inv_partialProd_mul_eq_contractNth {G : Type*} [Group G] (g : Fin (n + 1
     · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
       exact le_of_lt h
   · rwa [succAbove_of_castSucc_lt, succAbove_of_le_castSucc, partialProd_succ,
-    castSucc_fin_succ, ← mul_assoc,
+    castSucc_succ, ← mul_assoc,
       partialProd_right_inv, contractNth_apply_of_eq]
     · simp [le_iff_val_le_val, ← h]
     · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
       exact le_of_eq h
   · rwa [succAbove_of_le_castSucc, succAbove_of_le_castSucc, partialProd_succ, partialProd_succ,
-      castSucc_fin_succ, partialProd_succ, inv_mul_cancel_left, contractNth_apply_of_gt]
+      castSucc_succ, partialProd_succ, inv_mul_cancel_left, contractNth_apply_of_gt]
     · exact le_iff_val_le_val.2 (le_of_lt h)
     · rw [le_iff_val_le_val, val_succ]
       exact Nat.succ_le_of_lt h
