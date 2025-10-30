@@ -300,7 +300,7 @@ instance instInfConcept : Min (Concept α β r) :=
         rw [← c.lowerPolar_intent, ← d.lowerPolar_intent, ← lowerPolar_union,
           lowerPolar_upperPolar_lowerPolar] }⟩
 
-instance instSemilatticeInfConcept : PartialOrder (Concept α β r) :=
+instance : PartialOrder (Concept α β r) :=
   PartialOrder.lift _ extent_injective
 
 instance instSemilatticeInfConcept : SemilatticeInf (Concept α β r) :=
