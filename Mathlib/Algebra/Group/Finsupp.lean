@@ -143,6 +143,11 @@ lemma support_single_add_single [DecidableEq ι] {f₁ f₂ : ι} {g₁ g₂ : M
   · simp [pair_comm f₂ f₁]
   · simp [support_single_ne_zero _ hg₁, support_single_ne_zero _ hg₂, H.symm]
 
+lemma support_single_add_single_subset [DecidableEq ι] {f₁ f₂ : ι} {g₁ g₂ : M} :
+    (single f₁ g₁ + single f₂ g₂).support ⊆ {f₁, f₂} := by
+  refine subset_trans Finsupp.support_add <| union_subset_iff.mpr ⟨?_, ?_⟩ <;>
+  exact subset_trans Finsupp.support_single_subset (by simp)
+
 lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
     AddEquiv.finsuppUnique.symm d = single () d := by
   rw [Finsupp.unique_single (AddEquiv.finsuppUnique.symm d), Finsupp.unique_single_eq_iff]
