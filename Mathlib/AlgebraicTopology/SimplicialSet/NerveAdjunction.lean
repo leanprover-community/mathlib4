@@ -587,6 +587,20 @@ noncomputable instance Monoidal : Monoidal hoFunctor :=
 
 end hoFunctor
 
+section
+
+open MonoidalCategory
+
+theorem hoFunctor_pro_normal_monoidal (X : SSet.{u}) : Function.Bijective
+    fun (f : 𝟙_ SSet ⟶ X) => Functor.LaxMonoidal.ε hoFunctor ≫ hoFunctor.map f := by
+  let equiv := (SSet.unitHomEquiv X).trans <|
+    (hoFunctor.obj.equiv.{u} X).symm.trans Cat.fromChosenTerminalEquiv.symm
+  convert ← equiv.bijective with f
+  simp [equiv]
+  rw [Equiv.symm_apply_eq, ← Equiv.eq_symm_apply]; rfl
+
+end
+
 end
 
 end CategoryTheory

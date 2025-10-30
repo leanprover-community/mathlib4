@@ -119,6 +119,12 @@ instance category : Category (Quotient r) where
   id_comp f := Quot.inductionOn f <| by simp
   assoc f g h := Quot.inductionOn f <| Quot.inductionOn g <| Quot.inductionOn h <| by simp
 
+/-- An equivalence between the type synonym for a quotient category and the type alias
+for the original category. -/
+def equiv {C : Type _} [Category C] (r : HomRel C) : Quotient r ≃ C where
+  toFun x := x.1
+  invFun x := ⟨x⟩
+
 noncomputable section
 
 variable {G : Type*} [Groupoid G] (r : HomRel G)
