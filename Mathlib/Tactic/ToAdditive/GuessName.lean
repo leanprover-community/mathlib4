@@ -14,6 +14,7 @@ import Mathlib.Data.String.Defs
 open Std
 
 namespace ToAdditive
+open ToAdditive
 
 /-- A set of strings of names that end in a capital letter.
 * If the string contains a lowercase letter, the string should be split between the first occurrence
@@ -35,7 +36,7 @@ open String in
 
 E.g. `#eval "InvHMulLEConjugate₂SMul_ne_top".splitCase` yields
 `["Inv", "HMul", "LE", "Conjugate₂", "SMul", "_", "ne", "_", "top"]`. -/
-partial def _root_.String.splitCase (s : String) (i₀ : Pos := 0) (r : List String := []) :
+partial def String.splitCase (s : String) (i₀ : Pos := 0) (r : List String := []) :
     List String := Id.run do
   -- We test if we need to split between `i₀` and `i₁`.
   let i₁ := s.next i₀
@@ -61,11 +62,11 @@ partial def _root_.String.splitCase (s : String) (i₀ : Pos := 0) (r : List Str
 
 /-- Replaces characters in `s` by lower-casing the first characters until a non-upper-case character
 is found. -/
-partial def _root_.String.decapitalizeSeq (s : String) (i : String.Pos := 0) : String :=
+partial def String.decapitalizeSeq (s : String) (i : String.Pos := 0) : String :=
   if s.atEnd i || !(s.get i).isUpper then
     s
   else
-    decapitalizeSeq (s.set i <| s.get i |>.toLower) <| s.next i
+    decapitalizeSeq (s.set i (s.get i).toLower) <| s.next i
 
 
 /-- If `r` starts with an upper-case letter, return `s`, otherwise return `s` with the
