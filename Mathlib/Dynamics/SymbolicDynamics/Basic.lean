@@ -59,7 +59,7 @@ In multiplicative notation:
 ## Design choice: ambient vs. inner (subshift-relative) viewpoint
 
 All core notions (shift, cylinder, occurrence, language, …) are defined **in the
-ambient full shift** `(G → A)`. A subshift is then a closed, invariant subset,
+ambient full shift** `G → A`. A subshift is then a closed, invariant subset,
 bundled as `subshift A G`. Working inside a subshift is done by restriction.
 
 **Motivation.**
