@@ -531,10 +531,10 @@ instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
   __ := instMonoid
   mul_comm f g := by ext x; simp [mul_apply, mul_comm]
 
-/-- Coercion of a `BoundedContinuousFunction` is an `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
+/-- Coercion of a `BoundedContinuousFunction` is a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
 @[to_additive (attr := simps) /-- Coercion of a `BoundedContinuousFunction` is an `AddMonoidHom`.
 Similar to `AddMonoidHom.coeFn`. -/]
-def coeFnMulHom [Monoid R] [BoundedMul R] [ContinuousMul R] : (α →ᵇ R) →* α → R where
+def coeFnMonoidHom [Monoid R] [BoundedMul R] [ContinuousMul R] : (α →ᵇ R) →* α → R where
   toFun := (⇑)
   map_one' := coe_one
   map_mul' := coe_mul
@@ -543,7 +543,7 @@ variable (α R) in
 /-- The multiplicative map forgetting that a bounded continuous function is bounded. -/
 @[to_additive (attr := simps) /-- The additive map forgetting that a bounded continuous
 function is bounded.-/]
-def toContinuousMapMulHom [Monoid R] [BoundedMul R] [ContinuousMul R] : (α →ᵇ R) →* C(α, R) where
+def toContinuousMapMonoidHom [Monoid R] [BoundedMul R] [ContinuousMul R] : (α →ᵇ R) →* C(α, R) where
   toFun := toContinuousMap
   map_one' := rfl
   map_mul' := by
@@ -554,7 +554,7 @@ def toContinuousMapMulHom [Monoid R] [BoundedMul R] [ContinuousMul R] : (α →�
 @[to_additive (attr := simp)]
 lemma coe_prod {ι : Type*} (s : Finset ι) [CommMonoid R] [BoundedMul R] [ContinuousMul R]
     (f : ι → α →ᵇ R) :
-    ⇑(∏ i ∈ s, f i) = ∏ i ∈ s, ⇑(f i) := map_prod coeFnMulHom f s
+    ⇑(∏ i ∈ s, f i) = ∏ i ∈ s, ⇑(f i) := map_prod coeFnMonoidHom f s
 
 @[to_additive]
 lemma prod_apply {ι : Type*} (s : Finset ι) [CommMonoid R] [BoundedMul R] [ContinuousMul R]
