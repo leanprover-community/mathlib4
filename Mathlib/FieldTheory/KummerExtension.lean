@@ -410,11 +410,10 @@ in `K`, then `Gal(L/K)` is isomorphic to `ZMod n`. -/
 noncomputable
 def autEquivZmod [NeZero n] {ζ : K} (hζ : IsPrimitiveRoot ζ n) :
     Gal(L/K) ≃* Multiplicative (ZMod n) :=
-  haveI hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
-  (autEquivRootsOfUnity ⟨ζ, (mem_primitiveRoots hn).mpr hζ⟩ H L).trans
-    ((MulEquiv.subgroupCongr (IsPrimitiveRoot.zpowers_eq
-      (hζ.isUnit_unit' hn.ne')).symm).trans
-        (hζ.isUnit_unit' hn.ne').zmodEquivZPowers.symm.toMultiplicativeRight)
+  haveI hn := ne_zero_of_irreducible_X_pow_sub_C H
+  (autEquivRootsOfUnity ⟨ζ, (mem_primitiveRoots <| Nat.pos_of_ne_zero hn).mpr hζ⟩ H L).trans
+    ((MulEquiv.subgroupCongr (IsPrimitiveRoot.zpowers_eq (hζ.isUnit_unit' hn)).symm).trans
+        (hζ.isUnit_unit' hn).zmodEquivZPowers.symm.toMultiplicativeRight)
 
 include hα in
 lemma autEquivZmod_symm_apply_intCast [NeZero n] {ζ : K} (hζ : IsPrimitiveRoot ζ n) (m : ℤ) :
