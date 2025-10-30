@@ -566,7 +566,7 @@ theorem pointReflection_fixed_iff_of_module [Invertible (2 : k)] {x y : P₁} :
 Given a linear equivalence `A : V ≃ₗ[k] V` and base points `f₀ g₀ : P`, this constructs
 the affine equivalence `T x = A (x -ᵥ f₀) +ᵥ g₀`. This is the standard way to convert
 a linear automorphism into an affine automorphism with specified base point mapping. -/
-def ofLinearEquiv {k : Type*} {V : Type*} {P : Type*}
+def ofLinearEquiv {k : V P : Type*}
     [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P]
     (A : V ≃ₗ[k] V) (f₀ g₀ : P) : P ≃ᵃ[k] P :=
   let linearAsAffine : V ≃ᵃ[k] V :=
