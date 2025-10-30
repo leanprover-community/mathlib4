@@ -539,6 +539,7 @@ def coeFnMulHom [Monoid R] [BoundedMul R] [ContinuousMul R] : (α →ᵇ R) →*
   map_one' := coe_one
   map_mul' := coe_mul
 
+variable (α R) in
 /-- The multiplicative map forgetting that a bounded continuous function is bounded. -/
 @[to_additive (attr := simps) /-- The additive map forgetting that a bounded continuous
 function is bounded.-/]
