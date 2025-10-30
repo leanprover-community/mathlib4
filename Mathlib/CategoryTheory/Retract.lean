@@ -128,6 +128,12 @@ instance : IsSplitMono h.i.left := ⟨⟨h.left.splitMono⟩⟩
 
 instance : IsSplitMono h.i.right := ⟨⟨h.right.splitMono⟩⟩
 
+/-- If a morphism `f` is a retract of `g`,
+then `F.map f` is a retract of `F.map g` for any functor `F`. -/
+@[simps!]
+def map (F : C ⥤ D) : RetractArrow (F.map f) (F.map g) :=
+  Retract.map h F.mapArrow
+
 end RetractArrow
 
 namespace Iso

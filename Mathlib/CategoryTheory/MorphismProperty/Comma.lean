@@ -88,10 +88,16 @@ instance [W.RespectsIso] : (W.structuredArrowObj L (X := X)).IsClosedUnderIsomor
 /-- The morphism property on `Over X` induced by a morphism property on `C`. -/
 def over (W : MorphismProperty T) {X : T} : MorphismProperty (Over X) := fun _ _ f ↦ W f.left
 
+lemma over_eq_inverseImage (W : MorphismProperty T) (X : T) :
+    W.over = W.inverseImage (Over.forget X) := rfl
+
 @[simp] lemma over_iff {Y Z : Over X} (f : Y ⟶ Z) : W.over f ↔ W f.left := .rfl
 
 /-- The morphism property on `Under X` induced by a morphism property on `C`. -/
 def under (W : MorphismProperty T) {X : T} : MorphismProperty (Under X) := fun _ _ f ↦ W f.right
+
+lemma under_eq_inverseImage (W : MorphismProperty T) (X : T) :
+    W.under = W.inverseImage (Under.forget X) := rfl
 
 @[simp] lemma under_iff {Y Z : Under X} (f : Y ⟶ Z) : W.under f ↔ W f.right := .rfl
 
