@@ -19,23 +19,34 @@ This result is recorded in `MeasureTheory.MemLp.exist_sub_eLpNorm_le`.
 -/
 
 
-variable {E F : Type*}
-  [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [FiniteDimensional ℝ E]
-  [NormedAddCommGroup F]
+variable {α β E F : Type*} [MeasurableSpace E] [NormedAddCommGroup F]
 
 open scoped Nat NNReal ContDiff
 open MeasureTheory Pointwise ENNReal
 
+theorem MeasureTheory.eLpNorm_sub_le_of_dist_bdd' (μ : Measure E := by volume_tac)
+    {p : ℝ≥0∞} (hp : p ≠ ⊤) {c : ℝ} (hc : 0 ≤ c) {f g : E → F} {s : Set E}
+    (h : ∀ x, dist (f x) (g x) ≤ c) (hs : MeasurableSet s) (hs₁ : f.support ⊆ s)
+    (hs₂ : g.support ⊆ s) :
+    eLpNorm (f - g) p μ ≤ ENNReal.ofReal c * μ s ^ (1 / p.toReal) := by
+  have hs₃ : s.indicator (f - g) = f - g := by
+    rw [Set.indicator_eq_self]
+    exact (Function.support_sub _ _).trans (Set.union_subset hs₁ hs₂)
+  rw [← hs₃]
+  exact eLpNorm_sub_le_of_dist_bdd μ hp hs hc (fun x _ ↦ h x)
+
 namespace HasCompactSupport
 
-variable [OpensMeasurableSpace E] in
 /-- Every continuous compactly supported function is in `Lp` for every `p`. -/
-theorem memLp_of_continuous (μ : Measure E := by volume_tac) [IsFiniteMeasureOnCompacts μ]
+theorem memLp_of_continuous [TopologicalSpace E] [Nonempty E] [OpensMeasurableSpace E]
+    [SecondCountableTopologyEither E F] (μ : Measure E := by volume_tac)
+    [IsFiniteMeasureOnCompacts μ]
     {p : ℝ≥0∞} {f : E → F} (h₁ : HasCompactSupport f) (h₂ : Continuous f) : MemLp f p μ := by
   obtain ⟨x₀, hx₀⟩ := h₂.norm.exists_forall_ge_of_hasCompactSupport h₁.norm
   exact h₁.memLp_of_bound h₂.aestronglyMeasurable ‖f x₀‖ (ae_of_all _ hx₀)
 
-variable [BorelSpace E] [CompleteSpace F] [NormedSpace ℝ F]
+variable [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [BorelSpace E]
+variable [CompleteSpace F] [NormedSpace ℝ F]
 
 /-- For every continuous compactly supported function `f`, there exists a smooth compactly supported
 function `g` that increases the support by `1` and `dist (g x) (f x)` is arbitrary small.
@@ -105,16 +116,13 @@ theorem exist_sub_eLpNorm_le_of_continuous (μ : Measure E := by volume_tac) [μ
     exact hs₂
   obtain ⟨g, hg₁, hg₂, hg₃, hg₄⟩ := h₁.exist_support_subset_cthickening hp₂ hε' h₂
     (h₁.memLp_of_continuous μ h₂)
-  refine ⟨g, hg₁, hg₂, ?_⟩
-  have hs₃ : s.indicator (g - f) = g - f := by
-    rw [Set.indicator_eq_self]
-    apply (Function.support_sub _ _).trans (Set.union_subset hg₃ _)
+  have hf : Function.support f ⊆ Metric.cthickening 1 (tsupport f) := by
     simp only [Function.support_subset_iff, ne_eq, Metric.mem_cthickening_iff, ENNReal.ofReal_one]
     intro x hx
     rw [EMetric.infEdist_zero_of_mem (subset_tsupport _ hx)]
     exact zero_le_one
-  grw [← hs₃]
-  exact (eLpNorm_sub_le_of_dist_bdd μ hp hs₁.measurableSet hε'.le (fun x _ ↦ hg₄ x)).trans hε₂
+  exact ⟨g, hg₁, hg₂,
+    (eLpNorm_sub_le_of_dist_bdd' μ hp hε'.le hg₄ hs₁.measurableSet hg₃ hf).trans hε₂⟩
 
 /-- Every `Lp` function can be approximated by a smooth compactly supported function provided that
 `p < ∞`. -/
