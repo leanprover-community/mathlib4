@@ -24,9 +24,9 @@ naturally assume `[IsGaloisGroup G A B]` and whose statements would otherwise re
 `K` and `L` to the rings `A` and `B`) despite `K` and `L` not appearing in the conclusion.
 
 Unfortunately, this definition of `IsGaloisGroup G A B` for extensions of rings `B/A` is
-nonstandard and clashes with other notions such as the étale fundamental group. In particular,
-`IsGaloisGroup G A B` corresponds to the fields of fractions `Frac(B)/Frac(A)` being a Galois
-extension of fields, rather than `B/A` being étale for instance.
+nonstandard and clashes with other notions such as the étale fundamental group. In particular, if
+`A` is integrally closed, then  `IsGaloisGroup G A B` is equivalent to `B/A` being integral and the
+fields of fractions `Frac(B)/Frac(A)` being Galois, rather than `B/A` being étale for instance.
 
 But in the absence of a more suitable name, the utility of the predicate `IsGaloisGroup G A B` for
 extensions of rings `B/A` seems to outweigh these terminological issues.
