@@ -694,6 +694,26 @@ lemma reflectsColimits_of_reflectsIsomorphisms {G : C ⥤ D} [G.ReflectsIsomorph
 
 end
 
+section
+
+open Functor
+
+lemma isIso_app_coconePt_of_preservesColimit
+    {C D J : Type*} [Category C] [Category D] [Category J] (K : J ⥤ C) {L L' : C ⥤ D}
+    (α : L ⟶ L') [IsIso (whiskerLeft K α)] (c : Cocone K) (hc : IsColimit c)
+    [PreservesColimit K L] [PreservesColimit K L'] :
+    IsIso (α.app c.pt) := by
+  let e := IsColimit.coconePointsIsoOfNatIso
+    (isColimitOfPreserves L hc) (isColimitOfPreserves L' hc) (asIso (whiskerLeft K α))
+  convert inferInstanceAs (IsIso e.hom)
+  apply (isColimitOfPreserves L hc).hom_ext fun j ↦ ?_
+  simp only [Functor.comp_obj, Functor.mapCocone_pt, Functor.const_obj_obj, Functor.mapCocone_ι_app,
+    NatTrans.naturality, IsColimit.coconePointsIsoOfNatIso_hom, asIso_hom, e]
+  refine (((isColimitOfPreserves L hc).ι_map (L'.mapCocone c) (whiskerLeft K α) j).trans ?_).symm
+  simp
+
+end
+
 variable (F : C ⥤ D)
 
 /-- A fully faithful functor reflects limits. -/
