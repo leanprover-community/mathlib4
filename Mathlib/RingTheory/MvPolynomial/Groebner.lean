@@ -100,7 +100,7 @@ Main theorems:
   of an ideal is a Gröbner basis of it if and only if 0 is a remainder of echo sPolynomial between
   two polynomials on the basis.
 
-## Reference : [Becker-Weispfenning1993]
+## Reference : [Becker-Weispfenning1993] [Cox2015]
 
 -/
 
