@@ -24,7 +24,7 @@ to develop relativ versions `ContinuousOn` and `ContinuousWithinAt` of `Continuo
 
 -/
 
-open Set Filter Function Topology Filter
+open Set Filter Function Topology
 
 variable {α β γ δ : Type*} [TopologicalSpace α]
 
