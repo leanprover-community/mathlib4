@@ -24,7 +24,7 @@ variable {α β E F : Type*} [MeasurableSpace E] [NormedAddCommGroup F]
 open scoped Nat NNReal ContDiff
 open MeasureTheory Pointwise ENNReal
 
-theorem MeasureTheory.eLpNorm_sub_le_of_dist_bdd' (μ : Measure E := by volume_tac)
+theorem MeasureTheory.sub_eLpNorm_le_of_dist_bdd (μ : Measure E := by volume_tac)
     {p : ℝ≥0∞} (hp : p ≠ ⊤) {c : ℝ} (hc : 0 ≤ c) {f g : E → F} {s : Set E}
     (h : ∀ x, dist (f x) (g x) ≤ c) (hs : MeasurableSet s) (hs₁ : f.support ⊆ s)
     (hs₂ : g.support ⊆ s) :
@@ -33,7 +33,7 @@ theorem MeasureTheory.eLpNorm_sub_le_of_dist_bdd' (μ : Measure E := by volume_t
     rw [Set.indicator_eq_self]
     exact (Function.support_sub _ _).trans (Set.union_subset hs₁ hs₂)
   rw [← hs₃]
-  exact eLpNorm_sub_le_of_dist_bdd μ hp hs hc (fun x _ ↦ h x)
+  exact sub_indicator_eLpNorm_le_of_dist_bdd μ hp hs hc (fun x _ ↦ h x)
 
 namespace HasCompactSupport
 
@@ -119,7 +119,7 @@ theorem exist_sub_eLpNorm_le_of_continuous (μ : Measure E := by volume_tac) [μ
     intro x hx
     simp [EMetric.infEdist_zero_of_mem (subset_tsupport _ hx)]
   exact ⟨g, hg₁, hg₂,
-    (eLpNorm_sub_le_of_dist_bdd' μ hp hε'.le hg₄ hs₁.measurableSet hf hg₃).trans hε₂⟩
+    (sub_eLpNorm_le_of_dist_bdd μ hp hε'.le hg₄ hs₁.measurableSet hf hg₃).trans hε₂⟩
 
 /-- Every `Lp` function can be approximated by a smooth compactly supported function provided that
 `p < ∞`. -/

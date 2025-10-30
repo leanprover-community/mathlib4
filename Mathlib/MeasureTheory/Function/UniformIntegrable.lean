@@ -455,7 +455,7 @@ theorem unifIntegrable_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ ∞
 
 end
 
-theorem eLpNorm_sub_le_of_dist_bdd (μ : Measure α)
+theorem sub_indicator_eLpNorm_le_of_dist_bdd (μ : Measure α)
     {p : ℝ≥0∞} (hp' : p ≠ ∞) {s : Set α} (hs : MeasurableSet[m] s)
     {f g : α → β} {c : ℝ} (hc : 0 ≤ c) (hf : ∀ x ∈ s, dist (f x) (g x) ≤ c) :
     eLpNorm (s.indicator (f - g)) p μ ≤ ENNReal.ofReal c * μ s ^ (1 / p.toReal) := by
@@ -470,6 +470,9 @@ theorem eLpNorm_sub_le_of_dist_bdd (μ : Measure α)
     · simp [Set.indicator_of_notMem hx]
   grw [eLpNorm_mono this, eLpNorm_indicator_const hs hp hp', ← ofReal_norm_eq_enorm,
     Real.norm_eq_abs, abs_of_nonneg hc]
+
+@[deprecated (since := "2025-10-30")]
+alias eLpNorm_sub_le_of_dist_bdd := sub_indicator_eLpNorm_le_of_dist_bdd
 
 /-- A sequence of uniformly integrable functions which converges μ-a.e. converges in Lp. -/
 theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
@@ -512,7 +515,7 @@ theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤
   have hlt : eLpNorm (tᶜ.indicator (f n - g)) p μ ≤ ENNReal.ofReal (ε.toReal / 3) := by
     specialize hN n hn
     have : 0 ≤ ε.toReal / (3 * measureUnivNNReal μ ^ (1 / p.toReal)) := by positivity
-    have := eLpNorm_sub_le_of_dist_bdd μ hp' htm.compl this fun x hx =>
+    have := sub_indicator_eLpNorm_le_of_dist_bdd μ hp' htm.compl this fun x hx =>
       (dist_comm (g x) (f n x) ▸ (hN x hx).le :
         dist (f n x) (g x) ≤ ε.toReal / (3 * measureUnivNNReal μ ^ (1 / p.toReal)))
     refine le_trans this ?_
