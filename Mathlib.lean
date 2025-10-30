@@ -1055,6 +1055,7 @@ import Mathlib.Algebra.Polynomial.Mirror
 import Mathlib.Algebra.Polynomial.Module.AEval
 import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.Algebra.Polynomial.Module.FiniteDimensional
+import Mathlib.Algebra.Polynomial.Module.TensorProduct
 import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Algebra.Polynomial.Monomial
 import Mathlib.Algebra.Polynomial.OfFn
