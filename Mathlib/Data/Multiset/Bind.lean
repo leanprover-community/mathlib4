@@ -177,27 +177,35 @@ theorem bind_map_comm (m : Multiset α) (n : Multiset β) {f : α → β → γ}
     ((bind m) fun a => n.map fun b => f a b) = (bind n) fun b => m.map fun a => f a b :=
   Multiset.induction_on m (by simp) (by simp +contextual)
 
-theorem bind_filter (m : Multiset α) (p : α → Prop) (f : α → Multiset β) [DecidablePred p] :
-    bind (filter p m) f = bind m (fun a => if p a then f a else 0) := by
+theorem filter_eq_bind (m : Multiset α) (p : α → Prop) [DecidablePred p] :
+    filter p m = bind m (fun a => if p a then {a} else 0) := by
   induction m using Multiset.induction
   case empty => simp
-  case cons a m ih =>
-    simp [filter_cons, ih]
-    split_ifs with h <;> simp
+  case cons a m ih => simp [filter_cons, ih]
+
+theorem bind_filter (m : Multiset α) (p : α → Prop) (f : α → Multiset β) [DecidablePred p] :
+    bind (filter p m) f = bind m (fun a => if p a then f a else 0) := by
+  simp [filter_eq_bind, Multiset.bind_assoc]
+  apply Multiset.bind_congr; intro a ham
+  split_ifs <;> simp
 
 theorem filter_bind (m : Multiset α) (f : α → Multiset β) (p : β → Prop) [DecidablePred p] :
     filter p (bind m f) = bind m (fun a => filter p (f a)) := by
   simp [bind, filter_join]
 
-theorem bind_filterMap (m : Multiset α) (f : α → Option β) (g : β → Multiset γ) :
-    bind (filterMap f m) g = bind m (fun a => ((f a).map g).getD 0) := by
+theorem filterMap_eq_bind (m : Multiset α) (f : α → Option β) :
+    filterMap f m = bind m (fun a => ((f a).map singleton).getD 0) := by
   induction m using Multiset.induction
   case empty => simp
-  case cons a m ih =>
-    simp [filterMap_cons, ih]
-    cases hfa : f a
-    case none => simp
-    case some b => simp
+  case cons a m ih => simp [filterMap_cons, ih]
+
+theorem bind_filterMap (m : Multiset α) (f : α → Option β) (g : β → Multiset γ) :
+    bind (filterMap f m) g = bind m (fun a => ((f a).map g).getD 0) := by
+  simp [filterMap_eq_bind, Multiset.bind_assoc]
+  apply Multiset.bind_congr; intro a ham
+  cases f a with
+  | none => simp
+  | some b => simp
 
 theorem filterMap_bind (m : Multiset α) (f : α → Multiset β) (g : β → Option γ) :
     filterMap g (bind m f) = bind m (fun a => filterMap g (f a)) := by
