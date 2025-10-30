@@ -176,6 +176,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`MathlibTest.Header, `Plausible),
   (`MathlibTest.Header, `ProofWidgets),
   (`MathlibTest.Header, `Qq),
+  (`MathlibTest.Header, `Hammer),
   -- (`MathlibTest.Header, `Mathlib.Tactic),
   -- (`MathlibTest.Header, `Mathlib.Deprecated),
   (`MathlibTest.Header, `Batteries),
@@ -647,14 +648,14 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageDa
     if let some msg := checkBlocklist env mainModule imports then return #[msg] else return #[]
   else
     -- We always allow imports in the same directory (for each matching prefix),
-    -- from `Init`, `Lean` and `Std`, as well as imports in `Aesop`, `Qq`, `Plausible`,
-    -- `ImportGraph`, `ProofWidgets` or `LeanSearchClient` (as these are imported in Tactic.Common).
+    -- from `Init`, `Lean` and `Std`, as well as imports in `Aesop`, `Qq`, `Plausible`, `ImportGraph`,
+    -- `ProofWidgets`, `LeanSearchClient`, or `Hammer` (as these are imported in Tactic.Common).
     -- We also allow transitive imports of Mathlib.Init, as well as Mathlib.Init itself.
     let initImports := (← findImports ("Mathlib" / "Init.lean")).append
       #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames]
     let exclude := [
       `Init, `Std, `Lean,
-      `Aesop, `Qq, `Plausible, `ImportGraph, `ProofWidgets, `LeanSearchClient
+      `Aesop, `Qq, `Plausible, `ImportGraph, `ProofWidgets, `LeanSearchClient, `Hammer
     ]
     let importsToCheck := imports.filter (fun imp ↦ !exclude.any (·.isPrefixOf imp))
       |>.filter (fun imp ↦ !matchingPrefixes.any (·.isPrefixOf imp))
