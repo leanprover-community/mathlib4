@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Integral.FinMeasAdditive
-import Mathlib.Analysis.Normed.Operator.Completeness
+import Mathlib.Analysis.Normed.Operator.Extend
 
 /-!
 # Extension of a linear function from indicators to L1
