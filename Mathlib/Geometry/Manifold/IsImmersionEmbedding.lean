@@ -92,11 +92,11 @@ lemma isLocalSourceTargetProperty_immersionAtProp :
   mono_source {f φ ψ s} hs hf := by
     obtain ⟨equiv, hf⟩ := hf
     exact ⟨equiv, hf.mono (by simp; grind)⟩
-  congr {f g φ ψ s} hfg hs hφ hf := by
+  congr {f g φ ψ} hfg hf := by
     obtain ⟨equiv, hf⟩ := hf
     refine ⟨equiv, EqOn.trans (fun x hx ↦ ?_) (hf.mono (by simp))⟩
-    have aux : (φ.extend I).source ⊆ s := by simpa
-    grind [→ PartialEquiv.map_target]
+    have : ((φ.extend I).symm) x ∈ φ.source := by simp_all
+    grind
 
 variable (F I J n) in
 /-- `f : M → N` is a `C^n` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
