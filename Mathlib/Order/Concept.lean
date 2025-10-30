@@ -300,8 +300,11 @@ instance instInfConcept : Min (Concept α β r) :=
         rw [← c.lowerPolar_intent, ← d.lowerPolar_intent, ← lowerPolar_union,
           lowerPolar_upperPolar_lowerPolar] }⟩
 
+instance instSemilatticeInfConcept : PartialOrder (Concept α β r) :=
+  PartialOrder.lift _ extent_injective
+
 instance instSemilatticeInfConcept : SemilatticeInf (Concept α β r) :=
-  (extent_injective.semilatticeInf _) fun _ _ => rfl
+  extent_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[simp]
 theorem extent_subset_extent_iff : c.extent ⊆ d.extent ↔ c ≤ d :=

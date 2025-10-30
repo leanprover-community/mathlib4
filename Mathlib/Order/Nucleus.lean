@@ -110,7 +110,8 @@ instance : Min (Nucleus X) where
 @[simp, norm_cast] lemma coe_inf (m n : Nucleus X) : ⇑(m ⊓ n) = ⇑m ⊓ ⇑n := rfl
 @[simp] lemma inf_apply (m n : Nucleus X) (x : X) : (m ⊓ n) x = m x ⊓ n x := rfl
 
-instance : SemilatticeInf (Nucleus X) := DFunLike.coe_injective.semilatticeInf _ coe_inf
+instance : SemilatticeInf (Nucleus X) :=
+  DFunLike.coe_injective.semilatticeInf _ .rfl .rfl coe_inf
 
 /-- The smallest nucleus is the identity. -/
 instance instBot : OrderBot (Nucleus X) where
