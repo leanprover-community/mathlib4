@@ -77,17 +77,6 @@ instance category : LargeCategory.{max v u} Cat.{v, u} :=
 /-- Synonym for `NatTrans.app` to help with automation. -/
 abbrev app {C D : Cat} {F G : C ⟶ D} (α : F ⟶ G) (x : C) := α.app x
 
-def NatTrans.mk' {C D : Cat} {F G : C ⟶ D} (app : (X : C) → F.obj X ⟶ G.obj X)
-    (naturality : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), F.map f ≫ app Y = app X ≫ G.map f := by
-      cat_disch) : F ⟶ G :=
-  { app := app }
-
-@[simp]
-theorem app_mk {C D : Cat} {F G : C ⟶ D} {app : (X : C) → F.obj X ⟶ G.obj X}
-      {naturality : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), F.map f ≫ app Y = app X ≫ G.map f} (X : C) :
-    Cat.app (NatTrans.mk' app naturality) X = app X := by
-  rfl
-
 @[ext]
 theorem ext {C D : Cat} {F G : C ⟶ D} {α β : F ⟶ G} (w : app α = app β) : α = β :=
   NatTrans.ext w
