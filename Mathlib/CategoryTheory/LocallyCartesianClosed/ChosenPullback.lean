@@ -200,9 +200,21 @@ instance hasPullbackAlong : HasPullbacksAlong g := fun f => (isPullback f g).has
 
 /-- The computable `ChosenPullback.pullback g` is naturally isomorphic to the noncomputable
 `Over.pullback g`. -/
-@[simps!]
 noncomputable def pullbackIsoOverPullback : ChosenPullback.pullback g ≅ Over.pullback g :=
   (ChosenPullback.mapPullbackAdj g).rightAdjointUniq (Over.mapPullbackAdj g)
+
+@[reassoc (attr := simp)]
+lemma pullbackIsoOverPullback_hom_app_comp_fst (Z : Over X) :
+    ((pullbackIsoOverPullback g).hom.app Z).left ≫ pullback.fst _ _ = fst _ _ := by
+  simpa using (Over.forget _).congr_map
+    ((ChosenPullback.mapPullbackAdj g).rightAdjointUniq_hom_app_counit
+      (Over.mapPullbackAdj g) Z)
+
+@[reassoc (attr := simp)]
+lemma pullbackIsoOverPullback_hom_app_comp_snd (Z : Over X) :
+    ((pullbackIsoOverPullback g).hom.app Z).left ≫ pullback.snd _ _ = snd _ _ :=
+  Over.w ((pullbackIsoOverPullback g).hom.app Z)
+
 
 end PullbackFromChosenPullbacks
 
