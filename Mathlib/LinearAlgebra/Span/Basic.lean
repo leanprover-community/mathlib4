@@ -444,9 +444,7 @@ lemma span_range_subtype_eq_top_iff {ι : Type*} (p : Submodule R M) {s : ι →
 lemma comap_le_comap_iff_of_le_range {f : M →ₛₗ[σ₁₂] M₂} [RingHomSurjective σ₁₂]
     {p q : Submodule R₂ M₂} (hp : p ≤ LinearMap.range f) (hq : q ≤ LinearMap.range f) :
     p.comap f ≤ q.comap f ↔ p ≤ q := by
-  refine ⟨fun h ↦ ?_, comap_mono⟩
-  rw [← map_comap_eq_self hp, ← map_comap_eq_self hq]
-  exact map_mono h
+  rw [← Submodule.map_le_iff_le_comap, Submodule.map_comap_eq_of_le hp]
 
 lemma comap_sup_of_injective {f : M →ₛₗ[σ₁₂] M₂} [RingHomSurjective σ₁₂] {p q : Submodule R₂ M₂}
     (hf : Function.Injective f) (hp : p ≤ LinearMap.range f) (hq : q ≤ LinearMap.range f) :
