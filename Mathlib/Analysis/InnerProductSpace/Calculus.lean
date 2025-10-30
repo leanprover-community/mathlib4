@@ -214,6 +214,13 @@ theorem HasDerivWithinAt.norm_sq {f : ℝ → F} {f' : F} {s : Set ℝ} {x : ℝ
     HasDerivWithinAt (‖f ·‖ ^ 2) (2 * ⟪f x, f'⟫) s x := by
   simpa using hf.hasFDerivWithinAt.norm_sq.hasDerivWithinAt
 
+@[simp]
+theorem fderiv_norm_sq_apply (x : F) : fderiv ℝ (fun (x : F) ↦ ‖x‖^2) x = 2 • innerSL ℝ x := by
+  simpa using (HasFDerivAt.norm_sq (hasFDerivAt_id x)).fderiv
+
+theorem fderiv_norm_sq : fderiv ℝ (fun (x : F) ↦ ‖x‖^2) = 2 • (innerSL ℝ (E := F)) := by
+  ext1; simp
+
 end
 
 section
