@@ -197,7 +197,7 @@ open ENNReal
 
 variable {X : Type*} (m : PseudoEMetricSpace X) (d : X → X → ℝ≥0∞) (hd : d = edist)
 
-/-- Build new pseudoemetric space from an old one where the edistance is provably (but typically 
+/-- Build new pseudoemetric space from an old one where the edistance is provably (but typically
 non-definitionally) equal to some given edistance. We also provide convenience versions for
 PseudoMetric, Emetric and Metric spaces. -/
 -- See note [forgetful inheritance]
