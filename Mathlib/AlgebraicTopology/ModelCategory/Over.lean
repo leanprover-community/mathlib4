@@ -95,11 +95,48 @@ instance [(weakEquivalences C).IsStableUnderRetracts] :
 
 end
 
+lemma trivialCofibrations_over_eq
+    [CategoryWithWeakEquivalences C] [CategoryWithCofibrations C] :
+    trivialCofibrations (Over S) = (trivialCofibrations C).over := rfl
+
+lemma trivialFibrations_over_eq
+    [CategoryWithWeakEquivalences C] [CategoryWithFibrations C] :
+    trivialFibrations (Over S) = (trivialFibrations C).over := rfl
+
+variable {S} in
+lemma _root_.CategoryTheory.HasLiftingProperty.over {A B X Y : Over S}
+    (i : A ⟶ B) (p : X ⟶ Y) [HasLiftingProperty i.left p.left] :
+    HasLiftingProperty i p := sorry
+
+instance _root_.CategoryTheory.MorphismProperty.HasFactorization.over
+    (W₁ W₂ : MorphismProperty C) [W₁.HasFactorization W₂] (S : C) :
+    (W₁.over (X := S)).HasFactorization W₂.over := sorry
+
+instance [CategoryWithWeakEquivalences C]
+    [(weakEquivalences C).HasTwoOutOfThreeProperty] :
+    (weakEquivalences (Over S)).HasTwoOutOfThreeProperty := by
+  rw [weakEquivalences_over_def, MorphismProperty.over_eq_inverseImage]
+  infer_instance
+
+section
+
+variable [CategoryWithWeakEquivalences C] [CategoryWithCofibrations C]
+  [CategoryWithFibrations C]
+
+instance [(trivialCofibrations C).HasFactorization (fibrations C)] :
+    (trivialCofibrations (Over S)).HasFactorization (fibrations (Over S)) := by
+  rw [fibrations_over_def, trivialCofibrations_over_eq]
+  infer_instance
+
+instance [(cofibrations C).HasFactorization (trivialFibrations C)] :
+    (cofibrations (Over S)).HasFactorization (trivialFibrations (Over S)) := by
+  rw [cofibrations_over_def, trivialFibrations_over_eq]
+  infer_instance
+
+end
+
 instance [ModelCategory C] : ModelCategory (Over S) where
-  cm2 := sorry
-  cm4a := sorry
-  cm4b := sorry
-  cm5a := sorry
-  cm5b := sorry
+  cm4a _ _ _ _ _ := CategoryTheory.HasLiftingProperty.over _ _
+  cm4b _ _ _ _ _ := CategoryTheory.HasLiftingProperty.over _ _
 
 end HomotopicalAlgebra
