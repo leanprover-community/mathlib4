@@ -264,8 +264,10 @@ theorem pi_iff {ι : Type*} {M : ι → Type*} [_root_.Finite ι] [∀ i, AddCom
 
 variable (R)
 
-instance self : Module.Finite R R :=
-  ⟨⟨{1}, by simpa only [Finset.coe_singleton] using Ideal.span_singleton_one⟩⟩
+theorem _root_.Ideal.fg_top : (⊤ : Ideal R).FG :=
+  ⟨{1}, by simpa only [Finset.coe_singleton] using Ideal.span_singleton_one⟩
+
+instance self : Module.Finite R R := ⟨Ideal.fg_top R⟩
 
 variable (M)
 
