@@ -363,6 +363,9 @@ theorem hom_inv_associator {M N K : ModuleCat.{u} R} :
 
 namespace MonoidalCategory
 
+@[deprecated (since := "2025-10-29")] alias tensorObj := tensorObj_carrier
+@[deprecated (since := "2025-10-29")] alias tensorObj_def := tensorObj_carrier
+
 @[simp]
 theorem tensorHom_tmul {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) (k : K) (m : M) :
     (f ⊗ₘ g) (k ⊗ₜ m) = f k ⊗ₜ g m :=

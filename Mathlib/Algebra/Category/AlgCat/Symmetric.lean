@@ -31,6 +31,6 @@ instance : BraidedCategory (AlgCat.{u} R) :=
 instance : (forget₂ (AlgCat R) (ModuleCat R)).Braided where
 
 instance instSymmetricCategory : SymmetricCategory (AlgCat.{u} R) :=
-  symmetricCategoryOfFaithful (forget₂ (AlgCat R) (ModuleCat R))
+  .ofFaithful (forget₂ (AlgCat R) (ModuleCat R))
 
 end AlgCat
