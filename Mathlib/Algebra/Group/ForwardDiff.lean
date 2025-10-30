@@ -298,12 +298,12 @@ We prove formulae about the forward difference operator applied to polynomials:
 theorem sum_shift_eq_fwdDiff_iter (f : M → G) (n : ℕ) (y : M) (hn : n > 0) :
     ∑ k ∈ range n, f (y + k • h) = ∑ k ∈ range (n + 1), n.choose (k + 1) • Δ_[h]^[k] f y := by
   conv => enter [1, 2, x]; rw [shift_eq_sum_fwdDiff_iter (f := f) (n := x) (y := y)]; simp
-  have sum_extend_inner_range : ∑ x ∈ Finset.range n, ∑ k ∈ Finset.range (x + 1), (x.choose k) • Δ_[h]^[k] f y =
+  have sum_extend_inner_range : ∑ x ∈ range n, ∑ k ∈ range (x + 1), (x.choose k) • Δ_[h]^[k] f y =
     ∑ k ∈ range n, ∑ x ∈ Ico k n, (x.choose k) • (Δ_[h]^[k]) f y:= by
     rw [range_eq_Ico]
     rw [sum_Ico_Ico_comm]
   rw [sum_extend_inner_range]
   simp [← sum_smul]
-  rw [sum_range_add]; simp
-  congr 1; ext x
-  rw [show n = n - 1 + 1 by omega, Finset.Ico_add_one_right_eq_Icc, Nat.sum_Icc_choose]
+  rw [sum_range_add]; simp only [range_one, sum_singleton, add_zero, choose_succ_self, zero_nsmul]
+  apply sum_congr rfl; intro k hk
+  rw [show n = n - 1 + 1 by omega, Ico_add_one_right_eq_Icc, Nat.sum_Icc_choose]
