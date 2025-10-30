@@ -1173,6 +1173,7 @@ import Mathlib.Algebra.SkewMonoidAlgebra.Basic
 import Mathlib.Algebra.SkewMonoidAlgebra.Lift
 import Mathlib.Algebra.SkewMonoidAlgebra.Single
 import Mathlib.Algebra.SkewMonoidAlgebra.Support
+import Mathlib.Algebra.SkewPolynomial.Basic
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Algebra.Star.BigOperators
@@ -1882,6 +1883,7 @@ import Mathlib.Analysis.Normed.Operator.Compact
 import Mathlib.Analysis.Normed.Operator.Completeness
 import Mathlib.Analysis.Normed.Operator.Conformal
 import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
+import Mathlib.Analysis.Normed.Operator.Extend
 import Mathlib.Analysis.Normed.Operator.LinearIsometry
 import Mathlib.Analysis.Normed.Operator.Mul
 import Mathlib.Analysis.Normed.Operator.NNNorm
@@ -6090,6 +6092,7 @@ import Mathlib.RingTheory.WittVector.MulCoeff
 import Mathlib.RingTheory.WittVector.MulP
 import Mathlib.RingTheory.WittVector.StructurePolynomial
 import Mathlib.RingTheory.WittVector.Teichmuller
+import Mathlib.RingTheory.WittVector.TeichmullerSeries
 import Mathlib.RingTheory.WittVector.Truncated
 import Mathlib.RingTheory.WittVector.Verschiebung
 import Mathlib.RingTheory.WittVector.WittPolynomial
