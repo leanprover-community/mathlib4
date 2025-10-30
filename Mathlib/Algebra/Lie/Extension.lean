@@ -72,6 +72,7 @@ structure Extension where
   proj : L →ₗ⁅R⁆ M
   IsExtension : IsExtension incl proj
 
+/-- The bundled `LieAlgebra.Extension` corresponding to `LieAlgebra.IsExtension` -/
 @[simps] def IsExtension.extension {i : N →ₗ⁅R⁆ L} {p : L →ₗ⁅R⁆ M} (h : IsExtension i p) :
     Extension R N M :=
   ⟨L, _, _, i, p, h⟩
