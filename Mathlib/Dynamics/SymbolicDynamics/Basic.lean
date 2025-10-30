@@ -654,7 +654,7 @@ variable [Monoid G]
 
 /-- The set of patterns with fixed support `U`. -/
 @[to_additive fixedSupport]
-def mulFixedSupport (A : Type*) (G : Type*) [Monoid G] (U : Finset G) :=
+def mulFixedSupport (A : Type*) (G : Type*) (U : Finset G) :=
   { p : Pattern A G // p.support = U }
 
 attribute [inherit_doc SymbolicDynamics.FullShift.mulFixedSupport]
