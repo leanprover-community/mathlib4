@@ -409,8 +409,7 @@ lemma sum_single_add_single (f₁ f₂ : ι) (g₁ g₂ : A) (F : ι → A → B
     (HF : ∀ f, F f 0 = 0) :
     sum (single f₁ g₁ + single f₂ g₂) F = F f₁ g₁ + F f₂ g₂ := by
   classical
-  simp +contextual [sum_of_support_subset _ (s := {f₁, f₂}) (support_add.trans _),
-    Finset.subset_iff, single_apply, or_imp, H, HF, H.symm]
+  simp [sum_of_support_subset _ support_single_add_single_subset, single_apply, H, HF, H.symm]
 
 theorem equivFunOnFinite_symm_eq_sum [Fintype α] [AddCommMonoid M] (f : α → M) :
     equivFunOnFinite.symm f = ∑ a, Finsupp.single a (f a) := by
