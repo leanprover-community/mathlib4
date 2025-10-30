@@ -55,7 +55,10 @@ instance (priority := 100) IsOrderedMonoid.toIsOrderedCancelMonoid
 ### Linearly ordered commutative groups
 -/
 /- `LinearOrderedCommGroup` and `LinearOrderedAddCommGroup` no longer exist,
-but we still use the namespaces. -/
+but we still use the namespaces.
+
+TODO: everything in these namespaces should be renamed; even if these typeclasses still existed,
+it's unconventional to put theorems in namespaces named after them. -/
 run_meta ToAdditive.insertTranslation `LinearOrderedCommGroup `LinearOrderedAddCommGroup
 
 section LinearOrderedCommGroup
