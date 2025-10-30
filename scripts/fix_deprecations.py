@@ -27,7 +27,7 @@ def main():
         if 'warning:' in line and 'deprecated' in line:
             match = re.search(r'([^:]+\.lean):(\d+):(\d+):', line)
             if match:
-                filepath = match.group(1)
+                filepath = match.group(1).strip()  # Strip leading/trailing whitespace
                 line_num = int(match.group(2))
                 col_num = int(match.group(3))
 
