@@ -728,7 +728,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋
       congr 1
       dsimp [δ]
       rw [Fin.succAbove_of_castSucc_lt i.succ]
-      exact Fin.lt_succ
+      exact Fin.castSucc_lt_succ
     · dsimp [δ]
       rw [Fin.succAbove_of_le_castSucc i.succ _]
       simp only [Fin.lt_def, Fin.le_iff_val_le_val, Fin.val_succ, Fin.coe_castSucc,

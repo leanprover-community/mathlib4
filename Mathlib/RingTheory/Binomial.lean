@@ -250,7 +250,7 @@ instance Int.instBinomialRing : BinomialRing ℤ where
     rw [Int.multichoose.eq_def, nsmul_eq_mul]
     cases r with
     | ofNat n =>
-      simp only [Int.ofNat_eq_coe, Int.ofNat_mul_ofNat]
+      simp only [Int.ofNat_eq_natCast, Int.ofNat_mul_ofNat]
       rw [← Nat.descFactorial_eq_factorial_mul_choose, smeval_at_natCast, ← eval_eq_smeval n,
         ascPochhammer_nat_eq_descFactorial]
     | negSucc n =>

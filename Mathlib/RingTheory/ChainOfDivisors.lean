@@ -124,7 +124,7 @@ theorem eq_second_of_chain_of_prime_dvd {p q r : Associates M} {n : ℕ} (hn : n
       ?_ hp.irreducible
   · simpa using Fin.lt_def.mp hi
   · refine Associates.dvdNotUnit_iff_lt.2 (h₁ ?_)
-    simpa only [Fin.coe_eq_castSucc] using Fin.lt_succ
+    simpa only [Fin.coe_eq_castSucc] using Fin.castSucc_lt_succ
 
 theorem card_subset_divisors_le_length_of_chain {q : Associates M} {n : ℕ}
     {c : Fin (n + 1) → Associates M} (h₂ : ∀ {r}, r ≤ q ↔ ∃ i, r = c i) {m : Finset (Associates M)}
