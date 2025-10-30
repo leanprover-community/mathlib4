@@ -3,16 +3,16 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 import Mathlib.Analysis.Calculus.LineDeriv.Basic
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
+import Mathlib.Analysis.Distribution.TemperateGrowth
 import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 import Mathlib.Tactic.MoveAdd
+import Mathlib.MeasureTheory.Function.L2Space
 
 /-!
 # Schwartz space
@@ -67,7 +67,7 @@ noncomputable section
 
 open scoped Nat NNReal ContDiff
 
-variable {𝕜 𝕜' D E F G V : Type*}
+variable {𝕜 𝕜' D E F G H V : Type*}
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable [NormedAddCommGroup F] [NormedSpace ℝ F]
 
@@ -517,190 +517,10 @@ instance instFirstCountableTopology : FirstCountableTopology 𝓢(E, F) :=
 
 end Topology
 
-section TemperateGrowth
-
-/-! ### Functions of temperate growth -/
-
-/-- A function is called of temperate growth if it is smooth and all iterated derivatives are
-polynomially bounded. -/
-def _root_.Function.HasTemperateGrowth (f : E → F) : Prop :=
-  ContDiff ℝ ∞ f ∧ ∀ n : ℕ, ∃ (k : ℕ) (C : ℝ), ∀ x, ‖iteratedFDeriv ℝ n f x‖ ≤ C * (1 + ‖x‖) ^ k
-
-theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f : E → F}
-    (hf_temperate : f.HasTemperateGrowth) (n : ℕ) :
-    ∃ (k : ℕ) (C : ℝ), 0 ≤ C ∧ ∀ N ≤ n, ∀ x : E, ‖iteratedFDeriv ℝ N f x‖ ≤ C * (1 + ‖x‖) ^ k := by
-  choose k C f using hf_temperate.2
-  use (Finset.range (n + 1)).sup k
-  let C' := max (0 : ℝ) ((Finset.range (n + 1)).sup' (by simp) C)
-  have hC' : 0 ≤ C' := le_max_left _ _
-  use C', hC'
-  intro N hN x
-  rw [← Finset.mem_range_succ_iff] at hN
-  grw [f]
-  gcongr
-  · simp only [C', Finset.le_sup'_iff, le_max_iff]
-    right
-    exact ⟨N, hN, le_rfl⟩
-  · simp
-  exact Finset.le_sup hN
-
-lemma _root_.Function.HasTemperateGrowth.of_fderiv {f : E → F}
-    (h'f : Function.HasTemperateGrowth (fderiv ℝ f)) (hf : Differentiable ℝ f) {k : ℕ} {C : ℝ}
-    (h : ∀ x, ‖f x‖ ≤ C * (1 + ‖x‖) ^ k) :
-    Function.HasTemperateGrowth f := by
-  refine ⟨contDiff_succ_iff_fderiv.2 ⟨hf, by simp, h'f.1⟩, fun n ↦ ?_⟩
-  rcases n with rfl | m
-  · exact ⟨k, C, fun x ↦ by simpa using h x⟩
-  · rcases h'f.2 m with ⟨k', C', h'⟩
-    refine ⟨k', C', ?_⟩
-    simpa [iteratedFDeriv_succ_eq_comp_right] using h'
-
-lemma _root_.Function.HasTemperateGrowth.zero :
-    Function.HasTemperateGrowth (fun _ : E ↦ (0 : F)) := by
-  refine ⟨contDiff_const, fun n ↦ ⟨0, 0, fun x ↦ ?_⟩⟩
-  simp only [iteratedFDeriv_zero_fun, Pi.zero_apply, norm_zero]
-  positivity
-
-lemma _root_.Function.HasTemperateGrowth.const (c : F) :
-    Function.HasTemperateGrowth (fun _ : E ↦ c) :=
-  .of_fderiv (by simpa using .zero) (differentiable_const c) (k := 0) (C := ‖c‖) (fun x ↦ by simp)
-
-lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
-    Function.HasTemperateGrowth f := by
-  apply Function.HasTemperateGrowth.of_fderiv ?_ f.differentiable (k := 1) (C := ‖f‖) (fun x ↦ ?_)
-  · have : fderiv ℝ f = fun _ ↦ f := by ext1 v; simp only [ContinuousLinearMap.fderiv]
-    simpa [this] using .const _
-  · exact (f.le_opNorm x).trans (by simp [mul_add])
-
 theorem hasTemperateGrowth (f : 𝓢(E, F)) : Function.HasTemperateGrowth f := by
   refine ⟨smooth f ⊤, fun n => ?_⟩
   rcases f.decay 0 n with ⟨C, Cpos, hC⟩
   exact ⟨0, C, by simpa using hC⟩
-
-variable [NormedAddCommGroup D] [MeasurableSpace D]
-
-open MeasureTheory Module
-open scoped ENNReal
-
-/-- A measure `μ` has temperate growth if there is an `n : ℕ` such that `(1 + ‖x‖) ^ (- n)` is
-`μ`-integrable. -/
-class _root_.MeasureTheory.Measure.HasTemperateGrowth (μ : Measure D) : Prop where
-  exists_integrable : ∃ (n : ℕ), Integrable (fun x ↦ (1 + ‖x‖) ^ (- (n : ℝ))) μ
-
-open Classical in
-/-- An integer exponent `l` such that `(1 + ‖x‖) ^ (-l)` is integrable if `μ` has
-temperate growth. -/
-def _root_.MeasureTheory.Measure.integrablePower (μ : Measure D) : ℕ :=
-  if h : μ.HasTemperateGrowth then h.exists_integrable.choose else 0
-
-lemma integrable_pow_neg_integrablePower
-    (μ : Measure D) [h : μ.HasTemperateGrowth] :
-    Integrable (fun x ↦ (1 + ‖x‖) ^ (- (μ.integrablePower : ℝ))) μ := by
-  simpa [Measure.integrablePower, h] using h.exists_integrable.choose_spec
-
-instance _root_.MeasureTheory.Measure.IsFiniteMeasure.instHasTemperateGrowth {μ : Measure D}
-    [h : IsFiniteMeasure μ] : μ.HasTemperateGrowth := ⟨⟨0, by simp⟩⟩
-
-variable [NormedSpace ℝ D] [FiniteDimensional ℝ D] [BorelSpace D] in
-instance _root_.MeasureTheory.Measure.IsAddHaarMeasure.instHasTemperateGrowth {μ : Measure D}
-    [h : μ.IsAddHaarMeasure] : μ.HasTemperateGrowth :=
-  ⟨⟨finrank ℝ D + 1, by apply integrable_one_add_norm; norm_num⟩⟩
-
-/-- Pointwise inequality to control `x ^ k * f` in terms of `1 / (1 + x) ^ l` if one controls both
-`f` (with a bound `C₁`) and `x ^ (k + l) * f` (with a bound `C₂`). This will be used to check
-integrability of `x ^ k * f x` when `f` is a Schwartz function, and to control explicitly its
-integral in terms of suitable seminorms of `f`. -/
-lemma pow_mul_le_of_le_of_pow_mul_le {C₁ C₂ : ℝ} {k l : ℕ} {x f : ℝ} (hx : 0 ≤ x) (hf : 0 ≤ f)
-    (h₁ : f ≤ C₁) (h₂ : x ^ (k + l) * f ≤ C₂) :
-    x ^ k * f ≤ 2 ^ l * (C₁ + C₂) * (1 + x) ^ (- (l : ℝ)) := by
-  have : 0 ≤ C₂ := le_trans (by positivity) h₂
-  have : 2 ^ l * (C₁ + C₂) * (1 + x) ^ (- (l : ℝ)) = ((1 + x) / 2) ^ (-(l : ℝ)) * (C₁ + C₂) := by
-    rw [Real.div_rpow (by linarith) zero_le_two]
-    simp [div_eq_inv_mul, ← Real.rpow_neg_one, ← Real.rpow_mul]
-    ring
-  rw [this]
-  rcases le_total x 1 with h'x|h'x
-  · gcongr
-    · apply (pow_le_one₀ hx h'x).trans
-      apply Real.one_le_rpow_of_pos_of_le_one_of_nonpos
-      · linarith
-      · linarith
-      · simp
-    · linarith
-  · calc
-    x ^ k * f = x ^ (-(l : ℝ)) * (x ^ (k + l) * f) := by
-      rw [← Real.rpow_natCast, ← Real.rpow_natCast, ← mul_assoc, ← Real.rpow_add (by linarith)]
-      simp
-    _ ≤ ((1 + x) / 2) ^ (-(l : ℝ)) * (C₁ + C₂) := by
-      apply mul_le_mul _ _ (by positivity) (by positivity)
-      · exact Real.rpow_le_rpow_of_nonpos (by linarith) (by linarith) (by simp)
-      · exact h₂.trans (by linarith)
-
-variable [BorelSpace D] [SecondCountableTopology D] in
-/-- Given a function such that `f` and `x ^ (k + l) * f` are bounded for a suitable `l`, then
-`x ^ k * f` is integrable. The bounds are not relevant for the integrability conclusion, but they
-are relevant for bounding the integral in `integral_pow_mul_le_of_le_of_pow_mul_le`. We formulate
-the two lemmas with the same set of assumptions for ease of applications. -/
--- We redeclare `E` here to avoid the `NormedSpace ℝ E` typeclass available throughout this file.
-lemma integrable_of_le_of_pow_mul_le
-    {E : Type*} [NormedAddCommGroup E]
-    {μ : Measure D} [μ.HasTemperateGrowth] {f : D → E} {C₁ C₂ : ℝ} {k : ℕ}
-    (hf : ∀ x, ‖f x‖ ≤ C₁) (h'f : ∀ x, ‖x‖ ^ (k + μ.integrablePower) * ‖f x‖ ≤ C₂)
-    (h''f : AEStronglyMeasurable f μ) :
-    Integrable (fun x ↦ ‖x‖ ^ k * ‖f x‖) μ := by
-  apply ((integrable_pow_neg_integrablePower μ).const_mul (2 ^ μ.integrablePower * (C₁ + C₂))).mono'
-  · exact AEStronglyMeasurable.mul (aestronglyMeasurable_id.norm.pow _) h''f.norm
-  · filter_upwards with v
-    simp only [norm_mul, norm_pow, norm_norm]
-    apply pow_mul_le_of_le_of_pow_mul_le (norm_nonneg _) (norm_nonneg _) (hf v) (h'f v)
-
-/-- Given a function such that `f` and `x ^ (k + l) * f` are bounded for a suitable `l`, then
-one can bound explicitly the integral of `x ^ k * f`. -/
--- We redeclare `E` here to avoid the `NormedSpace ℝ E` typeclass available throughout this file.
-lemma integral_pow_mul_le_of_le_of_pow_mul_le
-    {E : Type*} [NormedAddCommGroup E]
-    {μ : Measure D} [μ.HasTemperateGrowth] {f : D → E} {C₁ C₂ : ℝ} {k : ℕ}
-    (hf : ∀ x, ‖f x‖ ≤ C₁) (h'f : ∀ x, ‖x‖ ^ (k + μ.integrablePower) * ‖f x‖ ≤ C₂) :
-    ∫ x, ‖x‖ ^ k * ‖f x‖ ∂μ ≤ 2 ^ μ.integrablePower *
-      (∫ x, (1 + ‖x‖) ^ (- (μ.integrablePower : ℝ)) ∂μ) * (C₁ + C₂) := by
-  rw [← integral_const_mul, ← integral_mul_const]
-  apply integral_mono_of_nonneg
-  · filter_upwards with v using by positivity
-  · exact ((integrable_pow_neg_integrablePower μ).const_mul _).mul_const _
-  filter_upwards with v
-  exact (pow_mul_le_of_le_of_pow_mul_le (norm_nonneg _) (norm_nonneg _) (hf v) (h'f v)).trans
-    (le_of_eq (by ring))
-
-/-- For any `HasTemperateGrowth` measure and `p`, there exists an integer power `k` such that
-`(1 + ‖x‖) ^ (-k)` is in `L^p`. -/
-theorem _root_.MeasureTheory.Measure.HasTemperateGrowth.exists_eLpNorm_lt_top (p : ℝ≥0∞)
-    {μ : Measure D} (hμ : μ.HasTemperateGrowth) :
-    ∃ k : ℕ, eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ < ⊤ := by
-  cases p with
-  | top => exact ⟨0, eLpNormEssSup_lt_top_of_ae_bound (C := 1) (by simp)⟩
-  | coe p =>
-    cases eq_or_ne (p : ℝ≥0∞) 0 with
-    | inl hp => exact ⟨0, by simp [hp]⟩
-    | inr hp =>
-      have h_one_add (x : D) : 0 < 1 + ‖x‖ := lt_add_of_pos_of_le zero_lt_one (norm_nonneg x)
-      have hp_pos : 0 < (p : ℝ) := by simpa [zero_lt_iff] using hp
-      rcases hμ.exists_integrable with ⟨l, hl⟩
-      let k := ⌈(l / p : ℝ)⌉₊
-      have hlk : l ≤ k * (p : ℝ) := by simpa [div_le_iff₀ hp_pos] using Nat.le_ceil (l / p : ℝ)
-      use k
-      suffices HasFiniteIntegral (fun x ↦ ((1 + ‖x‖) ^ (-(k * p) : ℝ))) μ by
-        rw [hasFiniteIntegral_iff_enorm] at this
-        rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp ENNReal.coe_ne_top]
-        simp only [ENNReal.coe_toReal]
-        refine Eq.subst (motive := (∫⁻ x, · x ∂μ < ⊤)) (funext fun x ↦ ?_) this
-        rw [← neg_mul, Real.rpow_mul (h_one_add x).le]
-        exact Real.enorm_rpow_of_nonneg (by positivity) NNReal.zero_le_coe
-      refine hl.hasFiniteIntegral.mono' (ae_of_all μ fun x ↦ ?_)
-      rw [Real.norm_of_nonneg (Real.rpow_nonneg (h_one_add x).le _)]
-      gcongr
-      simp
-
-end TemperateGrowth
 
 section HasCompactSupport
 
@@ -830,7 +650,7 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
     (fun f => (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp
       ((f.smooth ⊤).prodMk hg.1)) ?_
   rintro ⟨k, n⟩
-  rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨l, C, hC, hgrowth⟩
+  rcases hg.norm_iteratedFDeriv_le_uniform n with ⟨l, C, hC, hgrowth⟩
   use
     Finset.Iic (l + k, n), ‖B‖ * ((n : ℝ) + (1 : ℝ)) * n.choose (n / 2) * (C * 2 ^ (l + k)),
     by positivity
@@ -888,7 +708,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
   refine mkCLM (fun f => f ∘ g) (fun _ _ _ => by simp) (fun _ _ _ => rfl)
     (fun f => (f.smooth ⊤).comp hg.1) ?_
   rintro ⟨k, n⟩
-  rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨l, C, hC, hgrowth⟩
+  rcases hg.norm_iteratedFDeriv_le_uniform n with ⟨l, C, hC, hgrowth⟩
   rcases hg_upper with ⟨kg, Cg, hg_upper'⟩
   have hCg : 1 ≤ 1 + Cg := by
     refine le_add_of_nonneg_right ?_
@@ -1376,6 +1196,25 @@ theorem continuous_toLp {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} [hμ 
     Continuous (fun f : 𝓢(E, F) ↦ f.toLp p μ) := (toLpCLM ℝ F p μ).continuous
 
 end Lp
+
+section L2
+
+open MeasureTheory
+
+variable [NormedAddCommGroup H] [NormedSpace ℝ H] [FiniteDimensional ℝ H]
+  [MeasurableSpace H] [BorelSpace H]
+  [NormedAddCommGroup V] [InnerProductSpace ℂ V]
+
+@[simp]
+theorem inner_toL2_toL2_eq (f g : 𝓢(H, V)) (μ : Measure H := by volume_tac) [μ.HasTemperateGrowth] :
+    inner ℂ (f.toLp 2 μ) (g.toLp 2 μ) = ∫ x, inner ℂ (f x) (g x) ∂μ := by
+  apply integral_congr_ae
+  have hf_ae := f.coeFn_toLp 2 μ
+  have hg_ae := g.coeFn_toLp 2 μ
+  filter_upwards [hf_ae, hg_ae] with _ hf hg
+  rw [hf, hg]
+
+end L2
 
 section integration_by_parts
 
