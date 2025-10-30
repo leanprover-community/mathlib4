@@ -296,7 +296,7 @@ theorem Iso.connected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃g H
     G.Connected ↔ H.Connected :=
   ⟨Connected.map e.toHom e.toEquiv.surjective, Connected.map e.symm.toHom e.symm.toEquiv.surjective⟩
 
-theorem connected_or_compl_connected [Nonempty V] : G.Connected ∨ Gᶜ.Connected := by
+theorem connected_or_connected_compl [Nonempty V] : G.Connected ∨ Gᶜ.Connected := by
   have ⟨v₀⟩ := ‹Nonempty V›
   by_cases hreach₀ : ∀ v, G.Reachable v₀ v
   · exact .inl <| G.connected_iff_exists_forall_reachable.mpr ⟨v₀, hreach₀⟩
