@@ -2963,6 +2963,9 @@ Q5163116:
 
 Q5165492:
   title: Continuous mapping theorem
+  decl: MeasureTheory.TendstoInDistribution.continuous_comp
+  authors: Rémy Degenne
+  date: 2025
 
 Q5166389:
   title: Van Vleck's theorem
