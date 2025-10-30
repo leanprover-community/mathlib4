@@ -49,6 +49,9 @@ class ChosenPullback {Y X : C} (f : Y ⟶ X) where
   /-- The adjunction between `Over.map f` and `pullback f`. -/
   mapPullbackAdj (f) : Over.map f ⊣ pullback
 
+variable (C) in
+abbrev ChosenPullbacks := Π {X Y : C} (f : Y ⟶ X), ChosenPullback f
+
 namespace ChosenPullback
 
 /-- `ChosenPullback (Over.mk f).hom` from  `ChosenPullback f`. -/
