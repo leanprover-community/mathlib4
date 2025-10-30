@@ -126,20 +126,19 @@ variable [DivisionRing 𝕜] [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [
 variable (f : E →ₗ[𝕜] F)
 
 open scoped Classical in
-/-- The left inverse of a `f : LinearMap`. -/
-def leftInverse_aux : F →ₗ[𝕜] E :=
+/-- The left inverse of a `LinearMap`. -/
+def leftInverse : F →ₗ[𝕜] E :=
   if h_inj : LinearMap.ker f = ⊥ then
   Classical.choose (f.exists_leftInverse_of_injective h_inj)
   else 0
 
 /-- If `f` is injective, then the left inverse composed with `f` is the identity. -/
 @[simp]
-theorem leftInverseLM_aux_apply (h_inj : LinearMap.ker f = ⊥) (x : E) :
-    f.leftInverse_aux (f x) = x := by
+theorem leftInverse_apply (h_inj : LinearMap.ker f = ⊥) (x : E) :
+    f.leftInverse (f x) = x := by
   have := Classical.choose_spec (f.exists_leftInverse_of_injective h_inj)
   rw [LinearMap.ext_iff] at this
-  simp only [leftInverse_aux, h_inj, ↓reduceDIte]
-  exact this x
+  simpa [leftInverse, h_inj] using this x
 
 end LeftInverse
 
@@ -156,9 +155,9 @@ open scoped Classical in
 
 This definition is only used to construct extensions of continuous linear maps and should not
 be used outside of this file. -/
-def compInv_aux :=
+def compLeftInverse :=
   if h : LinearMap.ker g = ⊥ ∧ ∃ (C : ℝ), ∀ (x : E), ‖f x‖ ≤ C * ‖g x‖ then
-  (f ∘ₛₗ (g.leftInverse_aux.domRestrict
+  (f ∘ₛₗ (g.leftInverse.domRestrict
     (LinearMap.range g))).mkContinuousOfExistsBound
   (by
     rcases h.2 with ⟨C, hC⟩
@@ -167,15 +166,15 @@ def compInv_aux :=
     simp only [← hxy, LinearMap.coe_comp, Function.comp_apply,
       LinearMap.domRestrict_apply, AddSubgroupClass.coe_norm]
     convert hC y
-    apply g.leftInverseLM_aux_apply h.1)
+    apply g.leftInverse_apply h.1)
   else 0
 
 @[simp]
-theorem compInv_aux_apply (h_inj : LinearMap.ker g = ⊥)
+theorem compLeftInverse_apply (h_inj : LinearMap.ker g = ⊥)
     (h_norm : ∃ (C : ℝ), ∀ (x : E), ‖f x‖ ≤ C * ‖g x‖) (y : LinearMap.range g) :
-    f.compInv_aux g y = (f ∘ₛₗ (g.leftInverse_aux.domRestrict
+    f.compLeftInverse g y = (f ∘ₛₗ (g.leftInverse.domRestrict
       (LinearMap.range g))) y := by
-  simp [compInv_aux, h_inj, h_norm]
+  simp [compLeftInverse, h_inj, h_norm]
 
 end compInv
 
@@ -195,7 +194,7 @@ using an injective dense embedding `e : E →L[𝕜] Fₗ` together with a bound
 for all `x : E`. -/
 def extendOfNorm : Eₗ →SL[σ₁₂] F :=
   if h : DenseRange e then
-  ContinuousLinearMap.extend (f.compInv_aux e) (LinearMap.range e).subtypeL
+  ContinuousLinearMap.extend (f.compLeftInverse e) (LinearMap.range e).subtypeL
     (by
       simp only [Submodule.coe_subtypeL', Submodule.coe_subtype, denseRange_subtype_val]
       exact h)
@@ -208,15 +207,15 @@ theorem extendOfNorm_eq (h_inj : LinearMap.ker e = ⊥)
     (h_dense : DenseRange e) (h_norm : ∃ C, ∀ x, ‖f x‖ ≤ C * ‖e x‖) (x : E) :
     f.extendOfNorm e (e x) = f x := by
   simp only [extendOfNorm, h_dense, ↓reduceDIte]
-  have := ContinuousLinearMap.extend_eq (f.compInv_aux e) (LinearMap.range e).subtypeL (by
+  have := ContinuousLinearMap.extend_eq (f.compLeftInverse e) (LinearMap.range e).subtypeL (by
     simp only [Submodule.coe_subtypeL', Submodule.coe_subtype, denseRange_subtype_val]
     exact h_dense)
     isUniformEmbedding_subtype_val.isUniformInducing
   convert this ⟨e x, LinearMap.mem_range_self e x⟩
-  simp only [h_inj, h_norm, compInv_aux_apply, LinearMap.coe_comp, Function.comp_apply,
+  simp only [h_inj, h_norm, compLeftInverse_apply, LinearMap.coe_comp, Function.comp_apply,
     LinearMap.domRestrict_apply]
   congr
-  apply (e.leftInverseLM_aux_apply h_inj _).symm
+  apply (e.leftInverse_apply h_inj _).symm
 
 theorem extendOfNorm_norm_le (h_inj : LinearMap.ker e = ⊥) (h_dense : DenseRange e) (C : ℝ)
     (h_norm : ∀ (x : E), ‖f x‖ ≤ C * ‖e x‖) (x : Eₗ) :
