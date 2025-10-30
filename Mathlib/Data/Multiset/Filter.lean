@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
+Authors: Mario Carneiro, Rudy Peterson
 -/
 import Mathlib.Data.Multiset.MapFold
 import Mathlib.Data.Set.Function
@@ -199,6 +199,11 @@ theorem filterMap_cons (f : α → Option β) (a : α) (s : Multiset α) :
   cases h : f a
   case none => simp [filterMap_cons_none a s h]
   case some b => simp [filterMap_cons_some f a s h]
+
+@[simp]
+theorem filterMap_add (f : α → Option β) (s t : Multiset α) :
+    filterMap f (s + t) = filterMap f s + filterMap f t :=
+  Quotient.inductionOn₂ s t fun _l₁ _l₂ => congr_arg ofList <| filterMap_append
 
 theorem filterMap_eq_map (f : α → β) : filterMap (some ∘ f) = map f :=
   funext fun s =>

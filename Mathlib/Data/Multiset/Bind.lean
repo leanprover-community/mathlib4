@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
+Authors: Mario Carneiro, Rudy Peterson
 -/
 import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 
@@ -86,6 +86,12 @@ theorem rel_join {r : α → β → Prop} {s t} (h : Rel (Rel r) s t) : Rel r s.
 
 theorem filter_join (S : Multiset (Multiset α)) (p : α → Prop) [DecidablePred p] :
     filter p (join S) = join (map (filter p) S) := by
+  induction S using Multiset.induction with
+  | empty => simp
+  | cons _ _ ih => simp [ih]
+
+theorem filterMap_join (S : Multiset (Multiset α)) (f : α → Option β) :
+    filterMap f (join S) = join (map (filterMap f) S) := by
   induction S using Multiset.induction with
   | empty => simp
   | cons _ _ ih => simp [ih]
@@ -182,6 +188,20 @@ theorem bind_filter (m : Multiset α) (p : α → Prop) (f : α → Multiset β)
 theorem filter_bind (m : Multiset α) (f : α → Multiset β) (p : β → Prop) [DecidablePred p] :
     filter p (bind m f) = bind m (fun a => filter p (f a)) := by
   simp [bind, filter_join]
+
+theorem bind_filterMap (m : Multiset α) (f : α → Option β) (g : β → Multiset γ) :
+    bind (filterMap f m) g = bind m (fun a => ((f a).map g).getD 0) := by
+  induction m using Multiset.induction
+  case empty => simp
+  case cons a m ih =>
+    simp [filterMap_cons, ih]
+    cases hfa : f a
+    case none => simp
+    case some b => simp
+
+theorem filterMap_bind (m : Multiset α) (f : α → Multiset β) (g : β → Option γ) :
+    filterMap g (bind m f) = bind m (fun a => filterMap g (f a)) := by
+  simp [bind, filterMap_join]
 
 @[to_additive (attr := simp)]
 theorem prod_bind [CommMonoid β] (s : Multiset α) (t : α → Multiset β) :
