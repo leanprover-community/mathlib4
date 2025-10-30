@@ -5,6 +5,7 @@ Authors: Christian Merten
 -/
 import Mathlib.LinearAlgebra.Basis.Exact
 import Mathlib.RingTheory.Extension.Cotangent.Basic
+import Mathlib.RingTheory.Extension.Cotangent.Basis
 import Mathlib.RingTheory.Extension.Presentation.Submersive
 
 /-!
@@ -87,6 +88,17 @@ lemma disjoint_ker_toKaehler_of_linearIndependent
   obtain rfl := (linearIndependent_iff.mp h) c hx
   simp
 
+lemma cotangentRestrict_bijective_of_basis_kaehlerDifferential
+    (huv : IsCompl (Set.range v) (Set.range u)) (b : Module.Basis κ S (Ω[S⁄R]))
+    (hb : ∀ k, b k = (D R S) (P.val (v k))) [Subsingleton (H1Cotangent R S)] :
+    Function.Bijective (cotangentRestrict P hu) := by
+  refine P.cotangentRestrict_bijective_of_isCompl _ huv ?_ ?_
+  · simp_rw [← hb]
+    exact b.span_eq
+  · apply disjoint_ker_toKaehler_of_linearIndependent
+    simp_rw [← hb]
+    exact b.linearIndependent
+
 end Generators
 
 namespace PreSubmersivePresentation
@@ -116,5 +128,53 @@ lemma isUnit_jacobian_of_cotangentRestrict_bijective
       Submodule.map_top, LinearEquivClass.range]
 
 end PreSubmersivePresentation
+
+variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S] {σ : Type*}
+
+/-- If `Ω[S⁄R]` has a basis of the form `{d sᵢ}` where `sᵢ : S`, there exist
+generators `P` such that `Ω[S⁄R]` is free on `{d xᵢ}` for some of the generators `xᵢ`. -/
+lemma Generators.exists_of_basis_kaehlerDifferential [Algebra.FiniteType R S]
+    {I : Type*} (b : Module.Basis I S (Ω[S⁄R]))
+    (hb : Set.range b ⊆ Set.range (D R S)) :
+    ∃ (α : Type) (P : Generators R S (α ⊕ I)) (_ : Finite α),
+      ∀ k, b k = D R S (P.val (Sum.inr k)) := by
+  obtain ⟨n, ⟨P⟩⟩ := FiniteType.iff_exists_generators.mp ‹FiniteType R S›
+  choose f' hf' using hb
+  let f (i : I) : S := f' ⟨i, rfl⟩
+  have hf (i : I) : D R S (f i) = b i := by simp [f, hf']
+  let g (i : I) : P.Ring := P.σ (f i)
+  let P' : Generators R S (Fin n ⊕ I) := .ofSurjective (aeval P.val ∘ Sum.elim X g) <| fun s ↦ by
+    use rename Sum.inl (P.σ s)
+    simp [aeval_rename, Function.comp_assoc, ← aeval_unique]
+  exact ⟨Fin n, P', inferInstance, fun k ↦ by simp [← hf, P', g]⟩
+
+/-- If `H¹(S/R) = 0` and `Ω[S⁄R]` is free on `{d sᵢ}ᵢ` for some `sᵢ : S`, then `S`
+is `R`-standard smooth. -/
+theorem IsStandardSmooth.of_basis_kaehlerDifferential [FinitePresentation R S]
+    [Subsingleton (H1Cotangent R S)]
+    {I : Type v} (b : Module.Basis I S (Ω[S⁄R])) (hb : Set.range b ⊆ Set.range (D R S)) :
+    IsStandardSmooth R S := by
+  nontriviality S
+  obtain ⟨σ, P, hfin, hb⟩ := Generators.exists_of_basis_kaehlerDifferential b hb
+  have : Function.Bijective (P.cotangentRestrict _) :=
+    P.cotangentRestrict_bijective_of_basis_kaehlerDifferential Sum.inl_injective
+      Set.isCompl_range_inl_range_inr.symm b hb
+  let bcot' : Module.Basis σ S P.toExtension.Cotangent :=
+    .ofRepr (.ofBijective (P.cotangentRestrict _) this)
+  have : Finite I := Module.Finite.finite_basis b
+  obtain ⟨Q, bcot, hcomp, hbcot⟩ := P.exists_presentation_of_free bcot'
+  let P' : PreSubmersivePresentation R S (Unit ⊕ σ ⊕ I) (Unit ⊕ σ) :=
+    { __ := Q
+      map := Sum.map _root_.id Sum.inl
+      map_inj := Sum.map_injective.mpr ⟨fun _ _ h ↦ h, Sum.inl_injective⟩ }
+  have hcompl : IsCompl (Set.range (Sum.inr ∘ Sum.inr)) (Set.range P'.map) := by
+    simp [P', ← eq_compl_iff_isCompl, Set.ext_iff, Set.mem_compl_iff]
+  have hbij : Function.Bijective (P'.cotangentRestrict P'.map_inj) := by
+    apply P'.cotangentRestrict_bijective_of_basis_kaehlerDifferential P'.map_inj hcompl b
+    intro k
+    simp only [hb, ← hcomp, P', Function.comp_def]
+  let P'' : SubmersivePresentation R S _ _ :=
+    ⟨P', P'.isUnit_jacobian_of_cotangentRestrict_bijective bcot hbcot hbij⟩
+  exact P''.isStandardSmooth
 
 end Algebra
