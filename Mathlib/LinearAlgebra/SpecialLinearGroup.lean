@@ -471,7 +471,7 @@ noncomputable def center_equiv_rootsOfUnity :
     simp only
     split_ifs with hV
     · symm
-      rw [← Module.finrank_eq_zero_of_free (R := R)] at hV
+      rw [← Module.finrank_eq_zero_iff_of_free (R := R)] at hV
       simpa [hV] using (mem_rootsOfUnity _ _).mp r.prop
     · rw [not_subsingleton_iff_nontrivial] at hV
       have := Module.Free.instFaithfulSMulOfNontrivial R V
