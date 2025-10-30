@@ -47,7 +47,7 @@ set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
 
-assert_not_exists Set.iUnion MulAction MonoidWithZero
+assert_not_exists Set.iUnion MulAction MonoidWithZero IsOrderedMonoid
 
 open Function MulOpposite
 

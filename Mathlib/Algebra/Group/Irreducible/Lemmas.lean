@@ -12,7 +12,7 @@ import Mathlib.Algebra.Group.Units.Equiv
 # More lemmas about irreducible elements
 -/
 
-assert_not_exists MonoidWithZero Multiset
+assert_not_exists MonoidWithZero IsOrderedMonoid Multiset
 
 variable {F M N : Type*}
 

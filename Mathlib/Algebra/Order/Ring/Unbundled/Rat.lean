@@ -22,7 +22,7 @@ For the bundled `LinearOrderedCommRing` instance on `ℚ`, see `Algebra.Order.Ri
 rat, rationals, field, ℚ, numerator, denominator, num, denom, order, ordering
 -/
 
-assert_not_exists Field Finset Set.Icc GaloisConnection
+assert_not_exists IsOrderedMonoid Field Finset Set.Icc GaloisConnection
 
 namespace Rat
 

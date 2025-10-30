@@ -52,6 +52,8 @@ For each of the following structures we prove that if `β` has this structure, t
 filter, germ
 -/
 
+assert_not_exists IsOrderedRing
+
 open scoped Relator
 namespace Filter
 

@@ -61,7 +61,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 subring, subrings
 -/
 
-assert_not_exists RelIso Even
+assert_not_exists RelIso Even IsOrderedMonoid
 
 universe u v w
 

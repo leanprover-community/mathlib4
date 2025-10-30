@@ -12,7 +12,7 @@ import Mathlib.Data.Finset.Pi
 This file is concerned with folding binary lattice operations over finsets.
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists IsOrderedMonoid MonoidWithZero
 
 variable {α ι : Type*}
 

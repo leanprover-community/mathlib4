@@ -26,7 +26,7 @@ In decomposition monoids (e.g., `ℕ`, `ℤ`), this predicate is equivalent to `
 * `irreducible_iff_prime`: the two definitions are equivalent in a decomposition monoid.
 -/
 
-assert_not_exists Multiset
+assert_not_exists IsOrderedMonoid Multiset
 
 variable {M : Type*}
 

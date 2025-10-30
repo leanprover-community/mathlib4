@@ -58,6 +58,8 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 subring, subrings
 -/
 
+assert_not_exists IsOrderedRing
+
 universe u v w
 
 variable {R : Type u} {S : Type v} {T : Type w} [Ring R]

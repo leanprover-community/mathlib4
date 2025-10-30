@@ -11,7 +11,7 @@ import Mathlib.Order.Filter.Basic
 # Theorems about map and comap on filters.
 -/
 
-assert_not_exists Fintype
+assert_not_exists IsOrderedRing Fintype
 
 open Function Set Order
 open scoped symmDiff

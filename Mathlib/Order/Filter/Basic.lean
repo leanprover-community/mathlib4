@@ -59,7 +59,7 @@ we do *not* require. This gives `Filter X` better formal properties, in particul
 `[NeBot f]` in a number of lemmas and definitions.
 -/
 
-assert_not_exists Fintype
+assert_not_exists IsOrderedRing Fintype
 
 open Function Set Order
 open scoped symmDiff

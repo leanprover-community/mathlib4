@@ -74,6 +74,8 @@ This feature wasn't needed yet, so it's not implemented yet.
 ring, semiring, exponent, power
 -/
 
+assert_not_exists IsOrderedMonoid
+
 namespace Mathlib.Tactic
 namespace Ring
 

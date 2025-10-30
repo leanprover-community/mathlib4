@@ -19,6 +19,8 @@ may differ between the multiplicative and the additive version of a lemma.
 The reason is that we did not want to change existing names in the library.
 -/
 
+assert_not_exists IsOrderedMonoid
+
 open Function
 
 universe u

@@ -50,7 +50,7 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
-assert_not_exists RelIso Multiset MonoidWithZero
+assert_not_exists RelIso IsOrderedMonoid Multiset MonoidWithZero
 
 open Function
 open scoped Int

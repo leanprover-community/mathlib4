@@ -54,6 +54,8 @@ supremum helps define the meaning of recursive procedures.
 * [Semantics of Programming Languages: Structures and Techniques][gunter1992]
 -/
 
+assert_not_exists IsOrderedMonoid
+
 universe u v
 variable {ι : Sort*} {α β γ δ : Type*}
 

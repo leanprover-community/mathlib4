@@ -15,7 +15,7 @@ import Mathlib.Data.Set.Functor
 finite sets
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists IsOrderedRing MonoidWithZero
 
 open Set Function
 

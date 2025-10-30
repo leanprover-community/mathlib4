@@ -24,7 +24,7 @@ and proves basic properties about it such as the Chinese Remainder Theorem
 ModEq, congruence, mod, MOD, modulo
 -/
 
-assert_not_exists Function.support
+assert_not_exists IsOrderedMonoid Function.support
 
 namespace Nat
 

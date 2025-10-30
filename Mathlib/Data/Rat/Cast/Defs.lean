@@ -24,7 +24,7 @@ casting lemmas showing the well-behavedness of this injection.
 rat, rationals, field, ℚ, numerator, denominator, num, denom, cast, coercion, casting
 -/
 
-assert_not_exists MulAction
+assert_not_exists MulAction IsOrderedMonoid
 
 variable {F ι α β : Type*}
 

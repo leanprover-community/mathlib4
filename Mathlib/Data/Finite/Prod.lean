@@ -16,7 +16,7 @@ import Mathlib.Data.Set.NAry
 # Finiteness of products
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists IsOrderedRing MonoidWithZero
 
 variable {α β : Type*}
 

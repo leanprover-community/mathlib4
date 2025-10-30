@@ -21,6 +21,8 @@ Note that the global `IsCoprime` is not a straightforward generalization of `Nat
 Most of this file could be moved to batteries as well.
 -/
 
+assert_not_exists IsOrderedMonoid
+
 namespace Nat
 variable {a a₁ a₂ b b₁ b₂ c : ℕ}
 

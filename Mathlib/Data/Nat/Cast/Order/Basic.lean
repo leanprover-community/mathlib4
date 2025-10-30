@@ -14,6 +14,8 @@ import Mathlib.Order.Hom.Basic
 
 -/
 
+assert_not_exists IsOrderedMonoid
+
 variable {α : Type*}
 
 namespace Nat

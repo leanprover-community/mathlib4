@@ -10,7 +10,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 # Sums and products over preimages of finite sets.
 -/
 
-assert_not_exists MonoidWithZero MulAction
+assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
 
 variable {ι κ β : Type*}
 

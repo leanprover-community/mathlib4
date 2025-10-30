@@ -13,7 +13,7 @@ import Mathlib.Tactic.Spread
 # Extensionality of monoid homs from `ℕ`
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists IsOrderedMonoid MonoidWithZero
 
 open Additive Multiplicative
 

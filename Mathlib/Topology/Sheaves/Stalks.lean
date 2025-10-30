@@ -38,6 +38,8 @@ https://stacks.math.columbia.edu/tag/007L
 
 -/
 
+assert_not_exists IsOrderedMonoid
+
 noncomputable section
 
 universe v u v' u'

@@ -11,7 +11,7 @@ import Mathlib.Data.Set.Finite.Basic
 # Fintype instances for pi types
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists IsOrderedRing MonoidWithZero
 
 open Finset Function
 
