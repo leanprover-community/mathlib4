@@ -18,6 +18,7 @@ Properly develop the material in the context of lattices.
 -/
 
 open LinearMap (BilinForm)
+open Module
 
 variable {R S M} [CommRing R] [Field S] [AddCommGroup M]
 variable [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
@@ -43,7 +44,7 @@ lemma mem_dualSubmodule {N : Submodule R M} {x} :
 
 lemma le_flip_dualSubmodule {N₁ N₂ : Submodule R M} :
     N₁ ≤ B.flip.dualSubmodule N₂ ↔ N₂ ≤ B.dualSubmodule N₁ := by
-  show (∀ (x : M), x ∈ N₁ → _) ↔ ∀ (x : M), x ∈ N₂ → _
+  change (∀ (x : M), x ∈ N₁ → _) ↔ ∀ (x : M), x ∈ N₂ → _
   simp only [mem_dualSubmodule, Submodule.mem_one, flip_apply]
   exact forall₂_swap
 
@@ -116,7 +117,7 @@ lemma dualSubmodule_dualSubmodule_flip_of_basis {ι : Type*} [Finite ι]
   classical
   letI := FiniteDimensional.of_fintype_basis b
   rw [dualSubmodule_span_of_basis _ hB.flip, dualSubmodule_span_of_basis B hB,
-    dualBasis_dualBasis_flip B hB]
+    dualBasis_dualBasis_flip hB]
 
 lemma dualSubmodule_flip_dualSubmodule_of_basis {ι : Type*} [Finite ι]
     (hB : B.Nondegenerate) (b : Basis ι S M) :
@@ -125,7 +126,7 @@ lemma dualSubmodule_flip_dualSubmodule_of_basis {ι : Type*} [Finite ι]
   classical
   letI := FiniteDimensional.of_fintype_basis b
   rw [dualSubmodule_span_of_basis B hB, dualSubmodule_span_of_basis _ hB.flip,
-    dualBasis_flip_dualBasis B hB]
+    dualBasis_flip_dualBasis hB]
 
 lemma dualSubmodule_dualSubmodule_of_basis
     {ι} [Finite ι] (hB : B.Nondegenerate) (hB' : B.IsSymm) (b : Basis ι S M) :
@@ -134,7 +135,7 @@ lemma dualSubmodule_dualSubmodule_of_basis
   classical
   letI := FiniteDimensional.of_fintype_basis b
   rw [dualSubmodule_span_of_basis B hB, dualSubmodule_span_of_basis B hB,
-    dualBasis_dualBasis B hB hB']
+    dualBasis_dualBasis hB hB']
 
 end BilinForm
 

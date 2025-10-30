@@ -28,8 +28,6 @@ assert_not_exists RelIso
 
 universe u
 
-open OreLocalization
-
 namespace OreLocalization
 
 section MonoidWithZero
@@ -43,11 +41,21 @@ theorem zero_oreDiv' (s : S) : (0 : R) /ₒ s = 0 := by
 
 instance : MonoidWithZero R[S⁻¹] where
   zero_mul x := by
-    induction' x using OreLocalization.ind with r s
+    induction x using OreLocalization.ind with | _ r s
     rw [OreLocalization.zero_def, oreDiv_mul_char 0 r 1 s 0 1 (by simp), zero_mul, one_mul]
   mul_zero x := by
-    induction' x using OreLocalization.ind with r s
+    induction x using OreLocalization.ind with | _ r s
     rw [OreLocalization.zero_def, mul_div_one, mul_zero, zero_oreDiv', zero_oreDiv']
+
+theorem subsingleton_iff :
+    Subsingleton R[S⁻¹] ↔ 0 ∈ S := by
+  rw [← subsingleton_iff_zero_eq_one, OreLocalization.one_def,
+    OreLocalization.zero_def, oreDiv_eq_iff]
+  simp
+
+theorem nontrivial_iff :
+    Nontrivial R[S⁻¹] ↔ 0 ∉ S := by
+  rw [← not_subsingleton_iff_nontrivial, subsingleton_iff]
 
 end MonoidWithZero
 
@@ -118,8 +126,8 @@ private def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
   Quotient.lift (fun rs : X × S => add' rs.1 rs.2 x)
     (by
       rintro ⟨r₁, s₁⟩ ⟨r₂, s₂⟩ ⟨sb, rb, hb, hb'⟩
-      induction' x with r₃ s₃
-      show add'' _ _ _ _ = add'' _ _ _ _
+      induction x with | _ r₃ s₃
+      change add'' _ _ _ _ = add'' _ _ _ _
       dsimp only at *
       rcases oreCondition (s₃ : R) s₂ with ⟨rc, sc, hc⟩
       rcases oreCondition rc sb with ⟨rd, sd, hd⟩
@@ -146,7 +154,7 @@ theorem oreDiv_add_char' {r r' : X} (s s' : S) (rb : R) (sb : R)
     r /ₒ s + r' /ₒ s' = (sb • r + rb • r') /ₒ ⟨sb * s, h'⟩ := by
   with_unfolding_all exact add''_char r s r' s' rb sb h h'
 
-/-- A characterization of the addition on the Ore localizaion, allowing for arbitrary Ore
+/-- A characterization of the addition on the Ore localization, allowing for arbitrary Ore
 numerator and Ore denominator. -/
 theorem oreDiv_add_char {r r' : X} (s s' : S) (rb : R) (sb : S) (h : sb * s = rb * s') :
     r /ₒ s + r' /ₒ s' = (sb • r + rb • r') /ₒ (sb * s) :=
@@ -155,8 +163,8 @@ theorem oreDiv_add_char {r r' : X} (s s' : S) (rb : R) (sb : S) (h : sb * s = rb
 /-- Another characterization of the addition on the Ore localization, bundling up all witnesses
 and conditions into a sigma type. -/
 def oreDivAddChar' (r r' : X) (s s' : S) :
-    Σ'r'' : R,
-      Σ's'' : S, s'' * s = r'' * s' ∧ r /ₒ s + r' /ₒ s' = (s'' • r + r'' • r') /ₒ (s'' * s) :=
+    Σ' r'' : R,
+      Σ' s'' : S, s'' * s = r'' * s' ∧ r /ₒ s + r' /ₒ s' = (s'' • r + r'' • r') /ₒ (s'' * s) :=
   ⟨oreNum (s : R) s', oreDenom (s : R) s', ore_eq (s : R) s', oreDiv_add_oreDiv⟩
 
 @[simp]
@@ -164,9 +172,9 @@ theorem add_oreDiv {r r' : X} {s : S} : r /ₒ s + r' /ₒ s = (r + r') /ₒ s :
   simp [oreDiv_add_char s s 1 1 (by simp)]
 
 protected theorem add_assoc (x y z : X[S⁻¹]) : x + y + z = x + (y + z) := by
-  induction' x with r₁ s₁
-  induction' y with r₂ s₂
-  induction' z with r₃ s₃
+  induction x with | _ r₁ s₁
+  induction y with | _ r₂ s₂
+  induction z with | _ r₃ s₃
   rcases oreDivAddChar' r₁ r₂ s₁ s₂ with ⟨ra, sa, ha, ha'⟩; rw [ha']; clear ha'
   rcases oreDivAddChar' (sa • r₁ + ra • r₂) r₃ (sa * s₁) s₃ with ⟨rc, sc, hc, q⟩; rw [q]; clear q
   simp only [smul_add, add_assoc]
@@ -200,14 +208,14 @@ instance : AddMonoid X[S⁻¹] where
     nsmul_succ _ _ := by with_unfolding_all rfl
 
 protected theorem smul_zero (x : R[S⁻¹]) : x • (0 : X[S⁻¹]) = 0 := by
-  induction' x with r s
+  induction x with | _ r s
   rw [OreLocalization.zero_def, smul_div_one, smul_zero, zero_oreDiv, zero_oreDiv]
 
 protected theorem smul_add (z : R[S⁻¹]) (x y : X[S⁻¹]) :
     z • (x + y) = z • x + z • y := by
-  induction' x with r₁ s₁
-  induction' y with r₂ s₂
-  induction' z with r₃ s₃
+  induction x with | _ r₁ s₁
+  induction y with | _ r₂ s₂
+  induction z with | _ r₃ s₃
   rcases oreDivAddChar' r₁ r₂ s₁ s₂ with ⟨ra, sa, ha, ha'⟩; rw [ha']; clear ha'; norm_cast at ha
   rw [OreLocalization.expand' r₁ s₁ sa]
   rw [OreLocalization.expand r₂ s₂ ra (by rw [← ha]; apply SetLike.coe_mem)]
@@ -233,8 +241,8 @@ variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S]
 variable {X : Type*} [AddCommMonoid X] [DistribMulAction R X]
 
 protected theorem add_comm (x y : X[S⁻¹]) : x + y = y + x := by
-  induction' x with r s
-  induction' y with r' s'
+  induction x with | _ r s
+  induction y with | _ r' s'
   rcases oreDivAddChar' r r' s s' with ⟨ra, sa, ha, ha'⟩
   rw [ha', oreDiv_add_char' s' s _ _ ha.symm (ha ▸ (sa * s).2), add_comm]
   congr; ext; exact ha
@@ -265,7 +273,7 @@ protected theorem neg_def (r : X) (s : S) : -(r /ₒ s) = -r /ₒ s := by
   with_unfolding_all rfl
 
 protected theorem neg_add_cancel (x : X[S⁻¹]) : -x + x = 0 := by
-  induction' x with r s; simp
+  induction x with | _ r s; simp
 
 /-- `zsmul` of `OreLocalization` -/
 @[irreducible]

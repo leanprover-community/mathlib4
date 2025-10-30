@@ -100,7 +100,7 @@ theorem degree_eq_iff_natDegree_eq {p : R[X]} {n : ℕ} (hp : p ≠ 0) :
 
 theorem degree_eq_iff_natDegree_eq_of_pos {p : R[X]} {n : ℕ} (hn : 0 < n) :
     p.degree = n ↔ p.natDegree = n := by
-  obtain rfl|h := eq_or_ne p 0
+  obtain rfl | h := eq_or_ne p 0
   · simp [hn.ne]
   · exact degree_eq_iff_natDegree_eq h
 
@@ -304,7 +304,7 @@ def nextCoeff (p : R[X]) : R :=
 
 lemma nextCoeff_eq_zero :
     p.nextCoeff = 0 ↔ p.natDegree = 0 ∨ 0 < p.natDegree ∧ p.coeff (p.natDegree - 1) = 0 := by
-  simp [nextCoeff, or_iff_not_imp_left, pos_iff_ne_zero]; aesop
+  simp [nextCoeff, or_iff_not_imp_left, pos_iff_ne_zero]; simp_all
 
 lemma nextCoeff_ne_zero : p.nextCoeff ≠ 0 ↔ p.natDegree ≠ 0 ∧ p.coeff (p.natDegree - 1) ≠ 0 := by
   simp [nextCoeff]
@@ -365,7 +365,6 @@ theorem natDegree_C_mul_X_pow_le (a : R) (n : ℕ) : natDegree (C a * X ^ n) ≤
   natDegree_le_iff_degree_le.2 <| degree_C_mul_X_pow_le _ _
 
 theorem degree_erase_le (p : R[X]) (n : ℕ) : degree (p.erase n) ≤ degree p := by
-  rcases p with ⟨p⟩
   simp only [erase_def, degree, support]
   apply sup_mono
   rw [Finsupp.support_erase]
@@ -394,20 +393,14 @@ theorem degree_sum_le (s : Finset ι) (f : ι → R[X]) :
       _ ≤ _ := by rw [sup_cons]; exact max_le_max le_rfl ih
 
 theorem degree_mul_le (p q : R[X]) : degree (p * q) ≤ degree p + degree q := by
-  simpa only [degree, ← support_toFinsupp, toFinsupp_mul]
-    using AddMonoidAlgebra.sup_support_mul_le (WithBot.coe_add _ _).le _ _
+  simpa [degree, ← support_toFinsupp] using AddMonoidAlgebra.sup_support_mul_le (by simp) ..
 
 theorem degree_mul_le_of_le {a b : WithBot ℕ} (hp : degree p ≤ a) (hq : degree q ≤ b) :
-    degree (p * q) ≤ a + b :=
-  (p.degree_mul_le _).trans <| add_le_add ‹_› ‹_›
+    degree (p * q) ≤ a + b := by grw [degree_mul_le, hp, hq]
 
 theorem degree_pow_le (p : R[X]) : ∀ n : ℕ, degree (p ^ n) ≤ n • degree p
   | 0 => by rw [pow_zero, zero_nsmul]; exact degree_one_le
-  | n + 1 =>
-    calc
-      degree (p ^ (n + 1)) ≤ degree (p ^ n) + degree p := by
-        rw [pow_succ]; exact degree_mul_le _ _
-      _ ≤ _ := by rw [succ_nsmul]; exact add_le_add_right (degree_pow_le _ _) _
+  | n + 1 => by grw [pow_succ, succ_nsmul, degree_mul_le, degree_pow_le]
 
 theorem degree_pow_le_of_le {a : WithBot ℕ} (b : ℕ) (hp : degree p ≤ a) :
     degree (p ^ b) ≤ b * a := by
@@ -456,7 +449,7 @@ theorem leadingCoeff_one : leadingCoeff (1 : R[X]) = 1 :=
 theorem monic_one : Monic (1 : R[X]) :=
   leadingCoeff_C _
 
-theorem Monic.ne_zero {R : Type*} [Semiring R] [Nontrivial R] {p : R[X]} (hp : p.Monic) :
+theorem Monic.ne_zero [Nontrivial R] {p : R[X]} (hp : p.Monic) :
     p ≠ 0 := by
   rintro rfl
   simp [Monic] at hp
@@ -464,6 +457,10 @@ theorem Monic.ne_zero {R : Type*} [Semiring R] [Nontrivial R] {p : R[X]} (hp : p
 theorem Monic.ne_zero_of_ne (h : (0 : R) ≠ 1) {p : R[X]} (hp : p.Monic) : p ≠ 0 := by
   nontriviality R
   exact hp.ne_zero
+
+lemma Monic.ne_zero_of_C [Nontrivial R] {c : R} (hc : Monic (C c)) : c ≠ 0 := by
+  rintro rfl
+  simp [Monic] at hc
 
 theorem Monic.ne_zero_of_polynomial_ne {r} (hp : Monic p) (hne : q ≠ r) : p ≠ 0 :=
   haveI := Nontrivial.of_polynomial_ne hne
@@ -482,9 +479,7 @@ natDegree_mul_le.trans <| add_le_add ‹_› ‹_›
 theorem natDegree_pow_le {p : R[X]} {n : ℕ} : (p ^ n).natDegree ≤ n * p.natDegree := by
   induction n with
   | zero => simp
-  | succ i hi =>
-    rw [pow_succ, Nat.succ_mul]
-    apply le_trans natDegree_mul_le (add_le_add_right hi _)
+  | succ n ih => grw [pow_succ, Nat.succ_mul, natDegree_mul_le, ih]
 
 theorem natDegree_pow_le_of_le (n : ℕ) (hp : natDegree p ≤ m) :
     natDegree (p ^ n) ≤ n * m :=

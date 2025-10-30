@@ -27,7 +27,7 @@ and the exactness lemmas are
 - `KaehlerDifferential.map_surjective`
 -/
 
-open KaehlerDifferential TensorProduct MvPolynomial
+open KaehlerDifferential Module MvPolynomial TensorProduct
 
 namespace Algebra
 
@@ -79,7 +79,7 @@ lemma Cotangent.exact :
     trans ((IsScalarTower.toAlgHom R _ _).comp (IsScalarTower.toAlgHom R P.Ring S)) x
     · congr
       refine MvPolynomial.algHom_ext fun i ↦ ?_
-      show (Q.ofComp P).toAlgHom ((Q.toComp P).toAlgHom (X i)) = _
+      change (Q.ofComp P).toAlgHom ((Q.toComp P).toAlgHom (X i)) = _
       simp
     · simp [aeval_val_eq_zero hx]
   · intro x hx
@@ -126,7 +126,7 @@ section instanceProblem
 
 -- Note: these instances are needed to prevent instance search timeouts.
 attribute [local instance 999999] Zero.toOfNat0 SemilinearMapClass.distribMulActionSemiHomClass
-  SemilinearEquivClass.instSemilinearMapClass TensorProduct.addZeroClass AddZeroClass.toZero
+  SemilinearEquivClass.instSemilinearMapClass TensorProduct.addZeroClass AddZero.toZero
 
 lemma CotangentSpace.compEquiv_symm_inr :
     (compEquiv Q P).symm.toLinearMap ∘ₗ
@@ -252,11 +252,11 @@ lemma δAux_toAlgHom (f : Hom Q Q') (x) :
     rw [add_add_add_comm]
   | mul_X p n IH =>
     simp only [map_mul, Hom.toAlgHom_X, δAux_mul, algebraMap_apply, Hom.algebraMap_toAlgHom,
-      ← @IsScalarTower.algebraMap_smul Q'.Ring T, id.map_eq_id, δAux_X, RingHomCompTriple.comp_eq,
+      ← @IsScalarTower.algebraMap_smul Q'.Ring T, algebraMap_self, δAux_X,
       RingHom.id_apply, coe_eval₂Hom, IH, Hom.aeval_val, smul_add, map_aeval, tmul_add, tmul_smul,
       ← @IsScalarTower.algebraMap_smul Q.Ring T, smul_zero, aeval_X, zero_add, Derivation.leibniz,
       LinearEquiv.map_add, LinearEquiv.map_smul, Basis.repr_self, LinearMap.map_add, one_smul,
-      LinearMap.map_smul, Finsupp.linearCombination_single,
+      LinearMap.map_smul, Finsupp.linearCombination_single, RingHomCompTriple.comp_eq,
       Function.comp_apply, ← cotangentSpaceBasis_apply]
     rw [add_left_comm]
     rfl
@@ -276,8 +276,8 @@ lemma δAux_ofComp (x : (Q.comp P).Ring) :
   | mul_X p n IH =>
     simp only [map_mul, Hom.toAlgHom_X, ofComp_val, δAux_mul,
       ← @IsScalarTower.algebraMap_smul Q.Ring T, algebraMap_apply, Hom.algebraMap_toAlgHom,
-      id.map_eq_id, map_aeval, RingHomCompTriple.comp_eq, comp_val, RingHom.id_apply, coe_eval₂Hom,
-      IH, Derivation.leibniz, tmul_add, tmul_smul, ← cotangentSpaceBasis_apply,
+      algebraMap_self, map_aeval, RingHomCompTriple.comp_eq, comp_val, RingHom.id_apply,
+      IH, Derivation.leibniz, tmul_add, tmul_smul, ← cotangentSpaceBasis_apply, coe_eval₂Hom,
       ← @IsScalarTower.algebraMap_smul (Q.comp P).Ring T, aeval_X, LinearEquiv.map_add,
       LinearMapClass.map_smul, Prod.snd_add, Prod.smul_snd, LinearMap.map_add]
     obtain (n | n) := n
@@ -384,8 +384,9 @@ lemma δ_eq_δAux (x : Q.ker) (hx) :
       LinearEquiv.apply_symm_apply, z]
     ext
     swap; · rfl
-    show 0 = (LinearMap.fst T Q.toExtension.CotangentSpace (T ⊗[S] P.toExtension.CotangentSpace) ∘ₗ
-      (CotangentSpace.compEquiv Q P).toLinearMap) ((Q.comp P).toExtension.cotangentComplex y)
+    change 0 = (LinearMap.fst T Q.toExtension.CotangentSpace
+        (T ⊗[S] P.toExtension.CotangentSpace) ∘ₗ (CotangentSpace.compEquiv Q P).toLinearMap)
+      ((Q.comp P).toExtension.cotangentComplex y)
     rw [CotangentSpace.fst_compEquiv, Extension.CotangentSpace.map_cotangentComplex, hy, hx]
 
 lemma δ_eq_δ : δ Q P = δ Q P' := by
@@ -407,7 +408,7 @@ lemma δ_map (f : Hom Q' Q) (x) :
   letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   obtain ⟨x, hx⟩ := x
   obtain ⟨⟨y, hy⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
-  show δ _ _ ⟨_, _⟩ = δ _ _ _
+  change δ _ _ ⟨_, _⟩ = δ _ _ _
   replace hx : (1 : T) ⊗ₜ[Q'.Ring] (D S Q'.Ring) y = 0 := by
     simpa only [LinearMap.mem_ker, Extension.cotangentComplex_mk, ker, RingHom.mem_ker] using hx
   simp only [LinearMap.domRestrict_apply, Extension.Cotangent.map_mk, δ_eq_δAux]
@@ -423,7 +424,7 @@ lemma δ_comp_equiv :
 lemma exact_map_δ' (f : Hom W Q) :
     Function.Exact (Extension.H1Cotangent.map f.toExtensionHom) (δ Q P) := by
   refine (H1Cotangent.equiv (Q.comp P) W).surjective.comp_exact_iff_exact.mp ?_
-  show Function.Exact ((Extension.H1Cotangent.map f.toExtensionHom).restrictScalars T ∘ₗ
+  change Function.Exact ((Extension.H1Cotangent.map f.toExtensionHom).restrictScalars T ∘ₗ
     (Extension.H1Cotangent.map _)) (δ Q P)
   rw [← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq _ (Q.ofComp P).toExtensionHom]
   exact exact_map_δ Q P

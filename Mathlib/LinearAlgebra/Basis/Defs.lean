@@ -69,15 +69,12 @@ open Function Set Submodule Finsupp
 variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {K : Type*}
 variable {M : Type*} {M' M'' : Type*} {V : Type u} {V' : Type*}
 
-section Module
+namespace Module
 
 variable [Semiring R]
 variable [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
 
-section
-
-variable (ι R M)
-
+variable (ι R M) in
 /-- A `Basis ι R M` for a module `M` is the type of `ι`-indexed `R`-bases of `M`.
 
 The basis vectors are available as `DFunLike.coe (b : Basis ι R M) : ι → M`.
@@ -91,8 +88,6 @@ structure Basis where
     /-- `repr` is the linear equivalence sending a vector `x` to its coordinates:
     the `c`s such that `x = ∑ i, c i`. -/
     repr : M ≃ₗ[R] ι →₀ R
-
-end
 
 namespace Basis
 
@@ -231,11 +226,11 @@ def Basis.equivFun [Finite ι] (b : Basis ι R M) : M ≃ₗ[R] ι → R :=
       (ι →₀ R) ≃ₗ[R] ι → R)
 
 /-- A module over a finite ring that admits a finite basis is finite. -/
-def Module.fintypeOfFintype [Fintype ι] (b : Basis ι R M) [Fintype R] : Fintype M :=
+def fintypeOfFintype [Fintype ι] (b : Basis ι R M) [Fintype R] : Fintype M :=
   haveI := Classical.decEq ι
   Fintype.ofEquiv _ b.equivFun.toEquiv.symm
 
-theorem Module.card_fintype [Fintype ι] (b : Basis ι R M) [Fintype R] [Fintype M] :
+theorem card_fintype [Fintype ι] (b : Basis ι R M) [Fintype R] [Fintype M] :
     card M = card R ^ card ι := by
   classical
     calc
@@ -262,6 +257,7 @@ theorem Basis.sum_equivFun [Fintype ι] (b : Basis ι R M) (u : M) :
     ∑ i, b.equivFun u i • b i = u := by
   rw [← b.equivFun_symm_apply, b.equivFun.symm_apply_apply]
 
+@[simp]
 theorem Basis.sum_repr [Fintype ι] (b : Basis ι R M) (u : M) : ∑ i, b.repr u i • b i = u :=
   b.sum_equivFun u
 
@@ -334,7 +330,7 @@ theorem ext' {f₁ f₂ : M ≃ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b
 theorem ext_elem_iff {x y : M} : x = y ↔ ∀ i, b.repr x i = b.repr y i := by
   simp only [← DFunLike.ext_iff, EmbeddingLike.apply_eq_iff_eq]
 
-alias ⟨_, _root_.Basis.ext_elem⟩ := ext_elem_iff
+alias ⟨_, ext_elem⟩ := ext_elem_iff
 
 theorem repr_eq_iff {b : Basis ι R M} {f : M →ₗ[R] ι →₀ R} :
     ↑b.repr = f ↔ ∀ i, f (b i) = Finsupp.single i 1 :=
@@ -357,7 +353,7 @@ theorem repr_apply_eq (f : M → ι → R) (hadd : ∀ x y, f (x + y) = f x + f 
       map_smul' _ _ := by simp [hsmul, Pi.smul_apply] }
   have : Finsupp.lapply i ∘ₗ ↑b.repr = f_i := by
     refine b.ext fun j => ?_
-    show b.repr (b j) i = f (b j) i
+    change b.repr (b j) i = f (b j) i
     rw [b.repr_self, f_eq]
   calc
     b.repr x i = f_i x := by
@@ -414,19 +410,16 @@ section ReindexRange
 def reindexRange : Basis (range b) R M :=
   haveI := Classical.dec (Nontrivial R)
   if h : Nontrivial R then
-    letI := h
     b.reindex (Equiv.ofInjective b (Basis.injective b))
   else
     letI : Subsingleton R := not_nontrivial_iff_subsingleton.mp h
     .ofRepr (Module.subsingletonEquiv R M (range b))
 
 theorem reindexRange_self (i : ι) (h := Set.mem_range_self i) : b.reindexRange ⟨b i, h⟩ = b i := by
-  by_cases htr : Nontrivial R
-  · letI := htr
-    simp [htr, reindexRange, reindex_apply]
-  · letI : Subsingleton R := not_nontrivial_iff_subsingleton.mp htr
-    letI := Module.subsingleton R M
+  cases subsingleton_or_nontrivial R
+  · let := Module.subsingleton R M
     simp [reindexRange, eq_iff_true_of_subsingleton]
+  · simp [*, reindexRange, reindex_apply]
 
 theorem reindexRange_repr_self (i : ι) :
     b.reindexRange.repr (b i) = Finsupp.single ⟨b i, mem_range_self i⟩ 1 :=
@@ -660,7 +653,7 @@ section Coord
 
 variable (i : ι)
 
-/-- `b.coord i` is the linear function giving the `i`'th coordinate of a vector
+/-- `b.coord i` is the linear function giving the `i`-th coordinate of a vector
 with respect to the basis `b`.
 
 `b.coord i` is an element of the dual space. In particular, for

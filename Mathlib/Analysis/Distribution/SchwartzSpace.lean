@@ -3,15 +3,16 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 import Mathlib.Analysis.Calculus.LineDeriv.Basic
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
+import Mathlib.Analysis.Distribution.TemperateGrowth
 import Mathlib.Topology.Algebra.UniformFilterBasis
+import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 import Mathlib.Tactic.MoveAdd
+import Mathlib.MeasureTheory.Function.L2Space
 
 /-!
 # Schwartz space
@@ -66,7 +67,7 @@ noncomputable section
 
 open scoped Nat NNReal ContDiff
 
-variable {𝕜 𝕜' D E F G V : Type*}
+variable {𝕜 𝕜' D E F G H V : Type*}
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable [NormedAddCommGroup F] [NormedSpace ℝ F]
 
@@ -74,6 +75,9 @@ variable (E F) in
 /-- A function is a Schwartz function if it is smooth and all derivatives decay faster than
   any power of `‖x‖`. -/
 structure SchwartzMap where
+  /-- The underlying function.
+
+  Do NOT use directly. Use the coercion instead. -/
   toFun : E → F
   smooth' : ContDiff ℝ ∞ toFun
   decay' : ∀ k n : ℕ, ∃ C : ℝ, ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n toFun x‖ ≤ C
@@ -292,6 +296,9 @@ instance instNeg : Neg 𝓢(E, F) :=
     ⟨-f, (f.smooth _).neg, fun k n =>
       ⟨f.seminormAux k n, fun x => (decay_neg_aux k n f x).le.trans (f.le_seminormAux k n x)⟩⟩⟩
 
+@[simp]
+theorem neg_apply (f : 𝓢(E, F)) (x : E) : (-f) x = - (f x) := rfl
+
 end Neg
 
 section Add
@@ -323,7 +330,7 @@ instance instSub : Sub 𝓢(E, F) :=
     ⟨f - g, (f.smooth _).sub (g.smooth _), by
       intro k n
       refine ⟨f.seminormAux k n + g.seminormAux k n, fun x => ?_⟩
-      refine le_trans ?_ (add_le_add (f.le_seminormAux k n x) (g.le_seminormAux k n x))
+      grw [← f.le_seminormAux k n x, ← g.le_seminormAux k n x]
       rw [sub_eq_add_neg]
       rw [← decay_neg_aux k n g x]
       exact decay_add_le_aux k n f (-g) x⟩⟩
@@ -454,9 +461,8 @@ theorem one_add_le_sup_seminorm_apply {m : ℕ × ℕ} {k n : ℕ} (hk : k ≤ m
   rw [← Nat.sum_range_choose m.1]
   push_cast
   rw [Finset.sum_mul]
-  have hk' : Finset.range (k + 1) ⊆ Finset.range (m.1 + 1) := by
-    rwa [Finset.range_subset, add_le_add_iff_right]
-  refine le_trans (Finset.sum_le_sum_of_subset_of_nonneg hk' fun _ _ _ => by positivity) ?_
+  have hk' : Finset.range (k + 1) ⊆ Finset.range (m.1 + 1) := by grind
+  grw [hk']
   gcongr ∑ _i ∈ Finset.range (m.1 + 1), ?_ with i hi
   move_mul [(Nat.choose k i : ℝ), (Nat.choose m.1 i : ℝ)]
   gcongr
@@ -511,185 +517,29 @@ instance instFirstCountableTopology : FirstCountableTopology 𝓢(E, F) :=
 
 end Topology
 
-section TemperateGrowth
+theorem hasTemperateGrowth (f : 𝓢(E, F)) : Function.HasTemperateGrowth f := by
+  refine ⟨smooth f ⊤, fun n => ?_⟩
+  rcases f.decay 0 n with ⟨C, Cpos, hC⟩
+  exact ⟨0, C, by simpa using hC⟩
 
-/-! ### Functions of temperate growth -/
+section HasCompactSupport
 
-/-- A function is called of temperate growth if it is smooth and all iterated derivatives are
-polynomially bounded. -/
-def _root_.Function.HasTemperateGrowth (f : E → F) : Prop :=
-  ContDiff ℝ ∞ f ∧ ∀ n : ℕ, ∃ (k : ℕ) (C : ℝ), ∀ x, ‖iteratedFDeriv ℝ n f x‖ ≤ C * (1 + ‖x‖) ^ k
+/-- A smooth compactly supported function is a Schwartz function. -/
+@[simps]
+def _root_.HasCompactSupport.toSchwartzMap {f : E → F} (h₁ : HasCompactSupport f)
+    (h₂ : ContDiff ℝ ∞ f) : 𝓢(E, F) where
+  toFun := f
+  smooth' := h₂
+  decay' k n := by
+    set g := fun x ↦ ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖
+    have hg₁ : Continuous g := by
+      apply Continuous.mul (by fun_prop)
+      exact (h₂.of_le (right_eq_inf.mp rfl)).continuous_iteratedFDeriv'.norm
+    have hg₂ : HasCompactSupport g := (h₁.iteratedFDeriv _).norm.mul_left
+    obtain ⟨x₀, hx₀⟩ := hg₁.exists_forall_ge_of_hasCompactSupport hg₂
+    exact ⟨g x₀, hx₀⟩
 
-theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f : E → F}
-    (hf_temperate : f.HasTemperateGrowth) (n : ℕ) :
-    ∃ (k : ℕ) (C : ℝ), 0 ≤ C ∧ ∀ N ≤ n, ∀ x : E, ‖iteratedFDeriv ℝ N f x‖ ≤ C * (1 + ‖x‖) ^ k := by
-  choose k C f using hf_temperate.2
-  use (Finset.range (n + 1)).sup k
-  let C' := max (0 : ℝ) ((Finset.range (n + 1)).sup' (by simp) C)
-  have hC' : 0 ≤ C' := le_max_left _ _
-  use C', hC'
-  intro N hN x
-  rw [← Finset.mem_range_succ_iff] at hN
-  refine le_trans (f N x) (mul_le_mul ?_ ?_ (by positivity) hC')
-  · simp only [C', Finset.le_sup'_iff, le_max_iff]
-    right
-    exact ⟨N, hN, le_rfl⟩
-  gcongr
-  · simp
-  exact Finset.le_sup hN
-
-lemma _root_.Function.HasTemperateGrowth.of_fderiv {f : E → F}
-    (h'f : Function.HasTemperateGrowth (fderiv ℝ f)) (hf : Differentiable ℝ f) {k : ℕ} {C : ℝ}
-    (h : ∀ x, ‖f x‖ ≤ C * (1 + ‖x‖) ^ k) :
-    Function.HasTemperateGrowth f := by
-  refine ⟨contDiff_succ_iff_fderiv.2 ⟨hf, by simp, h'f.1⟩, fun n ↦ ?_⟩
-  rcases n with rfl|m
-  · exact ⟨k, C, fun x ↦ by simpa using h x⟩
-  · rcases h'f.2 m with ⟨k', C', h'⟩
-    refine ⟨k', C', ?_⟩
-    simpa [iteratedFDeriv_succ_eq_comp_right] using h'
-
-lemma _root_.Function.HasTemperateGrowth.zero :
-    Function.HasTemperateGrowth (fun _ : E ↦ (0 : F)) := by
-  refine ⟨contDiff_const, fun n ↦ ⟨0, 0, fun x ↦ ?_⟩⟩
-  simp only [iteratedFDeriv_zero_fun, Pi.zero_apply, norm_zero]
-  positivity
-
-lemma _root_.Function.HasTemperateGrowth.const (c : F) :
-    Function.HasTemperateGrowth (fun _ : E ↦ c) :=
-  .of_fderiv (by simpa using .zero) (differentiable_const c) (k := 0) (C := ‖c‖) (fun x ↦ by simp)
-
-lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
-    Function.HasTemperateGrowth f := by
-  apply Function.HasTemperateGrowth.of_fderiv ?_ f.differentiable (k := 1) (C := ‖f‖) (fun x ↦ ?_)
-  · have : fderiv ℝ f = fun _ ↦ f := by ext1 v; simp only [ContinuousLinearMap.fderiv]
-    simpa [this] using .const _
-  · exact (f.le_opNorm x).trans (by simp [mul_add])
-
-variable [NormedAddCommGroup D] [MeasurableSpace D]
-
-open MeasureTheory Module
-open scoped ENNReal
-
-/-- A measure `μ` has temperate growth if there is an `n : ℕ` such that `(1 + ‖x‖) ^ (- n)` is
-`μ`-integrable. -/
-class _root_.MeasureTheory.Measure.HasTemperateGrowth (μ : Measure D) : Prop where
-  exists_integrable : ∃ (n : ℕ), Integrable (fun x ↦ (1 + ‖x‖) ^ (- (n : ℝ))) μ
-
-open Classical in
-/-- An integer exponent `l` such that `(1 + ‖x‖) ^ (-l)` is integrable if `μ` has
-temperate growth. -/
-def _root_.MeasureTheory.Measure.integrablePower (μ : Measure D) : ℕ :=
-  if h : μ.HasTemperateGrowth then h.exists_integrable.choose else 0
-
-lemma integrable_pow_neg_integrablePower
-    (μ : Measure D) [h : μ.HasTemperateGrowth] :
-    Integrable (fun x ↦ (1 + ‖x‖) ^ (- (μ.integrablePower : ℝ))) μ := by
-  simpa [Measure.integrablePower, h] using h.exists_integrable.choose_spec
-
-instance _root_.MeasureTheory.Measure.IsFiniteMeasure.instHasTemperateGrowth {μ : Measure D}
-    [h : IsFiniteMeasure μ] : μ.HasTemperateGrowth := ⟨⟨0, by simp⟩⟩
-
-variable [NormedSpace ℝ D] [FiniteDimensional ℝ D] [BorelSpace D] in
-instance _root_.MeasureTheory.Measure.IsAddHaarMeasure.instHasTemperateGrowth {μ : Measure D}
-    [h : μ.IsAddHaarMeasure] : μ.HasTemperateGrowth :=
-  ⟨⟨finrank ℝ D + 1, by apply integrable_one_add_norm; norm_num⟩⟩
-
-/-- Pointwise inequality to control `x ^ k * f` in terms of `1 / (1 + x) ^ l` if one controls both
-`f` (with a bound `C₁`) and `x ^ (k + l) * f` (with a bound `C₂`). This will be used to check
-integrability of `x ^ k * f x` when `f` is a Schwartz function, and to control explicitly its
-integral in terms of suitable seminorms of `f`. -/
-lemma pow_mul_le_of_le_of_pow_mul_le {C₁ C₂ : ℝ} {k l : ℕ} {x f : ℝ} (hx : 0 ≤ x) (hf : 0 ≤ f)
-    (h₁ : f ≤ C₁) (h₂ : x ^ (k + l) * f ≤ C₂) :
-    x ^ k * f ≤ 2 ^ l * (C₁ + C₂) * (1 + x) ^ (- (l : ℝ)) := by
-  have : 0 ≤ C₂ := le_trans (by positivity) h₂
-  have : 2 ^ l * (C₁ + C₂) * (1 + x) ^ (- (l : ℝ)) = ((1 + x) / 2) ^ (-(l : ℝ)) * (C₁ + C₂) := by
-    rw [Real.div_rpow (by linarith) zero_le_two]
-    simp [div_eq_inv_mul, ← Real.rpow_neg_one, ← Real.rpow_mul]
-    ring
-  rw [this]
-  rcases le_total x 1 with h'x|h'x
-  · gcongr
-    · apply (pow_le_one₀ hx h'x).trans
-      apply Real.one_le_rpow_of_pos_of_le_one_of_nonpos
-      · linarith
-      · linarith
-      · simp
-    · linarith
-  · calc
-    x ^ k * f = x ^ (-(l : ℝ)) * (x ^ (k + l) * f) := by
-      rw [← Real.rpow_natCast, ← Real.rpow_natCast, ← mul_assoc, ← Real.rpow_add (by linarith)]
-      simp
-    _ ≤ ((1 + x) / 2) ^ (-(l : ℝ)) * (C₁ + C₂) := by
-      apply mul_le_mul _ _ (by positivity) (by positivity)
-      · exact Real.rpow_le_rpow_of_nonpos (by linarith) (by linarith) (by simp)
-      · exact h₂.trans (by linarith)
-
-variable [BorelSpace D] [SecondCountableTopology D] in
-/-- Given a function such that `f` and `x ^ (k + l) * f` are bounded for a suitable `l`, then
-`x ^ k * f` is integrable. The bounds are not relevant for the integrability conclusion, but they
-are relevant for bounding the integral in `integral_pow_mul_le_of_le_of_pow_mul_le`. We formulate
-the two lemmas with the same set of assumptions for ease of applications. -/
--- We redeclare `E` here to avoid the `NormedSpace ℝ E` typeclass available throughout this file.
-lemma integrable_of_le_of_pow_mul_le
-    {E : Type*} [NormedAddCommGroup E]
-    {μ : Measure D} [μ.HasTemperateGrowth] {f : D → E} {C₁ C₂ : ℝ} {k : ℕ}
-    (hf : ∀ x, ‖f x‖ ≤ C₁) (h'f : ∀ x, ‖x‖ ^ (k + μ.integrablePower) * ‖f x‖ ≤ C₂)
-    (h''f : AEStronglyMeasurable f μ) :
-    Integrable (fun x ↦ ‖x‖ ^ k * ‖f x‖) μ := by
-  apply ((integrable_pow_neg_integrablePower μ).const_mul (2 ^ μ.integrablePower * (C₁ + C₂))).mono'
-  · exact AEStronglyMeasurable.mul (aestronglyMeasurable_id.norm.pow _) h''f.norm
-  · filter_upwards with v
-    simp only [norm_mul, norm_pow, norm_norm]
-    apply pow_mul_le_of_le_of_pow_mul_le (norm_nonneg _) (norm_nonneg _) (hf v) (h'f v)
-
-/-- Given a function such that `f` and `x ^ (k + l) * f` are bounded for a suitable `l`, then
-one can bound explicitly the integral of `x ^ k * f`. -/
--- We redeclare `E` here to avoid the `NormedSpace ℝ E` typeclass available throughout this file.
-lemma integral_pow_mul_le_of_le_of_pow_mul_le
-    {E : Type*} [NormedAddCommGroup E]
-    {μ : Measure D} [μ.HasTemperateGrowth] {f : D → E} {C₁ C₂ : ℝ} {k : ℕ}
-    (hf : ∀ x, ‖f x‖ ≤ C₁) (h'f : ∀ x, ‖x‖ ^ (k + μ.integrablePower) * ‖f x‖ ≤ C₂) :
-    ∫ x, ‖x‖ ^ k * ‖f x‖ ∂μ ≤ 2 ^ μ.integrablePower *
-      (∫ x, (1 + ‖x‖) ^ (- (μ.integrablePower : ℝ)) ∂μ) * (C₁ + C₂) := by
-  rw [← integral_const_mul, ← integral_mul_const]
-  apply integral_mono_of_nonneg
-  · filter_upwards with v using by positivity
-  · exact ((integrable_pow_neg_integrablePower μ).const_mul _).mul_const _
-  filter_upwards with v
-  exact (pow_mul_le_of_le_of_pow_mul_le (norm_nonneg _) (norm_nonneg _) (hf v) (h'f v)).trans
-    (le_of_eq (by ring))
-
-/-- For any `HasTemperateGrowth` measure and `p`, there exists an integer power `k` such that
-`(1 + ‖x‖) ^ (-k)` is in `L^p`. -/
-theorem _root_.MeasureTheory.Measure.HasTemperateGrowth.exists_eLpNorm_lt_top (p : ℝ≥0∞)
-    {μ : Measure D} (hμ : μ.HasTemperateGrowth) :
-    ∃ k : ℕ, eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ < ⊤ := by
-  cases p with
-  | top => exact ⟨0, eLpNormEssSup_lt_top_of_ae_bound (C := 1) (by simp)⟩
-  | coe p =>
-    cases eq_or_ne (p : ℝ≥0∞) 0 with
-    | inl hp => exact ⟨0, by simp [hp]⟩
-    | inr hp =>
-      have h_one_add (x : D) : 0 < 1 + ‖x‖ := lt_add_of_pos_of_le zero_lt_one (norm_nonneg x)
-      have hp_pos : 0 < (p : ℝ) := by simpa [zero_lt_iff] using hp
-      rcases hμ.exists_integrable with ⟨l, hl⟩
-      let k := ⌈(l / p : ℝ)⌉₊
-      have hlk : l ≤ k * (p : ℝ) := by simpa [div_le_iff₀ hp_pos] using Nat.le_ceil (l / p : ℝ)
-      use k
-      suffices HasFiniteIntegral (fun x ↦ ((1 + ‖x‖) ^ (-(k * p) : ℝ))) μ by
-        rw [hasFiniteIntegral_iff_enorm] at this
-        rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp ENNReal.coe_ne_top]
-        simp only [ENNReal.coe_toReal]
-        refine Eq.subst (motive := (∫⁻ x, · x ∂μ < ⊤)) (funext fun x ↦ ?_) this
-        rw [← neg_mul, Real.rpow_mul (h_one_add x).le]
-        exact Real.enorm_rpow_of_nonneg (by positivity) NNReal.zero_le_coe
-      refine hl.hasFiniteIntegral.mono' (ae_of_all μ fun x ↦ ?_)
-      rw [Real.norm_of_nonneg (Real.rpow_nonneg (h_one_add x).le _)]
-      gcongr
-      simp
-
-end TemperateGrowth
+end HasCompactSupport
 
 section CLM
 
@@ -705,7 +555,7 @@ variable {σ : 𝕜 →+* 𝕜'}
 /-- Create a semilinear map between Schwartz spaces.
 
 Note: This is a helper definition for `mkCLM`. -/
-def mkLM (A : (D → E) → F → G) (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + g) x = A f x + A g x)
+def mkLM (A : 𝓢(D, E) → F → G) (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + g) x = A f x + A g x)
     (hsmul : ∀ (a : 𝕜) (f : 𝓢(D, E)) (x), A (a • f) x = σ a • A f x)
     (hsmooth : ∀ f : 𝓢(D, E), ContDiff ℝ ∞ (A f))
     (hbound : ∀ n : ℕ × ℕ, ∃ (s : Finset (ℕ × ℕ)) (C : ℝ), 0 ≤ C ∧ ∀ (f : 𝓢(D, E)) (x : F),
@@ -724,7 +574,7 @@ def mkLM (A : (D → E) → F → G) (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + 
 /-- Create a continuous semilinear map between Schwartz spaces.
 
 For an example of using this definition, see `fderivCLM`. -/
-def mkCLM [RingHomIsometric σ] (A : (D → E) → F → G)
+def mkCLM [RingHomIsometric σ] (A : 𝓢(D, E) → F → G)
     (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + g) x = A f x + A g x)
     (hsmul : ∀ (a : 𝕜) (f : 𝓢(D, E)) (x), A (a • f) x = σ a • A f x)
     (hsmooth : ∀ f : 𝓢(D, E), ContDiff ℝ ∞ (A f))
@@ -796,16 +646,11 @@ where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate g
 def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth) :
     𝓢(D, E) →L[𝕜] 𝓢(D, G) := by
   refine mkCLM (fun f x => B (f x) (g x))
-    (fun _ _ _ => by
-      simp only [map_add, Pi.add_apply,
-        ContinuousLinearMap.add_apply])
-    (fun _ _ _ => by
-      simp only [map_smul, ContinuousLinearMap.coe_smul', Pi.smul_apply,
-        RingHom.id_apply])
+    (fun _ _ _ => by simp) (fun _ _ _ => by simp)
     (fun f => (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp
-      (f.smooth'.prodMk hg.1)) ?_
+      ((f.smooth ⊤).prodMk hg.1)) ?_
   rintro ⟨k, n⟩
-  rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨l, C, hC, hgrowth⟩
+  rcases hg.norm_iteratedFDeriv_le_uniform n with ⟨l, C, hC, hgrowth⟩
   use
     Finset.Iic (l + k, n), ‖B‖ * ((n : ℝ) + (1 : ℝ)) * n.choose (n / 2) * (C * 2 ^ (l + k)),
     by positivity
@@ -814,8 +659,8 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
   simp_rw [← ContinuousLinearMap.bilinearRestrictScalars_apply_apply ℝ B]
   have hnorm_mul :=
     ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear (B.bilinearRestrictScalars ℝ)
-    f.smooth' hg.1 x (n := n) (mod_cast le_top)
-  refine le_trans (mul_le_mul_of_nonneg_left hnorm_mul hxk) ?_
+    (f.smooth ⊤) hg.1 x (n := n) (mod_cast le_top)
+  grw [hnorm_mul]
   rw [ContinuousLinearMap.norm_bilinearRestrictScalars]
   move_mul [← ‖B‖]
   simp_rw [mul_assoc ‖B‖]
@@ -832,7 +677,7 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
   · norm_cast
     exact i.choose_le_middle n
   specialize hgrowth (n - i) (by simp only [tsub_le_self]) x
-  refine le_trans (mul_le_mul_of_nonneg_left hgrowth (by positivity)) ?_
+  grw [hgrowth]
   move_mul [C]
   gcongr ?_ * C
   rw [Finset.mem_range_succ_iff] at hi
@@ -842,6 +687,10 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
   move_mul [(1 + ‖x‖) ^ l]
   gcongr
   simp
+
+@[simp]
+theorem bilinLeftCLM_apply (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth)
+    (f : 𝓢(D, E)) : bilinLeftCLM B hg f = fun x => B (f x) (g x) := rfl
 
 end Multiplication
 
@@ -856,11 +705,10 @@ variable [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 provided that the function is temperate and growths polynomially near infinity. -/
 def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
     (hg_upper : ∃ (k : ℕ) (C : ℝ), ∀ x, ‖x‖ ≤ C * (1 + ‖g x‖) ^ k) : 𝓢(E, F) →L[𝕜] 𝓢(D, F) := by
-  refine mkCLM (fun f x => f (g x))
-    (fun _ _ _ => by simp only [Pi.add_apply]) (fun _ _ _ => rfl)
-    (fun f => f.smooth'.comp hg.1) ?_
+  refine mkCLM (fun f => f ∘ g) (fun _ _ _ => by simp) (fun _ _ _ => rfl)
+    (fun f => (f.smooth ⊤).comp hg.1) ?_
   rintro ⟨k, n⟩
-  rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨l, C, hC, hgrowth⟩
+  rcases hg.norm_iteratedFDeriv_le_uniform n with ⟨l, C, hC, hgrowth⟩
   rcases hg_upper with ⟨kg, Cg, hg_upper'⟩
   have hCg : 1 ≤ 1 + Cg := by
     refine le_add_of_nonneg_right ?_
@@ -895,10 +743,10 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
     · exact le_trans (by simp) (le_self_pow₀ (by simp [hC]) hN₁')
     · refine le_self_pow₀ (one_le_pow₀ ?_) hN₁'
       simp only [le_add_iff_nonneg_right, norm_nonneg]
-  have := norm_iteratedFDeriv_comp_le f.smooth' hg.1 (mod_cast le_top) x hbound hgrowth'
+  have := norm_iteratedFDeriv_comp_le (f.smooth ⊤) hg.1 (mod_cast le_top) x hbound hgrowth'
   have hxk : ‖x‖ ^ k ≤ (1 + ‖x‖) ^ k :=
     pow_le_pow_left₀ (norm_nonneg _) (by simp only [zero_le_one, le_add_iff_nonneg_left]) _
-  refine le_trans (mul_le_mul hxk this (by positivity) (by positivity)) ?_
+  grw [hxk, this]
   have rearrange :
     (1 + ‖x‖) ^ k *
         (n ! * (2 ^ k' * seminorm_f / (1 + ‖g x‖) ^ k') * ((C + 1) * (1 + ‖x‖) ^ l) ^ n) =
@@ -909,11 +757,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
   rw [rearrange]
   have hgxk' : 0 < (1 + ‖g x‖) ^ k' := by positivity
   rw [← div_le_iff₀ hgxk'] at hg_upper''
-  have hpos : (0 : ℝ) ≤ (C + 1) ^ n * n ! * 2 ^ k' * seminorm_f := by
-    have : 0 ≤ seminorm_f := apply_nonneg _ _
-    positivity
-  refine le_trans (mul_le_mul_of_nonneg_right hg_upper'' hpos) ?_
-  rw [← mul_assoc]
+  grw [hg_upper'', ← mul_assoc]
 
 @[simp] lemma compCLM_apply {g : D → E} (hg : g.HasTemperateGrowth)
     (hg_upper : ∃ (k : ℕ) (C : ℝ), ∀ x, ‖x‖ ≤ C * (1 + ‖g x‖) ^ k) (f : 𝓢(E, F)) :
@@ -965,9 +809,9 @@ variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
-  mkCLM (fderiv ℝ) (fun f g _ => fderiv_add f.differentiableAt g.differentiableAt)
+  mkCLM (fderiv ℝ ·) (fun f g _ => fderiv_add f.differentiableAt g.differentiableAt)
     (fun a f _ => fderiv_const_smul f.differentiableAt a)
-    (fun f => (contDiff_succ_iff_fderiv.mp f.smooth').2.2) fun ⟨k, n⟩ =>
+    (fun f => (contDiff_succ_iff_fderiv.mp (f.smooth ⊤)).2.2) fun ⟨k, n⟩ =>
     ⟨{⟨k, n + 1⟩}, 1, zero_le_one, fun f x => by
       simpa only [schwartzSeminormFamily_apply, Seminorm.comp_apply, Finset.sup_singleton,
         one_smul, norm_iteratedFDeriv_fderiv, one_mul] using f.le_seminorm 𝕜 k (n + 1) x⟩
@@ -976,11 +820,14 @@ def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
 theorem fderivCLM_apply (f : 𝓢(E, F)) (x : E) : fderivCLM 𝕜 f x = fderiv ℝ f x :=
   rfl
 
+theorem hasFDerivAt (f : 𝓢(E, F)) (x : E) : HasFDerivAt f (fderiv ℝ f x) x :=
+  f.differentiableAt.hasFDerivAt
+
 /-- The 1-dimensional derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def derivCLM : 𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F) :=
-  mkCLM deriv (fun f g _ => deriv_add f.differentiableAt g.differentiableAt)
+  mkCLM (deriv ·) (fun f g _ => deriv_add f.differentiableAt g.differentiableAt)
     (fun a f _ => deriv_const_smul a f.differentiableAt)
-    (fun f => (contDiff_succ_iff_deriv.mp f.smooth').2.2) fun ⟨k, n⟩ =>
+    (fun f => (contDiff_succ_iff_deriv.mp (f.smooth ⊤)).2.2) fun ⟨k, n⟩ =>
     ⟨{⟨k, n + 1⟩}, 1, zero_le_one, fun f x => by
       simpa only [Real.norm_eq_abs, Finset.sup_singleton, schwartzSeminormFamily_apply, one_mul,
         norm_iteratedFDeriv_eq_norm_iteratedDeriv, ← iteratedDeriv_succ'] using
@@ -989,6 +836,9 @@ def derivCLM : 𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F) :=
 @[simp]
 theorem derivCLM_apply (f : 𝓢(ℝ, F)) (x : ℝ) : derivCLM 𝕜 f x = deriv f x :=
   rfl
+
+theorem hasDerivAt (f : 𝓢(ℝ, F)) (x : ℝ) : HasDerivAt f (deriv f x) x :=
+  f.differentiableAt.hasDerivAt
 
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a
 continuous linear map on Schwartz space. -/
@@ -1048,7 +898,7 @@ theorem iteratedPDeriv_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : 𝓢(E
     simp only [iteratedPDeriv_succ_left, iteratedFDeriv_succ_apply_left]
     rw [← fderiv_continuousMultilinear_apply_const_apply]
     · simp [← ih]
-    · exact f.smooth'.differentiable_iteratedFDeriv (mod_cast ENat.coe_lt_top n) x
+    · exact (f.smooth ⊤).differentiable_iteratedFDeriv (mod_cast ENat.coe_lt_top n) x
 
 
 end Derivatives
@@ -1267,7 +1117,7 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
   calc eLpNorm (⇑f) p μ
   _ = eLpNorm ((fun x : E ↦ (1 + ‖x‖) ^ (-k : ℝ)) • fun x ↦ (1 + ‖x‖) ^ k • f x) p μ := by
     refine congrArg (eLpNorm · p μ) (funext fun x ↦ ?_)
-    simp [Real.rpow_neg (h_one_add x).le, (h_one_add x).ne']
+    simp [(h_one_add x).ne']
   _ ≤ eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ * eLpNorm (fun x ↦ (1 + ‖x‖) ^ k • f x) ⊤ μ := by
     refine eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top p _ ?_
     refine Continuous.aestronglyMeasurable ?_
@@ -1298,16 +1148,10 @@ theorem memLp_top (f : 𝓢(E, F)) (μ : Measure E := by volume_tac) : MemLp f �
   refine memLp_top_of_bound f.continuous.aestronglyMeasurable C (ae_of_all μ fun x ↦ ?_)
   simpa using hC x
 
-@[deprecated (since := "2025-02-21")]
-alias memℒp_top := memLp_top
-
 /-- Schwartz functions are in `L^p` for any `p`. -/
 theorem memLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] : MemLp f p μ :=
   ⟨f.continuous.aestronglyMeasurable, f.eLpNorm_lt_top p μ⟩
-
-@[deprecated (since := "2025-02-21")]
-alias memℒp := memLp
 
 /-- Map a Schwartz function to an `Lp` function for any `p`. -/
 def toLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
@@ -1352,5 +1196,61 @@ theorem continuous_toLp {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} [hμ 
     Continuous (fun f : 𝓢(E, F) ↦ f.toLp p μ) := (toLpCLM ℝ F p μ).continuous
 
 end Lp
+
+section L2
+
+open MeasureTheory
+
+variable [NormedAddCommGroup H] [NormedSpace ℝ H] [FiniteDimensional ℝ H]
+  [MeasurableSpace H] [BorelSpace H]
+  [NormedAddCommGroup V] [InnerProductSpace ℂ V]
+
+@[simp]
+theorem inner_toL2_toL2_eq (f g : 𝓢(H, V)) (μ : Measure H := by volume_tac) [μ.HasTemperateGrowth] :
+    inner ℂ (f.toLp 2 μ) (g.toLp 2 μ) = ∫ x, inner ℂ (f x) (g x) ∂μ := by
+  apply integral_congr_ae
+  have hf_ae := f.coeFn_toLp 2 μ
+  have hg_ae := g.coeFn_toLp 2 μ
+  filter_upwards [hf_ae, hg_ae] with _ hf hg
+  rw [hf, hg]
+
+end L2
+
+section integration_by_parts
+
+open ENNReal MeasureTheory
+
+variable [NormedAddCommGroup V] [NormedSpace ℝ V]
+
+/-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
+
+Version for a general bilinear map. -/
+theorem integral_bilinear_deriv_right_eq_neg_left (f : 𝓢(ℝ, E)) (g : 𝓢(ℝ, F))
+    (L : E →L[ℝ] F →L[ℝ] V) :
+    ∫ (x : ℝ), L (f x) (deriv g x) = -∫ (x : ℝ), L (deriv f x) (g x) :=
+  MeasureTheory.integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable
+    f.hasDerivAt g.hasDerivAt (bilinLeftCLM L (derivCLM ℝ g).hasTemperateGrowth f).integrable
+    (bilinLeftCLM L g.hasTemperateGrowth (derivCLM ℝ f)).integrable
+    (bilinLeftCLM L g.hasTemperateGrowth f).integrable
+
+variable [RCLike 𝕜] [NormedSpace 𝕜 F] [NormedSpace 𝕜 V]
+
+/-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
+
+Version for a Schwartz function with values in continuous linear maps. -/
+theorem integral_clm_comp_deriv_right_eq_neg_left (f : 𝓢(ℝ, F →L[𝕜] V)) (g : 𝓢(ℝ, F)) :
+    ∫ (x : ℝ), f x (deriv g x) = -∫ (x : ℝ), deriv f x (g x) :=
+  integral_bilinear_deriv_right_eq_neg_left f g
+    ((ContinuousLinearMap.id 𝕜 (F →L[𝕜] V)).bilinearRestrictScalars ℝ)
+
+/-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
+
+Version for multiplication of scalar-valued Schwartz functions. -/
+theorem integral_mul_deriv_eq_neg_deriv_mul (f : 𝓢(ℝ, 𝕜)) (g : 𝓢(ℝ, 𝕜)) :
+    ∫ (x : ℝ), f x * (deriv g x) = -∫ (x : ℝ), deriv f x * (g x) :=
+  integral_bilinear_deriv_right_eq_neg_left f g (ContinuousLinearMap.mul ℝ 𝕜)
+
+end integration_by_parts
+
 
 end SchwartzMap

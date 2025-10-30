@@ -43,6 +43,10 @@ Before the `open scoped Classical` line, various proofs are made with decidabili
 This can cause issues -- see for example the non-simp lemma `toWithTopZero` proved by `rfl`,
 followed by `@[simp] lemma toWithTopZero'` whose proof uses `convert`.
 
+## Deprecation
+
+As it appears this has been unused since 2018, we are now deprecating it.
+If `ENat` does not serve your purposes, please raise this on the community Zulip.
 
 ## Tags
 
@@ -53,8 +57,11 @@ PartENat, ℕ∞
 open Part hiding some
 
 /-- Type of natural numbers with infinity (`⊤`) -/
+@[deprecated ENat (since := "2025-09-01")]
 def PartENat : Type :=
   Part ℕ
+
+set_option linter.deprecated false
 
 namespace PartENat
 
@@ -85,8 +92,6 @@ theorem dom_some (x : ℕ) : (some x).Dom :=
   trivial
 
 instance addCommMonoid : AddCommMonoid PartENat where
-  add := (· + ·)
-  zero := 0
   add_comm _ _ := Part.ext' and_comm fun _ _ => add_comm _ _
   zero_add _ := Part.ext' (iff_of_eq (true_and _)) fun _ _ => zero_add _
   add_zero _ := Part.ext' (iff_of_eq (and_true _)) fun _ _ => add_zero _
@@ -95,7 +100,6 @@ instance addCommMonoid : AddCommMonoid PartENat where
 
 instance : AddCommMonoidWithOne PartENat :=
   { PartENat.addCommMonoid with
-    one := 1
     natCast := some
     natCast_zero := rfl
     natCast_succ := fun _ => Part.ext' (iff_of_eq (true_and _)).symm fun _ _ => rfl }
@@ -234,9 +238,7 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
       specialize H hy
       specialize h fun _ => hy
       rw [not_forall] at h
-      obtain ⟨hx', h⟩ := h
-      rw [not_le] at h
-      exact h
+      cutsat
     · specialize h fun hx' => (hx hx').elim
       rw [not_forall] at h
       obtain ⟨hx', h⟩ := h
@@ -282,7 +284,7 @@ theorem get_le_get {x y : PartENat} {hx : x.Dom} {hy : y.Dom} : x.get hx ≤ y.g
     rw [← coe_le_coe, natCast_get, natCast_get]
 
 theorem le_coe_iff (x : PartENat) (n : ℕ) : x ≤ n ↔ ∃ h : x.Dom, x.get h ≤ n := by
-  show (∃ h : True → x.Dom, _) ↔ ∃ h : x.Dom, x.get h ≤ n
+  change (∃ h : True → x.Dom, _) ↔ ∃ h : x.Dom, x.get h ≤ n
   simp only [forall_prop_of_true, dom_natCast, get_natCast']
 
 theorem lt_coe_iff (x : PartENat) (n : ℕ) : x < n ↔ ∃ h : x.Dom, x.get h < n := by
@@ -400,16 +402,20 @@ noncomputable instance lattice : Lattice PartENat :=
     inf_le_right := min_le_right
     le_inf := fun _ _ _ => le_min }
 
-instance : CanonicallyOrderedAdd PartENat :=
-  { le_self_add := fun a b =>
-      PartENat.casesOn b (le_top.trans_eq (add_top _).symm) fun _ =>
-        PartENat.casesOn a (top_add _).ge fun _ =>
-          (coe_le_coe.2 le_self_add).trans_eq (Nat.cast_add _ _)
-    exists_add_of_le := fun {a b} =>
-      PartENat.casesOn b (fun _ => ⟨⊤, (add_top _).symm⟩) fun b =>
-        PartENat.casesOn a (fun h => ((natCast_lt_top _).not_ge h).elim) fun a h =>
-          ⟨(b - a : ℕ), by
-            rw [← Nat.cast_add, natCast_inj, add_comm, tsub_add_cancel_of_le (coe_le_coe.1 h)]⟩ }
+instance : CanonicallyOrderedAdd PartENat where
+  le_self_add a b :=
+    PartENat.casesOn b (le_top.trans_eq (add_top _).symm) fun _ =>
+      PartENat.casesOn a (top_add _).ge fun _ =>
+        (coe_le_coe.2 le_self_add).trans_eq (Nat.cast_add _ _)
+  le_add_self a b :=
+    PartENat.casesOn b (le_top.trans_eq (top_add _).symm) fun _ =>
+      PartENat.casesOn a (add_top _).ge fun _ =>
+        (coe_le_coe.2 le_add_self).trans_eq (Nat.cast_add _ _)
+  exists_add_of_le {a b} :=
+    PartENat.casesOn b (fun _ => ⟨⊤, (add_top _).symm⟩) fun b =>
+      PartENat.casesOn a (fun h => ((natCast_lt_top _).not_ge h).elim) fun a h =>
+        ⟨(b - a : ℕ), by
+          rw [← Nat.cast_add, natCast_inj, add_comm, tsub_add_cancel_of_le (coe_le_coe.1 h)]⟩
 
 theorem eq_natCast_sub_of_add_eq_natCast {x y : PartENat} {n : ℕ} (h : x + y = n) :
     x = ↑(n - y.get (dom_of_le_natCast ((le_add_left le_rfl).trans_eq h))) := by
@@ -424,6 +430,7 @@ protected theorem add_lt_add_right {x y z : PartENat} (h : x < y) (hz : z ≠ �
   induction y using PartENat.casesOn
   · rw [top_add]
     exact_mod_cast natCast_lt_top _
+  intro h
   norm_cast at h
   exact_mod_cast add_lt_add_right h _
 
@@ -444,12 +451,14 @@ theorem lt_add_one {x : PartENat} (hx : x ≠ ⊤) : x < x + 1 := by
 theorem le_of_lt_add_one {x y : PartENat} (h : x < y + 1) : x ≤ y := by
   induction y using PartENat.casesOn
   · apply le_top
+  intro h
   rcases ne_top_iff.mp (ne_top_of_lt h) with ⟨m, rfl⟩
   exact_mod_cast Nat.le_of_lt_succ (by norm_cast at h)
 
 theorem add_one_le_of_lt {x y : PartENat} (h : x < y) : x + 1 ≤ y := by
   induction y using PartENat.casesOn
   · apply le_top
+  intro h
   rcases ne_top_iff.mp (ne_top_of_lt h) with ⟨m, rfl⟩
   exact_mod_cast Nat.succ_le_of_lt (by norm_cast at h)
 
@@ -458,6 +467,7 @@ theorem add_one_le_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x + 1 ≤ y ↔ x 
   rcases ne_top_iff.mp hx with ⟨m, rfl⟩
   induction y using PartENat.casesOn
   · apply natCast_lt_top
+  intro h
   exact_mod_cast Nat.lt_of_succ_le (by norm_cast at h)
 
 theorem coe_succ_le_iff {n : ℕ} {e : PartENat} : ↑n.succ ≤ e ↔ ↑n < e := by
@@ -469,6 +479,7 @@ theorem lt_add_one_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x < y + 1 ↔ x �
   induction y using PartENat.casesOn
   · rw [top_add]
     apply natCast_lt_top
+  intro h
   exact_mod_cast Nat.lt_succ_of_le (by norm_cast at h)
 
 lemma lt_coe_succ_iff_le {x : PartENat} {n : ℕ} (hx : x ≠ ⊤) : x < n.succ ↔ x ≤ n := by
@@ -739,6 +750,6 @@ noncomputable instance : LinearOrderedAddCommMonoidWithTop PartENat :=
 
 noncomputable instance : CompleteLinearOrder PartENat :=
   { lattice, withTopOrderIso.symm.toGaloisInsertion.liftCompleteLattice,
-    linearOrder, LinearOrder.toBiheytingAlgebra with }
+    linearOrder, linearOrder.toBiheytingAlgebra with }
 
 end PartENat

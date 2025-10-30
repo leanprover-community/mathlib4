@@ -122,14 +122,14 @@ theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : 
       rw [add_le_add_iff_left, two_smul, ← two_mul] at e1
       rw [le_antisymm_iff]
       refine ⟨?_, norm_nonneg _⟩
-      rwa [← mul_zero (2 : ℝ), mul_le_mul_left (show (0 : ℝ) < 2 by norm_num)] at e1
+      rwa [← mul_zero (2 : ℝ), mul_le_mul_iff_right₀ (show (0 : ℝ) < 2 by simp)] at e1
   have QP_eq_QPQ : Q * P = Q * P * Q := by
     have e1 : P * (1 - Q) = P * (1 - Q) - (Q * P - Q * P * Q) :=
       calc
         P * (1 - Q) = (1 - Q) * P * (1 - Q) := by rw [PR_eq_RPR (1 - Q) h₂.Lcomplement]
         _ = P * (1 - Q) - (Q * P - Q * P * Q) := by noncomm_ring
     rwa [eq_sub_iff_add_eq, add_eq_left, sub_eq_zero] at e1
-  show P * Q = Q * P
+  change P * Q = Q * P
   rw [QP_eq_QPQ, PR_eq_RPR Q h₂]
 
 theorem mul [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
@@ -246,10 +246,9 @@ theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : { P : M // IsLprojecti
     R.prop.proj.eq, ← coe_inf Q, mul_assoc, ((Q ⊓ R).prop.commute Pᶜ.prop).eq, ← mul_assoc,
     Pᶜ.prop.proj.eq]
 
--- Porting note: In mathlib3 we were able to directly show that `{ P : M // IsLprojection X P }` was
---  an instance of a `DistribLattice`. Trying to do that in mathlib4 fails with "error:
--- (deterministic) timeout at 'whnf', maximum number of heartbeats (800000) has been reached"
--- My workaround is to show instance Lattice first
+/- This instance was created as an auxiliary definition when defining `Subtype.distribLattice`
+all at once would cause a timeout. That is no longer the case. Keeping this as a useful shortcut.
+-/
 instance [FaithfulSMul M X] : Lattice { P : M // IsLprojection X P } where
   sup := max
   inf := min

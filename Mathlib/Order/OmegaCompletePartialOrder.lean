@@ -73,6 +73,9 @@ variable [Preorder α] [Preorder β] [Preorder γ]
 instance : FunLike (Chain α) ℕ α := inferInstanceAs <| FunLike (ℕ →o α) ℕ α
 instance : OrderHomClass (Chain α) ℕ α := inferInstanceAs <| OrderHomClass (ℕ →o α) ℕ α
 
+/-- See note [partially-applied ext lemmas]. -/
+@[ext] lemma ext ⦃f g : Chain α⦄ (h : ⇑f = ⇑g) : f = g := DFunLike.ext' h
+
 instance [Inhabited α] : Inhabited (Chain α) :=
   ⟨⟨default, fun _ _ _ => le_rfl⟩⟩
 
@@ -90,8 +93,8 @@ lemma isChain_range : IsChain (· ≤ ·) (Set.range c) := Monotone.isChain_rang
 lemma directed : Directed (· ≤ ·) c := directedOn_range.2 c.isChain_range.directedOn
 
 /-- `map` function for `Chain` -/
--- Porting note: `simps` doesn't work with type synonyms
--- @[simps! -fullyApplied]
+-- Not `@[simps]`: we need `@[simps!]` to see through the type synonym `Chain β = ℕ →o β`,
+-- but then we'd get the `FunLike` instance for `OrderHom` instead.
 def map : Chain β :=
   f.comp c
 
@@ -125,8 +128,8 @@ theorem map_le_map {g : α →o β} (h : f ≤ g) : c.map f ≤ c.map g :=
 
 /-- `OmegaCompletePartialOrder.Chain.zip` pairs up the elements of two chains
 that have the same index. -/
--- Porting note: `simps` doesn't work with type synonyms
--- @[simps!]
+-- Not `@[simps]`: we need `@[simps!]` to see through the type synonym `Chain β = ℕ →o β`,
+-- but then we'd get the `FunLike` instance for `OrderHom` instead.
 def zip (c₀ : Chain α) (c₁ : Chain β) : Chain (α × β) :=
   OrderHom.prod c₀ c₁
 
@@ -421,9 +424,7 @@ instance : OmegaCompletePartialOrder (α × β) where
   ωSup_le := fun _ _ h => ⟨ωSup_le _ _ fun i => (h i).1, ωSup_le _ _ fun i => (h i).2⟩
   le_ωSup c i := ⟨le_ωSup (c.map OrderHom.fst) i, le_ωSup (c.map OrderHom.snd) i⟩
 
-theorem ωSup_zip (c₀ : Chain α) (c₁ : Chain β) : ωSup (c₀.zip c₁) = (ωSup c₀, ωSup c₁) := by
-  apply eq_of_forall_ge_iff; rintro ⟨z₁, z₂⟩
-  simp [ωSup_le_iff, forall_and]
+theorem ωSup_zip (c₀ : Chain α) (c₁ : Chain β) : ωSup (c₀.zip c₁) = (ωSup c₀, ωSup c₁) := rfl
 
 end Prod
 
@@ -434,9 +435,8 @@ namespace CompleteLattice
 of arbitrary suprema. -/
 instance (priority := 100) [CompleteLattice α] : OmegaCompletePartialOrder α where
   ωSup c := ⨆ i, c i
-  ωSup_le := fun ⟨c, _⟩ s hs => by
-    simp only [iSup_le_iff, OrderHom.coe_mk] at hs ⊢; assumption
-  le_ωSup := fun ⟨c, _⟩ i => by apply le_iSup_of_le i; rfl
+  ωSup_le := fun ⟨c, _⟩ s hs => by simpa only [iSup_le_iff]
+  le_ωSup := fun ⟨c, _⟩ i => le_iSup_of_le i le_rfl
 
 variable [OmegaCompletePartialOrder α] [CompleteLattice β] {f g : α → β}
 
@@ -585,8 +585,7 @@ theorem ωSup_bind {β γ : Type v} (c : Chain α) (f : α →o Part β) (g : α
     simp only [Part.mem_bind_iff, Chain.map_coe,
       Function.comp_apply, OrderHom.partBind_coe]
     exact ⟨_, hb, hy⟩
-  · intro i
-    intro y hy
+  · intro i y hy
     simp only [Part.mem_bind_iff, Chain.map_coe,
       Function.comp_apply, OrderHom.partBind_coe] at hy
     rcases hy with ⟨b, hb₀, hb₁⟩

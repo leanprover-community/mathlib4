@@ -59,11 +59,7 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
       · simp only [hpq, hp, hq, if_true, if_false]
         exact add_nonneg (pow_pos _).le (pow_pos _).le
       simp only [hpq, hp, hq, if_false]
-      refine le_trans (pow_right_mono₀ (by omega) (Polynomial.natDegree_add_le _ _)) ?_
-      refine
-        le_trans (le_max_iff.mpr ?_)
-          (max_le_add_of_nonneg (pow_nonneg (by omega) _) (pow_nonneg (by omega) _))
-      exact (max_choice p.natDegree q.natDegree).imp (fun h => by rw [h]) fun h => by rw [h]
+      exact le_trans (pow_right_mono₀ (by cutsat) (Polynomial.natDegree_add_le _ _)) (by grind)
     map_mul' := fun p q => by
       by_cases hp : p = 0; · simp [hp]
       by_cases hq : q = 0; · simp [hq]
@@ -90,7 +86,7 @@ theorem cardPowDegree_isEuclidean : IsEuclidean (cardPowDegree : AbsoluteValue F
     pow_pos (Int.natCast_pos.mpr card_pos) n
   { map_lt_map_iff' := fun {p q} => by
       classical
-      show cardPowDegree p < cardPowDegree q ↔ degree p < degree q
+      change cardPowDegree p < cardPowDegree q ↔ degree p < degree q
       simp only [cardPowDegree_apply]
       split_ifs with hp hq hq
       · simp only [hp, hq, lt_self_iff_false]

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patience Ablett, Kevin Buzzard, Harald Carlens, Wayne Ng Kwing King, Michael Schlößer,
   Justus Springer, Andrew Yang, Jujian Zhang
 -/
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Basic
 import Mathlib.AlgebraicGeometry.ValuativeCriterion
 
@@ -19,10 +20,10 @@ This contribution was created as part of the Durham Computational Algebraic Geom
 
 namespace AlgebraicGeometry.Proj
 
-variable {R A : Type*}
-variable [CommRing R] [CommRing A] [Algebra R A]
-variable (𝒜 : ℕ → Submodule R A)
-variable [GradedAlgebra 𝒜]
+variable {σ A : Type*}
+variable [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
+variable (𝒜 : ℕ → σ)
+variable [GradedRing 𝒜]
 
 open Scheme CategoryTheory Limits pullback HomogeneousLocalization
 
@@ -41,9 +42,9 @@ lemma lift_awayMapₐ_awayMapₐ_surjective {d e : ℕ} {f : A} (hf : f ∈ 𝒜
     exact this.elim _ _
   have : n = j * (d + e) := by
     apply DirectSum.degree_eq_of_mem_mem 𝒜 hb'
-    convert SetLike.pow_mem_graded _ _ using 2
-    · infer_instance
-    · exact hx ▸ SetLike.mul_mem_graded hf hg
+    · convert SetLike.pow_mem_graded _ _ using 2
+      · infer_instance
+      · exact hx ▸ SetLike.mul_mem_graded hf hg
     · exact hx ▸ hfg
   let x0 : NumDenSameDeg 𝒜 (.powers f) :=
   { deg := j * (d * (e + 1))
@@ -74,20 +75,20 @@ lemma lift_awayMapₐ_awayMapₐ_surjective {d e : ℕ} {f : A} (hf : f ∈ 𝒜
 
 open TensorProduct in
 instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
-  refine ⟨IsLocalAtTarget.of_openCover (Pullback.openCoverOfLeftRight
+  refine ⟨IsZariskiLocalAtTarget.of_openCover (Pullback.openCoverOfLeftRight
     (affineOpenCover 𝒜).openCover (affineOpenCover 𝒜).openCover _ _) ?_⟩
   intro ⟨i, j⟩
   dsimp [Scheme, Cover.pullbackHom]
   refine (MorphismProperty.cancel_left_of_respectsIso (P := @IsClosedImmersion)
     (f := (pullbackDiagonalMapIdIso ..).inv) _).mp ?_
-  let e₁ : pullback ((affineOpenCover 𝒜).map i ≫ toSpecZero 𝒜)
-        ((affineOpenCover 𝒜).map j ≫ toSpecZero 𝒜) ≅
-        Spec (.of <| TensorProduct (𝒜 0) (Away 𝒜 i.2) (Away 𝒜 j.2)) := by
-    refine pullback.congrHom ?_ ?_ ≪≫ pullbackSpecIso (𝒜 0) (Away 𝒜 i.2) (Away 𝒜 j.2)
-    · simp [affineOpenCover, openCoverOfISupEqTop, awayι_toSpecZero]; rfl
-    · simp [affineOpenCover, openCoverOfISupEqTop, awayι_toSpecZero]; rfl
-  let e₂ : pullback ((affineOpenCover 𝒜).map i) ((affineOpenCover 𝒜).map j) ≅
-        Spec (.of <| (Away 𝒜 (i.2 * j.2))) :=
+  let e₁ : pullback ((affineOpenCover 𝒜).f i ≫ toSpecZero 𝒜)
+        ((affineOpenCover 𝒜).f j ≫ toSpecZero 𝒜) ≅
+        Spec (.of <| TensorProduct (𝒜 0) (Away 𝒜 (i.2 : A)) (Away 𝒜 (j.2 : A))) := by
+    refine pullback.congrHom ?_ ?_ ≪≫ pullbackSpecIso (𝒜 0) (Away 𝒜 (i.2 : A)) (Away 𝒜 (j.2 : A))
+    · simp [affineOpenCover, affineOpenCoverOfIrrelevantLESpan, awayι_toSpecZero]; rfl
+    · simp [affineOpenCover, affineOpenCoverOfIrrelevantLESpan, awayι_toSpecZero]; rfl
+  let e₂ : pullback ((affineOpenCover 𝒜).f i) ((affineOpenCover 𝒜).f j) ≅
+        Spec (.of <| Away 𝒜 (i.2 * j.2 : A)) :=
     pullbackAwayιIso 𝒜 _ _ _ _ rfl
   rw [← MorphismProperty.cancel_right_of_respectsIso (P := @IsClosedImmersion) _ e₁.hom,
     ← MorphismProperty.cancel_left_of_respectsIso (P := @IsClosedImmersion) e₂.inv]
@@ -129,12 +130,12 @@ section LocallyOfFiniteType
 instance [Algebra.FiniteType (𝒜 0) A] : LocallyOfFiniteType (Proj.toSpecZero 𝒜) := by
   obtain ⟨x, hx, hx'⟩ := GradedAlgebra.exists_finset_adjoin_eq_top_and_homogeneous_ne_zero 𝒜
   choose d hd hxd using hx'
-  rw [IsLocalAtSource.iff_of_iSup_eq_top (P := @LocallyOfFiniteType) _
+  rw [IsZariskiLocalAtSource.iff_of_iSup_eq_top (P := @LocallyOfFiniteType) _
     (Proj.iSup_basicOpen_eq_top' 𝒜 (ι := x) (↑) (fun i ↦ ⟨_, hxd _ i.2⟩) (by simpa using hx))]
   intro i
   rw [← MorphismProperty.cancel_left_of_respectsIso (P := @LocallyOfFiniteType)
-    (Proj.basicOpenIsoSpec 𝒜 i (hxd _ i.2) (hd _ i.2).bot_lt).inv, ← Category.assoc, ← Proj.awayι,
-    Proj.awayι_toSpecZero, HasRingHomProperty.Spec_iff (P := @LocallyOfFiniteType)]
+    (Proj.basicOpenIsoSpec 𝒜 (i : A) (hxd _ i.2) (hd _ i.2).bot_lt).inv, ← Category.assoc,
+    ← Proj.awayι, Proj.awayι_toSpecZero, HasRingHomProperty.Spec_iff (P := @LocallyOfFiniteType)]
   exact HomogeneousLocalization.Away.finiteType _ _ (hxd _ i.2)
 
 end LocallyOfFiniteType
@@ -145,7 +146,7 @@ instance [Algebra.FiniteType (𝒜 0) A] : QuasiCompact (Proj.toSpecZero 𝒜) :
   rw [HasAffineProperty.iff_of_isAffine (P := @QuasiCompact)]
   obtain ⟨x, hx, hx'⟩ := GradedAlgebra.exists_finset_adjoin_eq_top_and_homogeneous_ne_zero 𝒜
   choose d hd hxd using hx'
-  have H (i : x) : IsCompact (Proj.basicOpen 𝒜 i).1 := by
+  have H (i : x) : IsCompact (Proj.basicOpen 𝒜 (i : A)).1 := by
     rw [← Proj.opensRange_awayι _ _ (hxd _ i.2) (hd _ i.2).bot_lt]
     exact isCompact_range (Proj.awayι _ _ (hxd _ i.2) (hd _ i.2).bot_lt).continuous
   have := congr($(Proj.iSup_basicOpen_eq_top' 𝒜
@@ -207,7 +208,7 @@ theorem valuativeCriterion_existence_aux
   have hi₀ (j) : ψ j ≤ ψ i₀ := hi1 ▸ (Finset.univ.image ψ).le_max' (ψ j) (by simp)
   have hKmax : 0 < Kmax := by
     refine zero_lt_iff.mpr fun hKmax ↦ ?_
-    have (i) : ψ i = 0 := le_zero_iff.mp (hKmax ▸ Finset.le_max' _ _ (by simp))
+    have (i : _) : ψ i = 0 := le_zero_iff.mp (hKmax ▸ Finset.le_max' _ _ (by simp))
     simp only [ψ, map_pow, pow_eq_zero_iff', map_eq_zero, ne_eq] at this
     have : φ 1 = 0 := by convert (this j).1; ext; simp
     simp only [map_one, one_ne_zero] at this
@@ -286,8 +287,8 @@ theorem valuativeCriterion_existence_aux
             · simp; ring
           · ext i; congr 1; ring
           · ring
-      _ ≤ (∏ i : ι, ψ i₀ ^ (d i * ai i)) * ψ i₀ ^ (d i₀ * a * (d j - 1)) :=
-          mul_le_mul_right' (Finset.prod_le_prod' fun i a ↦ pow_le_pow_left₀ zero_le' (hi₀ i) _) _
+      _ ≤ (∏ i : ι, ψ i₀ ^ (d i * ai i)) * ψ i₀ ^ (d i₀ * a * (d j - 1)) := by
+          gcongr with i; exacts [fun i _ ↦ zero_le', zero_le', hi₀ i]
       _ = ψ i₀ ^ (d i₀ * a * d j) := by
           rw [Finset.prod_pow_eq_pow_sum, ← pow_add]
           simp_rw [mul_comm (d _) (ai _), hai]
@@ -316,12 +317,13 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
     rintro _ ⟨x, rfl⟩
     obtain rfl := Subsingleton.elim x (IsLocalRing.closedPoint K)
     exact hi
-  let φ : Spec (.of K) ⟶ _ := IsOpenImmersion.lift _ _ this
+  let φ : Spec (.of <| K) ⟶ _ := IsOpenImmersion.lift _ _ this
   have H : Spec.preimage i₂ ≫ CommRingCat.ofHom (algebraMap O K) =
       CommRingCat.ofHom (fromZeroRingHom 𝒜 _) ≫ Spec.preimage φ := by
     apply Spec.map_injective
     simp only [Spec.map_comp, Spec.map_preimage, ← w.w]
-    rw [← Proj.awayι_toSpecZero, IsOpenImmersion.lift_fac_assoc]
+    rw [← Proj.awayι_toSpecZero _ _ (hxd i i.2), IsOpenImmersion.lift_fac_assoc]
+    exact Nat.zero_lt_of_ne_zero (hd i i.2)
   obtain ⟨i₀, φ', hφ, hφ'⟩ :=
     valuativeCriterion_existence_aux 𝒜 (Spec.preimage i₂).hom x (↑) (by simpa using hx) i
       (O := O) (K := K) (Spec.preimage φ).hom congr(($H).hom)
@@ -335,7 +337,7 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
   refine ⟨⟨Spec.map (CommRingCat.ofHom φ'') ≫ Proj.awayι 𝒜 _ (hxd _ i₀.2) (hd _ _).bot_lt, ?_, ?_⟩⟩
   · rw [← Spec.map_comp_assoc]
     convert IsOpenImmersion.lift_fac _ _ this using 1
-    show _ = φ ≫ _
+    change _ = φ ≫ _
     rw [← Spec.map_preimage φ, ← CommRingCat.ofHom_hom (Spec.preimage φ), ← hφ,
       ← CommRingCat.ofHom_comp]
     simp [hφ'', SpecMap_awayMap_awayι, add_comm]
@@ -346,7 +348,8 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
     apply IsFractionRing.injective O K
     refine (DFunLike.congr_fun hφ'' (fromZeroRingHom 𝒜 _ _)).trans ?_
     simp only [RingHom.coe_comp, Function.comp_apply]
-    rw [awayMap_fromZeroRingHom, ← awayMap_fromZeroRingHom 𝒜 _ rfl, ← RingHom.comp_apply, hφ]
+    rw [awayMap_fromZeroRingHom, ← awayMap_fromZeroRingHom 𝒜 (hxd i₀ i₀.2) rfl,
+      ← RingHom.comp_apply, hφ]
     exact congr($(H.symm) x)
 
 instance [Algebra.FiniteType (𝒜 0) A] : UniversallyClosed (Proj.toSpecZero 𝒜) := by

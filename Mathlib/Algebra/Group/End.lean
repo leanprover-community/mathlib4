@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Equiv.TypeTags
+import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Common
-import Mathlib.Algebra.Group.Prod
 
 /-!
 # Monoids of endomorphisms, groups of automorphisms
@@ -29,9 +30,9 @@ function composition, and multiplication in `CategoryTheory.End`, but not with
 end monoid, aut group
 -/
 
-assert_not_exists MonoidWithZero MulAction RelIso
+assert_not_exists HeytingAlgebra MonoidWithZero MulAction RelIso
 
-variable {A M G α β : Type*}
+variable {A M G α β γ : Type*}
 
 /-! ### Type endomorphisms -/
 
@@ -80,8 +81,7 @@ theorem default_eq : (default : Perm α) = 1 :=
 type. -/
 @[simps]
 def equivUnitsEnd : Perm α ≃* Units (Function.End α) where
-  -- Porting note: needed to add `.toFun`.
-  toFun e := ⟨e.toFun, e.symm.toFun, e.self_comp_symm, e.symm_comp_self⟩
+  toFun e := ⟨⇑e, ⇑e.symm, e.self_comp_symm, e.symm_comp_self⟩
   invFun u :=
     ⟨(u : Function.End α), (↑u⁻¹ : Function.End α), congr_fun u.inv_val, congr_fun u.val_inv⟩
   map_mul' _ _ := rfl
@@ -93,7 +93,7 @@ def _root_.MonoidHom.toHomPerm {G : Type*} [Group G] (f : G →* Function.End α
   equivUnitsEnd.symm.toMonoidHom.comp f.toHomUnits
 
 theorem mul_apply (f g : Perm α) (x) : (f * g) x = f (g x) :=
-  Equiv.trans_apply _ _ _
+  rfl
 
 theorem one_apply (x) : (1 : Perm α) x = x :=
   rfl
@@ -149,19 +149,19 @@ theorem mul_refl (e : Perm α) : e * Equiv.refl α = e :=
 
 @[simp]
 theorem one_symm : (1 : Perm α).symm = 1 :=
-  Equiv.refl_symm
+  rfl
 
 @[simp]
 theorem refl_inv : (Equiv.refl α : Perm α)⁻¹ = 1 :=
-  Equiv.refl_symm
+  rfl
 
 @[simp]
 theorem one_trans {α : Type*} {β : Sort*} (e : α ≃ β) : (1 : Perm α).trans e = e :=
-  Equiv.refl_trans e
+  rfl
 
 @[simp]
 theorem refl_mul (e : Perm α) : Equiv.refl α * e = e :=
-  Equiv.refl_trans e
+  rfl
 
 @[simp]
 theorem inv_trans_self (e : Perm α) : e⁻¹.trans e = 1 :=
@@ -179,14 +179,6 @@ theorem self_trans_inv (e : Perm α) : e.trans e⁻¹ = 1 :=
 theorem symm_mul (e : Perm α) : e.symm * e = 1 :=
   Equiv.self_trans_symm e
 
-/-- If `α` is equivalent to `β`, then `Perm α` is isomorphic to `Perm β`. -/
-def permCongrHom (e : α ≃ β) : Equiv.Perm α ≃* Equiv.Perm β where
-  toFun x := e.symm.trans (x.trans e)
-  invFun y := e.trans (y.trans e.symm)
-  left_inv _ := by ext; simp
-  right_inv _ := by ext; simp
-  map_mul' _ _ := by ext; simp
-
 /-! Lemmas about `Equiv.Perm.sumCongr` re-expressed via the group structure. -/
 
 
@@ -198,7 +190,7 @@ theorem sumCongr_mul {α β : Type*} (e : Perm α) (f : Perm β) (g : Perm α) (
 @[simp]
 theorem sumCongr_inv {α β : Type*} (e : Perm α) (f : Perm β) :
     (sumCongr e f)⁻¹ = sumCongr e⁻¹ f⁻¹ :=
-  sumCongr_symm e f
+  rfl
 
 @[simp]
 theorem sumCongr_one {α β : Type*} : sumCongr (1 : Perm α) (1 : Perm β) = 1 :=
@@ -237,24 +229,24 @@ theorem sumCongr_one_swap {α β : Type*} [DecidableEq α] [DecidableEq β] (i j
 @[simp]
 theorem sigmaCongrRight_mul {α : Type*} {β : α → Type*} (F : ∀ a, Perm (β a))
     (G : ∀ a, Perm (β a)) : sigmaCongrRight F * sigmaCongrRight G = sigmaCongrRight (F * G) :=
-  sigmaCongrRight_trans G F
+  rfl
 
 @[simp]
 theorem sigmaCongrRight_inv {α : Type*} {β : α → Type*} (F : ∀ a, Perm (β a)) :
     (sigmaCongrRight F)⁻¹ = sigmaCongrRight fun a => (F a)⁻¹ :=
-  sigmaCongrRight_symm F
+  rfl
 
 @[simp]
 theorem sigmaCongrRight_one {α : Type*} {β : α → Type*} :
     sigmaCongrRight (1 : ∀ a, Equiv.Perm <| β a) = 1 :=
-  sigmaCongrRight_refl
+  rfl
 
 /-- `Equiv.Perm.sigmaCongrRight` as a `MonoidHom`.
 
 This is particularly useful for its `MonoidHom.range` projection, which is the subgroup of
 permutations which do not exchange elements between fibers. -/
 @[simps]
-def sigmaCongrRightHom {α : Type*} (β : α → Type*) : (∀ a, Perm (β a)) →* Perm (Σa, β a) where
+def sigmaCongrRightHom {α : Type*} (β : α → Type*) : (∀ a, Perm (β a)) →* Perm (Σ a, β a) where
   toFun := sigmaCongrRight
   map_one' := sigmaCongrRight_one
   map_mul' _ _ := (sigmaCongrRight_mul _ _).symm
@@ -282,7 +274,42 @@ theorem subtypeCongrHom_injective (p : α → Prop) [DecidablePred p] :
 /-- If `e` is also a permutation, we can write `permCongr`
 completely in terms of the group structure. -/
 @[simp]
-theorem permCongr_eq_mul (e p : Perm α) : e.permCongr p = e * p * e⁻¹ :=
+theorem _root_.Equiv.permCongr_eq_mul (e p : Perm α) : e.permCongr p = e * p * e⁻¹ :=
+  rfl
+
+@[deprecated (since := "2025-08-29")] alias permCongr_eq_mul := Equiv.permCongr_eq_mul
+
+@[simp]
+lemma _root_.Equiv.permCongr_mul (e : α ≃ β) (p q : Perm α) :
+    e.permCongr (p * q) = e.permCongr p * e.permCongr q :=
+  permCongr_trans e q p |>.symm
+
+def _root_.Equiv.permCongrHom (e : α ≃ β) : Perm α ≃* Perm β where
+  toEquiv := e.permCongr
+  map_mul' p q := e.permCongr_mul p q
+
+attribute [inherit_doc Equiv.permCongr] Equiv.permCongrHom
+extend_docs Equiv.permCongrHom after "This is `Equiv.permCongr` as a `MulEquiv`."
+
+@[deprecated (since := "2025-08-23")] alias permCongrHom := Equiv.permCongrHom
+
+@[simp]
+theorem _root_.Equiv.permCongrHom_symm (e : α ≃ β) :
+    e.permCongrHom.symm = e.symm.permCongrHom :=
+  rfl
+
+@[simp]
+theorem _root_.Equiv.permCongrHom_trans (e : α ≃ β) (e' : β ≃ γ) :
+    e.permCongrHom.trans e'.permCongrHom = (e.trans e').permCongrHom :=
+  rfl
+
+@[simp]
+lemma _root_.Equiv.permCongrHom_coe_equiv (e : α ≃ β) :
+    (↑e.permCongrHom : Perm α ≃ Perm β) = e.permCongr :=
+  rfl
+
+@[simp]
+lemma _root_.Equiv.permCongrHom_coe (e : α ≃ β) : ⇑e.permCongrHom = ⇑e.permCongr :=
   rfl
 
 section ExtendDomain
@@ -615,7 +642,7 @@ end Group
 end Equiv
 
 /-- The group of multiplicative automorphisms. -/
-@[reducible, to_additive "The group of additive automorphisms."]
+@[reducible, to_additive /-- The group of additive automorphisms. -/]
 def MulAut (M : Type*) [Mul M] :=
   M ≃* M
 
@@ -705,7 +732,7 @@ def conj [Group G] : G →* MulAut G where
       map_mul' := by simp only [mul_assoc, inv_mul_cancel_left, forall_const] }
   map_mul' g₁ g₂ := by
     ext h
-    show g₁ * g₂ * h * (g₁ * g₂)⁻¹ = g₁ * (g₂ * h * g₂⁻¹) * g₁⁻¹
+    change g₁ * g₂ * h * (g₁ * g₂)⁻¹ = g₁ * (g₂ * h * g₂⁻¹) * g₁⁻¹
     simp only [mul_assoc, mul_inv_rev]
   map_one' := by ext; simp only [one_mul, inv_one, mul_one, one_apply]; rfl
 
@@ -818,7 +845,7 @@ def conj [AddGroup G] : G →+ Additive (AddAut G) where
         map_add' := by simp only [add_assoc, neg_add_cancel_left, forall_const] }
   map_add' g₁ g₂ := by
     apply Additive.toMul.injective; ext h
-    show g₁ + g₂ + h + -(g₁ + g₂) = g₁ + (g₂ + h + -g₂) + -g₁
+    change g₁ + g₂ + h + -(g₁ + g₂) = g₁ + (g₂ + h + -g₂) + -g₁
     simp only [add_assoc, neg_add_rev]
   map_zero' := by
     apply Additive.toMul.injective; ext

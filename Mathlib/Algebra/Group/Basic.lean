@@ -15,7 +15,7 @@ import Mathlib.Tactic.SplitIfs
 
 This file lists various basic lemmas about semigroups, monoids, and groups. Most proofs are
 one-liners from the corresponding axioms. For the definitions of semigroups, monoids and groups, see
-`Algebra/Group/Defs.lean`.
+`Mathlib/Algebra/Group/Defs.lean`.
 -/
 
 assert_not_exists MonoidWithZero DenselyOrdered
@@ -57,8 +57,8 @@ instance Semigroup.to_isAssociative : Std.Associative (α := α) (· * ·) := �
 /-- Composing two multiplications on the left by `y` then `x`
 is equal to a multiplication on the left by `x * y`.
 -/
-@[to_additive (attr := simp) "Composing two additions on the left by `y` then `x`
-is equal to an addition on the left by `x + y`."]
+@[to_additive (attr := simp) /-- Composing two additions on the left by `y` then `x`
+is equal to an addition on the left by `x + y`. -/]
 theorem comp_mul_left (x y : α) : (x * ·) ∘ (y * ·) = (x * y * ·) := by
   ext z
   simp [mul_assoc]
@@ -66,8 +66,8 @@ theorem comp_mul_left (x y : α) : (x * ·) ∘ (y * ·) = (x * y * ·) := by
 /-- Composing two multiplications on the right by `y` and `x`
 is equal to a multiplication on the right by `y * x`.
 -/
-@[to_additive (attr := simp) "Composing two additions on the right by `y` and `x`
-is equal to an addition on the right by `y + x`."]
+@[to_additive (attr := simp) /-- Composing two additions on the right by `y` and `x`
+is equal to an addition on the right by `y + x`. -/]
 theorem comp_mul_right (x y : α) : (· * x) ∘ (· * y) = (· * (y * x)) := by
   ext z
   simp [mul_assoc]
@@ -157,7 +157,7 @@ lemma pow_sub_one_mul (hn : n ≠ 0) (a : M) : a ^ (n - 1) * a = a ^ n := by
   rw [← pow_succ, Nat.sub_add_cancel <| Nat.one_le_iff_ne_zero.2 hn]
 
 /-- If `x ^ n = 1`, then `x ^ m` is the same as `x ^ (m % n)` -/
-@[to_additive nsmul_eq_mod_nsmul "If `n • x = 0`, then `m • x` is the same as `(m % n) • x`"]
+@[to_additive nsmul_eq_mod_nsmul /-- If `n • x = 0`, then `m • x` is the same as `(m % n) • x` -/]
 lemma pow_eq_pow_mod (m : ℕ) (ha : a ^ n = 1) : a ^ m = a ^ (m % n) := by
   calc
     a ^ m = a ^ (m % n + n * (m / n)) := by rw [Nat.mod_add_div]
@@ -173,13 +173,21 @@ lemma pow_eq_pow_mod (m : ℕ) (ha : a ^ n = 1) : a ^ m = a ^ (m % n) := by
 
 @[to_additive (attr := simp)]
 lemma mul_left_iterate (a : M) : ∀ n : ℕ, (a * ·)^[n] = (a ^ n * ·)
-  | 0 =>  by ext; simp
-  | n + 1 => by ext; simp [pow_succ, mul_left_iterate]
+  | 0 => by ext; simp
+  | n + 1 => by simp [pow_succ, mul_left_iterate]
 
 @[to_additive (attr := simp)]
 lemma mul_right_iterate (a : M) : ∀ n : ℕ, (· * a)^[n] = (· * a ^ n)
-  | 0 =>  by ext; simp
-  | n + 1 => by ext; simp [pow_succ', mul_right_iterate]
+  | 0 => by ext; simp
+  | n + 1 => by simp [pow_succ', mul_right_iterate]
+
+/-- Version of `mul_left_iterate` that is fully applied, for `rw`. -/
+@[to_additive /-- Version of `add_left_iterate` that is fully applied, for `rw`. -/]
+lemma mul_left_iterate_apply (a b : M) : (a * ·)^[n] b = a ^ n * b := by simp
+
+/-- Version of `mul_right_iterate` that is fully applied, for `rw`. -/
+@[to_additive /-- Version of `add_right_iterate` that is fully applied, for `rw`. -/ ]
+lemma mul_right_iterate_apply (a b : M) : (· * a)^[n] b = b * a ^ n := by simp
 
 @[to_additive]
 lemma mul_left_iterate_apply_one (a : M) : (a * ·)^[n] 1 = a ^ n := by simp
@@ -254,7 +262,7 @@ end LeftCancelMonoid
 
 section RightCancelMonoid
 
-variable [RightCancelMonoid M] {a b : M}
+variable [Monoid M] [IsRightCancelMul M] {a b : M}
 
 @[to_additive (attr := simp)]
 theorem mul_eq_right : a * b = b ↔ a = 1 := calc
@@ -353,7 +361,7 @@ variable [DivInvMonoid G]
 theorem mul_one_div (x y : G) : x * (1 / y) = x / y := by
   rw [div_eq_mul_inv, one_mul, div_eq_mul_inv]
 
-@[to_additive, field_simps] -- The attributes are out of order on purpose
+@[to_additive]
 theorem mul_div_assoc' (a b c : G) : a * (b / c) = a * b / c :=
   (mul_div_assoc _ _ _).symm
 
@@ -444,7 +452,7 @@ lemma inv_pow (a : α) : ∀ n : ℕ, a⁻¹ ^ n = (a ^ n)⁻¹
 -- the attributes are intentionally out of order. `smul_zero` proves `zsmul_zero`.
 @[to_additive zsmul_zero, simp]
 lemma one_zpow : ∀ n : ℤ, (1 : α) ^ n = 1
-  | (n : ℕ)    => by rw [zpow_natCast, one_pow]
+  | (n : ℕ) => by rw [zpow_natCast, one_pow]
   | .negSucc n => by rw [zpow_negSucc, one_pow, inv_one]
 
 @[to_additive (attr := simp) neg_zsmul]
@@ -461,7 +469,7 @@ lemma mul_zpow_neg_one (a b : α) : (a * b) ^ (-1 : ℤ) = b ^ (-1 : ℤ) * a ^ 
 
 @[to_additive zsmul_neg]
 lemma inv_zpow (a : α) : ∀ n : ℤ, a⁻¹ ^ n = (a ^ n)⁻¹
-  | (n : ℕ)    => by rw [zpow_natCast, zpow_natCast, inv_pow]
+  | (n : ℕ) => by rw [zpow_natCast, zpow_natCast, inv_pow]
   | .negSucc n => by rw [zpow_negSucc, zpow_negSucc, inv_pow]
 
 @[to_additive (attr := simp) zsmul_neg']
@@ -517,7 +525,7 @@ theorem zpow_comm (a : α) (m n : ℤ) : (a ^ m) ^ n = (a ^ n) ^ m := by rw [←
 
 variable (a b c)
 
-@[to_additive, field_simps] -- The attributes are out of order on purpose
+@[to_additive]
 theorem div_div_eq_mul_div : a / (b / c) = a * c / b := by simp
 
 @[to_additive (attr := simp)]
@@ -564,7 +572,7 @@ theorem one_div_mul_one_div : 1 / a * (1 / b) = 1 / (a * b) := by simp
 @[to_additive]
 theorem div_right_comm : a / b / c = a / c / b := by simp
 
-@[to_additive, field_simps]
+@[to_additive]
 theorem div_div : a / b / c = a / (b * c) := by simp
 
 @[to_additive]
@@ -579,7 +587,7 @@ theorem mul_div_right_comm : a * b / c = a / c * b := by simp
 @[to_additive]
 theorem div_mul_eq_div_div : a / (b * c) = a / b / c := by simp
 
-@[to_additive, field_simps]
+@[to_additive]
 theorem div_mul_eq_mul_div : a / b * c = a * c / b := by simp
 
 @[to_additive]
@@ -617,8 +625,6 @@ lemma div_pow (a b : α) (n : ℕ) : (a / b) ^ n = a ^ n / b ^ n := by
 @[to_additive zsmul_sub]
 lemma div_zpow (a b : α) (n : ℤ) : (a / b) ^ n = a ^ n / b ^ n := by
   simp only [div_eq_mul_inv, mul_zpow, inv_zpow]
-
-attribute [field_simps] div_pow div_zpow
 
 end DivisionCommMonoid
 
@@ -868,7 +874,7 @@ lemma zpow_one_sub_natCast (a : G) (n : ℕ) : a ^ (1 - n : ℤ) = a / a ^ n := 
 theorem zpow_eq_zpow_emod {x : G} (m : ℤ) {n : ℤ} (h : x ^ n = 1) :
     x ^ m = x ^ (m % n) :=
   calc
-    x ^ m = x ^ (m % n + n * (m / n)) := by rw [Int.emod_add_ediv]
+    x ^ m = x ^ (m % n + n * (m / n)) := by rw [Int.emod_add_mul_ediv]
     _ = x ^ (m % n) := by simp [zpow_add, zpow_mul, h]
 
 theorem zpow_eq_zpow_emod' {x : G} (m : ℤ) {n : ℕ} (h : x ^ n = 1) :
@@ -882,9 +888,9 @@ lemma zpow_iterate (k : ℤ) : ∀ n : ℕ, (fun x : G ↦ x ^ k)^[n] = (· ^ k 
 /-- To show a property of all powers of `g` it suffices to show it is closed under multiplication
 by `g` and `g⁻¹` on the left. For subgroups generated by more than one element, see
 `Subgroup.closure_induction_left`. -/
-@[to_additive "To show a property of all multiples of `g` it suffices to show it is closed under
+@[to_additive /-- To show a property of all multiples of `g` it suffices to show it is closed under
 addition by `g` and `-g` on the left. For additive subgroups generated by more than one element, see
-`AddSubgroup.closure_induction_left`."]
+`AddSubgroup.closure_induction_left`. -/]
 lemma zpow_induction_left {g : G} {P : G → Prop} (h_one : P (1 : G))
     (h_mul : ∀ a, P a → P (g * a)) (h_inv : ∀ a, P a → P (g⁻¹ * a)) (n : ℤ) : P (g ^ n) := by
   induction n with
@@ -899,9 +905,9 @@ lemma zpow_induction_left {g : G} {P : G → Prop} (h_one : P (1 : G))
 /-- To show a property of all powers of `g` it suffices to show it is closed under multiplication
 by `g` and `g⁻¹` on the right. For subgroups generated by more than one element, see
 `Subgroup.closure_induction_right`. -/
-@[to_additive "To show a property of all multiples of `g` it suffices to show it is closed under
+@[to_additive /-- To show a property of all multiples of `g` it suffices to show it is closed under
 addition by `g` and `-g` on the right. For additive subgroups generated by more than one element,
-see `AddSubgroup.closure_induction_right`."]
+see `AddSubgroup.closure_induction_right`. -/]
 lemma zpow_induction_right {g : G} {P : G → Prop} (h_one : P (1 : G))
     (h_mul : ∀ a, P a → P (a * g)) (h_inv : ∀ a, P a → P (a * g⁻¹)) (n : ℤ) : P (g ^ n) := by
   induction n with
@@ -1013,6 +1019,10 @@ theorem inv_mul_eq_inv_mul_iff_mul_eq_mul : b⁻¹ * a = d⁻¹ * c ↔ a * d = 
 theorem div_eq_div_iff_div_eq_div : a / b = c / d ↔ a / c = b / d := by
   rw [div_eq_iff_eq_mul, div_mul_eq_mul_div, div_eq_iff_eq_mul', mul_div_assoc]
 
+@[to_additive (attr := simp)]
+lemma const_div_involutive (a : G) : Function.Involutive (a / ·) :=
+  fun _ ↦ div_div_cancel ..
+
 end CommGroup
 
 section multiplicative
@@ -1025,7 +1035,7 @@ lemma multiplicative_of_symmetric_of_isTotal
     (hmul : ∀ {a b c}, r a b → r b c → p a b → p b c → p a c → f a c = f a b * f b c)
     {a b c : α} (pab : p a b) (pbc : p b c) (pac : p a c) : f a c = f a b * f b c := by
   have hmul' : ∀ {b c}, r b c → p a b → p b c → p a c → f a c = f a b * f b c := by
-    intros b c rbc pab pbc pac
+    intro b c rbc pab pbc pac
     obtain rab | rba := total_of r a b
     · exact hmul rab rbc pab pbc pac
     rw [← one_mul (f a c), ← hf_swap pab, mul_assoc]
@@ -1040,10 +1050,10 @@ lemma multiplicative_of_symmetric_of_isTotal
   anti-symmetric (i.e. satisfies `f a b * f b a = 1`), in order to show it is multiplicative
   (i.e. satisfies `f a c = f a b * f b c`), we may assume `r a b` and `r b c` are satisfied.
   We allow restricting to a subset specified by a predicate `p`. -/
-@[to_additive additive_of_isTotal "If a binary function from a type equipped with a total relation
-`r` to an additive monoid is anti-symmetric (i.e. satisfies `f a b + f b a = 0`), in order to show
-it is additive (i.e. satisfies `f a c = f a b + f b c`), we may assume `r a b` and `r b c` are
-satisfied. We allow restricting to a subset specified by a predicate `p`."]
+@[to_additive additive_of_isTotal /-- If a binary function from a type equipped with a total
+  relation `r` to an additive monoid is anti-symmetric (i.e. satisfies `f a b + f b a = 0`), in
+  order to show it is additive (i.e. satisfies `f a c = f a b + f b c`), we may assume `r a b` and
+  `r b c` are satisfied. We allow restricting to a subset specified by a predicate `p`. -/]
 theorem multiplicative_of_isTotal (p : α → Prop) (hswap : ∀ {a b}, p a → p b → f a b * f b a = 1)
     (hmul : ∀ {a b c}, r a b → r b c → p a → p b → p c → f a c = f a b * f b c) {a b c : α}
     (pa : p a) (pb : p b) (pc : p c) : f a c = f a b * f b c := by
@@ -1062,3 +1072,32 @@ lemma hom_coe_pow {F : Type*} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
     rw [pow_zero, h1]
     rfl
   | n + 1 => by rw [pow_succ, iterate_succ, hmul, hom_coe_pow c h1 hmul f n]
+
+/-!
+# Instances for `grind`.
+-/
+
+open Lean
+
+variable (α : Type*)
+
+instance AddCommMonoid.toGrindNatModule [s : AddCommMonoid α] :
+    Grind.NatModule α :=
+  { s with
+    nsmul := ⟨s.nsmul⟩
+    zero_nsmul := AddMonoid.nsmul_zero
+    add_one_nsmul n a := by change (n + 1) • a = n • a + a; rw [add_nsmul, one_nsmul] }
+
+instance AddCommGroup.toGrindIntModule [s : AddCommGroup α] :
+    Grind.IntModule α :=
+  { s with
+    nsmul := ⟨s.nsmul⟩
+    zsmul := ⟨s.zsmul⟩
+    zero_zsmul := SubNegMonoid.zsmul_zero'
+    one_zsmul := one_zsmul
+    add_zsmul n m a := add_zsmul a n m
+    zsmul_natCast_eq_nsmul n a := by simp }
+
+instance IsRightCancelAdd.toGrindAddRightCancel [AddSemigroup α] [IsRightCancelAdd α] :
+    Grind.AddRightCancel α where
+  add_right_cancel _ _ _ := add_right_cancel

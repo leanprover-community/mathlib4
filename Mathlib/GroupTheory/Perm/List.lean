@@ -57,7 +57,7 @@ theorem formPerm_singleton (x : α) : formPerm [x] = 1 :=
 @[simp]
 theorem formPerm_cons_cons (x y : α) (l : List α) :
     formPerm (x :: y :: l) = swap x y * formPerm (y :: l) :=
-  prod_cons
+  rfl
 
 theorem formPerm_pair (x y : α) : formPerm [x, y] = swap x y :=
   rfl
@@ -318,17 +318,14 @@ theorem formPerm_apply_mem_ne_self_iff (hl : Nodup l) (x : α) (hx : x ∈ l) :
   rw [Ne, formPerm_apply_mem_eq_self_iff _ hl x hx, not_le]
   exact ⟨Nat.succ_le_of_lt, Nat.lt_of_succ_le⟩
 
-theorem mem_of_formPerm_ne_self (l : List α) (x : α) (h : formPerm l x ≠ x) : x ∈ l := by
-  suffices x ∈ { y | formPerm l y ≠ y } by
-    rw [← mem_toFinset]
-    exact support_formPerm_le' _ this
-  simpa using h
+@[deprecated (since := "2025-10-06")]
+alias mem_of_formPerm_ne_self := mem_of_formPerm_apply_ne
 
-theorem formPerm_eq_self_of_notMem (l : List α) (x : α) (h : x ∉ l) : formPerm l x = x :=
-  by_contra fun H => h <| mem_of_formPerm_ne_self _ _ H
+@[deprecated (since := "2025-10-06")]
+alias formPerm_eq_self_of_notMem := List.formPerm_apply_of_notMem
 
 @[deprecated (since := "2025-05-23")]
-alias formPerm_eq_self_of_not_mem := formPerm_eq_self_of_notMem
+alias formPerm_eq_self_of_not_mem := List.formPerm_apply_of_notMem
 
 theorem formPerm_eq_one_iff (hl : Nodup l) : formPerm l = 1 ↔ l.length ≤ 1 := by
   rcases l with - | ⟨hd, tl⟩

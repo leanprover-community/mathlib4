@@ -5,6 +5,7 @@ Authors: Chris Hughes, Yaël Dillies
 -/
 
 import Mathlib.Data.List.Iterate
+import Mathlib.Data.Set.Pairwise.List
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.Tactic.Group
@@ -218,11 +219,10 @@ private theorem isCycleOn_support_cycleOf_aux [DecidableEq α] [Fintype α] (f :
     · exact ⟨sameCycle_apply_right.1 (mem_support_cycleOf_iff_aux.1 h).1,
       (mem_support_cycleOf_iff_aux.1 h).2⟩
     · exact ⟨sameCycle_apply_right.2 (mem_support_cycleOf_iff_aux.1 h).1,
-      (mem_support_cycleOf_iff_aux.1 h).2⟩
-    , fun a ha b hb =>
-      by
-        rw [mem_coe, mem_support_cycleOf_iff_aux] at ha hb
-        exact ha.1.symm.trans hb.1⟩
+      (mem_support_cycleOf_iff_aux.1 h).2⟩,
+    fun a ha b hb ↦ by
+      rw [mem_coe, mem_support_cycleOf_iff_aux] at ha hb
+      exact ha.1.symm.trans hb.1⟩
 
 private theorem SameCycle.exists_pow_eq_of_mem_support_aux {f} [DecidableEq α] [Fintype α]
     [DecidableRel f.SameCycle] (h : SameCycle f x y) (hx : x ∈ f.support) :
@@ -316,12 +316,11 @@ theorem SameCycle.exists_pow_eq [DecidableEq α] [Fintype α] (f : Perm α) (h :
   by_cases hx : x ∈ f.support
   · obtain ⟨k, hk, hk'⟩ := h.exists_pow_eq_of_mem_support hx
     rcases k with - | k
-    · refine ⟨#(f.cycleOf x).support, ?_, self_le_add_right _ _, ?_⟩
-      · assumption
-      · simp only [pow_zero, coe_one, id_eq] at hk'
-        subst hk'
-        rw [← (isCycle_cycleOf _ <| mem_support.1 hx).orderOf, ← cycleOf_pow_apply_self,
-          pow_orderOf_eq_one, one_apply]
+    · refine ⟨#(f.cycleOf x).support, hk, self_le_add_right _ _, ?_⟩
+      simp only [pow_zero, coe_one, id_eq] at hk'
+      subst hk'
+      rw [← (isCycle_cycleOf _ <| mem_support.1 hx).orderOf, ← cycleOf_pow_apply_self,
+        pow_orderOf_eq_one, one_apply]
     · exact ⟨k + 1, by simp, Nat.le_succ_of_le hk.le, hk'⟩
   · refine ⟨1, zero_lt_one, by simp, ?_⟩
     obtain ⟨k, rfl⟩ := h
@@ -468,7 +467,7 @@ theorem list_cycles_perm_list_cycles {α : Type*} [Finite α] {l₁ l₂ : List 
 /-- Factors a permutation `f` into a list of disjoint cyclic permutations that multiply to `f`. -/
 def cycleFactors [Fintype α] [LinearOrder α] (f : Perm α) :
     { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } :=
-  cycleFactorsAux (sort (α := α) (· ≤ ·) univ) f (fun {_ _} ↦ (mem_sort _).2 (mem_univ _))
+  cycleFactorsAux (sort (α := α) univ) f (fun {_ _} ↦ (mem_sort _).2 (mem_univ _))
 
 /-- Factors a permutation `f` into a list of disjoint cyclic permutations that multiply to `f`,
   without a linear order. -/
@@ -593,7 +592,7 @@ lemma support_zpowers_of_mem_cycleFactorsFinset_le {g : Perm α}
 theorem pairwise_disjoint_of_mem_zpowers :
     Pairwise fun (i j : f.cycleFactorsFinset) ↦
       ∀ (x y : Perm α), x ∈ Subgroup.zpowers ↑i → y ∈ Subgroup.zpowers ↑j → Disjoint x y :=
-  fun c d  hcd ↦ fun x y hx hy ↦ by
+  fun c d hcd ↦ fun x y hx hy ↦ by
   obtain ⟨m, hm⟩ := hx; obtain ⟨n, hn⟩ := hy
   simp only [← hm, ← hn]
   apply Disjoint.zpow_disjoint_zpow

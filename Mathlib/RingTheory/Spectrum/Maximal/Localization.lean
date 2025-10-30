@@ -90,7 +90,7 @@ theorem mapPiLocalization_naturality :
     (mapPiLocalization f hf).comp (toPiLocalization R) =
       (toPiLocalization S).comp f := by
   ext r I
-  show Localization.localRingHom _ _ _ rfl (algebraMap _ _ r) = algebraMap _ _ (f r)
+  change Localization.localRingHom _ _ _ rfl (algebraMap _ _ r) = algebraMap _ _ (f r)
   simp_rw [← IsLocalization.mk'_one (M := (I.1.comap f).primeCompl), Localization.localRingHom_mk',
     ← IsLocalization.mk'_one (M := I.1.primeCompl), Submonoid.coe_one, map_one f]
   rfl
@@ -138,7 +138,7 @@ variable {R}
 theorem finite_of_toPiLocalization_pi_surjective
     (h : Function.Surjective (toPiLocalization (Π i, R i))) :
     Finite ι := by
-  contrapose h; rw [not_finite_iff_infinite] at h
+  contrapose! h
   exact toPiLocalization_not_surjective_of_infinite _
 
 end Pi
@@ -216,7 +216,7 @@ noncomputable def mapPiLocalization : PiLocalization R →+* PiLocalization S :=
 theorem mapPiLocalization_naturality :
     (mapPiLocalization f).comp (toPiLocalization R) = (toPiLocalization S).comp f := by
   ext r I
-  show Localization.localRingHom _ _ _ rfl (algebraMap _ _ r) = algebraMap _ _ (f r)
+  change Localization.localRingHom _ _ _ rfl (algebraMap _ _ r) = algebraMap _ _ (f r)
   simp_rw [← IsLocalization.mk'_one (M := (I.1.comap f).primeCompl), Localization.localRingHom_mk',
     ← IsLocalization.mk'_one (M := I.1.primeCompl), Submonoid.coe_one, map_one f]
   rfl
@@ -251,7 +251,7 @@ variable {R}
 theorem finite_of_toPiLocalization_pi_surjective
     (h : Function.Surjective (toPiLocalization (Π i, R i))) :
     Finite ι := by
-  contrapose h; rw [not_finite_iff_infinite] at h
+  contrapose! h
   exact toPiLocalization_not_surjective_of_infinite _
 
 end Pi

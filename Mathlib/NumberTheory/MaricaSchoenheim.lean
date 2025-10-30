@@ -47,7 +47,7 @@ lemma grahamConjecture_of_squarefree {n : ℕ} (f : ℕ → ℕ) (hf' : ∀ k < 
     _ < n := tsub_lt_self hn.bot_lt zero_lt_one
   · rw [Finset.card_image_of_injOn, card_Iio]
     simpa using prod_primeFactors_invOn_squarefree.2.injOn.comp hf.injOn hf'
-  · simp only [𝒜, forall_mem_diffs, forall_mem_image, mem_Ioo, mem_Iio]
+  · simp only [𝒜, forall_mem_diffs, forall_mem_image, mem_Ioo, mem_Iio, Set.MapsTo, mem_coe]
     rintro i hi j hj
     rw [← primeFactors_div_gcd (hf' _ hi) (hf' _ hj).ne_zero,
       prod_primeFactors_of_squarefree <| hf'' _ hi _]

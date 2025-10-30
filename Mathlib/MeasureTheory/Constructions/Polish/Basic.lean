@@ -95,7 +95,7 @@ def upgradeStandardBorel [MeasurableSpace α] [h : StandardBorelSpace α] :
   constructor
 
 /-- The `MeasurableSpace α` instance on a `StandardBorelSpace` `α` is equal to
-the borel sets of `upgradeStandardBorel α`. -/
+the Borel sets of `upgradeStandardBorel α`. -/
 theorem eq_borel_upgradeStandardBorel [MeasurableSpace α] [StandardBorelSpace α] :
     ‹MeasurableSpace α› = @borel _ (upgradeStandardBorel α).toTopologicalSpace :=
   @BorelSpace.measurable_eq _ (upgradeStandardBorel α).toTopologicalSpace _
@@ -277,7 +277,7 @@ theorem AnalyticSet.iUnion [Countable ι] {s : ι → Set α} (hs : ∀ n, Analy
     coincides with `f n` on `β n` sends it to `⋃ n, s n`. -/
   choose β hβ h'β f f_cont f_range using fun n =>
     analyticSet_iff_exists_polishSpace_range.1 (hs n)
-  let γ := Σn, β n
+  let γ := Σ n, β n
   let F : γ → α := fun ⟨n, x⟩ ↦ f n x
   have F_cont : Continuous F := continuous_sigma f_cont
   have F_range : range F = ⋃ n, s n := by
@@ -567,7 +567,8 @@ theorem measurableSet_preimage_iff_preimage_val {f : X → Z} [CountablySeparate
     (hf : Measurable f) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet ((↑) ⁻¹' s : Set (range f)) :=
   have hf' : Measurable (rangeFactorization f) := hf.subtype_mk
-  hf'.measurableSet_preimage_iff_of_surjective (s := Subtype.val ⁻¹' s) surjective_onto_range
+  hf'.measurableSet_preimage_iff_of_surjective (s := Subtype.val ⁻¹' s)
+    rangeFactorization_surjective
 
 /-- If `f : X → Z` is a Borel measurable map from a standard Borel space to a
 countably separated measurable space and the range of `f` is measurable,
@@ -726,10 +727,7 @@ theorem MeasureTheory.measurableSet_range_of_continuous_injective {β : Type*} [
     have C2 : ∀ n, (s n).1.Nonempty := by
       intro n
       rw [nonempty_iff_ne_empty]
-      intro hn
-      have := (s n).2
-      rw [hn] at this
-      exact b_nonempty this
+      grind
     -- choose a point `y n ∈ s n`.
     choose y hy using C2
     have I : ∀ m n, ((s m).1 ∩ (s n).1).Nonempty := by
@@ -780,8 +778,7 @@ theorem MeasureTheory.measurableSet_range_of_continuous_injective {β : Type*} [
       intro a ha
       calc
         dist a z ≤ dist a (y n) + dist (y n) z := dist_triangle _ _ _
-        _ ≤ u n + dist (y n) z :=
-          (add_le_add_right ((dist_le_diam_of_mem (hs n).1 ha (hy n)).trans (hs n).2) _)
+        _ ≤ u n + dist (y n) z := by grw [dist_le_diam_of_mem (hs n).1 ha (hy n), (hs n).2]
         _ < δ := hn
     -- as `x` belongs to the closure of `f '' (s n)`, it belongs to the closure of `v`.
     have : x ∈ closure v := closure_mono fsnv (hxs n).1
@@ -909,9 +906,9 @@ end
 section LinearOrder
 
 variable {α β : Type*} {t : Set α} {g : α → β}
-[TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] [LinearOrder α] [OrderTopology α]
-[PolishSpace α]
-[TopologicalSpace β] [MeasurableSpace β] [BorelSpace β] [LinearOrder β] [OrderTopology β]
+  [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] [LinearOrder α] [OrderTopology α]
+  [PolishSpace α]
+  [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β] [LinearOrder β] [OrderTopology β]
 
 theorem MeasurableSet.image_of_monotoneOn_of_continuousOn
     (ht : MeasurableSet t) (hg : MonotoneOn g t) (h'g : ContinuousOn g t) :

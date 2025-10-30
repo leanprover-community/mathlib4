@@ -20,7 +20,7 @@ variable {α : Type*}
 
 /-! ### powerset -/
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: Write a more efficient version
+-- TODO: Write a more efficient version (this is slightly slower due to the `map (↑)`).
 /-- A helper function for the powerset of a multiset. Given a list `l`, returns a list
 of sublists of `l` as multisets. -/
 def powersetAux (l : List α) : List (Multiset α) :=
@@ -68,7 +68,6 @@ theorem powersetAux_perm {l₁ l₂ : List α} (p : l₁ ~ l₂) : powersetAux l
   powersetAux_perm_powersetAux'.trans <|
     (powerset_aux'_perm p).trans powersetAux_perm_powersetAux'.symm
 
---Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): slightly slower implementation due to `map ofList`
 /-- The power set of a multiset. -/
 def powerset (s : Multiset α) : Multiset (Multiset α) :=
   Quot.liftOn s
@@ -97,7 +96,7 @@ theorem mem_powerset {s t : Multiset α} : s ∈ powerset t ↔ s ≤ t :=
 theorem map_single_le_powerset (s : Multiset α) : s.map singleton ≤ powerset s :=
   Quotient.inductionOn s fun l => by
     simp only [powerset_coe, quot_mk_to_coe, coe_le, map_coe]
-    show l.map (((↑) : List α → Multiset α) ∘ pure) <+~ (sublists l).map (↑)
+    change l.map (((↑) : List α → Multiset α) ∘ pure) <+~ (sublists l).map (↑)
     rw [← List.map_map]
     exact ((map_pure_sublist_sublists _).map _).subperm
 
@@ -180,8 +179,7 @@ theorem powersetCardAux_cons (n : ℕ) (a : α) (l : List α) :
 
 theorem powersetCardAux_perm {n} {l₁ l₂ : List α} (p : l₁ ~ l₂) :
     powersetCardAux n l₁ ~ powersetCardAux n l₂ := by
-  induction' n with n IHn generalizing l₁ l₂
-  · simp
+  induction n generalizing l₁ l₂ with | zero => simp | succ n IHn => ?_
   induction p with
   | nil => rfl
   | cons _ p IH =>
@@ -257,9 +255,9 @@ theorem powersetCard_card_add (s : Multiset α) {i : ℕ} (hi : 0 < i) :
 
 theorem powersetCard_map {β : Type*} (f : α → β) (n : ℕ) (s : Multiset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (map f) := by
-  induction' s using Multiset.induction with t s ih generalizing n
-  · cases n <;> simp [powersetCard_zero_left]
-  · cases n <;> simp [ih]
+  induction s using Multiset.induction generalizing n with
+  | empty => cases n <;> simp [powersetCard_zero_left]
+  | cons t s ih => cases n <;> simp [ih]
 
 theorem pairwise_disjoint_powersetCard (s : Multiset α) :
     _root_.Pairwise fun i j => Disjoint (s.powersetCard i) (s.powersetCard j) :=

@@ -16,8 +16,6 @@ Tensor products of Lie modules carry natural Lie module structures.
 lie module, tensor product, universal property
 -/
 
-suppress_compilation
-
 universe u v w w₁ w₂ w₃
 
 variable {R : Type u} [CommRing R]
@@ -49,7 +47,7 @@ def hasBracketAux (x : L) : Module.End R (M ⊗[R] N) :=
 instance lieRingModule : LieRingModule L (M ⊗[R] N) where
   bracket x := hasBracketAux x
   add_lie x y t := by
-    simp only [hasBracketAux, LinearMap.lTensor_add, LinearMap.rTensor_add, LieHom.map_add,
+    simp only [hasBracketAux, LinearMap.lTensor_add, LinearMap.rTensor_add, map_add,
       LinearMap.add_apply]
     abel
   lie_add _ := LinearMap.map_add _
@@ -69,7 +67,7 @@ instance lieModule : LieModule R L (M ⊗[R] N) where
   smul_lie c x t := by
     change hasBracketAux (c • x) _ = c • hasBracketAux _ _
     simp only [hasBracketAux, smul_add, LinearMap.rTensor_smul, LinearMap.smul_apply,
-      LinearMap.lTensor_smul, LieHom.map_smul, LinearMap.add_apply]
+      LinearMap.lTensor_smul, map_smul, LinearMap.add_apply]
   lie_smul c _ := LinearMap.map_smul _ c
 
 @[simp]
@@ -83,7 +81,7 @@ variable (R L M N P Q)
 /-- The universal property for tensor product of modules of a Lie algebra: the `R`-linear
 tensor-hom adjunction is equivariant with respect to the `L` action. -/
 def lift : (M →ₗ[R] N →ₗ[R] P) ≃ₗ⁅R,L⁆ M ⊗[R] N →ₗ[R] P :=
-  { TensorProduct.lift.equiv R M N P with
+  { TensorProduct.lift.equiv (.id R) M N P with
     map_lie' := fun {x f} => by
       ext m n
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
@@ -106,12 +104,7 @@ def liftLie : (M →ₗ⁅R,L⁆ N →ₗ[R] P) ≃ₗ[R] M ⊗[R] N →ₗ⁅R,
 @[simp]
 theorem coe_liftLie_eq_lift_coe (f : M →ₗ⁅R,L⁆ N →ₗ[R] P) :
     ⇑(liftLie R L M N P f) = lift R L M N P f := by
-  suffices (liftLie R L M N P f : M ⊗[R] N →ₗ[R] P) = lift R L M N P f by
-    rw [← this, LieModuleHom.coe_toLinearMap]
-  ext m n
-  simp only [liftLie, LinearEquiv.trans_apply, LieModuleEquiv.coe_toLinearEquiv,
-    toLinearMap_maxTrivLinearMapEquivLieModuleHom, coe_maxTrivEquiv_apply,
-    toLinearMap_maxTrivLinearMapEquivLieModuleHom_symm]
+  tauto
 
 theorem liftLie_apply (f : M →ₗ⁅R,L⁆ N →ₗ[R] P) (m : M) (n : N) :
     liftLie R L M N P f (m ⊗ₜ n) = f m n := by
@@ -136,8 +129,6 @@ nonrec def map (f : M →ₗ⁅R,L⁆ P) (g : N →ₗ⁅R,L⁆ Q) : M ⊗[R] N 
 theorem toLinearMap_map (f : M →ₗ⁅R,L⁆ P) (g : N →ₗ⁅R,L⁆ Q) :
     (map f g : M ⊗[R] N →ₗ[R] P ⊗[R] Q) = TensorProduct.map (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :=
   rfl
-
-@[deprecated (since := "2024-12-30")] alias coe_linearMap_map := toLinearMap_map
 
 @[simp]
 nonrec theorem map_tmul (f : M →ₗ⁅R,L⁆ P) (g : N →ₗ⁅R,L⁆ Q) (m : M) (n : N) :
@@ -201,7 +192,7 @@ theorem lieIdeal_oper_eq_tensor_map_range :
     ⁅I, N⁆ = ((toModuleHom R L M).comp (mapIncl I N : I ⊗[R] N →ₗ⁅R,L⁆ L ⊗[R] M)).range := by
   rw [← toSubmodule_inj, lieIdeal_oper_eq_linear_span, LieModuleHom.toSubmodule_range,
     LieModuleHom.toLinearMap_comp, LinearMap.range_comp, mapIncl_def, toLinearMap_map,
-    TensorProduct.map_range_eq_span_tmul, Submodule.map_span]
+    TensorProduct.range_map_eq_span_tmul, Submodule.map_span]
   congr; ext m; constructor
   · rintro ⟨⟨x, hx⟩, ⟨n, hn⟩, rfl⟩; use x ⊗ₜ n; constructor
     · use ⟨x, hx⟩, ⟨n, hn⟩; rfl

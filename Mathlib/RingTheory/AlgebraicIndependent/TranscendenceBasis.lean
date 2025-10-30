@@ -3,8 +3,8 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Matroid.IndepAxioms
-import Mathlib.Data.Matroid.Rank.Cardinal
+import Mathlib.Combinatorics.Matroid.IndepAxioms
+import Mathlib.Combinatorics.Matroid.Rank.Cardinal
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
 import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 
@@ -198,7 +198,7 @@ theorem IsTranscendenceBasis.sumElim_comp [NoZeroDivisors A] {x : ι → S} {y :
   let Rxy := adjoin Rx (range y)
   rw [show adjoin R (range <| Sum.elim y (algebraMap S A ∘ x)) = Rxy.restrictScalars R by
     rw [← adjoin_algebraMap_image_union_eq_adjoin_adjoin, Sum.elim_range, union_comm, range_comp]]
-  show Algebra.IsAlgebraic Rxy A
+  change Algebra.IsAlgebraic Rxy A
   have := hx.1.algebraMap_injective.nontrivial
   have := hy.1.algebraMap_injective.nontrivial
   have := hy.isAlgebraic
@@ -262,9 +262,9 @@ private def indepMatroid : IndepMatroid A where
     rw [← isTranscendenceBasis_iff_maximal] at B_base ⊢
     cases subsingleton_or_nontrivial R
     · rw [isTranscendenceBasis_iff_of_subsingleton] at B_base ⊢
-      contrapose! h
+      by_contra this
       have ⟨b, hb⟩ := B_base
-      exact ⟨b, ⟨hb, fun hbI ↦ h ⟨b, hbI⟩⟩, .of_subsingleton⟩
+      exact h b ⟨hb, fun hbI ↦ this ⟨b, hbI⟩⟩ .of_subsingleton
     apply I_ind.isTranscendenceBasis_iff_isAlgebraic.mpr
     replace B_base := B_base.isAlgebraic
     simp_rw [id_eq]
@@ -311,6 +311,7 @@ theorem matroid_isBasis_iff [IsDomain A] {s t : Set A} : (matroid R A).IsBasis s
     fun alg a ha h ↦ ((AlgebraicIndepOn.insert_iff ha).mp h.1).2 <| by
       rw [image_id]; exact alg _ <| h.2 <| mem_insert ..⟩
 
+open Subsingleton in
 theorem matroid_isBasis_iff_of_subsingleton [Subsingleton A] {s t : Set A} :
     (matroid R A).IsBasis s t ↔ s = t := by
   have := (FaithfulSMul.algebraMap_injective R A).subsingleton
@@ -348,6 +349,8 @@ theorem matroid_spanning_iff [IsDomain A] {s : Set A} :
     (matroid R A).Spanning s ↔ Algebra.IsAlgebraic (adjoin R s) A := by
   simp_rw [Matroid.spanning_iff, matroid_e, subset_univ, and_true, eq_univ_iff_forall,
     matroid_closure_eq, SetLike.mem_coe, mem_algebraicClosure, Algebra.isAlgebraic_def]
+
+open Subsingleton -- brings the Subsingleton.to_noZeroDivisors instance into scope
 
 theorem matroid_isFlat_of_subsingleton [Subsingleton A] (s : Set A) : (matroid R A).IsFlat s := by
   simp_rw [Matroid.isFlat_iff, matroid_e, subset_univ,
@@ -472,7 +475,7 @@ theorem isTranscendenceBasis_of_lift_le_trdeg_of_finite
     [Finite ι] [alg : Algebra.IsAlgebraic (adjoin R (range x)) A]
     (le : lift.{w} #ι ≤ lift.{u} (trdeg R A)) : IsTranscendenceBasis R x := by
   have ⟨_, h⟩ := lift_mk_le'.mp (le.trans <| lift_le.mpr <| trdeg_le_cardinalMk R (range x))
-  have := surjective_onto_range.bijective_of_nat_card_le (Nat.card_le_card_of_injective _ h)
+  have := rangeFactorization_surjective.bijective_of_nat_card_le (Nat.card_le_card_of_injective _ h)
   refine .of_subtype_range (fun _ _ ↦ (this.1 <| Subtype.ext ·)) ?_
   have := isDomain_of_adjoin_range R (range x)
   rw [← matroid_spanning_iff, ← matroid_cRank_eq] at *

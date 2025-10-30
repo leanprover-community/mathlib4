@@ -13,7 +13,6 @@ import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.Perm.Support
-import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Logic.Equiv.Fintype
 import Mathlib.Tactic.NormNum.Ineq
 import Mathlib.Data.Finset.Sigma
@@ -79,11 +78,11 @@ def swapFactorsAux :
         fun {_} hg => ((List.mem_cons).1 hg).elim (fun h => ⟨x, f x, hfx, h⟩) (m.2.2 _)⟩
 
 /-- `swapFactors` represents a permutation as a product of a list of transpositions.
-The representation is non unique and depends on the linear order structure.
+The representation is nonunique and depends on the linear order structure.
 For types without linear order `truncSwapFactors` can be used. -/
 def swapFactors [Fintype α] [LinearOrder α] (f : Perm α) :
     { l : List (Perm α) // l.prod = f ∧ ∀ g ∈ l, IsSwap g } :=
-  swapFactorsAux ((@univ α _).sort (· ≤ ·)) f fun {_ _} => (mem_sort _).2 (mem_univ _)
+  swapFactorsAux ((@univ α _).sort) f fun {_ _} => (mem_sort _).2 (mem_univ _)
 
 /-- This computably represents the fact that any permutation can be represented as the product of
   a list of transpositions. -/
@@ -159,7 +158,7 @@ theorem isConj_swap {w x y z : α} (hwx : w ≠ x) (hyz : y ≠ z) : IsConj (swa
     else ⟨swap w y * swap x z, h hyz hwz⟩)
 
 /-- set of all pairs (⟨a, b⟩ : Σ a : fin n, fin n) such that b < a -/
-def finPairsLT (n : ℕ) : Finset (Σ_ : Fin n, Fin n) :=
+def finPairsLT (n : ℕ) : Finset (Σ _ : Fin n, Fin n) :=
   (univ : Finset (Fin n)).sigma fun a => (range a).attachFin fun _ hm => (mem_range.1 hm).trans a.2
 
 theorem mem_finPairsLT {n : ℕ} {a : Σ _ : Fin n, Fin n} : a ∈ finPairsLT n ↔ a.2 < a.1 := by
@@ -178,7 +177,7 @@ theorem signAux_one (n : ℕ) : signAux (1 : Perm (Fin n)) = 1 := by
   exact Finset.prod_congr rfl fun a ha => if_neg (mem_finPairsLT.1 ha).not_ge
 
 /-- `signBijAux f ⟨a, b⟩` returns the pair consisting of `f a` and `f b` in decreasing order. -/
-def signBijAux {n : ℕ} (f : Perm (Fin n)) (a : Σ _ : Fin n, Fin n) : Σ_ : Fin n, Fin n :=
+def signBijAux {n : ℕ} (f : Perm (Fin n)) (a : Σ _ : Fin n, Fin n) : Σ _ : Fin n, Fin n :=
   if _ : f a.2 < f a.1 then ⟨f a.1, f a.2⟩ else ⟨f a.2, f a.1⟩
 
 theorem signBijAux_injOn {n : ℕ} {f : Perm (Fin n)} :
@@ -208,7 +207,7 @@ theorem signBijAux_surj {n : ℕ} {f : Perm (Fin n)} :
               rw [apply_inv_self, apply_inv_self, if_neg (mem_finPairsLT.1 ha).le.not_gt]⟩
 
 theorem signBijAux_mem {n : ℕ} {f : Perm (Fin n)} :
-    ∀ a : Σ_ : Fin n, Fin n, a ∈ finPairsLT n → signBijAux f a ∈ finPairsLT n :=
+    ∀ a : Σ _ : Fin n, Fin n, a ∈ finPairsLT n → signBijAux f a ∈ finPairsLT n :=
   fun ⟨a₁, a₂⟩ ha => by
     unfold signBijAux
     split_ifs with h
@@ -260,8 +259,7 @@ private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2
     · exact absurd a₂.zero_le ha₁.not_ge
     rcases a₂.zero_le.eq_or_lt with (rfl | H')
     · simp only [and_true, heq_iff_eq, mem_singleton, Sigma.mk.inj_iff] at ha₂
-      have : 1 < a₁ := lt_of_le_of_ne (Nat.succ_le_of_lt ha₁)
-        (Ne.symm (by assumption))
+      have : 1 < a₁ := lt_of_le_of_ne' (Nat.succ_le_of_lt ha₁) ha₂
       have h01 : Equiv.swap (0 : Fin (n + 2)) 1 0 = 1 := by simp
       rw [swap_apply_of_ne_of_ne (ne_of_gt H) ha₂, h01, if_neg this.not_ge]
     · have le : 1 ≤ a₂ := Nat.succ_le_of_lt H'
@@ -338,7 +336,7 @@ theorem signAux3_mul_and_swap [Finite α] (f g : Perm α) (s : Multiset α) (hs 
       Pairwise fun x y => signAux3 (swap x y) hs = -1 := by
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin α
   induction s using Quotient.inductionOn with | _ l => ?_
-  show
+  change
     signAux2 l (f * g) = signAux2 l f * signAux2 l g ∧
     Pairwise fun x y => signAux2 l (swap x y) = -1
   have hfg : (e.symm.trans (f * g)).trans e = (e.symm.trans f).trans e * (e.symm.trans g).trans e :=
@@ -355,7 +353,7 @@ theorem signAux3_symm_trans_trans [Finite α] [DecidableEq β] [Finite β] (f : 
     {s : Multiset α} {t : Multiset β} (hs : ∀ x, x ∈ s) (ht : ∀ x, x ∈ t) :
     signAux3 ((e.symm.trans f).trans e) ht = signAux3 f hs := by
   induction t, s using Quotient.inductionOn₂
-  show signAux2 _ _ = signAux2 _ _
+  change signAux2 _ _ = signAux2 _ _
   rcases Finite.exists_equiv_fin β with ⟨n, ⟨e'⟩⟩
   rw [← signAux_eq_signAux2 _ _ e' fun _ _ => ht _,
     ← signAux_eq_signAux2 _ _ (e.trans e') fun _ _ => hs _]

@@ -62,6 +62,7 @@ end ModEq
 
 theorem modEq_comm : a ≡ b [ZMOD n] ↔ b ≡ a [ZMOD n] := ⟨ModEq.symm, ModEq.symm⟩
 
+@[simp, norm_cast]
 theorem natCast_modEq_iff {a b n : ℕ} : a ≡ b [ZMOD n] ↔ a ≡ b [MOD n] := by
   unfold ModEq Nat.ModEq; rw [← Int.ofNat_inj]; simp
 
@@ -89,7 +90,7 @@ theorem mod_modEq (a n) : a % n ≡ a [ZMOD n] :=
 
 @[simp]
 theorem neg_modEq_neg : -a ≡ -b [ZMOD n] ↔ a ≡ b [ZMOD n] := by
-  simp only [modEq_iff_dvd, (by omega : -b - -a = -(b - a)), Int.dvd_neg]
+  simp only [modEq_iff_dvd, (by cutsat : -b - -a = -(b - a)), Int.dvd_neg]
 
 @[simp]
 theorem modEq_neg : a ≡ b [ZMOD -n] ↔ a ≡ b [ZMOD n] := by simp [modEq_iff_dvd]
@@ -111,17 +112,17 @@ protected theorem mul_right' (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n * 
 
 @[gcongr]
 protected theorem add (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a + c ≡ b + d [ZMOD n] :=
-  modEq_iff_dvd.2 <| by convert Int.dvd_add h₁.dvd h₂.dvd using 1; omega
+  modEq_iff_dvd.2 <| by convert Int.dvd_add h₁.dvd h₂.dvd using 1; cutsat
 
-@[gcongr] protected theorem add_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c + a ≡ c + b [ZMOD n] :=
+protected theorem add_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c + a ≡ c + b [ZMOD n] :=
   ModEq.rfl.add h
 
-@[gcongr] protected theorem add_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a + c ≡ b + c [ZMOD n] :=
+protected theorem add_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a + c ≡ b + c [ZMOD n] :=
   h.add ModEq.rfl
 
 protected theorem add_left_cancel (h₁ : a ≡ b [ZMOD n]) (h₂ : a + c ≡ b + d [ZMOD n]) :
     c ≡ d [ZMOD n] :=
-  have : d - c = b + d - (a + c) - (b - a) := by omega
+  have : d - c = b + d - (a + c) - (b - a) := by cutsat
   modEq_iff_dvd.2 <| by
     rw [this]
     exact Int.dvd_sub h₂.dvd h₁.dvd
@@ -145,16 +146,16 @@ protected theorem sub (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a - 
   rw [sub_eq_add_neg, sub_eq_add_neg]
   exact h₁.add h₂.neg
 
-@[gcongr] protected theorem sub_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c - a ≡ c - b [ZMOD n] :=
+protected theorem sub_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c - a ≡ c - b [ZMOD n] :=
   ModEq.rfl.sub h
 
-@[gcongr] protected theorem sub_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a - c ≡ b - c [ZMOD n] :=
+protected theorem sub_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a - c ≡ b - c [ZMOD n] :=
   h.sub ModEq.rfl
 
-@[gcongr] protected theorem mul_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c * a ≡ c * b [ZMOD n] :=
+protected theorem mul_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c * a ≡ c * b [ZMOD n] :=
   h.mul_left'.of_dvd <| dvd_mul_left _ _
 
-@[gcongr] protected theorem mul_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n] :=
+protected theorem mul_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n] :=
   h.mul_right'.of_dvd <| dvd_mul_right _ _
 
 @[gcongr]
@@ -162,9 +163,9 @@ protected theorem mul (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a * 
   (h₂.mul_left _).trans (h₁.mul_right _)
 
 @[gcongr] protected theorem pow (m : ℕ) (h : a ≡ b [ZMOD n]) : a ^ m ≡ b ^ m [ZMOD n] := by
-  induction' m with d hd; · rfl
-  rw [pow_succ, pow_succ]
-  exact hd.mul h
+  induction m with
+  | zero => rfl
+  | succ d hd => rw [pow_succ, pow_succ]; exact hd.mul h
 
 lemma of_mul_left (m : ℤ) (h : a ≡ b [ZMOD m * n]) : a ≡ b [ZMOD n] := by
   rw [modEq_iff_dvd] at *; exact (dvd_mul_left n m).trans h
@@ -195,7 +196,7 @@ theorem of_div (h : a / c ≡ b / c [ZMOD m / c]) (ha : c ∣ a) (ha : c ∣ b) 
 For cancelling left multiplication in the modulus, see `Int.ModEq.of_mul_left`. -/
 protected theorem mul_left_cancel' (hc : c ≠ 0) :
     c * a ≡ c * b [ZMOD c * m] → a ≡ b [ZMOD m] := by
-  simp only [modEq_iff_dvd, Int.natCast_mul, ← Int.mul_sub]
+  simp only [modEq_iff_dvd, ← Int.mul_sub]
   exact Int.dvd_of_mul_dvd_mul_left hc
 
 protected theorem mul_left_cancel_iff' (hc : c ≠ 0) :
@@ -207,7 +208,7 @@ protected theorem mul_left_cancel_iff' (hc : c ≠ 0) :
 For cancelling right multiplication in the modulus, see `Int.ModEq.of_mul_right`. -/
 protected theorem mul_right_cancel' (hc : c ≠ 0) :
     a * c ≡ b * c [ZMOD m * c] → a ≡ b [ZMOD m] := by
-  simp only [modEq_iff_dvd, Int.natCast_mul, ← Int.sub_mul]
+  simp only [modEq_iff_dvd, ← Int.sub_mul]
   exact Int.dvd_of_mul_dvd_mul_right hc
 
 protected theorem mul_right_cancel_iff' (hc : c ≠ 0) :
@@ -273,14 +274,10 @@ theorem existsUnique_equiv (a : ℤ) {b : ℤ} (hb : 0 < b) :
       have : a % b < |b| := emod_lt_abs _ (ne_of_gt hb)
       rwa [abs_of_pos hb] at this, by simp [ModEq]⟩
 
-@[deprecated (since := "2024-12-17")] alias exists_unique_equiv := existsUnique_equiv
-
 theorem existsUnique_equiv_nat (a : ℤ) {b : ℤ} (hb : 0 < b) : ∃ z : ℕ, ↑z < b ∧ ↑z ≡ a [ZMOD b] :=
   let ⟨z, hz1, hz2, hz3⟩ := existsUnique_equiv a hb
   ⟨z.natAbs, by
     constructor <;> rw [natAbs_of_nonneg hz1] <;> assumption⟩
-
-@[deprecated (since := "2024-12-17")] alias exists_unique_equiv_nat := existsUnique_equiv_nat
 
 theorem mod_mul_right_mod (a b c : ℤ) : a % (b * c) % b = a % b :=
   (mod_modEq _ _).of_mul_right _

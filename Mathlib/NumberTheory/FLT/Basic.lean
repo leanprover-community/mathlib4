@@ -60,13 +60,13 @@ a proof. -/
 def FermatLastTheorem : Prop := ∀ n ≥ 3, FermatLastTheoremFor n
 
 lemma fermatLastTheoremFor_zero : FermatLastTheoremFor 0 :=
-  fun _ _ _ _ _ _ ↦ by norm_num
+  fun _ _ _ _ _ _ ↦ by simp
 
 lemma not_fermatLastTheoremFor_one : ¬ FermatLastTheoremFor 1 :=
-  fun h ↦ h 1 1 2 (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+  fun h ↦ h 1 1 2 (by simp) (by simp) (by simp) (by simp)
 
 lemma not_fermatLastTheoremFor_two : ¬ FermatLastTheoremFor 2 :=
-  fun h ↦ h 3 4 5 (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+  fun h ↦ h 3 4 5 (by simp) (by simp) (by simp) (by simp)
 
 variable {R : Type*} [Semiring R] [NoZeroDivisors R] {m n : ℕ}
 
@@ -245,7 +245,7 @@ lemma isCoprime_of_gcd_eq_one_of_FLT {n : ℕ} {a b c : ℤ} (Hgcd : Finset.gcd 
     (HF : a ^ n + b ^ n + c ^ n = 0) : IsCoprime a b := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp only [pow_zero, Int.reduceAdd, OfNat.ofNat_ne_zero] at HF
-  refine isCoprime_of_prime_dvd  ?_ <| (fun p hp hpa hpb ↦ hp.not_dvd_one ?_)
+  refine isCoprime_of_prime_dvd ?_ <| (fun p hp hpa hpb ↦ hp.not_dvd_one ?_)
   · rintro ⟨rfl, rfl⟩
     simp only [ne_eq, hn, not_false_eq_true, zero_pow, add_zero, zero_add, pow_eq_zero_iff]
       at HF

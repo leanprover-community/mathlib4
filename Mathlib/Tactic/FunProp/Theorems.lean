@@ -70,17 +70,17 @@ def detectLambdaTheoremArgs (f : Expr) (ctxVars : Array Expr) :
 
   match f with
   | .lam _ _ xBody _ =>
-    unless xBody.hasLooseBVars do return .some .const
+    unless xBody.hasLooseBVars do return some .const
     match xBody with
-    | .bvar 0 => return .some .id
-    | .app (.bvar 0) (.fvar _) =>  return .some .apply
+    | .bvar 0 => return some .id
+    | .app (.bvar 0) (.fvar _) =>  return some .apply
     | .app (.fvar fId) (.app (.fvar gId) (.bvar 0)) =>
       -- fun x => f (g x)
-      let .some argId_f := ctxVars.findIdx? (fun x => x == (.fvar fId)) | return none
-      let .some argId_g := ctxVars.findIdx? (fun x => x == (.fvar gId)) | return none
-      return .some <| .comp argId_f argId_g
+      let some argId_f := ctxVars.findIdx? (fun x => x == (.fvar fId)) | return none
+      let some argId_g := ctxVars.findIdx? (fun x => x == (.fvar gId)) | return none
+      return some <| .comp argId_f argId_g
     | .lam _ _ (.app (.app (.fvar _) (.bvar 1)) (.bvar 0)) _ =>
-      return .some .pi
+      return some .pi
     | _ => return none
   | _ => return none
 
@@ -168,7 +168,7 @@ structure FunctionTheorem where
 
 private local instance : Ord Name := ⟨Name.quickCmp⟩
 
-set_option linter.style.docString false in
+set_option linter.style.docString.empty false in
 /-- -/
 structure FunctionTheorems where
   /-- map: function name → function property → function theorem -/
@@ -183,7 +183,7 @@ def FunctionTheorem.getProof (thm : FunctionTheorem) : MetaM Expr := do
   | .decl name => mkConstWithFreshMVarLevels name
   | .fvar id => return .fvar id
 
-set_option linter.style.docString false in
+set_option linter.style.docString.empty false in
 /-- -/
 abbrev FunctionTheoremsExt := SimpleScopedEnvExtension FunctionTheorem FunctionTheorems
 
@@ -202,7 +202,7 @@ initialize functionTheoremsExt : FunctionTheoremsExt ←
               thms.push e}
   }
 
-set_option linter.style.docString false in
+set_option linter.style.docString.empty false in
 /-- -/
 def getTheoremsForFunction (funName : Name) (funPropName : Name) :
     CoreM (Array FunctionTheorem) := do
@@ -216,7 +216,7 @@ def getTheoremsForFunction (funName : Name) (funPropName : Name) :
 def GeneralTheorem.getProof (thm : GeneralTheorem) : MetaM Expr := do
   mkConstWithFreshMVarLevels thm.thmName
 
-/-- Extendions for transition or morphism theorems -/
+/-- Extensions for transition or morphism theorems -/
 abbrev GeneralTheoremsExt := SimpleScopedEnvExtension GeneralTheorem GeneralTheorems
 
 /-- Environment extension for transition theorems. -/
@@ -232,7 +232,7 @@ initialize transitionTheoremsExt : GeneralTheoremsExt ←
 /-- Get transition theorems applicable to `e`.
 
 For example calling on `e` equal to `Continuous f` might return theorems implying continuity
-from linearity over finite dimensional spaces or differentiability. -/
+from linearity over finite-dimensional spaces or differentiability. -/
 def getTransitionTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   let thms := (← get).transitionTheorems.theorems
   let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
@@ -309,12 +309,12 @@ type of theorem it is. -/
 def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : MetaM Theorem := do
   let info ← getConstInfo declName
   forallTelescope info.type fun xs b => do
-    let .some (decl,f) ← getFunProp? b
+    let some (decl,f) ← getFunProp? b
       | throwError "unrecognized function property `{← ppExpr b}`"
     let funPropName := decl.funPropName
     let fData? ←
       withConfig (fun cfg => { cfg with zeta := false}) <| getFunctionData? f defaultUnfoldPred
-    if let .some thmArgs ← detectLambdaTheoremArgs (← fData?.get) xs then
+    if let some thmArgs ← detectLambdaTheoremArgs (← fData?.get) xs then
       return .lam {
         funPropName := funPropName
         thmName := declName

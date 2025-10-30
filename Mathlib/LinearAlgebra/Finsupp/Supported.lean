@@ -56,7 +56,7 @@ theorem mem_supported {s : Set α} (p : α →₀ M) : p ∈ supported M R s ↔
 
 theorem mem_supported' {s : Set α} (p : α →₀ M) :
     p ∈ supported M R s ↔ ∀ x ∉ s, p x = 0 := by
-  haveI := Classical.decPred fun x : α => x ∈ s; simp [mem_supported, Set.subset_def, not_imp_comm]
+  simp [mem_supported, Set.subset_def, not_imp_comm]
 
 theorem mem_supported_support (p : α →₀ M) : p ∈ Finsupp.supported M R (p.support : Set α) := by
   rw [Finsupp.mem_supported]
@@ -77,7 +77,7 @@ theorem supported_eq_span_single (s : Set α) :
 
 theorem span_le_supported_biUnion_support (s : Set (α →₀ M)) :
     span R s ≤ supported M R (⋃ x ∈ s, x.support) :=
-  span_le.mpr fun _ h ↦ subset_biUnion_of_mem h (u := (·.support.toSet))
+  span_le.mpr fun _ h ↦ subset_biUnion_of_mem h (u := (SetLike.coe ·.support))
 
 variable (M)
 
@@ -183,6 +183,10 @@ theorem disjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
     (f : s →₀ M) : (supportedEquivFinsupp (R := R) s).symm f = f.extendDomain := by
   convert restrictSupportEquiv_symm_apply_coe ..
 
+@[simp] theorem supportedEquivFinsupp_symm_single (s : Set α) (i : s) (a : M) :
+    ((supportedEquivFinsupp (R := R) s).symm (single i a) : α →₀ M) = single ↑i a := by
+  classical simp
+
 section LMapDomain
 
 variable {α' : Type*} {α'' : Type*} (M R)
@@ -191,7 +195,7 @@ theorem supported_comap_lmapDomain (f : α → α') (s : Set α') :
     supported M R (f ⁻¹' s) ≤ (supported M R s).comap (lmapDomain M R f) := by
   classical
   intro l (hl : (l.support : Set α) ⊆ f ⁻¹' s)
-  show ↑(mapDomain f l).support ⊆ s
+  change ↑(mapDomain f l).support ⊆ s
   rw [← Set.image_subset_iff, ← Finset.coe_image] at hl
   exact Set.Subset.trans mapDomain_support hl
 
@@ -229,7 +233,7 @@ theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}
     rw [Finsupp.sum_apply, Finsupp.sum_eq_single x, single_eq_same] at this
     · simpa
     · intro y hy xy
-      simp only [SetLike.mem_coe, mem_supported, subset_def, Finset.mem_coe, mem_support_iff] at h₁
+      simp only [SetLike.mem_coe, mem_supported, subset_def, mem_support_iff] at h₁
       simp [mt (H _ (h₁ _ hy) _ xs) xy]
     · simp +contextual
   · by_contra h

@@ -52,8 +52,6 @@ theorem lie_mem_left (I : LieIdeal R L) (x y : L) (h : x ∈ I) : ⁅x, y⁆ ∈
 def LieIdeal.toLieSubalgebra (I : LieIdeal R L) : LieSubalgebra R L :=
   { I.toSubmodule with lie_mem' := by intro x y _ hy; apply lie_mem_right; exact hy }
 
-@[deprecated (since := "2025-01-02")] alias lieIdealSubalgebra := LieIdeal.toLieSubalgebra
-
 instance : Coe (LieIdeal R L) (LieSubalgebra R L) :=
   ⟨LieIdeal.toLieSubalgebra R L⟩
 
@@ -61,19 +59,10 @@ instance : Coe (LieIdeal R L) (LieSubalgebra R L) :=
 theorem LieIdeal.coe_toLieSubalgebra (I : LieIdeal R L) : ((I : LieSubalgebra R L) : Set L) = I :=
   rfl
 
-@[deprecated (since := "2024-12-30")]
-alias LieIdeal.coe_toSubalgebra := LieIdeal.coe_toLieSubalgebra
-
 @[simp]
 theorem LieIdeal.toLieSubalgebra_toSubmodule (I : LieIdeal R L) :
     ((I : LieSubalgebra R L) : Submodule R L) = LieSubmodule.toSubmodule I :=
   rfl
-
-@[deprecated (since := "2025-01-02")]
-alias LieIdeal.coe_toLieSubalgebra_toSubmodule := LieIdeal.toLieSubalgebra_toSubmodule
-
-@[deprecated (since := "2024-12-30")]
-alias LieIdeal.coe_to_lieSubalgebra_to_submodule := LieIdeal.toLieSubalgebra_toSubmodule
 
 /-- An ideal of `L` is a Lie subalgebra of `L`, so it is a Lie ring. -/
 instance LieIdeal.lieRing (I : LieIdeal R L) : LieRing I :=
@@ -144,8 +133,6 @@ variable (f : L →ₗ⁅R⁆ L') (I I₂ : LieIdeal R L) (J : LieIdeal R L')
 theorem top_toLieSubalgebra : ((⊤ : LieIdeal R L) : LieSubalgebra R L) = ⊤ :=
   rfl
 
-@[deprecated (since := "2024-12-30")] alias top_coe_lieSubalgebra := top_toLieSubalgebra
-
 /-- A morphism of Lie algebras `f : L → L'` pushes forward Lie ideals of `L` to Lie ideals of `L'`.
 
 Note that unlike `LieSubmodule.map`, we must take the `lieSpan` of the image. Mathematically
@@ -173,14 +160,10 @@ theorem map_toSubmodule (h : ↑(map f I) = f '' I) :
     LieSubmodule.toSubmodule (map f I) = (LieSubmodule.toSubmodule I).map (f : L →ₗ[R] L') := by
   rw [SetLike.ext'_iff, LieSubmodule.coe_toSubmodule, h, Submodule.map_coe]; rfl
 
-@[deprecated (since := "2024-12-30")] alias map_coeSubmodule := map_toSubmodule
-
 @[simp]
 theorem comap_toSubmodule :
     (LieSubmodule.toSubmodule (comap f J)) = (LieSubmodule.toSubmodule J).comap (f : L →ₗ[R] L') :=
   rfl
-
-@[deprecated (since := "2024-12-30")] alias comap_coeSubmodule := comap_toSubmodule
 
 theorem map_le : map f I ≤ J ↔ f '' I ⊆ J :=
   LieSubmodule.lieSpan_le
@@ -214,8 +197,8 @@ theorem comap_map_le : I ≤ comap f (map f I) := by rw [← map_le_iff_le_comap
 
 @[mono]
 theorem map_mono : Monotone (map f) := fun I₁ I₂ h ↦ by
-  rw [SetLike.le_def] at h
-  apply LieSubmodule.lieSpan_mono (Set.image_subset (⇑f) h)
+  unfold map
+  gcongr; exact h
 
 @[mono]
 theorem comap_mono : Monotone (comap f) := fun J₁ J₂ h ↦ by
@@ -245,10 +228,7 @@ In other words, in general, ideals of `I`, regarded as a Lie algebra in its own 
 same as ideals of `L` contained in `I`. -/
 instance subsingleton_of_bot : Subsingleton (LieIdeal R (⊥ : LieIdeal R L)) := by
   apply subsingleton_of_bot_eq_top
-  ext ⟨x, hx⟩
-  rw [LieSubmodule.mem_bot] at hx
-  subst hx
-  simp only [LieSubmodule.mk_eq_zero, LieSubmodule.mem_bot, LieSubmodule.mem_top]
+  subsingleton
 
 end LieIdeal
 
@@ -306,8 +286,6 @@ theorem ker_le_comap : f.ker ≤ J.comap f :=
 theorem ker_toSubmodule : LieSubmodule.toSubmodule (ker f) = LinearMap.ker (f : L →ₗ[R] L') :=
   rfl
 
-@[deprecated (since := "2024-12-30")] alias ker_coeSubmodule := ker_toSubmodule
-
 variable {f} in
 @[simp]
 theorem mem_ker {x : L} : x ∈ ker f ↔ f x = 0 :=
@@ -322,7 +300,7 @@ theorem mem_idealRange (x : L) : f x ∈ idealRange f := by
 theorem mem_idealRange_iff (h : IsIdealMorphism f) {y : L'} :
     y ∈ idealRange f ↔ ∃ x : L, f x = y := by
   rw [f.isIdealMorphism_def] at h
-  rw [← LieSubmodule.mem_coe, ← LieIdeal.coe_toLieSubalgebra, h, f.range_coe, Set.mem_range]
+  rw [← LieSubmodule.mem_coe, ← LieIdeal.coe_toLieSubalgebra, h, f.coe_range, Set.mem_range]
 
 theorem le_ker_iff : I ≤ f.ker ↔ ∀ x, x ∈ I → f x = 0 := by
   constructor <;> intro h x hx
@@ -336,8 +314,6 @@ theorem ker_eq_bot : f.ker = ⊥ ↔ Function.Injective f := by
 @[simp]
 theorem range_toSubmodule : (f.range : Submodule R L') = LinearMap.range (f : L →ₗ[R] L') :=
   rfl
-
-@[deprecated (since := "2024-12-30")] alias range_coeSubmodule := range_toSubmodule
 
 theorem range_eq_top : f.range = ⊤ ↔ Function.Surjective f := by
   rw [← LieSubalgebra.toSubmodule_inj, range_toSubmodule, LieSubalgebra.top_toSubmodule]
@@ -414,15 +390,14 @@ theorem inclusion_injective {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) :
   simp only [inclusion_apply, imp_self, Subtype.mk_eq_mk, SetLike.coe_eq_coe]
 
 theorem map_sup_ker_eq_map : LieIdeal.map f (I ⊔ f.ker) = LieIdeal.map f I := by
-  suffices LieIdeal.map f (I ⊔ f.ker) ≤ LieIdeal.map f I by
-    exact le_antisymm this (LieIdeal.map_mono le_sup_left)
+  refine le_antisymm ?_ (LieIdeal.map_mono le_sup_left)
   apply LieSubmodule.lieSpan_mono
   rintro x ⟨y, hy₁, hy₂⟩
   rw [← hy₂]
   erw [LieSubmodule.mem_sup] at hy₁
   obtain ⟨z₁, hz₁, z₂, hz₂, hy⟩ := hy₁
   rw [← hy]
-  rw [f.coe_toLinearMap, f.map_add, LieHom.mem_ker.mp hz₂, add_zero]; exact ⟨z₁, hz₁, rfl⟩
+  rw [map_add, f.coe_toLinearMap, LieHom.mem_ker.mp hz₂, add_zero]; exact ⟨z₁, hz₁, rfl⟩
 
 @[simp]
 theorem map_sup_ker_eq_map' :
@@ -434,7 +409,7 @@ theorem map_comap_eq (h : f.IsIdealMorphism) : map f (comap f J) = f.idealRange 
   apply le_antisymm
   · rw [le_inf_iff]; exact ⟨f.map_le_idealRange _, map_comap_le⟩
   · rw [f.isIdealMorphism_def] at h
-    rw [← SetLike.coe_subset_coe, LieSubmodule.inf_coe, ← coe_toLieSubalgebra, h]
+    rw [← SetLike.coe_subset_coe, LieSubmodule.coe_inf, ← coe_toLieSubalgebra, h]
     rintro y ⟨⟨x, h₁⟩, h₂⟩; rw [← h₁] at h₂ ⊢; exact mem_map h₂
 
 @[simp]

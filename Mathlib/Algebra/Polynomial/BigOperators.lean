@@ -73,7 +73,7 @@ theorem degree_list_sum_le_of_forall_degree_le (l : List S[X])
 
 theorem degree_list_sum_le (l : List S[X]) : degree l.sum ≤ (l.map natDegree).maximum := by
   apply degree_list_sum_le_of_forall_degree_le
-  intros p hp
+  intro p hp
   by_cases h : p = 0
   · subst h
     simp
@@ -84,20 +84,21 @@ theorem degree_list_sum_le (l : List S[X]) : degree l.sum ≤ (l.map natDegree).
     simp [hp]
 
 theorem natDegree_list_prod_le (l : List S[X]) : natDegree l.prod ≤ (l.map natDegree).sum := by
-  induction' l with hd tl IH
-  · simp
-  · simpa using natDegree_mul_le.trans (add_le_add_left IH _)
+  induction l with
+  | nil => simp
+  | cons p l ih => dsimp; grw [natDegree_mul_le, ih]
 
 theorem degree_list_prod_le (l : List S[X]) : degree l.prod ≤ (l.map degree).sum := by
-  induction' l with hd tl IH
-  · simp
-  · simpa using (degree_mul_le _ _).trans (add_le_add_left IH _)
+  induction l with
+  | nil => simp
+  | cons p l ih => dsimp; grw [degree_mul_le, ih]
 
 theorem coeff_list_prod_of_natDegree_le (l : List S[X]) (n : ℕ) (hl : ∀ p ∈ l, natDegree p ≤ n) :
     coeff (List.prod l) (l.length * n) = (l.map fun p => coeff p n).prod := by
-  induction' l with hd tl IH
-  · simp
-  · have hl' : ∀ p ∈ tl, natDegree p ≤ n := fun p hp => hl p (List.mem_cons_of_mem _ hp)
+  induction l with
+  | nil => simp
+  | cons hd tl IH =>
+    have hl' : ∀ p ∈ tl, natDegree p ≤ n := fun p hp => hl p (List.mem_cons_of_mem _ hp)
     simp only [List.prod_cons, List.map, List.length]
     rw [add_mul, one_mul, add_comm, ← IH hl', mul_comm tl.length]
     have h : natDegree tl.prod ≤ n * tl.length := by
@@ -136,7 +137,7 @@ where this condition is automatically satisfied.
 -/
 theorem leadingCoeff_multiset_prod' (h : (t.map leadingCoeff).prod ≠ 0) :
     t.prod.leadingCoeff = (t.map leadingCoeff).prod := by
-  induction' t using Multiset.induction_on with a t ih; · simp
+  induction t using Multiset.induction_on with | empty => simp | cons a t ih => ?_
   simp only [Multiset.map_cons, Multiset.prod_cons] at h ⊢
   rw [Polynomial.leadingCoeff_mul']
   · rw [ih]
@@ -187,16 +188,7 @@ theorem natDegree_multiset_prod_of_monic (h : ∀ f ∈ t, Monic f) :
     t.prod.natDegree = (t.map natDegree).sum := by
   nontriviality R
   apply natDegree_multiset_prod'
-  suffices (t.map fun f => leadingCoeff f).prod = 1 by
-    rw [this]
-    simp
-  convert prod_replicate (Multiset.card t) (1 : R)
-  · simp only [eq_replicate, Multiset.card_map, true_and]
-    rintro i hi
-    obtain ⟨i, hi, rfl⟩ := Multiset.mem_map.mp hi
-    apply h
-    assumption
-  · simp
+  simp_all
 
 theorem degree_multiset_prod_of_monic [Nontrivial R] (h : ∀ f ∈ t, Monic f) :
     t.prod.degree = (t.map degree).sum := by

@@ -38,14 +38,14 @@ variable {C : Type u₁} [Category.{v₁} C]
 def asEmptyCone (X : C) : Cone (Functor.empty.{0} C) :=
   { pt := X
     π :=
-    { app := by aesop_cat } }
+    { app := by cat_disch } }
 
 /-- Construct a cocone for the empty diagram given an object. -/
 @[simps]
 def asEmptyCocone (X : C) : Cocone (Functor.empty.{0} C) :=
   { pt := X
     ι :=
-    { app := by aesop_cat } }
+    { app := by cat_disch } }
 
 /-- `X` is terminal if the cone it induces on the empty diagram is limiting. -/
 abbrev IsTerminal (X : C) :=
@@ -57,18 +57,18 @@ abbrev IsInitial (X : C) :=
 
 /-- An object `Y` is terminal iff for every `X` there is a unique morphism `X ⟶ Y`. -/
 def isTerminalEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (Y : C) :
-    IsLimit (⟨Y, by aesop_cat, by simp⟩ : Cone F) ≃ ∀ X : C, Unique (X ⟶ Y) where
+    IsLimit (⟨Y, by cat_disch, by simp⟩ : Cone F) ≃ ∀ X : C, Unique (X ⟶ Y) where
   toFun t X :=
-    { default := t.lift ⟨X, ⟨by aesop_cat, by simp⟩⟩
+    { default := t.lift ⟨X, ⟨by cat_disch, by simp⟩⟩
       uniq := fun f =>
-        t.uniq ⟨X, ⟨by aesop_cat, by simp⟩⟩ f (by simp) }
+        t.uniq ⟨X, ⟨by cat_disch, by simp⟩⟩ f (by simp) }
   invFun u :=
     { lift := fun s => (u s.pt).default
       uniq := fun s _ _ => (u s.pt).2 _ }
   left_inv := by dsimp [Function.LeftInverse]; intro x; simp only [eq_iff_true_of_subsingleton]
   right_inv := by
     dsimp [Function.RightInverse,Function.LeftInverse]
-    intro u; ext
+    subsingleton
 
 /-- An object `Y` is terminal if for every `X` there is a unique morphism `X ⟶ Y`
     (as an instance). -/
@@ -103,17 +103,17 @@ def IsTerminal.equivOfIso {X Y : C} (e : X ≅ Y) :
 
 /-- An object `X` is initial iff for every `Y` there is a unique morphism `X ⟶ Y`. -/
 def isInitialEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (X : C) :
-    IsColimit (⟨X, ⟨by aesop_cat, by simp⟩⟩ : Cocone F) ≃ ∀ Y : C, Unique (X ⟶ Y) where
+    IsColimit (⟨X, ⟨by cat_disch, by simp⟩⟩ : Cocone F) ≃ ∀ Y : C, Unique (X ⟶ Y) where
   toFun t X :=
-    { default := t.desc ⟨X, ⟨by aesop_cat, by simp⟩⟩
-      uniq := fun f => t.uniq ⟨X, ⟨by aesop_cat, by simp⟩⟩ f (by simp) }
+    { default := t.desc ⟨X, ⟨by cat_disch, by simp⟩⟩
+      uniq := fun f => t.uniq ⟨X, ⟨by cat_disch, by simp⟩⟩ f (by simp) }
   invFun u :=
     { desc := fun s => (u s.pt).default
       uniq := fun s _ _ => (u s.pt).2 _ }
   left_inv := by dsimp [Function.LeftInverse]; intro; simp only [eq_iff_true_of_subsingleton]
   right_inv := by
-    dsimp [Function.RightInverse,Function.LeftInverse]
-    intro; funext; simp only
+    #adaptation_note /-- 19-07-2025 grind stopped working -/
+    intro x; dsimp
 
 /-- An object `X` is initial if for every `Y` there is a unique morphism `X ⟶ Y`
     (as an instance). -/
@@ -217,7 +217,7 @@ variable (X : C) {F₁ : Discrete.{w} PEmpty ⥤ C} {F₂ : Discrete.{w'} PEmpty
     as long as the cone points are isomorphic. -/
 def isLimitChangeEmptyCone {c₁ : Cone F₁} (hl : IsLimit c₁) (c₂ : Cone F₂) (hi : c₁.pt ≅ c₂.pt) :
     IsLimit c₂ where
-  lift c := hl.lift ⟨c.pt, by aesop_cat, by simp⟩ ≫ hi.hom
+  lift c := hl.lift ⟨c.pt, by cat_disch, by simp⟩ ≫ hi.hom
   uniq c f _ := by
     dsimp
     rw [← hl.uniq _ (f ≫ hi.inv) _]
@@ -246,7 +246,7 @@ def isLimitEquivIsTerminalOfIsEmpty {J : Type*} [Category J] [IsEmpty J] {F : J 
     as long as the cocone points are isomorphic. -/
 def isColimitChangeEmptyCocone {c₁ : Cocone F₁} (hl : IsColimit c₁) (c₂ : Cocone F₂)
     (hi : c₁.pt ≅ c₂.pt) : IsColimit c₂ where
-  desc c := hi.inv ≫ hl.desc ⟨c.pt, by aesop_cat, by simp⟩
+  desc c := hi.inv ≫ hl.desc ⟨c.pt, by cat_disch, by simp⟩
   uniq c f _ := by
     dsimp
     rw [← hl.uniq _ (hi.hom ≫ f) _]
@@ -396,10 +396,7 @@ def coconeOfDiagramTerminal {X : J} (tX : IsTerminal X) (F : J ⥤ C) : Cocone F
 def colimitOfDiagramTerminal {X : J} (tX : IsTerminal X) (F : J ⥤ C) :
     IsColimit (coconeOfDiagramTerminal tX F) where
   desc s := s.ι.app X
-  uniq s m w := by
-    conv_rhs => dsimp -- Porting note: why do I need this much firepower?
-    rw [← w X, coconeOfDiagramTerminal_ι_app, tX.hom_ext (tX.from X) (𝟙 _)]
-    simp
+  uniq s m w := by simp [← w X]
 
 lemma IsColimit.isIso_ι_app_of_isTerminal {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c)
     (X : J) (hX : IsTerminal X) :

@@ -245,10 +245,10 @@ instance preservesLimitsOfShape_presheafToSheaf
     Limits.hasLimitsOfShape_of_equivalence e
   haveI : FinCategory (AsSmall.{t} (FinCategory.AsType K)) := by
     constructor
-    · show Fintype (ULift _)
+    · change Fintype (ULift _)
       infer_instance
     · intro j j'
-      show Fintype (ULift _)
+      change Fintype (ULift _)
       infer_instance
   refine @preservesLimitsOfShape_of_equiv _ _ _ _ _ _ _ _ e.symm _ (show _ from ?_)
   constructor; intro F; constructor; intro S hS; constructor
@@ -257,7 +257,7 @@ instance preservesLimitsOfShape_presheafToSheaf
     reflectsLimitsOfShape_of_reflectsIsomorphisms
   apply isLimitOfPreserves (J.sheafification D) hS
 
-instance preservesfiniteLimits_presheafToSheaf [PreservesLimits (forget D)]
+instance preservesFiniteLimits_presheafToSheaf [PreservesLimits (forget D)]
     [∀ X : C, Small.{t, max u v} (J.Cover X)ᵒᵖ] [HasFiniteLimits D] :
     PreservesFiniteLimits (plusPlusSheaf J D) := by
   apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize.{t}
@@ -272,7 +272,7 @@ def plusPlusSheafIsoPresheafToSheaf : plusPlusSheaf J D ≅ presheafToSheaf J D 
 
 /-- `plusPlusFunctor` is isomorphic to `sheafification`. -/
 def plusPlusFunctorIsoSheafification : J.sheafification D ≅ sheafification J D :=
-  isoWhiskerRight (plusPlusSheafIsoPresheafToSheaf J D) (sheafToPresheaf J D)
+  Functor.isoWhiskerRight (plusPlusSheafIsoPresheafToSheaf J D) (sheafToPresheaf J D)
 
 /-- `plusPlus` is isomorphic to `sheafify`. -/
 def plusPlusIsoSheafify (P : Cᵒᵖ ⥤ D) : J.sheafify P ≅ sheafify J P :=
@@ -291,6 +291,10 @@ instance [PreservesLimits (forget D)] [HasFiniteLimits D]
     [∀ X : C, Small.{t, max u v} (J.Cover X)ᵒᵖ] :
     HasSheafify J D :=
   HasSheafify.mk' J D (plusPlusAdjunction J D)
+
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
+instance : HasSheafify J (Type max u v) := by
+  infer_instance
 
 end
 

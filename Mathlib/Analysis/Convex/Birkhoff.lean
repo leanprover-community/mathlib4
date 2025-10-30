@@ -6,8 +6,10 @@ Authors: Bhavik Mehta
 
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Extreme
+import Mathlib.Analysis.Convex.Jensen
+import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Combinatorics.Hall.Basic
-import Mathlib.Data.Matrix.DoublyStochastic
+import Mathlib.Analysis.Convex.DoublyStochasticMatrix
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -50,7 +52,7 @@ private lemma exists_perm_eq_zero_implies_eq_zero [Nonempty n] {s : R} (hs : 0 <
   rw [exists_mem_doublyStochastic_eq_smul_iff hs.le] at hM
   let f (i : n) : Finset n := {j | M i j ≠ 0}
   have hf (A : Finset n) : #A ≤ #(A.biUnion f) := by
-    have (i) : ∑ j ∈ f i, M i j = s := by simp [f, sum_subset (filter_subset _ _), hM.2.1]
+    have (i : _) : ∑ j ∈ f i, M i j = s := by simp [f, sum_subset (filter_subset _ _), hM.2.1]
     have h₁ : ∑ i ∈ A, ∑ j ∈ f i, M i j = #A * s := by simp [this]
     have h₂ : ∑ i, ∑ j ∈ A.biUnion f, M i j = #(A.biUnion f) * s := by
       simp [sum_comm (t := A.biUnion f), hM.2.2]
@@ -118,12 +120,12 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
     case isFalse h => exact hM.1 _ _
   have hd' : #{i : n × n | N i.1 i.2 ≠ 0} < d := by
     rw [← hd]
-    refine card_lt_card ?_
+    gcongr
     rw [ssubset_iff_of_subset (monotone_filter_right _ _)]
-    · simp only [ne_eq, mem_filter, mem_univ, true_and, Decidable.not_not, Prod.exists]
+    · simp_rw [mem_filter_univ, not_not, Prod.exists]
       refine ⟨i, σ i, hMi'.ne', ?_⟩
       simp [N, Equiv.toPEquiv_apply]
-    · rintro ⟨i', j'⟩ hN' hM'
+    · rintro ⟨i', j'⟩ _ hN' hM'
       dsimp at hN' hM'
       simp only [sub_apply, hM', smul_apply, PEquiv.toMatrix_apply, Equiv.toPEquiv_apply,
         Option.mem_def, Option.some.injEq, smul_eq_mul, mul_ite, mul_one, mul_zero, zero_sub,
@@ -196,3 +198,12 @@ theorem extremePoints_doublyStochastic :
   aesop
 
 end LinearOrderedField
+
+open scoped Matrix.Norms.L2Operator
+
+theorem Matrix.l2_opNorm_le_one_of_mem_doublyStochastic {M : Matrix n n ℝ}
+    (hM : M ∈ doublyStochastic ℝ n) :
+    ‖M‖ ≤ 1 := by
+  rw [← SetLike.mem_coe, doublyStochastic_eq_convexHull_permMatrix] at hM
+  have ⟨_, ⟨σ, rfl⟩, hσ⟩ := convexOn_univ_norm.exists_ge_of_mem_convexHull (by simp) hM
+  exact hσ.trans (permMatrix_l2_opNorm_le _)

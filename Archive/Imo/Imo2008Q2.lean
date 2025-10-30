@@ -40,19 +40,19 @@ theorem subst_abc {x y z : ℝ} (h : x * y * z = 1) :
     have := h.symm ▸ one_ne_zero
     simpa [not_or] using this
   have : z * (y * x) = 1 := by rw [← h]; ac_rfl
-  field_simp [*]
+  simp [field, mul_assoc, *]
 
 theorem imo2008_q2a (x y z : ℝ) (h : x * y * z = 1) (hx : x ≠ 1) (hy : y ≠ 1) (hz : z ≠ 1) :
     x ^ 2 / (x - 1) ^ 2 + y ^ 2 / (y - 1) ^ 2 + z ^ 2 / (z - 1) ^ 2 ≥ 1 := by
   obtain ⟨a, b, c, ha, hb, hc, rfl, rfl, rfl⟩ := subst_abc h
   obtain ⟨m, n, rfl, rfl⟩ : ∃ m n, b = c - m ∧ a = c - m - n := by use c - b, b - a; simp
-  have hm_ne_zero : m ≠ 0 := by contrapose! hy; field_simp; assumption
-  have hn_ne_zero : n ≠ 0 := by contrapose! hx; field_simp; assumption
+  have hm_ne_zero : m ≠ 0 := by contrapose! hy; simpa [field]
+  have hn_ne_zero : n ≠ 0 := by contrapose! hx; simpa [field]
   have hmn_ne_zero : m + n ≠ 0 := by contrapose! hz; field_simp; linarith
   have hc_sub_sub : c - (c - m - n) = m + n := by abel
   rw [ge_iff_le, ← sub_nonneg]
   convert sq_nonneg ((c * (m ^ 2 + n ^ 2 + m * n) - m * (m + n) ^ 2) / (m * n * (m + n)))
-  field_simp [hc_sub_sub]; ring
+  simp [field, hc_sub_sub]; ring
 
 def rationalSolutions :=
   {s : ℚ × ℚ × ℚ | ∃ x y z : ℚ, s = (x, y, z) ∧ x ≠ 1 ∧ y ≠ 1 ∧ z ≠ 1 ∧ x * y * z = 1 ∧
@@ -68,10 +68,10 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions := by
     rcases hs_in_W with ⟨x, y, z, h₁, t, ht_gt_zero, hx_t, hy_t, hz_t⟩
     use x, y, z
     have key_gt_zero : t ^ 2 + t + 1 > 0 := by linarith [pow_pos ht_gt_zero 2, ht_gt_zero]
-    have h₂ : x ≠ 1 := by rw [hx_t]; field_simp; linarith [key_gt_zero]
-    have h₃ : y ≠ 1 := by rw [hy_t]; field_simp; linarith [key_gt_zero]
+    have h₂ : x ≠ 1 := by rw [hx_t]; simp [field]; linarith [key_gt_zero]
+    have h₃ : y ≠ 1 := by rw [hy_t]; simp [field]; linarith [key_gt_zero]
     have h₄ : z ≠ 1 := by rw [hz_t]; linarith [key_gt_zero]
-    have h₅ : x * y * z = 1 := by rw [hx_t, hy_t, hz_t]; field_simp; ring
+    have h₅ : x * y * z = 1 := by rw [hx_t, hy_t, hz_t]; field_simp
     have h₆ : x ^ 2 / (x - 1) ^ 2 + y ^ 2 / (y - 1) ^ 2 + z ^ 2 / (z - 1) ^ 2 = 1 := by
       have hx1 : (x - 1) ^ 2 = (t ^ 2 + t + 1) ^ 2 / t ^ 4 := by
         field_simp; rw [hx_t]; field_simp; ring

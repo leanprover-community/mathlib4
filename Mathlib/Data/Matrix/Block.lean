@@ -5,7 +5,7 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin
 -/
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Composition
-import Mathlib.Data.Matrix.ConjTranspose
+import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 
 /-!
 # Block Matrices
@@ -216,6 +216,14 @@ theorem fromBlocks_multiply [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring �
   rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> simp only [fromBlocks, mul_apply, of_apply,
       Sum.elim_inr, Fintype.sum_sum_type, Sum.elim_inl, add_apply]
 
+theorem fromBlocks_diagonal_pow [Semiring α] [Fintype n] [Fintype m] [DecidableEq n] [DecidableEq m]
+    (A : Matrix n n α) (D : Matrix m m α) (k : ℕ) :
+    (fromBlocks A 0 0 D) ^ k = fromBlocks (A ^ k) 0 0 (D ^ k) := by
+  induction k with
+  | zero => ext (i | i) (j | j) <;> simp [one_apply]
+  | succ n ih =>
+    simp [ih, pow_succ, fromBlocks_multiply]
+
 theorem fromBlocks_mulVec [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring α] (A : Matrix n l α)
     (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α) (x : l ⊕ m → α) :
     (fromBlocks A B C D) *ᵥ x =
@@ -323,10 +331,7 @@ theorem blockDiagonal_apply' (M : o → Matrix m n α) (i k j k') :
   rfl
 
 theorem blockDiagonal_apply (M : o → Matrix m n α) (ik jk) :
-    blockDiagonal M ik jk = if ik.2 = jk.2 then M ik.2 ik.1 jk.1 else 0 := by
-  cases ik
-  cases jk
-  rfl
+    blockDiagonal M ik jk = if ik.2 = jk.2 then M ik.2 ik.1 jk.1 else 0 := rfl
 
 @[simp]
 theorem blockDiagonal_apply_eq (M : o → Matrix m n α) (i j k) :
@@ -580,10 +585,7 @@ theorem blockDiagonal'_submatrix_eq_blockDiagonal (M : o → Matrix m n α) :
 
 theorem blockDiagonal'_apply (M : ∀ i, Matrix (m' i) (n' i) α) (ik jk) :
     blockDiagonal' M ik jk =
-      if h : ik.1 = jk.1 then M ik.1 ik.2 (cast (congr_arg n' h.symm) jk.2) else 0 := by
-  cases ik
-  cases jk
-  rfl
+      if h : ik.1 = jk.1 then M ik.1 ik.2 (cast (congr_arg n' h.symm) jk.2) else 0 := rfl
 
 @[simp]
 theorem blockDiagonal'_apply_eq (M : ∀ i, Matrix (m' i) (n' i) α) (k i j) :
@@ -605,7 +607,7 @@ theorem blockDiagonal'_transpose (M : ∀ i, Matrix (m' i) (n' i) α) :
     (blockDiagonal' M)ᵀ = blockDiagonal' fun k => (M k)ᵀ := by
   ext ⟨ii, ix⟩ ⟨ji, jx⟩
   simp only [transpose_apply, blockDiagonal'_apply]
-  split_ifs <;> cc
+  split_ifs <;> grind
 
 @[simp]
 theorem blockDiagonal'_conjTranspose {α} [AddMonoid α] [StarAddMonoid α]

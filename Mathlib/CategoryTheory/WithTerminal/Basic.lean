@@ -5,6 +5,7 @@ Authors: Joseph Tooby-Smith, Adam Topaz
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
@@ -88,19 +89,13 @@ def comp : ∀ {X Y Z : WithTerminal C}, Hom X Y → Hom Y Z → Hom X Z
   | star, star, star => fun _ _ => PUnit.unit
 attribute [nolint simpNF] comp.eq_4
 
+@[aesop safe destruct (rule_sets := [CategoryTheory])]
+lemma false_of_from_star' {X : C} (f : Hom star (of X)) : False := (f : PEmpty).elim
+
 instance : Category.{v} (WithTerminal C) where
   Hom X Y := Hom X Y
   id _ := id _
   comp := comp
-  assoc {a b c d} f g h := by
-    -- Porting note: it would be nice to automate this away as well.
-    -- I tried splitting this into separate `Quiver` and `Category` instances,
-    -- so the `false_of_from_star` destruct rule below can be used here.
-    -- That works, but causes mysterious failures of `aesop_cat` in `map`.
-    cases a <;> cases b <;> cases c <;> cases d <;> try aesop_cat
-    · exact (h : PEmpty).elim
-    · exact (g : PEmpty).elim
-    · exact (h : PEmpty).elim
 
 /-- Helper function for typechecking. -/
 def down {X Y : C} (f : of X ⟶ of Y) : X ⟶ Y := f
@@ -141,7 +136,7 @@ def map {D : Type*} [Category D] (F : C ⥤ D) : WithTerminal C ⥤ WithTerminal
 def mapId (C : Type*) [Category C] : map (𝟭 C) ≅ 𝟭 (WithTerminal C) :=
   NatIso.ofComponents (fun X => match X with
     | of _ => Iso.refl _
-    | star => Iso.refl _) (by aesop_cat)
+    | star => Iso.refl _) (by cat_disch)
 
 /-- A natural isomorphism between the functor `map (F ⋙ G) ` and `map F ⋙ map G `. -/
 @[simps!]
@@ -149,7 +144,7 @@ def mapComp {D E : Type*} [Category D] [Category E] (F : C ⥤ D) (G : D ⥤ E) 
     map (F ⋙ G) ≅ map F ⋙ map G :=
   NatIso.ofComponents (fun X => match X with
     | of _ => Iso.refl _
-    | star => Iso.refl _) (by aesop_cat)
+    | star => Iso.refl _) (by cat_disch)
 
 /-- From a natural transformation of functors `C ⥤ D`, the induced natural transformation
 of functors `WithTerminal C ⥤ WithTerminal D`. -/
@@ -265,7 +260,7 @@ instance {X : WithTerminal C} : Unique (X ⟶ star) where
     match X with
     | of _ => PUnit.unit
     | star => PUnit.unit
-  uniq := by aesop_cat
+  uniq := by cat_disch
 
 /-- `WithTerminal.star` is terminal. -/
 def starTerminal : Limits.IsTerminal (star : WithTerminal C) :=
@@ -386,7 +381,7 @@ objects. -/
 @[simps!]
 def mkCommaMorphism {F G : WithTerminal C ⥤ D} (η : F ⟶ G) : mkCommaObject F ⟶ mkCommaObject G where
   right := η.app .star
-  left := whiskerLeft incl η
+  left := Functor.whiskerLeft incl η
 
 /-- An element of the comma category `Comma (𝟭 (C ⥤ D)) (Functor.const C)` can be seen as a
 functor `WithTerminal C ⥤ D`. -/
@@ -441,6 +436,64 @@ def equivComma : (WithTerminal C ⥤ D) ≌ Comma (𝟭 (C ⥤ D)) (Functor.cons
 
 end
 
+open CategoryTheory.Limits CategoryTheory.Limits.WidePullbackShape
+
+instance subsingleton_hom {J : Type*} : Quiver.IsThin (WithTerminal (Discrete J)) := fun _ _ => by
+  constructor
+  intro a b
+  casesm* WithTerminal _, (_ : WithTerminal _) ⟶ (_ : WithTerminal _)
+  · exact congr_arg (ULift.up ∘ PLift.up) rfl
+  · rfl
+  · rfl
+
+/-- Implementation detail for `widePullbackShapeEquiv`. -/
+@[simps apply]
+private def widePullbackShapeEquivObj {J : Type*} :
+    WidePullbackShape J ≃ WithTerminal (Discrete J) where
+  toFun
+  | .some x => .of <| .mk x
+  | .none => .star
+  invFun
+  | .of x => .some <| Discrete.as x
+  | .star => .none
+  left_inv  x := by cases x <;> simp
+  right_inv x := by cases x <;> simp
+
+/-- Implementation detail for `widePullbackShapeEquiv`. -/
+private def widePullbackShapeEquivMap {J : Type*} (x y : WidePullbackShape J) :
+    (x ⟶ y) ≃ (widePullbackShapeEquivObj x ⟶ widePullbackShapeEquivObj y) where
+  toFun
+  | .term _ => PUnit.unit
+  | .id _ => 𝟙 _
+  invFun f := match x, y with
+  | some x, some y =>
+    cast (by
+        have eq : x = y := PLift.down (ULift.down (down f))
+        rw [eq]
+        rfl
+    ) (Hom.id (some y))
+  | none, some y => by cases f
+  | some x, none => .term x
+  | none, none => .id none
+  left_inv f := by apply Subsingleton.allEq
+  right_inv f := match x, y with
+  | some x, some y => Subsingleton.allEq _ _
+  | none, some y => by cases f
+  | some x, none
+  | none, none => rfl
+
+/-- In the case of a discrete category, `WithTerminal` is the same category as `WidePullbackShape`
+
+TODO: Should we simply replace `WidePullbackShape J` with `WithTerminal (Discrete J)` everywhere? -/
+@[simps! functor_obj inverse_obj]
+def widePullbackShapeEquiv {J : Type*} : WidePullbackShape J ≌ WithTerminal (Discrete J) where
+  functor.obj := widePullbackShapeEquivObj
+  functor.map := widePullbackShapeEquivMap _ _
+  inverse.obj := widePullbackShapeEquivObj.symm
+  inverse.map f := (widePullbackShapeEquivMap _ _).symm (eqToHom (by simp) ≫ f ≫ eqToHom (by simp))
+  unitIso := NatIso.ofComponents fun x ↦ eqToIso (by aesop)
+  counitIso := NatIso.ofComponents fun x ↦ eqToIso (by aesop)
+
 end WithTerminal
 
 namespace WithInitial
@@ -471,17 +524,13 @@ def comp : ∀ {X Y Z : WithInitial C}, Hom X Y → Hom Y Z → Hom X Z
   | star, star, star => fun _ _ => PUnit.unit
 attribute [nolint simpNF] comp.eq_3
 
+@[aesop safe destruct (rule_sets := [CategoryTheory])]
+lemma false_of_to_star' {X : C} (f : Hom (of X) star) : False := (f : PEmpty).elim
+
 instance : Category.{v} (WithInitial C) where
   Hom X Y := Hom X Y
   id X := id X
   comp f g := comp f g
-  assoc {a b c d} f g h := by
-    -- Porting note: it would be nice to automate this away as well.
-    -- See the note on `Category (WithTerminal C)`
-    cases a <;> cases b <;> cases c <;> cases d <;> try aesop_cat
-    · exact (g : PEmpty).elim
-    · exact (f : PEmpty).elim
-    · exact (f : PEmpty).elim
 
 /-- Helper function for typechecking. -/
 def down {X Y : C} (f : of X ⟶ of Y) : X ⟶ Y := f
@@ -522,7 +571,7 @@ def map {D : Type*} [Category D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial D
 def mapId (C : Type*) [Category C] : map (𝟭 C) ≅ 𝟭 (WithInitial C) :=
   NatIso.ofComponents (fun X => match X with
     | of _ => Iso.refl _
-    | star => Iso.refl _) (by aesop_cat)
+    | star => Iso.refl _) (by cat_disch)
 
 /-- A natural isomorphism between the functor `map (F ⋙ G) ` and `map F ⋙ map G `. -/
 @[simps!]
@@ -530,7 +579,7 @@ def mapComp {D E : Type*} [Category D] [Category E] (F : C ⥤ D) (G : D ⥤ E) 
     map (F ⋙ G) ≅ map F ⋙ map G :=
   NatIso.ofComponents (fun X => match X with
     | of _ => Iso.refl _
-    | star => Iso.refl _) (by aesop_cat)
+    | star => Iso.refl _) (by cat_disch)
 
 /-- From a natural transformation of functors `C ⥤ D`, the induced natural transformation
 of functors `WithInitial C ⥤ WithInitial D`. -/
@@ -645,7 +694,7 @@ instance {X : WithInitial C} : Unique (star ⟶ X) where
     match X with
     | of _x => PUnit.unit
     | star => PUnit.unit
-  uniq := by aesop_cat
+  uniq := by cat_disch
 
 /-- `WithInitial.star` is initial. -/
 def starInitial : Limits.IsInitial (star : WithInitial C) :=
@@ -768,7 +817,7 @@ objects. -/
 @[simps!]
 def mkCommaMorphism {F G : WithInitial C ⥤ D} (η : F ⟶ G) : mkCommaObject F ⟶ mkCommaObject G where
   left := η.app .star
-  right := whiskerLeft incl η
+  right := Functor.whiskerLeft incl η
 
 /-- An element of the comma category `Comma (Functor.const C) (𝟭 (C ⥤ D))` can be seen as a
 functor `WithInitial C ⥤ D`. -/

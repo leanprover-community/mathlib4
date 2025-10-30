@@ -57,15 +57,15 @@ see `IsAlgClosed.splits_codomain` and `IsAlgClosed.splits_domain`.
 -/
 @[stacks 09GR "The definition of `IsAlgClosed` in mathlib is 09GR (4)"]
 class IsAlgClosed : Prop where
-  splits : ∀ p : k[X], p.Splits <| RingHom.id k
+  factors : ∀ p : k[X], p.Factors
 
 /-- Every polynomial splits in the field extension `f : K →+* k` if `k` is algebraically closed.
 
 See also `IsAlgClosed.splits_domain` for the case where `K` is algebraically closed.
 -/
 theorem IsAlgClosed.splits_codomain {k K : Type*} [Field k] [IsAlgClosed k] [CommRing K]
-    {f : K →+* k} (p : K[X]) : p.Splits f := by
-  convert IsAlgClosed.splits (p.map f); simp [splits_map_iff]
+    {f : K →+* k} (p : K[X]) : p.Splits f :=
+  IsAlgClosed.factors (p.map f)
 
 /-- Every polynomial splits in the field extension `f : K →+* k` if `K` is algebraically closed.
 
@@ -73,11 +73,14 @@ See also `IsAlgClosed.splits_codomain` for the case where `k` is algebraically c
 -/
 theorem IsAlgClosed.splits_domain {k K : Type*} [Field k] [IsAlgClosed k] [Field K] {f : k →+* K}
     (p : k[X]) : p.Splits f :=
-  Polynomial.splits_of_splits_id _ <| IsAlgClosed.splits _
+  (IsAlgClosed.factors p).map f
 
 namespace IsAlgClosed
 
 variable {k}
+
+theorem splits [IsAlgClosed k] (p : k[X]) : p.Splits (RingHom.id k) :=
+  (IsAlgClosed.factors p).map (RingHom.id k)
 
 /--
 If `k` is algebraically closed, then every nonconstant polynomial has a root.
@@ -135,7 +138,7 @@ If every nonconstant polynomial over `k` has a root, then `k` is algebraically c
 @[stacks 09GR "(3) ⟹ (4)"]
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p.eval x = 0) :
     IsAlgClosed k := by
-  refine ⟨fun p ↦ Or.inr ?_⟩
+  refine ⟨fun p ↦ factors_iff_splits.mpr <| Or.inr ?_⟩
   intro q hq _
   have : Irreducible (q * C (leadingCoeff q)⁻¹) := by
     classical
@@ -263,9 +266,6 @@ theorem surjective_restrictDomain_of_isAlgebraic {E : Type*}
     Function.Surjective fun φ : E →ₐ[K] M ↦ φ.restrictDomain L :=
   fun f ↦ IntermediateField.exists_algHom_of_splits'
     (E := E) f fun s ↦ ⟨Algebra.IsIntegral.isIntegral s, IsAlgClosed.splits_codomain _⟩
-
-@[deprecated (since := "2024-11-15")]
-alias surjective_comp_algebraMap_of_isAlgebraic := surjective_restrictDomain_of_isAlgebraic
 
 variable [Algebra.IsAlgebraic K L] (K L M)
 
@@ -413,7 +413,7 @@ noncomputable def equivOfEquivAux (hSR : S ≃+* R) :
   simp only [RingEquiv.toRingHom_eq_coe, Function.comp_apply, RingHom.coe_comp,
     AlgEquiv.coe_ringEquiv, RingEquiv.coe_toRingHom]
   conv_lhs => rw [← hSR.symm_apply_apply x]
-  show equivOfAlgebraic' R S L M (algebraMap R L (hSR x)) = _
+  change equivOfAlgebraic' R S L M (algebraMap R L (hSR x)) = _
   rw [AlgEquiv.commutes]
 
 /-- Algebraic closure of isomorphic fields are isomorphic -/

@@ -22,7 +22,7 @@ suppress_compilation
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Category CategoryTheory.Functor CategoryTheory.Limits
   CategoryTheory.Idempotents Opposite SimplicialObject Simplicial
 
 namespace AlgebraicTopology
@@ -54,7 +54,7 @@ def Γ₀NondegComplexIso (K : ChainComplex C ℕ) : (Γ₀.splitting K).nondegC
         · intro h
           replace h := congr_arg SimplexCategory.len h
           change n + 1 = n at h
-          omega
+          cutsat
         · simpa only [Isδ₀.iff] using hi)
 
 /-- The natural isomorphism `(Γ₀.splitting K).nondegComplex ≅ K` for `K : ChainComplex C ℕ`. -/

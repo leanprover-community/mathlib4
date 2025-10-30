@@ -147,18 +147,18 @@ lemma fromSpecStalkOfMem_restrict (f : X.PartialMap Y)
     {U : X.Opens} (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) {x} (hx : x ∈ U) :
     (f.restrict U hU hU').fromSpecStalkOfMem hx = f.fromSpecStalkOfMem (hU' hx) := by
   dsimp only [fromSpecStalkOfMem, restrict, Scheme.Opens.fromSpecStalkOfMem]
-  have e : ⟨x, hU' hx⟩ = (X.homOfLE hU').base ⟨x, hx⟩ := by
+  have e : ⟨x, hU' hx⟩ = X.homOfLE hU' ⟨x, hx⟩ := by
     rw [Scheme.homOfLE_base]
     rfl
-  rw [Category.assoc, ← Spec_map_stalkMap_fromSpecStalk_assoc,
-    ← Spec_map_stalkSpecializes_fromSpecStalk (Inseparable.of_eq e).specializes,
+  rw [Category.assoc, ← SpecMap_stalkMap_fromSpecStalk_assoc,
+    ← SpecMap_stalkSpecializes_fromSpecStalk (Inseparable.of_eq e).specializes,
     ← TopCat.Presheaf.stalkCongr_inv _ (Inseparable.of_eq e)]
   simp only [← Category.assoc, ← Spec.map_comp]
   congr 3
   rw [Iso.eq_inv_comp, ← Category.assoc, IsIso.comp_inv_eq, IsIso.eq_inv_comp,
-    stalkMap_congr_hom _ _ (X.homOfLE_ι hU').symm]
+    Hom.stalkMap_congr_hom _ _ (X.homOfLE_ι hU').symm]
   simp only [TopCat.Presheaf.stalkCongr_hom]
-  rw [← stalkSpecializes_stalkMap_assoc, stalkMap_comp]
+  rw [← Hom.stalkSpecializes_stalkMap_assoc, Hom.stalkMap_comp]
 
 lemma fromFunctionField_restrict (f : X.PartialMap Y) [IrreducibleSpace X]
     {U : X.Opens} (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) :
@@ -406,7 +406,10 @@ def RationalMap.fromFunctionField [IrreducibleSpace X] (f : X ⤏ Y) :
     Spec X.functionField ⟶ Y := by
   refine Quotient.lift PartialMap.fromFunctionField ?_ f
   intro f g ⟨W, hW, hWl, hWr, e⟩
-  have : f.restrict W hW hWl = g.restrict W hW hWr := by ext1; rfl; rw [e]; simp
+  have : f.restrict W hW hWl = g.restrict W hW hWr := by
+    ext1
+    · rfl
+    rw [e]; simp
   rw [← f.fromFunctionField_restrict hW hWl, this, g.fromFunctionField_restrict]
 
 @[simp]
@@ -488,11 +491,14 @@ lemma RationalMap.dense_domain (f : X ⤏ Y) : Dense (X := X) f.domain :=
 consisting of all the domains of the partial maps in the equivalence class. -/
 noncomputable
 def RationalMap.openCoverDomain (f : X ⤏ Y) : f.domain.toScheme.OpenCover where
-  J := { PartialMap.domain g | (g) (_ : g.toRationalMap = f) }
-  obj U := U.1.toScheme
-  map U := X.homOfLE (le_sSup U.2)
-  f x := ⟨_, (TopologicalSpace.Opens.mem_sSup.mp x.2).choose_spec.1⟩
-  covers x := ⟨⟨x.1, (TopologicalSpace.Opens.mem_sSup.mp x.2).choose_spec.2⟩, Subtype.ext (by simp)⟩
+  I₀ := { PartialMap.domain g | (g) (_ : g.toRationalMap = f) }
+  X U := U.1.toScheme
+  f U := X.homOfLE (le_sSup U.2)
+  mem₀ := by
+    rw [presieve₀_mem_precoverage_iff]
+    refine ⟨fun x ↦ ?_, inferInstance⟩
+    use ⟨_, (TopologicalSpace.Opens.mem_sSup.mp x.2).choose_spec.1⟩
+    exact ⟨⟨x.1, (TopologicalSpace.Opens.mem_sSup.mp x.2).choose_spec.2⟩, Subtype.ext (by simp)⟩
 
 /-- If `f : X ⤏ Y` is a rational map from a reduced scheme to a separated scheme,
 then `f` can be represented as a partial map on its domain of definition. -/
@@ -500,14 +506,14 @@ noncomputable
 def RationalMap.toPartialMap [IsReduced X] [Y.IsSeparated] (f : X ⤏ Y) : X.PartialMap Y := by
   refine ⟨f.domain, f.dense_domain, f.openCoverDomain.glueMorphisms
     (fun x ↦ (X.isoOfEq x.2.choose_spec.2).inv ≫ x.2.choose.hom) ?_⟩
-  intros x y
-  let g (x : f.openCoverDomain.J) := x.2.choose
+  intro x y
+  let g (x : f.openCoverDomain.I₀) := x.2.choose
   have hg₁ (x) : (g x).toRationalMap = f := x.2.choose_spec.1
   have hg₂ (x) : (g x).domain = x.1 := x.2.choose_spec.2
   refine (cancel_epi (isPullback_opens_inf_le (le_sSup x.2) (le_sSup y.2)).isoPullback.hom).mp ?_
   simp only [openCoverDomain, IsPullback.isoPullback_hom_fst_assoc,
     IsPullback.isoPullback_hom_snd_assoc]
-  show _ ≫ _ ≫ (g x).hom = _ ≫ _ ≫ (g y).hom
+  change _ ≫ _ ≫ (g x).hom = _ ≫ _ ≫ (g y).hom
   simp_rw [← cancel_epi (X.isoOfEq congr($(hg₂ x) ⊓ $(hg₂ y))).hom, ← Category.assoc]
   convert (PartialMap.equiv_iff_of_isSeparated (S := ⊤_ _) (f := g x) (g := g y)).mp ?_ using 1
   · dsimp; congr 1; simp [g, ← cancel_mono (Opens.ι _)]

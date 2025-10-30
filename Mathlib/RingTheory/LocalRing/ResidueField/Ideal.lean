@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
@@ -78,15 +78,15 @@ lemma Ideal.injective_algebraMap_quotient_residueField :
     Function.Injective (algebraMap (R ⧸ I) I.ResidueField) := by
   rw [RingHom.injective_iff_ker_eq_bot]
   refine (Ideal.ker_quotient_lift _ _).trans ?_
-  show map (Quotient.mk I) (RingHom.ker (algebraMap R I.ResidueField)) = ⊥
+  change map (Quotient.mk I) (RingHom.ker (algebraMap R I.ResidueField)) = ⊥
   rw [Ideal.ker_algebraMap_residueField, map_quotient_self]
 
 instance : IsFractionRing (R ⧸ I) I.ResidueField where
-  map_units' y := isUnit_iff_ne_zero.mpr
+  map_units y := isUnit_iff_ne_zero.mpr
     (map_ne_zero_of_mem_nonZeroDivisors _ I.injective_algebraMap_quotient_residueField y.2)
-  surj' x := by
+  surj x := by
     obtain ⟨x, rfl⟩ := IsLocalRing.residue_surjective x
-    obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.mk'_surjective I.primeCompl x
+    obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.exists_mk'_eq I.primeCompl x
     refine ⟨⟨Ideal.Quotient.mk _ x, ⟨Ideal.Quotient.mk _ s, ?_⟩⟩, ?_⟩
     · rwa [mem_nonZeroDivisors_iff_ne_zero, ne_eq, Ideal.Quotient.eq_zero_iff_mem]
     · simp [IsScalarTower.algebraMap_eq R (Localization.AtPrime I) I.ResidueField, ← map_mul]
