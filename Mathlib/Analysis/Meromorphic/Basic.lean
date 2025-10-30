@@ -117,7 +117,7 @@ theorem prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜} {x : 𝕜}
   classical
   induction s using Finset.induction with
   | empty =>
-    simp only [Finset.prod_empty]
+    rw [Finset.prod_empty]
     exact analyticAt_const.meromorphicAt
   | insert σ s hσ hind =>
     rw [Finset.prod_insert hσ]
