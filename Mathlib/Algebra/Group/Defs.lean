@@ -471,7 +471,7 @@ where
   /-- Auxiliary tail-recursive implementation for `npowBinRec`. -/
   @[to_additive nsmulBinRec.go /-- Auxiliary tail-recursive implementation for `nsmulBinRec`. -/]
   go (k : ℕ) : M → M → M :=
-    k.binaryRec (fun y _ ↦ y) fun bn _n fn y x ↦ fn (cond bn (y * x) y) (x * x)
+    k.binaryRecₖ (fun y _ ↦ y) fun bn _n fn y x ↦ fn (cond bn (y * x) y) (x * x)
 
 /--
 A variant of `npowRec` which is a semigroup homomorphism from `ℕ₊` to `M`.
@@ -538,6 +538,7 @@ theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M] (k : ℕ) (m n : M)
   | zero => simp at hk
   | one => simp [npowRec']
   | bit b k' k'0 ih =>
+    rw [Nat.binaryRecₖ_eq_binaryRec] at ih ⊢
     rw [Nat.binaryRec_eq _ _ (Or.inl rfl), ih _ _ k'0]
     cases b <;> simp only [Nat.bit, cond_false, cond_true, npowRec'_two_mul]
     rw [npowRec'_succ (by cutsat), npowRec'_two_mul, ← npowRec'_two_mul,
@@ -571,7 +572,7 @@ theorem npowRec_eq_npowBinRec : @npowRecAuto = @npowBinRecAuto := by
   funext M _ _ k m
   rw [npowBinRecAuto, npowRecAuto, npowBinRec]
   match k with
-  | 0 => rw [npowRec, npowBinRec.go, Nat.binaryRec_zero]
+  | 0 => rw [npowRec, npowBinRec.go, Nat.binaryRecₖ_zero]
   | k + 1 => rw [npowBinRec.go_spec, npowRec_eq]
 
 @[to_additive] theorem npowBinRec_zero {M : Type*} [Semigroup M] [One M] (m : M) :
