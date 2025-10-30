@@ -264,7 +264,7 @@
   "Mathlib.Tactic.NormNum.ModEq":
   ["Mathlib.Data.Int.ModEq", "Mathlib.Tactic.NormNum.DivMod"],
   "Mathlib.Tactic.NormNum.Ineq":
-  ["Mathlib.Algebra.Order.Field.Defs", "Mathlib.Algebra.Order.Monoid.WithTop"],
+  ["Mathlib.Algebra.Order.Monoid.WithTop"],
   "Mathlib.Tactic.NormNum.BigOperators":
   ["Mathlib.Algebra.BigOperators.Group.Finset.Basic",
    "Mathlib.Data.List.FinRange"],
