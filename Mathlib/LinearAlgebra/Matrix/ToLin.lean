@@ -644,7 +644,7 @@ lemma LinearMap.toMatrix_singleton {ι : Type*} [Unique ι] (f : R →ₗ[R] R) 
 theorem Matrix.toLin_one : Matrix.toLin v₁ v₁ 1 = LinearMap.id := by
   rw [← LinearMap.toMatrix_id v₁, Matrix.toLin_toMatrix]
 
-theorem toLin_scalar (r : R) : Matrix.toLin v₁ v₁ (scalar n r) = r • LinearMap.id :=
+theorem Matrix.toLin_scalar (r : R) : Matrix.toLin v₁ v₁ (scalar n r) = r • LinearMap.id :=
   (LinearMap.toMatrix v₁ v₁).injective (by simp [toMatrix_id, smul_one_eq_diagonal])
 
 theorem LinearMap.toMatrix_reindexRange [DecidableEq M₁] (f : M₁ →ₗ[R] M₂) (k : m) (i : n) :
