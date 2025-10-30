@@ -181,7 +181,7 @@ noncomputable def dividedPowers {n : ℕ} (hn_fac : IsUnit ((n - 1).factorial : 
 
 lemma dpow_apply {n : ℕ} (hn_fac : IsUnit ((n - 1).factorial : A)) (hnI : I ^ n = 0)
     {m : ℕ} {x : A} :
-  (dividedPowers (hn_fac) (hnI)).dpow m x =
+  (dividedPowers hn_fac hnI).dpow m x =
     if x ∈ I then inverse (m.factorial : A) * x ^ m else 0 := rfl
 
 end OfInvertibleFactorial

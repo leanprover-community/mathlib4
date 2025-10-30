@@ -102,7 +102,7 @@ theorem ext {F F' : MonoFactorisation f} (hI : F.I = F'.I)
     (hm : F.m = eqToHom hI ≫ F'.m) : F = F' := by
   obtain ⟨_, Fm, _, Ffac⟩ := F; obtain ⟨_, Fm', _, Ffac'⟩ := F'
   cases hI
-  simp? at hm says simp only [eqToHom_refl, Category.id_comp] at hm
+  replace hm : Fm = Fm' := by simpa using hm
   congr
   apply (cancel_mono Fm).1
   rw [Ffac, hm, Ffac']
@@ -152,6 +152,30 @@ def ofArrowIso {f g : Arrow C} (F : MonoFactorisation f.hom) (sq : f ⟶ g) [IsI
   e := inv sq.left ≫ F.e
   m_mono := mono_comp _ _
   fac := by simp only [fac_assoc, Arrow.w, IsIso.inv_comp_eq, Category.assoc]
+
+/--
+Given a mono factorisation `X ⟶ I ⟶ Y` of an arrow `f`, an isomorphism `I ≅ I'` gives a new mono
+factorisation `X ⟶ I' ⟶ Y` of `f`.
+-/
+@[simps]
+def ofIsoI (F : MonoFactorisation f) {I'} (e : F.I ≅ I') :
+    MonoFactorisation f where
+  I := I'
+  m := e.inv ≫ F.m
+  e := F.e ≫ e.hom
+
+/--
+Copying a mono factorisation to another mono factorisation with propositionally equal
+`m` and `e` fields.
+-/
+@[simps]
+def copy (F : MonoFactorisation f) (m : F.I ⟶ Y) (e : X ⟶ F.I)
+    (hm : m = F.m := by cat_disch) (he : e = F.e := by cat_disch) :
+    MonoFactorisation f where
+  I := F.I
+  m := m
+  e := e
+  m_mono := by rw [hm]; infer_instance
 
 end MonoFactorisation
 
@@ -215,6 +239,26 @@ def ofArrowIso {f g : Arrow C} {F : MonoFactorisation f.hom} (hF : IsImage F) (s
     simpa only [MonoFactorisation.ofArrowIso_m, Arrow.inv_right, ← Category.assoc,
       IsIso.comp_inv_eq] using hF.lift_fac (F'.ofArrowIso (inv sq))
 
+/--
+Given a mono factorisation `X ⟶ I ⟶ Y` of an arrow `f` that is an image and an isomorphism `I ≅ I'`,
+the induced mono factorisation by the isomorphism is also an image.
+-/
+@[simps]
+def ofIsoI {F : MonoFactorisation f} (hF : IsImage F) {I' : C} (e : F.I ≅ I') :
+    IsImage (F.ofIsoI e) where
+  lift F' := e.inv ≫ hF.lift F'
+
+/--
+Copying a mono factorisation to another mono factorisation with propositionally equal fields
+preserves the property of being an image.
+This is useful when one needs precise control of the `m` and `e` fields.
+-/
+@[simps]
+def copy {F : MonoFactorisation f} (hF : IsImage F) (m : F.I ⟶ Y) (e : X ⟶ F.I)
+    (hm : m = F.m := by cat_disch) (he : e = F.e := by cat_disch) :
+    IsImage (F.copy m e) where
+  lift := hF.lift
+
 end IsImage
 
 variable (f)
@@ -239,6 +283,27 @@ def ofArrowIso {f g : Arrow C} (F : ImageFactorisation f.hom) (sq : f ⟶ g) [Is
   F := F.F.ofArrowIso sq
   isImage := F.isImage.ofArrowIso sq
 
+/--
+Given an image factorisation `X ⟶ I ⟶ Y` of an arrow `f`, an isomorphism `I ≅ I'` induces a new
+image factorisation `X ⟶ I' ⟶ Y` of `f`.
+-/
+@[simps]
+def ofIsoI {f : X ⟶ Y} (F : ImageFactorisation f) {I' : C} (e : F.F.I ≅ I') :
+    ImageFactorisation f where
+  F := F.F.ofIsoI e
+  isImage := F.isImage.ofIsoI e
+
+/--
+Copying an image factorisation to another image factorisation with propositionally equal
+`m` and `e` fields.
+-/
+@[simps]
+def copy {f : X ⟶ Y} (F : ImageFactorisation f) (m : F.F.I ⟶ Y) (e : X ⟶ F.F.I)
+    (hm : m = F.F.m := by cat_disch) (he : e = F.F.e := by cat_disch) :
+    ImageFactorisation f where
+  F := F.F.copy m e
+  isImage := F.isImage.copy m e
+
 end ImageFactorisation
 
 /-- `HasImage f` means that there exists an image factorisation of `f`. -/
@@ -261,14 +326,18 @@ section
 
 variable [HasImage f]
 
+/-- Some image factorisation of `f` through a monomorphism (selected with choice). -/
+def Image.imageFactorisation : ImageFactorisation f :=
+  Classical.choice HasImage.exists_image
+
 /-- Some factorisation of `f` through a monomorphism (selected with choice). -/
 def Image.monoFactorisation : MonoFactorisation f :=
-  (Classical.choice HasImage.exists_image).F
+  (Image.imageFactorisation f).F
 
 /-- The witness of the universal property for the chosen factorisation of `f` through
 a monomorphism. -/
 def Image.isImage : IsImage (Image.monoFactorisation f) :=
-  (Classical.choice HasImage.exists_image).isImage
+  (Image.imageFactorisation f).isImage
 
 /-- The categorical image of a morphism. -/
 def image : C :=
@@ -470,7 +539,7 @@ theorem image.eq_fac [HasEqualizers C] (h : f = f') :
     image.ι f = (image.eqToIso h).hom ≫ image.ι f' := by
   apply image.ext
   subst h
-  simp [asIso,image.eqToIso, image.eqToHom]
+  simp [asIso, image.eqToIso, image.eqToHom]
 
 end
 
@@ -676,7 +745,7 @@ theorem ImageMap.map_uniq_aux {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] 
     (map_ι : map ≫ image.ι g.hom = image.ι f.hom ≫ sq.right := by cat_disch)
     (map' : image f.hom ⟶ image g.hom)
     (map_ι' : map' ≫ image.ι g.hom = image.ι f.hom ≫ sq.right) : (map = map') := by
-  have : map ≫ image.ι g.hom = map' ≫ image.ι g.hom := by rw [map_ι,map_ι']
+  have : map ≫ image.ι g.hom = map' ≫ image.ι g.hom := by rw [map_ι, map_ι']
   apply (cancel_mono (image.ι g.hom)).1 this
 
 theorem ImageMap.map_uniq {f g : Arrow C} [HasImage f.hom] [HasImage g.hom]

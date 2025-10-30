@@ -53,7 +53,7 @@ theorem toConvexCone_injective : Injective ((↑) : PointedCone R E → ConvexCo
 theorem pointed_toConvexCone (C : PointedCone R E) : (C : ConvexCone R E).Pointed := by
   simp [toConvexCone, ConvexCone.Pointed]
 
-@[simp] lemma mem_toConvexCone {C : PointedCone R E} {x : E} : x ∈ C.toConvexCone ↔ x ∈ C := .rfl
+@[simp] lemma mem_toConvexCone : x ∈ C.toConvexCone ↔ x ∈ C := .rfl
 
 @[ext] lemma ext (h : ∀ x, x ∈ C₁ ↔ x ∈ C₂) : C₁ = C₂ := SetLike.ext h
 
@@ -95,6 +95,32 @@ lemma _root_.ConvexCone.toPointedCone_top : (⊤ : ConvexCone R E).toPointedCone
 
 instance canLift : CanLift (ConvexCone R E) (PointedCone R E) (↑) ConvexCone.Pointed where
   prf C hC := ⟨C.toPointedCone hC, rfl⟩
+
+/-- Construct a pointed cone from closure under two-element conical combinations.
+I.e., a nonempty set closed under two-element conical combinations is a pointed cone. -/
+def ofConeComb (C : Set E) (nonempty : C.Nonempty)
+    (coneComb : ∀ x ∈ C, ∀ y ∈ C, ∀ a : R, 0 ≤ a → ∀ b : R, 0 ≤ b → a • x + b • y ∈ C) :
+    PointedCone R E :=
+  .ofLinearComb C nonempty fun x hx y hy ⟨a, ha⟩ ⟨b, hb⟩ => coneComb x hx y hy a ha b hb
+
+variable (R) in
+/-- The span of a set `s` is the smallest pointed cone that contains `s`.
+
+Pointed cones being defined as submodules over nonnegative scalars, this is exactly the
+submodule span of `s` w.r.t. nonnegative scalars. -/
+abbrev span (s : Set E) : PointedCone R E := Submodule.span R≥0 s
+
+lemma subset_span {s : Set E} : s ⊆ PointedCone.span R s := Submodule.subset_span
+
+/-- Elements of the cone hull are expressible as conical combination of elements from s. -/
+lemma mem_span_set {s : Set E} : x ∈ span R s ↔
+      ∃ c : E →₀ R, ↑c.support ⊆ s ∧ (∀ y, 0 ≤ c y) ∧ c.sum (fun m r => r • m) = x := by
+  rw [Submodule.mem_span_set]
+  constructor
+  · rintro ⟨c, hc, rfl⟩
+    exact ⟨⟨c.support, Subtype.val ∘ c, by simp [← Subtype.val_inj]⟩, hc, fun y ↦ (c y).2, rfl⟩
+  · rintro ⟨c, hc, hc₀, rfl⟩
+    exact ⟨⟨c.support, fun y ↦ ⟨c y, hc₀ _⟩, by simp⟩, hc, rfl⟩
 
 end Definitions
 

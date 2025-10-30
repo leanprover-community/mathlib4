@@ -58,7 +58,7 @@ def addFunPropDecl (declName : Name) : MetaM Unit := do
   let (xs, bi, b) ← forallMetaTelescope info.type
 
   if ¬b.isProp then
-    throwError "invalid fun_prop declaration, has to be `Prop` valued function"
+    throwError "invalid fun_prop declaration, has to be `Prop`-valued function"
 
   let lvls := info.levelParams.map (fun l => Level.param l)
   let e := mkAppN (.const declName lvls) xs
@@ -80,7 +80,7 @@ def addFunPropDecl (declName : Name) : MetaM Unit := do
 
   modifyEnv fun env => funPropDeclsExt.addEntry env decl
 
-  trace[Meta.Tactic.funProp.attr]
+  trace[Meta.Tactic.fun_prop.attr]
     "added new function property `{declName}`\nlook up pattern is `{path}`"
 
 

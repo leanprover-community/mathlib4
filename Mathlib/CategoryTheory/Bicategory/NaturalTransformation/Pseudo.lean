@@ -134,7 +134,6 @@ variable (F) in
 lemma id.toOplax : Oplax.StrongTrans.id F.toOplax = 𝟙 F :=
   rfl
 
-
 section
 
 variable {a b c : B} {a' : C}
@@ -237,6 +236,7 @@ lemma naturality_comp_iso (α : F ⟶ G) {a b c : B} (f : a ⟶ b) (g : b ⟶ c)
   ext
   simp [naturality_comp_hom α f g]
 
+@[reassoc, to_app]
 lemma naturality_comp_inv (α : F ⟶ G) {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
     (α.naturality (f ≫ g)).inv =
       α.app a ◁ (G.mapComp f g).hom ≫ (α_ _ _ _).inv ≫  (α.naturality f).inv ▷ G.map g ≫

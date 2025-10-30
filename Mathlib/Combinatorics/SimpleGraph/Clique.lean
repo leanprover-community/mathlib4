@@ -359,7 +359,7 @@ noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
     apply Iso.completeGraph
     simpa using (Fintype.equivFin h.choose).symm
   rw [← ha] at this
-  convert (Embedding.induce ↑h.choose.toSet).comp this.toEmbedding
+  convert (Embedding.induce ↑h.choose).comp this.toEmbedding
   exact hb.symm
 
 theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty (completeGraph (Fin n) ↪g G) :=
@@ -371,7 +371,7 @@ theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty (completeGraph (Fi
 /-- A simple graph has no `card β`-cliques iff it does not contain `⊤ : SimpleGraph β`. -/
 theorem cliqueFree_iff_top_free {β : Type*} [Fintype β] :
     G.CliqueFree (card β) ↔ (⊤ : SimpleGraph β).Free G := by
-  rw [← not_iff_not, not_free, cliqueFree_iff, not_isEmpty_iff,
+  rw [← not_iff_not, not_free, not_cliqueFree_iff,
     isContained_congr (Iso.completeGraph (Fintype.equivFin β)) Iso.refl]
   exact ⟨fun ⟨f⟩ ↦ ⟨f.toCopy⟩, fun ⟨f⟩ ↦ ⟨f.topEmbedding⟩⟩
 
@@ -412,10 +412,9 @@ theorem CliqueFree.comap {H : SimpleGraph β} (f : H ↪g G) : G.CliqueFree n �
 
 /-- See `SimpleGraph.cliqueFree_of_chromaticNumber_lt` for a tighter bound. -/
 theorem cliqueFree_of_card_lt [Fintype α] (hc : card α < n) : G.CliqueFree n := by
-  by_contra h
-  refine Nat.lt_le_asymm hc ?_
-  rw [cliqueFree_iff, not_isEmpty_iff] at h
-  simpa only [Fintype.card_fin] using Fintype.card_le_of_embedding h.some.toEmbedding
+  rw [cliqueFree_iff]
+  contrapose! hc
+  simpa only [Fintype.card_fin] using Fintype.card_le_of_embedding hc.some.toEmbedding
 
 /-- A complete `r`-partite graph has no `n`-cliques for `r < n`. -/
 theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι → Type*)
@@ -755,7 +754,7 @@ variable [DecidableRel H.Adj]
 
 @[gcongr, mono]
 theorem cliqueFinset_mono (h : G ≤ H) : G.cliqueFinset n ⊆ H.cliqueFinset n :=
-  monotone_filter_right _ fun _ ↦ IsNClique.mono h
+  monotone_filter_right _ fun _ _ ↦ IsNClique.mono h
 
 variable [Fintype β] [DecidableEq β] (G)
 

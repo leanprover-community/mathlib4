@@ -128,11 +128,11 @@ theorem lt_succ_floor (a : R) : a < ⌊a⌋.succ :=
 theorem lt_floor_add_one (a : R) : a < ⌊a⌋ + 1 := by
   simpa only [Int.succ, Int.cast_add, Int.cast_one] using lt_succ_floor a
 
-@[mono]
+@[gcongr, mono]
 theorem floor_mono : Monotone (floor : R → ℤ) :=
   gc_coe_floor.monotone_u
 
-@[gcongr, bound] lemma floor_le_floor (hab : a ≤ b) : ⌊a⌋ ≤ ⌊b⌋ := floor_mono hab
+@[bound] lemma floor_le_floor (hab : a ≤ b) : ⌊a⌋ ≤ ⌊b⌋ := floor_mono hab
 
 theorem floor_pos : 0 < ⌊a⌋ ↔ 1 ≤ a := by
   rw [Int.lt_iff_add_one_le, zero_add, le_floor, cast_one]
@@ -279,7 +279,7 @@ lemma mul_cast_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : k) : ⌊a * n
   rw [mul_comm, cast_mul_floor_div_cancel_of_pos hn]
 
 theorem natCast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : k) : ⌊n * a⌋ / n = ⌊a⌋ := by
-  simpa using cast_mul_floor_div_cancel_of_pos (n := n) (by omega) a
+  simpa using cast_mul_floor_div_cancel_of_pos (n := n) (by cutsat) a
 
 theorem mul_natCast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) {a : k} : ⌊a * n⌋ / n = ⌊a⌋ := by
   rw [mul_comm, natCast_mul_floor_div_cancel hn]
@@ -313,10 +313,7 @@ theorem fract_sub_self (a : R) : fract a - a = -⌊a⌋ :=
   sub_sub_cancel_left _ _
 
 theorem fract_add (a b : R) : ∃ z : ℤ, fract (a + b) - fract a - fract b = z :=
-  ⟨⌊a⌋ + ⌊b⌋ - ⌊a + b⌋, by
-    unfold fract
-    simp only [sub_eq_add_neg, neg_add_rev, neg_neg, cast_add, cast_neg]
-    abel⟩
+  ⟨⌊a⌋ + ⌊b⌋ - ⌊a + b⌋, by unfold fract; grind⟩
 
 variable [IsStrictOrderedRing R]
 

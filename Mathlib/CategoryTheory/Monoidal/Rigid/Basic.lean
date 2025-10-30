@@ -25,7 +25,7 @@ exact pairings and duals.
 * `comp_rightAdjointMate`: The adjoint mates of the composition is the composition of
   adjoint mates.
 
-## Notations
+## Notation
 
 * `η_` and `ε_` denote the coevaluation and evaluation morphism of an exact pairing.
 * `Xᘁ` and `ᘁX` denote the right and left dual of an object, as well as the adjoint

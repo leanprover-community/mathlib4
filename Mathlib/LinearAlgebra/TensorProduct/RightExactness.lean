@@ -7,7 +7,7 @@ Authors: Antoine Chambert-Loir
 import Mathlib.Algebra.Exact
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.TensorProduct.Maps
 
 /-! # Right-exactness properties of tensor product
 
@@ -223,9 +223,8 @@ lemma lTensor.inverse_of_rightInverse_apply
   apply LinearMap.congr_fun
   apply TensorProduct.ext'
   intro n q
-  simp? [lTensor.inverse_of_rightInverse] says
-    simp only [inverse_of_rightInverse, coe_comp, Function.comp_apply, lTensor_tmul,
-      lift.tmul, flip_apply, coe_mk, AddHom.coe_mk, mk_apply, Submodule.mkQ_apply]
+  suffices Submodule.Quotient.mk (n ⊗ₜ[R] h (g q)) = Submodule.Quotient.mk (n ⊗ₜ[R] q) by
+    simpa
   rw [Submodule.Quotient.eq, ← TensorProduct.tmul_sub]
   apply le_comap_range_lTensor f n
   rw [← hfg, mem_ker, map_sub, sub_eq_zero, hgh]
@@ -330,9 +329,7 @@ lemma rTensor.inverse_of_rightInverse_apply
   apply LinearMap.congr_fun
   apply TensorProduct.ext'
   intro n q
-  simp? [rTensor.inverse_of_rightInverse] says
-    simp only [inverse_of_rightInverse, coe_comp, Function.comp_apply, rTensor_tmul,
-      lift.tmul, coe_mk, AddHom.coe_mk, mk_apply, Submodule.mkQ_apply]
+  suffices Submodule.Quotient.mk (h (g n) ⊗ₜ[R] q) = Submodule.Quotient.mk (n ⊗ₜ[R] q) by simpa
   rw [Submodule.Quotient.eq, ← TensorProduct.sub_tmul]
   apply le_comap_range_rTensor f
   rw [← hfg, mem_ker, map_sub, sub_eq_zero, hgh]
