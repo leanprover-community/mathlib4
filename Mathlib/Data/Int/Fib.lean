@@ -131,10 +131,41 @@ theorem fib_add (m n : ℤ) : fib (m + n) = fib (m - 1) * fib n + fib m * fib (n
     · exact fib_add_natCast _ _
     · exact fib_neg_natCast_add_neg_natCast _ _
 
+theorem fib_two_mul (n : ℤ) : fib (2 * n) = fib n * (2 * fib (n + 1) - fib n) := by
+  rw [two_mul, fib_add]
+  grind [fib_add_two]
+
 theorem fib_two_mul_add_one (n : ℤ) : fib (2 * n + 1) = fib (n + 1) ^ 2 + fib n ^ 2 := by
   have := fib_add (n + 1) n
   grind
 
--- TODO: `fib_two_mul`, `fib_two_mul_add_two`, `fib_dvd`, ...
+theorem fib_two_mul_add_two (n : ℤ) :
+    fib (2 * n + 2) = fib (n + 1) * (2 * fib n + fib (n + 1)) := by
+  rw [← mul_add_one, fib_two_mul]
+  grind [fib_add_two]
+
+theorem fib_gcd (m n : ℤ) : fib (gcd m n) = gcd (fib m) (fib n) := by
+  obtain ⟨m, (rfl | rfl)⟩ := m.eq_nat_or_neg
+  · obtain ⟨n, (rfl | rfl)⟩ := n.eq_nat_or_neg
+    · simp [Nat.fib_gcd]
+    · simp only [gcd_neg, Int.gcd_natCast_natCast, fib_natCast, Nat.fib_gcd, fib_neg_natCast,
+        reduceNeg, Nat.cast_inj]
+      rcases neg_one_pow_eq_or ℤ (n + 1) with (h | h) <;> simp [h]
+  · obtain ⟨n, (rfl | rfl)⟩ := n.eq_nat_or_neg
+    · simp only [neg_gcd, Int.gcd_natCast_natCast, fib_natCast, Nat.fib_gcd, fib_neg_natCast,
+        reduceNeg, Nat.cast_inj]
+      rcases neg_one_pow_eq_or ℤ (m + 1) with (h | h) <;> simp [h]
+    · simp only [gcd_neg, neg_gcd, Int.gcd_natCast_natCast, fib_natCast, Nat.fib_gcd,
+        fib_neg_natCast, reduceNeg, Nat.cast_inj]
+      rcases neg_one_pow_eq_or ℤ (n + 1) with (h | h) <;>
+        rcases neg_one_pow_eq_or ℤ (m + 1) with (h' | h') <;> simp [h, h']
+
+private theorem fib_natCast_dvd {m : ℕ} {n : ℤ} (h : (m : ℤ) ∣ n) : fib m ∣ fib n := by
+  rwa [← gcd_eq_left_iff_dvd (by simp), ← fib_gcd, gcd_eq_left_iff_dvd (by simp) |>.mpr]
+
+theorem fib_dvd (m n : ℤ) (h : m ∣ n) : fib m ∣ fib n := by
+  obtain ⟨m, (rfl | rfl)⟩ := m.eq_nat_or_neg
+  · exact fib_natCast_dvd h
+  · simp [fib_neg_natCast, ← fib_natCast, fib_natCast_dvd <| Int.neg_dvd.mp h]
 
 end Int
