@@ -198,12 +198,12 @@ instance [IsCommMonObj G] : IsMonHom ι[G] where
 attribute [local simp] Hom.inv_def in
 instance [IsCommMonObj G] {f : M ⟶ G} [IsMonHom f] : IsMonHom f⁻¹ where
 
-namespace Grp_
-variable {G H : Grp_ C} [IsCommMonObj H.X]
+namespace Grp
+variable {G H : Grp C} [IsCommMonObj H.X]
 
--- TODO: Make `Grp_.toMon` an abbrev in mathlib.
+-- TODO: Make `Grp.toMon` an abbrev in mathlib.
 set_option allowUnsafeReducibility true in
-attribute [reducible] Grp_.toMon
+attribute [reducible] Grp.toMon
 
 instance : MonObj H where
   one := η[H.toMon]
@@ -238,10 +238,10 @@ attribute [local simp] mul_eq_mul comp_mul mul_comm mul_div_mul_comm in
 instance : IsCommMonObj H where
 
 instance [IsCommMonObj G.X] (f : G ⟶ H) : IsMonHom f where
-  one_hom := by ext; simp [Grp_.instMonObj]
-  mul_hom := by ext; simp [Grp_.instMonObj]
+  one_hom := by ext; simp [Grp.instMonObj]
+  mul_hom := by ext; simp [Grp.instMonObj]
 
-end Grp_
+end Grp
 
 /-- If `G` is a commutative group object, then `Hom(X, G)` has a commutative group structure. -/
 abbrev Hom.commGroup [IsCommMonObj G] : CommGroup (X ⟶ G) where
