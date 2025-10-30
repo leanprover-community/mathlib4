@@ -64,6 +64,10 @@ def isLimitOfHasBinaryProductOfPreservesLimit [PreservesLimit (pair X Y) G] :
     IsLimit (BinaryFan.mk (G.map (Limits.prod.fst : X ⨯ Y ⟶ X)) (G.map Limits.prod.snd)) :=
   mapIsLimitOfPreservesOfIsLimit G _ _ (prodIsProd X Y)
 
+instance [PreservesLimit (pair X Y) G] :
+    HasBinaryProduct (G.obj X) (G.obj Y) :=
+  ⟨_, isLimitOfHasBinaryProductOfPreservesLimit G X Y⟩
+
 variable [HasBinaryProduct (G.obj X) (G.obj Y)]
 
 /-- If the product comparison map for `G` at `(X,Y)` is an isomorphism, then `G` preserves the
