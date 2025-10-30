@@ -108,8 +108,9 @@ theorem MonotoneOn.intervalIntegral_deriv_bound {f : ℝ → ℝ} {a b : ℝ}
   rw [← uIcc_of_le hab] at hGf hG hG'
   have : f a ≤ f b := hf (by simp [hab]) (by simp [hab]) hab
   rw [uIcc_of_le (by linarith), mem_Icc]
-  have f_deriv_nonneg {x : ℝ} (hx : x ∈ Ioo a b): 0 ≤ deriv f x :=
-    hf.deriv_nonneg (Icc_mem_nhds (by grind) (by grind))
+  have f_deriv_nonneg {x : ℝ} (hx : x ∈ Ioo a b): 0 ≤ deriv f x := by
+    rw [← derivWithin_of_mem_nhds (Icc_mem_nhds (a := a) (b := b) (by grind) (by grind))]
+    exact hf.derivWithin_nonneg
   constructor
   · apply intervalIntegral.integral_nonneg_of_ae_restrict hab
     rw [Filter.EventuallyLE, MeasureTheory.ae_restrict_iff' (by simp)]

@@ -178,12 +178,6 @@ lemma MonotoneOn.derivWithin_nonneg (hg : MonotoneOn g s) :
   · simp [derivWithin_zero_of_not_accPt hx]
   exact hd.hasDerivWithinAt.nonneg_of_monotoneOn hx hg
 
-/-- The derivative at the interior of a set of a monotone function is nonnegative. -/
-lemma MonotoneOn.deriv_nonneg (hg : MonotoneOn g s) (hs : s ∈ 𝓝 x) :
-    0 ≤ deriv g x := by
-  rw [← derivWithin_of_mem_nhds hs]
-  exact hg.derivWithin_nonneg
-
 /-- If a monotone function has a derivative, then this derivative is nonnegative. -/
 lemma HasDerivAt.nonneg_of_monotone (hd : HasDerivAt g g' x) (hg : Monotone g) : 0 ≤ g' := by
   rw [← hasDerivWithinAt_univ] at hd
@@ -206,11 +200,6 @@ lemma HasDerivWithinAt.nonpos_of_antitoneOn (hx : AccPt x (𝓟 s))
 lemma AntitoneOn.derivWithin_nonpos (hg : AntitoneOn g s) :
     derivWithin g s x ≤ 0 := by
   simpa [derivWithin.fun_neg] using hg.neg.derivWithin_nonneg
-
-/-- The derivative at the interior of a set of a antitone function is nonpositive. -/
-lemma AntitoneOn.deriv_nonpos (hg : AntitoneOn g s) (hs : s ∈ 𝓝 x) :
-    deriv g x ≤ 0 := by
-  simpa [deriv.fun_neg] using hg.neg.deriv_nonneg hs
 
 /-- If an antitone function has a derivative, then this derivative is nonpositive. -/
 lemma HasDerivAt.nonpos_of_antitone (hd : HasDerivAt g g' x) (hg : Antitone g) : g' ≤ 0 := by
