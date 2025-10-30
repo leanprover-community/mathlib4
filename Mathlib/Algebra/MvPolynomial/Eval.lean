@@ -667,12 +667,6 @@ theorem aeval_prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) 
     aeval f (∏ i ∈ s, φ i) = ∏ i ∈ s, aeval f (φ i) :=
   map_prod (MvPolynomial.aeval f) _ _
 
-@[simp]
-lemma aeval_C_comp_left {ι S : Type*} [CommSemiring S] [Algebra R S]
-    (f : σ → S) (p : MvPolynomial σ R) :
-    aeval (C (σ := ι) ∘ f) p = C (aeval f p) :=
-  aeval_algebraMap_apply ..
-
 variable (R)
 
 theorem _root_.Algebra.adjoin_range_eq_range_aeval :
