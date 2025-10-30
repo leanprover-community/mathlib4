@@ -9,6 +9,7 @@ import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # PolynomialModule is isomorphic to a tensor product
+
 For a commutative ring `R` and an `R`-module `M`, we obtain an isomorphism between
 `R[X] ⊗[R] M` and `PolynomialModule R M` as `R[X]`-modules; this isomorphism is called
 `polynomialTensorProductLEquivPolynomialModule`.
@@ -22,8 +23,7 @@ variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
 
 namespace PolynomialModule
 
-/-- The `R[X]`-linear equivalence `(R[X] ⊗[R] M) ≃ₗ[R[X]] (PolynomialModule R M)`.
--/
+/-- The `R[X]`-linear equivalence `(R[X] ⊗[R] M) ≃ₗ[R[X]] (PolynomialModule R M)`. -/
 def polynomialTensorProductLEquivPolynomialModule :
     R[X] ⊗[R] M ≃ₗ[R[X]] PolynomialModule R M :=
   let e := liftBaseChange R[X] <| lsingle R (M := M) 0
