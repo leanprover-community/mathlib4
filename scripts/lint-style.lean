@@ -153,16 +153,17 @@ Return the number of undocumented scripts. -/
 def undocumentedScripts (opts : LinterOptions) : IO Nat := do
   unless getLinterValue linter.allScriptsDocumented opts do return 0
 
-  -- Retrieve all scripts (except for the `bench` directory).
-  let allScripts ← (walkDir "scripts" fun p ↦ pure (p.components.getD 1 "" != "bench"))
-  let allScripts := allScripts.erase ("scripts" / "bench")|>.erase ("scripts" / "README.md")
+  -- Retrieve all top-level entries in scripts directory (not recursive).
+  let entries ← System.FilePath.readDir "scripts"
+  let allScripts := entries.filterMap fun entry ↦
+    -- Skip the bench directory and README
+    if entry.fileName == "bench" || entry.fileName == "README.md" then none
+    else some entry.fileName
   -- Check if the README text contains each file enclosed in backticks.
   let readme : String ← IO.FS.readFile ("scripts" / "README.md")
   -- These are data files for linter exceptions: don't complain about these *for now*.
   let dataFiles := #["noshake.json", "nolints-style.txt"]
-  -- For now, there are no scripts in sub-directories that should be documented.
-  let fileNames := allScripts.map (·.fileName.get!)
-  let undocumented := fileNames.filter fun script ↦
+  let undocumented := allScripts.filter fun script ↦
     !readme.containsSubstr s!"`{script}`" && !dataFiles.contains script
   if undocumented.size > 0 then
     IO.println s!"error: found {undocumented.size} undocumented script(s): \
