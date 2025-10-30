@@ -2818,7 +2818,6 @@ lemma norm_crho_leq_house_crho : norm (h7.cρ q hq0 h2mq) ≤
   exact Preorder.le_refl ‖h7.cρ q hq0 h2mq‖
 }
 
-#check house_num_mul
 
 lemma crho_abs_eq : |h7.c₁ ^ h7.r q hq0 h2mq * h7.c₁ ^ (2 * h7.m * q)| =
   h7.c₁ ^ h7.r q hq0 h2mq * h7.c₁ ^ (2 * h7.m * q) := by {
@@ -3874,8 +3873,6 @@ lemma holS :
   ·
 
     clear H
-
-
    -- obtain ⟨l', hl'⟩ := H
     apply AnalyticAtEq (f := h7.SRl0 q hq0 h2mq)
       (U := (Metric.ball (h7.l₀' q hq0 h2mq + 1) 1))
@@ -3983,7 +3980,8 @@ lemma holS :
     · apply h7.SR_Analytic q hq0 h2mq z ?_
       have : z ∈ S.U h7 := by {
       unfold S.U ks
-      simp only [coe_image, coe_range, mem_compl_iff, Set.mem_image, Set.mem_Iio, not_exists,
+      simp only [coe_image, coe_range, mem_compl_iff, Set.mem_image,
+        Set.mem_Iio, not_exists,
         not_and]
       simp only [not_exists] at H
       intros x hx
