@@ -499,7 +499,7 @@ theorem exp_add_of_commute {x y : 𝔸} (hxy : Commute x y) : exp (x + y) = exp 
   exp_add_of_commute_of_mem_ball hxy ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _)
     ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _)
 
-/-- `NormedSace.exp x` has explicit two-sided inverse `NormedSace.exp  𝕂 (-x)`. -/
+/-- `NormedSpace.exp x` has explicit two-sided inverse `NormedSpace.exp (-x)`. -/
 noncomputable def invertibleExp (x : 𝔸) : Invertible (exp x) :=
   invertibleExpOfMemBall <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _
 
@@ -515,10 +515,9 @@ theorem _root_.Ring.inverse_exp (x : 𝔸) : Ring.inverse (exp x) = exp (-x) :=
 
 theorem exp_mem_unitary_of_mem_skewAdjoint [StarRing 𝔸] [ContinuousStar 𝔸] {x : 𝔸}
     (h : x ∈ skewAdjoint 𝔸) : exp x ∈ unitary 𝔸 := by
-  rw [unitary.mem_iff, star_exp, skewAdjoint.mem_iff.mp h, ←
-    exp_add_of_commute (Commute.refl x).neg_left, ←
-    exp_add_of_commute (Commute.refl x).neg_right, neg_add_cancel, add_neg_cancel, exp_zero,
-    and_self_iff]
+  rw [Unitary.mem_iff, star_exp, skewAdjoint.mem_iff.mp h, ←
+    exp_add_of_commute (Commute.refl x).neg_left, ← exp_add_of_commute (Commute.refl x).neg_right,
+    neg_add_cancel, add_neg_cancel, exp_zero, and_self_iff]
 
 open scoped Function in -- required for scoped `on` notation
 /-- In a Banach-algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`, if a family of elements `f i` mutually

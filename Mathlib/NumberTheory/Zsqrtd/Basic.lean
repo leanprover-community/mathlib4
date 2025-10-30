@@ -160,10 +160,7 @@ theorem im_mul (z w : ℤ√d) : (z * w).im = z.re * w.im + z.im * w.re :=
 
 instance addCommGroup : AddCommGroup (ℤ√d) := by
   refine
-  { add := (· + ·)
-    zero := (0 : ℤ√d)
-    sub := fun a b => a + -b
-    neg := Neg.neg
+  { sub := fun a b => a + -b
     nsmul := @nsmulRec (ℤ√d) ⟨0⟩ ⟨(· + ·)⟩
     zsmul := @zsmulRec (ℤ√d) ⟨0⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩ (@nsmulRec (ℤ√d) ⟨0⟩ ⟨(· + ·)⟩)
     add_assoc := ?_
@@ -190,13 +187,11 @@ theorem im_sub (z w : ℤ√d) : (z - w).im = z.im - w.im :=
 instance addGroupWithOne : AddGroupWithOne (ℤ√d) :=
   { Zsqrtd.addCommGroup with
     natCast := fun n => ofInt n
-    intCast := ofInt
-    one := 1 }
+    intCast := ofInt }
 
 instance commRing : CommRing (ℤ√d) := by
   refine
   { Zsqrtd.addGroupWithOne with
-    mul := (· * ·)
     npow := @npowRec (ℤ√d) ⟨1⟩ ⟨(· * ·)⟩,
     add_comm := ?_
     left_distrib := ?_
@@ -753,27 +748,23 @@ theorem nonneg_mul {a b : ℤ√d} (ha : Nonneg a) (hb : Nonneg b) : Nonneg (a *
   | _, _, ⟨x, y, Or.inr <| Or.inr rfl⟩, ⟨z, w, Or.inr <| Or.inr rfl⟩, ha, hb => by
     rw [calc
           (⟨-x, y⟩ * ⟨-z, w⟩ : ℤ√d) = ⟨_, _⟩ := rfl
-          _ = ⟨x * z + d * y * w, -(x * w + y * z)⟩ := by simp [add_comm]
-          ]
+          _ = ⟨x * z + d * y * w, -(x * w + y * z)⟩ := by simp [add_comm]]
     exact nonnegg_pos_neg.2 (sqLe_mul.left (nonnegg_neg_pos.1 ha) (nonnegg_neg_pos.1 hb))
   | _, _, ⟨x, y, Or.inr <| Or.inr rfl⟩, ⟨z, w, Or.inr <| Or.inl rfl⟩, ha, hb => by
     rw [calc
           (⟨-x, y⟩ * ⟨z, -w⟩ : ℤ√d) = ⟨_, _⟩ := rfl
-          _ = ⟨-(x * z + d * y * w), x * w + y * z⟩ := by simp [add_comm]
-          ]
+          _ = ⟨-(x * z + d * y * w), x * w + y * z⟩ := by simp [add_comm]]
     exact nonnegg_neg_pos.2 (sqLe_mul.right.left (nonnegg_neg_pos.1 ha) (nonnegg_pos_neg.1 hb))
   | _, _, ⟨x, y, Or.inr <| Or.inl rfl⟩, ⟨z, w, Or.inr <| Or.inr rfl⟩, ha, hb => by
     rw [calc
           (⟨x, -y⟩ * ⟨-z, w⟩ : ℤ√d) = ⟨_, _⟩ := rfl
-          _ = ⟨-(x * z + d * y * w), x * w + y * z⟩ := by simp [add_comm]
-          ]
+          _ = ⟨-(x * z + d * y * w), x * w + y * z⟩ := by simp [add_comm]]
     exact
         nonnegg_neg_pos.2 (sqLe_mul.right.right.left (nonnegg_pos_neg.1 ha) (nonnegg_neg_pos.1 hb))
   | _, _, ⟨x, y, Or.inr <| Or.inl rfl⟩, ⟨z, w, Or.inr <| Or.inl rfl⟩, ha, hb => by
     rw [calc
           (⟨x, -y⟩ * ⟨z, -w⟩ : ℤ√d) = ⟨_, _⟩ := rfl
-          _ = ⟨x * z + d * y * w, -(x * w + y * z)⟩ := by simp [add_comm]
-          ]
+          _ = ⟨x * z + d * y * w, -(x * w + y * z)⟩ := by simp [add_comm]]
     exact
         nonnegg_pos_neg.2
           (sqLe_mul.right.right.right (nonnegg_pos_neg.1 ha) (nonnegg_pos_neg.1 hb))
@@ -971,7 +962,7 @@ theorem lift_injective [CharZero R] {d : ℤ} (r : { r : R // r * r = ↑d })
 /-- An element of `ℤ√d` has norm equal to `1` if and only if it is contained in the submonoid
 of unitary elements. -/
 theorem norm_eq_one_iff_mem_unitary {d : ℤ} {a : ℤ√d} : a.norm = 1 ↔ a ∈ unitary (ℤ√d) := by
-  rw [unitary.mem_iff_self_mul_star, ← norm_eq_mul_conj]
+  rw [Unitary.mem_iff_self_mul_star, ← norm_eq_mul_conj]
   norm_cast
 
 /-- The kernel of the norm map on `ℤ√d` equals the submonoid of unitary elements. -/
