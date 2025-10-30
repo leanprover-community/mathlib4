@@ -300,7 +300,7 @@ theorem logMap_expMap {x : realSpace K}
 theorem sum_expMap_symm_apply {x : K} (hx : x ≠ 0) :
     ∑ w : InfinitePlace K, expMap.symm ((normAtAllPlaces (mixedEmbedding K x))) w =
       Real.log (|Algebra.norm ℚ x| : ℚ) := by
-  simp_rw [← prod_eq_abs_norm, Real.log_prod _ _ (fun _ _ ↦ pow_ne_zero _ ((map_ne_zero _).mpr hx)),
+  simp_rw [← prod_eq_abs_norm, Real.log_prod (fun _ _ ↦ pow_ne_zero _ ((map_ne_zero _).mpr hx)),
     Real.log_pow, expMap_symm_apply, normAtAllPlaces_mixedEmbedding]
 
 /--

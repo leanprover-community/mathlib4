@@ -312,7 +312,7 @@ private theorem toMonoidHom_apply_symm_apply (a : PresentedGroup (M.relationsSet
     (MulEquiv.toMonoidHom cs.mulEquiv : W →* PresentedGroup (M.relationsSet))
     ((MulEquiv.symm cs.mulEquiv) a) = a := calc
   _ = cs.mulEquiv ((MulEquiv.symm cs.mulEquiv) a) := by rfl
-  _ = _                                           := by rw [MulEquiv.apply_symm_apply]
+  _ = _ := by rw [MulEquiv.apply_symm_apply]
 
 /-- The universal mapping property of Coxeter systems. For any monoid `G`,
 functions `f : B → G` whose values satisfy the Coxeter relations are equivalent to
@@ -357,7 +357,7 @@ theorem simple_determines_coxeterSystem :
 /-- The product of the simple reflections of `W` corresponding to the indices in `ω`. -/
 def wordProd (ω : List B) : W := prod (map cs.simple ω)
 
-local prefix:100 "π" => cs.wordProd
+local prefix:100 "π " => cs.wordProd
 
 @[simp] theorem wordProd_nil : π [] = 1 := by simp [wordProd]
 
@@ -386,8 +386,8 @@ theorem wordProd_surjective : Surjective cs.wordProd := by
 /-- The word of length `m` that alternates between `i` and `i'`, ending with `i'`. -/
 def alternatingWord (i i' : B) (m : ℕ) : List B :=
   match m with
-  | 0    => []
-  | m+1  => (alternatingWord i' i m).concat i'
+  | 0 => []
+  | m + 1 => (alternatingWord i' i m).concat i'
 
 /-- The word of length `M i i'` that alternates between `i` and `i'`, ending with `i'`. -/
 abbrev braidWord (M : CoxeterMatrix B) (i i' : B) : List B := alternatingWord i i' (M i i')
@@ -420,9 +420,10 @@ lemma getElem_alternatingWord (i j : B) (p k : ℕ) (hk : k < p) :
   | succ n h => grind [CoxeterSystem.alternatingWord_succ']
 
 lemma getElem_alternatingWord_swapIndices (i j : B) (p k : ℕ) (h : k + 1 < p) :
-     (alternatingWord i j p)[k+1]'(by simp [h]) =
+     (alternatingWord i j p)[k + 1]'(by simp [h]) =
      (alternatingWord j i p)[k]'(by simp; cutsat) := by
-  rw [getElem_alternatingWord i j p (k+1) (by cutsat), getElem_alternatingWord j i p k (by cutsat)]
+  rw [getElem_alternatingWord i j p (k + 1) (by cutsat),
+    getElem_alternatingWord j i p k (by cutsat)]
   by_cases h_even : Even (p + k)
   · rw [if_pos h_even, ← add_assoc]
     simp only [ite_eq_right_iff, isEmpty_Prop, Nat.not_even_iff_odd, Even.add_one h_even,
@@ -456,7 +457,7 @@ lemma listTake_alternatingWord (i j : B) (p k : ℕ) (h : k < 2 * p) :
 lemma listTake_succ_alternatingWord (i j : B) (p : ℕ) (k : ℕ) (h : k + 1 < 2 * p) :
     List.take (k + 1) (alternatingWord i j (2 * p)) =
     i :: (List.take k (alternatingWord j i (2 * p))) := by
-  rw [listTake_alternatingWord j i p k (by cutsat), listTake_alternatingWord i j p (k+1) h]
+  rw [listTake_alternatingWord j i p k (by cutsat), listTake_alternatingWord i j p (k + 1) h]
   by_cases h_even : Even k
   · simp [Nat.not_even_iff_odd.mpr (Even.add_one h_even), alternatingWord_succ', h_even]
   · simp [(by rw [Nat.not_even_iff_odd] at h_even; exact Odd.add_one h_even : Even (k + 1)),
