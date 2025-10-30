@@ -216,7 +216,7 @@ Note that this difference only occurs because of our design using junk values;
 this is not a mathematically meaningful difference.`
 
 At the same time, this condition is fairly weak: it is implied, for instance, by `f` being
-continuous at `x` (see `mk_of_continuousAt`), which is easy to acertain in practice.
+continuous at `x` (see `mk_of_continuousAt`), which is easy to ascertain in practice.
 -/
 lemma map_target_subset_target (h : IsImmersionAt F I J n f x) :
     (h.equiv ∘ (·, 0)) '' (h.domChart.extend I).target ⊆ (h.codChart.extend J).target := by
