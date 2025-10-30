@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Emily Riehl
+Authors: Mario Carneiro, Emily Riehl
 -/
 
 import Mathlib.CategoryTheory.Bicategory.CatEnriched
@@ -32,7 +32,7 @@ universe u
 
 namespace SSet
 
-open CategoryTheory Simplicial MonoidalCategory
+open CategoryTheory Simplicial
 
 /-- `QCat` is the category of quasi-categories defined as the full subcategory of the category
 `SSet` of simplicial sets. -/
@@ -45,31 +45,15 @@ instance : Category QCat := ObjectProperty.FullSubcategory.category Quasicategor
 /-- As a full subcategory of `SSet`, the category `QCat` is a simplicially enriched ordinary
 category. -/
 instance QCat.SimplicialCat : SimplicialCategory QCat where
- Hom X Y := X.obj.functorHom Y.obj
- id X := Functor.natTransEquiv.symm (𝟙 X.obj)
- comp X Y Z := { app := fun _ ⟨f, g⟩ => f.comp g }
- homEquiv := Functor.natTransEquiv.symm
-
-/-- A type synonym for `C`, thought of as the objects of the quotient category. -/
-def Quotient.equiv {C : Type _} [Category C] (r : HomRel C) : Quotient r ≃ C where
-  toFun x := x.1
-  invFun x := ⟨x⟩
-
-def hoFunctor_obj_equiv (X : SSet) : hoFunctor.obj X ≃ X _⦋0⦌ :=
-  (Quotient.equiv _).trans (Quotient.equiv _)
-
-theorem hoFunctor_normal (X : SSet.{u}) : Function.Bijective
-    fun (f : 𝟙_ SSet ⟶ X) => Functor.LaxMonoidal.ε hoFunctor ≫ hoFunctor.map f := by
-  let equiv := (SSet.unitHomEquiv X).trans <|
-    (hoFunctor_obj_equiv.{u} X).symm.trans Cat.fromChosenTerminalEquiv.symm
-  convert ← equiv.bijective with f
-  simp [equiv]
-  rw [Equiv.symm_apply_eq, ← Equiv.eq_symm_apply]; rfl
+  Hom X Y := X.obj.functorHom Y.obj
+  id X := Functor.natTransEquiv.symm (𝟙 X.obj)
+  comp X Y Z := { app := fun _ ⟨f, g⟩ => f.comp g }
+  homEquiv := Functor.natTransEquiv.symm
 
 /-- `QCat` obtains a `Cat`-enriched ordinary category structure by applying `hoFunctor` to the
 hom objects in its `SSet`-enriched ordinary structure. -/
 noncomputable instance QCat.CatEnrichedOrdinaryCat : EnrichedOrdinaryCategory Cat QCat :=
-  TransportEnrichment.enrichedOrdinaryCategory QCat hoFunctor hoFunctor_normal
+  TransportEnrichment.enrichedOrdinaryCategory QCat hoFunctor hoFunctor_pro_normal_monoidal
 
 /-- The underlying category of the `Cat`-enriched ordinary category of quasicategories is
 equivalent to `QCat`. -/
@@ -85,7 +69,6 @@ noncomputable instance QCat.CatEnrichedCat : EnrichedCategory Cat QCat :=
     QCat.CatEnrichedOrdinaryCat.toEnrichedCategory
 
 end SSet
-
 
 namespace CategoryTheory
 
