@@ -195,7 +195,7 @@ private abbrev mergeWithGrindAllowed : Std.HashSet Name := { `«tactic#adaptatio
   inherit_doc linter.tacticAnalysis.mergeWithGrind]
 def mergeWithGrind : TacticAnalysis.Config where
   run seq := do
-    if let #[(preCtx, preI), (_postCtx, postI)] := seq[0:2].array then
+    if let #[(preCtx, preI), (_postCtx, postI)] := seq[seq.size - 2:].toArray then
       if postI.stx.getKind == ``Lean.Parser.Tactic.grind && preI.stx.getKind ∉ mergeWithGrindAllowed then
         if let [goal] := preI.goalsBefore then
           let goals ← try
