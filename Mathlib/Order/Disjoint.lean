@@ -74,15 +74,11 @@ grind_pattern Disjoint.mono_left => Disjoint b c, Disjoint a c
 theorem Disjoint.mono_right (h : b ≤ c) : Disjoint a c → Disjoint a b :=
   Disjoint.mono le_rfl h
 
-grind_pattern Disjoint.mono_right => b ≤ c, Disjoint a c
-grind_pattern Disjoint.mono_right => b ≤ c, Disjoint a b
-grind_pattern Disjoint.mono_right => Disjoint a c, Disjoint a b
+-- Note: we don't need separate `grind` patterns for `Disjoint.mono_right` because `grind`
+-- will use `disjoint_comm`.
 
 theorem Disjoint.out (h : Disjoint a b) (x : α) : x ≤ a → x ≤ b → x = ⊥ :=
   fun h₁ h₂ => by simpa using h h₁ h₂
-
-grind_pattern Disjoint.out => Disjoint a b, x ≤ a
-grind_pattern Disjoint.out => Disjoint a b, x ≤ b
 
 @[simp, grind =]
 theorem disjoint_self : Disjoint a a ↔ a = ⊥ :=
@@ -250,15 +246,8 @@ grind_pattern Codisjoint.mono_left => Codisjoint a c, Codisjoint b c
 theorem Codisjoint.mono_right : b ≤ c → Codisjoint a b → Codisjoint a c :=
   Codisjoint.mono le_rfl
 
-grind_pattern Codisjoint.mono_right => b ≤ c, Codisjoint a b
-grind_pattern Codisjoint.mono_right => b ≤ c, Codisjoint a c
-grind_pattern Codisjoint.mono_right => Codisjoint a b, Codisjoint a c
-
 theorem Codisjoint.out (h : Codisjoint a b) (x : α) : a ≤ x → b ≤ x → ⊤ ≤ x :=
   fun h₁ h₂ => by simpa using h h₁ h₂
-
-grind_pattern Codisjoint.out => Codisjoint a b, a ≤ x
-grind_pattern Codisjoint.out => Codisjoint a b, b ≤ x
 
 @[simp, grind =]
 theorem codisjoint_self : Codisjoint a a ↔ a = ⊤ :=
