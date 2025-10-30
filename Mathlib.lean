@@ -4800,6 +4800,7 @@ import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 import Mathlib.MeasureTheory.Measure.Haar.Quotient
 import Mathlib.MeasureTheory.Measure.Haar.Unique
 import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
+import Mathlib.MeasureTheory.Measure.HasOuterApproxClosedProd
 import Mathlib.MeasureTheory.Measure.Hausdorff
 import Mathlib.MeasureTheory.Measure.IntegralCharFun
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
