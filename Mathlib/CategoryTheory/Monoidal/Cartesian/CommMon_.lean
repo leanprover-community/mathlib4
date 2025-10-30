@@ -13,6 +13,7 @@ assert_not_exists MonoidWithZero
 
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory MonObj
 
+namespace CategoryTheory
 universe w v u
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] [BraidedCategory C] {X : C}
 
@@ -31,3 +32,5 @@ lemma IsCommMonObj.ofRepresentableBy (F : Cᵒᵖ ⥤ CommMonCat) (α : (F ⋙ f
 
 @[deprecated (since := "2025-09-14")]
 alias IsCommMon.ofRepresentableBy := IsCommMonObj.ofRepresentableBy
+
+end CategoryTheory
