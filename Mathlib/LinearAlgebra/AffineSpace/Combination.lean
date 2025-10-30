@@ -959,7 +959,7 @@ theorem ext_of_span_eq_top {V₁ V₂ P₁ P₂ : Type*}
     {s : Set P₁}
     (h_span : affineSpan k s = ⊤)
     (f g : P₁ →ᵃ[k] P₂)
-    (h_agree : ∀ p ∈ s, f p = g p) : f = g := by
+    (h_agree : s.restrict f = s.restrict g) : f = g := by
   ext x
   have hx : x ∈ affineSpan k s := by
     rw [h_span]
@@ -972,7 +972,7 @@ theorem ext_of_span_eq_top {V₁ V₂ P₁ P₂ : Type*}
   apply Finset.affineCombination_congr
   · simp
   · intro i _
-    exact h_agree i.val i.property
+    exact congr_fun h_agree i
 
 end AffineMap
 
@@ -987,7 +987,7 @@ theorem ext_of_span_eq_top [CommRing k] [AddCommGroup V] [Module k V] [AffineSpa
     {s : Set P}
     (h_span : affineSpan k s = ⊤)
     (T₁ T₂ : P ≃ᵃ[k] P)
-    (h_agree : ∀ p ∈ s, T₁ p = T₂ p) : T₁ = T₂ := by
+    (h_agree : s.restrict T₁ = s.restrict T₂) : T₁ = T₂ := by
   rw [← AffineEquiv.toAffineMap_inj]
   exact @AffineMap.ext_of_span_eq_top k _ V V P P _ _ _ _ _ _ s h_span
     T₁.toAffineMap T₂.toAffineMap h_agree
