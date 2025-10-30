@@ -607,8 +607,8 @@ lemma mulForbids_closed (F : Set (Pattern A G)) :
   simpa [this, isClosed_compl_iff] using isOpen_mulOccursInAt p v
 
 /-- Occurrence sets are closed. -/
-@[to_additive iClosed_occursInAt_add]
-lemma iClosed_occursInAt (p : Pattern A G) (g : G) :
+@[to_additive isClosed_occursInAt_add]
+lemma isClosed_occursInAt (p : Pattern A G) (g : G) :
     IsClosed { x | p.mulOccursInAt x g } := by
   simpa [mulOccursAt_eq_cylinder] using isClosed_cylinder _ _
 
@@ -729,5 +729,3 @@ end Language
 end FullShift
 
 end SymbolicDynamics
-
-#lint only
