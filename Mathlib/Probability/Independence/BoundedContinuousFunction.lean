@@ -1,4 +1,4 @@
-import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
+import Mathlib.MeasureTheory.Measure.HasOuterApproxClosedProd
 import Mathlib.Probability.Independence.Integration
 import Mathlib.Probability.Independence.Process
 
@@ -167,3 +167,7 @@ lemma indep_comap_of_boundedContinuousFunction (hm : m ≤ mΩ) [IsProbabilityMe
     Indep m (mE.comap X) P :=
   (Indep_iff_IndepSets ..).2 <|
     indepSets_comap_of_boundedContinuousFunction mX (fun s hs ↦ hm s hs) h
+
+lemma singleton_indepSets_comap_of_boundedContinuousFunction {A : Set Ω} (hA : MeasurableSet A)
+    {T : Type*} {E : T → Type*} [∀ t, MeasurableSpace (E t)] [∀ t, TopologicalSpace (E t)]
+    []
