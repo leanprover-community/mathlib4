@@ -19,11 +19,10 @@ and modules over it `M` and `N`, the standard construction of the tensor product
 It comes with a canonical bilinear map
 `TensorProduct.mk R M N : M →ₗ[R] N →ₗ[R] TensorProduct R M N`.
 
-Given any bilinear map `f : M →ₗ[R] N →ₗ[R] P`, there is a unique linear map
-`TensorProduct.lift f : TensorProduct R M N →ₗ[R] P` whose composition with the canonical bilinear
-map `TensorProduct.mk` is the given bilinear map `f`.  Uniqueness is shown in the theorem
+Given any bilinear map `f : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂`, there is a unique semilinear map
+`TensorProduct.lift f : TensorProduct R M N →ₛₗ[σ₁₂] P₂` whose composition with the canonical
+bilinear map `TensorProduct.mk` is the given bilinear map `f`.  Uniqueness is shown in the theorem
 `TensorProduct.lift.unique`.
-
 
 ## Notation
 
@@ -31,7 +30,6 @@ map `TensorProduct.mk` is the given bilinear map `f`.  Uniqueness is shown in th
   `TensorProduct R M N`.
 * It introduces the notation `m ⊗ₜ n` and `m ⊗ₜ[R] n` for the tensor product of two elements,
   otherwise written as `TensorProduct.tmul R m n`.
-
 
 ## Tags
 
@@ -596,7 +594,7 @@ theorem ext {g h : M ⊗ N →ₛₗ[σ₁₂] P₂} (H : (mk R M N).compr₂ₛ
 attribute [local ext high] ext
 
 variable (M N P₂ σ₁₂) in
-/-- Linearly constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P`
+/-- Linearly constructing a semilinear map `M ⊗ N → P` given a bilinear map `M → N → P`
 with the property that its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
 def uncurry : (M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) →ₗ[R₂] M ⊗[R] N →ₛₗ[σ₁₂] P₂ where
@@ -610,7 +608,7 @@ theorem uncurry_apply (f : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) (m 
 
 variable (M N P₂ σ₁₂)
 
-/-- A linear equivalence constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P`
+/-- A linear equivalence constructing a semilinear map `M ⊗ N → P` given a bilinear map `M → N → P`
 with the property that its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
 def lift.equiv : (M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) ≃ₗ[R₂] M ⊗[R] N →ₛₗ[σ₁₂] P₂ :=
@@ -627,8 +625,8 @@ theorem lift.equiv_symm_apply (f : M ⊗[R] N →ₛₗ[σ₁₂] P₂) (m : M) 
     (lift.equiv σ₁₂ M N P₂).symm f m n = f (m ⊗ₜ n) :=
   rfl
 
-/-- Given a linear map `M ⊗ N → P`, compose it with the canonical bilinear map `M → N → M ⊗ N` to
-form a bilinear map `M → N → P`. -/
+/-- Given a semilinear map `M ⊗ N → P`, compose it with the canonical bilinear map
+`M → N → M ⊗ N` to form a bilinear map `M → N → P`. -/
 def lcurry : (M ⊗[R] N →ₛₗ[σ₁₂] P₂) →ₗ[R₂] M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂ :=
   (lift.equiv σ₁₂ M N P₂).symm
 
@@ -639,8 +637,8 @@ theorem lcurry_apply (f : M ⊗[R] N →ₛₗ[σ₁₂] P₂) (m : M) (n : N) :
     lcurry σ₁₂ M N P₂ f m n = f (m ⊗ₜ n) :=
   rfl
 
-/-- Given a linear map `M ⊗ N → P`, compose it with the canonical bilinear map `M → N → M ⊗ N` to
-form a bilinear map `M → N → P`. -/
+/-- Given a semilinear map `M ⊗ N → P`, compose it with the canonical bilinear map
+`M → N → M ⊗ N` to form a bilinear map `M → N → P`. -/
 def curry (f : M ⊗[R] N →ₛₗ[σ₁₂] P₂) : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂ :=
   lcurry σ₁₂ M N P₂ f
 
@@ -668,7 +666,7 @@ theorem ext_fourfold {g h : M ⊗[R] N ⊗[R] P ⊗[R] Q →ₛₗ[σ₁₂] P�
   ext w x y z
   exact H w x y z
 
-/-- Two linear maps (M ⊗ N) ⊗ (P ⊗ Q) → S which agree on all elements of the
+/-- Two semilinear maps (M ⊗ N) ⊗ (P ⊗ Q) → S which agree on all elements of the
 form (m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q) are equal. -/
 theorem ext_fourfold' {φ ψ : M ⊗[R] N ⊗[R] (P ⊗[R] Q) →ₛₗ[σ₁₂] P₂}
     (H : ∀ w x y z, φ (w ⊗ₜ x ⊗ₜ (y ⊗ₜ z)) = ψ (w ⊗ₜ x ⊗ₜ (y ⊗ₜ z))) : φ = ψ := by
@@ -682,8 +680,7 @@ section
 
 variable (R M N)
 
-/-- The tensor product of modules is commutative, up to linear equivalence.
--/
+/-- The tensor product of modules is commutative, up to linear equivalence. -/
 protected def comm : M ⊗[R] N ≃ₗ[R] N ⊗[R] M :=
   LinearEquiv.ofLinear (lift (mk R N M).flip) (lift (mk R M N).flip) (ext' fun _ _ => rfl)
     (ext' fun _ _ => rfl)
@@ -759,7 +756,7 @@ theorem map_tmul (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N�
     map f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
   rfl
 
-/-- Given linear maps `f : M → P`, `g : N → Q`, if we identify `M ⊗ N` with `N ⊗ M` and `P ⊗ Q`
+/-- Given semilinear maps `f : M → P`, `g : N → Q`, if we identify `M ⊗ N` with `N ⊗ M` and `P ⊗ Q`
 with `Q ⊗ P`, then this lemma states that `f ⊗ g = g ⊗ f`. -/
 lemma map_comp_comm_eq (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) :
     map f g ∘ₛₗ (TensorProduct.comm R N M).toLinearMap =
@@ -873,20 +870,20 @@ theorem map_smul_right (r : R₂) (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛ
 
 variable (M N P M₂ N₂ σ₁₂)
 
-/-- The tensor product of a pair of linear maps between modules, bilinear in both maps. -/
+/-- The tensor product of a pair of semilinear maps between modules, bilinear in both maps. -/
 def mapBilinear : (M →ₛₗ[σ₁₂] M₂) →ₗ[R₂] (N →ₛₗ[σ₁₂] N₂) →ₗ[R₂] M ⊗[R] N →ₛₗ[σ₁₂] M₂ ⊗[R₂] N₂ :=
   LinearMap.mk₂ R₂ map map_add_left map_smul_left map_add_right map_smul_right
 
-/-- The canonical linear map from `P ⊗[R] (M →ₗ[R] Q)` to `(M →ₛₗ[σ₁₂] P ⊗[R] Q)` -/
+/-- The canonical linear map from `M₂ ⊗[R₂] (P →ₛₗ[σ₁₂] N₂)` to `P →ₛₗ[σ₁₂] M₂ ⊗[R₂] N₂`. -/
 def lTensorHomToHomLTensor : M₂ ⊗[R₂] (P →ₛₗ[σ₁₂] N₂) →ₗ[R₂] P →ₛₗ[σ₁₂] M₂ ⊗[R₂] N₂ :=
   TensorProduct.lift (llcomp _ P N₂ _ ∘ₛₗ mk R₂ M₂ N₂)
 
-/-- The canonical linear map from `(M →ₛₗ[σ₁₂] P) ⊗[R] Q` to `(M →ₛₗ[σ₁₂] P ⊗[R] Q)` -/
+/-- The canonical linear map from `(P →ₛₗ[σ₁₂] M₂) ⊗[R₂] N₂` to `P →ₛₗ[σ₁₂] M₂ ⊗[R₂] N₂`. -/
 def rTensorHomToHomRTensor : (P →ₛₗ[σ₁₂] M₂) ⊗[R₂] N₂ →ₗ[R₂] P →ₛₗ[σ₁₂] M₂ ⊗[R₂] N₂ :=
   TensorProduct.lift (llcomp _ P M₂ _ ∘ₗ (mk R₂ M₂ N₂).flip).flip
 
-/-- The linear map from `(M →ₗ P) ⊗ (N →ₗ Q)` to `(M ⊗ N →ₗ P ⊗ Q)` sending `f ⊗ₜ g` to
-the `TensorProduct.map f g`, the tensor product of the two maps. -/
+/-- The linear map from `(M →ₛₗ[σ₁₂] M₂) ⊗ (N →ₛₗ[σ₁₂] N₂)` to `(M ⊗ N →ₛₗ[σ₁₂] M₂ ⊗ N₂)`
+sending `f ⊗ₜ g` to `TensorProduct.map f g`, the tensor product of the two maps. -/
 def homTensorHomMap : (M →ₛₗ[σ₁₂] M₂) ⊗[R₂] (N →ₛₗ[σ₁₂] N₂) →ₗ[R₂] M ⊗[R] N →ₛₗ[σ₁₂] M₂ ⊗[R₂] N₂ :=
   lift (mapBilinear σ₁₂ M N M₂ N₂)
 
@@ -894,7 +891,7 @@ variable {M N P M₂ N₂ σ₁₂}
 
 /--
 This is a binary version of `TensorProduct.map`: Given a bilinear map `f : M ⟶ P ⟶ Q` and a
-bilinear map `g : N ⟶ S ⟶ T`, if we think `f` and `g` as linear maps with two inputs, then
+bilinear map `g : N ⟶ S ⟶ T`, if we think `f` and `g` as semilinear maps with two inputs, then
 `map₂ f g` is a bilinear map taking two inputs `M ⊗ N → P ⊗ S → Q ⊗ S` defined by
 `map₂ f g (m ⊗ n) (p ⊗ s) = f m p ⊗ g n s`.
 
@@ -942,8 +939,8 @@ end
 
 variable {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
 
-/-- If `M` and `P` are linearly equivalent and `N` and `Q` are linearly equivalent
-then `M ⊗ N` and `P ⊗ Q` are linearly equivalent. -/
+/-- If `M` and `P` are semilinearly equivalent and `N` and `Q` are semilinearly equivalent
+then `M ⊗ N` and `P ⊗ Q` are semilinearly equivalent. -/
 def congr (f : M ≃ₛₗ[σ₁₂] M₂) (g : N ≃ₛₗ[σ₁₂] N₂) : M ⊗[R] N ≃ₛₗ[σ₁₂] M₂ ⊗[R₂] N₂ :=
   LinearEquiv.ofLinear (map f g) (map f.symm g.symm)
     (ext' fun m n => by simp)
