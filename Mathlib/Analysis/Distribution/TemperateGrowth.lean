@@ -112,9 +112,9 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
 
 end Function
 
-variable [NormedAddCommGroup E] [MeasurableSpace E]
-
 namespace MeasureTheory.Measure
+
+variable [NormedAddCommGroup E] [MeasurableSpace E]
 
 open Module
 open scoped ENNReal
@@ -192,7 +192,6 @@ lemma _root_.integrable_of_le_of_pow_mul_le {μ : Measure E} [μ.HasTemperateGro
 
 /-- Given a function such that `f` and `x ^ (k + l) * f` are bounded for a suitable `l`, then
 one can bound explicitly the integral of `x ^ k * f`. -/
--- We redeclare `E` here to avoid the `NormedSpace ℝ E` typeclass available throughout this file.
 lemma _root_.integral_pow_mul_le_of_le_of_pow_mul_le
     {μ : Measure E} [μ.HasTemperateGrowth] {f : E → F} {C₁ C₂ : ℝ} {k : ℕ}
     (hf : ∀ x, ‖f x‖ ≤ C₁) (h'f : ∀ x, ‖x‖ ^ (k + μ.integrablePower) * ‖f x‖ ≤ C₂) :
