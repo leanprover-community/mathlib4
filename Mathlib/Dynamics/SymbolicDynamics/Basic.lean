@@ -135,7 +135,7 @@ step to the left. -/
 
 We call *configuration* an element of `G → A`.
 
-Given a configuration `x : G → A` and an element `g : G` of the multiplicative group,
+Given a configuration `x : G → A` and an element `g : G` of the additive group,
 the shifted configuration `shift g x` is defined by `(shift g x) h = x (h + g)`.
 
 Intuitively, this moves the whole configuration "in the direction of `g`": the value
