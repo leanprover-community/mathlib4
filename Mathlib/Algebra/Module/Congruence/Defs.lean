@@ -22,7 +22,8 @@ structure VAddCon [VAdd S M] extends Setoid M where
   /-- A `SMulCon` is closed under scalar multiplication. -/
   smul (s : S) {x y} : r x y → r (s • x) (s • y)
 
-/-- A congruence relation that preserves addition and scalar multiplication. -/
+/-- A congruence relation that preserves addition and scalar multiplication.
+The quotient by a `ModuleCon` inherits `DistribSMul`, `DistribMulAction`, and `Module` instances. -/
 structure ModuleCon [Add M] [SMul S M] extends AddCon M, SMulCon S M
 
 /-- The `SMulCon` underlying an `ModuleCon`. -/
