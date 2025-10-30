@@ -551,9 +551,7 @@ namespace ProbabilityMeasure
 /-- The push-forward of a probability measure by a measurable function. -/
 noncomputable def map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν) :
     ProbabilityMeasure Ω' :=
-  ⟨(ν : Measure Ω).map f,
-   ⟨by simp only [Measure.map_apply_of_aemeasurable f_aemble MeasurableSet.univ,
-                  preimage_univ, measure_univ]⟩⟩
+  ⟨(ν : Measure Ω).map f, (ν : Measure Ω).isProbabilityMeasure_map f_aemble⟩
 
 @[simp] lemma toMeasure_map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (hf : AEMeasurable f ν) :
     (ν.map hf).toMeasure = ν.toMeasure.map f := rfl
