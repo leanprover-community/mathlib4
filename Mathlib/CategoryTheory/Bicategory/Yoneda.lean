@@ -5,13 +5,7 @@ Authors: Calle Sönne
 -/
 
 import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Pseudo
-import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
 import Mathlib.CategoryTheory.Bicategory.Opposites
-import Mathlib.CategoryTheory.Category.Cat
-
-import Mathlib.Tactic.CategoryTheory.Coherence
-import Mathlib.CategoryTheory.Bicategory.Coherence
-
 
 /-!
 # 2-Yoneda embedding
@@ -26,56 +20,49 @@ open Bicategory Pseudofunctor StrongTrans
 
 universe w₁ v₁ u₁ w v u
 
-/-- A `SmallCategory` has objects and morphisms in the same universe level.
--/
-abbrev LocallySmallBicategory (B : Type u₁) : Type _ := Bicategory.{v₁, v₁, u₁} B
-
 namespace Bicategory
 
-open NatTrans
-
--- TODO: small when?!
-variable {B : Type u₁} [LocallySmallBicategory.{v₁} B]
+variable {B : Type u₁} [Bicategory.{w₁, v₁} B]
 
 attribute [local simp] Cat.associator_hom_app Cat.associator_inv_app
   Cat.leftUnitor_hom_app Cat.rightUnitor_hom_app
   Cat.leftUnitor_inv_app Cat.rightUnitor_inv_app
 
-@[simps]
-def representable (x : B) : Pseudofunctor Bᵒᵖ Cat.{v₁, v₁} where
-  -- On objects:
-  -- Hom functors: postcomposing (in `Bᴮᵒᵖ`).
-  toPrelaxFunctor :=
-    PrelaxFunctor.mkOfHomFunctors (fun y => Cat.of ((op x) ⟶ y))
-      (fun a b => (postcomposing (op x) a b))
-  mapId a := rightUnitorNatIso (op x) a
-  mapComp f g := (associatorNatIsoLeft (op x) f g).symm
+/-- The map on objects underlying the Yoneda embedding. It sends an object `x` to
+the pseudofunctor defined by:
+* Objects: `a ↦ (a ⟶ x)`
+* Higher morphisms get sent to the corresponding "precomposing" operation. -/
+@[simps!]
+def yoneda₀ (x : B) : Pseudofunctor Bᵒᵖ Cat.{w₁, v₁} where
+  toPrelaxFunctor := PrelaxFunctor.mkOfHomFunctors (fun y => Cat.of (unop y ⟶ x))
+    (fun a b => unopFunctor a b ⋙ precomposing (unop b) (unop a) x)
+  mapId a := leftUnitorNatIso (unop a) x
+  mapComp f g := associatorNatIsoRight g.unop f.unop x
 
--- Could this be representable from normal coyoneda?
-@[simps]
-def StrongNatTrans.representable {x y : B} (f : x ⟶ y) : representable x ⟶ representable y where
-  app z := (precomp z f.op)
-  naturality {a b} g := { -- TODO: Cat.NatIso.mk? Or just NatIso.mk?
-    hom := Cat.NatTrans.mk' fun h ↦ (α_ f.op h g).inv
-    inv := Cat.NatTrans.mk' fun h ↦ (α_ f.op h g).hom }
+/-- Postcomposing of a 1-morhisms seen as a strong transformation between pseudofunctors. -/
+@[simps!]
+def postcomp₂ {a b : B} (f : a ⟶ b) : yoneda₀ a ⟶ yoneda₀ b where
+  app x := (postcomposing (unop x) a b).obj f
+  naturality g := (associatorNatIsoMiddle g.unop f)
 
--- TODO:4 invertible if f is?
-@[simps]
-def Modification.representable {x y : B} {f g : x ⟶ y} (η : f ⟶ g) :
-    Modification (StrongNatTrans.representable f) (StrongNatTrans.representable g) where
-  app a := (precomposing _ _ _).map (op2 η)
+/-- Postcomposing of `1`-morphisms seen as a functor from `a ⟶ b` to the hom-category of the
+corresponding pseudofunctors. -/
+@[simps!]
+def postcomposing₂ (a b : B) : (a ⟶ b) ⥤ (yoneda₀ a ⟶ yoneda₀ b) where
+  obj := postcomp₂
+  map η := { app x := (postcomposing (unop x) a b).map η }
 
-@[simps]
-def yoneda.prelaxFunctor : PrelaxFunctor B (Pseudofunctor Bᵒᵖ Cat.{v₁, v₁}) where
-  obj x := representable x
-  map f := StrongNatTrans.representable f
-  map₂ η := Modification.representable η
+/-- The yoneda pseudofunctor from `B` to `Pseudofunctor Bᵒᵖ Cat`.
 
-@[simps]
-def yoneda : Pseudofunctor B (Pseudofunctor Bᵒᵖ Cat.{v₁, v₁}) where
-  toPrelaxFunctor := yoneda.prelaxFunctor
-  mapId a := isoMk (fun b => leftUnitorNatIso (op a) b)
-  mapComp f g := isoMk (fun b ↦ associatorNatIsoRight g.op f.op b)
+It consists of the following:
+* On objects: sends `x : B` to the pseudofunctor `Bᵒᵖ ⥤ Cat` given by
+  `a ↦ (a ⟶ x)` on objects and on 1- and 2-morphisms given by "precomposing"
+* On 1- and 2-morphisms it is given by "postcomposing" -/
+@[simps!]
+def yoneda : Pseudofunctor B (Pseudofunctor Bᵒᵖ Cat.{w₁, v₁}) where
+  toPrelaxFunctor := PrelaxFunctor.mkOfHomFunctors (fun x ↦ yoneda₀ x) postcomposing₂
+  mapId a := isoMk (fun b => rightUnitorNatIso (unop b) a)
+  mapComp f g := (isoMk (fun b ↦ associatorNatIsoLeft (unop b) f g)).symm
 
 end Bicategory
 

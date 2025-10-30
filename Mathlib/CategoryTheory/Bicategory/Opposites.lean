@@ -146,7 +146,7 @@ It is defined as follows.
 * The 2-morphisms `f ⟶ g` in `Bᵒᵖ` are the 2-morphisms `f ⟶ g` in `B`. In other words, the
   directions of the 2-morphisms are preserved.
 -/
-@[simps! homCategory_id_unop2 homCategory_comp_unop2 whiskerLeft_unop2 whiskerLeft_unop2
+@[simps! homCategory_id_unop2 homCategory_comp_unop2 whiskerLeft_unop2 whiskerRight_unop2
   associator_hom_unop2 associator_inv_unop2 leftUnitor_hom_unop2 leftUnitor_inv_unop2
   rightUnitor_hom_unop2 rightUnitor_inv_unop2]
 instance bicategory : Bicategory.{w, v} Bᵒᵖ where

@@ -169,6 +169,12 @@ attribute [simp]
   whiskerLeft_id whiskerLeft_comp id_whiskerLeft comp_whiskerLeft id_whiskerRight comp_whiskerRight
   whiskerRight_id whiskerRight_comp whisker_assoc
 
+/-- A `Small` Bicategory has objects, morphisms and 2-morphisms on the same universe level. -/
+abbrev SmallBicategory (B : Type u) : Type (u + 1) := Bicategory.{u, u, u} B
+
+/-- A `LocallySmallBicategory` has `Small` morphism categories. -/
+abbrev LocallySmallBicategory (B : Type u) : Type _ := Bicategory.{v, v, u} B
+
 
 variable {B : Type u} [Bicategory.{w, v} B] {a b c d e : B}
 
