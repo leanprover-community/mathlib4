@@ -91,11 +91,11 @@ lemma isLocalSourceTargetProperty_immersionAtProp :
   mono_source {f φ ψ s} hs hf := by
     obtain ⟨equiv, hf⟩ := hf
     exact ⟨equiv, hf.mono (by simp; grind)⟩
-  congr {f g φ ψ s} hfg hs hφ hf := by
+  congr {f g φ ψ} hfg hf := by
     obtain ⟨equiv, hf⟩ := hf
     refine ⟨equiv, EqOn.trans (fun x hx ↦ ?_) (hf.mono (by simp))⟩
-    have aux : (φ.extend I).source ⊆ s := by simpa
-    grind [→ PartialEquiv.map_target]
+    have : ((φ.extend I).symm) x ∈ φ.source := by simp_all
+    grind
 
 variable (F I J n) in
 /-- `f : M → N` is a `C^n` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
@@ -215,7 +215,7 @@ Note that this difference only occurs because of our design using junk values;
 this is not a mathematically meaningful difference.`
 
 At the same time, this condition is fairly weak: it is implied, for instance, by `f` being
-continuous at `x` (see `mk_of_continuousAt`), which is easy to acertain in practice.
+continuous at `x` (see `mk_of_continuousAt`), which is easy to ascertain in practice.
 -/
 lemma map_target_subset_target (h : IsImmersionAt F I J n f x) :
     (h.equiv ∘ (·, 0)) '' (h.domChart.extend I).target ⊆ (h.codChart.extend J).target := by

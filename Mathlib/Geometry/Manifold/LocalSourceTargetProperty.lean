@@ -61,7 +61,7 @@ structure IsLocalSourceTargetProperty
   -- Note: the analogous `mono_target` statement is true for both immersions and submersions.
   -- If and when a future lemma requires it, add this here.
   congr : ∀ {f g : M → N}, ∀ {φ : OpenPartialHomeomorph M H}, ∀ {ψ : OpenPartialHomeomorph N G},
-    ∀ {s : Set M}, EqOn f g s → IsOpen s → φ.source ⊆ s → P f φ ψ → P g φ ψ
+    EqOn f g φ.source → P f φ ψ → P g φ ψ
 
 variable (I I' n) in
 /-- Data witnessing the fact that `f` has local property `P` at `x` -/
@@ -142,11 +142,10 @@ lemma property (h : LiftSourceTargetPropertyAt I I' n f x P) : P f h.domChart h.
   h.localPresentationAt.property
 
 omit [ChartedSpace H M] [ChartedSpace G N] in
-lemma congr_iff (hP : IsLocalSourceTargetProperty P)
-    {f g : M → N} {φ : OpenPartialHomeomorph M H} {ψ : OpenPartialHomeomorph N G} {s : Set M}
-    (hs : IsOpen s) (hφ : φ.source ⊆ s) (hfg : EqOn f g s) :
+lemma congr_iff (hP : IsLocalSourceTargetProperty P) {f g : M → N}
+    {φ : OpenPartialHomeomorph M H} {ψ : OpenPartialHomeomorph N G} (hfg : EqOn f g φ.source) :
     P f φ ψ ↔ P g φ ψ :=
-  ⟨hP.congr hfg hs hφ, hP.congr hfg.symm hs hφ⟩
+  ⟨hP.congr hfg, hP.congr hfg.symm⟩
 
 -- XXX: should `OpenPartialHomeomorph.restr_source'` be tagged with grind?
 /-- If `P` is a local property, by monotonicity w.r.t. restricting `domChart`,
@@ -182,8 +181,7 @@ lemma congr_of_eventuallyEq (hP : IsLocalSourceTargetProperty P)
       · exact Subset.trans (by simp [interior_eq_iff_isOpen.mpr hs]) hss'
       · exact Subset.trans (by simp) hf.source_subset_preimage_source
     · rw [hfg.inter_preimage_eq]; exact inter_subset_right
-  · apply hP.congr (hfg.mono hss') hs
-    · grind [OpenPartialHomeomorph.restr_source']
+  · apply hP.congr (hfg.mono hss' |>.mono (by grind [OpenPartialHomeomorph.restr_source']))
     exact hP.mono_source hs hf.property
 
 /-- If `P` is monotone w.r.t. restricting `domChart` and closed under congruence,
