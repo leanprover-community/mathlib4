@@ -2455,17 +2455,17 @@ lemma ρ_is_int :
         (h7.c₁^(h7.m * q) : ℤ)
         (h7.c₁^(h7.m * q) : ℤ)
         (((a q x : ℕ) + b q x • h7.β')^(h7.r q hq0 h2mq))
-        (h7.α' ^ (a q x * h7.l₀' q hq0 h2mq))
-        (h7.γ' ^ (b q x * h7.l₀' q hq0 h2mq))
+        (h7.α' ^ (a q x * (h7.l₀' q hq0 h2mq + 1)))
+        (h7.γ' ^ (b q x * (h7.l₀' q hq0 h2mq + 1)))
       have : IsIntegral ℤ
          ((h7.c₁ ^ (h7.r q hq0 h2mq) * h7.c₁ ^ (h7.m * q) * h7.c₁ ^ (h7.m * q)) •
         ((↑(a q x) + b q x • h7.β') ^ (h7.r q hq0 h2mq) *
-          h7.α' ^ (a q x * ↑(h7.l₀' q hq0 h2mq + 1)) *
-          h7.γ' ^ (b q x * ↑(h7.l₀' q hq0 h2mq + 1)))) =
+          h7.α' ^ (a q x * (h7.l₀' q hq0 h2mq + 1)) *
+          h7.γ' ^ (b q x * (h7.l₀' q hq0 h2mq + 1)))) =
        IsIntegral ℤ
          (h7.c₁ ^ (h7.r q hq0 h2mq) • (↑(a q x) + b q x • h7.β') ^ (h7.r q hq0 h2mq) *
-          h7.c₁ ^ (h7.m * q) • h7.α' ^ (a q x * ↑(h7.l₀' q hq0 h2mq + 1)) *
-          h7.c₁ ^ (h7.m * q) • h7.γ' ^ (b q x * ↑(h7.l₀' q hq0 h2mq + 1))) := by {
+          h7.c₁ ^ (h7.m * q) • h7.α' ^ (a q x * (h7.l₀' q hq0 h2mq + 1)) *
+          h7.c₁ ^ (h7.m * q) • h7.γ' ^ (b q x * (h7.l₀' q hq0 h2mq + 1))) := by {
         rw [← this]
           }
       simp_rw [this]
@@ -2489,16 +2489,16 @@ lemma ρ_is_int :
         · apply h7.c₁ac
           · rw [mul_comm]
             apply Nat.mul_le_mul
-            · simp only [Fin.is_le']
+            · exact bar' (h7.l₀' q hq0 h2mq)
             · exact bar' (finProdFinEquiv.symm.toFun x).1
           · rw [← zsmul_eq_mul]; exact h7.isIntegral_c₁α
-      · have : h7.c₁ ^ (h7.m * q - ((b q x) * (h7.l₀' q hq0 h2mq))) *
-           (h7.c₁ ^ ((b q x) * (h7.l₀' q hq0 h2mq))) =
+      · have : h7.c₁ ^ (h7.m * q - ((b q x) * (h7.l₀' q hq0 h2mq + 1))) *
+           (h7.c₁ ^ ((b q x) * (h7.l₀' q hq0 h2mq + 1))) =
               (h7.c₁ ^ ((h7.m * q))) := by
           rw [← pow_add,Nat.sub_add_cancel]
           nth_rw 1 [mul_comm]
           apply mul_le_mul
-          · simp only [Fin.is_le']
+          · exact bar' (h7.l₀' q hq0 h2mq)
           · change (b q x) ≤ q
             have : ↑(finProdFinEquiv.symm.toFun x).2 ≤ q := Fin.is_le'
             exact bar' (finProdFinEquiv.symm.toFun x).2
@@ -2529,16 +2529,16 @@ lemma ρ_is_int :
         (h7.c₁^(h7.m * q) : ℤ)
         (h7.c₁^(h7.m * q) : ℤ)
         (((a q x : ℕ) + (b q x) • h7.β')^(h7.r q hq0 h2mq))
-        (h7.α' ^ ((a q x) * ((h7.l₀' q hq0 h2mq))))
-        (h7.γ' ^ ((b q x) * ((h7.l₀' q hq0 h2mq))))
+        (h7.α' ^ ((a q x) * ((h7.l₀' q hq0 h2mq + 1))))
+        (h7.γ' ^ ((b q x) * ((h7.l₀' q hq0 h2mq + 1))))
       have : IsIntegral ℤ (-(h7.c₁ ^ h7.r q hq0 h2mq * h7.c₁ ^ (h7.m * q) * h7.c₁ ^ (h7.m * q)) •
-    ((↑(a q x) + b q x • h7.β') ^ h7.r q hq0 h2mq * h7.α' ^ (a q x * ↑(h7.l₀' q hq0 h2mq)) *
-      h7.γ' ^ (b q x * ↑(h7.l₀' q hq0 h2mq)))) =
+    ((↑(a q x) + b q x • h7.β') ^ h7.r q hq0 h2mq * h7.α' ^ (a q x * (h7.l₀' q hq0 h2mq + 1)) *
+      h7.γ' ^ (b q x * (h7.l₀' q hq0 h2mq + 1)))) =
          IsIntegral ℤ ((h7.c₁ ^ (h7.r q hq0 h2mq) •
           (↑(a q x) + (b q x) • h7.β') ^ (h7.r q hq0 h2mq)
            * h7.c₁ ^ (h7.m * q) • h7.α' ^ ((a q x) *
-           (h7.l₀' q hq0 h2mq)) * h7.c₁ ^ (h7.m * q) •
-             h7.γ' ^ ((b q x) * (h7.l₀' q hq0 h2mq)))) := by
+           (h7.l₀' q hq0 h2mq + 1)) * h7.c₁ ^ (h7.m * q) •
+             h7.γ' ^ ((b q x) * (h7.l₀' q hq0 h2mq + 1)))) := by
           rw [← H]
           rw [neg_smul]
           simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_mul, Int.cast_pow,
@@ -2561,15 +2561,15 @@ lemma ρ_is_int :
         · apply h7.c₁ac
           · rw [mul_comm]
             apply Nat.mul_le_mul
-            simp only [Fin.is_le']
+            exact bar' (h7.l₀' q hq0 h2mq)
             exact bar' (finProdFinEquiv.symm.toFun x).1
           · rw [← zsmul_eq_mul]; exact h7.isIntegral_c₁α
-      · have : h7.c₁ ^ (h7.m * q - (b q x * (h7.l₀' q hq0 h2mq))) *
-           (h7.c₁ ^ ((b q x) * (h7.l₀' q hq0 h2mq))) = (h7.c₁ ^ ((h7.m * q))) := by
+      · have : h7.c₁ ^ (h7.m * q - (b q x * (h7.l₀' q hq0 h2mq + 1))) *
+           (h7.c₁ ^ ((b q x) * (h7.l₀' q hq0 h2mq + 1))) = (h7.c₁ ^ ((h7.m * q))) := by
           rw [← pow_add, Nat.sub_add_cancel]
           nth_rw 1 [mul_comm]
           apply mul_le_mul
-          · exact Fin.is_le'
+          · exact bar' (h7.l₀' q hq0 h2mq)
           · exact bar' (finProdFinEquiv.symm.toFun x).2
           · simp only [zero_le]
           · simp only [zero_le]
@@ -2582,50 +2582,6 @@ lemma ρ_is_int :
         · rw [← mul_pow]
           apply IsIntegral.pow
           · rw [← zsmul_eq_mul]; exact h7.isIntegral_c₁γ
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 def c1ρ : 𝓞 h7.K := RingOfIntegers.restrict _
   (fun _ => (ρ_is_int h7 q hq0 h2mq)) ℤ
