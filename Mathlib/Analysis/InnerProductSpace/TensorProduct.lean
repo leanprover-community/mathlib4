@@ -58,7 +58,7 @@ namespace TensorProduct
 /-- Bilinear map for the inner product on tensor products.
 On pure tensors: `inner_ (a ⊗ₜ b) (c ⊗ₜ d) = ⟪a, c⟫ * ⟪b, d⟫`. -/
 private abbrev inner_ : E ⊗[𝕜] F →ₗ⋆[𝕜] E ⊗[𝕜] F →ₗ[𝕜] 𝕜 :=
-  (lift <| mapBilinear 𝕜 E F 𝕜 𝕜).compr₂ (LinearMap.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜)
+  (lift <| mapBilinear (.id 𝕜) E F 𝕜 𝕜).compr₂ (LinearMap.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜)
 
 instance instInner : Inner 𝕜 (E ⊗[𝕜] F) := ⟨fun x y => inner_ x y⟩
 
@@ -252,7 +252,7 @@ def congrIsometry (f : E ≃ₗᵢ[𝕜] G) (g : F ≃ₗᵢ[𝕜] H) :
     inner_map_map f.toLinearIsometry g.toLinearIsometry
 
 @[simp] lemma congrIsometry_apply (f : E ≃ₗᵢ[𝕜] G) (g : F ≃ₗᵢ[𝕜] H) (x : E ⊗[𝕜] F) :
-    congrIsometry f g x = congr f g x := rfl
+    congrIsometry f g x = congr (σ₁₂ := .id _) f g x := rfl
 
 lemma congrIsometry_symm (f : E ≃ₗᵢ[𝕜] G) (g : F ≃ₗᵢ[𝕜] H) :
     (congrIsometry f g).symm = congrIsometry f.symm g.symm := rfl
