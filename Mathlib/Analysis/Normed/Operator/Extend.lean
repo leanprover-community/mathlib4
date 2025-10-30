@@ -28,14 +28,14 @@ namespace ContinuousLinearMap
 
 section Extend
 
-section NormedRing
+section Ring
 
 variable [AddCommGroup E] [UniformSpace E] [IsUniformAddGroup E]
   [AddCommGroup F] [UniformSpace F] [IsUniformAddGroup F] [T0Space F]
   [AddCommMonoid Eₗ] [UniformSpace Eₗ] [ContinuousAdd Eₗ]
   [Semiring 𝕜] [Semiring 𝕜₂] [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜 Eₗ]
   [ContinuousConstSMul 𝕜 Eₗ] [ContinuousConstSMul 𝕜₂ F]
-  {σ₁₂ : 𝕜 →+* 𝕜₂} (f g : E →SL[σ₁₂] F) [CompleteSpace F] (e : E →L[𝕜] Eₗ) (h_dense : DenseRange e)
+  {σ₁₂ : 𝕜 →+* 𝕜₂} (f g : E →SL[σ₁₂] F) [CompleteSpace F] (e : E →L[𝕜] Eₗ)
 
 variable (h_dense : DenseRange e) (h_e : IsUniformInducing e)
 
@@ -76,7 +76,7 @@ theorem extend_unique (g : Eₗ →SL[σ₁₂] F) (H : g.comp e = f) : extend f
 theorem extend_zero : extend (0 : E →SL[σ₁₂] F) e h_dense h_e = 0 :=
   extend_unique _ _ _ _ _ (zero_comp _)
 
-end NormedRing
+end Ring
 
 section NormedField
 
