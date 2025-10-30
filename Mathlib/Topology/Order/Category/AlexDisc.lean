@@ -51,7 +51,7 @@ abbrev of (X : Type*) [TopologicalSpace X] [AlexandrovDiscrete X] : AlexDisc whe
 lemma coe_of (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] : ↥(of α) = α := rfl
 
 @[simp] lemma forgetToTop_of (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] :
-  (forget₂ AlexDisc TopCat).obj (of α) = TopCat.of α := rfl
+    (forget₂ AlexDisc TopCat).obj (of α) = TopCat.of α := rfl
 
 @[simp] lemma coe_forgetToTop (X : AlexDisc) : ↥((forget₂ _ TopCat).obj X) = X := rfl
 

@@ -44,17 +44,23 @@ protected instance mul : Mul (End X) := ⟨fun x y => y ≫ x⟩
 variable {X}
 
 /-- Assist the typechecker by expressing a morphism `X ⟶ X` as a term of `CategoryTheory.End X`. -/
-def of (f : X ⟶ X) : End X := f
+abbrev of (f : X ⟶ X) : End X := f
 
 /-- Assist the typechecker by expressing an endomorphism `f : CategoryTheory.End X` as a term of
 `X ⟶ X`. -/
-def asHom (f : End X) : X ⟶ X := f
+abbrev asHom (f : End X) : X ⟶ X := f
 
-@[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `of`/`asHom`?
+-- TODO: to fix defeq abuse, this should be `(1 : End x) = of (𝟙 X)`.
+-- But that would require many more extra simp lemmas to get rid of the `of`.
+@[simp]
 theorem one_def : (1 : End X) = 𝟙 X := rfl
 
-@[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `of`/`asHom`?
+-- TODO: to fix defeq abuse, this should be `xs * ys = of (ys ≫ xs)`.
+-- But that would require many more extra simp lemmas to get rid of the `of`.
+@[simp]
 theorem mul_def (xs ys : End X) : xs * ys = ys ≫ xs := rfl
+
+lemma ext {x y : End X} (h : asHom x = asHom y) : x = y := h
 
 end Struct
 
@@ -146,8 +152,8 @@ def toEnd (X : C) : Aut X →* End X := (Units.coeHom (End X)).comp (Aut.unitsEn
 def autMulEquivOfIso {X Y : C} (h : X ≅ Y) : Aut X ≃* Aut Y where
   toFun x := { hom := h.inv ≫ x.hom ≫ h.hom, inv := h.inv ≫ x.inv ≫ h.hom }
   invFun y := { hom := h.hom ≫ y.hom ≫ h.inv, inv := h.hom ≫ y.inv ≫ h.inv }
-  left_inv _ := by aesop_cat
-  right_inv _ := by aesop_cat
+  left_inv _ := by cat_disch
+  right_inv _ := by cat_disch
   map_mul' := by simp [Aut_mul_def]
 
 end Aut

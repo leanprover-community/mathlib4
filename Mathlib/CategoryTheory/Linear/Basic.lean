@@ -40,15 +40,15 @@ open LinearMap
 namespace CategoryTheory
 
 /-- A category is called `R`-linear if `P ⟶ Q` is an `R`-module such that composition is
-    `R`-linear in both variables. -/
+`R`-linear in both variables. -/
 class Linear (R : Type w) [Semiring R] (C : Type u) [Category.{v} C] [Preadditive C] where
   homModule : ∀ X Y : C, Module R (X ⟶ Y) := by infer_instance
   /-- compatibility of the scalar multiplication with the post-composition -/
   smul_comp : ∀ (X Y Z : C) (r : R) (f : X ⟶ Y) (g : Y ⟶ Z), (r • f) ≫ g = r • f ≫ g := by
-    aesop_cat
+    cat_disch
   /-- compatibility of the scalar multiplication with the pre-composition -/
   comp_smul : ∀ (X Y Z : C) (f : X ⟶ Y) (r : R) (g : Y ⟶ Z), f ≫ (r • g) = r • f ≫ g := by
-    aesop_cat
+    cat_disch
 
 attribute [instance] Linear.homModule
 

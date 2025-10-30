@@ -85,7 +85,6 @@ theorem mem_neg {g : M} {S : Submodule R M} : g ∈ -S ↔ -g ∈ S :=
 
 This is available as an instance in the `Pointwise` locale. -/
 protected def involutivePointwiseNeg : InvolutiveNeg (Submodule R M) where
-  neg := Neg.neg
   neg_neg _S := SetLike.coe_injective <| neg_neg _
 
 scoped[Pointwise] attribute [instance] Submodule.involutivePointwiseNeg
@@ -172,7 +171,8 @@ instance : IsOrderedAddMonoid (Submodule R M) :=
   { add_le_add_left := fun _a _b => sup_le_sup_left }
 
 instance : CanonicallyOrderedAdd (Submodule R M) where
-  exists_add_of_le := @fun _a b h => ⟨b, (sup_eq_right.2 h).symm⟩
+  exists_add_of_le {_a b} h := ⟨b, (sup_eq_right.2 h).symm⟩
+  le_add_self _ _ := le_sup_right
   le_self_add := fun _a _b => le_sup_left
 
 section
@@ -196,7 +196,7 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseDistribMulAction
 
 open Pointwise
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_pointwise_smul (a : α) (S : Submodule R M) : ↑(a • S) = a • (S : Set M) :=
   rfl
 
@@ -322,7 +322,7 @@ variable (sR : Set R) (s : Set S) (N : Submodule R M)
 
 lemma mem_set_smul_def (x : M) :
     x ∈ s • N ↔
-  x ∈ sInf { p : Submodule R M | ∀ ⦃r : S⦄ {n : M}, r ∈ s → n ∈ N → r • n ∈ p } := Iff.rfl
+    x ∈ sInf { p : Submodule R M | ∀ ⦃r : S⦄ {n : M}, r ∈ s → n ∈ N → r • n ∈ p } := Iff.rfl
 
 variable {s N} in
 @[aesop safe]
@@ -434,12 +434,12 @@ lemma set_smul_eq_map [SMulCommClass R R N] :
       · refine fun h ↦ h fun r n hr hn ↦ ?_
         rw [mem_set_smul_def, mem_sInf]
         exact fun p hp ↦ hp hr hn
-      · aesop
+      · simp_all
 
 lemma mem_set_smul (x : M) [SMulCommClass R R N] :
     x ∈ sR • N ↔ ∃ (c : R →₀ N), (c.support : Set R) ⊆ sR ∧ x = c.sum fun r m ↦ r • m := by
   fconstructor
-  · intros h
+  · intro h
     rw [set_smul_eq_map] at h
     obtain ⟨c, hc, rfl⟩ := h
     exact ⟨c, hc, rfl⟩

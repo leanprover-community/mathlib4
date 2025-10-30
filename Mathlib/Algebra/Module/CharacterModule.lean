@@ -205,9 +205,7 @@ lemma eq_zero_of_ofSpanSingleton_apply_self (a : A)
   · split_ifs at hn
     · cases hn
     · rwa [eq_comm, AddMonoid.addOrderOf_eq_one_iff] at hn
-  · split_ifs with h
-    · norm_num
-    · exact Nat.pos_of_ne_zero h
+  · grind
 
 lemma exists_character_apply_ne_zero_of_ne_zero {a : A} (ne_zero : a ≠ 0) :
     ∃ (c : CharacterModule A), c a ≠ 0 :=

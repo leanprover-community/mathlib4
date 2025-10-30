@@ -135,17 +135,9 @@ equivalence. -/
 theorem PiLp.volume_preserving_ofLp : MeasurePreserving (@WithLp.ofLp 2 (ι → ℝ)) :=
   EuclideanSpace.volume_preserving_measurableEquiv ι
 
-@[deprecated PiLp.volume_preserving_ofLp (since := "2024-04-27")]
-theorem PiLp.volume_preserving_equiv : MeasurePreserving (WithLp.equiv 2 (ι → ℝ)) :=
-  EuclideanSpace.volume_preserving_measurableEquiv ι
-
 /-- The reverse direction of `PiLp.volume_preserving_measurableEquiv`, since
 `MeasurePreserving.symm` only works for `MeasurableEquiv`s. -/
 theorem PiLp.volume_preserving_toLp : MeasurePreserving (@WithLp.toLp 2 (ι → ℝ)) :=
-  (EuclideanSpace.volume_preserving_measurableEquiv ι).symm
-
-@[deprecated PiLp.volume_preserving_toLp (since := "2024-04-27")]
-theorem PiLp.volume_preserving_equiv_symm : MeasurePreserving (WithLp.equiv 2 (ι → ℝ)).symm :=
   (EuclideanSpace.volume_preserving_measurableEquiv ι).symm
 
 lemma volume_euclideanSpace_eq_dirac [IsEmpty ι] :
@@ -158,7 +150,7 @@ end PiLp
 
 namespace LinearIsometryEquiv
 
-/-- Every linear isometry on a real finite dimensional Hilbert space is measure-preserving. -/
+/-- Every linear isometry on a real finite-dimensional Hilbert space is measure-preserving. -/
 theorem measurePreserving (f : E ≃ₗᵢ[ℝ] F) :
     MeasurePreserving f := by
   refine ⟨f.continuous.measurable, ?_⟩

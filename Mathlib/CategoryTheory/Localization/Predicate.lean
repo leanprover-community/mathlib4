@@ -271,19 +271,14 @@ theorem natTrans_ext (L : C ⥤ D) (W) [L.IsLocalization W] {F₁ F₂ : D ⥤ E
   ext Y
   rw [← cancel_epi (F₁.map (L.objObjPreimageIso Y).hom), τ.naturality, τ'.naturality, h]
 
--- Porting note: the field `iso` was renamed `Lifting.iso'` and it was redefined as
--- `Lifting.iso` with explicit parameters
 /-- When `L : C ⥤ D` is a localization functor for `W : MorphismProperty C` and
 `F : C ⥤ E` is a functor, we shall say that `F' : D ⥤ E` lifts `F` if the obvious diagram
 is commutative up to an isomorphism. -/
-class Lifting (W : MorphismProperty C) (F : C ⥤ E) (F' : D ⥤ E) where
+class Lifting (L : C ⥤ D) (W : MorphismProperty C) (F : C ⥤ E) (F' : D ⥤ E) where
   /-- the isomorphism relating the localization functor and the two other given functors -/
-  iso' : L ⋙ F' ≅ F
+  iso (L W F F') : L ⋙ F' ≅ F
 
-/-- The distinguished isomorphism `L ⋙ F' ≅ F` given by `[Lifting L W F F']`. -/
-def Lifting.iso (F : C ⥤ E) (F' : D ⥤ E) [Lifting L W F F'] :
-    L ⋙ F' ≅ F :=
-  Lifting.iso' W
+@[deprecated (since := "2025-08-22")] alias Lifting.iso' := Lifting.iso
 
 variable {W}
 
@@ -297,7 +292,6 @@ instance liftingLift (F : C ⥤ E) (hF : W.IsInvertedBy F) (L : C ⥤ D) [L.IsLo
     Lifting L W F (lift F hF L) :=
   ⟨(inducedFunctor _).mapIso ((functorEquivalence L W E).counitIso.app ⟨F, hF⟩)⟩
 
--- Porting note: removed the unnecessary @[simps] attribute
 /-- The canonical isomorphism `L ⋙ lift F hF L ≅ F` for any functor `F : C ⥤ E`
 which inverts `W`, when `L : C ⥤ D` is a localization functor for `W`. -/
 def fac (F : C ⥤ E) (hF : W.IsInvertedBy F) (L : C ⥤ D) [L.IsLocalization W] :
@@ -362,9 +356,6 @@ instance id : Lifting L W L (𝟭 D) :=
 
 @[simps]
 instance compLeft (F : D ⥤ E) : Localization.Lifting L W (L ⋙ F) F := ⟨Iso.refl _⟩
-
-@[simp]
-lemma compLeft_iso (W) (F : D ⥤ E) : Localization.Lifting.iso L W (L ⋙ F) F = Iso.refl _ := rfl
 
 /-- Given a localization functor `L : C ⥤ D` for `W : MorphismProperty C`,
 if `F₁' : D ⥤ E` lifts a functor `F₁ : C ⥤ D`, then a functor `F₂'` which
@@ -495,6 +486,11 @@ variable {W f g}
 lemma map_eq (h : AreEqualizedByLocalization W f g) (L : C ⥤ D) [L.IsLocalization W] :
     L.map f = L.map g :=
   (areEqualizedByLocalization_iff L W f g).1 h
+
+lemma map_eq_of_isInvertedBy (h : AreEqualizedByLocalization W f g)
+    (F : C ⥤ D) (hF : W.IsInvertedBy F) :
+    F.map f = F.map g := by
+  simp [← NatIso.naturality_1 (Localization.fac F hF W.Q), h.map_eq W.Q]
 
 end AreEqualizedByLocalization
 

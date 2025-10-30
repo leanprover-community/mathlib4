@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Geometry.Euclidean.Projection
+import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 import Mathlib.Analysis.InnerProductSpace.Affine
 
 /-!
@@ -193,11 +194,11 @@ example {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 0 < s.hei
 
 open scoped RealInnerProductSpace
 
-variable {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
+variable {n : ℕ} (s : Simplex ℝ P n)
 
 /-- The inner product of an edge from `j` to `i` and the vector from the foot of `i` to `i`
 is the square of the height. -/
-lemma inner_vsub_vsub_altitudeFoot_eq_height_sq {i j : Fin (n + 1)} (h : i ≠ j) :
+lemma inner_vsub_vsub_altitudeFoot_eq_height_sq [NeZero n] {i j : Fin (n + 1)} (h : i ≠ j) :
     ⟪s.points i -ᵥ s.points j, s.points i -ᵥ s.altitudeFoot i⟫ = s.height i ^ 2 := by
   suffices ⟪s.points j -ᵥ s.altitudeFoot i, s.points i -ᵥ s.altitudeFoot i⟫ = 0 by
     rwa [height, inner_vsub_vsub_left_eq_dist_sq_right_iff, inner_vsub_left_eq_zero_symm]
@@ -210,12 +211,14 @@ lemma inner_vsub_vsub_altitudeFoot_eq_height_sq {i j : Fin (n + 1)} (h : i ≠ j
   rw [← direction_affineSpan, ← range_faceOpposite_points]
   exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
 
+variable [Nat.AtLeastTwo n]
+
 /--
 The inner product of two distinct altitudes has absolute value strictly less than the product of
 their lengths.
 
 Equivalently, neither vector is a multiple of the other; the angle between them is not 0 or π. -/
-lemma abs_inner_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠ j) (hn : 1 < n) :
+lemma abs_inner_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠ j) :
     |⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫|
       < s.height i * s.height j := by
   apply lt_of_le_of_ne
@@ -233,7 +236,8 @@ lemma abs_inner_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠ j) (hn
     · refine SetLike.le_def.1 (affineSpan_mono _ ?_) (Subtype.property _)
       simp
     · rw [SetLike.mem_coe]
-      have hk : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by linarith only [hn])
+      have hk : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j
+        (by linarith only [Nat.AtLeastTwo.one_lt (n := n)])
       have hs : vectorSpan ℝ (Set.range s.points) =
           vectorSpan ℝ (Set.range (s.faceOpposite i).points) ⊔
             vectorSpan ℝ (Set.range (s.faceOpposite j).points) := by
@@ -263,7 +267,7 @@ lemma abs_inner_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠ j) (hn
 The inner product of two altitudes has value strictly greater than the negated product of
 their lengths.
 -/
-lemma neg_mul_lt_inner_vsub_altitudeFoot (i j : Fin (n + 1)) (hn : 1 < n) :
+lemma neg_mul_lt_inner_vsub_altitudeFoot (i j : Fin (n + 1)) :
     -(s.height i * s.height j)
       < ⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫ := by
   obtain rfl | hij := eq_or_ne i j
@@ -275,23 +279,22 @@ lemma neg_mul_lt_inner_vsub_altitudeFoot (i j : Fin (n + 1)) (hn : 1 < n) :
   rw [neg_lt]
   refine lt_of_abs_lt ?_
   rw [abs_neg]
-  exact abs_inner_vsub_altitudeFoot_lt_mul s hij hn
+  exact abs_inner_vsub_altitudeFoot_lt_mul s hij
 
-lemma abs_inner_vsub_altitudeFoot_div_lt_one {i j : Fin (n + 1)} (hij : i ≠ j) (hn : 1 < n) :
+lemma abs_inner_vsub_altitudeFoot_div_lt_one {i j : Fin (n + 1)} (hij : i ≠ j) :
     |⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫
             / (s.height i * s.height j)| < 1 := by
   rw [abs_div, div_lt_one (by simp [height])]
   nth_rw 2 [abs_eq_self.2]
-  · exact abs_inner_vsub_altitudeFoot_lt_mul _ hij hn
+  · exact abs_inner_vsub_altitudeFoot_lt_mul _ hij
   · simp only [height]
     positivity
 
-lemma neg_one_lt_inner_vsub_altitudeFoot_div
-    {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i j : Fin (n + 1)) (hn : 1 < n) :
+lemma neg_one_lt_inner_vsub_altitudeFoot_div (s : Simplex ℝ P n) (i j : Fin (n + 1)) :
     -1 < ⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫
             / (s.height i * s.height j) := by
   rw [neg_lt, neg_div', div_lt_one (by simp [height]), neg_lt]
-  exact neg_mul_lt_inner_vsub_altitudeFoot _ _ _ hn
+  exact neg_mul_lt_inner_vsub_altitudeFoot _ _ _
 
 end Simplex
 

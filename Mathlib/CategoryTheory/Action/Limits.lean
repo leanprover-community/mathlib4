@@ -295,23 +295,33 @@ end HasZeroMorphisms
 
 section Preadditive
 
-variable [Preadditive V]
+variable [Preadditive V] {X Y : Action V G}
 
-instance {X Y : Action V G} : Add (X ⟶ Y) where
+instance : Add (X ⟶ Y) where
   add f g := ⟨f.hom + g.hom, by simp [f.comm, g.comm]⟩
 
-instance {X Y : Action V G} : Neg (X ⟶ Y) where
+instance : Neg (X ⟶ Y) where
   neg f := ⟨-f.hom, by simp [f.comm]⟩
+
+instance : Sub (X ⟶ Y) where
+  sub f g := ⟨f.hom - g.hom, by simp [f.comm, g.comm]⟩
+
+instance : SMul ℕ (X ⟶ Y) where
+  smul n f := ⟨n • f.hom, by simp [f.comm]⟩
+
+instance : SMul ℤ (X ⟶ Y) where
+  smul n f := ⟨n • f.hom, by simp [f.comm]⟩
+
+@[simp] lemma add_hom (f g : X ⟶ Y) : (f + g).hom = f.hom + g.hom := rfl
+@[simp] lemma neg_hom (f : X ⟶ Y) : (-f).hom = -f.hom := rfl
+@[simp] lemma sub_hom (f g : X ⟶ Y) : (f - g).hom = f.hom - g.hom := rfl
+@[simp] lemma nsmul_hom (n : ℕ) (f : X ⟶ Y) : (n • f).hom = n • f.hom := rfl
+@[simp] lemma zsmul_hom (n : ℤ) (f : X ⟶ Y) : (n • f).hom = n • f.hom := rfl
 
 instance : Preadditive (Action V G) where
   homGroup X Y :=
-    { nsmul := nsmulRec
-      zsmul := zsmulRec
-      zero_add := by intros; ext; exact zero_add _
-      add_zero := by intros; ext; exact add_zero _
-      add_assoc := by intros; ext; exact add_assoc _ _ _
-      neg_add_cancel := by intros; ext; exact neg_add_cancel _
-      add_comm := by intros; ext; exact add_comm _ _ }
+    hom_injective.addCommGroup (M₂ := X.V ⟶ Y.V) _ zero_hom add_hom neg_hom sub_hom
+      (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
   add_comp := by intros; ext; exact Preadditive.add_comp _ _ _ _ _ _
   comp_add := by intros; ext; exact Preadditive.comp_add _ _ _ _ _ _
 
@@ -323,15 +333,7 @@ instance functorCategoryEquivalence_additive :
     Functor.Additive (functorCategoryEquivalence V G).functor where
 
 @[simp]
-theorem neg_hom {X Y : Action V G} (f : X ⟶ Y) : (-f).hom = -f.hom :=
-  rfl
-
-@[simp]
-theorem add_hom {X Y : Action V G} (f g : X ⟶ Y) : (f + g).hom = f.hom + g.hom :=
-  rfl
-
-@[simp]
-theorem sum_hom {X Y : Action V G} {ι : Type*} (f : ι → (X ⟶ Y)) (s : Finset ι) :
+theorem sum_hom {ι : Type*} (f : ι → (X ⟶ Y)) (s : Finset ι) :
     (s.sum f).hom = s.sum fun i => (f i).hom :=
   (forget V G).map_sum f s
 

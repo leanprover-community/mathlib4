@@ -24,7 +24,7 @@ This file proves Nöbeling's theorem. For the overall proof outline see
 - [scholze2019condensed], Theorem 5.4.
 -/
 
-open Topology
+open Module Topology
 
 universe u
 
@@ -141,9 +141,6 @@ theorem Nobeling.isClosedEmbedding : IsClosedEmbedding (Nobeling.ι S) := by
     dsimp +unfoldPartialApp [ι] at h
     rw [← congr_fun h ⟨C, hC⟩]
     exact decide_eq_true hh.1
-
-@[deprecated (since := "2024-10-26")]
-alias Nobeling.embedding := Nobeling.isClosedEmbedding
 
 end Profinite
 

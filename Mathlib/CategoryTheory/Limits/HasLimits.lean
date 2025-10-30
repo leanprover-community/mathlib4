@@ -62,7 +62,7 @@ open CategoryTheory CategoryTheory.Category CategoryTheory.Functor Opposite
 
 namespace CategoryTheory.Limits
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 universe v₁ u₁ v₂ u₂ v₃ u₃ v v' v'' u u' u''
 
 variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
@@ -272,7 +272,7 @@ def limit.homIso' (F : J ⥤ C) [HasLimit F] (W : C) :
   (limit.isLimit F).homIso' W
 
 theorem limit.lift_extend {F : J ⥤ C} [HasLimit F] (c : Cone F) {X : C} (f : X ⟶ c.pt) :
-    limit.lift F (c.extend f) = f ≫ limit.lift F c := by aesop_cat
+    limit.lift F (c.extend f) = f ≫ limit.lift F c := by cat_disch
 
 /-- If a functor `F` has a limit, so does any naturally isomorphic functor.
 -/
@@ -383,7 +383,7 @@ we obtain a formula for `limit.pre F E`.
 -/
 theorem limit.pre_eq (s : LimitCone (E ⋙ F)) (t : LimitCone F) :
     limit.pre F E = (limit.isoLimitCone t).hom ≫ s.isLimit.lift (t.cone.whisker E) ≫
-      (limit.isoLimitCone s).inv := by aesop_cat
+      (limit.isoLimitCone s).inv := by cat_disch
 
 end Pre
 
@@ -422,7 +422,7 @@ end Post
 
 theorem limit.pre_post {D : Type u'} [Category.{v'} D] (E : K ⥤ J) (F : J ⥤ C) (G : C ⥤ D)
     [HasLimit F] [HasLimit (E ⋙ F)] [HasLimit (F ⋙ G)]
-    [h : HasLimit ((E ⋙ F) ⋙ G)] :-- G (limit F) ⟶ G (limit (E ⋙ F)) ⟶ limit ((E ⋙ F) ⋙ G) vs
+    [h : HasLimit ((E ⋙ F) ⋙ G)] : -- G (limit F) ⟶ G (limit (E ⋙ F)) ⟶ limit ((E ⋙ F) ⋙ G) vs
             -- G (limit F) ⟶ limit F ⋙ G ⟶ limit (E ⋙ (F ⋙ G)) or
     haveI : HasLimit (E ⋙ F ⋙ G) := h
     G.map (limit.pre F E) ≫ limit.post (E ⋙ F) G = limit.post F G ≫ limit.pre (F ⋙ G) E := by
@@ -484,7 +484,7 @@ theorem limit.map_pre' [HasLimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K ⥤ J
   ext1; simp
 
 theorem limit.id_pre (F : J ⥤ C) : limit.pre F (𝟭 _) = lim.map (Functor.leftUnitor F).inv := by
-  aesop_cat
+  cat_disch
 
 theorem limit.map_post {D : Type u'} [Category.{v'} D] [HasLimitsOfShape J D] (H : C ⥤ D) :
     /- H (limit F) ⟶ H (limit G) ⟶ limit (G ⋙ H) vs
@@ -508,8 +508,8 @@ def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim := Adjunction.mk' {
     { toFun := fun f => limit.lift _ ⟨c, f⟩
       invFun := fun f =>
         { app := fun _ => f ≫ limit.π _ _ }
-      left_inv := by aesop_cat
-      right_inv := by aesop_cat }
+      left_inv := by cat_disch
+      right_inv := by cat_disch }
   unit := { app := fun _ => limit.lift _ ⟨_, 𝟙 _⟩ }
   counit := { app := fun g => { app := limit.π _ } } }
 
@@ -571,7 +571,7 @@ variable (C)
 theorem hasLimitsOfSizeOfUnivLE [UnivLE.{v₂, v₁}] [UnivLE.{u₂, u₁}]
     [HasLimitsOfSize.{v₁, u₁} C] : HasLimitsOfSize.{v₂, u₂} C where
   has_limits_of_shape J {_} := hasLimitsOfShape_of_equivalence
-    ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm
+    ((ShrinkHoms.equivalence.{v₁} J).trans <| Shrink.equivalence _).symm
 
 /-- `hasLimitsOfSizeShrink.{v u} C` tries to obtain `HasLimitsOfSize.{v u} C`
 from some other `HasLimitsOfSize C`.
@@ -658,7 +658,7 @@ def colimit.ι (F : J ⥤ C) [HasColimit F] (j : J) : F.obj j ⟶ colimit F :=
 
 @[reassoc]
 theorem colimit.eqToHom_comp_ι (F : J ⥤ C) [HasColimit F] {j j' : J} (hj : j = j') :
-    eqToHom (by subst hj; rfl) ≫ colimit.ι F j = colimit.ι F j'  := by
+    eqToHom (by subst hj; rfl) ≫ colimit.ι F j = colimit.ι F j' := by
   subst hj
   simp
 
@@ -918,7 +918,7 @@ theorem colimit.pre_eq (s : ColimitCocone (E ⋙ F)) (t : ColimitCocone F) :
     colimit.pre F E =
       (colimit.isoColimitCocone s).hom ≫
         s.isColimit.desc (t.cocone.whisker E) ≫ (colimit.isoColimitCocone t).inv := by
-  aesop_cat
+  cat_disch
 
 end Pre
 
@@ -1024,14 +1024,13 @@ theorem colimit.pre_map' [HasColimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K �
   simp
 
 theorem colimit.pre_id (F : J ⥤ C) :
-    colimit.pre F (𝟭 _) = colim.map (Functor.leftUnitor F).hom := by aesop_cat
+    colimit.pre F (𝟭 _) = colim.map (Functor.leftUnitor F).hom := by cat_disch
 
 theorem colimit.map_post {D : Type u'} [Category.{v'} D] [HasColimitsOfShape J D]
-    (H : C ⥤ D) :/- H (colimit F) ⟶ H (colimit G) ⟶ colimit (G ⋙ H) vs
-             H (colimit F) ⟶ colimit (F ⋙ H) ⟶ colimit (G ⋙ H) -/
-          colimit.post
-          F H ≫
-        H.map (colim.map α) =
+    (H : C ⥤ D) :
+    /- H (colimit F) ⟶ H (colimit G) ⟶ colimit (G ⋙ H) vs
+      H (colimit F) ⟶ colimit (F ⋙ H) ⟶ colimit (G ⋙ H) -/
+    colimit.post F H ≫ H.map (colim.map α) =
       colim.map (whiskerRight α H) ≫ colimit.post G H := by
   ext
   rw [← assoc, colimit.ι_post, ← H.map_comp, colimit.ι_map, H.map_comp]
@@ -1054,8 +1053,8 @@ def colimConstAdj : (colim : (J ⥤ C) ⥤ C) ⊣ const J := Adjunction.mk' {
     { toFun := fun g =>
         { app := fun _ => colimit.ι _ _ ≫ g }
       invFun := fun g => colimit.desc _ ⟨_, g⟩
-      left_inv := by aesop_cat
-      right_inv := by aesop_cat }
+      left_inv := by cat_disch
+      right_inv := by cat_disch }
   unit := { app := fun g => { app := colimit.ι _ } }
   counit := { app := fun _ => colimit.desc _ ⟨_, 𝟙 _⟩ } }
 
@@ -1087,7 +1086,7 @@ variable (C)
 theorem hasColimitsOfSizeOfUnivLE [UnivLE.{v₂, v₁}] [UnivLE.{u₂, u₁}]
     [HasColimitsOfSize.{v₁, u₁} C] : HasColimitsOfSize.{v₂, u₂} C where
   has_colimits_of_shape J {_} := hasColimitsOfShape_of_equivalence
-    ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm
+    ((ShrinkHoms.equivalence.{v₁} J).trans <| Shrink.equivalence _).symm
 
 /-- `hasColimitsOfSizeShrink.{v u} C` tries to obtain `HasColimitsOfSize.{v u} C`
 from some other `HasColimitsOfSize C`.

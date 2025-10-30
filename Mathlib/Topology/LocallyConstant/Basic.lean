@@ -3,7 +3,7 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Group.Indicator
+import Mathlib.Algebra.Notation.Indicator
 import Mathlib.Tactic.FinCases
 import Mathlib.Topology.Connected.LocallyConnected
 import Mathlib.Topology.Sets.Closeds
@@ -259,8 +259,6 @@ protected theorem continuous : Continuous f :=
 /-- As a shorthand, `LocallyConstant.toContinuousMap` is available as a coercion -/
 instance : Coe (LocallyConstant X Y) C(X, Y) := ⟨toContinuousMap⟩
 
--- Porting note: became a syntactic `rfl`
-
 @[simp] theorem coe_continuousMap : ((f : C(X, Y)) : X → Y) = (f : X → Y) := rfl
 
 theorem toContinuousMap_injective :
@@ -442,9 +440,9 @@ variable {R : Type*} [One R] {U : Set X} (f : LocallyConstant X R)
 
 /-- Given a clopen set `U` and a locally constant function `f`, `LocallyConstant.mulIndicator`
   returns the locally constant function that is `f` on `U` and `1` otherwise. -/
-@[to_additive (attr := simps) "Given a clopen set `U` and a locally constant function `f`,
+@[to_additive (attr := simps) /-- Given a clopen set `U` and a locally constant function `f`,
   `LocallyConstant.indicator` returns the locally constant function that is `f` on `U` and `0`
-  otherwise. "]
+  otherwise. -/]
 noncomputable def mulIndicator (hU : IsClopen U) : LocallyConstant X R where
   toFun := Set.mulIndicator U f
   isLocallyConstant := fun s => by
@@ -521,8 +519,8 @@ end Equiv
 section Piecewise
 
 /-- Given two closed sets covering a topological space, and locally constant maps on these two sets,
-    then if these two locally constant maps agree on the intersection, we get a piecewise defined
-    locally constant map on the whole space.
+then if these two locally constant maps agree on the intersection, we get a piecewise defined
+locally constant map on the whole space.
 
 TODO: Generalise this construction to `ContinuousMap`. -/
 def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) (h : C₁ ∪ C₂ = Set.univ)

@@ -3,8 +3,7 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Homology.Opposite
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+import Mathlib.Algebra.Homology.ConcreteCategory
 import Mathlib.RepresentationTheory.Coinvariants
 import Mathlib.RepresentationTheory.Homological.Resolution
 import Mathlib.Tactic.CategoryTheory.Slice
@@ -68,7 +67,6 @@ for commutative rings.
 
 * API for homology in low degree: $\mathrm{H}_0, \mathrm{H}_1$ and $\mathrm{H}_2.$ For example,
   the corestriction-coinflation exact sequence.
-* The long exact sequence in homology attached to a short exact sequence of representations.
 * Upgrading `groupHomologyIsoTor` to an isomorphism of derived functors.
 
 -/
@@ -151,8 +149,7 @@ theorem d_eq [DecidableEq G] :
       ((barComplex k G).coinvariantsTensorObj A).d (n + 1) n ≫
       (coinvariantsTensorFreeLEquiv A (Fin n → G)).toModuleIso.hom := by
   ext : 3
-  simp [d_single (k := k), ModuleCat.MonoidalCategory.tensorObj,
-    ModuleCat.MonoidalCategory.whiskerLeft, tensorObj_def, whiskerLeft_def, TensorProduct.tmul_add,
+  simp [d_single (k := k), tensorObj_carrier, whiskerLeft_def, TensorProduct.tmul_add,
     TensorProduct.tmul_sum, barComplex.d_single (k := k)]
 
 end inhomogeneousChains
@@ -166,8 +163,8 @@ noncomputable abbrev inhomogeneousChains :
     (fun n => inhomogeneousChains.d A n) fun n => by
     classical
     simp only [inhomogeneousChains.d_eq]
-    slice_lhs 3 4 => { rw [Iso.hom_inv_id] }
-    slice_lhs 2 4 => { rw [Category.id_comp, ((barComplex k G).coinvariantsTensorObj A).d_comp_d] }
+    slice_lhs 3 4 => rw [Iso.hom_inv_id]
+    slice_lhs 2 4 => rw [Category.id_comp, ((barComplex k G).coinvariantsTensorObj A).d_comp_d]
     simp
 
 open inhomogeneousChains
@@ -202,9 +199,23 @@ abbrev cycles (n : ℕ) : ModuleCat k := (inhomogeneousChains A).cycles n
 
 open HomologicalComplex
 
+variable {A} in
+/-- When `m = 0` this makes a term of `cycles A 0` from any element of `A` (or more precisely
+any element in the kernel of `d₀,₀ = 0`). When `m` is positive, this makes a term of `cycles A m`
+from any element of the kernel of `dₘ,ₘ₋₁`. -/
+abbrev cyclesMk (m n : ℕ) (h : (ComplexShape.down ℕ).next m = n) (f : (Fin m → G) →₀ A)
+    (hf : (inhomogeneousChains A).d m n f = 0) : cycles A m :=
+  (inhomogeneousChains A).cyclesMk f n h hf
+
 /-- The natural inclusion of the `n`-cycles `Zₙ(G, A)` into the `n`-chains `Cₙ(G, A).` -/
 abbrev iCycles (n : ℕ) : cycles A n ⟶ (inhomogeneousChains A).X n :=
   (inhomogeneousChains A).iCycles n
+
+variable {A} in
+theorem iCycles_mk {m n : ℕ} (h : (ComplexShape.down ℕ).next m = n) (f : (Fin m → G) →₀ A)
+    (hf : (inhomogeneousChains A).d m n f = 0) :
+    iCycles A m (cyclesMk m n h f hf) = f := by
+  exact (inhomogeneousChains A).i_cyclesMk f n h hf
 
 /-- This is the map from `i`-chains to `j`-cycles induced by the differential in the complex of
 inhomogeneous chains. -/

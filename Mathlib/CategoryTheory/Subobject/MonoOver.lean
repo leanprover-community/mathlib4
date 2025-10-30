@@ -6,9 +6,11 @@ Authors: Bhavik Mehta, Kim Morrison
 import Mathlib.CategoryTheory.Comma.Over.Pullback
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
+import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+import Mathlib.CategoryTheory.WithTerminal.Cone
 
 /-!
 # Monomorphisms over a fixed object
@@ -36,7 +38,7 @@ and was ported to mathlib by Kim Morrison.
 -/
 
 
-universe v₁ v₂ u₁ u₂
+universe w' w v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section
 
@@ -47,18 +49,16 @@ open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
 variable {D : Type u₂} [Category.{v₂} D]
 
-/-- Monomorphisms, as a property objects in the category `Over X`. -/
-def monoOver (X : C) : ObjectProperty (Over X) := fun f ↦ Mono f.hom
-
-@[simp]
-lemma monoOver_iff {X : C} (f : Over X) : monoOver X f ↔ Mono f.hom := Iff.rfl
+/-- The object property in `Over X` of the structure morphism being a monomorphism. -/
+abbrev Over.isMono (X : C) : ObjectProperty (Over X) :=
+  fun f : Over X => Mono f.hom
 
 /-- The category of monomorphisms into `X` as a full subcategory of the over category.
 This isn't skeletal, so it's not a partial order.
 
 Later we define `Subobject X` as the quotient of this by isomorphisms.
 -/
-abbrev MonoOver (X : C) := (monoOver X).FullSubcategory
+abbrev MonoOver (X : C) := (Over.isMono X).FullSubcategory
 
 namespace MonoOver
 
@@ -133,12 +133,12 @@ abbrev homMk {f g : MonoOver X} (h : f.obj.left ⟶ g.obj.left)
 /-- Convenience constructor for an isomorphism in monomorphisms over `X`. -/
 @[simps]
 def isoMk {f g : MonoOver X} (h : f.obj.left ≅ g.obj.left)
-    (w : h.hom ≫ g.arrow = f.arrow := by aesop_cat) : f ≅ g where
+    (w : h.hom ≫ g.arrow = f.arrow := by cat_disch) : f ≅ g where
   hom := homMk h.hom w
   inv := homMk h.inv (by rw [h.inv_comp_eq, w])
 
 /-- If `f : MonoOver X`, then `mk' f.arrow` is of course just `f`, but not definitionally, so we
-    package it as an isomorphism. -/
+package it as an isomorphism. -/
 @[simps!]
 def mkArrowIso {X : C} (f : MonoOver X) : mk f.arrow ≅ f :=
   isoMk (Iso.refl _)
@@ -206,6 +206,74 @@ def slice {A : C} {f : Over A}
   counitIso :=
     MonoOver.liftComp _ _ _ _ ≪≫
       MonoOver.liftIso _ _ f.iteratedSliceEquiv.counitIso ≪≫ MonoOver.liftId
+
+section Limits
+
+variable {J : Type u₃} [Category.{v₃} J] (X : C)
+
+instance : (Over.isMono X).IsClosedUnderLimitsOfShape J where
+  limitsOfShape_le := fun F ⟨p, hp⟩ ↦ ⟨fun g h e ↦ by
+    refine (WithTerminal.isLimitEquiv.invFun p.isLimit).hom_ext (fun j ↦ ?_)
+    cases j with
+    | of j => have := hp j; rw [← cancel_mono ((p.diag.obj j).hom)]; simpa
+    | star => exact e⟩
+
+instance hasLimit (F : J ⥤ MonoOver X) [HasLimit (F ⋙ (Over.isMono X).ι)] :
+    HasLimit F :=
+  hasLimit_of_closedUnderLimits _ _ _
+
+instance hasLimitsOfShape [HasLimitsOfShape J (Over X)] :
+    HasLimitsOfShape J (MonoOver X) where
+
+instance hasFiniteLimits [HasFiniteLimits (Over X)] : HasFiniteLimits (MonoOver X) where
+  out _ _ _ := inferInstance
+
+instance hasLimitsOfSize [HasLimitsOfSize.{w, w'} (Over X)] :
+    HasLimitsOfSize.{w, w'} (MonoOver X) where
+
+end Limits
+
+section Colimits
+
+variable [HasCoproducts C] [HasStrongEpiMonoFactorisations C] {J : Type u₂} [Category.{v₂} J]
+
+/-- A helper function, providing the strong epi-mono factorization used construct to colimits. -/
+def strongEpiMonoFactorisationSigmaDesc (F : J ⥤ MonoOver Y) :
+    StrongEpiMonoFactorisation (Sigma.desc fun i ↦ (F.obj i).arrow) :=
+  Classical.choice <| HasStrongEpiMonoFactorisations.has_fac (Sigma.desc fun i ↦ (F.obj i).arrow)
+
+/-- If a category `C` has strong epi-mono factorization, for any `Y : C` and functor
+`F : J ⥤ MonoOver Y`, there is a cocone under F. -/
+def coconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
+    Cocone F where
+  pt := MonoOver.mk ((strongEpiMonoFactorisationSigmaDesc F).m)
+  ι.app j := homMk (Sigma.ι (fun i ↦ (F.obj i : C)) j ≫
+    (strongEpiMonoFactorisationSigmaDesc F).e)
+
+lemma commSqOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone F) :
+    CommSq (Sigma.desc fun i ↦ (c.ι.app i).hom.left) (strongEpiMonoFactorisationSigmaDesc F).e
+      c.pt.arrow (strongEpiMonoFactorisationSigmaDesc F).m where
+
+/-- A helper function, providing the lift structure used to construct colimits. -/
+def liftStructOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone F) :
+    (commSqOfHasStrongEpiMonoFactorisation F c).LiftStruct :=
+  Classical.choice
+    (((strongEpiMonoFactorisationSigmaDesc F).e_strong_epi.llp _).sq_hasLift
+      (commSqOfHasStrongEpiMonoFactorisation F c)).exists_lift
+
+/-- The cocone `coconeOfHasStrongEpiMonoFactorisation F` is a colimit -/
+def isColimitCoconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
+    IsColimit (coconeOfHasStrongEpiMonoFactorisation F) where
+  desc c := homMk (liftStructOfHasStrongEpiMonoFactorisation F c).l
+    (liftStructOfHasStrongEpiMonoFactorisation F c).fac_right
+
+instance hasColimitsOfSize_of_hasStrongEpiMonoFactorisations :
+    HasColimitsOfSize.{w, w'} (MonoOver Y) where
+  has_colimits_of_shape _ _ :=
+    ⟨fun F ↦
+      ⟨coconeOfHasStrongEpiMonoFactorisation F, isColimitCoconeOfHasStrongEpiMonoFactorisation F⟩⟩
+
+end Colimits
 
 section Pullback
 
@@ -310,7 +378,7 @@ section
 variable (X)
 
 /-- An equivalence of categories `e` between `C` and `D` induces an equivalence between
-    `MonoOver X` and `MonoOver (e.functor.obj X)` whenever `X` is an object of `C`. -/
+`MonoOver X` and `MonoOver (e.functor.obj X)` whenever `X` is an object of `C`. -/
 @[simps]
 def congr (e : C ≌ D) : MonoOver X ≌ MonoOver (e.functor.obj X) where
   functor :=

@@ -10,11 +10,11 @@ import Mathlib.RingTheory.Smooth.Kaehler
 import Mathlib.RingTheory.Flat.Localization
 
 /-!
-# The differential module and etale algebras
+# The differential module and étale algebras
 
 ## Main results
 - `KaehlerDifferential.tensorKaehlerEquivOfFormallyEtale`:
-  The canonical isomorphism `T ⊗[S] Ω[S⁄R] ≃ₗ[T] Ω[T⁄R]` for `T` a formally etale `S`-algebra.
+  The canonical isomorphism `T ⊗[S] Ω[S⁄R] ≃ₗ[T] Ω[T⁄R]` for `T` a formally étale `S`-algebra.
 - `Algebra.tensorH1CotangentOfIsLocalization`:
   The canonical isomorphism `T ⊗[S] H¹(L_{S⁄R}) ≃ₗ[T] H¹(L_{T⁄R})` for `T` a localization of `S`.
 -/
@@ -27,7 +27,7 @@ variable [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 open TensorProduct
 
 /--
-The canonical isomorphism `T ⊗[S] Ω[S⁄R] ≃ₗ[T] Ω[T⁄R]` for `T` a formally etale `S`-algebra.
+The canonical isomorphism `T ⊗[S] Ω[S⁄R] ≃ₗ[T] Ω[T⁄R]` for `T` a formally étale `S`-algebra.
 Also see `S ⊗[R] Ω[A⁄R] ≃ₗ[S] Ω[S ⊗[R] A⁄S]` at `KaehlerDifferential.tensorKaehlerEquiv`.
 -/
 @[simps! apply] noncomputable
@@ -36,7 +36,7 @@ def KaehlerDifferential.tensorKaehlerEquivOfFormallyEtale [Algebra.FormallyEtale
   refine LinearEquiv.ofBijective (mapBaseChange R S T)
     ⟨?_, fun x ↦ (KaehlerDifferential.exact_mapBaseChange_map R S T x).mp (Subsingleton.elim _ _)⟩
   rw [injective_iff_map_eq_zero]
-  intros x hx
+  intro x hx
   obtain ⟨x, rfl⟩ := (Algebra.H1Cotangent.exact_δ_mapBaseChange R S T x).mp hx
   rw [Subsingleton.elim x 0, map_zero]
 
@@ -79,7 +79,7 @@ Suppose we have a morphism of extensions of `R`-algebras
 -/
 variable {P : Extension.{u} R S} {Q : Extension.{u} R T} (f : P.Hom Q)
 
-/-- If `P → Q` is formally etale, then `T ⊗ₛ (S ⊗ₚ Ω[P/R]) ≃ T ⊗_Q Ω[Q/R]`. -/
+/-- If `P → Q` is formally étale, then `T ⊗ₛ (S ⊗ₚ Ω[P/R]) ≃ T ⊗_Q Ω[Q/R]`. -/
 noncomputable
 def tensorCotangentSpace
     (H : f.toRingHom.FormallyEtale) :
@@ -217,7 +217,7 @@ def tensorCotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.Ri
         simp only [LinearMap.liftBaseChange_tmul, map_smul]
         simp [Hom.mapKer, tensorCotangentInvFun_smul_mk] }
 
-/-- If `J ≃ Q ⊗ₚ I`, `S → T` is flat and `P → Q` is formally etale, then `T ⊗ H¹(L_P) ≃ H¹(L_Q)`. -/
+/-- If `J ≃ Q ⊗ₚ I`, `S → T` is flat and `P → Q` is formally étale, then `T ⊗ H¹(L_P) ≃ H¹(L_Q)`. -/
 noncomputable
 def tensorH1Cotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.Ring = f.toRingHom)
     [Module.Flat S T]
@@ -271,7 +271,7 @@ def tensorH1CotangentOfIsLocalization (M : Submonoid S) [IsLocalization M T] :
     by simpa using IsLocalization.map_units T ⟨algebraMap P.Ring S y, hy⟩)
   letI Q : Extension R T := .ofSurjective fQ (by
     intro x
-    obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.mk'_surjective M x
+    obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.exists_mk'_eq M x
     obtain ⟨x, rfl⟩ := P.algebraMap_surjective x
     obtain ⟨s, rfl⟩ := P.algebraMap_surjective s
     refine ⟨IsLocalization.mk' _ x ⟨s, show s ∈ M' from hs⟩, ?_⟩
@@ -307,7 +307,7 @@ def tensorH1CotangentOfIsLocalization (M : Submonoid S) [IsLocalization M T] :
         (Algebra.linearMap P.Ring (Localization M'))
         (f' := (IsScalarTower.toAlgHom P.Ring S T).toLinearMap)]
       ext x
-      obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.mk'_surjective M' x
+      obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.exists_mk'_eq M' x
       simp only [LinearMap.mem_ker, LinearMap.extendScalarsOfIsLocalization_apply', RingHom.mem_ker,
         IsLocalization.coe_liftAlgHom, AlgHom.toRingHom_eq_coe, IsLocalization.lift_mk'_spec,
         RingHom.coe_coe, AlgHom.coe_comp, IsScalarTower.coe_toAlgHom', Function.comp_apply,
@@ -343,7 +343,7 @@ lemma tensorH1CotangentOfIsLocalization_toLinearMap
     by simpa using IsLocalization.map_units T ⟨algebraMap P.Ring S y, hy⟩)
   letI Q : Extension R T := .ofSurjective fQ (by
     intro x
-    obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.mk'_surjective M x
+    obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.exists_mk'_eq M x
     obtain ⟨x, rfl⟩ := P.algebraMap_surjective x
     obtain ⟨s, rfl⟩ := P.algebraMap_surjective s
     refine ⟨IsLocalization.mk' _ x ⟨s, show s ∈ M' from hs⟩, ?_⟩

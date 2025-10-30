@@ -26,7 +26,7 @@ namespace EuclideanDomain
 variable {R : Type u}
 variable [EuclideanDomain R]
 
-/-- The well founded relation in a Euclidean Domain satisfying `a % b ≺ b` for `b ≠ 0` -/
+/-- The well-founded relation in a Euclidean Domain satisfying `a % b ≺ b` for `b ≠ 0` -/
 local infixl:50 " ≺ " => EuclideanDomain.r
 
 -- See note [lower instance priority]
@@ -255,9 +255,11 @@ theorem lcm_dvd {x y z : R} (hxz : x ∣ z) (hyz : y ∣ z) : lcm x y ∣ z := b
   rw [gcd_eq_gcd_ab, mul_add]
   apply dvd_add
   · rw [mul_left_comm]
-    exact mul_dvd_mul_left _ (hyz.mul_right _)
+    gcongr
+    apply hyz.mul_right
   · rw [mul_left_comm, mul_comm]
-    exact mul_dvd_mul_left _ (hxz.mul_right _)
+    gcongr
+    apply hxz.mul_right
 
 @[simp]
 theorem lcm_dvd_iff {x y z : R} : lcm x y ∣ z ↔ x ∣ z ∧ y ∣ z :=
@@ -306,8 +308,7 @@ section Div
 theorem mul_div_mul_cancel {a b c : R} (ha : a ≠ 0) (hcb : c ∣ b) : a * b / (a * c) = b / c := by
   by_cases hc : c = 0; · simp [hc]
   refine eq_div_of_mul_eq_right hc (mul_left_cancel₀ ha ?_)
-  rw [← mul_assoc, ← mul_div_assoc _ (mul_dvd_mul_left a hcb),
-    mul_div_cancel_left₀ _ (mul_ne_zero ha hc)]
+  rw [← mul_assoc, ← mul_div_assoc _ (by gcongr), mul_div_cancel_left₀ _ (mul_ne_zero ha hc)]
 
 theorem mul_div_mul_comm_of_dvd_dvd {a b c d : R} (hac : c ∣ a) (hbd : d ∣ b) :
     a * b / (c * d) = a / c * (b / d) := by
@@ -336,14 +337,14 @@ theorem sub_mul_div_right (x y z : R) (h1 : y ≠ 0) (h2 : y ∣ x) : (x - z * y
   rw [mul_comm z y]
   exact sub_mul_div_left _ _ _ h1 h2
 
-theorem mul_add_div_left (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) : (z * x + y) / z = x + y / z  := by
+theorem mul_add_div_left (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) : (z * x + y) / z = x + y / z := by
   rw [eq_comm]
   apply eq_div_of_mul_eq_right h1
   rw [mul_add, EuclideanDomain.mul_div_cancel' h1 h2]
 
 theorem mul_add_div_right (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) : (x * z + y) / z = x + y / z := by
   rw [mul_comm x z]
-  exact mul_add_div_left _  _  _  h1 h2
+  exact mul_add_div_left _ _ _ h1 h2
 
 theorem mul_sub_div_left (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) : (z * x - y) / z = x - y / z := by
   rw [eq_comm]
@@ -369,13 +370,13 @@ theorem div_div {x y z : R} (h1 : y ∣ x) (h2 : z ∣ (x / y)) :
   exact (div_mul h1 h2).symm
 
 theorem div_add_div_of_dvd {x y z t : R} (h1 : y ≠ 0) (h2 : t ≠ 0) (h3 : y ∣ x) (h4 : t ∣ z) :
-    x / y + z / t = (t * x + y * z) / (t * y):= by
+    x / y + z / t = (t * x + y * z) / (t * y) := by
   apply eq_div_of_mul_eq_right (mul_ne_zero h2 h1)
   rw [mul_add, mul_assoc, EuclideanDomain.mul_div_cancel' h1 h3, mul_comm t y,
     mul_assoc, EuclideanDomain.mul_div_cancel' h2 h4]
 
 theorem div_sub_div_of_dvd {x y z t : R} (h1 : y ≠ 0) (h2 : t ≠ 0) (h3 : y ∣ x) (h4 : t ∣ z) :
-    x / y - z / t = (t * x - y * z) / (t * y):= by
+    x / y - z / t = (t * x - y * z) / (t * y) := by
   apply eq_div_of_mul_eq_right (mul_ne_zero h2 h1)
   rw [mul_sub, mul_assoc, EuclideanDomain.mul_div_cancel' h1 h3, mul_comm t y,
     mul_assoc, EuclideanDomain.mul_div_cancel' h2 h4]
@@ -392,7 +393,7 @@ theorem eq_div_iff_mul_eq_of_dvd (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) :
 
 theorem div_eq_div_iff_mul_eq_mul_of_dvd {x y z t : R} (h1 : y ≠ 0) (h2 : t ≠ 0)
     (h3 : y ∣ x) (h4 : t ∣ z) : x / y = z / t ↔ t * x = y * z := by
-  rw [div_eq_iff_eq_mul_of_dvd _  _ _ h1 h3, ← mul_div_assoc _ h4,
+  rw [div_eq_iff_eq_mul_of_dvd _ _ _ h1 h3, ← mul_div_assoc _ h4,
     eq_div_iff_mul_eq_of_dvd _ _ _ h2]
   obtain ⟨a, ha⟩ := h4
   use y * a

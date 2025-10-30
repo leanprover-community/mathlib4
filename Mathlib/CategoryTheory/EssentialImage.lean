@@ -171,8 +171,8 @@ end EssSurj
 variable {J C D : Type*} [Category J] [Category C] [Category D]
   (G : J ⥤ D) (F : C ⥤ D) [F.Full] [F.Faithful] (hG : ∀ j, F.essImage (G.obj j))
 
-/-- Lift a functor `G : J ⥤ D` to the essential image of a fully functor `F : C ⥤ D` to a functor
-`G' : J ⥤ C` such that `G' ⋙ F ≅ G`. See `essImage.liftFunctorCompIso`. -/
+/-- Lift a functor `G : J ⥤ D` to the essential image of a fully faithful functor `F : C ⥤ D` to a
+functor `G' : J ⥤ C` such that `G' ⋙ F ≅ G`. See `essImage.liftFunctorCompIso`. -/
 @[simps] def essImage.liftFunctor : J ⥤ C where
   obj j := F.toEssImage.objPreimage ⟨G.obj j, hG j⟩
   map {i j} f :=
@@ -182,8 +182,8 @@ variable {J C D : Type*} [Category J] [Category C] [Category D]
   map_id _ := F.map_injective  (by simp)
   map_comp _ _ := F.map_injective (by simp)
 
-/-- A functor `G : J ⥤ D` to the essential image of a fully functor `F : C ⥤ D` does factor through
-`essImage.liftFunctor G F hG`. -/
+/-- A functor `G : J ⥤ D` to the essential image of a fully faithful functor `F : C ⥤ D` does
+factor through `essImage.liftFunctor G F hG`. -/
 @[simps!] def essImage.liftFunctorCompIso : essImage.liftFunctor G F hG ⋙ F ≅ G :=
   NatIso.ofComponents
     (fun i ↦ F.essImage.ι.mapIso (F.toEssImage.objObjPreimageIso ⟨G.obj i, hG _⟩))

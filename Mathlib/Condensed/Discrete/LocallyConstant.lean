@@ -23,7 +23,7 @@ the functor of sheaves of locally constant maps described above.
 
 The hard part of this adjunction is to define the counit. Its components are defined as follows:
 
-Let `S : CompHausLike P` and let `Y` be a finite-product preserving presheaf on `CompHausLike P`
+Let `S : CompHausLike P` and let `Y` be a finite-product-preserving presheaf on `CompHausLike P`
 (e.g. a sheaf for the coherent topology). We need to define a map `LocallyConstant S Y(*) ⟶ Y(S)`.
 Given a locally constant map `f : S → Y(*)`, let `S = S₁ ⊔ ⋯ ⊔ Sₙ` be the corresponding
 decomposition of `S` into the fibers. Let `yᵢ ∈ Y(*)` denote the value of `f` on `Sᵢ` and denote
@@ -287,7 +287,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     exact (mem_iff_eq_image (g.val.app _ ∘ f) _ _).symm
 
 /--
-The unit of the adjunciton is given by mapping each element to the corresponding constant map.
+The unit of the adjunction is given by mapping each element to the corresponding constant map.
 -/
 @[simps]
 def unit : 𝟭 _ ⟶ functor P hs ⋙ (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u + 1}⟩ where

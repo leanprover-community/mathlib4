@@ -52,7 +52,7 @@ theorem sup_def (S T : Subalgebra R A) : S ⊔ T = adjoin R (S ∪ T : Set A) :=
 
 theorem sSup_def (S : Set (Subalgebra R A)) : sSup S = adjoin R (⋃₀ (SetLike.coe '' S)) := rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_top : (↑(⊤ : Subalgebra R A) : Set A) = Set.univ := rfl
 
 @[simp]
@@ -228,7 +228,7 @@ theorem mem_bot {x : A} : x ∈ (⊥ : Subalgebra R A) ↔ x ∈ Set.range (alge
 theorem toSubmodule_bot : Subalgebra.toSubmodule (⊥ : Subalgebra R A) = 1 :=
   Submodule.one_eq_range.symm
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_bot : ((⊥ : Subalgebra R A) : Set A) = Set.range (algebraMap R A) := rfl
 
 theorem eq_top_iff {S : Subalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
@@ -238,8 +238,6 @@ theorem eq_top_iff {S : Subalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
 theorem _root_.AlgHom.range_eq_top (f : A →ₐ[R] B) :
     f.range = (⊤ : Subalgebra R B) ↔ Function.Surjective f :=
   Algebra.eq_top_iff
-
-@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := AlgHom.range_eq_top
 
 @[simp]
 theorem range_ofId : (Algebra.ofId R A).range = ⊥ := rfl
@@ -565,8 +563,9 @@ theorem adjoin_eq_span : Subalgebra.toSubmodule (adjoin R s) = span R (Submonoid
   · intro r hr
     rcases Subsemiring.mem_closure_iff_exists_list.1 hr with ⟨L, HL, rfl⟩
     clear hr
-    induction' L with hd tl ih
-    · exact zero_mem _
+    induction L with
+    | nil => exact zero_mem _
+    | cons hd tl ih => ?_
     rw [List.forall_mem_cons] at HL
     rw [List.map_cons, List.sum_cons]
     refine Submodule.add_mem _ ?_ (ih HL.2)
@@ -576,8 +575,9 @@ theorem adjoin_eq_span : Subalgebra.toSubmodule (adjoin R s) = span R (Submonoid
       rcases this with ⟨z, r, hr, hzr⟩
       rw [← hzr]
       exact smul_mem _ _ (subset_span hr)
-    induction' hd with hd tl ih
-    · exact ⟨1, 1, (Submonoid.closure s).one_mem', one_smul _ _⟩
+    induction hd with
+    | nil => exact ⟨1, 1, (Submonoid.closure s).one_mem', one_smul _ _⟩
+    | cons hd tl ih => ?_
     rw [List.forall_mem_cons] at HL
     rcases ih HL.2 with ⟨z, r, hr, hzr⟩
     rw [List.prod_cons, ← hzr]
@@ -607,9 +607,8 @@ theorem adjoin_span {s : Set A} : adjoin R (Submodule.span R s : Set A) = adjoin
   le_antisymm (adjoin_le (span_le_adjoin _ _)) (adjoin_mono Submodule.subset_span)
 
 theorem adjoin_image (f : A →ₐ[R] B) (s : Set A) : adjoin R (f '' s) = (adjoin R s).map f :=
-  le_antisymm (adjoin_le <| Set.image_subset _ subset_adjoin) <|
+  le_antisymm (adjoin_le <| Set.image_mono subset_adjoin) <|
     Subalgebra.map_le.2 <| adjoin_le <| Set.image_subset_iff.1 <| by
-      -- Porting note: I don't understand how this worked in Lean 3 with just `subset_adjoin`
       simp only [Set.image_id', coe_carrier_toSubmonoid, Subalgebra.coe_toSubsemiring,
         Subalgebra.coe_comap]
       exact fun x hx => subset_adjoin ⟨x, hx, rfl⟩
@@ -701,20 +700,15 @@ theorem adjoin_singleton_intCast (n : ℤ) : adjoin R {(n : A)} = ⊥ := by
 theorem adjoin_insert_intCast (n : ℤ) (s : Set A) : adjoin R (insert (n : A) s) = adjoin R s := by
   simpa using adjoin_insert_algebraMap (n : R) s
 
-theorem mem_adjoin_iff {s : Set A} {x : A} :
-    x ∈ adjoin R s ↔ x ∈ Subring.closure (Set.range (algebraMap R A) ∪ s) :=
-  ⟨fun hx =>
-    Subsemiring.closure_induction Subring.subset_closure (Subring.zero_mem _) (Subring.one_mem _)
-      (fun _ _ _ _ => Subring.add_mem _) (fun _ _ _ _ => Subring.mul_mem _) hx,
-    suffices Subring.closure (Set.range (algebraMap R A) ∪ s) ≤ (adjoin R s).toSubring
-      from (show (_ : Set A) ⊆ _ from this) (a := x)
-    -- Porting note: Lean doesn't seem to recognize the defeq between the order on subobjects and
-    -- subsets of their coercions to sets as easily as in Lean 3
-    Subring.closure_le.2 Subsemiring.subset_closure⟩
-
 theorem adjoin_eq_ring_closure (s : Set A) :
     (adjoin R s).toSubring = Subring.closure (Set.range (algebraMap R A) ∪ s) :=
-  Subring.ext fun _x => mem_adjoin_iff
+  .symm <| Subring.closure_eq_of_le (by simp [adjoin]) fun x hx =>
+    Subsemiring.closure_induction Subring.subset_closure (Subring.zero_mem _) (Subring.one_mem _)
+      (fun _ _ _ _ => Subring.add_mem _) (fun _ _ _ _ => Subring.mul_mem _) hx
+
+theorem mem_adjoin_iff {s : Set A} {x : A} :
+    x ∈ adjoin R s ↔ x ∈ Subring.closure (Set.range (algebraMap R A) ∪ s) := by
+  rw [← Subalgebra.mem_toSubring, adjoin_eq_ring_closure]
 
 variable (R)
 

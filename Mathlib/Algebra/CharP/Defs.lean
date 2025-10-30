@@ -66,7 +66,7 @@ lemma cast_eq_mod (k : ℕ) : (k : R) = (k % p : ℕ) :=
     (k : R) = ↑(k % p + p * (k / p)) := by rw [Nat.mod_add_div]
     _ = ↑(k % p) := by simp [this]
 
-lemma cast_eq_iff_mod_eq [IsLeftCancelAdd R] : (a:R) = (b:R) ↔ a % p = b % p := by
+lemma cast_eq_iff_mod_eq [IsLeftCancelAdd R] : (a : R) = (b : R) ↔ a % p = b % p := by
   wlog hle : a ≤ b
   · simpa only [eq_comm] using (this _ _ (lt_of_not_ge hle).le)
   obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le hle
@@ -146,8 +146,6 @@ lemma existsUnique : ∃! p, CharP R p :=
   let ⟨c, H⟩ := CharP.exists R
   ⟨c, H, fun _y H2 => CharP.eq R H2 H⟩
 
-@[deprecated (since := "2024-12-17")] alias exists_unique := existsUnique
-
 end NonAssocSemiring
 end CharP
 
@@ -183,6 +181,13 @@ lemma eq_zero [CharZero R] : ringChar R = 0 :=
   eq R 0
 
 lemma Nat.cast_ringChar : (ringChar R : R) = 0 := by rw [ringChar.spec]
+
+@[simp]
+lemma ringChar_eq_one : ringChar R = 1 ↔ Subsingleton R := by
+  rw [← Nat.dvd_one, ← spec, eq_comm, Nat.cast_one, subsingleton_iff_zero_eq_one]
+
+@[nontriviality]
+lemma ringChar_subsingleton [Subsingleton R] : ringChar R = 1 := by simpa
 
 end ringChar
 
@@ -229,8 +234,8 @@ lemma char_is_prime_of_two_le (p : ℕ) [CharP R p] (hp : 2 ≤ p) : Nat.Prime p
     have : p ∣ e := (cast_eq_zero_iff R p e).mp he
     have : e ∣ p := dvd_of_mul_left_eq d (Eq.symm hmul)
     have : e = p := ‹e ∣ p›.antisymm ‹p ∣ e›
-    have h₀ : 0 < p := by omega
-    have : d * p = 1 * p := by rw [‹e = p›] at hmul; rw [one_mul]; exact Eq.symm hmul
+    have h₀ : 0 < p := by grind
+    have : d * p = 1 * p := by grind
     show d = 1 ∨ d = p from Or.inl (mul_right_cancel₀ h₀.ne' this)
 
 section Nontrivial

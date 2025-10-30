@@ -601,8 +601,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → NonUnitalSubse
     NonUnitalSubsemiring.mk' (⋃ i, (S i : Set R))
       (⨆ i, (S i).toSubsemigroup) (Subsemigroup.coe_iSup_of_directed hS)
       (⨆ i, (S i).toAddSubmonoid) (AddSubmonoid.coe_iSup_of_directed hS)
-  -- Porting note `@this` doesn't work
-  suffices H : ⨆ i, S i ≤ U by simpa [U] using @H x
+  suffices ⨆ i, S i ≤ U by simpa [U] using @this x
   exact iSup_le fun i x hx => Set.mem_iUnion.2 ⟨i, hx⟩
 
 theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → NonUnitalSubsemiring R}
@@ -656,16 +655,11 @@ theorem srange_eq_top_iff_surjective {f : F} :
     srange f = (⊤ : NonUnitalSubsemiring S) ↔ Function.Surjective (f : R → S) :=
   SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_srange, coe_top]) Set.range_eq_univ
 
-@[deprecated (since := "2024-11-11")]
-alias srange_top_iff_surjective := srange_eq_top_iff_surjective
-
 /-- The range of a surjective non-unital ring homomorphism is the whole of the codomain. -/
 @[simp]
 theorem srange_eq_top_of_surjective (f : F) (hf : Function.Surjective (f : R → S)) :
     srange f = (⊤ : NonUnitalSubsemiring S) :=
   srange_eq_top_iff_surjective.2 hf
-
-@[deprecated (since := "2024-11-11")] alias srange_top_of_surjective := srange_eq_top_of_surjective
 
 /-- If two non-unital ring homomorphisms are equal on a set, then they are equal on its
 non-unital subsemiring closure. -/

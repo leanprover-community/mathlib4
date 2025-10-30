@@ -116,7 +116,7 @@ theorem Action.pretransitive_of_isConnected (X : Action FintypeCat G)
     have : IsIso i := by
       apply IsConnected.noTrivialComponent T' i
       apply (not_initial_iff_fiber_nonempty (Action.forget _ _) T').mpr
-      exact Set.Nonempty.coe_sort (MulAction.orbit_nonempty x)
+      exact Set.Nonempty.coe_sort (MulAction.nonempty_orbit x)
     have hb : Function.Bijective i.hom := by
       apply (ConcreteCategory.isIso_iff_bijective i.hom).mp
       exact map_isIso (forget₂ _ FintypeCat) i

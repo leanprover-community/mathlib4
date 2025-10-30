@@ -284,6 +284,10 @@ alias nhdsWithin_compl_singleton_sup_pure := nhdsNE_sup_pure
 @[simp]
 theorem pure_sup_nhdsNE (a : α) : pure a ⊔ 𝓝[≠] a = 𝓝 a := by rw [← sup_comm, nhdsNE_sup_pure]
 
+lemma continuousAt_iff_punctured_nhds [TopologicalSpace β] {f : α → β} {a : α} :
+    ContinuousAt f a ↔ Tendsto f (𝓝[≠] a) (𝓝 (f a)) := by
+  simp [ContinuousAt, - pure_sup_nhdsNE, ← pure_sup_nhdsNE a, tendsto_pure_nhds]
+
 theorem nhdsWithin_prod [TopologicalSpace β]
     {s u : Set α} {t v : Set β} {a : α} {b : β} (hu : u ∈ 𝓝[s] a) (hv : v ∈ 𝓝[t] b) :
     u ×ˢ v ∈ 𝓝[s ×ˢ t] (a, b) := by
@@ -298,9 +302,6 @@ lemma Filter.EventuallyEq.mem_interior {x : α} {s t : Set α} (hst : s =ᶠ[�
 lemma Filter.EventuallyEq.mem_interior_iff {x : α} {s t : Set α} (hst : s =ᶠ[𝓝 x] t) :
     x ∈ interior s ↔ x ∈ interior t :=
   ⟨fun h ↦ hst.mem_interior h, fun h ↦ hst.symm.mem_interior h⟩
-
-@[deprecated (since := "2024-11-11")]
-alias EventuallyEq.mem_interior_iff := Filter.EventuallyEq.mem_interior_iff
 
 section Pi
 
@@ -600,9 +601,12 @@ theorem continuousOn_iff_continuous_restrict :
 
 alias ⟨ContinuousOn.restrict, _⟩ := continuousOn_iff_continuous_restrict
 
-theorem ContinuousOn.restrict_mapsTo {t : Set β} (hf : ContinuousOn f s) (ht : MapsTo f s t) :
+theorem ContinuousOn.mapsToRestrict {t : Set β} (hf : ContinuousOn f s) (ht : MapsTo f s t) :
     Continuous (ht.restrict f s t) :=
   hf.restrict.codRestrict _
+
+@[deprecated (since := "05-09-2025")]
+alias ContinuousOn.restrict_mapsTo := ContinuousOn.mapsToRestrict
 
 theorem continuousOn_iff' :
     ContinuousOn f s ↔ ∀ t : Set β, IsOpen t → ∃ u, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s := by
@@ -816,9 +820,6 @@ theorem ContinuousOn.continuousAt (h : ContinuousOn f s)
 theorem continuousOn_of_forall_continuousAt (hcont : ∀ x ∈ s, ContinuousAt f x) :
     ContinuousOn f s := fun x hx => (hcont x hx).continuousWithinAt
 
-@[deprecated (since := "2024-10-30")]
-alias ContinuousAt.continuousOn := continuousOn_of_forall_continuousAt
-
 @[fun_prop]
 theorem Continuous.continuousOn (h : Continuous f) : ContinuousOn f s := by
   rw [← continuousOn_univ] at h
@@ -911,9 +912,8 @@ theorem ContinuousWithinAt.congr_mono
   (h.mono h₁).congr h' hx
 
 theorem ContinuousAt.congr_of_eventuallyEq (h : ContinuousAt f x) (hg : g =ᶠ[𝓝 x] f) :
-    ContinuousAt g x := by
-  simp only [← continuousWithinAt_univ] at h ⊢
-  exact h.congr_of_eventuallyEq_of_mem (by rwa [nhdsWithin_univ]) (mem_univ x)
+    ContinuousAt g x :=
+  congr h (EventuallyEq.symm hg)
 
 /-!
 ### Composition
@@ -1168,6 +1168,18 @@ theorem isOpenMap_prod_of_discrete_right [DiscreteTopology β] {f : α × β →
   simp_rw [isOpenMap_iff_nhds_le, Prod.forall, forall_swap (α := α) (β := β), nhds_prod_eq,
     nhds_discrete, prod_pure, map_map]; rfl
 
+theorem ContinuousOn.uncurry_left {f : α → β → γ} {sα : Set α} {sβ : Set β} (a : α) (ha : a ∈ sα)
+    (h : ContinuousOn f.uncurry (sα ×ˢ sβ)) : ContinuousOn (f a) sβ := by
+  let g : β → γ := f.uncurry ∘ (fun b => (a, b))
+  refine ContinuousOn.congr (f := g) ?_ (fun y => by simp [g])
+  exact ContinuousOn.comp h (by fun_prop) (by grind [Set.MapsTo])
+
+theorem ContinuousOn.uncurry_right {f : α → β → γ} {sα : Set α} {sβ : Set β} (b : β) (ha : b ∈ sβ)
+    (h : ContinuousOn f.uncurry (sα ×ˢ sβ)) : ContinuousOn (fun a => f a b) sα := by
+  let g : α → γ := f.uncurry ∘ (fun a => (a, b))
+  refine ContinuousOn.congr (f := g) ?_ (fun y => by simp [g])
+  exact ContinuousOn.comp h (by fun_prop) (by grind [Set.MapsTo])
+
 /-!
 ### Pi
 -/
@@ -1261,17 +1273,11 @@ theorem ContinuousWithinAt.finInsertNth
     ContinuousWithinAt (fun a => i.insertNth (f a) (g a)) s a :=
   hf.tendsto.finInsertNth i hg
 
-@[deprecated (since := "2025-01-02")]
-alias ContinuousWithinAt.fin_insertNth := ContinuousWithinAt.finInsertNth
-
 theorem ContinuousOn.finInsertNth
     (i : Fin (n + 1)) {f : α → X i} {g : α → ∀ j : Fin n, X (i.succAbove j)} {s : Set α}
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun a => i.insertNth (f a) (g a)) s := fun a ha =>
   (hf a ha).finInsertNth i (hg a ha)
-
-@[deprecated (since := "2025-01-02")]
-alias ContinuousOn.fin_insertNth := ContinuousOn.finInsertNth
 
 end Fin
 
@@ -1295,14 +1301,9 @@ lemma Topology.IsInducing.continuousWithinAt_iff {f : α → β} {g : β → γ}
     {s : Set α} {x : α} : ContinuousWithinAt f s x ↔ ContinuousWithinAt (g ∘ f) s x := by
   simp_rw [ContinuousWithinAt, hg.tendsto_nhds_iff]; rfl
 
-@[deprecated (since := "2024-10-28")]
-alias Inducing.continuousWithinAt_iff := IsInducing.continuousWithinAt_iff
-
 lemma Topology.IsInducing.continuousOn_iff {f : α → β} {g : β → γ} (hg : IsInducing g)
     {s : Set α} : ContinuousOn f s ↔ ContinuousOn (g ∘ f) s := by
   simp_rw [ContinuousOn, hg.continuousWithinAt_iff]
-
-@[deprecated (since := "2024-10-28")] alias Inducing.continuousOn_iff := IsInducing.continuousOn_iff
 
 lemma Topology.IsInducing.map_nhdsWithin_eq {f : α → β} (hf : IsInducing f) (s : Set α) (x : α) :
     map f (𝓝[s] x) = 𝓝[f '' s] f x := by
@@ -1316,15 +1317,9 @@ lemma Topology.IsEmbedding.continuousOn_iff {f : α → β} {g : β → γ} (hg 
     {s : Set α} : ContinuousOn f s ↔ ContinuousOn (g ∘ f) s :=
   hg.isInducing.continuousOn_iff
 
-@[deprecated (since := "2024-10-26")]
-alias Embedding.continuousOn_iff := IsEmbedding.continuousOn_iff
-
 lemma Topology.IsEmbedding.map_nhdsWithin_eq {f : α → β} (hf : IsEmbedding f) (s : Set α) (x : α) :
     map f (𝓝[s] x) = 𝓝[f '' s] f x :=
   hf.isInducing.map_nhdsWithin_eq s x
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.map_nhdsWithin_eq := IsEmbedding.map_nhdsWithin_eq
 
 theorem Topology.IsOpenEmbedding.map_nhdsWithin_preimage_eq {f : α → β} (hf : IsOpenEmbedding f)
     (s : Set β) (x : α) : map f (𝓝[f ⁻¹' s] x) = 𝓝[s] f x := by
@@ -1337,16 +1332,13 @@ theorem Topology.IsQuotientMap.continuousOn_isOpen_iff {f : α → β} {g : β �
   simp only [continuousOn_iff_continuous_restrict, (h.restrictPreimage_isOpen hs).continuous_iff]
   rfl
 
-@[deprecated (since := "2024-10-22")]
-alias QuotientMap.continuousOn_isOpen_iff := IsQuotientMap.continuousOn_isOpen_iff
-
 theorem IsOpenMap.continuousOn_image_of_leftInvOn {f : α → β} {s : Set α}
     (h : IsOpenMap (s.restrict f)) {finv : β → α} (hleft : LeftInvOn finv f s) :
     ContinuousOn finv (f '' s) := by
   refine continuousOn_iff'.2 fun t ht => ⟨f '' (t ∩ s), ?_, ?_⟩
   · rw [← image_restrict]
     exact h _ (ht.preimage continuous_subtype_val)
-  · rw [inter_eq_self_of_subset_left (image_subset f inter_subset_right), hleft.image_inter']
+  · rw [inter_eq_self_of_subset_left (image_mono inter_subset_right), hleft.image_inter']
 
 theorem IsOpenMap.continuousOn_range_of_leftInverse {f : α → β} (hf : IsOpenMap f) {finv : β → α}
     (hleft : Function.LeftInverse finv f) : ContinuousOn finv (range f) := by

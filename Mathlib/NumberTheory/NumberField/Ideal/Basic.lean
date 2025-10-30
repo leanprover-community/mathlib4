@@ -3,7 +3,7 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.Cyclotomic.Rat
+import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 import Mathlib.NumberTheory.NumberField.Units.Basic
 
 /-!
@@ -36,7 +36,7 @@ theorem IsPrimitiveRoot.not_coprime_norm_of_mk_eq_one [NumberField K] (hI : absN
     (h : let _ : NeZero n := NeZero.of_gt hn; Ideal.Quotient.mk I hζ.toInteger = 1) :
     ¬ (absNorm I).Coprime n := by
   intro h₁
-  rw [show 1 = Ideal.Quotient.mk I 1 by rfl, Ideal.Quotient.eq] at h
+  rw [← RingHom.map_one (Ideal.Quotient.mk I), Ideal.Quotient.eq] at h
   obtain ⟨p, hp, h₂⟩ := Nat.exists_prime_and_dvd hI
   have : Fact (p.Prime) := ⟨hp⟩
   refine hp.not_dvd_one <| h₁ ▸ Nat.dvd_gcd h₂ ?_
@@ -63,15 +63,15 @@ theorem Ideal.torsionMapQuot_injective (hI₁ : absNorm I ≠ 1)
   refine (injective_iff_map_eq_one _).mpr fun ⟨ζ, hζ⟩ h ↦ ?_
   rw [← rootsOfUnity_eq_torsion] at hζ
   obtain ⟨t, ht₀, ht, hζ⟩ := isPrimitiveRoot_of_mem_rootsOfUnity hζ
-  by_cases ht' : 2 ≤ t
-  · exfalso
-    let μ : K := ζ.val
-    have hμ : IsPrimitiveRoot μ t :=
-      (IsPrimitiveRoot.coe_units_iff.mpr hζ).map_of_injective RingOfIntegers.coe_injective
-    rw [Units.ext_iff, torsionMapQuot_apply, Units.val_one] at h
-    refine hμ.not_coprime_norm_of_mk_eq_one hI₁ ht' h ?_
-    exact Nat.dvd_one.mp (hI₂ ▸ Nat.gcd_dvd_gcd_of_dvd_right (absNorm I) ht)
-  · simpa [show t = 1 by grind] using hζ
+  suffices ¬ (2 ≤ t) by
+    simpa [show t = 1 by grind] using hζ
+  intro ht'
+  let μ : K := ζ.val
+  have hμ : IsPrimitiveRoot μ t :=
+    (IsPrimitiveRoot.coe_units_iff.mpr hζ).map_of_injective RingOfIntegers.coe_injective
+  rw [Units.ext_iff, torsionMapQuot_apply, Units.val_one] at h
+  refine hμ.not_coprime_norm_of_mk_eq_one hI₁ ht' h ?_
+  exact Nat.dvd_one.mp (hI₂ ▸ Nat.gcd_dvd_gcd_of_dvd_right (absNorm I) ht)
 
 /--
 If the norm of the (nonzero) prime ideal `P` is coprime with the order of the torsion of `K`, then

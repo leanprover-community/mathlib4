@@ -3,13 +3,10 @@ Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.BilinearForm.DualLattice
+import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.RingTheory.DedekindDomain.Basic
-import Mathlib.RingTheory.Localization.Module
 import Mathlib.RingTheory.Trace.Basic
-import Mathlib.RingTheory.RingHom.Finite
 
 /-!
 # Integral closure of Dedekind domains
@@ -36,10 +33,10 @@ to add a `(h : ¬IsField A)` assumption whenever this is explicitly needed.
 dedekind domain, dedekind ring
 -/
 
+open Algebra Module
+open scoped nonZeroDivisors Polynomial
 
 variable (A K : Type*) [CommRing A] [Field K]
-
-open scoped nonZeroDivisors Polynomial
 
 section IsIntegralClosure
 
@@ -49,8 +46,6 @@ We show that an integral closure of a Dedekind domain in a finite separable
 field extension is again a Dedekind domain. This implies the ring of integers
 of a number field is a Dedekind domain. -/
 
-
-open Algebra
 
 variable [Algebra A K] [IsFractionRing A K]
 variable (L : Type*) [Field L] (C : Type*) [CommRing C]
@@ -246,10 +241,5 @@ the field of fractions yourself. -/
 instance integralClosure.isDedekindDomain_fractionRing [IsDedekindDomain A] :
     IsDedekindDomain (integralClosure A L) :=
   integralClosure.isDedekindDomain A (FractionRing A) L
-
-attribute [local instance] FractionRing.liftAlgebra in
-instance [Module.Finite A C] [NoZeroSMulDivisors A C] :
-    FiniteDimensional (FractionRing A) (FractionRing C) :=
-  .of_isLocalization A C A⁰
 
 end IsIntegralClosure

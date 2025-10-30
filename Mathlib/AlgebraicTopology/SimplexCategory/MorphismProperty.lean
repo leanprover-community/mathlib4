@@ -3,7 +3,7 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory.Basic
+import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
@@ -22,23 +22,29 @@ open CategoryTheory
 
 namespace SimplexCategory
 
+#check Truncated
+#check Truncated.δ
+#check Truncated.Hom.tr
+    --W (Hom.tr (n := d) (SimplexCategory.δ i)))
+    --(σ_mem : ∀ (n : ℕ) (hn : n < d) (i : Fin (n + 1)),
+    --  W (Hom.tr (n := d) (SimplexCategory.σ i))) :
 lemma Truncated.morphismProperty_eq_top
     {d : ℕ} (W : MorphismProperty (Truncated d)) [W.IsMultiplicative]
     (δ_mem : ∀ (n : ℕ) (hn : n < d) (i : Fin (n + 2)),
-    W (Hom.tr (n := d) (SimplexCategory.δ i)))
+      W (Truncated.δ d i (by dsimp; cutsat) (by dsimp; cutsat)))
     (σ_mem : ∀ (n : ℕ) (hn : n < d) (i : Fin (n + 1)),
-      W (Hom.tr (n := d) (SimplexCategory.σ i))) :
+      W (Truncated.σ d i (by dsimp; cutsat) (by dsimp; cutsat))) :
     W = ⊤ := by
   ext ⟨a, ha⟩ ⟨b, hb⟩ f
   simp only [MorphismProperty.top_apply, iff_true]
-  induction' a using SimplexCategory.rec with a
-  induction' b using SimplexCategory.rec with b
+  induction a using SimplexCategory.rec with | _ a
+  induction b using SimplexCategory.rec with | _ b
   dsimp at ha hb
   generalize h : a + b = c
   induction c generalizing a b with
   | zero =>
-    obtain rfl : a = 0 := by omega
-    obtain rfl : b = 0 := by omega
+    obtain rfl : a = 0 := by cutsat
+    obtain rfl : b = 0 := by cutsat
     obtain rfl : f = 𝟙 _ := by
       ext i : 3
       apply Subsingleton.elim (α := Fin 1)
@@ -50,19 +56,19 @@ lemma Truncated.morphismProperty_eq_top
       · obtain ⟨i, g', hf'⟩ := eq_comp_δ_of_not_surjective _ h₁
         obtain rfl : f = Hom.tr g' ≫ Hom.tr (SimplexCategory.δ i) :=
           InducedCategory.hom_ext hf'
-        exact W.comp_mem _ _ (hc _ _ _ _ _ (by omega))
-          (δ_mem _ (by omega) _)
+        exact W.comp_mem _ _ (hc _ _ _ _ _ (by cutsat))
+          (δ_mem _ (by cutsat) _)
     by_cases h₂ : Function.Injective f.hom.toOrderHom; swap
     · obtain _ | a := a
       · exact (h₂ (Function.injective_of_subsingleton (α := Fin 1) _)).elim
       · obtain ⟨i, g', hf'⟩ := eq_σ_comp_of_not_injective _ h₂
         obtain rfl : f = Hom.tr (SimplexCategory.σ i) ≫ Hom.tr g' :=
           InducedCategory.hom_ext hf'
-        exact W.comp_mem _ _ (σ_mem _ (by omega) _) (hc _ _ _ _ _ (by omega))
+        exact W.comp_mem _ _ (σ_mem _ (by cutsat) _) (hc _ _ _ _ _ (by cutsat))
     rw [← epi_iff_surjective] at h₁
     rw [← mono_iff_injective] at h₂
-    obtain rfl : a = b := le_antisymm (len_le_of_mono h₂) (len_le_of_epi h₁)
-    obtain rfl : f = 𝟙 _ := InducedCategory.hom_ext (eq_id_of_mono f.hom)
+    obtain rfl : a = b := le_antisymm (len_le_of_mono f.hom) (len_le_of_epi f.hom)
+    obtain rfl : f = 𝟙 _ := ObjectProperty.hom_ext _ (SimplexCategory.eq_id_of_epi _)
     apply W.id_mem
 
 lemma morphismProperty_eq_top

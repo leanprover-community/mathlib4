@@ -3,6 +3,7 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
+import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.Order.Fin.Basic
 import Mathlib.Util.Superscript
@@ -27,7 +28,7 @@ We provide the following functions to work with these objects:
 4. `SimplexCategory.Hom.toOrderHom` gives the underlying monotone map associated to a
   term of `SimplexCategory.Hom`.
 
-## Notations
+## Notation
 
 * `⦋n⦌` denotes the `n`-dimensional simplex. This notation is available with
   `open Simplicial`.
@@ -147,12 +148,21 @@ theorem Hom.ext {a b : SimplexCategory} (f g : a ⟶ b) :
     f.toOrderHom = g.toOrderHom → f = g :=
   Hom.ext' _ _
 
-/-- The truncated simplex category. -/
-def Truncated (n : ℕ) :=
-  ObjectProperty.FullSubcategory fun a : SimplexCategory => a.len ≤ n
+/-- Homs in `SimplexCategory` are equivalent to order-preserving functions of finite linear
+orders. -/
+def homEquivOrderHom {a b : SimplexCategory} :
+    (a ⟶ b) ≃ (Fin (a.len + 1) →o Fin (b.len + 1)) where
+  toFun := Hom.toOrderHom
+  invFun := Hom.mk
 
-instance (n : ℕ) : SmallCategory.{0} (Truncated n) :=
-  ObjectProperty.FullSubcategory.category _
+/-- Homs in `SimplexCategory` are equivalent to functors between finite linear orders. -/
+def homEquivFunctor {a b : SimplexCategory} :
+    (a ⟶ b) ≃ (Fin (a.len + 1) ⥤ Fin (b.len + 1)) :=
+  SimplexCategory.homEquivOrderHom.trans OrderHom.equivFunctor
+
+/-- The truncated simplex category. -/
+abbrev Truncated (n : ℕ) :=
+  ObjectProperty.FullSubcategory fun a : SimplexCategory => a.len ≤ n
 
 namespace Truncated
 
@@ -162,11 +172,8 @@ instance {n} : Inhabited (Truncated n) :=
 /-- The fully faithful inclusion of the truncated simplex category into the usual
 simplex category.
 -/
-def inclusion (n : ℕ) : SimplexCategory.Truncated n ⥤ SimplexCategory :=
+abbrev inclusion (n : ℕ) : SimplexCategory.Truncated n ⥤ SimplexCategory :=
   ObjectProperty.ι _
-
-instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Full := ObjectProperty.full_ι _
-instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Faithful := ObjectProperty.faithful_ι _
 
 /-- A proof that the full subcategory inclusion is fully faithful -/
 noncomputable def inclusion.fullyFaithful (n : ℕ) :

@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
-import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 /-!
 
 # Minimal primes and localization
 
-We provide various results concerning the minimal primes above an ideal that needs the theory
-of localizations
+We provide various results concerning the minimal primes above an ideal that require the theory
+of localizations.
 
 ## Main results
 - `Ideal.exists_minimalPrimes_comap_eq` If `p` is a minimal prime over `f ⁻¹ I`, then it is the

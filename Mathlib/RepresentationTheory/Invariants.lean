@@ -85,6 +85,14 @@ theorem invariants_eq_top [ρ.IsTrivial] :
     invariants ρ = ⊤ :=
 eq_top_iff.2 (fun x _ g => ρ.isTrivial_apply g x)
 
+lemma mem_invariants_iff_of_forall_mem_zpowers
+    (g : G) (hg : ∀ x, x ∈ Subgroup.zpowers g) (x : V) :
+    x ∈ ρ.invariants ↔ ρ g x = x :=
+  ⟨fun h => h g, fun hx γ => by
+    rcases hg γ with ⟨i, rfl⟩
+    induction i with | zero => simp | succ i _ => simp_all [zpow_add_one] | pred i h => _
+    simpa [neg_sub_comm _ (1 : ℤ), zpow_sub] using congr(ρ g⁻¹ $(h.trans hx.symm))⟩
+
 section
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
@@ -219,6 +227,20 @@ instance : (invariantsFunctor k G).PreservesZeroMorphisms where
 instance : (invariantsFunctor k G).Additive where
 instance : (invariantsFunctor k G).Linear k where
 
+variable {G} in
+/-- Given a normal subgroup S ≤ G, this is the functor sending a `G`-representation `A` to the
+`G ⧸ S`-representation it induces on `A^S`. -/
+@[simps obj_V map_hom]
+noncomputable def quotientToInvariantsFunctor (S : Subgroup G) [S.Normal] :
+    Rep k G ⥤ Rep k (G ⧸ S) where
+  obj X := X.quotientToInvariants S
+  map {X Y} f := {
+    hom := (invariantsFunctor k S).map ((Action.res _ S.subtype).map f)
+    comm g := QuotientGroup.induction_on g fun g => by
+      ext x
+      simp [ModuleCat.endRingEquiv, Representation.quotientToInvariants,
+        Representation.toInvariants, invariants, hom_comm_apply] }
+
 /-- The adjunction between the functor equipping a module with the trivial representation, and
 the functor sending a representation to its submodule of invariants. -/
 @[simps]
@@ -232,7 +254,7 @@ noncomputable def invariantsAdjunction : trivialFunctor k G ⊣ invariantsFuncto
 lemma invariantsAdjunction_homEquiv_apply_hom
     {X : ModuleCat k} {Y : Rep k G} (f : (trivialFunctor k G).obj X ⟶ Y) :
     ((invariantsAdjunction k G).homEquiv _ _ f).hom =
-      f.hom.hom.codRestrict _ (by intros _ _; exact (hom_comm_apply f _ _).symm) := rfl
+      f.hom.hom.codRestrict _ (by intro _ _; exact (hom_comm_apply f _ _).symm) := rfl
 
 @[simp]
 lemma invariantsAdjunction_homEquiv_symm_apply_hom

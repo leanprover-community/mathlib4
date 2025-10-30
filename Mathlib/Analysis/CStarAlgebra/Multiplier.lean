@@ -191,9 +191,10 @@ instance instIntCast : IntCast 𝓜(𝕜, A) where
 instance instPow : Pow 𝓜(𝕜, A) ℕ where
   pow a n :=
     ⟨a.toProd ^ n, fun x y => by
-      induction' n with k hk generalizing x y
-      · rfl
-      · rw [Prod.pow_snd, Prod.pow_fst] at hk ⊢
+      induction n generalizing x y with
+      | zero => rfl
+      | succ k hk =>
+        rw [Prod.pow_snd, Prod.pow_fst] at hk ⊢
         rw [pow_succ' a.snd, mul_apply, a.central, hk, pow_succ a.fst, mul_apply]⟩
 
 instance instInhabited : Inhabited 𝓜(𝕜, A) :=
@@ -534,10 +535,7 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
   -- a handy lemma for this proof
   have h0 : ∀ f : A →L[𝕜] A, ∀ C : ℝ≥0, (∀ b : A, ‖f b‖₊ ^ 2 ≤ C * ‖f b‖₊ * ‖b‖₊) → ‖f‖₊ ≤ C := by
     intro f C h
-    have h1 : ∀ b, C * ‖f b‖₊ * ‖b‖₊ ≤ C * ‖f‖₊ * ‖b‖₊ ^ 2 := by
-      intro b
-      convert mul_le_mul_right' (mul_le_mul_left' (f.le_opNNNorm b) C) ‖b‖₊ using 1
-      ring
+    have h1 b : C * ‖f b‖₊ * ‖b‖₊ ≤ C * ‖f‖₊ * ‖b‖₊ ^ 2 := by grw [f.le_opNNNorm b]; ring_nf; rfl
     have := NNReal.div_le_of_le_mul <| f.opNNNorm_le_bound _ <| by
       simpa only [sqrt_sq, sqrt_mul] using fun b ↦ sqrt_le_sqrt.2 <| (h b).trans (h1 b)
     convert NNReal.rpow_le_rpow this two_pos.le
@@ -640,8 +638,6 @@ instance instCStarRing : CStarRing 𝓜(𝕜, A) where
 
 end DenselyNormed
 
-#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 noncomputable instance {A : Type*} [NonUnitalCStarAlgebra A] : CStarAlgebra 𝓜(ℂ, A) where
-  norm_mul_self_le := CStarRing.norm_mul_self_le
 
 end DoubleCentralizer
