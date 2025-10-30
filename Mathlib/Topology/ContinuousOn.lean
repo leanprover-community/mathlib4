@@ -20,7 +20,7 @@ equipped with the subspace topology.
 
 -/
 
-open Set Filter Function Topology Filter
+open Set Filter Function Topology
 
 variable {α β γ δ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
   [TopologicalSpace δ] {f g : α → β} {s s' s₁ t : Set α} {x : α}
