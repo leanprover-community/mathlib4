@@ -128,8 +128,8 @@ Intuitively, this moves the whole configuration "in the direction of `g`": the v
 at position `h` in the shifted configuration is the value that was at position
 `h * g` in the original one.
 
-For example, if `G = ℤ` (with addition) and `A = {0,1}`, then
-`mulShift 1 x` is the sequence obtained from `x` by shifting every symbol one
+For example, if `G = ℤ` (with addition) and `A = {0, 1}`, then
+`shift 1 x` is the sequence obtained from `x` by shifting every symbol one
 step to the left. -/
 @[to_additive /-- The **right-translation shift** on configurations, in additive notation.
 
