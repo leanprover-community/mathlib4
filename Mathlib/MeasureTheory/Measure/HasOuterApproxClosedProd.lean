@@ -131,7 +131,121 @@ lemma eq_prod_of_integral_mul_boundedContinuousFunction
 variable {X ι : Type*} [Fintype ι] {Y : ι → Type*}
   {mX : MeasurableSpace X} [TopologicalSpace X] [BorelSpace X] [HasOuterApproxClosed X]
   {mY : ∀ i, MeasurableSpace (Y i)} [∀ i, TopologicalSpace (Y i)] [∀ i, BorelSpace (Y i)]
-  [∀ i, HasOuterApproxClosed (Y i)] {μ ν : Measure (X × (Π i, Y i))}
+  [∀ i, HasOuterApproxClosed (Y i)] {μ ν : Measure (Π i, Y i)}
+
+lemma omg [IsFiniteMeasure μ]
+    (h : ∀ (g : (i : ι) → Y i →ᵇ ℝ≥0),
+      ∫⁻ z, ∏ i, g i (z i) ∂μ = ∫⁻ z, ∏ i, g i (z i) ∂ν) :
+    μ = ν := by
+  have hμν : μ univ = ν univ := by convert h 1 <;> simp
+  have : IsFiniteMeasure ν := ⟨by simp [← hμν]⟩
+  let π : Set (Set (Π i, Y i)) :=
+    {s | ∃ (G : (i : ι) → Set (Y i)), (∀ i, IsClosed (G i)) ∧ s = Set.univ.pi G}
+  have hπ1 : IsPiSystem π := by
+    rintro - ⟨s, hs, rfl⟩ - ⟨t, ht, rfl⟩ -
+    refine ⟨fun i ↦ s i ∩ t i, fun i ↦ (hs i).inter (ht i), ?_⟩
+    rw [← Set.pi_inter_distrib]
+  have hπ2 : MeasurableSpace.pi (m := mY) = generateFrom π := by
+    refine le_antisymm ?_ (generateFrom_le ?_)
+    · simp_rw [MeasurableSpace.pi, BorelSpace.measurable_eq, borel_eq_generateFrom_isClosed,
+        comap_generateFrom]
+      refine iSup_le fun i ↦ generateFrom_le ?_
+      · rintro - ⟨s, hs, rfl⟩
+        classical
+        refine measurableSet_generateFrom
+          ⟨fun j ↦ if hj : j = i then hj ▸ s else Set.univ, fun j ↦ ?_, ?_⟩
+        · obtain rfl | hj := eq_or_ne j i
+          · simpa
+          · simp [hj]
+        · ext y
+          simp only [mem_preimage, Set.mem_pi, mem_univ, forall_const]
+          refine ⟨fun h j ↦ ?_, fun h ↦ ?_⟩
+          · obtain rfl | hj := eq_or_ne j i
+            · simpa
+            · simp [hj]
+          · convert h i
+            simp
+    · rintro - ⟨s, hs, rfl⟩
+      exact .univ_pi fun i ↦ (hs i).measurableSet
+  refine ext_of_generate_finite π hπ2 hπ1 ?_ hμν
+  rintro - ⟨s, hs, rfl⟩
+  have (z : Π i, Y i) := ENNReal.continuous_coe.tendsto _ |>.comp <|
+    (tendsto_finset_prod Finset.univ (fun i _ ↦ tendsto_pi_nhds.1
+      (HasOuterApproxClosed.tendsto_apprSeq (hs i)) (z i)))
+  have hp (y : Π i, Y i) : ∏ i, (s i).indicator (fun _ ↦ (1 : ℝ≥0)) (y i) =
+      (Set.univ.pi s).indicator 1 y := by
+    simp only [Set.indicator, Set.mem_pi, mem_univ, forall_const, Pi.ofNat_apply]
+    split_ifs with hy
+    · simp only [Set.mem_pi, mem_univ, forall_const] at hy
+      exact Finset.prod_eq_one (by simpa)
+    · simpa [Finset.prod_eq_zero_iff] using hy
+  simp_rw [hp] at this
+  have h1 : Tendsto (fun n ↦ ∫⁻ z, ∏ i, ((hs i).apprSeq n (z i) : ℝ≥0) ∂μ)
+      atTop (𝓝 (∫⁻ z, ((Set.univ.pi s).indicator 1 z : ℝ≥0) ∂μ)) := by
+    simp_rw [← coe_finset_prod]
+    refine tendsto_lintegral_filter_of_dominated_convergence 1
+      (Eventually.of_forall <| by fun_prop) (Eventually.of_forall fun n ↦ ae_of_all _ fun ω ↦ ?_)
+      (by simp) (ae_of_all _ this)
+    grw [Finset.prod_le_one]
+    · simp
+    · simp
+    · exact fun i _ ↦ HasOuterApproxClosed.apprSeq_apply_le_one (hs i) _ _
+  have h2 : Tendsto (fun n ↦ ∫⁻ z, ∏ i, ((hs i).apprSeq n (z i) : ℝ≥0) ∂μ)
+      atTop (𝓝 (∫⁻ z, ((Set.univ.pi s).indicator 1 z : ℝ≥0) ∂ν)) := by
+    simp_rw [h, ← coe_finset_prod]
+    refine tendsto_lintegral_filter_of_dominated_convergence 1
+      (Eventually.of_forall <| by fun_prop) (Eventually.of_forall fun n ↦ ae_of_all _ fun ω ↦ ?_)
+      (by simp) (ae_of_all _ this)
+    grw [Finset.prod_le_one]
+    · simp
+    · simp
+    · exact fun i _ ↦ HasOuterApproxClosed.apprSeq_apply_le_one (hs i) _ _
+  convert tendsto_nhds_unique h1 h2 <;>
+    simp [MeasurableSet.univ_pi (fun i ↦ (hs i).measurableSet)]
+
+lemma omg' [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (h : ∀ (g : (i : ι) → Y i →ᵇ ℝ),
+      ∫ z, ∏ i, g i (z i) ∂μ = ∫ z, ∏ i, g i (z i) ∂ν) :
+    μ = ν := by
+  refine omg fun g ↦ ?_
+  rw [← toReal_eq_toReal_iff']
+  · have {μ : Measure (Π i, Y i)} :
+        (∫⁻ z, ∏ i, (g i (z i) : ℝ≥0∞) ∂μ).toReal =
+          ∫ z, ∏ i, (g i (z i)).toReal ∂μ := by
+      rw [integral_eq_lintegral_of_nonneg_ae]
+      · simp [ofReal_prod_of_nonneg]
+      · exact Eventually.of_forall fun _ ↦ by positivity
+      exact (Finset.aestronglyMeasurable_fun_prod _ fun i _ ↦
+          continuous_coe.aestronglyMeasurable.comp_measurable (by fun_prop))
+    simp_rw [this]
+    exact h (fun i ↦ ⟨⟨fun y ↦ (g i y), by fun_prop⟩, (g i).map_bounded'⟩)
+  · convert (lintegral_lt_top_of_nnreal μ
+      (∏ i, (g i).compContinuous ⟨Function.eval i, by fun_prop⟩)).ne
+    simp
+  · convert (lintegral_lt_top_of_nnreal ν
+      (∏ i, (g i).compContinuous ⟨Function.eval i, by fun_prop⟩)).ne
+    simp
+
+variable {Y ι : Type*} [Fintype ι] {X : ι → Type*}
+  {mX : ∀ i, MeasurableSpace (X i)} [∀ i, TopologicalSpace (X i)] [∀ i, BorelSpace (X i)]
+  [∀ i, HasOuterApproxClosed (X i)]
+  {mY : MeasurableSpace Y} [TopologicalSpace Y] [BorelSpace Y] [HasOuterApproxClosed Y]
+  {μ ν : Measure ((Π i, X i) × Y)}
+
+lemma omg'' [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (h : ∀ (f : (i : ι) → X i →ᵇ ℝ) (g : Y →ᵇ ℝ),
+      ∫ z, (∏ i, f i (z.1 i)) * g z.2 ∂μ = ∫ z, (∏ i, f i (z.1 i)) * g z.2 ∂ν) :
+    μ = ν := by
+  let Z : Option ι → Type _ | some i => ULift.{u_6} (X i) | none => ULift.{u_8} Y
+  let : ∀ i, MeasurableSpace (Z i) | some i => mX i |
+  let e : ((Π i, X i) × Y) ≃ᵐ (Π i, Z i) :=
+    { toEquiv := Equiv.prodComm _ _
+      measurable_toFun := measurable_swap
+      measurable_invFun := measurable_swap }
+  rw [← e.map_measurableEquiv_injective.eq_iff]
+  refine omg' fun f g ↦ ?_
+  rw [integral_map_equiv, integral_map_equiv]
+  simpa [e, mul_comm] using h g f
 
 lemma omg [IsFiniteMeasure μ]
     (h : ∀ (f : X →ᵇ ℝ≥0) (g : (i : ι) → Y i →ᵇ ℝ≥0),
@@ -228,18 +342,32 @@ lemma omg' [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     simp_rw [this]
     exact h ⟨⟨fun x ↦ (f x), by fun_prop⟩, f.map_bounded'⟩
       (fun i ↦ ⟨⟨fun y ↦ (g i y), by fun_prop⟩, (g i).map_bounded'⟩)
-  · simp_rw [← coe_mul]
-    convert (lintegral_lt_top_of_nnreal μ
+  · convert (lintegral_lt_top_of_nnreal μ
       ((f.compContinuous ⟨@Prod.fst X (Π i, Y i), continuous_fst⟩) *
       (∏ i, (g i).compContinuous ⟨Function.eval i ∘ @Prod.snd X _, by fun_prop⟩))).ne
-    simp only [BoundedContinuousFunction.coe_mul, coe_compContinuous, ContinuousMap.coe_mk,
-      Pi.mul_apply, Function.comp_apply, mul_eq_mul_left_iff]
+    simp
+  · convert (lintegral_lt_top_of_nnreal ν
+      ((f.compContinuous ⟨@Prod.fst X (Π i, Y i), continuous_fst⟩) *
+      (∏ i, (g i).compContinuous ⟨Function.eval i ∘ @Prod.snd X _, by fun_prop⟩))).ne
+    simp
 
-  -- apply (toReal_eq_toReal_iff' (lintegral_lt_top_of_nnreal μ
-  --   ((f.compContinuous ⟨@Prod.fst X (Π i, Y i), continuous_fst⟩) *
-  --     (∏ i, (g i).compContinuous ⟨Function.eval i ∘ @Prod.snd X _, ?_⟩))).ne
-  --   (lintegral_lt_top_of_nnreal ν
-  --   ((f.compContinuous ⟨@Prod.fst X (Π i, Y i), continuous_fst⟩) *
-  --     (∏ i, (g i).compContinuous ⟨Function.eval i ∘ @Prod.snd X _, ?_⟩))).ne).1
+variable {Y ι : Type*} [Fintype ι] {X : ι → Type*}
+  {mX : ∀ i, MeasurableSpace (X i)} [∀ i, TopologicalSpace (X i)] [∀ i, BorelSpace (X i)]
+  [∀ i, HasOuterApproxClosed (X i)]
+  {mY : MeasurableSpace Y} [TopologicalSpace Y] [BorelSpace Y] [HasOuterApproxClosed Y]
+  {μ ν : Measure ((Π i, X i) × Y)}
+
+lemma omg'' [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (h : ∀ (f : (i : ι) → X i →ᵇ ℝ) (g : Y →ᵇ ℝ),
+      ∫ z, (∏ i, f i (z.1 i)) * g z.2 ∂μ = ∫ z, (∏ i, f i (z.1 i)) * g z.2 ∂ν) :
+    μ = ν := by
+  let e : ((Π i, X i) × Y) ≃ᵐ (Y × (Π i, X i)) :=
+    { toEquiv := Equiv.prodComm _ _
+      measurable_toFun := measurable_swap
+      measurable_invFun := measurable_swap }
+  rw [← e.map_measurableEquiv_injective.eq_iff]
+  refine omg' fun f g ↦ ?_
+  rw [integral_map_equiv, integral_map_equiv]
+  simpa [e, mul_comm] using h g f
 
 end Measure
