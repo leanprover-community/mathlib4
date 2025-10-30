@@ -9,19 +9,7 @@ attribute [grind _=_] LawfulSingleton.insert_emptyc_eq
 
 attribute [grind =] Finset.mem_singleton
 
-attribute [grind =] Finset.disjoint_insert_left
-attribute [grind =] Finset.disjoint_insert_right
-attribute [grind ←] Finset.disjoint_empty_left
-attribute [grind ←] Finset.disjoint_empty_right
-
 attribute [grind] Pairwise
 
--- Add this line:
---attribute [-grind] Disjoint.out
--- or add both of these:
---attribute [-grind] disjoint_comm
---attribute [-grind] Disjoint.mono_left
--- to make plain `grind` with default e-match instance threshold succeed
-
 example : Pairwise (Function.onFun Disjoint fun x ↦ S1 x) := by
-  grind (instances := 2000)
+  grind
