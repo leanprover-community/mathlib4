@@ -45,7 +45,7 @@ class LocallyDirected (𝒰 : X.Cover (precoverage P)) [Category 𝒰.I₀] wher
   w {i j : 𝒰.I₀} (hij : i ⟶ j) : trans hij ≫ 𝒰.f j = 𝒰.f i := by aesop_cat
   directed {i j : 𝒰.I₀} (x : (pullback (𝒰.f i) (𝒰.f j)).carrier) :
     ∃ (k : 𝒰.I₀) (hki : k ⟶ i) (hkj : k ⟶ j) (y : 𝒰.X k),
-      (pullback.lift (trans hki) (trans hkj) (by simp [w])) y = x
+      pullback.lift (trans hki) (trans hkj) (by simp [w]) y = x
   property_trans {i j : 𝒰.I₀} (hij : i ⟶ j) : P (trans hij) := by infer_instance
 
 variable (𝒰 : X.Cover (precoverage P)) [Category 𝒰.I₀] [𝒰.LocallyDirected]
