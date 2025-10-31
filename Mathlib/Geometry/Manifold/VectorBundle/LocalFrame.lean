@@ -59,12 +59,12 @@ Suppose `{sᵢ}` is a local frame on `U`, and `hs : IsLocalFrameOn s U`.
   ff all of its frame coefficients are
 * `MDifferentiable` versions of the previous three statements
 
-* `Basis.localFrame e b`: the local frame on `V` w.r.t. a local trivialisation `e` of `V` and a
+* `Module.Basis.localFrame e b`: the local frame on `V` w.r.t. a local trivialisation `e` of `V` and a
   basis `b` of `F`. Use `b.localFrame e i` to access the i-th section in that frame.
 * `b.contMDiffOn_localFrame_baseSet`: each section `b.localFrame e i` is smooth on `e.baseSet`
 * `b.localFrame_toBasis_at e`: for each `x ∈ e.baseSet`, the vectors `b.localFrame e i x` form
   a basis of `F`
-* `Basis.localFrame_coeff e b i` describes the coefficient of sections of `V` w.r.t.
+* `Module.Basis.localFrame_coeff e b i` describes the coefficient of sections of `V` w.r.t.
   `b.localFrame e`: `b.localFrame e i` is a linear map from sections of `V` to functions `M → 𝕜`.
 * `b.localFrame_eventually_eq_sum_coeff_smul e`: near `x`, we have
   `s = ∑ i, (b.localFrame_coeff e i s) • b.localFrame e i`
