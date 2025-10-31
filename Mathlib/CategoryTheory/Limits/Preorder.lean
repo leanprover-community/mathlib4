@@ -84,7 +84,7 @@ lemma hasColimit_iff_hasLUB :
 
 end
 
-noncomputable section
+section
 
 variable [Preorder C]
 
@@ -94,7 +94,8 @@ def _root_.CategoryTheory.Limits.IsTerminal.orderTop {X : C} (t : IsTerminal X) 
   le_top Y := leOfHom (t.from Y)
 
 /-- A preorder with a terminal object has a greatest element. -/
-def orderTopOfHasTerminal [HasTerminal C] : OrderTop C := IsTerminal.orderTop terminalIsTerminal
+noncomputable def orderTopOfHasTerminal [HasTerminal C] : OrderTop C :=
+  IsTerminal.orderTop terminalIsTerminal
 
 variable (C) in
 /-- If `C` is a preorder with top, then `⊤` is a terminal object. -/
@@ -108,7 +109,8 @@ def _root_.CategoryTheory.Limits.IsInitial.orderBot {X : C} (t : IsInitial X) : 
   bot_le Y := leOfHom (t.to Y)
 
 /-- A preorder with an initial object has a least element. -/
-def orderBotOfHasInitial [HasInitial C] : OrderBot C := IsInitial.orderBot initialIsInitial
+noncomputable def orderBotOfHasInitial [HasInitial C] : OrderBot C :=
+  IsInitial.orderBot initialIsInitial
 
 variable (C) in
 /-- If `C` is a preorder with bot, then `⊥` is an initial object. -/
@@ -118,7 +120,7 @@ instance (priority := low) [OrderBot C] : HasInitial C := hasInitial_of_unique �
 
 end
 
-noncomputable section
+section
 
 variable [PartialOrder C]
 
@@ -134,7 +136,7 @@ def semilatticeInfOfIsLimitBinaryFan
 
 variable (C) in
 /-- If a partial order has binary products, then it is a inf-semilattice -/
-def semilatticeInfOfHasBinaryProducts [HasBinaryProducts C] : SemilatticeInf C :=
+noncomputable def semilatticeInfOfHasBinaryProducts [HasBinaryProducts C] : SemilatticeInf C :=
   semilatticeInfOfIsLimitBinaryFan
     (fun _ _ ↦ BinaryFan.mk prod.fst prod.snd) (fun X Y ↦ prodIsProd X Y)
 
@@ -150,7 +152,7 @@ def semilatticeSupOfIsColimitBinaryCofan
 
 variable (C) in
 /-- If a partial order has binary coproducts, then it is a sup-semilattice -/
-def semilatticeSupOfHasBinaryCoproducts [HasBinaryCoproducts C] : SemilatticeSup C :=
+noncomputable def semilatticeSupOfHasBinaryCoproducts [HasBinaryCoproducts C] : SemilatticeSup C :=
   semilatticeSupOfIsColimitBinaryCofan
     (fun _ _ ↦ BinaryCofan.mk coprod.inl coprod.inr) (fun X Y ↦ coprodIsCoprod X Y)
 
