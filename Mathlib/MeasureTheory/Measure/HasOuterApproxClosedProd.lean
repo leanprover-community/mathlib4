@@ -295,7 +295,7 @@ lemma ext_of_integral_mul_boundedContinuousFunction {μ ν : Measure (Z × T)}
 
 /-- The product of two finite measures μ and ν is the only finite measure ξ such that for all real
 bounded continuous functions f and g we have ∫ z, f z.1 * g z.2 ∂ξ = ∫ x, f x ∂μ * ∫ y, g y ∂ν. -/
-lemma eq_prod_of_integral_mul_boundedContinuousFunction' {μ : Measure Z}
+lemma eq_prod_of_integral_mul_boundedContinuousFunction {μ : Measure Z}
     {ν : Measure T} {ξ : Measure (Z × T)}
     [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure ξ]
     (h : ∀ (f : Z →ᵇ ℝ) (g : T →ᵇ ℝ), ∫ p, f p.1 * g p.2 ∂ξ = (∫ z, f z ∂μ) * (∫ t, g t ∂ν)) :
