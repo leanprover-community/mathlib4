@@ -12,9 +12,9 @@ import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 In this file,
 
 - `ι` is an index type (`Fin n` in many applications);
-- `E`, `F i`, `G i`, `H`, `i : ι`, are normed spaces;
+- `E`, `F i`, `G i`, `H`, are normed spaces for each `i : ι`;
 - `f x` is a continuous multilinear map from `Π i, G i` to `H`, depending on a parameter `x : E`;
-- `g i x`, `i : ι`, is a continuous linear map `F i → G i`, depending on a parameter `x : E`;
+- for each `i : ι`, `g i x` is a continuous linear map `F i → G i`, depending on a parameter `x : E`;
 
 Given this data, for each `x` we can define a continuous multilinear map from `Π i, F i` to `H`
 given by `(f x).compContinuousLinearMap (fun i ↦ g i x) v = f (fun i ↦ g i (v i))`.
@@ -30,6 +30,9 @@ In terms of bundled maps, the derivative with respect to `f`
 is given by `ContinuousMultilinearMap.compContinuousLinearMapL`
 and the sum of terms that represent the derivatives with respect to `g i`
 is given by `ContinuousMultilinearMap.fderivCompContinuousLinearMap`.
+
+All statements in the first section are claiming this, for various notions of differentiation. 
+The second section deduces the corresponding differentiability results when `ι` is finite.
 -/
 
 variable {𝕜 ι E : Type*} {F G : ι → Type*} {H : Type*}
