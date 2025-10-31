@@ -31,7 +31,7 @@ variable
 /-- The Fourier transform on a real inner product space, as a continuous linear map on the
 Schwartz space. -/
 noncomputable def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
-  refine mkCLM (𝓕 ·) ?_ ?_ ?_ ?_
+  refine mkCLM ((𝓕 : (V → E) → (V → E)) ·) ?_ ?_ ?_ ?_
   · intro f g x
     simp only [fourierIntegral_eq, add_apply, smul_add]
     rw [integral_add]
@@ -78,17 +78,17 @@ noncomputable def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
     _ = _ := by simp [mul_assoc]
 
 @[simp] lemma fourierTransformCLM_apply (f : 𝓢(V, E)) :
-    fourierTransformCLM 𝕜 f = 𝓕 f := rfl
+    fourierTransformCLM 𝕜 f = 𝓕 (f : V → E) := rfl
 
 variable [CompleteSpace E]
 
 @[simp]
-theorem fourier_inversion (f : 𝓢(V, E)) (x : V) : 𝓕⁻ (𝓕 f) x = f x :=
+theorem fourier_inversion (f : 𝓢(V, E)) (x : V) : 𝓕⁻ (𝓕 (f : V → E)) x = f x :=
   Integrable.fourier_inversion f.integrable (fourierTransformCLM ℂ f).integrable
     f.continuous.continuousAt
 
 @[simp]
-theorem fourier_inversion_inv (f : 𝓢(V, E)) (x : V) : 𝓕 (𝓕⁻ f) x = f x :=
+theorem fourier_inversion_inv (f : 𝓢(V, E)) (x : V) : 𝓕 (𝓕⁻ (f : V → E)) x = f x :=
   Integrable.fourier_inversion_inv f.integrable (fourierTransformCLM ℂ f).integrable
     f.continuous.continuousAt
 
@@ -101,13 +101,13 @@ variable [CompleteSpace F]
 /-- The Fourier transform satisfies `∫ 𝓕 f * g = ∫ f * 𝓕 g`, i.e., it is self-adjoint.
 Version where the multiplication is replaced by a general bilinear form `M`. -/
 theorem integral_bilin_fourierIntegral_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L[ℂ] F →L[ℂ] G) :
-    ∫ ξ, M (𝓕 f ξ) (g ξ) = ∫ x, M (f x) (𝓕 g x) := by
+    ∫ ξ, M (𝓕 (f : V → E) ξ) (g ξ) = ∫ x, M (f x) (𝓕 (g : V → F) x) := by
   have := VectorFourier.integral_bilin_fourierIntegral_eq_flip M (μ := volume) (ν := volume)
     (L := (innerₗ V)) continuous_fourierChar continuous_inner f.integrable g.integrable
   rwa [flip_innerₗ] at this
 
 theorem integral_sesq_fourierIntegral_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L⋆[ℂ] F →L[ℂ] G) :
-    ∫ ξ, M (𝓕 f ξ) (g ξ) = ∫ x, M (f x) (𝓕⁻ g x) := by
+    ∫ ξ, M (𝓕 (f : V → E) ξ) (g ξ) = ∫ x, M (f x) (𝓕⁻ (g : V → F) x) := by
   have := VectorFourier.integral_sesq_fourierIntegral_eq_neg_flip M (μ := volume) (ν := volume)
     (L := (innerₗ V)) continuous_fourierChar continuous_inner f.integrable g.integrable
   rwa [flip_innerₗ] at this
@@ -116,7 +116,7 @@ theorem integral_sesq_fourierIntegral_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : 
 
 Version where the multiplication is replaced by a general bilinear form `M`. -/
 theorem integral_sesq_fourier_fourier (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L⋆[ℂ] F →L[ℂ] G) :
-    ∫ ξ, M (𝓕 f ξ) (𝓕 g ξ) = ∫ x, M (f x) (g x) := by
+    ∫ ξ, M (𝓕 (f : V → E) ξ) (𝓕 (g : V → F) ξ) = ∫ x, M (f x) (g x) := by
   simpa only [fourierTransformCLM_apply, fourier_inversion]
     using integral_sesq_fourierIntegral_eq f (fourierTransformCLM ℂ g) M
 
@@ -124,11 +124,11 @@ variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteS
 
 /-- Plancherel's theorem for Schwartz functions. -/
 theorem integral_inner_fourier_fourier (f g : 𝓢(V, H)) :
-    ∫ ξ, ⟪𝓕 f ξ, 𝓕 g ξ⟫ = ∫ x, ⟪f x, g x⟫ :=
+    ∫ ξ, ⟪𝓕 (f : V → H) ξ, 𝓕 (g : V → H) ξ⟫ = ∫ x, ⟪f x, g x⟫ :=
   integral_sesq_fourier_fourier f g (innerSL ℂ)
 
 theorem integral_norm_sq_fourier (f : 𝓢(V, H)) :
-    ∫ ξ, ‖𝓕 f ξ‖^2 = ∫ x, ‖f x‖^2 := by
+    ∫ ξ, ‖𝓕 (f : V → H) ξ‖^2 = ∫ x, ‖f x‖^2 := by
   apply Complex.ofRealLI.injective
   simp only [← LinearIsometry.integral_comp_comm]
   convert integral_inner_fourier_fourier f f <;>
@@ -153,22 +153,22 @@ noncomputable def fourierTransformCLE : 𝓢(V, E) ≃L[𝕜] 𝓢(V, E) where
   left_inv := by
     intro f
     ext x
-    change 𝓕 (𝓕 f) (-x) = f x
+    change 𝓕 (𝓕 (f : V → E)) (-x) = f x
     rw [← fourierIntegralInv_eq_fourierIntegral_neg, Continuous.fourier_inversion f.continuous
       f.integrable (fourierTransformCLM 𝕜 f).integrable]
   right_inv := by
     intro f
     ext x
-    change 𝓕 (fun x ↦ (𝓕 f) (-x)) x = f x
+    change 𝓕 (fun (x : V) ↦ ((𝓕 (f : V → E)) (-x) : E)) x = f x
     simp_rw [← fourierIntegralInv_eq_fourierIntegral_neg, Continuous.fourier_inversion_inv
       f.continuous f.integrable (fourierTransformCLM 𝕜 f).integrable]
   continuous_invFun := ContinuousLinearMap.continuous _
 
 @[simp] lemma fourierTransformCLE_apply (f : 𝓢(V, E)) :
-    fourierTransformCLE 𝕜 f = 𝓕 f := rfl
+    fourierTransformCLE 𝕜 f = 𝓕 (f : V → E) := rfl
 
 @[simp] lemma fourierTransformCLE_symm_apply (f : 𝓢(V, E)) :
-    (fourierTransformCLE 𝕜).symm f = 𝓕⁻ f := by
+    (fourierTransformCLE 𝕜).symm f = 𝓕⁻ (f : V → E) := by
   ext x
   exact (fourierIntegralInv_eq_fourierIntegral_neg f x).symm
 
