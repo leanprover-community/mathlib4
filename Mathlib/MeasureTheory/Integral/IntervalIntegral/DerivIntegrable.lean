@@ -11,13 +11,13 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.Slope
 # `f'` is interval integrable for certain classes of functions `f`
 
 This file proves that:
-* `MonotoneOn.intervalIntegrable_deriv` - If `f` is monotone on `a..b`, then `f'` is interval
+* `MonotoneOn.intervalIntegrable_deriv`: If `f` is monotone on `a..b`, then `f'` is interval
 integrable on `a..b`.
-* `MonotoneOn.intervalIntegral_deriv_bound` - If `f` is monotone on `a..b`, then the integral of
+* `MonotoneOn.intervalIntegral_deriv_mem_uIcc`: If `f` is monotone on `a..b`, then the integral of
 `f'` on `a..b` is in `uIcc 0 (f b - f a)`.
-* `BoundedVariationOn.intervalIntegrable_deriv` - If `f` has bounded variation on `a..b`,
+* `BoundedVariationOn.intervalIntegrable_deriv`: If `f` has bounded variation on `a..b`,
 then `f'` is interval integrable on `a..b`.
-* `AbsolutelyContinuousOnInterval.intervalIntegrable_deriv` - If `f` is absolutely continuous on
+* `AbsolutelyContinuousOnInterval.intervalIntegrable_deriv`: If `f` is absolutely continuous on
 `a..b`, then `f'` is interval integrable on `a..b`.
 
 ## Tags
@@ -38,6 +38,12 @@ lemma MonotoneOn.exists_tendsto_deriv_liminf_lintegral_enorm_le
       (∀ (n : ℕ), AEStronglyMeasurable (G n) (volume.restrict (Icc a b))) ∧
       liminf (fun (n : ℕ) ↦ ∫⁻ (x : ℝ) in Icc a b, ‖G n x‖ₑ) atTop ≤
         ENNReal.ofReal (f b - f a) := by
+  /- Proof Sketch: Extend `f` on `[a, b]` to a function `g` on `ℝ` by defining `g x = f a` for
+  `x < a` and `g x = f b` for `x > b`. `g` is globally monotone and `g'` agrees with `f'` on
+  `(a, b)`. We let `G c x = slope g x (x + c)` for `c > 0`. Then `G c x` is nonnegative,
+  `∫⁻ (x : ℝ) in Icc a b, ‖G c x‖ₑ ≤ f b - f a`, and `G c x` tends to `f' x` as `c` tends to `0`
+  from the right. The function `fun n x ↦ G (n : ℝ)⁻¹ x` is a witness to the conclusion of the
+  lemma. -/
   let g (x : ℝ) : ℝ := f (max a (min x b))
   have hg : Monotone g := monotoneOn_univ.mp <| hf.comp (by grind [MonotoneOn]) (by grind [MapsTo])
   have hfg : EqOn f g (Ioo a b) := by grind [EqOn]
@@ -67,7 +73,7 @@ lemma MonotoneOn.exists_tendsto_deriv_liminf_lintegral_enorm_le
         refine Filter.liminf_le_of_frequently_le'
           (Filter.Frequently.of_forall fun n ↦ ENNReal.ofReal_le_ofReal ?_)
         rw [integral_Icc_eq_integral_Ioc, ← intervalIntegral.integral_of_le hab]
-        convert hg.monotoneOn (Icc a (b + (n : ℝ)⁻¹)) |>.intervalIntegral_slope_bound hab (by simp)
+        convert hg.monotoneOn (Icc a (b + (n : ℝ)⁻¹)) |>.intervalIntegral_slope_le hab (by simp)
           using 2
         simp [g]
       _ = ENNReal.ofReal (f b - f a) := by grind
@@ -116,8 +122,9 @@ theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}
     rw [Filter.EventuallyLE, MeasureTheory.ae_restrict_iff' (by simp)]
     filter_upwards [h₁, h₂] with x _ _ _
     exact f_deriv_nonneg (by grind [Icc_diff_both])
-  · have ebound := lintegral_enorm_le_liminf_of_tendsto'
-      ((MeasureTheory.ae_restrict_iff' (by measurability) |>.mpr hGf)) hG
+  · have ebound := lintegral_enorm_le_liminf_of_tendsto
+      ((MeasureTheory.ae_restrict_iff' (by measurability) |>.mpr hGf))
+      (fun n ↦ (hG n).aemeasurable.enorm)
     grw [hG'] at ebound
     rw [uIcc_of_le hab,
         ← MeasureTheory.ofReal_integral_norm_eq_lintegral_enorm integrable_f_deriv,
