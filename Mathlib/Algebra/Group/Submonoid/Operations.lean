@@ -312,6 +312,11 @@ theorem comap_iInf {ι : Sort*} (f : F) (s : ι → Submonoid N) :
 theorem map_bot (f : F) : (⊥ : Submonoid M).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
+@[to_additive]
+lemma disjoint_map {f : F} (hf : Function.Injective f) {H K : Submonoid M} (h : Disjoint H K) :
+    Disjoint (H.map f) (K.map f) := by
+  rw [disjoint_iff, ← map_inf _ _ f hf, disjoint_iff.mp h, map_bot]
+
 @[to_additive (attr := simp)]
 theorem comap_top (f : F) : (⊤ : Submonoid N).comap f = ⊤ :=
   (gc_map_comap f).u_top
@@ -844,6 +849,11 @@ theorem submonoidMap_surjective (f : M →* N) (M' : Submonoid M) :
   rintro ⟨_, x, hx, rfl⟩
   exact ⟨⟨x, hx⟩, rfl⟩
 
+@[to_additive]
+lemma surjOn_iff_le_map {f : M →* N} {H : Submonoid M} {K : Submonoid N} :
+    Set.SurjOn f H K ↔ K ≤ H.map f :=
+  Iff.rfl
+
 end MonoidHom
 
 namespace Submonoid
@@ -945,6 +955,13 @@ theorem bot_or_nontrivial (S : Submonoid M) : S = ⊥ ∨ Nontrivial S := by
   element. -/]
 theorem bot_or_exists_ne_one (S : Submonoid M) : S = ⊥ ∨ ∃ x ∈ S, x ≠ (1 : M) :=
   S.bot_or_nontrivial.imp_right S.nontrivial_iff_exists_ne_one.mp
+
+@[to_additive]
+lemma codisjoint_map {F : Type*} [FunLike F M N] [MonoidHomClass F M N] {f : F}
+    (hf : Function.Surjective f) {H K : Submonoid M} (h : Codisjoint H K) :
+    Codisjoint (H.map f) (K.map f) := by
+  rw [codisjoint_iff, ← map_sup, codisjoint_iff.mp h, ← MonoidHom.mrange_eq_map,
+    mrange_eq_top_of_surjective _ hf]
 
 section Pi
 
