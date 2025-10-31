@@ -172,8 +172,8 @@ theorem coeff_frobeniusEquiv_symm (f : Ring.Perfection R p) (n : ℕ) :
 
 @[simp]
 theorem coeff_iterate_frobeniusEquiv_symm (f : Ring.Perfection R p) (n m : ℕ) :
-    (Perfection.coeff _ p n) ((frobeniusEquiv _ p).symm ^[m] f) =
-    (Perfection.coeff _ p (n + m)) f := by
+    Perfection.coeff _ p n ((frobeniusEquiv _ p).symm ^[m] f) =
+    Perfection.coeff _ p (n + m) f := by
   revert f n
   induction' m with m ih
   · simp
