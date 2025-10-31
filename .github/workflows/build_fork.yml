@@ -309,6 +309,7 @@ jobs:
           echo "::endgroup::"
 
           ../master-branch/scripts/lake-build-with-retry.sh Mathlib
+          # results of build at pr-branch/.lake/build_summary_Mathlib*.json
       - name: end gh-problem-match-wrap for build step
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
@@ -377,6 +378,7 @@ jobs:
         run: |
           cd pr-branch
           ../master-branch/scripts/lake-build-with-retry.sh Archive
+          # results of build at pr-branch/.lake/build_summary_Archive*.json
 
       - name: build counterexamples
         id: counterexamples
@@ -384,6 +386,7 @@ jobs:
         run: |
           cd pr-branch
           ../master-branch/scripts/lake-build-with-retry.sh Counterexamples
+          # results of build at pr-branch/.lake/build_summary_Counterexamples*.json
 
       - name: Check if building Archive or Counterexamples failed
         if: steps.archive.outcome == 'failure' || steps.counterexamples.outcome == 'failure'
