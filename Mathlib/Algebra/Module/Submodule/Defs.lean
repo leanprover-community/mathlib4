@@ -119,10 +119,6 @@ theorem mk_le_mk {S S' : AddSubmonoid M} (h h') :
 theorem ext (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
   SetLike.ext h
 
-@[deprecated SetLike.coe_set_eq (since := "2025-04-20")]
-theorem carrier_inj : p.carrier = q.carrier ↔ p = q :=
-  (SetLike.coe_injective (A := Submodule R M)).eq_iff
-
 /-- Copy of a submodule with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. -/
 @[simps]
