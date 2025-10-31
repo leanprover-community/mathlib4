@@ -215,7 +215,7 @@ theorem extendOfNorm_norm_le (h_inj : LinearMap.ker e = ⊥) (h_dense : DenseRan
     (h_norm : ∀ (x : E), ‖f x‖ ≤ C * ‖e x‖) (x : Eₗ) :
     ‖f.extendOfNorm e x‖ ≤ C * ‖x‖ := by
   have h_mem : ∀ (x : Eₗ) (hy : x ∈ (LinearMap.range e)), ‖extendOfNorm f e x‖ ≤ C * ‖x‖ := by
-    rintro x ⟨y, hxy⟩
+    intro x ⟨y, hxy⟩
     rw [← hxy]
     convert h_norm y
     apply extendOfNorm_eq h_inj h_dense ⟨C, h_norm⟩
@@ -232,8 +232,7 @@ variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁
 
 variable {f : E →ₛₗ[σ₁₂] F} {e : E →ₗ[𝕜] Eₗ}
 
-theorem extendOfNorm_opNorm_le (h_inj : LinearMap.ker e = ⊥)
-    (h_dense : DenseRange e) {C : ℝ}
+theorem extendOfNorm_opNorm_le (h_inj : LinearMap.ker e = ⊥) (h_dense : DenseRange e) {C : ℝ}
     (hC : 0 ≤ C) (h_norm : ∀ (x : E), ‖f x‖ ≤ C * ‖e x‖) : ‖f.extendOfNorm e‖ ≤ C :=
   (f.extendOfNorm e).opNorm_le_bound hC (extendOfNorm_norm_le h_inj h_dense C h_norm)
 
