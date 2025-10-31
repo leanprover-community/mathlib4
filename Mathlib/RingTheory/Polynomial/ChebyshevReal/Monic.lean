@@ -19,62 +19,6 @@ import Mathlib.Topology.Algebra.Polynomial
 * `min_abs_of_monic_extrema` characterizes the equality case
 -/
 
-namespace Lagrange
-
-open Polynomial
-
-variable {F : Type*} [Field F] {ι : Type*} [DecidableEq ι]
-
-theorem interpolate_poly [DecidableEq F] {s : Finset ι} {v : ι → F} (hvs : Set.InjOn v s)
-    {P : Polynomial F} (hP : P.degree < s.card) :
-    (interpolate s v) (fun (i : ι) => P.eval (v i)) = P := by
-  let t : Finset F := s.image v
-  have ht : t.card = s.card := Finset.card_image_iff.mpr hvs
-  apply eq_of_degrees_lt_of_eval_finset_eq t
-  · rw [ht]
-    apply degree_interpolate_lt _ hvs
-  · rw [ht]
-    exact hP
-  · intro x hx
-    obtain ⟨i, hi, hx⟩ := Finset.mem_image.mp hx
-    rw [← hx, eval_interpolate_at_node _ hvs hi]
-
-theorem basis_topCoeff {s : Finset ι} {v : ι → F} {i : ι} (hi : i ∈ s) :
-    (Lagrange.basis s v i).coeff (s.card - 1) = (∏ j ∈ s.erase i, ((v i) - (v j)))⁻¹ := by
-  rw [Lagrange.basis]
-  unfold basisDivisor
-  rw [Finset.prod_mul_distrib, ← Finset.prod_inv_distrib, ←map_prod, coeff_C_mul]
-  rw [← Finset.card_erase_of_mem hi]
-  have : (∏ j ∈ s.erase i, (X - C (v j))).Monic := monic_prod_X_sub_C _ _
-  have := this.coeff_natDegree
-  rw [natDegree_finset_prod_X_sub_C_eq_card] at this
-  rw [this, mul_one]
-
-theorem interpolate_leadingCoeff [DecidableEq F] (s : Finset ι) (v : ι → F) (hvs : Set.InjOn v s)
-    {P : Polynomial F} (hP : s.card = P.degree + 1) :
-    P.leadingCoeff = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, ((v i) - (v j)) := by
-  have P_degree : P.degree = ↑(s.card - 1) := by
-    cases h : P.degree
-    case bot => rw [h] at hP; simp at hP
-    case coe d => rw [h] at hP; simp [ENat.coe_inj.mp hP]; rfl
-  have P_natDegree : P.natDegree = s.card - 1 := natDegree_eq_of_degree_eq_some P_degree
-  have s_card : s.card > 0 := by
-    by_contra! h
-    have : s.card = 0 := by omega
-    rw [this, P_degree] at hP
-    have := ENat.coe_inj.mp hP
-    dsimp at this
-    omega
-  have hP' : P.degree < s.card := by rw [P_degree, Nat.cast_lt]; omega
-  rw [leadingCoeff, P_natDegree]
-  rw (occs := [1]) [← interpolate_poly hvs hP']
-  rw [interpolate_apply, finset_sum_coeff]
-  congr! with i hi
-  rw [coeff_C_mul, basis_topCoeff hi]
-  field_simp
-
-end Lagrange
-
 namespace Polynomial.Chebyshev
 
 open Polynomial
@@ -169,15 +113,11 @@ private lemma convex_combination {n : ℕ} (hn : n ≠ 0) {P : ℝ[X]} (hP : P.d
       rw [this, mul_inv, ← inv_pow, ← div_eq_mul_inv]
       congr
       norm_num
-    · rw [← Lagrange.interpolate_leadingCoeff]
-      · simp
-      · exact hinj
-      · simp
-  · rw [Lagrange.interpolate_leadingCoeff (Finset.Icc 0 n) (fun i => cos (i * π / n))]
+    · rw [← Lagrange.leadingCoeff_interpolate hinj] <;> simp
+  · rw [Lagrange.leadingCoeff_interpolate hinj]
     · congr with i
       rw [mul_comm, ← div_eq_mul_inv, mul_div_mul_left]
       simp
-    · exact hinj
     · simp [hP]
 
 theorem bddAbove_poly_interval (P : ℝ[X]) : BddAbove { abs (P.eval x) | x ∈ Set.Icc (-1) 1 } := by

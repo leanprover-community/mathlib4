@@ -272,6 +272,17 @@ theorem basisDivisor_add_symm {x y : F} (hxy : x ≠ y) :
     sum_insert (notMem_singleton.mpr hxy), sum_singleton, basis_pair_left hxy,
     basis_pair_right hxy, id, id]
 
+theorem leadingCoeff_basis (hvs : Set.InjOn v s) (hi : i ∈ s) :
+    (Lagrange.basis s v i).leadingCoeff = (∏ j ∈ s.erase i, ((v i) - (v j)))⁻¹ := by
+  rw [leadingCoeff, natDegree_basis hvs hi, Lagrange.basis]
+  unfold basisDivisor
+  rw [Finset.prod_mul_distrib, ← Finset.prod_inv_distrib, ←map_prod, coeff_C_mul]
+  rw [← Finset.card_erase_of_mem hi]
+  have : (∏ j ∈ s.erase i, (X - C (v j))).Monic := monic_prod_X_sub_C _ _
+  have := this.coeff_natDegree
+  rw [natDegree_finset_prod_X_sub_C_eq_card] at this
+  rw [this, mul_one]
+
 end Basis
 
 section Interpolate
@@ -437,6 +448,43 @@ theorem interpolate_eq_add_interpolate_erase (hvs : Set.InjOn v s) (hi : i ∈ s
     sdiff_insert_insert_of_mem_of_notMem hj (notMem_singleton.mpr hij.symm),
     sdiff_singleton_eq_erase]
   exact insert_subset_iff.mpr ⟨hi, singleton_subset_iff.mpr hj⟩
+
+theorem interpolate_poly_eq_poly [DecidableEq F]
+    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < s.card) :
+    (interpolate s v) (fun (i : ι) => P.eval (v i)) = P := by
+  let t : Finset F := s.image v
+  have ht : t.card = s.card := Finset.card_image_iff.mpr hvs
+  apply eq_of_degrees_lt_of_eval_finset_eq t
+  · rw [ht]
+    apply degree_interpolate_lt _ hvs
+  · rw [ht]
+    exact hP
+  · intro x hx
+    obtain ⟨i, hi, hx⟩ := Finset.mem_image.mp hx
+    rw [← hx, eval_interpolate_at_node _ hvs hi]
+
+theorem leadingCoeff_interpolate [DecidableEq F]
+    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : s.card = P.degree + 1) :
+    P.leadingCoeff = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, ((v i) - (v j)) := by
+  have P_degree : P.degree = ↑(s.card - 1) := by
+    cases h : P.degree
+    case bot => rw [h] at hP; simp at hP
+    case coe d => rw [h] at hP; simp [ENat.coe_inj.mp hP]; rfl
+  have P_natDegree : P.natDegree = s.card - 1 := natDegree_eq_of_degree_eq_some P_degree
+  have s_card : s.card > 0 := by
+    by_contra! h
+    have : s.card = 0 := by omega
+    rw [this, P_degree] at hP
+    have := ENat.coe_inj.mp hP
+    dsimp at this
+    omega
+  have hP' : P.degree < s.card := by rw [P_degree, Nat.cast_lt]; omega
+  rw [leadingCoeff, P_natDegree]
+  rw (occs := [1]) [← interpolate_poly_eq_poly hvs hP']
+  rw [interpolate_apply, finset_sum_coeff]
+  congr! with i hi
+  rw [coeff_C_mul, ← natDegree_basis hvs hi, ← leadingCoeff, leadingCoeff_basis hvs hi]
+  field_simp
 
 end Interpolate
 
