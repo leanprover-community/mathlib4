@@ -27,7 +27,7 @@ section
 
 variable [IsOrderedMonoid α]
 
-@[to_additive] lemma IsConvexSubgroup.iff_mem_and_mem_of_mul_mem (H : Subgroup α) :
+@[to_additive] lemma IsConvexSubgroup.iff_mem_and_mem_of_mul_mem {H : Subgroup α} :
     IsConvexSubgroup H ↔ ∀ ⦃a b : α⦄, a ≤ 1 → b ≤ 1 → a * b ∈ H → a ∈ H ∧ b ∈ H where
   mp convex a _ ale0 ble1 h :=
     ⟨convex ((mul_le_iff_le_one_right' a).mpr ble1) ale0 h,
@@ -36,7 +36,7 @@ variable [IsOrderedMonoid α]
     (h (mul_inv_le_one_iff_le.mpr aleb) ble1 <|
       (inv_mul_cancel_right a b).symm ▸ ainH).right
 
-lemma IsConvexSubgroup.iff_mem_of_le_of_le (H : Subgroup α) :
+lemma IsConvexSubgroup.iff_mem_of_le_of_le {H : Subgroup α} :
     IsConvexSubgroup H ↔ ∀ a b c : α , a ≤ b → b ≤ c → a ∈ H → c ∈ H → b ∈ H where
   mp convex a b c aleb blec h1 h2 := by
     have  h : a * c⁻¹ ∈ H := by
@@ -160,8 +160,78 @@ lemma isHeightht1.tfae : List.TFAE [
   tfae_have 1 → 3 := by sorry
   tfae_finish
 
---def orderIsoFiniteArchimedeanClass :
- --   ConvexSubgroup α ≃o LowerSet (FiniteMulArchimedeanClass α) where
+@[simp] theorem Subgroup.mabs_mem_iff {G : Subgroup α} {a : α} : |a|ₘ ∈ G ↔ a ∈ G := by
+  obtain ⟨h, -⟩ | ⟨h, -⟩ := mabs_cases a <;> simp [h]
+
+theorem FiniteMulArchimedeanClass.min_le_mk_mul (a b : α) (ha : a ≠ 1) (hb : b ≠ 1)
+    (hab : a * b ≠ 1) : min (mk a ha) (mk b hb) ≤ mk (a * b) hab :=
+  MulArchimedeanClass.min_le_mk_mul a b
+
+theorem FiniteMulArchimedeanClass.mk_inv (a : α) (ha : a ≠ 1) :
+    mk a⁻¹ (by simp [ha]) = mk a ha :=
+  Subtype.ext (MulArchimedeanClass.mk_inv a)
+
+theorem ConvexSubgroup.mem_of_finiteMulArchimedeanClass_mk_le (G : ConvexSubgroup α)
+    {a b : α} {ha1 : a ≠ 1} {hb1 : b ≠ 1}
+    (le : FiniteMulArchimedeanClass.mk a ha1 ≤ FiniteMulArchimedeanClass.mk b hb1)
+    (haG : a ∈ G) : b ∈ G := by
+  rw [FiniteMulArchimedeanClass.mk_le_mk, MulArchimedeanClass.mk_le_mk] at le
+  have ⟨n, le⟩ := le
+  refine G.toSubgroup.mabs_mem_iff.mp ?_
+  exact IsConvexSubgroup.iff_mem_of_le_of_le.mp G.convex 1 _ _ (one_le_mabs _) le G.one_mem
+    (G.pow_mem (by simpa) _)
+
+def UpperSet.finiteMulArchimedeanClassToSubgroup (s : UpperSet (FiniteMulArchimedeanClass α)) :
+    Subgroup α where
+  carrier := {a | ∀ h : a ≠ 1, .mk a h ∈ s}
+  mul_mem' {a b} ha hb hab := by
+    obtain rfl | ha1 := eq_or_ne a 1
+    · simp_rw [one_mul] at hab ⊢; exact hb hab
+    obtain rfl | hb1 := eq_or_ne b 1
+    · simp_rw [mul_one] at hab ⊢; exact ha hab
+    apply s.upper (FiniteMulArchimedeanClass.min_le_mk_mul a b ha1 hb1 hab)
+    obtain eq | eq := min_choice (FiniteMulArchimedeanClass.mk a ha1)
+      (FiniteMulArchimedeanClass.mk b hb1) <;> rw [eq]
+    exacts [ha ha1, hb hb1]
+  one_mem' ha := (ha rfl).elim
+  inv_mem' {a} ha ha1 := by
+    rw [FiniteMulArchimedeanClass.mk_inv a (by simpa using ha1)]
+    exact ha _
+
+def equivFiniteArchimedeanClass :
+    ConvexSubgroup α ≃ UpperSet (FiniteMulArchimedeanClass α) where
+  toFun G := ⟨{x | ∃ a : α, ∃ ha : a ≠ 1, a ∈ G ∧ x = .mk a ha}, fun x y le ↦ by
+    rintro ⟨a, ha1, haG, rfl⟩
+    revert y
+    apply FiniteMulArchimedeanClass.ind
+    intro b hb1 le
+    have := G.mem_of_finiteMulArchimedeanClass_mk_le le haG
+    exact ⟨b, hb1, G.toSubgroup.mabs_mem_iff.mp (by simpa), rfl⟩⟩
+  invFun s := ⟨s.finiteMulArchimedeanClassToSubgroup, fun a b hab b_le ha b_ne ↦ by
+    refine s.upper ?_ (ha (hab.trans_lt (b_le.lt_of_ne b_ne)).ne)
+    exact MulArchimedeanClass.mk_monotoneOn (hab.trans b_le) b_le hab⟩
+  left_inv G := by
+    ext a
+    constructor <;> intro h
+    · obtain rfl | ha1 := eq_or_ne a 1; · simp
+      have ⟨b, hb1, hbG, eq⟩ := h ha1
+      exact G.mem_of_finiteMulArchimedeanClass_mk_le eq.ge hbG
+    exact fun ha ↦ ⟨a, ha, h, rfl⟩
+  right_inv s := by
+    ext1; apply Set.ext
+    apply FiniteMulArchimedeanClass.ind
+    intro a ha1
+    constructor <;> intro h
+    · have ⟨b, hb1, hbs, eq⟩ := h
+      rw [eq]
+      exact hbs hb1
+    exact ⟨a, ha1, fun _ ↦ h, rfl⟩
+
+def orderIsoFiniteArchimedeanClass :
+    (ConvexSubgroup α)ᵒᵈ ≃o UpperSet (FiniteMulArchimedeanClass α) :=
+  (OrderDual.ofDual.trans equivFiniteArchimedeanClass).toOrderIso
+    (fun _G _H le _x ⟨a, ha1, haH, eq⟩ ↦ ⟨a, ha1, le haH, eq⟩)
+    fun _s _t le _a hat ha1 ↦ le (hat ha1)
 
 end
 
