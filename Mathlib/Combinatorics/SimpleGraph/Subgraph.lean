@@ -776,6 +776,13 @@ theorem finset_card_neighborSet_eq_degree {G' : Subgraph G} {v : V} [Fintype (G'
     (G'.neighborSet v).toFinset.card = G'.degree v := by
   rw [degree, Set.toFinset_card]
 
+theorem degree_of_notMem_verts {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)]
+    (h : v ∉ G'.verts) : G'.degree v = 0 := by
+  rw [degree, Fintype.card_eq_zero_iff, isEmpty_subtype]
+  intro w
+  by_contra hw
+  exact h hw.fst_mem
+
 theorem degree_le (G' : Subgraph G) (v : V) [Fintype (G'.neighborSet v)]
     [Fintype (G.neighborSet v)] : G'.degree v ≤ G.degree v := by
   rw [← card_neighborSet_eq_degree]
@@ -797,10 +804,41 @@ theorem degree_spanningCoe {G' : G.Subgraph} (v : V) [Fintype (G'.neighborSet v)
   rw [← card_neighborSet_eq_degree, Subgraph.degree]
   congr!
 
+theorem degree_pos_iff_exists_adj {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)] :
+    0 < G'.degree v ↔ ∃ w, G'.Adj v w := by
+  simp only [degree, Fintype.card_pos_iff, nonempty_subtype, mem_neighborSet]
+
+theorem degree_eq_zero_of_subsingleton (G' : Subgraph G) (v : V) [Fintype (G'.neighborSet v)]
+    (hG : G'.verts.Subsingleton) : G'.degree v = 0 := by
+  by_cases hv : v ∈ G'.verts
+  · rw [← G'.coe_degree ⟨v, hv⟩]
+    exact G'.coe.degree_eq_zero_of_subsingleton ⟨v, hv⟩ ((Set.subsingleton_coe _).mpr hG)
+  · exact degree_of_notMem_verts hv
+
 theorem degree_eq_one_iff_unique_adj {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)] :
     G'.degree v = 1 ↔ ∃! w : V, G'.Adj v w := by
   rw [← finset_card_neighborSet_eq_degree, Finset.card_eq_one, Finset.singleton_iff_unique_mem]
   simp only [Set.mem_toFinset, mem_neighborSet]
+
+theorem nontrivial_of_degree_ne_zero {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)]
+    (h : G'.degree v ≠ 0) : Nontrivial G'.verts := by
+  apply not_subsingleton_iff_nontrivial.mp
+  by_contra
+  simp_all [G'.degree_eq_zero_of_subsingleton v]
+
+@[simp]
+theorem _root_.SimpleGraph.card_neighborSet_toSubgraph (H : SimpleGraph V) (h : H ≤ G)
+    (v : V) [Fintype ↑((toSubgraph H h).neighborSet v)] [Fintype ↑(H.neighborSet v)] :
+    Fintype.card ↑((toSubgraph H h).neighborSet v) = H.degree v := by
+  refine (Finset.card_eq_of_equiv_fintype ?_).symm
+  simp only [mem_neighborFinset]
+  rfl
+
+@[simp]
+lemma _root_.SimpleGraph.toSubgraph.degree (H : SimpleGraph V) (h : H ≤ G) {v : V}
+    [Fintype ↑((toSubgraph H h).neighborSet v)] [Fintype ↑(H.neighborSet v)] :
+    (toSubgraph H h).degree v = H.degree v := by
+  simp [Subgraph.degree]
 
 lemma neighborSet_eq_of_equiv {v : V} {H : Subgraph G}
     (h : G.neighborSet v ≃ H.neighborSet v) (hfin : (G.neighborSet v).Finite) :
