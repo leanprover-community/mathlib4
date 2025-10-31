@@ -103,7 +103,7 @@ lemma exists_mem_of_isClosed_of_nonempty
     (hZne : ∀ i, (Z i).Nonempty)
     (hZcpt : ∀ i, IsCompact (Z i))
     (hmapsTo : ∀ {i i' : I} (f : i ⟶ i'), Set.MapsTo (D.map f) (Z i) (Z i')) :
-    ∃ (s : c.pt), ∀ i, (c.π.app i) s ∈ Z i := by
+    ∃ (s : c.pt), ∀ i, c.π.app i s ∈ Z i := by
   let D' : I ⥤ Scheme :=
   { obj i := (vanishingIdeal ⟨Z i, hZc i⟩).subscheme
     map {X Y} f := subschemeMap _ _ (D.map f) (by
