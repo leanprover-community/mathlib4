@@ -66,7 +66,7 @@ theorem isPell_norm : ∀ {b : ℤ√d}, IsPell b ↔ b * star b = 1
   | ⟨x, y⟩ => by simp [Zsqrtd.ext_iff, IsPell, mul_comm]; ring_nf
 
 theorem isPell_iff_mem_unitary : ∀ {b : ℤ√d}, IsPell b ↔ b ∈ unitary (ℤ√d)
-  | ⟨x, y⟩ => by rw [unitary.mem_iff, isPell_norm, mul_comm (star _), and_self_iff]
+  | ⟨x, y⟩ => by rw [Unitary.mem_iff, isPell_norm, mul_comm (star _), and_self_iff]
 
 theorem isPell_mul {b c : ℤ√d} (hb : IsPell b) (hc : IsPell c) : IsPell (b * c) :=
   isPell_norm.2 (by simp [mul_comm, mul_left_comm c, mul_assoc,
@@ -94,7 +94,7 @@ theorem d_pos : 0 < d a1 :=
 --@[nolint dup_namespace]
 def pell : ℕ → ℕ × ℕ
   | 0 => (1, 0)
-  | n+1 => ((pell n).1 * a + d a1 * (pell n).2, (pell n).1 + (pell n).2 * a)
+  | n + 1 => ((pell n).1 * a + d a1 * (pell n).2, (pell n).1 + (pell n).2 * a)
 
 /-- The Pell `x` sequence. -/
 def xn (n : ℕ) : ℕ :=
@@ -581,13 +581,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
   | j + 1, ij, j2n, jnn, ntriv =>
     have lem2 : ∀ k > n, k ≤ 2 * n → (↑(xn a1 k % xn a1 n) : ℤ) =
         xn a1 n - xn a1 (2 * n - k) := fun k kn k2n => by
-      let k2nl :=
-        lt_of_add_lt_add_right <|
-          show 2 * n - k + k < n + k by
-            rw [tsub_add_cancel_of_le]
-            · rw [two_mul]
-              exact add_lt_add_left kn n
-            exact k2n
+      let k2nl : 2 * n - k < n := by cutsat
       have xle : xn a1 (2 * n - k) ≤ xn a1 n := le_of_lt <| strictMono_x a1 k2nl
       suffices xn a1 k % xn a1 n = xn a1 n - xn a1 (2 * n - k) by rw [this, Int.ofNat_sub xle]
       rw [← Nat.mod_eq_of_lt (Nat.sub_lt (x_pos a1 n) (x_pos a1 (2 * n - k)))]
@@ -840,7 +834,7 @@ theorem eq_pow_of_pell_lem {a y k : ℕ} (hy0 : y ≠ 0) (hk0 : k ≠ 0) (hyk : 
     _ = 2 * a * y - y * y - 1 := by ring
 
 theorem eq_pow_of_pell {m n k} :
-    n ^ k = m ↔ k = 0 ∧ m = 1 ∨0 < k ∧ (n = 0 ∧ m = 0 ∨
+    n ^ k = m ↔ k = 0 ∧ m = 1 ∨ 0 < k ∧ (n = 0 ∧ m = 0 ∨
       0 < n ∧ ∃ (w a t z : ℕ) (a1 : 1 < a), xn a1 k ≡ yn a1 k * (a - n) + m [MOD t] ∧
       2 * a * n = t + (n * n + 1) ∧ m < t ∧
       n ≤ w ∧ k ≤ w ∧ a * a - ((w + 1) * (w + 1) - 1) * (w * z) * (w * z) = 1) := by
