@@ -113,7 +113,7 @@ instance : BraidedCategory (ModuleCat.{u} R) :=
 instance : equivalenceSemimoduleCat (R := R).functor.Braided where
 
 instance symmetricCategory : SymmetricCategory (ModuleCat.{u} R) :=
-  symmetricCategoryOfFaithful equivalenceSemimoduleCat.functor
+  .ofFaithful equivalenceSemimoduleCat.functor
 
 @[simp]
 theorem braiding_hom_apply {M N : ModuleCat.{u} R} (m : M) (n : N) :
