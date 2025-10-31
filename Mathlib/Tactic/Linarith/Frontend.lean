@@ -514,7 +514,8 @@ elab_rules : tactic
 elab_rules : tactic
   | `(tactic| linarith?%$tk $[!%$bang]? $cfg:optConfig $[only%$o]? $[[$args,*]]?) =>
       withMainContext do
-        let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `linarith)
+        let args ←
+          ((args.map (TSepArray.getElems)).getD {}).mapM (elabTermWithoutNewMVars `linarith)
         let cfg := (← elabLinarithConfig cfg).updateReducibility bang.isSome
         let g ← getMainGoal
         let st ← saveState
