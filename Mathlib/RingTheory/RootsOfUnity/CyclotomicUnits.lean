@@ -95,13 +95,6 @@ theorem geom_sum_isUnit' (hζ : IsPrimitiveRoot ζ n) (hj : j.Coprime n) (hj_Uni
   | 1 => simp_all
   | n + 2 => exact geom_sum_isUnit hζ (by linarith) hj
 
-omit [IsDomain A] in
-/-- The explicit formula for the unit whose existence is the content of
-  `associated_pow_sub_one_pow_of_coprime`. -/
-theorem pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum :
-    (ζ ^ j - 1) * ∑ k ∈ range i, ζ ^ k = (ζ ^ i - 1) * ∑ k ∈ range j, ζ ^ k := by
-  grind [geom_sum_mul]
-
 theorem pow_sub_one_eq_geom_sum_mul_geom_sum_inv_mul_pow_sub_one (hζ : IsPrimitiveRoot ζ n)
     (hn : 2 ≤ n) (hi : i.Coprime n) (hj : j.Coprime n) :
     (ζ ^ j - 1) =

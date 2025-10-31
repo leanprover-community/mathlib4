@@ -402,28 +402,16 @@ theorem Measurable.prodMk {β γ} {_ : MeasurableSpace β} {_ : MeasurableSpace 
     {g : α → γ} (hf : Measurable f) (hg : Measurable g) : Measurable fun a : α => (f a, g a) :=
   Measurable.prod hf hg
 
-@[deprecated (since := "2025-03-05")]
-alias Measurable.prod_mk := Measurable.prodMk
-
 @[fun_prop]
 theorem Measurable.prodMap [MeasurableSpace δ] {f : α → β} {g : γ → δ} (hf : Measurable f)
     (hg : Measurable g) : Measurable (Prod.map f g) :=
   (hf.comp measurable_fst).prodMk (hg.comp measurable_snd)
 
-@[deprecated (since := "2025-03-05")]
-alias Measurable.prod_map := Measurable.prodMap
-
 theorem measurable_prodMk_left {x : α} : Measurable (@Prod.mk _ β x) :=
   measurable_const.prodMk measurable_id
 
-@[deprecated (since := "2025-03-05")]
-alias measurable_prod_mk_left := measurable_prodMk_left
-
 theorem measurable_prodMk_right {y : β} : Measurable fun x : α => (x, y) :=
   measurable_id.prodMk measurable_const
-
-@[deprecated (since := "2025-03-05")]
-alias measurable_prod_mk_right := measurable_prodMk_right
 
 theorem Measurable.of_uncurry_left {f : α → β → γ} (hf : Measurable (uncurry f)) {x : α} :
     Measurable (f x) :=
