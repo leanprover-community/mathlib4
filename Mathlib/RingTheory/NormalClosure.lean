@@ -18,23 +18,23 @@ of `Frac S`. In particular, if `S` is a Dedekind domain, then `T` is also a Dede
 # Technical notes
 * Many instances are proved about the `IntermediateField.normalClosure` of the extension
 `Frac S / Frac R` inside the `AlgebraicClosure` of `Frac S`. However these are only needed for the
-construction of `T` and to prove some results about it. Therefore, these instances are scoped.
+construction of `T` and to prove some results about it. Therefore, these instances are local.
 * `Ring.NormalClosure` is defined as a type rather than a `Subalgebra` for performance reasons
-(and thus we need to provide explicit instances for it). Although, defining at a `Subalgebra`
+(and thus we need to provide explicit instances for it). Although defining it as a `Subalgebra`
 does not cause timeouts in this file, it does slow down considerably its compilation and
 does trigger timeouts in applications.
 -/
 
 namespace Ring
 
-noncomputable section normalClosure
+noncomputable section NormalClosure
 
 variable (R S : Type*) [CommRing R] [CommRing S] [IsDomain R] [IsDomain S]
   [Algebra R S] [NoZeroSMulDivisors R S]
 
 /--
 We register this specific instance as a local instance rather than making
-`FractionRing.listAlgebra` a local instance because the latter causes timeouts since
+`FractionRing.liftAlgebra` a local instance because the latter causes timeouts since
 it is too general.
 -/
 local instance : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra _ _
@@ -46,7 +46,7 @@ local notation3 "E" => IntermediateField.normalClosure (FractionRing R) (Fractio
 
 
 /--
-This is a local instance since it is only used in this file to construct `Ring.normalClosure`.
+This is a local instance since it is only used in this file to construct `Ring.NormalClosure`.
 -/
 local instance : Algebra S E := ((algebraMap L E).comp (algebraMap S L)).toAlgebra
 
@@ -68,7 +68,7 @@ instance : Nontrivial T := inferInstanceAs (Nontrivial (integralClosure S E))
 instance : Algebra S T := inferInstanceAs (Algebra S (integralClosure S E))
 
 /--
-This is a local instance since it is only used in this file to construct `Ring.normalClosure`.
+This is a local instance since it is only used in this file to construct `Ring.NormalClosure`.
 -/
 local instance : Algebra T E := inferInstanceAs (Algebra (integralClosure S E) E)
 
@@ -129,4 +129,4 @@ instance : Module.Finite R T :=
 instance : IsDedekindDomain T :=
   integralClosure.isDedekindDomain S L E
 
-end Ring.normalClosure
+end Ring.NormalClosure

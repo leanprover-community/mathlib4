@@ -176,8 +176,7 @@ theorem spanNorm_mul_of_bot_or_top (eq_bot_or_top : ∀ I : Ideal R, I = ⊥ ∨
   rw [hJ]
   exact le_top
 
-theorem spanNorm_le_comap [Algebra.IsSeparable (FractionRing R) (FractionRing S)] (I : Ideal S) :
-    spanNorm R I ≤ comap (algebraMap R S) I := by
+theorem spanNorm_le_comap (I : Ideal S) : spanNorm R I ≤ comap (algebraMap R S) I := by
   rw [spanNorm, Ideal.map, Ideal.span_le, ← Submodule.span_le]
   intro x hx
   induction hx using Submodule.span_induction with
@@ -332,8 +331,8 @@ open MulSemiringAction Pointwise in
 theorem relNorm_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S] (g : G)
     (I : Ideal S) : relNorm R (g • I) = relNorm R I := relNorm_map_algEquiv (toAlgEquiv R S g) I
 
-theorem relNorm_le_comap [Algebra.IsSeparable (FractionRing R) (FractionRing S)] (I : Ideal S) :
-    relNorm R I ≤ comap (algebraMap R S) I := spanNorm_le_comap R I
+theorem relNorm_le_comap (I : Ideal S) : relNorm R I ≤ comap (algebraMap R S) I :=
+  spanNorm_le_comap R I
 
 theorem relNorm_relNorm (T : Type*) [CommRing T] [IsDedekindDomain T] [IsIntegrallyClosed T]
     [Algebra R T] [Algebra T S] [IsScalarTower R T S] [Module.Finite R T] [Module.Finite T S]

@@ -36,6 +36,8 @@ commutative ring, field of fractions
 
 assert_not_exists Ideal
 
+open nonZeroDivisors
+
 variable (R : Type*) [CommRing R] {M : Submonoid R} (S : Type*) [CommRing S]
 variable [Algebra R S] {P : Type*} [CommRing P]
 variable {A : Type*} [CommRing A] (K : Type*)
@@ -117,10 +119,50 @@ variable (R K)
 protected theorem injective : Function.Injective (algebraMap R K) :=
   IsLocalization.injective _ (le_of_eq rfl)
 
+include R in
+theorem nonZeroDivisors_eq_isUnit : K⁰ = IsUnit.submonoid K := by
+  refine le_antisymm (fun x hx ↦ ?_) (isUnit_le_nonZeroDivisors K)
+  have ⟨r, eq⟩ := surj R⁰ x
+  let r' : R⁰ := ⟨r.1, mem_nonZeroDivisors_of_injective (IsFractionRing.injective R K)
+    (eq ▸ mul_mem hx (map_units ..).mem_nonZeroDivisors)⟩
+  exact isUnit_of_mul_isUnit_left <| eq ▸ map_units K r'
+
+include R in
+/-- If `L` is a fraction ring of `K` which is a fraction ring of `R`,
+the `K`-algebra homomorphism from `K` to `L` is an isomorphism. -/
+noncomputable def algEquiv (L) [CommRing L] [Algebra K L] [IsFractionRing K L] : K ≃ₐ[K] L :=
+  atUnits K _ (nonZeroDivisors_eq_isUnit R K).le
+
+include R in
+theorem idem : IsFractionRing K K := IsLocalization.self (nonZeroDivisors_eq_isUnit R K).le
+
+/-- Taking fraction ring is idempotent: a fraction ring of a fraction ring of `R` is
+itself a fraction ring of `R`. -/
+theorem trans (L) [CommRing L] [Algebra K L] [IsFractionRing K L] [Algebra R L]
+    [IsScalarTower R K L] : IsFractionRing R L :=
+  isLocalization_of_algEquiv _ <| (algEquiv R K L).restrictScalars R
+
 instance (priority := 100) : FaithfulSMul R K :=
   (faithfulSMul_iff_algebraMap_injective R K).mpr <| IsFractionRing.injective R K
 
-variable {R K}
+variable {R}
+
+theorem self_iff_nonZeroDivisors_eq_isUnit : IsFractionRing R R ↔ R⁰ = IsUnit.submonoid R where
+  mp _ := nonZeroDivisors_eq_isUnit R R
+  mpr h := IsLocalization.self h.le
+
+theorem self_iff_nonZeroDivisors_le_isUnit : IsFractionRing R R ↔ R⁰ ≤ IsUnit.submonoid R := by
+  rw [self_iff_nonZeroDivisors_eq_isUnit, le_antisymm_iff,
+    and_iff_left (isUnit_le_nonZeroDivisors R)]
+
+theorem self_iff_bijective : IsFractionRing R R ↔ Function.Bijective (algebraMap R K) where
+  mp h := (atUnits R _ <| self_iff_nonZeroDivisors_le_isUnit.mp h).bijective
+  mpr h := isLocalization_of_algEquiv _ (AlgEquiv.ofBijective (Algebra.ofId R K) h).symm
+
+theorem self_iff_surjective : IsFractionRing R R ↔ Function.Surjective (algebraMap R K) := by
+  rw [self_iff_bijective K, Function.Bijective, and_iff_right (IsFractionRing.injective R K)]
+
+variable {K}
 
 open algebraMap in
 @[norm_cast]
@@ -198,7 +240,7 @@ theorem mk'_eq_div {r} (s : nonZeroDivisors A) : mk' K r s = algebraMap A K r / 
 
 theorem div_surjective (z : K) :
     ∃ x y : A, y ∈ nonZeroDivisors A ∧ algebraMap _ _ x / algebraMap _ _ y = z :=
-  let ⟨x, ⟨y, hy⟩, h⟩ := mk'_surjective (nonZeroDivisors A) z
+  let ⟨x, ⟨y, hy⟩, h⟩ := exists_mk'_eq (nonZeroDivisors A) z
   ⟨x, y, hy, by rwa [mk'_eq_div] at h⟩
 
 theorem isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors A) :
@@ -535,6 +577,8 @@ abbrev FractionRing :=
 
 namespace FractionRing
 
+instance : IsFractionRing (FractionRing R) (FractionRing R) := IsFractionRing.idem R _
+
 instance unique [Subsingleton R] : Unique (FractionRing R) := inferInstance
 
 instance [Nontrivial R] : Nontrivial (FractionRing R) := inferInstance
@@ -573,10 +617,7 @@ lemma algebraMap_liftAlgebra :
   rfl
 
 instance {R₀} [SMul R₀ R] [IsScalarTower R₀ R R] [SMul R₀ K] [IsScalarTower R₀ R K] :
-    IsScalarTower R₀ (FractionRing R) K where
-  smul_assoc r₀ r k := r.ind fun ⟨r, s⟩ ↦ by
-    simp_rw [Localization.smul_mk, Algebra.smul_def, Localization.mk_eq_mk',
-      algebraMap_liftAlgebra, IsFractionRing.lift_mk', mul_comm_div, ← Algebra.smul_def, smul_assoc]
+    IsScalarTower R₀ (FractionRing R) K := IsScalarTower.to₁₃₄ _ R _ _
 
 end liftAlgebra
 
@@ -596,9 +637,9 @@ section IsScalarTower
 
 attribute [local instance] liftAlgebra
 
-instance (B C : Type*) [CommRing B] [IsDomain B] [Field C] [Algebra A B] [Algebra A C] [Algebra B C]
-    [NoZeroSMulDivisors A B] [NoZeroSMulDivisors A C] [NoZeroSMulDivisors B C]
-    [IsScalarTower A B C] : IsScalarTower (FractionRing A) (FractionRing B) C where
+instance (k K : Type*) [Field k] [Field K] [Algebra A k] [Algebra A K] [Algebra k K]
+    [FaithfulSMul A k] [FaithfulSMul A K] [IsScalarTower A k K] :
+    IsScalarTower (FractionRing A) k K where
   smul_assoc a b c := a.ind fun ⟨a₁, a₂⟩ ↦ by
     rw [← smul_right_inj (nonZeroDivisors.coe_ne_zero a₂)]
     simp_rw [← smul_assoc, Localization.smul_mk, smul_eq_mul, Localization.mk_eq_mk',
