@@ -263,7 +263,7 @@ lemma ofDiscreteTopology_uniformSpace_eq_bot :
   ext U
   let := ofDiscreteTopology (X := X)
   simp only [uniformity_dist, gt_iff_lt, ofDiscreteTopology_dist_def, Filter.mem_biInf_principal,
-    DiscreteUniformity.eq_principal_idRel, Filter.mem_principal, idRel_subset]
+    DiscreteUniformity.eq_principal_relId, Filter.mem_principal, SetRel.id_subset_iff]
   constructor
   · rintro ⟨I, hI, hI', hIU⟩
     intro x
