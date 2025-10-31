@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Emily Riehl
+Authors: Emily Riehl
 -/
 
 import Mathlib.CategoryTheory.Bicategory.CatEnriched
@@ -13,8 +13,8 @@ import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
 # The strict bicategory of quasicategories
 
 In this file we define a strict bicategory whose objects are quasicategories,
-whose `1`-morphisms are maps of simplicial sets, and whose `2`-morphisms are homotopy classes of homotopies
-between them, defined using the simplicial interval `Δ[1]`.
+whose `1`-morphisms are maps of simplicial sets, and whose `2`-morphisms are homotopy classes of
+homotopies between them, defined using the simplicial interval `Δ[1]`.
 
 This is defined by transfering the simplicial enrichment of the category of quasicategories to
 a categorical enrichment by applying `hoFunctor : SSet ⥤ Cat` to the hom-objects.
@@ -23,8 +23,8 @@ This strict bicategory serves as a setting to develop the formal category theory
 
 ## References
 
-* Emily Riehl and Dominic Verity, Elements of ∞-Category Theory
-* Emily Riehl and Dominic Verity, The 2-category theory of quasi-categories
+* [Emily Riehl and Dominic Verity, Elements of ∞-Category Theory][RiehlVerity2022]
+* [Emily Riehl and Dominic Verity, The 2-category theory of quasi-categories][RiehlVerity2015]
 
 -/
 
@@ -60,12 +60,6 @@ equivalent to `QCat`. -/
 noncomputable def QCat.forgetEnrichment.equiv :
     ForgetEnrichment Cat QCat ≌ QCat := ForgetEnrichment.equiv Cat
 
-end SSet
-
-namespace CategoryTheory
-
-open SSet
-
 /-- The bicategory of quasicategories extracted from `QCat.CatEnrichedOrdinaryCat`. -/
 noncomputable instance QCat.bicategory : Bicategory QCat :=
   CatEnrichedOrdinary.instBicategory
@@ -74,4 +68,4 @@ noncomputable instance QCat.bicategory : Bicategory QCat :=
 noncomputable instance QCat.strictBicategory : Bicategory.Strict QCat :=
   CatEnrichedOrdinary.instStrict
 
-end CategoryTheory
+end SSet
