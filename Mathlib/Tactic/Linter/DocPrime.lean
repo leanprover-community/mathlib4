@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Lean.Elab.Command
+import Mathlib.Lean.Linter
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header
@@ -37,9 +38,7 @@ register_option linter.docPrime : Bool := {
 namespace DocPrime
 
 @[inherit_doc Mathlib.Linter.linter.docPrime]
-def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless getLinterValue linter.docPrime (← getLinterOptions) do
-    return
+def docPrimeLinter : Linter where run := whenLinterActivated linter.docPrime fun stx ↦ do
   if (← get).messages.hasErrors then
     return
   unless [``Lean.Parser.Command.declaration, `lemma].contains stx.getKind do return
