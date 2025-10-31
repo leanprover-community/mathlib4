@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Luigi Massacci
 -/
 
-import Mathlib.Analysis.Calculus.ContDiff.Defs
+import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Topology.ContinuousMap.Bounded.Normed
 import Mathlib.Topology.Sets.Compacts
 
@@ -137,9 +137,9 @@ theorem toFun_eq_coe {f : 𝓓^{n}_{K}(E, F)} : f.toFun = (f : E → F) :=
   rfl
 
 /-- See note [custom simps projection]. -/
-def Simps.apply (f : 𝓓^{n}_{K}(E, F)) : E → F := f
+def Simps.coe (f : 𝓓^{n}_{K}(E, F)) : E → F := f
 
-initialize_simps_projections ContDiffMapSupportedIn (toFun → apply)
+initialize_simps_projections ContDiffMapSupportedIn (toFun → coe, as_prefix coe)
 
 @[ext]
 theorem ext {f g : 𝓓^{n}_{K}(E, F)} (h : ∀ a, f a = g a) : f = g :=
@@ -158,5 +158,97 @@ theorem coe_copy (f : 𝓓^{n}_{K}(E, F)) (f' : E → F) (h : f' = f) : ⇑(f.co
 
 theorem copy_eq (f : 𝓓^{n}_{K}(E, F)) (f' : E → F) (h : f' = f) : f.copy f' h = f :=
   DFunLike.ext' h
+
+@[simp]
+theorem toBoundedContinuousFunction_apply (f : 𝓓^{n}_{K}(E, F)) (x : E) :
+   (f : BoundedContinuousFunction E F) x = (f x) := rfl
+
+section AddCommGroup
+
+@[simps -fullyApplied]
+instance : Zero 𝓓^{n}_{K}(E, F) where
+  zero := .mk 0 contDiff_zero_fun fun _ _ ↦ rfl
+
+@[simps -fullyApplied]
+instance : Add 𝓓^{n}_{K}(E, F) where
+  add f g := .mk (f + g) (f.contDiff.add g.contDiff) <| by
+    rw [← add_zero 0]
+    exact f.zero_on_compl.comp_left₂ g.zero_on_compl
+
+@[simps -fullyApplied]
+instance : Neg 𝓓^{n}_{K}(E, F) where
+  neg f := .mk (-f) (f.contDiff.neg) <| by
+    rw [← neg_zero]
+    exact f.zero_on_compl.comp_left
+
+@[simps -fullyApplied]
+instance instSub : Sub 𝓓^{n}_{K}(E, F) where
+  sub f g := .mk (f - g) (f.contDiff.sub g.contDiff) <| by
+    rw [← sub_zero 0]
+    exact f.zero_on_compl.comp_left₂ g.zero_on_compl
+
+@[simps -fullyApplied]
+instance instSMul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+   SMul R 𝓓^{n}_{K}(E, F) where
+  smul c f := .mk (c • (f : E → F)) (f.contDiff.const_smul c) <| by
+    rw [← smul_zero c]
+    exact f.zero_on_compl.comp_left
+
+instance : AddCommGroup 𝓓^{n}_{K}(E, F) :=
+  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+
+variable (E F K n)
+
+/-- Coercion as an additive homomorphism. -/
+def coeHom : 𝓓^{n}_{K}(E, F) →+ E → F where
+  toFun f := f
+  map_zero' := coe_zero
+  map_add' _ _ := rfl
+
+variable {E F}
+
+theorem coe_coeHom : (coeHom E F n K : 𝓓^{n}_{K}(E, F) → E → F) = DFunLike.coe :=
+  rfl
+
+theorem coeHom_injective : Function.Injective (coeHom E F n K) := by
+  rw [coe_coeHom]
+  exact DFunLike.coe_injective
+
+end AddCommGroup
+
+section Module
+
+instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+    Module R 𝓓^{n}_{K}(E, F) :=
+  (coeHom_injective n K).module R (coeHom E F n K) fun _ _ ↦ rfl
+
+end Module
+
+protected theorem support_subset (f : 𝓓^{n}_{K}(E, F)) : support f ⊆ K :=
+  support_subset_iff'.mpr f.zero_on_compl
+
+protected theorem tsupport_subset (f : 𝓓^{n}_{K}(E, F)) : tsupport f ⊆ K :=
+  closure_minimal f.support_subset K.isCompact.isClosed
+
+protected theorem hasCompactSupport (f : 𝓓^{n}_{K}(E, F)) : HasCompactSupport f :=
+  HasCompactSupport.intro K.isCompact f.zero_on_compl
+
+/-- Inclusion of unbundled `n`-times continuously differentiable function with support included
+in a compact `K` into the space `𝓓^{n}_{K}`. -/
+@[simps]
+protected def of_support_subset {f : E → F} (hf : ContDiff ℝ n f) (hsupp : support f ⊆ K) :
+    𝓓^{n}_{K}(E, F) where
+  toFun := f
+  contDiff' := hf
+  zero_on_compl' := support_subset_iff'.mp hsupp
+
+section Module
+
+instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+    Module R 𝓓^{n}_{K}(E, F) := fast_instance%
+  (coeHom_injective n K).module R (coeHom E F n K) fun _ _ ↦ rfl
+
+end Module
 
 end ContDiffMapSupportedIn

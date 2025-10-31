@@ -446,6 +446,7 @@ def mkOfUnitCounit (adj : CoreUnitCounit F G) : F ⊣ G where
     simpa [-CoreUnitCounit.right_triangle] using this Y
 
 /-- The adjunction between the identity functor on a category and itself. -/
+@[simps]
 def id : 𝟭 C ⊣ 𝟭 C where
   unit := 𝟙 _
   counit := 𝟙 _
@@ -523,7 +524,7 @@ lemma comp_counit_app (X : E) :
     (adj₁.comp adj₂).counit.app X = H.map (adj₁.counit.app (I.obj X)) ≫ adj₂.counit.app X := by
   simp [Adjunction.comp]
 
-lemma comp_homEquiv :  (adj₁.comp adj₂).homEquiv =
+lemma comp_homEquiv : (adj₁.comp adj₂).homEquiv =
     fun _ _ ↦ Equiv.trans (adj₂.homEquiv _ _) (adj₁.homEquiv _ _) :=
   mk'_homEquiv _
 

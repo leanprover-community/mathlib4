@@ -22,9 +22,8 @@ universe v₁ v₂ v₃ u₁ u₂ u₃ u
 
 open CategoryTheory Category Limits MonoidalCategory CartesianMonoidalCategory Mon MonObj
 
+namespace CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory.{v₁} C]
-
-section
 
 /-- A group object internal to a cartesian monoidal category. Also see the bundled `Grp`. -/
 class GrpObj (X : C) extends MonObj X where
@@ -51,8 +50,6 @@ instance : GrpObj (𝟙_ C) where
   inv := 𝟙 (𝟙_ C)
 
 end GrpObj
-
-end
 
 variable (C) in
 /-- A group object in a Cartesian monoidal category. -/
@@ -426,13 +423,15 @@ instance instBraidedCategory : BraidedCategory (Grp C) :=
 
 end Grp
 
-namespace CategoryTheory
 variable
   {D : Type u₂} [Category.{v₂} D] [CartesianMonoidalCategory D]
   {E : Type u₃} [Category.{v₃} E] [CartesianMonoidalCategory E]
 
 namespace Functor
-variable {F F' : C ⥤ D} [F.Monoidal] [F'.Monoidal] {G : D ⥤ E} [G.Monoidal]
+variable {F F' : C ⥤ D} {G : D ⥤ E}
+
+section Monoidal
+variable [F.Monoidal] [F'.Monoidal] [G.Monoidal]
 
 open scoped Obj
 
@@ -446,7 +445,7 @@ abbrev grpObjObj {G : C} [GrpObj G] : GrpObj (F.obj G) where
     simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc,
       Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp]
 
-scoped[Obj] attribute [instance] CategoryTheory.Functor.grpObjObj
+scoped[CategoryTheory.Obj] attribute [instance] CategoryTheory.Functor.grpObjObj
 
 @[reassoc, simp] lemma obj.ι_def {G : C} [GrpObj G] : ι[F.obj G] =  F.map ι := rfl
 
@@ -543,6 +542,27 @@ same on group objects as on objects. -/
     let : GrpObj H := (FullyFaithful.ofFullyFaithful F).grpObj H
     refine ⟨⟨H⟩, ⟨Grp.mkIso e ?_ ?_⟩⟩ <;> simp
 
+end Monoidal
+
+section Braided
+variable [BraidedCategory C] [BraidedCategory D] (F : C ⥤ D) [F.Braided]
+
+open Monoidal LaxMonoidal
+
+noncomputable instance mapGrp.instMonoidal : F.mapGrp.Monoidal :=
+  Functor.CoreMonoidal.toMonoidal
+  { εIso := (Grp.fullyFaithfulForget₂Mon _).preimageIso (εIso F.mapMon)
+    μIso X Y := (Grp.fullyFaithfulForget₂Mon _).preimageIso (μIso F.mapMon X.toMon Y.toMon)
+    μIso_hom_natural_left f Z := by convert μ_natural_left F.mapMon f Z.toMon using 1
+    μIso_hom_natural_right Z f := by convert μ_natural_right F.mapMon Z.toMon f using 1
+    associativity X Y Z := by convert associativity F.mapMon X.toMon Y.toMon Z.toMon using 1
+    left_unitality X := by convert left_unitality F.mapMon X.toMon using 1
+    right_unitality X := by convert right_unitality F.mapMon X.toMon using 1 }
+
+noncomputable instance mapGrp.instBraided : F.mapGrp.Braided where
+  braided X Y := by convert Braided.braided (F := F.mapMon) X.toMon Y.toMon using 1
+
+end Braided
 end Functor
 
 open Functor

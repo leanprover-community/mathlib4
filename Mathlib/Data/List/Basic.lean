@@ -732,9 +732,6 @@ theorem foldl_fixed {a : α} : ∀ l : List β, foldl (fun a _ => a) a l = a :=
 theorem foldr_fixed {b : β} : ∀ l : List α, foldr (fun _ b => b) b l = b :=
   foldr_fixed' fun _ => rfl
 
-@[deprecated foldr_cons_nil (since := "2025-02-10")]
-theorem foldr_eta (l : List α) : foldr cons [] l = l := foldr_cons_nil
-
 theorem reverse_foldl {l : List α} : reverse (foldl (fun t h => h :: t) [] l) = l := by
   simp
 
@@ -842,6 +839,8 @@ variable {op : α → α → α} [ha : Std.Associative op]
 /-- Notation for `op a b`. -/
 local notation a " ⋆ " b => op a b
 
+-- Setting `priority := high` means that Lean will prefer this notation to the identical one
+-- for `Seq.seq`
 /-- Notation for `foldl op a l`. -/
 local notation l " <*> " a => foldl op a l
 
@@ -879,21 +878,6 @@ theorem foldlM_eq_foldl (f : β → α → m β) (b l) :
   | cons _ _ l_ih => intro; simp only [List.foldlM, foldl, ← l_ih, functor_norm]
 
 end FoldlMFoldrM
-
-/-! ### intersperse -/
-
-@[deprecated (since := "2025-02-07")] alias intersperse_singleton := intersperse_single
-@[deprecated (since := "2025-02-07")] alias intersperse_cons_cons := intersperse_cons₂
-
-/-! ### map for partial functions -/
-
-@[deprecated "Deprecated without replacement." (since := "2025-02-07")]
-theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l) :
-    SizeOf.sizeOf x < SizeOf.sizeOf l := by
-  induction l with | nil => ?_ | cons h t ih => ?_ <;> cases hx <;> rw [cons.sizeOf_spec]
-  · cutsat
-  · specialize ih ‹_›
-    cutsat
 
 /-! ### filter -/
 
@@ -1043,9 +1027,6 @@ variable [DecidableEq α]
 theorem map_diff [DecidableEq β] {f : α → β} (finj : Injective f) {l₁ l₂ : List α} :
     map f (l₁.diff l₂) = (map f l₁).diff (map f l₂) := by
   simp only [diff_eq_foldl, foldl_map, map_foldl_erase finj]
-
-@[deprecated (since := "2025-04-10")]
-alias erase_diff_erase_sublist_of_sublist := Sublist.erase_diff_erase_sublist
 
 end Diff
 

@@ -68,19 +68,10 @@ subsets `Gal(L/E)` of `Gal(L/K)`, where `E/K` is finite. -/
 def fixedByFinite (K L : Type*) [Field K] [Field L] [Algebra K L] : Set (Subgroup Gal(L/K)) :=
   IntermediateField.fixingSubgroup '' finiteExts K L
 
-@[deprecated (since := "2025-03-16")]
-alias IntermediateField.finiteDimensional_bot := IntermediateField.instFiniteSubtypeMemBot
-
-@[deprecated (since := "2025-03-12")]
-alias IntermediateField.fixingSubgroup.bot := IntermediateField.fixingSubgroup_bot
-
 /-- If `L/K` is a field extension, then we have `Gal(L/K) ∈ fixedByFinite K L`. -/
 theorem top_fixedByFinite {K L : Type*} [Field K] [Field L] [Algebra K L] :
     ⊤ ∈ fixedByFinite K L :=
   ⟨⊥, IntermediateField.instFiniteSubtypeMemBot K, IntermediateField.fixingSubgroup_bot⟩
-
-@[deprecated (since := "2025-03-16")]
-alias finiteDimensional_sup := IntermediateField.finiteDimensional_sup
 
 /-- Given a field extension `L/K`, `galBasis K L` is the filter basis on `Gal(L/K)` whose sets
 are `Gal(L/E)` for intermediate fields `E` with `E/K` finite dimensional. -/
@@ -246,9 +237,6 @@ instance {K L : Type*} [Field K] [Field L] [Algebra K L] [Algebra.IsIntegral K L
 theorem krullTopology_isTotallySeparated {K L : Type*} [Field K] [Field L] [Algebra K L]
     [Algebra.IsIntegral K L] : IsTotallySeparated (Set.univ : Set Gal(L/K)) :=
   (totallySeparatedSpace_iff _).mp inferInstance
-
-@[deprecated (since := "2025-04-03")]
-alias krullTopology_totallyDisconnected := krullTopology_isTotallySeparated
 
 end TotallySeparated
 

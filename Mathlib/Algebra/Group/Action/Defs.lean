@@ -48,10 +48,12 @@ open Function (Injective Surjective)
 
 variable {M N G H α β γ δ : Type*}
 
+attribute [to_additive Add.toVAdd /-- See also `AddMonoid.toAddAction` -/] instSMulOfMul
+
 -- see Note [lower instance priority]
 /-- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
-@[to_additive /-- See also `AddMonoid.toAddAction` -/]
-instance (priority := 910) Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
+@[deprecated instSMulOfMul (since := "2025-10-18")]
+def Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
 
 /-- Like `Mul.toSMul`, but multiplies on the right.
 
@@ -388,7 +390,6 @@ See note [reducible non-instances]. -/
     /-- Pullback an additive action along an injective map respecting `+ᵥ`. -/]
 protected abbrev Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Injective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulAction M β where
-  smul := (· • ·)
   one_smul x := hf <| (smul _ _).trans <| one_smul _ (f x)
   mul_smul c₁ c₂ x := hf <| by simp only [smul, mul_smul]
 
@@ -398,7 +399,6 @@ See note [reducible non-instances]. -/
     /-- Pushforward an additive action along a surjective map respecting `+ᵥ`. -/]
 protected abbrev Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Surjective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulAction M β where
-  smul := (· • ·)
   one_smul := by simp [hf.forall, ← smul]
   mul_smul := by simp [hf.forall, ← smul, mul_smul]
 
@@ -586,7 +586,7 @@ class IsLeftCancelSMul [SMul G P] : Prop where
 
 @[to_additive]
 lemma IsLeftCancelSMul.left_cancel {G P} [SMul G P] [IsLeftCancelSMul G P] (a : G) (b c : P) :
-  a • b = a • c → b = c := IsLeftCancelSMul.left_cancel' a b c
+    a • b = a • c → b = c := IsLeftCancelSMul.left_cancel' a b c
 
 @[to_additive]
 instance [LeftCancelMonoid G] : IsLeftCancelSMul G G where
@@ -603,11 +603,11 @@ class IsCancelSMul [SMul G P] : Prop extends IsLeftCancelSMul G P where
 
 @[to_additive]
 lemma IsCancelSMul.left_cancel {G P} [SMul G P] [IsCancelSMul G P] (a : G) (b c : P) :
-  a • b = a • c → b = c := IsLeftCancelSMul.left_cancel' a b c
+    a • b = a • c → b = c := IsLeftCancelSMul.left_cancel' a b c
 
 @[to_additive]
 lemma IsCancelSMul.right_cancel {G P} [SMul G P] [IsCancelSMul G P] (a b : G) (c : P) :
-  a • c = b • c → a = b := IsCancelSMul.right_cancel' a b c
+    a • c = b • c → a = b := IsCancelSMul.right_cancel' a b c
 
 @[to_additive]
 instance [CancelMonoid G] : IsCancelSMul G G where
