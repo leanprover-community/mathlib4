@@ -717,7 +717,7 @@ lemma divMod_zero_of_not_le {a b c : FractionalIdeal R⁰ K} (hac : ¬ a ≤ c) 
     c.divMod b a = 0 := by
   simp [divMod, hac]
 
-set_option maxHeartbeats 210000 in
+set_option maxHeartbeats 250000 in
 -- changed for new compiler
 /-- Let `I J I' J'` be nonzero fractional ideals in a Dedekind domain with `J ≤ I` and `J' ≤ I'`.
 If `I/J = I'/J'` in the group of fractional ideals (i.e. `I * J' = I' * J`),
@@ -743,7 +743,7 @@ def quotientEquiv (I J I' J' : FractionalIdeal R⁰ K)
     refine Submodule.comap_mono ?_
     intro x hx
     refine (Submodule.mem_inf.mp (this.ge ?_)).1
-    simp only [val_eq_coe, Algebra.lsmul_coe, smul_eq_mul, mem_coe]
+    simp only [Algebra.lsmul_coe, smul_eq_mul]
     exact mul_mem_mul (mem_spanSingleton_self _ _) hx
   · rw [← LinearMap.ker_eq_bot, Submodule.mapQ, Submodule.ker_liftQ,
       LinearMap.ker_comp, Submodule.ker_mkQ, ← Submodule.comap_comp,
