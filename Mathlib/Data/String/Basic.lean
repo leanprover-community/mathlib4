@@ -122,6 +122,13 @@ instance decidableLE : DecidableLE String := by
 theorem le_iff_toList_le {s₁ s₂ : String} : s₁ ≤ s₂ ↔ s₁.toList ≤ s₂.toList :=
   (not_congr lt_iff_toList_lt).trans not_lt
 
+@[simp]
+theorem toList_eq_data {s : String} : s.toList = s.data := rfl
+
+#adaptation_note /-- 2025-10-31
+  Will be cleaned up in https://github.com/leanprover/lean4/pull/11017 -/
+attribute [-simp] toList
+
 theorem toList_inj {s₁ s₂ : String} : s₁.toList = s₂.toList ↔ s₁ = s₂ := by
   simp [data_inj]
 
@@ -131,8 +138,8 @@ theorem asString_nil : [].asString = "" :=
 theorem toList_empty : "".toList = [] :=
   rfl
 
-theorem asString_toList (s : String) : s.toList.asString = s := by
-  simp
+theorem asString_toList (s : String) : s.toList.asString = s :=
+  asString_data
 
 theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.drop 1).toList
   | s, h => by
@@ -162,7 +169,7 @@ instance : LinearOrder String where
   toDecidableEq := inferInstance
   toDecidableLT := String.decidableLT'
   compare_eq_compareOfLessAndEq a b := by
-    simp only [compare, compareOfLessAndEq, instLT, List.instLT, lt_iff_toList_lt, toList]
+    simp only [compare, compareOfLessAndEq, instLT, List.instLT, lt_iff_toList_lt, toList_eq_data]
     split_ifs <;>
     simp only [List.lt_iff_lex_lt] at *
 
@@ -173,7 +180,7 @@ open String
 namespace List
 
 theorem toList_asString (l : List Char) : l.asString.toList = l := by
-  simp
+  simp [-toList]
 
 theorem asString_eq {l : List Char} {s : String} : l.asString = s ↔ l = s.toList := by
   rw [← asString_toList s, asString_inj, asString_toList s]
