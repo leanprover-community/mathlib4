@@ -34,17 +34,21 @@ variable {α β : Type*} [Fintype α] [LinearOrder α] [LinearOrder β] {f : α 
 /-- The possible lengths of an increasing sequence which ends at `i`. -/
 private noncomputable def incSequencesTo (f : α → β) (i : α) : Finset ℕ :=
   open Classical in
-  image card {t : Finset α | IsGreatest t.toSet i ∧ StrictMonoOn f t}
+  image card {t : Finset α | IsGreatest t i ∧ StrictMonoOn f t}
 
 /-- The possible lengths of a decreasing sequence which ends at `i`. -/
 private noncomputable def decSequencesTo (f : α → β) (i : α) : Finset ℕ :=
   open Classical in
-  image card {t : Finset α | IsGreatest t.toSet i ∧ StrictAntiOn f t}
+  image card {t : Finset α | IsGreatest t i ∧ StrictAntiOn f t}
 
+/-- The singleton sequence is increasing, so 1 is a possible length. -/
 private lemma one_mem_incSequencesTo : 1 ∈ incSequencesTo f i := mem_image.2 ⟨{i}, by simp⟩
+/-- The singleton sequence is decreasing, so 1 is a possible length. -/
 private lemma one_mem_decSequencesTo : 1 ∈ decSequencesTo f i := one_mem_incSequencesTo (β := βᵒᵈ)
 
+/-- The singleton sequence is increasing, so the set of lengths is nonempty. -/
 private lemma incSequencesTo_nonempty : (incSequencesTo f i).Nonempty := ⟨1, one_mem_incSequencesTo⟩
+/-- The singleton sequence is decreasing, so the set of lengths is nonempty. -/
 private lemma decSequencesTo_nonempty : (decSequencesTo f i).Nonempty := ⟨1, one_mem_decSequencesTo⟩
 
 /-- The maximum length of an increasing sequence which ends at `i`. -/
@@ -65,6 +69,14 @@ private lemma maxIncSequencesTo_mem : maxIncSequencesTo f i ∈ incSequencesTo f
 private lemma maxDecSequencesTo_mem : maxDecSequencesTo f i ∈ decSequencesTo f i :=
   max'_mem _ decSequencesTo_nonempty
 
+/--
+We will want to show that if `i ≠ j`, then the pairs
+`(maxIncSequencesTo f i, maxDecSequencesTo f i)` and
+`(maxIncSequencesTo f j, maxDecSequencesTo f j)` are different.
+To this end, we will assume wlog that `i < j`, and show that if `f i < f j`,
+then `maxIncSequencesTo f i < maxIncSequencesTo f j`, and later dualise to prove that if `f j < f i`
+then `maxDecSequencesTo f i < maxDecSequencesTo f j`.
+-/
 private lemma maxIncSequencesTo_lt {i j : α} (hij : i < j) (hfij : f i < f j) :
     maxIncSequencesTo f i < maxIncSequencesTo f j := by
   classical
@@ -96,9 +108,17 @@ private lemma maxDecSequencesTo_gt {i j : α} (hij : i < j) (hfij : f j < f i) :
     maxDecSequencesTo f i < maxDecSequencesTo f j :=
   maxIncSequencesTo_lt (β := βᵒᵈ) hij hfij
 
+/--
+For each entry, we form a pair of labels consisting of the maximum lengths of increasing and
+decreasing sequences ending there.
+-/
 private noncomputable def paired (f : α → β) (i : α) : ℕ × ℕ :=
   (maxIncSequencesTo f i, maxDecSequencesTo f i)
 
+/--
+By combining the previous two lemmas, we see that since `f` is injective, the pairs of labels
+must also be unique.
+-/
 private lemma paired_injective (hf : Injective f) : Injective (paired f) := by
   apply injective_of_lt_imp_ne
   intro i j hij q
@@ -120,6 +140,8 @@ theorem erdos_szekeres {r s : ℕ} {f : α → β} (hn : r * s < Fintype.card α
     (∃ t : Finset α, r < #t ∧ StrictMonoOn f t) ∨
       ∃ t : Finset α, s < #t ∧ StrictAntiOn f t := by
   classical
+  -- It suffices to prove that there is some `i` where one of the max lengths is bigger than
+  -- `r` or `s`, as this corresponds to a monotone sequence of the required length.
   rsuffices ⟨i, hi⟩ : ∃ i, r < maxIncSequencesTo f i ∨ s < maxDecSequencesTo f i
   · refine Or.imp ?_ ?_ hi
     on_goal 1 =>
@@ -132,8 +154,10 @@ theorem erdos_szekeres {r s : ℕ} {f : α → β} (hn : r * s < Fintype.card α
       refine ⟨t, by rwa [ht₂], ?_⟩
       rw [mem_filter] at ht₁
       exact ht₁.2.2
+  -- If such an `i` does not exist, then our pairs of labels lie in a small set, which is a
+  -- contradiction since the pairs are unique.
   by_contra! q
-  have : Set.MapsTo (paired f) Finset.univ.toSet (Finset.Icc 1 r ×ˢ Finset.Icc 1 s).toSet := by
+  have : Set.MapsTo (paired f) (univ : Finset α) (Icc 1 r ×ˢ Icc 1 s : Finset _) := by
     simp [paired, one_le_maxIncSequencesTo, one_le_maxDecSequencesTo, Set.MapsTo, *]
   refine hn.not_ge ?_
   simpa using card_le_card_of_injOn (paired f) this (paired_injective hf).injOn
