@@ -296,22 +296,23 @@ theorem Iso.connected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃g H
     G.Connected ↔ H.Connected :=
   ⟨Connected.map e.toHom e.toEquiv.surjective, Connected.map e.symm.toHom e.symm.toEquiv.surjective⟩
 
-theorem connected_or_connected_compl [Nonempty V] : G.Connected ∨ Gᶜ.Connected := by
-  have ⟨v₀⟩ := ‹Nonempty V›
-  by_cases hreach₀ : ∀ v, G.Reachable v₀ v
-  · exact .inl <| G.connected_iff_exists_forall_reachable.mpr ⟨v₀, hreach₀⟩
-  refine .inr <| Gᶜ.connected_iff_exists_forall_reachable.mpr ⟨v₀, fun v ↦ ?_⟩
-  have ⟨v₁, hreach₁⟩ := not_forall.mp hreach₀
-  have hcadj₁ : Gᶜ.Adj v₀ v₁ :=
-    ⟨fun heq ↦ heq ▸ hreach₁ <| Reachable.refl _, mt Adj.reachable hreach₁⟩
-  by_cases hreach : G.Reachable v₀ v
-  · by_cases heq : v = v₁
-    · exact heq ▸ hcadj₁.reachable
-    have : Gᶜ.Adj v v₁ := ⟨heq, fun hadj ↦ hreach₁ <| hreach.trans hadj.reachable⟩
-    exact hcadj₁.reachable.trans this.reachable.symm
-  by_cases heq : v₀ = v
-  · exact heq ▸ .refl _
-  exact Adj.reachable ⟨heq, mt Adj.reachable hreach⟩
+lemma reachable_or_compl_adj (u v : V) : G.Reachable u v ∨ Gᶜ.Adj u v :=
+  or_iff_not_imp_left.mpr fun huv ↦ ⟨fun heq ↦ huv <| heq ▸ Reachable.rfl, mt Adj.reachable huv⟩
+
+theorem reachable_or_reachable_compl (u v w : V) : G.Reachable u v ∨ Gᶜ.Reachable u w :=
+  or_iff_not_imp_left.mpr fun huv ↦ (em <| G.Reachable u w).elim
+    (fun huw ↦ G.reachable_or_compl_adj .. |>.resolve_left huv |>.reachable.trans <|
+      (G.reachable_or_compl_adj .. |>.resolve_left fun hvw ↦ huv <| huw.trans hvw.symm).reachable)
+    (fun huw ↦ G.reachable_or_compl_adj .. |>.resolve_left huw |>.reachable)
+
+theorem connected_or_preconnected_compl : G.Connected ∨ Gᶜ.Preconnected := by
+  rw [or_iff_not_imp_left, G.connected_iff_exists_forall_reachable]
+  push_neg
+  exact fun h ↦ fun u v ↦ h u |>.elim fun w huw ↦
+    reachable_or_reachable_compl .. |>.resolve_left huw
+
+theorem connected_or_connected_compl [Nonempty V] : G.Connected ∨ Gᶜ.Connected :=
+  G.connected_or_preconnected_compl.elim .inl (.inr ⟨·⟩)
 
 /-- The quotient of `V` by the `SimpleGraph.Reachable` relation gives the connected
 components of a graph. -/
