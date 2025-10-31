@@ -156,18 +156,6 @@ lemma hasProd_symmetricIoc_int_iff {α : Type*} [CommMonoid α] [TopologicalSpac
     Tendsto (fun N : ℕ ↦ ∏ n ∈ Ioc (-(N : ℤ)) (N : ℤ), f n) atTop (𝓝 a) := by
   simp [HasProd, symmetricIoc, ← Nat.map_cast_int_atTop, comp_def]
 
-
-variable {n : ℕ}
-
-instance : LocallyFiniteOrder (Fin n → ℤ) := by
-  sorry
-
-@[to_additive]
-lemma hasProd_symmetricIoc_int_iff_gen {α : Type*} [CommMonoid α] [TopologicalSpace α]
-    (n : ℕ)  {f : (Fin n → ℤ) → α} {a : α} : HasProd f a (symmetricIoc (Fin n → ℤ)) ↔
-    Tendsto (fun N : ℕ ↦ ∏ j ∈ (Fin n → (Ioc (-(N : ℤ)) (N : ℤ))), f j) atTop (𝓝 a) := by
-  simp [HasProd, symmetricIoc, ← Nat.map_cast_int_atTop, comp_def]
-
 end Int
 
 end SummationFilter
