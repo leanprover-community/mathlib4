@@ -114,9 +114,6 @@ theorem mapsTo_iff_image_subset : MapsTo f s t ↔ f '' s ⊆ t :=
 theorem mapsTo_prodMap_diagonal : MapsTo (Prod.map f f) (diagonal α) (diagonal β) :=
   diagonal_subset_iff.2 fun _ => rfl
 
-@[deprecated (since := "2025-04-18")]
-alias mapsTo_prod_map_diagonal := mapsTo_prodMap_diagonal
-
 theorem MapsTo.subset_preimage (hf : MapsTo f s t) : s ⊆ f ⁻¹' t := hf
 
 theorem mapsTo_iff_subset_preimage : MapsTo f s t ↔ s ⊆ f ⁻¹' t := Iff.rfl

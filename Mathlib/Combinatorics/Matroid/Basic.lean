@@ -456,8 +456,6 @@ theorem rankFinite_or_rankInfinite (M : Matroid α) : RankFinite M ∨ RankInfin
   let ⟨B, hB⟩ := M.exists_isBase
   B.finite_or_infinite.imp hB.rankFinite_of_finite hB.rankInfinite_of_infinite
 
-@[deprecated (since := "2025-03-27")] alias finite_or_rankInfinite := rankFinite_or_rankInfinite
-
 @[simp]
 theorem not_rankFinite_iff (M : Matroid α) : ¬ RankFinite M ↔ RankInfinite M :=
   M.rankFinite_or_rankInfinite.elim (fun h ↦ iff_of_false (by simpa) M.not_rankInfinite)
