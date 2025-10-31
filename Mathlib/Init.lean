@@ -1,6 +1,7 @@
 module
 
 public import Lean.Linter.Sets -- for the definition of linter sets
+import Mathlib.Lean.Linter
 public import Mathlib.Tactic.Linter.CommandStart
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
