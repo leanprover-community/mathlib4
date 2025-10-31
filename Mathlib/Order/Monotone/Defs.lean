@@ -393,6 +393,20 @@ theorem StrictAnti.comp_strictMonoOn (hg : StrictAnti g) (hf : StrictMonoOn f s)
     StrictAntiOn (g ∘ f) s :=
   fun _ ha _ hb h ↦ hg (hf ha hb h)
 
+lemma MonotoneOn.comp (hg : MonotoneOn g t) (hf : MonotoneOn f s) (hs : Set.MapsTo f s t) :
+    MonotoneOn (g ∘ f) s := fun _x hx _y hy hxy ↦ hg (hs hx) (hs hy) <| hf hx hy hxy
+
+lemma MonotoneOn.comp_AntitoneOn (hg : MonotoneOn g t) (hf : AntitoneOn f s)
+    (hs : Set.MapsTo f s t) : AntitoneOn (g ∘ f) s := fun _x hx _y hy hxy ↦
+  hg (hs hy) (hs hx) <| hf hx hy hxy
+
+lemma AntitoneOn.comp (hg : AntitoneOn g t) (hf : AntitoneOn f s) (hs : Set.MapsTo f s t) :
+    MonotoneOn (g ∘ f) s := fun _x hx _y hy hxy ↦ hg (hs hy) (hs hx) <| hf hx hy hxy
+
+lemma AntitoneOn.comp_MonotoneOn (hg : AntitoneOn g t) (hf : MonotoneOn f s)
+    (hs : Set.MapsTo f s t) : AntitoneOn (g ∘ f) s := fun _x hx _y hy hxy ↦
+  hg (hs hx) (hs hy) <| hf hx hy hxy
+
 lemma StrictMonoOn.comp (hg : StrictMonoOn g t) (hf : StrictMonoOn f s) (hs : Set.MapsTo f s t) :
     StrictMonoOn (g ∘ f) s := fun _x hx _y hy hxy ↦ hg (hs hx) (hs hy) <| hf hx hy hxy
 
