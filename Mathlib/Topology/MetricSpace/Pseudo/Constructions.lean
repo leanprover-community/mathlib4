@@ -266,6 +266,7 @@ lemma ofDiscreteTopology_uniformSpace_eq_bot :
     DiscreteUniformity.eq_principal_relId, Filter.mem_principal, SetRel.id_subset_iff]
   constructor
   · rintro ⟨I, hI, hI', hIU⟩
+    constructor
     intro x
     refine hIU ?_
     simpa
@@ -276,7 +277,7 @@ lemma ofDiscreteTopology_uniformSpace_eq_bot :
     rintro ⟨x, y⟩
     simp only [Set.mem_setOf_eq]
     split <;>
-    simp_all
+    simp_all [h.refl]
 
 lemma ofDiscreteTopology_discreteUniformity :
     @DiscreteUniformity X (ofDiscreteTopology (X := X)).toUniformSpace := by
