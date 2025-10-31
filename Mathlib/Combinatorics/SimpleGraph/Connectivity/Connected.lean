@@ -299,17 +299,20 @@ theorem Iso.connected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃g H
 lemma reachable_or_compl_adj (u v : V) : G.Reachable u v ∨ Gᶜ.Adj u v :=
   or_iff_not_imp_left.mpr fun huv ↦ ⟨fun heq ↦ huv <| heq ▸ Reachable.rfl, mt Adj.reachable huv⟩
 
-theorem reachable_or_reachable_compl (u v w : V) : G.Reachable u v ∨ Gᶜ.Reachable u w :=
-  or_iff_not_imp_left.mpr fun huv ↦ (em <| G.Reachable u w).elim
-    (fun huw ↦ G.reachable_or_compl_adj .. |>.resolve_left huv |>.reachable.trans <|
-      (G.reachable_or_compl_adj .. |>.resolve_left fun hvw ↦ huv <| huw.trans hvw.symm).reachable)
-    (fun huw ↦ G.reachable_or_compl_adj .. |>.resolve_left huw |>.reachable)
+theorem reachable_or_reachable_compl (u v w : V) : G.Reachable u v ∨ Gᶜ.Reachable u w := by
+  refine or_iff_not_imp_left.mpr fun huv ↦ ?_
+  by_cases huw : G.Reachable u w
+  · have huv' := G.reachable_or_compl_adj .. |>.resolve_left huv
+    have hvw' := G.reachable_or_compl_adj .. |>.resolve_left fun hvw ↦ huv <| huw.trans hvw.symm
+    exact huv'.reachable.trans hvw'.reachable
+  exact G.reachable_or_compl_adj .. |>.resolve_left huw |>.reachable
 
 theorem connected_or_preconnected_compl : G.Connected ∨ Gᶜ.Preconnected := by
   rw [or_iff_not_imp_left, G.connected_iff_exists_forall_reachable]
-  push_neg
-  exact fun h ↦ fun u v ↦ h u |>.elim fun w huw ↦
-    reachable_or_reachable_compl .. |>.resolve_left huw
+  intro h u v
+  push_neg at h
+  have ⟨w, huw⟩ := h u
+  exact reachable_or_reachable_compl .. |>.resolve_left huw
 
 theorem connected_or_connected_compl [Nonempty V] : G.Connected ∨ Gᶜ.Connected :=
   G.connected_or_preconnected_compl.elim .inl (.inr ⟨·⟩)
