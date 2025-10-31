@@ -19,7 +19,7 @@ namespace CategoryTheory
 
 -- intended to be used with explicit universe parameters
 /-- Category of quivers. -/
-@[nolint checkUnivs]
+@[nolint checkUnivs, pp_with_univ]
 def Quiv :=
   Bundled Quiver.{v + 1, u}
 
@@ -153,6 +153,40 @@ def homEquivOfIso {V W : Quiv} (e : V ≅ W) {X Y : V} :
   invFun g := Quiver.homOfEq (e.inv.map g) (by simp) (by simp)
   left_inv f := by simp [inv_map_hom_map_of_iso]
   right_inv g := by simp [hom_map_inv_map_of_iso]
+
+@[simp]
+lemma id_obj_eq_id {Q : Quiv} : Prefunctor.obj (𝟙 Q) = _root_.id := rfl
+
+@[simp]
+lemma id_obj_eq_id_ext {Q : Quiv} X : Prefunctor.obj (𝟙 Q) X = X := rfl
+
+@[simp]
+lemma id_map_eq_id_ext {Q : Quiv} {X Y : Q} (f : X ⟶ Y) : Prefunctor.map (𝟙 Q) f = f := rfl
+
+--simp can theoretically solve this but it often gets stuck
+@[simp↓]
+lemma hom_inv_id_obj {U V : Quiv.{v, u}} (ι : U ≅ V) (X : U) :
+    ι.inv.obj (ι.hom.obj X) = X := by simp
+
+@[simp↓]
+lemma inv_hom_id_obj {U V : Quiv.{v, u}} (ι : U ≅ V) (X : V) :
+    ι.hom.obj (ι.inv.obj X) = X := by simp
+
+@[simp↓]
+lemma hom_inv_id_map {U V : Quiv.{v, u}} (ι : U ≅ V) {X Y : U} (f : X ⟶ Y) :
+    ι.inv.map (ι.hom.map f) = Quiver.homOfEq f
+      (hom_inv_id_obj ι X).symm (hom_inv_id_obj ι Y).symm := by
+  simp_rw [← Prefunctor.comp_map, ← Quiv.comp_eq_comp]
+  apply eq_of_heq
+  rw [Quiver.homOfEq_heq_right_iff, ι.hom_inv_id, id_map_eq_id_ext]
+
+@[simp↓]
+lemma inv_hom_id_map {U V : Quiv.{v, u}} (ι : U ≅ V) {X Y : V} (f : X ⟶ Y) :
+    ι.hom.map (ι.inv.map f) = Quiver.homOfEq f
+      (inv_hom_id_obj ι X).symm (inv_hom_id_obj ι Y).symm := by
+  simp_rw [← Prefunctor.comp_map, ← Quiv.comp_eq_comp]
+  apply eq_of_heq
+  rw [Quiver.homOfEq_heq_right_iff, ι.inv_hom_id, id_map_eq_id_ext]
 
 end
 

@@ -8,6 +8,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 import Mathlib.CategoryTheory.Subobject.Presheaf
 
+import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+
 /-!
 
 # Subobject Classifier
@@ -45,15 +47,25 @@ Let `C` refer to a category with a terminal object.
   category `C` has a subobject classifier if and only if the subobjects presheaf
   `CategoryTheory.Subobject.presheaf C` is representable (Proposition 1 in Section I.3 of [MM92]).
 
+* When a category has all pullbacks, the type of subobject classifiers is equivalent to the
+  type of representing objects for the functor `B => Subobject B`, and the proposition of
+  having a subobject classifier is equivalent to the proposition that this functor is representable.
+
 ## References
 
 * [S. MacLane and I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
+
+## TODO
+
+* Refactor the `HasClassifier` API to use `Classifier.mk'`, so that talking about
+  an abstract subobject classifier doesn't require `HasTerminal`.
 
 -/
 
 universe u v u₀ v₀
 
 namespace CategoryTheory
+section variable [HasTerminal C]
 
 open Category Limits Functor IsPullback
 
@@ -72,6 +84,7 @@ variable (C : Type u) [Category.{v} C]
 ```
 An equivalent formulation replaces `Ω₀` with the terminal object.
 -/
+@[ext]
 structure Classifier where
   /-- The domain of the truth morphism -/
   Ω₀ : C
@@ -198,6 +211,20 @@ lemma unique (χ' : X ⟶ Ω C) (hχ' : IsPullback m (Classifier.χ₀ _ U) χ' 
 instance truthIsSplitMono : IsSplitMono (truth C) :=
   Classifier.isTerminalΩ₀.isSplitMono_from _
 
+lemma χ_id (X : C) : χ (𝟙 X) = terminal.from X ≫ truth C := by
+  rw [← Category.id_comp (χ _), comm]
+
+@[simp]
+lemma χ_comp_id {X Y : C} (f : X ⟶ Y) : f ≫ χ (𝟙 Y) = χ (𝟙 X) := by
+  simp [χ_id]
+
+@[simp]
+lemma χ_naturality [HasPullbacks C] {X Y Z : C} (g : X ⟶ Z) (f : Y ⟶ Z) [Mono f] :
+    g ≫ χ f = χ (pullback.snd f g) := by
+  apply unique
+  rw [IsPullback.flip_iff, ← terminal.comp_from (pullback.fst f g)]
+  exact IsPullback.paste_horiz (IsPullback.of_hasPullback f g) (isPullback_χ f).flip
+
 /-- `truth C` is a regular monomorphism (because it is split). -/
 noncomputable instance truthIsRegularMono : RegularMono (truth C) :=
   RegularMono.ofIsSplitMono (truth C)
@@ -235,6 +262,8 @@ instance reflectsIsomorphismsOp (D : Type u₀) [Category.{v₀} D] (F : Cᵒᵖ
     [Functor.Faithful F] :
     Functor.ReflectsIsomorphisms F :=
   reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms F
+
+#check IsPullback.isoPullback
 
 end
 end HasClassifier
@@ -438,4 +467,93 @@ theorem isRepresentable_hasClassifier_iff [HasPullbacks C] :
     exact Classifier.SubobjectRepresentableBy.classifier h
 
 end Representability
+end
+
+
+open Function Classical in
+
+/-- The classifying object of `Type u` is `ULift Bool`. -/
+noncomputable def classifierType : Classifier (Type u) where
+  Ω := ULift Bool
+  truth := fun _ ↦ ⟨true⟩
+  χ {α β} f [_] := extend f (fun _ ↦ ⟨true⟩) (fun _ ↦ ⟨false⟩)
+  isPullback {α β} f hf := by
+    rw [mono_iff_injective] at hf
+    refine IsPullback.of_iso_pullback ⟨by ext a; simp [hf.extend_apply]⟩
+        (?iso ≪≫ (Types.pullbackIsoPullback _ _).symm) ?h₁ (by ext x ⟨⟨⟩⟩)
+    case iso =>
+      · exact {
+          hom a := ⟨⟨f a, default⟩, by simp [hf.extend_apply]⟩
+          inv | ⟨⟨b, _⟩, hb⟩ => Exists.choose (by simpa [extend] using hb)
+          hom_inv_id := by
+            ext a
+            simp only [types_comp_apply, types_id_apply]
+            generalize_proofs h
+            exact hf h.choose_spec
+          inv_hom_id := by
+            ext ⟨⟨b, -⟩, hb⟩ ⟨⟨⟩⟩
+            simp only [types_comp_apply, types_id_apply]
+            generalize_proofs h
+            exact h.choose_spec }
+    case h₁ => ext x; simp
+  uniq {α β} f hf χ' hχ' := by
+    rw [mono_iff_injective] at hf
+    ext1 b
+    have hχ'_w a : χ' (f a) = ⟨true⟩ := congrFun hχ'.w a
+    simp_rw [extend]
+    split <;> rename_i hb
+    · obtain ⟨a, rfl⟩ := hb
+      simp [hχ'_w]
+    · push_neg at hb
+      by_contra hχ'_b
+      simp_rw [ULift.ext_iff, Bool.not_eq_false] at hχ'_b
+      have := hχ'.isLimit.fac ⟨Option α,
+      { app | .left => (Option.map f · |>.getD b)
+            | .right => terminal.from _
+            | .one => fun _ ↦ ⟨true⟩,
+        naturality := by
+          rintro _ _ (I | L | R) <;> {ext (none | a) <;> simp [hχ'_w, ← hχ'_b]} }⟩
+      simp only at this
+      have uniq_term := inferInstanceAs (Unique (⊤_ (Type u)))
+      have all_eq (x y : ⊤_ (Type u)) : x = y :=
+        uniq_term.eq_default _ |>.trans <| uniq_term.default_eq _
+      replace this := congrFun (this .left) none
+      simpa using hb _ this
+
+instance : HasClassifier (Type u) := ⟨⟨classifierType⟩⟩
+
+-- #synth HasClassifier (Type u)
+
+-- section variable {C : Type u₀} [Category.{v₀} C] {D : Type u} [Category.{v} D]
+
+-- def Functor.emptyFlipIsoConst : (empty (C ⥤ D)).flip ≅ (const C).obj (empty D) :=
+--   NatIso.ofComponents (fun _ ↦ emptyExt _ _)
+
+-- open HasClassifier in
+-- /-- Subfunctors are classified pointwise. -/
+-- noncomputable instance
+--     -- {C : Type u₀} [Category.{v₀} C] {D : Type u} [Category.{v} D]
+--     [HasPullbacks D] [HasTerminal D] [HasClassifier D] : Classifier (C ⥤ D) where
+--   Ω := (const C).obj (Ω D)
+--   truth :=
+--     let termIsTerm : ⊤_ (C ⥤ D) ≅ (const C).obj (⊤_ D) :=
+--       limitIsoFlipCompLim _ ≪≫ isoWhiskerRight Functor.emptyFlipIsoConst _
+--         ≪≫ NatIso.ofComponents (fun _ ↦ Iso.refl _)
+--     termIsTerm.hom ≫ (const C).map (truth D)
+--   χ {F G} ϑ hϑ :=
+--     have hϑ' := NatTrans.mono_iff_mono_app _ |>.mp hϑ
+--     { app X := χ (ϑ.app X)
+--       naturality ⦃X Y⦄ f := by
+--         simp [-χ_naturality, χ_comp_eq_iff_isPullback]
+--         have := ϑ.naturality f
+--         use F.map f
+--         -- refine ⟨F.map f, IsPullback.of_iso_pullback ⟨by simp⟩ ?ι ?h₁ ?h₂⟩
+--      }
+--   isPullback := _
+--   uniq := _
+    -- let F_const : (C ⥤ D) ⥤ (C ⥤ (Ω D)) :=
+    --   Functor.const C ⋙ (HasClassifier.exists_classifier.some.map F)
+
+
+
 end CategoryTheory

@@ -99,6 +99,7 @@ structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Categ
 infixr:10 " ≌ " => Equivalence
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+         {E : Type u₃} [Category.{v₃} E]
 
 namespace Equivalence
 
@@ -710,6 +711,39 @@ def ObjectProperty.fullSubcategoryCongr {P P' : ObjectProperty C} (h : P = P') :
 
 @[deprecated (since := "2025-03-04")]
 alias Equivalence.ofFullSubcategory := ObjectProperty.fullSubcategoryCongr
+
+/-- The essential image of a composition of functors is equivalent to the essential image of
+the right functor restricted to the essential image of the left functor. -/
+@[simps!]
+def essImageInclusionComp (F : C ⥤ D) (G : D ⥤ E) :
+    (F.essImage.ι ⋙ G).EssImageSubcategory ≌ (F ⋙ G).EssImageSubcategory :=
+  ObjectProperty.fullSubcategoryCongr <| by
+    ext e
+    constructor <;> intro h
+    · use (Functor.essImage.witness h).2.choose
+      exact ⟨G.mapIso (Functor.essImage.witness h).2.choose_spec.some |>.trans <|
+          Functor.essImage.getIso h⟩
+    · let out := (Functor.essImage.witness h)
+      use ⟨F.obj (Functor.essImage.witness h), ⟨Functor.essImage.witness h, ⟨Iso.refl _⟩⟩⟩
+      exact ⟨Functor.essImage.getIso h⟩
+
+/-- The essential image of a composition with a fully faithful functor is equivalent to the
+essential image of the left functor. -/
+@[simps!]
+noncomputable def Functor.EssImage.compEquivOfFullyFaithful
+    (F : C ⥤ D) (G : D ⥤ E) [G.Full] [G.Faithful] :
+    (F ⋙ G).EssImageSubcategory ≌ F.EssImageSubcategory :=
+  letI inverse : F.EssImageSubcategory ⥤ (F ⋙ G).EssImageSubcategory :=
+    ObjectProperty.lift _ (F.essImage.ι ⋙ G)
+      (⟨_, ⟨G.mapIso ·.property.choose_spec.some⟩⟩)
+  have : inverse.EssSurj := by
+    constructor
+    rintro ⟨Y, ⟨X, ⟨ι⟩⟩⟩
+    exact ⟨⟨F.obj X, ⟨X, ⟨Iso.refl _⟩⟩⟩, ⟨InducedCategory.isoMk ι⟩⟩
+  have : inverse.IsEquivalence := ⟨inferInstance, inferInstance, ‹_›⟩
+  inverse.asEquivalence.symm
+
+-- end Equivalence
 
 namespace Iso
 

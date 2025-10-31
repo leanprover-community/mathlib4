@@ -1,17 +1,17 @@
 /-
 Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jack McKoen
+Authors: Jack McKoen, Robert Maxton
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Types.Limits
 import Mathlib.CategoryTheory.Limits.Types.Colimits
+import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
-# Binary (co)products of type-valued functors
+# (Co)products of type-valued functors
 
-Defines an explicit construction of binary products and coproducts of type-valued functors.
+Defines an explicit construction of products and coproducts of type-valued functors.
 
 Also defines isomorphisms to the categorical product and coproduct, respectively.
 -/
@@ -19,7 +19,7 @@ Also defines isomorphisms to the categorical product and coproduct, respectively
 
 open CategoryTheory.Limits
 
-universe w v u
+universe w v u i
 
 namespace CategoryTheory.FunctorToTypes
 
@@ -290,4 +290,200 @@ def binaryCoproductEquiv (a : C) :
 
 end coprod
 
+variable {J : Type i} (F : J → C ⥤ Type max w i)
+
+section pi
+
+/-- `pi F` is the explicit indexed product of a family of type-valued functors `F i`. -/
+def pi : C ⥤ Type max w i where
+  obj a := Π j, (F j).obj a
+  map f a := fun j => (F j).map f (a j)
+
+variable {F}
+
+/-- The `j`th projection of `pi F`, onto `F j`. -/
+@[simps]
+def pi.π (j : J) : pi F ⟶ F j where
+  app _ a := a j
+
+/-- Given natural transformations `(i : ι) → (G ⟶ F i)`, construct
+a natural transformation `G ⟶ pi F`. -/
+@[simps]
+def pi.lift {G : C ⥤ Type max w i} (τ : ∀ j, G ⟶ F j) : G ⟶ pi F where
+  app x y := fun j => (τ j).app x y
+  naturality _ _ _ := by
+    ext a
+    simp only [types_comp_apply, FunctorToTypes.naturality]
+    aesop
+
+@[simp]
+lemma pi.lift_π {G : C ⥤ Type max w i} (τ : ∀ j, G ⟶ F j) (j : J) :
+    pi.lift τ ≫ pi.π j = τ j := rfl
+
+variable (F)
+
+/-- The fan whose point is `pi F`. -/
+@[simps!]
+def productCone : Fan F :=
+  Fan.mk (pi F) pi.π
+
+/-- `pi F` is a limit cone. -/
+@[simps]
+def productLimit : IsLimit (productCone F) where
+  lift (s : Fan F) := pi.lift (s.π.app ⟨·⟩)
+  fac _ := fun ⟨j⟩ ↦ by ext; simp
+  uniq _ _ h := by ext; simp only [← h]; congr
+
+/-- `pi F` is a product for `F`. -/
+def productLimitCone : Limits.LimitCone (Discrete.functor F) :=
+  ⟨_, productLimit F⟩
+
+/-- The categorical product of type-valued functors is `pi F`. -/
+noncomputable def productIso : ∏ᶜ F ≅ pi F :=
+  limit.isoLimitCone (productLimitCone F)
+
+@[simp]
+lemma productIso_hom_comp_π (j : J) :
+    (productIso F).hom ≫ pi.π j = Pi.π F j := rfl
+
+@[simp]
+lemma productIso_inv_comp_π (j : J) :
+    (productIso F).inv ≫ Pi.π F j = pi.π j := by
+  rw [Iso.inv_comp_eq]; rfl
+
+@[simp]
+lemma productIso_inv_comp_π_apply (a : C) (j : J) (z : (pi F).obj a) :
+    (Pi.π F j).app a ((productIso F).inv.app a z) = z j :=
+  congr_fun (congr_app (productIso_inv_comp_π F j) a) z
+
+
+
+variable {F}
+
+/-- Construct an element of `(pi F).obj a` from a family of elements `j ↦ (F j).obj a`. -/
+noncomputable
+def piMk {a : C} (x : Π j, (F j).obj a) : (∏ᶜ F).obj a :=
+  ((productIso F).inv).app a x
+
+@[simp]
+lemma piMk_π {a : C} (x : Π j, (F j).obj a) (j : J) :
+    (Pi.π F j).app a (piMk x) = x j := by
+  simp only [piMk, productIso_inv_comp_π_apply]
+
+@[ext]
+lemma pi_ext {a : C} (z w : (pi F).obj a)
+    (h : ∀ j, (pi.π j).app a z = (pi.π j).app a w) :
+    z = w := by
+  funext j
+  simpa [pi.π] using h j
+
+variable (F)
+
+@[ext]
+lemma pi_ext' (a : C) (z w : (∏ᶜ F).obj a)
+    (h : ∀ j, (Pi.π F j).app a z = (Pi.π F j).app a w) :
+    z = w := by
+  apply Equiv.injective (piObjIso F a).toEquiv
+  apply Types.limit_ext; intro ⟨j⟩
+  simp_rw [Discrete.functor_obj_eq_as, Iso.toEquiv_fun, ← types_comp_apply (piObjIso F a).hom,
+  ← Pi.π.eq_def, piObjIso_hom_comp_π, h]
+
+end pi
+
+section sigma
+
+/-- `sigma F` is the explicit coproduct of type-valued functors `F i`. -/
+def sigma : C ⥤ Type max w i where
+  obj a := Σ j, (F j).obj a
+  map f | ⟨j, x⟩ => ⟨j, (F j).map f x⟩
+
+variable {F}
+
+/-- The `j`th inclusion of `F j` into `sigma F`. -/
+@[simps]
+def sigma.ι (j : J) : F j ⟶ sigma F where
+  app _ x := ⟨j, x⟩
+
+/-- Given natural transformations `(j : J) → (F j ⟶ G)`, construct
+a natural transformation `sigma F ⟶ G`. -/
+@[simps]
+def sigma.desc {G : C ⥤ Type max w i} (τ : (j : J) → F j ⟶ G) : sigma F ⟶ G where
+  app a | ⟨j, x⟩ => (τ j).app a x
+  naturality _ _ _ := by
+    ext ⟨j, x⟩
+    simp [sigma, FunctorToTypes.naturality]
+
+@[simp]
+lemma sigma.desc_ι {G : C ⥤ Type max w i} (τ : (j : J) → F j ⟶ G) (j : J) :
+    sigma.ι j ≫ sigma.desc τ = τ j := rfl
+
+variable (F)
+
+/-- The cofan whose point is `sigma F`. -/
+@[simps!]
+def coproductCofan : Cofan F :=
+  Cofan.mk (sigma F) sigma.ι
+
+/-- `sigma F` is a colimit cocone. -/
+@[simps]
+def coproductColimit : IsColimit (coproductCofan F) where
+  desc (s : Cofan F) := sigma.desc (s.ι.app ⟨·⟩)
+  fac _ | ⟨j⟩ => by simp [coproductCofan]
+  uniq _ _ h := by
+    ext _ ⟨j, x⟩
+    simp [← h, coproductCofan, sigma.ι]
+
+/-- `sigma F` is a coproduct for `F`. -/
+def coproductColimitCocone : Limits.ColimitCocone (Discrete.functor F) :=
+  ⟨_, coproductColimit F⟩
+
+/-- The categorical coproduct of type-valued functors is `sigma F`. -/
+noncomputable def coproductIso : ∐ F ≅ sigma F :=
+  colimit.isoColimitCocone (coproductColimitCocone F)
+
+@[simp]
+lemma ι_comp_coproductIso_hom (j : J) :
+    Sigma.ι F j ≫ (coproductIso F).hom = sigma.ι j := by
+  simp only [coproductIso]
+  aesop
+
+@[simp]
+lemma ι_comp_coproductIso_hom_apply (a : C) (j : J) (x : (F j).obj a) :
+    (coproductIso F).hom.app a ((Sigma.ι F j).app a x) = (sigma.ι j).app a x :=
+  congr_fun (congr_app (ι_comp_coproductIso_hom F j) a) x
+
+@[simp]
+lemma ι_comp_coproductIso_inv (j : J) :
+    sigma.ι j ≫ (coproductIso F).inv = Sigma.ι F j := rfl
+
+@[simp]
+lemma ι_comp_coproductIso_inv_apply (a : C) (j : J) (x : (F j).obj a) :
+    (coproductIso F).inv.app a ((sigma.ι j).app a x) = (Sigma.ι F j).app a x := rfl
+
+variable {F G}
+
+/-- Construct an element of `(∐ F).obj a` from a `j` and an element of `(F j).obj a` -/
+noncomputable
+abbrev sigmaMk {a : C} (j : J) (x : (F j).obj a) : (∐ F).obj a :=
+  (coproductIso F).inv.app a ⟨j, x⟩
+
+@[elab_as_elim, cases_eliminator]
+noncomputable def Sigma.obj_recOn {a : C} {motive : (∐ F).obj a → Sort*} (z : (∐ F).obj a)
+    (mk : (j : J) → (x : (F j).obj a) → motive (sigmaMk j x)) : motive z :=
+  let z' := (coproductIso F).hom.app a z
+  have h : z = (coproductIso F).inv.app a z' := by
+    unfold z'
+    rw [← types_comp_apply _ ((coproductIso F).inv.app a), Iso.hom_inv_id_app]
+    rfl
+  cast (congrArg motive h.symm) (mk z'.1 z'.2)
+
+@[simp]
+lemma Sigma.obj_recOn_mk {a : C} {motive : (∐ F).obj a → Sort*}
+    (mk : (j : J) → (x : (F j).obj a) → motive (sigmaMk j x))
+    (j : J) (x : (F j).obj a) : Sigma.obj_recOn (sigmaMk j x) mk = mk j x := by
+  unfold Sigma.obj_recOn sigmaMk
+  rw [cast_eq_iff_heq, ← types_comp_apply _ ((coproductIso F).hom.app a), Iso.inv_hom_id_app]
+  rfl
+
+end sigma
 end CategoryTheory.FunctorToTypes
