@@ -197,7 +197,7 @@ viewed as a subset of `G → A`. Equivalently, it is the preimage of that produc
 of singletons in `U → A` under the restriction map `(G → A) → (U → A)`. -/
 lemma cylinder_eq_set_pi (U : Finset G) (x : G → A) :
     cylinder U x = Set.pi (↑U : Set G) (fun i => ({x i} : Set A)) := by
-  ext y; simp [cylinder, Set.pi, Finset.mem_coe]
+  ext y; simp [cylinder, Set.pi]
 
 lemma mem_cylinder {U : Finset G} {x y : G → A} :
     y ∈ cylinder U x ↔ ∀ i ∈ U, y i = x i := Iff.rfl
