@@ -1,0 +1,24 @@
+/-
+Copyright (c) 2025 Thomas R. Murrills. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Thomas R. Murrills
+-/
+import Lean
+
+/-
+# Additional utilities for the `Linter` API
+-/
+
+open Lean Elab Command Linter
+
+namespace Lean.Linter
+
+/-- Runs a `CommandElabM` action when the provided linter option is `true`. -/
+def whenLinterOption (opt : Lean.Option Bool) (x : CommandElabM Unit) : CommandElabM Unit := do
+  if getLinterValue opt (← getLinterOptions) then x
+
+/-- Runs a `CommandElabM` action when the provided linter option is `false`. -/
+def whenNotLinterOption (opt : Lean.Option Bool) (x : CommandElabM Unit) : CommandElabM Unit := do
+  unless getLinterValue opt (← getLinterOptions) do x
+
+end Lean.Linter
