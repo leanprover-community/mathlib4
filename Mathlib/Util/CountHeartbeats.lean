@@ -3,11 +3,10 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-module
-
-public import Mathlib.Init
-public meta import Lean.Util.Heartbeats
-public meta import Lean.Meta.Tactic.TryThis
+import Mathlib.Lean.Linter
+import Mathlib.Init
+import Lean.Util.Heartbeats
+import Lean.Meta.Tactic.TryThis
 
 /-!
 Defines a command wrapper that prints the number of heartbeats used in the enclosed command.
@@ -243,25 +242,24 @@ register_option linter.countHeartbeatsApprox : Bool := {
 namespace CountHeartbeats
 
 @[inherit_doc Mathlib.Linter.linter.countHeartbeats]
-def countHeartbeatsLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless getLinterValue linter.countHeartbeats (← getLinterOptions) do
-    return
-  if (← get).messages.hasErrors then
-    return
-  let mut msgs := #[]
-  if [``Lean.Parser.Command.declaration, `lemma].contains stx.getKind then
-    let s ← get
-    if getLinterValue linter.countHeartbeatsApprox (← getLinterOptions) then
-      elabCommand (← `(command| #count_heartbeats approximately in $(⟨stx⟩)))
-    else
-      elabCommand (← `(command| #count_heartbeats in $(⟨stx⟩)))
-    msgs := (← get).messages.unreported.toArray.filter (·.severity != .error)
-    set s
-  match stx.find? (·.isOfKind ``Parser.Command.declId) with
-    | some decl =>
-      for msg in msgs do logInfoAt decl m!"'{decl[0].getId}' {(← msg.toString).decapitalize}"
-    | none =>
-      for msg in msgs do logInfoAt stx m!"{← msg.toString}"
+def countHeartbeatsLinter : Linter where
+  run := whenLinterActivated linter.countHeartbeats fun stx ↦ do
+    if (← get).messages.hasErrors then
+      return
+    let mut msgs := #[]
+    if [``Lean.Parser.Command.declaration, `lemma].contains stx.getKind then
+      let s ← get
+      if getLinterValue linter.countHeartbeatsApprox (← getLinterOptions) then
+        elabCommand (← `(command| #count_heartbeats approximately in $(⟨stx⟩)))
+      else
+        elabCommand (← `(command| #count_heartbeats in $(⟨stx⟩)))
+      msgs := (← get).messages.unreported.toArray.filter (·.severity != .error)
+      set s
+    match stx.find? (·.isOfKind ``Parser.Command.declId) with
+      | some decl =>
+        for msg in msgs do logInfoAt decl m!"'{decl[0].getId}' {(← msg.toString).decapitalize}"
+      | none =>
+        for msg in msgs do logInfoAt stx m!"{← msg.toString}"
 
 initialize addLinter countHeartbeatsLinter
 

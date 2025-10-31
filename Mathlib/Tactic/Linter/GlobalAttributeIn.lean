@@ -5,7 +5,8 @@ Authors: Michael Rothgang, Damiano Testa
 -/
 module
 
-public meta import Lean.Elab.Command
+import Lean.Elab.Command
+import Mathlib.Lean.Linter
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header
@@ -92,10 +93,6 @@ register_option linter.globalAttributeIn : Bool := {
 
 namespace globalAttributeInLinter
 
-/-- Gets the value of the `linter.globalAttributeIn` option. -/
-def getLinterGlobalAttributeIn (o : LinterOptions) : Bool :=
-  getLinterValue linter.globalAttributeIn o
-
 /--
 `getGlobalAttributesIn? cmd` assumes that `cmd` represents a `attribute [...] id in ...` command.
 If this is the case, then it returns `(id, #[non-local nor scoped attributes])`.
@@ -117,17 +114,16 @@ def getGlobalAttributesIn? : Syntax → Option (Ident × Array (TSyntax `attr))
 Despite the `in`, these define *global* instances, which can be rather misleading.
 Instead, remove the `in` or mark them with `local`.
 -/
-def globalAttributeIn : Linter where run := withSetOptionIn fun stx => do
-  unless getLinterGlobalAttributeIn (← getLinterOptions) do
-    return
-  if (← MonadState.get).messages.hasErrors then
-    return
-  for s in stx.topDown do
-    if let some (id, nonScopedNorLocal) := getGlobalAttributesIn? s then
-      for attr in nonScopedNorLocal do
-        Linter.logLint linter.globalAttributeIn attr m!
-          "Despite the `in`, the attribute '{attr}' is added globally to '{id}'\n\
-          please remove the `in` or make this a `local {attr}`"
+def globalAttributeIn : Linter where
+  run := whenLinterActivated linter.globalAttributeIn fun stx ↦ do
+    if (← MonadState.get).messages.hasErrors then
+      return
+    for s in stx.topDown do
+      if let some (id, nonScopedNorLocal) := getGlobalAttributesIn? s then
+        for attr in nonScopedNorLocal do
+          Linter.logLint linter.globalAttributeIn attr m!
+            "Despite the `in`, the attribute '{attr}' is added globally to '{id}'\n\
+            please remove the `in` or make this a `local {attr}`"
 
 initialize addLinter globalAttributeIn
 

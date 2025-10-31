@@ -5,8 +5,9 @@ Authors: Michael Rothgang
 -/
 module
 
-public meta import Lean.Elab.Command
-public meta import Lean.Server.InfoUtils
+import Lean.Elab.Command
+import Lean.Server.InfoUtils
+import Mathlib.Lean.Linter
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header
@@ -90,9 +91,7 @@ The `debug`, `pp`, `profiler` and `trace` are usually not necessary for producti
 so you can simply remove them. (Some tests will intentionally use one of these options;
 in this case, simply allow the linter.)
 -/
-def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
-    unless getLinterValue linter.style.setOption (← getLinterOptions) do
-      return
+def setOptionLinter : Linter where run := whenLinterActivated linter.style.setOption fun stx ↦ do
     if (← MonadState.get).messages.hasErrors then
       return
     if let some head := stx.find? isSetOption then
@@ -209,9 +208,7 @@ def unwanted_cdot (stx : Syntax) : Array Syntax :=
 namespace Style
 
 @[inherit_doc linter.style.cdot]
-def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless getLinterValue linter.style.cdot (← getLinterOptions) do
-      return
+def cdotLinter : Linter where run := whenLinterActivated linter.style.cdot fun stx ↦ do
     if (← MonadState.get).messages.hasErrors then
       return
     for s in unwanted_cdot stx do
@@ -257,9 +254,7 @@ def findDollarSyntax : Syntax → Array Syntax
   |_ => #[]
 
 @[inherit_doc linter.style.dollarSyntax]
-def dollarSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless getLinterValue linter.style.dollarSyntax (← getLinterOptions) do
-      return
+def dollarSyntaxLinter : Linter where run := whenLinterActivated linter.style.dollarSyntax fun stx ↦ do
     if (← MonadState.get).messages.hasErrors then
       return
     for s in findDollarSyntax stx do
@@ -301,9 +296,8 @@ def findLambdaSyntax : Syntax → Array Syntax
   |_ => #[]
 
 @[inherit_doc linter.style.lambdaSyntax]
-def lambdaSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless getLinterValue linter.style.lambdaSyntax (← getLinterOptions) do
-      return
+def lambdaSyntaxLinter : Linter where
+  run := whenLinterActivated linter.style.lambdaSyntax fun stx ↦ do
     if (← MonadState.get).messages.hasErrors then
       return
     for s in findLambdaSyntax stx do
@@ -414,9 +408,8 @@ register_option linter.style.longLine : Bool := {
 namespace Style.longLine
 
 @[inherit_doc Mathlib.Linter.linter.style.longLine]
-def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless getLinterValue linter.style.longLine (← getLinterOptions) do
-      return
+def longLineLinter : Linter where
+  run := whenLinterActivated linter.style.longLine fun stx ↦ do
     if (← MonadState.get).messages.hasErrors then
       return
     -- The linter ignores the `#guard_msgs` command, in particular its doc-string.
@@ -465,9 +458,8 @@ register_option linter.style.nameCheck : Bool := {
 namespace Style.nameCheck
 
 @[inherit_doc linter.style.nameCheck]
-def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
-    unless getLinterValue linter.style.nameCheck (← getLinterOptions) do
-      return
+def doubleUnderscore : Linter where
+  run := whenLinterActivated linter.style.nameCheck fun stx ↦ do
     if (← get).messages.hasErrors then
       return
     let mut aliases := #[]
@@ -520,9 +512,8 @@ def extractOpenNames : Syntax → Array (TSyntax `ident)
   | _ => #[]
 
 @[inherit_doc Mathlib.Linter.linter.style.openClassical]
-def openClassicalLinter : Linter where run stx := do
-    unless getLinterValue linter.style.openClassical (← getLinterOptions) do
-      return
+def openClassicalLinter : Linter where
+  run := whenLinterActivated linter.style.openClassical fun stx ↦ do
     if (← get).messages.hasErrors then
       return
     -- If `stx` describes an `open` command, extract the list of opened namespaces.
@@ -553,9 +544,8 @@ register_option linter.style.show : Bool := {
 namespace Style.show
 
 @[inherit_doc Mathlib.Linter.linter.style.show]
-def showLinter : Linter where run := withSetOptionIn fun stx => do
-    unless getLinterValue linter.style.show (← getLinterOptions) do
-      return
+def showLinter : Linter where
+  run := whenLinterActivated linter.style.show fun stx ↦ do
     if (← get).messages.hasErrors then
       return
     for tree in (← getInfoTrees) do

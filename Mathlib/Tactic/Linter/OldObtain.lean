@@ -5,7 +5,8 @@ Authors: Michael Rothgang
 -/
 module
 
-public meta import Lean.Elab.Command
+import Lean.Elab.Command
+import Mathlib.Lean.Linter
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header
@@ -71,9 +72,7 @@ register_option linter.oldObtain : Bool := {
 }
 
 /-- The `oldObtain` linter: see docstring above -/
-def oldObtainLinter : Linter where run := withSetOptionIn fun stx => do
-    unless getLinterValue linter.oldObtain (← getLinterOptions) do
-      return
+def oldObtainLinter : Linter where run := whenLinterActivated linter.oldObtain fun stx ↦ do
     if (← MonadState.get).messages.hasErrors then
       return
     if let some head := stx.find? isObtainWithoutProof then

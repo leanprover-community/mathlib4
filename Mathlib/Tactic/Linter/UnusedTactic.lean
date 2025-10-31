@@ -5,8 +5,9 @@ Authors: Damiano Testa
 -/
 module
 
-public meta import Lean.Parser.Syntax
-public meta import Batteries.Tactic.Unreachable
+import Lean.Parser.Syntax
+import Batteries.Tactic.Unreachable
+import Mathlib.Lean.Linter
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header
@@ -179,8 +180,8 @@ partial def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind) : InfoTre
 end
 
 /-- The main entry point to the unused tactic linter. -/
-def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
-  unless getLinterValue linter.unusedTactic (← getLinterOptions) && (← getInfoState).enabled do
+def unusedTacticLinter : Linter where run := whenLinterActivated linter.unusedTactic fun stx ↦ do
+  unless (← getInfoState).enabled do
     return
   if (← get).messages.hasErrors then
     return

@@ -3,10 +3,9 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-module
-
-public meta import Lean.Elab.Command
-public meta import Mathlib.Tactic.Linter.Header
+import Lean.Elab.Command
+import Mathlib.Lean.Linter
+import Mathlib.Tactic.Linter.Header
 
 /-!
 # The "flexible" linter
@@ -409,9 +408,8 @@ def reallyPersist
   return inert ++ new
 
 /-- The main implementation of the flexible linter. -/
-def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
-  unless getLinterValue linter.flexible (← getLinterOptions) && (← getInfoState).enabled do
-    return
+def flexibleLinter : Linter where run := whenLinterActivated linter.flexible fun _stx ↦ do
+  unless (← getInfoState).enabled do return
   if (← MonadState.get).messages.hasErrors then
     return
   let trees ← getInfoTrees

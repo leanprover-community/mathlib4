@@ -3,9 +3,8 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-module
-
-public meta import Lean.Elab.Command
+import Lean.Elab.Command
+import Mathlib.Lean.Linter
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header
@@ -160,9 +159,7 @@ def getManyGoals : InfoTree → Array (Syntax × Nat × Nat × Nat)
   | _ => default
 
 @[inherit_doc Mathlib.Linter.linter.style.multiGoal]
-def multiGoalLinter : Linter where run := withSetOptionIn fun _stx ↦ do
-    unless getLinterValue linter.style.multiGoal (← getLinterOptions) do
-      return
+def multiGoalLinter : Linter where run := whenLinterActivated linter.style.multiGoal fun stx ↦ do
     if (← get).messages.hasErrors then
       return
     let trees ← getInfoTrees

@@ -3,10 +3,9 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Anne Baanen
 -/
-module
-
-public meta import ImportGraph.Meta
-public import Mathlib.Init
+import ImportGraph.Meta
+import Mathlib.Lean.Linter
+import Mathlib.Init
 
 /-! # The `upstreamableDecl` linter
 
@@ -89,9 +88,8 @@ register_option linter.upstreamableDecl.private : Bool := {
 namespace DoubleImports
 
 @[inherit_doc Mathlib.Linter.linter.upstreamableDecl]
-def upstreamableDeclLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless getLinterValue linter.upstreamableDecl (← getLinterOptions) do
-      return
+def upstreamableDeclLinter : Linter where
+  run := whenLinterActivated linter.upstreamableDecl fun stx ↦ do
     if (← get).messages.hasErrors then
       return
     let skipDef := !getLinterValue linter.upstreamableDecl.defs (← getLinterOptions)

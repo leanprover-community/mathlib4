@@ -3,11 +3,10 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang, Damiano Testa
 -/
-module
-
-public meta import Lean.Elab.Command
-public meta import Lean.Elab.ParseImportsFast
-public meta import Mathlib.Tactic.Linter.DirectoryDependency
+import Lean.Elab.Command
+import Lean.Elab.ParseImportsFast
+import Mathlib.Lean.Linter
+import Mathlib.Tactic.Linter.DirectoryDependency
 
 /-!
 # The "header" linter
@@ -312,7 +311,7 @@ def duplicateImportsCheck (imports : Array Syntax)  : CommandElabM Unit := do
     else importsSoFar := importsSoFar.push i
 
 @[inherit_doc Mathlib.Linter.linter.style.header]
-def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
+def headerLinter : Linter where run := whenLinterActivated linter.style.header fun stx ↦ do
   let mainModule ← getMainModule
   let inMathlib? := ← match ← inMathlibRef.get with
     | some d => return d
@@ -326,8 +325,6 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- It is however active in the test files for the linter itself.
   unless inMathlib? ||
     mainModule == `MathlibTest.Header || mainModule == `MathlibTest.DirectoryDependencyLinter.Test do return
-  unless getLinterValue linter.style.header (← getLinterOptions) do
-    return
   if (← get).messages.hasErrors then
     return
   -- `Mathlib.lean` imports `Mathlib.Tactic`, which the broad imports check below would flag.
