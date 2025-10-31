@@ -20,18 +20,18 @@ open CompactlySupported MeasureTheory
 variable {X : Type*}
 
 namespace CompactlySupportedContinuousMap
-variable [TopologicalSpace X] [MeasurableSpace X]
+variable [TopologicalSpace X] [MeasurableSpace X] [OpensMeasurableSpace X]
 
 lemma integrable {E : Type*} [NormedAddCommGroup E] (f : C_c(X, E))
-    {μ : Measure X} [OpensMeasurableSpace X] [IsFiniteMeasureOnCompacts μ] :
+    {μ : Measure X} [IsFiniteMeasureOnCompacts μ] :
     Integrable f μ :=
   f.continuous.integrable_of_hasCompactSupport f.hasCompactSupport
 
-variable [T2Space X] [LocallyCompactSpace X] [BorelSpace X] (Λ : C_c(X, ℝ) →ₚ[ℝ] ℝ)
+variable [T2Space X] [LocallyCompactSpace X] (Λ : C_c(X, ℝ) →ₚ[ℝ] ℝ)
 
 /-- Integral as a positive linear functional on `C_c(X, ℝ)`. -/
 @[simps!]
-noncomputable def integralPositiveLinearMap (μ : Measure X) [OpensMeasurableSpace X]
+noncomputable def integralPositiveLinearMap (μ : Measure X)
     [IsFiniteMeasureOnCompacts μ] : C_c(X, ℝ) →ₚ[ℝ] ℝ :=
   PositiveLinearMap.mk₀
     { toFun f := ∫ x, f x ∂μ,
@@ -42,7 +42,7 @@ noncomputable def integralPositiveLinearMap (μ : Measure X) [OpensMeasurableSpa
 /-- Integration as a positive linear functional on `C_c(X, ℝ≥0)`. -/
 -- Note: the default generated `simps` lemma uses `Subtype.val` instead of `NNReal.toReal`.
 @[simps! apply]
-noncomputable def integralLinearMap (μ : Measure X) [OpensMeasurableSpace X]
+noncomputable def integralLinearMap (μ : Measure X)
     [IsFiniteMeasureOnCompacts μ] :
     C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0 :=
   CompactlySupportedContinuousMap.toNNRealLinear (integralPositiveLinearMap μ)
