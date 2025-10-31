@@ -165,8 +165,8 @@ instance perfectRing : PerfectRing (Ring.Perfection R p) p where
 
 @[simp]
 theorem coeff_frobeniusEquiv_symm (f : Ring.Perfection R p) (n : ℕ) :
-    (Perfection.coeff R p n) ((frobeniusEquiv (Ring.Perfection R p) p).symm f) =
-    (Perfection.coeff R p (n + 1)) f := by
+    Perfection.coeff R p n ((frobeniusEquiv (Ring.Perfection R p) p).symm f) =
+    Perfection.coeff R p (n + 1) f := by
   nth_rw 2 [← frobenius_apply_frobeniusEquiv_symm _ p f]
   rw [coeff_frobenius]
 
