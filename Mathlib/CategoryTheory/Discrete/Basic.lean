@@ -182,7 +182,7 @@ lemma functor_ext {I : Type u₁} {G F : Discrete I ⥤ C} (h : (i : I) → G.ob
     G = F := by
   fapply Functor.ext
   · intro I; rw [h]
-  · intro ⟨X⟩ ⟨Y⟩ ⟨⟨p⟩⟩; simp at p; induction p; simp
+  · intro ⟨X⟩ ⟨Y⟩ ⟨⟨p⟩⟩; simp only at p; induction p; simp
 
 /-- The discrete functor induced by a composition of maps can be written as a
 composition of two discrete functors.
