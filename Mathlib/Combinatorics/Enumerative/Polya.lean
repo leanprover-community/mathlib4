@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zihui Bai, Zhengfeng Yang
 -/
 
-import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Data.Fintype.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.Quotient
@@ -109,7 +108,7 @@ theorem orbit_size_eq_index (c : X → Y)
 
 end DistinctColorings
 
-open MvPolynomial
+
 
 open MulAction Finset Equiv BigOperators
 section
@@ -148,7 +147,7 @@ abbrev numCyclesOfGroup
   Fintype.card (CyclesOfGroup X g)
 
 /-- The number of permutations of `X` having exactly `i` cycles. -/
-abbrev numGroupOfNumCycles (X : Type u) [MulAction (Equiv.Perm X) X] [Fintype (Equiv.Perm X)]
+abbrev numGroupOfNumCycles (X : Type u) [Fintype (Equiv.Perm X)]
   [∀ g : (Equiv.Perm X), Fintype (CyclesOfGroup X g)] (i : ℕ) : ℕ :=
   Finset.card {g : (Equiv.Perm X) | numCyclesOfGroup X g = i}
 
