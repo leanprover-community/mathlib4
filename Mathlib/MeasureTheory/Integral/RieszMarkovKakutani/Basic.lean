@@ -27,6 +27,7 @@ literature.
 
 -/
 
+
 noncomputable section
 
 open scoped BoundedContinuousFunction NNReal ENNReal
