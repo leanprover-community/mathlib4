@@ -69,7 +69,6 @@ theorem Disjoint.mono_left (h : a ≤ b) : Disjoint b c → Disjoint a c :=
 
 grind_pattern Disjoint.mono_left => a ≤ b, Disjoint b c
 grind_pattern Disjoint.mono_left => a ≤ b, Disjoint a c
-grind_pattern Disjoint.mono_left => Disjoint b c, Disjoint a c
 
 theorem Disjoint.mono_right (h : b ≤ c) : Disjoint a c → Disjoint a b :=
   Disjoint.mono le_rfl h
@@ -241,7 +240,6 @@ theorem Codisjoint.mono_left (h : a ≤ b) : Codisjoint a c → Codisjoint b c :
 
 grind_pattern Codisjoint.mono_left => a ≤ b, Codisjoint a c
 grind_pattern Codisjoint.mono_left => a ≤ b, Codisjoint b c
-grind_pattern Codisjoint.mono_left => Codisjoint a c, Codisjoint b c
 
 theorem Codisjoint.mono_right : b ≤ c → Codisjoint a b → Codisjoint a c :=
   Codisjoint.mono le_rfl
