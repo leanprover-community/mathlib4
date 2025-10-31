@@ -705,7 +705,16 @@ lemma domDomRestrict_aux {ι} [DecidableEq ι] (P : ι → Prop) [DecidablePred 
     (c : M₁ i) : (fun j ↦ if h : P j then Function.update x i c ⟨j, h⟩ else z ⟨j, h⟩) =
     Function.update (fun j => if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩) i c := by
   ext j
-  by_cases h : j = i <;> grind [Function.update_self, Function.update_of_ne]
+  by_cases h : j = i
+  #adaptation_note /-- 2025-10-31
+    Used to be `<;> grind [Function.update_self, Function.update_of_ne]` -/
+  · subst h
+    simp [i.2]
+  · split <;> rename_i h'
+    · simp only [Function.update_of_ne h, h', ↓reduceDIte]
+      apply Function.update_of_ne
+      simpa [← Subtype.coe_inj]
+    · simp [Function.update_of_ne h, h']
 
 lemma domDomRestrict_aux_right {ι} [DecidableEq ι] (P : ι → Prop) [DecidablePred P] {M₁ : ι → Type*}
     [DecidableEq {a // ¬ P a}]
