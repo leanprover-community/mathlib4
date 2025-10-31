@@ -469,7 +469,7 @@ lemma measure_closure_eq_of_isCompact [R1Space α] [OuterRegular μ]
   exact measure_mono (hk.closure_subset_of_isOpen u_open ku)
 
 /-- Outer regular measures are determined by values on open sets. -/
-theorem eq_of_eq_on_isOpen {ν : Measure α} [OuterRegular μ] [OuterRegular ν]
+theorem ext_isOpen {ν : Measure α} [OuterRegular μ] [OuterRegular ν]
     (hμν : ∀ U, IsOpen U → μ U = ν U) : μ = ν := by
   ext s ms
   rw [Set.measure_eq_iInf_isOpen, Set.measure_eq_iInf_isOpen]
