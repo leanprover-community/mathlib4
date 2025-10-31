@@ -154,7 +154,7 @@ lemma exists_mem_of_isClosed_of_nonempty'
     (hZcpt : ∀ i hij, IsCompact (Z i hij))
     (hstab : ∀ (i i' : I) (hi'i : i' ⟶ i) (hij : i ⟶ j),
       Set.MapsTo (D.map hi'i) (Z i' (hi'i ≫ hij)) (Z i hij)) :
-    ∃ (s : c.pt), ∀ i hij, (c.π.app i) s ∈ Z i hij := by
+    ∃ (s : c.pt), ∀ i hij, c.π.app i s ∈ Z i hij := by
   have {i₁ i₂ : Over j} (f : i₁ ⟶ i₂) : IsAffineHom ((Over.forget j ⋙ D).map f) := by
     dsimp; infer_instance
   simpa [Over.forall_iff] using exists_mem_of_isClosed_of_nonempty (Over.forget j ⋙ D) _
