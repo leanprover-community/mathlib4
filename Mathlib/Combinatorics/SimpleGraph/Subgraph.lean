@@ -820,7 +820,7 @@ theorem degree_eq_one_iff_unique_adj {G' : Subgraph G} {v : V} [Fintype (G'.neig
   rw [← finset_card_neighborSet_eq_degree, Finset.card_eq_one, Finset.singleton_iff_unique_mem]
   simp only [Set.mem_toFinset, mem_neighborSet]
 
-theorem nontrivial_of_degree_ne_zero {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)]
+theorem nontrivial_verts_of_degree_ne_zero {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)]
     (h : G'.degree v ≠ 0) : Nontrivial G'.verts := by
   apply not_subsingleton_iff_nontrivial.mp
   by_contra
