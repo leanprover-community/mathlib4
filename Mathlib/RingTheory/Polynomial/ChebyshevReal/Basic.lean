@@ -53,14 +53,14 @@ namespace Polynomial.Chebyshev
 open Polynomial
 open Real
 
-theorem T_degree_real (n : ℤ) : (T ℝ n).degree = n.natAbs := by
-  exact T_degree ℝ n
+theorem degree_T_real (n : ℤ) : (T ℝ n).degree = n.natAbs := by
+  exact degree_T ℝ n
 
-theorem T_natDegree_real (n : ℤ) : (T ℝ n).natDegree = n.natAbs := by
-  exact T_natDegree ℝ n
+theorem natDegree_T_real (n : ℤ) : (T ℝ n).natDegree = n.natAbs := by
+  exact natDegree_T ℝ n
 
-theorem T_leadingCoeff_real (n : ℤ) : (T ℝ n).leadingCoeff = 2^(n.natAbs - 1) := by
-  exact T_leadingCoeff ℝ n
+theorem leadingCoeff_T_real (n : ℤ) : (T ℝ n).leadingCoeff = 2^(n.natAbs - 1) := by
+  exact leadingCoeff_T ℝ n
 
 theorem T_bounded_of_bounded (n : ℤ) {x : ℝ} (hx : x ∈ Set.Icc (-1) 1) :
     (T ℝ n).eval x ∈ Set.Icc (-1) 1 := by
@@ -196,7 +196,7 @@ noncomputable def T_roots (n : ℕ) : Finset ℝ :=
   (Finset.Ico 0 n).image (fun (k : ℕ) => cos ((2 * k + 1) * π / (2 * n)))
 
 @[simp]
-theorem T_roots_card (n : ℕ) : (T_roots n).card = n := by
+theorem card_T_roots (n : ℕ) : (T_roots n).card = n := by
   unfold T_roots
   rw [Finset.card_image_of_injOn]
   · simp
@@ -248,7 +248,7 @@ theorem T_roots_eq {n : ℕ} (hn : n ≠ 0) : (T ℝ n).roots = (T_roots n).val 
     contrapose! hn
     exact Int.ofNat_eq_zero.mp hn
   have hcard : (T_roots n).card = (T ℝ n).degree := by
-    rw [T_roots_card n, T_degree, Int.natAbs_natCast]
+    rw [card_T_roots n, degree_T, Int.natAbs_natCast]
   apply roots_of_zeroes_of_card hS hcard
 
 theorem T_eq_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
@@ -317,7 +317,7 @@ noncomputable def T_extrema (n : ℤ) : Finset ℝ :=
   (Finset.Icc 0 n.natAbs).image (fun (k : ℕ) => cos (k * π / n.natAbs))
 
 @[simp]
-theorem T_extrema_card (n : ℤ) : (T_extrema n).card = n.natAbs + 1 := by
+theorem card_T_extrema (n : ℤ) : (T_extrema n).card = n.natAbs + 1 := by
   unfold T_extrema
   rw [Finset.card_image_of_injOn]
   · simp
@@ -352,7 +352,8 @@ theorem T_extrema_card (n : ℤ) : (T_extrema n).card = n.natAbs + 1 := by
     field_simp at this
     norm_cast at this
 
-theorem T_extrema_eq_nat {n : ℕ} (hn : n ≠ 0) (x : ℝ) : |(T ℝ n).eval x| = 1 ↔ x ∈ T_extrema n := by
+theorem T_extrema_eq_natCast {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
+    |(T ℝ n).eval x| = 1 ↔ x ∈ T_extrema n := by
   have hn' : (n : ℤ) ≠ 0 := by omega
   constructor
   · intro h
@@ -404,29 +405,29 @@ theorem T_extrema_eq {n : ℤ} (hn : n ≠ 0) (x : ℝ) : |(T ℝ n).eval x| = 1
   obtain ⟨m, hmn⟩ := n.eq_nat_or_neg
   have hm : m ≠ 0 := by omega
   cases hmn with
-  | inl hmn => subst hmn; exact T_extrema_eq_nat hm x
+  | inl hmn => subst hmn; exact T_extrema_eq_natCast hm x
   | inr hmn =>
     subst hmn
     rw [T_neg]
-    convert T_extrema_eq_nat hm x using 1
+    convert T_extrema_eq_natCast hm x using 1
     unfold T_extrema
     simp
 
-theorem U_degree_nat_real (n : ℕ) : (U ℝ n).degree = n := by
-  exact U_degree_nat ℝ n
+theorem degree_U_natCast_real (n : ℕ) : (U ℝ n).degree = n := by
+  exact degree_U_natCast ℝ n
 
-theorem U_natDegree_nat_real (n : ℕ) : (U ℝ n).natDegree = n := by
-  exact U_natDegree_nat ℝ n
+theorem natDegree_U_natCast_real (n : ℕ) : (U ℝ n).natDegree = n := by
+  exact natDegree_U_natCast ℝ n
 
-theorem U_degree_ne_neg_one_real (n : ℤ) (hn : n ≠ -1) :
+theorem degree_U_ne_neg_one_real (n : ℤ) (hn : n ≠ -1) :
     (U ℝ n).degree = ↑((n + 1).natAbs - 1) := by
-  exact U_degree_ne_neg_one ℝ n hn
+  exact degree_U_ne_neg_one ℝ n hn
 
-theorem U_natDegree_real (n : ℤ) : (U ℝ n).natDegree = (n + 1).natAbs - 1 := by
-  exact U_natDegree ℝ n
+theorem natDegree_U_real (n : ℤ) : (U ℝ n).natDegree = (n + 1).natAbs - 1 := by
+  exact natDegree_U ℝ n
 
-theorem U_leadingCoeff_nat_real (n : ℕ) : (U ℝ n).leadingCoeff = 2^n := by
-  exact U_leadingCoeff_nat ℝ n
+theorem leadingCoeff_U_natCast_real (n : ℕ) : (U ℝ n).leadingCoeff = 2^n := by
+  exact leadingCoeff_U_natCast ℝ n
 
 theorem U_eq_zero_if (n : ℕ) {k : ℕ} (hk1 : 1 ≤ k) (hkn : k ≤ n) :
     (U ℝ n).eval (cos (k * π / (n + 1))) = 0 := by
@@ -460,7 +461,7 @@ noncomputable def U_roots (n : ℕ) : Finset ℝ :=
   (Finset.Icc 1 n).image (fun (k : ℕ) => cos (k * π / (n + 1)))
 
 @[simp]
-theorem U_roots_card (n : ℕ) : (U_roots n).card = n := by
+theorem card_U_roots (n : ℕ) : (U_roots n).card = n := by
   unfold U_roots
   rw [Finset.card_image_of_injOn]
   · simp
@@ -499,7 +500,7 @@ theorem U_roots_eq (n : ℕ) : (U ℝ n).roots = (U_roots n).val := by
     rw [←hx]
     apply U_eq_zero_if n hk.1 hk.2
   have hcard : (U_roots n).card = (U ℝ n).degree := by
-    rw [U_roots_card n, U_degree_nat]
+    rw [card_U_roots n, degree_U_natCast]
   apply roots_of_zeroes_of_card hS hcard
 
 theorem U_eq_zero_iff (n : ℕ) (x : ℝ) :
@@ -507,7 +508,7 @@ theorem U_eq_zero_iff (n : ℕ) (x : ℝ) :
   change (U ℝ n).IsRoot x ↔ ∃ (k : ℕ), 1 ≤ k ∧ k ≤ n ∧ x = cos (k * π / (n + 1))
   have : U ℝ n ≠ 0 := by
     by_contra! h
-    have : (U ℝ n).degree = n := by apply U_degree_nat
+    have : (U ℝ n).degree = n := by apply degree_U_natCast
     simp [h] at this
   rw [←(U ℝ n).mem_roots this, U_roots_eq n]
   unfold U_roots

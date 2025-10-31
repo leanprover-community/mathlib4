@@ -178,7 +178,7 @@ theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
     ring
 
 @[simp]
-theorem T_degree [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).degree = n.natAbs := by
+theorem degree_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).degree = n.natAbs := by
   induction n using Chebyshev.induct' with
   | zero => simp
   | one => simp
@@ -194,11 +194,11 @@ theorem T_degree [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).degree = n.na
   | neg n ih => rw [T_neg, ih]; simp
 
 @[simp]
-theorem T_natDegree [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).natDegree = n.natAbs :=
-  natDegree_eq_of_degree_eq_some (T_degree R n)
+theorem natDegree_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).natDegree = n.natAbs :=
+  natDegree_eq_of_degree_eq_some (degree_T R n)
 
 @[simp]
-theorem T_leadingCoeff [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
+theorem leadingCoeff_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
     (T R n).leadingCoeff = 2^(n.natAbs - 1) := by
   induction n using Chebyshev.induct' with
   | zero => simp
@@ -212,7 +212,7 @@ theorem T_leadingCoeff [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
     · norm_cast; simp [pow_add, mul_comm]
     · change (T R n).degree < (C 2 * X * T R (n + 1)).degree
       rw [mul_assoc, degree_C_mul (NeZero.ne 2), mul_comm, degree_mul_X,
-        T_degree R n, T_degree R (n + 1)]
+        degree_T R n, degree_T R (n + 1)]
       norm_cast; omega
   | neg n ih => simp [T_neg, ih]
 
@@ -326,7 +326,7 @@ theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := 
     ring
 
 @[simp]
-theorem U_degree_nat [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).degree = n := by
+theorem degree_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).degree = n := by
   induction n using Nat.twoStepInduction with
   | zero => simp
   | one =>
@@ -346,18 +346,18 @@ theorem U_degree_nat [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).degree = 
     · rw [ih1, this]; norm_cast; omega
 
 @[simp]
-theorem U_natDegree_nat [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).natDegree = n :=
-  natDegree_eq_of_degree_eq_some (U_degree_nat R n)
+theorem natDegree_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).natDegree = n :=
+  natDegree_eq_of_degree_eq_some (degree_U_natCast R n)
 
-theorem U_degree_neg_one : (U R (-1)).degree = ⊥ := by simp
+theorem degree_U_neg_one : (U R (-1)).degree = ⊥ := by simp
 
-theorem U_natDegree_neg_one : (U R (-1)).natDegree = 0 := by simp
+theorem natDegree_U_neg_one : (U R (-1)).natDegree = 0 := by simp
 
-theorem U_degree_ne_neg_one [IsDomain R] [NeZero (2 : R)] (n : ℤ) (hn : n ≠ -1) :
+theorem degree_U_ne_neg_one [IsDomain R] [NeZero (2 : R)] (n : ℤ) (hn : n ≠ -1) :
     (U R n).degree = ↑((n + 1).natAbs - 1) := by
   obtain ⟨m, hn⟩ := n.eq_nat_or_neg
   cases hn with
-  | inl hn => subst hn; rw [U_degree_nat R m]; norm_cast
+  | inl hn => subst hn; rw [degree_U_natCast R m]; norm_cast
   | inr hn =>
     subst hn; rw [U_neg, degree_neg]
     cases m with
@@ -368,16 +368,17 @@ theorem U_degree_ne_neg_one [IsDomain R] [NeZero (2 : R)] (n : ℤ) (hn : n ≠ 
       | succ m =>
         trans (U R m).degree
         · congr; omega
-        · rw [U_degree_nat R m]; norm_cast
+        · rw [degree_U_natCast R m]; norm_cast
 
-theorem U_natDegree [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
+theorem natDegree_U [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
     (U R n).natDegree = (n + 1).natAbs - 1 := by
   by_cases n = -1
   case pos hn => subst hn; simp
-  case neg hn => exact natDegree_eq_of_degree_eq_some (U_degree_ne_neg_one R n hn)
+  case neg hn => exact natDegree_eq_of_degree_eq_some (degree_U_ne_neg_one R n hn)
 
 @[simp]
-theorem U_leadingCoeff_nat [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).leadingCoeff = 2^n := by
+theorem leadingCoeff_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
+    (U R n).leadingCoeff = 2^n := by
   have : leadingCoeff (2 : R[X]) = 2 := by
     change leadingCoeff (C 2) = 2
     rw [leadingCoeff_C]
@@ -392,7 +393,7 @@ theorem U_leadingCoeff_nat [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).lea
     · change (U R n).degree < (C 2 * X * U R (n + 1)).degree
       norm_cast
       rw [mul_assoc, degree_C_mul (NeZero.ne 2), mul_comm, degree_mul_X,
-        U_degree_nat R n, U_degree_nat R (n + 1)]
+        degree_U_natCast R n, degree_U_natCast R (n + 1)]
       norm_cast; omega
 
 @[simp]
