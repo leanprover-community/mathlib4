@@ -15,7 +15,7 @@ import Mathlib.Tactic.SplitIfs
 
 This file lists various basic lemmas about semigroups, monoids, and groups. Most proofs are
 one-liners from the corresponding axioms. For the definitions of semigroups, monoids and groups, see
-`Algebra/Group/Defs.lean`.
+`Mathlib/Algebra/Group/Defs.lean`.
 -/
 
 assert_not_exists MonoidWithZero DenselyOrdered
@@ -224,39 +224,15 @@ theorem mul_eq_left : a * b = a ↔ b = 1 := calc
   a * b = a ↔ a * b = a * 1 := by rw [mul_one]
   _ ↔ b = 1 := mul_left_cancel_iff
 
-@[deprecated (since := "2025-03-05")] alias mul_right_eq_self := mul_eq_left
-@[deprecated (since := "2025-03-05")] alias add_right_eq_self := add_eq_left
-
-set_option linter.existingAttributeWarning false in
-attribute [to_additive existing] mul_right_eq_self
-
 @[to_additive (attr := simp)]
 theorem left_eq_mul : a = a * b ↔ b = 1 :=
   eq_comm.trans mul_eq_left
 
-@[deprecated (since := "2025-03-05")] alias self_eq_mul_right := left_eq_mul
-@[deprecated (since := "2025-03-05")] alias self_eq_add_right := left_eq_add
-
-set_option linter.existingAttributeWarning false in
-attribute [to_additive existing] self_eq_mul_right
-
 @[to_additive]
 theorem mul_ne_left : a * b ≠ a ↔ b ≠ 1 := mul_eq_left.not
 
-@[deprecated (since := "2025-03-05")] alias mul_right_ne_self := mul_ne_left
-@[deprecated (since := "2025-03-05")] alias add_right_ne_self := add_ne_left
-
-set_option linter.existingAttributeWarning false in
-attribute [to_additive existing] mul_right_ne_self
-
 @[to_additive]
 theorem left_ne_mul : a ≠ a * b ↔ b ≠ 1 := left_eq_mul.not
-
-@[deprecated (since := "2025-03-05")] alias self_ne_mul_right := left_ne_mul
-@[deprecated (since := "2025-03-05")] alias self_ne_add_right := left_ne_add
-
-set_option linter.existingAttributeWarning false in
-attribute [to_additive existing] self_ne_mul_right
 
 end LeftCancelMonoid
 
@@ -269,39 +245,15 @@ theorem mul_eq_right : a * b = b ↔ a = 1 := calc
   a * b = b ↔ a * b = 1 * b := by rw [one_mul]
   _ ↔ a = 1 := mul_right_cancel_iff
 
-@[deprecated (since := "2025-03-05")] alias mul_left_eq_self := mul_eq_right
-@[deprecated (since := "2025-03-05")] alias add_left_eq_self := add_eq_right
-
-set_option linter.existingAttributeWarning false in
-attribute [to_additive existing] mul_left_eq_self
-
 @[to_additive (attr := simp)]
 theorem right_eq_mul : b = a * b ↔ a = 1 :=
   eq_comm.trans mul_eq_right
 
-@[deprecated (since := "2025-03-05")] alias self_eq_mul_left := right_eq_mul
-@[deprecated (since := "2025-03-05")] alias self_eq_add_left := right_eq_add
-
-set_option linter.existingAttributeWarning false in
-attribute [to_additive existing] self_eq_mul_left
-
 @[to_additive]
 theorem mul_ne_right : a * b ≠ b ↔ a ≠ 1 := mul_eq_right.not
 
-@[deprecated (since := "2025-03-05")] alias mul_left_ne_self := mul_ne_right
-@[deprecated (since := "2025-03-05")] alias add_left_ne_self := add_ne_right
-
-set_option linter.existingAttributeWarning false in
-attribute [to_additive existing] mul_left_ne_self
-
 @[to_additive]
 theorem right_ne_mul : b ≠ a * b ↔ a ≠ 1 := right_eq_mul.not
-
-@[deprecated (since := "2025-03-05")] alias self_ne_mul_left := right_ne_mul
-@[deprecated (since := "2025-03-05")] alias self_ne_add_left := right_ne_add
-
-set_option linter.existingAttributeWarning false in
-attribute [to_additive existing] self_ne_mul_left
 
 end RightCancelMonoid
 
@@ -870,6 +822,10 @@ lemma zpow_one_sub_natCast (a : G) (n : ℕ) : a ^ (1 - n : ℤ) = a / a ^ n := 
 
 @[to_additive] lemma zpow_mul_comm (a : G) (m n : ℤ) : a ^ m * a ^ n = a ^ n * a ^ m := by
   rw [← zpow_add, Int.add_comm, zpow_add]
+
+@[to_additive] lemma mul_zpow_mul (a b : G) : ∀ n : ℤ, (a * b) ^ n * a = a * (b * a) ^ n
+  | (n : ℕ) => by simp [mul_pow_mul]
+  | .negSucc n => by simp [inv_mul_eq_iff_eq_mul, eq_mul_inv_iff_mul_eq, mul_assoc, mul_pow_mul]
 
 theorem zpow_eq_zpow_emod {x : G} (m : ℤ) {n : ℤ} (h : x ^ n = 1) :
     x ^ m = x ^ (m % n) :=

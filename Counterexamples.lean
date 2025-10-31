@@ -3,6 +3,7 @@ import Counterexamples.CanonicallyOrderedCommSemiringTwoMul
 import Counterexamples.CharPZeroNeCharZero
 import Counterexamples.CliffordAlgebraNotInjective
 import Counterexamples.Cyclotomic105
+import Counterexamples.DimensionPolynomial
 import Counterexamples.DirectSumIsInternal
 import Counterexamples.DiscreteTopologyNonDiscreteUniformity
 import Counterexamples.EulerSumOfPowers
