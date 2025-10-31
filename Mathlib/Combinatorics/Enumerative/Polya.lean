@@ -143,7 +143,7 @@ abbrev CyclesOfGroup (g : Equiv.Perm X) : Type u :=
   Quotient (Equiv.Perm.SameCycle.setoid g)
 
 /-- The number of cycles of the permutation `g` on `X`. -/
-abbrev numCyclesOfGroup 
+abbrev numCyclesOfGroup
     (g : Equiv.Perm X) [Fintype (CyclesOfGroup X g)] : ℕ :=
   Fintype.card (CyclesOfGroup X g)
 
