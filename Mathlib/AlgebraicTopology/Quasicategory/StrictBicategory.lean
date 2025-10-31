@@ -74,8 +74,6 @@ noncomputable instance QCat.bicategory : Bicategory QCat := by
 
 /-- The strict bicategory of quasicategories extracted from `QCat.CatEnrichedOrdinaryCat`. -/
 noncomputable instance QCat.strictBicategory : Bicategory.Strict QCat :=
-  let : EnrichedOrdinaryCategory Cat (ObjectProperty.FullSubcategory Quasicategory) :=
-    QCat.CatEnrichedOrdinaryCat
   CatEnrichedOrdinary.instStrict
 
 end CategoryTheory
