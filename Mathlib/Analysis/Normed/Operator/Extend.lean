@@ -126,7 +126,9 @@ variable [DivisionRing 𝕜] [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [
 variable (f : E →ₗ[𝕜] F)
 
 open scoped Classical in
-/-- The left inverse of a `LinearMap`. -/
+/-- The left inverse of `f : E →ₗ[𝕜] F`.
+
+If `f` is not injective, then we use the junk value `0`. -/
 def leftInverse : F →ₗ[𝕜] E :=
   if h_inj : LinearMap.ker f = ⊥ then
   Classical.choose (f.exists_leftInverse_of_injective h_inj)
@@ -134,7 +136,7 @@ def leftInverse : F →ₗ[𝕜] E :=
 
 /-- If `f` is injective, then the left inverse composed with `f` is the identity. -/
 @[simp]
-theorem leftInverse_apply (h_inj : LinearMap.ker f = ⊥) (x : E) :
+theorem leftInverse_apply_of_inj (h_inj : LinearMap.ker f = ⊥) (x : E) :
     f.leftInverse (f x) = x := by
   have := Classical.choose_spec (f.exists_leftInverse_of_injective h_inj)
   rw [LinearMap.ext_iff] at this
@@ -151,10 +153,7 @@ variable [DivisionRing 𝕜] [DivisionRing 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜�
 variable (f : E →ₛₗ[σ₁₂] F) (g : E →ₗ[𝕜] Eₗ)
 
 open scoped Classical in
-/-- Composition with the left inverse as a CLM.
-
-This definition is only used to construct extensions of continuous linear maps and should not
-be used outside of this file. -/
+/-- Composition with the left inverse as a CLM. -/
 def compLeftInverse :=
   if h : LinearMap.ker g = ⊥ ∧ ∃ (C : ℝ), ∀ (x : E), ‖f x‖ ≤ C * ‖g x‖ then
   (f ∘ₛₗ (g.leftInverse.domRestrict
@@ -166,11 +165,11 @@ def compLeftInverse :=
     simp only [← hxy, LinearMap.coe_comp, Function.comp_apply,
       LinearMap.domRestrict_apply, AddSubgroupClass.coe_norm]
     convert hC y
-    apply g.leftInverse_apply h.1)
+    apply g.leftInverse_apply_of_inj h.1)
   else 0
 
 @[simp]
-theorem compLeftInverse_apply (h_inj : LinearMap.ker g = ⊥)
+theorem compLeftInverse_apply_of_inj_bdd (h_inj : LinearMap.ker g = ⊥)
     (h_norm : ∃ (C : ℝ), ∀ (x : E), ‖f x‖ ≤ C * ‖g x‖) (y : LinearMap.range g) :
     f.compLeftInverse g y = (f ∘ₛₗ (g.leftInverse.domRestrict
       (LinearMap.range g))) y := by
@@ -194,10 +193,7 @@ using an injective dense embedding `e : E →L[𝕜] Fₗ` together with a bound
 for all `x : E`. -/
 def extendOfNorm : Eₗ →SL[σ₁₂] F :=
   if h : DenseRange e then
-  ContinuousLinearMap.extend (f.compLeftInverse e) (LinearMap.range e).subtypeL
-    (by
-      simp only [Submodule.coe_subtypeL', Submodule.coe_subtype, denseRange_subtype_val]
-      exact h)
+  (f.compLeftInverse e).extend (LinearMap.range e).subtypeL (by simpa using h)
     isUniformEmbedding_subtype_val.isUniformInducing
   else 0
 
@@ -207,15 +203,13 @@ theorem extendOfNorm_eq (h_inj : LinearMap.ker e = ⊥)
     (h_dense : DenseRange e) (h_norm : ∃ C, ∀ x, ‖f x‖ ≤ C * ‖e x‖) (x : E) :
     f.extendOfNorm e (e x) = f x := by
   simp only [extendOfNorm, h_dense, ↓reduceDIte]
-  have := ContinuousLinearMap.extend_eq (f.compLeftInverse e) (LinearMap.range e).subtypeL (by
-    simp only [Submodule.coe_subtypeL', Submodule.coe_subtype, denseRange_subtype_val]
-    exact h_dense)
+  have := (f.compLeftInverse e).extend_eq (LinearMap.range e).subtypeL (by simpa using h_dense)
     isUniformEmbedding_subtype_val.isUniformInducing
   convert this ⟨e x, LinearMap.mem_range_self e x⟩
-  simp only [h_inj, h_norm, compLeftInverse_apply, LinearMap.coe_comp, Function.comp_apply,
-    LinearMap.domRestrict_apply]
+  simp only [h_inj, h_norm, compLeftInverse_apply_of_inj_bdd, LinearMap.coe_comp,
+    Function.comp_apply, LinearMap.domRestrict_apply]
   congr
-  apply (e.leftInverse_apply h_inj _).symm
+  apply (e.leftInverse_apply_of_inj h_inj _).symm
 
 theorem extendOfNorm_norm_le (h_inj : LinearMap.ker e = ⊥) (h_dense : DenseRange e) (C : ℝ)
     (h_norm : ∀ (x : E), ‖f x‖ ≤ C * ‖e x‖) (x : Eₗ) :
@@ -225,9 +219,7 @@ theorem extendOfNorm_norm_le (h_inj : LinearMap.ker e = ⊥) (h_dense : DenseRan
     rw [← hxy]
     convert h_norm y
     apply extendOfNorm_eq h_inj h_dense ⟨C, h_norm⟩
-  have h_closed : IsClosed { x | ‖f.extendOfNorm e x‖ ≤ C * ‖x‖ } :=
-    (isClosed_le (ContinuousLinearMap.cont _).norm (continuous_const.mul continuous_norm))
-  exact h_dense.induction h_mem h_closed x
+  exact h_dense.induction h_mem (isClosed_le (by fun_prop) (by fun_prop)) x
 
 end NormedDivisionRing
 
