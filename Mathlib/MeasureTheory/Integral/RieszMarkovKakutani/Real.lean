@@ -354,7 +354,7 @@ variable {μ ν : Measure X}
 `C_c(X, ℝ)` and regular measures with inverse `RealRMK.integralPositiveLinearMap`. -/
 
 /-- Note: the assumption `IsFiniteMeasureOnCompacts μ` cannot be removed. For example, if
-`μ` is infinite on any nonempty set and `ν = 0`, then the hypothese are satisfied. -/
+`μ` is infinite on any nonempty set and `ν = 0`, then the hypotheses are satisfied. -/
 lemma measure_le_of_isCompact_of_integral [ν.OuterRegular]
     [IsFiniteMeasureOnCompacts ν] [IsFiniteMeasureOnCompacts μ]
     (hμν : ∀ f : C_c(X, ℝ), ∫ x, f x ∂μ ≤ ∫ x, f x ∂ν)
