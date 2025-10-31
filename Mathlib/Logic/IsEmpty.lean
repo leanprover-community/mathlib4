@@ -234,9 +234,6 @@ theorem biTotal_iff_isEmpty_right [IsEmpty α] : BiTotal R ↔ IsEmpty β := by
 theorem biTotal_iff_isEmpty_left [IsEmpty β] : BiTotal R ↔ IsEmpty α := by
   simp only [BiTotal, leftTotal_iff_isEmpty_left, rightTotal_empty, and_true]
 
-lemma Function.Injective.of_isEmpty (f : α → β) [IsEmpty α] : f.Injective := IsEmpty.elim ‹_›
-
-lemma Function.Surjective.of_isEmpty (f : α → β) [IsEmpty β] : f.Surjective := IsEmpty.elim ‹_›
-
-lemma Function.Bijective.of_isEmpty (f : α → β) [IsEmpty α] [IsEmpty β] : f.Bijective :=
-  ⟨.of_isEmpty _, .of_isEmpty _⟩
+lemma Function.Bijective.of_isEmpty (f : α → β) [IsEmpty β] : f.Bijective :=
+  have := f.isEmpty
+  ⟨injective_of_subsingleton _, IsEmpty.elim ‹_›⟩
