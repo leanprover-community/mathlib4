@@ -666,10 +666,17 @@ theorem ext_fourfold {g h : M ⊗[R] N ⊗[R] P ⊗[R] Q →ₛₗ[σ₁₂] P�
   ext w x y z
   exact H w x y z
 
-/-- Two semilinear maps (M ⊗ N) ⊗ (P ⊗ Q) → S which agree on all elements of the
-form (m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q) are equal. -/
+/-- Two semilinear maps `(M ⊗ N) ⊗ (P ⊗ Q) → P₂` which agree on all elements of the
+form `(m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q)` are equal. -/
 theorem ext_fourfold' {φ ψ : M ⊗[R] N ⊗[R] (P ⊗[R] Q) →ₛₗ[σ₁₂] P₂}
     (H : ∀ w x y z, φ (w ⊗ₜ x ⊗ₜ (y ⊗ₜ z)) = ψ (w ⊗ₜ x ⊗ₜ (y ⊗ₜ z))) : φ = ψ := by
+  ext m n p q
+  exact H m n p q
+
+/-- Two semilinear maps `M ⊗ (N ⊗ P) ⊗ Q → P₂` which agree on all elements of the
+form `m ⊗ₜ (n ⊗ₜ p) ⊗ₜ q` are equal. -/
+theorem ext_fourfold'' {φ ψ : M ⊗[R] (N ⊗[R] P) ⊗[R] Q →ₛₗ[σ₁₂] P₂}
+    (H : ∀ w x y z, φ (w ⊗ₜ (x ⊗ₜ y) ⊗ₜ z) = ψ (w ⊗ₜ (x ⊗ₜ y) ⊗ₜ z)) : φ = ψ := by
   ext m n p q
   exact H m n p q
 
