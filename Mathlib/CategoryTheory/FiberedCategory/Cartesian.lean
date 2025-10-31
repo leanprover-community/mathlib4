@@ -54,9 +54,11 @@ morphisms `φ' : a' ⟶ b`, also lying over `f`, there exists a unique morphism 
 `𝟙 R` such that `φ' = χ ≫ φ`.
 
 See SGA 1 VI 5.1. -/
-class IsCartesian : Prop extends IsHomLift p f φ where
+class IsCartesian : Prop  where
+  [toIsHomLift : IsHomLift p f φ]
   universal_property {a' : 𝒳} (φ' : a' ⟶ b) [IsHomLift p f φ'] :
       ∃! χ : a' ⟶ a, IsHomLift p (𝟙 R) χ ∧ χ ≫ φ = φ'
+attribute [instance] IsCartesian.toIsHomLift
 
 /-- A morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is strongly Cartesian if for
 all morphisms `φ' : a' ⟶ b` and all diagrams of the form
@@ -68,9 +70,11 @@ R' --g--> R --f--> S
 ```
 such that `φ'` lifts `g ≫ f`, there exists a lift `χ` of `g` such that `φ' = χ ≫ φ`. -/
 @[stacks 02XK]
-class IsStronglyCartesian : Prop extends IsHomLift p f φ where
+class IsStronglyCartesian : Prop where
+  [toIsHomLift : IsHomLift p f φ]
   universal_property' {a' : 𝒳} (g : p.obj a' ⟶ R) (φ' : a' ⟶ b) [IsHomLift p (g ≫ f) φ'] :
       ∃! χ : a' ⟶ a, IsHomLift p g χ ∧ χ ≫ φ = φ'
+attribute [instance] IsStronglyCartesian.toIsHomLift
 
 end
 
