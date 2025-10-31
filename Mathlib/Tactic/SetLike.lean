@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 
-import Mathlib.Init
+import Mathlib.Tactic.Basic
 import Aesop
 
 /-!
@@ -18,7 +18,7 @@ so we must put this declaration into its own file.
 declare_aesop_rule_sets [SetLike] (default := true)
 declare_aesop_rule_sets [SetLike!] (default := false)
 
-library_note "SetLike Aesop ruleset"/--
+library_note2 «SetLike Aesop ruleset» /--
 The Aesop tactic (`aesop`) can automatically prove obvious facts about membership in structures
 such as subgroups and subrings. Certain lemmas regarding membership in algebraic substructures
 are given the `aesop` attribute according to the following principles:

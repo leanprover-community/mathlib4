@@ -578,19 +578,18 @@ lemma sup_spanningCoe (H H' : Subgraph G) :
     (H ⊔ H').spanningCoe = H.spanningCoe ⊔ H'.spanningCoe := rfl
 
 /-- The top of the `Subgraph G` lattice is equivalent to the graph itself. -/
-def topEquiv : (⊤ : Subgraph G).coe ≃g G where
-  toFun v := ↑v
-  invFun v := ⟨v, trivial⟩
-  map_rel_iff' := Iff.rfl
+@[deprecated (since := "2025-09-15")] alias topEquiv := topIso
 
-/-- The bottom of the `Subgraph G` lattice is equivalent to the empty graph on the empty
+/-- The bottom of the `Subgraph G` lattice is isomorphic to the empty graph on the empty
 vertex type. -/
-def botEquiv : (⊥ : Subgraph G).coe ≃g emptyGraph Empty where
+def botIso : (⊥ : Subgraph G).coe ≃g emptyGraph Empty where
   toFun v := v.property.elim
   invFun v := v.elim
   left_inv := fun ⟨_, h⟩ ↦ h.elim
   right_inv v := v.elim
   map_rel_iff' := Iff.rfl
+
+@[deprecated (since := "2025-09-15")] alias botEquiv := botIso
 
 theorem edgeSet_mono {H₁ H₂ : Subgraph G} (h : H₁ ≤ H₂) : H₁.edgeSet ≤ H₂.edgeSet :=
   Sym2.ind h.2
@@ -719,8 +718,6 @@ protected def hom (x : Subgraph G) : x.coe →g G where
 theorem hom_injective {x : Subgraph G} : Function.Injective x.hom :=
   fun _ _ ↦ Subtype.ext
 
-@[deprecated (since := "2025-03-15")] alias hom.injective := hom_injective
-
 @[simp] lemma map_hom_top (G' : G.Subgraph) : Subgraph.map G'.hom ⊤ = G' := by
   aesop (add unfold safe Relation.Map, unsafe G'.edge_vert, unsafe Adj.symm)
 
@@ -733,8 +730,6 @@ def spanningHom (x : Subgraph G) : x.spanningCoe →g G where
 
 theorem spanningHom_injective {x : Subgraph G} : Function.Injective x.spanningHom :=
   fun _ _ ↦ id
-
-@[deprecated (since := "2025-03-15")] alias spanningHom.injective := spanningHom_injective
 
 theorem neighborSet_subset_of_subgraph {x y : Subgraph G} (h : x ≤ y) (v : V) :
     x.neighborSet v ⊆ y.neighborSet v :=

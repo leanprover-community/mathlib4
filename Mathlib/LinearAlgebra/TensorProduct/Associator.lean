@@ -36,7 +36,7 @@ variable (R M)
 -/
 protected def lid : R ⊗[R] M ≃ₗ[R] M :=
   LinearEquiv.ofLinear (lift <| LinearMap.lsmul R M) (mk R R M 1) (LinearMap.ext fun _ => by simp)
-    (ext' fun r m => by simp; rw [← tmul_smul, ← smul_tmul, smul_eq_mul, mul_one])
+    (ext' fun r m => by simp [← tmul_smul, ← smul_tmul, smul_eq_mul, mul_one])
 
 end
 
@@ -161,6 +161,28 @@ lemma map_map_assoc_symm (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R
       (TensorProduct.assoc R Q S T).symm (map f (map g h) x) :=
   DFunLike.congr_fun (map_map_comp_assoc_symm_eq _ _ _) _
 
+lemma assoc_tensor :
+    TensorProduct.assoc R (M ⊗[R] N) Q S = .rTensor S (TensorProduct.assoc R M N Q) ≪≫ₗ
+      TensorProduct.assoc R M (N ⊗[R] Q) S ≪≫ₗ .lTensor M (TensorProduct.assoc R N Q S) ≪≫ₗ
+      (TensorProduct.assoc R M N (Q ⊗[R] S)).symm :=
+  LinearEquiv.toLinearMap_inj.mp <| ext_fourfold fun _ _ _ => congrFun rfl
+
+lemma assoc_tensor' :
+    TensorProduct.assoc R M (N ⊗[R] Q) S = .rTensor S (TensorProduct.assoc R M N Q).symm ≪≫ₗ
+      (TensorProduct.assoc R (M ⊗[R] N) Q S) ≪≫ₗ TensorProduct.assoc R M N (Q ⊗[R] S) ≪≫ₗ
+      .lTensor M (TensorProduct.assoc R N Q S).symm :=
+  LinearEquiv.toLinearMap_inj.mp <| ext_fourfold'' fun _ _ _ => congrFun rfl
+
+lemma assoc_tensor'' :
+    TensorProduct.assoc R M N (Q ⊗[R] S) = (TensorProduct.assoc R (M ⊗[R] N) Q S).symm ≪≫ₗ
+      .rTensor S (TensorProduct.assoc R M N Q) ≪≫ₗ TensorProduct.assoc R M (N ⊗[R] Q) S ≪≫ₗ
+      .lTensor M (TensorProduct.assoc R N Q S) :=
+  LinearEquiv.toLinearMap_inj.mp <| ext_fourfold' fun _ _ _ => congrFun rfl
+
+lemma lid_tensor :
+    TensorProduct.lid R (M ⊗[R] N) = (TensorProduct.assoc R R M N).symm ≪≫ₗ
+      .rTensor N (TensorProduct.lid R M) :=
+  LinearEquiv.toLinearMap_inj.mp <| ext_threefold' fun _ _ => congrFun rfl
 
 section
 

@@ -285,6 +285,22 @@ instance toCommSemigroup {M} [CommSemigroup M] {A : Type*} [SetLike A M] [MulMem
     (S : A) : CommSemigroup S := fast_instance%
   Subtype.coe_injective.commSemigroup Subtype.val fun _ _ => rfl
 
+/-- A submagma of a left cancellative magma inherits left cancellation. -/
+@[to_additive
+/-- An additive submagma of a left cancellative additive magma inherits left cancellation. -/]
+instance isLeftCancelMul [IsLeftCancelMul M] (S : A) : IsLeftCancelMul S :=
+  Subtype.coe_injective.isLeftCancelMul Subtype.val fun _ _ => rfl
+
+/-- A submagma of a right cancellative magma inherits right cancellation. -/
+@[to_additive
+/-- An additive submagma of a right cancellative additive magma inherits right cancellation. -/]
+instance isRightCancelMul [IsRightCancelMul M] (S : A) : IsRightCancelMul S :=
+  Subtype.coe_injective.isRightCancelMul Subtype.val fun _ _ => rfl
+
+/-- A submagma of a cancellative magma inherits cancellation. -/
+@[to_additive /-- An additive submagma of a cancellative additive magma inherits cancellation. -/]
+instance isCancelMul [IsCancelMul M] (S : A) : IsCancelMul S where
+
 /-- The natural semigroup hom from a subsemigroup of semigroup `M` to `M`. -/
 @[to_additive /-- The natural semigroup hom from an `AddSubsemigroup` of
 `AddSubsemigroup` `M` to `M`. -/]

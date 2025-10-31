@@ -181,7 +181,7 @@ lemma orderOf_ofAdd_eq_addOrderOf {α : Type*} [AddMonoid α] (a : α) :
 protected lemma IsOfFinOrder.orderOf_pos (h : IsOfFinOrder x) : 0 < orderOf x :=
   minimalPeriod_pos_of_mem_periodicPts h
 
-@[to_additive addOrderOf_nsmul_eq_zero]
+@[to_additive (attr := simp) addOrderOf_nsmul_eq_zero]
 theorem pow_orderOf_eq_one (x : G) : x ^ orderOf x = 1 := by
   convert Eq.trans _ (isPeriodicPt_minimalPeriod (x * ·) 1)
   rw [orderOf, mul_left_iterate_apply_one]
@@ -214,9 +214,7 @@ theorem orderOf_eq_iff {n} (h : 0 < n) :
   split_ifs with h1
   · classical
     rw [find_eq_iff]
-    simp only [h, true_and]
-    push_neg
-    rfl
+    simp only [h, true_and, not_and]
   · rw [iff_false_left h.ne]
     rintro ⟨h', -⟩
     exact h1 ⟨n, h, h'⟩
@@ -768,6 +766,10 @@ alias ⟨_, IsMulTorsionFree.of_not_isOfFinOrder⟩ := isMulTorsionFree_iff_not_
 lemma not_isMulTorsionFree_iff_isOfFinOrder :
     ¬ IsMulTorsionFree G ↔ ∃ a ≠ (1 : G), IsOfFinOrder a := by
   simp [isMulTorsionFree_iff_not_isOfFinOrder]
+
+@[to_additive (attr := simp)]
+lemma zpowers_mabs [LinearOrder G] [IsOrderedMonoid G] (g : G) : zpowers |g|ₘ = zpowers g := by
+  rcases mabs_cases g with h | h <;> simp only [h, zpowers_inv]
 
 end CommGroup
 
