@@ -356,9 +356,6 @@ noncomputable def IsLocalDiffeomorph.diffeomorph_of_bijective
       have : y = (Φ x) x := ((hgInverse.2 y).congr (hfx hx)).mp rfl
       exact this ▸ (Φ x).map_source hx }
 
-@[deprecated (since := "2025-03-24")] alias
-IslocalDiffeomorph.diffeomorph_of_bijective := IsLocalDiffeomorph.diffeomorph_of_bijective
-
 end Basic
 
 section Differential
