@@ -308,4 +308,28 @@ end Equiv
 
 end TransportEnrichment
 
+section full_subcategory
+
+variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
+  {C : Type u} [Category.{v} C] [EnrichedOrdinaryCategory V C]
+
+/-- A full subcategory of an enriched ordinary category is an enriched ordinary category. -/
+instance (P : ObjectProperty C) :
+    EnrichedOrdinaryCategory V (ObjectProperty.FullSubcategory P) where
+  Hom X Y := X.obj ⟶[V] Y.obj
+  id X := eId V X.obj
+  comp X Y Z := eComp V X.obj Y.obj Z.obj
+  homEquiv {X} {Y} := P.fullyFaithfulι.homEquiv.trans (eHomEquiv V)
+  homEquiv_id {X} := by
+    change _ = eId V X.obj
+    rw [← eHomEquiv_id]
+    rfl
+  homEquiv_comp {X} {Y} {Z} f g := by
+    simp only [ObjectProperty.ι_obj, Equiv.trans_apply]
+    change (eHomEquiv V) (P.ι.map (f ≫ g)) = _
+    rw [Functor.map_comp, eHomEquiv_comp]
+    rfl
+
+end full_subcategory
+
 end CategoryTheory
