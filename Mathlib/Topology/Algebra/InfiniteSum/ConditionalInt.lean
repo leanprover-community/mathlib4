@@ -107,7 +107,7 @@ lemma symmetricIcc_eq_map_Icc_nat :
     (symmetricIcc ℤ).filter = atTop.map (fun N : ℕ ↦ Icc (-(N : ℤ)) N) := by
   simp [← Nat.map_cast_int_atTop, Function.comp_def]
 
-lemma symmetricIcc_eq_symmetricIoo_int : (symmetricIcc ℤ) = (symmetricIoo ℤ) := by
+lemma symmetricIcc_eq_symmetricIoo_int : symmetricIcc ℤ = symmetricIoo ℤ := by
   simp only [symmetricIcc, symmetricIoo, mk.injEq]
   ext s
   simp only [← Nat.map_cast_int_atTop, Filter.map_map, Filter.mem_map, mem_atTop_sets, ge_iff_le,
