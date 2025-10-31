@@ -639,6 +639,7 @@ theorem restr_toPartialEquiv (s : Set X) :
     (e.restr s).toPartialEquiv = e.toPartialEquiv.restr (interior s) :=
   rfl
 
+@[grind =]
 theorem restr_source' (s : Set X) (hs : IsOpen s) : (e.restr s).source = e.source ∩ s := by
   rw [e.restr_source, hs.interior_eq]
 
@@ -655,6 +656,7 @@ theorem restr_eq_of_source_subset {e : OpenPartialHomeomorph X Y} {s : Set X} (h
 theorem restr_univ {e : OpenPartialHomeomorph X Y} : e.restr univ = e :=
   restr_eq_of_source_subset (subset_univ _)
 
+@[grind =]
 theorem restr_source_inter (s : Set X) : e.restr (e.source ∩ s) = e.restr s := by
   refine OpenPartialHomeomorph.ext _ _ (fun x => rfl) (fun x => rfl) ?_
   simp [e.open_source.interior_eq, ← inter_assoc]
