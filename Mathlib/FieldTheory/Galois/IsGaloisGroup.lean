@@ -16,9 +16,20 @@ we do not assume that `L` is an algebraic extension of `K`.
 ## Implementation notes
 
 We actually define `IsGaloisGroup G A B` for extensions of rings `B/A`, with the same definition
-(faithful action on `B` with fixed field `A`). In this generality, the name `IsGaloisGroup` is a
-bit of a misnomer, since `IsGaloisGroup G A B` corresponds to the fields of fractions
-`Frac(B)/Frac(A)` being a Galois extension of fields, rather than `B/A` being étale (for instance).
+(faithful action on `B` with fixed ring `A`). This definition turns out to axiomatize a common
+setup in algebraic number theory where a Galois group `Gal(L/K)` acts on an extension of subrings
+`B/A` (e.g., rings of integers). In particular, there are theorems in algebraic number theory that
+naturally assume `[IsGaloisGroup G A B]` and whose statements would otherwise require assuming
+`(K L : Type*) [Field K] [Field L] [Algebra K L] [IsGalois K L]` (along with predicates relating
+`K` and `L` to the rings `A` and `B`) despite `K` and `L` not appearing in the conclusion.
+
+Unfortunately, this definition of `IsGaloisGroup G A B` for extensions of rings `B/A` is
+nonstandard and clashes with other notions such as the étale fundamental group. In particular, if
+`A` is integrally closed, then  `IsGaloisGroup G A B` is equivalent to `B/A` being integral and the
+fields of fractions `Frac(B)/Frac(A)` being Galois, rather than `B/A` being étale for instance.
+
+But in the absence of a more suitable name, the utility of the predicate `IsGaloisGroup G A B` for
+extensions of rings `B/A` seems to outweigh these terminological issues.
 -/
 
 section CommRing
