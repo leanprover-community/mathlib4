@@ -54,7 +54,7 @@ morphisms `φ' : a' ⟶ b`, also lying over `f`, there exists a unique morphism 
 `𝟙 R` such that `φ' = χ ≫ φ`.
 
 See SGA 1 VI 5.1. -/
-class IsCartesian : Prop  where
+class IsCartesian : Prop where
   [toIsHomLift : IsHomLift p f φ]
   universal_property {a' : 𝒳} (φ' : a' ⟶ b) [IsHomLift p f φ'] :
       ∃! χ : a' ⟶ a, IsHomLift p (𝟙 R) χ ∧ χ ≫ φ = φ'
