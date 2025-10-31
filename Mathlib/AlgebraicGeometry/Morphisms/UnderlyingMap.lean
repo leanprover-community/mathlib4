@@ -104,7 +104,7 @@ lemma Surjective.sigmaDesc_of_union_range_eq_univ {X : Scheme.{u}}
   refine ⟨fun x ↦ ?_⟩
   simp_rw [Set.eq_univ_iff_forall, Set.mem_iUnion] at H
   obtain ⟨i, x, rfl⟩ := H x
-  use Limits.Sigma.ι (fun i ↦ Y i) i x
+  use Limits.Sigma.ι Y i x
   rw [← Scheme.Hom.comp_apply, Limits.Sigma.ι_desc]
 
 instance {X : Scheme.{u}} {P : MorphismProperty Scheme.{u}} (𝒰 : X.Cover (Scheme.precoverage P)) :
