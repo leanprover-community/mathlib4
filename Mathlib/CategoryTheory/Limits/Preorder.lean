@@ -96,6 +96,7 @@ def _root_.CategoryTheory.Limits.IsTerminal.orderTop {X : C} (t : IsTerminal X) 
 /-- A preorder with a terminal object has a greatest element. -/
 def orderTopOfHasTerminal [HasTerminal C] : OrderTop C := IsTerminal.orderTop terminalIsTerminal
 
+variable (C) in
 /-- If `C` is a preorder with top, then `⊤` is a terminal object. -/
 def isTerminalTop [OrderTop C] : IsTerminal (⊤ : C) := IsTerminal.ofUnique _
 
@@ -109,6 +110,7 @@ def _root_.CategoryTheory.Limits.IsInitial.orderBot {X : C} (t : IsInitial X) : 
 /-- A preorder with an initial object has a least element. -/
 def orderBotOfHasInitial [HasInitial C] : OrderBot C := IsInitial.orderBot initialIsInitial
 
+variable (C) in
 /-- If `C` is a preorder with bot, then `⊥` is an initial object. -/
 def isInitialBot [OrderBot C] : IsInitial (⊥ : C) := IsInitial.ofUnique _
 
