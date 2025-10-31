@@ -60,6 +60,20 @@ example : 1 + 1 = 2 := by
   #adaptation_note /-- -/
   grind
 
+set_option linter.unusedTactic false
+
+/-- warning: 'skip; grind' can be replaced with 'grind' -/
+#guard_msgs in
+example : 0 = 0 := by
+  intros
+  intros
+  intros
+  intros
+  skip
+  grind
+
+set_option linter.unusedTactic true
+
 end mergeWithGrind
 
 section replaceWithGrind
