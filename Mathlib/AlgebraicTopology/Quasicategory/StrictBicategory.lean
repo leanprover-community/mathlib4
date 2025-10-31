@@ -60,14 +60,6 @@ equivalent to `QCat`. -/
 noncomputable def QCat.forgetEnrichment.equiv :
     ForgetEnrichment Cat QCat ≌ QCat := ForgetEnrichment.equiv Cat
 
-/-- As a simplicially enriched ordinary category, `QCat` is a simplicially enriched category. -/
-instance QCat.SSetEnrichedCat : EnrichedCategory SSet QCat :=
-  QCat.SimplicialCat.toEnrichedCategory
-
-/-- As a `Cat`-enriched ordinary category, `QCat` is a `Cat`-enriched category. -/
-noncomputable instance QCat.CatEnrichedCat : EnrichedCategory Cat QCat :=
-    QCat.CatEnrichedOrdinaryCat.toEnrichedCategory
-
 end SSet
 
 namespace CategoryTheory
