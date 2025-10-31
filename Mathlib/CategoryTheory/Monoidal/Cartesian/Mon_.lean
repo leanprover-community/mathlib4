@@ -17,6 +17,7 @@ showing that it is fully faithful and its (essential) image is the representable
 
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory MonObj
 
+namespace CategoryTheory
 universe w v u
 variable {C D : Type*} [Category.{v} C] [CartesianMonoidalCategory C]
   [Category.{w} D] [CartesianMonoidalCategory D]
@@ -150,12 +151,12 @@ abbrev Hom.monoid : Monoid (X ⟶ M) where
       Category.comp_id, rightUnitor_hom]
     exact lift_fst _ _
 
-scoped[MonObj] attribute [instance] Hom.monoid
+scoped[CategoryTheory.MonObj] attribute [instance] Hom.monoid
 
 lemma Hom.one_def : (1 : X ⟶ M) = toUnit X ≫ η := rfl
 lemma Hom.mul_def (f₁ f₂ : X ⟶ M) : f₁ * f₂ = lift f₁ f₂ ≫ μ := rfl
 
-namespace CategoryTheory.Functor
+namespace Functor
 variable (F : C ⥤ D) [F.Monoidal]
 
 open scoped Obj
@@ -181,7 +182,7 @@ def FullyFaithful.homMulEquiv (hF : F.FullyFaithful) : (X ⟶ M) ≃* (F.obj X �
   __ := hF.homEquiv
   __ := F.homMonoidHom
 
-end CategoryTheory.Functor
+end Functor
 
 section BraidedCategory
 variable [BraidedCategory C]
@@ -190,7 +191,7 @@ variable [BraidedCategory C]
 abbrev Hom.commMonoid [IsCommMonObj M] : CommMonoid (X ⟶ M) where
   mul_comm f g := by simpa [-IsCommMonObj.mul_comm] using lift g f ≫= IsCommMonObj.mul_comm M
 
-scoped[MonObj] attribute [instance] Hom.commMonoid
+scoped[CategoryTheory.MonObj] attribute [instance] Hom.commMonoid
 
 end BraidedCategory
 
@@ -365,3 +366,4 @@ def mulEquivCongrRight (e : M ≅ N) [IsMonHom e.hom] (X : C) : (X ⟶ M) ≃* (
   ((yonedaMon.mapIso <| Mon.mkIso' e).app <| .op X).monCatIsoToMulEquiv
 
 end Hom
+end CategoryTheory
