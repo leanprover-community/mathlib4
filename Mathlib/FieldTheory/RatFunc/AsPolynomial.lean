@@ -61,6 +61,10 @@ theorem algebraMap_comp_C : (algebraMap K[X] (RatFunc K)).comp Polynomial.C = C 
 theorem smul_eq_C_mul (r : K) (x : RatFunc K) : r • x = C r * x := by
   rw [Algebra.smul_def, algebraMap_eq_C]
 
+theorem C_injective : Function.Injective (RatFunc.C (K := K)) := by
+  rw [← algebraMap_comp_C, RingHom.coe_comp]
+  exact Function.Injective.comp (algebraMap_injective K) (Polynomial.C_injective)
+
 /-- `RatFunc.X` is the polynomial variable (aka indeterminate). -/
 def X : RatFunc K :=
   algebraMap K[X] (RatFunc K) Polynomial.X
