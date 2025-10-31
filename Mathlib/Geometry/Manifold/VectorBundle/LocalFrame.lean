@@ -408,11 +408,10 @@ variable (e b) in
 @[simp]
 lemma localFrame_coeff_apply_of_mem_baseSet (hx : x ∈ e.baseSet) (s : Π x : M, V x) (i : ι) :
     b.localFrame_coeff I e i s x = (b.localFrame_toBasis_at e hx).repr (s x) i := by
-  have ilf := b.localFrame_isLocalFrameOn_baseSet I 1 e
-  rw [show localFrame_toBasis_at e b hx = ilf.toBasisAt hx by ext j; simp [localFrame, hx]]
-  exact ilf.coeff_apply_of_mem hx s i -- XXX better variable name!
+  have hb := b.localFrame_isLocalFrameOn_baseSet I 1 e
+  have : b.localFrame_toBasis_at e hx = hb.toBasisAt hx := by ext j; simp [localFrame, hx]
+  exact this ▸ hb.coeff_apply_of_mem hx s i
 
--- TODO: better name?
 omit [IsManifold I 0 M] in
 lemma localFrame_coeff_sum_eq [Fintype ι] (s : Π x : M,  V x) {x'} (hx : x' ∈ e.baseSet) :
     s x' = (∑ i, (b.localFrame_coeff I e i s x') • b.localFrame e i x') := by
