@@ -32,8 +32,8 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 namespace Polynomial
 
 theorem roots_of_zeroes_of_card
-  {R : Type _} [CommRing R] [IsDomain R] {p : Polynomial R} {S : Finset R}
-  (hS : ∀ x ∈ S, p.eval x = 0) (hcard : S.card = p.degree) : p.roots = S.val := by
+    {R : Type*} [CommRing R] [IsDomain R] {p : Polynomial R} {S : Finset R}
+    (hS : ∀ x ∈ S, p.eval x = 0) (hcard : S.card = p.degree) : p.roots = S.val := by
   have hp : p ≠ 0 := by contrapose! hcard; simp [hcard]
   symm; apply Multiset.eq_of_le_of_card_le
   · apply Finset.val_le_iff_val_subset.mpr
