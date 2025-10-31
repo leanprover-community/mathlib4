@@ -175,9 +175,9 @@ theorem coeff_iterate_frobeniusEquiv_symm (f : Ring.Perfection R p) (n m : ℕ) 
     Perfection.coeff _ p n ((frobeniusEquiv _ p).symm ^[m] f) =
     Perfection.coeff _ p (n + m) f := by
   revert f n
-  induction' m with m ih
-  · simp
-  · intro f n
+  induction m generalizing f n with m ih
+  | zero => simp
+  | succ m ih => 
     simp [ih, ← add_assoc]
 
 variable (R p)
