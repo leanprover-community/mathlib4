@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2023 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen
+Authors: Anne Baanen, Kenny Lau
 -/
 import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 
 /-!
 # Criteria under which a Dedekind domain is a PID
@@ -18,6 +19,8 @@ principal.
   with finitely many maximal ideals, is a principal ideal.
 * `IsPrincipalIdealRing.of_finite_primes`: if a Dedekind domain has finitely many prime ideals,
   it is a principal ideal domain.
+* `IsPrincipalIdealRing.of_isDedekindDomain_of_uniqueFactorizationMonoid`: a Dedekind domain
+  that is a unique factorisation domain, is also a principal ideal domain.
 -/
 
 
@@ -81,8 +84,7 @@ theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {
   have hJ : IsLocalization.coeSubmodule A J = ↑I * Submodule.span R {v} := by
     rw [coe_ext_iff, coe_mul, coe_one] at hinv
     apply Submodule.map_comap_eq_self
-    rw [← Submodule.one_eq_range, ← hinv]
-    exact mul_le_mul_left' ((Submodule.span_singleton_le_iff_mem _ _).2 hv) _
+    grw [← Submodule.one_eq_range, ← hinv, (Submodule.span_singleton_le_iff_mem _ _).2 hv]
   have : (1 : A) ∈ ↑I * Submodule.span R {v} := by
     rw [← hJ, h, IsLocalization.coeSubmodule_top, Submodule.mem_one]
     exact ⟨1, (algebraMap R _).map_one⟩
@@ -91,7 +93,7 @@ theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {
   rw [← FractionalIdeal.coe_spanSingleton S, ← inv_inv I, eq_comm]
   refine congr_arg coeToSubmodule (Units.eq_inv_of_mul_eq_one_left (le_antisymm ?_ ?_))
   · conv_rhs => rw [← hinv, mul_comm]
-    apply mul_le_mul_left' (FractionalIdeal.spanSingleton_le_iff_mem.mpr hw)
+    grw [FractionalIdeal.spanSingleton_le_iff_mem.mpr hw]
   · rw [FractionalIdeal.one_le, ← hvw, mul_comm]
     exact FractionalIdeal.mul_mem_mul (FractionalIdeal.mem_spanSingleton_self _ _) hv
 
@@ -183,6 +185,7 @@ theorem IsPrincipalIdealRing.of_finite_primes [IsDedekindDomain R]
     (h : {I : Ideal R | I.IsPrime}.Finite) : IsPrincipalIdealRing R :=
   IsPrincipalIdealRing.of_finite_maximals <| h.subset fun _ hi ↦ hi.isPrime
 
+section
 variable [IsDedekindDomain R]
 variable (S : Type*) [CommRing S]
 variable [Algebra R S] [NoZeroSMulDivisors R S] [Module.Finite R S]
@@ -252,3 +255,15 @@ theorem IsDedekindDomain.isPrincipalIdealRing_localization_over_prime [IsDomain 
   exact
     and_iff_right_of_imp fun hP =>
       or_iff_not_imp_left.mpr (IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime S p hp0 hP)
+end
+
+-- not an instance because this might cause a timeout
+theorem IsPrincipalIdealRing.of_isDedekindDomain_of_uniqueFactorizationMonoid
+    (R : Type*) [CommRing R] [IsDedekindDomain R] [UniqueFactorizationMonoid R] :
+    IsPrincipalIdealRing R := by
+  refine .of_prime_ne_bot fun P hp hp₀ ↦ ?_
+  obtain ⟨x, hx₁, hx₂⟩ := hp.exists_mem_prime_of_ne_bot hp₀
+  suffices Ideal.span {x} = P from this ▸ inferInstance
+  have := (Ideal.span_singleton_prime hx₂.ne_zero).mpr hx₂
+  exact (Ring.DimensionLeOne.prime_le_prime_iff_eq (by aesop)).mp <|
+    P.span_singleton_le_iff_mem.mpr hx₁
