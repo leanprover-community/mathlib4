@@ -815,10 +815,13 @@ theorem degree_eq_zero_of_subsingleton (G' : Subgraph G) (v : V) [Fintype (G'.ne
     exact G'.coe.degree_eq_zero_of_subsingleton ⟨v, hv⟩ ((Set.subsingleton_coe _).mpr hG)
   · exact degree_of_notMem_verts hv
 
-theorem degree_eq_one_iff_unique_adj {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)] :
+theorem degree_eq_one_iff_existsUnique_adj {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)] :
     G'.degree v = 1 ↔ ∃! w : V, G'.Adj v w := by
   rw [← finset_card_neighborSet_eq_degree, Finset.card_eq_one, Finset.singleton_iff_unique_mem]
   simp only [Set.mem_toFinset, mem_neighborSet]
+
+@[deprecated (since := "2025-10-31")]
+alias degree_eq_one_iff_unique_adj := degree_eq_one_iff_existsUnique_adj
 
 theorem nontrivial_verts_of_degree_ne_zero {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)]
     (h : G'.degree v ≠ 0) : Nontrivial G'.verts := by
