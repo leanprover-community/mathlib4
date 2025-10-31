@@ -706,7 +706,7 @@ lemma domDomRestrict_aux {ι} [DecidableEq ι] (P : ι → Prop) [DecidablePred 
     Function.update (fun j => if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩) i c := by
   ext j
   by_cases h : j = i
-  #adaptation_note /-- 2025-10-31
+  #adaptation_note /-- 2025-10-31 https://github.com/leanprover/lean4/issues/11036
     Used to be `<;> grind [Function.update_self, Function.update_of_ne]` -/
   · subst h
     simp [i.2]
