@@ -89,14 +89,6 @@ theorem trans_app {F G H : C ⥤ D} (α : F ≅ G) (β : G ≅ H) (X : C) :
     (α ≪≫ β).app X = α.app X ≪≫ β.app X :=
   rfl
 
-@[deprecated Iso.app_hom (since := "2025-03-11")]
-theorem app_hom {F G : C ⥤ D} (α : F ≅ G) (X : C) : (α.app X).hom = α.hom.app X :=
-  rfl
-
-@[deprecated Iso.app_hom (since := "2025-03-11")]
-theorem app_inv {F G : C ⥤ D} (α : F ≅ G) (X : C) : (α.app X).inv = α.inv.app X :=
-  rfl
-
 variable {F G : C ⥤ D}
 
 instance hom_app_isIso (α : F ≅ G) (X : C) : IsIso (α.hom.app X) :=

@@ -133,8 +133,6 @@ protected theorem sign_eq_ediv_abs' (a : ℤ) : sign a = a / |a| :=
   if az : a = 0 then by simp [az]
   else (Int.ediv_eq_of_eq_mul_left (mt abs_eq_zero.1 az) (sign_mul_abs _).symm).symm
 
-@[deprecated (since := "2025-03-10")] alias sign_eq_ediv_abs := Int.sign_eq_ediv_abs'
-
 protected theorem sign_eq_abs_ediv (a : ℤ) : sign a = |a| / a :=
   if az : a = 0 then by simp [az]
   else (Int.ediv_eq_of_eq_mul_left az (sign_mul_self_eq_abs _).symm).symm

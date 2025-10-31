@@ -233,9 +233,6 @@ lemma leftRel_prod {β : Type*} [Group β] (s' : Subgroup β) :
   simp_rw [leftRel_apply]
   rfl
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.QuotientAddGroup.leftRel_sum := QuotientAddGroup.leftRel_prod
-
 @[to_additive]
 lemma leftRel_pi {ι : Type*} {β : ι → Type*} [∀ i, Group (β i)] (s' : ∀ i, Subgroup (β i)) :
     leftRel (Subgroup.pi Set.univ s') = @piSetoid _ _ fun i ↦ leftRel (s' i) := by
@@ -255,9 +252,6 @@ lemma rightRel_prod {β : Type*} [Group β] (s' : Subgroup β) :
   rw [Setoid.prod_apply]
   simp_rw [rightRel_apply]
   rfl
-
-@[deprecated (since := "2025-03-11")]
-alias _root_.QuotientAddGroup.rightRel_sum := QuotientAddGroup.rightRel_prod
 
 @[to_additive]
 lemma rightRel_pi {ι : Type*} {β : ι → Type*} [∀ i, Group (β i)] (s' : ∀ i, Subgroup (β i)) :
@@ -379,15 +373,6 @@ def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
       (QuotientGroup.mk_mul_of_mem (f a) b.2).trans (hf a)
     simp_rw [Quotient.map'_mk'', id, key, inv_mul_cancel_left]
 
-@[deprecated (since := "2025-03-11")]
-alias AddSubgroup.quotientEquivSumOfLE' := AddSubgroup.quotientEquivProdOfLE'
-
-@[deprecated (since := "2025-03-11")]
-alias AddSubgroup.quotientEquivSumOfLE'_apply := AddSubgroup.quotientEquivProdOfLE'_apply
-
-@[deprecated (since := "2025-03-11")]
-alias AddSubgroup.quotientEquivSumOfLE'_symm_apply := AddSubgroup.quotientEquivProdOfLE'_symm_apply
-
 /-- If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively.
 The constructive version is `quotientEquivProdOfLE'`. -/
 @[to_additive (attr := simps!) quotientEquivProdOfLE
@@ -395,15 +380,6 @@ The constructive version is `quotientEquivProdOfLE'`. -/
 constructive version is `quotientEquivProdOfLE'`. -/]
 noncomputable def quotientEquivProdOfLE (h_le : s ≤ t) : α ⧸ s ≃ (α ⧸ t) × t ⧸ s.subgroupOf t :=
   quotientEquivProdOfLE' h_le Quotient.out Quotient.out_eq'
-
-@[deprecated (since := "2025-03-11")]
-alias AddSubgroup.quotientEquivSumOfLE := AddSubgroup.quotientEquivProdOfLE
-
-@[deprecated (since := "2025-03-11")]
-alias AddSubgroup.quotientEquivSumOfLE_apply := AddSubgroup.quotientEquivProdOfLE_apply
-
-@[deprecated (since := "2025-03-11")]
-alias AddSubgroup.quotientEquivSumOfLE_symm_apply := AddSubgroup.quotientEquivProdOfLE_symm_apply
 
 /-- If `s ≤ t`, then there is an embedding `s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t`. -/
 @[to_additive

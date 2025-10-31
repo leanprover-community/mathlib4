@@ -298,8 +298,6 @@ theorem zeroLocus_eq_univ_iff (s : Set R) :
     zeroLocus s = Set.univ ↔ s ⊆ nilradical R := by
   rw [← Set.univ_subset_iff, subset_zeroLocus_iff_subset_vanishingIdeal, vanishingIdeal_univ]
 
-@[deprecated (since := "2025-04-05")] alias zeroLocus_eq_top_iff := zeroLocus_eq_univ_iff
-
 theorem zeroLocus_sup (I J : Ideal R) :
     zeroLocus ((I ⊔ J : Ideal R) : Set R) = zeroLocus I ∩ zeroLocus J :=
   (gc R).l_sup

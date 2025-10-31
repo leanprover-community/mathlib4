@@ -56,9 +56,6 @@ lemma mem_mgraph {f : G →* H} {x : G × H} : x ∈ f.mgraph ↔ f x.1 = x.2 :=
 @[to_additive mgraph_eq_mrange_prod]
 lemma mgraph_eq_mrange_prod (f : G →* H) : f.mgraph = mrange ((id _).prod f) := by aesop
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddMonoidHom.mgraph_eq_mrange_sum := AddMonoidHom.mgraph_eq_mrange_prod
-
 /-- **Vertical line test** for monoid homomorphisms.
 
 Let `f : G → H × I` be a homomorphism to a product of monoids. Assume that `f` is surjective on the
@@ -170,9 +167,6 @@ lemma mem_graph {f : G →* H} {x : G × H} : x ∈ f.graph ↔ f x.1 = x.2 := .
 
 @[to_additive graph_eq_range_prod]
 lemma graph_eq_range_prod (f : G →* H) : f.graph = range ((id _).prod f) := by aesop
-
-@[deprecated (since := "2025-03-11")]
-alias AddMonoidHom.graph_eq_range_sum := graph_eq_range_prod
 
 /-- **Vertical line test** for group homomorphisms.
 

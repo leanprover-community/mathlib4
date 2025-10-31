@@ -45,7 +45,7 @@ finset multiplication, finset addition, pointwise addition, pointwise multiplica
 pointwise subtraction
 -/
 
-assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction OrderedCommMonoid
+assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction IsOrderedMonoid
 
 open Function MulOpposite
 

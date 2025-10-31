@@ -294,8 +294,6 @@ theorem mul_eq_dfinsuppSum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' :
   simp only [gMulHom, AddMonoidHom.dfinsuppSum_apply, flip_apply, coe_comp, AddMonoidHom.coe_mk,
     ZeroHom.coe_mk, Function.comp_apply, AddMonoidHom.compHom_apply_apply]
 
-@[deprecated (since := "2025-04-06")] alias mul_eq_dfinsupp_sum := mul_eq_dfinsuppSum
-
 /-- A heavily unfolded version of the definition of multiplication -/
 theorem mul_eq_sum_support_ghas_mul [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
     a * a' =

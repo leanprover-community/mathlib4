@@ -108,8 +108,6 @@ lemma le_div_two_iff_mul_two_le {n m : ℕ} : m ≤ n / 2 ↔ (m : ℤ) * 2 ≤ 
 lemma div_lt_self' (a b : ℕ) : (a + 1) / (b + 2) < a + 1 :=
   Nat.div_lt_self (Nat.succ_pos _) (Nat.succ_lt_succ (Nat.succ_pos _))
 
-@[deprecated (since := "2025-04-15")] alias sub_mul_div' := sub_mul_div
-
 @[deprecated (since := "2025-06-05")] alias eq_zero_of_le_half := eq_zero_of_le_div_two
 @[deprecated (since := "2025-06-05")] alias le_half_of_half_lt_sub := le_div_two_of_div_two_lt_sub
 @[deprecated (since := "2025-06-05")] alias half_le_of_sub_le_half := div_two_le_of_sub_le_div_two

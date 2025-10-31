@@ -62,19 +62,6 @@ instance Int.hasSolidNorm : HasSolidNorm ℤ where
 
 end SolidNorm
 
-/--
-Let `α` be a normed commutative group equipped with a partial order covariant with addition, with
-respect which `α` forms a lattice. Suppose that `α` is *solid*, that is to say, for `a` and `b` in
-`α`, with absolute values `|a|` and `|b|` respectively, `|a| ≤ |b|` implies `‖a‖ ≤ ‖b‖`. Then `α` is
-said to be a normed lattice ordered group.
--/
-@[deprecated
-  "Use `[NormedAddCommGroup α] [Lattice α] [HasSolidNorm α] [IsOrderedAddMonoid α]` instead."
-  (since := "2025-04-10")]
-structure NormedLatticeAddCommGroup (α : Type*) extends
-    NormedAddCommGroup α, Lattice α, HasSolidNorm α where
-  add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
-
 variable {α : Type*} [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α] [IsOrderedAddMonoid α]
 
 open HasSolidNorm

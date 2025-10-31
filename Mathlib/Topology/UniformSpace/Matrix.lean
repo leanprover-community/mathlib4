@@ -25,9 +25,6 @@ instance instIsUniformAddGroup [AddGroup 𝕜] [IsUniformAddGroup 𝕜] :
     IsUniformAddGroup (Matrix m n 𝕜) :=
   inferInstanceAs <| IsUniformAddGroup (m → n → 𝕜)
 
-@[deprecated (since := "2025-03-31")] alias
-  instUniformAddGroup := Matrix.instIsUniformAddGroup
-
 theorem uniformity :
     𝓤 (Matrix m n 𝕜) = ⨅ (i : m) (j : n), (𝓤 𝕜).comap fun a => (a.1 i j, a.2 i j) := by
   erw [Pi.uniformity]

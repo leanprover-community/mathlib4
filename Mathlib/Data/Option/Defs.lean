@@ -66,12 +66,4 @@ theorem merge_isIdempotent (f : α → α → α) [Std.IdempotentOp f] :
 @[deprecated lawfulIdentity_merge (since := "2025-06-03")]
 theorem merge_isId (f : α → α → α) : Std.LawfulIdentity (merge f) none := lawfulIdentity_merge f
 
-@[deprecated (since := "2025-04-04")] alias liftOrGet_isCommutative :=
-  merge_isCommutative
-@[deprecated (since := "2025-04-04")] alias liftOrGet_isAssociative :=
-  merge_isAssociative
-@[deprecated (since := "2025-04-04")] alias liftOrGet_isIdempotent :=
-  merge_isIdempotent
-@[deprecated (since := "2025-04-04")] alias liftOrGet_isId := merge_isId
-
 end Option

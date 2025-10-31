@@ -281,8 +281,6 @@ theorem hasLimit_of_iso {F G : J ⥤ C} [HasLimit F] (α : F ≅ G) : HasLimit G
     { cone := (Cones.postcompose α.hom).obj (limit.cone F)
       isLimit := (IsLimit.postcomposeHomEquiv _ _).symm (limit.isLimit F) }
 
-@[deprecated (since := "2025-03-03")] alias hasLimitOfIso := hasLimit_of_iso
-
 theorem hasLimit_iff_of_iso {F G : J ⥤ C} (α : F ≅ G) : HasLimit F ↔ HasLimit G :=
   ⟨fun _ ↦ hasLimit_of_iso α, fun _ ↦ hasLimit_of_iso α.symm⟩
 
@@ -442,11 +440,6 @@ instance hasLimit_equivalence_comp (e : K ≌ J) [HasLimit F] : HasLimit (e.func
 theorem hasLimit_of_equivalence_comp (e : K ≌ J) [HasLimit (e.functor ⋙ F)] : HasLimit F := by
   haveI : HasLimit (e.inverse ⋙ e.functor ⋙ F) := Limits.hasLimit_equivalence_comp e.symm
   apply hasLimit_of_iso (e.invFunIdAssoc F)
-
-@[deprecated (since := "2025-03-02")] alias hasLimitEquivalenceComp :=
-  hasLimit_equivalence_comp
-@[deprecated (since := "2025-03-02")] alias hasLimitOfEquivalenceComp :=
-  hasLimit_of_equivalence_comp
 
 -- `hasLimitCompEquivalence` and `hasLimitOfCompEquivalence`
 -- are proved in `CategoryTheory/Adjunction/Limits.lean`.
@@ -807,8 +800,6 @@ theorem hasColimit_of_iso {F G : J ⥤ C} [HasColimit F] (α : G ≅ F) : HasCol
   HasColimit.mk
     { cocone := (Cocones.precompose α.hom).obj (colimit.cocone F)
       isColimit := (IsColimit.precomposeHomEquiv _ _).symm (colimit.isColimit F) }
-
-@[deprecated (since := "2025-03-03")] alias hasColimitOfIso := hasColimit_of_iso
 
 theorem hasColimit_iff_of_iso {F G : J ⥤ C} (α : F ≅ G) : HasColimit F ↔ HasColimit G :=
   ⟨fun _ ↦ hasColimit_of_iso α.symm, fun _ ↦ hasColimit_of_iso α⟩

@@ -31,7 +31,7 @@ choosing between `insert` and `Finset.cons`, or between `Finset.union` and `Fins
 * `Finset.subtype`: `s.subtype p` is the finset of `Subtype p` whose elements belong to `s`.
 * `Finset.fin`:`s.fin n` is the finset of all elements of `s` less than `n`.
 -/
-assert_not_exists Monoid OrderedCommMonoid
+assert_not_exists Monoid IsOrderedMonoid
 
 variable {α β γ : Type*}
 

@@ -46,7 +46,7 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
-assert_not_exists OrderedAddCommMonoid Multiset Ring
+assert_not_exists IsOrderedMonoid Multiset Ring
 
 open Function
 open scoped Int
@@ -125,9 +125,6 @@ theorem top_prod_top : (⊤ : Subgroup G).prod (⊤ : Subgroup N) = ⊤ :=
 @[to_additive (attr := simp) bot_prod_bot]
 theorem bot_prod_bot : (⊥ : Subgroup G).prod (⊥ : Subgroup N) = ⊥ :=
   SetLike.coe_injective <| by simp [coe_prod]
-
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddSubgroup.bot_sum_bot := AddSubgroup.bot_prod_bot
 
 @[to_additive le_prod_iff]
 theorem le_prod_iff {H : Subgroup G} {K : Subgroup N} {J : Subgroup (G × N)} :
@@ -569,16 +566,10 @@ theorem prodMap_comap_prod {G' : Type*} {N' : Type*} [Group G'] [Group N'] (f : 
     (S.prod S').comap (prodMap f g) = (S.comap f).prod (S'.comap g) :=
   SetLike.coe_injective <| Set.preimage_prod_map_prod f g _ _
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddMonoidHom.sumMap_comap_sum := AddMonoidHom.prodMap_comap_prod
-
 @[to_additive ker_prodMap]
 theorem ker_prodMap {G' : Type*} {N' : Type*} [Group G'] [Group N'] (f : G →* N) (g : G' →* N') :
     (prodMap f g).ker = f.ker.prod g.ker := by
   rw [← comap_bot, ← comap_bot, ← comap_bot, ← prodMap_comap_prod, bot_prod_bot]
-
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddMonoidHom.ker_sumMap := AddMonoidHom.ker_prodMap
 
 @[to_additive (attr := simp)]
 lemma ker_fst : ker (fst G G') = .prod ⊥ ⊤ := SetLike.ext fun _ => (iff_of_eq (and_true _)).symm
@@ -617,13 +608,6 @@ variable {N : Type*} [Group N] (f : G →* N)
 theorem comap_normalizer_eq_of_surjective (H : Subgroup G) {f : N →* G}
     (hf : Function.Surjective f) : H.normalizer.comap f = (H.comap f).normalizer :=
   comap_normalizer_eq_of_le_range fun x _ ↦ hf x
-
-@[deprecated (since := "2025-03-13")]
-alias comap_normalizer_eq_of_injective_of_le_range := comap_normalizer_eq_of_le_range
-
-@[deprecated (since := "2025-03-13")]
-alias _root_.AddSubgroup.comap_normalizer_eq_of_injective_of_le_range :=
-  AddSubgroup.comap_normalizer_eq_of_le_range
 
 /-- The image of the normalizer is equal to the normalizer of the image of an isomorphism. -/
 @[to_additive
@@ -816,18 +800,12 @@ instance prod_subgroupOf_prod_normal {H₁ K₁ : Subgroup G} {H₂ K₂ : Subgr
       h₂.conj_mem ⟨(n : G × N).snd, (mem_prod.mp n.2).2⟩ hgHK.2
         ⟨(g : G × N).snd, (mem_prod.mp g.2).2⟩⟩
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddSubgroup.sum_addSubgroupOf_sum_normal := AddSubgroup.prod_addSubgroupOf_prod_normal
-
 @[to_additive prod_normal]
 instance prod_normal (H : Subgroup G) (K : Subgroup N) [hH : H.Normal] [hK : K.Normal] :
     (H.prod K).Normal where
   conj_mem n hg g :=
     ⟨hH.conj_mem n.fst (Subgroup.mem_prod.mp hg).1 g.fst,
       hK.conj_mem n.snd (Subgroup.mem_prod.mp hg).2 g.snd⟩
-
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddSubgroup.sum_normal := AddSubgroup.prod_normal
 
 @[to_additive]
 theorem inf_subgroupOf_inf_normal_of_right (A B' B : Subgroup G)

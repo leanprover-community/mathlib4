@@ -183,9 +183,6 @@ theorem isUnit_exp {a : A} (h : IsNilpotent a) : IsUnit (exp a) := by
   use exp (-a)
   exact ⟨exp_mul_exp_neg_self h, exp_neg_mul_exp_self h⟩
 
-@[deprecated (since := "2025-03-11")]
-alias exp_of_nilpotent_is_unit := isUnit_exp
-
 theorem map_exp {B F : Type*} [Ring B] [FunLike F A B] [RingHomClass F A B] [Module ℚ B]
     {a : A} (ha : IsNilpotent a) (f : F) :
     f (exp a) = exp (f a) := by

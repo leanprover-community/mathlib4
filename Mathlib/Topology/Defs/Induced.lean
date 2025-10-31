@@ -96,8 +96,6 @@ if either of the following equivalent conditions hold:
 structure IsCoherentWith (S : Set (Set X)) : Prop where
   isOpen_of_forall_induced (u : Set X) : (∀ s ∈ S, IsOpen ((↑) ⁻¹' u : Set s)) → IsOpen u
 
-@[deprecated (since := "2025-04-08")] alias RestrictGenTopology := Topology.IsCoherentWith
-
 /-- A function `f : X → Y` between topological spaces is inducing if the topology on `X` is induced
 by the topology on `Y` through `f`, meaning that a set `s : Set X` is open iff it is the preimage
 under `f` of some open set `t : Set Y`. -/

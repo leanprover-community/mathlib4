@@ -178,13 +178,8 @@ theorem gcd_eq_gcd_ab : ∀ x y : ℤ, (gcd x y : ℤ) = x * gcdA x y + y * gcdB
 theorem lcm_def (i j : ℤ) : lcm i j = Nat.lcm (natAbs i) (natAbs j) :=
   rfl
 
-@[deprecated (since := "2025-04-04")] alias coe_nat_lcm := Int.lcm_natCast_natCast
-
 alias gcd_div := gcd_ediv
 alias gcd_div_gcd_div_gcd := gcd_ediv_gcd_ediv_gcd
-
-@[deprecated (since := "2025-04-04")] alias gcd_dvd_gcd_mul_left := gcd_dvd_gcd_mul_left_left
-@[deprecated (since := "2025-04-04")] alias gcd_dvd_gcd_mul_right := gcd_dvd_gcd_mul_right_left
 
 /-- If `gcd a (m * n) = 1`, then `gcd a m = 1`. -/
 theorem gcd_eq_one_of_gcd_mul_right_eq_one_left {a : ℤ} {m n : ℕ} (h : a.gcd (m * n) = 1) :
