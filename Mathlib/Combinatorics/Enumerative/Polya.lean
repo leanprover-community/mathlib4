@@ -143,7 +143,7 @@ abbrev CyclesOfGroup (g : Equiv.Perm X) : Type u :=
   Quotient (Equiv.Perm.SameCycle.setoid g)
 
 /-- The number of cycles of the permutation `g` on `X`. -/
-abbrev numCyclesOfGroup 
+abbrev numCyclesOfGroup
     (g : Equiv.Perm X) [Fintype (CyclesOfGroup X g)] : ℕ :=
   Fintype.card (CyclesOfGroup X g)
 
@@ -217,15 +217,15 @@ lemma f_mem_fixedBy_iff_forall_eq_to_eq (g : (Equiv.Perm X)) (c : X → Y) :
         rw [zpow_add_one]
         simp only [mul_smul]
         nth_rw 2 [← ih]
-        rw[hg]
-        simp
+        · rw[hg]
+          simp
         exact rfl
       · intro k ih
         rw [zpow_sub_one]
         simp only [mul_smul]
         nth_rw 2 [← ih]
-        rw[hg_inv]
-        exact fun this => rfl
+        · rw[hg_inv]
+          exact fun this => rfl
         simp
         by_cases hk : k = 0
         · rw [hk]
@@ -250,7 +250,7 @@ lemma f_mem_fixedBy_iff_forall_eq_to_eq (g : (Equiv.Perm X)) (c : X → Y) :
     have hab : (⟦g⁻¹ • x⟧ :Quotient (Equiv.Perm.SameCycle.setoid (MulAction.toPerm g)))= ⟦x⟧ := by
       apply Quotient.sound
       refine ⟨(1 : Int), ?_⟩
-      simp
+      simp only [zpow_one, Perm.smul_def, toPerm_apply, Perm.apply_inv_self]
     have := hconst (g⁻¹ • x) x hab
     rw[← this]
     exact hconst (g⁻¹ • x) (g⁻¹ • x) rfl
