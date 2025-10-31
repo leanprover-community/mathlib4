@@ -6,7 +6,6 @@ Authors: Vincent Beffara
 import Mathlib.Analysis.Complex.RemovableSingularity
 import Mathlib.Analysis.Calculus.UniformLimitsDeriv
 import Mathlib.Analysis.Normed.Group.FunctionSeries
-import Mathlib.Analysis.Complex.Liouville
 
 /-!
 # Locally uniform limits of holomorphic functions
@@ -40,21 +39,9 @@ holomorphic, because it depends continuously on `f` for the uniform topology. -/
 noncomputable def cderiv (r : ℝ) (f : ℂ → E) (z : ℂ) : E :=
   (2 * π * I : ℂ)⁻¹ • ∮ w in C(z, r), ((w - z) ^ 2)⁻¹ • f w
 
-/-- A circle integral which coincides with `iteratedDeriv n f z` whenever one can apply the Cauchy
-formula. -/
-noncomputable def citeratedDeriv (n : ℕ) (r : ℝ) (f : ℂ → E) (z : ℂ) : E :=
-  (2 * π * I : ℂ)⁻¹ • ∮ w in C(z, r), (w - z)⁻¹ ^ n • (w - z)⁻¹ • f w
-
 theorem cderiv_eq_deriv [CompleteSpace E] (hU : IsOpen U) (hf : DifferentiableOn ℂ f U) (hr : 0 < r)
     (hzr : closedBall z r ⊆ U) : cderiv r f z = deriv f z :=
   two_pi_I_inv_smul_circleIntegral_sub_sq_inv_smul_of_differentiable hU hzr hf (mem_ball_self hr)
-
-theorem citeratedDeriv_eq_iteratedDeriv [CompleteSpace E]
-    (hf : DifferentiableOn ℂ f U) (hr : 0 < r) (n : ℕ) (hzr : closedBall z r ⊆ U) :
-    n.factorial • citeratedDeriv n r f z = iteratedDeriv n f z := by
-  unfold citeratedDeriv; symm
-  exact iteratedDeriv_eq_smul_circleIntegral (n := n) (f := f) hr
-    (closure_ball z (ne_of_gt hr) ▸ hf.mono hzr).diffContOnCl
 
 theorem norm_cderiv_le (hr : 0 < r) (hf : ∀ w ∈ sphere z r, ‖f w‖ ≤ M) :
     ‖cderiv r f z‖ ≤ M / r := by

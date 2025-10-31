@@ -33,53 +33,50 @@ local postfix:100 "̂" => UniformSpace.Completion
 
 namespace Complex
 
-/-- If `f` is complex differentiable on an open disc with center `c` and radius `R > 0` and is
-continuous on its closure, then `f' c` can be represented as an integral over the corresponding
-circle. -/
-theorem deriv_eq_smul_circleIntegral [CompleteSpace F] {R : ℝ} {c : ℂ} {f : ℂ → F} (hR : 0 < R)
-    (hf : DiffContOnCl ℂ f (ball c R)) :
-    deriv f c = (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - c) ^ (-2 : ℤ) • f z := by
-  lift R to ℝ≥0 using hR.le
-  refine (hf.hasFPowerSeriesOnBall hR).hasFPowerSeriesAt.deriv.trans ?_
-  simp only [cauchyPowerSeries_apply, one_div, zpow_neg, pow_one, smul_smul, zpow_two, mul_inv]
-
-theorem iteratedDeriv_eq_smul_circleIntegral [CompleteSpace F] {R : ℝ} {c : ℂ} {n : ℕ} {f : ℂ → F}
-    (hR : 0 < R) (hf : DiffContOnCl ℂ f (ball c R)) : iteratedDeriv n f c = n.factorial  •
-    (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - c)⁻¹ ^ n • (z - c)⁻¹ • f z := by
-  lift R to ℝ≥0 using hR.le
-  rw [iteratedDeriv, ← (hf.hasFPowerSeriesOnBall hR).factorial_smul, cauchyPowerSeries]
-  simp
-
 /-- Cauchy's Estimate. -/
 private theorem norm_deriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {f : ℂ → F} (hR : 0 < R)
     (hf : DiffContOnCl ℂ f (ball c R)) (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
     ‖deriv f c‖ ≤ C / R := by
-  have : ∀ z ∈ sphere c R, ‖(z - c) ^ (-2 : ℤ) • f z‖ ≤ C / (R * R) :=
+  have hp : ∀ z ∈ sphere c R, ‖(z - c) ^ (-2 : ℤ) • f z‖ ≤ C / (R * R) :=
     fun z (hz : ‖z - c‖ = R) => by
     simpa [-mul_inv_rev, norm_smul, hz, zpow_two, ← div_eq_inv_mul] using
       (div_le_div_iff_of_pos_right (mul_pos hR hR)).2 (hC z hz)
+  have hq : deriv f c = (2 * π * I)⁻¹ • ∮ z in C(c, R), (z - c) ^ (-2 : ℤ) • f z := by
+    calc
+      deriv f c = (2 * π * I)⁻¹ • (2 * π * I) • deriv f c := by
+                rw [smul_comm, smul_inv_smul₀]; simp
+              _ = (2 * π * I)⁻¹ • ∮ z in C(c, R), (1 / (z - c) ^ 2) • f z := by
+                congr; exact (DiffContOnCl.deriv_eq_smul_circleIntegral hR hf).symm
+              _ = (2 * π * I)⁻¹ • ∮ z in C(c, R), (z - c) ^ (-2 : ℤ) • f z := by field_simp
   calc
-    ‖deriv f c‖ = ‖(2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - c) ^ (-2 : ℤ) • f z‖ :=
-      congr_arg norm (deriv_eq_smul_circleIntegral hR hf)
+    ‖deriv f c‖ = ‖(2 * π * I)⁻¹ • ∮ z in C(c, R), (z - c) ^ (-2 : ℤ) • f z‖ :=
+      congr_arg norm hq
     _ ≤ R * (C / (R * R)) :=
-      (circleIntegral.norm_two_pi_i_inv_smul_integral_le_of_norm_le_const hR.le this)
+      (circleIntegral.norm_two_pi_i_inv_smul_integral_le_of_norm_le_const hR.le hp)
     _ = C / R := by rw [mul_div_left_comm, div_self_mul_self', div_eq_mul_inv]
 
 theorem norm_iteratedDeriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {n : ℕ} {f : ℂ → F}
     (hR : 0 < R) (hf : DiffContOnCl ℂ f (ball c R)) (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
     ‖iteratedDeriv n f c‖ ≤ n.factorial * C / R ^ n := by
-  have : ∀ z ∈ sphere c R, ‖(z - c)⁻¹ ^ n • (z - c)⁻¹ • f z‖ ≤ C / (R ^ n  * R) :=
+  have hp : ∀ z ∈ sphere c R, ‖(z - c)⁻¹ ^ (n + 1) • f z‖ ≤ C / (R ^ n  * R) :=
     fun z (hz : ‖z - c‖ = R) => by
     have := (div_le_div_iff_of_pos_right (mul_pos (pow_pos hR n) hR)).2 (hC z hz)
-    simp [norm_smul, norm_pow, norm_inv, hz, ← div_eq_inv_mul, ← div_mul_eq_div_div, mul_comm R]
+    simp [norm_smul, norm_pow, norm_inv, hz, ← div_eq_inv_mul]
     exact this
+  have hq : iteratedDeriv n f c = n.factorial  •
+    (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - c)⁻¹ ^ (n + 1) • f z := by
+    calc
+      iteratedDeriv n f c = n.factorial • (2 * π * I)⁻¹ • (2 * π * I / n.factorial) •
+        iteratedDeriv n f c := by sorry
+      _ = n.factorial • (2 * π * I)⁻¹ •  (∮ z in C(c, R), (1 / (z - c) ^ (n + 1)) • f z) := by
+                congr; exact (DiffContOnCl.circleIntegral_one_div_sub_center_pow_smul hR n hf).symm
+      _ = n.factorial • (2 * π * I)⁻¹ • ∮ z in C(c, R), (z - c)⁻¹ ^ (n + 1) • f z := by simp
   calc
-    ‖iteratedDeriv n f c‖ = ‖n.factorial • (2 * π * I : ℂ)⁻¹ •
-      ∮ z in C(c, R), (z - c)⁻¹ ^ n • (z - c)⁻¹ • f z‖ :=
-      congr_arg norm (iteratedDeriv_eq_smul_circleIntegral hR hf)
-    _ ≤ n.factorial * (R * (C / (R ^ n * R))) := by
+    ‖iteratedDeriv n f c‖ = ‖n.factorial • (2 * π * I)⁻¹ •
+      ∮ z in C(c, R), (z - c)⁻¹ ^ (n + 1) • f z‖ := congr_arg norm hq
+    _ ≤ n.factorial * (R * (C / (R ^ (n + 1)))) := by
       simp only [RCLike.norm_nsmul (K := ℂ), nsmul_eq_mul]
-      have := (circleIntegral.norm_two_pi_i_inv_smul_integral_le_of_norm_le_const hR.le this)
+      have := (circleIntegral.norm_two_pi_i_inv_smul_integral_le_of_norm_le_const hR.le hp)
       refine mul_le_mul_of_nonneg_left this (?_ : (0 : ℝ) ≤ n.factorial)
       exact_mod_cast ((Nat.factorial_pos n).le)
     _ = n.factorial * C / R ^ n := by

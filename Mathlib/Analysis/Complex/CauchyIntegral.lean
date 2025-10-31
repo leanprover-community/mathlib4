@@ -721,6 +721,13 @@ lemma _root_.DiffContOnCl.circleIntegral_one_div_sub_center_pow_smul
   c.circleIntegral_one_div_sub_center_pow_smul_of_differentiable_on_off_countable h0 n
     Set.countable_empty hc.continuousOn_ball fun _ hx ↦ hc.differentiableAt isOpen_ball hx.1
 
+/-- **Cauchy integral formula for the first order derivative**, assuming `f` is continuous on a
+closed ball and differentiable on its interior. -/
+lemma _root_.DiffContOnCl.deriv_eq_smul_circleIntegral (h0 : 0 < R)
+    (hc : DiffContOnCl ℂ f (ball c R)) :
+    (∮ z in C(c, R), (1 / (z - c) ^ 2) • f z) = (2 * π * I) • deriv f c := by
+  simpa using DiffContOnCl.circleIntegral_one_div_sub_center_pow_smul h0 1 hc
+
 /-- **Cauchy integral formula for derivatives**, assuming `f` is differentiable on a closed ball. -/
 lemma _root_.DifferentiableOn.circleIntegral_one_div_sub_center_pow_smul (h0 : 0 < R) (n : ℕ)
     (hc : DifferentiableOn ℂ f (closedBall c R)) :
@@ -728,6 +735,13 @@ lemma _root_.DifferentiableOn.circleIntegral_one_div_sub_center_pow_smul (h0 : 0
       = (2 * π * I / n.factorial) • iteratedDeriv n f c :=
   (hc.mono closure_ball_subset_closedBall).diffContOnCl
     |>.circleIntegral_one_div_sub_center_pow_smul h0 n
+
+/-- **Cauchy integral formula for the first order derivative**, assuming `f` is differentiable on
+a closed ball. -/
+lemma _root_.DifferentiableOn.deriv_eq_smul_circleIntegral (h0 : 0 < R)
+    (hc : DifferentiableOn ℂ f (closedBall c R)) :
+    (∮ z in C(c, R), (1 / (z - c) ^ 2) • f z) = (2 * π * I) • deriv f c := by
+  simpa using DifferentiableOn.circleIntegral_one_div_sub_center_pow_smul h0 1 hc
 
 end derivatives
 
