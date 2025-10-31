@@ -13,7 +13,7 @@ import re
 from collections import defaultdict
 from pathlib import Path
 
-def main():
+def main() -> None:
     # Run lake build --no-build ONCE to collect warnings without building
     print("Running lake build --no-build to collect deprecation warnings...")
     result = subprocess.run(['lake', 'build', '--no-build'], capture_output=True, text=True)
@@ -59,9 +59,8 @@ def main():
     files_changed = total_changes = 0
     skipped = []
 
-    for filepath in sorted(warnings_by_file.keys()):
-        warnings = warnings_by_file[filepath]
-        print(f"{filepath}")
+    for filepath, warnings in sorted(warnings_by_file.items()):
+        print(filepath)
 
         with open(filepath, 'r') as f:
             lines = f.readlines()
