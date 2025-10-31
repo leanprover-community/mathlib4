@@ -164,7 +164,7 @@ register_option linter.tacticAnalysis.rwMerge : Bool := {
 }
 
 @[tacticAnalysis linter.tacticAnalysis.rwMerge, inherit_doc linter.tacticAnalysis.rwMerge]
-def rwMerge : TacticAnalysis.Config := .ofComplex {
+def Mathlib.TacticAnalysis.rwMerge : TacticAnalysis.Config := .ofComplex {
   out := (List MVarId × Array Syntax)
   ctx := (Array (Array Syntax))
   trigger ctx stx :=
@@ -193,7 +193,7 @@ private abbrev mergeWithGrindAllowed : Std.HashSet Name := { `«tactic#adaptatio
 
 @[tacticAnalysis linter.tacticAnalysis.mergeWithGrind,
   inherit_doc linter.tacticAnalysis.mergeWithGrind]
-def mergeWithGrind : TacticAnalysis.Config where
+def Mathlib.TacticAnalysis.mergeWithGrind : TacticAnalysis.Config where
   run seq := do
     if let #[(preCtx, preI), (_postCtx, postI)] := seq[0:2].array then
       if postI.stx.getKind == ``Lean.Parser.Tactic.grind && preI.stx.getKind ∉ mergeWithGrindAllowed then
@@ -212,7 +212,7 @@ register_option linter.tacticAnalysis.terminalToGrind : Bool := {
 
 @[tacticAnalysis linter.tacticAnalysis.terminalToGrind,
   inherit_doc linter.tacticAnalysis.terminalToGrind]
-def terminalToGrind : TacticAnalysis.Config where
+def Mathlib.TacticAnalysis.terminalToGrind : TacticAnalysis.Config where
   run seq := do
     let threshold := 3
     -- `replaced` will hold the terminal tactic sequence that can be replaced with `grind`.
@@ -265,19 +265,32 @@ def terminalToGrind : TacticAnalysis.Config where
       if oldHeartbeats * 2 < newHeartbeats then
         logWarningAt stx m!"'grind' is slower than the original: {oldHeartbeats} -> {newHeartbeats}"
 
-open Elab.Command in
+open Elab.Command
+
+/--
+When running the "tryAtEachStep" tactic analysis linters,
+only run on a fraction `1/n` of the goals found in the library.
+
+This is useful for running quick benchmarks.
+-/
+register_option linter.tacticAnalysis.tryAtEachStep.fraction : Nat := {
+  defValue := 1
+}
+
 /-- Run a tactic at each proof step. -/
-def tryAtEachStep (tac : Syntax → MVarId → CommandElabM (TSyntax `tactic)) : TacticAnalysis.Config where
+def Mathlib.TacticAnalysis.tryAtEachStep (tac : Syntax → MVarId → CommandElabM (TSyntax `tactic)) : TacticAnalysis.Config where
   run seq := do
+    let fraction := linter.tacticAnalysis.tryAtEachStep.fraction.get (← getOptions)
     for (ctx, i) in seq do
       if let [goal] := i.goalsBefore then
-        let tac ← tac i.stx goal
-        let goalsAfter ← try
-          ctx.runTacticCode i goal tac
-        catch _e =>
-          pure [goal]
-        if goalsAfter.isEmpty then
-          logInfoAt i.stx m!"`{i.stx}` can be replaced with `{tac}`"
+        if (hash goal) % fraction = 0 then
+          let tac ← tac i.stx goal
+          let goalsAfter ← try
+            ctx.runTacticCode i goal tac
+          catch _e =>
+            pure [goal]
+          if goalsAfter.isEmpty then
+            logInfoAt i.stx m!"`{i.stx}` can be replaced with `{tac}`"
 
 /-- Run `grind` at every step in proofs, reporting where it succeeds. -/
 register_option linter.tacticAnalysis.tryAtEachStepGrind : Bool := {
@@ -286,7 +299,7 @@ register_option linter.tacticAnalysis.tryAtEachStepGrind : Bool := {
 
 @[tacticAnalysis linter.tacticAnalysis.tryAtEachStepGrind,
    inherit_doc linter.tacticAnalysis.tryAtEachStepGrind]
-def tryAtEachStepGrind := tryAtEachStep (fun _ _ => `(tactic| grind))
+def tryAtEachStepGrind := tryAtEachStep fun _ _ => `(tactic| grind)
 
 /-- Run `simp_all` at every step in proofs, reporting where it succeeds. -/
 register_option linter.tacticAnalysis.tryAtEachStepSimpAll : Bool := {
@@ -295,7 +308,7 @@ register_option linter.tacticAnalysis.tryAtEachStepSimpAll : Bool := {
 
 @[tacticAnalysis linter.tacticAnalysis.tryAtEachStepSimpAll,
    inherit_doc linter.tacticAnalysis.tryAtEachStepSimpAll]
-def tryAtEachStepSimpAll := tryAtEachStep (fun _ _ => `(tactic| simp_all))
+def tryAtEachStepSimpAll := tryAtEachStep fun _ _ => `(tactic| simp_all)
 
 /-- Run `aesop` at every step in proofs, reporting where it succeeds. -/
 register_option linter.tacticAnalysis.tryAtEachStepAesop : Bool := {
@@ -316,7 +329,7 @@ register_option linter.tacticAnalysis.tryAtEachStepGrindPremises : Bool := {
 
 @[tacticAnalysis linter.tacticAnalysis.tryAtEachStepGrindPremises,
    inherit_doc linter.tacticAnalysis.tryAtEachStepGrindPremises]
-def tryAtEachStepGrindPremises := tryAtEachStep (fun _ _ => `(tactic| grind +premises))
+def tryAtEachStepGrindPremises := tryAtEachStep fun _ _ => `(tactic| grind +premises)
 
 -- TODO: add compatibility with `rintro` and `intros`
 /-- Suggest merging two adjacent `intro` tactics which don't pattern match. -/
@@ -325,7 +338,7 @@ register_option linter.tacticAnalysis.introMerge : Bool := {
 }
 
 @[tacticAnalysis linter.tacticAnalysis.introMerge, inherit_doc linter.tacticAnalysis.introMerge]
-def introMerge : TacticAnalysis.Config := .ofComplex {
+def Mathlib.TacticAnalysis.introMerge : TacticAnalysis.Config := .ofComplex {
   out := Option (TSyntax `tactic)
   ctx := Array (Array Term)
   trigger ctx stx :=
