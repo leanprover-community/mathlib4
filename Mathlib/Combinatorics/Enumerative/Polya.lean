@@ -1,14 +1,14 @@
 /-
-Copyright (c) 2025 Beibei Xiong. All rights reserved.
+Copyright (c) 2025 Zihui Bai. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Zihui Bai Zhengfeng Yang
+Authors: Zihui Bai, Zhengfeng Yang
 -/
 
+import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Data.Fintype.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.Perm.Cycle.Basic
-import Mathlib.Algebra.MvPolynomial.Basic
 
 /-!
 ## Main definitions and results
@@ -51,8 +51,6 @@ instance : MulAction (Equiv.Perm X) (X → Y) where
     simp [HSMul.hSMul]
     change f ((g'⁻¹ * g⁻¹) • x) = f (g'⁻¹ • (g⁻¹ • x))
     rw [mul_smul g'⁻¹ g⁻¹ x]
-
-
 
 /--
 For permutations `f, g : Equiv.Perm X`, the colorings `g • c` and `f • c`
