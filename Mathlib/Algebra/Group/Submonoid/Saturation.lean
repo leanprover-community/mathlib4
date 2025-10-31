@@ -14,8 +14,8 @@ For a submonoid `s` of a commutative monoid `M`, we construct the saturation of 
 
 It is used in the context of localisations.
 
-We also define the type of saturated submonoids, and give it the structure of a complete lattice,
-when the underlying type is a commutative monoid.
+We also define the type of saturated submonoids, and endows on it the structure of a complete
+lattice, when the underlying type is a commutative monoid.
 
 ## Main Definitions
 
