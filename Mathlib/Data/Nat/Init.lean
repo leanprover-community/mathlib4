@@ -8,6 +8,7 @@ import Batteries.Tactic.Init
 import Mathlib.Init
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.Notation
+import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 import Mathlib.Util.AssertExists
@@ -30,7 +31,7 @@ upstreamed to Batteries or the Lean standard library easily.
 See note [foundational algebra order theory].
 -/
 
-library_note "foundational algebra order theory"/--
+library_note2 «foundational algebra order theory» /--
 Batteries has a home-baked development of the algebraic and order-theoretic theory of `ℕ` and `ℤ
 which, in particular, is not typeclass-mediated. This is useful to set up the algebra and finiteness
 libraries in mathlib (naturals and integers show up as indices/offsets in lists, cardinality in
@@ -107,8 +108,6 @@ lemma le_div_two_iff_mul_two_le {n m : ℕ} : m ≤ n / 2 ↔ (m : ℤ) * 2 ≤ 
 lemma div_lt_self' (a b : ℕ) : (a + 1) / (b + 2) < a + 1 :=
   Nat.div_lt_self (Nat.succ_pos _) (Nat.succ_lt_succ (Nat.succ_pos _))
 
-@[deprecated (since := "2025-04-15")] alias sub_mul_div' := sub_mul_div
-
 @[deprecated (since := "2025-06-05")] alias eq_zero_of_le_half := eq_zero_of_le_div_two
 @[deprecated (since := "2025-06-05")] alias le_half_of_half_lt_sub := le_div_two_of_div_two_lt_sub
 @[deprecated (since := "2025-06-05")] alias half_le_of_sub_le_half := div_two_le_of_sub_le_div_two
@@ -116,7 +115,7 @@ lemma div_lt_self' (a b : ℕ) : (a + 1) / (b + 2) < a + 1 :=
 @[deprecated (since := "2025-06-05")] protected alias div_le_self' := Nat.div_le_self
 
 lemma two_mul_odd_div_two (hn : n % 2 = 1) : 2 * (n / 2) = n - 1 := by
-  omega
+  cutsat
 
 /-! ### `pow` -/
 
@@ -389,7 +388,7 @@ lemma not_pos_pow_dvd {a n : ℕ} (ha : 1 < a) (hn : 1 < n) : ¬ a ^ n ∣ a :=
 
 @[simp]
 protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ 2 * n + 1 := by
-  omega
+  cutsat
 
 /-- A natural number `m` divides the sum `m + n` if and only if `m` divides `n`. -/
 @[simp] protected lemma dvd_add_self_left : m ∣ m + n ↔ m ∣ n := Nat.dvd_add_right (Nat.dvd_refl m)
@@ -428,14 +427,21 @@ instance decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
 
 /-! ### `Nat.AtLeastTwo` -/
 
-/-- A type class for natural numbers which are greater than or equal to `2`. -/
+/-- A type class for natural numbers which are greater than or equal to `2`.
+
+`NeZero` and `AtLeastTwo` are used for numeric literals, and also for groups of related lemmas
+sharing a common value of `n` that needs to be nonzero, or at least `2`, and where it is
+convenient to pass this information implicitly. Instances for these classes cover some of the
+cases where it is most structurally obvious from the syntactic form of `n` that it satisfies the
+required conditions, such as `m + 1`. Less widely used cases may be defined as lemmas rather than
+global instances and then made into instances locally where needed. If implicit arguments,
+appearing before other explicit arguments, are allowed to be `autoParam`s in a future version of
+Lean, such an `autoParam` that is proved `by cutsat` might be a more general replacement for the
+use of typeclass inference for this purpose. -/
 class AtLeastTwo (n : ℕ) : Prop where
   prop : 2 ≤ n
 
-instance instAtLeastTwo {n : ℕ} : Nat.AtLeastTwo (n + 2) where
-  prop := Nat.succ_le_succ <| Nat.succ_le_succ <| Nat.zero_le _
-
-instance {n : ℕ} [NeZero n] : (n + 1).AtLeastTwo := ⟨by have := NeZero.ne n; omega⟩
+instance (n : ℕ) [NeZero n] : (n + 1).AtLeastTwo := ⟨by have := NeZero.ne n; cutsat⟩
 
 namespace AtLeastTwo
 
@@ -443,6 +449,12 @@ variable {n : ℕ} [n.AtLeastTwo]
 
 lemma one_lt : 1 < n := prop
 lemma ne_one : n ≠ 1 := Nat.ne_of_gt one_lt
+
+instance (priority := 100) toNeZero (n : ℕ) [n.AtLeastTwo] : NeZero n :=
+  ⟨Nat.ne_of_gt (Nat.le_of_lt one_lt)⟩
+
+variable (n) in
+lemma neZero_sub_one : NeZero (n - 1) := ⟨by have := prop (n := n); cutsat⟩
 
 end AtLeastTwo
 

@@ -152,7 +152,7 @@ theorem single_eq_monomial (s : σ →₀ ℕ) (a : R) : Finsupp.single s a = mo
   rfl
 
 theorem mul_def : p * q = p.sum fun m a => q.sum fun n b => monomial (m + n) (a * b) :=
-  AddMonoidAlgebra.mul_def
+  AddMonoidAlgebra.mul_def ..
 
 /-- `C a` is the constant polynomial with value `a` -/
 def C : R →+* MvPolynomial σ R :=
@@ -279,12 +279,12 @@ theorem X_inj [Nontrivial R] (m n : σ) : X m = (X n : MvPolynomial σ R) ↔ m 
   X_injective.eq_iff
 
 theorem monomial_pow : monomial s a ^ e = monomial (e • s) (a ^ e) :=
-  AddMonoidAlgebra.single_pow e
+  AddMonoidAlgebra.single_pow ..
 
 @[simp]
 theorem monomial_mul {s s' : σ →₀ ℕ} {a b : R} :
     monomial s a * monomial s' b = monomial (s + s') (a * b) :=
-  AddMonoidAlgebra.single_mul_single
+  AddMonoidAlgebra.single_mul_single ..
 
 variable (σ R)
 
@@ -401,9 +401,6 @@ theorem monomial_add_induction_on {motive : MvPolynomial σ R → Prop} (p : MvP
         a ∉ f.support → b ≠ 0 → motive f → motive ((monomial a b) + f)) :
     motive p :=
   Finsupp.induction p (C_0.rec <| C 0) monomial_add
-
-@[deprecated (since := "2025-03-11")]
-alias induction_on''' := monomial_add_induction_on
 
 /--
 Similar to `MvPolynomial.induction_on` but only a yet weaker form of `h_add` is required.
@@ -666,12 +663,12 @@ theorem coeff_mul [DecidableEq σ] (p q : MvPolynomial σ R) (n : σ →₀ ℕ)
 @[simp]
 theorem coeff_mul_monomial (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ R) :
     coeff (m + s) (p * monomial s r) = coeff m p * r :=
-  AddMonoidAlgebra.mul_single_apply_aux p r fun _a _ => add_left_inj _
+  AddMonoidAlgebra.mul_single_apply_aux fun _a _ => add_left_inj _
 
 @[simp]
 theorem coeff_monomial_mul (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ R) :
     coeff (s + m) (monomial s r * p) = r * coeff m p :=
-  AddMonoidAlgebra.single_mul_apply_aux p r fun _a _ => add_right_inj _
+  AddMonoidAlgebra.single_mul_apply_aux fun _a _ => add_right_inj _
 
 @[simp]
 theorem coeff_mul_X (m) (s : σ) (p : MvPolynomial σ R) :
@@ -728,7 +725,6 @@ theorem coeff_mul_monomial' (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ
   classical
   split_ifs with h
   · conv_rhs => rw [← coeff_mul_monomial _ s]
-    congr with t
     rw [tsub_add_cancel_of_le h]
   · contrapose! h
     rw [← mem_support_iff] at h

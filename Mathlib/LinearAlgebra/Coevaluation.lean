@@ -6,9 +6,9 @@ Authors: Jakob von Raumer
 import Mathlib.LinearAlgebra.Contraction
 
 /-!
-# The coevaluation map on finite dimensional vector spaces
+# The coevaluation map on finite-dimensional vector spaces
 
-Given a finite dimensional vector space `V` over a field `K` this describes the canonical linear map
+Given a finite-dimensional vector space `V` over a field `K` this describes the canonical linear map
 from `K` to `V ⊗ Dual K V` which corresponds to the identity function on `V`.
 
 ## Tags
@@ -34,7 +34,7 @@ universe u v
 variable (K : Type u) [Field K]
 variable (V : Type v) [AddCommGroup V] [Module K V] [FiniteDimensional K V]
 
-/-- The coevaluation map is a linear map from a field `K` to a finite dimensional
+/-- The coevaluation map is a linear map from a field `K` to a finite-dimensional
   vector space `V`. -/
 def coevaluation : K →ₗ[K] V ⊗[K] Module.Dual K V :=
   let bV := Basis.ofVectorSpace K V
@@ -62,7 +62,7 @@ theorem contractLeft_assoc_coevaluation :
   letI := Classical.decEq (Basis.ofVectorSpaceIndex K V)
   apply TensorProduct.ext
   apply (Basis.ofVectorSpace K V).dualBasis.ext; intro j; apply LinearMap.ext_ring
-  rw [LinearMap.compr₂_apply, LinearMap.compr₂_apply, TensorProduct.mk_apply]
+  rw [LinearMap.compr₂ₛₗ_apply, LinearMap.compr₂ₛₗ_apply, TensorProduct.mk_apply]
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_toLinearMap]
   rw [rid_tmul, one_smul, lid_symm_apply]
   simp only [LinearMap.lTensor_tmul, coevaluation_apply_one]
@@ -80,7 +80,7 @@ theorem contractLeft_assoc_coevaluation' :
   letI := Classical.decEq (Basis.ofVectorSpaceIndex K V)
   apply TensorProduct.ext
   apply LinearMap.ext_ring; apply (Basis.ofVectorSpace K V).ext; intro j
-  rw [LinearMap.compr₂_apply, LinearMap.compr₂_apply, TensorProduct.mk_apply]
+  rw [LinearMap.compr₂ₛₗ_apply, LinearMap.compr₂ₛₗ_apply, TensorProduct.mk_apply]
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_toLinearMap]
   rw [lid_tmul, one_smul, rid_symm_apply]
   simp only [LinearMap.rTensor_tmul, coevaluation_apply_one]

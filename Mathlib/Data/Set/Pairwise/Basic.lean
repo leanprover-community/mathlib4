@@ -171,13 +171,8 @@ theorem Pairwise.insert_of_symmetric (hs : s.Pairwise r) (hr : Symmetric r)
     (h : ∀ b ∈ s, a ≠ b → r a b) : (insert a s).Pairwise r :=
   (pairwise_insert_of_symmetric hr).2 ⟨hs, h⟩
 
-@[deprecated Pairwise.insert_of_symmetric (since := "2025-03-19")]
-theorem Pairwise.insert_of_symmetric_of_notMem (hs : s.Pairwise r) (hr : Symmetric r) (ha : a ∉ s)
-    (h : ∀ b ∈ s, r a b) : (insert a s).Pairwise r :=
-  (pairwise_insert_of_symmetric_of_notMem hr ha).2 ⟨hs, h⟩
-
 @[deprecated (since := "2025-05-23")]
-alias Pairwise.insert_of_symmetric_of_not_mem := Pairwise.insert_of_symmetric_of_notMem
+alias Pairwise.insert_of_symmetric_of_not_mem := Pairwise.insert_of_symmetric
 
 theorem pairwise_pair : Set.Pairwise {a, b} r ↔ a ≠ b → r a b ∧ r b a := by simp [pairwise_insert]
 

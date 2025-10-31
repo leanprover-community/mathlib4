@@ -42,11 +42,6 @@ The key results proved here are:
 kruskal-katona, kruskal, katona, shadow, initial segments, intersecting
 -/
 
--- TODO: There's currently a diamond. See https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/DecidableEq.20diamond.20on.20Fin
--- import Mathlib.Order.Fin.Basic
--- example (n : ℕ) : instDecidableEqFin n = instDecidableEq_mathlib := rfl
-attribute [-instance] instDecidableEqFin
-
 open Nat
 open scoped FinsetFamily
 
@@ -357,7 +352,7 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
   -- Consider 𝒜ᶜˢ = {sᶜ | s ∈ 𝒜}
   -- Its iterated shadow (∂^[n-2k] 𝒜ᶜˢ) is disjoint from 𝒜 by intersecting-ness
   have : Disjoint 𝒜 (∂^[n - 2 * r] 𝒜ᶜˢ) := disjoint_right.2 fun A hAbar hA ↦ by
-    simp [mem_shadow_iterate_iff_exists_sdiff, mem_compls] at hAbar
+    simp only [mem_shadow_iterate_iff_exists_sdiff, mem_compls] at hAbar
     obtain ⟨C, hC, hAC, _⟩ := hAbar
     exact h𝒜 hA hC (disjoint_of_subset_left hAC disjoint_compl_right)
   have : r ≤ n := h₃.trans (Nat.div_le_self n 2)
@@ -368,22 +363,22 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
   -- and everything in 𝒜ᶜˢ has size n-r.
   have h𝒜bar : (𝒜ᶜˢ : Set (Finset (Fin n))).Sized (n - r) := by simpa using h₂.compls
   -- We can use the Lovasz form of Kruskal-Katona to get |∂^[n-2k] 𝒜ᶜˢ| ≥ (n-1) choose r
-  have kk := kruskal_katona_lovasz_form (i := n - 2 * r) (by omega)
+  have kk := kruskal_katona_lovasz_form (i := n - 2 * r) (by cutsat)
     ((tsub_le_tsub_iff_left ‹1 ≤ n›).2 h1r) tsub_le_self h𝒜bar z.le
   have : n - r - (n - 2 * r) = r := by omega
   rw [this] at kk
   -- But this gives a contradiction: `n choose r < |𝒜| + |∂^[n-2k] 𝒜ᶜˢ|`
-  have : n.choose r < #(𝒜 ∪ ∂^[n - 2 * r] 𝒜ᶜˢ) := by
-    rw [card_union_of_disjoint ‹_›]
-    convert lt_of_le_of_lt (add_le_add_left kk _) (add_lt_add_right size _) using 1
-    convert Nat.choose_succ_succ _ _ using 3
-    all_goals rwa [Nat.sub_one, Nat.succ_pred_eq_of_pos]
+  have := calc
+    n.choose r = (n - 1).choose (r - 1) + (n - 1).choose r := by
+      convert Nat.choose_succ_succ _ _ using 3 <;> rwa [Nat.sub_one, Nat.succ_pred_eq_of_pos]
+    _ < #𝒜 + #(∂^[n - 2 * r] 𝒜ᶜˢ) := add_lt_add_of_lt_of_le size kk
+    _ = #(𝒜 ∪ ∂^[n - 2 * r] 𝒜ᶜˢ) := by rw [card_union_of_disjoint ‹_›]
   apply this.not_ge
   convert Set.Sized.card_le _
   · rw [Fintype.card_fin]
   rw [coe_union, Set.sized_union]
   refine ⟨‹_›, ?_⟩
   convert h𝒜bar.shadow_iterate
-  omega
+  cutsat
 
 end Finset

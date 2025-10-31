@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 /-!
 # Covolume of ℤ-lattices
 
-Let `E` be a finite dimensional real vector space.
+Let `E` be a finite-dimensional real vector space.
 
 Let `L` be a `ℤ`-lattice `L` defined as a discrete `ℤ`-submodule of `E` that spans `E` over `ℝ`.
 
@@ -43,7 +43,7 @@ index of `L₁` inside `L₂` is equal to `covolume L₁ / covolume L₂`.
 
 ## Naming convention
 
-Some results are true in the case where the ambient finite dimensional real vector space is the
+Some results are true in the case where the ambient finite-dimensional real vector space is the
 pi-space `ι → ℝ` and in the case where it is an `InnerProductSpace`. We use the following
 convention: the plain name is for the pi case, for e.g. `volume_image_eq_volume_div_covolume`. For
 the same result in the `InnerProductSpace` case, we add a `prime`, for e.g.
@@ -112,9 +112,6 @@ theorem covolume_eq_det_mul_measureReal {ι : Type*} [Fintype ι] [DecidableEq �
   congr
   ext
   exact b.ofZLatticeBasis_apply ℝ L _
-
-@[deprecated (since := "2025-04-19")]
-alias covolume_eq_det_mul_measure := covolume_eq_det_mul_measureReal
 
 theorem covolume_eq_det {ι : Type*} [Fintype ι] [DecidableEq ι] (L : Submodule ℤ (ι → ℝ))
     [DiscreteTopology L] [IsZLattice ℝ L] (b : Basis ι ℤ L) :

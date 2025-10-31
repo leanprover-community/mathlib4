@@ -140,9 +140,6 @@ theorem Tendsto.prodMk {h : Filter γ} {m₁ : α → β} {m₂ : α → γ}
     (h₁ : Tendsto m₁ f g) (h₂ : Tendsto m₂ f h) : Tendsto (fun x => (m₁ x, m₂ x)) f (g ×ˢ h) :=
   tendsto_inf.2 ⟨tendsto_comap_iff.2 h₁, tendsto_comap_iff.2 h₂⟩
 
-@[deprecated (since := "2025-03-10")]
-alias Tendsto.prod_mk := Tendsto.prodMk
-
 theorem tendsto_prod_swap : Tendsto (Prod.swap : α × β → β × α) (f ×ˢ g) (g ×ˢ f) :=
   tendsto_snd.prodMk tendsto_fst
 
@@ -163,16 +160,10 @@ theorem EventuallyEq.prodMap {δ} {la : Filter α} {fa ga : α → γ} (ha : fa 
     Prod.map fa fb =ᶠ[la ×ˢ lb] Prod.map ga gb :=
   (Eventually.prod_mk ha hb).mono fun _ h => Prod.ext h.1 h.2
 
-@[deprecated (since := "2025-03-10")]
-alias EventuallyEq.prod_map := EventuallyEq.prodMap
-
 theorem EventuallyLE.prodMap {δ} [LE γ] [LE δ] {la : Filter α} {fa ga : α → γ} (ha : fa ≤ᶠ[la] ga)
     {lb : Filter β} {fb gb : β → δ} (hb : fb ≤ᶠ[lb] gb) :
     Prod.map fa fb ≤ᶠ[la ×ˢ lb] Prod.map ga gb :=
   Eventually.prod_mk ha hb
-
-@[deprecated (since := "2025-03-10")]
-alias EventuallyLE.prod_map := EventuallyLE.prodMap
 
 theorem Eventually.curry {la : Filter α} {lb : Filter β} {p : α × β → Prop}
     (h : ∀ᶠ x in la ×ˢ lb, p x) : ∀ᶠ x in la, ∀ᶠ y in lb, p (x, y) := by
@@ -187,12 +178,16 @@ lemma Frequently.of_curry {la : Filter α} {lb : Filter β} {p : α × β → Pr
     (h : ∃ᶠ x in la, ∃ᶠ y in lb, p (x, y)) : ∃ᶠ xy in la ×ˢ lb, p xy :=
   h.uncurry
 
+theorem Eventually.image_of_prod {y : α → β} {r : α → β → Prop}
+    (hy : Tendsto y f g) (hr : ∀ᶠ p in f ×ˢ g, r p.1 p.2) : ∀ᶠ x in f, r x (y x) := by
+  obtain ⟨p, hp, q, hq, hr⟩ := eventually_prod_iff.mp hr
+  filter_upwards [hp, hy.eventually hq] with _ hp hq using hr hp hq
+
 /-- A fact that is eventually true about all pairs `l ×ˢ l` is eventually true about
 all diagonal pairs `(i, i)` -/
 theorem Eventually.diag_of_prod {p : α × α → Prop} (h : ∀ᶠ i in f ×ˢ f, p i) :
-    ∀ᶠ i in f, p (i, i) := by
-  obtain ⟨t, ht, s, hs, hst⟩ := eventually_prod_iff.1 h
-  apply (ht.and hs).mono fun x hx => hst hx.1 hx.2
+    ∀ᶠ i in f, p (i, i) :=
+  h.image_of_prod (r := p.curry) tendsto_id
 
 theorem Eventually.diag_of_prod_left {f : Filter α} {g : Filter γ} {p : (α × α) × γ → Prop} :
     (∀ᶠ x in (f ×ˢ f) ×ˢ g, p x) → ∀ᶠ x : α × γ in f ×ˢ g, p ((x.1, x.1), x.2) := by
@@ -356,9 +351,6 @@ theorem Tendsto.prodMap {δ : Type*} {f : α → γ} {g : β → δ} {a : Filter
   rw [Tendsto, Prod.map_def, ← prod_map_map_eq]
   exact Filter.prod_mono hf hg
 
-@[deprecated (since := "2025-03-10")]
-alias Tendsto.prod_map := Tendsto.prodMap
-
 protected theorem map_prod (m : α × β → γ) (f : Filter α) (g : Filter β) :
     map m (f ×ˢ g) = (f.map fun a b => m (a, b)).seq g := by
   simp only [Filter.ext_iff, mem_map, mem_prod_iff, mem_map_seq_iff, exists_and_left]
@@ -509,9 +501,6 @@ theorem map_prodMap_coprod_le.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {β
   rintro ⟨⟨u₁, hu₁, h₁⟩, u₂, hu₂, h₂⟩
   refine ⟨⟨m₁ ⁻¹' u₁, hu₁, fun _ hx => h₁ ?_⟩, ⟨m₂ ⁻¹' u₂, hu₂, fun _ hx => h₂ ?_⟩⟩ <;> convert hx
 
-@[deprecated (since := "2025-03-10")]
-alias map_prod_map_coprod_le := map_prodMap_coprod_le
-
 /-- Characterization of the coproduct of the `Filter.map`s of two principal filters `𝓟 {a}` and
 `𝓟 {i}`, the first under the constant function `fun a => b` and the second under the identity
 function. Together with the next lemma, `map_prodMap_const_id_principal_coprod_principal`, this
@@ -541,17 +530,10 @@ theorem map_prodMap_const_id_principal_coprod_principal {α β ι : Type*} (a : 
     use (a, i')
     simpa using h₁.symm
 
-@[deprecated (since := "2025-03-10")]
-alias map_prod_map_const_id_principal_coprod_principal :=
-  map_prodMap_const_id_principal_coprod_principal
-
 theorem Tendsto.prodMap_coprod {δ : Type*} {f : α → γ} {g : β → δ} {a : Filter α} {b : Filter β}
     {c : Filter γ} {d : Filter δ} (hf : Tendsto f a c) (hg : Tendsto g b d) :
     Tendsto (Prod.map f g) (a.coprod b) (c.coprod d) :=
   map_prodMap_coprod_le.trans (coprod_mono hf hg)
-
-@[deprecated (since := "2025-03-10")]
-alias Tendsto.prod_map_coprod := Tendsto.prodMap_coprod
 
 end Coprod
 

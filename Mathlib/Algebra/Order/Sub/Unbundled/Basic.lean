@@ -11,7 +11,7 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 -/
 
 -- These are about *unbundled* canonically ordered monoids
-assert_not_exists OrderedCommMonoid
+assert_not_exists IsOrderedMonoid
 
 variable {α : Type*}
 
@@ -24,17 +24,17 @@ variable [AddCommSemigroup α] [PartialOrder α] [ExistsAddOfLE α]
 theorem add_tsub_cancel_of_le (h : a ≤ b) : a + (b - a) = b := by
   refine le_antisymm ?_ le_add_tsub
   obtain ⟨c, rfl⟩ := exists_add_of_le h
-  exact add_le_add_left add_tsub_le_left a
+  grw [add_tsub_le_left]
 
 theorem tsub_add_cancel_of_le (h : a ≤ b) : b - a + a = b := by
   rw [add_comm]
   exact add_tsub_cancel_of_le h
 
-theorem add_le_of_le_tsub_right_of_le (h : b ≤ c) (h2 : a ≤ c - b) : a + b ≤ c :=
-  (add_le_add_right h2 b).trans_eq <| tsub_add_cancel_of_le h
+theorem add_le_of_le_tsub_right_of_le (h : b ≤ c) (h2 : a ≤ c - b) : a + b ≤ c := by
+  grw [h2, tsub_add_cancel_of_le h]
 
-theorem add_le_of_le_tsub_left_of_le (h : a ≤ c) (h2 : b ≤ c - a) : a + b ≤ c :=
-  (add_le_add_left h2 a).trans_eq <| add_tsub_cancel_of_le h
+theorem add_le_of_le_tsub_left_of_le (h : a ≤ c) (h2 : b ≤ c - a) : a + b ≤ c := by
+  grw [h2, add_tsub_cancel_of_le h]
 
 theorem tsub_le_tsub_iff_right (h : c ≤ b) : a - c ≤ b - c ↔ a ≤ b := by
   rw [tsub_le_iff_right, tsub_add_cancel_of_le h]
