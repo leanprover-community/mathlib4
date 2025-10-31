@@ -87,7 +87,7 @@ theorem MonotoneOn.intervalIntegrable_deriv {f : ℝ → ℝ} {a b : ℝ}
 
 /-- If `f` is monotone on `a..b`, then `f'` is interval integrable on `a..b` and the integral of
 `f'` on `a..b` is in between `0` and `f b - f a`. -/
-theorem MonotoneOn.intervalIntegral_deriv_bound {f : ℝ → ℝ} {a b : ℝ}
+theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}
     (hf : MonotoneOn f (uIcc a b)) :
     ∫ x in a..b, deriv f x ∈ uIcc 0 (f b - f a) := by
   wlog hab : a ≤ b generalizing a b with h

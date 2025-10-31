@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 # Some properties of the interval integral of `fun x ↦ slope f x (x + c)`, given a constant `c : ℝ`
 
 This file proves that:
-* `IntervalIntegrable.intervalIntegrable_slope` - If `f` is interval integrable on `a..(b + c)`
+* `IntervalIntegrable.intervalIntegrable_slope`: If `f` is interval integrable on `a..(b + c)`
 where `a ≤ b` and `0 ≤ c`, then `fun x ↦ slope f x (x + c)` is interval integrable on `a..b`.
 * `MonotoneOn.intervalIntegrable_slope` - If `f` is monotone on `a..(b + c)`
 where `a ≤ b` and `0 ≤ c`, then `fun x ↦ slope f x (x + c)` is interval integrable on `a..b`.
@@ -42,7 +42,7 @@ theorem MonotoneOn.intervalIntegrable_slope {f : ℝ → ℝ} {a b c : ℝ}
 
 /-- If `f` is monotone on `a..(b + c)` where `a ≤ b` and `0 ≤ c`, then the interval integral of
 `fun x ↦ slope f x (x + c)` on `a..b` is at most `f (b + c) - f a`. -/
-theorem MonotoneOn.intervalIntegral_slope_bound {f : ℝ → ℝ} {a b c : ℝ}
+theorem MonotoneOn.intervalIntegral_slope_le {f : ℝ → ℝ} {a b c : ℝ}
     (hf : MonotoneOn f (Icc a (b + c))) (hab : a ≤ b) (hc : 0 ≤ c) :
     ∫ x in a..b, slope f x (x + c) ≤ f (b + c) - f a := by
   rcases eq_or_lt_of_le hc with hc | hc
