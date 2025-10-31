@@ -258,10 +258,8 @@ theorem map_filter_eq_filterMap (f : α → β) (p : α → Prop) [DecidablePred
   induction s using Multiset.induction
   case empty => simp
   case cons a s ih =>
-    simp [filter_cons, filterMap_cons, map_add, ih]; clear ih; congr
-    by_cases hpa : p a
-    · simp [if_pos hpa]
-    · simp [if_neg hpa]
+    simp only [filter_cons, map_add, ih, filterMap_cons, Option.map_if]; clear ih; congr
+    split_ifs <;> simp
 
 /-! ### countP -/
 

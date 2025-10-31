@@ -201,7 +201,7 @@ theorem filterMap_eq_bind (m : Multiset α) (f : α → Option β) :
 
 theorem bind_filterMap (m : Multiset α) (f : α → Option β) (g : β → Multiset γ) :
     bind (filterMap f m) g = bind m (fun a => ((f a).map g).getD 0) := by
-  simp [filterMap_eq_bind, Multiset.bind_assoc]
+  simp only [filterMap_eq_bind, Multiset.bind_assoc]
   apply Multiset.bind_congr; intro a ham
   cases f a with
   | none => simp
