@@ -489,6 +489,7 @@ theorem eq_one_of_monic_natDegree_zero (hf : p.Monic) (hfd : p.natDegree = 0) : 
   rw [Monic.def, leadingCoeff, hfd] at hf
   rw [eq_C_of_natDegree_eq_zero hfd, hf, map_one]
 
+@[simp]
 theorem Monic.natDegree_eq_zero (hf : p.Monic) : p.natDegree = 0 ↔ p = 1 :=
   ⟨eq_one_of_monic_natDegree_zero hf, by rintro rfl; simp⟩
 

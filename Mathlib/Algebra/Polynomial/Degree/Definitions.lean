@@ -478,9 +478,7 @@ natDegree_mul_le.trans <| add_le_add ‹_› ‹_›
 theorem natDegree_pow_le {p : R[X]} {n : ℕ} : (p ^ n).natDegree ≤ n * p.natDegree := by
   induction n with
   | zero => simp
-  | succ i hi =>
-    rw [pow_succ, Nat.succ_mul]
-    apply le_trans natDegree_mul_le (add_le_add_right hi _)
+  | succ n ih => grw [pow_succ, Nat.succ_mul, natDegree_mul_le, ih]
 
 theorem natDegree_pow_le_of_le (n : ℕ) (hp : natDegree p ≤ m) :
     natDegree (p ^ n) ≤ n * m :=

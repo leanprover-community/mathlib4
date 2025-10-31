@@ -116,7 +116,7 @@ instance [MonoidalPreadditive C] : MonoidalPreadditive P.FullSubcategory :=
 variable (R : Type*) [Ring R] [Linear R C]
 
 instance [MonoidalPreadditive C] [MonoidalLinear R C] : MonoidalLinear R P.FullSubcategory :=
-  monoidalLinearOfFaithful R P.ι
+  .ofFaithful R P.ι
 
 end
 
@@ -166,7 +166,7 @@ section Symmetric
 variable [SymmetricCategory C]
 
 instance fullSymmetricSubcategory : SymmetricCategory P.FullSubcategory :=
-  symmetricCategoryOfFaithful P.ι
+  .ofFaithful P.ι
 
 end Symmetric
 

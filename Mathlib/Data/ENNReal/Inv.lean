@@ -466,9 +466,13 @@ theorem le_of_forall_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r < x
   lift r to ℝ≥0 using ne_top_of_lt hr
   exact h r hr
 
-lemma eq_of_forall_nnreal_iff {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r ≤ x ↔ ↑r ≤ y) : x = y :=
-  le_antisymm (le_of_forall_nnreal_lt fun _r hr ↦ (h _).1 hr.le)
-    (le_of_forall_nnreal_lt fun _r hr ↦ (h _).2 hr.le)
+lemma eq_of_forall_nnreal_le_iff {x y : ℝ≥0∞} : (∀ r : ℝ≥0, ↑r ≤ x ↔ ↑r ≤ y) → x = y :=
+  WithTop.eq_of_forall_coe_le_iff
+
+@[deprecated (since := "2025-10-20")] alias eq_of_forall_nnreal_iff := eq_of_forall_nnreal_le_iff
+
+lemma eq_of_forall_le_nnreal_iff {x y : ℝ≥0∞} : (∀ r : ℝ≥0, x ≤ r ↔ y ≤ r) → x = y :=
+  WithTop.eq_of_forall_le_coe_iff
 
 theorem le_of_forall_pos_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, 0 < r → ↑r < x → ↑r ≤ y) : x ≤ y :=
   le_of_forall_nnreal_lt fun r hr =>
