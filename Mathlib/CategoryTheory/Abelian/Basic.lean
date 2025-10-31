@@ -411,20 +411,20 @@ variable {Z : C} (g : Y ⟶ Z)
 
 /-- `Abelian.image` as a functor from the arrow category. -/
 @[simps]
-def imageFunctor : Arrow C ⥤ C where
+def im : Arrow C ⥤ C where
   obj f := Abelian.image f.hom
   map {f g} u := kernel.lift _ (Abelian.image.ι f.hom ≫ u.right) <| by simp [← Arrow.w_assoc u]
 
 /-- `Abelian.coimage` as a functor from the arrow category. -/
 @[simps]
-def coimageFunctor : Arrow C ⥤ C where
+def coim : Arrow C ⥤ C where
   obj f := Abelian.coimage f.hom
   map {f g} u := cokernel.desc _ (u.left ≫ Abelian.coimage.π g.hom) <| by
     simp [← Category.assoc, coimage.comp_π_eq_zero]; simp
 
 /-- The image and coimage of an arrow are naturally isomorphic. -/
 @[simps!]
-def coimageFunctorIsoImageFunctor : coimageFunctor (C := C) ≅ imageFunctor :=
+def coimIsoIm : coim (C := C) ≅ im :=
   NatIso.ofComponents fun _ ↦ Abelian.coimageIsoImage _
 
 /-- There is a canonical isomorphism between the abelian image and the categorical image of a
