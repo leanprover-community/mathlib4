@@ -32,8 +32,8 @@ and the units of the monoid of continuous maps. -/
 continuous addition and the additive units of the additive monoid of continuous maps. -/]
 def unitsLift : C(X, Mˣ) ≃ C(X, M)ˣ where
   toFun f :=
-    { val := ⟨fun x => f x, Units.continuous_val.comp f.continuous⟩
-      inv := ⟨fun x => ↑(f x)⁻¹, Units.continuous_val.comp (continuous_inv.comp f.continuous)⟩
+    { val := ⟨fun x => f x, by fun_prop⟩
+      inv := ⟨fun x => ↑(f x)⁻¹, by fun_prop⟩
       val_inv := ext fun _ => Units.mul_inv _
       inv_val := ext fun _ => Units.inv_mul _ }
   invFun f :=

@@ -292,7 +292,7 @@ lemma topologically_isZariskiLocalAtTarget [(topologically P).RespectsIso]
     simp_rw [topologically, morphismRestrict_base]
     exact hP₂ f.base U.carrier f.base.hom.2 U.2 hf
   · intro X Y f ι U hU hf
-    apply hP₃ f.base U hU f.base.hom.continuous fun i ↦ ?_
+    apply hP₃ f.base U hU (map_continuous _) fun i ↦ ?_
     rw [← morphismRestrict_base]
     exact hf i
 

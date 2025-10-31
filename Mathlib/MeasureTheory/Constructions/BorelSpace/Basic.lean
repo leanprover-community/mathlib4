@@ -552,7 +552,7 @@ end Homeomorph
 
 @[measurability]
 theorem ContinuousMap.measurable (f : C(α, γ)) : Measurable f :=
-  f.continuous.measurable
+  (map_continuous f).measurable
 
 @[fun_prop]
 theorem measurable_of_continuousOn_compl_singleton [T1Space α] {f : α → γ} (a : α)
