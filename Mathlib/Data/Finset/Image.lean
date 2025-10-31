@@ -480,7 +480,7 @@ theorem attach_image_val [DecidableEq α] {s : Finset α} : s.attach.image Subty
 lemma attach_cons (a : α) (s : Finset α) (ha) :
     attach (cons a s ha) =
       cons ⟨a, mem_cons_self a s⟩
-        ((attach s).map ⟨fun x ↦ ⟨x.1, mem_cons_of_mem x.2⟩, by aesop (add safe unfold Injective)⟩)
+        ((attach s).map ⟨fun x ↦ ⟨x.1, mem_cons_of_mem x.2⟩, fun x y => by simp⟩)
           (by simpa) := by ext ⟨x, hx⟩; simpa using hx
 
 @[simp]
