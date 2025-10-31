@@ -67,10 +67,8 @@ namespace CategoryTheory
 open SSet
 
 /-- The bicategory of quasicategories extracted from `QCat.CatEnrichedOrdinaryCat`. -/
-noncomputable instance QCat.bicategory : Bicategory QCat := by
-  have : EnrichedOrdinaryCategory Cat (ObjectProperty.FullSubcategory Quasicategory) :=
-    QCat.CatEnrichedOrdinaryCat
-  apply CatEnrichedOrdinary.instBicategory
+noncomputable instance QCat.bicategory : Bicategory QCat :=
+  CatEnrichedOrdinary.instBicategory
 
 /-- The strict bicategory of quasicategories extracted from `QCat.CatEnrichedOrdinaryCat`. -/
 noncomputable instance QCat.strictBicategory : Bicategory.Strict QCat :=
