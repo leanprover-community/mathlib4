@@ -76,7 +76,7 @@ lemma coe_inf (G₁ G₂ : G.Finsubgraph) : ↑(G₁ ⊓ G₂) = (G₁ ⊓ G₂ 
 lemma coe_sdiff (G₁ G₂ : G.Finsubgraph) : ↑(G₁ \ G₂) = (G₁ \ G₂ : G.Subgraph) := rfl
 
 instance instGeneralizedCoheytingAlgebra : GeneralizedCoheytingAlgebra G.Finsubgraph :=
-  Subtype.coe_injective.generalizedCoheytingAlgebra _ coe_sup coe_inf coe_bot coe_sdiff
+  Subtype.coe_injective.generalizedCoheytingAlgebra _ .rfl .rfl coe_sup coe_inf coe_bot coe_sdiff
 
 section Finite
 variable [Finite V]
@@ -110,8 +110,8 @@ lemma coe_iInf {ι : Sort*} (f : ι → G.Finsubgraph) : ⨅ i, f i = (⨅ i, f 
   rw [iInf, coe_sInf, iInf_range]
 
 instance instCompletelyDistribLattice : CompletelyDistribLattice G.Finsubgraph :=
-  Subtype.coe_injective.completelyDistribLattice _ coe_sup coe_inf coe_sSup coe_sInf coe_top coe_bot
-    coe_compl coe_himp coe_hnot coe_sdiff
+  Subtype.coe_injective.completelyDistribLattice _ .rfl .rfl coe_sup coe_inf coe_sSup coe_sInf
+    coe_top coe_bot coe_compl coe_himp coe_hnot coe_sdiff
 
 end Finite
 end Finsubgraph
