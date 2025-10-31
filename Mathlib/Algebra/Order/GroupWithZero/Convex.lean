@@ -142,18 +142,24 @@ def QuotientGroup.mkOrderedMonoidHom : α →*o α ⧸ G where
   __ := QuotientGroup.mk' G.toSubgroup
   monotone' a b le a' eq := ⟨a' * a⁻¹ * b, by simp [eq], by simp [mul_assoc, le]⟩
 
-lemma quotientmap_ismonotone : Monotone (β :=  α ⧸ G) (⟦·⟧) :=
+lemma quotientMk_ismonotone : Monotone (β :=  α ⧸ G) (⟦·⟧) :=
   (QuotientGroup.mkOrderedMonoidHom _).monotone'
 
---lemma aux: MulArchimedean (α) ↔ Unique (FiniteArchimedeanClass (Additive α)) := by sorry
+lemma aux : MulArchimedean α ↔ Subsingleton (FiniteMulArchimedeanClass α) := by sorry
 
-lemma ht1 :  LinearOrderedCommGroup.height α = 1 ↔ MulArchimedean (α) := by sorry
-lemma ht1':  LinearOrderedCommGroup.height α = 1 ↔ (∃ (f : α →*o NNRealˣ ), Function.Injective f.toFun ) := by sorry
+lemma ht1 : LinearOrderedCommGroup.height α ≤ 1 ↔ MulArchimedean α := by sorry
+lemma ht1' : LinearOrderedCommGroup.height α ≤ 1 ↔
+    ∃ f : α →*o Multiplicative ℝ, Function.Injective f := by sorry
+-- use Archimedean.exists_orderAddMonoidHom_real_injective for forward direction
+
+open NNReal
+def Units.nnrealToMultiplicativeReal : ℝ≥0ˣ ≃*o Multiplicative ℝ := sorry
+def NNReal.toWithZeroMultiplicativeReal : ℝ≥0 ≃*o WithZero (Multiplicative ℝ) := sorry
 
 lemma isHeightht1.tfae : List.TFAE [
-  LinearOrderedCommGroup.height α = 1,
-  MulArchimedean (α),
-  (∃ (f : α →*o NNRealˣ ), Function.Injective f.toFun )] := by
+  LinearOrderedCommGroup.height α ≤ 1,
+  MulArchimedean α,
+  ∃ f : α →*o Multiplicative ℝ, Function.Injective f] := by
   tfae_have 1 → 2 := by sorry
   tfae_have 2 → 1 := by sorry
   tfae_have 3 → 1 := by sorry
