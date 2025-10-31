@@ -19,9 +19,9 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 ## Main statements
 
-* T_n(x) ∈ [-1, 1] iff x ∈ [-1, 1]
-* Zeroes of T and U
-* Extrema of T
+* T_n(x) ∈ [-1, 1] iff x ∈ [-1, 1]: `T_bounded_iff_bounded`
+* Zeroes of T and U: `T_eq_zero_iff`, `T_roots_eq`, `U_eq_zero_iff`, `U_roots_eq`
+* Extrema of T: `T_abs_eq_one_iff`, `T_extrema_eq`
 
 ## TODO
 
