@@ -494,15 +494,13 @@ lemma contMDiffAt_localFrame_coeff [FiniteDimensional 𝕜 F] [CompleteSpace �
   have h₁ : CMDiffAt k (fun x ↦ (e (s x)).2) x := e.contMDiffAt_section_iff hxe |>.1 hs
   -- step 3: `b.repr` is a linear map, so the composition is smooth
   let bas := fun v ↦ b.repr v i
-  let basl : F →ₗ[𝕜] 𝕜 := {
-    toFun := bas
-    map_add' m m' := by simp [bas]
-    map_smul' m x := by simp [bas]
-  }
-  let basL : F →L[𝕜] 𝕜 := {
-    toLinearMap := basl
-    cont := basl.continuous_of_finiteDimensional
-  }
+  let basl : F →ₗ[𝕜] 𝕜 :=
+    { toFun := bas
+      map_add' m m' := by simp [bas]
+      map_smul' m x := by simp [bas] }
+  let basL : F →L[𝕜] 𝕜 :=
+    { toLinearMap := basl
+      cont := basl.continuous_of_finiteDimensional }
   have hbas : ContMDiffAt 𝓘(𝕜, F) 𝓘(𝕜) k basL (e (s x)).2 :=
     contMDiffAt_iff_contDiffAt.mpr <| (basL.contDiff (n := k)).contDiffAt
   exact hbas.comp x h₁
@@ -588,15 +586,13 @@ lemma mdifferentiableAt_localFrame_coeff [FiniteDimensional 𝕜 F] [CompleteSpa
   have h₁ : MDiffAt (fun x ↦ (e (s x)).2) x := e.mdifferentiableAt_section_iff I s hxe |>.1 hs
   -- step 3: `b.repr` is a linear map, so the composition is smooth
   let bas := fun v ↦ b.repr v i
-  let basl : F →ₗ[𝕜] 𝕜 := {
-    toFun := bas
-    map_add' m m' := by simp [bas]
-    map_smul' m x := by simp [bas]
-  }
-  let basL : F →L[𝕜] 𝕜 := {
-    toLinearMap := basl
-    cont := basl.continuous_of_finiteDimensional
-  }
+  let basl : F →ₗ[𝕜] 𝕜 :=
+    { toFun := bas
+      map_add' m m' := by simp [bas]
+      map_smul' m x := by simp [bas] }
+  let basL : F →L[𝕜] 𝕜 :=
+    { toLinearMap := basl
+      cont := basl.continuous_of_finiteDimensional }
   have hbas : MDifferentiableAt 𝓘(𝕜, F) 𝓘(𝕜) basL (e (s x)).2 :=
     mdifferentiableAt_iff_differentiableAt.mpr (basL.differentiable _)
   exact hbas.comp x h₁
