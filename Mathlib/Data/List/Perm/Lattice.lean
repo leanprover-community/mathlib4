@@ -30,10 +30,9 @@ variable {α : Type*}
 open Perm (swap)
 
 lemma Nodup.splits_nodup (l : List α) : l.splits.Nodup := by
-  simp [List.splits]
+  simp only [List.splits, splitAt_eq]
   apply List.Nodup.map_on
-  · simp
-    intro n1 hn1 n2 hn2 hmin hdrop
+  · simp only [mem_range, Prod.mk.injEq, take_eq_take_iff, and_imp]
     omega
   · apply List.nodup_range
 
@@ -45,21 +44,19 @@ lemma Nodup.splits₃_left_nodup (l : List α) : l.splits₃_left.Nodup := by
   constructor
   · intros t d htd_splits
     apply List.Nodup.map_on
-    · rintro ⟨ta1, ta2⟩ hta_splits ⟨tb1, tb2⟩ htb_splits
-      simp
+    · rintro ⟨ta1, ta2⟩ hta_splits ⟨tb1, tb2⟩ htb_splits; simp
     · apply Nodup.splits_nodup
   · induction l <;> simp
     case cons a l ihl =>
       constructor
-      · clear ihl
-        rintro b c x1 x2 hx1x2_l_splits rfl rfl
-        simp only [Function.onFun, splits_nil, map_cons, map_nil, splits_cons, map_map,
-                   singleton_disjoint, mem_cons, Prod.mk.injEq, nil_eq, reduceCtorEq, false_and,
-                   and_false, mem_map, Function.comp_apply, exists_const, or_self,
-                   not_false_eq_true]
+      · rintro b c x1 x2 hx1x2_l_splits rfl rfl
+        simp [Function.onFun]
       · refine (List.Pairwise.map ?_ ?_ ihl); clear ihl
         rintro ⟨x1, x2⟩ ⟨y1, y2⟩
-        simp [Function.onFun]
+        simp only [Function.onFun, splits_cons, map_cons, map_map, disjoint_cons_right, mem_cons,
+          Prod.mk.injEq, cons.injEq, true_and, mem_map, Function.comp_apply, reduceCtorEq,
+          false_and, and_false, exists_const, or_false, not_and, disjoint_cons_left,
+          not_false_eq_true]
         intro hdisj_map
         constructor
         · rintro rfl rfl
@@ -69,8 +66,9 @@ lemma Nodup.splits₃_left_nodup (l : List α) : l.splits₃_left.Nodup := by
             apply List.nil_self_mem_splits
           apply List.Disjoint_self _ hnil at hdisj_map
           assumption
-        · unfold Function.comp; simp
-          simp [Disjoint] at *
+        · unfold Function.comp
+          simp only [Disjoint, mem_map, Prod.exists, imp_false, not_exists, not_and,
+            forall_exists_index, and_imp, Prod.forall, Prod.mk.injEq] at *
           rintro z1 z2 z3 z4 z5 hx1_splits rfl rfl rfl z6 z7 hy1_splits ⟨_,rfl⟩ rfl rfl
           specialize hdisj_map _ _ _ _ _ hx1_splits rfl rfl rfl _ _ hy1_splits rfl rfl rfl
           assumption
@@ -91,14 +89,17 @@ lemma Nodup.splits₃_right_nodup (l : List α) : l.splits₃_right.Nodup := by
       constructor
       · clear ihl
         rintro b c l1 l2 hl_splits rfl rfl
-        simp [Function.onFun, Function.comp, List.Disjoint]
+        simp only [Function.onFun, Disjoint, splits_cons, map_cons, map_map, mem_cons, mem_map,
+          Function.comp, Prod.exists, imp_false, not_exists, not_and, forall_eq_or_imp,
+          Prod.mk.injEq, reduceCtorEq, false_and, not_false_eq_true, implies_true,
+          forall_exists_index, and_imp, Prod.forall, nil_eq, true_and]
         rintro y1 y2 b y1' y2' hy' rfl rfl rfl z1 z2 hz ⟨⟩
       · refine (List.Pairwise.map ?_ ?_ ihl); clear ihl
         rintro ⟨x1, x2⟩ ⟨y1, y2⟩
-        simp [Function.onFun]
-        intro hdisj_map
-        rintro ⟨t, d1, d2⟩ hx2_splits hy2_splits
-        simp [List.mem_map] at hx2_splits hy2_splits
+        simp only [Function.onFun]
+        rintro hdisj_map ⟨t, d1, d2⟩ hx2_splits hy2_splits
+        simp only [mem_map, Prod.mk.injEq, Prod.exists, ↓existsAndEq, and_true,
+          exists_eq_right_right] at hx2_splits hy2_splits
         rcases hx2_splits with ⟨hx2_splits, rfl⟩
         rcases hy2_splits with ⟨hy2_splits, ⟨_, rfl⟩⟩
         apply List.Disjoint.of_map at hdisj_map
@@ -107,8 +108,7 @@ lemma Nodup.splits₃_right_nodup (l : List α) : l.splits₃_right.Nodup := by
 
 lemma Perm.splits₃_left_right_perm (l : List α) : l.splits₃_left ~ l.splits₃_right := by
   rw [List.perm_ext_iff_of_nodup]
-  · rintro ⟨x, y, z⟩
-    simp only [List.mem_splits₃_left_iff, List.mem_splits₃_right_iff]
+  · rintro ⟨x, y, z⟩; simp [List.mem_splits₃_left_iff, List.mem_splits₃_right_iff]
   · apply Nodup.splits₃_left_nodup
   · apply Nodup.splits₃_right_nodup
 
