@@ -410,9 +410,9 @@ theorem _root_.MeasureTheory.Measure.ext_of_integral_eq_on_compactlySupported
 /-- Two regular measures are equal iff they induce the same positive linear functional
 on `C_c(X, ℝ)`. -/
 theorem integralPositiveLinearMap_inj [μ.Regular] [ν.Regular] :
-    integralPositiveLinearMap μ = integralPositiveLinearMap ν ↔ μ = ν :=
-  ⟨fun hμν ↦ Measure.ext_of_integral_eq_on_compactlySupported fun f ↦ congr($hμν f),
-    fun _ ↦ by congr⟩
+    integralPositiveLinearMap μ = integralPositiveLinearMap ν ↔ μ = ν where
+  mp hμν := Measure.ext_of_integral_eq_on_compactlySupported fun f ↦ congr($hμν f)
+  mpr _ := by congr
 
 /-- Every regular measure is induced by a positive linear functional on `C_c(X, ℝ)`.
 That is, `RealRMK.rieszMeasure` is a surjective function onto regular measures. -/
