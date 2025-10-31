@@ -983,9 +983,6 @@ theorem enorm_ae_le_eLpNormEssSup {_ : MeasurableSpace α} (f : α → ε) (μ :
     ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ eLpNormEssSup f μ :=
   ENNReal.ae_le_essSup fun x => ‖f x‖ₑ
 
-@[deprecated (since := "2025-03-05")] alias
-coe_nnnorm_ae_le_eLpNormEssSup := enorm_ae_le_eLpNormEssSup
-
 @[simp]
 theorem eLpNormEssSup_eq_zero_iff {f : α → ε} : eLpNormEssSup f μ = 0 ↔ f =ᵐ[μ] 0 := by
   simp [EventuallyEq, eLpNormEssSup_eq_essSup_enorm]
