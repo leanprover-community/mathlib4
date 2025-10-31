@@ -298,11 +298,41 @@ theorem Monic.mem_rootSet {T S : Type*} [CommRing T] [CommRing S] [IsDomain S]
     [Algebra T S] {p : T[X]} (hp : p.Monic) {a : S} : a ∈ p.rootSet S ↔ (aeval a) p = 0 := by
   simp [Polynomial.mem_rootSet', (hp.map (algebraMap T S)).ne_zero]
 
-theorem fiddly {α β : Type*} (s : Set α) (f : α → β) :
-    s.ncard ≤ (f '' s).ncard + 1 ↔ ∀ a ∈ s, ∀ b ∈ s, ∀ c ∈ s, ∀ d ∈ s,
-      f a = f b → f c = f d → a = b ∨ a = c ∨ b = c ∨ c = d := by
+theorem fiddly''' {α β : Type*} [Finite α] {f : α → β} (hf : Function.Surjective f) :
+    Nat.card α ≤ Nat.card β + 1 ↔ ∀ a b c d,
+      f a = f b → f c = f d → a ≠ b → c ≠ d → {a, b} = ({c, d} : Set α) := by
+  rcases isEmpty_or_nonempty α
+  · simp
+  let g := Function.surjInv hf
+  rw [← Set.ncard_range_of_injective (Function.injective_surjInv hf),
+    ← Set.ncard_add_ncard_compl (Set.range g), add_le_add_iff_left]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [Set.ncard_le_one_iff_subset_singleton] at h
+    obtain ⟨x, hx⟩ := h
+    suffices ∀ a b : α, f a = f b → a ≠ b → a = x ∨ a = g (f x) by grind
+    intro a b hfab hab
+    by_cases ha : a ∈ Set.range g
+    · obtain ⟨a, rfl⟩ := ha
+      rw [Function.surjInv_eq hf] at hfab
+      subst hfab
+      by_cases hb : b ∈ Set.range g
+      · obtain ⟨b, rfl⟩ := hb
+        rw [Function.surjInv_eq hf] at hab
+        contradiction
+      · exact Or.inr (congrArg (fun y ↦ g (f y)) (hx hb))
+    · exact Or.inl (hx ha)
+  · rw [Set.ncard_le_one]
+    simp only [Set.mem_compl_iff, Set.mem_range, not_exists, ← ne_eq]
+    intro a ha b hb
+    simpa [(ha (f b)).symm] using congrArg (a ∈ ·) (h a (g (f a)) b (g (f b))
+      (Function.surjInv_eq hf (f a)).symm (Function.surjInv_eq hf (f b)).symm
+      (ha (f a)).symm (hb (f b)).symm)
 
-  sorry
+theorem fiddly' {α β : Type*} (s : Set α) [Finite s] (f : α → β) :
+    s.ncard ≤ (f '' s).ncard + 1 ↔ ∀ a ∈ s, ∀ b ∈ s, ∀ c ∈ s, ∀ d ∈ s,
+      f a = f b → f c = f d → a ≠ b → c ≠ d → {a, b} = ({c, d} : Set α) := by
+  simpa [Subtype.ext_iff, ← Set.image_val_inj, Set.image_insert_eq] using
+    fiddly''' (Set.surjective_mapsTo_image_restrict f s)
 
 theorem tada -- R = ℤ, S = 𝓞 K
     {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
@@ -341,19 +371,25 @@ theorem tada -- R = ℤ, S = 𝓞 K
   split_ifs with hz hz'
   · subst hz
     simp only [MulAction.toPermHom_apply, MulAction.toPerm_apply, SetLike.coe_eq_coe]
-    have key := (fiddly (f.rootSet S) π).mp h
-      (g • g • x) (g • g • x).2 (g • x) (g • x).2 x x.2 (g • x) (g • x).2
+    have key := (fiddly' (f.rootSet S) π).mp h
+      (g • g • x) (g • g • x).2 (g • x) (g • x).2 (g • x) (g • x).2 x x.2
     simp [hπ] at key
     simp [← Polynomial.rootSet.coe_smul] at key
-    simp [hx, hx.symm] at key
-    exact key
+    simp [hx] at key
+    replace key := congrArg (fun s ↦ (x : S) ∈ s) key
+    simp [hx.symm] at key
+    exact key.symm
   · simp [hz']
   · simp only [MulAction.toPermHom_apply, MulAction.toPerm_apply, SetLike.coe_eq_coe]
-    have key := (fiddly (f.rootSet S) π).mp h (g • z) (g • z).2 z z.2 (g • x) (g • x).2 x x.2
+    have key := (fiddly' (f.rootSet S) π).mp h (g • z) (g • z).2 z z.2 (g • x) (g • x).2 x x.2
     simp [hπ] at key
     simp [← Polynomial.rootSet.coe_smul] at key
-    simp [hx, hz, hz'] at key
-    exact key
+    simp [hx] at key
+    rw [not_imp_comm] at key
+    apply key
+    contrapose! key
+    replace key := congrArg (fun s ↦ (z : S) ∈ s) key
+    simp [hz, hz'] at key
 
 theorem tada' {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
     [NoZeroSMulDivisors R S] (f : R[X])
