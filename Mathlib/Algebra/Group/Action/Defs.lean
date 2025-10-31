@@ -190,6 +190,19 @@ lemma smul_assoc {M N} [SMul M N] [SMul N α] [SMul M α] [IsScalarTower M N α]
 @[to_additive]
 instance Semigroup.isScalarTower [Semigroup α] : IsScalarTower α α α := ⟨mul_assoc⟩
 
+/-- An instance of `SMulDistribClass G R S` states that the multiplicative
+action of `G` on `S` is determined by the multiplicative actions of `G` on `R`
+and `R` on `S`.
+
+This is similar to `IsScalarTower` except that the action of `G` distributes
+over the action of `R` on `S`.
+
+E.g. if `M/L/K` is a tower of galois extensions then `SMulDistribClass Gal(M/K) L M`. -/
+class SMulDistribClass (G R S : Type*) [SMul G R] [SMul G S] [SMul R S] : Prop where
+  smul_distrib_smul (g : G) (r : R) (s : S) : g • r • s = (g • r) • (g • s)
+
+export SMulDistribClass (smul_distrib_smul)
+
 /-- A typeclass indicating that the right (aka `AddOpposite`) and left actions by `M` on `α` are
 equal, that is that `M` acts centrally on `α`. This can be thought of as a version of commutativity
 for `+ᵥ`. -/
