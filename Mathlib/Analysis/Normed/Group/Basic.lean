@@ -420,10 +420,10 @@ variable {G : Type*}
 where every distinct element is 1 away from another.
 This takes an explicit `DiscreteTopology` instance to ensure that the forgetful
 inheritance to topology matches. -/
-@[to_additive "The trivial seminorm on an additive group that already has a discrete topology,
+@[to_additive /-- The trivial seminorm on an additive group that already has a discrete topology,
 where every distinct element is 1 away from another.
 This takes an explicit `DiscreteTopology` instance to ensure that the forgetful
-inheritance to topology matches."]
+inheritance to topology matches. -/]
 def SeminormedGroup.ofDiscreteTopology [TopologicalSpace G] [DiscreteTopology G]
     [Group G] [DecidableEq G] : SeminormedGroup G where
   __ := PseudoMetricSpace.ofDiscreteTopology (X := G)
@@ -437,10 +437,10 @@ def SeminormedGroup.ofDiscreteTopology [TopologicalSpace G] [DiscreteTopology G]
 where every distinct element is 1 away from another.
 This takes an explicit `DiscreteTopology` instance to ensure that the forgetful
 inheritance to topology matches. -/
-@[to_additive "The trivial seminorm on an additive group that already has a discrete topology,
+@[to_additive /-- The trivial norm on an additive group that already has a discrete topology,
 where every distinct element is 1 away from another.
 This takes an explicit `DiscreteTopology` instance to ensure that the forgetful
-inheritance to topology matches."]
+inheritance to topology matches. -/]
 def NormedGroup.ofDiscreteTopology [TopologicalSpace G] [DiscreteTopology G]
     [Group G] [DecidableEq G] : NormedGroup G where
   __ := MetricSpace.ofDiscreteTopology (X := G)
