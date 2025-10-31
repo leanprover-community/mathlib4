@@ -138,8 +138,8 @@ theorem asString_nil : [].asString = "" :=
 theorem toList_empty : "".toList = [] :=
   rfl
 
-theorem asString_toList (s : String) : s.toList.asString = s :=
-  asString_data
+theorem asString_toList (s : String) : s.toList.asString = s := by
+  simp
 
 theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.drop 1).toList
   | s, h => by
