@@ -59,6 +59,7 @@ variable (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [MulSemiringAct
   [IsFractionRing A K] [IsFractionRing B L] [IsScalarTower A K L] [IsScalarTower A B L]
   [MulSemiringAction G L] [SMulDistribClass G B L]
 
+/-- `IsGaloisGroup` for rings implies `IsGaloisGroup` for their fraction fields. -/
 theorem IsGaloisGroup.to_isFractionRing [Finite G] [hGAB : IsGaloisGroup G A B] :
     IsGaloisGroup G K L := by
   have hc (a : A) : (algebraMap K L) (algebraMap A K a) = (algebraMap B L) (algebraMap A B a) := by
@@ -85,6 +86,8 @@ theorem IsGaloisGroup.to_isFractionRing [Finite G] [hGAB : IsGaloisGroup G A B] 
     use algebraMap A K b / algebraMap A K a
     simp [hc, div_eq_div_iff ha hy', ← map_mul, ← map_mul, hb]
 
+/-- If `B` is an integral extension of an integrally closed domain `A`, then `IsGaloisGroup` for
+their fraction fields implies `IsGaloisGroup` for these rings. -/
 theorem IsGaloisGroup.of_isFractionRing [hGKL : IsGaloisGroup G K L]
     [IsIntegrallyClosed A] [Algebra.IsIntegral A B] : IsGaloisGroup G A B := by
   have hc (a : A) : (algebraMap K L) (algebraMap A K a) = (algebraMap B L) (algebraMap A B a) := by
@@ -103,6 +106,8 @@ theorem IsGaloisGroup.of_isFractionRing [hGKL : IsGaloisGroup G K L]
     obtain ⟨a, rfl⟩ := hx
     exact ⟨a, by rwa [hc, IsFractionRing.coe_inj] at hb⟩
 
+/-- If `G` is finite and `A` is integrally closed then `IsGaloisGroup G A B` is equivalent to `B/A`
+being integral and the fields of fractions `Frac(B)/Frac(A)` being Galois with Galois group `G`. -/
 theorem IsGaloisGroup.iff_isFractionRing [Finite G] [IsIntegrallyClosed A] :
     IsGaloisGroup G A B ↔ Algebra.IsIntegral A B ∧ IsGaloisGroup G K L :=
   ⟨fun h ↦ ⟨h.isInvariant.isIntegral, h.to_isFractionRing G A B K L⟩,
