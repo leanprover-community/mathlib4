@@ -17,12 +17,17 @@ does not make sense when the domain and/or codomain of `φ` and `f` are not defi
 
 ## Main definition
 
-Given morphism `φ : a ⟶ b` in `𝒳` and `f : R ⟶ S` in `𝒮`, `p.IsHomLift f φ` is a class, defined
-using the auxiliary inductive type `IsHomLiftAux` which expresses the fact that `f = p(φ)`.
+Given morphism `φ : a ⟶ b` in `𝒳` and `f : R ⟶ S` in `𝒮`, `p.IsHomLift f φ` is a class
+which expresses the fact that `f = p(φ)`.
 
 We also define a macro `subst_hom_lift p f φ` which can be used to substitute `f` with `p(φ)` in a
-goal, this tactic is just short for `obtain ⟨⟩ := Functor.IsHomLift.cond (p:=p) (f:=f) (φ:=φ)`, and
+goal, this tactic is just short for `obtain ⟨⟩ := inferInstanceAs (p.IsHomLift f φ)`, and
 it is used to make the code more readable.
+
+## Implementation
+The class `IsHomLift` is defined as an inductive with the single constructor
+`.map (φ : a ⟶ b) : IsHomLiftAux p (p.map φ) φ`, similar to how `Eq a b` has the single constructor
+`.rfl (a : α) : Eq a a`.
 
 -/
 
@@ -34,10 +39,6 @@ variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒳] [Category.
 
 namespace CategoryTheory
 
-/-- Helper-type for defining `IsHomLift`. -/
-inductive IsHomLiftAux : ∀ {R S : 𝒮} {a b : 𝒳} (_ : R ⟶ S) (_ : a ⟶ b), Prop
-  | map {a b : 𝒳} (φ : a ⟶ b) : IsHomLiftAux (p.map φ) φ
-
 /-- Given a functor `p : 𝒳 ⥤ 𝒮`, an arrow `φ : a ⟶ b` in `𝒳` and an arrow `f : R ⟶ S` in `𝒮`,
 `p.IsHomLift f φ` expresses the fact that `φ` lifts `f` through `p`.
 This is often drawn as:
@@ -48,19 +49,18 @@ This is often drawn as:
   v        v
   R --f--> S
 ``` -/
-class Functor.IsHomLift {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) : Prop where
-  cond : IsHomLiftAux p f φ
+class inductive Functor.IsHomLift : ∀ {R S : 𝒮} {a b : 𝒳} (_ : R ⟶ S) (_ : a ⟶ b), Prop
+  | map {a b : 𝒳} (φ : a ⟶ b) : IsHomLift (p.map φ) φ
 
 /-- `subst_hom_lift p f φ` tries to substitute `f` with `p(φ)` by using `p.IsHomLift f φ` -/
 macro "subst_hom_lift" p:term:max f:term:max φ:term:max : tactic =>
-  `(tactic| obtain ⟨⟩ := Functor.IsHomLift.cond (p := $p) (f := $f) (φ := $φ))
+  `(tactic| obtain ⟨⟩ := inferInstanceAs (Functor.IsHomLift $p $f $φ))
 
 namespace IsHomLift
 
 /-- For any arrow `φ : a ⟶ b` in `𝒳`, `φ` lifts the arrow `p.map φ` in the base `𝒮`. -/
 @[simp]
-instance map {a b : 𝒳} (φ : a ⟶ b) : p.IsHomLift (p.map φ) φ where
-  cond := by constructor
+instance map {a b : 𝒳} (φ : a ⟶ b) : p.IsHomLift (p.map φ) φ := .map φ
 
 @[simp]
 instance (a : 𝒳) : p.IsHomLift (𝟙 (p.obj a)) (𝟙 a) := by
