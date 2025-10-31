@@ -160,9 +160,9 @@ lemma mk_of_continuousAt (hf : ContinuousAt f x)
     (hfP : P f domChart codChart) : LiftSourceTargetPropertyAt I I' n f x P := by
   obtain ⟨s, hs, hsopen, hxs⟩ := mem_nhds_iff.mp <|
     hf.preimage_mem_nhds (codChart.open_source.mem_nhds hfx)
-  exact ⟨domChart.restr s, codChart, by grind [OpenPartialHomeomorph.restr_source'], hfx,
-    restr_mem_maximalAtlas (contDiffGroupoid n I) hdomChart hsopen, hcodChart,
-    by grind [OpenPartialHomeomorph.restr_source'], hP.mono_source hsopen hfP⟩
+  exact ⟨domChart.restr s, codChart, by grind, hfx,
+    restr_mem_maximalAtlas (contDiffGroupoid n I) hdomChart hsopen, hcodChart, by grind,
+    hP.mono_source hsopen hfP⟩
 
 /-- If `P` is monotone w.r.t. restricting `domChart` and closed under congruence,
 if `f` has property `P` at `x` and `f` and `g` are eventually equal near `x`,
@@ -181,8 +181,7 @@ lemma congr_of_eventuallyEq (hP : IsLocalSourceTargetProperty P)
       · exact Subset.trans (by simp [interior_eq_iff_isOpen.mpr hs]) hss'
       · exact Subset.trans (by simp) hf.source_subset_preimage_source
     · rw [hfg.inter_preimage_eq]; exact inter_subset_right
-  · apply hP.congr (hfg.mono hss' |>.mono (by grind [OpenPartialHomeomorph.restr_source']))
-    exact hP.mono_source hs hf.property
+  · exact hP.congr (hfg.mono hss' |>.mono (by grind)) <| hP.mono_source hs hf.property
 
 /-- If `P` is monotone w.r.t. restricting `domChart` and closed under congruence,
 and `f` and `g` are eventually equal near `x`,
