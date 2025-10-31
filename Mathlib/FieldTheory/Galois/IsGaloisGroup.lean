@@ -25,8 +25,9 @@ naturally assume `[IsGaloisGroup G A B]` and whose statements would otherwise re
 
 Unfortunately, this definition of `IsGaloisGroup G A B` for extensions of rings `B/A` is
 nonstandard and clashes with other notions such as the étale fundamental group. In particular, if
-`A` is integrally closed, then  `IsGaloisGroup G A B` is equivalent to `B/A` being integral and the
-fields of fractions `Frac(B)/Frac(A)` being Galois, rather than `B/A` being étale for instance.
+`G` is finite and `A` is integrally closed, then  `IsGaloisGroup G A B` is equivalent to `B/A`
+being integral and the fields of fractions `Frac(B)/Frac(A)` being Galois with Galois group `G`
+(see `IsGaloisGroup.iff_isFractionRing`), rather than `B/A` being étale for instance.
 
 But in the absence of a more suitable name, the utility of the predicate `IsGaloisGroup G A B` for
 extensions of rings `B/A` seems to outweigh these terminological issues.
