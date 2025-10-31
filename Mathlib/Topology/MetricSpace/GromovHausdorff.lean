@@ -703,7 +703,7 @@ instance : SecondCountableTopology GHSpace := by
       have I :=
         calc
           ε⁻¹ * |dist x y - dist (Ψ x) (Ψ y)| = |ε⁻¹ * (dist x y - dist (Ψ x) (Ψ y))| := by
-            rw [abs_mul, abs_of_nonneg (le_of_lt (inv_pos.2 εpos))]
+            rw [abs_mul, abs_of_nonneg (inv_pos.2 εpos).le]
           _ = |ε⁻¹ * dist x y - ε⁻¹ * dist (Ψ x) (Ψ y)| := by congr; ring
           _ ≤ 1 := le_of_lt (abs_sub_lt_one_of_floor_eq_floor this)
       calc
