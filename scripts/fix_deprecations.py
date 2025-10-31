@@ -32,6 +32,7 @@ def main() -> None:
                 col_num = int(match.group(3))
 
                 # Skip if file doesn't exist locally
+                # This may occur e.g. for deprecations warnings inside upstream dependencies.
                 if not Path(filepath).exists():
                     if filepath not in skipped_files:
                         skipped_files.add(filepath)
