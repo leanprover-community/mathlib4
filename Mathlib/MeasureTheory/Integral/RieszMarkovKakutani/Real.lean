@@ -6,7 +6,7 @@ Authors: Yoh Tanimoto, Oliver Butterley
 import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
 import Mathlib.Order.Interval.Set.Union
-import Mathlib.Topology.ContinuousMap.CompactlySupported.Integral
+import Mathlib.MeasureTheory.Integral.CompactlySupported
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for real-linear functionals
@@ -353,8 +353,8 @@ variable {μ ν : Measure X}
 /-! We show that `RealRMK.rieszMeasure` is a bijection between positive linear functionals on
 `C_c(X, ℝ)` and regular measures with inverse `RealRMK.integralPositiveLinearMap`. -/
 
--- Note: the assumption `IsFiniteMeasureOnCompacts μ` cannot be removed. For example, if
--- `μ` is infinite on any nonempty set and `ν = 0`, then the hypothese are satisfied.
+/-- Note: the assumption `IsFiniteMeasureOnCompacts μ` cannot be removed. For example, if
+`μ` is infinite on any nonempty set and `ν = 0`, then the hypothese are satisfied. -/
 lemma measure_le_of_isCompact_of_integral [ν.OuterRegular]
     [IsFiniteMeasureOnCompacts ν] [IsFiniteMeasureOnCompacts μ]
     (hμν : ∀ f : C_c(X, ℝ), ∫ x, f x ∂μ ≤ ∫ x, f x ∂ν)
