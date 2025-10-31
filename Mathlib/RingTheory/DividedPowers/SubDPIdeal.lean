@@ -78,7 +78,7 @@ namespace DividedPowers
 structure IsSubDPIdeal {A : Type*} [CommSemiring A] {I : Ideal A} (hI : DividedPowers I)
     (J : Ideal A) : Prop where
   isSubideal : J ≤ I
-  dpow_mem : ∀ (n : ℕ) (_: n ≠ 0) {j : A} (_ : j ∈ J), hI.dpow n j ∈ J
+  dpow_mem : ∀ (n : ℕ) (_ : n ≠ 0) {j : A} (_ : j ∈ J), hI.dpow n j ∈ J
 
 section IsSubDPIdeal
 
@@ -134,7 +134,7 @@ theorem isSubDPIdeal_inf_iff {A : Type*} [CommRing A] {I : Ideal A} (hI : Divide
   · have hab' : a - b ∈ I := I.sub_mem ha hb
     rw [← add_sub_cancel b a, hI.dpow_add' hb hab', range_add_one, sum_insert notMem_range_self,
       tsub_self, hI.dpow_zero hab', mul_one, add_sub_cancel_left]
-    exact J.sum_mem (fun i hi ↦  SemilatticeInf.inf_le_left J I ((J ⊓ I).smul_mem _
+    exact J.sum_mem (fun i hi ↦ SemilatticeInf.inf_le_left J I ((J ⊓ I).smul_mem _
       (hIJ.dpow_mem _ (ne_of_gt (Nat.sub_pos_of_lt (mem_range.mp hi))) ⟨hab, hab'⟩)))
   · refine ⟨SemilatticeInf.inf_le_right J I, fun {n} hn {a} ha ↦ ⟨?_, hI.dpow_mem hn ha.right⟩⟩
     rw [← sub_zero (hI.dpow n a), ← hI.dpow_eval_zero hn]
@@ -161,7 +161,7 @@ theorem span_isSubDPIdeal_iff {S : Set A} (hS : S ⊆ I) :
         apply Submodule.sum_mem (span S)
         intro m _
         by_cases hm0 : m = 0
-        · exact hm0 ▸ mul_mem_left (span S)  _ (hy _ hm)
+        · exact hm0 ▸ mul_mem_left (span S) _ (hy _ hm)
         · exact mul_mem_right _ (span S) (hx _ hm0)
     | smul a x hxI hx =>
         rw [Algebra.id.smul_eq_mul, hI.dpow_mul (hSI hxI)]
@@ -185,12 +185,13 @@ theorem isSubDPIdeal_iSup {ι : Type*} {J : ι → Ideal A} (hJ : ∀ i, IsSubDP
 
 theorem isSubDPIdeal_iInf {ι : Type*} {J : ι → Ideal A} (hJ : ∀ i, IsSubDPIdeal hI (J i)) :
     IsSubDPIdeal hI (I ⊓ iInf (fun i ↦ J i)) := by
-  by_cases hι : Nonempty ι
-  · refine ⟨fun _ hx ↦ hx.1, ?_⟩
+  cases isEmpty_or_nonempty ι with
+  | inr _ =>
+    refine ⟨fun _ hx ↦ hx.1, ?_⟩
     intro n hn x hx
     simp only [Ideal.mem_inf, mem_iInf] at hx ⊢
     exact ⟨hI.dpow_mem hn hx.1, fun i ↦  IsSubDPIdeal.dpow_mem (hJ i) n hn (hx.2 i)⟩
-  · simp only [not_nonempty_iff] at hι
+  | inl _ =>
     simp only [iInf_of_empty, le_top, inf_of_le_left]
     exact IsSubDPIdeal.self hI
 
@@ -549,7 +550,7 @@ noncomputable def dpow : ℕ → B → B := fun n ↦
 variable {f} (hf : Function.Surjective f) {J} (hIJ : J = I.map f)
   (hIf : hI.IsSubDPIdeal (RingHom.ker f ⊓ I))
 
-/-- Divided powers on the the codomain `B` of a surjective ring homomorphism `f` are compatible
+/-- Divided powers on the codomain `B` of a surjective ring homomorphism `f` are compatible
   with `f`. -/
 theorem dpow_apply' (hIf : IsSubDPIdeal hI (RingHom.ker f ⊓ I)) {n : ℕ} {a : A} (ha : a ∈ I) :
     dpow hI f n (f a) = f (hI.dpow n a) := by

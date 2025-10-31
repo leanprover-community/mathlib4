@@ -8,6 +8,7 @@ import Batteries.Tactic.Trans
 import Mathlib.Data.Ordering.Basic
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.Push.Attr
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.TypeStar
 import Mathlib.Order.Defs.PartialOrder
@@ -112,8 +113,8 @@ lemma ne_iff_lt_or_gt : a ≠ b ↔ a < b ∨ b < a := ⟨lt_or_gt_of_ne, (Or.el
 
 lemma lt_iff_not_ge : a < b ↔ ¬b ≤ a := ⟨not_le_of_gt, lt_of_not_ge⟩
 
-@[simp] lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
-@[simp] lemma not_le : ¬a ≤ b ↔ b < a := lt_iff_not_ge.symm
+@[simp, push] lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
+@[simp, push] lemma not_le : ¬a ≤ b ↔ b < a := lt_iff_not_ge.symm
 
 lemma eq_or_gt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
   if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
@@ -132,9 +133,9 @@ theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α}
   le_of_not_gt fun h' => not_le_of_gt (H h') h
 
 @[grind =]
-lemma min_def (a b : α) : min a b = if a ≤ b then a else b := by rw [LinearOrder.min_def a]
+lemma min_def (a b : α) : min a b = if a ≤ b then a else b := LinearOrder.min_def a b
 @[grind =]
-lemma max_def (a b : α) : max a b = if a ≤ b then b else a := by rw [LinearOrder.max_def a]
+lemma max_def (a b : α) : max a b = if a ≤ b then b else a := LinearOrder.max_def a b
 
 lemma min_le_left (a b : α) : min a b ≤ a := by
   if h : a ≤ b
@@ -147,9 +148,7 @@ lemma min_le_right (a b : α) : min a b ≤ b := by
   else simp [min_def, if_neg h, le_refl]
 
 lemma le_min (h₁ : c ≤ a) (h₂ : c ≤ b) : c ≤ min a b := by
-  if h : a ≤ b
-  then simpa [min_def, if_pos h] using h₁
-  else simpa [min_def, if_neg h] using h₂
+  grind
 
 lemma le_max_left (a b : α) : a ≤ max a b := by
   if h : a ≤ b
@@ -162,9 +161,7 @@ lemma le_max_right (a b : α) : b ≤ max a b := by
   else simpa [max_def, if_neg h] using le_of_not_ge h
 
 lemma max_le (h₁ : a ≤ c) (h₂ : b ≤ c) : max a b ≤ c := by
-  if h : a ≤ b
-  then simpa [max_def, if_pos h] using h₂
-  else simpa [max_def, if_neg h] using h₁
+  grind
 
 lemma eq_min (h₁ : c ≤ a) (h₂ : c ≤ b) (h₃ : ∀ {d}, d ≤ a → d ≤ b → d ≤ c) : c = min a b :=
   le_antisymm (le_min h₁ h₂) (h₃ (min_le_left a b) (min_le_right a b))
@@ -188,7 +185,7 @@ lemma min_left_comm (a b c : α) : min a (min b c) = min b (min a c) := by
 @[simp] lemma min_self (a : α) : min a a = a := by simp [min_def]
 
 lemma min_eq_left (h : a ≤ b) : min a b = a := by
-  apply Eq.symm; apply eq_min (le_refl _) h; intros; assumption
+  grind
 
 lemma min_eq_right (h : b ≤ a) : min a b = b := min_comm b a ▸ min_eq_left h
 

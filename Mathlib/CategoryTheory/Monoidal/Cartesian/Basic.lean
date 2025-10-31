@@ -27,9 +27,9 @@ We however develop the theory for any `F.OplaxMonoidal`/`F.Monoidal`/`F.Braided`
 requiring it to be the `ofChosenFiniteProducts` one. This is to avoid diamonds: Consider
 e.g. `𝟭 C` and `F ⋙ G`.
 
-In applications requiring a finite preserving functor to be oplax-monoidal/monoidal/braided,
-avoid `attribute [local instance] ofChosenFiniteProducts` but instead turn on the corresponding
-`ofChosenFiniteProducts` declaration for that functor only.
+In applications requiring a finite-product-preserving functor to be
+oplax-monoidal/monoidal/braided, avoid `attribute [local instance] ofChosenFiniteProducts` but
+instead turn on the corresponding `ofChosenFiniteProducts` declaration for that functor only.
 
 # Projects
 
@@ -91,8 +91,8 @@ lemma id_tensorHom_id (X Y : C) : tensorHom ℬ (𝟙 X) (𝟙 Y) = 𝟙 (tensor
 
 @[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
 
-lemma tensor_comp (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
-    tensorHom ℬ (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom ℬ f₁ f₂ ≫ tensorHom ℬ g₁ g₂ :=
+lemma tensorHom_comp_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
+    tensorHom ℬ f₁ f₂ ≫ tensorHom ℬ g₁ g₂ = tensorHom ℬ (f₁ ≫ g₁) (f₂ ≫ g₂) :=
   (ℬ _ _).isLimit.hom_ext <| by rintro ⟨_ | _⟩ <;> simp [tensorHom]
 
 lemma pentagon (W X Y Z : C) :
@@ -157,7 +157,7 @@ abbrev ofChosenFiniteProducts : CartesianMonoidalCategory C :=
   {
   toMonoidalCategory := .ofTensorHom
     (id_tensorHom_id := id_tensorHom_id ℬ)
-    (tensor_comp := tensor_comp ℬ)
+    (tensorHom_comp_tensorHom := tensorHom_comp_tensorHom ℬ)
     (pentagon := pentagon ℬ)
     (triangle := triangle 𝒯 ℬ)
     (leftUnitor_naturality := leftUnitor_naturality 𝒯 ℬ)
@@ -769,6 +769,14 @@ end prodComparison
 
 end CartesianMonoidalCategoryComparison
 
+/-- In a cartesian monoidal category, `tensorLeft X` is naturally isomorphic `prod.functor.obj X`.
+-/
+noncomputable def tensorLeftIsoProd [HasBinaryProducts C] (X : C) :
+    MonoidalCategory.tensorLeft X ≅ prod.functor.obj X :=
+  NatIso.ofComponents fun Y ↦
+    (CartesianMonoidalCategory.tensorProductIsBinaryProduct X Y).conePointUniqueUpToIso
+      (limit.isLimit _)
+
 open Limits
 
 variable {P : ObjectProperty C}
@@ -776,11 +784,15 @@ variable {P : ObjectProperty C}
 -- TODO: Introduce `ClosedUnderFiniteProducts`?
 /-- The restriction of a Cartesian-monoidal category along an object property that's closed under
 finite products is Cartesian-monoidal. -/
-noncomputable def fullSubcategory (hP₀ : ClosedUnderLimitsOfShape (Discrete PEmpty) P)
-    (hP₂ : ClosedUnderLimitsOfShape (Discrete WalkingPair) P) :
+@[simps!]
+instance fullSubcategory
+    [P.IsClosedUnderLimitsOfShape (Discrete PEmpty)]
+    [P.IsClosedUnderLimitsOfShape (Discrete WalkingPair)] :
     CartesianMonoidalCategory P.FullSubcategory where
-  __ := MonoidalCategory.fullSubcategory P (hP₀ isTerminalTensorUnit <| by simp)
-    fun X Y hX hY ↦ hP₂ (tensorProductIsBinaryProduct X Y) (by rintro ⟨_ | _⟩ <;> simp [hX, hY])
+  __ := MonoidalCategory.fullSubcategory P
+      (P.prop_of_isLimit isTerminalTensorUnit (by simp))
+      (fun X Y hX hY ↦ P.prop_of_isLimit (tensorProductIsBinaryProduct X Y)
+        (by rintro (_ | _) <;> assumption))
   isTerminalTensorUnit := .ofUniqueHom (fun X ↦ toUnit X.1) fun _ _ ↦ by ext
   fst X Y := fst X.1 Y.1
   snd X Y := snd X.1 Y.1
@@ -957,11 +969,6 @@ alias braidedOfChosenFiniteProducts := Braided.ofChosenFiniteProducts
 
 namespace EssImageSubcategory
 variable [F.Full] [F.Faithful] [PreservesFiniteProducts F] {T X Y Z : F.EssImageSubcategory}
-
-@[simps!]
-noncomputable instance instCartesianMonoidalCategory :
-     CartesianMonoidalCategory F.EssImageSubcategory :=
-  .fullSubcategory (.essImage _) (.essImage _)
 
 lemma tensor_obj (X Y : F.EssImageSubcategory) : (X ⊗ Y).obj = X.obj ⊗ Y.obj := rfl
 

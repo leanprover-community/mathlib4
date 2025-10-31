@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Monoidal.Conv
 ## TODO
 
 * Show that in a Cartesian monoidal category Hopf monoids are exactly group objects.
-* Show that `Hopf_ (ModuleCat R) ≌ HopfAlgCat R`.
+* Show that `Hopf (ModuleCat R) ≌ HopfAlgCat R`.
 -/
 
 noncomputable section
@@ -22,6 +22,7 @@ universe v₁ v₂ u₁ u₂ u
 
 open CategoryTheory MonoidalCategory
 
+namespace CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory C]
 
 open scoped MonObj ComonObj
@@ -52,35 +53,39 @@ variable (C)
 /--
 A Hopf monoid in a braided category `C` is a bimonoid object in `C` equipped with an antipode.
 -/
-structure Hopf_ where
+structure Hopf where
   /-- The underlying object in the ambient monoidal category -/
   X : C
   [hopf : HopfObj X]
 
-attribute [instance] Hopf_.hopf
+@[deprecated (since := "2025-09-15")] alias Hopf_ := Hopf
 
-namespace Hopf_
+attribute [instance] Hopf.hopf
+
+namespace Hopf
 
 variable {C}
 
 /-- A Hopf monoid is a bimonoid. -/
-def toBimon_ (A : Hopf_ C) : Bimon_ C := .mk' A.X
+def toBimon (A : Hopf C) : Bimon C := .mk' A.X
+
+@[deprecated (since := "2025-09-15")] alias toBimon_ := toBimon
 
 /--
 Morphisms of Hopf monoids are just morphisms of the underlying bimonoids.
 In fact they automatically intertwine the antipodes, proved below.
 -/
-instance : Category (Hopf_ C) :=
-  inferInstanceAs <| Category (InducedCategory (Bimon_ C) Hopf_.toBimon_)
+instance : Category (Hopf C) :=
+  inferInstanceAs <| Category (InducedCategory (Bimon C) Hopf.toBimon)
 
-end Hopf_
+end Hopf
 
 namespace HopfObj
 
 variable {C}
 
 /-- Morphisms of Hopf monoids intertwine the antipodes. -/
-theorem hom_antipode {A B : C} [HopfObj A] [HopfObj B] (f : A ⟶ B) [IsBimon_Hom f] :
+theorem hom_antipode {A B : C} [HopfObj A] [HopfObj B] (f : A ⟶ B) [IsBimonHom f] :
     f ≫ 𝒮 = 𝒮 ≫ f := by
   -- We show these elements are equal by exhibiting an element in the convolution algebra
   -- between `A` (as a comonoid) and `B` (as a monoid),
@@ -95,11 +100,11 @@ theorem hom_antipode {A B : C} [HopfObj A] [HopfObj B] (f : A ⟶ B) [IsBimon_Ho
     slice_lhs 2 3 =>
       rw [← tensorHom_def]
     slice_lhs 1 2 =>
-      rw [← IsComon_Hom.hom_comul f]
+      rw [← IsComonHom.hom_comul f]
     slice_lhs 2 4 =>
       rw [antipode_left]
     slice_lhs 1 2 =>
-      rw [IsComon_Hom.hom_counit]
+      rw [IsComonHom.hom_counit]
   · rw [Conv.mul_eq, Conv.one_eq]
     simp only [whiskerLeft_comp, Category.assoc]
     slice_lhs 2 3 =>
@@ -107,11 +112,11 @@ theorem hom_antipode {A B : C} [HopfObj A] [HopfObj B] (f : A ⟶ B) [IsBimon_Ho
     slice_lhs 3 4 =>
       rw [← tensorHom_def]
     slice_lhs 3 4 =>
-      rw [← IsMon_Hom.mul_hom]
+      rw [← IsMonHom.mul_hom]
     slice_lhs 1 3 =>
       rw [antipode_right]
     slice_lhs 2 3 =>
-      rw [IsMon_Hom.one_hom]
+      rw [IsMonHom.one_hom]
 
 @[reassoc (attr := simp)]
 theorem one_antipode (A : C) [HopfObj A] : η[A] ≫ 𝒮[A] = η[A] := by
@@ -119,7 +124,7 @@ theorem one_antipode (A : C) [HopfObj A] : η[A] ≫ 𝒮[A] = η[A] := by
   conv at this =>
     rhs
     rw [antipode_left]
-  rw [Bimon_.one_comul_assoc, tensorHom_def_assoc, unitors_inv_equal,
+  rw [Bimon.one_comul_assoc, tensorHom_def_assoc, unitors_inv_equal,
     ← rightUnitor_inv_naturality_assoc, whisker_exchange_assoc, ← rightUnitor_inv_naturality_assoc,
     rightUnitor_inv_naturality_assoc] at this
   simpa
@@ -130,7 +135,7 @@ theorem antipode_counit (A : C) [HopfObj A] : 𝒮[A] ≫ ε[A] = ε[A] := by
   conv at this =>
     rhs
     rw [antipode_left_assoc]
-  rw [Bimon_.mul_counit, tensorHom_def', Category.assoc, ← whisker_exchange_assoc] at this
+  rw [Bimon.mul_counit, tensorHom_def', Category.assoc, ← whisker_exchange_assoc] at this
   simpa [unitors_equal]
 
 /-!
@@ -152,7 +157,7 @@ theorem antipode_comul₁ (A : C) [HopfObj A] :
   slice_lhs 3 5 =>
     rw [← associator_naturality_right, ← Category.assoc, ← tensorHom_def]
   slice_lhs 3 9 =>
-    rw [Bimon_.compatibility]
+    rw [Bimon.compatibility]
   slice_lhs 1 3 =>
     rw [antipode_left]
   simp [MonObj.tensorObj.one_def]
@@ -424,15 +429,15 @@ theorem mul_antipode (A : C) [HopfObj A] :
   · -- Unfold the algebra structure in the convolution monoid,
     -- then `simp?, simp only [tensor_μ], simp?`.
     rw [Conv.mul_eq, Conv.one_eq]
-    simp only [Comon_.tensorObj_comul, whiskerRight_tensor, comp_whiskerRight, Category.assoc,
-      Comon_.tensorObj_counit]
+    simp only [Comon.tensorObj_comul, whiskerRight_tensor, comp_whiskerRight, Category.assoc,
+      Comon.tensorObj_counit]
     simp only [tensorμ]
     simp only [Category.assoc, pentagon_hom_inv_inv_inv_inv_assoc]
     exact mul_antipode₁ A
   · rw [Conv.mul_eq, Conv.one_eq]
-    simp only [Comon_.tensorObj_comul, whiskerRight_tensor,
+    simp only [Comon.tensorObj_comul, whiskerRight_tensor,
       BraidedCategory.braiding_naturality_assoc, whiskerLeft_comp, Category.assoc,
-      Comon_.tensorObj_counit]
+      Comon.tensorObj_counit]
     simp only [tensorμ]
     simp only [Category.assoc, pentagon_hom_inv_inv_inv_inv_assoc]
     exact mul_antipode₂ A
@@ -457,4 +462,4 @@ theorem antipode_antipode (A : C) [HopfObj A] (comm : (β_ _ _).hom ≫ μ[A] = 
 
 end HopfObj
 
-end
+end CategoryTheory
