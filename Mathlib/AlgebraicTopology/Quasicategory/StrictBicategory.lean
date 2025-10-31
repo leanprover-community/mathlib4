@@ -36,7 +36,7 @@ open CategoryTheory Simplicial
 
 /-- `QCat` is the category of quasi-categories defined as the full subcategory of the category
 `SSet` of simplicial sets. -/
-def QCat := ObjectProperty.FullSubcategory Quasicategory
+abbrev QCat := ObjectProperty.FullSubcategory Quasicategory
 
 /-- `QCat` is the category of quasi-categories defined as the full subcategory of the category
 `SSet` of simplicial sets. -/
