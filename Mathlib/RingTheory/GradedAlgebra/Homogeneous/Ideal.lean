@@ -369,8 +369,8 @@ theorem eq_bot_iff (I : HomogeneousIdeal 𝒜) : I = ⊥ ↔ I.toIdeal = ⊥ :=
   toIdeal_injective.eq_iff.symm
 
 instance completeLattice : CompleteLattice (HomogeneousIdeal 𝒜) :=
-  toIdeal_injective.completeLattice _ toIdeal_sup toIdeal_inf toIdeal_sSup toIdeal_sInf toIdeal_top
-    toIdeal_bot
+  toIdeal_injective.completeLattice _ .rfl .rfl toIdeal_sup toIdeal_inf toIdeal_sSup toIdeal_sInf
+    toIdeal_top toIdeal_bot
 
 instance : Add (HomogeneousIdeal 𝒜) :=
   ⟨(· ⊔ ·)⟩
