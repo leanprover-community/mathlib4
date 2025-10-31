@@ -10,7 +10,7 @@ import Mathlib.Algebra.Ring.Units
 # Associated elements in rings
 -/
 
-assert_not_exists OrderedCommMonoid Multiset Field
+assert_not_exists IsOrderedMonoid Multiset Field
 
 namespace Associated
 variable {M : Type*} [Monoid M] [HasDistribNeg M] {a b : M}

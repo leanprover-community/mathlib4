@@ -243,7 +243,7 @@ theorem bitwise_swap {f : Bool → Bool → Bool} :
   rcases m with - | m
   <;> rcases n with - | n
   <;> try rw [bitwise_zero_left, bitwise_zero_right]
-  · specialize ih ((m+1) / 2) (div_lt_self' ..)
+  · specialize ih ((m + 1) / 2) (div_lt_self' ..)
     simp [bitwise_of_ne_zero, ih]
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`

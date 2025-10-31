@@ -14,7 +14,7 @@ This file records some of the behavior of `eqToHom` 1-morphisms and
 
 Given an equality of objects `h : x = y` in a bicategory, there is a 1-morphism
 `eqToHom h : x ⟶ y` just like in an ordinary category. The definitional property
-of this morhism is that if `h : x = x`, `eqToHom h = 𝟙 x`. This is
+of this morphism is that if `h : x = x`, `eqToHom h = 𝟙 x`. This is
 implemented as the `eqToHom` morphism in the `CategoryStruct` underlying the
 bicategory.
 
