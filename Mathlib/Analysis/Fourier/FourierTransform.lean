@@ -5,6 +5,7 @@ Authors: David Loeffler
 -/
 import Mathlib.Algebra.Group.AddChar
 import Mathlib.Analysis.Complex.Circle
+import Mathlib.Analysis.Fourier.Notation
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.MeasureTheory.Integral.Bochner.Set
@@ -413,20 +414,11 @@ open scoped RealInnerProductSpace
 
 variable [FiniteDimensional ℝ V]
 
-/-- The Fourier transform of a function on an inner product space, with respect to the standard
-additive character `ω ↦ exp (2 i π ω)`.
-Denoted as `𝓕` within the `Real.FourierTransform` namespace. -/
-def fourierIntegral (f : V → E) (w : V) : E :=
-  VectorFourier.fourierIntegral 𝐞 volume (innerₗ V) f w
+instance FourierTransform : FourierTransform (V → E) (V → E) where
+  fourierTransform f := VectorFourier.fourierIntegral 𝐞 volume (innerₗ V) f
 
-/-- The inverse Fourier transform of a function on an inner product space, defined as the Fourier
-transform but with opposite sign in the exponential.
-Denoted as `𝓕⁻¹` within the `Real.FourierTransform` namespace. -/
-def fourierIntegralInv (f : V → E) (w : V) : E :=
-  VectorFourier.fourierIntegral 𝐞 volume (-innerₗ V) f w
-
-@[inherit_doc] scoped[FourierTransform] notation "𝓕" => Real.fourierIntegral
-@[inherit_doc] scoped[FourierTransform] notation "𝓕⁻" => Real.fourierIntegralInv
+instance FourierTransformInv : FourierTransformInv (V → E) (V → E) where
+  fourierTransformInv f w := VectorFourier.fourierIntegral 𝐞 volume (-innerₗ V) f w
 
 lemma fourierIntegral_eq (f : V → E) (w : V) :
     𝓕 f w = ∫ v, 𝐞 (-⟪v, w⟫) • f v := rfl
@@ -437,7 +429,7 @@ lemma fourierIntegral_eq' (f : V → E) (w : V) :
 
 lemma fourierIntegralInv_eq (f : V → E) (w : V) :
     𝓕⁻ f w = ∫ v, 𝐞 ⟪v, w⟫ • f v := by
-  simp [fourierIntegralInv, VectorFourier.fourierIntegral]
+  simp [FourierTransformInv.fourierTransformInv, VectorFourier.fourierIntegral]
 
 lemma fourierIntegralInv_eq' (f : V → E) (w : V) :
     𝓕⁻ f w = ∫ v, Complex.exp ((↑(2 * π * ⟪v, w⟫) * Complex.I)) • f v := by
@@ -469,7 +461,7 @@ lemma fourierIntegralInv_comp_linearIsometry (A : W ≃ₗᵢ[ℝ] V) (f : V →
   simp [fourierIntegralInv_eq_fourierIntegral_neg, fourierIntegral_comp_linearIsometry]
 
 theorem fourierIntegral_real_eq (f : ℝ → E) (w : ℝ) :
-    fourierIntegral f w = ∫ v : ℝ, 𝐞 (-(v * w)) • f v := by
+    𝓕 f w = ∫ v : ℝ, 𝐞 (-(v * w)) • f v := by
   simp_rw [mul_comm _ w]
   rfl
 

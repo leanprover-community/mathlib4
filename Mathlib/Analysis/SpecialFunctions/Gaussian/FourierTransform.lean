@@ -358,7 +358,7 @@ theorem _root_.fourierIntegral_gaussian_innerProductSpace' (hb : 0 < b.re) (x w 
     ring
 
 theorem _root_.fourierIntegral_gaussian_innerProductSpace (hb : 0 < b.re) (w : V) :
-    𝓕 (fun v ↦ cexp (-b * ‖v‖ ^ 2)) w =
+    𝓕 (fun (v : V) ↦ cexp (-b * ‖v‖ ^ 2)) w =
       (π / b) ^ (Module.finrank ℝ V / 2 : ℂ) * cexp (-π ^ 2 * ‖w‖ ^ 2 / b) := by
   simpa using fourierIntegral_gaussian_innerProductSpace' hb 0 w
 
