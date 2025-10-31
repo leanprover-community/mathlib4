@@ -152,7 +152,7 @@ theorem frobeniusEquiv_symm_comp_frobenius :
 
 @[simp]
 theorem coe_frobenius_comp_coe_frobeniusEquiv_symm :
-    (⇑(frobenius R p) ∘ ⇑(frobeniusEquiv R p).symm) = id := by
+    ⇑(frobenius R p) ∘ ⇑(frobeniusEquiv R p).symm = id := by
   ext
   simp
 
