@@ -189,6 +189,20 @@ jobs:
         # Only return if PR is still open
         filterOutClosed: true
 
+    - name: Send Zulip message (blocked by open PR)
+      if: steps.find-pr.outputs.pr_found == 'true'
+      uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+      with:
+        api-key: ${{ secrets.ZULIP_API_KEY }}
+        email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+        organization-url: 'https://leanprover.zulipchat.com'
+        to: 'nightly-testing'
+        type: 'stream'
+        topic: 'Mathlib `remove outdated deprecated declarations`'
+        content: |
+          Reminder: #${{ steps.find-pr.outputs.pr }} is still open; this has prevented the automatic
+          deprecation workflow from creating a new PR.
+
     - name: Create Pull Request
       id: pr
       if: ${{ steps.process_dates.outputs.from_date && toJson(inputs.dry_run) != 'true' && steps.find-pr.outputs.pr_found != 'true' }}
