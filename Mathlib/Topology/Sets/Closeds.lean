@@ -330,8 +330,8 @@ instance : HasCompl (Clopens α) := ⟨fun s => ⟨sᶜ, s.isClopen.compl⟩⟩
 @[simp, norm_cast] lemma coe_compl (s : Clopens α) : (↑sᶜ : Set α) = (↑s)ᶜ := rfl
 
 instance : BooleanAlgebra (Clopens α) :=
-  SetLike.coe_injective.booleanAlgebra _ coe_sup coe_inf coe_top coe_bot coe_compl coe_sdiff
-    coe_himp
+  SetLike.coe_injective.booleanAlgebra _ .rfl .rfl coe_sup coe_inf coe_top coe_bot coe_compl
+    coe_sdiff coe_himp
 
 instance : Inhabited (Clopens α) := ⟨⊥⟩
 

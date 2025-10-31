@@ -154,10 +154,13 @@ theorem iSup_N {ι : Sort*} (f : ι → I.Filtration M) : (iSup f).N = ⨆ i, (f
 theorem iInf_N {ι : Sort*} (f : ι → I.Filtration M) : (iInf f).N = ⨅ i, (f i).N :=
   congr_arg sInf (Set.range_comp _ _).symm
 
+instance : PartialOrder (I.Filtration M) :=
+  PartialOrder.lift _ fun _ _ ↦ Ideal.Filtration.ext
+
 instance : CompleteLattice (I.Filtration M) :=
   Function.Injective.completeLattice Ideal.Filtration.N
-    (fun _ _ => Ideal.Filtration.ext) sup_N inf_N
-    (fun _ => sSup_image) (fun _ => sInf_image) top_N bot_N
+    (fun _ _ ↦ Ideal.Filtration.ext) .rfl .rfl sup_N inf_N
+    (fun _ ↦ sSup_image) (fun _ ↦ sInf_image) top_N bot_N
 
 instance : Inhabited (I.Filtration M) :=
   ⟨⊥⟩

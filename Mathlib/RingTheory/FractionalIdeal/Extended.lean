@@ -106,13 +106,11 @@ theorem extended_one : extended L hf (1 : FractionalIdeal M K) = 1 := by
 theorem extended_le_one_of_le_one (hI : I ≤ 1) : extended L hf I ≤ 1 := by
   obtain ⟨J, rfl⟩ := le_one_iff_exists_coeIdeal.mp hI
   intro x hx
-  simp only [val_eq_coe, mem_coe, mem_extended_iff, mem_span_image_iff_exists_fun,
-    Finset.univ_eq_attach, coe_one] at hx ⊢
+  simp only [mem_extended_iff, mem_span_image_iff_exists_fun] at hx
   obtain ⟨s, hs, c, rfl⟩ := hx
-  refine Submodule.sum_smul_mem _ _ fun x h ↦ mem_one.mpr ?_
-  obtain ⟨a, ha⟩ : ∃ a, (algebraMap A K) a = ↑x := by
-    simpa [val_eq_coe, coe_one, mem_one] using hI <| hs x.prop
-  exact ⟨f a, by rw [← ha, map_eq]⟩
+  refine Submodule.sum_smul_mem _ _ fun ⟨x, hx⟩ h ↦ ?_
+  obtain ⟨a, ha, rfl⟩ := hI (hs hx)
+  exact ⟨f a, by simp [map_eq]⟩
 
 theorem one_le_extended_of_one_le (hI : 1 ≤ I) : 1 ≤ extended L hf I := by
   rw [one_le] at hI ⊢

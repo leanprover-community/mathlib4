@@ -105,7 +105,7 @@ instance : Max {x // x ∈ L} := Sublattice.instSupCoe
 instance : Min {x // x ∈ L} := Sublattice.instInfCoe
 
 instance instCompleteLattice : CompleteLattice L :=
-  Subtype.coe_injective.completeLattice _
+  Subtype.coe_injective.completeLattice _ .rfl .rfl
     Sublattice.coe_sup Sublattice.coe_inf coe_sSup' coe_sInf' coe_top coe_bot
 
 /-- The natural complete lattice hom from a complete sublattice to the original lattice. -/

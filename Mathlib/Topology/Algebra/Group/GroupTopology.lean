@@ -123,7 +123,7 @@ theorem toTopologicalSpace_inf (x y : GroupTopology α) :
 
 @[to_additive]
 instance : SemilatticeInf (GroupTopology α) :=
-  toTopologicalSpace_injective.semilatticeInf _ toTopologicalSpace_inf
+  toTopologicalSpace_injective.semilatticeInf _ .rfl .rfl toTopologicalSpace_inf
 
 @[to_additive]
 instance : Inhabited (GroupTopology α) :=

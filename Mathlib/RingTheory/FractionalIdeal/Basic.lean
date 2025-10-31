@@ -454,9 +454,6 @@ theorem coe_sup (I J : FractionalIdeal S P) : ↑(I ⊔ J) = (I ⊔ J : Submodul
 instance lattice : Lattice (FractionalIdeal S P) :=
   Function.Injective.lattice _ Subtype.coe_injective .rfl .rfl coe_sup coe_inf
 
-instance : SemilatticeSup (FractionalIdeal S P) :=
-  { FractionalIdeal.lattice with }
-
 end Lattice
 
 section Semiring
