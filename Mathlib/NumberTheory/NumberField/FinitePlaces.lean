@@ -36,7 +36,7 @@ into a completion of `K` associated to a non-zero prime ideal of `𝓞 K`.
 number field, places, finite places
 -/
 
-open Ideal IsDedekindDomain HeightOneSpectrum WithZeroMulInt
+open Ideal IsDedekindDomain HeightOneSpectrum WithZeroMulInt WithZero
 
 open scoped WithZero NNReal
 
@@ -58,9 +58,8 @@ instance : IsDiscreteValuationRing (v.valuation K).integer where
       Valuation.Integer.not_isUnit_iff_valuation_lt_one, Ideal.mem_bot, Subtype.forall, not_forall]
     obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
     use π
-    simp [Valuation.mem_integer_iff, ← WithZero.coe_one, ← ofAdd_zero, - ofAdd_neg,
-          Subtype.ext_iff, ← (v.valuation K).map_eq_zero_iff, hπ, ← WithZero.coe_one,
-          ← ofAdd_zero]
+    simp [Valuation.mem_integer_iff, ← exp_zero, Subtype.ext_iff, - exp_neg,
+      ← (v.valuation K).map_eq_zero_iff, hπ]
 
 instance : IsPrincipalIdealRing (v.adicCompletionIntegers K) := by
   unfold HeightOneSpectrum.adicCompletionIntegers
@@ -69,7 +68,7 @@ instance : IsPrincipalIdealRing (v.adicCompletionIntegers K) := by
   simpa using Valued.v.range_nontrivial
 
 -- TODO: make this inferred from `IsRankOneDiscrete`, or
--- develop the API for a  completion of a base `IsDVR` ring
+-- develop the API for a completion of a base `IsDVR` ring
 instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
   not_a_field' := by
     unfold HeightOneSpectrum.adicCompletionIntegers
@@ -78,7 +77,7 @@ instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
       exists_prop]
     obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
     use π
-    simp [hπ, - ofAdd_neg, ← WithZero.coe_one, ← ofAdd_zero,
+    simp [hπ, ← exp_zero, - exp_neg,
           ← (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).map_eq_zero_iff]
 
 end DVR
@@ -165,9 +164,6 @@ noncomputable def FinitePlace.mk (v : HeightOneSpectrum (𝓞 K)) : FinitePlace 
 
 lemma toNNReal_valued_eq_adicAbv (x : WithVal (v.valuation K)) :
     toNNReal (absNorm_ne_zero v) (Valued.v x) = adicAbv v x := rfl
-
-@[deprecated (since := "2025-03-01")]
-  alias toNNReal_Valued_eq_vadicAbv := toNNReal_valued_eq_adicAbv
 
 /-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
 value. -/
