@@ -300,7 +300,7 @@ lemma awayι_preimage_basicOpen :
     awayι 𝒜 f f_deg hm ⁻¹ᵁ basicOpen 𝒜 g =
       PrimeSpectrum.basicOpen (Away.isLocalizationElem f_deg g_deg) := by
   ext1
-  trans Set.range (Spec.map (CommRingCat.ofHom (awayMap 𝒜 g_deg rfl))).base
+  trans Set.range (Spec.map (CommRingCat.ofHom (awayMap 𝒜 g_deg rfl)))
   · rw [← pullbackAwayιIso_inv_fst 𝒜 f_deg hm g_deg hm' rfl]
     simp only [TopologicalSpace.Opens.map_coe, Scheme.Hom.comp_base,
       TopCat.hom_comp, ContinuousMap.coe_comp, Set.range_comp]

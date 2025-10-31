@@ -89,7 +89,7 @@ lemma IsQuasiAffine.of_isAffineHom [IsAffineHom f] [Y.IsQuasiAffine] : X.IsQuasi
   have := QuasiCompact.compactSpace_of_compactSpace f
   refine .of_forall_exists_mem_basicOpen _ fun x ↦ ?_
   obtain ⟨_, ⟨_, ⟨r, hr, rfl⟩, rfl⟩, hxr, -⟩ := (IsQuasiAffine.isBasis_basicOpen
-    Y).exists_subset_of_mem_open (Set.mem_univ (f.base x)) isOpen_univ
+    Y).exists_subset_of_mem_open (Set.mem_univ (f x)) isOpen_univ
   refine ⟨f.appTop r, ?_⟩
   rw [← preimage_basicOpen_top]
   exact ⟨hr.preimage _, hxr⟩
