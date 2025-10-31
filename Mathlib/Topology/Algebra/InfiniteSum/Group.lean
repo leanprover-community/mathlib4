@@ -21,7 +21,7 @@ open Filter Finset Function
 
 open scoped Topology
 
-variable {α β γ : Type*}
+variable {α β γ : Type*} {L : SummationFilter β}
 
 section IsTopologicalGroup
 
@@ -30,54 +30,54 @@ variable {f g : β → α} {a a₁ a₂ : α}
 
 -- `by simpa using` speeds up elaboration. Why?
 @[to_additive]
-theorem HasProd.inv (h : HasProd f a) : HasProd (fun b ↦ (f b)⁻¹) a⁻¹ := by
+theorem HasProd.inv (h : HasProd f a L) : HasProd (fun b ↦ (f b)⁻¹) a⁻¹ L := by
   simpa only using h.map (MonoidHom.id α)⁻¹ continuous_inv
 
 @[to_additive]
-theorem Multipliable.inv (hf : Multipliable f) : Multipliable fun b ↦ (f b)⁻¹ :=
+theorem Multipliable.inv (hf : Multipliable f L) : Multipliable (fun b ↦ (f b)⁻¹) L :=
   hf.hasProd.inv.multipliable
 
 @[to_additive]
-theorem Multipliable.of_inv (hf : Multipliable fun b ↦ (f b)⁻¹) : Multipliable f := by
+theorem Multipliable.of_inv (hf : Multipliable (fun b ↦ (f b)⁻¹) L) : Multipliable f L := by
   simpa only [inv_inv] using hf.inv
 
 @[to_additive]
-theorem multipliable_inv_iff : (Multipliable fun b ↦ (f b)⁻¹) ↔ Multipliable f :=
+theorem multipliable_inv_iff : (Multipliable (fun b ↦ (f b)⁻¹) L) ↔ Multipliable f L:=
   ⟨Multipliable.of_inv, Multipliable.inv⟩
 
 @[to_additive]
-theorem HasProd.div (hf : HasProd f a₁) (hg : HasProd g a₂) :
-    HasProd (fun b ↦ f b / g b) (a₁ / a₂) := by
+theorem HasProd.div (hf : HasProd f a₁ L) (hg : HasProd g a₂ L) :
+    HasProd (fun b ↦ f b / g b) (a₁ / a₂) L := by
   simp only [div_eq_mul_inv]
   exact hf.mul hg.inv
 
 @[to_additive]
-theorem Multipliable.div (hf : Multipliable f) (hg : Multipliable g) :
-    Multipliable fun b ↦ f b / g b :=
+theorem Multipliable.div (hf : Multipliable f L) (hg : Multipliable g L) :
+    Multipliable (fun b ↦ f b / g b) L :=
   (hf.hasProd.div hg.hasProd).multipliable
 
 @[to_additive]
-theorem Multipliable.trans_div (hg : Multipliable g) (hfg : Multipliable fun b ↦ f b / g b) :
-    Multipliable f := by
+theorem Multipliable.trans_div (hg : Multipliable g L) (hfg : Multipliable (fun b ↦ f b / g b) L) :
+    Multipliable f L := by
   simpa only [div_mul_cancel] using hfg.mul hg
 
 @[to_additive]
-theorem multipliable_iff_of_multipliable_div (hfg : Multipliable fun b ↦ f b / g b) :
-    Multipliable f ↔ Multipliable g :=
+theorem multipliable_iff_of_multipliable_div (hfg : Multipliable (fun b ↦ f b / g b) L) :
+    Multipliable f L ↔ Multipliable g L :=
   ⟨fun hf ↦ hf.trans_div <| by simpa only [inv_div] using hfg.inv, fun hg ↦ hg.trans_div hfg⟩
 
 @[to_additive]
-theorem HasProd.update (hf : HasProd f a₁) (b : β) [DecidableEq β] (a : α) :
-    HasProd (update f b a) (a / f b * a₁) := by
-  convert (hasProd_ite_eq b (a / f b)).mul hf with b'
+theorem HasProd.update [L.LeAtTop] (hf : HasProd f a₁ L) (b : β) [DecidableEq β] (a : α) :
+    HasProd (update f b a) (a / f b * a₁) L := by
+  convert (hasProd_ite_eq b (a / f b) (L := L)).mul hf with b'
   by_cases h : b' = b
   · rw [h, update_self]
     simp
   · simp only [h, update_of_ne, if_false, Ne, one_mul, not_false_iff]
 
 @[to_additive]
-theorem Multipliable.update (hf : Multipliable f) (b : β) [DecidableEq β] (a : α) :
-    Multipliable (update f b a) :=
+theorem Multipliable.update [L.LeAtTop] (hf : Multipliable f L) (b : β) [DecidableEq β] (a : α) :
+    Multipliable (update f b a) L :=
   (hf.hasProd.update b a).multipliable
 
 @[to_additive]
@@ -120,8 +120,8 @@ theorem Set.Finite.multipliable_compl_iff {s : Set β} (hs : s.Finite) :
   (hs.multipliable f).multipliable_compl_iff
 
 @[to_additive]
-theorem hasProd_ite_div_hasProd [DecidableEq β] (hf : HasProd f a) (b : β) :
-    HasProd (fun n ↦ ite (n = b) 1 (f n)) (a / f b) := by
+theorem hasProd_ite_div_hasProd [L.LeAtTop] [DecidableEq β] (hf : HasProd f a L) (b : β) :
+    HasProd (fun n ↦ ite (n = b) 1 (f n)) (a / f b) L := by
   convert hf.update b 1 using 1
   · ext n
     rw [Function.update_apply]
@@ -134,16 +134,16 @@ Note that this requires the target to be a group, and hence fails for products v
 in a ring. See `Multipliable.congr_cofinite₀` for a version applying in this case,
 with an additional non-vanishing hypothesis.
 -/
-@[to_additive "A more general version of `Summable.congr`, allowing the functions to
-disagree on a finite set."]
+@[to_additive /-- A more general version of `Summable.congr`, allowing the functions to
+disagree on a finite set. -/]
 theorem Multipliable.congr_cofinite (hf : Multipliable f) (hfg : f =ᶠ[cofinite] g) :
     Multipliable g :=
   hfg.multipliable_compl_iff.mp <| (hfg.multipliable_compl_iff.mpr hf).congr (by simp)
 
 /-- A more general version of `multipliable_congr`, allowing the functions to
 disagree on a finite set. -/
-@[to_additive "A more general version of `summable_congr`, allowing the functions to
-disagree on a finite set."]
+@[to_additive /-- A more general version of `summable_congr`, allowing the functions to
+disagree on a finite set. -/]
 theorem multipliable_congr_cofinite (hfg : f =ᶠ[cofinite] g) :
     Multipliable f ↔ Multipliable g :=
   ⟨fun h ↦ h.congr_cofinite hfg, fun h ↦ h.congr_cofinite (hfg.mono fun _ h' ↦ h'.symm)⟩
@@ -161,44 +161,29 @@ section tprod
 variable [T2Space α]
 
 @[to_additive]
-theorem tprod_inv : ∏' b, (f b)⁻¹ = (∏' b, f b)⁻¹ := by
-  by_cases hf : Multipliable f
-  · exact hf.hasProd.inv.tprod_eq
-  · simp [tprod_eq_one_of_not_multipliable hf,
-      tprod_eq_one_of_not_multipliable (mt Multipliable.of_inv hf)]
+theorem tprod_inv : ∏'[L] b, (f b)⁻¹ = (∏'[L] b, f b)⁻¹ :=
+  ((Homeomorph.inv α).isClosedEmbedding.map_tprod f (g := MulEquiv.inv α)).symm
 
 @[to_additive]
-protected theorem Multipliable.tprod_div (hf : Multipliable f) (hg : Multipliable g) :
-    ∏' b, (f b / g b) = (∏' b, f b) / ∏' b, g b :=
+protected theorem Multipliable.tprod_div [L.NeBot] (hf : Multipliable f L) (hg : Multipliable g L) :
+    ∏'[L] b, (f b / g b) = (∏'[L] b, f b) / ∏'[L] b, g b :=
   (hf.hasProd.div hg.hasProd).tprod_eq
-
-@[deprecated (since := "2025-04-12")] alias tsum_sub := Summable.tsum_sub
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_div :=
-  Multipliable.tprod_div
 
 @[to_additive]
 protected theorem Multipliable.prod_mul_tprod_compl {s : Finset β} (hf : Multipliable f) :
     (∏ x ∈ s, f x) * ∏' x : ↑(s : Set β)ᶜ, f x = ∏' x, f x :=
   ((s.hasProd f).mul_compl (s.multipliable_compl_iff.2 hf).hasProd).tprod_eq.symm
 
-@[deprecated (since := "2025-04-12")] alias sum_add_tsum_compl := Summable.sum_add_tsum_compl
-@[to_additive existing, deprecated (since := "2025-04-12")] alias prod_mul_tprod_compl :=
-  Multipliable.prod_mul_tprod_compl
-
 /-- Let `f : β → α` be a multipliable function and let `b ∈ β` be an index.
 Lemma `tprod_eq_mul_tprod_ite` writes `∏ n, f n` as `f b` times the product of the
 remaining terms. -/
-@[to_additive "Let `f : β → α` be a summable function and let `b ∈ β` be an index.
+@[to_additive /-- Let `f : β → α` be a summable function and let `b ∈ β` be an index.
 Lemma `tsum_eq_add_tsum_ite` writes `Σ' n, f n` as `f b` plus the sum of the
-remaining terms."]
+remaining terms. -/]
 protected theorem Multipliable.tprod_eq_mul_tprod_ite [DecidableEq β] (hf : Multipliable f)
     (b : β) : ∏' n, f n = f b * ∏' n, ite (n = b) 1 (f n) := by
   rw [(hasProd_ite_div_hasProd hf.hasProd b).tprod_eq]
   exact (mul_div_cancel _ _).symm
-
-@[deprecated (since := "2025-04-12")] alias tsum_eq_add_tsum_ite := Summable.tsum_eq_add_tsum_ite
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_eq_mul_tprod_ite :=
-  Multipliable.tprod_eq_mul_tprod_ite
 
 end tprod
 
@@ -209,8 +194,8 @@ section IsUniformGroup
 variable [CommGroup α] [UniformSpace α]
 
 /-- The **Cauchy criterion** for infinite products, also known as the **Cauchy convergence test** -/
-@[to_additive "The **Cauchy criterion** for infinite sums, also known as the
-**Cauchy convergence test**"]
+@[to_additive /-- The **Cauchy criterion** for infinite sums, also known as the
+**Cauchy convergence test** -/]
 theorem multipliable_iff_cauchySeq_finset [CompleteSpace α] {f : β → α} :
     Multipliable f ↔ CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b := by
   classical exact cauchy_map_iff_exists_tendsto.symm
@@ -321,11 +306,6 @@ protected theorem Multipliable.tprod_subtype_mul_tprod_subtype_compl [T2Space α
     (hf : Multipliable f) (s : Set β) : (∏' x : s, f x) * ∏' x : ↑sᶜ, f x = ∏' x, f x :=
   ((hf.subtype s).hasProd.mul_compl (hf.subtype { x | x ∉ s }).hasProd).unique hf.hasProd
 
-@[deprecated (since := "2025-04-12")] alias tsum_subtype_add_tsum_subtype_compl :=
-  Summable.tsum_subtype_add_tsum_subtype_compl
-@[to_additive existing, deprecated (since := "2025-04-12")] alias
-  tprod_subtype_mul_tprod_subtype_compl := Multipliable.tprod_subtype_mul_tprod_subtype_compl
-
 @[to_additive]
 protected theorem Multipliable.prod_mul_tprod_subtype_compl [T2Space α] {f : β → α}
     (hf : Multipliable f) (s : Finset β) :
@@ -333,11 +313,6 @@ protected theorem Multipliable.prod_mul_tprod_subtype_compl [T2Space α] {f : β
   rw [← hf.tprod_subtype_mul_tprod_subtype_compl s]
   simp only [Finset.tprod_subtype', mul_right_inj]
   rfl
-
-@[deprecated (since := "2025-04-12")] alias sum_add_tsum_subtype_compl :=
-  Summable.sum_add_tsum_subtype_compl
-@[to_additive existing, deprecated (since := "2025-04-12")] alias prod_mul_tprod_subtype_compl :=
-  Multipliable.prod_mul_tprod_subtype_compl
 
 end IsUniformGroup
 
@@ -364,8 +339,9 @@ theorem Multipliable.tprod_vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he :
 /-- The product over the complement of a finset tends to `1` when the finset grows to cover the
 whole space. This does not need a multipliability assumption, as otherwise all such products are
 one. -/
-@[to_additive "The sum over the complement of a finset tends to `0` when the finset grows to cover
-the whole space. This does not need a summability assumption, as otherwise all such sums are zero."]
+@[to_additive /-- The sum over the complement of a finset tends to `0` when the finset grows to
+cover the whole space. This does not need a summability assumption, as otherwise all such sums are
+zero. -/]
 theorem tendsto_tprod_compl_atTop_one (f : α → G) :
     Tendsto (fun s : Finset α ↦ ∏' a : { x // x ∉ s }, f a) atTop (𝓝 1) := by
   classical
@@ -379,8 +355,8 @@ theorem tendsto_tprod_compl_atTop_one (f : α → G) :
 
 /-- Product divergence test: if `f` is unconditionally multipliable, then `f x` tends to one along
 `cofinite`. -/
-@[to_additive "Series divergence test: if `f` is unconditionally summable, then `f x` tends to zero
-along `cofinite`."]
+@[to_additive /-- Series divergence test: if `f` is unconditionally summable, then `f x` tends to
+zero along `cofinite`. -/]
 theorem Multipliable.tendsto_cofinite_one (hf : Multipliable f) : Tendsto f cofinite (𝓝 1) := by
   intro e he
   rw [Filter.mem_map]
@@ -419,7 +395,7 @@ theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := 
     rw [tprod_eq_prod (s := univ) (fun x hx ↦ (hx (mem_univ x)).elim)]
     simp only [prod_const, Nat.card_eq_fintype_card, Fintype.card]
   · simp only [Nat.card_eq_zero_of_infinite, pow_zero]
-    rcases eq_or_ne a 1 with rfl|ha
+    rcases eq_or_ne a 1 with rfl | ha
     · simp
     · apply tprod_eq_one_of_not_multipliable
       simpa [multipliable_const_iff] using ha
@@ -456,8 +432,6 @@ protected lemma Multipliable.tsum_congr_cofinite₀ [T2Space K] (hc : Multipliab
     (hs : ∀ a ∈ s, f a ≠ 0) (hs' : ∀ a ∉ s, f a = g a) :
     ∏' i, g i = ((∏' i, f i) * ((∏ i ∈ s, g i) / ∏ i ∈ s, f i)) :=
   (hc.hasProd.congr_cofinite₀ hs hs').tprod_eq
-
-@[deprecated (since := "2025-04-12")] alias tsum_congr_cofinite := Multipliable.tsum_congr_cofinite₀
 
 /--
 See also `Multipliable.congr_cofinite`, which does not have a non-vanishing condition, but instead

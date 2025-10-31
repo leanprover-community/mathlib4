@@ -29,14 +29,13 @@ def toModifiers (nm : Name) (newDoc : Option (TSyntax `Lean.Parser.Command.docCo
   let env ← getEnv
   let d ← getConstInfo nm
   let mods : Modifiers :=
-  { docString? := newDoc
+  { docString? := newDoc.map (·, doc.verso.get (← getOptions))
     visibility :=
     if isPrivateNameExport nm then
       Visibility.private
-    else if isProtected env nm then
-      Visibility.regular
     else
-      Visibility.protected
+      Visibility.regular
+    isProtected := isProtected env nm
     computeKind := if (env.find? <| nm.mkStr "_cstage1").isSome then .regular else .noncomputable
     recKind := RecKind.default -- nonrec only matters for name resolution, so is irrelevant (?)
     isUnsafe := d.isUnsafe
@@ -56,6 +55,7 @@ def toPreDefinition (nm newNm : Name) (newType newValue : Expr)
   let mods ← toModifiers nm newDoc
   let predef : PreDefinition :=
   { ref := Syntax.missing
+    binders := mkNullNode #[]
     kind := if d.isDef then DefKind.def else DefKind.theorem
     levelParams := d.levelParams
     modifiers := mods
@@ -74,7 +74,7 @@ def MVarId.introsWithBinderIdents
     (g : MVarId) (ids : List (TSyntax ``binderIdent)) (maxIntros? : Option Nat := none) :
     MetaM (List (TSyntax ``binderIdent) × Array FVarId × MVarId) := do
   let type ← g.getType
-  let type ← instantiateMVars type
+  let type ← Lean.instantiateMVars type
   let n := getIntrosSize type
   let n := match maxIntros? with | none => n | some maxIntros => min n maxIntros
   if n == 0 then
@@ -210,7 +210,7 @@ def iterateAtMost : Nat → m Unit → m Unit
 -/
 def iterateExactly' : Nat → m Unit → m Unit
   | 0, _ => pure ()
-  | n+1, tac => tac *> iterateExactly' n tac
+  | n + 1, tac => tac *> iterateExactly' n tac
 
 /--
 `iterateRange m n t`: Repeat the given tactic at least `m` times and

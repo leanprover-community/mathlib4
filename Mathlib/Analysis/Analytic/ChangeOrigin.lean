@@ -138,7 +138,7 @@ def changeOriginIndexEquiv :
     -- formulate the generalized goal
     suffices ∀ k' l', k' = k → l' = l → ∀ (hkl : k + l = k' + l') (hs'),
         (⟨k', l', ⟨s.map (finCongr hkl).toEmbedding, hs'⟩⟩ :
-          Σk l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) = ⟨k, l, ⟨s, hs⟩⟩ by
+          Σ k l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) = ⟨k, l, ⟨s, hs⟩⟩ by
       apply this <;> simp only [hs, add_tsub_cancel_right]
     simp
   right_inv := by
@@ -156,7 +156,7 @@ lemma changeOriginSeriesTerm_changeOriginIndexEquiv_symm (n t) :
   simp_rw [changeOriginSeriesTerm_apply, eq_comm]; apply this
 
 theorem changeOriginSeries_summable_aux₁ {r r' : ℝ≥0} (hr : (r + r' : ℝ≥0∞) < p.radius) :
-    Summable fun s : Σk l : ℕ, { s : Finset (Fin (k + l)) // s.card = l } =>
+    Summable fun s : Σ k l : ℕ, { s : Finset (Fin (k + l)) // s.card = l } =>
       ‖p (s.1 + s.2.1)‖₊ * r ^ s.2.1 * r' ^ s.1 := by
   rw [← changeOriginIndexEquiv.symm.summable_iff]
   dsimp only [Function.comp_def, changeOriginIndexEquiv_symm_apply_fst,
@@ -176,7 +176,7 @@ theorem changeOriginSeries_summable_aux₁ {r r' : ℝ≥0} (hr : (r + r' : ℝ�
   exact p.summable_nnnorm_mul_pow hr
 
 theorem changeOriginSeries_summable_aux₂ (hr : (r : ℝ≥0∞) < p.radius) (k : ℕ) :
-    Summable fun s : Σl : ℕ, { s : Finset (Fin (k + l)) // s.card = l } =>
+    Summable fun s : Σ l : ℕ, { s : Finset (Fin (k + l)) // s.card = l } =>
       ‖p (k + s.1)‖₊ * r ^ s.1 := by
   rcases ENNReal.lt_iff_exists_add_pos_lt.1 hr with ⟨r', h0, hr'⟩
   simpa only [mul_inv_cancel_right₀ (pow_pos h0 _).ne'] using
@@ -196,7 +196,7 @@ theorem le_changeOriginSeries_radius (k : ℕ) : p.radius ≤ (p.changeOriginSer
 
 theorem nnnorm_changeOrigin_le (k : ℕ) (h : (‖x‖₊ : ℝ≥0∞) < p.radius) :
     ‖p.changeOrigin x k‖₊ ≤
-      ∑' s : Σl : ℕ, { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + s.1)‖₊ * ‖x‖₊ ^ s.1 := by
+      ∑' s : Σ l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + s.1)‖₊ * ‖x‖₊ ^ s.1 := by
   refine tsum_of_nnnorm_bounded ?_ fun l => p.nnnorm_changeOriginSeries_apply_le_tsum k l x
   have := p.changeOriginSeries_summable_aux₂ h k
   refine HasSum.sigma this.hasSum fun l => ?_
@@ -212,7 +212,7 @@ theorem changeOrigin_radius : p.radius - ‖x‖₊ ≤ (p.changeOrigin x).radiu
   apply le_radius_of_summable_nnnorm
   have (k : ℕ) :
       ‖p.changeOrigin x k‖₊ * r ^ k ≤
-        (∑' s : Σl : ℕ, { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + s.1)‖₊ * ‖x‖₊ ^ s.1) *
+        (∑' s : Σ l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + s.1)‖₊ * ‖x‖₊ ^ s.1) *
           r ^ k := by
     gcongr; exact p.nnnorm_changeOrigin_le k hr'
   refine NNReal.summable_of_le this ?_
@@ -383,5 +383,12 @@ theorem AnalyticAt.exists_mem_nhds_analyticOnNhd (h : AnalyticAt 𝕜 f x) :
 theorem AnalyticAt.exists_ball_analyticOnNhd (h : AnalyticAt 𝕜 f x) :
     ∃ r : ℝ, 0 < r ∧ AnalyticOnNhd 𝕜 f (Metric.ball x r) :=
   Metric.isOpen_iff.mp (isOpen_analyticAt _ _) _ h
+
+/-- Sum of series is analytic on its ball of convergence. -/
+protected theorem FormalMultilinearSeries.analyticOnNhd :
+    AnalyticOnNhd 𝕜 p.sum (EMetric.ball 0 p.radius) := by
+  by_cases hr : p.radius = 0
+  · simp [hr]
+  exact (FormalMultilinearSeries.hasFPowerSeriesOnBall _ (pos_of_ne_zero hr)).analyticOnNhd
 
 end

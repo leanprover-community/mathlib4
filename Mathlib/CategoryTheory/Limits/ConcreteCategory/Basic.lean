@@ -23,7 +23,7 @@ namespace CategoryTheory.Types
 
 open Limits
 
-/-! The forgetful fuctor on `Type u` is the identity; copy the instances on `𝟭 (Type u)`
+/-! The forgetful functor on `Type u` is the identity; copy the instances on `𝟭 (Type u)`
 over to `forget (Type u)`.
 
 We currently have two instances for `HasForget (Type u)`:
@@ -122,7 +122,7 @@ section
 variable [PreservesColimit F (forget C)]
 
 theorem from_union_surjective_of_isColimit {D : Cocone F} (hD : IsColimit D) :
-    let ff : (Σj : J, ToType (F.obj j)) → ToType D.pt := fun a => D.ι.app a.1 a.2
+    let ff : (Σ j : J, ToType (F.obj j)) → ToType D.pt := fun a => D.ι.app a.1 a.2
     Function.Surjective ff := by
   intro ff x
   let E : Cocone (F ⋙ forget C) := (forget C).mapCocone D

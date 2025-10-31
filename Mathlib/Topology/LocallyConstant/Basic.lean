@@ -3,7 +3,7 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Group.Indicator
+import Mathlib.Algebra.Notation.Indicator
 import Mathlib.Tactic.FinCases
 import Mathlib.Topology.Connected.LocallyConnected
 import Mathlib.Topology.Sets.Closeds
@@ -111,9 +111,6 @@ theorem prodMk {Y'} {f : X → Y} {f' : X → Y'} (hf : IsLocallyConstant f)
     (hf' : IsLocallyConstant f') : IsLocallyConstant fun x => (f x, f' x) :=
   (iff_eventually_eq _).2 fun x =>
     (hf.eventually_eq x).mp <| (hf'.eventually_eq x).mono fun _ hf' hf => Prod.ext hf hf'
-
-@[deprecated (since := "2025-03-10")]
-alias prod_mk := prodMk
 
 theorem comp₂ {Y₁ Y₂ Z : Type*} {f : X → Y₁} {g : X → Y₂} (hf : IsLocallyConstant f)
     (hg : IsLocallyConstant g) (h : Y₁ → Y₂ → Z) : IsLocallyConstant fun x => h (f x) (g x) :=
@@ -258,8 +255,6 @@ protected theorem continuous : Continuous f :=
 
 /-- As a shorthand, `LocallyConstant.toContinuousMap` is available as a coercion -/
 instance : Coe (LocallyConstant X Y) C(X, Y) := ⟨toContinuousMap⟩
-
--- Porting note: became a syntactic `rfl`
 
 @[simp] theorem coe_continuousMap : ((f : C(X, Y)) : X → Y) = (f : X → Y) := rfl
 
@@ -442,9 +437,9 @@ variable {R : Type*} [One R] {U : Set X} (f : LocallyConstant X R)
 
 /-- Given a clopen set `U` and a locally constant function `f`, `LocallyConstant.mulIndicator`
   returns the locally constant function that is `f` on `U` and `1` otherwise. -/
-@[to_additive (attr := simps) "Given a clopen set `U` and a locally constant function `f`,
+@[to_additive (attr := simps) /-- Given a clopen set `U` and a locally constant function `f`,
   `LocallyConstant.indicator` returns the locally constant function that is `f` on `U` and `0`
-  otherwise. "]
+  otherwise. -/]
 noncomputable def mulIndicator (hU : IsClopen U) : LocallyConstant X R where
   toFun := Set.mulIndicator U f
   isLocallyConstant := fun s => by
@@ -521,8 +516,8 @@ end Equiv
 section Piecewise
 
 /-- Given two closed sets covering a topological space, and locally constant maps on these two sets,
-    then if these two locally constant maps agree on the intersection, we get a piecewise defined
-    locally constant map on the whole space.
+then if these two locally constant maps agree on the intersection, we get a piecewise defined
+locally constant map on the whole space.
 
 TODO: Generalise this construction to `ContinuousMap`. -/
 def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) (h : C₁ ∪ C₂ = Set.univ)

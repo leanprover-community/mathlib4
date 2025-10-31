@@ -62,10 +62,7 @@ variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
 /-- Some basic API lemmas -/
 theorem quadraticCharFun_eq_zero_iff {a : F} : quadraticCharFun F a = 0 ↔ a = 0 := by
   simp only [quadraticCharFun]
-  by_cases ha : a = 0
-  · simp only [ha, if_true]
-  · simp only [ha, if_false]
-    split_ifs <;> simp only [one_ne_zero]
+  grind
 
 @[simp]
 theorem quadraticCharFun_zero : quadraticCharFun F 0 = 0 := by
@@ -152,7 +149,7 @@ theorem quadraticChar_dichotomy {a : F} (ha : a ≠ 0) :
 /-- The quadratic character is `1` or `-1` on nonzero arguments. -/
 theorem quadraticChar_eq_neg_one_iff_not_one {a : F} (ha : a ≠ 0) :
     quadraticChar F a = -1 ↔ ¬quadraticChar F a = 1 :=
-  ⟨fun h ↦ by rw [h]; omega, fun h₂ ↦ (or_iff_right h₂).mp (quadraticChar_dichotomy ha)⟩
+  ⟨fun h ↦ by rw [h]; cutsat, fun h₂ ↦ (or_iff_right h₂).mp (quadraticChar_dichotomy ha)⟩
 
 /-- For `a : F`, `quadraticChar F a = -1 ↔ ¬ IsSquare a`. -/
 theorem quadraticChar_neg_one_iff_not_isSquare {a : F} : quadraticChar F a = -1 ↔ ¬IsSquare a := by
@@ -224,8 +221,8 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
       have h₁ : s = [b, -b].toFinset := by
         ext1
         rw [← pow_two] at h
-        simp only [Set.toFinset_setOf, h, mem_filter, mem_univ, true_and, List.toFinset_cons,
-          List.toFinset_nil, insert_empty_eq, mem_insert, mem_singleton, s]
+        simp_rw [s, Set.toFinset_setOf, mem_filter_univ, h, List.toFinset_cons, List.toFinset_nil,
+          insert_empty_eq, mem_insert, mem_singleton]
         exact sq_eq_sq_iff_eq_or_eq_neg
       norm_cast
       rw [h₁, List.toFinset_cons, List.toFinset_cons, List.toFinset_nil]
@@ -274,6 +271,6 @@ theorem FiniteField.isSquare_neg_one_iff : IsSquare (-1 : F) ↔ Fintype.card F 
   · have h₁ := FiniteField.odd_card_of_char_ne_two hF
     rw [← quadraticChar_one_iff_isSquare (neg_ne_zero.mpr (one_ne_zero' F)),
       quadraticChar_neg_one hF, χ₄_nat_eq_if_mod_four, h₁]
-    omega
+    cutsat
 
 end SpecialValues

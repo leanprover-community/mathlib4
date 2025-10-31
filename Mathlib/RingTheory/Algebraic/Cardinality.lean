@@ -62,15 +62,10 @@ theorem cardinalMk_le_sigma_polynomial :
     #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) := by
   simpa only [lift_id] using lift_cardinalMk_le_sigma_polynomial R L
 
-@[deprecated (since := "2024-11-10")]
-alias cardinal_mk_le_sigma_polynomial := cardinalMk_le_sigma_polynomial
-
 /-- The cardinality of an algebraic extension is at most the maximum of the cardinality
 of the base ring or `ℵ₀`. -/
 @[stacks 09GK]
 theorem cardinalMk_le_max : #L ≤ max #R ℵ₀ := by
   simpa only [lift_id] using lift_cardinalMk_le_max R L
-
-@[deprecated (since := "2024-11-10")] alias cardinal_mk_le_max := cardinalMk_le_max
 
 end Algebra.IsAlgebraic

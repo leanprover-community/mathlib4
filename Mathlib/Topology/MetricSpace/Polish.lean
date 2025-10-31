@@ -64,18 +64,6 @@ instance [TopologicalSpace α] [SeparableSpace α] [IsCompletelyMetrizableSpace 
   haveI := UniformSpace.secondCountable_of_separable α
   constructor
 
-@[deprecated (since := "2025-03-14")] alias UpgradedPolishSpace :=
-  UpgradedIsCompletelyMetrizableSpace
-
-@[deprecated (since := "2025-03-14")] alias polishSpaceMetric :=
-  completelyMetrizableMetric
-
-@[deprecated (since := "2025-03-14")] alias complete_polishSpaceMetric :=
-  complete_completelyMetrizableMetric
-
-@[deprecated (since := "2025-03-14")] alias upgradePolishSpace :=
-  upgradeIsCompletelyMetrizable
-
 namespace PolishSpace
 
 /-- Any nonempty Polish space is the continuous image of the fundamental space `ℕ → ℕ`. -/
@@ -224,7 +212,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) :
   have A : CauchySeq fun n => (u n).1 := by
     refine cauchySeq_of_le_tendsto_0 (fun n : ℕ => (1 / 2) ^ n) (fun n m N hNn hNm => ?_) ?_
     · exact (dist_val_le_dist (u n) (u m)).trans (hu N n m hNn hNm).le
-    · exact tendsto_pow_atTop_nhds_zero_of_lt_one (by norm_num) (by norm_num)
+    · exact tendsto_pow_atTop_nhds_zero_of_lt_one (by simp) (by norm_num)
   obtain ⟨x, xlim⟩ : ∃ x, Tendsto (fun n => (u n).1) atTop (𝓝 x) := cauchySeq_tendsto_of_complete A
   by_cases xs : x ∈ s
   · exact ⟨⟨x, xs⟩, tendsto_subtype_rng.2 xlim⟩

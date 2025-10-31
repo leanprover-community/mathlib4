@@ -97,7 +97,7 @@ theorem tendsto_cfc_fun {l : Filter X} {F : X → R → R} {f : R → R} {a : A}
     intro t
     simp only [eventually_comap, Subtype.forall]
     peel h_tendsto t with ht x _
-    aesop
+    simp_all
   · simpa [cfc_apply_of_not_predicate a ha] using tendsto_const_nhds
 
 /-- If `f : X → R → R` tends to `f x₀` uniformly (along `𝓝 x₀`) on the spectrum of `a`,
@@ -140,7 +140,7 @@ theorem Continuous.cfc_fun [TopologicalSpace X] (f : X → R → R) (a : A)
     (h_cont : Continuous (fun x ↦ ofFun {spectrum R a} (f x)))
     (hf : ∀ x, ContinuousOn (f x) (spectrum R a) := by cfc_cont_tac) :
     Continuous fun x ↦ cfc (f x) a := by
-  rw [continuous_iff_continuousOn_univ] at h_cont ⊢
+  rw [← continuousOn_univ] at h_cont ⊢
   exact h_cont.cfc_fun (fun x _ ↦ hf x)
 
 end Generic
@@ -304,7 +304,7 @@ protected theorem Continuous.cfc [TopologicalSpace X] {s : Set 𝕜} (hs : IsCom
     {a : X → A} (ha_cont : Continuous a) (ha : ∀ x, spectrum 𝕜 (a x) ⊆ s)
     (hf : ContinuousOn f s := by cfc_cont_tac) (ha' : ∀ x, p (a x) := by cfc_tac) :
     Continuous (fun x ↦ cfc f (a x)) := by
-  rw [continuous_iff_continuousOn_univ] at ha_cont ⊢
+  rw [← continuousOn_univ] at ha_cont ⊢
   exact ha_cont.cfc hs f (fun x _ ↦ ha x) (fun x _ ↦ ha' x)
 
 end RCLike
@@ -322,7 +322,7 @@ theorem continuousOn_cfc_nnreal {s : Set ℝ≥0} (hs : IsCompact s)
     (f : ℝ≥0 → ℝ≥0) (hf : ContinuousOn f s := by cfc_cont_tac) :
     ContinuousOn (cfc f) {a : A | 0 ≤ a ∧ spectrum ℝ≥0 a ⊆ s} := by
   have : {a : A | 0 ≤ a ∧ spectrum ℝ≥0 a ⊆ s}.EqOn (cfc f) (cfc (fun x : ℝ ↦ f x.toNNReal)) :=
-    fun a ha ↦ cfc_nnreal_eq_real _ ha.1
+    fun a ha ↦ cfc_nnreal_eq_real _ _ ha.1
   refine ContinuousOn.congr ?_ this
   replace hf : ContinuousOn (fun x ↦ f x.toNNReal : ℝ → ℝ) (NNReal.toReal '' s) := by
     apply hf.ofReal_map_toNNReal
@@ -330,7 +330,8 @@ theorem continuousOn_cfc_nnreal {s : Set ℝ≥0} (hs : IsCompact s)
     intro x hx
     simpa
   refine continuousOn_cfc A (hs.image NNReal.continuous_coe) _ hf |>.mono fun a ha ↦ ?_
-  simp only [Set.mem_setOf_eq, nonneg_iff_isSelfAdjoint_and_spectrumRestricts] at ha ⊢
+  simp only [Set.mem_setOf_eq, nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts] at ha ⊢
+  rw [← SpectrumRestricts] at ha
   refine ⟨ha.1.1, ?_⟩
   rw [← ha.1.2.algebraMap_image]
   exact Set.image_mono ha.2
@@ -400,7 +401,7 @@ theorem Continuous.cfc_nnreal [TopologicalSpace X] {s : Set ℝ≥0} (hs : IsCom
     {a : X → A} (ha_cont : Continuous a) (ha : ∀ x, spectrum ℝ≥0 (a x) ⊆ s)
     (hf : ContinuousOn f s := by cfc_cont_tac) (ha' : ∀ x, 0 ≤ a x := by cfc_tac) :
     Continuous (fun x ↦ cfc f (a x)) := by
-  rw [continuous_iff_continuousOn_univ] at ha_cont ⊢
+  rw [← continuousOn_univ] at ha_cont ⊢
   exact ha_cont.cfc_nnreal hs f (fun x _ ↦ ha x) (fun x _ ↦ ha' x)
 
 end NNReal
@@ -450,7 +451,7 @@ theorem tendsto_cfcₙ_fun {l : Filter X} {F : X → R → R} {f : R → R} {a :
     intro t
     simp only [eventually_comap, Subtype.forall]
     peel h_tendsto t with ht x _
-    aesop
+    simp_all
   · simpa [cfcₙ_apply_of_not_predicate a ha] using tendsto_const_nhds
 
 /-- If `f : X → R → R` tends to `f x₀` uniformly (along `𝓝 x₀`) on the spectrum of `a`,
@@ -498,7 +499,7 @@ theorem Continuous.cfcₙ_fun [TopologicalSpace X] (f : X → R → R) (a : A)
     (hf : ∀ x, ContinuousOn (f x) (quasispectrum R a) := by cfc_cont_tac)
     (hf0 : ∀ x, f x 0 = 0 := by cfc_zero_tac) :
     Continuous fun x ↦ cfcₙ (f x) a := by
-  rw [continuous_iff_continuousOn_univ] at h_cont ⊢
+  rw [← continuousOn_univ] at h_cont ⊢
   exact h_cont.cfcₙ_fun (fun x _ ↦ hf x) (fun x _ ↦ hf0 x)
 
 end Generic
@@ -562,10 +563,9 @@ theorem continuous_cfcₙHomSuperset_left
     Continuous (fun x ↦ cfcₙHomSuperset (ha' x) (ha x) f) := by
   have : CompactSpace s := by rwa [isCompact_iff_compactSpace] at hs
   induction f using ContinuousMapZero.induction_on_of_compact with
-  | h0 => rfl
   | zero => simpa [map_zero] using continuous_const
-  | id => simpa only [cfcₙHomSuperset_id']
-  | star_id => simp only [map_star, cfcₙHomSuperset_id']; fun_prop
+  | id => simpa only [cfcₙHomSuperset_id]
+  | star_id => simp only [map_star, cfcₙHomSuperset_id]; fun_prop
   | add f g hf hg => simpa only [map_add] using hf.add hg
   | mul f g hf hg => simpa only [map_mul] using hf.mul hg
   | smul r f hf => simpa only [map_smul] using hf.const_smul r
@@ -670,7 +670,7 @@ protected theorem Continuous.cfcₙ [TopologicalSpace X] {s : Set 𝕜} (hs : Is
     (hf : ContinuousOn f s := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
     (ha' : ∀ x, p (a x) := by cfc_tac) :
     Continuous (fun x ↦ cfcₙ f (a x)) := by
-  rw [continuous_iff_continuousOn_univ] at ha_cont ⊢
+  rw [← continuousOn_univ] at ha_cont ⊢
   exact ha_cont.cfcₙ hs f (fun x _ ↦ ha x) (fun x _ ↦ ha' x)
 
 /-- `cfcₙ` is continuous in the variable `a : A` when `s : Set 𝕜` is compact and `a` varies over
@@ -702,7 +702,7 @@ theorem continuousOn_cfcₙ_nnreal {s : Set ℝ≥0} (hs : IsCompact s) (f : ℝ
     ContinuousOn (cfcₙ f · : A → A) {a : A | 0 ≤ a ∧ quasispectrum ℝ≥0 a ⊆ s} := by
   have : {a : A | 0 ≤ a ∧ quasispectrum ℝ≥0 a ⊆ s}.EqOn (cfcₙ f)
       (cfcₙ (fun x : ℝ ↦ f x.toNNReal)) :=
-    fun a ha ↦ cfcₙ_nnreal_eq_real _ ha.1
+    fun a ha ↦ cfcₙ_nnreal_eq_real _ _ ha.1
   refine ContinuousOn.congr ?_ this
   replace hf : ContinuousOn (fun x ↦ f x.toNNReal : ℝ → ℝ) (NNReal.toReal '' s) := by
     apply hf.ofReal_map_toNNReal
@@ -786,7 +786,7 @@ theorem Continuous.cfcₙ_nnreal [TopologicalSpace X] {s : Set ℝ≥0} (hs : Is
     (hf : ContinuousOn f s := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
     (ha' : ∀ x, 0 ≤ a x := by cfc_tac) :
     Continuous (fun x ↦ cfcₙ f (a x)) := by
-  rw [continuous_iff_continuousOn_univ] at ha_cont ⊢
+  rw [← continuousOn_univ] at ha_cont ⊢
   exact ha_cont.cfcₙ_nnreal hs f (fun x _ ↦ ha x) (fun x _ ↦ ha' x)
 
 end NNReal

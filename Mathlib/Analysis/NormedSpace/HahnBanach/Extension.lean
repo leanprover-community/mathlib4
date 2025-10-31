@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
 -/
 import Mathlib.Analysis.Convex.Cone.Extension
-import Mathlib.Analysis.NormedSpace.RCLike
-import Mathlib.Analysis.NormedSpace.Extend
+import Mathlib.Analysis.Normed.Module.RCLike.Extend
 import Mathlib.Analysis.RCLike.Lemmas
 
 /-!
@@ -38,8 +37,8 @@ variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 /-- **Hahn-Banach theorem** for continuous linear functions over `ℝ`.
 See also `exists_extension_norm_eq` in the root namespace for a more general version
 that works both for `ℝ` and `ℂ`. -/
-theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : p →L[ℝ] ℝ) :
-    ∃ g : E →L[ℝ] ℝ, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
+theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : StrongDual ℝ p) :
+    ∃ g : StrongDual ℝ E, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
   rcases exists_extension_of_le_sublinear ⟨p, f⟩ (fun x => ‖f‖ * ‖x‖)
       (fun c hc x => by simp only [norm_smul c x, Real.norm_eq_abs, abs_of_pos hc, mul_left_comm])
       (fun x y => by
@@ -67,26 +66,26 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜
 
 /-- **Hahn-Banach theorem** for continuous linear functions over `𝕜`
 satisfying `IsRCLikeNormedField 𝕜`. -/
-theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :
-    ∃ g : E →L[𝕜] 𝕜, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
+theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
+    ∃ g : StrongDual 𝕜 E, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   letI : Module ℝ E := RestrictScalars.module ℝ 𝕜 E
   letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
   letI : NormedSpace ℝ E := NormedSpace.restrictScalars _ 𝕜 _
-  -- Let `fr: p →L[ℝ] ℝ` be the real part of `f`.
+  -- Let `fr: StrongDual ℝ p` be the real part of `f`.
   let fr := reCLM.comp (f.restrictScalars ℝ)
   -- Use the real version to get a norm-preserving extension of `fr`, which
-  -- we'll call `g : E →L[ℝ] ℝ`.
+  -- we'll call `g : StrongDual ℝ E`.
   rcases Real.exists_extension_norm_eq (p.restrictScalars ℝ) fr with ⟨g, ⟨hextends, hnormeq⟩⟩
-  -- Now `g` can be extended to the `E →L[𝕜] 𝕜` we need.
+  -- Now `g` can be extended to the `StrongDual 𝕜 E` we need.
   refine ⟨g.extendTo𝕜, ?_⟩
   -- It is an extension of `f`.
   have h : ∀ x : p, g.extendTo𝕜 x = f x := by
     intro x
     rw [ContinuousLinearMap.extendTo𝕜_apply, ← Submodule.coe_smul]
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    -- The goal has a coercion from `RestrictScalars ℝ 𝕜 E →L[ℝ] ℝ`, but
-    -- `hextends` involves a coercion from `E →L[ℝ] ℝ`.
+    -- The goal has a coercion from `RestrictScalars ℝ 𝕜 StrongDual ℝ E`, but
+    -- `hextends` involves a coercion from `StrongDual ℝ E`.
     erw [hextends]
     erw [hextends]
     have :
@@ -114,7 +113,7 @@ open Module
 
 /-- Corollary of the **Hahn-Banach theorem**: if `f : p → F` is a continuous linear map
 from a submodule of a normed space `E` over `𝕜`, `𝕜 = ℝ` or `𝕜 = ℂ`,
-with a finite dimensional range, then `f` admits an extension to a continuous linear map `E → F`.
+with a finite-dimensional range, then `f` admits an extension to a continuous linear map `E → F`.
 
 Note that contrary to the case `F = 𝕜`, see `exists_extension_norm_eq`,
 we provide no estimates on the norm of the extension.
@@ -132,7 +131,7 @@ lemma ContinuousLinearMap.exist_extension_of_finiteDimensional_range {p : Submod
   ext x
   simp [fi, e, hgf]
 
-/-- A finite dimensional submodule over `ℝ` or `ℂ` is `Submodule.ClosedComplemented`. -/
+/-- A finite-dimensional submodule over `ℝ` or `ℂ` is `Submodule.ClosedComplemented`. -/
 lemma Submodule.ClosedComplemented.of_finiteDimensional (p : Submodule 𝕜 F)
     [FiniteDimensional 𝕜 p] : p.ClosedComplemented :=
   let ⟨g, hg⟩ := (ContinuousLinearMap.id 𝕜 p).exist_extension_of_finiteDimensional_range
@@ -148,12 +147,11 @@ variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 open ContinuousLinearEquiv Submodule
 
 theorem coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x h‖ = 1 := by
-  rw [norm_smul (α := 𝕜) (x := coord 𝕜 x h), RCLike.norm_coe_norm, coord_norm,
-    mul_inv_cancel₀ (mt norm_eq_zero.mp h)]
+  simp [-algebraMap_smul, norm_smul, mul_inv_cancel₀ (mt norm_eq_zero.mp h)]
 
 /-- Corollary of Hahn-Banach. Given a nonzero element `x` of a normed space, there exists an
-    element of the dual space, of norm `1`, whose value on `x` is `‖x‖`. -/
-theorem exists_dual_vector (x : E) (h : x ≠ 0) : ∃ g : E →L[𝕜] 𝕜, ‖g‖ = 1 ∧ g x = ‖x‖ := by
+element of the dual space, of norm `1`, whose value on `x` is `‖x‖`. -/
+theorem exists_dual_vector (x : E) (h : x ≠ 0) : ∃ g : StrongDual 𝕜 E, ‖g‖ = 1 ∧ g x = ‖x‖ := by
   let p : Submodule 𝕜 E := 𝕜 ∙ x
   let f := (‖x‖ : 𝕜) • coord 𝕜 x h
   obtain ⟨g, hg⟩ := exists_extension_norm_eq p f
@@ -165,19 +163,19 @@ theorem exists_dual_vector (x : E) (h : x ≠ 0) : ∃ g : E →L[𝕜] 𝕜, �
       _ = ‖x‖ := by simp [-algebraMap_smul]
 
 /-- Variant of Hahn-Banach, eliminating the hypothesis that `x` be nonzero, and choosing
-    the dual element arbitrarily when `x = 0`. -/
-theorem exists_dual_vector' [Nontrivial E] (x : E) : ∃ g : E →L[𝕜] 𝕜, ‖g‖ = 1 ∧ g x = ‖x‖ := by
+the dual element arbitrarily when `x = 0`. -/
+theorem exists_dual_vector' [Nontrivial E] (x : E) : ∃ g : StrongDual 𝕜 E, ‖g‖ = 1 ∧ g x = ‖x‖ := by
   by_cases hx : x = 0
   · obtain ⟨y, hy⟩ := exists_ne (0 : E)
-    obtain ⟨g, hg⟩ : ∃ g : E →L[𝕜] 𝕜, ‖g‖ = 1 ∧ g y = ‖y‖ := exists_dual_vector 𝕜 y hy
+    obtain ⟨g, hg⟩ : ∃ g : StrongDual 𝕜 E, ‖g‖ = 1 ∧ g y = ‖y‖ := exists_dual_vector 𝕜 y hy
     refine ⟨g, hg.left, ?_⟩
     simp [hx]
   · exact exists_dual_vector 𝕜 x hx
 
 /-- Variant of Hahn-Banach, eliminating the hypothesis that `x` be nonzero, but only ensuring that
-    the dual element has norm at most `1` (this can not be improved for the trivial
-    vector space). -/
-theorem exists_dual_vector'' (x : E) : ∃ g : E →L[𝕜] 𝕜, ‖g‖ ≤ 1 ∧ g x = ‖x‖ := by
+the dual element has norm at most `1` (this cannot be improved for the trivial
+vector space). -/
+theorem exists_dual_vector'' (x : E) : ∃ g : StrongDual 𝕜 E, ‖g‖ ≤ 1 ∧ g x = ‖x‖ := by
   by_cases hx : x = 0
   · refine ⟨0, by simp, ?_⟩
     symm

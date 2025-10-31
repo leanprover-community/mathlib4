@@ -24,7 +24,7 @@ casting lemmas showing the well-behavedness of this injection.
 rat, rationals, field, ℚ, numerator, denominator, num, denom, cast, coercion, casting
 -/
 
-assert_not_exists MulAction OrderedAddCommMonoid
+assert_not_exists MulAction IsOrderedMonoid
 
 variable {F ι α β : Type*}
 
@@ -57,8 +57,7 @@ lemma cast_comm (q : ℚ≥0) (a : α) : q * a = a * q := cast_commute _ _
     obtain ⟨k, rfl⟩ : d ∣ b := by simpa [Int.natCast_dvd_natCast, this] using Rat.den_dvd a b
     simp [*]
   have hb' : b ≠ 0 := by rintro rfl; exact hb Nat.cast_zero
-  have hd' : d ≠ 0 := by assumption
-  simp_rw [Rat.mk'_eq_divInt, mk_divInt, divNat_inj hb' hd'] at e
+  simp_rw [Rat.mk'_eq_divInt, mk_divInt, divNat_inj hb' h] at e
   rw [cast_def]
   dsimp
   rw [Commute.div_eq_div_iff _ hd hb]
@@ -151,7 +150,7 @@ lemma cast_divInt_of_ne_zero (a : ℤ) {b : ℤ} (b0 : (b : α) ≠ 0) : (a /. b
     contradiction
   rw [mk'_eq_divInt] at e
   have := congr_arg ((↑) : ℤ → α)
-    ((divInt_eq_iff b0' <| ne_of_gt <| Int.natCast_pos.2 h.bot_lt).1 e)
+    ((divInt_eq_divInt_iff b0' <| ne_of_gt <| Int.natCast_pos.2 h.bot_lt).1 e)
   rw [Int.cast_mul, Int.cast_mul, Int.cast_natCast] at this
   rw [eq_comm, cast_def, div_eq_mul_inv, eq_div_iff_mul_eq d0, mul_assoc, (d.commute_cast _).eq,
     ← mul_assoc, this, mul_assoc, mul_inv_cancel₀ b0, mul_one]
@@ -186,7 +185,7 @@ lemma cast_add_of_ne_zero {q r : ℚ} (hq : (q.den : α) ≠ 0) (hr : (r.den : �
 
 @[norm_cast]
 lemma cast_inv_of_ne_zero (hq : (q.num : α) ≠ 0) : ↑(q⁻¹) = (q⁻¹ : α) := by
-  rw [inv_def', cast_divInt_of_ne_zero _ hq, cast_def, inv_div, Int.cast_natCast]
+  rw [inv_def, cast_divInt_of_ne_zero _ hq, cast_def, inv_div, Int.cast_natCast]
 
 @[norm_cast] lemma cast_div_of_ne_zero (hp : (p.den : α) ≠ 0) (hq : (q.num : α) ≠ 0) :
     ↑(p / q) = (p / q : α) := by

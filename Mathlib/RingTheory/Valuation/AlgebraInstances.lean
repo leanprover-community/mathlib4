@@ -23,10 +23,9 @@ of a field with a valuation, as well as their unit balls.
 -/
 
 open Function Valuation
+open scoped WithZero
 
-open scoped Multiplicative
-
-variable {K : Type*} [Field K] (v : Valuation K ℤₘ₀) (L : Type*) [Field L] [Algebra K L]
+variable {K : Type*} [Field K] (v : Valuation K ℤᵐ⁰) (L : Type*) [Field L] [Algebra K L]
 
 namespace ValuationSubring
 
@@ -37,11 +36,8 @@ theorem algebraMap_injective : Injective (algebraMap v.valuationSubring L) :=
   (FaithfulSMul.algebraMap_injective K L).comp (IsFractionRing.injective _ _)
 
 theorem isIntegral_of_mem_ringOfIntegers {x : L} (hx : x ∈ integralClosure v.valuationSubring L) :
-    IsIntegral v.valuationSubring (⟨x, hx⟩ : integralClosure v.valuationSubring L) := by
-  obtain ⟨P, hPm, hP⟩ := hx
-  refine ⟨P, hPm, ?_⟩
-  rw [← Polynomial.aeval_def, ← Subalgebra.coe_eq_zero, Polynomial.aeval_subalgebra_coe,
-    Polynomial.aeval_def, Subtype.coe_mk, hP]
+    IsIntegral v.valuationSubring (⟨x, hx⟩ : integralClosure v.valuationSubring L) :=
+  integralClosure.isIntegral ⟨x, hx⟩
 
 theorem isIntegral_of_mem_ringOfIntegers' {x : (integralClosure v.valuationSubring L)} :
     IsIntegral v.valuationSubring (x : integralClosure v.valuationSubring L) := by

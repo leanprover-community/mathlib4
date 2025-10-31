@@ -157,12 +157,12 @@ theorem card_modEq_card_fixedPoints : Nat.card α ≡ Nat.card (fixedPoints G α
   rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
   classical
     calc
-      card α = card (Σy : Quotient (orbitRel G α), { x // Quotient.mk'' x = y }) :=
+      card α = card (Σ y : Quotient (orbitRel G α), { x // Quotient.mk'' x = y }) :=
         card_congr (Equiv.sigmaFiberEquiv (@Quotient.mk'' _ (orbitRel G α))).symm
       _ = ∑ a : Quotient (orbitRel G α), card { x // Quotient.mk'' x = a } := card_sigma
       _ ≡ ∑ _a : fixedPoints G α, 1 [MOD p] := ?_
       _ = _ := by simp
-    rw [← ZMod.eq_iff_modEq_nat p, Nat.cast_sum, Nat.cast_sum]
+    rw [← ZMod.natCast_eq_natCast_iff _ _ p, Nat.cast_sum, Nat.cast_sum]
     have key :
       ∀ x,
         card { y // (Quotient.mk'' y : Quotient (orbitRel G α)) = Quotient.mk'' x } =
@@ -330,9 +330,9 @@ theorem le_or_disjoint_of_coprime [hp : Fact p.Prime] {P : Subgroup G} (hP : IsP
     contrapose! h_cop
     exact Nat.Prime.not_coprime_iff_dvd.mpr ⟨p, hp.out, h_cop⟩
   refine h3.symm.imp (fun h4 ↦ ?_) (fun h4 ↦ ?_)
-  · rw [← Subgroup.relindex_eq_one]
-    exact Nat.eq_one_of_dvd_coprimes h4 (H.relindex_dvd_index_of_normal P)
-      (Subgroup.relindex_dvd_card H P)
+  · rw [← Subgroup.relIndex_eq_one]
+    exact Nat.eq_one_of_dvd_coprimes h4 (H.relIndex_dvd_index_of_normal P)
+      (Subgroup.relIndex_dvd_card H P)
   · exact disjoint_iff.mpr (Subgroup.inf_eq_bot_of_coprime h4)
 
 section P2comm

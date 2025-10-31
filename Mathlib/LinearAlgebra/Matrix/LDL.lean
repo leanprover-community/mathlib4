@@ -27,6 +27,7 @@ decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a d
 
 -/
 
+open Module
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {n : Type*} [LinearOrder n] [WellFoundedLT n] [LocallyFiniteOrderBot n]
@@ -36,9 +37,9 @@ section set_options
 set_option quotPrecheck false
 local notation "⟪" x ", " y "⟫ₑ" => inner 𝕜 (WithLp.toLp 2 x) (WithLp.toLp 2 y)
 
-open Matrix
+open Matrix InnerProductSpace
 
-open scoped Matrix ComplexOrder
+open scoped ComplexOrder
 
 variable {S : Matrix n n 𝕜} [Fintype n] (hS : S.PosDef)
 

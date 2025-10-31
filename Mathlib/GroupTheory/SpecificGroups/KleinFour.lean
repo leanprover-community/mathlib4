@@ -17,7 +17,7 @@ produces the third one.
 * `IsKleinFour` : A mixin class which states that the group has order four and exponent two.
 * `mulEquiv'` : An equivalence between a Klein four-group and a group of exponent two which
   preserves the identity is in fact an isomorphism.
-* `mulEquiv`: Any two Klein four-groups are isomorphic via any identity preserving equivalence.
+* `mulEquiv`: Any two Klein four-groups are isomorphic via any identity-preserving equivalence.
 
 ## References
 
@@ -73,7 +73,7 @@ namespace IsKleinFour
 potentially *a lot* slower). -/
 @[to_additive]
 scoped instance instFinite {G : Type*} [Group G] [IsKleinFour G] : Finite G :=
-  Nat.finite_of_card_ne_zero <| by norm_num [IsKleinFour.card_four]
+  Nat.finite_of_card_ne_zero <| by simp [IsKleinFour.card_four]
 
 @[to_additive (attr := simp)]
 lemma card_four' {G : Type*} [Group G] [Fintype G] [IsKleinFour G] :
@@ -122,8 +122,8 @@ variable {G₁ G₂ : Type*} [Group G₁] [Group G₂] [IsKleinFour G₁]
 
 /-- An equivalence between an `IsKleinFour` group `G₁` and a group `G₂` of exponent two which sends
 `1 : G₁` to `1 : G₂` is in fact an isomorphism. -/
-@[to_additive "An equivalence between an `IsAddKleinFour` group `G₁` and a group `G₂` of exponent
-two which sends `0 : G₁` to `0 : G₂` is in fact an isomorphism."]
+@[to_additive /-- An equivalence between an `IsAddKleinFour` group `G₁` and a group `G₂` of exponent
+two which sends `0 : G₁` to `0 : G₂` is in fact an isomorphism. -/]
 def mulEquiv' (e : G₁ ≃ G₂) (he : e 1 = 1) (h : Monoid.exponent G₂ = 2) : G₁ ≃* G₂ where
   toEquiv := e
   map_mul' := by
@@ -146,13 +146,13 @@ def mulEquiv' (e : G₁ ≃ G₂) (he : e 1 = 1) (h : Monoid.exponent G₂ = 2) 
 
 /-- Any two `IsKleinFour` groups are isomorphic via any equivalence which sends the identity of one
 group to the identity of the other. -/
-@[to_additive "Any two `IsAddKleinFour` groups are isomorphic via any
-equivalence which sends the identity of one group to the identity of the other."]
+@[to_additive /-- Any two `IsAddKleinFour` groups are isomorphic via any
+equivalence which sends the identity of one group to the identity of the other. -/]
 abbrev mulEquiv [IsKleinFour G₂] (e : G₁ ≃ G₂) (he : e 1 = 1) : G₁ ≃* G₂ :=
   mulEquiv' e he exponent_two
 
 /-- Any two `IsKleinFour` groups are isomorphic. -/
-@[to_additive "Any two `IsAddKleinFour` groups are isomorphic."]
+@[to_additive /-- Any two `IsAddKleinFour` groups are isomorphic. -/]
 lemma nonempty_mulEquiv [IsKleinFour G₂] : Nonempty (G₁ ≃* G₂) := by
   classical
   let _inst₁ := Fintype.ofFinite G₁

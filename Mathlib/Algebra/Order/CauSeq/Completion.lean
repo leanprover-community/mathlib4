@@ -251,9 +251,9 @@ noncomputable instance Cauchy.divisionRing : DivisionRing (Cauchy abv) where
   nnqsmul_def _ x := Quotient.inductionOn x fun _ ↦ congr_arg mk <| ext fun _ ↦ NNRat.smul_def _ _
   qsmul_def _ x := Quotient.inductionOn x fun _ ↦ congr_arg mk <| ext fun _ ↦ Rat.smul_def _ _
 
-/-- Show the first 10 items of a representative of this equivalence class of cauchy sequences.
+/-- Show the first 10 items of a representative of this equivalence class of Cauchy sequences.
 
-The representative chosen is the one passed in the VM to `Quot.mk`, so two cauchy sequences
+The representative chosen is the one passed in the VM to `Quot.mk`, so two Cauchy sequences
 converging to the same number may be printed differently.
 -/
 unsafe instance [Repr β] : Repr (Cauchy abv) where
@@ -349,6 +349,9 @@ theorem lim_neg (f : CauSeq β abv) : lim (-f) = -lim f :=
     (show LimZero (-f - const abv (-lim f)) by
       rw [const_neg, sub_neg_eq_add, add_comm, ← sub_eq_add_neg]
       exact Setoid.symm (equiv_lim f))
+
+theorem lim_sub (f g : CauSeq β abv) : lim f - lim g = lim (f - g) := by
+  rw [sub_eq_add_neg, sub_eq_add_neg, ← lim_neg, lim_add f (-g)]
 
 theorem lim_eq_zero_iff (f : CauSeq β abv) : lim f = 0 ↔ LimZero f :=
   ⟨fun h => by

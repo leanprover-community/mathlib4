@@ -38,18 +38,16 @@ We provide `Monoid.centralizer`, `AddMonoid.centralizer`, `Subgroup.centralizer`
 `AddSubgroup.centralizer` in other files.
 -/
 
-assert_not_exists RelIso Finset MonoidWithZero Subsemigroup
+assert_not_exists HeytingAlgebra RelIso Finset MonoidWithZero Subsemigroup
 
 variable {M : Type*} {S T : Set M}
 
 /-- Conditions for an element to be additively central -/
 structure IsAddCentral [Add M] (z : M) : Prop where
   /-- addition commutes -/
-  comm (a : M) : z + a = a + z
+  comm (a : M) : AddCommute z a
   /-- associative property for left addition -/
   left_assoc (b c : M) : z + (b + c) = (z + b) + c
-  /-- middle associative addition property -/
-  mid_assoc (a c : M) : (a + z) + c = a + (z + c)
   /-- associative property for right addition -/
   right_assoc (a b : M) : (a + b) + z = a + (b + z)
 
@@ -57,11 +55,9 @@ structure IsAddCentral [Add M] (z : M) : Prop where
 @[to_additive]
 structure IsMulCentral [Mul M] (z : M) : Prop where
   /-- multiplication commutes -/
-  comm (a : M) : z * a = a * z
+  comm (a : M) : Commute z a
   /-- associative property for left multiplication -/
   left_assoc (b c : M) : z * (b * c) = (z * b) * c
-  /-- middle associative multiplication property -/
-  mid_assoc (a c : M) : (a * z) * c = a * (z * c)
   /-- associative property for right multiplication -/
   right_assoc (a b : M) : (a * b) * z = a * (b * z)
 
@@ -72,15 +68,19 @@ namespace IsMulCentral
 
 variable {a c : M} [Mul M]
 
+@[to_additive]
+protected theorem mid_assoc {z : M} (h : IsMulCentral z) (a c) : a * z * c = a * (z * c) := by
+  rw [h.comm, ← h.right_assoc, ← h.comm, ← h.left_assoc, h.comm]
+
 -- cf. `Commute.left_comm`
 @[to_additive]
 protected theorem left_comm (h : IsMulCentral a) (b c) : a * (b * c) = b * (a * c) := by
-  simp only [h.comm, h.right_assoc]
+  simp only [(h.comm _).eq, h.right_assoc]
 
 -- cf. `Commute.right_comm`
 @[to_additive]
 protected theorem right_comm (h : IsMulCentral c) (a b) : a * b * c = a * c * b := by
-  simp only [h.right_assoc, h.mid_assoc, h.comm]
+  simp only [h.right_assoc, h.mid_assoc, (h.comm _).eq]
 
 end IsMulCentral
 
@@ -93,13 +93,13 @@ variable [Mul M]
 
 variable (M) in
 /-- The center of a magma. -/
-@[to_additive addCenter " The center of an additive magma. "]
+@[to_additive addCenter /-- The center of an additive magma. -/]
 def center : Set M :=
   { z | IsMulCentral z }
 
 variable (S) in
 /-- The centralizer of a subset of a magma. -/
-@[to_additive addCentralizer " The centralizer of a subset of an additive magma. "]
+@[to_additive addCentralizer /-- The centralizer of a subset of an additive magma. -/]
 def centralizer : Set M := {c | ∀ m ∈ S, m * c = c * m}
 
 @[to_additive mem_addCenter_iff]
@@ -122,11 +122,6 @@ theorem mul_mem_center {z₁ z₂ : M} (hz₁ : z₁ ∈ Set.center M) (hz₂ : 
     _ = z₁ * ((z₂ * b) * c) := by rw [hz₂.left_assoc]
     _ = (z₁ * (z₂ * b)) * c := by rw [hz₁.left_assoc]
     _ = z₁ * z₂ * b * c := by rw [hz₂.mid_assoc]
-  mid_assoc (a c : M) := calc
-    a * (z₁ * z₂) * c = ((a * z₁) * z₂) * c := by rw [hz₁.mid_assoc]
-    _ = (a * z₁) * (z₂ * c) := by rw [hz₂.mid_assoc]
-    _ = a * (z₁ * (z₂ * c)) := by rw [hz₁.mid_assoc]
-    _ = a * (z₁ * z₂ * c) := by rw [hz₂.mid_assoc]
   right_assoc (a b : M) := calc
     a * b * (z₁ * z₂) = ((a * b) * z₁) * z₂ := by rw [hz₂.right_assoc]
     _ = (a * (b * z₁)) * z₂ := by rw [hz₁.right_assoc]
@@ -169,11 +164,13 @@ lemma centralizer_centralizer_comm_of_comm (h_comm : ∀ x ∈ S, ∀ y ∈ S, x
     ∀ x ∈ S.centralizer.centralizer, ∀ y ∈ S.centralizer.centralizer, x * y = y * x :=
   fun _ h₁ _ h₂ ↦ h₂ _ fun _ h₃ ↦ h₁ _ fun _ h₄ ↦ h_comm _ h₄ _ h₃
 
+@[to_additive addCentralizer_empty]
 theorem centralizer_empty : (∅ : Set M).centralizer = ⊤ := by
   simp only [centralizer, mem_empty_iff_false, IsEmpty.forall_iff, implies_true, setOf_true,
     top_eq_univ]
 
 /-- The centralizer of the product of non-empty sets is equal to the product of the centralizers. -/
+@[to_additive addCentralizer_prod]
 theorem centralizer_prod {N : Type*} [Mul N] {S : Set M} {T : Set N}
     (hS : S.Nonempty) (hT : T.Nonempty) :
     (S ×ˢ T).centralizer = S.centralizer ×ˢ T.centralizer := by
@@ -185,11 +182,48 @@ theorem centralizer_prod {N : Type*} [Mul N] {S : Set M} {T : Set N}
   exact ⟨fun h => ⟨fun y hy => (h y c hy hc).1, fun y hy => (h b y hb hy).2⟩,
     fun h y z hy hz => ⟨h.1 _ hy, h.2 _ hz⟩⟩
 
+@[to_additive prod_addCentralizer_subset_addCentralizer_prod]
 theorem prod_centralizer_subset_centralizer_prod {N : Type*} [Mul N] (S : Set M) (T : Set N) :
     S.centralizer ×ˢ T.centralizer ⊆ (S ×ˢ T).centralizer := by
   rw [subset_def]
   simp only [mem_prod, and_imp, Prod.forall, mem_centralizer_iff, Prod.mk_mul_mk, Prod.mk.injEq]
   exact fun a b ha hb c d hc hd => ⟨ha c hc, hb d hd⟩
+
+@[to_additive addCenter_prod]
+theorem center_prod {N : Type*} [Mul N] :
+    center (M × N) = center M ×ˢ center N := by
+  ext x
+  simp only [mem_prod, mem_center_iff, isMulCentral_iff, commute_iff_eq, Prod.ext_iff]
+  exact ⟨
+    fun ⟨h1, h2, h3⟩ => ⟨
+      ⟨ fun a => (h1 (a, x.2)).1,
+        fun b c => (h2 (b, x.2) (c, x.2)).1,
+        fun a b => (h3 (a, x.2) (b, x.2)).1⟩,
+      ⟨ fun a => (h1 (x.1, a)).2,
+        fun a b => (h2 (x.1, a) (x.1, b)).2,
+        fun a b => (h3 (x.1, a) (x.1, b)).2⟩⟩,
+    fun ⟨⟨h1, h2, h3⟩, ⟨h4, h5, h6⟩⟩ => ⟨
+      fun _ => ⟨h1 _, h4 _⟩,
+      fun _ _ => ⟨h2 _ _, h5 _ _⟩,
+      fun _ _ => ⟨h3 _ _, h6 _ _⟩⟩⟩
+
+open Function in
+@[to_additive addCenter_pi]
+theorem center_pi {ι : Type*} {A : ι → Type*} [Π i, Mul (A i)] :
+    center (Π i, A i) = univ.pi (fun i => center (A i)) := by
+  classical
+  ext x
+  simp only [mem_pi, mem_center_iff, isMulCentral_iff, mem_univ, forall_true_left,
+    commute_iff_eq, funext_iff, Pi.mul_def]
+  exact ⟨
+    fun ⟨h1, h2, h3⟩ i => ⟨
+      fun a => by simpa using h1 (update x i a) i,
+      fun b c => by simpa using h2 (update x i b) (update x i c) i,
+      fun a b => by simpa using h3 (update x i a) (update x i b) i⟩,
+    fun h => ⟨
+      fun a i => (h i).1 (a i),
+      fun b c i => (h i).2.1 (b i) (c i),
+      fun a b i => (h i).2.2 (a i) (b i)⟩⟩
 
 end Mul
 
@@ -199,8 +233,7 @@ variable [Semigroup M] {a b : M}
 @[to_additive]
 theorem _root_.Semigroup.mem_center_iff {z : M} :
     z ∈ Set.center M ↔ ∀ g, g * z = z * g := ⟨fun a g ↦ by rw [IsMulCentral.comm a g],
-  fun h ↦ ⟨fun _ ↦ (Commute.eq (h _)).symm, fun _ _ ↦ (mul_assoc z _ _).symm,
-  fun _ _ ↦ mul_assoc _ z _, fun _ _ ↦ mul_assoc _ _ z⟩ ⟩
+  fun h ↦ ⟨fun _ ↦ (h _).symm, fun _ _ ↦ (mul_assoc z _ _).symm, fun _ _ ↦ mul_assoc _ _ z⟩ ⟩
 
 @[to_additive (attr := simp) add_mem_addCentralizer]
 lemma mul_mem_centralizer (ha : a ∈ centralizer S) (hb : b ∈ centralizer S) :
@@ -246,9 +279,8 @@ variable [MulOneClass M]
 
 @[to_additive (attr := simp) zero_mem_addCenter]
 theorem one_mem_center : (1 : M) ∈ Set.center M where
-  comm _  := by rw [one_mul, mul_one]
+  comm _ := by rw [commute_iff_eq, one_mul, mul_one]
   left_assoc _ _ := by rw [one_mul, one_mul]
-  mid_assoc _ _ := by rw [mul_one, one_mul]
   right_assoc _ _ := by rw [mul_one, mul_one]
 
 @[to_additive (attr := simp) zero_mem_addCentralizer]
@@ -264,7 +296,7 @@ theorem subset_center_units : ((↑) : Mˣ → M) ⁻¹' center M ⊆ Set.center
   fun _ ha => by
   rw [_root_.Semigroup.mem_center_iff]
   intro _
-  rw [← Units.eq_iff, Units.val_mul, Units.val_mul, ha.comm]
+  rw [← Units.val_inj, Units.val_mul, Units.val_mul, ha.comm]
 
 @[to_additive (attr := simp)]
 theorem units_inv_mem_center {a : Mˣ} (ha : ↑a ∈ Set.center M) : ↑a⁻¹ ∈ Set.center M := by

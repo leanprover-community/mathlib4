@@ -168,7 +168,7 @@ section LinearOrder
 
 variable [LinearOrder α] [OrderClosedTopology α] {a b x : α} {μ : Measure α}
 
--- we open this locale only here to avoid issues with list being treated as intervals above
+-- we open this scope only here to avoid issues with list being treated as intervals above
 open Interval
 
 @[simp, measurability]
@@ -553,8 +553,8 @@ theorem Measurable.isLUB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g'
     {s : Set δ} (hs : MeasurableSet s) (hg : ∀ b ∈ s, IsLUB { a | ∃ i, f i b = a } (g b))
     (hg' : EqOn g g' sᶜ) (g'_meas : Measurable g') : Measurable g := by
   classical
-  rcases isEmpty_or_nonempty ι with hι|⟨⟨i⟩⟩
-  · rcases eq_empty_or_nonempty s with rfl|⟨x, hx⟩
+  rcases isEmpty_or_nonempty ι with hι | ⟨⟨i⟩⟩
+  · rcases eq_empty_or_nonempty s with rfl | ⟨x, hx⟩
     · convert g'_meas
       rwa [compl_empty, eqOn_univ] at hg'
     · have A : ∀ b ∈ s, IsBot (g b) := by simpa using hg
@@ -668,9 +668,6 @@ theorem MeasurableSet.of_mem_nhdsGT_aux {s : Set α} (h : ∀ x ∈ s, s ∈ �
       exact False.elim (hx.2 this)
   exact B.countable_of_Ioo fun x hx => hy x hx.1
 
-@[deprecated (since := "2024-12-22")]
-alias measurableSet_of_mem_nhdsWithin_Ioi_aux := MeasurableSet.of_mem_nhdsGT_aux
-
 /-- If a set is a right-neighborhood of all of its points, then it is measurable. -/
 theorem MeasurableSet.of_mem_nhdsGT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x) : MeasurableSet s := by
   by_cases H : ∃ x ∈ s, IsTop x
@@ -688,9 +685,6 @@ theorem MeasurableSet.of_mem_nhdsGT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>]
     simp only [IsTop] at H
     push_neg at H
     exact H
-
-@[deprecated (since := "2024-12-22")]
-alias measurableSet_of_mem_nhdsWithin_Ioi := MeasurableSet.of_mem_nhdsGT
 
 lemma measurableSet_bddAbove_range {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     MeasurableSet {b | BddAbove (range (fun i ↦ f i b))} := by
@@ -758,13 +752,12 @@ protected theorem Measurable.iSup {ι} [Countable ι] {f : ι → δ → α} (hf
     measurableSet_bddAbove_range hf
   have : Measurable (fun (_b : δ) ↦ sSup (∅ : Set α)) := measurable_const
   apply Measurable.isLUB_of_mem hf A _ _ this
-  · rintro b ⟨c, hc⟩
+  · intro b hb
     apply isLUB_ciSup
-    refine ⟨c, ?_⟩
-    assumption
+    simpa
   · intro b hb
     apply csSup_of_not_bddAbove
-    exact hb
+    simpa
 
 -- TODO: Why does this error?
 -- /-- Compositional version of `Measurable.iSup` for use by `fun_prop`. -/

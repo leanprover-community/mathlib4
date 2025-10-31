@@ -153,10 +153,7 @@ def ofIsColimitCokernelCofork (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsCo
 
 @[simp] lemma ofIsColimitCokernelCofork_f' (hg : S.g = 0) (c : CokernelCofork S.f)
     (hc : IsColimit c) : (ofIsColimitCokernelCofork S hg c hc).f' = S.f := by
-  rw [← cancel_mono (ofIsColimitCokernelCofork S hg c hc).i, f'_i,
-    ofIsColimitCokernelCofork_i]
-  dsimp
-  rw [comp_id]
+  rfl
 
 /-- When the second map `S.g` is zero, this is the left homology data on `S` given by
 the chosen `cokernel S.f` -/
@@ -210,6 +207,21 @@ def ofZeros (hf : S.f = 0) (hg : S.g = 0) : S.LeftHomologyData where
     (ofZeros S hf hg).f' = 0 := by
   rw [← cancel_mono ((ofZeros S hf hg).i), zero_comp, f'_i, hf]
 
+variable {S} in
+/-- Given a left homology data `h` of a short complex `S`, we can construct another left homology
+data by choosing another kernel and cokernel that are isomorphic to the ones in `h`. -/
+@[simps] def copy {K' H' : C} (eK : K' ≅ h.K) (eH : H' ≅ h.H) : S.LeftHomologyData where
+  K := K'
+  H := H'
+  i := eK.hom ≫ h.i
+  π := eK.hom ≫ h.π ≫ eH.inv
+  wi := by rw [assoc, h.wi, comp_zero]
+  hi := IsKernel.isoKernel _ _ h.hi eK (by simp)
+  wπ := by simp [IsKernel.isoKernel]
+  hπ := IsColimit.equivOfNatIsoOfIso
+    (parallelPair.ext (Iso.refl S.X₁) eK.symm (by simp [IsKernel.isoKernel]) (by simp)) _ _
+    (Cocones.ext (by exact eH.symm) (by rintro (_ | _) <;> simp [IsKernel.isoKernel])) h.hπ
+
 end LeftHomologyData
 
 /-- A short complex `S` has left homology when there exists a `S.LeftHomologyData` -/
@@ -217,8 +229,8 @@ class HasLeftHomology : Prop where
   condition : Nonempty S.LeftHomologyData
 
 /-- A chosen `S.LeftHomologyData` for a short complex `S` that has left homology -/
-noncomputable def leftHomologyData [S.HasLeftHomology] :
-  S.LeftHomologyData := HasLeftHomology.condition.some
+noncomputable def leftHomologyData [S.HasLeftHomology] : S.LeftHomologyData :=
+  HasLeftHomology.condition.some
 
 variable {S}
 
@@ -227,7 +239,7 @@ namespace HasLeftHomology
 lemma mk' (h : S.LeftHomologyData) : HasLeftHomology S := ⟨Nonempty.intro h⟩
 
 instance of_hasKernel_of_hasCokernel [HasKernel S.g] [HasCokernel (kernel.lift S.g S.f S.zero)] :
-  S.HasLeftHomology := HasLeftHomology.mk' (LeftHomologyData.ofHasKernelOfHasCokernel S)
+    S.HasLeftHomology := HasLeftHomology.mk' (LeftHomologyData.ofHasKernelOfHasCokernel S)
 
 instance of_hasCokernel {X Y : C} (f : X ⟶ Y) (Z : C) [HasCokernel f] :
     (ShortComplex.mk f (0 : Y ⟶ Z) comp_zero).HasLeftHomology :=
@@ -257,11 +269,11 @@ structure LeftHomologyMapData where
   /-- the induced map on left homology -/
   φH : h₁.H ⟶ h₂.H
   /-- commutation with `i` -/
-  commi : φK ≫ h₂.i = h₁.i ≫ φ.τ₂ := by aesop_cat
+  commi : φK ≫ h₂.i = h₁.i ≫ φ.τ₂ := by cat_disch
   /-- commutation with `f'` -/
-  commf' : h₁.f' ≫ φK = φ.τ₁ ≫ h₂.f' := by aesop_cat
+  commf' : h₁.f' ≫ φK = φ.τ₁ ≫ h₂.f' := by cat_disch
   /-- commutation with `π` -/
-  commπ : h₁.π ≫ φH = φK ≫ h₂.π := by aesop_cat
+  commπ : h₁.π ≫ φH = φK ≫ h₂.π := by cat_disch
 
 namespace LeftHomologyMapData
 
@@ -943,7 +955,7 @@ lemma liftCycles_i : S.liftCycles k hk ≫ S.iCycles = k :=
 
 @[reassoc]
 lemma comp_liftCycles {A' : C} (α : A' ⟶ A) :
-    α ≫ S.liftCycles k hk = S.liftCycles (α ≫ k) (by rw [assoc, hk, comp_zero]) := by aesop_cat
+    α ≫ S.liftCycles k hk = S.liftCycles (α ≫ k) (by rw [assoc, hk, comp_zero]) := by cat_disch
 
 /-- Via `S.iCycles : S.cycles ⟶ S.X₂`, the object `S.cycles` identifies to the
 kernel of `S.g : S.X₂ ⟶ S.X₃`. -/
@@ -981,7 +993,7 @@ noncomputable def leftHomologyIsCokernel :
 lemma liftCycles_comp_cyclesMap (φ : S ⟶ S₁) [S₁.HasLeftHomology] :
     S.liftCycles k hk ≫ cyclesMap φ =
       S₁.liftCycles (k ≫ φ.τ₂) (by rw [assoc, φ.comm₂₃, reassoc_of% hk, zero_comp]) := by
-  aesop_cat
+  cat_disch
 
 variable {S}
 
@@ -1011,7 +1023,7 @@ lemma hasCokernel [S.HasLeftHomology] [HasKernel S.g] :
   haveI : HasColimit (parallelPair h.f' 0) := ⟨⟨⟨_, h.hπ'⟩⟩⟩
   let e : parallelPair (kernel.lift S.g S.f S.zero) 0 ≅ parallelPair h.f' 0 :=
     parallelPair.ext (Iso.refl _) (IsLimit.conePointUniqueUpToIso (kernelIsKernel S.g) h.hi)
-      (by aesop_cat) (by simp)
+      (by cat_disch) (by simp)
   exact hasColimit_of_iso e
 
 end HasLeftHomology

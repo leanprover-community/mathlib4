@@ -37,9 +37,6 @@ see `Fintype.card_powersetCard` in `Mathlib/Data/Finset/Powerset.lean`.
 binomial coefficient, combination, multicombination, stars and bars
 -/
 
-
-open Nat
-
 namespace Nat
 
 /-- `choose n k` is the number of `k`-element subsets in an `n`-element set. Also known as binomial
@@ -97,16 +94,17 @@ theorem choose_succ_self (n : ℕ) : choose n (succ n) = 0 :=
 @[simp]
 lemma choose_one_right (n : ℕ) : choose n 1 = n := by induction n <;> simp [*, choose, Nat.add_comm]
 
--- The `n+1`-st triangle number is `n` more than the `n`-th triangle number
+-- The `n + 1`-st triangle number is `n` more than the `n`-th triangle number
 theorem triangle_succ (n : ℕ) : (n + 1) * (n + 1 - 1) / 2 = n * (n - 1) / 2 + n := by
   rw [← add_mul_div_left, Nat.mul_comm 2 n, ← Nat.mul_add, Nat.add_sub_cancel, Nat.mul_comm]
   cases n <;> rfl; apply zero_lt_succ
 
 /-- `choose n 2` is the `n`-th triangle number. -/
 theorem choose_two_right (n : ℕ) : choose n 2 = n * (n - 1) / 2 := by
-  induction' n with n ih
-  · simp
-  · rw [triangle_succ n, choose, ih]
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [triangle_succ n, choose, ih]
     simp [Nat.add_comm]
 
 theorem choose_pos : ∀ {n k}, k ≤ n → 0 < choose n k
@@ -116,6 +114,12 @@ theorem choose_pos : ∀ {n k}, k ≤ n → 0 < choose n k
 
 theorem choose_eq_zero_iff {n k : ℕ} : n.choose k = 0 ↔ n < k :=
   ⟨fun h => lt_of_not_ge (mt Nat.choose_pos h.symm.not_lt), Nat.choose_eq_zero_of_lt⟩
+
+theorem choose_ne_zero_iff {n k : ℕ} : n.choose k ≠ 0 ↔ k ≤ n :=
+  not_iff_not.1 <| by simp [choose_eq_zero_iff]
+
+lemma choose_ne_zero {n k : ℕ} (h : k ≤ n) : n.choose k ≠ 0 :=
+  (choose_pos h).ne'
 
 theorem succ_mul_choose_eq : ∀ n k, succ n * choose n k = choose (succ n) (succ k) * succ k
   | 0, 0 => by decide
@@ -180,7 +184,7 @@ theorem factorial_mul_factorial_dvd_factorial {n k : ℕ} (hk : k ≤ n) : k ! *
   rw [← choose_mul_factorial_mul_factorial hk, Nat.mul_assoc]; exact Nat.dvd_mul_left _ _
 
 theorem factorial_mul_factorial_dvd_factorial_add (i j : ℕ) : i ! * j ! ∣ (i + j)! := by
-  suffices i ! * (i + j - i) ! ∣ (i + j)! by
+  suffices i ! * (i + j - i)! ∣ (i + j)! by
     rwa [Nat.add_sub_cancel_left i j] at this
   exact factorial_mul_factorial_dvd_factorial (Nat.le_add_right _ _)
 
@@ -298,10 +302,7 @@ theorem choose_le_middle (r n : ℕ) : choose n r ≤ choose n (n / 2) := by
     · apply choose_le_middle_of_le_half_left a
     · rw [← choose_symm b]
       apply choose_le_middle_of_le_half_left
-      rw [div_lt_iff_lt_mul Nat.zero_lt_two] at h
-      rw [le_div_iff_mul_le Nat.zero_lt_two, Nat.mul_sub_right_distrib, Nat.sub_le_iff_le_add,
-        ← Nat.sub_le_iff_le_add', Nat.mul_two, Nat.add_sub_cancel]
-      exact le_of_lt h
+      cutsat
   · rw [choose_eq_zero_of_lt b]
     apply zero_le
 
@@ -312,9 +313,9 @@ theorem choose_le_succ (a c : ℕ) : choose a c ≤ choose a.succ c := by
   cases c <;> simp [Nat.choose_succ_succ]
 
 theorem choose_le_add (a b c : ℕ) : choose a c ≤ choose (a + b) c := by
-  induction' b with b_n b_ih
-  · simp
-  exact le_trans b_ih (choose_le_succ (a + b_n) c)
+  induction b with
+  | zero => simp
+  | succ b_n b_ih => exact b_ih.trans (choose_le_succ (a + b_n) c)
 
 theorem choose_le_choose {a b : ℕ} (c : ℕ) (h : a ≤ b) : choose a c ≤ choose b c :=
   Nat.add_sub_cancel' h ▸ choose_le_add a (b - a) c
@@ -360,19 +361,21 @@ theorem multichoose_succ_succ (n k : ℕ) :
 
 @[simp]
 theorem multichoose_one (k : ℕ) : multichoose 1 k = 1 := by
-  induction' k with k IH; · simp
-  simp [multichoose_succ_succ 0 k, IH]
+  induction k with
+  | zero => simp
+  | succ k IH => simp [multichoose_succ_succ 0 k, IH]
 
 @[simp]
 theorem multichoose_two (k : ℕ) : multichoose 2 k = k + 1 := by
-  induction' k with k IH; · simp
-  rw [multichoose, IH]
-  simp [Nat.add_comm]
+  induction k with
+  | zero => simp
+  | succ k IH => rw [multichoose, IH]; simp [Nat.add_comm]
 
 @[simp]
 theorem multichoose_one_right (n : ℕ) : multichoose n 1 = n := by
-  induction' n with n IH; · simp
-  simp [multichoose_succ_succ n 0, IH]
+  induction n with
+  | zero => simp
+  | succ n IH => simp [multichoose_succ_succ n 0, IH]
 
 theorem multichoose_eq : ∀ n k : ℕ, multichoose n k = (n + k - 1).choose k
   | _, 0 => by simp
@@ -382,6 +385,6 @@ theorem multichoose_eq : ∀ n k : ℕ, multichoose n k = (n + k - 1).choose k
     have : (n + 1) + k < (n + 1) + (k + 1) := Nat.add_lt_add_left (Nat.lt_succ_self _) _
     rw [multichoose_succ_succ, Nat.add_comm, Nat.succ_add_sub_one, ← Nat.add_assoc,
       Nat.choose_succ_succ]
-    simp [multichoose_eq n (k+1), multichoose_eq (n+1) k]
+    simp [multichoose_eq n (k + 1), multichoose_eq (n + 1) k]
 
 end Nat

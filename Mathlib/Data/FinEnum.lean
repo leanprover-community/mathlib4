@@ -25,7 +25,7 @@ class FinEnum (α : Sort*) where
   /-- `FinEnum.card` is the cardinality of the `FinEnum` -/
   card : ℕ
   /-- `FinEnum.Equiv` states that type `α` is in bijection with `Fin card`,
-    the size of the `FinEnum` -/
+  the size of the `FinEnum` -/
   equiv : α ≃ Fin card
   [decEq : DecidableEq α]
 
@@ -105,7 +105,7 @@ instance empty : FinEnum Empty :=
   ofList [] fun x => Empty.elim x
 
 instance punit : FinEnum PUnit :=
-  ofList [PUnit.unit] fun x => by cases x; simp
+  ofList [PUnit.unit] fun x => by simp
 
 instance prod {β} [FinEnum α] [FinEnum β] : FinEnum (α × β) :=
   ofList (toList α ×ˢ toList β) fun x => by cases x; simp
@@ -130,7 +130,7 @@ def Finset.enum [DecidableEq α] : List α → List (Finset α)
     let r ← Finset.enum xs
     [r, insert x r]
 
-@[simp]
+@[simp, grind =]
 theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
     s ∈ Finset.enum xs ↔ ∀ x ∈ s, x ∈ xs := by
   induction xs generalizing s with
@@ -143,7 +143,7 @@ theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
       simp +contextual [eq_comm (a := s), or_iff_not_imp_left, hs]
 
 instance Finset.finEnum [FinEnum α] : FinEnum (Finset α) :=
-  ofList (Finset.enum (toList α)) (by intro; simp)
+  ofList (Finset.enum (toList α)) (by simp)
 
 instance Subtype.finEnum [FinEnum α] (p : α → Prop) [DecidablePred p] : FinEnum { x // p x } :=
   ofList ((toList α).filterMap fun x => if h : p x then some ⟨_, h⟩ else none)
@@ -153,22 +153,22 @@ instance (β : α → Type v) [FinEnum α] [∀ a, FinEnum (β a)] : FinEnum (Si
   ofList ((toList α).flatMap fun a => (toList (β a)).map <| Sigma.mk a)
     (by intro x; cases x; simp)
 
-instance PSigma.finEnum [FinEnum α] [∀ a, FinEnum (β a)] : FinEnum (Σ'a, β a) :=
+instance PSigma.finEnum [FinEnum α] [∀ a, FinEnum (β a)] : FinEnum (Σ' a, β a) :=
   FinEnum.ofEquiv _ (Equiv.psigmaEquivSigma _)
 
 instance PSigma.finEnumPropLeft {α : Prop} {β : α → Type v} [∀ a, FinEnum (β a)] [Decidable α] :
-    FinEnum (Σ'a, β a) :=
+    FinEnum (Σ' a, β a) :=
   if h : α then ofList ((toList (β h)).map <| PSigma.mk h) fun ⟨a, Ba⟩ => by simp
   else ofList [] fun ⟨a, _⟩ => (h a).elim
 
 instance PSigma.finEnumPropRight {β : α → Prop} [FinEnum α] [∀ a, Decidable (β a)] :
-    FinEnum (Σ'a, β a) :=
+    FinEnum (Σ' a, β a) :=
   FinEnum.ofEquiv { a // β a }
     ⟨fun ⟨x, y⟩ => ⟨x, y⟩, fun ⟨x, y⟩ => ⟨x, y⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
 
 instance PSigma.finEnumPropProp {α : Prop} {β : α → Prop} [Decidable α] [∀ a, Decidable (β a)] :
-    FinEnum (Σ'a, β a) :=
-  if h : ∃ a, β a then ofList [⟨h.fst, h.snd⟩] (by rintro ⟨⟩; simp)
+    FinEnum (Σ' a, β a) :=
+  if h : ∃ a, β a then ofList [⟨h.fst, h.snd⟩] (by simp)
   else ofList [] fun a => (h ⟨a.fst, a.snd⟩).elim
 
 instance [DecidableEq α] (xs : List α) : FinEnum { x : α // x ∈ xs } := ofList xs.attach (by simp)
@@ -234,9 +234,7 @@ instance [Unique α] : Unique (FinEnum α) where
     · exact card_eq_one α
     · refine heq_of_cast_eq ?_ (Subsingleton.allEq _ _)
       exact congrArg (α ≃ Fin ·) <| card_eq_one α
-    · funext x y
-      cases decEq x y <;> cases decidableEq_of_subsingleton x y <;>
-      first | rfl | contradiction
+    · subsingleton
 
 /-- A type with unique inhabitant has a trivial enumeration. Not registered as an instance, to make
 sure that there aren't two definitionally differing instances around. -/

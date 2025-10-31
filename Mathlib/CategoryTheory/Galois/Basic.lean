@@ -3,6 +3,7 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
+import Mathlib.Algebra.Group.TransferInstance
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.Limits.FintypeCat
 import Mathlib.CategoryTheory.Limits.MonoCoprod
@@ -10,7 +11,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.Data.Finite.Card
-import Mathlib.Algebra.Equiv.TransferInstance
 
 /-!
 # Definition and basic properties of Galois categories
@@ -366,7 +366,7 @@ lemma lt_card_fiber_of_mono_of_notIso {X Y : C} (f : X ⟶ Y) [Mono f]
   apply isIso_of_mono_of_eq_card_fiber F f
   simp only [not_lt] at hlt
   exact Nat.le_antisymm
-    (Finite.card_le_of_injective (F.map f) (injective_of_mono_of_preservesPullback (F.map f))) hlt
+    (Nat.card_le_card_of_injective (F.map f) (injective_of_mono_of_preservesPullback (F.map f))) hlt
 
 /-- The cardinality of the fiber of a not-initial object is non-zero. -/
 lemma non_zero_card_fiber_of_not_initial (X : C) (h : IsInitial X → False) :

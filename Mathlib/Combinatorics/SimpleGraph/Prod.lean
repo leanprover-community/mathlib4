@@ -144,9 +144,6 @@ theorem ofBoxProdRight_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {a b�
     · simp [ofBoxProdRight_boxProdRight]
     · exact ⟨h, rfl⟩
 
-@[deprecated (since := "2025-03-30")]
-alias ofBoxProdLeft_boxProdRight := ofBoxProdRight_boxProdRight
-
 lemma length_boxProd {a₁ a₂ : α} {b₁ b₂ : β} [DecidableEq α] [DecidableEq β]
     [DecidableRel G.Adj] [DecidableRel H.Adj] (w : (G □ H).Walk (a₁, b₁) (a₂, b₂)) :
     w.length = w.ofBoxProdLeft.length + w.ofBoxProdRight.length := by
@@ -155,7 +152,7 @@ lemma length_boxProd {a₁ a₂ : α} {b₁ b₂ : β} [DecidableEq α] [Decidab
   | .cons x w' => next c =>
     unfold ofBoxProdLeft ofBoxProdRight
     rw [length_cons, length_boxProd w']
-    have disj : (G.Adj a₁ c.1 ∧ b₁ = c.2) ∨ (H.Adj b₁ c.2 ∧ a₁ = c.1) := by aesop
+    have disj : (G.Adj a₁ c.1 ∧ b₁ = c.2) ∨ (H.Adj b₁ c.2 ∧ a₁ = c.1) := by simp_all
     rcases disj with h₁ | h₂
     · simp only [h₁, and_self, ↓reduceDIte, length_cons, Or.by_cases]
       rw [add_comm, add_comm w'.ofBoxProdLeft.length 1, add_assoc]

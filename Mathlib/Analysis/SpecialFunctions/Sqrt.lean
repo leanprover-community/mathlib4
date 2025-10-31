@@ -26,7 +26,7 @@ namespace Real
 
 /-- Local homeomorph between `(0, +∞)` and `(0, +∞)` with `toFun = (· ^ 2)` and
 `invFun = Real.sqrt`. -/
-noncomputable def sqPartialHomeomorph : PartialHomeomorph ℝ ℝ where
+noncomputable def sqPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun x := x ^ 2
   invFun := (√·)
   source := Ioi 0
@@ -100,7 +100,7 @@ end deriv
 section fderiv
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {n : WithTop ℕ∞}
-  {s : Set E} {x : E} {f' : E →L[ℝ] ℝ}
+  {s : Set E} {x : E} {f' : StrongDual ℝ E}
 
 theorem HasFDerivAt.sqrt (hf : HasFDerivAt f f' x) (hx : f x ≠ 0) :
     HasFDerivAt (fun y => √(f y)) ((1 / (2 * √(f x))) • f') x :=

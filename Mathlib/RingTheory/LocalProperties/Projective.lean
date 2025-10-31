@@ -158,14 +158,14 @@ theorem Module.projective_of_localization_maximal'
     (H : ∀ (I : Ideal R) (_ : I.IsMaximal), Module.Projective (Rₚ I) (Mₚ I))
     [Module.FinitePresentation R M] : Module.Projective R M := by
   apply Module.projective_of_localization_maximal
-  intros P hP
+  intro P hP
   refine Module.Projective.of_ringEquiv (M := Mₚ P)
     (IsLocalization.algEquiv P.primeCompl (Rₚ P) (Localization.AtPrime P)).toRingEquiv
     { __ := IsLocalizedModule.linearEquiv P.primeCompl (f P)
         (LocalizedModule.mkLinearMap P.primeCompl M)
       map_smul' := ?_ }
-  · intros r m
-    obtain ⟨r, s, rfl⟩ := IsLocalization.mk'_surjective P.primeCompl r
+  · intro r m
+    obtain ⟨r, s, rfl⟩ := IsLocalization.exists_mk'_eq P.primeCompl r
     apply ((Module.End.isUnit_iff _).mp
       (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap P.primeCompl M) s)).1
     dsimp
