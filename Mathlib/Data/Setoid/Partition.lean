@@ -477,7 +477,7 @@ theorem piecewise_bij {β : Type*} {f : ι → α → β}
     simp only [fun i ↦ BijOn.image_eq (hf i)]
     rintro i - j - hij
     exact ht.disjoint hij
-  rw [bijective_iff_bijOn_univ, ← hs.iUnion, ← ht.iUnion]
+  rw [← bijOn_univ, ← hs.iUnion, ← ht.iUnion]
   exact bijOn_iUnion hg_bij hg_inj
 
 end IndexedPartition
