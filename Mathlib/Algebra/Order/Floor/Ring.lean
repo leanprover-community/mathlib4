@@ -128,11 +128,11 @@ theorem lt_succ_floor (a : R) : a < ⌊a⌋.succ :=
 theorem lt_floor_add_one (a : R) : a < ⌊a⌋ + 1 := by
   simpa only [Int.succ, Int.cast_add, Int.cast_one] using lt_succ_floor a
 
-@[mono]
+@[gcongr, mono]
 theorem floor_mono : Monotone (floor : R → ℤ) :=
   gc_coe_floor.monotone_u
 
-@[gcongr, bound] lemma floor_le_floor (hab : a ≤ b) : ⌊a⌋ ≤ ⌊b⌋ := floor_mono hab
+@[bound] lemma floor_le_floor (hab : a ≤ b) : ⌊a⌋ ≤ ⌊b⌋ := floor_mono hab
 
 theorem floor_pos : 0 < ⌊a⌋ ↔ 1 ≤ a := by
   rw [Int.lt_iff_add_one_le, zero_add, le_floor, cast_one]
@@ -313,9 +313,7 @@ theorem fract_sub_self (a : R) : fract a - a = -⌊a⌋ :=
   sub_sub_cancel_left _ _
 
 theorem fract_add (a b : R) : ∃ z : ℤ, fract (a + b) - fract a - fract b = z :=
-  ⟨⌊a⌋ + ⌊b⌋ - ⌊a + b⌋, by
-    unfold fract
-    grind⟩
+  ⟨⌊a⌋ + ⌊b⌋ - ⌊a + b⌋, by unfold fract; grind⟩
 
 variable [IsStrictOrderedRing R]
 

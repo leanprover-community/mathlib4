@@ -523,14 +523,11 @@ def stalkIso (x : PrimeSpectrum.Top R) :
     rw [← this, ← hs, const_apply, localizationToStalk_mk']
     refine (structureSheaf R).presheaf.germ_ext V hxV (homOfLE hg) iVU ?_
     rw [← hs, res_const']
-  inv_hom_id := CommRingCat.hom_ext <|
-    @IsLocalization.ringHom_ext R _ x.asIdeal.primeCompl (Localization.AtPrime x.asIdeal) _ _
-      (Localization.AtPrime x.asIdeal) _ _
-      (RingHom.comp (stalkToFiberRingHom R x).hom (localizationToStalk R x).hom)
-      (RingHom.id (Localization.AtPrime _)) <| by
-        ext f
-        rw [RingHom.comp_apply, RingHom.comp_apply, localizationToStalk_of,
-          stalkToFiberRingHom_toStalk, RingHom.comp_apply, RingHom.id_apply]
+  inv_hom_id := CommRingCat.hom_ext <| IsLocalization.ringHom_ext x.asIdeal.primeCompl <| by
+    ext f
+    rw [CommRingCat.hom_comp, CommRingCat.hom_id,
+      RingHom.comp_apply, RingHom.comp_apply, localizationToStalk_of,
+      stalkToFiberRingHom_toStalk, RingHom.comp_apply, RingHom.id_apply]
 
 instance (x : PrimeSpectrum R) : IsIso (stalkToFiberRingHom R x) :=
   (stalkIso R x).isIso_hom
@@ -583,8 +580,8 @@ theorem toBasicOpen_to_map (s f : R) :
 -- The proof here follows the argument in Hartshorne's Algebraic Geometry, Proposition II.2.2.
 theorem toBasicOpen_injective (f : R) : Function.Injective (toBasicOpen R f) := by
   intro s t h_eq
-  obtain ⟨a, ⟨b, hb⟩, rfl⟩ := IsLocalization.mk'_surjective (Submonoid.powers f) s
-  obtain ⟨c, ⟨d, hd⟩, rfl⟩ := IsLocalization.mk'_surjective (Submonoid.powers f) t
+  obtain ⟨a, ⟨b, hb⟩, rfl⟩ := IsLocalization.exists_mk'_eq (Submonoid.powers f) s
+  obtain ⟨c, ⟨d, hd⟩, rfl⟩ := IsLocalization.exists_mk'_eq (Submonoid.powers f) t
   simp only [toBasicOpen_mk'] at h_eq
   rw [IsLocalization.eq]
   -- We know that the fractions `a/b` and `c/d` are equal as sections of the structure sheaf on
@@ -765,7 +762,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
   -- Next we show that some power of `f` is a linear combination of the `h i`
   obtain ⟨n, hn⟩ : f ∈ (Ideal.span (h '' ↑t)).radical := by
     rw [← PrimeSpectrum.vanishingIdeal_zeroLocus_eq_radical, PrimeSpectrum.zeroLocus_span]
-    simp [PrimeSpectrum.basicOpen_eq_zeroLocus_compl] at ht_cover
+    simp only [PrimeSpectrum.basicOpen_eq_zeroLocus_compl] at ht_cover
     replace ht_cover : (PrimeSpectrum.zeroLocus {f})ᶜ ⊆
         ⋃ (i : ι) (x : i ∈ t), (PrimeSpectrum.zeroLocus {h i})ᶜ := ht_cover
     rw [Set.compl_subset_comm] at ht_cover
