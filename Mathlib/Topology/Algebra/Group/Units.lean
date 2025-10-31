@@ -27,8 +27,8 @@ lemma Submonoid.isOpen_units {M : Type*} [TopologicalSpace M] [Monoid M]
 
 /-- The isomorphism of topological groups between the units of a product and
 the product of the units. -/
-@[to_additive /-- The isomorphism of topological additive groups between the additive units of a product
-and the product of the additive units. -/]
+@[to_additive /-- The isomorphism of topological additive groups between the additive units of a
+product and the product of the additive units. -/]
 def ContinuousMulEquiv.piUnits {ι : Type*}
     {M : ι → Type*} [(i : ι) → Monoid (M i)] [(i : ι) → TopologicalSpace (M i)] :
     (Π i, M i)ˣ ≃ₜ* Π i, (M i)ˣ where
