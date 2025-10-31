@@ -247,7 +247,7 @@ noncomputable def transfiniteCompositionOfShapeMapFromBot (j : J) :
   incl :=
     { app k := (functor hG A₀ J).map (homOfLE k.2)
       naturality k k' h := by simp [MonoOver.forget] }
-  isColimit := colimitOfDiagramTerminal Preorder.isTerminalTop _
+  isColimit := colimitOfDiagramTerminal isTerminalTop _
   map_mem k hk := by
     dsimp [MonoOver.forget]
     convert pushouts_ofLE_le_largerSubobject hG
