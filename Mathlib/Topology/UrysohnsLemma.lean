@@ -520,7 +520,7 @@ lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
     apply Urysohns.CU.lim_of_notMem_U
     exact notMem_compl_iff.mpr hx
 
-/-- A variation of Urysohn's lemma. In a Hausdorff locally compact space, for a compact set `K`
+/-- A variation of **Urysohn's lemma**. In a Hausdorff locally compact space, for a compact set `K`
 contained in an open set `V`, there exists a compactly supported continuous function `f` such that
 `0 ≤ f ≤ 1`, `f = 1` on K and the support of `f` is contained in `V`. -/
 lemma exists_continuous_one_of_compact_subset_open [T2Space X] [LocallyCompactSpace X]
