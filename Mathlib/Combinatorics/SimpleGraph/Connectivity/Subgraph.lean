@@ -601,7 +601,7 @@ protected lemma Connected.map_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
 protected lemma Connected.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
     (hconn : G''.Connected) :
     (Subgraph.coeSubgraph G'').Connected := by
-  exact hconn.map_Subgraph_coe G'.hom
+  exact hconn.map_coe G'.hom
 
 end Subgraph
 
