@@ -91,9 +91,11 @@ section pair
 
 open FourierTransform
 
+/-- A `FourierPair` is a pair of spaces `E` and `F` such that `𝓕⁻ ∘ 𝓕 = id` on `E`. -/
 class FourierPair (E F : Type*) extends FourierTransform E F, FourierTransformInv F E where
   inv_fourier : ∀ (f : E), 𝓕⁻ (𝓕 f) = f
 
+/-- A `FourierPairInv` is a pair of spaces `E` and `F` such that `𝓕 ∘ 𝓕⁻ = id` on `F`. -/
 class FourierPairInv (E F : Type*) extends FourierTransform E F, FourierTransformInv F E where
   fourier_inv : ∀ (f : F), 𝓕 (𝓕⁻ f) = f
 
