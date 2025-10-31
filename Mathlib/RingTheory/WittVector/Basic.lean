@@ -66,25 +66,22 @@ def mapFun (f : α → β) : 𝕎 α → 𝕎 β := fun x => mk _ (f ∘ x.coeff
 
 namespace mapFun
 
--- Porting note: switched the proof to tactic mode. I think that `ext` was the issue.
-theorem injective (f : α → β) (hf : Injective f) : Injective (mapFun f : 𝕎 α → 𝕎 β) := by
-  intros _ _ h
-  ext p
-  exact hf (congr_arg (fun x => coeff x p) h :)
+theorem injective (f : α → β) (hf : Injective f) : Injective (mapFun f : 𝕎 α → 𝕎 β) :=
+  fun _ _ h => ext fun n => hf (congr_arg (fun x => coeff x n) h :)
 
 theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 𝕎 α → 𝕎 β) := fun x =>
   ⟨mk _ fun n => Classical.choose <| hf <| x.coeff n,
     by ext n; simp only [mapFun, coeff_mk, comp_apply, Classical.choose_spec (hf (x.coeff n))]⟩
 
 /-- Auxiliary tactic for showing that `mapFun` respects the ring operations. -/
--- porting note: a very crude port.
 macro "map_fun_tac" : tactic => `(tactic| (
+  -- TODO: the Lean 3 version of this tactic was more functional
   ext n
   simp only [mapFun, mk, comp_apply, zero_coeff, map_zero,
-    -- Porting note: the lemmas on the next line do not have the `simp` tag in mathlib4
+    -- the lemmas on the next line do not have the `simp` tag in mathlib4
     add_coeff, sub_coeff, mul_coeff, neg_coeff, nsmul_coeff, zsmul_coeff, pow_coeff,
     peval, map_aeval, algebraMap_int_eq, coe_eval₂Hom] <;>
-  try { cases n <;> simp <;> done } <;>  -- Porting note: this line solves `one`
+  try { cases n <;> simp <;> done } <;> -- this line solves `one`
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl <;>
   ext ⟨i, k⟩ <;>
     fin_cases i <;> rfl))
@@ -119,7 +116,7 @@ theorem natCast (n : ℕ) : mapFun f (n : 𝕎 R) = n :=
 
 theorem intCast (n : ℤ) : mapFun f (n : 𝕎 R) = n :=
   show mapFun f n.castDef = (n : WittVector p S) by
-    cases n <;> simp [*, Int.castDef, add, one, neg, zero, natCast] <;> rfl
+    cases n <;> simp [*, Int.castDef, neg, natCast] <;> rfl
 
 end mapFun
 
@@ -138,12 +135,12 @@ section Tactic
 open Lean Elab Tactic
 
 /-- An auxiliary tactic for proving that `ghostFun` respects the ring operations. -/
-elab "ghost_fun_tac" φ:term "," fn:term : tactic => do
+elab "ghost_fun_tac " φ:term ", " fn:term : tactic => do
   evalTactic (← `(tactic| (
   ext n
   have := congr_fun (congr_arg (@peval R _ _) (wittStructureInt_prop p $φ n)) $fn
   simp only [wittZero, OfNat.ofNat, Zero.zero, wittOne, One.one,
-    HAdd.hAdd, Add.add, HSub.hSub, Sub.sub, Neg.neg, HMul.hMul, Mul.mul,HPow.hPow, Pow.pow,
+    HAdd.hAdd, Add.add, HSub.hSub, Sub.sub, Neg.neg, HMul.hMul, Mul.mul, HPow.hPow, Pow.pow,
     wittNSMul, wittZSMul, HSMul.hSMul, SMul.smul]
   simpa +unfoldPartialApp [WittVector.ghostFun, aeval_rename, aeval_bind₁,
     comp, uncurry, peval, eval] using this
@@ -261,17 +258,15 @@ theorem map_surjective (f : R →+* S) (hf : Surjective f) : Surjective (map f :
 theorem map_coeff (f : R →+* S) (x : 𝕎 R) (n : ℕ) : (map f x).coeff n = f (x.coeff n) :=
   rfl
 
+variable (R) in
 @[simp]
-theorem map_id (R : Type*) [CommRing R] :
-    WittVector.map (RingHom.id R) = RingHom.id (𝕎 R) := by
-  ext
-  simp
+theorem map_id : WittVector.map (RingHom.id R) = RingHom.id (𝕎 R) := by
+  ext; simp
 
-theorem map_eq_zero_iff {p : ℕ} {R S : Type*} [CommRing R] [CommRing S] [Fact (Nat.Prime p)]
-    (f : R →+* S) {x : WittVector p R} :
+theorem map_eq_zero_iff (f : R →+* S) {x : WittVector p R} :
     ((map f) x) = 0 ↔ ∀ n, f (x.coeff n) = 0 := by
   refine ⟨fun h n ↦ ?_, fun h ↦ ?_⟩
-  · apply_fun (fun x ↦ x.coeff n) at h
+  · apply_fun (·.coeff n) at h
     simpa using h
   · ext n
     simpa using h n
@@ -302,12 +297,9 @@ theorem pow_dvd_ghostComponent_of_dvd_coeff {x : 𝕎 R} {n : ℕ}
   have : (MvPolynomial.aeval x.coeff) ((MvPolynomial.monomial (R := ℤ)
       (Finsupp.single i (p ^ (n - i)))) (p ^ i)) = ((p : R) ^ i) * (x.coeff i) ^ (p ^ (n - i)) := by
     simp [MvPolynomial.aeval_monomial, map_pow]
-  rw [this]
-  have : n + 1 = (n - i) + 1 + i := by omega
-  nth_rw 1 [this]
-  rw [pow_add, mul_comm]
+  rw [this, show n + 1 = (n - i) + 1 + i by omega, pow_add, mul_comm]
   apply mul_dvd_mul_left
-  refine (pow_dvd_pow_of_dvd ?_ _).trans (b := (x.coeff i) ^ (n - i + 1)) (pow_dvd_pow _ ?_)
+  refine (pow_dvd_pow_of_dvd ?_ _).trans (pow_dvd_pow _ ?_)
   · exact hx i (Nat.le_of_lt_succ hi)
   · exact ((n - i).lt_two_pow_self).succ_le.trans
         (pow_left_mono (n - i) (Nat.Prime.two_le Fact.out))

@@ -87,7 +87,7 @@ variable [Fintype α] {s t : Finset α}
 def univ : Finset α :=
   @Fintype.elems α _
 
-@[simp]
+@[simp, grind ←]
 theorem mem_univ (x : α) : x ∈ (univ : Finset α) :=
   Fintype.complete x
 
@@ -106,6 +106,8 @@ theorem coe_eq_univ : (s : Set α) = Set.univ ↔ s = univ := by rw [← coe_uni
 
 @[simp]
 theorem subset_univ (s : Finset α) : s ⊆ univ := fun a _ => mem_univ a
+
+theorem mem_filter_univ {p : α → Prop} [DecidablePred p] : ∀ x, x ∈ univ.filter p ↔ p x := by simp
 
 end Finset
 
@@ -196,8 +198,8 @@ namespace Fintype
 
 instance decidablePiFintype {α} {β : α → Type*} [∀ a, DecidableEq (β a)] [Fintype α] :
     DecidableEq (∀ a, β a) := fun f g =>
-  decidable_of_iff (∀ a ∈ @Fintype.elems α _, f a = g a)
-    (by simp [funext_iff, Fintype.complete])
+  decidable_of_iff (∀ a ∈ @univ α _, f a = g a)
+    (by simp [funext_iff])
 
 instance decidableForallFintype {p : α → Prop} [DecidablePred p] [Fintype α] :
     Decidable (∀ a, p a) :=

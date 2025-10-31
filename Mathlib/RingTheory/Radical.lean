@@ -104,7 +104,7 @@ lemma normalizedFactors_nodup (ha : IsRadical a) : (normalizedFactors a).Nodup :
 
 /--
 If `x` is a unit, then the finset of prime factors of `x` is empty.
-The converse is true with a nonzero assumption, see `normalizedFactors_eq_zero_iff`.
+The converse is true with a nonzero assumption, see `primeFactors_eq_empty_iff`.
 -/
 lemma primeFactors_of_isUnit (h : IsUnit a) : primeFactors a = ∅ := by
   classical
@@ -446,17 +446,17 @@ lemma UniqueFactorizationMonoid.primeFactors_eq_natPrimeFactors :
 namespace Nat
 
 @[simp] theorem radical_le_self_iff {n : ℕ} : radical n ≤ n ↔ n ≠ 0 :=
-  ⟨by aesop, fun h ↦ Nat.le_of_dvd (by omega) radical_dvd_self⟩
+  ⟨by aesop, fun h ↦ Nat.le_of_dvd (by cutsat) radical_dvd_self⟩
 
 @[simp] theorem two_le_radical_iff {n : ℕ} : 2 ≤ radical n ↔ 2 ≤ n := by
   refine ⟨?_, ?_⟩
   · match n with | 0 | 1 | _ + 2 => simp
   · intro hn
-    obtain ⟨p, hp, hpn⟩ := Nat.exists_prime_and_dvd (show n ≠ 1 by omega)
+    obtain ⟨p, hp, hpn⟩ := Nat.exists_prime_and_dvd (show n ≠ 1 by cutsat)
     trans p
     · apply hp.two_le
     · apply Nat.le_of_dvd (Nat.pos_of_ne_zero radical_ne_zero)
-      rwa [dvd_radical_iff_of_irreducible hp.prime.irreducible (by omega)]
+      rwa [dvd_radical_iff_of_irreducible hp.prime.irreducible (by cutsat)]
 
 @[simp] theorem one_lt_radical_iff {n : ℕ} : 1 < radical n ↔ 1 < n := two_le_radical_iff
 

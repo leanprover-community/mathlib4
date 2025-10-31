@@ -22,7 +22,7 @@ variable {α : Type u}
 @[simps]
 def unitOfInvertible [Monoid α] (a : α) [Invertible a] : αˣ where
   val := a
-  inv := ⅟ a
+  inv := ⅟a
   val_inv := by simp
   inv_val := by simp
 
@@ -30,14 +30,14 @@ theorem isUnit_of_invertible [Monoid α] (a : α) [Invertible a] : IsUnit a :=
   ⟨unitOfInvertible a, rfl⟩
 
 /-- Units are invertible in their associated monoid. -/
-def Units.invertible [Monoid α] (u : αˣ) :
+instance Units.invertible [Monoid α] (u : αˣ) :
     Invertible (u : α) where
   invOf := ↑u⁻¹
   invOf_mul_self := u.inv_mul
   mul_invOf_self := u.mul_inv
 
 @[simp]
-theorem invOf_units [Monoid α] (u : αˣ) [Invertible (u : α)] : ⅟ (u : α) = ↑u⁻¹ :=
+theorem invOf_units [Monoid α] (u : αˣ) [Invertible (u : α)] : ⅟(u : α) = ↑u⁻¹ :=
   invOf_eq_right_inv u.mul_inv
 
 theorem IsUnit.nonempty_invertible [Monoid α] {a : α} (h : IsUnit a) : Nonempty (Invertible a) :=
@@ -55,23 +55,23 @@ theorem nonempty_invertible_iff_isUnit [Monoid α] (a : α) : Nonempty (Invertib
   ⟨Nonempty.rec <| @isUnit_of_invertible _ _ _, IsUnit.nonempty_invertible⟩
 
 theorem Commute.invOf_right [Monoid α] {a b : α} [Invertible b] (h : Commute a b) :
-    Commute a (⅟ b) :=
+    Commute a (⅟b) :=
   calc
-    a * ⅟ b = ⅟ b * (b * a * ⅟ b) := by simp [mul_assoc]
-    _ = ⅟ b * (a * b * ⅟ b) := by rw [h.eq]
-    _ = ⅟ b * a := by simp [mul_assoc]
+    a * ⅟b = ⅟b * (b * a * ⅟b) := by simp [mul_assoc]
+    _ = ⅟b * (a * b * ⅟b) := by rw [h.eq]
+    _ = ⅟b * a := by simp [mul_assoc]
 
 theorem Commute.invOf_left [Monoid α] {a b : α} [Invertible b] (h : Commute b a) :
-    Commute (⅟ b) a :=
+    Commute (⅟b) a :=
   calc
-    ⅟ b * a = ⅟ b * (a * b * ⅟ b) := by simp [mul_assoc]
-    _ = ⅟ b * (b * a * ⅟ b) := by rw [h.eq]
-    _ = a * ⅟ b := by simp [mul_assoc]
+    ⅟b * a = ⅟b * (a * b * ⅟b) := by simp [mul_assoc]
+    _ = ⅟b * (b * a * ⅟b) := by rw [h.eq]
+    _ = a * ⅟b := by simp [mul_assoc]
 
-theorem commute_invOf {M : Type*} [One M] [Mul M] (m : M) [Invertible m] : Commute m (⅟ m) :=
+theorem commute_invOf {M : Type*} [One M] [Mul M] (m : M) [Invertible m] : Commute m (⅟m) :=
   calc
-    m * ⅟ m = 1 := mul_invOf_self m
-    _ = ⅟ m * m := (invOf_mul_self m).symm
+    m * ⅟m = 1 := mul_invOf_self m
+    _ = ⅟m * m := (invOf_mul_self m).symm
 
 section Monoid
 
@@ -79,7 +79,7 @@ variable [Monoid α]
 
 /-- This is the `Invertible` version of `Units.isUnit_units_mul` -/
 abbrev invertibleOfInvertibleMul (a b : α) [Invertible a] [Invertible (a * b)] : Invertible b where
-  invOf := ⅟ (a * b) * a
+  invOf := ⅟(a * b) * a
   invOf_mul_self := by rw [mul_assoc, invOf_mul_self]
   mul_invOf_self := by
     rw [← (isUnit_of_invertible a).mul_right_inj, ← mul_assoc, ← mul_assoc, mul_invOf_self, mul_one,
@@ -87,7 +87,7 @@ abbrev invertibleOfInvertibleMul (a b : α) [Invertible a] [Invertible (a * b)] 
 
 /-- This is the `Invertible` version of `Units.isUnit_mul_units` -/
 abbrev invertibleOfMulInvertible (a b : α) [Invertible (a * b)] [Invertible b] : Invertible a where
-  invOf := b * ⅟ (a * b)
+  invOf := b * ⅟(a * b)
   invOf_mul_self := by
     rw [← (isUnit_of_invertible b).mul_left_inj, mul_assoc, mul_assoc, invOf_mul_self, mul_one,
       one_mul]
@@ -110,11 +110,11 @@ def Invertible.mulRight (a : α) {b : α} (_ : Invertible b) : Invertible a ≃ 
   right_inv _ := Subsingleton.elim _ _
 
 instance invertiblePow (m : α) [Invertible m] (n : ℕ) : Invertible (m ^ n) where
-  invOf := ⅟ m ^ n
+  invOf := ⅟m ^ n
   invOf_mul_self := by rw [← (commute_invOf m).symm.mul_pow, invOf_mul_self, one_pow]
   mul_invOf_self := by rw [← (commute_invOf m).mul_pow, mul_invOf_self, one_pow]
 
-lemma invOf_pow (m : α) [Invertible m] (n : ℕ) [Invertible (m ^ n)] : ⅟ (m ^ n) = ⅟ m ^ n :=
+lemma invOf_pow (m : α) [Invertible m] (n : ℕ) [Invertible (m ^ n)] : ⅟(m ^ n) = ⅟m ^ n :=
   @invertible_unique _ _ _ _ _ (invertiblePow m n) rfl
 
 /-- If `x ^ n = 1` then `x` has an inverse, `x^(n - 1)`. -/
@@ -128,7 +128,7 @@ end Monoid
 def Invertible.map {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [MulOneClass S]
     [FunLike F R S] [MonoidHomClass F R S] (f : F) (r : R) [Invertible r] :
     Invertible (f r) where
-  invOf := f (⅟ r)
+  invOf := f (⅟r)
   invOf_mul_self := by rw [← map_mul, invOf_mul_self, map_one]
   mul_invOf_self := by rw [← map_mul, mul_invOf_self, map_one]
 
@@ -137,7 +137,7 @@ before applying this lemma. -/
 theorem map_invOf {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [Monoid S]
     [FunLike F R S] [MonoidHomClass F R S] (f : F) (r : R)
     [Invertible r] [ifr : Invertible (f r)] :
-    f (⅟ r) = ⅟ (f r) :=
+    f (⅟r) = ⅟(f r) :=
   have h : ifr = Invertible.map f r := Subsingleton.elim _ _
   by subst h; rfl
 

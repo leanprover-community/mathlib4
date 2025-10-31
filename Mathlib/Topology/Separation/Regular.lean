@@ -11,7 +11,7 @@ import Mathlib.Topology.Connected.Clopen
 /-!
 # Regular, normal, T₃, T₄ and T₅ spaces
 
-This file continues the study of separation properties of topological spaces, focussing
+This file continues the study of separation properties of topological spaces, focusing
 on conditions strictly stronger than T₂.
 
 ## Main definitions
@@ -83,12 +83,12 @@ theorem regularSpace_TFAE (X : Type u) [TopologicalSpace X] :
       ∀ (x : X) (s : Set X), Disjoint (𝓝ˢ s) (𝓝 x) ↔ x ∉ closure s,
       ∀ (x : X) (s : Set X), s ∈ 𝓝 x → ∃ t ∈ 𝓝 x, IsClosed t ∧ t ⊆ s,
       ∀ x : X, (𝓝 x).lift' closure ≤ 𝓝 x,
-      ∀ x : X , (𝓝 x).lift' closure = 𝓝 x] := by
+      ∀ x : X, (𝓝 x).lift' closure = 𝓝 x] := by
   tfae_have 1 ↔ 5 := by
     rw [regularSpace_iff, (@compl_surjective (Set X) _).forall, forall_swap]
     simp only [isClosed_compl_iff, mem_compl_iff, Classical.not_not, @and_comm (_ ∈ _),
       (nhds_basis_opens _).lift'_closure.le_basis_iff (nhds_basis_opens _), and_imp,
-      (nhds_basis_opens _).disjoint_iff_right, exists_prop, ← subset_interior_iff_mem_nhdsSet,
+      (nhds_basis_opens _).disjoint_iff_right, ← subset_interior_iff_mem_nhdsSet,
       interior_compl, compl_subset_compl]
   tfae_have 5 → 6 := fun h a => (h a).antisymm (𝓝 _).le_lift'_closure
   tfae_have 6 → 4
@@ -196,8 +196,6 @@ protected theorem Topology.IsInducing.regularSpace [TopologicalSpace Y] {f : Y �
     (fun b => by rw [hf.nhds_eq_comap b]; exact (closed_nhds_basis _).comap _)
     fun b s hs => by exact hs.2.preimage hf.continuous
 
-@[deprecated (since := "2024-10-28")] alias Inducing.regularSpace := IsInducing.regularSpace
-
 theorem regularSpace_induced (f : Y → X) : @RegularSpace Y (induced f ‹_›) :=
   letI := induced f ‹_›
   (IsInducing.induced f).regularSpace
@@ -269,6 +267,17 @@ lemma IsClosed.HasSeparatingCover {s t : Set X} [LindelofSpace X] [RegularSpace 
     u u_open (fun a ainh ↦ mem_iUnion.mpr ⟨a, u_nhds a ainh⟩)
   exact ⟨u ∘ f, f_cov, fun n ↦ ⟨u_open (f n), u_dis (f n)⟩⟩
 
+/-- Given two separable points `x` and `y`, we can find neighbourhoods
+`x ∈ V₁ ⊆ U₁` and `y ∈ V₂ ⊆ U₂`, with the `Vₖ` closed and the `Uₖ` open,
+such that the `Uₖ` are disjoint. -/
+theorem disjoint_nested_nhds_of_not_inseparable [RegularSpace X] {x y : X} (h : ¬Inseparable x y) :
+    ∃ U₁ ∈ 𝓝 x, ∃ V₁ ∈ 𝓝 x, ∃ U₂ ∈ 𝓝 y, ∃ V₂ ∈ 𝓝 y,
+      IsClosed V₁ ∧ IsClosed V₂ ∧ IsOpen U₁ ∧ IsOpen U₂ ∧ V₁ ⊆ U₁ ∧ V₂ ⊆ U₂ ∧ Disjoint U₁ U₂ := by
+  rcases r1_separation h with ⟨U₁, U₂, U₁_op, U₂_op, x_in, y_in, H⟩
+  rcases exists_mem_nhds_isClosed_subset (U₁_op.mem_nhds x_in) with ⟨V₁, V₁_in, V₁_closed, h₁⟩
+  rcases exists_mem_nhds_isClosed_subset (U₂_op.mem_nhds y_in) with ⟨V₂, V₂_in, V₂_closed, h₂⟩
+  exact ⟨U₁, mem_of_superset V₁_in h₁, V₁, V₁_in, U₂, mem_of_superset V₂_in h₂, V₂, V₂_in,
+    V₁_closed, V₂_closed, U₁_op, U₂_op, h₁, h₂, H⟩
 
 end RegularSpace
 
@@ -296,6 +305,17 @@ theorem exists_open_between_and_isCompact_closure [LocallyCompactSpace X] [Regul
     apply (closure_mono interior_subset).trans (le_of_eq L_closed.closure_eq)
   refine ⟨interior L, isOpen_interior, KL, A.trans LU, ?_⟩
   exact L_compact.closure_of_subset interior_subset
+
+lemma IsCompact.closure_eq_nhdsKer [RegularSpace X] {s : Set X} (hs : IsCompact s) :
+    closure s = nhdsKer s := by
+  apply subset_antisymm
+  · rw [nhdsKer, ← hs.lift'_closure_nhdsSet]
+    simp +contextual [Filter.lift', Filter.lift, closure_mono, subset_of_mem_nhdsSet]
+  · intro y hy
+    by_contra! hy'
+    rw [← _root_.disjoint_nhdsSet_nhds, Filter.disjoint_iff] at hy'
+    obtain ⟨t, hts, t', ht'y, H⟩ := hy'
+    exact Set.disjoint_iff.mp H ⟨hy t hts, mem_of_mem_nhds ht'y⟩
 
 end LocallyCompactRegularSpace
 
@@ -340,9 +360,6 @@ theorem Topology.IsEmbedding.t25Space [TopologicalSpace Y] [T25Space Y] {f : X �
     (hf : IsEmbedding f) : T25Space X :=
   .of_injective_continuous hf.injective hf.continuous
 
-@[deprecated (since := "2024-10-26")]
-alias Embedding.t25Space := IsEmbedding.t25Space
-
 protected theorem Homeomorph.t25Space [TopologicalSpace Y] [T25Space X] (h : X ≃ₜ Y) : T25Space Y :=
   h.symm.isEmbedding.t25Space
 
@@ -376,9 +393,6 @@ protected theorem Topology.IsEmbedding.t3Space [TopologicalSpace Y] [T3Space Y] 
   { toT0Space := hf.t0Space
     toRegularSpace := hf.isInducing.regularSpace }
 
-@[deprecated (since := "2024-10-26")]
-alias Embedding.t3Space := IsEmbedding.t3Space
-
 protected theorem Homeomorph.t3Space [TopologicalSpace Y] [T3Space X] (h : X ≃ₜ Y) : T3Space Y :=
   h.symm.isEmbedding.t3Space
 
@@ -397,12 +411,8 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
 with the `Vₖ` closed and the `Uₖ` open, such that the `Uₖ` are disjoint. -/
 theorem disjoint_nested_nhds [T3Space X] {x y : X} (h : x ≠ y) :
     ∃ U₁ ∈ 𝓝 x, ∃ V₁ ∈ 𝓝 x, ∃ U₂ ∈ 𝓝 y, ∃ V₂ ∈ 𝓝 y,
-      IsClosed V₁ ∧ IsClosed V₂ ∧ IsOpen U₁ ∧ IsOpen U₂ ∧ V₁ ⊆ U₁ ∧ V₂ ⊆ U₂ ∧ Disjoint U₁ U₂ := by
-  rcases t2_separation h with ⟨U₁, U₂, U₁_op, U₂_op, x_in, y_in, H⟩
-  rcases exists_mem_nhds_isClosed_subset (U₁_op.mem_nhds x_in) with ⟨V₁, V₁_in, V₁_closed, h₁⟩
-  rcases exists_mem_nhds_isClosed_subset (U₂_op.mem_nhds y_in) with ⟨V₂, V₂_in, V₂_closed, h₂⟩
-  exact ⟨U₁, mem_of_superset V₁_in h₁, V₁, V₁_in, U₂, mem_of_superset V₂_in h₂, V₂, V₂_in,
-    V₁_closed, V₂_closed, U₁_op, U₂_op, h₁, h₂, H⟩
+      IsClosed V₁ ∧ IsClosed V₂ ∧ IsOpen U₁ ∧ IsOpen U₂ ∧ V₁ ⊆ U₁ ∧ V₂ ⊆ U₂ ∧ Disjoint U₁ U₂ :=
+  disjoint_nested_nhds_of_not_inseparable (mt Inseparable.eq h)
 
 open SeparationQuotient
 
@@ -540,9 +550,6 @@ theorem Topology.IsEmbedding.completelyNormalSpace [TopologicalSpace Y] [Complet
   · rwa [← subset_compl_iff_disjoint_right, image_subset_iff, preimage_compl,
       ← he.closure_eq_preimage_closure_image, subset_compl_iff_disjoint_right]
 
-@[deprecated (since := "2024-10-26")]
-alias Embedding.completelyNormalSpace := IsEmbedding.completelyNormalSpace
-
 /-- A subspace of a completely normal space is a completely normal space. -/
 instance [CompletelyNormalSpace X] {p : X → Prop} : CompletelyNormalSpace { x // p x } :=
   IsEmbedding.subtypeVal.completelyNormalSpace
@@ -560,9 +567,6 @@ theorem Topology.IsEmbedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X →
   completely_normal := by
     have := he.completelyNormalSpace
     exact completely_normal
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.t5Space := IsEmbedding.t5Space
 
 protected theorem Homeomorph.t5Space [TopologicalSpace Y] [T5Space X] (h : X ≃ₜ Y) : T5Space Y :=
   h.symm.isClosedEmbedding.t5Space
