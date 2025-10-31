@@ -113,9 +113,7 @@ variable {f g : E → F}
 theorem HasTemperateGrowth.neg (hf : f.HasTemperateGrowth) : (-f).HasTemperateGrowth := by
   refine ⟨hf.1.neg, fun n ↦ ?_⟩
   obtain ⟨k, C, h⟩ := hf.2 n
-  use k, C
-  intro x
-  simpa [iteratedFDeriv_neg_apply] using h x
+  exact ⟨k, C, fun x ↦ by simpa [iteratedFDeriv_neg_apply] using h x⟩
 
 variable {α : Type*} {l : Filter α}
 
@@ -132,8 +130,7 @@ theorem _root_.Asymptotics.isBigO_pow_of_le_right {f : α → ℝ} (hf : ∀ x, 
 theorem HasTemperateGrowth.add (hf : f.HasTemperateGrowth) (hg : g.HasTemperateGrowth) :
     (f + g).HasTemperateGrowth := by
   rw [hasTemperateGrowth_iff_isBigO] at *
-  refine ⟨hf.1.add hg.1, ?_⟩
-  intro n
+  refine ⟨hf.1.add hg.1, fun n ↦ ?_⟩
   obtain ⟨k₁, h₁⟩ := hf.2 n
   obtain ⟨k₂, h₂⟩ := hg.2 n
   use max k₁ k₂
