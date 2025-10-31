@@ -179,9 +179,9 @@ theorem bind_map_comm (m : Multiset α) (n : Multiset β) {f : α → β → γ}
 
 theorem filter_eq_bind (m : Multiset α) (p : α → Prop) [DecidablePred p] :
     filter p m = bind m (fun a => if p a then {a} else 0) := by
-  induction m using Multiset.induction
-  case empty => simp
-  case cons a m ih => simp [filter_cons, ih]
+  induction m using Multiset.induction with
+  | empty => simp
+  | cons a m ih => simp [filter_cons, ih]
 
 theorem bind_filter (m : Multiset α) (p : α → Prop) (f : α → Multiset β) [DecidablePred p] :
     bind (filter p m) f = bind m (fun a => if p a then f a else 0) := by
