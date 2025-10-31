@@ -74,17 +74,11 @@ theorem hasFiniteIntegral_prodMk_left (a : α) {s : Set (β × γ)} (h2s : (κ �
     _ = (κ ⊗ₖ η) a s := measure_toMeasurable s
     _ < ⊤ := h2s.lt_top
 
-@[deprecated (since := "2025-03-05")]
-alias hasFiniteIntegral_prod_mk_left := hasFiniteIntegral_prodMk_left
-
 theorem integrable_kernel_prodMk_left (a : α) {s : Set (β × γ)} (hs : MeasurableSet s)
     (h2s : (κ ⊗ₖ η) a s ≠ ∞) : Integrable (fun b => (η (a, b)).real (Prod.mk b ⁻¹' s)) (κ a) := by
   constructor
   · exact (measurable_kernel_prodMk_left' hs a).ennreal_toReal.aestronglyMeasurable
   · exact hasFiniteIntegral_prodMk_left a h2s
-
-@[deprecated (since := "2025-03-05")]
-alias integrable_kernel_prod_mk_left := integrable_kernel_prodMk_left
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_kernel_compProd [NormedSpace ℝ E]
     ⦃f : β × γ → E⦄ (hf : AEStronglyMeasurable f ((κ ⊗ₖ η) a)) :
@@ -144,10 +138,6 @@ theorem integrable_compProd_iff ⦃f : β × γ → E⦄ (hf : AEStronglyMeasura
 theorem _root_.MeasureTheory.Integrable.ae_of_compProd ⦃f : β × γ → E⦄
     (hf : Integrable f ((κ ⊗ₖ η) a)) : ∀ᵐ x ∂κ a, Integrable (fun y => f (x, y)) (η (a, x)) :=
   ((integrable_compProd_iff hf.aestronglyMeasurable).mp hf).1
-
-@[deprecated (since := "2025-02-28")]
-alias _root_.MeasureTheory.Integrable.compProd_mk_left_ae :=
-  _root_.MeasureTheory.Integrable.ae_of_compProd
 
 theorem _root_.MeasureTheory.Integrable.integral_norm_compProd ⦃f : β × γ → E⦄
     (hf : Integrable f ((κ ⊗ₖ η) a)) : Integrable (fun x => ∫ y, ‖f (x, y)‖ ∂η (a, x)) (κ a) :=

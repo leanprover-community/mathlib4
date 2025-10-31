@@ -82,9 +82,10 @@ theorem derivedSeriesOfIdeal_add (k l : ℕ) : D (k + l) I = D k (D l I) := by
 @[gcongr, mono]
 theorem derivedSeriesOfIdeal_le {I J : LieIdeal R L} {k l : ℕ} (h₁ : I ≤ J) (h₂ : l ≤ k) :
     D k I ≤ D l J := by
-  revert l; induction' k with k ih <;> intro l h₂
-  · rw [le_zero_iff] at h₂; rw [h₂, derivedSeriesOfIdeal_zero]; exact h₁
-  · have h : l = k.succ ∨ l ≤ k := by rwa [le_iff_eq_or_lt, Nat.lt_succ_iff] at h₂
+  induction k generalizing l with
+  | zero => rw [le_zero_iff] at h₂; rw [h₂, derivedSeriesOfIdeal_zero]; exact h₁
+  | succ k ih =>
+    have h : l = k.succ ∨ l ≤ k := by rwa [le_iff_eq_or_lt, Nat.lt_succ_iff] at h₂
     rcases h with h | h
     · rw [h, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_succ]
       exact LieSubmodule.mono_lie (ih (le_refl k)) (ih (le_refl k))

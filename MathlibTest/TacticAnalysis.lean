@@ -1,4 +1,21 @@
 import Mathlib.Tactic.TacticAnalysis.Declarations
+import Mathlib.Tactic.AdaptationNote
+import Lean.PremiseSelection
+
+section terminalReplacement
+
+section omega
+
+set_option linter.tacticAnalysis.omegaToCutsat true
+
+/-- warning: `cutsat` can replace `omega` -/
+#guard_msgs in
+example : 1 + 1 = 2 := by
+  omega
+
+end omega
+
+end terminalReplacement
 
 section rwMerge
 
@@ -21,6 +38,19 @@ example : x = z := by
   rw [xy]
   rw [yz]
 
+-- Definitions using `where` clauses did not get picked up by the framework,
+-- since apparently their syntax bounds do not match the original.
+structure Fact (p : Prop) : Prop where
+  out : p
+/--
+warning: Try this: rw [xy, yz]
+-/
+#guard_msgs in
+example : Fact (x = z) where
+  out := by
+    rw [xy]
+    rw [yz]
+
 end rwMerge
 
 section mergeWithGrind
@@ -37,6 +67,25 @@ warning: 'have : 1 + 1 < 3 := by omega; grind' can be replaced with 'grind'
 example : 1 + 1 = 2 := by
   have : 1 + 1 < 3 := by omega
   grind
+
+-- `#adaptation_note` is ignored
+example : 1 + 1 = 2 := by
+  #adaptation_note /-- -/
+  grind
+
+set_option linter.unusedTactic false
+
+/-- warning: 'skip; grind' can be replaced with 'grind' -/
+#guard_msgs in
+example : 0 = 0 := by
+  intros
+  intros
+  intros
+  intros
+  skip
+  grind
+
+set_option linter.unusedTactic true
 
 end mergeWithGrind
 
@@ -58,4 +107,112 @@ example : 1 + 1 = 2 := by
   have : 1 + 1 < 4 := by omega
   rfl
 
+universe u v
+
+-- This next example used to fail with `unknown universe level 'v'`.
+
+/--
+warning: replace the proof with 'grind': let T : Type max u v := Sigma f;
+  have : 1 + 1 = 2 := rfl;
+  rfl
+-/
+#guard_msgs in
+example {α : Type u} (f : α → Type max u v) : 1 = 1 := by
+  let T : Type max u v := Sigma f
+  have : 1 + 1 = 2 := rfl -- Extra line to ensure the linter picks it up.
+  rfl
+
+-- Ensure the effects of `classical` are picked up. Otherwise we get an error like:
+-- failed to synthesize
+--   Decidable b
+theorem forall_imp_iff_exists_imp {α : Type} {p : α → Prop} {b : Prop} [ha : Nonempty α] :
+    (∀ x, p x) → b ↔ ∃ x, p x → b := by
+  classical
+  let ⟨a⟩ := ha
+  refine ⟨fun h ↦ Decidable.not_forall_not.1 fun h' ↦ ?_, fun ⟨x, hx⟩ h ↦ hx (h x)⟩
+  exact if hb : b then h' a fun _ ↦ hb else hb <| h fun x ↦ (Decidable.not_imp_iff_and_not.1 (h' x)).1
+
 end replaceWithGrind
+
+section introMerge
+
+set_option linter.tacticAnalysis.introMerge true
+
+/-- warning: Try this: intro a b -/
+#guard_msgs in
+example : ∀ a b : Unit, a = b := by
+  intro a
+  intro b
+  rfl
+
+/-- warning: Try this: intro _ b -/
+#guard_msgs in
+example : ∀ a b : Unit, a = b := by
+  intro
+  intro b
+  rfl
+
+/-- warning: Try this: intro a _ -/
+#guard_msgs in
+example : ∀ a b : Unit, a = b := by
+  intro a
+  intro _
+  rfl
+
+
+#guard_msgs in
+example : ∀ a b : Unit, a = b := by
+  intro a b
+  rfl
+
+end introMerge
+
+section tryAtEachStep
+
+section
+set_option linter.tacticAnalysis.tryAtEachStepGrind true
+
+/-- info: `rfl` can be replaced with `grind` -/
+#guard_msgs in
+example : 1 + 1 = 2 := by
+  rfl
+
+/--
+info: `skip` can be replaced with `grind`
+---
+info: `rfl` can be replaced with `grind`
+---
+warning: 'skip' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : 1 + 1 = 2 := by
+  skip
+  rfl
+
+end
+
+section
+
+def P (_ : Nat) := True
+theorem p : P 37 := trivial
+
+set_premise_selector fun _ _ => pure #[{ name := `p, score := 1.0 }]
+
+-- FIXME: remove this one `grind +premises` lands.
+macro_rules | `(tactic| grind +premises) => `(tactic| grind [p])
+
+example : P 37 := by
+  grind +premises
+
+set_option linter.tacticAnalysis.tryAtEachStepGrindPremises true
+
+/-- info: `trivial` can be replaced with `grind +premises✝` -/
+#guard_msgs in
+example : P 37 := by
+  trivial
+
+end
+
+end tryAtEachStep

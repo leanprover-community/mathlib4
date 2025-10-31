@@ -14,7 +14,7 @@ import Mathlib.Data.ZMod.Defs
 /-!
 # Freiman homomorphisms
 
-In this file, we define Freiman homomorphisms and isomorphism.
+In this file, we define Freiman homomorphisms and isomorphisms.
 
 An `n`-Freiman homomorphism from `A` to `B` is a function `f : α → β` such that `f '' A ⊆ B` and
 `f x₁ * ... * f xₙ = f y₁ * ... * f yₙ` for all `x₁, ..., xₙ, y₁, ..., yₙ ∈ A` such that
@@ -57,7 +57,7 @@ an `AddMonoid`/`Monoid` instead of the `AddMonoid`/`Monoid` itself.
 
 * `MonoidHomClass.isMulFreimanHom` could be relaxed to `MulHom.toFreimanHom` by proving
   `(s.map f).prod = (t.map f).prod` directly by induction instead of going through `f s.prod`.
-* Affine maps are Freiman homs.
+* Affine maps are Freiman homomorphisms.
 -/
 
 assert_not_exists Field Ideal TwoSidedIdeal
@@ -359,12 +359,6 @@ lemma IsMulFreimanHom.prodMap (h₁ : IsMulFreimanHom n A₁ B₁ f₁) (h₂ : 
       (by simpa) h.1, h₂.map_prod_eq_map_prod (by simpa [@forall_swap α₁] using hsA.2)
       (by simpa [@forall_swap α₁] using htA.2) (by simpa) (by simpa) h.2⟩
 
-@[deprecated (since := "2025-03-11")]
-alias IsAddFreimanHom.sum := IsAddFreimanHom.prodMap
-
-@[to_additive existing, deprecated (since := "2025-03-11")]
-alias IsMulFreimanHom.prod := IsMulFreimanHom.prodMap
-
 @[to_additive prodMap]
 lemma IsMulFreimanIso.prodMap (h₁ : IsMulFreimanIso n A₁ B₁ f₁) (h₂ : IsMulFreimanIso n A₂ B₂ f₂) :
     IsMulFreimanIso n (A₁ ×ˢ A₂) (B₁ ×ˢ B₂) (Prod.map f₁ f₂) where
@@ -377,12 +371,6 @@ lemma IsMulFreimanIso.prodMap (h₁ : IsMulFreimanIso n A₁ B₁ f₁) (h₂ : 
       h₁.map_prod_eq_map_prod (by simpa using hsA.1) (by simpa using htA.1) (by simpa) (by simpa),
       h₂.map_prod_eq_map_prod (by simpa [@forall_swap α₁] using hsA.2)
         (by simpa [@forall_swap α₁] using htA.2) (by simpa) (by simpa)]
-
-@[deprecated (since := "2025-03-11")]
-alias IsAddFreimanIso.sum := IsAddFreimanIso.prodMap
-
-@[to_additive existing, deprecated (since := "2025-03-11")]
-alias IsMulFreimanIso.prod := IsMulFreimanIso.prodMap
 
 end Prod
 

@@ -25,9 +25,6 @@ yields a not-necessarily-unital, not-necessarily-associative algebra.
 - `SkewMonoidAlgebra k G`: the skew monoid algebra of `G` over `k` is the type of finite formal
 `k`-linear combinations of terms of `G`, endowed with a skewed convolution product.
 
-## TODO
-- the algebra instance (see #10541)
-- lifting lemmas (see #10541)
 -/
 
 
@@ -141,8 +138,7 @@ section Support
 
 /-- For `f : SkewMonoidAlgebra k G`, `f.support` is the set of all `a ∈ G` such that
 `f.coeff a ≠ 0`. -/
-def support : SkewMonoidAlgebra k G → Finset G
-  | ⟨p⟩ => p.support
+def support (p : SkewMonoidAlgebra k G) : Finset G := p.toFinsupp.support
 
 @[simp]
 theorem support_ofFinsupp (p) : support (⟨p⟩ : SkewMonoidAlgebra k G) = p.support := by
@@ -158,6 +154,11 @@ theorem support_zero : (0 : SkewMonoidAlgebra k G).support = ∅ := rfl
 theorem support_eq_empty {p} : p.support = ∅ ↔ (p : SkewMonoidAlgebra k G) = 0 := by
   rcases p
   simp only [support, Finsupp.support_eq_empty, ofFinsupp_eq_zero]
+
+lemma support_add [DecidableEq G] {p q : SkewMonoidAlgebra k G} :
+    (p + q).support ⊆ p.support ∪ q.support := by
+  simp [support]
+  exact Finsupp.support_add
 
 end Support
 
@@ -998,7 +999,7 @@ def singleAddHom (a : G) : k →+ SkewMonoidAlgebra k G where
 @[ext high]
 theorem addHom_ext' {N : Type*} [AddZeroClass N] ⦃f g : SkewMonoidAlgebra k G →+ N⦄
     (H : ∀ x, f.comp (singleAddHom x) = g.comp (singleAddHom x)) : f = g :=
-  addHom_ext fun x => DFunLike.congr_fun (H x)
+  addHom_ext fun x ↦ DFunLike.congr_fun (H x)
 
 end AddHom
 
@@ -1030,7 +1031,7 @@ theorem ringHom_ext {f g : SkewMonoidAlgebra k G →+* k} (h₁ : ∀ b, f (sing
   have {a : G} {b₁ b₂ : k} : (single 1 b₁) * (single a b₂) = single a (b₁ * b₂) := by
     simp [single_mul_single, one_mul, one_smul]
   RingHom.coe_addMonoidHom_injective <|
-    addHom_ext fun a b => by rw [← mul_one b, ← this, AddMonoidHom.coe_coe f,
+    addHom_ext fun a b ↦ by rw [← mul_one b, ← this, AddMonoidHom.coe_coe f,
       AddMonoidHom.coe_coe g, f.map_mul, g.map_mul, h₁, h_of]
 
 end singleOneRingHom
@@ -1052,9 +1053,9 @@ theorem mapDomain_mul [MulSemiringAction α β] [MulSemiringAction α₂ β]
     (hf : ∀ (a : α) (x : β), a • x = (f a) • x) :
     mapDomain f (x * y) = mapDomain f x * mapDomain f y := by
   rw [mul_def, map_sum]
-  have : (sum x fun a b => sum y fun a₂ b₂ => mapDomain (↑f) (single (a * a₂) (b * a • b₂))) =
-      sum (mapDomain (↑f) x) fun a₁ b₁ =>
-        sum (mapDomain (↑f) y) fun a₂ b₂ => single (a₁ * a₂) (b₁ * a₁ • b₂) := by
+  have : (sum x fun a b ↦ sum y fun a₂ b₂ ↦ mapDomain (↑f) (single (a * a₂) (b * a • b₂))) =
+      sum (mapDomain (↑f) x) fun a₁ b₁ ↦
+        sum (mapDomain (↑f) y) fun a₂ b₂ ↦ single (a₁ * a₂) (b₁ * a₁ • b₂) := by
     simp_rw [mapDomain_single, map_mul]
     rw [sum_mapDomain_index (by simp) (by simp [add_mul, single_add, sum_add])]
     congr
@@ -1096,7 +1097,7 @@ theorem smul_of (g : G) (r : k) : r • of k G g = single g r := by
   rw [of_apply, smul_single, smul_eq_mul, mul_one]
 
 theorem of_injective [Nontrivial k] :
-    Function.Injective (of k G) := fun a b h => by
+    Function.Injective (of k G) := fun a b h ↦ by
   simp_rw [of_apply, ← toFinsupp_inj] at h
   simpa using (Finsupp.single_eq_single_iff _ _ _ _).mp h
 
@@ -1122,17 +1123,15 @@ theorem liftNC_smul [MulOneClass G] {R : Type*} [Semiring R] (f : k →+* R) (g 
     liftNC (f : k →+ R) g (c • φ) = f c * liftNC (f : k →+ R) g φ := by
   suffices this :
     (liftNC ↑f g).comp (smulAddHom k (SkewMonoidAlgebra k G) c) =
-      (AddMonoidHom.mulLeft (f c)).comp (liftNC ↑f g) by exact DFunLike.congr_fun this φ
+      (AddMonoidHom.mulLeft (f c)).comp (liftNC ↑f g) by simpa using congr($this φ)
   refine addHom_ext' fun a => AddMonoidHom.ext fun b => ?_
-  simp only [AddMonoidHom.coe_comp, Function.comp_apply, singleAddHom_apply, smulAddHom_apply,
-    smul_single, smul_eq_mul, AddMonoidHom.coe_mulLeft]
-  simp [liftNC_single, liftNC_single, AddMonoidHom.coe_coe, map_mul, mul_assoc]
+  simp [smul_single, mul_assoc]
 
 variable (k G) [Monoid G] [MulSemiringAction G k]
 
 instance isScalarTower_self [IsScalarTower k k k] :
     IsScalarTower k (SkewMonoidAlgebra k G) (SkewMonoidAlgebra k G) :=
-  ⟨fun t a b => by
+  ⟨fun t a b ↦ by
     classical
     simp only [smul_eq_mul]
     refine Eq.trans (sum_smul_index' (g := a) (b := t) ?_) ?_ <;>
@@ -1167,7 +1166,7 @@ theorem distribMulActionHom_ext' [DistribMulAction R M] [DistribMulAction R N] {
     {f g : SkewMonoidAlgebra M α →+[R] N}
     (h : ∀ a : α, f.comp (DistribMulActionHom.single a) = g.comp (DistribMulActionHom.single a)) :
     f = g :=
-  distribMulActionHom_ext fun a => DistribMulActionHom.congr_fun (h a)
+  distribMulActionHom_ext fun a ↦ DistribMulActionHom.congr_fun (h a)
 
 /-- Interpret `single a` as a linear map. -/
 def lsingle {α : Type*} (a : α) [Module R M] : M →ₗ[R] (SkewMonoidAlgebra M α) where
@@ -1183,7 +1182,7 @@ theorem lhom_ext {α : Type*} [Module R M] [Module R N] ⦃φ ψ : SkewMonoidAlg
 @[ext high]
 theorem lhom_ext' {α : Type*} [Module R M] [Module R N] ⦃φ ψ : SkewMonoidAlgebra M α →ₗ[R] N⦄
     (h : ∀ a, φ.comp (lsingle a) = ψ.comp (lsingle a)) : φ = ψ :=
-  lhom_ext fun a => LinearMap.congr_fun (h a)
+  lhom_ext fun a ↦ LinearMap.congr_fun (h a)
 
 variable {A : Type*} [NonUnitalNonAssocSemiring A] [Monoid G] [Semiring k] [MulSemiringAction G k]
 open NonUnitalAlgHom
@@ -1196,9 +1195,7 @@ theorem nonUnitalAlgHom_ext [DistribMulAction k A] {φ₁ φ₂ : SkewMonoidAlge
   apply distribMulActionHom_ext'
   intro a
   ext
-  simp [DistribMulActionHom.comp_apply, NonUnitalAlgHom.coe_to_distribMulActionHom,
-    DistribMulActionHom.single_toFun, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
-    singleAddHom_apply, h]
+  simp [singleAddHom_apply, h]
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]
@@ -1207,5 +1204,57 @@ theorem nonUnitalAlgHom_ext' [DistribMulAction k A] {φ₁ φ₂ : SkewMonoidAlg
   nonUnitalAlgHom_ext <| DFunLike.congr_fun h
 
 end DistribMulActionHom
+
+section CommSemiring
+
+variable [Monoid G] [CommSemiring k]
+variable {A : Type*} [Semiring A] [Algebra k A]
+
+/-- The instance `Algebra k (SkewMonoidAlgebra A G)` whenever we have `Algebra k A`.
+  In particular this provides the instance `Algebra k (SkewMonoidAlgebra k G)`. -/
+instance [MulSemiringAction G A]
+    [SMulCommClass G k A] : Algebra k (SkewMonoidAlgebra A G) where
+  algebraMap := singleOneRingHom.comp (algebraMap k A)
+  smul_def' r a := by
+    ext
+    simp only [RingHom.coe_comp, comp_apply, coeff_smul, Algebra.smul_def, singleOneRingHom,
+      singleAddHom, ZeroHom.toFun_eq_coe, ZeroHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk,
+      OneHom.coe_mk, coeff_single_one_mul]
+  commutes' r f := by
+    ext
+    simp only [singleOneRingHom, singleAddHom, ZeroHom.toFun_eq_coe, ZeroHom.coe_mk, RingHom.coe_mk,
+      MonoidHom.coe_mk, OneHom.coe_mk, coeff_single_one_mul, Algebra.commutes, coeff_mul_single_one,
+      smul_algebraMap, RingHom.coe_comp, comp_apply]
+
+@[simp]
+theorem coe_algebraMap [MulSemiringAction G A] [SMulCommClass G k A] :
+    ⇑(algebraMap k (SkewMonoidAlgebra A G)) = single 1 ∘ algebraMap k A :=
+  rfl
+
+theorem single_eq_algebraMap_mul_of [MulSemiringAction G k] [SMulCommClass G k k] (a : G) (b : k) :
+    single a b = algebraMap k (SkewMonoidAlgebra k G) b * of k G a := by
+  simp [coe_algebraMap, comp_apply, of_apply, single_mul_single, one_mul, smul_one, mul_one]
+
+theorem single_algebraMap_eq_algebraMap_mul_of (a : G) (b : k) [MulSemiringAction G A]
+    [SMulCommClass G k A] :
+    single a (algebraMap k A b) = algebraMap k (SkewMonoidAlgebra A G) b * of A G a := by
+  simp [coe_algebraMap, comp_apply, of_apply, single_mul_single, one_mul, smul_one, mul_one]
+
+/- Hypotheses needed for `k`-algebra homomorphism from `SkewMonoidAlgebra k G`-/
+variable [MulSemiringAction G k] [SMulCommClass G k k]
+
+/-- A `k`-algebra homomorphism from `SkewMonoidAlgebra k G` is uniquely defined by its
+values on the functions `single a 1`. -/
+theorem algHom_ext ⦃φ₁ φ₂ : AlgHom k (SkewMonoidAlgebra k G) A⦄
+    (h : ∀ x, φ₁ (single x 1) = φ₂ (single x 1)) : φ₁ = φ₂ :=
+    AlgHom.toLinearMap_injective (lhom_ext' fun a ↦ (LinearMap.ext_ring (h a)))
+
+@[ext high]
+theorem algHom_ext' ⦃φ₁ φ₂ : AlgHom k (SkewMonoidAlgebra k G) A⦄
+    (h : (φ₁ : SkewMonoidAlgebra k G →* A).comp (of k G) =
+      (φ₂ : SkewMonoidAlgebra k G →* A).comp (of k G)) :
+    φ₁ = φ₂ := algHom_ext <| DFunLike.congr_fun h
+
+end CommSemiring
 
 end SkewMonoidAlgebra

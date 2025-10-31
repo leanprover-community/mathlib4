@@ -295,11 +295,6 @@ lemma subtype_injective :
 protected theorem coe_subtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
 
-@[deprecated (since := "2025-02-18")]
-protected alias coeSubtype := SubMulAction.SMulMemClass.coe_subtype
-@[deprecated (since := "2025-02-18")]
-protected alias _root_.SubAddAction.SMulMemClass.coeSubtype := SubAddAction.SMulMemClass.coe_subtype
-
 end SMulMemClass
 
 section MulActionMonoid
@@ -353,7 +348,6 @@ variable (p : SubMulAction R M)
 /-- If the scalar product forms a `MulAction`, then the subset inherits this action -/
 @[to_additive]
 instance mulAction' : MulAction S p where
-  smul := (· • ·)
   one_smul x := Subtype.ext <| one_smul _ (x : M)
   mul_smul c₁ c₂ x := Subtype.ext <| mul_smul c₁ c₂ (x : M)
 

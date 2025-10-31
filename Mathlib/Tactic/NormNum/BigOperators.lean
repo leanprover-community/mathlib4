@@ -133,7 +133,7 @@ partial def List.proveNilOrCons {u : Level} {α : Q(Type u)} (s : Q(List $α)) :
     haveI' : $s =Q .finRange $n := ⟨⟩
     return match ← Nat.unifyZeroOrSucc n with -- We want definitional equality on `n`.
     | .zero _pf => .nil q(List.finRange_zero)
-    | .succ n' _pf => .cons _ _ q(List.finRange_succ_eq_map $n')
+    | .succ n' _pf => .cons _ _ q(List.finRange_succ)
   | (.const ``List.map [v, _], _, #[(β : Q(Type v)), _, (f : Q($β → $α)), (xxs : Q(List $β))]) => do
     haveI' : $s =Q ($xxs).map $f := ⟨⟩
     return match ← List.proveNilOrCons xxs with
@@ -247,7 +247,7 @@ lemma Finset.range_zero' {n : ℕ} (pn : NormNum.IsNat n 0) :
 
 lemma Finset.range_succ' {n nn n' : ℕ} (pn : NormNum.IsNat n nn) (pn' : nn = Nat.succ n') :
     Finset.range n = Finset.cons n' (Finset.range n') Finset.notMem_range_self := by
-  rw [pn.out, Nat.cast_id, pn', Finset.range_succ, Finset.insert_eq_cons]
+  rw [pn.out, Nat.cast_id, pn', Finset.range_add_one, Finset.insert_eq_cons]
 
 lemma Finset.univ_eq_elems {α : Type*} [Fintype α] (elems : Finset α)
     (complete : ∀ x : α, x ∈ elems) :

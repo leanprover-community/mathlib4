@@ -39,8 +39,6 @@ lemma measureReal_le_one {μ : Measure α} [IsZeroOrProbabilityMeasure μ] {s : 
     μ.real s ≤ 1 :=
   ENNReal.toReal_le_of_le_ofReal zero_le_one (ENNReal.ofReal_one.symm ▸ prob_le_one)
 
-@[deprecated (since := "2025-04-19")] alias toReal_prob_le_one := measureReal_le_one
-
 @[simp]
 theorem one_le_prob_iff {μ : Measure α} [IsZeroOrProbabilityMeasure μ] : 1 ≤ μ s ↔ μ s = 1 :=
   ⟨fun h => le_antisymm prob_le_one h, fun h => h ▸ le_refl _⟩
@@ -88,9 +86,19 @@ instance isProbabilityMeasureSMul [IsFiniteMeasure μ] [NeZero μ] :
 
 variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
 
-theorem isProbabilityMeasure_map {f : α → β} (hf : AEMeasurable f μ) :
+theorem Measure.isProbabilityMeasure_map {f : α → β} (hf : AEMeasurable f μ) :
     IsProbabilityMeasure (map f μ) :=
   ⟨by simp [map_apply_of_aemeasurable, hf]⟩
+
+theorem Measure.isProbabilityMeasure_of_map {μ : Measure α} {f : α → β}
+    (hf : AEMeasurable f μ) [IsProbabilityMeasure (μ.map f)] : IsProbabilityMeasure μ where
+  measure_univ := by
+    rw [← Set.preimage_univ (f := f), ← map_apply_of_aemeasurable hf .univ]
+    exact IsProbabilityMeasure.measure_univ
+
+theorem Measure.isProbabilityMeasure_map_iff {μ : Measure α} {f : α → β}
+    (hf : AEMeasurable f μ) : IsProbabilityMeasure (μ.map f) ↔ IsProbabilityMeasure μ :=
+  ⟨fun _ ↦ isProbabilityMeasure_of_map hf, fun _ ↦ isProbabilityMeasure_map hf⟩
 
 instance IsProbabilityMeasure_comap_equiv (f : β ≃ᵐ α) : IsProbabilityMeasure (μ.comap f) := by
   rw [← MeasurableEquiv.map_symm]; exact isProbabilityMeasure_map f.symm.measurable.aemeasurable

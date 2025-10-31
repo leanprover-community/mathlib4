@@ -188,7 +188,7 @@ def scalar (n : Type u) [DecidableEq n] [Fintype n] : α →+* Matrix n n α :=
 
 section Scalar
 
-variable [DecidableEq n] [Fintype n]
+variable [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m]
 
 @[simp]
 theorem scalar_apply (a : α) : scalar n a = diagonal fun _ => a :=
@@ -197,12 +197,22 @@ theorem scalar_apply (a : α) : scalar n a = diagonal fun _ => a :=
 theorem scalar_inj [Nonempty n] {r s : α} : scalar n r = scalar n s ↔ r = s :=
   (diagonal_injective.comp Function.const_injective).eq_iff
 
+/-- A version of `Matrix.scalar_commute_iff` for rectangular matrices. -/
+theorem scalar_comm_iff {r : α} {M : Matrix m n α} :
+    scalar m r * M = M * scalar n r ↔ r • M = MulOpposite.op r • M := by
+  simp_rw [scalar_apply, ← smul_eq_diagonal_mul, ← op_smul_eq_mul_diagonal]
+
 theorem scalar_commute_iff {r : α} {M : Matrix n n α} :
-    Commute (scalar n r) M ↔ r • M = MulOpposite.op r • M := by
-  simp_rw [Commute, SemiconjBy, scalar_apply, ← smul_eq_diagonal_mul, ← op_smul_eq_mul_diagonal]
+    Commute (scalar n r) M ↔ r • M = MulOpposite.op r • M :=
+  scalar_comm_iff
+
+/-- A version of `Matrix.scalar_commute` for rectangular matrices. -/
+theorem scalar_comm (r : α) (hr : ∀ r', Commute r r') (M : Matrix m n α) :
+    scalar m r * M = M * scalar n r :=
+  scalar_comm_iff.2 <| ext fun _ _ => hr _
 
 theorem scalar_commute (r : α) (hr : ∀ r', Commute r r') (M : Matrix n n α) :
-    Commute (scalar n r) M := scalar_commute_iff.2 <| ext fun _ _ => hr _
+    Commute (scalar n r) M := scalar_comm r hr M
 
 end Scalar
 
@@ -219,9 +229,7 @@ instance instAlgebra : Algebra R (Matrix n n α) where
   smul_def' r x := by ext; simp [Matrix.scalar, Algebra.smul_def r]
 
 theorem algebraMap_matrix_apply {r : R} {i j : n} :
-    algebraMap R (Matrix n n α) r i j = if i = j then algebraMap R α r else 0 := by
-  dsimp [algebraMap, Algebra.algebraMap, Matrix.scalar]
-  split_ifs with h <;> simp [h]
+    algebraMap R (Matrix n n α) r i j = if i = j then algebraMap R α r else 0 := rfl
 
 theorem algebraMap_eq_diagonal (r : R) :
     algebraMap R (Matrix n n α) r = diagonal (algebraMap R (n → α) r) := rfl
@@ -869,5 +877,32 @@ def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableE
 variable {R m α}
 
 end Transpose
+
+section NonUnitalNonAssocSemiring
+variable {ι : Type*} [NonUnitalNonAssocSemiring α] [Fintype n]
+
+theorem sum_mulVec (s : Finset ι) (x : ι → Matrix m n α) (y : n → α) :
+    (∑ i ∈ s, x i) *ᵥ y = ∑ i ∈ s, x i *ᵥ y := by
+  ext
+  simp only [mulVec, dotProduct, sum_apply, Finset.sum_mul, Finset.sum_apply]
+  rw [Finset.sum_comm]
+
+theorem mulVec_sum (x : Matrix m n α) (s : Finset ι) (y : ι → (n → α)) :
+    x *ᵥ ∑ i ∈ s, y i = ∑ i ∈ s, x *ᵥ y i := by
+  ext
+  simp only [mulVec, dotProduct_sum, Finset.sum_apply]
+
+theorem sum_vecMul (s : Finset ι) (x : ι → (n → α)) (y : Matrix n m α) :
+    (∑ i ∈ s, x i) ᵥ* y = ∑ i ∈ s, x i ᵥ* y := by
+  ext
+  simp only [vecMul, sum_dotProduct, Finset.sum_apply]
+
+theorem vecMul_sum (x : n → α) (s : Finset ι) (y : ι → Matrix n m α) :
+    x ᵥ* (∑ i ∈ s, y i) = ∑ i ∈ s, x ᵥ* y i := by
+  ext
+  simp only [vecMul, dotProduct, sum_apply, Finset.mul_sum, Finset.sum_apply]
+  rw [Finset.sum_comm]
+
+end NonUnitalNonAssocSemiring
 
 end Matrix

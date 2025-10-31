@@ -125,26 +125,6 @@ theorem Icc_eq_pair : Finset.Icc a (a + 1) = {a, a + 1} := by
   simp
   omega
 
-@[deprecated Fintype.card_Icc (since := "2025-03-28")]
-theorem card_fintype_Icc : Fintype.card (Set.Icc a b) = (b + 1 - a).toNat := by
-  simp
-
-@[deprecated Fintype.card_Ico (since := "2025-03-28")]
-theorem card_fintype_Ico : Fintype.card (Set.Ico a b) = (b - a).toNat := by
-  simp
-
-@[deprecated Fintype.card_Ioc (since := "2025-03-28")]
-theorem card_fintype_Ioc : Fintype.card (Set.Ioc a b) = (b - a).toNat := by
-  simp
-
-@[deprecated Fintype.card_Ioo (since := "2025-03-28")]
-theorem card_fintype_Ioo : Fintype.card (Set.Ioo a b) = (b - a - 1).toNat := by
-  simp
-
-@[deprecated Fintype.card_uIcc (since := "2025-03-28")]
-theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a).natAbs + 1 := by
-  simp
-
 theorem card_fintype_Icc_of_le (h : a ≤ b + 1) : (Fintype.card (Set.Icc a b) : ℤ) = b + 1 - a := by
   simp [h]
 
@@ -166,7 +146,7 @@ theorem image_Ico_emod (n a : ℤ) (h : 0 ≤ a) : (Ico n (n + a)).image (· % a
   · rintro ⟨i, _, rfl⟩
     exact ⟨emod_nonneg i ha.ne', emod_lt_of_pos i ha⟩
   intro hia
-  have hn := Int.emod_add_ediv n a
+  have hn := Int.emod_add_mul_ediv n a
   obtain hi | hi := lt_or_ge i (n % a)
   · refine ⟨i + a * (n / a + 1), ⟨?_, ?_⟩, ?_⟩
     · rw [add_comm (n / a), mul_add, mul_one, ← add_assoc]

@@ -31,6 +31,7 @@ section Limits
 
 variable {J : Type v} [Category.{w} J]
 
+attribute [local fun_prop] continuous_subtype_val
 /-- A choice of limit cone for a functor `F : J ⥤ TopCat`.
 Generally you should just use `limit.cone F`, unless you need the actual definition
 (which is in terms of `Types.limitCone`).
@@ -265,9 +266,6 @@ lemma hasColimit_iff_small_colimitType :
   constructor <;> intro
   · infer_instance
   · exact ⟨⟨_, isColimitCoconeOfForget _ (colimit.isColimit _)⟩⟩
-
-@[deprecated (since := "2025-04-01")] alias hasColimit_iff_small_quot :=
-  hasColimit_iff_small_colimitType
 
 instance topCat_hasColimitsOfShape (J : Type v) [Category J] [Small.{u} J] :
     HasColimitsOfShape J TopCat.{u} where

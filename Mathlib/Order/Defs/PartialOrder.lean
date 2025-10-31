@@ -3,6 +3,7 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
+import Batteries.Tactic.Alias
 import Batteries.Tactic.Trans
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
@@ -42,10 +43,12 @@ class Preorder (α : Type*) extends LE α, LT α where
   lt := fun a b => a ≤ b ∧ ¬b ≤ a
   lt_iff_le_not_ge : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by intros; rfl
 
-instance [Preorder α] : Lean.Grind.Preorder α where
+instance [Preorder α] : Std.LawfulOrderLT α where
+  lt_iff := Preorder.lt_iff_le_not_ge
+
+instance [Preorder α] : Std.IsPreorder α where
   le_refl := Preorder.le_refl
-  le_trans := Preorder.le_trans _ _ _
-  lt_iff_le_not_le := Preorder.lt_iff_le_not_ge _ _
+  le_trans := Preorder.le_trans
 
 @[deprecated (since := "2025-05-11")] alias Preorder.lt_iff_le_not_le := Preorder.lt_iff_le_not_ge
 
@@ -125,12 +128,8 @@ instance : @Trans α α α GT.gt GE.ge GT.gt := ⟨lt_of_lt_of_le'⟩
 instance : @Trans α α α GE.ge GT.gt GT.gt := ⟨lt_of_le_of_lt'⟩
 
 /-- `<` is decidable if `≤` is. -/
-def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α
-  | a, b =>
-    if hab : a ≤ b then
-      if hba : b ≤ a then isFalse fun hab' => not_le_of_gt hab' hba
-      else isTrue <| lt_of_le_not_ge hab hba
-    else isFalse fun hab' => hab (le_of_lt hab')
+def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α :=
+  fun _ _ => decidable_of_iff _ lt_iff_le_not_ge.symm
 
 /-- `WCovBy a b` means that `a = b` or `b` covers `a`.
 This means that `a ≤ b` and there is no element in between. This is denoted `a ⩿ b`.
@@ -161,8 +160,8 @@ section PartialOrder
 class PartialOrder (α : Type*) extends Preorder α where
   le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
 
-instance [PartialOrder α] : Lean.Grind.PartialOrder α where
-  le_antisymm := PartialOrder.le_antisymm _ _
+instance [PartialOrder α] : Std.IsPartialOrder α where
+  le_antisymm := PartialOrder.le_antisymm
 
 variable [PartialOrder α] {a b : α}
 

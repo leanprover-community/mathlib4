@@ -28,7 +28,7 @@ variable (C : Type u) [Category.{v} C]
 -- We could enable the following line:
 -- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opposite
 -- but may need
--- https://github.com/JLimperg/aesop/issues/59
+-- https://github.com/leanprover-community/aesop/issues/59
 
 namespace AlgebraicGeometry
 
@@ -60,7 +60,7 @@ theorem mk_coe (carrier) (presheaf) (h) :
 instance (X : SheafedSpace C) : TopologicalSpace X :=
   X.carrier.str
 
-/-- The trivial `unit` valued sheaf on any topological space. -/
+/-- The trivial `unit`-valued sheaf on any topological space. -/
 def unit (X : TopCat) : SheafedSpace (Discrete Unit) :=
   { @PresheafedSpace.const (Discrete Unit) _ X ⟨⟨⟩⟩ with IsSheaf := Presheaf.isSheaf_unit _ }
 
@@ -242,6 +242,22 @@ lemma mono_of_base_injective_of_stalk_epi {X Y : SheafedSpace C} (f : X ⟶ Y)
   refine SheafedSpace.hom_stalk_ext ⟨g, gc⟩ ⟨g, hc⟩ rfl fun x ↦ ?_
   rw [← cancel_epi (f.stalkMap (g x)), stalkCongr_hom, stalkSpecializes_refl, Category.id_comp,
     ← PresheafedSpace.stalkMap.comp ⟨g, gc⟩ f, ← PresheafedSpace.stalkMap.comp ⟨g, hc⟩ f]
+  congr 1
+
+attribute [local ext] DFunLike.ext in
+include instCC in
+lemma epi_of_base_surjective_of_stalk_mono {X Y : SheafedSpace C} (f : X ⟶ Y)
+    (h₁ : Function.Surjective f.base)
+    (h₂ : ∀ x, Mono (f.stalkMap x)) : Epi f := by
+  constructor
+  intro Z ⟨g, gc⟩ ⟨h, hc⟩ e
+  obtain rfl : g = h := ConcreteCategory.hom_ext _ _ fun y ↦ by
+    rw [← (h₁ y).choose_spec]
+    simpa using congr(($e).base.hom (h₁ y).choose)
+  refine SheafedSpace.hom_stalk_ext ⟨g, gc⟩ ⟨g, hc⟩ rfl fun y ↦ ?_
+  rw [← (h₁ y).choose_spec, ← cancel_mono (f.stalkMap (h₁ y).choose), stalkCongr_hom,
+    stalkSpecializes_refl, Category.id_comp, ← PresheafedSpace.stalkMap.comp f ⟨g, gc⟩,
+    ← PresheafedSpace.stalkMap.comp f ⟨g, hc⟩]
   congr 1
 
 end ConcreteCategory

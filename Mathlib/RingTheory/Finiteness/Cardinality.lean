@@ -3,6 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Module.Congruence.Defs
 import Mathlib.LinearAlgebra.Basis.Cardinality
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Isomorphisms
@@ -28,6 +29,22 @@ theorem Submodule.fg_iff_exists_fin_linearMap {N : Submodule R M} :
     N.FG ↔ ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), LinearMap.range f = N := by
   simp_rw [fg_iff_exists_fin_generating_family, ← ((Pi.basisFun R _).constr ℕ).exists_congr_right]
   simp [Basis.constr_range]
+
+theorem AddSubmonoid.fg_iff_exists_fin_addMonoidHom {M : Type*} [AddCommMonoid M]
+    {S : AddSubmonoid M} : S.FG ↔ ∃ (n : ℕ) (f : (Fin n → ℕ) →+ M), AddMonoidHom.mrange f = S := by
+  rw [← S.toNatSubmodule_toAddSubmonoid, ← Submodule.fg_iff_addSubmonoid_fg,
+    Submodule.fg_iff_exists_fin_linearMap]
+  exact exists_congr fun n => ⟨fun ⟨f, hf⟩ => ⟨f, hf ▸ LinearMap.range_toAddSubmonoid _⟩,
+    fun ⟨f, hf⟩ => ⟨f.toNatLinearMap, Submodule.toAddSubmonoid_inj.mp <|
+      hf ▸ LinearMap.range_toAddSubmonoid _⟩⟩
+
+theorem AddSubgroup.fg_iff_exists_fin_addMonoidHom {M : Type*} [AddCommGroup M]
+    {H : AddSubgroup M} : H.FG ↔ ∃ (n : ℕ) (f : (Fin n → ℤ) →+ M), AddMonoidHom.range f = H := by
+  rw [← H.toIntSubmodule_toAddSubgroup, ← Submodule.fg_iff_addSubgroup_fg,
+    Submodule.fg_iff_exists_fin_linearMap]
+  refine exists_congr fun n => ⟨fun ⟨f, hf⟩ => ⟨f, hf ▸ LinearMap.range_toAddSubgroup _⟩,
+    fun ⟨f, hf⟩ => ⟨f.toIntLinearMap, Submodule.toAddSubmonoid_inj.mp ?_⟩⟩
+  simp [hf]
 
 namespace Module
 
@@ -87,7 +104,11 @@ end ModuleAndAlgebra
 namespace Module.Finite
 
 universe u
-variable (R : Type u) (M : Type*) [Ring R] [AddCommGroup M] [Module R M] [Module.Finite R M]
+variable (R : Type u) (M : Type*)
+
+section Ring
+
+variable [Ring R] [AddCommGroup M] [Module R M] [Module.Finite R M]
 
 /-- The kernel of a random surjective linear map from a finite free module
 to a given finite module. -/
@@ -99,5 +120,25 @@ protected abbrev repr : Type u := _ ⧸ kerRepr R M
 /-- The representative is isomorphic to the original module. -/
 noncomputable def reprEquiv : Finite.repr R M ≃ₗ[R] M :=
   LinearMap.quotKerEquivOfSurjective _ (Finite.exists_fin' R M).choose_spec.choose_spec
+
+end Ring
+
+section Semiring
+
+variable [Semiring R] [AddCommMonoid M] [Module R M] [Module.Finite R M]
+
+/-- The kernel (as a congruence relation) of a random surjective linear map
+from a finite free module to a given finite module. -/
+noncomputable def kerReprₛ :=
+  ModuleCon.ker (Finite.exists_fin' R M).choose_spec.choose.toDistribMulActionHom
+
+/-- A representative of a finite module in the same universe as the semiring. -/
+protected abbrev reprₛ : Type u := (kerReprₛ R M).Quotient
+
+/-- The representative is isomorphic to the original module. -/
+noncomputable def reprEquivₛ : Finite.reprₛ R M ≃ₗ[R] M :=
+  ModuleCon.quotientKerEquivOfSurjective _ (Finite.exists_fin' R M).choose_spec.choose_spec
+
+end Semiring
 
 end Module.Finite

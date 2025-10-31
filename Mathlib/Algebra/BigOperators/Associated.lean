@@ -94,7 +94,7 @@ theorem divisor_closure_eq_closure [CancelCommMonoidWithZero M₀]
     simp only [Set.mem_setOf_eq] at hind
     obtain ⟨ha₁ | ha₂, hs⟩ := hm
     · rcases ha₁.exists_right_inv with ⟨k, hk⟩
-      refine hind x (y*k) ?_ hs ?_
+      refine hind x (y * k) ?_ hs ?_
       · simp only [← mul_assoc, ← hprod, ← Multiset.prod_cons, mul_comm]
         refine multiset_prod_mem _ _ (Multiset.forall_mem_cons.2 ⟨subset_closure ?_,
           Multiset.forall_mem_cons.2 ⟨subset_closure ?_, fun t ht => subset_closure (hs t ht)⟩⟩)
@@ -171,7 +171,6 @@ theorem prod_eq_one_iff {p : Multiset (Associates M)} :
 
 theorem prod_le_prod {p q : Multiset (Associates M)} (h : p ≤ q) : p.prod ≤ q.prod := by
   haveI := Classical.decEq (Associates M)
-  haveI := Classical.decEq M
   suffices p.prod ≤ (p + (q - p)).prod by rwa [add_tsub_cancel_of_le h] at this
   suffices p.prod * 1 ≤ p.prod * (q - p).prod by simpa
   exact mul_mono (le_refl p.prod) one_le
@@ -223,12 +222,8 @@ theorem Prime.dvd_finsuppProd_iff {f : M₀ →₀ M} {g : M₀ → M → ℕ} {
     p ∣ f.prod g ↔ ∃ a ∈ f.support, p ∣ g a (f a) :=
   Prime.dvd_finset_prod_iff pp _
 
-@[deprecated (since := "2025-04-06")] alias Prime.dvd_finsupp_prod_iff := Prime.dvd_finsuppProd_iff
-
 theorem Prime.not_dvd_finsuppProd {f : M₀ →₀ M} {g : M₀ → M → ℕ} {p : ℕ} (pp : Prime p)
     (hS : ∀ a ∈ f.support, ¬p ∣ g a (f a)) : ¬p ∣ f.prod g :=
   Prime.not_dvd_finset_prod pp hS
-
-@[deprecated (since := "2025-04-06")] alias Prime.not_dvd_finsupp_prod := Prime.not_dvd_finsuppProd
 
 end CommMonoidWithZero

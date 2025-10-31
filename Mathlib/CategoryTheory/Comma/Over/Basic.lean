@@ -25,7 +25,7 @@ namespace CategoryTheory
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 variable {T : Type u₁} [Category.{v₁} T]
 variable {D : Type u₂} [Category.{v₂} D]
 
@@ -215,10 +215,7 @@ def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ := eqToIso (mapId_eq Y)
 
 /-- Mapping by `f` and then forgetting is the same as forgetting. -/
 theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
-    (map f) ⋙ (forget Y) = (forget X) := by
-  fapply Functor.ext
-  · simp [Over, Over.map]
-  · simp
+    (map f) ⋙ (forget Y) = (forget X) := rfl
 
 /-- The natural isomorphism arising from `mapForget_eq`. -/
 def mapForget {X Y : T} (f : X ⟶ Y) :
@@ -283,6 +280,9 @@ The converse does not hold without additional assumptions on the underlying cate
 theorem epi_of_epi_left {f g : Over X} (k : f ⟶ g) [hk : Epi k.left] : Epi k :=
   (forget X).epi_of_epi_map hk
 
+instance epi_homMk {U V : Over X} {f : U.left ⟶ V.left} [Epi f] (w) : Epi (homMk f w) :=
+  (forget X).epi_of_epi_map ‹_›
+
 /--
 If `k.left` is a monomorphism, then `k` is a monomorphism. In other words, `Over.forget X` reflects
 monomorphisms.
@@ -292,6 +292,9 @@ This lemma is not an instance, to avoid loops in type class inference.
 -/
 theorem mono_of_mono_left {f g : Over X} (k : f ⟶ g) [hk : Mono k.left] : Mono k :=
   (forget X).mono_of_mono_map hk
+
+instance mono_homMk {U V : Over X} {f : U.left ⟶ V.left} [Mono f] (w) : Mono (homMk f w) :=
+  (forget X).mono_of_mono_map ‹_›
 
 /--
 If `k` is a monomorphism, then `k.left` is a monomorphism. In other words, `Over.forget X` preserves
@@ -429,6 +432,36 @@ def equivalenceOfIsTerminal (hX : IsTerminal X) : Over X ≌ T where
   unitIso := NatIso.ofComponents fun Y ↦ isoMk (.refl _) (hX.hom_ext _ _)
   counitIso := NatIso.ofComponents fun _ ↦ .refl _
 
+/-- The induced functor to `Over X` from a functor `J ⥤ C` and natural maps `sᵢ : X ⟶ Dᵢ`.
+For the converse direction see `CategoryTheory.WithTerminal.commaFromOver`. -/
+@[simps]
+protected def lift {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X) :
+    J ⥤ Over X where
+  obj j := mk (s.app j)
+  map f := homMk (D.map f)
+
+/-- The induced cone on `Over X` on the lifted functor. -/
+@[simps]
+def liftCone {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X)
+    (c : Cone D) (p : c.pt ⟶ X) (hp : ∀ j, c.π.app j ≫ s.app j = p) :
+    Cone (Over.lift D s) where
+  pt := mk p
+  π.app j := homMk (c.π.app j)
+
+/-- The lifted cone on `Over X` is a limit cone if the original cone was limiting
+and `J` is nonempty. -/
+def isLimitLiftCone {J : Type*} [Category J] [Nonempty J]
+    (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X)
+    (c : Cone D) (p : c.pt ⟶ X) (hp : ∀ j, c.π.app j ≫ s.app j = p)
+    (hc : IsLimit c) :
+    IsLimit (Over.liftCone D s c p hp) where
+  lift s := homMk (hc.lift ((forget _).mapCone s))
+    (by simpa [← hp (Classical.arbitrary J)] using Over.w (s.π.app _))
+  fac _ _ := by ext; simp [hc.fac]
+  uniq _ _ hm := by
+    ext
+    exact hc.hom_ext fun j ↦ by simpa [hc.fac] using congr($(hm j).left)
+
 end Over
 
 namespace CostructuredArrow
@@ -511,7 +544,7 @@ lemma homMk_eta {U V : Under X} (f : U ⟶ V) (h) :
 
 /-- This is useful when `homMk (· ≫ ·)` appears under `Functor.map` or a natural equivalence. -/
 lemma homMk_comp {U V W : Under X} (f : U.right ⟶ V.right) (g : V.right ⟶ W.right) (w_f w_g) :
-    homMk (f ≫ g) (by simp only [reassoc_of% w_f, w_g])  = homMk f w_f ≫ homMk g w_g := by
+    homMk (f ≫ g) (by simp only [reassoc_of% w_f, w_g]) = homMk f w_f ≫ homMk g w_g := by
   ext
   simp
 
@@ -625,10 +658,7 @@ def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ := eqToIso (mapId_eq Y)
 
 /-- Mapping by `f` and then forgetting is the same as forgetting. -/
 theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
-    (map f) ⋙ (forget X) = (forget Y) := by
-  fapply Functor.ext
-  · dsimp [Under, Under.map]; intro x; exact rfl
-  · simp
+    (map f) ⋙ (forget X) = (forget Y) := rfl
 
 /-- The natural isomorphism arising from `mapForget_eq`. -/
 def mapForget {X Y : T} (f : X ⟶ Y) :
@@ -661,7 +691,7 @@ def mapCongr {X Y : T} (f g : X ⟶ Y) (h : f = g) :
 
 variable (T) in
 /-- The functor defined by the under categories -/
-@[simps] def mapFunctor : Tᵒᵖ  ⥤ Cat where
+@[simps] def mapFunctor : Tᵒᵖ ⥤ Cat where
   obj X := Cat.of (Under X.unop)
   map f := map f.unop
   map_id X := mapId_eq X.unop
@@ -692,6 +722,9 @@ The converse does not hold without additional assumptions on the underlying cate
 theorem mono_of_mono_right {f g : Under X} (k : f ⟶ g) [hk : Mono k.right] : Mono k :=
   (forget X).mono_of_mono_map hk
 
+instance mono_homMk {U V : Under X} {f : U.right ⟶ V.right} [Mono f] (w) : Mono (homMk f w) :=
+  (forget X).mono_of_mono_map ‹_›
+
 /--
 If `k.right` is an epimorphism, then `k` is an epimorphism. In other words, `Under.forget X`
 reflects epimorphisms.
@@ -701,6 +734,9 @@ This lemma is not an instance, to avoid loops in type class inference.
 -/
 theorem epi_of_epi_right {f g : Under X} (k : f ⟶ g) [hk : Epi k.right] : Epi k :=
   (forget X).epi_of_epi_map hk
+
+instance epi_homMk {U V : Under X} {f : U.right ⟶ V.right} [Epi f] (w) : Epi (homMk f w) :=
+  (forget X).epi_of_epi_map ‹_›
 
 /--
 If `k` is an epimorphism, then `k.right` is an epimorphism. In other words, `Under.forget X`
@@ -801,6 +837,35 @@ def equivalenceOfIsInitial (hX : IsInitial X) : Under X ≌ T where
   inverse := { obj Y := mk (hX.to Y), map f := homMk f }
   unitIso := NatIso.ofComponents fun Y ↦ isoMk (.refl _) (hX.hom_ext _ _)
   counitIso := NatIso.ofComponents fun _ ↦ .refl _
+
+/-- The induced functor to `Under X` from a functor `J ⥤ C` and natural maps `sᵢ : X ⟶ Dᵢ`. -/
+@[simps]
+protected def lift {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D) :
+    J ⥤ Under X where
+  obj j := .mk (s.app j)
+  map f := Under.homMk (D.map f) (by simpa using (s.naturality f).symm)
+
+/-- The induced cocone on `Under X` from on the lifted functor. -/
+@[simps]
+def liftCocone {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D)
+    (c : Cocone D) (p : X ⟶ c.pt) (hp : ∀ j, s.app j ≫ c.ι.app j = p) :
+    Cocone (Under.lift D s) where
+  pt := mk p
+  ι.app j := homMk (c.ι.app j)
+
+/-- The lifted cocone on `Under X` is a colimit cocone if the original cocone was colimiting
+and `J` is nonempty. -/
+def isColimitLiftCocone {J : Type*} [Category J] [Nonempty J]
+    (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D)
+    (c : Cocone D) (p : X ⟶ c.pt) (hp : ∀ j, s.app j ≫ c.ι.app j = p)
+    (hc : IsColimit c) :
+    IsColimit (liftCocone D s c p hp) where
+  desc s := Under.homMk (hc.desc ((Under.forget _).mapCocone s))
+    (by simpa [← hp (Classical.arbitrary _)] using Under.w (s.ι.app _))
+  fac _ _ := by ext; simp [hc.fac]
+  uniq _ _ hm := by
+    ext
+    exact hc.hom_ext fun j ↦ by simpa [hc.fac] using congr($(hm j).right)
 
 end Under
 
@@ -1118,22 +1183,6 @@ def Under.opEquivOpOver : Under (op X) ≌ (Over X)ᵒᵖ where
   inverse.map {Z Y} f := Under.homMk f.unop.left.op <| by dsimp; rw [← Over.w f.unop, op_comp]
   unitIso := Iso.refl _
   counitIso := Iso.refl _
-
-/-- The canonical functor by reversing structure arrows. -/
-@[deprecated Over.opEquivOpUnder (since := "2025-04-08")]
-def Over.opToOpUnder : Over (op X) ⥤ (Under X)ᵒᵖ := (Over.opEquivOpUnder X).functor
-
-/-- The canonical functor by reversing structure arrows. -/
-@[deprecated Over.opEquivOpUnder (since := "2025-04-08")]
-def Under.opToOverOp : (Under X)ᵒᵖ ⥤ Over (op X) := (Over.opEquivOpUnder X).inverse
-
-/-- The canonical functor by reversing structure arrows. -/
-@[deprecated Under.opEquivOpOver (since := "2025-04-08")]
-def Under.opToOpOver : Under (op X) ⥤ (Over X)ᵒᵖ := (Under.opEquivOpOver X).functor
-
-/-- The canonical functor by reversing structure arrows. -/
-@[deprecated Under.opEquivOpOver (since := "2025-04-08")]
-def Over.opToUnderOp : (Over X)ᵒᵖ ⥤ Under (op X) := (Under.opEquivOpOver X).inverse
 
 end Opposite
 

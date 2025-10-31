@@ -291,7 +291,7 @@ theorem diag_card : (diag s).card = s.card := by
 
 @[simp]
 theorem offDiag_card : (offDiag s).card = s.card * s.card - s.card :=
-  suffices (diag s).card + (offDiag s).card = s.card * s.card by rw [s.diag_card] at this; omega
+  suffices (diag s).card + (offDiag s).card = s.card * s.card by rw [s.diag_card] at this; cutsat
   by rw [← card_product, diag, offDiag]
      conv_rhs => rw [← filter_card_add_filter_neg_card_eq_card (fun a => a.1 = a.2)]
 
@@ -313,8 +313,7 @@ theorem offDiag_empty : (∅ : Finset α).offDiag = ∅ :=
 
 @[simp]
 theorem diag_union_offDiag : s.diag ∪ s.offDiag = s ×ˢ s := by
-  conv_rhs => rw [← filter_union_filter_neg_eq (fun a => a.1 = a.2) (s ×ˢ s)]
-  rfl
+  grind
 
 @[simp]
 theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag :=

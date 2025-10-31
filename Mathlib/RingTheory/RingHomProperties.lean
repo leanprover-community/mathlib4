@@ -84,9 +84,6 @@ theorem RespectsIso.isLocalization_away_iff (hP : RingHom.RespectsIso @P) {R S :
   dsimp [e, e₁, e₂, IsLocalization.Away.map]
   simp only [IsLocalization.map_eq, id_apply, RingHomCompTriple.comp_apply]
 
-@[deprecated (since := "2025-03-01")]
-alias RespectsIso.is_localization_away_iff := RespectsIso.isLocalization_away_iff
-
 lemma RespectsIso.and (hP : RespectsIso P) (hQ : RespectsIso Q) :
     RespectsIso (fun f ↦ P f ∧ Q f) := by
   refine ⟨?_, ?_⟩
@@ -149,9 +146,7 @@ theorem IsStableUnderBaseChange.mk (h₁ : RespectsIso @P)
   have hemul (x y : _) : e (x * y) = e x * e y := by simp_rw [hef, map_mul]
   convert h₁.1 _ { e with map_mul' := hemul } (h₂ H)
   ext x
-  change _ = e (x ⊗ₜ[R] 1)
-  -- Porting note: Had `dsimp only [e]` here, which didn't work anymore
-  rw [h.symm.1.equiv_tmul, Algebra.smul_def, AlgHom.toLinearMap_apply, map_one, mul_one]
+  simp [e, h.symm.1.equiv_tmul, Algebra.smul_def]
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra
 
