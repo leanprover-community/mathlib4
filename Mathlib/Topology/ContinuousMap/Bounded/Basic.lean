@@ -531,6 +531,40 @@ instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
   __ := instMonoid
   mul_comm f g := by ext x; simp [mul_apply, mul_comm]
 
+/-- Coercion of a `BoundedContinuousFunction` is a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
+@[to_additive (attr := simps) /-- Coercion of a `BoundedContinuousFunction` is an `AddMonoidHom`.
+Similar to `AddMonoidHom.coeFn`. -/]
+def coeFnMonoidHom [Monoid R] [BoundedMul R] [ContinuousMul R] : (α →ᵇ R) →* α → R where
+  toFun := (⇑)
+  map_one' := coe_one
+  map_mul' := coe_mul
+
+@[deprecated (since := "2025-10-30")] alias coeFnAddHom := coeFnAddMonoidHom
+
+variable (α R) in
+/-- The multiplicative map forgetting that a bounded continuous function is bounded. -/
+@[to_additive (attr := simps) /-- The additive map forgetting that a bounded continuous
+function is bounded.-/]
+def toContinuousMapMonoidHom [Monoid R] [BoundedMul R] [ContinuousMul R] : (α →ᵇ R) →* C(α, R) where
+  toFun := toContinuousMap
+  map_one' := rfl
+  map_mul' := by
+    intros
+    ext
+    simp
+
+@[deprecated (since := "2025-10-30")] alias toContinuousMapAddHom := toContinuousMapAddMonoidHom
+
+@[to_additive (attr := simp)]
+lemma coe_prod {ι : Type*} (s : Finset ι) [CommMonoid R] [BoundedMul R] [ContinuousMul R]
+    (f : ι → α →ᵇ R) :
+    ⇑(∏ i ∈ s, f i) = ∏ i ∈ s, ⇑(f i) := map_prod coeFnMonoidHom f s
+
+@[to_additive]
+lemma prod_apply {ι : Type*} (s : Finset ι) [CommMonoid R] [BoundedMul R] [ContinuousMul R]
+    (f : ι → α →ᵇ R) (a : α) :
+    (∏ i ∈ s, f i) a = ∏ i ∈ s, f i a := by simp
+
 @[to_additive]
 instance instMulOneClass [MulOneClass R] [BoundedMul R] [ContinuousMul R] : MulOneClass (α →ᵇ R) :=
   DFunLike.coe_injective.mulOneClass _ coe_one coe_mul
@@ -564,41 +598,7 @@ theorem add_compContinuous [Add β] [BoundedAdd β] [ContinuousAdd β] [Topologi
     (f g : α →ᵇ β) (h : C(γ, α)) :
     (g + f).compContinuous h = g.compContinuous h + f.compContinuous h := rfl
 
-/-- Coercion of a `NormedAddGroupHom` is an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`. -/
-@[simps]
-def coeFnAddHom [AddMonoid β] [BoundedAdd β] [ContinuousAdd β] : (α →ᵇ β) →+ α → β where
-  toFun := (⇑)
-  map_zero' := coe_zero
-  map_add' := coe_add
-
-variable (α β)
-
-/-- The additive map forgetting that a bounded continuous function is bounded. -/
-@[simps]
-def toContinuousMapAddHom [AddMonoid β] [BoundedAdd β] [ContinuousAdd β] : (α →ᵇ β) →+ C(α, β) where
-  toFun := toContinuousMap
-  map_zero' := rfl
-  map_add' := by
-    intros
-    ext
-    simp
-
 end add
-
-section comm_add
-
-variable [TopologicalSpace α]
-variable [PseudoMetricSpace β] [AddCommMonoid β] [BoundedAdd β] [ContinuousAdd β]
-
-@[simp]
-theorem coe_sum {ι : Type*} (s : Finset ι) (f : ι → α →ᵇ β) :
-    ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, (f i : α → β) :=
-  map_sum coeFnAddHom f s
-
-theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → α →ᵇ β) (a : α) :
-    (∑ i ∈ s, f i) a = ∑ i ∈ s, f i a := by simp
-
-end comm_add
 
 section LipschitzAdd
 
