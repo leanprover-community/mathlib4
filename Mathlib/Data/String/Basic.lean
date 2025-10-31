@@ -122,7 +122,6 @@ instance decidableLE : DecidableLE String := by
 theorem le_iff_toList_le {s₁ s₂ : String} : s₁ ≤ s₂ ↔ s₁.toList ≤ s₂.toList :=
   (not_congr lt_iff_toList_lt).trans not_lt
 
-@[simp]
 theorem toList_eq_data {s : String} : s.toList = s.data := rfl
 
 #adaptation_note /-- 2025-10-31
@@ -130,7 +129,7 @@ theorem toList_eq_data {s : String} : s.toList = s.data := rfl
 attribute [-simp] toList
 
 theorem toList_inj {s₁ s₂ : String} : s₁.toList = s₂.toList ↔ s₁ = s₂ := by
-  simp [data_inj]
+  simp [toList_eq_data ,data_inj]
 
 theorem asString_nil : [].asString = "" :=
   rfl
@@ -139,14 +138,15 @@ theorem toList_empty : "".toList = [] :=
   rfl
 
 theorem asString_toList (s : String) : s.toList.asString = s := by
-  simp
+  simp [toList_eq_data]
 
 theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.drop 1).toList
   | s, h => by
     obtain ⟨l, rfl⟩ := s.exists_eq_asString
     match l with
     | [] => simp at h
-    | c::cs => simp [head, mkIterator, Iterator.curr, Pos.Raw.get, Pos.Raw.utf8GetAux]
+    | c::cs => simp [toList_eq_data, head, mkIterator, Iterator.curr, Pos.Raw.get,
+        Pos.Raw.utf8GetAux]
 
 @[simp]
 theorem head_empty : "".data.head! = default :=
@@ -180,7 +180,7 @@ open String
 namespace List
 
 theorem toList_asString (l : List Char) : l.asString.toList = l := by
-  simp [-toList]
+  simp [-toList, toList_eq_data]
 
 theorem asString_eq {l : List Char} {s : String} : l.asString = s ↔ l = s.toList := by
   rw [← asString_toList s, asString_inj, asString_toList s]
