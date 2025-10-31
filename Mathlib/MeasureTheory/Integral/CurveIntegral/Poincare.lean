@@ -39,9 +39,24 @@ iff its Fréchet derivative `dω : E → E →L[𝕜] E →L[𝕜] F` is symmetr
 open scoped unitInterval Interval Pointwise Topology
 open AffineMap Filter Function MeasureTheory Set
 
-variable {E F : Type*}
-  [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {𝕜 E F : Type*} [RCLike 𝕜]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {a b c d : E}
+
+namespace ContinuousMap.Homotopy
+
+theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_countable
+    [NormedSpace ℝ E] [NormedSpace ℝ F]
+    {ω : E → E →L[𝕜] F} {dω : E → E →L[ℝ] E →L[𝕜] F} {γ₁ : Path a b} {γ₂ : Path c d}
+    {φ : (γ₁ : C(I, E)).Homotopy γ₂} {s : Set (I × I)} {t : Set E}
+    (hω : ∀ x ∈ s, HasFDerivWithinAt ω (dω x) s x) (hωc : ContinuousOn ω (closure s))
+    (hdω : ∀ x ∈ s, ∀ a ∈ tangentConeAt ℝ s x, ∀ b ∈ tangentConeAt ℝ s x, dω x a b = dω x b a)
+    (hφs : ∀ a ∈ Ioo 0 1, ∀ b ∈ Ioo 0 1, φ (a, b) ∈ s)
+    (hcontdiff : C
+    True := by
+  sorry
+
+#exit
 
 theorem ContinuousMap.Homotopy.curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_of_contDiffOn
     {ω : E → E →L[ℝ] F} {dω : E → E →L[ℝ] E →L[ℝ] F} {γ₁ : Path a b} {γ₂ : Path c d} {s : Set E}
