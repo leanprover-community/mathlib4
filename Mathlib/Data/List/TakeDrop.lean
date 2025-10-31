@@ -170,14 +170,14 @@ lemma splits_cons (x : α) (xs : List α) :
 
 lemma mem_splits_iff (x y l : List α) :
     (x, y) ∈ l.splits ↔ l = x ++ y := by
-  simp [List.splits]
+  simp only [splits, splitAt_eq, mem_map, mem_range, Prod.mk.injEq]
   constructor
   · rintro ⟨n, hn, htake, hdrop⟩
     rw [←htake, ←hdrop, List.take_append_drop]
   · rintro rfl
     exists x.length
     constructor
-    · simp; omega
+    · simp only [length_append]; omega
     · constructor
       · rw [List.take_left]
       · rw [List.drop_left]
