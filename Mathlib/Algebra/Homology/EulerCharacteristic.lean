@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jesse Alama
 -/
 import Mathlib.Algebra.Homology.HomologicalComplex
+import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Algebra.Category.ModuleCat.Basic
@@ -24,8 +25,10 @@ uniformly for chain complexes, cochain complexes, and complexes with other index
 * `ComplexShape.EulerCharSigns`: Typeclass providing alternating signs for Euler characteristic
 * `HomologicalComplex.eulerChar`: The Euler characteristic over a finite set of indices
 * `HomologicalComplex.eulerCharTsum`: The Euler characteristic as an infinite sum
-* `HomologicalComplex.homologyEulerChar`: The homological Euler characteristic over a finite set
-* `HomologicalComplex.homologyEulerCharTsum`: The homological Euler characteristic as an infinite sum
+* `HomologicalComplex.homologyEulerChar`: The homological Euler characteristic over a
+  finite set
+* `HomologicalComplex.homologyEulerCharTsum`: The homological Euler characteristic as an
+  infinite sum
 
 ## Main results
 
@@ -102,7 +105,7 @@ noncomputable def eulerChar [c.EulerCharSigns] (C : HomologicalComplex (ModuleCa
 This is the Euler characteristic computed from the homology groups rather than
 the original complex. -/
 noncomputable def homologyEulerChar [c.EulerCharSigns]
-    (C : HomologicalComplex (ModuleCat R) c) [∀ i, (C.sc i).HasHomology]
+    (C : HomologicalComplex (ModuleCat R) c) [∀ i : ι, C.HasHomology i]
     (indices : Finset ι) : ℤ :=
   ∑ i ∈ indices, (c.χ i : ℤ) * Module.finrank R (C.homology i)
 
@@ -120,7 +123,7 @@ noncomputable def eulerCharTsum [c.EulerCharSigns]
 
 /-- The homological Euler characteristic as an infinite sum. -/
 noncomputable def homologyEulerCharTsum [c.EulerCharSigns]
-    (C : HomologicalComplex (ModuleCat R) c) [∀ i, (C.sc i).HasHomology] : ℤ :=
+    (C : HomologicalComplex (ModuleCat R) c) [∀ i : ι, C.HasHomology i] : ℤ :=
   ∑ i : ι, (c.χ i : ℤ) * Module.finrank R (C.homology i)
 
 /-- If a complex vanishes outside a finite set, the infinite Euler characteristic
@@ -131,6 +134,7 @@ theorem eulerCharTsum_eq_eulerChar [c.EulerCharSigns]
     (h_zero : ∀ i ∉ indices, Module.finrank R (C.X i) = 0) :
     eulerCharTsum C = eulerChar C indices := by
   simp only [eulerCharTsum, eulerChar]
+  symm
   apply Finset.sum_subset (Finset.subset_univ indices)
   intro i _ hi
   simp [h_zero i hi]
@@ -138,11 +142,12 @@ theorem eulerCharTsum_eq_eulerChar [c.EulerCharSigns]
 /-- If homology vanishes outside a finite set, the infinite homological Euler
 characteristic equals the finite one. -/
 theorem homologyEulerCharTsum_eq_homologyEulerChar [c.EulerCharSigns]
-    (C : HomologicalComplex (ModuleCat R) c) [∀ i, (C.sc i).HasHomology]
+    (C : HomologicalComplex (ModuleCat R) c) [∀ i : ι, C.HasHomology i]
     (indices : Finset ι)
     (h_zero : ∀ i ∉ indices, Module.finrank R (C.homology i) = 0) :
     homologyEulerCharTsum C = homologyEulerChar C indices := by
   simp only [homologyEulerCharTsum, homologyEulerChar]
+  symm
   apply Finset.sum_subset (Finset.subset_univ indices)
   intro i _ hi
   simp [h_zero i hi]
