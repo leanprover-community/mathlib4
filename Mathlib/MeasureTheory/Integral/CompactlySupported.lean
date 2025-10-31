@@ -10,6 +10,7 @@ import Mathlib.Topology.ContinuousMap.CompactlySupported
 
 /-!
 # Integrating compactly supported continuous functions
+
 This file contains definitions and lemmas related to integrals of compactly supported continuous
 functions.
 -/
