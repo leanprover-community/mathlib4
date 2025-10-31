@@ -627,13 +627,13 @@ instance : SecondCountableTopology GHSpace := by
     ⟨N p, fun a b => ⌊ε⁻¹ * dist ((E p).symm a) ((E p).symm b)⌋⟩
   refine ⟨Σ n, Fin n → Fin n → ℤ, inferInstance, F, fun p q hpq => ?_⟩
   /- As the target space of F is countable, it suffices to show that two points
-    `p` and `q` with `F p = F q` are at distance `≤ δ`.
-    For this, we construct a map `Φ` from `s p ⊆ p.Rep` (representing `p`)
-    to `q.Rep` (representing `q`) which is almost an isometry on `s p`, and
-    with image `s q`. For this, we compose the identification of `s p` with `Fin (N p)`
-    and the inverse of the identification of `s q` with `Fin (N q)`. Together with
-    the fact that `N p = N q`, this constructs `Ψ` between `s p` and `s q`, and then
-    composing with the canonical inclusion we get `Φ`. -/
+  `p` and `q` with `F p = F q` are at distance `≤ δ`.
+  For this, we construct a map `Φ` from `s p ⊆ p.Rep` (representing `p`)
+  to `q.Rep` (representing `q`) which is almost an isometry on `s p`, and
+  with image `s q`. For this, we compose the identification of `s p` with `Fin (N p)`
+  and the inverse of the identification of `s q` with `Fin (N q)`. Together with
+  the fact that `N p = N q`, this constructs `Ψ` between `s p` and `s q`, and then
+  composing with the canonical inclusion we get `Φ`. -/
   have Npq : N p = N q := (Sigma.mk.inj_iff.1 hpq).1
   let Ψ : s p → s q := fun x => (E q).symm (Fin.cast Npq ((E p) x))
   let Φ : s p → q.Rep := fun x => Ψ x
@@ -668,8 +668,8 @@ instance : SecondCountableTopology GHSpace := by
       exact hy.le
     · show ∀ x y : s p, |dist x y - dist (Φ x) (Φ y)| ≤ ε
       /- the distance between `x` and `y` is encoded in `F p`, and the distance between
-        `Φ x` and `Φ y` (two points of `s q`) is encoded in `F q`, all this up to `ε`.
-        As `F p = F q`, the distances are almost equal. -/
+      `Φ x` and `Φ y` (two points of `s q`) is encoded in `F q`, all this up to `ε`.
+      As `F p = F q`, the distances are almost equal. -/
       intro x y
       -- introduce `i`, that codes both `x` and `Φ x` in `Fin (N p) = Fin (N q)`
       let i : ℕ := E p x
