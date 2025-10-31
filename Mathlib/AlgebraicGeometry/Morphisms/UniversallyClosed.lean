@@ -118,7 +118,7 @@ lemma compactSpace_of_universallyClosed
     exact isOpen_iUnion fun i ↦ (fT.continuous.1 _ (Ti i).2).inter (p.continuous.1 _ (U i).2)
   let Zc : T.Opens := ⟨(fT '' Z)ᶜ, (fT.isClosedMap _ hZ).isOpen_compl⟩
   let ψ : MvPolynomial 𝒰.I₀ K →ₐ[K] K := MvPolynomial.aeval (fun _ ↦ 1)
-  let t : T := (Spec.map <| CommRingCat.ofHom ψ.toRingHom) default
+  let t : T := Spec.map (CommRingCat.ofHom ψ.toRingHom) default
   have ht (i : 𝒰.I₀) : t ∈ Ti i := show ψ (.X i) ≠ 0 by simp [ψ]
   have htZc : t ∈ Zc := by
     intro ⟨z, hz, hzt⟩
