@@ -84,7 +84,7 @@ lemma map_adj_apply {G : SimpleGraph V} {f : V ↪ W} {a b : V} :
 
 theorem map_monotone (f : V ↪ W) : Monotone (SimpleGraph.map f) := by
   rintro G G' h _ _ ⟨u, v, ha, rfl, rfl⟩
-  exact ⟨_, _, h _ _ ha, rfl, rfl⟩
+  exact ⟨_, _, h ha, rfl, rfl⟩
 
 @[simp] lemma map_id : G.map (Function.Embedding.refl _) = G :=
   SimpleGraph.ext <| Relation.map_id_id _
@@ -125,8 +125,9 @@ lemma comap_symm (G : SimpleGraph V) (e : V ≃ W) :
 lemma map_symm (G : SimpleGraph W) (e : V ≃ W) :
     G.map e.symm.toEmbedding = G.comap e.toEmbedding := by rw [← comap_symm, e.symm_symm]
 
-theorem comap_monotone (f : V ↪ W) : Monotone (SimpleGraph.comap f) :=
-  fun _ _ h _ _ ↦ h _ _
+theorem comap_monotone (f : V ↪ W) : Monotone (SimpleGraph.comap f) := by
+  intro G G' h _ _ ha
+  exact h ha
 
 @[simp] lemma comap_bot (f : V → W) : (emptyGraph W).comap f = emptyGraph V := rfl
 

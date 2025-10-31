@@ -163,8 +163,9 @@ theorem iSup_adj {f : ι → Digraph V} : (⨆ i, f i).Adj a b ↔ ∃ i, (f i).
 @[simp]
 theorem iInf_adj {f : ι → Digraph V} : (⨅ i, f i).Adj a b ↔ (∀ i, (f i).Adj a b) := by simp [iInf]
 
-instance : PartialOrder (Digraph V) :=
-  PartialOrder.lift _ adj_injective
+instance : PartialOrder (Digraph V) where
+  __ := PartialOrder.lift _ adj_injective
+  le G H := ∀ ⦃a b⦄, G.Adj a b → H.Adj a b
 
 instance distribLattice : DistribLattice (Digraph V) :=
   adj_injective.distribLattice _ .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
