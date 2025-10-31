@@ -38,7 +38,7 @@ uniqueness is expressed by `uniq`.
 
 noncomputable section
 
-open CategoryTheory.Category
+open CategoryTheory.Category CategoryTheory.Functor
 
 namespace CategoryTheory
 
@@ -134,7 +134,7 @@ def liftToPathCategory : Paths (LocQuiver W) ⥤ D :=
   Quiv.lift
     { obj := fun X => G.obj X.obj
       map := by
-        intros X Y
+        intro X Y
         rintro (f | ⟨g, hg⟩)
         · exact G.map f
         · haveI := hG g hg
@@ -146,15 +146,7 @@ def lift : W.Localization ⥤ D :=
   Quotient.lift (relations W) (liftToPathCategory G hG)
     (by
       rintro ⟨X⟩ ⟨Y⟩ f₁ f₂ r
-      -- Porting note: rest of proof was `rcases r with ⟨⟩; tidy`
-      rcases r with (_|_|⟨f,hf⟩|⟨f,hf⟩)
-      · aesop_cat
-      · simp
-      all_goals
-        dsimp
-        haveI := hG f hf
-        simp
-        rfl)
+      rcases r with ⟨⟩ <;> all_goals aesop)
 
 @[simp]
 theorem fac : W.Q ⋙ lift G hG = G :=
@@ -215,7 +207,7 @@ theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
       rcases X with ⟨⟨X⟩⟩
       rcases Y with ⟨⟨Y⟩⟩
       simpa only [Functor.map_preimage] using this _ _ (G.preimage f)
-    intros X₁ X₂ p
+    intro X₁ X₂ p
     induction p with
     | nil => simpa only [Functor.map_id] using hP₁ (𝟙 X₁.obj)
     | @cons X₂ X₃ p g hp =>
@@ -265,17 +257,17 @@ def natTransExtension {F₁ F₂ : W.Localization ⥤ D} (τ : W.Q ⋙ F₁ ⟶ 
     refine morphismProperty_is_top'
       (MorphismProperty.naturalityProperty (NatTransExtension.app τ))
       ?_ (MorphismProperty.naturalityProperty.stableUnderInverse _)
-    intros X Y f
+    intro X Y f
     dsimp
     simpa only [NatTransExtension.app_eq] using τ.naturality f
 
 @[simp]
 theorem whiskerLeft_natTransExtension {F G : W.Localization ⥤ D} (τ : W.Q ⋙ F ⟶ W.Q ⋙ G) :
-    whiskerLeft W.Q (natTransExtension τ) = τ := by aesop_cat
+    whiskerLeft W.Q (natTransExtension τ) = τ := by cat_disch
 
 -- This is not a simp lemma, because the simp norm form of the left-hand side uses `whiskerLeft`.
 theorem natTransExtension_hcomp {F G : W.Localization ⥤ D} (τ : W.Q ⋙ F ⟶ W.Q ⋙ G) :
-    𝟙 W.Q ◫ natTransExtension τ = τ := by aesop_cat
+    𝟙 W.Q ◫ natTransExtension τ = τ := by simp
 
 theorem natTrans_hcomp_injective {F G : W.Localization ⥤ D} {τ₁ τ₂ : F ⟶ G}
     (h : 𝟙 W.Q ◫ τ₁ = 𝟙 W.Q ◫ τ₂) : τ₁ = τ₂ := by

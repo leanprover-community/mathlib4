@@ -7,7 +7,7 @@ import Mathlib.RingTheory.Etale.Pi
 import Mathlib.RingTheory.Unramified.Field
 
 /-!
-# Etale algebras over fields
+# Étale algebras over fields
 
 ## Main results
 
@@ -54,7 +54,7 @@ theorem of_isSeparable_aux [Algebra.IsSeparable K L] [EssFiniteType K L] :
   have := FormallyUnramified.finite_of_free (R := K) (S := L)
   constructor
   -- We shall show that any `f : L → B/I` can be lifted to `L → B` if `I^2 = ⊥`
-  intros B _ _ I h
+  intro B _ _ I h
   refine ⟨FormallyUnramified.iff_comp_injective.mp (FormallyUnramified.of_isSeparable K L) I h, ?_⟩
   intro f
   -- By separability and finiteness, we may assume `L = K(α)` with `p` the minpoly of `α`.
@@ -90,7 +90,7 @@ theorem of_isSeparable_aux [Algebra.IsSeparable K L] [EssFiniteType K L] :
 open scoped IntermediateField in
 lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
   constructor
-  intros B _ _ I h
+  intro B _ _ I h
   -- We shall show that any `f : L → B/I` can be lifted to `L → B` if `I^2 = ⊥`.
   -- But we already know that there exists a unique lift for every finite subfield of `L`
   -- by `of_isSeparable_aux`, so we can glue them all together.
@@ -124,7 +124,7 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
       apply IntermediateField.finiteDimensional_adjoin
       intro x _; exact (Algebra.IsSeparable.isSeparable K x).isIntegral
     have := IsSeparable.of_algHom _ _ (IsScalarTower.toAlgHom K (K⟮x, y⟯) L)
-    obtain ⟨⟨α, hα⟩, e⟩ := Field.exists_primitive_element K K⟮x,y⟯
+    obtain ⟨⟨α, hα⟩, e⟩ := Field.exists_primitive_element K K⟮x, y⟯
     apply_fun (IntermediateField.map (IntermediateField.val _)) at e
     rw [IntermediateField.adjoin_map, ← AlgHom.fieldRange_eq_map] at e
     simp only [IntermediateField.coe_val, Set.image_singleton,
@@ -133,18 +133,18 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
     have hy : y ∈ K⟮α⟯ := e ▸ IntermediateField.subset_adjoin K {x, y} (by simp)
     exact ⟨α, hx, hy⟩
   refine ⟨⟨⟨⟨⟨fun x ↦ g x (IntermediateField.AdjoinSimple.gen K x), ?_⟩, ?_⟩, ?_, ?_⟩, ?_⟩, ?_⟩
-  · show g 1 1 = 1; rw [map_one]
-  · intros x y
+  · change g 1 1 = 1; rw [map_one]
+  · intro x y
     obtain ⟨α, hx, hy⟩ := H x y
     simp only [← hg₃ _ _ hx, ← hg₃ _ _ hy, ← map_mul, ← hg₃ _ _ (mul_mem hx hy)]
     rfl
-  · show g 0 0 = 0; rw [map_zero]
-  · intros x y
+  · change g 0 0 = 0; rw [map_zero]
+  · intro x y
     obtain ⟨α, hx, hy⟩ := H x y
     simp only [← hg₃ _ _ hx, ← hg₃ _ _ hy, ← map_add, ← hg₃ _ _ (add_mem hx hy)]
     rfl
   · intro r
-    show g _ (algebraMap K _ r) = _
+    change g _ (algebraMap K _ r) = _
     rw [AlgHom.commutes]
   · ext x
     simpa using AlgHom.congr_fun (hg₁ x) (IntermediateField.AdjoinSimple.gen K x)

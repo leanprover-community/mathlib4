@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Jireh Loreaux
 -/
 
-import Mathlib.Algebra.Ring.Hom.Defs
+import Mathlib.Algebra.Ring.Hom.InjSurj
 
 /-!
 # Additional lemmas about homomorphisms of semirings and rings
@@ -61,7 +61,6 @@ end LiftRight
 end
 
 end NonUnitalRingHom
-
 
 namespace RingHom
 

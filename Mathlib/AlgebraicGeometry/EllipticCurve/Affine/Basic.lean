@@ -246,12 +246,6 @@ lemma equation_iff_nonsingular [Nontrivial R] [W.IsElliptic] {x y : R} :
     W.toAffine.Equation x y ↔ W.toAffine.Nonsingular x y :=
   W.toAffine.equation_iff_nonsingular_of_Δ_ne_zero <| W.coe_Δ' ▸ W.Δ'.ne_zero
 
-@[deprecated (since := "2025-03-01")] alias nonsingular_zero_of_Δ_ne_zero :=
-  equation_iff_nonsingular_of_Δ_ne_zero
-@[deprecated (since := "2025-03-01")] alias nonsingular_of_Δ_ne_zero :=
-  equation_iff_nonsingular_of_Δ_ne_zero
-@[deprecated (since := "2025-03-01")] alias nonsingular := equation_iff_nonsingular
-
 /-! ## Maps and base changes -/
 
 variable (f : R →+* S) (x y : R)

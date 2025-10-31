@@ -85,24 +85,6 @@ lemma card_Iic : #(Iic b) = b + 1 := by rw [Iic_eq_Icc, card_Icc, Nat.bot_eq_zer
 @[simp]
 theorem card_Iio : #(Iio b) = b := by rw [Iio_eq_Ico, card_Ico, Nat.bot_eq_zero, Nat.sub_zero]
 
-@[deprecated Fintype.card_Icc (since := "2025-03-28")]
-theorem card_fintypeIcc : Fintype.card (Set.Icc a b) = b + 1 - a := by simp
-
-@[deprecated Fintype.card_Ico (since := "2025-03-28")]
-theorem card_fintypeIco : Fintype.card (Set.Ico a b) = b - a := by simp
-
-@[deprecated Fintype.card_Ioc (since := "2025-03-28")]
-theorem card_fintypeIoc : Fintype.card (Set.Ioc a b) = b - a := by simp
-
-@[deprecated Fintype.card_Ioo (since := "2025-03-28")]
-theorem card_fintypeIoo : Fintype.card (Set.Ioo a b) = b - a - 1 := by simp
-
-@[deprecated Fintype.card_Iic (since := "2025-03-28")]
-theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by simp
-
-@[deprecated Fintype.card_Iio (since := "2025-03-28")]
-theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by simp
-
 @[deprecated Finset.Icc_succ_left_eq_Ioc (since := "2025-04-24")]
 theorem Icc_succ_left : Icc a.succ b = Ioc a b := by
   ext x
@@ -151,7 +133,7 @@ lemma mem_Ioc_succ' (a : Ioc b (b + 1)) : a = ⟨b + 1, mem_Ioc.2 (by omega)⟩ 
   Subtype.val_inj.1 (mem_Ioc_succ.1 a.2)
 
 set_option linter.deprecated false in
-@[deprecated Finset.insert_Ico_right_eq_Ico_succ_right (since := "2025-04-24")]
+@[deprecated Finset.insert_Ico_right_eq_Ico_succ (since := "2025-04-24")]
 theorem Ico_succ_right_eq_insert_Ico (h : a ≤ b) : Ico a (b + 1) = insert b (Ico a b) := by
   rw [Ico_succ_right, ← Ico_insert_right h]
 
@@ -164,29 +146,29 @@ theorem Ico_insert_succ_left (h : a < b) : insert a (Ico a.succ b) = Ico a b := 
 lemma Icc_insert_succ_left (h : a ≤ b) : insert a (Icc (a + 1) b) = Icc a b := by
   ext x
   simp only [mem_insert, mem_Icc]
-  omega
+  cutsat
 
-@[deprecated Finset.insert_Icc_eq_Icc_succ_right (since := "2025-04-24")]
+@[deprecated Finset.insert_Icc_right_eq_Icc_succ (since := "2025-04-24")]
 lemma Icc_insert_succ_right (h : a ≤ b + 1) : insert (b + 1) (Icc a b) = Icc a (b + 1) := by
   ext x
   simp only [mem_insert, mem_Icc]
-  omega
+  cutsat
 
 theorem image_sub_const_Ico (h : c ≤ a) :
     ((Ico a b).image fun x => x - c) = Ico (a - c) (b - c) := by
   ext x
   simp_rw [mem_image, mem_Ico]
-  refine ⟨?_, fun h ↦ ⟨x + c, by omega⟩⟩
+  refine ⟨?_, fun h ↦ ⟨x + c, by cutsat⟩⟩
   rintro ⟨x, hx, rfl⟩
-  omega
+  cutsat
 
 theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
     ((Ico a b).image fun x => c - x) = Ico (c + 1 - b) (c + 1 - a) := by
   ext x
   simp_rw [mem_image, mem_Ico]
-  refine ⟨?_, fun h ↦ ⟨c - x, by omega⟩⟩
+  refine ⟨?_, fun h ↦ ⟨c - x, by cutsat⟩⟩
   rintro ⟨x, hx, rfl⟩
-  omega
+  cutsat
 
 set_option linter.deprecated false in
 theorem Ico_succ_left_eq_erase_Ico : Ico a.succ b = erase (Ico a b) a := by
@@ -225,7 +207,7 @@ theorem image_Ico_mod (n a : ℕ) : (Ico n (n + a)).image (· % a) = range a := 
   obtain rfl | ha := eq_or_ne a 0
   · rw [range_zero, add_zero, Ico_self, image_empty]
   ext i
-  simp only [mem_image, exists_prop, mem_range, mem_Ico]
+  simp only [mem_image, mem_range, mem_Ico]
   constructor
   · rintro ⟨i, _, rfl⟩
     exact mod_lt i ha.bot_lt
@@ -240,8 +222,8 @@ theorem image_Ico_mod (n a : ℕ) : (Ico n (n + a)).image (· % a) = range a := 
       rw [Nat.mul_add, mul_one, ← add_assoc, hn]
     · rw [Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt hia]
   · refine ⟨i + a * (n / a), ⟨?_, ?_⟩, ?_⟩
-    · omega
-    · omega
+    · cutsat
+    · cutsat
     · rw [Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt hia]
 
 section Multiset
@@ -268,6 +250,10 @@ lemma toFinset_range'_1_1 (a : ℕ) : (List.range' 1 a).toFinset = Icc 1 a := by
   ext x
   rw [List.mem_toFinset, List.mem_range'_1, add_comm, Nat.lt_succ_iff, Finset.mem_Icc]
 
+lemma toFinset_range (a : ℕ) : (List.range a).toFinset = Finset.range a := by
+  ext x
+  rw [List.mem_toFinset, List.mem_range, Finset.mem_range]
+
 end List
 
 namespace Finset
@@ -285,9 +271,9 @@ theorem range_add_eq_union : range (a + b) = range a ∪ (range b).map (addLeftE
   ext x
   simp only [Ico_zero_eq_range, mem_image, mem_range, addLeftEmbedding_apply, mem_Ico]
   constructor
-  · aesop
+  · cutsat
   · rintro h
-    exact ⟨x - a, by omega⟩
+    exact ⟨x - a, by cutsat⟩
 
 end Finset
 
@@ -311,7 +297,7 @@ lemma Nat.strong_decreasing_induction (base : ∃ n, ∀ m > n, P m) (step : ∀
   · rintro ⟨b, hb⟩
     rcases base with ⟨n, hn⟩
     specialize @hb (n + b + 1) (fun m hm ↦ hn _ _)
-    all_goals omega
+    all_goals cutsat
 
 theorem Nat.decreasing_induction_of_infinite
     (h : ∀ n, P (n + 1) → P n) (hP : { x | P x }.Infinite) (n : ℕ) : P n :=

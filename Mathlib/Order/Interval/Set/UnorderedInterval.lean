@@ -30,7 +30,7 @@ subcube containing both `a` and `b`.
 
 ## Notation
 
-We use the localized notation `[[a, b]]` for `uIcc a b`. One can open the locale `Interval` to
+We use the localized notation `[[a, b]]` for `uIcc a b`. One can open the scope `Interval` to
 make the notation available.
 
 -/
@@ -62,9 +62,6 @@ open Interval
 lemma uIcc_toDual (a b : α) : [[toDual a, toDual b]] = ofDual ⁻¹' [[a, b]] :=
   -- Note: needed to hint `(α := α)` after https://github.com/leanprover-community/mathlib4/pull/8386 (elaboration order?)
   Icc_toDual (α := α)
-
-@[deprecated (since := "2025-03-20")]
-alias dual_uIcc := uIcc_toDual
 
 @[simp]
 theorem uIcc_ofDual (a b : αᵒᵈ) : [[ofDual a, ofDual b]] = toDual ⁻¹' [[a, b]] :=
@@ -260,7 +257,7 @@ lemma mem_uIoc : a ∈ Ι b c ↔ b < a ∧ a ≤ c ∨ c < a ∧ a ≤ b := by
   rw [uIoc_eq_union, mem_union, mem_Ioc, mem_Ioc]
 
 lemma notMem_uIoc : a ∉ Ι b c ↔ a ≤ b ∧ a ≤ c ∨ c < a ∧ b < a := by
-  simp only [uIoc_eq_union, mem_union, mem_Ioc, not_lt, ← not_le]
+  simp only [uIoc_eq_union, mem_union, mem_Ioc, ← not_le]
   tauto
 
 @[deprecated (since := "2025-05-23")] alias not_mem_uIoc := notMem_uIoc
@@ -285,7 +282,7 @@ lemma uIoc_subset_uIcc : Ι a b ⊆ uIcc a b := Ioc_subset_Icc_self
 
 lemma eq_of_mem_uIoc_of_mem_uIoc : a ∈ Ι b c → b ∈ Ι a c → a = b := by
   simp_rw [mem_uIoc]; rintro (⟨_, _⟩ | ⟨_, _⟩) (⟨_, _⟩ | ⟨_, _⟩) <;> apply le_antisymm <;>
-    first |assumption|exact le_of_lt ‹_›|exact le_trans ‹_› (le_of_lt ‹_›)
+    first | assumption | exact le_of_lt ‹_› | exact le_trans ‹_› (le_of_lt ‹_›)
 
 lemma eq_of_mem_uIoc_of_mem_uIoc' : b ∈ Ι a c → c ∈ Ι a b → b = c := by
   simpa only [uIoc_comm a] using eq_of_mem_uIoc_of_mem_uIoc
@@ -295,8 +292,8 @@ lemma eq_of_notMem_uIoc_of_notMem_uIoc (ha : a ≤ c) (hb : b ≤ c) :
   simp_rw [notMem_uIoc]
   rintro (⟨_, _⟩ | ⟨_, _⟩) (⟨_, _⟩ | ⟨_, _⟩) <;>
       apply le_antisymm <;>
-    first |assumption|exact le_of_lt ‹_›|
-    exact absurd hb (not_le_of_gt ‹c < b›)|exact absurd ha (not_le_of_gt ‹c < a›)
+    first | assumption | exact le_of_lt ‹_› |
+    exact absurd hb (not_le_of_gt ‹c < b›) | exact absurd ha (not_le_of_gt ‹c < a›)
 
 @[deprecated (since := "2025-05-23")]
 alias eq_of_not_mem_uIoc_of_not_mem_uIoc := eq_of_notMem_uIoc_of_notMem_uIoc
@@ -306,7 +303,7 @@ lemma uIoc_injective_right (a : α) : Injective fun b => Ι b a := by
   rw [Set.ext_iff] at h
   obtain ha | ha := le_or_gt b a
   · have hb := (h b).not
-    simp only [ha, left_mem_uIoc, not_lt, true_iff, notMem_uIoc, ← not_le,
+    simp only [ha, left_mem_uIoc, true_iff, notMem_uIoc, ← not_le,
       and_true, not_true, false_and, not_false_iff, or_false] at hb
     refine hb.eq_of_not_lt fun hc => ?_
     simpa [ha, and_iff_right hc, ← @not_le _ _ _ a, iff_not_self, -not_le] using h c
@@ -335,9 +332,6 @@ def uIoo (a b : α) : Set α := Ioo (a ⊓ b) (a ⊔ b)
 @[simp]
 lemma uIoo_toDual (a b : α) : uIoo (toDual a) (toDual b) = ofDual ⁻¹' uIoo a b :=
   Ioo_toDual (α := α)
-
-@[deprecated (since := "2025-03-20")]
-alias dual_uIoo := uIoo_toDual
 
 @[simp]
 theorem uIoo_ofDual (a b : αᵒᵈ) : uIoo (ofDual a) (ofDual b) = toDual ⁻¹' uIoo a b :=

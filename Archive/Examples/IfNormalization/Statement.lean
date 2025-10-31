@@ -16,7 +16,7 @@ Their first suggestion was "if-normalization".
 This file contains a Lean formulation of the problem. See `Result.lean` for a Lean solution.
 -/
 
-/-- An if-expression is either boolean literal, a numbered variable,
+/-- An if-expression is either Boolean literal, a numbered variable,
 or an if-then-else expression where each subexpression is an if-expression. -/
 inductive IfExpr
   | lit : Bool → IfExpr

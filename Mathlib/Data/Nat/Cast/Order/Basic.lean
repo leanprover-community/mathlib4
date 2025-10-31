@@ -3,10 +3,10 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Data.Nat.Cast.NeZero
 import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.NeZero
 import Mathlib.Order.Hom.Basic
 
 /-!
@@ -14,7 +14,7 @@ import Mathlib.Order.Hom.Basic
 
 -/
 
-assert_not_exists OrderedCommMonoid
+assert_not_exists IsOrderedMonoid
 
 variable {α : Type*}
 
@@ -28,13 +28,10 @@ we use a generic collection of instances so that it applies in other settings (e
 variable [AddMonoidWithOne α] [PartialOrder α]
 variable [AddLeftMono α] [ZeroLEOneClass α]
 
-@[mono]
+@[gcongr, mono]
 theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
   monotone_nat_of_le_succ fun n ↦ by
     rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
-
-@[gcongr]
-theorem _root_.GCongr.natCast_le_natCast {a b : ℕ} (h : a ≤ b) : (a : α) ≤ b := mono_cast h
 
 /-- See also `Nat.cast_nonneg`, specialised for an `OrderedSemiring`. -/
 @[simp low]
@@ -62,11 +59,9 @@ end Nontrivial
 
 variable [CharZero α] {m n : ℕ}
 
+@[gcongr]
 theorem strictMono_cast : StrictMono (Nat.cast : ℕ → α) :=
   mono_cast.strictMono_of_injective cast_injective
-
-@[gcongr]
-lemma _root_.GCongr.natCast_lt_natCast {a b : ℕ} (h : a < b) : (a : α) < b := strictMono_cast h
 
 /-- `Nat.cast : ℕ → α` as an `OrderEmbedding` -/
 @[simps! -fullyApplied]
@@ -87,6 +82,9 @@ theorem one_lt_cast : 1 < (n : α) ↔ 1 < n := by rw [← cast_one, cast_lt]
 @[simp, norm_cast]
 theorem one_le_cast : 1 ≤ (n : α) ↔ 1 ≤ n := by rw [← cast_one, cast_le]
 
+theorem one_le_cast_iff_ne_zero : 1 ≤ (n : α) ↔ n ≠ 0 :=
+  one_le_cast.trans one_le_iff_ne_zero
+
 @[simp, norm_cast]
 theorem cast_lt_one : (n : α) < 1 ↔ n = 0 := by
   rw [← cast_one, cast_lt, Nat.lt_succ_iff, le_zero]
@@ -94,7 +92,7 @@ theorem cast_lt_one : (n : α) < 1 ↔ n = 0 := by
 @[simp, norm_cast]
 theorem cast_le_one : (n : α) ≤ 1 ↔ n ≤ 1 := by rw [← cast_one, cast_le]
 
-@[simp] lemma cast_nonpos : (n : α) ≤ 0 ↔ n = 0 := by norm_cast; omega
+@[simp] lemma cast_nonpos : (n : α) ≤ 0 ↔ n = 0 := by norm_cast; cutsat
 
 section
 variable [m.AtLeastTwo]

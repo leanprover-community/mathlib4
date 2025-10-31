@@ -70,7 +70,7 @@ namespace ProbabilityTheory.Kernel
 
 variable {α β γ Ω : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
   {mγ : MeasurableSpace γ} [MeasurableSpace.CountablyGenerated γ]
-  [MeasurableSpace Ω] [StandardBorelSpace Ω] [Nonempty Ω]
+  {mΩ : MeasurableSpace Ω} [StandardBorelSpace Ω] [Nonempty Ω]
 
 section Real
 
@@ -102,7 +102,7 @@ lemma isRatCondKernelCDFAux_density_Iic (κ : Kernel α (γ × ℝ)) [IsFiniteKe
       a s' ?_ ?_ (fun _ ↦ measurableSet_Iic)
     · exact fun i j hij ↦ Iic_subset_Iic.mpr (by exact mod_cast hs_mono hij)
     · ext x
-      simp only [mem_iUnion, mem_Iic, mem_univ, iff_true]
+      simp only [mem_iUnion, mem_univ, iff_true]
       rw [tendsto_atTop_atTop] at hs_tendsto
       have ⟨q, hq⟩ := exists_rat_gt x
       obtain ⟨i, hi⟩ := hs_tendsto q

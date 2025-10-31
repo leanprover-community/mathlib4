@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Integral.FinMeasAdditive
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
+import Mathlib.Analysis.Normed.Operator.Extend
 
 /-!
 # Extension of a linear function from indicators to L1
@@ -634,9 +634,6 @@ theorem setToFun_non_aestronglyMeasurable (hT : DominatedFinMeasAdditive μ T C)
     (hf : ¬AEStronglyMeasurable f μ) : setToFun μ T hT f = 0 :=
   setToFun_undef hT (not_and_of_not_left _ hf)
 
-@[deprecated (since := "2025-04-09")]
-alias setToFun_non_aEStronglyMeasurable := setToFun_non_aestronglyMeasurable
-
 theorem setToFun_congr_left (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (h : T = T') (f : α → E) :
     setToFun μ T hT f = setToFun μ T' hT' f := by
@@ -741,8 +738,8 @@ theorem setToFun_smul [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass �
     (hT : DominatedFinMeasAdditive μ T C) (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (c : 𝕜)
     (f : α → E) : setToFun μ T hT (c • f) = c • setToFun μ T hT f := by
   by_cases hf : Integrable f μ
-  · rw [setToFun_eq hT hf, setToFun_eq hT, Integrable.toL1_smul',
-      L1.setToL1_smul hT h_smul c _]
+  · rw [setToFun_eq hT hf, setToFun_eq hT (hf.smul c), Integrable.toL1_smul' f hf,
+      L1.setToL1_smul hT h_smul c]
   · by_cases hr : c = 0
     · rw [hr]; simp
     · have hf' : ¬Integrable (c • f) μ := by rwa [integrable_smul_iff hr f]
@@ -971,14 +968,13 @@ theorem setToFun_congr_measure_of_add_left {μ' : Measure α}
     setToFun (μ + μ') T hT_add f = setToFun μ' T hT f := by
   refine setToFun_congr_measure_of_integrable 1 one_ne_top ?_ hT_add hT f hf
   rw [one_smul]
-  nth_rw 1 [← zero_add μ']
-  exact add_le_add_right bot_le μ'
+  exact Measure.le_add_left le_rfl
 
 theorem setToFun_top_smul_measure (hT : DominatedFinMeasAdditive (∞ • μ) T C) (f : α → E) :
     setToFun (∞ • μ) T hT f = 0 := by
   refine setToFun_measure_zero' hT fun s _ hμs => ?_
   rw [lt_top_iff_ne_top] at hμs
-  simp only [true_and, Measure.smul_apply, ENNReal.mul_eq_top, eq_self_iff_true,
+  simp only [true_and, Measure.smul_apply, ENNReal.mul_eq_top,
     top_ne_zero, Ne, not_false_iff, not_or, Classical.not_not, smul_eq_mul] at hμs
   simp only [hμs.right, Measure.smul_apply, mul_zero, smul_eq_mul]
 

@@ -66,14 +66,14 @@ theorem isPell_norm : ∀ {b : ℤ√d}, IsPell b ↔ b * star b = 1
   | ⟨x, y⟩ => by simp [Zsqrtd.ext_iff, IsPell, mul_comm]; ring_nf
 
 theorem isPell_iff_mem_unitary : ∀ {b : ℤ√d}, IsPell b ↔ b ∈ unitary (ℤ√d)
-  | ⟨x, y⟩ => by rw [unitary.mem_iff, isPell_norm, mul_comm (star _), and_self_iff]
+  | ⟨x, y⟩ => by rw [Unitary.mem_iff, isPell_norm, mul_comm (star _), and_self_iff]
 
 theorem isPell_mul {b c : ℤ√d} (hb : IsPell b) (hc : IsPell c) : IsPell (b * c) :=
   isPell_norm.2 (by simp [mul_comm, mul_left_comm c, mul_assoc,
     star_mul, isPell_norm.1 hb, isPell_norm.1 hc])
 
 theorem isPell_star : ∀ {b : ℤ√d}, IsPell b ↔ IsPell (star b)
-  | ⟨x, y⟩ => by simp [IsPell, Zsqrtd.star_mk]
+  | ⟨x, y⟩ => by simp [IsPell]
 
 end
 
@@ -94,7 +94,7 @@ theorem d_pos : 0 < d a1 :=
 --@[nolint dup_namespace]
 def pell : ℕ → ℕ × ℕ
   | 0 => (1, 0)
-  | n+1 => ((pell n).1 * a + d a1 * (pell n).2, (pell n).1 + (pell n).2 * a)
+  | n + 1 => ((pell n).1 * a + d a1 * (pell n).2, (pell n).1 + (pell n).2 * a)
 
 /-- The Pell `x` sequence. -/
 def xn (n : ℕ) : ℕ :=
@@ -168,12 +168,16 @@ def pellZd (n : ℕ) : ℤ√(d a1) :=
   ⟨xn a1 n, yn a1 n⟩
 
 @[simp]
-theorem pellZd_re (n : ℕ) : (pellZd a1 n).re = xn a1 n :=
+theorem re_pellZd (n : ℕ) : (pellZd a1 n).re = xn a1 n :=
   rfl
 
+@[deprecated (since := "2025-08-31")] alias pellZd_re := re_pellZd
+
 @[simp]
-theorem pellZd_im (n : ℕ) : (pellZd a1 n).im = yn a1 n :=
+theorem im_pellZd (n : ℕ) : (pellZd a1 n).im = yn a1 n :=
   rfl
+
+@[deprecated (since := "2025-08-31")] alias pellZd_im := im_pellZd
 
 theorem isPell_nat {x y : ℕ} : IsPell (⟨x, y⟩ : ℤ√(d a1)) ↔ x * x - d a1 * y * y = 1 :=
   ⟨fun h =>
@@ -265,14 +269,14 @@ theorem eq_pell_lem : ∀ (n) (b : ℤ√(d a1)), 1 ≤ b → IsPell b →
                       (mul_le_mul_of_nonneg_left hn (le_trans zero_le_one h1)) a1p
               rw [bm, one_mul, mul_assoc, Eq.trans (mul_comm _ _) a1m, mul_one] at t
               exact ha t
-        simp only [sub_self, sub_neg_eq_add] at y0l; simp only [Zsqrtd.neg_re, add_neg_cancel,
-          Zsqrtd.neg_im, neg_neg] at yl2
+        simp only [sub_self, sub_neg_eq_add] at y0l; simp only [Zsqrtd.re_neg, add_neg_cancel,
+          Zsqrtd.im_neg, neg_neg] at yl2
         exact
           match y, y0l, (yl2 : (⟨_, _⟩ : ℤ√_) < ⟨_, _⟩) with
           | 0, y0l, _ => y0l (le_refl 0)
           | (y + 1 : ℕ), _, yl2 =>
             yl2
-              (Zsqrtd.le_of_le_le (by simp [sub_eq_add_neg])
+              (Zsqrtd.le_of_le_le (by simp)
                 (let t := Int.ofNat_le_ofNat_of_le (Nat.succ_pos y)
                 add_le_add t t))
           | Int.negSucc _, y0l, _ => y0l trivial
@@ -387,31 +391,27 @@ theorem y_dvd_iff (m n) : yn a1 m ∣ yn a1 n ↔ m ∣ n :=
 theorem xy_modEq_yn (n) :
     ∀ k, xn a1 (n * k) ≡ xn a1 n ^ k [MOD yn a1 n ^ 2] ∧ yn a1 (n * k) ≡
         k * xn a1 n ^ (k - 1) * yn a1 n [MOD yn a1 n ^ 3]
-  | 0 => by constructor <;> simpa using Nat.ModEq.refl _
+  | 0 => by simp [Nat.ModEq.refl]
   | k + 1 => by
     let ⟨hx, hy⟩ := xy_modEq_yn n k
     have L : xn a1 (n * k) * xn a1 n + d a1 * yn a1 (n * k) * yn a1 n ≡
-        xn a1 n ^ k * xn a1 n + 0 [MOD yn a1 n ^ 2] :=
-      (hx.mul_right _).add <|
-        modEq_zero_iff_dvd.2 <| by
-          rw [_root_.pow_succ]
-          exact
-            mul_dvd_mul_right
-              (dvd_mul_of_dvd_right
-                (modEq_zero_iff_dvd.1 <|
-                  (hy.of_dvd <| by simp [_root_.pow_succ]).trans <|
-                    modEq_zero_iff_dvd.2 <| by simp)
-                _) _
+        xn a1 n ^ k * xn a1 n + 0 [MOD yn a1 n ^ 2] := by
+      gcongr
+      rw [modEq_zero_iff_dvd, sq]
+      gcongr
+      apply dvd_mul_of_dvd_right
+      rw [← modEq_zero_iff_dvd]
+      refine (hy.of_dvd <| dvd_pow_self _ <| by decide).trans ?_
+      simp [modEq_zero_iff_dvd]
     have R : xn a1 (n * k) * yn a1 n + yn a1 (n * k) * xn a1 n ≡
-        xn a1 n ^ k * yn a1 n + k * xn a1 n ^ k * yn a1 n [MOD yn a1 n ^ 3] :=
-      ModEq.add
-          (by
-            rw [_root_.pow_succ]
-            exact hx.mul_right' _) <| by
-        have : k * xn a1 n ^ (k - 1) * yn a1 n * xn a1 n = k * xn a1 n ^ k * yn a1 n := by
+        xn a1 n ^ k * yn a1 n + k * xn a1 n ^ k * yn a1 n [MOD yn a1 n ^ 3] := by
+      gcongr ?_ + ?_
+      · rw [_root_.pow_succ]
+        exact hx.mul_right' _
+      · have : k * xn a1 n ^ (k - 1) * yn a1 n * xn a1 n = k * xn a1 n ^ k * yn a1 n := by
           rcases k with - | k <;> simp [_root_.pow_succ]; ring_nf
         rw [← this]
-        exact hy.mul_right _
+        gcongr
     rw [add_tsub_cancel_right, Nat.mul_succ, xn_add, yn_add, pow_succ (xn _ n), Nat.succ_mul,
       add_comm (k * xn _ n ^ k) (xn _ n ^ k), right_distrib]
     exact ⟨L, R⟩
@@ -449,7 +449,7 @@ theorem xy_succ_succ (n) :
   have := pellZd_succ_succ a1 n; unfold pellZd at this
   rw [Zsqrtd.nsmul_val (2 * a : ℕ)] at this
   injection this with h₁ h₂
-  constructor <;> apply Int.ofNat.inj <;> [simpa using h₁; simpa using h₂]
+  grind
 
 theorem xn_succ_succ (n) : xn a1 (n + 2) + xn a1 n = 2 * a * xn a1 (n + 1) :=
   (xy_succ_succ a1 n).1
@@ -473,7 +473,7 @@ theorem yn_modEq_a_sub_one : ∀ n, yn a1 n ≡ n [MOD a - 1]
 
 theorem yn_modEq_two : ∀ n, yn a1 n ≡ n [MOD 2]
   | 0 => by rfl
-  | 1 => by simp; rfl
+  | 1 => by simp [Nat.ModEq.refl]
   | n + 2 =>
     (yn_modEq_two n).add_right_cancel <| by
       rw [yn_succ_succ, mul_assoc, (by ring : n + 2 + n = 2 * (n + 1))]
@@ -490,12 +490,12 @@ end
 
 theorem x_sub_y_dvd_pow (y : ℕ) :
     ∀ n, (2 * a * y - y * y - 1 : ℤ) ∣ yz a1 n * (a - y) + ↑(y ^ n) - xz a1 n
-  | 0 => by simp [xz, yz, Int.ofNat_zero, Int.ofNat_one]
-  | 1 => by simp [xz, yz, Int.ofNat_zero, Int.ofNat_one]
+  | 0 => by simp [xz, yz]
+  | 1 => by simp [xz, yz]
   | n + 2 => by
     have : (2 * a * y - y * y - 1 : ℤ) ∣ ↑(y ^ (n + 2)) - ↑(2 * a) * ↑(y ^ (n + 1)) + ↑(y ^ n) :=
       ⟨-↑(y ^ n), by
-        simp [_root_.pow_succ, mul_add, Int.natCast_mul, show ((2 : ℕ) : ℤ) = 2 from rfl, mul_comm,
+        simp [_root_.pow_succ, mul_comm,
           mul_left_comm]
         ring⟩
     rw [xz_succ_succ, yz_succ_succ, x_sub_y_dvd_pow_lem ↑(y ^ (n + 2)) ↑(y ^ (n + 1)) ↑(y ^ n)]
@@ -581,13 +581,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
   | j + 1, ij, j2n, jnn, ntriv =>
     have lem2 : ∀ k > n, k ≤ 2 * n → (↑(xn a1 k % xn a1 n) : ℤ) =
         xn a1 n - xn a1 (2 * n - k) := fun k kn k2n => by
-      let k2nl :=
-        lt_of_add_lt_add_right <|
-          show 2 * n - k + k < n + k by
-            rw [tsub_add_cancel_of_le]
-            · rw [two_mul]
-              exact add_lt_add_left kn n
-            exact k2n
+      let k2nl : 2 * n - k < n := by cutsat
       have xle : xn a1 (2 * n - k) ≤ xn a1 n := le_of_lt <| strictMono_x a1 k2nl
       suffices xn a1 k % xn a1 n = xn a1 n - xn a1 (2 * n - k) by rw [this, Int.ofNat_sub xle]
       rw [← Nat.mod_eq_of_lt (Nat.sub_lt (x_pos a1 n) (x_pos a1 (2 * n - k)))]
@@ -691,12 +685,12 @@ theorem eq_of_xn_modEq' {i j n} (ipos : 0 < i) (hin : i ≤ n) (j4n : j ≤ 4 * 
           _root_.ne_of_gt ipos i0⟩)
     fun j2n : 2 * n < j =>
     suffices i = 4 * n - j by rw [this, add_tsub_cancel_of_le j4n]
-    have j42n : 4 * n - j ≤ 2 * n := by omega
+    have j42n : 4 * n - j ≤ 2 * n := by cutsat
     eq_of_xn_modEq a1 i2n j42n
       (h.symm.trans <| by
         let t := xn_modEq_x4n_sub a1 j42n
         rwa [tsub_tsub_cancel_of_le j4n] at t)
-      (by omega)
+      (by cutsat)
 
 theorem modEq_of_xn_modEq {i j n} (ipos : 0 < i) (hin : i ≤ n)
     (h : xn a1 j ≡ xn a1 i [MOD xn a1 n]) :
@@ -725,8 +719,8 @@ end
 
 theorem xy_modEq_of_modEq {a b c} (a1 : 1 < a) (b1 : 1 < b) (h : a ≡ b [MOD c]) :
     ∀ n, xn a1 n ≡ xn b1 n [MOD c] ∧ yn a1 n ≡ yn b1 n [MOD c]
-  | 0 => by constructor <;> rfl
-  | 1 => by simpa using ⟨h, ModEq.refl 1⟩
+  | 0 => by simp [Nat.ModEq.refl]
+  | 1 => by simpa [Nat.ModEq.refl]
   | n + 2 =>
     ⟨(xy_modEq_of_modEq a1 b1 h n).left.add_right_cancel <| by
         rw [xn_succ_succ a1, xn_succ_succ b1]
@@ -803,7 +797,7 @@ theorem matiyasevic {a k x y} :
             have iln : i ≤ n :=
               le_of_not_gt fun hin =>
                 not_lt_of_ge (Nat.le_of_dvd vp (dvd_of_mul_left_dvd yv)) (strictMono_y a1 hin)
-            have yd : 4 * yn a1 i ∣ 4 * n := mul_dvd_mul_left _ <| dvd_of_ysq_dvd a1 yv
+            have yd : 4 * yn a1 i ∣ 4 * n := by gcongr; exact dvd_of_ysq_dvd a1 yv
             have jk : j ≡ k [MOD 4 * yn a1 i] :=
               have : 4 * yn a1 i ∣ b - 1 :=
                 Int.natCast_dvd_natCast.1 <| by rw [Int.ofNat_sub (le_of_lt b1)]; exact bm1.symm.dvd
@@ -840,7 +834,7 @@ theorem eq_pow_of_pell_lem {a y k : ℕ} (hy0 : y ≠ 0) (hk0 : k ≠ 0) (hyk : 
     _ = 2 * a * y - y * y - 1 := by ring
 
 theorem eq_pow_of_pell {m n k} :
-    n ^ k = m ↔ k = 0 ∧ m = 1 ∨0 < k ∧ (n = 0 ∧ m = 0 ∨
+    n ^ k = m ↔ k = 0 ∧ m = 1 ∨ 0 < k ∧ (n = 0 ∧ m = 0 ∨
       0 < n ∧ ∃ (w a t z : ℕ) (a1 : 1 < a), xn a1 k ≡ yn a1 k * (a - n) + m [MOD t] ∧
       2 * a * n = t + (n * n + 1) ∧ m < t ∧
       n ≤ w ∧ k ≤ w ∧ a * a - ((w + 1) * (w + 1) - 1) * (w * z) * (w * z) = 1) := by

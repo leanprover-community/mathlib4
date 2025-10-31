@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Topology.UniformSpace.Ultra.Basic
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Rel
 
 /-!
 # Pseudometrics as bundled functions
@@ -65,7 +66,7 @@ instance : LE (PseudoMetric X R) := ⟨fun d d' ↦ ⇑d ≤ d'⟩
 
 @[simp, norm_cast]
 protected lemma coe_le_coe {d d' : PseudoMetric X R} :
-    (d : X → X → R) ≤ d' ↔ d ≤ d'  :=
+    (d : X → X → R) ≤ d' ↔ d ≤ d' :=
   Iff.rfl
 
 end Basic
@@ -114,8 +115,8 @@ protected lemma sup_apply [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [A
 instance [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [AddRightMono R] :
     SemilatticeSup (PseudoMetric X R) where
   sup := max
-  le_sup_left := by simp [← PseudoMetric.coe_le_coe, Pi.le_def]
-  le_sup_right := by simp [← PseudoMetric.coe_le_coe, Pi.le_def]
+  le_sup_left := by simp [← PseudoMetric.coe_le_coe]
+  le_sup_right := by simp [← PseudoMetric.coe_le_coe]
   sup_le _ _ _ := fun h h' _ _ ↦ sup_le (h _ _) (h' _ _)
 
 section OrderBot
@@ -139,7 +140,7 @@ lemma coe_finsetSup [IsOrderedAddMonoid R] {Y : Type*} {f : Y → PseudoMetric X
     ⇑(s.sup f) = s.sup' hs (f ·) := by
   induction hs using Finset.Nonempty.cons_induction with
   | singleton i => simp
-  | cons a s ha hs ih => funext; simp [hs, ih]
+  | cons a s ha hs ih => simp [hs, ih]
 
 lemma finsetSup_apply [IsOrderedAddMonoid R] {Y : Type*} {f : Y → PseudoMetric X R}
     {s : Finset Y} (hs : s.Nonempty) (x y : X) :
@@ -172,14 +173,14 @@ instance IsUltra.sup [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [AddRig
   intro x y z
   simp only [PseudoMetric.sup_apply]
   calc d x z ⊔ d' x z ≤ d x y ⊔ d y z ⊔ (d' x y ⊔ d' y z) := sup_le_sup le_sup le_sup
-  _ ≤ d x y ⊔ d' x y ⊔ (d y z ⊔ d' y z) := by simp [sup_comm, sup_assoc, sup_left_comm]
+  _ ≤ d x y ⊔ d' x y ⊔ (d y z ⊔ d' y z) := by simp [sup_comm, sup_left_comm]
 
 lemma IsUltra.finsetSup {Y : Type*} [AddCommMonoid R] [LinearOrder R] [AddLeftStrictMono R]
     [IsOrderedAddMonoid R] {f : Y → PseudoMetric X R} {s : Finset Y} (h : ∀ d ∈ s, IsUltra (f d)) :
     IsUltra (s.sup f) := by
   constructor
   intro x y z
-  rcases s.eq_empty_or_nonempty with rfl|hs
+  rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
   simp_rw [finsetSup_apply hs]
   apply Finset.sup'_le
@@ -195,23 +196,32 @@ end IsUltra
 
 section ball
 
-lemma isSymmetricRel_ball [Add R] [Zero R] [Preorder R] (d : PseudoMetric X R) {ε : R} :
-    IsSymmetricRel {xy | d xy.1 xy.2 < ε} := by
-  simp [IsSymmetricRel, d.symm]
+instance isSymm_ball [Add R] [Zero R] [Preorder R] (d : PseudoMetric X R) {ε : R} :
+    SetRel.IsSymm {xy | d xy.1 xy.2 < ε} where
+  symm := by simp [d.symm]
 
-lemma isSymmetricRel_closedBall [Add R] [Zero R] [LE R] (d : PseudoMetric X R) {ε : R} :
-    IsSymmetricRel {xy | d xy.1 xy.2 ≤ ε} := by
-  simp [IsSymmetricRel, d.symm]
+@[deprecated (since := "2025-10-17")] alias isSymmetricRel_ball := isSymm_ball
 
-lemma IsUltra.isTransitiveRel_ball [Add R] [Zero R] [LinearOrder R] (d : PseudoMetric X R)
+instance isSymm_closedBall [Add R] [Zero R] [LE R] (d : PseudoMetric X R) {ε : R} :
+    SetRel.IsSymm {xy | d xy.1 xy.2 ≤ ε} where
+  symm := by simp [d.symm]
+
+@[deprecated (since := "2025-10-17")] alias isSymmetricRel_closedBall := isSymm_closedBall
+
+instance IsUltra.isTrans_ball [Add R] [Zero R] [LinearOrder R] (d : PseudoMetric X R)
     [d.IsUltra] {ε : R} :
-    IsTransitiveRel {xy | d xy.1 xy.2 < ε} :=
-  fun _ _ _ hxy hyz ↦ le_sup.trans_lt (max_lt hxy hyz)
+      SetRel.IsTrans {xy | d xy.1 xy.2 < ε} where
+    trans _ _ _ hxy hyz := le_sup.trans_lt (max_lt hxy hyz)
 
-lemma IsUltra.isTransitiveRel_closedBall [Add R] [Zero R] [SemilatticeSup R] (d : PseudoMetric X R)
+@[deprecated (since := "2025-10-17")] alias IsUltra.isTransitiveRel_ball := IsUltra.isTrans_ball
+
+instance IsUltra.isTrans_closedBall [Add R] [Zero R] [SemilatticeSup R] (d : PseudoMetric X R)
     [d.IsUltra] {ε : R} :
-    IsTransitiveRel {xy | d xy.1 xy.2 ≤ ε} :=
-  fun _ _ _ hxy hyz ↦ le_sup.trans (sup_le hxy hyz)
+    SetRel.IsTrans {xy | d xy.1 xy.2 ≤ ε} where
+  trans _ _ _ hxy hyz := le_sup.trans (sup_le hxy hyz)
+
+@[deprecated (since := "2025-10-17")]
+alias IsUltra.isTransitiveRel_closedBall := IsUltra.isTrans_closedBall
 
 end ball
 

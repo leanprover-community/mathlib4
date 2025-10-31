@@ -52,7 +52,7 @@ theorem sup_empty : (∅ : Finset β).sup f = ⊥ :=
 theorem sup_cons {b : β} (h : b ∉ s) : (cons b s h).sup f = f b ⊔ s.sup f :=
   fold_cons h
 
-@[simp]
+@[simp, grind =]
 theorem sup_insert [DecidableEq β] {b : β} : (insert b s : Finset β).sup f = f b ⊔ s.sup f :=
   fold_insert_idem
 
@@ -109,6 +109,7 @@ lemma isLUB_sup_id {s : Finset α} : IsLUB s (s.sup id) := by simpa using isLUB_
 
 theorem le_sup_of_le {b : β} (hb : b ∈ s) (h : a ≤ f b) : a ≤ s.sup f := h.trans <| le_sup hb
 
+@[grind _=_]
 theorem sup_union [DecidableEq β] : (s₁ ∪ s₂).sup f = s₁.sup f ⊔ s₂.sup f :=
   eq_of_forall_ge_iff fun c => by simp [or_imp, forall_and]
 
@@ -125,11 +126,11 @@ theorem sup_ite (p : β → Prop) [DecidablePred p] :
     (s.sup fun i => ite (p i) (f i) (g i)) = (s.filter p).sup f ⊔ (s.filter fun i => ¬p i).sup g :=
   fold_ite _
 
-@[gcongr]
+@[gcongr, grind ←]
 theorem sup_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ≤ g b) : s.sup f ≤ s.sup g :=
   Finset.sup_le fun b hb => le_trans (h b hb) (le_sup hb)
 
-@[gcongr]
+@[gcongr, grind ←]
 theorem sup_mono (h : s₁ ⊆ s₂) : s₁.sup f ≤ s₂.sup f :=
   Finset.sup_le (fun _ hb => le_sup (h hb))
 
@@ -221,7 +222,7 @@ theorem sup_mem (s : Set α) (w₁ : ⊥ ∈ s) (w₂ : ∀ᵉ (x ∈ s) (y ∈ 
 
 @[simp]
 protected theorem sup_eq_bot_iff (f : β → α) (S : Finset β) : S.sup f = ⊥ ↔ ∀ s ∈ S, f s = ⊥ := by
-  classical induction' S using Finset.induction with a S _ hi <;> simp [*]
+  classical induction S using Finset.induction <;> simp [*]
 
 @[simp]
 lemma sup_disjSum (s : Finset β) (t : Finset γ) (f : β ⊕ γ → α) :
@@ -302,7 +303,7 @@ theorem inf_def : s.inf f = (s.1.map f).inf :=
 
 @[simp]
 theorem inf_empty : (∅ : Finset β).inf f = ⊤ :=
-  fold_empty
+  rfl
 
 @[simp]
 theorem inf_cons {b : β} (h : b ∉ s) : (cons b s h).inf f = f b ⊓ s.inf f :=
@@ -609,7 +610,7 @@ protected theorem sup_lt_iff (ha : ⊥ < a) : s.sup f < a ↔ ∀ b ∈ s, f b <
 theorem sup_mem_of_nonempty (hs : s.Nonempty) : s.sup f ∈ f '' s := by
   classical
   induction s using Finset.induction with
-  | empty => exfalso; simp only [Finset.not_nonempty_empty] at hs
+  | empty => simp only [Finset.not_nonempty_empty] at hs
   | insert a s _ h =>
     rw [Finset.sup_insert (b := a) (s := s) (f := f)]
     cases s.eq_empty_or_nonempty with
@@ -687,7 +688,7 @@ variable [SemilatticeSup α]
 
 theorem sup_of_mem {s : Finset β} (f : β → α) {b : β} (h : b ∈ s) :
     ∃ a : α, s.sup ((↑) ∘ f : β → WithBot α) = ↑a :=
-  Exists.imp (fun _ => And.left) (@le_sup (WithBot α) _ _ _ _ _ _ h (f b) rfl)
+  (WithBot.le_iff_forall.1 (le_sup (α := WithBot α) h) (f b) rfl).imp fun _ ↦ And.left
 
 /-- Given nonempty finset `s` then `s.sup' H f` is the supremum of its image under `f` in (possibly
 unbounded) join-semilattice `α`, where `H` is a proof of nonemptiness. If `α` has a bottom element
@@ -738,12 +739,8 @@ lemma sup'_eq_of_forall {a : α} (h : ∀ b ∈ s, f b = a) : s.sup' H f = a :=
     (le_sup'_of_le _ H.choose_spec (h _ H.choose_spec).ge)
 
 @[simp]
-theorem sup'_const (a : α) : s.sup' H (fun _ => a) = a := by
-  apply le_antisymm
-  · apply sup'_le
-    intros
-    exact le_rfl
-  · apply le_sup' (fun _ => a) H.choose_spec
+theorem sup'_const (a : α) : s.sup' H (fun _ => a) = a :=
+  sup'_eq_of_forall H (fun _ ↦ a) fun _ ↦ congrFun rfl
 
 theorem sup'_union [DecidableEq β] {s₁ s₂ : Finset β} (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty)
     (f : β → α) :
@@ -756,7 +753,7 @@ protected theorem sup'_comm {t : Finset γ} (hs : s.Nonempty) (ht : t.Nonempty) 
 
 theorem sup'_induction {p : α → Prop} (hp : ∀ a₁, p a₁ → ∀ a₂, p a₂ → p (a₁ ⊔ a₂))
     (hs : ∀ b ∈ s, p (f b)) : p (s.sup' H f) := by
-  show @WithBot.recBotCoe α (fun _ => Prop) True p ↑(s.sup' H f)
+  change @WithBot.recBotCoe α (fun _ => Prop) True p ↑(s.sup' H f)
   rw [coe_sup']
   refine sup_induction trivial (fun a₁ h₁ a₂ h₂ ↦ ?_) hs
   match a₁, a₂ with
@@ -790,7 +787,7 @@ theorem _root_.map_finset_sup' [SemilatticeSup β] [FunLike F α β] [SupHomClas
 theorem sup'_image [DecidableEq β] {s : Finset γ} {f : γ → β} (hs : (s.image f).Nonempty)
     (g : β → α) :
     (s.image f).sup' hs g = s.sup' hs.of_image (g ∘ f) := by
-  rw [← WithBot.coe_eq_coe]; simp only [coe_sup', sup_image, WithBot.coe_sup]; rfl
+  rw [← WithBot.coe_eq_coe]; simp only [coe_sup', sup_image]; rfl
 
 /-- A version of `Finset.sup'_image` with LHS and RHS reversed.
 Also, this lemma assumes that `s` is nonempty instead of assuming that its image is nonempty. -/
@@ -1074,7 +1071,7 @@ theorem lt_inf'_iff : a < s.inf' H f ↔ ∀ i ∈ s, a < f i :=
 
 theorem exists_mem_eq_sup' (f : ι → α) : ∃ i, i ∈ s ∧ s.sup' H f = f i := by
   induction H using Finset.Nonempty.cons_induction with
-  | singleton c =>  exact ⟨c, mem_singleton_self c, rfl⟩
+  | singleton c => exact ⟨c, mem_singleton_self c, rfl⟩
   | cons c s hcs hs ih =>
     rcases ih with ⟨b, hb, h'⟩
     rw [sup'_cons hs, h']
@@ -1122,14 +1119,14 @@ variable [DecidableEq α] {s : Finset ι} {f : ι → Finset α} {a : α}
 
 set_option linter.docPrime false in
 @[simp] lemma mem_sup' (hs) : a ∈ s.sup' hs f ↔ ∃ i ∈ s, a ∈ f i := by
-  induction' hs using Nonempty.cons_induction <;> simp [*]
+  induction hs using Nonempty.cons_induction <;> simp [*]
 
 set_option linter.docPrime false in
 @[simp] lemma mem_inf' (hs) : a ∈ s.inf' hs f ↔ ∀ i ∈ s, a ∈ f i := by
-  induction' hs using Nonempty.cons_induction <;> simp [*]
+  induction hs using Nonempty.cons_induction <;> simp [*]
 
 @[simp] lemma mem_sup : a ∈ s.sup f ↔ ∃ i ∈ s, a ∈ f i := by
-  induction' s using cons_induction <;> simp [*]
+  induction s using cons_induction <;> simp [*]
 
 @[simp]
 theorem sup_singleton_apply (s : Finset β) (f : β → α) :

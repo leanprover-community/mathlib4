@@ -43,7 +43,7 @@ theorem tendsto_rpow_neg_atTop {y : ℝ} (hy : 0 < y) : Tendsto (fun x : ℝ => 
 open Asymptotics in
 lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 1) :
     Tendsto (b ^ · : ℝ → ℝ) atTop (𝓝 (0 : ℝ)) := by
-  rcases lt_trichotomy b 0 with hb|rfl|hb
+  rcases lt_trichotomy b 0 with hb | rfl | hb
   case inl => -- b < 0
     simp_rw [Real.rpow_def_of_nonpos hb.le, hb.ne, ite_false]
     rw [← isLittleO_const_iff (c := (1 : ℝ)) one_ne_zero, (one_mul (1 : ℝ)).symm]
@@ -66,12 +66,6 @@ lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 
     refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_of_neg ?_).mpr tendsto_id
     exact (log_neg_iff hb).mpr hb₁
 
-lemma tendsto_rpow_atTop_of_base_gt_one (b : ℝ) (hb : 1 < b) :
-    Tendsto (b ^ · : ℝ → ℝ) atBot (𝓝 (0 : ℝ)) := by
-  simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
-  refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_of_pos ?_).mpr tendsto_id
-  exact (log_pos_iff (by positivity)).mpr <| by aesop
-
 lemma tendsto_rpow_atBot_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1) :
     Tendsto (b ^ · : ℝ → ℝ) atBot atTop := by
   simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
@@ -81,9 +75,11 @@ lemma tendsto_rpow_atBot_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1
 lemma tendsto_rpow_atBot_of_base_gt_one (b : ℝ) (hb : 1 < b) :
     Tendsto (b ^ · : ℝ → ℝ) atBot (𝓝 0) := by
   simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
-  refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_iff_pos <| tendsto_id (α := ℝ)).mpr ?_
+  refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_of_pos ?_).mpr tendsto_id
   exact (log_pos_iff (by positivity)).mpr <| by aesop
 
+@[deprecated (since := "2025-08-24")]
+alias tendsto_rpow_atTop_of_base_gt_one := tendsto_rpow_atBot_of_base_gt_one
 
 /-- The function `x ^ (a / (b * x + c))` tends to `1` at `+∞`, for any real numbers `a`, `b`, and
 `c` such that `b` is nonzero. -/
@@ -192,7 +188,7 @@ theorem isBigO_cpow_rpow (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|)
     _ =Θ[l] (show α → ℝ from fun x => ‖f x‖ ^ (g x).re / (1 : ℝ)) :=
       ((isTheta_refl _ _).div (isTheta_exp_arg_mul_im hl))
     _ =ᶠ[l] (show α → ℝ from fun x => ‖f x‖ ^ (g x).re) := by
-      simp only [ofReal_one, div_one, EventuallyEq.rfl]
+      simp only [div_one, EventuallyEq.rfl]
 
 theorem isTheta_cpow_rpow (hl_im : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|)
     (hl : ∀ᶠ x in l, f x = 0 → re (g x) = 0 → g x = 0) :
@@ -204,7 +200,7 @@ theorem isTheta_cpow_rpow (hl_im : IsBoundedUnder (· ≤ ·) l fun x => |(g x).
     _ =Θ[l] fun x => ‖f x‖ ^ (g x).re / (1 : ℝ) :=
       (isTheta_refl _ _).div (isTheta_exp_arg_mul_im hl_im)
     _ =ᶠ[l] (fun x => ‖f x‖ ^ (g x).re) := by
-      simp only [ofReal_one, div_one, EventuallyEq.rfl]
+      simp only [div_one, EventuallyEq.rfl]
 
 theorem isTheta_cpow_const_rpow {b : ℂ} (hl : b.re = 0 → b ≠ 0 → ∀ᶠ x in l, f x ≠ 0) :
     (fun x => f x ^ b) =Θ[l] fun x => ‖f x‖ ^ b.re :=
@@ -227,7 +223,7 @@ theorem IsBigOWith.rpow (h : IsBigOWith c l f g) (hc : 0 ≤ c) (hr : 0 ≤ r) (
   filter_upwards [hg, h.bound] with x hgx hx
   calc
     |f x ^ r| ≤ |f x| ^ r := abs_rpow_le_abs_rpow _ _
-    _ ≤ (c * |g x|) ^ r := rpow_le_rpow (abs_nonneg _) hx hr
+    _ ≤ (c * |g x|) ^ r := by gcongr; assumption
     _ = c ^ r * |g x ^ r| := by rw [mul_rpow hc (abs_nonneg _), abs_rpow_of_nonneg hgx]
 
 theorem IsBigO.rpow (hr : 0 ≤ r) (hg : 0 ≤ᶠ[l] g) (h : f =O[l] g) :
@@ -322,7 +318,7 @@ theorem isLittleO_exp_neg_mul_rpow_atTop {a : ℝ} (ha : 0 < a) (b : ℝ) :
     exact (ht.ne' h.1).elim
   · refine (tendsto_exp_mul_div_rpow_atTop (-b) a ha).inv_tendsto_atTop.congr' ?_
     refine (eventually_ge_atTop 0).mono fun t ht => ?_
-    field_simp [Real.exp_neg, rpow_neg ht]
+    simp [field, Real.exp_neg, rpow_neg ht]
 
 theorem isLittleO_log_rpow_atTop {r : ℝ} (hr : 0 < r) : log =o[atTop] fun x => x ^ r :=
   calc
@@ -357,32 +353,20 @@ theorem isLittleO_abs_log_rpow_rpow_nhdsGT_zero {s : ℝ} (r : ℝ) (hs : s < 0)
     (eventually_mem_nhdsWithin.mono fun x hx => by
       rw [Function.comp_apply, inv_rpow hx.out.le, rpow_neg hx.out.le, inv_inv])
 
-@[deprecated (since := "2025-03-02")]
-alias isLittleO_abs_log_rpow_rpow_nhds_zero := isLittleO_abs_log_rpow_rpow_nhdsGT_zero
-
 theorem isLittleO_log_rpow_nhdsGT_zero {r : ℝ} (hr : r < 0) : log =o[𝓝[>] 0] fun x => x ^ r :=
   (isLittleO_abs_log_rpow_rpow_nhdsGT_zero 1 hr).neg_left.congr'
     (mem_of_superset (Icc_mem_nhdsGT one_pos) fun x hx => by
       simp [abs_of_nonpos (log_nonpos hx.1 hx.2)])
     .rfl
 
-@[deprecated (since := "2025-03-02")]
-alias isLittleO_log_rpow_nhds_zero := isLittleO_log_rpow_nhdsGT_zero
-
 theorem tendsto_log_div_rpow_nhdsGT_zero {r : ℝ} (hr : r < 0) :
     Tendsto (fun x => log x / x ^ r) (𝓝[>] 0) (𝓝 0) :=
   (isLittleO_log_rpow_nhdsGT_zero hr).tendsto_div_nhds_zero
-
-@[deprecated (since := "2025-03-02")]
-alias tendsto_log_div_rpow_nhds_zero := tendsto_log_div_rpow_nhdsGT_zero
 
 theorem tendsto_log_mul_rpow_nhdsGT_zero {r : ℝ} (hr : 0 < r) :
     Tendsto (fun x => log x * x ^ r) (𝓝[>] 0) (𝓝 0) :=
   (tendsto_log_div_rpow_nhdsGT_zero <| neg_lt_zero.2 hr).congr' <|
     eventually_mem_nhdsWithin.mono fun x hx => by rw [rpow_neg hx.out.le, div_inv_eq_mul]
-
-@[deprecated (since := "2025-03-02")]
-alias tendsto_log_mul_rpow_nhds_zero := tendsto_log_mul_rpow_nhdsGT_zero
 
 lemma tendsto_log_mul_self_nhdsLT_zero : Filter.Tendsto (fun x ↦ log x * x) (𝓝[<] 0) (𝓝 0) := by
   have h := tendsto_log_mul_rpow_nhdsGT_zero zero_lt_one
@@ -397,6 +381,3 @@ lemma tendsto_log_mul_self_nhdsLT_zero : Filter.Tendsto (fun x ↦ log x * x) (�
   refine nhdsWithin_mono 0 (fun x hx ↦ ?_)
   simp only [Set.mem_Iio] at hx
   simp only [Set.mem_compl_iff, Set.mem_singleton_iff, hx.ne, not_false_eq_true]
-
-@[deprecated (since := "2025-03-02")]
-alias tendsto_log_mul_self_nhds_zero_left := tendsto_log_mul_self_nhdsLT_zero

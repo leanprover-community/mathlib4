@@ -3,7 +3,6 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Chain
 import Mathlib.Data.Multiset.Sort
 import Mathlib.Logic.Equiv.List
 
@@ -72,20 +71,25 @@ theorem raise_lower : ∀ {l n}, List.Sorted (· ≤ ·) (n :: l) → raise (low
     have : n ≤ m := List.rel_of_sorted_cons h _ List.mem_cons_self
     simp [raise, lower, Nat.sub_add_cancel this, raise_lower h.of_cons]
 
-theorem raise_chain : ∀ l n, List.Chain (· ≤ ·) n (raise l n)
-  | [], _ => List.Chain.nil
-  | _ :: _, _ => List.Chain.cons (Nat.le_add_left _ _) (raise_chain _ _)
+theorem isChain_raise : ∀ l n, List.IsChain (· ≤ ·) (raise l n)
+  | [], _ => .nil
+  | [_], _ => .singleton _
+  | _ :: _ :: _, _ => .cons_cons (Nat.le_add_left _ _) (isChain_raise (_ :: _) _)
+
+theorem isChain_cons_raise (l n) : List.IsChain (· ≤ ·) (n :: raise l n) :=
+  isChain_raise (n :: l) 0
+
+@[deprecated (since := "2025-09-19")]
+alias raise_chain := isChain_cons_raise
 
 /-- `raise l n` is a non-decreasing sequence. -/
-theorem raise_sorted : ∀ l n, List.Sorted (· ≤ ·) (raise l n)
-  | [], _ => List.sorted_nil
-  | _ :: _, _ => List.chain_iff_pairwise.1 (raise_chain _ _)
+theorem raise_sorted (l n) : List.Sorted (· ≤ ·) (raise l n) := (isChain_raise _ _).pairwise
 
 /-- If `α` is denumerable, then so is `Multiset α`. Warning: this is *not* the same encoding as used
 in `Multiset.encodable`. -/
 instance multiset : Denumerable (Multiset α) :=
   mk'
-    ⟨fun s : Multiset α => encode <| lower ((s.map encode).sort (· ≤ ·)) 0,
+    ⟨fun s : Multiset α => encode <| lower (s.map encode).sort 0,
      fun n =>
       Multiset.map (ofNat α) (raise (ofNat (List ℕ) n) 0),
      fun s => by

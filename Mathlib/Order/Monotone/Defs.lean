@@ -455,17 +455,19 @@ theorem monotone_fst : Monotone (@Prod.fst α β) := fun _ _ ↦ And.left
 
 theorem monotone_snd : Monotone (@Prod.snd α β) := fun _ _ ↦ And.right
 
+theorem monotone_prodMk_iff {f : γ → α} {g : γ → β} :
+    Monotone (fun x => (f x, g x)) ↔ Monotone f ∧ Monotone g := by
+  simp_rw [Monotone, Prod.mk_le_mk, forall_and]
+
+theorem Monotone.prodMk {f : γ → α} {g : γ → β} (hf : Monotone f) (hg : Monotone g) :
+    Monotone (fun x => (f x, g x)) :=
+  monotone_prodMk_iff.2 ⟨hf, hg⟩
+
 theorem Monotone.prodMap (hf : Monotone f) (hg : Monotone g) : Monotone (Prod.map f g) :=
   fun _ _ h ↦ ⟨hf h.1, hg h.2⟩
 
-@[deprecated (since := "2025-04-18")]
-alias Monotone.prod_map := Monotone.prodMap
-
 theorem Antitone.prodMap (hf : Antitone f) (hg : Antitone g) : Antitone (Prod.map f g) :=
   fun _ _ h ↦ ⟨hf h.1, hg h.2⟩
-
-@[deprecated (since := "2025-04-18")]
-alias Antitone.prod_map := Antitone.prodMap
 
 lemma monotone_prod_iff {h : α × β → γ} :
     Monotone h ↔ (∀ a, Monotone (fun b => h (a, b))) ∧ (∀ b, Monotone (fun a => h (a, b))) where
@@ -490,16 +492,10 @@ theorem StrictMono.prodMap (hf : StrictMono f) (hg : StrictMono g) : StrictMono 
   simp only [Prod.lt_iff]
   exact Or.imp (And.imp hf.imp hg.monotone.imp) (And.imp hf.monotone.imp hg.imp)
 
-@[deprecated (since := "2025-04-18")]
-alias StrictMono.prod_map := StrictMono.prodMap
-
 theorem StrictAnti.prodMap (hf : StrictAnti f) (hg : StrictAnti g) : StrictAnti (Prod.map f g) :=
   fun a b ↦ by
   simp only [Prod.lt_iff]
   exact Or.imp (And.imp hf.imp hg.antitone.imp) (And.imp hf.antitone.imp hg.imp)
-
-@[deprecated (since := "2025-04-18")]
-alias StrictAnti.prod_map := StrictAnti.prodMap
 
 end PartialOrder
 
