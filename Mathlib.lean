@@ -673,6 +673,7 @@ import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Module.Bimodule
 import Mathlib.Algebra.Module.Card
 import Mathlib.Algebra.Module.CharacterModule
+import Mathlib.Algebra.Module.Congruence.Defs
 import Mathlib.Algebra.Module.DedekindDomain
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Module.End
