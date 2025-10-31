@@ -36,11 +36,6 @@ instance {H : G.Subgraph} : CoeFun H.Preconnected (fun _ => ∀ u v : H.verts, H
 protected lemma preconnected_iff {H : G.Subgraph} :
     H.Preconnected ↔ H.coe.Preconnected := ⟨fun ⟨h⟩ => h, .mk⟩
 
-lemma preconnected_bot {H : G.Subgraph} (h : H.verts.Subsingleton) (eq_bot : H = ⊥)
-    : (⊥ : G.Subgraph).Preconnected := by
-  rw [Subgraph.preconnected_iff, coe_bot, ← eq_bot]
-  exact @SimpleGraph.preconnected_bot _ ((H.verts.subsingleton_coe).mpr h)
-
 /-- A subgraph is connected if it is connected when coerced to be a simple graph.
 
 Note: This is a structure to make it so one can be precise about how dot notation resolves. -/
