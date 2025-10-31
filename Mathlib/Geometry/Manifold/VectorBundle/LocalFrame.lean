@@ -321,9 +321,6 @@ noncomputable def localFrame
   -- idea: take the vector b i and apply the trivialisation e to it.
   if hx : x ∈ e.baseSet then b.localFrame_toBasis_at e hx i else 0
 
--- TODO: understand why this isn’t already a simp lemma
-attribute [simp] Trivialization.apply_mk_symm
-
 omit [IsManifold I 0 M] in
 /-- Each local frame `s^i ∈ Γ(E)` of a `C^k` vector bundle, defined by a local trivialisation `e`,
 is `C^k` on `e.baseSet`. -/
