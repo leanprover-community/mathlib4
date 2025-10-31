@@ -31,7 +31,7 @@ choosing between `insert` and `Finset.cons`, or between `Finset.union` and `Fins
 * `Finset.subtype`: `s.subtype p` is the finset of `Subtype p` whose elements belong to `s`.
 * `Finset.fin`:`s.fin n` is the finset of all elements of `s` less than `n`.
 -/
-assert_not_exists Monoid OrderedCommMonoid
+assert_not_exists Monoid IsOrderedMonoid
 
 variable {α β γ : Type*}
 
@@ -477,7 +477,14 @@ theorem attach_image_val [DecidableEq α] {s : Finset α} : s.attach.image Subty
   eq_of_veq <| by rw [image_val, attach_val, Multiset.attach_map_val, dedup_eq_self]
 
 @[simp]
-theorem attach_insert [DecidableEq α] {a : α} {s : Finset α} :
+lemma attach_cons (a : α) (s : Finset α) (ha) :
+    attach (cons a s ha) =
+      cons ⟨a, mem_cons_self a s⟩
+        ((attach s).map ⟨fun x ↦ ⟨x.1, mem_cons_of_mem x.2⟩, fun x y => by simp⟩)
+          (by simpa) := by ext ⟨x, hx⟩; simpa using hx
+
+@[simp]
+theorem attach_insert [DecidableEq α] (s : Finset α) (a : α) :
     attach (insert a s) =
       insert (⟨a, mem_insert_self a s⟩ : { x // x ∈ insert a s })
         ((attach s).image fun x => ⟨x.1, mem_insert_of_mem x.2⟩) :=
