@@ -221,7 +221,7 @@ end PseudoEMetricSpace
 namespace PseudoMetricSpace
 variable {X : Type*} (m : PseudoMetricSpace X) (d : X → X → ℝ) (hd : d = dist)
 
-/-- Build new pseudometric space from an old one where the distance are provably (but typically
+/-- Build new pseudometric space from an old one where the distance is provably (but typically
 non-definitionally) equal to some given distance. We also provide convenience versions for
 PseudoEMetric, Emetric and Metric spaces. -/
 -- See note [forgetful inheritance]
