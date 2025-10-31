@@ -17,7 +17,7 @@ In this file,
 - for each `i : ι`, `g i x` is a continuous linear map `F i → G i`, depending on a parameter `x : E`;
 
 Given this data, for each `x` we can define a continuous multilinear map from `Π i, F i` to `H`
-given by `(f x).compContinuousLinearMap (fun i ↦ g i x) v = f (fun i ↦ g i (v i))`.
+given by `(f x).compContinuousLinearMap (fun i ↦ g i x) v = f x (fun i ↦ g i x (v i))`.
 
 As a map between functional spaces,
 `ContinuousMultilinearMap.compContinuousLinearMap` is multilinear in `(f; g i)`.
