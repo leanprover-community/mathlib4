@@ -630,7 +630,7 @@ def inductionOn (motive : RelSeries r → Sort*)
     | zero =>
       convert singleton p.head
       ext n
-      exact heq
+      · exact heq
       simp [show n = 0 by cutsat, apply_zero]
     | succ d hd =>
       have lq := p.tail_length (heq ▸ d.zero_ne_add_one.symm)
@@ -899,9 +899,6 @@ protected noncomputable def withLength [InfiniteDimensionalOrder α] (n : ℕ) :
 /-- if `α` is infinite dimensional, then `α` is nonempty. -/
 lemma nonempty_of_infiniteDimensionalOrder [InfiniteDimensionalOrder α] : Nonempty α :=
   ⟨LTSeries.withLength α 0 0⟩
-
-@[deprecated (since := "2025-03-01")]
-alias nonempty_of_infiniteDimensionalType := nonempty_of_infiniteDimensionalOrder
 
 lemma nonempty_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : Nonempty α := by
   obtain ⟨p, _⟩ := (SetRel.finiteDimensional_iff _).mp ‹_›

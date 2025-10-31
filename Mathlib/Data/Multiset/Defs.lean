@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Perm.Subperm
+import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Quot
 import Mathlib.Order.Monotone.Defs
 import Mathlib.Order.RelClasses
@@ -223,21 +224,20 @@ def card : Multiset α → ℕ := Quot.lift length fun _l₁ _l₂ => Perm.lengt
 theorem coe_card (l : List α) : card (l : Multiset α) = length l :=
   rfl
 
-@[gcongr]
 theorem card_le_card {s t : Multiset α} (h : s ≤ t) : card s ≤ card t :=
   leInductionOn h Sublist.length_le
 
 theorem eq_of_le_of_card_le {s t : Multiset α} (h : s ≤ t) : card t ≤ card s → s = t :=
   leInductionOn h fun s h₂ => congr_arg _ <| s.eq_of_length_le h₂
 
-@[gcongr]
 theorem card_lt_card {s t : Multiset α} (h : s < t) : card s < card t :=
   lt_of_not_ge fun h₂ => _root_.ne_of_lt h <| eq_of_le_of_card_le (le_of_lt h) h₂
 
-@[mono]
+@[gcongr, mono]
 theorem card_mono : Monotone (@card α) := fun _a _b => card_le_card
 
-lemma card_strictMono : StrictMono (card : Multiset α → ℕ) := fun _ _ ↦ card_lt_card
+@[gcongr]
+lemma card_strictMono : StrictMono (@card α) := fun _ _ ↦ card_lt_card
 
 /-- Another way of expressing `strongInductionOn`: the `(<)` relation is well-founded. -/
 instance instWellFoundedLT : WellFoundedLT (Multiset α) :=
