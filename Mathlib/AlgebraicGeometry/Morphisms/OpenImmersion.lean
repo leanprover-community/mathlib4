@@ -42,7 +42,7 @@ lemma isOpenImmersion_SpecMap_iff_of_surjective {R S : CommRingCat}
       have : IsLocalization.Away (1 - e) (↑R ⧸ Ideal.span {e}) :=
         IsLocalization.away_of_isIdempotentElem he.one_sub (by simp) Ideal.Quotient.mk_surjective
       IsOpenImmersion.of_isLocalization (1 - e)
-    have H : Set.range (Spec.map φ).base = Set.range (Spec.map f).base :=
+    have H : Set.range (Spec.map φ) = Set.range (Spec.map f) :=
       ((PrimeSpectrum.range_comap_of_surjective _ _
         Ideal.Quotient.mk_surjective).trans (by simp)).trans he'.symm
     let i : S ≅ .of _ := (Scheme.Spec.preimageIso
@@ -62,10 +62,10 @@ lemma isOpenImmersion_SpecMap_iff_of_surjective {R S : CommRingCat}
 variable {X Y : Scheme.{u}}
 
 theorem isOpenImmersion_iff_stalk {f : X ⟶ Y} : IsOpenImmersion f ↔
-    IsOpenEmbedding f.base ∧ ∀ x, IsIso (f.stalkMap x) := IsOpenImmersion.iff_isIso_stalkMap f
+    IsOpenEmbedding f ∧ ∀ x, IsIso (f.stalkMap x) := IsOpenImmersion.iff_isIso_stalkMap f
 
 theorem IsOpenImmersion.of_openCover_source (f : X ⟶ Y)
-    (𝒰 : X.OpenCover) (hf : Function.Injective f.base) (h𝒰 : ∀ i, IsOpenImmersion (𝒰.f i ≫ f)) :
+    (𝒰 : X.OpenCover) (hf : Function.Injective f) (h𝒰 : ∀ i, IsOpenImmersion (𝒰.f i ≫ f)) :
     IsOpenImmersion f := by
   refine isOpenImmersion_iff_stalk.mpr ⟨.of_continuous_injective_isOpenMap f.continuous hf ?_, ?_⟩
   · intro U hU
@@ -78,13 +78,13 @@ theorem IsOpenImmersion.of_openCover_source (f : X ⟶ Y)
     infer_instance
 
 lemma IsOpenImmersion.of_forall_source_exists (f : X ⟶ Y)
-    (hf : Function.Injective f.base)
+    (hf : Function.Injective f)
     (hX : ∀ x, ∃ (U : Scheme) (i : U ⟶ X) (_ : IsOpenImmersion i),
       x ∈ i.opensRange ∧ IsOpenImmersion (i ≫ f)) :
     IsOpenImmersion f := by
   choose U i _ hxi hi using hX
   let 𝒰 : X.OpenCover := ⟨⟨X, U, i⟩,
-    ⟨by simpa using show ∀ x, ∃ j y, (i j).base y = x from (⟨_, hxi ·⟩), by simpa⟩⟩
+    ⟨by simpa using show ∀ x, ∃ j y, i j y = x from (⟨_, hxi ·⟩), by simpa⟩⟩
   exact IsOpenImmersion.of_openCover_source f 𝒰 hf hi
 
 theorem isOpenImmersion_eq_inf :

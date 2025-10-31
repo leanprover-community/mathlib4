@@ -548,7 +548,7 @@ noncomputable def toMeromorphicNFOn :
   · exact 0
 
 /--
-If `f` is not meromorphic on `U`, conversion to normal form  maps the function
+If `f` is not meromorphic on `U`, conversion to normal form maps the function
 to `0`.
 -/
 @[simp] lemma toMeromorphicNFOn_of_not_meromorphicOn (hf : ¬MeromorphicOn f U) :

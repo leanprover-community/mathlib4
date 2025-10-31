@@ -660,7 +660,7 @@ theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, 2 ^ x < #α) {r : α �
   apply le_antisymm
   · have : { s : Set α | Bounded r s } = ⋃ i, 𝒫{ j | r j i } := setOf_exists _
     rw [← coe_setOf, this]
-    refine mk_iUnion_le_sum_mk.trans ((sum_le_iSup (fun i => #(𝒫{ j | r j i }))).trans
+    refine mk_iUnion_le_sum_mk.trans ((sum_le_mk_mul_iSup (fun i => #(𝒫{ j | r j i }))).trans
       ((mul_le_max_of_aleph0_le_left ha).trans ?_))
     rw [max_eq_left]
     apply ciSup_le' _

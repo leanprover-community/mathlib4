@@ -23,7 +23,7 @@ import Mathlib.Algebra.GroupWithZero.Nat
 natural numbers, integers, normalization monoid, gcd monoid, greatest common divisor
 -/
 
-assert_not_exists OrderedCommMonoid
+assert_not_exists IsOrderedMonoid
 
 /-- `ℕ` is a gcd_monoid. -/
 instance : GCDMonoid ℕ where

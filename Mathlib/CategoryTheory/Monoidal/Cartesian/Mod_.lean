@@ -12,6 +12,7 @@ import Mathlib.CategoryTheory.Monoidal.Mod_
 
 open CategoryTheory MonoidalCategory CartesianMonoidalCategory
 
+namespace CategoryTheory
 universe v u
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
 
@@ -29,3 +30,5 @@ attribute [local instance] ModObj.trivialAction in
 @[simps]
 def Mod_.trivialAction (M : Mon C) (X : C) : Mod_ C M.X where
   X := X
+
+end CategoryTheory

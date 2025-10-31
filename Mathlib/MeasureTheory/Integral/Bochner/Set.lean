@@ -561,15 +561,9 @@ theorem norm_setIntegral_le_of_norm_le_const_ae' {C : ℝ} (hs : μ s < ∞)
     simp only [norm_zero, ge_iff_le]
     positivity
 
-@[deprecated (since := "2025-04-17")]
-alias norm_setIntegral_le_of_norm_le_const_ae'' := norm_setIntegral_le_of_norm_le_const_ae'
-
 theorem norm_setIntegral_le_of_norm_le_const {C : ℝ} (hs : μ s < ∞) (hC : ∀ x ∈ s, ‖f x‖ ≤ C) :
     ‖∫ x in s, f x ∂μ‖ ≤ C * μ.real s :=
   norm_setIntegral_le_of_norm_le_const_ae' hs (Eventually.of_forall hC)
-
-@[deprecated (since := "2025-04-17")]
-alias norm_setIntegral_le_of_norm_le_const' := norm_setIntegral_le_of_norm_le_const
 
 theorem norm_integral_sub_setIntegral_le [IsFiniteMeasure μ] {C : ℝ}
     (hf : ∀ᵐ (x : X) ∂μ, ‖f x‖ ≤ C) {s : Set X} (hs : MeasurableSet s) (hf1 : Integrable f μ) :

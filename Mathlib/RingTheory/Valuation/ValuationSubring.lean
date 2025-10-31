@@ -390,8 +390,7 @@ theorem isEquiv_iff_valuationSubring :
 theorem isEquiv_valuation_valuationSubring : v.IsEquiv v.valuationSubring.valuation := by
   rw [isEquiv_iff_val_le_one]
   intro x
-  rw [ValuationSubring.valuation_le_one_iff]
-  rfl
+  rw [ValuationSubring.valuation_le_one_iff, mem_valuationSubring_iff]
 
 lemma valuationSubring.integers : v.Integers v.valuationSubring :=
   Valuation.integer.integers _

@@ -491,7 +491,7 @@ theorem inner_le_Lp_mul_Lq (f g : ι → ℝ≥0) {p q : ℝ} (hpq : p.HolderCon
   suffices (∑ i ∈ s, f' i * g' i) ≤ 1 by
     simp_rw [f', g', div_mul_div_comm, ← sum_div] at this
     rwa [div_le_iff₀, one_mul] at this
-    -- TODO: We are missing a positivity  extension here
+    -- TODO: We are missing a positivity extension here
     exact mul_pos (rpow_pos hf) (rpow_pos hg)
   refine inner_le_Lp_mul_Lp_of_norm_le_one s f' g' hpq (le_of_eq ?_) (le_of_eq ?_)
   · simp_rw [f', div_rpow, ← sum_div, ← rpow_mul, one_div, inv_mul_cancel₀ hpq.ne_zero, rpow_one,

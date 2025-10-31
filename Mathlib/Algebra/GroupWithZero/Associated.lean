@@ -15,7 +15,7 @@ Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
 -/
 
-assert_not_exists OrderedCommMonoid Multiset Ring
+assert_not_exists IsOrderedMonoid Multiset Ring
 
 variable {M : Type*}
 
@@ -464,8 +464,6 @@ theorem mk_mul_mk {x y : M} : Associates.mk x * Associates.mk y = Associates.mk 
   rfl
 
 instance instCommMonoid : CommMonoid (Associates M) where
-  one := 1
-  mul := (· * ·)
   mul_one a' := Quotient.inductionOn a' fun a => show ⟦a * 1⟧ = ⟦a⟧ by simp
   one_mul a' := Quotient.inductionOn a' fun a => show ⟦1 * a⟧ = ⟦a⟧ by simp
   mul_assoc a' b' c' :=
