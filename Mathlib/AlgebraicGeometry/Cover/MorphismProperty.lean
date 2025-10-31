@@ -40,7 +40,7 @@ variable (K : Precoverage Scheme.{u})
 is jointly surjective. -/
 class JointlySurjective (K : Precoverage Scheme.{u}) : Prop where
   exists_eq {X : Scheme.{u}} (S : Presieve X) (hS : S ∈ K X) (x : X) :
-    ∃ (Y : Scheme.{u}) (g : Y ⟶ X), S g ∧ x ∈ Set.range g.base
+    ∃ (Y : Scheme.{u}) (g : Y ⟶ X), S g ∧ x ∈ Set.range g
 
 /-- A cover of `X` in the coverage `K` is a `0`-hypercover for `K`. -/
 abbrev Cover (K : Precoverage Scheme.{u}) := Precoverage.ZeroHypercover.{v} K
@@ -51,7 +51,7 @@ variable {X Y Z : Scheme.{u}} (𝒰 : X.Cover K) (f : X ⟶ Z) (g : Y ⟶ Z)
 variable [∀ x, HasPullback (𝒰.f x ≫ f) g]
 
 lemma Cover.exists_eq [JointlySurjective K] (𝒰 : X.Cover K) (x : X) :
-    ∃ i y, (𝒰.f i).base y = x := by
+    ∃ i y, 𝒰.f i y = x := by
   obtain ⟨Y, g, ⟨i⟩, y, hy⟩ := JointlySurjective.exists_eq 𝒰.presieve₀ 𝒰.mem₀ x
   use i, y
 
@@ -60,11 +60,11 @@ def Cover.idx [JointlySurjective K] (𝒰 : X.Cover K) (x : X) : 𝒰.I₀ :=
   (𝒰.exists_eq x).choose
 
 lemma Cover.covers [JointlySurjective K] (𝒰 : X.Cover K) (x : X) :
-    x ∈ Set.range (𝒰.f (𝒰.idx x)).base :=
+    x ∈ Set.range (𝒰.f (𝒰.idx x)) :=
   (𝒰.exists_eq x).choose_spec
 
 theorem Cover.iUnion_range [JointlySurjective K] {X : Scheme.{u}} (𝒰 : X.Cover K) :
-    ⋃ i, Set.range (𝒰.f i).base = Set.univ := by
+    ⋃ i, Set.range (𝒰.f i) = Set.univ := by
   rw [Set.eq_univ_iff_forall]
   intro x
   rw [Set.mem_iUnion]
@@ -80,7 +80,7 @@ section MorphismProperty
 variable {P Q : MorphismProperty Scheme.{u}}
 
 lemma presieve₀_mem_precoverage_iff (E : PreZeroHypercover X) :
-    E.presieve₀ ∈ precoverage P X ↔ (∀ x, ∃ i, x ∈ Set.range (E.f i).base) ∧ ∀ i, P (E.f i) := by
+    E.presieve₀ ∈ precoverage P X ↔ (∀ x, ∃ i, x ∈ Set.range (E.f i)) ∧ ∀ i, P (E.f i) := by
   simp
 
 @[grind ←]
@@ -91,7 +91,7 @@ lemma Cover.map_prop (𝒰 : X.Cover (precoverage P)) (i : 𝒰.I₀) : P (𝒰.
 cover `X`, `Cover.mkOfCovers` is an associated `P`-cover of `X`. -/
 @[simps!]
 def Cover.mkOfCovers (J : Type*) (obj : J → Scheme.{u}) (map : (j : J) → obj j ⟶ X)
-    (covers : ∀ x, ∃ j y, (map j).base y = x)
+    (covers : ∀ x, ∃ j y, map j y = x)
     (map_prop : ∀ j, P (map j) := by infer_instance) : X.Cover (precoverage P) where
   I₀ := J
   X := obj
@@ -106,7 +106,7 @@ def coverOfIsIso [P.ContainsIdentities] [P.RespectsIso] {X Y : Scheme.{u}} (f : 
     [IsIso f] : Cover.{v} (precoverage P) Y :=
   .mkOfCovers PUnit (fun _ ↦ X)
     (fun _ ↦ f)
-    (fun x ↦ ⟨⟨⟩, (inv f).base x, by simp [← Hom.comp_apply]⟩)
+    (fun x ↦ ⟨⟨⟩, inv f x, by simp [← Hom.comp_apply]⟩)
     (fun _ ↦ P.of_isIso f)
 
 instance : JointlySurjective (precoverage P) where
@@ -141,7 +141,7 @@ def Cover.copy [P.RespectsIso] {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P))
     refine ⟨fun x ↦ ?_, ?_⟩
     · obtain ⟨i, y, rfl⟩ := 𝒰.exists_eq x
       obtain ⟨i, rfl⟩ := e₁.surjective i
-      use i, (e₂ i).inv.base y
+      use i, (e₂ i).inv y
       simp [h]
     · simp_rw [h, MorphismProperty.cancel_left_of_respectsIso]
       intro i
@@ -201,7 +201,7 @@ structure AffineCover (P : MorphismProperty Scheme.{u}) (S : Scheme.{u}) where
   /-- given a point of `x : S`, `idx x` is the index of the component which contains `x` -/
   idx (x : S) : I₀
   /-- the components cover `S` -/
-  covers (x : S) : x ∈ Set.range (f (idx x)).base
+  covers (x : S) : x ∈ Set.range (f (idx x))
   /-- the component maps satisfy `P` -/
   map_prop (j : I₀) : P (f j) := by infer_instance
 
