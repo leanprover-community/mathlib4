@@ -1094,18 +1094,12 @@ theorem Lattice.isStronglyAtomic [OrderBot α] [IsUpperModularLattice α] [IsAto
         (hbot ▸ IsUpperModularLattice.covBy_sup_of_inf_covBy) (h x hx).bot_covBy
     rwa [inf_eq_left] at h_inf
 
-@[deprecated (since := "2025-03-13")] alias CompleteLattice.isStronglyAtomic :=
-  Lattice.isStronglyAtomic
-
 /-- A lower-modular lattice that is coatomistic is strongly coatomic.
 Not an instance to prevent loops. -/
 theorem Lattice.isStronglyCoatomic [OrderTop α] [IsLowerModularLattice α]
     [IsCoatomistic α] : IsStronglyCoatomic α := by
   rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]
   exact Lattice.isStronglyAtomic
-
-@[deprecated (since := "2025-03-13")] alias CompleteLattice.isStronglyCoatomic :=
-  Lattice.isStronglyCoatomic
 
 end Lattice
 
