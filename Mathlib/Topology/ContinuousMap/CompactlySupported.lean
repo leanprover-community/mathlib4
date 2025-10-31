@@ -494,8 +494,7 @@ section Lattice
 
 variable [TopologicalSpace β]
 
-instance [Lattice β] [TopologicalLattice β] [Zero β] : Lattice C_c(α, β) :=
-  DFunLike.coe_injective.lattice _ .rfl .rfl coe_sup coe_inf
+instance [Lattice β] [TopologicalLattice β] [Zero β] : Lattice C_c(α, β) where
 
 instance instMulLeftMono [PartialOrder β] [MulZeroClass β] [ContinuousMul β] [MulLeftMono β] :
     MulLeftMono C_c(α, β) :=
