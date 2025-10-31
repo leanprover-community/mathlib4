@@ -216,7 +216,7 @@ def tacticAnalysis : Linter where run := withSetOptionIn fun stx => do
     return
   let env ← getEnv
   let configs := (tacticAnalysisExt.getState env).2
-  let trees ← getInfoTrees
+  let trees := (← getInfoState).substituteLazy.get.trees
   runPasses configs stx trees
 
 initialize addLinter tacticAnalysis

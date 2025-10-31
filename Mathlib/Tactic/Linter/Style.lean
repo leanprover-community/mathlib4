@@ -551,7 +551,7 @@ def showLinter : Linter where run := withSetOptionIn fun stx => do
       return
     if (← get).messages.hasErrors then
       return
-    for tree in (← getInfoTrees) do
+    for tree in (← getInfoState).substituteLazy.get.trees do
       tree.foldInfoM (init := ()) fun ci i _ => do
         let .ofTacticInfo tac := i | return
         unless tac.stx.isOfKind ``Lean.Parser.Tactic.show do return
