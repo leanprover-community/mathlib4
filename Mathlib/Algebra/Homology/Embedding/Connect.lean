@@ -88,19 +88,15 @@ def d : ∀ (n m : ℤ), X K L n ⟶ X K L m
 @[simp] lemma d_zero_one : h.d 0 1 = L.d 0 1 := rfl
 @[simp] lemma d_sub_two_sub_one : h.d (-2) (-1) = K.d 1 0 := rfl
 
-lemma shape (n m : ℤ) (hnm : n + 1 ≠ m) : h.d n m = 0 :=
-  match n, m with
-  | .ofNat n, .ofNat m => L.shape _ _ (by simp at hnm ⊢; cutsat)
-  | .negSucc n, .negSucc m => by
-    simpa only [d_negSucc] using K.shape n m (by simp at hnm ⊢; cutsat)
-  | .negSucc 0, .ofNat 0 => by simp at hnm
-  | .ofNat _, .negSucc m => rfl
-  | .negSucc n, .ofNat m => by
-    obtain _ | n := n
-    · obtain _ | m := m
-      · simp at hnm
-      · rfl
-    · rfl
+lemma shape : (n m : ℤ) → (hnm : n + 1 ≠ m) → h.d n m = 0 := by
+  -- `fun_cases d` does not work here
+  refine d.fun_cases_unfolding (motive := fun n m r => (n + 1 ≠ m) → r = 0)
+    h ?_ ?_ ?_ ?_ ?_
+  · intro n m hnm; exact L.shape _ _ (by simp at hnm ⊢; cutsat)
+  · intro n m hnm; exact K.shape _ _ (by simp at hnm ⊢; cutsat)
+  · intro hnm; simp at hnm
+  · intro n m hnm; rfl
+  · intro n m hnm _; rfl
 
 @[reassoc (attr := simp)]
 lemma d_comp_d (n m p : ℤ) : h.d n m ≫ h.d m p = 0 := by
