@@ -198,21 +198,21 @@ instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsAffineHom g] [IsAffine 
 /-- If the underlying map of a morphism is inducing and has closed range, then it is affine. -/
 @[stacks 04DE]
 lemma isAffineHom_of_isInducing
-    (hf₁ : Topology.IsInducing f.base)
-    (hf₂ : IsClosed (Set.range f.base)) :
+    (hf₁ : Topology.IsInducing f)
+    (hf₂ : IsClosed (Set.range f)) :
     IsAffineHom f := by
   apply isAffineHom_of_forall_exists_isAffineOpen
   intro y
-  by_cases hy : y ∈ Set.range f.base
+  by_cases hy : y ∈ Set.range f
   · obtain ⟨x, rfl⟩ := hy
     obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
-      Y.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (f.base x)) isOpen_univ
+      Y.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (f x)) isOpen_univ
     obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ :=
       X.isBasis_affineOpens.exists_subset_of_mem_open hxU (f ⁻¹ᵁ U).isOpen
     obtain ⟨U', hU'U, rfl⟩ : ∃ U' : Y.Opens, U' ≤ U ∧ f ⁻¹ᵁ U' = V := by
       obtain ⟨U', hU', e⟩ := hf₁.isOpen_iff.mp V.2
       exact ⟨⟨U', hU'⟩ ⊓ U, inf_le_right, Opens.ext (by simpa [e] using hVU)⟩
-    obtain ⟨r, hrU', hxr⟩ := hU.exists_basicOpen_le ⟨f.base x, hxV⟩ hxU
+    obtain ⟨r, hrU', hxr⟩ := hU.exists_basicOpen_le ⟨f x, hxV⟩ hxU
     refine ⟨_, hxr, hU.basicOpen r, ?_⟩
     convert hV.basicOpen (f.app _ (Y.presheaf.map (homOfLE hU'U).op r)) using 1
     simp only [Scheme.preimage_basicOpen, ← CommRingCat.comp_apply, f.naturality]

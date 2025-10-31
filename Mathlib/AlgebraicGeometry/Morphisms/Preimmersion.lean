@@ -27,9 +27,9 @@ namespace AlgebraicGeometry
 topological spaces is an embedding and the induced morphisms of stalks are all surjective. -/
 @[mk_iff]
 class IsPreimmersion {X Y : Scheme} (f : X ⟶ Y) : Prop extends SurjectiveOnStalks f where
-  base_embedding : IsEmbedding f.base
+  base_embedding : IsEmbedding f
 
-lemma Scheme.Hom.isEmbedding {X Y : Scheme} (f : Hom X Y) [IsPreimmersion f] : IsEmbedding f.base :=
+lemma Scheme.Hom.isEmbedding {X Y : Scheme} (f : X ⟶ Y) [IsPreimmersion f] : IsEmbedding f :=
   IsPreimmersion.base_embedding
 
 lemma isPreimmersion_eq_inf :
@@ -102,8 +102,8 @@ instance : IsStableUnderBaseChange @IsPreimmersion := by
   refine .mk' fun X Y Z f g _ _ ↦ ?_
   have := pullback_fst (P := @SurjectiveOnStalks) f g inferInstance
   constructor
-  let L (x : (pullback f g :)) : { x : X × Y | f.base x.1 = g.base x.2 } :=
-    ⟨⟨(pullback.fst f g).base x, (pullback.snd f g).base x⟩,
+  let L (x : (pullback f g :)) : { x : X × Y | f x.1 = g x.2 } :=
+    ⟨⟨pullback.fst f g x, pullback.snd f g x⟩,
     by simp only [Set.mem_setOf, ← Scheme.Hom.comp_apply, pullback.condition]⟩
   have : IsEmbedding L := IsEmbedding.of_comp (by fun_prop) continuous_subtype_val
     (SurjectiveOnStalks.isEmbedding_pullback f g)
