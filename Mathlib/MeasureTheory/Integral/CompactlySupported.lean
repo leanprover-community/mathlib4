@@ -20,15 +20,14 @@ open CompactlySupported MeasureTheory
 variable {X : Type*}
 
 namespace CompactlySupportedContinuousMap
+variable [TopologicalSpace X] [MeasurableSpace X]
 
-lemma integrable {X E : Type*} [MeasurableSpace X]
-    [TopologicalSpace X] [NormedAddCommGroup E] (f : C_c(X, E))
+lemma integrable {E : Type*} [NormedAddCommGroup E] (f : C_c(X, E))
     {μ : Measure X} [OpensMeasurableSpace X] [IsFiniteMeasureOnCompacts μ] :
     Integrable f μ :=
   f.continuous.integrable_of_hasCompactSupport f.hasCompactSupport
 
-variable [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X]
-variable (Λ : C_c(X, ℝ) →ₚ[ℝ] ℝ)
+variable [T2Space X] [LocallyCompactSpace X] [BorelSpace X] (Λ : C_c(X, ℝ) →ₚ[ℝ] ℝ)
 
 /-- Integral as a positive linear functional on `C_c(X, ℝ)`. -/
 @[simps!]
