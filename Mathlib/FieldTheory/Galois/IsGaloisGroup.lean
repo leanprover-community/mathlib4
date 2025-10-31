@@ -12,17 +12,47 @@ import Mathlib.RingTheory.Invariant.Defs
 Given an action of a group `G` on an extension of fields `L/K`, we introduce a predicate
 `IsGaloisGroup G K L` saying that `G` acts faithfully on `L` with fixed field `K`. In particular,
 we do not assume that `L` is an algebraic extension of `K`.
+
+## Implementation notes
+
+We actually define `IsGaloisGroup G A B` for extensions of rings `B/A`, with the same definition
+(faithful action on `B` with fixed ring `A`). This definition turns out to axiomatize a common
+setup in algebraic number theory where a Galois group `Gal(L/K)` acts on an extension of subrings
+`B/A` (e.g., rings of integers). In particular, there are theorems in algebraic number theory that
+naturally assume `[IsGaloisGroup G A B]` and whose statements would otherwise require assuming
+`(K L : Type*) [Field K] [Field L] [Algebra K L] [IsGalois K L]` (along with predicates relating
+`K` and `L` to the rings `A` and `B`) despite `K` and `L` not appearing in the conclusion.
+
+Unfortunately, this definition of `IsGaloisGroup G A B` for extensions of rings `B/A` is
+nonstandard and clashes with other notions such as the étale fundamental group. In particular, if
+`A` is integrally closed, then  `IsGaloisGroup G A B` is equivalent to `B/A` being integral and the
+fields of fractions `Frac(B)/Frac(A)` being Galois, rather than `B/A` being étale for instance.
+
+But in the absence of a more suitable name, the utility of the predicate `IsGaloisGroup G A B` for
+extensions of rings `B/A` seems to outweigh these terminological issues.
 -/
+
+section CommRing
+
+variable (G A B : Type*) [Group G] [CommSemiring A] [Semiring B] [Algebra A B]
+  [MulSemiringAction G B]
+
+/-- `G` is a Galois group for `L/K` if the action of `G` on `L` is faithful with fixed field `K`.
+In particular, we do not assume that `L` is an algebraic extension of `K`.
+
+See the implementation notes in this file for the meaning of this definition in the case of rings.
+-/
+class IsGaloisGroup where
+  faithful : FaithfulSMul G B
+  commutes : SMulCommClass G A B
+  isInvariant : Algebra.IsInvariant A B G
+
+attribute [instance low] IsGaloisGroup.commutes IsGaloisGroup.isInvariant
+
+end CommRing
 
 variable (G H K L : Type*) [Group G] [Group H] [Field K] [Field L] [Algebra K L]
   [MulSemiringAction G L] [MulSemiringAction H L]
-
-/-- `G` is a Galois group for `L/K` if the action on `L` is faithful with fixed field `K`.
-In particular, we do not assume that `L` is an algebraic extension of `K`. -/
-class IsGaloisGroup where
-  faithful : FaithfulSMul G L
-  commutes : SMulCommClass G K L
-  isInvariant : Algebra.IsInvariant K L G
 
 namespace IsGaloisGroup
 
@@ -38,8 +68,8 @@ theorem isGalois [Finite G] [IsGaloisGroup G K L] : IsGalois K L := by
   rw [← isGalois_iff_isGalois_bot, ← fixedPoints_eq_bot G]
   exact IsGalois.of_fixed_field L G
 
-/-- If `L/K` is a finite Galois extension, then `L ≃ₐ[K] L` is a Galois group for `L/K`. -/
-instance of_isGalois [FiniteDimensional K L] [IsGalois K L] : IsGaloisGroup (L ≃ₐ[K] L) K L where
+/-- If `L/K` is a finite Galois extension, then `Gal(L/K)` is a Galois group for `L/K`. -/
+instance of_isGalois [FiniteDimensional K L] [IsGalois K L] : IsGaloisGroup Gal(L/K) K L where
   faithful := inferInstance
   commutes := inferInstance
   isInvariant := ⟨fun x ↦ (IsGalois.mem_bot_iff_fixed x).mpr⟩
@@ -58,8 +88,8 @@ theorem card_eq_finrank [IsGaloisGroup G K L] : Nat.card G = Module.finrank K L 
 theorem finiteDimensional [Finite G] [IsGaloisGroup G K L] : FiniteDimensional K L :=
   FiniteDimensional.of_finrank_pos (card_eq_finrank G K L ▸ Nat.card_pos)
 
-/-- If `G` is a finite Galois group for `L/K`, then `G` is isomorphic to `L ≃ₐ[K] L`. -/
-@[simps!] noncomputable def mulEquivAlgEquiv [IsGaloisGroup G K L] [Finite G] : G ≃* (L ≃ₐ[K] L) :=
+/-- If `G` is a finite Galois group for `L/K`, then `G` is isomorphic to `Gal(L/K)`. -/
+@[simps!] noncomputable def mulEquivAlgEquiv [IsGaloisGroup G K L] [Finite G] : G ≃* Gal(L/K) :=
   MulEquiv.ofBijective (MulSemiringAction.toAlgAut G K L) (by
     have := isGalois G K L
     have := finiteDimensional G K L

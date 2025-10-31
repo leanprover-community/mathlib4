@@ -303,8 +303,8 @@ theorem UniformCauchySeqOn.div (hf : UniformCauchySeqOn f l s) (hf' : UniformCau
 end UniformConvergence
 
 @[to_additive]
-instance IsUniformGroup.of_compactSpace [UniformSpace β] [Group β] [ContinuousDiv β]
-    [CompactSpace β] :
+instance (priority := 100) IsUniformGroup.of_compactSpace [UniformSpace β] [Group β]
+    [ContinuousDiv β] [CompactSpace β] :
     IsUniformGroup β where
   uniformContinuous_div := CompactSpace.uniformContinuous_of_continuous continuous_div'
 

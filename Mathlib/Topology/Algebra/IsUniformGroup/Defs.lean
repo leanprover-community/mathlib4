@@ -22,7 +22,7 @@ coincides with **both** the left and right uniform structures.
   endowed with the associated right uniform structure. This means that two points `x` and `y`
   are close precisely when `y * x⁻¹` is close to `1` / `y + (-x)` close to `0`.
 * `IsLeftUniformGroup` and `IsLeftUniformAddGroup`: Multiplicative and topological additive groups
-  endowed with the associated right uniform structure. This means that two points `x` and `y`
+  endowed with the associated left uniform structure. This means that two points `x` and `y`
   are close precisely when `x⁻¹ * y` is close to `1` / `(-x) + y` close to `0`.
 * `IsUniformGroup` and `IsUniformAddGroup`: Multiplicative and additive uniform groups,
   i.e., groups with uniformly continuous `(*)` and `(⁻¹)` / `(+)` and `(-)`. This corresponds
@@ -79,7 +79,7 @@ class IsRightUniformGroup (G : Type*) [UniformSpace G] [Group G] : Prop
     𝓤 G = comap (fun x : G × G ↦ x.2 * x.1⁻¹) (𝓝 1)
 
 /-- A **left-uniform additive group** is a topological additive group endowed with the associated
-right uniform structure: the uniformity filter `𝓤 G` is the inverse image of `𝓝 0` by the map
+left uniform structure: the uniformity filter `𝓤 G` is the inverse image of `𝓝 0` by the map
 `(x, y) ↦ (-x) + y`.
 
 In other words, we declare that two points `x` and `y` are infinitely close
@@ -90,7 +90,7 @@ class IsLeftUniformAddGroup (G : Type*) [UniformSpace G] [AddGroup G] : Prop
     𝓤 G = comap (fun x : G × G ↦ (-x.1) + x.2) (𝓝 0)
 
 /-- A **left-uniform group** is a topological group endowed with the associated
-right uniform structure: the uniformity filter `𝓤 G` is the inverse image of `𝓝 1` by the map
+left uniform structure: the uniformity filter `𝓤 G` is the inverse image of `𝓝 1` by the map
 `(x, y) ↦ x⁻¹ * y`.
 
 In other words, we declare that two points `x` and `y` are infinitely close
@@ -121,6 +121,11 @@ class inductive IsLeftOrRightUniformGroup (G : Type*) [UniformSpace G] [Group G]
 | right [IsRightUniformGroup G] : IsLeftOrRightUniformGroup G
 | left [IsLeftUniformGroup G] : IsLeftOrRightUniformGroup G
 
+attribute [instance 10] IsRightUniformAddGroup.toIsTopologicalAddGroup
+attribute [instance 10] IsRightUniformGroup.toIsTopologicalGroup
+attribute [instance 10] IsLeftUniformAddGroup.toIsTopologicalAddGroup
+attribute [instance 10] IsLeftUniformGroup.toIsTopologicalGroup
+
 attribute [instance] IsLeftOrRightUniformAddGroup.left
 attribute [instance] IsLeftOrRightUniformAddGroup.right
 attribute [instance] IsLeftOrRightUniformGroup.left
@@ -133,8 +138,15 @@ variable [IsLeftUniformGroup Gₗ] [IsRightUniformGroup Gᵣ]
 variable [IsLeftUniformGroup Hₗ] [IsRightUniformGroup Hᵣ]
 variable [UniformSpace X]
 
-@[to_additive]
-instance : IsTopologicalGroup G := by
+/-- Note: We give this instance the lowest priority as any concrete type satisfying it will
+have an instance of either `IsLeftUniformGroup` or `IsRightUniformGroup`.
+
+In other words, this instance only appears in lemmas assuming `IsLeftOrRightUniformGroup G`. -/
+@[to_additive /-- Note: We give this instance the lowest priority as any concrete type satisfying
+it will have an instance of either `IsLeftUniformAddGroup` or `IsRightUniformAddGroup`.
+
+In other words, this instance only appears in lemmas assuming `IsLeftOrRightUniformAddGroup G`. -/]
+instance (priority := 0) : IsTopologicalGroup G := by
   rcases ‹IsLeftOrRightUniformGroup G› <;> infer_instance
 
 variable (Gₗ Gᵣ)
@@ -656,7 +668,8 @@ variable {α : Type*} {β : Type*}
 
 `IsUniformGroup G` is equivalent to the fact that `G` is a topological group, and the uniformity
 coincides with **both** the associated left and right uniformities
-(this fact is not in Mathlib yet).
+(see `IsUniformGroup.isRightUniformGroup`, `IsUniformGroup.isLeftUniformGroup` and
+`IsUniformGroup.of_left_right`).
 
 Since there are topological groups where these two uniformities do **not** coincide,
 not all topological groups admit a uniform group structure in this sense. This is however the
@@ -665,14 +678,13 @@ typeclass. -/
 class IsUniformGroup (α : Type*) [UniformSpace α] [Group α] : Prop where
   uniformContinuous_div : UniformContinuous fun p : α × α => p.1 / p.2
 
-@[deprecated (since := "2025-03-26")] alias UniformGroup := IsUniformGroup
-
 /-- A uniform additive group is an additive group in which addition and negation are
 uniformly continuous.
 
 `IsUniformAddGroup G` is equivalent to the fact that `G` is a topological additive group, and the
 uniformity coincides with **both** the associated left and right uniformities
-(this fact is not in Mathlib yet).
+(see `IsUniformAddGroup.isRightUniformAddGroup`, `IsUniformAddGroup.isLeftUniformAddGroup` and
+`IsUniformAddGroup.of_left_right`).
 
 Since there are topological groups where these two uniformities do **not** coincide,
 not all topological groups admit a uniform group structure in this sense. This is however the
@@ -680,8 +692,6 @@ case for commutative groups, which are the main motivation for the existence of 
 typeclass. -/
 class IsUniformAddGroup (α : Type*) [UniformSpace α] [AddGroup α] : Prop where
   uniformContinuous_sub : UniformContinuous fun p : α × α => p.1 - p.2
-
-@[deprecated (since := "2025-03-26")] alias UniformAddGroup := IsUniformAddGroup
 
 attribute [to_additive] IsUniformGroup
 
@@ -814,12 +824,6 @@ instance (priority := 10) IsUniformGroup.to_topologicalGroup : IsTopologicalGrou
   continuous_mul := uniformContinuous_mul.continuous
   continuous_inv := uniformContinuous_inv.continuous
 
-@[deprecated (since := "2025-03-31")] alias UniformGroup.to_topologicalAddGroup :=
-  IsUniformAddGroup.to_topologicalAddGroup
-@[to_additive existing, deprecated
-  (since := "2025-03-31")] alias
-  UniformGroup.to_topologicalGroup := IsUniformGroup.to_topologicalGroup
-
 @[to_additive]
 instance Prod.instIsUniformGroup [UniformSpace β] [Group β] [IsUniformGroup β] :
     IsUniformGroup (α × β) :=
@@ -899,20 +903,11 @@ theorem IsUniformGroup.ext {G : Type*} [Group G] {u v : UniformSpace G} (hu : @I
     (h : @nhds _ u.toTopologicalSpace 1 = @nhds _ v.toTopologicalSpace 1) : u = v :=
   IsRightUniformGroup.ext inferInstance inferInstance h
 
-@[deprecated (since := "2025-03-31")] alias UniformAddGroup.ext := IsUniformAddGroup.ext
-@[to_additive existing UniformAddGroup.ext, deprecated (since := "2025-03-31")] alias
-  UniformGroup.ext := IsUniformGroup.ext
-
 @[to_additive]
 theorem IsUniformGroup.ext_iff {G : Type*} [Group G] {u v : UniformSpace G}
     (hu : @IsUniformGroup G u _) (hv : @IsUniformGroup G v _) :
     u = v ↔ @nhds _ u.toTopologicalSpace 1 = @nhds _ v.toTopologicalSpace 1 :=
   IsRightUniformGroup.ext_iff inferInstance inferInstance
-
-@[deprecated (since := "2025-03-31")] alias UniformAddGroup.ext_iff :=
-  IsUniformAddGroup.ext_iff
-@[to_additive existing UniformAddGroup.ext_iff, deprecated (since := "2025-03-31")] alias
-  UniformGroup.ext_iff := IsUniformGroup.ext_iff
 
 end
 
@@ -939,7 +934,6 @@ theorem comap_conj_nhds_one :
   rw [← (comap_injective φ.surjective).eq_iff, comap_comap, comap_comap, conj_φ, snd_φ,
       ← uniformity_eq_comap_inv_mul_nhds_one, ← uniformity_eq_comap_mul_inv_nhds_one]
 
-set_option profiler true in
 open Prod (snd) in
 /-- Note: this assumes `[IsLeftUniformGroup β] [IsRightUniformGroup β]` instead of the more typical
 (and equivalent) `[IsUniformGroup β]` because this is used in the proof of said equivalence. -/
@@ -963,10 +957,7 @@ theorem Filter.Tendsto.conj_nhds_one {ι : Type*} {l : Filter ι} {x : ι → β
   -- `exact` works but is quite slow...
   convert tendsto_conj_nhds_one.comp this
 
-open Prod (fst snd) in
-variable (β) in
-@[to_additive]
-instance (priority := 100) IsUniformGroup.of_left_right : IsUniformGroup β where
+instance (priority := 10) IsUniformGroup.of_left_right : IsUniformGroup β where
   uniformContinuous_div := by
     let φ : (β × β) × (β × β) → β := fun ⟨⟨x₁, x₂⟩, ⟨y₁, y₂⟩⟩ ↦ x₂ * y₂⁻¹ * y₁ * x₁⁻¹
     let ψ : (β × β) × (β × β) → β := fun ⟨⟨x₁, x₂⟩, ⟨y₁, y₂⟩⟩ ↦ (x₁⁻¹ * x₂) * (y₂⁻¹ * y₁)
@@ -1036,11 +1027,6 @@ theorem isUniformGroup_of_commGroup : IsUniformGroup G := by
   infer_instance
 
 alias comm_topologicalGroup_is_uniform := isUniformGroup_of_commGroup
-@[deprecated (since := "2025-03-30")]
-alias uniformAddGroup_of_addCommGroup := isUniformAddGroup_of_addCommGroup
-@[to_additive existing, deprecated (since := "2025-03-30")]
-alias uniformGroup_of_commGroup := isUniformGroup_of_commGroup
-
 open Set
 
 end

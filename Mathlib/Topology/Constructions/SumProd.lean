@@ -60,9 +60,6 @@ theorem continuous_prodMk {f : X → Y} {g : X → Z} :
     (Continuous fun x => (f x, g x)) ↔ Continuous f ∧ Continuous g :=
   continuous_inf_rng.trans <| continuous_induced_rng.and continuous_induced_rng
 
-@[deprecated (since := "2025-03-10")]
-alias continuous_prod_mk := continuous_prodMk
-
 @[continuity]
 theorem continuous_fst : Continuous (@Prod.fst X Y) :=
   (continuous_prodMk.1 continuous_id).1
@@ -140,20 +137,11 @@ theorem Continuous.prodMk {f : Z → X} {g : Z → Y} (hf : Continuous f) (hg : 
     Continuous fun x => (f x, g x) :=
   continuous_prodMk.2 ⟨hf, hg⟩
 
-@[deprecated (since := "2025-03-10")]
-alias Continuous.prod_mk := Continuous.prodMk
-
 @[continuity]
 theorem Continuous.prodMk_right (x : X) : Continuous fun y : Y => (x, y) := by fun_prop
 
-@[deprecated (since := "2025-03-10")]
-alias Continuous.Prod.mk := Continuous.prodMk_right
-
 @[continuity]
 theorem Continuous.prodMk_left (y : Y) : Continuous fun x : X => (x, y) := by fun_prop
-
-@[deprecated (since := "2025-03-10")]
-alias Continuous.Prod.mk_left := Continuous.prodMk_left
 
 /-- If `f x y` is continuous in `x` for all `y ∈ s`,
 then the set of `x` such that `f x` maps `s` to `t` is closed. -/
@@ -223,9 +211,6 @@ theorem Filter.Eventually.prod_inr_nhds {p : Y → Prop} {y : Y} (h : ∀ᶠ x i
 theorem Filter.Eventually.prodMk_nhds {px : X → Prop} {x} (hx : ∀ᶠ x in 𝓝 x, px x) {py : Y → Prop}
     {y} (hy : ∀ᶠ y in 𝓝 y, py y) : ∀ᶠ p in 𝓝 (x, y), px (p : X × Y).1 ∧ py p.2 :=
   (hx.prod_inl_nhds y).and (hy.prod_inr_nhds x)
-
-@[deprecated (since := "2025-03-10")]
-alias Filter.Eventually.prod_mk_nhds := Filter.Eventually.prodMk_nhds
 
 theorem continuous_swap : Continuous (Prod.swap : X × Y → Y × X) :=
   continuous_snd.prodMk continuous_fst
@@ -342,9 +327,6 @@ theorem Filter.Tendsto.prodMk_nhds {γ} {x : X} {y : Y} {f : Filter γ} {mx : γ
   rw [nhds_prod_eq]
   exact hx.prodMk hy
 
-@[deprecated (since := "2025-03-10")]
-alias Filter.Tendsto.prod_mk_nhds := Filter.Tendsto.prodMk_nhds
-
 theorem Filter.Tendsto.prodMap_nhds {x : X} {y : Y} {z : Z} {w : W} {f : X → Y} {g : Z → W}
     (hf : Tendsto f (𝓝 x) (𝓝 y)) (hg : Tendsto g (𝓝 z) (𝓝 w)) :
     Tendsto (Prod.map f g) (𝓝 (x, z)) (𝓝 (y, w)) := by
@@ -360,9 +342,6 @@ theorem Filter.Eventually.curry_nhds {p : X × Y → Prop} {x : X} {y : Y}
 theorem ContinuousAt.prodMk {f : X → Y} {g : X → Z} {x : X} (hf : ContinuousAt f x)
     (hg : ContinuousAt g x) : ContinuousAt (fun x => (f x, g x)) x :=
   hf.prodMk_nhds hg
-
-@[deprecated (since := "2025-03-10")]
-alias ContinuousAt.prod := ContinuousAt.prodMk
 
 theorem ContinuousAt.prodMap {f : X → Z} {g : Y → W} {p : X × Y} (hf : ContinuousAt f p.fst)
     (hg : ContinuousAt g p.snd) : ContinuousAt (Prod.map f g) p :=
