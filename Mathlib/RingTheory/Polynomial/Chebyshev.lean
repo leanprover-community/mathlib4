@@ -82,7 +82,8 @@ protected theorem induct (motive : ℤ → Prop)
   T.induct motive zero one add_two fun n hn hnm => by
     simpa only [Int.negSucc_eq, neg_add] using neg_add_one n hn hnm
 
-/-- Another induction principle, which is easier to use -/
+/-- Another induction principle used for proving facts about Chebyshev polynomials,
+    which is sometimes easier to use -/
 @[elab_as_elim]
 protected theorem induct' (motive : ℤ → Prop)
     (zero : motive 0)
