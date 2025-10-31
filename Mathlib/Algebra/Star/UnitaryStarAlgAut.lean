@@ -11,7 +11,7 @@ import Mathlib.Algebra.Star.Unitary
 # The ⋆-algebra automorphism given by a unitary element
 
 This file defines the ⋆-algebra automorphism on `R` given by a unitary `u`,
-which is `Unitary.toStarAlgAut S R u`, defined to be `x ↦ u * x * star u`.
+which is `Unitary.conjStarAlgAut S R u`, defined to be `x ↦ u * x * star u`.
 -/
 
 namespace Unitary
@@ -24,7 +24,7 @@ variable (S R) in
 
 This is the ⋆-algebra automorphism version of a specialized version of
 `MulSemiringAction.toAlgAut`. -/
-def toStarAlgAut : unitary R →* (R ≃⋆ₐ[S] R) where
+def conjStarAlgAut : unitary R →* (R ≃⋆ₐ[S] R) where
   toFun u :=
   { toRingEquiv := MulSemiringAction.toRingEquiv _ R (ConjAct.toConjAct <| toUnits u)
     map_smul' _ _ := smul_comm _ _ _ |>.symm
@@ -35,28 +35,28 @@ def toStarAlgAut : unitary R →* (R ≃⋆ₐ[S] R) where
   map_mul' g h := by ext; simp [mul_smul]
 
 @[simp]
-theorem toStarAlgAut_apply (u : unitary R) (x : R) :
-    toStarAlgAut S R u x = u * x * (star u : R) := rfl
+theorem conjStarAlgAut_apply (u : unitary R) (x : R) :
+    conjStarAlgAut S R u x = u * x * (star u : R) := rfl
 
 @[simp]
-theorem toStarAlgAut_symm_apply (u : unitary R) (x : R) :
-    (toStarAlgAut S R u).symm x = (star u : R) * x * u := rfl
+theorem conjStarAlgAut_symm_apply (u : unitary R) (x : R) :
+    (conjStarAlgAut S R u).symm x = (star u : R) * x * u := rfl
 
-theorem toStarAlgAut_trans_toStarAlgAut (u₁ u₂ : unitary R) :
-    (toStarAlgAut S R u₁).trans (toStarAlgAut S R u₂) = toStarAlgAut S R (u₂ * u₁) :=
+theorem conjStarAlgAut_trans_toStarAlgAut (u₁ u₂ : unitary R) :
+    (conjStarAlgAut S R u₁).trans (conjStarAlgAut S R u₂) = conjStarAlgAut S R (u₂ * u₁) :=
   map_mul _ _ _ |>.symm
 
-theorem toStarAlgAut_symm (u : unitary R) :
-    (toStarAlgAut S R u).symm = toStarAlgAut S R (star u) := by
+theorem conjStarAlgAut_symm (u : unitary R) :
+    (conjStarAlgAut S R u).symm = conjStarAlgAut S R (star u) := by
   ext; simp
 
-theorem toRingEquiv_toStarAlgAut (u : unitary R) :
-    (toStarAlgAut S R u).toRingEquiv
+theorem toRingEquiv_conjStarAlgAut (u : unitary R) :
+    (conjStarAlgAut S R u).toRingEquiv
     = MulSemiringAction.toRingEquiv _ R (ConjAct.toConjAct <| toUnits u) :=
   rfl
 
-theorem toAlgEquiv_toStarAlgAut {S : Type*} [CommSemiring S] [Algebra S R] (u : unitary R) :
-    (toStarAlgAut S R u).toAlgEquiv
+theorem toAlgEquiv_conjStarAlgAut {S : Type*} [CommSemiring S] [Algebra S R] (u : unitary R) :
+    (conjStarAlgAut S R u).toAlgEquiv
     = MulSemiringAction.toAlgEquiv _ R (ConjAct.toConjAct <| toUnits u) :=
   rfl
 
