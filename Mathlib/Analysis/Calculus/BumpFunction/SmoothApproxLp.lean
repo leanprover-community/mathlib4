@@ -52,11 +52,15 @@ variable [CompleteSpace F] [NormedSpace ℝ F]
 function `g` that increases the support by `1` and `dist (g x) (f x)` is arbitrary small.
 
 The function `g` is explicitly constructed using convolution with a bump function. -/
-theorem exist_support_subset_cthickening {μ : Measure E} [μ.IsAddHaarMeasure] {p : ℝ≥0∞}
-    (hp₂ : 1 ≤ p) {ε : ℝ} (hε : 0 < ε) {f : E → F}
-    (h₁ : HasCompactSupport f) (h₂ : Continuous f) (h₃ : MemLp f p μ) :
+theorem exist_support_subset_cthickening {ε : ℝ} (hε : 0 < ε) {f : E → F}
+    (h₁ : HasCompactSupport f) (h₂ : Continuous f) :
     ∃ (g : E → F), HasCompactSupport g ∧ ContDiff ℝ ∞ g ∧
       g.support ⊆ Metric.cthickening 1 (tsupport f) ∧ ∀ x, dist (f x) (g x) ≤ ε := by
+  obtain ⟨s, hs⟩ := Module.Basis.exists_basis ℝ E
+  let bs := Classical.choice hs
+  have h_bs : Fintype s := FiniteDimensional.fintypeBasisIndex bs
+  let μ := bs.addHaar
+  have h₃ : MemLp f 1 μ := memLp_of_continuous μ h₁ h₂
   have := h₁.uniformContinuous_of_continuous h₂
   rw [Metric.uniformContinuous_iff] at this
   rcases this ε hε with ⟨δ', hδ', h⟩
@@ -67,7 +71,7 @@ theorem exist_support_subset_cthickening {μ : Measure E} [μ.IsAddHaarMeasure] 
   set g' := MeasureTheory.convolution (phi.normed μ) f (ContinuousLinearMap.lsmul ℝ ℝ) μ
   have hg'₁ : ContDiff ℝ ∞ g' :=
     phi.hasCompactSupport_normed.contDiff_convolution_left _ phi.contDiff_normed
-      (h₃.locallyIntegrable hp₂)
+      (h₃.locallyIntegrable (le_refl _))
   have hg'₂ : HasCompactSupport g' := phi.hasCompactSupport_normed.convolution _ h₁
   refine ⟨g', hg'₂, hg'₁, ?_, fun x ↦ ?_⟩
   · grw [MeasureTheory.support_convolution_subset, ContDiffBump.support_normed_eq, ball_add,
@@ -82,8 +86,8 @@ theorem exist_support_subset_cthickening {μ : Measure E} [μ.IsAddHaarMeasure] 
 /-- For every continuous compactly supported function `f`there exists a smooth compactly supported
 function `g` such that `f - g` is arbitrary small in the `Lp`-norm for `p < ∞`. -/
 theorem exist_eLpNorm_sub_le_of_continuous (μ : Measure E := by volume_tac) [μ.IsAddHaarMeasure]
-    {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {ε : ℝ}
-    (hε : 0 < ε) {f : E → F} (h₁ : HasCompactSupport f) (h₂ : Continuous f) :
+    {p : ℝ≥0∞} (hp : p ≠ ⊤) {ε : ℝ} (hε : 0 < ε) {f : E → F} (h₁ : HasCompactSupport f)
+    (h₂ : Continuous f) :
     ∃ (g : E → F), HasCompactSupport g ∧ ContDiff ℝ ∞ g ∧
     eLpNorm (f - g) p μ ≤ ENNReal.ofReal ε := by
   by_cases hf : f = 0
@@ -113,8 +117,7 @@ theorem exist_eLpNorm_sub_le_of_continuous (μ : Measure E := by volume_tac) [μ
     move_mul [ε]
     rw [← Real.rpow_add, one_div, neg_add_cancel, Real.rpow_zero, one_mul]
     exact hs₂
-  obtain ⟨g, hg₁, hg₂, hg₃, hg₄⟩ := h₁.exist_support_subset_cthickening hp₂ hε' h₂
-    (h₁.memLp_of_continuous μ h₂)
+  obtain ⟨g, hg₁, hg₂, hg₃, hg₄⟩ := h₁.exist_support_subset_cthickening hε' h₂
   have hf : Function.support f ⊆ Metric.cthickening 1 (tsupport f) := by
     intro x hx
     simp [EMetric.infEdist_zero_of_mem (subset_tsupport _ hx)]
@@ -131,7 +134,7 @@ theorem _root_.MeasureTheory.MemLp.exist_eLpNorm_sub_le {μ : Measure E} [μ.IsA
   have hε₂ : 0 < ε/2 := by positivity
   have hε₂' : 0 < ENNReal.ofReal (ε/2) := by positivity
   obtain ⟨g, hg₁, hg₂, hg₃, hg₄⟩ := hf.exists_hasCompactSupport_eLpNorm_sub_le hp hε₂'.ne'
-  obtain ⟨g', hg'₁, hg'₂, hg'₃⟩ := hg₁.exist_eLpNorm_sub_le_of_continuous μ hp hp₂ hε₂ hg₃
+  obtain ⟨g', hg'₁, hg'₂, hg'₃⟩ := hg₁.exist_eLpNorm_sub_le_of_continuous μ hp hε₂ hg₃
   refine ⟨g', hg'₁, hg'₂, ?_⟩
   have : f - g' = (f - g) - (g' - g) := by simp
   grw [this, eLpNorm_sub_le (hf.aestronglyMeasurable.sub hg₄.aestronglyMeasurable)
