@@ -57,7 +57,7 @@ theorem measure_compl_le_add_of_le_add [IsFiniteMeasure μ] (hs : MeasurableSet 
     tsub_le_iff_right]
   calc
     μ univ = μ univ - μ s + μ s := (tsub_add_cancel_of_le <| measure_mono s.subset_univ).symm
-    _ ≤ μ univ - μ s + (μ t + ε) := add_le_add_left h _
+    _ ≤ μ univ - μ s + (μ t + ε) := by gcongr
     _ = _ := by rw [add_right_comm, add_assoc]
 
 theorem measure_compl_le_add_iff [IsFiniteMeasure μ] (hs : MeasurableSet s) (ht : MeasurableSet t)
@@ -213,16 +213,10 @@ theorem abs_measureReal_sub_le_measureReal_symmDiff'
     union_comm t s]
   abel
 
-@[deprecated (since := "2025-04-18")] alias
-  abs_toReal_measure_sub_le_measure_symmDiff' := abs_measureReal_sub_le_measureReal_symmDiff'
-
 theorem abs_measureReal_sub_le_measureReal_symmDiff [IsFiniteMeasure μ]
     (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ) :
     |μ.real s - μ.real t| ≤ μ.real (s ∆ t) :=
   abs_measureReal_sub_le_measureReal_symmDiff' hs ht (measure_ne_top μ s) (measure_ne_top μ t)
-
-@[deprecated (since := "2025-04-18")] alias
-  abs_toReal_measure_sub_le_measure_symmDiff := abs_measureReal_sub_le_measureReal_symmDiff
 
 instance {s : Finset ι} {μ : ι → Measure α} [∀ i, IsFiniteMeasure (μ i)] :
     IsFiniteMeasure (∑ i ∈ s, μ i) where measure_univ_lt_top := by simp [measure_lt_top]

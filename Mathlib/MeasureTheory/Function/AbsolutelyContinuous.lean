@@ -3,11 +3,8 @@ Copyright (c) 2025 Yizheng Zhu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yizheng Zhu
 -/
-import Mathlib.Analysis.Normed.Group.Bounded
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Analysis.Normed.MulAction
+import Mathlib.Analysis.BoundedVariation
 import Mathlib.Order.SuccPred.IntervalSucc
-import Mathlib.Topology.EMetricSpace.BoundedVariation
 
 /-!
 # Absolutely Continuous Functions
@@ -17,7 +14,7 @@ basic properties about absolutely continuous functions.
 
 A function `f` is *absolutely continuous* on `uIcc a b` if for any `ε > 0`, there is `δ > 0` such
 that for any finite disjoint collection of intervals `uIoc (a i) (b i)` for `i < n` where `a i`,
-`b i` are all in `uIcc a b` for `i < n`,  if `∑ i ∈ range n, dist (a i) (b i) < δ`, then
+`b i` are all in `uIcc a b` for `i < n`, if `∑ i ∈ range n, dist (a i) (b i) < δ`, then
 `∑ i ∈ range n, dist (f (a i)) (f (b i)) < ε`.
 
 We give a filter version of the definition of absolutely continuous functions in
@@ -36,11 +33,15 @@ We use the filter version to prove that absolutely continuous functions are clos
 and that absolutely continuous implies uniform continuous in
 `AbsolutelyContinuousOnInterval.uniformlyContinuousOn`
 
-We use the the `ε`-`δ` definition to prove that
+We use the `ε`-`δ` definition to prove that
 * Lipschitz continuous functions are absolutely continuous -
 `LipschitzOnWith.absolutelyContinuousOnInterval`;
 * absolutely continuous functions have bounded variation -
 `AbsolutelyContinuousOnInterval.boundedVariationOn`.
+
+We conclude that
+* absolutely continuous functions are a.e. differentiable -
+`AbsolutelyContinuousOnInterval.ae_differentiableAt`.
 
 ## Tags
 absolutely continuous
@@ -90,9 +91,7 @@ lemma disjWithin_comm (a b : ℝ) : disjWithin a b = disjWithin b a := by
 
 lemma disjWithin_mono {a b c d : ℝ} (habcd : uIcc c d ⊆ uIcc a b) :
     disjWithin c d ⊆ disjWithin a b := by
-  simp +contextual only [disjWithin, Finset.mem_range, setOf_subset_setOf, and_true,
-    and_imp, Prod.forall]
-  exact fun (n I h _ i hi) ↦ ⟨habcd (h i hi).left, habcd (h i hi).right⟩
+  grind [disjWithin]
 
 /-- `AbsolutelyContinuousOnInterval f a b`: A function `f` is *absolutely continuous* on `uIcc a b`
 if the function which (intuitively) maps `uIoc (a i) (b i)`, `i < n` to
@@ -108,7 +107,7 @@ def _root_.AbsolutelyContinuousOnInterval (f : ℝ → X) (a b : ℝ) :=
 /-- The traditional `ε`-`δ` definition of absolutely continuous: A function `f` is
 *absolutely continuous* on `uIcc a b` if for any `ε > 0`, there is `δ > 0` such that for
 any finite disjoint collection of intervals `uIoc (a i) (b i)` for `i < n` where `a i`, `b i` are
-all in `uIcc a b` for `i < n`,  if `∑ i ∈ range n, dist (a i) (b i) < δ`, then
+all in `uIcc a b` for `i < n`, if `∑ i ∈ range n, dist (a i) (b i) < δ`, then
 `∑ i ∈ range n, dist (f (a i)) (f (b i)) < ε`. -/
 theorem _root_.absolutelyContinuousOnInterval_iff (f : ℝ → X) (a b : ℝ) :
     AbsolutelyContinuousOnInterval f a b ↔
@@ -173,10 +172,7 @@ theorem const_smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M 
     AbsolutelyContinuousOnInterval (fun x ↦ α • f x) a b := by
   apply squeeze_zero (fun t ↦ ?_) (fun t ↦ ?_) (by simpa using hf.const_mul ‖α‖)
   · exact Finset.sum_nonneg (fun i hi ↦ by positivity)
-  · rw [Finset.mul_sum]
-    gcongr
-    simp only [dist_smul₀]
-    rfl
+  · simp [Finset.mul_sum, dist_smul₀]
 
 theorem const_mul {f : ℝ → ℝ} (α : ℝ) (hf : AbsolutelyContinuousOnInterval f a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ α * f x) a b :=
@@ -201,8 +197,7 @@ theorem uniformlyContinuousOn (hf : AbsolutelyContinuousOnInterval f a b) :
     simp only [disjWithin, Finset.mem_range, preimage_setOf_eq, Nat.lt_one_iff,
       forall_eq, mem_setOf_eq, mem_prod]
     simp
-  · simp only [totalLengthFilter, comap_comap]
-    congr 1
+  · simp [totalLengthFilter, comap_comap, Function.comp_def]
 
 /-- If `f` is absolutely continuous on `uIcc a b`, then `f` is continuous on `uIcc a b`. -/
 theorem continuousOn (hf : AbsolutelyContinuousOnInterval f a b) :
@@ -225,7 +220,7 @@ theorem fun_smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
   unfold AbsolutelyContinuousOnInterval at hf hg
   apply squeeze_zero' ?_ ?_
     (by simpa using (hg.const_mul C).add (hf.const_mul D))
-  · exact Filter.Eventually.of_forall <| fun _ ↦ Finset.sum_nonneg (fun i hi ↦ by exact dist_nonneg)
+  · exact Filter.Eventually.of_forall <| fun _ ↦ Finset.sum_nonneg (fun i hi ↦ dist_nonneg)
   rw [eventually_inf_principal]
   filter_upwards with (n, I) hnI
   simp only [Finset.mul_sum, ← Finset.sum_add_distrib]
@@ -263,7 +258,7 @@ theorem fun_mul {f g : ℝ → ℝ}
 on `uIcc a b`. -/
 theorem mul {f g : ℝ → ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
-    AbsolutelyContinuousOnInterval (fun x ↦ f x * g x) a b :=
+    AbsolutelyContinuousOnInterval (f * g) a b :=
   hf.fun_mul hg
 
 /-- If `f` is Lipschitz on `uIcc a b`, then `f` is absolutely continuous on `uIcc a b`. -/
@@ -336,8 +331,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
           constructor <;> exact this (hp₂ _)
         · rw [PairwiseDisjoint]
           convert hp₁.pairwise_disjoint_on_Ioc_succ.set_pairwise (Finset.range p.1) using 3
-          rw [uIoc_of_le (hp₁ (by omega))]
-          rfl
+          rw [uIoc_of_le (hp₁ (by omega)), Nat.succ_eq_succ]
       · suffices p.2.val p.1 - p.2.val 0 < δ by
           convert this
           rw [← Finset.sum_range_sub]
@@ -370,5 +364,11 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
   · convert h_mono (show i + 1 ≤ n + 1 by omega)
     · norm_cast
     · simp only [Nat.cast_add, Nat.cast_one, δ']; field_simp; abel
+
+/-- If `f` is absolute continuous on `uIcc a b`, then `f'` exists a.e. on `uIcc a b`. -/
+theorem ae_differentiableAt {f : ℝ → ℝ} {a b : ℝ}
+    (hf : AbsolutelyContinuousOnInterval f a b) :
+    ∀ᵐ (x : ℝ), x ∈ uIcc a b → DifferentiableAt ℝ f x :=
+  hf.boundedVariationOn.ae_differentiableAt_of_mem_uIcc
 
 end AbsolutelyContinuousOnInterval

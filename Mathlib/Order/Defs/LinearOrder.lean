@@ -122,20 +122,14 @@ lemma eq_or_gt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
 @[deprecated (since := "2025-07-27")] alias eq_or_lt_of_not_gt := eq_or_gt_of_not_lt
 @[deprecated (since := "2025-05-11")] alias eq_or_lt_of_not_lt := eq_or_gt_of_not_lt
 
-/-- Perform a case-split on the ordering of `x` and `y` in a decidable linear order. -/
-@[deprecated lt_trichotomy (since := "2025-04-21")]
-def ltByCases (x y : α) {P : Sort*} (h₁ : x < y → P) (h₂ : x = y → P) (h₃ : y < x → P) : P :=
-  if h : x < y then h₁ h
-  else if h' : y < x then h₃ h' else h₂ (le_antisymm (le_of_not_gt h') (le_of_not_gt h))
-
 theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α} {c d : β}
     (H : d < c → b < a) (h : a ≤ b) : c ≤ d :=
   le_of_not_gt fun h' => not_le_of_gt (H h') h
 
 @[grind =]
-lemma min_def (a b : α) : min a b = if a ≤ b then a else b := by rw [LinearOrder.min_def a]
+lemma min_def (a b : α) : min a b = if a ≤ b then a else b := LinearOrder.min_def a b
 @[grind =]
-lemma max_def (a b : α) : max a b = if a ≤ b then b else a := by rw [LinearOrder.max_def a]
+lemma max_def (a b : α) : max a b = if a ≤ b then b else a := LinearOrder.max_def a b
 
 lemma min_le_left (a b : α) : min a b ≤ a := by
   if h : a ≤ b

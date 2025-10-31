@@ -43,8 +43,8 @@ along any morphism `Y' ⟶ Y` is injective (on points).
 class UniversallyInjective (f : X ⟶ Y) : Prop where
   universally_injective : universally (topologically (Injective ·)) f
 
-theorem Scheme.Hom.injective (f : X.Hom Y) [UniversallyInjective f] :
-    Function.Injective f.base :=
+theorem Scheme.Hom.injective (f : X ⟶ Y) [UniversallyInjective f] :
+    Function.Injective f :=
   UniversallyInjective.universally_injective _ _ _ .of_id_snd
 
 theorem universallyInjective_eq :
@@ -55,8 +55,8 @@ theorem universallyInjective_eq_diagonal :
     @UniversallyInjective = diagonal @Surjective := by
   apply le_antisymm
   · intro X Y f hf
-    refine ⟨fun x ↦ ⟨(pullback.fst f f).base x, hf.1 _ _ _ (IsPullback.of_hasPullback f f) ?_⟩⟩
-    rw [← Scheme.comp_base_apply, pullback.diagonal_fst]
+    refine ⟨fun x ↦ ⟨pullback.fst f f x, hf.1 _ _ _ (IsPullback.of_hasPullback f f) ?_⟩⟩
+    rw [← Scheme.Hom.comp_apply, pullback.diagonal_fst]
     rfl
   · rw [← universally_eq_iff.mpr (inferInstanceAs (IsStableUnderBaseChange (diagonal @Surjective))),
       universallyInjective_eq]
@@ -64,7 +64,7 @@ theorem universallyInjective_eq_diagonal :
     intro X Y f hf x₁ x₂ e
     obtain ⟨t, ht₁, ht₂⟩ := Scheme.Pullback.exists_preimage_pullback _ _ e
     obtain ⟨t, rfl⟩ := hf.1 t
-    rw [← ht₁, ← ht₂, ← Scheme.comp_base_apply, ← Scheme.comp_base_apply, pullback.diagonal_fst,
+    rw [← ht₁, ← ht₂, ← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply, pullback.diagonal_fst,
       pullback.diagonal_snd]
 
 theorem UniversallyInjective.iff_diagonal :

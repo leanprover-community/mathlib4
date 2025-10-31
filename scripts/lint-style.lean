@@ -38,15 +38,36 @@ def getWorkspaceRoot : IO Lake.Package := do
     | throw <| IO.userError "failed to load Lake workspace"
   return workspace.root
 
+section LinterSetsElab
+
+open Lean
+
+instance [ToExpr α] : ToExpr (NameMap α) where
+  toExpr s := mkApp4 (.const ``Std.TreeMap.ofArray [.zero, .zero])
+    (toTypeExpr Name) (toTypeExpr α)
+    (toExpr s.toArray)
+    (.const ``Lean.Name.quickCmp [])
+  toTypeExpr := .const ``LinterSets []
+
+instance : ToExpr LinterSets := inferInstanceAs <| ToExpr (NameMap _)
+
+/-- Return the linter sets defined at this point of elaborating the current file. -/
+elab "linter_sets%" : term => do
+  return toExpr <| linterSetsExt.getState (← getEnv)
+
+end LinterSetsElab
+
 /-- Convert the options that Lake knows into the option that Lean knows. -/
-def toLeanOptions (opts : Array Lake.LeanOption) : Lean.Options :=
-  opts.foldl (init := Lean.Options.empty) fun opts o =>
+def toLeanOptions (opts : Lean.LeanOptions) : Lean.Options := Id.run do
+  let mut out := Lean.Options.empty
+  for ⟨name, value⟩ in opts.values do
     -- Strip off the `weak.` prefix, like Lean does when parsing command line arguments.
-    if o.name.getRoot == `weak
+    if name.getRoot == `weak
     then
-      opts.insert (o.name.replacePrefix `weak Lean.Name.anonymous) o.value.toDataValue
+      out := out.insert (name.replacePrefix `weak Lean.Name.anonymous) value.toDataValue
     else
-      opts.insert o.name o.value.toDataValue
+      out := out.insert name value.toDataValue
+  return out
 
 /-- Determine the `Lean.Options` from the Lakefile of the current project.
 
@@ -68,7 +89,7 @@ def getLakefileLeanOptions : IO Lean.Options := do
       exe.config.leanOptions
     else
       #[]
-  return Lean.LeanOptions.toOptions (rootOpts.appendArray defaultOpts)
+  return toLeanOptions (rootOpts.appendArray defaultOpts)
 
 /-- Check that `Mathlib.Init` is transitively imported in all of Mathlib -/
 register_option linter.checkInitImports : Bool := { defValue := false }
@@ -132,16 +153,17 @@ Return the number of undocumented scripts. -/
 def undocumentedScripts (opts : LinterOptions) : IO Nat := do
   unless getLinterValue linter.allScriptsDocumented opts do return 0
 
-  -- Retrieve all scripts (except for the `bench` directory).
-  let allScripts ← (walkDir "scripts" fun p ↦ pure (p.components.getD 1 "" != "bench"))
-  let allScripts := allScripts.erase ("scripts" / "bench")|>.erase ("scripts" / "README.md")
+  -- Retrieve all top-level entries in scripts directory (not recursive).
+  let entries ← System.FilePath.readDir "scripts"
+  let allScripts := entries.filterMap fun entry ↦
+    -- Skip the bench directory and README
+    if entry.fileName == "bench" || entry.fileName == "README.md" then none
+    else some entry.fileName
   -- Check if the README text contains each file enclosed in backticks.
   let readme : String ← IO.FS.readFile ("scripts" / "README.md")
   -- These are data files for linter exceptions: don't complain about these *for now*.
   let dataFiles := #["noshake.json", "nolints-style.txt"]
-  -- For now, there are no scripts in sub-directories that should be documented.
-  let fileNames := allScripts.map (·.fileName.get!)
-  let undocumented := fileNames.filter fun script ↦
+  let undocumented := allScripts.filter fun script ↦
     !readme.containsSubstr s!"`{script}`" && !dataFiles.contains script
   if undocumented.size > 0 then
     IO.println s!"error: found {undocumented.size} undocumented script(s): \
@@ -151,14 +173,9 @@ def undocumentedScripts (opts : LinterOptions) : IO Nat := do
 
 /-- Implementation of the `lint-style` command line program. -/
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
-  -- Use the environment declared in Mathlib.Tactic.Linter.TextBased to determine the linter sets.
-  Lean.initSearchPath (← Lean.findSysroot)
-  let sets ← unsafe Lean.withImportModules #[{module := `Mathlib.Tactic.Linter.TextBased}] {}
-    fun env => pure <| linterSetsExt.getState env
-
   let opts : LinterOptions := {
     toOptions := ← getLakefileLeanOptions,
-    linterSets := sets,
+    linterSets := linter_sets%,
   }
 
   let style : ErrorFormat := match args.hasFlag "github" with
@@ -188,6 +205,31 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
       | none => result := result.append <| modParse.imports.map Lean.Import.module
       | some err => throw <| IO.userError s!"could not parse module name {mod}: {err}"
     pure result
+
+  -- Smoke tests for accidentally disabling all the linters again:
+  -- require a nonempty set of modules that get linted.
+  if originModules.isEmpty then
+    throw <| IO.userError
+      s!"lint-style: no modules to lint.\n\
+      \n\
+      Note: by default, we lint all the default `lake build` targets in the Lakefile.\n\
+      \n\
+      Hint: specify modules to lint as command line arguments to `lake exe lint-style`."
+  -- ensure the header linter is active if we're linting Mathlib.
+  if `Mathlib ∈ originModules then
+    if !getLinterValue linter.checkInitImports opts then
+      throw <| IO.userError
+        s!"lint-style selftest failed: header linter is not enabled in Mathlib.\n\
+        \n\
+        Hint: in a project downstream of Mathlib, remove `Mathlib` as an argument to \
+        `lake exe style`, or remove `Mathlib` from the default `lake build` targets.\n\
+        \n\
+        Hint: in Mathlib, check that the `linter_sets%` elaborator still works.\n\
+        \n\
+        Note: we want to make sure that we do not accidentally turn off all the linters, \
+        since such a change would not be noticed in CI otherwise. The header linter is an \
+        arbitrarily chosen important Mathlib style linter."
+
   -- Get all the imports, but only those in the same package.
   let pkgs := originModules.map (·.components.head!)
   Lean.initSearchPath (← Lean.findSysroot)

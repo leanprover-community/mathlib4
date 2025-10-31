@@ -355,9 +355,6 @@ theorem coeAddMonoidHom_eq_dfinsuppSum [DecidableEq ι]
     Equiv.coe_fn_mk]
   exact DFinsupp.sumAddHom_apply _ x
 
-@[deprecated (since := "2025-04-06")]
-alias coeAddMonoidHom_eq_dfinsupp_sum := coeAddMonoidHom_eq_dfinsuppSum
-
 @[simp]
 theorem coeAddMonoidHom_of {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] (A : ι → S) (i : ι) (x : A i) :

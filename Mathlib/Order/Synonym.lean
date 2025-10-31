@@ -177,6 +177,9 @@ instance (α : Type*) [DecidableEq α] : DecidableEq (Lex α) :=
 instance (α : Type*) [Inhabited α] : Inhabited (Lex α) :=
   inferInstanceAs (Inhabited α)
 
+instance {α γ} [H : CoeFun α γ] : CoeFun (Lex α) γ where
+  coe f := H.coe (ofLex f)
+
 /-- A recursor for `Lex`. Use as `induction x`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
 protected def Lex.rec {β : Lex α → Sort*} (h : ∀ a, β (toLex a)) : ∀ a, β a := fun a => h (ofLex a)
@@ -232,6 +235,9 @@ instance (α : Type*) [DecidableEq α] : DecidableEq (Colex α) :=
 
 instance (α : Type*) [Inhabited α] : Inhabited (Colex α) :=
   inferInstanceAs (Inhabited α)
+
+instance {α γ} [H : CoeFun α γ] : CoeFun (Colex α) γ where
+  coe f := H.coe (ofColex f)
 
 /-- A recursor for `Colex`. Use as `induction x`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
