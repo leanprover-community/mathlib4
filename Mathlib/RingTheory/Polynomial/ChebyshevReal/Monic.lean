@@ -253,9 +253,9 @@ theorem min_abs_of_monic_extrema {n : ℕ} (hn : n ≠ 0) (P : ℝ[X])
       positivity
     have heq := (Finset.sum_eq_zero_iff_of_nonneg hnonneg).mp hsum
     apply eq_of_degrees_lt_of_eval_finset_eq (T_extrema n)
-    · rw [Pdeg, T_extrema_card]; norm_cast; omega
+    · rw [Pdeg, card_T_extrema]; norm_cast; omega
     · unfold normalized_T
-      rw [degree_C_mul, T_degree_real, T_extrema_card]
+      rw [degree_C_mul, degree_T_real, card_T_extrema]
       · norm_cast; omega
       positivity
     intro x hx
