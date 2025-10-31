@@ -277,7 +277,7 @@ end EMetricSpace
 namespace MetricSpace
 variable {X : Type*} (m : MetricSpace X) (d : X → X → ℝ) (hd : d = dist)
 
-/-- Build new metric space from an old one where the distance are provably (but typically
+/-- Build new metric space from an old one where the distance is provably (but typically
 non-definitionally) equal to some given distance. We also provide convenience versions for
 PseudoEMetric, PseudoMatric and EMetric spaces. -/
 -- See note [forgetful inheritance]
