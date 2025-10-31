@@ -75,9 +75,6 @@ protected theorem aestronglyMeasurable {f : ι → α → β} {p : ℝ≥0∞} (
     (i : ι) : AEStronglyMeasurable (f i) μ :=
   hf.1 i
 
-@[deprecated (since := "2025-04-09")]
-alias aeStronglyMeasurable := UniformIntegrable.aestronglyMeasurable
-
 protected theorem unifIntegrable {f : ι → α → β} {p : ℝ≥0∞} (hf : UniformIntegrable f p μ) :
     UnifIntegrable f p μ :=
   hf.2.1
@@ -883,7 +880,7 @@ theorem uniformIntegrable_average
     refine ⟨δ, hδ₁, fun n s hs hle => ?_⟩
     simp_rw [Finset.smul_sum, Finset.indicator_sum]
     refine le_trans (eLpNorm_sum_le (fun i _ => ((hf₁ i).const_smul _).indicator hs) hp) ?_
-    have this i : s.indicator ((n : ℝ) ⁻¹ • f i) = (↑n : ℝ)⁻¹ • s.indicator (f i) :=
+    have this i : s.indicator ((n : ℝ)⁻¹ • f i) = (↑n : ℝ)⁻¹ • s.indicator (f i) :=
       indicator_const_smul _ _ _
     obtain rfl | hn := eq_or_ne n 0
     · simp
