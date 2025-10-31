@@ -195,7 +195,7 @@ instance (R K : Type*) [CommRing R] [CommRing K] [Algebra R K]
   smul_one g := by ext; exact smul_one g
   smul_mul g x y := by ext; exact smul_mul' g (x : K) (y : K)
 
-instance {G K : Type*} [Group G] [Field K] [NumberField K] [MulSemiringAction G K] :
+instance {G K : Type*} [Group G] [Field K] [MulSemiringAction G K] :
     MulSemiringAction G (𝓞 K) :=
   inferInstanceAs (MulSemiringAction G (integralClosure _ _))
 
@@ -288,19 +288,20 @@ instance {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
   one_smul x := Subtype.ext (one_smul G x.1)
   mul_smul g h x := Subtype.ext (mul_smul g h x.1)
 
-theorem Polynomial.rootSet.coe_smul
+theorem rootSet.coe_smul
     {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
     [NoZeroSMulDivisors R S] {f : R[X]}
     {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
     (g : G) (x : f.rootSet S) : (g • x : f.rootSet S) = g • (x : S) := rfl
 
-theorem _root_.Polynomial.Monic.mem_rootSet {T S : Type*} [CommRing T] [CommRing S] [IsDomain S]
+theorem Monic.mem_rootSet {T S : Type*} [CommRing T] [CommRing S] [IsDomain S]
     [Algebra T S] {p : T[X]} (hp : p.Monic) {a : S} : a ∈ p.rootSet S ↔ (aeval a) p = 0 := by
   simp [Polynomial.mem_rootSet', (hp.map (algebraMap T S)).ne_zero]
 
 theorem fiddly {α β : Type*} (s : Set α) (f : α → β) :
     s.ncard ≤ (f '' s).ncard + 1 ↔ ∀ a ∈ s, ∀ b ∈ s, ∀ c ∈ s, ∀ d ∈ s,
       f a = f b → f c = f d → a = b ∨ a = c ∨ b = c ∨ c = d := by
+
   sorry
 
 theorem tada -- R = ℤ, S = 𝓞 K
@@ -396,6 +397,8 @@ attribute [-instance] Polynomial.Gal.galActionAux -- should be local to Polynomi
 
 attribute [local instance] Gal.splits_ℚ_ℂ
 
+attribute [-instance] Gal.smul Gal.galAction -- todo: redefine in more general semiring context
+
 open NumberField
 
 theorem tada'' (f₀ : ℤ[X]) (hf₀ : f₀.Monic) (hf' : Irreducible f₀) :
@@ -410,20 +413,23 @@ theorem tada'' (f₀ : ℤ[X]) (hf₀ : f₀.Monic) (hf' : Irreducible f₀) :
   have : IsGalois ℚ K := by constructor
   let R := 𝓞 K
   let G := f.Gal
-  -- let _ : MulSemiringAction G R := IsIntegralClosure.MulSemiringAction ℤ ℚ K R
   suffices Function.Bijective (Gal.galActionHom f K) by
     rw [switchinglemma f ℂ K]
     exact (((Gal.rootsEquivRoots f f.SplittingField).symm.trans
       (Gal.rootsEquivRoots f ℂ)).permCongrHom.toEquiv.comp_bijective _).mpr this
-  let φ : f₀.rootSet R → f.rootSet K := fun x ↦ ⟨algebraMap R K x, by
+  have hφ : Set.MapsTo (algebraMap R K) (f₀.rootSet R) (f.rootSet K) := by
+    intro x hx
     rw [hf.mem_rootSet, aeval_map_algebraMap, aeval_algebraMap_apply,
-      aeval_eq_zero_of_mem_rootSet x.2, map_zero]⟩
+      aeval_eq_zero_of_mem_rootSet hx, map_zero]
+  let φ : f₀.rootSet R → f.rootSet K := hφ.restrict
   have hφ1 : ∀ g : G, ∀ x : f₀.rootSet R, φ (g • x) = g • φ x := by
     intro g x
     ext
-    sorry
+    exact (rootSet.coe_smul g (φ x)).symm
   have hφ2 : Function.Bijective φ := by
-    -- injective and card
+    rw [Function.Bijective, hφ.restrict_inj, hφ.restrict_surjective_iff]
+    refine ⟨RingOfIntegers.coe_injective.injOn, ?_⟩
+    -- surjective
     sorry
   suffices Function.Bijective (MulAction.toPermHom G (f₀.rootSet R)) by
     sorry
@@ -431,9 +437,15 @@ theorem tada'' (f₀ : ℤ[X]) (hf₀ : f₀.Monic) (hf' : Irreducible f₀) :
   --   rw [switchinglemma f ℂ K]
   --   exact (((Gal.rootsEquivRoots f f.SplittingField).symm.trans
   --     (Gal.rootsEquivRoots f ℂ)).permCongrHom.toEquiv.comp_bijective _).mpr this
-  have : MulAction.IsPretransitive G (f.rootSet K) :=
-    Gal.galAction_isPretransitive _ _ (hf₀.irreducible_iff_irreducible_map_fraction_map.mp hf')
-  have : FaithfulSMul G (f.rootSet K) :=
+  have : MulAction.IsPretransitive G (f.rootSet K) := by
+    convert Gal.galAction_isPretransitive f K (hf₀.irreducible_iff_irreducible_map_fraction_map.mp hf')
+    ext
+    -- diamond...
+    sorry
+  have : FaithfulSMul G (f.rootSet S) :=
+    -- use galActionHom_injective
+    sorry
+  have : FaithfulSMul G (f₀.rootSet R) :=
     -- use galActionHom_injective
     sorry
   -- need a bijection between f₀.rootSet R and
