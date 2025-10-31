@@ -209,7 +209,7 @@ def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return
     for s in unwanted_cdot stx do
       Linter.logLint linter.style.cdot s
-        m!"Please, use '·' (typed as `\\.`) instead of '{s}' as 'cdot'."
+        m!"Please, use '·' (typed as `\\.`) instead of '.' as 'cdot'."
     -- We also check for isolated cdot's, i.e. when the cdot is on its own line.
     for cdot in Mathlib.Linter.findCDot stx do
       match cdot.find? (·.isOfKind `token.«· ») with
@@ -310,7 +310,7 @@ initialize addLinter lambdaSyntaxLinter
 end Style.lambdaSyntax
 
 /-!
-#  The "longFile" linter
+# The "longFile" linter
 
 The "longFile" linter emits a warning on files which are longer than a certain number of lines
 (1500 by default).
@@ -422,7 +422,7 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
         let fileMap ← getFileMap
         -- `impMods` is the syntax for the modules imported in the current file
         let (impMods, _) ← Parser.parseHeader
-          { input := fileMap.source, fileName := ← getFileName, fileMap := fileMap }
+          { inputString := fileMap.source, fileName := ← getFileName, fileMap := fileMap }
         return impMods.raw
       else return stx
     let sstr := stx.getSubstring?

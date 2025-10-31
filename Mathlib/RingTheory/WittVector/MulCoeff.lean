@@ -136,9 +136,6 @@ theorem mul_polyOfInterest_aux3 (p n : ℕ) : wittPolyProd p (n + 1) =
     remainder p n := by
   -- a useful auxiliary fact
   have mvpz : (p : 𝕄) ^ (n + 1) = MvPolynomial.C ((p : ℤ) ^ (n + 1)) := by norm_cast
-  -- Porting note: the original proof applies `sum_range_succ` through a non-`conv` rewrite,
-  -- but this does not work in Lean 4; the whole proof also times out very badly. The proof has been
-  -- nearly totally rewritten here and now finishes quite fast.
   rw [wittPolyProd, wittPolynomial, map_sum, map_sum]
   conv_lhs =>
     arg 1

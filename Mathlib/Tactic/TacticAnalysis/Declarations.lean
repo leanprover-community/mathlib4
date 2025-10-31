@@ -7,6 +7,7 @@ import Mathlib.Tactic.TacticAnalysis
 import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.MinImports
 import Lean.Elab.Tactic.Meta
+import Lean.Elab.Command
 
 /-!
 # Tactic linters
@@ -14,70 +15,148 @@ import Lean.Elab.Tactic.Meta
 This file defines passes to run from the tactic analysis framework.
 -/
 
-open Lean Mathlib
+open Lean Meta
+
+namespace Mathlib.TacticAnalysis
+
+/-- Helper structure for the return type of the `test` function in `terminalReplacement`. -/
+private inductive TerminalReplacementOutcome where
+| success (stx : TSyntax `tactic)
+| remainingGoals (stx : TSyntax `tactic) (goals : List MessageData)
+| error (stx : TSyntax `tactic) (msg : MessageData)
+
+open Elab.Command
+
+/--
+Define a pass that tries replacing one terminal tactic with another.
+
+`newTacticName` is a human-readable name for the tactic, for example "linarith".
+This can be used to group messages together, so that `ring`, `ring_nf`, `ring1`, ...
+all produce the same message.
+
+`oldTacticKind` is the `SyntaxNodeKind` for the tactic's main parser,
+for example `Mathlib.Tactic.linarith`.
+
+`newTactic stx goal` selects the new tactic to try, which may depend on the old tactic invocation
+in `stx` and the current `goal`.
+-/
+def terminalReplacement (oldTacticName newTacticName : String) (oldTacticKind : SyntaxNodeKind)
+    (newTactic : Syntax → MVarId → MetaM (TSyntax `tactic))
+    (reportFailure : Bool := true) (reportSuccess : Bool := false)
+    (reportSlowdown : Bool := false) (maxSlowdown : Float := 1) :
+    TacticAnalysis.Config := .ofComplex {
+  out := TerminalReplacementOutcome
+  ctx := Syntax
+  trigger _ stx := if stx.getKind == oldTacticKind
+    then .accept stx else .skip
+  test stx goal := do
+    let tac ← newTactic stx goal
+    try
+      let (goals, _) ← Lean.Elab.runTactic goal tac
+      match goals with
+      | [] => return .success tac
+      | _ => do
+        let goalsMessages ← goals.mapM fun g => do
+          let e ← instantiateMVars (← g.getType)
+          pure m!"⊢ {MessageData.ofExpr e}\n"
+        return .remainingGoals tac goalsMessages
+    catch _e =>
+      let name ← mkAuxDeclName `extracted
+      let ((sig, _, modules), _) ← (Mathlib.Tactic.ExtractGoal.goalSignature name goal).run
+      let imports := modules.toList.map (s!"import {·}")
+      return .error tac m!"{"\n".intercalate imports}\n\ntheorem {sig} := by\n  fail_if_success {tac}\n  {stx}"
+  tell stx _ oldHeartbeats new newHeartbeats :=
+    match new with
+    | .error _ msg =>
+      if reportFailure then
+        let msg :=
+          m!"`{newTacticName}` failed where `{oldTacticName}` succeeded.\n" ++
+          m!"Original tactic:{indentD stx}\n" ++
+          m!"Counterexample:{indentD msg}"
+        return msg
+      else
+        return none
+    | .remainingGoals newStx goals =>
+      if reportFailure then
+        let msg :=
+          m!"`{newTacticName}` left unsolved goals where `{oldTacticName}` succeeded.\n" ++
+          m!"Original tactic:{indentD stx}\n" ++
+          m!"Replacement tactic:{indentD newStx}\n" ++
+          m!"Unsolved goals:{indentD goals}"
+        return msg
+      else
+        return none
+    | .success newStx => do
+      -- TODO: we should add a "Try this:" suggestion with code action.
+      let msg := if (← liftCoreM <| PrettyPrinter.ppTactic newStx).pretty = newTacticName then
+        m!"`{newTacticName}` can replace `{stx}`"
+      else
+        m!"`{newTacticName}` can replace `{stx}` using `{newStx}`"
+      if reportSlowdown ∧ maxSlowdown * oldHeartbeats.toFloat < newHeartbeats.toFloat then
+        return some m!"{msg}, but is slower: {newHeartbeats / 1000} versus {oldHeartbeats / 1000} heartbeats"
+      else if reportSuccess then
+        return some msg
+      else
+        return none
+    }
+
 
 /--
 Define a pass that tries replacing a specific tactic with `grind`.
 
+`tacticName` is a human-readable name for the tactic, for example "linarith".
+This can be used to group messages together, so that `ring`, `ring_nf`, `ring1`, ...
+all produce the same message.
+
 `tacticKind` is the `SyntaxNodeKind` for the tactic's main parser,
 for example `Mathlib.Tactic.linarith`.
 -/
-def grindReplacementWith (tacticKind : SyntaxNodeKind)
+def grindReplacementWith (tacticName : String) (tacticKind : SyntaxNodeKind)
     (reportFailure : Bool := true) (reportSuccess : Bool := false)
     (reportSlowdown : Bool := false) (maxSlowdown : Float := 1) :
-    TacticAnalysis.Config := .ofComplex {
-  out := List MVarId × MessageData
-  ctx := Syntax
-  trigger _ stx := if stx.getKind == tacticKind
-    then .accept stx else .skip
-  test stx goal := do
-    let tac ← `(tactic| grind)
-    try
-      let (goals, _) ← Lean.Elab.runTactic goal tac
-      return (goals, m!"")
-    catch _e => -- Grind throws an error if it fails.
-      let name ← mkAuxDeclName `extracted
-      let ((sig, _, modules), _) ← (Mathlib.Tactic.ExtractGoal.goalSignature name goal).run
-      let imports := modules.toList.map (s!"import {·}")
-      return ([goal], m!"{"\n".intercalate imports}\n\ntheorem {sig} := by\n  fail_if_success grind\n  {stx}")
-  tell stx _ oldHeartbeats new newHeartbeats :=
-    if let (_ :: _, counterexample ) := new then
-      if reportFailure then
-        some m!"'grind' failed where '{stx}' succeeded. Counterexample:\n{counterexample}"
-      else
-        none
-    else
-      if reportSlowdown ∧ maxSlowdown * oldHeartbeats.toFloat < newHeartbeats.toFloat then
-        some m!"'grind' is slower than '{stx}': {newHeartbeats / 1000} versus {oldHeartbeats / 1000} heartbeats"
-      else if reportSuccess then
-        some m!"'grind' can replace '{stx}'"
-      else
-        none
-    }
+    TacticAnalysis.Config :=
+  terminalReplacement tacticName "grind" tacticKind (fun _ _ => `(tactic| grind))
+    reportFailure reportSuccess reportSlowdown maxSlowdown
+
+end Mathlib.TacticAnalysis
+
+open Mathlib TacticAnalysis
 
 /-- Debug `grind` by identifying places where it does not yet supersede `linarith`. -/
-register_option linter.tacticAnalysis.linarithToGrind : Bool := {
+register_option linter.tacticAnalysis.regressions.linarithToGrind : Bool := {
   defValue := false
 }
-@[tacticAnalysis linter.tacticAnalysis.linarithToGrind,
-  inherit_doc linter.tacticAnalysis.linarithToGrind]
-def linarithToGrind := grindReplacementWith `Mathlib.Tactic.linarith
-
-/-- Debug `grind` by identifying places where it does not yet supersede `omega`. -/
-register_option linter.tacticAnalysis.omegaToGrind : Bool := {
-  defValue := false
-}
-@[tacticAnalysis linter.tacticAnalysis.omegaToGrind,
-  inherit_doc linter.tacticAnalysis.omegaToGrind]
-def omegaToGrind := grindReplacementWith ``Lean.Parser.Tactic.omega
+@[tacticAnalysis linter.tacticAnalysis.regressions.linarithToGrind,
+  inherit_doc linter.tacticAnalysis.regressions.linarithToGrind]
+def linarithToGrindRegressions := grindReplacementWith "linarith" `Mathlib.Tactic.linarith
 
 /-- Debug `grind` by identifying places where it does not yet supersede `ring`. -/
-register_option linter.tacticAnalysis.ringToGrind : Bool := {
+register_option linter.tacticAnalysis.regressions.ringToGrind : Bool := {
   defValue := false
 }
-@[tacticAnalysis linter.tacticAnalysis.ringToGrind,
-  inherit_doc linter.tacticAnalysis.ringToGrind]
-def ringToGrind := grindReplacementWith `Mathlib.Tactic.RingNF.ring
+@[tacticAnalysis linter.tacticAnalysis.regressions.ringToGrind,
+  inherit_doc linter.tacticAnalysis.regressions.ringToGrind]
+def ringToGrindRegressions := grindReplacementWith "ring" `Mathlib.Tactic.RingNF.ring
+
+/-- Debug `cutsat` by identifying places where it does not yet supersede `omega`. -/
+register_option linter.tacticAnalysis.regressions.omegaToCutsat : Bool := {
+  defValue := false
+}
+@[tacticAnalysis linter.tacticAnalysis.regressions.omegaToCutsat,
+  inherit_doc linter.tacticAnalysis.regressions.omegaToCutsat]
+def omegaToCutsatRegressions :=
+  terminalReplacement "omega" "cutsat" ``Lean.Parser.Tactic.omega (fun _ _ => `(tactic| cutsat))
+    (reportSuccess := false) (reportFailure := true)
+
+/-- Report places where `omega` can be replaced by `cutsat`. -/
+register_option linter.tacticAnalysis.omegaToCutsat : Bool := {
+  defValue := false
+}
+@[tacticAnalysis linter.tacticAnalysis.omegaToCutsat,
+  inherit_doc linter.tacticAnalysis.omegaToCutsat]
+def omegaToCutsat :=
+  terminalReplacement "omega" "cutsat" ``Lean.Parser.Tactic.omega (fun _ _ => `(tactic| cutsat))
+    (reportSuccess := true) (reportFailure := false)
 
 /-- Suggest merging two adjacent `rw` tactics if that also solves the goal. -/
 register_option linter.tacticAnalysis.rwMerge : Bool := {
@@ -100,7 +179,7 @@ def rwMerge : TacticAnalysis.Config := .ofComplex {
       return (goals, ctxT.map (↑·))
     catch _e => -- rw throws an error if it fails to pattern-match.
       return ([goal], ctxT.map (↑·))
-  tell _stx _old _oldHeartbeats new _newHeartbeats :=
+  tell _stx _old _oldHeartbeats new _newHeartbeats := pure <|
     if new.1.isEmpty then
       m!"Try this: rw {new.2}"
     else none }
@@ -110,12 +189,14 @@ register_option linter.tacticAnalysis.mergeWithGrind : Bool := {
   defValue := false
 }
 
+private abbrev mergeWithGrindAllowed : Std.HashSet Name := { `«tactic#adaptation_note_» }
+
 @[tacticAnalysis linter.tacticAnalysis.mergeWithGrind,
   inherit_doc linter.tacticAnalysis.mergeWithGrind]
 def mergeWithGrind : TacticAnalysis.Config where
   run seq := do
     if let #[(preCtx, preI), (_postCtx, postI)] := seq[0:2].array then
-      if postI.stx.getKind == ``Lean.Parser.Tactic.grind then
+      if postI.stx.getKind == ``Lean.Parser.Tactic.grind && preI.stx.getKind ∉ mergeWithGrindAllowed then
         if let [goal] := preI.goalsBefore then
           let goals ← try
             preCtx.runTacticCode preI goal postI.stx
@@ -184,6 +265,59 @@ def terminalToGrind : TacticAnalysis.Config where
       if oldHeartbeats * 2 < newHeartbeats then
         logWarningAt stx m!"'grind' is slower than the original: {oldHeartbeats} -> {newHeartbeats}"
 
+open Elab.Command in
+/-- Run a tactic at each proof step. -/
+def tryAtEachStep (tac : Syntax → MVarId → CommandElabM (TSyntax `tactic)) : TacticAnalysis.Config where
+  run seq := do
+    for (ctx, i) in seq do
+      if let [goal] := i.goalsBefore then
+        let tac ← tac i.stx goal
+        let goalsAfter ← try
+          ctx.runTacticCode i goal tac
+        catch _e =>
+          pure [goal]
+        if goalsAfter.isEmpty then
+          logInfoAt i.stx m!"`{i.stx}` can be replaced with `{tac}`"
+
+/-- Run `grind` at every step in proofs, reporting where it succeeds. -/
+register_option linter.tacticAnalysis.tryAtEachStepGrind : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepGrind,
+   inherit_doc linter.tacticAnalysis.tryAtEachStepGrind]
+def tryAtEachStepGrind := tryAtEachStep (fun _ _ => `(tactic| grind))
+
+/-- Run `simp_all` at every step in proofs, reporting where it succeeds. -/
+register_option linter.tacticAnalysis.tryAtEachStepSimpAll : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepSimpAll,
+   inherit_doc linter.tacticAnalysis.tryAtEachStepSimpAll]
+def tryAtEachStepSimpAll := tryAtEachStep (fun _ _ => `(tactic| simp_all))
+
+/-- Run `aesop` at every step in proofs, reporting where it succeeds. -/
+register_option linter.tacticAnalysis.tryAtEachStepAesop : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepAesop,
+   inherit_doc linter.tacticAnalysis.tryAtEachStepAesop]
+def tryAtEachStepAesop := tryAtEachStep
+  -- As `aesop` isn't imported here, we construct the tactic syntax manually.
+  fun _ _ => return ⟨TSyntax.raw <|
+    mkNode `Aesop.Frontend.Parser.aesopTactic #[mkAtom "aesop", mkNullNode]⟩
+
+/-- Run `grind +premises` at every step in proofs, reporting where it succeeds. -/
+register_option linter.tacticAnalysis.tryAtEachStepGrindPremises : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepGrindPremises,
+   inherit_doc linter.tacticAnalysis.tryAtEachStepGrindPremises]
+def tryAtEachStepGrindPremises := tryAtEachStep (fun _ _ => `(tactic| grind +premises))
+
 -- TODO: add compatibility with `rintro` and `intros`
 /-- Suggest merging two adjacent `intro` tactics which don't pattern match. -/
 register_option linter.tacticAnalysis.introMerge : Bool := {
@@ -208,5 +342,5 @@ def introMerge : TacticAnalysis.Config := .ofComplex {
       return some tac
     catch _e => -- if for whatever reason we can't run `intro` here.
       return none
-  tell _stx _old _oldHeartbeats new _newHeartbeats :=
+  tell _stx _old _oldHeartbeats new _newHeartbeats := pure <|
     if let some tac := new then m!"Try this: {tac}" else none}

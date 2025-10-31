@@ -618,7 +618,7 @@ example (q : Prop) (p : ∀ (x : ℤ), q → 1 = 2) : 1 = 2 := by
   nlinarith [p _ garbage]
 
 /--
-error: don't know how to synthesize placeholder for argument 'x'
+error: don't know how to synthesize placeholder for argument `x`
 context:
 q : Prop
 p : ∀ (x : ℤ), 1 = 2

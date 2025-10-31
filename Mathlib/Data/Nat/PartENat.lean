@@ -92,8 +92,6 @@ theorem dom_some (x : ℕ) : (some x).Dom :=
   trivial
 
 instance addCommMonoid : AddCommMonoid PartENat where
-  add := (· + ·)
-  zero := 0
   add_comm _ _ := Part.ext' and_comm fun _ _ => add_comm _ _
   zero_add _ := Part.ext' (iff_of_eq (true_and _)) fun _ _ => zero_add _
   add_zero _ := Part.ext' (iff_of_eq (and_true _)) fun _ _ => add_zero _
@@ -102,7 +100,6 @@ instance addCommMonoid : AddCommMonoid PartENat where
 
 instance : AddCommMonoidWithOne PartENat :=
   { PartENat.addCommMonoid with
-    one := 1
     natCast := some
     natCast_zero := rfl
     natCast_succ := fun _ => Part.ext' (iff_of_eq (true_and _)).symm fun _ _ => rfl }
@@ -241,7 +238,7 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
       specialize H hy
       specialize h fun _ => hy
       rw [not_forall] at h
-      omega
+      cutsat
     · specialize h fun hx' => (hx hx').elim
       rw [not_forall] at h
       obtain ⟨hx', h⟩ := h
@@ -433,6 +430,7 @@ protected theorem add_lt_add_right {x y z : PartENat} (h : x < y) (hz : z ≠ �
   induction y using PartENat.casesOn
   · rw [top_add]
     exact_mod_cast natCast_lt_top _
+  intro h
   norm_cast at h
   exact_mod_cast add_lt_add_right h _
 
@@ -453,12 +451,14 @@ theorem lt_add_one {x : PartENat} (hx : x ≠ ⊤) : x < x + 1 := by
 theorem le_of_lt_add_one {x y : PartENat} (h : x < y + 1) : x ≤ y := by
   induction y using PartENat.casesOn
   · apply le_top
+  intro h
   rcases ne_top_iff.mp (ne_top_of_lt h) with ⟨m, rfl⟩
   exact_mod_cast Nat.le_of_lt_succ (by norm_cast at h)
 
 theorem add_one_le_of_lt {x y : PartENat} (h : x < y) : x + 1 ≤ y := by
   induction y using PartENat.casesOn
   · apply le_top
+  intro h
   rcases ne_top_iff.mp (ne_top_of_lt h) with ⟨m, rfl⟩
   exact_mod_cast Nat.succ_le_of_lt (by norm_cast at h)
 
@@ -467,6 +467,7 @@ theorem add_one_le_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x + 1 ≤ y ↔ x 
   rcases ne_top_iff.mp hx with ⟨m, rfl⟩
   induction y using PartENat.casesOn
   · apply natCast_lt_top
+  intro h
   exact_mod_cast Nat.lt_of_succ_le (by norm_cast at h)
 
 theorem coe_succ_le_iff {n : ℕ} {e : PartENat} : ↑n.succ ≤ e ↔ ↑n < e := by
@@ -478,6 +479,7 @@ theorem lt_add_one_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x < y + 1 ↔ x �
   induction y using PartENat.casesOn
   · rw [top_add]
     apply natCast_lt_top
+  intro h
   exact_mod_cast Nat.lt_succ_of_le (by norm_cast at h)
 
 lemma lt_coe_succ_iff_le {x : PartENat} {n : ℕ} (hx : x ≠ ⊤) : x < n.succ ↔ x ≤ n := by

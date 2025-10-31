@@ -3,6 +3,7 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Peter Nelson
 -/
+import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Data.Nat.Factorial.SuperFactorial
 import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
@@ -24,7 +25,7 @@ the `α × Fin n` matrix with `i`th row `[(w i) ^ (n-1), (v i) * (w i)^(n-2), ..
 `projVandermonde v w = rectVandermonde v w n` is the square matrix case, where `α = Fin n`.
 The determinant of `projVandermonde v w` is the product of `v j * w i - v i * w j`,
 taken over all pairs `i,j` with `i < j`, which gives a similar characterization of
-when it it nonsingular. Since `vandermonde v w = projVandermonde v 1`,
+when it is nonsingular. Since `vandermonde v w = projVandermonde v 1`,
 we can derive most of the API for the former in terms of the latter.
 
 These extensions of Vandermonde matrices arise in the study of complete arcs in finite geometry,
@@ -130,7 +131,7 @@ theorem projVandermonde_apply_of_ne_zero
   rw [projVandermonde_apply, eq_div_iff (by simp [hw]), mul_assoc, ← pow_add, rev_add_cast]
 
 theorem projVandermonde_apply_zero_right {v w : Fin (n + 1) → R} {i : Fin (n + 1)} (hw : w i = 0) :
-    projVandermonde v w i = Pi.single (Fin.last n) ((v i) ^ n)  := by
+    projVandermonde v w i = Pi.single (Fin.last n) ((v i) ^ n) := by
   ext j
   obtain rfl | hlt := j.le_last.eq_or_lt
   · simp [projVandermonde_apply]
@@ -237,7 +238,7 @@ theorem det_vandermonde_add (v : Fin n → R) (a : R) :
 @[simp]
 theorem det_vandermonde_sub (v : Fin n → R) (a : R) :
     (Matrix.vandermonde fun i ↦ v i - a).det = (Matrix.vandermonde v).det := by
-  rw [← det_vandermonde_add v (- a)]
+  rw [← det_vandermonde_add v (-a)]
   simp only [← sub_eq_add_neg]
 
 theorem eq_zero_of_forall_index_sum_pow_mul_eq_zero [IsDomain R] {f v : Fin n → R}
@@ -262,13 +263,13 @@ theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials (v : Fin
     Matrix.of (fun i j => ((p j).eval (v i))) =
     (Matrix.vandermonde v) * (Matrix.of (fun (i j : Fin n) => (p j).coeff i)) := by
   ext i j
-  rw [Matrix.mul_apply, eval, Matrix.of_apply, eval₂]
+  simp_rw [Matrix.mul_apply, eval, Matrix.of_apply, eval₂]
   simp only [Matrix.vandermonde]
   have : (p j).support ⊆ range n := supp_subset_range <| Nat.lt_of_le_of_lt (h_deg j) <| Fin.prop j
   rw [sum_eq_of_subset _ (fun j => zero_mul ((v i) ^ j)) this, ← Fin.sum_univ_eq_sum_range]
   congr
   ext k
-  rw [mul_comm, Matrix.of_apply, RingHom.id_apply, of_apply]
+  rw [mul_comm, Matrix.of_apply, RingHom.id_apply]
 
 theorem det_eval_matrixOfPolynomials_eq_det_vandermonde (v : Fin n → R) (p : Fin n → R[X])
     (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :

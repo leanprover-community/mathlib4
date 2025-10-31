@@ -168,4 +168,16 @@ lemma hasLiftingProperty_iff {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y) :
 
 end Arrow
 
+/-- Given morphisms `i : A ⟶ B`, `p : X ⟶ Y`, `t : A ⟶ X`,
+this is the property that a lifting exists for all squares
+with `i` on left, `p` on the right and `t` on the top. -/
+def HasLiftingPropertyFixedTop (t : A ⟶ X) : Prop :=
+  ∀ (b : B ⟶ Y) (sq : CommSq t i p b), sq.HasLift
+
+/-- Given morphisms `i : A ⟶ B`, `p : X ⟶ Y`, `b : B ⟶ Y`,
+this is the property that a lifting exists for all squares
+with `i` on left, `p` on the right and `b` on the bottom. -/
+def HasLiftingPropertyFixedBot (b : B ⟶ Y) : Prop :=
+  ∀ (t : A ⟶ X) (sq : CommSq t i p b), sq.HasLift
+
 end CategoryTheory

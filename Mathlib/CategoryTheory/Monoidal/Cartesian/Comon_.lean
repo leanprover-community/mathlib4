@@ -19,6 +19,7 @@ universe v u
 
 noncomputable section
 
+namespace CategoryTheory
 variable (C : Type u) [Category.{v} C] [CartesianMonoidalCategory C]
 
 attribute [local simp] leftUnitor_hom rightUnitor_hom
@@ -27,7 +28,7 @@ attribute [local simp] leftUnitor_hom rightUnitor_hom
 The functor from a Cartesian monoidal category to comonoids in that category,
 equipping every object with the diagonal map as a comultiplication.
 -/
-def cartesianComon_ : C ⥤ Comon_ C where
+def cartesianComon : C ⥤ Comon C where
   obj X := {
     X := X
     comon := {
@@ -36,6 +37,8 @@ def cartesianComon_ : C ⥤ Comon_ C where
     }
   }
   map f := .mk' f
+
+@[deprecated (since := "2025-09-15")] alias cartesianComon_ := cartesianComon
 
 variable {C}
 
@@ -54,16 +57,20 @@ variable {C}
 Every comonoid object in a Cartesian monoidal category is equivalent to
 the canonical comonoid structure on the underlying object.
 -/
-@[simps] def iso_cartesianComon_ (A : Comon_ C) : A ≅ (cartesianComon_ C).obj A.X :=
+@[simps] def isoCartesianComon (A : Comon C) : A ≅ (cartesianComon C).obj A.X :=
   { hom := .mk' (𝟙 _)
     inv := .mk' (𝟙 _) }
+
+@[deprecated (since := "2025-09-15")] alias iso_cartesianComon_ := isoCartesianComon
 
 /--
 The category of comonoid objects in a Cartesian monoidal category is equivalent
 to the category itself, via the forgetful functor.
 -/
-@[simps] def comonEquiv : Comon_ C ≌ C where
-  functor := Comon_.forget C
-  inverse := cartesianComon_ C
-  unitIso := NatIso.ofComponents (fun A => iso_cartesianComon_ A)
-  counitIso := NatIso.ofComponents (fun _ => Iso.refl _)
+@[simps] def comonEquiv : Comon C ≌ C where
+  functor := Comon.forget C
+  inverse := cartesianComon C
+  unitIso := NatIso.ofComponents isoCartesianComon
+  counitIso := NatIso.ofComponents (fun _ => .refl _)
+
+end CategoryTheory

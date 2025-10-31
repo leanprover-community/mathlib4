@@ -5,7 +5,7 @@ Authors: Moritz Doll
 -/
 import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.Analysis.InnerProductSpace.ProdL2
-import Mathlib.Analysis.Normed.Operator.Completeness
+import Mathlib.Analysis.Normed.Operator.Extend
 import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.Topology.Algebra.Module.LinearPMap
 
@@ -258,8 +258,8 @@ Note that the adjoint is taken with respect to the L^2 inner product on `E × F`
 as `WithLp 2 (E × F)`. -/
 protected noncomputable
 def adjoint (g : Submodule 𝕜 (E × F)) : Submodule 𝕜 (F × E) :=
-    (g.map <| (LinearEquiv.skewSwap 𝕜 F E).symm.trans
-      (WithLp.linearEquiv 2 𝕜 (F × E)).symm).orthogonal.map (WithLp.linearEquiv 2 𝕜 (F × E))
+  (g.map <| (LinearEquiv.skewSwap 𝕜 F E).symm.trans
+    (WithLp.linearEquiv 2 𝕜 (F × E)).symm).orthogonal.map (WithLp.linearEquiv 2 𝕜 (F × E))
 
 @[simp]
 theorem mem_adjoint_iff (g : Submodule 𝕜 (E × F)) (x : F × E) :

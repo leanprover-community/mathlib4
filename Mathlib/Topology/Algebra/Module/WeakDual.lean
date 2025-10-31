@@ -33,10 +33,6 @@ with the respective topology instances on it.
 * The instance `WeakSpace.instTopologicalSpace` is the weak topology on `E`, i.e., the
   coarsest topology such that all `v : dual 𝕜 E` remain continuous.
 
-## Notations
-
-No new notation is introduced.
-
 ## References
 
 * [H. H. Schaefer, *Topological Vector Spaces*][schaefer1966]
@@ -153,6 +149,9 @@ instance instModule' [CommSemiring 𝕝] [Module 𝕝 E] : Module 𝕝 (WeakSpac
 instance instIsScalarTower [CommSemiring 𝕝] [Module 𝕝 𝕜] [Module 𝕝 E] [IsScalarTower 𝕝 𝕜 E] :
     IsScalarTower 𝕝 𝕜 (WeakSpace 𝕜 E) :=
   WeakBilin.instIsScalarTower (topDualPairing 𝕜 E).flip
+
+instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (WeakSpace 𝕜 E) :=
+  WeakBilin.instContinuousSMul _
 
 variable [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F]
 
