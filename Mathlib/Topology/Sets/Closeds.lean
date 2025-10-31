@@ -46,8 +46,6 @@ instance : CanLift (Set α) (Closeds α) (↑) IsClosed where
 theorem isClosed (s : Closeds α) : IsClosed (s : Set α) :=
   s.isClosed'
 
-@[deprecated (since := "2025-04-20")] alias closed := isClosed
-
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Closeds α) : Set α := s
 

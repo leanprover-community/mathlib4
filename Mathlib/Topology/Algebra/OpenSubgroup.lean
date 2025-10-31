@@ -153,24 +153,15 @@ variable {H : Type*} [Group H] [TopologicalSpace H]
 def prod (U : OpenSubgroup G) (V : OpenSubgroup H) : OpenSubgroup (G × H) :=
   ⟨.prod U V, U.isOpen.prod V.isOpen⟩
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.OpenAddSubgroup.sum := OpenAddSubgroup.prod
-
 @[to_additive (attr := simp, norm_cast) coe_prod]
 theorem coe_prod (U : OpenSubgroup G) (V : OpenSubgroup H) :
     (U.prod V : Set (G × H)) = (U : Set G) ×ˢ (V : Set H) :=
   rfl
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.OpenAddSubgroup.coe_sum := OpenAddSubgroup.coe_prod
-
 @[to_additive (attr := simp, norm_cast) toAddSubgroup_prod]
 theorem toSubgroup_prod (U : OpenSubgroup G) (V : OpenSubgroup H) :
     (U.prod V : Subgroup (G × H)) = (U : Subgroup G).prod V :=
   rfl
-
-@[deprecated (since := "2025-03-11")]
-alias _root_.OpenAddSubgroup.toAddSubgroup_sum := OpenAddSubgroup.toAddSubgroup_prod
 
 end
 

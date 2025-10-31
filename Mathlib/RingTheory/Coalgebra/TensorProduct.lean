@@ -47,14 +47,10 @@ lemma comul_def :
         AlgebraTensorModule.map Coalgebra.comul Coalgebra.comul :=
   rfl
 
-@[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_comul := comul_def
-
 lemma counit_def :
     Coalgebra.counit (R := S) (A := A ⊗[R] B) =
       AlgebraTensorModule.rid R S S ∘ₗ AlgebraTensorModule.map counit counit :=
   rfl
-
-@[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_counit := counit_def
 
 @[simp]
 lemma comul_tmul (x : A) (y : B) :

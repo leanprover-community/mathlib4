@@ -409,10 +409,6 @@ theorem det_one_add_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] (u v 
   rw [det_one_add_mul_comm, det_unique, Pi.add_apply, Pi.add_apply, Matrix.one_apply_eq,
     Matrix.replicateRow_mul_replicateCol_apply]
 
-@[deprecated (since := "2025-03-20")] alias
-  det_one_add_col_mul_row := det_one_add_replicateCol_mul_replicateRow
-
-
 /-- The **Matrix determinant lemma**
 
 TODO: show the more general version without `hA : IsUnit A.det` as
@@ -425,9 +421,6 @@ theorem det_add_replicateCol_mul_replicateRow {ι : Type*} [Unique ι]
   nth_rewrite 1 [← Matrix.mul_one A]
   rwa [← Matrix.mul_nonsing_inv_cancel_left A (replicateCol ι u * replicateRow ι v),
     ← Matrix.mul_add, det_mul, ← Matrix.mul_assoc, det_one_add_mul_comm, ← Matrix.mul_assoc]
-
-@[deprecated (since := "2025-03-20")] alias
-  det_add_col_mul_row := det_add_replicateCol_mul_replicateRow
 
 /-- A generalization of the **Matrix determinant lemma** -/
 theorem det_add_mul {A : Matrix m m α} (U : Matrix m n α)

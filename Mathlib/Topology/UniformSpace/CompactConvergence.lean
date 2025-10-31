@@ -428,9 +428,6 @@ instance instCompleteSpaceOfCompactlyCoherentSpace [CompactlyCoherentSpace α] :
 @[deprecated (since := "2025-06-03")]
 alias completeSpace_of_isCoherentWith := instCompleteSpaceOfCompactlyCoherentSpace
 
-@[deprecated (since := "2025-04-08")]
-alias completeSpace_of_restrictGenTopology := instCompleteSpaceOfCompactlyCoherentSpace
-
 end CompleteSpace
 
 /-- If `C(α, β)` is a complete space, then for any (possibly, discontinuous) function `f`

@@ -67,12 +67,6 @@ theorem HasProd.prodMk {f : β → α} {g : β → γ} {a : α} {b : γ} (hf : H
     (hg : HasProd g b L) : HasProd (fun x ↦ (⟨f x, g x⟩ : α × γ)) ⟨a, b⟩ L := by
   simp [HasProd, ← prod_mk_prod, Filter.Tendsto.prodMk_nhds hf hg]
 
-@[deprecated (since := "2025-03-10")]
-alias HasSum.prod_mk := HasSum.prodMk
-
-@[to_additive existing HasSum.prodMk, deprecated (since := "2025-03-10")]
-alias HasProd.prod_mk := HasProd.prodMk
-
 end ProdCodomain
 
 section ContinuousMul
@@ -98,10 +92,6 @@ protected lemma Multipliable.tprod_sum {α β M : Type*} [CommMonoid M] [Topolog
     [ContinuousMul M] [T2Space M] {f : α ⊕ β → M} (h₁ : Multipliable (f ∘ .inl))
     (h₂ : Multipliable (f ∘ .inr)) : ∏' i, f i = (∏' i, f (.inl i)) * (∏' i, f (.inr i)) :=
   (h₁.hasProd.sum h₂.hasProd).tprod_eq
-
-@[deprecated (since := "2025-04-12")] alias tsum_sum := Summable.tsum_sum
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_sum :=
-  Multipliable.tprod_sum
 
 @[to_additive]
 lemma Multipliable.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
@@ -165,30 +155,17 @@ protected theorem Multipliable.tprod_sigma' {γ : β → Type*} {f : (Σ b : β,
     ∏' p, f p = ∏' (b) (c), f ⟨b, c⟩ :=
   (h₂.hasProd.sigma fun b ↦ (h₁ b).hasProd).tprod_eq.symm
 
-@[deprecated (since := "2025-04-12")] alias tsum_sigma' := Summable.tsum_sigma'
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_sigma' :=
-  Multipliable.tprod_sigma'
-
 @[to_additive Summable.tsum_prod']
 protected theorem Multipliable.tprod_prod' {f : β × γ → α} (h : Multipliable f)
     (h₁ : ∀ b, Multipliable fun c ↦ f (b, c)) :
     ∏' p, f p = ∏' (b) (c), f (b, c) :=
   (h.hasProd.prod_fiberwise fun b ↦ (h₁ b).hasProd).tprod_eq.symm
 
-@[deprecated (since := "2025-04-12")] alias tsum_prod' := Summable.tsum_prod'
-@[to_additive existing Summable.tsum_prod', deprecated (since := "2025-04-12")] alias tprod_prod' :=
-  Multipliable.tprod_prod'
-
 @[to_additive Summable.tsum_prod_uncurry]
 protected theorem Multipliable.tprod_prod_uncurry {f : β → γ → α}
     (h : Multipliable (Function.uncurry f)) (h₁ : ∀ b, Multipliable fun c ↦ f b c) :
     ∏' p : β × γ, uncurry f p = ∏' (b) (c), f b c :=
   (h.hasProd.prod_fiberwise fun b ↦ (h₁ b).hasProd).tprod_eq.symm
-
-@[deprecated (since := "2025-04-12")] alias tsum_prod_uncurry :=
-  Summable.tsum_prod_uncurry
-@[to_additive existing Summable.tsum_prod_uncurry, deprecated (since := "2025-04-12")] alias
-  tprod_prod_uncurry := Multipliable.tprod_prod_uncurry
 
 @[to_additive]
 protected theorem Multipliable.tprod_comm' {f : β → γ → α} (h : Multipliable (Function.uncurry f))
@@ -197,10 +174,6 @@ protected theorem Multipliable.tprod_comm' {f : β → γ → α} (h : Multiplia
   rw [← h.tprod_prod_uncurry h₁, ← h.prod_symm.tprod_prod_uncurry h₂,
     ← (Equiv.prodComm γ β).tprod_eq (uncurry f)]
   rfl
-
-@[deprecated (since := "2025-04-12")] alias tsum_comm':= Summable.tsum_comm'
-@[to_additive existing, deprecated (since := "2025-04-12")] alias
-  tprod_comm' := Multipliable.tprod_comm'
 
 end T3Space
 
@@ -275,27 +248,15 @@ protected theorem Multipliable.tprod_sigma {γ : β → Type*} {f : (Σ b : β, 
     (ha : Multipliable f) : ∏' p, f p = ∏' (b) (c), f ⟨b, c⟩ :=
   Multipliable.tprod_sigma' (fun b ↦ ha.sigma_factor b) ha
 
-@[deprecated (since := "2025-04-12")] alias tsum_sigma := Summable.tsum_sigma
-@[to_additive existing, deprecated (since := "2025-04-12")] alias
-  tprod_sigma := Multipliable.tprod_sigma
-
 @[to_additive Summable.tsum_prod]
 protected theorem Multipliable.tprod_prod {f : β × γ → α} (h : Multipliable f) :
     ∏' p, f p = ∏' (b) (c), f ⟨b, c⟩ :=
   h.tprod_prod' h.prod_factor
 
-@[deprecated (since := "2025-04-12")] alias tsum_prod := Summable.tsum_prod
-@[to_additive existing tsum_prod, deprecated (since := "2025-04-12")]
-  alias tprod_prod := Multipliable.tprod_prod
-
 @[to_additive]
 protected theorem Multipliable.tprod_comm {f : β → γ → α} (h : Multipliable (Function.uncurry f)) :
     ∏' (c) (b), f b c = ∏' (b) (c), f b c :=
   h.tprod_comm' h.prod_factor h.prod_symm.prod_factor
-
-@[deprecated (since := "2025-04-12")] alias tsum_comm := Summable.tsum_comm
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_comm :=
-  Multipliable.tprod_comm
 
 end CompleteT0Space
 

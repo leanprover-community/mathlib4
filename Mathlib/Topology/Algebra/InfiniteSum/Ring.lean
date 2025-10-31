@@ -172,8 +172,6 @@ protected theorem Summable.tsum_mul_tsum (hf : Summable f) (hg : Summable g)
     ((∑' x, f x) * ∑' y, g y) = ∑' z : ι × κ, f z.1 * g z.2 :=
   hf.hasSum.mul_eq hg.hasSum hfg.hasSum
 
-@[deprecated (since := "2025-04-12")] alias tsum_mul_tsum := Summable.tsum_mul_tsum
-
 end tsum_mul_tsum
 
 /-!
@@ -224,9 +222,6 @@ protected theorem Summable.tsum_mul_tsum_eq_tsum_sum_antidiagonal (hf : Summable
   exact (summable_mul_prod_iff_summable_mul_sigma_antidiagonal.mp hfg).tsum_sigma'
     (fun n ↦ (hasSum_fintype _).summable)
 
-@[deprecated (since := "2025-04-12")] alias tsum_mul_tsum_eq_tsum_sum_antidiagonal :=
-  Summable.tsum_mul_tsum_eq_tsum_sum_antidiagonal
-
 end HasAntidiagonal
 
 section Nat
@@ -249,9 +244,6 @@ protected theorem Summable.tsum_mul_tsum_eq_tsum_sum_range (hf : Summable f) (hg
     ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ k ∈ range (n + 1), f k * g (n - k) := by
   simp_rw [← Nat.sum_antidiagonal_eq_sum_range_succ fun k l ↦ f k * g l]
   exact hf.tsum_mul_tsum_eq_tsum_sum_antidiagonal hg hfg
-
-@[deprecated (since := "2025-04-12")] alias tsum_mul_tsum_eq_tsum_sum_range :=
-  Summable.tsum_mul_tsum_eq_tsum_sum_range
 
 end Nat
 

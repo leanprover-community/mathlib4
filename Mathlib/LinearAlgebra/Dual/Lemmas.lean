@@ -148,10 +148,6 @@ instance dual_finite [Projective R M] : Module.Finite R (Dual R M) :=
 
 end Module
 
-@[deprecated (since := "2025-04-11")] alias Basis.dual_free := Module.dual_free
-@[deprecated (since := "2025-04-11")] alias Basis.dual_projective := Module.dual_projective
-@[deprecated (since := "2025-04-11")] alias Basis.dual_finite := Module.dual_finite
-
 end CommSemiring
 
 end

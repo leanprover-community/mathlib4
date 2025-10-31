@@ -86,11 +86,6 @@ theorem le_centralizer_iff_isMulCommutative : K ≤ centralizer K ↔ IsMulCommu
   ⟨fun h => ⟨⟨fun x y => Subtype.ext (h y.2 x x.2)⟩⟩,
     fun h x hx y hy => congr_arg Subtype.val (h.1.1 ⟨y, hy⟩ ⟨x, hx⟩)⟩
 
-@[deprecated (since := "2025-04-09")] alias le_centralizer_iff_isCommutative :=
-  le_centralizer_iff_isMulCommutative
-@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.le_centralizer_iff_isCommutative :=
-  AddSubgroup.le_centralizer_iff_isAddCommutative
-
 variable (H)
 
 @[to_additive]

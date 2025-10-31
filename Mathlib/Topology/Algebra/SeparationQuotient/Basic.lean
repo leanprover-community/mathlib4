@@ -211,11 +211,6 @@ instance instIsUniformGroup {G : Type*} [Group G] [UniformSpace G] [IsUniformGro
     rw [uniformContinuous_dom₂]
     exact uniformContinuous_mk.comp uniformContinuous_div
 
-@[deprecated (since := "2025-03-31")] alias
-  instUniformAddGroup := SeparationQuotient.instIsUniformAddGroup
-@[to_additive existing, deprecated (since := "2025-03-31")] alias
-  instUniformGroup := SeparationQuotient.instIsUniformGroup
-
 end IsUniformGroup
 
 section MonoidWithZero

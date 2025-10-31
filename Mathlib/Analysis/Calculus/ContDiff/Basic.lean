@@ -516,9 +516,6 @@ theorem HasFTaylorSeriesUpToOn.prodMk {n : WithTop ℕ∞}
   · intro m hm
     exact (L m).continuous.comp_continuousOn ((hf.cont m hm).prodMk (hg.cont m hm))
 
-@[deprecated (since := "2025-03-09")]
-alias HasFTaylorSeriesUpToOn.prod := HasFTaylorSeriesUpToOn.prodMk
-
 /-- The Cartesian product of `C^n` functions at a point in a domain is `C^n`. -/
 @[fun_prop]
 theorem ContDiffWithinAt.prodMk {s : Set E} {f : E → F} {g : E → G}
@@ -540,17 +537,11 @@ theorem ContDiffWithinAt.prodMk {s : Set E} {f : E → F} {g : E → G}
     exact ⟨u ∩ v, Filter.inter_mem hu hv, _,
       (hp.mono inter_subset_left).prodMk (hq.mono inter_subset_right)⟩
 
-@[deprecated (since := "2025-03-09")]
-alias ContDiffWithinAt.prod := ContDiffWithinAt.prodMk
-
 /-- The Cartesian product of `C^n` functions on domains is `C^n`. -/
 @[fun_prop]
 theorem ContDiffOn.prodMk {s : Set E} {f : E → F} {g : E → G} (hf : ContDiffOn 𝕜 n f s)
     (hg : ContDiffOn 𝕜 n g s) : ContDiffOn 𝕜 n (fun x : E => (f x, g x)) s := fun x hx =>
   (hf x hx).prodMk (hg x hx)
-
-@[deprecated (since := "2025-03-09")]
-alias ContDiffOn.prod := ContDiffOn.prodMk
 
 /-- The Cartesian product of `C^n` functions at a point is `C^n`. -/
 @[fun_prop]
@@ -558,17 +549,11 @@ theorem ContDiffAt.prodMk {f : E → F} {g : E → G} (hf : ContDiffAt 𝕜 n f 
     (hg : ContDiffAt 𝕜 n g x) : ContDiffAt 𝕜 n (fun x : E => (f x, g x)) x :=
   contDiffWithinAt_univ.1 <| hf.contDiffWithinAt.prodMk hg.contDiffWithinAt
 
-@[deprecated (since := "2025-03-09")]
-alias ContDiffAt.prod := ContDiffAt.prodMk
-
 /-- The Cartesian product of `C^n` functions is `C^n`. -/
 @[fun_prop]
 theorem ContDiff.prodMk {f : E → F} {g : E → G} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
     ContDiff 𝕜 n fun x : E => (f x, g x) :=
   contDiffOn_univ.1 <| hf.contDiffOn.prodMk hg.contDiffOn
-
-@[deprecated (since := "2025-03-09")]
-alias ContDiff.prod := ContDiff.prodMk
 
 end prod
 

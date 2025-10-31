@@ -197,9 +197,6 @@ theorem IsPreprimitive.mk' (Hnt : fixedPoints G X ≠ ⊤)
   obtain ⟨_, ha⟩ := Hnt
   exact .of_isTrivialBlock_of_notMem_fixedPoints ha fun {B} _ ↦ H
 
-@[deprecated (since := "2025-03-03")] alias _root_.AddAction.mk' := AddAction.IsPreprimitive.mk'
-@[to_additive existing, deprecated (since := "2025-03-03")] alias mk' := IsPreprimitive.mk'
-
 section EquivariantMap
 
 variable {M : Type*} [Group M] {α : Type*} [MulAction M α]

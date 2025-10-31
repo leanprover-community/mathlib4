@@ -143,9 +143,6 @@ theorem t2Space_of_properSMul_of_t1Group [h_proper : ProperSMul G X] [T1Space G]
   rw [← range_gf]
   exact (proper_g.comp proper_f).isClosed_range
 
-@[deprecated (since := "2025-03-21")]
-alias t2Space_of_properSMul_of_t2Group := t2Space_of_properSMul_of_t1Group
-
 /-- If two groups `H` and `G` act on a topological space `X` such that `G` acts properly and
 there exists a group homomorphism `H → G` which is a closed embedding compatible with the actions,
 then `H` also acts properly on `X`. -/

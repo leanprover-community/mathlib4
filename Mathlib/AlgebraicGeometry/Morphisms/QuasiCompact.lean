@@ -333,12 +333,4 @@ lemma Scheme.zeroLocus_eq_univ_iff_subset_nilradical {X : Scheme.{u}}
     X.zeroLocus s = Set.univ ↔ s ⊆ nilradical Γ(X, ⊤) :=
   zeroLocus_eq_univ_iff_subset_nilradical_of_isCompact (U := ⊤) (CompactSpace.isCompact_univ) s
 
-@[deprecated (since := "2025-04-05")]
-alias Scheme.zeroLocus_eq_top_iff_subset_nilradical_of_isCompact :=
-  Scheme.zeroLocus_eq_univ_iff_subset_nilradical_of_isCompact
-
-@[deprecated (since := "2025-04-05")]
-alias Scheme.zeroLocus_eq_top_iff_subset_nilradical :=
-  Scheme.zeroLocus_eq_univ_iff_subset_nilradical
-
 end AlgebraicGeometry

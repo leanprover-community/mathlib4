@@ -708,9 +708,6 @@ def ObjectProperty.fullSubcategoryCongr {P P' : ObjectProperty C} (h : P = P') :
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
-@[deprecated (since := "2025-03-04")]
-alias Equivalence.ofFullSubcategory := ObjectProperty.fullSubcategoryCongr
-
 namespace Iso
 
 variable {E : Type u₃} [Category.{v₃} E] {F : C ⥤ E} {G : C ⥤ D} {H : D ⥤ E}

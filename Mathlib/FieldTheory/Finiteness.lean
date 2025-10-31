@@ -89,8 +89,6 @@ theorem _root_.Module.card_eq_pow_finrank [Fintype K] [Fintype V] :
   let b := IsNoetherian.finsetBasis K V
   rw [Module.card_fintype b, ← Module.finrank_eq_card_basis b]
 
-@[deprecated (since := "2025-03-14")] alias _root_.card_eq_pow_finrank := Module.card_eq_pow_finrank
-
 theorem _root_.Module.natCard_eq_pow_finrank [Module.Finite K V] :
     Nat.card V = Nat.card K ^ finrank K V := by
   let b := IsNoetherian.finsetBasis K V

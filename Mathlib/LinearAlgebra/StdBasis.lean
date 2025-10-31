@@ -63,11 +63,6 @@ lemma linearIndependent_single_of_ne_zero {ι R M : Type*} [Ring R] [AddCommGrou
   exact linearIndependent_single (fun i (_ : Unit) ↦ v i) <| by
     simp +contextual [Fintype.linearIndependent_iff, hv]
 
-@[deprecated linearIndependent_single_of_ne_zero (since := "2025-04-14")]
-theorem linearIndependent_single_ne_zero {ι R : Type*} [Ring R] [NoZeroDivisors R] [DecidableEq ι]
-    {v : ι → R} (hv : ∀ i, v i ≠ 0) : LinearIndependent R (fun i : ι ↦ Pi.single i (v i)) :=
-  linearIndependent_single_of_ne_zero hv
-
 variable [Semiring R] [∀ i, AddCommMonoid (Ms i)] [∀ i, Module R (Ms i)]
 
 section Fintype
@@ -168,8 +163,6 @@ lemma AlgHom.eq_piEvalAlgHom {k G : Type*} [CommSemiring k] [NoZeroDivisors k] [
   use s
   refine AlgHom.toLinearMap_injective ((Pi.basisFun k G).ext fun t ↦ ?_)
   by_cases t = s <;> simp_all
-
-@[deprecated (since := "2025-04-15")] alias eval_of_algHom := AlgHom.eq_piEvalAlgHom
 
 namespace Module
 

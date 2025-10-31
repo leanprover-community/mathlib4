@@ -75,9 +75,6 @@ protected theorem aestronglyMeasurable {f : ι → α → β} {p : ℝ≥0∞} (
     (i : ι) : AEStronglyMeasurable (f i) μ :=
   hf.1 i
 
-@[deprecated (since := "2025-04-09")]
-alias aeStronglyMeasurable := UniformIntegrable.aestronglyMeasurable
-
 protected theorem unifIntegrable {f : ι → α → β} {p : ℝ≥0∞} (hf : UniformIntegrable f p μ) :
     UnifIntegrable f p μ :=
   hf.2.1

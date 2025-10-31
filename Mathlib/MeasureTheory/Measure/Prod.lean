@@ -82,9 +82,6 @@ theorem measurable_measure_prodMk_left_finite [IsFiniteMeasure ν] {s : Set (α 
       exacts [hfd.mono fun _ _ ↦ .preimage _, fun i ↦ measurable_prodMk_left (hfm i)]
     simpa only [this] using Measurable.ennreal_tsum ihf
 
-@[deprecated (since := "2025-03-05")]
-alias measurable_measure_prod_mk_left_finite := measurable_measure_prodMk_left_finite
-
 /-- If `ν` is an s-finite measure, and `s ⊆ α × β` is measurable, then `x ↦ ν { y | (x, y) ∈ s }`
 is a measurable function.
 
@@ -98,17 +95,11 @@ theorem measurable_measure_prodMk_left [SFinite ν] {s : Set (α × β)} (hs : M
   simp_rw [Measure.sum_apply_of_countable]
   exact Measurable.ennreal_tsum (fun i ↦ measurable_measure_prodMk_left_finite hs)
 
-@[deprecated (since := "2025-03-05")]
-alias measurable_measure_prod_mk_left := measurable_measure_prodMk_left
-
 /-- If `μ` is an s-finite measure, and `s ⊆ α × β` is measurable, then `y ↦ μ { x | (x, y) ∈ s }` is
   a measurable function. -/
 theorem measurable_measure_prodMk_right {μ : Measure α} [SFinite μ] {s : Set (α × β)}
     (hs : MeasurableSet s) : Measurable fun y => μ ((fun x => (x, y)) ⁻¹' s) :=
   measurable_measure_prodMk_left (measurableSet_swap_iff.mpr hs)
-
-@[deprecated (since := "2025-03-05")]
-alias measurable_measure_prod_mk_right := measurable_measure_prodMk_right
 
 theorem Measurable.map_prodMk_left [SFinite ν] :
     Measurable fun x : α => map (Prod.mk x) ν := by
@@ -116,17 +107,11 @@ theorem Measurable.map_prodMk_left [SFinite ν] :
   simp_rw [map_apply measurable_prodMk_left hs]
   exact measurable_measure_prodMk_left hs
 
-@[deprecated (since := "2025-03-05")]
-alias Measurable.map_prod_mk_left := Measurable.map_prodMk_left
-
 theorem Measurable.map_prodMk_right {μ : Measure α} [SFinite μ] :
     Measurable fun y : β => map (fun x : α => (x, y)) μ := by
   apply measurable_of_measurable_coe; intro s hs
   simp_rw [map_apply measurable_prodMk_right hs]
   exact measurable_measure_prodMk_right hs
-
-@[deprecated (since := "2025-03-05")]
-alias Measurable.map_prod_mk_right := Measurable.map_prodMk_right
 
 /-- The Lebesgue integral is measurable. This shows that the integrand of (the right-hand-side of)
   Tonelli's theorem is measurable. -/
@@ -969,13 +954,6 @@ theorem lintegral_prod (f : α × β → ℝ≥0∞) (hf : AEMeasurable f (μ.pr
   filter_upwards [Measurable.map_prodMk_left.aemeasurable.ae_of_bind hf] with a ha
   exact lintegral_map' ha (by fun_prop)
 
-/-- **Tonelli's Theorem**: For `ℝ≥0∞`-valued measurable functions on `α × β`,
-  the integral of `f` is equal to the iterated integral. -/
-@[deprecated lintegral_prod (since := "2025-04-06")]
-theorem lintegral_prod_of_measurable (f : α × β → ℝ≥0∞) (hf : Measurable f) :
-    ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ :=
-  lintegral_prod f hf.aemeasurable
-
 omit [SFinite ν] in
 theorem lintegral_prod_le (f : α × β → ℝ≥0∞) :
     ∫⁻ z, f z ∂μ.prod ν ≤ ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ := by
@@ -1095,15 +1073,9 @@ theorem fst_map_prodMk₀ {X : α → β} {Y : α → γ} {μ : Measure α}
       exact measurable_fst.comp_aemeasurable hX
     simp [map_of_not_aemeasurable, hX, this]
 
-@[deprecated (since := "2025-03-05")]
-alias fst_map_prod_mk₀ := fst_map_prodMk₀
-
 theorem fst_map_prodMk {X : α → β} {Y : α → γ} {μ : Measure α}
     (hY : Measurable Y) : (μ.map fun a => (X a, Y a)).fst = μ.map X :=
   fst_map_prodMk₀ hY.aemeasurable
-
-@[deprecated (since := "2025-03-05")]
-alias fst_map_prod_mk := fst_map_prodMk
 
 @[simp]
 lemma fst_add {μ ν : Measure (α × β)} : (μ + ν).fst = μ.fst + ν.fst :=
@@ -1163,15 +1135,9 @@ theorem snd_map_prodMk₀ {X : α → β} {Y : α → γ} {μ : Measure α} (hX 
       exact measurable_snd.comp_aemeasurable hY
     simp [map_of_not_aemeasurable, hY, this]
 
-@[deprecated (since := "2025-03-05")]
-alias snd_map_prod_mk₀ := snd_map_prodMk₀
-
 theorem snd_map_prodMk {X : α → β} {Y : α → γ} {μ : Measure α} (hX : Measurable X) :
     (μ.map fun a => (X a, Y a)).snd = μ.map Y :=
   snd_map_prodMk₀ hX.aemeasurable
-
-@[deprecated (since := "2025-03-05")]
-alias snd_map_prod_mk := snd_map_prodMk
 
 @[simp]
 lemma snd_add {μ ν : Measure (α × β)} : (μ + ν).snd = μ.snd + ν.snd :=
