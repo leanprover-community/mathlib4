@@ -143,7 +143,7 @@ abbrev CyclesOfGroup (g : Equiv.Perm X) : Type u :=
   Quotient (Equiv.Perm.SameCycle.setoid g)
 
 /-- The number of cycles of the permutation `g` on `X`. -/
-abbrev numCyclesOfGroup [MulAction (Equiv.Perm X) X]
+abbrev numCyclesOfGroup 
     (g : Equiv.Perm X) [Fintype (CyclesOfGroup X g)] : ℕ :=
   Fintype.card (CyclesOfGroup X g)
 
@@ -272,7 +272,7 @@ def fixedBy_cycle_equiv (g : Equiv.Perm X) :
        ⟩,
   invFun := fun f =>
     Quotient.lift f
-      (by intro a b h ;
+      (by intro a b h;
           exact (f_mem_fixedBy_iff_forall_eq_to_eq g f.1).1 f.2 a b (Quotient.sound h)),
   left_inv := by
     intro f; ext ⟨x⟩; rfl,
