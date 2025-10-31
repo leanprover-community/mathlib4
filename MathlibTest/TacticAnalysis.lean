@@ -1,6 +1,6 @@
 import Mathlib.Tactic.TacticAnalysis.Declarations
 import Mathlib.Tactic.AdaptationNote
-import Lean.PremiseSelection
+import Lean.LibrarySuggestions
 
 section terminalReplacement
 
@@ -171,7 +171,7 @@ section
 def P (_ : Nat) := True
 theorem p : P 37 := trivial
 
-set_premise_selector fun _ _ => pure #[{ name := `p, score := 1.0 }]
+set_library_suggestions fun _ _ => pure #[{ name := `p, score := 1.0 }]
 
 -- FIXME: remove this one `grind +premises` lands.
 macro_rules | `(tactic| grind +premises) => `(tactic| grind [p])
