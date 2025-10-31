@@ -45,8 +45,7 @@ metrizable space, uniform space
 
 
 open Set Function Metric List Filter
-
-open NNReal Filter Uniformity
+open scoped NNReal SetRel Uniformity
 
 variable {X : Type*}
 
@@ -178,7 +177,7 @@ end PseudoMetricSpace
 protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X]
     [IsCountablyGenerated (𝓤 X)] : ∃ I : PseudoMetricSpace X, I.toUniformSpace = ‹_› := by
   classical
-  /- Choose a fast decreasing antitone basis `U : ℕ → set (X × X)` of the uniformity filter `𝓤 X`.
+  /- Choose a fast decreasing antitone basis `U : ℕ → SetRel X X` of the uniformity filter `𝓤 X`.
     Define `d x y : ℝ≥0` to be `(1 / 2) ^ n`, where `n` is the minimal index of `U n` that
     separates `x` and `y`: `(x, y) ∉ U n`, or `0` if `x` is not separated from `y`. This function
     satisfies the assumptions of `PseudoMetricSpace.ofPreNNDist` and
@@ -187,8 +186,8 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     `d` and `dist` are equal. Since the former uniformity is equal to `𝓤 X`, the latter is equal to
     `𝓤 X` as well. -/
   obtain ⟨U, hU_symm, hU_comp, hB⟩ :
-    ∃ U : ℕ → Set (X × X),
-      (∀ n, IsSymmetricRel (U n)) ∧
+    ∃ U : ℕ → SetRel X X,
+      (∀ n, (U n).IsSymm) ∧
         (∀ ⦃m n⦄, m < n → U n ○ (U n ○ U n) ⊆ U m) ∧ (𝓤 X).HasAntitoneBasis U := by
     rcases UniformSpace.has_seq_basis X with ⟨V, hB, hV_symm⟩
     rcases hB.subbasis_with_rel fun m =>
@@ -204,9 +203,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     split_ifs with h
     · simp [h, pow_eq_zero_iff']
     · simpa only [not_exists, Classical.not_not, eq_self_iff_true, true_iff] using h
-  have hd_symm : ∀ x y, d x y = d y x := by
-    intro x y
-    simp only [d, @IsSymmetricRel.mk_mem_comm _ _ (hU_symm _) x y]
+  have hd_symm x y : d x y = d y x := by simp only [d, (U _).comm]
   have hr : (1 / 2 : ℝ≥0) ∈ Ioo (0 : ℝ≥0) 1 := ⟨half_pos one_pos, NNReal.half_lt_self one_ne_zero⟩
   letI I := PseudoMetricSpace.ofPreNNDist d (fun x => hd₀.2 rfl) hd_symm
   have hdist_le : ∀ x y, dist x y ≤ d x y := PseudoMetricSpace.dist_ofPreNNDist_le _ _ _
