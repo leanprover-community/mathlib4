@@ -359,24 +359,22 @@ theorem tada' {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
     [NoZeroSMulDivisors R S] (f : R[X])
     (hf : f.Monic) (hf' : (f.map (algebraMap R S)).Factors)
     (G : Type*) [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
-    [MulAction.IsPretransitive G (f.rootSet S)] [FaithfulSMul G (f.rootSet S)]
+    [MulAction.IsPretransitive G (f.rootSet S)]
     (hG : ⨆ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G = ⊤)
     (h : ∀ m : MaximalSpectrum S, (f.rootSet S).ncard ≤ (f.rootSet (S ⧸ m.asIdeal)).ncard + 1) :
-    Function.Bijective (MulAction.toPermHom G (f.rootSet S)) := by
+    Function.Surjective (MulAction.toPermHom G (f.rootSet S)) := by
   classical
-  have hinj : Function.Injective (MulAction.toPermHom G (f.rootSet S)) := MulAction.toPerm_injective
-  let X := ⋃ m : MaximalSpectrum S,
-    ((↑(m.asIdeal.toAddSubgroup.inertia G : Subgroup G) : Set G) \ {1})
+  let X : Set G := ⋃ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G
   have hS1 : Subgroup.closure X = ⊤ := by
     simpa only [X, Subgroup.closure_iUnion, Subgroup.closure_eq, Subgroup.closure_diff_one]
-  have hS2 : ∀ σ ∈ X, (MulAction.toPermHom G (f.rootSet S) σ).IsSwap := by
+  have hS2 : ∀ σ ∈ X, MulAction.toPermHom G (f.rootSet S) σ = 1 ∨
+      (MulAction.toPermHom G (f.rootSet S) σ).IsSwap := by
     intro σ hσ
-    simp only [X, Set.mem_iUnion, Set.mem_diff, Set.mem_singleton_iff] at hσ
-    obtain ⟨m, hm, hσ⟩ := hσ
-    apply (tada f hf G m hf' ?_ σ hm).resolve_left
-    · rwa [map_eq_one_iff _ hinj]
-    · grw [← h]
-  exact ⟨hinj, surjective_of_isSwap_of_isPretransitive X hS2 hS1⟩
+    simp only [X, Set.mem_iUnion] at hσ
+    obtain ⟨m, hm⟩ := hσ
+    have := tada f hf G m hf' (h m) σ hm
+    exact this
+  exact surjective_of_isSwap_of_isPretransitive' X hS2 hS1
 
 open Equiv Pointwise
 
@@ -413,10 +411,11 @@ theorem tada'' (f₀ : ℤ[X]) (hf₀ : f₀.Monic) (hf' : Irreducible f₀) :
   have : IsGalois ℚ K := by constructor
   let R := 𝓞 K
   let G := f.Gal
-  suffices Function.Bijective (Gal.galActionHom f K) by
+  suffices Function.Surjective (Gal.galActionHom f K) by
+    use Polynomial.Gal.galActionHom_injective f ℂ
     rw [switchinglemma f ℂ K]
     exact (((Gal.rootsEquivRoots f f.SplittingField).symm.trans
-      (Gal.rootsEquivRoots f ℂ)).permCongrHom.toEquiv.comp_bijective _).mpr this
+      (Gal.rootsEquivRoots f ℂ)).permCongrHom.toEquiv.comp_surjective _).mpr this
   have hφ : Set.MapsTo (algebraMap R K) (f₀.rootSet R) (f.rootSet K) := by
     intro x hx
     rw [hf.mem_rootSet, aeval_map_algebraMap, aeval_algebraMap_apply,
@@ -431,22 +430,17 @@ theorem tada'' (f₀ : ℤ[X]) (hf₀ : f₀.Monic) (hf' : Irreducible f₀) :
     refine ⟨RingOfIntegers.coe_injective.injOn, ?_⟩
     -- surjective
     sorry
-  suffices Function.Bijective (MulAction.toPermHom G (f₀.rootSet R)) by
+  suffices Function.Surjective (MulAction.toPermHom G (f₀.rootSet R)) by
     sorry
   -- suffices Function.Bijective (Gal.galActionHom f K) by
   --   rw [switchinglemma f ℂ K]
   --   exact (((Gal.rootsEquivRoots f f.SplittingField).symm.trans
   --     (Gal.rootsEquivRoots f ℂ)).permCongrHom.toEquiv.comp_bijective _).mpr this
   have : MulAction.IsPretransitive G (f.rootSet K) := by
-    convert Gal.galAction_isPretransitive f K (hf₀.irreducible_iff_irreducible_map_fraction_map.mp hf')
+    convert Gal.galAction_isPretransitive f K
+      (hf₀.irreducible_iff_irreducible_map_fraction_map.mp hf')
     ext
     -- diamond...
-    sorry
-  have : FaithfulSMul G (f.rootSet S) :=
-    -- use galActionHom_injective
-    sorry
-  have : FaithfulSMul G (f₀.rootSet R) :=
-    -- use galActionHom_injective
     sorry
   -- need a bijection between f₀.rootSet R and
   have : MulAction.IsPretransitive G (f₀.rootSet R) := by
