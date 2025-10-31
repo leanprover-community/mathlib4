@@ -5,8 +5,8 @@ Authors: Kenny Lau, Chris Hughes, Jujian Zhang
 -/
 import Mathlib.Algebra.Colimit.DirectLimit
 import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Algebra.Module.Congruence.Defs
 import Mathlib.Data.Finset.Order
-import Mathlib.GroupTheory.Congruence.Hom
 import Mathlib.Tactic.SuppressCompilation
 
 /-!
@@ -47,32 +47,27 @@ inductive DirectLimit.Eqv : DirectSum ι G → DirectSum ι G → Prop
   | of_map {i j} (h : i ≤ j) (x : G i) :
     Eqv (DirectSum.lof R ι G i x) (DirectSum.lof R ι G j <| f i j h x)
 
+/-- The congruence relation to quotient the direct sum by to obtain the direct limit. -/
+def DirectLimit.moduleCon [DecidableEq ι] : ModuleCon R (DirectSum ι G) :=
+  SMulCon.addConGen' (Eqv f) <| by rintro _ _ _ ⟨⟩; simpa only [← map_smul] using .of_map ..
+
 variable (G)
 
 /-- The direct limit of a directed system is the modules glued together along the maps. -/
-def DirectLimit [DecidableEq ι] : Type _ := (addConGen <| DirectLimit.Eqv f).Quotient
+def DirectLimit [DecidableEq ι] : Type _ := (DirectLimit.moduleCon f).Quotient
 
 namespace DirectLimit
 
 section Basic
 
 instance addCommMonoid : AddCommMonoid (DirectLimit G f) :=
-  AddCon.addCommMonoid _
+  inferInstanceAs (AddCommMonoid (moduleCon f).Quotient)
 
-instance module : Module R (DirectLimit G f) where
-  smul r := AddCon.lift _ ((AddCon.mk' _).comp <| smulAddHom R _ r) <|
-    AddCon.addConGen_le fun x y ⟨_, _⟩ ↦ (AddCon.eq _).mpr <| by
-      simpa only [smulAddHom_apply, ← map_smul] using .of _ _ (.of_map _ _)
-  one_smul := by rintro ⟨⟩; exact congr_arg _ (one_smul _ _)
-  mul_smul _ _ := by rintro ⟨⟩; exact congr_arg _ (mul_smul _ _ _)
-  smul_zero _ := congr_arg _ (smul_zero _)
-  smul_add _ := by rintro ⟨⟩ ⟨⟩; exact congr_arg _ (smul_add _ _ _)
-  add_smul _ _ := by rintro ⟨⟩; exact congr_arg _ (add_smul _ _ _)
-  zero_smul := by rintro ⟨⟩; exact congr_arg _ (zero_smul _ _)
+instance module : Module R (DirectLimit G f) := inferInstanceAs (Module R (moduleCon f).Quotient)
 
 instance addCommGroup (G : ι → Type*) [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
     (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) : AddCommGroup (DirectLimit G f) :=
-  inferInstanceAs (AddCommGroup <| AddCon.Quotient _)
+  inferInstanceAs (AddCommGroup (moduleCon f).Quotient)
 
 instance inhabited : Inhabited (DirectLimit G f) :=
   ⟨0⟩
