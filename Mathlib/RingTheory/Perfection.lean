@@ -177,7 +177,7 @@ theorem coeff_iterate_frobeniusEquiv_symm (f : Ring.Perfection R p) (n m : ℕ) 
   revert f n
   induction m generalizing f n with m ih
   | zero => simp
-  | succ m ih => 
+  | succ m ih =>
     simp [ih, ← add_assoc]
 
 variable (R p)
