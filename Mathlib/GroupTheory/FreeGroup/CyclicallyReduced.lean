@@ -6,6 +6,7 @@ Authors: Amir Livne Bar-on, Bernhard Reinke
 import Mathlib.Data.List.Induction
 import Mathlib.GroupTheory.FreeGroup.Basic
 import Mathlib.GroupTheory.FreeGroup.Reduce
+import Mathlib.Tactic.Group
 
 /-!
 This file defines some extra lemmas for free groups, in particular about cyclically reduced words.
@@ -22,7 +23,7 @@ universe u
 variable {α : Type u}
 namespace FreeGroup
 
-variable {L L₁ L₂ : List (α × Bool)}
+variable {L L₁ L₂ L₃ : List (α × Bool)}
 
 /-- Predicate asserting that the word `L` is cyclically reduced, i.e., it is reduced and furthermore
 the first and the last letter of the word do not cancel. The empty word is by convention also
@@ -60,7 +61,7 @@ protected theorem singleton {x : (α × Bool)} : IsCyclicallyReduced [x] := by
 theorem isReduced (h : IsCyclicallyReduced L) : IsReduced L := h.1
 
 @[to_additive]
-theorem flatten_replicate (n : ℕ) (h : IsCyclicallyReduced L) :
+theorem flatten_replicate (h : IsCyclicallyReduced L) (n : ℕ) :
     IsCyclicallyReduced (List.replicate n L).flatten := by match n, L with
   | 0, _ => simp
   | n + 1, [] => simp
@@ -75,9 +76,9 @@ theorem flatten_replicate (n : ℕ) (h : IsCyclicallyReduced L) :
 end IsCyclicallyReduced
 
 @[to_additive]
-theorem IsReduced.append_flatten_replicate_append (n : ℕ) (hn : n ≠ 0) (L₁ L₂ L₃ : List (α × Bool))
-    (h₁ : IsCyclicallyReduced L₂) (h₂ : IsReduced (L₁ ++ L₂ ++ L₃))
-    : IsReduced (L₁ ++ (List.replicate n L₂).flatten ++ L₃) := by
+theorem IsReduced.append_flatten_replicate_append (h₁ : IsCyclicallyReduced L₂)
+    (h₂ : IsReduced (L₁ ++ L₂ ++ L₃)) {n : ℕ} (hn : n ≠ 0) :
+  IsReduced (L₁ ++ (List.replicate n L₂).flatten ++ L₃) := by
   match n with
   | 0 => contradiction
   | n + 1 =>
@@ -93,16 +94,16 @@ theorem IsReduced.append_flatten_replicate_append (n : ℕ) (hn : n ≠ 0) (L₁
       rw [← flatten_concat, ← replicate_succ']
       exact (h₁.flatten_replicate _).isReduced
 
-/-- This function produces a subword of a word `w` by cancelling the first and last letters of `w`
-as long as possible. If `w` is reduced, the resulting word will be cyclically reduced. -/
-@[to_additive /-- This function produces a subword of a word `w` by cancelling the first and last
-letters of `w` as long as possible. If `w` is reduced, the resulting word will be cyclically
+/-- This function produces a subword of a word `L` by cancelling the first and last letters of `L`
+as long as possible. If `L` is reduced, the resulting word will be cyclically reduced. -/
+@[to_additive /-- This function produces a subword of a word `L` by cancelling the first and last
+letters of `L` as long as possible. If `L` is reduced, the resulting word will be cyclically
 reduced. -/]
 def reduceCyclically [DecidableEq α] : List (α × Bool) → List (α × Bool) :=
   List.bidirectionalRec
     (nil := [])
     (singleton := fun x => [x])
-    (cons_append := fun a l b rC => if b.1 = a.1 ∧ (!b.2) = a.2 then rC else a :: l ++ [b])
+    (cons_append := fun a L b rC => if b.1 = a.1 ∧ (!b.2) = a.2 then rC else a :: L ++ [b])
 
 namespace reduceCyclically
 variable [DecidableEq α]
@@ -115,16 +116,15 @@ protected theorem singleton {a : α × Bool} : reduceCyclically [a] = [a] := by
   simp [reduceCyclically]
 
 @[to_additive]
-protected theorem cons_append {a b : α × Bool} (l : List (α × Bool)) :
-    reduceCyclically (a :: (l ++ [b])) =
-    if b.1 = a.1 ∧ (!b.2) = a.2 then reduceCyclically l else a :: l ++ [b] := by
+protected theorem cons_append {a b : α × Bool} (L : List (α × Bool)) :
+    reduceCyclically (a :: (L ++ [b])) =
+    if b.1 = a.1 ∧ (!b.2) = a.2 then reduceCyclically L else a :: L ++ [b] := by
   simp [reduceCyclically]
 
 
 @[to_additive]
-theorem isCyclicallyReduced (w : List (α × Bool)) (h : IsReduced w) :
-    IsCyclicallyReduced (reduceCyclically w) := by
-  induction w using List.bidirectionalRec
+theorem isCyclicallyReduced (h : IsReduced L) : IsCyclicallyReduced (reduceCyclically L) := by
+  induction L using List.bidirectionalRec
   case nil => simp
   case singleton => simp
   case cons_append a l b ih =>
@@ -135,8 +135,10 @@ theorem isCyclicallyReduced (w : List (α × Bool)) (h : IsReduced w) :
       rw [isCyclicallyReduced_cons_append_iff]
       exact ⟨h, by simpa using h'⟩
 
-/-- Partner function to `reduceCyclically`. See `reduceCyclically.conjugation`. -/
-@[to_additive /-- Partner function to `reduceCyclically`. See `reduceCyclically.conjugation`. -/]
+/-- Partner function to `reduceCyclically`.
+See `reduceCyclically.conj_conjugator_reduceCyclically`. -/
+@[to_additive /-- Partner function to `reduceCyclically`.
+See `reduceCyclically.conj_conjugator.reduceCyclically`. -/]
 def conjugator : List (α × Bool) → List (α × Bool) :=
   List.bidirectionalRec
     (nil := [])
@@ -150,14 +152,14 @@ protected theorem conjugator.nil : conjugator ([] : List (α × Bool)) = [] := b
 protected theorem conjugator.singleton {a : α × Bool} : conjugator [a] = [] := by simp [conjugator]
 
 @[to_additive]
-protected theorem conjugator.cons_append {a b : α × Bool} (l : List (α × Bool)) :
-    conjugator (a :: (l ++ [b])) = if b.1 = a.1 ∧ (!b.2) = a.2 then a :: conjugator l else [] := by
+protected theorem conjugator.cons_append {a b : α × Bool} (L : List (α × Bool)) :
+    conjugator (a :: (L ++ [b])) = if b.1 = a.1 ∧ (!b.2) = a.2 then a :: conjugator L else [] := by
   simp [conjugator]
 
 @[to_additive]
-theorem conj_conjugator_reduceCyclically (w : List (α × Bool)) :
-    conjugator w ++ reduceCyclically w ++ invRev (conjugator w) = w := by
-  induction w using List.bidirectionalRec
+theorem conj_conjugator_reduceCyclically (L : List (α × Bool)) :
+    conjugator L ++ reduceCyclically L ++ invRev (conjugator L) = L := by
+  induction L using List.bidirectionalRec
   case nil => simp
   case singleton => simp
   case cons_append a l b eq =>
@@ -169,7 +171,7 @@ theorem conj_conjugator_reduceCyclically (w : List (α × Bool)) :
     case isFalse => simp
 
 @[to_additive]
-theorem reduce_flatten_replicate_succ (n : ℕ) (L : List (α × Bool)) (h : IsReduced L) :
+theorem reduce_flatten_replicate_succ (h : IsReduced L) (n : ℕ) :
     reduce (List.replicate (n + 1) L).flatten = conjugator L ++
     (List.replicate (n + 1) (reduceCyclically L)).flatten ++ invRev (conjugator L) := by
   induction n
@@ -180,24 +182,22 @@ theorem reduce_flatten_replicate_succ (n : ℕ) (L : List (α × Bool)) (h : IsR
     nth_rewrite 1 [← conj_conjugator_reduceCyclically L]
     have {L₁ L₂ L₃ L₄ L₅ : List (α × Bool)} : reduce (L₁ ++ L₂ ++ invRev L₃ ++ (L₃ ++ L₄ ++ L₅)) =
         reduce (L₁ ++ (L₂ ++ L₄) ++ L₅) := by
-      nth_rewrite 1 [append_assoc]
-      nth_rewrite 2 [← append_assoc, ← append_assoc]
-      nth_rewrite 1 [← reduce_append_reduce_reduce]
-      nth_rewrite 3 [← reduce_append_reduce_reduce]
-      nth_rewrite 4 [← reduce_append_reduce_reduce]
-      simp [reduce_invRev_left_cancel, reduce_append_reduce_reduce]
+      apply reduce.sound
+      repeat rw [← mul_mk]
+      rw [← inv_mk]
+      group
     rw [this, ← flatten_cons, ← replicate_succ, ← isReduced_iff_reduce_eq]
-    apply IsReduced.append_flatten_replicate_append _ (by simp) ..
-    · apply isCyclicallyReduced _ h
+    apply IsReduced.append_flatten_replicate_append (hn := by simp) ..
+    · exact isCyclicallyReduced h
     · rwa [conj_conjugator_reduceCyclically]
 
 @[to_additive]
-theorem reduce_flatten_replicate {n : ℕ} {L : List (α × Bool)} (h : IsReduced L) :
+theorem reduce_flatten_replicate (h : IsReduced L) (n : ℕ) :
     reduce (List.replicate n L).flatten = if n = 0 then [] else conjugator L ++
     (List.replicate n (reduceCyclically L)).flatten ++ invRev (conjugator L) :=
   match n with
   | 0 => by simp
-  | n + 1 => reduce_flatten_replicate_succ n L h
+  | n + 1 => reduce_flatten_replicate_succ h n
 
 end reduceCyclically
 end FreeGroup
