@@ -1295,7 +1295,7 @@ instance instDecidableRel_deleteVerts_adj (u : Set V) [r : DecidableRel G.Adj] :
 /-- Equivalence between a Subgraph with deleted vertices and its corresponding SimpleGraph. -/
 def coeDeleteVertsEquiv {s : Set V} :
     (G'.deleteVerts s).coe ≃g G'.coe.induce {v : G'.verts | ↑v ∈ s}ᶜ where
-  toFun := fun ⟨v, hv⟩ ↦ ⟨⟨v, (Set.mem_of_mem_inter_left hv)⟩, by aesop⟩
+  toFun := fun ⟨v, hv⟩ ↦ ⟨⟨v, Set.mem_of_mem_inter_left hv⟩, by aesop⟩
   invFun := fun ⟨v, hv⟩ ↦ ⟨v, by simp_all⟩
   left_inv := fun v ↦ by simp
   right_inv := fun v ↦ by simp
