@@ -8,13 +8,13 @@ import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.Algebra.Star.Unitary
 
 /-!
-# The ⋆-algebra automorphism given by a unitary
+# The ⋆-algebra automorphism given by a unitary element
 
 This file defines the ⋆-algebra automorphism on `R` given by a unitary `u`,
-`unitary.toStarAlgAut S R u`, such that `x ↦ u * x * star u`.
+which is `unitary.toStarAlgAut S R u`, defined to be `x ↦ u * x * star u`.
 -/
 
-namespace unitary
+namespace Unitary
 variable {S R : Type*} [Semiring R] [StarMul R]
   [SMul S R] [IsScalarTower S R R] [SMulCommClass S R R]
 
@@ -60,4 +60,4 @@ theorem toAlgEquiv_toStarAlgAut {S : Type*} [CommSemiring S] [Algebra S R] (u : 
     = MulSemiringAction.toAlgEquiv _ R (ConjAct.toConjAct <| toUnits u) :=
   rfl
 
-end unitary
+end Unitary
