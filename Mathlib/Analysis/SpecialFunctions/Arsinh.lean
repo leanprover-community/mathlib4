@@ -188,7 +188,7 @@ def arcosh (x : ℝ) :=
 @[simp]
 theorem cosh_arcosh {x : ℝ} (hx : 1 ≤ x) : cosh (arcosh x) = x := by
   unfold arcosh
-  have : 0 < x + sqrt (x^2 - 1) := by positivity
+  have : 0 < x + sqrt (x ^ 2 - 1) := by positivity
   rw [cosh_eq, exp_neg, exp_log this]
   field_simp; ring_nf
   rw [sq_sqrt]
