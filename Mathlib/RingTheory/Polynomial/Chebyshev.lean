@@ -355,11 +355,10 @@ theorem natDegree_U_neg_one : (U R (-1)).natDegree = 0 := by simp
 
 theorem degree_U_ne_neg_one [IsDomain R] [NeZero (2 : R)] (n : ℤ) (hn : n ≠ -1) :
     (U R n).degree = ↑((n + 1).natAbs - 1) := by
-  obtain ⟨m, hn⟩ := n.eq_nat_or_neg
-  cases hn with
-  | inl hn => subst hn; rw [degree_U_natCast R m]; norm_cast
-  | inr hn =>
-    subst hn; rw [U_neg, degree_neg]
+  obtain ⟨m, rfl | rfl⟩ := n.eq_nat_or_neg
+  case inl => rw [degree_U_natCast R m]; norm_cast
+  case inr =>
+    rw [U_neg, degree_neg]
     cases m with
     | zero => simp
     | succ m =>
