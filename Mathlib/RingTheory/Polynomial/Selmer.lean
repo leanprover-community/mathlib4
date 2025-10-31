@@ -53,60 +53,21 @@ theorem card_subgroup_eq_finrank_fixedpoints :
     Nat.card H = Module.finrank (FixedPoints.intermediateField H : IntermediateField K L) L :=
   card_eq_finrank H (FixedPoints.intermediateField H) L
 
-instance to_intermediateField [Finite G] :
-    IsGaloisGroup (fixingSubgroup G (F : Set L)) F L where
-  faithful := have := hGKL.faithful; inferInstance
-  commutes := ⟨fun g x y ↦ by simp [Algebra.smul_def, Subgroup.smul_def, g.2 x]⟩
-  isInvariant := ⟨fun x h ↦ ⟨⟨x, by
-    have := hGKL.finiteDimensional
-    have := hGKL.isGalois
-    rw [← IsGalois.fixedField_fixingSubgroup F]
-    intro ⟨g, hg⟩
-    rw [Subtype.forall] at h
-    simp only [Subgroup.mk_smul, IntermediateField.mem_fixingSubgroup_iff,
-      mem_fixingSubgroup_iff] at h hg
-    have key := mulEquivCongr_apply_smul (L ≃ₐ[K] L) G K L g x
-    refine key.symm.trans (h _ (by simpa only [mulEquivCongr_apply_smul]))
-  ⟩, rfl⟩⟩
-
-theorem card_fixingSubgroup_eq_finrank [Finite G] :
-    Nat.card (fixingSubgroup G (F : Set L)) = Module.finrank F L :=
-  card_eq_finrank (fixingSubgroup G (F : Set L)) F L
-
 end IsGaloisGroup
 
 namespace IsGaloisGroup
-
-theorem fixingSubgroup_le_of_le (h : F ≤ F') :
-    fixingSubgroup G (F' : Set L) ≤ fixingSubgroup G (F : Set L) :=
-  fun _ hσ ⟨x, hx⟩ ↦ hσ ⟨x, h hx⟩
 
 section SMulCommClass
 
 variable [SMulCommClass G K L]
 
-theorem fixingSubgroup_bot : fixingSubgroup G ((⊥ : IntermediateField K L) : Set L) = ⊤ := by
-  simp [Subgroup.ext_iff, mem_fixingSubgroup_iff, IntermediateField.mem_bot] -- simp lemmas?
-
-theorem fixedPoints_bot :
-    (FixedPoints.intermediateField (⊥ : Subgroup G) : IntermediateField K L) = ⊤ := by
-  simp [IntermediateField.ext_iff]
-
 theorem le_fixedPoints_iff_le_fixingSubgroup :
     F ≤ FixedPoints.intermediateField H ↔ H ≤ fixingSubgroup G (F : Set L) :=
   ⟨fun h g hg x => h (Subtype.mem x) ⟨g, hg⟩, fun h x hx g => h (Subtype.mem g) ⟨x, hx⟩⟩
 
-theorem fixedPoints_le_of_le (h : H ≤ H') :
-    FixedPoints.intermediateField H' ≤ (FixedPoints.intermediateField H : IntermediateField K L) :=
-  fun _ hσ ⟨x, hx⟩ ↦ hσ ⟨x, h hx⟩
-
 end SMulCommClass
 
 variable [hGKL : IsGaloisGroup G K L]
-
-theorem fixingSubgroup_top : fixingSubgroup G ((⊤ : IntermediateField K L) : Set L) = ⊥ := by
-  simp only [Subgroup.ext_iff, mem_fixingSubgroup_iff, Subgroup.mem_bot]
-  exact fun x ↦ ⟨fun h ↦ hGKL.faithful.eq_of_smul_eq_smul (by simpa using h), fun h ↦ by simp [h]⟩
 
 theorem fixedPoints_top :
     (FixedPoints.intermediateField (⊤ : Subgroup G) : IntermediateField K L) = ⊥ := by
@@ -123,13 +84,6 @@ theorem fixingSubgroup_fixedPoints [Finite G] :
     apply IntermediateField.finrank_le_of_le_left
     rw [le_fixedPoints_iff_le_fixingSubgroup]
 
-theorem fixedPoints_fixingSubgroup [Finite G] :
-    FixedPoints.intermediateField (fixingSubgroup G (F : Set L)) = F := by
-  have : FiniteDimensional K L := hGKL.finiteDimensional
-  refine (IntermediateField.eq_of_le_of_finrank_eq' ?_ ?_).symm
-  · rw [le_fixedPoints_iff_le_fixingSubgroup]
-  · rw [← card_subgroup_eq_finrank_fixedpoints, card_fixingSubgroup_eq_finrank]
-
 end IsGaloisGroup
 
 end GeneralGalois
@@ -137,25 +91,6 @@ end GeneralGalois
 section Inertia
 
 open scoped Pointwise
-
-section inertiadef
-
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-  (P : Ideal A) (Q : Ideal B) [Q.LiesOver P]
-  (G : Type*) [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
-
-theorem Ideal.inertiaSubgroup_eq_ker : Q.toAddSubgroup.inertia G =
-    (Ideal.Quotient.stabilizerHom Q P G).ker.map (MulAction.stabilizer G Q).subtype := by
-  simp_rw [Subgroup.ext_iff, AddSubgroup.mem_inertia, Submodule.mem_toAddSubgroup,
-    Subgroup.mem_map, MonoidHom.mem_ker, Subgroup.subtype_apply, AlgEquiv.ext_iff,
-    AlgEquiv.one_apply, Submodule.Quotient.forall, Quotient.mk_eq_mk,
-    Quotient.stabilizerHom_apply, Quotient.mk_eq_mk_iff_sub_mem]
-  refine fun g ↦ ⟨fun h ↦ ⟨⟨g, ?_⟩, h, rfl⟩, fun ⟨g, h, hg⟩ x ↦ hg ▸ h x⟩
-  rw [← Subgroup.inv_mem_iff, MulAction.mem_stabilizer_iff, Ideal.ext_iff]
-  intro x
-  rw [mem_inv_pointwise_smul_iff, iff_comm, ← Q.add_mem_iff_right (h x), sub_add_cancel]
-
-end inertiadef
 
 section inertia
 
@@ -184,6 +119,7 @@ open IsGaloisGroup
 
 open NumberField
 
+-- PRed
 instance (R K : Type*) [CommRing R] [CommRing K] [Algebra R K]
     (G : Type*) [Group G] [MulSemiringAction G K] [SMulCommClass G R K] :
     MulSemiringAction G (integralClosure R K) where
@@ -195,15 +131,18 @@ instance (R K : Type*) [CommRing R] [CommRing K] [Algebra R K]
   smul_one g := by ext; exact smul_one g
   smul_mul g x y := by ext; exact smul_mul' g (x : K) (y : K)
 
+-- PRed
 instance {G K : Type*} [Group G] [Field K] [MulSemiringAction G K] :
     MulSemiringAction G (𝓞 K) :=
   inferInstanceAs (MulSemiringAction G (integralClosure _ _))
 
+-- PRed
 instance (K L : Type*) [Field K] [Field L] [NumberField K] [NumberField L] [Algebra K L]
     (G : Type*) [Group G] [MulSemiringAction G L] [IsGaloisGroup G K L] :
     IsGaloisGroup G (𝓞 K) (𝓞 L) :=
   IsGaloisGroup.of_isFractionRing G (𝓞 K) (𝓞 L) K L (fun _ _ ↦ rfl)
 
+-- PRed
 instance (L : Type*) [Field L] [NumberField L]
     (G : Type*) [Group G] [MulSemiringAction G L] [IsGaloisGroup G ℚ L] :
     IsGaloisGroup G ℤ (𝓞 L) :=
