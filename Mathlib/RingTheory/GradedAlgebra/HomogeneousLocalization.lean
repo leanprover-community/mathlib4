@@ -494,7 +494,7 @@ instance : Algebra R₀ (HomogeneousLocalization 𝒜 x) where
 
 lemma algebraMap_eq : algebraMap (𝒜 0) (HomogeneousLocalization 𝒜 x) = fromZeroRingHom 𝒜 x := rfl
 
-lemma algebraMap_apply' (r : R₀) : algebraMap R₀ (HomogeneousLocalization 𝒜 x) r =
+lemma algebraMap_apply' {r : R₀} : algebraMap R₀ (HomogeneousLocalization 𝒜 x) r =
     fromZeroRingHom 𝒜 x (algebraMap R (𝒜 0) (algebraMap R₀ R r)) := rfl
 
 instance : IsScalarTower (𝒜 0) (HomogeneousLocalization 𝒜 x) (Localization x) :=
@@ -508,9 +508,9 @@ instance : IsScalarTower R₀ R (HomogeneousLocalization 𝒜 x) :=
 
 variable (𝒜)
 
-/-- Given a denominator `d : 𝒜 i`, we have a linear map `𝒜 i → HomogeneousLocalization 𝒜 x` that
-sends `n` to `n/d`. -/
-@[simps] def mkₗ {i : ι} (den : 𝒜 i) (den_mem : (den : A) ∈ x) :
+/-- Given a denominator `den : 𝒜 i`, we have a linear map `𝒜 i → HomogeneousLocalization 𝒜 x` that
+sends `n` to `n/den`. -/
+@[simps] def mkₗ {i : ι} {den : 𝒜 i} (den_mem : (den : A) ∈ x) :
     𝒜 i →ₗ[R] HomogeneousLocalization 𝒜 x where
   toFun num := mk ⟨_, num, den, den_mem⟩
   map_add' _ _ := by ext; simp [Localization.add_mk_self]
@@ -645,9 +645,9 @@ lemma Away.mk_surjective {d : ι} (hf : f ∈ 𝒜 d) (x : Away 𝒜 f) :
 to `x / f ^ n`. -/
 protected def Away.mkₗ {d : ι} (hf : f ∈ 𝒜 d) (n : ℕ) :
     𝒜 (n • d) →ₗ[R] HomogeneousLocalization.Away 𝒜 f :=
-  mkₗ 𝒜 ⟨f ^ n, pow_mem_graded _ hf⟩ ⟨n, rfl⟩
+  mkₗ 𝒜 (den := ⟨f ^ n, pow_mem_graded _ hf⟩) ⟨n, rfl⟩
 
-@[simp] lemma Away.mkₗ_apply {d : ι} (hf : f ∈ 𝒜 d) (n : ℕ) (x : 𝒜 (n • d)) :
+@[simp] lemma Away.mkₗ_apply {d : ι} (hf : f ∈ 𝒜 d) {n : ℕ} (x : 𝒜 (n • d)) :
     Away.mkₗ 𝒜 hf n x = .mk 𝒜 hf n x x.2 := rfl
 
 end
