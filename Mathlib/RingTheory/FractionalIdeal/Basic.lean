@@ -62,7 +62,8 @@ variable {R : Type*} [CommRing R] {S : Submonoid R} {P : Type*} [CommRing P]
 variable [Algebra R P]
 variable (S)
 
-/-- A submodule `I` is a fractional ideal if `a I ⊆ R` for some `a ≠ 0`. -/
+/-- A submodule `I` is a fractional ideal with respect to a submonoid `S`
+if `a I ⊆ R` for some `a ∈ S`. -/
 def IsFractional (I : Submodule R P) :=
   ∃ a ∈ S, ∀ b ∈ I, IsInteger R (a • b)
 
@@ -72,7 +73,7 @@ variable (P)
 
 More precisely, let `P` be a localization of `R` at some submonoid `S`,
 then a fractional ideal `I ⊆ P` is an `R`-submodule of `P`,
-such that there is a nonzero `a : R` with `a I ⊆ R`.
+such that there is an `a ∈ S` with `a I ⊆ R`.
 -/
 def FractionalIdeal :=
   { I : Submodule R P // IsFractional S I }
@@ -125,9 +126,9 @@ theorem den_mul_self_eq_num (I : FractionalIdeal S P) :
   exact I.2.choose_spec.2 a ha
 
 /-- The linear equivalence between the fractional ideal `I` and the integral ideal `I.num`
-defined by mapping `x` to `den I • x`. -/
-noncomputable def equivNum [Nontrivial P] [NoZeroSMulDivisors R P]
-    {I : FractionalIdeal S P} (h_nz : (I.den : R) ≠ 0) : I ≃ₗ[R] I.num := by
+defined by mapping `x` to `den I • x`, assuming scalar multiplication by `I.den` is injective. -/
+noncomputable abbrev equivNumOfIsSMulRegular [FaithfulSMul R P] {I : FractionalIdeal S P}
+    (reg : IsSMulRegular P I.den) : I ≃ₗ[R] I.num := by
   refine LinearEquiv.trans
     (LinearEquiv.ofBijective ((DistribMulAction.toLinearMap R P I.den).restrict fun _ hx ↦ ?_)
       ⟨fun _ _ hxy ↦ ?_, fun ⟨y, hy⟩ ↦ ?_⟩)
@@ -135,11 +136,22 @@ noncomputable def equivNum [Nontrivial P] [NoZeroSMulDivisors R P]
       (FaithfulSMul.algebraMap_injective R P) (num I)).symm
   · rw [← den_mul_self_eq_num]
     exact Submodule.smul_mem_pointwise_smul _ _ _ hx
-  · simp_rw [LinearMap.restrict_apply, DistribMulAction.toLinearMap_apply, Subtype.mk.injEq] at hxy
-    rwa [Submonoid.smul_def, Submonoid.smul_def, smul_right_inj h_nz, SetCoe.ext_iff] at hxy
+  · simpa [LinearMap.restrict_apply, reg.eq_iff] using hxy
   · rw [← den_mul_self_eq_num] at hy
     obtain ⟨x, hx, hxy⟩ := hy
     exact ⟨⟨x, hx⟩, by simp_rw [LinearMap.restrict_apply, Subtype.ext_iff, ← hxy]; rfl⟩
+
+/-- The linear equivalence between the fractional ideal `I` and the integral ideal `I.num`
+defined by mapping `x` to `den I • x`. -/
+noncomputable def equivNum [NoZeroSMulDivisors R P] [Nontrivial P]
+    {I : FractionalIdeal S P} (h_nz : (I.den : R) ≠ 0) : I ≃ₗ[R] I.num :=
+  equivNumOfIsSMulRegular (smul_right_injective P h_nz)
+
+/-- The linear equivalence between the fractional ideal `I` in a faithful localization
+and the integral ideal `I.num` -/
+noncomputable def equivNumOfIsLocalization [FaithfulSMul R P] [IsLocalization S P]
+    (I : FractionalIdeal S P) : I ≃ₗ[R] I.num :=
+  equivNumOfIsSMulRegular (smul_bijective ..).1
 
 section SetLike
 
