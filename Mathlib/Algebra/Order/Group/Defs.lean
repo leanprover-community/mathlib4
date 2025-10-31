@@ -31,7 +31,7 @@ universe u
 
 variable {α : Type u}
 
-alias OrderedCommGroup.mul_lt_mul_left' := mul_lt_mul_left'
+alias OrderedCommGroup.mul_lt_mul_left' := mul_lt_mul_right
 
 attribute [to_additive OrderedAddCommGroup.add_lt_add_left] OrderedCommGroup.mul_lt_mul_left'
 
