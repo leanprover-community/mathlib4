@@ -157,7 +157,7 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
     refine ⟨is, ix, iy, ⟨x, hx⟩, ⟨y, hy⟩⟩
   let 𝓤 := (Scheme.Pullback.openCoverOfBase 𝒰 f g).bind
     (fun i ↦ Scheme.Pullback.openCoverOfLeftRight (𝒱 i) (𝒲 i) _ _)
-  refine isEmbedding_of_iSup_eq_top_of_preimage_subset_range _ ?_ U this _ (fun i ↦ (𝓤.f i))
+  refine isEmbedding_of_iSup_eq_top_of_preimage_subset_range _ ?_ U this _ (𝓤.f ·)
     (fun i ↦ (𝓤.f i).continuous) ?_ ?_
   · fun_prop
   · rintro i x ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
