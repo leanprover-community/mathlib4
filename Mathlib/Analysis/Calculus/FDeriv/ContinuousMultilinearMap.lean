@@ -31,7 +31,7 @@ is given by `ContinuousMultilinearMap.compContinuousLinearMapL`
 and the sum of terms that represent the derivatives with respect to `g i`
 is given by `ContinuousMultilinearMap.fderivCompContinuousLinearMap`.
 
-All statements in the first section are claiming this, for various notions of differentiation. 
+All statements in the first section are claiming this, for various notions of differentiation.
 The second section deduces the corresponding differentiability results when `ι` is finite.
 -/
 
