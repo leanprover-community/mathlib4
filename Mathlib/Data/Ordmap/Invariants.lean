@@ -56,7 +56,7 @@ theorem not_le_delta {s} (H : 1 ≤ s) : ¬s ≤ delta * 0 :=
   not_le_of_gt H
 
 theorem delta_lt_false {a b : ℕ} (h₁ : delta * a < b) (h₂ : delta * b < a) : False :=
-  not_le_of_gt (lt_trans ((mul_lt_mul_left (by decide)).2 h₁) h₂) <| by
+  not_le_of_gt (lt_trans (mul_lt_mul_of_pos_left h₁ <| by decide) h₂) <| by
     simpa [mul_assoc] using Nat.mul_le_mul_right a (by decide : 1 ≤ delta * delta)
 
 /-! ### `singleton` -/
@@ -105,7 +105,7 @@ theorem size_eq_realSize : ∀ {t : Ordnode α}, Sized t → size t = realSize t
 
 @[simp]
 theorem Sized.size_eq_zero {t : Ordnode α} (ht : Sized t) : size t = 0 ↔ t = nil := by
-  cases t <;> [simp;simp [ht.1]]
+  cases t <;> [simp; simp [ht.1]]
 
 theorem Sized.pos {s l x r} (h : Sized (@node α s l x r)) : 0 < s := by
   rw [h.1]; apply Nat.le_add_left
@@ -702,7 +702,7 @@ theorem balanceL_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : S
     rcases H with (⟨l', e, H | ⟨_, H₂⟩⟩ | ⟨r', e, H | ⟨_, H₂⟩⟩)
     · exact le_trans (le_trans (Nat.le_add_left _ _) H) (mul_pos (by decide) l1 : (0 : ℕ) < _)
     · exact le_trans H₂ (Nat.mul_le_mul_left _ (raised_iff.1 e).1)
-    · cases raised_iff.1 e; unfold delta; omega
+    · cases raised_iff.1 e; unfold delta; cutsat
     · exact le_trans (raised_iff.1 e).1 H₂
 
 theorem balance_sz_dual {l r}

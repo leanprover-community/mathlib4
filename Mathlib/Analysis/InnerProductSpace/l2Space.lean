@@ -3,7 +3,7 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection
+import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 import Mathlib.Analysis.Normed.Lp.lpSpace
 import Mathlib.Analysis.InnerProductSpace.PiL2
 
@@ -194,7 +194,7 @@ protected def linearIsometry (hV : OrthogonalFamily 𝕜 G V) : lp G 2 →ₗᵢ
   norm_map' f := by
     classical
       -- needed for lattice instance on `Finset ι`, for `Filter.atTop_neBot`
-      have H : 0 < (2 : ℝ≥0∞).toReal := by norm_num
+      have H : 0 < (2 : ℝ≥0∞).toReal := by simp
       suffices ‖∑' i : ι, V i (f i)‖ ^ (2 : ℝ≥0∞).toReal = ‖f‖ ^ (2 : ℝ≥0∞).toReal by
         exact Real.rpow_left_injOn H.ne' (norm_nonneg _) (norm_nonneg _) this
       refine tendsto_nhds_unique ?_ (lp.hasSum_norm H f)
@@ -212,7 +212,7 @@ protected theorem hasSum_linearIsometry (f : lp G 2) :
 @[simp]
 protected theorem linearIsometry_apply_single [DecidableEq ι] {i : ι} (x : G i) :
     hV.linearIsometry (lp.single 2 i x) = V i x := by
-  rw [hV.linearIsometry_apply, ← tsum_ite_eq i (V i x)]
+  rw [hV.linearIsometry_apply, ← tsum_ite_eq i (fun _ ↦ V i x)]
   congr
   ext j
   rw [lp.single_apply]

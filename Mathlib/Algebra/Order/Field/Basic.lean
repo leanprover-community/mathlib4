@@ -9,6 +9,7 @@ import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Set.Monotone
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Tactic.Positivity.Core
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 
 /-!
 # Lemmas about linear ordered (semi)fields
@@ -22,44 +23,6 @@ variable {ι α β : Type*}
 section LinearOrderedSemifield
 
 variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a b c d e : α} {m n : ℤ}
-
-/-!
-### Relating two divisions.
--/
-
-@[deprecated div_le_div_iff_of_pos_right (since := "2024-11-12")]
-theorem div_le_div_right (hc : 0 < c) : a / c ≤ b / c ↔ a ≤ b := div_le_div_iff_of_pos_right hc
-
-@[deprecated div_lt_div_iff_of_pos_right (since := "2024-11-12")]
-theorem div_lt_div_right (hc : 0 < c) : a / c < b / c ↔ a < b := div_lt_div_iff_of_pos_right hc
-
-@[deprecated div_lt_div_iff_of_pos_left (since := "2024-11-13")]
-theorem div_lt_div_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : a / b < a / c ↔ c < b :=
-  div_lt_div_iff_of_pos_left ha hb hc
-
-@[deprecated div_le_div_iff_of_pos_left (since := "2024-11-12")]
-theorem div_le_div_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : a / b ≤ a / c ↔ c ≤ b :=
-  div_le_div_iff_of_pos_left ha hb hc
-
-@[deprecated div_lt_div_iff₀ (since := "2024-11-12")]
-theorem div_lt_div_iff (b0 : 0 < b) (d0 : 0 < d) : a / b < c / d ↔ a * d < c * b :=
-  div_lt_div_iff₀ b0 d0
-
-@[deprecated div_le_div_iff₀ (since := "2024-11-12")]
-theorem div_le_div_iff (b0 : 0 < b) (d0 : 0 < d) : a / b ≤ c / d ↔ a * d ≤ c * b :=
-  div_le_div_iff₀ b0 d0
-
-@[deprecated div_le_div₀ (since := "2024-11-12")]
-theorem div_le_div (hc : 0 ≤ c) (hac : a ≤ c) (hd : 0 < d) (hbd : d ≤ b) : a / b ≤ c / d :=
-  div_le_div₀ hc hac hd hbd
-
-@[deprecated div_lt_div₀ (since := "2024-11-12")]
-theorem div_lt_div (hac : a < c) (hbd : d ≤ b) (c0 : 0 ≤ c) (d0 : 0 < d) : a / b < c / d :=
-  div_lt_div₀ hac hbd c0 d0
-
-@[deprecated div_lt_div₀' (since := "2024-11-12")]
-theorem div_lt_div' (hac : a ≤ c) (hbd : d < b) (c0 : 0 < c) (d0 : 0 < d) : a / b < c / d :=
-  div_lt_div₀' hac hbd c0 d0
 
 /-!
 ### Relating one division and involving `1`
@@ -171,7 +134,7 @@ theorem left_lt_add_div_two : a < (a + b) / 2 ↔ a < b := by simp [lt_div_iff�
 theorem add_div_two_lt_right : (a + b) / 2 < b ↔ a < b := by simp [div_lt_iff₀, mul_two]
 
 theorem add_thirds (a : α) : a / 3 + a / 3 + a / 3 = a := by
-  rw [div_add_div_same, div_add_div_same, ← two_mul, ← add_one_mul 2 a, two_add_one_eq_three,
+  rw [← add_div, ← add_div, ← two_mul, ← add_one_mul 2 a, two_add_one_eq_three,
     mul_div_cancel_left₀ a three_ne_zero]
 
 /-!
@@ -222,10 +185,9 @@ instance (priority := 100) LinearOrderedSemiField.toDenselyOrdered : DenselyOrde
     ⟨(a₁ + a₂) / 2,
       calc
         a₁ = (a₁ + a₁) / 2 := (add_self_div_two a₁).symm
-        _ < (a₁ + a₂) / 2 := div_lt_div_of_pos_right (add_lt_add_left h _) zero_lt_two
-        ,
+        _ < (a₁ + a₂) / 2 := by gcongr; exact zero_lt_two,
       calc
-        (a₁ + a₂) / 2 < (a₂ + a₂) / 2 := div_lt_div_of_pos_right (add_lt_add_right h _) zero_lt_two
+        (a₁ + a₂) / 2 < (a₂ + a₂) / 2 := by gcongr; exact zero_lt_two
         _ = a₂ := add_self_div_two a₂
         ⟩
 
@@ -557,12 +519,10 @@ theorem one_div_le_neg_one (h1 : a < 0) (h2 : -1 ≤ a) : 1 / a ≤ -1 :=
 
 
 theorem sub_self_div_two (a : α) : a - a / 2 = a / 2 := by
-  suffices a / 2 + a / 2 - a / 2 = a / 2 by rwa [add_halves] at this
-  rw [add_sub_cancel_right]
+  grind
 
 theorem div_two_sub_self (a : α) : a / 2 - a = -(a / 2) := by
-  suffices a / 2 - (a / 2 + a / 2) = -(a / 2) by rwa [add_halves] at this
-  rw [sub_add_eq_sub_sub, sub_self, zero_sub]
+  grind
 
 theorem add_sub_div_two_lt (h : a < b) : a + (b - a) / 2 < b := by
   rwa [← div_sub_div_same, sub_eq_add_neg, add_comm (b / 2), ← add_assoc, ← sub_eq_add_neg, ←
@@ -643,10 +603,7 @@ lemma mul_le_of_forall_lt_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 ≤ c)
 
 theorem mul_self_inj_of_nonneg (a0 : 0 ≤ a) (b0 : 0 ≤ b) : a * a = b * b ↔ a = b :=
   mul_self_eq_mul_self_iff.trans <|
-    or_iff_left_of_imp fun h => by
-      subst a
-      have : b = 0 := le_antisymm (neg_nonneg.1 a0) b0
-      rw [this, neg_zero]
+    or_iff_left_of_imp fun h => by grind
 
 theorem min_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : min (a / c) (b / c) = max a b / c :=
   Eq.symm <| Antitone.map_max fun _ _ => div_le_div_of_nonpos_of_le hc
@@ -654,6 +611,7 @@ theorem min_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : min (a / c) (b /
 theorem max_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : max (a / c) (b / c) = min a b / c :=
   Eq.symm <| Antitone.map_min fun _ _ => div_le_div_of_nonpos_of_le hc
 
+@[simp]
 theorem abs_inv (a : α) : |a⁻¹| = |a|⁻¹ :=
   map_inv₀ (absHom : α →*₀ α) a
 
@@ -679,6 +637,17 @@ theorem uniform_continuous_npow_on_bounded (B : α) {ε : α} (hε : 0 < ε) (n 
     (mul_nonneg (abs_nonneg _) n.cast_nonneg)
   refine max_le ?_ (hr.trans <| le_add_of_nonneg_right zero_le_one)
   exact add_sub_cancel r q ▸ (abs_add_le ..).trans (add_le_add hr hqr.1)
+
+lemma two_mul_le_add_mul_sq {ε : α} (hε : 0 < ε) :
+    2 * a * b ≤ ε * a ^ 2 + ε⁻¹ * b ^ 2 := by
+  have h : 2 * (ε * a) * b ≤ (ε * a) ^ 2 + b ^ 2 := two_mul_le_add_sq (ε * a) b
+  calc 2 * a * b
+  _ = 2 * a * b * (ε * ε⁻¹) := by rw [mul_inv_cancel₀ hε.ne', mul_one]
+  _ = (2 * (ε * a) * b) * ε⁻¹ := by simp_rw [mul_assoc, mul_comm ε, mul_assoc]
+  _ ≤ ((ε * a) ^ 2 + b ^ 2) * ε⁻¹ := by gcongr; exact inv_nonneg.mpr hε.le
+  _ = ε * a ^ 2 + ε⁻¹ * b ^ 2 := by
+    rw [mul_comm _ ε⁻¹, mul_pow, mul_add, ← mul_assoc, pow_two, ← mul_assoc, inv_mul_cancel₀ hε.ne',
+      one_mul]
 
 end
 

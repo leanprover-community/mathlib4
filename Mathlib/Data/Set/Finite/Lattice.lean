@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Data.Finite.Sigma
 import Mathlib.Data.Set.Finite.Powerset
 import Mathlib.Data.Set.Finite.Range
+import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Finiteness of unions and intersections
@@ -20,7 +20,7 @@ and a `Set.Finite` constructor.
 finite sets
 -/
 
-assert_not_exists OrderedRing MonoidWithZero
+assert_not_exists IsOrderedRing MonoidWithZero
 
 open Set Function
 
@@ -83,8 +83,9 @@ Some set instances do not appear here since they are consequences of others, for
 namespace Finite.Set
 
 instance finite_iUnion [Finite ι] (f : ι → Set α) [∀ i, Finite (f i)] : Finite (⋃ i, f i) := by
-  rw [iUnion_eq_range_psigma]
-  apply Set.finite_range
+  have : Fintype (PLift ι) := Fintype.ofFinite _
+  have : ∀ i, Fintype (f i) := fun i => Fintype.ofFinite _
+  classical apply (fintypeiUnion _).finite
 
 instance finite_sUnion {s : Set (Set α)} [Finite s] [H : ∀ t : s, Finite (t : Set α)] :
     Finite (⋃₀ s) := by
@@ -462,5 +463,12 @@ theorem DirectedOn.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} {f
   rw [Set.biUnion_eq_iUnion] at hs
   haveI := hn.coe_sort
   simpa using (directed_comp.2 hc.directed_val).exists_mem_subset_of_finset_subset_biUnion hs
+
+theorem DirectedOn.exists_mem_subset_of_finite_of_subset_sUnion {α : Type*} {c : Set (Set α)}
+    (hn : c.Nonempty) (hc : DirectedOn (· ⊆ ·) c) {s : Set α} (hs : s.Finite)
+    (hsc : s ⊆ sUnion c) : ∃ t ∈ c, s ⊆ t := by
+  rw [← hs.coe_toFinset, sUnion_eq_biUnion] at hsc
+  have := DirectedOn.exists_mem_subset_of_finset_subset_biUnion hn hc hsc
+  exact hs.coe_toFinset ▸ this
 
 end LinearOrder

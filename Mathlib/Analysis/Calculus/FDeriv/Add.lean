@@ -197,7 +197,7 @@ section Add
 @[fun_prop]
 nonrec theorem HasStrictFDerivAt.fun_add (hf : HasStrictFDerivAt f f' x)
     (hg : HasStrictFDerivAt g g' x) : HasStrictFDerivAt (fun y => f y + g y) (f' + g') x :=
-   .of_isLittleO <| (hf.isLittleO.add hg.isLittleO).congr_left fun y => by
+  .of_isLittleO <| (hf.isLittleO.add hg.isLittleO).congr_left fun y => by
     simp only [map_sub, add_apply]
     abel
 
@@ -944,11 +944,11 @@ theorem hasFDerivAt_sub_const_iff (c : F) : HasFDerivAt (f · - c) f' x ↔ HasF
 alias ⟨_, HasFDerivAt.sub_const⟩ := hasFDerivAt_sub_const_iff
 
 @[fun_prop]
-theorem hasStrictFDerivAt_sub_const {x : F} (c : F) : HasStrictFDerivAt (· - c) (id 𝕜 F) x :=
+theorem hasStrictFDerivAt_sub_const {x : F} (c : F) : HasStrictFDerivAt (· - c) (.id 𝕜 F) x :=
   (hasStrictFDerivAt_id x).sub_const c
 
 @[fun_prop]
-theorem hasFDerivAt_sub_const {x : F} (c : F) : HasFDerivAt (· - c) (id 𝕜 F) x :=
+theorem hasFDerivAt_sub_const {x : F} (c : F) : HasFDerivAt (· - c) (.id 𝕜 F) x :=
   (hasFDerivAt_id x).sub_const c
 
 @[fun_prop]

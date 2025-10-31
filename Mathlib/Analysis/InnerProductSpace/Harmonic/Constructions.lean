@@ -52,13 +52,14 @@ theorem AnalyticAt.harmonicAt_re {f : ℂ → ℂ} (h : AnalyticAt ℂ f x) :
 If `f : ℂ → ℂ` is complex-analytic, then its imaginary part is harmonic.
 -/
 theorem AnalyticAt.harmonicAt_im {f : ℂ → ℂ} (h : AnalyticAt ℂ f x) :
-  HarmonicAt (fun z ↦ (f z).im) x := h.harmonicAt.comp_CLM imCLM
+    HarmonicAt (fun z ↦ (f z).im) x :=
+  h.harmonicAt.comp_CLM imCLM
 
 /--
 If `f : ℂ → ℂ` is complex-analytic, then its complex conjugate is harmonic.
 -/
-theorem AnalyticAt.harmonicAt_conj {f : ℂ → ℂ} (h : AnalyticAt ℂ f x) :
-  HarmonicAt (conj f) x := (harmonicAt_comp_CLE_iff conjCLE).2 h.harmonicAt
+theorem AnalyticAt.harmonicAt_conj {f : ℂ → ℂ} (h : AnalyticAt ℂ f x) : HarmonicAt (conj f) x :=
+  (harmonicAt_comp_CLE_iff conjCLE).2 h.harmonicAt
 
 /-!
 ## Harmonicity of `log ‖analytic‖`
@@ -106,7 +107,7 @@ theorem AnalyticAt.harmonicAt_log_norm {f : ℂ → ℂ} {z : ℂ} (h₁f : Anal
     funext z
     simp only [Pi.smul_apply, Function.comp_apply, smul_eq_mul]
     rw [Complex.norm_def, Real.log_sqrt]
-    linarith
+    · linarith
     exact (f z).normSq_nonneg
   rw [this]
   apply HarmonicAt.const_smul

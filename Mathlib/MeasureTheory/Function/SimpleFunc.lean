@@ -247,7 +247,7 @@ theorem bind_apply (f : α →ₛ β) (g : β → α →ₛ γ) (a) : f.bind g a
   rfl
 
 /-- Given a function `g : β → γ` and a simple function `f : α →ₛ β`, `f.map g` return the simple
-    function `g ∘ f : α →ₛ γ` -/
+function `g ∘ f : α →ₛ γ` -/
 def map (g : β → γ) (f : α →ₛ β) : α →ₛ γ :=
   bind f (const α ∘ g)
 
@@ -406,10 +406,6 @@ theorem coe_inv [Inv β] (f : α →ₛ β) : ⇑(f⁻¹) = (⇑f)⁻¹ :=
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_div [Div β] (f g : α →ₛ β) : ⇑(f / g) = ⇑f / ⇑g :=
   rfl
-
-@[simp, norm_cast]
-theorem coe_le [LE β] {f g : α →ₛ β} : (f : α → β) ≤ g ↔ f ≤ g :=
-  Iff.rfl
 
 @[simp, norm_cast]
 theorem coe_sup [Max β] (f g : α →ₛ β) : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
@@ -614,11 +610,11 @@ instance [Semiring β] : Semiring (α →ₛ β) :=
 
 instance [NonUnitalRing β] : NonUnitalRing (α →ₛ β) :=
   fast_instance% Function.Injective.nonUnitalRing (fun f => show α → β from f) coe_injective
-   coe_zero coe_add coe_mul coe_neg coe_sub coe_smul coe_smul
+    coe_zero coe_add coe_mul coe_neg coe_sub coe_smul coe_smul
 
 instance [Ring β] : Ring (α →ₛ β) :=
   fast_instance% Function.Injective.ring (fun f => show α → β from f) coe_injective coe_zero
-   coe_one coe_add coe_mul coe_neg coe_sub coe_smul coe_smul coe_pow coe_natCast coe_intCast
+    coe_one coe_add coe_mul coe_neg coe_sub coe_smul coe_smul coe_pow coe_natCast coe_intCast
 
 instance [SMul K γ] [SMul γ β] [SMul K β] [IsScalarTower K γ β] : IsScalarTower K γ (α →ₛ β) where
   smul_assoc _ _ _ := ext fun _ ↦ smul_assoc ..
@@ -671,8 +667,10 @@ variable [Preorder β] {s : Set α} {f f₁ f₂ g g₁ g₂ : α →ₛ β} {hs
 
 instance instPreorder : Preorder (α →ₛ β) := Preorder.lift (⇑)
 
-@[norm_cast] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := .rfl
+@[simp, norm_cast] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := .rfl
 @[simp, norm_cast] lemma coe_lt_coe : ⇑f < g ↔ f < g := .rfl
+
+@[deprecated (since := "2025-10-21")] alias coe_le := coe_le_coe
 
 @[simp] lemma mk_le_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' ≤ mk g hg hg' ↔ f ≤ g := Iff.rfl
 @[simp] lemma mk_lt_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' < mk g hg hg' ↔ f < g := Iff.rfl
@@ -832,7 +830,7 @@ theorem approx_apply [TopologicalSpace β] [OrderClosedTopology β] [MeasurableS
   · exact hf measurableSet_Ici
 
 theorem monotone_approx (i : ℕ → β) (f : α → β) : Monotone (approx i f) := fun _ _ h =>
-  Finset.sup_mono <| Finset.range_subset.2 h
+  Finset.sup_mono <| Finset.range_subset_range.2 h
 
 theorem approx_comp [TopologicalSpace β] [OrderClosedTopology β] [MeasurableSpace β]
     [OpensMeasurableSpace β] [MeasurableSpace γ] {i : ℕ → β} {f : γ → β} {g : α → γ} {n : ℕ} (a : α)
@@ -887,11 +885,11 @@ theorem eapprox_lt_top (f : α → ℝ≥0∞) (n : ℕ) (a : α) : eapprox f n 
       _ < ⊤ := ENNReal.coe_lt_top
   · exact WithTop.top_pos
 
-@[mono]
+@[gcongr, mono]
 theorem monotone_eapprox (f : α → ℝ≥0∞) : Monotone (eapprox f) :=
   monotone_approx _ f
 
-@[gcongr]
+@[deprecated monotone_eapprox (since := "2025-08-13")]
 lemma eapprox_mono {m n : ℕ} (hmn : m ≤ n) : eapprox f m ≤ eapprox f n := monotone_eapprox _ hmn
 
 lemma iSup_eapprox_apply (hf : Measurable f) (a : α) : ⨆ n, (eapprox f n : α →ₛ ℝ≥0∞) a = f a := by
@@ -983,10 +981,7 @@ theorem map_lintegral (g : β → ℝ≥0∞) (f : α →ₛ β) :
   rw [map_preimage_singleton, ← f.sum_measure_preimage_singleton, Finset.mul_sum]
   refine Finset.sum_congr ?_ ?_
   · congr
-  · intro x
-    simp only [Finset.mem_filter]
-    rintro ⟨_, h⟩
-    rw [h]
+  · grind
 
 theorem add_lintegral (f g : α →ₛ ℝ≥0∞) : (f + g).lintegral μ = f.lintegral μ + g.lintegral μ :=
   calc
@@ -1088,7 +1083,6 @@ theorem restrict_const_lintegral (c : ℝ≥0∞) {s : Set α} (hs : MeasurableS
     ((const α c).restrict s).lintegral μ = c * μ s := by
   rw [restrict_lintegral_eq_lintegral_restrict _ hs, const_lintegral_restrict]
 
-@[gcongr]
 theorem lintegral_mono_fun {f g : α →ₛ ℝ≥0∞} (h : f ≤ g) : f.lintegral μ ≤ g.lintegral μ := by
   refine Monotone.of_left_le_map_sup (f := (lintegral · μ)) (fun f g ↦ ?_) h
   calc
@@ -1101,7 +1095,6 @@ theorem lintegral_mono_fun {f g : α →ₛ ℝ≥0∞} (h : f ≤ g) : f.linteg
 theorem le_sup_lintegral (f g : α →ₛ ℝ≥0∞) : f.lintegral μ ⊔ g.lintegral μ ≤ (f ⊔ g).lintegral μ :=
   Monotone.le_map_sup (fun _ _ ↦ lintegral_mono_fun) f g
 
-@[gcongr]
 theorem lintegral_mono_measure {f : α →ₛ ℝ≥0∞} (h : μ ≤ ν) : f.lintegral μ ≤ f.lintegral ν := by
   simp only [lintegral]
   gcongr
@@ -1202,7 +1195,7 @@ theorem map_iff {g : β → γ} (hg : ∀ {b}, g b = 0 ↔ b = 0) :
 protected theorem pair {g : α →ₛ γ} (hf : f.FinMeasSupp μ) (hg : g.FinMeasSupp μ) :
     (pair f g).FinMeasSupp μ :=
   calc
-    μ (support <| pair f g) = μ (support f ∪ support g) := congr_arg μ <| support_prod_mk f g
+    μ (support <| pair f g) = μ (support f ∪ support g) := congr_arg μ <| support_prodMk f g
     _ ≤ μ (support f) + μ (support g) := measure_union_le _ _
     _ < _ := add_lt_top.2 ⟨hf, hg⟩
 

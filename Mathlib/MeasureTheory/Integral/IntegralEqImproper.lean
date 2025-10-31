@@ -85,14 +85,13 @@ section AECover
 variable {α ι : Type*} [MeasurableSpace α] (μ : Measure α) (l : Filter ι)
 
 /-- A sequence `φ` of subsets of `α` is a `MeasureTheory.AECover` w.r.t. a measure `μ` and a filter
-    `l` if almost every point (w.r.t. `μ`) of `α` eventually belongs to `φ n` (w.r.t. `l`), and if
-    each `φ n` is measurable.  This definition is a technical way to avoid duplicating a lot of
-    proofs.  It should be thought of as a sufficient condition for being able to interpret
-    `∫ x, f x ∂μ` (if it exists) as the limit of `∫ x in φ n, f x ∂μ` as `n` tends to `l`.
-
-    See for example `MeasureTheory.AECover.lintegral_tendsto_of_countably_generated`,
-    `MeasureTheory.AECover.integrable_of_integral_norm_tendsto` and
-    `MeasureTheory.AECover.integral_tendsto_of_countably_generated`. -/
+`l` if almost every point (w.r.t. `μ`) of `α` eventually belongs to `φ n` (w.r.t. `l`), and if
+each `φ n` is measurable.  This definition is a technical way to avoid duplicating a lot of
+proofs.  It should be thought of as a sufficient condition for being able to interpret
+`∫ x, f x ∂μ` (if it exists) as the limit of `∫ x in φ n, f x ∂μ` as `n` tends to `l`.
+See for example `MeasureTheory.AECover.lintegral_tendsto_of_countably_generated`,
+`MeasureTheory.AECover.integrable_of_integral_norm_tendsto` and
+`MeasureTheory.AECover.integral_tendsto_of_countably_generated`. -/
 structure AECover (φ : ι → Set α) : Prop where
   ae_eventually_mem : ∀ᵐ x ∂μ, ∀ᶠ i in l, x ∈ φ i
   protected measurableSet : ∀ i, MeasurableSet <| φ i
@@ -398,10 +397,6 @@ theorem AECover.integrable_of_lintegral_enorm_bounded [l.NeBot] [l.IsCountablyGe
   refine ⟨hfm, (le_of_tendsto ?_ hbounded).trans_lt ENNReal.ofReal_lt_top⟩
   exact hφ.lintegral_tendsto_of_countably_generated hfm.enorm
 
-@[deprecated (since := "2025-01-22")]
-alias AECover.integrable_of_lintegral_nnnorm_bounded :=
-  AECover.integrable_of_lintegral_enorm_bounded
-
 theorem AECover.integrable_of_lintegral_enorm_tendsto [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ) (hfm : AEStronglyMeasurable f μ)
     (htendsto : Tendsto (fun i => ∫⁻ x in φ i, ‖f x‖ₑ ∂μ) l (𝓝 <| .ofReal I)) :
@@ -411,29 +406,17 @@ theorem AECover.integrable_of_lintegral_enorm_tendsto [l.NeBot] [l.IsCountablyGe
   refine (ENNReal.ofReal_lt_ofReal_iff (lt_max_of_lt_left zero_lt_one)).2 ?_
   exact lt_max_of_lt_right (lt_add_one I)
 
-@[deprecated (since := "2025-01-22")]
-alias AECover.integrable_of_lintegral_nnnorm_tendsto :=
-  AECover.integrable_of_lintegral_enorm_tendsto
-
 theorem AECover.integrable_of_lintegral_enorm_bounded' [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ≥0) (hfm : AEStronglyMeasurable f μ)
     (hbounded : ∀ᶠ i in l, ∫⁻ x in φ i, ‖f x‖ₑ ∂μ ≤ I) : Integrable f μ :=
   hφ.integrable_of_lintegral_enorm_bounded I hfm
     (by simpa only [ENNReal.ofReal_coe_nnreal] using hbounded)
 
-@[deprecated (since := "2025-01-22")]
-alias AECover.integrable_of_lintegral_nnnorm_bounded' :=
-  AECover.integrable_of_lintegral_enorm_bounded'
-
 theorem AECover.integrable_of_lintegral_enorm_tendsto' [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ≥0) (hfm : AEStronglyMeasurable f μ)
     (htendsto : Tendsto (fun i => ∫⁻ x in φ i, ‖f x‖ₑ ∂μ) l (𝓝 I)) : Integrable f μ :=
   hφ.integrable_of_lintegral_enorm_tendsto I hfm
     (by simpa only [ENNReal.ofReal_coe_nnreal] using htendsto)
-
-@[deprecated (since := "2025-01-22")]
-alias AECover.integrable_of_lintegral_nnnorm_tendsto' :=
-  AECover.integrable_of_lintegral_enorm_tendsto'
 
 theorem AECover.integrable_of_integral_norm_bounded [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ) (hfi : ∀ i, IntegrableOn f (φ i) μ)
@@ -486,8 +469,7 @@ theorem AECover.integral_tendsto_of_countably_generated [l.IsCountablyGenerated]
     (Eventually.of_forall fun _ => ae_of_all _ fun _ => norm_indicator_le_norm_self _ _) hfi.norm
     (hφ.ae_tendsto_indicator f)
 
-/-- Slight reformulation of
-    `MeasureTheory.AECover.integral_tendsto_of_countably_generated`. -/
+/-- Slight reformulation of `MeasureTheory.AECover.integral_tendsto_of_countably_generated`. -/
 theorem AECover.integral_eq_of_tendsto [l.NeBot] [l.IsCountablyGenerated] {φ : ι → Set α}
     (hφ : AECover μ l φ) {f : α → E} (I : E) (hfi : Integrable f μ)
     (h : Tendsto (fun n => ∫ x in φ n, f x ∂μ) l (𝓝 I)) : ∫ x, f x ∂μ = I :=
@@ -581,9 +563,12 @@ theorem integrableOn_Ioc_of_intervalIntegral_norm_bounded {I a₀ b₀ : ℝ}
   refine (aecover_Ioc_of_Ioc ha hb).integrable_of_integral_norm_bounded I
     (fun i => (hfi i).restrict) (h.mono fun i hi ↦ ?_)
   rw [Measure.restrict_restrict measurableSet_Ioc]
-  refine le_trans (setIntegral_mono_set (hfi i).norm ?_ ?_) hi <;> apply ae_of_all
-  · simp only [Pi.zero_apply, norm_nonneg, forall_const]
-  · intro c hc; exact hc.1
+  grw [← hi]
+  gcongr
+  · apply ae_of_all
+    simp
+  · exact (hfi i).norm
+  · exact inter_subset_left
 
 theorem integrableOn_Ioc_of_intervalIntegral_norm_bounded_left {I a₀ b : ℝ}
     (hfi : ∀ i, IntegrableOn f <| Ioc (a i) b) (ha : Tendsto a l <| 𝓝 a₀)
@@ -977,10 +962,6 @@ lemma _root_.HasCompactSupport.enorm_le_lintegral_Ici_deriv
     simp only [ContinuousLinearMap.fderiv]
     simp [I]
 
-@[deprecated (since := "2025-01-22")]
-alias _root_.HasCompactSupport.ennnorm_le_lintegral_Ici_deriv :=
-  HasCompactSupport.enorm_le_lintegral_Ici_deriv
-
 end IicFTC
 
 section UnivFTC
@@ -1044,8 +1025,8 @@ theorem integral_comp_smul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → E} {a : �
     have i2 : [[a, b]] ⊆ Ici a := by rw [uIcc_of_le hb.le]; exact Icc_subset_Ici_self
     refine
       intervalIntegral.integral_comp_smul_deriv''' (hf.mono i2)
-        (fun x hx => hff' x <| mem_of_mem_of_subset hx i1) (hg_cont.mono <| image_subset _ ?_)
-        (hg1.mono_set <| image_subset _ ?_) (hg2.mono_set i2) <;> assumption
+        (fun x hx => hff' x <| mem_of_mem_of_subset hx i1) (hg_cont.mono <| image_mono ?_)
+        (hg1.mono_set <| image_mono ?_) (hg2.mono_set i2) <;> assumption
   rw [integrableOn_Ici_iff_integrableOn_Ioi] at hg2
   have t2 := intervalIntegral_tendsto_integral_Ioi _ hg2 tendsto_id
   have : Ioi (f a) ⊆ f '' Ici a :=

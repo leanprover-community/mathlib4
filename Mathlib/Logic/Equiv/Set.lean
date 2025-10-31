@@ -248,15 +248,8 @@ theorem union_symm_apply_right {α} {s t : Set α} [DecidablePred fun x => x ∈
 /-- A singleton set is equivalent to a `PUnit` type. -/
 protected def singleton {α} (a : α) : ({a} : Set α) ≃ PUnit.{u} :=
   ⟨fun _ => PUnit.unit, fun _ => ⟨a, mem_singleton _⟩, fun ⟨x, h⟩ => by
-    simp? at h says simp only [mem_singleton_iff] at h
     subst x
     rfl, fun ⟨⟩ => rfl⟩
-
-@[deprecated (since := "2025-03-19"), simps! apply symm_apply]
-protected alias ofEq := Equiv.setCongr
-
-attribute [deprecated Equiv.setCongr_apply (since := "2025-03-19")] Set.ofEq_apply
-attribute [deprecated Equiv.setCongr_symm_apply (since := "2025-03-19")] Set.ofEq_symm_apply
 
 lemma Equiv.strictMono_setCongr {α : Type*} [Preorder α] {S T : Set α} (h : S = T) :
     StrictMono (setCongr h) := fun _ _ ↦ id

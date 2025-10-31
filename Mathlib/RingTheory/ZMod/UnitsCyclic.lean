@@ -33,7 +33,7 @@ The case of prime numbers is also an instance:
 * `ZMod.not_isCyclic_units_eight`: `(ZMod 8)ˣ` is not cyclic
 
 * `ZMod.orderOf_one_add_mul_prime`: the order of `1 + a * p`
-modulo `p ^ (n + 1)` is `p ^ n` when `p` does not divide `a`.
+  modulo `p ^ (n + 1)` is `p ^ n` when `p` does not divide `a`.
 
 * `ZMod.orderOf_five` : the order of `5` modulo `2 ^ (n + 3)` is `2 ^ (n + 1)`.
 
@@ -115,7 +115,7 @@ lemma exists_one_add_mul_pow_prime_eq
         (u * x) ^ (2 + (i - 2)) * p.choose i := by rw [Nat.add_sub_of_le hi']
       _ = u ^ 2 * x ^ 2 * (u * x) ^ (i - 2) * p.choose i := by ring_nf
       _ = u ^ 2 * x ^ 2 * (u * x) ^ (i - 2) * (p * (p.choose i / p) : ℕ) := by
-        rw [Nat.mul_div_cancel' (hp.dvd_choose_self hi.2.2.1 <| by omega)]
+        rw [Nat.mul_div_cancel' (hp.dvd_choose_self hi.2.2.1 <| by cutsat)]
       _ = u ^ 2 * x ^ 2 * (u * x) ^ (i - 2) * p * (p.choose i / p : ℕ) := by
         simp only [Nat.cast_mul]; ring_nf
       _ = p * u * (v * (a * x ^ 2 * ((u * x) ^ (i - 2) * (p.choose i / p : ℕ)))) := by
@@ -179,7 +179,7 @@ theorem orderOf_one_add_mul_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (a : 
     orderOf (1 + p * a : ZMod (p ^ (n + 1))) = p ^ n := by
   convert orderOf_one_add_mul_prime_pow hp 1 one_ne_zero _ a ha n using 1
   · rw [pow_one]
-  · have := hp.two_le; omega
+  · have := hp.two_le; cutsat
 
 theorem orderOf_one_add_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (n : ℕ) :
     orderOf (1 + p : ZMod (p ^ (n + 1))) = p ^ n := by
@@ -233,7 +233,7 @@ theorem isCyclic_units_two_pow_iff (n : ℕ) :
     simp only [Nat.reduceLeDiff, iff_false]
     intro H
     apply not_isCyclic_units_eight
-    have h : 2 ^ 3 ∣ 2 ^ (n + 3) := pow_dvd_pow _ (by omega)
+    have h : 2 ^ 3 ∣ 2 ^ (n + 3) := pow_dvd_pow _ (by cutsat)
     exact isCyclic_of_surjective _ (unitsMap_surjective h)
 
 lemma orderOf_one_add_four_mul (a : ℤ) (ha : Odd a) (n : ℕ) :
@@ -244,7 +244,7 @@ lemma orderOf_one_add_four_mul (a : ℤ) (ha : Odd a) (n : ℕ) :
 
 theorem orderOf_five (n : ℕ) :
     orderOf (5 : ZMod (2 ^ (n + 2))) = 2 ^ n := by
-  convert orderOf_one_add_four_mul 1 (by norm_num) n
+  convert orderOf_one_add_four_mul 1 (by simp) n
   norm_num
 
 end PrimePow
@@ -270,7 +270,7 @@ theorem isCyclic_units_four_mul_iff (n : ℕ) :
   have : NeZero n := ⟨hn0⟩
   have : Odd (φ n) := by simpa [show φ 4 = 2 from rfl] using h
   rw [Nat.odd_totient_iff] at this
-  omega
+  cutsat
 
 theorem isCyclic_units_two_mul_iff_of_odd (n : ℕ) (hn : Odd n) :
     IsCyclic (ZMod (2 * n))ˣ ↔ IsCyclic (ZMod n)ˣ := by
@@ -357,10 +357,7 @@ theorem isCyclic_units_iff (n : ℕ) :
   obtain ⟨n, rfl⟩ := hn.two_dvd
   apply iff_of_false
   · rw [← mul_assoc, show 2 * 2 = 4 from rfl, isCyclic_units_four_mul_iff]
-    omega
-  rintro (⟨p, m, -, odd, -, eq⟩ | ⟨p, m, -, odd, -, eq⟩)
-  on_goal 1 => have := eq ▸ odd.pow
-  on_goal 2 => have := (Nat.mul_left_cancel_iff zero_lt_two).mp eq ▸ odd.pow
-  all_goals simp [← Nat.not_even_iff_odd] at this
+    cutsat
+  grind
 
 end ZMod

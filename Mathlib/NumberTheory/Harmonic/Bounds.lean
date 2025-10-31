@@ -23,8 +23,8 @@ theorem log_add_one_le_harmonic (n : ℕ) :
   calc _ = ∫ x in (1 : ℕ)..↑(n + 1), x⁻¹ := ?_
        _ ≤ ∑ d ∈ Finset.Icc 1 n, (d : ℝ)⁻¹ := ?_
        _ = harmonic n := ?_
-  · rw [Nat.cast_one, integral_inv (by simp [(show ¬ (1 : ℝ) ≤ 0 by norm_num)]), div_one]
-  · exact (inv_antitoneOn_Icc_right <| by norm_num).integral_le_sum_Ico (Nat.le_add_left 1 n)
+  · rw [Nat.cast_one, integral_inv (by simp [(show ¬ (1 : ℝ) ≤ 0 by simp)]), div_one]
+  · exact (inv_antitoneOn_Icc_right <| by simp).integral_le_sum_Ico (Nat.le_add_left 1 n)
   · simp only [harmonic_eq_sum_Icc, Rat.cast_sum, Rat.cast_inv, Rat.cast_natCast]
 
 theorem harmonic_le_one_add_log (n : ℕ) :
@@ -35,16 +35,16 @@ theorem harmonic_le_one_add_log (n : ℕ) :
   simp_rw [harmonic_eq_sum_Icc, Rat.cast_sum, Rat.cast_inv, Rat.cast_natCast]
   rw [← Finset.sum_erase_add (Finset.Icc 1 n) _ (Finset.left_mem_Icc.mpr hn), add_comm,
     Nat.cast_one, inv_one]
-  refine add_le_add_left ?_ 1
+  gcongr
   simp only [Finset.Icc_erase_left]
   calc ∑ d ∈ .Ico 2 (n + 1), (d : ℝ)⁻¹
     _ = ∑ d ∈ .Ico 2 (n + 1), (↑(d + 1) - 1)⁻¹ := ?_
-    _ ≤ ∫ x in (2)..↑(n + 1), (x - 1)⁻¹ := ?_
-    _ = ∫ x in (1)..n, x⁻¹ := ?_
+    _ ≤ ∫ x in 2..↑(n + 1), (x - 1)⁻¹ := ?_
+    _ = ∫ x in 1..n, x⁻¹ := ?_
     _ = Real.log ↑n := ?_
   · simp_rw [Nat.cast_add, Nat.cast_one, add_sub_cancel_right]
   · exact @AntitoneOn.sum_le_integral_Ico 2 (n + 1) (fun x : ℝ ↦ (x - 1)⁻¹) (by linarith [hn]) <|
-      sub_inv_antitoneOn_Icc_right (by norm_num)
+      sub_inv_antitoneOn_Icc_right (by simp)
   · convert intervalIntegral.integral_comp_sub_right _ 1
     · norm_num
     · simp only [Nat.cast_add, Nat.cast_one, add_sub_cancel_right]

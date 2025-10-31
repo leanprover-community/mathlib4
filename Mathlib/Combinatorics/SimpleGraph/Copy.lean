@@ -11,12 +11,12 @@ import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 This file introduces the concept of one simple graph containing a copy of another.
 
-For two simple graph `G` and `H`, a *copy* of `G` in `H` is a (not necessarily induced) subgraph of
+For two simple graphs `G` and `H`, a *copy* of `G` in `H` is a (not necessarily induced) subgraph of
 `H` isomorphic to `G`.
 
 If there exists a copy of `G` in `H`, we say that `H` *contains* `G`. This is equivalent to saying
-that there is an injective graph homomorphism `G → H` them (this is **not** the same as a graph
-embedding, as we do not require the subgraph to be induced).
+that there is an injective graph homomorphism `G → H` between them (this is **not** the same as a
+graph embedding, as we do not require the subgraph to be induced).
 
 If there exists an induced copy of `G` in `H`, we say that `H` *inducingly contains* `G`. This is
 equivalent to saying that there is a graph embedding `G ↪ H`.
@@ -35,9 +35,9 @@ Containment:
   `G`. This is the negation of `SimpleGraph.IsContained` implemented for convenience.
 * `SimpleGraph.killCopies G H`: Subgraph of `G` that does not contain `H`. Obtained by arbitrarily
   removing an edge from each copy of `H` in `G`.
-* `SimpleGraph.copyCount G H`: Number of copies of `H` in `G`, ie number of subgraphs of `G`
+* `SimpleGraph.copyCount G H`: Number of copies of `H` in `G`, i.e. number of subgraphs of `G`
   isomorphic to `H`.
-* `SimpleGraph.labelledCopyCount G H`: Number of labelled copies of `H` in `G`, ie number of
+* `SimpleGraph.labelledCopyCount G H`: Number of labelled copies of `H` in `G`, i.e. number of
   graph embeddings from `H` to `G`.
 
 Induced containment:
@@ -46,13 +46,13 @@ Induced containment:
 
 ## Notation
 
-The following notation is declared in locale `SimpleGraph`:
+The following notation is declared in scope `SimpleGraph`:
 * `G ⊑ H` for `SimpleGraph.IsContained G H`.
 * `G ⊴ H` for `SimpleGraph.IsIndContained G H`.
 
 ## TODO
 
-* Relate `⊤ ⊑ H`/`⊥ ⊑ H` to there being a clique/independent set in `H`.
+* Relate `⊥ ⊴ H` to there being an independent set in `H`.
 * Count induced copies of a graph inside another.
 * Make `copyCount`/`labelledCopyCount` computable (not necessarily efficiently).
 -/
@@ -106,8 +106,6 @@ lemma injective (f : Copy A B) : Injective f.toHom := f.injective'
 @[simp] lemma toHom_apply (f : Copy A B) (a : α) : ⇑f.toHom a = f a := rfl
 
 @[simp] lemma coe_mk (f : A →g B) (hf) : ⇑(.mk f hf : Copy A B) = f := rfl
-
-@[deprecated (since := "2025-03-19")] alias coe_toHom_apply := toHom_apply
 
 /-- A copy induces an embedding of edge sets. -/
 def mapEdgeSet (f : Copy A B) : A.edgeSet ↪ B.edgeSet where
@@ -196,6 +194,12 @@ instance [Fintype {f : G →g H // Injective f}] : Fintype (G.Copy H) :=
     invFun f := ⟨f.1, f.2⟩
   }
 
+/-- A copy of `⊤` gives rise to an embedding of `⊤`. -/
+@[simps!]
+def topEmbedding (f : Copy (⊤ : SimpleGraph α) G) : (⊤ : SimpleGraph α) ↪g G :=
+  { f.toEmbedding with
+    map_rel_iff' := fun {v w} ↦ ⟨fun h ↦ by simpa using h.ne, f.toHom.map_adj⟩}
+
 end Copy
 
 /-- A `Subgraph G` gives rise to a copy from the coercion to `G`. -/
@@ -281,8 +285,6 @@ protected alias IsContained.bot := bot_isContained_iff_card_le
 
 /-- A simple graph `G` contains all `Subgraph G` coercions. -/
 lemma Subgraph.coe_isContained (G' : G.Subgraph) : G'.coe ⊑ G := ⟨G'.coeCopy⟩
-
-@[deprecated (since := "2025-03-19")] alias Subgraph.Copy.map := Copy.isoSubgraphMap
 
 /-- `B` contains `A` if and only if `B` has a subgraph `B'` and `B'` is isomorphic to `A`. -/
 theorem isContained_iff_exists_iso_subgraph :
@@ -374,9 +376,8 @@ alias ⟨IsIndContained.exists_iso_subgraph, IsIndContained.of_exists_iso_subgra
   isIndContained_iff_exists_iso_subgraph
 
 @[simp] lemma top_isIndContained_iff_top_isContained :
-    (⊤ : SimpleGraph V) ⊴ H ↔ (⊤ : SimpleGraph V) ⊑ H where
-  mp h := h.isContained
-  mpr := fun ⟨f⟩ ↦ ⟨f.toEmbedding, fun {v w} ↦ ⟨fun h ↦ by simpa using h.ne, f.toHom.map_adj⟩⟩
+    (⊤ : SimpleGraph V) ⊴ H ↔ (⊤ : SimpleGraph V) ⊑ H :=
+  ⟨IsIndContained.isContained, fun ⟨f⟩ ↦ ⟨f.topEmbedding⟩⟩
 
 @[simp] lemma compl_isIndContained_compl : Gᶜ ⊴ Hᶜ ↔ G ⊴ H :=
   Embedding.complEquiv.symm.nonempty_congr

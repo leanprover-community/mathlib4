@@ -5,7 +5,7 @@ Authors: David Loeffler, Geoffrey Irving, Stefan Kebekus
 -/
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
+import Mathlib.Analysis.Normed.Operator.Mul
 import Mathlib.Analysis.Normed.Ring.Units
 import Mathlib.Analysis.Analytic.OfScalars
 
@@ -105,8 +105,6 @@ theorem AnalyticAt.fun_add (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x)
   let ⟨_, hqf⟩ := hg
   (hpf.add hqf).analyticAt
 
-@[deprecated (since := "2025-03-11")] alias AnalyticAt.add' := AnalyticAt.fun_add
-
 @[fun_prop]
 theorem AnalyticAt.add (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) : AnalyticAt 𝕜 (f + g) x :=
   hf.fun_add hg
@@ -153,8 +151,6 @@ theorem AnalyticAt.neg (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (-f) x :=
   mp hf := by simpa using hf.neg
   mpr := .neg
 
-@[deprecated (since := "2025-03-11")] alias AnalyticAt.neg' := AnalyticAt.fun_neg
-
 theorem HasFPowerSeriesWithinOnBall.sub (hf : HasFPowerSeriesWithinOnBall f pf s x r)
     (hg : HasFPowerSeriesWithinOnBall g pg s x r) :
     HasFPowerSeriesWithinOnBall (f - g) (pf - pg) s x r := by
@@ -186,8 +182,6 @@ theorem AnalyticAt.fun_sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x)
 theorem AnalyticAt.sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
     AnalyticAt 𝕜 (f - g) x :=
   hf.fun_sub hg
-
-@[deprecated (since := "2025-03-11")] alias AnalyticAt.sub' := AnalyticAt.fun_sub
 
 theorem HasFPowerSeriesWithinOnBall.const_smul (hf : HasFPowerSeriesWithinOnBall f pf s x r) :
     HasFPowerSeriesWithinOnBall (c • f) (c • pf) s x r where
@@ -224,8 +218,6 @@ theorem AnalyticAt.fun_const_smul (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (
 @[fun_prop]
 theorem AnalyticAt.const_smul (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (c • f) x :=
   hf.fun_const_smul
-
-@[deprecated (since := "2025-03-11")] alias AnalyticAt.const_smul' := AnalyticAt.fun_const_smul
 
 theorem AnalyticOn.add (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticOn 𝕜 (f + g) s :=
@@ -621,8 +613,6 @@ lemma AnalyticAt.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E �
     AnalyticAt 𝕜 (f • g) z :=
   hf.fun_smul hg
 
-@[deprecated (since := "2025-03-11")] alias AnalyticAt.smul' := AnalyticAt.fun_smul
-
 /-- Scalar multiplication of one analytic function by another. -/
 lemma AnalyticOn.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F]
     {f : E → 𝕝} {g : E → F} {s : Set E}
@@ -653,8 +643,6 @@ lemma AnalyticAt.fun_mul {f g : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (hg 
 lemma AnalyticAt.mul {f g : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
     AnalyticAt 𝕜 (f * g) z :=
   hf.fun_mul hg
-
-@[deprecated (since := "2025-03-11")] alias AnalyticAt.mul' := AnalyticAt.fun_mul
 
 /-- Multiplication of analytic functions (valued in a normed `𝕜`-algebra) is analytic. -/
 lemma AnalyticOn.mul {f g : E → A} {s : Set E}
@@ -977,8 +965,6 @@ theorem AnalyticOn.fun_inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOn 𝕜 f 
     AnalyticOn 𝕜 (fun x ↦ (f x)⁻¹) s :=
   fun x m ↦ (fa x m).inv (f0 x m)
 
-@[deprecated (since := "2025-03-11")] alias AnalyticAt.inv' := AnalyticAt.fun_inv
-
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
 theorem AnalyticOn.inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOn 𝕜 f s) (f0 : ∀ x ∈ s, f x ≠ 0) :
     AnalyticOn 𝕜 f⁻¹ s :=
@@ -1114,8 +1100,6 @@ theorem AnalyticAt.div {f g : E → 𝕝} {x : E}
     AnalyticAt 𝕜 (f / g) x :=
   fa.fun_div ga g0
 
-@[deprecated (since := "2025-03-11")] alias AnalyticAt.div' := AnalyticAt.fun_div
-
 /-- `f x / g x` is analytic away from `g x = 0` -/
 theorem AnalyticOn.div {f g : E → 𝕝} {s : Set E}
     (fa : AnalyticOn 𝕜 f s) (ga : AnalyticOn 𝕜 g s) (g0 : ∀ x ∈ s, g x ≠ 0) :
@@ -1137,10 +1121,12 @@ theorem Finset.analyticWithinAt_fun_sum {f : α → E → F} {c : E} {s : Set E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
     AnalyticWithinAt 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s c := by
   classical
-  induction' N using Finset.induction with a B aB hB
-  · simp only [Finset.sum_empty]
+  induction N using Finset.induction with
+  | empty =>
+    simp only [Finset.sum_empty]
     exact analyticWithinAt_const
-  · simp_rw [Finset.sum_insert aB]
+  | insert a B aB hB =>
+    simp_rw [Finset.sum_insert aB]
     simp only [Finset.mem_insert] at h
     exact (h a (Or.inl rfl)).add (hB fun b m ↦ h b (Or.inr m))
 
@@ -1196,10 +1182,12 @@ theorem Finset.analyticWithinAt_fun_prod {A : Type*} [NormedCommRing A] [NormedA
     {f : α → E → A} {c : E} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
     AnalyticWithinAt 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s c := by
   classical
-  induction' N using Finset.induction with a B aB hB
-  · simp only [Finset.prod_empty]
+  induction N using Finset.induction with
+  | empty =>
+    simp only [Finset.prod_empty]
     exact analyticWithinAt_const
-  · simp_rw [Finset.prod_insert aB]
+  | insert a B aB hB =>
+    simp_rw [Finset.prod_insert aB]
     simp only [Finset.mem_insert] at h
     exact (h a (Or.inl rfl)).mul (hB fun b m ↦ h b (Or.inr m))
 

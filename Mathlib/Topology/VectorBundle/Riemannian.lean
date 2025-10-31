@@ -150,12 +150,12 @@ lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr 
   -- are `δ` close. When writing this proof, I have followed my nose in the computation, and
   -- recorded only in the end how small `δ` needs to be. The reader should skip the precise
   -- condition for now, as it doesn't give any useful insight.
-  obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ (r' ^ 2) ⁻¹ < 1 - δ * C := by
+  obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ (r' ^ 2)⁻¹ < 1 - δ * C := by
     have A : ∀ᶠ δ in 𝓝[>] (0 : ℝ), 0 < δ := self_mem_nhdsWithin
     have B : Tendsto (fun δ ↦ 1 - δ * C) (𝓝[>] 0) (𝓝 (1 - 0 * C)) := by
       apply tendsto_inf_left
       exact tendsto_const_nhds.sub (tendsto_id.mul tendsto_const_nhds)
-    have B' : ∀ᶠ δ in 𝓝[>] 0, (r' ^ 2) ⁻¹ < 1 - δ * C := by
+    have B' : ∀ᶠ δ in 𝓝[>] 0, (r' ^ 2)⁻¹ < 1 - δ * C := by
       apply (tendsto_order.1 B).1
       simpa using inv_lt_one_of_one_lt₀ (by nlinarith)
     exact (A.and B').exists
@@ -197,14 +197,12 @@ lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr 
         g' x w w
     _ = (g' x - g' y) w w + g' y w w := by simp
     _ ≤ ‖g' x - g' y‖ * ‖w‖ * ‖w‖ + g' y w w := by
-      gcongr; exact (Real.le_norm_self _).trans (le_opNorm₂ (g' x - g' y) w w)
+      grw [← le_opNorm₂, ← Real.le_norm_self]
     _ ≤ δ * ‖w‖ ^ 2 + g' y w w := by
       rw [pow_two, mul_assoc]; gcongr
     _ ≤ δ * (‖(G : E x →L[ℝ] F)‖ * ‖G.symm w‖) ^ 2 + g' y w w := by
-      gcongr
-      have : w = G (G.symm w) := by simp
-      conv_lhs => rw [this]
-      exact le_opNorm (G : E x →L[ℝ] F) (G.symm w)
+      grw [← le_opNorm]
+      simp
     _ = δ * C * ‖G.symm w‖^2 + g' y w w := by ring
     _ = δ * C * g x (G.symm w) (G.symm w) + g' y w w := by
       simp [← real_inner_self_eq_norm_sq, hg]
@@ -212,7 +210,7 @@ lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr 
       rw [← hgx]; rfl
   have : (1 - δ * C) * g' x w w ≤ g' y w w := by linarith
   rw [← (le_div_iff₀' (lt_of_le_of_lt (by positivity) hδ )), div_eq_inv_mul] at this
-  apply this.trans
+  grw [this]
   gcongr
   · rw [← hgy, ← hg,real_inner_self_eq_norm_sq]
     positivity
@@ -234,9 +232,7 @@ lemma eventually_norm_trivializationAt_lt (x : B) :
     rfl
   have : (trivializationAt F E x).continuousLinearMapAt ℝ y =
     (ContinuousLinearMap.id _ _) ∘L ((trivializationAt F E x).continuousLinearMapAt ℝ y) := by simp
-  rw [← A, comp_assoc] at this
-  rw [this]
-  apply (opNorm_comp_le _ _).trans_lt
+  grw [this, ← A, comp_assoc, opNorm_comp_le]
   gcongr
   linarith
 
@@ -306,14 +302,12 @@ lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr 
   calc g' y w w
     _ = (g' y - g' x) w w + g' x w w := by simp
     _ ≤ ‖g' y - g' x‖ * ‖w‖ * ‖w‖ + g' x w w := by
-      gcongr; exact (Real.le_norm_self _).trans (le_opNorm₂ (g' y - g' x) w w)
+      grw [← le_opNorm₂, ← Real.le_norm_self]
     _ ≤ δ * ‖w‖ ^ 2 + g' x w w := by
       rw [pow_two, mul_assoc]; gcongr
     _ ≤ δ * (‖(G : E x →L[ℝ] F)‖ * ‖G.symm w‖) ^ 2 + g' x w w := by
-      gcongr
-      have : w = G (G.symm w) := by simp
-      conv_lhs => rw [this]
-      exact le_opNorm (G : E x →L[ℝ] F) (G.symm w)
+      grw [← le_opNorm]
+      simp
     _ = δ * C * ‖G.symm w‖^2 + g' x w w := by ring
     _ = δ * C * g x (G.symm w) (G.symm w) + g' x w w := by
       simp [← real_inner_self_eq_norm_sq, hg]
@@ -346,9 +340,7 @@ lemma eventually_norm_symmL_trivializationAt_lt (x : B) :
     rfl
   have : (trivializationAt F E x).symmL ℝ y =
      ((trivializationAt F E x).symmL ℝ y) ∘L (ContinuousLinearMap.id _ _) := by simp
-  rw [← A, ← comp_assoc] at this
-  rw [this]
-  apply (opNorm_comp_le _ _).trans_lt
+  grw [this, ← A, ← comp_assoc, opNorm_comp_le]
   gcongr
   linarith
 
@@ -408,14 +400,14 @@ variable (E) in
 /-- Class used to create an inner product structure space on the fibers of a fiber bundle, without
 creating diamonds. Use as follows:
 * `instance : RiemannianBundle E := ⟨g⟩` where `g : RiemannianMetric E` registers the inner product
-space on the fibers;
+  space on the fibers;
 * `instance : RiemannianBundle E := ⟨g.toRiemannianMetric⟩` where
-`g : ContinuousRiemannianMetric F E` registers the inner product space on the fibers, and the fact
-that it varies continuously (i.e., a `[IsContinuousRiemannianBundle]` instance).
+  `g : ContinuousRiemannianMetric F E` registers the inner product space on the fibers, and the fact
+  that it varies continuously (i.e., a `[IsContinuousRiemannianBundle]` instance).
 * `instance : RiemannianBundle E := ⟨g.toRiemannianMetric⟩` where
-`g : ContMDiffRiemannianMetric IB n F E` registers the inner product space on the fibers, and the
-fact that it varies smoothly (and continuously), i.e., `[IsContMDiffRiemannianBundle]` and
-`[IsContinuousRiemannianBundle]` instances.
+  `g : ContMDiffRiemannianMetric IB n F E` registers the inner product space on the fibers, and the
+  fact that it varies smoothly (and continuously), i.e., `[IsContMDiffRiemannianBundle]` and
+  `[IsContinuousRiemannianBundle]` instances.
 -/
 class RiemannianBundle where
   /-- The family of inner products on the fibers -/
@@ -426,7 +418,7 @@ a `NormedAddCommGroup` structure.
 
 The normal priority for an instance which always applies like this one should be 100.
 We use 80 as this is rather specialized, so we want other paths to be tried first typically.
-As this instance is quite specific and very costly because of higher order unification, we
+As this instance is quite specific and very costly because of higher-order unification, we
 also scope it to the `Bundle` namespace. -/
 noncomputable scoped instance (priority := 80) [h : RiemannianBundle E] (b : B) :
     NormedAddCommGroup (E b) :=
@@ -437,7 +429,7 @@ an `InnerProductSpace ℝ` structure.
 
 The normal priority for an instance which always applies like this one should be 100.
 We use 80 as this is rather specialized, so we want other paths to be tried first typically.
-As this instance is quite specific and very costly because of higher order unification, we
+As this instance is quite specific and very costly because of higher-order unification, we
 also scope it to the `Bundle` namespace. -/
 noncomputable scoped instance (priority := 80) [h : RiemannianBundle E] (b : B) :
     InnerProductSpace ℝ (E b) :=
@@ -478,7 +470,7 @@ def ContinuousRiemannianMetric.toRiemannianMetric (g : ContinuousRiemannianMetri
 
 /-- If a Riemannian bundle structure is defined using `g.toRiemannianMetric` where `g` is
 a `ContinuousRiemannianMetric`, then we make sure typeclass inference can infer automatically
-that the the bundle is a continuous Riemannian bundle. -/
+that the bundle is a continuous Riemannian bundle. -/
 instance (g : ContinuousRiemannianMetric F E) :
     letI : RiemannianBundle E := ⟨g.toRiemannianMetric⟩;
     IsContinuousRiemannianBundle F E := by

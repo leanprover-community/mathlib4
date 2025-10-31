@@ -50,7 +50,7 @@ when `c.prev j = i` and `c.next j = k`. -/
 noncomputable def natIsoSc' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k) :
     shortComplexFunctor C c j ≅ shortComplexFunctor' C c i j k :=
   NatIso.ofComponents (fun K => ShortComplex.isoMk (K.XIsoOfEq hi) (Iso.refl _) (K.XIsoOfEq hk)
-    (by simp) (by simp)) (by aesop_cat)
+    (by simp) (by simp)) (by cat_disch)
 
 variable {C c}
 
@@ -538,7 +538,7 @@ lemma iCyclesIso_inv_hom_id :
   (K.iCyclesIso i j hj h).inv_hom_id
 
 lemma isIso_homologyι : IsIso (K.homologyι i) :=
-  ShortComplex.isIso_homologyι _ (by aesop_cat)
+  ShortComplex.isIso_homologyι _ (by cat_disch)
 
 /-- The canonical isomorphism `K.homology i ≅ K.opcycles i`
 when the differential from `i` is zero. -/
@@ -585,7 +585,7 @@ lemma pOpcyclesIso_inv_hom_id :
   (K.pOpcyclesIso i j hi h).inv_hom_id
 
 lemma isIso_homologyπ : IsIso (K.homologyπ j) :=
-  ShortComplex.isIso_homologyπ _ (by aesop_cat)
+  ShortComplex.isIso_homologyπ _ (by cat_disch)
 
 /-- The canonical isomorphism `K.cycles j ≅ K.homology j`
 when the differential to `j` is zero. -/

@@ -25,14 +25,8 @@ instance measurableSpace : MeasurableSpace (WithLp p X) :=
 @[fun_prop, measurability]
 lemma measurable_ofLp : Measurable (@WithLp.ofLp p X) := fun _ h ↦ h
 
-@[deprecated measurable_ofLp (since := "2024-04-27")]
-lemma measurable_equiv : Measurable (WithLp.equiv p X) := fun _ h ↦ h
-
 @[fun_prop, measurability]
 lemma measurable_toLp : Measurable (@WithLp.toLp p X) := fun _ h ↦ h
-
-@[deprecated measurable_toLp (since := "2024-04-27")]
-lemma measurable_equiv_symm : Measurable (WithLp.equiv p X).symm := fun _ h ↦ h
 
 variable (Y : Type*) [MeasurableSpace Y] [TopologicalSpace X] [TopologicalSpace Y]
   [BorelSpace X] [BorelSpace Y] [SecondCountableTopologyEither X Y]

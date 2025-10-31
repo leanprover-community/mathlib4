@@ -103,6 +103,10 @@ end Prio
 def algebraMap (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] : R →+* A :=
   Algebra.algebraMap
 
+theorem Algebra.subsingleton (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A]
+    [Subsingleton R] : Subsingleton A :=
+  (algebraMap R A).codomain_trivial
+
 /-- Coercion from a commutative semiring to an algebra over this semiring. -/
 @[coe, reducible]
 def Algebra.cast {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] : R → A :=
@@ -254,8 +258,13 @@ theorem algebra_ext {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] (P Q :
     funext r a
     rw [P.smul_def', Q.smul_def', h]
   rcases P with @⟨⟨P⟩⟩
-  rcases Q with @⟨⟨Q⟩⟩
   congr
+
+/-- An auxiliary lemma used to prove theorems of the form
+`RingHom.X (algebraMap R S) ↔ Algebra.X R S`. -/
+lemma _root_.toAlgebra_algebraMap [Algebra R S] :
+    (algebraMap R S).toAlgebra = ‹_› :=
+  algebra_ext _ _ fun _ ↦ rfl
 
 -- see Note [lower instance priority]
 instance (priority := 200) toModule {R A} {_ : CommSemiring R} {_ : Semiring A} [Algebra R A] :
@@ -375,7 +384,7 @@ instance (priority := 1100) id : Algebra R R where
   -- We override `toFun` and `toSMul` because `RingHom.id` is not reducible and cannot
   -- be made so without a significant performance hit.
   -- see library note [reducible non-instances].
-  toSMul := Mul.toSMul _
+  toSMul := instSMulOfMul
   __ := ({RingHom.id R with toFun x := x}).toAlgebra
 
 @[simp] lemma linearMap_self : Algebra.linearMap R R = .id := rfl

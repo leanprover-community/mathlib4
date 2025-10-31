@@ -104,16 +104,10 @@ theorem map_update_add [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁
     f (update m i (x + y)) = f (update m i x) + f (update m i y) :=
   f.map_update_add' m i x y
 
-@[deprecated (since := "2024-11-03")]
-protected alias map_add := ContinuousMultilinearMap.map_update_add
-
 @[simp]
 theorem map_update_smul [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (c : R) (x : M₁ i) :
     f (update m i (c • x)) = c • f (update m i x) :=
   f.map_update_smul' m i c x
-
-@[deprecated (since := "2024-11-03")]
-protected alias map_smul := ContinuousMultilinearMap.map_update_smul
 
 theorem map_coord_zero {m : ∀ i, M₁ i} (i : ι) (h : m i = 0) : f m = 0 :=
   f.toMultilinearMap.map_coord_zero i h
@@ -210,7 +204,7 @@ linear map obtained by fixing all coordinates but `i` equal to those of `m`, and
   { f.toMultilinearMap.toLinearMap m i with
     cont := f.cont.comp (continuous_const.update i continuous_id) }
 
-/-- The cartesian product of two continuous multilinear maps, as a continuous multilinear map. -/
+/-- The Cartesian product of two continuous multilinear maps, as a continuous multilinear map. -/
 def prod (f : ContinuousMultilinearMap R M₁ M₂) (g : ContinuousMultilinearMap R M₁ M₃) :
     ContinuousMultilinearMap R M₁ (M₂ × M₃) :=
   { f.toMultilinearMap.prod g.toMultilinearMap with cont := f.cont.prodMk g.cont }
@@ -468,9 +462,6 @@ variable [Ring R] [∀ i, AddCommGroup (M₁ i)] [AddCommGroup M₂] [∀ i, Mod
 theorem map_update_sub [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i) :
     f (update m i (x - y)) = f (update m i x) - f (update m i y) :=
   f.toMultilinearMap.map_update_sub _ _ _ _
-
-@[deprecated (since := "2024-11-03")]
-protected alias map_sub := ContinuousMultilinearMap.map_update_sub
 
 section IsTopologicalAddGroup
 

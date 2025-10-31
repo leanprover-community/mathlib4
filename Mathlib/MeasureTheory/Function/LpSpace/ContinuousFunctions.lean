@@ -3,7 +3,7 @@ Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
+import Mathlib.Analysis.Normed.Operator.NormedSpace
 import Mathlib.MeasureTheory.Function.LpSpace.Basic
 import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.Topology.ContinuousMap.Compact
@@ -28,7 +28,7 @@ variable (E p μ) in
 bounded continuous representative. -/
 def MeasureTheory.Lp.boundedContinuousFunction : AddSubgroup (Lp E p μ) :=
   AddSubgroup.addSubgroupOf
-    ((ContinuousMap.toAEEqFunAddHom μ).comp (toContinuousMapAddHom α E)).range (Lp E p μ)
+    ((ContinuousMap.toAEEqFunAddHom μ).comp (toContinuousMapAddMonoidHom α E)).range (Lp E p μ)
 
 /-- By definition, the elements of `Lp.boundedContinuousFunction E p μ` are the elements of
 `Lp E p μ` which contain a bounded continuous representative. -/
@@ -70,8 +70,8 @@ variable (p μ)
 /-- The normed group homomorphism of considering a bounded continuous function on a finite-measure
 space as an element of `Lp`. -/
 def toLpHom [Fact (1 ≤ p)] : NormedAddGroupHom (α →ᵇ E) (Lp E p μ) :=
-  { AddMonoidHom.codRestrict ((ContinuousMap.toAEEqFunAddHom μ).comp (toContinuousMapAddHom α E))
-      (Lp E p μ) mem_Lp with
+  { AddMonoidHom.codRestrict ((ContinuousMap.toAEEqFunAddHom μ).comp
+    (toContinuousMapAddMonoidHom α E)) (Lp E p μ) mem_Lp with
     bound' := ⟨_, Lp_norm_le⟩ }
 
 theorem range_toLpHom [Fact (1 ≤ p)] :
@@ -79,7 +79,7 @@ theorem range_toLpHom [Fact (1 ≤ p)] :
       MeasureTheory.Lp.boundedContinuousFunction E p μ := by
   symm
   exact AddMonoidHom.addSubgroupOf_range_eq_of_le
-      ((ContinuousMap.toAEEqFunAddHom μ).comp (toContinuousMapAddHom α E))
+      ((ContinuousMap.toAEEqFunAddHom μ).comp (toContinuousMapAddMonoidHom α E))
       (by rintro - ⟨f, rfl⟩; exact mem_Lp f : _ ≤ Lp E p μ)
 
 variable (𝕜 : Type*) [Fact (1 ≤ p)] [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
@@ -145,7 +145,7 @@ theorem range_toLp :
   have := (linearIsometryBoundedOfCompact α E 𝕜).surjective
   convert Function.Surjective.range_comp this (BoundedContinuousFunction.toLp (E := E) p μ 𝕜)
   rw [← BoundedContinuousFunction.range_toLp p μ (𝕜 := 𝕜), Submodule.coe_toAddSubgroup,
-    LinearMap.range_coe]
+    LinearMap.coe_range]
 
 variable {p}
 

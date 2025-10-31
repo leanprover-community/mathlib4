@@ -29,7 +29,7 @@ local postfix:max "⋆" => star
 
 variable {α : Type*} {s t : Set α} {a : α}
 
-/-- The set `(star s : Set α)` is defined as `{x | star x ∈ s}` in the locale `Pointwise`.
+/-- The set `(star s : Set α)` is defined as `{x | star x ∈ s}` in the scope Pointwise`.
 In the usual case where `star` is involutive, it is equal to `{star s | x ∈ s}`, see
 `Set.image_star`. -/
 protected def star [Star α] : Star (Set α) := ⟨preimage Star.star⟩
@@ -81,7 +81,6 @@ theorem compl_star [Star α] : sᶜ⋆ = s⋆ᶜ := preimage_compl
 
 @[simp]
 instance [InvolutiveStar α] : InvolutiveStar (Set α) where
-  star := Star.star
   star_involutive s := by simp only [← star_preimage, preimage_preimage, star_star, preimage_id']
 
 @[simp]

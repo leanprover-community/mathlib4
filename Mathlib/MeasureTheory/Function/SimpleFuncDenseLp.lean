@@ -34,7 +34,7 @@ by a sequence of simple functions.
 
 For `E` finite-dimensional, simple functions `α →ₛ E` are dense in L^∞ -- prove this.
 
-## Notations
+## Notation
 
 * `α →ₛ β` (local notation): the type of simple functions `α → β`.
 * `α →₁ₛ[μ] E`: the type of `L1` simple functions `α → β`.
@@ -212,8 +212,6 @@ theorem tendsto_approxOn_L1_enorm [OpensMeasurableSpace E] {f : β → E} (hf : 
     tendsto_approxOn_Lp_eLpNorm hf h₀ one_ne_top hμ
       (by simpa [eLpNorm_one_eq_lintegral_enorm] using hi)
 
-@[deprecated (since := "2025-01-21")] alias tendsto_approxOn_L1_nnnorm := tendsto_approxOn_L1_enorm
-
 theorem integrable_approxOn [BorelSpace E] {f : β → E} {μ : Measure β} (fmeas : Measurable f)
     (hf : Integrable f μ) {s : Set E} {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s]
     (hi₀ : Integrable (fun _ => y₀) μ) (n : ℕ) : Integrable (approxOn f fmeas s y₀ h₀ n) μ := by
@@ -227,9 +225,6 @@ theorem tendsto_approxOn_range_L1_enorm [OpensMeasurableSpace E] {f : β → E} 
   apply tendsto_approxOn_L1_enorm fmeas
   · filter_upwards with x using subset_closure (by simp)
   · simpa using hf.2
-
-@[deprecated (since := "2025-01-21")]
-alias tendsto_approxOn_range_L1_nnnorm := tendsto_approxOn_range_L1_enorm
 
 theorem integrable_approxOn_range [BorelSpace E] {f : β → E} {μ : Measure β} (fmeas : Measurable f)
     [SeparableSpace (range f ∪ {0} : Set E)] (hf : Integrable f μ) (n : ℕ) :
@@ -382,7 +377,7 @@ variable [MeasurableSpace α] [NormedAddCommGroup E] [NormedAddCommGroup F] (p :
 variable (E)
 
 /-- `Lp.simpleFunc` is a subspace of Lp consisting of equivalence classes of an integrable simple
-    function. -/
+function. -/
 def simpleFunc : AddSubgroup (Lp E p μ) where
   carrier := { f : Lp E p μ | ∃ s : α →ₛ E, (AEEqFun.mk s s.aestronglyMeasurable : α →ₘ[μ] E) = f }
   zero_mem' := ⟨0, rfl⟩
@@ -452,8 +447,6 @@ attribute [local instance] simpleFunc.module
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
 protected theorem isBoundedSMul [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (Lp.simpleFunc E p μ) :=
   IsBoundedSMul.of_norm_smul_le fun r f => (norm_smul_le r (f : Lp E p μ) :)
-
-@[deprecated (since := "2025-03-10")] protected alias boundedSMul := simpleFunc.isBoundedSMul
 
 attribute [local instance] simpleFunc.isBoundedSMul
 
@@ -708,11 +701,6 @@ variable {G : Type*} [NormedAddCommGroup G]
 
 theorem coeFn_le [PartialOrder G] (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← Lp.coeFn_le]
-
-instance instAddLeftMono [PartialOrder G] [IsOrderedAddMonoid G] :
-    AddLeftMono (Lp.simpleFunc G p μ) := by
-  refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
-  exact add_le_add_left hg₁₂ f
 
 variable (p μ G)
 

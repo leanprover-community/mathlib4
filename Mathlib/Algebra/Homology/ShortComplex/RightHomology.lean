@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 
 import Mathlib.Algebra.Homology.ShortComplex.LeftHomology
-import Mathlib.CategoryTheory.Limits.Opposites
+import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Kernels
 
 /-!
 # Right Homology of short complexes
@@ -362,11 +362,11 @@ structure RightHomologyMapData where
   /-- the induced map on right homology -/
   φH : h₁.H ⟶ h₂.H
   /-- commutation with `p` -/
-  commp : h₁.p ≫ φQ = φ.τ₂ ≫ h₂.p := by aesop_cat
+  commp : h₁.p ≫ φQ = φ.τ₂ ≫ h₂.p := by cat_disch
   /-- commutation with `g'` -/
-  commg' : φQ ≫ h₂.g' = h₁.g' ≫ φ.τ₃ := by aesop_cat
+  commg' : φQ ≫ h₂.g' = h₁.g' ≫ φ.τ₃ := by cat_disch
   /-- commutation with `ι` -/
-  commι : φH ≫ h₂.ι = h₁.ι ≫ φQ := by aesop_cat
+  commι : φH ≫ h₂.ι = h₁.ι ≫ φQ := by cat_disch
 
 namespace RightHomologyMapData
 
@@ -1135,7 +1135,7 @@ noncomputable def ofEpiOfIsIsoOfMono' : RightHomologyData S₁ := by
 
 end
 
-/-- If `e : S₁ ≅ S₂` is an isomorphism of short complexes and `h₁ : RightomologyData S₁`,
+/-- If `e : S₁ ≅ S₂` is an isomorphism of short complexes and `h₁ : RightHomologyData S₁`,
 this is the right homology data for `S₂` deduced from the isomorphism. -/
 noncomputable def ofIso (e : S₁ ≅ S₂) (h₁ : RightHomologyData S₁) : RightHomologyData S₂ :=
   h₁.ofEpiOfIsIsoOfMono e.hom

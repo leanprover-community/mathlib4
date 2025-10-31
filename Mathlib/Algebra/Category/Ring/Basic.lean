@@ -158,7 +158,7 @@ instance hasForgetToAddCommMonCat : HasForget₂ SemiRingCat AddCommMonCat where
     { obj := fun R ↦ AddCommMonCat.of R
       map := fun f ↦ AddCommMonCat.ofHom f.hom.toAddMonoidHom }
 
-/-- Ring equivalence are isomorphisms in category of semirings -/
+/-- Ring equivalences are isomorphisms in category of semirings -/
 @[simps]
 def _root_.RingEquiv.toSemiRingCatIso {R S : Type u} [Semiring R] [Semiring S] (e : R ≃+* S) :
     of R ≅ of S where
@@ -315,12 +315,12 @@ def fullyFaithfulForget₂ToSemiRingCat :
 instance : (forget₂ RingCat SemiRingCat).Full :=
   fullyFaithfulForget₂ToSemiRingCat.full
 
-instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrp where
+instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrpCat where
   forget₂ :=
-    { obj := fun R ↦ AddCommGrp.of R
-      map := fun f ↦ AddCommGrp.ofHom f.hom.toAddMonoidHom }
+    { obj := fun R ↦ AddCommGrpCat.of R
+      map := fun f ↦ AddCommGrpCat.ofHom f.hom.toAddMonoidHom }
 
-/-- Ring equivalence are isomorphisms in category of semirings -/
+/-- Ring equivalences are isomorphisms in category of rings -/
 @[simps]
 def _root_.RingEquiv.toRingCatIso {R S : Type u} [Ring R] [Ring S] (e : R ≃+* S) :
     of R ≅ of S where
@@ -480,7 +480,7 @@ instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat where
     { obj := fun R ↦ CommMonCat.of R
       map := fun f ↦ CommMonCat.ofHom f.hom.toMonoidHom }
 
-/-- Ring equivalence are isomorphisms in category of semirings -/
+/-- Ring equivalences are isomorphisms in category of commutative semirings -/
 @[simps]
 def _root_.RingEquiv.toCommSemiRingCatIso
     {R S : Type u} [CommSemiring R] [CommSemiring S] (e : R ≃+* S) :
@@ -655,7 +655,7 @@ instance : HasForget₂ CommRingCat CommMonCat where
   forget₂ := { obj M := .of M, map f := CommMonCat.ofHom f.hom }
   forget_comp := rfl
 
-/-- Ring equivalence are isomorphisms in category of semirings -/
+/-- Ring equivalences are isomorphisms in category of commutative rings -/
 @[simps]
 def _root_.RingEquiv.toCommRingCatIso
     {R S : Type u} [CommRing R] [CommRing S] (e : R ≃+* S) :

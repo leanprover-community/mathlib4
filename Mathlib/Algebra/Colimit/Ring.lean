@@ -44,7 +44,8 @@ variable (f : ∀ i j, i ≤ j → G i → G j)
 
 open FreeCommRing
 
-/-- The direct limit of a directed system is the rings glued together along the maps. -/
+/-- The direct limit of a directed system is the ring obtained by gluing the components along the
+maps. -/
 def DirectLimit : Type _ :=
   FreeCommRing (Σ i, G i) ⧸
     Ideal.span
@@ -156,17 +157,30 @@ variable (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x
 @[simp] theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x :=
   FreeCommRing.lift_of _ _
 
+@[ext]
+theorem hom_ext {g₁ g₂ : DirectLimit G f →+* P} (h : ∀ i, g₁.comp (of G f i) = g₂.comp (of G f i)) :
+    g₁ = g₂ :=
+  Ideal.Quotient.ringHom_ext <| FreeCommRing.hom_ext fun ⟨i, x⟩ => congr($(h i) x)
+
+@[simp]
+theorem lift_comp_of (F : DirectLimit G f →+* P) :
+    lift G f _ (fun i ↦ F.comp <| of G f i) (fun i j hij x ↦ by simp) = F := by
+  ext; simp
+
+@[deprecated lift_comp_of (since := "2025-08-11")]
 theorem lift_unique (F : DirectLimit G f →+* P) (x) :
     F x = lift G f P (fun i ↦ F.comp <| of G f i) (fun i j hij x ↦ by simp) x := by
-  obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-  exact x.induction_on (by simp) (fun _ ↦ .symm <| lift_of ..)
-    (by simp+contextual) (by simp+contextual)
+  rw [lift_comp_of]
+
+@[simp]
+theorem lift_of' : lift G f _ (of G f) (fun i j hij x ↦ by simp) = .id _ := by
+  ext; simp
 
 lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
     (injective : ∀ i, Function.Injective <| g i) :
     Function.Injective (lift G f P g Hg) := by
   simp_rw [injective_iff_map_eq_zero] at injective ⊢
-  intros z hz
+  intro z hz
   induction z using DirectLimit.induction_on with
   | ih _ g => rw [lift_of] at hz; rw [injective _ g hz, map_zero]
 
@@ -182,8 +196,8 @@ the direct limit constructed as a quotient of the disjoint union. -/
 def ringEquiv [Nonempty ι] : DirectLimit G (f' · · ·) ≃+* _root_.DirectLimit G f' :=
   .ofRingHom (lift _ _ _ (Ring.of _ _) fun _ _ _ _ ↦ .symm <| eq_of_le ..)
     (Ring.lift _ _ _ (of _ _) fun _ _ _ _ ↦ of_f ..)
-    (by ext ⟨_⟩; rw [← Quotient.mk]; simp [Ring.lift, _root_.DirectLimit.lift_def]; rfl)
-    (by ext x; exact x.induction_on fun i x ↦ by simp)
+    (by ext; simp)
+    (by ext; simp)
 
 theorem ringEquiv_of [Nonempty ι] {i g} : ringEquiv G f' (of _ _ i g) = ⟦⟨i, g⟩⟧ := by
   simp [ringEquiv]; rfl
@@ -240,11 +254,8 @@ def map (g : (i : ι) → G i →+* G' i)
   lift_of _ _ _ _ _
 
 @[simp] lemma map_id :
-    map (fun _ ↦ RingHom.id _) (fun _ _ _ ↦ rfl) = RingHom.id (DirectLimit G fun _ _ h ↦ f _ _ h) :=
-  DFunLike.ext _ _ fun x ↦ by
-    obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    refine x.induction_on (by simp) (fun _ ↦ ?_) (by simp+contextual) (by simp+contextual)
-    rw [quotientMk_of, map_apply_of]; rfl
+    map (fun _ ↦ RingHom.id _) (fun _ _ _ ↦ rfl) = .id (DirectLimit G fun _ _ h ↦ f _ _ h) := by
+  ext; simp
 
 lemma map_comp (g₁ : (i : ι) → G i →+* G' i) (g₂ : (i : ι) → G' i →+* G'' i)
     (hg₁ : ∀ i j h, (g₁ j).comp (f i j h) = (f' i j h).comp (g₁ i))
@@ -253,13 +264,8 @@ lemma map_comp (g₁ : (i : ι) → G i →+* G' i) (g₂ : (i : ι) → G' i �
       DirectLimit G (fun _ _ h ↦ f _ _ h) →+* DirectLimit G'' fun _ _ h ↦ f'' _ _ h) =
     (map (fun i ↦ (g₂ i).comp (g₁ i)) fun i j h ↦ by
       rw [RingHom.comp_assoc, hg₁ i, ← RingHom.comp_assoc, hg₂ i, RingHom.comp_assoc] :
-      DirectLimit G (fun _ _ h ↦ f _ _ h) →+* DirectLimit G'' fun _ _ h ↦ f'' _ _ h) :=
-  DFunLike.ext _ _ fun x ↦ by
-    obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    refine x.induction_on (by simp) (fun _ ↦ ?_) (by simp+contextual) (by simp+contextual)
-    rw [RingHom.comp_apply, quotientMk_of]
-    simp_rw [map_apply_of]
-    rfl
+      DirectLimit G (fun _ _ h ↦ f _ _ h) →+* DirectLimit G'' fun _ _ h ↦ f'' _ _ h) := by
+  ext; simp
 
 /--
 Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any

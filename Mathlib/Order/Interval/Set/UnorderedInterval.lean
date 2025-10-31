@@ -30,7 +30,7 @@ subcube containing both `a` and `b`.
 
 ## Notation
 
-We use the localized notation `[[a, b]]` for `uIcc a b`. One can open the locale `Interval` to
+We use the localized notation `[[a, b]]` for `uIcc a b`. One can open the scope `Interval` to
 make the notation available.
 
 -/
@@ -62,9 +62,6 @@ open Interval
 lemma uIcc_toDual (a b : α) : [[toDual a, toDual b]] = ofDual ⁻¹' [[a, b]] :=
   -- Note: needed to hint `(α := α)` after https://github.com/leanprover-community/mathlib4/pull/8386 (elaboration order?)
   Icc_toDual (α := α)
-
-@[deprecated (since := "2025-03-20")]
-alias dual_uIcc := uIcc_toDual
 
 @[simp]
 theorem uIcc_ofDual (a b : αᵒᵈ) : [[ofDual a, ofDual b]] = toDual ⁻¹' [[a, b]] :=
@@ -335,9 +332,6 @@ def uIoo (a b : α) : Set α := Ioo (a ⊓ b) (a ⊔ b)
 @[simp]
 lemma uIoo_toDual (a b : α) : uIoo (toDual a) (toDual b) = ofDual ⁻¹' uIoo a b :=
   Ioo_toDual (α := α)
-
-@[deprecated (since := "2025-03-20")]
-alias dual_uIoo := uIoo_toDual
 
 @[simp]
 theorem uIoo_ofDual (a b : αᵒᵈ) : uIoo (ofDual a) (ofDual b) = toDual ⁻¹' uIoo a b :=

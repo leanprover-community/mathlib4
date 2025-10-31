@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Disjointed
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Order.Ring.Prod
 import Mathlib.Data.Int.Interval
 import Mathlib.Tactic.Ring
@@ -72,7 +73,7 @@ variable {α β : Type*} [Ring α] [PartialOrder α] [IsOrderedRing α]
     #(box (n + 1) : Finset (α × β)) =
       #(Icc (-n.succ : α) n.succ) * #(Icc (-n.succ : β) n.succ) -
         #(Icc (-n : α) n) * #(Icc (-n : β) n) := by
-  rw [box_succ_eq_sdiff, card_sdiff (Icc_neg_mono n.le_succ), Finset.card_Icc_prod,
+  rw [box_succ_eq_sdiff, card_sdiff_of_subset (Icc_neg_mono n.le_succ), Finset.card_Icc_prod,
     Finset.card_Icc_prod]
   simp_rw [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one, neg_add_rev, fst_add, fst_neg,
     fst_one, fst_natCast, snd_add, snd_neg, snd_one, snd_natCast]

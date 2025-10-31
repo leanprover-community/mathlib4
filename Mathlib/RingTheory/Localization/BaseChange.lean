@@ -91,7 +91,7 @@ include S
 
 theorem tensorProduct_compatibleSMul : CompatibleSMul R A M₁ M₂ where
   smul_tmul a _ _ := by
-    obtain ⟨r, s, rfl⟩ := mk'_surjective S a
+    obtain ⟨r, s, rfl⟩ := exists_mk'_eq S a
     rw [← (map_units A s).smul_left_cancel]
     simp_rw [algebraMap_smul, smul_tmul', ← smul_assoc, smul_tmul, ← smul_assoc, smul_mk'_self,
       algebraMap_smul, smul_tmul]
@@ -117,8 +117,6 @@ noncomputable def algebraTensorEquiv : B ⊗[A] C ≃ₐ[A] B ⊗[R] C :=
 noncomputable def algebraLid : A ⊗[R] B ≃ₐ[A] B :=
   have := tensorProduct_compatibleSMul S A A B
   Algebra.TensorProduct.lidOfCompatibleSMul R A B
-
-@[deprecated (since := "2024-12-01")] alias tensorSelfAlgEquiv := algebraLid
 
 set_option linter.docPrime false in
 theorem bijective_linearMap_mul' : Function.Bijective (LinearMap.mul' R A) :=
@@ -198,8 +196,8 @@ end
 
 section
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    (r : R) (A : Type*) [CommRing A] [Algebra R A]
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
+    (r : R) (A : Type*) [CommSemiring A] [Algebra R A]
 
 instance IsLocalization.tensor (M : Submonoid R) [IsLocalization M A] :
     IsLocalization (Algebra.algebraMapSubmonoid S M) (S ⊗[R] A) := by

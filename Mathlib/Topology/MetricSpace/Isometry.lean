@@ -88,13 +88,30 @@ theorem prodMap {δ} [PseudoEMetricSpace δ] {f : α → β} {g : γ → δ} (hf
     (hg : Isometry g) : Isometry (Prod.map f g) := fun x y => by
   simp only [Prod.edist_eq, Prod.map_fst, hf.edist_eq, Prod.map_snd, hg.edist_eq]
 
-@[deprecated (since := "2025-04-18")]
-alias prod_map := prodMap
-
 protected theorem piMap {ι} [Fintype ι] {α β : ι → Type*} [∀ i, PseudoEMetricSpace (α i)]
     [∀ i, PseudoEMetricSpace (β i)] (f : ∀ i, α i → β i) (hf : ∀ i, Isometry (f i)) :
     Isometry (Pi.map f) := fun x y => by
   simp only [edist_pi_def, (hf _).edist_eq, Pi.map_apply]
+
+protected lemma single [Fintype ι] [DecidableEq ι] {E : ι → Type*} [∀ i, PseudoEMetricSpace (E i)]
+    [∀ i, Zero (E i)] (i : ι) :
+    Isometry (Pi.single (M := E) i) := by
+  intro x y
+  rw [edist_pi_def]
+  refine le_antisymm (Finset.sup_le fun j ↦ ?_) (Finset.le_sup_of_le (Finset.mem_univ i) (by simp))
+  obtain rfl | h := eq_or_ne i j
+  · simp
+  · simp [h]
+
+protected lemma inl [AddZeroClass α] [AddZeroClass β] : Isometry (AddMonoidHom.inl α β) := by
+  intro x y
+  rw [Prod.edist_eq]
+  simp
+
+protected lemma inr [AddZeroClass α] [AddZeroClass β] : Isometry (AddMonoidHom.inr α β) := by
+  intro x y
+  rw [Prod.edist_eq]
+  simp
 
 /-- The composition of isometries is an isometry. -/
 theorem comp {g : β → γ} {f : α → β} (hg : Isometry g) (hf : Isometry f) : Isometry (g ∘ f) :=
@@ -175,9 +192,6 @@ lemma isUniformEmbedding (hf : Isometry f) : IsUniformEmbedding f :=
 /-- An isometry from an emetric space is an embedding -/
 theorem isEmbedding (hf : Isometry f) : IsEmbedding f := hf.isUniformEmbedding.isEmbedding
 
-@[deprecated (since := "2024-10-26")]
-alias embedding := isEmbedding
-
 /-- An isometry from a complete emetric space is a closed embedding -/
 theorem isClosedEmbedding [CompleteSpace α] [EMetricSpace γ] {f : α → γ} (hf : Isometry f) :
     IsClosedEmbedding f :=
@@ -200,7 +214,6 @@ theorem diam_range (hf : Isometry f) : Metric.diam (range f) = Metric.diam (univ
 
 theorem preimage_setOf_dist (hf : Isometry f) (x : α) (p : ℝ → Prop) :
     f ⁻¹' { y | p (dist y (f x)) } = { y | p (dist y x) } := by
-  ext y
   simp [hf.dist_eq]
 
 theorem preimage_closedBall (hf : Isometry f) (x : α) (r : ℝ) :
@@ -247,14 +260,14 @@ theorem Topology.IsEmbedding.to_isometry {α β} [TopologicalSpace α] [MetricSp
   let _ := h.comapMetricSpace f
   Isometry.of_dist_eq fun _ _ => rfl
 
-@[deprecated (since := "2024-10-26")]
-alias Embedding.to_isometry := IsEmbedding.to_isometry
-
 theorem PseudoEMetricSpace.isometry_induced (f : α → β) [m : PseudoEMetricSpace β] :
     letI := m.induced f; Isometry f := fun _ _ ↦ rfl
 
-theorem PsuedoMetricSpace.isometry_induced (f : α → β) [m : PseudoMetricSpace β] :
+theorem PseudoMetricSpace.isometry_induced (f : α → β) [m : PseudoMetricSpace β] :
     letI := m.induced f; Isometry f := fun _ _ ↦ rfl
+
+@[deprecated (since := "2025-07-27")]
+alias PsuedoMetricSpace.isometry_induced := PseudoMetricSpace.isometry_induced
 
 theorem EMetricSpace.isometry_induced (f : α → β) (hf : f.Injective) [m : EMetricSpace β] :
     letI := m.induced f hf; Isometry f := fun _ _ ↦ rfl
@@ -600,6 +613,12 @@ def _root_.Fin.appendIsometry (m n : ℕ) : (Fin m → α) × (Fin n → α) ≃
 theorem _root_.Fin.appendIsometry_toHomeomorph (m n : ℕ) :
     (Fin.appendIsometry m n).toHomeomorph = Fin.appendHomeomorph (X := α) m n :=
   rfl
+
+/-- The natural `IsometryEquiv` `(Fin m → ℝ) × (Fin l → ℝ) ≃ᵢ (Fin n → ℝ)` when `m + l = n`. -/
+@[simps!]
+def _root_.Fin.appendIsometryOfEq {n m l : ℕ} (hmln : m + l = n) :
+    (Fin m → α) × (Fin l → α) ≃ᵢ (Fin n → α) :=
+  (Fin.appendIsometry m l).trans (IsometryEquiv.piCongrLeft (Y := fun _ ↦ α) (finCongr hmln))
 
 variable (ι α)
 
