@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2025 Beibei Xiong. All rights reserved.
+Copyright (c) 2025 Zihui Bai. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Zihui Bai Zhengfeng Yang
+Authors: Zihui Bai, Zhengfeng Yang
 -/
 
 import Mathlib.Data.Fintype.Basic
@@ -49,8 +49,6 @@ instance : MulAction (Equiv.Perm X) (X → Y) where
     simp [HSMul.hSMul]
     change f ((g'⁻¹ * g⁻¹) • x) = f (g'⁻¹ • (g⁻¹ • x))
     rw [mul_smul g'⁻¹ g⁻¹ x]
-
-
 
 /--
 For permutations `f, g : Equiv.Perm X`, the colorings `g • c` and `f • c`
