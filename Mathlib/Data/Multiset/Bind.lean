@@ -195,9 +195,9 @@ theorem filter_bind (m : Multiset α) (f : α → Multiset β) (p : β → Prop)
 
 theorem filterMap_eq_bind (m : Multiset α) (f : α → Option β) :
     filterMap f m = bind m (fun a => ((f a).map singleton).getD 0) := by
-  induction m using Multiset.induction
-  case empty => simp
-  case cons a m ih => simp [filterMap_cons, ih]
+  induction m using Multiset.induction with
+  | empty => simp
+  | cons a m ih => simp [filterMap_cons, ih]
 
 theorem bind_filterMap (m : Multiset α) (f : α → Option β) (g : β → Multiset γ) :
     bind (filterMap f m) g = bind m (fun a => ((f a).map g).getD 0) := by
