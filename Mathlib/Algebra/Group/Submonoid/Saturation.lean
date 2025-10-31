@@ -3,6 +3,7 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.OmegaCompletePartialOrder
@@ -53,7 +54,7 @@ theorem sInf {f : Set (Submonoid M)} (hf : ∀ s ∈ f, s.IsSaturated) :
   simp_rw [mem_sInf] at hxy ⊢
   exact ⟨fun s hs ↦ (hf s hs <| hxy s hs).1, fun s hs ↦ (hf s hs <| hxy s hs).2⟩
 
-theorem iInf {ι : Type*} {f : ι → Submonoid M} (hf : ∀ i, (f i).IsSaturated) :
+theorem iInf {ι : Sort*} {f : ι → Submonoid M} (hf : ∀ i, (f i).IsSaturated) :
     (iInf f).IsSaturated :=
   sInf <| Set.forall_mem_range.mpr hf
 
@@ -71,6 +72,7 @@ end IsSaturated
 
 end Submonoid
 
+/-- A saturated submonoid is a submonoid `s` that satisfies `x * y ∈ s ↔ x ∈ s ∧ y ∈ s`. -/
 structure SaturatedSubmonoid (M : Type*) [MulOneClass M] extends Submonoid M where
   isSaturated : toSubmonoid.IsSaturated
 
@@ -82,10 +84,16 @@ attribute [simp] isSaturated
 theorem toSubmonoid_injective : (toSubmonoid (M := M)).Injective :=
   fun ⟨s₁, h₁⟩ ⟨s₂, h₂⟩ eq ↦ by congr
 
+@[ext] lemma ext {s₁ s₂ : SaturatedSubmonoid M} (h : s₁.toSubmonoid = s₂.toSubmonoid) : s₁ = s₂ :=
+  toSubmonoid_injective h
+
 variable (M) in
 instance instSetLike : SetLike (SaturatedSubmonoid M) M where
   coe := (·.carrier)
   coe_injective' _ _ h := toSubmonoid_injective <| SetLike.coe_injective h
+
+lemma ext' {s₁ s₂ : SaturatedSubmonoid M} (h : ∀ x, x ∈ s₁ ↔ x ∈ s₂) : s₁ = s₂ :=
+  SetLike.ext h
 
 variable (M) in
 instance instSubmonoidClass : SubmonoidClass (SaturatedSubmonoid M) M where
@@ -152,11 +160,26 @@ def saturation {M : Type*} [CommMonoid M] (s : Submonoid M) : SaturatedSubmonoid
 
 variable {M : Type*} [CommMonoid M]
 
+section
+variable {s : Submonoid M} {x : M}
+
+theorem mem_saturation_iff : x ∈ s.saturation ↔ ∃ y, x * y ∈ s := Iff.rfl
+
+theorem mem_saturation_iff' : x ∈ s.saturation ↔ ∃ y, y * x ∈ s := by
+  simp_rw [mem_saturation_iff, mul_comm x]
+
+theorem mem_saturation_iff_exists_dvd : x ∈ s.saturation ↔ ∃ m ∈ s, x ∣ m := by
+  simp_rw [dvd_def, existsAndEq, and_true, mem_saturation_iff]
+
+end
+
 variable (M) in
 theorem gc_saturation : GaloisConnection (saturation (M := M)) (·.toSubmonoid) :=
   fun a b ↦ ⟨fun ih x hx ↦ ih ⟨1, by rwa [mul_one]⟩, fun ih x ⟨y, h⟩ ↦ (b.2 <| ih h).1⟩
 
 variable (M) in
+/-- `saturation` forms a `GaloisInsertion` with the forgetful functor
+`SaturatedSubmonoid.toSubmonoid`. -/
 def giSaturation : GaloisInsertion (saturation (M := M)) (·.toSubmonoid) where
   choice s hs := { s with isSaturated := .of_left fun _ y hxy ↦ hs ⟨y, hxy⟩ }
   gc := gc_saturation M
@@ -169,6 +192,9 @@ theorem saturation_le_iff_le : a.saturation ≤ b ↔ a ≤ b.toSubmonoid := gc_
 alias ⟨_, saturation_le_of_le⟩ := saturation_le_iff_le
 
 theorem le_toSubmonoid_saturation : a ≤ a.saturation.toSubmonoid := (gc_saturation M).le_u_l a
+
+@[simp]
+theorem saturation_toSubmonoid : b.saturation = b := (giSaturation M).l_u_eq b
 
 end Submonoid
 
@@ -196,3 +222,25 @@ theorem iSup_def {ι : Sort*} {f : ι → SaturatedSubmonoid M} :
   (Submonoid.giSaturation M).l_iSup_u f |>.symm
 
 end SaturatedSubmonoid
+
+namespace Submonoid
+variable {M : Type*} [CommMonoid M]
+
+@[simp] theorem saturation_bot : (⊥ : Submonoid M).saturation = ⊥ := (gc_saturation M).l_bot
+@[simp] theorem saturation_top : (⊤ : Submonoid M).saturation = ⊤ := (giSaturation M).l_top
+
+@[simp] theorem saturation_sup {s₁ s₂ : Submonoid M} :
+    (s₁ ⊔ s₂).saturation = s₁.saturation ⊔ s₂.saturation := (gc_saturation M).l_sup
+
+-- note that it does not preserve inf:
+-- if s₁ = {6 ^ n | n : ℕ} and s₂ = {15 ^ n | n : ℕ} then
+-- (s₁ ⊓ s₂).saturation = {1} and
+-- s₁.saturation ⊓ s₂.saturation = {3 ^ n | n : ℕ}
+
+@[simp] theorem saturation_sSup {f : Set (Submonoid M)} :
+    (sSup f).saturation = ⨆ s ∈ f, s.saturation := (gc_saturation M).l_sSup
+
+@[simp] theorem saturation_iSup {ι : Sort*} {f : ι → Submonoid M} :
+    (iSup f).saturation = ⨆ i, (f i).saturation := (gc_saturation M).l_iSup
+
+end Submonoid
