@@ -91,9 +91,6 @@ abbrev ConnectedComponents.ι (j : ConnectedComponents J) : j.Component ⥤ J :=
 abbrev ConnectedComponents.mk (j : J) : ConnectedComponents J :=
   Quotient.mk'' j
 
-@[deprecated (since := "2025-03-04")] alias Component := ConnectedComponents.Component
-@[deprecated (since := "2025-03-04")] alias Component.ι := ConnectedComponents.ι
-
 /-- Each connected component of the category is nonempty. -/
 instance (j : ConnectedComponents J) : Nonempty j.Component := by
   induction j using Quotient.inductionOn'

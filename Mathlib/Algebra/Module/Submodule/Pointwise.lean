@@ -108,9 +108,6 @@ theorem span_neg_eq_neg (s : Set M) : span R (-s) = -span R s := by
   · rw [neg_le, span_le, coe_set_neg, ← Set.neg_subset]
     exact subset_span
 
-@[deprecated (since := "2025-04-08")]
-alias closure_neg := span_neg_eq_neg
-
 @[simp]
 theorem neg_inf (S T : Submodule R M) : -(S ⊓ T) = -S ⊓ -T := rfl
 
