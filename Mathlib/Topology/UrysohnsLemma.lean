@@ -525,8 +525,8 @@ contained in an open set `V`, there exists a compactly supported continuous func
 `0 ≤ f ≤ 1`, `f = 1` on K and the support of `f` is contained in `V`. -/
 lemma exists_continuous_one_of_compact_subset_open [T2Space X] [LocallyCompactSpace X]
     {K V : Set X} (hK : IsCompact K) (hV : IsOpen V) (hKV : K ⊆ V) :
-    ∃ f : C(X, ℝ), Set.EqOn (⇑f) 1 K ∧ IsCompact (tsupport ⇑f)
-    ∧ tsupport ⇑f ⊆ V ∧ ∀ (x : X), f x ∈ Set.Icc 0 1 := by
+    ∃ f : C(X, ℝ), Set.EqOn f 1 K ∧ IsCompact (tsupport f) ∧
+      tsupport f ⊆ V ∧ ∀ x, f x ∈ Set.Icc 0 1 := by
   obtain ⟨U, hU1, hU2, hU3, hU4⟩ := exists_open_between_and_isCompact_closure hK hV hKV
   obtain ⟨f, hf1, hf2, hf3⟩ := exists_tsupport_one_of_isOpen_isClosed hU1 hU4 hK.isClosed hU2
   have : tsupport f ⊆ closure U := hf1.trans subset_closure
