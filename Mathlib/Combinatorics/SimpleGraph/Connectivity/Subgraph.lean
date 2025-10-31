@@ -568,7 +568,7 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
 
 end induced_subgraphs
 
-protected theorem Connected.toSubgraph {H : SimpleGraph V} (h : H ≤ G) (hconn : H.Connected) :
+protected lemma Connected.toSubgraph {H : SimpleGraph V} (h : H ≤ G) (hconn : H.Connected) :
     (toSubgraph H h).Connected := by
   obtain ⟨hpreconn, _⟩ := hconn
   simp_all only [Subgraph.connected_iff_forall_exists_walk_subgraph, toSubgraph_verts,
