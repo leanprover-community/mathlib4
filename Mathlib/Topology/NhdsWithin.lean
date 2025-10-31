@@ -13,7 +13,7 @@ This file develops API on the relative versions `nhdsWithin` and `nhdsSetWithin`
 
 Their basic properties studied in this file include the relationship between neighborhood filters
 relative to a set and neighborhood filters in the corresponding subtype, and are in later files used
-to develop relativ versions `ContinuousOn` and `ContinuousWithinAt` of `Continuous` and
+to develop relative versions `ContinuousOn` and `ContinuousWithinAt` of `Continuous` and
 `ContinuousAt`.
 
 ## Notation
