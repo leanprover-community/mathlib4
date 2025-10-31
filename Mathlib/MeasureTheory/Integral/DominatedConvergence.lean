@@ -629,6 +629,22 @@ theorem continuous_parametric_intervalIntegral_of_continuous'
     (hf : Continuous f.uncurry) (a₀ b₀ : ℝ) :
     Continuous fun x ↦ ∫ t in a₀..b₀, f x t ∂μ := by fun_prop
 
+lemma ContinuousOn.parametric_intervalIntegral {f : X × ℝ → E} {u : Set X}
+    {a₀ b₀ : ℝ} (hf : ContinuousOn f (u ×ˢ [[a₀, b₀]])) :
+    ContinuousOn (fun x ↦ ∫ t in a₀..b₀, f (x, t) ∂μ) u := by
+  wlog hab : a₀ ≤ b₀ with h
+  · simp_rw [intervalIntegral.integral_symm b₀ a₀]
+    exact (h (Set.uIcc_comm a₀ b₀ ▸ hf) (le_of_not_ge hab)).neg
+  rw [Set.uIcc_of_le hab] at hf
+  rw [continuousOn_iff_continuous_restrict] at hf ⊢
+  replace hf :
+      Continuous (Function.uncurry fun (x : u) (t : ℝ) ↦ f (x, Set.projIcc _ _ hab t)) :=
+    (hf.comp (f := (Homeomorph.Set.prod u _).symm ∘ Prod.map id (Set.projIcc _ _ hab))
+      (by fun_prop)).congr fun (x, t) ↦ by simp
+  refine (intervalIntegral.continuous_parametric_intervalIntegral_of_continuous' hf a₀ b₀).congr
+    fun x ↦ intervalIntegral.integral_congr fun t ht ↦ ?_
+  simp [Set.projIcc_of_mem hab <| Set.uIcc_of_le hab ▸ ht]
+
 end ContinuousPrimitive
 
 end intervalIntegral
