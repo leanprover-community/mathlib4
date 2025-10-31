@@ -29,25 +29,6 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 * Prove more minimax properties of Chebyshev polynomials.
 -/
 
-namespace Polynomial
-
-theorem roots_of_zeroes_of_card
-  {R : Type _} [CommRing R] [IsDomain R] {p : Polynomial R} {S : Finset R}
-  (hS : ∀ x ∈ S, p.eval x = 0) (hcard : S.card = p.degree) : p.roots = S.val := by
-  have hp : p ≠ 0 := by contrapose! hcard; simp [hcard]
-  symm; apply Multiset.eq_of_le_of_card_le
-  · apply Finset.val_le_iff_val_subset.mpr
-    intro x hx
-    apply (p.mem_roots hp).mpr
-    apply hS
-    exact hx
-  · change p.roots.card ≤ S.card
-    have := p.card_roots hp
-    rw [←hcard, Nat.cast_le] at this
-    exact this
-
-end Polynomial
-
 namespace Polynomial.Chebyshev
 
 open Polynomial
@@ -249,7 +230,7 @@ theorem T_roots_eq {n : ℕ} (hn : n ≠ 0) : (T ℝ n).roots = (T_roots n).val 
     exact Int.ofNat_eq_zero.mp hn
   have hcard : (T_roots n).card = (T ℝ n).degree := by
     rw [card_T_roots n, degree_T, Int.natAbs_natCast]
-  apply roots_of_zeroes_of_card hS hcard
+  apply roots_eq_of_degree hS hcard
 
 theorem T_eq_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     (T ℝ n).eval x = 1 ↔ ∃ (k : ℤ), x = cos (2 * k * π / n) := by
@@ -501,7 +482,7 @@ theorem U_roots_eq (n : ℕ) : (U ℝ n).roots = (U_roots n).val := by
     apply U_eq_zero_if n hk.1 hk.2
   have hcard : (U_roots n).card = (U ℝ n).degree := by
     rw [card_U_roots n, degree_U_natCast]
-  apply roots_of_zeroes_of_card hS hcard
+  apply roots_eq_of_degree hS hcard
 
 theorem U_eq_zero_iff (n : ℕ) (x : ℝ) :
     (U ℝ n).eval x = 0 ↔ ∃ (k : ℕ), 1 ≤ k ∧ k ≤ n ∧ x = cos (k * π / (n + 1)) := by
