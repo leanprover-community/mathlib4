@@ -146,7 +146,7 @@ theorem isClosed_iff_bsup :
   rw [isClosed_iff_iSup]
   refine ⟨fun H o ho f hf => H (toType_nonempty_iff_ne_zero.2 ho) _ ?_, fun H ι hι f hf => ?_⟩
   · exact fun i => hf _ _
-  · rw [← Ordinal.sup, ← bsup_eq_sup]
+  · rw [← bsup_eq_iSup]
     apply H (type_ne_zero_iff_nonempty.2 hι)
     exact fun i hi => hf _
 

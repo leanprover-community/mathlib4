@@ -50,7 +50,7 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
-assert_not_exists RelIso OrderedCommMonoid Multiset MonoidWithZero
+assert_not_exists RelIso IsOrderedMonoid Multiset MonoidWithZero
 
 open Function
 open scoped Int
@@ -84,6 +84,22 @@ class HasMemOrInvMem {S G : Type*} [Inv G] [SetLike S G] (s : S) : Prop where
 
 export HasMemOrNegMem (mem_or_neg_mem)
 export HasMemOrInvMem (mem_or_inv_mem)
+
+namespace HasMemOrInvMem
+
+variable {S G : Type*} [Inv G] [SetLike S G] (s : S) [HasMemOrInvMem s]
+
+@[to_additive (attr := aesop unsafe 70% apply)]
+theorem inv_mem_of_notMem (x : G) (h : x ∉ s) : x⁻¹ ∈ s := by
+  have := mem_or_inv_mem s x
+  simp_all
+
+@[to_additive (attr := aesop unsafe 70% apply)]
+theorem mem_of_inv_notMem (x : G) (h : x⁻¹ ∉ s) : x ∈ s := by
+  have := mem_or_inv_mem s x
+  simp_all
+
+end HasMemOrInvMem
 
 /-- `SubgroupClass S G` states `S` is a type of subsets `s ⊆ G` that are subgroups of `G`. -/
 class SubgroupClass (S : Type*) (G : outParam Type*) [DivInvMonoid G] [SetLike S G] : Prop
@@ -692,27 +708,15 @@ theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
 
 end Normalizer
 
-@[deprecated (since := "2025-04-09")] alias IsCommutative := IsMulCommutative
-@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.IsCommutative := IsAddCommutative
-
 /-- A subgroup of a commutative group is commutative. -/
 @[to_additive /-- A subgroup of a commutative group is commutative. -/]
 instance commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
     IsMulCommutative H :=
   ⟨CommMagma.to_isCommutative⟩
 
-@[deprecated (since := "2025-04-09")] alias commGroup_isCommutative := commGroup_isMulCommutative
-@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.addCommGroup_isCommutative :=
-  commGroup_isMulCommutative
-
 @[to_additive]
 lemma mul_comm_of_mem_isMulCommutative [IsMulCommutative H] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :
     a * b = b * a := by
   simpa only [MulMemClass.mk_mul_mk, Subtype.mk.injEq] using mul_comm (⟨a, ha⟩ : H) (⟨b, hb⟩ : H)
-
-@[deprecated (since := "2025-04-09")] alias mul_comm_of_mem_isCommutative :=
-  mul_comm_of_mem_isMulCommutative
-@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.add_comm_of_mem_isCommutative :=
-  _root_.AddSubgroup.add_comm_of_mem_isAddCommutative
 
 end Subgroup
