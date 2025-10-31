@@ -66,7 +66,7 @@ lemma trans_comp {i j k : 𝒰.I₀} (hij : i ⟶ j) (hjk : j ⟶ k) :
 
 lemma exists_lift_trans_eq {i j : 𝒰.I₀} (x : (pullback (𝒰.f i) (𝒰.f j)).carrier) :
     ∃ (k : 𝒰.I₀) (hki : k ⟶ i) (hkj : k ⟶ j) (y : 𝒰.X k),
-      (pullback.lift (𝒰.trans hki) (𝒰.trans hkj) (by simp)) y = x :=
+      pullback.lift (𝒰.trans hki) (𝒰.trans hkj) (by simp) y = x :=
   LocallyDirected.directed x
 
 lemma property_trans {i j : 𝒰.I₀} (hij : i ⟶ j) : P (𝒰.trans hij) :=
