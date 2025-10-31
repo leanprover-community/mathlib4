@@ -21,4 +21,9 @@ def whenLinterOption (opt : Lean.Option Bool) (x : CommandElabM Unit) : CommandE
 def whenNotLinterOption (opt : Lean.Option Bool) (x : CommandElabM Unit) : CommandElabM Unit := do
   unless getLinterValue opt (← getLinterOptions) do x
 
+/-- Processes `set_option ... in`s that wrap the input `stx`, then acts on the inner syntax with
+`x` after checking that the provided linter option is `true`. -/
+def whenLinterActivated (opt : Lean.Option Bool) (x : CommandElab) : CommandElab :=
+  withSetOptionIn (whenLinterOption opt ∘ x)
+
 end Lean.Linter
