@@ -13,7 +13,7 @@ import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
 # The strict bicategory of quasicategories
 
 In this file we define a strict bicategory whose objects are quasicategories,
-whose morphisms are maps of simplicial sets, and whose morphisms are homotopy classes of homotopies
+whose `1`-morphisms are maps of simplicial sets, and whose `2`-morphisms are homotopy classes of homotopies
 between them, defined using the simplicial interval `Δ[1]`.
 
 This is defined by transfering the simplicial enrichment of the category of quasicategories to
