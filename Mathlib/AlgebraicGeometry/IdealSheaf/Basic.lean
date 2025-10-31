@@ -728,7 +728,7 @@ lemma Hom.support_ker (f : X ⟶ Y) [QuasiCompact f] :
         MorphismProperty.pullback_snd _ _ inferInstance
       have := this (𝒰.pullbackHom f i) ⟨_, rfl⟩
         ((coe_support_inter _ ⟨⊤, isAffineOpen_top _⟩).ge ⟨?_, Set.mem_univ x⟩).1
-      · have := image_closure_subset_closure_image (f := (𝒰.f i))
+      · have := image_closure_subset_closure_image (f := 𝒰.f i)
           (𝒰.f i).continuous (Set.mem_image_of_mem _ this)
         rw [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base, 𝒰.pullbackHom_map] at this
         exact closure_mono (Set.range_comp_subset_range _ _) this
