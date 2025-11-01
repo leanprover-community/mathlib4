@@ -241,5 +241,4 @@ algebraically closed field. -/
 theorem ax_grothendieck_univ (p : ι → MvPolynomial ι K) :
     (fun v i => eval v (p i)).Injective →
     (fun v i => eval v (p i)).Surjective := by
-  simpa [Set.injective_iff_injOn_univ, Set.surjective_iff_surjOn_univ] using
-      ax_grothendieck_zeroLocus 0 p
+  simpa using ax_grothendieck_zeroLocus 0 p

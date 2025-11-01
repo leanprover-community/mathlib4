@@ -72,7 +72,7 @@ theorem embeddingPiTangent_injOn : InjOn f.embeddingPiTangent s := by
 
 theorem embeddingPiTangent_injective (f : SmoothBumpCovering ι I M) :
     Injective f.embeddingPiTangent :=
-  injective_iff_injOn_univ.2 f.embeddingPiTangent_injOn
+  injOn_univ.1 f.embeddingPiTangent_injOn
 
 theorem comp_embeddingPiTangent_mfderiv (x : M) (hx : x ∈ s) :
     ((ContinuousLinearMap.fst ℝ E ℝ).comp
