@@ -403,8 +403,6 @@ lemma fromAffine_some_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingu
     fromAffine (.some h) ≠ 0 :=
   mk_ne_zero <| (nonsingularLift_some ..).mpr h
 
-@[deprecated (since := "2025-03-01")] alias fromAffine_ne_zero := fromAffine_some_ne_zero
-
 /-- The negation of a nonsingular Jacobian point on a Weierstrass curve `W`.
 
 Given a nonsingular Jacobian point `P` on `W`, use `-P` instead of `neg P`. -/

@@ -11,16 +11,26 @@ In particular, note that most reviewers will only notice your PR
 if it passes the continuous integration checks.
 Please ask for help on https://leanprover.zulipchat.com if needed.
 
-To indicate co-authors, include at least one commit authored by each
-co-author among the commits in the pull request. If necessary, you may 
-create empty commits to indicate co-authorship, using commands like so:
+When merging, all the commits will be squashed into a single commit
+listing all co-authors.
+
+Co-authors in the squash commit are gathered from two sources:
+
+First, all authors of commits to this PR branch are included. Thus,
+one way to add co-authors is to include at least one commit authored by
+each co-author among the commits in the pull request. If necessary, you
+may create empty commits to indicate co-authorship, using commands like so:
 
 git commit --author="Author Name <author@email.com>" --allow-empty -m "add Author Name as coauthor"
 
-When merging, all the commits will be squashed into a single commit listing all co-authors.
+Second, co-authors can also be listed in lines at the very bottom of
+the commit message (that is, directly before the `---`) using the following format:
 
-If you are moving or deleting declarations, please include these lines at the bottom of the commit message
-(that is, before the `---`) using the following format:
+Co-authored-by: Author Name <author@email.com>
+
+If you are moving or deleting declarations, please include these lines
+at the bottom of the commit message (before the `---`, and also before
+any "Co-authored-by" lines) using the following format:
 
 Moves:
 - Vector.* -> List.Vector.*
