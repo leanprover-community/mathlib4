@@ -627,7 +627,7 @@ lemma Preconnected.connected_deleteVerts_singleton_of_degree_eq_one [DecidableEq
     (hpreconn : H.Preconnected) {v : V} [Fintype ↑(H.neighborSet v)] (hdeg : H.degree v = 1) :
     (H.deleteVerts {v}).Connected := by
   refine Subgraph.connected_iff'.mpr (coeDeleteVertsEquiv.connected_iff.mpr ?_)
-  have hv : v ∈ H.verts := (degree_eq_one_iff_unique_adj.mp hdeg).choose_spec.left.fst_mem
+  have hv : v ∈ H.verts := (degree_eq_one_iff_existsUnique_adj.mp hdeg).choose_spec.left.fst_mem
   have : ({w | ↑w ∈ ({v} : Set V)} : Set H.verts) = {⟨v, hv⟩} := by aesop
   rw [this]
   exact hpreconn.coe.connected_induce_complement_singleton_of_degree_eq_one (by simp_all)
