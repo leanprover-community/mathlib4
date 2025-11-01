@@ -161,7 +161,7 @@ end IsPredictable
 
 section
 
-variable [MetrizableSpace E] [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
+variable [MetrizableSpace E] [MeasurableSpace E] [BorelSpace E]
 
 lemma measurableSet_predictable_singleton_prod
     {𝓕 : Filtration ℕ m} {n : ℕ} {s : Set Ω} (hs : MeasurableSet[𝓕 n] s) :
