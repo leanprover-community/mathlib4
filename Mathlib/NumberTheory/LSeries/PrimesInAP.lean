@@ -507,16 +507,16 @@ theorem forall_exists_prime_gt_and_modEq (n : ℕ) {q a : ℕ} (hq : q ≠ 0) (h
   simpa using forall_exists_prime_gt_and_zmodEq n (q := q) (a := a) hq (by simpa)
 
 open Filter in
-lemma frequently_atTop_prime_and_modEq_one {q a : ℕ} (hq : q ≠ 0) (h : a.Coprime q) :
+lemma frequently_atTop_prime_and_modEq {q a : ℕ} (hq : q ≠ 0) (h : a.Coprime q) :
     ∃ᶠ p in atTop, p.Prime ∧ p ≡ a [MOD q] := by
   rw [frequently_atTop]
   intro n
   obtain ⟨p, hn, hp, ha⟩ := forall_exists_prime_gt_and_modEq n hq h
   exact ⟨p, hn.le, hp, ha⟩
 
-lemma infinite_setOf_prime_and_modEq_one {q a : ℕ} (hq : q ≠ 0) (h : a.Coprime q) :
+lemma infinite_setOf_prime_and_modEq {q a : ℕ} (hq : q ≠ 0) (h : a.Coprime q) :
     Set.Infinite {p : ℕ | p.Prime ∧ p ≡ a [MOD q]} :=
-  frequently_atTop_iff_infinite.1 (frequently_atTop_prime_and_modEq_one hq h)
+  frequently_atTop_iff_infinite.1 (frequently_atTop_prime_and_modEq hq h)
 
 end Nat
 
