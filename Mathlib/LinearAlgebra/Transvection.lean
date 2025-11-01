@@ -16,6 +16,8 @@ import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 import Mathlib.RingTheory.Polynomial.UniqueFactorization
 import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 import Mathlib.Algebra.MvPolynomial.Division
+import Mathlib.RingTheory.MvPolynomial.IrrQuadratic
+import Mathlib.LinearAlgebra.Dual.BaseChange
 
 /-!
 # Transvections
@@ -23,326 +25,6 @@ import Mathlib.Algebra.MvPolynomial.Division
 -/
 
 universe u v
-
-section Polynomial
-
-open Polynomial
-
-theorem irreducible_smul_X_add_C {R : Type*} [CommRing R] [IsDomain R]
-    {a b : R} (ha : a ≠ 0) (hab : IsRelPrime a b) :
-    Irreducible (a • X + C b : Polynomial R) where
-  not_isUnit h := by
-    obtain ⟨u, hu, h⟩ := isUnit_iff.mp h
-    apply ha
-    simpa using congr_arg (fun f ↦ coeff f 1) h.symm
-  isUnit_or_isUnit f g h := by
-    wlog H : f.degree ≤ g.degree generalizing f g
-    · rcases le_total f.degree g.degree with h' | h'
-      · exact this f g h h'
-      · rw [mul_comm] at h
-        exact or_comm.mp (this g f h h')
-    have hd := congr_arg degree h
-    have ha' : (a • (X : R[X])).degree = 1 := by
-      simp [smul_eq_C_mul a, degree_C ha]
-    rw [degree_mul, degree_add_C (by simp [ha']), ha'] at hd
-    rw [eq_comm, Nat.WithBot.add_eq_one_iff] at hd
-    rcases hd with hd | hd
-    · left
-      have hf := f.eq_C_of_degree_eq_zero hd.1
-      suffices IsUnit (f.coeff 0) by
-        rw [isUnit_iff]
-        exact ⟨f.coeff 0, this, hf.symm⟩
-      rw [hf, ← smul_eq_C_mul] at h
-      apply hab
-      · use g.coeff 1
-        simpa using congr_arg (fun f ↦ coeff f 1) h
-      · use g.coeff 0
-        simpa using congr_arg (fun f ↦ coeff f 0) h
-    · exfalso
-      rw [hd.1, hd.2, ← not_lt] at H
-      apply H (zero_lt_one' (WithBot ℕ))
-
-end Polynomial
-
--- TODO: exists? move elsewhere.
-/-- The equivalence between a type and the `Option` type
-of the type deprived of one given element. -/
-noncomputable def equiv_option {n : Type*} [DecidableEq n] (i : n) :
-    n ≃ Option {x : n // x ≠ i} where
-  toFun x := if hx : x = i then none else some ⟨x, hx⟩
-  invFun y := Option.elim y i (fun x ↦ ↑x)
-  left_inv x := by
-    by_cases hx : x = i <;> simp [hx]
-  right_inv y :=  by
-    cases y with
-    | none => simp
-    | some x => simp [x.prop]
-
-
-namespace MvPolynomial
-
-open scoped Polynomial
-
-variable (n : Type*) [Fintype n] (R : Type*) [CommRing R] [IsDomain R]
-
-/-- The quadratic polynomial $$\sum_{i=1}^n X_i Y_i$$. -/
-noncomputable def quad : MvPolynomial (n ⊕ n) R :=
-  ∑ i : n, MvPolynomial.X (Sum.inl i) * MvPolynomial.X (Sum.inr i)
-
-noncomputable example (n : Type*) [DecidableEq n] (R : Type*) [CommRing R] (i : n) :
-    MvPolynomial n R ≃ₐ[R] (MvPolynomial {x : n // x ≠ i} R)[X] :=
-  (renameEquiv R (equiv_option i)).trans (MvPolynomial.optionEquivLeft R _)
-
-variable {R} in
-theorem totalDegree_le_of_dvd_of_isDomain
-    {σ : Type*} {p q : MvPolynomial σ R} (hp : q ≠ 0) (h : p ∣ q) :
-    p.totalDegree ≤ q.totalDegree := by
-  obtain ⟨r, rfl⟩ := h
-  rw [totalDegree_mul_of_isDomain]
-  · exact Nat.le_add_right p.totalDegree r.totalDegree
-  · exact fun h ↦ hp (by simp [h])
-  · exact fun h ↦ hp (by simp [h])
-
-theorem dvd_C_iff_exists
-    {σ : Type*} {a : R} (ha : a ≠ 0) {p : MvPolynomial σ R} :
-    p ∣ MvPolynomial.C a ↔ ∃ b, b ∣ a ∧ p = MvPolynomial.C b := by
-  constructor
-  · intro hp
-    use MvPolynomial.coeff 0 p
-    suffices p.totalDegree = 0 by
-      rw [totalDegree_eq_zero_iff_eq_C] at this
-      refine ⟨?_, this⟩
-      rw [this, MvPolynomial.C_dvd_iff_dvd_coeff] at hp
-      convert hp 0
-      simp
-    apply Nat.eq_zero_of_le_zero
-    convert totalDegree_le_of_dvd_of_isDomain (by simp [ha]) hp
-    simp
-  · rintro ⟨b, hab, rfl⟩
-    exact _root_.map_dvd MvPolynomial.C hab
-
-theorem dvd_X_iff_exists
-    {σ : Type*} {i : σ} {p : MvPolynomial σ R} :
-    p ∣ X i ↔ ∃ r, IsUnit r ∧ (p = C r ∨ p = r • (X i)) := by
-  constructor
-  · rintro ⟨q, hq⟩
-    have : totalDegree p + totalDegree q = 1 := by
-      rw [← totalDegree_mul_of_isDomain, ← hq]
-      · simp only [totalDegree_X]
-      · intro h; simp [h] at hq
-      · intro h; simp [h] at hq
-    rw [Nat.add_eq_one_iff] at this
-    rcases this with h01 | h10
-    · rw [totalDegree_eq_zero_iff_eq_C] at h01
-      refine ⟨coeff 0 p, ?_, Or.inl h01.1⟩
-      rw [h01.1] at hq
-      replace hq := congr_arg (fun f ↦ coeff (Finsupp.single i 1) f) hq
-      simp only [coeff_X, coeff_C_mul] at hq
-      exact isUnit_of_mul_eq_one _ _ hq.symm
-    · rw [totalDegree_eq_zero_iff_eq_C] at h10
-      have : IsUnit (coeff 0 q) := by
-        replace hq := congr_arg (fun f ↦ coeff (Finsupp.single i 1) f) hq
-        simp only at hq
-        rw [h10.2, mul_comm] at hq
-        simp only [coeff_X, coeff_C_mul] at hq
-        exact isUnit_of_mul_eq_one _ _ hq.symm
-      set u := this.unit
-      have h : q = C (u : R) := by rw [h10.2]; simp [u]
-      refine ⟨(u⁻¹ : Rˣ), Units.isUnit _, ?_⟩
-      right
-      rw [smul_eq_C_mul, hq, mul_comm p q, h, ← mul_assoc,
-        ← map_mul]
-      simp
-  · rintro ⟨r, hr, hp⟩
-    rcases hp with hp | hp
-    · rw [hp, ← (hr.map _).unit_spec]
-      exact Units.coe_dvd
-    · rw [hp, smul_eq_C_mul, ← (hr.map _).unit_spec, Units.mul_left_dvd]
-
-theorem dvd_monomial_iff {σ : Type*} {n : σ →₀ ℕ} {p : MvPolynomial σ R} :
-    p ∣ monomial n 1 ↔
-    ∃ (r : R) (m : σ →₀ ℕ), IsUnit r ∧ m ≤ n ∧ p = monomial m r := by
-  constructor
-  · rintro ⟨q, hq⟩
-
-
-    sorry
-  · rintro ⟨r, m, hr, hm, rfl⟩
-    rw [monomial_dvd_monomial, ← isUnit_iff_dvd_one]
-    simp [hm, hr]
-
-theorem quad_irreducible (h : Nontrivial n) : Irreducible (quad n R) := by
-  classical
-  let p := ∑ x : n,
-    MvPolynomial.X (R := MvPolynomial n R) x * MvPolynomial.C ( (MvPolynomial.X (R := R) x))
-  let e := sumRingEquiv R n n
-  have : e (quad n R) = p := by simp [e, p, quad, sumRingEquiv]
-  rw [← MulEquiv.irreducible_iff e, this]
-  obtain ⟨i, j, hij⟩ := h
-  set S := MvPolynomial { x // x ≠ i } (MvPolynomial n R)
-  let f : MvPolynomial n (MvPolynomial n R) ≃ₐ[R] S[X] :=
-    ((renameEquiv (MvPolynomial n R) (equiv_option i)).trans
-      (MvPolynomial.optionEquivLeft _ _)).restrictScalars R
-  have hfXi : f (MvPolynomial.X i) = Polynomial.X := by
-    simp only [f]
-    rw [AlgEquiv.restrictScalars_apply]
-    simp [equiv_option, optionEquivLeft_apply]
-  have hfX (x : {x : n // x ≠ i}) : f (MvPolynomial.X x) =
-      Polynomial.C (MvPolynomial.X x) := by
-    simp only [f]
-    rw [AlgEquiv.restrictScalars_apply]
-    simp [equiv_option, optionEquivLeft_apply, dif_neg x.prop]
-  have hfCX (x : n) : f (MvPolynomial.C (MvPolynomial.X x)) =
-      Polynomial.C (MvPolynomial.C (MvPolynomial.X x)) := by
-    simp only [f]
-    rw [AlgEquiv.restrictScalars_apply]
-    simp [equiv_option, optionEquivLeft_apply]
-  rw [← MulEquiv.irreducible_iff f]
-  let a : S := C (MvPolynomial.X (R := R) i)
-  let b : S := ∑ x : { x : n // x ≠ i},
-    (MvPolynomial.X (R := R) (x : n)) • X (R := MvPolynomial n R) x
-  suffices f p = a • Polynomial.X + Polynomial.C b  by
-    rw [this]
-    refine irreducible_smul_X_add_C (fun ha ↦ ?_) (fun c hca hcb ↦ ?_)
-    · simp only [ne_eq, a] at ha
-      rw [MvPolynomial.C_eq_zero] at ha
-      exact MvPolynomial.X_ne_zero i ha
-    · simp only [a] at hca
-      rw [dvd_C_iff_exists _ (MvPolynomial.X_ne_zero i)] at hca
-      obtain ⟨c, hc, rfl⟩ := hca
-      apply IsUnit.map
-      rw [MvPolynomial.dvd_X_iff_exists] at hc
-      obtain ⟨r, hr, hc | hc⟩ := hc <;>
-        have hr' : IsUnit (MvPolynomial.C (σ := n) r) :=
-            IsUnit.map MvPolynomial.C hr
-      · simpa [hc] using hr'
-      · exfalso
-        apply hij
-        rw [← MvPolynomial.X_dvd_X (σ := n) (R := R)]
-        apply dvd_of_mul_left_dvd (a := MvPolynomial.C r)
-        rw [MvPolynomial.C_dvd_iff_dvd_coeff] at hcb
-        specialize hcb (Finsupp.single ⟨j, Ne.symm hij⟩ 1)
-        rw [hc, MvPolynomial.smul_eq_C_mul] at hcb
-        simp only [b] at hcb
-        rw [MvPolynomial.coeff_sum] at hcb
-        simpa using hcb
-  simp only [p]
-  rw [map_sum, Fintype.sum_eq_add_sum_subtype_ne _ i]
-  rw [map_sum]
-  apply congr_arg₂
-  · simp only [ne_eq, map_mul, a]
-    rw [mul_comm, hfXi, hfCX, ← Polynomial.smul_eq_C_mul]
-  · apply Fintype.sum_congr
-    intro x
-    simp [hfCX, hfX]
-    rw [MvPolynomial.smul_eq_C_mul, map_mul, mul_comm]
-
-end MvPolynomial
-
-
-
--- TODO: mv to somewhere
-section
-
-namespace Module.Dual
-
-open TensorProduct LinearEquiv
-
-variable {R : Type*} [CommSemiring R]
-  {V : Type*} [AddCommMonoid V] [Module R V]
-  {W : Type*} [AddCommMonoid W] [Module R W]
-  (A : Type*) [CommSemiring A] [Algebra R A]
-
-/-- `LinearMap.baseChange` for `Module.Dual`. -/
-def baseChange (f : Module.Dual R V) :
-    Module.Dual A (A ⊗[R] V) :=
-  (AlgebraTensorModule.rid R A A).toLinearMap.comp (LinearMap.baseChange A f)
-
-@[simp]
-theorem baseChange_apply_tmul (f : Module.Dual R V) (a : A) (v : V) :
-    f.baseChange A (a ⊗ₜ v) = (f v) • a := by
-  simp [baseChange]
-
-/-- Equivalent modules have equivalent duals. -/
-def congr (e : V ≃ₗ[R] W) :
-    Module.Dual R V ≃ₗ[R] Module.Dual R W :=
-  LinearEquiv.congrLeft R R e
-
-/-- `Module.Dual.baseChange` as a linear map. -/
-def baseChangeHom :
-    Module.Dual R V →ₗ[R] Module.Dual A (A ⊗[R] V) where
-  toFun := Module.Dual.baseChange A
-  map_add' := by unfold Module.Dual.baseChange; aesop
-  map_smul' r x := by
-    ext
-    unfold Module.Dual.baseChange
-    simp [LinearMap.baseChange_smul, ← TensorProduct.tmul_smul, mul_smul]
-
-@[simp]
-theorem baseChangeHom_apply (f : Module.Dual R V) :
-    Module.Dual.baseChangeHom A f = f.baseChange A :=
-  rfl
-
-section group
-
-variable {R : Type*} [CommRing R]
-  {V : Type*} [AddCommGroup V] [Module R V]
-  (A : Type*) [CommRing A] [Algebra R A]
-
-theorem baseChange_sub (f g : Module.Dual R V) :
-    Module.Dual.baseChange A (f - g) = Module.Dual.baseChange A f - Module.Dual.baseChange A g := by
-  unfold Module.Dual.baseChange; aesop
-
-theorem baseChange_neg (f : Module.Dual R V) :
-    Module.Dual.baseChange A (-f) = -(Module.Dual.baseChange A f) := by
-  unfold Module.Dual.baseChange; aesop
-
-end group
-
-section comp
-
-variable (B : Type*) [CommSemiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
-
-theorem baseChange_comp (f : Module.Dual R V) :
-    Module.Dual.congr (TensorProduct.AlgebraTensorModule.cancelBaseChange R A B B V)
-      ((f.baseChange A).baseChange B) = f.baseChange B := by
-  ext; simp [Module.Dual.congr, congrLeft]
-
-end comp
-
-variable {A}
-variable {W : Type*} [AddCommGroup W] [Module R W] [Module A W] [IsScalarTower R A W]
-  {ε : V →ₗ[R] W} (ibc_VW : IsBaseChange A ε)
-
-/-- The map showing that the duals of modules related by base change
-are also related by base change. -/
-noncomputable def _root_.IsBaseChange.dualMap :
-    (Module.Dual R V) →ₗ[R] Module.Dual A W where
-  toFun f := ibc_VW.lift ((Algebra.linearMap R A).comp f)
-  map_add' x y := by
-    ext w
-    simp [LinearMap.comp_add]
-    induction w using ibc_VW.inductionOn with
-    | zero => simp
-    | add _ _ h h' => simp only [h, h', map_add]; module
-    | smul _ _ h => simp only [_root_.map_smul, ← smul_add, h]
-    | tmul => simp [ibc_VW.lift_eq]
-  map_smul' r f := by
-    ext w
-    simp only [RingHom.id_apply, LinearMap.smul_apply]
-    induction w using ibc_VW.inductionOn with
-    | zero => simp
-    | add _ _ h h' => simp only [h, h', map_add]; module
-    | smul _ _ h => simp [_root_.map_smul, h]
-    | tmul => simp [ibc_VW.lift_eq, Algebra.smul_def]
-
-/-- Duals of modules related by base change are related by base change. -/
-theorem isBaseChange : IsBaseChange A (ibc_VW.dualMap) := by
-  sorry
-
-end Module.Dual
-
-end
 
 namespace LinearMap
 
@@ -793,9 +475,8 @@ theorem det_eq_one
   let pS := (Fintype.linearCombination S fS) vS
   have hpS : pS = ∑ x, vS x * fS x := by
     simp [pS, Fintype.linearCombination_apply]
-  have hpS' : Fintype.linearCombination S fS vS =
-    MvPolynomial.quad (Fin n) ℤ := by
-    simp only [MvPolynomial.quad]
+  have hpS' : Fintype.linearCombination S fS vS = MvPolynomial.sum_X_mul_Y (Fin n) ℤ := by
+    simp only [MvPolynomial.sum_X_mul_Y]
     rw [Fintype.linearCombination_apply]
     simp_rw [smul_eq_mul, mul_comm, fS, vS]
   let T := S ⧸ Ideal.span {pS}
@@ -837,12 +518,11 @@ theorem det_eq_one
       rw [Ideal.span_singleton_prime this.ne_zero, ← irreducible_iff_prime]
       exact this
     simp only [pS, hpS']
-    refine MvPolynomial.quad_irreducible (Fin n) ℤ ?_
+    apply MvPolynomial.irreducible_sum_X_mul_Y
     rw [Fin.nontrivial_iff_two_le]
     exact hn2
   let algTR : Algebra T R := RingHom.toAlgebra γ
   let fR := tT.baseChange R
---  let j := (ibc T R (n := Fin n)).trans e.symm
   let j :=   (IsBaseChange.pi
     (fun _ ↦ Algebra.linearMap T R)
     (fun i ↦ IsBaseChange.linearMap T ((fun _ ↦ R) i))).equiv.trans e.symm
@@ -882,14 +562,6 @@ theorem det_eq_one
   rw [this, det_conj]
   simp only [fR, LinearMap.det_baseChange, tT]
   rw [det_eq_one_ofDomain hfvT, map_one]
-
-example (S : Type*) [CommRing S] [Algebra R S] :
-    V →ₗ[R] S ⊗[R] V :=
-  ((TensorProduct.mk R S V) 1)
-
-example (S : Type*) [CommRing S] [Algebra R S] :
-    IsBaseChange S ((TensorProduct.mk R S V) 1) :=
-  TensorProduct.isBaseChange R V S
 
 theorem _root_.LinearEquiv.det_eq_one
     {f : Module.Dual R V} {v : V} (hfv : f v = 0) :
