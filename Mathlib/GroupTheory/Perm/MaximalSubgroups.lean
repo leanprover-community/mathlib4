@@ -218,9 +218,8 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
       apply hB_ne_sc B hB
       apply Set.Subset.antisymm hBsc
       intro x hx
-      rw [← Subtype.coe_mk x _, ← Set.mem_preimage, hB']
+      rw [← Subtype.coe_mk x hx, ← Set.mem_preimage, hB']
       apply Set.mem_univ
-      exact hx
     -- IsTrivialBlock (Subtype.val ⁻¹' B : Set (sᶜ : Set α)),
     suffices IsPreprimitive (stabilizer G (sᶜ : Set α)) (sᶜ : Set α) by
       apply this.isTrivialBlock_of_isBlock
@@ -267,15 +266,13 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
         have hBs' : B = s := by
           apply Set.Subset.antisymm hBs
           intro x hx
-          rw [← Subtype.coe_mk x _, ← Set.mem_preimage, hB']
+          rw [← Subtype.coe_mk x hx, ← Set.mem_preimage, hB']
           apply Set.mem_univ
-          exact hx
         have : ∃ g' ∈ G, g' • s ≠ s := by
           by_contra h
           apply ne_of_lt hG
           push_neg at h
-          apply le_antisymm
-          exact le_of_lt hG
+          apply le_antisymm (le_of_lt hG)
           intro g' hg'; rw [mem_stabilizer_iff]; exact h g' hg'
         obtain ⟨g', hg', hg's⟩ := this
         rcases MulAction.isBlock_iff_smul_eq_or_disjoint.mp hB ⟨g', hg'⟩ with h | h
