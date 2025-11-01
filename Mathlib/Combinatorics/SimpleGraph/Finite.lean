@@ -204,7 +204,7 @@ theorem degree_eq_zero_iff_notMem_support : G.degree v = 0 ↔ v ∉ G.support :
 alias degree_eq_zero_iff_not_mem_support := degree_eq_zero_iff_notMem_support
 
 theorem degree_eq_zero_of_subsingleton {G : SimpleGraph V} (v : V) [Fintype (G.neighborSet v)]
-    (h : Subsingleton V) : G.degree v = 0 := by
+    [Subsingleton V] : G.degree v = 0 := by
   have := G.degree_pos_iff_exists_adj v
   simp_all [subsingleton_iff_forall_eq v]
 
