@@ -227,7 +227,7 @@ end BundledHoms
 
 theorem nodup_map_univ_iff_injective [Fintype α] {f : α → β} :
     (Multiset.map f univ.val).Nodup ↔ Function.Injective f := by
-  rw [nodup_map_iff_injOn, coe_univ, Set.injective_iff_injOn_univ]
+  rw [nodup_map_iff_injOn, coe_univ, Set.injOn_univ]
 
 instance decidableInjectiveFintype [DecidableEq β] [Fintype α] :
     DecidablePred (Injective : (α → β) → Prop) :=
