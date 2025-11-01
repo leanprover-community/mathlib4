@@ -67,7 +67,7 @@ variable [DecidableEq ι] [AddCommMonoid ι]
 variable [CommSemiring A] [Algebra R A] (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜]
 
 instance : Algebra ((𝒜 0).baseChange S) (S ⊗[R] A) :=
-  GradeZero.instAlgebraSubtypeMemSubmoduleOfNat fun i ↦ (𝒜 i).baseChange S
+  GradeZero.instAlgebraSubtypeMemOfNat fun i ↦ (𝒜 i).baseChange S
 
 @[simp] lemma algebraMap_apply (x : (𝒜 0).baseChange S) : algebraMap _ (S ⊗[R] A) x = x := rfl
 
