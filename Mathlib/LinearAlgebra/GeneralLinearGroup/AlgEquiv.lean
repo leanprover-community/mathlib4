@@ -17,9 +17,9 @@ In other words, the map `MulSemiringAction.toAlgEquiv` from `GeneralLinearGroup 
 -/
 
 namespace Module.End
-variable {R K V : Type*} [CommSemiring R] [AddCommGroup V] [Module R V] [Field K] [Module K V]
+variable {R K V : Type*} [CommSemiring R] [Field K] [AddCommGroup V] [Module R V] [Module K V]
 
-open Module LinearMap End
+open Module LinearMap End Free
 
 /-- This takes in a linear map `f : End R V →ₗ End R V`, a dual `y : Dual R V`,
 and an element `z : V`, and constructs a linear operator on `V` such that
@@ -50,7 +50,7 @@ theorem AlgEquiv.coe_eq_linearEquiv_conjugate (f : End K V ≃ₐ[K] End K V) :
   simp_rw [funext_iff, ← comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm]
   obtain ⟨u, v, huv⟩ : ∃ u : V, ∃ v : Dual K V, v u ≠ 0 := by
     obtain ⟨u, hu⟩ := nontrivial_iff_exists_ne 0 |>.mp ‹Nontrivial V›
-    obtain ⟨v, hv⟩ := Module.linearMap_exists_ne_zero K hu
+    obtain ⟨v, hv⟩ := exists_linearMap_apply_ne_zero_of_ne_zero K hu
     exact ⟨u, v, hv⟩
   obtain ⟨z, hz⟩ : ∃ z : V, f (smulRightₗ v u) z ≠ 0 := by
     simp_rw [ne_eq, ← not_forall]
@@ -64,7 +64,7 @@ theorem AlgEquiv.coe_eq_linearEquiv_conjugate (f : End K V ≃ₐ[K] End K V) :
   have surj : Function.Surjective T := by
     intro w
     have : T u ≠ 0 := by simpa [T]
-    obtain ⟨d, hd⟩ := Module.linearMap_exists_eq_one K this
+    obtain ⟨d, hd⟩ := exists_linearMap_apply_eq_one_of_ne_zero K this
     use f.symm (smulRightₗ d w) u
     have h : f (f.symm (smulRightₗ d w)) (T u) = w := by simp [hd]
     simp_rw [this', h]

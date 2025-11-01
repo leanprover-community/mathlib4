@@ -313,18 +313,4 @@ theorem quotient_prod_linearEquiv (p : Submodule K V) : Nonempty (((V ⧸ p) × 
     ((quotientEquivOfIsCompl p q hq).prodCongr (LinearEquiv.refl _ _)).trans
       (prodEquivOfIsCompl q p hq.symm)
 
-variable (K) in
-/-- This is a linear map version of `SeparatingDual.exists_ne_zero` in a vector space. -/
-theorem Module.linearMap_exists_ne_zero {x : V} (hx : x ≠ 0) : ∃ f : V →ₗ[K] K, f x ≠ 0 :=
-  let b := Basis.ofVectorSpace K V
-  have hb : b.repr x ≠ 0 := by simpa
-  have ⟨i, hi⟩ := not_forall.mp fun h ↦ hb <| Finsupp.ext h
-  ⟨b.coord i, hi⟩
-
-/-- This is a linear map version of `SeparatingDual.exists_eq_one` in a vector space. -/
-theorem Module.linearMap_exists_eq_one (K : Type*) [Field K] [Module K V]
-    {x : V} (hx : x ≠ 0) : ∃ f : V →ₗ[K] K, f x = 1 :=
-  have ⟨f, hf⟩ := linearMap_exists_ne_zero K hx
-  ⟨(f x)⁻¹ • f, inv_mul_cancel₀ hf⟩
-
 end DivisionRing
