@@ -321,9 +321,8 @@ theorem Module.linearMap_exists_ne_zero {x : V} (hx : x ≠ 0) : ∃ f : V →�
   have ⟨i, hi⟩ := not_forall.mp fun h ↦ hb <| Finsupp.ext h
   ⟨b.coord i, hi⟩
 
-variable (K) in
 /-- This is a linear map version of `SeparatingDual.exists_eq_one` in a vector space. -/
-theorem Module.linearMap_exists_eq_one {K : Type*} [Field K] [Module K V]
+theorem Module.linearMap_exists_eq_one (K : Type*) [Field K] [Module K V]
     {x : V} (hx : x ≠ 0) : ∃ f : V →ₗ[K] K, f x = 1 :=
   have ⟨f, hf⟩ := linearMap_exists_ne_zero K hx
   ⟨(f x)⁻¹ • f, inv_mul_cancel₀ hf⟩

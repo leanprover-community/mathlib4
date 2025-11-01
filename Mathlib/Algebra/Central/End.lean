@@ -25,4 +25,4 @@ instance Algebra.IsCentral.end : Algebra.IsCentral K (End K V) where
     nontriviality V
     obtain ⟨x, hx⟩ := exists_ne (0 : V)
     obtain ⟨f, hf⟩ := linearMap_exists_eq_one K hx
-    exact ⟨f (T x), ext fun _ => by simp [h', hf]⟩
+    exact ⟨f (T x), LinearMap.ext fun _ => by simp [h', hf]⟩
