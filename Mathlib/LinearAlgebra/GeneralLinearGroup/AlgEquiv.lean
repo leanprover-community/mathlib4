@@ -84,11 +84,10 @@ end move
 such that `f` is given by `x ↦ T * x * T⁻¹`. -/
 theorem AlgEquiv.coe_eq_linearEquiv_conjugate (f : End R V ≃ₐ[R] End R V) :
     ∃ T : V ≃ₗ[R] V, ⇑f = fun x ↦ T ∘ₗ x ∘ₗ T.symm := by
-  obtain hn | hn := subsingleton_or_nontrivial V
-  · exact ⟨.refl _ _, Subsingleton.elim _ _⟩
+  nontriviality V
   simp_rw [funext_iff, ← comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm]
   obtain ⟨u, v, huv⟩ : ∃ u : V, ∃ v : Dual R V, v u ≠ 0 := by
-    obtain ⟨u, hu⟩ := nontrivial_iff_exists_ne 0 |>.mp hn
+    obtain ⟨u, hu⟩ := nontrivial_iff_exists_ne 0 |>.mp ‹Nontrivial V›
     obtain ⟨v, hv⟩ := dual_exists_ne_zero R hu
     exact ⟨u, v, hv⟩
   obtain ⟨z, hz⟩ : ∃ z : V, f (smulRightₗ v u) z ≠ 0 := by
