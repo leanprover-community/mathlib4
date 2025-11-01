@@ -2171,6 +2171,7 @@ import Mathlib.CategoryTheory.Bicategory.Monad.Basic
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Strong
+import Mathlib.CategoryTheory.Bicategory.Product
 import Mathlib.CategoryTheory.Bicategory.SingleObj
 import Mathlib.CategoryTheory.Bicategory.Strict
 import Mathlib.CategoryTheory.Bicategory.Strict.Basic
