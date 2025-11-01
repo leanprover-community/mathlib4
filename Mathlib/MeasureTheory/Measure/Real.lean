@@ -370,8 +370,7 @@ theorem measureReal_compl [IsFiniteMeasure μ] (h₁ : MeasurableSet s) :
 
 theorem measureReal_compl₀ [IsFiniteMeasure μ] (h₁ : NullMeasurableSet s μ) :
     μ.real sᶜ = μ.real univ - μ.real s := by
-  simp only [measureReal_def, ne_eq, measure_ne_top, not_false_eq_true, measure_compl₀ h₁]
-  rw [ENNReal.toReal_sub_of_le (measure_mono (subset_univ _)) (by finiteness)]
+  linarith [measureReal_add_measureReal_compl₀ h₁]
 
 theorem measureReal_union_congr_of_subset (hs : s₁ ⊆ s₂)
     (hsμ : μ.real s₂ ≤ μ.real s₁) (ht : t₁ ⊆ t₂) (htμ : μ.real t₂ ≤ μ.real t₁)
