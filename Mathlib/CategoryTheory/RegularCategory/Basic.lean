@@ -50,9 +50,7 @@ class Regular extends HasFiniteLimits C where
 
 end
 
-variable {C : Type u} [Category.{v} C]
-variable [Regular C]
-
+variable {C : Type u} [Category.{v} C] [Regular C]
 variable {X Y : C} (f : X ⟶ Y)
 
 noncomputable section
@@ -122,9 +120,10 @@ def strongEpiMonoFactorisation : StrongEpiMonoFactorisation f where
 instance hasStrongEpiMonoFactorisations : HasStrongEpiMonoFactorisations C where
   has_fac f := ⟨strongEpiMonoFactorisation f⟩
 
+variable {f} in
 instance regularEpiOfExtremalEpi (s : ExtremalEpi f) : RegularEpi f :=
   have := s.isIso (e f) (m f) (by simp)
-  fac f ▸ RegularEpi.ofRegularEpiCompIso (e f) (m f)
+  RegularEpi.ofArrowIso <| Arrow.isoMk (f := .mk (e f)) (Iso.refl _) (asIso (m f))
 
 end Regular.Limits
 end
