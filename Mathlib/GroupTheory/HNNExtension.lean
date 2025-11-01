@@ -279,7 +279,7 @@ def cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
       · exact h1
       · exact w.mem_set _ _ h'
     chain := by
-      refine List.isChain_cons'.2 ⟨?_, w.chain⟩
+      refine List.isChain_cons.2 ⟨?_, w.chain⟩
       rintro ⟨u', g'⟩ hu' hw1
       exact h2 _ (by simp_all) hw1 }
 
@@ -299,9 +299,9 @@ def consRecOn {motive : NormalWord d → Sort*} (w : NormalWord d)
       { head := a.2
         toList := l
         mem_set := fun _ _ h => mem_set _ _ (List.mem_cons_of_mem _ h),
-        chain := (List.isChain_cons'.1 chain).2 }
+        chain := (List.isChain_cons.1 chain).2 }
       (mem_set a.1 a.2 List.mem_cons_self)
-      (by simpa using (List.isChain_cons'.1 chain).1)
+      (by simpa using (List.isChain_cons.1 chain).1)
       (ih _ _ _)
 
 @[simp]
@@ -513,7 +513,7 @@ theorem prod_cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set 
   simp [ReducedWord.prod, cons, mul_assoc]
 
 theorem prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
-    (unitsSMul φ u w).prod φ = (t^(u : ℤ) * w.prod φ : HNNExtension G A B φ) := by
+    (unitsSMul φ u w).prod φ = (t ^ (u : ℤ) * w.prod φ : HNNExtension G A B φ) := by
   rw [unitsSMul]
   split_ifs with hcan
   · cases w using consRecOn
@@ -635,7 +635,7 @@ theorem exists_normalWord_prod_eq
          mem_set := by simp
          chain := List.isChain_nil }, by simp⟩
   | cons a l ih =>
-    rcases ih (List.isChain_cons'.1 chain).2 with ⟨w', hw'1, hw'2, hw'3⟩
+    rcases ih (List.isChain_cons.1 chain).2 with ⟨w', hw'1, hw'2, hw'3⟩
     clear ih
     refine ⟨(t^(a.1 : ℤ) * of a.2 : HNNExtension G A B φ) • w', ?_, ?_⟩
     · rw [prod_smul, hw'1]
@@ -651,7 +651,7 @@ theorem exists_normalWord_prod_eq
         rw [mul_mem_cancel_right this] at hS
         have : a.fst = -a.fst := by
           have hl : l ≠ [] := by rintro rfl; simp_all
-          have : a.fst = (l.head hl).fst := (List.isChain_cons'.1 chain).1 (l.head hl)
+          have : a.fst = (l.head hl).fst := (List.isChain_cons.1 chain).1 (l.head hl)
             (List.head?_eq_head _) hS
           rwa [List.head?_eq_head hl, Option.map_some, ← this, Option.some_inj] at hx'
         simp at this

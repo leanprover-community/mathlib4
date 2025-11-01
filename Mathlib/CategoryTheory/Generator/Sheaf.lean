@@ -40,16 +40,17 @@ noncomputable def freeYonedaHomEquiv {X : C} {M : A} {F : Sheaf J A} :
     (freeYoneda J X M ⟶ F) ≃ (M ⟶ F.val.obj (op X)) :=
   ((sheafificationAdjunction J A).homEquiv _ _).trans Presheaf.freeYonedaHomEquiv
 
-lemma isSeparating {ι : Type w} {S : ι → A} (hS : IsSeparating (Set.range S)) :
-    IsSeparating (Set.range (fun (⟨X, i⟩ : C × ι) ↦ freeYoneda J X (S i))) := by
+lemma isSeparating {ι : Type w} {S : ι → A} (hS : ObjectProperty.IsSeparating (.ofObj S)) :
+    ObjectProperty.IsSeparating (.ofObj (fun (⟨X, i⟩ : C × ι) ↦ freeYoneda J X (S i))) := by
   intro F G f g hfg
   refine (sheafToPresheaf J A).map_injective (Presheaf.isSeparating C hS _ _ ?_)
-  rintro _ ⟨⟨X, i⟩, rfl⟩ a
+  rintro _ ⟨X, i⟩ a
   apply ((sheafificationAdjunction _ _).homEquiv _ _).symm.injective
   simpa only [← Adjunction.homEquiv_naturality_right_symm] using
-    hfg _ ⟨⟨X, i⟩, rfl⟩ (((sheafificationAdjunction _ _).homEquiv _ _).symm a)
+    hfg _ (ObjectProperty.ofObj_apply _ ⟨X, i⟩)
+      (((sheafificationAdjunction _ _).homEquiv _ _).symm a)
 
-lemma isSeparator {ι : Type w} {S : ι → A} (hS : IsSeparating (Set.range S))
+lemma isSeparator {ι : Type w} {S : ι → A} (hS : ObjectProperty.IsSeparating (.ofObj S))
     [HasCoproduct (fun (⟨X, i⟩ : C × ι) ↦ freeYoneda J X (S i))] [Preadditive A] :
     IsSeparator (∐ (fun (⟨X, i⟩ : C × ι) ↦ freeYoneda J X (S i))) :=
   (isSeparating J hS).isSeparator_coproduct

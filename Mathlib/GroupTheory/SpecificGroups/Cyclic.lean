@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.TypeTags.Finite
+import Mathlib.Algebra.Order.Hom.TypeTags
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.ZMod.Aut
 import Mathlib.Data.ZMod.QuotientGroup
@@ -640,6 +641,37 @@ instance ZMod.instIsSimpleAddGroup {p : ℕ} [Fact p.Prime] : IsSimpleAddGroup (
     ⟨inferInstance, by simpa using (Fact.out : p.Prime)⟩
 
 end SpecificInstances
+
+section EquivInt
+
+/-- A linearly-ordered additive abelian group is cyclic iff it is isomorphic to `ℤ` as an ordered
+additive monoid. -/
+lemma LinearOrderedAddCommGroup.isAddCyclic_iff_nonempty_equiv_int {A : Type*}
+    [AddCommGroup A] [LinearOrder A] [IsOrderedAddMonoid A] [Nontrivial A] :
+    IsAddCyclic A ↔ Nonempty (A ≃+o ℤ) := by
+  refine ⟨?_, fun ⟨e⟩ ↦ e.isAddCyclic.mpr inferInstance⟩
+  rintro ⟨g, hs⟩
+  have h_ne : g ≠ 0 := by
+    obtain ⟨a, ha⟩ := exists_ne (0 : A)
+    obtain ⟨m, rfl⟩ := hs a
+    aesop
+  wlog hg' : 0 < g
+  · exact this (g := -g) (by simpa using neg_surjective.comp hs) (by grind) (by grind)
+  have hi : (fun n : ℤ ↦ n • g).Injective := injective_zsmul_iff_not_isOfFinAddOrder.mpr
+      <| not_isOfFinAddOrder_of_isAddTorsionFree h_ne
+  exact ⟨.symm { Equiv.ofBijective _ ⟨hi, hs⟩ with
+    map_add' := add_zsmul g
+    map_le_map_iff' := zsmul_le_zsmul_iff_left hg' }⟩
+
+/-- A linearly-ordered abelian group is cyclic iff it is isomorphic to `Multiplicative ℤ` as an
+ordered monoid. -/
+lemma LinearOrderedCommGroup.isCyclic_iff_nonempty_equiv_int {G : Type*}
+    [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [Nontrivial G] :
+    IsCyclic G ↔ Nonempty (G ≃*o Multiplicative ℤ) := by
+  rw [← isAddCyclic_additive_iff, LinearOrderedAddCommGroup.isAddCyclic_iff_nonempty_equiv_int,
+    OrderAddMonoidIso.toMultiplicativeRight.nonempty_congr]
+
+end EquivInt
 
 section Exponent
 

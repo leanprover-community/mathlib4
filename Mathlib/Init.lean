@@ -59,8 +59,8 @@ Projects depending on mathlib can use `set_option linter.allMathlibLinters true`
 all these linters, or add the `weak.linter.mathlibStandardSet` option to their lakefile.
 -/
 register_linter_set linter.mathlibStandardSet :=
-  linter.allScriptsDocumented
-  linter.checkInitImports
+  -- linter.allScriptsDocumented -- disabled, let's not impose this requirement downstream.
+  -- linter.checkInitImports -- disabled, not relevant downstream.
   linter.hashCommand
   linter.oldObtain
   linter.style.cases
@@ -90,6 +90,7 @@ register_linter_set linter.nightlyRegressionSet :=
   linter.tacticAnalysis.regressions.linarithToGrind
   linter.tacticAnalysis.regressions.omegaToCutsat
   linter.tacticAnalysis.regressions.ringToGrind
+  linter.tacticAnalysis.regressions.tautoToGrind
 
 /-- Define a set of linters that run once a week and get posted to Zulip.
 -/

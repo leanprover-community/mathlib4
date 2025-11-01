@@ -7,10 +7,10 @@ import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.CategoryTheory.Monoidal.Grp_
 
 /-!
-# Yoneda embedding of `Grp_ C`
+# Yoneda embedding of `Grp C`
 
 We show that group objects are exactly those whose yoneda presheaf is a presheaf of groups,
-by constructing the yoneda embedding `Grp_ C ⥤ Cᵒᵖ ⥤ GrpCat.{v}` and
+by constructing the yoneda embedding `Grp C ⥤ Cᵒᵖ ⥤ GrpCat.{v}` and
 showing that it is fully faithful and its (essential) image is the representable functors.
 -/
 
@@ -18,17 +18,22 @@ assert_not_exists Field
 
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory MonObj
 
+namespace CategoryTheory
 universe w v u
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
   {M G H X Y : C} [MonObj M] [GrpObj G] [GrpObj H]
 
-/-- Construct a morphism `G ⟶ H` of `Grp_ C` C from a map `f : G ⟶ H` and a `IsMonHom f`
+/-- Construct a morphism `G ⟶ H` of `Grp C` C from a map `f : G ⟶ H` and a `IsMonHom f`
 instance. -/
 @[simps]
-def Grp_.homMk (f : G ⟶ H) [IsMonHom f] : .mk G ⟶ Grp_.mk H := ⟨f⟩
+def Grp.homMk (f : G ⟶ H) [IsMonHom f] : .mk G ⟶ Grp.mk H := ⟨f⟩
+
+@[deprecated (since := "2025-10-13")] alias Grp_.homMk := Grp.homMk
 
 @[simp]
-lemma Grp_.homMk_hom' {G H : Grp_ C} (f : G ⟶ H) : homMk (G := G.X) (H := H.X) f.hom = f := rfl
+lemma Grp.homMk_hom' {G H : Grp C} (f : G ⟶ H) : homMk (G := G.X) (H := H.X) f.hom = f := rfl
+
+@[deprecated (since := "2025-10-13")] alias Grp_.homMk_hom' := Grp.homMk_hom'
 
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
@@ -65,7 +70,7 @@ abbrev Hom.group : Group (X ⟶ G) where
     _ = (f ≫ lift ι (𝟙 G)) ≫ μ := by simp
     _ = toUnit X ≫ η := by rw [Category.assoc]; simp
 
-scoped[MonObj] attribute [instance] Hom.group
+scoped[CategoryTheory.MonObj] attribute [instance] Hom.group
 
 lemma Hom.inv_def (f : X ⟶ G) : f⁻¹ = f ≫ ι := rfl
 
@@ -106,7 +111,7 @@ def yonedaGrpObjIsoOfRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{v}) (α : (F ⋙ f
 
 /-- The yoneda embedding of `Grp_C` into presheaves of groups. -/
 @[simps]
-def yonedaGrp : Grp_ C ⥤ Cᵒᵖ ⥤ GrpCat.{v} where
+def yonedaGrp : Grp C ⥤ Cᵒᵖ ⥤ GrpCat.{v} where
   obj G := yonedaGrpObj G.X
   map {G H} ψ := { app Y := GrpCat.ofHom ((yonedaMon.map ψ).app Y).hom }
 
@@ -146,14 +151,14 @@ lemma GrpObj.inv_comp (f : X ⟶ G) (g : G ⟶ H) [IsMonHom g] : f⁻¹ ≫ g = 
 @[reassoc]
 lemma GrpObj.div_comp (f g : X ⟶ G) (h : G ⟶ H) [IsMonHom h] :
     (f / g) ≫ h = (f ≫ h) / (g ≫ h) :=
-  ((yonedaGrp.map <| Grp_.homMk h).app <| op X).hom.map_div f g
+  ((yonedaGrp.map <| Grp.homMk h).app <| op X).hom.map_div f g
 
 @[deprecated (since := "2025-09-13")] alias Grp_Class.div_comp := GrpObj.div_comp
 
 @[reassoc]
 lemma GrpObj.zpow_comp (f : X ⟶ G) (n : ℤ) (g : G ⟶ H) [IsMonHom g] :
     (f ^ n) ≫ g = (f ≫ g) ^ n :=
-  ((yonedaGrp.map <| Grp_.homMk g).app <| op X).hom.map_zpow f n
+  ((yonedaGrp.map <| Grp.homMk g).app <| op X).hom.map_zpow f n
 
 @[deprecated (since := "2025-09-13")] alias Grp_Class.zpow_comp := GrpObj.zpow_comp
 
@@ -193,4 +198,6 @@ instance [BraidedCategory C] [IsCommMonObj G] {f : M ⟶ G} [IsMonHom f] : IsMon
 /-- If `G` is a commutative group object, then `Hom(X, G)` has a commutative group structure. -/
 abbrev Hom.commGroup [BraidedCategory C] [IsCommMonObj G] : CommGroup (X ⟶ G) where
 
-scoped[MonObj] attribute [instance] Hom.commGroup
+scoped[CategoryTheory.MonObj] attribute [instance] Hom.commGroup
+
+end CategoryTheory
