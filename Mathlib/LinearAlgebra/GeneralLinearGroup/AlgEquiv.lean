@@ -8,12 +8,12 @@ import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.Dual.Defs
 
 /-!
-# Algebra automorphisms in `End R V` are inner
+# Algebra automorphisms in `End K V` are inner
 
-This file shows that given any algebra equivalence `f : End R V ≃ₐ End R V`,
+This file shows that given any algebra equivalence `f : End K V ≃ₐ End K V`,
 there exists a linear equivalence `T : V ≃ₗ T` such that `f x = T * x * T.symm`.
-In other words, the map `MulSemiringAction.toAlgEquiv` from `GeneralLinearGroup R V` to
-`End R V ≃ₐ End R V` is surjective.
+In other words, the map `MulSemiringAction.toAlgEquiv` from `GeneralLinearGroup K V` to
+`End K V ≃ₐ End K V` is surjective.
 -/
 
 namespace Module.End
