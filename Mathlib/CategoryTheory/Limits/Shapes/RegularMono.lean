@@ -68,7 +68,7 @@ instance (priority := 100) RegularMono.ofIso (f : X ⟶ Y) [IsIso f] : RegularMo
     rw [IsIso.eq_comp_inv, ← w]; simp
 
 /-- Regular monomorphisms are preserved by isomorphisms in the arrow category. -/
-def RegularMono.of_arrow_iso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
+def RegularMono.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
     (e : Arrow.mk f ≅ Arrow.mk g) [h : RegularMono f] :
     RegularMono g where
   Z := h.Z
@@ -97,7 +97,7 @@ instance MorphismProperty.regularMono.containsIdentities :
 
 instance MorphismProperty.regularMono.respectsIso :
     (MorphismProperty.regularMono C).RespectsIso :=
-  RespectsIso.of_respects_arrow_iso _ (fun _ _ e h ↦ ⟨.of_arrow_iso e (h := h.some)⟩)
+  RespectsIso.of_respects_arrow_iso _ (fun _ _ e h ↦ ⟨.ofArrowIso e (h := h.some)⟩)
 
 instance is_regular_mono_of_regular_mono (f : X ⟶ Y) [h : RegularMono f] : IsRegularMono f := ⟨h⟩
 
@@ -240,7 +240,7 @@ instance (priority := 100) RegularEpi.ofIso (f : X ⟶ Y) [IsIso f] : RegularEpi
     rw [IsIso.eq_inv_comp, ← w]; simp
 
 /-- Regular epimorphisms are preserved by isomorphisms in the arrow category. -/
-def RegularEpi.of_arrow_iso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
+def RegularEpi.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
     (e : Arrow.mk f ≅ Arrow.mk g) [h : RegularEpi f] :
     RegularEpi g where
   W := h.W
@@ -270,7 +270,7 @@ instance MorphismProperty.regularEpi.containsIdentities :
 
 instance MorphismProperty.regularEpi.respectsIso :
     (MorphismProperty.regularEpi C).RespectsIso :=
-  RespectsIso.of_respects_arrow_iso _ (fun _ _ e h ↦ ⟨.of_arrow_iso e (h := h.some)⟩)
+  RespectsIso.of_respects_arrow_iso _ (fun _ _ e h ↦ ⟨.ofArrowIso e (h := h.some)⟩)
 
 instance is_regular_epi_of_regular_epi (f : X ⟶ Y) [h : RegularEpi f] : IsRegularEpi f := ⟨h⟩
 
