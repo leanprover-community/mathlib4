@@ -42,7 +42,7 @@ structure StrictPseudofunctor extends StrictlyUnitaryPseudofunctor B C where
 construct a `StrictPseudofunctor`.
 
 `StrictPseudofunctorPreCore` does not construct a Pseudofunctor in general,
-since it does not include the compatibility conditoins on the associator
+since it does not include the compatibility conditions on the associator
 and unitors. However, when the underlying bicategories are strict, a
 `StrictPseudofunctorPreCore` does induce a `StrictPseudofunctor`. -/
 structure StrictPseudofunctorPreCore extends PrelaxFunctor B C where
