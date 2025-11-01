@@ -69,7 +69,12 @@ theorem AlgEquiv.coe_eq_linearEquiv_conjugate (f : End K V ≃ₐ[K] End K V) :
     have h : f (f.symm (smulRightₗ d w)) (T u) = w := by simp [hd]
     simp_rw [this', h]
   have inj : Function.Injective T := (injective_iff_map_eq_zero T).mpr fun x hx ↦ by
-    sorry
+    have h_smul : smulRightₗ v x = 0 := by
+      rw [← _root_.map_eq_zero_iff _ f.injective]
+      ext y
+      obtain ⟨w, rfl⟩ := surj y
+      rw [← this', smulRightₗ_apply, map_smul, hx, smul_zero, zero_apply]
+    simpa [huv] using congr((fun f ↦ f u) $h_smul)
   exact ⟨LinearEquiv.ofBijective T ⟨inj, surj⟩, fun A ↦ this A |>.symm⟩
 
 /-- Alternate statement of `coe_eq_linearEquiv_conjugate`. -/
