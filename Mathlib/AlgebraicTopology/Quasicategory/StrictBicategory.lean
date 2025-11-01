@@ -6,7 +6,7 @@ Authors: Emily Riehl
 
 import Mathlib.CategoryTheory.Bicategory.CatEnriched
 import Mathlib.AlgebraicTopology.Quasicategory.Basic
-import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
+import Mathlib.AlgebraicTopology.SimplicialCategory.SimplicialObject
 import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
 
 /-!
@@ -44,16 +44,13 @@ instance : Category QCat := ObjectProperty.FullSubcategory.category Quasicategor
 
 /-- As a full subcategory of `SSet`, the category `QCat` is a simplicially enriched ordinary
 category. -/
-instance QCat.SimplicialCat : SimplicialCategory QCat where
-  Hom X Y := X.obj.functorHom Y.obj
-  id X := Functor.natTransEquiv.symm (𝟙 X.obj)
-  comp X Y Z := { app := fun _ ⟨f, g⟩ => f.comp g }
-  homEquiv := Functor.natTransEquiv.symm
+instance QCat.SimplicialCat : SimplicialCategory QCat := inferInstance
 
 /-- `QCat` obtains a `Cat`-enriched ordinary category structure by applying `hoFunctor` to the
 hom objects in its `SSet`-enriched ordinary structure. -/
 noncomputable instance QCat.CatEnrichedOrdinaryCat : EnrichedOrdinaryCategory Cat QCat :=
-  TransportEnrichment.enrichedOrdinaryCategory QCat hoFunctor hoFunctor_pro_normal_monoidal
+  TransportEnrichment.enrichedOrdinaryCategory QCat hoFunctor
+    hoFunctor.proNormalMonoidalEquiv hoFunctor.proNormalMonoidalEquiv_eq
 
 /-- The underlying category of the `Cat`-enriched ordinary category of quasicategories is
 equivalent to `QCat`. -/
