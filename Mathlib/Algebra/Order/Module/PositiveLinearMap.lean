@@ -47,8 +47,8 @@ def toPositiveLinearMap (f : F) : E₁ →ₚ[R] E₂ :=
   { (f : E₁ →ₗ[R] E₂), (f : E₁ →o E₂) with }
 
 /-- Reinterpret an element of a type of positive linear maps as a positive linear map. -/
-instance instCoeToLinearMap : CoeHead F (E₁ →ₚ[R] E₂) where
-  coe f := toPositiveLinearMap f
+instance instCoeToLinearMap (f : F) : CoeDep F f (E₁ →ₚ[R] E₂) where
+  coe := toPositiveLinearMap f
 
 /-- An additive group homomorphism that maps nonnegative elements to nonnegative elements
 is an order homomorphism. -/

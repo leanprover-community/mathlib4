@@ -714,8 +714,8 @@ def toIsometryEquiv (f : F) : α ≃ᵢ β :=
 @[simp]
 theorem coe_coe (f : F) : ⇑(toIsometryEquiv f) = ⇑f := rfl
 
-instance : CoeOut F (α ≃ᵢ β) :=
-  ⟨toIsometryEquiv⟩
+instance (f : F) : CoeDep F f (α ≃ᵢ β) :=
+  ⟨toIsometryEquiv f⟩
 
 theorem toIsometryEquiv_injective : Function.Injective ((↑) : F → α ≃ᵢ β) :=
   fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ DFunLike.congr_fun e a

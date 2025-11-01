@@ -76,9 +76,9 @@ def toBialgHom (f : F) : A →ₐc[R] B :=
   { CoalgHomClass.toCoalgHom f, AlgHomClass.toAlgHom f with
     toFun := f }
 
-instance instCoeToBialgHom :
-    CoeHead F (A →ₐc[R] B) :=
-  ⟨BialgHomClass.toBialgHom⟩
+instance instCoeToBialgHom (f : F) :
+    CoeDep F f (A →ₐc[R] B) :=
+  ⟨BialgHomClass.toBialgHom f⟩
 
 end
 section

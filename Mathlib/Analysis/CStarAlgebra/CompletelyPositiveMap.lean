@@ -83,9 +83,9 @@ def toCompletelyPositiveLinearMap [CompletelyPositiveMapClass F A₁ A₂] (f : 
 
 /-- Reinterpret an element of a type of completely positive maps as a completely positive linear
 map. -/
-instance instCoeToCompletelyPositiveMap [CompletelyPositiveMapClass F A₁ A₂] :
-    CoeHead F (A₁ →CP A₂) where
-  coe f := toCompletelyPositiveLinearMap f
+instance instCoeToCompletelyPositiveMap [CompletelyPositiveMapClass F A₁ A₂] (f : F) :
+    CoeDep F f (A₁ →CP A₂) where
+  coe := toCompletelyPositiveLinearMap f
 
 open CStarMatrix in
 /-- Linear maps which are completely positive are order homomorphisms (i.e., positive maps). -/

@@ -209,13 +209,8 @@ def cast : SignType → α
   | pos => 1
   | neg => -1
 
-/-- This is a `CoeTail` since the type on the right (trivially) determines the type on the left.
-
-`outParam`-wise it could be a `Coe`, but we don't want to try applying this instance for a
-coercion to any `α`.
--/
-instance : CoeTail SignType α :=
-  ⟨cast⟩
+instance (s : SignType) : CoeDep SignType s α :=
+  ⟨cast s⟩
 
 /-- Casting out of `SignType` respects composition with functions preserving `0, 1, -1`. -/
 lemma map_cast' {β : Type*} [One β] [Neg β] [Zero β]

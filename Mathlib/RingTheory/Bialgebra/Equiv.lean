@@ -65,8 +65,8 @@ def toBialgEquiv (f : F) : A ≃ₐc[R] B :=
   { (f : A ≃ₗc[R] B), (f : A →ₐc[R] B) with }
 
 /-- Reinterpret an element of a type of bialgebra equivalences as a bialgebra equivalence. -/
-instance instCoeToBialgEquiv : CoeHead F (A ≃ₐc[R] B) where
-  coe f := toBialgEquiv f
+instance instCoeToBialgEquiv (f : F) : CoeDep F f (A ≃ₐc[R] B) where
+  coe := toBialgEquiv f
 
 instance (priority := 100) toAlgEquivClass : AlgEquivClass F R A B where
   map_mul := map_mul

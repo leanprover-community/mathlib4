@@ -160,8 +160,8 @@ def semilinearMap : M →ₛₗ[σ] M₃ where
   map_smul' := map_smulₛₗ f
 
 /-- Reinterpret an element of a type of semilinear maps as a semilinear map. -/
-instance instCoeToSemilinearMap : CoeHead F (M →ₛₗ[σ] M₃) where
-  coe f := semilinearMap f
+instance instCoeToSemilinearMap : CoeDep F f (M →ₛₗ[σ] M₃) where
+  coe := semilinearMap f
 
 end SemilinearMapClass
 
@@ -173,8 +173,8 @@ variable {F : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂] [Mod
 abbrev linearMap : M₁ →ₗ[R] M₂ := SemilinearMapClass.semilinearMap f
 
 /-- Reinterpret an element of a type of linear maps as a linear map. -/
-instance instCoeToLinearMap : CoeHead F (M₁ →ₗ[R] M₂) where
-  coe f := SemilinearMapClass.semilinearMap f
+instance instCoeToLinearMap : CoeDep F f (M₁ →ₗ[R] M₂) where
+  coe := SemilinearMapClass.semilinearMap f
 
 end LinearMapClass
 
