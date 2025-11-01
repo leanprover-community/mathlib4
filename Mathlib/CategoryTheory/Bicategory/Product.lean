@@ -23,13 +23,10 @@ namespace CategoryTheory.Bicategory
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
-section
-
-variable (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂) [Bicategory.{w₂, v₂} C]
-
 /-- The cartesian product of two bicategories. -/
 @[simps! (notRecursive := [])]
-instance prod : Bicategory (B × C) where
+instance prod (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂) [Bicategory.{w₂, v₂} C] :
+    Bicategory (B × C) where
   homCategory X Y := CategoryTheory.prod' (X.1 ⟶ Y.1) (X.2 ⟶ Y.2)
   whiskerLeft f g h θ := ⟨f.1 ◁ θ.1, f.2 ◁ θ.2⟩
   whiskerRight θ g := ⟨θ.1 ▷ g.1, θ.2 ▷ g.2⟩
@@ -37,8 +34,6 @@ instance prod : Bicategory (B × C) where
   leftUnitor f := Iso.prod (λ_ f.1) (λ_ f.2)
   rightUnitor f := Iso.prod (ρ_ f.1) (ρ_ f.2)
   whisker_exchange η θ := Prod.ext (whisker_exchange η.1 θ.1) (whisker_exchange η.2 θ.2)
-
-end
 
 namespace Prod
 
