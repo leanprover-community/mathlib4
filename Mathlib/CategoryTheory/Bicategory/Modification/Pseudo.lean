@@ -51,7 +51,7 @@ structure Modification where
   naturality :
     ∀ {a b : B} (f : a ⟶ b),
       F.map f ◁ app b ≫ (θ.naturality f).hom =
-        (η.naturality f).hom ≫ app a ▷ G.map f := by aesop_cat
+        (η.naturality f).hom ≫ app a ▷ G.map f := by cat_disch
 
 attribute [reassoc (attr := simp)] Modification.naturality
 
@@ -140,7 +140,7 @@ by giving object level isomorphisms, and checking naturality only in the forward
 def isoMk (app : ∀ a, η.app a ≅ θ.app a)
     (naturality : ∀ {a b} (f : a ⟶ b),
       F.map f ◁ (app b).hom ≫ (θ.naturality f).hom =
-        (η.naturality f).hom ≫ (app a).hom ▷ G.map f := by aesop_cat) :
+        (η.naturality f).hom ≫ (app a).hom ▷ G.map f := by cat_disch) :
     η ≅ θ where
   hom := { app a := (app a).hom }
   inv :=

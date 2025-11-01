@@ -79,7 +79,8 @@ namespace StrongTrans
 
 variable {F G : Pseudofunctor B C}
 
-/-- The strong transformation between underlying pseudofunctors. -/
+/-- The strong transformation of oplax functors induced by a strong transformation of
+pseudofunctors. -/
 @[simps]
 def toOplax (η : StrongTrans F G) : Oplax.StrongTrans F.toOplax G.toOplax where
   app := η.app
