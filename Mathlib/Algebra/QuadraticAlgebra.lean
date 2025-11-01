@@ -423,6 +423,7 @@ end CommSemiring
 section CommRing
 
 instance instCommRing [CommRing R] : CommRing (QuadraticAlgebra R a b) where
+  mul_comm := mul_comm
 
 end CommRing
 

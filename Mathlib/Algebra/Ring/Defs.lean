@@ -200,16 +200,31 @@ theorem boole_mul {α} [MulZeroOneClass α] (P : Prop) [Decidable P] (a : α) :
     (if P then 1 else 0) * a = if P then a else 0 := by simp
 
 /-- A not-necessarily-unital, not-necessarily-associative, but commutative semiring. -/
-class NonUnitalNonAssocCommSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, CommMagma α
+class NonUnitalNonAssocCommSemiring (α : Type u) extends NonUnitalNonAssocSemiring α where
+  /-- Multiplication is commutative in a commutative multiplicative magma. -/
+  protected mul_comm : ∀ a b : α, a * b = b * a
+
+instance (priority := 100) (α : Type*) [h : NonUnitalNonAssocCommSemiring α] : CommMagma α where
+  __ := h
 
 /-- A non-unital commutative semiring is a `NonUnitalSemiring` with commutative multiplication.
 In other words, it is a type with the following structures: additive commutative monoid
 (`AddCommMonoid`), commutative semigroup (`CommSemigroup`), distributive laws (`Distrib`), and
 multiplication by zero law (`MulZeroClass`). -/
-class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α, CommSemigroup α
+class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α where
+  /-- Multiplication is commutative in a commutative multiplicative magma. -/
+  protected mul_comm : ∀ a b : α, a * b = b * a
+
+instance (priority := 100) (α : Type*) [h : NonUnitalCommSemiring α] : CommSemigroup α where
+  __ := h
 
 /-- A commutative semiring is a semiring with commutative multiplication. -/
-class CommSemiring (R : Type u) extends Semiring R, CommMonoid R
+class CommSemiring (R : Type u) extends Semiring R where
+  /-- Multiplication is commutative in a commutative multiplicative magma. -/
+  protected mul_comm : ∀ a b : R, a * b = b * a
+
+instance (priority := 100) (α : Type*) [h : CommSemiring α] : CommMonoid α where
+  __ := h
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommSemiring.toNonUnitalCommSemiring [CommSemiring α] :
@@ -371,14 +386,22 @@ instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUni
   { s with }
 
 /-- A commutative ring is a ring with commutative multiplication. -/
-class CommRing (α : Type u) extends Ring α, CommMonoid α
+class CommRing (α : Type u) extends Ring α where--, CommMonoid α
+  /-- Multiplication is commutative in a commutative multiplicative magma. -/
+  protected mul_comm : ∀ a b : α, a * b = b * a
 
-instance (priority := 100) CommRing.toCommSemiring [s : CommRing α] : CommSemiring α :=
+
+instance (priority := 100) [s : CommRing α] : CommMonoid α :=
   { s with }
+
+instance (priority := 100) CommRing.toCommSemiring [s : CommRing α] : CommSemiring α where
+  toSemiring := s.toRing.toSemiring
+  mul_comm := mul_comm
 
 -- see Note [lower instance priority]
-instance (priority := 100) CommRing.toNonUnitalCommRing [s : CommRing α] : NonUnitalCommRing α :=
-  { s with }
+instance (priority := 100) CommRing.toNonUnitalCommRing [s : CommRing α] : NonUnitalCommRing α where
+  toNonUnitalRing := s.toRing.toNonUnitalRing
+  mul_comm := mul_comm
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
