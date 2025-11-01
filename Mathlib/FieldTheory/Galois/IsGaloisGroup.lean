@@ -116,8 +116,6 @@ theorem IsGaloisGroup.iff_isFractionRing [Finite G] [IsIntegrallyClosed A] :
 
 open NumberField
 
-#check Subgroup.map_map
-
 instance (K L : Type*) [Field K] [Field L] [NumberField K] [NumberField L] [Algebra K L]
     (G : Type*) [Group G] [MulSemiringAction G L] [IsGaloisGroup G K L] :
     IsGaloisGroup G (𝓞 K) (𝓞 L) :=
