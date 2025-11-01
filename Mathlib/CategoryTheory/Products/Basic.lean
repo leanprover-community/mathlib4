@@ -38,7 +38,7 @@ variable (C : Type u₁) [CategoryStruct.{v₁} C] (D : Type u₂) [CategoryStru
 
 /-- `CategoryStruct.prod C D` gives the Cartesian product of two `CategoryStruct`'s. -/
 @[simps (notRecursive := [])] -- notRecursive to generate simp lemmas like `id_fst` and `comp_snd`
-instance CategoryStruct.prod : CategoryStruct.{max v₁ v₂} (C × D) where
+instance prod : CategoryStruct.{max v₁ v₂} (C × D) where
   Hom X Y := (X.1 ⟶ Y.1) × (X.2 ⟶ Y.2)
   id X := ⟨𝟙 X.1, 𝟙 X.2⟩
   comp f g := (f.1 ≫ g.1, f.2 ≫ g.2)
@@ -79,8 +79,8 @@ section
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
 /-- `prod C D` gives the Cartesian product of two categories. -/
-@[simps! (notRecursive := []) Hom id_fst id_snd comp_fst comp_snd, stacks 001K]
-instance prod : Category.{max v₁ v₂} (C × D) where
+@[stacks 001K]
+instance prod' : Category.{max v₁ v₂} (C × D) where
 
 theorem isIso_prod_iff {P Q : C} {S T : D} {f : (P, S) ⟶ (Q, T)} :
     IsIso f ↔ IsIso f.1 ∧ IsIso f.2 := by
@@ -123,7 +123,7 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₁) [Category.{v₁} D]
 universe levels. This helps typeclass resolution.
 -/
 instance uniformProd : Category (C × D) :=
-  CategoryTheory.prod C D
+  CategoryTheory.prod' C D
 
 end
 
