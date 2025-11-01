@@ -246,9 +246,10 @@ end TensorProduct
 
 section MulSemiringAction
 
-instance (R K : Type*) [CommRing R] [CommRing K] [Algebra R K]
-    (G : Type*) [Group G] [MulSemiringAction G K] [SMulCommClass G R K] :
-    MulSemiringAction G (integralClosure R K) where
+variable (R K : Type*) [CommRing R] [CommRing K] [Algebra R K]
+    (G : Type*) [Group G] [MulSemiringAction G K] [SMulCommClass G R K]
+
+instance : MulSemiringAction G (integralClosure R K) where
   smul := fun g x ↦ ⟨g • (x : K), x.2.map (MulSemiringAction.toAlgHom R K g)⟩
   one_smul x := by ext; exact one_smul G (x : K)
   mul_smul g h x := by ext; exact mul_smul g h (x : K)
@@ -256,5 +257,8 @@ instance (R K : Type*) [CommRing R] [CommRing K] [Algebra R K]
   smul_add g x y := by ext; exact smul_add g (x : K) (y : K)
   smul_one g := by ext; exact smul_one g
   smul_mul g x y := by ext; exact smul_mul' g (x : K) (y : K)
+
+instance : SMulDistribClass G (integralClosure R K) K where
+  smul_distrib_smul g r k := smul_mul' g (r : K) k
 
 end MulSemiringAction

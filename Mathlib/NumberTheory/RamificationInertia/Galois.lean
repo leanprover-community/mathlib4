@@ -207,8 +207,11 @@ theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn :
   let L := FractionRing B
   let _ : MulSemiringAction G L := MulSemiringAction.compHom L
       ((IsFractionRing.fieldEquivOfAlgEquivHom K L).comp (MulSemiringAction.toAlgAut G A B))
+  have : SMulDistribClass G B L := ⟨fun g b x ↦ by
+    rw [Algebra.smul_def', Algebra.smul_def', smul_mul']
+    congr
+    exact IsFractionRing.fieldEquivOfAlgEquiv_algebraMap K L L _ b⟩
   have hGKL : IsGaloisGroup G K L := IsGaloisGroup.to_isFractionRing G A B K L
-    (fun g b ↦ IsFractionRing.fieldEquivOfAlgEquiv_algebraMap K L L _ b)
   rw [← smul_eq_mul, ← coe_primesOverFinset hpb B, Set.ncard_coe_finset, ← Finset.sum_const]
   rw [hGKL.card_eq_finrank, ← sum_ramification_inertia B K L hpb]
   apply Finset.sum_congr rfl
