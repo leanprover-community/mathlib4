@@ -179,7 +179,7 @@ jobs:
 
     - name: Get PR
       if: ${{ steps.get-branch-sha.outputs.sha != '' }}
-      id: find-pr # all the steps below are skipped if 'ready-to-merge' is in the list of labels found here
+      id: find-pr
       uses: 8BitJonny/gh-get-current-pr@4056877062a1f3b624d5d4c2bedefa9cf51435c9 # 4.0.0
       # TODO: this may not work properly if the same commit is pushed to multiple branches:
       # https://github.com/8BitJonny/gh-get-current-pr/issues/8
@@ -200,8 +200,9 @@ jobs:
         type: 'stream'
         topic: 'Mathlib `remove outdated deprecated declarations`'
         content: |
-          Reminder: #${{ steps.find-pr.outputs.pr }} is still open; this has prevented the automatic
-          deprecation workflow from creating a new PR.
+          Reminder: #${{ steps.find-pr.outputs.pr }} is still open; this has prevented [the automatic
+          deprecation workflow](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          from creating a new PR.
 
     - name: Create Pull Request
       id: pr
