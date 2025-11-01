@@ -171,8 +171,7 @@ theorem dvd_monomial_iff {σ : Type*} {n : σ →₀ ℕ} {p : MvPolynomial σ R
     rw [monomial_dvd_monomial, ← isUnit_iff_dvd_one]
     simp [hm, hr]
 
-theorem quad_irreducible [UniqueFactorizationMonoid R] (h : Nontrivial n) :
-    Irreducible (quad n R) := by
+theorem quad_irreducible (h : Nontrivial n) : Irreducible (quad n R) := by
   classical
   let p := ∑ x : n,
     MvPolynomial.X (R := MvPolynomial n R) x * MvPolynomial.C ( (MvPolynomial.X (R := R) x))
@@ -266,15 +265,8 @@ theorem baseChange_apply_tmul (f : Module.Dual R V) (a : A) (v : V) :
 
 /-- Equivalent modules have equivalent duals. -/
 def congr (e : V ≃ₗ[R] W) :
-    Module.Dual R V ≃ₗ[R] Module.Dual R W := by
-  exact LinearEquiv.congrLeft R R e
-
-def baseChange_congr (e : V ≃ₗ[R] W) (f : Module.Dual R V) :
-    Module.Dual A (A ⊗[R] W) :=
-  -- Module.Dual.congr e (Module.Dual.baseChange A f)
-  -- f.baseChange A : A ⊗[R] V →ₗ[A] A
-  -- A ⊗[R] W ≃ₗ[A] A ⊗[R] V := e.symm.baseChange A
-  (f.baseChange A).comp (e.symm.baseChange R A W V).toLinearMap
+    Module.Dual R V ≃ₗ[R] Module.Dual R W :=
+  LinearEquiv.congrLeft R R e
 
 /-- `Module.Dual.baseChange` as a linear map. -/
 def baseChangeHom :
