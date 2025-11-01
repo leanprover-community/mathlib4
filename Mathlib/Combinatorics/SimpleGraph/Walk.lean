@@ -1181,7 +1181,7 @@ lemma getVert_mem_tail_support {u v : V} (p : G.Walk u v) (hp : ¬p.Nil) (i : �
   cases i
   · contradiction
   · rw [← getVert_tail, ← p.support_tail_of_not_nil hp]
-    exact getVert_mem_support p.tail _
+    exact getVert_mem_support ..
 
 lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) :
     p = q := by
