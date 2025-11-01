@@ -535,7 +535,7 @@ Q544369:
 
 Q550402:
   title: Dirichlet's theorem on arithmetic progressions
-  decl: Nat.setOf_prime_and_eq_mod_infinite
+  decl: Nat.infinite_setOf_prime_and_eq_mod
   authors: David Loeffler, Michael Stoll
 
 Q552367:
