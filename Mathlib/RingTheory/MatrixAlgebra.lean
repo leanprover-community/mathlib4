@@ -236,13 +236,6 @@ theorem matrixEquivTensor_apply_symm (a : A) (M : Matrix n n R) :
 namespace Matrix
 open scoped Kronecker
 
-theorem conjTranspose_kroneckerTMul {R A B l m n p : Type*}
-    [CommSemiring R] [StarRing R] [AddCommMonoid A] [AddCommMonoid B] [StarAddMonoid A]
-    [StarAddMonoid B] [Module R A] [Module R B] [StarModule R A] [StarModule R B]
-    (x : Matrix l m A) (y : Matrix n p B) :
-    (x ⊗ₖₜ y)ᴴ = (xᴴ ⊗ₖₜ yᴴ : Matrix (m × p) (l × n) (A ⊗[R] B)) := by
-  ext; simp
-
 variable (m) (S B)
 variable [CommSemiring S] [Algebra R S] [Algebra S A] [IsScalarTower R S A]
 variable [Fintype m] [DecidableEq m]
