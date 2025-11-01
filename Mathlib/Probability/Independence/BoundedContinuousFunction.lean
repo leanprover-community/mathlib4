@@ -103,11 +103,11 @@ lemma indicator_indepFun_of_bcf [IsProbabilityMeasure P] {A : Set Ω} (mA : Null
     integral_indicator₀ mA, integral_indicator₀ mA.compl, integral_const, integral_const, h]
   · simp [measureReal_compl₀ mA]
     ring
-  · exact (integrable_const _).indicator hA
-  · exact (integrable_const _).indicator hA.compl
+  · exact (integrable_const _).indicator₀ mA
+  · exact (integrable_const _).indicator₀ mA.compl
   · refine Integrable.of_bound ?_ (|f 1| * ‖g‖) (ae_of_all _ fun ω ↦ ?_)
     · exact AEStronglyMeasurable.indicator
-        ((g.continuous.aestronglyMeasurable.comp_aemeasurable mX).const_mul _) hA
+        ((g.continuous.aestronglyMeasurable.comp_aemeasurable mX).const_mul _) mA
     · simp only [Set.indicator, Real.norm_eq_abs]
       split_ifs
       swap; · simp only [abs_zero]; positivity

@@ -524,6 +524,12 @@ protected theorem indicator [Zero β] (hfm : AEStronglyMeasurable f μ) {s : Set
     (hs : MeasurableSet s) : AEStronglyMeasurable (s.indicator f) μ :=
   (aestronglyMeasurable_indicator_iff hs).mpr hfm.restrict
 
+@[fun_prop, measurability]
+protected theorem indicator₀ [Zero β] (hfm : AEStronglyMeasurable f μ) {s : Set α}
+    (hs : NullMeasurableSet s μ) : AEStronglyMeasurable (s.indicator f) μ :=
+  (hfm.indicator (measurableSet_toMeasurable μ s)).congr
+    (indicator_ae_eq_of_ae_eq_set hs.toMeasurable_ae_eq)
+
 theorem nullMeasurableSet_eq_fun {E} [TopologicalSpace E] [MetrizableSpace E] {f g : α → E}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     NullMeasurableSet { x | f x = g x } μ := by
