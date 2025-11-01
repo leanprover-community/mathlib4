@@ -94,10 +94,10 @@ lemma progMeasurable {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsP
   rintro - ⟨-, (⟨s, hs, rfl⟩ | ⟨j, A, hA, rfl⟩), rfl⟩
   · rw [(by aesop : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' ({⊥} ×ˢ s) = {⊥} ×ˢ s)]
     exact (measurableSet_singleton _).prod <| 𝓕.mono bot_le _ hs
-  · by_cases hji : j ≤ i
+  · obtain hji | hij := lt_or_ge j i
     · rw [(by grind : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A
         = (Subtype.val ⁻¹' (Set.Ioc j i)) ×ˢ A)]
-      exact (measurable_subtype_coe measurableSet_Ioc).prod (𝓕.mono hji _ hA)
+      exact (measurable_subtype_coe measurableSet_Ioc).prod (𝓕.mono hji.le _ hA)
     · rw [(by grind : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A = ∅)]
       · simp
 
