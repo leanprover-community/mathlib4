@@ -33,7 +33,6 @@ local postfix:100 "̂" => UniformSpace.Completion
 
 namespace Complex
 
-/-- Cauchy's Estimate. -/
 private theorem norm_deriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {f : ℂ → F} (hR : 0 < R)
     (hf : DiffContOnCl ℂ f (ball c R)) (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
     ‖deriv f c‖ ≤ C / R := by
@@ -55,36 +54,11 @@ private theorem norm_deriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {f : �
       (circleIntegral.norm_two_pi_i_inv_smul_integral_le_of_norm_le_const hR.le hp)
     _ = C / R := by rw [mul_div_left_comm, div_self_mul_self', div_eq_mul_inv]
 
-theorem norm_iteratedDeriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {n : ℕ} {f : ℂ → F}
-    (hR : 0 < R) (hf : DiffContOnCl ℂ f (ball c R)) (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
-    ‖iteratedDeriv n f c‖ ≤ n.factorial * C / R ^ n := by
-  have hp : ∀ z ∈ sphere c R, ‖(z - c)⁻¹ ^ (n + 1) • f z‖ ≤ C / (R ^ n  * R) :=
-    fun z (hz : ‖z - c‖ = R) => by
-    have := (div_le_div_iff_of_pos_right (mul_pos (pow_pos hR n) hR)).2 (hC z hz)
-    simp [norm_smul, norm_pow, norm_inv, hz, ← div_eq_inv_mul]
-    exact this
-  have hq : iteratedDeriv n f c = n.factorial  •
-    (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - c)⁻¹ ^ (n + 1) • f z := by
-    calc
-      iteratedDeriv n f c = n.factorial • (2 * π * I)⁻¹ • (2 * π * I / n.factorial) •
-        iteratedDeriv n f c := by sorry
-      _ = n.factorial • (2 * π * I)⁻¹ •  (∮ z in C(c, R), (1 / (z - c) ^ (n + 1)) • f z) := by
-                congr; exact (DiffContOnCl.circleIntegral_one_div_sub_center_pow_smul hR n hf).symm
-      _ = n.factorial • (2 * π * I)⁻¹ • ∮ z in C(c, R), (z - c)⁻¹ ^ (n + 1) • f z := by simp
-  calc
-    ‖iteratedDeriv n f c‖ = ‖n.factorial • (2 * π * I)⁻¹ •
-      ∮ z in C(c, R), (z - c)⁻¹ ^ (n + 1) • f z‖ := congr_arg norm hq
-    _ ≤ n.factorial * (R * (C / (R ^ (n + 1)))) := by
-      simp only [RCLike.norm_nsmul (K := ℂ), nsmul_eq_mul]
-      have := (circleIntegral.norm_two_pi_i_inv_smul_integral_le_of_norm_le_const hR.le hp)
-      refine mul_le_mul_of_nonneg_left this (?_ : (0 : ℝ) ≤ n.factorial)
-      exact_mod_cast ((Nat.factorial_pos n).le)
-    _ = n.factorial * C / R ^ n := by
-      grind
-
-/-- If `f` is complex differentiable on an open disc of radius `R > 0`, is continuous on its
-closure, and its values on the boundary circle of this disc are bounded from above by `C`, then the
-norm of its derivative at the center is at most `C / R`. -/
+/-- **Cauchy's estimate for the first order derivative**: If `f` is complex differentiable on an
+open disc of radius `R > 0`, is continuous on its closure, and its values on the boundary circle
+of this disc are bounded from above by `C`, then the norm of its derivative at the center is at
+most `C / R`. Note that this theorem does not require the completeness of the codomain of `f`. In
+constrast, the completeness is needed for `norm_iteratedDeriv_le_of_forall_mem_sphere_norm_le`. -/
 theorem norm_deriv_le_of_forall_mem_sphere_norm_le {c : ℂ} {R C : ℝ} {f : ℂ → F} (hR : 0 < R)
     (hd : DiffContOnCl ℂ f (ball c R)) (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
     ‖deriv f c‖ ≤ C / R := by
@@ -99,6 +73,41 @@ theorem norm_deriv_le_of_forall_mem_sphere_norm_le {c : ℂ} {R C : ℝ} {f : �
     _ ≤ C / R :=
       norm_deriv_le_aux hR (e.differentiable.comp_diffContOnCl hd) fun z hz =>
         (UniformSpace.Completion.norm_coe _).trans_le (hC z hz)
+
+/-- **Cauchy's estimate for derivatives**:  If `f` is complex differentiable on an open disc of
+radius `R > 0`, is continuous on its closure, and its values on the boundary circle of this disc
+are bounded from above by `C`, then the norm of its `n`-th derivative at the center is at most
+`n.factorial * C / R ^ n`. -/
+theorem norm_iteratedDeriv_le_of_forall_mem_sphere_norm_le [CompleteSpace F] {c : ℂ} {R C : ℝ}
+    {n : ℕ} {f : ℂ → F} (hR : 0 < R) (hf : DiffContOnCl ℂ f (ball c R))
+    (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
+    ‖iteratedDeriv n f c‖ ≤ n.factorial * C / R ^ n := by
+  have hp : ∀ z ∈ sphere c R, ‖(z - c)⁻¹ ^ (n + 1) • f z‖ ≤ C / (R ^ n  * R) :=
+    fun z (hz : ‖z - c‖ = R) => by
+    have := (div_le_div_iff_of_pos_right (mul_pos (pow_pos hR n) hR)).2 (hC z hz)
+    simp [norm_smul, norm_pow, norm_inv, hz, ← div_eq_inv_mul]
+    exact this
+  have hq : iteratedDeriv n f c = n.factorial  •
+    (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - c)⁻¹ ^ (n + 1) • f z := by
+    calc
+      iteratedDeriv n f c = n.factorial • (2 * π * I)⁻¹ • (2 * π * I / n.factorial) •
+        iteratedDeriv n f c := by
+        rw [← smul_assoc, nsmul_eq_mul, mul_comm, inv_mul_eq_div, ← inv_div,
+          smul_comm, smul_inv_smul₀]
+        simp [Nat.factorial_ne_zero]
+      _ = n.factorial • (2 * π * I)⁻¹ •  (∮ z in C(c, R), (1 / (z - c) ^ (n + 1)) • f z) := by
+                congr; exact (DiffContOnCl.circleIntegral_one_div_sub_center_pow_smul hR n hf).symm
+      _ = n.factorial • (2 * π * I)⁻¹ • ∮ z in C(c, R), (z - c)⁻¹ ^ (n + 1) • f z := by simp
+  calc
+    ‖iteratedDeriv n f c‖ = ‖n.factorial • (2 * π * I)⁻¹ •
+      ∮ z in C(c, R), (z - c)⁻¹ ^ (n + 1) • f z‖ := congr_arg norm hq
+    _ ≤ n.factorial * (R * (C / (R ^ (n + 1)))) := by
+      simp only [RCLike.norm_nsmul (K := ℂ), nsmul_eq_mul]
+      have := (circleIntegral.norm_two_pi_i_inv_smul_integral_le_of_norm_le_const hR.le hp)
+      refine mul_le_mul_of_nonneg_left this (?_ : (0 : ℝ) ≤ n.factorial)
+      exact_mod_cast ((Nat.factorial_pos n).le)
+    _ = n.factorial * C / R ^ n := by
+      grind
 
 /-- An auxiliary lemma for Liouville's theorem `Differentiable.apply_eq_apply_of_bounded`. -/
 theorem liouville_theorem_aux {f : ℂ → F} (hf : Differentiable ℂ f) (hb : IsBounded (range f))
