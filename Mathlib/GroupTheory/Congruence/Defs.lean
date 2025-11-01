@@ -537,7 +537,7 @@ protected theorem pow {M : Type*} [Monoid M] (c : Con M) :
   | Nat.succ n, w, x, h => by simpa [pow_succ] using c.mul (Con.pow c n h) h
 
 @[to_additive]
-instance one [MulOneClass M] (c : Con M) : One c.Quotient where
+instance one [Mul M] [One M] (c : Con M) : One c.Quotient where
   -- Using Quotient.mk'' here instead of c.toQuotient
   -- since c.toQuotient is not reducible.
   -- This would lead to non-defeq diamonds since this instance ends up in
@@ -558,6 +558,12 @@ instance {M : Type*} [Monoid M] (c : Con M) : Pow c.Quotient ℕ where
 an `AddSemigroup`. -/]
 instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient := fast_instance%
   Function.Surjective.semigroup _ Quotient.mk''_surjective fun _ _ => rfl
+
+/-- The quotient of a commutative magma by a congruence relation is a commutative magma. -/
+@[to_additive /-- The quotient of an `AddCommMagma` by an additive congruence relation is
+an `AddCommMagma`. -/]
+instance commMagma {M : Type*} [CommMagma M] (c : Con M) : CommMagma c.Quotient := fast_instance%
+  Function.Surjective.commMagma _ Quotient.mk''_surjective fun _ _ => rfl
 
 /-- The quotient of a commutative semigroup by a congruence relation is a semigroup. -/
 @[to_additive /-- The quotient of an `AddCommSemigroup` by an additive congruence relation is

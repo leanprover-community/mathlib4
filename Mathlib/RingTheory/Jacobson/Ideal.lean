@@ -260,8 +260,6 @@ instance {I : Ideal R} [I.IsTwoSided] : I.jacobson.IsTwoSided where
       simpa using this
     exact mem_sInf.mp xJ ⟨I𝔪₀, 𝔪₀_maximal⟩
 
-@[deprecated (since := "2025-04-13")] alias jacobson_mul_mem_right := Ideal.instIsTwoSidedJacobson
-
 end Ring
 
 section CommRing

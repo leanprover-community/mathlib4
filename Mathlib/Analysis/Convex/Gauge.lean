@@ -396,9 +396,6 @@ theorem tendsto_gauge_nhds_zero_nhdsGE (hs : s ∈ 𝓝 0) : Tendsto (gauge s) (
   filter_upwards [hs] with x hx
   exact ⟨gauge_nonneg _, gauge_le_of_mem hε.le hx⟩
 
-@[deprecated (since := "2025-03-02")]
-alias tendsto_gauge_nhds_zero' := tendsto_gauge_nhds_zero_nhdsGE
-
 theorem tendsto_gauge_nhds_zero (hs : s ∈ 𝓝 0) : Tendsto (gauge s) (𝓝 0) (𝓝 0) :=
   (tendsto_gauge_nhds_zero_nhdsGE hs).mono_right inf_le_left
 
