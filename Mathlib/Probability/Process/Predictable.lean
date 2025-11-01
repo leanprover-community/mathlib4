@@ -60,6 +60,11 @@ def IsPredictable (𝓕 : Filtration ι m) (u : ι → Ω → E) :=
 
 end
 
+lemma measurableSet_predictable_Ioi_prod [LinearOrder ι] [OrderBot ι]
+    {𝓕 : Filtration ι m} {i : ι} {s : Set Ω} (hs : MeasurableSet[𝓕 i] s) :
+    MeasurableSet[𝓕.predictable] <| Set.Ioi i ×ˢ s :=
+  MeasurableSpace.measurableSet_generateFrom <| Or.inr ⟨i, s, hs, rfl⟩
+
 /-- Sets of the form `(i, j] × A` for any `A ∈ 𝓕 i` are measurable with respect to the predictable
 σ-algebra. -/
 lemma measurableSet_predictable_Ioc_prod [LinearOrder ι] [OrderBot ι]
@@ -69,9 +74,8 @@ lemma measurableSet_predictable_Ioc_prod [LinearOrder ι] [OrderBot ι]
   · simp [hij]
   · rw [← Set.Ioi_diff_Ioi, (by simp : (Set.Ioi i \ Set.Ioi j) ×ˢ s
       = Set.Ioi i ×ˢ (s \ s) ∪ (Set.Ioi i \ Set.Ioi j) ×ˢ s), ← Set.prod_diff_prod]
-    exact MeasurableSet.diff
-      (MeasurableSpace.measurableSet_generateFrom <| Or.inr ⟨i, s, hs, rfl⟩) <|
-      (MeasurableSpace.measurableSet_generateFrom <| Or.inr ⟨j, s, 𝓕.mono hij.le _ hs, rfl⟩)
+    refine MeasurableSet.diff (measurableSet_predictable_Ioi_prod hs)
+      (measurableSet_predictable_Ioi_prod <| 𝓕.mono hij.le _ hs)
 
 namespace IsPredictable
 
