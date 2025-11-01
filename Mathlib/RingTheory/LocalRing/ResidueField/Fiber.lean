@@ -45,8 +45,7 @@ variable (R S) in
 `p : PrimeSpectrum R` is in bijection with the prime spectrum of `κ(p) ⊗[R] S`. -/
 @[simps]
 noncomputable def PrimeSpectrum.preimageEquivTensorResidueField (p : PrimeSpectrum R) :
-    (algebraMap R S).specComap ⁻¹' {p} ≃
-      PrimeSpectrum (p.asIdeal.ResidueField ⊗[R] S) where
+    (algebraMap R S).specComap ⁻¹' {p} ≃ PrimeSpectrum (p.asIdeal.ResidueField ⊗[R] S) where
   toFun q := ⟨RingHom.ker (Algebra.TensorProduct.lift
         (Ideal.ResidueField.mapₐ p.asIdeal q.1.asIdeal congr($(q.2.symm).asIdeal))
           (IsScalarTower.toAlgHom _ _ _) (fun _ _ ↦ .all _ _)).toRingHom, RingHom.ker_isPrime _⟩
@@ -73,8 +72,7 @@ variable (R S) in
 `p`. -/
 @[simps!]
 noncomputable def PrimeSpectrum.preimageOrderIsoTensorResidueField (p : PrimeSpectrum R) :
-    (algebraMap R S).specComap ⁻¹' {p} ≃o
-      PrimeSpectrum (p.asIdeal.ResidueField ⊗[R] S) where
+    (algebraMap R S).specComap ⁻¹' {p} ≃o PrimeSpectrum (p.asIdeal.ResidueField ⊗[R] S) where
   toEquiv := preimageEquivTensorResidueField R S p
   map_rel_iff' {q₁ q₂} := by
     constructor
@@ -88,3 +86,15 @@ noncomputable def PrimeSpectrum.preimageOrderIsoTensorResidueField (p : PrimeSpe
         simpa using H hx
       · rw [← q₂.2] at hr; simpa [IsScalarTower.algebraMap_apply R S q₂.1.asIdeal.ResidueField]
       · rw [← q₁.2] at hr; simpa [IsScalarTower.algebraMap_apply R S q₁.1.asIdeal.ResidueField]
+
+variable (R S) in
+/-- The `OrderIso` between fiber of a ring homomorphism `algebraMap R S : R →+* S` at a prime ideal
+`p : PrimeSpectrum R` and the prime spectrum of the tensor product of `S` and the residue field of
+`p`. -/
+@[simps!]
+noncomputable def PrimeSpectrum.primesOverOrderIsoTensorResidueField (R S : Type*) [CommRing R]
+    [CommRing S] [Algebra R S] (p : PrimeSpectrum R) :
+    p.asIdeal.primesOver S ≃o PrimeSpectrum (p.asIdeal.ResidueField ⊗[R] S) :=
+  .trans ⟨⟨fun q ↦ ⟨⟨q, q.2.1⟩, PrimeSpectrum.ext q.2.2.1.symm⟩,
+    fun q ↦ ⟨q.1.asIdeal, ⟨q.1.2, ⟨congr($(q.2).1).symm⟩⟩⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
+    (PrimeSpectrum.preimageOrderIsoTensorResidueField R S p)
