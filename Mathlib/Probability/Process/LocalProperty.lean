@@ -316,7 +316,7 @@ lemma isPreLocalizingSequence_of_isLocalizingSequence
       (tsum_geometric_lt_top.2 <| by norm_num)
   have hτTop := hτ.tendsto_top
   filter_upwards [ae_eventually_notMem this.ne, hτTop] with ω hω hωτ
-  replace hT := hωτ.min hT.tendsto_withTop_atTop_nhds_top
+  replace hT := hωτ.min <| Tendsto.tendsto_withTop_atTop_nhds_top hT
   simp_rw [eventually_atTop, not_lt, ← eventually_atTop] at hω
   rw [min_self] at hT
   rw [← min_self ⊤]
