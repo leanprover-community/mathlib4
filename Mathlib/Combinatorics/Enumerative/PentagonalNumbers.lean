@@ -264,5 +264,3 @@ lemma coeff_E_eq_coeff_cutoff (n : ℕ) :
       (PowerSeries.coeff n)
         (∏ k ∈ Finset.range (n + 1), (1 - (PowerSeries.X : PowerSeries ℤ) ^ (k + 1))) := by
   simp [E]
-
- 
