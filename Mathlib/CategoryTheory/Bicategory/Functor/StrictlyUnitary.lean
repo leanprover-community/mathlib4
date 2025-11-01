@@ -56,6 +56,8 @@ structure StrictlyUnitaryLaxFunctor extends LaxFunctor B C where
   map_id (X : B) : map (𝟙 X) = 𝟙 (obj X) := by cat_disch
   mapId_eq_eqToHom (X : B) : (mapId X) = eqToHom (map_id X).symm := by cat_disch
 
+attribute [simp] StrictlyUnitaryLaxFunctor.map_id
+
 /-- A helper structure that bundles the necessary data to
 construct a `StrictlyUnitaryLaxFunctor` without specifying the redundant
 field `mapId`. -/
@@ -259,6 +261,8 @@ structure StrictlyUnitaryPseudofunctorCore where
           (α_ (map f) (map g) (map h)).hom ≫ map f ◁ (mapComp g h).inv ≫
           (mapComp f (g ≫ h)).inv := by
     cat_disch
+
+attribute [simp] StrictlyUnitaryPseudofunctor.map_id
 
 namespace StrictlyUnitaryPseudofunctor
 
