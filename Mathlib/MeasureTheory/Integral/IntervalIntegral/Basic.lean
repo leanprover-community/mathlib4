@@ -85,16 +85,26 @@ theorem intervalIntegrable_iff : IntervalIntegrable f μ a b ↔ IntegrableOn f 
 theorem IntervalIntegrable.def' (h : IntervalIntegrable f μ a b) : IntegrableOn f (Ι a b) μ :=
   intervalIntegrable_iff.mp h
 
-theorem IntervalIntegrable.congr {g : ℝ → ε} (hf : IntervalIntegrable f μ a b)
+theorem intervalIntegrable_congr_ae {g : ℝ → ε} (h : f =ᵐ[μ.restrict (Ι a b)] g) :
+    IntervalIntegrable f μ a b ↔ IntervalIntegrable g μ a b := by
+  rw [intervalIntegrable_iff, integrableOn_congr_fun_ae h, intervalIntegrable_iff]
+
+theorem IntervalIntegrable.congr_ae {g : ℝ → ε} (hf : IntervalIntegrable f μ a b)
     (h : f =ᵐ[μ.restrict (Ι a b)] g) :
     IntervalIntegrable g μ a b := by
-  rwa [intervalIntegrable_iff, ← integrableOn_congr_fun_ae h, ← intervalIntegrable_iff]
+  rwa [← intervalIntegrable_congr_ae h]
+
+theorem intervalIntegrable_congr {g : ℝ → ε} (h : EqOn f g (Ι a b)) :
+    IntervalIntegrable f μ a b ↔ IntervalIntegrable g μ a b :=
+  intervalIntegrable_congr_ae <| (ae_restrict_mem measurableSet_uIoc).mono h
+
+alias ⟨IntervalIntegrable.congr, _⟩ := intervalIntegrable_congr
 
 /-- Interval integrability is invariant when functions change along discrete sets. -/
 theorem IntervalIntegrable.congr_codiscreteWithin {g : ℝ → ε} [NoAtoms μ]
     (h : f =ᶠ[codiscreteWithin (Ι a b)] g) (hf : IntervalIntegrable f μ a b) :
     IntervalIntegrable g μ a b :=
-  hf.congr (ae_restrict_le_codiscreteWithin measurableSet_Ioc h)
+  hf.congr_ae (ae_restrict_le_codiscreteWithin measurableSet_Ioc h)
 
 /-- Interval integrability is invariant when functions change along discrete sets. -/
 theorem intervalIntegrable_congr_codiscreteWithin {g : ℝ → ε} [NoAtoms μ]
@@ -150,6 +160,9 @@ theorem intervalIntegrable_const [IsLocallyFiniteMeasure μ]
     {c : E} (hc : ‖c‖ₑ ≠ ⊤ := by finiteness) :
     IntervalIntegrable (fun _ => c) μ a b :=
   intervalIntegrable_const_iff hc |>.2 <| Or.inr measure_Ioc_lt_top
+
+protected theorem IntervalIntegrable.zero : IntervalIntegrable (0 : ℝ → E) μ a b :=
+  (intervalIntegrable_const_iff <| by finiteness).mpr <| .inl rfl
 
 end
 
@@ -674,9 +687,6 @@ theorem norm_integral_eq_norm_integral_uIoc (f : ℝ → E) :
     ‖∫ x in a..b, f x ∂μ‖ = ‖∫ x in Ι a b, f x ∂μ‖ := by
   rw [← norm_integral_min_max, integral_of_le min_le_max, uIoc]
 
-@[deprecated (since := "2025-04-19")]
-alias norm_integral_eq_norm_integral_Ioc := norm_integral_eq_norm_integral_uIoc
-
 theorem abs_integral_eq_abs_integral_uIoc (f : ℝ → ℝ) :
     |∫ x in a..b, f x ∂μ| = |∫ x in Ι a b, f x ∂μ| :=
   norm_integral_eq_norm_integral_uIoc f
@@ -685,9 +695,6 @@ theorem norm_integral_le_integral_norm_uIoc : ‖∫ x in a..b, f x ∂μ‖ ≤
   calc
     ‖∫ x in a..b, f x ∂μ‖ = ‖∫ x in Ι a b, f x ∂μ‖ := norm_integral_eq_norm_integral_uIoc f
     _ ≤ ∫ x in Ι a b, ‖f x‖ ∂μ := norm_integral_le_integral_norm f
-
-@[deprecated (since := "2025-04-19")]
-alias norm_integral_le_integral_norm_Ioc := norm_integral_le_integral_norm_uIoc
 
 theorem norm_integral_le_abs_integral_norm : ‖∫ x in a..b, f x ∂μ‖ ≤ |∫ x in a..b, ‖f x‖ ∂μ| := by
   simp only [← Real.norm_eq_abs, norm_integral_eq_norm_integral_uIoc]

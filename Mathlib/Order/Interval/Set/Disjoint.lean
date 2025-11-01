@@ -47,10 +47,6 @@ theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
 theorem Ioc_disjoint_Ioc_of_le {d : α} (h : b ≤ c) : Disjoint (Ioc a b) (Ioc c d) :=
   (Iic_disjoint_Ioc h).mono Ioc_subset_Iic_self le_rfl
 
-@[deprecated Ioc_disjoint_Ioc_of_le (since := "2025-03-04")]
-theorem Ioc_disjoint_Ioc_same : Disjoint (Ioc a b) (Ioc b c) :=
-  (Iic_disjoint_Ioc le_rfl).mono Ioc_subset_Iic_self le_rfl
-
 @[simp]
 theorem Ico_disjoint_Ico_same : Disjoint (Ico a b) (Ico b c) :=
   disjoint_left.mpr fun _ hab hbc => hab.2.not_ge hbc.1

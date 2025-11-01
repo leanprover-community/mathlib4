@@ -145,19 +145,14 @@ would result in three sequences:
 Similarly, a declaration with multiple `by` blocks results in each of the blocks getting its
 own sequence.
 -/
-def findTacticSeqs (stx : Syntax) (tree : InfoTree) :
+def findTacticSeqs (tree : InfoTree) :
     CommandElabM (Array (Array (ContextInfo × TacticInfo))) := do
-  let some enclosingRange := stx.getRange? |
-    throw (Exception.error stx m!"operating on syntax without range")
   -- Turn the CommandElabM into a surrounding context for traversing the tree.
   let ctx ← read
   let state ← get
   let ctxInfo := { env := state.env, fileMap := ctx.fileMap, ngen := state.ngen }
   let out ← tree.visitM (m := CommandElabM) (ctx? := some ctxInfo)
-    (fun _ i _ => do
-      if let some range := i.stx.getRange? then
-        pure <| enclosingRange.start <= range.start && range.stop <= enclosingRange.stop
-      else pure false)
+    (fun _ _ _ => pure true) -- Assumption: a tactic can occur as a child of any piece of syntax.
     (fun ctx i _c cs => do
       let relevantChildren := (cs.filterMap id).toArray
       let childTactics := relevantChildren.filterMap Prod.fst
@@ -190,8 +185,7 @@ def findTacticSeqs (stx : Syntax) (tree : InfoTree) :
 
 /-- Run the tactic analysis passes from `configs` on the tactic sequences in `stx`,
 using `trees` to get the infotrees. -/
-def runPasses (configs : Array Pass) (stx : Syntax)
-    (trees : PersistentArray InfoTree) : CommandElabM Unit := do
+def runPasses (configs : Array Pass) (trees : PersistentArray InfoTree) : CommandElabM Unit := do
   let opts ← getLinterOptions
   let enabledConfigs := configs.filter fun config =>
     -- This can be `none` in the file where the option is declared.
@@ -199,7 +193,7 @@ def runPasses (configs : Array Pass) (stx : Syntax)
   if enabledConfigs.isEmpty then
     return
   for i in trees do
-    for seq in (← findTacticSeqs stx i) do
+    for seq in (← findTacticSeqs i) do
       for config in enabledConfigs do
         config.run seq
 
@@ -217,7 +211,7 @@ def tacticAnalysis : Linter where run := withSetOptionIn fun stx => do
   let env ← getEnv
   let configs := (tacticAnalysisExt.getState env).2
   let trees ← getInfoTrees
-  runPasses configs stx trees
+  runPasses configs trees
 
 initialize addLinter tacticAnalysis
 
@@ -275,7 +269,7 @@ structure ComplexConfig where
   test (context : ctx) (goal : MVarId) : MetaM out
   /-- Decides what to report to the user. -/
   tell (stx : Syntax) (originalSubgoals : List MVarId) (originalHeartbeats : Nat)
-    (new : out) (newHeartbeats : Nat) : Option MessageData
+    (new : out) (newHeartbeats : Nat) : CommandElabM (Option MessageData)
 
 /-- Test the `config` against a sequence of tactics, using the context info and tactic info
 from the start of the sequence. -/
@@ -295,7 +289,7 @@ def testTacticSeq (config : ComplexConfig) (tacticSeq : Array (TSyntax `tactic))
           logWarning m!"original tactic '{stx}' failed: {e.toMessageData}"
           return [goal]
       let (new, newHeartbeats) ← withHeartbeats <| ctxI.runTactic i goal <| config.test ctx
-      if let some msg := config.tell stx oldGoals oldHeartbeats new newHeartbeats  then
+      if let some msg ← config.tell stx oldGoals oldHeartbeats new newHeartbeats  then
         logWarning msg
 
 /-- Run the `config` against a sequence of tactics, using the `trigger` to determine which

@@ -3,7 +3,6 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Batteries.Data.Nat.Gcd
 import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.GroupWithZero.Nat
@@ -22,7 +21,7 @@ Note that the global `IsCoprime` is not a straightforward generalization of `Nat
 Most of this file could be moved to batteries as well.
 -/
 
-assert_not_exists OrderedCommMonoid
+assert_not_exists IsOrderedMonoid
 
 namespace Nat
 variable {a a₁ a₂ b b₁ b₂ c : ℕ}
@@ -59,6 +58,24 @@ theorem pow_sub_one_gcd_pow_sub_one (a b c : ℕ) :
   · simp
   replace hb : c % b < b := mod_lt c hb
   rw [gcd_rec, pow_sub_one_mod_pow_sub_one, pow_sub_one_gcd_pow_sub_one, ← gcd_rec]
+
+/-! ### `lcm` and divisibility -/
+
+theorem dvd_lcm_of_dvd_left (h : a ∣ b) (c : ℕ) : a ∣ lcm b c :=
+  h.trans (dvd_lcm_left b c)
+
+alias Dvd.dvd.nat_lcm_right := dvd_lcm_of_dvd_left
+
+theorem dvd_of_lcm_right_dvd {a b c : ℕ} (h : lcm a b ∣ c) : a ∣ c :=
+  (dvd_lcm_left a b).trans h
+
+theorem dvd_lcm_of_dvd_right {a b : ℕ} (h : a ∣ b) (c : ℕ) : a ∣ lcm c b :=
+  h.trans (dvd_lcm_right c b)
+
+alias Dvd.dvd.nat_lcm_left := dvd_lcm_of_dvd_right
+
+theorem dvd_of_lcm_left_dvd {a b c : ℕ} (h : lcm a b ∣ c) : b ∣ c :=
+  (dvd_lcm_right a b).trans h
 
 /-!
 ### `Coprime`
@@ -193,8 +210,6 @@ theorem Coprime.eq_of_mul_eq_zero {m n : ℕ} (h : m.Coprime n) (hmn : m * n = 0
   (Nat.mul_eq_zero.mp hmn).imp (fun hm => ⟨hm, n.coprime_zero_left.mp <| hm ▸ h⟩) fun hn =>
     let eq := hn ▸ h.symm
     ⟨m.coprime_zero_left.mp <| eq, hn⟩
-
-@[deprecated (since := "2025-04-01")] alias prodDvdAndDvdOfDvdProd := dvdProdDvdOfDvdProd
 
 theorem coprime_iff_isRelPrime {m n : ℕ} : m.Coprime n ↔ IsRelPrime m n := by
   simp_rw [coprime_iff_gcd_eq_one, IsRelPrime, ← and_imp, ← dvd_gcd_iff, isUnit_iff_dvd_one]

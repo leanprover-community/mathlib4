@@ -182,7 +182,7 @@ instance (priority := 100) Finite.of_subsingleton {α : Sort*} [Subsingleton α]
   Finite.of_injective (Function.const α ()) <| Function.injective_of_subsingleton _
 
 -- Higher priority for `Prop`s
-instance prop (p : Prop) : Finite p :=
+instance instFiniteProp (p : Prop) : Finite p :=
   Finite.of_subsingleton
 
 /-- This instance also provides `[Finite s]` for `s : Set α`. -/
@@ -487,10 +487,7 @@ instance [Nonempty α] : Infinite (List α) :=
   Infinite.of_surjective ((↑) : List α → Multiset α) Quot.mk_surjective
 
 instance String.infinite : Infinite String :=
-  Infinite.of_injective (String.mk) <| by
-    intro _ _ h
-    cases h with
-    | refl => rfl
+  Infinite.of_injective List.asString (fun _ _ => List.asString_injective)
 
 instance Infinite.set [Infinite α] : Infinite (Set α) :=
   Infinite.of_injective singleton Set.singleton_injective
@@ -551,10 +548,10 @@ theorem exists_subset_card_eq (α : Type*) [Infinite α] (n : ℕ) : ∃ s : Fin
 theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : #s ≤ n) :
     ∃ t : Finset α, s ⊆ t ∧ #t = n := by
   induction n generalizing s with
-  | zero => exact ⟨s, subset_refl _, Nat.eq_zero_of_le_zero hn⟩
+  | zero => exact ⟨s, subset_rfl, Nat.eq_zero_of_le_zero hn⟩
   | succ n IH =>
     rcases hn.eq_or_lt with hn' | hn'
-    · exact ⟨s, subset_refl _, hn'⟩
+    · exact ⟨s, subset_rfl, hn'⟩
     obtain ⟨t, hs, ht⟩ := IH _ (Nat.le_of_lt_succ hn')
     obtain ⟨x, hx⟩ := exists_notMem_finset t
     refine ⟨Finset.cons x t hx, hs.trans (Finset.subset_cons _), ?_⟩

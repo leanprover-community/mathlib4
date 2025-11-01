@@ -827,6 +827,9 @@ def eqLocus (f g : M →[L] N) : Substructure L M where
       apply hx
     simp [h]
 
+@[simp]
+theorem mem_eqLocus {f g : M →[L] N} {x : M} : x ∈ f.eqLocus g ↔ f x = g x := Iff.rfl
+
 /-- If two `L.Hom`s are equal on a set, then they are equal on its substructure closure. -/
 theorem eqOn_closure {f g : M →[L] N} {s : Set M} (h : Set.EqOn f g s) :
     Set.EqOn f g (closure L s) :=

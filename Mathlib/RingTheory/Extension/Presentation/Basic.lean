@@ -218,6 +218,10 @@ noncomputable def localizationAway : Presentation R S Unit Unit where
 lemma localizationAway_dimension_zero : (localizationAway S r).dimension = 0 := by
   simp [Presentation.dimension]
 
+lemma _root_.Algebra.Generators.C_mul_X_sub_one_mem_ker :
+    C r * X () - 1 ∈ (Generators.localizationAway S r).ker :=
+  (Presentation.localizationAway S r).relation_mem_ker ()
+
 end Localization
 
 section BaseChange
@@ -329,8 +333,9 @@ private noncomputable def aux (Q : Presentation S T ι' σ') (P : Presentation R
     MvPolynomial (ι' ⊕ ι) R →ₐ[R] MvPolynomial ι' S :=
   aeval (Sum.elim X (MvPolynomial.C ∘ P.val))
 
-/-- A choice of pre-image of `Q.relation r` under `aux`. -/
-private noncomputable def comp_relation_aux (r : σ') : MvPolynomial (ι' ⊕ ι) R :=
+/-- A choice of pre-image of `Q.relation r` under the canonical
+map `MvPolynomial (ι' ⊕ ι) R →ₐ[R] MvPolynomial ι' S` given by the evalation of `P`. -/
+noncomputable def compRelationAux (r : σ') : MvPolynomial (ι' ⊕ ι) R :=
   Finsupp.sum (Q.relation r)
     (fun x j ↦ (MvPolynomial.rename Sum.inr <| P.σ j) * monomial (x.mapDomain Sum.inl) 1)
 
@@ -338,10 +343,10 @@ private noncomputable def comp_relation_aux (r : σ') : MvPolynomial (ι' ⊕ ι
 private lemma aux_X (i : ι' ⊕ ι) : (Q.aux P) (X i) = Sum.elim X (C ∘ P.val) i :=
   aeval_X (Sum.elim X (C ∘ P.val)) i
 
-/-- The pre-images constructed in `comp_relation_aux` are indeed pre-images under `aux`. -/
-private lemma comp_relation_aux_map (r : σ') :
-    (Q.aux P) (Q.comp_relation_aux P r) = Q.relation r := by
-  simp only [aux, comp_relation_aux, map_finsuppSum]
+/-- The pre-images constructed in `compRelationAux` are indeed pre-images under `aux`. -/
+private lemma compRelationAux_map (r : σ') :
+    (Q.aux P) (Q.compRelationAux P r) = Q.relation r := by
+  simp only [aux, compRelationAux, map_finsuppSum]
   simp only [map_mul, aeval_rename, aeval_monomial, Sum.elim_comp_inr]
   conv_rhs => rw [← Finsupp.sum_single (Q.relation r)]
   congr
@@ -371,14 +376,14 @@ private lemma aux_surjective : Function.Surjective (Q.aux P) := fun p ↦ by
     exact ⟨(a * X (Sum.inl i)), by simp⟩
 
 private lemma aux_image_relation :
-    Q.aux P '' (Set.range (Algebra.Presentation.comp_relation_aux Q P)) = Set.range Q.relation := by
+    Q.aux P '' (Set.range (Algebra.Presentation.compRelationAux Q P)) = Set.range Q.relation := by
   ext x
   constructor
   · rintro ⟨y, ⟨a, rfl⟩, rfl⟩
-    exact ⟨a, (Q.comp_relation_aux_map P a).symm⟩
+    exact ⟨a, (Q.compRelationAux_map P a).symm⟩
   · rintro ⟨y, rfl⟩
-    use Q.comp_relation_aux P y
-    simp only [Set.mem_range, exists_apply_eq_apply, true_and, comp_relation_aux_map]
+    use Q.compRelationAux P y
+    simp only [Set.mem_range, exists_apply_eq_apply, true_and, compRelationAux_map]
 
 private lemma aux_eq_comp : Q.aux P =
     (MvPolynomial.mapAlgHom (aeval P.val)).comp (sumAlgEquiv R ι' ι).toAlgHom := by
@@ -399,11 +404,10 @@ private lemma aeval_comp_val_eq :
       (aevalTower (IsScalarTower.toAlgHom R S T) Q.val).comp (Q.aux P) := by
   ext i
   simp only [AlgHom.coe_comp, Function.comp_apply]
-  erw [Q.aux_X P i]
   cases i <;> simp
 
 private lemma span_range_relation_eq_ker_comp : Ideal.span
-    (Set.range (Sum.elim (Algebra.Presentation.comp_relation_aux Q P)
+    (Set.range (Sum.elim (Algebra.Presentation.compRelationAux Q P)
       fun rp ↦ (rename Sum.inr) (P.relation rp))) = (Q.comp P.toGenerators).ker := by
   rw [Generators.ker_eq_ker_aeval_val, Q.aeval_comp_val_eq, ← AlgHom.comap_ker]
   change _ = Ideal.comap _ (RingHom.ker (aeval Q.val))
@@ -420,7 +424,7 @@ we may construct a presentation of `T` over `R`. -/
 @[simps -isSimp relation]
 noncomputable def comp : Presentation R T (ι' ⊕ ι) (σ' ⊕ σ) where
   toGenerators := Q.toGenerators.comp P.toGenerators
-  relation := Sum.elim (Q.comp_relation_aux P)
+  relation := Sum.elim (Q.compRelationAux P)
     (fun rp ↦ MvPolynomial.rename Sum.inr <| P.relation rp)
   span_range_relation_eq_ker := Q.span_range_relation_eq_ker_comp P
 
@@ -435,7 +439,7 @@ lemma comp_aeval_relation_inl (r : σ') :
     aeval (Sum.elim X (MvPolynomial.C ∘ P.val)) ((Q.comp P).relation (Sum.inl r)) =
       Q.relation r := by
   change (Q.aux P) _ = _
-  simp [comp_relation, comp_relation_aux_map]
+  simp [comp_relation, compRelationAux_map]
 
 end Composition
 

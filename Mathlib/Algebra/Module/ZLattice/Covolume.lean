@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 /-!
 # Covolume of ℤ-lattices
 
-Let `E` be a finite dimensional real vector space.
+Let `E` be a finite-dimensional real vector space.
 
 Let `L` be a `ℤ`-lattice `L` defined as a discrete `ℤ`-submodule of `E` that spans `E` over `ℝ`.
 
@@ -25,7 +25,7 @@ Let `L` be a `ℤ`-lattice `L` defined as a discrete `ℤ`-submodule of `E` that
 * `ZLattice.covolume_eq_det`: if `L` is a lattice in `ℝ^n`, then its covolume is the absolute
   value of the determinant of any `ℤ`-basis of `L`.
 
-* `ZLattice.covolume_div_covolume_eq_relindex`: Let `L₁` be a sub-`ℤ`-lattice of `L₂`. Then the
+* `ZLattice.covolume_div_covolume_eq_relIndex`: Let `L₁` be a sub-`ℤ`-lattice of `L₂`. Then the
 index of `L₁` inside `L₂` is equal to `covolume L₁ / covolume L₂`.
 
 * `ZLattice.covolume.tendsto_card_div_pow`: Let `s` be a bounded measurable set of `ι → ℝ`, then
@@ -43,7 +43,7 @@ index of `L₁` inside `L₂` is equal to `covolume L₁ / covolume L₂`.
 
 ## Naming convention
 
-Some results are true in the case where the ambient finite dimensional real vector space is the
+Some results are true in the case where the ambient finite-dimensional real vector space is the
 pi-space `ι → ℝ` and in the case where it is an `InnerProductSpace`. We use the following
 convention: the plain name is for the pi case, for e.g. `volume_image_eq_volume_div_covolume`. For
 the same result in the `InnerProductSpace` case, we add a `prime`, for e.g.
@@ -113,9 +113,6 @@ theorem covolume_eq_det_mul_measureReal {ι : Type*} [Fintype ι] [DecidableEq �
   ext
   exact b.ofZLatticeBasis_apply ℝ L _
 
-@[deprecated (since := "2025-04-19")]
-alias covolume_eq_det_mul_measure := covolume_eq_det_mul_measureReal
-
 theorem covolume_eq_det {ι : Type*} [Fintype ι] [DecidableEq ι] (L : Submodule ℤ (ι → ℝ))
     [DiscreteTopology L] [IsZLattice ℝ L] (b : Basis ι ℤ L) :
     covolume L = |(Matrix.of ((↑) ∘ b)).det| := by
@@ -138,13 +135,13 @@ theorem covolume_eq_det_inv {ι : Type*} [Fintype ι] (L : Submodule ℤ (ι →
 Let `L₁` be a sub-`ℤ`-lattice of `L₂`. Then the index of `L₁` inside `L₂` is equal to
 `covolume L₁ / covolume L₂`.
 -/
-theorem covolume_div_covolume_eq_relindex {ι : Type*} [Fintype ι] (L₁ L₂ : Submodule ℤ (ι → ℝ))
+theorem covolume_div_covolume_eq_relIndex {ι : Type*} [Fintype ι] (L₁ L₂ : Submodule ℤ (ι → ℝ))
     [DiscreteTopology L₁] [IsZLattice ℝ L₁] [DiscreteTopology L₂] [IsZLattice ℝ L₂] (h : L₁ ≤ L₂) :
-    covolume L₁ / covolume L₂ = L₁.toAddSubgroup.relindex L₂.toAddSubgroup := by
+    covolume L₁ / covolume L₂ = L₁.toAddSubgroup.relIndex L₂.toAddSubgroup := by
   classical
   let b₁ := IsZLattice.basis L₁
   let b₂ := IsZLattice.basis L₂
-  rw [AddSubgroup.relindex_eq_natAbs_det L₁.toAddSubgroup L₂.toAddSubgroup h b₁ b₂,
+  rw [AddSubgroup.relIndex_eq_natAbs_det L₁.toAddSubgroup L₂.toAddSubgroup h b₁ b₂,
     Nat.cast_natAbs, Int.cast_abs]
   trans |(b₂.ofZLatticeBasis ℝ).det (b₁.ofZLatticeBasis ℝ)|
   · rw [← Basis.det_mul_det _ (Pi.basisFun ℝ ι) _, abs_mul, Pi.basisFun_det_apply,
@@ -156,24 +153,30 @@ theorem covolume_div_covolume_eq_relindex {ι : Type*} [Fintype ι] (L₁ L₂ :
     rw [Matrix.map_apply, Basis.toMatrix_apply, Basis.toMatrix_apply, Basis.ofZLatticeBasis_apply]
     exact (b₂.ofZLatticeBasis_repr_apply ℝ L₂ ⟨b₁ j, h (coe_mem _)⟩ i)
 
+@[deprecated (since := "2025-08-12")]
+alias covolume_div_covolume_eq_relindex := covolume_div_covolume_eq_relIndex
+
 /--
-A more general version of `covolume_div_covolume_eq_relindex`;
+A more general version of `covolume_div_covolume_eq_relIndex`;
 see the `Naming conventions` section in the introduction.
 -/
-theorem covolume_div_covolume_eq_relindex' {E : Type*} [NormedAddCommGroup E]
+theorem covolume_div_covolume_eq_relIndex' {E : Type*} [NormedAddCommGroup E]
     [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
     (L₁ L₂ : Submodule ℤ E) [DiscreteTopology L₁] [IsZLattice ℝ L₁] [DiscreteTopology L₂]
     [IsZLattice ℝ L₂] (h : L₁ ≤ L₂) :
-    covolume L₁ / covolume L₂ = L₁.toAddSubgroup.relindex L₂.toAddSubgroup := by
+    covolume L₁ / covolume L₂ = L₁.toAddSubgroup.relIndex L₂.toAddSubgroup := by
   let f := (EuclideanSpace.equiv _ ℝ).symm.trans
     (stdOrthonormalBasis ℝ E).repr.toContinuousLinearEquiv.symm
   have hf : MeasurePreserving f := (stdOrthonormalBasis ℝ E).measurePreserving_repr_symm.comp
     (EuclideanSpace.volume_preserving_measurableEquiv _).symm
   rw [← covolume_comap L₁ volume volume hf, ← covolume_comap L₂ volume volume hf,
-    covolume_div_covolume_eq_relindex _ _ (fun _ h' ↦ h h'), ZLattice.comap_toAddSubgroup,
+    covolume_div_covolume_eq_relIndex _ _ (fun _ h' ↦ h h'), ZLattice.comap_toAddSubgroup,
     ZLattice.comap_toAddSubgroup, Nat.cast_inj, LinearEquiv.toAddMonoidHom_commutes,
     AddSubgroup.comap_equiv_eq_map_symm', AddSubgroup.comap_equiv_eq_map_symm',
-    AddSubgroup.relindex_map_map_of_injective _ _ f.symm.injective]
+    AddSubgroup.relIndex_map_map_of_injective _ _ f.symm.injective]
+
+@[deprecated (since := "2025-08-12")]
+alias covolume_div_covolume_eq_relindex' := covolume_div_covolume_eq_relIndex'
 
 theorem volume_image_eq_volume_div_covolume {ι : Type*} [Fintype ι] (L : Submodule ℤ (ι → ℝ))
     [DiscreteTopology L] [IsZLattice ℝ L] (b : Basis ι ℤ L) {s : Set (ι → ℝ)} :

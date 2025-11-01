@@ -578,19 +578,18 @@ lemma sup_spanningCoe (H H' : Subgraph G) :
     (H ⊔ H').spanningCoe = H.spanningCoe ⊔ H'.spanningCoe := rfl
 
 /-- The top of the `Subgraph G` lattice is equivalent to the graph itself. -/
-def topEquiv : (⊤ : Subgraph G).coe ≃g G where
-  toFun v := ↑v
-  invFun v := ⟨v, trivial⟩
-  map_rel_iff' := Iff.rfl
+@[deprecated (since := "2025-09-15")] alias topEquiv := topIso
 
-/-- The bottom of the `Subgraph G` lattice is equivalent to the empty graph on the empty
+/-- The bottom of the `Subgraph G` lattice is isomorphic to the empty graph on the empty
 vertex type. -/
-def botEquiv : (⊥ : Subgraph G).coe ≃g emptyGraph Empty where
+def botIso : (⊥ : Subgraph G).coe ≃g emptyGraph Empty where
   toFun v := v.property.elim
   invFun v := v.elim
   left_inv := fun ⟨_, h⟩ ↦ h.elim
   right_inv v := v.elim
   map_rel_iff' := Iff.rfl
+
+@[deprecated (since := "2025-09-15")] alias botEquiv := botIso
 
 theorem edgeSet_mono {H₁ H₂ : Subgraph G} (h : H₁ ≤ H₂) : H₁.edgeSet ≤ H₂.edgeSet :=
   Sym2.ind h.2
@@ -719,8 +718,6 @@ protected def hom (x : Subgraph G) : x.coe →g G where
 theorem hom_injective {x : Subgraph G} : Function.Injective x.hom :=
   fun _ _ ↦ Subtype.ext
 
-@[deprecated (since := "2025-03-15")] alias hom.injective := hom_injective
-
 @[simp] lemma map_hom_top (G' : G.Subgraph) : Subgraph.map G'.hom ⊤ = G' := by
   aesop (add unfold safe Relation.Map, unsafe G'.edge_vert, unsafe Adj.symm)
 
@@ -733,8 +730,6 @@ def spanningHom (x : Subgraph G) : x.spanningCoe →g G where
 
 theorem spanningHom_injective {x : Subgraph G} : Function.Injective x.spanningHom :=
   fun _ _ ↦ id
-
-@[deprecated (since := "2025-03-15")] alias spanningHom.injective := spanningHom_injective
 
 theorem neighborSet_subset_of_subgraph {x y : Subgraph G} (h : x ≤ y) (v : V) :
     x.neighborSet v ⊆ y.neighborSet v :=
@@ -777,6 +772,13 @@ theorem finset_card_neighborSet_eq_degree {G' : Subgraph G} {v : V} [Fintype (G'
     (G'.neighborSet v).toFinset.card = G'.degree v := by
   rw [degree, Set.toFinset_card]
 
+theorem degree_of_notMem_verts {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)]
+    (h : v ∉ G'.verts) : G'.degree v = 0 := by
+  rw [degree, Fintype.card_eq_zero_iff, isEmpty_subtype]
+  intro w
+  by_contra hw
+  exact h hw.fst_mem
+
 theorem degree_le (G' : Subgraph G) (v : V) [Fintype (G'.neighborSet v)]
     [Fintype (G.neighborSet v)] : G'.degree v ≤ G.degree v := by
   rw [← card_neighborSet_eq_degree]
@@ -798,10 +800,31 @@ theorem degree_spanningCoe {G' : G.Subgraph} (v : V) [Fintype (G'.neighborSet v)
   rw [← card_neighborSet_eq_degree, Subgraph.degree]
   congr!
 
-theorem degree_eq_one_iff_unique_adj {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)] :
+theorem degree_pos_iff_exists_adj {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)] :
+    0 < G'.degree v ↔ ∃ w, G'.Adj v w := by
+  simp only [degree, Fintype.card_pos_iff, nonempty_subtype, mem_neighborSet]
+
+theorem degree_eq_zero_of_subsingleton (G' : Subgraph G) (v : V) [Fintype (G'.neighborSet v)]
+    (hG : G'.verts.Subsingleton) : G'.degree v = 0 := by
+  by_cases hv : v ∈ G'.verts
+  · rw [← G'.coe_degree ⟨v, hv⟩]
+    have := (Set.subsingleton_coe _).mpr hG
+    exact G'.coe.degree_eq_zero_of_subsingleton ⟨v, hv⟩
+  · exact degree_of_notMem_verts hv
+
+theorem degree_eq_one_iff_existsUnique_adj {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)] :
     G'.degree v = 1 ↔ ∃! w : V, G'.Adj v w := by
   rw [← finset_card_neighborSet_eq_degree, Finset.card_eq_one, Finset.singleton_iff_unique_mem]
   simp only [Set.mem_toFinset, mem_neighborSet]
+
+@[deprecated (since := "2025-10-31")]
+alias degree_eq_one_iff_unique_adj := degree_eq_one_iff_existsUnique_adj
+
+theorem nontrivial_verts_of_degree_ne_zero {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)]
+    (h : G'.degree v ≠ 0) : Nontrivial G'.verts := by
+  apply not_subsingleton_iff_nontrivial.mp
+  by_contra
+  simp_all [G'.degree_eq_zero_of_subsingleton v]
 
 lemma neighborSet_eq_of_equiv {v : V} {H : Subgraph G}
     (h : G.neighborSet v ≃ H.neighborSet v) (hfin : (G.neighborSet v).Finite) :
@@ -818,6 +841,20 @@ lemma adj_iff_of_neighborSet_equiv {v : V} {H : Subgraph G}
   Set.ext_iff.mp (neighborSet_eq_of_equiv h hfin) _
 
 end Subgraph
+
+@[simp]
+theorem card_neighborSet_toSubgraph (G H : SimpleGraph V) (h : H ≤ G)
+    (v : V) [Fintype ↑((toSubgraph H h).neighborSet v)] [Fintype ↑(H.neighborSet v)] :
+    Fintype.card ↑((toSubgraph H h).neighborSet v) = H.degree v := by
+  refine (Finset.card_eq_of_equiv_fintype ?_).symm
+  simp only [mem_neighborFinset]
+  rfl
+
+@[simp]
+lemma degree_toSubgraph (G H : SimpleGraph V) (h : H ≤ G) {v : V}
+    [Fintype ↑((toSubgraph H h).neighborSet v)] [Fintype ↑(H.neighborSet v)] :
+    (toSubgraph H h).degree v = H.degree v := by
+  simp [Subgraph.degree]
 
 section MkProperties
 
