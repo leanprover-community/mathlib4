@@ -294,16 +294,13 @@ theorem fwdDiff_iter_sum_mul_pow_eq_zero {n : ℕ} (P : ℕ → R) :
 We prove formulae about the forward difference operator applied to polynomials:
 * A formula for the sum of a polynomial sequence, which generalizes **Faulhaber's formula**.
 -/
-
-theorem sum_shift_eq_fwdDiff_iter (f : M → G) (n : ℕ) (y : M) (hn : n > 0) :
+theorem sum_shift_eq_fwdDiff_iter (f : M → G) (y : M) {n : ℕ} (hn : 0 < n) :
     ∑ k ∈ range n, f (y + k • h) = ∑ k ∈ range (n + 1), n.choose (k + 1) • Δ_[h]^[k] f y := by
-  conv => enter [1, 2, x]; rw [shift_eq_sum_fwdDiff_iter (f := f) (n := x) (y := y)]; simp
+  simp_rw [shift_eq_sum_fwdDiff_iter]
   have sum_extend_inner_range : ∑ x ∈ range n, ∑ k ∈ range (x + 1), (x.choose k) • Δ_[h]^[k] f y =
-    ∑ k ∈ range n, ∑ x ∈ Ico k n, (x.choose k) • (Δ_[h]^[k]) f y:= by
-    rw [range_eq_Ico]
-    rw [sum_Ico_Ico_comm]
-  rw [sum_extend_inner_range]
-  simp [← sum_smul]
+      ∑ k ∈ range n, ∑ x ∈ Ico k n, (x.choose k) • (Δ_[h]^[k]) f y := by
+    rw [range_eq_Ico, sum_Ico_Ico_comm]
+  simp only [sum_extend_inner_range, ← sum_smul]
   rw [sum_range_add]; simp only [range_one, sum_singleton, add_zero, choose_succ_self, zero_nsmul]
   apply sum_congr rfl; intro k hk
   rw [show n = n - 1 + 1 by omega, Ico_add_one_right_eq_Icc, Nat.sum_Icc_choose]
