@@ -141,9 +141,8 @@ def strongEpiMonoFactorisation : StrongEpiMonoFactorisation f where
 instance hasStrongEpiMonoFactorisations : HasStrongEpiMonoFactorisations C where
   has_fac f := ⟨strongEpiMonoFactorisation f⟩
 
-variable {f} in
 /-- In a regular category, every extremal epimorphism is an epimorphism. -/
-instance regularEpiOfExtremalEpi (s : ExtremalEpi f) : RegularEpi f :=
+instance regularEpiOfExtremalEpi [s : ExtremalEpi f] : RegularEpi f :=
   have := s.isIso (e f) (m f) (by simp)
   RegularEpi.ofArrowIso <| Arrow.isoMk (f := .mk (e f)) (Iso.refl _) (asIso (m f))
 
