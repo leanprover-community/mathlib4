@@ -223,6 +223,9 @@ theorem Filtration.condExp_condExp [Preorder ι] {E : Type*} [NormedAddCommGroup
     {i j : ι} (hij : i ≤ j) [SigmaFinite (μ.trim (ℱ.le j))] :
     μ[μ[f|ℱ j]|ℱ i] =ᵐ[μ] μ[f|ℱ i] := condExp_condExp_of_le (ℱ.mono hij) (ℱ.le j)
 
+/-- A filtration `𝓕` is right continuous if `𝓕 t = ⨅ j > i, 𝓕 j = 𝓕 i` for all `t`. -/
+def IsRightContinuous [Preorder ι] (f : Filtration ι m) := ∀ i, ⨅ j > i, f j = f i
+
 section OfSet
 
 variable [Preorder ι]
