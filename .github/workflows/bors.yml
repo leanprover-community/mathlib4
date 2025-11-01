@@ -25,8 +25,7 @@ env:
 concurrency:
   # label each workflow run; only the latest with each label will run
   # workflows on master get more expressive labels
-  group: ${{ github.workflow }}-${{ github.ref }}.
-    ${{ ( contains(fromJSON( '["refs/heads/master", "refs/heads/staging"]'), github.ref ) && github.run_id) || ''}}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ (contains(fromJSON('["refs/heads/master", "refs/heads/staging"]'), github.ref) && github.run_id) || '' }}
   # cancel any running workflow with the same label
   cancel-in-progress: true
 
@@ -306,6 +305,7 @@ jobs:
           echo "::endgroup::"
 
           ../master-branch/scripts/lake-build-with-retry.sh Mathlib
+          # results of build at pr-branch/.lake/build_summary_Mathlib*.json
       - name: end gh-problem-match-wrap for build step
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
@@ -374,6 +374,7 @@ jobs:
         run: |
           cd pr-branch
           ../master-branch/scripts/lake-build-with-retry.sh Archive
+          # results of build at pr-branch/.lake/build_summary_Archive*.json
 
       - name: build counterexamples
         id: counterexamples
@@ -381,6 +382,7 @@ jobs:
         run: |
           cd pr-branch
           ../master-branch/scripts/lake-build-with-retry.sh Counterexamples
+          # results of build at pr-branch/.lake/build_summary_Counterexamples*.json
 
       - name: Check if building Archive or Counterexamples failed
         if: steps.archive.outcome == 'failure' || steps.counterexamples.outcome == 'failure'
