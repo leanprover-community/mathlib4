@@ -203,12 +203,13 @@ theorem degree_eq_zero_iff_notMem_support : G.degree v = 0 ↔ v ∉ G.support :
 @[deprecated (since := "2025-05-23")]
 alias degree_eq_zero_iff_not_mem_support := degree_eq_zero_iff_notMem_support
 
+@[simp]
 theorem degree_eq_zero_of_subsingleton {G : SimpleGraph V} (v : V) [Fintype (G.neighborSet v)]
-    (h : Subsingleton V) : G.degree v = 0 := by
+    [Subsingleton V] : G.degree v = 0 := by
   have := G.degree_pos_iff_exists_adj v
   simp_all [subsingleton_iff_forall_eq v]
 
-theorem degree_eq_one_iff_unique_adj {G : SimpleGraph V} {v : V} [Fintype (G.neighborSet v)] :
+theorem degree_eq_one_iff_existsUnique_adj {G : SimpleGraph V} {v : V} [Fintype (G.neighborSet v)] :
     G.degree v = 1 ↔ ∃! w : V, G.Adj v w := by
   rw [degree, Finset.card_eq_one, Finset.singleton_iff_unique_mem]
   simp only [mem_neighborFinset]
