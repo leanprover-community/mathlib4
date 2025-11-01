@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
-import Mathlib.Algebra.Ring.Action.ConjAct
 
 /-!
 # Basic lemmas about the general linear group $GL(n, R)$
@@ -14,79 +13,6 @@ see `LinearAlgebra/Matrix/GeneralLinearGroup/Defs.lean`.
 -/
 
 namespace Matrix
-
-open Matrix LinearMap
-
-variable {R n : Type*} [Fintype n]
-
-/-- This takes in a non-unital algebra homomorphism `f` and vectors `y, z : n → R`
-and constructs a linear operator on `(n → R)` such that `x ↦ f (vecMulVec x y) *ᵥ z`. -/
-private def auxLinear [Semiring R] (f : Matrix n n R →ₗ[R] Matrix n n R) (y z : n → R) :
-    (n → R) →ₗ[R] (n → R) :=
-  (mulVecBilin R ℕ).flip z ∘ₗ (f : Matrix n n R →ₗ[R] Matrix n n R) ∘ₗ (vecMulVecBilin R ℕ).flip y
-
-@[simp]
-private theorem auxLinear_apply [Semiring R]
-    (f : Matrix n n R →ₙₐ[R] Matrix n n R) (x y z : n → R) :
-  auxLinear f y z x = f (vecMulVec x y) *ᵥ z := rfl
-
-theorem auxLinear_mulVec [CommSemiring R]
-    (f : Matrix n n R →ₙₐ[R] Matrix n n R) (y z : n → R) (A : Matrix n n R) (x : n → R) :
-    auxLinear f y z (A *ᵥ x) = f A *ᵥ auxLinear f y z x := by
-  let T := auxLinear f y z
-  calc
-    _ = f (vecMulVec (A *ᵥ x) y) *ᵥ z := by simp [auxLinear_apply]
-    _ = f (A * vecMulVec x y) *ᵥ z := by
-      simp_rw [vecMulVec_eq Unit, replicateCol_mulVec, ← Matrix.mul_assoc]
-    _ = (f A * f (vecMulVec x y)) *ᵥ z := by simp_rw [map_mul]
-    _ = f A *ᵥ T x := by simp only [← mulVec_mulVec]; rfl
-
-variable [DecidableEq n]
-
-private theorem toMatrix'_auxLinear_mul [CommSemiring R]
-    (f : Matrix n n R →ₙₐ[R] Matrix n n R) (y z : n → R) (A : Matrix n n R) :
-    (auxLinear f y z).toMatrix' * A = f A * (auxLinear f y z).toMatrix' :=
-  toLin'.injective <| LinearMap.ext fun x => by simpa using auxLinear_mulVec f y z A x
-
-/-- Given an algebra automorphism `f` on `Matrix n n R`, there exists an invertible matrix `T`
-such that `f` is given by `x ↦ T * x * T⁻¹`. -/
-theorem AlgEquiv.coe_eq_generalLinearGroup_conjugate [Field R]
-    (f : Matrix n n R ≃ₐ[R] Matrix n n R) :
-    ∃ T : GL n R, ⇑f = fun x => T * x * ((T⁻¹ : GL n R) : Matrix n n R) := by
-  obtain hn | hn := isEmpty_or_nonempty n
-  · exact ⟨1, Subsingleton.elim _ _⟩
-  simp_rw [funext_iff, @eq_comm _ (f _), Units.mul_inv_eq_iff_eq_mul, @eq_comm _ _ (f _ * _)]
-  obtain ⟨u, v, huv⟩ : ∃ u v : n → R, vecMulVec u v ≠ 0 :=
-    ⟨1, 1, vecMulVec_ne_zero one_ne_zero one_ne_zero⟩
-  obtain ⟨z, hz⟩ : ∃ z : n → R, f (vecMulVec u v) *ᵥ z ≠ 0 := by
-    simp_rw [ne_eq, ← not_forall]
-    suffices ¬ f (vecMulVec u v) = 0 by
-      rwa [← toMatrix'_toLin' (f _), EmbeddingLike.map_eq_zero_iff, LinearMap.ext_iff] at this
-    rwa [← ne_eq, EmbeddingLike.map_ne_zero_iff]
-  let T := auxLinear f.toAlgHom v z
-  have this A : T.toMatrix' * A = f A * T.toMatrix' :=
-    toMatrix'_auxLinear_mul f.toAlgHom.toNonUnitalAlgHom v z A
-  suffices hM : IsUnit T.toMatrix' from ⟨hM.unit, fun A => this A |>.symm⟩
-  simp_rw [← isUnit_toLin'_iff, toLin'_toMatrix', isUnit_iff_range_eq_top, range_eq_top]
-  intro w
-  obtain ⟨q, hq : T u q ≠ 0⟩ := Function.ne_iff.mp hz
-  let d : n → R := Pi.single q (T u q)⁻¹
-  have hd : T u ⬝ᵥ d = 1 := by rw [dotProduct_single, mul_inv_cancel₀ hq]
-  use f.symm (vecMulVec w d) *ᵥ u
-  have h : f (f.symm (vecMulVec w d)) *ᵥ T u = w := by
-    rw [f.apply_symm_apply, vecMulVec_mulVec, dotProduct_comm, hd, MulOpposite.op_one, one_smul]
-  simp_rw [← toMatrix'_mulVec, mulVec_mulVec, this, ← mulVec_mulVec, toMatrix'_mulVec, h]
-
-/-- Alternate statement of `coe_eq_generalLinearGroup_conjugate`. -/
-theorem mulSemiringActionToAlgEquiv_conjAct_surjective [Field R] :
-    Function.Surjective (MulSemiringAction.toAlgEquiv (G := ConjAct (GL n R)) R (Matrix n n R)) :=
-  fun f => f.coe_eq_generalLinearGroup_conjugate.imp fun _ h => (DFunLike.coe_injective h).symm
-
-/-- Algebra automorphisms on matrices preserve the trace. -/
-theorem trace_algEquiv_apply [Field R] (f : Matrix n n R ≃ₐ[R] Matrix n n R) (x : Matrix n n R) :
-    trace (f x) = trace x := by
-  obtain ⟨T, hT⟩ := f.coe_eq_generalLinearGroup_conjugate
-  simp [hT, trace_mul_cycle (T : Matrix n n R)]
 
 section Examples
 
