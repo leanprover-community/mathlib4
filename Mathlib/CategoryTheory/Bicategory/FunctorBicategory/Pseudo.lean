@@ -81,4 +81,6 @@ instance bicategory : Bicategory (Pseudofunctor B C) where
 
 end StrongTrans
 
+-- here
+
 end CategoryTheory.Pseudofunctor
