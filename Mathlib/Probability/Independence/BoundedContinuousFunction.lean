@@ -7,6 +7,16 @@ open scoped BoundedContinuousFunction
 
 variable {Ω S T : Type*} {m mΩ : MeasurableSpace Ω} {P : Measure Ω}
 
+lemma IndepFun.indepSets_of_indicator {𝓧 : Type*} [mX : MeasurableSpace 𝓧] {A : Set Ω} {X : Ω → 𝓧}
+    (h : (A.indicator (1 : Ω → ℝ)) ⟂ᵢ[P] X) :
+    IndepSets {A} {s | MeasurableSet[mX.comap X] s} P := by
+  rw [IndepSets_iff]
+  rintro s - hs ⟨t, ht, rfl⟩
+  rw [Set.mem_singleton_iff.1 hs]
+  have hA' : A = A.indicator (1 : Ω → ℝ) ⁻¹' {1} := by ext; simp [Set.indicator]
+  rw [hA']
+  exact h.measure_inter_preimage_eq_mul _ _ (by simp) ht
+
 section Process
 
 variable {E : S → Type*} {F : T → Type*} {G H : Type*}
@@ -69,6 +79,61 @@ lemma indepFun_of_bcf [IsFiniteMeasure P] (mZ : AEMeasurable Z P) (mU : AEMeasur
   any_goals fun_prop
   exact Measurable.aestronglyMeasurable (by fun_prop)
 
+lemma indicator_indepFun_of_bcf [IsFiniteMeasure P] {A : Set Ω} (mA : NullMeasurableSet A P)
+    (mX : ∀ s, AEMeasurable (X s) P)
+    (h : ∀ f : (s : S) → E s →ᵇ ℝ, ∫ ω in A, ∏ s, f s (X s ω) ∂P =
+      P.real A * ∫ ω, ∏ s, f s (X s ω) ∂P) :
+    (A.indicator (1 : Ω → ℝ)) ⟂ᵢ[P] (fun ω s ↦ X s ω) := by
+  refine indepFun_pi_of_bcf
+    ((aemeasurable_indicator_const_iff 1).2 mA) mX fun f g ↦ ?_
+  have h1 ω : f (A.indicator 1 ω) * ∏ s, g s (X s ω) =
+      A.indicator (fun ω ↦ f 1 * ∏ s, g s (X s ω)) ω +
+      f 0 * ∏ s, g s (X s ω) - A.indicator (fun ω ↦ f 0 * ∏ s, g s (X s ω)) ω := by
+    classical
+    rw [Set.indicator_apply]
+    split_ifs <;> simp_all
+  have h2 ω : f (A.indicator 1 ω) =
+      A.indicator (fun _ ↦ f 1) ω + Aᶜ.indicator (fun _ ↦ f 0) ω := by
+    classical
+    rw [Set.indicator_apply]
+    split_ifs <;> simp_all
+  simp_rw [Pi.mul_apply, Finset.prod_apply, Function.comp_apply, h1, h2]
+  rw [integral_sub, integral_add, integral_indicator hA, integral_indicator hA, integral_const_mul,
+    integral_const_mul, integral_const_mul, integral_add, integral_indicator hA,
+    integral_indicator hA.compl, integral_const, integral_const, h]
+  · simp [measureReal_compl hA]
+    ring
+  · exact (integrable_const _).indicator hA
+  · exact (integrable_const _).indicator hA.compl
+  · refine Integrable.of_bound ?_ (|f 1| * ‖g‖) (ae_of_all _ fun ω ↦ ?_)
+    · exact AEStronglyMeasurable.indicator
+        ((g.continuous.aestronglyMeasurable.comp_aemeasurable mX).const_mul _) hA
+    · simp only [Set.indicator, Real.norm_eq_abs]
+      split_ifs
+      swap; · simp only [abs_zero]; positivity
+      grw [abs_mul, g.abs_apply_le_norm]
+  · refine Integrable.of_bound ?_ (|f 0| * ‖g‖) (ae_of_all _ fun ω ↦ ?_)
+    · exact (g.continuous.aestronglyMeasurable.comp_aemeasurable mX).const_mul _
+    · grw [Real.norm_eq_abs, abs_mul, g.abs_apply_le_norm]
+  · apply Integrable.add
+    · refine Integrable.of_bound ?_ (|f 1| * ‖g‖) (ae_of_all _ fun ω ↦ ?_)
+      · exact AEStronglyMeasurable.indicator
+          ((g.continuous.aestronglyMeasurable.comp_aemeasurable mX).const_mul _) hA
+      · simp only [Set.indicator, Real.norm_eq_abs]
+        split_ifs
+        swap; · simp only [abs_zero]; positivity
+        grw [abs_mul, g.abs_apply_le_norm]
+    · refine Integrable.of_bound ?_ (|f 0| * ‖g‖) (ae_of_all _ fun ω ↦ ?_)
+      · exact (g.continuous.aestronglyMeasurable.comp_aemeasurable mX).const_mul _
+      · grw [Real.norm_eq_abs, abs_mul, g.abs_apply_le_norm]
+  · refine Integrable.of_bound ?_ (|f 0| * ‖g‖) (ae_of_all _ fun ω ↦ ?_)
+    · exact AEStronglyMeasurable.indicator
+        ((g.continuous.aestronglyMeasurable.comp_aemeasurable mX).const_mul _) hA
+    · simp only [Set.indicator, Real.norm_eq_abs]
+      split_ifs
+      swap; · simp only [abs_zero]; positivity
+      grw [abs_mul, g.abs_apply_le_norm]
+
 end Fintype
 
 lemma process_indepFun_process_of_bcf [IsZeroOrProbabilityMeasure P]
@@ -79,39 +144,19 @@ lemma process_indepFun_process_of_bcf [IsZeroOrProbabilityMeasure P]
   IndepFun.process_indepFun_process mX mY
     fun I J ↦ pi_indepFun_pi_of_bcf (by fun_prop) (by fun_prop) (h I J)
 
-lemma indepFun_process_of_bcf [IsFiniteMeasure P] (mZ : AEMeasurable Z P)
-    (mY : ∀ t, AEMeasurable (Y t) P)
-    (h : ∀ (f : G →ᵇ ℝ) (g : (t : T) → F t →ᵇ ℝ),
+lemma indepFun_process_of_bcf [IsZeroOrProbabilityMeasure P]
+    (mZ : AEMeasurable Z P) (mY : ∀ t, Measurable (Y t))
+    (h : ∀ (f : G →ᵇ ℝ) (J : Finset T) (g : (t : J) → F t →ᵇ ℝ),
       P[f ∘ Z * (∏ t, g t ∘ (Y t))] = P[f ∘ Z] * P[∏ t, g t ∘ (Y t)]) :
-    IndepFun Z (fun ω t ↦ Y t ω) P := by
-  rw [indepFun_iff_map_prod_eq_prod_map_map mZ (aemeasurable_pi_lambda _ mY)]
-  refine eq_prod_of_integral_mul_prod_boundedContinuousFunction fun f g ↦ ?_
-  rw [integral_map, integral_map, integral_map]
-  · convert h f g <;> simp
-  any_goals fun_prop
-  all_goals exact Measurable.aestronglyMeasurable (by fun_prop)
+    IndepFun Z (fun ω t ↦ Y t ω) P :=
+  IndepFun.indepFun_process mZ mY fun J ↦ indepFun_pi_of_bcf (by fun_prop) (by fun_prop) (h · J)
 
-lemma pi_indepFun_of_bcf [IsFiniteMeasure P] (mX : ∀ s, AEMeasurable (X s) P)
-    (mU : AEMeasurable U P)
-    (h : ∀ (f : (s : S) → E s →ᵇ ℝ) (g : H →ᵇ ℝ),
+lemma process_indepFun_of_bcf [IsZeroOrProbabilityMeasure P]
+    (mX : ∀ s, Measurable (X s)) (mU : AEMeasurable U P)
+    (h : ∀ (I : Finset S) (f : (s : I) → E s →ᵇ ℝ) (g : H →ᵇ ℝ),
       P[(∏ s, f s ∘ (X s)) * g ∘ U] = P[∏ s, f s ∘ (X s)] * P[g ∘ U]) :
-    IndepFun (fun ω s ↦ X s ω) U P := by
-  rw [indepFun_iff_map_prod_eq_prod_map_map (aemeasurable_pi_lambda _ mX) mU]
-  refine eq_prod_of_integral_prod_mul_boundedContinuousFunction fun f g ↦ ?_
-  rw [integral_map, integral_map, integral_map]
-  · convert h f g <;> simp
-  any_goals fun_prop
-  all_goals exact Measurable.aestronglyMeasurable (by fun_prop)
-
-lemma indepFun_of_bcf [IsFiniteMeasure P] (mZ : AEMeasurable Z P) (mU : AEMeasurable U P)
-    (h : ∀ (f : G →ᵇ ℝ) (g : H →ᵇ ℝ), P[f ∘ Z * g ∘ U] = P[f ∘ Z] * P[g ∘ U]) :
-    IndepFun Z U P := by
-  rw [indepFun_iff_map_prod_eq_prod_map_map mZ mU]
-  refine eq_prod_of_integral_mul_boundedContinuousFunction fun f g ↦ ?_
-  rw [integral_map, integral_map, integral_map]
-  · exact h f g
-  any_goals fun_prop
-  exact Measurable.aestronglyMeasurable (by fun_prop)
+    IndepFun (fun ω s ↦ X s ω) U P :=
+  IndepFun.process_indepFun mX mU fun I ↦ pi_indepFun_of_bcf (by fun_prop) (by fun_prop) (h I)
 
 end Process
 
@@ -154,7 +199,6 @@ lemma indepSet_iff_compl_indepSet {A B : Set Ω} (hA : MeasurableSet A) (hB : Me
     _ = P B - P A * P B := by rw [hAB]
     _ = (1 - P A) * P B := by rw [ENNReal.sub_mul (by simp)]; simp
     _ = P Aᶜ * P B := by rw [measure_compl hA (by simp)]; simp
-
 
 lemma singleton_indepSets_comap_iff_indicator_indepFun (mX : Measurable X) {A : Set Ω}
     (hA : MeasurableSet A) [hP : IsProbabilityMeasure P] :
