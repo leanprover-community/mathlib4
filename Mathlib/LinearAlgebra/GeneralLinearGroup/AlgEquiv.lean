@@ -43,35 +43,6 @@ private theorem auxLinear_comp (f : End R V →ₐ[R] End R V) (y : Dual R V) (z
     auxLinear f y z ∘ₗ A = f A ∘ₗ auxLinear f y z :=
   LinearMap.ext <| auxLinear_map_apply f y z A
 
-section move
-
-variable (K) in
-/-- This is a linear map version of `SeparatingDual.exists_ne_zero` in a vector space. -/
-theorem dual_exists_ne_zero {x : V} (hx : x ≠ 0) : ∃ f : Dual K V, f x ≠ 0 :=
-  let b := Basis.ofVectorSpace K V
-  have hb : b.repr x ≠ 0 := by simpa
-  have ⟨i, hi⟩ := not_forall.mp fun h ↦ hb <| Finsupp.ext h
-  ⟨b.coord i, hi⟩
-
-variable (K) in
-/-- This is a linear map version of `SeparatingDual.exists_eq_one` in a vector space. -/
-theorem dual_exists_eq_one {x : V} (hx : x ≠ 0) : ∃ f : Dual K V, f x = 1 :=
-  have ⟨f, hf⟩ := dual_exists_ne_zero K hx
-  ⟨(f x)⁻¹ • f, inv_mul_cancel₀ hf⟩
-
-/-- The center of endomorphisms on a vector space is trivial,
-in other words, it is a central algebra. -/
-instance _root_.Algebra.IsCentral.end : Algebra.IsCentral K (End K V) where
-  out T hT := by
-    have h' (f : Dual K V) (y v : V) : f (T v) • y = f v • T y := by
-      simpa using congr($(Subalgebra.mem_center_iff.mp hT <| f.smulRight y) v)
-    nontriviality V
-    obtain ⟨x, hx⟩ := exists_ne (0 : V)
-    obtain ⟨f, hf⟩ := dual_exists_eq_one K hx
-    exact ⟨f (T x), ext fun _ => by simp [h', hf]⟩
-
-end move
-
 /-- Given an algebra automorphism `f` in `End K V`, there exists a linear isomorphism `T`
 such that `f` is given by `x ↦ T * x * T⁻¹`. -/
 theorem AlgEquiv.coe_eq_linearEquiv_conjugate (f : End K V ≃ₐ[K] End K V) :
@@ -80,7 +51,7 @@ theorem AlgEquiv.coe_eq_linearEquiv_conjugate (f : End K V ≃ₐ[K] End K V) :
   simp_rw [funext_iff, ← comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm]
   obtain ⟨u, v, huv⟩ : ∃ u : V, ∃ v : Dual K V, v u ≠ 0 := by
     obtain ⟨u, hu⟩ := nontrivial_iff_exists_ne 0 |>.mp ‹Nontrivial V›
-    obtain ⟨v, hv⟩ := dual_exists_ne_zero K hu
+    obtain ⟨v, hv⟩ := Module.linearMap_exists_ne_zero K hu
     exact ⟨u, v, hv⟩
   obtain ⟨z, hz⟩ : ∃ z : V, f (smulRightₗ v u) z ≠ 0 := by
     simp_rw [ne_eq, ← not_forall]
@@ -94,7 +65,7 @@ theorem AlgEquiv.coe_eq_linearEquiv_conjugate (f : End K V ≃ₐ[K] End K V) :
   have surj : Function.Surjective T := by
     intro w
     have : T u ≠ 0 := by simpa [T]
-    obtain ⟨d, hd⟩ := dual_exists_eq_one K this
+    obtain ⟨d, hd⟩ := Module.linearMap_exists_eq_one K this
     use f.symm (smulRightₗ d w) u
     have h : f (f.symm (smulRightₗ d w)) (T u) = w := by simp [hd]
     simp_rw [this', h]
