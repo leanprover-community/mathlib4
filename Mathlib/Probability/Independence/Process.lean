@@ -136,22 +136,26 @@ variable {P : Measure Ω}
 for all $s_1, ..., s_p \in S$ the family $(X_{s_1}, ..., X_{s_p})$ is independent from $Y$. -/
 lemma IndepFun.process_indepFun {𝓧 : S → Type*} {𝓨 : Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [MeasurableSpace 𝓨] {X : (i : S) → Ω → 𝓧 i}
-    {Y : Ω → 𝓨} (hX : ∀ i, Measurable (X i)) (hY : Measurable Y)
+    {Y : Ω → 𝓨} (hX : ∀ i, Measurable (X i)) (hY : AEMeasurable Y P)
     (h : ∀ (I : Finset S),
       IndepFun (fun ω (i : I) ↦ X i ω) Y P) [IsZeroOrProbabilityMeasure P] :
-    IndepFun (fun ω i ↦ X i ω) Y P :=
-  Kernel.IndepFun.process_indepFun hX hY h
+    IndepFun (fun ω i ↦ X i ω) Y P := by
+  suffices (fun ω i ↦ X i ω) ⟂ᵢ[P] (hY.mk Y) from
+    this.congr .rfl hY.ae_eq_mk.symm
+  exact Kernel.IndepFun.process_indepFun hX hY.measurable_mk (fun I ↦ (h I).congr .rfl hY.ae_eq_mk)
 
 /-- A random variable $X$ is independent from a stochastic process $(Y_s)_{s \in S}$  if
 for all $s_1, ..., s_p \in S$ the variable $Y$ is independent from the family
 $(X_{s_1}, ..., X_{s_p})$. -/
 lemma IndepFun.indepFun_process {𝓧 : Type*} {𝓨 : S → Type*}
     [MeasurableSpace 𝓧] [∀ i, MeasurableSpace (𝓨 i)] {X : Ω → 𝓧}
-    {Y : (i : S) → Ω → 𝓨 i} (hX : Measurable X) (hY : ∀ i, Measurable (Y i))
+    {Y : (i : S) → Ω → 𝓨 i} (hX : AEMeasurable X P) (hY : ∀ i, Measurable (Y i))
     (h : ∀ (I : Finset S),
       IndepFun X (fun ω (i : I) ↦ Y i ω) P) [IsZeroOrProbabilityMeasure P] :
-    IndepFun X (fun ω i ↦ Y i ω) P :=
-  Kernel.IndepFun.indepFun_process hX hY h
+    IndepFun X (fun ω i ↦ Y i ω) P := by
+  suffices (hX.mk X) ⟂ᵢ[P] (fun ω i ↦ Y i ω) from
+    this.congr hX.ae_eq_mk.symm .rfl
+  exact Kernel.IndepFun.indepFun_process hX.measurable_mk hY (fun I ↦ (h I).congr hX.ae_eq_mk .rfl)
 
 /-- Two stochastic processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ are independent if
 for all $s_1, ..., s_p \in S$ and $t_1, ..., t_q \in T$ the two families
@@ -171,8 +175,7 @@ $(X^{s_1}_{t^{s_1}_1}, ..., X^{s_1}_{t^{s_1}_{p_1}}), ...,
 lemma iIndepFun.iIndepFun_process {T : S → Type*} {𝓧 : (i : S) → (j : T i) → Type*}
     [∀ i j, MeasurableSpace (𝓧 i j)] {X : (i : S) → (j : T i) → Ω → 𝓧 i j}
     (hX : ∀ i j, Measurable (X i j))
-    (h : ∀ (I : Finset S) (J : (i : I) → Finset (T i)),
-      iIndepFun (fun i ω (j : J i) ↦ X i j ω) P) :
+    (h : ∀ (I : Finset S) (J : (i : I) → Finset (T i)), iIndepFun (fun i ω (j : J i) ↦ X i j ω) P) :
     iIndepFun (fun i ω j ↦ X i j ω) P :=
   Kernel.iIndepFun.iIndepFun_process hX h
 

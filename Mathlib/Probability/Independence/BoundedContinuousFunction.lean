@@ -5,6 +5,116 @@ import Mathlib.Probability.Independence.Process
 open MeasureTheory Measure ProbabilityTheory ENNReal
 open scoped BoundedContinuousFunction
 
+variable {Ω S T : Type*} {m mΩ : MeasurableSpace Ω} {P : Measure Ω}
+
+section Process
+
+variable {E : S → Type*} {F : T → Type*} {G H : Type*}
+  [∀ s, TopologicalSpace (E s)] [∀ s, MeasurableSpace (E s)] [∀ s, BorelSpace (E s)]
+  [∀ s, HasOuterApproxClosed (E s)]
+  [∀ t, TopologicalSpace (F t)] [∀ t, MeasurableSpace (F t)] [∀ t, BorelSpace (F t)]
+  [∀ t, HasOuterApproxClosed (F t)]
+  [TopologicalSpace G] [MeasurableSpace G] [BorelSpace G] [HasOuterApproxClosed G]
+  [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H] [HasOuterApproxClosed H]
+  {X : (s : S) → Ω → E s} {Y : (t : T) → Ω → F t} {Z : Ω → G} {U : Ω → H}
+
+section Fintype
+
+variable [Fintype S] [Fintype T]
+
+lemma pi_indepFun_pi_of_bcf [IsFiniteMeasure P] (mX : ∀ s, AEMeasurable (X s) P)
+    (mY : ∀ t, AEMeasurable (Y t) P)
+    (h : ∀ (f : (s : S) → E s →ᵇ ℝ) (g : (t : T) → F t →ᵇ ℝ),
+      P[(∏ s, f s ∘ (X s)) * (∏ t, g t ∘ (Y t))] = P[∏ s, f s ∘ (X s)] * P[∏ t, g t ∘ (Y t)]) :
+    IndepFun (fun ω s ↦ X s ω) (fun ω t ↦ Y t ω) P := by
+  rw [indepFun_iff_map_prod_eq_prod_map_map (aemeasurable_pi_lambda _ mX)
+    (aemeasurable_pi_lambda _ mY)]
+  refine eq_prod_of_integral_prod_mul_prod_boundedContinuousFunction fun f g ↦ ?_
+  rw [integral_map, integral_map, integral_map]
+  · convert h f g <;> simp
+  any_goals fun_prop
+  all_goals exact Measurable.aestronglyMeasurable (by fun_prop)
+
+lemma indepFun_pi_of_bcf [IsFiniteMeasure P] (mZ : AEMeasurable Z P)
+    (mY : ∀ t, AEMeasurable (Y t) P)
+    (h : ∀ (f : G →ᵇ ℝ) (g : (t : T) → F t →ᵇ ℝ),
+      P[f ∘ Z * (∏ t, g t ∘ (Y t))] = P[f ∘ Z] * P[∏ t, g t ∘ (Y t)]) :
+    IndepFun Z (fun ω t ↦ Y t ω) P := by
+  rw [indepFun_iff_map_prod_eq_prod_map_map mZ (aemeasurable_pi_lambda _ mY)]
+  refine eq_prod_of_integral_mul_prod_boundedContinuousFunction fun f g ↦ ?_
+  rw [integral_map, integral_map, integral_map]
+  · convert h f g <;> simp
+  any_goals fun_prop
+  all_goals exact Measurable.aestronglyMeasurable (by fun_prop)
+
+lemma pi_indepFun_of_bcf [IsFiniteMeasure P] (mX : ∀ s, AEMeasurable (X s) P)
+    (mU : AEMeasurable U P)
+    (h : ∀ (f : (s : S) → E s →ᵇ ℝ) (g : H →ᵇ ℝ),
+      P[(∏ s, f s ∘ (X s)) * g ∘ U] = P[∏ s, f s ∘ (X s)] * P[g ∘ U]) :
+    IndepFun (fun ω s ↦ X s ω) U P := by
+  rw [indepFun_iff_map_prod_eq_prod_map_map (aemeasurable_pi_lambda _ mX) mU]
+  refine eq_prod_of_integral_prod_mul_boundedContinuousFunction fun f g ↦ ?_
+  rw [integral_map, integral_map, integral_map]
+  · convert h f g <;> simp
+  any_goals fun_prop
+  all_goals exact Measurable.aestronglyMeasurable (by fun_prop)
+
+lemma indepFun_of_bcf [IsFiniteMeasure P] (mZ : AEMeasurable Z P) (mU : AEMeasurable U P)
+    (h : ∀ (f : G →ᵇ ℝ) (g : H →ᵇ ℝ), P[f ∘ Z * g ∘ U] = P[f ∘ Z] * P[g ∘ U]) :
+    IndepFun Z U P := by
+  rw [indepFun_iff_map_prod_eq_prod_map_map mZ mU]
+  refine eq_prod_of_integral_mul_boundedContinuousFunction fun f g ↦ ?_
+  rw [integral_map, integral_map, integral_map]
+  · exact h f g
+  any_goals fun_prop
+  exact Measurable.aestronglyMeasurable (by fun_prop)
+
+end Fintype
+
+lemma process_indepFun_process_of_bcf [IsZeroOrProbabilityMeasure P]
+    (mX : ∀ s, Measurable (X s)) (mY : ∀ t, Measurable (Y t))
+    (h : ∀ (I : Finset S) (J : Finset T) (f : (s : I) → E s →ᵇ ℝ) (g : (t : J) → F t →ᵇ ℝ),
+      P[(∏ s, f s ∘ (X s)) * (∏ t, g t ∘ (Y t))] = P[∏ s, f s ∘ (X s)] * P[∏ t, g t ∘ (Y t)]) :
+    IndepFun (fun ω s ↦ X s ω) (fun ω t ↦ Y t ω) P :=
+  IndepFun.process_indepFun_process mX mY
+    fun I J ↦ pi_indepFun_pi_of_bcf (by fun_prop) (by fun_prop) (h I J)
+
+lemma indepFun_process_of_bcf [IsFiniteMeasure P] (mZ : AEMeasurable Z P)
+    (mY : ∀ t, AEMeasurable (Y t) P)
+    (h : ∀ (f : G →ᵇ ℝ) (g : (t : T) → F t →ᵇ ℝ),
+      P[f ∘ Z * (∏ t, g t ∘ (Y t))] = P[f ∘ Z] * P[∏ t, g t ∘ (Y t)]) :
+    IndepFun Z (fun ω t ↦ Y t ω) P := by
+  rw [indepFun_iff_map_prod_eq_prod_map_map mZ (aemeasurable_pi_lambda _ mY)]
+  refine eq_prod_of_integral_mul_prod_boundedContinuousFunction fun f g ↦ ?_
+  rw [integral_map, integral_map, integral_map]
+  · convert h f g <;> simp
+  any_goals fun_prop
+  all_goals exact Measurable.aestronglyMeasurable (by fun_prop)
+
+lemma pi_indepFun_of_bcf [IsFiniteMeasure P] (mX : ∀ s, AEMeasurable (X s) P)
+    (mU : AEMeasurable U P)
+    (h : ∀ (f : (s : S) → E s →ᵇ ℝ) (g : H →ᵇ ℝ),
+      P[(∏ s, f s ∘ (X s)) * g ∘ U] = P[∏ s, f s ∘ (X s)] * P[g ∘ U]) :
+    IndepFun (fun ω s ↦ X s ω) U P := by
+  rw [indepFun_iff_map_prod_eq_prod_map_map (aemeasurable_pi_lambda _ mX) mU]
+  refine eq_prod_of_integral_prod_mul_boundedContinuousFunction fun f g ↦ ?_
+  rw [integral_map, integral_map, integral_map]
+  · convert h f g <;> simp
+  any_goals fun_prop
+  all_goals exact Measurable.aestronglyMeasurable (by fun_prop)
+
+lemma indepFun_of_bcf [IsFiniteMeasure P] (mZ : AEMeasurable Z P) (mU : AEMeasurable U P)
+    (h : ∀ (f : G →ᵇ ℝ) (g : H →ᵇ ℝ), P[f ∘ Z * g ∘ U] = P[f ∘ Z] * P[g ∘ U]) :
+    IndepFun Z U P := by
+  rw [indepFun_iff_map_prod_eq_prod_map_map mZ mU]
+  refine eq_prod_of_integral_mul_boundedContinuousFunction fun f g ↦ ?_
+  rw [integral_map, integral_map, integral_map]
+  · exact h f g
+  any_goals fun_prop
+  exact Measurable.aestronglyMeasurable (by fun_prop)
+
+end Process
+
 variable {Ω E F : Type*} {m mΩ : MeasurableSpace Ω} {P : Measure Ω}
   [TopologicalSpace E] [mE : MeasurableSpace E] [BorelSpace E] [HasOuterApproxClosed E]
   [TopologicalSpace F] [mF : MeasurableSpace F] [BorelSpace F] [HasOuterApproxClosed F]
@@ -167,7 +277,3 @@ lemma indep_comap_of_boundedContinuousFunction (hm : m ≤ mΩ) [IsProbabilityMe
     Indep m (mE.comap X) P :=
   (Indep_iff_IndepSets ..).2 <|
     indepSets_comap_of_boundedContinuousFunction mX (fun s hs ↦ hm s hs) h
-
-lemma singleton_indepSets_comap_of_boundedContinuousFunction {A : Set Ω} (hA : MeasurableSet A)
-    {T : Type*} {E : T → Type*} [∀ t, MeasurableSpace (E t)] [∀ t, TopologicalSpace (E t)]
-    []
