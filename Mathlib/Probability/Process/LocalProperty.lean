@@ -261,7 +261,7 @@ lemma locally_of_isPreLocalizingSequence [Zero E] {τ : ℕ → Ω → WithTop �
 section
 
 omit [DenselyOrdered ι] [FirstCountableTopology ι]
-variable [SecondCountableTopology ι] [IsFiniteMeasure P] -- [NoMaxOrder ι]
+variable [SecondCountableTopology ι] [IsFiniteMeasure P]
 
 lemma isPreLocalizingSequence_of_isLocalizingSequence_aux'
     {τ : ℕ → Ω → WithTop ι} {σ : ℕ → ℕ → Ω → WithTop ι}
