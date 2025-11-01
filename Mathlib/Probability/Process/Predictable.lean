@@ -66,13 +66,12 @@ lemma measurableSet_predictable_Ioc_prod [LinearOrder ι] [OrderBot ι]
     {𝓕 : Filtration ι m} (i j : ι) {s : Set Ω} (hs : MeasurableSet[𝓕 i] s) :
     MeasurableSet[𝓕.predictable] <| Set.Ioc i j ×ˢ s := by
   obtain hij | hij := le_or_gt j i
-  · simp [hji]
-  · rw [not_le] at hji
-    rw [← Set.Ioi_diff_Ioi, (by simp : (Set.Ioi i \ Set.Ioi j) ×ˢ s
+  · simp [hij]
+  · rw [← Set.Ioi_diff_Ioi, (by simp : (Set.Ioi i \ Set.Ioi j) ×ˢ s
       = Set.Ioi i ×ˢ (s \ s) ∪ (Set.Ioi i \ Set.Ioi j) ×ˢ s), ← Set.prod_diff_prod]
     exact MeasurableSet.diff
       (MeasurableSpace.measurableSet_generateFrom <| Or.inr ⟨i, s, hs, rfl⟩) <|
-      (MeasurableSpace.measurableSet_generateFrom <| Or.inr ⟨j, s, 𝓕.mono hji.le _ hs, rfl⟩)
+      (MeasurableSpace.measurableSet_generateFrom <| Or.inr ⟨j, s, 𝓕.mono hij.le _ hs, rfl⟩)
 
 namespace IsPredictable
 
@@ -100,11 +99,7 @@ lemma progMeasurable {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsP
         = (Subtype.val ⁻¹' (Set.Ioc j i)) ×ˢ A)]
       exact (measurable_subtype_coe measurableSet_Ioc).prod (𝓕.mono hji _ hA)
     · rw [(by grind : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A = ∅)]
-      · exact .empty
-      · ext p
-        simp only [Set.mem_preimage, Set.mem_prod, Set.mem_Ioi, Set.mem_empty_iff_false,
-          iff_false, not_and]
-        exact fun hj ↦ False.elim <| hji <| hj.le.trans p.1.2
+      · simp
 
 /-- A predictable process is adapted. -/
 lemma adapted {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsPredictable 𝓕 u) :
@@ -124,7 +119,7 @@ lemma measurableSet_prodMk_add_one_of_predictable {𝓕 : Filtration ℕ m} {s :
   rintro - (⟨A, hA, rfl⟩ | ⟨i, A, hA, rfl⟩)
   · rw [MeasurableSpace.map_def,
       (_ : (fun (p : Set.singleton (n + 1) × Ω) ↦ ((p.1 : ℕ), p.2)) ⁻¹' ({⊥} ×ˢ A) = ∅)]
-    · exact .empty
+    · simp
     · ext p
       simp only [Nat.bot_eq_zero, Set.mem_preimage, Set.mem_prod, Set.mem_singleton_iff,
         Set.mem_empty_iff_false, iff_false, not_and]
@@ -138,16 +133,15 @@ lemma measurableSet_prodMk_add_one_of_predictable {𝓕 : Filtration ℕ m} {s :
           iff_false, not_and]
         rw [p.1.2]
         grind
-    · rw [not_lt] at hni
-      rw [(_ : (fun (p : Set.singleton (n + 1) × Ω) ↦ ((p.1 : ℕ), p.2)) ⁻¹' (Set.Ioi i ×ˢ A)
+    · rw [(_ : (fun (p : Set.singleton (n + 1) × Ω) ↦ ((p.1 : ℕ), p.2)) ⁻¹' (Set.Ioi i ×ˢ A)
           = {⟨n + 1, rfl⟩} ×ˢ A)]
-      · exact MeasurableSet.prod (MeasurableSet.of_subtype_image trivial) (𝓕.mono hni _ hA)
+      · exact MeasurableSet.prod (MeasurableSet.of_subtype_image trivial) (𝓕.mono hin _ hA)
       · ext p
         simp only [Set.mem_preimage, Set.mem_prod, Set.mem_Ioi, Set.mem_singleton_iff,
           and_congr_left_iff]
         intro hp2
         rw [p.1.2]
-        exact ⟨fun _ ↦ by aesop, fun _ ↦ lt_add_one_iff.2 hni⟩
+        exact ⟨fun _ ↦ by aesop, fun _ ↦ lt_add_one_iff.2 hin⟩
 
 omit [SecondCountableTopology E] in
 /-- If `u` is a discrete predictable process, then `u (n + 1)` is `𝓕 n`-measurable. -/
@@ -174,7 +168,7 @@ lemma measurableSet_predictable_singleton_prod
     rintro ⟨hm₁, hm₂⟩
     linarith
 
-lemma isPredictable_of_measurable_add_one
+lemma isPredictable_of_measurable_add_one [SecondCountableTopology E]
     {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}
     (h₀ : Measurable[𝓕 0] (u 0)) (h : ∀ n, Measurable[𝓕 n] (u (n + 1))) :
     IsPredictable 𝓕 u := by
@@ -189,7 +183,8 @@ lemma isPredictable_of_measurable_add_one
 
 /-- A discrete process `u` is predictable iff `u (n + 1)` is `𝓕 n`-measurable for all `n` and
 `u 0` is `𝓕 0`-measurable. -/
-lemma isPredictable_iff_measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E} :
+lemma isPredictable_iff_measurable_add_one [SecondCountableTopology E]
+    {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E} :
     IsPredictable 𝓕 u ↔ Measurable[𝓕 0] (u 0) ∧ ∀ n, Measurable[𝓕 n] (u (n + 1)) :=
   ⟨fun h𝓕 ↦ ⟨(h𝓕.adapted 0).measurable, fun n ↦ h𝓕.measurable_add_one (n)⟩,
    fun h ↦ isPredictable_of_measurable_add_one h.1 h.2⟩
