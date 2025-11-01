@@ -967,7 +967,7 @@ abbrev snd (p : G.Walk u v) : V := p.getVert 1
 lemma snd_cons {u v w} (q : G.Walk v w) (hadj : G.Adj u v) :
     (q.cons hadj).snd = v := by simp
 
-lemma snd_mem_tail_support {u v : V} {p : G.Walk u v} (h : ¬ p.Nil) : p.snd ∈ p.support.tail :=
+lemma snd_mem_tail_support {u v : V} {p : G.Walk u v} (h : ¬p.Nil) : p.snd ∈ p.support.tail :=
   p.notNilRec (by simp) h
 
 /-- The walk obtained by taking the first `n` darts of a walk. -/
