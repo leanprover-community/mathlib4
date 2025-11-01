@@ -332,7 +332,7 @@ theorem LowerSemicontinuous.isClosed_preimage {f : α → γ} (hf : LowerSemicon
   lowerSemicontinuous_iff_isClosed_preimage.1 hf y
 
 theorem lowerSemicontinuousOn_iff_preimage_Iic {f : α → γ} :
-    LowerSemicontinuousOn f s ↔ ∀ b, ∃ v : Set α, IsClosed v ∧ s ∩ f ⁻¹' Set.Iic b = s ∩ v := by
+    LowerSemicontinuousOn f s ↔ ∀ b, ∃ v, IsClosed v ∧ s ∩ f ⁻¹' Set.Iic b = s ∩ v := by
   simp only [lowerSemicontinuousOn_iff_restrict, restrict_eq,
     lowerSemicontinuous_iff_isClosed_preimage, preimage_comp, isClosed_induced_iff,
     Subtype.preimage_coe_eq_preimage_coe_iff, eq_comm]
