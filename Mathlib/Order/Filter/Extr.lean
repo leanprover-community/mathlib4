@@ -138,11 +138,8 @@ theorem IsMinOn.isGLB (ha : a ∈ s) (hfsa : IsMinOn f s a) :
   exact ⟨fun hba x hx ↦ le_trans hba (hfsa hx), fun hb ↦ hb a ha⟩
 
 theorem IsMaxOn.isLUB (ha : a ∈ s) (hfsa : IsMaxOn f s a) :
-    IsLUB {f x | x ∈ s} (f a) := by
-  rw [isLUB_iff_le_iff]
-  intro b
-  simp only [mem_upperBounds, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-  exact ⟨fun hba x hx ↦ le_trans (hfsa hx) hba, fun hb ↦ hb a ha⟩
+    IsLUB {f x | x ∈ s} (f a) :=
+  IsMinOn.isGLB (α := αᵒᵈ) (β := βᵒᵈ) ha hfsa
 
 theorem IsMinFilter.tendsto_principal_Ici (h : IsMinFilter f l a) : Tendsto f l (𝓟 <| Ici (f a)) :=
   tendsto_principal.2 h
