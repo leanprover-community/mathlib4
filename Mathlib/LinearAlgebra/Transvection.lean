@@ -6,7 +6,7 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Dual.Defs
+import Mathlib.LinearAlgebra.Dual.BaseChange
 
 /-!
 # Transvections in a module
@@ -141,3 +141,26 @@ theorem symm_eq' {f : Module.Dual R V} {v : V}
   ext; simp [LinearEquiv.symm_apply_eq, comp_of_right_eq_apply hf]
 
 end LinearEquiv.transvection
+
+section baseChange
+
+namespace LinearMap.transvection
+
+open LinearMap LinearEquiv
+
+variable {A : Type*} [CommRing A] [Algebra R A]
+
+theorem baseChange (f : Module.Dual R V) (v : V) :
+    (transvection f v).baseChange A = transvection (f.baseChange A) (1 ⊗ₜ[R] v) := by
+  ext; simp [transvection, TensorProduct.tmul_add]
+
+theorem _root_.LinearEquiv.transvection.baseChange
+    {f : Module.Dual R V} {v : V}
+    (h : f v = 0) (hA : f.baseChange A (1 ⊗ₜ[R] v) = 0) :
+    (LinearEquiv.transvection h).baseChange R A V V = LinearEquiv.transvection hA := by
+  simp [← toLinearMap_inj, coe_baseChange,
+    LinearEquiv.transvection.coe_toLinearMap, LinearMap.transvection.baseChange]
+
+end LinearMap.transvection
+
+end baseChange
