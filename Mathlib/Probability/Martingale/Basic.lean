@@ -444,11 +444,11 @@ theorem Martingale.eq_zero_of_predictable [SigmaFiniteFiltration μ 𝒢] {f : �
     exact ((Germ.coe_eq.mp (congr_arg Germ.ofFun <| condExp_of_stronglyMeasurable (𝒢.le _) (hfadp _)
       (hfmgle.integrable _))).symm.trans (hfmgle.2 k (k + 1) k.le_succ)).trans ih
 
-section
+section IsPredictable
 
 variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
 
-/-- A predictable submartingale is a.e. greater equal than its initial state. -/
+/-- A predictable submartingale is a.e. greater than or equal to its initial state. -/
 theorem Submartingale.zero_le_of_predictable' [Preorder E] [SigmaFiniteFiltration μ 𝒢]
     {f : ℕ → Ω → E} (hfmgle : Submartingale f 𝒢 μ) (hfadp : IsPredictable 𝒢 f) (n : ℕ) :
     f 0 ≤ᵐ[μ] f n := by
@@ -481,6 +481,7 @@ theorem Martingale.eq_zero_of_predictable' [SigmaFiniteFiltration μ 𝒢] {f : 
       (hfmgle.integrable _))).symm.trans (hfmgle.2 k (k + 1) k.le_succ)).trans ih
 
 end
+
 namespace Submartingale
 
 protected theorem integrable_stoppedValue [LE E] {f : ℕ → Ω → E} (hf : Submartingale f 𝒢 μ)

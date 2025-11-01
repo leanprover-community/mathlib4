@@ -14,7 +14,7 @@ and adapted. We also give an equivalent characterization of predictability for d
 
 ## Main definitions
 
-* `Filtration.Predictable` : The predictable σ-algebra associated to a filtration.
+* `Filtration.predictable` : The predictable σ-algebra associated to a filtration.
 * `Filtration.IsPredictable` : A process is predictable if it is measurable with respect to the
   predictable σ-algebra.
 
@@ -65,9 +65,8 @@ end
 lemma measurableSet_predictable_Ioc_prod [LinearOrder ι] [OrderBot ι]
     {𝓕 : Filtration ι m} (i j : ι) {s : Set Ω} (hs : MeasurableSet[𝓕 i] s) :
     MeasurableSet[𝓕.predictable] <| Set.Ioc i j ×ˢ s := by
-  by_cases hji : j ≤ i
-  · rw [Set.Ioc_eq_empty_of_le hji, Set.empty_prod]
-    simp only [MeasurableSet.empty]
+  obtain hij | hij := le_or_gt j i
+  · simp [hji]
   · rw [not_le] at hji
     rw [← Set.Ioi_diff_Ioi, (by simp : (Set.Ioi i \ Set.Ioi j) ×ˢ s
       = Set.Ioi i ×ˢ (s \ s) ∪ (Set.Ioi i \ Set.Ioi j) ×ˢ s), ← Set.prod_diff_prod]
@@ -80,14 +79,13 @@ namespace IsPredictable
 open Filtration
 
 variable [LinearOrder ι] [OrderBot ι] [MeasurableSpace ι] [TopologicalSpace ι]
-    [OpensMeasurableSpace ι] [OrderClosedTopology ι] [MeasurableSingletonClass ι]
+    [OpensMeasurableSpace ι] [OrderClosedTopology ι]
     [MetrizableSpace E] [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
 
 /-- A predictable process is progressively measurable. -/
 lemma progMeasurable {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsPredictable 𝓕 u) :
     ProgMeasurable 𝓕 u := by
-  intro i
-  refine Measurable.stronglyMeasurable ?_
+  refine fun i ↦ Measurable.stronglyMeasurable ?_
   rw [IsPredictable, stronglyMeasurable_iff_measurable, measurable_iff_comap_le] at h𝓕
   rw [measurable_iff_comap_le, (by aesop : (fun (p : Set.Iic i × Ω) ↦ u (p.1) p.2)
       = Function.uncurry u ∘ (fun p ↦ (p.1, p.2))), ← MeasurableSpace.comap_comp]
@@ -98,12 +96,11 @@ lemma progMeasurable {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsP
   · rw [(by aesop : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' ({⊥} ×ˢ s) = {⊥} ×ˢ s)]
     exact (measurableSet_singleton _).prod <| 𝓕.mono bot_le _ hs
   · by_cases hji : j ≤ i
-    · rw [(_ : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A
+    · rw [(by grind : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A
         = (Subtype.val ⁻¹' (Set.Ioc j i)) ×ˢ A)]
-      · exact (measurable_subtype_coe measurableSet_Ioc).prod (𝓕.mono hji _ hA)
-      · aesop
-    · rw [(_ : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A = ∅)]
-      · simp only [MeasurableSet.empty]
+      exact (measurable_subtype_coe measurableSet_Ioc).prod (𝓕.mono hji _ hA)
+    · rw [(by grind : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A = ∅)]
+      · exact .empty
       · ext p
         simp only [Set.mem_preimage, Set.mem_prod, Set.mem_Ioi, Set.mem_empty_iff_false,
           iff_false, not_and]
@@ -114,33 +111,33 @@ lemma adapted {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsPredicta
     Adapted 𝓕 u :=
   h𝓕.progMeasurable.adapted
 
+omit [SecondCountableTopology E] in
 lemma measurableSet_prodMk_add_one_of_predictable {𝓕 : Filtration ℕ m} {s : Set (ℕ × Ω)}
     (hs : MeasurableSet[𝓕.predictable] s) (n : ℕ) :
     MeasurableSet[𝓕 n] {ω | (n + 1, ω) ∈ s} := by
   rw [(by aesop : {ω | (n + 1, ω) ∈ s} = (Prod.mk (α := Set.singleton (n + 1)) (β := Ω)
-      (⟨n + 1, rfl⟩)) ⁻¹' ((fun (p : Set.singleton (n + 1) × Ω) ↦ ((p.1 : ℕ), p.2)) ⁻¹' s))]
+      ⟨n + 1, rfl⟩) ⁻¹' ((fun (p : Set.singleton (n + 1) × Ω) ↦ ((p.1 : ℕ), p.2)) ⁻¹' s))]
   refine measurableSet_preimage (mβ := Subtype.instMeasurableSpace.prod (𝓕 n))
     measurable_prodMk_left <| measurableSet_preimage ?_ hs
   rw [measurable_iff_comap_le, MeasurableSpace.comap_le_iff_le_map]
   refine MeasurableSpace.generateFrom_le ?_
   rintro - (⟨A, hA, rfl⟩ | ⟨i, A, hA, rfl⟩)
-  · rw [MeasurableSpace.map_def]
-    rw [(_ : (fun (p : Set.singleton (n + 1) × Ω) ↦ ((p.1 : ℕ), p.2)) ⁻¹' ({⊥} ×ˢ A) = ∅)]
-    · simp only [MeasurableSet.empty]
+  · rw [MeasurableSpace.map_def,
+      (_ : (fun (p : Set.singleton (n + 1) × Ω) ↦ ((p.1 : ℕ), p.2)) ⁻¹' ({⊥} ×ˢ A) = ∅)]
+    · exact .empty
     · ext p
       simp only [Nat.bot_eq_zero, Set.mem_preimage, Set.mem_prod, Set.mem_singleton_iff,
         Set.mem_empty_iff_false, iff_false, not_and]
       exact fun hp1 ↦ False.elim <| Nat.succ_ne_zero n (hp1 ▸ p.1.2.symm)
   · rw [MeasurableSpace.map_def]
-    by_cases hni : n < i
+    obtain hni | hin := lt_or_ge n i
     · rw [(_ : (fun (p : Set.singleton (n + 1) × Ω) ↦ ((p.1 : ℕ), p.2)) ⁻¹' (Set.Ioi i ×ˢ A) = ∅)]
       · simp only [MeasurableSet.empty]
       · ext p
         simp only [Set.mem_preimage, Set.mem_prod, Set.mem_Ioi, Set.mem_empty_iff_false,
           iff_false, not_and]
         rw [p.1.2]
-        intro h
-        linarith
+        grind
     · rw [not_lt] at hni
       rw [(_ : (fun (p : Set.singleton (n + 1) × Ω) ↦ ((p.1 : ℕ), p.2)) ⁻¹' (Set.Ioi i ×ˢ A)
           = {⟨n + 1, rfl⟩} ×ˢ A)]
