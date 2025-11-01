@@ -264,6 +264,7 @@ section StarRing
 variable [StarRing R] [StarAddMonoid A] [StarAddMonoid B] [StarModule R A] [StarModule R B]
 
 variable (m n A B) in
+/-- `Matrix.kroneckerTMul` as a ⋆-algebra equivalence, when the two arguments are tensored. -/
 def kroneckerTMulStarAlgEquiv :
     Matrix m m A ⊗[R] Matrix n n B ≃⋆ₐ[S] Matrix (m × n) (m × n) (A ⊗[R] B) :=
   .ofAlgEquiv (kroneckerTMulAlgEquiv m n R S A B)
@@ -302,6 +303,7 @@ def kroneckerAlgEquiv : (Matrix m m R ⊗[R] Matrix n n R) ≃ₐ[R] Matrix (m �
     (kroneckerAlgEquiv m n R).symm x = (kroneckerLinearEquiv m m n n R).symm x := rfl
 
 variable (m n) in
+/-- `Matrix.kronecker` as a ⋆-algebra equivalence, when the two arguments are tensored. -/
 def kroneckerStarAlgEquiv [StarRing R] :
     (Matrix m m R ⊗[R] Matrix n n R) ≃⋆ₐ[R] Matrix (m × n) (m × n) R :=
   .ofAlgEquiv (kroneckerAlgEquiv m n R)
