@@ -15,10 +15,10 @@ there exists a linear equivalence `T : V ≃ₗ T` such that `f x = T * x * T.sy
 In other words, the map from `GeneralLinearGroup R V` to `End R V ≃ₐ End R V` is surjective.
 -/
 
-namespace Module
+namespace Module.End
 variable {R V : Type*} [AddCommGroup V]
 
-open Module LinearMap
+open Module LinearMap End
 
 /-- This takes in a linear map `f : End R V →ₗ End R V`, a dual `y : Dual R V`,
 and an element `z : V`, and constructs a linear operator on `V` such that
@@ -62,7 +62,7 @@ theorem dual_exists_eq_one [Field R] [Module R V] {x : V} (hx : x ≠ 0) :
 
 /-- Given an algebra automorphism `f` in `End R V`, there exists a linear isomorphism `T`
 such that `f` is given by `x ↦ T * x * T⁻¹`. -/
-theorem End.AlgEquiv.coe_eq_linearEquiv_conjugate
+theorem AlgEquiv.coe_eq_linearEquiv_conjugate
     [Field R] [Module R V] (f : End R V ≃ₐ[R] End R V) :
     ∃ T : V ≃ₗ[R] V, ⇑f = fun x ↦ T ∘ₗ x ∘ₗ T.symm := by
   obtain hn | hn := subsingleton_or_nontrivial V
@@ -97,7 +97,6 @@ theorem End.AlgEquiv.coe_eq_linearEquiv_conjugate
     simpa [huv] using congr((fun f ↦ f u) $h_smul)
   exact ⟨LinearEquiv.ofBijective T ⟨inj, surj⟩, fun A ↦ this A |>.symm⟩
 
-open Module.End in
 /-- Alternate statement of `coe_eq_linearEquiv_conjugate`. -/
 theorem mulSemiringActionToAlgEquiv_conjAct_surjective [Field R] [Module R V] :
     Function.Surjective
@@ -106,4 +105,4 @@ theorem mulSemiringActionToAlgEquiv_conjAct_surjective [Field R] [Module R V] :
   obtain ⟨T, hT⟩ := f.coe_eq_linearEquiv_conjugate
   exact ⟨LinearMap.GeneralLinearGroup.ofLinearEquiv T, (DFunLike.coe_injective hT).symm⟩
 
-end Module
+end Module.End
