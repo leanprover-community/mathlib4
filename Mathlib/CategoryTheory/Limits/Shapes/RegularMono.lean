@@ -67,18 +67,20 @@ instance (priority := 100) RegularMono.ofIso (f : X ⟶ Y) [IsIso f] : RegularMo
   isLimit := Fork.IsLimit.mk _ (fun s ↦ s.ι ≫ inv f) (by simp) fun s m w ↦ by
     rw [IsIso.eq_comp_inv, ← w]; simp
 
-/-- Regular monomorphisms are preserved when precomposing with an isomorphism. -/
-instance (priority := 100) RegularMono.ofIsoCompRegularMono {Z}
-    (f : Y ⟶ Z) [h : RegularMono f] (g : X ⟶ Y) [IsIso g] : RegularMono (g ≫ f) where
+/-- Regular monomorphisms are preserved by isomorphisms in the arrow category. -/
+def RegularMono.of_arrow_iso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
+    (e : Arrow.mk f ≅ Arrow.mk g) [h : RegularMono f] :
+    RegularMono g where
   Z := h.Z
-  left := h.left
-  right := h.right
-  w := by rw [Category.assoc, h.w, Category.assoc]
-  isLimit := Fork.isLimitOfIsos _ h.isLimit _ (Iso.refl _) (Iso.refl _) (asIso (inv g))
+  left := e.inv.right ≫ h.left
+  right := e.inv.right ≫ h.right
+  w := by
+    have := Arrow.mk_hom g ▸ Arrow.w_mk_right e.inv
+    rw [← reassoc_of% this, ← reassoc_of% this, h.w]
+  isLimit := Fork.isLimitOfIsos _ h.isLimit _ (Comma.rightIso e) (Iso.refl _) (Comma.leftIso e)
 
 /-- `IsRegularMono f` is the assertion that `f` is a regular monomorphism. -/
-class IsRegularMono {X Y : C} (f : X ⟶ Y) : Prop where
-  exists_regularMono : Nonempty (RegularMono f)
+abbrev IsRegularMono {X Y : C} (f : X ⟶ Y) : Prop := Nonempty (RegularMono f)
 
 variable (C) in
 /-- The `MorphismProperty C` satisfied by regular monomorphisms in `C`. -/
@@ -91,14 +93,17 @@ theorem MorphismProperty.regularMono.iff (f : X ⟶ Y) :
 
 instance MorphismProperty.regularMono.containsIdentities :
     (MorphismProperty.regularMono C).ContainsIdentities where
-  id_mem _ := ⟨⟨RegularMono.ofIso _⟩⟩
+  id_mem _ := ⟨RegularMono.ofIso _⟩
 
-instance is_regular_mono_of_regular_mono (f : X ⟶ Y) [h : RegularMono f] : IsRegularMono f where
-  exists_regularMono := ⟨h⟩
+instance MorphismProperty.regularMono.respectsIso :
+    (MorphismProperty.regularMono C).RespectsIso :=
+  RespectsIso.of_respects_arrow_iso _ (fun _ _ e h ↦ ⟨.of_arrow_iso e (h := h.some)⟩)
+
+instance is_regular_mono_of_regular_mono (f : X ⟶ Y) [h : RegularMono f] : IsRegularMono f := ⟨h⟩
 
 instance (priority := low) regularMonoOfIsRegularMono (f : X ⟶ Y) [h : IsRegularMono f] :
     RegularMono f :=
-  Classical.choice h.exists_regularMono
+  h.some
 
 instance equalizerRegular (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
     RegularMono (equalizer.ι g h) where
@@ -234,18 +239,21 @@ instance (priority := 100) RegularEpi.ofIso (f : X ⟶ Y) [IsIso f] : RegularEpi
   isColimit := Cofork.IsColimit.mk _ (fun s ↦ inv f ≫ s.π) (by simp) fun s m w ↦ by
     rw [IsIso.eq_inv_comp, ← w]; simp
 
-/-- Regular epimorphisms are preserved when postcomposing with an isomorphism. -/
-instance (priority := 100) RegularEpi.ofRegularEpiCompIso {Z}
-    (f : X ⟶ Y) [h : RegularEpi f] (g : Y ⟶ Z) [IsIso g] : RegularEpi (f ≫ g) where
+/-- Regular epimorphisms are preserved by isomorphisms in the arrow category. -/
+def RegularEpi.of_arrow_iso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
+    (e : Arrow.mk f ≅ Arrow.mk g) [h : RegularEpi f] :
+    RegularEpi g where
   W := h.W
-  left := h.left
-  right := h.right
-  w := by rw [reassoc_of% h.w]
-  isColimit := Cofork.isColimitOfIsos _ h.isColimit _ (Iso.refl _) (Iso.refl _) (asIso g)
+  left := h.left ≫ e.hom.left
+  right := h.right ≫ e.hom.left
+  w := by
+    simp only [Category.assoc, Arrow.w_mk_right, Arrow.mk_hom]
+    rw [reassoc_of% h.w]
+  isColimit := Cofork.isColimitOfIsos _ h.isColimit _
+    (Iso.refl _) (Comma.leftIso e) (Comma.rightIso e)
 
 /-- `IsRegularEpi f` is the assertion that `f` is a regular epimorphism. -/
-class IsRegularEpi {X Y : C} (f : X ⟶ Y) : Prop where
-  exists_regularEpi : Nonempty (RegularEpi f)
+abbrev IsRegularEpi {X Y : C} (f : X ⟶ Y) : Prop := Nonempty (RegularEpi f)
 
 variable (C) in
 /-- The `MorphismProperty C` satisfied by regular epimorphisms in `C`. -/
@@ -258,14 +266,17 @@ theorem MorphismProperty.regularEpi.iff (f : X ⟶ Y) :
 
 instance MorphismProperty.regularEpi.containsIdentities :
     (MorphismProperty.regularEpi C).ContainsIdentities where
-  id_mem _ := ⟨⟨RegularEpi.ofIso _⟩⟩
+  id_mem _ := ⟨RegularEpi.ofIso _⟩
 
-instance is_regular_epi_of_regular_epi (f : X ⟶ Y) [h : RegularEpi f] : IsRegularEpi f where
-  exists_regularEpi := ⟨h⟩
+instance MorphismProperty.regularEpi.respectsIso :
+    (MorphismProperty.regularEpi C).RespectsIso :=
+  RespectsIso.of_respects_arrow_iso _ (fun _ _ e h ↦ ⟨.of_arrow_iso e (h := h.some)⟩)
+
+instance is_regular_epi_of_regular_epi (f : X ⟶ Y) [h : RegularEpi f] : IsRegularEpi f := ⟨h⟩
 
 instance (priority := low) regularEpiOfIsRegularEpi (f : X ⟶ Y) [h : IsRegularEpi f] :
     RegularEpi f :=
-  Classical.choice h.exists_regularEpi
+  h.some
 
 instance coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
     RegularEpi (coequalizer.π g h) where

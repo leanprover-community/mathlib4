@@ -128,9 +128,9 @@ def normalMonoOfMono [IsNormalMonoCategory C] (f : X ⟶ Y) [Mono f] : NormalMon
 
 instance (priority := 100) regularMonoCategoryOfNormalMonoCategory [IsNormalMonoCategory C] :
     IsRegularMonoCategory C where
-  regularMonoOfMono f _ := by
+  regularMonoOfMono f _ := ⟨by
     haveI := normalMonoOfMono f
-    infer_instance
+    infer_instance⟩
 
 end
 
@@ -266,8 +266,8 @@ def normalEpiOfEpi [IsNormalEpiCategory C] (f : X ⟶ Y) [Epi f] : NormalEpi f :
 
 instance (priority := 100) regularEpiCategoryOfNormalEpiCategory [IsNormalEpiCategory C] :
     IsRegularEpiCategory C where
-  regularEpiOfEpi f _ := by
+  regularEpiOfEpi f _ := ⟨by
     haveI := normalEpiOfEpi f
-    infer_instance
+    infer_instance⟩
 
 end CategoryTheory
