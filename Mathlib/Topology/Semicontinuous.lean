@@ -162,8 +162,8 @@ theorem LowerSemicontinuousOn.mono (h : LowerSemicontinuousOn f s) (hst : t ⊆ 
 theorem lowerSemicontinuousOn_univ_iff : LowerSemicontinuousOn f univ ↔ LowerSemicontinuous f := by
   simp [LowerSemicontinuousOn, LowerSemicontinuous, lowerSemicontinuousWithinAt_univ_iff]
 
-theorem lowerSemicontinuousOn_iff_restrict :
-    LowerSemicontinuousOn f s ↔ LowerSemicontinuous (s.restrict f) := by
+@[simp] theorem lowerSemicontinuous_restrict_iff :
+    LowerSemicontinuous (s.restrict f) ↔ LowerSemicontinuousOn f s := by
   rw [LowerSemicontinuousOn, LowerSemicontinuous, SetCoe.forall]
   refine forall₂_congr fun a ha ↦ forall₂_congr fun b _ ↦ ?_
   simp only [nhdsWithin_eq_map_subtype_coe ha, eventually_map, restrict]
