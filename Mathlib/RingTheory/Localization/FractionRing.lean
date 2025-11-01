@@ -240,7 +240,7 @@ theorem mk'_eq_div {r} (s : nonZeroDivisors A) : mk' K r s = algebraMap A K r / 
 
 theorem div_surjective (z : K) :
     ∃ x y : A, y ∈ nonZeroDivisors A ∧ algebraMap _ _ x / algebraMap _ _ y = z :=
-  let ⟨x, ⟨y, hy⟩, h⟩ := mk'_surjective (nonZeroDivisors A) z
+  let ⟨x, ⟨y, hy⟩, h⟩ := exists_mk'_eq (nonZeroDivisors A) z
   ⟨x, y, hy, by rwa [mk'_eq_div] at h⟩
 
 theorem isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors A) :
@@ -617,10 +617,7 @@ lemma algebraMap_liftAlgebra :
   rfl
 
 instance {R₀} [SMul R₀ R] [IsScalarTower R₀ R R] [SMul R₀ K] [IsScalarTower R₀ R K] :
-    IsScalarTower R₀ (FractionRing R) K where
-  smul_assoc r₀ r k := r.ind fun ⟨r, s⟩ ↦ by
-    simp_rw [Localization.smul_mk, Algebra.smul_def, Localization.mk_eq_mk',
-      algebraMap_liftAlgebra, IsFractionRing.lift_mk', mul_comm_div, ← Algebra.smul_def, smul_assoc]
+    IsScalarTower R₀ (FractionRing R) K := IsScalarTower.to₁₃₄ _ R _ _
 
 end liftAlgebra
 
@@ -640,10 +637,9 @@ section IsScalarTower
 
 attribute [local instance] liftAlgebra
 
-instance (B C : Type*) [CommRing B] [IsDomain B] [CommRing C] [IsDomain C] [Algebra A B]
-    [Algebra A C] [Algebra B C] [NoZeroSMulDivisors A B] [NoZeroSMulDivisors A C]
-    [NoZeroSMulDivisors B C] [IsScalarTower A B C] :
-    IsScalarTower (FractionRing A) (FractionRing B) (FractionRing C) where
+instance (k K : Type*) [Field k] [Field K] [Algebra A k] [Algebra A K] [Algebra k K]
+    [FaithfulSMul A k] [FaithfulSMul A K] [IsScalarTower A k K] :
+    IsScalarTower (FractionRing A) k K where
   smul_assoc a b c := a.ind fun ⟨a₁, a₂⟩ ↦ by
     rw [← smul_right_inj (nonZeroDivisors.coe_ne_zero a₂)]
     simp_rw [← smul_assoc, Localization.smul_mk, smul_eq_mul, Localization.mk_eq_mk',

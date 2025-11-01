@@ -673,7 +673,7 @@ theorem independent_maxGenEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
 any eigenspace has trivial intersection with the span of all the other eigenspaces. -/
 theorem eigenspaces_iSupIndep [NoZeroSMulDivisors R M] (f : End R M) :
     iSupIndep f.eigenspace :=
-  (f.independent_genEigenspace 1).mono fun _ ↦ le_rfl
+  f.independent_genEigenspace 1
 
 /-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
 independent. -/
