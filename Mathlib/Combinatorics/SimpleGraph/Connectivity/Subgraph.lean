@@ -265,7 +265,7 @@ lemma mem_support_of_adj_toSubgraph {u v u' v' : V} {p : G.Walk u v} (hp : p.toS
     u' ∈ p.support := p.mem_verts_toSubgraph.mp (p.toSubgraph.edge_vert hp)
 
 lemma verts_toSubgraph_toPath_subset {u v : V} {p : G.Walk u v} [DecidableEq V] :
-    (p.toPath : G.Walk u v).toSubgraph.verts ⊆ {x | x ∈ p.support} := by
+    p.bypass.toSubgraph.verts ⊆ {x | x ∈ p.support} := by
   simpa using p.support_toPath_subset
 
 lemma adj_toSubgraph_iff_mem_edges {u v u' v' : V} {p : G.Walk u v} :
