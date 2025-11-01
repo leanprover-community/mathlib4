@@ -173,7 +173,7 @@ theorem Perm.foldr_eq {f : α → β → β} {l₁ l₂ : List α} [lcomm : Left
   intro b
   induction p using Perm.recOnSwap' generalizing b with
   | nil => rfl
-  | cons _ _ r  => simp [r b]
+  | cons _ _ r => simp [r b]
   | swap' _ _ _ r => simp only [foldr_cons]; rw [lcomm.left_comm, r b]
   | trans _ _ r₁ r₂ => exact Eq.trans (r₁ b) (r₂ b)
 
@@ -215,13 +215,10 @@ theorem map_perm_map_iff {l' : List α} {f : α → β} (hf : f.Injective) :
   map f l ~ map f l' ↔ Relation.Comp (· = map f ·) (· ~ ·) (map f l) l' := by rw [eq_map_comp_perm]
   _ ↔ l ~ l' := by simp [Relation.Comp, map_inj_right hf]
 
-@[gcongr]
 theorem Perm.flatMap_left (l : List α) {f g : α → List β} (h : ∀ a ∈ l, f a ~ g a) :
     l.flatMap f ~ l.flatMap g :=
   Perm.flatten_congr <| by
     rwa [List.forall₂_map_right_iff, List.forall₂_map_left_iff, List.forall₂_same]
-
-attribute [gcongr] Perm.flatMap_right
 
 @[gcongr]
 protected theorem Perm.flatMap {l₁ l₂ : List α} {f g : α → List β} (h : l₁ ~ l₂)
@@ -240,12 +237,10 @@ theorem map_append_flatMap_perm (l : List α) (f : α → β) (g : α → List �
     l.map f ++ l.flatMap g ~ l.flatMap fun x => f x :: g x := by
   simpa [← map_eq_flatMap] using flatMap_append_perm l (fun x => [f x]) g
 
-@[gcongr]
 theorem Perm.product_right {l₁ l₂ : List α} (t₁ : List β) (p : l₁ ~ l₂) :
     product l₁ t₁ ~ product l₂ t₁ :=
   p.flatMap_right _
 
-@[gcongr]
 theorem Perm.product_left (l : List α) {t₁ t₂ : List β} (p : t₁ ~ t₂) :
     product l t₁ ~ product l t₂ :=
   (Perm.flatMap_left _) fun _ _ => p.map _

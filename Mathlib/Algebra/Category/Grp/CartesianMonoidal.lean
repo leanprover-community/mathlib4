@@ -9,127 +9,130 @@ import Mathlib.Algebra.Ring.PUnit
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
 /-!
-# Chosen finite products in `Grp` and friends
+# Chosen finite products in `GrpCat` and friends
 -/
 
 open CategoryTheory Limits MonoidalCategory
 
 universe u
 
-namespace Grp
+namespace GrpCat
 
-/-- Construct limit data for a binary product in `Grp`, using `Grp.of (G × H)` -/
+/-- Construct limit data for a binary product in `GrpCat`, using `GrpCat.of (G × H)` -/
 @[simps! cone_pt isLimit_lift]
-def binaryProductLimitCone (G H : Grp.{u}) : LimitCone (pair G H) where
+def binaryProductLimitCone (G H : GrpCat.{u}) : LimitCone (pair G H) where
   cone := BinaryFan.mk (ofHom (MonoidHom.fst G H)) (ofHom (MonoidHom.snd G H))
   isLimit := BinaryFan.IsLimit.mk _ (fun l r => ofHom (MonoidHom.prod l.hom r.hom))
-    (fun _ _ => rfl) (fun _ _ => rfl) (by aesop_cat)
+    (fun _ _ => rfl) (fun _ _ => rfl) (by cat_disch)
 
-/-- We choose `Grp.of (G × H)` as the product of `G` and `H` and `Grp.of PUnit` as
+/-- We choose `GrpCat.of (G × H)` as the product of `G` and `H` and `GrpCat.of PUnit` as
 the terminal object. -/
-noncomputable instance cartesianMonoidalCategoryGrp : CartesianMonoidalCategory Grp.{u} :=
-  .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (Grp.of PUnit.{u + 1})).isTerminal⟩
+noncomputable instance cartesianMonoidalCategoryGrp : CartesianMonoidalCategory GrpCat.{u} :=
+  .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (GrpCat.of PUnit.{u + 1})).isTerminal⟩
     fun G H ↦ binaryProductLimitCone G H
 
-noncomputable instance : BraidedCategory Grp.{u} := .ofCartesianMonoidalCategory
+noncomputable instance : BraidedCategory GrpCat.{u} := .ofCartesianMonoidalCategory
 
-noncomputable instance : (forget Grp.{u}).Braided := .ofChosenFiniteProducts _
+noncomputable instance : (forget GrpCat.{u}).Braided := .ofChosenFiniteProducts _
 
-theorem tensorObj_eq (G H : Grp.{u}) : (G ⊗ H) = of (G × H) := rfl
+theorem tensorObj_eq (G H : GrpCat.{u}) : (G ⊗ H) = of (G × H) := rfl
 
 @[simp]
-theorem μ_forget_apply {G H : Grp.{u}} (p : G) (q : H) :
-    Functor.LaxMonoidal.μ (forget Grp.{u}) G H (p, q) = (p, q) := by
+theorem μ_forget_apply {G H : GrpCat.{u}} (p : G) (q : H) :
+    Functor.LaxMonoidal.μ (forget GrpCat.{u}) G H (p, q) = (p, q) := by
   apply Prod.ext
-  · exact congrFun (Functor.Monoidal.μ_fst (forget Grp.{u}) G H) (p, q)
-  · exact congrFun (Functor.Monoidal.μ_snd (forget Grp.{u}) G H) (p, q)
+  · exact congrFun (Functor.Monoidal.μ_fst (forget GrpCat.{u}) G H) (p, q)
+  · exact congrFun (Functor.Monoidal.μ_snd (forget GrpCat.{u}) G H) (p, q)
 
-end Grp
+end GrpCat
 
-namespace AddGrp
+namespace AddGrpCat
 
-/-- Construct limit data for a binary product in `AddGrp`, using `AddGrp.of (G × H)` -/
+/-- Construct limit data for a binary product in `AddGrpCat`, using `AddGrpCat.of (G × H)` -/
 @[simps! cone_pt isLimit_lift]
-def binaryProductLimitCone (G H : AddGrp.{u}) : LimitCone (pair G H) where
+def binaryProductLimitCone (G H : AddGrpCat.{u}) : LimitCone (pair G H) where
   cone := BinaryFan.mk (ofHom (AddMonoidHom.fst G H)) (ofHom (AddMonoidHom.snd G H))
   isLimit := BinaryFan.IsLimit.mk _ (fun l r => ofHom (AddMonoidHom.prod l.hom r.hom))
-    (fun _ _ => rfl) (fun _ _ => rfl) (by aesop_cat)
+    (fun _ _ => rfl) (fun _ _ => rfl) (by cat_disch)
 
-/-- We choose `AddGrp.of (G × H)` as the product of `G` and `H` and `AddGrp.of PUnit` as
+/-- We choose `AddGrpCat.of (G × H)` as the product of `G` and `H` and `AddGrpCat.of PUnit` as
 the terminal object. -/
-noncomputable instance cartesianMonoidalCategoryAddGrp : CartesianMonoidalCategory AddGrp.{u} :=
-  .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (AddGrp.of PUnit.{u + 1})).isTerminal⟩
+noncomputable instance cartesianMonoidalCategoryAddGrp : CartesianMonoidalCategory AddGrpCat.{u} :=
+  .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (AddGrpCat.of PUnit.{u + 1})).isTerminal⟩
     fun G H ↦ binaryProductLimitCone G H
 
-noncomputable instance : BraidedCategory AddGrp.{u} := .ofCartesianMonoidalCategory
+noncomputable instance : BraidedCategory AddGrpCat.{u} := .ofCartesianMonoidalCategory
 
-noncomputable instance : (forget AddGrp.{u}).Braided := .ofChosenFiniteProducts _
+noncomputable instance : (forget AddGrpCat.{u}).Braided := .ofChosenFiniteProducts _
 
-theorem tensorObj_eq (G H : AddGrp.{u}) : (G ⊗ H) = of (G × H) := rfl
+theorem tensorObj_eq (G H : AddGrpCat.{u}) : (G ⊗ H) = of (G × H) := rfl
 
 @[simp]
-theorem μ_forget_apply {G H : AddGrp.{u}} (p : G) (q : H) :
-    Functor.LaxMonoidal.μ (forget AddGrp.{u}) G H (p, q) = (p, q) := by
+theorem μ_forget_apply {G H : AddGrpCat.{u}} (p : G) (q : H) :
+    Functor.LaxMonoidal.μ (forget AddGrpCat.{u}) G H (p, q) = (p, q) := by
   apply Prod.ext
-  · exact congrFun (Functor.Monoidal.μ_fst (forget AddGrp.{u}) G H) (p, q)
-  · exact congrFun (Functor.Monoidal.μ_snd (forget AddGrp.{u}) G H) (p, q)
+  · exact congrFun (Functor.Monoidal.μ_fst (forget AddGrpCat.{u}) G H) (p, q)
+  · exact congrFun (Functor.Monoidal.μ_snd (forget AddGrpCat.{u}) G H) (p, q)
 
-end AddGrp
+end AddGrpCat
 
-namespace CommGrp
+namespace CommGrpCat
 
-/-- Construct limit data for a binary product in `CommGrp`, using `CommGrp.of (G × H)` -/
+/-- Construct limit data for a binary product in `CommGrpCat`, using `CommGrpCat.of (G × H)` -/
 @[simps! cone_pt isLimit_lift]
-def binaryProductLimitCone (G H : CommGrp.{u}) : LimitCone (pair G H) where
+def binaryProductLimitCone (G H : CommGrpCat.{u}) : LimitCone (pair G H) where
   cone := BinaryFan.mk (ofHom (MonoidHom.fst G H)) (ofHom (MonoidHom.snd G H))
   isLimit := BinaryFan.IsLimit.mk _ (fun l r => ofHom (MonoidHom.prod l.hom r.hom))
-    (fun _ _ => rfl) (fun _ _ => rfl) (by aesop_cat)
+    (fun _ _ => rfl) (fun _ _ => rfl) (by cat_disch)
 
-/-- We choose `CommGrp.of (G × H)` as the product of `G` and `H` and `CommGrp.of PUnit` as
+/-- We choose `CommGrpCat.of (G × H)` as the product of `G` and `H` and `CommGrpCat.of PUnit` as
 the terminal object. -/
-noncomputable instance cartesianMonoidalCategoryCommGrp : CartesianMonoidalCategory CommGrp.{u} :=
-  .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (CommGrp.of PUnit.{u + 1})).isTerminal⟩
+noncomputable instance cartesianMonoidalCategory : CartesianMonoidalCategory CommGrpCat.{u} :=
+  .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (CommGrpCat.of PUnit.{u + 1})).isTerminal⟩
     fun G H ↦ binaryProductLimitCone G H
 
-noncomputable instance : BraidedCategory CommGrp.{u} := .ofCartesianMonoidalCategory
+noncomputable instance : BraidedCategory CommGrpCat.{u} := .ofCartesianMonoidalCategory
 
-noncomputable instance : (forget CommGrp.{u}).Braided := .ofChosenFiniteProducts _
+noncomputable instance : (forget CommGrpCat.{u}).Braided := .ofChosenFiniteProducts _
 
-theorem tensorObj_eq (G H : CommGrp.{u}) : (G ⊗ H) = of (G × H) := rfl
+theorem tensorObj_eq (G H : CommGrpCat.{u}) : (G ⊗ H) = of (G × H) := rfl
 
 @[simp]
-theorem μ_forget_apply {G H : CommGrp.{u}} (p : G) (q : H) :
-    Functor.LaxMonoidal.μ (forget CommGrp.{u}) G H (p, q) = (p, q) := by
+theorem μ_forget_apply {G H : CommGrpCat.{u}} (p : G) (q : H) :
+    Functor.LaxMonoidal.μ (forget CommGrpCat.{u}) G H (p, q) = (p, q) := by
   apply Prod.ext
-  · exact congrFun (Functor.Monoidal.μ_fst (forget CommGrp.{u}) G H) (p, q)
-  · exact congrFun (Functor.Monoidal.μ_snd (forget CommGrp.{u}) G H) (p, q)
+  · exact congrFun (Functor.Monoidal.μ_fst (forget CommGrpCat.{u}) G H) (p, q)
+  · exact congrFun (Functor.Monoidal.μ_snd (forget CommGrpCat.{u}) G H) (p, q)
 
-end CommGrp
+end CommGrpCat
 
-namespace AddCommGrp
+namespace AddCommGrpCat
 
-/-- We choose `AddCommGrp.of (G × H)` as the product of `G` and `H` and `AddGrp.of PUnit` as
-the terminal object. -/
-noncomputable def cartesianMonoidalCategoryAddCommGrp : CartesianMonoidalCategory AddCommGrp.{u} :=
-  .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (AddCommGrp.of PUnit.{u + 1})).isTerminal⟩
+/-- We choose `AddCommGrpCat.of (G × H)` as the product of `G` and `H` and
+`AddCommGrpCat.of PUnit` as the terminal object. -/
+noncomputable def cartesianMonoidalCategory : CartesianMonoidalCategory AddCommGrpCat.{u} :=
+  .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (AddCommGrpCat.of PUnit.{u + 1})).isTerminal⟩
     fun G H ↦ binaryProductLimitCone G H
+
+@[deprecated (since := "2025-10-10")]
+alias cartesianMonoidalCategoryAddCommGrp := cartesianMonoidalCategory
 
 @[deprecated (since := "2025-05-15")]
-alias chosenFiniteProductsAddCommGrp := cartesianMonoidalCategoryAddCommGrp
+alias chosenFiniteProductsAddCommGrp := cartesianMonoidalCategory
 
-attribute [local instance] cartesianMonoidalCategoryAddCommGrp
+attribute [local instance] cartesianMonoidalCategory
 
-noncomputable instance : BraidedCategory AddCommGrp.{u} := .ofCartesianMonoidalCategory
+noncomputable instance : BraidedCategory AddCommGrpCat.{u} := .ofCartesianMonoidalCategory
 
-noncomputable instance : (forget AddCommGrp.{u}).Braided := .ofChosenFiniteProducts _
+noncomputable instance : (forget AddCommGrpCat.{u}).Braided := .ofChosenFiniteProducts _
 
-theorem tensorObj_eq (G H : AddCommGrp.{u}) : (G ⊗ H) = of (G × H) := rfl
+theorem tensorObj_eq (G H : AddCommGrpCat.{u}) : (G ⊗ H) = of (G × H) := rfl
 
 @[simp]
-theorem μ_forget_apply {G H : AddCommGrp.{u}} (p : G) (q : H) :
-    Functor.LaxMonoidal.μ (forget AddCommGrp.{u}) G H (p, q) = (p, q) := by
+theorem μ_forget_apply {G H : AddCommGrpCat.{u}} (p : G) (q : H) :
+    Functor.LaxMonoidal.μ (forget AddCommGrpCat.{u}) G H (p, q) = (p, q) := by
   apply Prod.ext
-  · exact congrFun (Functor.Monoidal.μ_fst (forget AddCommGrp.{u}) G H) (p, q)
-  · exact congrFun (Functor.Monoidal.μ_snd (forget AddCommGrp.{u}) G H) (p, q)
+  · exact congrFun (Functor.Monoidal.μ_fst (forget AddCommGrpCat.{u}) G H) (p, q)
+  · exact congrFun (Functor.Monoidal.μ_snd (forget AddCommGrpCat.{u}) G H) (p, q)
 
-end AddCommGrp
+end AddCommGrpCat

@@ -34,7 +34,7 @@ discrete categories.
 
 namespace CategoryTheory
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 universe v₁ v₂ v₃ u₁ u₁' u₂ u₃
 
 -- This is intentionally a structure rather than a type synonym
@@ -58,8 +58,8 @@ theorem Discrete.mk_as {α : Type u₁} (X : Discrete α) : Discrete.mk X.as = X
 def discreteEquiv {α : Type u₁} : Discrete α ≃ α where
   toFun := Discrete.as
   invFun := Discrete.mk
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 instance {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) :=
   discreteEquiv.decidableEq
@@ -87,7 +87,7 @@ instance [Inhabited α] : Inhabited (Discrete α) :=
   ⟨⟨default⟩⟩
 
 instance [Subsingleton α] : Subsingleton (Discrete α) :=
-  ⟨by aesop_cat⟩
+  ⟨by cat_disch⟩
 
 instance instSubsingletonDiscreteHom (X Y : Discrete α) : Subsingleton (X ⟶ Y) :=
   show Subsingleton (ULift (PLift _)) from inferInstance
@@ -103,7 +103,7 @@ Use:
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 ```
-to locally gives `aesop_cat` the ability to call `cases` on
+to locally give `cat_disch` the ability to call `cases` on
 `Discrete` and `(_ : Discrete _) ⟶ (_ : Discrete _)` hypotheses.
 -/
 def discreteCases : TacticM Unit := do
@@ -125,12 +125,12 @@ theorem eq_of_hom {X Y : Discrete α} (i : X ⟶ Y) : X.as = Y.as :=
 /-- Promote an equation between the wrapped terms in `X Y : Discrete α` to a morphism `X ⟶ Y`
 in the discrete category. -/
 protected abbrev eqToHom {X Y : Discrete α} (h : X.as = Y.as) : X ⟶ Y :=
-  eqToHom (by aesop_cat)
+  eqToHom (by cat_disch)
 
 /-- Promote an equation between the wrapped terms in `X Y : Discrete α` to an isomorphism `X ≅ Y`
 in the discrete category. -/
 protected abbrev eqToIso {X Y : Discrete α} (h : X.as = Y.as) : X ≅ Y :=
-  eqToIso (by aesop_cat)
+  eqToIso (by cat_disch)
 
 /-- A variant of `eqToHom` that lifts terms to the discrete category. -/
 abbrev eqToHom' {a b : α} (h : a = b) : Discrete.mk a ⟶ Discrete.mk b :=
@@ -144,10 +144,14 @@ abbrev eqToIso' {a b : α} (h : a = b) : Discrete.mk a ≅ Discrete.mk b :=
 theorem id_def (X : Discrete α) : ULift.up (PLift.up (Eq.refl X.as)) = 𝟙 X :=
   rfl
 
+@[simp]
+theorem id_def' (X : α) : ULift.up (PLift.up (Eq.refl X)) = 𝟙 (⟨X⟩ : Discrete α) :=
+  rfl
+
 variable {C : Type u₂} [Category.{v₂} C]
 
 instance {I : Type u₁} {i j : Discrete I} (f : i ⟶ j) : IsIso f :=
-  ⟨⟨Discrete.eqToHom (eq_of_hom f).symm, by aesop_cat⟩⟩
+  ⟨⟨Discrete.eqToHom (eq_of_hom f).symm, by cat_disch⟩⟩
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
@@ -166,12 +170,20 @@ theorem functor_obj {I : Type u₁} (F : I → C) (i : I) :
   rfl
 
 theorem functor_map {I : Type u₁} (F : I → C) {i : Discrete I} (f : i ⟶ i) :
-    (Discrete.functor F).map f = 𝟙 (F i.as) := by aesop_cat
+    (Discrete.functor F).map f = 𝟙 (F i.as) := by cat_disch
 
 @[simp]
 theorem functor_obj_eq_as {I : Type u₁} (F : I → C) (X : Discrete I) :
     (Discrete.functor F).obj X = F X.as :=
   rfl
+
+@[ext]
+lemma functor_ext {I : Type u₁} {G F : Discrete I ⥤ C} (h : (i : I) → G.obj ⟨i⟩ = F.obj ⟨i⟩) :
+    G = F := by
+  fapply Functor.ext
+  · intro I; rw [h]
+  · intro ⟨X⟩ ⟨Y⟩ ⟨⟨p⟩⟩; simp only at p; induction p; simp
+
 /-- The discrete functor induced by a composition of maps can be written as a
 composition of two discrete functors.
 -/
@@ -214,7 +226,7 @@ instance {I : Type*} {F G : Discrete I ⥤ C} (f : ∀ i, F.obj i ⟶ G.obj i) [
 
 @[simp]
 theorem natIso_app {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.obj i ≅ G.obj i)
-    (i : Discrete I) : (Discrete.natIso f).app i = f i := by aesop_cat
+    (i : Discrete I) : (Discrete.natIso f).app i = f i := by cat_disch
 
 /-- Every functor `F` from a discrete category is naturally isomorphic (actually, equal) to
   `Discrete.functor (F.obj)`. -/
@@ -270,11 +282,23 @@ variable {C : Type u₂} [Category.{v₂} C]
 @[simp]
 theorem functor_map_id (F : Discrete J ⥤ C) {j : Discrete J} (f : j ⟶ j) :
     F.map f = 𝟙 (F.obj j) := by
-  have h : f = 𝟙 j := by aesop_cat
+  have h : f = 𝟙 j := by cat_disch
   rw [h]
   simp
 
 end Discrete
+
+@[simp]
+lemma Discrete.forall {α : Type*} {p : Discrete α → Prop} :
+    (∀ (a : Discrete α), p a) ↔ ∀ (a' : α), p ⟨a'⟩ := by
+  rw [iff_iff_eq, discreteEquiv.forall_congr_left]
+  simp [discreteEquiv]
+
+@[simp]
+lemma Discrete.exists {α : Type*} {p : Discrete α → Prop} :
+    (∃ (a : Discrete α), p a) ↔ ∃ (a' : α), p ⟨a'⟩ := by
+  rw [iff_iff_eq, discreteEquiv.exists_congr_left]
+  simp [discreteEquiv]
 
 /-- The equivalence of categories `(J → C) ≌ (Discrete J ⥤ C)`. -/
 @[simps]
@@ -292,7 +316,7 @@ def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁
       rintro ⟨x⟩ ⟨y⟩ f
       obtain rfl : x = y := Discrete.eq_of_hom f
       obtain rfl : f = 𝟙 _ := rfl
-      simp))) (by aesop_cat)
+      simp))) (by cat_disch)
 
 /-- A category is discrete when there is at most one morphism between two objects,
 in which case they are equal. -/
@@ -312,7 +336,7 @@ variable {C : Type*} [Category C] [IsDiscrete C]
 lemma obj_ext_of_isDiscrete {X Y : C} (f : X ⟶ Y) : X = Y := IsDiscrete.eq_of_hom f
 
 instance isIso_of_isDiscrete {X Y : C} (f : X ⟶ Y) : IsIso f :=
-  ⟨eqToHom (IsDiscrete.eq_of_hom f).symm, by aesop_cat⟩
+  ⟨eqToHom (IsDiscrete.eq_of_hom f).symm, by cat_disch⟩
 
 instance : IsDiscrete Cᵒᵖ where
   eq_of_hom := by

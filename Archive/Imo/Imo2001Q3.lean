@@ -78,7 +78,7 @@ lemma card_not_easy_le_210 (hG : ∀ i, #(G i) ≤ 6) (hB : ∀ i j, ¬Disjoint 
       simp_rw [card_filter, ← univ_product_univ, sum_product]
     _ = ∑ i, #({p ∈ G i | ¬Easy B p}.biUnion fun p ↦ {j | p ∈ B j}) := by
       congr!; ext
-      simp_rw [mem_biUnion, mem_inter, mem_filter, mem_univ, true_and]
+      simp_rw [mem_biUnion, mem_inter, mem_filter]
       congr! 2; tauto
     _ ≤ ∑ i, ∑ p ∈ G i with ¬Easy B p, #{j | p ∈ B j} := sum_le_sum fun _ _ ↦ card_biUnion_le
     _ ≤ ∑ i, ∑ p ∈ G i with ¬Easy B p, 2 := by
@@ -87,8 +87,7 @@ lemma card_not_easy_le_210 (hG : ∀ i, #(G i) ≤ 6) (hB : ∀ i j, ¬Disjoint 
       exact Nat.le_of_lt_succ mp.2
     _ ≤ ∑ i : Fin 21, 5 * 2 := by
       gcongr with i
-      rw [sum_const, smul_eq_mul]
-      exact mul_le_mul_right' (card_not_easy_le_five (hG _) (hB _)) _
+      grw [sum_const, smul_eq_mul, card_not_easy_le_five (hG _) (hB _)]
     _ = _ := by norm_num
 
 theorem result (h : Condition G B) : ∃ p, Easy G p ∧ Easy B p := by
@@ -101,7 +100,7 @@ theorem result (h : Condition G B) : ∃ p, Easy G p ∧ Easy B p := by
   have key := (card_union_le _ _).trans (add_le_add cB cG) |>.trans_lt
     (show _ < #(@univ (Fin 21 × Fin 21) _) by simp)
   obtain ⟨⟨i, j⟩, -, hij⟩ := exists_mem_notMem_of_card_lt_card key
-  simp_rw [mem_union, mem_map, mem_filter, mem_univ, Function.Embedding.coeFn_mk, Prod.exists,
+  simp_rw [mem_union, mem_map, mem_filter_univ, Function.Embedding.coeFn_mk, Prod.exists,
     Prod.swap_prod_mk, Prod.mk.injEq, existsAndEq, true_and, and_true, not_or, not_exists,
     not_and', not_not, mem_inter, and_imp] at hij
   obtain ⟨p, pG, pB⟩ := not_disjoint_iff.mp (G_inter_B i j)

@@ -29,7 +29,7 @@ instance [Small.{u} J] (F : J ⥤ Type u) : Small.{u} (F.ColimitType) :=
 
 variable (F : J ⥤ Type u)
 
-/-- If `F : J ⥤ Type u`, then the data of a "type theoretic" cocone of `F`
+/-- If `F : J ⥤ Type u`, then the data of a "type-theoretic" cocone of `F`
 with a point in `Type u` is the same as the data of a cocone (in a categorical sense). -/
 @[simps]
 def coconeTypesEquiv : CoconeTypes.{u} F ≃ Cocone F where
@@ -123,10 +123,10 @@ section instances
 example : HasColimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max w v) := inferInstance
 example : HasColimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max v w) := inferInstance
 
-example : HasColimitsOfSize.{0, 0, v, v+1} (Type v) := inferInstance
-example : HasColimitsOfSize.{v, v, v, v+1} (Type v) := inferInstance
+example : HasColimitsOfSize.{0, 0, v, v + 1} (Type v) := inferInstance
+example : HasColimitsOfSize.{v, v, v, v + 1} (Type v) := inferInstance
 
-example [UnivLE.{v, u}] : HasColimitsOfSize.{v, v, u, u+1} (Type u) := inferInstance
+example [UnivLE.{v, u}] : HasColimitsOfSize.{v, v, u, u + 1} (Type u) := inferInstance
 
 end instances
 
@@ -167,36 +167,27 @@ theorem colimitEquivColimitType_apply (j : J) (x : F.obj j) :
   apply (colimitEquivColimitType F).symm.injective
   simp
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] was removed because the linter said it was useless
 variable {F} in
+@[simp]
 theorem Colimit.w_apply {j j' : J} {x : F.obj j} (f : j ⟶ j') :
     colimit.ι F j' (F.map f x) = colimit.ι F j x :=
   congr_fun (colimit.w F f) x
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] was removed because the linter said it was useless
+@[simp]
 theorem Colimit.ι_desc_apply (s : Cocone F) (j : J) (x : F.obj j) :
-    colimit.desc F s (colimit.ι F j x) = s.ι.app j x :=
-   congr_fun (colimit.ι_desc s j) x
-
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] was removed because the linter said it was useless
-theorem Colimit.ι_map_apply {F G : J ⥤ Type u} [HasColimitsOfShape J (Type u)] (α : F ⟶ G) (j : J)
-    (x : F.obj j) : colim.map α (colimit.ι F j x) = colimit.ι G j (α.app j x) :=
-  congr_fun (colimit.ι_map α j) x
-
-@[simp]
-theorem Colimit.w_apply' {F : J ⥤ Type v} {j j' : J} {x : F.obj j} (f : j ⟶ j') :
-    colimit.ι F j' (F.map f x) = colimit.ι F j x :=
-  congr_fun (colimit.w F f) x
-
-@[simp]
-theorem Colimit.ι_desc_apply' (F : J ⥤ Type v) (s : Cocone F) (j : J) (x : F.obj j) :
     colimit.desc F s (colimit.ι F j x) = s.ι.app j x :=
   congr_fun (colimit.ι_desc s j) x
 
 @[simp]
-theorem Colimit.ι_map_apply' {F G : J ⥤ Type v} (α : F ⟶ G) (j : J) (x) :
-    colim.map α (colimit.ι F j x) = colimit.ι G j (α.app j x) :=
+theorem Colimit.ι_map_apply {F G : J ⥤ Type u} [HasColimitsOfShape J (Type u)] (α : F ⟶ G) (j : J)
+    (x : F.obj j) : colim.map α (colimit.ι F j x) = colimit.ι G j (α.app j x) :=
   congr_fun (colimit.ι_map α j) x
+
+-- These were variations of the aliased lemmas with different universe variables.
+-- It appears those are now strictly more powerful.
+@[deprecated (since := "2025-08-22")] alias Colimit.w_apply' := Colimit.w_apply
+@[deprecated (since := "2025-08-22")] alias Colimit.ι_desc_apply' := Colimit.ι_desc_apply
+@[deprecated (since := "2025-08-22")] alias Colimit.ι_map_apply' := Colimit.ι_map_apply
 
 variable {F} in
 theorem colimit_sound {j j' : J} {x : F.obj j} {x' : F.obj j'} (f : j ⟶ j')

@@ -60,9 +60,6 @@ protected theorem analyticAt (f : E →L[𝕜] F) (x : E) : AnalyticAt 𝕜 f x 
 protected theorem cpolynomialOn (f : E →L[𝕜] F) (s : Set E) : CPolynomialOn 𝕜 f s :=
   fun x _ ↦ f.cpolynomialAt x
 
-@[deprecated (since := "2025-03-22")]
-protected alias colynomialOn := ContinuousLinearMap.cpolynomialOn
-
 protected theorem analyticOnNhd (f : E →L[𝕜] F) (s : Set E) : AnalyticOnNhd 𝕜 f s :=
   fun x _ ↦ f.analyticAt x
 
@@ -203,10 +200,10 @@ protected theorem analyticAt : AnalyticAt 𝕜 f x :=
 protected theorem analyticOnNhd : AnalyticOnNhd 𝕜 f s :=
   fun x _ ↦ f.analyticAt x
 
-protected theorem analyticWithinAt (f : E →L[𝕜] F) (s : Set E) (x : E) : AnalyticWithinAt 𝕜 f s x :=
+protected theorem analyticWithinAt : AnalyticWithinAt 𝕜 f s x :=
   (f.analyticAt x).analyticWithinAt
 
-protected theorem analyticOn (f : E →L[𝕜] F) (s : Set E) : AnalyticOn 𝕜 f s :=
+protected theorem analyticOn : AnalyticOn 𝕜 f s :=
   fun x _ ↦ f.analyticWithinAt _ x
 
 end ContinuousLinearEquiv
@@ -221,10 +218,10 @@ protected theorem analyticAt : AnalyticAt 𝕜 f x :=
 protected theorem analyticOnNhd : AnalyticOnNhd 𝕜 f s :=
   fun x _ ↦ f.analyticAt x
 
-protected theorem analyticWithinAt (f : E →L[𝕜] F) (s : Set E) (x : E) : AnalyticWithinAt 𝕜 f s x :=
+protected theorem analyticWithinAt : AnalyticWithinAt 𝕜 f s x :=
   (f.analyticAt x).analyticWithinAt
 
-protected theorem analyticOn (f : E →L[𝕜] F) (s : Set E) : AnalyticOn 𝕜 f s :=
+protected theorem analyticOn : AnalyticOn 𝕜 f s :=
   fun x _ ↦ f.analyticWithinAt _ x
 
 end LinearIsometryEquiv

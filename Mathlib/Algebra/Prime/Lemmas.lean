@@ -26,7 +26,7 @@ Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
 -/
 
-assert_not_exists OrderedCommMonoid Multiset
+assert_not_exists IsOrderedMonoid Multiset
 
 variable {M N : Type*}
 
@@ -126,9 +126,6 @@ theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul (hp : Prime p) {a b : M} {k l :
 theorem Prime.not_isSquare (hp : Prime p) : ¬IsSquare p :=
   hp.irreducible.not_isSquare
 
-@[deprecated (since := "2025-04-17")]
-alias Prime.not_square := Prime.not_isSquare
-
 theorem IsSquare.not_prime (ha : IsSquare a) : ¬Prime a := fun h => h.not_isSquare ha
 
 theorem not_prime_pow {n : ℕ} (hn : n ≠ 1) : ¬Prime (a ^ n) := fun hp =>
@@ -158,9 +155,7 @@ section CancelCommMonoidWithZero
 theorem DvdNotUnit.ne [CancelCommMonoidWithZero M] {p q : M} (h : DvdNotUnit p q) : p ≠ q := by
   by_contra hcontra
   obtain ⟨hp, x, hx', hx''⟩ := h
-  conv_lhs at hx'' => rw [← hcontra, ← mul_one p]
-  rw [(mul_left_cancel₀ hp hx'').symm] at hx'
-  exact hx' isUnit_one
+  simp_all
 
 theorem pow_injective_of_not_isUnit [CancelCommMonoidWithZero M] {q : M} (hq : ¬IsUnit q)
     (hq' : q ≠ 0) : Function.Injective fun n : ℕ => q ^ n := by

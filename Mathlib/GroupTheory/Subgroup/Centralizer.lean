@@ -21,7 +21,7 @@ variable {H K : Subgroup G}
 
 /-- The `centralizer` of `s` is the subgroup of `g : G` commuting with every `h : s`. -/
 @[to_additive
-      "The `centralizer` of `s` is the additive subgroup of `g : G` commuting with every `h : s`."]
+/-- The `centralizer` of `s` is the additive subgroup of `g : G` commuting with every `h : s`. -/]
 def centralizer (s : Set G) : Subgroup G :=
   { Submonoid.centralizer s with
     carrier := Set.centralizer s
@@ -86,11 +86,6 @@ theorem le_centralizer_iff_isMulCommutative : K ≤ centralizer K ↔ IsMulCommu
   ⟨fun h => ⟨⟨fun x y => Subtype.ext (h y.2 x x.2)⟩⟩,
     fun h x hx y hy => congr_arg Subtype.val (h.1.1 ⟨y, hy⟩ ⟨x, hx⟩)⟩
 
-@[deprecated (since := "2025-04-09")] alias le_centralizer_iff_isCommutative :=
-  le_centralizer_iff_isMulCommutative
-@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.le_centralizer_iff_isCommutative :=
-  AddSubgroup.le_centralizer_iff_isAddCommutative
-
 variable (H)
 
 @[to_additive]
@@ -105,8 +100,7 @@ lemma closure_le_centralizer_centralizer (s : Set G) :
 
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative group. -/
 @[to_additive
-      "If all the elements of a set `s` commute, then `closure s` is an additive
-      commutative group."]
+/-- If all the elements of a set `s` commute, then `closure s` is an additive commutative group. -/]
 abbrev closureCommGroupOfComm {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x * y = y * x) :
     CommGroup (closure k) :=
   { (closure k).toGroup with

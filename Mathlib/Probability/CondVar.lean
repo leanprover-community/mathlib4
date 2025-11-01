@@ -134,15 +134,15 @@ lemma integral_condVar_add_variance_condExp (hm : m ≤ m₀) [IsProbabilityMeas
     _ = μ[(μ[X ^ 2 | m] - μ[X | m] ^ 2 : Ω → ℝ)] + (μ[μ[X | m] ^ 2] - μ[μ[X | m]] ^ 2) := by
       congr 1
       · exact integral_congr_ae <| condVar_ae_eq_condExp_sq_sub_sq_condExp hm hX
-      · exact variance_def' hX.condExp
+      · exact variance_eq_sub hX.condExp
     _ = μ[X ^ 2] - μ[μ[X | m] ^ 2] + (μ[μ[X | m] ^ 2] - μ[X] ^ 2) := by
       rw [integral_sub' integrable_condExp, integral_condExp hm, integral_condExp hm]
       exact hX.condExp.integrable_sq
-    _ = Var[X; μ] := by rw [variance_def' hX]; ring
+    _ = Var[X; μ] := by rw [variance_eq_sub hX]; ring
 
 lemma condVar_bot' [NeZero μ] (X : Ω → ℝ) :
     Var[X; μ | ⊥] = fun _ => ⨍ ω, (X ω - ⨍ ω', X ω' ∂μ) ^ 2 ∂μ := by
-  ext ω; simp [condVar, condExp_bot', average, measureReal_def]
+  simp [condVar, condExp_bot', average, measureReal_def]
 
 lemma condVar_bot_ae_eq (X : Ω → ℝ) :
     Var[X; μ | ⊥] =ᵐ[μ] fun _ ↦ ⨍ ω, (X ω - ⨍ ω', X ω' ∂μ) ^ 2 ∂μ := by

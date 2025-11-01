@@ -22,7 +22,7 @@ import Mathlib.RingTheory.TensorProduct.Finite
 
 ## Main results
 
-- `Module.finitePresentation_iff_finite`: If `R` is noetherian, then f.p. iff f.g. on `R`-modules.
+- `Module.finitePresentation_iff_finite`: If `R` is Noetherian, then f.p. iff f.g. on `R`-modules.
 
 Suppose `0 → K → M → N → 0` is an exact sequence of `R`-modules.
 
@@ -152,9 +152,6 @@ lemma Module.finitePresentation_of_projective [Projective R M] [Module.Finite R 
   Module.finitePresentation_of_free_of_surjective _ surj
     (Finite.iff_fg.mp <| LinearMap.ker_eq_range_of_comp_eq_id hfg ▸ inferInstance)
 
-@[deprecated (since := "2024-11-06")]
-alias Module.finitePresentation_of_free := Module.finitePresentation_of_projective
-
 variable {ι} [Finite ι]
 
 instance : Module.FinitePresentation R R := Module.finitePresentation_of_projective _ _
@@ -169,7 +166,7 @@ lemma Module.finitePresentation_of_surjective [h : Module.FinitePresentation R M
   obtain ⟨t, ht⟩ := hl'
   have H : Function.Surjective (Finsupp.linearCombination R ((↑) : s → M)) :=
     LinearMap.range_eq_top.mp
-      (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
+      (by rw [range_linearCombination, Subtype.range_val, ← hs])
   apply Module.finitePresentation_of_free_of_surjective (l ∘ₗ linearCombination R Subtype.val)
     (hl.comp H)
   choose σ hσ using (show _ from H)
@@ -186,7 +183,7 @@ lemma Module.FinitePresentation.fg_ker [Module.Finite R M]
   obtain ⟨s, hs, hs'⟩ := h
   have H : Function.Surjective (Finsupp.linearCombination R ((↑) : s → N)) :=
     LinearMap.range_eq_top.mp
-      (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
+      (by rw [range_linearCombination, Subtype.range_val, ← hs])
   obtain ⟨f, hf⟩ : ∃ f : (s →₀ R) →ₗ[R] M, l ∘ₗ f = (Finsupp.linearCombination R Subtype.val) := by
     choose f hf using show _ from hl
     exact ⟨Finsupp.linearCombination R (fun i ↦ f i), by ext; simp [hf]⟩
@@ -219,11 +216,10 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
   let π := Finsupp.linearCombination R ((↑) : s → M)
   have H : Function.Surjective π :=
     LinearMap.range_eq_top.mp
-      (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
+      (by rw [range_linearCombination, Subtype.range_val, ← hs])
   have inst : Module.Finite R (LinearMap.ker (l ∘ₗ π)) := by
     constructor
     rw [Submodule.fg_top]; exact Module.FinitePresentation.fg_ker _ (hl.comp H)
-  letI : AddCommGroup (LinearMap.ker (l ∘ₗ π)) := inferInstance
   let f : LinearMap.ker (l ∘ₗ π) →ₗ[R] LinearMap.ker l := LinearMap.restrict π (fun x ↦ id)
   have e : π ∘ₗ Submodule.subtype _ = Submodule.subtype _ ∘ₗ f := by ext; rfl
   have hf : Function.Surjective f := by
@@ -367,7 +363,7 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
   let π := Finsupp.linearCombination R ((↑) : σ → M)
   have hπ : Function.Surjective π :=
     LinearMap.range_eq_top.mp
-      (by rw [range_linearCombination, Subtype.range_val, ← hσ]; rfl)
+      (by rw [range_linearCombination, Subtype.range_val, ← hσ])
   classical
   choose s hs using IsLocalizedModule.surj S f
   let i : σ → N :=
@@ -381,7 +377,7 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
     rw [← mul_smul, Finset.prod_erase_mul]
     exact j.prop
   have : ∀ x : τ, ∃ s : S, s • (Finsupp.linearCombination R i x) = 0 := by
-    intros x
+    intro x
     convert_to ∃ s : S, s • (Finsupp.linearCombination R i x) = s • 0
     · simp only [smul_zero]
     apply IsLocalizedModule.exists_of_eq (S := S) (f := f)

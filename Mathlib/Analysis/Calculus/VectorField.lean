@@ -97,9 +97,7 @@ lemma lieBracketWithin_const_smul_left {c : 𝕜} (hV : DifferentiableWithinAt �
     (hs : UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 (c • V) W s x =
       c • lieBracketWithin 𝕜 V W s x := by
-  simp only [lieBracketWithin, Pi.smul_apply, map_smul, smul_sub]
-  rw [fderivWithin_const_smul hs hV]
-  rfl
+  simp [lieBracketWithin, smul_sub, fderivWithin_const_smul hs hV]
 
 lemma lieBracket_const_smul_left {c : 𝕜} (hV : DifferentiableAt 𝕜 V x) :
     lieBracket 𝕜 (c • V) W x = c • lieBracket 𝕜 V W x := by
@@ -110,9 +108,7 @@ lemma lieBracketWithin_const_smul_right {c : 𝕜} (hW : DifferentiableWithinAt 
     (hs : UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 V (c • W) s x =
       c • lieBracketWithin 𝕜 V W s x := by
-  simp only [lieBracketWithin, Pi.smul_apply, map_smul, smul_sub]
-  rw [fderivWithin_const_smul hs hW]
-  rfl
+  simp [lieBracketWithin, smul_sub, fderivWithin_const_smul hs hW]
 
 lemma lieBracket_const_smul_right {c : 𝕜} (hW : DifferentiableAt 𝕜 W x) :
     lieBracket 𝕜 V (c • W) x = c • lieBracket 𝕜 V W x := by
@@ -280,7 +276,7 @@ theorem lieBracketWithin_congr_set (h : s =ᶠ[𝓝 x] t) :
   lieBracketWithin_congr_set' x <| h.filter_mono inf_le_left
 
 /-- Variant of `lieBracketWithin_eventually_congr_set` where one requires the sets to coincide only
-in  the complement of a point. -/
+in the complement of a point. -/
 theorem lieBracketWithin_eventually_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     lieBracketWithin 𝕜 V W s =ᶠ[𝓝 x] lieBracketWithin 𝕜 V W t :=
   (eventually_nhds_nhdsWithin.2 h).mono fun _ => lieBracketWithin_congr_set' y

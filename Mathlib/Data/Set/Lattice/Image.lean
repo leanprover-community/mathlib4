@@ -368,6 +368,16 @@ lemma iInter₂_union_iInter₂ {ι₁ κ₁ : Sort*} {ι₂ : ι₁ → Sort*} 
     (⋂ i₁, ⋂ i₂, f i₁ i₂) ∪ ⋂ j₁, ⋂ j₂, g j₁ j₂ = ⋂ i₁, ⋂ i₂, ⋂ j₁, ⋂ j₂, f i₁ i₂ ∪ g j₁ j₂ := by
   simp_rw [iInter_union, union_iInter]
 
+theorem biUnion_inter_of_pairwise_disjoint {ι : Type*} {f : ι → Set α}
+    (h : Pairwise (Disjoint on f)) (s t : Set ι) :
+    (⋃ i ∈ (s ∩ t), f i) = (⋃ i ∈ s, f i) ∩ (⋃ i ∈ t, f i) :=
+  biSup_inter_of_pairwise_disjoint h s t
+
+theorem biUnion_iInter_of_pairwise_disjoint {ι κ : Type*}
+    [hκ : Nonempty κ] {f : ι → Set α} (h : Pairwise (Disjoint on f)) (s : κ → Set ι) :
+    (⋃ i ∈ (⋂ j, s j), f i) = ⋂ j, (⋃ i ∈ s j, f i) :=
+  biSup_iInter_of_pairwise_disjoint h s
+
 end Image
 
 section Preimage
@@ -452,6 +462,16 @@ theorem iUnion_prod_of_monotone [SemilatticeSup α] {s : α → Set β} {t : α 
     exact ⟨⟨x, hz⟩, x, hw⟩
   · intro x hz x' hw
     exact ⟨x ⊔ x', hs le_sup_left hz, ht le_sup_right hw⟩
+
+lemma biUnion_prod {α β γ} (s : Set α) (t : Set β) (f : α → Set γ) (g : β → Set δ) :
+    ⋃ x ∈ s ×ˢ t, f x.1 ×ˢ g x.2 = (⋃ x ∈ s, f x) ×ˢ (⋃ x ∈ t, g x) := by
+  ext ⟨_, _⟩
+  simp only [mem_iUnion, mem_prod, exists_prop, Prod.exists]; tauto
+
+/-- Analogue of `biSup_prod` for sets. -/
+lemma biUnion_prod' (s : Set β) (t : Set γ) (f : β × γ → Set α) :
+    ⋃ x ∈ s ×ˢ t, f x = ⋃ (i ∈ s) (j ∈ t), f (i, j) :=
+  biSup_prod
 
 theorem sInter_prod_sInter_subset (S : Set (Set α)) (T : Set (Set β)) :
     ⋂₀ S ×ˢ ⋂₀ T ⊆ ⋂ r ∈ S ×ˢ T, r.1 ×ˢ r.2 :=

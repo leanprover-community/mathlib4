@@ -121,18 +121,18 @@ instance : FunLike (α -o β) α β where
 instance : HasUncurry (α ->> β) α β :=
   ⟨fun f x => f x⟩
 instance [HasUncurry β γ δ] : HasUncurry (α ->> β) (α × γ) δ :=
-  ⟨fun f p ↦ (↿(f p.1)) p.2⟩
+  ⟨fun f p ↦ ↿(f p.1) p.2⟩
 
 instance : HasUncurry (α -o β) α β :=
   ⟨fun f x => f x⟩
 instance [HasUncurry β γ δ] : HasUncurry (α -o β) (α × γ) δ :=
-  ⟨fun f p ↦ (↿(f p.1)) p.2⟩
+  ⟨fun f p ↦ ↿(f p.1) p.2⟩
 
 
 -- morphism theorems i.e. theorems about `FunLike.coe` --
 ---------------------------------------------------------
 
--- this is some form of cartesian closedness with homs `α ->> β`
+-- this is some form of Cartesian closedness with homs `α ->> β`
 @[fun_prop] theorem conHom_con' (f : α → β ->> γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x => (f x) (g x)) := silentSorry
 
 @[fun_prop] theorem conHom_lin_in_fn' (f : α → β ->> γ) (y : β) (hf : Lin f) : Lin (fun x => f x y) := silentSorry
