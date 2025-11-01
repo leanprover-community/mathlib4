@@ -3,6 +3,7 @@ Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
+import Mathlib.Algebra.Central.Defs
 import Mathlib.Algebra.Ring.Action.ConjAct
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.Dual.Defs
@@ -12,7 +13,8 @@ import Mathlib.LinearAlgebra.Dual.Defs
 
 This file shows that given any algebra equivalence `f : End R V ≃ₐ End R V`,
 there exists a linear equivalence `T : V ≃ₗ T` such that `f x = T * x * T.symm`.
-In other words, the map from `GeneralLinearGroup R V` to `End R V ≃ₐ End R V` is surjective.
+In other words, the map `MulSemiringAction.toAlgEquiv` from `GeneralLinearGroup R V` to
+`End R V ≃ₐ End R V` is surjective.
 -/
 
 namespace Module.End
@@ -34,7 +36,7 @@ private def auxLinear [CommSemiring R] [Module R V] (f : End R V →ₗ[R] End R
 private theorem auxLinear_map_apply [CommSemiring R] [Module R V]
     (f : End R V →ₐ[R] End R V) (y : Dual R V) (z : V) (A : End R V) (x : V) :
     auxLinear f y z (A x) = f A (auxLinear f y z x) := by
-  simp_rw [auxLinear_apply, coe_coe, ← End.mul_apply, ← map_mul]
+  simp_rw [auxLinear_apply, coe_coe, ← mul_apply, ← map_mul]
   congr
   ext
   simp
@@ -44,9 +46,13 @@ private theorem auxLinear_comp [CommSemiring R] [Module R V]
     auxLinear f y z ∘ₗ A = f A ∘ₗ auxLinear f y z :=
   LinearMap.ext <| auxLinear_map_apply f y z A
 
+variable [Field R] [Module R V]
+
+section move
+
 variable (R) in
 /-- This is a linear map version of `SeparatingDual.exists_ne_zero` in a vector space. -/
-theorem dual_exists_ne_zero [Field R] [Module R V] {x : V} (hx : x ≠ 0) :
+theorem dual_exists_ne_zero {x : V} (hx : x ≠ 0) :
     ∃ f : Dual R V, f x ≠ 0 :=
   let b := Basis.ofVectorSpace R V
   have hb : b.repr x ≠ 0 := by simpa
@@ -55,19 +61,32 @@ theorem dual_exists_ne_zero [Field R] [Module R V] {x : V} (hx : x ≠ 0) :
 
 variable (R) in
 /-- This is a linear map version of `SeparatingDual.exists_eq_one` in a vector space. -/
-theorem dual_exists_eq_one [Field R] [Module R V] {x : V} (hx : x ≠ 0) :
+theorem dual_exists_eq_one {x : V} (hx : x ≠ 0) :
     ∃ f : Dual R V, f x = 1 :=
   have ⟨f, hf⟩ := dual_exists_ne_zero R hx
   ⟨(f x)⁻¹ • f, inv_mul_cancel₀ hf⟩
 
+/-- The center of linear maps on a vector space is trivial,
+in other words, it is a central algebra. -/
+instance _root_.Algebra.IsCentral.linearMap :
+    Algebra.IsCentral R (V →ₗ[R] V) where
+  out T hT := by
+    have h' (f : Dual R V) (y v : V) : f (T v) • y = f v • T y := by
+      simpa using congr($(Subalgebra.mem_center_iff.mp hT <| f.smulRight y) v)
+    nontriviality V
+    obtain ⟨x, hx⟩ := exists_ne (0 : V)
+    obtain ⟨f, hf⟩ := dual_exists_eq_one (R := R) hx
+    exact ⟨f (T x), ext fun _ => by simp [h', hf]⟩
+
+end move
+
 /-- Given an algebra automorphism `f` in `End R V`, there exists a linear isomorphism `T`
 such that `f` is given by `x ↦ T * x * T⁻¹`. -/
-theorem AlgEquiv.coe_eq_linearEquiv_conjugate
-    [Field R] [Module R V] (f : End R V ≃ₐ[R] End R V) :
+theorem AlgEquiv.coe_eq_linearEquiv_conjugate (f : End R V ≃ₐ[R] End R V) :
     ∃ T : V ≃ₗ[R] V, ⇑f = fun x ↦ T ∘ₗ x ∘ₗ T.symm := by
   obtain hn | hn := subsingleton_or_nontrivial V
   · exact ⟨.refl _ _, Subsingleton.elim _ _⟩
-  simp_rw [funext_iff, ← LinearMap.comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm]
+  simp_rw [funext_iff, ← comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm]
   obtain ⟨u, v, huv⟩ : ∃ u : V, ∃ v : Dual R V, v u ≠ 0 := by
     obtain ⟨u, hu⟩ := nontrivial_iff_exists_ne 0 |>.mp hn
     obtain ⟨v, hv⟩ := dual_exists_ne_zero R hu
@@ -76,7 +95,7 @@ theorem AlgEquiv.coe_eq_linearEquiv_conjugate
     simp_rw [ne_eq, ← not_forall]
     suffices ¬ f (smulRightₗ v u) = 0 by rwa [LinearMap.ext_iff] at this
     simp only [EmbeddingLike.map_eq_zero_iff, LinearMap.ext_iff, smulRightₗ_apply,
-      LinearMap.zero_apply, smul_eq_zero, not_forall, not_or, exists_and_right]
+      zero_apply, smul_eq_zero, not_forall, not_or, exists_and_right]
     exact ⟨⟨u, huv⟩, fun h ↦ by simp [h] at huv⟩
   let T := auxLinear f v z
   have this A : T ∘ₗ A = f A ∘ₗ T := auxLinear_comp f.toAlgHom v z A
@@ -98,7 +117,7 @@ theorem AlgEquiv.coe_eq_linearEquiv_conjugate
   exact ⟨LinearEquiv.ofBijective T ⟨inj, surj⟩, fun A ↦ this A |>.symm⟩
 
 /-- Alternate statement of `coe_eq_linearEquiv_conjugate`. -/
-theorem mulSemiringActionToAlgEquiv_conjAct_surjective [Field R] [Module R V] :
+theorem mulSemiringActionToAlgEquiv_conjAct_surjective :
     Function.Surjective
       (MulSemiringAction.toAlgEquiv (G := ConjAct (GeneralLinearGroup R V)) R (End R V)) := by
   intro f
