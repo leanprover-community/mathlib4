@@ -207,7 +207,7 @@ such that the structure isomorphism `map (𝟙 X) ≅ 𝟙 (F.obj X)` is in fact
 identity 1-cell for every `X : B` (in particular, there is an equality
 `F.map (𝟙 X) = 𝟙 (F.obj x)`). -/
 @[kerodon 008R]
-structure StrictlyUnitaryPseudofunctor extends Pseudofunctor B C where
+structure StrictlyUnitaryPseudofunctor extends B ⥤ᵖ C where
   map_id (X : B) : map (𝟙 X) = 𝟙 (obj X)
   mapId_eq_eqToIso (X : B) : (mapId X) = eqToIso (map_id X)
 
