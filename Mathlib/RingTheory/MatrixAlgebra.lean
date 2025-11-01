@@ -3,11 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Eric Wieser
 -/
+import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Composition
 import Mathlib.LinearAlgebra.Matrix.Kronecker
 import Mathlib.RingTheory.TensorProduct.Maps
-
 
 /-!
 # Algebra isomorphisms between tensor products and matrices
@@ -236,6 +236,13 @@ theorem matrixEquivTensor_apply_symm (a : A) (M : Matrix n n R) :
 namespace Matrix
 open scoped Kronecker
 
+theorem conjTranspose_kroneckerTMul {R A B l m n p : Type*}
+    [CommSemiring R] [StarRing R] [AddCommMonoid A] [AddCommMonoid B] [StarAddMonoid A]
+    [StarAddMonoid B] [Module R A] [Module R B] [StarModule R A] [StarModule R B]
+    (x : Matrix l m A) (y : Matrix n p B) :
+    (x ⊗ₖₜ y)ᴴ = (xᴴ ⊗ₖₜ yᴴ : Matrix (m × p) (l × n) (A ⊗[R] B)) := by
+  ext; simp
+
 variable (m) (S B)
 variable [CommSemiring S] [Algebra R S] [Algebra S A] [IsScalarTower R S A]
 variable [Fintype m] [DecidableEq m]
@@ -260,6 +267,36 @@ theorem kroneckerTMulAlgEquiv_symm_apply (x : Matrix (m × n) (m × n) (A ⊗[R]
       (kroneckerTMulLinearEquiv m m n n R S A B).symm x :=
   rfl
 
+section StarRing
+variable [StarRing R] [StarAddMonoid A] [StarAddMonoid B] [StarModule R A] [StarModule R B]
+
+variable (m n A B) in
+def kroneckerTMulStarAlgEquiv :
+    Matrix m m A ⊗[R] Matrix n n B ≃⋆ₐ[S] Matrix (m × n) (m × n) (A ⊗[R] B) :=
+  .ofAlgEquiv (kroneckerTMulAlgEquiv m n R S A B)
+  fun x ↦ x.induction_on (by simp)
+    (by simp [star_eq_conjTranspose, conjTranspose_kroneckerTMul])
+    (by simp_all)
+
+@[simp]
+theorem toAlgEquiv_kroneckerTMulStarAlgEquiv :
+    (kroneckerTMulStarAlgEquiv m n R S A B).toAlgEquiv =
+      kroneckerTMulAlgEquiv m n R S A B := rfl
+
+@[simp]
+theorem kroneckerTMulStarAlgEquiv_apply (x : Matrix m m A ⊗[R] Matrix n n B) :
+    (kroneckerTMulStarAlgEquiv m n R S A B) x =
+      kroneckerTMulLinearEquiv m m n n R S A B x :=
+  rfl
+
+@[simp]
+theorem kroneckerTMulStarAlgEquiv_symm_apply (x : Matrix (m × n) (m × n) (A ⊗[R] B)) :
+    (kroneckerTMulStarAlgEquiv m n R S A B).symm x =
+      (kroneckerTMulLinearEquiv m m n n R S A B).symm x :=
+  rfl
+
+end StarRing
+
 variable (m n) in
 /-- `Matrix.kronecker` as an algebra equivalence, when the two arguments are tensored. -/
 -- TODO: upgrade this to `≃⋆ₐ` for when `R` is a ⋆-ring (after #27290)
@@ -274,5 +311,22 @@ def kroneckerAlgEquiv : (Matrix m m R ⊗[R] Matrix n n R) ≃ₐ[R] Matrix (m �
 
 @[simp] theorem kroneckerAlgEquiv_symm_apply (x : Matrix (m × n) (m × n) R) :
     (kroneckerAlgEquiv m n R).symm x = (kroneckerLinearEquiv m m n n R).symm x := rfl
+
+variable (m n) in
+def kroneckerStarAlgEquiv [StarRing R] :
+    (Matrix m m R ⊗[R] Matrix n n R) ≃⋆ₐ[R] Matrix (m × n) (m × n) R :=
+  .ofAlgEquiv (kroneckerAlgEquiv m n R)
+  fun x ↦ x.induction_on (by simp)
+    (by simp [star_eq_conjTranspose, conjTranspose_kronecker])
+    (by simp_all)
+
+@[simp] theorem toAlgEquiv_kroneckerStarAlgEquiv [StarRing R] :
+    (kroneckerStarAlgEquiv m n R).toAlgEquiv = kroneckerAlgEquiv m n R := rfl
+
+@[simp] theorem kroneckerStarAlgEquiv_apply [StarRing R] (x : Matrix m m R ⊗ Matrix n n R) :
+    kroneckerStarAlgEquiv m n R x = kroneckerLinearEquiv m m n n R x := rfl
+
+@[simp] theorem kroneckerStarAlgEquiv_symm_apply [StarRing R] (x : Matrix (m × n) (m × n) R) :
+    (kroneckerStarAlgEquiv m n R).symm x = (kroneckerLinearEquiv m m n n R).symm x := rfl
 
 end Matrix
