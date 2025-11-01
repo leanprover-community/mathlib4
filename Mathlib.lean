@@ -673,6 +673,7 @@ import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Module.Bimodule
 import Mathlib.Algebra.Module.Card
 import Mathlib.Algebra.Module.CharacterModule
+import Mathlib.Algebra.Module.Congruence.Defs
 import Mathlib.Algebra.Module.DedekindDomain
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Module.End
@@ -3826,7 +3827,6 @@ import Mathlib.Data.ZMod.QuotientRing
 import Mathlib.Data.ZMod.Units
 import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.Deprecated.Aliases
-import Mathlib.Deprecated.AnalyticManifold
 import Mathlib.Deprecated.Estimator
 import Mathlib.Deprecated.MLList.BestFirst
 import Mathlib.Deprecated.Order
@@ -3976,7 +3976,6 @@ import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.Algebra.Monoid
 import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
 import Mathlib.Geometry.Manifold.Algebra.Structures
-import Mathlib.Geometry.Manifold.AnalyticManifold
 import Mathlib.Geometry.Manifold.Bordism
 import Mathlib.Geometry.Manifold.BumpFunction
 import Mathlib.Geometry.Manifold.ChartedSpace
@@ -4727,10 +4726,12 @@ import Mathlib.MeasureTheory.Integral.IntervalAverage
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.DerivIntegrable
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Slope
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.TrapezoidalRule
 import Mathlib.MeasureTheory.Integral.Layercake
 import Mathlib.MeasureTheory.Integral.Lebesgue
@@ -5763,6 +5764,7 @@ import Mathlib.RingTheory.Kaehler.Polynomial
 import Mathlib.RingTheory.Kaehler.TensorProduct
 import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.KrullDimension.Field
+import Mathlib.RingTheory.KrullDimension.LocalRing
 import Mathlib.RingTheory.KrullDimension.Module
 import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 import Mathlib.RingTheory.KrullDimension.PID
@@ -6506,6 +6508,7 @@ import Mathlib.Topology.Algebra.Group.Pointwise
 import Mathlib.Topology.Algebra.Group.Quotient
 import Mathlib.Topology.Algebra.Group.SubmonoidClosure
 import Mathlib.Topology.Algebra.Group.TopologicalAbelianization
+import Mathlib.Topology.Algebra.Group.Units
 import Mathlib.Topology.Algebra.GroupCompletion
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.Indicator

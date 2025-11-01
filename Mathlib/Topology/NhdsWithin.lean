@@ -274,9 +274,6 @@ theorem insert_mem_nhds_iff {a : α} {s : Set α} : insert a s ∈ 𝓝 a ↔ s 
 theorem nhdsNE_sup_pure (a : α) : 𝓝[≠] a ⊔ pure a = 𝓝 a := by
   rw [← nhdsWithin_singleton, ← nhdsWithin_union, compl_union_self, nhdsWithin_univ]
 
-@[deprecated (since := "2025-03-02")]
-alias nhdsWithin_compl_singleton_sup_pure := nhdsNE_sup_pure
-
 @[simp]
 theorem pure_sup_nhdsNE (a : α) : pure a ⊔ 𝓝[≠] a = 𝓝 a := by rw [← sup_comm, nhdsNE_sup_pure]
 
