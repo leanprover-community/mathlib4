@@ -108,20 +108,28 @@ lemma Functor.mapTriangleOfSES {S : ShortComplex (CochainComplex C ℤ)} (hS : S
     CochainComplex.mappingCone.mapHomologicalComplexXIso'_hom,
     mapHomologicalComplex_map_f, CochainComplex.mappingCone.desc_f _ _ _ _ n (n + 1) rfl]
 
+omit [HasDerivedCategory.{t} C] in
 lemma CochainComplex.mappingCone.descShortComplex_hom {S₁ S₂ : ShortComplex (CochainComplex C ℤ)}
-    (hS₁ : S₁.ShortExact) (hS₂ : S₂.ShortExact) (f : S₁ ⟶ S₂) :
-    CochainComplex.mappingCone.descShortComplex S₁ ≫ f.τ₃ =
+    (f : S₁ ⟶ S₂) : CochainComplex.mappingCone.descShortComplex S₁ ≫ f.τ₃ =
     CochainComplex.mappingCone.map S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm ≫
     CochainComplex.mappingCone.descShortComplex S₂ := by
+  ext n
+  simp [CochainComplex.mappingCone.map, CochainComplex.mappingCone.descShortComplex]
+  apply CochainComplex.mappingCone.ext_from _ (n + 1) n rfl
+  · simp
+  · have : (S₁.g ≫ f.τ₃).f n = (f.τ₂ ≫ S₂.g).f n := by rw [f.comm₂₃]
+    simpa
 
-  sorry
-
+omit [HasDerivedCategory.{t} C] in
 lemma CochainComplex.mappingCone.triangle_mor₃_hom {K₁ L₁ K₂ L₂ : CochainComplex C ℤ}
     (f : K₁ ⟶ L₁) (g : K₂ ⟶ L₂) (a : K₁ ⟶ K₂) (b : L₁ ⟶ L₂) (comm : f ≫ b = a ≫ g) :
     (CochainComplex.mappingCone.triangle f).mor₃ ≫ (shiftFunctor (CochainComplex C ℤ) 1).map a =
     CochainComplex.mappingCone.map f g a b comm ≫ (CochainComplex.mappingCone.triangle g).mor₃ := by
-
-  sorry
+  ext n
+  simp [CochainComplex.mappingCone.map]
+  apply CochainComplex.mappingCone.ext_from _ (n + 1) n rfl
+  · simp
+  · simp
 
 lemma triangleOfSESδ_hom {S₁ S₂ : ShortComplex (CochainComplex C ℤ)} (hS₁ : S₁.ShortExact)
     (hS₂ : S₂.ShortExact) (f : S₁ ⟶ S₂) : (triangleOfSESδ hS₁) ≫ ((shiftFunctor
@@ -133,8 +141,7 @@ lemma triangleOfSESδ_hom {S₁ S₂ : ShortComplex (CochainComplex C ℤ)} (hS�
   change _ ≫ ((Q.commShiftIso 1).app S₂.X₁).hom = _ ≫ ((Q.commShiftIso 1).app S₂.X₁).hom
   rw [Iso.cancel_iso_hom_right, ← Q.map_comp]
   let g := CochainComplex.mappingCone.map S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm
-  simp only [Functor.comp_obj, Functor.comp_map,
-    CochainComplex.mappingCone.descShortComplex_hom hS₁ hS₂ f,
+  simp only [Functor.comp_obj, Functor.comp_map, CochainComplex.mappingCone.descShortComplex_hom f,
     Functor.map_comp, Category.assoc, IsIso.hom_inv_id, Category.comp_id]
   rw [← Q.map_comp, ← Q.map_comp, CochainComplex.mappingCone.triangle_mor₃_hom]
 
