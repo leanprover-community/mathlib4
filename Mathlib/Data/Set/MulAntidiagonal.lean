@@ -38,7 +38,7 @@ theorem mulAntidiagonal_mono_right (h : t₁ ⊆ t₂) :
 
 end Mul
 
--- The left hand side is not in simp normal form, see variant below.
+-- The left-hand side is not in simp normal form, see variant below.
 @[to_additive]
 theorem swap_mem_mulAntidiagonal [CommMagma α] {s t : Set α} {a : α} {x : α × α} :
     x.swap ∈ Set.mulAntidiagonal s t a ↔ x ∈ Set.mulAntidiagonal t s a := by

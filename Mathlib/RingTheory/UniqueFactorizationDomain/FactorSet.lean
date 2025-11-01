@@ -459,10 +459,9 @@ theorem factors_one [Nontrivial α] : factors (1 : Associates α) = 0 := by
 @[simp]
 theorem pow_factors [Nontrivial α] {a : Associates α} {k : ℕ} :
     (a ^ k).factors = k • a.factors := by
-  induction' k with n h
-  · rw [zero_nsmul, pow_zero]
-    exact factors_one
-  · rw [pow_succ, succ_nsmul, factors_mul, h]
+  induction k with
+  | zero => rw [zero_nsmul, pow_zero]; exact factors_one
+  | succ n h => rw [pow_succ, succ_nsmul, factors_mul, h]
 
 section count
 
@@ -558,10 +557,9 @@ theorem dvd_count_of_dvd_count_mul {a b : Associates α} (hb : b ≠ 0)
 theorem count_pow [Nontrivial α] {a : Associates α} (ha : a ≠ 0)
     {p : Associates α} (hp : Irreducible p) (k : ℕ) :
     count p (a ^ k).factors = k * count p a.factors := by
-  induction' k with n h
-  · rw [pow_zero, factors_one, zero_mul, count_zero hp]
-  · rw [pow_succ', count_mul ha (pow_ne_zero _ ha) hp, h]
-    ring
+  induction k with
+  | zero => rw [pow_zero, factors_one, zero_mul, count_zero hp]
+  | succ n h => rw [pow_succ', count_mul ha (pow_ne_zero _ ha) hp, h]; ring
 
 theorem dvd_count_pow [Nontrivial α] {a : Associates α} (ha : a ≠ 0)
     {p : Associates α} (hp : Irreducible p) (k : ℕ) : k ∣ count p (a ^ k).factors := by

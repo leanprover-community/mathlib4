@@ -173,7 +173,7 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
     · exact lt_max_of_lt_right
         (toReal_pos ((Measure.measure_univ_ne_zero).mpr hP'0) (measure_ne_top P' Set.univ))
   -- obtain K, a compact and closed set, which covers E up to a small area of measure at most ε
-  -- wrt to both P and P'
+  -- w.r.t. both P and P'
   obtain ⟨KP, _, hKPco, hKPcl, hKP⟩ := MeasurableSet.exists_isCompact_isClosed_diff_lt
     (MeasurableSet.univ) (measure_ne_top P Set.univ) (ne_of_gt (ofReal_pos.mpr hε))
   obtain ⟨KP', _, hKP'co, hKP'cl, hKP'⟩ := MeasurableSet.exists_isCompact_isClosed_diff_lt
@@ -186,7 +186,7 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
         (measure_mono (Set.compl_subset_compl_of_subset (Set.subset_union_left))) hKP
   have hKP'bound : P' (KP ∪ KP')ᶜ < ε.toNNReal := lt_of_le_of_lt
         (measure_mono (Set.compl_subset_compl_of_subset (Set.subset_union_right))) hKP'
-  -- stone-weierstrass approximation of f on K
+  -- Stone-Weierstrass approximation of f on K
   obtain ⟨g', hg'A, hg'approx⟩ :=
       ContinuousMap.exists_mem_subalgebra_near_continuous_of_isCompact_of_separatesPoints
       hA f hKco (Left.mul_pos (sqrt_pos_of_pos hε) (inv_pos_of_pos pos_of_measure))

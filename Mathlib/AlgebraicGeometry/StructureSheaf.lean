@@ -215,7 +215,7 @@ instance commRingStructureSheafInTypeObj (U : (Opens (PrimeSpectrum.Top R))ᵒ�
 
 open PrimeSpectrum
 
-/-- The structure presheaf, valued in `CommRingCat`, constructed by dressing up the `Type` valued
+/-- The structure presheaf, valued in `CommRingCat`, constructed by dressing up the `Type`-valued
 structure presheaf.
 -/
 @[simps obj_carrier]
@@ -229,7 +229,7 @@ def structurePresheafInCommRing : Presheaf CommRingCat (PrimeSpectrum.Top R) whe
       map_mul' := fun _ _ => rfl }
 
 /-- Some glue, verifying that the structure presheaf valued in `CommRingCat` agrees
-with the `Type` valued structure presheaf.
+with the `Type`-valued structure presheaf.
 -/
 def structurePresheafCompForget :
     structurePresheafInCommRing R ⋙ forget CommRingCat ≅ (structureSheafInType R).1 :=
@@ -634,7 +634,7 @@ theorem locally_const_basicOpen (U : Opens (PrimeSpectrum.Top R))
   replace hn := Ideal.mul_mem_right h (Ideal.span {g}) hn
   rw [← pow_succ, Ideal.mem_span_singleton'] at hn
   obtain ⟨c, hc⟩ := hn
-  have basic_opens_eq := PrimeSpectrum.basicOpen_pow h (n + 1) (by omega)
+  have basic_opens_eq := PrimeSpectrum.basicOpen_pow h (n + 1) (by cutsat)
   have i_basic_open := eqToHom basic_opens_eq ≫ homOfLE hDhV
   -- We claim that `(f * c) / h ^ (n + 1)` is our desired representation
   use f * c, h ^ (n + 1), i_basic_open ≫ iVU, (basic_opens_eq.symm.le :) hxDh
@@ -709,7 +709,7 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
   -- Since there are only finitely many indices involved, we can pick the supremum.
   let N := (t ×ˢ t).sup n
   have basic_opens_eq : ∀ i : ι, PrimeSpectrum.basicOpen (h i ^ (N + 1)) =
-    PrimeSpectrum.basicOpen (h i) := fun i => PrimeSpectrum.basicOpen_pow _ _ (by omega)
+    PrimeSpectrum.basicOpen (h i) := fun i => PrimeSpectrum.basicOpen_pow _ _ (by cutsat)
   -- Expanding the fraction `a i / h i` by the power `(h i) ^ n` gives the desired normalization
   refine
     ⟨fun i => a i * h i ^ N, fun i => h i ^ (N + 1), fun i => eqToHom (basic_opens_eq i) ≫ iDh i,
@@ -809,7 +809,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
   swap
   · intro y hy
     change y ∈ PrimeSpectrum.basicOpen (f ^ (n + 1))
-    rw [PrimeSpectrum.basicOpen_pow f (n + 1) (by omega)]
+    rw [PrimeSpectrum.basicOpen_pow f (n + 1) (by cutsat)]
     exact (leOfHom (iDh i) :) hy
   -- The rest of the proof is just computation
   apply const_ext
@@ -969,8 +969,8 @@ theorem comapFunIsLocallyFraction (f : R →+* S) (U : Opens (PrimeSpectrum.Top 
   specialize h_frac ⟨PrimeSpectrum.comap f q, hqW⟩
   refine ⟨h_frac.1, ?_⟩
   dsimp only [comapFun]
-  erw [← Localization.localRingHom_to_map (PrimeSpectrum.comap f q).asIdeal, ← RingHom.map_mul,
-    h_frac.2, Localization.localRingHom_to_map]
+  erw [← Localization.localRingHom_to_map (PrimeSpectrum.comap f q).asIdeal _ _ rfl,
+    ← RingHom.map_mul, h_frac.2, Localization.localRingHom_to_map]
   rfl
 
 /-- For a ring homomorphism `f : R →+* S` and open sets `U` and `V` of the prime spectra of `R` and

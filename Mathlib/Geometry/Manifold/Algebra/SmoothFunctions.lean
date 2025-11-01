@@ -114,7 +114,6 @@ def compLeftMonoidHom {G' : Type*} [Monoid G'] [TopologicalSpace G'] [ChartedSpa
 
 variable (I') {N}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215):
 -- TODO: generalize to any `C^n` map instead of `Set.inclusion`
 /-- For a Lie group `G` and open sets `U ⊆ V` in `N`, the 'restriction' group homomorphism from
 `C^n⟮I, V; I', G⟯` to `C^n⟮I, U; I', G⟯`. -/

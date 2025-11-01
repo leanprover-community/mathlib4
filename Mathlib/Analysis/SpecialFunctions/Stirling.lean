@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Fabian Kruse, Nikolas Kuhn
 -/
 import Mathlib.Analysis.PSeries
-import Mathlib.Data.Real.Pi.Wallis
+import Mathlib.Analysis.Real.Pi.Wallis
 import Mathlib.Tactic.AdaptationNote
 
 /-!
@@ -78,8 +78,7 @@ theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
     rw [← pow_mul, pow_add]
     push_cast
     field_simp
-    ring
-  · have h : ∀ x ≠ (0 : ℝ), 1 + x⁻¹ = (x + 1) / x := fun x hx ↦ by field_simp [hx]
+  · have h (x) (hx : x ≠ (0 : ℝ)) : 1 + x⁻¹ = (x + 1) / x := by field_simp
     simp (disch := positivity) only [log_stirlingSeq_formula, log_div, log_mul, log_exp,
       factorial_succ, cast_mul, cast_succ, range_one, sum_singleton, h]
     ring
@@ -113,20 +112,16 @@ theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
 -/
 theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
     log (stirlingSeq (n + 1)) - log (stirlingSeq (n + 2)) ≤ 1 / (4 * (↑(n + 1) : ℝ) ^ 2) := by
-  have h₁ : (0 : ℝ) < 4 * ((n : ℝ) + 1) ^ 2 := by positivity
-  have h₃ : (0 : ℝ) < (2 * ((n : ℝ) + 1) + 1) ^ 2 := by positivity
-  have h₂ : (0 : ℝ) < 1 - (1 / (2 * ((n : ℝ) + 1) + 1)) ^ 2 := by
-    rw [← mul_lt_mul_right h₃]
-    have H : 0 < (2 * ((n : ℝ) + 1) + 1) ^ 2 - 1 := by nlinarith [cast_nonneg (α := ℝ) n]
-    convert H using 1 <;> field_simp [h₃.ne']
+  have h₁ : (0 : ℝ) < ((n : ℝ) + 1) ^ 2 * 4 := by positivity
+  have h₃ : (0 : ℝ) < (2 * ((n : ℝ) + 1) + 1) ^ 2 - 1 := by
+    ring_nf
+    positivity
   refine (log_stirlingSeq_diff_le_geo_sum n).trans ?_
   push_cast
-  rw [div_le_div_iff₀ h₂ h₁]
-  field_simp [h₃.ne']
-  rw [div_le_div_iff_of_pos_right h₃]
+  field_simp
   ring_nf
   norm_cast
-  omega
+  cutsat
 
 /-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 1/4 * ∑' 1/k^2` -/
 theorem log_stirlingSeq_bounded_aux :
@@ -205,7 +200,7 @@ theorem stirlingSeq_pow_four_div_stirlingSeq_pow_two_eq (n : ℕ) (hn : n ≠ 0)
   simp_rw [div_pow, mul_pow]
   rw [sq_sqrt, sq_sqrt]
   any_goals positivity
-  field_simp [← exp_nsmul]
+  simp [field, ← exp_nsmul]
   ring_nf
 
 /-- Suppose the sequence `stirlingSeq` (defined above) has the limit `a ≠ 0`.
@@ -217,7 +212,7 @@ theorem second_wallis_limit (a : ℝ) (hane : a ≠ 0) (ha : Tendsto stirlingSeq
     stirlingSeq_pow_four_div_stirlingSeq_pow_two_eq n (one_le_iff_ne_zero.mp hn)⟩) ?_
   have h : a ^ 2 / 2 = a ^ 4 / a ^ 2 * (1 / 2) := by
     rw [mul_one_div, ← mul_one_div (a ^ 4) (a ^ 2), one_div, ← pow_sub_of_lt a]
-    norm_num
+    simp
   rw [h]
   exact ((ha.pow 4).div ((ha.comp (tendsto_id.const_mul_atTop' two_pos)).pow 2)
     (pow_ne_zero 2 hane)).mul tendsto_self_div_two_mul_self_add_one
@@ -239,6 +234,6 @@ lemma factorial_isEquivalent_stirling :
     nth_rewrite 2 [← div_self this]
     convert tendsto_stirlingSeq_sqrt_pi.div tendsto_const_nhds this using 1
     ext n
-    field_simp [stirlingSeq, mul_right_comm]
+    simp [field, stirlingSeq, mul_right_comm]
 
 end Stirling

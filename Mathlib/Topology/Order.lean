@@ -378,9 +378,11 @@ theorem gc_coinduced_induced (f : α → β) :
     GaloisConnection (TopologicalSpace.coinduced f) (TopologicalSpace.induced f) := fun _ _ =>
   coinduced_le_iff_le_induced
 
+@[gcongr]
 theorem induced_mono (h : t₁ ≤ t₂) : t₁.induced g ≤ t₂.induced g :=
   (gc_coinduced_induced g).monotone_u h
 
+@[gcongr]
 theorem coinduced_mono (h : t₁ ≤ t₂) : t₁.coinduced f ≤ t₂.coinduced f :=
   (gc_coinduced_induced f).monotone_l h
 
@@ -604,7 +606,7 @@ theorem nhds_sInf {s : Set (TopologicalSpace α)} {a : α} :
     @nhds α (sInf s) a = ⨅ t ∈ s, @nhds α t a :=
   (gc_nhds a).u_sInf
 
--- Porting note: timeouts without `b₁ := t₁`
+-- Porting note: type error without `b₁ := t₁`
 theorem nhds_inf {t₁ t₂ : TopologicalSpace α} {a : α} :
     @nhds α (t₁ ⊓ t₂) a = @nhds α t₁ a ⊓ @nhds α t₂ a :=
   (gc_nhds a).u_inf (b₁ := t₁)
@@ -615,6 +617,21 @@ theorem nhds_top {a : α} : @nhds α ⊤ a = ⊤ :=
 theorem isOpen_sup {t₁ t₂ : TopologicalSpace α} {s : Set α} :
     IsOpen[t₁ ⊔ t₂] s ↔ IsOpen[t₁] s ∧ IsOpen[t₂] s :=
   Iff.rfl
+
+/-- In the trivial topology no points are separable.
+
+The corresponding `bot` lemma is handled more generally by `inseparable_iff_eq`. -/
+@[simp]
+theorem inseparable_top (x y : α) : @Inseparable α ⊤ x y := nhds_top.trans nhds_top.symm
+
+theorem TopologicalSpace.eq_top_iff_forall_inseparable {t : TopologicalSpace α} :
+    t = ⊤ ↔ (∀ x y : α, Inseparable x y) where
+  mp h := h ▸ inseparable_top
+  mpr h := ext_nhds fun x => nhds_top ▸ top_unique fun _ hs a => mem_of_mem_nhds <| h x a ▸ hs
+
+theorem TopologicalSpace.ne_top_iff_exists_not_inseparable {t : TopologicalSpace α} :
+    t ≠ ⊤ ↔ ∃ x y : α, ¬Inseparable x y := by
+  simpa using eq_top_iff_forall_inseparable.not
 
 open TopologicalSpace
 
@@ -788,12 +805,10 @@ theorem map_nhds_induced_of_mem {a : α} (h : range f ∈ 𝓝 (f a)) :
 
 theorem closure_induced {f : α → β} {a : α} {s : Set α} :
     a ∈ @closure α (t.induced f) s ↔ f a ∈ closure (f '' s) := by
-  letI := t.induced f
   simp only [mem_closure_iff_frequently, nhds_induced, frequently_comap, mem_image, and_comm]
 
 theorem isClosed_induced_iff' {f : α → β} {s : Set α} :
     IsClosed[t.induced f] s ↔ ∀ a, f a ∈ closure (f '' s) → a ∈ s := by
-  letI := t.induced f
   simp only [← closure_subset_iff_isClosed, subset_def, closure_induced]
 
 end Induced

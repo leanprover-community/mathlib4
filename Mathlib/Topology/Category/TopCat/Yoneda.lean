@@ -26,7 +26,7 @@ variable {C : Type u} [Category.{v} C] (F : C ⥤ TopCat.{w}) (Y : Type w') [Top
 namespace ContinuousMap
 
 /--
-A universe polymorphic "Yoneda presheaf" on `C` given by continuous maps into a topoological space
+A universe polymorphic "Yoneda presheaf" on `C` given by continuous maps into a topological space
 `Y`.
 -/
 @[simps]
@@ -35,7 +35,7 @@ def yonedaPresheaf : Cᵒᵖ ⥤ Type (max w w') where
   map f g := ContinuousMap.comp g (F.map f.unop).hom
 
 /--
-A universe polymorphic Yoneda presheaf on `TopCat` given by continuous maps into a topoological
+A universe polymorphic Yoneda presheaf on `TopCat` given by continuous maps into a topological
 space `Y`.
 -/
 @[simps]

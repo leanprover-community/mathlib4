@@ -116,6 +116,16 @@ theorem Measure.isFiniteMeasure_map {m : MeasurableSpace α} (μ : Measure α) [
   · rw [map_of_not_aemeasurable hf]
     exact MeasureTheory.isFiniteMeasureZero
 
+theorem Measure.isFiniteMeasure_of_map {μ : Measure α} {f : α → β}
+    (hf : AEMeasurable f μ) [IsFiniteMeasure (μ.map f)] : IsFiniteMeasure μ where
+  measure_univ_lt_top := by
+    rw [← Set.preimage_univ (f := f), ← map_apply_of_aemeasurable hf .univ]
+    exact IsFiniteMeasure.measure_univ_lt_top
+
+theorem Measure.isFiniteMeasure_map_iff {μ : Measure α} {f : α → β}
+    (hf : AEMeasurable f μ) : IsFiniteMeasure (μ.map f) ↔ IsFiniteMeasure μ :=
+  ⟨fun _ ↦ isFiniteMeasure_of_map hf, fun _ ↦ isFiniteMeasure_map μ f⟩
+
 instance IsFiniteMeasure_comap (f : β → α) [IsFiniteMeasure μ] : IsFiniteMeasure (μ.comap f) where
   measure_univ_lt_top := by
     by_cases hf : Injective f ∧ ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ

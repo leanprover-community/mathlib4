@@ -79,8 +79,11 @@ theorem IsSheaf.isSheafFor {P : Cᵒᵖ ⥤ Type w} (hp : IsSheaf J P) (R : Pres
 theorem isSheaf_of_le (P : Cᵒᵖ ⥤ Type w) {J₁ J₂ : GrothendieckTopology C} :
     J₁ ≤ J₂ → IsSheaf J₂ P → IsSheaf J₁ P := fun h t _ S hS => t S (h _ hS)
 
-theorem isSeparated_of_isSheaf (P : Cᵒᵖ ⥤ Type w) (h : IsSheaf J P) : IsSeparated J P :=
+variable {J} in
+theorem IsSheaf.isSeparated {P : Cᵒᵖ ⥤ Type w} (h : IsSheaf J P) : IsSeparated J P :=
   fun S hS => (h S hS).isSeparatedFor
+
+@[deprecated (since := "2025-08-28")] alias isSeparated_of_isSheaf := IsSheaf.isSeparated
 
 section
 
@@ -118,7 +121,7 @@ theorem isSheaf_of_yoneda {P : Cᵒᵖ ⥤ Type v}
 presieves only.
 -/
 theorem isSheaf_pretopology [HasPullbacks C] (K : Pretopology C) :
-    IsSheaf (K.toGrothendieck C) P ↔ ∀ {X : C} (R : Presieve X), R ∈ K X → IsSheafFor P R := by
+    IsSheaf K.toGrothendieck P ↔ ∀ {X : C} (R : Presieve X), R ∈ K X → IsSheafFor P R := by
   constructor
   · intro PJ X R hR
     rw [isSheafFor_iff_generate]
@@ -132,7 +135,7 @@ theorem isSheaf_pretopology [HasPullbacks C] (K : Pretopology C) :
     rw [← pullbackArrows_comm, ← isSheafFor_iff_generate]
     exact PK (pullbackArrows f R) (K.pullbacks f R hR)
 
-/-- Any presheaf is a sheaf for the bottom (trivial) grothendieck topology. -/
+/-- Any presheaf is a sheaf for the bottom (trivial) Grothendieck topology. -/
 theorem isSheaf_bot : IsSheaf (⊥ : GrothendieckTopology C) P := fun X => by
   simp [isSheafFor_top_sieve]
 

@@ -35,11 +35,9 @@ run_cmd
       open $typeName (toBitVec_mul) in
       protected theorem toBitVec_nsmul (n : ℕ) (a : $typeName) :
           (n • a).toBitVec = n • a.toBitVec := by
-        change (n * a).toBitVec = n • a.toBitVec
         rw [Lean.Grind.Semiring.nsmul_eq_natCast_mul, toBitVec_mul,
           nsmul_eq_mul, BitVec.natCast_eq_ofNat]
         rfl
-
 
       attribute [local instance] natCast intCast
 

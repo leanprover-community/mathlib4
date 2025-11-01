@@ -103,7 +103,7 @@ noncomputable def sectionsSubmodule (U : (Opens (PrimeSpectrum R))ᵒᵖ) :
     intro a b ha hb x
     rcases ha x with ⟨Va, ma, ia, ra, sa, wa⟩
     rcases hb x with ⟨Vb, mb, ib, rb, sb, wb⟩
-    refine ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia, sb• ra+ sa•rb , sa * sb, ?_⟩
+    refine ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia, sb • ra + sa • rb, sa * sb, ?_⟩
     intro y
     rcases wa (Opens.infLELeft _ _ y : Va) with ⟨nma, wa⟩
     rcases wb (Opens.infLERight _ _ y : Vb) with ⟨nmb, wb⟩
@@ -118,7 +118,7 @@ noncomputable def sectionsSubmodule (U : (Opens (PrimeSpectrum R))ᵒᵖ) :
     intro r a ha x
     rcases ha x with ⟨Va, ma, ia, ra, sa, wa⟩
     rcases r.2 x with ⟨Vr, mr, ir, rr, sr, wr⟩
-    refine ⟨Va ⊓ Vr, ⟨ma, mr⟩, Opens.infLELeft _ _ ≫ ia, rr•ra, sr*sa, ?_⟩
+    refine ⟨Va ⊓ Vr, ⟨ma, mr⟩, Opens.infLELeft _ _ ≫ ia, rr • ra, sr * sa, ?_⟩
     intro y
     rcases wa (Opens.infLELeft _ _ y : Va) with ⟨nma, wa⟩
     rcases wr (Opens.infLERight _ _ y) with ⟨nmr, wr⟩

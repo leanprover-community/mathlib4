@@ -38,22 +38,37 @@ section Semiring
 
 namespace Ideal
 
-variable {α : ι → Type*} [Π i, Semiring (α i)] (I : Π i, Ideal (α i))
+variable {R : ι → Type*} [Π i, Semiring (R i)] (I J : Π i, Ideal (R i))
 
 section Pi
 
 /-- `Πᵢ Iᵢ` as an ideal of `Πᵢ Rᵢ`. -/
-def pi : Ideal (Π i, α i) where
-  carrier := { x | ∀ i, x i ∈ I i }
+def pi : Ideal (Π i, R i) where
+  carrier := { r | ∀ i, r i ∈ I i }
   zero_mem' i := (I i).zero_mem
   add_mem' ha hb i := (I i).add_mem (ha i) (hb i)
   smul_mem' a _b hb i := (I i).mul_mem_left (a i) (hb i)
 
-theorem mem_pi (x : Π i, α i) : x ∈ pi I ↔ ∀ i, x i ∈ I i :=
+theorem mem_pi (r : Π i, R i) : r ∈ pi I ↔ ∀ i, r i ∈ I i :=
   Iff.rfl
+
+@[simp] theorem pi_span {r : Π i, R i} : pi (span {r ·}) = span {r} := by
+  ext; simp_rw [mem_pi, mem_span_singleton', funext_iff, Classical.skolem, Pi.mul_def]
 
 instance (priority := low) [∀ i, (I i).IsTwoSided] : (pi I).IsTwoSided :=
   ⟨fun _b hb i ↦ mul_mem_right _ _ (hb i)⟩
+
+variable {I J}
+
+theorem single_mem_pi [DecidableEq ι] {i : ι} {r : R i} (hr : r ∈ I i) : Pi.single i r ∈ pi I := by
+  intro j
+  obtain rfl | ne := eq_or_ne i j
+  · simpa
+  · simp [ne]
+
+@[simp] theorem pi_le_pi_iff : pi I ≤ pi J ↔ I ≤ J where
+  mp le i r hr := by classical simpa using le (single_mem_pi hr) i
+  mpr le r hr i := le i (hr i)
 
 end Pi
 
@@ -73,7 +88,7 @@ theorem add_pow_mem_of_pow_mem_of_le_of_commute {m n k : ℕ}
   · rw [hab.pow_pow]
     exact I.mul_mem_left _ (I.pow_mem_of_pow_mem ha h)
   · refine I.mul_mem_left _ (I.pow_mem_of_pow_mem hb ?_)
-    omega
+    cutsat
 
 theorem add_pow_add_pred_mem_of_pow_mem_of_commute {m n : ℕ}
     (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) (hab : Commute a b) :
@@ -109,8 +124,9 @@ theorem add_pow_add_pred_mem_of_pow_mem {m n : ℕ}
 theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : ℕ) :
     s.sum ^ (Multiset.card s * n + 1) ∈
     span ((s.map fun (x : α) ↦ x ^ (n + 1)).toFinset : Set α) := by
-  induction' s using Multiset.induction_on with a s hs
-  · simp
+  induction s using Multiset.induction_on with
+  | empty => simp
+  | cons a s hs => ?_
   simp only [Finset.coe_insert, Multiset.map_cons, Multiset.toFinset_cons, Multiset.sum_cons,
     Multiset.card_cons, add_pow]
   refine Submodule.sum_mem _ ?_
@@ -148,7 +164,8 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
     · exact subset_span ⟨_, hx, pow_zero _⟩
   rw [eq_top_iff_one, span, Finsupp.mem_span_iff_linearCombination] at hs
   rcases hs with ⟨f, hf⟩
-  have hf : (f.support.sum fun a => f a * a) = 1 := hf -- Porting note: was `change ... at hf`
+  simp only [Finsupp.linearCombination, Finsupp.coe_lsum, Finsupp.sum, LinearMap.coe_smulRight,
+    LinearMap.id_coe, id_eq, smul_eq_mul] at hf
   have := sum_pow_mem_span_pow f.support (fun a => f a * a) n
   rw [hf, one_pow] at this
   refine span_le.mpr ?_ this

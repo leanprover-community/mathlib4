@@ -581,6 +581,12 @@ theorem mem_rootSet_of_injective [CommRing S] {p : S[X]} [Algebra S R]
   classical
   exact Multiset.mem_toFinset.trans (mem_roots_map_of_injective h hp)
 
+@[simp]
+theorem nthRootsFinset_toSet {n : ℕ} (h : 0 < n) (a : R) :
+    nthRootsFinset n a = {r | r ^ n = a} := by
+  ext x
+  simp_all
+
 end Roots
 
 lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero {R} [CommRing R] [IsDomain R]

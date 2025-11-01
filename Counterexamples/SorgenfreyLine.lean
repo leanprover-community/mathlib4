@@ -23,7 +23,7 @@ We prove that this line is a completely normal Hausdorff space but its product w
 normal space. In particular, this implies that the topology on `ℝₗ` is neither metrizable, nor
 second countable.
 
-## Notations
+## Notation
 
 - `ℝₗ`: Sorgenfrey line.
 

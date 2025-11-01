@@ -17,7 +17,7 @@ See https://ncatlab.org/nlab/show/Delta-generated+topological+space.
 Adapted from `Mathlib/Topology/Category/CompactlyGenerated.lean`.
 
 ## TODO
-* `DeltaGenerated` is cartesian-closed.
+* `DeltaGenerated` is Cartesian-closed.
 -/
 
 universe u

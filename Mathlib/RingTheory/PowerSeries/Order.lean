@@ -40,7 +40,7 @@ section OrderBasic
 
 variable [Semiring R] {φ : R⟦X⟧}
 
-theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff R n φ ≠ 0) ↔ φ ≠ 0 := by
+theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff n φ ≠ 0) ↔ φ ≠ 0 := by
   refine not_iff_not.mp ?_
   push_neg
   simp
@@ -71,7 +71,7 @@ theorem coe_toNat_order {φ : R⟦X⟧} (hf : φ ≠ 0) : φ.order.toNat = φ.or
 
 /-- If the order of a formal power series is finite,
 then the coefficient indexed by the order is nonzero. -/
-theorem coeff_order (h : φ ≠ 0) : coeff R φ.order.toNat φ ≠ 0 := by
+theorem coeff_order (h : φ ≠ 0) : coeff φ.order.toNat φ ≠ 0 := by
   classical
   simp only [order, h, not_false_iff, dif_neg]
   generalize_proofs h
@@ -79,7 +79,7 @@ theorem coeff_order (h : φ ≠ 0) : coeff R φ.order.toNat φ ≠ 0 := by
 
 /-- If the `n`th coefficient of a formal power series is nonzero,
 then the order of the power series is less than or equal to `n`. -/
-theorem order_le (n : ℕ) (h : coeff R n φ ≠ 0) : order φ ≤ n := by
+theorem order_le (n : ℕ) (h : coeff n φ ≠ 0) : order φ ≤ n := by
   classical
   rw [order, dif_neg]
   · simpa using ⟨n, le_rfl, h⟩
@@ -87,11 +87,11 @@ theorem order_le (n : ℕ) (h : coeff R n φ ≠ 0) : order φ ≤ n := by
 
 /-- The `n`th coefficient of a formal power series is `0` if `n` is strictly
 smaller than the order of the power series. -/
-theorem coeff_of_lt_order (n : ℕ) (h : ↑n < order φ) : coeff R n φ = 0 := by
+theorem coeff_of_lt_order (n : ℕ) (h : ↑n < order φ) : coeff n φ = 0 := by
   contrapose! h
   exact order_le _ h
 
-theorem coeff_of_lt_order_toNat (n : ℕ) (h : n < φ.order.toNat) : coeff R n φ = 0 := by
+theorem coeff_of_lt_order_toNat (n : ℕ) (h : n < φ.order.toNat) : coeff n φ = 0 := by
   by_cases h' : φ = 0
   · simp [h']
   · refine coeff_of_lt_order _ ?_
@@ -99,7 +99,7 @@ theorem coeff_of_lt_order_toNat (n : ℕ) (h : n < φ.order.toNat) : coeff R n �
 
 /-- The order of a formal power series is at least `n` if
 the `i`th coefficient is `0` for all `i < n`. -/
-theorem nat_le_order (φ : R⟦X⟧) (n : ℕ) (h : ∀ i < n, coeff R i φ = 0) : ↑n ≤ order φ := by
+theorem nat_le_order (φ : R⟦X⟧) (n : ℕ) (h : ∀ i < n, coeff i φ = 0) : ↑n ≤ order φ := by
   classical
   simp only [order]
   split_ifs
@@ -108,7 +108,7 @@ theorem nat_le_order (φ : R⟦X⟧) (n : ℕ) (h : ∀ i < n, coeff R i φ = 0)
 
 /-- The order of a formal power series is at least `n` if
 the `i`th coefficient is `0` for all `i < n`. -/
-theorem le_order (φ : R⟦X⟧) (n : ℕ∞) (h : ∀ i : ℕ, ↑i < n → coeff R i φ = 0) :
+theorem le_order (φ : R⟦X⟧) (n : ℕ∞) (h : ∀ i : ℕ, ↑i < n → coeff i φ = 0) :
     n ≤ order φ := by
   cases n with
   | top => simpa using ext (by simpa using h)
@@ -119,7 +119,7 @@ theorem le_order (φ : R⟦X⟧) (n : ℕ∞) (h : ∀ i : ℕ, ↑i < n → coe
 /-- The order of a formal power series is exactly `n` if the `n`th coefficient is nonzero,
 and the `i`th coefficient is `0` for all `i < n`. -/
 theorem order_eq_nat {φ : R⟦X⟧} {n : ℕ} :
-    order φ = n ↔ coeff R n φ ≠ 0 ∧ ∀ i, i < n → coeff R i φ = 0 := by
+    order φ = n ↔ coeff n φ ≠ 0 ∧ ∀ i, i < n → coeff i φ = 0 := by
   classical
   rcases eq_or_ne φ 0 with (rfl | hφ)
   · simp
@@ -128,7 +128,7 @@ theorem order_eq_nat {φ : R⟦X⟧} {n : ℕ} :
 /-- The order of a formal power series is exactly `n` if the `n`th coefficient is nonzero,
 and the `i`th coefficient is `0` for all `i < n`. -/
 theorem order_eq {φ : R⟦X⟧} {n : ℕ∞} :
-    order φ = n ↔ (∀ i : ℕ, ↑i = n → coeff R i φ ≠ 0) ∧ ∀ i : ℕ, ↑i < n → coeff R i φ = 0 := by
+    order φ = n ↔ (∀ i : ℕ, ↑i = n → coeff i φ ≠ 0) ∧ ∀ i : ℕ, ↑i < n → coeff i φ = 0 := by
   cases n with
   | top => simp
   | coe n => simp [order_eq_nat]
@@ -149,10 +149,10 @@ private theorem order_add_of_order_eq.aux (φ ψ : R⟦X⟧)
   constructor
   · intro i hi
     rw [← hi] at H
-    rw [(coeff _ _).map_add, coeff_of_lt_order i H, add_zero]
+    rw [(coeff _).map_add, coeff_of_lt_order i H, add_zero]
     exact (order_eq_nat.1 hi.symm).1
   · intro i hi
-    rw [(coeff _ _).map_add, coeff_of_lt_order i hi, coeff_of_lt_order i (lt_trans hi H),
+    rw [(coeff _).map_add, coeff_of_lt_order i hi, coeff_of_lt_order i (lt_trans hi H),
       zero_add]
 
 /-- The order of the sum of two formal power series
@@ -191,7 +191,7 @@ alias order_mul_ge := le_order_mul
 
 /-- The order of the monomial `a*X^n` is infinite if `a = 0` and `n` otherwise. -/
 theorem order_monomial (n : ℕ) (a : R) [Decidable (a = 0)] :
-    order (monomial R n a) = if a = 0 then (⊤ : ℕ∞) else n := by
+    order (monomial n a) = if a = 0 then (⊤ : ℕ∞) else n := by
   split_ifs with h
   · rw [h, order_eq_top, LinearMap.map_zero]
   · rw [order_eq]
@@ -203,30 +203,30 @@ theorem order_monomial (n : ℕ) (a : R) [Decidable (a = 0)] :
       exact ne_of_lt hi
 
 /-- The order of the monomial `a*X^n` is `n` if `a ≠ 0`. -/
-theorem order_monomial_of_ne_zero (n : ℕ) (a : R) (h : a ≠ 0) : order (monomial R n a) = n := by
+theorem order_monomial_of_ne_zero (n : ℕ) (a : R) (h : a ≠ 0) : order (monomial n a) = n := by
   classical
   rw [order_monomial, if_neg h]
 
 /-- If `n` is strictly smaller than the order of `ψ`, then the `n`th coefficient of its product
 with any other power series is `0`. -/
 theorem coeff_mul_of_lt_order {φ ψ : R⟦X⟧} {n : ℕ} (h : ↑n < ψ.order) :
-    coeff R n (φ * ψ) = 0 := by
-  suffices coeff R n (φ * ψ) = ∑ p ∈ antidiagonal n, 0 by rw [this, Finset.sum_const_zero]
+    coeff n (φ * ψ) = 0 := by
+  suffices coeff n (φ * ψ) = ∑ p ∈ antidiagonal n, 0 by rw [this, Finset.sum_const_zero]
   rw [coeff_mul]
   apply Finset.sum_congr rfl
   intro x hx
-  refine mul_eq_zero_of_right (coeff R x.fst φ) (coeff_of_lt_order x.snd (lt_of_le_of_lt ?_ h))
+  refine mul_eq_zero_of_right (coeff x.fst φ) (coeff_of_lt_order x.snd (lt_of_le_of_lt ?_ h))
   rw [mem_antidiagonal] at hx
   norm_cast
-  omega
+  cutsat
 
 theorem coeff_mul_one_sub_of_lt_order {R : Type*} [Ring R] {φ ψ : R⟦X⟧} (n : ℕ)
-    (h : ↑n < ψ.order) : coeff R n (φ * (1 - ψ)) = coeff R n φ := by
+    (h : ↑n < ψ.order) : coeff n (φ * (1 - ψ)) = coeff n φ := by
   simp [coeff_mul_of_lt_order h, mul_sub]
 
 theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ) (s : Finset ι)
     (φ : R⟦X⟧) (f : ι → R⟦X⟧) :
-    (∀ i ∈ s, ↑k < (f i).order) → coeff R k (φ * ∏ i ∈ s, (1 - f i)) = coeff R k φ := by
+    (∀ i ∈ s, ↑k < (f i).order) → coeff k (φ * ∏ i ∈ s, (1 - f i)) = coeff k φ := by
   classical
   induction s using Finset.induction_on with
   | empty => simp
@@ -239,14 +239,14 @@ theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ)
 /-- Given a non-zero power series `f`, `divXPowOrder f` is the power series obtained by
 dividing out the largest power of X that divides `f`, that is its order -/
 def divXPowOrder (f : R⟦X⟧) : R⟦X⟧ :=
-  .mk fun n ↦ coeff R (n + f.order.toNat) f
+  .mk fun n ↦ coeff (n + f.order.toNat) f
 
 @[deprecated (since := "2025-04-15")]
 noncomputable alias divided_by_X_pow_order := divXPowOrder
 
 @[simp]
 lemma coeff_divXPowOrder {f : R⟦X⟧} {n : ℕ} :
-    coeff R n (divXPowOrder f) = coeff R (n + f.order.toNat) f :=
+    coeff n (divXPowOrder f) = coeff (n + f.order.toNat) f :=
   coeff_mk _ _
 
 @[simp]
@@ -256,11 +256,11 @@ lemma divXPowOrder_zero :
   simp
 
 lemma constantCoeff_divXPowOrder {f : R⟦X⟧} :
-    constantCoeff R (divXPowOrder f) = coeff R f.order.toNat f := by
+    constantCoeff (divXPowOrder f) = coeff f.order.toNat f := by
   simp [← coeff_zero_eq_constantCoeff]
 
 lemma constantCoeff_divXPowOrder_eq_zero_iff {f : R⟦X⟧} :
-    constantCoeff R (divXPowOrder f) = 0 ↔ f = 0 := by
+    constantCoeff (divXPowOrder f) = 0 ↔ f = 0 := by
   by_cases h : f = 0
   · simp [h]
   · simp [constantCoeff_divXPowOrder, coeff_order h, h]
@@ -296,7 +296,7 @@ theorem order_eq_emultiplicity_X {R : Type*} [Semiring R] (φ : R⟦X⟧) :
     · apply Order.le_of_lt_add_one
       rw [← not_le, ← Nat.cast_one, ← Nat.cast_add, ← pow_dvd_iff_le_emultiplicity]
       rintro ⟨ψ, H⟩
-      have := congr_arg (coeff R n) H
+      have := congr_arg (coeff n) H
       rw [X_pow_mul, coeff_mul_of_lt_order, ← hn] at this
       · exact coeff_order hφ this
       · rw [X_pow_eq, order_monomial]

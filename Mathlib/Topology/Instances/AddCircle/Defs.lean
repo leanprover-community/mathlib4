@@ -25,14 +25,15 @@ See also `Circle` and `Real.angle`.  For the normed group structure on `AddCircl
 * `AddCircle`: the additive circle `𝕜 ⧸ (ℤ ∙ p)` for some period `p : 𝕜`
 * `UnitAddCircle`: the special case `ℝ ⧸ ℤ`
 * `AddCircle.equivAddCircle`: the rescaling equivalence `AddCircle p ≃+ AddCircle q`
-* `AddCircle.equivIco`: the natural equivalence `AddCircle p ≃ Ico a (a + p)`
+* `AddCircle.equivIco` and `AddCircle.equivIoc`: the natural equivalences
+  `AddCircle p ≃ Ico a (a + p)` and `AddCircle p ≃ Ioc a (a + p)`
 * `AddCircle.addOrderOf_div_of_gcd_eq_one`: rational points have finite order
 * `AddCircle.exists_gcd_eq_one_of_isOfFinAddOrder`: finite-order points are rational
 * `AddCircle.homeoIccQuot`: the natural topological equivalence between `AddCircle p` and
   `Icc a (a + p)` with its endpoints identified.
-* `AddCircle.liftIco_continuous`: if `f : ℝ → B` is continuous, and `f a = f (a + p)` for
-  some `a`, then there is a continuous function `AddCircle p → B` which agrees with `f` on
-  `Icc a (a + p)`.
+* `AddCircle.liftIco_continuous` and `AddCircle.liftIoc_continuous`: if `f : ℝ → B` is continuous,
+  and `f a = f (a + p)` for some `a`, then there is a continuous function `AddCircle p → B`
+  which agrees with `f` on `Icc a (a + p)`.
 
 ## Implementation notes:
 
@@ -435,7 +436,7 @@ theorem nsmul_eq_zero_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
   obtain ⟨a, ha⟩ := hk
   refine ⟨a.natMod n, Int.natMod_lt h.ne', ?_⟩
   have h0 : (n : 𝕜) ≠ 0 := Nat.cast_ne_zero.2 h.ne'
-  rw [nsmul_eq_mul, mul_comm, ← div_eq_iff h0, ← a.ediv_add_emod' n, add_smul, add_div,
+  rw [nsmul_eq_mul, mul_comm, ← div_eq_iff h0, ← a.ediv_mul_add_emod n, add_smul, add_div,
     zsmul_eq_mul, Int.cast_mul, Int.cast_natCast, mul_assoc, ← mul_div, mul_comm _ p,
     mul_div_cancel_right₀ p h0] at ha
   rw [← ha, coe_add, ← Int.cast_natCast, Int.natMod, Int.toNat_of_nonneg, zsmul_eq_mul,
@@ -607,10 +608,20 @@ def homeoIccQuot [TopologicalSpace 𝕜] [OrderTopology 𝕜] : 𝕋 ≃ₜ Quot
     continuous_quot_lift _ ((AddCircle.continuous_mk' p).comp continuous_subtype_val)
 
 /-! We now show that a continuous function on `[a, a + p]` satisfying `f a = f (a + p)` is the
-pullback of a continuous function on `AddCircle p`. -/
+pullback of a continuous function on `AddCircle p`, by first showing that
+various lifts are equivalent. -/
 
 
 variable {p a}
+
+theorem liftIoc_eq_liftIco {f : 𝕜 → B} (hf : f a = f (a + p)) :
+    liftIoc p a f = liftIco p a f := by
+  ext q
+  obtain ⟨x, hx, rfl⟩ := by simpa only [mem_image] using coe_image_Ico_eq p a ▸ mem_univ q
+  rw [liftIco_coe_apply hx]
+  obtain (⟨rfl, -⟩ | h) := by rwa [mem_Ico, le_iff_eq_or_lt, or_and_right] at hx
+  · rw [← coe_add_period, liftIoc_coe_apply (by simp [hp.out]), hf]
+  · exact liftIoc_coe_apply ⟨h.1, h.2.le⟩
 
 theorem liftIco_eq_lift_Icc {f : 𝕜 → B} (h : f a = f (a + p)) :
     liftIco p a f =
@@ -621,8 +632,21 @@ theorem liftIco_eq_lift_Icc {f : 𝕜 → B} (h : f a = f (a + p)) :
         equivIccQuot p a :=
   rfl
 
+theorem liftIoc_eq_lift_Icc {f : 𝕜 → B} (h : f a = f (a + p)) :
+    liftIoc p a f =
+      Quot.lift (restrict (Icc a <| a + p) f)
+          (by
+            rintro _ _ ⟨_⟩
+            exact h) ∘
+        equivIccQuot p a := by
+  rw [← liftIco_eq_lift_Icc h]
+  exact liftIoc_eq_liftIco h
+
 theorem liftIco_zero_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ico 0 p) : liftIco p 0 f ↑x = f x :=
   liftIco_coe_apply (by rwa [zero_add])
+
+theorem liftIoc_zero_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ioc 0 p) : liftIoc p 0 f ↑x = f x :=
+  liftIoc_coe_apply (by rwa [zero_add])
 
 variable [TopologicalSpace 𝕜] [OrderTopology 𝕜]
 
@@ -635,6 +659,16 @@ theorem liftIco_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f a = f (
 theorem liftIco_zero_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f 0 = f p)
     (hc : ContinuousOn f <| Icc 0 p) : Continuous (liftIco p 0 f) :=
   liftIco_continuous (by rwa [zero_add] : f 0 = f (0 + p)) (by rwa [zero_add])
+
+theorem liftIoc_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f a = f (a + p))
+    (hc : ContinuousOn f <| Icc a (a + p)) : Continuous (liftIoc p a f) := by
+  rw [liftIoc_eq_lift_Icc hf]
+  refine Continuous.comp ?_ (homeoIccQuot p a).continuous_toFun
+  exact continuous_coinduced_dom.mpr (continuousOn_iff_continuous_restrict.mp hc)
+
+theorem liftIoc_zero_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f 0 = f p)
+    (hc : ContinuousOn f <| Icc 0 p) : Continuous (liftIoc p 0 f) :=
+  liftIoc_continuous (by rwa [zero_add] : f 0 = f (0 + p)) (by rwa [zero_add])
 
 end AddCircle
 

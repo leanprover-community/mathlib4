@@ -180,7 +180,7 @@ theorem disjoint_sdiff_iff_le (hz : z ≤ y) (hx : x ≤ y) : Disjoint z (y \ x)
     le_of_inf_le_sup_le (le_trans H.le_bot bot_le)
       (by
         rw [sup_sdiff_cancel_right hx]
-        refine le_trans (sup_le_sup_left sdiff_le z) ?_
+        grw [sdiff_le]
         rw [sup_eq_right.2 hz]),
     fun H => disjoint_sdiff_self_right.mono_left H⟩
 
@@ -198,11 +198,10 @@ theorem le_iff_eq_sup_sdiff (hz : z ≤ y) (hx : x ≤ y) : x ≤ z ↔ y = z �
   ⟨fun H => by
     apply le_antisymm
     · conv_lhs => rw [← sup_inf_sdiff y x]
-      apply sup_le_sup_right
+      gcongr
       rwa [inf_eq_right.2 hx]
-    · apply le_trans
-      · apply sup_le_sup_right hz
-      · rw [sup_sdiff_left],
+    · grw [hz]
+      rw [sup_sdiff_left],
     fun H => by
     conv_lhs at H => rw [← sup_sdiff_cancel_right hx]
     refine le_of_inf_le_sup_le ?_ H.le
@@ -254,7 +253,7 @@ theorem le_sdiff_right : x ≤ y \ x ↔ x = ⊥ :=
   ⟨fun h => disjoint_self.1 (disjoint_sdiff_self_right.mono_right h), fun h => h.le.trans bot_le⟩
 
 @[simp] lemma sdiff_eq_right : x \ y = y ↔ x = ⊥ ∧ y = ⊥ := by
-  rw [disjoint_sdiff_self_left.eq_iff]; aesop
+  rw [disjoint_sdiff_self_left.eq_iff]; simp_all
 
 lemma sdiff_ne_right : x \ y ≠ y ↔ x ≠ ⊥ ∨ y ≠ ⊥ := sdiff_eq_right.not.trans not_and_or
 
@@ -407,7 +406,7 @@ theorem sup_lt_of_lt_sdiff_left (h : y < z \ x) (hxz : x ≤ z) : x ⊔ y < z :=
 
 theorem sup_lt_of_lt_sdiff_right (h : x < z \ y) (hyz : y ≤ z) : x ⊔ y < z := by
   rw [← sdiff_sup_cancel hyz]
-  refine (sup_le_sup_right h.le _).lt_of_not_ge fun h' => h.not_ge ?_
+  refine lt_of_le_not_ge (by grw [h]) fun h' => h.not_ge ?_
   rw [← sdiff_idem]
   exact (sdiff_le_sdiff_of_sup_le_sup_right h').trans sdiff_le
 
@@ -429,7 +428,7 @@ end GeneralizedBooleanAlgebra
 ### Boolean algebras
 -/
 -- See note [reducible non instances]
-/-- A bounded generalized boolean algebra is a boolean algebra. -/
+/-- A bounded generalized Boolean algebra is a Boolean algebra. -/
 abbrev GeneralizedBooleanAlgebra.toBooleanAlgebra [GeneralizedBooleanAlgebra α] [OrderTop α] :
     BooleanAlgebra α where
   __ := ‹GeneralizedBooleanAlgebra α›
@@ -678,5 +677,3 @@ protected abbrev Function.Injective.booleanAlgebra [Max α] [Min α] [Top α] [B
   himp_eq a b := hf <| (map_himp _ _).trans <| himp_eq.trans <| by rw [map_sup, map_compl]
 
 end lift
-
-

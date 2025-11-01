@@ -62,7 +62,7 @@ private lemma circleAverage_log_norm_sub_const₁_integral :
     filter_upwards [this] with a ha
     simp only [Set.mem_compl_iff, Set.mem_preimage, Set.mem_singleton_iff, mul_eq_zero,
       OfNat.ofNat_ne_zero, ne_eq, not_false_eq_true, pow_eq_zero_iff, false_or] at ha
-    rw [log_mul (by norm_num) (by simp_all), log_pow, Nat.cast_ofNat]
+    rw [log_mul (by simp) (by simp_all), log_pow, Nat.cast_ofNat]
   _ = (∫ (x : ℝ) in 0..π, log 4) + 2 * ∫ (x : ℝ) in 0..π, log (sin x) := by
     rw [integral_add _root_.intervalIntegrable_const
       (by apply intervalIntegrable_log_sin.const_mul 2), intervalIntegral.integral_const_mul]
@@ -112,7 +112,7 @@ theorem circleAverage_log_norm_sub_const₁ (h : ‖a‖ = 1) :
       norm_num
     _ = 2 - 2 * cos (2 * (x / 2)) := by
       rw [← mul_div_assoc]
-      norm_num
+      simp
     _ = 4 - 4 * cos (x / 2) ^ 2 := by
       rw [cos_two_mul]
       ring

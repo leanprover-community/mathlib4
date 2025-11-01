@@ -9,7 +9,7 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
 
 /-!
 
-# Order Monoid Isomorphisms on `Additve` and `Multiplicative`.
+# Order Monoid Isomorphisms on `Additive` and `Multiplicative`.
 
 -/
 

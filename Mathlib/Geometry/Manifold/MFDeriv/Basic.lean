@@ -502,6 +502,14 @@ theorem MDifferentiableWithinAt.prodMk {f : M → M'} {g : M → M''}
 @[deprecated (since := "2025-03-08")]
 alias MDifferentiableWithinAt.prod_mk := MDifferentiableWithinAt.prodMk
 
+/-- If `f` and `g` have derivatives `df` and `dg` within `s` at `x`, respectively,
+then `x ↦ (f x, g x)` has derivative `df.prod dg` within `s`. -/
+theorem HasMFDerivWithinAt.prodMk {f : M → M'} {g : M → M''}
+    {df : TangentSpace I x →L[𝕜] TangentSpace I' (f x)} (hf : HasMFDerivWithinAt I I' f s x df)
+    {dg : TangentSpace I x →L[𝕜] TangentSpace I'' (g x)} (hg : HasMFDerivWithinAt I I'' g s x dg) :
+    HasMFDerivWithinAt I (I'.prod I'') (fun y ↦ (f y, g y)) s x (df.prod dg) :=
+  ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
+
 theorem MDifferentiableAt.prodMk {f : M → M'} {g : M → M''} (hf : MDifferentiableAt I I' f x)
     (hg : MDifferentiableAt I I'' g x) :
     MDifferentiableAt I (I'.prod I'') (fun x => (f x, g x)) x :=
@@ -509,6 +517,14 @@ theorem MDifferentiableAt.prodMk {f : M → M'} {g : M → M''} (hf : MDifferent
 
 @[deprecated (since := "2025-03-08")]
 alias MDifferentiableAt.prod_mk := MDifferentiableAt.prodMk
+
+/-- If `f` and `g` have derivatives `df` and `dg` at `x`, respectively,
+then `x ↦ (f x, g x)` has derivative `df.prod dg`. -/
+theorem HasMFDerivAt.prodMk {f : M → M'} {g : M → M''}
+    {df : TangentSpace I x →L[𝕜] TangentSpace I' (f x)} (hf : HasMFDerivAt I I' f x df)
+    {dg : TangentSpace I x →L[𝕜] TangentSpace I'' (g x)} (hg : HasMFDerivAt I I'' g x dg) :
+    HasMFDerivAt I (I'.prod I'') (fun y ↦ (f y, g y)) x (df.prod dg) :=
+  ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 theorem MDifferentiableWithinAt.prodMk_space {f : M → E'} {g : M → E''}
     (hf : MDifferentiableWithinAt I 𝓘(𝕜, E') f s x)
@@ -573,8 +589,8 @@ variable {f' f₀' f₁' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)}
 /-- `UniqueMDiffWithinAt` achieves its goal: it implies the uniqueness of the derivative. -/
 protected nonrec theorem UniqueMDiffWithinAt.eq (U : UniqueMDiffWithinAt I s x)
     (h : HasMFDerivWithinAt I I' f s x f') (h₁ : HasMFDerivWithinAt I I' f s x f₁') : f' = f₁' := by
-  -- Porting note: didn't need `convert` because of finding instances by unification
-  convert U.eq h.2 h₁.2
+  -- `by apply` because the instances can be found in the term but not in the goal.
+  apply U.eq h.2 h₁.2
 
 protected theorem UniqueMDiffOn.eq (U : UniqueMDiffOn I s) (hx : x ∈ s)
     (h : HasMFDerivWithinAt I I' f s x f') (h₁ : HasMFDerivWithinAt I I' f s x f₁') : f' = f₁' :=

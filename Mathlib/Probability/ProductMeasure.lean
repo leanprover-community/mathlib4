@@ -153,7 +153,7 @@ lemma map_piSingleton (μ : (n : ℕ) → Measure (X n)) [∀ n, SigmaFinite (μ
     (μ (n + 1)).map (piSingleton n) = Measure.pi (fun i : Ioc n (n + 1) ↦ μ i) := by
   refine (Measure.pi_eq fun s hs ↦ ?_).symm
   have : Subsingleton (Ioc n (n + 1)) := by rw [Nat.Ioc_succ_singleton]; infer_instance
-  rw [Fintype.prod_subsingleton _ ⟨n + 1, mem_Ioc.2 (by omega)⟩,
+  rw [Fintype.prod_subsingleton _ ⟨n + 1, mem_Ioc.2 (by cutsat)⟩,
     Measure.map_apply (by fun_prop) (.univ_pi hs)]
   congr 1 with x
   simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, forall_const, Subtype.forall,
@@ -176,12 +176,12 @@ theorem partialTraj_const_restrict₂ {a b : ℕ} :
       all_goals fun_prop
     · have : (restrict₂ (Ioc_subset_Iic_self (a := a))) ∘ (IicProdIoc (X := X) n (n + 1)) =
           (IocProdIoc a n (n + 1)) ∘ (Prod.map (restrict₂ Ioc_subset_Iic_self) id) := rfl
-      rw [const_apply, partialTraj_succ_of_le (by omega), map_const, prod_const_comp, id_comp,
+      rw [const_apply, partialTraj_succ_of_le (by cutsat), map_const, prod_const_comp, id_comp,
         ← map_comp_right, this, map_comp_right, ← map_prod_map, hind, Kernel.map_id, map_apply,
         prod_apply, const_apply, const_apply, Measure.map_piSingleton,
         Measure.pi_prod_map_IocProdIoc]
       any_goals fun_prop
-      all_goals omega
+      all_goals cutsat
   · have : IsEmpty (Ioc a b) := by simpa [hba] using Subtype.isEmpty_false
     ext x s ms
     by_cases hs : s.Nonempty

@@ -519,13 +519,13 @@ theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M] (k : ℕ) (m n : M)
   generalize hk : k + 1 = k'
   replace hk : k' ≠ 0 := by omega
   induction k' using Nat.binaryRecFromOne generalizing n m with
-  | z₀ => simp at hk
-  | z₁ => simp [npowRec']
-  | f b k' k'0 ih =>
+  | zero => simp at hk
+  | one => simp [npowRec']
+  | bit b k' k'0 ih =>
     rw [Nat.binaryRec_eq _ _ (Or.inl rfl), ih _ _ k'0]
     cases b <;> simp only [Nat.bit, cond_false, cond_true, npowRec'_two_mul]
-    rw [npowRec'_succ (by omega), npowRec'_two_mul, ← npowRec'_two_mul,
-      ← npowRec'_mul_comm (by omega), mul_assoc]
+    rw [npowRec'_succ (by cutsat), npowRec'_two_mul, ← npowRec'_two_mul,
+      ← npowRec'_mul_comm (by cutsat), mul_assoc]
 
 /--
 An abbreviation for `npowRec` with an additional typeclass assumption on associativity
@@ -661,6 +661,19 @@ lemma pow_right_comm (a : M) (m n : ℕ) : (a ^ m) ^ n = (a ^ n) ^ m := by
   rw [← pow_mul, Nat.mul_comm, pow_mul]
 
 end Monoid
+
+/-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `n : ℕ` is
+injective. -/
+@[mk_iff]
+class IsAddTorsionFree (M : Type*) [AddMonoid M] where
+  protected nsmul_right_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ n • a
+
+/-- A monoid is torsion-free if power by every non-zero element `n : ℕ` is injective. -/
+@[to_additive, mk_iff]
+class IsMulTorsionFree (M : Type*) [Monoid M] where
+  protected pow_left_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n
+
+attribute [to_additive existing] isMulTorsionFree_iff
 
 /-- An additive commutative monoid is an additive monoid with commutative `(+)`. -/
 class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
@@ -955,7 +968,7 @@ theorem div_eq_mul_inv (a b : G) : a / b = a * b⁻¹ :=
 
 alias division_def := div_eq_mul_inv
 
-@[to_additive, field_simps] -- The attributes are out of order on purpose
+@[to_additive]
 theorem inv_eq_one_div (x : G) : x⁻¹ = 1 / x := by rw [div_eq_mul_inv, one_mul]
 
 @[to_additive]

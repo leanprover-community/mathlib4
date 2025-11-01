@@ -223,7 +223,7 @@ theorem evalHorizontalComp_cons_cons {f f' g g' h h' i i' : C}
     (e_ηθ : η ⊗ₘ θ = ηθ) (e_ηθs : ηs ⊗ₘ θs = ηθs)
     (e_ηθ₁ : ηθ ≫ ηθs = ηθ₁) (e_ηθ₂ : (α ⊗ᵢ β).hom ≫ ηθ₁ = ηθ₂) :
     (α.hom ≫ η ≫ ηs) ⊗ₘ (β.hom ≫ θ ≫ θs) = ηθ₂ := by
-  simp [← e_ηθ , ← e_ηθs , ← e_ηθ₁, ← e_ηθ₂]
+  simp [← e_ηθ, ← e_ηθs, ← e_ηθ₁, ← e_ηθ₂]
 
 end
 
@@ -284,7 +284,7 @@ instance : MkEvalComp MonoidalM where
 instance : MkEvalWhiskerLeft MonoidalM where
   mkEvalWhiskerLeftNil f α := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let g ← α.srcM
     let h ← α.tgtM
     have f_e : Q($ctx.C) := f.e
@@ -294,7 +294,7 @@ instance : MkEvalWhiskerLeft MonoidalM where
     return q(evalWhiskerLeft_nil $f_e $α_e)
   mkEvalWhiskerLeftOfCons f α η ηs θ e_θ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let g ← α.srcM
     let h ← α.tgtM
     let i ← η.tgtM
@@ -312,7 +312,7 @@ instance : MkEvalWhiskerLeft MonoidalM where
     return q(evalWhiskerLeft_of_cons $α $η $e_θ)
   mkEvalWhiskerLeftComp f g η η₁ η₂ η₃ η₄ e_η₁ e_η₂ e_η₃ e_η₄ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let h ← η.srcM
     let i ← η.tgtM
     have f : Q($ctx.C) := f.e
@@ -331,7 +331,7 @@ instance : MkEvalWhiskerLeft MonoidalM where
     return q(evalWhiskerLeft_comp $e_η₁ $e_η₂ $e_η₃ $e_η₄)
   mkEvalWhiskerLeftId η η₁ η₂ e_η₁ e_η₂ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← η.srcM
     let g ← η.tgtM
     have f : Q($ctx.C) := f.e
@@ -346,7 +346,7 @@ instance : MkEvalWhiskerLeft MonoidalM where
 instance : MkEvalWhiskerRight MonoidalM where
   mkEvalWhiskerRightAuxOf η h := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← η.srcM
     let g ← η.tgtM
     have f : Q($ctx.C) := f.e
@@ -356,7 +356,7 @@ instance : MkEvalWhiskerRight MonoidalM where
     return q(evalWhiskerRightAux_of $η $h)
   mkEvalWhiskerRightAuxCons f η ηs ηs' η₁ η₂ η₃ e_ηs' e_η₁ e_η₂ e_η₃ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let g ← η.srcM
     let h ← η.tgtM
     let i ← ηs.srcM
@@ -379,7 +379,7 @@ instance : MkEvalWhiskerRight MonoidalM where
     return q(evalWhiskerRightAux_cons $e_ηs' $e_η₁ $e_η₂ $e_η₃)
   mkEvalWhiskerRightNil α h := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← α.srcM
     let g ← α.tgtM
     have f : Q($ctx.C) := f.e
@@ -389,7 +389,7 @@ instance : MkEvalWhiskerRight MonoidalM where
     return q(evalWhiskerRight_nil $α $h)
   mkEvalWhiskerRightConsOfOf j α η ηs ηs₁ η₁ η₂ η₃ e_ηs₁ e_η₁ e_η₂ e_η₃ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← α.srcM
     let g ← α.tgtM
     let h ← η.tgtM
@@ -414,7 +414,7 @@ instance : MkEvalWhiskerRight MonoidalM where
   mkEvalWhiskerRightConsWhisker f k α η ηs η₁ η₂ ηs₁ ηs₂ η₃ η₄ η₅
       e_η₁ e_η₂ e_ηs₁ e_ηs₂ e_η₃ e_η₄ e_η₅ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let g ← α.srcM
     let h ← η.srcM
     let i ← η.tgtM
@@ -445,7 +445,7 @@ instance : MkEvalWhiskerRight MonoidalM where
     return q(evalWhiskerRight_cons_whisker $e_η₁ $e_η₂ $e_ηs₁ $e_ηs₂ $e_η₃ $e_η₄ $e_η₅)
   mkEvalWhiskerRightComp g h η η₁ η₂ η₃ η₄ e_η₁ e_η₂ e_η₃ e_η₄ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← η.srcM
     let f' ← η.tgtM
     have f : Q($ctx.C) := f.e
@@ -464,7 +464,7 @@ instance : MkEvalWhiskerRight MonoidalM where
     return q(evalWhiskerRight_comp $e_η₁ $e_η₂ $e_η₃ $e_η₄)
   mkEvalWhiskerRightId η η₁ η₂ e_η₁ e_η₂ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← η.srcM
     let g ← η.tgtM
     have f : Q($ctx.C) := f.e
@@ -479,7 +479,7 @@ instance : MkEvalWhiskerRight MonoidalM where
 instance : MkEvalHorizontalComp MonoidalM where
   mkEvalHorizontalCompAuxOf η θ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← η.srcM
     let g ← η.tgtM
     let h ← θ.srcM
@@ -493,7 +493,7 @@ instance : MkEvalHorizontalComp MonoidalM where
     return q(evalHorizontalCompAux_of $η $θ)
   mkEvalHorizontalCompAuxCons η ηs θ ηθ η₁ ηθ₁ ηθ₂ e_ηθ e_η₁ e_ηθ₁ e_ηθ₂ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← η.srcM
     let g ← η.tgtM
     let f' ← ηs.srcM
@@ -520,7 +520,7 @@ instance : MkEvalHorizontalComp MonoidalM where
     return q(evalHorizontalCompAux_cons $e_ηθ $e_η₁ $e_ηθ₁ $e_ηθ₂)
   mkEvalHorizontalCompAux'Whisker f η θ ηθ η₁ η₂ η₃ e_ηθ e_η₁ e_η₂ e_η₃ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let g ← η.srcM
     let h ← η.tgtM
     let f' ← θ.srcM
@@ -543,7 +543,7 @@ instance : MkEvalHorizontalComp MonoidalM where
     return q(evalHorizontalCompAux'_whisker $e_ηθ $e_η₁ $e_η₂ $e_η₃)
   mkEvalHorizontalCompAux'OfWhisker f η θ η₁ ηθ ηθ₁ ηθ₂ e_η₁ e_ηθ e_ηθ₁ e_ηθ₂ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let g ← η.srcM
     let h ← η.tgtM
     let f' ← θ.srcM
@@ -566,7 +566,7 @@ instance : MkEvalHorizontalComp MonoidalM where
     return q(evalHorizontalCompAux'_of_whisker $e_η₁ $e_ηθ $e_ηθ₁ $e_ηθ₂)
   mkEvalHorizontalCompNilNil α β := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← α.srcM
     let g ← α.tgtM
     let h ← β.srcM
@@ -580,7 +580,7 @@ instance : MkEvalHorizontalComp MonoidalM where
     return q(evalHorizontalComp_nil_nil $α $β)
   mkEvalHorizontalCompNilCons α β η ηs η₁ ηs₁ η₂ η₃ e_η₁ e_ηs₁ e_η₂ e_η₃ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← α.srcM
     let g ← α.tgtM
     let f' ← β.srcM
@@ -608,7 +608,7 @@ instance : MkEvalHorizontalComp MonoidalM where
     return q(evalHorizontalComp_nil_cons $e_η₁ $e_ηs₁ $e_η₂ $e_η₃)
   mkEvalHorizontalCompConsNil α β η ηs η₁ ηs₁ η₂ η₃ e_η₁ e_ηs₁ e_η₂ e_η₃ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← α.srcM
     let g ← α.tgtM
     let h ← η.tgtM
@@ -636,7 +636,7 @@ instance : MkEvalHorizontalComp MonoidalM where
     return q(evalHorizontalComp_cons_nil $e_η₁ $e_ηs₁ $e_η₂ $e_η₃)
   mkEvalHorizontalCompConsCons α β η θ ηs θs ηθ ηθs ηθ₁ ηθ₂ e_ηθ e_ηθs e_ηθ₁ e_ηθ₂ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← α.srcM
     let g ← α.tgtM
     let h ← η.tgtM
@@ -690,7 +690,7 @@ instance : MkEval MonoidalM where
     return q(eval_comp $e_η $e_θ $e_ηθ)
   mkEvalWhiskerLeft f η η' θ e_η e_θ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let g ← η'.srcM
     let h ← η'.tgtM
     have f : Q($ctx.C) := f.e
@@ -704,7 +704,7 @@ instance : MkEval MonoidalM where
     return q(eval_whiskerLeft $e_η $e_θ)
   mkEvalWhiskerRight η h η' θ e_η e_θ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← η'.srcM
     let g ← η'.tgtM
     have f : Q($ctx.C) := f.e
@@ -718,7 +718,7 @@ instance : MkEval MonoidalM where
     return q(eval_whiskerRight $e_η $e_θ)
   mkEvalHorizontalComp η θ η' θ' ι e_η e_θ e_ι := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let f ← η'.srcM
     let g ← η'.tgtM
     let h ← θ'.srcM

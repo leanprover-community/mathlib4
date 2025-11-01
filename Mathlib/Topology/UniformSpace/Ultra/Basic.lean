@@ -36,7 +36,6 @@ but rather extend the relation properties as needed.
 * Generalize results about open/closed balls and spheres in `IsUltraUniformity` to
   combine applications for `MetricSpace.ball` and valued "balls"
 * Use `IsUltraUniformity` to work with profinite/totally separated spaces
-* Show that the `UniformSpace.Completion` of an `IsUltraUniformity` is `IsUltraUniformity`
 
 ## References
 
@@ -107,6 +106,34 @@ lemma IsTransitiveRel.comp_eq_of_idRel_subset {s : Set (X × X)}
     s ○ s = s :=
   le_antisymm h.comp_subset_self (subset_comp_self h')
 
+lemma IsTransitiveRel.prod_subset_trans {s : Set (X × X)} {t u v : Set X} (hs : IsTransitiveRel s)
+    (htu : t ×ˢ u ⊆ s) (huv : u ×ˢ v ⊆ s) (hu : u.Nonempty) :
+    t ×ˢ v ⊆ s := by
+  rintro ⟨a, b⟩ hab
+  simp only [mem_prod] at hab
+  obtain ⟨x, hx⟩ := hu
+  exact hs (@htu ⟨a, x⟩ ⟨hab.left, hx⟩) (@huv ⟨x, b⟩ ⟨hx, hab.right⟩)
+
+lemma IsTransitiveRel.mem_filter_prod_trans {s : Set (X × X)} {f g h : Filter X} [g.NeBot]
+    (hs : IsTransitiveRel s) (hfg : s ∈ f ×ˢ g) (hgh : s ∈ g ×ˢ h) :
+    s ∈ f ×ˢ h :=
+  Eventually.trans_prod (by simpa using hfg) (by simpa using hgh) hs
+
+lemma IsTransitiveRel.mem_filter_prod_comm {s : Set (X × X)} {f g h : Filter X} [g.NeBot]
+    (hs : IsTransitiveRel s) (hfg : s ∈ f ×ˢ g) (hgh : s ∈ g ×ˢ h) :
+    s ∈ f ×ˢ h := by
+  rw [mem_prod_iff] at hfg hgh ⊢
+  obtain ⟨t, ht, u, hu, htu⟩ := hfg
+  obtain ⟨v, hv, w, hw, hvw⟩ := hgh
+  replace htu : t ×ˢ (u ∩ v) ⊆ s := by
+    rw [Set.prod_inter]
+    refine inter_subset_left.trans htu
+  replace hvw : (u ∩ v) ×ˢ w ⊆ s := by
+    rw [Set.inter_prod]
+    refine inter_subset_right.trans hvw
+  refine ⟨_, ht, _, hw, hs.prod_subset_trans htu hvw <| g.nonempty_of_mem ?_⟩
+  simp [hu, hv]
+
 open UniformSpace in
 lemma IsTransitiveRel.ball_subset_of_mem {V : Set (X × X)} (h : IsTransitiveRel V)
     {x y : X} (hy : y ∈ ball x V) :
@@ -135,6 +162,17 @@ lemma IsUltraUniformity.mk_of_hasBasis {ι : Type*} {p : ι → Prop} {s : ι �
   hasBasis := h_basis.to_hasBasis'
     (fun i hi ↦ ⟨s i, ⟨h_basis.mem_of_mem hi, h_symm i hi, h_trans i hi⟩, subset_rfl⟩)
     (fun _ hs ↦ hs.1)
+
+lemma IsUltraUniformity.mem_nhds_iff_symm_trans [IsUltraUniformity X] {x : X} {s : Set X} :
+    s ∈ 𝓝 x ↔ ∃ V ∈ 𝓤 X, IsSymmetricRel V ∧ IsTransitiveRel V ∧ UniformSpace.ball x V ⊆ s := by
+  rw [UniformSpace.mem_nhds_iff]
+  constructor
+  · rintro ⟨V, V_in, V_sub⟩
+    rw [IsUltraUniformity.hasBasis.mem_iff'] at V_in
+    obtain ⟨U, ⟨U_in, U_sym, U_trans⟩, U_sub⟩ := V_in
+    refine ⟨U, U_in, U_sym, U_trans, (UniformSpace.ball_mono U_sub _).trans V_sub⟩
+  · rintro ⟨V, V_in, _, _, V_sub⟩
+    exact ⟨V, V_in, V_sub⟩
 
 namespace UniformSpace
 

@@ -82,7 +82,7 @@ natural subtraction. -/
 lemma card' [Finite V] : Nat.card V = Nat.card (ℙ k V) * (Nat.card k - 1) + 1 := by
   rw [← card k V]
   have : Nat.card V > 0 := Nat.card_pos
-  omega
+  cutsat
 
 end
 
@@ -93,7 +93,7 @@ as a fraction. -/
 lemma card'' [Finite k] : Nat.card (ℙ k V) = (Nat.card V - 1) / (Nat.card k - 1) := by
   have : 1 < Nat.card k := Finite.one_lt_card
   rw [card k, Nat.mul_div_cancel]
-  omega
+  cutsat
 
 lemma card_of_finrank [Finite k] {n : ℕ} (h : Module.finrank k V = n) :
     Nat.card (ℙ k V) = ∑ i ∈ Finset.range n, Nat.card k ^ i := by
@@ -109,7 +109,7 @@ lemma card_of_finrank [Finite k] {n : ℕ} (h : Module.finrank k V = n) :
       simpa using Module.finite_of_finite k
     simp [this]
   have : 1 < Nat.card k := Finite.one_lt_card
-  refine Nat.mul_right_cancel (m := Nat.card k - 1) (by omega) ?_
+  refine Nat.mul_right_cancel (m := Nat.card k - 1) (by cutsat) ?_
   let e : V ≃ₗ[k] (Fin n → k) := LinearEquiv.ofFinrankEq _ _ (by simpa)
   have hc : Nat.card V = Nat.card k ^ n := by simp [Nat.card_congr e.toEquiv, Nat.card_fun]
   zify

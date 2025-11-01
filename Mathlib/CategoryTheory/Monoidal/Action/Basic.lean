@@ -27,13 +27,10 @@ on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
 ## TODOs/Projects
 * Equivalence between actions of `C` on `D` and pseudofunctors from the
   classifying bicategory of `C` to `Cat`.
-* Left actions as monoidal functors C ⥤ (D ⥤ D)ᴹᵒᵖ.
-* Right actions as monoidal functors C ⥤ D ⥤ D.
-* (Right) Action of `(C ⥤ C)` on `C`.
 * Left/Right Modules in `D` over a monoid object in `C`.
   Equivalence with `Mod_` when `D` is `C`. Bimodules objects.
 * Given a monad `M` on `C`, equivalence between `Algebra M`, and modules in `C`
-  on `M.toMon : Mon_ (C ⥤ C)`.
+  on `M.toMon : Mon (C ⥤ C)`.
 * Canonical left action of `Type u` on `u`-small cocomplete categories via the
   copower.
 
@@ -187,7 +184,7 @@ open Category
 
 variable {C D} [MonoidalCategory C] [MonoidalLeftAction C D]
 
--- Simp normal forms are aligned with the ones in `MonoidalCateogry`.
+-- Simp normal forms are aligned with the ones in `MonoidalCategory`.
 
 @[simp]
 lemma id_actionHom (c : C) {d d' : D} (f : d ⟶ d') :
@@ -496,7 +493,7 @@ open Category
 
 variable {C D} [MonoidalCategory C] [MonoidalRightAction C D]
 
--- Simp normal forms are aligned with the ones in `MonoidalCateogry`.
+-- Simp normal forms are aligned with the ones in `MonoidalCategory`.
 
 @[simp]
 lemma actionHom_id {d d' : D} (f : d ⟶ d') (c : C) :

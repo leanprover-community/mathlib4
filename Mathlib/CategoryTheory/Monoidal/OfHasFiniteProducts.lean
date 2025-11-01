@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 # The natural monoidal structure on any category with finite (co)products.
 
 A category with a monoidal structure provided in this way
-is sometimes called a (co)cartesian category,
+is sometimes called a (co-)Cartesian category,
 although this is also sometimes used to mean a finitely complete category.
 (See <https://ncatlab.org/nlab/show/cartesian+category>.)
 
@@ -106,7 +106,7 @@ theorem rightUnitor_inv (X : C) : (ρ_ X).inv = prod.lift (𝟙 _) (terminal.fro
   rfl
 
 -- We don't mark this as a simp lemma, even though in many particular
--- categories the right hand side will simplify significantly further.
+-- categories the right-hand side will simplify significantly further.
 -- For now, we'll plan to create specialised simp lemmas in each particular category.
 theorem associator_hom (X Y Z : C) :
     (α_ X Y Z).hom =
@@ -220,7 +220,7 @@ theorem rightUnitor_inv (X : C) : (ρ_ X).inv = Limits.coprod.inl :=
   rfl
 
 -- We don't mark this as a simp lemma, even though in many particular
--- categories the right hand side will simplify significantly further.
+-- categories the right-hand side will simplify significantly further.
 -- For now, we'll plan to create specialised simp lemmas in each particular category.
 theorem associator_hom (X Y Z : C) :
     (α_ X Y Z).hom =

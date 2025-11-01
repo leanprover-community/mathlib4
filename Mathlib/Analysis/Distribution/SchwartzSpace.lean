@@ -326,7 +326,7 @@ instance instSub : Sub 𝓢(E, F) :=
     ⟨f - g, (f.smooth _).sub (g.smooth _), by
       intro k n
       refine ⟨f.seminormAux k n + g.seminormAux k n, fun x => ?_⟩
-      refine le_trans ?_ (add_le_add (f.le_seminormAux k n x) (g.le_seminormAux k n x))
+      grw [← f.le_seminormAux k n x, ← g.le_seminormAux k n x]
       rw [sub_eq_add_neg]
       rw [← decay_neg_aux k n g x]
       exact decay_add_le_aux k n f (-g) x⟩⟩
@@ -457,9 +457,8 @@ theorem one_add_le_sup_seminorm_apply {m : ℕ × ℕ} {k n : ℕ} (hk : k ≤ m
   rw [← Nat.sum_range_choose m.1]
   push_cast
   rw [Finset.sum_mul]
-  have hk' : Finset.range (k + 1) ⊆ Finset.range (m.1 + 1) := by
-    rwa [Finset.range_subset, add_le_add_iff_right]
-  refine le_trans (Finset.sum_le_sum_of_subset_of_nonneg hk' fun _ _ _ => by positivity) ?_
+  have hk' : Finset.range (k + 1) ⊆ Finset.range (m.1 + 1) := by grind
+  grw [hk']
   gcongr ∑ _i ∈ Finset.range (m.1 + 1), ?_ with i hi
   move_mul [(Nat.choose k i : ℝ), (Nat.choose m.1 i : ℝ)]
   gcongr
@@ -533,11 +532,11 @@ theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f
   use C', hC'
   intro N hN x
   rw [← Finset.mem_range_succ_iff] at hN
-  refine le_trans (f N x) (mul_le_mul ?_ ?_ (by positivity) hC')
+  grw [f]
+  gcongr
   · simp only [C', Finset.le_sup'_iff, le_max_iff]
     right
     exact ⟨N, hN, le_rfl⟩
-  gcongr
   · simp
   exact Finset.le_sup hN
 
@@ -818,7 +817,7 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
   have hnorm_mul :=
     ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear (B.bilinearRestrictScalars ℝ)
     (f.smooth ⊤) hg.1 x (n := n) (mod_cast le_top)
-  refine le_trans (mul_le_mul_of_nonneg_left hnorm_mul hxk) ?_
+  grw [hnorm_mul]
   rw [ContinuousLinearMap.norm_bilinearRestrictScalars]
   move_mul [← ‖B‖]
   simp_rw [mul_assoc ‖B‖]
@@ -835,7 +834,7 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
   · norm_cast
     exact i.choose_le_middle n
   specialize hgrowth (n - i) (by simp only [tsub_le_self]) x
-  refine le_trans (mul_le_mul_of_nonneg_left hgrowth (by positivity)) ?_
+  grw [hgrowth]
   move_mul [C]
   gcongr ?_ * C
   rw [Finset.mem_range_succ_iff] at hi
@@ -859,8 +858,7 @@ variable [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 provided that the function is temperate and growths polynomially near infinity. -/
 def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
     (hg_upper : ∃ (k : ℕ) (C : ℝ), ∀ x, ‖x‖ ≤ C * (1 + ‖g x‖) ^ k) : 𝓢(E, F) →L[𝕜] 𝓢(D, F) := by
-  refine mkCLM (fun f x => f (g x))
-    (fun _ _ _ => by simp only [Pi.add_apply]) (fun _ _ _ => rfl)
+  refine mkCLM (fun f => f ∘ g) (fun _ _ _ => by simp) (fun _ _ _ => rfl)
     (fun f => (f.smooth ⊤).comp hg.1) ?_
   rintro ⟨k, n⟩
   rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨l, C, hC, hgrowth⟩
@@ -901,7 +899,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
   have := norm_iteratedFDeriv_comp_le (f.smooth ⊤) hg.1 (mod_cast le_top) x hbound hgrowth'
   have hxk : ‖x‖ ^ k ≤ (1 + ‖x‖) ^ k :=
     pow_le_pow_left₀ (norm_nonneg _) (by simp only [zero_le_one, le_add_iff_nonneg_left]) _
-  refine le_trans (mul_le_mul hxk this (by positivity) (by positivity)) ?_
+  grw [hxk, this]
   have rearrange :
     (1 + ‖x‖) ^ k *
         (n ! * (2 ^ k' * seminorm_f / (1 + ‖g x‖) ^ k') * ((C + 1) * (1 + ‖x‖) ^ l) ^ n) =
@@ -912,11 +910,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
   rw [rearrange]
   have hgxk' : 0 < (1 + ‖g x‖) ^ k' := by positivity
   rw [← div_le_iff₀ hgxk'] at hg_upper''
-  have hpos : (0 : ℝ) ≤ (C + 1) ^ n * n ! * 2 ^ k' * seminorm_f := by
-    have : 0 ≤ seminorm_f := apply_nonneg _ _
-    positivity
-  refine le_trans (mul_le_mul_of_nonneg_right hg_upper'' hpos) ?_
-  rw [← mul_assoc]
+  grw [hg_upper'', ← mul_assoc]
 
 @[simp] lemma compCLM_apply {g : D → E} (hg : g.HasTemperateGrowth)
     (hg_upper : ∃ (k : ℕ) (C : ℝ), ∀ x, ‖x‖ ≤ C * (1 + ‖g x‖) ^ k) (f : 𝓢(E, F)) :
@@ -1301,16 +1295,10 @@ theorem memLp_top (f : 𝓢(E, F)) (μ : Measure E := by volume_tac) : MemLp f �
   refine memLp_top_of_bound f.continuous.aestronglyMeasurable C (ae_of_all μ fun x ↦ ?_)
   simpa using hC x
 
-@[deprecated (since := "2025-02-21")]
-alias memℒp_top := memLp_top
-
 /-- Schwartz functions are in `L^p` for any `p`. -/
 theorem memLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] : MemLp f p μ :=
   ⟨f.continuous.aestronglyMeasurable, f.eLpNorm_lt_top p μ⟩
-
-@[deprecated (since := "2025-02-21")]
-alias memℒp := memLp
 
 /-- Map a Schwartz function to an `Lp` function for any `p`. -/
 def toLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :

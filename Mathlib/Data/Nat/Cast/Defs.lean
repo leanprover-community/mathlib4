@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
 -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Data.Nat.Init
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.OfNat
 
@@ -29,25 +30,6 @@ variable {R : Type*}
 protected def Nat.unaryCast [One R] [Zero R] [Add R] : ℕ → R
   | 0 => 0
   | n + 1 => Nat.unaryCast n + 1
-
--- the following four declarations are not in mathlib3 and are relevant to the way numeric
--- literals are handled in Lean 4.
-
-/-- A type class for natural numbers which are greater than or equal to `2`. -/
-class Nat.AtLeastTwo (n : ℕ) : Prop where
-  prop : 2 ≤ n
-
-instance instNatAtLeastTwo {n : ℕ} : Nat.AtLeastTwo (n + 2) where
-  prop := Nat.succ_le_succ <| Nat.succ_le_succ <| Nat.zero_le _
-
-namespace Nat.AtLeastTwo
-
-variable {n : ℕ} [n.AtLeastTwo]
-
-lemma one_lt : 1 < n := prop
-lemma ne_one : n ≠ 1 := Nat.ne_of_gt one_lt
-
-end Nat.AtLeastTwo
 
 /-- Recognize numeric literals which are at least `2` as terms of `R` via `Nat.cast`. This
 instance is what makes things like `37 : R` type check.  Note that `0` and `1` are not needed

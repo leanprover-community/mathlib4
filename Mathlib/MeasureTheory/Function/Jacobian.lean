@@ -7,7 +7,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Congr
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.Analysis.NormedSpace.Pointwise
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 import Mathlib.MeasureTheory.Constructions.Polish.Basic
 import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
 import Mathlib.Topology.Algebra.Module.Determinant
@@ -522,7 +522,6 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
       r * ‖(f' x - A) a‖ = ‖(f' x - A) (r • a)‖ := by
         simp only [ContinuousLinearMap.map_smul, norm_smul, Real.norm_eq_abs, abs_of_nonneg rpos.le]
       _ = ‖f y - f x - A (y - x) - (f y - f x - (f' x) (y - x))‖ := by
-        congr 1
         simp only [ya, add_sub_cancel_left, sub_sub_sub_cancel_left, ContinuousLinearMap.coe_sub',
           Pi.sub_apply, ContinuousLinearMap.map_smul, smul_sub]
       _ ≤ ‖f y - f x - A (y - x)‖ + ‖f y - f x - (f' x) (y - x)‖ := norm_sub_le _ _
@@ -539,7 +538,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
     _ ≤ ‖(f' x - A) a‖ + ‖(f' x - A) (z - a)‖ := norm_add_le _ _
     _ ≤ (δ + ε) * (‖z‖ + ε) + ‖f' x - A‖ * ‖z - a‖ := by
       apply add_le_add
-      · rw [mul_assoc] at I; exact (mul_le_mul_left rpos).1 I
+      · rw [mul_assoc] at I; exact (mul_le_mul_iff_right₀ rpos).1 I
       · apply ContinuousLinearMap.le_opNorm
     _ ≤ (δ + ε) * (‖z‖ + ε) + ‖f' x - A‖ * ε := by
       rw [mem_closedBall_iff_norm'] at az
@@ -1004,7 +1003,7 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image_aux1 (hs : MeasurableSet s)
       have I : |(f' x).det| ≤ |(A n).det| + ε :=
         calc
           |(f' x).det| = |(A n).det + ((f' x).det - (A n).det)| := by congr 1; abel
-          _ ≤ |(A n).det| + |(f' x).det - (A n).det| := abs_add _ _
+          _ ≤ |(A n).det| + |(f' x).det - (A n).det| := abs_add_le _ _
           _ ≤ |(A n).det| + ε := add_le_add le_rfl ((hδ (A n)).2.1 _ hx)
       calc
         ENNReal.ofReal |(f' x).det| ≤ ENNReal.ofReal (|(A n).det| + ε) :=

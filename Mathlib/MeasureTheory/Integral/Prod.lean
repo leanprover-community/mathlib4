@@ -3,6 +3,7 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.MeasureTheory.Measure.Prod
@@ -305,6 +306,16 @@ theorem Integrable.op_fst_snd {F G : Type*} [NormedAddCommGroup F] [NormedAddCom
       simp [lintegral_const_mul', lintegral_mul_const', hg.2.ne, mul_assoc]
     _ < ∞ := by apply_rules [ENNReal.mul_lt_top, hf.2, hg.2, ENNReal.ofReal_lt_top]
 
+lemma Integrable.comp_fst {f : α → E} (hf : Integrable f μ) (ν : Measure β) [IsFiniteMeasure ν] :
+    Integrable (fun x ↦ f x.1) (μ.prod ν) := by
+  rw [← memLp_one_iff_integrable] at hf ⊢
+  exact hf.comp_fst ν
+
+lemma Integrable.comp_snd {f : β → E} (hf : Integrable f ν) (μ : Measure α) [IsFiniteMeasure μ] :
+    Integrable (fun x ↦ f x.2) (μ.prod ν) := by
+  rw [← memLp_one_iff_integrable] at hf ⊢
+  exact hf.comp_snd μ
+
 omit [SFinite ν] in
 theorem Integrable.smul_prod {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E]
     {f : α → R} {g : β → E} (hf : Integrable f μ) (hg : Integrable g ν) :
@@ -534,6 +545,44 @@ theorem integral_fun_snd (f : β → E) : ∫ z, f z.2 ∂μ.prod ν = μ.real u
 theorem integral_fun_fst (f : α → E) : ∫ z, f z.1 ∂μ.prod ν = ν.real univ • ∫ x, f x ∂μ := by
   rw [← integral_prod_swap]
   apply integral_fun_snd
+
+section ContinuousLinearMap
+
+variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
+  [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
+  [NormedAddCommGroup G] [NormedSpace ℝ G] {mG : MeasurableSpace G}
+  {μ : Measure E} [IsProbabilityMeasure μ] {ν : Measure F} [IsProbabilityMeasure ν]
+  {L : E × F →L[ℝ] G}
+
+lemma integrable_continuousLinearMap_prod'
+    (hLμ : Integrable (L.comp (.inl ℝ E F)) μ) (hLν : Integrable (L.comp (.inr ℝ E F)) ν) :
+    Integrable L (μ.prod ν) := by
+  change Integrable (fun v ↦ L v) (μ.prod ν)
+  simp_rw [← L.comp_inl_add_comp_inr]
+  exact (hLμ.comp_fst ν).add (hLν.comp_snd μ)
+
+lemma integrable_continuousLinearMap_prod (hμ : Integrable id μ) (hν : Integrable id ν) :
+    Integrable L (μ.prod ν) :=
+  integrable_continuousLinearMap_prod' (ContinuousLinearMap.integrable_comp _ hμ)
+    (ContinuousLinearMap.integrable_comp _ hν)
+
+variable [CompleteSpace G]
+
+lemma integral_continuousLinearMap_prod'
+    (hLμ : Integrable (L.comp (.inl ℝ E F)) μ) (hLν : Integrable (L.comp (.inr ℝ E F)) ν) :
+    ∫ p, L p ∂(μ.prod ν) = ∫ x, L.comp (.inl ℝ E F) x ∂μ + ∫ y, L.comp (.inr ℝ E F) y ∂ν := by
+  simp_rw [← L.comp_inl_add_comp_inr]
+  replace hLμ := ((memLp_one_iff_integrable.mpr hLμ).comp_fst ν).integrable le_rfl
+  replace hLν := ((memLp_one_iff_integrable.mpr hLν).comp_snd μ).integrable le_rfl
+  rw [integral_add hLμ hLν, integral_prod _ hLμ, integral_prod _ hLν]
+  simp
+
+lemma integral_continuousLinearMap_prod (hμ : Integrable id μ) (hν : Integrable id ν) :
+    ∫ p, L p ∂(μ.prod ν) = ∫ x, L.comp (.inl ℝ E F) x ∂μ + ∫ y, L.comp (.inr ℝ E F) y ∂ν :=
+  integral_continuousLinearMap_prod' (ContinuousLinearMap.integrable_comp _ hμ)
+    (ContinuousLinearMap.integrable_comp _ hν)
+
+end ContinuousLinearMap
 
 section
 

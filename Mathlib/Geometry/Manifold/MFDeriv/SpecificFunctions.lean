@@ -3,6 +3,7 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
+import Mathlib.Analysis.Calculus.FDeriv.Mul
 import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
 /-!
@@ -378,7 +379,7 @@ theorem mdifferentiableOn_prod_iff (f : M → M' × N') :
     MDifferentiableOn I (I'.prod J') f s ↔
       MDifferentiableOn I I' (Prod.fst ∘ f) s ∧ MDifferentiableOn I J' (Prod.snd ∘ f) s :=
   ⟨fun h ↦ ⟨fun x hx ↦ ((mdifferentiableWithinAt_prod_iff f).1 (h x hx)).1,
-      fun x hx ↦ ((mdifferentiableWithinAt_prod_iff f).1 (h x hx)).2⟩ ,
+      fun x hx ↦ ((mdifferentiableWithinAt_prod_iff f).1 (h x hx)).2⟩,
     fun h x hx ↦ (mdifferentiableWithinAt_prod_iff f).2 ⟨h.1 x hx, h.2 x hx⟩⟩
 
 theorem mdifferentiableOn_prod_module_iff (f : M → F₁ × F₂) :

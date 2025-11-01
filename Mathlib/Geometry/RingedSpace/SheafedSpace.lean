@@ -25,25 +25,22 @@ universe u v w' w
 variable (C : Type u) [Category.{v} C]
 
 
--- Porting note: removed
--- local attribute [tidy] tactic.op_induction'
--- as it isn't needed here. If it is useful elsewhere
+-- We could enable the following line:
 -- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opposite
--- should suffice, but may need
--- https://github.com/JLimperg/aesop/issues/59
+-- but may need
+-- https://github.com/leanprover-community/aesop/issues/59
 
 namespace AlgebraicGeometry
 
 /-- A `SheafedSpace C` is a topological space equipped with a sheaf of `C`s. -/
 structure SheafedSpace extends PresheafedSpace C where
-  /-- A sheafed space is presheafed space which happens to be sheaf. -/
+  /-- A sheafed space is a presheafed space which happens to be a sheaf. -/
   IsSheaf : presheaf.IsSheaf
 
 variable {C}
 
 namespace SheafedSpace
 
--- Porting note: use `CoeOut` for the coercion happens left to right
 instance coeCarrier : CoeOut (SheafedSpace C) TopCat where coe X := X.carrier
 
 instance coeSort : CoeSort (SheafedSpace C) Type* where
@@ -53,13 +50,7 @@ instance coeSort : CoeSort (SheafedSpace C) Type* where
 def sheaf (X : SheafedSpace C) : Sheaf C (X : TopCat) :=
   ⟨X.presheaf, X.IsSheaf⟩
 
--- Porting note: this is a syntactic tautology, so removed
--- @[simp]
--- theorem as_coe (X : SheafedSpace C) : X.carrier = (X : TopCat) :=
---   rfl
-
--- Porting note: this gives a `simpVarHead` error (`LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`).
--- so removed @[simp]
+/-- Not `@[simp]` since it already reduces to `carrier = carrier`. -/
 theorem mk_coe (carrier) (presheaf) (h) :
     (({ carrier
         presheaf
@@ -69,7 +60,7 @@ theorem mk_coe (carrier) (presheaf) (h) :
 instance (X : SheafedSpace C) : TopologicalSpace X :=
   X.carrier.str
 
-/-- The trivial `unit` valued sheaf on any topological space. -/
+/-- The trivial `unit`-valued sheaf on any topological space. -/
 def unit (X : TopCat) : SheafedSpace (Discrete Unit) :=
   { @PresheafedSpace.const (Discrete Unit) _ X ⟨⟨⟩⟩ with IsSheaf := Presheaf.isSheaf_unit _ }
 

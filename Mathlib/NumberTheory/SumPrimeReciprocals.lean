@@ -52,7 +52,7 @@ lemma one_half_le_sum_primes_ge_one_div (k : ℕ) :
     rwa [hN₀, ← mul_assoc, ← pow_two 2, ← mul_pow, sqrt_eq', ← sub_le_iff_le_add',
       cast_mul, cast_mul, cast_pow, cast_two,
       show (2 * (2 * m ^ 2) - m * (2 * m) : ℝ) = 2 * (2 * m ^ 2) * (1 / 2) by ring,
-      _root_.mul_le_mul_left <| by positivity] at this
+      mul_le_mul_iff_right₀ <| by positivity] at this
   calc (2 * N₀ : ℝ)
     _ = ((2 * N₀).smoothNumbersUpTo k).card + ((2 * N₀).roughNumbersUpTo k).card := by
         exact_mod_cast ((2 * N₀).smoothNumbersUpTo_card_add_roughNumbersUpTo_card k).symm

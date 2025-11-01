@@ -50,7 +50,7 @@ open sets in `Proj`, more specifically:
       `ProjIsoSpecTopComponent.FromSpec.carrier.relevant`;
     * This ideal is prime, the proof can be found in
       `ProjIsoSpecTopComponent.FromSpec.carrier.asIdeal.prime`.
-    Hence we have a well defined function `Spec.T A⁰_f → Proj.T | (pbo f)`, this function is called
+    Hence we have a well-defined function `Spec.T A⁰_f → Proj.T | (pbo f)`, this function is called
     `ProjIsoSpecTopComponent.FromSpec.toFun`. But to prove the continuity of this function, we need
     to prove `fromSpec ∘ toSpec` and `toSpec ∘ fromSpec` are both identities; these are achieved in
     `ProjIsoSpecTopComponent.fromSpec_toSpec` and `ProjIsoSpecTopComponent.toSpec_fromSpec`.
@@ -353,7 +353,7 @@ theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg
     rw [← add_smul, Nat.add_sub_of_le h1]; rfl
   · rw [(_ : m * i = _)]
     apply GradedMonoid.toGradedMul.mul_mem (i := (j-m) • i) (j := (m + m - j) • i) <;> mem_tac_aux
-    rw [← add_smul]; congr; omega
+    rw [← add_smul]; congr; cutsat
   convert_to ∑ i ∈ range (m + m + 1), g i ∈ q.1; swap
   · refine q.1.sum_mem fun j _ => nsmul_mem ?_ _; split_ifs
     exacts [q.1.zero_mem, q.1.mul_mem_left _ (hb i), q.1.mul_mem_right _ (ha i)]
@@ -498,7 +498,7 @@ section fromSpecToSpec
 lemma fromSpec_toSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) (x : Proj.T| pbo f) :
     FromSpec.toFun f_deg hm (toSpec 𝒜 f x) = x := by
   refine Subtype.ext <| ProjectiveSpectrum.ext <| HomogeneousIdeal.ext' ?_
-  intros i z hzi
+  intro i z hzi
   refine (FromSpec.mem_carrier_iff_of_mem f_deg hm _ _ hzi).trans ?_
   exact (ToSpec.mk_mem_carrier _ _).trans (x.1.2.pow_mem_iff_mem m hm)
 
@@ -732,11 +732,11 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
         (mk_mem_toSpec_base_apply _ _ _).not.mpr <| x.1.1.toIdeal.primeCompl.pow_mem hb' m⟩⟩,
         val_injective _ ?_⟩
     · convert SetLike.mul_mem_graded a.2 (SetLike.pow_mem_graded (m - 1) hb) using 2
-      rw [← succ_nsmul', tsub_add_cancel_of_le (by omega), mul_comm, smul_eq_mul]
+      rw [← succ_nsmul', tsub_add_cancel_of_le (by cutsat), mul_comm, smul_eq_mul]
     · simp only [RingHom.algebraMap_toAlgebra, map_mk, RingHom.id_apply, val_mul, val_mk,
         mk_eq_mk', ← IsLocalization.mk'_mul, Submonoid.mk_mul_mk, IsLocalization.mk'_eq_iff_eq]
-      rw [mul_comm b, mul_mul_mul_comm, ← pow_succ', mul_assoc, tsub_add_cancel_of_le (by omega)]
-  · intros y z e
+      rw [mul_comm b, mul_mul_mul_comm, ← pow_succ', mul_assoc, tsub_add_cancel_of_le (by cutsat)]
+  · intro y z e
     obtain ⟨y, rfl⟩ := HomogeneousLocalization.mk_surjective y
     obtain ⟨z, rfl⟩ := HomogeneousLocalization.mk_surjective z
     obtain ⟨i, c, hc, hc', e⟩ : ∃ i, ∃ c ∈ 𝒜 i, c ∉ x.1.asHomogeneousIdeal ∧

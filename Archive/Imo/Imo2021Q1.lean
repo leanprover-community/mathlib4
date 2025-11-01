@@ -87,8 +87,7 @@ lemma exists_finset_3_le_card_with_pairs_summing_to_squares {n : ℕ} (hn : 100 
     grind
   · intro x hx y hy hxy
     simp only [Finset.mem_insert, Finset.mem_singleton] at hx hy
-    rcases hx with (rfl | rfl | rfl) <;> rcases hy with (rfl | rfl | rfl)
-    all_goals grind
+    rcases hx with (rfl | rfl | rfl) <;> rcases hy with (rfl | rfl | rfl) <;> grind
   · grind
 
 end Imo2021Q1

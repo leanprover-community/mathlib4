@@ -5,7 +5,7 @@ Authors: Calle Sönne, Joël Riou, Ravi Vakil
 -/
 import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.AlgebraicGeometry.Sites.BigZariski
-import Mathlib.CategoryTheory.Sites.OneHypercover
+import Mathlib.CategoryTheory.Sites.Hypercover.One
 
 /-!
 # The 1-hypercover of a glue data

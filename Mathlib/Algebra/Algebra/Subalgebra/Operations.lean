@@ -54,7 +54,7 @@ theorem mem_of_finset_sum_eq_one_of_pow_smul_mem
   have : Ideal.span (s' '' ι') = ⊤ := by
     rw [Ideal.eq_top_iff_one, ← e']
     apply sum_mem
-    intros i hi
+    intro i hi
     exact Ideal.mul_mem_left _ _ <| Ideal.subset_span <| Set.mem_image_of_mem s' hi
   let N := ι'.sup n
   have hN := Ideal.span_pow_eq_top _ this N

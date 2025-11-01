@@ -144,9 +144,6 @@ theorem AlgHom.algebraicIndependent_iff (f : A →ₐ[R] A') (hf : Injective f) 
 theorem AlgebraicIndependent.of_subsingleton [Subsingleton R] : AlgebraicIndependent R x :=
   algebraicIndependent_iff.2 fun _ _ => Subsingleton.elim _ _
 
-@[deprecated (since := "2025-02-07")] alias algebraicIndependent_of_subsingleton :=
-  AlgebraicIndependent.of_subsingleton
-
 theorem isTranscendenceBasis_iff_of_subsingleton [Subsingleton R] (x : ι → A) :
     IsTranscendenceBasis R x ↔ Nonempty ι := by
   have := Module.subsingleton R A
@@ -493,8 +490,6 @@ section Field
 
 variable {K : Type*} [Field K] [Algebra K A]
 
-/- Porting note: removing `simp`, not in simp normal form. Could make `Function.Injective f` a
-simp lemma when `f` is a field hom, and then simp would prove this -/
 theorem algebraicIndependent_empty_type [IsEmpty ι] [Nontrivial A] : AlgebraicIndependent K x := by
   rw [algebraicIndependent_empty_type_iff]
   exact RingHom.injective _

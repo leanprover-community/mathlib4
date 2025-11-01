@@ -545,6 +545,7 @@ theorem subtypeVal_nil {α : TypeVec.{u} 0} (ps : α ⟹ «repeat» 0 Prop) :
     TypeVec.subtypeVal ps = nilFun :=
   funext <| by rintro ⟨⟩
 
+@[simp]
 theorem diag_sub_val {n} {α : TypeVec.{u} n} : subtypeVal (repeatEq α) ⊚ diagSub = prod.diag := by
   ext i x
   induction i with
@@ -642,14 +643,7 @@ theorem dropFun_id {α : TypeVec (n + 1)} : dropFun (@TypeVec.id _ α) = id :=
 @[simp]
 theorem prod_map_id {α β : TypeVec n} : (@TypeVec.id _ α ⊗' @TypeVec.id _ β) = id := prod_id
 
-@[simp]
-theorem subtypeVal_diagSub {α : TypeVec n} : subtypeVal (repeatEq α) ⊚ diagSub = prod.diag := by
-  ext i x
-  induction i with
-  | fz => simp [comp, diagSub, subtypeVal, prod.diag]
-  | fs _ i_ih =>
-    simp only [comp, subtypeVal, diagSub, prod.diag] at *
-    apply i_ih
+@[deprecated (since := "2025-08-14")] alias subtypeVal_diagSub := diag_sub_val
 
 @[simp]
 theorem toSubtype_of_subtype {α : TypeVec n} (p : α ⟹ «repeat» n Prop) :

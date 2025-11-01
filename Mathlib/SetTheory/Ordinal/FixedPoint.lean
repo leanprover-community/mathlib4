@@ -61,9 +61,6 @@ theorem le_nfpFamily [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.{u}) (a)
 theorem lt_nfpFamily_iff [Small.{u} ι] {a b} : a < nfpFamily f b ↔ ∃ l, a < List.foldr f b l :=
   Ordinal.lt_iSup_iff
 
-@[deprecated (since := "2025-02-16")]
-alias lt_nfpFamily := lt_nfpFamily_iff
-
 theorem nfpFamily_le_iff [Small.{u} ι] {a b} : nfpFamily f a ≤ b ↔ ∀ l, List.foldr f a l ≤ b :=
   Ordinal.iSup_le_iff
 
@@ -155,7 +152,7 @@ theorem isNormal_derivFamily [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.
   · rw [derivFamily_succ, ← succ_le_iff]
     exact le_nfpFamily _ _
   · rw [derivFamily_limit _ h, Set.image_eq_range]
-    have : Nonempty (Set.Iio o) := ⟨0, h.bot_lt⟩
+    have := h.nonempty_Iio.to_subtype
     exact isLUB_ciSup (bddAbove_of_small _)
 
 theorem derivFamily_strictMono [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.{u}) :
@@ -172,7 +169,7 @@ theorem derivFamily_fp [Small.{u} ι] {i} (H : IsNormal (f i)) (o : Ordinal) :
     rw [derivFamily_succ]
     exact nfpFamily_fp H _
   | limit o l IH =>
-    have : Nonempty (Set.Iio o) := ⟨0, l.bot_lt⟩
+    have := l.nonempty_Iio.to_subtype
     rw [derivFamily_limit _ l, H.map_iSup]
     refine eq_of_forall_ge_iff fun c => ?_
     rw [Ordinal.iSup_le_iff, Ordinal.iSup_le_iff]
@@ -210,6 +207,10 @@ theorem le_iff_derivFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a} :
 theorem fp_iff_derivFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a} :
     (∀ i, f i a = a) ↔ ∃ o, derivFamily f o = a :=
   Iff.trans ⟨fun h i => le_of_eq (h i), fun h i => (H i).le_iff_eq.1 (h i)⟩ (le_iff_derivFamily H)
+
+theorem mem_range_derivFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a} :
+    a ∈ Set.range (derivFamily f) ↔ ∀ i, f i a = a :=
+  (fp_iff_derivFamily H).symm
 
 /-- For a family of normal functions, `Ordinal.derivFamily` enumerates the common fixed points. -/
 theorem derivFamily_eq_enumOrd [Small.{u} ι] (H : ∀ i, IsNormal (f i)) :
@@ -350,6 +351,9 @@ theorem IsNormal.le_iff_deriv (H : IsNormal f) {a} : f a ≤ a ↔ ∃ o, deriv 
 
 theorem IsNormal.fp_iff_deriv (H : IsNormal f) {a} : f a = a ↔ ∃ o, deriv f o = a := by
   rw [← H.le_iff_eq, H.le_iff_deriv]
+
+theorem IsNormal.mem_range_deriv (H : IsNormal f) {a} : a ∈ Set.range (deriv f) ↔ f a = a :=
+  H.fp_iff_deriv.symm
 
 /-- `Ordinal.deriv` enumerates the fixed points of a normal function. -/
 theorem deriv_eq_enumOrd (H : IsNormal f) : deriv f = enumOrd (Function.fixedPoints f) := by
@@ -497,7 +501,7 @@ theorem nfp_mul_opow_omega0_add {a c : Ordinal} (b) (ha : 0 < a) (hc : 0 < c)
     have := le_nfp (a * ·) (a ^ ω * b + c)
     rw [hd] at this
     have := (add_lt_add_left hc (a ^ ω * b)).trans_le this
-    rw [add_zero, mul_lt_mul_iff_left (opow_pos ω ha)] at this
+    rw [add_zero, mul_lt_mul_iff_right₀ (opow_pos ω ha)] at this
     rwa [succ_le_iff]
 
 theorem deriv_mul_eq_opow_omega0_mul {a : Ordinal.{u}} (ha : 0 < a) (b) :

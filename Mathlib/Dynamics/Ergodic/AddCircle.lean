@@ -18,13 +18,13 @@ This file contains proofs of ergodicity for maps of the additive circle.
 ## Main definitions:
 
 * `AddCircle.ergodic_zsmul`: given `n : ℤ` such that `1 < |n|`, the self map `y ↦ n • y` on
-  the additive circle is ergodic (wrt the Haar measure).
+  the additive circle is ergodic (w.r.t. the Haar measure).
 * `AddCircle.ergodic_nsmul`: given `n : ℕ` such that `1 < n`, the self map `y ↦ n • y` on
-  the additive circle is ergodic (wrt the Haar measure).
+  the additive circle is ergodic (w.r.t. the Haar measure).
 * `AddCircle.ergodic_zsmul_add`: given `n : ℤ` such that `1 < |n|` and `x : AddCircle T`, the
-  self map `y ↦ n • y + x` on the additive circle is ergodic (wrt the Haar measure).
+  self map `y ↦ n • y + x` on the additive circle is ergodic (w.r.t. the Haar measure).
 * `AddCircle.ergodic_nsmul_add`: given `n : ℕ` such that `1 < n` and `x : AddCircle T`, the
-  self map `y ↦ n • y + x` on the additive circle is ergodic (wrt the Haar measure).
+  self map `y ↦ n • y + x` on the additive circle is ergodic (w.r.t. the Haar measure).
 
 -/
 

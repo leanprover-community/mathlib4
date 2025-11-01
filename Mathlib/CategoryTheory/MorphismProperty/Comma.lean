@@ -50,6 +50,32 @@ lemma over_iso_iff (P : MorphismProperty T) [P.RespectsIso] {X : T} {f g : Over 
     P f.hom ↔ P g.hom :=
   P.comma_iso_iff e
 
+section
+
+variable {W : MorphismProperty T} {X : T}
+
+/-- The morphism property on `Over X` induced by a morphism property on `C`. -/
+def over (W : MorphismProperty T) {X : T} : MorphismProperty (Over X) := fun _ _ f ↦ W f.left
+
+@[simp] lemma over_iff {Y Z : Over X} (f : Y ⟶ Z) : W.over f ↔ W f.left := .rfl
+
+/-- The morphism property on `Under X` induced by a morphism property on `C`. -/
+def under (W : MorphismProperty T) {X : T} : MorphismProperty (Under X) := fun _ _ f ↦ W f.right
+
+@[simp] lemma under_iff {Y Z : Under X} (f : Y ⟶ Z) : W.under f ↔ W f.right := .rfl
+
+/-- The object property on `Over X` induced by a morphism property. -/
+def overObj (W : MorphismProperty T) {X : T} : ObjectProperty (Over X) := fun f ↦ W f.hom
+
+@[simp] lemma overObj_iff (Y : Over X) : W.overObj Y ↔ W Y.hom := .rfl
+
+/-- The object property on `Under X` induced by a morphism property. -/
+def underObj (W : MorphismProperty T) {X : T} : ObjectProperty (Under X) := fun f ↦ W f.hom
+
+@[simp] lemma underObj_iff (Y : Under X) : W.underObj Y ↔ W Y.hom := .rfl
+
+end
+
 variable (P : MorphismProperty T) (Q : MorphismProperty A) (W : MorphismProperty B)
 
 /-- `P.Comma L R Q W` is the subcategory of `Comma L R` consisting of

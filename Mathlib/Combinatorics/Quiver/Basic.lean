@@ -120,8 +120,7 @@ lemma eq_homOfEq_iff {X X' Y Y' : V} (f : X ⟶ Y) (g : X' ⟶ Y')
   subst hX hY; simp
 
 lemma homOfEq_heq {X Y X' Y' : V} (hX : X = X') (hY : Y = Y') (f : X ⟶ Y) :
-    homOfEq f hX hY ≍ f := by
-  cases hX; cases hY; rfl
+    homOfEq f hX hY ≍ f := (heq_of_homOfEq_ext hX hY rfl).symm
 
 lemma homOfEq_heq_left_iff {X Y X' Y' : V} (f : X ⟶ Y) (g : X' ⟶ Y')
     (hX : X = X') (hY : Y = Y') :

@@ -109,8 +109,8 @@ def IsNonarchimedean {α : Type*} [Add α] (f : α → R) : Prop := ∀ a b : α
 
 The slightly unusual typeclass assumptions `[LinearOrderedSemiring R] [ExistsAddOfLE R]` cover two
 more familiar settings:
-* `[LinearOrderedRing R]`, eg `ℤ`, `ℚ` or `ℝ`
-* `[CanonicallyLinearOrderedSemiring R]` (although we don't actually have this typeclass), eg `ℕ`,
+* `[LinearOrderedRing R]`, e.g. `ℤ`, `ℚ` or `ℝ`
+* `[CanonicallyLinearOrderedSemiring R]` (although we don't actually have this typeclass), e.g. `ℕ`,
   `ℚ≥0` or `ℝ≥0`
 -/
 

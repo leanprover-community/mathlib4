@@ -15,7 +15,7 @@ This file defines bundled homomorphisms of `R`-algebras.
 * `AlgHom R A B`: the type of `R`-algebra morphisms from `A` to `B`.
 * `Algebra.ofId R A : R →ₐ[R] A`: the canonical map from `R` to `A`, as an `AlgHom`.
 
-## Notations
+## Notation
 
 * `A →ₐ[R] B` : `R`-algebra homomorphism from `A` to `B`.
 -/
@@ -309,7 +309,7 @@ def ofLinearMap (f : A →ₗ[R] B) (map_one : f 1 = 1) (map_mul : ∀ x y, f (x
     toFun := f
     map_one' := map_one
     map_mul' := map_mul
-    commutes' := fun c => by simp only [Algebra.algebraMap_eq_smul_one, f.map_smul, map_one] }
+    commutes' c := by simp only [Algebra.algebraMap_eq_smul_one, f.map_smul, map_one] }
 
 @[simp]
 theorem ofLinearMap_toLinearMap (map_one) (map_mul) :
@@ -456,7 +456,7 @@ theorem smul_units_def (f : A →ₐ[R] A) (x : Aˣ) :
 
 end MulDistribMulAction
 
-variable (M : Submonoid R) {B : Type w} [CommRing B] [Algebra R B] {A}
+variable (M : Submonoid R) {B : Type w} [Semiring B] [Algebra R B] {A}
 
 lemma algebraMapSubmonoid_map_eq (f : A →ₐ[R] B) :
     (algebraMapSubmonoid A M).map f = algebraMapSubmonoid B M := by

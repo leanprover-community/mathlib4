@@ -73,7 +73,7 @@ the manifold derivative of `f`, at `x`, is just the usual derivative of
 There is a subtlety with respect to continuity: if the function is not continuous, then the image
 of a small open set around `x` will not be contained in the source of the preferred chart around
 `f x`, which means that when reading `f` in the chart one is losing some information. To avoid this,
-we include continuity in the definition of differentiablity (which is reasonable since with any
+we include continuity in the definition of differentiability (which is reasonable since with any
 definition, differentiability implies continuity).
 
 *Warning*: the derivative (even within a subset) is a linear map on the whole tangent space. Suppose
@@ -302,7 +302,7 @@ variable (I I') in
 has, at the point `x`, the derivative `f'`. Here, `f'` is a continuous linear
 map from the tangent space at `x` to the tangent space at `f x`.
 
-We require continuity in the definition, as otherwise points close to `x` `s` could be sent by
+We require continuity in the definition, as otherwise points close to `x` in `s` could be sent by
 `f` outside of the chart domain around `f x`. Then the chart could do anything to the image points,
 and in particular by coincidence `writtenInExtChartAt I I' x f` could be differentiable, while
 this would not mean anything relevant. -/

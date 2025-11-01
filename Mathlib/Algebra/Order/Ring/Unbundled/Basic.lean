@@ -108,7 +108,7 @@ immediate predecessors and what conditions are added to each of them.
 Each section is labelled with a corresponding bundled ordered ring typeclass in mind. Mixins for
 relating the order structures and ring structures are added as needed.
 
-TODO: the mixin assumptiosn can be relaxed in most cases
+TODO: the mixin assumptions can be relaxed in most cases
 
 -/
 
@@ -373,7 +373,6 @@ end Monotone
 lemma mul_add_mul_le_mul_add_mul [ExistsAddOfLE R] [MulPosMono R]
     [AddLeftMono R] [AddLeftReflectLE R]
     (hab : a ≤ b) (hcd : c ≤ d) : a * d + b * c ≤ a * c + b * d := by
-  obtain ⟨b, rfl⟩ := exists_add_of_le hab
   obtain ⟨d, hd, rfl⟩ := exists_nonneg_add_of_le hcd
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
   exact add_le_add_left (mul_le_mul_of_nonneg_right hab hd) _
@@ -390,10 +389,10 @@ variable [AddLeftReflectLT R]
 lemma mul_add_mul_lt_mul_add_mul [ExistsAddOfLE R] [MulPosStrictMono R]
     [AddLeftStrictMono R]
     (hab : a < b) (hcd : c < d) : a * d + b * c < a * c + b * d := by
-  obtain ⟨b, rfl⟩ := exists_add_of_le hab.le
   obtain ⟨d, hd, rfl⟩ := exists_pos_add_of_lt' hcd
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
-  exact add_lt_add_left (mul_lt_mul_of_pos_right hab hd) _
+  gcongr
+  exact hd
 
 /-- Binary **rearrangement inequality**. -/
 lemma mul_add_mul_lt_mul_add_mul' [ExistsAddOfLE R] [MulPosStrictMono R]
@@ -437,13 +436,13 @@ theorem nonpos_of_mul_nonpos_right [PosMulStrictMono R]
 @[simp]
 theorem mul_nonneg_iff_of_pos_left [PosMulStrictMono R]
     (h : 0 < c) : 0 ≤ c * b ↔ 0 ≤ b := by
-  convert mul_le_mul_left h
+  convert mul_le_mul_iff_right₀ h
   simp
 
 @[simp]
 theorem mul_nonneg_iff_of_pos_right [MulPosStrictMono R]
     (h : 0 < c) : 0 ≤ b * c ↔ 0 ≤ b := by
-  simpa using (mul_le_mul_right h : 0 * c ≤ b * c ↔ 0 ≤ b)
+  simpa using (mul_le_mul_iff_left₀ h : 0 * c ≤ b * c ↔ 0 ≤ b)
 
 theorem add_le_mul_of_left_le_right [ZeroLEOneClass R] [NeZero (1 : R)]
     [MulPosStrictMono R] [AddLeftMono R]
@@ -456,7 +455,7 @@ theorem add_le_mul_of_left_le_right [ZeroLEOneClass R] [NeZero (1 : R)]
   calc
     a + b ≤ b + b := add_le_add_right ab b
     _ = 2 * b := (two_mul b).symm
-    _ ≤ a * b := (mul_le_mul_right this).mpr a2
+    _ ≤ a * b := (mul_le_mul_iff_left₀ this).mpr a2
 
 theorem add_le_mul_of_right_le_left [ZeroLEOneClass R] [NeZero (1 : R)]
     [AddLeftMono R] [PosMulStrictMono R]
@@ -469,7 +468,7 @@ theorem add_le_mul_of_right_le_left [ZeroLEOneClass R] [NeZero (1 : R)]
   calc
     a + b ≤ a + a := add_le_add_left ba a
     _ = a * 2 := (mul_two a).symm
-    _ ≤ a * b := (mul_le_mul_left this).mpr b2
+    _ ≤ a * b := (mul_le_mul_iff_right₀ this).mpr b2
 
 theorem add_le_mul [ZeroLEOneClass R] [NeZero (1 : R)]
     [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftMono R]

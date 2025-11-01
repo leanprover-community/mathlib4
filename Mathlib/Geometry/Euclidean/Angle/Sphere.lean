@@ -67,6 +67,43 @@ end Orientation
 namespace EuclideanGeometry
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+  [NormedAddTorsor V P]
+
+namespace Sphere
+
+open Real InnerProductSpace
+
+/-- **Thales' theorem**: The angle inscribed in a semicircle is a right angle. -/
+theorem angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter {p₁ p₂ p₃ : P} {s : Sphere P}
+    (hd : s.IsDiameter p₁ p₃) :
+    ∠ p₁ p₂ p₃ = π / 2 ↔ p₂ ∈ s := by
+  rw [mem_sphere', EuclideanGeometry.angle,
+    ← InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two]
+  let o := s.center
+  have h_center : o = midpoint ℝ p₁ p₃ := hd.midpoint_eq_center.symm
+  rw [← vsub_add_vsub_cancel p₁ o p₂, ← vsub_add_vsub_cancel p₃ o p₂,
+    inner_add_left, inner_add_right, inner_add_right]
+  have h_opp : p₁ -ᵥ o = -(p₃ -ᵥ o) := by
+    rw [h_center, left_vsub_midpoint, right_vsub_midpoint, ← smul_neg, neg_vsub_eq_vsub_rev]
+  rw [h_opp, inner_neg_left, inner_neg_left, real_inner_comm (p₃ -ᵥ o) (o -ᵥ p₂)]
+  ring_nf
+  rw [neg_add_eq_zero, real_inner_self_eq_norm_sq, ← dist_eq_norm_vsub,
+    real_inner_self_eq_norm_sq, ← dist_eq_norm_vsub, sq_eq_sq₀ dist_nonneg dist_nonneg,
+    mem_sphere.mp hd.right_mem]
+  exact eq_comm
+
+/-- **Thales' theorem**: For three distinct points, the angle at the second point
+is a right angle if and only if the second point lies on the sphere having the first and third
+points as diameter endpoints. -/
+theorem angle_eq_pi_div_two_iff_mem_sphere_ofDiameter {p₁ p₂ p₃ : P} :
+    ∠ p₁ p₂ p₃ = π / 2 ↔ p₂ ∈ Sphere.ofDiameter p₁ p₃ :=
+  angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter (Sphere.isDiameter_ofDiameter p₁ p₃)
+
+alias thales_theorem := angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter
+
+end Sphere
+
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 
 local notation "o" => Module.Oriented.positiveOrientation
@@ -293,7 +330,6 @@ theorem circumsphere_eq_circumsphere_of_eq_of_eq_of_two_zsmul_oangle_eq {t₁ t�
     t₁.circumsphere = t₂.circumsphere := by
   rw [t₁.circumsphere_eq_of_dist_of_oangle h₁₂ h₁₃ h₂₃,
     t₂.circumsphere_eq_of_dist_of_oangle h₁₂ h₁₃ h₂₃,
-    -- Porting note: was `congrm ⟨((_ : ℝ)⁻¹ / 2) • _ +ᵥ _, _ / _ / 2⟩` and five more lines
     Real.Angle.tan_eq_of_two_zsmul_eq h₂, Real.Angle.abs_sin_eq_of_two_zsmul_eq h₂, h₁, h₃]
 
 /-- Given a triangle, and a fourth point such that twice the angle between two points of the

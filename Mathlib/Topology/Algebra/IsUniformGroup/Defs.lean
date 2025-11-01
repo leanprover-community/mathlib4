@@ -20,7 +20,7 @@ group naturally induces a uniform structure.
 ## Main results
 
 * `IsTopologicalAddGroup.toUniformSpace` and `comm_topologicalAddGroup_is_uniform` can be used
-  to construct a canonical uniformity for a topological add group.
+  to construct a canonical uniformity for a topological additive group.
 
 See `Mathlib/Topology/Algebra/IsUniformGroup/Basic.lean` for further results.
 -/
@@ -461,9 +461,6 @@ theorem isUniformGroup_of_commGroup : IsUniformGroup G := by
     div_div_div_comm _ (Prod.snd (Prod.snd _)), ← nhds_prod_eq]
   exact (continuous_div'.tendsto' 1 1 (div_one 1)).comp tendsto_comap
 
-@[deprecated (since := "2025-02-28")]
-alias comm_topologicalAddGroup_is_uniform := isUniformAddGroup_of_addCommGroup
-@[to_additive existing, deprecated (since := "2025-02-28")]
 alias comm_topologicalGroup_is_uniform := isUniformGroup_of_commGroup
 @[deprecated (since := "2025-03-30")]
 alias uniformAddGroup_of_addCommGroup := isUniformAddGroup_of_addCommGroup

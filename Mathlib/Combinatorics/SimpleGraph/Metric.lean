@@ -278,6 +278,17 @@ lemma dist_top_of_ne (h : u ≠ v) : (⊤ : SimpleGraph V).dist u v = 1 := by
 lemma dist_top [DecidableEq V] : (⊤ : SimpleGraph V).dist u v = (if u = v then 0 else 1) := by
   by_cases h : u = v <;> simp [h]
 
+lemma length_eq_dist_of_subwalk {u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
+    (h₁ : p₁.length = G.dist u v) (h₂ : p₂.IsSubwalk p₁) : p₂.length = G.dist u' v' := by
+  refine (dist_le _).eq_of_not_lt' fun hh ↦ ?_
+  obtain ⟨ru, rv, h⟩ := h₂
+  obtain ⟨s, _⟩ := p₂.reachable.exists_path_of_dist
+  let r := ru.append s |>.append rv
+  have : p₁.length = ru.length + p₂.length + rv.length := by simp [h]
+  have : r.length = ru.length + s.length + rv.length := by simp [r]
+  have := dist_le r
+  cutsat
+
 /-- Supergraphs have smaller or equal distances to their subgraphs. -/
 @[gcongr]
 protected theorem Reachable.dist_anti {G' : SimpleGraph V} (h : G ≤ G') (hr : G.Reachable u v) :
@@ -295,17 +306,17 @@ lemma Walk.exists_adj_adj_not_adj_ne {p : G.Walk v w} (hp : p.length = G.dist v 
   have : p.tail.tail.length < p.tail.length := by
     rw [← p.tail.length_tail_add_one (by
       simp only [not_nil_iff_lt_length, ← p.length_tail_add_one hnp] at hp ⊢
-      omega)]
+      cutsat)]
     omega
   have : p.tail.length < p.length := by rw [← p.length_tail_add_one hnp]; omega
   by_cases hv : v = p.getVert 2
   · have : G.dist v w ≤ p.tail.tail.length := by
       simpa [hv, p.getVert_tail] using dist_le p.tail.tail
-    omega
+    cutsat
   by_cases hadj : G.Adj v (p.getVert 2)
   · have : G.dist v w ≤ p.tail.tail.length + 1 :=
       dist_le <| p.tail.tail.cons <| p.getVert_tail ▸ hadj
-    omega
+    cutsat
   exact ⟨p.adj_snd hnp, p.adj_getVert_succ (hp ▸ hl), hadj, hv⟩
 
 end dist

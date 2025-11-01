@@ -488,10 +488,10 @@ lemma RationalMap.dense_domain (f : X ⤏ Y) : Dense (X := X) f.domain :=
 consisting of all the domains of the partial maps in the equivalence class. -/
 noncomputable
 def RationalMap.openCoverDomain (f : X ⤏ Y) : f.domain.toScheme.OpenCover where
-  J := { PartialMap.domain g | (g) (_ : g.toRationalMap = f) }
-  obj U := U.1.toScheme
-  map U := X.homOfLE (le_sSup U.2)
-  f x := ⟨_, (TopologicalSpace.Opens.mem_sSup.mp x.2).choose_spec.1⟩
+  I₀ := { PartialMap.domain g | (g) (_ : g.toRationalMap = f) }
+  X U := U.1.toScheme
+  f U := X.homOfLE (le_sSup U.2)
+  idx x := ⟨_, (TopologicalSpace.Opens.mem_sSup.mp x.2).choose_spec.1⟩
   covers x := ⟨⟨x.1, (TopologicalSpace.Opens.mem_sSup.mp x.2).choose_spec.2⟩, Subtype.ext (by simp)⟩
 
 /-- If `f : X ⤏ Y` is a rational map from a reduced scheme to a separated scheme,
@@ -500,8 +500,8 @@ noncomputable
 def RationalMap.toPartialMap [IsReduced X] [Y.IsSeparated] (f : X ⤏ Y) : X.PartialMap Y := by
   refine ⟨f.domain, f.dense_domain, f.openCoverDomain.glueMorphisms
     (fun x ↦ (X.isoOfEq x.2.choose_spec.2).inv ≫ x.2.choose.hom) ?_⟩
-  intros x y
-  let g (x : f.openCoverDomain.J) := x.2.choose
+  intro x y
+  let g (x : f.openCoverDomain.I₀) := x.2.choose
   have hg₁ (x) : (g x).toRationalMap = f := x.2.choose_spec.1
   have hg₂ (x) : (g x).domain = x.1 := x.2.choose_spec.2
   refine (cancel_epi (isPullback_opens_inf_le (le_sSup x.2) (le_sSup y.2)).isoPullback.hom).mp ?_

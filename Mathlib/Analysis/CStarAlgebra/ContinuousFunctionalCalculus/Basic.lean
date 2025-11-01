@@ -172,7 +172,7 @@ lemma inr_comp_cfcₙHom_eq_cfcₙAux {A : Type*} [NonUnitalCStarAlgebra A] (a :
       cfcₙAux (isStarNormal_inr (R := ℂ) (A := A)) a ha := by
   have h (a : A) := isStarNormal_inr (R := ℂ) (A := A) (a := a)
   refine @ContinuousMapZero.UniqueHom.eq_of_continuous_of_map_id
-    _ _ _ _ _ _ _ _ _ _ _ inferInstance inferInstance _ (σₙ ℂ a) _ _ rfl _ _ ?_ ?_ ?_
+    _ _ _ _ _ _ _ _ _ _ _ inferInstance inferInstance _ (σₙ ℂ a) _ _ _ _ ?_ ?_ ?_
   · change Continuous (fun f ↦ (cfcₙHom ha f : A⁺¹)); fun_prop
   · exact isClosedEmbedding_cfcₙAux @(h) a ha |>.continuous
   · trans (a : A⁺¹)
@@ -305,10 +305,10 @@ instance CStarAlgebra.instNonnegSpectrumClass : NonnegSpectrumClass ℝ A :=
     | mem x hx =>
       obtain ⟨b, rfl⟩ := hx
       exact spectrum_star_mul_self_nonneg
-    | one =>
+    | zero =>
       nontriviality A
       simp
-    | mul x y x_mem y_mem hx hy =>
+    | add x y x_mem y_mem hx hy =>
       rw [← SpectrumRestricts.nnreal_iff] at hx hy ⊢
       rw [← StarOrderedRing.nonneg_iff] at x_mem y_mem
       exact hx.nnreal_add (.of_nonneg x_mem) (.of_nonneg y_mem) hy
@@ -373,11 +373,11 @@ lemma CStarAlgebra.spectralOrderedRing : @StarOrderedRing A _ (CStarAlgebra.spec
           rw [quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ,
             SpectrumRestricts.nnreal_iff, Unitization.inr_mul, Unitization.inr_star]
           exact spectrum_star_mul_self_nonneg
-        | one =>
+        | zero =>
           rw [quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ, SpectrumRestricts.nnreal_iff]
           nontriviality A
           simp
-        | mul x y _ _ hx hy =>
+        | add x y _ _ hx hy =>
           simp +singlePass only [← Unitization.isSelfAdjoint_inr (R := ℂ),
             quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ] at hx hy ⊢
           rw [Unitization.inr_add]
@@ -438,7 +438,7 @@ lemma Unitization.complex_cfcₙ_eq_cfc_inr (a : A) (f : ℂ → ℂ) (hf₀ : f
   Unitization.cfcₙ_eq_cfc_inr isStarNormal_inr ..
 
 /-- note: the version for `ℝ≥0`, `Unitization.nnreal_cfcₙ_eq_cfc_inr`, can be found in
-`Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Order.lean` -/
+`Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Order.lean` -/
 lemma Unitization.real_cfcₙ_eq_cfc_inr (a : A) (f : ℝ → ℝ) (hf₀ : f 0 = 0 := by cfc_zero_tac) :
     cfcₙ f a = cfc f (a : A⁺¹) :=
   Unitization.cfcₙ_eq_cfc_inr isSelfAdjoint_inr ..
@@ -460,7 +460,7 @@ instance IsStarNormal.instIsometricContinuousFunctionalCalculus :
 instance IsSelfAdjoint.instIsometricContinuousFunctionalCalculus :
     IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint :=
   SpectrumRestricts.isometric_cfc Complex.reCLM Complex.isometry_ofReal (.zero _)
-    fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_spectrumRestricts
+    fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts
 
 end Unital
 

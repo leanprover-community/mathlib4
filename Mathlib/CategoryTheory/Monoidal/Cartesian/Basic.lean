@@ -20,12 +20,12 @@ For better defeqs, we also extend `MonoidalCategory`.
 
 ## Implementation notes
 
-For cartesian monoidal categories, the oplax-monoidal/monoidal/braided structure of a functor `F`
+For Cartesian monoidal categories, the oplax-monoidal/monoidal/braided structure of a functor `F`
 preserving finite products is uniquely determined. See the `ofChosenFiniteProducts` declarations.
 
 We however develop the theory for any `F.OplaxMonoidal`/`F.Monoidal`/`F.Braided` instance instead of
 requiring it to be the `ofChosenFiniteProducts` one. This is to avoid diamonds: Consider
-eg `𝟭 C` and `F ⋙ G`.
+e.g. `𝟭 C` and `F ⋙ G`.
 
 In applications requiring a finite preserving functor to be oplax-monoidal/monoidal/braided,
 avoid `attribute [local instance] ofChosenFiniteProducts` but instead turn on the corresponding
@@ -91,8 +91,8 @@ lemma id_tensorHom_id (X Y : C) : tensorHom ℬ (𝟙 X) (𝟙 Y) = 𝟙 (tensor
 
 @[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
 
-lemma tensor_comp (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
-    tensorHom ℬ (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom ℬ f₁ f₂ ≫ tensorHom ℬ g₁ g₂ :=
+lemma tensorHom_comp_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
+    tensorHom ℬ f₁ f₂ ≫ tensorHom ℬ g₁ g₂ = tensorHom ℬ (f₁ ≫ g₁) (f₂ ≫ g₂) :=
   (ℬ _ _).isLimit.hom_ext <| by rintro ⟨_ | _⟩ <;> simp [tensorHom]
 
 lemma pentagon (W X Y Z : C) :
@@ -157,7 +157,7 @@ abbrev ofChosenFiniteProducts : CartesianMonoidalCategory C :=
   {
   toMonoidalCategory := .ofTensorHom
     (id_tensorHom_id := id_tensorHom_id ℬ)
-    (tensor_comp := tensor_comp ℬ)
+    (tensorHom_comp_tensorHom := tensorHom_comp_tensorHom ℬ)
     (pentagon := pentagon ℬ)
     (triangle := triangle 𝒯 ℬ)
     (leftUnitor_naturality := leftUnitor_naturality 𝒯 ℬ)
@@ -210,6 +210,8 @@ lean to do the necessary elaboration.
 @[ext]
 lemma toUnit_unique {X : C} (f g : X ⟶ 𝟙_ _) : f = g :=
   Subsingleton.elim _ _
+
+@[simp] lemma toUnit_unit : toUnit (𝟙_ C) = 𝟙 (𝟙_ C) := toUnit_unique ..
 
 @[reassoc (attr := simp)]
 theorem comp_toUnit {X Y : C} (f : X ⟶ Y) : f ≫ toUnit Y = toUnit X :=
@@ -386,7 +388,7 @@ lemma lift_rightUnitor_hom {X Y : C} (f : X ⟶ Y) (g : X ⟶ 𝟙_ C) :
   rw [← Iso.eq_comp_inv]
   cat_disch
 
-/-- Universal property of the cartesian product: Maps to `X ⊗ Y` correspond to pairs of maps to `X`
+/-- Universal property of the Cartesian product: Maps to `X ⊗ Y` correspond to pairs of maps to `X`
 and to `Y`. -/
 @[simps]
 def homEquivToProd {X Y Z : C} : (Z ⟶ X ⊗ Y) ≃ (Z ⟶ X) × (Z ⟶ Y) where
@@ -414,6 +416,22 @@ theorem braiding_inv_fst (X Y : C) : (β_ X Y).inv ≫ fst _ _ = snd _ _ := by
 @[reassoc (attr := simp)]
 theorem braiding_inv_snd (X Y : C) : (β_ X Y).inv ≫ snd _ _ = fst _ _ := by
   simp [fst_def, snd_def, ← BraidedCategory.braiding_inv_naturality_right_assoc]
+
+@[reassoc (attr := simp)]
+lemma tensorμ_fst (W X Y Z : C) : tensorμ W X Y Z ≫ fst (W ⊗ Y) (X ⊗ Z) = fst W X ⊗ₘ fst Y Z := by
+  ext <;> simp [tensorμ]
+
+@[reassoc (attr := simp)]
+lemma tensorμ_snd (W X Y Z : C) : tensorμ W X Y Z ≫ snd (W ⊗ Y) (X ⊗ Z) = snd W X ⊗ₘ snd Y Z := by
+  ext <;> simp [tensorμ]
+
+@[reassoc (attr := simp)]
+lemma tensorδ_fst (W X Y Z : C) : tensorδ W X Y Z ≫ fst (W ⊗ X) (Y ⊗ Z) = fst W Y ⊗ₘ fst X Z := by
+  ext <;> simp [tensorδ]
+
+@[reassoc (attr := simp)]
+lemma tensorδ_snd (W X Y Z : C) : tensorδ W X Y Z ≫ snd (W ⊗ X) (Y ⊗ Z) = snd W Y ⊗ₘ snd X Z := by
+  ext <;> simp [tensorδ]
 
 theorem lift_snd_fst {X Y : C} : lift (snd X Y) (fst X Y) = (β_ X Y).hom := by cat_disch
 
@@ -756,8 +774,8 @@ open Limits
 variable {P : ObjectProperty C}
 
 -- TODO: Introduce `ClosedUnderFiniteProducts`?
-/-- The restriction of a cartesian-monoidal category along an object property that's closed under
-finite products is cartesian-monoidal. -/
+/-- The restriction of a Cartesian-monoidal category along an object property that's closed under
+finite products is Cartesian-monoidal. -/
 noncomputable def fullSubcategory (hP₀ : ClosedUnderLimitsOfShape (Discrete PEmpty) P)
     (hP₂ : ClosedUnderLimitsOfShape (Discrete WalkingPair) P) :
     CartesianMonoidalCategory P.FullSubcategory where
@@ -823,7 +841,7 @@ instance (X Y : C) : IsIso (δ F X Y) :=
   δ_of_cartesianMonoidalCategory F X Y ▸ isIso_prodComparison_of_preservesLimit_pair F X Y
 
 omit [F.OplaxMonoidal] in
-/-- Any functor between cartesian-monoidal categories is oplax monoidal.
+/-- Any functor between Cartesian-monoidal categories is oplax monoidal.
 
 This is not made an instance because it would create a diamond for the oplax monoidal structure on
 the identity and composition of functors. -/
@@ -837,7 +855,7 @@ def ofChosenFiniteProducts (F : C ⥤ D) : F.OplaxMonoidal where
   oplax_right_unitality _ := by ext; simp [← Functor.map_comp]
 
 omit [F.OplaxMonoidal] in
-/-- Any functor between cartesian-monoidal categories is oplax monoidal in a unique way. -/
+/-- Any functor between Cartesian-monoidal categories is oplax monoidal in a unique way. -/
 instance : Subsingleton F.OplaxMonoidal where
   allEq a b := by
     ext1
@@ -880,7 +898,7 @@ lemma μ_of_cartesianMonoidalCategory (X Y : C) : μ F X Y = (prodComparisonIso 
 
 attribute [local instance] Functor.OplaxMonoidal.ofChosenFiniteProducts in
 omit [F.Monoidal] in
-/-- A finite-product-preserving functor between cartesian monoidal categories is monoidal.
+/-- A finite-product-preserving functor between Cartesian monoidal categories is monoidal.
 
 This is not made an instance because it would create a diamond for the monoidal structure on
 the identity and composition of functors. -/
@@ -905,7 +923,7 @@ instance [F.Monoidal] : PreservesFiniteProducts F :=
 
 attribute [local instance] OplaxMonoidal.ofChosenFiniteProducts in
 /--
-A functor between cartesian monoidal categories is monoidal iff it preserves finite products.
+A functor between Cartesian monoidal categories is monoidal iff it preserves finite products.
 -/
 lemma nonempty_monoidal_iff_preservesFiniteProducts :
     Nonempty F.Monoidal ↔ PreservesFiniteProducts F :=
@@ -917,7 +935,7 @@ namespace Braided
 variable [BraidedCategory C] [BraidedCategory D]
 
 attribute [local instance] Functor.Monoidal.ofChosenFiniteProducts in
-/-- A finite-product-preserving functor between cartesian monoidal categories is braided.
+/-- A finite-product-preserving functor between Cartesian monoidal categories is braided.
 
 This is not made an instance because it would create a diamond for the monoidal structure on
 the identity and composition of functors. -/

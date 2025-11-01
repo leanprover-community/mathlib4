@@ -10,8 +10,9 @@ import Mathlib.CategoryTheory.IsConnected
 /-!
 # Connected limits in the over category
 
-Shows that the forgetful functor `Over B ⥤ C` creates connected limits, in particular `Over B` has
-any connected limit which `C` has.
+Shows that the forgetful functor `Over B ⥤ C` creates and preserves connected limits,
+the latter without assuming that `C` has any limits.
+In particular, `Over B` has any connected limit which `C` has.
 -/
 
 
@@ -78,6 +79,21 @@ instance forgetCreatesConnectedLimits [IsConnected J] {B : C} :
       { liftedCone := CreatesConnected.raiseCone c
         validLift := eqToIso (CreatesConnected.raised_cone_lowers_to_original c)
         makesLimit := CreatesConnected.raisedConeIsLimit t }
+
+/-- The forgetful functor from the over category preserves any connected limit. -/
+instance forgetPreservesConnectedLimits [IsConnected J] {B : C} :
+    PreservesLimitsOfShape J (forget B) where
+  preservesLimit := {
+    preserves hc := ⟨{
+      lift s := (forget B).map (hc.lift (CreatesConnected.raiseCone s))
+      fac _ _ := by
+        rw [Functor.mapCone_π_app, ← Functor.map_comp, hc.fac,
+          CreatesConnected.raiseCone_π_app, forget_map, homMk_left _ _]
+      uniq s m fac :=
+        congrArg (forget B).map (hc.uniq (CreatesConnected.raiseCone s)
+          (Over.homMk m (by simp [← fac])) fun j => (forget B).map_injective (fac j))
+    }⟩
+  }
 
 /-- The over category has any connected limit which the original category has. -/
 instance has_connected_limits {B : C} [IsConnected J] [HasLimitsOfShape J C] :

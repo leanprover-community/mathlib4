@@ -29,18 +29,18 @@ noncomputable section
 
 namespace UpperHalfPlane
 
-/-- The matrix `[1, 0; 0, -1]`, which defines an anti-holomorphic involution of `ℍ` via
+/-- The matrix `[-1, 0; 0, 1]`, which defines an anti-holomorphic involution of `ℍ` via
 `τ ↦ -conj τ`. -/
-def J : GL (Fin 2) ℝ := .mkOfDetNeZero !![1, 0; 0, -1] (by simp)
+def J : GL (Fin 2) ℝ := .mkOfDetNeZero !![-1, 0; 0, 1] (by simp)
 
 lemma coe_J_smul (τ : ℍ) : (↑(J • τ) : ℂ) = -conj ↑τ := by
-  simp [UpperHalfPlane.coe_smul, σ, J, if_neg (show ¬(1 : ℝ) < 0 by norm_num), num, denom, div_neg]
+  simp [UpperHalfPlane.coe_smul, σ, J, show ¬(1 : ℝ) < 0 by simp, num, denom]
 
 lemma J_smul (τ : ℍ) : J • τ = ofComplex (-(conj ↑τ)) := by
   ext
   rw [coe_J_smul, ofComplex_apply_of_im_pos (by simpa using τ.im_pos), coe_mk_subtype]
 
-@[simp] lemma val_J : J.val = !![1, 0; 0, -1] := rfl
+@[simp] lemma val_J : J.val = !![-1, 0; 0, 1] := rfl
 
 @[simp] lemma J_sq : J ^ 2 = 1 := by ext; simp [J, sq, Matrix.one_fin_two]
 
@@ -48,7 +48,7 @@ lemma J_smul (τ : ℍ) : J • τ = ofComplex (-(conj ↑τ)) := by
 
 @[simp] lemma sigma_J : σ J = starRingEnd ℂ := by simp [σ, J]
 
-@[simp] lemma denom_J (τ : ℍ) : denom J τ = -1 := by simp [J, denom]
+@[simp] lemma denom_J (τ : ℍ) : denom J τ = 1 := by simp [J, denom]
 
 end UpperHalfPlane
 
@@ -65,22 +65,19 @@ private lemma MDifferentiable.slash_of_pos {f : ℍ → ℂ} (hf : MDifferentiab
   simpa only [σ, hg, ↓reduceIte] using hf.comp (mdifferentiable_smul hg)
 
 private lemma slash_J (f : ℍ → ℂ) (k : ℤ) :
-    f ∣[k] J = fun τ : ℍ ↦ -conj (f <| ofComplex <| -(conj ↑τ)) := by
-  ext τ
-  simp [slash_def, J_smul, mul_assoc, ← zpow_add₀ (by norm_num : (-1 : ℂ) ≠ 0),
-    (by ring : k - 1 + -k = -1), -zpow_neg, zpow_neg_one]
+    f ∣[k] J = fun τ : ℍ ↦ conj (f <| ofComplex <| -(conj ↑τ)) := by
+  simp [slash_def, J_smul]
 
 /-- The weight `k` slash action of the negative-determinant matrix `J` preserves holomorphic
 functions. -/
 private lemma MDifferentiable.slashJ {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f) (k : ℤ) :
     MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f ∣[k] J) := by
   simp only [mdifferentiable_iff, slash_J, Function.comp_def] at hf ⊢
-  have : {z | 0 < z.im}.EqOn (fun x ↦ -conj (f <| ofComplex <| -conj ↑(ofComplex x)))
-      (fun x ↦ -conj (f <| ofComplex <| -conj x)) := fun z hz ↦ by
-    simp [ofComplex_apply_of_im_pos hz]
+  have : {z | 0 < z.im}.EqOn (fun x ↦ conj (f <| ofComplex <| -conj ↑(ofComplex x)))
+      (fun x ↦ conj (f <| ofComplex <| -conj x)) := fun z h ↦ by simp [ofComplex_apply_of_im_pos h]
   refine .congr (fun z hz ↦ DifferentiableAt.differentiableWithinAt ?_) this
   have : 0 < (-conj z).im := by simpa using hz
-  have := hf.differentiableAt ((Complex.continuous_im.isOpen_preimage _ isOpen_Ioi).mem_nhds this)
+  have := hf.differentiableAt (isOpen_upperHalfPlaneSet.mem_nhds this)
   simpa using (this.comp _ differentiable_neg.differentiableAt).star_star.neg
 
 /-- The weight `k` slash action of `GL(2, ℝ)` preserves holomorphic functions. -/
@@ -136,6 +133,11 @@ instance (priority := 100) ModularFormClass.modularForm :
   slash_action_eq f := f.slash_action_eq'
   holo := ModularForm.holo'
   bdd_at_infty := ModularForm.bdd_at_infty'
+
+@[fun_prop]
+lemma ModularFormClass.continuous {k : ℤ} {Γ : Subgroup SL(2, ℤ)}
+    {F : Type*} [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F) :
+  Continuous f := (ModularFormClass.holo f).continuous
 
 instance (priority := 100) CuspForm.funLike : FunLike (CuspForm Γ k) ℍ ℂ where
   coe f := f.toFun

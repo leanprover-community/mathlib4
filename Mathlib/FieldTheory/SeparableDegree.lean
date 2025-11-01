@@ -729,7 +729,6 @@ theorem finSepDegree_dvd_finrank : finSepDegree F E ∣ finrank F E := by
     simp only at h ⊢
     have hdvd := mul_dvd_mul h <| finSepDegree_adjoin_simple_dvd_finrank L E x
     set M := L⟮x⟯
-    have := Algebra.IsAlgebraic.of_finite L M
     rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
       Module.finrank_mul_finrank F L M] at hdvd
   rw [finrank_of_infinite_dimensional hfd]
@@ -747,10 +746,7 @@ theorem finSepDegree_eq_finrank_of_isSeparable [Algebra.IsSeparable F E] :
     finSepDegree F E = finrank F E := by
   wlog hfd : FiniteDimensional F E generalizing E with H
   · rw [finrank_of_infinite_dimensional hfd]
-    have halg := Algebra.IsSeparable.isAlgebraic F E
     obtain ⟨L, h, h'⟩ := exists_lt_finrank_of_infinite_dimensional hfd (finSepDegree F E)
-    have : Algebra.IsSeparable F L := Algebra.isSeparable_tower_bot_of_isSeparable F L E
-    have := (halg.tower_top L)
     have hd := finSepDegree_mul_finSepDegree_of_isAlgebraic F L E
     rw [H L h] at hd
     by_cases hd' : finSepDegree L E = 0
@@ -764,7 +760,6 @@ theorem finSepDegree_eq_finrank_of_isSeparable [Algebra.IsSeparable F E] :
     (finSepDegree_adjoin_simple_eq_finrank_iff L E x (IsAlgebraic.of_finite L x)).2 <|
       IsSeparable.tower_top L (Algebra.IsSeparable.isSeparable F x)
   set M := L⟮x⟯
-  have := Algebra.IsAlgebraic.of_finite L M
   rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
     Module.finrank_mul_finrank F L M] at heq
 
@@ -824,7 +819,6 @@ theorem IsSeparable.of_algebra_isSeparable_of_isSeparable [Algebra E K] [IsScala
   haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep
   haveI := adjoin.finiteDimensional halg
   haveI : FiniteDimensional F E'⟮x⟯ := FiniteDimensional.trans F E' E'⟮x⟯
-  have : Algebra.IsAlgebraic E' E'⟮x⟯ := Algebra.IsSeparable.isAlgebraic _ _
   have := finSepDegree_mul_finSepDegree_of_isAlgebraic F E' E'⟮x⟯
   rw [finSepDegree_eq_finrank_of_isSeparable F E',
     finSepDegree_eq_finrank_of_isSeparable E' E'⟮x⟯,

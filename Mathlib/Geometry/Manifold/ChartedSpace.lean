@@ -9,8 +9,8 @@ import Mathlib.Topology.Connected.LocPathConnected
 /-!
 # Charted spaces
 
-A smooth manifold is a topological space `M` locally modelled on a euclidean space (or a euclidean
-half-space for manifolds with boundaries, or an infinite dimensional vector space for more general
+A smooth manifold is a topological space `M` locally modelled on a Euclidean space (or a Euclidean
+half-space for manifolds with boundaries, or an infinite-dimensional vector space for more general
 notions of manifolds), i.e., the manifold is covered by open subsets on which there are local
 homeomorphisms (the charts) going to a model space `H`, and the changes of charts should be smooth
 maps.
@@ -102,9 +102,9 @@ In the definition of a charted space, the model space is written as an explicit 
 can be several model spaces for a given topological space. For instance, a complex manifold
 (modelled over `ℂ^n`) will also be seen sometimes as a real manifold modelled over `ℝ^(2n)`.
 
-## Notations
+## Notation
 
-In the locale `Manifold`, we denote the composition of partial homeomorphisms with `≫ₕ`, and the
+In the scope `Manifold`, we denote the composition of partial homeomorphisms with `≫ₕ`, and the
 composition of partial equivs with `≫`.
 -/
 
@@ -124,7 +124,7 @@ the arrow. -/
 
 @[inherit_doc] scoped[Manifold] infixr:100 " ≫ " => PartialEquiv.trans
 
-open Set PartialHomeomorph Manifold  -- Porting note: Added `Manifold`
+open Set PartialHomeomorph Manifold
 
 /-! ### Structure groupoids -/
 
@@ -390,12 +390,8 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
       simp only [ee'.1, he.1]
     · have A := EqOnSource.symm' ee'
       apply PG.congr e'.symm.open_source A.2
-      -- Porting note: was
-      -- convert he.2
-      -- rw [A.1]
-      -- rfl
+      convert he.2 using 1
       rw [A.1, symm_toPartialEquiv, PartialEquiv.symm_source]
-      exact he.2
 
 theorem mem_groupoid_of_pregroupoid {PG : Pregroupoid H} {e : PartialHomeomorph H H} :
     e ∈ PG.groupoid ↔ PG.property e e.source ∧ PG.property e.symm e.target :=
@@ -510,14 +506,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     rintro e ⟨s, hs, hes⟩
     refine G.mem_of_eqOnSource ?_ hes
     convert closedUnderRestriction' G.id_mem hs
-    -- Porting note: was
-    -- change s = _ ∩ _
-    -- rw [hs.interior_eq]
-    -- simp only [mfld_simps]
-    ext
-    · rw [PartialHomeomorph.restr_apply, PartialHomeomorph.refl_apply, id, ofSet_apply, id_eq]
-    · simp
-    · simp [hs.interior_eq]
+    ext <;> simp [hs.interior_eq]
   · intro h
     constructor
     intro e he s hs
@@ -589,7 +578,6 @@ section
 
 variable (H) [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
 
--- Porting note: Added `(H := H)` to avoid typeclass instance problem.
 theorem mem_chart_target (x : M) : chartAt H x x ∈ (chartAt H x).target :=
   (chartAt H x).map_source (mem_chart_source _ _)
 
@@ -809,8 +797,6 @@ def ModelPi {ι : Type*} (H : ι → Type*) :=
   ∀ i, H i
 
 section
-
--- attribute [local reducible] ModelProd -- Porting note: not available in Lean4
 
 instance modelProdInhabited [Inhabited H] [Inhabited H'] : Inhabited (ModelProd H H') :=
   instInhabitedProd
@@ -1193,6 +1179,38 @@ theorem StructureGroupoid.maximalAtlas_mono {G G' : StructureGroupoid H} (h : G 
     G.maximalAtlas M ⊆ G'.maximalAtlas M :=
   fun _ he e' he' ↦ ⟨h (he e' he').1, h (he e' he').2⟩
 
+private theorem restr_mem_maximalAtlas_aux1 [ClosedUnderRestriction G]
+    {e e' : PartialHomeomorph M H} (he : e ∈ G.maximalAtlas M) (he' : e' ∈ atlas H M)
+    {s : Set M} (hs : IsOpen s) :
+    (e.restr s).symm ≫ₕ e' ∈ G := by
+  have hs'' : IsOpen (e '' (e.source ∩ s)) := by
+    rw [isOpen_image_iff_of_subset_source _ inter_subset_left]
+    exact e.open_source.inter hs
+  have : (e.restr (e.source ∩ s)).symm ≫ₕ e' ∈ G := by
+    apply G.mem_of_eqOnSource (closedUnderRestriction' (he e' he').1 hs'')
+    exact e.restr_symm_trans (e.open_source.inter hs) hs'' inter_subset_left
+  refine G.mem_of_eqOnSource this ?_
+  exact EqOnSource.trans' (Setoid.symm e.restr_inter_source).symm' (eqOnSource_refl e')
+
+private theorem restr_mem_maximalAtlas_aux2 [ClosedUnderRestriction G]
+    {e e' : PartialHomeomorph M H} (he : e ∈ G.maximalAtlas M) (he' : e' ∈ atlas H M)
+    {s : Set M} (hs : IsOpen s) :
+    e'.symm ≫ₕ e.restr s ∈ G := by
+  have hs'' : IsOpen (e' '' (e'.source ∩ s)) := by
+    rw [isOpen_image_iff_of_subset_source e' inter_subset_left]
+    exact e'.open_source.inter hs
+  have ht : IsOpen (e'.target ∩ e'.symm ⁻¹' s) := by
+    rw [← image_source_inter_eq']
+    exact isOpen_image_source_inter e' hs
+  exact G.mem_of_eqOnSource (closedUnderRestriction' (he e' he').2 ht) (e.symm_trans_restr e' hs)
+
+/-- If a structure groupoid `G` is closed under restriction, for any chart `e` in the maximal atlas,
+the restriction `e.restr s` to an open set `s` is also in the maximal atlas. -/
+theorem restr_mem_maximalAtlas [ClosedUnderRestriction G]
+    {e : PartialHomeomorph M H} (he : e ∈ G.maximalAtlas M) {s : Set M} (hs : IsOpen s) :
+    e.restr s ∈ G.maximalAtlas M :=
+  fun _e' he' ↦ ⟨restr_mem_maximalAtlas_aux1 G he he' hs, restr_mem_maximalAtlas_aux2 G he he' hs⟩
+
 end MaximalAtlas
 
 section Singleton
@@ -1332,7 +1350,7 @@ end TopologicalSpace.Opens
 NB. We cannot deduce membership in `atlas H s` in general: by definition, this atlas contains
 precisely the restriction of each preferred chart at `x ∈ s` --- whereas `atlas H M`
 can contain more charts than these. -/
-lemma StructureGroupoid.restriction_in_maximalAtlas {e : PartialHomeomorph M H}
+lemma StructureGroupoid.subtypeRestr_mem_maximalAtlas {e : PartialHomeomorph M H}
     (he : e ∈ atlas H M) {s : Opens M} (hs : Nonempty s) {G : StructureGroupoid H} [HasGroupoid M G]
     [ClosedUnderRestriction G] : e.subtypeRestr hs ∈ G.maximalAtlas s := by
   intro e' he'
@@ -1343,6 +1361,9 @@ lemma StructureGroupoid.restriction_in_maximalAtlas {e : PartialHomeomorph M H}
   -- the transition functions of the restriction are the restriction of the transition function.
   exact ⟨G.trans_restricted he (chart_mem_atlas H (x : M)) hs,
          G.trans_restricted (chart_mem_atlas H (x : M)) he hs⟩
+
+@[deprecated (since := "2025-08-17")] alias StructureGroupoid.restriction_in_maximalAtlas :=
+  StructureGroupoid.subtypeRestr_mem_maximalAtlas
 
 /-! ### Structomorphisms -/
 
@@ -1449,7 +1470,7 @@ theorem StructureGroupoid.restriction_mem_maximalAtlas_subtype
           Opens.partialHomeomorphSubtypeCoe_source, preimage_univ, inter_self, subtypeRestr_source,
           goal, s]
         exact Subtype.coe_preimage_self _ |>.symm, by intro _ _; rfl⟩
-  exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.restriction_in_maximalAtlas he hs)
+  exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.subtypeRestr_mem_maximalAtlas he hs)
 
 /-- Each chart of a charted space is a structomorphism between its source and target. -/
 def PartialHomeomorph.toStructomorph {e : PartialHomeomorph M H} (he : e ∈ atlas H M)
@@ -1475,3 +1496,5 @@ def PartialHomeomorph.toStructomorph {e : PartialHomeomorph M H} (he : e ∈ atl
       mem_groupoid := fun _ c' _ ⟨_, ⟨x, _⟩, _⟩ ↦ (this.false x).elim }
 
 end HasGroupoid
+
+set_option linter.style.longFile 1700

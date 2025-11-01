@@ -230,7 +230,7 @@ private lemma isOpenImmersion_sigmaDesc_aux
     have ⟨y, hy⟩ := (Scheme.IsLocallyDirected.openCover (Discrete.functor f)).covers x
     rw [← hy]
     refine IsIso.of_isIso_fac_right
-      (g := ((Scheme.IsLocallyDirected.openCover (Discrete.functor f)).map _).stalkMap y)
+      (g := ((Scheme.IsLocallyDirected.openCover (Discrete.functor f)).f _).stalkMap y)
       (h := (X.presheaf.stalkCongr (.of_eq ?_)).hom ≫ (α _).stalkMap _) ?_
     · simp [← Scheme.comp_base_apply]
     · simp [← Scheme.stalkMap_comp, Scheme.stalkMap_congr_hom _ _ (colimit.ι_desc _ _)]
@@ -329,10 +329,10 @@ lemma coprodMk_inr (x : Y) :
 /-- The open cover of the coproduct of two schemes. -/
 noncomputable
 def coprodOpenCover.{w} : (X ⨿ Y).OpenCover where
-  J := PUnit.{w + 1} ⊕ PUnit.{w + 1}
-  obj x := x.elim (fun _ ↦ X) (fun _ ↦ Y)
-  map x := x.rec (fun _ ↦ coprod.inl) (fun _ ↦ coprod.inr)
-  f x := ((coprodMk X Y).symm x).elim (fun _ ↦ Sum.inl .unit) (fun _ ↦ Sum.inr .unit)
+  I₀ := PUnit.{w + 1} ⊕ PUnit.{w + 1}
+  X x := x.elim (fun _ ↦ X) (fun _ ↦ Y)
+  f x := x.rec (fun _ ↦ coprod.inl) (fun _ ↦ coprod.inr)
+  idx x := ((coprodMk X Y).symm x).elim (fun _ ↦ Sum.inl .unit) (fun _ ↦ Sum.inr .unit)
   covers x := by
     obtain ⟨x, rfl⟩ := (coprodMk X Y).surjective x
     simp only [Sum.elim_inl, Sum.elim_inr, Set.mem_range]
@@ -404,7 +404,6 @@ lemma isIso_stalkMap_coprodSpec (x) :
     rw [← IsIso.comp_inv_eq, Scheme.stalkMap_congr_hom _ (Spec.map _) (coprodSpec_inl R S)] at this
     rw [coprodMk_inl, ← this]
     letI := (RingHom.fst R S).toAlgebra
-    have := IsLocalization.away_fst (R := R) (S := S)
     have : IsOpenImmersion (Spec.map (CommRingCat.ofHom (RingHom.fst R S))) :=
       IsOpenImmersion.of_isLocalization (1, 0)
     infer_instance
@@ -412,7 +411,6 @@ lemma isIso_stalkMap_coprodSpec (x) :
     rw [← IsIso.comp_inv_eq, Scheme.stalkMap_congr_hom _ (Spec.map _) (coprodSpec_inr R S)] at this
     rw [coprodMk_inr, ← this]
     letI := (RingHom.snd R S).toAlgebra
-    have := IsLocalization.away_snd (R := R) (S := S)
     have : IsOpenImmersion (Spec.map (CommRingCat.ofHom (RingHom.snd R S))) :=
       IsOpenImmersion.of_isLocalization (0, 1)
     infer_instance

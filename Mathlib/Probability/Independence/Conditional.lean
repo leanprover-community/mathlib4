@@ -158,7 +158,7 @@ lemma iCondIndepSets_iff (π : ι → Set (Set Ω)) (hπ : ∀ i s (_hs : s ∈ 
     fun s f H i hi ↦ condExpKernel_ae_eq_condExp hm' (hπ i (f i) (H i hi))
   have h_eq : ∀ (s : Finset ι) (f : ι → Set Ω) (_H : ∀ i, i ∈ s → f i ∈ π i), ∀ᵐ ω ∂μ,
       ∀ i ∈ s, ENNReal.toReal (condExpKernel μ m' ω (f i)) = (μ⟦f i | m'⟧) ω := by
-    intros s f H
+    intro s f H
     simp_rw [← Finset.mem_coe]
     rw [ae_ball_iff (Finset.countable_toSet s)]
     exact h_eq' s f H
@@ -232,10 +232,10 @@ theorem condIndepSets_singleton_iff {μ : Measure Ω} [IsFiniteMeasure μ]
     CondIndepSets m' hm' {s} {t} μ ↔ (μ⟦s ∩ t | m'⟧) =ᵐ[μ] (μ⟦s | m'⟧) * (μ⟦t | m'⟧) := by
   rw [condIndepSets_iff _ _ _ _ ?_ ?_]
   · simp only [Set.mem_singleton_iff, forall_eq_apply_imp_iff, forall_eq]
-  · intros s' hs'
+  · intro s' hs'
     rw [Set.mem_singleton_iff] at hs'
     rwa [hs']
-  · intros s' hs'
+  · intro s' hs'
     rw [Set.mem_singleton_iff] at hs'
     rwa [hs']
 
@@ -676,8 +676,8 @@ theorem condIndepFun_iff_condIndepSet_preimage {mβ : MeasurableSpace β} {mβ' 
   simp only [CondIndepFun, CondIndepSet, Kernel.indepFun_iff_indepSet_preimage hf hg]
 
 @[symm]
-nonrec theorem CondIndepFun.symm {_ : MeasurableSpace β} {f g : Ω → β}
-    (hfg : CondIndepFun m' hm' f g μ) :
+nonrec theorem CondIndepFun.symm {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+    {f : Ω → β} {g : Ω → β'} (hfg : CondIndepFun m' hm' f g μ) :
     CondIndepFun m' hm' g f μ :=
   hfg.symm
 
@@ -687,6 +687,16 @@ theorem CondIndepFun.comp {γ γ' : Type*} {_mβ : MeasurableSpace β} {_mβ' : 
     CondIndepFun m' hm' (φ ∘ f) (ψ ∘ g) μ :=
   Kernel.IndepFun.comp hfg hφ hψ
 
+lemma condIndepFun_const_left {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+    (c : β) (X : Ω → β') :
+    CondIndepFun m' hm' (fun _ ↦ c) X μ :=
+  Kernel.indepFun_const_left c X
+
+lemma condIndepFun_const_right {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+    (X : Ω → β) (c : β') :
+    CondIndepFun m' hm' X (fun _ ↦ c) μ :=
+  Kernel.indepFun_const_right X c
+
 theorem CondIndepFun.neg_right {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β']
     [MeasurableNeg β'] (hfg : CondIndepFun m' hm' f g μ) :
     CondIndepFun m' hm' f (-g) μ := hfg.comp measurable_id measurable_neg
@@ -694,6 +704,38 @@ theorem CondIndepFun.neg_right {_mβ : MeasurableSpace β} {_mβ' : MeasurableSp
 theorem CondIndepFun.neg_left {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β]
     [MeasurableNeg β] (hfg : CondIndepFun m' hm' f g μ) :
     CondIndepFun m' hm' (-f) g μ := hfg.comp measurable_neg measurable_id
+
+lemma condIndepFun_of_measurable_left {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+    {X : Ω → β} {Y : Ω → β'} (hX : Measurable[m'] X) (hY : Measurable Y) :
+    CondIndepFun m' hm' X Y μ := by
+  rw [condIndepFun_iff _ hm' _ _ (hX.mono hm' le_rfl) hY]
+  rintro _ _ ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
+  rw [show (fun ω : Ω ↦ (1 : ℝ)) = 1 from rfl, Set.inter_indicator_one]
+  calc μ[(X ⁻¹' s).indicator 1 * (Y ⁻¹' t).indicator 1|m']
+  _ =ᵐ[μ] (X ⁻¹' s).indicator 1 * μ[(Y ⁻¹' t).indicator 1|m'] := by
+    refine condExp_stronglyMeasurable_mul_of_bound hm' (stronglyMeasurable_const.indicator (hX hs))
+      ((integrable_indicator_iff (hY ht)).2 integrableOn_const) 1 (ae_of_all μ fun ω ↦ ?_)
+    rw [Set.indicator]
+    split_ifs with h <;> simp
+  _ =ᵐ[μ] μ[(X ⁻¹' s).indicator 1|m'] * μ[(Y ⁻¹' t).indicator 1|m'] := by
+    nth_rw 2 [condExp_of_stronglyMeasurable hm']
+    · exact stronglyMeasurable_const.indicator (hX hs)
+    · exact (integrable_indicator_iff ((hX.le hm') hs)).2 integrableOn_const
+
+lemma condIndepFun_of_measurable_right {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+    {X : Ω → β} {Y : Ω → β'} (hX : Measurable X) (hY : Measurable[m'] Y) :
+    CondIndepFun m' hm' X Y μ :=
+  (condIndepFun_of_measurable_left hY hX).symm
+
+lemma condIndepFun_self_left {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+    {X : Ω → β} {Z : Ω → β'} (hX : Measurable X) (hZ : Measurable Z) :
+    CondIndepFun (mβ'.comap Z) hZ.comap_le Z X μ :=
+  condIndepFun_of_measurable_left (comap_measurable Z) hX
+
+lemma condIndepFun_self_right {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+    {X : Ω → β} {Z : Ω → β'} (hX : Measurable X) (hZ : Measurable Z) :
+    CondIndepFun (mβ'.comap Z) hZ.comap_le X Z μ :=
+  condIndepFun_of_measurable_right hX (comap_measurable Z)
 
 section iCondIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}

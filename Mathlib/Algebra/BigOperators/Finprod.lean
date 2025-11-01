@@ -170,7 +170,7 @@ notation3"∏ᶠ " (...) ", " r:67:(scoped f => finprod f) => r
 theorem finprod_eq_prod_plift_of_mulSupport_toFinset_subset {f : α → M}
     (hf : (mulSupport (f ∘ PLift.down)).Finite) {s : Finset (PLift α)} (hs : hf.toFinset ⊆ s) :
     ∏ᶠ i, f i = ∏ i ∈ s, f i.down := by
-  rw [finprod, dif_pos]
+  rw [finprod, dif_pos hf]
   refine Finset.prod_subset hs fun x _ hxf => ?_
   rwa [hf.mem_toFinset, notMem_mulSupport] at hxf
 
@@ -1086,11 +1086,11 @@ theorem Finset.mulSupport_of_fiberwise_prod_subset_image [DecidableEq β] (s : F
   exact Finset.nonempty_of_prod_ne_one h
 
 /-- Note that `b ∈ (s.filter (fun ab => Prod.fst ab = a)).image Prod.snd` iff `(a, b) ∈ s` so
-we can simplify the right hand side of this lemma. However the form stated here is more useful for
+we can simplify the right-hand side of this lemma. However the form stated here is more useful for
 iterating this lemma, e.g., if we have `f : α × β × γ → M`. -/
 @[to_additive
       /-- Note that `b ∈ (s.filter (fun ab => Prod.fst ab = a)).image Prod.snd` iff `(a, b) ∈ s` so
-      we can simplify the right hand side of this lemma. However the form stated here is more
+      we can simplify the right-hand side of this lemma. However the form stated here is more
       useful for iterating this lemma, e.g., if we have `f : α × β × γ → M`. -/]
 theorem finprod_mem_finset_product' [DecidableEq α] [DecidableEq β] (s : Finset (α × β))
     (f : α × β → M) :

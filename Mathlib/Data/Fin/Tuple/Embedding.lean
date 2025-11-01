@@ -63,7 +63,6 @@ theorem coe_snoc {n : ℕ} (x : Fin n ↪ α) {a : α} (ha : a ∉ range x) :
 
 theorem init_snoc {n : ℕ} (x : Fin n ↪ α) {a : α} (ha : a ∉ range x) :
     init (snoc x ha) = x := by
-  apply coe_injective
   simp [snoc, init]
 
 theorem snoc_castSucc {n : ℕ} {x : Fin n ↪ α} {a : α} {ha : a ∉ range x} {i : Fin n} :
@@ -109,10 +108,10 @@ def twoEmbeddingEquiv : (Fin 2 ↪ α) ≃ { (a, b) : α × α | a ≠ b } where
         · simp [hj] at hij; exact False.elim (h hij.symm)
         · rw [eq_one_of_ne_zero j hj] }
   left_inv e := by
-    ext i; simp
+    ext i
     by_cases hi : i = 0
-    · rw [if_pos hi, hi]
-    · rw [if_neg hi, Fin.eq_one_of_ne_zero i hi]
+    · simp [hi]
+    · simp [Fin.eq_one_of_ne_zero i hi]
 
 /-- Two distinct elements of `α` give an embedding `Fin 2 ↪ α`. -/
 def embFinTwo {a b : α} (h : a ≠ b) : Fin 2 ↪ α :=

@@ -77,16 +77,12 @@ theorem monotone_comp_ofDual_iff : Monotone (f ∘ ofDual) ↔ Antitone f :=
 theorem antitone_comp_ofDual_iff : Antitone (f ∘ ofDual) ↔ Monotone f :=
   forall_swap
 
--- Porting note:
--- Here (and below) without the type ascription, Lean is seeing through the
--- defeq `βᵒᵈ = β` and picking up the wrong `Preorder` instance.
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/logic.2Eequiv.2Ebasic.20mathlib4.23631/near/311744939
 @[simp]
-theorem monotone_toDual_comp_iff : Monotone (toDual ∘ f : α → βᵒᵈ) ↔ Antitone f :=
+theorem monotone_toDual_comp_iff : Monotone (toDual ∘ f) ↔ Antitone f :=
   Iff.rfl
 
 @[simp]
-theorem antitone_toDual_comp_iff : Antitone (toDual ∘ f : α → βᵒᵈ) ↔ Monotone f :=
+theorem antitone_toDual_comp_iff : Antitone (toDual ∘ f) ↔ Monotone f :=
   Iff.rfl
 
 @[simp]
@@ -98,11 +94,11 @@ theorem antitoneOn_comp_ofDual_iff : AntitoneOn (f ∘ ofDual) s ↔ MonotoneOn 
   forall₂_swap
 
 @[simp]
-theorem monotoneOn_toDual_comp_iff : MonotoneOn (toDual ∘ f : α → βᵒᵈ) s ↔ AntitoneOn f s :=
+theorem monotoneOn_toDual_comp_iff : MonotoneOn (toDual ∘ f) s ↔ AntitoneOn f s :=
   Iff.rfl
 
 @[simp]
-theorem antitoneOn_toDual_comp_iff : AntitoneOn (toDual ∘ f : α → βᵒᵈ) s ↔ MonotoneOn f s :=
+theorem antitoneOn_toDual_comp_iff : AntitoneOn (toDual ∘ f) s ↔ MonotoneOn f s :=
   Iff.rfl
 
 @[simp]
@@ -748,4 +744,4 @@ lemma converges_of_monotone_of_bounded {f : ℕ → ℕ} (mono_f : Monotone f)
     · push_neg at h; obtain ⟨N, hN⟩ := h
       replace hN : f N = c + 1 := by specialize hc N; omega
       use c + 1, N; intro n hn
-      specialize mono_f hn; specialize hc n; omega
+      specialize mono_f hn; specialize hc n; cutsat
