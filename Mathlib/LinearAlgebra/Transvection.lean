@@ -567,4 +567,3 @@ end LinearMap
 end
 
 end transvection
-
