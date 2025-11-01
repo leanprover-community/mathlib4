@@ -19,7 +19,7 @@ topological space, opposite monoid, units
 -/
 
 
-variable {M X : Type*}
+variable {M N X : Type*}
 
 open Filter Topology
 
@@ -91,7 +91,7 @@ namespace Units
 
 open MulOpposite
 
-variable [TopologicalSpace M] [Monoid M] [TopologicalSpace X]
+variable [TopologicalSpace M] [Monoid M] [TopologicalSpace N] [Monoid N] [TopologicalSpace X]
 
 /-- The units of a monoid are equipped with a topology, via the embedding into `M × M`. -/
 @[to_additive
@@ -159,5 +159,21 @@ protected theorem continuous_iff {f : X → Mˣ} :
 @[to_additive (attr := fun_prop)]
 theorem continuous_coe_inv : Continuous (fun u => ↑u⁻¹ : Mˣ → M) :=
   (Units.continuous_iff.1 continuous_id).2
+
+@[to_additive]
+lemma continuous_map {f : M →* N} (hf : Continuous f) : Continuous (map f) :=
+  Units.continuous_iff.mpr ⟨hf.comp continuous_val, hf.comp continuous_coe_inv⟩
+
+@[to_additive]
+lemma isOpenMap_map {f : M →* N} (hf_inj : Function.Injective f) (hf : IsOpenMap f) :
+    IsOpenMap (map f) := by
+  rintro _ ⟨U, hU, rfl⟩
+  have hg_openMap := hf.prodMap <| opHomeomorph.isOpenMap.comp (hf.comp opHomeomorph.symm.isOpenMap)
+  refine ⟨_, hg_openMap U hU, Set.ext fun y ↦ ?_⟩
+  simp only [embedProduct, OneHom.coe_mk, Set.mem_preimage, Set.mem_image, Prod.mk.injEq,
+    Prod.map, Prod.exists, MulOpposite.exists, MonoidHom.coe_mk]
+  refine ⟨fun ⟨a, b, h, ha, hb⟩ ↦ ⟨⟨a, b, hf_inj ?_, hf_inj ?_⟩, ?_⟩,
+    fun ⟨x, hxV, hx⟩ ↦ ⟨x, x.inv, by simp [hxV, ← hx]⟩⟩
+  all_goals simp_all
 
 end Units

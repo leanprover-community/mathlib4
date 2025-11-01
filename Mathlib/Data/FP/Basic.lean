@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Semiquot
 import Mathlib.Data.Nat.Size
-import Batteries.Data.Rat.Basic
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Rat.Init
 import Mathlib.Algebra.Ring.Int.Defs
@@ -86,7 +85,7 @@ theorem Float.Zero.valid : ValidFinite emin 0 :=
       rw [← Int.ofNat_le] at this
       rw [← sub_nonneg] at *
       simp only [emin, emax] at *
-      omega
+      cutsat
     le_trans C.precMax (Nat.le_mul_of_pos_left _ Nat.zero_lt_two),
     by (simp [sub_eq_add_neg, Int.ofNat_zero_le])⟩
 
@@ -208,7 +207,7 @@ instance : Neg Float :=
 unsafe def add (mode : RMode) : Float → Float → Float
   | nan, _ => nan
   | _, nan => nan
-  | inf Bool.true, inf Bool.false=> nan
+  | inf Bool.true, inf Bool.false => nan
   | inf Bool.false, inf Bool.true => nan
   | inf s₁, _ => inf s₁
   | _, inf s₂ => inf s₂

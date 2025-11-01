@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.TypeTags.Finite
+import Mathlib.Algebra.Order.Hom.TypeTags
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.ZMod.Aut
 import Mathlib.Data.ZMod.QuotientGroup
@@ -108,7 +109,7 @@ variable [Group α] [Group G] [Group G']
 @[to_additive /-- A non-cyclic additive group is non-trivial. -/]
 theorem Nontrivial.of_not_isCyclic (nc : ¬IsCyclic α) : Nontrivial α := by
   contrapose! nc
-  exact @isCyclic_of_subsingleton _ _ (not_nontrivial_iff_subsingleton.mp nc)
+  exact @isCyclic_of_subsingleton _ _ nc
 
 @[to_additive]
 theorem MonoidHom.map_cyclic [h : IsCyclic G] (σ : G →* G) :
@@ -214,6 +215,12 @@ theorem orderOf_eq_card_of_forall_mem_zpowers {g : α} (hx : ∀ x, x ∈ zpower
   rw [← Nat.card_zpowers, (zpowers g).eq_top_iff'.mpr hx, card_top]
 
 @[to_additive]
+theorem orderOf_eq_card_of_forall_mem_powers {g : α} (hx : ∀ x, x ∈ Submonoid.powers g) :
+    orderOf g = Nat.card α := by
+  rw [orderOf_eq_card_of_forall_mem_zpowers]
+  exact fun x ↦ Submonoid.powers_le_zpowers _ (hx _)
+
+@[to_additive]
 theorem orderOf_eq_card_of_zpowers_eq_top {g : G} (h : Subgroup.zpowers g = ⊤) :
     orderOf g = Nat.card G :=
   orderOf_eq_card_of_forall_mem_zpowers fun _ ↦ h.ge (Subgroup.mem_top _)
@@ -263,7 +270,7 @@ instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H :=
           exact mod_cast (Nat.find_spec hex).2
         have hk₃ : g ^ (k % Nat.find hex : ℤ) ∈ H :=
           (Subgroup.mul_mem_cancel_right H hk₂).1 <| by
-            rw [← zpow_add, Int.emod_add_ediv, hk]; exact hx
+            rw [← zpow_add, Int.emod_add_mul_ediv, hk]; exact hx
         have hk₄ : k % Nat.find hex = (k % Nat.find hex).natAbs := by
           rw [Int.natAbs_of_nonneg
               (Int.emod_nonneg _ (Int.natCast_ne_zero_iff_pos.2 (Nat.find_spec hex).1))]
@@ -635,6 +642,37 @@ instance ZMod.instIsSimpleAddGroup {p : ℕ} [Fact p.Prime] : IsSimpleAddGroup (
 
 end SpecificInstances
 
+section EquivInt
+
+/-- A linearly-ordered additive abelian group is cyclic iff it is isomorphic to `ℤ` as an ordered
+additive monoid. -/
+lemma LinearOrderedAddCommGroup.isAddCyclic_iff_nonempty_equiv_int {A : Type*}
+    [AddCommGroup A] [LinearOrder A] [IsOrderedAddMonoid A] [Nontrivial A] :
+    IsAddCyclic A ↔ Nonempty (A ≃+o ℤ) := by
+  refine ⟨?_, fun ⟨e⟩ ↦ e.isAddCyclic.mpr inferInstance⟩
+  rintro ⟨g, hs⟩
+  have h_ne : g ≠ 0 := by
+    obtain ⟨a, ha⟩ := exists_ne (0 : A)
+    obtain ⟨m, rfl⟩ := hs a
+    aesop
+  wlog hg' : 0 < g
+  · exact this (g := -g) (by simpa using neg_surjective.comp hs) (by grind) (by grind)
+  have hi : (fun n : ℤ ↦ n • g).Injective := injective_zsmul_iff_not_isOfFinAddOrder.mpr
+      <| not_isOfFinAddOrder_of_isAddTorsionFree h_ne
+  exact ⟨.symm { Equiv.ofBijective _ ⟨hi, hs⟩ with
+    map_add' := add_zsmul g
+    map_le_map_iff' := zsmul_le_zsmul_iff_left hg' }⟩
+
+/-- A linearly-ordered abelian group is cyclic iff it is isomorphic to `Multiplicative ℤ` as an
+ordered monoid. -/
+lemma LinearOrderedCommGroup.isCyclic_iff_nonempty_equiv_int {G : Type*}
+    [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [Nontrivial G] :
+    IsCyclic G ↔ Nonempty (G ≃*o Multiplicative ℤ) := by
+  rw [← isAddCyclic_additive_iff, LinearOrderedAddCommGroup.isAddCyclic_iff_nonempty_equiv_int,
+    OrderAddMonoidIso.toMultiplicativeRight.nonempty_congr]
+
+end EquivInt
+
 section Exponent
 
 open Monoid
@@ -693,7 +731,7 @@ lemma not_isCyclic_iff_exponent_eq_prime [Group α] {p : ℕ} (hp : p.Prime)
   interval_cases a
   · exact False.elim <| hg <| orderOf_eq_one_iff.mp <| by simp_all
   · simp_all
-  · exact False.elim <| h_cyc <| isCyclic_of_orderOf_eq_card g <| by omega
+  · exact False.elim <| h_cyc <| isCyclic_of_orderOf_eq_card g <| by cutsat
 
 end Exponent
 

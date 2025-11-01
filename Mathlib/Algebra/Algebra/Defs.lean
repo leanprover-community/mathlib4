@@ -103,6 +103,10 @@ end Prio
 def algebraMap (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] : R →+* A :=
   Algebra.algebraMap
 
+theorem Algebra.subsingleton (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A]
+    [Subsingleton R] : Subsingleton A :=
+  (algebraMap R A).codomain_trivial
+
 /-- Coercion from a commutative semiring to an algebra over this semiring. -/
 @[coe, reducible]
 def Algebra.cast {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] : R → A :=
@@ -254,7 +258,6 @@ theorem algebra_ext {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] (P Q :
     funext r a
     rw [P.smul_def', Q.smul_def', h]
   rcases P with @⟨⟨P⟩⟩
-  rcases Q with @⟨⟨Q⟩⟩
   congr
 
 /-- An auxiliary lemma used to prove theorems of the form
@@ -381,7 +384,7 @@ instance (priority := 1100) id : Algebra R R where
   -- We override `toFun` and `toSMul` because `RingHom.id` is not reducible and cannot
   -- be made so without a significant performance hit.
   -- see library note [reducible non-instances].
-  toSMul := Mul.toSMul _
+  toSMul := instSMulOfMul
   __ := ({RingHom.id R with toFun x := x}).toAlgebra
 
 @[simp] lemma linearMap_self : Algebra.linearMap R R = .id := rfl
@@ -411,9 +414,18 @@ end Semiring
 
 end Algebra
 
+section algebraMap
+
+variable {A B : Type*} (a : A) (b : B) (C : Type*)
+  [SMul A B] [CommSemiring B] [Semiring C] [Algebra B C]
+
 @[norm_cast]
-theorem algebraMap.coe_smul (A B C : Type*) [SMul A B] [CommSemiring B] [Semiring C] [Algebra B C]
-    [SMul A C] [IsScalarTower A B C] (a : A) (b : B) : (a • b : B) = a • (b : C) := calc
-  ((a • b : B) : C) = (a • b) • 1 := Algebra.algebraMap_eq_smul_one _
-  _ = a • (b • 1) := smul_assoc ..
-  _ = a • (b : C) := congrArg _ (Algebra.algebraMap_eq_smul_one b).symm
+theorem algebraMap.coe_smul [SMul A C] [IsScalarTower A B C] : (a • b : B) = a • (b : C) := by
+  simp [Algebra.algebraMap_eq_smul_one]
+
+@[norm_cast]
+theorem algebraMap.coe_smul' [Monoid A] [MulDistribMulAction A C] [SMulDistribClass A B C] :
+    (a • b : B) = a • (b : C) := by
+  simp [Algebra.algebraMap_eq_smul_one, smul_distrib_smul]
+
+end algebraMap

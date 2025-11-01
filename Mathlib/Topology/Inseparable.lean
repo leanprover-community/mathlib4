@@ -25,7 +25,7 @@ In this file we prove basic properties of the following notions defined elsewher
 
 We also prove various basic properties of the relation `Inseparable`.
 
-## Notations
+## Notation
 
 - `x ⤳ y`: notation for `Specializes x y`;
 - `x ~ᵢ y` is used as a local notation for `Inseparable x y`;
@@ -630,9 +630,6 @@ theorem comap_mk_nhdsSet_image : comap mk (𝓝ˢ (mk '' s)) = 𝓝ˢ s :=
 is the neighborhood of its equivalence class. -/
 theorem map_mk_nhds : map mk (𝓝 x) = 𝓝 (mk x) := by
   rw [← comap_mk_nhds_mk, map_comap_of_surjective surjective_mk]
-
-@[deprecated map_mk_nhds (since := "2025-03-21")]
-theorem nhds_mk (x : X) : 𝓝 (mk x) = .map mk (𝓝 x) := .symm <| map_mk_nhds ..
 
 theorem map_mk_nhdsSet : map mk (𝓝ˢ s) = 𝓝ˢ (mk '' s) := by
   rw [← comap_mk_nhdsSet_image, map_comap_of_surjective surjective_mk]

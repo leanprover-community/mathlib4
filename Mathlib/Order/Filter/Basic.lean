@@ -41,7 +41,7 @@ The examples of filters appearing in the description of the two motivating ideas
 The predicate "happening eventually" is `Filter.Eventually`, and "happening often" is
 `Filter.Frequently`, whose definitions are immediate after `Filter` is defined (but they come
 rather late in this file in order to immediately relate them to the lattice structure).
-## Notations
+## Notation
 
 * `∀ᶠ x in f, p x` : `f.Eventually p`;
 * `∃ᶠ x in f, p x` : `f.Frequently p`;
@@ -59,7 +59,7 @@ we do *not* require. This gives `Filter X` better formal properties, in particul
 `[NeBot f]` in a number of lemmas and definitions.
 -/
 
-assert_not_exists OrderedSemiring Fintype
+assert_not_exists IsOrderedRing Fintype
 
 open Function Set Order
 open scoped symmDiff
@@ -947,9 +947,6 @@ theorem EventuallyEq.prodMk {l} {f f' : α → β} (hf : f =ᶠ[l] f') {g g' : �
       intros
       simp only [*]
 
-@[deprecated (since := "2025-03-10")]
-alias EventuallyEq.prod_mk := EventuallyEq.prodMk
-
 -- See `EventuallyEq.comp_tendsto` further below for a similar statement w.r.t.
 -- composition on the right.
 theorem EventuallyEq.fun_comp {f g : α → β} {l : Filter α} (H : f =ᶠ[l] g) (h : β → γ) :
@@ -960,7 +957,7 @@ theorem EventuallyEq.comp₂ {δ} {f f' : α → β} {g g' : α → γ} {l} (Hf 
     (Hg : g =ᶠ[l] g') : (fun x => h (f x) (g x)) =ᶠ[l] fun x => h (f' x) (g' x) :=
   (Hf.prodMk Hg).fun_comp (uncurry h)
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem EventuallyEq.mul [Mul β] {f f' g g' : α → β} {l : Filter α} (h : f =ᶠ[l] g)
     (h' : f' =ᶠ[l] g') : f * f' =ᶠ[l] g * g' :=
   h.comp₂ (· * ·) h'
@@ -978,19 +975,17 @@ lemma EventuallyEq.mul_left [Mul β] {f₁ f₂ f₃ : α → β} (h : f₁ =ᶠ
 lemma EventuallyEq.mul_right [Mul β] {f₁ f₂ f₃ : α → β} (h : f₁ =ᶠ[l] f₂) :
     f₁ * f₃ =ᶠ[l] f₂ * f₃ := EventuallyEq.mul h (by rfl)
 
-@[to_additive const_smul]
+@[to_additive (attr := gcongr, to_additive) const_smul]
 theorem EventuallyEq.pow_const {γ} [Pow β γ] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) (c : γ) :
     f ^ c =ᶠ[l] g ^ c :=
   h.fun_comp (· ^ c)
 
-@[to_additive fun_const_smul]
+@[to_additive (attr := to_additive) fun_const_smul]
 theorem EventuallyEq.fun_pow_const {γ} [Pow β γ] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g)
     (c : γ) : (fun x => f x ^ c) =ᶠ[l] fun x => g x ^ c :=
   h.pow_const c
 
-attribute [to_additive] EventuallyEq.const_smul EventuallyEq.fun_const_smul
-
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem EventuallyEq.inv [Inv β] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) : f⁻¹ =ᶠ[l] g⁻¹ :=
   h.fun_comp Inv.inv
 
@@ -999,7 +994,7 @@ theorem EventuallyEq.fun_inv [Inv β] {f g : α → β} {l : Filter α} (h : f =
     (fun x => (f x)⁻¹) =ᶠ[l] fun x => (g x)⁻¹ :=
   h.inv
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem EventuallyEq.div [Div β] {f f' g g' : α → β} {l : Filter α} (h : f =ᶠ[l] g)
     (h' : f' =ᶠ[l] g') :  f / f' =ᶠ[l] g / g' :=
   h.comp₂ (· / ·) h'
@@ -1018,37 +1013,46 @@ protected theorem EventuallyEq.fun_star {R : Type*} [Star R] {f g : α → R}
     {l : Filter α} (h : f =ᶠ[l] g) : (fun x ↦ star (f x)) =ᶠ[l] fun x ↦ star (g x) :=
   h.fun_comp Star.star
 
+@[gcongr]
 protected theorem EventuallyEq.star {R : Type*} [Star R]
     {f g : α → R} {l : Filter α} (h : f =ᶠ[l] g) : star f =ᶠ[l] star g := h.fun_comp Star.star
 
+@[gcongr]
 theorem EventuallyEq.sup [Max β] {l : Filter α} {f f' g g' : α → β} (hf : f =ᶠ[l] f')
     (hg : g =ᶠ[l] g') : f ⊔ g =ᶠ[l] f' ⊔ g' :=
   hf.comp₂ (· ⊔ ·) hg
 
+@[gcongr]
 theorem EventuallyEq.inf [Min β] {l : Filter α} {f f' g g' : α → β} (hf : f =ᶠ[l] f')
     (hg : g =ᶠ[l] g') : f ⊓ g =ᶠ[l] f' ⊓ g' :=
   hf.comp₂ (· ⊓ ·) hg
 
+@[gcongr]
 theorem EventuallyEq.preimage {l : Filter α} {f g : α → β} (h : f =ᶠ[l] g) (s : Set β) :
     f ⁻¹' s =ᶠ[l] g ⁻¹' s :=
   h.fun_comp s
 
+@[gcongr]
 theorem EventuallyEq.inter {s t s' t' : Set α} {l : Filter α} (h : s =ᶠ[l] t) (h' : s' =ᶠ[l] t') :
     (s ∩ s' : Set α) =ᶠ[l] (t ∩ t' : Set α) :=
   h.comp₂ (· ∧ ·) h'
 
+@[gcongr]
 theorem EventuallyEq.union {s t s' t' : Set α} {l : Filter α} (h : s =ᶠ[l] t) (h' : s' =ᶠ[l] t') :
     (s ∪ s' : Set α) =ᶠ[l] (t ∪ t' : Set α) :=
   h.comp₂ (· ∨ ·) h'
 
+@[gcongr]
 theorem EventuallyEq.compl {s t : Set α} {l : Filter α} (h : s =ᶠ[l] t) :
     (sᶜ : Set α) =ᶠ[l] (tᶜ : Set α) :=
   h.fun_comp Not
 
+@[gcongr]
 theorem EventuallyEq.diff {s t s' t' : Set α} {l : Filter α} (h : s =ᶠ[l] t) (h' : s' =ᶠ[l] t') :
     (s \ s' : Set α) =ᶠ[l] (t \ t' : Set α) :=
   h.inter h'.compl
 
+@[gcongr]
 protected theorem EventuallyEq.symmDiff {s t s' t' : Set α} {l : Filter α}
     (h : s =ᶠ[l] t) (h' : s' =ᶠ[l] t') : (s ∆ s' : Set α) =ᶠ[l] (t ∆ t' : Set α) :=
   (h.diff h').union (h'.diff h)

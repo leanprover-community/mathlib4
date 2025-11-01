@@ -121,16 +121,15 @@ instance : ValuationRing A where
 
 instance : Algebra A K := inferInstanceAs <| Algebra A.toSubring K
 
--- Porting note: Somehow it cannot find this instance and I'm too lazy to debug. wrong prio?
-instance isLocalRing : IsLocalRing A := ValuationRing.isLocalRing A
+instance isLocalRing : IsLocalRing A := inferInstance
 
 @[simp]
 theorem algebraMap_apply (a : A) : algebraMap A K a = a := rfl
 
 instance : IsFractionRing A K where
-  map_units' := fun ⟨y, hy⟩ =>
+  map_units := fun ⟨y, hy⟩ =>
     (Units.mk0 (y : K) fun c => nonZeroDivisors.ne_zero hy <| Subtype.ext c).isUnit
-  surj' z := by
+  surj z := by
     by_cases h : z = 0; · use (0, 1); simp [h]
     rcases A.mem_or_inv_mem z with hh | hh
     · use (⟨z, hh⟩, 1); simp
@@ -391,8 +390,7 @@ theorem isEquiv_iff_valuationSubring :
 theorem isEquiv_valuation_valuationSubring : v.IsEquiv v.valuationSubring.valuation := by
   rw [isEquiv_iff_val_le_one]
   intro x
-  rw [ValuationSubring.valuation_le_one_iff]
-  rfl
+  rw [ValuationSubring.valuation_le_one_iff, mem_valuationSubring_iff]
 
 lemma valuationSubring.integers : v.Integers v.valuationSubring :=
   Valuation.integer.integers _
@@ -422,9 +420,7 @@ def unitGroupMulEquiv : A.unitGroup ≃* Aˣ where
   toFun x :=
     { val := ⟨(x : Kˣ), mem_of_valuation_le_one A _ x.prop.le⟩
       inv := ⟨((x⁻¹ : A.unitGroup) : Kˣ), mem_of_valuation_le_one _ _ x⁻¹.prop.le⟩
-      -- Porting note: was `Units.mul_inv x`
       val_inv := Subtype.ext (by simp)
-      -- Porting note: was `Units.inv_mul x`
       inv_val := Subtype.ext (by simp) }
   invFun x := ⟨Units.map A.subtype.toMonoidHom x, A.valuation_unit x⟩
   map_mul' a b := by ext; rfl
@@ -477,7 +473,6 @@ section nonunits
 /-- The nonunits of a valuation subring of `K`, as a subsemigroup of `K` -/
 def nonunits : Subsemigroup K where
   carrier := {x | A.valuation x < 1}
-  -- Porting note: added `Set.mem_setOf.mp`
   mul_mem' ha hb := (mul_lt_mul'' (Set.mem_setOf.mp ha) (Set.mem_setOf.mp hb)
     zero_le' zero_le').trans_eq <| mul_one _
 
@@ -657,10 +652,6 @@ def unitsModPrincipalUnitsEquivResidueFieldUnits :
     A.unitGroup ⧸ A.principalUnitGroup.comap A.unitGroup.subtype ≃* (IsLocalRing.ResidueField A)ˣ :=
   (QuotientGroup.quotientMulEquivOfEq A.ker_unitGroupToResidueFieldUnits.symm).trans
     (QuotientGroup.quotientKerEquivOfSurjective _ A.surjective_unitGroupToResidueFieldUnits)
-
-/-- Porting note: Lean needs to be reminded of this instance -/
-local instance : MulOneClass ({ x // x ∈ unitGroup A } ⧸
-    Subgroup.comap (Subgroup.subtype (unitGroup A)) (principalUnitGroup A)) := inferInstance
 
 theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk :
     (A.unitsModPrincipalUnitsEquivResidueFieldUnits : _ ⧸ Subgroup.comap _ _ →* _).comp

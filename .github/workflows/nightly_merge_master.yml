@@ -13,7 +13,7 @@ jobs:
     if: github.repository == 'leanprover-community/mathlib4'
     steps:
       - name: Checkout nightly-testing from fork
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           repository: leanprover-community/mathlib4-nightly-testing
           ref: nightly-testing
@@ -22,7 +22,7 @@ jobs:
           fetch-depth: 0
 
       - name: Configure Lean
-        uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
+        uses: leanprover/lean-action@434f25c2f80ded67bba02502ad3a86f25db50709 # v1.3.0
         with:
           auto-config: false
           use-github-cache: false
