@@ -10,7 +10,7 @@ import Mathlib.Analysis.Calculus.ParametricIntegral
 # Derivatives of interval integrals depending on parameters
 
 In this file we restate theorems about derivatives of integrals depending on parameters for interval
-integrals. -/
+integrals. In the real case, we also show that parametric integrals of Cⁿ functions are Cⁿ. -/
 
 universe u
 
@@ -166,6 +166,8 @@ nonrec theorem hasFDerivAt_integral_of_contDiffOn
     exact (hasFDerivAt_prodMk_left _ x.2).hasFDerivWithinAt.fderivWithin
       (hu'.uniqueDiffWithinAt hx.1)
 
+/-- If `f : H × ℝ → E` is Cⁿ on `u ×ˢ [[a, b]]`, the parametric integral
+`fun x ↦ ∫ t in a..b, f (x, t) ∂μ` is Cⁿ on `u` too. -/
 lemma _root_.ContDiffOn.parametric_intervalIntegral {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
     [NoAtoms μ] {E H : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup H]
     [NormedSpace ℝ H] {f : H × ℝ → E} {u : Set H} (hu : IsOpen u) {a b : ℝ} {n : ℕ∞}
@@ -206,11 +208,12 @@ lemma _root_.ContDiffOn.parametric_intervalIntegral {μ : Measure ℝ} [IsLocall
   · intro h E _ _ f hf
     exact contDiffOn_infty.2 fun n ↦ h n E <| hf.of_le <| WithTop.coe_le_coe.2 le_top
 
+/-- If `f : H × ℝ → E` is Cⁿ, the parametric integral
+`fun x ↦ ∫ t in a..b, f (x, t) ∂μ` is Cⁿ too. -/
 lemma _root_.ContDiff.parametric_intervalIntegral {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
     [NoAtoms μ] {E H : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup H]
     [NormedSpace ℝ H] {f : H × ℝ → E} {a b : ℝ} {n : ℕ∞}
-    (hf : ContDiff ℝ n f) :
-    ContDiff ℝ n (fun x ↦ ∫ t in a..b, f (x, t) ∂μ) :=
+    (hf : ContDiff ℝ n f) : ContDiff ℝ n (fun x ↦ ∫ t in a..b, f (x, t) ∂μ) :=
   contDiffOn_univ.1 <| ContDiffOn.parametric_intervalIntegral isOpen_univ hf.contDiffOn
 
 end intervalIntegral

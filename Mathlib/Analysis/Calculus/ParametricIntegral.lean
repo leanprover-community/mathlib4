@@ -42,6 +42,15 @@ variable.
   derivative `F' x a` for `x` near `x₀` and `F' x` is bounded by an integrable function independent
   from `x` near `x₀`.
 
+* `hasFDerivAt_integral_of_continuousOn_fderiv`: this version assumes that `F : H × α → E` is
+  continuously differentiable in the first argument near `x₀` in the sense that:
+  - `F` is continuous on `u ×ˢ k` for a neighbourhood `u` of `x₀`,
+  - `fun x ↦ F (x, t)` is differentiable on `u` for each parameter `t ∈ k`,
+  - `fun (x, t) ↦ fderiv 𝕜 (fun y ↦ F (y, t)) x` is continuous on `u ×ˢ k`.
+
+  Here `k : Set α` is the domain of integration and is required to be compact, regarding some
+  sufficiently compatible topology on `α`.
+
 `hasDerivAt_integral_of_dominated_loc_of_lip` and
 `hasDerivAt_integral_of_dominated_loc_of_deriv_le` are versions of the above two results that
 assume `H = ℝ` or `H = ℂ` and use the high-school derivative `deriv` instead of Fréchet derivative
@@ -250,7 +259,7 @@ if there exist a neighbourhood `u` of `x₀` and a compact set `k` such that `f 
 continuous and continuously differentiable in the first argument on `u ×ˢ k`, then a derivative of
 `fun x => ∫ t in k, f (x, t) ∂μ` in `x₀` can be computed as
 `∫ t in k, fderiv 𝕜 (fun x ↦ f (x, t)) x₀ ∂μ`. -/
-nonrec theorem hasFDerivAt_integral_of_continuousOn_fderiv [TopologicalSpace α] [T2Space α]
+theorem hasFDerivAt_integral_of_continuousOn_fderiv [TopologicalSpace α] [T2Space α]
     [OpensMeasurableSpace α] [SecondCountableTopology α] [IsFiniteMeasureOnCompacts μ]
     [IsLocallyFiniteMeasure μ] {f : H × α → E} {x₀ : H} {u : Set H} (hu : u ∈ 𝓝 x₀) {k : Set α}
     (hk : IsCompact k) (hF₁ : ContinuousOn f (u ×ˢ k))
@@ -258,6 +267,7 @@ nonrec theorem hasFDerivAt_integral_of_continuousOn_fderiv [TopologicalSpace α]
     (hF₃ : ContinuousOn (fun x ↦ fderiv 𝕜 (fun y ↦ f (y, x.2)) x.1) (u ×ˢ k)) :
     HasFDerivAt (fun x => ∫ t in k, f (x, t) ∂μ)
       (∫ t in k, fderiv 𝕜 (fun x ↦ f (x, t)) x₀ ∂μ) x₀ := by
+  -- wlog shrink u to an open neighbourhood
   wlog hu' : IsOpen u with h
   · have ⟨u', hu'⟩ := _root_.mem_nhds_iff.1 hu
     exact h (hu'.2.1.mem_nhds hu'.2.2) hk (hF₁.mono <| prod_mono_left hu'.1)
@@ -265,6 +275,7 @@ nonrec theorem hasFDerivAt_integral_of_continuousOn_fderiv [TopologicalSpace α]
   have hxu := mem_of_mem_nhds hu
   let F' := fun x : H × α ↦ ‖fderiv 𝕜 (fun y ↦ f (y, x.2)) x.1‖
   have hF' : ContinuousOn F' _ := continuous_norm.comp_continuousOn hF₃
+  -- via a compactness argument, find an ε > 0 such that F' is bounded on `ball x₀ ε × k`
   let ⟨ε, hε, hε', B, hB⟩ :
       ∃ ε > 0, ball x₀ ε ⊆ u ∧ ∃ B, ∀ x ∈ ball x₀ ε ×ˢ k, F' x < B := by
     let ⟨B, hB⟩ := (isCompact_singleton.prod hk).bddAbove_image <|
@@ -279,6 +290,7 @@ nonrec theorem hasFDerivAt_integral_of_continuousOn_fderiv [TopologicalSpace α]
     have ⟨ε, hε, hε'⟩ := Metric.mem_nhds_iff.1 (Filter.inter_mem hv (hu))
     exact ⟨ε, hε, hε'.trans inter_subset_right, B + 1,
       fun x hx ↦ hv' <| prod_mono_left (hε'.trans inter_subset_left) hx⟩
+  -- now apply `hasFDerivAt_integral_of_dominated_of_fderiv_le` with the obtained ε and bound
   have hk' : MeasurableSet k := hk.measurableSet
   simp_rw [← integral_subtype_comap hk']
   refine hasFDerivAt_integral_of_dominated_of_fderiv_le (bound := fun _ ↦ B)
