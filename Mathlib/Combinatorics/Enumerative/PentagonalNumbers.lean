@@ -262,5 +262,14 @@ noncomputable def E (n : ℕ) : PowerSeries ℤ :=
 lemma coeff_E_eq_coeff_cutoff (n : ℕ) :
     (PowerSeries.coeff n) (E n) =
       (PowerSeries.coeff n)
+<<<<<<< HEAD
         (∏ k ∈ Finset.range (n + 1), (1 - (PowerSeries.X : PowerSeries ℤ) ^ (k + 1))) := by
   rfl
+=======
+<<<<<<< HEAD
+        (∏ k ∈ Finset.range (n + 1), (1 - (PowerSeries.X : PowerSeries ℤ) ^ (k + 1))) := by rfl
+=======
+        (∏ k ∈ Finset.range (n + 1), (1 - (PowerSeries.X : PowerSeries ℤ) ^ (k + 1))) := by
+  simp [E]
+>>>>>>> bdef99ea153 ([pre-commit.ci lite] apply automatic fixes)
+>>>>>>> da7abdd60e2 (style: apply lint-style updates (bibliography/doc formatting))
