@@ -1336,8 +1336,6 @@ variable {H : SimpleGraph V}
 theorem transfer_eq_map_ofLE (hp) (GH : G ≤ H) : p.transfer H hp = p.map (.ofLE GH) := by
   induction p <;> simp [*]
 
-@[deprecated (since := "2025-03-17")] alias transfer_eq_map_of_le := transfer_eq_map_ofLE
-
 @[simp]
 theorem edges_transfer (hp) : (p.transfer H hp).edges = p.edges := by
   induction p <;> simp [*]
@@ -1378,6 +1376,33 @@ theorem reverse_transfer (hp) :
   induction p with
   | nil => simp
   | cons _ _ ih => simp only [transfer_append, Walk.transfer, reverse_cons, ih]
+
+/-! ### Inducing a walk -/
+
+variable {s : Set V}
+
+variable (s) in
+/-- A walk in `G` which is fully contained in a set `s` of vertices lifts to a walk of `G[s]`. -/
+protected def induce {u v : V} :
+    ∀ (w : G.Walk u v) (hw : ∀ x ∈ w.support, x ∈ s),
+      (G.induce s).Walk ⟨u, hw _ w.start_mem_support⟩ ⟨v, hw _ w.end_mem_support⟩
+  | .nil, hw => .nil
+  | .cons (v := u') huu' w, hw => .cons (induce_adj.2 huu') <| w.induce <| by simp_all
+
+@[simp] lemma induce_nil (hw) : (.nil : G.Walk u u).induce s hw = .nil := rfl
+
+@[simp] lemma induce_cons (huu' : G.Adj u u') (w : G.Walk u' v) (hw) :
+    (w.cons huu').induce s hw = .cons (induce_adj.2 huu') (w.induce s <| by simp_all) := rfl
+
+@[simp] lemma support_induce {u v : V} :
+    ∀ (w : G.Walk u v) (hw), (w.induce s hw).support = w.support.attachWith _ hw
+  | .nil, hw => rfl
+  | .cons (v := u') hu w, hw => by simp [support_induce]
+
+@[simp] lemma map_induce {u v : V} :
+    ∀ (w : G.Walk u v) (hw), (w.induce s hw).map (Embedding.induce _).toHom = w
+  | .nil, hw => rfl
+  | .cons (v := u') huu' w, hw => by simp [map_induce]
 
 end Walk
 
