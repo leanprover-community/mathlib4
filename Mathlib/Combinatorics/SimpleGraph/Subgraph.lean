@@ -812,7 +812,8 @@ theorem degree_eq_zero_of_subsingleton (G' : Subgraph G) (v : V) [Fintype (G'.ne
     (hG : G'.verts.Subsingleton) : G'.degree v = 0 := by
   by_cases hv : v ∈ G'.verts
   · rw [← G'.coe_degree ⟨v, hv⟩]
-    exact G'.coe.degree_eq_zero_of_subsingleton ⟨v, hv⟩ ((Set.subsingleton_coe _).mpr hG)
+    have := (Set.subsingleton_coe _).mpr hG
+    exact G'.coe.degree_eq_zero_of_subsingleton ⟨v, hv⟩
   · exact degree_of_notMem_verts hv
 
 theorem degree_eq_one_iff_existsUnique_adj {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)] :
