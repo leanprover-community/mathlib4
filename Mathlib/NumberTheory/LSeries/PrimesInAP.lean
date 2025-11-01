@@ -56,7 +56,7 @@ The main steps of the proof are as follows.
 ## Main Result
 
 We give two versions of **Dirichlet's Theorem**:
-* `Nat.setOf_prime_and_eq_mod_infinite` states that the set of primes `p`
+* `Nat.infinite_setOf_prime_and_eq_mod` states that the set of primes `p`
   such that `(p : ZMod q) = a` is infinite (when `a` is invertible in `ZMod q`).
 * `Nat.forall_exists_prime_gt_and_eq_mod` states that for any natural number `n`
   there is a prime `p > n` such that `(p : ZMod q) = a`.
@@ -469,19 +469,22 @@ variable {q : ℕ} [NeZero q] {a : ZMod q}
 /-- **Dirichlet's Theorem** on primes in arithmetic progression: if `q` is a positive
 integer and `a : ZMod q` is a unit, then there are infinitely many prime numbers `p`
 such that `(p : ZMod q) = a`. -/
-theorem setOf_prime_and_eq_mod_infinite (ha : IsUnit a) :
+theorem infinite_setOf_prime_and_eq_mod (ha : IsUnit a) :
     {p : ℕ | p.Prime ∧ (p : ZMod q) = a}.Infinite := by
   by_contra H
   rw [Set.not_infinite] at H
   exact not_summable_residueClass_prime_div ha <|
     summable_of_finite_support <| support_residueClass_prime_div a ▸ H
 
+@[deprecated (since := "2025-11-01")]
+alias setOf_prime_and_eq_mod_infinite := infinite_setOf_prime_and_eq_mod
+
 /-- **Dirichlet's Theorem** on primes in arithmetic progression: if `q` is a positive
 integer and `a : ZMod q` is a unit, then there are infinitely many prime numbers `p`
 such that `(p : ZMod q) = a`. -/
 theorem forall_exists_prime_gt_and_eq_mod (ha : IsUnit a) (n : ℕ) :
     ∃ p > n, p.Prime ∧ (p : ZMod q) = a := by
-  obtain ⟨p, hp₁, hp₂⟩ := Set.infinite_iff_exists_gt.mp (setOf_prime_and_eq_mod_infinite ha) n
+  obtain ⟨p, hp₁, hp₂⟩ := Set.infinite_iff_exists_gt.mp (infinite_setOf_prime_and_eq_mod ha) n
   exact ⟨p, hp₂.gt, Set.mem_setOf.mp hp₁⟩
 
 /-- **Dirichlet's Theorem** on primes in arithmetic progression: if `q` is a positive
@@ -504,16 +507,16 @@ theorem forall_exists_prime_gt_and_modEq (n : ℕ) {q a : ℕ} (hq : q ≠ 0) (h
   simpa using forall_exists_prime_gt_and_zmodEq n (q := q) (a := a) hq (by simpa)
 
 open Filter in
-lemma frequently_atTop_prime_and_modEq_one {q a : ℕ} (hq : q ≠ 0) (h : a.Coprime q) :
+lemma frequently_atTop_prime_and_modEq {q a : ℕ} (hq : q ≠ 0) (h : a.Coprime q) :
     ∃ᶠ p in atTop, p.Prime ∧ p ≡ a [MOD q] := by
   rw [frequently_atTop]
   intro n
   obtain ⟨p, hn, hp, ha⟩ := forall_exists_prime_gt_and_modEq n hq h
   exact ⟨p, hn.le, hp, ha⟩
 
-lemma infinite_setOf_prime_and_modEq_one {q a : ℕ} (hq : q ≠ 0) (h : a.Coprime q) :
+lemma infinite_setOf_prime_and_modEq {q a : ℕ} (hq : q ≠ 0) (h : a.Coprime q) :
     Set.Infinite {p : ℕ | p.Prime ∧ p ≡ a [MOD q]} :=
-  frequently_atTop_iff_infinite.1 (frequently_atTop_prime_and_modEq_one hq h)
+  frequently_atTop_iff_infinite.1 (frequently_atTop_prime_and_modEq hq h)
 
 end Nat
 
