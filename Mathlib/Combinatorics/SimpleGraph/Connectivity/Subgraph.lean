@@ -274,12 +274,12 @@ lemma adj_toSubgraph_iff_mem_edges {u v u' v' : V} {p : G.Walk u v} :
   rfl
 
 lemma adj_toSubgraph_toPath {u v u' v' : V} {p : G.Walk u v} [DecidableEq V]
-    (hp : (p.toPath : G.Walk u v).toSubgraph.Adj u' v') : p.toSubgraph.Adj u' v' := by
+    (hp : p.bypass.toSubgraph.Adj u' v') : p.toSubgraph.Adj u' v' := by
   simp_all only [adj_toSubgraph_iff_mem_edges]
   exact p.edges_toPath_subset hp
 
 lemma toSubgraph_toPath_le_toSubgraph {u v : V} {p : G.Walk u v} [DecidableEq V] :
-    (p.toPath : G.Walk u v).toSubgraph ≤ p.toSubgraph := by
+    p.bypass.toSubgraph ≤ p.toSubgraph := by
   refine ⟨?_, fun _ _ h ↦ adj_toSubgraph_toPath h⟩
   simpa using p.verts_toSubgraph_toPath_subset
 
