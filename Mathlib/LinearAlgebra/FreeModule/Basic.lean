@@ -166,7 +166,7 @@ variable {M} in
 /-- This is a linear map version of `SeparatingDual.exists_ne_zero` in a vector space. -/
 theorem exists_linearMap_apply_ne_zero_of_ne_zero {x : M} (hx : x ≠ 0) :
     ∃ f : M →ₗ[R] R, f x ≠ 0 :=
-  let b := Module.Free.chooseBasis R M
+  let b := chooseBasis R M
   have hb : b.repr x ≠ 0 := by simpa
   have ⟨i, hi⟩ := not_forall.mp fun h ↦ hb <| Finsupp.ext h
   ⟨b.coord i, hi⟩
@@ -174,7 +174,7 @@ theorem exists_linearMap_apply_ne_zero_of_ne_zero {x : M} (hx : x ≠ 0) :
 variable {M} in
 /-- This is a linear map version of `SeparatingDual.exists_eq_one` in a vector space. -/
 theorem exists_linearMap_apply_eq_one_of_ne_zero (K : Type*) [Semifield K] [Module K M]
-    [Module.Free K M] {x : M} (hx : x ≠ 0) : ∃ f : M →ₗ[K] K, f x = 1 :=
+    [Free K M] {x : M} (hx : x ≠ 0) : ∃ f : M →ₗ[K] K, f x = 1 :=
   have ⟨f, hf⟩ := exists_linearMap_apply_ne_zero_of_ne_zero K hx
   ⟨(f x)⁻¹ • f, inv_mul_cancel₀ hf⟩
 
