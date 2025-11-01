@@ -136,17 +136,13 @@ theorem LowerSemicontinuousWithinAt.mono (h : LowerSemicontinuousWithinAt f s x)
     LowerSemicontinuousWithinAt f t x := fun y hy =>
   Filter.Eventually.filter_mono (nhdsWithin_mono _ hst) (h y hy)
 
-theorem LowerSemicontinuousWithinAt.congr {a : α}
+theorem LowerSemicontinuousWithinAt.congr_of_eventuallyEq {a : α}
+    (h : LowerSemicontinuousWithinAt f s a)
     (has : a ∈ s) (hfg : ∀ᶠ x in nhdsWithin a s, f x = g x) :
-    LowerSemicontinuousWithinAt f s a ↔ LowerSemicontinuousWithinAt g s a := by
-  apply forall_congr'
-  intro b
-  rw [Filter.EventuallyEq.eq_of_nhdsWithin hfg has]
-  apply imp_congr Iff.rfl
-  apply Filter.eventually_congr
-  apply Filter.Eventually.mono hfg
-  intro x hx
-  rw [hx]
+    LowerSemicontinuousWithinAt g s a := by
+  intro b hb
+  rw [← Filter.EventuallyEq.eq_of_nhdsWithin hfg has] at hb
+  exact EventuallyEq.rw hfg _ (h b hb)
 
 theorem lowerSemicontinuousWithinAt_univ_iff :
     LowerSemicontinuousWithinAt f univ x ↔ LowerSemicontinuousAt f x := by
