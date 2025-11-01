@@ -105,34 +105,49 @@ lemma indicator_indepFun_of_bcf [IsProbabilityMeasure P] {A : Set Ω} (mA : Null
     ring
   · exact (integrable_const _).indicator₀ mA
   · exact (integrable_const _).indicator₀ mA.compl
-  · refine Integrable.of_bound ?_ (|f 1| * ‖g‖) (ae_of_all _ fun ω ↦ ?_)
-    · exact AEStronglyMeasurable.indicator
-        ((g.continuous.aestronglyMeasurable.comp_aemeasurable mX).const_mul _) mA
+  · refine Integrable.of_bound ?_ (|f 1| * ∏ s, ‖g s‖) (ae_of_all _ fun ω ↦ ?_)
+    · exact AEStronglyMeasurable.indicator₀
+        ((Finset.aestronglyMeasurable_fun_prod _ fun s _ ↦
+          (g s).continuous.aestronglyMeasurable.comp_aemeasurable (mX s)).const_mul _) mA
     · simp only [Set.indicator, Real.norm_eq_abs]
       split_ifs
       swap; · simp only [abs_zero]; positivity
-      grw [abs_mul, g.abs_apply_le_norm]
-  · refine Integrable.of_bound ?_ (|f 0| * ‖g‖) (ae_of_all _ fun ω ↦ ?_)
-    · exact (g.continuous.aestronglyMeasurable.comp_aemeasurable mX).const_mul _
-    · grw [Real.norm_eq_abs, abs_mul, g.abs_apply_le_norm]
+      grw [abs_mul, Finset.abs_prod]
+      gcongr with s
+      exact (g s).abs_apply_le_norm _
+  · refine Integrable.of_bound ?_ (|f 0| * ∏ s, ‖g s‖) (ae_of_all _ fun ω ↦ ?_)
+    · exact (Finset.aestronglyMeasurable_fun_prod _ fun s _ ↦
+        (g s).continuous.aestronglyMeasurable.comp_aemeasurable (mX s)).const_mul _
+    · grw [Real.norm_eq_abs, abs_mul, Finset.abs_prod]
+      gcongr with s
+      exact (g s).abs_apply_le_norm _
   · apply Integrable.add
-    · refine Integrable.of_bound ?_ (|f 1| * ‖g‖) (ae_of_all _ fun ω ↦ ?_)
-      · exact AEStronglyMeasurable.indicator
-          ((g.continuous.aestronglyMeasurable.comp_aemeasurable mX).const_mul _) hA
+    · refine Integrable.of_bound ?_ (|f 1| * ∏ s, ‖g s‖) (ae_of_all _ fun ω ↦ ?_)
+      · exact AEStronglyMeasurable.indicator₀
+          ((Finset.aestronglyMeasurable_fun_prod _ fun s _ ↦
+            (g s).continuous.aestronglyMeasurable.comp_aemeasurable (mX s)).const_mul _) mA
       · simp only [Set.indicator, Real.norm_eq_abs]
         split_ifs
         swap; · simp only [abs_zero]; positivity
-        grw [abs_mul, g.abs_apply_le_norm]
-    · refine Integrable.of_bound ?_ (|f 0| * ‖g‖) (ae_of_all _ fun ω ↦ ?_)
-      · exact (g.continuous.aestronglyMeasurable.comp_aemeasurable mX).const_mul _
-      · grw [Real.norm_eq_abs, abs_mul, g.abs_apply_le_norm]
-  · refine Integrable.of_bound ?_ (|f 0| * ‖g‖) (ae_of_all _ fun ω ↦ ?_)
-    · exact AEStronglyMeasurable.indicator
-        ((g.continuous.aestronglyMeasurable.comp_aemeasurable mX).const_mul _) hA
+        grw [abs_mul, Finset.abs_prod]
+        gcongr with s
+        exact (g s).abs_apply_le_norm _
+    · refine Integrable.of_bound ?_ (|f 0| * ∏ s, ‖g s‖) (ae_of_all _ fun ω ↦ ?_)
+      · exact (Finset.aestronglyMeasurable_fun_prod _ fun s _ ↦
+          (g s).continuous.aestronglyMeasurable.comp_aemeasurable (mX s)).const_mul _
+      · grw [Real.norm_eq_abs, abs_mul, Finset.abs_prod]
+        gcongr with s
+        exact (g s).abs_apply_le_norm _
+  · refine Integrable.of_bound ?_ (|f 0| * ∏ s, ‖g s‖) (ae_of_all _ fun ω ↦ ?_)
+    · exact AEStronglyMeasurable.indicator₀
+        ((Finset.aestronglyMeasurable_fun_prod _ fun s _ ↦
+          (g s).continuous.aestronglyMeasurable.comp_aemeasurable (mX s)).const_mul _) mA
     · simp only [Set.indicator, Real.norm_eq_abs]
       split_ifs
       swap; · simp only [abs_zero]; positivity
-      grw [abs_mul, g.abs_apply_le_norm]
+      grw [abs_mul, Finset.abs_prod]
+      gcongr with s
+      exact (g s).abs_apply_le_norm _
 
 end Fintype
 
