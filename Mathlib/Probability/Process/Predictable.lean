@@ -77,6 +77,15 @@ lemma measurableSet_predictable_Ioc_prod [LinearOrder ι] [OrderBot ι]
     refine MeasurableSet.diff (measurableSet_predictable_Ioi_prod hs)
       (measurableSet_predictable_Ioi_prod <| 𝓕.mono hij.le _ hs)
 
+lemma measurableSpace_le_predictable_of_measurableSet [Preorder ι] [OrderBot ι]
+    {𝓕 : Filtration ι m} {m' : MeasurableSpace (ι × Ω)}
+    (hm'bot : ∀ A, MeasurableSet[𝓕 ⊥] A → MeasurableSet[m'] ({⊥} ×ˢ A))
+    (hm' : ∀ i A, MeasurableSet[𝓕 i] A → MeasurableSet[m'] ((Set.Ioi i) ×ˢ A)) :
+    𝓕.predictable ≤ m' := by
+  refine MeasurableSpace.generateFrom_le ?_
+  rintro - (⟨A, hA, rfl⟩ | ⟨i, A, hA, rfl⟩)
+  · exact hm'bot A hA
+  · exact hm' i A hA
 namespace IsPredictable
 
 open Filtration
@@ -92,13 +101,15 @@ lemma progMeasurable {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsP
   rw [IsPredictable, stronglyMeasurable_iff_measurable, measurable_iff_comap_le] at h𝓕
   rw [measurable_iff_comap_le, (by aesop : (fun (p : Set.Iic i × Ω) ↦ u (p.1) p.2)
       = Function.uncurry u ∘ (fun p ↦ (p.1, p.2))), ← MeasurableSpace.comap_comp]
-  refine (MeasurableSpace.comap_mono h𝓕).trans ?_
-  rw [predictable, MeasurableSpace.comap_generateFrom]
-  refine MeasurableSpace.generateFrom_le ?_
-  rintro - ⟨-, (⟨s, hs, rfl⟩ | ⟨j, A, hA, rfl⟩), rfl⟩
-  · rw [(by aesop : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' ({⊥} ×ˢ s) = {⊥} ×ˢ s)]
-    exact (measurableSet_singleton _).prod <| 𝓕.mono bot_le _ hs
-  · obtain hji | hij := lt_or_ge j i
+  refine (MeasurableSpace.comap_mono h𝓕).trans <| MeasurableSpace.comap_le_iff_le_map.2 <|
+    measurableSpace_le_predictable_of_measurableSet ?_ ?_
+  · intros A hA
+    simp only [MeasurableSpace.map_def,
+      (by aesop : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' ({⊥} ×ˢ A) = {⊥} ×ˢ A)]
+    exact (measurableSet_singleton _).prod <| 𝓕.mono bot_le _ hA
+  · intros j A hA
+    simp only [MeasurableSpace.map_def]
+    obtain hji | hij := lt_or_ge j i
     · rw [(by grind : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A
         = (Subtype.val ⁻¹' (Set.Ioc j i)) ×ˢ A)]
       exact (measurable_subtype_coe measurableSet_Ioc).prod (𝓕.mono hji.le _ hA)
