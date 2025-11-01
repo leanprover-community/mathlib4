@@ -325,9 +325,6 @@ lemma associator_inv_fst_fst (X Y Z : C) :
   simp [fst_def, ← whiskerLeft_rightUnitor_assoc, -whiskerLeft_rightUnitor,
     ← whiskerLeft_comp_assoc]
 
-@[deprecated (since := "2025-04-01")] alias associator_inv_fst := associator_inv_fst_fst
-@[deprecated (since := "2025-04-01")] alias associator_inv_fst_assoc := associator_inv_fst_fst_assoc
-
 @[reassoc (attr := simp)]
 lemma associator_inv_fst_snd (X Y Z : C) :
     (α_ X Y Z).inv ≫ fst _ _ ≫ snd _ _ = snd _ _ ≫ fst _ _ := by
@@ -497,12 +494,6 @@ abbrev terminalComparison : F.obj (𝟙_ C) ⟶ 𝟙_ D := toUnit _
 @[reassoc]
 lemma map_toUnit_comp_terminalComparison (A : C) :
     F.map (toUnit A) ≫ terminalComparison F = toUnit _ := toUnit_unique _ _
-
-@[deprecated (since := "2025-04-09")]
-alias map_toUnit_comp_terminalCompariso := map_toUnit_comp_terminalComparison
-
-@[deprecated (since := "2025-04-09")]
-alias map_toUnit_comp_terminalCompariso_assoc := map_toUnit_comp_terminalComparison_assoc
 
 open Limits
 
@@ -769,6 +760,14 @@ end prodComparison
 
 end CartesianMonoidalCategoryComparison
 
+/-- In a cartesian monoidal category, `tensorLeft X` is naturally isomorphic `prod.functor.obj X`.
+-/
+noncomputable def tensorLeftIsoProd [HasBinaryProducts C] (X : C) :
+    MonoidalCategory.tensorLeft X ≅ prod.functor.obj X :=
+  NatIso.ofComponents fun Y ↦
+    (CartesianMonoidalCategory.tensorProductIsBinaryProduct X Y).conePointUniqueUpToIso
+      (limit.isLimit _)
+
 open Limits
 
 variable {P : ObjectProperty C}
@@ -776,11 +775,15 @@ variable {P : ObjectProperty C}
 -- TODO: Introduce `ClosedUnderFiniteProducts`?
 /-- The restriction of a Cartesian-monoidal category along an object property that's closed under
 finite products is Cartesian-monoidal. -/
-noncomputable def fullSubcategory (hP₀ : ClosedUnderLimitsOfShape (Discrete PEmpty) P)
-    (hP₂ : ClosedUnderLimitsOfShape (Discrete WalkingPair) P) :
+@[simps!]
+instance fullSubcategory
+    [P.IsClosedUnderLimitsOfShape (Discrete PEmpty)]
+    [P.IsClosedUnderLimitsOfShape (Discrete WalkingPair)] :
     CartesianMonoidalCategory P.FullSubcategory where
-  __ := MonoidalCategory.fullSubcategory P (hP₀ isTerminalTensorUnit <| by simp)
-    fun X Y hX hY ↦ hP₂ (tensorProductIsBinaryProduct X Y) (by rintro ⟨_ | _⟩ <;> simp [hX, hY])
+  __ := MonoidalCategory.fullSubcategory P
+      (P.prop_of_isLimit isTerminalTensorUnit (by simp))
+      (fun X Y hX hY ↦ P.prop_of_isLimit (tensorProductIsBinaryProduct X Y)
+        (by rintro (_ | _) <;> assumption))
   isTerminalTensorUnit := .ofUniqueHom (fun X ↦ toUnit X.1) fun _ _ ↦ by ext
   fst X Y := fst X.1 Y.1
   snd X Y := snd X.1 Y.1
@@ -957,11 +960,6 @@ alias braidedOfChosenFiniteProducts := Braided.ofChosenFiniteProducts
 
 namespace EssImageSubcategory
 variable [F.Full] [F.Faithful] [PreservesFiniteProducts F] {T X Y Z : F.EssImageSubcategory}
-
-@[simps!]
-noncomputable instance instCartesianMonoidalCategory :
-     CartesianMonoidalCategory F.EssImageSubcategory :=
-  .fullSubcategory (.essImage _) (.essImage _)
 
 lemma tensor_obj (X Y : F.EssImageSubcategory) : (X ⊗ Y).obj = X.obj ⊗ Y.obj := rfl
 
