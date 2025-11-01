@@ -865,6 +865,9 @@ def StrongEpiMonoFactorisation.toMonoIsImage {X Y : C} {f : X ⟶ Y}
   lift G :=
     (CommSq.mk (show G.e ≫ G.m = F.e ≫ F.m by rw [F.toMonoFactorisation.fac, G.fac])).lift
 
+/--
+The underlying mono factorisation of a strong epi-mono factorisation is an image factorisation.
+-/
 def StrongEpiMonoFactorisation.toImageFactorisation {X Y : C} {f : X ⟶ Y}
     (F : StrongEpiMonoFactorisation f) : ImageFactorisation f where
   F := F.toMonoFactorisation
