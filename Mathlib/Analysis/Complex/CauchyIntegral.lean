@@ -3,10 +3,7 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Calculus.DiffContOnCl
-import Mathlib.Analysis.Calculus.DSlope
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Analysis.Real.Cardinality
 import Mathlib.MeasureTheory.Integral.CircleIntegral

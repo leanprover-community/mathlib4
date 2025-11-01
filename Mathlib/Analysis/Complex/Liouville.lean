@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Normed.Module.Completion
 
 /-!
 # Liouville's theorem
