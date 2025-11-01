@@ -10,9 +10,9 @@ import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 
 /-! # Maximal subgroups of the symmetric groups
 
-* `Equiv.Perm.isCoatom_stabilizer`: when `s : set α` is
-  not empty, nor its complementary subset,
-  and if the cardinality of `s` is not half of that of `α`,
+* `Equiv.Perm.isCoatom_stabilizer`:
+  if neither `s : set α` nor its complementary subset is empty,
+  and the cardinality of `s` is not half of that of `α`,
   then `MulAction.stabilizer (Equiv.Perm α) s` is
   a maximal subgroup of the symmetric group `Equiv.Perm α`.
 
@@ -20,11 +20,11 @@ import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 
 ## TODO
 
-  * Appplication to primitivity of the action
+  * Application to primitivity of the action
     of `Equiv.Perm α` on finite combinations of `α`.
 
   * Formalize the other cases of the classification.
-  The next one should be the *imprimitive case*.
+    The next one should be the *imprimitive case*.
 
 ## Reference
 
@@ -36,10 +36,6 @@ alternating and symmetric groups*, 1987][LiebeckPraegerSaxl-1987].
 open scoped Pointwise
 
 open Set
-
-theorem Subtype.image_preimage_of_val {α : Type*} {s B : Set α} (h : B ⊆ s) :
-    Subtype.val '' (Subtype.val ⁻¹' B : Set s) = B := by
-  rw [image_preimage_eq_range_inter, range_coe, inter_eq_self_of_subset_right h]
 
 namespace Equiv.Perm
 
@@ -62,13 +58,11 @@ theorem IsPretransitive.of_partition {s : Set α}
       obtain ⟨k, hk⟩ := hs' b hb x hx
       use k * g
       rw [mul_smul, hgab, hk]
-  by_contra! hyp
-  apply hG
+  contrapose! hG
   rw [eq_top_iff, le_stabilizer_iff_smul_le]
-  intro g _
-  rintro b ⟨a, ha, hgab⟩
+  rintro g _ b ⟨a, ha, hgab⟩
   by_contra hb
-  exact hyp a b g ha (Set.mem_compl hb) hgab
+  exact hG a b g ha (Set.mem_compl hb) hgab
 
 theorem swap_mem_stabilizer [DecidableEq α]
     {a b : α} {s : Set α} (ha : a ∈ s) (hb : b ∈ s) :
@@ -78,87 +72,65 @@ theorem swap_mem_stabilizer [DecidableEq α]
     apply Set.Subset.antisymm this
     exact Set.subset_smul_set_iff.mpr this
   rintro _ ⟨x, hx, rfl⟩
-  simp only [Perm.smul_def]
-  by_cases hxa : x = a
-  · rwa [hxa, swap_apply_left]
-  by_cases hxb : x = b
-  · rwa [hxb, swap_apply_right]
-  · rwa [swap_apply_of_ne_of_ne hxa hxb]
+  by_cases h : x ∈ ({a, b} : Set α)
+  · aesop
+  · have := swap_apply_of_ne_of_ne (a := a) (b := b) (x := x)
+    aesop
 
 theorem moves_in
-    (G : Subgroup (Perm α)) (t : Set α) (hGt : stabilizer (Perm α) t < G) :
+    (G : Subgroup (Perm α)) (t : Set α) (hGt : stabilizer (Perm α) t ≤ G) :
     ∀ a ∈ t, ∀ b ∈ t, ∃ g : G, g • a = b := by
   classical
   intro a ha b hb
-  use ⟨swap a b, ?_⟩
-  · change swap a b • a = b
-    simp only [Perm.smul_def, swap_apply_left]
-  · apply le_of_lt hGt
-    apply swap_mem_stabilizer ha hb
+  use ⟨swap a b, hGt (swap_mem_stabilizer ha hb)⟩
+  rw [Subgroup.mk_smul, Perm.smul_def, swap_apply_left]
 
-theorem stabilizer_ne_top (s : Set α) (hs : s.Nonempty) (hsc : sᶜ.Nonempty) :
+theorem stabilizer_ne_top_of_nonempty_of_nonempty_compl
+    {s : Set α} (hs : s.Nonempty) (hsc : sᶜ.Nonempty) :
     stabilizer (Perm α) s ≠ ⊤ := by
   classical
   obtain ⟨a, ha⟩ := hs
   obtain ⟨b, hb⟩ := hsc
   intro h
   rw [Set.mem_compl_iff] at hb; apply hb
-  have hg : swap a b ∈ stabilizer (Perm α) s := by rw [h]; apply Subgroup.mem_top
+  have hg : swap a b ∈ stabilizer (Perm α) s := by simp_all
   rw [mem_stabilizer_iff] at hg
-  rw [← hg]
-  rw [Set.mem_smul_set]
-  use a; use ha; apply swap_apply_left
+  rw [← hg, Set.mem_smul_set]
+  aesop
 
-theorem stabilizer_nonempty_ne_top (α : Type _) (s : Set α) (hs : s.Nonempty) (hs' : sᶜ.Nonempty) :
-    stabilizer (Perm α) s ≠ ⊤ := by
-  classical
-  obtain ⟨a : α, ha : a ∈ s⟩ := hs
-  obtain ⟨b : α, hb : b ∈ sᶜ⟩ := hs'
-  intro h
-  let g := swap a b
-  have h' : g ∈ ⊤ := Subgroup.mem_top g
-  rw [← h, mem_stabilizer_iff] at h'
-  rw [Set.mem_compl_iff] at hb
-  apply hb
-  rw [← h']
-  use a
-  exact And.intro ha (swap_apply_left a b)
-
-variable [Finite α]
-
-theorem has_swap_of_lt_stabilizer [DecidableEq α]
+theorem has_swap_mem_of_lt_stabilizer [DecidableEq α]
     (s : Set α) (G : Subgroup (Perm α))
     (hG : stabilizer (Perm α) s < G) :
     ∃ g : Perm α, g.IsSwap ∧ g ∈ G := by
-  have : ∀ (t : Set α) (_ : 1 < t.ncard), ∃ (g : Perm α),
+  have : ∀ (t : Set α) (_ : 1 < t.encard), ∃ (g : Perm α),
       g.IsSwap ∧ g ∈ stabilizer (Perm α) t := by
     intro t ht
-    rw [Set.one_lt_ncard_iff] at ht
+    rw [Set.one_lt_encard_iff] at ht
     obtain ⟨a, b, ha, hb, h⟩ := ht
     use swap a b, Perm.swap_isSwap_iff.mpr h, swap_mem_stabilizer ha hb
-  rcases lt_or_ge 1 (s.ncard) with h1 | h1'
+  rcases lt_or_ge 1 s.encard with h1 | h1'
   · obtain ⟨g, hg, hg'⟩ := this s h1
     exact ⟨g, hg, le_of_lt hG hg'⟩
-  rcases lt_or_ge 1 sᶜ.ncard with h1c | h1c'
+  rcases lt_or_ge 1 sᶜ.encard with h1c | h1c'
   · obtain ⟨g, hg, hg'⟩ := this sᶜ h1c
     use g, hg
     rw [stabilizer_compl] at hg'
     exact le_of_lt hG hg'
+  have hα : Set.encard (_root_.Set.univ : Set α) = 2 := by
+    rw [← Set.encard_add_encard_compl s]
+    have : (1 + 1 : ENat) = 2 := by norm_num
+    convert this <;>
+    · apply le_antisymm
+      · assumption
+      rw [one_le_encard_iff_nonempty, Set.nonempty_iff_ne_empty]
+      aesop
+  have _ : Finite α := by
+    rw [finite_iff_nonempty_fintype]
+    refine univ_finite_iff_nonempty_fintype.mp ?_
+    exact finite_of_encard_eq_coe hα
   have hα : Nat.card α = 2 := by
-    rw [← Set.ncard_add_ncard_compl s] -- , hs1, hsc1]
-    convert Nat.one_add 1
-    · apply le_antisymm
-      assumption
-      rw [Nat.succ_le_iff, Set.ncard_pos, Set.nonempty_iff_ne_empty]
-      intro h
-      apply ne_top_of_lt hG
-      rw [h, stabilizer_empty_eq_top]
-    · apply le_antisymm
-      assumption
-      rw [Nat.succ_le_iff, Set.ncard_pos, Set.nonempty_iff_ne_empty]
-      intro h
-      apply ne_top_of_lt hG
-      rw [← stabilizer_compl, h, stabilizer_empty_eq_top]
+    rw [← ENat.card_coe_set_eq, ENat.card_eq_coe_natCard, Nat.card_coe_set_eq, ncard_univ] at hα
+    exact ENat.coe_inj.mp hα
   have hα2 : Fact (Nat.card (Perm α)).Prime := by
     apply Fact.mk
     rw [Nat.card_perm, hα, Nat.factorial_two]
@@ -167,43 +139,46 @@ theorem has_swap_of_lt_stabilizer [DecidableEq α]
   | inl h =>
     exfalso; exact ne_bot_of_gt hG h
   | inr h =>
-    rw [h]
-    rw [← stabilizer_univ_eq_top (Perm α) α]
+    rw [h, ← stabilizer_univ_eq_top (Perm α) α]
     apply this
-    rw [Set.ncard_univ, hα]
-    norm_num
+    simp_all
 
 theorem ofSubtype_mem_stabilizer {s : Set α} [DecidablePred fun x ↦ x ∈ s]
     (g : Perm s) :
     g.ofSubtype ∈ stabilizer (Perm α) s := by
-  rw [mem_stabilizer_set_iff_subset_smul_set s.toFinite]
-  intro x hx
-  rw [Set.mem_smul_set]
-  use g.symm ⟨x, hx⟩
-  simp
+  rw [mem_stabilizer_iff]
+  ext g'
+  simp_rw [mem_smul_set, Perm.smul_def]
+  refine ⟨?_, fun a ↦ ?_⟩
+  · rintro ⟨w, hs, rfl⟩
+    simp [ofSubtype_apply_of_mem _ hs]
+  · use (g⁻¹ ⟨g', a⟩)
+    simp
 
 open SubMulAction
 
+variable [Finite α]
+
 theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
-    (s : Set α) (h0 : s.Nonempty) (h1 : sᶜ.Nonempty)
-    (hα : s.ncard < sᶜ.ncard) :
+    {s : Set α} (h0 : s.Nonempty) (hα : s.ncard < sᶜ.ncard) :
     IsCoatom (stabilizer (Perm α) s) := by
   classical
+  have h1 : sᶜ.Nonempty := nonempty_iff_ne_empty.mpr (by aesop)
   have : Fintype α := Fintype.ofFinite α
   -- To prove that `stabilizer (Perm α) s` is maximal,
   -- we need to prove that it is `≠ ⊤`
-  refine ⟨stabilizer_ne_top s h0 h1, fun G hG ↦ ?_⟩
+  refine ⟨stabilizer_ne_top_of_nonempty_of_nonempty_compl h0 h1, fun G hG ↦ ?_⟩
   -- … and that every strict over-subgroup `G` is equal to `⊤`
   -- We know that `G` contains a swap
-  obtain ⟨g, hg_swap, hg⟩ := has_swap_of_lt_stabilizer s G hG
+  obtain ⟨g, hg_swap, hg⟩ := has_swap_mem_of_lt_stabilizer s G hG
   -- By Jordan's theorem `eq_top_of_isPreprimitive_of_isSwap_mem`,
   -- it suffices to prove that `G` acts primitively
   apply subgroup_eq_top_of_isPreprimitive_of_isSwap_mem _ g hg_swap hg
   -- First, we prove that `G` acts transitively
   have : IsPretransitive G α := by
     apply IsPretransitive.of_partition G (s := s)
-    · apply moves_in; exact hG
-    · apply moves_in; rw [stabilizer_compl]; exact hG
+    · apply moves_in; exact le_of_lt hG
+    · apply moves_in; rw [stabilizer_compl]; exact le_of_lt hG
     · intro h
       apply lt_irrefl G; apply lt_of_le_of_lt _ hG
       --  `G ≤ stabilizer (Equiv.Perm α) s`
@@ -235,7 +210,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
   -- Step 2 : A block contained in sᶜ is a subsingleton
   have hB_not_le_sc : ∀ (B : Set α) (_ : IsBlock G B) (_ : B ⊆ sᶜ), B.Subsingleton := by
     intro B hB hBsc
-    rw [← Subtype.image_preimage_of_val hBsc]
+    rw [← inter_eq_self_of_subset_right hBsc, ← Subtype.image_preimage_val]
     apply Set.Subsingleton.image
     suffices IsTrivialBlock (Subtype.val ⁻¹' B : Set (sᶜ : Set α)) by
       apply Or.resolve_right this
@@ -285,7 +260,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     suffices IsTrivialBlock (Subtype.val ⁻¹' B : Set s) by
       rcases this with hB' | hB'
       · -- trivial case
-        rw [← Subtype.image_preimage_of_val hBs]
+        rw [← inter_eq_self_of_subset_right hBs, ← Subtype.image_preimage_val]
         apply Set.Subsingleton.image
         exact hB'
       · -- `coe ⁻¹' B = s`
@@ -413,18 +388,16 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
 
 /-- `MulAction.stabilizer (Perm α) s` is a maximal subgroup of `Perm α`,
 provided `s` and `sᶜ` are nonempty, and `Nat.card α ≠ 2 * Nat.card s`. -/
-theorem isCoatom_stabilizer (s : Set α)
+theorem isCoatom_stabilizer {s : Set α}
     (h0 : s.Nonempty) (h1 : sᶜ.Nonempty)
     (hα : Nat.card α ≠ 2 * s.ncard) :
     IsCoatom (stabilizer (Perm α) s) := by
-  rcases Nat.lt_trichotomy s.ncard sᶜ.ncard with hs | hs'
-  · exact isCoatom_stabilizer_of_ncard_lt_ncard_compl s h0 h1 hs
-  rcases hs' with hs | hs
-  · exfalso; apply hα
+  obtain hs | hs | hs := Nat.lt_trichotomy s.ncard sᶜ.ncard
+  · exact isCoatom_stabilizer_of_ncard_lt_ncard_compl h0 hs
+  · contrapose! hα
     rw [← Set.ncard_add_ncard_compl s, two_mul, ← hs]
-  · rw [← compl_compl s] at h0
-    rw [← stabilizer_compl]
-    apply isCoatom_stabilizer_of_ncard_lt_ncard_compl (sᶜ) h1 h0
+  · rw [← stabilizer_compl]
+    apply isCoatom_stabilizer_of_ncard_lt_ncard_compl h1
     rwa [compl_compl]
 
 end Equiv.Perm

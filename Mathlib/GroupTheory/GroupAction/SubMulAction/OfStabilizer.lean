@@ -248,7 +248,7 @@ theorem _root_.SMul.smul_stabilizer_def (s : Set α) (g : stabilizer G s) (x : s
     ((g • x : ↥s) : α) = (g : G) • (x : α) :=
   rfl
 
-/-- The stablizer of a set acts on that set -/
+/-- The stabilizer of a set acts on that set -/
 @[to_additive]
 instance (s : Set α) : MulAction (stabilizer G s) s where
   one_smul x := by
@@ -259,20 +259,16 @@ instance (s : Set α) : MulAction (stabilizer G s) s where
 
 theorem stabilizer_empty_eq_top :
     stabilizer G (∅ : Set α) = ⊤ := by
-  rw [eq_top_iff]
-  intro g _
-  simp [mem_stabilizer_iff]
+  aesop
 
 theorem stabilizer_univ_eq_top :
-    stabilizer G (_root_.Set.univ : Set α) = ⊤ := by
-  rw [eq_top_iff]
-  intro g _
-  simp [mem_stabilizer_iff]
+    stabilizer G (Set.univ : Set α) = ⊤ := by
+  aesop
 
 /-- The stabilizer of the complement is the stabilizer of the set. -/
 @[simp]
 theorem stabilizer_compl {s : Set α} :
-    stabilizer G (sᶜ) = stabilizer G s := by
+    stabilizer G sᶜ = stabilizer G s := by
   have (s : Set α) : stabilizer G s ≤ stabilizer G (sᶜ) := by
     intro g h
     simp [Set.smul_set_compl, mem_stabilizer_iff.1 h]

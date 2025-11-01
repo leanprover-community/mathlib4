@@ -308,8 +308,7 @@ theorem swap_isSwap_iff {a b : α} :
   constructor
   · intro h hab
     apply h.isCycle.ne_one
-    rw [← hab, swap_self]
-    ext; simp
+    aesop
   · intro h; use a, b
 
 variable [Fintype α]
