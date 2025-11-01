@@ -77,33 +77,6 @@ def m : (I f) ⟶ Y :=
 lemma fac : (e f) ≫ (m f) = f :=
   coequalizer.π_desc f _
 
-/--
-The following lemma states that if whole square is a pullback and squares 2, 3 and 4 are pullbacks,
-then square 1 is a pullback too.
-```
-X₁₁ - h₁₁ -> X₁₂ - h₁₂ -> X₁₃
-|            |            |
-v₁₁    1     v₁₂    2     v₁₃
-↓            ↓            ↓
-X₂₁ - h₂₁ -> X₂₂ - h₂₂ -> X₂₃
-|            |            |
-v₂₁    3     v₂₂    4     v₂₃
-↓            ↓            ↓
-X₃₁ - h₃₁ -> X₃₂ - h₃₂ -> X₃₃
-```
--/
-lemma pb {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ X₃₁ X₃₂ X₃₃ : C}
-    {h₁₁ : X₁₁ ⟶ X₁₂} {h₁₂ : X₁₂ ⟶ X₁₃} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₁₃ : X₁₃ ⟶ X₂₃}
-    {h₂₁ : X₂₁ ⟶ X₂₂} {h₂₂ : X₂₂ ⟶ X₂₃} {v₂₁ : X₂₁ ⟶ X₃₁} {v₂₂ : X₂₂ ⟶ X₃₂} {v₂₃ : X₂₃ ⟶ X₃₃}
-    {h₃₁ : X₃₁ ⟶ X₃₂} {h₃₂ : X₃₂ ⟶ X₃₃} (w : h₁₁ ≫ v₁₂ = v₁₁ ≫ h₂₁)
-    (h : IsPullback (h₁₁ ≫ h₁₂) (v₁₁ ≫ v₂₁) (v₁₃ ≫ v₂₃) (h₃₁ ≫ h₃₂))
-    (h2 : IsPullback h₁₂ v₁₂ v₁₃ h₂₂) (h3 : IsPullback h₂₁ v₂₁ v₂₂ h₃₁)
-    (h4 : IsPullback h₂₂ v₂₂ v₂₃ h₃₂) :
-    IsPullback h₁₁ v₁₁ v₁₂ h₂₁ := by
-  apply IsPullback.of_right ?_ w h2
-  apply IsPullback.of_bot h (by rw [← reassoc_of% w, ← h2.w, Category.assoc])
-  exact IsPullback.paste_horiz h3 h4
-
 instance m_mono : Mono (m f) := by
   apply (IsKernelPair.of_hasPullback (m f)).mono_of_eq_fst_snd
   set k₁ := pullback.fst (m f) (m f)
@@ -119,36 +92,10 @@ instance m_mono : Mono (m f) := by
       (e f ≫ m f) (e f ≫ m f) := by
     rw [fac, pullback.lift_fst, pullback.lift_snd]
     simpa [g₁, g₂] using IsPullback.of_hasPullback f f
-  have sq1 := pb (by simp [g₂, g₁]) ispbsq sq₁ sq₂ <|
-    IsPullback.of_hasPullback (m f) (m f)
-  have reβ1 : IsRegularEpi (pullback.snd (e f) k₁) := by
-    apply Regular.regularEpiIsStableUnderBaseChange.of_isPullback sq₁ (e_isRegularEpi f)
-  have reα2 : IsRegularEpi (pullback.fst k₂ (e f)) := by
-    apply Regular.regularEpiIsStableUnderBaseChange.of_isPullback sq₂.flip (e_isRegularEpi f)
-  have reb : IsRegularEpi g₁ := by
-    apply Regular.regularEpiIsStableUnderBaseChange.of_isPullback sq1.flip reα2
-  rw [← cancel_epi (g₁ ≫ pullback.snd (e f) k₁)]
-  convert coequalizer.condition (pullback.fst f f) (pullback.snd f f) using 1
-  · rw [Category.assoc, sq₁.w.symm, pullback.lift_fst_assoc, e]
-  · rw [sq1.w, Category.assoc, sq₂.w, pullback.lift_snd_assoc, e]
-
-instance m_mono' : Mono (m f) := by
-  apply (IsKernelPair.of_hasPullback (m f)).mono_of_eq_fst_snd
-  set k₁ := pullback.fst (m f) (m f)
-  set k₂ := pullback.snd (m f) (m f)
-  set d : _ ⟶ (pullback (m f) (m f)) :=
-    pullback.lift (pullback.fst f f ≫ e f) (pullback.snd f f ≫ e f)
-      (by simp; rw [pullback.condition])
-  set g₁ : _ ⟶ (pullback (e f) k₁) := pullback.lift (pullback.fst f f) d (by simp [d, k₁])
-  set g₂ : _ ⟶ (pullback k₂ (e f)) := pullback.lift d (pullback.snd f f) (by simp [d, k₂])
-  set sq₁ := IsPullback.of_hasPullback (e f) k₁
-  let sq₂ := IsPullback.of_hasPullback k₂ (e f)
-  have ispbsq : IsPullback (g₁ ≫ pullback.fst (e f) k₁) (g₂ ≫ pullback.snd k₂ (e f))
-      (e f ≫ m f) (e f ≫ m f) := by
-    rw [fac, pullback.lift_fst, pullback.lift_snd]
-    simpa [g₁, g₂] using IsPullback.of_hasPullback f f
-  have sq1 := pb (by simp [g₂, g₁]) ispbsq sq₁ sq₂ <|
-    IsPullback.of_hasPullback (m f) (m f)
+  have sq1 : IsPullback g₁ g₂ (pullback.snd (e f) k₁) (pullback.fst k₂ (e f)) := by
+    apply IsPullback.of_right ?_ (by simp [g₂, g₁]) sq₁
+    apply IsPullback.of_bot ispbsq (by simp [g₂, g₁, k₁, d])
+    exact IsPullback.paste_horiz sq₂ (IsPullback.of_hasPullback (m f) (m f))
   have reβ1 : IsRegularEpi (pullback.snd (e f) k₁) := by
     apply Regular.regularEpiIsStableUnderBaseChange.of_isPullback sq₁ (e_isRegularEpi f)
   have reα2 : IsRegularEpi (pullback.fst k₂ (e f)) := by
@@ -166,14 +113,14 @@ def monoFactorisation : MonoFactorisation f where
   e := e f
   fac := fac f
 
-def strongEpi : StrongEpiMonoFactorisation f where
+def strongEpiMonoFactorisation : StrongEpiMonoFactorisation f where
   __ := monoFactorisation f
   e_strong_epi := by
     dsimp [monoFactorisation]
     apply strongEpi_of_regularEpi
 
 instance hasStrongEpiMonoFactorisations : HasStrongEpiMonoFactorisations C where
-  has_fac f := ⟨strongEpi f⟩
+  has_fac f := ⟨strongEpiMonoFactorisation f⟩
 
 instance regularEpiOfExtremalEpi (s : ExtremalEpi f) : RegularEpi f :=
   have := s.isIso (e f) (m f) (by simp)
