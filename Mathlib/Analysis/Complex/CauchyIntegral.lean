@@ -694,6 +694,8 @@ end analyticity
 section derivatives
 /-!
 ## Circle integrals for higher derivatives
+
+TODO: add a version for `w ∈ Metric.ball c R`.
 -/
 
 variable {R : ℝ} {f : ℂ → E} {c : ℂ} {s : Set ℂ}
@@ -711,6 +713,15 @@ lemma circleIntegral_one_div_sub_center_pow_smul_of_differentiable_on_off_counta
   rw [← this, cauchyPowerSeries_apply, ← Nat.cast_smul_eq_nsmul ℂ, ← mul_smul, ← mul_smul,
     div_mul_cancel₀ _ (mod_cast n.factorial_ne_zero), mul_inv_cancel₀ two_pi_I_ne_zero, one_smul]
   simp [← mul_smul, pow_succ, mul_comm]
+
+/-- **Cauchy integral formula for the first order derivative**, assuming `f` is continuous on a
+closed ball and differentiable on its interior away from a countable set. -/
+lemma differentiable_on_off_countable_deriv_eq_smul_circleIntegral
+    (h0 : 0 < R) (hs : s.Countable) (hc : ContinuousOn f (closedBall c R))
+    (hd : ∀ z ∈ ball c R \ s, DifferentiableAt ℂ f z) :
+    (∮ z in C(c, R), (1 / (z - c) ^ 2) • f z) = (2 * π * I) • deriv f c := by
+  simpa using circleIntegral_one_div_sub_center_pow_smul_of_differentiable_on_off_countable
+    h0 1 hs hc hd
 
 /-- **Cauchy integral formula for derivatives**, assuming `f` is continuous on a closed ball and
 differentiable on its interior. -/
