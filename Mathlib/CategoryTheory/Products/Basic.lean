@@ -34,11 +34,7 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 section
 
-variable (C : Type u₁) (D : Type u₂)
-
-section
-
-variable [CategoryStruct.{v₁} C] [CategoryStruct.{v₂} D]
+variable (C : Type u₁) [CategoryStruct.{v₁} C] (D : Type u₂) [CategoryStruct.{v₂} D]
 
 -- the generates simp lemmas like `id_fst` and `comp_snd`
 /-- `CategoryStruct.prod C D` gives the Cartesian product of two `CategoryStruct`'s. -/
@@ -79,7 +75,7 @@ end Prod
 
 end
 
-section -- TODO: this section seems pointless?
+section
 
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
@@ -233,8 +229,6 @@ variable {C}
 @[simps!]
 def Functor.constCompEvaluationObj (X : C) : Functor.const C ⋙ (evaluation C D).obj X ≅ 𝟭 D :=
   NatIso.ofComponents fun _ => Iso.refl _
-
-end
 
 end
 
