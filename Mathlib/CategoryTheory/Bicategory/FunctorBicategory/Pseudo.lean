@@ -6,6 +6,8 @@ Authors: Calle Sönne
 
 import Mathlib.CategoryTheory.Bicategory.Modification.Pseudo
 import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
+import Mathlib.CategoryTheory.Bicategory.Product
+import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
 /-!
 # The bicategory of pseudofunctors between two bicategories
@@ -20,8 +22,6 @@ Given bicategories `B` and `C`, we give a bicategory structure on `Pseudofunctor
 namespace CategoryTheory.Pseudofunctor
 
 open Category Bicategory
-
-open scoped Bicategory
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
@@ -81,6 +81,57 @@ instance bicategory : Bicategory (Pseudofunctor B C) where
 
 end StrongTrans
 
--- here
+open StrongTrans
+
+@[simps] -- remove eqToIso simps...!
+def eval (b : B) : (B ⥤ᵖ C) ⥤ᵖ C where
+  obj P := P.obj b
+  map θ := θ.app b
+  map₂ Γ := Γ.app b
+  mapId P := eqToIso rfl
+  mapComp f g := eqToIso rfl
+
+--attribute [simp] Modification.naturality
+--attribute [-simp] Modification.whiskerLeft_app
+
+/-- The "evaluation at `X`" functor, such that
+`(evaluation.obj X).obj F = F.obj X`,
+which is functorial in both `X` and `F`.
+-/
+@[simps]
+def evaluation : B ⥤ᵖ (B ⥤ᵖ C) ⥤ᵖ C where
+  -- TODO: actually a StrictPseudofunctor
+  obj := eval
+  map f := {
+    app P := P.map f
+    naturality θ := (θ.naturality f).symm }
+  map₂ η :=
+    { app P := P.map₂ η
+      naturality θ := by simp [map₂_whiskerRight_app] }
+  mapId b := isoMk (fun P ↦ P.mapId b) (fun θ ↦ by simp [naturality_id_inv])
+  mapComp f g := isoMk (fun P ↦ P.mapComp f g) (fun θ ↦ by simp [naturality_comp_inv])
+
+/- The "evaluation of `F` at `X`" functor,
+as a functor `C × (C ⥤ D) ⥤ D`.
+-/
+@[simps]
+def evaluationUncurried : B × (B ⥤ᵖ C) ⥤ᵖ C where
+  obj p := p.2.obj p.1
+  map {x} {y} f  := x.2.map f.1 ≫ f.2.app y.1
+  map₂ {x} {y} f g η  := (x.2.map₂ η.1) ▷ f.2.app y.1 ≫ x.2.map g.1 ◁ η.2.app y.1
+  map₂_comp {a b f g h} η θ := by simp [map₂_whiskerRight_app, ← whisker_exchange_assoc]
+  mapId P := (ρ_ _) ≪≫ P.2.mapId P.1
+  -- TODO: golf this
+  mapComp {a b c} f g := (α_ _ _ _).symm ≪≫
+      whiskerRightIso
+        (whiskerRightIso (a.2.mapComp f.1 g.1) _ ≪≫
+          (α_ _ _ _) ≪≫ (whiskerLeftIso _ (f.2.naturality g.1)) ≪≫
+          (α_ _ _ _).symm) (g.2.app c.1) ≪≫ α_ _ _ _
+  map₂_whisker_left {a b c} f {g h} η := by sorry
+  map₂_whisker_right := sorry
+  map₂_associator := sorry
+  map₂_left_unitor := sorry
+  map₂_right_unitor := sorry
+
 
 end CategoryTheory.Pseudofunctor
