@@ -98,10 +98,10 @@ lemma indicator_indepFun_of_bcf [IsFiniteMeasure P] {A : Set Ω} (mA : NullMeasu
     rw [Set.indicator_apply]
     split_ifs <;> simp_all
   simp_rw [Pi.mul_apply, Finset.prod_apply, Function.comp_apply, h1, h2]
-  rw [integral_sub, integral_add, integral_indicator hA, integral_indicator hA, integral_const_mul,
-    integral_const_mul, integral_const_mul, integral_add, integral_indicator hA,
-    integral_indicator hA.compl, integral_const, integral_const, h]
-  · simp [measureReal_compl hA]
+  rw [integral_sub, integral_add, integral_indicator₀ mA, integral_indicator₀ mA,
+    integral_const_mul, integral_const_mul, integral_const_mul, integral_add,
+    integral_indicator₀ mA, integral_indicator₀ mA.compl, integral_const, integral_const, h]
+  · simp [measureReal_compl mA]
     ring
   · exact (integrable_const _).indicator hA
   · exact (integrable_const _).indicator hA.compl

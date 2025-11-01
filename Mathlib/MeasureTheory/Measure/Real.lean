@@ -368,6 +368,11 @@ theorem measureReal_compl [IsFiniteMeasure μ] (h₁ : MeasurableSet s) :
   rw [compl_eq_univ_diff]
   exact measureReal_diff (subset_univ s) h₁
 
+theorem measureReal_compl₀ [IsFiniteMeasure μ] (h₁ : NullMeasurableSet s μ) :
+    μ.real sᶜ = μ.real univ - μ.real s := by
+  simp only [measureReal_def, ne_eq, measure_ne_top, not_false_eq_true, measure_compl₀ h₁]
+  rw [ENNReal.toReal_sub_of_le (measure_mono (subset_univ _)) (by finiteness)]
+
 theorem measureReal_union_congr_of_subset (hs : s₁ ⊆ s₂)
     (hsμ : μ.real s₂ ≤ μ.real s₁) (ht : t₁ ⊆ t₂) (htμ : μ.real t₂ ≤ μ.real t₁)
     (h₁ : μ s₂ ≠ ∞ := by finiteness) (h₂ : μ t₂ ≠ ∞ := by finiteness) :
