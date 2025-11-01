@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.GroupWithZero.Action.TransferInstance
 import Mathlib.Algebra.Module.Equiv.Defs
+import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
 # Transfer algebraic structures across `Equiv`s
@@ -19,6 +20,16 @@ variable {R α β : Type*} [Semiring R]
 
 namespace Equiv
 variable (e : α ≃ β)
+
+variable (R : Type*) [Zero R] in
+/-- Transfer `NoZeroSMulDivisors` across an `Equiv` -/
+protected lemma noZeroSMulDivisors [Zero β] [SMul R β] [NoZeroSMulDivisors R β] :
+    let := e.zero
+    let := e.smul R
+    NoZeroSMulDivisors R α := by
+  extract_lets
+  refine ⟨fun {r} m ↦ ?_⟩
+  simpa [smul_def, zero_def, Equiv.eq_symm_apply] using eq_zero_or_eq_zero_of_smul_eq_zero
 
 variable (R) in
 /-- Transfer `Module` across an `Equiv` -/

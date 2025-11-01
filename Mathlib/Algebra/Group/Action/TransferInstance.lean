@@ -3,7 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Algebra.Group.Action.Faithful
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.TransferInstance
 import Mathlib.Algebra.Group.InjSurj
@@ -70,5 +70,15 @@ protected abbrev mulDistribMulAction (e : N ≃ O) [MulDistribMulAction M O] :
   { e.mulAction M with
     smul_one := by simp [one_def, smul_def, smul_one]
     smul_mul := by simp [mul_def, smul_def, smul_mul'] }
+
+variable (M) [SMul M β] in
+/-- Transfer `FaithfulSMul` across an `Equiv` -/
+@[to_additive /-- Transfer `FaithfulVAdd` across an `Equiv` -/]
+protected lemma faithfulSMul (e : α ≃ β) [FaithfulSMul M β] :
+    letI := e.smul M
+    FaithfulSMul M α :=
+  letI := e.smul M
+  { eq_of_smul_eq_smul {m₁ m₂} := by
+      simpa [← e.forall_congr_right, smul_def] using eq_of_smul_eq_smul (α := β) }
 
 end Equiv
