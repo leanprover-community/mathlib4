@@ -101,10 +101,21 @@ lemma Functor.mapTriangleOfSES {S : ShortComplex (CochainComplex C ℤ)} (hS : S
   congr 1
   rw [IsIso.eq_comp_inv, ← Q.map_comp]
   congr 1
-
-  --CochainComplex.mappingCone.mapTriangleIso
-  sorry
-
+  ext n
+  simp only [mapHomologicalComplex_obj_X, ShortComplex.map_X₃,
+    CochainComplex.mappingCone.mapHomologicalComplexIso,
+    CochainComplex.mappingCone.descShortComplex, ShortComplex.map_X₁, ShortComplex.map_X₂,
+    ShortComplex.map_f, ShortComplex.map_g, HomologicalComplex.comp_f,
+    HomologicalComplex.Hom.isoOfComponents_hom_f,
+    CochainComplex.mappingCone.mapHomologicalComplexXIso,
+    CochainComplex.mappingCone.mapHomologicalComplexXIso'_hom, Int.reduceNeg, Preadditive.add_comp,
+    Category.assoc, CochainComplex.mappingCone.inl_v_desc_f,
+    CochainComplex.HomComplex.Cochain.zero_v, comp_zero, CochainComplex.mappingCone.inr_f_desc_f,
+    mapHomologicalComplex_map_f, zero_add]
+  rw [← F.map_comp]
+  congr 1
+  rw [CochainComplex.mappingCone.desc_f _ _ _ _ n (n + 1) rfl]
+  simp
 
 lemma Functor.mapShiftedHom_singleδ {S : ShortComplex C} (hS : S.ShortExact) :
     (F.mapShiftedHom S.X₃ S.X₁ 1) hS.singleδ = (hS.map_of_exact F).singleδ := by
@@ -142,9 +153,11 @@ lemma Functor.mapShiftedHom_singleδ {S : ShortComplex C} (hS : S.ShortExact) :
     simp only [Iso.inv_hom_id_app_assoc]
     exact Category.comp_id _
   rw [← (shiftFunctor (DerivedCategory D) 1).map_comp, eq2, ← Category.assoc, eq1]
+  /-
   simp only [comp_obj, triangleOfSESδ, ShortComplex.map_X₃, ShortComplex.map_X₁,
     ShortComplex.map_X₂, ShortComplex.map_f, CochainComplex.mappingCone.triangle_obj₁,
     Category.assoc]
+  -/
 
   sorry
 
