@@ -130,6 +130,10 @@ theorem isMinOn_univ_iff : IsMinOn f univ a ↔ ∀ x, f a ≤ f x :=
 theorem isMaxOn_univ_iff : IsMaxOn f univ a ↔ ∀ x, f x ≤ f a :=
   univ_subset_iff.trans eq_univ_iff_forall
 
+theorem IsMinOn.bddBelow (h : IsMinOn f s a) :
+    BddBelow (f '' s) :=
+  ⟨f a, by simpa [mem_lowerBounds] using h⟩
+
 theorem IsMinOn.isGLB (ha : a ∈ s) (hfsa : IsMinOn f s a) :
     IsGLB {f x | x ∈ s} (f a) := by
   rw [isGLB_iff_le_iff]
@@ -140,6 +144,10 @@ theorem IsMinOn.isGLB (ha : a ∈ s) (hfsa : IsMinOn f s a) :
 theorem IsMaxOn.isLUB (ha : a ∈ s) (hfsa : IsMaxOn f s a) :
     IsLUB {f x | x ∈ s} (f a) :=
   IsMinOn.isGLB (α := αᵒᵈ) (β := βᵒᵈ) ha hfsa
+
+theorem IsMaxOn.bddAbove (h : IsMaxOn f s a) :
+    BddAbove (f '' s) :=
+  ⟨f a, by simpa [mem_upperBounds] using h⟩
 
 theorem IsMinFilter.tendsto_principal_Ici (h : IsMinFilter f l a) : Tendsto f l (𝓟 <| Ici (f a)) :=
   tendsto_principal.2 h

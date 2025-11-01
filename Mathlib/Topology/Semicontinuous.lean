@@ -201,9 +201,11 @@ section
 variable {α : Type*} [TopologicalSpace α] {β : Type*} [LinearOrder β] {f : α → β} {s : Set α}
 
 /-- A lower semicontinuous function attains its lower bound on a nonempty compact set. -/
-theorem LowerSemicontinuousOn.exists_forall_le_of_isCompact {s : Set α} (ne_s : s.Nonempty)
+theorem LowerSemicontinuousOn.exists_isMinOn {s : Set α} (ne_s : s.Nonempty)
     (hs : IsCompact s) (hf : LowerSemicontinuousOn f s) :
-    ∃ a ∈ s, ∀ x ∈ s, f a ≤ f x := by
+    ∃ a ∈ s, IsMinOn f s a := by
+--  hf.exists_forall_le_of_isCompact ne_s hs
+  simp only [isMinOn_iff]
   have _ : Nonempty α := Exists.nonempty ne_s
   have _ : Nonempty s := Nonempty.to_subtype ne_s
   let φ : β → Filter α := fun b ↦ 𝓟 (s ∩ f ⁻¹' Iic b)
@@ -228,12 +230,6 @@ theorem LowerSemicontinuousOn.exists_forall_le_of_isCompact {s : Set α} (ne_s :
   filter_upwards [(hf a ha (f x) hxa).filter_mono (inf_le_inf_left _ hℱs),
     (hℱ x hx).filter_mono (inf_le_right : 𝓝 a ⊓ ℱ ≤ ℱ)] using fun y h₁ h₂ ↦ not_le_of_gt h₁ h₂
 
-/-- A lower semicontinuous function attains its lower bound on a nonempty compact set. -/
-theorem LowerSemicontinuousOn.exists_isMinOn {s : Set α} (ne_s : s.Nonempty)
-    (hs : IsCompact s) (hf : LowerSemicontinuousOn f s) :
-    ∃ a ∈ s, IsMinOn f s a :=
-  hf.exists_forall_le_of_isCompact ne_s hs
-
 /-- A lower semicontinuous function is bounded below on a compact set. -/
 theorem LowerSemicontinuousOn.bddBelow_of_isCompact [Nonempty β] {s : Set α} (hs : IsCompact s)
     (hf : LowerSemicontinuousOn f s) : BddBelow (f '' s) := by
@@ -242,10 +238,8 @@ theorem LowerSemicontinuousOn.bddBelow_of_isCompact [Nonempty β] {s : Set α} (
       simp only [h, Set.image_empty]
       exact bddBelow_empty
   | inr h =>
-      obtain ⟨a, _, has⟩ := LowerSemicontinuousOn.exists_forall_le_of_isCompact h hs hf
-      use f a
-      rintro b ⟨x, hx, rfl⟩; exact has x hx
-
+      obtain ⟨a, _, has⟩ := LowerSemicontinuousOn.exists_isMinOn h hs hf
+      exact has.bddBelow
 
 end
 
@@ -314,7 +308,7 @@ theorem LowerSemicontinuous.isOpen_preimage (hf : LowerSemicontinuous f) (y : β
 
 theorem lowerSemicontinuousOn_iff_preimage_Ioi :
     LowerSemicontinuousOn f s ↔ ∀ b, ∃ u, IsOpen u ∧ s ∩ f ⁻¹' Set.Ioi b = s ∩ u := by
-  simp only [lowerSemicontinuousOn_iff_restrict, restrict_eq,
+  simp only [← lowerSemicontinuous_restrict_iff, restrict_eq,
     lowerSemicontinuous_iff_isOpen_preimage, preimage_comp, isOpen_induced_iff,
     Subtype.preimage_coe_eq_preimage_coe_iff, eq_comm]
 
@@ -333,9 +327,9 @@ theorem LowerSemicontinuous.isClosed_preimage {f : α → γ} (hf : LowerSemicon
 
 theorem lowerSemicontinuousOn_iff_preimage_Iic {f : α → γ} :
     LowerSemicontinuousOn f s ↔ ∀ b, ∃ v, IsClosed v ∧ s ∩ f ⁻¹' Set.Iic b = s ∩ v := by
-  simp only [lowerSemicontinuousOn_iff_restrict, restrict_eq,
-    lowerSemicontinuous_iff_isClosed_preimage, preimage_comp, isClosed_induced_iff,
-    Subtype.preimage_coe_eq_preimage_coe_iff, eq_comm]
+  simp only [← lowerSemicontinuous_restrict_iff, restrict_eq,
+      lowerSemicontinuous_iff_isClosed_preimage, preimage_comp,
+      isClosed_induced_iff, Subtype.preimage_coe_eq_preimage_coe_iff, eq_comm]
 
 variable [TopologicalSpace γ] [OrderTopology γ]
 
@@ -845,10 +839,11 @@ theorem UpperSemicontinuousWithinAt.mono (h : UpperSemicontinuousWithinAt f s x)
     UpperSemicontinuousWithinAt f t x := fun y hy =>
   Filter.Eventually.filter_mono (nhdsWithin_mono _ hst) (h y hy)
 
-theorem UpperSemicontinuousWithinAt.congr {a : α}
+theorem UpperSemicontinuousWithinAt.congr_of_eventuallyEq {a : α}
+    (h : UpperSemicontinuousWithinAt f s a)
     (has : a ∈ s) (hfg : ∀ᶠ x in nhdsWithin a s, f x = g x) :
-    UpperSemicontinuousWithinAt f s a ↔ UpperSemicontinuousWithinAt g s a :=
-  LowerSemicontinuousWithinAt.congr (β := βᵒᵈ) has hfg
+    UpperSemicontinuousWithinAt g s a :=
+  LowerSemicontinuousWithinAt.congr_of_eventuallyEq (β := βᵒᵈ) h has hfg
 
 theorem upperSemicontinuousWithinAt_univ_iff :
     UpperSemicontinuousWithinAt f univ x ↔ UpperSemicontinuousAt f x := by
@@ -899,11 +894,6 @@ theorem upperSemicontinuous_const : UpperSemicontinuous fun _x : α => z := fun 
 section
 
 variable {α : Type*} [TopologicalSpace α] {β : Type*} [LinearOrder β] {f : α → β} {s : Set α}
-
-/-- An upper semicontinuous function attains its upper bound on a nonempty compact set. -/
-theorem UpperSemicontinuousOn.exists_forall_ge_of_isCompact {s : Set α} (ne_s : s.Nonempty)
-    (hs : IsCompact s) (hf : UpperSemicontinuousOn f s) : ∃ a ∈ s, ∀ x ∈ s, f x ≤ f a :=
-  LowerSemicontinuousOn.exists_forall_le_of_isCompact (β := βᵒᵈ) ne_s hs hf
 
 /-- An upper semicontinuous function attains its upper bound on a nonempty compact set. -/
 theorem UpperSemicontinuousOn.exists_isMaxOn {s : Set α} (ne_s : s.Nonempty)
@@ -1077,9 +1067,9 @@ theorem UpperSemicontinuous.comp
     (hf : UpperSemicontinuous f) (hg : Continuous g) : UpperSemicontinuous (f ∘ g) :=
   LowerSemicontinuous.comp (β := βᵒᵈ) hf hg
 
-theorem upperSemicontinuousOn_iff_restrict {s : Set α} :
-    UpperSemicontinuousOn f s ↔ UpperSemicontinuous (s.restrict f) :=
-  lowerSemicontinuousOn_iff_restrict (β := βᵒᵈ)
+@[simp] theorem upperSemicontinuousOn_iff_restrict {s : Set α} :
+    UpperSemicontinuous (s.restrict f) ↔ UpperSemicontinuousOn f s :=
+  lowerSemicontinuous_restrict_iff (β := βᵒᵈ)
 
 theorem upperSemicontinuousOn_iff_preimage_Iio :
     UpperSemicontinuousOn f s ↔ ∀ b, ∃ u : Set α, IsOpen u ∧ s ∩ f ⁻¹' Set.Iio b = s ∩ u :=
