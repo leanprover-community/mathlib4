@@ -7,6 +7,37 @@ import Mathlib.Probability.Process.Stopping
 
 /-! # Local properties of processes
 
+This file defines local and stable properties of stochastic processes with respect to a filtration.
+This is notably useful in local martingales.
+
+## Main definitions
+
+* `ProbabilityTheory.IsPreLocalizingSequence`: A pre-localizing sequence is a sequence of stopping
+  times which tends almost surely to infinity.
+* `ProbabilityTheory.IsLocalizingSequence`: A localizing sequence is a pre-localizing sequence
+  which is almost surely increasing.
+* `ProbabilityTheory.Locally`: A stochastic process `X` is said to satisfy a property `p` locally
+  with respect to a filtration `𝓕` if there exists a localizing sequence `(τ n)` such that for all
+  `n`, the stopped process `X^{τ n} I_{τ n > ⊥}` satisfies `p`.
+* `ProbabilityTheory.IsStable`: A property of stochastic processes is said to be stable if it is
+  preserved under taking the stopped process `X^{τ} I_{τ > ⊥}` by a stopping time `τ`.
+
+## Main results
+
+* `ProbabilityTheory.IsStable.isStable_locally`: If a property `p` is stable, then the property
+* `ProbabilityTheory.isLocalizingSequence_of_isPreLocalizingSequence`: Given a
+  pre-localizing sequence `(τ n)`, the sequence `⊓ j ≥ n, τ j` is a localizing sequence.
+  "satisfies `p` locally" is also stable.
+* `ProbabilityTheory.locally_of_isPreLocalizingSequence`: If a property `p` is stable, then it is
+  locally satisfied by `X` if the definition of local holds replacing localizing sequence by
+  pre-localizing sequence.
+* `ProbabilityTheory.locally_locally`: For stable properties, locally is idempotent.
+* `ProbabilityTheory.locally_induction`: If `q` is a stable property, and `p` implies locally `q`,
+  then locally `p` implies locally `q`.
+
+### Tags
+
+localizing sequence, local property, stable property
 -/
 
 open MeasureTheory Filter
