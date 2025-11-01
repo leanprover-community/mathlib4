@@ -333,6 +333,13 @@ theorem exists_ideal_over_maximal_of_isIntegral [Algebra.IsIntegral R S]
   obtain ⟨Q, -, Q_prime, hQ⟩ := exists_ideal_over_prime_of_isIntegral P ⊥ hP
   exact ⟨Q, isMaximal_of_isIntegral_of_isMaximal_comap _ (hQ.symm ▸ P_max), hQ⟩
 
+theorem exists_maximal_ideal_liesOver_of_isIntegral [Algebra.IsIntegral R S] [FaithfulSMul R S]
+    (P : Ideal R) [P.IsMaximal] :
+    ∃ (Q : Ideal S), Q.IsMaximal ∧ Q.LiesOver P := by
+  simp_rw [liesOver_iff, eq_comm (a := P)]
+  exact exists_ideal_over_maximal_of_isIntegral P (by
+    simp [(RingHom.injective_iff_ker_eq_bot _).mp (FaithfulSMul.algebraMap_injective R S)])
+
 lemma map_eq_top_iff_of_ker_le {R S} [CommRing R] [CommRing S]
     (f : R →+* S) {I : Ideal R} (hf₁ : RingHom.ker f ≤ I) (hf₂ : f.IsIntegral) :
     I.map f = ⊤ ↔ I = ⊤ := by
@@ -373,9 +380,14 @@ theorem IsMaximal.of_isMaximal_liesOver [P.IsMaximal] : p.IsMaximal := by
   rw [P.over_def p]
   exact isMaximal_comap_of_isIntegral_of_isMaximal P
 
+variable (A) in
 theorem eq_bot_of_liesOver_bot [Nontrivial A] [IsDomain B] [h : P.LiesOver (⊥ : Ideal A)] :
     P = ⊥ :=
   eq_bot_of_comap_eq_bot <| ((liesOver_iff _ _).mp h).symm
+
+variable (A) {P} in
+theorem under_ne_bot [Nontrivial A] [IsDomain B] (hP : P ≠ ⊥) : under A P ≠ ⊥ :=
+  fun h ↦ hP <| eq_bot_of_comap_eq_bot h
 
 /-- `B ⧸ P` is an integral `A ⧸ p`-algebra if `B` is a integral `A`-algebra. -/
 instance Quotient.algebra_isIntegral_of_liesOver : Algebra.IsIntegral (A ⧸ p) (B ⧸ P) :=
