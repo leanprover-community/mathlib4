@@ -271,19 +271,16 @@ def kroneckerTMulStarAlgEquiv :
     (by simp [star_eq_conjTranspose, conjTranspose_kroneckerTMul])
     (by simp_all)
 
-@[simp]
-theorem toAlgEquiv_kroneckerTMulStarAlgEquiv :
+@[simp] theorem toAlgEquiv_kroneckerTMulStarAlgEquiv :
     (kroneckerTMulStarAlgEquiv m n R S A B).toAlgEquiv =
       kroneckerTMulAlgEquiv m n R S A B := rfl
 
-@[simp]
-theorem kroneckerTMulStarAlgEquiv_apply (x : Matrix m m A ⊗[R] Matrix n n B) :
+@[simp] theorem kroneckerTMulStarAlgEquiv_apply (x : Matrix m m A ⊗[R] Matrix n n B) :
     (kroneckerTMulStarAlgEquiv m n R S A B) x =
       kroneckerTMulLinearEquiv m m n n R S A B x :=
   rfl
 
-@[simp]
-theorem kroneckerTMulStarAlgEquiv_symm_apply (x : Matrix (m × n) (m × n) (A ⊗[R] B)) :
+@[simp] theorem kroneckerTMulStarAlgEquiv_symm_apply (x : Matrix (m × n) (m × n) (A ⊗[R] B)) :
     (kroneckerTMulStarAlgEquiv m n R S A B).symm x =
       (kroneckerTMulLinearEquiv m m n n R S A B).symm x :=
   rfl
@@ -292,7 +289,6 @@ end StarRing
 
 variable (m n) in
 /-- `Matrix.kronecker` as an algebra equivalence, when the two arguments are tensored. -/
--- TODO: upgrade this to `≃⋆ₐ` for when `R` is a ⋆-ring (after #27290)
 def kroneckerAlgEquiv : (Matrix m m R ⊗[R] Matrix n n R) ≃ₐ[R] Matrix (m × n) (m × n) R :=
   (kroneckerTMulAlgEquiv m n R R R R).trans (Algebra.TensorProduct.lid R R).mapMatrix
 
