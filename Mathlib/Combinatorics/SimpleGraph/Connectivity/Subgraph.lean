@@ -264,7 +264,7 @@ lemma mem_support_of_adj_toSubgraph {u v u' v' : V} {p : G.Walk u v} (hp : p.toS
     u' ∈ p.support := p.mem_verts_toSubgraph.mp (p.toSubgraph.edge_vert hp)
 
 lemma verts_toSubgraph_toPath_subset {u v : V} {p : G.Walk u v} [DecidableEq V] :
-    (p.toPath : G.Walk u v).toSubgraph.verts ⊆ {x | x ∈ p.support} := by
+    p.bypass.toSubgraph.verts ⊆ {x | x ∈ p.support} := by
   simpa using p.support_toPath_subset
 
 lemma adj_toSubgraph_iff_mem_edges {u v u' v' : V} {p : G.Walk u v} :
@@ -273,12 +273,12 @@ lemma adj_toSubgraph_iff_mem_edges {u v u' v' : V} {p : G.Walk u v} :
   rfl
 
 lemma adj_toSubgraph_toPath {u v u' v' : V} {p : G.Walk u v} [DecidableEq V]
-    (hp : (p.toPath : G.Walk u v).toSubgraph.Adj u' v') : p.toSubgraph.Adj u' v' := by
+    (hp : p.bypass.toSubgraph.Adj u' v') : p.toSubgraph.Adj u' v' := by
   simp_all only [adj_toSubgraph_iff_mem_edges]
   exact p.edges_toPath_subset hp
 
 lemma toSubgraph_toPath_le_toSubgraph {u v : V} {p : G.Walk u v} [DecidableEq V] :
-    (p.toPath : G.Walk u v).toSubgraph ≤ p.toSubgraph := by
+    p.bypass.toSubgraph ≤ p.toSubgraph := by
   refine ⟨?_, fun _ _ h ↦ adj_toSubgraph_toPath h⟩
   simpa using p.verts_toSubgraph_toPath_subset
 

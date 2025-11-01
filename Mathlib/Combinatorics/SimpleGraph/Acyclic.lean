@@ -306,7 +306,7 @@ connected. -/
 lemma Preconnected.connected_induce_complement_singleton_of_degree_eq_one [DecidableEq V]
     (hpreconn : G.Preconnected) {v : V} [Fintype ↑(G.neighborSet v)] (hdeg : G.degree v = 1) :
     (G.induce {v}ᶜ).Connected := by
-  obtain ⟨u, adj_vu, hu⟩ := degree_eq_one_iff_unique_adj.mp hdeg
+  obtain ⟨u, adj_vu, hu⟩ := degree_eq_one_iff_existsUnique_adj.mp hdeg
   refine (connected_iff _).mpr ⟨?_, ?_⟩
   /- There exists a walk between any two vertices w and x in G.induce {v}ᶜ
   via the unique vertex u adjacent to vertex v. -/
