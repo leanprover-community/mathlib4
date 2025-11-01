@@ -34,12 +34,14 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 section
 
-variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
+variable (C : Type u₁) [CategoryStruct.{v₁} C] (D : Type u₂) [CategoryStruct.{v₂} D]
+
+-- TODO: generalize Functor to CategoryStruct?
 
 -- the generates simp lemmas like `id_fst` and `comp_snd`
-/-- `prod C D` gives the Cartesian product of two categories. -/
-@[simps (notRecursive := []) Hom id_fst id_snd comp_fst comp_snd, stacks 001K]
-instance prod : Category.{max v₁ v₂} (C × D) where
+/-- `CategoryStruct.prod C D` gives the Cartesian product of two `CategoryStruct`'s. -/
+@[simps (notRecursive := []) Hom id_fst id_snd comp_fst comp_snd]
+instance CategoryStruct.prod : CategoryStruct.{max v₁ v₂} (C × D) where
   Hom X Y := (X.1 ⟶ Y.1) × (X.2 ⟶ Y.2)
   id X := ⟨𝟙 X.1, 𝟙 X.2⟩
   comp f g := (f.1 ≫ g.1, f.2 ≫ g.2)
@@ -72,6 +74,18 @@ abbrev mkHom {X₁ X₂ : C} {Y₁ Y₂ : D} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y
 scoped infixr:70 " ×ₘ " => Prod.mkHom
 
 end Prod
+
+end
+
+section -- TODO: this section seems pointless?
+
+variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
+
+-- the generates simp lemmas like `id_fst` and `comp_snd`
+/-- `prod C D` gives the Cartesian product of two categories. -/
+@[simps! (notRecursive := []) Hom id_fst id_snd comp_fst comp_snd, stacks 001K]
+instance prod : Category.{max v₁ v₂} (C × D) where
+
 theorem isIso_prod_iff {P Q : C} {S T : D} {f : (P, S) ⟶ (Q, T)} :
     IsIso f ↔ IsIso f.1 ∧ IsIso f.2 := by
   constructor

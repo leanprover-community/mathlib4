@@ -46,7 +46,7 @@ since it does not include the compatibility conditoins on the associator
 and unitors. However, when the underlying bicategories are strict, a
 `StrictPseudofunctorPreCore` does induce a `StrictPseudofunctor`. -/
 structure StrictPseudofunctorPreCore extends PrelaxFunctor B C where
-  map_id (X : B) : map (𝟙 X) = 𝟙 (obj X)
+  map_id (X : B) : map (𝟙 X) = 𝟙 (obj X) := by cat_disch
   map_comp : ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c), map (f ≫ g) = map f ≫ map g := by
     cat_disch
   map₂_whisker_left :
