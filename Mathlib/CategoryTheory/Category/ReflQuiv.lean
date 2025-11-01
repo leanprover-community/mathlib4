@@ -132,6 +132,21 @@ category on the underlying quiver of a refl quiver to the free category on the r
 def FreeRefl.quotientFunctor (V) [ReflQuiver V] : Paths V ⥤ FreeRefl V :=
   Quotient.functor (C := Paths V) (FreeReflRel (V := V))
 
+instance (V) [ReflQuiver V] : (FreeRefl.quotientFunctor V).Full :=
+  Quotient.full_functor _
+
+@[simp]
+lemma FreeRefl.quotientFunctor_map_nil (V) [ReflQuiver V] (x : Paths V) :
+    (quotientFunctor V).map (.nil : x ⟶ x) = 𝟙 _ :=
+  Functor.map_id _ _
+
+@[simp]
+lemma FreeRefl.quotientFunctor_map_cons (V) [ReflQuiver V] {x y z : Paths V}
+    (p : x ⟶ y) (q : Quiver.Hom (V := V) y z) :
+    (quotientFunctor V).map (p.cons q : x ⟶ z) =
+      (quotientFunctor V).map p ≫ (quotientFunctor V).map q.toPath :=
+  rfl
+
 /-- This is a specialization of `Quotient.lift_unique'` rather than `Quotient.lift_unique`, hence
 the prime in the name. -/
 theorem FreeRefl.lift_unique' {V} [ReflQuiver V] {D} [Category D] (F₁ F₂ : FreeRefl V ⥤ D)

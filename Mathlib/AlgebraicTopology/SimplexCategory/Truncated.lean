@@ -76,6 +76,11 @@ lemma δ₂_one_comp_σ₂_zero {n} (hn := by decide) (hn' := by decide) :
     δ₂ (n := n) 1 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ := SimplexCategory.δ_comp_σ_succ
 
 @[reassoc (attr := simp)]
+lemma δ₂_one_comp_σ₂_one {n} (hn := by decide) (hn' := by decide) :
+    δ₂ (n := n + 1) 1 hn hn' ≫ σ₂ 1 hn' hn = 𝟙 _ :=
+  SimplexCategory.δ_comp_σ_self (n := n + 1) (i := 1)
+
+@[reassoc (attr := simp)]
 lemma δ₂_two_comp_σ₂_one : δ₂ (2 : Fin 3) ≫ σ₂ 1 = 𝟙 _ :=
   SimplexCategory.δ_comp_σ_succ' (by decide)
 
