@@ -158,8 +158,8 @@ end LinearOrder
 section ConditionallyCompleteLinearOrderBot
 
 variable [ConditionallyCompleteLinearOrderBot ι] [TopologicalSpace ι] [OrderTopology ι]
-  [DenselyOrdered ι] [FirstCountableTopology ι] [NoMaxOrder ι]
-  {𝓕 : Filtration ι mΩ} {X : ι → Ω → E} {p q : (ι → Ω → E) → Prop}
+  [DenselyOrdered ι] [FirstCountableTopology ι] {𝓕 : Filtration ι mΩ} {X : ι → Ω → E}
+  {p q : (ι → Ω → E) → Prop}
 
 lemma measure_iInter_of_ae_antitone {ι : Type*}
     [Countable ι] [Preorder ι] [IsDirected ι fun (x1 x2 : ι) ↦ x1 ≤ x2]
@@ -229,8 +229,8 @@ lemma locally_of_isPreLocalizingSequence [Zero E] {τ : ℕ → Ω → WithTop �
 
 section
 
-omit [DenselyOrdered ι] [FirstCountableTopology ι] [NoMaxOrder ι]
-variable [SecondCountableTopology ι] [IsFiniteMeasure P]
+omit [DenselyOrdered ι] [FirstCountableTopology ι]
+variable [SecondCountableTopology ι] [IsFiniteMeasure P] -- [NoMaxOrder ι]
 
 lemma isPreLocalizingSequence_of_isLocalizingSequence_aux'
     {τ : ℕ → Ω → WithTop ι} {σ : ℕ → ℕ → Ω → WithTop ι}

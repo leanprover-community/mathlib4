@@ -257,3 +257,43 @@ def sumHomeomorph [OrderTop ι] : WithTop ι ≃ₜ ι ⊕ Unit where
   continuous_invFun := continuous_sum_dom.mpr ⟨by fun_prop, by fun_prop⟩
 
 end WithTop
+
+section Tendsto
+
+variable {α β : Type*} [Nonempty β] [LinearOrder β]
+
+lemma Tendsto.min_atTop_atTop [LinearOrder α]
+    {f g : β → α} (hf : Tendsto f atTop atTop) (hg : Tendsto g atTop atTop) :
+    Tendsto (fun x ↦ f x ⊓ g x) atTop atTop := by
+  rw [Filter.tendsto_atTop_atTop] at *
+  exact fun a ↦ let ⟨b₁, hb₁⟩ := hf a; let ⟨b₂, hb₂⟩ := hg a
+    ⟨max b₁ b₂, fun B hB ↦ le_min (hb₁ _ (max_le_iff.1 hB).1) (hb₂ _ (max_le_iff.1 hB).2)⟩
+
+lemma WithTop.tendsto_nhds_top_iff [TopologicalSpace β] [OrderTopology β]
+    {f : Filter α} (x : α → WithTop β) :
+    Tendsto x f (𝓝 ⊤) ↔ ∀ (i : β), ∀ᶠ (a : α) in f, i < x a := by
+  refine nhds_top_basis.tendsto_right_iff.trans ?_
+  simp only [Set.mem_Ioi]
+  refine ⟨fun h i ↦ h i trivial, fun h i hi ↦ ?_⟩
+  specialize h (i.untop hi.ne)
+  filter_upwards [h] with a ha
+  simpa using ha
+
+lemma WithTop.tendsto_atTop_nhds_top_iff [TopologicalSpace β] [OrderTopology β]
+    [Nonempty α] [inst : Preorder α] [IsDirected α fun x1 x2 ↦ x1 ≤ x2] (x : α → WithTop β) :
+    Tendsto x atTop (𝓝 ⊤) ↔ ∀ (i : β), ∃ N, ∀ n ≥ N, i < x n := by
+  rw [WithTop.tendsto_nhds_top_iff]
+  simp only [eventually_atTop, ge_iff_le]
+
+lemma Tendsto.tendsto_withTop_atTop_nhds_top [NoMaxOrder β] [TopologicalSpace β] [OrderTopology β]
+    {a : ℕ → β} (ha : Tendsto a atTop atTop) :
+    Tendsto (fun n ↦ (a n : WithTop β)) atTop (𝓝 ⊤) := by
+  rw [WithTop.tendsto_atTop_nhds_top_iff]
+  rw [tendsto_atTop_atTop] at ha
+  norm_cast
+  intro i
+  obtain ⟨i', hi'⟩ := NoMaxOrder.exists_gt i
+  obtain ⟨j, hj⟩ := ha i'
+  exact ⟨j, fun n hn ↦ lt_of_lt_of_le hi' <| hj _ hn⟩
+
+end Tendsto

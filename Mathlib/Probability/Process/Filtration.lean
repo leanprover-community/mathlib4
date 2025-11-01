@@ -226,6 +226,13 @@ theorem Filtration.condExp_condExp [Preorder ι] {E : Type*} [NormedAddCommGroup
 /-- A filtration `𝓕` is right continuous if `𝓕 t = ⨅ j > i, 𝓕 j = 𝓕 i` for all `t`. -/
 def IsRightContinuous [Preorder ι] (f : Filtration ι m) := ∀ i, ⨅ j > i, f j = f i
 
+lemma measurableSet_of_isRightContinuous [Preorder ι]
+    {f : Filtration ι m} (hf : IsRightContinuous f) {i : ι}
+    {s : Set Ω} (hs : MeasurableSet[⨅ j > i, f j] s) :
+    MeasurableSet[f i] s := by
+  convert hs
+  rw [hf i]
+
 section OfSet
 
 variable [Preorder ι]
