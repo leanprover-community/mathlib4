@@ -16,13 +16,20 @@ jobs:
       with:
         fetch-depth: 0
     
-    - uses: leanprover/setup-lean@v1
+    - name: Setup Lean and Lake
+      run: |
+        curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | bash -s -- -y
+        ~/.elan/toolchains/leanprover/bin/lake --version
     
-    - name: Update dependencies
-      run: lake update
+    - name: Update dependencies using Lake
+      run: |
+        source ~/.elan/env
+        lake update
     
     - name: Build with Lake
-      run: lake build
+      run: |
+        source ~/.elan/env
+        lake build
     
-    - name: Print Build Success
+    - name: Confirm BUILD SUCCESSFUL
       run: echo 'BUILD SUCCESSFUL'
