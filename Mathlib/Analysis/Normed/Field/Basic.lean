@@ -243,9 +243,6 @@ theorem nhdsNE_neBot (x : α) : NeBot (𝓝[≠] x) := by
   refine ⟨x + b, mt (Set.mem_singleton_iff.trans add_eq_left).1 <| norm_pos_iff.1 hb0, ?_⟩
   rwa [dist_comm, dist_eq_norm, add_sub_cancel_left]
 
-@[deprecated (since := "2025-03-02")]
-alias punctured_nhds_neBot := nhdsNE_neBot
-
 @[instance]
 theorem nhdsWithin_isUnit_neBot : NeBot (𝓝[{ x : α | IsUnit x }] 0) := by
   simpa only [isUnit_iff_ne_zero] using nhdsNE_neBot (0 : α)

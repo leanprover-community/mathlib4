@@ -18,7 +18,7 @@ jobs:
           rm -rf "$HOME/.cache/mathlib"
 
       - name: Checkout mathlib
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: leanprover-community/mathlib4-nightly-testing
           ref: nightly-testing-green
@@ -30,7 +30,7 @@ jobs:
 
       - name: Build and lint the project.
         id: build-lean
-        uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # v1.2.0
+        uses: leanprover/lean-action@434f25c2f80ded67bba02502ad3a86f25db50709 # v1.3.0
         with:
           use-mathlib-cache: true
 
@@ -57,7 +57,7 @@ jobs:
           [[require]]
           scope = "leanprover"
           name = "doc-gen4"
-          rev = "main"
+          rev = "nightly-testing"
           EOF
 
           # Initialise docbuild as a Lean project

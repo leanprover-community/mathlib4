@@ -8,6 +8,7 @@ import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.PowerSeries.Order
 import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.LinearAlgebra.Finsupp.Pi
+import Mathlib.Topology.Algebra.InfiniteSum.Ring
 
 /-! # Product topology on power series
 
@@ -157,6 +158,35 @@ theorem summable_of_tendsto_order_atTop_nhds_top [LinearOrder ι] [LocallyFinite
 
 end Sum
 
+section Prod
+variable [CommSemiring R] {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] {f : ι → R⟦X⟧}
+
+/-- If the order of a family of `PowerSeries` tends to infinity, the collection of all
+possible products over `Finset` is summable. -/
+theorem summable_prod_of_tendsto_order_atTop_nhds_top
+    (h : Tendsto (fun i ↦ (f i).order) atTop (𝓝 ⊤)) : Summable (∏ i ∈ ·, f i) := by
+  rcases isEmpty_or_nonempty ι with hempty | hempty
+  · apply Summable.of_finite
+  refine (summable_iff_summable_coeff _).mpr fun n ↦ summable_of_finite_support ?_
+  simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, eventually_atTop] at h
+  obtain ⟨i, hi⟩ := h n
+  apply (Finset.Iio i).powerset.finite_toSet.subset
+  suffices ∀ s : Finset ι, coeff n (∏ i ∈ s, f i) ≠ 0 → ↑s ⊆ Set.Iio i by simpa
+  intro s hs
+  contrapose! hs
+  obtain ⟨x, hxs, hxi⟩ := Set.not_subset.mp hs
+  rw [Set.mem_Iio, not_lt] at hxi
+  refine coeff_of_lt_order _ <| (hi x hxi).trans_le <| le_trans ?_ (le_order_prod _ _)
+  apply Finset.single_le_sum (by simp) hxs
+
+/-- A family of `PowerSeries` in the form `1 + f i` is multipliable if the order of `f i` tends to
+infinity. -/
+theorem multipliable_one_add_of_tendsto_order_atTop_nhds_top
+    (h : Tendsto (fun i ↦ (f i).order) atTop (nhds ⊤)) : Multipliable (1 + f ·) :=
+  multipliable_one_add_of_summable_prod <| summable_prod_of_tendsto_order_atTop_nhds_top _ h
+
+end Prod
+
 end WithPiTopology
 
 end Topological
@@ -187,8 +217,6 @@ theorem instCompleteSpace [CompleteSpace R] :
 theorem instIsUniformAddGroup [AddGroup R] [IsUniformAddGroup R] :
     IsUniformAddGroup (PowerSeries R) :=
   MvPowerSeries.WithPiTopology.instIsUniformAddGroup
-
-@[deprecated (since := "2025-03-27")] alias instUniformAddGroup := instIsUniformAddGroup
 
 end WithPiTopology
 

@@ -44,9 +44,6 @@ theorem finiteQuotientOfFreeOfNeBot [Module.Free ℤ S] [Module.Finite ℤ S]
   let b := Module.Free.chooseBasis ℤ S
   Submodule.finiteQuotientOfFreeOfRankEq (I.restrictScalars ℤ) <| finrank_eq_finrank b I hI
 
-@[deprecated (since := "2025-03-15")] alias fintypeQuotientOfFreeOfNeBot :=
-  finiteQuotientOfFreeOfNeBot
-
 variable (F : Type*) [CommRing F] [Algebra F R] [Algebra F S] [IsScalarTower F R S]
   (b : Basis ι R S) {I : Ideal S} (hI : I ≠ ⊥)
 
