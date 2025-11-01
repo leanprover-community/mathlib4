@@ -485,15 +485,35 @@ theorem forall_exists_prime_gt_and_eq_mod (ha : IsUnit a) (n : ℕ) :
   exact ⟨p, hp₂.gt, Set.mem_setOf.mp hp₁⟩
 
 /-- **Dirichlet's Theorem** on primes in arithmetic progression: if `q` is a positive
-integer and `a : ℤ` is coürime to `q`, then there are infinitely many prime numbers `p`
+integer and `a : ℤ` is coprime to `q`, then there are infinitely many prime numbers `p`
 such that `p ≡ a mod q`. -/
-theorem forall_exists_prime_gt_and_modEq (n : ℕ) {a : ℤ} (h : IsCoprime a q) :
+theorem forall_exists_prime_gt_and_zmodEq (n : ℕ) {q : ℕ} {a : ℤ} (hq : q ≠ 0) (h : IsCoprime a q) :
     ∃ p > n, p.Prime ∧ p ≡ a [ZMOD q] := by
+  have : NeZero q := ⟨hq⟩
   have : IsUnit (a : ZMod q) := by
     rwa [ZMod.coe_int_isUnit_iff_isCoprime, isCoprime_comm]
   obtain ⟨p, hpn, hpp, heq⟩ := forall_exists_prime_gt_and_eq_mod this n
   refine ⟨p, hpn, hpp, ?_⟩
   simpa [← ZMod.intCast_eq_intCast_iff] using heq
+
+/-- **Dirichlet's Theorem** on primes in arithmetic progression: if `q` is a positive
+integer and `a : ℕ` is coprime to `q`, then there are infinitely many prime numbers `p`
+such that `p ≡ a mod q`. -/
+theorem forall_exists_prime_gt_and_modEq (n : ℕ) {q a : ℕ} (hq : q ≠ 0) (h : a.Coprime q) :
+    ∃ p > n, p.Prime ∧ p ≡ a [MOD q] := by
+  simpa using forall_exists_prime_gt_and_zmodEq n (q := q) (a := a) hq (by simpa)
+
+open Filter in
+lemma frequently_atTop_prime_and_modEq_one {q a : ℕ} (hq : q ≠ 0) (h : a.Coprime q) :
+    ∃ᶠ p in atTop, p.Prime ∧ p ≡ a [MOD q] := by
+  rw [frequently_atTop]
+  intro n
+  obtain ⟨p, hn, hp, ha⟩ := forall_exists_prime_gt_and_modEq n hq h
+  exact ⟨p, hn.le, hp, ha⟩
+
+lemma infinite_setOf_prime_and_modEq_one {q a : ℕ} (hq : q ≠ 0) (h : a.Coprime q) :
+    Set.Infinite {p : ℕ | p.Prime ∧ p ≡ a [MOD q]} :=
+  frequently_atTop_iff_infinite.1 (frequently_atTop_prime_and_modEq_one hq h)
 
 end Nat
 
