@@ -247,14 +247,14 @@ instance Type.adhesive : Adhesive (Type u) :=
     (IsPushout.isVanKampen_inl _ (Types.isCoprodOfMono f) _ _ _ H.flip).flip⟩
 
 noncomputable instance (priority := 100) Adhesive.toRegularMonoCategory [Adhesive C] :
-    IsRegularMonoCategory C :=
-  ⟨fun f _ => ⟨{
-      Z := pushout f f
-      left := pushout.inl _ _
-      right := pushout.inr _ _
-      w := pushout.condition
-      isLimit := (Adhesive.isPullback_of_isPushout_of_mono_left
-        (IsPushout.of_hasPushout f f)).isLimitFork }⟩⟩
+    IsRegularMonoCategory C where
+  regularMonoOfMono f := ⟨⟨{
+    Z := pushout f f
+    left := pushout.inl _ _
+    right := pushout.inr _ _
+    w := pushout.condition
+    isLimit := (Adhesive.isPullback_of_isPushout_of_mono_left
+      (IsPushout.of_hasPushout f f)).isLimitFork }⟩⟩
 
 -- This then implies that adhesive categories are balanced
 example [Adhesive C] : Balanced C :=
