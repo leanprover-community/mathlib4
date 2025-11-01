@@ -4,20 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.Dual.Basis
-import Mathlib.LinearAlgebra.Matrix.Dual
-import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Charpoly.BaseChange
-import Mathlib.Algebra.Group.Subgroup.Lattice
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.RingTheory.MvPolynomial.Basic
-import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
-import Mathlib.RingTheory.Polynomial.UniqueFactorization
-import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
-import Mathlib.Algebra.MvPolynomial.Division
-import Mathlib.RingTheory.MvPolynomial.IrrQuadratic
 import Mathlib.LinearAlgebra.Dual.BaseChange
+import Mathlib.RingTheory.MvPolynomial.IrrQuadratic
+import Mathlib.RingTheory.Polynomial.UniqueFactorization
+import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 
 /-!
 # Transvections
@@ -576,3 +567,8 @@ end LinearMap
 end
 
 end transvection
+
+#exit
+#min_imports
+
+
