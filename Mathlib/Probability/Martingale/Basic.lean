@@ -480,7 +480,7 @@ theorem Martingale.eq_zero_of_predictable' [SigmaFiniteFiltration μ 𝒢] {f : 
       (hfadp.measurable_add_one _).stronglyMeasurable
       (hfmgle.integrable _))).symm.trans (hfmgle.2 k (k + 1) k.le_succ)).trans ih
 
-end
+end IsPredictable
 
 namespace Submartingale
 
