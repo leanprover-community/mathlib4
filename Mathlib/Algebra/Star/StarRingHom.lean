@@ -276,7 +276,8 @@ def toStarRingEquiv {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [St
 /-- Any type satisfying `StarRingEquivClass` can be cast into `StarRingEquiv` via
 `StarRingEquivClass.toStarRingEquiv`. -/
 instance instCoeDep {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
-    [EquivLike F A B] [RingEquivClass F A B] [StarRingEquivClass F A B] (f : F) : CoeDep F f (A ≃⋆+* B) :=
+    [EquivLike F A B] [RingEquivClass F A B] [StarRingEquivClass F A B] (f : F) :
+    CoeDep F f (A ≃⋆+* B) :=
   ⟨toStarRingEquiv f⟩
 
 end StarRingEquivClass
