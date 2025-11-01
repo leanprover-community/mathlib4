@@ -17,8 +17,6 @@ jobs:
         fetch-depth: 0
     
     - uses: leanprover/setup-lean@v1
-      with:
-        lean-version: ${{ fromJson(''.github/lean-toolchain.json'') }}
     
     - name: Update dependencies
       run: lake update
