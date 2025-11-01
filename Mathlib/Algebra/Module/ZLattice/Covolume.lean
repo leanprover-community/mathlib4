@@ -113,9 +113,6 @@ theorem covolume_eq_det_mul_measureReal {ι : Type*} [Fintype ι] [DecidableEq �
   ext
   exact b.ofZLatticeBasis_apply ℝ L _
 
-@[deprecated (since := "2025-04-19")]
-alias covolume_eq_det_mul_measure := covolume_eq_det_mul_measureReal
-
 theorem covolume_eq_det {ι : Type*} [Fintype ι] [DecidableEq ι] (L : Submodule ℤ (ι → ℝ))
     [DiscreteTopology L] [IsZLattice ℝ L] (b : Basis ι ℤ L) :
     covolume L = |(Matrix.of ((↑) ∘ b)).det| := by

@@ -125,9 +125,8 @@ lemma comap_symm (G : SimpleGraph V) (e : V ≃ W) :
 lemma map_symm (G : SimpleGraph W) (e : V ≃ W) :
     G.map e.symm.toEmbedding = G.comap e.toEmbedding := by rw [← comap_symm, e.symm_symm]
 
-theorem comap_monotone (f : V ↪ W) : Monotone (SimpleGraph.comap f) := by
-  intro G G' h _ _ ha
-  exact h ha
+theorem comap_monotone (f : V ↪ W) : Monotone (SimpleGraph.comap f) :=
+  fun _ _ h _ _ ha ↦ h ha
 
 @[simp] lemma comap_bot (f : V → W) : (emptyGraph W).comap f = emptyGraph V := rfl
 
@@ -299,21 +298,6 @@ def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩
 @[simp, norm_cast] lemma coe_ofLE (h : G₁ ≤ G₂) : ⇑(ofLE h) = id := rfl
 
 lemma ofLE_apply (h : G₁ ≤ G₂) (v : V) : ofLE h v = v := rfl
-
-/-- The induced map for spanning subgraphs, which is the identity on vertices. -/
-@[deprecated ofLE (since := "2025-03-17")]
-def mapSpanningSubgraphs {G G' : SimpleGraph V} (h : G ≤ G') : G →g G' where
-  toFun x := x
-  map_rel' ha := h ha
-
-@[deprecated "This is true by simp" (since := "2025-03-17")]
-lemma mapSpanningSubgraphs_inj {G G' : SimpleGraph V} {v w : V} (h : G ≤ G') :
-    ofLE h v = ofLE h w ↔ v = w := by simp
-
-@[deprecated "This is true by simp" (since := "2025-03-17")]
-lemma mapSpanningSubgraphs_injective {G G' : SimpleGraph V} (h : G ≤ G') :
-    Injective (ofLE h) :=
-  fun v w hvw ↦ by simpa using hvw
 
 theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective f.mapEdgeSet := by
   rintro ⟨e₁, h₁⟩ ⟨e₂, h₂⟩

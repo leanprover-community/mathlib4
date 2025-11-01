@@ -308,11 +308,11 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
   rintro ⟨O, K, i₁, i₂, w⟩
   obtain ⟨x, hx, hx'⟩ := GradedAlgebra.exists_finset_adjoin_eq_top_and_homogeneous_ne_zero 𝒜
   choose d hd hxd using hx'
-  have : i₁.base (IsLocalRing.closedPoint K) ∈ (⊤ : (Proj 𝒜).Opens) := trivial
+  have : i₁ (IsLocalRing.closedPoint K) ∈ (⊤ : (Proj 𝒜).Opens) := trivial
   rw [← Proj.iSup_basicOpen_eq_top' 𝒜 (ι := x) (↑) (fun i ↦ ⟨_, hxd _ i.2⟩) (by simpa using hx),
     TopologicalSpace.Opens.mem_iSup] at this
   obtain ⟨i, hi⟩ := this
-  have : Set.range i₁.base ⊆ (Proj.awayι 𝒜 _ (hxd i i.2) (hd i i.2).bot_lt).opensRange := by
+  have : Set.range i₁ ⊆ (Proj.awayι 𝒜 _ (hxd i i.2) (hd i i.2).bot_lt).opensRange := by
     rw [Proj.opensRange_awayι]
     rintro _ ⟨x, rfl⟩
     obtain rfl := Subsingleton.elim x (IsLocalRing.closedPoint K)
