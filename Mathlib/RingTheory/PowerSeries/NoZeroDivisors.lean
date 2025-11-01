@@ -25,7 +25,7 @@ variable {R : Type*}
 
 namespace PowerSeries
 
-section NoZeroDivisors
+section Semiring
 
 variable [Semiring R]
 
@@ -33,8 +33,15 @@ instance [NoZeroDivisors R] : NoZeroDivisors R⟦X⟧ where
   eq_zero_or_eq_zero_of_mul_eq_zero {φ ψ} h := by
     simp_rw [← order_eq_top, order_mul] at h ⊢
     exact WithTop.add_eq_top.mp h
+lemma mem_map_constantCoeff {I : Ideal R⟦X⟧} {r : R} :
+    r ∈ I.map constantCoeff ↔ ∃ f ∈ I, f.constantCoeff = r :=
+  I.mem_map_iff_of_surjective _ constantCoeff_surj
 
-end NoZeroDivisors
+lemma constantCoeff_mem_map_of_mem {I : Ideal R⟦X⟧} {f : R⟦X⟧} :
+    f ∈ I → f.constantCoeff ∈ I.map constantCoeff :=
+  (mem_map_constantCoeff.2 ⟨_, ·, rfl⟩)
+
+end Semiring
 
 section IsDomain
 
