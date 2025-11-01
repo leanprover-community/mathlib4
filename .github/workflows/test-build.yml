@@ -16,11 +16,9 @@ jobs:
       with:
         fetch-depth: 0
     
-    - name: Setup elan
-      run: |
-        curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | bash -s -- -y
-        echo ~/.elan/toolchains/*/bin >> $GITHUB_PATH
-        echo ~/.elan/toolchains/leanprover/bin >> $GITHUB_PATH
+    - uses: leanprover/setup-lean@v1
+      with:
+        lean-version: ${{ fromJson(''.github/lean-toolchain.json'') }}
     
     - name: Update dependencies
       run: lake update
