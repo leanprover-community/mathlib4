@@ -79,7 +79,7 @@ lemma indepFun_of_bcf [IsFiniteMeasure P] (mZ : AEMeasurable Z P) (mU : AEMeasur
   any_goals fun_prop
   exact Measurable.aestronglyMeasurable (by fun_prop)
 
-lemma indicator_indepFun_of_bcf [IsFiniteMeasure P] {A : Set Ω} (mA : NullMeasurableSet A P)
+lemma indicator_indepFun_of_bcf [IsProbabilityMeasure P] {A : Set Ω} (mA : NullMeasurableSet A P)
     (mX : ∀ s, AEMeasurable (X s) P)
     (h : ∀ f : (s : S) → E s →ᵇ ℝ, ∫ ω in A, ∏ s, f s (X s ω) ∂P =
       P.real A * ∫ ω, ∏ s, f s (X s ω) ∂P) :
@@ -101,7 +101,7 @@ lemma indicator_indepFun_of_bcf [IsFiniteMeasure P] {A : Set Ω} (mA : NullMeasu
   rw [integral_sub, integral_add, integral_indicator₀ mA, integral_indicator₀ mA,
     integral_const_mul, integral_const_mul, integral_const_mul, integral_add,
     integral_indicator₀ mA, integral_indicator₀ mA.compl, integral_const, integral_const, h]
-  · simp [measureReal_compl mA]
+  · simp [measureReal_compl₀ mA]
     ring
   · exact (integrable_const _).indicator hA
   · exact (integrable_const _).indicator hA.compl
