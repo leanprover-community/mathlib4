@@ -64,6 +64,9 @@ theorem irreducible_smul_X_add_C {R : Type*} [CommRing R] [IsDomain R]
 
 end Polynomial
 
+-- TODO: exists? move elsewhere.
+/-- The equivalence between a type and the `Option` type
+of the type deprived of one given element. -/
 noncomputable def equiv_option {n : Type*} [DecidableEq n] (i : n) :
     n ≃ Option {x : n // x ≠ i} where
   toFun x := if hx : x = i then none else some ⟨x, hx⟩
@@ -82,6 +85,7 @@ open scoped Polynomial
 
 variable (n : Type*) [Fintype n] (R : Type*) [CommRing R] [IsDomain R]
 
+/-- The quadratic polynomial $$\sum_{i=1}^n X_i Y_i$$. -/
 noncomputable def quad : MvPolynomial (n ⊕ n) R :=
   ∑ i : n, MvPolynomial.X (Sum.inl i) * MvPolynomial.X (Sum.inr i)
 
@@ -260,6 +264,7 @@ theorem baseChange_apply_tmul (f : Module.Dual R V) (a : A) (v : V) :
     f.baseChange A (a ⊗ₜ v) = (f v) • a := by
   simp [baseChange]
 
+/-- Equivalent modules have equivalent duals. -/
 def congr (e : V ≃ₗ[R] W) :
     Module.Dual R V ≃ₗ[R] Module.Dual R W := by
   exact LinearEquiv.congrLeft R R e
@@ -317,9 +322,8 @@ variable {A}
 variable {W : Type*} [AddCommGroup W] [Module R W] [Module A W] [IsScalarTower R A W]
   {ε : V →ₗ[R] W} (ibc_VW : IsBaseChange A ε)
 
-noncomputable example (f : Module.Dual R V) : Module.Dual A W :=
-  ibc_VW.lift ((Algebra.linearMap R A).comp f)
-
+/-- The map showing that the duals of modules related by base change
+are also related by base change. -/
 noncomputable def _root_.IsBaseChange.dualMap :
     (Module.Dual R V) →ₗ[R] Module.Dual A W where
   toFun f := ibc_VW.lift ((Algebra.linearMap R A).comp f)
@@ -340,6 +344,7 @@ noncomputable def _root_.IsBaseChange.dualMap :
     | smul _ _ h => simp [_root_.map_smul, h]
     | tmul => simp [ibc_VW.lift_eq, Algebra.smul_def]
 
+/-- Duals of modules related by base change are related by base change. -/
 theorem isBaseChange : IsBaseChange A (ibc_VW.dualMap) := by
   sorry
 
@@ -740,14 +745,15 @@ open scoped TensorProduct
 
 open LinearMap
 
+/- Unused
+/-- Base change property of `n → R`, for finite `n`. -/
 noncomputable def ibc {n : Type*} [Finite n]
     (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] :
-    S ⊗[R] (n → R) ≃ₗ[S] n → S := by
-  have ibc_RS:= IsBaseChange.pi (R := R) (S := S)
-    (ι := n) (M := fun _ ↦ R) (M' := fun _ ↦ S)
+    S ⊗[R] (n → R) ≃ₗ[S] n → S :=
+  (IsBaseChange.pi
     (fun _ ↦ Algebra.linearMap R S)
-    (fun i ↦ IsBaseChange.linearMap R ((fun _ ↦ S) i))
-  apply ibc_RS.equiv
+    (fun i ↦ IsBaseChange.linearMap R ((fun _ ↦ S) i))).equiv
+-/
 
 variable [Module.Free R V] [Module.Finite R V]
 
@@ -844,7 +850,10 @@ theorem det_eq_one
     exact hn2
   let algTR : Algebra T R := RingHom.toAlgebra γ
   let fR := tT.baseChange R
-  let j := (ibc T R (n := Fin n)).trans e.symm
+--  let j := (ibc T R (n := Fin n)).trans e.symm
+  let j :=   (IsBaseChange.pi
+    (fun _ ↦ Algebra.linearMap T R)
+    (fun i ↦ IsBaseChange.linearMap T ((fun _ ↦ R) i))).equiv.trans e.symm
   have : LinearMap.transvection f v = j ∘ₗ fR ∘ₗ j.symm := by
     simp only [fR, tT, transvection.baseChange, LinearMap.transvection.congr]
     congr
@@ -863,14 +872,14 @@ theorem det_eq_one
       | tmul r t =>
         simp only [Module.Dual.baseChangeHom_apply, Module.Dual.baseChange_apply_tmul]
         simp only [lc2T, Fintype.linearCombination_apply, Finset.sum_smul]
-        simp [j, ibc, e, IsBaseChange.equiv_tmul]
+        simp [j, e, IsBaseChange.equiv_tmul]
         rw [Finset.mul_sum]
         apply Finset.sum_congr rfl
         intro x _
         simp only [Algebra.smul_def, RingHom.algebraMap_toAlgebra,
           map_mul, ← RingHom.comp_apply, hγβ, ← hαfS x]
         ring
-    · simp only [ibc, LinearEquiv.trans_apply, j, LinearEquiv.eq_symm_apply]
+    · simp only [LinearEquiv.trans_apply, j, LinearEquiv.eq_symm_apply]
       -- some API is missing
       ext i
       simp [IsBaseChange.equiv, vT, e, RingHom.algebraMap_toAlgebra]
