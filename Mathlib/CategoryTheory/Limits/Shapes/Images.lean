@@ -865,6 +865,11 @@ def StrongEpiMonoFactorisation.toMonoIsImage {X Y : C} {f : X ⟶ Y}
   lift G :=
     (CommSq.mk (show G.e ≫ G.m = F.e ≫ F.m by rw [F.toMonoFactorisation.fac, G.fac])).lift
 
+def StrongEpiMonoFactorisation.toImageFactorisation {X Y : C} {f : X ⟶ Y}
+    (F : StrongEpiMonoFactorisation f) : ImageFactorisation f where
+  F := F.toMonoFactorisation
+  isImage := F.toMonoIsImage
+
 variable (C)
 
 /-- A category has strong epi-mono factorisations if every morphism admits a strong epi-mono
