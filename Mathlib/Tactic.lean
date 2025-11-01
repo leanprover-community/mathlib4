@@ -160,6 +160,8 @@ import Mathlib.Tactic.Linter.DocPrime
 import Mathlib.Tactic.Linter.DocString
 import Mathlib.Tactic.Linter.FindDeprecations
 import Mathlib.Tactic.Linter.FlexibleLinter
+import Mathlib.Tactic.Linter.Foo
+import Mathlib.Tactic.Linter.Foo0
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.HaveLetLinter
@@ -171,6 +173,7 @@ import Mathlib.Tactic.Linter.OldObtain
 import Mathlib.Tactic.Linter.PPRoundtrip
 import Mathlib.Tactic.Linter.Style
 import Mathlib.Tactic.Linter.TextBased
+import Mathlib.Tactic.Linter.UnusedDecidable
 import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.Linter.UnusedTacticExtension
 import Mathlib.Tactic.Linter.UpstreamableDecl
