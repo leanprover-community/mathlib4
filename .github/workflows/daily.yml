@@ -64,7 +64,7 @@ jobs:
           ref: ${{ env.BRANCH_REF }}
 
       - name: Configure Lean
-        uses: leanprover/lean-action@434f25c2f80ded67bba02502ad3a86f25db50709 # 2025-04-24
+        uses: leanprover/lean-action@434f25c2f80ded67bba02502ad3a86f25db50709 # v1.3.0
         with:
           auto-config: false
           use-github-cache: false
