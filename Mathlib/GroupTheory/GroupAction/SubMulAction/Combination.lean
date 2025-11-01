@@ -76,18 +76,17 @@ theorem eq_iff_subset : s = t ↔ (s : Finset α) ⊆ (t : Finset α) := by
 theorem exists_mem_notMem (hn : 1 ≤ n) (hα : n < ENat.card α) {a b : α} (hab : a ≠ b) :
     ∃ s : n.Combination α, a ∈ s ∧ b ∉ s := by
   have ha' : n ≤ Set.encard {b}ᶜ := by
-    rw [← not_lt, ← ENat.add_lt_add_iff_left (k := 1) _, not_lt]
+    rw [← not_lt, ← ENat.add_lt_add_iff_left (k := 1) (ENat.coe_ne_top _), not_lt]
     rwa [← Set.encard_singleton b, Set.encard_add_encard_compl,
       Set.encard_singleton, Set.encard_univ, add_comm,
-      ENat.add_one_le_iff]
-    all_goals { exact ENat.coe_ne_top _}
+      ENat.add_one_le_iff (ENat.coe_ne_top _)]
   obtain ⟨s, has, has', hs⟩ :=
     Set.exists_superset_subset_encard_eq (s := {a}) (by simp [Ne.symm hab]) (by simpa) ha'
   simp only [Set.singleton_subset_iff, Set.subset_compl_singleton_iff] at has has'
   letI : Set.Finite s := Set.finite_of_encard_eq_coe hs
   use ⟨Set.Finite.toFinset this, by
       rw [mem_iff, ←ENat.coe_inj, ← hs, this.encard_eq_coe_toFinset_card]⟩
-  simp [← mem_coe_iff, has, has']
+  simp [has, has']
 
 variable (α n) in
 /-- `Nat.Combination α n` as a `SubMulAction` of `Finset α`. -/
