@@ -55,9 +55,8 @@ theorem AlgEquiv.coe_eq_linearEquiv_conj [Free K V] (f : End K V ≃ₐ[K] End K
   obtain ⟨z, hz⟩ : ∃ z : V, f (smulRightₗ v u) z ≠ 0 := by
     simp_rw [ne_eq, ← not_forall]
     suffices ¬ f (smulRightₗ v u) = 0 by rwa [LinearMap.ext_iff] at this
-    simp only [EmbeddingLike.map_eq_zero_iff, LinearMap.ext_iff, smulRightₗ_apply,
-      zero_apply, smul_eq_zero, not_forall, not_or, exists_and_right]
-    exact ⟨⟨u, huv⟩, fun h ↦ by simp [h] at huv⟩
+    simp only [EmbeddingLike.map_eq_zero_iff, LinearMap.ext_iff, not_forall]
+    exact ⟨u, huv.isUnit.smul_eq_zero.not.mpr hu⟩
   let T := auxLinear f v z
   have this A : T ∘ₗ A = f A ∘ₗ T := auxLinear_comp f.toAlgHom v z A
   have this' A x : T (A x) = f A (T x) := auxLinear_map_apply f.toAlgHom v z A x
