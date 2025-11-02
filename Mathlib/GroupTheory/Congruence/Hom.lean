@@ -258,7 +258,7 @@ relation on `M` whose induced map from the quotient of `M` to `P` is injective. 
 is the unique additive congruence relation on `M` whose induced map from the quotient of `M`
 to `P` is injective. -/]
 theorem ker_eq_lift_of_injective (H : c ≤ ker f) (h : Injective (c.lift f H)) : ker f = c :=
-  toSetoid_inj <| Setoid.ker_eq_lift_of_injective f H h
+  toSetoid_injective <| Setoid.ker_eq_lift_of_injective f H h
 
 variable {c}
 

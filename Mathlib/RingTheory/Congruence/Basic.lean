@@ -104,7 +104,7 @@ The API in this section is copied from `Mathlib/GroupTheory/Congruence.lean`
 
 section Lattice
 
-variable [Add R] [Mul R]
+variable [Add R] [Mul R] {c d : RingCon R}
 
 /-- For congruence relations `c, d` on a type `M` with multiplication and addition, `c ≤ d` iff
 `∀ x y ∈ M`, `x` is related to `y` by `d` if `x` is related to `y` by `c`. -/
@@ -112,8 +112,7 @@ instance : LE (RingCon R) where
   le c d := ∀ ⦃x y⦄, c x y → d x y
 
 /-- Definition of `≤` for congruence relations. -/
-theorem le_def {c d : RingCon R} : c ≤ d ↔ ∀ {x y}, c x y → d x y :=
-  Iff.rfl
+theorem le_def : c ≤ d ↔ ∀ {x y}, c x y → d x y := .rfl
 
 /-- The infimum of a set of congruence relations on a given type with multiplication and
 addition. -/
@@ -171,11 +170,19 @@ instance : CompleteLattice (RingCon R) where
       add' := congr_arg₂ _ }
   bot_le c := fun x _y h => h ▸ c.refl x
 
-@[simp, norm_cast]
-theorem coe_top : ⇑(⊤ : RingCon R) = ⊤ := rfl
+@[simp, norm_cast] lemma coe_top : ⇑(⊤ : RingCon R) = ⊤ := rfl
+@[simp, norm_cast] lemma coe_bot : ⇑(⊥ : RingCon R) = Eq := rfl
 
-@[simp, norm_cast]
-theorem coe_bot : ⇑(⊥ : RingCon R) = Eq := rfl
+@[simp] lemma toCon_top : (⊤ : RingCon R).toCon = ⊤ := rfl
+@[simp] lemma toCon_bot : (⊥ : RingCon R).toCon = ⊥ := rfl
+
+@[simp] lemma toCon_eq_top : c.toCon = ⊤ ↔ c = ⊤ := by rw [← toCon_top, toCon_inj]
+@[simp] lemma toCon_eq_bot : c.toCon = ⊥ ↔ c = ⊥ := by rw [← toCon_bot, toCon_inj]
+
+@[simp] lemma subsingleton_quotient : Subsingleton c.Quotient ↔ c = ⊤ := by simp [RingCon.Quotient]
+
+@[simp] lemma nontrivial_quotient : Nontrivial c.Quotient ↔ c ≠ ⊤ := by
+  simp [← not_subsingleton_iff_nontrivial]
 
 /-- The infimum of two congruence relations equals the infimum of the underlying binary
 operations. -/
