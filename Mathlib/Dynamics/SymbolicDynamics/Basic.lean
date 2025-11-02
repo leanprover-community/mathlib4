@@ -311,9 +311,7 @@ end Dominos
 
 section Forbids
 
-variable {A : Type*}
-variable {G : Type*}
-variable [Monoid G]
+variable {A G : Type*} [Monoid G]
 
 /-- `p.mulOccursInAt x g` means that the finite pattern `p` appears in the configuration `x`
 at position `g`.
@@ -324,8 +322,8 @@ at `h * g` coincides with the value specified by `p` at `h`.
 Intuitively, if you shift the configuration `x` by `g` (using `mulShift g`),
 then on the support of `p` you exactly recover the pattern `p`. This is the basic
 notion of "pattern occurrence" used to define subshifts via forbidden patterns. -/
-@[to_additive
-/-- `p.addOccursInAt x g` means that the finite pattern `p` appears in the configuration `x`
+@[to_additive Pattern.occursInAt
+/-- `p.occursInAt x g` means that the finite pattern `p` appears in the configuration `x`
 at position `g`.
 
 Formally: for every position `h` in the support of `p`, the value of the configuration
@@ -337,6 +335,15 @@ notion of "pattern occurrence" used to define subshifts via forbidden patterns. 
 def Pattern.mulOccursInAt (p : Pattern A G) (x : G → A) (g : G) : Prop :=
   ∀ (h) (hh : h ∈ p.support), x (h * g) = p.data ⟨h, hh⟩
 
+/-- `mulForbids F` is the set of configurations that avoid every pattern in `F`.
+
+Formally: `x ∈ mulForbids F` if and only if for every pattern `p ∈ F` and every
+group element `g : G`, the pattern `p` does not occur in `x` at position `g`.
+
+Intuitively, `mulForbids F` is the shift space defined by declaring the finite set
+(or family) of patterns `F` to be *forbidden*. A configuration belongs to the subshift if and only
+it avoids all the forbidden patterns. -/
+@[to_additive forbids
 /-- `forbids F` is the set of configurations that avoid every pattern in `F`.
 
 Formally: `x ∈ forbids F` if and only if for every pattern `p ∈ F` and every
@@ -344,18 +351,15 @@ group element `g : G`, the pattern `p` does not occur in `x` at position `g`.
 
 Intuitively, `forbids F` is the shift space defined by declaring the finite set
 (or family) of patterns `F` to be *forbidden*. A configuration belongs to the subshift if and only
-it avoids all the forbidden patterns. -/
-@[to_additive forbids]
+it avoids all the forbidden patterns. -/]
 def mulForbids (F : Set (Pattern A G)) : Set (G → A) :=
   { x | ∀ p ∈ F, ∀ g : G, ¬ p.mulOccursInAt x g }
-
-attribute [inherit_doc SymbolicDynamics.FullShift.mulForbids] SymbolicDynamics.FullShift.forbids
 
 /-- Shifting a configuration commutes with occurrences of a pattern.
 
 Formally: a pattern `p` occurs in the shifted configuration `mulShift h x` at
 position `g` if and only if it occurs in the original configuration `x` at
-position `g + h`. -/
+position `g * h`. -/
 @[to_additive occurs_shift
 /-- Shifting a configuration commutes with occurrences of a pattern.
 
@@ -375,11 +379,13 @@ the shifted configuration `mulShift h x` also avoids every `p ∈ F` at every po
 
 Formally: if `x` avoids every `p ∈ F` at every position, then for any `h : G`,
 the shifted configuration `shift h x` also avoids every `p ∈ F` at every position. -/]
-lemma mulForbids_shift_invariant (F : Set (Pattern A G)) :
-    ∀ h : G, ∀ x ∈ mulForbids (A := A) (G := G) F, mulShift h x ∈ mulForbids F := by
-  intro h x hx p hp g
+lemma mulForbids_shift_invariant
+    (F : Set (Pattern A G)) (h : G) :
+    Set.MapsTo (fun x => mulShift h x)
+    (mulForbids (A := A) (G := G) F) (mulForbids F) := by
+  -- unfold `MapsTo`
+  intro x hx p hp g
   specialize hx p hp (g * h)
-  -- contraposition
   contrapose! hx
   simpa [mulOccurs_mulShift] using hx
 
@@ -388,26 +394,33 @@ end Forbids
 section OccursAt
 
 variable {A : Type*} [Inhabited A]
-variable {G : Type*}
--- We assume right-cancellation throughout this section for uniqueness of preimages under (_ + v).
-variable [Monoid G] [IsRightCancelMul G] [DecidableEq G]
+variable {G : Type*} [Monoid G] [IsRightCancelMul G] [DecidableEq G]
+-- We assume right-cancellation throughout this section for uniqueness of preimages under (_ * v)
+-- or (_ + v).
 
 /-- Turn a finite pattern into a configuration, by extending it with
 the default symbol outside its support.
 
 Formally: given a pattern `p` with finite support in `G`, we define a configuration
-`patternToOriginConfig p : G → A` by setting
-* `patternToOriginConfig p i = p.data ⟨i, h⟩` if `i ∈ p.support`,
-* `patternToOriginConfig p i = default` otherwise.
+`Pattern.mulExtend p : G → A` by setting
+* `Pattern.mulExtend p i = p.data ⟨i, h⟩` if `i ∈ p.support`,
+* `Pattern.mulExtend p i = default` otherwise.
 
 This produces a canonical "completion" of the pattern to a configuration,
 filling all unspecified positions with `default`. -/
-@[to_additive patternToOriginConfig]
-def mulPatternToOriginConfig (p : Pattern A G) : G → A :=
-  fun i ↦ if h : i ∈ p.support then p.data ⟨i, h⟩ else default
+@[to_additive Pattern.extendAtOrigin
+/-- Turn a finite pattern into a configuration, by extending it with
+the default symbol outside its support.
 
-attribute [inherit_doc SymbolicDynamics.FullShift.mulPatternToOriginConfig]
-  SymbolicDynamics.FullShift.patternToOriginConfig
+Formally: given a pattern `p` with finite support in `G`, we define a configuration
+`Pattern.extend p : G → A` by setting
+* `Pattern.extend p i = p.data ⟨i, h⟩` if `i ∈ p.support`,
+* `Pattern.extend p i = default` otherwise.
+
+This produces a canonical "completion" of the pattern to a configuration,
+filling all unspecified positions with `default`. -/]
+def Pattern.mulExtendAtOrigin (p : Pattern A G) : G → A :=
+  fun i ↦ if h : i ∈ p.support then p.data ⟨i, h⟩ else default
 
 /-- Translate a finite pattern `p` so that it occurs at the translate `v`, before completing into
 a configuration.
@@ -418,10 +431,10 @@ On input `h : G`, we proceed as follows:
 * otherwise return `default`.
 
 This definition does not assume right-cancellation; it only *chooses* a preimage.
-Uniqueness (and the usual equations such as `mulPatternToConfig p v (w * v) = p.data ⟨w, _⟩`)
+Uniqueness (and the usual equations such as `Pattern.mulExtend p v (w * v) = p.data ⟨w, _⟩`)
 require a right-cancellation hypothesis and are proved in separate lemmas.
 -/
-@[to_additive patternToConfig
+@[to_additive Pattern.extend
 /-- Translate a finite pattern `p` so that it occurs at the translate `v`, before completing into
 a configuration.
 
@@ -431,10 +444,10 @@ On input `h : G`, we proceed as follows:
 * otherwise return `default`.
 
 This definition does not assume right-cancellation; it only *chooses* a preimage.
-Uniqueness (and the usual equations such as `patternToConfig p v (w + v) = p.data ⟨w, _⟩`)
+Uniqueness (and the usual equations such as `Pattern.extend p v (w + v) = p.data ⟨w, _⟩`)
 require a right-cancellation hypothesis and are proved in separate lemmas.
 -/]
-noncomputable def mulPatternToConfig (p : Pattern A G) (v : G) : G → A :=
+noncomputable def Pattern.mulExtend (p : Pattern A G) (v : G) : G → A :=
   fun h =>
     if hmem : h ∈ p.support.image (· * v) then
       -- package existence of a preimage under (_ * v)
@@ -487,7 +500,7 @@ This statement uses `[IsRightCancelMul G]` to identify the preimage of `w + v`
 under right-multiplication by `v`. -/]
 lemma mulPatternToConfig_apply_of_mem
     (p : Pattern A G) (v w : G) (hw : w ∈ p.support) :
-    mulPatternToConfig (A := A) (G := G) p v (w * v) = p.data ⟨w, hw⟩ := by
+    p.mulExtend v (w * v) = p.data ⟨w, hw⟩ := by
   -- (w*v) is in the translated support
   have hmem : (w * v) ∈ p.support.image (· * v) :=
     Finset.mem_image.mpr ⟨w, hw, rfl⟩
@@ -496,9 +509,9 @@ lemma mulPatternToConfig_apply_of_mem
     simpa [Finset.mem_image] using hmem
   -- open the `if` branch as returned by the definition
   have h1 :
-      mulPatternToConfig (A := A) (G := G) p v (w * v)
+      p.mulExtend v (w * v)
         = p.data ⟨Classical.choose ex, (Classical.choose_spec ex).1⟩ := by
-    simp [mulPatternToConfig, hmem]
+    simp [Pattern.mulExtend, hmem]
   -- name the chosen witness and relate it to `w` by right-cancellation
   let w' := Classical.choose ex
   have hw'  : w' ∈ p.support := (Classical.choose_spec ex).1
@@ -523,7 +536,7 @@ lemma mulPatternToConfig_apply_of_mem
 
   -- put the rewrites together
   calc
-    mulPatternToConfig (A := A) (G := G) p v (w * v)
+    p.mulExtend v (w * v)
         = p.data ⟨Classical.choose ex, (Classical.choose_spec ex).1⟩ := h1
     _   = p.data ⟨w, hw_w⟩ := by
             -- push h2 through `p.data`
@@ -556,7 +569,7 @@ the configuration `x` agrees with the translated pattern `patternToConfig p g`.
 (This uses `[IsRightCancelMul G]` to identify the preimage along right-multiplication by `g`.) -/]
 lemma mulOccursAt_eq_cylinder
     (p : Pattern A G) (g : G) :
-    { x | p.mulOccursInAt x g } = cylinder (p.support.image (· * g)) (mulPatternToConfig p g) := by
+    { x | p.mulOccursInAt x g } = cylinder (p.support.image (· * g)) (p.mulExtend g) := by
   ext x; constructor
   · -- ⇒: from an occurrence, get membership in the cylinder
     intro H u hu
@@ -567,7 +580,7 @@ lemma mulOccursAt_eq_cylinder
   · -- ⇐: from the cylinder, recover an occurrence
     intro H u hu
     -- H gives equality with the translated pattern on the image
-    have hx : x (u * g) = mulPatternToConfig p g (u * g) :=
+    have hx : x (u * g) = p.mulExtend g (u * g) :=
       H (u * g) (Finset.mem_image_of_mem (· * g) hu)
     -- rewrite the RHS by the “apply_of_mem” lemma
     simpa [mulPatternToConfig_apply_of_mem (p := p) (v := g) (w := u) hu] using hx
@@ -578,8 +591,8 @@ end OccursAt
 
 section DefSubshiftByForbidden
 
-variable {A G : Type*} [Monoid G] [IsRightCancelMul G] [TopologicalSpace A] [DiscreteTopology A]
-           [Inhabited A] [DecidableEq G]
+variable {A : Type*} [TopologicalSpace A] [DiscreteTopology A] [Inhabited A]
+variable {G : Type*} [Monoid G] [IsRightCancelMul G] [DecidableEq G]
 
 /-- Occurrence sets are open. -/
 @[to_additive isOpen_occursInAt]
@@ -647,10 +660,8 @@ end DefSubshiftByForbidden
 
 section Language
 
-variable {A : Type*} [Fintype A]
-variable {G : Type*}
-variable [TopologicalSpace A]
-variable [Monoid G]
+variable {A : Type*} [Fintype A] [TopologicalSpace A]
+variable {G : Type*} [Monoid G]
 
 /-- The set of patterns with fixed support `U`. -/
 @[to_additive fixedSupport]
