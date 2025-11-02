@@ -18,13 +18,6 @@ variable {ι M N : Type*}
 namespace List
 section Defs
 
-/-- Product of a list.
-
-`List.prod [a, b, c] = a * (b * (c * 1))` -/
-@[to_additive existing]
-def prod {α} [Mul α] [One α] : List α → α :=
-  foldr (· * ·) 1
-
 /-- The alternating sum of a list. -/
 def alternatingSum {G : Type*} [Zero G] [Add G] [Neg G] : List G → G
   | [] => 0
@@ -44,13 +37,6 @@ section Mul
 
 variable [Mul M] [One M] {a : M} {l : List M}
 
-@[to_additive existing, simp]
-theorem prod_nil : ([] : List M).prod = 1 :=
-  rfl
-
-@[to_additive existing, simp]
-theorem prod_cons : (a :: l).prod = a * l.prod := rfl
-
 @[to_additive]
 lemma prod_induction
     (p : M → Prop) (hom : ∀ a b, p a → p b → p (a * b)) (unit : p 1) (base : ∀ x ∈ l, p x) :
@@ -67,10 +53,6 @@ end Mul
 section MulOneClass
 
 variable [MulOneClass M] {l : List M} {a : M}
-
-@[to_additive]
-theorem prod_singleton : [a].prod = a :=
-  mul_one a
 
 @[to_additive]
 theorem prod_one_cons : (1 :: l).prod = l.prod := by
