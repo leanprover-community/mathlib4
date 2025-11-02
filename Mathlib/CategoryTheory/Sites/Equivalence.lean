@@ -188,13 +188,14 @@ noncomputable
 def smallSheafificationAdjunction : smallSheafify J A ⊣ sheafToPresheaf J A :=
   (equivSmallModel C).transportSheafificationAdjunction J _ A
 
-noncomputable instance hasSheafifyEssentiallySmallSite : HasSheafify J A :=
+lemma hasSheafifyEssentiallySmallSite : HasSheafify J A :=
   (equivSmallModel C).hasSheafify J ((equivSmallModel C).inverse.inducedTopology J) A
 
 instance hasSheafComposeEssentiallySmallSite : HasSheafCompose J F :=
   (equivSmallModel C).hasSheafCompose J ((equivSmallModel C).inverse.inducedTopology J) F
 
-instance hasLimitsEssentiallySmallSite
+omit [HasSheafify ((equivSmallModel C).inverse.inducedTopology J) A] in
+lemma hasLimitsEssentiallySmallSite
     [HasLimits <| Sheaf ((equivSmallModel C).inverse.inducedTopology J) A] :
     HasLimitsOfSize.{max v₃ w, max v₃ w} <| Sheaf J A :=
   Adjunction.has_limits_of_equivalence ((equivSmallModel C).sheafCongr J
@@ -283,7 +284,8 @@ lemma WEqualsLocallyBijective.transport (hG : CoverPreserving K J G) :
 variable [EssentiallySmall.{w} C]
   [∀ (X : Cᵒᵖ), HasLimitsOfShape (StructuredArrow X (equivSmallModel C).inverse.op) A]
 
-instance [((equivSmallModel C).inverse.inducedTopology J).WEqualsLocallyBijective A] :
+lemma WEqualsLocallyBijective.ofEssentiallySmall
+    [((equivSmallModel C).inverse.inducedTopology J).WEqualsLocallyBijective A] :
     J.WEqualsLocallyBijective A :=
   WEqualsLocallyBijective.transport J ((equivSmallModel C).inverse.inducedTopology J)
     (equivSmallModel C).inverse (IsDenseSubsite.coverPreserving _ _ _)

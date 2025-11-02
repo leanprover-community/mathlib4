@@ -803,7 +803,7 @@ theorem IsCycleOn.exists_pow_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈
 
 theorem IsCycleOn.exists_pow_eq' (hs : s.Finite) (hf : f.IsCycleOn s) (ha : a ∈ s) (hb : b ∈ s) :
     ∃ n : ℕ, (f ^ n) a = b := by
-  lift s to Finset α using id hs
+  lift s to Finset α using hs
   obtain ⟨n, -, hn⟩ := hf.exists_pow_eq ha hb
   exact ⟨n, hn⟩
 

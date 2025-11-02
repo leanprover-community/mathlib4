@@ -303,6 +303,7 @@ lemma XYIdeal_neg_mul {x y : F} (h : W.Nonsingular x y) :
     AdjoinRoot.mk_eq_mk.mpr ⟨1, Y_rw⟩, map_mul, span_insert, ← span_singleton_mul_span_singleton,
     ← Ideal.mul_sup, ← span_insert]
   convert mul_top (_ : Ideal W.CoordinateRing) using 2
+  on_goal 2 => infer_instance
   simp_rw [← Set.image_singleton (f := mk W), ← Set.image_insert_eq, ← map_span]
   convert map_top (R := F[X][Y]) (mk W) using 1
   apply congr_arg

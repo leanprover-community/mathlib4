@@ -60,7 +60,7 @@ lemma mem_freeLocus_of_isLocalization (p : PrimeSpectrum R)
       (Localization.AtPrime p.asIdeal) Rₚ).toRingEquiv
   refine { __ := IsLocalizedModule.iso p.asIdeal.primeCompl f, map_smul' := ?_ }
   intro r x
-  obtain ⟨r, s, rfl⟩ := IsLocalization.mk'_surjective p.asIdeal.primeCompl r
+  obtain ⟨r, s, rfl⟩ := IsLocalization.exists_mk'_eq p.asIdeal.primeCompl r
   apply ((Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units f s)).1
   simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
     algebraMap_end_apply, AlgEquiv.toRingEquiv_eq_coe,
@@ -119,7 +119,7 @@ lemma freeLocus_localization (S : Submonoid R) :
       (Submonoid.map (algebraMap R (Localization S)) p'.primeCompl)
     · rintro _ ⟨x, hx, rfl⟩; exact hx
     · rintro ⟨x, hx⟩
-      obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective S x
+      obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq S x
       refine ⟨algebraMap _ _ s.1, x, fun H ↦ hx ?_, by simp⟩
       rw [IsLocalization.mk'_eq_mul_mk'_one]
       exact Ideal.mul_mem_right _ _ H
@@ -143,7 +143,7 @@ lemma freeLocus_localization (S : Submonoid R) :
       (Algebra.algebraMapSubmonoid (Localization S) p'.primeCompl)
     · rintro _ ⟨x, hx, rfl⟩; exact hx
     · rintro ⟨x, hx⟩
-      obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective S x
+      obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq S x
       refine ⟨algebraMap _ _ s.1, x, fun H ↦ hx ?_, by simp⟩
       rw [IsLocalization.mk'_eq_mul_mk'_one]
       exact Ideal.mul_mem_right _ _ H

@@ -81,11 +81,9 @@ variable [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
 instance isOrderedAddMonoid : IsOrderedAddMonoid (ι →₀ α) :=
   { add_le_add_left := fun _a _b h c s => add_le_add_left (h s) (c s) }
 
+@[gcongr]
 lemma mapDomain_mono : Monotone (mapDomain f : (ι →₀ α) → (κ →₀ α)) := by
   classical exact fun g₁ g₂ h ↦ sum_le_sum_index h (fun _ _ ↦ single_mono) (by simp)
-
-@[gcongr] protected lemma GCongr.mapDomain_mono (hg : g₁ ≤ g₂) : g₁.mapDomain f ≤ g₂.mapDomain f :=
-  mapDomain_mono hg
 
 lemma mapDomain_nonneg (hg : 0 ≤ g) : 0 ≤ g.mapDomain f := by simpa using mapDomain_mono hg
 lemma mapDomain_nonpos (hg : g ≤ 0) : g.mapDomain f ≤ 0 := by simpa using mapDomain_mono hg

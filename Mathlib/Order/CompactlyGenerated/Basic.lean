@@ -510,6 +510,28 @@ section
 
 variable [IsModularLattice α] [IsCompactlyGenerated α]
 
+/--
+If each family `f i` is `iSupIndep`, then the family of pointwise infima
+`k ↦ ⨅ i, f i (k i)` is also `iSupIndep`.
+-/
+theorem iSupIndep.iInf {ι : Type*} {κ : ι → Type*} (f : (i : ι) → κ i → α)
+    (h_indep : ∀ i : ι, iSupIndep (f i)) : iSupIndep (fun k : (i : ι) → κ i ↦ ⨅ i, f i (k i)) := by
+  rw [iSupIndep_iff_supIndep_of_injOn (iSupIndep.injOn_iInf _ h_indep)]
+  intro s
+  induction s using Finset.strongInduction with
+  | H s ih =>
+    by_cases hs : 1 < s.card; swap
+    · by_cases hcard0 : s.card = 0 <;> grind [Finset.card_eq_zero, Finset.card_eq_one]
+    · obtain ⟨k₁, k₂, _, _, h⟩ := Finset.one_lt_card_iff.mp hs
+      obtain ⟨i, hi⟩ : ∃ i : ι, k₁ i ≠ k₂ i := Function.ne_iff.mp h
+      classical
+      rw [← Finset.image_biUnion_filter_eq s (· i)]
+      refine Finset.SupIndep.biUnion ?_ (by grind)
+      apply ((h_indep i).supIndep' _).mono
+      simp_rw [Finset.sup_le_iff, Finset.mem_filter, and_imp]
+      rintro _ _ _ _ rfl
+      exact iInf_le _ _
+
 instance (priority := 100) isAtomic_of_complementedLattice [ComplementedLattice α] : IsAtomic α :=
   ⟨fun b => by
     by_cases h : { c : α | CompleteLattice.IsCompactElement c ∧ c ≤ b } ⊆ {⊥}

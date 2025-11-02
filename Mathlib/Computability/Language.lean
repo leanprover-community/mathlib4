@@ -192,13 +192,15 @@ theorem kstar_def_nonempty (l : Language α) :
 theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
   sup_eq_right.symm
 
-theorem le_mul_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ * l₂ ≤ m₁ * m₂ := by
-  intro h₁ h₂ x hx
-  simp only [mul_def, mem_image2] at hx ⊢
-  tauto
+instance : MulLeftMono (Language α) where
+  elim _ _ _ := image2_subset_left
 
-theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=
-  sup_le_sup
+instance : MulRightMono (Language α) where
+  elim _ _ _ := image2_subset_right
+
+@[deprecated mul_le_mul' (since := "2025-10-26")]
+theorem le_mul_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ * l₂ ≤ m₁ * m₂ :=
+  mul_le_mul'
 
 theorem mem_iSup {ι : Sort v} {l : ι → Language α} {x : List α} : (x ∈ ⨆ i, l i) ↔ ∃ i, x ∈ l i :=
   mem_iUnion
@@ -268,7 +270,7 @@ instance : KleeneAlgebra (Language α) :=
       | zero => simp
       | succ n ih =>
         rw [pow_succ, mul_assoc (l^n) l m]
-        exact le_trans (le_mul_congr le_rfl h) ih,
+        exact le_trans (mul_le_mul_left' h _) ih,
     mul_kstar_le_self := fun l m h ↦ by
       rw [kstar_eq_iSup_pow, mul_iSup]
       refine iSup_le (fun n ↦ ?_)
@@ -276,7 +278,11 @@ instance : KleeneAlgebra (Language α) :=
       | zero => simp
       | succ n ih =>
         rw [pow_succ, ← mul_assoc m (l^n) l]
-        exact le_trans (le_mul_congr ih le_rfl) h }
+        exact le_trans (mul_le_mul_right' ih _) h }
+
+@[deprecated add_le_add (since := "2025-10-26")]
+theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=
+  add_le_add
 
 /-- **Arden's lemma** -/
 theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + n ↔ l = m∗ * n where

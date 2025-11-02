@@ -12,17 +12,36 @@ import Mathlib.RingTheory.Invariant.Defs
 Given an action of a group `G` on an extension of fields `L/K`, we introduce a predicate
 `IsGaloisGroup G K L` saying that `G` acts faithfully on `L` with fixed field `K`. In particular,
 we do not assume that `L` is an algebraic extension of `K`.
+
+## Implementation notes
+
+We actually define `IsGaloisGroup G A B` for extensions of rings `B/A`, with the same definition
+(faithful action on `B` with fixed field `A`). In this generality, the name `IsGaloisGroup` is a
+bit of a misnomer, since `IsGaloisGroup G A B` corresponds to the fields of fractions
+`Frac(B)/Frac(A)` being a Galois extension of fields, rather than `B/A` being étale (for instance).
 -/
+
+section CommRing
+
+variable (G A B : Type*) [Group G] [CommSemiring A] [Semiring B] [Algebra A B]
+  [MulSemiringAction G B]
+
+/-- `G` is a Galois group for `L/K` if the action of `G` on `L` is faithful with fixed field `K`.
+In particular, we do not assume that `L` is an algebraic extension of `K`.
+
+See the implementation notes in this file for the meaning of this definition in the case of rings.
+-/
+class IsGaloisGroup where
+  faithful : FaithfulSMul G B
+  commutes : SMulCommClass G A B
+  isInvariant : Algebra.IsInvariant A B G
+
+attribute [instance low] IsGaloisGroup.commutes IsGaloisGroup.isInvariant
+
+end CommRing
 
 variable (G H K L : Type*) [Group G] [Group H] [Field K] [Field L] [Algebra K L]
   [MulSemiringAction G L] [MulSemiringAction H L]
-
-/-- `G` is a Galois group for `L/K` if the action on `L` is faithful with fixed field `K`.
-In particular, we do not assume that `L` is an algebraic extension of `K`. -/
-class IsGaloisGroup where
-  faithful : FaithfulSMul G L
-  commutes : SMulCommClass G K L
-  isInvariant : Algebra.IsInvariant K L G
 
 namespace IsGaloisGroup
 

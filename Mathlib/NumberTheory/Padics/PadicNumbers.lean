@@ -106,7 +106,7 @@ lemma Int.padicValuation_self (p : ℕ) [Fact p.Prime] :
 lemma Int.padicValuation_le_one (p : ℕ) [Fact p.Prime] (x : ℤ) :
     Int.padicValuation p x ≤ 1 := by
   simp only [← Rat.padicValuation_cast, Rat.padicValuation, Valuation.coe_mk,
-    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Rat.intCast_eq_zero, padicValRat.of_int]
+    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Rat.intCast_eq_zero_iff, padicValRat.of_int]
   split_ifs
   · simp
   · rw [← le_log_iff_exp_le] <;>
@@ -115,7 +115,7 @@ lemma Int.padicValuation_le_one (p : ℕ) [Fact p.Prime] (x : ℤ) :
 lemma Int.padicValuation_eq_one_iff {p : ℕ} [Fact p.Prime] {x : ℤ} :
     Int.padicValuation p x = 1 ↔ ¬ (p : ℤ) ∣ x := by
   simp only [← Rat.padicValuation_cast, Rat.padicValuation, Valuation.coe_mk,
-    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Rat.intCast_eq_zero, padicValRat.of_int]
+    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Rat.intCast_eq_zero_iff, padicValRat.of_int]
   split_ifs
   · simp_all
   · rw [← exp_zero, exp_injective.eq_iff]
