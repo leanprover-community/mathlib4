@@ -214,6 +214,23 @@ theorem singleton_inj [T1Space α] {x y : α} : ({x} : Closeds α) = {y} ↔ x =
 def preimage (s : Closeds β) {f : α → β} (hf : Continuous f) : Closeds α :=
   ⟨f ⁻¹' s, s.isClosed.preimage hf⟩
 
+instance : SProd (Closeds α) (Closeds β) (Closeds (α × β)) where
+  sprod s t := ⟨s ×ˢ t, s.isClosed.prod t.isClosed⟩
+
+@[simp]
+theorem coe_prod (s : Closeds α) (t : Closeds β) :
+    (s ×ˢ t : Closeds (α × β)) = (s : Set α) ×ˢ (t : Set β) :=
+  rfl
+
+@[simp]
+theorem mem_prod {s : Closeds α} {t : Closeds β} {x : α × β} : x ∈ s ×ˢ t ↔ x.1 ∈ s ∧ x.2 ∈ t :=
+  Iff.rfl
+
+@[simp]
+theorem singleton_prod_singleton [T1Space α] [T1Space β] (x : α) (y : β) :
+    ({x} ×ˢ {y} : Closeds (α × β)) = {(x, y)} :=
+  Closeds.ext Set.singleton_prod_singleton
+
 end Closeds
 
 /-- The complement of a closed set as an open set. -/
