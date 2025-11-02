@@ -953,6 +953,20 @@ theorem vecMul_ofNat (x : ℕ) [x.AtLeastTwo] (v : m → α) :
     v ᵥ* ofNat(x) = MulOpposite.op (OfNat.ofNat x : α) • v :=
   vecMul_natCast _ _
 
+omit [Fintype m] [DecidableEq m] in
+theorem mulVec_injective [DecidableEq n] : @mulVec m n α _ _ |>.Injective := by
+  intro A B h
+  ext i j
+  convert congrFun (congrFun h <| Pi.single j 1) i
+    <;> simp
+
+omit [Fintype n] in
+theorem vecMul_injective : (·.vecMul : Matrix m n α → _).Injective := by
+  intro A B h
+  ext i j
+  convert congrFun (congrFun h <| Pi.single i 1) j
+    <;> simp only [single_one_vecMul, row]
+
 end NonAssocSemiring
 
 section NonUnitalNonAssocRing
