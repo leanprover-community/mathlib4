@@ -122,6 +122,9 @@ section PiLp
 
 variable (ι : Type*) [Fintype ι]
 
+@[deprecated (since := "2025-11-02")] alias EuclideanSpace.measurableEquiv :=
+  MeasurableEquiv.toLp
+
 /-- The measure equivalence between `EuclideanSpace ℝ ι` and `ι → ℝ` is volume preserving. -/
 theorem EuclideanSpace.volume_preserving_measurableEquiv_toLp_symm :
     MeasurePreserving (MeasurableEquiv.toLp 2 (ι → ℝ)).symm := by
