@@ -116,6 +116,7 @@ section PiLp
 
 variable (ι : Type*) [Fintype ι]
 
+/-- `WithLp.equiv` as a `MeasurableEquiv`. -/
 @[deprecated MeasurableEquiv.toLp (since := "2025-11-02")]
 protected def EuclideanSpace.measurableEquiv : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) :=
   (MeasurableEquiv.toLp 2 (ι → ℝ)).symm
