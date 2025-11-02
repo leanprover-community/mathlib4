@@ -42,10 +42,22 @@ open Set Filter Function Topology
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
 
+theorem discreteTopology_subtype_iff {S : Set Y} :
+    DiscreteTopology S ↔ ∀ x ∈ S, 𝓝[≠] x ⊓ 𝓟 S = ⊥ := by
+  simp_rw [discreteTopology_iff_nhds_ne, SetCoe.forall', nhds_ne_subtype_eq_bot_iff]
+
+theorem isDiscrete_iff_nhdsNE {S : Set Y} :
+    IsDiscrete S ↔ ∀ x ∈ S, 𝓝[≠] x ⊓ 𝓟 S = ⊥ := by
+  rw [isDiscrete_iff_discreteTopology, discreteTopology_subtype_iff]
+
 lemma discreteTopology_subtype_iff' {S : Set Y} :
     DiscreteTopology S ↔ ∀ y ∈ S, ∃ U : Set Y, IsOpen U ∧ U ∩ S = {y} := by
   simp [discreteTopology_iff_isOpen_singleton, isOpen_induced_iff, Set.ext_iff]
   grind
+
+theorem isDiscrete_iff_forall_exists_isOpen {S : Set Y} :
+    IsDiscrete S ↔ ∀ y ∈ S, ∃ U, IsOpen U ∧ U ∩ S = {y} := by
+  rw [isDiscrete_iff_discreteTopology, discreteTopology_subtype_iff']
 
 section cofinite_cocompact
 
@@ -69,7 +81,8 @@ lemma Continuous.discrete_of_tendsto_cofinite_cocompact [T1Space X] [WeaklyLocal
 lemma tendsto_cofinite_cocompact_of_discrete [DiscreteTopology X]
     (hf : Tendsto f (cocompact _) (cocompact _)) :
     Tendsto f cofinite (cocompact _) := by
-  rwa [← cocompact_eq_cofinite X]
+  convert hf
+  rw [cocompact_eq_cofinite X]
 
 lemma IsClosed.tendsto_coe_cofinite_of_isDiscrete
     {s : Set X} (hs : IsClosed s) (hs' : IsDiscrete s) :
@@ -94,7 +107,7 @@ section codiscrete_filter
 neighbourhood filter at an arbitrary point of `X`. (Compare `isDiscrete_iff_nhds_ne`.) -/
 theorem isClosed_and_discrete_iff {S : Set X} :
     IsClosed S ∧ IsDiscrete S ↔ ∀ x, Disjoint (𝓝[≠] x) (𝓟 S) := by
-  rw [isDiscrete_iff_nhds_ne, isClosed_iff_clusterPt, ← forall_and]
+  rw [isDiscrete_iff_nhdsNE, isClosed_iff_clusterPt, ← forall_and]
   congrm (∀ x, ?_)
   rw [← not_imp_not, clusterPt_iff_not_disjoint, not_not, ← disjoint_iff]
   constructor <;> intro H
@@ -139,7 +152,7 @@ lemma Filter.codiscreteWithin.mono {U₁ U : Set X} (hU : U₁ ⊆ U) :
 /-- If `s` is codiscrete within `U`, then `sᶜ ∩ U` has discrete topology. -/
 theorem isDiscrete_of_codiscreteWithin {U s : Set X} (h : s ∈ Filter.codiscreteWithin U) :
     IsDiscrete ((sᶜ ∩ U) : Set X) := by
-  rw [(by simp : ((sᶜ ∩ U) : Set X) = ((s ∪ Uᶜ)ᶜ : Set X)), isDiscrete_iff_nhds_ne]
+  rw [(by simp : ((sᶜ ∩ U) : Set X) = ((s ∪ Uᶜ)ᶜ : Set X)), isDiscrete_iff_nhdsNE]
   simp_rw [mem_codiscreteWithin, Filter.disjoint_principal_right] at h
   intro x hx
   rw [← Filter.mem_iff_inf_principal_compl, ← Set.compl_diff]

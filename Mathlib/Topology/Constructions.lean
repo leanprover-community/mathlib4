@@ -256,17 +256,10 @@ lemma SetLike.isDiscrete_iff_discreteTopology {S : Type*} [SetLike S X] {s : S} 
     IsDiscrete (s : Set X) ↔ DiscreteTopology s :=
   ⟨fun s ↦ s.to_subtype, fun s ↦ ⟨s⟩⟩
 
-theorem isDiscrete_iff_nhds_ne :
-    IsDiscrete s ↔ ∀ x ∈ s, 𝓝[≠] x ⊓ 𝓟 s = ⊥ := by
-  simp_rw [isDiscrete_iff_discreteTopology, discreteTopology_iff_nhds_ne, SetCoe.forall',
-    nhds_ne_subtype_eq_bot_iff]
-
 lemma isDiscrete_of_discreteTopology [DiscreteTopology X] : IsDiscrete s :=
   ⟨instDiscreteTopologySubtype⟩
 
 lemma DiscreteTopology.isDiscrete [DiscreteTopology s] : IsDiscrete s := ⟨inferInstance⟩
-
-@[deprecated (since := "2025-10-08")] alias discreteTopology_subtype_iff := isDiscrete_iff_nhds_ne
 
 end IsDiscrete
 
@@ -581,12 +574,19 @@ protected lemma Topology.IsClosedEmbedding.inclusion (hst : s ⊆ t) (hs : IsClo
   isClosed_range := by rwa [range_inclusion]
 
 /-- Let `s, t ⊆ X` be two subsets of a topological space `X`.  If `t ⊆ s` and the topology induced
-by `X`on `s` is discrete, then also the topology induces on `t` is discrete. -/
-lemma IsDiscrete.mono {t : Set X} (hs : IsDiscrete s) (hst : t ⊆ s) : IsDiscrete t :=
-  haveI := hs.to_subtype
-  ⟨(IsEmbedding.inclusion hst).discreteTopology⟩
+by `X`on `s` is discrete, then also the topology induces on `t` is discrete.
 
-@[deprecated (since := "2025-10-08")] alias DiscreteTopology.of_subset := IsDiscrete.mono
+(Compare `IsDiscrete.mono` which is the same thing stated without using subtypes.) -/
+theorem DiscreteTopology.of_subset {X : Type*} [TopologicalSpace X] {s t : Set X}
+    (_ : DiscreteTopology s) (ts : t ⊆ s) : DiscreteTopology t :=
+  (IsEmbedding.inclusion ts).discreteTopology
+
+/-- Let `s, t ⊆ X` be two subsets of a topological space `X`.  If `t ⊆ s` and `s` is discrete,
+then `t` is discrete.
+
+(Compare `DiscreteTopology.of_subset` which is the same thing stated in terms of subtypes.) -/
+lemma IsDiscrete.mono {t : Set X} (hs : IsDiscrete s) (hst : t ⊆ s) : IsDiscrete t :=
+  ⟨.of_subset hs.to_subtype hst⟩
 
 /-- Let `s` be a discrete subset of a topological space. Then the preimage of `s` by
 a continuous injective map is also discrete. -/
