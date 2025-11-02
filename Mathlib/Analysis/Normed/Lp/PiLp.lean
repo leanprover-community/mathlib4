@@ -750,7 +750,7 @@ variable [∀ i, Module 𝕜 (α i)] [∀ i, Module 𝕜 (β i)] (c : 𝕜)
 /-- The canonical map `WithLp.equiv` between `PiLp ∞ β` and `Π i, β i` as a linear isometric
 equivalence. -/
 def equivₗᵢ : PiLp ∞ β ≃ₗᵢ[𝕜] (∀ i, β i) where
-  __ := WithLp.linearEquiv p 𝕜 _
+  __ := WithLp.linearEquiv ∞ 𝕜 _
   norm_map' := norm_ofLp
 
 section piLpCongrLeft

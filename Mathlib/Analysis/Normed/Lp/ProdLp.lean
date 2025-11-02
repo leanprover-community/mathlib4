@@ -858,7 +858,7 @@ variable {𝕜 p α β}
 /-- The canonical map `WithLp.equiv` between `WithLp ∞ (α × β)` and `α × β` as a linear isometric
 equivalence. -/
 def prodEquivₗᵢ : WithLp ∞ (α × β) ≃ₗᵢ[𝕜] α × β where
-  __ := WithLp.equiv p _
+  __ := WithLp.equiv ∞ _
   map_add' _f _g := rfl
   map_smul' _c _f := rfl
   norm_map' := prod_norm_toLp
