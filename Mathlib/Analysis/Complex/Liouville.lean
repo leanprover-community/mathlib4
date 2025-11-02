@@ -42,17 +42,12 @@ theorem norm_iteratedDeriv_le_of_forall_mem_sphere_norm_le [CompleteSpace F] {c 
   have hp (z) (hz : ‖z - c‖ = R) : ‖(z - c)⁻¹ ^ (n + 1) • f z‖ ≤ C / (R ^ n  * R) := by
     simpa [norm_smul, norm_pow, norm_inv, hz, ← div_eq_inv_mul] using
       (div_le_div_iff_of_pos_right (mul_pos (pow_pos hR n) hR)).2 (hC z hz)
-  have hq : iteratedDeriv n f c = n.factorial  •
-    (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - c)⁻¹ ^ (n + 1) • f z := by
-    calc
-      iteratedDeriv n f c = n.factorial • (2 * π * I)⁻¹ • (2 * π * I / n.factorial) •
-        iteratedDeriv n f c := by
-        rw [← smul_assoc, nsmul_eq_mul, mul_comm, inv_mul_eq_div, ← inv_div,
-          smul_comm, smul_inv_smul₀]
-        simp [Nat.factorial_ne_zero]
-      _ = n.factorial • (2 * π * I)⁻¹ •  (∮ z in C(c, R), (1 / (z - c) ^ (n + 1)) • f z) := by
-        rw [← DiffContOnCl.circleIntegral_one_div_sub_center_pow_smul hR n hf]
-      _ = n.factorial • (2 * π * I)⁻¹ • ∮ z in C(c, R), (z - c)⁻¹ ^ (n + 1) • f z := by simp
+  have hq : iteratedDeriv n f c = n.factorial • (2 * π * I)⁻¹ •
+    ∮ z in C(c, R), (z - c)⁻¹ ^ (n + 1) • f z := by
+    have : (2 * π * I / n.factorial) ≠ 0 := by simp [Nat.factorial_ne_zero]
+    rw [← inv_smul_smul₀ this (iteratedDeriv n f c), inv_div, div_eq_inv_mul, mul_comm,
+      ← nsmul_eq_mul, smul_assoc]
+    simp [← DiffContOnCl.circleIntegral_one_div_sub_center_pow_smul hR n hf]
   calc
     ‖iteratedDeriv n f c‖ = ‖n.factorial • (2 * π * I)⁻¹ •
       ∮ z in C(c, R), (z - c)⁻¹ ^ (n + 1) • f z‖ := by rw [hq]
