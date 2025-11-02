@@ -39,6 +39,11 @@ def checkInner (tk : Syntax) (term : Term) (c : Name) : TacticM Unit := do
   logInfoAt tk <| MessageData.signature c
   return
 
+def checkPrimeInner (tk : Syntax) (term : Term) (c : Name) : TacticM Unit := do
+  addCompletionInfo <| .id term c (danglingDot := false) {} none
+  logInfoAt tk <| MessageData.signature c
+  return
+
 def elabCheckTacticInner (tk : Syntax) (ignoreStuckTC : Bool) (term : Term)
     (inner : Syntax → Term → Name → TacticM Unit): TacticM Unit :=
   withoutModifyingStateWithInfoAndMessages <| withMainContext do
@@ -64,6 +69,9 @@ Info messages are placed at `tk`.
 def elabCheckTactic (tk : Syntax) (ignoreStuckTC : Bool) (term : Term) : TacticM Unit :=
   elabCheckTacticInner tk ignoreStuckTC term checkInner
 
+def elabCheckPrimeTactic (tk : Syntax) (ignoreStuckTC : Bool) (term : Term) : TacticM Unit :=
+  elabCheckTacticInner tk ignoreStuckTC term checkPrimeInner
+
 /--
 The `#check t` tactic elaborates the term `t` and then pretty prints it with its type as `e : ty`.
 
@@ -76,8 +84,10 @@ These become metavariables in the output.
 -/
 elab tk:"#check " colGt term:term : tactic => elabCheckTactic tk true term
 
+elab tk:"#check' " colGt term:term : tactic => elabCheckPrimeTactic tk true term
+
 end Mathlib.Tactic
 
 example : Nat := by
-  #check Nat
+  #check' Nat
   exact 1
