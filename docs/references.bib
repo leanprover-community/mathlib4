@@ -1,16 +1,4 @@
 
-# To normalize:
-# bibtool --preserve.key.case=on --preserve.keys=on --pass.comments=on --print.use.tab=off -s -i docs/references.bib -o docs/references.bib
-
-# WARNING: Please only use alphanumeric characters, '-', '_', and ':' for the key of bibliography items!
-# Currently doc-gen does not support characters outside them and will silently errors, causing incomplete reference pages.
-
-# https://www.zbmath.org/ and https://mathscinet.ams.org/mathscinet
-# (or the free tool https://mathscinet.ams.org/mrlookup)
-# are good sources of complete bibtex entries for mathematics
-
-# To link to an entry in `references.bib`, use the following formats:
-#   [Author, *Title* (optional location)][bibkey]
 @Book{            abramsky_gabbay_maibaum_1994,
   editor        = {Abramsky, S. and Gabbay, D. M. and Maibaum, T. S. E.},
   title         = {Handbook of logic in computer science. {Vol}. 3:
@@ -4861,6 +4849,30 @@
   keywords      = {54-01},
   zbmath        = {2107988},
   zbl           = {1052.54001}
+}
+
+# To normalize:
+# bibtool --preserve.key.case=on --preserve.keys=on --pass.comments=on --print.use.tab=off -s -i docs/references.bib -o docs/references.bib
+
+# WARNING: Please only use alphanumeric characters, '-', '_', and ':' for the key of bibliography items!
+# Currently doc-gen does not support characters outside them and will silently errors, causing incomplete reference pages.
+
+# https://www.zbmath.org/ and https://mathscinet.ams.org/mathscinet
+# (or the free tool https://mathscinet.ams.org/mrlookup)
+# are good sources of complete bibtex entries for mathematics
+
+# To link to an entry in `references.bib`, use the following formats:
+#   [Author, *Title* (optional location)][bibkey]
+@Book{            zbMATH05171613,
+  author        = {Watkins, John J.},
+  title         = {Topics in commutative ring theory},
+  isbn          = {978-0-691-12748-4},
+  year          = {2007},
+  publisher     = {Princeton, NJ: Princeton University Press},
+  language      = {English},
+  keywords      = {13-01},
+  zbmath        = {5171613},
+  zbl           = {1123.13002}
 }
 
 @Article{         zbMATH06785026,
