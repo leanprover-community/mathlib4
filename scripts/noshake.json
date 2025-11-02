@@ -264,8 +264,7 @@
   "Mathlib.Tactic.NormNum.Parity": ["Mathlib.Algebra.Ring.Int.Parity"],
   "Mathlib.Tactic.NormNum.ModEq":
   ["Mathlib.Data.Int.ModEq", "Mathlib.Tactic.NormNum.DivMod"],
-  "Mathlib.Tactic.NormNum.Ineq":
-  ["Mathlib.Algebra.Order.Monoid.WithTop"],
+  "Mathlib.Tactic.NormNum.Ineq": ["Mathlib.Algebra.Order.Monoid.WithTop"],
   "Mathlib.Tactic.NormNum.BigOperators":
   ["Mathlib.Algebra.BigOperators.Group.Finset.Basic",
    "Mathlib.Data.List.FinRange"],
@@ -424,6 +423,8 @@
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Operations"],
   "Mathlib.Lean.Expr.Basic": ["Batteries.Logic"],
   "Mathlib.GroupTheory.MonoidLocalization.Basic": ["Mathlib.Init.Data.Prod"],
+  "Mathlib.GroupTheory.FreeGroup.Basic":
+  ["Mathlib.Algebra.BigOperators.Group.List.Basic"],
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
   ["Mathlib.CategoryTheory.Sites.Whiskering"],
   "Mathlib.Geometry.Manifold.PoincareConjecture":
