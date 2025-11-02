@@ -3,7 +3,6 @@ Copyright (c) 2025 Fernando Chu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fernando Chu
 -/
-import Mathlib.CategoryTheory.EffectiveEpi.Basic
 import Mathlib.CategoryTheory.ExtremalEpi
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
