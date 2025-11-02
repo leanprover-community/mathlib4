@@ -63,10 +63,6 @@ protected lemma HasBasis.map₂ {ι ι' : Type*} {p : ι → Prop} {q : ι' → 
     (map₂ m f g).HasBasis (fun i : ι × ι' ↦ p i.1 ∧ q i.2) fun i ↦ image2 m (s i.1) (t i.2) := by
   simpa only [← map_prod_eq_map₂, ← image_prod] using (hf.prod hg).map _
 
-lemma hasBasis_map₂ :
-    (map₂ m f g).HasBasis (fun s : Set α × Set β ↦ s.1 ∈ f ∧ s.2 ∈ g) fun s ↦ image2 m s.1 s.2 :=
-  f.basis_sets.map₂ m g.basis_sets
-
 -- lemma image2_mem_map₂_iff (hm : injective2 m) : image2 m s t ∈ map₂ m f g ↔ s ∈ f ∧ t ∈ g :=
 -- ⟨by { rintro ⟨u, v, hu, hv, h⟩, rw image2_subset_image2_iff hm at h,
 --   exact ⟨mem_of_superset hu h.1, mem_of_superset hv h.2⟩ }, fun h ↦ image2_mem_map₂ h.1 h.2⟩

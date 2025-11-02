@@ -218,9 +218,6 @@ protected theorem HasBasis.inv {ι : Sort*} {p : ι → Prop} {s : ι → Set α
     (h : f.HasBasis p s) : f⁻¹.HasBasis p fun i ↦ (s i)⁻¹ := by
   simpa using h.map Inv.inv
 
-@[to_additive]
-theorem hasBasis_inv : f⁻¹.HasBasis (· ∈ f) (·⁻¹) := f.basis_sets.inv
-
 /-- Inversion is involutive on `Filter α` if it is on `α`. -/
 @[to_additive /-- Negation is involutive on `Filter α` if it is on `α`. -/]
 protected def instInvolutiveInv : InvolutiveInv (Filter α) :=
@@ -268,11 +265,6 @@ theorem HasBasis.mul {ιf ιg : Type*} {pf : ιf → Prop} {sf : ιf → Set α}
     {pg : ιg → Prop} {sg : ιg → Set α} (hf : f.HasBasis pf sf) (hg : g.HasBasis pg sg) :
     (f * g).HasBasis (fun i : ιf × ιg ↦ pf i.1 ∧ pg i.2) fun i ↦ sf i.1 * sg i.2 :=
   hf.map₂ (· * ·) hg
-
-@[to_additive]
-theorem hasBasis_mul :
-    (f * g).HasBasis (fun st : Set α × Set α ↦ st.1 ∈ f ∧ st.2 ∈ g) (fun st ↦ st.1 * st.2) :=
-  f.basis_sets.mul g.basis_sets
 
 @[to_additive (attr := simp)]
 theorem map₂_mul : map₂ (· * ·) f g = f * g :=
@@ -383,11 +375,6 @@ theorem HasBasis.div {ιf ιg : Type*} {pf : ιf → Prop} {sf : ιf → Set α}
     {pg : ιg → Prop} {sg : ιg → Set α} (hf : f.HasBasis pf sf) (hg : g.HasBasis pg sg) :
     (f / g).HasBasis (fun i : ιf × ιg ↦ pf i.1 ∧ pg i.2) fun i ↦ sf i.1 / sg i.2 :=
   hf.map₂ (· / ·) hg
-
-@[to_additive]
-theorem hasBasis_div :
-    (f / g).HasBasis (fun st : Set α × Set α ↦ st.1 ∈ f ∧ st.2 ∈ g) (fun st ↦ st.1 / st.2) :=
-  f.basis_sets.div g.basis_sets
 
 @[to_additive (attr := simp)]
 theorem map₂_div : map₂ (· / ·) f g = f / g :=
@@ -799,12 +786,6 @@ theorem HasBasis.smul {ιf ιg : Type*} {pf : ιf → Prop} {sf : ιf → Set α
     {pg : ιg → Prop} {sg : ιg → Set β} (hf : f.HasBasis pf sf) (hg : g.HasBasis pg sg) :
     (f • g).HasBasis (fun i : ιf × ιg ↦ pf i.1 ∧ pg i.2) fun i ↦ sf i.1 • sg i.2 :=
   hf.map₂ (· • ·) hg
-
-@[to_additive]
-theorem hasBasis_smul :
-    (f • g).HasBasis (fun st : Set α × Set β ↦ st.1 ∈ f ∧ st.2 ∈ g) (fun st ↦ st.1 • st.2) :=
-  f.basis_sets.smul g.basis_sets
-
 
 @[to_additive (attr := simp)]
 theorem map₂_smul : map₂ (· • ·) f g = f • g :=
