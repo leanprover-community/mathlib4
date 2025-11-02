@@ -203,7 +203,7 @@ theorem exist_eq_span_eq_ncard_of_X_not_mem (hI : X ∉ I) {S : Set R}
 
 end X_notMem
 
-/-- A prime ideal `P` of `R⟦X⟧` if finitely generated if and only if `P.map constantCoeff` is
+/-- A prime ideal `P` of `R⟦X⟧` is finitely generated if and only if `P.map constantCoeff` is
 finitely generated. -/
 lemma IsPrime.FG_iff {P : Ideal R⟦X⟧} [P.IsPrime] : P.FG ↔ (P.map constantCoeff).FG := by
   constructor
