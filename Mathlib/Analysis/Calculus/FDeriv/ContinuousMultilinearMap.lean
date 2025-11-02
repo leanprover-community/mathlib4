@@ -14,7 +14,8 @@ In this file,
 - `ι` is an index type (`Fin n` in many applications);
 - `E`, `F i`, `G i`, `H`, are normed spaces for each `i : ι`;
 - `f x` is a continuous multilinear map from `Π i, G i` to `H`, depending on a parameter `x : E`;
-- for each `i : ι`, `g i x` is a continuous linear map `F i → G i`, depending on a parameter `x : E`;
+- for each `i : ι`, `g i x` is a continuous linear map `F i → G i`,
+  depending on a parameter `x : E`.
 
 Given this data, for each `x` we can define a continuous multilinear map from `Π i, F i` to `H`
 given by `(f x).compContinuousLinearMap (fun i ↦ g i x) v = f x (fun i ↦ g i x (v i))`.
