@@ -1382,6 +1382,7 @@ import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
 import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
+import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction2
 import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
 import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
 import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesSubcomplex

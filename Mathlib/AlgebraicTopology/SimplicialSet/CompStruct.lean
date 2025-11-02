@@ -3,7 +3,7 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Basic
+import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
 
 /-!
@@ -11,7 +11,7 @@ import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
 
 -/
 
-universe u
+universe v u
 
 open CategoryTheory Simplicial SimplicialObject.Truncated
   SimplexCategory.Truncated
@@ -115,4 +115,27 @@ end Edge
 
 end Truncated
 
+variable {X : SSet.{u}}
+
+def Edge (x y : X _⦋0⦌) := Truncated.Edge (X := (truncation 2).obj X) x y
+
 end SSet
+
+namespace CategoryTheory
+
+open SSet
+
+variable {C : Type u} [Category.{v} C]
+
+def nerveHomEquiv {x y : (nerve C) _⦋0⦌} :
+    Edge x y ≃ (nerveEquiv x ⟶ nerveEquiv y) where
+  toFun e := eqToHom (by simp only [nerveEquiv, ← e.src_eq]; rfl) ≫ e.edge.hom ≫
+    eqToHom (by simp only [nerveEquiv, ← e.tgt_eq]; rfl)
+  invFun f :=
+    { edge := ComposableArrows.mk₁ f
+      src_eq := ComposableArrows.ext₀ rfl
+      tgt_eq := ComposableArrows.ext₀ rfl }
+  left_inv := sorry
+  right_inv := sorry
+
+end CategoryTheory

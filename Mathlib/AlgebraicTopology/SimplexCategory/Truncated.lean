@@ -88,6 +88,25 @@ lemma δ₂_two_comp_σ₂_one : δ₂ (2 : Fin 3) ≫ σ₂ 1 = 𝟙 _ :=
 lemma δ₂_two_comp_σ₂_zero : δ₂ (2 : Fin 3) ≫ σ₂ 0 = σ₂ 0 ≫ δ₂ 1 :=
   SimplexCategory.δ_comp_σ_of_gt' (by decide)
 
+lemma δ₂_one_eq_const : δ₂ (1 : Fin 2) = const _ _ 0 := by
+  -- should be `by decide`
+  ext i
+  fin_cases i
+  rfl
+
+lemma δ₂_zero_eq_const : δ₂ (0 : Fin 2) = const _ _ 1 := by
+  -- should be `by decide`
+  ext i
+  fin_cases i
+  rfl
+
+@[reassoc]
+lemma δ₂_zero_comp_δ₂_two : δ₂ (0 : Fin 2) ≫ δ₂ 2 = δ₂ 1 ≫ δ₂ 0 := by
+  -- should be `by decide`
+  ext i
+  fin_cases i
+  rfl
+
 end Two
 
 end SimplexCategory.Truncated
