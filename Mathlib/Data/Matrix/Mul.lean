@@ -954,16 +954,18 @@ theorem vecMul_ofNat (x : ℕ) [x.AtLeastTwo] (v : m → α) :
   vecMul_natCast _ _
 
 omit [Fintype m] [DecidableEq m] in
-theorem mulVec_injective [DecidableEq n] : @mulVec m n α _ _ |>.Injective := by
+theorem mulVec_injective : @mulVec m n α _ _ |>.Injective := by
   intro A B h
   ext i j
+  classical
   convert congrFun₂ h (Pi.single j 1) i
     <;> simp
 
-omit [Fintype n] in
+omit [Fintype n] [DecidableEq m] in
 theorem vecMul_injective : (·.vecMul : Matrix m n α → _).Injective := by
   intro A B h
   ext i j
+  classical
   convert congrFun₂ h (Pi.single i 1) j
     <;> simp only [single_one_vecMul, row]
 
