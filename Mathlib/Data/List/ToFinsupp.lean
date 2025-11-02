@@ -126,6 +126,6 @@ theorem toFinsupp_eq_sum_mapIdx_single {R : Type*} [AddMonoid R] (l : List R)
   induction l using List.reverseRecOn with
   | nil => exact toFinsupp_nil
   | append_singleton x xs ih =>
-    classical simp [toFinsupp_concat_eq_toFinsupp_add_single, ih]
+    classical simp [toFinsupp_concat_eq_toFinsupp_add_single, sum_append, ih]
 
 end List

@@ -28,9 +28,6 @@ variable {ι α β M N P G : Type*}
 
 namespace List
 
-attribute [to_additive existing] prod_nil prod_cons prod_one_cons prod_append prod_concat
-  prod_flatten
-
 section Monoid
 
 variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
@@ -69,8 +66,8 @@ theorem prod_hom₂_nonempty {l : List ι} (f : M → N → P)
 theorem prod_hom₂ (l : List ι) (f : M → N → P) (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d)
     (hf' : f 1 1 = 1) (f₁ : ι → M) (f₂ : ι → N) :
     (l.map fun i => f (f₁ i) (f₂ i)).prod = f (l.map f₁).prod (l.map f₂).prod := by
-  rw [prod, prod, prod, foldr_map, foldr_map, foldr_map,
-    ← l.foldr_hom₂ f _ _ (fun x y => f (f₁ x) (f₂ x) * y) _ _ (by simp [hf]), hf']
+  simp only [prod_eq_foldr, foldr_map]
+  rw [← foldr_hom₂ l f _ _ ((fun x y => f (f₁ x) (f₂ x) * y) ) _ _ (by simp [hf]), hf']
 
 @[to_additive (attr := simp)]
 theorem prod_map_mul {M : Type*} [CommMonoid M] {l : List ι} {f g : ι → M} :
@@ -289,7 +286,7 @@ variable [Group G]
 @[to_additive /-- This is the `List.sum` version of `add_neg_rev` -/]
 theorem prod_inv_reverse : ∀ L : List G, L.prod⁻¹ = (L.map fun x => x⁻¹).reverse.prod
   | [] => by simp
-  | x :: xs => by simp [prod_inv_reverse xs]
+  | x :: xs => by simp [prod_append, prod_inv_reverse xs]
 
 /-- A non-commutative variant of `List.prod_reverse` -/
 @[to_additive /-- A non-commutative variant of `List.sum_reverse` -/]
@@ -311,8 +308,7 @@ theorem prod_range_div' (n : ℕ) (f : ℕ → G) :
     ((range n).map fun k ↦ f k / f (k + 1)).prod = f 0 / f n := by
   induction n with
   | zero => exact (div_self' (f 0)).symm
-  | succ n h =>
-    rw [range_succ, map_append, map_singleton, prod_append, prod_singleton, h, div_mul_div_cancel]
+  | succ n h => simp [range_succ, prod_append, map_append, h]
 
 end Group
 

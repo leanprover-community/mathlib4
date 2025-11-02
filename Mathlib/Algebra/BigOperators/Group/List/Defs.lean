@@ -18,6 +18,10 @@ variable {ι M N : Type*}
 namespace List
 section Defs
 
+set_option linter.existingAttributeWarning false in
+attribute [to_additive existing] prod prod_nil prod_cons prod_one_cons prod_append prod_concat
+  prod_flatten
+
 /-- The alternating sum of a list. -/
 def alternatingSum {G : Type*} [Zero G] [Add G] [Neg G] : List G → G
   | [] => 0
@@ -55,24 +59,15 @@ section MulOneClass
 variable [MulOneClass M] {l : List M} {a : M}
 
 @[to_additive]
-theorem prod_one_cons : (1 :: l).prod = l.prod := by
-  rw [prod, foldr, one_mul]
-
-@[to_additive]
 theorem prod_map_one {l : List ι} :
     (l.map fun _ => (1 : M)).prod = 1 := by
-  induction l with
-  | nil => rfl
-  | cons hd tl ih => rw [map_cons, prod_one_cons, ih]
+  induction l with simp [*]
 
 end MulOneClass
 
 section Monoid
 
 variable [Monoid M] [Monoid N]
-
-@[to_additive]
-theorem prod_eq_foldr {l : List M} : l.prod = foldr (· * ·) 1 l := rfl
 
 @[to_additive (attr := simp)]
 theorem prod_replicate (n : ℕ) (a : M) : (replicate n a).prod = a ^ n := by
