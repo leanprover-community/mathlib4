@@ -386,13 +386,14 @@ Let `S` be an `S₀`-algebra. Then `S`-modules are modules over `S₀`.
 -/
 scoped instance : Module S₀ M := Module.compHom _ (algebraMap S₀ S)
 
+lemma smul_def (s : S₀) (m : M) : s • m = algebraMap S₀ S s • m := rfl
+
 scoped instance : IsScalarTower S₀ S M where
-  smul_assoc _ _ _ := by rw [Algebra.smul_def, mul_smul]; rfl
+  smul_assoc _ _ _ := by rw [_root_.Algebra.smul_def, mul_smul, smul_def]
 
 scoped instance : SMulCommClass S S₀ M where
-  smul_comm s s₀ n :=
-    show s • algebraMap S₀ S s₀ • n = algebraMap S₀ S s₀ • s • n by
-    rw [← smul_assoc, smul_eq_mul, ← Algebra.commutes, mul_smul]
+  smul_comm s s₀ n := by
+    rw [smul_def, smul_def, ← smul_assoc, smul_eq_mul, ← Algebra.commutes, mul_smul]
 
 /- TODO: generalize `Functor.Linear`, see #28826.
 Let `S` be an `S₀`-algebra. Then the category of `S`-modules is `S₀`-linear.
