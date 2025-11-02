@@ -492,7 +492,7 @@ instance RelCWComplex.Subcomplex.instCompletelyDistribLattice [T2Space X]
 
 end Lattice
 
-instance RelCWComplex.Subcomplex.instInhabited [T2Space X] [RelCWComplex C D] :
+instance RelCWComplex.Subcomplex.instInhabited [RelCWComplex C D] :
     Inhabited (Subcomplex C) :=
   ⟨⊥⟩
 
