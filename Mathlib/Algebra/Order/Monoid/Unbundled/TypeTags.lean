@@ -172,3 +172,18 @@ variable [LE α] [OrderBot α]
 end OrderBot
 
 end Multiplicative
+
+section DenselyOrdered
+
+variable [LT α]
+
+lemma denselyOrdered_additive_iff : DenselyOrdered (Additive α) ↔ DenselyOrdered α := Iff.rfl
+lemma denselyOrdered_multiplicative_iff : DenselyOrdered (Multiplicative α) ↔ DenselyOrdered α :=
+  Iff.rfl
+
+instance [DenselyOrdered α] : DenselyOrdered (Multiplicative α) :=
+  denselyOrdered_multiplicative_iff.2 ‹_›
+instance [DenselyOrdered α] : DenselyOrdered (Additive α) :=
+  denselyOrdered_additive_iff.2 ‹_›
+
+end DenselyOrdered
