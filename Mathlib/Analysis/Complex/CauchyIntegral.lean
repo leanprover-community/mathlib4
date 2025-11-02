@@ -702,13 +702,13 @@ differentiable on its interior away from a countable set. -/
 lemma circleIntegral_one_div_sub_center_pow_smul_of_differentiable_on_off_countable
     (h0 : 0 < R) (n : ℕ) (hs : s.Countable)
     (hc : ContinuousOn f (closedBall c R)) (hd : ∀ z ∈ ball c R \ s, DifferentiableAt ℂ f z) :
-    (∮ z in C(c, R), (1 / (z - c) ^ (n + 1)) • f z)
+    ∮ z in C(c, R), (1 / (z - c) ^ (n + 1)) • f z
       = (2 * π * I / n.factorial) • iteratedDeriv n f c := by
   have := hasFPowerSeriesOnBall_of_differentiable_off_countable (R := ⟨R, h0.le⟩) hs hc hd h0
       |>.factorial_smul 1 n
   rw [iteratedFDeriv_apply_eq_iteratedDeriv_mul_prod, Finset.prod_const_one, one_smul] at this
   rw [← this, cauchyPowerSeries_apply, ← Nat.cast_smul_eq_nsmul ℂ, ← mul_smul, ← mul_smul,
-    div_mul_cancel₀ _ (mod_cast n.factorial_ne_zero), mul_inv_cancel₀ two_pi_I_ne_zero, one_smul]
+    div_mul_cancel₀ _ (mod_cast n.factorial_ne_zero), mul_inv_cancel₀ two_pi_I_ne_zero]
   simp [← mul_smul, pow_succ, mul_comm]
 
 /-- **Cauchy integral formula for the first order derivative**, assuming `f` is continuous on a
@@ -716,7 +716,7 @@ closed ball and differentiable on its interior away from a countable set. -/
 lemma differentiable_on_off_countable_deriv_eq_smul_circleIntegral
     (h0 : 0 < R) (hs : s.Countable) (hc : ContinuousOn f (closedBall c R))
     (hd : ∀ z ∈ ball c R \ s, DifferentiableAt ℂ f z) :
-    (∮ z in C(c, R), (1 / (z - c) ^ 2) • f z) = (2 * π * I) • deriv f c := by
+    ∮ z in C(c, R), (1 / (z - c) ^ 2) • f z = (2 * π * I) • deriv f c := by
   simpa using circleIntegral_one_div_sub_center_pow_smul_of_differentiable_on_off_countable
     h0 1 hs hc hd
 
@@ -724,7 +724,7 @@ lemma differentiable_on_off_countable_deriv_eq_smul_circleIntegral
 differentiable on its interior. -/
 lemma _root_.DiffContOnCl.circleIntegral_one_div_sub_center_pow_smul
     (h0 : 0 < R) (n : ℕ) (hc : DiffContOnCl ℂ f (ball c R)) :
-    (∮ z in C(c, R), (1 / (z - c) ^ (n + 1)) • f z)
+    ∮ z in C(c, R), (1 / (z - c) ^ (n + 1)) • f z
       = (2 * π * I / n.factorial) • iteratedDeriv n f c :=
   c.circleIntegral_one_div_sub_center_pow_smul_of_differentiable_on_off_countable h0 n
     Set.countable_empty hc.continuousOn_ball fun _ hx ↦ hc.differentiableAt isOpen_ball hx.1
@@ -733,13 +733,13 @@ lemma _root_.DiffContOnCl.circleIntegral_one_div_sub_center_pow_smul
 closed ball and differentiable on its interior. -/
 lemma _root_.DiffContOnCl.deriv_eq_smul_circleIntegral (h0 : 0 < R)
     (hc : DiffContOnCl ℂ f (ball c R)) :
-    (∮ z in C(c, R), (1 / (z - c) ^ 2) • f z) = (2 * π * I) • deriv f c := by
+    ∮ z in C(c, R), (1 / (z - c) ^ 2) • f z = (2 * π * I) • deriv f c := by
   simpa using DiffContOnCl.circleIntegral_one_div_sub_center_pow_smul h0 1 hc
 
 /-- **Cauchy integral formula for derivatives**, assuming `f` is differentiable on a closed ball. -/
 lemma _root_.DifferentiableOn.circleIntegral_one_div_sub_center_pow_smul (h0 : 0 < R) (n : ℕ)
     (hc : DifferentiableOn ℂ f (closedBall c R)) :
-    (∮ z in C(c, R), (1 / (z - c) ^ (n + 1)) • f z)
+    ∮ z in C(c, R), (1 / (z - c) ^ (n + 1)) • f z
       = (2 * π * I / n.factorial) • iteratedDeriv n f c :=
   (hc.mono closure_ball_subset_closedBall).diffContOnCl
     |>.circleIntegral_one_div_sub_center_pow_smul h0 n
@@ -748,7 +748,7 @@ lemma _root_.DifferentiableOn.circleIntegral_one_div_sub_center_pow_smul (h0 : 0
 a closed ball. -/
 lemma _root_.DifferentiableOn.deriv_eq_smul_circleIntegral (h0 : 0 < R)
     (hc : DifferentiableOn ℂ f (closedBall c R)) :
-    (∮ z in C(c, R), (1 / (z - c) ^ 2) • f z) = (2 * π * I) • deriv f c := by
+    ∮ z in C(c, R), (1 / (z - c) ^ 2) • f z = (2 * π * I) • deriv f c := by
   simpa using DifferentiableOn.circleIntegral_one_div_sub_center_pow_smul h0 1 hc
 
 end derivatives
