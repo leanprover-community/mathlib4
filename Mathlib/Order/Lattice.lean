@@ -505,6 +505,39 @@ def Lattice.mk' {α : Type*} [Max α] [Min α] (sup_comm : ∀ a b : α, a ⊔ b
       rw [partial_order_eq]
       apply le_inf }
 
+/-- A type with a pair of commutative and associative binary operations which satisfy two absorption
+laws relating the two operations has the structure of a lattice.
+
+Provided a partial order such that `a ≤ b` if and only if `a ⊔ b = b`, we can define a lattice that
+uses both the provided `Min` and `Max` instances as well as the provided `PartialOrder` instance.
+-/
+def Lattice.mk'' {α : Type*} [PartialOrder α] [Max α] [Min α]
+    (sup_comm : ∀ (a b : α), a ⊔ b = b ⊔ a) (sup_assoc : ∀ (a b c : α), a ⊔ b ⊔ c = a ⊔ (b ⊔ c))
+    (inf_comm : ∀ (a b : α), a ⊓ b = b ⊓ a) (inf_assoc : ∀ (a b c : α), a ⊓ b ⊓ c = a ⊓ (b ⊓ c))
+    (sup_inf_self : ∀ (a b : α), a ⊔ a ⊓ b = a) (inf_sup_self : ∀ (a b : α), a ⊓ (a ⊔ b) = a)
+    (le_iff : ∀ (a b : α), a ≤ b ↔ a ⊔ b = b) : Lattice α :=
+  have sup_self : ∀ a : α , a ⊔ a = a := by
+    intro a
+    rw [← le_iff]
+  have le_iff' : ∀ (a b : α), a ≤ b ↔ a ⊓ b = a := by
+    intro a b
+    rw [le_iff]
+    exact ⟨fun h => by rw [← h, inf_sup_self],
+      fun h => by rw [← h, sup_comm, inf_comm, sup_inf_self]⟩
+  { __ := (inferInstance : PartialOrder α)
+    sup := Max.max
+    le_sup_left a b := by rw [le_iff, ← sup_assoc, sup_self]
+    le_sup_right a b := by rw [le_iff, sup_comm, sup_assoc, sup_self]
+    sup_le a b c hac hbc := by
+      rw [le_iff] at *
+      rw [sup_assoc, hbc, hac]
+    inf := Min.min
+    inf_le_left a b := by rw [le_iff, sup_comm, sup_inf_self]
+    inf_le_right a b := by rw [le_iff, sup_comm, inf_comm, sup_inf_self]
+    le_inf a b c hab hac := by
+      rw [le_iff'] at *
+      rw [← inf_assoc, hab, hac]}
+
 section Lattice
 
 variable [Lattice α] {a b c : α}
