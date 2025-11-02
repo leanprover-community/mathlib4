@@ -133,12 +133,7 @@ def SwapTrue : (I → Bool) → I → Bool :=
   fun f i ↦ if ord I i = o then true else f i
 
 theorem continuous_swapTrue : Continuous (SwapTrue o : (I → Bool) → I → Bool) := by
-  dsimp +unfoldPartialApp [SwapTrue]
-  apply continuous_pi
-  intro i
-  apply Continuous.comp'
-  · apply continuous_bot
-  · apply continuous_apply
+  continuity
 
 variable {o}
 
