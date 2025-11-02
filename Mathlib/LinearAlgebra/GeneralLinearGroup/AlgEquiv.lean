@@ -78,7 +78,7 @@ theorem AlgEquiv.coe_eq_linearEquiv_conjugate (f : End K V ≃ₐ[K] End K V) :
   exact ⟨LinearEquiv.ofBijective T ⟨inj, surj⟩, fun A ↦ this A |>.symm⟩
 
 /-- Alternate statement of `coe_eq_linearEquiv_conjugate`. -/
-theorem mulSemiringActionToAlgEquiv_conjAct_surjective :
+theorem surjective_mulSemiringActionToAlgEquiv_conjAct :
     Function.Surjective
       (MulSemiringAction.toAlgEquiv (G := ConjAct (GeneralLinearGroup K V)) K (End K V)) := by
   intro f
