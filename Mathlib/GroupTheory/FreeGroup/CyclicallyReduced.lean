@@ -138,7 +138,7 @@ theorem isCyclicallyReduced (h : IsReduced L) : IsCyclicallyReduced (reduceCycli
 /-- Partner function to `reduceCyclically`.
 See `reduceCyclically.conj_conjugator_reduceCyclically`. -/
 @[to_additive /-- Partner function to `reduceCyclically`.
-See `reduceCyclically.conj_conjugator.reduceCyclically`. -/]
+See `reduceCyclically.conj_conjugator_reduceCyclically`. -/]
 def conjugator : List (α × Bool) → List (α × Bool) :=
   List.bidirectionalRec
     (nil := [])
