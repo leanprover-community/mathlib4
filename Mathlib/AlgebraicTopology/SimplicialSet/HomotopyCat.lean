@@ -310,6 +310,10 @@ lemma homMk_comp_homMk {x₀ x₁ x₂ : V _⦋0⦌₂} {e₀₁ : Edge x₀ x�
     (OneTruncation₂.HoRel₂.of_compStruct h)
 
 variable (V) in
+/-- If `V` is a `2`-truncated simplicial sets, this is the family of
+morphisms in `V.HomotopyCategory` corresponding to the edges of `V`.
+(Any morphism in `V.HomotopyCategory` is in the multiplicative closure
+of this family of morphisms, see `multiplicativeClosure_morphismPropertyHomMk`.) -/
 def morphismPropertyHomMk : MorphismProperty V.HomotopyCategory :=
     .ofHoms (fun (e : Σ (x y : V _⦋0⦌₂), Edge x y) ↦ homMk e.2.2)
 
@@ -359,17 +363,10 @@ variable (obj : V _⦋0⦌₂ → D) (map : ∀ ⦃x y : V _⦋0⦌₂⦄, Edge 
 
 /-- Constructor for functors from the homotopy category. -/
 def lift : V.HomotopyCategory ⥤ D :=
-  CategoryTheory.Quotient.lift _ (
-    CategoryTheory.Quotient.lift _ (Paths.lift { obj := obj, map e := map e }) (by
-      -- needs a `Cat.FreeReflRel.lift`
-      have := map_id
-      sorry)) (by
-      rintro _ e₀₁ e₁₂ e₀₂ ⟨h⟩
-      have := map_comp h
-      simp only [Functor.map_comp]
-      change (𝟙 _ ≫ map _) ≫ 𝟙 _ ≫ map _ = 𝟙 _ ≫ map _
-      rw [id_comp, id_comp, id_comp]
-      exact map_comp h)
+  CategoryTheory.Quotient.lift _
+    (Cat.FreeRefl.lift obj (fun _ _ f ↦ map f) map_id) (by
+      rintro _ _ _ _ ⟨h⟩
+      simpa using map_comp h)
 
 @[simp]
 lemma lift_obj_mk (x : V _⦋0⦌₂) : (lift obj map map_id map_comp).obj (mk x) = obj x := rfl
@@ -487,8 +484,6 @@ end Truncated
 2-truncation. -/
 def hoFunctor : SSet.{u} ⥤ Cat.{u, u} := SSet.truncation 2 ⋙ Truncated.hoFunctor₂
 
-section
-
 /-- Since `⦋0⦌ : SimplexCategory` is terminal, `Δ[0]` has a unique point and thus
 `OneTruncation₂ ((truncation 2).obj Δ[0])` has a unique inhabitant. -/
 instance instUniqueOneTruncation₂DeltaZero : Unique (OneTruncation₂ ((truncation 2).obj Δ[0])) :=
@@ -507,8 +502,6 @@ instance (x y : OneTruncation₂ ((truncation 2).obj Δ[0])) : Unique (x ⟶ y) 
     ext
     exact this.allEq _ _
 
-section
-
 instance : Unique ((truncation.{u} 2).obj Δ[0]).HomotopyCategory :=
   inferInstanceAs (Unique <| CategoryTheory.Quotient _)
 
@@ -521,8 +514,6 @@ instance : IsDiscrete ((truncation.{u} 2).obj Δ[0]).HomotopyCategory where
 def isTerminalHoFunctorDeltaZero : IsTerminal (hoFunctor.{u}.obj (Δ[0])) :=
   Cat.isTerminalOfUniqueOfIsDiscrete
 
-end
-
 /-- The homotopy category functor preserves generic terminal objects. -/
 noncomputable def hoFunctor.terminalIso : hoFunctor.obj (⊤_ SSet) ≅ ⊤_ Cat :=
   hoFunctor.mapIso (terminalIsoIsTerminal stdSimplex.isTerminalObj₀) ≪≫
@@ -534,7 +525,5 @@ instance hoFunctor.preservesTerminal : PreservesLimit (empty.{0} SSet) hoFunctor
 instance hoFunctor.preservesTerminal' :
     PreservesLimitsOfShape (Discrete PEmpty.{1}) hoFunctor :=
   preservesLimitsOfShape_pempty_of_preservesTerminal _
-
-end
 
 end SSet

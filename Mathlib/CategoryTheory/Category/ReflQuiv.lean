@@ -147,6 +147,29 @@ lemma FreeRefl.quotientFunctor_map_cons (V) [ReflQuiver V] {x y z : Paths V}
       (quotientFunctor V).map p ≫ (quotientFunctor V).map q.toPath :=
   rfl
 
+section
+
+variable {V} [ReflQuiver V] {D : Type*} [Category D]
+  (obj : V → D) (map : ∀ ⦃v w : V⦄, (v ⟶ w) → (obj v ⟶ obj w))
+  (map_id : ∀ (v : V), map (𝟙rq v) = 𝟙 _)
+
+/-- Constructor for functors from `FreeRefl`. -/
+def FreeRefl.lift : FreeRefl V ⥤ D :=
+  Quotient.lift _ (Paths.lift { obj := obj, map f := map f }) (by
+    rintro _ _ _ _ ⟨h⟩
+    simp [map_id])
+
+@[simp]
+lemma FreeRefl.lift_obj (v : V) :
+    (lift obj map map_id).obj (.mk v) = obj v := rfl
+
+@[simp]
+lemma FreeRefl.lift_map {v w : V} (f : v ⟶ w) :
+    (lift obj map map_id).map ((quotientFunctor V).map f.toPath) = map f :=
+  Category.id_comp _
+
+end
+
 /-- This is a specialization of `Quotient.lift_unique'` rather than `Quotient.lift_unique`, hence
 the prime in the name. -/
 theorem FreeRefl.lift_unique' {V} [ReflQuiver V] {D} [Category D] (F₁ F₂ : FreeRefl V ⥤ D)
