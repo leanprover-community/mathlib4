@@ -52,6 +52,12 @@ def map {x₀ x₁ : X _⦋0⦌₂} (e : Edge x₀ x₁) (f : X ⟶ Y) :
   src_eq := by simp [← FunctorToTypes.naturality]
   tgt_eq := by simp [← FunctorToTypes.naturality]
 
+@[simp]
+lemma map_id (x : X _⦋0⦌₂) (f : X ⟶ Y) :
+    (Edge.id x).map f = Edge.id (f.app _ x) := by
+  ext
+  simp [FunctorToTypes.naturality]
+
 /-- Let `x₀`, `x₁`, `x₂` be `0`-simplices of a `2`-truncated simplicial set `X`,
 `e₀₁` an edge from `x₀` to `x₁`, `e₁₂` an edge from `x₁` to `x₂`,
 `e₀₂` an edge from `x₀` to `x₂`. This is the data of a `2`-simplex whose
@@ -150,6 +156,18 @@ lemma mk_edge : (mk s src_eq tgt_eq).edge = s := rfl
 
 end
 
+/-- The constant edge on a `0`-simplex. -/
+def id (x : X _⦋0⦌) : Edge x x :=
+  Truncated.Edge.id _
+
+@[simp]
+lemma id_edge (x : X _⦋0⦌) :
+    (id x).edge = X.σ 0 x := rfl
+
+def CompStruct {x₀ x₁ x₂ : X _⦋0⦌}
+    (e₀₁ : Edge x₀ x₁) (e₁₂ : Edge x₁ x₂) (e₀₂ : Edge x₀ x₂) :=
+  Truncated.Edge.CompStruct e₀₁ e₁₂ e₀₂
+
 end Edge
 
 end SSet
@@ -181,5 +199,16 @@ def nerveHomEquiv {x y : (nerve C) _⦋0⦌} :
     ext
     exact ComposableArrows.ext₁ (by simp) (by simp) rfl
   right_inv f := by simp
+
+@[simp]
+lemma nerveHomEquiv_id (x : (nerve C) _⦋0⦌) :
+    nerveHomEquiv (Edge.id x) = 𝟙 _ := by
+  obtain ⟨x, rfl⟩ := nerveEquiv.symm.surjective x
+  dsimp [nerveHomEquiv]
+  cat_disch
+
+lemma nerveHomEquiv_comp {x₀ x₁ x₂ : (nerve C) _⦋0⦌} {e₀₁ : Edge x₀ x₁}
+    {e₁₂ : Edge x₁ x₂} {e₀₂ : Edge x₀ x₂} (h : Edge.CompStruct e₀₁ e₁₂ e₀₂) :
+    nerveHomEquiv e₀₁ ≫ nerveHomEquiv e₁₂ = nerveHomEquiv e₀₂ := sorry
 
 end CategoryTheory

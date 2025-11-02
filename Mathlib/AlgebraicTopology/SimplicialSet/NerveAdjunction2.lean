@@ -168,25 +168,25 @@ namespace HomotopyCategory
 
 variable {X : Truncated.{u} 2} {C : Type u} [SmallCategory C]
 
-def functorOfTruncation (φ : (X ⟶ (truncation 2).obj (nerve C))) :
-    X.HomotopyCategory ⥤ C := by
-  refine lift (fun x ↦ nerveEquiv (φ.app _ x)) (fun x y e ↦ nerveHomEquiv (e.map φ)) ?_ ?_
-  · sorry
-  · sorry
+def descOfTruncation (φ : X ⟶ (truncation 2).obj (nerve C)) :
+    X.HomotopyCategory ⥤ C :=
+  lift (fun x ↦ nerveEquiv (φ.app _ x)) (fun e ↦ nerveHomEquiv (e.map φ))
+    (fun x ↦ by simpa using nerveHomEquiv_id (φ.app _ x))
+      (fun h ↦ nerveHomEquiv_comp (h.map φ))
 
 def functorEquiv :
     (X.HomotopyCategory ⥤ C) ≃ (X ⟶ (truncation 2).obj (nerve C)) where
   toFun F :=
     liftOfIsStrictSegal (fun x ↦ nerveEquiv.symm (F.obj (mk x))) (by
       sorry) sorry sorry sorry sorry sorry
-  invFun φ := functorOfTruncation φ
+  invFun φ := descOfTruncation φ
   left_inv := sorry
   right_inv := sorry
 
 end HomotopyCategory
 
-/-- The adjunction between the 2-truncated nerve functor and the 2-truncated homotopy category
-functor. -/
+/-- The adjunction between the 2-truncated homotopy category functor
+and the 2-truncated nerve functor and the . -/
 def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ :=
   Adjunction.mkOfHomEquiv
     { homEquiv _ _ := HomotopyCategory.functorEquiv

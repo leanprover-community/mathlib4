@@ -360,10 +360,10 @@ variable {D : Type*} [Category D]
 
 section
 
-variable (obj : V _⦋0⦌₂ → D) (map : ∀ ⦃x y : V _⦋0⦌₂⦄, Edge x y → (obj x ⟶ obj y))
+variable (obj : V _⦋0⦌₂ → D) (map : ∀ {x y : V _⦋0⦌₂}, Edge x y → (obj x ⟶ obj y))
   (map_id : ∀ (x : V _⦋0⦌₂), map (.id x) = 𝟙 _)
-  (map_comp : ∀ ⦃x₀ x₁ x₂ : V _⦋0⦌₂⦄
-    ⦃e₀₁ : Edge x₀ x₁⦄ ⦃e₁₂ : Edge x₁ x₂⦄ ⦃e₀₂ : Edge x₀ x₂⦄
+  (map_comp : ∀ {x₀ x₁ x₂ : V _⦋0⦌₂}
+    {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂} {e₀₂ : Edge x₀ x₂}
     (_ : Edge.CompStruct e₀₁ e₁₂ e₀₂), map e₀₁ ≫ map e₁₂ = map e₀₂)
 
 /-- Constructor for functors from the homotopy category. -/
