@@ -53,7 +53,10 @@ end liftOfIsStrictSegal
 def liftOfIsStrictSegal : X ⟶ Y := by
   have := f₀
   have := f₁
-  -- add extra conditions
+  have := hδ₁
+  have := hδ₀
+  have := hσ
+  have := hY
   sorry
 
 end
@@ -68,19 +71,19 @@ def functorOfTruncation (φ : (X ⟶ (truncation 2).obj (nerve C))) :
   · sorry
   · sorry
 
-#check IsStrictSegal
 def functorEquiv :
     (X.HomotopyCategory ⥤ C) ≃ (X ⟶ (truncation 2).obj (nerve C)) where
   toFun F :=
     liftOfIsStrictSegal (fun x ↦ nerveEquiv.symm (F.obj (mk x))) (by
-      sorry)
+      sorry) sorry sorry sorry sorry
   invFun φ := functorOfTruncation φ
   left_inv := sorry
   right_inv := sorry
 
 end HomotopyCategory
 
---(X : Truncated 2) → (Y : Cat) → (hoFunctor₂.obj X ⟶ Y) ≃ (X ⟶ nerveFunctor₂.obj Y)
+/-- The adjunction between the 2-truncated nerve functor and the 2-truncated homotopy category
+functor. -/
 def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ :=
   Adjunction.mkOfHomEquiv
     { homEquiv _ _ := HomotopyCategory.functorEquiv
@@ -88,15 +91,6 @@ def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ :=
       homEquiv_naturality_right := sorry }
 
 
-#exit
-
 end Truncated
 
 end SSet
-
-#check SSet.Truncated.hoFunctor₂
-
-/-- The adjunction between the 2-truncated nerve functor and the 2-truncated homotopy category
-functor. -/
-def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ :=
-  sorry
