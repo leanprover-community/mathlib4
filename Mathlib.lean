@@ -4443,6 +4443,7 @@ import Mathlib.LinearAlgebra.Multilinear.Curry
 import Mathlib.LinearAlgebra.Multilinear.DFinsupp
 import Mathlib.LinearAlgebra.Multilinear.DirectSum
 import Mathlib.LinearAlgebra.Multilinear.FiniteDimensional
+import Mathlib.LinearAlgebra.Multilinear.Finsupp
 import Mathlib.LinearAlgebra.Multilinear.Pi
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 import Mathlib.LinearAlgebra.Orientation
