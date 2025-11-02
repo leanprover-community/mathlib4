@@ -954,7 +954,7 @@ theorem vecMul_ofNat (x : ℕ) [x.AtLeastTwo] (v : m → α) :
   vecMul_natCast _ _
 
 omit [Fintype m] [DecidableEq m] in
-theorem mulVec_injective : @mulVec m n α _ _ |>.Injective := by
+theorem mulVec_injective : (mulVec : Matrix m n α → _).Injective := by
   intro A B h
   ext i j
   classical
