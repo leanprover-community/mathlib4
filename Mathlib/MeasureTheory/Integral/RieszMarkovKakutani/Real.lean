@@ -370,7 +370,7 @@ lemma measure_le_of_isCompact_of_integral [ν.OuterRegular]
   have VltTop : ν V < ⊤ := pV3.trans_lt <| by finiteness
   obtain ⟨f, pf1, pf2, pf3⟩ :
       ∃ f : C_c(X, ℝ), Set.EqOn (⇑f) 1 K ∧ tsupport ⇑f ⊆ V ∧ ∀ (x : X), f x ∈ Set.Icc 0 1 := by
-    obtain ⟨f, hf1, hf2, hf3⟩ := exists_continuous_one_of_compact_subset_open hK pV2 pV1
+    obtain ⟨f, hf1, hf2, hf3⟩ := exists_continuousMap_one_of_isCompact_subset_isOpen hK pV2 pV1
     exact ⟨⟨f, hasCompactSupport_def.mpr hf2⟩, hf1, hf3⟩
   have hfV (x : X) : f x ≤ V.indicator 1 x := by
     by_cases hx : x ∈ tsupport f

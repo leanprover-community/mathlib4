@@ -523,7 +523,7 @@ lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
 /-- A variation of **Urysohn's lemma**. In a Hausdorff locally compact space, for a compact set `K`
 contained in an open set `V`, there exists a compactly supported continuous function `f` such that
 `0 ≤ f ≤ 1`, `f = 1` on K and the support of `f` is contained in `V`. -/
-lemma exists_continuous_one_of_compact_subset_open [T2Space X] [LocallyCompactSpace X]
+lemma exists_continuousMap_one_of_isCompact_subset_isOpen [T2Space X] [LocallyCompactSpace X]
     {K V : Set X} (hK : IsCompact K) (hV : IsOpen V) (hKV : K ⊆ V) :
     ∃ f : C(X, ℝ), Set.EqOn f 1 K ∧ IsCompact (tsupport f) ∧
       tsupport f ⊆ V ∧ ∀ x, f x ∈ Set.Icc 0 1 := by
