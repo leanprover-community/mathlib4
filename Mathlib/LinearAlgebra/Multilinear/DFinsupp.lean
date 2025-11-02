@@ -236,10 +236,23 @@ theorem fromDFinsuppEquiv_symm_apply (f : MultilinearMap R (fun i ↦ Π₀ j : 
 
 end
 
-section
+end CommSemiring
 
+end dfinsuppFamily
+
+section freeDFinsuppEquiv
+
+variable [DecidableEq ι] [Fintype ι] [CommSemiring R]
+variable {M : ∀ i, κ i → Type uM} {N : (Π i, κ i) → Type uN}
+variable [∀ i k, AddCommMonoid (M i k)] [∀ p, AddCommMonoid (N p)]
+variable [∀ i k, Module R (M i k)] [∀ p, Module R (N p)]
 variable {ι'} [∀ i, Fintype (κ i)] [∀ i, DecidableEq (κ i)]
 
+/--
+The linear equivalence of multilinear maps on free modules over `R` indexed by `fun i => κ i` on
+the domain and `ι'` on the codomain and the dependent, finitely supported maps from
+`(Π i, κ i) × ι'` into `R`.
+-/
 def freeDFinsuppEquiv :
   (Π₀ (_ : (Π i, κ i) × ι'), R) ≃ₗ[R] MultilinearMap R (fun i => Π₀ _ : κ i, R) (Π₀ _ : ι', R) :=
     (DFinsupp.domLCongr (M := fun _ => R) (Equiv.sigmaEquivProd _ _).symm) ≪≫ₗ
@@ -277,6 +290,11 @@ theorem freeDFinsuppEquiv_single_one [DecidableEq ι'] (p : (Π i, κ i) × ι')
     exact Finset.prod_eq_zero (Finset.mem_univ i) h
   · simp_all only [and_false, ↓reduceIte, Finset.sum_const_zero]
 
+/--
+When `freeDFinsuppEquiv` is applied to a map with a single value of one the resulting multilinear
+map sends inputs to a single value in the codomain, taking a product over images from each
+component of the domain.
+-/
 @[simp]
 theorem freeDFinsuppEquiv_single [DecidableEq ι'] (p : (Π i, κ i) × ι') (r : R)
   (x : Π i, Π₀ _ : κ i, R) :
@@ -293,45 +311,10 @@ theorem freeDFinsuppEquiv_apply [DecidableEq ι'] [Fintype ι']
   · intro ⟨k, i'⟩ r f hf r_ne_zero hfx
     simp only [map_add, add_apply, DFinsupp.coe_add, Pi.add_apply, DFinsupp.single_apply,
       eq_rec_constant, dite_eq_ite]
-    rw [freeDFinsuppEquiv_single]
-    simp_rw [add_smul, Finset.sum_add_distrib, ite_smul, zero_smul, Finset.sum_ite_eq]
-    simp only [Finset.mem_univ, ↓reduceIte, hfx]
+    simp_rw [freeDFinsuppEquiv_single]
+    simp only [add_smul, Finset.sum_add_distrib, ite_smul, zero_smul,
+      Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, hfx]
 
-variable [DecidableEq ι] [DecidableEq ι'] [∀ i, DecidableEq (κ i)] [DecidableEq R] in
-noncomputable def freeFinsuppEquiv :
-  (((Π i, κ i) × ι') →₀ R) ≃ₗ[R] MultilinearMap R (fun i => (κ i →₀ R)) (ι' →₀ R) :=
-  (finsuppLequivDFinsupp R) ≪≫ₗ freeDFinsuppEquiv ≪≫ₗ
-  ((finsuppLequivDFinsupp R).multilinearMapCongrRight R).symm ≪≫ₗ
-  LinearEquiv.multilinearMapCongrLeft (fun _ => finsuppLequivDFinsupp R)
-
-theorem freeFinsuppEquiv_def [DecidableEq ι'] [DecidableEq R] (f : ((Π i, κ i) × ι') →₀ R) :
-  freeFinsuppEquiv f = LinearEquiv.multilinearMapCongrLeft (fun _ => finsuppLequivDFinsupp R) (
-  ((finsuppLequivDFinsupp R).multilinearMapCongrRight R).symm (
-  freeDFinsuppEquiv ((finsuppLequivDFinsupp R) f))) := rfl
-
-@[simp]
-theorem freeFinsuppEquiv_single [DecidableEq ι'] [DecidableEq R] (p : ((Π i, κ i) × ι')) (r : R)
-  (x : Π i, (κ i →₀ R)) : freeFinsuppEquiv (Finsupp.single p r) x =
-  r • Finsupp.single p.2 ((∏ i, (x i) (p.1 i))) := by
-  simp [freeFinsuppEquiv_def]
-
-theorem freeFinsuppEquiv_apply [DecidableEq ι'] [DecidableEq R] [Fintype ι']
-  (f : ((Π i, κ i) × ι') →₀ R) (x : Π i, (κ i →₀ R)) :
-  freeFinsuppEquiv f x = ∑ p, f p • Finsupp.single p.2 ((∏ i, (x i) (p.1 i))) := by
-  induction f using Finsupp.induction_linear with
-  | zero =>
-    rw [LinearEquiv.map_zero]
-    simp
-  | add f g hf hg =>
-    simp [hf, hg, add_mul, Finset.sum_add_distrib]
-  | single p r =>
-    simp only [freeFinsuppEquiv_single, Finsupp.smul_single, smul_eq_mul, Finsupp.single_apply,
-      ite_smul, zero_smul, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
-
-end
-
-end CommSemiring
-
-end dfinsuppFamily
+end freeDFinsuppEquiv
 
 end MultilinearMap

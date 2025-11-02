@@ -1,9 +1,9 @@
 /-
 Copyright (c) 2021 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joseph Myers
+Authors: Joseph Myers, Eric Wieser, Daniel Morrison
 -/
-import Mathlib.LinearAlgebra.Multilinear.DFinsupp
+import Mathlib.LinearAlgebra.Multilinear.Finsupp
 
 /-!
 # Multilinear maps in relation to bases.
@@ -11,7 +11,6 @@ import Mathlib.LinearAlgebra.Multilinear.DFinsupp
 This file proves lemmas about the action of multilinear maps on basis vectors.
 
 -/
-
 
 open MultilinearMap
 
@@ -35,19 +34,15 @@ theorem Module.Basis.ext_multilinear [Finite ι] {f g : MultilinearMap R M N} {�
 @[deprecated (since := "2025-05-12")]
 alias Basis.ext_multilinear_fin := Module.Basis.ext_multilinear
 
-
 section Basis
 
 universe uι uκ uS uR uM uN
-variable {ι : Type uι} {κ : ι → Type uκ}
-variable {S : Type uS} {R : Type uR}
-variable {ι'} {M : ι → Type uM} {N : Type uN}
+variable {ι : Type uι} [DecidableEq ι] {κ : ι → Type uκ} [∀ i, DecidableEq (κ i)]
+variable {S : Type uS} {R : Type uR} [DecidableEq R]
+variable {ι'} [DecidableEq ι'] {M : ι → Type uM} {N : Type uN}
 variable [Fintype ι] [∀ i, Fintype (κ i)] [CommSemiring R]
 variable [∀ i, AddCommMonoid (M i)] [AddCommMonoid N]
 variable [∀ i, Module R (M i)] [Module R N]
-
-variable [DecidableEq ι] [DecidableEq ι'] [∀ i, DecidableEq (κ i)]
-variable [DecidableEq R]
 
 open Module in
 /-- A basis for multilinear maps given a finite basis on each domain and a basis on the codomain. -/
