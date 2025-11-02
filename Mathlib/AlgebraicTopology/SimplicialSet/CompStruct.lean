@@ -22,7 +22,8 @@ namespace Truncated
 
 variable {X Y : Truncated.{u} 2}
 
-/-- In a `2`-truncated simplicial set, an edge from a `0`-simplex `x₀` -/
+/-- In a `2`-truncated simplicial set, an edge from a vertex `x₀` to `x₁` is
+a `1`-simplex with prescribed `0`-dimensional faces. -/
 @[ext]
 structure Edge (x₀ x₁ : X _⦋0⦌₂) where
   /-- A `1`-simplex -/
@@ -117,7 +118,39 @@ end Truncated
 
 variable {X : SSet.{u}}
 
+/-- In a simplicial set, an edge from a vertex `x₀` to `x₁` is
+a `1`-simplex with prescribed `0`-dimensional faces. -/
 def Edge (x y : X _⦋0⦌) := Truncated.Edge (X := (truncation 2).obj X) x y
+
+namespace Edge
+
+variable {x y : X _⦋0⦌}
+
+def edge (e : Edge x y) : X _⦋1⦌ := Truncated.Edge.edge e
+
+@[simp]
+lemma src_eq (e : Edge x y) : X.δ 1 e.edge = x := Truncated.Edge.src_eq e
+
+@[simp]
+lemma tgt_eq (e : Edge x y) : X.δ 0 e.edge = y := Truncated.Edge.tgt_eq e
+
+@[ext]
+lemma ext {x y : X _⦋0⦌} {e e' : Edge x y} (h : e.edge = e'.edge) :
+    e = e' := Truncated.Edge.ext h
+
+section
+
+variable {x y : X _⦋0⦌} (s : X _⦋1⦌) (src_eq : X.δ 1 s = x) (tgt_eq : X.δ 0 s = y)
+
+def mk : Edge x y where
+  edge := s
+
+@[simp]
+lemma mk_edge : (mk s src_eq tgt_eq).edge = s := rfl
+
+end
+
+end Edge
 
 end SSet
 
@@ -127,15 +160,26 @@ open SSet
 
 variable {C : Type u} [Category.{v} C]
 
+@[simp]
+lemma nerve.left {x y : (nerve C) _⦋0⦌} (e : Edge x y) :
+    ComposableArrows.left e.edge = nerveEquiv x := by
+  simp only [← e.src_eq]
+  rfl
+
+@[simp]
+lemma nerve.right {x y : (nerve C) _⦋0⦌} (e : Edge x y) :
+    ComposableArrows.right (n := 1) e.edge = nerveEquiv y := by
+  simp only [← e.tgt_eq]
+  rfl
+
 def nerveHomEquiv {x y : (nerve C) _⦋0⦌} :
     Edge x y ≃ (nerveEquiv x ⟶ nerveEquiv y) where
   toFun e := eqToHom (by simp only [nerveEquiv, ← e.src_eq]; rfl) ≫ e.edge.hom ≫
     eqToHom (by simp only [nerveEquiv, ← e.tgt_eq]; rfl)
-  invFun f :=
-    { edge := ComposableArrows.mk₁ f
-      src_eq := ComposableArrows.ext₀ rfl
-      tgt_eq := ComposableArrows.ext₀ rfl }
-  left_inv := sorry
-  right_inv := sorry
+  invFun f := .mk (ComposableArrows.mk₁ f) (ComposableArrows.ext₀ rfl) (ComposableArrows.ext₀ rfl)
+  left_inv e := by
+    ext
+    exact ComposableArrows.ext₁ (by simp) (by simp) rfl
+  right_inv f := by simp
 
 end CategoryTheory
