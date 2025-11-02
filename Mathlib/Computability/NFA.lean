@@ -87,7 +87,7 @@ theorem stepSet_singleton (s : σ) (a : α) : M.stepSet {s} a = M.step s a := by
 theorem stepSet_union {S1 S2 : Set σ} {a : α} :
     M.stepSet (S1 ∪ S2) a = M.stepSet S1 a ∪ M.stepSet S2 a := by
   ext s
-  simp [mem_stepSet]
+  simp only [mem_stepSet, mem_union]
   constructor
   · rintro ⟨s', (h1 | h2), hstep⟩
     · left; tauto
@@ -133,6 +133,14 @@ theorem evalFrom_union (S1 S2 : Set σ) (x : List α) :
 
 variable (M) in
 @[simp]
+theorem evalFrom_iUnion.{i} {ι : Type i} (f : ι → Set σ) (x : List α) :
+    M.evalFrom (⋃ (i : ι), f i) x = ⋃ (i : ι), M.evalFrom (f i) x := by
+  induction x generalizing f
+  case nil => simp
+  case cons a x ih =>
+    simp [stepSet, Set.iUnion_comm (ι:=σ) (ι':=ι), ih]
+
+variable (M) in
 theorem evalFrom_biUnion {ι : Type*} (t : Set ι) (f : ι → Set σ) :
     ∀ (x : List α), M.evalFrom (⋃ i ∈ t, f i) x = ⋃ i ∈ t, M.evalFrom (f i) x
   | [] => by simp
@@ -159,7 +167,7 @@ theorem mem_acceptsFrom {S : Set σ} {x : List α} :
 
 @[simp]
 theorem mem_acceptsFrom_nil {S : Set σ} : [] ∈ M.acceptsFrom S ↔ ∃ s ∈ S, s ∈ M.accept := by
-  simp [mem_acceptsFrom]; tauto
+  simp only [mem_acceptsFrom, evalFrom_nil]; tauto
 
 @[simp]
 theorem mem_acceptsFrom_cons {S : Set σ} {a : α} {x : List α} :
@@ -181,17 +189,25 @@ theorem acceptsFrom_union {S1 S2 : Set σ} :
     · right; tauto
   · rintro (⟨s, hs, h⟩ | ⟨s, hs, h⟩) <;> exists s <;> tauto
 
-theorem mem_acceptsFrom_biUnion {ι : Type*} (t : Set ι) (f : ι → Set σ) (x : List α) :
-    x ∈ M.acceptsFrom (⋃ i ∈ t, f i) ↔ x ∈ ⋃ i ∈ t, M.acceptsFrom (f i) := by
-  simp [acceptsFrom]; rw [Set.mem_setOf]; tauto
+theorem mem_acceptsFrom_iUnion.{i} {ι : Type i} (f : ι → Set σ) :
+    M.acceptsFrom (⋃ (i : ι), f i) = ⋃ (i : ι), M.acceptsFrom (f i) := by
+  ext x
+  simp only [acceptsFrom, evalFrom_iUnion, mem_iUnion]
+  simp_rw [↑mem_iUnion, ↑mem_setOf_eq]; tauto
 
-theorem mem_acceptsFrom_setOf_fact {S : Set σ} {p : Prop} {x : List α} :
+theorem mem_acceptsFrom_biUnion {ι : Type*} (t : Set ι) (f : ι → Set σ) :
+    M.acceptsFrom (⋃ i ∈ t, f i) = ⋃ i ∈ t, M.acceptsFrom (f i) := by
+  ext x
+  simp only [acceptsFrom, evalFrom_biUnion, mem_iUnion, exists_prop]
+  simp_rw [↑mem_iUnion, ↑mem_setOf_eq]; tauto
+
+theorem mem_acceptsFrom_sep_fact {S : Set σ} {p : Prop} {x : List α} :
     x ∈ M.acceptsFrom {s ∈ S | p} ↔ x ∈ M.acceptsFrom S ∧ p := by
   induction x generalizing S <;> simp
   case nil => tauto
   case cons a x ih =>
     have h : M.stepSet {s ∈ S | p} a = {s ∈ M.stepSet S a | p} := by
-      ext s; simp [stepSet]; tauto
+      ext s; simp only [stepSet, mem_setOf_eq, mem_iUnion, exists_prop]; tauto
     rw [h, ih]
 
 variable (M) in
