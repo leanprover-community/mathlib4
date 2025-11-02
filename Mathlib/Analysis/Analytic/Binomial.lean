@@ -3,8 +3,8 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Analysis.Complex.OperatorNorm
 import Mathlib.Analysis.Calculus.IteratedDeriv.ConvergenceOnBall
+import Mathlib.Analysis.Complex.OperatorNorm
 import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
