@@ -87,7 +87,7 @@ theorem stepSet_singleton (s : σ) (a : α) : M.stepSet {s} a = M.step s a := by
 theorem stepSet_union {S1 S2 : Set σ} {a : α} :
     M.stepSet (S1 ∪ S2) a = M.stepSet S1 a ∪ M.stepSet S2 a := by
   ext s
-  simp [mem_stepSet]
+  simp only [mem_stepSet, mem_union]
   constructor
   · rintro ⟨s', (h1 | h2), hstep⟩
     · left; tauto
