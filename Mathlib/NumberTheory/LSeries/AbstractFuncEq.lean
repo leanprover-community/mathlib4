@@ -5,7 +5,6 @@ Authors: David Loeffler
 -/
 
 import Mathlib.Analysis.MellinTransform
-import Batteries.Tactic.ShowUnused
 /-!
 # Abstract functional equations for Mellin transforms
 
