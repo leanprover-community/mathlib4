@@ -39,21 +39,14 @@ def checkInner (tk : Syntax) (term : Term) (c : Name) : TacticM Unit := do
   logInfoAt tk <| MessageData.signature c
   return
 
-/--
-Tactic version of `Lean.Elab.Command.elabCheck`.
-Elaborates `term` without modifying tactic/elab/meta state.
-Info messages are placed at `tk`.
--/
-def elabCheckTactic (tk : Syntax) (ignoreStuckTC : Bool) (term : Term) : TacticM Unit :=
+def elabCheckTacticInner (tk : Syntax) (ignoreStuckTC : Bool) (term : Term)
+    (inner : Syntax → Term → Name → TacticM Unit): TacticM Unit :=
   withoutModifyingStateWithInfoAndMessages <| withMainContext do
     if let `($_:ident) := term then
       -- show signature for `#check ident`
       try
         for c in (← realizeGlobalConstWithInfos term) do
-          checkInner tk term c
-          --addCompletionInfo <| .id term c (danglingDot := false) {} none
-          --logInfoAt tk <| MessageData.signature c
-          --return
+          inner tk term c
       catch _ => pure ()  -- identifier might not be a constant but constant + projection
     let e ← Term.elabTerm term none
     Term.synthesizeSyntheticMVarsNoPostponing (ignoreStuckTC := ignoreStuckTC)
@@ -62,6 +55,14 @@ def elabCheckTactic (tk : Syntax) (ignoreStuckTC : Bool) (term : Term) : TacticM
     if e.isSyntheticSorry then
       return
     logInfoAt tk m!"{e} : {type}"
+
+/--
+Tactic version of `Lean.Elab.Command.elabCheck`.
+Elaborates `term` without modifying tactic/elab/meta state.
+Info messages are placed at `tk`.
+-/
+def elabCheckTactic (tk : Syntax) (ignoreStuckTC : Bool) (term : Term) : TacticM Unit :=
+  elabCheckTacticInner tk ignoreStuckTC term checkInner
 
 /--
 The `#check t` tactic elaborates the term `t` and then pretty prints it with its type as `e : ty`.
