@@ -799,29 +799,13 @@ section Segments
 lemma horizontalSegment_eq (a₁ a₂ b : ℝ) :
     (fun (x : ℝ) ↦ x + b * I) '' [[a₁, a₂]] = [[a₁, a₂]] ×ℂ {b} := by
   rw [← preimage_equivRealProd_prod]
-  ext x
-  constructor
-  · intro hx
-    obtain ⟨x₁, hx₁, hx₁'⟩ := hx
-    simp [← hx₁', mem_preimage, mem_prod, hx₁]
-  · intro hx
-    obtain ⟨x₁, hx₁, hx₁', hx₁''⟩ := hx
-    refine ⟨x.re, x₁, by simp⟩
+  grind [ofReal_re, ofReal_im, I_im, add_im, mul_im, re_add_im, equivRealProd_apply]
 
 /-- A vertical segment `[b₁, b₂]` translated by `a` is the complex line segment. -/
 lemma verticalSegment_eq (a b₁ b₂ : ℝ) :
     (fun (y : ℝ) ↦ a + y * I) '' [[b₁, b₂]] = {a} ×ℂ [[b₁, b₂]] := by
   rw [← preimage_equivRealProd_prod]
-  ext x
-  constructor
-  · intro hx
-    obtain ⟨x₁, hx₁, hx₁'⟩ := hx
-    simp [← hx₁', mem_preimage, mem_prod, hx₁]
-  · intro hx
-    simp only [equivRealProd_apply, singleton_prod, mem_image, Prod.mk.injEq,
-      exists_eq_right_right, mem_preimage] at hx
-    obtain ⟨x₁, hx₁, hx₁', hx₁''⟩ := hx
-    refine ⟨x.im, x₁, by simp⟩
+  grind [ofReal_re, ofReal_im, I_im, add_im, mul_im, re_add_im, equivRealProd_apply]
 
 end Segments
 
