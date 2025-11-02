@@ -32,14 +32,14 @@ instance {α : Type*} [Mul α] [Preorder α] [MulLeftStrictMono α] :
     PosMulStrictMono (WithZero α) where
   mul_lt_mul_of_pos_left
   | (x : α), hx, 0, (b : α), _ => by simpa only [mul_zero] using WithZero.zero_lt_coe _
-  | (x : α), hx, (a : α), (b : α), h => by norm_cast at h ⊢; exact mul_lt_mul_left' h x
+  | (x : α), hx, (a : α), (b : α), h => by norm_cast at h ⊢; gcongr
 
 open Function in
 instance {α : Type*} [Mul α] [Preorder α] [MulRightStrictMono α] :
     MulPosStrictMono (WithZero α) where
   mul_lt_mul_of_pos_right
   | (x : α), hx, 0, (b : α), _ => by simpa only [mul_zero] using WithZero.zero_lt_coe _
-  | (x : α), hx, (a : α), (b : α), h => by norm_cast at h ⊢; exact mul_lt_mul_right' h x
+  | (x : α), hx, (a : α), (b : α), h => by norm_cast at h ⊢; gcongr
 
 instance {α : Type*} [Mul α] [Preorder α] [MulLeftMono α] :
     PosMulMono (WithZero α) where
@@ -47,7 +47,7 @@ instance {α : Type*} [Mul α] [Preorder α] [MulLeftMono α] :
   | 0, _, a, b, _ => by simp
   | (x : α), _, 0, _, _ => by simp
   | (x : α), _, (a : α), 0, h => by simp at h
-  | (x : α), hx, (a : α), (b : α), h => by norm_cast at h ⊢; exact mul_le_mul_left' h x
+  | (x : α), hx, (a : α), (b : α), h => by norm_cast at h ⊢; gcongr
 
 -- This makes `lt_mul_of_le_of_one_lt'` work on `ℤᵐ⁰`
 open Function in
@@ -57,7 +57,7 @@ instance {α : Type*} [Mul α] [Preorder α] [MulRightMono α] :
   | 0, _, a, b, _ => by simp
   | (x : α), _, 0, _, _ => by simp
   | (x : α), _, (a : α), 0, h => by simp at h
-  | (x : α), hx, (a : α), (b : α), h => by norm_cast at h ⊢; exact mul_le_mul_right' h x
+  | (x : α), hx, (a : α), (b : α), h => by norm_cast at h ⊢; gcongr
 
 section Units
 

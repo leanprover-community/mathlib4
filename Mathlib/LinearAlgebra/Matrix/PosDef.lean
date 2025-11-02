@@ -479,7 +479,7 @@ lemma _root_.Matrix.IsHermitian.posDef_iff_eigenvalues_pos [DecidableEq n] {A : 
   refine ⟨fun h => h.eigenvalues_pos, fun h => ?_⟩
   rw [hA.spectral_theorem]
   refine (posDef_diagonal_iff.mpr <| by simpa using h).mul_mul_conjTranspose_same ?_
-  rw [vecMul_injective_iff_isUnit, ← unitary.val_toUnits_apply]
+  rw [vecMul_injective_iff_isUnit, ← Unitary.val_toUnits_apply]
   exact Units.isUnit _
 
 theorem trace_pos [Nonempty n] {A : Matrix n n 𝕜} (hA : A.PosDef) : 0 < A.trace := by

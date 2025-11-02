@@ -14,6 +14,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃ u
 
 open CategoryTheory MonoidalCategory MonObj
 
+namespace CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory.{v₁} C]
 
 variable (C) in
@@ -147,7 +148,6 @@ instance : HasInitial (CommMon C) :=
 
 end CommMon
 
-namespace CategoryTheory
 variable
   {D : Type u₂} [Category.{v₂} D] [MonoidalCategory D] [BraidedCategory D]
   {E : Type u₃} [Category.{v₃} E] [MonoidalCategory E] [BraidedCategory E]
@@ -271,11 +271,11 @@ def mapCommMon (e : C ≌ D) [e.functor.Braided] [e.inverse.Braided] [e.IsMonoid
   unitIso := mapCommMonIdIso.symm ≪≫ mapCommMonNatIso e.unitIso ≪≫ mapCommMonCompIso
   counitIso := mapCommMonCompIso.symm ≪≫ mapCommMonNatIso e.counitIso ≪≫ mapCommMonIdIso
 
-end CategoryTheory.Equivalence
+end Equivalence
 
 namespace CommMon
 
-open CategoryTheory.LaxBraidedFunctor
+open LaxBraidedFunctor
 
 namespace EquivLaxBraidedFunctorPUnit
 
@@ -355,3 +355,4 @@ def equivLaxBraidedFunctorPUnit : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C �
   counitIso := counitIso C
 
 end CommMon
+end CategoryTheory

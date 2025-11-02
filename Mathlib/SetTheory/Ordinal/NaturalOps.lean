@@ -230,22 +230,6 @@ theorem nadd_comm (a b) : a ♯ b = b ♯ a := by
   congr <;> ext x <;> cases x <;> apply congr_arg _ (nadd_comm _ _)
 termination_by (a, b)
 
-@[deprecated "blsub will soon be deprecated" (since := "2024-11-18")]
-theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
-    (hf : ∀ {i j} (hi hj), i ≤ j → f i hi ≤ f j hj) :
-    blsub.{u, v} _ f =
-      max (blsub.{u, v} a fun a' ha' => f (a' ♯ b) <| nadd_lt_nadd_right ha' b)
-        (blsub.{u, v} b fun b' hb' => f (a ♯ b') <| nadd_lt_nadd_left hb' a) := by
-  apply (blsub_le_iff.2 fun i h => _).antisymm (max_le _ _)
-  · intro i h
-    rcases lt_nadd_iff.1 h with (⟨a', ha', hi⟩ | ⟨b', hb', hi⟩)
-    · exact lt_max_of_lt_left ((hf h (nadd_lt_nadd_right ha' b) hi).trans_lt (lt_blsub _ _ ha'))
-    · exact lt_max_of_lt_right ((hf h (nadd_lt_nadd_left hb' a) hi).trans_lt (lt_blsub _ _ hb'))
-  all_goals
-    apply blsub_le_of_brange_subset.{u, u, v}
-    rintro c ⟨d, hd, rfl⟩
-    apply mem_brange_self
-
 private theorem iSup_nadd_of_monotone {a b} (f : Ordinal.{u} → Ordinal.{u}) (h : Monotone f) :
     ⨆ x : Iio (a ♯ b), f x = max (⨆ a' : Iio a, f (a'.1 ♯ b)) (⨆ b' : Iio b, f (a ♯ b'.1)) := by
   apply (max_le _ _).antisymm'
@@ -458,11 +442,6 @@ theorem nadd_right_comm : ∀ a b c, a ♯ b ♯ c = a ♯ c ♯ b :=
 
 variable {a b c d : Ordinal.{u}}
 
-@[deprecated "avoid using the definition of `nmul` directly" (since := "2024-11-19")]
-theorem nmul_def (a b : Ordinal) :
-    a ⨳ b = sInf {c | ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a ⨳ b' < c ♯ a' ⨳ b'} := by
-  rw [nmul]
-
 /-- The set in the definition of `nmul` is nonempty. -/
 private theorem nmul_nonempty (a b : Ordinal.{u}) :
     {c : Ordinal.{u} | ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a ⨳ b' < c ♯ a' ⨳ b'}.Nonempty := by
@@ -531,11 +510,13 @@ theorem nmul_lt_nmul_of_pos_left (h₁ : a < b) (h₂ : 0 < c) : c ⨳ a < c ⨳
 theorem nmul_lt_nmul_of_pos_right (h₁ : a < b) (h₂ : 0 < c) : a ⨳ c < b ⨳ c :=
   lt_nmul_iff.2 ⟨a, h₁, 0, h₂, by simp⟩
 
+@[gcongr]
 theorem nmul_le_nmul_left (h : a ≤ b) (c) : c ⨳ a ≤ c ⨳ b := by
   rcases lt_or_eq_of_le h with (h₁ | rfl) <;> rcases (eq_zero_or_pos c).symm with (h₂ | rfl)
   · exact (nmul_lt_nmul_of_pos_left h₁ h₂).le
   all_goals simp
 
+@[gcongr]
 theorem nmul_le_nmul_right (h : a ≤ b) (c) : a ⨳ c ≤ b ⨳ c := by
   rw [nmul_comm, nmul_comm b]
   exact nmul_le_nmul_left h c
@@ -596,14 +577,6 @@ private theorem nmul_nadd_lt₃' {a' b' c' : Ordinal} (ha : a' < a) (hb : b' < b
   convert nmul_nadd_lt₃ hb hc ha using 1 <;>
     (simp only [nadd_eq_add, NatOrdinal.toOrdinal_toNatOrdinal]; abel_nf)
 
-@[deprecated nmul_nadd_le₃ (since := "2024-11-19")]
-theorem nmul_nadd_le₃' {a' b' c' : Ordinal} (ha : a' ≤ a) (hb : b' ≤ b) (hc : c' ≤ c) :
-    a' ⨳ (b ⨳ c) ♯ a ⨳ (b' ⨳ c) ♯ a ⨳ (b ⨳ c') ♯ a' ⨳ (b' ⨳ c') ≤
-      a ⨳ (b ⨳ c) ♯ a' ⨳ (b' ⨳ c) ♯ a' ⨳ (b ⨳ c') ♯ a ⨳ (b' ⨳ c') := by
-  simp only [nmul_comm _ (_ ⨳ _)]
-  convert nmul_nadd_le₃ hb hc ha using 1 <;>
-    (simp only [nadd_eq_add, NatOrdinal.toOrdinal_toNatOrdinal]; abel_nf)
-
 theorem lt_nmul_iff₃ : d < a ⨳ b ⨳ c ↔ ∃ a' < a, ∃ b' < b, ∃ c' < c,
     d ♯ a' ⨳ b' ⨳ c ♯ a' ⨳ b ⨳ c' ♯ a ⨳ b' ⨳ c' ≤
       a' ⨳ b ⨳ c ♯ a ⨳ b' ⨳ c ♯ a ⨳ b ⨳ c' ♯ a' ⨳ b' ⨳ c' := by
@@ -633,12 +606,6 @@ private theorem nmul_le_iff₃' : a ⨳ (b ⨳ c) ≤ d ↔ ∀ a' < a, ∀ b' <
   constructor <;> intro h a' ha b' hb c' hc
   · convert h b' hb c' hc a' ha using 1 <;> abel_nf
   · convert h c' hc a' ha b' hb using 1 <;> abel_nf
-
-@[deprecated lt_nmul_iff₃ (since := "2024-11-19")]
-theorem lt_nmul_iff₃' : d < a ⨳ (b ⨳ c) ↔ ∃ a' < a, ∃ b' < b, ∃ c' < c,
-    d ♯ a' ⨳ (b' ⨳ c) ♯ a' ⨳ (b ⨳ c') ♯ a ⨳ (b' ⨳ c') ≤
-      a' ⨳ (b ⨳ c) ♯ a ⨳ (b' ⨳ c) ♯ a ⨳ (b ⨳ c') ♯ a' ⨳ (b' ⨳ c') := by
-  simpa using nmul_le_iff₃'.not
 
 theorem nmul_assoc (a b c : Ordinal) : a ⨳ b ⨳ c = a ⨳ (b ⨳ c) := by
   apply le_antisymm
@@ -727,7 +694,7 @@ theorem mul_le_nmul (a b : Ordinal.{u}) : a * b ≤ a ⨳ b := by
     rcases eq_zero_or_pos a with (rfl | ha)
     · simp
     · rw [(isNormal_mul_right ha).apply_of_isSuccLimit hc, Ordinal.iSup_le_iff]
-      rintro ⟨i, hi⟩
-      exact (H i hi).trans (nmul_le_nmul_left hi.le a)
+      rintro ⟨i, (hi : i < c)⟩
+      grw [H i hi, hi]
 
 end Ordinal
