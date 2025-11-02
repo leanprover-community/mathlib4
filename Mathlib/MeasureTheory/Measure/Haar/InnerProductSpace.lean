@@ -125,6 +125,15 @@ variable (ι : Type*) [Fintype ι]
 @[deprecated (since := "2025-11-02")] alias EuclideanSpace.measurableEquiv :=
   MeasurableEquiv.toLp
 
+@[deprecated (since := "2025-11-02")] alias EuclideanSpace.measurableEquiv_toEquiv :=
+  MeasurableEquiv.coe_toLp
+
+@[deprecated (since := "2025-11-02")] alias EuclideanSpace.coe_measurableEquiv :=
+  MeasurableEquiv.coe_toLp
+
+@[deprecated (since := "2025-11-02")] alias EuclideanSpace.coe_measurableEquiv_symm :=
+  MeasurableEquiv.coe_toLp_symm
+
 /-- The measure equivalence between `EuclideanSpace ℝ ι` and `ι → ℝ` is volume preserving. -/
 theorem EuclideanSpace.volume_preserving_measurableEquiv_toLp_symm :
     MeasurePreserving (MeasurableEquiv.toLp 2 (ι → ℝ)).symm := by
