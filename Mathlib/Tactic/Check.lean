@@ -39,9 +39,15 @@ def checkInner (tk : Syntax) (term : Term) (c : Name) : TacticM Unit := do
   logInfoAt tk <| MessageData.signature c
   return
 
+open Lean Elab Command PrettyPrinter Delaborator in
 def checkPrimeInner (tk : Syntax) (term : Term) (c : Name) : TacticM Unit := do
   addCompletionInfo <| .id term c (danglingDot := false) {} none
-  logInfoAt tk <| MessageData.signature c
+  let info ← getConstInfo c
+  let delab : Delab := do
+    delabForallParamsWithSignature fun binders type => do
+      let binders := binders.filter fun binder => binder.raw.isOfKind ``Parser.Term.explicitBinder
+      return ⟨← `(declSigWithId| $(mkIdent c) $binders* : $type)⟩
+  logInfoAt tk <| .ofFormatWithInfosM (PrettyPrinter.ppExprWithInfos (delab := delab) info.type)
   return
 
 def elabCheckTacticInner (tk : Syntax) (ignoreStuckTC : Bool) (term : Term)
@@ -107,7 +113,7 @@ example : Nat := by
 
 set_option linter.unusedTactic false in
 /--
-info: foo {a b c : Nat} (h : a = b + c) : a = b
+info: foo (h : a = b + c) : a = b
 ---
 info: foo : ?m.2 = ?m.3 + ?m.4 → ?m.2 = ?m.3
 -/
