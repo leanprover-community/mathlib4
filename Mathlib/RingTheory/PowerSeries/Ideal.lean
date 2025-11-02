@@ -184,11 +184,11 @@ theorem exist_eq_span_eq_ncard_of_X_not_mem (hI : X ∉ I) {S : Set R}
     (hSI : span S = I.map constantCoeff) (hS : S.Finite) :
       ∃ T, I = span T ∧ T.Finite ∧ T.ncard = S.ncard := by
   obtain ⟨k, a, a_injective, rfl⟩ := Finite.fin_param hS
-  refine ⟨_, I_eq_span_range hSI hI, finite_range _, trans (b := k) ?_ ?_⟩
-  <;> rw [Set.ncard_range_of_injective, Nat.card_fin]
+  refine ⟨_, I_eq_span_range hSI hI, finite_range _, trans (b := k) ?_ ?_⟩ <;>
+  rw [Set.ncard_range_of_injective, Nat.card_fin]
   · intro _ _ this
-    replace := congrArg constantCoeff this
-    simp [constantCoeff_F_apply] at this
+    apply_fun constantCoeff at this
+    simp only [constantCoeff_F_apply] at this
     exact a_injective this
   · exact a_injective
 
