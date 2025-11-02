@@ -354,7 +354,7 @@ theorem ι_colimitIso_inv [HasColimit G] (X : C) :
   simp [colimitIso]
 
 /-- A pointfree version of `colimitIso`, stating that whiskering by `F` followed by taking the
-colimit is isomorpic to taking the colimit on the codomain of `F`. -/
+colimit is isomorphic to taking the colimit on the codomain of `F`. -/
 def colimIso [HasColimitsOfShape D E] [HasColimitsOfShape C E] :
     (whiskeringLeft _ _ _).obj F ⋙ colim ≅ colim (J := D) (C := E) :=
   NatIso.ofComponents (fun G => colimitIso F G) fun f => by
@@ -379,6 +379,10 @@ We can't make this an instance, because `F` is not determined by the goal.
 -/
 theorem hasColimit_of_comp [HasColimit (F ⋙ G)] : HasColimit G :=
   HasColimit.mk (colimitCoconeOfComp F (getColimitCocone (F ⋙ G)))
+
+lemma hasColimit_comp_iff :
+    HasColimit (F ⋙ G) ↔ HasColimit G :=
+  ⟨fun _ ↦ Functor.Final.hasColimit_of_comp F, fun _ ↦ inferInstance⟩
 
 theorem preservesColimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [PreservesColimit (F ⋙ G) H] : PreservesColimit G H where
@@ -691,7 +695,7 @@ def limitIso [HasLimit G] : limit (F ⋙ G) ≅ limit G :=
   (asIso (limit.pre G F)).symm
 
 /-- A pointfree version of `limitIso`, stating that whiskering by `F` followed by taking the
-limit is isomorpic to taking the limit on the codomain of `F`. -/
+limit is isomorphic to taking the limit on the codomain of `F`. -/
 def limIso [HasLimitsOfShape D E] [HasLimitsOfShape C E] :
     (whiskeringLeft _ _ _).obj F ⋙ lim ≅ lim (J := D) (C := E) :=
   Iso.symm <| NatIso.ofComponents (fun G => (limitIso F G).symm) fun f => by
@@ -715,6 +719,10 @@ We can't make this an instance, because `F` is not determined by the goal.
 -/
 theorem hasLimit_of_comp [HasLimit (F ⋙ G)] : HasLimit G :=
   HasLimit.mk (limitConeOfComp F (getLimitCone (F ⋙ G)))
+
+lemma hasLimit_comp_iff :
+    HasLimit (F ⋙ G) ↔ HasLimit G :=
+  ⟨fun _ ↦ Functor.Initial.hasLimit_of_comp F, fun _ ↦ inferInstance⟩
 
 theorem preservesLimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [PreservesLimit (F ⋙ G) H] : PreservesLimit G H where
@@ -1045,7 +1053,7 @@ instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final :=
 
 open Limits
 
-/-- A natural transformation `α : F ⟶ G` between functors `F G : C ⥤ Cat` which is is final on each
+/-- A natural transformation `α : F ⟶ G` between functors `F G : C ⥤ Cat` which is final on each
 fiber `(α.app X)` induces an equivalence of fiberwise colimits of `map α ⋙ H` and `H` for each
 functor `H : Grothendieck G ⥤ Type`. -/
 def Grothendieck.fiberwiseColimitMapCompEquivalence {C : Type u₁} [Category.{v₁} C]
@@ -1110,6 +1118,9 @@ variable (F : C ⥤ D) (G : C' ⥤ D')
 
 instance [F.Final] [G.Final] : (F.prod G).Final where
   out := fun ⟨d, d'⟩ => isConnected_of_equivalent (StructuredArrow.prodEquivalence d d' F G).symm
+
+instance [F.Initial] [G.Initial] : (F.prod G).Initial where
+  out := fun ⟨d, d'⟩ => isConnected_of_equivalent (CostructuredArrow.prodEquivalence F G d d').symm
 
 end Prod
 

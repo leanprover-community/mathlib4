@@ -503,9 +503,7 @@ lemma tendsto_atTop_sumCoeffsExp : Tendsto (fun (p : ℝ) => ∑ i, a i * (b i) 
       (by have := R.b_pos (max_bi b); linarith) (R.b_lt_one _)
   refine tendsto_atTop_mono (fun p => ?_) h₁
   refine Finset.single_le_sum (f := fun i => (a i : ℝ) * b i ^ p) (fun i _ => ?_) (mem_univ _)
-  have h₁ : 0 < a i := R.a_pos i
-  have h₂ : 0 < b i := R.b_pos i
-  positivity
+  positivity [R.a_pos i, R.b_pos i]
 
 lemma one_mem_range_sumCoeffsExp : 1 ∈ Set.range (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
   refine mem_range_of_exists_le_of_exists_ge R.continuous_sumCoeffsExp ?le_one ?ge_one
@@ -643,7 +641,7 @@ lemma eventually_atTop_sumTransform_le :
         have : 0 < u := calc
           0 < r i n := by exact hrpos_i
           _ ≤ u := by exact hu.1
-        exact rpow_le_rpow_of_exponent_nonpos (by positivity)
+        exact rpow_le_rpow_of_nonpos (by positivity)
           (by exact_mod_cast (le_of_lt hu.2)) (le_of_lt hp)
       _ ≤ n ^ p a b * #(Ico (r i n) n) • (c₂ * g n / n ^ (p a b + 1)) := by
         gcongr; exact Finset.sum_le_card_nsmul _ _ _ (fun x _ => by rfl)
@@ -725,7 +723,7 @@ lemma eventually_atTop_sumTransform_ge :
                       _ ≤ u := hu.1
           positivity
         · rw [Finset.mem_Ico] at hu
-          exact rpow_le_rpow_of_exponent_nonpos (by positivity)
+          exact rpow_le_rpow_of_nonpos (by positivity)
             (by exact_mod_cast hu.1) (le_of_lt hp)
       _ ≥ n ^ p a b * #(Ico (r i n) n) • (c₂ * g n / r i n ^ (p a b + 1)) := by
           gcongr; exact Finset.card_nsmul_le_sum _ _ _ (fun x _ => by rfl)
@@ -733,7 +731,7 @@ lemma eventually_atTop_sumTransform_ge :
           rw [nsmul_eq_mul, mul_assoc]
       _ ≥ n ^ p a b * #(Ico (r i n) n) * (c₂ * g n / (c₁ * n) ^ (p a b + 1)) := by
           gcongr n ^ p a b * #(Ico (r i n) n) * (c₂ * g n / ?_)
-          exact rpow_le_rpow_of_exponent_nonpos (by positivity) (hn₁ i) (le_of_lt hp)
+          exact rpow_le_rpow_of_nonpos (by positivity) (hn₁ i) (le_of_lt hp)
       _ = n ^ (p a b) * (n - r i n) * (c₂ * g n / (c₁ * n) ^ ((p a b) + 1)) := by
           congr; rw [Nat.card_Ico, Nat.cast_sub (le_of_lt <| hr_lt_n i)]
       _ ≥ n ^ (p a b) * (n - c₃ * n) * (c₂ * g n / (c₁ * n) ^ ((p a b) + 1)) := by

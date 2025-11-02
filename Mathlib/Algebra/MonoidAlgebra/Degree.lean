@@ -97,14 +97,15 @@ section AddOnly
 variable [Add A] [Add B] [Add T] [AddLeftMono B] [AddRightMono B]
   [AddLeftMono T] [AddRightMono T]
 
-theorem sup_support_mul_le {degb : A → B} (degbm : ∀ {a b}, degb (a + b) ≤ degb a + degb b)
+theorem sup_support_mul_le {degb : A → B} (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b)
     (f g : R[A]) :
     (f * g).support.sup degb ≤ f.support.sup degb + g.support.sup degb := by
   classical
-  exact (Finset.sup_mono <| support_mul _ _).trans <| Finset.sup_add_le.2 fun _fd fds _gd gds ↦
-    degbm.trans <| add_le_add (Finset.le_sup fds) (Finset.le_sup gds)
+  grw [support_mul, Finset.sup_add_le]
+  rintro _fd fds _gd gds
+  grw [degbm, ← Finset.le_sup fds, ← Finset.le_sup gds]
 
-theorem le_inf_support_mul {degt : A → T} (degtm : ∀ {a b}, degt a + degt b ≤ degt (a + b))
+theorem le_inf_support_mul {degt : A → T} (degtm : ∀ a b, degt a + degt b ≤ degt (a + b))
     (f g : R[A]) :
     f.support.inf degt + g.support.inf degt ≤ (f * g).support.inf degt :=
   sup_support_mul_le (B := Tᵒᵈ) degtm f g
@@ -126,8 +127,7 @@ theorem sup_support_list_prod_le (degb0 : degb 0 ≤ 0)
     exact fun a ha => by rwa [Finset.mem_singleton.mp (Finsupp.support_single_subset ha)]
   | f::fs => by
     rw [List.prod_cons, List.map_cons, List.sum_cons]
-    exact (sup_support_mul_le (@fun a b => degbm a b) _ _).trans
-        (add_le_add_left (sup_support_list_prod_le degb0 degbm fs) _)
+    grw [sup_support_mul_le degbm, sup_support_list_prod_le degb0 degbm]
 
 theorem le_inf_support_list_prod (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (l : List R[A]) :

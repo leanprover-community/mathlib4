@@ -62,7 +62,7 @@ field `mapId`. -/
 structure StrictlyUnitaryLaxFunctorCore where
   /-- action on objects -/
   obj : B → C
-  /-- action on 1-morhisms -/
+  /-- action on 1-morphisms -/
   map : ∀ {X Y : B}, (X ⟶ Y) → (obj X ⟶ obj Y)
   map_id : ∀ (X : B), map (𝟙 X) = 𝟙 (obj X)
   /-- action on 2-morphisms -/

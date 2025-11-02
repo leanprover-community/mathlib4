@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jason Yuen
 -/
 import Mathlib.Data.Real.ConjExponents
-import Mathlib.Data.Real.Irrational
+import Mathlib.NumberTheory.Real.Irrational
 
 /-!
 # Rayleigh's theorem on Beatty sequences
