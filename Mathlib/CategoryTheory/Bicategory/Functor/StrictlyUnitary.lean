@@ -262,7 +262,6 @@ structure StrictlyUnitaryPseudofunctorCore where
           (mapComp f (g ≫ h)).inv := by
     cat_disch
 
-attribute [simp] StrictlyUnitaryPseudofunctor.map_id
 
 namespace StrictlyUnitaryPseudofunctor
 
