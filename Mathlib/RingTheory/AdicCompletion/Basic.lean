@@ -5,7 +5,6 @@ Authors: Kenny Lau, Judith Ludwig, Christian Merten, Jiedong Jiang
 -/
 import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.LinearAlgebra.SModEq.Basic
-import Mathlib.RingTheory.Jacobson.Ideal
 import Mathlib.RingTheory.Ideal.Quotient.PowTransition
 import Mathlib.RingTheory.Jacobson.Ideal
 
@@ -48,7 +47,7 @@ class IsPrecomplete : Prop where
     ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)]
 
 /-- A module `M` is `I`-adically complete if it is Hausdorff and precomplete. -/
-@[stacks 0317 "see also `IsAdicComplete.bijective_iff`"]
+@[mk_iff,stacks 0317 "see also `IsAdicComplete.bijective_iff`"]
 class IsAdicComplete : Prop extends IsHausdorff I M, IsPrecomplete I M
 
 variable {I M}
