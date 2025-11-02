@@ -91,9 +91,6 @@ abbrev ConnectedComponents.ι (j : ConnectedComponents J) : j.Component ⥤ J :=
 abbrev ConnectedComponents.mk (j : J) : ConnectedComponents J :=
   Quotient.mk'' j
 
-@[deprecated (since := "2025-03-04")] alias Component := ConnectedComponents.Component
-@[deprecated (since := "2025-03-04")] alias Component.ι := ConnectedComponents.ι
-
 /-- Each connected component of the category is nonempty. -/
 instance (j : ConnectedComponents J) : Nonempty j.Component := by
   induction j using Quotient.inductionOn'
@@ -127,7 +124,7 @@ instance (j : ConnectedComponents J) : IsConnected j.Component := by
     (fun x y _ _ h => ?_) _ _ h₁₂ hl₁ _
   exact zag_of_zag_obj (ConnectedComponents.ι _) h
 
-/-- The disjoint union of `J`s connected components, written explicitly as a sigma-type with the
+/-- The disjoint union of `J`'s connected components, written explicitly as a sigma-type with the
 category structure.
 This category is equivalent to `J`.
 -/

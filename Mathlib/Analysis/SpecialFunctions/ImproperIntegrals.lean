@@ -114,7 +114,7 @@ theorem integrableOn_add_rpow_Ioi_of_lt {a c m : ℝ} (ha : a < -1) (hc : -m < c
   have hd : ∀ x ∈ Ici c, HasDerivAt (fun t ↦ (t + m) ^ (a + 1) / (a + 1)) ((x + m) ^ a) x := by
     intro x hx
     convert (((hasDerivAt_id _).add_const _).rpow_const _).div_const _ using 1
-    simp [show a + 1 ≠ 0 by linarith]
+    · simp [show a + 1 ≠ 0 by linarith]
     left; linarith [mem_Ici.mp hx, id_eq x]
   have ht : Tendsto (fun t ↦ ((t + m) ^ (a + 1)) / (a + 1)) atTop (nhds (0 / (a + 1))) := by
     rw [← neg_neg (a + 1)]

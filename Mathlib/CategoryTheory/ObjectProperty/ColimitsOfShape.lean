@@ -22,18 +22,18 @@ Under certain circumstances, the type of objects satisfying
 introduced is to deduce that the full subcategory of `P.colimitsOfShape J`
 is essentially small.
 
+By requiring `P.colimitsOfShape J ≤ P`, we introduce a typeclass
+`P.IsClosedUnderColimitsOfShape J`.
+
 ## TODO
 
-* refactor `ClosedUnderColimitsOfShape J P` to make it a typeclass which
-would say that `P.colimitsOfShape J ≤ J`.
 * refactor `ObjectProperty.ind` by saying that it is the supremum
 of `P.colimitsOfShape J` for a filtered category `J`
 (generalize also to `κ`-filtered categories?)
-* dualize the results and formalize the closure of `P`
-under finite limits (which require iterating over `ℕ`),
-and more generally the closure under limits indexed by a category
-whose type of arrows has a cardinality that is bounded by a
-certain regular cardinal (@joelriou)
+* formalize the closure of `P` under finite colimits (which require
+iterating over `ℕ`), and more generally the closure under colimits
+indexed by a category whose type of arrows has a cardinality
+that is bounded by a certain regular cardinal (@joelriou)
 
 -/
 
@@ -147,4 +147,50 @@ instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} J] [Locall
   rintro ⟨_, ⟨F, hF⟩⟩
   exact ⟨⟨P.lift F hF, by assumption⟩, rfl⟩
 
-end CategoryTheory.ObjectProperty
+/-- A property of objects satisfies `P.IsClosedUnderColimitsOfShape J` if it
+is stable by colimits of shape `J`. -/
+@[mk_iff]
+class IsClosedUnderColimitsOfShape (P : ObjectProperty C) (J : Type u') [Category.{v'} J] where
+  colimitsOfShape_le (P J) : P.colimitsOfShape J ≤ P
+
+variable {P J} in
+lemma IsClosedUnderColimitsOfShape.mk' [P.IsClosedUnderIsomorphisms]
+    (h : P.strictColimitsOfShape J ≤ P) :
+    P.IsClosedUnderColimitsOfShape J where
+  colimitsOfShape_le := by
+    conv_rhs => rw [← P.isoClosure_eq_self]
+    rw [← isoClosure_strictColimitsOfShape]
+    exact monotone_isoClosure h
+
+export IsClosedUnderColimitsOfShape (colimitsOfShape_le)
+
+section
+
+variable {J} [P.IsClosedUnderColimitsOfShape J]
+
+variable {P} in
+lemma ColimitOfShape.prop {X : C} (h : P.ColimitOfShape J X) : P X :=
+  P.colimitsOfShape_le J _ ⟨h⟩
+
+lemma prop_of_isColimit {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c)
+    (hF : ∀ (j : J), P (F.obj j)) : P c.pt :=
+  P.colimitsOfShape_le J _ ⟨{ diag := _, ι := _, isColimit := hc, prop_diag_obj := hF }⟩
+
+lemma prop_colimit (F : J ⥤ C) [HasColimit F] (hF : ∀ (j : J), P (F.obj j)) :
+    P (colimit F) :=
+  P.prop_of_isColimit (colimit.isColimit F) hF
+
+end
+
+end ObjectProperty
+
+namespace Limits
+
+@[deprecated (since := "2025-09-22")] alias ClosedUnderColimitsOfShape :=
+  ObjectProperty.IsClosedUnderColimitsOfShape
+@[deprecated (since := "2025-09-22")] alias closedUnderColimitsOfShape_of_colimit :=
+  ObjectProperty.IsClosedUnderColimitsOfShape.mk'
+@[deprecated (since := "2025-09-22")] alias ClosedUnderColimitsOfShape.colimit :=
+  ObjectProperty.prop_colimit
+
+end CategoryTheory.Limits

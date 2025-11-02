@@ -434,8 +434,8 @@ theorem BinaryCofan.isColimit_iff_isIso_inl {X Y : C} (h : IsInitial Y) (c : Bin
     obtain ⟨l, hl, -⟩ := BinaryCofan.IsColimit.desc' H (𝟙 X) (h.to X)
     refine ⟨⟨l, hl, BinaryCofan.IsColimit.hom_ext H (?_) (h.hom_ext _ _)⟩⟩
     rw [Category.comp_id]
-    have e : (inl c ≫ l) ≫ inl c = 𝟙 X ≫ inl c := congrArg (·≫inl c) hl
-    rwa [Category.assoc,Category.id_comp] at e
+    have e : (inl c ≫ l) ≫ inl c = 𝟙 X ≫ inl c := congrArg (· ≫ inl c) hl
+    rwa [Category.assoc, Category.id_comp] at e
   · intro
     exact
       ⟨BinaryCofan.IsColimit.mk _ (fun f _ => inv c.inl ≫ f)
@@ -821,12 +821,14 @@ end CoprodLemmas
 
 variable (C)
 
-/-- `HasBinaryProducts` represents a choice of product for every pair of objects. -/
+/-- A category `HasBinaryProducts` if it has all limits of shape `Discrete WalkingPair`,
+i.e. if it has a product for every pair of objects. -/
 @[stacks 001T]
 abbrev HasBinaryProducts :=
   HasLimitsOfShape (Discrete WalkingPair) C
 
-/-- `HasBinaryCoproducts` represents a choice of coproduct for every pair of objects. -/
+/-- A category `HasBinaryCoproducts` if it has all colimit of shape `Discrete WalkingPair`,
+i.e. if it has a coproduct for every pair of objects. -/
 @[stacks 04AP]
 abbrev HasBinaryCoproducts :=
   HasColimitsOfShape (Discrete WalkingPair) C
@@ -1073,6 +1075,18 @@ theorem prodComparison_natural (f : A ⟶ A') (g : B ⟶ B') :
       prodComparison F A B ≫ prod.map (F.map f) (F.map g) := by
   rw [prodComparison, prodComparison, prod.lift_map, ← F.map_comp, ← F.map_comp, prod.comp_lift, ←
     F.map_comp, prod.map_fst, ← F.map_comp, prod.map_snd]
+
+variable {F}
+
+/-- Naturality of the `prodComparison` morphism in a natural transformation. -/
+@[reassoc]
+theorem prodComparison_natural_of_natTrans {H : C ⥤ D} [HasBinaryProduct (H.obj A) (H.obj B)]
+    (α : F ⟶ H) :
+    α.app (prod A B) ≫ prodComparison H A B =
+      prodComparison F A B ≫ prod.map (α.app A) (α.app B) := by
+  rw [prodComparison, prodComparison, prod.lift_map, prod.comp_lift, α.naturality, α.naturality]
+
+variable (F)
 
 /-- The product comparison morphism from `F(A ⨯ -)` to `FA ⨯ F-`, whose components are given by
 `prodComparison`.

@@ -10,7 +10,7 @@ import Mathlib.Data.Finset.Lattice.Fold
 # Maximum and minimum of finite sets
 -/
 
-assert_not_exists OrderedCommMonoid MonoidWithZero
+assert_not_exists IsOrderedMonoid MonoidWithZero
 
 open Function Multiset OrderDual
 
@@ -53,9 +53,8 @@ lemma max_pair (a b : α) :
     Finset.max {a, b} = max (↑a) (↑b) := by
   simp
 
-theorem max_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.max = b := by
-  obtain ⟨b, h, _⟩ := le_sup (α := WithBot α) h _ rfl
-  exact ⟨b, h⟩
+theorem max_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.max = b :=
+  let ⟨b, h, _⟩ := WithBot.le_iff_forall.1 (le_sup (α := WithBot α) h) _ rfl; ⟨b, h⟩
 
 theorem max_of_nonempty {s : Finset α} (h : s.Nonempty) : ∃ a : α, s.max = a :=
   let ⟨_, h⟩ := h
@@ -140,9 +139,8 @@ lemma min_pair (a b : α) :
     Finset.min {a, b} = min (↑a) (↑b) := by
   simp
 
-theorem min_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.min = b := by
-  obtain ⟨b, h, _⟩ := inf_le (α := WithTop α) h _ rfl
-  exact ⟨b, h⟩
+theorem min_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.min = b :=
+  let ⟨b, h, _⟩ := WithTop.le_iff_forall.1 (inf_le (α := WithTop α) h) _ rfl; ⟨b, h⟩
 
 theorem min_of_nonempty {s : Finset α} (h : s.Nonempty) : ∃ a : α, s.min = a :=
   let ⟨_, h⟩ := h

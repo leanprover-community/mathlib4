@@ -941,18 +941,10 @@ def _root_.ContinuousLinearEquiv.continuousMultilinearMapCongrRight (g : G ≃L[
     continuous_invFun :=
       (compContinuousMultilinearMapL 𝕜 E G' G g.symm.toContinuousLinearMap).continuous }
 
-@[deprecated (since := "2025-04-19")]
-alias _root_.ContinuousLinearEquiv.compContinuousMultilinearMapL :=
-  ContinuousLinearEquiv.continuousMultilinearMapCongrRight
-
 @[simp]
 theorem _root_.ContinuousLinearEquiv.continuousMultilinearMapCongrRight_symm (g : G ≃L[𝕜] G') :
     (g.continuousMultilinearMapCongrRight E).symm = g.symm.continuousMultilinearMapCongrRight E :=
   rfl
-
-@[deprecated (since := "2025-04-19")]
-alias _root_.ContinuousLinearEquiv.compContinuousMultilinearMapL_symm :=
-  ContinuousLinearEquiv.continuousMultilinearMapCongrRight_symm
 
 variable {E}
 
@@ -961,10 +953,6 @@ theorem _root_.ContinuousLinearEquiv.continuousMultilinearMapCongrRight_apply (g
     (f : ContinuousMultilinearMap 𝕜 E G) :
     g.continuousMultilinearMapCongrRight E f = (g : G →L[𝕜] G').compContinuousMultilinearMap f :=
   rfl
-
-@[deprecated (since := "2025-04-19")]
-alias _root_.ContinuousLinearEquiv.compContinuousMultilinearMapL_apply :=
-  ContinuousLinearEquiv.continuousMultilinearMapCongrRight_apply
 
 /-- Flip arguments in `f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G'` to get
 `ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')` -/
@@ -992,6 +980,65 @@ def flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
     ‖f‖ fun m => by
       dsimp only [MultilinearMap.coe_mk]
       exact LinearMap.mkContinuous_norm_le _ (by positivity) _
+
+/-- Flip arguments in `f : ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')` to get
+`G →L[𝕜] ContinuousMultilinearMap 𝕜 E G'` -/
+@[simps! apply_apply]
+def _root_.ContinuousMultilinearMap.flipLinear (f : ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')) :
+    G →L[𝕜] ContinuousMultilinearMap 𝕜 E G' :=
+  MultilinearMap.mkContinuousLinear
+    { toFun x :=
+        { toFun m := f m x
+          map_update_add' := by simp
+          map_update_smul' := by simp }
+      map_add' x y := by ext1; simp
+      map_smul' c x := by ext1; simp } ‖f‖ <| fun x m ↦ by
+    rw [LinearMap.coe_mk, AddHom.coe_mk, MultilinearMap.coe_mk, mul_right_comm]
+    apply ((f m).le_opNorm x).trans
+    gcongr
+    apply f.le_opNorm
+
+@[simp] lemma flipLinear_flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
+    f.flipMultilinear.flipLinear = f := rfl
+
+@[simp] lemma _root_.ContinuousMultilinearMap.flipMultilinear_flipLinear
+    (f : ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')) :
+    f.flipLinear.flipMultilinear = f := rfl
+
+variable (𝕜 E G G') in
+/-- Flipping arguments gives a linear equivalence between `G →L[𝕜] ContinuousMultilinearMap 𝕜 E G'`
+and `ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')` -/
+def flipMultilinearEquivₗ : (G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') ≃ₗ[𝕜]
+    (ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')) where
+  toFun f := f.flipMultilinear
+  invFun f := f.flipLinear
+  map_add' f g := by ext; simp
+  map_smul' c f := by ext; simp
+  left_inv f := rfl
+  right_inv f := rfl
+
+variable (𝕜 E G G') in
+/-- Flipping arguments gives a continuous linear equivalence between
+`G →L[𝕜] ContinuousMultilinearMap 𝕜 E G'` and `ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')` -/
+def flipMultilinearEquiv : (G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') ≃L[𝕜]
+    ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G') := by
+  refine (flipMultilinearEquivₗ 𝕜 E G G').toContinuousLinearEquivOfBounds 1 1 ?_ ?_
+  · intro f
+    suffices ‖f.flipMultilinear‖ ≤ ‖f‖ by simpa
+    apply MultilinearMap.mkContinuous_norm_le
+    positivity
+  · intro f
+    suffices ‖f.flipLinear‖ ≤ ‖f‖ by simpa
+    apply MultilinearMap.mkContinuousLinear_norm_le
+    positivity
+
+@[simp] lemma coe_flipMultilinearEquiv :
+    (flipMultilinearEquiv 𝕜 E G G' : (G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') →
+      (ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G'))) = flipMultilinear := rfl
+
+@[simp] lemma coe_symm_flipMultilinearEquiv :
+    ((flipMultilinearEquiv 𝕜 E G G').symm : (ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')) →
+    (G →L[𝕜] ContinuousMultilinearMap 𝕜 E G')) = flipLinear := rfl
 
 end ContinuousLinearMap
 
@@ -1155,19 +1202,12 @@ def _root_.ContinuousLinearEquiv.continuousMultilinearMapCongrLeft (f : ∀ i, E
         ContinuousLinearMap.coe_coe, compContinuousLinearMap_apply, ContinuousLinearEquiv.coe_coe,
         ContinuousLinearEquiv.symm_apply_apply] }
 
-@[deprecated (since := "2025-04-19")]
-alias compContinuousLinearMapEquivL := ContinuousLinearEquiv.continuousMultilinearMapCongrLeft
-
 @[simp]
 theorem _root_.ContinuousLinearEquiv.continuousMultilinearMapCongrLeft_symm
     (f : ∀ i, E i ≃L[𝕜] E₁ i) :
     (ContinuousLinearEquiv.continuousMultilinearMapCongrLeft G f).symm =
       .continuousMultilinearMapCongrLeft G fun i : ι => (f i).symm :=
   rfl
-
-@[deprecated (since := "2025-04-19")]
-alias compContinuousLinearMapEquivL_symm :=
-  ContinuousLinearEquiv.continuousMultilinearMapCongrLeft_symm
 
 variable {G}
 
@@ -1177,10 +1217,6 @@ theorem _root_.ContinuousLinearEquiv.continuousMultilinearMapCongrLeft_apply
     ContinuousLinearEquiv.continuousMultilinearMapCongrLeft G f g =
       g.compContinuousLinearMap fun i => (f i : E i →L[𝕜] E₁ i) :=
   rfl
-
-@[deprecated (since := "2025-04-19")]
-alias compContinuousLinearMapEquivL_apply :=
-  ContinuousLinearEquiv.continuousMultilinearMapCongrLeft_apply
 
 /-- One of the components of the iterated derivative of a continuous multilinear map. Given a
 bijection `e` between a type `α` (typically `Fin k`) and a subset `s` of `ι`, this component is a

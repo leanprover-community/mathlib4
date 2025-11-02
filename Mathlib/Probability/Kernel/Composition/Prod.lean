@@ -200,6 +200,10 @@ lemma map_prod_swap (κ : Kernel α β) (η : Kernel α γ) [IsSFiniteKernel κ]
   refine (lintegral_lintegral_swap ?_).symm
   fun_prop
 
+lemma prodComm_prod {κ : Kernel α β} [IsSFiniteKernel κ] {η : Kernel α γ} [IsSFiniteKernel η] :
+    (κ ×ₖ η).map MeasurableEquiv.prodComm = η ×ₖ κ :=
+  map_prod_swap κ η
+
 @[simp]
 lemma swap_prod {κ : Kernel α β} [IsSFiniteKernel κ] {η : Kernel α γ} [IsSFiniteKernel η] :
     (swap β γ) ∘ₖ (κ ×ₖ η) = (η ×ₖ κ) := by
@@ -222,6 +226,12 @@ lemma prodAssoc_prod (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel α γ
   ext1 a
   rw [map_apply _ (by fun_prop), prod_apply, prod_apply, Measure.prodAssoc_prod, prod_apply,
     prod_apply]
+
+lemma prodAssoc_symm_prod (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel α γ) [IsSFiniteKernel η]
+    (ξ : Kernel α δ) [IsSFiniteKernel ξ] :
+    (κ ×ₖ (ξ ×ₖ η)).map MeasurableEquiv.prodAssoc.symm = (κ ×ₖ ξ) ×ₖ η := by
+  rw [← prodAssoc_prod, ← Kernel.map_comp_right _ (by fun_prop) (by fun_prop)]
+  simp
 
 lemma prod_const_comp {δ} {mδ : MeasurableSpace δ} (κ : Kernel α β) [IsSFiniteKernel κ]
     (η : Kernel β γ) [IsSFiniteKernel η] (μ : Measure δ) [SFinite μ] :

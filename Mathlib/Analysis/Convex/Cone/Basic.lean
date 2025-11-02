@@ -42,7 +42,7 @@ The next steps are:
 
 open ContinuousLinearMap Filter Function Set
 
-variable {R E F G : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
+variable {𝕜 R E F G : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
 variable [AddCommMonoid E] [TopologicalSpace E] [Module R E]
 variable [AddCommMonoid F] [TopologicalSpace F] [Module R F]
 variable [AddCommMonoid G] [TopologicalSpace G] [Module R G]
@@ -161,11 +161,23 @@ end ProperCone
 ### Topological properties of convex cones
 
 This section proves topological results about convex cones.
+
+#### TODO
+
+This result generalises to G-submodules.
 -/
 
 namespace ConvexCone
-variable {𝕜 E : Type*} [TopologicalSpace 𝕜] [Semifield 𝕜] [LinearOrder 𝕜] [OrderTopology 𝕜]
-  [DenselyOrdered 𝕜] [NoMaxOrder 𝕜] [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
+variable [Semifield 𝕜] [LinearOrder 𝕜] [Module 𝕜 E] {s : Set E}
+
+-- FIXME: This is necessary for the proof below but triggers the `unusedSectionVars` linter.
+-- variable [IsStrictOrderedRing 𝕜] [IsTopologicalAddGroup M] in
+/-- This is true essentially by `Submodule.span_eq_iUnion_nat`, except that `Submodule` currently
+doesn't support that use case. See
+https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/G-submodules/with/514426583 -/
+proof_wanted isOpen_hull (hs : IsOpen s) : IsOpen (hull 𝕜 s : Set E)
+
+variable [TopologicalSpace 𝕜] [OrderTopology 𝕜] [DenselyOrdered 𝕜] [NoMaxOrder 𝕜]
   [ContinuousSMul 𝕜 E] {C : ConvexCone 𝕜 E}
 
 lemma Pointed.of_nonempty_of_isClosed (hC : (C : Set E).Nonempty) (hSclos : IsClosed (C : Set E)) :
@@ -180,9 +192,6 @@ lemma Pointed.of_nonempty_of_isClosed (hC : (C : Set E).Nonempty) (hSclos : IsCl
     (continuous_id.smul continuous_const).continuousWithinAt
   -- `0 ∈ closure f (0, ∞) ⊆ C, 0 ∈ C`
   simpa [f, Pointed, ← SetLike.mem_coe] using hfS <| fc.mem_closure_image <| by simp
-
-@[deprecated (since := "2025-04-18")]
-alias pointed_of_nonempty_of_isClosed := Pointed.of_nonempty_of_isClosed
 
 variable [IsOrderedRing 𝕜]
 

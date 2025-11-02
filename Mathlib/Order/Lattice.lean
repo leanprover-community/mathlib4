@@ -821,6 +821,7 @@ instance [∀ i, Max (α' i)] : Max (∀ i, α' i) :=
 theorem sup_apply [∀ i, Max (α' i)] (f g : ∀ i, α' i) (i : ι) : (f ⊔ g) i = f i ⊔ g i :=
   rfl
 
+@[push ←]
 theorem sup_def [∀ i, Max (α' i)] (f g : ∀ i, α' i) : f ⊔ g = fun i => f i ⊔ g i :=
   rfl
 
@@ -831,6 +832,7 @@ instance [∀ i, Min (α' i)] : Min (∀ i, α' i) :=
 theorem inf_apply [∀ i, Min (α' i)] (f g : ∀ i, α' i) (i : ι) : (f ⊓ g) i = f i ⊓ g i :=
   rfl
 
+@[push ←]
 theorem inf_def [∀ i, Min (α' i)] (f g : ∀ i, α' i) : f ⊓ g = fun i => f i ⊓ g i :=
   rfl
 

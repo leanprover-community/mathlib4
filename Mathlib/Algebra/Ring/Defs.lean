@@ -311,7 +311,6 @@ section NonUnitalNonAssocRing
 variable [NonUnitalNonAssocRing α]
 
 instance (priority := 100) NonUnitalNonAssocRing.toHasDistribNeg : HasDistribNeg α where
-  neg := Neg.neg
   neg_neg := neg_neg
   neg_mul a b := eq_neg_of_add_eq_zero_left <| by rw [← right_distrib, neg_add_cancel, zero_mul]
   mul_neg a b := eq_neg_of_add_eq_zero_left <| by rw [← left_distrib, neg_add_cancel, mul_zero]

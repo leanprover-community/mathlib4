@@ -238,9 +238,6 @@ lemma separatesPoints_continuous_of_t35Space [T35Space X] :
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
   exact ⟨fun x ↦ f x, continuous_subtype_val.comp f_cont, by simp_all⟩
 
-@[deprecated (since := "2025-04-13")]
-alias separatesPoints_continuous_of_completelyRegularSpace := separatesPoints_continuous_of_t35Space
-
 lemma separatesPoints_continuous_of_t35Space_Icc [T35Space X] :
     SeparatesPoints {f : X → I | Continuous f} := by
   intro x y x_ne_y
@@ -248,19 +245,12 @@ lemma separatesPoints_continuous_of_t35Space_Icc [T35Space X] :
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
   exact ⟨f, f_cont, by simp_all⟩
 
-@[deprecated (since := "2025-04-13")]
-alias separatesPoints_continuous_of_completelyRegularSpace_Icc :=
-  separatesPoints_continuous_of_t35Space_Icc
-
 lemma injective_stoneCechUnit_of_t35Space [T35Space X] :
     Function.Injective (stoneCechUnit : X → StoneCech X) := by
   intro a b hab
   contrapose hab
   obtain ⟨f, fc, fab⟩ := separatesPoints_continuous_of_t35Space_Icc hab
   exact fun q ↦ fab (eq_if_stoneCechUnit_eq fc q)
-
-@[deprecated (since := "2025-04-13")]
-alias injective_stoneCechUnit_of_completelyRegularSpace := injective_stoneCechUnit_of_t35Space
 
 lemma isEmbedding_stoneCechUnit [T35Space X] :
     IsEmbedding (stoneCechUnit : X → StoneCech X) where
