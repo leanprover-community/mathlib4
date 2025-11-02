@@ -134,9 +134,8 @@ private noncomputable def g' (hI : X ∉ I) : ℕ → I
     have h := sub_const_eq_X_mul_shift ((g' hI n).1 - ∑ i, C (T (g' hI n).2 haI i) * F haI i)
     simp only [map_sub, map_sum, _root_.map_mul, constantCoeff_C, constantCoeff_F_apply, sum_T,
       sub_self, map_zero, sub_zero, coeff_C_mul] at h
-    have : ∑ i, C (T (g' hI n).2 haI i) * F haI i ∈ I :=
-      I.sum_mem fun i _ ↦ I.mul_mem_left _ (F_apply_mem_I haI i)
-    exact (I_prime.mul_mem_iff_mem_or_mem.1 (h ▸ I.sub_mem (g' hI n).2 this)).resolve_left hI⟩
+    refine (I_prime.mul_mem_iff_mem_or_mem.1 (h ▸ I.sub_mem (g' hI n).2 ?_)).resolve_left hI
+    exact  I.sum_mem fun i _ ↦ I.mul_mem_left _ (F_apply_mem_I haI i)⟩
 
 private lemma g'_sub_sum_T (n : ℕ) (hI : X ∉ I) :
     (g' hg haI hI n).1 - ∑ i, C (T (g' hg haI hI n).2 haI i) * F haI i =
