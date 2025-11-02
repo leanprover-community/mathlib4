@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.Dual.Lemmas
 
 The ordering of the tensor product of ordered modules is not uniquely defined by the
 tensor product of modules. Orderings can be expressed as (salient pointed) cones
-(representing the positive elements). Therefore, equivalently to the above, the definition
+(representing the nonnegative elements). Therefore, equivalently to the above, the definition
 of the tensor product of convex cones is not uniquely specified by the tensor product of
 modules. "Sufficiently nice" candidates for tensor products of cones are bounded by
 the minimal tensor product and the maximal tensor product. These are the analogues
@@ -20,11 +20,9 @@ of the injective and projective tensor products in the theory of operator algebr
 
 We define the minimal and maximal tensor products of two pointed cones:
 
-'minTensorProduct C₁ C₂'
-'maxTensorProduct C₁ C₂'
-
-We use "algebraicDual" as a convenient abbreviation for the general
-PointedCone.dual
+'minTensorProduct C₁ C₂': all conical combinations of elementary tensor products x ⊗ₜ y
+  of cone elements x and y.
+'maxTensorProduct C₁ C₂': the dual of the minimal tensor product of the dual cones.
 
 ## Main results
 
@@ -53,70 +51,64 @@ variable {H : Type*} [AddCommGroup H] [Module K H]
 
 namespace PointedCone
 
-/-- The algebraic dual of a pointed cone C (as opposed to "the inner product dual") are the
-elements of the dual module that are non-negative on all of C, i.e., linear maps φ: C → K,
-such that 0 ≤ φ(x) for all x in C. The algebraic dual is a pointed cone. This abbreviation
-is a concrete instance of the more general PointedCone.dual -/
-abbrev algebraicDual (C : PointedCone K G) : PointedCone K (Dual K G) :=
-      PointedCone.dual (Module.dualPairing K G).flip C.carrier
-
-/-- The set of elementary tensor products from two cones: all tensors of the form x ⊗ₜ y
-where x ∈ C₁ and y ∈ C₂. This forms the generating set for the minimal tensor product. -/
-def elementaryTensors (C₁ : PointedCone K G) (C₂ : PointedCone K H) : Set (G ⊗[K] H) :=
-  {z | ∃ x y, x ∈ C₁ ∧ y ∈ C₂ ∧ z = x ⊗ₜ[K] y}
-
 /-- The minimal tensor product of two cones is given by all conical combinations of elementary
-tensor products x ⊗ₜ y of cone elements. -/
+tensor products x ⊗ₜ y of cone elements x and y. -/
 noncomputable def minTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone K H)
     : PointedCone K (G ⊗[K] H) :=
-  PointedCone.span K (elementaryTensors C₁ C₂)
-  --conicalHull K (elementaryTensors C₁ C₂)
+  PointedCone.span K {z | ∃ x y, x ∈ C₁ ∧ y ∈ C₂ ∧ z = x ⊗ₜ[K] y}
 
-/-- The maximal tensor product is the set of elements of the module tensor product
-space for which all elementary tensor products of dual cone elements φ₁ ⊗ₜ φ₂ are non-negative. -/
+/-- The maximal tensor product is the (algebraic) dual of the minimal tensor product
+of the dual cones. -/
 noncomputable def maxTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone K H)
-    : PointedCone K (G ⊗[K] H) where
-  -- All elements z for which all (φ₁ ⊗ₜ φ₂) are non-negative
-  carrier :=
-    {z : G ⊗[K] H | ∀ (φ₁ : Dual K G)(φ₂ : Dual K H),
-      φ₁ ∈ algebraicDual C₁ → φ₂ ∈ algebraicDual C₂ →
-      0 ≤ dualDistrib K G H (φ₁ ⊗ₜ[K] φ₂) z}
-  -- Follows direct from (φ₁ ⊗ₜ[K] φ₂) 0 = 0
-  zero_mem' := by simp
-  smul_mem' := fun c₁ x₁ hx₁ φ₁ φ₂ hφ₁ hφ₂ => by
-    -- Both factors are nonnegative (make explicit and solve by mul_nonneg)
-    have h_pos_c₁ : 0 ≤ (c₁ : K) := c₁.property
-    have h_pos_dual : 0 ≤ dualDistrib K G H (φ₁ ⊗ₜ[K] φ₂) x₁ := hx₁ φ₁ φ₂ hφ₁ hφ₂
-    simp only [map_smul_of_tower]
-    exact mul_nonneg h_pos_c₁ h_pos_dual
-  add_mem' := by
-    intro z₁ z₂ hz₁ hz₂ φ₁ φ₂ hφ₁ hφ₂
-    -- Both terms are nonnegative (make explicit and solve by positivity)
-    have h_pos_z₁ : 0 ≤ dualDistrib K G H (φ₁ ⊗ₜ[K] φ₂) z₁ := hz₁ φ₁ φ₂ hφ₁ hφ₂
-    have h_pos_z₂ : 0 ≤ dualDistrib K G H (φ₁ ⊗ₜ[K] φ₂) z₂ := hz₂ φ₁ φ₂ hφ₁ hφ₂
-    simp [map_add]
-    positivity
+    : PointedCone K (G ⊗[K] H) :=
+  PointedCone.dual
+    (dualDistrib K G H)
+    (minTensorProduct
+      (PointedCone.dual (Module.dualPairing K G).flip C₁.carrier)
+      (PointedCone.dual (Module.dualPairing K H).flip C₂.carrier)).carrier
+
+/-- Characterization of the maximal tensor product: `z` lies in
+`maxTensorProduct C₁ C₂` iff all pairings with elementary dual tensors are nonnegative. -/
+theorem mem_maxTensorProduct_iff
+    {C₁ : PointedCone K G} {C₂ : PointedCone K H} {z : G ⊗[K] H} :
+    z ∈ maxTensorProduct (K:=K) C₁ C₂ ↔
+      ∀ φ ∈ PointedCone.dual (Module.dualPairing K G).flip C₁.carrier,
+      ∀ ψ ∈ PointedCone.dual (Module.dualPairing K H).flip C₂.carrier,
+        0 ≤ (dualDistrib K G H (φ ⊗ₜ[K] ψ)) z := by
+  constructor
+  · intro hz φ hφ ψ hψ
+    have h : ∀ x φ' (hφ' : φ' ∈ PointedCone.dual (Module.dualPairing K G).flip C₁.carrier) ψ'
+        (hψ' : ψ' ∈ PointedCone.dual (Module.dualPairing K H).flip C₂.carrier),
+        x = φ' ⊗ₜ ψ' → 0 ≤ (dualDistrib K G H x) z := by
+      simpa [maxTensorProduct, minTensorProduct, PointedCone.mem_dual, PointedCone.dual_span]
+        using hz
+    exact h _ φ hφ ψ hψ rfl
+  · intro h
+    simpa [maxTensorProduct, minTensorProduct, PointedCone.mem_dual, PointedCone.dual_span] using
+      fun x φ hφ ψ hψ (hx : x = φ ⊗ₜ ψ) => hx ▸ h φ hφ ψ hψ
 
 /-- Individual elementary tensors are in the maximal tensor product. -/
 theorem tmul_mem_maxTensorProduct {x y} {C₁ : PointedCone K G} {C₂ : PointedCone K H} (hx : x ∈ C₁)
     (hy : y ∈ C₂) : x ⊗ₜ[K] y ∈ maxTensorProduct C₁ C₂ := by
-  intro φ₁ φ₂ hφ₁ hφ₂
+  rw [mem_maxTensorProduct_iff]
+  intro φ hφ ψ hψ
   simp only [dualDistrib_apply]
-  -- Both factors are nonnegative (make explicit and solve by positivity)
-  have h_pos_φ₁ : 0 ≤ φ₁ x := hφ₁ hx
-  have h_pos_φ₂ : 0 ≤ φ₂ y := hφ₂ hy
-  positivity
+  exact mul_nonneg (hφ hx) (hψ hy)
+
+/-- Individual elementary tensors are in the minimal tensor product. -/
+theorem tmul_mem_minTensorProduct {x y} {C₁ : PointedCone K G} {C₂ : PointedCone K H} (hx : x ∈ C₁)
+    (hy : y ∈ C₂) : x ⊗ₜ[K] y ∈ minTensorProduct C₁ C₂ := by
+  apply Submodule.subset_span
+  exact ⟨x, y, hx, hy, rfl⟩
 
 /-- The maximal tensor product contains the set of all elementary tensors. -/
-theorem elementaryTensors_subset_maxTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone K H) :
-    elementaryTensors C₁ C₂ ⊆ maxTensorProduct C₁ C₂ :=
+theorem tmul_subset_maxTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone K H) :
+    {z | ∃ x y, x ∈ C₁ ∧ y ∈ C₂ ∧ z = x ⊗ₜ[K] y} ⊆ maxTensorProduct C₁ C₂ :=
   fun _ ⟨_, _, hx, hy, hw⟩ => hw ▸ tmul_mem_maxTensorProduct hx hy
 
 /-- The minimal tensor product is less than or equal to the maximal tensor product. -/
 theorem minTensorProduct_le_maxTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone K H)
     : minTensorProduct C₁ C₂ ≤ maxTensorProduct C₁ C₂ := by
-  -- minTensorProduct = PointedCone.span of elementary tensors
-  -- maxTensorProduct contains all elementary tensors, hence it contains the span
-  exact Submodule.span_le.mpr (elementaryTensors_subset_maxTensorProduct C₁ C₂)
+  exact Submodule.span_le.mpr (tmul_subset_maxTensorProduct C₁ C₂)
 
 end PointedCone
