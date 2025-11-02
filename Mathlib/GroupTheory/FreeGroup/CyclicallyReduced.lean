@@ -187,7 +187,7 @@ theorem reduce_flatten_replicate_succ (h : IsReduced L) (n : ℕ) :
       rw [← inv_mk]
       group
     rw [this, ← flatten_cons, ← replicate_succ, ← isReduced_iff_reduce_eq]
-    apply IsReduced.append_flatten_replicate_append (hn := by simp) ..
+    apply IsReduced.append_flatten_replicate_append (hn := by simp)
     · exact isCyclicallyReduced h
     · rwa [conj_conjugator_reduceCyclically]
 
