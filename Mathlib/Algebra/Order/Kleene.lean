@@ -301,6 +301,7 @@ instance : KleeneAlgebra (∀ i, π i) :=
     mul_kstar_le_self := fun _ _ h _ ↦ mul_kstar_le_self <| h _
     kstar_mul_le_self := fun _ _ h _ ↦ kstar_mul_le_self <| h _ }
 
+@[push ←]
 theorem kstar_def (a : ∀ i, π i) : a∗ = fun i ↦ (a i)∗ :=
   rfl
 

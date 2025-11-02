@@ -7,7 +7,7 @@ import Mathlib.NumberTheory.Divisors
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
-#  `Nat.divisors` as a multiplicative homomorpism
+# `Nat.divisors` as a multiplicative homomorpism
 
 The main definition of this file is `Nat.divisorsHom : ℕ →* Finset ℕ`,
 exhibiting `Nat.divisors` as a multiplicative homomorphism from `ℕ` to `Finset ℕ`.

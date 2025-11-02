@@ -19,7 +19,6 @@ We show that these properties are local, and are stable under compositions and b
 
 -/
 
-
 noncomputable section
 
 open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
@@ -75,6 +74,13 @@ instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [LocallyOfFiniteType g] :
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [LocallyOfFiniteType f] :
     LocallyOfFiniteType (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
+
+instance (f : X ⟶ Y) (V : Y.Opens) [LocallyOfFiniteType f] : LocallyOfFiniteType (f ∣_ V) :=
+  IsZariskiLocalAtTarget.restrict ‹_› V
+
+instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [LocallyOfFiniteType f] :
+    LocallyOfFiniteType (f.resLE V U e) := by
+  delta Scheme.Hom.resLE; infer_instance
 
 instance {R} [CommRing R] [IsJacobsonRing R] : JacobsonSpace <| Spec <| .of R :=
   inferInstanceAs (JacobsonSpace (PrimeSpectrum R))

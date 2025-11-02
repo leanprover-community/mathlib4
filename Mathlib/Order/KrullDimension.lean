@@ -255,17 +255,13 @@ lemma coheight_eq_index_of_length_eq_head_coheight {p : LTSeries α} (h : p.leng
     (i : Fin (p.length + 1)) : coheight (p i) = i.rev := by
   simpa using height_eq_index_of_length_eq_height_last (α := αᵒᵈ) (p := p.reverse) (by simpa) i.rev
 
+@[gcongr]
 lemma height_mono : Monotone (α := α) height :=
   fun _ _ hab ↦ biSup_mono (fun _ hla => hla.trans hab)
 
-@[gcongr] protected lemma _root_.GCongr.height_le_height (a b : α) (hab : a ≤ b) :
-    height a ≤ height b := height_mono hab
-
+@[gcongr]
 lemma coheight_anti : Antitone (α := α) coheight :=
   (height_mono (α := αᵒᵈ)).dual_left
-
-@[gcongr] protected lemma _root_.GCongr.coheight_le_coheight (a b : α) (hba : b ≤ a) :
-    coheight a ≤ coheight b := coheight_anti hba
 
 private lemma height_add_const (a : α) (n : ℕ∞) :
     height a + n = ⨆ (p : LTSeries α) (_ : p.last = a), p.length + n := by
