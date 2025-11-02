@@ -28,6 +28,9 @@ variable {ι α β M N P G : Type*}
 
 namespace List
 
+attribute [to_additive existing] prod_nil prod_cons prod_one_cons prod_append prod_concat
+  prod_flatten
+
 section Monoid
 
 variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
@@ -38,22 +41,6 @@ theorem prod_eq_foldl : ∀ {l : List M}, l.prod = foldl (· * ·) 1 l
   | cons a l => by
     rw [prod_cons, prod_eq_foldl, ← foldl_assoc (α := M) (op := (· * ·))]
     simp
-
-@[to_additive (attr := simp)]
-theorem prod_append : (l₁ ++ l₂).prod = l₁.prod * l₂.prod :=
-  calc
-    (l₁ ++ l₂).prod = foldr (· * ·) (1 * foldr (· * ·) 1 l₂) l₁ := by simp [List.prod]
-    _ = l₁.prod * l₂.prod := foldr_assoc
-
-@[to_additive]
-theorem prod_concat : (l.concat a).prod = l.prod * a := by
-  rw [concat_eq_append, prod_append, prod_singleton]
-
-@[to_additive (attr := simp)]
-theorem prod_flatten {l : List (List M)} : l.flatten.prod = (l.map List.prod).prod := by
-  induction l with
-  | nil => simp
-  | cons head tail ih => simp only [*, List.flatten_cons, map, prod_append, prod_cons]
 
 open scoped Relator in
 @[to_additive]
