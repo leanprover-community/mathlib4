@@ -53,7 +53,7 @@ lax functor `F` from `B` to `C` such that the structure 1-cell
 `𝟙 (obj X) ⟶ map (𝟙 X)` is in fact an identity 1-cell for every `X : B`. -/
 @[kerodon 008R]
 structure StrictlyUnitaryLaxFunctor extends LaxFunctor B C where
-  map_id (X : B) : map (𝟙 X) = 𝟙 (obj X) := by cat_disch
+  map_id (X : B) : map (𝟙 X) = 𝟙 (obj X) := by rfl_cat
   mapId_eq_eqToHom (X : B) : (mapId X) = eqToHom (map_id X).symm := by cat_disch
 
 
@@ -209,7 +209,7 @@ identity 1-cell for every `X : B` (in particular, there is an equality
 `F.map (𝟙 X) = 𝟙 (F.obj x)`). -/
 @[kerodon 008R]
 structure StrictlyUnitaryPseudofunctor extends Pseudofunctor B C where
-  map_id (X : B) : map (𝟙 X) = 𝟙 (obj X) := by cat_disch
+  map_id (X : B) : map (𝟙 X) = 𝟙 (obj X) := by rfl_cat
   mapId_eq_eqToIso (X : B) : (mapId X) = eqToIso (map_id X) := by cat_disch
 
 /-- A helper structure that bundles the necessary data to
@@ -220,7 +220,7 @@ structure StrictlyUnitaryPseudofunctorCore where
   obj : B → C
   /-- action on 1-morphisms -/
   map : ∀ {X Y : B}, (X ⟶ Y) → (obj X ⟶ obj Y)
-  map_id : ∀ (X : B), map (𝟙 X) = 𝟙 (obj X) := by cat_disch
+  map_id : ∀ (X : B), map (𝟙 X) = 𝟙 (obj X) := by rfl_cat
   /-- action on 2-morphisms -/
   map₂ : ∀ {a b : B} {f g : a ⟶ b}, (f ⟶ g) → (map f ⟶ map g)
   map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by cat_disch
@@ -260,7 +260,6 @@ structure StrictlyUnitaryPseudofunctorCore where
           (α_ (map f) (map g) (map h)).hom ≫ map f ◁ (mapComp g h).inv ≫
           (mapComp f (g ≫ h)).inv := by
     cat_disch
-
 
 namespace StrictlyUnitaryPseudofunctor
 
