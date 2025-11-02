@@ -69,13 +69,14 @@ register_option linter.unnecessarySetOptionIn.heartbeats : Bool := {
     options"
 }
 
+open Linter in
 /-- reports a warning if the "first layer" `set_option ... in` is unnecessary. -/
 def findSetOptionIn (cmd : CommandElab) : CommandElab := fun stx => do
   let mut (report?, declId) := (false, default)
   let s ← get
   match stx with
     | `(command| set_option $opt $_ in $inner) => do
-      if !Linter.getLinterValue linter.unnecessarySetOptionIn.heartbeats (← getOptions) &&
+      if !Linter.getLinterValue linter.unnecessarySetOptionIn.heartbeats (← getLinterOptions) &&
         opt.getId == `maxHeartbeats then
           return
       if !opt.getId.components.contains `linter then
@@ -89,12 +90,13 @@ def findSetOptionIn (cmd : CommandElab) : CommandElab := fun stx => do
             m!"unnecessary 'set_option {opt}' in '{declId}'"
     | _ => return
 
+open Linter in
 @[inherit_doc linter.unnecessarySetOptionIn]
 def unnecessarySetOptionIn : Linter where run cmd := do
   let mod ← getMainModule
   if mod.getRoot == `MathlibTest && mod != `MathlibTest.UnnecessarySetOptionIn then
     return
-  if Linter.getLinterValue linter.unnecessarySetOptionIn (← getOptions) then
+  if Linter.getLinterValue linter.unnecessarySetOptionIn (← getLinterOptions) then
     findSetOptionIn elabCommand cmd
 
 initialize addLinter unnecessarySetOptionIn
