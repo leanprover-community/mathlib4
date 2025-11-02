@@ -59,7 +59,7 @@ General algebra:
     localization: 'Localization'
     local ring: 'IsLocalRing'
     Noetherian ring: 'IsNoetherianRing'
-    ordered ring: 'OrderedRing'
+    # ordered ring: 'OrderedRing'
 
   Ideals and quotients:
     ideal of a commutative ring: 'Ideal'
