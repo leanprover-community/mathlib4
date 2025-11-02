@@ -174,6 +174,9 @@ protected theorem generate (B : FilterBasis α) : generate B.sets = B.filter := 
   · rw [le_generate_iff]
     apply mem_filter_of_mem
 
+lemma ker_filter (F : FilterBasis α) : F.filter.ker = ⋂₀ F.sets := by
+  aesop (add simp [ker, FilterBasis.filter])
+
 end FilterBasis
 
 namespace Filter
