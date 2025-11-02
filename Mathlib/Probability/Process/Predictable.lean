@@ -70,12 +70,12 @@ lemma measurableSet_predictable_Ioi_prod [LinearOrder ι] [OrderBot ι]
 lemma measurableSet_predictable_Ioc_prod [LinearOrder ι] [OrderBot ι]
     {𝓕 : Filtration ι m} (i j : ι) {s : Set Ω} (hs : MeasurableSet[𝓕 i] s) :
     MeasurableSet[𝓕.predictable] <| Set.Ioc i j ×ˢ s := by
-  obtain hij | hij := le_or_gt j i
+  obtain hij | hij := le_total j i
   · simp [hij]
   · rw [← Set.Ioi_diff_Ioi, (by simp : (Set.Ioi i \ Set.Ioi j) ×ˢ s
       = Set.Ioi i ×ˢ (s \ s) ∪ (Set.Ioi i \ Set.Ioi j) ×ˢ s), ← Set.prod_diff_prod]
-    refine MeasurableSet.diff (measurableSet_predictable_Ioi_prod hs)
-      (measurableSet_predictable_Ioi_prod <| 𝓕.mono hij.le _ hs)
+    exact (measurableSet_predictable_Ioi_prod hs).diff
+      (measurableSet_predictable_Ioi_prod <| 𝓕.mono hij _ hs)
 
 lemma measurableSpace_le_predictable_of_measurableSet [Preorder ι] [OrderBot ι]
     {𝓕 : Filtration ι m} {m' : MeasurableSpace (ι × Ω)}
@@ -86,6 +86,7 @@ lemma measurableSpace_le_predictable_of_measurableSet [Preorder ι] [OrderBot ι
   rintro - (⟨A, hA, rfl⟩ | ⟨i, A, hA, rfl⟩)
   · exact hm'bot A hA
   · exact hm' i A hA
+  
 namespace IsPredictable
 
 open Filtration
@@ -109,12 +110,11 @@ lemma progMeasurable {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsP
     exact (measurableSet_singleton _).prod <| 𝓕.mono bot_le _ hA
   · intros j A hA
     simp only [MeasurableSpace.map_def]
-    obtain hji | hij := lt_or_ge j i
+    obtain hji | hij := le_total j i
     · rw [(by grind : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A
         = (Subtype.val ⁻¹' (Set.Ioc j i)) ×ˢ A)]
       exact (measurable_subtype_coe measurableSet_Ioc).prod (𝓕.mono hji.le _ hA)
-    · rw [(by grind : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A = ∅)]
-      · simp
+    · simp [(by grind : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A = ∅)]
 
 /-- A predictable process is adapted. -/
 lemma adapted {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsPredictable 𝓕 u) :
@@ -179,9 +179,7 @@ lemma measurableSet_predictable_singleton_prod
   · exact measurableSet_predictable_Ioc_prod _ _ hs
   · ext m
     simp only [Set.mem_singleton_iff, Set.mem_Ioc]
-    refine ⟨fun hm ↦ ⟨hm ▸ lt_add_one n, hm ▸ le_rfl⟩, ?_⟩
-    rintro ⟨hm₁, hm₂⟩
-    linarith
+    omega
 
 lemma isPredictable_of_measurable_add_one [SecondCountableTopology E]
     {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}
