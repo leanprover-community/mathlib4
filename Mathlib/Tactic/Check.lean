@@ -36,33 +36,34 @@ open Lean Meta Elab Tactic
 
 /-- Core routine for the `#check` tactic: show a signature for `#check term`, assuming `term`
 is an identifier. Info messages are placed at `tk`.
-`c` contains the resolved name of `term`, in case there are several. -/
-def checkInner (tk : Syntax) (term : Term) (c : Name) : TacticM Unit := do
-  addCompletionInfo <| .id term c (danglingDot := false) {} none
-  logInfoAt tk <| MessageData.signature c
-  return
+In case there are several resolved names for `term`, show information for all of them. -/
+def checkInner (tk : Syntax) (term : Term) : TacticM Unit := do
+  for c in (← realizeGlobalConstWithInfos term) do
+    addCompletionInfo <| .id term c (danglingDot := false) {} none
+    logInfoAt tk <| MessageData.signature c
+    return
 
 open Lean Elab Command PrettyPrinter Delaborator in
-def checkPrimeInner (tk : Syntax) (term : Term) (c : Name) : TacticM Unit := do
-  addCompletionInfo <| .id term c (danglingDot := false) {} none
-  let info ← getConstInfo c
-  let delab : Delab := do
-    delabForallParamsWithSignature fun binders type => do
-      let binders := binders.filter fun binder => binder.raw.isOfKind ``Parser.Term.explicitBinder
-      return ⟨← `(declSigWithId| $(mkIdent c) $binders* : $type)⟩
-  logInfoAt tk <| .ofFormatWithInfosM (PrettyPrinter.ppExprWithInfos (delab := delab) info.type)
-  return
+def checkPrimeInner (tk : Syntax) (term : Term) : TacticM Unit := do
+  for c in (← realizeGlobalConstWithInfos term) do
+    addCompletionInfo <| .id term c (danglingDot := false) {} none
+    let info ← getConstInfo c
+    let delab : Delab := do
+      delabForallParamsWithSignature fun binders type => do
+        let binders := binders.filter fun binder => binder.raw.isOfKind ``Parser.Term.explicitBinder
+        return ⟨← `(declSigWithId| $(mkIdent c) $binders* : $type)⟩
+    logInfoAt tk <| .ofFormatWithInfosM (PrettyPrinter.ppExprWithInfos (delab := delab) info.type)
+    return
 
 /-- Workhorse method for the `#check` and `#check'` tactic.
 This does all the set-up; the actual behaviour is governed by the function `inner` passed in. -/
 def elabCheckTacticInner (tk : Syntax) (ignoreStuckTC : Bool) (term : Term)
-    (inner : Syntax → Term → Name → TacticM Unit): TacticM Unit :=
+    (inner : Syntax → Term → TacticM Unit): TacticM Unit :=
   withoutModifyingStateWithInfoAndMessages <| withMainContext do
     if let `($_:ident) := term then
       -- show signature for `#check ident`
       try
-        for c in (← realizeGlobalConstWithInfos term) do
-          inner tk term c
+        inner tk term
       catch _ => pure ()  -- identifier might not be a constant but constant + projection
     let e ← Term.elabTerm term none
     Term.synthesizeSyntheticMVarsNoPostponing (ignoreStuckTC := ignoreStuckTC)
