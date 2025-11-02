@@ -249,6 +249,7 @@ private theorem lift_aux (m n m' n' : M) (s t s' t' : ℕ+)
     ring_nf
   · simp_rw [smul_smul, ← mul_rotate s'.val, ← smul_smul, ← h', smul_smul]
     ring_nf
+
 instance : LE (DivisibleHull M) where
   le x y := liftOn₂ x y (fun m s n t ↦ t.val • m ≤ s.val • n) lift_aux
 
