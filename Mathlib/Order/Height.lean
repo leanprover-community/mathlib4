@@ -71,18 +71,23 @@ theorem exists_eq_chainHeight_of_finite (h : s.Finite) :
      ∃ t ⊆ s, t.encard = s.chainHeight r ∧ IsChain r t :=
   exists_eq_chainHeight_of_chainHeight_ne_top s r (chainHeight_ne_top_of_finite s r h)
 
-theorem encard_le_chainHeight {r} (s t : Set α) (hs : t ⊆ s) (hc : IsChain r t) :
+theorem encard_le_chainHeight_of_isChain {r} (s t : Set α) (hs : t ⊆ s) (hc : IsChain r t) :
     t.encard ≤ s.chainHeight r :=
   le_iSup_iff.mpr fun _ hb ↦ hb ⟨t, hs, hc⟩
 
+theorem encard_eq_chainHeight_of_isChain {r} (s : Set α) (hc : IsChain r s) :
+    s.encard = s.chainHeight r :=
+  le_antisymm (encard_le_chainHeight_of_isChain _ _ Set.Subset.rfl hc) (chainHeight_le_encard _ _)
+
 theorem finite_of_chainHeight_ne_top {r} {s : Set α} (hc : IsChain r s) (h : s.chainHeight r ≠ ⊤) :
     s.Finite :=
-  Set.encard_ne_top_iff.mp <| ne_top_of_le_ne_top h <| encard_le_chainHeight _ _ (subset_refl _) hc
+  Set.encard_ne_top_iff.mp <| ne_top_of_le_ne_top h <|
+    encard_le_chainHeight_of_isChain _ _ (subset_refl _) hc
 
 theorem not_isChain_of_chainHeight_lt_encard (s t : Set α) (ht : t ⊆ s)
     (he : s.chainHeight r < t.encard) : ¬ IsChain r t := by
   by_contra! hh
-  grw [encard_le_chainHeight _ _ ht hh] at he
+  grw [encard_le_chainHeight_of_isChain _ _ ht hh] at he
   exact (lt_self_iff_false _).mp he
 
 theorem chainHeight_eq_top_iff :
@@ -123,14 +128,14 @@ theorem chainHeight_of_isEmpty [IsEmpty α] : s.chainHeight r = 0 :=
 theorem chainHeight_mono (s t : Set α) (h : s ⊆ t) : s.chainHeight r ≤ t.chainHeight r := by
   refine forall_natCast_le_iff_le.mp fun n hn ↦ ?_
   obtain ⟨a, ha₁, ha₂, ha₃⟩ := exists_isChain_of_le_chainHeight n hn
-  exact ha₂ ▸ encard_le_chainHeight _ _ (ha₁.trans h) ha₃
+  exact ha₂ ▸ encard_le_chainHeight_of_isChain _ _ (ha₁.trans h) ha₃
 
 @[simp]
 theorem chainHeight_flip : s.chainHeight (flip r) = s.chainHeight r := by
   refine eq_of_forall_natCast_le_iff fun n ↦ ⟨fun hn ↦ ?_, fun hn ↦ ?_⟩
   all_goals
   · obtain ⟨a, ha₁, ha₂, ha₃⟩ := exists_isChain_of_le_chainHeight n hn
-    exact ha₂ ▸ encard_le_chainHeight _ _ ha₁ <|
+    exact ha₂ ▸ encard_le_chainHeight_of_isChain _ _ ha₁ <|
       fun _ hx _ hy hne ↦ by simpa [flip, Or.comm] using ha₃ hx hy hne
 
 section Rel
@@ -142,11 +147,11 @@ theorem chainHeight_eq_of_relEmbedding (e : r ↪r r') :
   refine eq_of_forall_natCast_le_iff fun n ↦ ⟨fun hn ↦ ?_, fun hn ↦ ?_⟩
   · obtain ⟨a, ha₁, ha₂, ha₃⟩ := exists_isChain_of_le_chainHeight n hn
     rw [← ha₂, ← Set.encard_preimage_of_injective_subset_range e.injective (by grind)]
-    exact encard_le_chainHeight _ _ (preimage_subset ha₁ e.injective.injOn) <|
+    exact encard_le_chainHeight_of_isChain _ _ (preimage_subset ha₁ e.injective.injOn) <|
       ha₃.preimage_relEmbedding e
   · obtain ⟨a, ha₁, ha₂, ha₃⟩ := exists_isChain_of_le_chainHeight n hn
     rw [← ha₂, ← e.injective.encard_image]
-    exact encard_le_chainHeight _ _ (by grind) <| ha₃.image_relEmbedding e
+    exact encard_le_chainHeight_of_isChain _ _ (by grind) <| ha₃.image_relEmbedding e
 
 theorem chainHeight_eq_of_relIso (e : r ≃r r') : (e '' s).chainHeight r' = s.chainHeight r :=
   chainHeight_eq_of_relEmbedding s e.toRelEmbedding
