@@ -78,7 +78,7 @@ theorem IsPartition.of_orbits :
   · intro x
     exact ⟨_, ⟨x, rfl⟩, mem_orbit_self x⟩
   · rintro ⟨a, ha : orbit G a = ∅⟩
-    exact (MulAction.orbit_nonempty a).ne_empty ha
+    exact (MulAction.nonempty_orbit a).ne_empty ha
 
 end orbits
 
@@ -293,7 +293,7 @@ lemma isInvariantBlock_iff_isFixedBlock : IsInvariantBlock G B ↔ IsFixedBlock 
 @[to_additive /-- An invariant block of a group action is a fixed block. -/]
 alias ⟨IsInvariantBlock.isFixedBlock, _⟩ := isInvariantBlock_iff_isFixedBlock
 
-/-- An invariant block  of a group action is a block. -/
+/-- An invariant block of a group action is a block. -/
 @[to_additive /-- An invariant block of a group action is a block. -/]
 lemma IsInvariantBlock.isBlock (hB : IsInvariantBlock G B) : IsBlock G B := hB.isFixedBlock.isBlock
 
@@ -747,7 +747,7 @@ theorem of_subset (a : X) (hfB : B.Finite) :
     obtain ⟨b, hb : b ∈ B⟩ := hfB_ne
     obtain ⟨k, hk : k • b = a⟩ := exists_smul_eq G b a
     apply Set.Finite.subset (Set.Finite.map _ hfB) (hB'₀ k ⟨b, hb, hk⟩)
-  have hag : ∀ g : G, a ∈ g • B' → B' ≤ g • B' :=  by
+  have hag : ∀ g : G, a ∈ g • B' → B' ≤ g • B' := by
     intro g hg x hx
     -- a = g • b; b ∈ B'; a ∈ k • B → b ∈ k • B
     simp only [B', Set.mem_iInter, Set.mem_smul_set_iff_inv_smul_mem,

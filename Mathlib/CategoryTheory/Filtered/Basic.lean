@@ -81,7 +81,7 @@ class IsFilteredOrEmpty : Prop where
 3. there exists some object. -/
 @[stacks 002V "They also define a diagram being filtered."]
 class IsFiltered : Prop extends IsFilteredOrEmpty C where
-  /-- a filtered category must be non empty -/
+  /-- a filtered category must be non-empty -/
   -- This should be an instance but it causes significant slowdown
   [nonempty : Nonempty C]
 
@@ -281,9 +281,8 @@ theorem cocone_nonempty (F : J ⥤ C) : Nonempty (Cocone F) := by
   classical
   let O := Finset.univ.image F.obj
   let H : Finset (Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
-    Finset.univ.biUnion   fun X : J =>
-      Finset.univ.biUnion fun Y : J =>
-        Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp [O], by simp [O], F.map f⟩
+    Finset.univ.biUnion fun X : J => Finset.univ.biUnion fun Y : J =>
+      Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp [O], by simp [O], F.map f⟩
   obtain ⟨Z, f, w⟩ := sup_exists O H
   refine ⟨⟨Z, ⟨fun X => f (by simp [O]), ?_⟩⟩⟩
   intro j j' g
@@ -499,7 +498,7 @@ class IsCofilteredOrEmpty : Prop where
 3. there exists some object. -/
 @[stacks 04AZ]
 class IsCofiltered : Prop extends IsCofilteredOrEmpty C where
-  /-- a cofiltered category must be non empty -/
+  /-- a cofiltered category must be non-empty -/
   -- This should be an instance but it causes significant slowdown
   [nonempty : Nonempty C]
 

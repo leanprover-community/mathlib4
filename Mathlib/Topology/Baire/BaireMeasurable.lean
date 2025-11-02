@@ -37,7 +37,7 @@ scoped[Topology] notation:50 f " =ᵇ " g:50 => Filter.EventuallyEq (residual _)
 almost everywhere in the sense of Baire category. That is, on a residual set. -/
 scoped[Topology] notation3 "∀ᵇ " (...) ", " r:(scoped p => Filter.Eventually p <| residual _) => r
 
-/-- Notation to say that a property of points in a topological space holds on a non meager set. -/
+/-- Notation to say that a property of points in a topological space holds on a nonmeager set. -/
 scoped[Topology] notation3 "∃ᵇ " (...) ", " r:(scoped p => Filter.Frequently p <| residual _) => r
 
 variable {α}

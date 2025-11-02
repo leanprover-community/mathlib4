@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Topology.UniformSpace.UniformConvergence
-import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.UniformSpace.CompleteSeparated
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.UniformSpace.HeineCantor
-import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 import Mathlib.Topology.Algebra.Group.Quotient
 import Mathlib.Topology.DiscreteSubset
 import Mathlib.Tactic.Abel
@@ -36,13 +35,6 @@ open Filter Set
 variable {α : Type*} {β : Type*}
 
 variable [UniformSpace α] [Group α] [IsUniformGroup α]
-
-@[to_additive]
-instance Pi.instIsUniformGroup {ι : Type*} {G : ι → Type*} [∀ i, UniformSpace (G i)]
-    [∀ i, Group (G i)] [∀ i, IsUniformGroup (G i)] : IsUniformGroup (∀ i, G i) where
-  uniformContinuous_div := uniformContinuous_pi.mpr fun i ↦
-    (uniformContinuous_proj G i).comp uniformContinuous_fst |>.div <|
-      (uniformContinuous_proj G i).comp uniformContinuous_snd
 
 @[to_additive]
 theorem isUniformEmbedding_translate_mul (a : α) : IsUniformEmbedding fun x : α => x * a :=
@@ -81,31 +73,6 @@ lemma cauchy_map_iff_tendsto_swapped (𝓕 : Filter ι) (f : ι → G) :
 end IsUniformGroup
 
 end Cauchy
-
-section LatticeOps
-
-variable [Group β]
-
-@[to_additive]
-lemma IsUniformInducing.isUniformGroup {γ : Type*} [Group γ] [UniformSpace γ] [IsUniformGroup γ]
-    [UniformSpace β] {F : Type*} [FunLike F β γ] [MonoidHomClass F β γ]
-    (f : F) (hf : IsUniformInducing f) :
-    IsUniformGroup β where
-  uniformContinuous_div := by
-    simp_rw [hf.uniformContinuous_iff, Function.comp_def, map_div]
-    exact uniformContinuous_div.comp (hf.uniformContinuous.prodMap hf.uniformContinuous)
-
-@[deprecated (since := "2025-03-30")]
-alias IsUniformInducing.uniformAddGroup := IsUniformInducing.isUniformAddGroup
-@[to_additive existing, deprecated (since := "2025-03-30")]
-alias IsUniformInducing.uniformGroup := IsUniformInducing.isUniformGroup
-
-@[to_additive]
-protected theorem IsUniformGroup.comap {γ : Type*} [Group γ] {u : UniformSpace γ} [IsUniformGroup γ]
-    {F : Type*} [FunLike F β γ] [MonoidHomClass F β γ] (f : F) : @IsUniformGroup β (u.comap f) _ :=
-  letI : UniformSpace β := u.comap f; IsUniformInducing.isUniformGroup f ⟨rfl⟩
-
-end LatticeOps
 
 namespace Subgroup
 
@@ -193,6 +160,12 @@ theorem UniformCauchySeqOn.div (hf : UniformCauchySeqOn f l s) (hf' : UniformCau
 
 end UniformConvergence
 
+@[to_additive]
+instance IsUniformGroup.of_compactSpace [UniformSpace β] [Group β] [ContinuousDiv β]
+    [CompactSpace β] :
+    IsUniformGroup β where
+  uniformContinuous_div := CompactSpace.uniformContinuous_of_continuous continuous_div'
+
 end IsUniformGroup
 
 section IsTopologicalGroup
@@ -203,11 +176,9 @@ variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 attribute [local instance] IsTopologicalGroup.toUniformSpace
 
-@[to_additive]
+@[to_additive (attr := deprecated IsUniformGroup.of_compactSpace (since := "2025-09-27"))]
 theorem topologicalGroup_is_uniform_of_compactSpace [CompactSpace G] : IsUniformGroup G :=
-  ⟨by
-    apply CompactSpace.uniformContinuous_of_continuous
-    exact continuous_div'⟩
+  inferInstance
 
 variable {G}
 

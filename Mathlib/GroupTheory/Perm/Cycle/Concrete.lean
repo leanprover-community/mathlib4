@@ -63,7 +63,7 @@ theorem formPerm_disjoint_iff (hl : Nodup l) (hl' : Nodup l') (hn : 2 ≤ l.leng
     by_cases hx : x ∈ l
     on_goal 1 => by_cases hx' : x ∈ l'
     · exact (h hx hx').elim
-    all_goals have := formPerm_eq_self_of_notMem _ _ ‹_›; tauto
+    all_goals have := List.formPerm_apply_of_notMem ‹_›; tauto
 
 theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPerm l) := by
   rcases l with - | ⟨x, l⟩
@@ -75,7 +75,7 @@ theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPer
     constructor
     · rwa [formPerm_apply_mem_ne_self_iff _ hl _ mem_cons_self]
     · intro w hw
-      have : w ∈ x::y::l := mem_of_formPerm_ne_self _ _ hw
+      have : w ∈ x::y::l := mem_of_formPerm_apply_ne hw
       obtain ⟨k, hk, rfl⟩ := getElem_of_mem this
       use k
       simp only [zpow_natCast, formPerm_pow_apply_head _ _ hl k, Nat.mod_eq_of_lt hk]
@@ -158,7 +158,7 @@ theorem support_formPerm [Fintype α] (s : Cycle α) (h : Nodup s) (hn : Nontriv
 theorem formPerm_eq_self_of_notMem (s : Cycle α) (h : Nodup s) (x : α) (hx : x ∉ s) :
     formPerm s h x = x := by
   induction s using Quot.inductionOn
-  simpa using List.formPerm_eq_self_of_notMem _ _ hx
+  simpa using List.formPerm_apply_of_notMem hx
 
 @[deprecated (since := "2025-05-23")]
 alias formPerm_eq_self_of_not_mem := formPerm_eq_self_of_notMem
@@ -470,7 +470,7 @@ def isoCycle' : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s
 -- mutes `'decide' tactic does nothing [linter.unusedTactic]`
 set_option linter.unusedTactic false in
 @[inherit_doc Cycle.formPerm]
-notation3 (prettyPrint := false) "c["(l", "* => foldr (h t => List.cons h t) List.nil)"]" =>
+notation3 (prettyPrint := false) "c[" (l", "* => foldr (h t => List.cons h t) List.nil) "]" =>
   Cycle.formPerm (Cycle.ofList l) (Iff.mpr Cycle.nodup_coe_iff (by decide))
 
 /-- Represents a permutation as product of disjoint cycles:

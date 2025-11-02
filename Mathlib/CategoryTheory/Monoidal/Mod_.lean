@@ -14,6 +14,7 @@ universe v₁ v₂ u₁ u₂
 
 open CategoryTheory MonoidalCategory MonObj
 
+namespace CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
   {D : Type u₂} [Category.{v₂} D] [MonoidalLeftAction C D]
 
@@ -42,9 +43,9 @@ class ModObj (X : D) where
 
 attribute [reassoc] ModObj.mul_smul' ModObj.one_smul'
 
-@[inherit_doc] scoped[MonObj] notation "γ" => ModObj.smul
-@[inherit_doc] scoped[MonObj] notation "γ["Y"]" => ModObj.smul (X := Y)
-@[inherit_doc] scoped[MonObj] notation "γ["N","Y"]" =>
+@[inherit_doc] scoped[CategoryTheory.MonObj] notation "γ" => ModObj.smul
+@[inherit_doc] scoped[CategoryTheory.MonObj] notation "γ["Y"]" => ModObj.smul (X := Y)
+@[inherit_doc] scoped[CategoryTheory.MonObj] notation "γ["N","Y"]" =>
   ModObj.smul (M := N) (X := Y)
 
 variable {M}
@@ -66,7 +67,7 @@ theorem assoc_flip (X : D) [ModObj M X] : M ⊴ₗ γ ≫ γ =
 
 variable (M) in
 /-- The action of a monoid object on itself. -/
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 abbrev regular : ModObj M M where
   smul := μ
 
@@ -267,3 +268,4 @@ def comap {A B : C} [MonObj A] [MonObj B] (f : A ⟶ B) [IsMonHom f] :
 end comap
 
 end Mod_
+end CategoryTheory

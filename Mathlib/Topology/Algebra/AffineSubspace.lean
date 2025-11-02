@@ -52,6 +52,6 @@ theorem isClosed_direction_iff [T1Space V] (s : AffineSubspace R P) :
   rcases s.eq_bot_or_nonempty with (rfl | ⟨x, hx⟩); · simp
   rw [← (Homeomorph.vaddConst x).symm.isClosed_image,
     AffineSubspace.coe_direction_eq_vsub_set_right hx]
-  rfl
+  simp only [Homeomorph.vaddConst_symm_apply]
 
 end AffineSubspace

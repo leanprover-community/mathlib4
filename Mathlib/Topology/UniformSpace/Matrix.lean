@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Heather Macbeth
 -/
 import Mathlib.LinearAlgebra.Matrix.Defs
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 import Mathlib.Topology.UniformSpace.Pi
+import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 
 /-!
 # Uniform space structure on matrices
@@ -24,9 +24,6 @@ instance instUniformSpace : UniformSpace (Matrix m n 𝕜) :=
 instance instIsUniformAddGroup [AddGroup 𝕜] [IsUniformAddGroup 𝕜] :
     IsUniformAddGroup (Matrix m n 𝕜) :=
   inferInstanceAs <| IsUniformAddGroup (m → n → 𝕜)
-
-@[deprecated (since := "2025-03-31")] alias
-  instUniformAddGroup := Matrix.instIsUniformAddGroup
 
 theorem uniformity :
     𝓤 (Matrix m n 𝕜) = ⨅ (i : m) (j : n), (𝓤 𝕜).comap fun a => (a.1 i j, a.2 i j) := by

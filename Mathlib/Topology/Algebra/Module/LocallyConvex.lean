@@ -239,14 +239,12 @@ instance LinearOrderedSemiring.toLocallyConvexSpace {R : Type*} [TopologicalSpac
       intro
       refine nhds_top_basis.to_hasBasis' ?_ ?_
       · intros
-        refine ⟨Set.Ioi _, ?_, subset_refl _⟩
+        refine ⟨Set.Ioi _, ?_, subset_rfl⟩
         simp_all
       · simp +contextual
     refine (nhds_basis_Ioo' hl hu).to_hasBasis' ?_ ?_
     · simp only [id_eq, and_imp, Prod.forall]
-      intros
-      refine ⟨_, ?_, subset_refl _⟩
-      simp_all [Ioo_mem_nhds, convex_Ioo]
+      exact fun _ _ h₁ h₂ ↦ ⟨_, by simp [h₁, h₂, Ioo_mem_nhds, convex_Ioo], subset_rfl⟩
     · simp +contextual
 
 end LinearOrderedSemiring

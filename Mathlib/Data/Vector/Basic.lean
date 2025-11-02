@@ -311,9 +311,7 @@ into the provided starting value `b : β` and the recursed `scanl`
 This lemma is the `cons` version of `scanl_get`.
 -/
 @[simp]
-theorem scanl_cons (x : α) : scanl f b (x ::ᵥ v) = b ::ᵥ scanl f (f b x) v := by
-  simp only [scanl, toList_cons, List.scanl]; dsimp
-  simp only [cons]
+theorem scanl_cons (x : α) : scanl f b (x ::ᵥ v) = b ::ᵥ scanl f (f b x) v := rfl
 
 /-- The underlying `List` of a `Vector` after a `scanl` is the `List.scanl`
 of the underlying `List` of the original `Vector`.
@@ -679,7 +677,10 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) :
     ∀ x : Vector α n, x.traverse ((pure : _ → Id _) ∘ f) = pure (map f x) := by
-  rintro ⟨x, rfl⟩; simp!; induction x <;> simp! [*, functor_norm]; rfl
+  rintro ⟨x, rfl⟩
+  simp!
+  induction x <;> simp! [*, functor_norm]
+  rfl
 
 variable [LawfulApplicative F] (η : ApplicativeTransformation F G)
 
