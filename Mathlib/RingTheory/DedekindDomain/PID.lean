@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2023 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen
+Authors: Anne Baanen, Kenny Lau
 -/
 import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 
 /-!
 # Criteria under which a Dedekind domain is a PID
@@ -18,6 +19,8 @@ principal.
   with finitely many maximal ideals, is a principal ideal.
 * `IsPrincipalIdealRing.of_finite_primes`: if a Dedekind domain has finitely many prime ideals,
   it is a principal ideal domain.
+* `IsPrincipalIdealRing.of_isDedekindDomain_of_uniqueFactorizationMonoid`: a Dedekind domain
+  that is a unique factorisation domain, is also a principal ideal domain.
 -/
 
 
@@ -182,6 +185,7 @@ theorem IsPrincipalIdealRing.of_finite_primes [IsDedekindDomain R]
     (h : {I : Ideal R | I.IsPrime}.Finite) : IsPrincipalIdealRing R :=
   IsPrincipalIdealRing.of_finite_maximals <| h.subset fun _ hi ↦ hi.isPrime
 
+section
 variable [IsDedekindDomain R]
 variable (S : Type*) [CommRing S]
 variable [Algebra R S] [NoZeroSMulDivisors R S] [Module.Finite R S]
@@ -251,3 +255,15 @@ theorem IsDedekindDomain.isPrincipalIdealRing_localization_over_prime [IsDomain 
   exact
     and_iff_right_of_imp fun hP =>
       or_iff_not_imp_left.mpr (IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime S p hp0 hP)
+end
+
+-- not an instance because this might cause a timeout
+theorem IsPrincipalIdealRing.of_isDedekindDomain_of_uniqueFactorizationMonoid
+    (R : Type*) [CommRing R] [IsDedekindDomain R] [UniqueFactorizationMonoid R] :
+    IsPrincipalIdealRing R := by
+  refine .of_prime_ne_bot fun P hp hp₀ ↦ ?_
+  obtain ⟨x, hx₁, hx₂⟩ := hp.exists_mem_prime_of_ne_bot hp₀
+  suffices Ideal.span {x} = P from this ▸ inferInstance
+  have := (Ideal.span_singleton_prime hx₂.ne_zero).mpr hx₂
+  exact (Ring.DimensionLeOne.prime_le_prime_iff_eq (by aesop)).mp <|
+    P.span_singleton_le_iff_mem.mpr hx₁

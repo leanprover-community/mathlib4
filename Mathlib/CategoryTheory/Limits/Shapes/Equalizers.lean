@@ -754,7 +754,7 @@ noncomputable abbrev equalizer : C :=
   limit (parallelPair f g)
 
 /-- If an equalizer of `f` and `g` exists, we can access the inclusion
-equalizer f g ⟶ X` by saying `equalizer.ι f g`. -/
+`equalizer f g ⟶ X` by saying `equalizer.ι f g`. -/
 noncomputable abbrev equalizer.ι : equalizer f g ⟶ X :=
   limit.π (parallelPair f g) zero
 

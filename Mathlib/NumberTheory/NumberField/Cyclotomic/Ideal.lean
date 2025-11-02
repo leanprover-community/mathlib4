@@ -165,6 +165,46 @@ theorem ramificationIdxIn_of_prime_pow :
 
 end PrimePow
 
+section Prime
+
+variable [hK : IsCyclotomicExtension {p} ℚ K] {ζ : K} (hζ : IsPrimitiveRoot ζ p)
+
+instance isPrime_span_zeta_sub_one' : IsPrime (span {hζ.toInteger - 1}) := by
+  rw [← pow_one p] at hK hζ
+  exact isPrime_span_zeta_sub_one p 0 hζ
+
+theorem inertiaDeg_span_zeta_sub_one' : inertiaDeg 𝒑 (span {hζ.toInteger - 1}) = 1 := by
+  rw [← pow_one p] at hK hζ
+  exact inertiaDeg_span_zeta_sub_one p 0 hζ
+
+theorem ramificationIdx_span_zeta_sub_one' :
+    ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 (span {hζ.toInteger - 1}) = p - 1 := by
+  rw [← pow_one p] at hK hζ
+  rw [ramificationIdx_span_zeta_sub_one p 0 hζ, pow_zero, one_mul]
+
+include hK in
+theorem ncard_primesOver_of_prime :
+    (primesOver 𝒑 (𝓞 K)).ncard = 1 := by
+  rw [← pow_one p] at hK
+  exact ncard_primesOver_of_prime_pow p 0 K
+
+theorem eq_span_zeta_sub_one_of_liesOver' (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver 𝒑] :
+    P = span {hζ.toInteger - 1} := by
+  rw [← pow_one p] at hK hζ
+  exact eq_span_zeta_sub_one_of_liesOver p 0 K P hζ
+
+include hK in
+theorem inertiaDeg_eq_of_prime (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver 𝒑] :
+    inertiaDeg 𝒑 P = 1 := by
+  rw [eq_span_zeta_sub_one_of_liesOver' p K hK.zeta_spec P, inertiaDeg_span_zeta_sub_one']
+
+include hK in
+theorem ramificationIdx_eq_of_prime (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver 𝒑] :
+    ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = p - 1 := by
+  rw [eq_span_zeta_sub_one_of_liesOver' p K hK.zeta_spec P, ramificationIdx_span_zeta_sub_one']
+
+end Prime
+
 section notDVD
 
 open NumberField.Ideal Polynomial
