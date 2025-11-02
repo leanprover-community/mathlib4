@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.Algebra.QuadraticAlgebra
 import Mathlib.Algebra.Star.Unitary
+import Mathlib.LinearAlgebra.Determinant
 import Mathlib.Tactic.FieldSimp
 
 /-! # Quadratic algebras : involution and norm.
@@ -292,6 +293,25 @@ theorem norm_mem_nonZeroDivisors_iff {z : QuadraticAlgebra R a b} :
   · intro hz
     rw [← coe_mem_nonZeroDivisors_iff, coe_norm_eq_mul_star]
     exact Submonoid.mul_mem _ hz (star_mem_nonZeroDivisors hz)
+
+/-- The norm of an element in a quadratic algebra is the determinant of the endomorphism defined by
+left multiplication by that element. -/
+theorem det_toModuleEnd_eq_norm (z : QuadraticAlgebra R a b) :
+    (Module.toModuleEnd R (QuadraticAlgebra R a b) z).det = z.norm := by
+  rw [← LinearMap.det_toMatrix <| basis ..]
+  have : !![z.re, a * z.im; z.im, z.re + b * z.im].det = z.norm := by
+    simp [norm]
+    ring
+  convert this
+  apply LinearEquiv.eq_symm_apply _ |>.mp
+  ext1 w
+  apply basis .. |>.repr.injective
+  apply DFunLike.coe_injective'
+  rw [LinearMap.toMatrix_symm, Matrix.repr_toLin]
+  ext i
+  fin_cases i
+    <;> simp
+    <;> ring
 
 end norm
 
