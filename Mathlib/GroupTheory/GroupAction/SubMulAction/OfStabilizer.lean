@@ -236,7 +236,7 @@ open MulAction Set
 variable (G : Type*) [Group G] (α : Type*) [MulAction G α]
 
 /-- The stabilizer of a set acts on that set. -/
-@[to_additive]
+@[to_additive /-- The stabilizer of a set acts on that set. -/]
 instance _root_.SMul.ofStabilizer (s : Set α) :
     SMul (stabilizer G s) s where
   smul g x := ⟨g • ↑x, by
@@ -249,7 +249,7 @@ theorem _root_.SMul.smul_stabilizer_def (s : Set α) (g : stabilizer G s) (x : s
   rfl
 
 /-- The stabilizer of a set acts on that set -/
-@[to_additive]
+@[to_additive /-- The stabilizer of a set acts on that set. -/]
 instance (s : Set α) : MulAction (stabilizer G s) s where
   one_smul x := by
     simp only [← Subtype.coe_inj, SMul.smul_stabilizer_def, OneMemClass.coe_one, one_smul]
