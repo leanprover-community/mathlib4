@@ -184,23 +184,13 @@ theorem exist_eq_span_eq_ncard_of_X_not_mem (hI : X ∉ I) {S : Set R}
     (hSI : span S = I.map constantCoeff) (hS : S.Finite) :
       ∃ T, I = span T ∧ T.Finite ∧ T.ncard = S.ncard := by
   obtain ⟨k, a, a_injective, rfl⟩ := Finite.fin_param hS
-  refine ⟨_, I_eq_span_range hSI hI, finite_range _, ?_⟩
-  have h₁ : (range a).ncard = k := by
-    refine ncard_eq_of_bijective (a ⟨·, ·⟩) ?_ ?_ ?_
-    · intro _ ⟨i, _⟩
-      use i.1, i.2
-    · exact fun _ _ ↦ mem_range_self _
-    · exact fun _ _ _ _ h ↦ Fin.mk_eq_mk.1 (a_injective h)
-  have h₂ : (range (F hSI)).ncard = k := by
-    refine ncard_eq_of_bijective (F hSI ⟨·, ·⟩) ?_ ?_ ?_
-    · intro _ ⟨i, _⟩
-      use i.1, i.2
-    · exact fun _ _ ↦ mem_range_self _
-    · intro _ _ _ _ this
-      replace := congrArg constantCoeff this
-      simp only [constantCoeff_F_apply] at this
-      exact Fin.mk_eq_mk.1 (a_injective this)
-  rw [h₁, h₂]
+  refine ⟨_, I_eq_span_range hSI hI, finite_range _, trans (b := k) ?_ ?_⟩
+  <;> rw [Set.ncard_range_of_injective, Nat.card_fin]
+  · intro _ _ this
+    replace := congrArg constantCoeff this
+    simp [constantCoeff_F_apply] at this
+    exact a_injective this
+  · exact a_injective
 
 end X_notMem
 
