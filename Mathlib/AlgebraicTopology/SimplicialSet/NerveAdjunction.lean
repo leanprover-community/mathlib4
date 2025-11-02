@@ -43,7 +43,20 @@ section
 /-- The components of the counit of `nerve₂Adj`. -/
 @[simps!]
 def nerve₂Adj.counit.app (C : Type u) [SmallCategory C] :
-    (nerveFunctor₂.obj (Cat.of C)).HomotopyCategory ⥤ C := by
+    (nerveFunctor₂.obj (Cat.of C)).HomotopyCategory ⥤ C :=
+  Quotient.lift _ (Cat.freeRefl.map (OneTruncation₂.ofNerve₂ C).hom ≫
+    ReflQuiv.adj.{u}.counit.app (Cat.of C)) (fun x y f g rel ↦ by
+      induction rel with
+      | @of_compStruct x₀ x₁ x₂ e₀₁ e₁₂ e₀₂ h =>
+        dsimp only [id_obj, Cat.comp_obj, ReflQuiv.of_val, Cat.of_α,
+          Cat.comp_map]
+        simp only [Cat.freeRefl_obj, ReflQuiv.of_val, Cat.of_α, Cat.freeRefl_map, map_comp,
+          Cat.freeReflMap_map]
+        sorry)
+#check pathComposition
+
+#exit
+  #exit
   fapply Quotient.lift
   · exact
     (whiskerRight (OneTruncation₂.ofNerve₂.natIso).hom _ ≫ ReflQuiv.adj.{u}.counit).app (Cat.of C)
