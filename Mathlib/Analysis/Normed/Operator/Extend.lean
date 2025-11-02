@@ -187,9 +187,9 @@ variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂] {σ₁₂ : 𝕜
 variable (f : E →ₛₗ[σ₁₂] F) (e : E →ₗ[𝕜] Eₗ)
 
 open scoped Classical in
-/-- Extension of a continuous linear map `f : E →SL[σ₁₂] F` to `Fₗ →SL[σ₁₂] F`,
+/-- Extension of a linear map `f : E →ₛₗ[σ₁₂] F` to a continuous linear map `Eₗ →SL[σ₁₂] F`,
 where `E` is a normed space and `F` a complete normed space,
-using an injective dense embedding `e : E →L[𝕜] Fₗ` together with a bound `‖f x‖ ≤ C * ‖e x‖`
+using an injective dense embedding `e : E →L[𝕜] Eₗ` together with a bound `‖f x‖ ≤ C * ‖e x‖`
 for all `x : E`. -/
 def extendOfNorm : Eₗ →SL[σ₁₂] F :=
   if h : DenseRange e then
