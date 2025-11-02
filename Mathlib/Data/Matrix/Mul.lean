@@ -919,12 +919,20 @@ theorem mulVec_injective [Fintype n] : (mulVec : Matrix m n α → _).Injective 
   convert congrFun₂ h (Pi.single j 1) i
     <;> simp
 
+theorem eq_of_forall_mulVec_eq [Fintype n] {A B : Matrix m n α} (h : ∀ v, A *ᵥ v = B *ᵥ v) :
+    A = B :=
+  mulVec_injective <| funext h
+
 theorem vecMul_injective [Fintype m] : (·.vecMul : Matrix m n α → _).Injective := by
   intro A B h
   ext i j
   classical
   convert congrFun₂ h (Pi.single i 1) j
     <;> simp only [single_one_vecMul, row]
+
+theorem eq_of_forall_vecMul_eq [Fintype m] {A B : Matrix m n α} (h : ∀ v, v ᵥ* A = v ᵥ* B) :
+    A = B :=
+  vecMul_injective <| funext h
 
 variable [Fintype m] [DecidableEq m]
 
