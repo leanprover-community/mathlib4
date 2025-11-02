@@ -676,8 +676,6 @@ theorem IndepFun.congr {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     f' ⟂ᵢ[μ] g' := by
   refine Kernel.IndepFun.congr' hfg ?_ ?_ <;> simpa
 
-@[deprecated (since := "2025-03-18")] alias IndepFun.ae_eq := IndepFun.congr
-
 section Prod
 
 variable {Ω Ω' : Type*} {mΩ : MeasurableSpace Ω} {mΩ' : MeasurableSpace Ω'}
@@ -792,9 +790,6 @@ lemma iIndepFun.indepFun_prodMk (hf_Indep : iIndepFun f μ) (hf_meas : ∀ i, Me
     IndepFun (fun a => (f i a, f j a)) (f k) μ :=
   Kernel.iIndepFun.indepFun_prodMk hf_Indep hf_meas i j k hik hjk
 
-@[deprecated (since := "2025-03-05")]
-alias iIndepFun.indepFun_prod_mk := iIndepFun.indepFun_prodMk
-
 lemma iIndepFun.indepFun_prodMk₀ (hf_Indep : iIndepFun f μ) (hf_meas : ∀ i, AEMeasurable (f i) μ)
     (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     IndepFun (fun a => (f i a, f j a)) (f k) μ :=
@@ -804,9 +799,6 @@ lemma iIndepFun.indepFun_prodMk_prodMk (h_indep : iIndepFun f μ) (hf : ∀ i, M
     (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
     IndepFun (fun a ↦ (f i a, f j a)) (fun a ↦ (f k a, f l a)) μ :=
   Kernel.iIndepFun.indepFun_prodMk_prodMk h_indep hf i j k l hik hil hjk hjl
-
-@[deprecated (since := "2025-03-05")]
-alias iIndepFun.indepFun_prod_mk_prod_mk := iIndepFun.indepFun_prodMk_prodMk
 
 lemma iIndepFun.indepFun_prodMk_prodMk₀ (h_indep : iIndepFun f μ) (hf : ∀ i, AEMeasurable (f i) μ)
     (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
