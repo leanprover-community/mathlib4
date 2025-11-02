@@ -17,6 +17,19 @@ since it elaborates `t` in a more tolerant way and so it can be possible to get 
 For example, `#check` allows metavariables.
 -/
 
+open Lean Elab Command PrettyPrinter Delaborator in
+/-- The `#check'` command is like `#check`, but only prints explicit arguments in the signature
+(i.e., omitting implicit and typeclass arguments). -/
+elab tk:"#check' " name:ident : command => runTermElabM fun _ => do
+  for c in (← realizeGlobalConstWithInfos name) do
+    addCompletionInfo <| .id name name.getId (danglingDot := false) {} none
+    let info ← getConstInfo c
+    let delab : Delab := do
+      delabForallParamsWithSignature fun binders type => do
+        let binders := binders.filter fun binder => binder.raw.isOfKind ``Parser.Term.explicitBinder
+        return ⟨← `(declSigWithId| $(mkIdent c) $binders* : $type)⟩
+    logInfoAt tk <| .ofFormatWithInfosM (PrettyPrinter.ppExprWithInfos (delab := delab) info.type)
+
 namespace Mathlib.Tactic
 
 open Lean Meta Elab Tactic
