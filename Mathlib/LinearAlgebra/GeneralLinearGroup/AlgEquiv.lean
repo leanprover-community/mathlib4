@@ -11,7 +11,7 @@ import Mathlib.LinearAlgebra.Dual.Defs
 # Algebra automorphisms in `End K V` are inner
 
 This file shows that given any algebra equivalence `f : End K V ≃ₐ End K V`,
-there exists a linear equivalence `T : V ≃ₗ T` such that `f x = T * x * T.symm`.
+there exists a linear equivalence `T : V ≃ₗ V` such that `f x = T ∘ₗ x ∘ₗ T.symm`.
 In other words, the map `MulSemiringAction.toAlgEquiv` from `GeneralLinearGroup K V` to
 `End K V ≃ₐ End K V` is surjective.
 -/
@@ -43,11 +43,11 @@ private theorem auxLinear_comp (f : End R V →ₐ[R] End R V) (y : Dual R V) (z
   LinearMap.ext <| auxLinear_map_apply f y z A
 
 /-- Given an algebra automorphism `f` in `End K V`, there exists a linear isomorphism `T`
-such that `f` is given by `x ↦ T * x * T⁻¹`. -/
-theorem AlgEquiv.coe_eq_linearEquiv_conjugate (f : End K V ≃ₐ[K] End K V) :
-    ∃ T : V ≃ₗ[K] V, ⇑f = fun x ↦ T ∘ₗ x ∘ₗ T.symm := by
+such that `f` is given by `x ↦ T ∘ₗ x ∘ₗ T.symm`. -/
+theorem AlgEquiv.coe_eq_linearEquiv_conj (f : End K V ≃ₐ[K] End K V) :
+    ∃ T : V ≃ₗ[K] V, ⇑f = T.conj := by
   nontriviality V
-  simp_rw [funext_iff, ← comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm]
+  simp_rw [funext_iff, LinearEquiv.conj_apply, LinearEquiv.eq_comp_toLinearMap_symm]
   obtain ⟨u, v, huv⟩ : ∃ u : V, ∃ v : Dual K V, v u ≠ 0 := by
     obtain ⟨u, hu⟩ := nontrivial_iff_exists_ne 0 |>.mp ‹Nontrivial V›
     obtain ⟨v, hv⟩ := exists_linearMap_apply_ne_zero_of_ne_zero K hu
@@ -77,12 +77,12 @@ theorem AlgEquiv.coe_eq_linearEquiv_conjugate (f : End K V ≃ₐ[K] End K V) :
     simpa [huv] using congr((fun f ↦ f u) $h_smul)
   exact ⟨LinearEquiv.ofBijective T ⟨inj, surj⟩, fun A ↦ this A |>.symm⟩
 
-/-- Alternate statement of `coe_eq_linearEquiv_conjugate`. -/
+/-- Alternate statement of `coe_eq_linearEquiv_conj`. -/
 theorem mulSemiringActionToAlgEquiv_conjAct_surjective :
     Function.Surjective
       (MulSemiringAction.toAlgEquiv (G := ConjAct (GeneralLinearGroup K V)) K (End K V)) := by
   intro f
-  obtain ⟨T, hT⟩ := f.coe_eq_linearEquiv_conjugate
+  obtain ⟨T, hT⟩ := f.coe_eq_linearEquiv_conj
   exact ⟨GeneralLinearGroup.ofLinearEquiv T, (DFunLike.coe_injective hT).symm⟩
 
 end Module.End
