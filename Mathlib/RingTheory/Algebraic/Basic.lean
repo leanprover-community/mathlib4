@@ -20,7 +20,7 @@ a tower of algebraic field extensions is algebraic.
 
 universe u v w
 
-open Polynomial
+open Polynomial nonZeroDivisors
 
 section
 
@@ -34,7 +34,6 @@ variable {R}
 
 theorem IsAlgebraic.nontrivial {a : A} (h : IsAlgebraic R a) : Nontrivial R := by
   contrapose! h
-  rw [not_nontrivial_iff_subsingleton] at h
   apply is_transcendental_of_subsingleton
 
 variable (R A)
@@ -52,7 +51,7 @@ theorem Polynomial.transcendental_X : Transcendental R (X (R := R)) := by
 variable {R A}
 
 theorem IsAlgebraic.of_aeval {r : A} (f : R[X]) (hf : f.natDegree ≠ 0)
-    (hf' : f.leadingCoeff ∈ nonZeroDivisors R) (H : IsAlgebraic R (aeval r f)) :
+    (hf' : f.leadingCoeff ∈ R⁰) (H : IsAlgebraic R (aeval r f)) :
     IsAlgebraic R r := by
   obtain ⟨p, h1, h2⟩ := H
   have : (p.comp f).coeff (p.natDegree * f.natDegree) ≠ 0 := fun h ↦ h1 <| by
@@ -62,7 +61,7 @@ theorem IsAlgebraic.of_aeval {r : A} (f : R[X]) (hf : f.natDegree ≠ 0)
   exact ⟨p.comp f, fun h ↦ this (by simp [h]), by rwa [aeval_comp]⟩
 
 theorem Transcendental.aeval {r : A} (H : Transcendental R r) (f : R[X]) (hf : f.natDegree ≠ 0)
-    (hf' : f.leadingCoeff ∈ nonZeroDivisors R) :
+    (hf' : f.leadingCoeff ∈ R⁰) :
     Transcendental R (aeval r f) := fun h ↦ H (h.of_aeval f hf hf')
 
 /-- If `r : A` and `f : R[X]` are transcendental over `R`, then `Polynomial.aeval r f` is also
@@ -89,7 +88,7 @@ theorem IsAlgebraic.of_aeval_of_transcendental {r : A} {f : R[X]}
   exact Transcendental.aeval_of_transcendental H hf
 
 theorem Polynomial.transcendental (f : R[X]) (hf : f.natDegree ≠ 0)
-    (hf' : f.leadingCoeff ∈ nonZeroDivisors R) :
+    (hf' : f.leadingCoeff ∈ R⁰) :
     Transcendental R f := by
   simpa using (transcendental_X R).aeval f hf hf'
 
@@ -152,7 +151,7 @@ theorem isAlgebraic_rat (R : Type u) {A : Type v} [DivisionRing A] [Field R] [Al
   rw [← map_ratCast (algebraMap R A)]
   exact isAlgebraic_algebraMap (Rat.cast n)
 
-theorem isAlgebraic_of_mem_rootSet {R : Type u} {A : Type v} [Field R] [Field A] [Algebra R A]
+theorem isAlgebraic_of_mem_rootSet {R : Type u} {A : Type v} [CommRing R] [Field A] [Algebra R A]
     {p : R[X]} {x : A} (hx : x ∈ p.rootSet A) : IsAlgebraic R x :=
   ⟨p, ne_zero_of_mem_rootSet hx, aeval_eq_zero_of_mem_rootSet hx⟩
 
@@ -325,16 +324,16 @@ theorem transcendental_algebraMap_iff {a : S} (h : Function.Injective (algebraMa
 namespace Subalgebra
 
 theorem isAlgebraic_iff_isAlgebraic_val {S : Subalgebra R A} {x : S} :
-    _root_.IsAlgebraic R x ↔ _root_.IsAlgebraic R x.1 :=
+    IsAlgebraic R x ↔ IsAlgebraic R x.1 :=
   (isAlgebraic_algHom_iff S.val Subtype.val_injective).symm
 
-theorem isAlgebraic_of_isAlgebraic_bot {x : S} (halg : _root_.IsAlgebraic (⊥ : Subalgebra R S) x) :
-    _root_.IsAlgebraic R x :=
+theorem isAlgebraic_of_isAlgebraic_bot {x : S} (halg : IsAlgebraic (⊥ : Subalgebra R S) x) :
+    IsAlgebraic R x :=
   halg.of_ringHom_of_comp_eq (algebraMap R (⊥ : Subalgebra R S))
     (RingHom.id S) (by rintro ⟨_, r, rfl⟩; exact ⟨r, rfl⟩) Function.injective_id rfl
 
 theorem isAlgebraic_bot_iff (h : Function.Injective (algebraMap R S)) {x : S} :
-    _root_.IsAlgebraic (⊥ : Subalgebra R S) x ↔ _root_.IsAlgebraic R x :=
+    IsAlgebraic (⊥ : Subalgebra R S) x ↔ IsAlgebraic R x :=
   isAlgebraic_ringHom_iff_of_comp_eq (Algebra.botEquivOfInjective h).symm (RingHom.id S)
     Function.injective_id (by rfl)
 
@@ -362,13 +361,13 @@ theorem IsAlgebraic.of_pow {r : A} {n : ℕ} (hn : 0 < n) (ht : IsAlgebraic R (r
 theorem Transcendental.pow {r : A} (ht : Transcendental R r) {n : ℕ} (hn : 0 < n) :
     Transcendental R (r ^ n) := fun ht' ↦ ht <| ht'.of_pow hn
 
-lemma IsAlgebraic.invOf {x : S} [Invertible x] (h : IsAlgebraic R x) : IsAlgebraic R (⅟ x) := by
+lemma IsAlgebraic.invOf {x : S} [Invertible x] (h : IsAlgebraic R x) : IsAlgebraic R (⅟x) := by
   obtain ⟨p, hp, hp'⟩ := h
   refine ⟨p.reverse, by simpa using hp, ?_⟩
   rwa [Polynomial.aeval_def, Polynomial.eval₂_reverse_eq_zero_iff, ← Polynomial.aeval_def]
 
 lemma IsAlgebraic.invOf_iff {x : S} [Invertible x] :
-    IsAlgebraic R (⅟ x) ↔ IsAlgebraic R x :=
+    IsAlgebraic R (⅟x) ↔ IsAlgebraic R x :=
   ⟨IsAlgebraic.invOf, IsAlgebraic.invOf⟩
 
 lemma IsAlgebraic.inv_iff {K} [Field K] [Algebra R K] {x : K} :
@@ -401,9 +400,6 @@ theorem IsAlgebraic.extendScalars (hinj : Function.Injective (algebraMap R S)) {
   ⟨p.map (algebraMap _ _), by
     rwa [Ne, ← degree_eq_bot, degree_map_eq_of_injective hinj, degree_eq_bot], by simpa⟩
 
-@[deprecated (since := "2024-11-18")]
-alias IsAlgebraic.tower_top_of_injective := IsAlgebraic.extendScalars
-
 /-- A special case of `IsAlgebraic.extendScalars`. This is extracted as a theorem
   because in some cases `IsAlgebraic.extendScalars` will just runs out of memory. -/
 theorem IsAlgebraic.tower_top_of_subalgebra_le
@@ -418,9 +414,6 @@ theorem IsAlgebraic.tower_top_of_subalgebra_le
 theorem Transcendental.restrictScalars (hinj : Function.Injective (algebraMap R S)) {x : A}
     (h : Transcendental S x) : Transcendental R x := fun H ↦ h (H.extendScalars hinj)
 
-@[deprecated (since := "2024-11-18")]
-alias Transcendental.of_tower_top_of_injective := Transcendental.restrictScalars
-
 /-- A special case of `Transcendental.restrictScalars`. This is extracted as a theorem
   because in some cases `Transcendental.restrictScalars` will just runs out of memory. -/
 theorem Transcendental.of_tower_top_of_subalgebra_le
@@ -432,10 +425,7 @@ theorem Transcendental.of_tower_top_of_subalgebra_le
   and the map from `R` to `S` is injective. -/
 theorem Algebra.IsAlgebraic.extendScalars (hinj : Function.Injective (algebraMap R S))
     [Algebra.IsAlgebraic R A] : Algebra.IsAlgebraic S A :=
-  ⟨fun _ ↦ _root_.IsAlgebraic.extendScalars hinj (Algebra.IsAlgebraic.isAlgebraic _)⟩
-
-@[deprecated (since := "2024-11-18")]
-alias Algebra.IsAlgebraic.tower_top_of_injective := Algebra.IsAlgebraic.extendScalars
+  ⟨fun _ ↦ (Algebra.IsAlgebraic.isAlgebraic _).extendScalars hinj⟩
 
 theorem Algebra.IsAlgebraic.tower_bot_of_injective [Algebra.IsAlgebraic R A]
     (hinj : Function.Injective (algebraMap S A)) :
@@ -496,13 +486,13 @@ theorem algHom_bijective [NoZeroSMulDivisors K L] [Algebra.IsAlgebraic K L] (f :
   obtain ⟨a, ha⟩ := this ⟨b, mem_rootSet.2 ⟨hp, he⟩⟩
   exact ⟨a, Subtype.ext_iff.1 ha⟩
 
-theorem algHom_bijective₂ [NoZeroSMulDivisors K L] [Field R] [Algebra K R]
+theorem algHom_bijective₂ [NoZeroSMulDivisors K L] [DivisionRing R] [Algebra K R]
     [Algebra.IsAlgebraic K L] (f : L →ₐ[K] R) (g : R →ₐ[K] L) :
     Function.Bijective f ∧ Function.Bijective g :=
   (g.injective.bijective₂_of_surjective f.injective (algHom_bijective <| g.comp f).2).symm
 
 theorem bijective_of_isScalarTower [NoZeroSMulDivisors K L] [Algebra.IsAlgebraic K L]
-    [Field R] [Algebra K R] [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
+    [DivisionRing R] [Algebra K R] [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
     Function.Bijective f :=
   (algHom_bijective₂ (IsScalarTower.toAlgHom K L R) f).2
 
@@ -520,8 +510,6 @@ noncomputable def algEquivEquivAlgHom [NoZeroSMulDivisors K L] [Algebra.IsAlgebr
     (L ≃ₐ[K] L) ≃* (L →ₐ[K] L) where
   toFun ϕ := ϕ.toAlgHom
   invFun ϕ := AlgEquiv.ofBijective ϕ (algHom_bijective ϕ)
-  left_inv _ := by ext; rfl
-  right_inv _ := by ext; rfl
   map_mul' _ _ := rfl
 
 end Algebra.IsAlgebraic
@@ -532,19 +520,22 @@ end
 
 section
 
-variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
+variable {R S : Type*} [CommRing R]
+
+section
+
+variable [Ring S] [Algebra R S]
 
 theorem IsAlgebraic.exists_nonzero_coeff_and_aeval_eq_zero
-    {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ nonZeroDivisors S) :
+    {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ S⁰) :
     ∃ q : R[X], q.coeff 0 ≠ 0 ∧ aeval s q = 0 := by
   obtain ⟨p, hp0, hp⟩ := hRs
   obtain ⟨q, hpq, hq⟩ := exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp0 0
   simp only [C_0, sub_zero, X_pow_mul, X_dvd_iff] at hpq hq
   rw [hpq, map_mul, aeval_X_pow] at hp
-  exact ⟨q, hq, (nonZeroDivisors S).pow_mem hs (rootMultiplicity 0 p) (aeval s q) hp⟩
+  exact ⟨q, hq, (S⁰.pow_mem hs (rootMultiplicity 0 p)).2 (aeval s q) hp⟩
 
-theorem IsAlgebraic.exists_nonzero_eq_adjoin_mul
-    {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ nonZeroDivisors S) :
+theorem IsAlgebraic.exists_nonzero_eq_adjoin_mul {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ S⁰) :
     ∃ᵉ (t ∈ Algebra.adjoin R {s}) (r ≠ (0 : R)), s * t = algebraMap R S r := by
   have ⟨q, hq0, hq⟩ := hRs.exists_nonzero_coeff_and_aeval_eq_zero hs
   have ⟨p, hp⟩ := X_dvd_sub_C (p := q)
@@ -552,17 +543,35 @@ theorem IsAlgebraic.exists_nonzero_eq_adjoin_mul
   apply_fun aeval s at hp
   rwa [map_sub, hq, zero_sub, map_mul, aeval_X, aeval_C, ← map_neg, eq_comm] at hp
 
-theorem IsAlgebraic.exists_nonzero_dvd
-    {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ nonZeroDivisors S) :
+theorem IsAlgebraic.exists_nonzero_dvd {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ S⁰) :
     ∃ r : R, r ≠ 0 ∧ s ∣ algebraMap R S r := by
   obtain ⟨q, hq0, hq⟩ := hRs.exists_nonzero_coeff_and_aeval_eq_zero hs
   have key := map_dvd (aeval s) (X_dvd_sub_C (p := q))
   rw [map_sub, hq, zero_sub, dvd_neg, aeval_X, aeval_C] at key
   exact ⟨q.coeff 0, hq0, key⟩
 
+/-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
+if `b` is algebraic over `R`. -/
+theorem IsAlgebraic.exists_smul_eq_mul
+    (a : S) {b : S} (hRb : IsAlgebraic R b) (hb : b ∈ S⁰) :
+    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c :=
+  have ⟨r, hr, s, h⟩ := hRb.exists_nonzero_dvd hb
+  ⟨s * a, r, hr, by rw [Algebra.smul_def, h, mul_assoc]⟩
+
+variable (R)
+
+/-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
+if `b` is algebraic over `R`. -/
+theorem Algebra.IsAlgebraic.exists_smul_eq_mul [NoZeroDivisors S] [Algebra.IsAlgebraic R S]
+    (a : S) {b : S} (hb : b ≠ 0) :
+    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c :=
+  (isAlgebraic b).exists_smul_eq_mul a (mem_nonZeroDivisors_of_ne_zero hb)
+
+end
+
 namespace Algebra.IsAlgebraic
 
-variable (S : Type*) {A : Type*} [CommRing S] [NoZeroDivisors S] [Algebra R S]
+variable (S) {A : Type*} [CommRing S] [NoZeroDivisors S] [Algebra R S]
   [alg : Algebra.IsAlgebraic R S] [Ring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
 
 open Function (Injective) in
@@ -579,23 +588,6 @@ theorem faithfulSMul_tower_top [FaithfulSMul R A] : FaithfulSMul S A := by
   exact injective_tower_top S ‹_›
 
 end Algebra.IsAlgebraic
-
-/-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
-if `b` is algebraic over `R`. -/
-theorem IsAlgebraic.exists_smul_eq_mul
-    (a : S) {b : S} (hRb : IsAlgebraic R b) (hb : b ∈ nonZeroDivisors S) :
-    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c :=
-  have ⟨r, hr, s, h⟩ := hRb.exists_nonzero_dvd hb
-  ⟨s * a, r, hr, by rw [Algebra.smul_def, h, mul_assoc]⟩
-
-variable (R)
-
-/-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
-if `b` is algebraic over `R`. -/
-theorem Algebra.IsAlgebraic.exists_smul_eq_mul [NoZeroDivisors S] [Algebra.IsAlgebraic R S]
-    (a : S) {b : S} (hb : b ≠ 0) :
-    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c :=
-  (isAlgebraic b).exists_smul_eq_mul a (mem_nonZeroDivisors_of_ne_zero hb)
 
 end
 
@@ -626,13 +618,10 @@ theorem Subalgebra.inv_mem_of_root_of_coeff_zero_ne_zero {x : A} {p : K[X]}
     rw [this]
     exact A.smul_mem (aeval x _).2 _
   have : aeval (x : L) p = 0 := by rw [Subalgebra.aeval_coe, aeval_eq, Subalgebra.coe_zero]
-  -- Porting note: this was a long sequence of `rw`.
-  rw [inv_eq_of_root_of_coeff_zero_ne_zero this coeff_zero_ne, div_eq_inv_mul, Algebra.smul_def]
-  simp only [aeval_coe, Submonoid.coe_mul, Subsemiring.coe_toSubmonoid, coe_toSubsemiring,
-    coe_algebraMap]
-  rw [map_inv₀, map_neg, inv_neg, neg_mul]
+  rw [inv_eq_of_root_of_coeff_zero_ne_zero this coeff_zero_ne, div_eq_inv_mul, Algebra.smul_def,
+    aeval_coe, map_inv₀, map_neg, inv_neg, neg_mul]
 
-theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : _root_.IsAlgebraic K (x : L)) :
+theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : IsAlgebraic K (x : L)) :
     (x⁻¹ : L) ∈ A := by
   obtain ⟨p, ne_zero, aeval_eq⟩ := hx
   rw [Subalgebra.aeval_coe, Subalgebra.coe_eq_zero] at aeval_eq

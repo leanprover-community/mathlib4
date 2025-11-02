@@ -49,12 +49,12 @@ before and after and see if there is some change.
 ## TODO
 * The linter seems to be silenced by `set_option ... in`: maybe it should enter `in`s?
 
-##  Implementation notes
+## Implementation notes
 
 Yet another linter copied from the `unreachableTactic` linter!
 -/
 
-open Lean Elab Std
+open Lean Elab Std Linter
 
 namespace Mathlib.Linter
 
@@ -176,7 +176,7 @@ end
 
 /-- The main entry point to the unused tactic linter. -/
 def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
-  unless Linter.getLinterValue linter.unusedTactic (← getOptions) && (← getInfoState).enabled do
+  unless getLinterValue linter.unusedTactic (← getLinterOptions) && (← getInfoState).enabled do
     return
   if (← get).messages.hasErrors then
     return

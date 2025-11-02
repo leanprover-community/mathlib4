@@ -30,7 +30,7 @@ lemma natDegree_le_pred (hf : p.natDegree ≤ n) (hn : p.coeff n = 0) : p.natDeg
   · exact hf
   · refine (Nat.le_succ_iff_eq_or_le.1 hf).resolve_left fun h ↦ ?_
     rw [← Nat.succ_eq_add_one, ← h, coeff_natDegree, leadingCoeff_eq_zero] at hn
-    aesop
+    simp_all
 
 theorem monomial_natDegree_leadingCoeff_eq_self (h : #p.support ≤ 1) :
     monomial p.natDegree p.leadingCoeff = p := by

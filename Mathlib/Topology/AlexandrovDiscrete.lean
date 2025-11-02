@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Data.Set.Image
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Inseparable
-import Mathlib.Topology.Compactness.Exterior
+import Mathlib.Topology.Compactness.NhdsKer
 
 /-!
 # Alexandrov-discrete topological spaces
@@ -15,21 +15,11 @@ This file defines Alexandrov-discrete spaces, aka finitely generated spaces.
 
 A space is Alexandrov-discrete if the (arbitrary) intersection of open sets is open. As such,
 the intersection of all neighborhoods of a set is a neighborhood itself. Hence every set has a
-minimal neighborhood, which we call the *exterior* of the set.
+minimal neighborhood, which we call the *neighborhoods kernel* of the set.
 
 ## Main declarations
 
 * `AlexandrovDiscrete`: Prop-valued typeclass for a topological space to be Alexandrov-discrete
-
-## Notes
-
-The "minimal neighborhood of a set" construction is not named in the literature. We chose the name
-"exterior" with analogy to the interior. `interior` and `exterior` have the same properties up to
-
-
-## TODO
-
-Finite product of Alexandrov-discrete spaces is Alexandrov-discrete.
 
 ## Tags
 
@@ -40,6 +30,7 @@ open Filter Set TopologicalSpace Topology
 
 /-- A topological space is **Alexandrov-discrete** or **finitely generated** if the intersection of
 a family of open sets is open. -/
+@[mk_iff]
 class AlexandrovDiscrete (α : Type*) [TopologicalSpace α] : Prop where
   /-- The intersection of a family of open sets is an open set. Use `isOpen_sInter` in the root
   namespace instead. -/
@@ -48,6 +39,12 @@ class AlexandrovDiscrete (α : Type*) [TopologicalSpace α] : Prop where
 variable {ι : Sort*} {κ : ι → Sort*} {α β : Type*}
 section
 variable [TopologicalSpace α] [TopologicalSpace β]
+
+lemma alexandrovDiscrete_iff_isClosed :
+    AlexandrovDiscrete α ↔ ∀ S : Set (Set α), (∀ s ∈ S, IsClosed s) → IsClosed (⋃₀ S) := by
+  conv_lhs => tactic =>
+    simp_rw +singlePass [alexandrovDiscrete_iff, compl_surjective.image_surjective.forall,
+      forall_mem_image, ← compl_sUnion, isOpen_compl_iff]
 
 instance DiscreteTopology.toAlexandrovDiscrete [DiscreteTopology α] : AlexandrovDiscrete α where
   isOpen_sInter _ _ := isOpen_discrete _
@@ -67,8 +64,8 @@ lemma isOpen_iInter₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsOpen (f i j
     IsOpen (⋂ i, ⋂ j, f i j) :=
   isOpen_iInter fun _ ↦ isOpen_iInter <| hf _
 
-lemma isClosed_sUnion (hS : ∀ s ∈ S, IsClosed s) : IsClosed (⋃₀ S) := by
-  simp only [← isOpen_compl_iff, compl_sUnion] at hS ⊢; exact isOpen_sInter <| forall_mem_image.2 hS
+lemma isClosed_sUnion (hS : ∀ s ∈ S, IsClosed s) : IsClosed (⋃₀ S) :=
+  alexandrovDiscrete_iff_isClosed.mp inferInstance S hS
 
 lemma isClosed_iUnion (hf : ∀ i, IsClosed (f i)) : IsClosed (⋃ i, f i) :=
   isClosed_sUnion <| forall_mem_range.2 hf
@@ -121,9 +118,6 @@ lemma Topology.IsInducing.alexandrovDiscrete [AlexandrovDiscrete α] {f : β →
     refine ⟨_, isOpen_iInter₂ hU, ?_⟩
     simp_rw [preimage_iInter, htU, sInter_eq_biInter]
 
-@[deprecated (since := "2024-10-28")]
-alias Inducing.alexandrovDiscrete := IsInducing.alexandrovDiscrete
-
 end
 
 lemma AlexandrovDiscrete.sup {t₁ t₂ : TopologicalSpace α} (_ : @AlexandrovDiscrete α t₁)
@@ -143,36 +137,79 @@ section
 variable [TopologicalSpace α] [TopologicalSpace β] [AlexandrovDiscrete α] [AlexandrovDiscrete β]
   {s t : Set α} {a : α}
 
-@[simp] lemma isOpen_exterior : IsOpen (exterior s) := by
-  rw [exterior_def]; exact isOpen_sInter fun _ ↦ And.left
+@[simp] lemma isOpen_nhdsKer : IsOpen (nhdsKer s) := by
+  rw [nhdsKer_def]; exact isOpen_sInter fun _ ↦ And.left
 
-lemma exterior_mem_nhdsSet : exterior s ∈ 𝓝ˢ s := isOpen_exterior.mem_nhdsSet.2 subset_exterior
+@[deprecated (since := "2025-07-09")] alias isOpen_exterior := isOpen_nhdsKer
 
-@[simp] lemma exterior_eq_iff_isOpen : exterior s = s ↔ IsOpen s :=
-  ⟨fun h ↦ h ▸ isOpen_exterior, IsOpen.exterior_eq⟩
+lemma nhdsKer_mem_nhdsSet : nhdsKer s ∈ 𝓝ˢ s := isOpen_nhdsKer.mem_nhdsSet.2 subset_nhdsKer
 
-@[simp] lemma exterior_subset_iff_isOpen : exterior s ⊆ s ↔ IsOpen s := by
-  simp only [exterior_eq_iff_isOpen.symm, Subset.antisymm_iff, subset_exterior, and_true]
+@[deprecated (since := "2025-07-09")] alias exterior_mem_nhdsSet := nhdsKer_mem_nhdsSet
 
-lemma exterior_subset_iff : exterior s ⊆ t ↔ ∃ U, IsOpen U ∧ s ⊆ U ∧ U ⊆ t :=
-  ⟨fun h ↦ ⟨exterior s, isOpen_exterior, subset_exterior, h⟩,
-    fun ⟨_U, hU, hsU, hUt⟩ ↦ (exterior_minimal hsU hU).trans hUt⟩
+@[simp] lemma nhdsKer_eq_iff_isOpen : nhdsKer s = s ↔ IsOpen s :=
+  ⟨fun h ↦ h ▸ isOpen_nhdsKer, IsOpen.nhdsKer_eq⟩
 
-lemma exterior_subset_iff_mem_nhdsSet : exterior s ⊆ t ↔ t ∈ 𝓝ˢ s :=
-  exterior_subset_iff.trans mem_nhdsSet_iff_exists.symm
+@[deprecated (since := "2025-07-09")] alias exterior_eq_iff_isOpen := nhdsKer_eq_iff_isOpen
 
-lemma exterior_singleton_subset_iff_mem_nhds : exterior {a} ⊆ t ↔ t ∈ 𝓝 a := by
-  simp [exterior_subset_iff_mem_nhdsSet]
+@[simp] lemma nhdsKer_subset_iff_isOpen : nhdsKer s ⊆ s ↔ IsOpen s := by
+  simp only [nhdsKer_eq_iff_isOpen.symm, Subset.antisymm_iff, subset_nhdsKer, and_true]
 
-lemma gc_exterior_interior : GaloisConnection (exterior : Set α → Set α) interior :=
-  fun s t ↦ by simp [exterior_subset_iff, subset_interior_iff]
+@[deprecated (since := "2025-07-09")] alias exterior_subset_iff_isOpen := nhdsKer_subset_iff_isOpen
 
-@[simp] lemma principal_exterior (s : Set α) : 𝓟 (exterior s) = 𝓝ˢ s := by
-  rw [← nhdsSet_exterior, isOpen_exterior.nhdsSet_eq]
+lemma nhdsKer_subset_iff : nhdsKer s ⊆ t ↔ ∃ U, IsOpen U ∧ s ⊆ U ∧ U ⊆ t :=
+  ⟨fun h ↦ ⟨nhdsKer s, isOpen_nhdsKer, subset_nhdsKer, h⟩,
+    fun ⟨_U, hU, hsU, hUt⟩ ↦ (nhdsKer_minimal hsU hU).trans hUt⟩
+
+@[deprecated (since := "2025-07-09")] alias exterior_subset_iff := nhdsKer_subset_iff
+
+lemma nhdsKer_subset_iff_mem_nhdsSet : nhdsKer s ⊆ t ↔ t ∈ 𝓝ˢ s :=
+  nhdsKer_subset_iff.trans mem_nhdsSet_iff_exists.symm
+
+@[deprecated (since := "2025-07-09")]
+alias exterior_subset_iff_mem_nhdsSet := nhdsKer_subset_iff_mem_nhdsSet
+
+lemma nhdsKer_singleton_subset_iff_mem_nhds : nhdsKer {a} ⊆ t ↔ t ∈ 𝓝 a := by
+  simp [nhdsKer_subset_iff_mem_nhdsSet]
+
+@[deprecated (since := "2025-07-09")]
+alias exterior_singleton_subset_iff_mem_nhds := nhdsKer_singleton_subset_iff_mem_nhds
+
+lemma gc_nhdsKer_interior : GaloisConnection (nhdsKer : Set α → Set α) interior :=
+  fun s t ↦ by simp [nhdsKer_subset_iff, subset_interior_iff]
+
+@[deprecated (since := "2025-07-09")] alias gc_exterior_interior := gc_nhdsKer_interior
+
+@[simp] lemma principal_nhdsKer (s : Set α) : 𝓟 (nhdsKer s) = 𝓝ˢ s := by
+  rw [← nhdsSet_nhdsKer, isOpen_nhdsKer.nhdsSet_eq]
+
+@[deprecated (since := "2025-07-09")] alias principal_exterior := principal_nhdsKer
+
+lemma principal_nhdsKer_singleton (a : α) : 𝓟 (nhdsKer {a}) = 𝓝 a := by
+  rw [principal_nhdsKer, nhdsSet_singleton]
+
+lemma nhdsSet_basis_nhdsKer (s : Set α) :
+    (𝓝ˢ s).HasBasis (fun _ : Unit => True) (fun _ => nhdsKer s) :=
+  principal_nhdsKer s ▸ hasBasis_principal (nhdsKer s)
+
+lemma nhds_basis_nhdsKer_singleton (a : α) :
+    (𝓝 a).HasBasis (fun _ : Unit => True) (fun _ => nhdsKer {a}) :=
+  principal_nhdsKer_singleton a ▸ hasBasis_principal (nhdsKer {a})
 
 lemma isOpen_iff_forall_specializes : IsOpen s ↔ ∀ x y, x ⤳ y → y ∈ s → x ∈ s := by
-  simp only [← exterior_subset_iff_isOpen, Set.subset_def, mem_exterior_iff_specializes, exists_imp,
+  simp only [← nhdsKer_subset_iff_isOpen, Set.subset_def, mem_nhdsKer_iff_specializes, exists_imp,
     and_imp, @forall_swap (_ ⤳ _)]
+
+omit [AlexandrovDiscrete α] in
+lemma alexandrovDiscrete_iff_nhds : AlexandrovDiscrete α ↔ (∀ a : α, 𝓝 a = 𝓟 (nhdsKer {a})) where
+  mp _ a := principal_nhdsKer_singleton a |>.symm
+  mpr hα := by
+    simp only [alexandrovDiscrete_iff_isClosed, isClosed_iff_clusterPt, ClusterPt, funext hα,
+      inf_principal, principal_neBot_iff]
+    intro S hS a ha
+    rw [sUnion_eq_biUnion, inter_iUnion₂, nonempty_biUnion] at ha
+    obtain ⟨s, hs, has⟩ := ha
+    specialize hS s hs a has
+    exact mem_sUnion_of_mem hS hs
 
 lemma alexandrovDiscrete_coinduced {β : Type*} {f : α → β} :
     @AlexandrovDiscrete β (coinduced f ‹_›) :=
@@ -180,12 +217,12 @@ lemma alexandrovDiscrete_coinduced {β : Type*} {f : α → β} :
     rw [isOpen_coinduced, preimage_sInter]; exact isOpen_iInter₂ hS
 
 instance AlexandrovDiscrete.toFirstCountable : FirstCountableTopology α where
-  nhds_generated_countable a := ⟨{exterior {a}}, countable_singleton _, by simp⟩
+  nhds_generated_countable a := ⟨{nhdsKer {a}}, countable_singleton _, by simp⟩
 
 instance AlexandrovDiscrete.toLocallyCompactSpace : LocallyCompactSpace α where
-  local_compact_nhds a _U hU := ⟨exterior {a},
-    isOpen_exterior.mem_nhds <| subset_exterior <| mem_singleton _,
-      exterior_singleton_subset_iff_mem_nhds.2 hU, isCompact_singleton.exterior⟩
+  local_compact_nhds a _U hU := ⟨nhdsKer {a},
+    isOpen_nhdsKer.mem_nhds <| subset_nhdsKer <| mem_singleton _,
+      nhdsKer_singleton_subset_iff_mem_nhds.2 hU, isCompact_singleton.nhdsKer⟩
 
 instance Subtype.instAlexandrovDiscrete {p : α → Prop} : AlexandrovDiscrete {a // p a} :=
   IsInducing.subtypeVal.alexandrovDiscrete
@@ -196,8 +233,18 @@ instance Quotient.instAlexandrovDiscrete {s : Setoid α} : AlexandrovDiscrete (Q
 instance Sum.instAlexandrovDiscrete : AlexandrovDiscrete (α ⊕ β) :=
   alexandrovDiscrete_coinduced.sup alexandrovDiscrete_coinduced
 
-instance Sigma.instAlexandrovDiscrete {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    [∀ i, AlexandrovDiscrete (π i)] : AlexandrovDiscrete (Σ i, π i) :=
+instance Sigma.instAlexandrovDiscrete {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+    [∀ i, AlexandrovDiscrete (X i)] : AlexandrovDiscrete (Σ i, X i) :=
   alexandrovDiscrete_iSup fun _ ↦ alexandrovDiscrete_coinduced
+
+instance Prod.instAlexandrovDiscrete : AlexandrovDiscrete (α × β) := by
+  simp_rw [alexandrovDiscrete_iff_nhds, Prod.forall, nhds_prod_eq, ← principal_nhdsKer_singleton,
+    prod_principal_principal, nhdsKer_pair, forall_true_iff]
+
+instance Pi.instAlexandrovDiscreteOfFinite {ι : Type*} [Finite ι] {X : ι → Type*}
+    [Π i, TopologicalSpace (X i)] [∀ i, AlexandrovDiscrete (X i)] :
+    AlexandrovDiscrete (Π i, X i) := by
+  simp_rw [alexandrovDiscrete_iff_nhds, nhds_pi, ← principal_nhdsKer_singleton,
+    pi_principal, nhdsKer_singleton_pi, forall_true_iff]
 
 end

@@ -9,7 +9,7 @@ import Lean.Elab.ElabRules
 import Lean.DocString
 
 /-!
-#  `extend_doc` command
+# `extend_doc` command
 
 In a file where declaration `decl` is defined, writing
 ```lean
@@ -28,7 +28,7 @@ namespace Mathlib.Tactic.ExtendDocs
 
 /-- `extend_docs <declName> before <prefix_string> after <suffix_string>` extends the
 docs of `<declName>` by adding `<prefix_string>` before and `<suffix_string>` after. -/
-syntax "extend_docs" ident (colGt &"before" str)? (colGt &"after" str)? : command
+syntax "extend_docs" ident (colGt &"before " str)? (colGt &"after " str)? : command
 
 open Lean Elab Command in
 elab_rules : command
@@ -38,6 +38,6 @@ elab_rules : command
     let bef := if bef.isNone then "" else (bef.get!).getString ++ "\n\n"
     let aft := if aft.isNone then "" else "\n\n" ++ (aft.get!).getString
     let oldDoc := (← findDocString? (← getEnv) declName).getD ""
-    addDocString declName <| bef ++ oldDoc ++ aft
+    addDocStringCore declName <| bef ++ oldDoc ++ aft
 
 end Mathlib.Tactic.ExtendDocs

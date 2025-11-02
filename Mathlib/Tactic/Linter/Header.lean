@@ -5,9 +5,10 @@ Authors: Michael Rothgang, Damiano Testa
 -/
 import Lean.Elab.Command
 import Lean.Elab.ParseImportsFast
+import Mathlib.Tactic.Linter.DirectoryDependency
 
 /-!
-#  The "header" linter
+# The "header" linter
 
 The "header" style linter checks that a file starts with
 ```
@@ -47,7 +48,7 @@ could arise from this part and also flag that the file should contain a module d
 the `import` statements.
 -/
 
-open Lean Elab Command
+open Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
@@ -74,8 +75,8 @@ It returns the array of all `import` identifiers in `s`. -/
 partial
 def getImportIds (s : Syntax) : Array Syntax :=
   let rest : Array Syntax := (s.getArgs.map getImportIds).flatten
-  if s.isOfKind ``Lean.Parser.Module.import then
-    rest.push (s.getArgs.getD 2 default)
+  if let `(Lean.Parser.Module.import| import $n) := s then
+    rest.push n
   else
     rest
 
@@ -95,7 +96,7 @@ parsing the file linearly, it will only need to parse
 In conclusion, either the parsing is successful, and the linter can continue with its analysis,
 or the parsing is not successful and the linter will flag a missing module doc-string!
 -/
-def parseUpToHere (pos : String.Pos) (post : String := "") : CommandElabM Syntax := do
+def parseUpToHere (pos : String.Pos.Raw) (post : String := "") : CommandElabM Syntax := do
   let upToHere : Substring := { str := (← getFileMap).source, startPos := ⟨0⟩, stopPos := pos }
   -- Append a further string after the content of `upToHere`.
   Parser.testParseModule (← getEnv) "linter.style.header" (upToHere.toString ++ post)
@@ -103,9 +104,9 @@ def parseUpToHere (pos : String.Pos) (post : String := "") : CommandElabM Syntax
 /-- `toSyntax s pattern` converts the two input strings into a `Syntax`, assuming that `pattern`
 is a substring of `s`:
 the syntax is an atom with value `pattern` whose the range is the range of `pattern` in `s`. -/
-def toSyntax (s pattern : String) (offset : String.Pos := 0) : Syntax :=
-  let beg := ((s.splitOn pattern).getD 0 "").endPos + offset
-  let fin := (((s.splitOn pattern).getD 0 "") ++ pattern).endPos + offset
+def toSyntax (s pattern : String) (offset : String.Pos.Raw := 0) : Syntax :=
+  let beg := ((s.splitOn pattern).getD 0 "").endPos.offsetBy offset
+  let fin := (((s.splitOn pattern).getD 0 "") ++ pattern).endPos.offsetBy offset
   mkAtomFrom (.ofRange ⟨beg, fin⟩) pattern
 
 /-- Return if `line` looks like a correct authors line in a copyright header.
@@ -115,7 +116,7 @@ produces.
 `authorsLineChecks` computes a position for its warning *relative to `line`*.
 The `offset` input passes on the starting position of `line` in the whole file.
 -/
-def authorsLineChecks (line : String) (offset : String.Pos) : Array (Syntax × String) :=
+def authorsLineChecks (line : String) (offset : String.Pos.Raw) : Array (Syntax × String) :=
   Id.run do
   -- We cannot reasonably validate the author names, so we look only for a few common mistakes:
   -- the line starting wrongly, double spaces, using ' and ' between names,
@@ -214,8 +215,8 @@ This is used by the `Header` linter as a heuristic of whether it should inspect 
 def isInMathlib (modName : Name) : IO Bool := do
   let mlPath := ("Mathlib" : System.FilePath).addExtension "lean"
   if ← mlPath.pathExists then
-    let ml ← parseImports' (← IO.FS.readFile mlPath) ""
-    return (ml.map (·.module == modName)).any (·)
+    let res ← parseImports' (← IO.FS.readFile mlPath) ""
+    return (res.imports.map (·.module == modName)).any (·)
   else return false
 
 /-- `inMathlibRef` is
@@ -256,8 +257,7 @@ register_option linter.style.header : Bool := {
 namespace Style.header
 
 /-- Check the `Syntax` `imports` for broad imports:
-`Mathlib.Tactic`, any import starting with `Lake`, `Mathlib.Tactic.{Have,Replace}`
-or anything in the `Deprecated` folder. -/
+`Mathlib.Tactic`, any import starting with `Lake`, or `Mathlib.Tactic.{Have,Replace}`. -/
 def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : CommandElabM Unit := do
   for i in imports do
     match i.getId with
@@ -279,11 +279,6 @@ def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : CommandElab
         "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter \
         (see e.g. https://github.com/leanprover-community/mathlib4/pull/13779). Please consider carefully if this import is useful and \
         make sure to benchmark it. If this is fine, feel free to silence this linter."
-      else if (`Mathlib.Deprecated).isPrefixOf modName &&
-          !(`Mathlib.Deprecated).isPrefixOf mainModule then
-        -- We do not complain about files in the `Deprecated` directory importing one another.
-        Linter.logLint linter.style.header i
-          "Files in the `Deprecated` directory are not supposed to be imported."
 
 /-- Check the syntax `imports` for syntactically duplicate imports.
 The output is an array of `Syntax` atoms whose ranges are the import statements,
@@ -308,9 +303,10 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
       inMathlibRef.set (some val)
       return val
   -- The linter skips files not imported in `Mathlib.lean`, to avoid linting "scratch files".
-  -- It is however active in the test file `MathlibTest.Header` for the linter itself.
-  unless inMathlib? || mainModule == `MathlibTest.Header do return
-  unless Linter.getLinterValue linter.style.header (← getOptions) do
+  -- It is however active in the test files for the linter itself.
+  unless inMathlib? ||
+    mainModule == `MathlibTest.Header || mainModule == `MathlibTest.DirectoryDependencyLinter.Test do return
+  unless getLinterValue linter.style.header (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
@@ -331,13 +327,18 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- In that case, we parse until the end of the imports and add an extra `section` afterwards,
     -- so we trigger a "no module doc-string" warning.
     let fil ← getFileName
-    let (stx, _) ← Parser.parseHeader { input := fm.source, fileName := fil, fileMap := fm }
-    parseUpToHere (stx.getTailPos?.getD default) "\nsection")
+    let (stx, _) ← Parser.parseHeader { inputString := fm.source, fileName := fil, fileMap := fm }
+    parseUpToHere (stx.raw.getTailPos?.getD default) "\nsection")
   let importIds := getImportIds upToStx
   -- Report on broad or duplicate imports.
   broadImportsCheck importIds mainModule
   duplicateImportsCheck importIds
-
+  let errors ← directoryDependencyCheck mainModule
+  if errors.size > 0 then
+    let mut msgs := ""
+    for msg in errors do
+      msgs := msgs ++ "\n\n" ++ (← msg.toString)
+    Linter.logLint linter.directoryDependency stx msgs.trimLeft
   let afterImports := firstNonImport? upToStx
   if afterImports.isNone then return
   let copyright := match upToStx.getHeadInfo with

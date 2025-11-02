@@ -91,7 +91,7 @@ lemma isInt_emod {a b q m a' : ℤ} {b' r : ℕ}
     (hm : q * b' = m) (h : r + m = a') (h₂ : Nat.blt r b' = true) :
     IsNat (a % b) r := ⟨by
   obtain ⟨⟨rfl⟩, ⟨rfl⟩⟩ := ha, hb
-  simp only [← h, ← hm, Int.add_mul_emod_self]
+  simp only [← h, ← hm, Int.add_mul_emod_self_right]
   rw [Int.emod_eq_of_lt] <;> [simp; simpa using h₂]⟩
 
 lemma isInt_emod_neg {a b : ℤ} {r : ℕ} (h : IsNat (a % -b) r) : IsNat (a % b) r :=

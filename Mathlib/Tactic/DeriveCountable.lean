@@ -7,7 +7,6 @@ import Lean.Meta.Transform
 import Lean.Meta.Inductive
 import Lean.Elab.Deriving.Basic
 import Lean.Elab.Deriving.Util
-import Batteries.Data.NameSet
 import Mathlib.Data.Countable.Defs
 import Mathlib.Data.Nat.Pairing
 
@@ -237,7 +236,7 @@ private def mkCountableInstanceCmds (ctx : Deriving.Context) (typeNames : Array 
 
 private def mkCountableCmds (indVal : InductiveVal) (declNames : Array Name) :
     TermElabM (Array Syntax) := do
-  let ctx ← mkContext "countable" indVal.name
+  let ctx ← mkContext ``Countable "countable" indVal.name
   let toNatFunNames : Array Name ← ctx.auxFunNames.mapM fun name => do
     let .str n' s := name.eraseMacroScopes | unreachable!
     mkFreshUserName <| .str n' (s ++ "ToNat")

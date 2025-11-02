@@ -41,7 +41,7 @@ it suffices to assume that `f` is zero wherever `g` is. (This generalization is 
 the Fréchet derivative.)
 -/
 
-assert_not_exists BoundedSMul Summable PartialHomeomorph BoundedLENhdsClass
+assert_not_exists IsBoundedSMul Summable OpenPartialHomeomorph BoundedLENhdsClass
 
 open Set Topology Filter NNReal
 
@@ -58,6 +58,7 @@ variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddC
   [SeminormedAddGroup E''']
   [SeminormedRing R']
 
+variable {S : Type*} [NormedRing S] [NormMulClass S]
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜']
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
 variable {f' : α → E'} {g' : α → F'} {k' : α → G'}
@@ -392,6 +393,11 @@ theorem IsBigO.comp_tendsto (hfg : f =O[l] g) {k : β → α} {l' : Filter β} (
     (f ∘ k) =O[l'] (g ∘ k) :=
   isBigO_iff_isBigOWith.2 <| hfg.isBigOWith.imp fun _c h => h.comp_tendsto hk
 
+lemma IsBigO.comp_neg_int {f : ℤ → E} {g : ℤ → F} (hf : f =O[cofinite] g) :
+    (fun n => f (-n)) =O[cofinite] fun n => g (-n) := by
+  rw [← Equiv.neg_apply]
+  exact hf.comp_tendsto (Equiv.neg ℤ).injective.tendsto_cofinite
+
 theorem IsLittleO.comp_tendsto (hfg : f =o[l] g) {k : β → α} {l' : Filter β} (hk : Tendsto k l' l) :
     (f ∘ k) =o[l'] (g ∘ k) :=
   IsLittleO.of_isBigOWith fun _c cpos => (hfg.forall_isBigOWith cpos).comp_tendsto hk
@@ -535,7 +541,7 @@ theorem isLittleO_irrefl' (h : ∃ᶠ x in l, ‖f' x‖ ≠ 0) : ¬f' =o[l] f' 
   intro ho
   rcases ((ho.bound one_half_pos).and_frequently h).exists with ⟨x, hle, hne⟩
   rw [one_div, ← div_eq_inv_mul] at hle
-  exact (half_lt_self (lt_of_le_of_ne (norm_nonneg _) hne.symm)).not_le hle
+  exact (half_lt_self (lt_of_le_of_ne (norm_nonneg _) hne.symm)).not_ge hle
 
 theorem isLittleO_irrefl (h : ∃ᶠ x in l, f'' x ≠ 0) : ¬f'' =o[l] f'' :=
   isLittleO_irrefl' <| h.mono fun _x => norm_ne_zero_iff.mpr
@@ -980,6 +986,30 @@ theorem IsBigO.sub (h₁ : f₁ =O[l] g) (h₂ : f₂ =O[l] g) : (fun x => f₁ 
 theorem IsLittleO.sub (h₁ : f₁ =o[l] g) (h₂ : f₂ =o[l] g) : (fun x => f₁ x - f₂ x) =o[l] g := by
   simpa only [sub_eq_add_neg] using h₁.add h₂.neg_left
 
+theorem IsBigO.add_iff_left (h₂ : f₂ =O[l] g) : (fun x => f₁ x + f₂ x) =O[l] g ↔ (f₁ =O[l] g):=
+  ⟨fun h ↦ h.sub h₂ |>.congr (fun _ ↦ add_sub_cancel_right _ _) (fun _ ↦ rfl), fun h ↦ h.add h₂⟩
+
+theorem IsBigO.add_iff_right (h₁ : f₁ =O[l] g) : (fun x => f₁ x + f₂ x) =O[l] g ↔ (f₂ =O[l] g):=
+  ⟨fun h ↦ h.sub h₁ |>.congr (fun _ ↦ (eq_sub_of_add_eq' rfl).symm) (fun _ ↦ rfl), fun h ↦ h₁.add h⟩
+
+theorem IsLittleO.add_iff_left (h₂ : f₂ =o[l] g) : (fun x => f₁ x + f₂ x) =o[l] g ↔ (f₁ =o[l] g):=
+  ⟨fun h ↦ h.sub h₂ |>.congr (fun _ ↦ add_sub_cancel_right _ _) (fun _ ↦ rfl), fun h ↦ h.add h₂⟩
+
+theorem IsLittleO.add_iff_right (h₁ : f₁ =o[l] g) : (fun x => f₁ x + f₂ x) =o[l] g ↔ (f₂ =o[l] g):=
+  ⟨fun h ↦ h.sub h₁ |>.congr (fun _ ↦ (eq_sub_of_add_eq' rfl).symm) (fun _ ↦ rfl), fun h ↦ h₁.add h⟩
+
+theorem IsBigO.sub_iff_left (h₂ : f₂ =O[l] g) : (fun x => f₁ x - f₂ x) =O[l] g ↔ (f₁ =O[l] g):=
+  ⟨fun h ↦ h.add h₂ |>.congr (fun _ ↦ sub_add_cancel ..) (fun _ ↦ rfl), fun h ↦ h.sub h₂⟩
+
+theorem IsBigO.sub_iff_right (h₁ : f₁ =O[l] g) : (fun x => f₁ x - f₂ x) =O[l] g ↔ (f₂ =O[l] g):=
+  ⟨fun h ↦ h₁.sub h |>.congr (fun _ ↦ sub_sub_self ..) (fun _ ↦ rfl), fun h ↦ h₁.sub h⟩
+
+theorem IsLittleO.sub_iff_left (h₂ : f₂ =o[l] g) : (fun x => f₁ x - f₂ x) =o[l] g ↔ (f₁ =o[l] g):=
+  ⟨fun h ↦ h.add h₂ |>.congr (fun _ ↦ sub_add_cancel ..) (fun _ ↦ rfl), fun h ↦ h.sub h₂⟩
+
+theorem IsLittleO.sub_iff_right (h₁ : f₁ =o[l] g) : (fun x => f₁ x - f₂ x) =o[l] g ↔ (f₂ =o[l] g):=
+  ⟨fun h ↦ h₁.sub h |>.congr (fun _ ↦ sub_sub_self ..) (fun _ ↦ rfl), fun h ↦ h₁.sub h⟩
+
 end add_sub
 
 /-!
@@ -1064,8 +1094,7 @@ variable {g g' l}
 
 @[simp]
 theorem isBigOWith_zero_right_iff : (IsBigOWith c l f'' fun _x => (0 : F')) ↔ f'' =ᶠ[l] 0 := by
-  simp only [IsBigOWith_def, exists_prop, norm_zero, mul_zero,
-    norm_le_zero_iff, EventuallyEq, Pi.zero_apply]
+  simp only [IsBigOWith_def, norm_zero, mul_zero, norm_le_zero_iff, EventuallyEq, Pi.zero_apply]
 
 @[simp]
 theorem isBigO_zero_right_iff : (f'' =O[l] fun _x => (0 : F')) ↔ f'' =ᶠ[l] 0 :=
@@ -1127,26 +1156,26 @@ theorem isBigOWith_self_const_mul' (u : Rˣ) (f : α → R) (l : Filter α) :
   (isBigOWith_const_mul_self ↑u⁻¹ (fun x ↦ ↑u * f x) l).congr_left
     fun x ↦ u.inv_mul_cancel_left (f x)
 
-theorem isBigOWith_self_const_mul (c : 𝕜) (hc : c ≠ 0) (f : α → 𝕜) (l : Filter α) :
-    IsBigOWith ‖c‖⁻¹ l f fun x => c * f x :=
-  (isBigOWith_self_const_mul' (Units.mk0 c hc) f l).congr_const <| norm_inv c
+theorem isBigOWith_self_const_mul {c : S} (hc : c ≠ 0) (f : α → S) (l : Filter α) :
+    IsBigOWith ‖c‖⁻¹ l f fun x ↦ c * f x := by
+  simp [IsBigOWith, inv_mul_cancel_left₀ (norm_ne_zero_iff.mpr hc)]
 
 theorem isBigO_self_const_mul' {c : R} (hc : IsUnit c) (f : α → R) (l : Filter α) :
     f =O[l] fun x => c * f x :=
   let ⟨u, hu⟩ := hc
   hu ▸ (isBigOWith_self_const_mul' u f l).isBigO
 
-theorem isBigO_self_const_mul (c : 𝕜) (hc : c ≠ 0) (f : α → 𝕜) (l : Filter α) :
-    f =O[l] fun x => c * f x :=
-  isBigO_self_const_mul' (IsUnit.mk0 c hc) f l
+theorem isBigO_self_const_mul {c : S} (hc : c ≠ 0) (f : α → S) (l : Filter α) :
+    f =O[l] fun x ↦ c * f x :=
+  (isBigOWith_self_const_mul hc f l).isBigO
 
 theorem isBigO_const_mul_left_iff' {f : α → R} {c : R} (hc : IsUnit c) :
     (fun x => c * f x) =O[l] g ↔ f =O[l] g :=
   ⟨(isBigO_self_const_mul' hc f l).trans, fun h => h.const_mul_left c⟩
 
-theorem isBigO_const_mul_left_iff {f : α → 𝕜} {c : 𝕜} (hc : c ≠ 0) :
+theorem isBigO_const_mul_left_iff {f : α → S} {c : S} (hc : c ≠ 0) :
     (fun x => c * f x) =O[l] g ↔ f =O[l] g :=
-  isBigO_const_mul_left_iff' <| IsUnit.mk0 c hc
+  ⟨(isBigO_self_const_mul hc f l).trans, (isBigO_const_mul_self c f l).trans⟩
 
 theorem IsLittleO.const_mul_left {f : α → R} (h : f =o[l] g) (c : R) : (fun x => c * f x) =o[l] g :=
   (isBigO_const_mul_self c f l).trans_isLittleO h
@@ -1155,9 +1184,9 @@ theorem isLittleO_const_mul_left_iff' {f : α → R} {c : R} (hc : IsUnit c) :
     (fun x => c * f x) =o[l] g ↔ f =o[l] g :=
   ⟨(isBigO_self_const_mul' hc f l).trans_isLittleO, fun h => h.const_mul_left c⟩
 
-theorem isLittleO_const_mul_left_iff {f : α → 𝕜} {c : 𝕜} (hc : c ≠ 0) :
+theorem isLittleO_const_mul_left_iff {f : α → S} {c : S} (hc : c ≠ 0) :
     (fun x => c * f x) =o[l] g ↔ f =o[l] g :=
-  isLittleO_const_mul_left_iff' <| IsUnit.mk0 c hc
+  ⟨(isBigO_self_const_mul hc f l).trans_isLittleO, (isBigO_const_mul_self c f l).trans_isLittleO⟩
 
 theorem IsBigOWith.of_const_mul_right {g : α → R} {c : R} (hc' : 0 ≤ c')
     (h : IsBigOWith c' l f fun x => c * g x) : IsBigOWith (c' * ‖c‖) l f g :=
@@ -1171,25 +1200,26 @@ theorem IsBigOWith.const_mul_right' {g : α → R} {u : Rˣ} {c' : ℝ} (hc' : 0
     (h : IsBigOWith c' l f g) : IsBigOWith (c' * ‖(↑u⁻¹ : R)‖) l f fun x => ↑u * g x :=
   h.trans (isBigOWith_self_const_mul' _ _ _) hc'
 
-theorem IsBigOWith.const_mul_right {g : α → 𝕜} {c : 𝕜} (hc : c ≠ 0) {c' : ℝ} (hc' : 0 ≤ c')
+theorem IsBigOWith.const_mul_right {g : α → S} {c : S} (hc : c ≠ 0) {c' : ℝ} (hc' : 0 ≤ c')
     (h : IsBigOWith c' l f g) : IsBigOWith (c' * ‖c‖⁻¹) l f fun x => c * g x :=
-  h.trans (isBigOWith_self_const_mul c hc g l) hc'
+  h.trans (isBigOWith_self_const_mul hc g l) hc'
 
 theorem IsBigO.const_mul_right' {g : α → R} {c : R} (hc : IsUnit c) (h : f =O[l] g) :
     f =O[l] fun x => c * g x :=
   h.trans (isBigO_self_const_mul' hc g l)
 
-theorem IsBigO.const_mul_right {g : α → 𝕜} {c : 𝕜} (hc : c ≠ 0) (h : f =O[l] g) :
+theorem IsBigO.const_mul_right {g : α → S} {c : S} (hc : c ≠ 0) (h : f =O[l] g) :
     f =O[l] fun x => c * g x :=
-  h.const_mul_right' <| IsUnit.mk0 c hc
+  match h.exists_nonneg with
+  | ⟨_, hd, hd'⟩ => (hd'.const_mul_right hc hd).isBigO
 
 theorem isBigO_const_mul_right_iff' {g : α → R} {c : R} (hc : IsUnit c) :
     (f =O[l] fun x => c * g x) ↔ f =O[l] g :=
   ⟨fun h => h.of_const_mul_right, fun h => h.const_mul_right' hc⟩
 
-theorem isBigO_const_mul_right_iff {g : α → 𝕜} {c : 𝕜} (hc : c ≠ 0) :
+theorem isBigO_const_mul_right_iff {g : α → S} {c : S} (hc : c ≠ 0) :
     (f =O[l] fun x => c * g x) ↔ f =O[l] g :=
-  isBigO_const_mul_right_iff' <| IsUnit.mk0 c hc
+  ⟨fun h ↦ h.of_const_mul_right, fun h ↦ h.const_mul_right hc⟩
 
 theorem IsLittleO.of_const_mul_right {g : α → R} {c : R} (h : f =o[l] fun x => c * g x) :
     f =o[l] g :=
@@ -1199,21 +1229,21 @@ theorem IsLittleO.const_mul_right' {g : α → R} {c : R} (hc : IsUnit c) (h : f
     f =o[l] fun x => c * g x :=
   h.trans_isBigO (isBigO_self_const_mul' hc g l)
 
-theorem IsLittleO.const_mul_right {g : α → 𝕜} {c : 𝕜} (hc : c ≠ 0) (h : f =o[l] g) :
+theorem IsLittleO.const_mul_right {g : α → S} {c : S} (hc : c ≠ 0) (h : f =o[l] g) :
     f =o[l] fun x => c * g x :=
-  h.const_mul_right' <| IsUnit.mk0 c hc
+  h.trans_isBigO <| isBigO_self_const_mul hc g l
 
 theorem isLittleO_const_mul_right_iff' {g : α → R} {c : R} (hc : IsUnit c) :
     (f =o[l] fun x => c * g x) ↔ f =o[l] g :=
   ⟨fun h => h.of_const_mul_right, fun h => h.const_mul_right' hc⟩
 
-theorem isLittleO_const_mul_right_iff {g : α → 𝕜} {c : 𝕜} (hc : c ≠ 0) :
+theorem isLittleO_const_mul_right_iff {g : α → S} {c : S} (hc : c ≠ 0) :
     (f =o[l] fun x => c * g x) ↔ f =o[l] g :=
-  isLittleO_const_mul_right_iff' <| IsUnit.mk0 c hc
+  ⟨fun h ↦ h.of_const_mul_right, fun h ↦ h.trans_isBigO (isBigO_self_const_mul hc g l)⟩
 
 /-! ### Multiplication -/
 
-theorem IsBigOWith.mul {f₁ f₂ : α → R} {g₁ g₂ : α → 𝕜} {c₁ c₂ : ℝ} (h₁ : IsBigOWith c₁ l f₁ g₁)
+theorem IsBigOWith.mul {f₁ f₂ : α → R} {g₁ g₂ : α → S} {c₁ c₂ : ℝ} (h₁ : IsBigOWith c₁ l f₁ g₁)
     (h₂ : IsBigOWith c₂ l f₂ g₂) :
     IsBigOWith (c₁ * c₂) l (fun x => f₁ x * f₂ x) fun x => g₁ x * g₂ x := by
   simp only [IsBigOWith_def] at *
@@ -1222,44 +1252,48 @@ theorem IsBigOWith.mul {f₁ f₂ : α → R} {g₁ g₂ : α → 𝕜} {c₁ c�
   convert mul_le_mul hx₁ hx₂ (norm_nonneg _) (le_trans (norm_nonneg _) hx₁) using 1
   rw [norm_mul, mul_mul_mul_comm]
 
-theorem IsBigO.mul {f₁ f₂ : α → R} {g₁ g₂ : α → 𝕜} (h₁ : f₁ =O[l] g₁) (h₂ : f₂ =O[l] g₂) :
+theorem IsBigO.mul {f₁ f₂ : α → R} {g₁ g₂ : α → S} (h₁ : f₁ =O[l] g₁) (h₂ : f₂ =O[l] g₂) :
     (fun x => f₁ x * f₂ x) =O[l] fun x => g₁ x * g₂ x :=
   let ⟨_c, hc⟩ := h₁.isBigOWith
   let ⟨_c', hc'⟩ := h₂.isBigOWith
   (hc.mul hc').isBigO
 
-theorem IsBigO.mul_isLittleO {f₁ f₂ : α → R} {g₁ g₂ : α → 𝕜} (h₁ : f₁ =O[l] g₁) (h₂ : f₂ =o[l] g₂) :
+theorem IsBigO.mul_isLittleO {f₁ f₂ : α → R} {g₁ g₂ : α → S} (h₁ : f₁ =O[l] g₁) (h₂ : f₂ =o[l] g₂) :
     (fun x => f₁ x * f₂ x) =o[l] fun x => g₁ x * g₂ x := by
   simp only [IsLittleO_def] at *
   intro c cpos
   rcases h₁.exists_pos with ⟨c', c'pos, hc'⟩
   exact (hc'.mul (h₂ (div_pos cpos c'pos))).congr_const (mul_div_cancel₀ _ (ne_of_gt c'pos))
 
-theorem IsLittleO.mul_isBigO {f₁ f₂ : α → R} {g₁ g₂ : α → 𝕜} (h₁ : f₁ =o[l] g₁) (h₂ : f₂ =O[l] g₂) :
-    (fun x => f₁ x * f₂ x) =o[l] fun x => g₁ x * g₂ x := by
+theorem IsLittleO.mul_isBigO {f₁ f₂ : α → R} {g₁ g₂ : α → S} (h₁ : f₁ =o[l] g₁) (h₂ : f₂ =O[l] g₂) :
+    (fun x ↦ f₁ x * f₂ x) =o[l] fun x ↦ g₁ x * g₂ x := by
   simp only [IsLittleO_def] at *
   intro c cpos
   rcases h₂.exists_pos with ⟨c', c'pos, hc'⟩
   exact ((h₁ (div_pos cpos c'pos)).mul hc').congr_const (div_mul_cancel₀ _ (ne_of_gt c'pos))
 
-theorem IsLittleO.mul {f₁ f₂ : α → R} {g₁ g₂ : α → 𝕜} (h₁ : f₁ =o[l] g₁) (h₂ : f₂ =o[l] g₂) :
-    (fun x => f₁ x * f₂ x) =o[l] fun x => g₁ x * g₂ x :=
+theorem IsLittleO.mul {f₁ f₂ : α → R} {g₁ g₂ : α → S} (h₁ : f₁ =o[l] g₁) (h₂ : f₂ =o[l] g₂) :
+    (fun x ↦ f₁ x * f₂ x) =o[l] fun x ↦ g₁ x * g₂ x :=
   h₁.mul_isBigO h₂.isBigO
 
-theorem IsBigOWith.pow' {f : α → R} {g : α → 𝕜} (h : IsBigOWith c l f g) :
-    ∀ n : ℕ, IsBigOWith (Nat.casesOn n ‖(1 : R)‖ fun n => c ^ (n + 1))
+theorem IsBigOWith.pow' [NormOneClass S] {f : α → R} {g : α → S} (h : IsBigOWith c l f g) :
+    ∀ n : ℕ, IsBigOWith (Nat.casesOn n ‖(1 : R)‖ fun n ↦ c ^ (n + 1))
       l (fun x => f x ^ n) fun x => g x ^ n
-  | 0 => by simpa using isBigOWith_const_const (1 : R) (one_ne_zero' 𝕜) l
+  | 0 => by
+    have : Nontrivial S := NormOneClass.nontrivial
+    simpa using isBigOWith_const_const (1 : R) (one_ne_zero' S) l
   | 1 => by simpa
   | n + 2 => by simpa [pow_succ] using (IsBigOWith.pow' h (n + 1)).mul h
 
-theorem IsBigOWith.pow [NormOneClass R] {f : α → R} {g : α → 𝕜} (h : IsBigOWith c l f g) :
+theorem IsBigOWith.pow [NormOneClass R] [NormOneClass S]
+    {f : α → R} {g : α → S} (h : IsBigOWith c l f g) :
     ∀ n : ℕ, IsBigOWith (c ^ n) l (fun x => f x ^ n) fun x => g x ^ n
   | 0 => by simpa using h.pow' 0
   | n + 1 => h.pow' (n + 1)
 
-theorem IsBigOWith.of_pow {n : ℕ} {f : α → 𝕜} {g : α → R} (h : IsBigOWith c l (f ^ n) (g ^ n))
-    (hn : n ≠ 0) (hc : c ≤ c' ^ n) (hc' : 0 ≤ c') : IsBigOWith c' l f g :=
+theorem IsBigOWith.of_pow [NormOneClass S] {n : ℕ} {f : α → S} {g : α → R}
+    (h : IsBigOWith c l (f ^ n) (g ^ n)) (hn : n ≠ 0) (hc : c ≤ c' ^ n) (hc' : 0 ≤ c') :
+    IsBigOWith c' l f g :=
   IsBigOWith.of_bound <| (h.weaken hc).bound.mono fun x hx ↦
     le_of_pow_le_pow_left₀ hn (by positivity) <|
       calc
@@ -1268,20 +1302,20 @@ theorem IsBigOWith.of_pow {n : ℕ} {f : α → 𝕜} {g : α → R} (h : IsBigO
         _ ≤ c' ^ n * ‖g x‖ ^ n := by gcongr; exact norm_pow_le' _ hn.bot_lt
         _ = (c' * ‖g x‖) ^ n := (mul_pow _ _ _).symm
 
-theorem IsBigO.pow {f : α → R} {g : α → 𝕜} (h : f =O[l] g) (n : ℕ) :
+theorem IsBigO.pow [NormOneClass S] {f : α → R} {g : α → S} (h : f =O[l] g) (n : ℕ) :
     (fun x => f x ^ n) =O[l] fun x => g x ^ n :=
   let ⟨_C, hC⟩ := h.isBigOWith
   isBigO_iff_isBigOWith.2 ⟨_, hC.pow' n⟩
 
-theorem IsLittleO.pow {f : α → R} {g : α → 𝕜} (h : f =o[l] g) {n : ℕ} (hn : 0 < n) :
+theorem IsLittleO.pow {f : α → R} {g : α → S} (h : f =o[l] g) {n : ℕ} (hn : 0 < n) :
     (fun x => f x ^ n) =o[l] fun x => g x ^ n := by
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn.ne'; clear hn
   induction n with
   | zero => simpa only [pow_one]
   | succ n ihn => convert ihn.mul h <;> simp [pow_succ]
 
-theorem IsLittleO.of_pow {f : α → 𝕜} {g : α → R} {n : ℕ} (h : (f ^ n) =o[l] (g ^ n)) (hn : n ≠ 0) :
-    f =o[l] g :=
+theorem IsLittleO.of_pow [NormOneClass S] {f : α → S} {g : α → R} {n : ℕ}
+    (h : (f ^ n) =o[l] (g ^ n)) (hn : n ≠ 0) : f =o[l] g :=
   IsLittleO.of_isBigOWith fun _c hc => (h.def' <| pow_pos hc _).of_pow hn le_rfl hc.le
 
 /-! ### Inverse -/
@@ -1313,9 +1347,9 @@ variable {ι : Type*} {A : ι → α → E'} {C : ι → ℝ} {s : Finset ι}
 theorem IsBigOWith.sum (h : ∀ i ∈ s, IsBigOWith (C i) l (A i) g) :
     IsBigOWith (∑ i ∈ s, C i) l (fun x => ∑ i ∈ s, A i x) g := by
   induction s using Finset.cons_induction with
-  | empty => simp only [isBigOWith_zero', Finset.sum_empty, forall_true_iff]
+  | empty => simp only [isBigOWith_zero', Finset.sum_empty]
   | cons i s is IH =>
-    simp only [is, Finset.sum_cons, Finset.forall_mem_cons] at h ⊢
+    simp only [Finset.sum_cons, Finset.forall_mem_cons] at h ⊢
     exact h.1.add (IH h.2)
 
 theorem IsBigO.sum (h : ∀ i ∈ s, A i =O[l] g) : (fun x => ∑ i ∈ s, A i x) =O[l] g := by

@@ -27,10 +27,11 @@ inductive Triplewise (p : α → α → α → Prop) : List α → Prop
   | nil : [].Triplewise p
   | cons {a : α} {l : List α} : l.Pairwise (p a) → l.Triplewise p → (a :: l).Triplewise p
 
-attribute [simp] Triplewise.nil
+attribute [simp, grind ←] Triplewise.nil
 
 variable {a b c : α} {l l₁ l₂ : List α} {p q : α → α → α → Prop} {f : α → β} {p' : β → β → β → Prop}
 
+@[grind =]
 lemma triplewise_cons : (a :: l).Triplewise p ↔ l.Pairwise (p a) ∧ l.Triplewise p := by
   rw [triplewise_iff]; aesop
 
@@ -77,17 +78,9 @@ lemma triplewise_iff_getElem : l.Triplewise p ↔ ∀ i j k (hij : i < j) (hjk :
     simp only [triplewise_cons, length_cons, pairwise_iff_getElem, ih]
     refine ⟨fun ⟨hh, ht⟩ i j k hij hjk hk ↦ ?_,
             fun h ↦ ⟨fun i j hi hj hij ↦ ?_, fun i j k hij hjk hk ↦ ?_⟩⟩
-    · rcases i with - | i <;> rcases j with - | j
-      · simp at hij
-      · rcases k with - | k
-        · omega
-        · simpa using hh j k (by omega) (by omega) (by omega)
-      · simp at hij
-      · rcases k with - | k
-        · omega
-        · simpa using ht i j k (by omega) (by omega) (by omega)
-    · simpa using h 0 (i + 1) (j + 1) (by omega) (by omega) (by omega)
-    · simpa using h (i + 1) (j + 1) (k + 1) (by omega) (by omega) (by omega)
+    · grind
+    · simpa using h 0 (i + 1) (j + 1) (by cutsat) (by cutsat) (by cutsat)
+    · simpa using h (i + 1) (j + 1) (k + 1) (by cutsat) (by cutsat) (by cutsat)
 
 lemma triplewise_append : (l₁ ++ l₂).Triplewise p ↔ l₁.Triplewise p ∧ l₂.Triplewise p ∧
     (∀ a ∈ l₁, l₂.Pairwise (p a)) ∧ ∀ a ∈ l₂, l₁.Pairwise fun x y ↦ p x y a := by

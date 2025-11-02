@@ -148,6 +148,7 @@ end Paths
 namespace Symmetrify
 
 /-- The inclusion of a quiver in its symmetrification -/
+@[simps]
 def of : Prefunctor V (Symmetrify V) where
   obj := id
   map := Sum.inl
@@ -229,14 +230,5 @@ instance ofMapReverse [h : HasInvolutiveReverse V] : (Push.of σ).MapReverse :=
   ⟨by simp [of_reverse]⟩
 
 end Push
-
-/-- A quiver is preconnected iff there exists a path between any pair of
-vertices.
-Note that if `V` doesn't `HasReverse`, then the definition is stronger than
-simply having a preconnected underlying `SimpleGraph`, since a path in one
-direction doesn't induce one in the other.
--/
-def IsPreconnected (V) [Quiver.{u + 1} V] :=
-  ∀ X Y : V, Nonempty (Path X Y)
 
 end Quiver

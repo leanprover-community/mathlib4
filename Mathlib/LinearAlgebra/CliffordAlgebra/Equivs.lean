@@ -5,9 +5,9 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.DualNumber
 import Mathlib.Algebra.QuaternionBasis
-import Mathlib.Data.Complex.Module
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 import Mathlib.LinearAlgebra.CliffordAlgebra.Star
+import Mathlib.LinearAlgebra.Complex.Module
 import Mathlib.LinearAlgebra.QuadraticForm.Prod
 
 /-!
@@ -74,18 +74,16 @@ theorem ι_eq_zero : ι (0 : QuadraticForm R Unit) = 0 :=
   Subsingleton.elim _ _
 
 /-- Since the vector space is empty the ring is commutative. -/
-instance : CommRing (CliffordAlgebra (0 : QuadraticForm R Unit)) :=
-  { CliffordAlgebra.instRing _ with
-    mul_comm := fun x y => by
-      induction x using CliffordAlgebra.induction with
-      | algebraMap r => apply Algebra.commutes
-      | ι x => simp
-      | add x₁ x₂ hx₁ hx₂ => rw [mul_add, add_mul, hx₁, hx₂]
-      | mul x₁ x₂ hx₁ hx₂ => rw [mul_assoc, hx₂, ← mul_assoc, hx₁, ← mul_assoc] }
+instance : CommRing (CliffordAlgebra (0 : QuadraticForm R Unit)) where
+  mul_comm := fun x y => by
+    induction x using CliffordAlgebra.induction with
+    | algebraMap r => apply Algebra.commutes
+    | ι x => simp
+    | add x₁ x₂ hx₁ hx₂ => rw [mul_add, add_mul, hx₁, hx₂]
+    | mul x₁ x₂ hx₁ hx₂ => rw [mul_assoc, hx₂, ← mul_assoc, hx₁, ← mul_assoc]
 
--- Porting note: Changed `x.reverse` to `reverse (R := R) x`
 theorem reverse_apply (x : CliffordAlgebra (0 : QuadraticForm R Unit)) :
-    reverse (R := R) x = x := by
+    x.reverse = x := by
   induction x using CliffordAlgebra.induction with
   | algebraMap r => exact reverse.commutes _
   | ι x => rw [ι_eq_zero, LinearMap.zero_apply, reverse.map_zero]
@@ -120,7 +118,7 @@ open scoped ComplexConjugate
 
 /-- The quadratic form sending elements to the negation of their square. -/
 def Q : QuadraticForm ℝ ℝ :=
-  -QuadraticMap.sq (R := ℝ) -- Porting note: Added `(R := ℝ)`
+  -QuadraticMap.sq
 
 @[simp]
 theorem Q_apply (r : ℝ) : Q r = -(r * r) :=
@@ -190,15 +188,13 @@ protected def equiv : CliffordAlgebra Q ≃ₐ[ℝ] ℂ :=
 /-- The clifford algebra is commutative since it is isomorphic to the complex numbers.
 
 TODO: prove this is true for all `CliffordAlgebra`s over a 1-dimensional vector space. -/
-instance : CommRing (CliffordAlgebra Q) :=
-  { CliffordAlgebra.instRing _ with
-    mul_comm := fun x y =>
-      CliffordAlgebraComplex.equiv.injective <| by
-        rw [map_mul, mul_comm, map_mul] }
+instance : CommRing (CliffordAlgebra Q) where
+  mul_comm := fun x y =>
+    CliffordAlgebraComplex.equiv.injective <| by
+      rw [map_mul, mul_comm, map_mul]
 
--- Porting note: Changed `x.reverse` to `reverse (R := ℝ) x`
 /-- `reverse` is a no-op over `CliffordAlgebraComplex.Q`. -/
-theorem reverse_apply (x : CliffordAlgebra Q) : reverse (R := ℝ) x = x := by
+theorem reverse_apply (x : CliffordAlgebra Q) : x.reverse = x := by
   induction x using CliffordAlgebra.induction with
   | algebraMap r => exact reverse.commutes _
   | ι x => rw [reverse_ι]
@@ -214,9 +210,6 @@ theorem reverse_eq_id : (reverse : CliffordAlgebra Q →ₗ[ℝ] _) = LinearMap.
 theorem ofComplex_conj (c : ℂ) : ofComplex (conj c) = involute (ofComplex c) :=
   CliffordAlgebraComplex.equiv.injective <| by
     rw [equiv_apply, equiv_apply, toComplex_involute, toComplex_ofComplex, toComplex_ofComplex]
-
--- this name is too short for us to want it visible after `open CliffordAlgebraComplex`
---attribute [protected] Q -- Porting note: removed
 
 end CliffordAlgebraComplex
 
@@ -306,7 +299,7 @@ theorem ofQuaternion_comp_toQuaternion :
     dsimp
     rw [toQuaternion_ι]
     dsimp
-    simp only [toQuaternion_ι, zero_smul, one_smul, zero_add, add_zero, RingHom.map_zero]
+    simp only [zero_smul, one_smul, zero_add, add_zero, RingHom.map_zero]
 
 @[simp]
 theorem ofQuaternion_toQuaternion (c : CliffordAlgebra (Q c₁ c₂)) :
@@ -335,9 +328,6 @@ theorem ofQuaternion_star (q : ℍ[R,c₁,0,c₂]) : ofQuaternion (star q) = sta
   CliffordAlgebraQuaternion.equiv.injective <| by
     rw [equiv_apply, equiv_apply, toQuaternion_star, toQuaternion_ofQuaternion,
       toQuaternion_ofQuaternion]
-
--- this name is too short for us to want it visible after `open CliffordAlgebraQuaternion`
---attribute [protected] Q -- Porting note: removed
 
 end CliffordAlgebraQuaternion
 

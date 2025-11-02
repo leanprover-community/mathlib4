@@ -10,8 +10,8 @@ import Mathlib.RingTheory.TensorProduct.Basic
 /-!
 # Interaction between quotients and tensor products for algebras
 
-This files proves algebra analogs of the isomorphisms in
-`Mathlib.LinearAlgebra.TensorProduct.Quotient`.
+This file proves algebra analogs of the isomorphisms in
+`Mathlib/LinearAlgebra/TensorProduct/Quotient.lean`.
 
 ## Main results
 

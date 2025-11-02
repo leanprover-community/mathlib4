@@ -3,7 +3,7 @@ Copyright (c) 2019 Abhimanyu Pallavi Sudhir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abhimanyu Pallavi Sudhir, Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Order.Filter.Ring
 import Mathlib.Order.Filter.Ultrafilter.Defs
@@ -63,7 +63,7 @@ instance instField [Field β] : Field β* where
   __ := instDivisionRing
 
 theorem coe_lt [Preorder β] {f g : α → β} : (f : β*) < g ↔ ∀* x, f x < g x := by
-  simp only [lt_iff_le_not_le, eventually_and, coe_le, eventually_not, EventuallyLE]
+  simp only [lt_iff_le_not_ge, eventually_and, coe_le, eventually_not, EventuallyLE]
 
 theorem coe_pos [Preorder β] [Zero β] {f : α → β} : 0 < (f : β*) ↔ ∀* x, 0 < f x :=
   coe_lt
@@ -88,48 +88,12 @@ open Classical in
 noncomputable instance instLinearOrder [LinearOrder β] : LinearOrder β* :=
   Lattice.toLinearOrder _
 
-@[to_additive]
-noncomputable instance linearOrderedCommGroup [LinearOrderedCommGroup β] :
-    LinearOrderedCommGroup β* where
-  __ := instOrderedCommGroup
-  __ := instLinearOrder
-
-instance instStrictOrderedSemiring [StrictOrderedSemiring β] : StrictOrderedSemiring β* where
-  __ := instOrderedSemiring
-  __ := instOrderedAddCancelCommMonoid
-  mul_lt_mul_of_pos_left x y z := inductionOn₃ x y z fun _f _g _h hfg hh ↦
-    coe_lt.2 <| (coe_lt.1 hh).mp <| (coe_lt.1 hfg).mono fun _a ↦ mul_lt_mul_of_pos_left
-  mul_lt_mul_of_pos_right x y z := inductionOn₃ x y z fun _f _g _h hfg hh ↦
-    coe_lt.2 <| (coe_lt.1 hh).mp <| (coe_lt.1 hfg).mono fun _a ↦ mul_lt_mul_of_pos_right
-
-instance instStrictOrderedCommSemiring [StrictOrderedCommSemiring β] :
-    StrictOrderedCommSemiring β* where
-  __ := instStrictOrderedSemiring
-  __ := instOrderedCommSemiring
-
-instance instStrictOrderedRing [StrictOrderedRing β] : StrictOrderedRing β* where
-  __ := instRing
-  __ := instStrictOrderedSemiring
-  zero_le_one := const_le zero_le_one
-  mul_pos x y := inductionOn₂ x y fun _f _g hf hg ↦
-    coe_pos.2 <| (coe_pos.1 hg).mp <| (coe_pos.1 hf).mono fun _x ↦ mul_pos
-
-instance instStrictOrderedCommRing [StrictOrderedCommRing β] : StrictOrderedCommRing β* where
-  __ := instStrictOrderedRing
-  __ := instOrderedCommRing
-
-noncomputable instance instLinearOrderedRing [LinearOrderedRing β] : LinearOrderedRing β* where
-  __ := instStrictOrderedRing
-  __ := instLinearOrder
-
-noncomputable instance instLinearOrderedField [LinearOrderedField β] : LinearOrderedField β* where
-  __ := instLinearOrderedRing
-  __ := instField
-
-noncomputable instance instLinearOrderedCommRing [LinearOrderedCommRing β] :
-    LinearOrderedCommRing β* where
-  __ := instLinearOrderedRing
-  __ := instCommMonoid
+instance instIsStrictOrderedRing [Semiring β] [PartialOrder β] [IsStrictOrderedRing β] :
+    IsStrictOrderedRing β* where
+  mul_lt_mul_of_pos_left x := inductionOn x fun _f hf y z ↦ inductionOn₂ y z fun _g _h hgh ↦
+    coe_lt.2 <| (coe_lt.1 hf).mp <| (coe_lt.1 hgh).mono fun _a ↦ mul_lt_mul_of_pos_left
+  mul_lt_mul_of_pos_right x := inductionOn x fun _f hf y z ↦ inductionOn₂ y z fun _g _h hgh ↦
+    coe_lt.2 <| (coe_lt.1 hf).mp <| (coe_lt.1 hgh).mono fun _a ↦ mul_lt_mul_of_pos_right
 
 theorem max_def [LinearOrder β] (x y : β*) : max x y = map₂ max x y :=
   inductionOn₂ x y fun a b => by
@@ -147,7 +111,8 @@ theorem min_def [K : LinearOrder β] (x y : β*) : min x y = map₂ min x y :=
     · rw [min_eq_right h, map₂_coe, coe_eq]
       exact h.mono fun i hi => (min_eq_right hi).symm
 
-theorem abs_def [LinearOrderedAddCommGroup β] (x : β*) : |x| = map abs x :=
+theorem abs_def [AddCommGroup β] [LinearOrder β] (x : β*) :
+    |x| = map abs x :=
   inductionOn x fun _a => rfl
 
 @[simp]
@@ -159,7 +124,8 @@ theorem const_min [LinearOrder β] (x y : β) : (↑(min x y : β) : β*) = min 
   rw [min_def, map₂_const]
 
 @[simp]
-theorem const_abs [LinearOrderedAddCommGroup β] (x : β) : (↑|x| : β*) = |↑x| := by
+theorem const_abs [AddCommGroup β] [LinearOrder β] (x : β) :
+    (↑|x| : β*) = |↑x| := by
   rw [abs_def, map_const]
 
 end Germ

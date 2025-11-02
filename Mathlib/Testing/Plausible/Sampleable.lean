@@ -3,9 +3,9 @@ Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
-import Batteries.Data.Rat.Basic
-import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.List.Monad
+import Mathlib.Data.PNat.Defs
 import Plausible.Sampleable
 
 /-!
@@ -23,6 +23,9 @@ instance Rat.shrinkable : Shrinkable Rat where
   shrink r :=
     (Shrinkable.shrink r.num).flatMap fun d => Nat.shrink r.den |>.map fun n => Rat.divInt d n
 
+instance PNat.shrinkable : Shrinkable PNat where
+  shrink m := Nat.shrink m.natPred |>.map Nat.succPNat
+
 end Shrinkers
 
 section Samplers
@@ -35,6 +38,12 @@ instance Rat.sampleableExt : SampleableExt Rat :=
       (le_trans (Int.neg_nonpos_of_nonneg (Int.ofNat_zero_le _)) (Int.ofNat_zero_le _))
     let n ← choose Nat 0 (← getSize) (Nat.zero_le _)
     return Rat.divInt d n)
+
+
+instance PNat.sampleableExt : SampleableExt PNat :=
+  mkSelfContained (do
+    let n ← chooseNat
+    return Nat.succPNat n)
 
 end Samplers
 

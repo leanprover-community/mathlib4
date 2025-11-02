@@ -29,8 +29,9 @@ noncomputable section
 
 open EMetric ENNReal Filter MeasureTheory NNReal Set
 
-variable {α β : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
-variable [NormedAddCommGroup β]
+variable {α β ε ε' : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
+variable [NormedAddCommGroup β] [TopologicalSpace ε] [ContinuousENorm ε]
+  [TopologicalSpace ε'] [ESeminormedAddMonoid ε']
 
 namespace MeasureTheory
 
@@ -40,20 +41,20 @@ section
 
 /-- A class of almost everywhere equal functions is `Integrable` if its function representative
 is integrable. -/
-def Integrable (f : α →ₘ[μ] β) : Prop :=
+def Integrable (f : α →ₘ[μ] ε) : Prop :=
   MeasureTheory.Integrable f μ
 
-theorem integrable_mk {f : α → β} (hf : AEStronglyMeasurable f μ) :
-    Integrable (mk f hf : α →ₘ[μ] β) ↔ MeasureTheory.Integrable f μ := by
+theorem integrable_mk {f : α → ε} (hf : AEStronglyMeasurable f μ) :
+    Integrable (mk f hf : α →ₘ[μ] ε) ↔ MeasureTheory.Integrable f μ := by
   simp only [Integrable]
   apply integrable_congr
   exact coeFn_mk f hf
 
-theorem integrable_coeFn {f : α →ₘ[μ] β} : MeasureTheory.Integrable f μ ↔ Integrable f := by
-  rw [← integrable_mk, mk_coeFn]
+theorem integrable_coeFn {f : α →ₘ[μ] ε} : MeasureTheory.Integrable f μ ↔ Integrable f := by
+  rw [← integrable_mk f.aestronglyMeasurable, mk_coeFn]
 
-theorem integrable_zero : Integrable (0 : α →ₘ[μ] β) :=
-  (MeasureTheory.integrable_zero α β μ).congr (coeFn_mk _ _).symm
+theorem integrable_zero : Integrable (0 : α →ₘ[μ] ε') :=
+  (MeasureTheory.integrable_zero α ε' μ).congr (coeFn_mk _ _).symm
 
 end
 
@@ -67,6 +68,7 @@ section
 theorem integrable_iff_mem_L1 {f : α →ₘ[μ] β} : Integrable f ↔ f ∈ (α →₁[μ] β) := by
   rw [← integrable_coeFn, ← memLp_one_iff_integrable, Lp.mem_Lp_iff_memLp]
 
+-- TODO: generalise these lemmas to `ENormedSpace` or similar
 theorem Integrable.add {f g : α →ₘ[μ] β} : Integrable f → Integrable g → Integrable (f + g) := by
   refine induction_on₂ f g fun f hf g hg hfi hgi => ?_
   simp only [integrable_mk, mk_add_mk] at hfi hgi ⊢
@@ -78,15 +80,15 @@ theorem Integrable.sub {f g : α →ₘ[μ] β} (hf : Integrable f) (hg : Integr
 
 end
 
-section BoundedSMul
+section IsBoundedSMul
 
-variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β]
+variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
 
 theorem Integrable.smul {c : 𝕜} {f : α →ₘ[μ] β} : Integrable f → Integrable (c • f) :=
   induction_on f fun _f hfm hfi => (integrable_mk _).2 <|
     by simpa using ((integrable_mk hfm).1 hfi).smul c
 
-end BoundedSMul
+end IsBoundedSMul
 
 end
 
@@ -102,21 +104,25 @@ theorem integrable_coeFn (f : α →₁[μ] β) : Integrable f μ := by
 theorem hasFiniteIntegral_coeFn (f : α →₁[μ] β) : HasFiniteIntegral f μ :=
   (integrable_coeFn f).hasFiniteIntegral
 
+@[fun_prop]
 theorem stronglyMeasurable_coeFn (f : α →₁[μ] β) : StronglyMeasurable f :=
   Lp.stronglyMeasurable f
 
+@[fun_prop]
 theorem measurable_coeFn [MeasurableSpace β] [BorelSpace β] (f : α →₁[μ] β) : Measurable f :=
   (Lp.stronglyMeasurable f).measurable
 
+@[fun_prop]
 theorem aestronglyMeasurable_coeFn (f : α →₁[μ] β) : AEStronglyMeasurable f μ :=
   Lp.aestronglyMeasurable f
 
+@[fun_prop]
 theorem aemeasurable_coeFn [MeasurableSpace β] [BorelSpace β] (f : α →₁[μ] β) : AEMeasurable f μ :=
   (Lp.stronglyMeasurable f).measurable.aemeasurable
 
 theorem edist_def (f g : α →₁[μ] β) : edist f g = ∫⁻ a, edist (f a) (g a) ∂μ := by
   simp only [Lp.edist_def, eLpNorm, one_ne_zero, eLpNorm'_eq_lintegral_enorm, Pi.sub_apply,
-    one_toReal, ENNReal.rpow_one, ne_eq, not_false_eq_true, div_self, ite_false]
+    toReal_one, ENNReal.rpow_one, ne_eq, not_false_eq_true, div_self, ite_false]
   simp [edist_eq_enorm_sub]
 
 theorem dist_def (f g : α →₁[μ] β) : dist f g = (∫⁻ a, edist (f a) (g a) ∂μ).toReal := by
@@ -196,9 +202,8 @@ theorem norm_toL1 (f : α → β) (hf : Integrable f μ) :
   simp [toL1, Lp.norm_toLp, eLpNorm, eLpNorm'_eq_lintegral_enorm]
 
 theorem enorm_toL1 {f : α → β} (hf : Integrable f μ) : ‖hf.toL1 f‖ₑ = ∫⁻ a, ‖f a‖ₑ ∂μ := by
-  simpa [Integrable.toL1, eLpNorm, eLpNorm', enorm] using ENNReal.coe_toNNReal hf.2.ne
-
-@[deprecated (since := "2025-01-20")] alias nnnorm_toL1 := enorm_toL1
+  simp only [Lp.enorm_def, toL1_eq_mk, eLpNorm_aeeqFun]
+  simp [eLpNorm, eLpNorm']
 
 theorem norm_toL1_eq_lintegral_norm (f : α → β) (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) := by
@@ -208,7 +213,7 @@ theorem norm_toL1_eq_lintegral_norm (f : α → β) (hf : Integrable f μ) :
 theorem edist_toL1_toL1 (f g : α → β) (hf : Integrable f μ) (hg : Integrable g μ) :
     edist (hf.toL1 f) (hg.toL1 g) = ∫⁻ a, edist (f a) (g a) ∂μ := by
   simp only [toL1, Lp.edist_toLp_toLp, eLpNorm, one_ne_zero, eLpNorm'_eq_lintegral_enorm,
-    Pi.sub_apply, one_toReal, ENNReal.rpow_one, ne_eq, not_false_eq_true, div_self, ite_false]
+    Pi.sub_apply, toReal_one, ENNReal.rpow_one, ne_eq, not_false_eq_true, div_self, ite_false]
   simp [edist_eq_enorm_sub]
 
 theorem edist_toL1_zero (f : α → β) (hf : Integrable f μ) :
@@ -216,7 +221,7 @@ theorem edist_toL1_zero (f : α → β) (hf : Integrable f μ) :
   simp only [edist_zero_right, Lp.enorm_def, toL1_eq_mk, eLpNorm_aeeqFun]
   apply eLpNorm_one_eq_lintegral_enorm
 
-variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β]
+variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
 
 theorem toL1_smul (f : α → β) (hf : Integrable f μ) (k : 𝕜) :
     toL1 (fun a => k • f a) (hf.smul k) = k • toL1 f hf :=

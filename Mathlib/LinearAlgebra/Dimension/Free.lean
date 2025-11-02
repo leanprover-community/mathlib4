@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.RingTheory.AlgebraTower
 import Mathlib.SetTheory.Cardinal.Finsupp
@@ -25,7 +24,7 @@ noncomputable section
 
 universe u v v' w
 
-open Cardinal Basis Submodule Function Set DirectSum Module
+open Cardinal Basis Submodule Function Set Module
 
 section Tower
 
@@ -52,7 +51,7 @@ $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$
 
 This is a simpler version of `lift_rank_mul_lift_rank` with `K` and `A` in the same universe. -/
 @[stacks 09G9]
-theorem rank_mul_rank (A : Type v) [AddCommGroup A]
+theorem rank_mul_rank (A : Type v) [AddCommMonoid A]
     [Module K A] [Module F A] [IsScalarTower F K A] [Module.Free K A] :
     Module.rank F K * Module.rank K A = Module.rank F A := by
   convert lift_rank_mul_lift_rank F K A <;> rw [lift_id]
@@ -66,7 +65,7 @@ theorem Module.finrank_mul_finrank : finrank F K * finrank K A = finrank F A := 
 
 end Tower
 
-variable {R : Type u} {M M₁ : Type v} {M' : Type v'}
+variable {R : Type u} {S : Type*} {M M₁ : Type v} {M' : Type v'}
 variable [Semiring R] [StrongRankCondition R]
 variable [AddCommMonoid M] [Module R M] [Module.Free R M]
 variable [AddCommMonoid M'] [Module R M'] [Module.Free R M']
@@ -80,7 +79,7 @@ variable (R M)
 theorem rank_eq_card_chooseBasisIndex : Module.rank R M = #(ChooseBasisIndex R M) :=
   (chooseBasis R M).mk_eq_rank''.symm
 
-/-- The finrank of a free module `M` over `R` is the cardinality of `ChooseBasisIndex R M`. -/
+/-- The `finrank` of a free module `M` over `R` is the cardinality of `ChooseBasisIndex R M`. -/
 theorem _root_.Module.finrank_eq_card_chooseBasisIndex [Module.Finite R M] :
     finrank R M = Fintype.card (ChooseBasisIndex R M) := by
   simp [finrank, rank_eq_card_chooseBasisIndex]
@@ -91,7 +90,7 @@ lemma rank_eq_mk_of_infinite_lt [Infinite R] (h_lt : lift.{v} #R < lift.{u} #M) 
     Module.rank R M = #M := by
   have : Infinite M := infinite_iff.mpr <| lift_le.mp <| le_trans (by simp) h_lt.le
   have h : lift #M = lift #(ChooseBasisIndex R M →₀ R) := lift_mk_eq'.mpr ⟨(chooseBasis R M).repr⟩
-  simp only [mk_finsupp_lift_of_infinite', lift_id', ← rank_eq_card_chooseBasisIndex, lift_max,
+  simp only [mk_finsupp_lift_of_infinite', ← rank_eq_card_chooseBasisIndex, lift_max,
     lift_lift] at h
   refine lift_inj.mp ((max_eq_iff.mp h.symm).resolve_right <| not_and_of_not_left _ ?_).left
   exact (lift_umax.{v, u}.symm ▸ h_lt).ne
@@ -168,7 +167,7 @@ namespace Module
 /-- A free module of rank zero is trivial. -/
 lemma subsingleton_of_rank_zero (h : Module.rank R M = 0) : Subsingleton M := by
   rw [← Basis.mk_eq_rank'' (Module.Free.chooseBasis R M), Cardinal.mk_eq_zero_iff] at h
-  exact (Module.Free.repr R M).subsingleton
+  exact (Module.Free.chooseBasis R M).repr.subsingleton
 
 /-- See `rank_lt_aleph0` for the inverse direction without `Module.Free R M`. -/
 lemma rank_lt_aleph0_iff : Module.rank R M < ℵ₀ ↔ Module.Finite R M := by
@@ -187,10 +186,39 @@ theorem finite_of_finrank_pos (h : 0 < finrank R M) : Module.Finite R M := by
 theorem finite_of_finrank_eq_succ {n : ℕ} (hn : finrank R M = n.succ) : Module.Finite R M :=
   finite_of_finrank_pos <| by rw [hn]; exact n.succ_pos
 
-theorem finite_iff_of_rank_eq_nsmul {W} [AddCommGroup W] [Module R W] [Module.Free R W] {n : ℕ}
+theorem finite_iff_of_rank_eq_nsmul {W} [AddCommMonoid W] [Module R W] [Module.Free R W] {n : ℕ}
     (hn : n ≠ 0) (hVW : Module.rank R M = n • Module.rank R W) :
     Module.Finite R M ↔ Module.Finite R W := by
   simp only [← rank_lt_aleph0_iff, hVW, nsmul_lt_aleph0_iff_of_ne_zero hn]
+
+variable (R S M) in
+omit [Module.Free R M] in
+/-- Also see `Module.finrank_top_le_finrank_of_isScalarTower`
+for a version with different typeclass constraints. -/
+lemma finrank_top_le_finrank_of_isScalarTower_of_free [Semiring S] [StrongRankCondition S]
+    [Module S M] [Module R S] [FaithfulSMul R S] [Module.Finite R S]
+    [IsScalarTower R S S] [IsScalarTower R S M] [Module.Free S M] :
+    finrank S M ≤ finrank R M := by
+  by_cases H : Module.Finite S M
+  · have := Module.Finite.trans (R := R) S M
+    exact finrank_top_le_finrank_of_isScalarTower R S M
+  · rw [finrank, Cardinal.toNat_eq_zero.mpr (.inr _)]
+    · exact zero_le _
+    · rwa [← not_lt, Module.rank_lt_aleph0_iff]
+
+variable (R) in
+/-- Also see `Module.finrank_bot_le_finrank_of_isScalarTower`
+for a version with different typeclass constraints. -/
+lemma finrank_bot_le_finrank_of_isScalarTower_of_free (S T : Type*) [Semiring S] [Semiring T]
+    [Module R T] [Module S T] [Module R S] [IsScalarTower R S T]
+    [IsScalarTower S T T] [FaithfulSMul S T] [Module.Finite S T] [Module.Free R S] :
+    finrank R S ≤ finrank R T := by
+  by_cases H : Module.Finite R S
+  · have := Module.Finite.trans (R := R) S T
+    exact finrank_bot_le_finrank_of_isScalarTower R S T
+  · rw [finrank, Cardinal.toNat_eq_zero.mpr (.inr _)]
+    · exact zero_le _
+    · rwa [← not_lt, Module.rank_lt_aleph0_iff]
 
 variable (R M)
 
@@ -223,3 +251,11 @@ theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
     fun hv => by rw [hv, LinearEquiv.map_zero, Finsupp.zero_apply]⟩
 
 end Module
+
+namespace Algebra
+
+instance (R S : Type*) [CommSemiring R] [StrongRankCondition R] [Semiring S] [Algebra R S]
+    [IsQuadraticExtension R S] :
+    Module.Finite R S := finite_of_finrank_eq_succ <| IsQuadraticExtension.finrank_eq_two R S
+
+end Algebra

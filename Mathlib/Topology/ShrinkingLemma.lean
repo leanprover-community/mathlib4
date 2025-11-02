@@ -138,18 +138,17 @@ def chainSup (c : Set (PartialRefinement u s p)) (hc : IsChain (· ≤ ·) c) (n
     · simp_rw [not_exists, not_and, not_imp_not, chainSupCarrier, mem_iUnion₂] at hx
       haveI : Nonempty (PartialRefinement u s p) := ⟨ne.some⟩
       choose! v hvc hiv using hx
-      rcases (hfin x hxs).exists_maximal_wrt v _ (mem_iUnion.1 (hU hxs)) with
-        ⟨i, hxi : x ∈ u i, hmax : ∀ j, x ∈ u j → v i ≤ v j → v i = v j⟩
+      rcases (hfin x hxs).exists_maximalFor v _ (mem_iUnion.1 (hU hxs)) with
+        ⟨i, hxi : x ∈ u i, hmax : ∀ j, x ∈ u j → v i ≤ v j → v j ≤ v i⟩
       rcases mem_iUnion.1 ((v i).subset_iUnion hxs) with ⟨j, hj⟩
       use j
       have hj' : x ∈ u j := (v i).subset _ hj
-      have : v j ≤ v i := (hc.total (hvc _ hxi) (hvc _ hj')).elim (fun h => (hmax j hj' h).ge) id
+      have : v j ≤ v i := (hc.total (hvc _ hxi) (hvc _ hj')).elim (hmax j hj') id
       simpa only [find_apply_of_mem hc ne (hvc _ hxi) (this.1 <| hiv _ hj')]
   closure_subset hi := (find c ne _).closure_subset ((mem_find_carrier_iff _).2 hi)
   pred_of_mem {i} hi := by
     obtain ⟨v, hv⟩ := Set.mem_iUnion.mp hi
     simp only [mem_iUnion, exists_prop] at hv
-    simp only
     rw [find_apply_of_mem hc ne hv.1 hv.2]
     exact v.pred_of_mem hv.2
   apply_eq hi := (find c ne _).apply_eq (mt (mem_find_carrier_iff _).1 hi)
@@ -176,7 +175,7 @@ theorem exists_gt [NormalSpace X] (v : PartialRefinement u s ⊤) (hs : IsClosed
   classical
   refine ⟨⟨update v i vi, insert i v.carrier, ?_, ?_, ?_, ?_, ?_⟩, ?_, ?_⟩
   · intro j
-    rcases eq_or_ne j i with (rfl| hne) <;> simp [*, v.isOpen]
+    rcases eq_or_ne j i with (rfl | hne) <;> simp [*, v.isOpen]
   · refine fun x hx => mem_iUnion.2 ?_
     rcases em (∃ j ≠ i, x ∈ v j) with (⟨j, hji, hj⟩ | h)
     · use j
@@ -282,7 +281,7 @@ theorem exists_gt_t2space (v : PartialRefinement u s (fun w => IsCompact (closur
     intro x hx
     have (j) (hj : j ≠ i) : x ∉ v j := by
       rw [hsi] at hx
-      apply Set.not_mem_of_mem_compl
+      apply Set.notMem_of_mem_compl
       have hsi' : x ∈ (⋂ i_1, ⋂ (_ : ¬i_1 = i), (v.toFun i_1)ᶜ) := Set.mem_of_mem_inter_right hx
       rw [ne_eq] at hj
       rw [Set.mem_iInter₂] at hsi'
@@ -297,7 +296,7 @@ theorem exists_gt_t2space (v : PartialRefinement u s (fun w => IsCompact (closur
   classical
   refine ⟨⟨update v i vi, insert i v.carrier, ?_, ?_, ?_, ?_, ?_⟩, ⟨?_, ?_⟩, ?_⟩
   · intro j
-    rcases eq_or_ne j i with (rfl| hne) <;> simp [*, v.isOpen]
+    rcases eq_or_ne j i with (rfl | hne) <;> simp [*, v.isOpen]
   · refine fun x hx => mem_iUnion.2 ?_
     rcases em (∃ j ≠ i, x ∈ v j) with (⟨j, hji, hj⟩ | h)
     · use j
@@ -366,10 +365,8 @@ theorem exists_subset_iUnion_compact_subset_t2space (hs : IsCompact s) (uo : ∀
       ∧ ∀ i, IsCompact (v i) := by
   let ⟨v, hsv, _, hv⟩ := exists_subset_iUnion_closure_subset_t2space hs uo uf us
   use fun i => closure (v i)
-  refine ⟨?_, ?_, ?_⟩
+  refine ⟨?_, ?_, hv⟩
   · exact Subset.trans hsv (iUnion_mono fun _ => subset_closure)
   · simp only [isClosed_closure, implies_true]
-  · simp only
-    exact And.intro (fun i => hv.1 i) (fun i => hv.2 i)
 
 end T2LocallyCompactSpace

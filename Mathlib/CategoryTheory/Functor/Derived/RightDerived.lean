@@ -48,13 +48,9 @@ variable {C C' D D' H H' : Type _} [Category C] [Category C']
 if it is equipped with a natural transformation `α : F ⟶ L ⋙ RF`
 which makes it a left Kan extension of `F` along `L`,
 where `L : C ⥤ D` is a localization functor for `W : MorphismProperty C`. -/
-class IsRightDerivedFunctor [L.IsLocalization W] : Prop where
-  isLeftKanExtension' : RF.IsLeftKanExtension α
-
-lemma IsRightDerivedFunctor.isLeftKanExtension
-    [L.IsLocalization W] [RF.IsRightDerivedFunctor α W] :
-    RF.IsLeftKanExtension α :=
-  IsRightDerivedFunctor.isLeftKanExtension' W
+class IsRightDerivedFunctor (RF : D ⥤ H) {F : C ⥤ H} {L : C ⥤ D} (α : F ⟶ L ⋙ RF)
+    (W : MorphismProperty C) [L.IsLocalization W] : Prop where
+  isLeftKanExtension (RF α) : RF.IsLeftKanExtension α
 
 lemma isRightDerivedFunctor_iff_isLeftKanExtension [L.IsLocalization W] :
     RF.IsRightDerivedFunctor α W ↔ RF.IsLeftKanExtension α := by
@@ -204,7 +200,7 @@ noncomputable def totalRightDerivedUnit : F ⟶ L ⋙ F.totalRightDerived L W :=
 
 instance : (F.totalRightDerived L W).IsRightDerivedFunctor
     (F.totalRightDerivedUnit L W) W where
-  isLeftKanExtension' := by
+  isLeftKanExtension := by
     dsimp [totalRightDerived, totalRightDerivedUnit]
     infer_instance
 

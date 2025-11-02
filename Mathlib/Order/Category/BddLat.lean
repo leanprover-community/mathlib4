@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Adjunction.Unique
 import Mathlib.Order.Category.BddOrd
 import Mathlib.Order.Category.Lat
 import Mathlib.Order.Category.Semilat
+import Mathlib.Order.Hom.WithTopBot
 
 /-!
 # The category of bounded lattices
@@ -214,8 +215,7 @@ def latToBddLatForgetAdjunction : latToBddLat.{u} ⊣ forget₂ BddLat Lat :=
               match a with
               | none => f.hom.map_top'.symm
               | some none => f.hom.map_bot'.symm
-              | some (some _) => rfl
-          right_inv := fun _ => Lat.ext fun _ => rfl }
+              | some (some _) => rfl }
       homEquiv_naturality_left_symm := fun _ _ =>
         BddLat.ext fun a =>
           match a with

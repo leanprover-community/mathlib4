@@ -17,7 +17,8 @@ open Lean Meta Server ProofWidgets
 /-- Return the link text and inserted text above and below of the gcongr widget. -/
 @[nolint unusedArguments]
 def makeGCongrString (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
-    (_ : SelectInsertParams) : MetaM (String × String × Option (String.Pos × String.Pos)) := do
+    (_ : SelectInsertParams) :
+    MetaM (String × String × Option (String.Pos.Raw × String.Pos.Raw)) := do
 let subexprPos := getGoalLocations pos
 unless goalType.isAppOf ``LE.le || goalType.isAppOf ``LT.lt || goalType.isAppOf `Int.ModEq do
   panic! "The goal must be a ≤ or < or ≡."
@@ -48,6 +49,6 @@ open scoped Json in
 /-- Display a widget panel allowing to generate a `gcongr` call with holes specified by selecting
 subexpressions in the goal. -/
 elab stx:"gcongr?" : tactic => do
-  let some replaceRange := (← getFileMap).rangeOfStx? stx | return
+  let some replaceRange := (← getFileMap).lspRangeOfStx? stx | return
   Widget.savePanelWidgetInfo GCongrSelectionPanel.javascriptHash
     (pure <| json% { replaceRange: $(replaceRange) }) stx

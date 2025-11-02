@@ -126,16 +126,14 @@ theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Finite α] {f 
     o.matrixDecomposition (𝟙 (⨁ fun a => s (f a))) i = 1 := by
   ext ⟨b, ⟨⟩⟩ ⟨a, j_property⟩
   simp only [Set.mem_preimage, Set.mem_singleton_iff] at j_property
-  simp only [Category.comp_id, Category.id_comp, Category.assoc, End.one_def, eqToHom_refl,
+  simp only [Category.comp_id, Category.id_comp, End.one_def, eqToHom_refl,
     Matrix.one_apply, HomOrthogonal.matrixDecomposition_apply, biproduct.components]
   split_ifs with h
   · cases h
     simp
   · simp only [Subtype.mk.injEq] at h
-    -- Porting note: used to be `convert comp_zero`, but that does not work anymore
-    have : biproduct.ι (fun a ↦ s (f a)) a ≫ biproduct.π (fun b ↦ s (f b)) b = 0 := by
-      simpa using biproduct.ι_π_ne _ (Ne.symm h)
-    rw [this, comp_zero]
+    convert comp_zero
+    simpa using biproduct.ι_π_ne _ (Ne.symm h)
 
 open scoped Classical in
 theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Finite α] [Fintype β]
@@ -146,7 +144,7 @@ theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Finite
   simp only [Set.mem_preimage, Set.mem_singleton_iff] at j_property
   simp only [Matrix.mul_apply, Limits.biproduct.components,
     HomOrthogonal.matrixDecomposition_apply, Category.comp_id, Category.id_comp, Category.assoc,
-    End.mul_def, eqToHom_refl, eqToHom_trans_assoc, Finset.sum_congr]
+    End.mul_def, eqToHom_refl, eqToHom_trans_assoc]
   conv_lhs => rw [← Category.id_comp w, ← biproduct.total]
   simp only [Preadditive.sum_comp, Preadditive.comp_sum]
   apply Finset.sum_congr_set
@@ -154,10 +152,11 @@ theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Finite
   · intro b nm
     simp only [Set.mem_preimage, Set.mem_singleton_iff] at nm
     simp only [Category.assoc]
-    -- Porting note: this used to be 4 times `convert comp_zero`
-    have : biproduct.ι (fun b ↦ s (g b)) b ≫ w ≫ biproduct.π (fun b ↦ s (h b)) c = 0 := by
-      apply o.eq_zero nm
-    simp only [this, comp_zero]
+    convert comp_zero
+    convert comp_zero
+    convert comp_zero
+    convert comp_zero
+    simp only [o.eq_zero nm]
 
 section
 

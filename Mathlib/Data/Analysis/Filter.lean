@@ -20,7 +20,7 @@ This file provides infrastructure to compute with filters.
 
 open Set Filter
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO write doc strings
+-- TODO write doc strings
 /-- A `CFilter α σ` is a realization of a filter (base) on `α`,
   represented by a type `σ` together with operations for the top element and
   the binary `inf` operation. -/
@@ -46,13 +46,13 @@ section
 
 variable [PartialOrder α] (F : CFilter α σ)
 
+/-
+A DFunLike instance would not be mathematically meaningful here, since the coercion to f cannot b
+injective.
+-/
 instance : CoeFun (CFilter α σ) fun _ ↦ σ → α :=
   ⟨CFilter.f⟩
 
-/- Porting note: Due to the CoeFun instance, the lhs of this lemma has a variable (f) as its head
-symbol (simpnf linter problem). Replacing it with a DFunLike instance would not be mathematically
-meaningful here, since the coercion to f cannot be injective, hence need to remove @[simp]. -/
--- @[simp]
 theorem coe_mk (f pt inf h₁ h₂ a) : (@CFilter.mk α σ _ f pt inf h₁ h₂) a = f a :=
   rfl
 
@@ -86,7 +86,7 @@ theorem mem_toFilter_sets (F : CFilter (Set α) σ) {a : Set α} : a ∈ F.toFil
 
 end CFilter
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO write doc strings
+-- TODO write doc strings
 /-- A realizer for filter `f` is a cfilter which generates `f`. -/
 structure Filter.Realizer (f : Filter α) where
   σ : Type*
@@ -183,8 +183,8 @@ protected def map (m : α → β) {f : Filter α} (F : f.Realizer) : (map m f).R
     { f := fun s ↦ image m (F.F s)
       pt := F.F.pt
       inf := F.F.inf
-      inf_le_left := fun _ _ ↦ image_subset _ (F.F.inf_le_left _ _)
-      inf_le_right := fun _ _ ↦ image_subset _ (F.F.inf_le_right _ _) },
+      inf_le_left := fun _ _ ↦ image_mono (F.F.inf_le_left _ _)
+      inf_le_right := fun _ _ ↦ image_mono (F.F.inf_le_right _ _) },
     filter_eq <| Set.ext fun _ ↦ by
       simp only [CFilter.toFilter, image_subset_iff, mem_setOf_eq, Filter.mem_sets, mem_map]
       rw [F.mem_sets]⟩
@@ -249,12 +249,12 @@ protected def cofinite [DecidableEq α] : (@cofinite α).Realizer :=
     filter_eq <|
       Set.ext fun _ ↦
         ⟨fun ⟨s, h⟩ ↦ s.finite_toSet.subset (compl_subset_comm.1 h), fun h ↦
-          ⟨h.toFinset, by simp [Subset.rfl]⟩⟩⟩
+          ⟨h.toFinset, by simp⟩⟩⟩
 
 /-- Construct a realizer for filter bind -/
 protected def bind {f : Filter α} {m : α → Filter β} (F : f.Realizer) (G : ∀ i, (m i).Realizer) :
     (f.bind m).Realizer :=
-  ⟨Σs : F.σ, ∀ i ∈ F.F s, (G i).σ,
+  ⟨Σ s : F.σ, ∀ i ∈ F.F s, (G i).σ,
     { f := fun ⟨s, f⟩ ↦ ⋃ i ∈ F.F s, (G i).F (f i (by assumption))
       pt := ⟨F.F.pt, fun i _ ↦ (G i).F.pt⟩
       inf := fun ⟨a, f⟩ ⟨b, f'⟩ ↦
@@ -280,9 +280,9 @@ protected def bind {f : Filter α} {m : α → Filter β} (F : f.Realizer) (G : 
 protected def iSup {f : α → Filter β} (F : ∀ i, (f i).Realizer) : (⨆ i, f i).Realizer :=
   let F' : (⨆ i, f i).Realizer :=
     (Realizer.bind Realizer.top F).ofEq <|
-      filter_eq <| Set.ext <| by simp [Filter.bind, eq_univ_iff_forall, iSup_sets_eq]
+      filter_eq <| Set.ext <| by simp [Filter.bind, iSup_sets_eq]
   F'.ofEquiv <|
-    show (Σ_ : Unit, ∀ i : α, True → (F i).σ) ≃ ∀ i, (F i).σ from
+    show (Σ _ : Unit, ∀ i : α, True → (F i).σ) ≃ ∀ i, (F i).σ from
       ⟨fun ⟨_, f⟩ i ↦ f i ⟨⟩, fun f ↦ ⟨(), fun i _ ↦ f i⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
 
 /-- Construct a realizer for the product of filters -/

@@ -168,19 +168,17 @@ noncomputable instance commShiftOp [CommShift F A] :
     CommShift (OppositeShift.functor A F) A where
   iso a := (NatIso.op (F.commShiftIso a)).symm
   zero := by
-    simp only
     rw [commShiftIso_zero]
     ext
     simp only [op_obj, comp_obj, Iso.symm_hom, NatIso.op_inv, NatTrans.op_app,
-      CommShift.isoZero_inv_app, op_comp, CommShift.isoZero_hom_app, op_map]
+      CommShift.isoZero_inv_app, op_comp, CommShift.isoZero_hom_app]
     erw [oppositeShiftFunctorZero_inv_app, oppositeShiftFunctorZero_hom_app]
     rfl
   add a b := by
-    simp only
     rw [commShiftIso_add]
     ext
     simp only [op_obj, comp_obj, Iso.symm_hom, NatIso.op_inv, NatTrans.op_app,
-      CommShift.isoAdd_inv_app, op_comp, Category.assoc, CommShift.isoAdd_hom_app, op_map]
+      CommShift.isoAdd_inv_app, op_comp, Category.assoc, CommShift.isoAdd_hom_app]
     erw [oppositeShiftFunctorAdd_inv_app, oppositeShiftFunctorAdd_hom_app]
     rfl
 
@@ -196,19 +194,17 @@ noncomputable def commShiftUnop
     [CommShift (OppositeShift.functor A F) A] : CommShift F A where
   iso a := NatIso.removeOp ((OppositeShift.functor A F).commShiftIso a).symm
   zero := by
-    simp only
     rw [commShiftIso_zero]
     ext
     simp only [comp_obj, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
-      CommShift.isoZero_inv_app, op_map, unop_comp, Quiver.Hom.unop_op, CommShift.isoZero_hom_app]
+      CommShift.isoZero_inv_app, unop_comp, CommShift.isoZero_hom_app]
     erw [oppositeShiftFunctorZero_hom_app, oppositeShiftFunctorZero_inv_app]
     rfl
   add a b := by
-    simp only
     rw [commShiftIso_add]
     ext
     simp only [comp_obj, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
-      CommShift.isoAdd_inv_app, op_map, unop_comp, Quiver.Hom.unop_op, Category.assoc,
+      CommShift.isoAdd_inv_app, unop_comp, Category.assoc,
       CommShift.isoAdd_hom_app]
     erw [oppositeShiftFunctorAdd_hom_app, oppositeShiftFunctorAdd_inv_app]
     rfl
@@ -228,7 +224,7 @@ instance commShift_op (τ : F ⟶ G) [NatTrans.CommShift τ A] :
       ← cancel_epi (((OppositeShift.functor A G).commShiftIso _).inv.app _)]
     dsimp
     simp only [assoc, Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj,
-      Functor.op_obj, comp_id]
+      comp_id]
     exact (op_inj_iff _ _).mpr (NatTrans.shift_app_comm τ _ (unop _))
 
 end NatTrans
@@ -274,7 +270,7 @@ end NatTrans
 The adjunction `adj`, seen as an adjunction between `OppositeShift.functor G`
 and `OppositeShift.functor F`.
 -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def OppositeShift.adjunction {F} {G : D ⥤ C} (adj : F ⊣ G) :
     OppositeShift.functor A G ⊣ OppositeShift.functor A F where
   unit := (NatTrans.OppositeShift.natIsoId D A).hom ≫
@@ -303,7 +299,7 @@ If an adjunction `F ⊣ G` is compatible with `CommShift` structures on `F` and 
 the opposite adjunction `OppositeShift.adjunction adj` is compatible with the opposite
 `CommShift` structures.
 -/
-instance commShift_op [F.CommShift A] [G.CommShift A]  [adj.CommShift A] :
+instance commShift_op [F.CommShift A] [G.CommShift A] [adj.CommShift A] :
     Adjunction.CommShift (OppositeShift.adjunction A adj) A where
   commShift_unit := by dsimp [OppositeShift.adjunction]; infer_instance
   commShift_counit := by dsimp [OppositeShift.adjunction]; infer_instance

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
 
@@ -73,7 +74,7 @@ section Product
 variable (hI : IsInitial I)
 
 -- This is the data of a particular disjoint coproduct in `C`.
-variable {α : Type} {X : α → C} (c : Cofan X) (hc : IsColimit c)
+variable {α : Type*} [Small.{w} α] {X : α → C} (c : Cofan X) (hc : IsColimit c)
 
 theorem piComparison_fac :
     have : HasCoproduct X := ⟨⟨c, hc⟩⟩
@@ -89,7 +90,7 @@ theorem piComparison_fac :
   rw [hh, ← desc_op_comp_opCoproductIsoProduct'_hom hc]
   simp
 
-variable [(ofArrows X c.inj).hasPullbacks]
+variable [(ofArrows X c.inj).HasPairwisePullbacks]
 
 include hc in
 /--

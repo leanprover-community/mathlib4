@@ -39,6 +39,7 @@ variable [L.Structure M] [L.Structure N] [L.Structure P] [L.Structure Q]
 /-- An elementary embedding of first-order structures is an embedding that commutes with the
   realizations of formulas. -/
 structure ElementaryEmbedding where
+  /-- The underlying embedding -/
   toFun : M → N
   -- Porting note:
   -- The autoparam here used to be `obviously`.
@@ -63,9 +64,7 @@ instance instFunLike : FunLike (M ↪ₑ[L] N) M N where
   coe_injective' f g h := by
     cases f
     cases g
-    simp only [ElementaryEmbedding.mk.injEq]
-    ext x
-    exact funext_iff.1 h x
+    simpa only [ElementaryEmbedding.mk.injEq]
 
 @[simp]
 theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.BoundedFormula α n)
@@ -106,8 +105,8 @@ theorem injective (φ : M ↪ₑ[L] N) : Function.Injective φ := by
   have h :=
     φ.map_formula ((var 0).equal (var 1) : L.Formula (Fin 2)) fun i => if i = 0 then x else y
   rw [Formula.realize_equal, Formula.realize_equal] at h
-  simp only [Nat.one_ne_zero, Term.realize, Fin.one_eq_zero_iff, if_true, eq_self_iff_true,
-    Function.comp_apply, if_false] at h
+  simp only [Term.realize, Fin.one_eq_zero_iff, if_true,
+    Function.comp_apply] at h
   exact h.1
 
 instance embeddingLike : EmbeddingLike (M ↪ₑ[L] N) M N :=

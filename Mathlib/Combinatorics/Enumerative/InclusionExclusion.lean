@@ -33,26 +33,76 @@ Per the above explanation, this file contains the following variants of inclusio
 * `Finset.inclusion_exclusion_card_inf_compl`: Cardinality of a finite intersection of
   complements of sets
 
+See also `MeasureTheory.integral_biUnion_eq_sum_powerset` for the version with integrals, and
+`MeasureTheory.measureReal_biUnion_eq_sum_powerset` for the version with measures.
+
 ## TODO
 
-* Use (a slight variant of) `Finset.prod_indicator_biUnion_sub_indicator` to prove the integral
-  version of inclusion-exclusion.
 * Prove that truncating the series alternatively gives an upper/lower bound to the true value.
 -/
 
 assert_not_exists Field
 
 namespace Finset
-variable {ι α G : Type*} [DecidableEq α] [AddCommGroup G] {s : Finset ι}
+variable {ι α G : Type*} [AddCommGroup G] {s : Finset ι}
 
-lemma prod_indicator_biUnion_sub_indicator (hs : s.Nonempty) (S : ι → Finset α) (a : α) :
-    ∏ i ∈ s, (Set.indicator (s.biUnion S) 1 a - Set.indicator (S i) 1 a) = (0 : ℤ) := by
-  by_cases ha : a ∈ s.biUnion S
-  · obtain ⟨i, hi, ha⟩ := mem_biUnion.1 ha
-    exact prod_eq_zero hi <| by simp [*, -coe_biUnion]
+lemma prod_indicator_biUnion_sub_indicator (hs : s.Nonempty) (S : ι → Set α) (a : α) :
+    ∏ i ∈ s, (Set.indicator (⋃ i ∈ s, S i) 1 a - Set.indicator (S i) 1 a) = (0 : ℤ) := by
+  by_cases ha : a ∈ ⋃ i ∈ s, S i
+  · have ha' := ha
+    simp only [Set.mem_iUnion, exists_prop] at ha
+    obtain ⟨i, hi, ha⟩ := ha
+    apply prod_eq_zero hi (by simp [ha, ha'])
   · obtain ⟨i, hi⟩ := hs
-    have ha : a ∉ S i := fun h ↦ ha <| subset_biUnion_of_mem _ hi h
+    have ha : a ∉ S i := by aesop
     exact prod_eq_zero hi <| by simp [*, -coe_biUnion]
+
+/-- **Inclusion-exclusion principle**, indicator version over a finite union of sets. -/
+lemma indicator_biUnion_eq_sum_powerset (s : Finset ι) (S : ι → Set α) (f : α → G) (a : α) :
+    Set.indicator (⋃ i ∈ s, S i) f a = ∑ t ∈ s.powerset with t.Nonempty,
+      (-1) ^ (#t + 1) • Set.indicator (⋂ i ∈ t, S i) f a := by
+  classical
+  by_cases ha : a ∈ ⋃ i ∈ s, S i; swap
+  · simp only [ha, not_false_eq_true, Set.indicator_of_notMem, Int.reduceNeg, pow_succ, mul_neg,
+      mul_one, neg_smul]
+    symm
+    apply sum_eq_zero
+    simp only [Int.reduceNeg, neg_eq_zero, mem_filter, mem_powerset, and_imp]
+    intro t hts ht
+    rw [Set.indicator_of_notMem]
+    · simp
+    · contrapose! ha
+      simp only [Set.mem_iInter] at ha
+      rcases ht with ⟨i, hi⟩
+      simp only [Set.mem_iUnion, exists_prop]
+      exact ⟨i, hts hi, ha _ hi⟩
+  rw [← sub_eq_zero]
+  calc
+    Set.indicator (⋃ i ∈ s, S i) f a - ∑ t ∈ s.powerset with t.Nonempty,
+      (-1) ^ (#t + 1) • Set.indicator (⋂ i ∈ t.1, S i) f a
+    _ = ∑ t ∈ s.powerset with t.Nonempty, (-1) ^ #t • Set.indicator (⋂ i ∈ t, S i) f a +
+        ∑ t ∈ s.powerset with ¬ t.Nonempty, (-1) ^ #t • Set.indicator (⋂ i ∈ t, S i) f a := by
+      simp [sub_eq_neg_add, ← sum_neg_distrib, filter_eq', pow_succ, ha]
+    _ = ∑ t ∈ s.powerset, (-1) ^ #t • Set.indicator (⋂ i ∈ t, S i) f a := by
+      rw [sum_filter_add_sum_filter_not]
+    _ = (∏ i ∈ s, (1 - Set.indicator (S i) 1 a : ℤ)) • f a := by
+      simp only [Int.reduceNeg, prod_sub, prod_const_one, mul_one, sum_smul]
+      congr! 1 with t
+      simp only [prod_const_one, prod_indicator_apply]
+      simp [Set.indicator]
+    _ = 0 := by
+      have : Set.indicator (⋃ i ∈ s, S i) 1 a = (1 : ℤ) := Set.indicator_of_mem ha 1
+      rw [← this, prod_indicator_biUnion_sub_indicator, zero_smul]
+      simp only [Set.mem_iUnion, exists_prop] at ha
+      rcases ha with ⟨i, hi, -⟩
+      exact ⟨i, hi⟩
+
+variable [DecidableEq α]
+
+lemma prod_indicator_biUnion_finset_sub_indicator (hs : s.Nonempty) (S : ι → Finset α) (a : α) :
+    ∏ i ∈ s, (Set.indicator (s.biUnion S) 1 a - Set.indicator (S i) 1 a) = (0 : ℤ) := by
+  convert prod_indicator_biUnion_sub_indicator hs (fun i ↦ S i) a
+  simp
 
 /-- **Inclusion-exclusion principle** for the sum of a function over a union.
 
@@ -72,13 +122,13 @@ theorem inclusion_exclusion_sum_biUnion (s : Finset ι) (S : ι → Finset α) (
       simp [sub_eq_neg_add, ← sum_neg_distrib, filter_eq', pow_succ]
     _ = ∑ t ∈ s.powerset, (-1) ^ #t •
           if ht : t.Nonempty then ∑ a ∈ t.inf' ht S, f a else ∑ a ∈ s.biUnion S, f a := by
-      rw [← sum_attach (filter ..)]; simp [sum_dite, filter_eq', sum_attach]
+      rw [← sum_attach (filter ..)]; simp [sum_dite]
     _ = ∑ a ∈ s.biUnion S, (∏ i ∈ s, (1 - Set.indicator (S i) 1 a : ℤ)) • f a := by
-      simp only [Int.reduceNeg, mem_coe, prod_sub, sum_comm (s := s.biUnion S), sum_smul, mul_assoc]
+      simp only [Int.reduceNeg, prod_sub, sum_comm (s := s.biUnion S), sum_smul, mul_assoc]
       congr! with t
       split_ifs with ht
       · obtain ⟨i, hi⟩ := ht
-        simp only [prod_const_one, mul_one, prod_indicator_apply]
+        simp only [prod_const_one, prod_indicator_apply]
         simp only [smul_sum, Set.indicator, Set.mem_iInter, mem_coe, Pi.one_apply, mul_ite, mul_one,
           mul_zero, ite_smul, zero_smul, sum_ite, not_forall, sum_const_zero, add_zero]
         congr
@@ -90,7 +140,7 @@ theorem inclusion_exclusion_sum_biUnion (s : Finset ι) (S : ι → Finset α) (
       congr! with t; rw [Set.indicator_of_mem ‹_›, Pi.one_apply]
     _ = 0 := by
       obtain rfl | hs := s.eq_empty_or_nonempty <;>
-        simp [-coe_biUnion, prod_indicator_biUnion_sub_indicator, *]
+        simp [-coe_biUnion, prod_indicator_biUnion_finset_sub_indicator, *]
 
 /-- **Inclusion-exclusion principle** for the cardinality of a union.
 

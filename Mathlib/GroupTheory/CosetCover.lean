@@ -253,13 +253,13 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
   have hHD (i) : ¬(H i).FiniteIndex → H i ≠ D := fun hfi hD' => (hD' ▸ hfi) hD
   have hdensity : ∑ i ∈ s, ((H i).index : ℚ)⁻¹ =
       (Finset.univ.filter (K · = D)).card * (D.index : ℚ)⁻¹ := by
-    rw [eq_mul_inv_iff_mul_eq₀ (Nat.cast_ne_zero.mpr hD.finiteIndex), Finset.sum_mul,
+    rw [eq_mul_inv_iff_mul_eq₀ (Nat.cast_ne_zero.mpr hD.index_ne_zero), Finset.sum_mul,
       ← Finset.sum_attach, eq_comm, Finset.card_filter, Nat.cast_sum, ← Finset.univ_sigma_univ,
       Finset.sum_sigma, Finset.sum_coe_sort_eq_attach]
     refine Finset.sum_congr rfl fun i _ => ?_
     by_cases hfi : (H i).FiniteIndex
-    · rw [← relindex_mul_index (hD_le i.2 hfi), Nat.cast_mul, mul_comm,
-        mul_inv_cancel_right₀ (Nat.cast_ne_zero.mpr hfi.finiteIndex)]
+    · rw [← relIndex_mul_index (hD_le i.2 hfi), Nat.cast_mul, mul_comm,
+        mul_inv_cancel_right₀ (Nat.cast_ne_zero.mpr hfi.index_ne_zero)]
       simpa [K, hfi] using (ht i.1 i.2 hfi).1.card_left
     · rw [of_not_not (FiniteIndex.mk.mt hfi), Nat.cast_zero, inv_zero, zero_mul]
       simpa [K, hfi] using hHD i hfi
@@ -270,13 +270,13 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
     refine Set.iUnion_congr fun hi => ?_
     by_cases hfi : (H i).FiniteIndex <;>
       simp [Set.smul_set_iUnion, Set.iUnion_subtype, ← leftCoset_assoc,
-        f, K, hHD, ← (ht i hi _).2, hi, hfi, hkfi]
+        f, K, hHD, ← (ht i hi _).2, hfi]
   · rw [hdensity]
-    refine le_of_mul_le_mul_right ?_ (Nat.cast_pos.mpr (Nat.pos_of_ne_zero hD.finiteIndex))
-    rw [one_mul, mul_assoc, inv_mul_cancel₀ (Nat.cast_ne_zero.mpr hD.finiteIndex), mul_one,
+    refine le_of_mul_le_mul_right ?_ (Nat.cast_pos.mpr (Nat.pos_of_ne_zero hD.index_ne_zero))
+    rw [one_mul, mul_assoc, inv_mul_cancel₀ (Nat.cast_ne_zero.mpr hD.index_ne_zero), mul_one,
       Nat.cast_le]
     exact index_le_of_leftCoset_cover_const hcovers'
-  · rw [hdensity, mul_inv_eq_one₀ (Nat.cast_ne_zero.mpr hD.finiteIndex),
+  · rw [hdensity, mul_inv_eq_one₀ (Nat.cast_ne_zero.mpr hD.index_ne_zero),
       Nat.cast_inj, Finset.coe_filter]
     intro h i hi j hj hij c hi' hj' x hx
     have hdisjoint := pairwiseDisjoint_leftCoset_cover_const_of_index_eq hcovers' h.symm
@@ -333,7 +333,7 @@ of these subgroups has index not exceeding the number of cosets. -/
 theorem exists_index_le_card_of_leftCoset_cover :
     ∃ i ∈ s, (H i).FiniteIndex ∧ (H i).index ≤ s.card := by
   by_contra! h
-  apply (one_le_sum_inv_index_of_leftCoset_cover hcovers).not_lt
+  apply (one_le_sum_inv_index_of_leftCoset_cover hcovers).not_gt
   cases s.eq_empty_or_nonempty with
   | inl hs => simp only [hs, Finset.sum_empty, zero_lt_one]
   | inr hs =>
@@ -370,26 +370,24 @@ variable {k E : Type*} [DivisionRing k] [Infinite k] [AddCommGroup E] [Module k 
     {s : Finset (Subspace k E)}
 
 /- A vector space over an infinite field cannot be a finite union of proper subspaces. -/
-theorem Subspace.biUnion_ne_univ_of_top_nmem (hs : ⊤ ∉ s) :
+theorem Subspace.biUnion_ne_univ_of_top_notMem (hs : ⊤ ∉ s) :
     ⋃ p ∈ s, (p : Set E) ≠ Set.univ := by
   intro hcovers
   have ⟨p, hp, hfi⟩ := Submodule.exists_finiteIndex_of_cover hcovers
-  have : Finite (E ⧸ p) := AddSubgroup.finite_quotient_of_finiteIndex _
+  have : Finite (E ⧸ p) := AddSubgroup.finite_quotient_of_finiteIndex
   have : Nontrivial (E ⧸ p) :=
     Submodule.Quotient.nontrivial_of_lt_top p (ne_of_mem_of_not_mem hp hs).lt_top
   have : Infinite (E ⧸ p) := Module.Free.infinite k (E ⧸ p)
   exact not_finite (E ⧸ p)
 
+@[deprecated (since := "2025-05-24")]
+alias Subspace.biUnion_ne_univ_of_top_nmem := Subspace.biUnion_ne_univ_of_top_notMem
+
 /- A vector space over an infinite field cannot be a finite union of proper subspaces. -/
 theorem Subspace.top_mem_of_biUnion_eq_univ (hcovers : ⋃ p ∈ s, (p : Set E) = Set.univ) :
     ⊤ ∈ s := by
   contrapose! hcovers
-  exact Subspace.biUnion_ne_univ_of_top_nmem hcovers
-
-@[deprecated (since := "2024-10-29")]
-alias Subspace.biUnion_ne_univ_of_ne_top := Subspace.biUnion_ne_univ_of_top_nmem
-@[deprecated (since := "2024-10-29")]
-alias Subspace.exists_eq_top_of_biUnion_eq_univ := Subspace.top_mem_of_biUnion_eq_univ
+  exact Subspace.biUnion_ne_univ_of_top_notMem hcovers
 
 theorem Subspace.exists_eq_top_of_iUnion_eq_univ {ι} [Finite ι] {p : ι → Subspace k E}
     (hcovers : ⋃ i, (p i : Set E) = Set.univ) : ∃ i, p i = ⊤ := by

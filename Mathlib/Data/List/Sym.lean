@@ -55,7 +55,7 @@ theorem sym2_eq_nil_iff {xs : List α} : xs.sym2 = [] ↔ xs = [] := by
 theorem left_mem_of_mk_mem_sym2 {xs : List α} {a b : α}
     (h : s(a, b) ∈ xs.sym2) : a ∈ xs := by
   induction xs with
-  | nil => exact (not_mem_nil _ h).elim
+  | nil => exact (not_mem_nil h).elim
   | cons x xs ih =>
     rw [mem_cons]
     rw [mem_sym2_cons_iff] at h
@@ -96,6 +96,10 @@ theorem mem_sym2_iff {xs : List α} {z : Sym2 α} :
     z ∈ xs.sym2 ↔ ∀ y ∈ z, y ∈ xs := by
   refine z.ind (fun a b => ?_)
   simp [mk_mem_sym2_iff]
+
+lemma setOf_mem_sym2 {xs : List α} :
+    {z : Sym2 α | z ∈ xs.sym2} = {x : α | x ∈ xs}.sym2 :=
+  Set.ext fun z ↦ z.ind fun a b => by simp [mk_mem_sym2_iff]
 
 protected theorem Nodup.sym2 {xs : List α} (h : xs.Nodup) : xs.sym2.Nodup := by
   induction xs with
@@ -157,7 +161,8 @@ theorem map_mk_disjoint_sym2 (x : α) (xs : List α) (h : x ∉ xs) :
       rw [List.mem_map] at hx hy
       obtain ⟨a, hx, rfl⟩ := hx
       obtain ⟨b, hy, hx⟩ := hy
-      simp [Sym2.mk_eq_mk_iff, Ne.symm h.1] at hx
+      simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Ne.symm h.1, false_and, Prod.swap_prod_mk,
+        false_or] at hx
       obtain ⟨rfl, rfl⟩ := hx
       exact h.2 hy
     · exact ih h.2
@@ -173,7 +178,7 @@ theorem dedup_sym2 [DecidableEq α] (xs : List α) : xs.sym2.dedup = xs.dedup.sy
       refine mem_append_left _ ?_
       rw [mem_map]
       exact ⟨_, hm, Sym2.eq_swap⟩
-    · rw [dedup_cons_of_not_mem hm, List.sym2, map_cons, ← ih, dedup_cons_of_not_mem, cons_append,
+    · rw [dedup_cons_of_notMem hm, List.sym2, map_cons, ← ih, dedup_cons_of_notMem, cons_append,
         List.Disjoint.dedup_append, dedup_map_of_injective]
       · exact (Sym2.mkEmbedding _).injective
       · exact map_mk_disjoint_sym2 x xs hm
@@ -188,12 +193,12 @@ protected theorem Perm.sym2 {xs ys : List α} (h : xs ~ ys) :
     exact (h.map _).append ih
   | swap x y xs =>
     simp only [List.sym2, map_cons, cons_append]
-    conv => enter [1,2,1]; rw [Sym2.eq_swap]
+    conv => enter [1, 2, 1]; rw [Sym2.eq_swap]
     -- Explicit permutation to speed up simps that follow.
     refine Perm.trans (Perm.swap ..) (Perm.trans (Perm.cons _ ?_) (Perm.swap ..))
     simp only [← Multiset.coe_eq_coe, ← Multiset.cons_coe,
       ← Multiset.coe_add, ← Multiset.singleton_add]
-    simp only [add_assoc, add_left_comm]
+    simp only [add_left_comm]
   | trans _ _ ih1 ih2 => exact ih1.trans ih2
 
 protected theorem Sublist.sym2 {xs ys : List α} (h : xs <+ ys) : xs.sym2 <+ ys.sym2 := by

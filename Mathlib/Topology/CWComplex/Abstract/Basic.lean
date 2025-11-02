@@ -10,7 +10,7 @@ import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 /-!
 # CW-complexes
 
-This file defines (relative) CW-complexes.
+This file defines (relative) CW-complexes using a categorical approach.
 
 ## Main definitions
 
@@ -21,10 +21,25 @@ This file defines (relative) CW-complexes.
 
 * `CWComplex`: A CW-complex is a relative CW-complex whose `sk 0` (i.e., $(-1)$-skeleton) is empty.
 
+## Implementation Notes
+
+This file provides a categorical approach to CW complexes,
+defining them via colimits and transfinite compositions.
+For a classical approach that defines CW complexes via explicit cells and attaching maps,
+see `Mathlib/Topology/CWComplex/Classical/Basic.lean`.
+The two approaches are equivalent but serve different purposes:
+* This approach is more suitable for categorical arguments and generalizations
+* The classical approach is more convenient for concrete geometric arguments
+
 ## References
 
 * [R. Fritsch and R. Piccinini, *Cellular Structures in Topology*][fritsch-piccinini1990]
 
+## TODO
+
+* Prove the equivalence between this categorical approach and the classical approach in
+  `Mathlib/Topology/CWComplex/Classical/Basic.lean`.
+  Currently there is no way to move between the two definitions.
 -/
 
 open TopCat

@@ -96,7 +96,7 @@ def randBound (α : Type u)
 
 /-- Generate a random `Fin`. -/
 def randFin {n : Nat} [NeZero n] [RandomGen g] : RandGT g m (Fin n) :=
-  fun ⟨g⟩ ↦ pure <| randNat g 0 (n - 1) |>.map (Fin.ofNat' n) ULift.up
+  fun ⟨g⟩ ↦ pure <| randNat g 0 (n - 1) |>.map (Fin.ofNat n) ULift.up
 
 instance {n : Nat} [NeZero n] : Random m (Fin n) where
   random := randFin

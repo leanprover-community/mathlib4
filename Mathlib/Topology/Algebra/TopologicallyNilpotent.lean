@@ -5,30 +5,31 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.Topology.Algebra.LinearTopology
 import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Nilpotent.Defs
 
 /-! # Topologically nilpotent elements
 
 Let `M` be a monoid with zero `M`, endowed with a topology.
 
 * `IsTopologicallyNilpotent a` says that `a : M` is *topologically nilpotent*,
-ie, its powers converge to zero.
+  i.e., its powers converge to zero.
 
 * `IsTopologicallyNilpotent.map`:
-The image of a topologically nilpotent element under a continuous morphism of
-monoids with zero endowed with a topology is topologically nilpotent.
+  The image of a topologically nilpotent element under a continuous morphism of
+  monoids with zero endowed with a topology is topologically nilpotent.
 
 * `IsTopologicallyNilpotent.zero`: `0` is topologically nilpotent.
 
 Let `R` be a commutative ring with a linear topology.
 
 * `IsTopologicallyNilpotent.mul_left`: if `a : R` is topologically nilpotent,
-then `a*b` is topologically nilpotent.
+  then `a*b` is topologically nilpotent.
 
 * `IsTopologicallyNilpotent.mul_right`: if `a : R` is topologically nilpotent,
-then `a * b` is topologically nilpotent.
+  then `a * b` is topologically nilpotent.
 
 * `IsTopologicallyNilpotent.add`: if `a b : R` are topologically nilpotent,
-then `a + b` is topologically nilpotent.
+  then `a + b` is topologically nilpotent.
 
 These lemmas are actually deduced from their analogues for commuting elements of rings.
 
@@ -64,6 +65,13 @@ theorem zero : IsTopologicallyNilpotent (0 : R) :=
   tendsto_atTop_of_eventually_const (i₀ := 1)
     (fun _ hi => by rw [zero_pow (Nat.ne_zero_iff_zero_lt.mpr hi)])
 
+theorem _root_.IsNilpotent.isTopologicallyNilpotent {a : R} (ha : IsNilpotent a) :
+    IsTopologicallyNilpotent a := by
+  obtain ⟨n, hn⟩ := ha
+  apply tendsto_atTop_of_eventually_const (i₀ := n)
+  intro i hi
+  rw [← Nat.add_sub_of_le hi, pow_add, hn, zero_mul]
+
 theorem exists_pow_mem_of_mem_nhds {a : R} (ha : IsTopologicallyNilpotent a)
     {v : Set R} (hv : v ∈ 𝓝 0) :
     ∃ n, a ^ n ∈ v :=
@@ -85,7 +93,7 @@ theorem mul_right_of_commute [IsLinearTopology Rᵐᵒᵖ R]
 
 /-- If `a` and `b` commute and `b` is topologically nilpotent,
   then `a * b` is topologically nilpotent. -/
- theorem mul_left_of_commute [IsLinearTopology R R] {a b : R}
+theorem mul_left_of_commute [IsLinearTopology R R] {a b : R}
     (hb : IsTopologicallyNilpotent b) (hab : Commute a b) :
     IsTopologicallyNilpotent (a * b) := by
   simp_rw [IsTopologicallyNilpotent, hab.mul_pow]
@@ -116,7 +124,7 @@ theorem mul_right {a : R} (ha : IsTopologicallyNilpotent a) (b : R) :
   ha.mul_right_of_commute (Commute.all ..)
 
 /-- If `b` is topologically nilpotent, then `a * b` is topologically nilpotent. -/
- theorem mul_left (a : R) {b : R} (hb : IsTopologicallyNilpotent b) :
+theorem mul_left (a : R) {b : R} (hb : IsTopologicallyNilpotent b) :
     IsTopologicallyNilpotent (a * b) :=
   hb.mul_left_of_commute (Commute.all ..)
 
@@ -124,6 +132,19 @@ theorem mul_right {a : R} (ha : IsTopologicallyNilpotent a) (b : R) :
 theorem add {a b : R} (ha : IsTopologicallyNilpotent a) (hb : IsTopologicallyNilpotent b) :
     IsTopologicallyNilpotent (a + b) :=
   ha.add_of_commute hb (Commute.all ..)
+
+variable (R) in
+/-- The topological nilradical of a ring with a linear topology -/
+@[simps]
+def _root_.topologicalNilradical : Ideal R where
+  carrier := {a | IsTopologicallyNilpotent a}
+  add_mem' := add
+  zero_mem' := zero
+  smul_mem' := mul_left
+
+theorem mem_topologicalNilradical_iff {a : R} :
+    a ∈ topologicalNilradical R ↔ IsTopologicallyNilpotent a := by
+  simp [topologicalNilradical]
 
 end CommRing
 

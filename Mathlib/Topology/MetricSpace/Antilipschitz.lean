@@ -96,8 +96,7 @@ theorem mul_le_edist (hf : AntilipschitzWith K f) (x y : α) :
   exact ENNReal.div_le_of_le_mul' (hf x y)
 
 theorem ediam_preimage_le (hf : AntilipschitzWith K f) (s : Set β) : diam (f ⁻¹' s) ≤ K * diam s :=
-  diam_le fun x hx y hy => (hf x y).trans <|
-    mul_le_mul_left' (edist_le_diam_of_mem (mem_preimage.1 hx) hy) K
+  diam_le fun x hx y hy => by grw [hf x y, edist_le_diam_of_mem (mem_preimage.1 hx) hy]
 
 theorem le_mul_ediam_image (hf : AntilipschitzWith K f) (s : Set α) : diam s ≤ K * diam (f '' s) :=
   (diam_mono (subset_preimage_image _ _)).trans (hf.ediam_preimage_le (f '' s))
@@ -109,7 +108,7 @@ theorem comp {Kg : ℝ≥0} {g : β → γ} (hg : AntilipschitzWith Kg g) {Kf : 
     (hf : AntilipschitzWith Kf f) : AntilipschitzWith (Kf * Kg) (g ∘ f) := fun x y =>
   calc
     edist x y ≤ Kf * edist (f x) (f y) := hf x y
-    _ ≤ Kf * (Kg * edist (g (f x)) (g (f y))) := mul_left_mono (hg _ _)
+    _ ≤ Kf * (Kg * edist (g (f x)) (g (f y))) := mul_right_mono (hg _ _)
     _ = _ := by rw [ENNReal.coe_mul, mul_assoc]; rfl
 
 theorem restrict (hf : AntilipschitzWith K f) (s : Set α) : AntilipschitzWith K (s.restrict f) :=
@@ -146,14 +145,9 @@ theorem isUniformInducing (hf : AntilipschitzWith K f) (hfc : UniformContinuous 
     IsUniformInducing f :=
   ⟨le_antisymm hf.comap_uniformity_le hfc.le_comap⟩
 
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing := isUniformInducing
-
 lemma isUniformEmbedding {α β : Type*} [EMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0} {f : α → β}
     (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) : IsUniformEmbedding f :=
   ⟨hf.isUniformInducing hfc, hf.injective⟩
-
-@[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
 
 theorem isComplete_range [CompleteSpace α] (hf : AntilipschitzWith K f)
     (hfc : UniformContinuous f) : IsComplete (range f) :=
@@ -169,13 +163,10 @@ theorem isClosedEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [EMetricSp
     IsClosedEmbedding f :=
   { (hf.isUniformEmbedding hfc).isEmbedding with isClosed_range := hf.isClosed_range hfc }
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding := isClosedEmbedding
-
 theorem subtype_coe (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
   AntilipschitzWith.id.restrict s
 
-@[nontriviality] -- Porting note: added `nontriviality`
+@[nontriviality]
 theorem of_subsingleton [Subsingleton α] {K : ℝ≥0} : AntilipschitzWith K f := fun x y => by
   simp only [Subsingleton.elim x y, edist_self, zero_le]
 

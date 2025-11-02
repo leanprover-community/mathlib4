@@ -6,7 +6,6 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.Algebra.Field.Rat
-import Mathlib.Algebra.Order.Field.Rat
 
 /-!
 # Basic results about modules over the rationals.
@@ -71,6 +70,18 @@ instance IsScalarTower.nnrat {R : Type u} {M : Type v} [Semiring R] [AddCommMono
 instance IsScalarTower.rat {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
     [Module ℚ R] [Module ℚ M] : IsScalarTower ℚ R M where
   smul_assoc r x y := map_rat_smul ((smulAddHom R M).flip y) r x
+
+/-- `nnqsmul` is equal to any other module structure via a cast. -/
+lemma NNRat.cast_smul_eq_nnqsmul (R : Type*) [DivisionSemiring R]
+    [MulAction R M] [MulAction ℚ≥0 M] [IsScalarTower ℚ≥0 R M]
+    (q : ℚ≥0) (x : M) : (q : R) • x = q • x := by
+  rw [← one_smul R x, ← smul_assoc, ← smul_assoc]; simp
+
+/-- `qsmul` is equal to any other module structure via a cast. -/
+lemma Rat.cast_smul_eq_qsmul (R : Type*) [DivisionRing R]
+    [MulAction R M] [MulAction ℚ M] [IsScalarTower ℚ R M]
+    (q : ℚ) (x : M) : (q : R) • x = q • x := by
+  rw [← one_smul R x, ← smul_assoc, ← smul_assoc]; simp
 
 section
 variable {α : Type u} {M : Type v}

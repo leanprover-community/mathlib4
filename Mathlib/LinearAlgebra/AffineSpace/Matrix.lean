@@ -60,12 +60,10 @@ theorem affineIndependent_of_toMatrix_right_inv [Fintype ι] [Finite ι'] [Decid
   have hweq' : w₁ ᵥ* b.toMatrix p = w₂ ᵥ* b.toMatrix p := by
     ext j
     change (∑ i, w₁ i • b.coord j (p i)) = ∑ i, w₂ i • b.coord j (p i)
-    -- Porting note: Added `u` because `∘` was causing trouble
-    have u : (fun i => b.coord j (p i)) = b.coord j ∘ p := by simp only [Function.comp_def]
     rw [← Finset.univ.affineCombination_eq_linear_combination _ _ hw₁,
-      ← Finset.univ.affineCombination_eq_linear_combination _ _ hw₂, u,
-      ← Finset.univ.map_affineCombination p w₁ hw₁, ← Finset.univ.map_affineCombination p w₂ hw₂,
-      hweq]
+      ← Finset.univ.affineCombination_eq_linear_combination _ _ hw₂,
+      ← Function.comp_def (b.coord j) p, ← Finset.univ.map_affineCombination p w₁ hw₁,
+      ← Finset.univ.map_affineCombination p w₂ hw₂, hweq]
   replace hweq' := congr_arg (fun w => w ᵥ* A) hweq'
   simpa only [Matrix.vecMul_vecMul, hA, Matrix.vecMul_one] using hweq'
 
@@ -86,7 +84,7 @@ theorem affineSpan_eq_top_of_toMatrix_left_inv [Finite ι] [Fintype ι'] [Decida
       _ = ∑ j, ∑ l, A i j * b.toMatrix p j l := by simp_rw [Finset.mul_sum]
       _ = ∑ l, ∑ j, A i j * b.toMatrix p j l := by rw [Finset.sum_comm]
       _ = ∑ l, (A * b.toMatrix p) i l := rfl
-      _ = 1 := by simp [hA, Matrix.one_apply, Finset.filter_eq]
+      _ = 1 := by simp [hA, Matrix.one_apply]
   have hbi : b i = Finset.univ.affineCombination k p (A i) := by
     apply b.ext_elem
     intro j

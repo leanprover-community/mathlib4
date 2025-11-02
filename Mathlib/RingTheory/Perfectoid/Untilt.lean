@@ -17,13 +17,13 @@ is not the untilt *functor*.
 
 ## Main definition
 * `PreTilt.untilt` : Given a `p`-adically complete ring `O`, this is the
-multiplicative map from `PreTilt O p` to `O` itself. Specifically, it is
-defined as the limit of `p^n`-th powers of arbitrary lifts in `O` of the
-`n`-th component from the perfection of `O/p`.
+  multiplicative map from `PreTilt O p` to `O` itself. Specifically, it is
+  defined as the limit of `p^n`-th powers of arbitrary lifts in `O` of the
+  `n`-th component from the perfection of `O/p`.
 
 ## Main theorem
 * `PreTilt.mk_untilt_eq_coeff_zero` : The composition of the mod `p` map
-with the untilt function equals taking the zeroth component of the perfection.
+  with the untilt function equals taking the zeroth component of the perfection.
 
 ## Reference
 * [Berkeley Lectures on \( p \)-adic Geometry][MR4446467]
@@ -85,7 +85,7 @@ lemma pow_dvd_mul_untiltAux_sub_untiltAux_mul (x y : PreTilt O p) (m : ℕ) :
   cases m with
   | zero => simp [untiltAux]
   | succ m =>
-    simp only [untiltAux, _root_.map_mul, ← mul_pow]
+    simp only [untiltAux, map_mul, ← mul_pow]
     refine dvd_sub_pow_of_dvd_sub ?_ m
     rw [← mem_span_singleton, ← Ideal.Quotient.eq]
     simp

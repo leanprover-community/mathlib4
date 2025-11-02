@@ -24,15 +24,10 @@ itself using `pathEquivList`.
 namespace Quiver
 
 /-- Type tag on `Unit` used to define single-object quivers. -/
--- Porting note: Removed `deriving Unique`.
 @[nolint unusedArguments]
 def SingleObj (_ : Type*) : Type :=
   Unit
-
--- Porting note: `deriving` from above has been moved to below.
-instance {α : Type*} : Unique (SingleObj α) where
-  default := ⟨⟩
-  uniq := fun _ => rfl
+deriving Unique
 
 namespace SingleObj
 
@@ -42,11 +37,7 @@ instance : Quiver (SingleObj α) :=
   ⟨fun _ _ => α⟩
 
 /-- The single object in `SingleObj α`. -/
-def star : SingleObj α :=
-  Unit.unit
-
-instance : Inhabited (SingleObj α) :=
-  ⟨star α⟩
+def star : SingleObj α := default
 
 variable {α β γ}
 
@@ -75,8 +66,6 @@ arrows types.
 def toPrefunctor : (α → β) ≃ SingleObj α ⥤q SingleObj β where
   toFun f := ⟨id, f⟩
   invFun f a := f.map (toHom a)
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 theorem toPrefunctor_id : toPrefunctor id = 𝟭q (SingleObj α) :=
   rfl

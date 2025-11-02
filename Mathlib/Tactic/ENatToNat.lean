@@ -59,16 +59,17 @@ elab "cases_first_enat" : tactic => focus do
         return Option.some decl
       else
         return Option.none
-    let .some decl := decl? | throwError "No ENats"
+    let some decl := decl? | throwError "No ENats"
     let isInaccessible := ctx.inaccessibleFVars.find? (·.fvarId == decl.fvarId) |>.isSome
     if isInaccessible then
       let name : Name := `enat_to_nat_aux
       setGoals [← g.rename decl.fvarId name]
       let x := mkIdent name
-      evalTactic (← `(tactic| cases' $x:ident using ENat.recTopCoe))
+      evalTactic (← `(tactic| cases $x:ident using ENat.recTopCoe))
     else
       let x := mkIdent decl.userName
-      evalTactic (← `(tactic| cases' $x:ident using ENat.recTopCoe with $x:ident))
+      evalTactic
+        (← `(tactic| cases $x:ident using ENat.recTopCoe with | top => _ | coe $x:ident => _))
     evalTactic (← `(tactic| all_goals try simp only [enat_to_nat_top] at *))
 
 /-- `enat_to_nat` shifts all `ENat`s in the context to `Nat`, rewriting propositions about them.

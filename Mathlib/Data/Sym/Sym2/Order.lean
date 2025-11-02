@@ -9,7 +9,7 @@ import Mathlib.Order.Lattice
 /-!
 # Sorting the elements of `Sym2`
 
-This files provides `Sym2.sortEquiv`, the forward direction of which is somewhat analogous to
+This file provides `Sym2.sortEquiv`, the forward direction of which is somewhat analogous to
 `Multiset.sort`.
 -/
 
@@ -28,7 +28,7 @@ def inf [SemilatticeInf α] (x : Sym2 α) : α := Sym2.lift ⟨(· ⊓ ·), inf_
 @[simp] theorem inf_mk [SemilatticeInf α] (a b : α) : s(a, b).inf = a ⊓ b := rfl
 
 protected theorem inf_le_sup [Lattice α] (s : Sym2 α) : s.inf ≤ s.sup := by
-  cases s using Sym2.ind; simp [_root_.inf_le_sup]
+  cases s using Sym2.ind; simp
 
 /-- In a linear order, symmetric squares are canonically identified with ordered pairs. -/
 @[simps!]
@@ -41,5 +41,14 @@ def sortEquiv [LinearOrder α] : Sym2 α ≃ { p : α × α // p.1 ≤ p.2 } whe
     | inr h => simp [h]
   right_inv := Subtype.rec <| Prod.rec fun x y hxy =>
     Subtype.ext <| Prod.ext (by simp [hxy]) (by simp [hxy])
+
+/-- In a linear order, two symmetric squares are equal if and only if
+they have the same infimum and supremum. -/
+theorem inf_eq_inf_and_sup_eq_sup [LinearOrder α] {s t : Sym2 α} :
+    s.inf = t.inf ∧ s.sup = t.sup ↔ s = t := by
+  induction s with | _ a b
+  induction t with | _ c d
+  obtain hab | hba := le_total a b <;> obtain hcd | hdc := le_total c d <;>
+    aesop (add unsafe le_antisymm)
 
 end Sym2

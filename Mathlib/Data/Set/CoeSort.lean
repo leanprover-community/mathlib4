@@ -23,16 +23,19 @@ universe u v w
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
--- Porting note: I've introduced this abbreviation, with the `@[coe]` attribute,
--- so that `norm_cast` has something to index on.
--- It is currently an abbreviation so that instance coming from `Subtype` are available.
--- If you're interested in making it a `def`, as it probably should be,
--- you'll then need to create additional instances (and possibly prove lemmas about them).
--- The first error should appear below at `monotoneOn_iff_monotone`.
-/-- Given the set `s`, `Elem s` is the `Type` of element of `s`. -/
+/-- Given the set `s`, `Elem s` is the `Type` of element of `s`.
+
+It is currently an abbreviation so that instance coming from `Subtype` are available.
+If you're interested in making it a `def`, as it probably should be,
+you'll then need to create additional instances (and possibly prove lemmas about them).
+See e.g. `Mathlib/Data/Set/Order.lean`.
+-/
 @[coe, reducible] def Elem (s : Set α) : Type u := {x // x ∈ s}
 
 /-- Coercion from a set to the corresponding subtype. -/
 instance : CoeSort (Set α) (Type u) := ⟨Elem⟩
+
+@[simp] theorem elem_mem {σ α} [I : Membership σ α] {S} :
+    @Set.Elem σ (@Membership.mem σ α I S) = { x // x ∈ S } := rfl
 
 end Set

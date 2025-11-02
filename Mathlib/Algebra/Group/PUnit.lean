@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Tactic.MinImports
 
 /-!
 # `PUnit` is a commutative group
@@ -37,9 +36,7 @@ instance commGroup : CommGroup PUnit where
 @[to_additive] instance : Div PUnit where div _ _ := unit
 @[to_additive] instance : Inv PUnit where inv _ := unit
 
--- dsimp loops when applying this lemma to its LHS,
--- probably https://github.com/leanprover/lean4/pull/2867
-@[to_additive (attr := simp, nolint simpNF)] lemma one_eq : (1 : PUnit) = unit := rfl
+@[to_additive (attr := simp)] lemma one_eq : (1 : PUnit) = unit := rfl
 
 -- note simp can prove this when the Boolean ring structure is introduced
 @[to_additive] lemma mul_eq (x y : PUnit) : x * y = unit := rfl

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Functor.Const
-import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Discrete.Basic
 
 /-!
 # The category `Discrete PUnit`
@@ -17,7 +17,7 @@ and construct the equivalence `(Discrete PUnit ⥤ C) ≌ C`.
 
 universe w v u
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C]
@@ -71,7 +71,7 @@ theorem equiv_punit_iff_unique :
     suffices sub : Subsingleton (x ⟶ y) from uniqueOfSubsingleton f
     have : ∀ z, z = h.unit.app x ≫ (h.functor ⋙ h.inverse).map z ≫ h.unitInv.app y := by
       intro z
-      simp [congrArg (· ≫ h.unitInv.app y) (h.unit.naturality z)]
+      simp
     apply Subsingleton.intro
     intro a b
     rw [this a, this b]

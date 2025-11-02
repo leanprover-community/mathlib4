@@ -6,7 +6,7 @@ Authors: Bryan Gin-ge Chen, Yaël Dillies
 import Mathlib.Algebra.Group.Idempotent
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.PUnit
-import Mathlib.Order.Hom.Lattice
+import Mathlib.Order.Hom.BoundedLattice
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Ring
 
@@ -46,7 +46,7 @@ variable {α β γ : Type*}
 
 /-- A Boolean ring is a ring where multiplication is idempotent. -/
 class BooleanRing (α) extends Ring α where
-  /-- Multiplication in a boolean ring is idempotent. -/
+  /-- Multiplication in a Boolean ring is idempotent. -/
   isIdempotentElem (a : α) : IsIdempotentElem a
 
 namespace BooleanRing
@@ -66,7 +66,7 @@ theorem add_self : a + a = 0 := by
       a + a = (a + a) * (a + a) := by rw [mul_self]
       _ = a * a + a * a + (a * a + a * a) := by rw [add_mul, mul_add]
       _ = a + a + (a + a) := by rw [mul_self]
-  rwa [self_eq_add_left] at this
+  rwa [right_eq_add] at this
 
 @[scoped simp]
 theorem neg_eq : -a = a :=
@@ -88,7 +88,7 @@ theorem mul_add_mul : a * b + b * a = 0 := by
       _ = a * a + a * b + (b * a + b * b) := by rw [add_mul, mul_add, mul_add]
       _ = a + a * b + (b * a + b) := by simp only [mul_self]
       _ = a + b + (a * b + b * a) := by abel
-  rwa [self_eq_add_right] at this
+  rwa [left_eq_add] at this
 
 @[scoped simp]
 theorem sub_eq_add : a - b = a + b := by rw [sub_eq_add_neg, add_right_inj, neg_eq]
@@ -160,9 +160,8 @@ def sup : Max α :=
 def inf : Min α :=
   ⟨(· * ·)⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add priority 100. lower instance priority
-scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.sup
-scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.inf
+scoped [BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.sup
+scoped [BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.inf
 open BooleanAlgebraOfBooleanRing
 
 theorem sup_comm (a b : α) : a ⊔ b = b ⊔ a := by
@@ -221,7 +220,7 @@ def toBooleanAlgebra : BooleanAlgebra α :=
     bot_le := fun a => show 0 + a + 0 * a = a by rw [zero_mul, zero_add, add_zero]
     compl := fun a => 1 + a
     inf_compl_le_bot := fun a =>
-      show a * (1 + a) + 0 + a * (1 + a) * 0 = 0 by norm_num [mul_add, mul_self, add_self]
+      show a * (1 + a) + 0 + a * (1 + a) * 0 = 0 by simp [mul_add, mul_self, add_self]
     top_le_sup_compl := fun a => by
       change
         1 + (a + (1 + a) + a * (1 + a)) + 1 * (a + (1 + a) + a * (1 + a)) =
@@ -229,8 +228,7 @@ def toBooleanAlgebra : BooleanAlgebra α :=
       norm_num [mul_add, mul_self, add_self]
       rw [← add_assoc, add_self] }
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add priority 100. lower instance priority
-scoped[BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.toBooleanAlgebra
+scoped[BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.toBooleanAlgebra
 
 end BooleanRing
 
@@ -365,7 +363,7 @@ instance [Inhabited α] : Inhabited (AsBoolRing α) :=
   ‹Inhabited α›
 
 -- See note [reducible non-instances]
-/-- Every generalized Boolean algebra has the structure of a non unital commutative ring with the
+/-- Every generalized Boolean algebra has the structure of a nonunital commutative ring with the
 following data:
 
 * `a + b` unfolds to `a ∆ b` (symmetric difference)
@@ -523,7 +521,6 @@ instance : BooleanRing Bool where
   add_assoc := xor_assoc
   zero_add := Bool.false_xor
   add_zero := Bool.xor_false
-  sub_eq_add_neg _ _ := rfl
   neg_add_cancel := Bool.xor_self
   add_comm := xor_comm
   mul_assoc := and_assoc

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
 import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Defs
 import Mathlib.Topology.Order.Lattice
 
 /-!
@@ -79,18 +79,13 @@ namespace WithLower
 @[match_pattern] def ofLower : WithLower α ≃ α := Equiv.refl _
 
 @[simp] lemma toLower_symm : (@toLower α).symm = ofLower := rfl
-@[deprecated (since := "2024-12-16")] alias to_WithLower_symm_eq := toLower_symm
-
 @[simp] lemma ofLower_symm : (@ofLower α).symm = toLower := rfl
-@[deprecated (since := "2024-12-16")] alias of_WithLower_symm_eq := ofLower_symm
-
 @[simp] lemma toLower_ofLower (a : WithLower α) : toLower (ofLower a) = a := rfl
 
 @[simp] lemma ofLower_toLower (a : α) : ofLower (toLower a) = a := rfl
 
 lemma toLower_inj {a b : α} : toLower a = toLower b ↔ a = b := Iff.rfl
 
--- Porting note: removed @[simp] to make linter happy
 theorem ofLower_inj {a b : WithLower α} : ofLower a = ofLower b ↔ a = b :=
   Iff.rfl
 
@@ -141,9 +136,7 @@ namespace WithUpper
 @[match_pattern] def ofUpper : WithUpper α ≃ α := Equiv.refl _
 
 @[simp] lemma toUpper_symm {α} : (@toUpper α).symm = ofUpper := rfl
-@[deprecated (since := "2024-12-16")] alias to_WithUpper_symm_eq := toUpper_symm
 @[simp] lemma ofUpper_symm : (@ofUpper α).symm = toUpper := rfl
-@[deprecated (since := "2024-12-16")] alias of_WithUpper_symm_eq := ofUpper_symm
 @[simp] lemma toUpper_ofUpper (a : WithUpper α) : toUpper (ofUpper a) = a := rfl
 @[simp] lemma ofUpper_toUpper (a : α) : ofUpper (toUpper a) = a := rfl
 lemma toUpper_inj {a b : α} : toUpper a = toUpper b ↔ a = b := Iff.rfl
@@ -234,7 +227,7 @@ variable {α}
 /-- If `α` is equipped with the lower topology, then it is homeomorphic to `WithLower α`.
 -/
 def withLowerHomeomorph : WithLower α ≃ₜ α :=
-  WithLower.ofLower.toHomeomorphOfIsInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+  WithLower.ofLower.toHomeomorphOfIsInducing ⟨topology_eq α ▸ induced_id.symm⟩
 
 theorem isOpen_iff_generate_Ici_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Ici a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
@@ -247,9 +240,6 @@ instance _root_.OrderDual.instIsUpper [Preorder α] [TopologicalSpace α] [IsLow
 instance : ClosedIciTopology α :=
   ⟨fun a ↦ isOpen_compl_iff.1 <| isOpen_iff_generate_Ici_compl.2 <| GenerateOpen.basic _ ⟨a, rfl⟩⟩
 
--- Porting note: The old `IsLower.isClosed_Ici` was removed, since one can now use
--- the general `isClosed_Ici` lemma thanks to the instance above.
-
 /-- The upper closure of a finite set is closed in the lower topology. -/
 theorem isClosed_upperClosure (h : s.Finite) : IsClosed (upperClosure s : Set α) := by
   simp only [← UpperSet.iInf_Ici, UpperSet.coe_iInf]
@@ -257,7 +247,6 @@ theorem isClosed_upperClosure (h : s.Finite) : IsClosed (upperClosure s : Set α
 
 /-- Every set open in the lower topology is a lower set. -/
 theorem isLowerSet_of_isOpen (h : IsOpen s) : IsLowerSet s := by
-  -- Porting note: `rw` leaves a shadowed assumption
   replace h := isOpen_iff_generate_Ici_compl.1 h
   induction h with
   | basic u h' => obtain ⟨a, rfl⟩ := h'; exact (isUpperSet_Ici a).compl
@@ -365,7 +354,7 @@ lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ ∃ a, (
     · intro b hb
       simp only [sInter_image, mem_iInter, mem_compl_iff]
       intro s hs
-      obtain ⟨a,ha⟩ := (subset_insert_iff_of_not_mem hUS).mp hS1 hs
+      obtain ⟨a, ha⟩ := (subset_insert_iff_of_notMem hUS).mp hS1 hs
       subst hS2 ha
       simp_all only [compl_Ici, mem_Ici, sSup_le_iff, mem_setOf_eq, mem_Iio, not_lt]
     · intro b hb
@@ -399,7 +388,7 @@ variable {α}
 /-- If `α` is equipped with the upper topology, then it is homeomorphic to `WithUpper α`.
 -/
 def withUpperHomeomorph : WithUpper α ≃ₜ α :=
-  WithUpper.ofUpper.toHomeomorphOfIsInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+  WithUpper.ofUpper.toHomeomorphOfIsInducing ⟨topology_eq α ▸ induced_id.symm⟩
 
 theorem isOpen_iff_generate_Iic_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Iic a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
@@ -564,4 +553,4 @@ instance : IsUpper Prop where
         rcases hs with (rfl | rfl)
         · use True
         · use False)
-      (by rintro _ ⟨a, rfl⟩; by_cases a <;> aesop (add simp [Ioi, lt_iff_le_not_le]))
+      (by rintro _ ⟨a, rfl⟩; by_cases a <;> aesop (add simp [Ioi, lt_iff_le_not_ge]))

@@ -58,23 +58,19 @@ lemma mem_locallyConstant_essImage_of_isColimit_mapCocone (X : CondensedSet.{u})
     Condensed.isoLocallyConstantOfIsColimit _ h
   exact ⟨_, ⟨e.functor.preimageIso ((sheafToPresheaf _ _).preimageIso i.symm)⟩⟩
 
-@[deprecated (since := "2024-12-25")]
-alias mem_locallyContant_essImage_of_isColimit_mapCocone :=
-  mem_locallyConstant_essImage_of_isColimit_mapCocone
-
 /--
 `CondensedSet.LocallyConstant.functor` is left adjoint to the forgetful functor from condensed
 sets to sets.
 -/
 noncomputable abbrev LocallyConstant.adjunction :
-    CondensedSet.LocallyConstant.functor ⊣ Condensed.underlying (Type (u+1)) :=
+    CondensedSet.LocallyConstant.functor ⊣ Condensed.underlying (Type (u + 1)) :=
   CompHausLike.LocallyConstant.adjunction _ _
 
 open Condensed
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 open CondensedSet.LocallyConstant List in
-theorem isDiscrete_tfae  (X : CondensedSet.{u}) :
+theorem isDiscrete_tfae (X : CondensedSet.{u}) :
     TFAE
     [ X.IsDiscrete
     , IsIso ((Condensed.discreteUnderlyingAdj _).counit.app X)
@@ -110,7 +106,7 @@ end CondensedSet
 
 namespace CondensedMod
 
-variable (R : Type (u+1)) [Ring R]
+variable (R : Type (u + 1)) [Ring R]
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma isDiscrete_iff_isDiscrete_forget (M : CondensedMod R) :
@@ -118,11 +114,11 @@ lemma isDiscrete_iff_isDiscrete_forget (M : CondensedMod R) :
   Sheaf.isConstant_iff_forget (coherentTopology CompHaus)
     (forget (ModuleCat R)) M CompHaus.isTerminalPUnit
 
-instance : HasLimitsOfSize.{u, u+1} (ModuleCat.{u+1} R) :=
-  hasLimitsOfSizeShrink.{u, u+1, u+1, u+1} _
+instance : HasLimitsOfSize.{u, u + 1} (ModuleCat.{u + 1} R) :=
+  hasLimitsOfSizeShrink.{u, u + 1, u + 1, u + 1} _
 
 open CondensedMod.LocallyConstant List in
-theorem isDiscrete_tfae  (M : CondensedMod.{u} R) :
+theorem isDiscrete_tfae (M : CondensedMod.{u} R) :
     TFAE
     [ M.IsDiscrete
     , IsIso ((Condensed.discreteUnderlyingAdj _).counit.app M)
@@ -151,13 +147,13 @@ theorem isDiscrete_tfae  (M : CondensedMod.{u} R) :
     rw [isDiscrete_iff_isDiscrete_forget, ((CondensedSet.isDiscrete_tfae _).out 0 6:)]
     intro S
     letI : PreservesFilteredColimitsOfSize.{u, u} (forget (ModuleCat R)) :=
-      preservesFilteredColimitsOfSize_shrink.{u, u+1, u, u+1} _
+      preservesFilteredColimitsOfSize_shrink.{u, u + 1, u, u + 1} _
     exact ⟨isColimitOfPreserves (forget (ModuleCat R)) (h S).some⟩
   tfae_have 1 → 7 := by
     intro h S
     rw [isDiscrete_iff_isDiscrete_forget, ((CondensedSet.isDiscrete_tfae _).out 0 6:)] at h
     letI : ReflectsFilteredColimitsOfSize.{u, u} (forget (ModuleCat R)) :=
-      reflectsFilteredColimitsOfSize_shrink.{u, u+1, u, u+1} _
+      reflectsFilteredColimitsOfSize_shrink.{u, u + 1, u, u + 1} _
     exact ⟨isColimitOfReflects (forget (ModuleCat R)) (h S).some⟩
   tfae_finish
 
@@ -185,10 +181,6 @@ lemma mem_locallyConstant_essImage_of_isColimit_mapCocone (X : LightCondSet.{u})
     LightCondensed.isoLocallyConstantOfIsColimit _ h
   exact ⟨_, ⟨((sheafToPresheaf _ _).preimageIso i.symm)⟩⟩
 
-@[deprecated (since := "2024-12-25")]
-alias mem_locallyContant_essImage_of_isColimit_mapCocone :=
-  mem_locallyConstant_essImage_of_isColimit_mapCocone
-
 /--
 `LightCondSet.LocallyConstant.functor` is left adjoint to the forgetful functor from light condensed
 sets to sets.
@@ -199,7 +191,7 @@ noncomputable abbrev LocallyConstant.adjunction :
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 open LightCondSet.LocallyConstant List in
-theorem isDiscrete_tfae  (X : LightCondSet.{u}) :
+theorem isDiscrete_tfae (X : LightCondSet.{u}) :
     TFAE
     [ X.IsDiscrete
     , IsIso ((LightCondensed.discreteUnderlyingAdj _).counit.app X)
@@ -237,7 +229,7 @@ lemma isDiscrete_iff_isDiscrete_forget (M : LightCondMod R) :
     (forget (ModuleCat R)) M LightProfinite.isTerminalPUnit
 
 open LightCondMod.LocallyConstant List in
-theorem isDiscrete_tfae  (M : LightCondMod.{u} R) :
+theorem isDiscrete_tfae (M : LightCondMod.{u} R) :
     TFAE
     [ M.IsDiscrete
     , IsIso ((LightCondensed.discreteUnderlyingAdj _).counit.app M)

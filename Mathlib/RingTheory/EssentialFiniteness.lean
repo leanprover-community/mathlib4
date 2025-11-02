@@ -75,7 +75,7 @@ lemma essFiniteType_cond_iff (σ : Finset S) :
     · intro s
       obtain ⟨t, ht, ht', h⟩ := hσ s
       exact ⟨⟨⟨_, h⟩, ⟨t, ht⟩, ht'⟩, rfl⟩
-    · intros x y e
+    · intro x y e
       exact ⟨1, by simpa using Subtype.ext e⟩
 
 lemma essFiniteType_iff :
@@ -95,7 +95,7 @@ lemma EssFiniteType.of_isLocalization (M : Submonoid R) [IsLocalization M S] :
     EssFiniteType R S := by
   rw [essFiniteType_iff]
   use ∅
-  simp only [Finset.coe_empty, Algebra.adjoin_empty, exists_and_left, Algebra.mem_bot,
+  simp only [Finset.coe_empty, Algebra.adjoin_empty, Algebra.mem_bot,
     Set.mem_range, exists_exists_eq_and]
   intro s
   obtain ⟨⟨x, t⟩, e⟩ := IsLocalization.surj M s
@@ -164,9 +164,10 @@ instance EssFiniteType.baseChange [h : EssFiniteType R S] : EssFiniteType T (T �
   obtain ⟨σ, hσ⟩ := h
   use σ.image Algebra.TensorProduct.includeRight
   intro s
-  induction' s using TensorProduct.induction_on with x y x y hx hy
-  · exact ⟨1, one_mem _, isUnit_one, by simpa using zero_mem _⟩
-  · obtain ⟨t, h₁, h₂, h₃⟩ := hσ y
+  induction s using TensorProduct.induction_on with
+  | zero => exact ⟨1, one_mem _, isUnit_one, by simp⟩
+  | tmul x y =>
+    obtain ⟨t, h₁, h₂, h₃⟩ := hσ y
     have H (x : S) (hx : x ∈ Algebra.adjoin R (σ : Set S)) :
         1 ⊗ₜ[R] x ∈ Algebra.adjoin T
           ((σ.image Algebra.TensorProduct.includeRight : Finset (T ⊗[R] S)) : Set (T ⊗[R] S)) := by
@@ -182,7 +183,8 @@ instance EssFiniteType.baseChange [h : EssFiniteType R S] : EssFiniteType T (T �
     rw [← mul_one x, ← smul_eq_mul, ← TensorProduct.smul_tmul']
     apply Subalgebra.smul_mem
     exact H _ h₃
-  · obtain ⟨tx, hx₁, hx₂, hx₃⟩ := hx
+  | add x y hx hy =>
+    obtain ⟨tx, hx₁, hx₂, hx₃⟩ := hx
     obtain ⟨ty, hy₁, hy₂, hy₃⟩ := hy
     refine ⟨_, mul_mem hx₁ hy₁, hx₂.mul hy₂, ?_⟩
     rw [add_mul, ← mul_assoc, mul_comm tx ty, ← mul_assoc]
@@ -219,13 +221,40 @@ lemma EssFiniteType.algHom_ext [EssFiniteType R S]
   suffices f.comp (IsScalarTower.toAlgHom R _ S) = g.comp (IsScalarTower.toAlgHom R _ S) by
     ext; exact AlgHom.congr_fun this _
   apply AlgHom.ext_of_adjoin_eq_top (s := { x | x.1 ∈ finset R S })
-  · rw [← top_le_iff]
-    rintro ⟨x, hx⟩ _
-    refine Algebra.adjoin_induction ?_ ?_ ?_ ?_ hx
-    · intro x hx; exact Algebra.subset_adjoin hx
-    · intro r; exact Subalgebra.algebraMap_mem _ _
-    · intro x y _ _ hx hy; exact add_mem hx hy
-    · intro x y _ _ hx hy; exact mul_mem hx hy
+  · exact adjoin_mem_finset R S
   · rintro ⟨x, hx⟩ hx'; exact H x hx'
 
 end Algebra
+
+namespace RingHom
+
+variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] {f : R →+* S}
+
+/-- A ring hom is essentially of finite type if it is the composition of a localization map
+and a ring hom of finite type. See `Algebra.EssFiniteType`. -/
+@[algebraize Algebra.EssFiniteType]
+def EssFiniteType (f : R →+* S) : Prop :=
+  letI := f.toAlgebra
+  Algebra.EssFiniteType R S
+
+/-- A choice of "essential generators" for a ring hom essentially of finite type.
+See `Algebra.EssFiniteType.ext`. -/
+noncomputable
+def EssFiniteType.finset (hf : f.EssFiniteType) : Finset S :=
+  letI := f.toAlgebra
+  haveI : Algebra.EssFiniteType R S := hf
+  Algebra.EssFiniteType.finset R S
+
+lemma FiniteType.essFiniteType (hf : f.FiniteType) : f.EssFiniteType := by
+  algebraize [f]
+  change Algebra.EssFiniteType R S
+  infer_instance
+
+lemma EssFiniteType.ext (hf : f.EssFiniteType) {g₁ g₂ : S →+* T}
+    (h₁ : g₁.comp f = g₂.comp f) (h₂ : ∀ x ∈ hf.finset, g₁ x = g₂ x) : g₁ = g₂ := by
+  algebraize [f, g₁.comp f]
+  ext x
+  exact DFunLike.congr_fun (Algebra.EssFiniteType.algHom_ext T
+    ⟨g₁, fun _ ↦ rfl⟩ ⟨g₂, DFunLike.congr_fun h₁.symm⟩ h₂) x
+
+end RingHom

@@ -16,14 +16,14 @@ universe u v
 
 open Cardinal
 
-theorem univLE_iff_cardinal_le : UnivLE.{u, v} ↔ univ.{u, v+1} ≤ univ.{v, u+1} := by
-  rw [← not_iff_not, UnivLE]; simp_rw [small_iff_lift_mk_lt_univ]; push_neg
+theorem univLE_iff_cardinal_le : UnivLE.{u, v} ↔ univ.{u, v + 1} ≤ univ.{v, u + 1} := by
+  rw [← not_iff_not, univLE_iff]; simp_rw [small_iff_lift_mk_lt_univ]; push_neg
   -- strange: simp_rw [univ_umax.{v,u}] doesn't work
   refine ⟨fun ⟨α, le⟩ ↦ ?_, fun h ↦ ?_⟩
-  · rw [univ_umax.{v,u}, ← lift_le.{u+1}, lift_univ, lift_lift] at le
-    exact le.trans_lt (lift_lt_univ'.{u,v+1} #α)
+  · rw [univ_umax.{v, u}, ← lift_le.{u + 1}, lift_univ, lift_lift] at le
+    exact le.trans_lt (lift_lt_univ'.{u, v + 1} #α)
   · obtain ⟨⟨α⟩, h⟩ := lt_univ'.mp h; use α
-    rw [univ_umax.{v,u}, ← lift_le.{u+1}, lift_univ, lift_lift]
+    rw [univ_umax.{v, u}, ← lift_le.{u + 1}, lift_univ, lift_lift]
     exact h.le
 
 theorem univLE_iff_exists_embedding : UnivLE.{u, v} ↔ Nonempty (Ordinal.{u} ↪ Ordinal.{v}) := by

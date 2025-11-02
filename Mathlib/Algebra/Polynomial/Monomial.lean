@@ -37,9 +37,9 @@ theorem card_support_le_one_iff_monomial {f : R[X]} :
     refine ⟨n, f.coeff n, ?_⟩
     ext i
     by_cases hi : i = n
-    · simp [hi, coeff_monomial]
+    · simp [hi]
     · have : f.coeff i = 0 := by
-        rw [← not_mem_support_iff]
+        rw [← notMem_support_iff]
         exact fun hi' => hi (Finset.mem_singleton.1 (hn hi'))
       simp [this, Ne.symm hi, coeff_monomial]
   · rintro ⟨n, a, rfl⟩
@@ -53,7 +53,7 @@ theorem ringHom_ext {S} [Semiring S] {f g : R[X] →+* S} (h₁ : ∀ a, f (C a)
   set g' := g.comp (toFinsuppIso R).symm.toRingHom with hg'
   have A : f' = g' := by
     ext
-    simp [f', g', h₁, RingEquiv.toRingHom_eq_coe]
+    · simp [f', g', h₁, RingEquiv.toRingHom_eq_coe]
     simpa using h₂
   have B : f = f'.comp (toFinsuppIso R) := by
     rw [hf', RingHom.comp_assoc]

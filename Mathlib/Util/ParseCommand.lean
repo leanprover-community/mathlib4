@@ -24,7 +24,7 @@ def captureException (env : Environment) (s : ParserFn) (input : String) : Excep
   let s := s.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
   if !s.allErrors.isEmpty then
     .error (s.toErrorMsg ictx)
-  else if ictx.input.atEnd s.pos then
+  else if ictx.atEnd s.pos then
     .ok s.stxStack.back
   else
     .error ((s.mkError "end of input").toErrorMsg ictx)

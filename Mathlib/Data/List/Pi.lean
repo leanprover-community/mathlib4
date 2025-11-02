@@ -6,7 +6,7 @@ Authors: Yuyang Zhao
 import Mathlib.Data.Multiset.Pi
 
 /-!
-# The cartesian product of lists
+# The Cartesian product of lists
 
 ## Main definitions
 
@@ -26,7 +26,7 @@ variable {i : ι} {l : List ι}
 
 /-- Given `f` a function whose domain is `i :: l`, get its value at `i`. -/
 def head (f : ∀ j ∈ i :: l, α j) : α i :=
-  f i (mem_cons_self _ _)
+  f i mem_cons_self
 
 /-- Given `f` a function whose domain is `i :: l`, produce a function whose domain
 is restricted to `l`. -/
@@ -84,19 +84,17 @@ def pi : ∀ l : List ι, (∀ i, List (α i)) → List (∀ i, i ∈ l → α i
 
 lemma _root_.Multiset.pi_coe (l : List ι) (fs : ∀ i, List (α i)) :
     (l : Multiset ι).pi (fs ·) = (↑(pi l fs) : Multiset (∀ i ∈ l, α i)) := by
-  induction' l with i l ih
-  · change Multiset.pi 0 _ = _
-    simp only [Multiset.coe_singleton, Multiset.pi_zero, pi_nil, Multiset.singleton_inj]
+  induction l with
+  | nil =>
+    simp only [Multiset.coe_nil, Multiset.pi_zero, pi_nil, Multiset.coe_singleton,
+      Multiset.singleton_inj]
     ext i hi
     simp at hi
-  · change Multiset.pi (i ::ₘ ↑l) _ = _
-    simp [ih, Multiset.coe_bind, - Multiset.cons_coe]
+  | cons i l ih =>
+    simp [ih, Multiset.coe_bind, ← Multiset.cons_coe]
 
-lemma mem_pi {l : List ι} (fs : ∀ i, List (α i)) :
-    ∀ f : ∀ i ∈ l, α i, (f ∈ pi l fs) ↔ (∀ i (hi : i ∈ l), f i hi ∈ fs i) := by
-  intros f
-  convert @Multiset.mem_pi ι _ α ↑l (fs ·) f using 1
-  rw [Multiset.pi_coe]
-  rfl
+lemma mem_pi {l : List ι} (fs : ∀ i, List (α i)) (f : ∀ i ∈ l, α i) :
+    (f ∈ pi l fs) ↔ (∀ i (hi : i ∈ l), f i hi ∈ fs i) := by
+  simpa [Multiset.pi_coe] using Multiset.mem_pi ↑l (fs ·) f
 
 end List

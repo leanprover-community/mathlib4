@@ -39,7 +39,7 @@ than just a functor known to be a right adjoint. In docstrings, we write `(η, �
 and counit of the adjunction `adj₁ : F ⊣ U` and `(ι, δ)` for the unit and counit of the adjunction
 `adj₂ : F' ⊣ R ⋙ U`.
 
-This file has been adapted to `Mathlib.CategoryTheory.Adjunction.Lifting.Right`.
+This file has been adapted to `Mathlib/CategoryTheory/Adjunction/Lifting/Right.lean`.
 Please try to keep them in sync.
 
 ## TODO
@@ -163,8 +163,8 @@ noncomputable def constructLeftAdjoint [∀ X : B, RegularEpi (adj₁.counit.app
   erw [Cofork.IsColimit.homIso_natural, Cofork.IsColimit.homIso_natural]
   erw [adj₂.homEquiv_naturality_right]
   simp_rw [Functor.comp_map]
-  -- This used to be `simp`, but we need `aesop_cat` after https://github.com/leanprover/lean4/pull/2644
-  aesop_cat
+  -- This used to be `simp`, but we need `cat_disch` after https://github.com/leanprover/lean4/pull/2644
+  cat_disch
 
 end LiftLeftAdjoint
 
@@ -194,10 +194,10 @@ lemma isRightAdjoint_triangle_lift_monadic (U : B ⥤ C) [MonadicRightAdjoint U]
       infer_instance
     refine ((Adjunction.ofIsRightAdjoint
       (R' ⋙ (Monad.comparison (monadicAdjunction U)).inv)).ofNatIsoRight ?_).isRightAdjoint
-    exact isoWhiskerLeft R (Monad.comparison _).asEquivalence.unitIso.symm ≪≫ R.rightUnitor
+    exact Functor.isoWhiskerLeft R (Monad.comparison _).asEquivalence.unitIso.symm ≪≫ R.rightUnitor
   let this : (R' ⋙ Monad.forget (monadicAdjunction U).toMonad).IsRightAdjoint := by
     refine ((Adjunction.ofIsRightAdjoint (R ⋙ U)).ofNatIsoRight ?_).isRightAdjoint
-    exact isoWhiskerLeft R (Monad.comparisonForget (monadicAdjunction U)).symm
+    exact Functor.isoWhiskerLeft R (Monad.comparisonForget (monadicAdjunction U)).symm
   let this : ∀ X, RegularEpi ((Monad.adj (monadicAdjunction U).toMonad).counit.app X) := by
     intro X
     simp only [Monad.adj_counit]

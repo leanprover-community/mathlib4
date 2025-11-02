@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.SetTheory.Ordinal.Family
 
 /-!
 # Rank in a well-founded relation
@@ -94,36 +94,3 @@ theorem IsWellFounded.rank_eq_typein (r) [IsWellOrder α r] : rank r = Ordinal.t
   ext a
   exact InitialSeg.eq (⟨(OrderEmbedding.ofStrictMono _ WellFoundedLT.rank_strictMono).ltEmbedding,
     fun a b h ↦ mem_range_rank_of_le h.le⟩) (Ordinal.typein r) a
-
-namespace WellFounded
-
-variable {r : α → α → Prop} (hwf : WellFounded r)
-
-/-- The rank of an element `a` under a well-founded relation `r` is defined inductively as the
-smallest ordinal greater than the ranks of all elements below it (i.e. elements `b` such that
-`r b a`). -/
-@[deprecated IsWellFounded.rank (since := "2024-09-07")]
-noncomputable def rank (a : α) : Ordinal.{u} :=
-  (hwf.apply a).rank
-
-set_option linter.deprecated false in
-@[deprecated IsWellFounded.rank_eq (since := "2024-09-07")]
-theorem rank_eq : hwf.rank a = ⨆ b : { b // r b a }, Order.succ (hwf.rank b) :=
-  (hwf.apply a).rank_eq
-
-set_option linter.deprecated false in
-@[deprecated IsWellFounded.rank_lt_of_rel (since := "2024-09-07")]
-theorem rank_lt_of_rel (h : r a b) : hwf.rank a < hwf.rank b :=
-  Acc.rank_lt_of_rel _ h
-
-set_option linter.deprecated false in
-@[deprecated WellFoundedLT.rank_strictMono (since := "2024-09-07")]
-theorem rank_strictMono [Preorder α] [WellFoundedLT α] :
-    StrictMono (rank <| @wellFounded_lt α _ _) := fun _ _ => rank_lt_of_rel _
-
-set_option linter.deprecated false in
-@[deprecated WellFoundedGT.rank_strictAnti (since := "2024-09-07")]
-theorem rank_strictAnti [Preorder α] [WellFoundedGT α] :
-    StrictAnti (rank <| @wellFounded_gt α _ _) := fun _ _ => rank_lt_of_rel wellFounded_gt
-
-end WellFounded

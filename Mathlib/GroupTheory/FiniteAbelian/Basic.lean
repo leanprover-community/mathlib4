@@ -66,19 +66,21 @@ private def directSumNeZeroMulEquiv (ι : Type) [DecidableEq ι] (p : ι → ℕ
   invFun := DirectSum.toAddMonoid fun i ↦
     if h : n i = 0 then 0 else DirectSum.of (fun j : {i // n i ≠ 0} ↦ ZMod (p j ^ n j)) ⟨i, h⟩
   left_inv x := by
-    induction' x using DirectSum.induction_on with i x x y hx hy
-    · simp
-    · rw [directSumNeZeroMulHom, DirectSum.toAddMonoid_of, DirectSum.toAddMonoid_of,
+    induction x using DirectSum.induction_on with
+    | zero => simp
+    | of i x =>
+      rw [directSumNeZeroMulHom, DirectSum.toAddMonoid_of, DirectSum.toAddMonoid_of,
         dif_neg i.prop]
-    · rw [map_add, map_add, hx, hy]
+    | add x y hx hy => rw [map_add, map_add, hx, hy]
   right_inv x := by
-    induction' x using DirectSum.induction_on with i x x y hx hy
-    · rw [map_zero, map_zero]
-    · rw [DirectSum.toAddMonoid_of]
+    induction x using DirectSum.induction_on with
+    | zero => rw [map_zero, map_zero]
+    | of i x =>
+      rw [DirectSum.toAddMonoid_of]
       split_ifs with h
       · simp [(ZMod.subsingleton_iff.2 <| by rw [h, pow_zero]).elim x 0]
       · simp_rw [directSumNeZeroMulHom, DirectSum.toAddMonoid_of]
-    · rw [map_add, map_add, hx, hy]
+    | add x y hx hy => rw [map_add, map_add, hx, hy]
   map_add' := map_add (directSumNeZeroMulHom p n)
 
 universe u
@@ -132,7 +134,7 @@ theorem equiv_directSum_zmod_of_finite [Finite G] :
   obtain ⟨n, ι, fι, p, hp, e, ⟨f⟩⟩ := equiv_free_prod_directSum_zmod G
   rcases n with - | n
   · have : Unique (Fin Nat.zero →₀ ℤ) :=
-      { uniq := by simp only [eq_iff_true_of_subsingleton]; trivial }
+      { uniq := by subsingleton }
     exact ⟨ι, fι, p, hp, e, ⟨f.trans AddEquiv.uniqueProd⟩⟩
   · haveI := @Fintype.prodLeft _ _ _ (Fintype.ofEquiv G f.toEquiv) _
     exact
@@ -169,6 +171,6 @@ theorem equiv_prod_multiplicative_zmod_of_finite (G : Type*) [CommGroup G] [Fini
        (∀ (i : ι), 1 < n i) ∧ Nonempty (G ≃* ((i : ι) → Multiplicative (ZMod (n i)))) := by
   obtain ⟨ι, inst, n, h₁, h₂⟩ := AddCommGroup.equiv_directSum_zmod_of_finite' (Additive G)
   exact ⟨ι, inst, n, h₁, ⟨MulEquiv.toAdditive.symm <| h₂.some.trans <|
-    (DirectSum.addEquivProd _).trans <| MulEquiv.toAdditive'' <| MulEquiv.piMultiplicative _⟩⟩
+    (DirectSum.addEquivProd _).trans (MulEquiv.piMultiplicative _).toAdditiveRight⟩⟩
 
 end CommGroup

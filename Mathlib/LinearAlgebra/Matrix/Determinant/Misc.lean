@@ -68,8 +68,7 @@ theorem det_eq_sum_column_mul_submatrix_succAbove_succAbove_det {n : ℕ}
     (hv : ∀ j ≠ j₀, ∑ i, M i j = 0) :
     M.det = (-1) ^ (i₀ + j₀ : ℕ) *
       (∑ i, M i j₀) * (M.submatrix (Fin.succAbove i₀) (Fin.succAbove j₀)).det := by
-  rw [show M.det = (1 : R) • Matrix.det _ by rw [one_smul],
-    ← Matrix.det_updateRow_sum _ i₀ (fun _ ↦ 1), Matrix.det_succ_row _ i₀]
+  rw [← one_smul R M.det, ← Matrix.det_updateRow_sum _ i₀ (fun _ ↦ 1), Matrix.det_succ_row _ i₀]
   simp only [updateRow_apply, if_true, one_smul, submatrix_updateRow_succAbove, Finset.sum_apply]
   rw [Fintype.sum_eq_add_sum_subtype_ne _ j₀]
   conv_lhs =>
@@ -85,8 +84,8 @@ theorem det_eq_sum_row_mul_submatrix_succAbove_succAbove_det {n : ℕ}
     (hv : ∀ i ≠ i₀, ∑ j, M i j = 0) :
     M.det = (-1) ^ (i₀ + j₀ : ℕ) *
       (∑ j, M i₀ j) * (M.submatrix (Fin.succAbove i₀) (Fin.succAbove j₀)).det := by
-    rw [← det_transpose, det_eq_sum_column_mul_submatrix_succAbove_succAbove_det _ j₀ i₀
-      (by simpa using hv), ← det_transpose, transpose_submatrix, transpose_transpose, add_comm]
-    simp_rw [transpose_apply]
+  rw [← det_transpose, det_eq_sum_column_mul_submatrix_succAbove_succAbove_det _ j₀ i₀
+    (by simpa using hv), ← det_transpose, transpose_submatrix, transpose_transpose, add_comm]
+  simp_rw [transpose_apply]
 
 end Matrix

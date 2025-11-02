@@ -13,8 +13,7 @@ In this file, it is shown that under suitable assumptions,
 limits exist in the category `SheafOfModules R`.
 
 ## TODO
-* do the same for colimits (which requires constructing
-the associated sheaf of modules functor)
+* do the same for colimits (which requires constructing the associated sheaf of modules functor)
 
 -/
 
@@ -31,11 +30,11 @@ variable {R : Cᵒᵖ ⥤ RingCat.{u}}
   {F : D ⥤ PresheafOfModules.{v} R}
   [∀ X, Small.{v} ((F ⋙ evaluation R X) ⋙ forget _).sections]
   {c : Cone F}
-  [HasLimitsOfShape D AddCommGrp.{v}]
+  [HasLimitsOfShape D AddCommGrpCat.{v}]
 
 lemma isSheaf_of_isLimit (hc : IsLimit c) (hF : ∀ j, Presheaf.IsSheaf J (F.obj j).presheaf) :
     Presheaf.IsSheaf J (c.pt.presheaf) := by
-  let G : D ⥤ Sheaf J AddCommGrp.{v} :=
+  let G : D ⥤ Sheaf J AddCommGrpCat.{v} :=
     { obj := fun j => ⟨(F.obj j).presheaf, hF j⟩
       map := fun φ => ⟨(PresheafOfModules.toPresheaf R).map (F.map φ)⟩ }
   exact Sheaf.isSheaf_of_isLimit G _ (isLimitOfPreserves (toPresheaf R) hc)
@@ -50,12 +49,11 @@ section Limits
 
 variable (F : D ⥤ SheafOfModules.{v} R)
   [∀ X, Small.{v} ((F ⋙ evaluation R X) ⋙ CategoryTheory.forget _).sections]
-  [HasLimitsOfShape D AddCommGrp.{v}]
+  [HasLimitsOfShape D AddCommGrpCat.{v}]
 
 instance (X : Cᵒᵖ) : Small.{v} (((F ⋙ forget _) ⋙ PresheafOfModules.evaluation _ X) ⋙
     CategoryTheory.forget _).sections := by
-  change Small.{v} ((F ⋙ evaluation R X) ⋙ CategoryTheory.forget _).sections
-  infer_instance
+  solve_by_elim
 
 noncomputable instance createsLimit : CreatesLimit F (forget _) :=
   createsLimitOfFullyFaithfulOfIso' (limit.isLimit (F ⋙ forget _))

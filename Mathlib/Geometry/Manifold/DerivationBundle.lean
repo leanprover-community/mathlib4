@@ -15,8 +15,8 @@ Moreover, we define the differential of a function in terms of derivations.
 
 The content of this file is not meant to be regarded as an alternative definition to the current
 tangent bundle but rather as a purely algebraic theory that provides a purely algebraic definition
-of the Lie algebra for a Lie group.
-
+of the Lie algebra for a Lie group. This theory coincides with the usual tangent bundle in the
+case of finite-dimensional `C^∞` real manifolds, but not in the general case.
 -/
 
 
@@ -37,8 +37,6 @@ Denoted as `C^n⟮I, M; 𝕜⟯⟨x⟩` within the `Derivation` namespace. -/
 @[nolint unusedArguments]
 def PointedContMDiffMap (_ : M) :=
   C^n⟮I, M; 𝕜⟯
-
-@[deprecated (since := "2025-01-09")] alias PointedSmoothMap := PointedContMDiffMap
 
 @[inherit_doc]
 scoped[Derivation] notation "C^" n "⟮" I ", " M "; " 𝕜 "⟯⟨" x "⟩" => PointedContMDiffMap 𝕜 I M n x
@@ -90,7 +88,8 @@ end PointedContMDiffMap
 open scoped Derivation
 
 /-- The derivations at a point of a manifold. Some regard this as a possible definition of the
-tangent space -/
+tangent space, as this coincides with the usual tangent space for finite-dimensional `C^∞` real
+manifolds. The identification is not true in general, though. -/
 abbrev PointDerivation (x : M) :=
   Derivation 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ 𝕜
 
@@ -104,8 +103,6 @@ variable (X : Derivation 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯) (f : 
 -/
 def ContMDiffFunction.evalAt (x : M) : C^∞⟮I, M; 𝕜⟯ →ₗ[C^∞⟮I, M; 𝕜⟯⟨x⟩] 𝕜 :=
   (PointedContMDiffMap.eval x).toLinearMap
-
-@[deprecated (since := "2025-01-09")] alias SmoothFunction.evalAt := ContMDiffFunction.evalAt
 
 namespace Derivation
 
@@ -125,15 +122,15 @@ variable {I} {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Ty
   [ChartedSpace H' M']
 
 /-- The heterogeneous differential as a linear map, denoted as `𝒅ₕ` within the `Manifold` namespace.
-Instead of taking a function as an argument this
-differential takes `h : f x = y`. It is particularly handy to deal with situations where the points
-on where it has to be evaluated are equal but not definitionally equal. -/
+Instead of taking a function as an argument, this
+differential takes `h : f x = y`. It is particularly handy for situations where the points
+at which it has to be evaluated are equal but not definitionally equal. -/
 def hfdifferential {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y) :
     PointDerivation I x →ₗ[𝕜] PointDerivation I' y where
   toFun v :=
     Derivation.mk'
       { toFun := fun g => v (g.comp f)
-        map_add' := fun g g' => by dsimp; rw [ContMDiffMap.add_comp, Derivation.map_add]
+        map_add' := fun g g' => by rw [ContMDiffMap.add_comp, Derivation.map_add]
         map_smul' := fun k g => by
           dsimp; rw [ContMDiffMap.smul_comp, Derivation.map_smul, smul_eq_mul] }
       fun g g' => by
@@ -160,14 +157,10 @@ def fdifferential (f : C^∞⟮I, M; I', M'⟯) (x : M) :
 theorem fdifferential_apply (f : C^∞⟮I, M; I', M'⟯) {x : M} (v : PointDerivation I x)
     (g : C^∞⟮I', M'; 𝕜⟯) : 𝒅 f x v g = v (g.comp f) :=
   rfl
-@[deprecated (since := "2024-11-11")] alias apply_fdifferential := fdifferential_apply
-
 @[simp]
 theorem hfdifferential_apply {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y)
     (v : PointDerivation I x) (g : C^∞⟮I', M'; 𝕜⟯) : 𝒅ₕ h v g = 𝒅 f x v g :=
   rfl
-@[deprecated (since := "2024-11-11")] alias apply_hfdifferential := hfdifferential_apply
-
 variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*}
   [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M'']
   [ChartedSpace H'' M'']

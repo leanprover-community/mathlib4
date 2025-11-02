@@ -35,37 +35,24 @@ theorem Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmb _) :=
 theorem Iio_last_eq_map : Iio (Fin.last n) = Finset.univ.map Fin.castSuccEmb :=
   coe_injective <| by ext; simp [lt_def]
 
-@[simp]
-theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmb _) := by
-  ext i
-  simp only [mem_filter, mem_Ioi, mem_map, mem_univ, Function.Embedding.coeFn_mk, exists_true_left]
-  constructor
-  · refine cases ?_ ?_ i
-    · rintro ⟨⟨⟩⟩
-    · intro i hi
-      exact ⟨i, succ_lt_succ_iff.mp hi, rfl⟩
-  · rintro ⟨i, hi, rfl⟩
-    simpa
+theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmb _) := by simp
 
-@[simp]
-theorem Iio_castSucc (i : Fin n) : Iio (castSucc i) = (Iio i).map Fin.castSuccEmb := by
-  apply Finset.map_injective Fin.valEmbedding
-  rw [Finset.map_map, Fin.map_valEmbedding_Iio]
-  exact (Fin.map_valEmbedding_Iio i).symm
+theorem Iio_castSucc (i : Fin n) : Iio (castSucc i) = (Iio i).map Fin.castSuccEmb := by simp
 
 theorem card_filter_univ_succ (p : Fin (n + 1) → Prop) [DecidablePred p] :
     #{x | p x} = if p 0 then #{x | p (.succ x)} + 1 else #{x | p (.succ x)} := by
   rw [Fin.univ_succ, filter_cons, apply_ite Finset.card, card_cons, filter_map, card_map]; rfl
 
 theorem card_filter_univ_succ' (p : Fin (n + 1) → Prop) [DecidablePred p] :
-    #{x | p x} = ite (p 0) 1 0 + #{x | p (.succ x)}:= by
+    #{x | p x} = ite (p 0) 1 0 + #{x | p (.succ x)} := by
   rw [card_filter_univ_succ]; split_ifs <;> simp [add_comm]
 
 theorem card_filter_univ_eq_vector_get_eq_count [DecidableEq α] (a : α) (v : List.Vector α n) :
     #{i | v.get i = a} = v.toList.count a := by
-  induction' v with n x xs hxs
-  · simp
-  · simp_rw [card_filter_univ_succ', Vector.get_cons_zero, Vector.toList_cons, Vector.get_cons_succ,
+  induction v with
+  | nil => simp
+  | @cons n x xs hxs =>
+    simp_rw [card_filter_univ_succ', Vector.get_cons_zero, Vector.toList_cons, Vector.get_cons_succ,
       hxs, List.count_cons, add_comm (ite (x = a) 1 0), beq_iff_eq]
 
 end Fin

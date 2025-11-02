@@ -3,6 +3,7 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Order.BooleanAlgebra.Basic
 import Mathlib.Order.Hom.Lattice
 
 /-!
@@ -162,11 +163,11 @@ instance instSDiff : SDiff (Booleanisation α) where
 
 instance instPreorder : Preorder (Booleanisation α) where
   lt := (· < ·)
-  lt_iff_le_not_le
-    | lift a, lift b => by simp [lt_iff_le_not_le]
+  lt_iff_le_not_ge
+    | lift a, lift b => by simp [lt_iff_le_not_ge]
     | lift a, comp b => by simp
     | comp a, lift b => by simp
-    | comp a, comp b => by simp [lt_iff_le_not_le]
+    | comp a, comp b => by simp [lt_iff_le_not_ge]
   le_refl
     | lift _ => LE.lift le_rfl
     | comp _ => LE.comp le_rfl
@@ -224,12 +225,13 @@ instance instSemilatticeInf : SemilatticeInf (Booleanisation α) where
     | comp a, comp b, comp c, LE.comp hba, LE.comp hca => LE.comp <| sup_le hba hca
 
 instance instDistribLattice : DistribLattice (Booleanisation α) where
+  inf x y := x ⊓ y
   inf_le_left _ _ := inf_le_left
   inf_le_right _ _ := inf_le_right
   le_inf _ _ _ := le_inf
   le_sup_inf
     | lift _, lift _, lift _ => LE.lift le_sup_inf
-    | lift a, lift b, comp c => LE.lift <| by simp [sup_left_comm, sup_comm, sup_assoc]
+    | lift a, lift b, comp c => LE.lift <| by simp [sup_comm, sup_assoc]
     | lift a, comp b, lift c => LE.lift <| by
       simp [sup_left_comm (a := b \ a), sup_comm (a := b \ a)]
     | lift a, comp b, comp c => LE.comp <| by rw [sup_sdiff]

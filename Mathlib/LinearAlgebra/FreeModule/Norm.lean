@@ -12,10 +12,7 @@ import Mathlib.RingTheory.Norm.Defs
 # Norms on free modules over principal ideal domains
 -/
 
-
-open Ideal Polynomial
-
-open scoped Polynomial
+open Ideal Module Polynomial
 
 variable {R S ι : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [CommRing S]
   [IsDomain S] [Algebra R S]

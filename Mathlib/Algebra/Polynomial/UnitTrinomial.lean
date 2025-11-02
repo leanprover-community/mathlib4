@@ -205,29 +205,23 @@ theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Unit
   have key : n - m + k < n := by rwa [← lt_tsub_iff_right, tsub_lt_tsub_iff_left_of_le hmn.le]
   rw [hp, trinomial_mirror hkm hmn u.ne_zero w.ne_zero]
   simp_rw [trinomial_def, C_mul_X_pow_eq_monomial, add_mul, mul_add, monomial_mul_monomial,
-    toFinsupp_add, toFinsupp_monomial]
-  -- Porting note: added next line (less powerful `simp`).
-  rw [Finsupp.filter_add, Finsupp.filter_add, Finsupp.filter_add, Finsupp.filter_add,
-    Finsupp.filter_add, Finsupp.filter_add, Finsupp.filter_add, Finsupp.filter_add]
+    toFinsupp_add, toFinsupp_monomial, AddMonoidAlgebra, Finsupp.filter_add]
   rw [Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg,
     Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg, Finsupp.filter_single_of_pos,
     Finsupp.filter_single_of_neg, Finsupp.filter_single_of_pos, Finsupp.filter_single_of_neg]
-  · simp only [add_zero, zero_add, ofFinsupp_add, ofFinsupp_single]
-    -- Porting note: added next two lines (less powerful `simp`).
+  · simp only [add_zero, zero_add]
+    -- Porting note: the next `rw` is needed to see through the defeq `Finsupp = AddMonoidAlgebra`
     rw [ofFinsupp_add]
     simp only [ofFinsupp_single]
     rw [C_mul_monomial, C_mul_monomial, mul_comm (v : ℤ) w, add_comm (n - m + k) n]
   · exact fun h => h.2.ne rfl
-  · refine ⟨?_, add_lt_add_left key n⟩
+  · refine ⟨?_, by gcongr⟩
     rwa [add_comm, add_lt_add_iff_left, lt_add_iff_pos_left, tsub_pos_iff_lt]
   · exact fun h => h.1.ne (add_comm k n)
-  · exact ⟨add_lt_add_right hkm n, add_lt_add_right hmn n⟩
+  · constructor <;> gcongr
   · rw [← add_assoc, add_tsub_cancel_of_le hmn.le, add_comm]
     exact fun h => h.1.ne rfl
-  · intro h
-    have := h.1
-    rw [add_comm, add_lt_add_iff_right] at this
-    exact asymm this hmn
+  · grind
   · exact fun h => h.1.ne rfl
   · exact fun h => asymm ((add_lt_add_iff_left k).mp h.1) key
   · exact fun h => asymm ((add_lt_add_iff_left k).mp h.1) (hkm.trans hmn)
@@ -241,14 +235,13 @@ theorem irreducible_aux2 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k 
   replace h := h.trans (irreducible_aux1 hkm' hmn' u v w hq).symm
   rw [(isUnit_C.mpr v.isUnit).mul_right_inj] at h
   rw [binomial_eq_binomial u.ne_zero w.ne_zero] at h
-  simp only [add_left_inj, Units.eq_iff] at h
+  simp only [add_left_inj, Units.val_inj] at h
   rcases h with (⟨rfl, -⟩ | ⟨rfl, rfl, h⟩ | ⟨-, hm, hm'⟩)
   · exact Or.inl (hq.trans hp.symm)
   · refine Or.inr ?_
     rw [← trinomial_mirror hkm' hmn' u.ne_zero u.ne_zero, eq_comm, mirror_eq_iff] at hp
     exact hq.trans hp
-  · obtain rfl : m = m' := by omega
-    exact Or.inl (hq.trans hp.symm)
+  · grind
 
 theorem irreducible_aux3 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k < m') (hmn' : m' < n)
     (u v w x z : Units ℤ) (hp : p = trinomial k m n (u : ℤ) v w)
@@ -261,14 +254,14 @@ theorem irreducible_aux3 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k 
     at hmul
   have hadd := congr_arg (eval 1) h
   rw [eval_mul, eval_mul, mirror_eval_one, mirror_eval_one, ← sq, ← sq, hp, hq] at hadd
-  simp only [eval_add, eval_C_mul, eval_pow, eval_X, one_pow, mul_one, trinomial_def] at hadd
+  simp only [eval_add, eval_C_mul, eval_X_pow, one_pow, mul_one, trinomial_def] at hadd
   rw [add_assoc, add_assoc, add_comm (u : ℤ), add_comm (x : ℤ), add_assoc, add_assoc] at hadd
   simp only [add_sq', add_assoc, add_right_inj, ← Units.val_pow_eq_pow_val, Int.units_sq] at hadd
   rw [mul_assoc, hmul, ← mul_assoc, add_right_inj,
     mul_right_inj' (show 2 * (v : ℤ) ≠ 0 from mul_ne_zero two_ne_zero v.ne_zero)] at hadd
   replace hadd :=
     (Int.isUnit_add_isUnit_eq_isUnit_add_isUnit w.isUnit u.isUnit z.isUnit x.isUnit).mp hadd
-  simp only [Units.eq_iff] at hadd
+  simp only [Units.val_inj] at hadd
   rcases hadd with (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
   · exact irreducible_aux2 hkm hmn hkm' hmn' u v w hp hq h
   · rw [← mirror_inj, trinomial_mirror hkm' hmn' w.ne_zero u.ne_zero] at hq

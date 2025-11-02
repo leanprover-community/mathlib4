@@ -5,6 +5,7 @@ Authors: Leonardo de Moura
 -/
 
 import Mathlib.Init
+import Batteries.Control.AlternativeMonad
 /-!
 # Monad instances for `List`
 -/
@@ -25,11 +26,19 @@ instance instMonad : Monad List.{u} where
 instance instLawfulMonad : LawfulMonad List.{u} := LawfulMonad.mk'
   (id_map := map_id)
   (pure_bind := fun _ _ => List.append_nil _)
-  (bind_assoc := List.flatMap_assoc)
-  (bind_pure_comp := fun _ _ => (map_eq_flatMap _ _).symm)
+  (bind_assoc := fun _ _ _ => List.flatMap_assoc)
+  (bind_pure_comp := fun _ _ => map_eq_flatMap.symm)
 
-instance instAlternative : Alternative List.{u} where
+instance : AlternativeMonad List.{u} where
   failure := @List.nil
   orElse l l' := List.append l (l' ())
+
+instance : LawfulAlternative List where
+  map_failure _ := List.map_nil
+  failure_seq _ := List.flatMap_nil
+  orElse_failure _ := List.append_nil _
+  failure_orElse _ := List.nil_append _
+  orElse_assoc _ _ _ := List.append_assoc _ _ _ |>.symm
+  map_orElse _ _ _ := List.map_append
 
 end List

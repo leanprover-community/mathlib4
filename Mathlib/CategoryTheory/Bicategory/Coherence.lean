@@ -31,7 +31,7 @@ theorem follows immediately from this fact.
 ## References
 
 * [Ilya Beylin and Peter Dybjer, Extracting a proof of coherence for monoidal categories from a
-   proof of normalization for monoids][beylin1996]
+  proof of normalization for monoids][beylin1996]
 -/
 
 
@@ -55,8 +55,6 @@ def inclusionPathAux {a : B} : ∀ {b : B}, Path a b → Hom a b
   | _, nil => Hom.id a
   | _, cons p f => (inclusionPathAux p).comp (Hom.of f)
 
-/- Porting note: Since the following instance was removed when porting
-`CategoryTheory.Bicategory.Free`, we add it locally here. -/
 /-- Category structure on `Hom a b`. In this file, we will use `Hom a b` for `a b : B`
 (precisely, `FreeBicategory.Hom a b`) instead of the definitionally equal expression
 `a ⟶ b` for `a b : FreeBicategory B`. The main reason is that we have to annoyingly write
@@ -86,10 +84,8 @@ theorem preinclusion_obj (a : B) : (preinclusion B).obj ⟨a⟩ = a :=
 
 @[simp]
 theorem preinclusion_map₂ {a b : B} (f g : Discrete (Path.{v + 1} a b)) (η : f ⟶ g) :
-    (preinclusion B).map₂ η = eqToHom (congr_arg _ (Discrete.ext (Discrete.eq_of_hom η))) := by
-  rcases η with ⟨⟨⟩⟩
-  cases Discrete.ext (by assumption)
-  convert (inclusionPath a b).map_id _
+    (preinclusion B).map₂ η = eqToHom (congr_arg _ (Discrete.ext (Discrete.eq_of_hom η))) :=
+  rfl
 
 /-- The normalization of the composition of `p : Path a b` and `f : Hom b c`.
 `p` will eventually be taken to be `nil` and we then get the normalization
@@ -156,7 +152,7 @@ theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f 
   induction η' with
   | id => simp
   | vcomp η θ ihf ihg =>
-    simp only [mk_vcomp, Bicategory.whiskerLeft_comp]
+    simp only [mk_vcomp, whiskerLeft_comp]
     slice_lhs 2 3 => rw [ihg]
     slice_lhs 1 2 => rw [ihf]
     simp
@@ -172,8 +168,7 @@ theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f 
     dsimp at this; simp [this]
   | _ => simp
 
--- Porting note: the left-hand side is not in simp-normal form.
--- @[simp]
+-- Not `@[simp]` because it is not in `simp`-normal form.
 theorem normalizeAux_nil_comp {a b c : B} (f : Hom a b) (g : Hom b c) :
     normalizeAux nil (f.comp g) = (normalizeAux nil f).comp (normalizeAux nil g) := by
   induction g generalizing a with

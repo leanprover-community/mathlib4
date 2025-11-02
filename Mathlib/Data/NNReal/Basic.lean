@@ -17,12 +17,12 @@ import Mathlib.Order.ConditionallyCompleteLattice.Group
 This file contains all results on `NNReal` that do not directly follow from its basic structure.
 As a consequence, it is a bit of a random collection of results, and is a good target for cleanup.
 
-## Notations
+## Notation
 
 This file uses `ℝ≥0` as a localized notation for `NNReal`.
 -/
 
-assert_not_exists Star
+assert_not_exists TrivialStar
 
 open Function
 open scoped BigOperators
@@ -101,7 +101,7 @@ section Sub
 
 In this section we provide a few lemmas about subtraction that do not fit well into any other
 typeclass. For lemmas about subtraction and addition see lemmas about `OrderedSub` in the file
-`Mathlib.Algebra.Order.Sub.Basic`. See also `mul_tsub` and `tsub_mul`.
+`Mathlib/Algebra/Order/Sub/Basic.lean`. See also `mul_tsub` and `tsub_mul`.
 -/
 
 theorem sub_div (a b c : ℝ≥0) : (a - b) / c = a / c - b / c :=
@@ -133,17 +133,14 @@ theorem iSup_mul (f : ι → ℝ≥0) (a : ℝ≥0) : (⨆ i, f i) * a = ⨆ i, 
 theorem iSup_div (f : ι → ℝ≥0) (a : ℝ≥0) : (⨆ i, f i) / a = ⨆ i, f i / a := by
   simp only [div_eq_mul_inv, iSup_mul]
 
--- Porting note: generalized to allow empty `ι`
 theorem mul_iSup_le {a : ℝ≥0} {g : ℝ≥0} {h : ι → ℝ≥0} (H : ∀ j, g * h j ≤ a) : g * iSup h ≤ a := by
   rw [mul_iSup]
   exact ciSup_le' H
 
--- Porting note: generalized to allow empty `ι`
 theorem iSup_mul_le {a : ℝ≥0} {g : ι → ℝ≥0} {h : ℝ≥0} (H : ∀ i, g i * h ≤ a) : iSup g * h ≤ a := by
   rw [iSup_mul]
   exact ciSup_le' H
 
--- Porting note: generalized to allow empty `ι`
 theorem iSup_mul_iSup_le {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, g i * h j ≤ a) :
     iSup g * iSup h ≤ a :=
   iSup_mul_le fun _ => mul_iSup_le <| H _

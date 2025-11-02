@@ -100,14 +100,13 @@ theorem le_gronwallBound_of_liminf_deriv_right_le {f f' : ℝ → ℝ} {δ K ε 
     (ha : f a ≤ δ) (bound : ∀ x ∈ Ico a b, f' x ≤ K * f x + ε) :
     ∀ x ∈ Icc a b, f x ≤ gronwallBound δ K ε (x - a) := by
   have H : ∀ x ∈ Icc a b, ∀ ε' ∈ Ioi ε, f x ≤ gronwallBound δ K ε' (x - a) := by
-    intro x hx ε' hε'
+    intro x hx ε' (hε' : ε < ε')
     apply image_le_of_liminf_slope_right_lt_deriv_boundary hf hf'
     · rwa [sub_self, gronwallBound_x0]
     · exact fun x => hasDerivAt_gronwallBound_shift δ K ε' x a
     · intro x hx hfB
-      rw [← hfB]
-      apply lt_of_le_of_lt (bound x hx)
-      exact add_lt_add_left (mem_Ioi.1 hε') _
+      grw [← hfB, bound x hx]
+      gcongr
     · exact hx
   intro x hx
   change f x ≤ (fun ε' => gronwallBound δ K ε' (x - a)) ε
@@ -125,6 +124,19 @@ theorem norm_le_gronwallBound_of_norm_deriv_right_le {f f' : ℝ → E} {δ K ε
     ∀ x ∈ Icc a b, ‖f x‖ ≤ gronwallBound δ K ε (x - a) :=
   le_gronwallBound_of_liminf_deriv_right_le (continuous_norm.comp_continuousOn hf)
     (fun x hx _r hr => (hf' x hx).liminf_right_slope_norm_le hr) ha bound
+
+/-- Let `f : [a, b] → E` be a differentiable function such that `f a = 0`
+and `‖f'(x)‖ ≤ K ‖f(x)‖` for some constant `K`. Then `f = 0` on `[a, b]`. -/
+theorem eq_zero_of_abs_deriv_le_mul_abs_self_of_eq_zero_right {f f' : ℝ → E} {K a b : ℝ}
+    (hf : ContinuousOn f (Icc a b)) (hf' : ∀ x ∈ Ico a b, HasDerivWithinAt f (f' x) (Ici x) x)
+    (ha : f a = 0) (bound : ∀ x ∈ Ico a b, ‖f' x‖ ≤ K * ‖f x‖) :
+    ∀ x ∈ Set.Icc a b, f x = 0 := by
+  intro x hx
+  apply norm_le_zero_iff.mp
+  calc ‖f x‖
+    _ ≤ gronwallBound 0 K 0 (x - a) :=
+      norm_le_gronwallBound_of_norm_deriv_right_le hf hf' (by simp [ha]) (by simpa using bound) _ hx
+    _ = 0 := by rw [gronwallBound_ε0_δ0]
 
 variable {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0} {f g f' g' : ℝ → E} {a b t₀ : ℝ} {εf εg δ : ℝ}
 
@@ -247,7 +259,7 @@ theorem ODE_solution_unique_of_mem_Icc_left
   have hv' : ∀ t ∈ Ico (-b) (-a), LipschitzOnWith K (Neg.neg ∘ (v (-t))) (s (-t)) := by
     intro t ht
     replace ht : -t ∈ Ioc a b := by
-      simp at ht ⊢
+      simp only [mem_Ico, mem_Ioc] at ht ⊢
       constructor <;> linarith
     rw [← one_mul K]
     exact LipschitzWith.id.neg.comp_lipschitzOnWith (hv _ ht)
@@ -264,11 +276,11 @@ theorem ODE_solution_unique_of_mem_Icc_left
   apply ODE_solution_unique_of_mem_Icc_right hv'
     (hf.comp continuousOn_neg hmt1) _ (fun _ ht ↦ hfs _ (hmt2 ht))
     (hg.comp continuousOn_neg hmt1) _ (fun _ ht ↦ hgs _ (hmt2 ht)) (by simp [hb])
-  · intros t ht
+  · intro t ht
     convert HasFDerivWithinAt.comp_hasDerivWithinAt t (hf' (-t) (hmt2 ht))
       (hasDerivAt_neg t).hasDerivWithinAt (hmt3 t)
     simp
-  · intros t ht
+  · intro t ht
     convert HasFDerivWithinAt.comp_hasDerivWithinAt t (hg' (-t) (hmt2 ht))
       (hasDerivAt_neg t).hasDerivWithinAt (hmt3 t)
     simp
@@ -309,16 +321,16 @@ theorem ODE_solution_unique_of_mem_Ioo
     (hg : ∀ t ∈ Ioo a b, HasDerivAt g (v t (g t)) t ∧ g t ∈ s t)
     (heq : f t₀ = g t₀) :
     EqOn f g (Ioo a b) := by
-  intros t' ht'
-  rcases lt_or_le t' t₀ with (h | h)
+  intro t' ht'
+  rcases lt_or_ge t' t₀ with (h | h)
   · have hss : Icc t' t₀ ⊆ Ioo a b :=
       fun _ ht'' ↦ ⟨lt_of_lt_of_le ht'.1 ht''.1, lt_of_le_of_lt ht''.2 ht.2⟩
     exact ODE_solution_unique_of_mem_Icc_left
       (fun t'' ht'' ↦ hv t'' ((Ioc_subset_Icc_self.trans hss) ht''))
-      (continuousOn_of_forall_continuousAt fun _ ht'' ↦ (hf _ <| hss ht'').1.continuousAt)
+      (HasDerivAt.continuousOn fun _ ht'' ↦ (hf _ <| hss ht'').1)
       (fun _ ht'' ↦ (hf _ <| hss <| Ioc_subset_Icc_self ht'').1.hasDerivWithinAt)
       (fun _ ht'' ↦ (hf _ <| hss <| Ioc_subset_Icc_self ht'').2)
-      (continuousOn_of_forall_continuousAt fun _ ht'' ↦ (hg _ <| hss ht'').1.continuousAt)
+      (HasDerivAt.continuousOn fun _ ht'' ↦ (hg _ <| hss ht'').1)
       (fun _ ht'' ↦ (hg _ <| hss <| Ioc_subset_Icc_self ht'').1.hasDerivWithinAt)
       (fun _ ht'' ↦ (hg _ <| hss <| Ioc_subset_Icc_self ht'').2) heq
       ⟨le_rfl, le_of_lt h⟩
@@ -326,15 +338,15 @@ theorem ODE_solution_unique_of_mem_Ioo
       fun _ ht'' ↦ ⟨lt_of_lt_of_le ht.1 ht''.1, lt_of_le_of_lt ht''.2 ht'.2⟩
     exact ODE_solution_unique_of_mem_Icc_right
       (fun t'' ht'' ↦ hv t'' ((Ico_subset_Icc_self.trans hss) ht''))
-      (continuousOn_of_forall_continuousAt fun _ ht'' ↦ (hf _ <| hss ht'').1.continuousAt)
+      (HasDerivAt.continuousOn fun _ ht'' ↦ (hf _ <| hss ht'').1)
       (fun _ ht'' ↦ (hf _ <| hss <| Ico_subset_Icc_self ht'').1.hasDerivWithinAt)
       (fun _ ht'' ↦ (hf _ <| hss <| Ico_subset_Icc_self ht'').2)
-      (continuousOn_of_forall_continuousAt fun _ ht'' ↦ (hg _ <| hss ht'').1.continuousAt)
+      (HasDerivAt.continuousOn fun _ ht'' ↦ (hg _ <| hss ht'').1)
       (fun _ ht'' ↦ (hg _ <| hss <| Ico_subset_Icc_self ht'').1.hasDerivWithinAt)
       (fun _ ht'' ↦ (hg _ <| hss <| Ico_subset_Icc_self ht'').2) heq
       ⟨h, le_rfl⟩
 
-/-- Local unqueness of ODE solutions. -/
+/-- Local uniqueness of ODE solutions. -/
 theorem ODE_solution_unique_of_eventually
     (hv : ∀ᶠ t in 𝓝 t₀, LipschitzOnWith K (v t) (s t))
     (hf : ∀ᶠ t in 𝓝 t₀, HasDerivAt f (v t (f t)) t ∧ f t ∈ s t)
@@ -358,6 +370,25 @@ theorem ODE_solution_unique
     (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (v t (g t)) (Ici t) t)
     (ha : f a = g a) :
     EqOn f g (Icc a b) :=
-  have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
+  have hfs : ∀ t ∈ Ico a b, f t ∈ univ := fun _ _ => trivial
   ODE_solution_unique_of_mem_Icc_right (fun t _ => (hv t).lipschitzOnWith) hf hf' hfs hg hg'
     (fun _ _ => trivial) ha
+
+/-- There exists only one global solution to an ODE \(\dot x=v(t, x\) with a given initial value
+provided that the RHS is Lipschitz continuous. -/
+theorem ODE_solution_unique_univ
+    (hv : ∀ t, LipschitzOnWith K (v t) (s t))
+    (hf : ∀ t, HasDerivAt f (v t (f t)) t ∧ f t ∈ s t)
+    (hg : ∀ t, HasDerivAt g (v t (g t)) t ∧ g t ∈ s t)
+    (heq : f t₀ = g t₀) : f = g := by
+  ext t
+  obtain ⟨A, B, Ht, Ht₀⟩ : ∃ A B, t ∈ Set.Ioo A B ∧ t₀ ∈ Set.Ioo A B := by
+    use (min (-|t|) (-|t₀|) - 1), (max |t| |t₀| + 1)
+    rw [Set.mem_Ioo, Set.mem_Ioo]
+    refine ⟨⟨?_, ?_⟩, ?_, ?_⟩
+    · exact sub_one_lt _ |>.trans_le <| min_le_left _ _ |>.trans <| neg_abs_le t
+    · exact le_abs_self _ |>.trans_lt <| le_max_left _ _ |>.trans_lt <| lt_add_one _
+    · exact sub_one_lt _ |>.trans_le <| min_le_right _ _ |>.trans <| neg_abs_le t₀
+    · exact le_abs_self _ |>.trans_lt <| le_max_right _ _ |>.trans_lt <| lt_add_one _
+  exact ODE_solution_unique_of_mem_Ioo
+    (fun t _ => hv t) Ht₀ (fun t _ => hf t) (fun t _ => hg t) heq Ht

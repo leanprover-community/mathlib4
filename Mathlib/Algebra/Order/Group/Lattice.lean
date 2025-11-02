@@ -93,7 +93,7 @@ lemma div_inf (a b c : α) : c / (a ⊓ b) = c / a ⊔ c / b := (OrderIso.divLef
 lemma pow_two_semiclosed
     {a : α} (ha : 1 ≤ a ^ 2) : 1 ≤ a := by
   suffices this : (a ⊓ 1) * (a ⊓ 1) = a ⊓ 1 by
-    rwa [← inf_eq_right, ← mul_right_eq_self]
+    rwa [← inf_eq_right, ← mul_eq_left]
   rw [mul_inf, inf_mul, ← pow_two, mul_one, one_mul, inf_assoc, inf_left_idem, inf_comm,
     inf_assoc, inf_of_le_left ha]
 
@@ -115,7 +115,7 @@ lemma inf_mul_sup [MulLeftMono α] (a b : α) : (a ⊓ b) * (a ⊔ b) = a * b :=
 
 /-- Every lattice ordered commutative group is a distributive lattice. -/
 -- Non-comm case needs cancellation law https://ncatlab.org/nlab/show/distributive+lattice
-@[to_additive "Every lattice ordered commutative additive group is a distributive lattice"]
+@[to_additive /-- Every lattice ordered commutative additive group is a distributive lattice -/]
 def CommGroup.toDistribLattice (α : Type*) [Lattice α] [CommGroup α]
     [MulLeftMono α] : DistribLattice α where
   le_sup_inf x y z := by

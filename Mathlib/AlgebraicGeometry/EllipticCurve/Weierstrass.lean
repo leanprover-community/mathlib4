@@ -30,17 +30,17 @@ field of `R` are precisely the `X`-coordinates of the non-zero 2-torsion points 
 
 ## Main definitions
 
- * `WeierstrassCurve`: a Weierstrass curve over a commutative ring.
- * `WeierstrassCurve.Δ`: the discriminant of a Weierstrass curve.
- * `WeierstrassCurve.map`: the Weierstrass curve mapped over a ring homomorphism.
- * `WeierstrassCurve.twoTorsionPolynomial`: the 2-torsion polynomial of a Weierstrass curve.
- * `WeierstrassCurve.IsElliptic`: typeclass asserting that a Weierstrass curve is an elliptic curve.
- * `WeierstrassCurve.j`: the j-invariant of an elliptic curve.
+* `WeierstrassCurve`: a Weierstrass curve over a commutative ring.
+* `WeierstrassCurve.Δ`: the discriminant of a Weierstrass curve.
+* `WeierstrassCurve.map`: the Weierstrass curve mapped over a ring homomorphism.
+* `WeierstrassCurve.twoTorsionPolynomial`: the 2-torsion polynomial of a Weierstrass curve.
+* `WeierstrassCurve.IsElliptic`: typeclass asserting that a Weierstrass curve is an elliptic curve.
+* `WeierstrassCurve.j`: the j-invariant of an elliptic curve.
 
 ## Main statements
 
- * `WeierstrassCurve.twoTorsionPolynomial_disc`: the discriminant of a Weierstrass curve is a
-    constant factor of the cubic discriminant of its 2-torsion polynomial.
+* `WeierstrassCurve.twoTorsionPolynomial_discr`: the discriminant of a Weierstrass curve is a
+  constant factor of the cubic discriminant of its 2-torsion polynomial.
 
 ## Implementation notes
 
@@ -53,9 +53,9 @@ which are not globally defined by a cubic equation valid over the entire base.
 
 ## References
 
- * [N Katz and B Mazur, *Arithmetic Moduli of Elliptic Curves*][katz_mazur]
- * [P Deligne, *Courbes Elliptiques: Formulaire (d'après J. Tate)*][deligne_formulaire]
- * [J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
+* [N Katz and B Mazur, *Arithmetic Moduli of Elliptic Curves*][katz_mazur]
+* [P Deligne, *Courbes Elliptiques: Formulaire (d'après J. Tate)*][deligne_formulaire]
+* [J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
 
 ## Tags
 
@@ -298,9 +298,11 @@ splitting field of `R` are precisely the `X`-coordinates of the non-zero 2-torsi
 def twoTorsionPolynomial : Cubic R :=
   ⟨4, W.b₂, 2 * W.b₄, W.b₆⟩
 
-lemma twoTorsionPolynomial_disc : W.twoTorsionPolynomial.disc = 16 * W.Δ := by
-  simp only [b₂, b₄, b₆, b₈, Δ, twoTorsionPolynomial, Cubic.disc]
+lemma twoTorsionPolynomial_discr : W.twoTorsionPolynomial.discr = 16 * W.Δ := by
+  simp only [b₂, b₄, b₆, b₈, Δ, twoTorsionPolynomial, Cubic.discr]
   ring1
+
+@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc := twoTorsionPolynomial_discr
 
 section CharTwo
 
@@ -312,8 +314,11 @@ lemma twoTorsionPolynomial_of_char_two : W.twoTorsionPolynomial = ⟨0, W.b₂, 
   · linear_combination 2 * CharP.cast_eq_zero R 2
   · linear_combination W.b₄ * CharP.cast_eq_zero R 2
 
-lemma twoTorsionPolynomial_disc_of_char_two : W.twoTorsionPolynomial.disc = 0 := by
-  linear_combination W.twoTorsionPolynomial_disc + 8 * W.Δ * CharP.cast_eq_zero R 2
+lemma twoTorsionPolynomial_discr_of_char_two : W.twoTorsionPolynomial.discr = 0 := by
+  linear_combination W.twoTorsionPolynomial_discr + 8 * W.Δ * CharP.cast_eq_zero R 2
+
+@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc_of_char_two :=
+  twoTorsionPolynomial_discr_of_char_two
 
 end CharTwo
 
@@ -327,28 +332,35 @@ lemma twoTorsionPolynomial_of_char_three : W.twoTorsionPolynomial = ⟨1, W.b₂
   · linear_combination CharP.cast_eq_zero R 3
   · linear_combination W.b₄ * CharP.cast_eq_zero R 3
 
-lemma twoTorsionPolynomial_disc_of_char_three : W.twoTorsionPolynomial.disc = W.Δ := by
-  linear_combination W.twoTorsionPolynomial_disc + 5 * W.Δ * CharP.cast_eq_zero R 3
+lemma twoTorsionPolynomial_discr_of_char_three : W.twoTorsionPolynomial.discr = W.Δ := by
+  linear_combination W.twoTorsionPolynomial_discr + 5 * W.Δ * CharP.cast_eq_zero R 3
 
 end CharThree
 
--- TODO: change to `[IsUnit ...]` once #17458 is merged
-lemma twoTorsionPolynomial_disc_isUnit (hu : IsUnit (2 : R)) :
-    IsUnit W.twoTorsionPolynomial.disc ↔ IsUnit W.Δ := by
-  rw [twoTorsionPolynomial_disc, IsUnit.mul_iff, show (16 : R) = 2 ^ 4 by norm_num1]
+-- TODO: change to `[IsUnit ...]` once https://github.com/leanprover-community/mathlib4/issues/17458 is merged
+lemma twoTorsionPolynomial_discr_isUnit (hu : IsUnit (2 : R)) :
+    IsUnit W.twoTorsionPolynomial.discr ↔ IsUnit W.Δ := by
+  rw [twoTorsionPolynomial_discr, IsUnit.mul_iff, show (16 : R) = 2 ^ 4 by norm_num1]
   exact and_iff_right <| hu.pow 4
 
--- TODO: change to `[IsUnit ...]` once #17458 is merged
+-- TODO: change to `[IsUnit ...]` once https://github.com/leanprover-community/mathlib4/issues/17458 is merged
 -- TODO: In this case `IsUnit W.Δ` is just `W.IsElliptic`, consider removing/rephrasing this result
-lemma twoTorsionPolynomial_disc_ne_zero [Nontrivial R] (hu : IsUnit (2 : R)) (hΔ : IsUnit W.Δ) :
-    W.twoTorsionPolynomial.disc ≠ 0 :=
-  ((W.twoTorsionPolynomial_disc_isUnit hu).mpr hΔ).ne_zero
+lemma twoTorsionPolynomial_discr_ne_zero [Nontrivial R] (hu : IsUnit (2 : R)) (hΔ : IsUnit W.Δ) :
+    W.twoTorsionPolynomial.discr ≠ 0 :=
+  ((W.twoTorsionPolynomial_discr_isUnit hu).mpr hΔ).ne_zero
+
+@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc_of_char_three :=
+  twoTorsionPolynomial_discr_of_char_three
+@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc_isUnit :=
+  twoTorsionPolynomial_discr_isUnit
+@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc_ne_zero :=
+  twoTorsionPolynomial_discr_ne_zero
 
 end TorsionPolynomial
 
 /-! ## Elliptic curves -/
 
--- TODO: change to `protected abbrev IsElliptic := IsUnit W.Δ` once #17458 is merged
+-- TODO: change to `protected abbrev IsElliptic := IsUnit W.Δ` once https://github.com/leanprover-community/mathlib4/issues/17458 is merged
 /-- `WeierstrassCurve.IsElliptic` is a typeclass which asserts that a Weierstrass curve is an
 elliptic curve: that its discriminant is a unit. Note that this definition is only mathematically
 accurate for certain rings whose Picard group has trivial 12-torsion, such as a field or a PID. -/
@@ -426,11 +438,14 @@ lemma j_eq_zero_iff_of_char_three [IsReduced R] : W.j = 0 ↔ W.b₂ = 0 := by
 
 end CharThree
 
--- TODO: this is defeq to `twoTorsionPolynomial_disc_ne_zero` once #17458 is merged,
+-- TODO: this is defeq to `twoTorsionPolynomial_discr_ne_zero` once https://github.com/leanprover-community/mathlib4/issues/17458 is merged,
 -- TODO: consider removing/rephrasing this result
-lemma twoTorsionPolynomial_disc_ne_zero_of_isElliptic [Nontrivial R] (hu : IsUnit (2 : R)) :
-    W.twoTorsionPolynomial.disc ≠ 0 :=
-  W.twoTorsionPolynomial_disc_ne_zero hu W.isUnit_Δ
+lemma twoTorsionPolynomial_discr_ne_zero_of_isElliptic [Nontrivial R] (hu : IsUnit (2 : R)) :
+    W.twoTorsionPolynomial.discr ≠ 0 :=
+  W.twoTorsionPolynomial_discr_ne_zero hu W.isUnit_Δ
+
+@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc_ne_zero_of_isElliptic :=
+  twoTorsionPolynomial_discr_ne_zero_of_isElliptic
 
 section BaseChange
 

@@ -16,7 +16,7 @@ Let `α` be a decidable fintype.
 * `conj_support_eq` relates the support of `k • g` with that of `g`
 
 * `cycleFactorsFinset_conj_eq`, `mem_cycleFactorsFinset_conj'`
-  and `cycleFactorsFinset_conj` relate the set of cycles of `g`,  `g.cycleFactorsFinset`,
+  and `cycleFactorsFinset_conj` relate the set of cycles of `g`, `g.cycleFactorsFinset`,
   with that for `k • g`
 
 -/

@@ -38,7 +38,7 @@ noncomputable section
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
-open Module
+open Module InnerProductSpace
 
 open scoped RealInnerProductSpace
 
@@ -86,9 +86,7 @@ top-dimensional forms on `E`. -/
 theorem det_eq_neg_det_of_opposite_orientation (h : e.toBasis.orientation ≠ f.toBasis.orientation) :
     e.toBasis.det = -f.toBasis.det := by
   rw [e.toBasis.det.eq_smul_basis_det f.toBasis]
-  -- Porting note: added `neg_one_smul` with explicit type
-  simp [e.det_to_matrix_orthonormalBasis_of_opposite_orientation f h,
-    neg_one_smul ℝ (M := E [⋀^ι]→ₗ[ℝ] ℝ)]
+  simp [e.det_to_matrix_orthonormalBasis_of_opposite_orientation f h]
 
 variable [Nonempty ι]
 
@@ -177,7 +175,7 @@ irreducible_def volumeForm : E [⋀^Fin n]→ₗ[ℝ] ℝ := by
 theorem volumeForm_zero_pos [_i : Fact (finrank ℝ E = 0)] :
     Orientation.volumeForm (positiveOrientation : Orientation ℝ E (Fin 0)) =
       AlternatingMap.constLinearEquivOfIsEmpty 1 := by
-  simp [volumeForm, Or.by_cases, if_pos]
+  simp [volumeForm, Or.by_cases]
 
 theorem volumeForm_zero_neg [_i : Fact (finrank ℝ E = 0)] :
     Orientation.volumeForm (-positiveOrientation : Orientation ℝ E (Fin 0)) =
@@ -221,8 +219,7 @@ theorem volumeForm_neg_orientation : (-o).volumeForm = -o.volumeForm := by
   rcases n with - | n
   · refine o.eq_or_eq_neg_of_isEmpty.elim ?_ ?_ <;> rintro rfl
     · simp [volumeForm_zero_neg]
-    · rw [neg_neg (positiveOrientation (R := ℝ))] -- Porting note: added
-      simp [volumeForm_zero_neg]
+    · simp [volumeForm_zero_neg]
   let e : OrthonormalBasis (Fin n.succ) ℝ E := o.finOrthonormalBasis n.succ_pos Fact.out
   have h₁ : e.toBasis.orientation = o := o.finOrthonormalBasis_orientation _ _
   have h₂ : e.toBasis.orientation ≠ -o := by
@@ -308,9 +305,9 @@ theorem volumeForm_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ
 theorem volumeForm_comp_linearIsometryEquiv (φ : E ≃ₗᵢ[ℝ] E)
     (hφ : 0 < LinearMap.det (φ.toLinearEquiv : E →ₗ[ℝ] E)) (x : Fin n → E) :
     o.volumeForm (φ ∘ x) = o.volumeForm x := by
-  rcases n with - | n -- Porting note: need to explicitly prove `FiniteDimensional ℝ E`
+  rcases n with - | n
   · refine o.eq_or_eq_neg_of_isEmpty.elim ?_ ?_ <;> rintro rfl <;> simp
-  haveI : FiniteDimensional ℝ E := .of_fact_finrank_eq_succ n
+  have : FiniteDimensional ℝ E := .of_fact_finrank_eq_succ n
   convert o.volumeForm_map φ (φ ∘ x)
   · symm
     rwa [← o.map_eq_iff_det_pos φ.toLinearEquiv] at hφ

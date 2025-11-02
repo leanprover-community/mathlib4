@@ -153,9 +153,9 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
           (Real.cos_pos_of_mem_Ioo <| abs_lt.1 <| (abs_of_pos (mul_pos hd₀ hb)).symm ▸ hb'),
         fun w hw => ?_⟩
     replace hw : |im (aff w)| ≤ d * b := by
-      rw [← Real.closedBall_eq_Icc] at hw
-      rwa [im_ofReal_mul, sub_im, mul_I_im, ofReal_re, _root_.abs_mul, abs_of_pos hd₀,
-        mul_le_mul_left hd₀]
+      rw [← Real.closedBall_eq_Icc, mem_closedBall, Real.dist_eq] at hw
+      rw [im_ofReal_mul, sub_im, mul_I_im, ofReal_re, _root_.abs_mul, abs_of_pos hd₀]
+      gcongr
     simpa only [aff, re_ofReal_mul, _root_.abs_mul, abs_of_pos hd₀, sub_re, mul_I_re, ofReal_im,
       zero_mul, neg_zero, sub_zero] using
       norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le ε₀.le hw hb'.le
@@ -164,13 +164,13 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
     refine fun w hw => (hδ <| hw.by_cases ?_ ?_).trans (Real.exp_le_one_iff.2 ?_)
     exacts [fun h => h.symm ▸ left_mem_Icc.2 hab.le, fun h => h.symm ▸ right_mem_Icc.2 hab.le,
       mul_nonpos_of_nonpos_of_nonneg δ₀.le (Real.exp_pos _).le]
-  /- Our apriori estimate on `f` implies that `g ε w • f w → 0` as `|w.re| → ∞` along the strip. In
+  /- Our a priori estimate on `f` implies that `g ε w • f w → 0` as `|w.re| → ∞` along the strip. In
     particular, its norm is less than or equal to `C` for sufficiently large `|w.re|`. -/
   obtain ⟨R, hzR, hR⟩ :
     ∃ R : ℝ, |z.re| < R ∧ ∀ w, |re w| = R → im w ∈ Ioo (a - b) (a + b) → ‖g ε w • f w‖ ≤ C := by
     refine ((eventually_gt_atTop _).and ?_).exists
     rcases hO.exists_pos with ⟨A, hA₀, hA⟩
-    simp only [isBigOWith_iff, eventually_inf_principal, eventually_comap, mem_Ioo, ← abs_lt,
+    simp only [isBigOWith_iff, eventually_inf_principal, eventually_comap, mem_Ioo,
       mem_preimage, (· ∘ ·), Real.norm_eq_abs, abs_of_pos (Real.exp_pos _)] at hA
     suffices
         Tendsto (fun R => expR (δ * expR (d * R) + B * expR (c * R) + Real.log A)) atTop (𝓝 0) by
@@ -187,11 +187,10 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
       refine Tendsto.atBot_add ?_ tendsto_const_nhds
       simpa only [id, (· ∘ ·), add_mul, mul_assoc, ← div_eq_inv_mul, ← Real.exp_sub, ← sub_mul,
         sub_sub_cancel]
-        using H.neg_mul_atTop δ₀ <| Real.tendsto_exp_atTop.comp <|
-          tendsto_const_nhds.mul_atTop hd₀ tendsto_id
+        using H.neg_mul_atTop δ₀ <| Real.tendsto_exp_atTop.comp <| tendsto_id.const_mul_atTop hd₀
     refine tendsto_const_nhds.add (tendsto_const_nhds.mul ?_)
     exact tendsto_inv_atTop_zero.comp <| Real.tendsto_exp_atTop.comp <|
-      tendsto_const_nhds.mul_atTop (sub_pos.2 hcd) tendsto_id
+      tendsto_id.const_mul_atTop (sub_pos.2 hcd)
   have hR₀ : 0 < R := (_root_.abs_nonneg _).trans_lt hzR
   /- Finally, we apply the bounded version of the maximum modulus principle to the rectangle
     `(-R, R) × (a - b, a + b)`. The function is bounded by `C` on the horizontal sides by assumption
@@ -349,7 +348,6 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
     refine ⟨log z, ?_, exp_log hzne⟩
     rw [log_im]
     exact ⟨arg_nonneg_iff.2 hz_im, arg_le_pi_div_two_iff.2 (Or.inl hz_re)⟩
-  -- Porting note: failed to clear `clear hz_re hz_im hzne`
   -- We are going to apply `PhragmenLindelof.horizontal_strip` to `f ∘ Complex.exp` and `ζ`.
   change ‖(f ∘ exp) ζ‖ ≤ C
   have H : MapsTo exp (im ⁻¹' Ioo 0 (π / 2)) (Ioi 0 ×ℂ Ioi 0) := fun z hz ↦ by
@@ -359,7 +357,6 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
       Real.sin_pos_of_mem_Ioo ⟨hz.1, hz.2.trans (half_lt_self Real.pi_pos)⟩
     constructor <;> positivity
   refine horizontal_strip (hd.comp differentiable_exp.diffContOnCl H) ?_ ?_ ?_ hζ.1 hζ.2
-  -- Porting note: failed to clear hζ ζ
   · -- The estimate `hB` on `f` implies the required estimate on
     -- `f ∘ exp` with the same `c` and `B' = max B 0`.
     rw [sub_zero, div_div_cancel₀ Real.pi_pos.ne']
@@ -379,7 +376,7 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
       rw [norm_one, Real.norm_of_nonneg (Real.exp_pos _).le, Real.one_le_exp_iff]
       positivity
     · -- For the estimate as `ζ.re → ∞`, we reuse the upper estimate on `f`
-      simp only [EventuallyLE, eventually_inf_principal, eventually_comap, comp_apply, one_mul,
+      simp only [EventuallyLE, eventually_inf_principal, eventually_comap, comp_apply,
         Real.norm_of_nonneg (Real.exp_pos _).le, norm_exp, ← Real.exp_mul, Real.exp_le_exp]
       filter_upwards [eventually_ge_atTop 0] with x hx z hz _
       rw [hz, abs_of_nonneg hx, mul_comm _ c]
@@ -677,7 +674,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
     rw [cocompact_eq_atBot_atTop, inf_sup_right, (disjoint_atBot_principal_Ici (0 : ℝ)).eq_bot,
       bot_sup_eq]
     exact (hre.norm.eventually <| ge_mem_nhds hlt).filter_mono inf_le_left
-  rcases le_or_lt ‖f x₀‖ C with h | h
+  rcases le_or_gt ‖f x₀‖ C with h | h
   ·-- If `‖f x₀‖ ≤ C`, then `hle` implies the required estimate
     simpa only [max_eq_left h] using hle _ hmax
   · -- Otherwise, `‖f z‖ ≤ ‖f x₀‖` for all `z` in the right half-plane due to `hle`.
@@ -699,7 +696,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
         _ = |(z - x₀).re| := by rw [sub_re, ofReal_re, _root_.abs_sub_comm]
         _ ≤ ‖z - x₀‖ := abs_re_le_norm _
     -- Thus we have `C < ‖f x₀‖ = ‖f 0‖ ≤ C`. Contradiction completes the proof.
-    refine (h.not_le <| this ▸ ?_).elim
+    refine (h.not_ge <| this ▸ ?_).elim
     simpa using him 0
 
 /-- **Phragmen-Lindelöf principle** in the right half-plane. Let `f : ℂ → E` be a function such that
@@ -774,8 +771,8 @@ theorem eq_zero_on_right_half_plane_of_superexponential_decay (hd : DiffContOnCl
   suffices H : ∀ n : ℕ, ‖g n z‖ ≤ C by
     contrapose! H
     simp only [hg]
-    exact (((tendsto_pow_atTop_atTop_of_one_lt (Real.one_lt_exp_iff.2 hz)).atTop_mul
-      (norm_pos_iff.2 H) tendsto_const_nhds).eventually (eventually_gt_atTop C)).exists
+    exact (((tendsto_pow_atTop_atTop_of_one_lt (Real.one_lt_exp_iff.2 hz)).atTop_mul_const
+      (norm_pos_iff.2 H)).eventually (eventually_gt_atTop C)).exists
   intro n
   -- This estimate follows from the Phragmen-Lindelöf principle in the right half-plane.
   refine right_half_plane_of_tendsto_zero_on_real ((differentiable_exp.pow n).diffContOnCl.smul hd)

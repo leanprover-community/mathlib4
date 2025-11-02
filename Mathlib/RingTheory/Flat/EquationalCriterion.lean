@@ -3,9 +3,9 @@ Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee, Junyan Xu
 -/
-import Mathlib.RingTheory.Flat.Basic
-import Mathlib.LinearAlgebra.TensorProduct.Vanishing
 import Mathlib.Algebra.Module.FinitePresentation
+import Mathlib.LinearAlgebra.TensorProduct.Vanishing
+import Mathlib.RingTheory.Flat.Tensor
 
 /-! # The equational criterion for flatness
 
@@ -109,7 +109,7 @@ $x \colon R^l \to M$ such that $x(f) = 0$, there exist a finite free module $R^k
 linear maps $a \colon R^l \to R^k$ and $y \colon R^k \to M$ such
 that $x = y \circ a$ and $a(f) = 0$.
 -/
-@[stacks 00HK, stacks 058D "except (3)"]
+@[stacks 00HK, stacks 058D "(1) ↔ (2)"]
 theorem tfae_equational_criterion : List.TFAE [
     Flat R M,
     ∀ I : Ideal R, Function.Injective (rTensor M I.subtype),
@@ -130,11 +130,10 @@ theorem tfae_equational_criterion : List.TFAE [
     let x' : Fin l → M := fun i ↦ x (single i 1)
     have := calc
       ∑ i, f' i • x' i
-      _ = ∑ i, f i • x (single i 1)         := rfl
+      _ = ∑ i, f i • x (single i 1) := rfl
       _ = x (∑ i, f i • Finsupp.single i 1) := by simp_rw [map_sum, map_smul]
-      _ = x f                               := by
-        simp_rw [smul_single, smul_eq_mul, mul_one, univ_sum_single]
-      _ = 0                                 := hfx
+      _ = x f := by simp_rw [smul_single, smul_eq_mul, mul_one, univ_sum_single]
+      _ = 0 := hfx
     obtain ⟨k, a', y', ⟨ha'y', ha'⟩⟩ := h₄ this
     use k
     use Finsupp.linearCombination R (fun i ↦ equivFunOnFinite.symm (a' i))
@@ -223,9 +222,6 @@ theorem exists_factorization_of_apply_eq_zero_of_free [Flat R M] {N : Type*} [Ad
   have ⟨k, a, y, hya, haf⟩ := iff_forall_exists_factorization.mp ‹Flat R M›
     (f := e.symm f) (x := x ∘ₗ e) (by simpa using h)
   ⟨k, a ∘ₗ e.symm, y, by rwa [← comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm], haf⟩
-
-@[deprecated (since := "2025-01-03")] alias exists_factorization_of_apply_eq_zero :=
-  exists_factorization_of_apply_eq_zero_of_free
 
 private theorem exists_factorization_of_comp_eq_zero_of_free_aux [Flat R M] {K : Type*} {n : ℕ}
     [AddCommGroup K] [Module R K] [Module.Finite R K] {f : K →ₗ[R] Fin n →₀ R}

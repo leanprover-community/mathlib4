@@ -60,7 +60,7 @@ noncomputable def CommSq.isColimitEquivIsColimitCokernelCofork (sq : CommSq f g 
       (fun s ↦ PushoutCocone.IsColimit.desc h
         (biprod.inl ≫ s.π) (biprod.inr ≫ s.π) (by
           rw [← sub_eq_zero, ← assoc, ← assoc, ← Preadditive.sub_comp]
-          convert s.condition <;> aesop_cat))
+          convert s.condition <;> cat_disch))
       (fun s ↦ by
         dsimp
         ext
@@ -96,7 +96,7 @@ noncomputable def CommSq.isColimitEquivIsColimitCokernelCofork (sq : CommSq f g 
         apply Cofork.IsColimit.hom_ext h
         convert (h.fac (CokernelCofork.ofπ (biprod.desc s.inl s.inr)
           (by simp [s.condition])) .one).symm
-        aesop_cat)
+        cat_disch)
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 
@@ -139,7 +139,7 @@ noncomputable def CommSq.isLimitEquivIsLimitKernelFork (sq : CommSq fst snd f g)
       (fun s ↦ PullbackCone.IsLimit.lift h
         (s.ι ≫ biprod.fst) (s.ι ≫ biprod.snd) (by
           rw [← sub_eq_zero, assoc, assoc, ← Preadditive.comp_sub]
-          convert s.condition <;> aesop_cat))
+          convert s.condition <;> cat_disch))
       (fun s ↦ by
         dsimp
         ext
@@ -173,7 +173,7 @@ noncomputable def CommSq.isLimitEquivIsLimitKernelFork (sq : CommSq fst snd f g)
         apply Fork.IsLimit.hom_ext h
         convert (h.fac (KernelFork.ofι (biprod.lift s.fst s.snd)
           (by simp [s.condition])) .zero).symm
-        aesop_cat)
+        cat_disch)
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 

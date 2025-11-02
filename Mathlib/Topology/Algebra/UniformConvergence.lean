@@ -22,7 +22,7 @@ space of continuous linear maps between two topological vector spaces.
 
 ## Implementation notes
 
-Like in `Mathlib.Topology.UniformSpace.UniformConvergenceTopology`, we use the type aliases
+Like in `Mathlib/Topology/UniformSpace/UniformConvergenceTopology.lean`, we use the type aliases
 `UniformFun` (denoted `α →ᵤ β`) and `UniformOnFun` (denoted `α →ᵤ[𝔖] β`) for functions from `α`
 to `β` endowed with the structures of uniform convergence and `𝔖`-convergence.
 
@@ -207,12 +207,12 @@ end AlgebraicInstances
 
 section Group
 
-variable {α G ι : Type*} [Group G] {𝔖 : Set <| Set α} [UniformSpace G] [UniformGroup G]
+variable {α G ι : Type*} [Group G] {𝔖 : Set <| Set α} [UniformSpace G] [IsUniformGroup G]
 
 /-- If `G` is a uniform group, then `α →ᵤ G` is a uniform group as well. -/
-@[to_additive "If `G` is a uniform additive group,
-then `α →ᵤ G` is a uniform additive group as well."]
-instance : UniformGroup (α →ᵤ G) :=
+@[to_additive /-- If `G` is a uniform additive group,
+then `α →ᵤ G` is a uniform additive group as well. -/]
+instance : IsUniformGroup (α →ᵤ G) :=
   ⟨(-- Since `(/) : G × G → G` is uniformly continuous,
     -- `UniformFun.postcomp_uniformContinuous` tells us that
     -- `((/) ∘ —) : (α →ᵤ G × G) → (α →ᵤ G)` is uniformly continuous too. By precomposing with
@@ -236,9 +236,9 @@ protected theorem UniformFun.hasBasis_nhds_one :
 
 /-- Let `𝔖 : Set (Set α)`. If `G` is a uniform group, then `α →ᵤ[𝔖] G` is a uniform group as
 well. -/
-@[to_additive "Let `𝔖 : Set (Set α)`. If `G` is a uniform additive group,
-then `α →ᵤ[𝔖] G` is a uniform additive group as well."]
-instance : UniformGroup (α →ᵤ[𝔖] G) :=
+@[to_additive /-- Let `𝔖 : Set (Set α)`. If `G` is a uniform additive group,
+then `α →ᵤ[𝔖] G` is a uniform additive group as well. -/]
+instance : IsUniformGroup (α →ᵤ[𝔖] G) :=
   ⟨(-- Since `(/) : G × G → G` is uniformly continuous,
     -- `UniformOnFun.postcomp_uniformContinuous` tells us that
     -- `((/) ∘ —) : (α →ᵤ[𝔖] G × G) → (α →ᵤ[𝔖] G)` is uniformly continuous too. By precomposing with
@@ -264,6 +264,26 @@ protected theorem UniformOnFun.hasBasis_nhds_one (𝔖 : Set <| Set α) (h𝔖�
       (fun SV : Set α × Set G => SV.1 ∈ 𝔖 ∧ SV.2 ∈ (𝓝 1 : Filter G)) fun SV =>
       { f : α →ᵤ[𝔖] G | ∀ x ∈ SV.1, f x ∈ SV.2 } :=
   UniformOnFun.hasBasis_nhds_one_of_basis 𝔖 h𝔖₁ h𝔖₂ (basis_sets _)
+
+@[to_additive (attr := simp)]
+lemma UniformOnFun.ofFun_prod {β : Type*} [CommMonoid β] {f : ι → α → β} (I : Finset ι) :
+    ofFun 𝔖 (∏ i ∈ I, f i) = ∏ i ∈ I, ofFun 𝔖 (f i) :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma UniformOnFun.toFun_prod {β : Type*} [CommMonoid β] {f : ι → α → β} (I : Finset ι) :
+    toFun 𝔖 (∏ i ∈ I, f i) = ∏ i ∈ I, toFun 𝔖 (f i) :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma UniformFun.ofFun_prod {β : Type*} [CommMonoid β] {f : ι → α → β} (I : Finset ι) :
+    ofFun (∏ i ∈ I, f i) = ∏ i ∈ I, ofFun (f i) :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma UniformFun.toFun_prod {β : Type*} [CommMonoid β] {f : ι → α → β} (I : Finset ι) :
+    toFun (∏ i ∈ I, f i) = ∏ i ∈ I, toFun (f i) :=
+  rfl
 
 end Group
 

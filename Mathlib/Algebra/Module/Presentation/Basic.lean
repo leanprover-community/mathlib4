@@ -32,10 +32,11 @@ generators and relations.
 
 ## TODO
 * Relate this to `Module.FinitePresentation`
-* Behaviour of presentations with respect to the extension of scalars and
-the restriction of scalars
+* Behaviour of presentations with respect to the extension of scalars and the restriction of scalars
 
 -/
+
+assert_not_exists Cardinal
 
 universe w' w'' w₀ w₁ v'' v' v u
 
@@ -71,7 +72,7 @@ noncomputable instance : Module A relations.Quotient := by
   dsimp only [Quotient]; infer_instance
 
 /-- The canonical (surjective) linear map `(relations.G →₀ A) →ₗ[A] relations.Quotient`. -/
-def toQuotient : (relations.G →₀ A) →ₗ[A] relations.Quotient := Submodule.mkQ _
+noncomputable def toQuotient : (relations.G →₀ A) →ₗ[A] relations.Quotient := Submodule.mkQ _
 
 variable {relations} in
 @[ext]
@@ -214,7 +215,7 @@ variable (π : (relations.G →₀ A) →ₗ[A] M) (hπ : ∀ (r : relations.R),
 for `relations.Solution M` for which the data is given as
 a linear map `π : (relations.G →₀ A) →ₗ[A] M`. (See also `ofπ'` for an alternate
 vanishing criterion.) -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 noncomputable def ofπ : relations.Solution M where
   var g := π (Finsupp.single g 1)
   linearCombination_var_relation r := by
@@ -233,7 +234,7 @@ variable (π : (relations.G →₀ A) →ₗ[A] M) (hπ : π.comp relations.map 
 
 /-- Variant of `ofπ` where the vanishing condition is expressed in terms
 of a composition of linear maps. -/
-@[simps! (config := .lemmasOnly)]
+@[simps! -isSimp]
 noncomputable def ofπ' : relations.Solution M :=
   ofπ π (fun r ↦ by
     simpa using DFunLike.congr_fun hπ (Finsupp.single r 1))
@@ -500,6 +501,7 @@ variable {A M}
 def Presentation.ofIsPresentation {relations : Relations.{w₀, w₁} A}
     {solution : relations.Solution M} (h : solution.IsPresentation) :
     Presentation.{w₀, w₁} A M where
+  __ := relations
   toSolution := solution
   toIsPresentation := h
 

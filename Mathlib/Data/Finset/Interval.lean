@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
+Authors: Yaël Dillies, Yury Kudryashov
 -/
 import Mathlib.Data.Finset.Grade
 import Mathlib.Data.Finset.Powerset
@@ -30,54 +30,47 @@ namespace Finset
 
 section Decidable
 
+/-- `LocallyFiniteOrder` instance for `Finset α`.
+
+We provide an optimized definition for `Finset.Icc (s : Finset α) t`,
+then define the other intervals based on `Icc`.
+
+We do not define, e.g., `Finset.Ico` based on `Finset.ssubsets`,
+because it would require more code without performance gain.
+-/
+instance instLocallyFiniteOrder [DecidableEq α] : LocallyFiniteOrder (Finset α) :=
+  .ofIcc _ (fun s t ↦
+    if s ⊆ t then
+      (t \ s).powerset.attach.map ⟨fun u ↦ u.1.disjUnion s <|
+        disjoint_sdiff_self_left.mono_left <| mem_powerset.mp u.2, fun u₁ u₂ h ↦ by
+          simpa only [disjUnion_inj_left, Subtype.eq_iff] using h⟩
+    else ∅) fun s t u ↦ by
+      by_cases hst : s ⊆ t
+      · suffices (∃ a ⊆ t, Disjoint a s ∧ a ∪ s = u) ↔ s ⊆ u ∧ u ⊆ t by
+          simpa [hst, subset_sdiff, and_assoc]
+        constructor
+        · rintro ⟨u, hut, -, rfl⟩
+          exact ⟨subset_union_right, union_subset hut hst⟩
+        · rintro ⟨hsu, hut⟩
+          exact ⟨u \ s, sdiff_subset.trans hut, disjoint_sdiff_self_left, sdiff_union_of_subset hsu⟩
+      · suffices s ⊆ u → ¬u ⊆ t by simpa [hst]
+        exact fun hsu hut ↦ hst (hsu.trans hut)
+
 variable [DecidableEq α] (s t : Finset α)
 
-instance instLocallyFiniteOrder : LocallyFiniteOrder (Finset α) where
-  finsetIcc s t := t.powerset.filter (s ⊆ ·)
-  finsetIco s t := t.ssubsets.filter (s ⊆ ·)
-  finsetIoc s t := t.powerset.filter (s ⊂ ·)
-  finsetIoo s t := t.ssubsets.filter (s ⊂ ·)
-  finset_mem_Icc s t u := by
-    rw [mem_filter, mem_powerset]
-    exact and_comm
-  finset_mem_Ico s t u := by
-    rw [mem_filter, mem_ssubsets]
-    exact and_comm
-  finset_mem_Ioc s t u := by
-    rw [mem_filter, mem_powerset]
-    exact and_comm
-  finset_mem_Ioo s t u := by
-    rw [mem_filter, mem_ssubsets]
-    exact and_comm
-
-theorem Icc_eq_filter_powerset : Icc s t = t.powerset.filter (s ⊆ ·) :=
-  rfl
-
-theorem Ico_eq_filter_ssubsets : Ico s t = t.ssubsets.filter (s ⊆ ·) :=
-  rfl
-
-theorem Ioc_eq_filter_powerset : Ioc s t = t.powerset.filter (s ⊂ ·) :=
-  rfl
-
-theorem Ioo_eq_filter_ssubsets : Ioo s t = t.ssubsets.filter (s ⊂ ·) :=
-  rfl
-
-theorem Iic_eq_powerset : Iic s = s.powerset :=
-  filter_true_of_mem fun t _ => empty_subset t
-
-theorem Iio_eq_ssubsets : Iio s = s.ssubsets :=
-  filter_true_of_mem fun t _ => empty_subset t
+theorem Icc_eq_filter_powerset : Icc s t = {u ∈ t.powerset | s ⊆ u} := by ext; simp [and_comm]
+theorem Ico_eq_filter_ssubsets : Ico s t = {u ∈ t.ssubsets | s ⊆ u} := by ext; simp [and_comm]
+theorem Ioc_eq_filter_powerset : Ioc s t = {u ∈ t.powerset | s ⊂ u} := by ext; simp [and_comm]
+theorem Ioo_eq_filter_ssubsets : Ioo s t = {u ∈ t.ssubsets | s ⊂ u} := by ext; simp [and_comm]
+theorem Iic_eq_powerset : Iic s = s.powerset := by ext; simp
+theorem Iio_eq_ssubsets : Iio s = s.ssubsets := by ext; simp
 
 variable {s t}
 
 theorem Icc_eq_image_powerset (h : s ⊆ t) : Icc s t = (t \ s).powerset.image (s ∪ ·) := by
-  ext u
-  simp_rw [mem_Icc, mem_image, mem_powerset]
-  constructor
-  · rintro ⟨hs, ht⟩
-    exact ⟨u \ s, sdiff_le_sdiff_right ht, sup_sdiff_cancel_right hs⟩
-  · rintro ⟨v, hv, rfl⟩
-    exact ⟨le_sup_left, union_subset h <| hv.trans sdiff_subset⟩
+  unfold Finset.Icc instLocallyFiniteOrder LocallyFiniteOrder.ofIcc
+  ext
+  simp [h, union_comm]
 
 theorem Ico_eq_image_ssubsets (h : s ⊆ t) : Ico s t = (t \ s).ssubsets.image (s ∪ ·) := by
   ext u
@@ -90,11 +83,8 @@ theorem Ico_eq_image_ssubsets (h : s ⊆ t) : Ico s t = (t \ s).ssubsets.image (
 
 /-- Cardinality of a non-empty `Icc` of finsets. -/
 theorem card_Icc_finset (h : s ⊆ t) : (Icc s t).card = 2 ^ (t.card - s.card) := by
-  rw [← card_sdiff h, ← card_powerset, Icc_eq_image_powerset h, Finset.card_image_iff]
-  rintro u hu v hv (huv : s ⊔ u = s ⊔ v)
-  rw [mem_coe, mem_powerset] at hu hv
-  rw [← (disjoint_sdiff.mono_right hu : Disjoint s u).sup_sdiff_cancel_left, ←
-    (disjoint_sdiff.mono_right hv : Disjoint s v).sup_sdiff_cancel_left, huv]
+  unfold Finset.Icc instLocallyFiniteOrder LocallyFiniteOrder.ofIcc
+  simp [h, card_sdiff_of_subset]
 
 /-- Cardinality of an `Ico` of finsets. -/
 theorem card_Ico_finset (h : s ⊆ t) : (Ico s t).card = 2 ^ (t.card - s.card) - 1 := by

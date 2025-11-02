@@ -33,15 +33,14 @@ The proof is done by induction, using two standard constructions
 * `MonomialOrder.subLTerm f` deletes the leading term of a polynomial `f`
 
 * `MonomialOrder.reduce hb f` subtracts from `f` the appropriate multiple of `b : MvPolynomial σ R`,
-provided `IsUnit (m.leadingCoeff b)`.
+  provided `IsUnit (m.leadingCoeff b)`.
 
 * `MonomialOrder.div_set` is the variant of `MonomialOrder.div` for a set of polynomials.
 
+* `MonomialOrder.div_single` is the variant of `MonomialOrder.div` for a single polynomial.
+
+
 ## Reference : [Becker-Weispfenning1993]
-
-## TODO
-
-* Prove that under `Field F`, `IsUnit (m.leadingCoeff (b i))` is equivalent to `b i ≠ 0`.
 
 -/
 
@@ -84,7 +83,7 @@ variable (m) in
 noncomputable
 def reduce {b : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff b)) (f : MvPolynomial σ R) :
     MvPolynomial σ R :=
- f - monomial (m.degree f - m.degree b) (hb.unit⁻¹ * m.leadingCoeff f) * b
+  f - monomial (m.degree f - m.degree b) (hb.unit⁻¹ * m.leadingCoeff f) * b
 
 theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff b))
     (hbf : m.degree b ≤ m.degree f) (hf : m.degree f ≠ 0) :
@@ -120,6 +119,8 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff 
     rw [H', degree_zero] at K
     exact hf K.symm
 
+/-- Division by a family of multivariate polynomials
+whose leading coefficients are invertible with respect to a monomial order -/
 theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
     (hb : ∀ i, IsUnit (m.leadingCoeff (b i))) (f : MvPolynomial σ R) :
     ∃ (g : ι →₀ (MvPolynomial σ R)) (r : MvPolynomial σ R),
@@ -142,7 +143,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
         apply le_of_eq
         simp only [EmbeddingLike.apply_eq_iff_eq]
         apply degree_smul (Units.isRegular _)
-      · simp only [Finsupp.single_eq_of_ne (Ne.symm hj), mul_zero, degree_zero, map_zero]
+      · simp only [Finsupp.single_eq_of_ne hj, mul_zero, degree_zero, map_zero]
         apply bot_le
     · simp
   push_neg at hb'
@@ -176,13 +177,8 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
       · classical
         rw [Finsupp.single_apply]
         split_ifs with hc
-        · apply le_trans degree_mul_le
-          simp only [map_add]
-          apply le_of_le_of_eq (add_le_add_left (degree_monomial_le _) _)
-          simp only [← hc]
-          rw [← map_add, m.toSyn.injective.eq_iff]
-          rw [add_tsub_cancel_of_le]
-          exact hf
+        · subst j
+          grw [degree_mul_le, map_add, degree_monomial_le, ← map_add, add_tsub_cancel_of_le hf]
         · simp only [mul_zero, degree_zero, map_zero]
           exact bot_le
     · exact H'.2.2
@@ -222,6 +218,8 @@ decreasing_by
   nth_rewrite 1 [eq_C_of_degree_eq_zero hf0, hf0]
   simp
 
+/-- Division by a *set* of multivariate polynomials
+whose leading coefficients are invertible with respect to a monomial order -/
 theorem div_set {B : Set (MvPolynomial σ R)}
     (hB : ∀ b ∈ B, IsUnit (m.leadingCoeff b)) (f : MvPolynomial σ R) :
     ∃ (g : B →₀ (MvPolynomial σ R)) (r : MvPolynomial σ R),
@@ -230,5 +228,25 @@ theorem div_set {B : Set (MvPolynomial σ R)}
         (∀ c ∈ r.support, ∀ b ∈ B, ¬ (m.degree b ≤ c)) := by
   obtain ⟨g, r, H⟩ := m.div (b := fun (p : B) ↦ p) (fun b ↦ hB b b.prop) f
   exact ⟨g, r, H.1, H.2.1, fun c hc b hb ↦ H.2.2 c hc ⟨b, hb⟩⟩
+
+/-- Division by a multivariate polynomial
+whose leading coefficient is invertible with respect to a monomial order -/
+theorem div_single {b : MvPolynomial σ R}
+    (hb : IsUnit (m.leadingCoeff b)) (f : MvPolynomial σ R) :
+    ∃ (g : MvPolynomial σ R) (r : MvPolynomial σ R),
+      f = g * b + r ∧
+        (m.degree (b * g) ≼[m] m.degree f) ∧
+        (∀ c ∈ r.support, ¬ (m.degree b ≤ c)) := by
+  obtain ⟨g, r, hgr, h1, h2⟩ := div_set (B := {b}) (m := m) (by simp [hb]) f
+  specialize h1 ⟨b, by simp⟩
+  set q := g ⟨b, by simp⟩
+  simp only [Set.mem_singleton_iff, forall_eq] at h2
+  simp only at h1
+  refine ⟨q, r, ?_, h1, h2⟩
+  rw [hgr]
+  simp only [Finsupp.linearCombination, Finsupp.coe_lsum, LinearMap.coe_smulRight, LinearMap.id_coe,
+    id_eq, smul_eq_mul, add_left_inj]
+  rw [Finsupp.sum_eq_single ⟨b, by simp⟩ _ (by simp)]
+  simp +contextual
 
 end MonomialOrder

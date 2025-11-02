@@ -46,7 +46,6 @@ variable (rα rβ)
   unchanged.
 
   See `Sym2.GameAdd` for the unordered pair analog. -/
-
 inductive GameAdd : α × β → α × β → Prop
   | fst {a₁ a₂ b} : rα a₁ a₂ → GameAdd (a₁, b) (a₂, b)
   | snd {a b₁ b₂} : rβ b₁ b₂ → GameAdd (a, b₁) (a, b₂)
@@ -89,8 +88,8 @@ end Prod
   stronger condition `∀ b, Acc rβ b`. -/
 theorem Acc.prod_gameAdd (ha : Acc rα a) (hb : Acc rβ b) :
     Acc (Prod.GameAdd rα rβ) (a, b) := by
-  induction' ha with a _ iha generalizing b
-  induction' hb with b hb ihb
+  induction ha generalizing b with | _ a _ iha
+  induction hb with | _ b hb ihb
   refine Acc.intro _ fun h => ?_
   rintro (⟨ra⟩ | ⟨rb⟩)
   exacts [iha _ ra (Acc.intro b hb), ihb _ rb]
@@ -175,10 +174,10 @@ end Sym2
 
 theorem Acc.sym2_gameAdd {a b} (ha : Acc rα a) (hb : Acc rα b) :
     Acc (Sym2.GameAdd rα) s(a, b) := by
-  induction' ha with a _ iha generalizing b
-  induction' hb with b hb ihb
+  induction ha generalizing b with | _ a _ iha
+  induction hb with | _ b hb ihb
   refine Acc.intro _ fun s => ?_
-  induction' s with c d
+  induction s with | _ c d
   rw [Sym2.GameAdd]
   dsimp
   rintro ((rc | rd) | (rd | rc))
@@ -200,19 +199,16 @@ attribute [local instance] Sym2.Rel.setoid
 /-- Recursion on the well-founded `Sym2.GameAdd` relation. -/
 def GameAdd.fix {C : α → α → Sort*} (hr : WellFounded rα)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα s(a₂, b₂) s(a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a b : α) :
-    C a b := by
-  -- Porting note: this was refactored for https://github.com/leanprover-community/mathlib4/pull/3414 (reenableeta), and could perhaps be cleaned up.
-  have := hr.sym2_gameAdd
-  dsimp only [GameAdd, lift₂, DFunLike.coe, EquivLike.coe] at this
-  exact @WellFounded.fix (α × α) (fun x => C x.1 x.2) _ this.of_quotient_lift₂
+    C a b :=
+  @WellFounded.fix (α × α) (fun x => C x.1 x.2)
+    (fun x y ↦ Prod.GameAdd rα rα x y ∨ Prod.GameAdd rα rα x.swap y)
+    (by simpa [← Sym2.gameAdd_iff] using hr.sym2_gameAdd.onFun)
     (fun ⟨x₁, x₂⟩ IH' => IH x₁ x₂ fun a' b' => IH' ⟨a', b'⟩) (a, b)
 
 theorem GameAdd.fix_eq {C : α → α → Sort*} (hr : WellFounded rα)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα s(a₂, b₂) s(a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a b : α) :
-    GameAdd.fix hr IH a b = IH a b fun a' b' _ => GameAdd.fix hr IH a' b' := by
-  -- Porting note: this was refactored for https://github.com/leanprover-community/mathlib4/pull/3414 (reenableeta), and could perhaps be cleaned up.
-  dsimp [GameAdd.fix]
-  exact WellFounded.fix_eq _ _ _
+    GameAdd.fix hr IH a b = IH a b fun a' b' _ => GameAdd.fix hr IH a' b' :=
+  WellFounded.fix_eq ..
 
 /-- Induction on the well-founded `Sym2.GameAdd` relation. -/
 theorem GameAdd.induction {C : α → α → Prop} :

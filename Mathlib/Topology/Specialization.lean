@@ -35,16 +35,16 @@ variable {α β γ : Type*}
 
 -- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
 -- If that were still the case, this would useful as a `@[simp]` lemma,
--- despite the fact that it is provable by `simp` (by not `dsimp`).
+-- despite the fact that it is provable by `simp` (but not `dsimp`).
 @[simp, nolint simpNF] -- See https://github.com/leanprover-community/mathlib4/issues/10675
 lemma toEquiv_inj {a b : α} : toEquiv a = toEquiv b ↔ a = b := Iff.rfl
 
 -- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
 -- If that were still the case, this would useful as a `@[simp]` lemma,
--- despite the fact that it is provable by `simp` (by not `dsimp`).
+-- despite the fact that it is provable by `simp` (but not `dsimp`).
 @[simp, nolint simpNF] -- See https://github.com/leanprover-community/mathlib4/issues/10675
 lemma ofEquiv_inj {a b : Specialization α} : ofEquiv a = ofEquiv b ↔ a = b :=
-Iff.rfl
+  Iff.rfl
 
 /-- A recursor for `Specialization`. Use as `induction x`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
@@ -59,13 +59,13 @@ instance instPartialOrder [T0Space α] : PartialOrder (Specialization α) := spe
 
 @[simp] lemma toEquiv_le_toEquiv {a b : α} : toEquiv a ≤ toEquiv b ↔ b ⤳ a := Iff.rfl
 @[simp] lemma ofEquiv_specializes_ofEquiv {a b : Specialization α} :
-  ofEquiv a ⤳ ofEquiv b ↔ b ≤ a := Iff.rfl
+    ofEquiv a ⤳ ofEquiv b ↔ b ≤ a := Iff.rfl
 
 @[simp] lemma isOpen_toEquiv_preimage [AlexandrovDiscrete α] {s : Set (Specialization α)} :
-  IsOpen (toEquiv ⁻¹' s) ↔ IsUpperSet s := isOpen_iff_forall_specializes.trans forall_swap
+    IsOpen (toEquiv ⁻¹' s) ↔ IsUpperSet s := isOpen_iff_forall_specializes.trans forall_swap
 
 @[simp] lemma isUpperSet_ofEquiv_preimage [AlexandrovDiscrete α] {s : Set α} :
-  IsUpperSet (ofEquiv ⁻¹' s) ↔ IsOpen s := isOpen_toEquiv_preimage.symm
+    IsUpperSet (ofEquiv ⁻¹' s) ↔ IsOpen s := isOpen_toEquiv_preimage.symm
 
 /-- A continuous map between topological spaces induces a monotone map between their specialization
 orders. -/

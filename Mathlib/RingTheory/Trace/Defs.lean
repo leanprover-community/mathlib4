@@ -3,8 +3,8 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
-import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Trace
 
 /-!
@@ -16,14 +16,14 @@ the roots of the minimal polynomial of `s` over `R`.
 
 ## Main definitions
 
- * `Algebra.trace R S x`: the trace of an element `s` of an `R`-algebra `S`
- * `Algebra.traceForm R S`: bilinear form sending `x`, `y` to the trace of `x * y`
- * `Algebra.traceMatrix R b`: the matrix whose `(i j)`-th element is the trace of `b i * b j`.
+* `Algebra.trace R S x`: the trace of an element `s` of an `R`-algebra `S`
+* `Algebra.traceForm R S`: bilinear form sending `x`, `y` to the trace of `x * y`
+* `Algebra.traceMatrix R b`: the matrix whose `(i j)`-th element is the trace of `b i * b j`.
 
 ## Main results
 
- * `trace_algebraMap_of_basis`, `trace_algebraMap`: if `x : K`, then `Tr_{L/K} x = [L : K] x`
- * `trace_trace_of_basis`, `trace_trace`: `Tr_{L/K} (Tr_{F/L} x) = Tr_{F/K} x`
+* `trace_algebraMap_of_basis`, `trace_algebraMap`: if `x : K`, then `Tr_{L/K} x = [L : K] x`
+* `trace_trace_of_basis`, `trace_trace`: `Tr_{L/K} (Tr_{F/L} x) = Tr_{F/K} x`
 
 ## Implementation notes
 
@@ -37,7 +37,7 @@ For now, the definitions assume `S` is commutative, so the choice doesn't matter
 
 ## References
 
- * https://en.wikipedia.org/wiki/Field_trace
+* https://en.wikipedia.org/wiki/Field_trace
 
 -/
 
@@ -174,7 +174,8 @@ variable {S}
 theorem traceForm_apply (x y : S) : traceForm R S x y = trace R S (x * y) :=
   rfl
 
-theorem traceForm_isSymm : (traceForm R S).IsSymm := fun _ _ => congr_arg (trace R S) (mul_comm _ _)
+theorem traceForm_isSymm : (traceForm R S).IsSymm :=
+  ⟨fun _ _ => congr_arg (trace R S) (mul_comm _ _)⟩
 
 theorem traceForm_toMatrix [DecidableEq ι] (b : Basis ι R S) (i j) :
     BilinForm.toMatrix b (traceForm R S) i j = trace R S (b i * b j) := by

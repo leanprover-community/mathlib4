@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Data.Fintype.Basic
-import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Discrete.Basic
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.CategoryTheory.Category.ULift
 
@@ -51,6 +51,7 @@ instance finCategoryOpposite {J : Type v} [SmallCategory J] [FinCategory J] : Fi
   fintypeObj := Fintype.ofEquiv _ equivToOpposite
   fintypeHom j j' := Fintype.ofEquiv _ (opEquiv j j').symm
 
+attribute [local instance] uliftCategory in
 /-- Applying `ULift` to morphisms and objects of a category preserves finiteness. -/
 instance finCategoryUlift {J : Type v} [SmallCategory J] [FinCategory J] :
     FinCategory.{max w v} (ULiftHom.{w, max w v} (ULift.{w, v} J)) where

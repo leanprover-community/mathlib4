@@ -24,14 +24,13 @@ variable (R : Type*) [Semiring R]
 variable (C : Type*) [Category C] [Preadditive C] [Linear R C]
 variable [MonoidalCategory C]
 
--- Porting note: added `MonoidalPreadditive` as argument ``
 /-- A category is `MonoidalLinear R` if tensoring is `R`-linear in both factors.
 -/
 class MonoidalLinear [MonoidalPreadditive C] : Prop where
-  whiskerLeft_smul : ∀ (X : C) {Y Z : C} (r : R) (f : Y ⟶ Z) , X ◁ (r • f) = r • (X ◁ f) := by
-    aesop_cat
+  whiskerLeft_smul : ∀ (X : C) {Y Z : C} (r : R) (f : Y ⟶ Z), X ◁ (r • f) = r • (X ◁ f) := by
+    cat_disch
   smul_whiskerRight : ∀ (r : R) {Y Z : C} (f : Y ⟶ Z) (X : C), (r • f) ▷ X = r • (f ▷ X) := by
-    aesop_cat
+    cat_disch
 
 attribute [simp] MonoidalLinear.whiskerLeft_smul MonoidalLinear.smul_whiskerRight
 
@@ -48,18 +47,20 @@ instance tensoringRight_linear (X : C) : ((tensoringRight C).obj X).Linear R whe
 
 /-- A faithful linear monoidal functor to a linear monoidal category
 ensures that the domain is linear monoidal. -/
-theorem monoidalLinearOfFaithful {D : Type*} [Category D] [Preadditive D] [Linear R D]
+theorem MonoidalLinear.ofFaithful {D : Type*} [Category D] [Preadditive D] [Linear R D]
     [MonoidalCategory D] [MonoidalPreadditive D] (F : D ⥤ C) [F.Monoidal] [F.Faithful]
     [F.Linear R] : MonoidalLinear R D :=
   { whiskerLeft_smul := by
-      intros X Y Z r f
+      intro X Y Z r f
       apply F.map_injective
       rw [Functor.Monoidal.map_whiskerLeft]
       simp
     smul_whiskerRight := by
-      intros r X Y f Z
+      intro r X Y f Z
       apply F.map_injective
       rw [Functor.Monoidal.map_whiskerRight]
       simp }
+
+@[deprecated (since := "2025-10-17")] alias monoidalLinearOfFaithful := MonoidalLinear.ofFaithful
 
 end CategoryTheory
