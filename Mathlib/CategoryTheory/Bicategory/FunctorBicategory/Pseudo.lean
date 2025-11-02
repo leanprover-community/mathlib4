@@ -25,11 +25,11 @@ open Category Bicategory
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
-variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
-
 namespace StrongTrans
 
-variable {F G H I : Pseudofunctor B C}
+variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
+
+variable {F G H I : B ⥤ᵖ C}
 
 /-- Left whiskering of a strong natural transformation between pseudofunctors
 and a modification. -/
@@ -83,25 +83,22 @@ end StrongTrans
 
 open StrongTrans
 
-@[simps] -- remove eqToIso simps...!
-def eval (b : B) : (B ⥤ᵖ C) ⥤ᵖ C where
+variable {B : Type u₁} [Bicategory.{w₁, v₁} B] (C : Type u₂) [Bicategory.{w₂, v₂} C]
+
+/-- Object-wise evaluation as a strict pseudofunctor from `B ⥤ᵖ C` to `C`. -/
+@[simps!] -- remove eqToIso simps...!
+def eval (b : B) : StrictPseudofunctor (B ⥤ᵖ C) C := .mk' {
   obj P := P.obj b
   map θ := θ.app b
   map₂ Γ := Γ.app b
-  mapId P := eqToIso rfl
-  mapComp f g := eqToIso rfl
+  map₂_id P := rfl
+  map₂_comp f g := rfl }
 
---attribute [simp] Modification.naturality
---attribute [-simp] Modification.whiskerLeft_app
-
-/-- The "evaluation at `X`" functor, such that
-`(evaluation.obj X).obj F = F.obj X`,
-which is functorial in both `X` and `F`.
--/
-@[simps]
+/-- The evaluation pseudofunctor, sending `X : B` and `F : B ⥤ᵖ C` to `F.obj X`. It is
+pseudofunctorial in both `X` and `F`. -/
+@[simps!]
 def evaluation : B ⥤ᵖ (B ⥤ᵖ C) ⥤ᵖ C where
-  -- TODO: actually a StrictPseudofunctor
-  obj := eval
+  obj b := eval C b
   map f := {
     app P := P.map f
     naturality θ := (θ.naturality f).symm }
@@ -110,49 +107,6 @@ def evaluation : B ⥤ᵖ (B ⥤ᵖ C) ⥤ᵖ C where
       naturality θ := by simp [map₂_whiskerRight_app] }
   mapId b := isoMk (fun P ↦ P.mapId b) (fun θ ↦ by simp [naturality_id_inv])
   mapComp f g := isoMk (fun P ↦ P.mapComp f g) (fun θ ↦ by simp [naturality_comp_inv])
-
-def uncurryObj {D : Type*} [Bicategory D] (F : B ⥤ᵖ (C ⥤ᵖ D)) : B × C ⥤ᵖ D where
-  obj X := (F.obj X.1).obj X.2
-  map {X Y} f := (F.map f.1).app X.2 ≫ (F.obj Y.1).map f.2
-  map₂ {X Y f g} η :=
-    (F.map₂ η.1).app X.2 ▷ (F.obj Y.1).map f.2 ≫
-      (F.map g.1).app X.2 ◁ (F.obj Y.1).map₂ η.2
-  map₂_comp {a b f g h} η θ := by simp [← whisker_exchange_assoc]
-  mapId X := by
-    apply whiskerLeftIso _ ((F.obj X.1).mapId X.2) ≪≫ (ρ_ _) ≪≫ _
-    sorry
-
-
-  mapComp := sorry
-  map₂_whisker_left := sorry
-  map₂_whisker_right := sorry
-  map₂_associator := sorry
-  map₂_left_unitor := sorry
-  map₂_right_unitor := sorry
-
-#exit
-
-/- The "evaluation of `F` at `X`" functor,
-as a functor `C × (C ⥤ D) ⥤ D`.
--/
-@[simps]
-def evaluationUncurried : B × (B ⥤ᵖ C) ⥤ᵖ C where
-  obj p := p.2.obj p.1
-  map {x} {y} f  := x.2.map f.1 ≫ f.2.app y.1
-  map₂ {x} {y} f g η  := (x.2.map₂ η.1) ▷ f.2.app y.1 ≫ x.2.map g.1 ◁ η.2.app y.1
-  map₂_comp {a b f g h} η θ := by simp [map₂_whiskerRight_app, ← whisker_exchange_assoc]
-  mapId P := (ρ_ _) ≪≫ P.2.mapId P.1
-  -- TODO: golf this
-  mapComp {a b c} f g := (α_ _ _ _).symm ≪≫
-      whiskerRightIso
-        (whiskerRightIso (a.2.mapComp f.1 g.1) _ ≪≫
-          (α_ _ _ _) ≪≫ (whiskerLeftIso _ (f.2.naturality g.1)) ≪≫
-          (α_ _ _ _).symm) (g.2.app c.1) ≪≫ α_ _ _ _
-  map₂_whisker_left {a b c} f {g h} η := by sorry
-  map₂_whisker_right := sorry
-  map₂_associator := sorry
-  map₂_left_unitor := sorry
-  map₂_right_unitor := sorry
 
 
 end CategoryTheory.Pseudofunctor

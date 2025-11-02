@@ -264,6 +264,9 @@ structure StrictlyUnitaryPseudofunctorCore where
 
 namespace StrictlyUnitaryPseudofunctor
 
+instance hasCoeToPseudo : Coe (StrictlyUnitaryPseudofunctor B C) (B ⥤ᵖ C) :=
+  ⟨toPseudofunctor⟩
+
 variable {B C}
 
 /-- An alternate constructor for strictly unitary lax functors that does not

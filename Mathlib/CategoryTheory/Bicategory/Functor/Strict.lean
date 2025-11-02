@@ -82,6 +82,10 @@ structure StrictPseudofunctorCore extends StrictPseudofunctorPreCore B C where
 
 namespace StrictPseudofunctor
 
+instance hasCoeToStrictlyUnitary :
+    Coe (StrictPseudofunctor B C) (StrictlyUnitaryPseudofunctor B C) :=
+  ⟨toStrictlyUnitaryPseudofunctor⟩
+
 variable {B C}
 
 /-- An alternate constructor for strictly unitary lax functors that does not
