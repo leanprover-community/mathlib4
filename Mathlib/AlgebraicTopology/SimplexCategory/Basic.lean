@@ -145,6 +145,11 @@ lemma mkOfSucc_homToOrderHom_zero {n} (i : Fin n) :
 lemma mkOfSucc_homToOrderHom_one {n} (i : Fin n) :
     DFunLike.coe (F := Fin 2 →o Fin (n + 1)) (Hom.toOrderHom (mkOfSucc i)) 1 = i.succ := rfl
 
+@[simp]
+lemma mkOfSucc_eq_id : mkOfSucc (0 : Fin 1) = 𝟙 _ := by
+  -- should be `by decide`
+  ext i
+  fin_cases i <;> rfl
 
 /-- The morphism `⦋2⦌ ⟶ ⦋n⦌` that picks out a specified composite of morphisms in `Fin (n+1)`. -/
 def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
@@ -453,6 +458,16 @@ lemma mkOfSucc_δ_eq {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
     subst h
     rw [Fin.succAbove_castSucc_self]
     rfl
+
+lemma mkOfSucc_one_eq_δ : mkOfSucc (1 : Fin 2) = δ 0 := by
+  -- should be `by decide`
+  ext i
+  fin_cases i <;> rfl
+
+lemma mkOfSucc_zero_eq_δ : mkOfSucc (0 : Fin 2) = δ 2 := by
+  -- should be `by decide`
+  ext i
+  fin_cases i <;> rfl
 
 theorem eq_of_one_to_two (f : ⦋1⦌ ⟶ ⦋2⦌) :
     (∃ i, f = (δ (n := 1) i)) ∨ ∃ a, f = SimplexCategory.const _ _ a := by

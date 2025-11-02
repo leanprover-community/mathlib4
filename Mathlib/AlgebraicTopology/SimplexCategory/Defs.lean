@@ -214,6 +214,10 @@ abbrev Hom.tr {n : ℕ} {a b : SimplexCategory} (f : a ⟶ b)
     (⟨a, ha⟩ : Truncated n) ⟶ ⟨b, hb⟩ :=
   f
 
+@[simp]
+lemma Hom.tr_id {n : ℕ} (a : SimplexCategory) (ha : a.len ≤ n := by trunc) :
+    Hom.tr (𝟙 a) ha = 𝟙 _ := rfl
+
 lemma Hom.tr_comp {n : ℕ} {a b c : SimplexCategory} (f : a ⟶ b) (g : b ⟶ c)
     (ha : a.len ≤ n := by trunc) (hb : b.len ≤ n := by trunc)
     (hc : c.len ≤ n := by trunc) :
