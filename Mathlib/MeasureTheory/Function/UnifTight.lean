@@ -174,7 +174,7 @@ private theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α �
     obtain ⟨S, hμS, hFε⟩ := h hgLp hε
     obtain ⟨s, _, hμs, hfε⟩ :=
       (hfLp (Fin.last n)).exists_eLpNorm_indicator_compl_lt hp_top (coe_ne_zero.2 hε.ne')
-    refine ⟨s ∪ S, (by measurability), fun i => ?_⟩
+    refine ⟨s ∪ S, (by finiteness), fun i => ?_⟩
     by_cases hi : i.val < n
     · rw [show f i = g ⟨i.val, hi⟩ from rfl, compl_union, ← indicator_indicator]
       apply (eLpNorm_indicator_le _).trans

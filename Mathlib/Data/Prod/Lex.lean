@@ -91,15 +91,7 @@ theorem toLex_covBy_toLex_iff {a₁ a₂ : α} {b₁ b₂ : β} :
     toLex (a₁, b₁) ⋖ toLex (a₂, b₂) ↔ a₁ = a₂ ∧ b₁ ⋖ b₂ ∨ a₁ ⋖ a₂ ∧ IsMax b₁ ∧ IsMin b₂ := by
   simp only [CovBy, toLex_lt_toLex, toLex.surjective.forall, Prod.forall, isMax_iff_forall_not_lt,
     isMin_iff_forall_not_lt]
-  constructor
-  · grind
-  · rintro (⟨rfl, hb, h⟩ | ⟨⟨ha, h⟩, hb₁, hb₂⟩)
-    · refine ⟨.inr ⟨rfl, hb⟩, fun a b ↦ ?_⟩
-      rintro (hlt₁ | ⟨rfl, hlt₁⟩) (hlt₂ | ⟨heq, hlt₂⟩)
-      exacts [hlt₁.not_gt hlt₂, hlt₁.ne' heq, hlt₂.false, h hlt₁ hlt₂]
-    · refine ⟨.inl ha, fun a b ↦ ?_⟩
-      rintro (hlt₁ | ⟨rfl, hlt₁⟩) (hlt₂ | ⟨heq, hlt₂⟩)
-      exacts [h hlt₁ hlt₂, hb₂ _ hlt₂, hb₁ _ hlt₁, hb₁ _ hlt₁]
+  grind
 
 theorem covBy_iff {a b : α ×ₗ β} :
     a ⋖ b ↔ (ofLex a).1 = (ofLex b).1 ∧ (ofLex a).2 ⋖ (ofLex b).2 ∨

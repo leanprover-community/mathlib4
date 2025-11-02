@@ -68,6 +68,7 @@ namespace IsDedekindDomain
 
 noncomputable section
 
+open WithZero
 open scoped WithZero nonZeroDivisors
 
 universe u v
@@ -98,8 +99,7 @@ theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
   simp_rw [IsLocalization.toLocalizationMap_sec, SubmonoidClass.coe_subtype,
     if_neg <| IsLocalization.sec_fst_ne_zero x.ne_zero,
     if_neg (nonZeroDivisors.coe_ne_zero _),
-    valuationOfNeZeroToFun, ofAdd_sub, ofAdd_neg, div_inv_eq_mul, WithZero.coe_mul,
-    WithZero.coe_inv, inv_inv]
+    ← exp_neg, ← exp_add, valuationOfNeZeroToFun, ← sub_eq_add_neg, exp]
 
 /-- The multiplicative `v`-adic valuation on `Kˣ`. -/
 def valuationOfNeZero : Kˣ →* Multiplicative ℤ where
