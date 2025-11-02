@@ -44,6 +44,7 @@ namespace Bicategory.Opposite
 
 variable {B : Type u} [Bicategory.{w, v} B]
 
+/-- Type synonym for 2-morphisms in the opposite bicategory. -/
 structure Hom2 {a b : Bᵒᵖ} (f g : a ⟶ b) where
   op2' ::
   /-- `Bᵒᵖ` preserves the direction of all 2-morphisms in `B` -/
@@ -58,7 +59,7 @@ instance homCategory (a b : Bᵒᵖ) : Category.{w} (a ⟶ b) where
   comp η θ := op2' (η.unop2 ≫ θ.unop2)
 
 /-- Synonym for constructor of `Hom2` where the 1-morphisms `f` and `g` lie in `B` and not `Bᵒᵖ`. -/
-abbrev op2 {a b : B} {f g : a ⟶ b} (η : f ⟶ g) : f.op ⟶ g.op :=
+def op2 {a b : B} {f g : a ⟶ b} (η : f ⟶ g) : f.op ⟶ g.op :=
   op2' η
 
 @[simp]
