@@ -87,15 +87,11 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
       fun n ↦ iteratedDeriv n (fun (x : ℂ) ↦ (1 + x) ^ a) 0 / n !) by
     convert AnalyticOn.hasFPowerSeriesOnSubball _ _ _
     · norm_num
-    · apply AnalyticOn.cpow
-      · apply AnalyticOn.add
-        · exact analyticOn_const
-        · exact analyticOn_id
-      · exact analyticOn_const
-      · intro z hz
-        apply Complex.mem_slitPlane_of_norm_lt_one
-        rw [← ENNReal.ofReal_one, Metric.emetric_ball] at hz
-        simpa using hz
+    · apply AnalyticOn.cpow (analyticOn_const.add analyticOn_id) analyticOn_const
+      intro z hz
+      apply Complex.mem_slitPlane_of_norm_lt_one
+      rw [← ENNReal.ofReal_one, Metric.emetric_ball] at hz
+      simpa using hz
     · rw [← this]
       exact binomialSeries_radius_ge_one
   simp only [binomialSeries, FormalMultilinearSeries.ofScalars_series_eq_iff]
@@ -118,7 +114,6 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
       ext z
       rw [iteratedDerivWithin_succ]
     rw [this]
-    clear this
     have : Set.EqOn (derivWithin (iteratedDerivWithin n (fun (x : ℂ) ↦ (1 + x) ^ a) B) B)
         (derivWithin (fun x ↦ (descPochhammer ℤ n).smeval a * (1 + x) ^ (a - ↑n)) B) B := by
       intro z hz
@@ -136,7 +131,7 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
 
 theorem one_add_cpow_hasFPowerSeriesAt_zero {a : ℂ} :
     HasFPowerSeriesAt (fun x ↦ (1 + x)^a) (binomialSeries ℂ a) 0 :=
-  HasFPowerSeriesOnBall.hasFPowerSeriesAt one_add_cpow_hasFPowerSeriesOnBall_zero
+  one_add_cpow_hasFPowerSeriesOnBall_zero.hasFPowerSeriesAt
 
 theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
     HasFPowerSeriesOnBall (fun x ↦ (1 + x)^a) (binomialSeries ℝ a) 0 1 := by
@@ -159,7 +154,7 @@ theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
       ext n
       simp [Polynomial.smul_pow]
     rw [this]
-    exact HasFPowerSeriesOnBall.restrictScalars one_add_cpow_hasFPowerSeriesOnBall_zero
+    exact one_add_cpow_hasFPowerSeriesOnBall_zero.restrictScalars
   rw [show 0 = Complex.ofRealCLM 0 by simp] at h
   apply HasFPowerSeriesOnBall.compContinuousLinearMap at h
   simp only [Complex.ofRealCLM_enorm, div_one] at h
@@ -192,4 +187,4 @@ theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
 
 theorem one_add_rpow_hasFPowerSeriesAt_zero {a : ℝ} :
     HasFPowerSeriesAt (fun x ↦ (1 + x)^a) (binomialSeries ℝ a) 0 :=
-  HasFPowerSeriesOnBall.hasFPowerSeriesAt one_add_rpow_hasFPowerSeriesOnBall_zero
+  one_add_rpow_hasFPowerSeriesOnBall_zero.hasFPowerSeriesAt
