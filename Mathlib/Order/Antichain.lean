@@ -18,7 +18,7 @@ relation is `G.Adj` for `G : SimpleGraph α`, this corresponds to independent se
 * `IsAntichain r s`: Any two elements of `s : Set α` are unrelated by `r : α → α → Prop`.
 * `IsStrongAntichain r s`: Any two elements of `s : Set α` are not related by `r : α → α → Prop`
   to a common element.
-* `IsMaximalAntichain r s`: An antichain such that no antichain strictly including `s` exists.
+* `IsMaxAntichain r s`: An antichain such that no antichain strictly including `s` exists.
 -/
 
 assert_not_exists CompleteLattice
@@ -367,15 +367,14 @@ protected theorem image {s : β → β → Prop} (e : r ≃r s) {c : Set α} (hc
     exact hc.2 (ht.image _ fun _ _ ↦ e.symm.map_rel_iff.mp)
       ((e.toEquiv.subset_symm_image _ _).2 hf)
 
-protected theorem isEmpty_iff (h : IsMaxAntichain r s) : IsEmpty α ↔ IsEmpty s := by
-  refine ⟨fun _ ↦ isEmpty_coe_sort.mpr s.eq_empty_of_isEmpty, fun h' ↦ ?_⟩
-  by_contra! hh
-  obtain ⟨x⟩ := hh
-  simp only [IsMaxAntichain, isEmpty_coe_sort.mp h', IsAntichain.empty, empty_subset, forall_const,
-    true_and] at h
+protected theorem isEmpty_iff (h : IsMaxAntichain r s) : IsEmpty α ↔ s = ∅ := by
+  refine ⟨fun _ ↦ s.eq_empty_of_isEmpty, fun h' ↦ ?_⟩
+  constructor
+  intro x
+  simp only [IsMaxAntichain, h', IsAntichain.empty, empty_subset, forall_const, true_and] at h
   exact singleton_ne_empty x (h IsAntichain.singleton).symm
 
-protected theorem nonempty_iff (h : IsMaxAntichain r s) : Nonempty α ↔ Nonempty s := by
+protected theorem nonempty_iff (h : IsMaxAntichain r s) : Nonempty α ↔ s ≠ ∅ := by
   grind [not_nonempty_iff, IsMaxAntichain.isEmpty_iff]
 
 protected theorem symm (h : IsMaxAntichain r s) : IsMaxAntichain (flip r) s :=
