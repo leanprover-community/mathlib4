@@ -6,7 +6,8 @@ Authors: Joseph Myers, Eric Wieser, Daniel Morrison
 import Mathlib.LinearAlgebra.Multilinear.Finsupp
 
 /-!
-# Multilinear maps in relation to bases.
+#import Mathlib.LinearAlgebra.Basis.Defs
+ Multilinear maps in relation to bases.
 
 This file proves lemmas about the action of multilinear maps on basis vectors and constructs a
 basis for multilinear maps given bases on the domain and codomain.

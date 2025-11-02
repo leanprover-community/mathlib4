@@ -7,7 +7,6 @@ import Mathlib.Data.Fintype.Quotient
 import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Multilinear.Basic
-import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 # Interactions between finitely-supported functions and multilinear maps

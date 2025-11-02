@@ -6,7 +6,6 @@ Authors: Sophie Morel, Eric Wieser
 import Mathlib.LinearAlgebra.PiTensorProduct
 import Mathlib.LinearAlgebra.DFinsupp.PiTensorProduct
 import Mathlib.Algebra.DirectSum.Module
-import Mathlib.LinearAlgebra.Multilinear.DirectSum
 
 /-!
 # Tensor products of direct sums
