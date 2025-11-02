@@ -17,7 +17,7 @@ In decomposition monoids (e.g., `ℕ`, `ℤ`), this predicate is equivalent to `
 (see `irreducible_iff_prime`), however this is not true in general.
 -/
 
-assert_not_exists MonoidWithZero OrderedCommMonoid Multiset
+assert_not_exists MonoidWithZero IsOrderedMonoid Multiset
 
 variable {M : Type*}
 
@@ -44,9 +44,6 @@ structure Irreducible (p : M) : Prop where
   isUnit_or_isUnit ⦃a b : M⦄ : p = a * b → IsUnit a ∨ IsUnit b
 
 namespace Irreducible
-
-@[deprecated (since := "2025-04-09")] alias not_unit := not_isUnit
-@[deprecated (since := "2025-04-10")] alias isUnit_or_isUnit' := isUnit_or_isUnit
 
 end Irreducible
 

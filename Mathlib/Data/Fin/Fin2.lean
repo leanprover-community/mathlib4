@@ -116,7 +116,7 @@ def ofNat' : ∀ {n} (m) [IsLT m n], Fin2 n
 
 /-- `castSucc i` embeds `i : Fin2 n` in `Fin2 (n+1)`. -/
 def castSucc {n} : Fin2 n → Fin2 (n + 1)
-  | fz   => fz
+  | fz => fz
   | fs k => fs <| castSucc k
 
 /-- The greatest value of `Fin2 (n+1)`. -/
@@ -126,7 +126,7 @@ def last : {n : Nat} → Fin2 (n + 1)
 
 /-- Maps `0` to `n-1`, `1` to `n-2`, ..., `n-1` to `0`. -/
 def rev {n : Nat} : Fin2 n → Fin2 n
-  | .fz   => last
+  | .fz => last
   | .fs i => i.rev.castSucc
 
 @[simp] lemma rev_last {n} : rev (@last n) = fz := by

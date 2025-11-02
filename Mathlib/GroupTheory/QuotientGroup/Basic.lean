@@ -15,7 +15,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 /-!
 # Quotients of groups by normal subgroups
 
-This files develops the basic theory of quotients of groups by normal subgroups. In particular it
+This file develops the basic theory of quotients of groups by normal subgroups. In particular, it
 proves Noether's first and second isomorphism theorems.
 
 ## Main statements
@@ -81,9 +81,10 @@ def kerLift : G ⧸ ker φ →* H :=
 theorem kerLift_mk (g : G) : (kerLift φ) g = φ g :=
   rfl
 
-@[to_additive (attr := simp)]
-theorem kerLift_mk' (g : G) : (kerLift φ) (mk g) = φ g :=
-  lift_mk' _ _ _
+@[deprecated (since := "2025-10-28")]
+alias _root_.QuotientAddGroup.kerLift_mk' := _root_.QuotientAddGroup.kerLift_mk
+@[to_additive existing, deprecated (since := "2025-10-28")]
+alias kerLift_mk' := kerLift_mk
 
 @[to_additive]
 theorem kerLift_injective : Injective (kerLift φ) := fun a b =>
@@ -125,7 +126,7 @@ def quotientKerEquivOfRightInverse (ψ : H → G) (hφ : RightInverse ψ φ) : G
   { kerLift φ with
     toFun := kerLift φ
     invFun := mk ∘ ψ
-    left_inv := fun x => kerLift_injective φ (by rw [Function.comp_apply, kerLift_mk', hφ])
+    left_inv := fun x => kerLift_injective φ (by rw [Function.comp_apply, kerLift_mk, hφ])
     right_inv := hφ }
 
 /-- The canonical isomorphism `G/⊥ ≃* G`. -/

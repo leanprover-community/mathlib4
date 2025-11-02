@@ -7,7 +7,7 @@ Authors: Yoh Tanimoto
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 
 /-!
-#  Riesz–Markov–Kakutani representation theorem for `ℝ≥0`
+# Riesz–Markov–Kakutani representation theorem for `ℝ≥0`
 
 This file proves the Riesz-Markov-Kakutani representation theorem on a locally compact
 T2 space `X` for `ℝ≥0`-linear functionals `Λ`.

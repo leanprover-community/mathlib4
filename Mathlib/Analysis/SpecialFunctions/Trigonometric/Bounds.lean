@@ -229,4 +229,18 @@ theorem cos_le_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx
   · simp
   · exact (cos_lt_one_div_sqrt_sq_add_one hx1 hx2 hx3).le
 
+theorem norm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖ ≤ ‖x‖ := by
+  rw [Complex.norm_exp_I_mul_ofReal_sub_one]
+  calc
+    _ = 2 * |Real.sin (x / 2)| := by simp
+    _ ≤ 2 * |x / 2| := (mul_le_mul_iff_of_pos_left zero_lt_two).mpr Real.abs_sin_le_abs
+    _ = _ := by rw [abs_div, Nat.abs_ofNat, Real.norm_eq_abs]; ring
+
+theorem enorm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖ₑ ≤ ‖x‖ₑ := by
+  iterate 2 rw [← enorm_norm, Real.enorm_of_nonneg (norm_nonneg _)]
+  exact ENNReal.ofReal_le_ofReal norm_exp_I_mul_ofReal_sub_one_le
+
+theorem nnnorm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖₊ ≤ ‖x‖₊ := by
+  rw [← ENNReal.coe_le_coe]; exact enorm_exp_I_mul_ofReal_sub_one_le
+
 end Real
