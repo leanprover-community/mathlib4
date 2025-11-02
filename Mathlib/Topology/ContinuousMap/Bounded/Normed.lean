@@ -67,6 +67,9 @@ lemma neg_norm_le_apply (f : α →ᵇ ℝ) (x : α) :
 lemma apply_le_norm (f : α →ᵇ ℝ) (x : α) :
     f x ≤ ‖f‖ := (abs_le.mp (norm_coe_le_norm f x)).2
 
+lemma abs_apply_le_norm (f : α →ᵇ ℝ) (x : α) :
+    |f x| ≤ ‖f‖ := norm_coe_le_norm f x
+
 theorem dist_le_two_norm' {f : γ → β} {C : ℝ} (hC : ∀ x, ‖f x‖ ≤ C) (x y : γ) :
     dist (f x) (f y) ≤ 2 * C :=
   calc
