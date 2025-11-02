@@ -912,6 +912,20 @@ lemma ext_of_single_vecMul [DecidableEq m] [Fintype m] {M N : Matrix m n α}
   simp_rw [single_one_vecMul] at h
   exact congrFun (h i) j
 
+theorem mulVec_injective [Fintype n] : (mulVec : Matrix m n α → _).Injective := by
+  intro A B h
+  ext i j
+  classical
+  convert congrFun₂ h (Pi.single j 1) i
+    <;> simp
+
+theorem vecMul_injective [Fintype m] : (·.vecMul : Matrix m n α → _).Injective := by
+  intro A B h
+  ext i j
+  classical
+  convert congrFun₂ h (Pi.single i 1) j
+    <;> simp only [single_one_vecMul, row]
+
 variable [Fintype m] [Fintype n] [DecidableEq m]
 
 @[simp]
@@ -952,22 +966,6 @@ theorem ofNat_mulVec (x : ℕ) [x.AtLeastTwo] (v : m → α) :
 theorem vecMul_ofNat (x : ℕ) [x.AtLeastTwo] (v : m → α) :
     v ᵥ* ofNat(x) = MulOpposite.op (OfNat.ofNat x : α) • v :=
   vecMul_natCast _ _
-
-omit [Fintype m] [DecidableEq m] in
-theorem mulVec_injective : (mulVec : Matrix m n α → _).Injective := by
-  intro A B h
-  ext i j
-  classical
-  convert congrFun₂ h (Pi.single j 1) i
-    <;> simp
-
-omit [Fintype n] [DecidableEq m] in
-theorem vecMul_injective : (·.vecMul : Matrix m n α → _).Injective := by
-  intro A B h
-  ext i j
-  classical
-  convert congrFun₂ h (Pi.single i 1) j
-    <;> simp only [single_one_vecMul, row]
 
 end NonAssocSemiring
 
