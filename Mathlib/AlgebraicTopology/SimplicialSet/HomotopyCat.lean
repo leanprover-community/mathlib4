@@ -324,22 +324,25 @@ lemma morphismPropertyHomMk_of_edge {x y : V _⦋0⦌₂} (e : Edge x y) :
   rw [MorphismProperty.ofHoms_iff]
   exact ⟨⟨x, y, e⟩, rfl⟩
 
+lemma morphismPropertyHomMk_eq_strictMap :
+    morphismPropertyHomMk V =
+      (Cat.FreeRefl.morphismPropertyHomMk (OneTruncation₂ V)).strictMap (quotientFunctor V) := by
+  ext _ _ f
+  constructor
+  · rintro ⟨_⟩
+    exact MorphismProperty.map_mem_strictMap _ _ _ ⟨_⟩
+  · rintro ⟨⟨_, _, e⟩⟩
+    exact morphismPropertyHomMk_of_edge e
+
 open MorphismProperty in
 lemma multiplicativeClosure_morphismPropertyHomMk :
-    (morphismPropertyHomMk V).multiplicativeClosure = ⊤ := by
-  sorry
-  /-refine le_antisymm (by simp) ?_
-  intro x y f hf
-  clear hf
-  obtain ⟨x, rfl⟩ := mk_surjective x
-  obtain ⟨y, rfl⟩ := mk_surjective y
-  obtain ⟨f, rfl⟩ := (HomotopyCategory.quotientFunctor _).map_surjective f
-  obtain ⟨f, rfl⟩ := (Cat.FreeRefl.quotientFunctor _).map_surjective f
-  induction f with
-  | nil => simpa using id_mem _ _
-  | cons _ f hp =>
-    simpa using comp_mem _ _ _ hp
-        (le_multiplicativeClosure _ _ (morphismPropertyHomMk_of_edge f))-/
+    (morphismPropertyHomMk V).multiplicativeClosure = ⊤ :=
+  le_antisymm (by simp) (fun x y f _ ↦ by
+    obtain ⟨f, rfl⟩ := (quotientFunctor _).map_surjective f
+    rw [morphismPropertyHomMk_eq_strictMap]
+    refine strictMap_multiplicativeClosure_le _ _ _ ?_
+    rw [Cat.FreeRefl.multiplicativeClosure_morphismPropertyHomMk]
+    exact map_mem_strictMap _ _ _ (by simp))
 
 lemma morphismProperty_eq_top {W : MorphismProperty V.HomotopyCategory}
     [W.IsMultiplicative]
