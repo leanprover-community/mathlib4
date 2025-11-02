@@ -34,6 +34,9 @@ namespace Mathlib.Tactic
 
 open Lean Meta Elab Tactic
 
+/-- Core routine for the `#check` tactic: show a signature for `#check term`, assuming `term`
+is an identifier. Info messages are placed at `tk`.
+`c` contains the resolved name of `term`, in case there are several. -/
 def checkInner (tk : Syntax) (term : Term) (c : Name) : TacticM Unit := do
   addCompletionInfo <| .id term c (danglingDot := false) {} none
   logInfoAt tk <| MessageData.signature c
@@ -50,6 +53,8 @@ def checkPrimeInner (tk : Syntax) (term : Term) (c : Name) : TacticM Unit := do
   logInfoAt tk <| .ofFormatWithInfosM (PrettyPrinter.ppExprWithInfos (delab := delab) info.type)
   return
 
+/-- Workhorse method for the `#check` and `#check'` tactic.
+This does all the set-up; the actual behaviour is governed by the function `inner` passed in. -/
 def elabCheckTacticInner (tk : Syntax) (ignoreStuckTC : Bool) (term : Term)
     (inner : Syntax → Term → Name → TacticM Unit): TacticM Unit :=
   withoutModifyingStateWithInfoAndMessages <| withMainContext do
@@ -75,6 +80,12 @@ Info messages are placed at `tk`.
 def elabCheckTactic (tk : Syntax) (ignoreStuckTC : Bool) (term : Term) : TacticM Unit :=
   elabCheckTacticInner tk ignoreStuckTC term checkInner
 
+/--
+Tactic version of the `#check'` command:
+like `#check`, but only shows explicit arguments in the signature.
+Elaborates `term` without modifying tactic/elab/meta state.
+Info messages are placed at `tk`.
+-/
 def elabCheckPrimeTactic (tk : Syntax) (ignoreStuckTC : Bool) (term : Term) : TacticM Unit :=
   elabCheckTacticInner tk ignoreStuckTC term checkPrimeInner
 
@@ -90,6 +101,18 @@ These become metavariables in the output.
 -/
 elab tk:"#check " colGt term:term : tactic => elabCheckTactic tk true term
 
+/--
+The `#check' t` tactic elaborates the term `t` and then pretty prints it with its type as `e : ty`.
+In contrast to `#check t`, we only pretty-print explicit arguments, and omit implicit or type class
+arguments.
+
+If `t` is an identifier, then it pretty prints a type declaration form
+for the global constant `t` instead.
+Use `#check' (t)` to pretty print it as an elaborated expression.
+
+Like the `#check'` command, the `#check'` tactic allows stuck typeclass instance problems.
+These become metavariables in the output.
+-/
 elab tk:"#check' " colGt term:term : tactic => elabCheckPrimeTactic tk true term
 
 end Mathlib.Tactic
