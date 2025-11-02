@@ -76,21 +76,19 @@ lemma covarianceBilin_comm (x y : E) :
 
 lemma covarianceBilin_self [CompleteSpace E] [IsFiniteMeasure μ] (h : MemLp id 2 μ) (x : E) :
     covarianceBilin μ x x = Var[fun u ↦ ⟪x, u⟫; μ] := by
-  rw [covarianceBilin_eq_covarianceBilinDual, covarianceBilinDual_self_eq_variance h]
-  rfl
+  simp [covarianceBilin_eq_covarianceBilinDual, covarianceBilinDual_self_eq_variance h]
 
 lemma covarianceBilin_apply_eq_cov [CompleteSpace E] [IsFiniteMeasure μ]
     (h : MemLp id 2 μ) (x y : E) :
     covarianceBilin μ x y = cov[fun u ↦ ⟪x, u⟫, fun u ↦ ⟪y, u⟫; μ] := by
-  rw [covarianceBilin_eq_covarianceBilinDual, covarianceBilinDual_eq_covariance h]
-  rfl
+  simp [covarianceBilin_eq_covarianceBilinDual, covarianceBilinDual_eq_covariance h]
 
 lemma covarianceBilin_real {μ : Measure ℝ} [IsFiniteMeasure μ] (x y : ℝ) :
     covarianceBilin μ x y = x * y * Var[id; μ] := by
   by_cases h : MemLp id 2 μ
   · simp only [covarianceBilin_apply_eq_cov h, RCLike.inner_apply, conj_trivial, mul_comm]
     rw [covariance_mul_left, covariance_mul_right, ← mul_assoc, covariance_self aemeasurable_id']
-    rfl
+    simp [Function.id_def]
   · simp [h, variance_of_not_memLp, aestronglyMeasurable_id]
 
 lemma covarianceBilin_real_self {μ : Measure ℝ} [IsFiniteMeasure μ] (x : ℝ) :
@@ -145,7 +143,7 @@ lemma covarianceBilin_apply_basisFun {ι Ω : Type*} [Fintype ι] {mΩ : Measura
       (basisFun ι ℝ i) (basisFun ι ℝ j) = cov[X i, X j; μ] := by
   have (i : ι) := (hX i).aemeasurable
   rw [covarianceBilin_apply_eq_cov, covariance_map]
-  · simp [basisFun_inner]; rfl
+  · simp [basisFun_inner, Function.comp_def]
   · exact Measurable.aestronglyMeasurable (by fun_prop)
   · exact Measurable.aestronglyMeasurable (by fun_prop)
   · fun_prop
@@ -213,7 +211,7 @@ lemma covarianceOperator_apply (hμ : MemLp id 2 μ) (x : E) :
   refine (unique_continuousLinearMapOfBilin _ fun y ↦ ?_).symm
   rw [real_inner_comm, ← integral_inner]
   · simp_rw [inner_smul_right, ← continuousLinearMapOfBilin_apply, ← covarianceOperator_inner hμ]
-    rfl
+    simp [covarianceOperator]
   exact memLp_one_iff_integrable.1 <| hμ.smul (hμ.const_inner x)
 
 lemma isPositive_covarianceOperator : (covarianceOperator μ).toLinearMap.IsPositive := by
