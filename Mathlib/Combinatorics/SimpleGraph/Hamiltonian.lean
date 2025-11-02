@@ -76,10 +76,10 @@ lemma IsHamiltonian.length_support (hp : p.IsHamiltonian) : p.support.length = F
 
 end
 
-theorem isHamiltonian_iff_support_get_bijective : p.IsHamiltonian ↔ (p.support.get ·).Bijective :=
+theorem isHamiltonian_iff_support_get_bijective : p.IsHamiltonian ↔ p.support.get.Bijective :=
   p.support.get_bijective_iff.symm
 
-theorem IsHamiltonian.getVert_surjective (hp : p.IsHamiltonian) : (p.getVert ·).Surjective := by
+theorem IsHamiltonian.getVert_surjective (hp : p.IsHamiltonian) : p.getVert.Surjective := by
   intro v
   obtain ⟨n, rfl⟩ := List.mem_iff_get.mp <| p.support.one_le_count_iff.mp (hp v).ge
   exact ⟨n, p.getVert_eq_support_getElem <| Nat.le_of_lt_succ <| n.prop.trans_eq p.length_support⟩
