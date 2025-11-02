@@ -357,7 +357,7 @@ variable (obj : V _⦋0⦌₂ → D) (map : ∀ ⦃x y : V _⦋0⦌₂⦄, Edge 
     ⦃e₀₁ : Edge x₀ x₁⦄ ⦃e₁₂ : Edge x₁ x₂⦄ ⦃e₀₂ : Edge x₀ x₂⦄
     (_ : Edge.CompStruct e₀₁ e₁₂ e₀₂), map e₀₁ ≫ map e₁₂ = map e₀₂)
 
-/-- Constructor for morphisms for the homotopy category. -/
+/-- Constructor for functors from the homotopy category. -/
 def lift : V.HomotopyCategory ⥤ D :=
   CategoryTheory.Quotient.lift _ (
     CategoryTheory.Quotient.lift _ (Paths.lift { obj := obj, map e := map e }) (by
@@ -388,8 +388,7 @@ section
 variable (φ : ∀ (x : V _⦋0⦌₂), F.obj (mk x) ⟶ G.obj (mk x))
   (hφ : ∀ ⦃x y : V _⦋0⦌₂⦄ (e : Edge x y), F.map (homMk e) ≫ φ y = φ x ≫ G.map (homMk e))
 
-/-- Constructor for natural transformation for natural transformations between
-functors from `V.HomotopyCategory`. -/
+/-- Constructor for natural transformations between functors from `V.HomotopyCategory`. -/
 def mkNatTrans : F ⟶ G where
   app _ := φ _
   naturality _ _ f := by
@@ -409,8 +408,7 @@ variable (iso : ∀ (x : V _⦋0⦌₂), F.obj (mk x) ≅ G.obj (mk x))
   (hiso : ∀ ⦃x y : V _⦋0⦌₂⦄ (e : Edge x y), F.map (homMk e) ≫ (iso y).hom =
     (iso x).hom ≫ G.map (homMk e))
 
-/-- Constructor for natural transformation for natural isomorphisms between
-functors from `V.HomotopyCategory`. -/
+/-- Constructor for natural isomorphisms between functors from `V.HomotopyCategory`. -/
 def mkNatIso : F ≅ G :=
   NatIso.ofComponents (fun _ ↦ iso _) (fun f ↦ (mkNatTrans _ hiso).naturality f)
 
