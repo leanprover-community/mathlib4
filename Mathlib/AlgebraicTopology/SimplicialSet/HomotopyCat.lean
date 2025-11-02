@@ -151,30 +151,14 @@ def OneTruncation₂.ofNerve₂.natIso :
       simp [ofNerve₂, ReflQuiv.isoOfEquiv, ReflQuiv.isoOfQuivIso, Quiv.isoOfEquiv,
         nerveHomEquiv, nerveFunctor₂, SimplicialObject.truncation, ReflQuiv.category]))
 
---private lemma map_map_of_eq.{w} {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ Type w) {X Y Z : C}
---    {α : X ⟶ Y} {β : Y ⟶ Z} {γ : X ⟶ Z} {φ} :
---    α ≫ β = γ → V.map α.op (V.map β.op φ) = V.map γ.op φ := by
---  rintro rfl
---  simp
+private lemma map_map_of_eq.{w} {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ Type w) {X Y Z : C}
+    {α : X ⟶ Y} {β : Y ⟶ Z} {γ : X ⟶ Z} {φ} :
+    α ≫ β = γ → V.map α.op (V.map β.op φ) = V.map γ.op φ := by
+  rintro rfl
+  simp
 
---variable {V : SSet}
+namespace Truncated
 
-namespace OneTruncation₂
-
-variable (V : SSet.Truncated.{u} 2)
-
-/-- The 2-simplices in a 2-truncated simplicial set `V` generate a hom relation on the free
-category on the underlying refl quiver of `V`. -/
-inductive HoRel₂ : HomRel (Cat.FreeRefl (OneTruncation₂ V)) where
-  | of_compStruct {x₀ x₁ x₂ : V _⦋0⦌₂} {e₀₁ : Truncated.Edge x₀ x₁}
-    {e₁₂ : Truncated.Edge x₁ x₂} {e₀₂ : Truncated.Edge x₀ x₂}
-    (h : Truncated.Edge.CompStruct e₀₁ e₁₂ e₀₂) :
-    HoRel₂
-      ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map
-        (Quiver.Hom.toPath e₀₁ ≫ Quiver.Hom.toPath e₁₂))
-      ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map (Quiver.Hom.toPath e₀₂))
-
-/-
 /-- The map that picks up the initial vertex of a 2-simplex, as a morphism in the 2-truncated
 simplex category. -/
 def ι0₂ : ⦋0⦌₂ ⟶ ⦋2⦌₂ := δ₂ (n := 0) 1 ≫ δ₂ (n := 1) 1
@@ -221,7 +205,24 @@ def ev02₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev0₂ φ ⟶ ev2₂ �
 2nd face of a 2-simplex. -/
 def ev01₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev0₂ φ ⟶ ev1₂ φ :=
   ⟨V.map δ2₂.op φ, map_map_of_eq V (SimplexCategory.δ_comp_δ (j := 1) le_rfl), map_map_of_eq V rfl⟩
-  -/
+
+end Truncated
+
+namespace OneTruncation₂
+
+variable (V : SSet.Truncated.{u} 2)
+
+/-- The 2-simplices in a 2-truncated simplicial set `V` generate a hom relation on the free
+category on the underlying refl quiver of `V`. -/
+inductive HoRel₂ : HomRel (Cat.FreeRefl (OneTruncation₂ V)) where
+  | of_compStruct {x₀ x₁ x₂ : V _⦋0⦌₂} {e₀₁ : Truncated.Edge x₀ x₁}
+    {e₁₂ : Truncated.Edge x₁ x₂} {e₀₂ : Truncated.Edge x₀ x₂}
+    (h : Truncated.Edge.CompStruct e₀₁ e₁₂ e₀₂) :
+    HoRel₂
+      ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map
+        (Quiver.Hom.toPath e₀₁ ≫ Quiver.Hom.toPath e₁₂))
+      ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map (Quiver.Hom.toPath e₀₂))
+
 
 /-
 /-- The 2-simplices in a 2-truncated simplicial set `V` generate a hom relation on the free
@@ -468,15 +469,13 @@ theorem hoFunctor₂_naturality {X Y : SSet.Truncated.{u} 2} (f : X ⟶ Y) :
     (oneTruncation₂ ⋙ Cat.freeRefl).map f ⋙ SSet.Truncated.HomotopyCategory.quotientFunctor Y =
       SSet.Truncated.HomotopyCategory.quotientFunctor X ⋙ mapHomotopyCategory f := rfl
 
-
---/-- By `Quotient.lift_unique'` (not `Quotient.lift`) we have that `quotientFunctor V` is an
---epimorphism. -/
---theorem HomotopyCategory.lift_unique' (V : SSet.Truncated.{u} 2) {D} [Category D]
---    (F₁ F₂ : V.HomotopyCategory ⥤ D)
---    (h : HomotopyCategory.quotientFunctor V ⋙ F₁ = HomotopyCategory.quotientFunctor V ⋙ F₂) :
---    F₁ = F₂ :=
---  Quotient.lift_unique' (C := Cat.FreeRefl (OneTruncation₂ V))
---    (HoRel₂ (V := V)) _ _ h
+/-- By `Quotient.lift_unique'` (not `Quotient.lift`) we have that `quotientFunctor V` is an
+epimorphism. -/
+theorem HomotopyCategory.lift_unique' (V : SSet.Truncated.{u} 2) {D} [Category D]
+    (F₁ F₂ : V.HomotopyCategory ⥤ D)
+    (h : HomotopyCategory.quotientFunctor V ⋙ F₁ = HomotopyCategory.quotientFunctor V ⋙ F₂) :
+    F₁ = F₂ :=
+  Quotient.lift_unique' _ _ _ h
 
 end Truncated
 

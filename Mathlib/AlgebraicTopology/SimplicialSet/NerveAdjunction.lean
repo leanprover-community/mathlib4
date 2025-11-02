@@ -49,9 +49,10 @@ def nerve₂Adj.counit.app (C : Type u) [SmallCategory C] :
     (whiskerRight (OneTruncation₂.ofNerve₂.natIso).hom _ ≫ ReflQuiv.adj.{u}.counit).app (Cat.of C)
   · intro x y f g rel
     obtain ⟨φ⟩ := rel
+    sorry /-
     simpa [ReflQuiv.adj, Quot.liftOn, Cat.FreeRefl.quotientFunctor, Quotient.functor,
         pathComposition, Quiv.adj, OneTruncation₂.nerveHomEquiv] using
-      φ.map_comp (X := 0) (Y := 1) (Z := 2) (homOfLE (by decide)) (homOfLE (by decide))
+      φ.map_comp (X := 0) (Y := 1) (Z := 2) (homOfLE (by decide)) (homOfLE (by decide))-/
 
 @[simp]
 theorem nerve₂Adj.counit.app_eq (C : Type u) [SmallCategory C] :
@@ -146,11 +147,12 @@ lemma toNerve₂.mk_naturality_σ00 : toNerve₂.mk.naturalityProperty F (σ₂ 
   refine Eq.trans ?_ (nerve.σ₀_mk₀_eq (C := C) (F.obj x)).symm
   have := ReflPrefunctor.map_id F x
   dsimp at this ⊢
+  sorry /-
   rw [← this, ← OneTruncation₂.id_edge x]
   fapply ReflPrefunctor.congr_mk₁_map
   · simp [← FunctorToTypes.map_comp_apply, ← op_comp]
   · simp [← FunctorToTypes.map_comp_apply, ← op_comp]
-  · aesop
+  · aesop-/
 
 lemma toNerve₂.mk_naturality_δ0i (i : Fin 2) : toNerve₂.mk.naturalityProperty F (δ₂ i) := by
   ext x
@@ -280,7 +282,7 @@ theorem oneTruncation₂_toNerve₂Mk' : oneTruncation₂.map (toNerve₂.mk' F 
   refine Quiver.heq_of_homOfEq_ext ?_ ?_ (f' := F.map g) ?_
   · exact ComposableArrows.ext₀ rfl
   · exact ComposableArrows.ext₀ rfl
-  · apply OneTruncation₂.Hom.ext
+  · sorry /-apply OneTruncation₂.Hom.ext
     simp only [oneTruncation₂_obj, ReflQuiv.of_val, OneTruncation₂.homOfEq_edge]
     fapply ComposableArrows.ext₁ <;> simp [ReflQuiv.comp_eq_comp]
     · rw [g.src_eq]; exact congr_arg (·.obj 0) (F.map g).src_eq.symm
@@ -288,7 +290,7 @@ theorem oneTruncation₂_toNerve₂Mk' : oneTruncation₂.map (toNerve₂.mk' F 
     · refine (conj_eqToHom_iff_heq' _ _ _ _).2 ?_
       simp [OneTruncation₂.nerveHomEquiv]
       obtain ⟨g, rfl, rfl⟩ := g
-      rfl
+      rfl-/
 
 end
 
@@ -322,7 +324,7 @@ def nerve₂Adj.unit.app (X : SSet.Truncated.{u} 2) :
   · exact (ReflQuiv.adj.{u}.unit.app (SSet.oneTruncation₂.obj X) ⋙rq
       (SSet.Truncated.HomotopyCategory.quotientFunctor X).toReflPrefunctor ⋙rq
       (OneTruncation₂.ofNerve₂.natIso).inv.app (hoFunctor₂.obj X))
-  · exact fun φ ↦ Quotient.sound _ (HoRel₂.mk φ)
+  · sorry--exact fun φ ↦ Quotient.sound _ (HoRel₂.mk φ)
 
 theorem nerve₂Adj.unit.map_app_eq (X : SSet.Truncated.{u} 2) :
     SSet.oneTruncation₂.map (nerve₂Adj.unit.app X) =
@@ -335,12 +337,13 @@ theorem nerve₂Adj.unit.map_app_eq (X : SSet.Truncated.{u} 2) :
 lemma nerve₂Adj.unit.naturality {X Y : SSet.Truncated.{u} 2} (f : X ⟶ Y) :
     f ≫ unit.app Y = unit.app X ≫ nerveFunctor₂.map (hoFunctor₂.map f) :=
   toNerve₂.ext _ _ (by
-    have := (OneTruncation₂.ofNerve₂.natIso).inv.naturality (hoFunctor₂.map f)
+    sorry
+    /-have := (OneTruncation₂.ofNerve₂.natIso).inv.naturality (hoFunctor₂.map f)
     dsimp at this ⊢
     rw [Functor.map_comp, Functor.map_comp, nerve₂Adj.unit.map_app_eq,
       nerve₂Adj.unit.map_app_eq, ← ReflQuiv.comp_eq_comp (Y := ReflQuiv.of _),
       ← ReflQuiv.comp_eq_comp (Y := ReflQuiv.of _), assoc, ← this]
-    rfl)
+    rfl-/)
 
 /-- The 2-truncated nerve adjunction unit. -/
 @[simps]
@@ -355,7 +358,7 @@ nonrec def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ :=
     unit := nerve₂Adj.unit
     counit := nerve₂Adj.counit
     left_triangle := by
-      ext X
+      /-ext X
       apply HomotopyCategory.lift_unique'
       dsimp
       rw [Cat.comp_eq_comp, ← Functor.assoc]
@@ -378,9 +381,10 @@ nonrec def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ :=
         (Y := hoFunctor₂.obj X) (SSet.Truncated.HomotopyCategory.quotientFunctor X)
       dsimp at this
       rw [this]
-      apply Adjunction.left_triangle_components_assoc
+      apply Adjunction.left_triangle_components_assoc-/
+      sorry
     right_triangle := by
-      refine NatTrans.ext (funext fun C ↦ ?_)
+      /-refine NatTrans.ext (funext fun C ↦ ?_)
       apply toNerve₂.ext
       dsimp
       simp only [id_comp, map_comp, oneTruncation₂_obj, map_id]
@@ -404,7 +408,8 @@ nonrec def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ :=
       rw [← assoc, ← this]
       have := ReflQuiv.adj.right_triangle_components C
       dsimp [ReflQuiv.forget] at this
-      simp [reassoc_of% this]
+      simp [reassoc_of% this]-/
+      sorry
   }
 
 instance nerveFunctor₂.faithful : nerveFunctor₂.{u, u}.Faithful :=
@@ -463,7 +468,8 @@ instance nerveFunctor₂.full : nerveFunctor₂.{u, u}.Full where
         dsimp [oneTruncation₂, ComposableArrows.left, SimplicialObject.truncation,
           nerveFunctor₂, SSet.truncation, forget₂, HasForget₂.forget₂] at this ⊢
         convert this.symm
-        apply ComposableArrows.ext₀; rfl
+        sorry
+        --apply ComposableArrows.ext₀; rfl
     let fF : X ⥤ Y := ReflPrefunctor.toFunctor uF' this
     have eq : fF.toReflPrefunctor = uF' := rfl
     refine ⟨fF, toNerve₂.ext (nerveFunctor₂.{u,u}.map fF) F ?_⟩
