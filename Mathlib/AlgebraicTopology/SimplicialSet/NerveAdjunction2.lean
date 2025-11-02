@@ -177,8 +177,19 @@ def descOfTruncation (φ : X ⟶ (truncation 2).obj (nerve C)) :
 def functorEquiv :
     (X.HomotopyCategory ⥤ C) ≃ (X ⟶ (truncation 2).obj (nerve C)) where
   toFun F :=
-    liftOfIsStrictSegal (fun x ↦ nerveEquiv.symm (F.obj (mk x))) (by
-      sorry) sorry sorry sorry sorry sorry
+    liftOfIsStrictSegal (fun x ↦ nerveEquiv.symm (F.obj (mk x)))
+      (fun f ↦ ComposableArrows.mk₁ (F.map (homMk (Truncated.Edge.mk' f))))
+      (fun f ↦ ComposableArrows.ext₀ rfl)
+      (fun f ↦ ComposableArrows.ext₀ rfl) (fun x ↦ by
+        dsimp
+        refine Eq.trans ?_ (σ_zero_nerveEquiv_symm (F.obj (mk x))).symm
+        refine ComposableArrows.ext₁ ?_ ?_ ?_
+        · simp [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_one_comp_σ₂_zero]
+        · simp [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_zero]
+        · dsimp
+          simp
+          sorry) (by
+        sorry) (by sorry)
   invFun φ := descOfTruncation φ
   left_inv := sorry
   right_inv := sorry
