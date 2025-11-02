@@ -66,6 +66,10 @@ def toDualMap : E →ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
 variable {E}
 
 @[simp]
+theorem toDualMap_apply_coe {x : E} : ⇑(toDualMap 𝕜 E x) = fun y => ⟪x, y⟫ :=
+  rfl
+
+@[simp]
 theorem toDualMap_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ :=
   rfl
 
