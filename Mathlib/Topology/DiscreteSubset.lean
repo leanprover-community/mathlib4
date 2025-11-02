@@ -42,10 +42,6 @@ open Set Filter Function Topology
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
 
-theorem discreteTopology_subtype_iff {S : Set Y} :
-    DiscreteTopology S ↔ ∀ x ∈ S, 𝓝[≠] x ⊓ 𝓟 S = ⊥ := by
-  simp_rw [discreteTopology_iff_nhds_ne, SetCoe.forall', nhds_ne_subtype_eq_bot_iff]
-
 lemma discreteTopology_subtype_iff' {S : Set Y} :
     DiscreteTopology S ↔ ∀ y ∈ S, ∃ U : Set Y, IsOpen U ∧ U ∩ S = {y} := by
   simp [discreteTopology_iff_isOpen_singleton, isOpen_induced_iff, Set.ext_iff]
@@ -257,7 +253,7 @@ section discrete_union
 
 lemma compl_mem_codiscrete_iff {S : Set X} :
     Sᶜ ∈ codiscrete X ↔ IsClosed S ∧ DiscreteTopology ↑S := by
-  rw [mem_codiscrete, compl_compl, isClosed_and_discrete_iff]
+  rw [mem_codiscrete, compl_compl, ← isDiscrete_iff_discreteTopology, isClosed_and_discrete_iff]
 
 /-- The union of two discrete closed subsets is discrete. -/
 theorem discreteTopology_union {S T : Set X} (hs : DiscreteTopology S) (ht : DiscreteTopology T)
