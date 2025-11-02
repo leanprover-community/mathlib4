@@ -8,7 +8,7 @@ import Lean.Elab.ParseImportsFast
 import Mathlib.Tactic.Linter.DirectoryDependency
 
 /-!
-#  The "header" linter
+# The "header" linter
 
 The "header" style linter checks that a file starts with
 ```

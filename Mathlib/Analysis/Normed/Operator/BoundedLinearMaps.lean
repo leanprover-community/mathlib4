@@ -307,6 +307,10 @@ def IsBoundedBilinearMap.toContinuousLinearMap (hf : IsBoundedBilinearMap 𝕜 f
     (LinearMap.mk₂ _ f.curry hf.add_left hf.smul_left hf.add_right hf.smul_right) <|
     hf.bound.imp fun _ ↦ And.right
 
+@[simp]
+lemma IsBoundedBilinearMap.toContinuousLinearMap_apply (hf : IsBoundedBilinearMap 𝕜 f)
+    (x : E) (y : F) : hf.toContinuousLinearMap x y = f (x, y) := rfl
+
 protected theorem IsBoundedBilinearMap.isBigO (h : IsBoundedBilinearMap 𝕜 f) :
     f =O[⊤] fun p : E × F => ‖p.1‖ * ‖p.2‖ :=
   let ⟨C, _, hC⟩ := h.bound
