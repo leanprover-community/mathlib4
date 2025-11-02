@@ -122,27 +122,21 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
     have : Set.EqOn (derivWithin (iteratedDerivWithin n (fun (x : ℂ) ↦ (1 + x) ^ a) B) B)
         (derivWithin (fun x ↦ (descPochhammer ℤ n).smeval a * (1 + x) ^ (a - ↑n)) B) B := by
       intro z hz
-      rw [derivWithin_congr]
-      · intro z hz
-        exact ih hz
-      · exact ih hz
+      rw [derivWithin_congr (fun _ hz ↦ ih hz) (ih hz)]
     apply Set.EqOn.trans this
     intro z hz
-    simp only [Nat.cast_add, Nat.cast_one, B]
-    rw [derivWithin_of_isOpen Metric.isOpen_ball hz]
-    simp only [deriv_const_mul_field']
-    rw [deriv_cpow_const]
-    rotate_left
-    · fun_prop
+    simp only [Nat.cast_add, Nat.cast_one, B, derivWithin_of_isOpen Metric.isOpen_ball hz,
+      deriv_const_mul_field']
+    rw [deriv_cpow_const (by fun_prop), deriv_const_add', deriv_id'', mul_one,
+      show a - (n + 1) = a - n - 1 by ring, ← mul_assoc]
+    · congr
+      simp [descPochhammer_succ_right, Polynomial.smeval_mul, Polynomial.smeval_natCast]
     · apply Complex.mem_slitPlane_of_norm_lt_one
       simpa [B] using hz
-    rw [deriv_const_add', deriv_id'', mul_one, show a - (n + 1) = a - n - 1 by ring, ← mul_assoc]
-    congr
-    simp [descPochhammer_succ_right, Polynomial.smeval_mul, Polynomial.smeval_natCast]
 
 theorem one_add_cpow_hasFPowerSeriesAt_zero {a : ℂ} :
-    HasFPowerSeriesAt (fun x ↦ (1 + x)^a) (binomialSeries ℂ a) 0 := by
-  apply HasFPowerSeriesOnBall.hasFPowerSeriesAt one_add_cpow_hasFPowerSeriesOnBall_zero
+    HasFPowerSeriesAt (fun x ↦ (1 + x)^a) (binomialSeries ℂ a) 0 :=
+  HasFPowerSeriesOnBall.hasFPowerSeriesAt one_add_cpow_hasFPowerSeriesOnBall_zero
 
 theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
     HasFPowerSeriesOnBall (fun x ↦ (1 + x)^a) (binomialSeries ℝ a) 0 1 := by
@@ -194,9 +188,8 @@ theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
       Complex.ofRealCLM_apply, Complex.ofReal_one, Function.const_one,
       ContinuousMultilinearMap.smul_apply, ContinuousMultilinearMap.mkPiAlgebraFin_apply,
       Fin.prod_ofFn, Pi.one_apply, Finset.prod_const_one, Complex.real_smul, mul_one]
-  rw [← Complex.ofReal_prod, ← Complex.ofReal_mul, Complex.ofReal_re]
-  simp [binomialSeries]
+  simp [Complex.ofReal_re, binomialSeries]
 
 theorem one_add_rpow_hasFPowerSeriesAt_zero {a : ℝ} :
-    HasFPowerSeriesAt (fun x ↦ (1 + x)^a) (binomialSeries ℝ a) 0 := by
-  apply HasFPowerSeriesOnBall.hasFPowerSeriesAt one_add_rpow_hasFPowerSeriesOnBall_zero
+    HasFPowerSeriesAt (fun x ↦ (1 + x)^a) (binomialSeries ℝ a) 0 :=
+  HasFPowerSeriesOnBall.hasFPowerSeriesAt one_add_rpow_hasFPowerSeriesOnBall_zero
