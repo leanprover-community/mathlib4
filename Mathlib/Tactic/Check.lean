@@ -34,6 +34,11 @@ namespace Mathlib.Tactic
 
 open Lean Meta Elab Tactic
 
+def checkInner (tk : Syntax) (term : Term) (c : Name) : TacticM Unit := do
+  addCompletionInfo <| .id term c (danglingDot := false) {} none
+  logInfoAt tk <| MessageData.signature c
+  return
+
 /--
 Tactic version of `Lean.Elab.Command.elabCheck`.
 Elaborates `term` without modifying tactic/elab/meta state.
@@ -45,9 +50,10 @@ def elabCheckTactic (tk : Syntax) (ignoreStuckTC : Bool) (term : Term) : TacticM
       -- show signature for `#check ident`
       try
         for c in (← realizeGlobalConstWithInfos term) do
-          addCompletionInfo <| .id term c (danglingDot := false) {} none
-          logInfoAt tk <| MessageData.signature c
-          return
+          checkInner tk term c
+          --addCompletionInfo <| .id term c (danglingDot := false) {} none
+          --logInfoAt tk <| MessageData.signature c
+          --return
       catch _ => pure ()  -- identifier might not be a constant but constant + projection
     let e ← Term.elabTerm term none
     Term.synthesizeSyntheticMVarsNoPostponing (ignoreStuckTC := ignoreStuckTC)
@@ -70,3 +76,7 @@ These become metavariables in the output.
 elab tk:"#check " colGt term:term : tactic => elabCheckTactic tk true term
 
 end Mathlib.Tactic
+
+example : Nat := by
+  #check Nat
+  exact 1
