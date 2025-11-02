@@ -86,7 +86,7 @@ lemma measurableSpace_le_predictable_of_measurableSet [Preorder ι] [OrderBot ι
   rintro - (⟨A, hA, rfl⟩ | ⟨i, A, hA, rfl⟩)
   · exact hm'bot A hA
   · exact hm' i A hA
-  
+
 namespace IsPredictable
 
 open Filtration
