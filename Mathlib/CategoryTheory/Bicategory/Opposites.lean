@@ -5,7 +5,6 @@ Authors: Calle Sönne
 -/
 
 import Mathlib.CategoryTheory.Bicategory.Basic
-import Mathlib.Tactic.CategoryTheory.ToApp
 import Mathlib.CategoryTheory.Opposites
 
 /-!
