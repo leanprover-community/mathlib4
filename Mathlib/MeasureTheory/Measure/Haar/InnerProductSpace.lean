@@ -116,8 +116,9 @@ section PiLp
 
 variable (ι : Type*) [Fintype ι]
 
-@[deprecated (since := "2025-11-02")] alias EuclideanSpace.measurableEquiv :=
-  MeasurableEquiv.toLp
+@[deprecated MeasurableEquiv.toLp (since := "2025-11-02")]
+protected def EuclideanSpace.measurableEquiv : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) :=
+  (MeasurableEquiv.toLp 2 (ι → ℝ)).symm
 
 @[deprecated (since := "2025-11-02")] alias EuclideanSpace.measurableEquiv_toEquiv :=
   MeasurableEquiv.coe_toLp
