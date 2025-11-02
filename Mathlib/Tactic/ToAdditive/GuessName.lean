@@ -243,7 +243,6 @@ def fixAbbreviation : List String → List String
   | x :: s                            => x :: fixAbbreviation s
   | []                                => []
 
-
 /--
 Autogenerate additive name.
 This runs in several steps:
