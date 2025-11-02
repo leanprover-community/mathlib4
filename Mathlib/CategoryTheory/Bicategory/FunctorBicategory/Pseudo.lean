@@ -111,6 +111,27 @@ def evaluation : B ⥤ᵖ (B ⥤ᵖ C) ⥤ᵖ C where
   mapId b := isoMk (fun P ↦ P.mapId b) (fun θ ↦ by simp [naturality_id_inv])
   mapComp f g := isoMk (fun P ↦ P.mapComp f g) (fun θ ↦ by simp [naturality_comp_inv])
 
+def uncurryObj {D : Type*} [Bicategory D] (F : B ⥤ᵖ (C ⥤ᵖ D)) : B × C ⥤ᵖ D where
+  obj X := (F.obj X.1).obj X.2
+  map {X Y} f := (F.map f.1).app X.2 ≫ (F.obj Y.1).map f.2
+  map₂ {X Y f g} η :=
+    (F.map₂ η.1).app X.2 ▷ (F.obj Y.1).map f.2 ≫
+      (F.map g.1).app X.2 ◁ (F.obj Y.1).map₂ η.2
+  map₂_comp {a b f g h} η θ := by simp [← whisker_exchange_assoc]
+  mapId X := by
+    apply whiskerLeftIso _ ((F.obj X.1).mapId X.2) ≪≫ (ρ_ _) ≪≫ _
+    sorry
+
+
+  mapComp := sorry
+  map₂_whisker_left := sorry
+  map₂_whisker_right := sorry
+  map₂_associator := sorry
+  map₂_left_unitor := sorry
+  map₂_right_unitor := sorry
+
+#exit
+
 /- The "evaluation of `F` at `X`" functor,
 as a functor `C × (C ⥤ D) ⥤ D`.
 -/
