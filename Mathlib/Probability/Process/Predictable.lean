@@ -60,6 +60,11 @@ def IsPredictable (𝓕 : Filtration ι m) (u : ι → Ω → E) :=
 
 end
 
+lemma measurableSet_predictable_singleton_bot_prod [LinearOrder ι] [OrderBot ι]
+    {𝓕 : Filtration ι m} {s : Set Ω} (hs : MeasurableSet[𝓕 ⊥] s) :
+    MeasurableSet[𝓕.predictable] <| {⊥} ×ˢ s := by
+  refine MeasurableSpace.measurableSet_generateFrom <| Or.inl ⟨s, hs, rfl⟩
+
 lemma measurableSet_predictable_Ioi_prod [LinearOrder ι] [OrderBot ι]
     {𝓕 : Filtration ι m} {i : ι} {s : Set Ω} (hs : MeasurableSet[𝓕 i] s) :
     MeasurableSet[𝓕.predictable] <| Set.Ioi i ×ˢ s :=
@@ -86,7 +91,7 @@ lemma measurableSpace_le_predictable_of_measurableSet [Preorder ι] [OrderBot ι
   rintro - (⟨A, hA, rfl⟩ | ⟨i, A, hA, rfl⟩)
   · exact hm'bot A hA
   · exact hm' i A hA
-  
+
 namespace IsPredictable
 
 open Filtration
@@ -113,7 +118,7 @@ lemma progMeasurable {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsP
     obtain hji | hij := le_total j i
     · rw [(by grind : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A
         = (Subtype.val ⁻¹' (Set.Ioc j i)) ×ˢ A)]
-      exact (measurable_subtype_coe measurableSet_Ioc).prod (𝓕.mono hji.le _ hA)
+      exact (measurable_subtype_coe measurableSet_Ioc).prod (𝓕.mono hji _ hA)
     · simp [(by grind : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A = ∅)]
 
 /-- A predictable process is adapted. -/
