@@ -460,45 +460,46 @@ noncomputable def Pattern.mulExtend (p : Pattern A G) (v : G) : G → A :=
     else
       default
 
+namespace Pattern
 /-- Extract the finite pattern given by restricting a configuration `x : G → A`
 to a finite subset `U : Finset G`.
 
 Formally: the support is `U`, and for each `i ∈ U` the pattern records the value
-`x i`. In other words, `mulPatternFromConfig x U` is the partial configuration of
+`x i`. In other words, `Pattern.mulFromConfig x U` is the partial configuration of
 `x` visible on the coordinates in `U`.
 
-This is the inverse construction to `mulPatternToOriginConfig` (which extends a
+This is the inverse construction to `Pattern.mulFromConfig` (which extends a
 finite pattern to a configuration by filling with `default`). -/
-@[to_additive patternFromConfig
+@[to_additive fromConfig
 /-- Extract the finite pattern given by restricting a configuration `x : G → A`
 to a finite subset `U : Finset G`.
 
 Formally: the support is `U`, and for each `i ∈ U` the pattern records the value
-`x i`. In other words, `patternFromConfig x U` is the partial configuration of
+`x i`. In other words, `Pattern.fromConfig x U` is the partial configuration of
 `x` visible on the coordinates in `U`.
 
-This is the inverse construction to `patternToOriginConfig` (which extends a
+This is the inverse construction to `Pattern.fromConfig` (which extends a
 finite pattern to a configuration by filling with `default`). -/]
-def mulPatternFromConfig (x : G → A) (U : Finset G) : Pattern A G where
+def mulFromConfig (x : G → A) (U : Finset G) : Pattern A G where
   support := U
   data := fun i => x i.1
 
-/-- On the translated support, `mulPatternToConfig p v` agrees with `p` at the preimage.
+/-- On the translated support, `Pattern.mulExtend p v` agrees with `p` at the preimage.
 
 More precisely, if `w ∈ p.support`, then at the translated site `w * v`,
-the configuration `mulPatternToConfig p v` takes the value prescribed by `p` at `w`.
+the configuration `Pattern.extend p v` takes the value prescribed by `p` at `w`.
 
 This statement uses `[IsRightCancelMul G]` to identify the preimage of `w * v`
 under right-multiplication by `v`. -/
-@[to_additive patternToConfig_apply_of_mem
-  /-- On the translated support, `patternToConfig p v` agrees with `p` at the preimage.
+@[to_additive toConfig_apply_of_mem
+  /-- On the translated support, `Pattern.extend p v` agrees with `p` at the preimage.
 
 More precisely, if `w ∈ p.support`, then at the translated site `w + v`,
-the configuration `patternToConfig p v` takes the value prescribed by `p` at `w`.
+the configuration `Pattern.extend p v` takes the value prescribed by `p` at `w`.
 
 This statement uses `[IsRightCancelMul G]` to identify the preimage of `w + v`
 under right-multiplication by `v`. -/]
-lemma mulPatternToConfig_apply_of_mem
+lemma mulToConfig_apply_of_mem
     (p : Pattern A G) (v w : G) (hw : w ∈ p.support) :
     p.mulExtend v (w * v) = p.data ⟨w, hw⟩ := by
   -- (w*v) is in the translated support
@@ -546,6 +547,8 @@ lemma mulPatternToConfig_apply_of_mem
             -- push h3 through `p.data`
             simp [h3]
 
+end Pattern
+
 /-- We call *occurrence set* for pattern `p` and position `g` the set of configurations
 in which a pattern `p` occurs at position `g`.
 
@@ -576,14 +579,14 @@ lemma mulOccursAt_eq_cylinder
     rcases Finset.mem_image.mp hu with ⟨w, hw, rfl⟩
     -- want: x (w*g) = patternToConfig p g (w*g)
     have hx : x (w * g) = p.data ⟨w, hw⟩ := H w hw
-    simpa [mulPatternToConfig_apply_of_mem (p := p) (v := g) (w := w) hw] using hx
+    simpa [Pattern.mulToConfig_apply_of_mem (p := p) (v := g) (w := w) hw] using hx
   · -- ⇐: from the cylinder, recover an occurrence
     intro H u hu
     -- H gives equality with the translated pattern on the image
     have hx : x (u * g) = p.mulExtend g (u * g) :=
       H (u * g) (Finset.mem_image_of_mem (· * g) hu)
     -- rewrite the RHS by the “apply_of_mem” lemma
-    simpa [mulPatternToConfig_apply_of_mem (p := p) (v := g) (w := u) hu] using hx
+    simpa [Pattern.mulToConfig_apply_of_mem (p := p) (v := g) (w := u) hu] using hx
 
 end OccursAt
 
@@ -703,7 +706,7 @@ This is the set of all finite patterns obtained by restricting some configuratio
 `x ∈ X` to `U`. -/
 @[to_additive languageOn]
 def mulLanguageOn (X : Set (G → A)) (U : Finset G) : Set (Pattern A G) :=
-  { p | ∃ x ∈ X, mulPatternFromConfig x U = p }
+  { p | ∃ x ∈ X, Pattern.mulFromConfig x U = p }
 
 attribute [inherit_doc SymbolicDynamics.FullShift.mulLanguageOn]
   SymbolicDynamics.FullShift.languageOn
@@ -717,7 +720,7 @@ in some configuration of `X`. Since `U` is finite, this is a finite number. -/
 noncomputable def mulLanguageCardOn (X : Set (G → A)) (U : Finset G) : ℕ := by
   -- Image of a map into the finite type `FixedSupport A G U`
   let f : {x : G → A // x ∈ X} → mulFixedSupport A G U :=
-    fun x => ⟨mulPatternFromConfig x.1 U, rfl⟩
+    fun x => ⟨Pattern.mulFromConfig x.1 U, rfl⟩
   have hfin : (Set.range f).Finite := (Set.finite_univ :
     (Set.univ : Set (mulFixedSupport A G U)).Finite)
     |>.subset (by intro y hy; simp)
