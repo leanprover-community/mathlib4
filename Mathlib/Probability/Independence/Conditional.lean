@@ -932,9 +932,6 @@ theorem iCondIndepFun.condIndepFun_prodMk {β : ι → Type*}
     CondIndepFun m' hm' (fun a => (f i a, f j a)) (f k) μ :=
   Kernel.iIndepFun.indepFun_prodMk hf_Indep hf_meas i j k hik hjk
 
-@[deprecated (since := "2025-03-05")]
-alias iCondIndepFun.condIndepFun_prod_mk := iCondIndepFun.condIndepFun_prodMk
-
 open Finset in
 lemma iCondIndepFun.condIndepFun_prodMk_prodMk (h_indep : iCondIndepFun m' hm' f μ)
     (hf : ∀ i, Measurable (f i))
@@ -945,9 +942,6 @@ lemma iCondIndepFun.condIndepFun_prodMk_prodMk (h_indep : iCondIndepFun m' hm' f
     ⟨v ⟨i, mem_insert_self _ _⟩, v ⟨j, mem_insert_of_mem <| mem_singleton_self _⟩⟩
   have hg (i j : ι) : Measurable (g i j) := by fun_prop
   exact (h_indep.indepFun_finset {i, j} {k, l} (by aesop) hf).comp (hg i j) (hg k l)
-
-@[deprecated (since := "2025-03-05")]
-alias iCondIndepFun.condIndepFun_prod_mk_prod_mk := iCondIndepFun.condIndepFun_prodMk_prodMk
 
 end iCondIndepFun
 

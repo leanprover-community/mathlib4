@@ -1184,22 +1184,6 @@ def Under.opEquivOpOver : Under (op X) ≌ (Over X)ᵒᵖ where
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
-/-- The canonical functor by reversing structure arrows. -/
-@[deprecated Over.opEquivOpUnder (since := "2025-04-08")]
-def Over.opToOpUnder : Over (op X) ⥤ (Under X)ᵒᵖ := (Over.opEquivOpUnder X).functor
-
-/-- The canonical functor by reversing structure arrows. -/
-@[deprecated Over.opEquivOpUnder (since := "2025-04-08")]
-def Under.opToOverOp : (Under X)ᵒᵖ ⥤ Over (op X) := (Over.opEquivOpUnder X).inverse
-
-/-- The canonical functor by reversing structure arrows. -/
-@[deprecated Under.opEquivOpOver (since := "2025-04-08")]
-def Under.opToOpOver : Under (op X) ⥤ (Over X)ᵒᵖ := (Under.opEquivOpOver X).functor
-
-/-- The canonical functor by reversing structure arrows. -/
-@[deprecated Under.opEquivOpOver (since := "2025-04-08")]
-def Over.opToUnderOp : (Over X)ᵒᵖ ⥤ Under (op X) := (Under.opEquivOpOver X).inverse
-
 end Opposite
 
 end CategoryTheory

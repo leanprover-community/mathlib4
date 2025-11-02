@@ -39,7 +39,7 @@ finite sets, finset
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
-assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice OrderedCommMonoid
+assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice IsOrderedMonoid
 
 open Multiset Subtype Function
 
