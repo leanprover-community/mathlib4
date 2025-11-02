@@ -259,7 +259,7 @@ theorem coe_sup (s t : NonemptyCompacts α) : (↑(s ⊔ t) : Set α) = ↑s ∪
 theorem coe_top [CompactSpace α] [Nonempty α] : (↑(⊤ : NonemptyCompacts α) : Set α) = univ :=
   rfl
 
-@[simps!]
+@[simps! singleton_coe singleton_toCompacts]
 instance : Singleton α (NonemptyCompacts α) where
   singleton x := ⟨{x}, singleton_nonempty x⟩
 
@@ -268,11 +268,7 @@ theorem mem_singleton (x y : α) : x ∈ ({y} : NonemptyCompacts α) ↔ x = y :
   Iff.rfl
 
 @[simp]
-theorem toCompacts_singleton (x : α) : toCompacts {x} = {x} :=
-  rfl
-
-@[simp]
-theorem toCloseds_singleton [T2Space α] (x : α) : toCloseds {x} = Closeds.singleton x :=
+theorem singleton_toCloseds [T2Space α] (x : α) : toCloseds {x} = Closeds.singleton x :=
   rfl
 
 /-- In an inhabited space, the type of nonempty compact subsets is also inhabited, with
