@@ -1372,11 +1372,8 @@ protected abbrev Function.Injective.completeLattice [Max α] [Min α] [LE α] [L
     (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) : CompleteLattice α where
   __ := hf.lattice f le lt map_sup map_inf
+  __ := BoundedOrder.lift f (fun _ _ ↦ le.1) map_top map_bot
   le_sSup _ a h := le.1 <| (le_iSup₂ a h).trans (map_sSup _).ge
   sSup_le _ _ h := le.1 <| (map_sSup _).trans_le <| iSup₂_le fun a ha ↦ le.2 <| h a ha
   sInf_le _ a h := le.1 <| (map_sInf _).trans_le <| iInf₂_le a h
   le_sInf _ _ h := le.1 <| (le_iInf₂ fun a ha ↦ le.2 <| h a ha).trans (map_sInf _).ge
-  top := ⊤
-  le_top _ := le.1 <| (@le_top β _ _ _).trans map_top.ge
-  bot := ⊥
-  bot_le _ := le.1 <| map_bot.le.trans bot_le
