@@ -309,8 +309,8 @@ exclusively. -/
 @[to_additive existing]
 lemma LinearOrderedCommGroup.isCyclic_iff_not_denselyOrdered [Nontrivial G] :
     IsCyclic G ↔ ¬ DenselyOrdered G := by
-  rw [← isAddCyclic_additive_iff, LinearOrderedAddCommGroup.isAddCyclic_iff_not_denselyOrdered]
-  rfl
+  rw [← isAddCyclic_additive_iff, LinearOrderedAddCommGroup.isAddCyclic_iff_not_denselyOrdered,
+    denselyOrdered_additive_iff]
 
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
 either isomorphic (and order-isomorphic) to `ℤᵐ⁰`, or is densely ordered. -/
@@ -522,15 +522,6 @@ end LocallyFiniteOrder
 section DenselyOrdered
 
 variable {X : Type*} [LT X]
-
-lemma denselyOrdered_additive_iff : DenselyOrdered (Additive X) ↔ DenselyOrdered X := Iff.rfl
-lemma denselyOrdered_multiplicative_iff : DenselyOrdered (Multiplicative X) ↔ DenselyOrdered X :=
-  Iff.rfl
-
-instance [DenselyOrdered X] : DenselyOrdered (Multiplicative X) :=
-  denselyOrdered_multiplicative_iff.2 ‹_›
-instance [DenselyOrdered X] : DenselyOrdered (Additive X) :=
-  denselyOrdered_additive_iff.2 ‹_›
 
 lemma WithZero.denselyOrdered_iff {M : Type*} [Preorder M] [NoMinOrder M] :
     DenselyOrdered (WithZero M) ↔ DenselyOrdered M :=
