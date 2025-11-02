@@ -17,7 +17,9 @@ since it elaborates `t` in a more tolerant way and so it can be possible to get 
 For example, `#check` allows metavariables.
 -/
 
-open Lean Elab Command PrettyPrinter Delaborator in
+open Lean Elab Meta Tactic
+
+open Command PrettyPrinter Delaborator in
 /-- The `#check'` command is like `#check`, but only prints explicit arguments in the signature
 (i.e., omitting implicit and typeclass arguments). -/
 elab tk:"#check' " name:ident : command => runTermElabM fun _ => do
@@ -32,8 +34,6 @@ elab tk:"#check' " name:ident : command => runTermElabM fun _ => do
 
 namespace Mathlib.Tactic
 
-open Lean Meta Elab Tactic
-
 /-- Core routine for the `#check` tactic: show a signature for `#check term`, assuming `term`
 is an identifier. Info messages are placed at `tk`.
 In case there are several resolved names for `term`, show information for all of them. -/
@@ -43,7 +43,10 @@ def checkInner (tk : Syntax) (term : Term) : TacticM Unit := do
     logInfoAt tk <| MessageData.signature c
     return
 
-open Lean Elab Command PrettyPrinter Delaborator in
+open PrettyPrinter Delaborator in
+/-- Core routine for the `#check'` tactic: show a signature for `#check' term`, assuming `term`
+is an identifier. Info messages are placed at `tk`.
+In case there are several resolved names for `term`, show information for all of them. -/
 def checkPrimeInner (tk : Syntax) (term : Term) : TacticM Unit := do
   for c in (← realizeGlobalConstWithInfos term) do
     addCompletionInfo <| .id term c (danglingDot := false) {} none
