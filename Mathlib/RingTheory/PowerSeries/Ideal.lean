@@ -127,38 +127,38 @@ end T
 
 variable [I_prime : I.IsPrime]
 
-private noncomputable def g' (hI : X ∉ I) : ℕ → I
+private noncomputable def G (hI : X ∉ I) : ℕ → I
 | 0 => ⟨g, hg⟩
 | n + 1 =>
-  ⟨mk fun p ↦ coeff (p + 1) (g' hI n) - ∑ i, T (g' hI n).2 haI i * coeff (p + 1) (F haI i), by
-    have h := sub_const_eq_X_mul_shift ((g' hI n).1 - ∑ i, C (T (g' hI n).2 haI i) * F haI i)
+  ⟨mk fun p ↦ coeff (p + 1) (G hI n) - ∑ i, T (G hI n).2 haI i * coeff (p + 1) (F haI i), by
+    have h := sub_const_eq_X_mul_shift ((G hI n).1 - ∑ i, C (T (G hI n).2 haI i) * F haI i)
     simp only [map_sub, map_sum, _root_.map_mul, constantCoeff_C, constantCoeff_F_apply, sum_T,
       sub_self, map_zero, sub_zero, coeff_C_mul] at h
-    refine (I_prime.mul_mem_iff_mem_or_mem.1 (h ▸ I.sub_mem (g' hI n).2 ?_)).resolve_left hI
+    refine (I_prime.mul_mem_iff_mem_or_mem.1 (h ▸ I.sub_mem (G hI n).2 ?_)).resolve_left hI
     exact  I.sum_mem fun i _ ↦ I.mul_mem_left _ (F_apply_mem_I haI i)⟩
 
-private lemma g'_sub_sum_T (n : ℕ) (hI : X ∉ I) :
-    (g' hg haI hI n).1 - ∑ i, C (T (g' hg haI hI n).2 haI i) * F haI i =
-      X * (g' hg haI hI (n + 1)).1 := by
+private lemma G_sub_sum_T (n : ℕ) (hI : X ∉ I) :
+    (G hg haI hI n).1 - ∑ i, C (T (G hg haI hI n).2 haI i) * F haI i =
+      X * (G hg haI hI (n + 1)).1 := by
   simpa [sum_T, constantCoeff_F_apply] using sub_const_eq_X_mul_shift
-    ((g' hg haI hI n).1 - ∑ i, C (T (g' hg haI hI n).2 haI i) * F haI i)
+    ((G hg haI hI n).1 - ∑ i, C (T (G hg haI hI n).2 haI i) * F haI i)
 
 /-- Given `a : Fin k → R` such that `(haP : span (range a) = I.map constantCoeff)` and `g : R⟦X⟧`
 such `(hg : g ∈ I)`, we construct `H : Fin k → R⟦X⟧` such that `g = ∑ i, H i * F i`. -/
 private noncomputable def H (hI : X ∉ I) (i : Fin k) : R⟦X⟧ :=
-  mk fun n ↦ T (g' hg haI hI n).2 haI i
+  mk fun n ↦ T (G hg haI hI n).2 haI i
 
 private lemma g_sub_sum_trunc_H (hI : X ∉ I) (n : ℕ) :
-    g - ∑ i, trunc n (H hg haI hI i) * F haI i = X ^ n * (g' hg haI hI n).1 := by
+    g - ∑ i, trunc n (H hg haI hI i) * F haI i = X ^ n * (G hg haI hI n).1 := by
   induction n with
-  | zero => simp [g']
+  | zero => simp [G]
   | succ n hn =>
     conv =>
       enter [1, 2, 2, i]
       rw [trunc_succ, Polynomial.coe_add, Polynomial.coe_monomial, add_mul, ← mul_one (coeff n _),
         ← smul_eq_mul (b := 1), map_smul, ← X_pow_eq, smul_eq_C_mul, mul_comm _ (X ^ n), mul_assoc]
     rw [sum_add_distrib, sub_add_eq_sub_sub, hn, ← mul_sum, ← mul_sub]
-    simp only [H, coeff_mk, g'_sub_sum_T]
+    simp only [H, coeff_mk, G_sub_sum_T]
     ring
 
 private lemma sum_H_mul_F (hI : X ∉ I) : ∑ i, H hg haI hI i * F haI i = g := by
