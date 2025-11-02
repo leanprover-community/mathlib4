@@ -303,7 +303,7 @@ building blocks: they describe local adjacency conditions between two sites
 of a configuration. -/
 def domino {A : Type*} (i j : G) (ai aj : A) : Pattern A G := by
   classical
-  refine
+  exact
     { support := ({i, j} : Finset G)
       data := fun ⟨z, _hz⟩ => if z = i then ai else aj }
 
