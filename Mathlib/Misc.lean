@@ -1,6 +1,56 @@
 import Mathlib
+import Batteries.Tactic.Instances
+
+section IsPrimitiveRoot
+
+theorem IsPrimitiveRoot.eq_neg_one_of_two_right' {R : Type*} [CommRing R] [NoZeroDivisors R]
+    {ζ : Rˣ} (h : IsPrimitiveRoot ζ 2) : ζ = -1 := by
+  simp [Units.ext_iff, (IsPrimitiveRoot.coe_units_iff.mpr h).eq_neg_one_of_two_right]
+
+end IsPrimitiveRoot
+
+section IsDedekindDomain.HeightOneSpectrum
+
+namespace IsDedekindDomain.HeightOneSpectrum
+
+theorem intValuation_pow_le_iff_not_dvd {R : Type*} [CommRing R] [IsDedekindDomain R]
+    (v : HeightOneSpectrum R) {r : R} (hr : r ≠ 0) (n : ℕ) :
+    WithZero.exp (-↑n) ≤ v.intValuation r ↔ ¬ v.asIdeal ^ (n + 1) ∣ Ideal.span {r} := by
+  have {a} {n} (ha : a ≠ 0) :
+      a < WithZero.exp (- n) ↔ a ≤ WithZero.exp (- (n + 1)) := by
+    rw [← WithZero.exp_log ha, WithZero.exp_le_exp, WithZero.exp_lt_exp]
+    grind
+  rw [← not_lt, this, ← Nat.cast_add_one, intValuation_le_pow_iff_dvd]
+  exact intValuation_ne_zero v r hr
+
+theorem intValuation_pow_le_iff_not_mem {R : Type*} [CommRing R] [IsDedekindDomain R]
+    (v : HeightOneSpectrum R) {r : R} (hr : r ≠ 0) (n : ℕ) :
+    WithZero.exp (-↑n) ≤ v.intValuation r ↔ ¬ r ∈ v.asIdeal ^ (n + 1) := by
+   rw [intValuation_pow_le_iff_not_dvd _ hr, Ideal.dvd_span_singleton]
+
+end IsDedekindDomain.HeightOneSpectrum
+
+section Ideal
+
+open Ideal
+
+theorem Ideal.liesOver_pow_of_le_ramificationIdx {R S : Type*} [CommRing R] [CommRing S]
+    [Algebra R S] (p : Ideal R) (P : Ideal S) [P.LiesOver p] {e : ℕ} (h₁ : 1 ≤ e)
+    (h₂ : e ≤ ramificationIdx (algebraMap R S) p P) : (P ^ e).LiesOver p := by
+  rw [liesOver_iff, under_def]
+  apply le_antisymm
+  · exact le_trans (le_comap_pow_ramificationIdx (p := p) (P := P) (f := algebraMap R S))
+      (comap_mono (pow_le_pow_right h₂))
+  · rw [over_def P p, under_def]
+    convert comap_mono <| pow_le_pow_right h₁
+    rw [pow_one]
+
+end Ideal
 
 section Nat
+
+theorem Nat.Prime.three_le_of_odd {p : ℕ} (h₁ : Nat.Prime p) (h₂ : Odd p) : 3 ≤ p :=
+  Nat.lt_of_le_of_ne h₁.two_le (by grind)
 
 theorem Nat.two_le_div_of_dvd {a b : ℕ} (h₁ : b ∣ a) (h₂ : b ≠ a) (h₃ : a ≠ 0) :
     2 ≤ a / b := by
