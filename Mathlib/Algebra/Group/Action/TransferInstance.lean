@@ -72,8 +72,12 @@ protected abbrev mulDistribMulAction (e : N ≃ O) [MulDistribMulAction M O] :
     smul_mul := by simp [mul_def, smul_def, smul_mul'] }
 
 variable (M) [SMul M β] in
-/-- Transfer `FaithfulSMul` across an `Equiv` -/
-@[to_additive /-- Transfer `FaithfulVAdd` across an `Equiv` -/]
+/-- Transfer `FaithfulSMul` across an `Equiv`.
+
+See `FaithfulSMul.of_injective` for the general statement not about transferring. -/
+@[to_additive /-- Transfer `FaithfulVAdd` across an `Equiv`
+
+See `FaithfulVAdd.of_injective` for the general statement not about transferring. -/]
 protected lemma faithfulSMul (e : α ≃ β) [FaithfulSMul M β] :
     letI := e.smul M
     FaithfulSMul M α :=
