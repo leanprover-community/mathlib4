@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.Data.List.Chain
 import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Algebra.BigOperators.Group.List.Basic
 
 /-!
 # Free groups
