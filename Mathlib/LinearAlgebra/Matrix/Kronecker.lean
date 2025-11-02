@@ -524,7 +524,7 @@ theorem trace_kroneckerTMul [Fintype m] [Fintype n] (A : Matrix m m α) (B : Mat
 
 theorem conjTranspose_kroneckerTMul [StarRing R] [StarAddMonoid α] [StarAddMonoid β]
     [StarModule R α] [StarModule R β] (x : Matrix l m α) (y : Matrix n p β) :
-    (x ⊗ₖₜ y)ᴴ = (xᴴ ⊗ₖₜ yᴴ : Matrix (m × p) (l × n) (α ⊗[R] β)) := by
+    (x ⊗ₖₜ[R] y)ᴴ = xᴴ ⊗ₖₜ[R] yᴴ := by
   ext; simp
 
 end Module
