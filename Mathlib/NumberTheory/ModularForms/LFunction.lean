@@ -78,6 +78,7 @@ noncomputable def weakFEPair (f : F) : WeakFEPair ℂ where
     filter_upwards [eventually_gt_atTop 0] with t ht
     simp [ht, ofComplex_apply_of_im_pos, ← coe_im]
 
+/-- The `L`-series of a modular form (including its Archimedean `Γ`-factor). -/
 noncomputable def Λ (f : F) : ℂ → ℂ := (weakFEPair hk f).Λ
 
 lemma hasSum_Λ (f : F) {s : ℂ} (hk : 0 < k) (hs : k + 1 < s.re) :
@@ -106,6 +107,7 @@ lemma hasSum_Λ (f : F) {s : ℂ} (hk : 0 < k) (hs : k + 1 < s.re) :
     apply IsBigO.mul _ (isBigO_refl _ _)
     simpa [Subgroup.strictWidthInfty_SL2Z] using (ModularFormClass.qExpansion_isBigO hk.le f)
 
+/-- The `L`-series of a modular form (without its Archimedean `Γ`-factor). -/
 noncomputable def L (f : F) (s : ℂ) : ℂ :=  Λ hk f s * (2 / Gammaℂ s)
 
 end ModularForm
@@ -122,16 +124,16 @@ noncomputable def strongFEPair (f : F) : StrongFEPair ℂ where
   hf₀ := (CuspFormClass.zero_at_infty f).valueAtInfty_eq_zero
   hg₀ := (CuspFormClass.zero_at_infty f).valueAtInfty_eq_zero
 
-lemma Λ_eq_strongFEPair_Λ (f : F) : Λ hk f = (strongFEPair hk f).Λ :=
-  (strongFEPair hk f).toWeakFEPair_Λ_eq_Λ
-
 lemma differentiable_Λ (f : F) : Differentiable ℂ (Λ hk f) :=
-  Λ_eq_strongFEPair_Λ hk f ▸ (strongFEPair hk f).differentiable_Λ
+  (strongFEPair hk f).differentiable_Λ
+
+lemma Λ_eq_mellin (f : F) : Λ hk f = mellin (fun t ↦ f (ofComplex (I * t))) :=
+  (strongFEPair hk f).Λ_eq
 
 lemma hasSum_Λ (f : F) {s : ℂ} (hk : 0 < k) (hs : k / 2 + 1 < s.re) :
     HasSum (fun n ↦ π ^ (-s) * Gamma s *
       (ModularFormClass.qExpansion 1 f).coeff n / ↑(2 * n : ℝ) ^ s) (Λ hk f s) := by
-  rw [Λ_eq_strongFEPair_Λ]
+  rw [Λ_eq_mellin]
   refine hasSum_mellin_pi_mul ?_ (by linarith [show (0 : ℝ) < k from mod_cast hk]) ?_ ?_
   · intro i
     rcases eq_or_ne i 0 with rfl | hi
@@ -145,7 +147,7 @@ lemma hasSum_Λ (f : F) {s : ℂ} (hk : 0 < k) (hs : k / 2 + 1 < s.re) :
       congr 1
       simp only [neg_mul, ofReal_neg, ofReal_mul, ofReal_ofNat, ofReal_natCast,
         ofComplex_apply_eq_ite, mul_im, Complex.I_re, ofReal_im, mul_zero, Complex.I_im, ofReal_re,
-        one_mul, zero_add, ht, ↓reduceDIte, coe_mk_subtype, ofReal_one, div_one]
+        one_mul, zero_add, ht, ↓reduceDIte, coe_mk_subtype, ofReal_one]
       have := I_sq
       grind
     · simpa only [Subgroup.strictPeriods_SL2Z] using AddSubgroup.mem_zmultiples 1
