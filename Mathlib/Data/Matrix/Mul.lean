@@ -926,7 +926,7 @@ theorem vecMul_injective [Fintype m] : (·.vecMul : Matrix m n α → _).Injecti
   convert congrFun₂ h (Pi.single i 1) j
     <;> simp only [single_one_vecMul, row]
 
-variable [Fintype m] [Fintype n] [DecidableEq m]
+variable [Fintype m] [DecidableEq m]
 
 @[simp]
 theorem one_mulVec (v : m → α) : 1 *ᵥ v = v := by
