@@ -301,7 +301,7 @@ also called cells) `{i, j}`, specifying the value `ai` at `i` and the value `aj`
 In symbolic dynamics, dominos (two-cell patterns) are the simplest nontrivial
 building blocks: they describe local adjacency conditions between two sites
 of a configuration. -/
-def Domino {A : Type*} (i j : G) (ai aj : A) : Pattern A G := by
+def domino {A : Type*} (i j : G) (ai aj : A) : Pattern A G := by
   classical
   refine
     { support := ({i, j} : Finset G)
