@@ -161,6 +161,12 @@ theorem integral_indicator (hs : MeasurableSet s) :
         (integral_congr_ae (indicator_ae_eq_restrict_compl hs)))
     _ = ∫ x in s, f x ∂μ := by simp
 
+theorem integral_indicator₀ (hs : NullMeasurableSet s μ) :
+    ∫ x, indicator s f x ∂μ = ∫ x in s, f x ∂μ := by
+  rw [← integral_congr_ae (indicator_ae_eq_of_ae_eq_set hs.toMeasurable_ae_eq),
+    integral_indicator (measurableSet_toMeasurable _ _),
+    Measure.restrict_congr_set hs.toMeasurable_ae_eq]
+
 lemma integral_integral_indicator {mY : MeasurableSpace Y} {ν : Measure Y} (f : X → Y → E)
     {s : Set X} (hs : MeasurableSet s) :
     ∫ x, ∫ y, s.indicator (f · y) x ∂ν ∂μ = ∫ x in s, ∫ y, f x y ∂ν ∂μ := by
