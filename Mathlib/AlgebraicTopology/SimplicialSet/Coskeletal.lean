@@ -18,8 +18,8 @@ This isomorphism follows from the fact that `rightExtensionInclusion X 2` is a r
 extension. In fact, we show that when `X` is `StrictSegal` then
 `(rightExtensionInclusion X n).IsPointwiseRightKanExtension` holds.
 
-As an example, `SimplicialObject.IsCoskeletal (nerve C) 2` shows that that nerves of categories
-are 2-coskeletal.
+As an example, `SimplicialObject.IsCoskeletal (nerve C) 2` shows that nerves of categories are
+2-coskeletal.
 -/
 
 

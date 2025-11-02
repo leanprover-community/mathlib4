@@ -42,11 +42,6 @@ The key results proved here are:
 kruskal-katona, kruskal, katona, shadow, initial segments, intersecting
 -/
 
--- TODO: There's currently a diamond. See https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/DecidableEq.20diamond.20on.20Fin
--- import Mathlib.Order.Fin.Basic
--- example (n : ℕ) : instDecidableEqFin n = instDecidableEq_mathlib := rfl
-attribute [-instance] instDecidableEqFin
-
 open Nat
 open scoped FinsetFamily
 
@@ -373,11 +368,11 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
   have : n - r - (n - 2 * r) = r := by omega
   rw [this] at kk
   -- But this gives a contradiction: `n choose r < |𝒜| + |∂^[n-2k] 𝒜ᶜˢ|`
-  have : n.choose r < #(𝒜 ∪ ∂^[n - 2 * r] 𝒜ᶜˢ) := by
-    rw [card_union_of_disjoint ‹_›]
-    convert lt_of_le_of_lt (add_le_add_left kk _) (add_lt_add_right size _) using 1
-    convert Nat.choose_succ_succ _ _ using 3
-    all_goals rwa [Nat.sub_one, Nat.succ_pred_eq_of_pos]
+  have := calc
+    n.choose r = (n - 1).choose (r - 1) + (n - 1).choose r := by
+      convert Nat.choose_succ_succ _ _ using 3 <;> rwa [Nat.sub_one, Nat.succ_pred_eq_of_pos]
+    _ < #𝒜 + #(∂^[n - 2 * r] 𝒜ᶜˢ) := add_lt_add_of_lt_of_le size kk
+    _ = #(𝒜 ∪ ∂^[n - 2 * r] 𝒜ᶜˢ) := by rw [card_union_of_disjoint ‹_›]
   apply this.not_ge
   convert Set.Sized.card_le _
   · rw [Fintype.card_fin]

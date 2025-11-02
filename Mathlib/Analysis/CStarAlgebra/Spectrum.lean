@@ -34,7 +34,7 @@ we can still establish a form of spectral permanence.
 
 ## Main statements
 
-+ `unitary.spectrum_subset_circle`: The spectrum of a unitary element is contained in the unit
++ `Unitary.spectrum_subset_circle`: The spectrum of a unitary element is contained in the unit
   sphere in `ℂ`.
 + `IsSelfAdjoint.spectralRadius_eq_nnnorm`: The spectral radius of a selfadjoint element is equal
   to its norm.
@@ -68,21 +68,28 @@ section UnitarySpectrum
 variable {𝕜 : Type*} [NormedField 𝕜] {E : Type*} [NormedRing E] [StarRing E] [CStarRing E]
   [NormedAlgebra 𝕜 E] [CompleteSpace E]
 
-theorem unitary.spectrum_subset_circle (u : unitary E) :
+theorem Unitary.spectrum_subset_circle (u : unitary E) :
     spectrum 𝕜 (u : E) ⊆ Metric.sphere 0 1 := by
   nontriviality E
   refine fun k hk => mem_sphere_zero_iff_norm.mpr (le_antisymm ?_ ?_)
   · simpa only [CStarRing.norm_coe_unitary u] using norm_le_norm_of_mem hk
-  · rw [← unitary.val_toUnits_apply u] at hk
+  · rw [← Unitary.val_toUnits_apply u] at hk
     have hnk := ne_zero_of_mem_of_unit hk
-    rw [← inv_inv (unitary.toUnits u), ← spectrum.map_inv, Set.mem_inv] at hk
-    have : ‖k‖⁻¹ ≤ ‖(↑(unitary.toUnits u)⁻¹ : E)‖ := by
+    rw [← inv_inv (Unitary.toUnits u), ← spectrum.map_inv, Set.mem_inv] at hk
+    have : ‖k‖⁻¹ ≤ ‖(↑(Unitary.toUnits u)⁻¹ : E)‖ := by
       simpa only [norm_inv] using norm_le_norm_of_mem hk
     simpa using inv_le_of_inv_le₀ (norm_pos_iff.mpr hnk) this
 
+@[deprecated (since := "2025-10-29")] alias unitary.spectrum_subset_circle :=
+  Unitary.spectrum_subset_circle
+
 theorem spectrum.subset_circle_of_unitary {u : E} (h : u ∈ unitary E) :
     spectrum 𝕜 u ⊆ Metric.sphere 0 1 :=
-  unitary.spectrum_subset_circle ⟨u, h⟩
+  Unitary.spectrum_subset_circle ⟨u, h⟩
+
+theorem spectrum.norm_eq_one_of_unitary {u : E} (hu : u ∈ unitary E)
+    ⦃z : 𝕜⦄ (hz : z ∈ spectrum 𝕜 u) : ‖z‖ = 1 := by
+  simpa using spectrum.subset_circle_of_unitary hu hz
 
 end UnitarySpectrum
 

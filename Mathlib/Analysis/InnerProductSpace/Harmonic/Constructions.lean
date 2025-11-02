@@ -107,7 +107,7 @@ theorem AnalyticAt.harmonicAt_log_norm {f : ℂ → ℂ} {z : ℂ} (h₁f : Anal
     funext z
     simp only [Pi.smul_apply, Function.comp_apply, smul_eq_mul]
     rw [Complex.norm_def, Real.log_sqrt]
-    linarith
+    · linarith
     exact (f z).normSq_nonneg
   rw [this]
   apply HarmonicAt.const_smul

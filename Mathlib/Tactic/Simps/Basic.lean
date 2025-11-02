@@ -7,6 +7,7 @@ import Lean.Elab.Tactic.Simp
 import Lean.Elab.App
 import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Lean.Expr.Basic
+import Mathlib.Tactic.Basic
 
 /-!
 # Simps attribute
@@ -832,7 +833,7 @@ def getRawProjections (stx : Syntax) (str : Name) (traceIfExists : Bool := false
   trace[simps.debug] "Generated raw projection data:{indentD <| toMessageData (rawLevels, projs)}"
   pure (rawLevels, projs)
 
-library_note "custom simps projection" /--
+library_note2 «custom simps projection» /--
 You can specify custom projections for the `@[simps]` attribute.
 To do this for the projection `MyStructure.originalProjection` by adding a declaration
 `MyStructure.Simps.myProjection` that is definitionally equal to
@@ -900,18 +901,6 @@ structure Config where
 
 /-- Function elaborating `Config` -/
 declare_command_config_elab elabSimpsConfig Config
-
-/-- A common configuration for `@[simps]`: generate equalities between functions instead equalities
-between fully applied Expressions. Replaced by `@[simps -fullyApplied]`. -/
-@[deprecated "use `-fullyApplied` instead" (since := "2025-03-10")]
-def Config.asFn : Simps.Config where
-  fullyApplied := false
-
-/-- A common configuration for `@[simps]`: don't tag the generated lemmas with `@[simp]`.
-Replaced by `@[simps -isSimp]`. -/
-@[deprecated "use `-isSimp` instead" (since := "2025-03-10")]
-def Config.lemmasOnly : Config where
-  isSimp := false
 
 /-- `instantiateLambdasOrApps es e` instantiates lambdas in `e` by expressions from `es`.
 If the length of `es` is larger than the number of lambdas in `e`,
