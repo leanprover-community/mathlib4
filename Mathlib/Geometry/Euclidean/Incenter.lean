@@ -196,8 +196,8 @@ lemma inv_height_eq_sum_mul_inv_dist (i : Fin (n + 1)) :
 
 /-- The inverse of the distance from one vertex to the opposite face is less than the sum of that
 quantity for the other vertices. This implies the existence of the excenter opposite that vertex;
-it also implies that the image of the incenter under a homothety with scale factor 2 about a
-vertex lies outside the simplex. -/
+it also gives information about the location of the incenter (see
+`excenterWeights_empty_lt_inv_two`). -/
 lemma inv_height_lt_sum_inv_height [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
     (s.height i)⁻¹ < ∑ j ∈ {k | k ≠ i}, (s.height j)⁻¹ := by
   rw [inv_height_eq_sum_mul_inv_dist]
@@ -243,6 +243,20 @@ lemma sign_excenterWeights_singleton_pos [Nat.AtLeastTwo n] {i j : Fin (n + 1)} 
 terms of `ExcenterExists`. -/
 lemma excenterExists_singleton [Nat.AtLeastTwo n] (i : Fin (n + 1)) : s.ExcenterExists {i} :=
   (s.sum_excenterWeightsUnnorm_singleton_pos i).ne'
+
+/-- The barycentric coordinates of the incenter are less than `2⁻¹` (thus, it lies closer on an
+angle bisector to the opposite side than to the vertex, or equivalently the image of the incenter
+under a homothety with scale factor 2 about a vertex lies outside the simplex). -/
+lemma excenterWeights_empty_lt_inv_two [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
+    s.excenterWeights ∅ i < 2⁻¹ := by
+  have h := s.inv_height_lt_sum_inv_height i
+  rw [Finset.filter_ne', ← Finset.compl_singleton, ← add_lt_add_iff_left (s.height i)⁻¹] at h
+  have h' : 2 * (s.height i)⁻¹ < ∑ j ∈ {i}, (s.height j)⁻¹ + ∑ j ∈ {i}ᶜ, (s.height j)⁻¹ := by
+    rwa [two_mul, Finset.sum_singleton]
+  rw [Finset.sum_add_sum_compl, ← lt_inv_mul_iff₀ (by norm_num), ← div_lt_iff₀ (by positivity)]
+    at h'
+  convert h'
+  simp [excenterWeights, excenterWeightsUnnorm, div_eq_inv_mul]
 
 /-- The exsphere with signs determined by the given set of indices (for the empty set, this is
 the insphere; for a singleton set, this is the exsphere opposite a vertex).  This is only
