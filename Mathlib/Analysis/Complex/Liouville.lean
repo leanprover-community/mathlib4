@@ -36,7 +36,7 @@ radius `R > 0`, is continuous on its closure, and its values on the boundary cir
 are bounded from above by `C`, then the norm of its `n`-th derivative at the center is at most
 `n.factorial * C / R ^ n`. -/
 theorem norm_iteratedDeriv_le_of_forall_mem_sphere_norm_le [CompleteSpace F] {c : ℂ} {R C : ℝ}
-    {n : ℕ} {f : ℂ → F} (hR : 0 < R) (hf : DiffContOnCl ℂ f (ball c R))
+    {f : ℂ → F} (n : ℕ) (hR : 0 < R) (hf : DiffContOnCl ℂ f (ball c R))
     (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
     ‖iteratedDeriv n f c‖ ≤ n.factorial * C / R ^ n := by
   have hp (z) (hz : ‖z - c‖ = R) : ‖(z - c)⁻¹ ^ (n + 1) • f z‖ ≤ C / (R ^ n  * R) := by
@@ -51,7 +51,7 @@ theorem norm_iteratedDeriv_le_of_forall_mem_sphere_norm_le [CompleteSpace F] {c 
           smul_comm, smul_inv_smul₀]
         simp [Nat.factorial_ne_zero]
       _ = n.factorial • (2 * π * I)⁻¹ •  (∮ z in C(c, R), (1 / (z - c) ^ (n + 1)) • f z) := by
-        rw [← (DiffContOnCl.circleIntegral_one_div_sub_center_pow_smul hR n hf)]
+        rw [← DiffContOnCl.circleIntegral_one_div_sub_center_pow_smul hR n hf]
       _ = n.factorial • (2 * π * I)⁻¹ • ∮ z in C(c, R), (z - c)⁻¹ ^ (n + 1) • f z := by simp
   calc
     ‖iteratedDeriv n f c‖ = ‖n.factorial • (2 * π * I)⁻¹ •
@@ -65,7 +65,7 @@ theorem norm_iteratedDeriv_le_of_forall_mem_sphere_norm_le [CompleteSpace F] {c 
 private theorem norm_deriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {f : ℂ → F} (hR : 0 < R)
     (hf : DiffContOnCl ℂ f (ball c R)) (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
     ‖deriv f c‖ ≤ C / R := by
-  simpa using norm_iteratedDeriv_le_of_forall_mem_sphere_norm_le hR hf hC (n := 1)
+  simpa using norm_iteratedDeriv_le_of_forall_mem_sphere_norm_le 1 hR hf hC
 
 /-- **Cauchy's estimate for the first order derivative**: If `f` is complex differentiable on an
 open disc of radius `R > 0`, is continuous on its closure, and its values on the boundary circle
