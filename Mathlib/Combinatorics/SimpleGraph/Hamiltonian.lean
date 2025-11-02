@@ -81,7 +81,7 @@ theorem isHamiltonian_iff_support_get_bijective : p.IsHamiltonian ↔ (p.support
 
 theorem IsHamiltonian.getVert_surjective (hp : p.IsHamiltonian) : (p.getVert ·).Surjective :=
   fun v ↦ (List.mem_iff_get.mp <| p.support.one_le_count_iff.mp <| le_of_eq <| hp v |>.symm).imp'
-    Fin.val fun _ h ↦ h ▸ p.getVert_eq_support_getElem (by grind [length_support])
+    Fin.val fun _ h ↦ h ▸ p.getVert_eq_support_getElem (by grind [Walk.length_support])
 
 /-- A Hamiltonian cycle is a cycle that visits every vertex once. -/
 structure IsHamiltonianCycle (p : G.Walk a a) : Prop extends p.IsCycle where
