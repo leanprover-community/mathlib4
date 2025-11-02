@@ -5,6 +5,16 @@ Authors: Daniel Morrison
 -/
 import Mathlib.LinearAlgebra.Multilinear.DFinsupp
 
+/-!
+# Interactions between finitely-supported functions and multilinear maps
+
+## Main definitions
+
+* `freeFinsuppEquiv` is an equivalence of multilinear maps over free modules with finitely
+  supported maps.
+
+-/
+
 universe uι uκ uS uR uM uN
 variable {ι : Type uι} {κ : ι → Type uκ}
 variable {S : Type uS} {R : Type uR}

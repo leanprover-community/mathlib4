@@ -27,6 +27,9 @@ import Mathlib.LinearAlgebra.Basis.Basic
     functions `x`.
   - `MultilinearMap.dfinsuppFamilyₗ` is a `LinearMap`, linear in the family of multilinear maps `f`.
 
+* `freeDFinsuppEquiv` is an equivalence of multilinear maps over free modules with finitely
+  supported maps.
+
 -/
 
 universe uι uκ uS uR uM uN
@@ -268,10 +271,18 @@ theorem freeDFinsuppEquiv_def (f : Π₀ (_ : (Π i, κ i) × ι'), R) : freeDFi
   (DFinsupp.sigmaCurryLEquiv (R := R) (M := fun _ _ => R)) (
   (DFinsupp.domLCongr (R := R) (M := fun _ => R) (Equiv.sigmaEquivProd _ _).symm) f)))) := rfl
 
+/--
+When `freeDFinsuppEquiv` is applied to a map with a single value of one the resulting multilinear
+map sends inputs to a single value in the codomain, taking a product over images from each
+component of the domain.
+-/
 @[simp]
-theorem freeDFinsuppEquiv_single_one [DecidableEq ι'] (p : (Π i, κ i) × ι')
+theorem freeDFinsuppEquiv_single [DecidableEq ι'] (p : (Π i, κ i) × ι') (r : R)
   (x : Π i, Π₀ _ : κ i, R) :
-  freeDFinsuppEquiv (DFinsupp.single p 1) x = DFinsupp.single p.2 ((∏ i, (x i) (p.1 i))) := by
+  freeDFinsuppEquiv (DFinsupp.single p r) x = r • DFinsupp.single p.2 ((∏ i, (x i) (p.1 i))) := by
+  nth_rw 1 [show r = r • 1 by rw [smul_eq_mul]; ring]
+  rw [DFinsupp.single_smul, map_smul, smul_apply]
+  congr
   classical
   ext i'
   simp_all [freeDFinsuppEquiv_def, DFinsupp.domLCongr_apply, Equiv.symm_symm,
@@ -289,18 +300,6 @@ theorem freeDFinsuppEquiv_single_one [DecidableEq ι'] (p : (Π i, κ i) × ι')
     symm
     exact Finset.prod_eq_zero (Finset.mem_univ i) h
   · simp_all only [and_false, ↓reduceIte, Finset.sum_const_zero]
-
-/--
-When `freeDFinsuppEquiv` is applied to a map with a single value of one the resulting multilinear
-map sends inputs to a single value in the codomain, taking a product over images from each
-component of the domain.
--/
-@[simp]
-theorem freeDFinsuppEquiv_single [DecidableEq ι'] (p : (Π i, κ i) × ι') (r : R)
-  (x : Π i, Π₀ _ : κ i, R) :
-  freeDFinsuppEquiv (DFinsupp.single p r) x = r • DFinsupp.single p.2 ((∏ i, (x i) (p.1 i))) := by
-  nth_rw 1 [show r = r • 1 by rw [smul_eq_mul]; ring]
-  rw [DFinsupp.single_smul, map_smul, smul_apply, freeDFinsuppEquiv_single_one p x]
 
 theorem freeDFinsuppEquiv_apply [DecidableEq ι'] [Fintype ι']
   (f : Π₀ (_ : (Π i, κ i) × ι'), R) (x : Π i, Π₀ _ : κ i, R) :
