@@ -87,6 +87,12 @@ theorem Module.FinitePresentation.exists_fin [fp : Module.FinitePresentation R M
   · simpa [range_linearCombination] using hι₁
   · simpa [LinearMap.ker_comp, Submodule.comap_equiv_eq_map_symm] using hι₂.map _
 
+/-- An alternative version of `Module.FinitePresentation.exists_fin` that provides a right exact
+sequence. -/
+theorem Module.FinitePresentation.exists_fin' [fp : Module.FinitePresentation R M] :
+    ∃ (n m : ℕ) (f : (Fin n → R) →ₗ[R] M) (g : (Fin m → R) →ₗ[R] (Fin n → R)),
+    Function.Surjective f ∧ Function.Exact g f := sorry
+
 /-- A finitely presented module is isomorphic to the quotient of a finite free module by a finitely
 generated submodule. -/
 theorem Module.FinitePresentation.equiv_quotient [Module.FinitePresentation R M] [Small.{v} R] :
