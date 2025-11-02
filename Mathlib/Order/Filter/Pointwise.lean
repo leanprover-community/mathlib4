@@ -805,7 +805,6 @@ theorem hasBasis_smul :
     (f • g).HasBasis (fun st : Set α × Set β ↦ st.1 ∈ f ∧ st.2 ∈ g) (fun st ↦ st.1 • st.2) :=
   f.basis_sets.smul g.basis_sets
 
-
 @[to_additive (attr := simp)]
 theorem map₂_smul : map₂ (· • ·) f g = f • g :=
   rfl
