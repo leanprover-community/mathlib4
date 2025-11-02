@@ -183,20 +183,15 @@ instance RelCWComplex.Subcomplex.instMin [RelCWComplex C D] : Min (Subcomplex C)
       rw [inter_union_distrib_left, union_inter_cancel_left, union_inter_distrib_left,
         ← union_assoc, union_self, ← union_inter_distrib_left]
       congrm D ∪ ?_
-      apply subset_antisymm
-      · refine Subset.trans (iUnion_mono fun n ↦ ?_) iUnion_inter_subset
-        refine Subset.trans (iUnion_mono fun i ↦ ?_) iUnion_inter_subset
-        simp only [subset_inter_iff, iUnion_subset_iff, subset_refl, implies_true, and_true]
-        exact fun hi hi' ↦ subset_iUnion_of_subset hi Subset.rfl
-      · intro x
-        simp only [mem_inter_iff, mem_iUnion, exists_prop, and_imp, forall_exists_index]
-        intro n i hi hxi m j hj hxj
-        use n, i, hi
-        refine ⟨?_, hxi⟩
-        suffices (⟨n, i⟩ : Σ n, cell C n) = ⟨m, j⟩ by aesop
-        apply eq_of_not_disjoint_openCell
-        rw [not_disjoint_iff]
-        exact ⟨x, hxi, hxj⟩
+      calc
+        ⋃ n, ⋃ i ∈ E.I n, ⋃ (_ : i ∈ F.I n), openCell n i
+        _ = ⋃ (x ∈ {x : Σ n, cell C n | x.2 ∈ E.I x.1} ∩ {x : Σ n, cell C n | x.2 ∈ F.I x.1}),
+            openCell x.1 x.2 := by
+          simp [iUnion_sigma, iUnion_and]
+        _ = (⋃ n, ⋃ i ∈ E.I n, openCell n i) ∩ ⋃ n, ⋃ i ∈ F.I n, openCell n i := by
+          rw [biUnion_inter_of_pairwise_disjoint
+            (fun ⟨n, j⟩ ⟨m, i⟩ h ↦ disjoint_openCell_of_ne h)]
+          simp [iUnion_sigma]
   }
 
 instance RelCWComplex.Subcomplex.instLattice [RelCWComplex C D] : Lattice (Subcomplex C) :=
@@ -342,21 +337,16 @@ instance RelCWComplex.Subcomplex.instInfSet [T2Space X] [RelCWComplex C D] :
       · simp_rw [inter_iInter, inter_eq_right.2 (subset_complex _), ← Subcomplex.union,
           ← union_iInter]
         congrm D ∪ ?_
-        simp_rw [iUnion_subtype, mem_iInter]
-        ext x
-        simp only [mem_iUnion, exists_prop, iInter_coe_set, mem_iInter]
-        refine ⟨fun ⟨n, i, hi, hx⟩ E hE ↦ ⟨n, i, hi E hE, hx⟩, ?_⟩
-        intro h'
-        let ⟨E, hE⟩ := Classical.choice h
-        obtain ⟨n, i, hi, hx⟩ := h' E hE
-        use n, i
-        refine ⟨?_, hx⟩
-        intro F hF
-        obtain ⟨m, j, hj, hx'⟩ := h' F hF
-        suffices (⟨n, i⟩ : Σ n, cell C n) = ⟨m, j⟩ by aesop
-        apply eq_of_not_disjoint_openCell
-        rw [not_disjoint_iff]
-        exact ⟨x, hx, hx'⟩
+        simp_rw [iUnion_subtype]
+        calc
+          ⋃ n, ⋃ x ∈ ⋂ E ∈ S, E.I n, openCell n x
+          _ = ⋃ x ∈ ⋂ (E : { x // x ∈ S }), {x : Σ n, cell C n | x.2 ∈ E.1.I x.1},
+              openCell x.1 x.2 := by
+            simp [iUnion_sigma]
+          _ = ⋂ (E : { x // x ∈ S }), ⋃ n, ⋃ x ∈ E.1.I n, openCell n x := by
+            rw [biUnion_iInter_of_pairwise_disjoint
+              (fun ⟨n, j⟩ ⟨m, i⟩ h ↦ disjoint_openCell_of_ne h)]
+            simp [iUnion_sigma]
       · simp_all only [nonempty_subtype, not_exists, iUnion_coe_set, iInter_of_empty, iInter_univ,
           mem_univ, iUnion_true, iInter_coe_set, inter_univ]
         exact union_iUnion_openCell_eq_complex
