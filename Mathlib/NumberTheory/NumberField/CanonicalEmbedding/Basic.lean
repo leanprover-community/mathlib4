@@ -5,6 +5,7 @@ Authors: Xavier Roblot
 -/
 import Mathlib.Algebra.Module.ZLattice.Basic
 import Mathlib.Analysis.InnerProductSpace.ProdL2
+import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 import Mathlib.MeasureTheory.Measure.Haar.Unique
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
 import Mathlib.NumberTheory.NumberField.Units.Basic
@@ -808,10 +809,6 @@ instance : Ring (euclidean.mixedSpace K) :=
   have : Ring (EuclideanSpace ℝ {w : InfinitePlace K // IsReal w}) := Pi.ring
   have : Ring (EuclideanSpace ℂ {w : InfinitePlace K // IsComplex w}) := Pi.ring
   inferInstanceAs (Ring (_ × _))
-
-instance : MeasurableSpace (euclidean.mixedSpace K) := borel _
-
-instance : BorelSpace (euclidean.mixedSpace K) := ⟨rfl⟩
 
 variable [NumberField K]
 
