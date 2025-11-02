@@ -30,6 +30,12 @@ and provides lemmas that deal with this function and its connection to `Nat.coun
 * `Nat.nth_eq_orderIsoOfNat`: For an infinitely-often true predicate, `nth` agrees with the
   order-isomorphism of the subtype to the natural numbers.
 
+## Implementation details
+
+Much of the below was written before `Set.encard` existed and partly for this reason uses the
+pattern `∀ hf : Set.Finite (setOf p), n < hf.toFinset.card` rather than `n < {x | p x}.encard`.
+We should consider changing this.
+
 There has been some discussion on the subject of whether both of `nth` and
 `Nat.Subtype.orderIsoOfNat` should exist. See discussion
 [here](https://github.com/leanprover-community/mathlib/pull/9457#pullrequestreview-767221180).
@@ -274,6 +280,54 @@ lemma nth_mem_anti {a b : ℕ} (hab : a ≤ b) (h : p (nth p b)) : p (nth p a) :
     have hb0 : nth p b = 0 := by simp [nth_eq_zero, h'b]
     rw [ha0]
     rwa [hb0] at h
+
+/-- `Nat.nth p` is the least strictly monotone function whose image is contained in `setOf p` -/
+lemma nth_le_of_strictMonoOn_of_mapsTo {p : ℕ → Prop} (f : ℕ → ℕ)
+    (hmaps : Set.MapsTo f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } (setOf p))
+    (hmono : StrictMonoOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card }) {n : ℕ} :
+    nth p n ≤ f n := by
+  by_cases hn : (∀ hf : Set.Finite (setOf p), n < hf.toFinset.card)
+  · induction n using Nat.strong_induction_on with | _ n ih =>
+    rw [nth_eq_sInf]
+    refine csInf_le (by simp) ⟨hmaps hn, fun k hk => ?_⟩
+    have : f k < f n := by apply hmono <;> grind
+    grind
+  · push_neg at hn
+    rcases hn with ⟨hf, hn⟩
+    rw [nth, dif_pos hf, List.getD_eq_default _ _ (by simp [hn])]
+    exact Nat.zero_le _
+
+/-- `Nat.nth p` is the greatest monotone function whose image contains `setOf p`. -/
+lemma le_nth_of_monotoneOn_of_surjOn {p : ℕ → Prop} (f : ℕ → ℕ)
+    (hsurj : Set.SurjOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } (setOf p))
+    (hmono : MonotoneOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card }) {n : ℕ}
+    (hn : ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card) : f n ≤ nth p n := by
+  induction n with
+  | zero =>
+    rw [Nat.nth_zero]
+    refine le_csInf ⟨_, nth_mem _ hn⟩ fun b hb => ?_
+    rcases hsurj hb with ⟨k, hk, rfl⟩
+    exact hmono hn hk (Nat.zero_le _)
+  | succ n ih =>
+    rw [nth_eq_sInf]
+    refine le_csInf ?_ ?_
+    · use nth p (n + 1), nth_mem _ hn
+      exact fun k hk => nth_lt_nth' hk hn
+    rintro b ⟨hb, h⟩
+    rcases hsurj hb with ⟨m, hm, rfl⟩
+    apply hmono hn hm
+    rw [Nat.succ_le]
+    apply hmono.reflect_lt <;> grind
+
+/-- `Nat.nth p` is the unique strictly monotone function whose image is `setOf p`. -/
+lemma eq_nth_of_strictMonoOn_of_mapsTo_of_surjOn {p : ℕ → Prop} (f : ℕ → ℕ)
+    (hsurj : Set.SurjOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } (setOf p))
+    (hmaps : Set.MapsTo f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } (setOf p))
+    (hmono : StrictMonoOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card }) :
+    Set.EqOn f (nth p) { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } :=
+  fun _ hi => le_antisymm
+    (Nat.le_nth_of_monotoneOn_of_surjOn _ hsurj hmono.monotoneOn hi)
+    (Nat.nth_le_of_strictMonoOn_of_mapsTo _ hmaps hmono)
 
 lemma nth_comp_of_strictMono {n : ℕ} {f : ℕ → ℕ} (hf : StrictMono f)
     (h0 : ∀ k, p k → k ∈ Set.range f) (h : ∀ hfi : (setOf p).Finite, n < hfi.toFinset.card) :

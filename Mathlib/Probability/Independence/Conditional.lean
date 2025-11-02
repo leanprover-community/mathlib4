@@ -673,7 +673,7 @@ theorem iCondIndepFun_iff_condExp_inter_preimage_eq_mul {β : ι → Type*}
     (m : ∀ x, MeasurableSpace (β x)) (f : ∀ i, Ω → β i) (hf : ∀ i, Measurable (f i)) :
     iCondIndepFun m' hm' f μ ↔
       ∀ (S : Finset ι) {sets : ∀ i : ι, Set (β i)} (_H : ∀ i, i ∈ S → MeasurableSet[m i] (sets i)),
-        (μ⟦⋂ i ∈ S, f i ⁻¹' sets i| m'⟧) =ᵐ[μ] ∏ i ∈ S, (μ⟦f i ⁻¹' sets i | m'⟧) := by
+        (μ⟦⋂ i ∈ S, f i ⁻¹' sets i | m'⟧) =ᵐ[μ] ∏ i ∈ S, (μ⟦f i ⁻¹' sets i | m'⟧) := by
   rw [iCondIndepFun_iff]
   swap
   · exact hf
@@ -932,9 +932,6 @@ theorem iCondIndepFun.condIndepFun_prodMk {β : ι → Type*}
     CondIndepFun m' hm' (fun a => (f i a, f j a)) (f k) μ :=
   Kernel.iIndepFun.indepFun_prodMk hf_Indep hf_meas i j k hik hjk
 
-@[deprecated (since := "2025-03-05")]
-alias iCondIndepFun.condIndepFun_prod_mk := iCondIndepFun.condIndepFun_prodMk
-
 open Finset in
 lemma iCondIndepFun.condIndepFun_prodMk_prodMk (h_indep : iCondIndepFun m' hm' f μ)
     (hf : ∀ i, Measurable (f i))
@@ -945,9 +942,6 @@ lemma iCondIndepFun.condIndepFun_prodMk_prodMk (h_indep : iCondIndepFun m' hm' f
     ⟨v ⟨i, mem_insert_self _ _⟩, v ⟨j, mem_insert_of_mem <| mem_singleton_self _⟩⟩
   have hg (i j : ι) : Measurable (g i j) := by fun_prop
   exact (h_indep.indepFun_finset {i, j} {k, l} (by aesop) hf).comp (hg i j) (hg k l)
-
-@[deprecated (since := "2025-03-05")]
-alias iCondIndepFun.condIndepFun_prod_mk_prod_mk := iCondIndepFun.condIndepFun_prodMk_prodMk
 
 end iCondIndepFun
 

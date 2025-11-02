@@ -14,6 +14,7 @@ assert_not_exists Field
 
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory MonObj
 
+namespace CategoryTheory
 universe w v u
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] [BraidedCategory C] {X : C}
 
@@ -37,3 +38,4 @@ def CommGrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ CommGrpCat.{w})
 alias CommGrp_Class.ofRepresentableBy := CommGrpObj.ofRepresentableBy
 
 end CommGrp
+end CategoryTheory

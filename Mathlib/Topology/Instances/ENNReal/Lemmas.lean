@@ -767,7 +767,7 @@ theorem tsum_biUnion_le_tsum {ι : Type*} (f : α → ℝ≥0∞) (s : Set ι) (
 
 theorem tsum_biUnion_le {ι : Type*} (f : α → ℝ≥0∞) (s : Finset ι) (t : ι → Set α) :
     ∑' x : ⋃ i ∈ s, t i, f x ≤ ∑ i ∈ s, ∑' x : t i, f x :=
-  (tsum_biUnion_le_tsum f s.toSet t).trans_eq (Finset.tsum_subtype s fun i => ∑' x : t i, f x)
+  (tsum_biUnion_le_tsum f s t).trans_eq (Finset.tsum_subtype s fun i => ∑' x : t i, f x)
 
 theorem tsum_iUnion_le {ι : Type*} [Fintype ι] (f : α → ℝ≥0∞) (t : ι → Set α) :
     ∑' x : ⋃ i, t i, f x ≤ ∑ i, ∑' x : t i, f x := by
@@ -1407,14 +1407,14 @@ lemma limsup_toReal_eq [NeBot f] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) (le_b :
 @[simp, norm_cast]
 lemma ofNNReal_limsup {u : ι → ℝ≥0} (hf : f.IsBoundedUnder (· ≤ ·) u) :
     limsup u f = limsup (fun i ↦ (u i : ℝ≥0∞)) f := by
-  refine eq_of_forall_nnreal_iff fun r ↦ ?_
+  refine eq_of_forall_nnreal_le_iff fun r ↦ ?_
   rw [coe_le_coe, le_limsup_iff, le_limsup_iff]
   simp [forall_ennreal]
 
 @[simp, norm_cast]
 lemma ofNNReal_liminf {u : ι → ℝ≥0} (hf : f.IsCoboundedUnder (· ≥ ·) u) :
     liminf u f = liminf (fun i ↦ (u i : ℝ≥0∞)) f := by
-  refine eq_of_forall_nnreal_iff fun r ↦ ?_
+  refine eq_of_forall_nnreal_le_iff fun r ↦ ?_
   rw [coe_le_coe, le_liminf_iff, le_liminf_iff]
   simp [forall_ennreal]
 

@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Data.Int.Order.Basic
+import Mathlib.Algebra.Order.Group.Unbundled.Int
 import Mathlib.Data.Rat.Defs
 import Mathlib.Algebra.Ring.Int.Defs
 
@@ -22,7 +22,7 @@ For the bundled `LinearOrderedCommRing` instance on `ℚ`, see `Algebra.Order.Ri
 rat, rationals, field, ℚ, numerator, denominator, num, denom, order, ordering
 -/
 
-assert_not_exists OrderedCommMonoid Field Finset Set.Icc GaloisConnection
+assert_not_exists IsOrderedMonoid Field Finset Set.Icc GaloisConnection
 
 namespace Rat
 
@@ -41,6 +41,11 @@ theorem ofScientific_nonneg (m : ℕ) (s : Bool) (e : ℕ) : 0 ≤ Rat.ofScienti
 instance _root_.NNRatCast.toOfScientific {K} [NNRatCast K] : OfScientific K where
   ofScientific (m : ℕ) (b : Bool) (d : ℕ) :=
     NNRat.cast ⟨Rat.ofScientific m b d, ofScientific_nonneg m b d⟩
+
+theorem _root_.NNRatCast.toOfScientific_def {K} [NNRatCast K] (m : ℕ) (b : Bool) (d : ℕ) :
+    (OfScientific.ofScientific m b d : K) =
+      NNRat.cast ⟨(OfScientific.ofScientific m b d : ℚ), ofScientific_nonneg m b d⟩ :=
+  rfl
 
 /-- Casting a scientific literal via `ℚ≥0` is the same as casting directly. -/
 @[simp, norm_cast]
@@ -129,5 +134,18 @@ theorem lt_one_iff_num_lt_denom {q : ℚ} : q < 1 ↔ q.num < q.den := by simp [
 
 theorem abs_def (q : ℚ) : |q| = q.num.natAbs /. q.den := by
   grind [abs_of_nonpos, neg_def, Rat.num_nonneg, abs_of_nonneg, num_divInt_den]
+
+theorem abs_def' (q : ℚ) :
+    |q| = ⟨|q.num|, q.den, q.den_ne_zero, q.num.abs_eq_natAbs ▸ q.reduced⟩ := by
+  refine ext ?_ ?_ <;>
+    simp [Int.abs_eq_natAbs, abs_def, ← Rat.mk_eq_divInt q.num.natAbs _ q.den_ne_zero q.reduced]
+
+@[simp]
+theorem num_abs_eq_abs_num (q : ℚ) : |q|.num = |q.num| := by
+  rw [abs_def']
+
+@[simp]
+theorem den_abs_eq_den (q : ℚ) : |q|.den = q.den := by
+  rw [abs_def']
 
 end Rat
