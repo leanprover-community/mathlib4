@@ -62,8 +62,9 @@ variable [CompleteSpace F]
 theorem baz (hf : ∀ (t : ℝ) (ht : t ∈ Set.uIcc 0 1), ContDiffAt ℝ (n + 1) f (x + t • y)) :
     f (x + y) = ∑ k ∈ Finset.range (n + 1), (k ! : ℝ)⁻¹ • (iteratedFDeriv ℝ k f x (fun _ ↦ y)) +
     (n ! : ℝ)⁻¹ • ∫ t in 0..1, (1 - t)^n • iteratedFDeriv ℝ (n + 1) f (x + t • y) (fun _ ↦ y) := by
-  induction' n with n ih
-  · simp only [zero_add, Finset.range_one, Finset.sum_singleton, factorial_zero, cast_one, inv_one,
+  induction n with
+  | zero =>
+    simp only [zero_add, Finset.range_one, Finset.sum_singleton, factorial_zero, cast_one, inv_one,
     iteratedFDeriv_zero_apply, one_smul, pow_zero, reduceAdd, iteratedFDeriv_one_apply]
     rw [← sub_eq_iff_eq_add', Eq.comm]
     have hf' : ∀ (t : ℝ) (ht : t ∈ Set.uIcc 0 1), DifferentiableAt ℝ (fun s ↦ f (x + s • y)) t :=
@@ -84,33 +85,28 @@ theorem baz (hf : ∀ (t : ℝ) (ht : t ∈ Set.uIcc 0 1), ContDiffAt ℝ (n + 1
     rw [foo_zero]
     apply (hf t ht).differentiableAt
     simp
-  specialize ih (fun t ht ↦ (hf t ht).of_le (by simp))
-  rw [Finset.sum_range_succ, add_assoc]
-  convert ih using 2
-  set u := fun (k : ℕ) (t : ℝ) ↦ (k ! : ℝ)⁻¹ * (1 - t) ^ k
-  have hu : ∀ (k : ℕ) (t : ℝ), HasDerivAt (u k) (-u (k - 1) t) t := by
-    intro k t
-    unfold u
-    sorry
-  have hu' : ∀ (k : ℕ), IntervalIntegrable (u k) MeasureTheory.volume 0 1 := by
-    sorry
-  set v := fun (k : ℕ) (t : ℝ) ↦ iteratedFDeriv ℝ k f (x + t • y) (fun _ ↦ y)
-  have hv : ∀ (k : ℕ) (t : ℝ), HasDerivAt (v k) (v (k + 1) t) t := by
-    sorry
-  have hv' : ∀ (k : ℕ), IntervalIntegrable (v k) MeasureTheory.volume 0 1 := by
-    sorry
-  have := intervalIntegral.integral_smul_deriv_eq_deriv_smul
-    (fun t _ ↦ hu (n + 1) t) (fun t _ ↦ hv (n + 1) t) (hu' n).neg (hv' _)
-  rw [← eq_neg_add_iff_add_eq]
-  rw [← intervalIntegral.integral_smul, ← intervalIntegral.integral_smul]
-  nth_rw 1 [sub_eq_add_neg] at this
-  rw [← intervalIntegral.integral_neg] at this
-  convert this using 1
-  · apply intervalIntegral.integral_congr
-    intro t ht
-    simp only [u, v, smul_smul]
-  congr 1
-  · simp [u, v]
-  · apply intervalIntegral.integral_congr
-    intro t ht
-    simp [u, v, smul_smul]
+  | succ n ih =>
+    specialize ih (fun t ht ↦ (hf t ht).of_le (by simp))
+    rw [Finset.sum_range_succ, add_assoc]
+    convert ih using 2
+    set u := fun (k : ℕ) (t : ℝ) ↦ (k ! : ℝ)⁻¹ * (1 - t) ^ k
+    have hu : ∀ (k : ℕ) (t : ℝ), HasDerivAt (u k) (-u (k - 1) t) t := by
+      intro k t
+      unfold u
+      sorry
+    have hu' : ∀ (k : ℕ), IntervalIntegrable (u k) MeasureTheory.volume 0 1 := by
+      sorry
+    set v := fun (k : ℕ) (t : ℝ) ↦ iteratedFDeriv ℝ k f (x + t • y) (fun _ ↦ y)
+    have hv : ∀ (k : ℕ) (t : ℝ), HasDerivAt (v k) (v (k + 1) t) t := by
+      sorry
+    have hv' : ∀ (k : ℕ), IntervalIntegrable (v k) MeasureTheory.volume 0 1 := by
+      sorry
+    -- We rest of the proof is integration by parts
+    have := intervalIntegral.integral_smul_deriv_eq_deriv_smul
+      (fun t _ ↦ hu (n + 1) t) (fun t _ ↦ hv (n + 1) t) (hu' n).neg (hv' _)
+    simp only [← eq_neg_add_iff_add_eq, ← intervalIntegral.integral_smul, smul_smul]
+    nth_rw 1 [sub_eq_add_neg] at this
+    simp only [← intervalIntegral.integral_neg, add_tsub_cancel_right, neg_smul, neg_neg] at this
+    convert this using 1
+    congr 1
+    simp [u, v]
