@@ -17,7 +17,7 @@ In other words, the map `MulSemiringAction.toAlgEquiv` from `GeneralLinearGroup 
 -/
 
 namespace Module.End
-variable {R K V : Type*} [CommSemiring R] [Field K] [AddCommGroup V] [Module R V] [Module K V]
+variable {R K V : Type*} [CommSemiring R] [Semifield K] [AddCommMonoid V] [Module R V] [Module K V]
 
 open Module LinearMap End Free
 
@@ -44,7 +44,7 @@ private theorem auxLinear_comp (f : End R V →ₐ[R] End R V) (y : Dual R V) (z
 
 /-- Given an algebra automorphism `f` in `End K V`, there exists a linear isomorphism `T`
 such that `f` is given by `x ↦ T ∘ₗ x ∘ₗ T.symm`. -/
-theorem AlgEquiv.coe_eq_linearEquiv_conj (f : End K V ≃ₐ[K] End K V) :
+theorem AlgEquiv.coe_eq_linearEquiv_conj [Free K V] (f : End K V ≃ₐ[K] End K V) :
     ∃ T : V ≃ₗ[K] V, ⇑f = T.conj := by
   nontriviality V
   simp_rw [funext_iff, LinearEquiv.conj_apply, LinearEquiv.eq_comp_toLinearMap_symm]
@@ -68,17 +68,17 @@ theorem AlgEquiv.coe_eq_linearEquiv_conj (f : End K V ≃ₐ[K] End K V) :
     use f.symm (smulRightₗ d w) u
     have h : f (f.symm (smulRightₗ d w)) (T u) = w := by simp [hd]
     simp_rw [this', h]
-  have inj : Function.Injective T := (injective_iff_map_eq_zero T).mpr fun x hx ↦ by
-    have h_smul : smulRightₗ v x = 0 := by
-      rw [← _root_.map_eq_zero_iff _ f.injective]
-      ext y
-      obtain ⟨w, rfl⟩ := surj y
-      rw [← this', smulRightₗ_apply, map_smul, hx, smul_zero, zero_apply]
-    simpa [huv] using congr((fun f ↦ f u) $h_smul)
+  have inj : Function.Injective T := fun x y hxy ↦ by
+    have h_smul : smulRightₗ v x = smulRightₗ v y := by
+      rw [← f.injective.eq_iff]
+      ext z
+      obtain ⟨w, rfl⟩ := surj z
+      simp_rw [← this', smulRightₗ_apply, map_smul, hxy]
+    simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
   exact ⟨LinearEquiv.ofBijective T ⟨inj, surj⟩, fun A ↦ this A |>.symm⟩
 
 /-- Alternate statement of `coe_eq_linearEquiv_conj`. -/
-theorem mulSemiringActionToAlgEquiv_conjAct_surjective :
+theorem mulSemiringActionToAlgEquiv_conjAct_surjective [Free K V] :
     Function.Surjective
       (MulSemiringAction.toAlgEquiv (G := ConjAct (GeneralLinearGroup K V)) K (End K V)) := by
   intro f
