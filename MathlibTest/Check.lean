@@ -19,6 +19,19 @@ example (x y : Nat) : True := by
   #check x + y
   trivial
 
+theorem bar {a b c : Nat} (h : a = b + c) : a = b := sorry
+
+-- #check does show implicit arguments (and also typeclass arguments) when present
+set_option linter.unusedTactic false in
+/--
+info: bar {a b c : Nat} (h : a = b + c) : a = b
+---
+info: bar : ?m✝ = ?m✝ + ?m✝ → ?m✝ = ?m✝
+-/
+#guard_msgs in
+example : True := by
+  #check bar
+  trivial
 
 /-!
 `#check` is ok with metavariables
@@ -94,3 +107,67 @@ example (x : Nat) : True := by
   let y : Nat := ?a
   have := (by refine rfl : ?a = x)
   trace_state
+
+
+/-! The same tests for check' -/
+
+/-- info: x + y : Nat -/
+#guard_msgs in
+example (x y : Nat) : True := by
+  #check' x + y
+  trivial
+
+
+/-!
+`#check'` is ok with metavariables
+and `have := e` is not a substitute for `#check'`
+-/
+
+/-- info: x + ?m✝ : Nat -/
+#guard_msgs in
+example (x : Nat) : True := by
+  #check' x + _
+  trivial
+
+/-!
+`#check'` cannot be used to accidentally assign metavariables, since it saves the state.
+This is in contrasted against `have`.
+-/
+
+/--
+info: rfl : x = x
+---
+error: unsolved goals
+x : Nat
+y : Nat := ?a
+⊢ True
+
+case a
+x : Nat
+⊢ Nat
+---
+trace: x : Nat
+y : Nat := ?a
+⊢ True
+
+case a
+x : Nat
+⊢ Nat
+-/
+#guard_msgs in
+example (x : Nat) : True := by
+  let y : Nat := ?a
+  #check' (by refine rfl : ?a = x)
+  trace_state
+
+-- #check' only shows explicit arguments, no implicit or typeclass arguments
+set_option linter.unusedTactic false in
+/--
+info: bar (h : a = b + c) : a = b
+---
+info: bar : ?m✝ = ?m✝ + ?m✝ → ?m✝ = ?m✝
+-/
+#guard_msgs in
+example : True := by
+  #check' bar
+  trivial

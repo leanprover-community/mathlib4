@@ -93,31 +93,3 @@ elab tk:"#check " colGt term:term : tactic => elabCheckTactic tk true term
 elab tk:"#check' " colGt term:term : tactic => elabCheckPrimeTactic tk true term
 
 end Mathlib.Tactic
-
-theorem foo {a b c : Nat} (h : a = b + c) : a = b := sorry
-
-#check foo
-#check' foo
-
-set_option linter.unusedTactic false in
-/--
-info: foo {a b c : Nat} (h : a = b + c) : a = b
----
-info: foo : ?m.2 = ?m.3 + ?m.4 → ?m.2 = ?m.3
--/
-#guard_msgs in
-example : Nat := by
-  #check foo
-  --#check' foo
-  exact 1
-
-set_option linter.unusedTactic false in
-/--
-info: foo (h : a = b + c) : a = b
----
-info: foo : ?m.2 = ?m.3 + ?m.4 → ?m.2 = ?m.3
--/
-#guard_msgs in
-example : Nat := by
-  #check' foo
-  exact 1
