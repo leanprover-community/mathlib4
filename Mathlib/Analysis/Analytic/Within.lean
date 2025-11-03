@@ -214,6 +214,4 @@ theorem AnalyticWithinAt.eventually_analyticWithinAt
   simp only [Filter.EventuallyEq, eventually_nhdsWithin_iff] at hfg ⊢
   filter_upwards [hfg.eventually_nhds, hga.eventually_analyticAt] with z hfgz hgaz hz
   refine analyticWithinAt_iff_exists_analyticAt.mpr ⟨g, ?_, hgaz⟩
-  rw [← eventually_nhdsWithin_iff] at hfgz
-  refine hfgz.filter_mono (nhdsWithin_mono _ ?_)
-  simp only [hz, insert_eq_of_mem, subset_insert]
+  exact (eventually_nhdsWithin_iff.mpr hfgz).filter_mono <| nhdsWithin_mono _ (by simp [hz])
