@@ -183,7 +183,7 @@ theorem IsEquiv.orderRingIso_apply (h : v.IsEquiv w) (x : WithVal v) :
 theorem IsEquiv.orderRingIso_symm_apply (h : v.IsEquiv w) (x : WithVal w) :
     h.orderRingIso.symm x = (equivWithVal v w).symm x := rfl
 
--- TODO: remove surjectivity when we have bases for Valued's ValuativeRel
+-- TODO: remove surjectivity when we have range bases for Valued's ValuativeRel #27314
 theorem IsEquiv.uniformContinuous_equivWithVal (hw : Function.Surjective w) (h : v.IsEquiv w) :
     UniformContinuous (equivWithVal v w) := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
