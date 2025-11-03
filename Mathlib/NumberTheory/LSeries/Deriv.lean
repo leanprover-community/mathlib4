@@ -74,19 +74,19 @@ private lemma LSeries.LSeriesSummable_logMul_and_hasDerivAt {f : ℕ → ℂ} {s
 of `f` is differentiable with derivative the negative of the L-series of the point-wise
 product of `log` with `f`. -/
 lemma LSeries_hasDerivAt {f : ℕ → ℂ} {s : ℂ} (h : abscissaOfAbsConv f < s.re) :
-    HasDerivAt (LSeries f) (- LSeries (logMul f) s) s :=
+    HasDerivAt (LSeries f) (-LSeries (logMul f) s) s :=
   (LSeriesSummable_logMul_and_hasDerivAt h).2
 
 /-- If `re s` is greater than the abscissa of absolute convergence of `f`, then
 the derivative of this L-series at `s` is the negative of the L-series of `log * f`. -/
 lemma LSeries_deriv {f : ℕ → ℂ} {s : ℂ} (h : abscissaOfAbsConv f < s.re) :
-    deriv (LSeries f) s = - LSeries (logMul f) s :=
+    deriv (LSeries f) s = -LSeries (logMul f) s :=
   (LSeries_hasDerivAt h).deriv
 
 /-- The derivative of the L-series of `f` agrees with the negative of the L-series of
 `log * f` on the right half-plane of absolute convergence. -/
 lemma LSeries_deriv_eqOn {f : ℕ → ℂ} :
-    {s | abscissaOfAbsConv f < s.re}.EqOn (deriv (LSeries f)) (- LSeries (logMul f)) :=
+    {s | abscissaOfAbsConv f < s.re}.EqOn (deriv (LSeries f)) (-LSeries (logMul f)) :=
   deriv_eqOn (isOpen_re_gt_EReal _) fun _ hs ↦ (LSeries_hasDerivAt hs).hasDerivWithinAt
 
 /-- If the L-series of `f` is summable at `s` and `re s < re s'`, then the L-series of the
@@ -103,7 +103,7 @@ lemma LSeries.abscissaOfAbsConv_logMul {f : ℕ → ℂ} :
   apply le_antisymm <;> refine abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable' fun s hs ↦ ?_
   · exact LSeriesSummable_logMul_of_lt_re <| by simp [hs]
   · refine (LSeriesSummable_of_abscissaOfAbsConv_lt_re <| by simp [hs])
-      |>.norm.of_norm_bounded_eventually_nat (‖term (logMul f) s ·‖) ?_
+      |>.norm.of_norm_bounded_eventually_nat (g := fun n ↦ ‖term (logMul f) s n‖) ?_
     filter_upwards [Filter.eventually_ge_atTop <| max 1 (Nat.ceil (Real.exp 1))] with n hn
     simp only [term_of_ne_zero (show n ≠ 0 by omega), logMul, norm_mul, mul_div_assoc,
       ← natCast_log, norm_real]
@@ -136,7 +136,7 @@ lemma LSeries_iteratedDeriv {f : ℕ → ℂ} (m : ℕ) {s : ℂ} (h : abscissaO
     have := derivWithin_congr ih' (ih h)
     simp_rw [derivWithin_of_isOpen (isOpen_re_gt_EReal _) h] at this
     rw [iteratedDeriv_succ, this]
-    simp [Pi.mul_def, pow_succ, mul_assoc, Function.iterate_succ', Function.comp_def,
+    simp [Pi.mul_def, pow_succ, Function.iterate_succ',
       LSeries_deriv <| absicssaOfAbsConv_logPowMul.symm ▸ h, -Function.iterate_succ]
 
 /-!

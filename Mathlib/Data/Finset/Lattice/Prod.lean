@@ -12,7 +12,7 @@ import Mathlib.Data.Finset.Prod
 This file is concerned with folding binary lattice operations over finsets.
 -/
 
-assert_not_exists OrderedCommMonoid MonoidWithZero
+assert_not_exists IsOrderedMonoid MonoidWithZero
 
 open Function Multiset OrderDual
 
@@ -47,7 +47,7 @@ variable {ι κ α β : Type*} [SemilatticeSup α] [SemilatticeSup β] [OrderBot
     obtain ⟨a, ha⟩ := hs
     obtain ⟨b, hb⟩ := ht
     simp only [Prod.map, Finset.sup_le_iff, mem_product, and_imp, Prod.forall, Prod.le_def]
-    exact ⟨fun h ↦ ⟨fun i hi ↦ (h _ _ hi hb).1, fun j hj ↦ (h _ _ ha hj).2⟩, by aesop⟩
+    exact ⟨fun h ↦ ⟨fun i hi ↦ (h _ _ hi hb).1, fun j hj ↦ (h _ _ ha hj).2⟩, by simp_all⟩
 
 end Prod
 
@@ -131,7 +131,7 @@ lemma prodMk_sup'_sup' (hs : s.Nonempty) (ht : t.Nonempty) (f : ι → α) (g : 
     obtain ⟨a, ha⟩ := hs
     obtain ⟨b, hb⟩ := ht
     simp only [Prod.map, sup'_le_iff, mem_product, and_imp, Prod.forall, Prod.le_def]
-    exact ⟨by aesop, fun h ↦ ⟨fun i hi ↦ (h _ _ hi hb).1, fun j hj ↦ (h _ _ ha hj).2⟩⟩
+    exact ⟨by simp_all, fun h ↦ ⟨fun i hi ↦ (h _ _ hi hb).1, fun j hj ↦ (h _ _ ha hj).2⟩⟩
 
 /-- See also `Finset.prodMk_sup'_sup'`. -/
 -- @[simp] -- TODO: Why does `Prod.map_apply` simplify the LHS?

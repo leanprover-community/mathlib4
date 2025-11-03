@@ -50,7 +50,7 @@ section MonoidWithZero
 variable [MonoidWithZero M₀] {l : List M₀}
 
 /-- If zero is an element of a list `l`, then `List.prod l = 0`. If the domain is a nontrivial
-monoid with zero with no divisors, then this implication becomes an `iff`, see
+monoid with zero with no zero divisors, then this implication becomes an `iff`, see
 `List.prod_eq_zero_iff`. -/
 lemma prod_eq_zero : ∀ {l : List M₀}, (0 : M₀) ∈ l → l.prod = 0
   -- |  absurd h (not_mem_nil _)

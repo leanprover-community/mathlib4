@@ -9,12 +9,12 @@ import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
 /-!
 # Results about indicator functions, their integrals, and measures
 
-This file has a few measure theoretic or integration-related results on indicator functions.
+This file has a few measure-theoretic or integration-related results on indicator functions.
 
 ## Implementation notes
 
-This file exists to avoid importing `Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable`
-in `Mathlib.MeasureTheory.Integral.Lebesgue.Basic`.
+This file exists to avoid importing `Mathlib/MeasureTheory/Constructions/BorelSpace/Metrizable.lean`
+in `Mathlib/MeasureTheory/Integral/Lebesgue/Basic.lean`.
 
 ## TODO
 
@@ -22,8 +22,8 @@ The result `MeasureTheory.tendsto_measure_of_tendsto_indicator` here could be pr
 integration, if we had convergence of measures results for countably generated filters. Ideally,
 the present file would then become unnecessary: lemmas such as
 `MeasureTheory.tendsto_measure_of_ae_tendsto_indicator` would not need integration so could be
-moved out of `Mathlib.MeasureTheory.Integral.Lebesgue.Basic`, and the lemmas in this file could be
-moved to, e.g., `Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable`.
+moved out of `Mathlib/MeasureTheory/Integral/Lebesgue/Basic.lean`, and the lemmas in this file could
+be moved to, e.g., `Mathlib/MeasureTheory/Constructions/BorelSpace/Metrizable.lean`.
 -/
 
 namespace MeasureTheory

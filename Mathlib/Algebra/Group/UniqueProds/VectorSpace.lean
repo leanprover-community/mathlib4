@@ -16,4 +16,4 @@ variable {G : Type*}
   `(Basis.ofVectorSpaceIndex ℚ G) →₀ ℚ` by choosing a basis, and `ℚ` already has
   `TwoUniqueSums` because it's ordered. -/
 instance [AddCommGroup G] [Module ℚ G] : TwoUniqueSums G :=
-  TwoUniqueSums.of_injective_addHom _ (Basis.ofVectorSpace ℚ G).repr.injective inferInstance
+  TwoUniqueSums.of_injective_addHom _ (Module.Basis.ofVectorSpace ℚ G).repr.injective inferInstance

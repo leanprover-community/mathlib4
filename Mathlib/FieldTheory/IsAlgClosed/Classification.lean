@@ -80,7 +80,7 @@ variable {K' : Type u} [Field K'] [Algebra R K'] [IsAlgClosed K']
 variable {ι' : Type u} (v' : ι' → K')
 
 /-- The cardinality of an algebraically closed `R`-algebra is less than or equal to
-the maximum of of the cardinality of `R`, the cardinality of a transcendence basis and
+the maximum of the cardinality of `R`, the cardinality of a transcendence basis and
 `ℵ₀`
 
 For a simpler, but less universe-polymorphic statement, see
@@ -101,7 +101,7 @@ theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
     _ = _ := by simp
 
 /-- The cardinality of an algebraically closed `R`-algebra is less than or equal to
-the maximum of of the cardinality of `R`, the cardinality of a transcendence basis and
+the maximum of the cardinality of `R`, the cardinality of a transcendence basis and
 `ℵ₀`
 
 A less-universe polymorphic, but simpler statement of
@@ -118,7 +118,7 @@ For a simpler, but less universe-polymorphic statement, see
 theorem cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt [Nontrivial R]
     (hv : IsTranscendenceBasis R v) (hR : #R ≤ ℵ₀) (hK : ℵ₀ < #K) :
     Cardinal.lift.{w} #K = Cardinal.lift.{v} #ι :=
-  have : ℵ₀ ≤ Cardinal.lift.{max u v} #ι := le_of_not_lt fun h => not_le_of_gt
+  have : ℵ₀ ≤ Cardinal.lift.{max u v} #ι := le_of_not_gt fun h => not_le_of_gt
     (show ℵ₀ < Cardinal.lift.{max u w} #K by simpa) <|
     calc
       Cardinal.lift.{max u w, v} #K ≤ max (max (Cardinal.lift.{max v w, u} #R)

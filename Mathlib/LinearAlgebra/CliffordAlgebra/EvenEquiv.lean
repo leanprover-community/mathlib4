@@ -70,8 +70,8 @@ theorem v_sq_scalar (m : M) : v Q m * v Q m = algebraMap _ _ (Q m) :=
 theorem neg_e0_mul_v (m : M) : -(e0 Q * v Q m) = v Q m * e0 Q := by
   refine neg_eq_of_add_eq_zero_right ((ι_mul_ι_add_swap _ _).trans ?_)
   dsimp [QuadraticMap.polar]
-  simp only [add_zero, mul_zero, mul_one, zero_add, neg_zero, QuadraticMap.map_zero,
-    add_sub_cancel_right, sub_self, map_zero, zero_sub]
+  simp only [add_zero, mul_zero, mul_one, zero_add, neg_zero,
+    add_sub_cancel_right, sub_self, map_zero]
 
 theorem neg_v_mul_e0 (m : M) : -(v Q m * e0 Q) = e0 Q * v Q m := by
   rw [neg_eq_iff_eq_neg]
@@ -109,7 +109,7 @@ def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
     rw [Subtype.coe_mk, pow_two]
     exact Submodule.mul_mem_mul (LinearMap.mem_range_self _ _) (LinearMap.mem_range_self _ _)
   · ext1
-    rw [Subalgebra.coe_mul]  -- Porting note: was part of the `dsimp only` below
+    rw [Subalgebra.coe_mul] -- Porting note: was part of the `dsimp only` below
     erw [LinearMap.codRestrict_apply] -- Porting note: was part of the `dsimp only` below
     dsimp only [LinearMap.comp_apply, LinearMap.mulLeft_apply, Subalgebra.coe_algebraMap]
     rw [← mul_assoc, e0_mul_v_mul_e0, v_sq_scalar]

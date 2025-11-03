@@ -3,6 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Order.Filter.Bases.Basic
 import Mathlib.Order.Filter.Prod
 
 /-!
@@ -57,6 +58,11 @@ theorem map_prod_eq_map₂' (m : α × β → γ) (f : Filter α) (g : Filter β
 theorem map₂_mk_eq_prod (f : Filter α) (g : Filter β) : map₂ Prod.mk f g = f ×ˢ g := by
   simp only [← map_prod_eq_map₂, map_id']
 
+protected lemma HasBasis.map₂ {ι ι' : Type*} {p : ι → Prop} {q : ι' → Prop} {s t}
+    (m : α → β → γ) (hf : f.HasBasis p s) (hg : g.HasBasis q t) :
+    (map₂ m f g).HasBasis (fun i : ι × ι' ↦ p i.1 ∧ q i.2) fun i ↦ image2 m (s i.1) (t i.2) := by
+  simpa only [← map_prod_eq_map₂, ← image_prod] using (hf.prod hg).map _
+
 -- lemma image2_mem_map₂_iff (hm : injective2 m) : image2 m s t ∈ map₂ m f g ↔ s ∈ f ∧ t ∈ g :=
 -- ⟨by { rintro ⟨u, v, hu, hv, h⟩, rw image2_subset_image2_iff hm at h,
 --   exact ⟨mem_of_superset hu h.1, mem_of_superset hv h.2⟩ }, fun h ↦ image2_mem_map₂ h.1 h.2⟩
@@ -64,11 +70,9 @@ theorem map₂_mk_eq_prod (f : Filter α) (g : Filter β) : map₂ Prod.mk f g =
 theorem map₂_mono (hf : f₁ ≤ f₂) (hg : g₁ ≤ g₂) : map₂ m f₁ g₁ ≤ map₂ m f₂ g₂ :=
   fun _ ⟨s, hs, t, ht, hst⟩ => ⟨s, hf hs, t, hg ht, hst⟩
 
-@[gcongr]
 theorem map₂_mono_left (h : g₁ ≤ g₂) : map₂ m f g₁ ≤ map₂ m f g₂ :=
   map₂_mono Subset.rfl h
 
-@[gcongr]
 theorem map₂_mono_right (h : f₁ ≤ f₂) : map₂ m f₁ g ≤ map₂ m f₂ g :=
   map₂_mono h Subset.rfl
 
@@ -126,6 +130,7 @@ theorem map₂_pure : map₂ m (pure a) (pure b) = pure (m a b) := by rw [map₂
 theorem map₂_swap (m : α → β → γ) (f : Filter α) (g : Filter β) :
     map₂ m f g = map₂ (fun a b => m b a) g f := by
   rw [← map_prod_eq_map₂, prod_comm, map_map, ← map_prod_eq_map₂, Function.comp_def]
+  simp
 
 @[simp]
 theorem map₂_left [NeBot g] : map₂ (fun x _ => x) f g = f := by

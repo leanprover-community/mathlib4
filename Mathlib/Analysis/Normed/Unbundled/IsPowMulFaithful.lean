@@ -48,7 +48,7 @@ theorem contraction_of_isPowMul_of_boundedWrt {F : Type*} {α : outParam (Type*)
     (mul_nonneg (rpow_nonneg (le_of_lt hC0) _) (apply_nonneg _ _))
   · rw [mul_pow, h, ← hβ _ hn, ← RingHom.map_pow]
     apply le_trans (hC (x ^ n))
-    rw [mul_le_mul_left hC0]
+    rw [mul_le_mul_iff_right₀ hC0]
     exact map_pow_le_pow _ _ (Nat.one_le_iff_ne_zero.mp hn)
 
 /-- Given a bounded `f : α →+* β` between seminormed rings, is the seminorm on `β` is
@@ -75,7 +75,7 @@ theorem eq_seminorms {F : Type*} {α : outParam (Type*)} [Ring α] [FunLike F α
 variable {R S : Type*} [NormedCommRing R] [CommRing S] [Algebra R S]
 
 /-- If `R` is a normed commutative ring and `f₁` and `f₂` are two power-multiplicative `R`-algebra
-  norms on `S`, then if `f₁` and `f₂` are equivalent on every  subring `R[y]` for `y : S`, it
+  norms on `S`, then if `f₁` and `f₂` are equivalent on every subring `R[y]` for `y : S`, it
   follows that `f₁ = f₂` [BGR, Proposition 3.1.5/1][bosch-guntzer-remmert]. -/
 theorem eq_of_powMul_faithful (f₁ : AlgebraNorm R S) (hf₁_pm : IsPowMul f₁) (f₂ : AlgebraNorm R S)
     (hf₂_pm : IsPowMul f₂)

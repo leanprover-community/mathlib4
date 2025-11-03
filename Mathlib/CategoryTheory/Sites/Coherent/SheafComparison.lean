@@ -44,7 +44,7 @@ instance : F.IsCoverDense (coherentTopology _) := by
   refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, ?_⟩
   apply Coverage.Saturate.of
   refine ⟨Unit, inferInstance, fun _ => F.effectiveEpiOverObj B,
-    fun _ => F.effectiveEpiOver B, ?_ , ?_⟩
+    fun _ => F.effectiveEpiOver B, ?_, ?_⟩
   · funext; ext -- Do we want `Presieve.ext`?
     refine ⟨fun ⟨⟩ ↦ ⟨()⟩, ?_⟩
     rintro ⟨⟩
@@ -67,7 +67,7 @@ theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
     let Z : α → C := fun a ↦ (Functor.EffectivelyEnough.presentation (F := F) (Y a)).some.p
     let g₀ : (a : α) → F.obj (Z a) ⟶ Y a := fun a ↦ F.effectiveEpiOver (Y a)
     have : EffectiveEpiFamily _ (fun a ↦ g₀ a ≫ π a) := inferInstance
-    refine ⟨Z , fun a ↦ F.preimage (g₀ a ≫ π a), ?_, fun a ↦ (?_ : S.arrows (F.preimage _))⟩
+    refine ⟨Z, fun a ↦ F.preimage (g₀ a ≫ π a), ?_, fun a ↦ (?_ : S.arrows (F.preimage _))⟩
     · refine F.finite_effectiveEpiFamily_of_map _ _ ?_
       simpa using this
     · obtain ⟨W, g₁, g₂, h₁, h₂⟩ := H₂ a

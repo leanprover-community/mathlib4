@@ -28,7 +28,7 @@ basis, bases
 
 -/
 
-open Function Set Submodule
+open Function Module Set Submodule
 
 variable {ι : Type*} {ι' : Type*} {K : Type*} {V : Type*} {V' : Type*}
 
@@ -39,7 +39,7 @@ variable {v : ι → V} {s t : Set V} {x y z : V}
 
 open Submodule
 
-namespace Basis
+namespace Module.Basis
 
 section ExistsBasis
 
@@ -154,7 +154,7 @@ theorem ofVectorSpace_apply_self (x : ofVectorSpaceIndex K V) : ofVectorSpace K 
   exact Basis.mk_apply _ _ _
 
 @[simp]
-theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _ ) :=
+theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _) :=
   funext fun x => ofVectorSpace_apply_self K V x
 
 theorem ofVectorSpaceIndex.linearIndependent :
@@ -173,7 +173,7 @@ end
 
 end ExistsBasis
 
-end Basis
+end Module.Basis
 
 open Fintype
 
@@ -248,7 +248,7 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   have fb_eq : f b = hC ⟨f b, BC b.2⟩ := by
     change f b = Basis.extend this _
     simp_rw [Basis.extend_apply_self]
-  dsimp []
+  dsimp
   rw [Basis.ofVectorSpace_apply_self, fb_eq, hC.constr_basis]
   exact leftInverse_invFun (LinearMap.ker_eq_bot.1 hf_inj) _
 
@@ -266,7 +266,7 @@ theorem LinearMap.exists_extend {p : Submodule K V} (f : p →ₗ[K] V') :
   let ⟨g, hg⟩ := p.subtype.exists_leftInverse_of_injective p.ker_subtype
   ⟨f.comp g, by rw [LinearMap.comp_assoc, hg, f.comp_id]⟩
 
-theorem LinearMap.exists_extend_of_not_mem {p : Submodule K V} {v : V} (f : p →ₗ[K] V')
+theorem LinearMap.exists_extend_of_notMem {p : Submodule K V} {v : V} (f : p →ₗ[K] V')
     (hv : v ∉ p) (y : V') : ∃ g : V →ₗ[K] V', g.comp p.subtype = f ∧ g v = y := by
   rcases (LinearPMap.supSpanSingleton ⟨p, f⟩ v y hv).toFun.exists_extend with ⟨g, hg⟩
   refine ⟨g, ?_, ?_⟩
@@ -276,20 +276,35 @@ theorem LinearMap.exists_extend_of_not_mem {p : Submodule K V} {v : V} (f : p �
   · have := LinearPMap.supSpanSingleton_apply_self ⟨p, f⟩ y hv
     simpa using congr($hg _).trans this
 
+@[deprecated (since := "2025-05-23")]
+alias LinearMap.exists_extend_of_not_mem := LinearMap.exists_extend_of_notMem
+
 open Submodule LinearMap
 
-theorem Submodule.exists_le_ker_of_not_mem {p : Submodule K V} {v : V} (hv : v ∉ p) :
+theorem Submodule.exists_le_ker_of_notMem {p : Submodule K V} {v : V} (hv : v ∉ p) :
     ∃ f : V →ₗ[K] K, f v ≠ 0 ∧ p ≤ ker f := by
-  rcases LinearMap.exists_extend_of_not_mem (0 : p →ₗ[K] K) hv 1 with ⟨f, hpf, hfv⟩
+  rcases LinearMap.exists_extend_of_notMem (0 : p →ₗ[K] K) hv 1 with ⟨f, hpf, hfv⟩
   refine ⟨f, by simp [hfv], fun x hx ↦ ?_⟩
   simpa using congr($hpf ⟨x, hx⟩)
+
+/-- If `V` and `V'` are nontrivial vector spaces over a field `K`, the space of `K`-linear maps
+between them is nontrivial. -/
+instance [Nontrivial V] [Nontrivial V'] : Nontrivial (V →ₗ[K] V') := by
+  obtain ⟨v, hv⟩ := exists_ne (0 : V)
+  obtain ⟨w, hw⟩ := exists_ne (0 : V')
+  have : v ∉ (⊥ : Submodule K V) := by simp only [mem_bot, hv, not_false_eq_true]
+  obtain ⟨g, _, hg⟩ := LinearMap.exists_extend_of_notMem (K := K) 0 this w
+  exact ⟨g, 0, DFunLike.ne_iff.mpr ⟨v, by simp_all⟩⟩
+
+@[deprecated (since := "2025-05-23")]
+alias Submodule.exists_le_ker_of_not_mem := Submodule.exists_le_ker_of_notMem
 
 /-- If `p < ⊤` is a subspace of a vector space `V`, then there exists a nonzero linear map
 `f : V →ₗ[K] K` such that `p ≤ ker f`. -/
 theorem Submodule.exists_le_ker_of_lt_top (p : Submodule K V) (hp : p < ⊤) :
     ∃ (f : V →ₗ[K] K), f ≠ 0 ∧ p ≤ ker f := by
   rcases SetLike.exists_of_lt hp with ⟨v, -, hpv⟩
-  rcases exists_le_ker_of_not_mem hpv with ⟨f, hfv, hpf⟩
+  rcases exists_le_ker_of_notMem hpv with ⟨f, hfv, hpf⟩
   exact ⟨f, ne_of_apply_ne (· v) hfv, hpf⟩
 
 theorem quotient_prod_linearEquiv (p : Submodule K V) : Nonempty (((V ⧸ p) × p) ≃ₗ[K] V) :=

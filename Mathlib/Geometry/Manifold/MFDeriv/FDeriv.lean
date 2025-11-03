@@ -9,7 +9,7 @@ import Mathlib.Geometry.Manifold.MFDeriv.Basic
 ### Relations between vector space derivative and manifold derivative
 
 The manifold derivative `mfderiv`, when considered on the model vector space with its trivial
-manifold structure, coincides with the usual Frechet derivative `fderiv`. In this section, we prove
+manifold structure, coincides with the usual Fréchet derivative `fderiv`. In this section, we prove
 this and related statements.
 -/
 

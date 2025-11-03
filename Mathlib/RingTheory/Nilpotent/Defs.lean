@@ -12,8 +12,8 @@ import Mathlib.Data.Nat.Lattice
 # Definition of nilpotent elements
 
 This file defines the notion of a nilpotent element and proves the immediate consequences.
-For results that require further theory, see `Mathlib.RingTheory.Nilpotent.Basic`
-and `Mathlib.RingTheory.Nilpotent.Lemmas`.
+For results that require further theory, see `Mathlib/RingTheory/Nilpotent/Basic.lean`
+and `Mathlib/RingTheory/Nilpotent/Lemmas.lean`.
 
 ## Main definitions
 
@@ -193,7 +193,7 @@ end IsReduced
 
 instance (priority := 900) isReduced_of_noZeroDivisors [MonoidWithZero R] [NoZeroDivisors R] :
     IsReduced R :=
-  ⟨fun _ ⟨_, hn⟩ => pow_eq_zero hn⟩
+  ⟨fun _ ⟨_, hn⟩ => eq_zero_of_pow_eq_zero hn⟩
 
 instance (priority := 900) isReduced_of_subsingleton [Zero R] [Pow R ℕ] [Subsingleton R] :
     IsReduced R :=
@@ -235,14 +235,14 @@ section Semiring
 
 variable [Semiring R]
 
-theorem isNilpotent_mul_left (h_comm : Commute x y) (h : IsNilpotent x) : IsNilpotent (x * y) := by
+theorem isNilpotent_mul_right (h_comm : Commute x y) (h : IsNilpotent x) : IsNilpotent (x * y) := by
   obtain ⟨n, hn⟩ := h
   use n
   rw [h_comm.mul_pow, hn, zero_mul]
 
-theorem isNilpotent_mul_right (h_comm : Commute x y) (h : IsNilpotent y) : IsNilpotent (x * y) := by
+theorem isNilpotent_mul_left (h_comm : Commute x y) (h : IsNilpotent y) : IsNilpotent (x * y) := by
   rw [h_comm.eq]
-  exact h_comm.symm.isNilpotent_mul_left h
+  exact h_comm.symm.isNilpotent_mul_right h
 
 end Semiring
 

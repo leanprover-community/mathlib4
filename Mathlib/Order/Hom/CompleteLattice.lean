@@ -144,7 +144,7 @@ instance (priority := 100) sInfHomClass.toInfTopHomClass [CompleteLattice α]
   { ‹sInfHomClass F α β› with
     map_inf := fun f a b => by
       rw [← sInf_pair, map_sInf, Set.image_pair]
-      simp only [Set.image_pair, sInf_insert, sInf_singleton]
+      simp only [sInf_insert, sInf_singleton]
     map_top := fun f => by
       rw [← sInf_empty, map_sInf, Set.image_empty, sInf_empty] }
 
@@ -328,7 +328,7 @@ instance : Bot (sSupHom α β) :=
 
 instance : OrderBot (sSupHom α β) where
   bot := ⊥
-  bot_le := fun _ _ ↦ CompleteLattice.bot_le _
+  bot_le := fun _ _ ↦ OrderBot.bot_le _
 
 @[simp]
 theorem coe_bot : ⇑(⊥ : sSupHom α β) = ⊥ :=
@@ -449,7 +449,7 @@ instance : Top (sInfHom α β) :=
 
 instance : OrderTop (sInfHom α β) where
   top := ⊤
-  le_top := fun _ _ => CompleteLattice.le_top _
+  le_top := fun _ _ => OrderTop.le_top _
 
 @[simp]
 theorem coe_top : ⇑(⊤ : sInfHom α β) = ⊤ :=
@@ -681,8 +681,6 @@ variable [SupSet α] [SupSet β] [SupSet γ]
 protected def dual : sSupHom α β ≃ sInfHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨toDual ∘ f ∘ ofDual, f.map_sSup'⟩
   invFun f := ⟨ofDual ∘ f ∘ toDual, f.map_sInf'⟩
-  left_inv _ := sSupHom.ext fun _ => rfl
-  right_inv _ := sInfHom.ext fun _ => rfl
 
 @[simp]
 theorem dual_id : sSupHom.dual (sSupHom.id α) = sInfHom.id _ :=
@@ -717,8 +715,6 @@ protected def dual : sInfHom α β ≃ sSupHom αᵒᵈ βᵒᵈ where
   invFun f :=
     { toFun := ofDual ∘ f ∘ toDual
       map_sInf' := fun _ => congr_arg ofDual (map_sSup f _) }
-  left_inv _ := sInfHom.ext fun _ => rfl
-  right_inv _ := sSupHom.ext fun _ => rfl
 
 @[simp]
 theorem dual_id : sInfHom.dual (sInfHom.id α) = sSupHom.id _ :=
@@ -750,8 +746,6 @@ lattices. -/
 protected def dual : CompleteLatticeHom α β ≃ CompleteLatticeHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨sSupHom.dual f.tosSupHom, fun s ↦ f.map_sInf' s⟩
   invFun f := ⟨sSupHom.dual f.tosSupHom, fun s ↦ f.map_sInf' s⟩
-  left_inv _ := ext fun _ => rfl
-  right_inv _ := ext fun _ => rfl
 
 @[simp]
 theorem dual_id : CompleteLatticeHom.dual (CompleteLatticeHom.id α) = CompleteLatticeHom.id _ :=

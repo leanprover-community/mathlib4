@@ -3,8 +3,7 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Alex Brodbelt
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Order.Field.GeomSum
 import Mathlib.Data.NNReal.Basic
 
 /-!
@@ -42,8 +41,9 @@ lemma le_avg : ∑ k ∈ range (n + 1), x k ≤ (∑ k ∈ range n, x k) * (1 + 
   rw [sum_range_succ, mul_one_add, add_le_add_iff_left, mul_one_div,
     le_div_iff₀ (mod_cast hn.bot_lt), mul_comm, ← nsmul_eq_mul]
   conv_lhs => rw [← card_range n, ← sum_const]
-  refine sum_le_sum fun k hk ↦ hx (le_of_lt ?_)
-  simpa using hk
+  gcongr with i hi
+  refine hx <| le_of_lt ?_
+  simpa using hi
 
 /-- The main inequality used for part a. -/
 lemma ineq (h0 : x 0 = 1) (hp : ∀ k, 0 < x k) :
@@ -61,7 +61,7 @@ lemma ineq (h0 : x 0 = 1) (hp : ∀ k, 0 < x k) :
     -- We make use of the `le_avg` lemma.
     _ ≤ (∑ k ∈ range (n + 1), x k) ^ 2 / ∑ k ∈ range (n + 1), x (k + 1) := by
       gcongr
-      · exact sum_pos (fun k _ ↦ hp _) nonempty_range_succ
+      · exact sum_pos (fun k _ ↦ hp _) nonempty_range_add_one
       · exact add_nonneg (sum_nonneg fun k _ ↦ (hp _).le) zero_le_one
       · rw [sum_range_succ', h0]
       · exact le_avg hn (hx.comp_monotone @Nat.succ_le_succ)

@@ -43,7 +43,7 @@ structure Karoubi where
   /-- an endomorphism of the object -/
   p : X ⟶ X
   /-- the condition that the given endomorphism is an idempotent -/
-  idem : p ≫ p = p := by aesop_cat
+  idem : p ≫ p = p := by cat_disch
 
 namespace Karoubi
 
@@ -69,7 +69,7 @@ structure Hom (P Q : Karoubi C) where
   /-- a morphism between the underlying objects -/
   f : P.X ⟶ Q.X
   /-- compatibility of the given morphism with the given idempotents -/
-  comm : P.p ≫ f ≫ Q.p = f := by aesop_cat
+  comm : P.p ≫ f ≫ Q.p = f := by cat_disch
 
 instance [Preadditive C] (P Q : Karoubi C) : Inhabited (Hom P Q) :=
   ⟨⟨0, by rw [zero_comp, comp_zero]⟩⟩
@@ -257,10 +257,10 @@ theorem decomp_p (P : Karoubi C) : (toKaroubi C).map P.p = decompId_p P ≫ deco
   ext
   simp only [comp_f, decompId_p_f, decompId_i_f, P.idem, toKaroubi_map_f]
 
-theorem decompId_i_toKaroubi (X : C) : decompId_i ((toKaroubi C).obj X) = 𝟙 _ := by
+theorem decompId_i_toKaroubi (X : C) : decompId_i ((toKaroubi C).obj X) = 𝟙 _ :=
   rfl
 
-theorem decompId_p_toKaroubi (X : C) : decompId_p ((toKaroubi C).obj X) = 𝟙 _ := by
+theorem decompId_p_toKaroubi (X : C) : decompId_p ((toKaroubi C).obj X) = 𝟙 _ :=
   rfl
 
 theorem decompId_i_naturality {P Q : Karoubi C} (f : P ⟶ Q) :

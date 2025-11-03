@@ -30,7 +30,7 @@ syntax (name := successIfFailWithMsg) "success_if_fail_with_msg " term:max tacti
 /-- Evaluates `tacs` and succeeds only if `tacs` both fails and throws an error equal (as a string)
 to `msg`. -/
 def successIfFailWithMessage {s α : Type} {m : Type → Type} [Monad m] [MonadLiftT BaseIO m]
-    [MonadLiftT MetaM m] [MonadBacktrack s m] [MonadError m] (msg : String) (tacs : m α)
+    [MonadLiftT CoreM m] [MonadBacktrack s m] [MonadError m] (msg : String) (tacs : m α)
     (msgref : Option Syntax := none) (ref : Option Syntax := none) : m Unit := do
   let s ← saveState
   let err ←
@@ -39,10 +39,10 @@ def successIfFailWithMessage {s α : Type} {m : Type → Type} [Monad m] [MonadL
   restoreState s
   if let some err := err then
     unless msg.trim == err.trim do
-      if let .some msgref := msgref then
+      if let some msgref := msgref then
         let suggestion : TryThis.Suggestion :=
           { suggestion := s!"\"{err.trim}\""
-            toCodeActionTitle? := .some (fun _ => "Update with tactic error message")}
+            toCodeActionTitle? := some (fun _ => "Update with tactic error message")}
         TryThis.addSuggestion msgref suggestion (header := "Update with tactic error message: ")
 
       if let some ref := ref then

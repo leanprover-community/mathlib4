@@ -48,11 +48,7 @@ theorem div_mem {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ≤ y) : x / 
 theorem fract_mem (x : ℝ) : fract x ∈ I :=
   ⟨fract_nonneg _, (fract_lt_one _).le⟩
 
-theorem mem_iff_one_sub_mem {t : ℝ} : t ∈ I ↔ 1 - t ∈ I := by
-  rw [mem_Icc, mem_Icc]
-  constructor <;> intro <;> constructor <;> linarith
-
-instance : CompleteLattice I := have : Fact ((0 : ℝ) ≤ 1) := ⟨zero_le_one⟩; inferInstance
+@[deprecated (since := "2025-08-14")] alias mem_iff_one_sub_mem := Icc.mem_iff_one_sub_mem
 
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
@@ -68,7 +64,7 @@ theorem mul_le_right {x y : I} : x * y ≤ y :=
   Subtype.coe_le_coe.mp <| mul_le_of_le_one_left y.2.1 x.2.2
 
 /-- Unit interval central symmetry. -/
-def symm : I → I := fun t => ⟨1 - t, mem_iff_one_sub_mem.mp t.prop⟩
+def symm : I → I := fun t => ⟨1 - t, Icc.mem_iff_one_sub_mem.mp t.prop⟩
 
 @[inherit_doc]
 scoped notation "σ" => unitInterval.symm
@@ -92,6 +88,10 @@ theorem symm_bijective : Function.Bijective (symm : I → I) := symm_involutive.
 @[simp]
 theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
   rfl
+
+lemma image_coe_preimage_symm {s : Set I} :
+    Subtype.val '' (σ ⁻¹' s) = (1 - ·) ⁻¹' (Subtype.val '' s) := by
+  simp [symm_involutive, ← Function.Involutive.image_eq_preimage, image_image]
 
 @[simp]
 theorem symm_projIcc (x : ℝ) :
@@ -221,10 +221,23 @@ instance : LinearOrderedCommMonoidWithZero I where
   zero_mul i := zero_mul i
   mul_zero i := mul_zero i
   zero_le_one := nonneg'
-  mul_le_mul_left i j h_ij k := by
-    simp only [← Subtype.coe_le_coe, coe_mul]
-    apply mul_le_mul le_rfl ?_ (nonneg i) (nonneg k)
-    simp [h_ij]
+  mul_le_mul_left i j h_ij k := by simp only [← Subtype.coe_le_coe, coe_mul]; gcongr; exact nonneg k
+
+lemma subtype_Iic_eq_Icc (x : I) : Subtype.val⁻¹' (Iic ↑x) = Icc 0 x := by
+  rw [preimage_subtype_val_Iic]
+  exact Icc_bot.symm
+
+lemma subtype_Iio_eq_Ico (x : I) : Subtype.val⁻¹' (Iio ↑x) = Ico 0 x := by
+  rw [preimage_subtype_val_Iio]
+  exact Ico_bot.symm
+
+lemma subtype_Ici_eq_Icc (x : I) : Subtype.val⁻¹' (Ici ↑x) = Icc x 1 := by
+  rw [preimage_subtype_val_Ici]
+  exact Icc_top.symm
+
+lemma subtype_Ioi_eq_Ioc (x : I) : Subtype.val⁻¹' (Ioi ↑x) = Ioc x 1 := by
+  rw [preimage_subtype_val_Ioi]
+  exact Ioc_top.symm
 
 end unitInterval
 
@@ -239,7 +252,7 @@ variable {α} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
 /-- `Set.projIcc` is a contraction. -/
 lemma _root_.Set.abs_projIcc_sub_projIcc : (|projIcc a b h c - projIcc a b h d| : α) ≤ |c - d| := by
   wlog hdc : d ≤ c generalizing c d
-  · rw [abs_sub_comm, abs_sub_comm c]; exact this (le_of_not_le hdc)
+  · rw [abs_sub_comm, abs_sub_comm c]; exact this (le_of_not_ge hdc)
   rw [abs_eq_self.2 (sub_nonneg.2 hdc),
     abs_eq_self.2 (sub_nonneg.2 <| mod_cast monotone_projIcc h hdc)]
   rw [← sub_nonneg] at hdc
@@ -267,13 +280,13 @@ lemma monotone_addNSMul (hδ : 0 ≤ δ) : Monotone (addNSMul h δ) :=
   fun _ _ hnm ↦ monotone_projIcc h <| (add_le_add_iff_left _).mpr (nsmul_le_nsmul_left hδ hnm)
 
 lemma abs_sub_addNSMul_le (hδ : 0 ≤ δ) {t : Icc a b} (n : ℕ)
-    (ht : t ∈ Icc (addNSMul h δ n) (addNSMul h δ (n+1))) :
+    (ht : t ∈ Icc (addNSMul h δ n) (addNSMul h δ (n + 1))) :
     (|t - addNSMul h δ n| : α) ≤ δ :=
   calc
     (|t - addNSMul h δ n| : α) = t - addNSMul h δ n            := abs_eq_self.2 <| sub_nonneg.2 ht.1
-    _ ≤ projIcc a b h (a + (n+1) • δ) - addNSMul h δ n := by apply sub_le_sub_right; exact ht.2
-    _ ≤ (|projIcc a b h (a + (n+1) • δ) - addNSMul h δ n| : α) := le_abs_self _
-    _ ≤ |a + (n+1) • δ - (a + n • δ)|                          := abs_projIcc_sub_projIcc h
+    _ ≤ projIcc a b h (a + (n + 1) • δ) - addNSMul h δ n := by apply sub_le_sub_right; exact ht.2
+    _ ≤ (|projIcc a b h (a + (n + 1) • δ) - addNSMul h δ n| : α) := le_abs_self _
+    _ ≤ |a + (n + 1) • δ - (a + n • δ)|                          := abs_projIcc_sub_projIcc h
     _ ≤ δ := by
           rw [add_sub_add_comm, sub_self, zero_add, succ_nsmul', add_sub_cancel_right]
           exact (abs_eq_self.mpr hδ).le

@@ -20,7 +20,7 @@ If this number is above the current `maxHeartbeats`, we also print a `Try this:`
 -/
 
 
-open Lean Elab Command Meta
+open Lean Elab Command Meta Linter
 
 namespace Mathlib.CountHeartbeats
 
@@ -36,7 +36,8 @@ def runTacForHeartbeats (tac : TSyntax `Lean.Parser.Tactic.tacticSeq) (revert : 
     TacticM Nat := do
   let start ← IO.getNumHeartbeats
   let s ← saveState
-  evalTactic tac
+  withOptions (fun opts => opts.set ``Elab.async false) do
+    evalTactic tac
   if revert then restoreState s
   return (← IO.getNumHeartbeats) - start
 
@@ -93,17 +94,17 @@ set_option linter.style.maxHeartbeats false in
 Use `#count_heartbeats` to count the heartbeats in *all* the following declarations.
 
 This is most useful for setting sufficient but reasonable limits via `set_option maxHeartbeats`
-for long running declarations.
+for long-running declarations.
 
 If you do so, please resist the temptation to set the limit as low as possible.
 As the `simp` set and other features of the library evolve,
 other contributors will find that their (likely unrelated) changes
 have pushed the declaration over the limit.
-`count_heartbearts in` will automatically suggest a `set_option maxHeartbeats` via "Try this:"
+`count_heartbeats in` will automatically suggest a `set_option maxHeartbeats` via "Try this:"
 using the least number of the form `2^k * 200000` that suffices.
 
-Note that that internal heartbeat counter accessible via `IO.getNumHeartbeats`
-has granularity 1000 times finer that the limits set by `set_option maxHeartbeats`.
+Note that the internal heartbeat counter accessible via `IO.getNumHeartbeats`
+has granularity 1000 times finer than the limits set by `set_option maxHeartbeats`.
 As this is intended as a user command, we divide by 1000.
 
 The optional `approximately` keyword rounds down the heartbeats to the nearest thousand.
@@ -133,14 +134,6 @@ elab "#count_heartbeats " approx:(&"approximately ")? "in" ppLine cmd:command : 
         Lean.Meta.Tactic.TryThis.addSuggestion (← getRef)
           (← set_option hygiene false in `(command| set_option maxHeartbeats $m in $cmd))
 
-/-- `count_heartbeats` is deprecated in favour of `#count_heartbeats` since "2025-01-12" -/
-elab "count_heartbeats" : tactic =>
-  logWarning "`count_heartbeats` has been renamed to `#count_heartbeats`"
-
-/-- `count_heartbeats` is deprecated in favour of `#count_heartbeats` since "2025-01-12" -/
-elab "count_heartbeats" : command =>
-  logWarning "`count_heartbeats` has been renamed to `#count_heartbeats`"
-
 set_option linter.style.maxHeartbeats false in
 /--
 Guard the minimal number of heartbeats used in the enclosed command.
@@ -165,7 +158,7 @@ elab "guard_min_heartbeats " approx:(&"approximately ")? n:(num)? "in" ppLine cm
            | none => max
   let start ← IO.getNumHeartbeats
   try
-    elabCommand (← `(command| set_option maxHeartbeats 0 in $cmd))
+    elabCommand (← `(command| set_option Elab.async false in set_option maxHeartbeats 0 in $cmd))
   finally
     let finish ← IO.getNumHeartbeats
     let elapsed := (finish - start) / 1000
@@ -210,12 +203,10 @@ end CountHeartbeats
 end Mathlib
 
 /-!
-#  The "countHeartbeats" linter
+# The "countHeartbeats" linter
 
 The "countHeartbeats" linter counts the heartbeats of every declaration.
 -/
-
-open Lean Elab Command
 
 namespace Mathlib.Linter
 
@@ -249,14 +240,14 @@ namespace CountHeartbeats
 
 @[inherit_doc Mathlib.Linter.linter.countHeartbeats]
 def countHeartbeatsLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.countHeartbeats (← getOptions) do
+  unless getLinterValue linter.countHeartbeats (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
   let mut msgs := #[]
   if [``Lean.Parser.Command.declaration, `lemma].contains stx.getKind then
     let s ← get
-    if Linter.getLinterValue linter.countHeartbeatsApprox (← getOptions) then
+    if getLinterValue linter.countHeartbeatsApprox (← getLinterOptions) then
       elabCommand (← `(command| #count_heartbeats approximately in $(⟨stx⟩)))
     else
       elabCommand (← `(command| #count_heartbeats in $(⟨stx⟩)))

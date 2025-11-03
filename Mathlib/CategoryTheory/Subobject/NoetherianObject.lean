@@ -21,7 +21,7 @@ closed under subobjects.
 ## Future works
 
 * show that `isNoetherian` is a Serre class when `C` is an abelian category
-(TODO @joelriou)
+  (TODO @joelriou)
 
 -/
 
@@ -36,9 +36,10 @@ variable {C : Type u} [Category.{v} C]
 /-- An object `X` in a category `C` is Noetherian if `Subobject X`
 satisfies the ascending chain condition. This definition is a
 term in `ObjectProperty C` which allows to study the stability
-properties of noetherian objects. For statements regarding
+properties of Noetherian objects. For statements regarding
 specific objects, it is advisable to use the type class
 `IsNoetherianObject` instead. -/
+@[stacks 0FCG]
 def isNoetherianObject : ObjectProperty C :=
   fun X ↦ WellFoundedGT (Subobject X)
 
@@ -46,6 +47,7 @@ variable (X Y : C)
 
 /-- An object `X` in a category `C` is Noetherian if `Subobject X`
 satisfies the ascending chain condition. -/
+@[stacks 0FCG]
 abbrev IsNoetherianObject : Prop := isNoetherianObject.Is X
 
 instance [IsNoetherianObject X] : WellFoundedGT (Subobject X) :=
@@ -69,7 +71,7 @@ lemma isNoetherianObject_iff_not_strictMono :
   refine ⟨fun _ ↦ not_strictMono_of_wellFoundedGT, fun h ↦ ?_⟩
   dsimp only [IsNoetherianObject]
   rw [ObjectProperty.is_iff, isNoetherianObject, WellFoundedGT,
-    isWellFounded_iff, RelEmbedding.wellFounded_iff_no_descending_seq]
+    isWellFounded_iff, RelEmbedding.wellFounded_iff_isEmpty]
   exact ⟨fun f ↦ h f.toFun (fun a b h ↦ f.map_rel_iff.2 h)⟩
 
 variable {X} in
@@ -82,14 +84,12 @@ lemma isNoetherianObject_iff_isEventuallyConstant :
     IsNoetherianObject X ↔ ∀ (F : ℕ ⥤ MonoOver X),
       IsFiltered.IsEventuallyConstant F := by
   rw [isNoetherianObject_iff_monotone_chain_condition]
-  constructor
-  · intro h G
-    obtain ⟨n, hn⟩ := h ⟨_, (G ⋙ (Subobject.equivMonoOver _).inverse).monotone⟩
+  refine ⟨fun h G ↦ ?_, fun h F ↦ ?_⟩
+  · obtain ⟨n, hn⟩ := h (G ⋙ (Subobject.equivMonoOver _).inverse).toOrderHom
     refine ⟨n, fun m hm ↦ ?_⟩
     rw [MonoOver.isIso_iff_subobjectMk_eq]
     exact hn m (leOfHom hm)
-  · intro h F
-    obtain ⟨n, hn⟩ := h (F.monotone.functor ⋙ Subobject.representative)
+  · obtain ⟨n, hn⟩ := h (F.monotone.functor ⋙ Subobject.representative)
     refine ⟨n, fun m hm ↦ ?_⟩
     simpa [← MonoOver.isIso_iff_isIso_left, isIso_iff_of_reflects_iso,
       PartialOrder.isIso_iff_eq] using hn (homOfLE hm)

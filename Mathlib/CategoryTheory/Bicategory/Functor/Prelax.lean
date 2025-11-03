@@ -5,6 +5,7 @@ Authors: Yuma Mizuno, Calle Sönne
 -/
 
 import Mathlib.CategoryTheory.Bicategory.Basic
+import Mathlib.CategoryTheory.EqToHom
 
 /-!
 
@@ -40,8 +41,6 @@ corresponding hom types.
 namespace CategoryTheory
 
 open Category Bicategory
-
-open Bicategory
 
 universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -101,10 +100,10 @@ This structure will be extended to define `LaxFunctor` and `OplaxFunctor`.
 structure PrelaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂) [Bicategory.{w₂, v₂} C]
     extends PrelaxFunctorStruct B C where
   /-- Prelax functors preserves identity 2-morphisms. -/
-  map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop -- TODO: why not aesop_cat?
+  map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop -- TODO: why not cat_disch?
   /-- Prelax functors preserves compositions of 2-morphisms. -/
   map₂_comp : ∀ {a b : B} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h),
-      map₂ (η ≫ θ) = map₂ η ≫ map₂ θ := by aesop_cat
+      map₂ (η ≫ θ) = map₂ η ≫ map₂ θ := by cat_disch
 
 namespace PrelaxFunctor
 
@@ -193,6 +192,16 @@ lemma map₂_inv_hom_isIso {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] :
   simp
 
 end
+
+lemma map₂_eqToHom {x y : B} (f g : x ⟶ y) (hfg : f = g) :
+    F.map₂ (eqToHom hfg) = eqToHom (by rw [← hfg]) := by
+  subst hfg
+  simp
+
+lemma map₂Iso_eqToIso {x y : B} (f g : x ⟶ y) (hfg : f = g) :
+    F.map₂Iso (eqToIso hfg) = eqToIso (by rw [← hfg]) := by
+  subst hfg
+  simp
 
 end PrelaxFunctor
 

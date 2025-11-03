@@ -282,7 +282,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
   have ε_pos : 0 < ε := ht
   have I1 : ∀ n, ε / 2 ≤ f (↑(s (n + 1)) \ ↑(s n)) := by
     intro n
-    rw [div_le_iff₀' (show (0 : ℝ) < 2 by norm_num), hε]
+    rw [div_le_iff₀' (show (0 : ℝ) < 2 by simp), hε]
     convert hF (s n) u using 2
     · dsimp
       ext x
@@ -360,7 +360,7 @@ theorem discretePart_apply (f : BoundedAdditiveMeasure α) (s : Set α) :
 
 theorem continuousPart_apply_eq_zero_of_countable (f : BoundedAdditiveMeasure α) (s : Set α)
     (hs : s.Countable) : f.continuousPart s = 0 := by
-  simp [continuousPart]
+  simp only [continuousPart, restrict_apply]
   convert f.apply_countable s hs using 2
   ext x
   simp [and_comm]
@@ -451,7 +451,7 @@ end
 
 We construct a subset of `ℝ²`, given as a family of sets, which is large along verticals (i.e.,
 it only misses a countable set along each vertical) but small along horizontals (it is countable
-along horizontals). Such a set can not be measurable as it would contradict Fubini theorem.
+along horizontals). Such a set cannot be measurable as it would contradict Fubini theorem.
 We need the continuum hypothesis to construct it.
 -/
 
@@ -468,7 +468,7 @@ theorem sierpinski_pathological_family (Hcont : #ℝ = ℵ₁) :
         constructor
         · rintro rfl; exact irrefl_of r y h
         · exact asymm h
-      · simp only [true_or, eq_self_iff_true, iff_true]; exact irrefl x
+      · simp only [true_or, iff_true]; exact irrefl x
       · simp only [h, iff_true, or_true]; exact asymm h
     rw [this]
     apply Countable.union _ (countable_singleton _)
@@ -548,11 +548,9 @@ theorem comp_ae_eq_const (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ 
 
 theorem integrable_comp (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
     IntegrableOn (fun x => φ (f Hcont x)) (Icc 0 1) := by
-  have :
-    IntegrableOn (fun _ => φ.toBoundedAdditiveMeasure.continuousPart univ) (Icc (0 : ℝ) 1)
-      volume := by
-    simp [integrableOn_const]
-  apply Integrable.congr this (comp_ae_eq_const Hcont φ)
+  have : IntegrableOn (fun _ => φ.toBoundedAdditiveMeasure.continuousPart univ) (Icc (0 : ℝ) 1)
+      volume := by simp
+  exact Integrable.congr this (comp_ae_eq_const Hcont φ)
 
 theorem integral_comp (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
     ∫ x in Icc 0 1, φ (f Hcont x) = φ.toBoundedAdditiveMeasure.continuousPart univ := by

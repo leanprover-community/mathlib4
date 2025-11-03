@@ -9,7 +9,7 @@ import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Ring.Equiv
 
 /-!
-# Semiring, ring etc structures on `R × S`
+# Semiring, ring etc. structures on `R × S`
 
 In this file we define two-binop (`Semiring`, `Ring` etc) structures on `R × S`. We also prove
 trivial `simp` lemmas, and define the following operations on `RingHom`s and similarly for
@@ -314,7 +314,6 @@ def prodZeroRing : R ≃+* R × S where
   invFun := Prod.fst
   map_add' := by simp
   map_mul' := by simp
-  left_inv _ := rfl
   right_inv x := by cases x; simp [eq_iff_true_of_subsingleton]
 
 /-- A ring `R` is isomorphic to `S × R` when `S` is the zero ring -/
@@ -324,7 +323,6 @@ def zeroRingProd : R ≃+* S × R where
   invFun := Prod.snd
   map_add' := by simp
   map_mul' := by simp
-  left_inv _ := rfl
   right_inv x := by cases x; simp [eq_iff_true_of_subsingleton]
 
 end RingEquiv

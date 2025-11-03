@@ -18,13 +18,11 @@ This file shows that taking `TensorProduct`s commutes with taking `Prod`s in bot
 
 ## Notes
 
-See `Mathlib.LinearAlgebra.TensorProduct.Pi` for arbitrary products.
+See `Mathlib/LinearAlgebra/TensorProduct/Pi.lean` for arbitrary products.
 
 -/
 
 variable (R S M₁ M₂ M₃ : Type*)
-
-suppress_compilation
 
 namespace TensorProduct
 

@@ -36,7 +36,17 @@ def AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly {R : Type*} [CommRing R] [Alg
     refine ⟨(injective_iff_map_eq_zero _).2 fun P₁ hP₁ ↦ ?_, Minpoly.toAdjoin.surjective F x⟩
     obtain ⟨P, rfl⟩ := mk_surjective P₁
     refine AdjoinRoot.mk_eq_zero.mpr (minpoly.dvd F x ?_)
-    rwa [Minpoly.toAdjoin_apply', liftHom_mk, ← Subalgebra.coe_eq_zero, aeval_subalgebra_coe] at hP₁
+    simpa [← Subalgebra.coe_eq_zero, ← aeval_def] using hP₁
+
+@[simp]
+theorem AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly_symm_toAlgHom {R : Type*} [CommRing R]
+    [Algebra F R] (x : R) :
+    (adjoinSingletonEquivAdjoinRootMinpoly F x).symm = AdjoinRoot.Minpoly.toAdjoin F x := rfl
+
+@[simp]
+theorem AlgEquiv.coe_adjoinSingletonEquivAdjoinRootMinpoly_symm {R : Type*} [CommRing R]
+    [Algebra F R] (x : R) :
+    ⇑(adjoinSingletonEquivAdjoinRootMinpoly F x).symm = AdjoinRoot.Minpoly.toAdjoin F x := rfl
 
 /-- Produce an algebra homomorphism `Adjoin R {x} →ₐ[R] T` sending `x` to
 a root of `x`'s minimal polynomial in `T`. -/
@@ -44,7 +54,7 @@ noncomputable def Algebra.adjoin.liftSingleton {S T : Type*}
     [CommRing S] [CommRing T] [Algebra F S] [Algebra F T]
     (x : S) (y : T) (h : aeval y (minpoly F x) = 0) :
     Algebra.adjoin F {x} →ₐ[F] T :=
-  (AdjoinRoot.liftHom _ y h).comp (AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly F x).toAlgHom
+  (AdjoinRoot.liftAlgHom _ _ y h).comp (AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly F x).toAlgHom
 
 open Finset
 

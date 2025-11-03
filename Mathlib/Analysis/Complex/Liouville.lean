@@ -128,7 +128,7 @@ theorem eq_const_of_tendsto_cocompact [Nontrivial E] {f : E → F} (hf : Differe
     obtain ⟨s, hs, hs_bdd⟩ := Metric.exists_isBounded_image_of_tendsto hb
     obtain ⟨t, ht, hts⟩ := mem_cocompact.mp hs
     apply ht.image hf.continuous |>.isBounded.union hs_bdd |>.subset
-    simpa [Set.image_union, Set.image_univ] using Set.image_subset _ <| calc
+    simpa [Set.image_union, Set.image_univ] using Set.image_mono <| calc
       Set.univ = t ∪ tᶜ := t.union_compl_self.symm
       _        ⊆ t ∪ s  := by gcongr
   obtain ⟨c', hc'⟩ := hf.exists_eq_const_of_bounded h_bdd

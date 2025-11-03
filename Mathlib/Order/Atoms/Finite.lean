@@ -14,8 +14,8 @@ import Mathlib.Order.Preorder.Finite
 This module contains some results on atoms and simple lattices in the finite context.
 
 ## Main results
-  * `Finite.to_isAtomic`, `Finite.to_isCoatomic`: Finite partial orders with bottom resp. top
-    are atomic resp. coatomic.
+* `Finite.to_isAtomic`, `Finite.to_isCoatomic`: Finite partial orders with bottom resp. top
+  are atomic resp. coatomic.
 
 -/
 
@@ -28,20 +28,24 @@ variable [LE α] [BoundedOrder α] [IsSimpleOrder α]
 
 section DecidableEq
 
-/- It is important that `IsSimpleOrder` is the last type-class argument of this instance,
-so that type-class inference fails quickly if it doesn't apply. -/
-instance (priority := 200) [DecidableEq α] : Fintype α :=
+/-- It is important that `IsSimpleOrder` is the last type-class argument of this instance,
+so that type-class inference fails quickly if it doesn't apply.
+
+Note that as of 2025-08-13, this is false. Could someone investigate? -/
+scoped instance (priority := 200) [DecidableEq α] : Fintype α :=
   Fintype.ofEquiv Bool equivBool.symm
 
 end DecidableEq
 
-instance (priority := 200) : Finite α := by classical infer_instance
+scoped instance (priority := 200) : Finite α := by classical infer_instance
 
 end IsSimpleOrder
 
 namespace Fintype
 
 namespace IsSimpleOrder
+
+open scoped _root_.IsSimpleOrder
 
 variable [LE α] [BoundedOrder α] [IsSimpleOrder α] [DecidableEq α]
 
@@ -74,13 +78,8 @@ open Finset
 
 -- see Note [lower instance priority]
 instance (priority := 100) Finite.to_isCoatomic [PartialOrder α] [OrderTop α] [Finite α] :
-    IsCoatomic α := by
-  refine IsCoatomic.mk fun b => or_iff_not_imp_left.2 fun ht => ?_
-  obtain ⟨c, hc, hmax⟩ :=
-    Set.Finite.exists_maximalFor id { x : α | b ≤ x ∧ x ≠ ⊤ } (Set.toFinite _) ⟨b, le_rfl, ht⟩
-  refine ⟨c, ⟨hc.2, fun y hcy => ?_⟩, hc.1⟩
-  by_contra hyt
-  exact not_lt_iff_le_imp_le.2 (hmax ⟨hc.1.trans hcy.le, hyt⟩) hcy
+    IsCoatomic α :=
+  IsStronglyCoatomic.toIsCoatomic α
 
 -- see Note [lower instance priority]
 instance (priority := 100) Finite.to_isAtomic [PartialOrder α] [OrderBot α] [Finite α] :
@@ -98,7 +97,7 @@ instance : IsStronglyAtomic α where
     obtain ⟨x, hx, hxmin⟩ := (LocallyFiniteOrder.finsetIoc a b).exists_minimal
       ⟨b, by simpa [LocallyFiniteOrder.finset_mem_Ioc]⟩
     simp only [LocallyFiniteOrder.finset_mem_Ioc] at hx hxmin
-    exact ⟨x, ⟨hx.1, fun c hac hcx ↦ hcx.not_le <| hxmin ⟨hac, hcx.le.trans hx.2⟩ hcx.le⟩, hx.2⟩
+    exact ⟨x, ⟨hx.1, fun c hac hcx ↦ hcx.not_ge <| hxmin ⟨hac, hcx.le.trans hx.2⟩ hcx.le⟩, hx.2⟩
 
 instance : IsStronglyCoatomic α := by
   rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]; infer_instance

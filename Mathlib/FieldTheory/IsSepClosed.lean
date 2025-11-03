@@ -59,13 +59,17 @@ To show `Polynomial.Splits p f` for an arbitrary ring homomorphism `f`,
 see `IsSepClosed.splits_codomain` and `IsSepClosed.splits_domain`.
 -/
 class IsSepClosed : Prop where
-  splits_of_separable : ∀ p : k[X], p.Separable → (p.Splits <| RingHom.id k)
+  factors_of_separable : ∀ p : k[X], p.Separable → p.Factors
 
 /-- An algebraically closed field is also separably closed. -/
 instance IsSepClosed.of_isAlgClosed [IsAlgClosed k] : IsSepClosed k :=
-  ⟨fun p _ ↦ IsAlgClosed.splits p⟩
+  ⟨fun p _ ↦ IsAlgClosed.factors p⟩
 
 variable {k} {K}
+
+theorem IsSepClosed.splits_of_separable [IsSepClosed k] (p : k[X]) (hp : p.Separable) :
+    p.Splits (RingHom.id k) :=
+  (factors_of_separable p hp).map (RingHom.id k)
 
 /-- Every separable polynomial splits in the field extension `f : k →+* K` if `K` is
 separably closed.
@@ -148,7 +152,7 @@ theorem exists_eq_mul_self [IsSepClosed k] (x : k) [h2 : NeZero (2 : k)] : ∃ z
 theorem roots_eq_zero_iff [IsSepClosed k] {p : k[X]} (hsep : p.Separable) :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
   refine ⟨fun h => ?_, fun hp => by rw [hp, roots_C]⟩
-  rcases le_or_lt (degree p) 0 with hd | hd
+  rcases le_or_gt (degree p) 0 with hd | hd
   · exact eq_C_of_degree_le_zero hd
   · obtain ⟨z, hz⟩ := IsSepClosed.exists_root p hd.ne' hsep
     rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
@@ -171,9 +175,8 @@ variable (k) {K}
 
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → Separable p → ∃ x, p.eval x = 0) :
     IsSepClosed k := by
-  refine ⟨fun p hsep ↦ Or.inr ?_⟩
+  refine ⟨fun p hsep ↦ factors_iff_splits.mpr <| Or.inr ?_⟩
   intro q hq hdvd
-  simp only [map_id] at hdvd
   have hlc : IsUnit (leadingCoeff q)⁻¹ := IsUnit.inv <| Ne.isUnit <|
     leadingCoeff_ne_zero.2 <| Irreducible.ne_zero hq
   have hsep' : Separable (q * C (leadingCoeff q)⁻¹) :=
@@ -275,9 +278,6 @@ theorem surjective_restrictDomain_of_isSeparable {E : Type*}
   fun f ↦ IntermediateField.exists_algHom_of_splits' (E := E) f
     fun s ↦ ⟨Algebra.IsSeparable.isIntegral L s,
       IsSepClosed.splits_codomain _ <| Algebra.IsSeparable.isSeparable L s⟩
-
-@[deprecated (since := "2024-11-15")]
-alias surjective_comp_algebraMap_of_isSeparable := surjective_restrictDomain_of_isSeparable
 
 variable [Algebra.IsSeparable K L] {L}
 

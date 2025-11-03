@@ -56,13 +56,7 @@ lemma mem (i : ι) : x i ∈ G.obj (X i) := by
 lemma of_equiv {ι' : Type w''} (e : ι' ≃ ι) :
     G.IsGeneratedBy (fun i' ↦ x (e i')) := by
   rw [isGeneratedBy_iff, ← h.iSup_eq]
-  apply le_antisymm
-  · simp only [iSup_le_iff]
-    intro i'
-    exact le_iSup (fun i ↦ ofSection (x i)) (e i')
-  · simp only [iSup_le_iff]
-    intro i'
-    convert (le_iSup (fun i' ↦ ofSection (x (e i'))) (e.symm i')) <;> simp
+  exact Equiv.iSup_congr e (congrFun rfl)
 
 lemma image {F' : Cᵒᵖ ⥤ Type w} (f : F ⟶ F') :
     (G.image f).IsGeneratedBy (fun i ↦ f.app _ (x i)) := by
@@ -161,7 +155,7 @@ lemma yoneda_obj_isGeneratedBy (X : C) :
     PresheafIsGeneratedBy (yoneda.obj X) (fun (_ : Unit) ↦ 𝟙 X) := by
   simp only [Subpresheaf.isGeneratedBy_iff]
   ext U u
-  simp only [yoneda_obj_obj, Subpresheaf.iSup_obj, Set.iSup_eq_iUnion, Set.mem_iUnion,
+  simp only [yoneda_obj_obj, Subpresheaf.iSup_obj, Set.mem_iUnion,
     exists_const, Subpresheaf.top_obj, Set.top_eq_univ, Set.mem_univ, iff_true]
   exact ⟨u.op, by simp⟩
 

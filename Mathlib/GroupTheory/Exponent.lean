@@ -3,12 +3,12 @@ Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Nat
-import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.Tactic.Peel
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Data.Nat.Factorization.LCM
+import Mathlib.GroupTheory.OrderOfElement
+import Mathlib.Tactic.Peel
 
 /-!
 # Exponent of a group
@@ -54,19 +54,19 @@ section Monoid
 variable (G) [Monoid G]
 
 /-- A predicate on a monoid saying that there is a positive integer `n` such that `g ^ n = 1`
-  for all `g`. -/
+for all `g`. -/
 @[to_additive
-      "A predicate on an additive monoid saying that there is a positive integer `n` such\n
-      that `n • g = 0` for all `g`."]
+/-- A predicate on an additive monoid saying that there is a positive integer `n` such that
+`n • g = 0` for all `g`. -/]
 def ExponentExists :=
   ∃ n, 0 < n ∧ ∀ g : G, g ^ n = 1
 
 open scoped Classical in
 /-- The exponent of a group is the smallest positive integer `n` such that `g ^ n = 1` for all
-  `g ∈ G` if it exists, otherwise it is zero by convention. -/
+`g ∈ G` if it exists, otherwise it is zero by convention. -/
 @[to_additive
-      "The exponent of an additive group is the smallest positive integer `n` such that\n
-      `n • g = 0` for all `g ∈ G` if it exists, otherwise it is zero by convention."]
+/-- The exponent of an additive group is the smallest positive integer `n` such that
+`n • g = 0` for all `g ∈ G` if it exists, otherwise it is zero by convention. -/]
 noncomputable def exponent :=
   if h : ExponentExists G then Nat.find h else 0
 
@@ -99,7 +99,7 @@ theorem ExponentExists.orderOf_pos (h : ExponentExists G) (g : G) : 0 < orderOf 
 theorem exponent_ne_zero : exponent G ≠ 0 ↔ ExponentExists G := by
   rw [exponent]
   split_ifs with h
-  · simp [h, @not_lt_zero' ℕ]
+  · simp [h]
   --if this isn't done this way, `to_additive` freaks
   · tauto
 
@@ -121,9 +121,20 @@ theorem exponent_eq_zero_iff : exponent G = 0 ↔ ¬ExponentExists G :=
 theorem exponent_eq_zero_of_order_zero {g : G} (hg : orderOf g = 0) : exponent G = 0 :=
   exponent_eq_zero_iff.mpr fun h ↦ h.orderOf_pos g |>.ne' hg
 
+@[to_additive]
+theorem exponent_eq_sInf :
+    Monoid.exponent G = sInf {d : ℕ | 0 < d ∧ ∀ x : G, x ^ d = 1} := by
+  by_cases h : Monoid.ExponentExists G
+  · have h' : {d : ℕ | 0 < d ∧ ∀ x : G, x ^ d = 1}.Nonempty := h
+    rw [Monoid.exponent, dif_pos h, Nat.sInf_def h']
+    congr
+  · have : {d | 0 < d ∧ ∀ (x : G), x ^ d = 1} = ∅ :=
+      Set.eq_empty_of_forall_notMem fun n hn ↦ h ⟨n, hn⟩
+    rw [Monoid.exponent_eq_zero_iff.mpr h, this, Nat.sInf_empty]
+
 /-- The exponent is zero iff for all nonzero `n`, one can find a `g` such that `g ^ n ≠ 1`. -/
-@[to_additive "The exponent is zero iff for all nonzero `n`, one can find a `g` such that
-`n • g ≠ 0`."]
+@[to_additive /-- The exponent is zero iff for all nonzero `n`, one can find a `g` such that
+`n • g ≠ 0`. -/]
 theorem exponent_eq_zero_iff_forall : exponent G = 0 ↔ ∀ n > 0, ∃ g : G, g ^ n ≠ 1 := by
   rw [exponent_eq_zero_iff, ExponentExists]
   push_neg
@@ -160,7 +171,7 @@ theorem exponent_min' (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n = 1) : exp
 theorem exponent_min (m : ℕ) (hpos : 0 < m) (hm : m < exponent G) : ∃ g : G, g ^ m ≠ 1 := by
   by_contra! h
   have hcon : exponent G ≤ m := exponent_min' m hpos h
-  omega
+  cutsat
 
 @[to_additive AddMonoid.exp_eq_one_iff]
 theorem exp_eq_one_iff : exponent G = 1 ↔ Subsingleton G := by
@@ -200,7 +211,7 @@ theorem exponent_dvd_iff_forall_pow_eq_one {n : ℕ} : exponent G ∣ n ↔ ∀ 
       apply exponent_min' _ h
       simp_rw [← pow_eq_mod_exponent]
       exact hG
-    exact h₂.not_le h₃
+    exact h₂.not_ge h₃
 
 @[to_additive]
 alias ⟨_, exponent_dvd_of_forall_pow_eq_one⟩ := exponent_dvd_iff_forall_pow_eq_one
@@ -234,7 +245,7 @@ theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} 
     suffices key : ¬exponent G ∣ exponent G / p by
       rwa [exponent_dvd_iff_forall_pow_eq_one, not_forall] at key
     exact fun hd =>
-      hp.one_lt.not_le
+      hp.one_lt.not_ge
         ((mul_le_iff_le_one_left he).mp <|
           Nat.le_of_dvd he <| Nat.mul_dvd_of_dvd_div (Nat.dvd_of_mem_primeFactors h) hd)
   obtain ⟨k, hk : exponent G = p ^ _ * k⟩ := Nat.ordProj_dvd _ _
@@ -252,10 +263,10 @@ open Nat in
 of order `lcm n m`. The result actually gives an explicit (computable) element, written as the
 product of a power of `x` and a power of `y`. See also the result below if you don't need the
 explicit formula. -/
-@[to_additive "If two commuting elements `x` and `y` of an additive monoid have order `n` and `m`,
-there is an element of order `lcm n m`. The result actually gives an explicit (computable) element,
-written as the sum of a multiple of `x` and a multiple of `y`. See also the result below if you
-don't need the explicit formula."]
+@[to_additive /-- If two commuting elements `x` and `y` of an additive monoid have order `n` and
+`m`, there is an element of order `lcm n m`. The result actually gives an explicit (computable)
+element, written as the sum of a multiple of `x` and a multiple of `y`. See also the result below
+if you don't need the explicit formula. -/]
 lemma _root_.Commute.orderOf_mul_pow_eq_lcm {x y : G} (h : Commute x y) (hx : orderOf x ≠ 0)
     (hy : orderOf y ≠ 0) :
     orderOf (x ^ (orderOf x / (factorizationLCMLeft (orderOf x) (orderOf y))) *
@@ -269,9 +280,9 @@ lemma _root_.Commute.orderOf_mul_pow_eq_lcm {x y : G} (h : Commute x y) (hx : or
 open Submonoid in
 /-- If two commuting elements `x` and `y` of a monoid have order `n` and `m`, then there is an
 element of order `lcm n m` that lies in the subgroup generated by `x` and `y`. -/
-@[to_additive "If two commuting elements `x` and `y` of an additive monoid have order `n` and `m`,
-then there is an element of order `lcm n m` that lies in the additive subgroup generated by `x`
-and `y`."]
+@[to_additive /-- If two commuting elements `x` and `y` of an additive monoid have order `n` and
+`m`, then there is an element of order `lcm n m` that lies in the additive subgroup generated by `x`
+and `y`. -/]
 theorem _root_.Commute.exists_orderOf_eq_lcm {x y : G} (h : Commute x y) :
     ∃ z ∈ closure {x, y}, orderOf z = Nat.lcm (orderOf x) (orderOf y) := by
   by_cases hx : orderOf x = 0 <;> by_cases hy : orderOf y = 0
@@ -340,8 +351,8 @@ variable {H : Type*} [Monoid H]
 If there exists an injective, multiplication-preserving map from `G` to `H`,
 then the exponent of `G` divides the exponent of `H`.
 -/
-@[to_additive "If there exists an injective, addition-preserving map from `G` to `H`,
-then the exponent of `G` divides the exponent of `H`."]
+@[to_additive /-- If there exists an injective, addition-preserving map from `G` to `H`,
+then the exponent of `G` divides the exponent of `H`. -/]
 theorem exponent_dvd_of_monoidHom (e : G →* H) (e_inj : Function.Injective e) :
     Monoid.exponent G ∣ Monoid.exponent H :=
   exponent_dvd_of_forall_pow_eq_one fun g => e_inj (by
@@ -351,8 +362,8 @@ theorem exponent_dvd_of_monoidHom (e : G →* H) (e_inj : Function.Injective e) 
 If there exists a multiplication-preserving equivalence between `G` and `H`,
 then the exponent of `G` is equal to the exponent of `H`.
 -/
-@[to_additive "If there exists a addition-preserving equivalence between `G` and `H`,
-then the exponent of `G` is equal to the exponent of `H`."]
+@[to_additive /-- If there exists a addition-preserving equivalence between `G` and `H`,
+then the exponent of `G` is equal to the exponent of `H`. -/]
 theorem exponent_eq_of_mulEquiv (e : G ≃* H) : Monoid.exponent G = Monoid.exponent H :=
   Nat.dvd_antisymm
     (exponent_dvd_of_monoidHom e e.injective)
@@ -429,7 +440,7 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
   obtain ⟨g, hg⟩ := hp.exists_orderOf_eq_pow_factorization_exponent G
   suffices orderOf t < orderOf (t ^ p ^ k * g) by
     rw [ht] at this
-    exact this.not_le (le_csSup hfin.bddAbove <| Set.mem_range_self _)
+    exact this.not_ge (le_csSup hfin.bddAbove <| Set.mem_range_self _)
   have hpk : p ^ k ∣ orderOf t := Nat.ordProj_dvd _ _
   have hpk' : orderOf (t ^ p ^ k) = orderOf t / p ^ k := by
     rw [orderOf_pow' t (pow_ne_zero k hp.ne_zero), Nat.gcd_eq_right hpk]
@@ -443,7 +454,7 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
       simp [k, hp]
     rw [this]
     -- Porting note: convert made to_additive complain
-    apply Nat.pow_succ_factorization_not_dvd (hG.orderOf_pos <| t ^ p ^ k).ne' hp
+    exact Nat.pow_succ_factorization_not_dvd (hG.orderOf_pos <| t ^ p ^ k).ne' hp
   rw [(Commute.all _ g).orderOf_mul_eq_mul_orderOf_of_coprime hcoprime, hpk',
     hg, ha, hk, pow_add, pow_add, pow_one, ← mul_assoc, ← mul_assoc,
     Nat.div_mul_cancel, mul_assoc, lt_mul_iff_one_lt_right <| hG.orderOf_pos t, ← pow_succ]
@@ -557,8 +568,8 @@ theorem MonoidHom.exponent_dvd {F M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂]
 
 /-- The exponent of finite product of monoids is the `Finset.lcm` of the exponents of the
 constituent monoids. -/
-@[to_additive "The exponent of finite product of additive monoids is the `Finset.lcm` of the
-exponents of the constituent additive monoids."]
+@[to_additive /-- The exponent of finite product of additive monoids is the `Finset.lcm` of the
+exponents of the constituent additive monoids. -/]
 theorem Monoid.exponent_pi {ι : Type*} [Fintype ι] {M : ι → Type*} [∀ i, Monoid (M i)] :
     exponent ((i : ι) → M i) = lcm univ (exponent <| M ·) := by
   refine dvd_antisymm ?_ ?_
@@ -571,9 +582,9 @@ theorem Monoid.exponent_pi {ι : Type*} [Fintype ι] {M : ι → Type*} [∀ i, 
     exact MonoidHom.exponent_dvd (f := Pi.evalMonoidHom (M ·) i) (Function.surjective_eval i)
 
 /-- The exponent of product of two monoids is the `lcm` of the exponents of the
-individuaul monoids. -/
-@[to_additive AddMonoid.exponent_prod "The exponent of product of two additive monoids is the `lcm`
-of the exponents of the individuaul additive monoids."]
+individual monoids. -/
+@[to_additive AddMonoid.exponent_prod /-- The exponent of product of two additive monoids is the
+`lcm` of the exponents of the individual additive monoids. -/]
 theorem Monoid.exponent_prod {M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂] :
     exponent (M₁ × M₂) = lcm (exponent M₁) (exponent M₂) := by
   refine dvd_antisymm ?_ (lcm_dvd ?_ ?_)
@@ -621,7 +632,7 @@ lemma mul_comm_of_exponent_two [IsCancelMul G] (hG : Monoid.exponent G = 2) (a b
   Commute.of_orderOf_dvd_two (fun g => hG ▸ Monoid.order_dvd_exponent g) a b
 
 /-- Any cancellative monoid of exponent two is abelian. -/
-@[to_additive "Any additive group of exponent two is abelian."]
+@[to_additive /-- Any additive group of exponent two is abelian. -/]
 abbrev commMonoidOfExponentTwo [IsCancelMul G] (hG : Monoid.exponent G = 2) : CommMonoid G where
   mul_comm := mul_comm_of_exponent_two hG
 
@@ -643,17 +654,29 @@ lemma inv_eq_self_of_orderOf_eq_two {x : G} (hx : orderOf x = 2) :
   inv_eq_of_mul_eq_one_left <| pow_two (a := x) ▸ hx ▸ pow_orderOf_eq_one x
 
 @[to_additive]
-lemma mul_not_mem_of_orderOf_eq_two {x y : G} (hx : orderOf x = 2)
+lemma mul_notMem_of_orderOf_eq_two {x y : G} (hx : orderOf x = 2)
     (hy : orderOf y = 2) (hxy : x ≠ y) : x * y ∉ ({x, y, 1} : Set G) := by
   simp only [Set.mem_singleton_iff, Set.mem_insert_iff, mul_eq_left, mul_eq_right,
     mul_eq_one_iff_eq_inv, inv_eq_self_of_orderOf_eq_two hy, not_or]
   aesop
 
+@[deprecated (since := "2025-05-23")]
+alias add_not_mem_of_addOrderOf_eq_two := add_notMem_of_addOrderOf_eq_two
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias mul_not_mem_of_orderOf_eq_two := mul_notMem_of_orderOf_eq_two
+
 @[to_additive]
-lemma mul_not_mem_of_exponent_two (h : Monoid.exponent G = 2) {x y : G}
+lemma mul_notMem_of_exponent_two (h : Monoid.exponent G = 2) {x y : G}
     (hx : x ≠ 1) (hy : y ≠ 1) (hxy : x ≠ y) : x * y ∉ ({x, y, 1} : Set G) :=
-  mul_not_mem_of_orderOf_eq_two (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one x) hx)
+  mul_notMem_of_orderOf_eq_two (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one x) hx)
     (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one y) hy) hxy
+
+@[deprecated (since := "2025-05-23")]
+alias add_not_mem_of_exponent_two := add_notMem_of_exponent_two
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias mul_not_mem_of_exponent_two := mul_notMem_of_exponent_two
 
 end Group
 

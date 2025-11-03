@@ -6,11 +6,11 @@ Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
-# Sets are a complete atomic boolean algebra.
+# Sets are a complete atomic Boolean algebra.
 
-This file contains only the definition of the complete atomic boolean algebra structure on `Set`.
+This file contains only the definition of the complete atomic Boolean algebra structure on `Set`.
 Indexed union/intersection are defined in `Mathlib.Order.SetNotation`; lemmas are available in
-`Mathlib.Data.Set.Lattice`.
+`Mathlib/Data/Set/Lattice.lean`.
 
 ## Main declarations
 

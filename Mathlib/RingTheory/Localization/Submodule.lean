@@ -6,6 +6,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Noetherian.Defs
+import Mathlib.RingTheory.EssentialFiniteness
 
 /-!
 # Submodules in localizations of commutative rings
@@ -82,6 +83,11 @@ instance {R} [CommRing R] [IsNoetherianRing R] (S : Submonoid R) :
     IsNoetherianRing (Localization S) :=
   IsLocalization.isNoetherianRing S _ ‹_›
 
+lemma _root_.Algebra.EssFiniteType.isNoetherianRing
+    (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+    [Algebra.EssFiniteType R S] [IsNoetherianRing R] : IsNoetherianRing S := by
+  exact IsLocalization.isNoetherianRing (Algebra.EssFiniteType.submonoid R S) _
+    (Algebra.FiniteType.isNoetherianRing R _)
 section NonZeroDivisors
 
 variable {R : Type*} [CommRing R] {M : Submonoid R}
@@ -138,7 +144,7 @@ theorem mem_span_iff {N : Type*} [AddCommMonoid N] [Module R N] [Module S N] [Is
       · rw [← mul_one (1 : R), mk'_mul, mul_assoc, mk'_spec, map_one, mul_one, mul_one]
       · rw [← mul_one (1 : R), mk'_mul, mul_right_comm, mk'_spec, map_one, mul_one, one_mul]
     · rintro a _ _ ⟨y, hy, z, rfl⟩
-      obtain ⟨y', z', rfl⟩ := mk'_surjective M a
+      obtain ⟨y', z', rfl⟩ := exists_mk'_eq M a
       refine ⟨y' • y, Submodule.smul_mem _ _ hy, z' * z, ?_⟩
       rw [← IsScalarTower.algebraMap_smul S y', smul_smul, ← mk'_mul, smul_smul,
         mul_comm (mk' S _ _), mul_mk'_eq_mk'_of_mul]

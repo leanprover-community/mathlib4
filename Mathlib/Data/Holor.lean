@@ -67,13 +67,13 @@ def assocLeft : HolorIndex (ds₁ ++ (ds₂ ++ ds₃)) → HolorIndex (ds₁ ++ 
 theorem take_take : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.take = t.take.take
   | ⟨is, h⟩ =>
     Subtype.eq <| by
-      simp [assocRight, take, cast_type, List.take_take, Nat.le_add_right, min_eq_left]
+      simp [assocRight, take, cast_type, List.take_take, Nat.le_add_right]
 
 theorem drop_take : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.drop.take = t.take.drop
   | ⟨is, h⟩ => Subtype.eq (by simp [assocRight, take, drop, cast_type, List.drop_take])
 
 theorem drop_drop : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.drop.drop = t.drop
-  | ⟨is, h⟩ => Subtype.eq (by simp [add_comm, assocRight, drop, cast_type, List.drop_drop])
+  | ⟨is, h⟩ => Subtype.eq (by simp [assocRight, drop, cast_type, List.drop_drop])
 
 end HolorIndex
 
@@ -144,7 +144,7 @@ theorem mul_assoc0 [Semigroup α] (x : Holor α ds₁) (y : Holor α ds₂) (z :
     rw [append_assoc]
 
 theorem mul_assoc [Semigroup α] (x : Holor α ds₁) (y : Holor α ds₂) (z : Holor α ds₃) :
-    HEq (mul (mul x y) z) (mul x (mul y z)) := by simp [cast_heq, mul_assoc0, assocLeft]
+    mul (mul x y) z ≍ mul x (mul y z) := by simp [cast_heq, mul_assoc0, assocLeft]
 
 theorem mul_left_distrib [Distrib α] (x : Holor α ds₁) (y : Holor α ds₂) (z : Holor α ds₂) :
     x ⊗ (y + z) = x ⊗ y + x ⊗ z := funext fun t => left_distrib (x t.take) (y t.drop) (z t.drop)
@@ -285,7 +285,7 @@ theorem cprankMax_sum [NonUnitalNonAssocSemiring α] {β} {n : ℕ} (s : Finset 
   Finset.induction_on s (by simp [CPRankMax.zero])
     (by
       intro x s (h_x_notin_s : x ∉ s) ih h_cprank
-      simp only [Finset.sum_insert h_x_notin_s, Finset.card_insert_of_not_mem h_x_notin_s]
+      simp only [Finset.sum_insert h_x_notin_s, Finset.card_insert_of_notMem h_x_notin_s]
       rw [Nat.right_distrib]
       simp only [Nat.one_mul, Nat.add_comm]
       have ih' : CPRankMax (Finset.card s * n) (∑ x ∈ s, f x) := by

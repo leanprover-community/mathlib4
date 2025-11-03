@@ -63,7 +63,7 @@ theorem radon_partition {f : ι → E} (h : ¬ AffineIndependent 𝕜 f) :
   refine centerMass_mem_convexHull_of_nonpos _ (fun _ hi ↦ (mem_filter.mp hi).2.le) ?_
     (fun _i hi ↦ mem_image_of_mem _ fun hi' ↦ ?_)
   · linarith only [hI, hJI]
-  · exact (mem_filter.mp hi').2.not_lt (mem_filter.mp hi).2
+  · exact (mem_filter.mp hi').2.not_gt (mem_filter.mp hi).2
 
 open Module
 
@@ -85,26 +85,27 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
     (h_inter : ∀ I ⊆ s, #I ≤ finrank 𝕜 E + 1 → (⋂ i ∈ I, F i).Nonempty) :
     (⋂ i ∈ s, F i).Nonempty := by
   classical
-  obtain h_card | h_card := lt_or_le #s (finrank 𝕜 E + 1)
+  obtain h_card | h_card := lt_or_ge #s (finrank 𝕜 E + 1)
   · exact helly_theorem_corner (le_of_lt h_card) h_inter
   generalize hn : #s = n
   rw [hn] at h_card
-  induction' n, h_card using Nat.le_induction with k h_card hk generalizing ι
-  · exact helly_theorem_corner (le_of_eq hn) h_inter
+  induction n, h_card using Nat.le_induction generalizing ι with
+  | base => exact helly_theorem_corner (le_of_eq hn) h_inter
   /- Construct a family of vectors indexed by `ι` such that the vector corresponding to `i : ι`
   is an arbitrary element of the intersection of all `F j` except `F i`. -/
+  | succ k h_card hk =>
   let a (i : s) : E := Set.Nonempty.some (s := ⋂ j ∈ s.erase i, F j) <| by
     apply hk (s := s.erase i)
     · exact fun i hi ↦ h_convex i (mem_of_mem_erase hi)
     · intro J hJ_ss hJ_card
       exact h_inter J (subset_trans hJ_ss (erase_subset i.val s)) hJ_card
-    · simp only [coe_mem, card_erase_of_mem]; omega
+    · simp only [coe_mem, card_erase_of_mem]; cutsat
   /- This family of vectors is not affine independent because the number of them exceeds the
   dimension of the space. -/
   have h_ind : ¬AffineIndependent 𝕜 a := by
     rw [← finrank_vectorSpan_le_iff_not_affineIndependent 𝕜 a (n := (k - 1))]
     · exact (Submodule.finrank_le (vectorSpan 𝕜 (range a))).trans (Nat.le_pred_of_lt h_card)
-    · simp only [card_coe]; omega
+    · simp only [card_coe]; cutsat
   /- Use `radon_partition` to conclude there is a subset `I` of `s` and a point `p : E` which
   lies in the convex hull of either `a '' I` or `a '' Iᶜ`. We claim that `p ∈ ⋂ i ∈ s, F i`. -/
   obtain ⟨I, p, hp_I, hp_Ic⟩ := radon_partition h_ind
@@ -181,7 +182,7 @@ theorem helly_theorem_set {F : Finset (Set E)}
   obtain ⟨J, _, hJ_ss, hJ_card⟩ := exists_subsuperset_card_eq hI_ss hI_card h_card
   have : ⋂₀ (J : Set (Set E)) ⊆ ⋂₀ I := sInter_mono (by simpa [hI_ss])
   apply Set.Nonempty.mono this
-  exact h_inter J hJ_ss (by omega)
+  exact h_inter J hJ_ss (by cutsat)
 
 /-- **Helly's theorem** for families of compact convex sets.
 

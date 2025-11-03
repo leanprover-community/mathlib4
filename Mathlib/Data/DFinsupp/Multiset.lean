@@ -44,7 +44,7 @@ variable [DecidableEq α] {s t : Multiset α}
 def toDFinsupp : Multiset α →+ Π₀ _ : α, ℕ where
   toFun s :=
     { toFun := fun n ↦ s.count n
-      support' := Trunc.mk ⟨s, fun i ↦ (em (i ∈ s)).imp_right Multiset.count_eq_zero_of_not_mem⟩ }
+      support' := Trunc.mk ⟨s, fun i ↦ (em (i ∈ s)).imp_right Multiset.count_eq_zero_of_notMem⟩ }
   map_zero' := rfl
   map_add' _ _ := DFinsupp.ext fun _ ↦ Multiset.count_add _ _ _
 
@@ -61,7 +61,7 @@ theorem toDFinsupp_replicate (a : α) (n : ℕ) :
     toDFinsupp (Multiset.replicate n a) = DFinsupp.single a n := by
   ext i
   dsimp [toDFinsupp]
-  simp [count_replicate, eq_comm]
+  simp [count_replicate]
 
 @[simp]
 theorem toDFinsupp_singleton (a : α) : toDFinsupp {a} = DFinsupp.single a 1 := by
@@ -133,7 +133,7 @@ theorem toMultiset_inf : toMultiset (f ⊓ g) = toMultiset f ∩ toMultiset g :=
   Multiset.toDFinsupp_injective <| by simp
 
 @[simp]
-theorem toMultiset_sup : toMultiset (f ⊔ g) = toMultiset f∪ toMultiset g :=
+theorem toMultiset_sup : toMultiset (f ⊔ g) = toMultiset f ∪ toMultiset g :=
   Multiset.toDFinsupp_injective <| by simp
 
 end DFinsupp

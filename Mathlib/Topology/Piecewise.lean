@@ -47,12 +47,12 @@ theorem ContinuousOn.if' {s : Set α} {p : α → Prop} {f g : α → β} [∀ a
       · exact (hf x hx).congr (fun y hy => if_pos hy.2) (if_pos hx.2)
       · have : x ∉ closure { a | p a }ᶜ := fun h => hx' ⟨subset_closure hx.2, by
           rwa [closure_compl] at h⟩
-        exact continuousWithinAt_of_not_mem_closure fun h =>
+        exact continuousWithinAt_of_notMem_closure fun h =>
           this (closure_inter_subset_inter_closure _ _ h).2
     · apply ContinuousWithinAt.union
       · have : x ∉ closure { a | p a } := fun h =>
           hx' ⟨h, fun h' : x ∈ interior { a | p a } => hx.2 (interior_subset h')⟩
-        exact continuousWithinAt_of_not_mem_closure fun h =>
+        exact continuousWithinAt_of_notMem_closure fun h =>
           this (closure_inter_subset_inter_closure _ _ h).2
       · exact (hg x hx).congr (fun y hy => if_neg hy.2) (if_neg hx.2)
 
@@ -92,14 +92,14 @@ theorem continuous_if' {p : α → Prop} [∀ a, Decidable (p a)]
     (hpg : ∀ a ∈ frontier { x | p x }, Tendsto g (𝓝[{ x | ¬p x }] a) (𝓝 <| ite (p a) (f a) (g a)))
     (hf : ContinuousOn f { x | p x }) (hg : ContinuousOn g { x | ¬p x }) :
     Continuous fun a => ite (p a) (f a) (g a) := by
-  rw [continuous_iff_continuousOn_univ]
+  rw [← continuousOn_univ]
   apply ContinuousOn.if' <;> simp [*] <;> assumption
 
 theorem continuous_if {p : α → Prop} [∀ a, Decidable (p a)]
     (hp : ∀ a ∈ frontier { x | p x }, f a = g a) (hf : ContinuousOn f (closure { x | p x }))
     (hg : ContinuousOn g (closure { x | ¬p x })) :
     Continuous fun a => if p a then f a else g a := by
-  rw [continuous_iff_continuousOn_univ]
+  rw [← continuousOn_univ]
   apply ContinuousOn.if <;> simpa
 
 theorem Continuous.if {p : α → Prop} [∀ a, Decidable (p a)]

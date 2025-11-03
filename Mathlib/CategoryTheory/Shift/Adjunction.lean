@@ -29,7 +29,7 @@ In order to simplify the construction of the `CommShift` structure on `G`, we fi
 the compatibility condition on `adj.unit` for a fixed `a` in `A` and for isomorphisms
 `e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a` and
 `e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a`. We then prove that:
-- If `e₁` and `e₂` satusfy this condition, then `e₁` uniquely determines `e₂` and vice versa.
+- If `e₁` and `e₂` satisfy this condition, then `e₁` uniquely determines `e₂` and vice versa.
 - If `a = 0`, the isomorphisms `Functor.CommShift.isoZero F` and `Functor.CommShift.isoZero G`
 satisfy the condition.
 - The condition is stable by addition on `A`, if we use `Functor.CommShift.isoAdd` to deduce
@@ -232,11 +232,11 @@ lemma mk' (h : NatTrans.CommShift adj.unit A) :
   commShift_counit := ⟨fun a ↦ by
     ext
     simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app,
-      Functor.commShiftIso_comp_hom_app, whiskerRight_app, assoc, whiskerLeft_app,
+      Functor.commShiftIso_comp_hom_app, Functor.whiskerRight_app, assoc, Functor.whiskerLeft_app,
       Functor.commShiftIso_id_hom_app, comp_id]
     refine (compatibilityCounit_of_compatibilityUnit adj _ _ (fun X ↦ ?_) _).symm
     simpa only [NatTrans.comp_app,
-      Functor.commShiftIso_id_hom_app, whiskerRight_app, id_comp,
+      Functor.commShiftIso_id_hom_app, Functor.whiskerRight_app, id_comp,
       Functor.commShiftIso_comp_hom_app] using congr_app (h.shift_comm a) X⟩
 
 variable [adj.CommShift A]

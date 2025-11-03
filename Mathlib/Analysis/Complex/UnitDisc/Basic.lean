@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Complex.Circle
-import Mathlib.Analysis.NormedSpace.BallAction
+import Mathlib.Analysis.Normed.Module.Ball.Action
 
 /-!
 # Poincaré disc
@@ -51,9 +51,6 @@ theorem norm_lt_one (z : 𝔻) : ‖(z : ℂ)‖ < 1 :=
 
 theorem norm_ne_one (z : 𝔻) : ‖(z : ℂ)‖ ≠ 1 :=
   z.norm_lt_one.ne
-
-@[deprecated (since := "2025-02-16")] alias abs_lt_one := norm_lt_one
-@[deprecated (since := "2025-02-16")] alias abs_ne_one := norm_ne_one
 
 theorem normSq_lt_one (z : 𝔻) : normSq z < 1 := by
   convert (Real.sqrt_lt' one_pos).1 z.norm_lt_one

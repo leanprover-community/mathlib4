@@ -167,10 +167,7 @@ def wRec {α : TypeVec n} {C : Type*}
 theorem wRec_eq {α : TypeVec n} {C : Type*}
     (g : ∀ a : P.A, P.drop.B a ⟹ α → (P.last.B a → P.W α) → (P.last.B a → C) → C) (a : P.A)
     (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α) :
-    P.wRec g (P.wMk a f' f) = g a f' f fun i => P.wRec g (f i) := by
-  rw [wMk, wRec]; rw [wpRec_eq]
-  dsimp only [wPathDestLeft_wPathCasesOn, wPathDestRight_wPathCasesOn]
-  congr
+    P.wRec g (P.wMk a f' f) = g a f' f fun i => P.wRec g (f i) := rfl
 
 /-- Induction principle for `W` -/
 theorem w_ind {α : TypeVec n} {C : P.W α → Prop}
@@ -199,7 +196,7 @@ theorem wMk_eq {α : TypeVec n} (a : P.A) (f : P.last.B a → P.last.W) (g' : P.
 
 theorem w_map_wMk {α β : TypeVec n} (g : α ⟹ β) (a : P.A) (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → P.W α) : g <$$> P.wMk a f' f = P.wMk a (g ⊚ f') fun i => g <$$> f i := by
-  show _ = P.wMk a (g ⊚ f') (MvFunctor.map g ∘ f)
+  change _ = P.wMk a (g ⊚ f') (MvFunctor.map g ∘ f)
   have : MvFunctor.map g ∘ f = fun i => ⟨(f i).fst, g ⊚ (f i).snd⟩ := by
     ext i : 1
     dsimp [Function.comp_def]

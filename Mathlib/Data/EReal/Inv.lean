@@ -5,7 +5,8 @@ Authors: Kevin Buzzard
 -/
 import Mathlib.Data.ENNReal.Inv
 import Mathlib.Data.EReal.Operations
-import Mathlib.Data.Sign
+import Mathlib.Data.Sign.Basic
+import Mathlib.Data.Nat.Cast.Order.Field
 
 /-!
 # Absolute value, sign, inversion and division on extended real numbers
@@ -64,7 +65,7 @@ protected theorem abs_neg : ∀ x : EReal, (-x).abs = x.abs
 @[simp]
 theorem abs_mul (x y : EReal) : (x * y).abs = x.abs * y.abs := by
   induction x, y using induction₂_symm_neg with
-  | top_zero => simp only [zero_mul, mul_zero, abs_zero]
+  | top_zero => simp only [mul_zero, abs_zero]
   | top_top => rfl
   | symm h => rwa [mul_comm, EReal.mul_comm]
   | coe_coe => simp only [← coe_mul, abs_def, _root_.abs_mul, ENNReal.ofReal_mul (abs_nonneg _)]
@@ -97,10 +98,10 @@ theorem coe_coe_sign (x : SignType) : ((x : ℝ) : EReal) = x := by cases x <;> 
 @[simp]
 theorem sign_mul (x y : EReal) : sign (x * y) = sign x * sign y := by
   induction x, y using induction₂_symm_neg with
-  | top_zero => simp only [zero_mul, mul_zero, sign_zero]
+  | top_zero => simp only [mul_zero, sign_zero]
   | top_top => rfl
   | symm h => rwa [mul_comm, EReal.mul_comm]
-  | coe_coe => simp only [← coe_mul, sign_coe, _root_.sign_mul, ENNReal.ofReal_mul (abs_nonneg _)]
+  | coe_coe => simp only [← coe_mul, sign_coe, _root_.sign_mul]
   | top_pos _ h =>
     rw [top_mul_coe_of_pos h, sign_top, one_mul, sign_pos (EReal.coe_pos.2 h)]
   | neg_left h => rw [neg_mul, sign_neg, sign_neg, h, neg_mul]
@@ -142,7 +143,7 @@ instance : CommMonoidWithZero EReal :=
   { inferInstanceAs (MulZeroOneClass EReal) with
     mul_assoc := fun x y z => by
       rw [← sign_eq_and_abs_eq_iff_eq]
-      simp only [mul_assoc, abs_mul, eq_self_iff_true, sign_mul, and_self_iff]
+      simp only [mul_assoc, abs_mul, sign_mul, and_self_iff]
     mul_comm := EReal.mul_comm }
 
 instance : PosMulMono EReal := posMulMono_iff_covariant_pos.2 <| .mk <| by
@@ -160,7 +161,7 @@ instance : MulPosReflectLT EReal := MulPosMono.toMulPosReflectLT
 lemma mul_le_mul_of_nonpos_right {a b c : EReal} (h : b ≤ a) (hc : c ≤ 0) : a * c ≤ b * c := by
   rw [mul_comm a c, mul_comm b c, ← neg_le_neg_iff, ← neg_mul c b, ← neg_mul c a]
   rw [← neg_zero, EReal.le_neg] at hc
-  exact mul_le_mul_of_nonneg_left h hc
+  gcongr
 
 @[simp, norm_cast]
 theorem coe_pow (x : ℝ) (n : ℕ) : (↑(x ^ n) : EReal) = (x : EReal) ^ n :=
@@ -254,7 +255,7 @@ lemma sign_mul_inv_abs (a : EReal) : (sign a) * (a.abs : EReal)⁻¹ = a⁻¹ :=
 
 lemma sign_mul_inv_abs' (a : EReal) : (sign a) * ((a.abs⁻¹ : ℝ≥0∞) : EReal) = a⁻¹ := by
   induction a with
-  | bot | top  => simp
+  | bot | top => simp
   | coe a =>
     rcases lt_trichotomy a 0 with (a_neg | rfl | a_pos)
     · rw [sign_coe, _root_.sign_neg a_neg, coe_neg_one, neg_one_mul, abs_def a,
@@ -394,6 +395,7 @@ lemma div_eq_iff (hbot : b ≠ ⊥) (htop : b ≠ ⊤) (hzero : b ≠ 0) : c / b
 lemma monotone_div_right_of_nonneg (h : 0 ≤ b) : Monotone fun a ↦ a / b :=
   fun _ _ h' ↦ mul_le_mul_of_nonneg_right h' (inv_nonneg_of_nonneg h)
 
+@[gcongr]
 lemma div_le_div_right_of_nonneg (h : 0 ≤ c) (h' : a ≤ b) : a / c ≤ b / c :=
   monotone_div_right_of_nonneg h h'
 
@@ -405,6 +407,7 @@ lemma strictMono_div_right_of_pos (h : 0 < b) (h' : b ≠ ⊤) : StrictMono fun 
   rw [← @EReal.mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h), hyp,
     @EReal.mul_div_cancel a' b (ne_bot_of_gt h) h' (ne_of_gt h)]
 
+@[gcongr]
 lemma div_lt_div_right_of_pos (h₁ : 0 < c) (h₂ : c ≠ ⊤) (h₃ : a < b) : a / c < b / c :=
   strictMono_div_right_of_pos h₁ h₂ h₃
 
@@ -446,7 +449,7 @@ lemma lt_div_iff (h : 0 < b) (h' : b ≠ ⊤) : a < c / b ↔ a * b < c := by
   rw [EReal.mul_div b a b, mul_comm a b]
   exact (strictMono_div_right_of_pos h h').lt_iff_lt
 
-lemma div_lt_iff (h : 0 < c) (h' : c ≠ ⊤) :  b / c < a ↔ b < a * c := by
+lemma div_lt_iff (h : 0 < c) (h' : c ≠ ⊤) : b / c < a ↔ b < a * c := by
   nth_rw 1 [← @mul_div_cancel a c (ne_bot_of_gt h) h' (ne_of_gt h)]
   rw [EReal.mul_div c a c, mul_comm a c]
   exact (strictMono_div_right_of_pos h h').lt_iff_lt
@@ -455,7 +458,7 @@ lemma div_nonneg (h : 0 ≤ a) (h' : 0 ≤ b) : 0 ≤ a / b :=
   mul_nonneg h (inv_nonneg_of_nonneg h')
 
 lemma div_pos (ha : 0 < a) (hb : 0 < b) (hb' : b ≠ ⊤) : 0 < a / b :=
-  mul_pos ha (inv_pos_of_pos_ne_top hb hb')
+  EReal.mul_pos ha (inv_pos_of_pos_ne_top hb hb')
 
 lemma div_nonpos_of_nonpos_of_nonneg (h : a ≤ 0) (h' : 0 ≤ b) : a / b ≤ 0 :=
   mul_nonpos_of_nonpos_of_nonneg h (inv_nonneg_of_nonneg h')
@@ -471,7 +474,7 @@ private lemma exists_lt_mul_left_of_nonneg (ha : 0 ≤ a) (hc : 0 ≤ c) (h : c 
   rcases eq_or_ne b ⊤ with rfl | b_top
   · rcases eq_or_lt_of_le ha with rfl | ha
     · rw [zero_mul] at h
-      exact (not_le_of_lt h hc).rec
+      exact (not_le_of_gt h hc).rec
     · obtain ⟨a', a0', aa'⟩ := exists_between ha
       use a', mem_Ioo.2 ⟨a0', aa'⟩
       rw [mul_top_of_pos ha] at h
@@ -490,7 +493,7 @@ private lemma exists_mul_left_lt (h₁ : a ≠ 0 ∨ b ≠ ⊤) (h₂ : a ≠ �
     ∃ a' ∈ Ioo a ⊤, a' * b < c := by
   rcases eq_top_or_lt_top a with rfl | a_top
   · rw [ne_self_iff_false, false_or] at h₂; rw [top_mul_of_pos h₂] at hc; exact (not_top_lt hc).rec
-  rcases le_or_lt b 0 with b0 | b0
+  rcases le_or_gt b 0 with b0 | b0
   · obtain ⟨a', aa', a_top'⟩ := exists_between a_top
     exact ⟨a', mem_Ioo.2 ⟨aa', a_top'⟩, lt_of_le_of_lt (mul_le_mul_of_nonpos_right aa'.le b0) hc⟩
   rcases eq_top_or_lt_top b with rfl | b_top
@@ -520,7 +523,7 @@ lemma le_mul_of_forall_lt (h₁ : 0 < a ∨ b ≠ ⊤) (h₂ : a ≠ ⊤ ∨ 0 <
 lemma mul_le_of_forall_lt_of_nonneg (ha : 0 ≤ a) (hc : 0 ≤ c)
     (h : ∀ a' ∈ Ioo 0 a, ∀ b' ∈ Ioo 0 b, a' * b' ≤ c) : a * b ≤ c := by
   refine le_of_forall_lt_imp_le_of_dense fun d dab ↦ ?_
-  rcases lt_or_le d 0 with d0 | d0
+  rcases lt_or_ge d 0 with d0 | d0
   · exact d0.le.trans hc
   obtain ⟨a', aa', dab⟩ := exists_lt_mul_left_of_nonneg ha d0 dab
   obtain ⟨b', bb', dab⟩ := exists_lt_mul_right_of_nonneg aa'.1.le d0 dab
@@ -537,3 +540,34 @@ lemma add_div_of_nonneg_right (h : 0 ≤ c) :
   apply right_distrib_of_nonneg_of_ne_top (inv_nonneg_of_nonneg h) (inv_lt_top c).ne
 
 end EReal
+
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq Function
+
+/-- Extension for the `positivity` tactic: inverse of an `EReal`. -/
+@[positivity (_⁻¹ : EReal)]
+def evalERealInv : PositivityExt where eval {u α} zα pα e := do
+  match u, α, e with
+  | 0, ~q(EReal), ~q($a⁻¹) =>
+    assertInstancesCommute
+    match (← core zα pα a).toNonneg with
+    | some pa => pure (.nonnegative q(EReal.inv_nonneg_of_nonneg <| $pa))
+    | none => pure .none
+  | _, _, _ => throwError "not an inverse of an `EReal`"
+
+/-- Extension for the `positivity` tactic: ratio of two `EReal`s. -/
+@[positivity (_ / _ : EReal)]
+def evalERealDiv : PositivityExt where eval {u α} zα pα e := do
+  match u, α, e with
+  | 0, ~q(EReal), ~q($a / $b) =>
+    assertInstancesCommute
+    match (← core zα pα a).toNonneg with
+    | some pa =>
+      match (← core zα pα b).toNonneg with
+      | some pb => pure (.nonnegative q(EReal.div_nonneg $pa $pb))
+      | none => pure .none
+    | _ => pure .none
+  | _, _, _ => throwError "not a ratio of 2 `EReal`s"
+
+end Mathlib.Meta.Positivity

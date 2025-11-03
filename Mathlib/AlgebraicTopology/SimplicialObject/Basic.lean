@@ -105,7 +105,6 @@ def eqToIso {n m : ℕ} (h : n = m) : X _⦋n⦌ ≅ X _⦋m⦌ :=
 
 @[simp]
 theorem eqToIso_refl {n : ℕ} (h : n = n) : X.eqToIso h = Iso.refl _ := by
-  ext
   simp [eqToIso]
 
 /-- The generic case of the first simplicial identity -/
@@ -438,9 +437,9 @@ def toArrow : Augmented C ⥤ Arrow C where
 /-- The compatibility of a morphism with the augmentation, on 0-simplices -/
 @[reassoc]
 theorem w₀ {X Y : Augmented C} (f : X ⟶ Y) :
-    (Augmented.drop.map f).app (op (SimplexCategory.mk 0)) ≫ Y.hom.app (op (SimplexCategory.mk 0)) =
-      X.hom.app (op (SimplexCategory.mk 0)) ≫ Augmented.point.map f := by
-  convert congr_app f.w (op (SimplexCategory.mk 0))
+    (Augmented.drop.map f).app (op ⦋0⦌) ≫ Y.hom.app (op ⦋0⦌) =
+      X.hom.app (op ⦋0⦌) ≫ Augmented.point.map f := by
+  convert congr_app f.w (op ⦋0⦌)
 
 variable (C)
 
@@ -516,12 +515,12 @@ end SimplicialObject
 def CosimplicialObject :=
   SimplexCategory ⥤ C
 
+namespace CosimplicialObject
+
 @[simps!]
 instance : Category (CosimplicialObject C) := by
   dsimp only [CosimplicialObject]
   infer_instance
-
-namespace CosimplicialObject
 
 /-- `X ^⦋n⦌` denotes the `n`th-term of the cosimplicial object X -/
 scoped[Simplicial]
@@ -569,7 +568,6 @@ def eqToIso {n m : ℕ} (h : n = m) : X ^⦋n⦌ ≅ X ^⦋m⦌ :=
 
 @[simp]
 theorem eqToIso_refl {n : ℕ} (h : n = n) : X.eqToIso h = Iso.refl _ := by
-  ext
   simp [eqToIso]
 
 /-- The generic case of the first cosimplicial identity -/
@@ -585,14 +583,14 @@ theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i 
       X.δ (j.pred fun (hj : j = 0) => by simp only [hj, Fin.not_lt_zero] at H) ≫
         X.δ (Fin.castSucc i) := by
   dsimp [δ]
-  simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_δ' H]
+  simp only [← X.map_comp, SimplexCategory.δ_comp_δ' H]
 
 @[reassoc]
 theorem δ_comp_δ'' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : i ≤ Fin.castSucc j) :
     X.δ (i.castLT (Nat.lt_of_le_of_lt (Fin.le_iff_val_le_val.mp H) j.is_lt)) ≫ X.δ j.succ =
       X.δ j ≫ X.δ i := by
   dsimp [δ]
-  simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_δ'' H]
+  simp only [← X.map_comp, SimplexCategory.δ_comp_δ'' H]
 
 /-- The special case of the first cosimplicial identity -/
 @[reassoc]
@@ -652,7 +650,7 @@ theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < 
         X.δ (i.pred <|
           fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) := by
   dsimp [δ, σ]
-  simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_σ_of_gt' H]
+  simp only [← X.map_comp, SimplexCategory.δ_comp_σ_of_gt' H]
 
 /-- The fifth cosimplicial identity -/
 @[reassoc]
@@ -663,12 +661,12 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
 
 @[reassoc (attr := simp)]
 theorem δ_naturality {X' X : CosimplicialObject C} (f : X ⟶ X') {n : ℕ} (i : Fin (n + 2)) :
-    X.δ i ≫ f.app (SimplexCategory.mk (n + 1)) = f.app (SimplexCategory.mk n) ≫ X'.δ i :=
+    X.δ i ≫ f.app ⦋n + 1⦌ = f.app ⦋n⦌ ≫ X'.δ i :=
   f.naturality _
 
 @[reassoc (attr := simp)]
 theorem σ_naturality {X' X : CosimplicialObject C} (f : X ⟶ X') {n : ℕ} (i : Fin (n + 1)) :
-    X.σ i ≫ f.app (SimplexCategory.mk n) = f.app (SimplexCategory.mk (n + 1)) ≫ X'.σ i :=
+    X.σ i ≫ f.app ⦋n⦌ = f.app ⦋n + 1⦌ ≫ X'.σ i :=
   f.naturality _
 
 variable (C)
@@ -829,7 +827,7 @@ def whiskering (D : Type u') [Category.{v'} D] : (C ⥤ D) ⥤ Augmented C ⥤ A
             ext n
             dsimp
             rw [Category.id_comp, Category.id_comp, η.naturality] }
-      naturality := fun _ _ f => by ext <;> dsimp <;> simp }
+      naturality := fun _ _ f => by ext <;> simp }
 
 variable {C}
 
@@ -957,7 +955,7 @@ def simplicialCosimplicialAugmentedEquiv :
       rw [← f.op_unop]
       simp_rw [← op_comp]
       congr 1
-      aesop_cat
+      cat_disch
   counitIso := NatIso.ofComponents fun X => X.leftOpRightOpIso
 
 end CategoryTheory

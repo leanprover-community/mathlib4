@@ -453,7 +453,7 @@ lemma _root_.MeasurableEmbedding.map_withDensity_rnDeriv (hf : MeasurableEmbeddi
   ext s hs
   rw [hf.map_apply, withDensity_apply _ (hf.measurable hs), withDensity_apply _ hs,
     setLIntegral_map hs (Measure.measurable_rnDeriv _ _) hf.measurable]
-  refine setLIntegral_congr_fun (hf.measurable hs) ?_
+  refine setLIntegral_congr_fun_ae (hf.measurable hs) ?_
   filter_upwards [hf.rnDeriv_map μ ν] with a ha _ using ha.symm
 
 lemma _root_.MeasurableEmbedding.singularPart_map (hf : MeasurableEmbedding f)
@@ -519,5 +519,48 @@ lemma setIntegral_rnDeriv_smul' [SigmaFinite ν] (hμν : μ ≪ ν) (s : Set α
   exacts [measurable_rnDeriv _ _, ae_restrict_of_ae (rnDeriv_lt_top _ _)]
 
 end IntegralRNDerivMul
+
+section Conv
+
+open Measure
+
+variable {G : Type*} [Group G] {mG : MeasurableSpace G} [MeasurableMul₂ G] [MeasurableInv G]
+  {μ : Measure G} [IsMulLeftInvariant μ]
+
+@[to_additive]
+theorem mconv_eq_withDensity_mlconvolution_rnDeriv [SFinite μ] {ν₁ ν₂ : Measure G}
+    [ν₁.HaveLebesgueDecomposition μ] [ν₂.HaveLebesgueDecomposition μ]
+    (hν₁ : ν₁ ≪ μ) (hν₂ : ν₂ ≪ μ) :
+    ν₁ ∗ₘ ν₂ = μ.withDensity (ν₁.rnDeriv μ ⋆ₘₗ[μ] ν₂.rnDeriv μ) := by
+  rw [← mconv_withDensity_eq_mlconvolution (by fun_prop) (by fun_prop),
+    withDensity_rnDeriv_eq _ _ hν₁, withDensity_rnDeriv_eq _ _ hν₂]
+
+@[to_additive]
+theorem HaveLebesgueDecomposition.mconv [SFinite μ] {ν₁ ν₂ : Measure G}
+    [ν₁.HaveLebesgueDecomposition μ] [ν₂.HaveLebesgueDecomposition μ]
+    (hν₁ : ν₁ ≪ μ) (hν₂ : ν₂ ≪ μ) : (ν₁ ∗ₘ ν₂).HaveLebesgueDecomposition μ :=
+  ⟨⟨0, (ν₁.rnDeriv μ) ⋆ₘₗ[μ] (ν₂.rnDeriv μ)⟩, by fun_prop, by simp,
+    by simpa using mconv_eq_withDensity_mlconvolution_rnDeriv hν₁ hν₂⟩
+
+@[to_additive]
+theorem rnDeriv_mconv [SFinite μ] {ν₁ ν₂ : Measure G} [IsFiniteMeasure ν₁] [IsFiniteMeasure ν₂]
+    [ν₁.HaveLebesgueDecomposition μ] [ν₂.HaveLebesgueDecomposition μ]
+    (hν₁ : ν₁ ≪ μ) (hν₂ : ν₂ ≪ μ) :
+    (ν₁ ∗ₘ ν₂).rnDeriv μ =ᵐ[μ] (ν₁.rnDeriv μ) ⋆ₘₗ[μ] (ν₂.rnDeriv μ) := by
+  have := HaveLebesgueDecomposition.mconv hν₁ hν₂
+  rw [← withDensity_eq_iff (by fun_prop) (by fun_prop),
+    withDensity_rnDeriv_eq _ _ (mconv_absolutelyContinuous hν₂),
+    mconv_eq_withDensity_mlconvolution_rnDeriv hν₁ hν₂]
+  exact (lintegral_rnDeriv_lt_top (ν₁ ∗ₘ ν₂) μ).ne
+
+@[to_additive]
+theorem rnDeriv_mconv' [SigmaFinite μ] {ν₁ ν₂ : Measure G} [SigmaFinite ν₁] [SigmaFinite ν₂]
+    (hν₁ : ν₁ ≪ μ) (hν₂ : ν₂ ≪ μ) :
+    (ν₁ ∗ₘ ν₂).rnDeriv μ =ᵐ[μ] (ν₁.rnDeriv μ) ⋆ₘₗ[μ] (ν₂.rnDeriv μ) := by
+  rw [← withDensity_eq_iff_of_sigmaFinite (by fun_prop) (by fun_prop),
+    ← mconv_eq_withDensity_mlconvolution_rnDeriv hν₁ hν₂,
+    withDensity_rnDeriv_eq _ _ (mconv_absolutelyContinuous hν₂)]
+
+end Conv
 
 end MeasureTheory

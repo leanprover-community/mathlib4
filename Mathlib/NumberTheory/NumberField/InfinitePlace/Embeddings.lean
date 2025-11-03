@@ -112,12 +112,12 @@ theorem pow_eq_one_of_norm_eq_one {x : K} (hxi : IsIntegral ℤ x) (hx : ∀ φ 
     @Set.Infinite.exists_ne_map_eq_of_mapsTo _ _ _ _ (x ^ · : ℕ → K) Set.infinite_univ
       (by exact fun a _ => ⟨hxi.pow a, fun φ => by simp [hx φ]⟩) (finite_of_norm_le K A (1 : ℝ))
   wlog hlt : b < a
-  · exact this K A hxi hx b a habne.symm h.symm (habne.lt_or_lt.resolve_right hlt)
+  · exact this K A hxi hx b a habne.symm h.symm (habne.lt_or_gt.resolve_right hlt)
   refine ⟨a - b, tsub_pos_of_lt hlt, ?_⟩
   rw [← Nat.sub_add_cancel hlt.le, pow_add, mul_left_eq_self₀] at h
   refine h.resolve_right fun hp => ?_
   specialize hx (IsAlgClosed.lift (R := ℚ)).toRingHom
-  rw [pow_eq_zero hp, map_zero, norm_zero] at hx; norm_num at hx
+  rw [eq_zero_of_pow_eq_zero hp, map_zero, norm_zero] at hx; norm_num at hx
 
 end Bounded
 
@@ -142,9 +142,8 @@ open Complex NumberField
 
 open scoped ComplexConjugate
 
-variable {K : Type*} [Field K] {k : Type*} [Field k]
+variable (K : Type*) [Field K] {k : Type*} [Field k]
 
-variable (K) in
 /--
 A (random) lift of the complex embedding `φ : k →+* ℂ` to an extension `K` of `k`.
 -/
@@ -162,10 +161,17 @@ theorem lift_comp_algebraMap [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →
 @[simp]
 theorem lift_algebraMap_apply [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) (x : k) :
     lift K φ (algebraMap k K x) = φ x :=
-  RingHom.congr_fun (lift_comp_algebraMap φ) x
+  RingHom.congr_fun (lift_comp_algebraMap K φ) x
+
+variable {K}
 
 /-- The conjugate of a complex embedding as a complex embedding. -/
 abbrev conjugate (φ : K →+* ℂ) : K →+* ℂ := star φ
+
+@[simp]
+theorem conjugate_comp (φ : K →+* ℂ) (σ : k →+* K) :
+    (conjugate φ).comp σ = conjugate (φ.comp σ) :=
+  rfl
 
 @[simp]
 theorem conjugate_coe_eq (φ : K →+* ℂ) (x : K) : (conjugate φ) x = conj (φ x) := rfl
@@ -187,9 +193,9 @@ def IsReal.embedding {φ : K →+* ℂ} (hφ : IsReal φ) : K →+* ℝ where
   map_one' := by simp only [map_one, one_re]
   map_mul' := by
     simp only [Complex.conj_eq_iff_im.mp (RingHom.congr_fun hφ _), map_mul, mul_re,
-      mul_zero, tsub_zero, eq_self_iff_true, forall_const]
+      mul_zero, tsub_zero, forall_const]
   map_zero' := by simp only [map_zero, zero_re]
-  map_add' := by simp only [map_add, add_re, eq_self_iff_true, forall_const]
+  map_add' := by simp only [map_add, add_re, forall_const]
 
 @[simp]
 theorem IsReal.coe_embedding_apply {φ : K →+* ℂ} (hφ : IsReal φ) (x : K) :
@@ -208,7 +214,7 @@ lemma isReal_comp_iff {f : k ≃+* K} {φ : K →+* ℂ} :
 
 lemma exists_comp_symm_eq_of_comp_eq [Algebra k K] [IsGalois k K] (φ ψ : K →+* ℂ)
     (h : φ.comp (algebraMap k K) = ψ.comp (algebraMap k K)) :
-    ∃ σ : K ≃ₐ[k] K, φ.comp σ.symm = ψ := by
+    ∃ σ : Gal(K/k), φ.comp σ.symm = ψ := by
   letI := (φ.comp (algebraMap k K)).toAlgebra
   letI := φ.toAlgebra
   have : IsScalarTower k K ℂ := IsScalarTower.of_algebraMap_eq' rfl
@@ -217,10 +223,10 @@ lemma exists_comp_symm_eq_of_comp_eq [Algebra k K] [IsGalois k K] (φ ψ : K →
   ext1 x
   exact AlgHom.restrictNormal_commutes ψ' K x
 
-variable [Algebra k K] (φ : K →+* ℂ) (σ : K ≃ₐ[k] K)
+variable [Algebra k K] (φ : K →+* ℂ) (σ : Gal(K/k))
 
 /--
-`IsConj φ σ` states that `σ : K ≃ₐ[k] K` is the conjugation under the embedding `φ : K →+* ℂ`.
+`IsConj φ σ` states that `σ : Gal(K/k)` is the conjugation under the embedding `φ : K →+* ℂ`.
 -/
 def IsConj : Prop := conjugate φ = φ.comp σ
 
@@ -228,10 +234,10 @@ variable {φ σ}
 
 lemma IsConj.eq (h : IsConj φ σ) (x) : φ (σ x) = star (φ x) := RingHom.congr_fun h.symm x
 
-lemma IsConj.ext {σ₁ σ₂ : K ≃ₐ[k] K} (h₁ : IsConj φ σ₁) (h₂ : IsConj φ σ₂) : σ₁ = σ₂ :=
+lemma IsConj.ext {σ₁ σ₂ : Gal(K/k)} (h₁ : IsConj φ σ₁) (h₂ : IsConj φ σ₂) : σ₁ = σ₂ :=
   AlgEquiv.ext fun x ↦ φ.injective ((h₁.eq x).trans (h₂.eq x).symm)
 
-lemma IsConj.ext_iff {σ₁ σ₂ : K ≃ₐ[k] K} (h₁ : IsConj φ σ₁) : σ₁ = σ₂ ↔ IsConj φ σ₂ :=
+lemma IsConj.ext_iff {σ₁ σ₂ : Gal(K/k)} (h₁ : IsConj φ σ₁) : σ₁ = σ₂ ↔ IsConj φ σ₂ :=
   ⟨fun e ↦ e ▸ h₁, h₁.ext⟩
 
 lemma IsConj.isReal_comp (h : IsConj φ σ) : IsReal (φ.comp (algebraMap k K)) := by
@@ -239,14 +245,80 @@ lemma IsConj.isReal_comp (h : IsConj φ σ) : IsReal (φ.comp (algebraMap k K)) 
   simp only [conjugate_coe_eq, RingHom.coe_comp, Function.comp_apply, ← h.eq,
     starRingEnd_apply, AlgEquiv.commutes]
 
-lemma isConj_one_iff : IsConj φ (1 : K ≃ₐ[k] K) ↔ IsReal φ := Iff.rfl
+lemma isConj_one_iff : IsConj φ (1 : Gal(K/k)) ↔ IsReal φ := Iff.rfl
 
 alias ⟨_, IsReal.isConjGal_one⟩ := ComplexEmbedding.isConj_one_iff
+
+lemma isConj_ne_one_iff (hσ : IsConj φ σ) :
+    σ ≠ 1 ↔ ¬ IsReal φ :=
+  not_iff_not.mpr ⟨fun h ↦ isConj_one_iff.mp (h ▸ hσ),
+    fun h ↦ (IsConj.ext_iff hσ).mpr h.isConjGal_one⟩
 
 lemma IsConj.symm (hσ : IsConj φ σ) :
     IsConj φ σ.symm := RingHom.ext fun x ↦ by simpa using congr_arg star (hσ.eq (σ.symm x))
 
 lemma isConj_symm : IsConj φ σ.symm ↔ IsConj φ σ :=
   ⟨IsConj.symm, IsConj.symm⟩
+
+lemma isConj_apply_apply (hσ : IsConj φ σ) (x : K) :
+    σ (σ x) = x := by
+  simp [← φ.injective.eq_iff, hσ.eq]
+
+theorem IsConj.comp (hσ : IsConj φ σ) (ν : Gal(K/k)) :
+    IsConj (φ.comp ν) (ν⁻¹ * σ * ν) := by
+  ext
+  simpa [← AlgEquiv.mul_apply, ← mul_assoc] using RingHom.congr_fun hσ _
+
+lemma orderOf_isConj_two_of_ne_one (hσ : IsConj φ σ) (hσ' : σ ≠ 1) :
+    orderOf σ = 2 :=
+  orderOf_eq_prime_iff.mpr ⟨by ext; simpa using isConj_apply_apply hσ _, hσ'⟩
+
+section Extension
+
+variable {K : Type*} (L : Type*) [Field K] [Field L] (ψ : K →+* ℂ) [Algebra K L]
+
+/-- If `L/K` and `ψ : K →+* ℂ`, then the type of `ComplexEmbedding.Extension L ψ` consists of all
+`φ : L →+* ℂ` such that `φ.comp (algebraMap K L) = ψ`. -/
+protected abbrev Extension := { φ : L →+* ℂ // φ.comp (algebraMap K L) = ψ }
+
+namespace Extension
+
+variable (φ : ComplexEmbedding.Extension L ψ) {L ψ}
+
+theorem comp_eq : φ.1.comp (algebraMap K L) = ψ := φ.2
+
+theorem conjugate_comp_ne (h : ¬IsReal ψ) : (conjugate φ).comp (algebraMap K L) ≠ ψ := by
+  simp_all [ComplexEmbedding.isReal_iff, comp_eq]
+
+theorem not_isReal_of_not_isReal (h : ¬IsReal ψ) : ¬IsReal φ.1 :=
+  mt (IsReal.comp _) (comp_eq φ ▸ h)
+
+end Extension
+
+variable (K) {L ψ}
+
+/-- If `L/K` and `φ : L →+* ℂ`, then `IsMixed K φ` if the image of `φ` is complex while the image
+of `φ` restricted to `K` is real.
+
+This is the complex embedding analogue of `InfinitePlace.IsRamified K w`, where
+`w : InfinitePlace L`. It is not the same concept because conjugation of `φ` in this case
+leads to two distinct mixed embeddings but only a single ramified place `w`, leading to a
+two-to-one isomorphism between them. -/
+abbrev IsMixed (φ : L →+* ℂ) :=
+  ComplexEmbedding.IsReal (φ.comp (algebraMap K L)) ∧ ¬ComplexEmbedding.IsReal φ
+
+/-- If `L/K` and `φ : L →+* ℂ`, then `IsMixed K φ` if `φ` is not mixed in `K`, i.e., `φ` is real
+if and only if it's restriction to `K` is.
+
+This is the complex embedding analogue of `InfinitePlace.IsUnramified K w`, where
+`w : InfinitePlace L`. In this case there is an isomorphism between unmixed embeddings and
+unramified infinite places. -/
+abbrev IsUnmixed (φ : L →+* ℂ) := IsReal (φ.comp (algebraMap K L)) → IsReal φ
+
+theorem IsUnmixed.isReal_iff_isReal {φ : L →+* ℂ} (h : IsUnmixed K φ) :
+    IsReal (φ.comp (algebraMap K L)) ↔ IsReal φ := by
+  aesop (add simp [IsReal.comp])
+
+end Extension
 
 end NumberField.ComplexEmbedding

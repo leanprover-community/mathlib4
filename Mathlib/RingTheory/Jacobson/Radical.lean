@@ -24,6 +24,8 @@ it is in fact a two-sided ideal, and equals the intersection of all maximal righ
 * [F. Lorenz, *Algebra: Volume II: Fields with Structure, Algebras and Advanced Topics*][Lorenz2008]
 -/
 
+assert_not_exists Cardinal
+
 namespace Module
 
 open Submodule
@@ -194,7 +196,7 @@ theorem FG.jacobson_smul_lt {N : Submodule R M} (ne_bot : N ≠ ⊥) (fg : N.FG)
 /-- A form of Nakayama's lemma for modules over noncommutative rings. -/
 theorem FG.eq_bot_of_le_jacobson_smul {N : Submodule R M} (fg : N.FG)
     (le : N ≤ Ring.jacobson R • N) : N = ⊥ := by
-  contrapose! le; exact (jacobson_smul_lt le fg).not_le
+  contrapose! le; exact (jacobson_smul_lt le fg).not_ge
 
 end Submodule
 

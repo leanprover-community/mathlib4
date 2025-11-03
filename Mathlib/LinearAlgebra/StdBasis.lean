@@ -31,7 +31,7 @@ this is a basis over `Fin 3 → R`.
 
 -/
 
-open Function Set Submodule
+open Function Module Set Submodule
 
 namespace Pi
 
@@ -63,11 +63,6 @@ lemma linearIndependent_single_of_ne_zero {ι R M : Type*} [Ring R] [AddCommGrou
   exact linearIndependent_single (fun i (_ : Unit) ↦ v i) <| by
     simp +contextual [Fintype.linearIndependent_iff, hv]
 
-@[deprecated linearIndependent_single_of_ne_zero (since := "2025-04-14")]
-theorem linearIndependent_single_ne_zero {ι R : Type*} [Ring R] [NoZeroDivisors R] [DecidableEq ι]
-    {v : ι → R} (hv : ∀ i, v i ≠ 0) : LinearIndependent R (fun i : ι ↦ Pi.single i (v i)) :=
-  linearIndependent_single_of_ne_zero hv
-
 variable [Semiring R] [∀ i, AddCommMonoid (Ms i)] [∀ i, Module R (Ms i)]
 
 section Fintype
@@ -94,13 +89,13 @@ theorem basis_repr_single [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (
   ext ⟨j', i'⟩
   by_cases hj : j = j'
   · subst hj
-    simp only [Pi.basis, LinearEquiv.trans_apply, Basis.repr_self, Pi.single_eq_same,
+    simp only [Pi.basis, LinearEquiv.trans_apply,
       LinearEquiv.piCongrRight, Finsupp.sigmaFinsuppLEquivPiFinsupp_symm_apply,
-      Basis.repr_symm_apply, LinearEquiv.coe_mk, ne_eq, Sigma.mk.inj_iff, heq_eq_eq, true_and]
+      Basis.repr_symm_apply, LinearEquiv.coe_mk]
     symm
     simp [Finsupp.single_apply]
   simp only [Pi.basis, LinearEquiv.trans_apply, Finsupp.sigmaFinsuppLEquivPiFinsupp_symm_apply,
-    LinearEquiv.piCongrRight, coe_single]
+    LinearEquiv.piCongrRight]
   dsimp
   rw [Pi.single_eq_of_ne (Ne.symm hj), LinearEquiv.map_zero, Finsupp.zero_apply,
     Finsupp.single_eq_of_ne]
@@ -168,8 +163,6 @@ lemma AlgHom.eq_piEvalAlgHom {k G : Type*} [CommSemiring k] [NoZeroDivisors k] [
   use s
   refine AlgHom.toLinearMap_injective ((Pi.basisFun k G).ext fun t ↦ ?_)
   by_cases t = s <;> simp_all
-
-@[deprecated (since := "2025-04-15")] alias eval_of_algHom := AlgHom.eq_piEvalAlgHom
 
 namespace Module
 

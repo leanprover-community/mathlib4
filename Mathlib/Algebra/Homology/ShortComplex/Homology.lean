@@ -50,11 +50,11 @@ structure HomologyData where
   /-- a right homology data -/
   right : S.RightHomologyData
   /-- the compatibility isomorphism relating the two dual notions of
-    `LeftHomologyData` and `RightHomologyData`  -/
+  `LeftHomologyData` and `RightHomologyData` -/
   iso : left.H ≅ right.H
   /-- the pentagon relation expressing the compatibility of the left
   and right homology data -/
-  comm : left.π ≫ iso.hom ≫ right.ι = left.i ≫ right.p := by aesop_cat
+  comm : left.π ≫ iso.hom ≫ right.ι = left.i ≫ right.p := by cat_disch
 
 attribute [reassoc (attr := simp)] HomologyData.comm
 
@@ -201,8 +201,7 @@ class HasHomology : Prop where
   condition : Nonempty S.HomologyData
 
 /-- A chosen `S.HomologyData` for a short complex `S` that has homology -/
-noncomputable def homologyData [HasHomology S] :
-  S.HomologyData := HasHomology.condition.some
+noncomputable def homologyData [HasHomology S] : S.HomologyData := HasHomology.condition.some
 
 variable {S}
 
@@ -621,7 +620,7 @@ lemma HomologyData.leftRightHomologyComparison'_eq (h : S.HomologyData) :
     π_leftRightHomologyComparison'_ι, comm]
 
 instance isIso_leftRightHomologyComparison'_of_homologyData (h : S.HomologyData) :
-  IsIso (leftRightHomologyComparison' h.left h.right) := by
+    IsIso (leftRightHomologyComparison' h.left h.right) := by
     rw [h.leftRightHomologyComparison'_eq]
     infer_instance
 
@@ -926,15 +925,15 @@ lemma homology_π_ι :
 `cokernel S.f ⟶ S.X₃`. -/
 noncomputable def homologyIsoKernelDesc [HasCokernel S.f]
     [HasKernel (cokernel.desc S.f S.g S.zero)] :
-  S.homology ≅ kernel (cokernel.desc S.f S.g S.zero) :=
-    S.rightHomologyIso.symm ≪≫ S.rightHomologyIsoKernelDesc
+    S.homology ≅ kernel (cokernel.desc S.f S.g S.zero) :=
+  S.rightHomologyIso.symm ≪≫ S.rightHomologyIsoKernelDesc
 
 /-- The homology of a short complex `S` identifies to the cokernel of the induced morphism
 `S.X₁ ⟶ kernel S.g`. -/
 noncomputable def homologyIsoCokernelLift [HasKernel S.g]
     [HasCokernel (kernel.lift S.g S.f S.zero)] :
-  S.homology ≅ cokernel (kernel.lift S.g S.f S.zero) :=
-    S.leftHomologyIso.symm ≪≫ S.leftHomologyIsoCokernelLift
+    S.homology ≅ cokernel (kernel.lift S.g S.f S.zero) :=
+  S.leftHomologyIso.symm ≪≫ S.leftHomologyIsoCokernelLift
 
 @[reassoc (attr := simp)]
 lemma LeftHomologyData.homologyπ_comp_homologyIso_hom (h : S.LeftHomologyData) :

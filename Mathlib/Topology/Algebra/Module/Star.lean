@@ -40,7 +40,7 @@ def starL' (R : Type*) {A : Type*} [CommSemiring R] [StarRing R] [TrivialStar R]
     A ≃L[R] A :=
   (starL R : A ≃L⋆[R] A).trans
     ({ AddEquiv.refl A with
-        map_smul' := fun r a => by simp [starRingEnd_apply]
+        map_smul' := fun r a => by simp
         continuous_toFun := continuous_id
         continuous_invFun := continuous_id } :
       A ≃L⋆[R] A)

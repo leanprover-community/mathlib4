@@ -33,14 +33,12 @@ variable (I J K L R R' : Type*)
 def comp : Matrix I J (Matrix K L R) ≃ Matrix (I × K) (J × L) R where
   toFun m ik jl := m ik.1 jl.1 ik.2 jl.2
   invFun n i j k l := n (i, k) (j, l)
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 section Basic
 variable {R I J K L}
 
 theorem comp_map_map (M : Matrix I J (Matrix K L R)) (f : R → R') :
-  comp I J K L _ (M.map (fun M' => M'.map f)) = (comp I J K L _ M).map f := rfl
+    comp I J K L _ (M.map (fun M' => M'.map f)) = (comp I J K L _ M).map f := rfl
 
 @[simp]
 theorem comp_single_single
@@ -95,13 +93,13 @@ theorem comp_symm_diagonal [DecidableEq I] [DecidableEq J] [Zero R] (d : I × J 
   (comp I I J J R).symm_apply_eq.2 <| (comp_diagonal_diagonal fun i j => d (i, j)).symm
 
 theorem comp_transpose (M : Matrix I J (Matrix K L R)) :
-  comp J I K L R Mᵀ = (comp _ _ _ _ R <| M.map (·ᵀ))ᵀ := rfl
+    comp J I K L R Mᵀ = (comp _ _ _ _ R <| M.map (·ᵀ))ᵀ := rfl
 
 theorem comp_map_transpose (M : Matrix I J (Matrix K L R)) :
-  comp I J L K R (M.map (·ᵀ)) = (comp _ _ _ _ R Mᵀ)ᵀ := rfl
+    comp I J L K R (M.map (·ᵀ)) = (comp _ _ _ _ R Mᵀ)ᵀ := rfl
 
 theorem comp_symm_transpose (M : Matrix (I × K) (J × L) R) :
-  (comp J I L K R).symm Mᵀ = (((comp I J K L R).symm M).map (·ᵀ))ᵀ := rfl
+    (comp J I L K R).symm Mᵀ = (((comp I J K L R).symm M).map (·ᵀ))ᵀ := rfl
 
 end Basic
 
@@ -173,6 +171,15 @@ theorem compAlgEquiv_apply (M : Matrix I I (Matrix J J R)) :
 @[simp]
 theorem compAlgEquiv_symm_apply (M : Matrix (I × J) (I × J) R) :
     (compAlgEquiv I J R K).symm M = (comp I I J J R).symm M := rfl
+
+@[simp]
+theorem isUnit_comp_iff {M : Matrix I I (Matrix J J R)} : IsUnit (comp _ _ _ _ _ M) ↔ IsUnit M :=
+  isUnit_map_iff (compAlgEquiv _ _ _ ℕ) M
+
+@[simp]
+theorem isUnit_comp_symm_iff {M : Matrix (I × J) (I × J) R} :
+    IsUnit (comp _ _ _ _ _ |>.symm M) ↔ IsUnit M :=
+  isUnit_map_iff (compAlgEquiv _ _ _ ℕ).symm M
 
 end Algebra
 

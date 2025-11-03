@@ -26,7 +26,7 @@ to transport over to `Option.{v}`. `ULiftable` is an attempt at improving the si
 
 
 ## Main definitions
-  * `ULiftable` class
+* `ULiftable` class
 
 ## Tags
 
@@ -165,7 +165,8 @@ instance WriterT.instULiftableULiftULift {m m'} [ULiftable m m'] :
     ULiftable (WriterT (ULift.{max v₀ u₀} s) m) (WriterT (ULift.{max v₁ u₀} s) m') :=
   WriterT.uliftable' <| Equiv.ulift.trans Equiv.ulift.symm
 
-instance Except.instULiftable {ε : Type u₀} : ULiftable (Except.{u₀,v₁} ε) (Except.{u₀,v₂} ε) where
+instance Except.instULiftable {ε : Type u₀} :
+    ULiftable (Except.{u₀, v₁} ε) (Except.{u₀, v₂} ε) where
   congr e :=
     { toFun := Except.map e
       invFun := Except.map e.symm

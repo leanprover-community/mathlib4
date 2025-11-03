@@ -57,13 +57,14 @@ theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m
   by_cases h : z = 0
   · have : s = 0 := hs.unique (by simpa [ha 0 hn, h] using hasSum_at_zero a)
     exact ⟨a n, by simp [h, hn.ne', this], by simpa [h] using hasSum_at_zero fun m => a (m + n)⟩
-  · refine ⟨(z ^ n)⁻¹ • s, by field_simp [smul_smul], ?_⟩
+  · refine ⟨(z ^ n)⁻¹ • s, by match_scalars; field_simp, ?_⟩
     have h1 : ∑ i ∈ Finset.range n, z ^ i • a i = 0 :=
       Finset.sum_eq_zero fun k hk => by simp [ha k (Finset.mem_range.mp hk)]
     have h2 : HasSum (fun m => z ^ (m + n) • a (m + n)) s := by
       simpa [h1] using (hasSum_nat_add_iff' n).mpr hs
-    convert h2.const_smul (z⁻¹ ^ n) using 1
-    · field_simp [pow_add, smul_smul]
+    convert h2.const_smul (z⁻¹ ^ n) using 2 with x
+    · match_scalars
+      simp [field, pow_add]
     · simp only [inv_pow]
 
 end HasSum
@@ -74,11 +75,11 @@ theorem has_fpower_series_dslope_fslope (hp : HasFPowerSeriesAt f p z₀) :
     HasFPowerSeriesAt (dslope f z₀) p.fslope z₀ := by
   have hpd : deriv f z₀ = p.coeff 1 := hp.deriv
   have hp0 : p.coeff 0 = f z₀ := hp.coeff_zero 1
-  simp only [hasFPowerSeriesAt_iff, apply_eq_pow_smul_coeff, coeff_fslope] at hp ⊢
+  simp only [hasFPowerSeriesAt_iff, coeff_fslope] at hp ⊢
   refine hp.mono fun x hx => ?_
   by_cases h : x = 0
   · convert hasSum_single (α := E) 0 _ <;> intros <;> simp [*]
-  · have hxx : ∀ n : ℕ, x⁻¹ * x ^ (n + 1) = x ^ n := fun n => by field_simp [h, _root_.pow_succ]
+  · have hxx : ∀ n : ℕ, x⁻¹ * x ^ (n + 1) = x ^ n := fun n => by simp [field, _root_.pow_succ]
     suffices HasSum (fun n => x⁻¹ • x ^ (n + 1) • p.coeff (n + 1)) (x⁻¹ • (f (z₀ + x) - f z₀)) by
       simpa [dslope, slope, h, smul_smul, hxx] using this
     simpa [hp0] using ((hasSum_nat_add_iff' 1).mpr hx).const_smul x⁻¹
@@ -337,10 +338,12 @@ theorem AnalyticAt.map_nhdsNE {x : 𝕜} {f : 𝕜 → E} (hfx : AnalyticAt 𝕜
     (h₂f : ¬EventuallyConst f (𝓝 x)) :
     (𝓝[≠] x).map f ≤ (𝓝[≠] f x) := fun _ hs ↦ mem_map.1 (preimage_of_nhdsNE hfx h₂f hs)
 
-/-- Preimages of codiscrete sets: if `f` is analytic on a neighbourhood of `U` and not locally
-constant, then the preimage of any subset codiscrete within `f '' U` is codiscrete within `U`.
+/--
+Preimages of codiscrete sets: if `f` is analytic on a neighbourhood of `U` and not locally constant,
+then the preimage of any subset codiscrete within `f '' U` is codiscrete within `U`.
 
-Applications might want to use the theorem `Filter.codiscreteWithin.mono`.
+See `AnalyticOnNhd.preimage_zero_mem_codiscreteWithin` for the special case that `s` is the
+complement of zero. Applications might want to use the theorem `Filter.codiscreteWithin.mono`.
 -/
 theorem AnalyticOnNhd.preimage_mem_codiscreteWithin {U : Set 𝕜} {s : Set E} {f : 𝕜 → E}
     (hfU : AnalyticOnNhd 𝕜 f U) (h₂f : ∀ x ∈ U, ¬EventuallyConst f (𝓝 x))

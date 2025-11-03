@@ -1,187 +1,292 @@
 /-
-Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
+Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
 import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
 
-/-! ## Matching with a RefinedDiscrTree
+/-!
+# Matching with a RefinedDiscrTree
 
-We use a very simple unification algorithm. For all star/metavariable patterns in the
-`RefinedDiscrTree` and in the target, we store the assignment, and when it is assigned again,
-we check that it is the same assignment.
+This file defines the matching procedure for the `RefinedDiscrTree`.
+
+The main definitions are
+* The structure `MatchResult`, which contains the match results, ordered by matching score.
+* The (private) function `evalNode` which evaluates a node of the `RefinedDiscrTree`
+* The (private) function `getMatchLoop`, which is the main function that computes the matches.
+  It implements the non-deterministic computation by keeping a stack of `PartialMatch`es,
+  and repeatedly processing the most recent one.
+* The matching function `getMatch` that also returns an updated `RefinedDiscrTree`
+
+To find the matches, we first encode the expression as a `List Key`. Then using this,
+we find all matches with the tree. When `unify == true`, we also allow metavariables in the target
+expression to be assigned.
+
+We use a simple unification algorithm. For all star/metavariable patterns in the
+`RefinedDiscrTree` (and in the target if `unify == true`), we store the assignment,
+and when it is attempted to be assigned again, we check that it is the same assignment.
+
 -/
 
-open Mathlib.Meta.FunProp (StateListT StateListM)
-
 namespace Lean.Meta.RefinedDiscrTree
-variable {α}
 
-namespace GetUnify
+variable {α β : Type}
 
-/-- If `k` is a key in `children`, return the corresponding `Trie α`. Otherwise return `none`. -/
-def findKey (children : Array (Key × Trie α)) (k : Key) : Option (Trie α) :=
-  (·.2) <$> children.binSearch (k, default) (fun a b => a.1 < b.1)
+/-- Monad for working with a `RefinedDiscrTree`. -/
+private abbrev TreeM α := StateRefT (Array (Trie α)) MetaM
 
-private structure Context where
-  unify : Bool
+/-- Run a `TreeM` computation using `d : RefinedDiscrTree`, without losing the reference to `d`. -/
+@[inline] private def runTreeM (d : RefinedDiscrTree α) (m : TreeM α β) :
+    MetaM (Except Exception β × RefinedDiscrTree α) := do
+  let { tries, root } := d
+  let (result, tries) ← (try Except.ok <$> m catch ex => pure (.error ex)).run tries
+  pure (result, { tries, root })
 
-private structure State where
-  /-- Score representing how good the match is. -/
-  score : Nat := 0
-  /-- Metavariable assignments for the `Key.star` patterns in the `RefinedDiscrTree`. -/
-  starAssignments : Std.HashMap Nat DTExpr := {}
-  /-- Metavariable assignments for the `Expr.mvar` in the expression. -/
-  mvarAssignments : Std.HashMap MVarId (Array Key) := {}
+private def setTrie (i : TrieIndex) (v : Trie α) : TreeM α Unit :=
+  modify (·.set! i v)
 
+/-- Create a new trie with the given lazy entry. -/
+private def newTrie (e : LazyEntry × α) : TreeM α TrieIndex := do
+  modifyGet fun a => (a.size, a.push (.node #[] none {} {} #[e]))
 
-private abbrev M := ReaderT Context <| StateListM State
-
-/-- Return all values from `x` in an array, together with their scores. -/
-private def M.run (unify : Bool) (x : M (Trie α)) :
-    Array (Array α × Nat) :=
-  ((x.run { unify }).run {}).toArray.map (fun (t, s) => (t.values!, s.score))
-
-/-- Increment the score by `n`. -/
-private def incrementScore (n : Nat) : M Unit :=
-  modify fun s => { s with score := s.score + n }
-
-/-- Log a metavariable assignment in the `State`. -/
-private def insertStarAssignment (n : Nat) (e : DTExpr) : M Unit :=
-  modify fun s => { s with starAssignments := s.starAssignments.insert n e }
-
-/-- Log a metavariable assignment in the `State`. -/
-private def assignMVar (mvarId : MVarId) (e : Array Key) : M Unit := do
-  let { mvarAssignments, .. } ← get
-  match mvarAssignments[mvarId]? with
-  | some e' => guard (e == e')
-  | none =>
-    modify fun s => { s with mvarAssignments := s.mvarAssignments.insert mvarId e }
-
-/-- Return the possible `Trie α` that match with `n` metavariable. -/
-partial def skipEntries (t : Trie α) (skipped : Array Key) : Nat → M (Array Key × Trie α)
-  | 0      => pure (skipped, t)
-  | skip+1 =>
-    t.children!.foldr (init := failure) fun (k, c) x =>
-      (skipEntries c (skipped.push k) (skip + k.arity)) <|> x
-/-- Return the possible `Trie α` that match with anything.
-We add 1 to the matching score when the key is `.opaque`,
-since this pattern is "harder" to match with. -/
-def matchTargetStar (mvarId? : Option MVarId) (t : Trie α) : M (Trie α) := do
-  let (keys, t) ← t.children!.foldr (init := failure) fun (k, c) x => (do
-    if k == .opaque then
-      incrementScore 1
-    skipEntries c #[k] k.arity
-    ) <|> x
-  if let some mvarId := mvarId? then
-    assignMVar mvarId keys
-  return t
-
-/-- Return the possible `Trie α` that come from a `Key.star`,
-while keeping track of the `Key.star` assignments. -/
-def matchTreeStars (e : DTExpr) (t : Trie α) : M (Trie α) := do
-  let {starAssignments, ..} ← get
-  let mut result := failure
-  /- The `Key.star` are at the start of the `t.children!`,
-  so this loops through all of them. -/
-  for (k, c) in t.children! do
-    let .star i := k | break
-    if let some assignment := starAssignments[i]? then
-      if e == assignment then
-        result := (incrementScore e.size *> pure c) <|> result
-    else
-      result := (insertStarAssignment i e *> pure c) <|> result
-  result
-
-mutual
-  /-- Return the possible `Trie α` that match with `e`. -/
-  partial def matchExpr (e : DTExpr) (t : Trie α) : M (Trie α) := do
-    if let .star mvarId? := e then
-      if (← read).unify then
-        matchTargetStar mvarId? t
-      else
-        matchTreeStars e t
-    else
-      matchTreeStars e t <|> exactMatch e (findKey t.children!)
-
-  /-- If `e` is not a metavariable, return the possible `Trie α` that exactly match with `e`. -/
-  @[specialize]
-  partial def exactMatch (e : DTExpr) (find? : Key → Option (Trie α)) : M (Trie α) := do
-
-    let findKey (k : Key) (x : Trie α → M (Trie α) := pure) (score := 1) : M (Trie α) :=
-      match find? k with
-        | none => failure
-        | some trie => do
-          incrementScore score
-          x trie
-
-    let matchArgs (args : Array DTExpr) : Trie α → M (Trie α) :=
-      args.foldlM (fun t e => matchExpr e t)
-
-    match e with
-    | .opaque           => failure
-    | .const c args     => findKey (.const c args.size) (matchArgs args)
-    | .fvar fvarId args => findKey (.fvar fvarId args.size) (matchArgs args)
-    | .bvar i args      => findKey (.bvar i args.size) (matchArgs args)
-    | .lit v            => findKey (.lit v)
-    | .sort             => findKey .sort
-    | .lam b            => findKey .lam (matchExpr b) 0
-    | .forall d b       => findKey .forall (matchExpr d >=> matchExpr b)
-    | .proj n i a args  => findKey (.proj n i args.size) (matchExpr a >=> matchArgs args)
-    | _                 => unreachable!
-
-end
-
-private partial def getMatchWithScoreAux (d : RefinedDiscrTree α) (e : DTExpr) (unify : Bool)
-    (allowRootStar : Bool := false) : Array (Array α × Nat) := (do
-  if e matches .star _ then
-    guard allowRootStar
-    d.root.foldl (init := failure) fun x k c => (do
-      if k == Key.opaque then
-        GetUnify.incrementScore 1
-      let (_, t) ← GetUnify.skipEntries c #[k] k.arity
-      return t) <|> x
-  else
-    GetUnify.exactMatch e d.root.find?
-    <|> do
-    guard allowRootStar
-    let some c := d.root.find? (.star 0) | failure
-    return c
-  ).run unify
-
-end GetUnify
+/-- Add a lazy entry to an existing trie. -/
+private def addLazyEntryToTrie (i : TrieIndex) (e : LazyEntry × α) : TreeM α Unit :=
+  modify (·.modify i fun node => { node with pending := node.pending.push e })
 
 /--
-Return the results from the `RefinedDiscrTree` that match the given expression,
-together with their matching scores, in decreasing order of score.
+Evaluate the `Trie α` at index `trie`,
+replacing it with the evaluated value,
+and returning the `Trie α`.
+-/
+private def evalNode (trie : TrieIndex) : TreeM α (Trie α) := do
+  let node := (← get)[trie]!
+  if node.pending.isEmpty then
+    return node
+  setTrie trie default -- reduce the reference count to `node` to be 1
+  let mut { values, star, labelledStars, children, pending } := node
+  for (entry, value) in pending do
+    let some newEntries ← evalLazyEntry entry true | values := values.push value
+    for (key, entry) in newEntries do
+      let entry := (entry, value)
+      match key with
+      | .labelledStar label =>
+        if let some trie := labelledStars[label]? then
+          addLazyEntryToTrie trie entry
+        else
+          labelledStars := labelledStars.insert label (← newTrie entry)
+      | .star =>
+        if let some trie := star then
+          addLazyEntryToTrie trie entry
+        else
+          star := some (← newTrie entry)
+      | _ =>
+        if let some trie := children[key]? then
+          addLazyEntryToTrie trie entry
+        else
+          children := children.insert key (← newTrie entry)
+  let node := { values, star, labelledStars, children, pending := #[] }
+  setTrie trie node
+  return node
 
-Each entry of type `Array α × Nat` corresponds to one pattern.
 
-If `unify := false`, then metavariables in `e` are treated as opaque variables.
-This is for when you don't want to instantiate metavariables in `e`.
+/--
+A match result contains the results from matching a term against
+patterns in the discrimination tree.
+-/
+structure MatchResult (α : Type) where
+  /--
+  The elements in the match result.
 
-If `allowRootStar := false`, then we don't allow `e` or the matched key in `d`
-to be a star pattern. -/
-def getMatchWithScore (d : RefinedDiscrTree α) (e : Expr) (unify : Bool)
-    (allowRootStar : Bool := false) : MetaM (Array (Array α × Nat)) := do
-  let e ← mkDTExpr e
-  let result := GetUnify.getMatchWithScoreAux d e unify allowRootStar
-  return result.qsort (·.2 > ·.2)
+  The `Nat` in the tree map represents the `score` of the results.
+  The elements are arrays of arrays, where each sub-array corresponds to one discr tree pattern.
+  -/
+  elts : Std.TreeMap Nat (Array (Array α)) := {}
+  deriving Inhabited
 
-/-- Similar to `getMatchWithScore`, but also returns matches with prefixes of `e`.
-We store the score, followed by the number of ignored arguments. -/
-partial def getMatchWithScoreWithExtra (d : RefinedDiscrTree α) (e : Expr) (unify : Bool)
-    (allowRootStar : Bool := false) :
-    MetaM (Array (Array α × Nat × Nat)) := do
-  let result ← go e 0
-  return result.qsort (·.2.1 > ·.2.1)
+private def MatchResult.push (mr : MatchResult α) (score : Nat) (e : Array α) : MatchResult α :=
+  { elts := mr.elts.alter score fun | some arr => arr.push e | none => #[e] }
+
+/--
+Convert a `MatchResult` into a `Array`, with better matches at the start of the array.
+-/
+def MatchResult.toArray (mr : MatchResult α) : Array α :=
+  mr.elts.foldr (init := #[]) fun _ a r => a.foldl (init := r) (· ++ ·)
+
+/--
+Convert a `MatchResult` into an `Array` of `Array`s. Each `Array` corresponds to one pattern.
+The better matching patterns are at the start of the outer array.
+For each inner array, the entries are ordered in the order they were inserted.
+-/
+def MatchResult.flatten (mr : MatchResult α) : Array (Array α) :=
+  mr.elts.foldr (init := #[]) (fun _ arr cand => cand ++ arr)
+
+/-
+A partial match captures the intermediate state of a match execution.
+
+N.B. Discrimination tree matching has non-determinism due to stars,
+so the matching loop maintains a stack of partial match results.
+-/
+private structure PartialMatch where
+  /-- Remaining terms to match -/
+  keys : List Key
+  /-- Number of non-star matches so far -/
+  score : Nat
+  /-- Trie to match next -/
+  trie : TrieIndex
+  /-- Metavariable assignments for `.labelledStar` patterns in the discrimination tree.
+  We use a `List Key`, in the reverse order. -/
+  treeStars : Std.HashMap Nat (List Key) := {}
+  deriving Inhabited
+
+
+/--
+Add to the `todo` stack all matches that result from a `.star` in the query expression.
+-/
+private partial def matchQueryStar (trie : TrieIndex) (pMatch : PartialMatch)
+    (todo : Array PartialMatch) (skip : Nat := 1) : TreeM α (Array PartialMatch) := do
+  match skip with
+  | skip+1 =>
+    let { star, labelledStars, children, .. } ← evalNode trie
+    let mut todo := todo
+    if let some trie := star then
+      todo ← matchQueryStar trie pMatch todo skip
+    todo ← labelledStars.foldM (init := todo) fun todo _ trie =>
+      matchQueryStar trie pMatch todo skip
+    todo ← children.foldM (init := todo) fun todo key trie =>
+      matchQueryStar trie pMatch todo (skip + key.arity)
+    return todo
+  | 0 =>
+    return todo.push { pMatch with trie }
+
+/-- Return every value that is indexed in the tree. -/
+private def matchEverything (root : Std.HashMap Key TrieIndex) : TreeM α (MatchResult α) := do
+  let pMatches ← root.foldM (init := #[]) fun todo key trie =>
+    matchQueryStar trie { keys := [], score := 0, trie := 0 } todo key.arity
+  pMatches.foldlM (init := {}) fun result pMatch => do
+    let { values, .. } ← evalNode pMatch.trie
+    return result.push (score := 0) values
+
+/-- Add to the `todo` stack all matches that result from a `.star _` in the discrimination tree. -/
+private partial def matchTreeStars (key : Key) (node : Trie α) (pMatch : PartialMatch)
+    (todo : Array PartialMatch) (unify : Bool) : Array PartialMatch := Id.run do
+  let { star, labelledStars, .. } := node
+  if labelledStars.isEmpty && star.isNone then
+    todo
+  else
+    let (dropped, keys) := drop [key] pMatch.keys key.arity
+    let mut todo := todo
+    if let some trie := star then
+      todo := todo.push { pMatch with keys, trie }
+    todo := node.labelledStars.fold (init := todo) fun todo id trie =>
+      if let some assignment := pMatch.treeStars[id]? then
+        let eq lhs rhs := if unify then (isEq lhs.reverse rhs.reverse).isSome else lhs == rhs
+        if eq dropped assignment then
+          todo.push { pMatch with keys, trie, score := pMatch.score + dropped.length }
+        else
+          todo
+      else
+        let treeStars := pMatch.treeStars.insert id dropped
+        todo.push { pMatch with keys, trie, treeStars }
+    return todo
 where
-  /-- go -/
-  go (e : Expr) (numIgnored : Nat) : MetaM (Array (Array α × Nat × Nat)) := do
-  let result ← getMatchWithScore d e unify allowRootStar
-  let result := result.map fun (a, b) => (a, b, numIgnored)
-  match e with
-  | .app e _ => return (← go e (numIgnored + 1)) ++ result
-  | _ => return result
+  /-- Drop the keys corresponding to the next `n` expressions. -/
+  drop (dropped rest : List Key) (n : Nat) : (List Key × List Key) := Id.run do
+    match n with
+    | 0 => (dropped, rest)
+    | n + 1 =>
+      let key :: rest := rest | panic! "too few keys"
+      drop (key :: dropped) rest (n + key.arity)
+
+  isEq (lhs rhs : List Key) : Option (List Key × List Key) := do
+    match lhs with
+    | [] => panic! "too few keys"
+    | .star :: lhs =>
+      let (_, rhs) := drop [] rhs 1
+      return (lhs, rhs)
+    | lHead :: lhs =>
+    match rhs with
+    | [] => panic! "too few keys"
+    | .star :: rhs =>
+      let (_, lhs) := drop [] lhs 1
+      return (lhs, rhs)
+    | rHead :: rhs =>
+      guard (lHead == rHead)
+      lHead.arity.foldM (init := (lhs, rhs)) fun _ _ (lhs, rhs) => isEq lhs rhs
+
+/-- Add to the `todo` stack the match with `key`. -/
+private def matchKey (key : Key) (children : Std.HashMap Key TrieIndex) (pMatch : PartialMatch)
+    (todo : Array PartialMatch) : Array PartialMatch :=
+  if key == .opaque then todo else
+  match children[key]? with
+  | none      => todo
+  | some trie => todo.push { pMatch with trie, score := pMatch.score + 1 }
+
+/-- Return the possible `Trie α` that match with `keys`. -/
+private partial def getMatchLoop (todo : Array PartialMatch) (result : MatchResult α)
+    (unify : Bool) : TreeM α (MatchResult α) := do
+  if h : todo.size = 0 then
+    return result
+  else
+    let pMatch := todo.back
+    let todo := todo.pop
+    let node ← evalNode pMatch.trie
+    match pMatch.keys with
+    | [] =>
+      getMatchLoop todo (result.push (score := pMatch.score) node.values) unify
+    | key :: keys =>
+      let pMatch := { pMatch with keys }
+      match key with
+      -- `key` is not a `.labelledStar`
+      | .star =>
+        if unify then
+          let todo ← matchQueryStar pMatch.trie pMatch todo
+          getMatchLoop todo result unify
+        else
+          let todo := matchTreeStars key node pMatch todo unify
+          getMatchLoop todo result unify
+      | _ =>
+        let todo := matchTreeStars key node pMatch todo unify
+        let todo := matchKey key node.children pMatch todo
+        getMatchLoop todo result unify
+
+/-- Return the results from matching the pattern `[.star]` or `[.labelledStar 0]`. -/
+private def matchTreeRootStar (root : Std.HashMap Key TrieIndex) : TreeM α (MatchResult α) := do
+  let mut result := {}
+  if let some trie := root[Key.labelledStar 0]? then
+    let { values, .. } ← evalNode trie
+    result := result.push (score := 0) values
+  if let some trie := root[Key.star]? then
+    let { values, .. } ← evalNode trie
+    result := result.push (score := 0) values
+  return result
+
+/--
+Find values that match `e` in `d`.
+* If `unify == true` then metavariables in `e` can be assigned.
+* If `matchRootStar == true` then we allow metavariables at the root to unify.
+  Set this to `false` to avoid getting excessively many results.
+
+Note: to preserve the reference to `d`, `getMatch` will never throw an error,
+and instead it returns an `Except Exception (MatchResult α)`.
+-/
+def getMatch (d : RefinedDiscrTree α) (e : Expr) (unify matchRootStar : Bool) :
+    MetaM (Except Exception (MatchResult α) × RefinedDiscrTree α) := do
+  withReducible do runTreeM d do
+    let (key, keys) ← encodeExpr e (labelledStars := false)
+    let pMatch : PartialMatch := { keys, score := 0, trie := default }
+    if key == .star then
+      if matchRootStar then
+        if unify then
+          matchEverything d.root
+        else
+          matchTreeRootStar d.root
+      else
+        return {}
+    else
+      let todo := matchKey key d.root pMatch #[]
+      if matchRootStar then
+        getMatchLoop todo (← matchTreeRootStar d.root) unify
+      else
+        getMatchLoop todo {} unify
 
 end Lean.Meta.RefinedDiscrTree

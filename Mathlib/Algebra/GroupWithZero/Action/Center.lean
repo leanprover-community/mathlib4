@@ -10,6 +10,8 @@ import Mathlib.GroupTheory.Subgroup.Center
 # The center of a group with zero
 -/
 
+assert_not_exists Ring
+
 /-- For a group with zero, the center of the units is the same as the units of the center. -/
 @[simps! apply_val_coe symm_apply_coe_val]
 def Subgroup.centerUnitsEquivUnitsCenter (G₀ : Type*) [GroupWithZero G₀] :
@@ -23,6 +25,4 @@ def Subgroup.centerUnitsEquivUnitsCenter (G₀ : Type*) [GroupWithZero G₀] :
       map_one' := rfl
       map_mul' _ _ := rfl }
   invFun u := unitsCenterToCenterUnits G₀ u
-  left_inv _ := by ext; rfl
-  right_inv _ := by ext; rfl
   map_mul' := map_mul _

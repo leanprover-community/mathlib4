@@ -12,9 +12,9 @@ import Mathlib.Order.Interval.Finset.Nat
 /-!
 # Counting elements in an interval with given residue
 
-The theorems in this file generalise `Nat.card_multiples` in `Mathlib.Data.Nat.Factorization.Basic`
-to all integer intervals and any fixed residue (not just zero, which reduces to the multiples).
-Theorems are given for `Ico` and `Ioc` intervals.
+The theorems in this file generalise `Nat.card_multiples` in
+`Mathlib/Data/Nat/Factorization/Basic.lean` to all integer intervals and any fixed residue (not just
+zero, which reduces to the multiples). Theorems are given for `Ico` and `Ioc` intervals.
 -/
 
 
@@ -70,13 +70,13 @@ theorem Ioc_filter_dvd_card : #{x ∈ Ioc a b | r ∣ x} = max (⌊b / (r : ℚ)
 if `a ≤ b`. -/
 theorem Ico_filter_modEq_card (v : ℤ) :
     #{x ∈ Ico a b | x ≡ v [ZMOD r]} = max (⌈(b - v) / (r : ℚ)⌉ - ⌈(a - v) / (r : ℚ)⌉) 0 := by
-  simp [Ico_filter_modEq_eq, Ico_filter_dvd_eq, toNat_eq_max, hr]
+  simp [Ico_filter_modEq_eq, Ico_filter_dvd_eq, hr]
 
 /-- There are `⌊(b - v) / r⌋ - ⌊(a - v) / r⌋` numbers congruent to `v` mod `r` in `(a, b]`,
 if `a ≤ b`. -/
 theorem Ioc_filter_modEq_card (v : ℤ) :
     #{x ∈ Ioc a b | x ≡ v [ZMOD r]} = max (⌊(b - v) / (r : ℚ)⌋ - ⌊(a - v) / (r : ℚ)⌋) 0 := by
-  simp [Ioc_filter_modEq_eq, Ioc_filter_dvd_eq, toNat_eq_max, hr]
+  simp [Ioc_filter_modEq_eq, Ioc_filter_dvd_eq, hr]
 
 end Int
 
@@ -100,7 +100,7 @@ lemma Ioc_filter_modEq_cast {v : ℕ} :
   simp only [mem_map, mem_filter, mem_Ioc, castEmbedding_apply]
   constructor
   · simp_rw [forall_exists_index, ← natCast_modEq_iff]; intro y ⟨h, c⟩; subst c; exact_mod_cast h
-  · intro h; lift x to ℕ using (by omega); exact ⟨x, by simp_all [natCast_modEq_iff]⟩
+  · intro h; lift x to ℕ using (by cutsat); exact ⟨x, by simp_all [natCast_modEq_iff]⟩
 
 variable (hr : 0 < r)
 include hr
@@ -124,7 +124,7 @@ theorem count_modEq_card_eq_ceil (v : ℕ) :
     b.count (· ≡ v [MOD r]) = ⌈(b - (v % r : ℕ)) / (r : ℚ)⌉ := by
   have hr' : 0 < (r : ℚ) := by positivity
   rw [count_eq_card_filter_range, ← Ico_zero_eq_range, Ico_filter_modEq_card _ _ hr,
-    max_eq_left (sub_nonneg.mpr <| by gcongr <;> positivity)]
+    max_eq_left (sub_nonneg.mpr <| by gcongr; positivity)]
   conv_lhs =>
     rw [← div_add_mod v r, cast_add, cast_mul, add_comm]
     tactic => simp_rw [← sub_sub, sub_div (_ - _), mul_div_cancel_left₀ _ hr'.ne',

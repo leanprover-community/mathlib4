@@ -29,13 +29,13 @@ theorem Nullhomotopic.comp_right {f : C(X, Y)} (hf : f.Nullhomotopic) (g : C(Y, 
     (g.comp f).Nullhomotopic := by
   obtain ⟨y, hy⟩ := hf
   use g y
-  exact Homotopic.hcomp hy (Homotopic.refl g)
+  exact .comp (.refl g) hy
 
 theorem Nullhomotopic.comp_left {f : C(Y, Z)} (hf : f.Nullhomotopic) (g : C(X, Y)) :
     (f.comp g).Nullhomotopic := by
   obtain ⟨y, hy⟩ := hf
   use y
-  exact Homotopic.hcomp (Homotopic.refl g) hy
+  exact .comp hy (.refl g)
 
 end ContinuousMap
 

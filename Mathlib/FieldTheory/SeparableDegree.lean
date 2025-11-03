@@ -557,7 +557,7 @@ theorem eq_X_sub_C_pow_of_natSepDegree_eq_one_of_splits (hm : f.Monic)
   classical
   have h1 := eq_prod_roots_of_monic_of_splits_id hm hs
   have h2 := (natSepDegree_eq_of_splits f hs).symm
-  rw [h, aroots_def, Algebra.id.map_eq_id, map_id, Multiset.toFinset_card_eq_one_iff] at h2
+  rw [h, aroots_def, Algebra.algebraMap_self, map_id, Multiset.toFinset_card_eq_one_iff] at h2
   obtain ⟨h2, y, h3⟩ := h2
   exact ⟨_, y, h2, by rwa [h3, Multiset.map_nsmul, Multiset.map_singleton, Multiset.prod_nsmul,
     Multiset.prod_singleton] at h1⟩
@@ -729,7 +729,6 @@ theorem finSepDegree_dvd_finrank : finSepDegree F E ∣ finrank F E := by
     simp only at h ⊢
     have hdvd := mul_dvd_mul h <| finSepDegree_adjoin_simple_dvd_finrank L E x
     set M := L⟮x⟯
-    have := Algebra.IsAlgebraic.of_finite L M
     rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
       Module.finrank_mul_finrank F L M] at hdvd
   rw [finrank_of_infinite_dimensional hfd]
@@ -747,10 +746,7 @@ theorem finSepDegree_eq_finrank_of_isSeparable [Algebra.IsSeparable F E] :
     finSepDegree F E = finrank F E := by
   wlog hfd : FiniteDimensional F E generalizing E with H
   · rw [finrank_of_infinite_dimensional hfd]
-    have halg := Algebra.IsSeparable.isAlgebraic F E
     obtain ⟨L, h, h'⟩ := exists_lt_finrank_of_infinite_dimensional hfd (finSepDegree F E)
-    have : Algebra.IsSeparable F L := Algebra.isSeparable_tower_bot_of_isSeparable F L E
-    have := (halg.tower_top L)
     have hd := finSepDegree_mul_finSepDegree_of_isAlgebraic F L E
     rw [H L h] at hd
     by_cases hd' : finSepDegree L E = 0
@@ -764,7 +760,6 @@ theorem finSepDegree_eq_finrank_of_isSeparable [Algebra.IsSeparable F E] :
     (finSepDegree_adjoin_simple_eq_finrank_iff L E x (IsAlgebraic.of_finite L x)).2 <|
       IsSeparable.tower_top L (Algebra.IsSeparable.isSeparable F x)
   set M := L⟮x⟯
-  have := Algebra.IsAlgebraic.of_finite L M
   rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
     Module.finrank_mul_finrank F L M] at heq
 
@@ -778,7 +773,7 @@ theorem finSepDegree_eq_finrank_iff [FiniteDimensional F E] :
   ⟨fun heq ↦ ⟨fun x ↦ by
     have halg := IsAlgebraic.of_finite F x
     refine (finSepDegree_adjoin_simple_eq_finrank_iff F E x halg).1 <| le_antisymm
-      (finSepDegree_adjoin_simple_le_finrank F E x halg) <| le_of_not_lt fun h ↦ ?_
+      (finSepDegree_adjoin_simple_le_finrank F E x halg) <| le_of_not_gt fun h ↦ ?_
     have := Nat.mul_lt_mul_of_lt_of_le' h (finSepDegree_le_finrank F⟮x⟯ E) Fin.pos'
     rw [finSepDegree_mul_finSepDegree_of_isAlgebraic F F⟮x⟯ E,
       Module.finrank_mul_finrank F F⟮x⟯ E] at this
@@ -824,7 +819,6 @@ theorem IsSeparable.of_algebra_isSeparable_of_isSeparable [Algebra E K] [IsScala
   haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep
   haveI := adjoin.finiteDimensional halg
   haveI : FiniteDimensional F E'⟮x⟯ := FiniteDimensional.trans F E' E'⟮x⟯
-  have : Algebra.IsAlgebraic E' E'⟮x⟯ := Algebra.IsSeparable.isAlgebraic _ _
   have := finSepDegree_mul_finSepDegree_of_isAlgebraic F E' E'⟮x⟯
   rw [finSepDegree_eq_finrank_of_isSeparable F E',
     finSepDegree_eq_finrank_of_isSeparable E' E'⟮x⟯,
@@ -898,23 +892,22 @@ end Field
 /-- A field is a perfect field (which means that any irreducible polynomial is separable)
 if and only if every separable degree one polynomial splits. -/
 theorem perfectField_iff_splits_of_natSepDegree_eq_one (F : Type*) [Field F] :
-    PerfectField F ↔ ∀ f : F[X], f.natSepDegree = 1 → f.Splits (RingHom.id F) := by
-  refine ⟨fun ⟨h⟩ f hf ↦ or_iff_not_imp_left.2 fun hn g hg hd ↦ ?_, fun h ↦ ?_⟩
-  · rw [Polynomial.map_id] at hn hd
-    have := natSepDegree_le_of_dvd g f hd hn
+    PerfectField F ↔ ∀ f : F[X], f.natSepDegree = 1 → Factors f := by
+  refine ⟨fun ⟨h⟩ f hf ↦ factors_iff_splits.2 <| or_iff_not_imp_left.2 fun hn g hg hd ↦ ?_,
+      fun h ↦ ?_⟩
+  · have := natSepDegree_le_of_dvd g f hd hn
     rw [hf, (h hg).natSepDegree_eq_natDegree] at this
     exact (degree_eq_iff_natDegree_eq_of_pos one_pos).2 <| this.antisymm <|
       natDegree_pos_iff_degree_pos.2 (degree_pos_of_irreducible hg)
   obtain ⟨p, _⟩ := ExpChar.exists F
   haveI := PerfectRing.ofSurjective F p fun x ↦ by
-    obtain ⟨y, hy⟩ := exists_root_of_splits _
+    obtain ⟨y, hy⟩ := Factors.exists_eval_eq_zero
       (h _ (pow_one p ▸ natSepDegree_X_pow_char_pow_sub_C p 1 x))
       ((degree_X_pow_sub_C (expChar_pos F p) x).symm ▸ Nat.cast_pos.2 (expChar_pos F p)).ne'
-    exact ⟨y, by rwa [← eval, eval_sub, eval_pow, eval_X, eval_C, sub_eq_zero] at hy⟩
+    exact ⟨y, by rwa [eval_sub, eval_X_pow, eval_C, sub_eq_zero] at hy⟩
   exact PerfectRing.toPerfectField F p
 
 variable {E K} in
 theorem PerfectField.splits_of_natSepDegree_eq_one [PerfectField K] {f : E[X]}
     (i : E →+* K) (hf : f.natSepDegree = 1) : f.Splits i :=
-  (splits_id_iff_splits _).mp <| (perfectField_iff_splits_of_natSepDegree_eq_one K).mp ‹_› _
-    (natSepDegree_map K f i ▸ hf)
+  (perfectField_iff_splits_of_natSepDegree_eq_one K).mp ‹_› _ (natSepDegree_map K f i ▸ hf)

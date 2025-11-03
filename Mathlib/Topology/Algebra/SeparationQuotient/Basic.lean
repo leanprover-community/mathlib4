@@ -115,7 +115,7 @@ instance instMulOneClass [MulOneClass M] [ContinuousMul M] :
   surjective_mk.mulOneClass mk mk_one mk_mul
 
 /-- `SeparationQuotient.mk` as a `MonoidHom`. -/
-@[to_additive (attr := simps) "`SeparationQuotient.mk` as an `AddMonoidHom`."]
+@[to_additive (attr := simps) /-- `SeparationQuotient.mk` as an `AddMonoidHom`. -/]
 def mkMonoidHom [MulOneClass M] [ContinuousMul M] : M →* SeparationQuotient M where
   toFun := mk
   map_mul' := mk_mul
@@ -210,11 +210,6 @@ instance instIsUniformGroup {G : Type*} [Group G] [UniformSpace G] [IsUniformGro
   uniformContinuous_div := by
     rw [uniformContinuous_dom₂]
     exact uniformContinuous_mk.comp uniformContinuous_div
-
-@[deprecated (since := "2025-03-31")] alias
-  instUniformAddGroup := SeparationQuotient.instIsUniformAddGroup
-@[to_additive existing, deprecated (since := "2025-03-31")] alias
-  instUniformGroup := SeparationQuotient.instIsUniformGroup
 
 end IsUniformGroup
 

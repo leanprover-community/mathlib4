@@ -12,6 +12,8 @@ open Finset
 section
 -- set_option trace.profiler true
 
+set_option linter.style.commandStart false
+
 -- `antidiagonalTuple` is faster than `finAntidiagonal` by a small constant factor
 /-- info: 23426 -/
 #guard_msgs in #eval #(finAntidiagonal 4 50)

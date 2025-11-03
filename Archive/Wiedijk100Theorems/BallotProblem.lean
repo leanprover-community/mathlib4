@@ -58,8 +58,7 @@ theorem staysPositive_cons_pos (x : ℤ) (hx : 0 < x) (l : List ℤ) :
     (x::l) ∈ staysPositive ↔ l ∈ staysPositive := by
   rw [staysPositive_cons, and_iff_left_iff_imp]
   intro h
-  have := sum_nonneg_of_staysPositive h
-  positivity
+  positivity [sum_nonneg_of_staysPositive h]
 
 /-- `countedSequence p q` is the set of lists of integers for which every element is `+1` or `-1`,
 there are `p` lots of `+1` and `q` lots of `-1`.
@@ -115,16 +114,17 @@ theorem counted_succ_succ (p q : ℕ) :
     obtain ⟨hl₀, hl₁, hl₂⟩ := hl
     obtain hlast | hlast := hl₂ (l.head hlnil) (List.head_mem hlnil)
     · refine Or.inl ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
-      · rw [List.count_tail hlnil, hl₀, hlast, beq_self_eq_true, if_pos rfl, Nat.add_sub_cancel]
-      · rw [List.count_tail hlnil, hl₁, hlast, if_neg (by decide), Nat.sub_zero]
+      · rw [List.count_tail, hl₀, List.head?_eq_head hlnil, hlast, beq_self_eq_true, if_pos rfl,
+          Nat.add_sub_cancel]
+      · rw [List.count_tail, hl₁, List.head?_eq_head hlnil, hlast, if_neg (by decide), Nat.sub_zero]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
-      · rw [← hlast, List.head_cons_tail]
+      · rw [← hlast, List.cons_head_tail]
     · refine Or.inr ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
-      · rw [List.count_tail hlnil, hl₀, hlast, if_neg (by decide), Nat.sub_zero]
-      · rw [List.count_tail hlnil, hl₁, hlast, beq_self_eq_true, if_pos rfl,
+      · rw [List.count_tail, hl₀, List.head?_eq_head hlnil, hlast, if_neg (by decide), Nat.sub_zero]
+      · rw [List.count_tail, hl₁, List.head?_eq_head hlnil, hlast, beq_self_eq_true, if_pos rfl,
           Nat.add_sub_cancel]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
-      · rw [← hlast, List.head_cons_tail]
+      · rw [← hlast, List.cons_head_tail]
   · rintro (⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩ | ⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩)
     · refine ⟨?_, ?_, ?_⟩
       · rw [List.count_cons, beq_self_eq_true, if_pos rfl, ht₀]
@@ -175,8 +175,8 @@ attribute [local instance] measurableSingletonClass_list_int
 private theorem list_int_measurableSet {s : Set (List ℤ)} : MeasurableSet s := trivial
 
 theorem count_countedSequence : ∀ p q : ℕ, count (countedSequence p q) = (p + q).choose p
-  | p, 0 => by simp [counted_right_zero, count_singleton]
-  | 0, q => by simp [counted_left_zero, count_singleton]
+  | p, 0 => by simp [counted_right_zero]
+  | 0, q => by simp [counted_left_zero]
   | p + 1, q + 1 => by
     rw [counted_succ_succ, measure_union (disjoint_bits _ _) list_int_measurableSet,
       count_injective_image List.cons_injective, count_countedSequence _ _,
@@ -236,7 +236,7 @@ theorem first_vote_neg (p q : ℕ) (h : 0 < p + q) :
   all_goals simp_all [ENNReal.div_eq_top]
 
 theorem ballot_same (p : ℕ) : uniformOn (countedSequence (p + 1) (p + 1)) staysPositive = 0 := by
-  rw [uniformOn_eq_zero_iff (countedSequence_finite _ _), eq_empty_iff_forall_not_mem]
+  rw [uniformOn_eq_zero_iff (countedSequence_finite _ _), eq_empty_iff_forall_notMem]
   rintro x ⟨hx, t⟩
   apply ne_of_gt (t x _ x.suffix_refl)
   · simpa using sum_of_mem_countedSequence hx
@@ -284,7 +284,7 @@ theorem countedSequence_int_neg_counted_succ_succ (p q : ℕ) :
       (_ : List.cons 1 '' countedSequence p (q + 1) ∩ {l : List ℤ | l.headI = 1}ᶜ = ∅),
       empty_union] <;>
     · ext
-      simp only [mem_inter_iff, mem_image, mem_setOf_eq, and_iff_left_iff_imp, mem_empty_iff_false,
+      simp only [mem_inter_iff, mem_image, and_iff_left_iff_imp, mem_empty_iff_false,
         iff_false, not_and, forall_exists_index, and_imp]
       rintro y _ rfl
       norm_num
@@ -339,7 +339,7 @@ theorem ballot_problem' :
         apply ne_of_gt
         norm_cast
         linarith
-      field_simp [h₄, h₅, h₆] at *
+      simp [field, h₄, h₅, h₆] at *
       ring
     all_goals exact ENNReal.mul_ne_top (measure_ne_top _ _) (by simp [Ne, ENNReal.div_eq_top])
 

@@ -120,8 +120,8 @@ theorem count_replicate (a b : α) (n : ℕ) : count a (replicate n b) = if b = 
 theorem le_count_iff_replicate_le {a : α} {s : Multiset α} {n : ℕ} :
     n ≤ count a s ↔ replicate n a ≤ s :=
   Quot.inductionOn s fun _l => by
-    simp only [quot_mk_to_coe'', mem_coe, coe_count]
-    exact le_count_iff_replicate_sublist.trans replicate_le_coe.symm
+    simp only [quot_mk_to_coe'', coe_count]
+    exact replicate_sublist_iff.symm.trans replicate_le_coe.symm
 
 end
 

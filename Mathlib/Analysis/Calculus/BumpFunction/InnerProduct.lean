@@ -49,7 +49,7 @@ noncomputable def ContDiffBumpBase.ofInnerProductSpace : ContDiffBumpBase E wher
   support R hR := by
     ext x
     rw [mem_support, Ne, smoothTransition.zero_iff_nonpos, not_le, mem_ball_zero_iff]
-    simp [div_pos_iff, sq_lt_sq, abs_of_pos (one_pos.trans hR), hR, hR.not_lt]
+    simp [hR]
 
 /-- Any inner product space has smooth bump functions. -/
 instance (priority := 100) hasContDiffBump_of_innerProductSpace : HasContDiffBump E :=

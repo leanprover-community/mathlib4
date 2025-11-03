@@ -78,7 +78,7 @@ theorem naturality_tensorHom {p f₁ g₁ f₂ g₂ pf₁ pf₁f₂ : C} {η : f
     (η_f₁ : p ⊗ f₁ ≅ pf₁) (η_g₁ : p ⊗ g₁ ≅ pf₁) (η_f₂ : pf₁ ⊗ f₂ ≅ pf₁f₂) (η_g₂ : pf₁ ⊗ g₂ ≅ pf₁f₂)
     (ih_η : p ◁ η ≪≫ η_g₁ = η_f₁)
     (ih_θ : pf₁ ◁ θ ≪≫ η_g₂ = η_f₂) :
-    p ◁ (η ⊗ θ) ≪≫ normalizeIsoComp η_g₁ η_g₂ = normalizeIsoComp η_f₁ η_f₂ := by
+    p ◁ (η ⊗ᵢ θ) ≪≫ normalizeIsoComp η_g₁ η_g₂ = normalizeIsoComp η_f₁ η_f₂ := by
   rw [tensorIso_def]
   apply naturality_comp
   · apply naturality_whiskerRight _ _ _ ih_η
@@ -94,7 +94,7 @@ theorem naturality_inv {p f g pf : C} {η : f ≅ g}
 instance : MonadNormalizeNaturality MonoidalM where
   mkNaturalityAssociator p pf pfg pfgh f g h η_f η_g η_h := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     have p : Q($ctx.C) := p.e.e
     have f : Q($ctx.C) := f.e
     have g : Q($ctx.C) := g.e
@@ -108,7 +108,7 @@ instance : MonadNormalizeNaturality MonoidalM where
     return q(naturality_associator $η_f $η_g $η_h)
   mkNaturalityLeftUnitor p pf f η_f := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     have p : Q($ctx.C) := p.e.e
     have f : Q($ctx.C) := f.e
     have pf : Q($ctx.C) := pf.e.e
@@ -116,7 +116,7 @@ instance : MonadNormalizeNaturality MonoidalM where
     return q(naturality_leftUnitor $η_f)
   mkNaturalityRightUnitor p pf f η_f := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     have p : Q($ctx.C) := p.e.e
     have f : Q($ctx.C) := f.e
     have pf : Q($ctx.C) := pf.e.e
@@ -124,7 +124,7 @@ instance : MonadNormalizeNaturality MonoidalM where
     return q(naturality_rightUnitor $η_f)
   mkNaturalityId p pf f η_f := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     have p : Q($ctx.C) := p.e.e
     have f : Q($ctx.C) := f.e
     have pf : Q($ctx.C) := pf.e.e
@@ -132,7 +132,7 @@ instance : MonadNormalizeNaturality MonoidalM where
     return q(naturality_id $η_f)
   mkNaturalityComp p pf f g h η θ η_f η_g η_h ih_η ih_θ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     have p : Q($ctx.C) := p.e.e
     have f : Q($ctx.C) := f.e
     have g : Q($ctx.C) := g.e
@@ -148,7 +148,7 @@ instance : MonadNormalizeNaturality MonoidalM where
     return q(naturality_comp $η_f $η_g $η_h $ih_η $ih_θ)
   mkNaturalityWhiskerLeft p pf pfg f g h η η_f η_fg η_fh ih_η := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     have p : Q($ctx.C) := p.e.e
     have f : Q($ctx.C) := f.e
     have g : Q($ctx.C) := g.e
@@ -163,7 +163,7 @@ instance : MonadNormalizeNaturality MonoidalM where
     return q(naturality_whiskerLeft $η_f $η_fg $η_fh $ih_η)
   mkNaturalityWhiskerRight p pf pfh f g h η η_f η_g η_fh ih_η := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     have p : Q($ctx.C) := p.e.e
     have f : Q($ctx.C) := f.e
     have g : Q($ctx.C) := g.e
@@ -178,7 +178,7 @@ instance : MonadNormalizeNaturality MonoidalM where
     return q(naturality_whiskerRight $η_f $η_g $η_fh $ih_η)
   mkNaturalityHorizontalComp p pf₁ pf₁f₂ f₁ g₁ f₂ g₂ η θ η_f₁ η_g₁ η_f₂ η_g₂ ih_η ih_θ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     have p : Q($ctx.C) := p.e.e
     have f₁ : Q($ctx.C) := f₁.e
     have g₁ : Q($ctx.C) := g₁.e
@@ -197,7 +197,7 @@ instance : MonadNormalizeNaturality MonoidalM where
     return q(naturality_tensorHom $η_f₁ $η_g₁ $η_f₂ $η_g₂ $ih_η $ih_θ)
   mkNaturalityInv p pf f g η η_f η_g ih := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     have p : Q($ctx.C) := p.e.e
     have f : Q($ctx.C) := f.e
     have g : Q($ctx.C) := g.e
@@ -236,7 +236,7 @@ end
 instance : MkEqOfNaturality MonoidalM where
   mkEqOfNaturality η θ ηIso θIso η_f η_g Hη Hθ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let some _monoidal := ctx.instMonoidal? | synthMonoidalError
     let η' := ηIso.e
     let θ' := θIso.e
     let f ← η'.srcM

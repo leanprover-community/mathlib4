@@ -11,7 +11,7 @@ import Mathlib.Topology.UniformSpace.Equiv
 # Ascoli Theorem
 
 In this file, we prove the general **Arzela-Ascoli theorem**, and various related statements about
-the topology of equicontinuous subsetes of `X →ᵤ[𝔖] α`, where `X` is a topological space, `𝔖` is
+the topology of equicontinuous subsets of `X →ᵤ[𝔖] α`, where `X` is a topological space, `𝔖` is
 a family of compact subsets of `X`, and `α` is a uniform space.
 
 ## Main statements
@@ -52,7 +52,7 @@ a family of compact subsets of `X`, and `α` is a uniform space.
 ## TODO
 
 * Prove that, on an equicontinuous family, pointwise convergence and pointwise convergence on a
-  dense subset coincide, and deduce metrizability criterions for equicontinuous subsets.
+  dense subset coincide, and deduce metrizability criteria for equicontinuous subsets.
 
 * Prove the total boundedness version of the theorem
 
@@ -117,8 +117,8 @@ theorem Equicontinuous.comap_uniformFun_eq [CompactSpace X] (F_eqcont : Equicont
     rcases mem_iUnion₂.mp (Acover.symm.subset <| mem_univ x) with ⟨a, ha, hax⟩
     -- Since `(i, j) ∈ 𝐒(V, a)` we also have `(F i a, F j a) ∈ V`, and finally we get
     -- `(F i x, F j x) ∈ V ○ V ○ V ⊆ U`.
-    exact hVU (prodMk_mem_compRel (prodMk_mem_compRel
-      (Vsymm.mk_mem_comm.mp (hax i)) (hij a ha)) (hax j))
+    exact hVU <| SetRel.prodMk_mem_comp (SetRel.prodMk_mem_comp (SetRel.symm V <| hax i) (hij a ha))
+      (hax j)
   -- This completes the proof.
   exact mem_of_superset
     (A.iInter_mem_sets.mpr fun x _ ↦ mem_iInf_of_mem x <| preimage_mem_comap hV) this
@@ -131,7 +131,7 @@ In other words, pointwise convergence and uniform convergence coincide on an equ
 subset of `X → α`.
 
 This is a version of `Equicontinuous.comap_uniformFun_eq` stated in terms of `IsUniformInducing`
-for convenuence. -/
+for convenience. -/
 lemma Equicontinuous.isUniformInducing_uniformFun_iff_pi [UniformSpace ι] [CompactSpace X]
     (F_eqcont : Equicontinuous F) :
     IsUniformInducing (UniformFun.ofFun ∘ F) ↔ IsUniformInducing F := by
@@ -147,7 +147,7 @@ In other words, pointwise convergence and uniform convergence coincide on an equ
 subset of `X → α`.
 
 This is a consequence of `Equicontinuous.comap_uniformFun_eq`, stated in terms of `IsInducing`
-for convenuence. -/
+for convenience. -/
 lemma Equicontinuous.inducing_uniformFun_iff_pi [TopologicalSpace ι] [CompactSpace X]
     (F_eqcont : Equicontinuous F) :
     IsInducing (UniformFun.ofFun ∘ F) ↔ IsInducing F := by
@@ -163,12 +163,12 @@ theorem Equicontinuous.tendsto_uniformFun_iff_pi [CompactSpace X]
     (F_eqcont : Equicontinuous F) (ℱ : Filter ι) (f : X → α) :
     Tendsto (UniformFun.ofFun ∘ F) ℱ (𝓝 <| UniformFun.ofFun f) ↔
     Tendsto F ℱ (𝓝 f) := by
-  -- Assume `ℱ` is non trivial.
+  -- Assume `ℱ` is non-trivial.
   rcases ℱ.eq_or_neBot with rfl | ℱ_ne
   · simp
   constructor <;> intro H
   -- The forward direction is always true, the interesting part is the converse.
-  · exact UniformFun.uniformContinuous_toFun.continuous.tendsto _|>.comp H
+  · exact UniformFun.uniformContinuous_toFun.continuous.tendsto _ |>.comp H
   -- To prove it, assume that `F` tends to `f` *pointwise* along `ℱ`.
   · set S : Set (X → α) := closure (range F)
     set 𝒢 : Filter S := comap (↑) (map F ℱ)
@@ -247,7 +247,7 @@ In particular, pointwise convergence and compact convergence coincide on an equi
 subset of `X → α`.
 
 This is a version of `EquicontinuousOn.comap_uniformOnFun_eq` stated in terms of `IsUniformInducing`
-for convenuence. -/
+for convenience. -/
 lemma EquicontinuousOn.isUniformInducing_uniformOnFun_iff_pi' [UniformSpace ι]
     {𝔖 : Set (Set X)} (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K)
     (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K) :
@@ -317,10 +317,6 @@ lemma EquicontinuousOn.isInducing_uniformOnFun_iff_pi [TopologicalSpace ι]
       show restrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl]
   exact ⟨fun H ↦ φ.isInducing.comp H, fun H ↦ φ.symm.isInducing.comp H⟩
 
-@[deprecated (since := "2024-10-28")]
-alias EquicontinuousOn.inducing_uniformOnFun_iff_pi :=
-  EquicontinuousOn.isInducing_uniformOnFun_iff_pi
-
 -- TODO: find a way to factor common elements of this proof and the proof of
 -- `EquicontinuousOn.comap_uniformOnFun_eq`
 /-- Let `X` be a topological space, `𝔖` a family of compact subsets of `X`,
@@ -340,7 +336,7 @@ theorem EquicontinuousOn.tendsto_uniformOnFun_iff_pi'
   -- Thus, we just have to compare the two sides of our goal when restricted to some
   -- `K ∈ 𝔖`, where we can apply `Equicontinuous.tendsto_uniformFun_iff_pi`.
   rw [← Filter.tendsto_comap_iff (g := (⋃₀ 𝔖).restrict), ← nhds_induced]
-  simp_rw [UniformOnFun.topologicalSpace_eq, Pi.induced_restrict_sUnion 𝔖 (π := fun _ ↦ α),
+  simp_rw [UniformOnFun.topologicalSpace_eq, Pi.induced_restrict_sUnion 𝔖 (A := fun _ ↦ α),
     _root_.nhds_iInf, nhds_induced, tendsto_iInf, tendsto_comap_iff]
   congrm ∀ K (hK : K ∈ 𝔖), ?_
   have : CompactSpace K := isCompact_iff_compactSpace.mp (𝔖_compact K hK)

@@ -3,6 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
+import Batteries.Data.List.Pairwise
 import Batteries.Data.List.Perm
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Nodup
@@ -427,7 +428,7 @@ theorem mem_orderedInsert {a b : α} {l : List α} :
   | x :: xs => by
     rw [orderedInsert]
     split_ifs
-    · simp [orderedInsert]
+    · simp
     · rw [mem_cons, mem_cons, mem_orderedInsert, or_left_comm]
 
 theorem map_orderedInsert (f : α → β) (l : List α) (x : α)
@@ -437,14 +438,12 @@ theorem map_orderedInsert (f : α → β) (l : List α) (x : α)
   | nil => simp
   | cons x xs ih =>
     rw [List.forall_mem_cons] at hl₁ hl₂
-    simp only [List.map, List.orderedInsert, ← hl₁.1, ← hl₂.1]
+    simp only [List.map, List.orderedInsert, ← hl₂.1]
     split_ifs
     · rw [List.map, List.map]
     · rw [List.map, ih (fun _ ha => hl₁.2 _ ha) (fun _ ha => hl₂.2 _ ha)]
 
 section Correctness
-
-open Perm
 
 theorem perm_orderedInsert (a) : ∀ l : List α, orderedInsert r a l ~ a :: l
   | [] => Perm.refl _
@@ -514,12 +513,15 @@ theorem erase_orderedInsert [DecidableEq α] [IsRefl α r] (x : α) (xs : List �
   simp [refl x] at h
 
 /-- Inserting then erasing an element that is absent is the identity. -/
-theorem erase_orderedInsert_of_not_mem [DecidableEq α]
+theorem erase_orderedInsert_of_notMem [DecidableEq α]
     {x : α} {xs : List α} (hx : x ∉ xs) :
     (xs.orderedInsert r x).erase x = xs := by
   rw [orderedInsert_eq_take_drop, erase_append_right, List.erase_cons_head,
     takeWhile_append_dropWhile]
   exact mt ((takeWhile_prefix _).sublist.subset ·) hx
+
+@[deprecated (since := "2025-05-23")]
+alias erase_orderedInsert_of_not_mem := erase_orderedInsert_of_notMem
 
 /-- For an antisymmetric relation, erasing then inserting is the identity. -/
 theorem orderedInsert_erase [DecidableEq α] [IsAntisymm α r] (x : α) (xs : List α) (hx : x ∈ xs)
@@ -569,7 +571,7 @@ theorem Sublist.orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs)
       unfold orderedInsert
       cases hs <;> split_ifs with hr
       · exact .cons₂ _ <| .cons _ ‹a :: as <+ bs›
-      · have ih := orderedInsert_sublist x ‹a :: as <+ bs›  hb.of_cons
+      · have ih := orderedInsert_sublist x ‹a :: as <+ bs› hb.of_cons
         simp only [hr, orderedInsert, ite_true] at ih
         exact .trans ih <| .cons _ (.refl _)
       · have hba := pairwise_cons.mp hb |>.left _ (mem_of_cons_sublist ‹a :: as <+ bs›)

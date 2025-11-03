@@ -122,6 +122,7 @@ theorem le_ciSup_of_le {f : ι → α} (H : BddAbove (range f)) (c : ι) (h : a 
   le_trans h (le_ciSup H c)
 
 /-- The indexed suprema of two functions are comparable if the functions are pointwise comparable -/
+@[gcongr low]
 theorem ciSup_mono {f g : ι → α} (B : BddAbove (range g)) (H : ∀ x, f x ≤ g x) :
     iSup f ≤ iSup g := by
   cases isEmpty_or_nonempty ι
@@ -133,6 +134,7 @@ theorem le_ciSup_set {f : β → α} {s : Set β} (H : BddAbove (f '' s)) {c : �
   (le_csSup H <| mem_image_of_mem f hc).trans_eq sSup_image'
 
 /-- The indexed infimum of two functions are comparable if the functions are pointwise comparable -/
+@[gcongr low]
 theorem ciInf_mono {f g : ι → α} (B : BddBelow (range f)) (H : ∀ x, f x ≤ g x) : iInf f ≤ iInf g :=
   ciSup_mono (α := αᵒᵈ) B H
 
@@ -178,13 +180,11 @@ theorem ciSup_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨆ i, s
 theorem ciInf_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨅ i, s i = s i :=
   @ciInf_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
 
-@[simp]
-theorem ciSup_pos {p : Prop} {f : p → α} (hp : p) : ⨆ h : p, f h = f hp :=
-  ciSup_subsingleton hp f
+theorem ciSup_pos {p : Prop} {f : p → α} (hp : p) : ⨆ h : p, f h = f hp := by
+  simp [hp]
 
-@[simp]
-theorem ciInf_pos {p : Prop} {f : p → α} (hp : p) : ⨅ h : p, f h = f hp :=
-  ciSup_pos (α := αᵒᵈ) hp
+theorem ciInf_pos {p : Prop} {f : p → α} (hp : p) : ⨅ h : p, f h = f hp := by
+  simp [hp]
 
 lemma ciSup_neg {p : Prop} {f : p → α} (hp : ¬ p) :
     ⨆ (h : p), f h = sSup (∅ : Set α) := by
@@ -211,7 +211,7 @@ theorem cbiSup_eq_of_forall {p : ι → Prop} {f : Subtype p → α} (hp : ∀ i
   congr
   apply Subset.antisymm
   · rintro - ⟨i, rfl⟩
-    simp [hp i]
+    simp
   · rintro - ⟨i, rfl⟩
     simp
 
@@ -264,6 +264,22 @@ lemma Set.Iic_ciInf [Nonempty ι] {f : ι → α} (hf : BddBelow (range f)) :
 lemma Set.Ici_ciSup [Nonempty ι] {f : ι → α} (hf : BddAbove (range f)) :
     Ici (⨆ i, f i) = ⋂ i, Ici (f i) :=
   Iic_ciInf (α := αᵒᵈ) hf
+
+theorem ciSup_Iic [Preorder β] {f : β → α} (a : β) (hf : Monotone f) :
+    ⨆ x : Iic a, f x = f a := by
+  have H : BddAbove (range fun x : Iic a ↦ f x) := ⟨f a, fun _ ↦ by aesop⟩
+  apply (le_ciSup H (⟨a, le_refl a⟩ : Iic a)).antisymm'
+  rw [ciSup_le_iff H]
+  rintro ⟨a, h⟩
+  exact hf h
+
+theorem ciInf_Ici [Preorder β] {f : β → α} (a : β) (hf : Monotone f) :
+    ⨅ x : Ici a, f x = f a := by
+  have H : BddBelow (range fun x : Ici a ↦ f x) := ⟨f a, fun _ ↦ by aesop⟩
+  apply (ciInf_le H (⟨a, le_refl a⟩ : Ici a)).antisymm
+  rw [le_ciInf_iff H]
+  rintro ⟨a, h⟩
+  exact hf h
 
 theorem ciSup_subtype [Nonempty ι] {p : ι → Prop} [Nonempty (Subtype p)] {f : Subtype p → α}
     (hf : BddAbove (Set.range f)) (hf' : sSup ∅ ≤ iSup f) :
@@ -341,7 +357,7 @@ lemma ciSup_image {α ι ι' : Type*} [ConditionallyCompleteLattice α] [Nonempt
     intro ⟨i, h⟩
     obtain ⟨t, ht⟩ : ∃ t : f '' s, g t = g (f (Subtype.mk i h)) := by
       have : f i ∈ f '' s := Set.mem_image_of_mem _ h
-      exact ⟨⟨f i, this⟩, by simp [this]⟩
+      exact ⟨⟨f i, this⟩, by simp⟩
     rw [← ht]
     refine le_ciSup_set ?_ t.prop
     simpa [bddAbove_def] using hf
@@ -402,7 +418,7 @@ theorem cbiSup_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : �
         exact le_ciSup H _
       · simp [hi]
     · apply sup_le
-      · rcases isEmpty_or_nonempty (Subtype p) with hp|hp
+      · rcases isEmpty_or_nonempty (Subtype p) with hp | hp
         · rw [iSup_of_empty']
           convert le_ciSup B i₀
           simp [hi₀]

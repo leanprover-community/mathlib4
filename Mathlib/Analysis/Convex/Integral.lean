@@ -285,9 +285,9 @@ theorem StrictConvexOn.ae_eq_const_or_map_average_lt [IsFiniteMeasure μ] (hg : 
     g ((a • ⨍ x in t, f x ∂μ) + b • ⨍ x in tᶜ, f x ∂μ) <
         a * g (⨍ x in t, f x ∂μ) + b * g (⨍ x in tᶜ, f x ∂μ) :=
       hg.2 (this h₀).1 (this h₀').1 hne ha hb hab
-    _ ≤ (a * ⨍ x in t, g (f x) ∂μ) + b * ⨍ x in tᶜ, g (f x) ∂μ :=
-      add_le_add (mul_le_mul_of_nonneg_left (this h₀).2 ha.le)
-        (mul_le_mul_of_nonneg_left (this h₀').2 hb.le)
+    _ ≤ (a * ⨍ x in t, g (f x) ∂μ) + b * ⨍ x in tᶜ, g (f x) ∂μ := by
+      gcongr
+      exacts [(this h₀).2, (this h₀').2]
 
 /-- **Jensen's inequality**, strict version: if an integrable function `f : α → E` takes values in a
 convex closed set `s`, and `g : E → ℝ` is continuous and strictly concave on `s`, then
@@ -304,12 +304,12 @@ a.e., then either this function is a.e. equal to its average value, or the norm 
 is strictly less than `C`. -/
 theorem ae_eq_const_or_norm_average_lt_of_norm_le_const [StrictConvexSpace ℝ E]
     (h_le : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : f =ᵐ[μ] const α (⨍ x, f x ∂μ) ∨ ‖⨍ x, f x ∂μ‖ < C := by
-  rcases le_or_lt C 0 with hC0 | hC0
+  rcases le_or_gt C 0 with hC0 | hC0
   · have : f =ᵐ[μ] 0 := h_le.mono fun x hx => norm_le_zero_iff.1 (hx.trans hC0)
     simp only [average_congr this, Pi.zero_apply, average_zero]
     exact Or.inl this
   by_cases hfi : Integrable f μ; swap
-  · simp [average_eq, integral_undef hfi, hC0, ENNReal.toReal_pos_iff]
+  · simp [average_eq, integral_undef hfi, hC0]
   rcases (le_top : μ univ ≤ ∞).eq_or_lt with hμt | hμt
   · simp [average_eq, measureReal_def, hμt, hC0]
   haveI : IsFiniteMeasure μ := ⟨hμt⟩
@@ -324,7 +324,7 @@ strictly less than `μ.real univ * C`. -/
 theorem ae_eq_const_or_norm_integral_lt_of_norm_le_const [StrictConvexSpace ℝ E] [IsFiniteMeasure μ]
     (h_le : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
     f =ᵐ[μ] const α (⨍ x, f x ∂μ) ∨ ‖∫ x, f x ∂μ‖ < μ.real univ * C := by
-  rcases eq_or_ne μ 0 with h₀ | h₀; · left; simp [h₀, EventuallyEq]
+  rcases eq_or_ne μ 0 with h₀ | h₀; · simp [h₀, EventuallyEq]
   have hμ : 0 < μ.real univ := by
     simp [measureReal_def, ENNReal.toReal_pos_iff, pos_iff_ne_zero, h₀, measure_lt_top]
   refine (ae_eq_const_or_norm_average_lt_of_norm_le_const h_le).imp_right fun H => ?_

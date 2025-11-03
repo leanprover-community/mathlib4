@@ -67,17 +67,16 @@ instance partialOrder : PartialOrder (Localization s) where
       simp only [mk_le_mk] at hab hbc ⊢
       apply le_of_mul_le_mul_left' _
       · exact ↑b.2
-      rw [mul_left_comm]
-      refine (mul_le_mul_left' hab _).trans ?_
+      grw [mul_left_comm, hab]
       rwa [mul_left_comm, mul_left_comm (b.2 : α), mul_le_mul_iff_left]
   le_antisymm a b := by
-    induction' a using Localization.rec with a₁ a₂
+    induction a using Localization.rec
     on_goal 1 =>
-      induction' b using Localization.rec with b₁ b₂
+      induction b using Localization.rec
       · simp_rw [mk_le_mk, mk_eq_mk_iff, r_iff_exists]
         exact fun hab hba => ⟨1, by rw [hab.antisymm hba]⟩
     all_goals rfl
-  lt_iff_le_not_le a b := Localization.induction_on₂ a b fun _ _ => lt_iff_le_not_le
+  lt_iff_le_not_ge a b := Localization.induction_on₂ a b fun _ _ => lt_iff_le_not_ge
 
 @[to_additive]
 instance isOrderedCancelMonoid : IsOrderedCancelMonoid (Localization s) where
@@ -100,8 +99,8 @@ instance decidableLT [DecidableLT α] : DecidableLT (Localization s) := fun a b 
   Localization.recOnSubsingleton₂ a b fun _ _ _ _ => decidable_of_iff' _ mk_lt_mk
 
 /-- An ordered cancellative monoid injects into its localization by sending `a` to `a / b`. -/
-@[to_additive (attr := simps!) "An ordered cancellative monoid injects into its localization by
-sending `a` to `a - b`."]
+@[to_additive (attr := simps!) /-- An ordered cancellative monoid injects into its localization by
+sending `a` to `a - b`. -/]
 def mkOrderEmbedding (b : s) : α ↪o Localization s where
   toFun a := mk a b
   inj' := mk_left_injective _

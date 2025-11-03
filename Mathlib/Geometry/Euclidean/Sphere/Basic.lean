@@ -48,7 +48,7 @@ be positive; that should be given as a hypothesis to lemmas that require it. -/
 structure Sphere [MetricSpace P] where
   /-- center of this sphere -/
   center : P
-  /-- radius of the sphere: not required to be positive -/
+  /-- radius of the sphere; not required to be positive -/
   radius : ℝ
 
 variable {P}
@@ -76,15 +76,11 @@ theorem Sphere.mk_radius (c : P) (r : ℝ) : (⟨c, r⟩ : Sphere P).radius = r 
 theorem Sphere.mk_center_radius (s : Sphere P) : (⟨s.center, s.radius⟩ : Sphere P) = s := by
   ext <;> rfl
 
-/- Porting note: is a syntactic tautology
-theorem Sphere.coe_def (s : Sphere P) : (s : Set P) = Metric.sphere s.center s.radius :=
-  rfl -/
-
 @[simp]
 theorem Sphere.coe_mk (c : P) (r : ℝ) : ↑(⟨c, r⟩ : Sphere P) = Metric.sphere c r :=
   rfl
 
--- @[simp] -- Porting note: simp-normal form is `Sphere.mem_coe'`
+-- simp-normal form is `Sphere.mem_coe'`
 theorem Sphere.mem_coe {p : P} {s : Sphere P} : p ∈ (s : Set P) ↔ p ∈ s :=
   Iff.rfl
 
@@ -424,7 +420,7 @@ theorem inner_pos_or_eq_of_dist_le_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ 
       · rw [norm_pos_iff, vsub_ne_zero]
         rintro rfl
         rw [← hp₁] at hp₂'
-        refine (dist_nonneg.not_lt : ¬dist p₂ s.center < 0) ?_
+        refine (dist_nonneg.not_gt : ¬dist p₂ s.center < 0) ?_
         simpa using hp₂'
     · rw [← hp₁, @dist_eq_norm_vsub V, @dist_eq_norm_vsub V] at hp₂'
       nth_rw 1 [← hp₂']

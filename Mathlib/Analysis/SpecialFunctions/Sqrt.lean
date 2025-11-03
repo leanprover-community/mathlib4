@@ -26,7 +26,7 @@ namespace Real
 
 /-- Local homeomorph between `(0, +∞)` and `(0, +∞)` with `toFun = (· ^ 2)` and
 `invFun = Real.sqrt`. -/
-noncomputable def sqPartialHomeomorph : PartialHomeomorph ℝ ℝ where
+noncomputable def sqPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun x := x ^ 2
   invFun := (√·)
   source := Ioi 0
@@ -42,7 +42,7 @@ noncomputable def sqPartialHomeomorph : PartialHomeomorph ℝ ℝ where
 
 theorem deriv_sqrt_aux {x : ℝ} (hx : x ≠ 0) :
     HasStrictDerivAt (√·) (1 / (2 * √x)) x ∧ ∀ n, ContDiffAt ℝ n (√·) x := by
-  rcases hx.lt_or_lt with hx | hx
+  rcases hx.lt_or_gt with hx | hx
   · rw [sqrt_eq_zero_of_nonpos hx.le, mul_zero, div_zero]
     have : (√·) =ᶠ[𝓝 x] fun _ => 0 := (gt_mem_nhds hx).mono fun x hx => sqrt_eq_zero_of_nonpos hx.le
     exact
@@ -100,7 +100,7 @@ end deriv
 section fderiv
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {n : WithTop ℕ∞}
-  {s : Set E} {x : E} {f' : E →L[ℝ] ℝ}
+  {s : Set E} {x : E} {f' : StrongDual ℝ E}
 
 theorem HasFDerivAt.sqrt (hf : HasFDerivAt f f' x) (hx : f x ≠ 0) :
     HasFDerivAt (fun y => √(f y)) ((1 / (2 * √(f x))) • f') x :=

@@ -154,6 +154,10 @@ theorem min_eq_bot [OrderBot α] {a b : α} : min a b = ⊥ ↔ a = ⊥ ∨ b = 
 theorem max_eq_top [OrderTop α] {a b : α} : max a b = ⊤ ↔ a = ⊤ ∨ b = ⊤ :=
   @min_eq_bot αᵒᵈ _ _ a b
 
+@[aesop (rule_sets := [finiteness]) safe apply]
+lemma max_ne_top [OrderTop α] {a b : α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : max a b ≠ ⊤ := by
+  grind [max_eq_top]
+
 end LinearOrder
 
 /-! ### Induction on `WellFoundedGT` and `WellFoundedLT` -/

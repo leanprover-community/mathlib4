@@ -21,11 +21,11 @@ open Set
 `n ↦ (· ^ n)`, which maps a second argument of `1` to `1`. Then if `f` is replaced by the
 corresponding multiplicative indicator function, the finset may be replaced by a possibly larger
 finset without changing the value of the product. -/
-@[to_additive "Consider a sum of `g i (f i)` over a finset.  Suppose `g` is a function such as
+@[to_additive /-- Consider a sum of `g i (f i)` over a finset.  Suppose `g` is a function such as
 `n ↦ (n • ·)`, which maps a second argument of `0` to `0` (or a weighted sum of `f i * h i` or
 `f i • h i`, where `f` gives the weights that are multiplied by some other function `h`). Then if
 `f` is replaced by the corresponding indicator function, the finset may be replaced by a possibly
-larger finset without changing the value of the sum."]
+larger finset without changing the value of the sum. -/]
 lemma prod_mulIndicator_subset_of_eq_one [One α] (f : ι → α) (g : ι → α → β) {s t : Finset ι}
     (h : s ⊆ t) (hg : ∀ a, g a 1 = 1) :
     ∏ i ∈ t, g i (mulIndicator ↑s f i) = ∏ i ∈ s, g i (f i) := by
@@ -35,8 +35,8 @@ lemma prod_mulIndicator_subset_of_eq_one [One α] (f : ι → α) (g : ι → α
 
 /-- Taking the product of an indicator function over a possibly larger finset is the same as
 taking the original function over the original finset. -/
-@[to_additive "Summing an indicator function over a possibly larger `Finset` is the same as summing
-  the original function over the original finset."]
+@[to_additive /-- Summing an indicator function over a possibly larger `Finset` is the same as
+summing the original function over the original finset. -/]
 lemma prod_mulIndicator_subset (f : ι → β) {s t : Finset ι} (h : s ⊆ t) :
     ∏ i ∈ t, mulIndicator (↑s) f i = ∏ i ∈ s, f i :=
   prod_mulIndicator_subset_of_eq_one _ (fun _ ↦ id) h fun _ ↦ rfl
@@ -48,7 +48,7 @@ lemma prod_mulIndicator_eq_prod_filter (s : Finset ι) (f : ι → κ → β) (t
   refine (prod_filter_mul_prod_filter_not s (fun i ↦ g i ∈ t i) _).symm.trans <|
      Eq.trans (congr_arg₂ (· * ·) ?_ ?_) (mul_one _)
   · exact prod_congr rfl fun x hx ↦ mulIndicator_of_mem (mem_filter.1 hx).2 _
-  · exact prod_eq_one fun x hx ↦ mulIndicator_of_not_mem (mem_filter.1 hx).2 _
+  · exact prod_eq_one fun x hx ↦ mulIndicator_of_notMem (mem_filter.1 hx).2 _
 
 @[to_additive]
 lemma prod_mulIndicator_eq_prod_inter [DecidableEq ι] (s t : Finset ι) (f : ι → β) :
@@ -68,9 +68,9 @@ lemma mulIndicator_biUnion (s : Finset ι) (t : ι → Set κ) {f : κ → β}
   | empty => simp
   | cons i s hi ih =>
     ext j
-    rw [coe_cons, Set.pairwiseDisjoint_insert_of_not_mem (Finset.mem_coe.not.2 hi)] at hs
+    rw [coe_cons, Set.pairwiseDisjoint_insert_of_notMem (Finset.mem_coe.not.2 hi)] at hs
     classical
-    rw [prod_cons, cons_eq_insert, set_biUnion_insert, mulIndicator_union_of_not_mem_inter, ih hs.1]
+    rw [prod_cons, cons_eq_insert, set_biUnion_insert, mulIndicator_union_of_notMem_inter, ih hs.1]
     exact (Set.disjoint_iff.mp (Set.disjoint_iUnion₂_right.mpr hs.2) ·)
 
 @[to_additive]
