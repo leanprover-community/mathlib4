@@ -896,22 +896,20 @@ protected def dist : Dist (∀ i, F i) where
 
 attribute [scoped instance] PiCountable.dist
 
-theorem dist_eq_tsum (x y : ∀ i, F i) :
-    dist x y = ∑' i, min (2⁻¹ ^ encode i) (dist (x i) (y i)) :=
+lemma dist_eq_tsum (x y : ∀ i, F i) : dist x y = ∑' i, min (2⁻¹ ^ encode i) (dist (x i) (y i)) :=
   rfl
 
-theorem dist_summable (x y : ∀ i, F i) :
-    Summable fun i => min (2⁻¹ ^ encode i) (dist (x i) (y i)) := by
+lemma dist_summable (x y : ∀ i, F i) :
+    Summable fun i ↦ min (2⁻¹ ^ encode i) (dist (x i) (y i)) := by
   refine .of_nonneg_of_le (fun i => ?_) (fun i => min_le_left _ _) <| by
     simpa [one_div] using summable_geometric_two_encode
-  exact le_min (pow_nonneg (by simp) _) dist_nonneg
+  exact le_min (by positivity) dist_nonneg
 
-theorem min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) :
+lemma min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) : 
     min (2⁻¹ ^ encode i) (dist (x i) (y i)) ≤ dist x y :=
   (dist_summable x y).le_tsum i fun j _ => le_min (by simp) dist_nonneg
 
-theorem dist_le_dist_pi_of_dist_lt (h : dist x y < 2⁻¹ ^ encode i) :
-    dist (x i) (y i) ≤ dist x y := by
+lemma dist_le_dist_pi_of_dist_lt (h : dist x y < 2⁻¹ ^ encode i) : dist (x i) (y i) ≤ dist x y := by
   simpa only [not_le.2 h, false_or] using min_le_iff.1 (min_dist_le_dist_pi x y i)
 
 /-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
