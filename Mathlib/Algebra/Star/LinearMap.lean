@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
 import Mathlib.Algebra.Algebra.Bilinear
+import Mathlib.Algebra.Star.Pi
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.TensorProduct
+import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # Intrinsic star operation on `E →ₗ[R] F`
@@ -113,5 +115,24 @@ theorem intrinsicStar_rTensor (f : E →ₗ[R] F) : star (rTensor G f) = rTensor
   simp [rTensor, TensorProduct.intrinsicStar_map]
 
 end TensorProduct
+
+section Matrix
+variable {R m n : Type*} [CommSemiring R] [StarRing R] [Fintype m] [DecidableEq m]
+
+theorem toMatrix'_intrinsicStar (f : (m → R) →ₗ[R] (n → R)) :
+    (star f).toMatrix' = f.toMatrix'.map star := by
+  ext; simp [Pi.star_def, apply_ite]
+
+/-- A linear map `f : (m → R) →ₗ (n → R)` is self-adjoint (with respect to the intrinsic star)
+iff its corresponding matrix `f.toMatrix'` has all self-adjoint elements.
+
+So star-preserving maps correspond to their matrices containing only self-adjoint elements. -/
+theorem isSelfAdjoint_iff_forall_isSelfAdjoint_toMatrix'_apply (f : (m → R) →ₗ[R] (n → R)) :
+    IsSelfAdjoint f ↔ ∀ i j, IsSelfAdjoint (f.toMatrix' i j) := by
+  simp only [IsSelfAdjoint]
+  rw [← toMatrix'.injective.eq_iff]
+  simp [toMatrix'_intrinsicStar, ← Matrix.ext_iff]
+
+end Matrix
 
 end LinearMap
