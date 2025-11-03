@@ -1,5 +1,18 @@
 import Std
 import Batteries
+import Mathlib.A_Foo.ArrowNatTrans
+import Mathlib.A_Foo.BiCoe
+import Mathlib.A_Foo.NewCat
+import Mathlib.A_Foo.PresheafCopy
+import Mathlib.A_Foo.Santi
+import Mathlib.A_Foo.StrictEquivalence
+import Mathlib.A_Foo.StrictEquivalenceEqToHom
+import Mathlib.A_Foo.StrictEquivalenceTemplate
+import Mathlib.A_Foo.loopbug
+import Mathlib.A_Foo.test
+import Mathlib.A_Foo.traceclassnames
+import Mathlib.A_Foo.vi
+import Mathlib.A_Foo.where
 import Mathlib.Algebra.AddConstMap.Basic
 import Mathlib.Algebra.AddConstMap.Equiv
 import Mathlib.Algebra.AddTorsor.Basic
@@ -6383,8 +6396,6 @@ import Mathlib.Tactic.Linter.DocPrime
 import Mathlib.Tactic.Linter.DocString
 import Mathlib.Tactic.Linter.FindDeprecations
 import Mathlib.Tactic.Linter.FlexibleLinter
-import Mathlib.Tactic.Linter.Foo
-import Mathlib.Tactic.Linter.Foo0
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.HaveLetLinter
