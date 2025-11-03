@@ -42,7 +42,7 @@ lemma isUnit_iff_notMem_of_isAdicComplete_maximal [IsAdicComplete m R] (r : R) :
       (IsUnit.exists_left_inv (mapu n.2))
     let invSeries : ℕ → R := fun n ↦ if h : n = 0 then 0 else Classical.choose <|
       Ideal.Quotient.mk_surjective <| invSeries' ⟨n, (Nat.zero_lt_of_ne_zero h)⟩
-    have invSeries_spec {n : ℕ} (npos : 0 < n): (Ideal.Quotient.mk (m ^ n)) (invSeries n) =
+    have invSeries_spec {n : ℕ} (npos : 0 < n) : (Ideal.Quotient.mk (m ^ n)) (invSeries n) =
       invSeries' ⟨n, npos⟩ := by
       simpa only [Nat.ne_zero_of_lt npos, invSeries]
       using Classical.choose_spec (Ideal.Quotient.mk_surjective (invSeries' ⟨n, npos⟩))

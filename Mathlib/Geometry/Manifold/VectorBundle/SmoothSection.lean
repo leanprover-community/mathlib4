@@ -80,7 +80,7 @@ lemma ContMDiff.add_section
 
 lemma ContMDiffWithinAt.neg_section
     (hs : ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u x₀) :
-    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (- s x)) u x₀ := by
+    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (-s x)) u x₀ := by
   rw [contMDiffWithinAt_section] at hs ⊢
   set e := trivializationAt F V x₀
   refine hs.neg.congr_of_eventuallyEq ?_ ?_
@@ -93,7 +93,7 @@ lemma ContMDiffWithinAt.neg_section
 
 lemma ContMDiffAt.neg_section
     (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀) :
-    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (- s x)) x₀ := by
+    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (-s x)) x₀ := by
   rw [← contMDiffWithinAt_univ] at hs ⊢
   exact hs.neg_section
 

@@ -47,8 +47,6 @@ variable (K)
 continuous, including inversion. -/
 class IsTopologicalDivisionRing : Prop extends IsTopologicalRing K, ContinuousInv₀ K
 
-@[deprecated (since := "2025-03-25")] alias TopologicalDivisionRing := IsTopologicalDivisionRing
-
 section Subfield
 
 variable {α : Type*} [Field α] [TopologicalSpace α] [IsTopologicalDivisionRing α]
@@ -76,6 +74,28 @@ theorem Subfield.topologicalClosure_minimal (s : Subfield α) {t : Subfield α} 
   closure_minimal h ht
 
 end Subfield
+
+section Units
+
+/-- In an ordered field, the units of the nonnegative elements are the positive elements. -/
+@[simps!]
+def Nonneg.unitsHomeomorphPos (R : Type*) [DivisionSemiring R] [PartialOrder R]
+    [IsStrictOrderedRing R] [PosMulReflectLT R]
+    [TopologicalSpace R] [ContinuousInv₀ R] :
+    { r : R // 0 ≤ r }ˣ ≃ₜ { r : R // 0 < r } where
+  __ := Nonneg.unitsEquivPos R
+  continuous_toFun := by
+    rw [Topology.IsEmbedding.subtypeVal.continuous_iff]
+    exact Continuous.subtype_val (p := (0 ≤ ·)) Units.continuous_val
+  continuous_invFun := by
+    rw [Units.continuous_iff]
+    refine ⟨by fun_prop, ?_⟩
+    suffices Continuous fun (x : { r : R // 0 < r }) ↦ (x⁻¹ : R) by
+      simpa [Topology.IsEmbedding.subtypeVal.continuous_iff, Function.comp_def]
+    rw [continuous_iff_continuousAt]
+    exact fun x ↦ ContinuousAt.inv₀ (by fun_prop) x.2.ne'
+
+end Units
 
 section affineHomeomorph
 

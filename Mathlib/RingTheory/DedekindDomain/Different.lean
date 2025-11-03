@@ -25,8 +25,7 @@ import Mathlib.RingTheory.Trace.Quotient
     with `f` being the minimal polynomial of `x`.
 - `not_dvd_differentIdeal_iff`: A prime does not divide the different ideal iff it is unramified
   (in the sense of `Algebra.IsUnramifiedAt`).
-- `differentIdeal_eq_differentIdeal_mul_differentIdeal`:
-  Transitivity of the different ideal.
+- `differentIdeal_eq_differentIdeal_mul_differentIdeal`: Transitivity of the different ideal.
 
 ## TODO
 - Show properties of the different ideal
@@ -88,6 +87,18 @@ lemma le_traceDual_traceDual {I : Submodule B L} :
 @[simp]
 lemma restrictScalars_traceDual {I : Submodule B L} :
     Iᵛ.restrictScalars A = (Algebra.traceForm K L).dualSubmodule (I.restrictScalars A) := rfl
+
+variable (A) in
+/--
+If the module `I` is spanned by the basis `b`, then its `traceDual` module is spanned by
+`b.traceDual`.
+-/
+theorem traceDual_span_of_basis [FiniteDimensional K L] [Algebra.IsSeparable K L]
+    (I : Submodule B L) {ι : Type*} [Finite ι] [DecidableEq ι] (b : Basis ι K L)
+    (hb : I.restrictScalars A = Submodule.span A (Set.range b)) :
+    (traceDual A K I).restrictScalars A = span A (Set.range b.traceDual) := by
+  rw [restrictScalars_traceDual, hb]
+  exact (traceForm K L).dualSubmodule_span_of_basis (traceForm_nondegenerate K L) b
 
 @[simp]
 lemma traceDual_bot :
@@ -589,7 +600,7 @@ lemma traceForm_dualSubmodule_adjoin
   have pbgen : pb.gen = x := by simp [pb]
   have hnondeg : (traceForm K L).Nondegenerate := traceForm_nondegenerate K L
   have hpb : ⇑(LinearMap.BilinForm.dualBasis (traceForm K L) hnondeg pb.basis) = _ :=
-    _root_.funext (traceForm_dualBasis_powerBasis_eq pb)
+    _root_.funext (Basis.traceDual_powerBasis_eq pb)
   have : (Subalgebra.toSubmodule (Algebra.adjoin A {x})) =
       Submodule.span A (Set.range pb.basis) := by
     rw [← span_range_natDegree_eq_adjoin (minpoly.monic hAx) (minpoly.aeval _ _)]
@@ -723,7 +734,7 @@ lemma pow_sub_one_dvd_differentIdeal_aux
   intro x hx
   rw [← Ideal.Quotient.eq_zero_iff_mem, ← trace_quotient_eq_of_isDedekindDomain,
     ← isNilpotent_iff_eq_zero]
-  refine trace_isNilpotent_of_isNilpotent ⟨e, ?_⟩
+  refine isNilpotent_trace_of_isNilpotent ⟨e, ?_⟩
   rw [← map_pow, Ideal.Quotient.eq_zero_iff_mem]
   exact (Ideal.dvd_iff_le.mp this) <| Ideal.pow_mem_pow hx _
 

@@ -320,10 +320,6 @@ private lemma LinearIndependent.pair_add_smul_add_smul_iff_aux (h : a * d ≠ b 
   convert pair_add_smul_add_smul_iff_aux d (-b) (-c) a (by simpa [mul_comm d a]) h' using 1
   ext i; fin_cases i <;> simp <;> module
 
-@[deprecated (since := "2025-04-15")]
-alias LinearIndependent.linear_combination_pair_of_det_ne_zero :=
-  LinearIndependent.pair_add_smul_add_smul_iff
-
 @[simp] lemma LinearIndependent.pair_add_smul_right_iff :
     LinearIndependent R ![x, c • x + y] ↔ LinearIndependent R ![x, y] := by
   rcases subsingleton_or_nontrivial S with hS | hS; · simp [hS.elim c 0]
