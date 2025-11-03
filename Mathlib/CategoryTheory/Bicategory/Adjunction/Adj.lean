@@ -177,7 +177,7 @@ instance : Bicategory (Adj B) where
 
 /-- The forget pseudofunctor from `Adj B` to `B`. -/
 @[simps]
-def forget₁ : Pseudofunctor (Adj B) B where
+def forget₁ : Adj B ⥤ᵖ B where
   obj a := a.obj
   map x := x.l
   map₂ α := α.τl
