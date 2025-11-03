@@ -29,8 +29,8 @@ def Lean.Meta.DiscrTree.getAllFromKey {α : Type} (tree : DiscrTree α) (key : K
   | none => #[]
 
 -- TODO(Paul-Lez): maybe this should be in Core?
-private def Lean.PersistentHashMap.toHashMap {α β}
-    {_ : BEq α} {_ : Hashable α} (m : PersistentHashMap α β) : Std.HashMap α β :=
+private def Lean.PersistentHashMap.toHashMap {α β} [BEq α] [Hashable α]
+    (m : PersistentHashMap α β) : Std.HashMap α β :=
   m.foldl (init := {}) fun ps k v => ps.insert k v
 
 private structure SimprocData where
@@ -68,22 +68,19 @@ def simprocFromKeys (keys : Array SimpTheoremKey) (simprocs : DiscrTree SimprocD
     out := out.filter fun simprocEntry ↦ simprocEntry.isDSimproc
   return out
 
-private def simprocOutStr (simprocData : SimprocData) (keys : Array Key) (doc : String) :
+private def simprocOutStr (simprocData : SimprocData) (keys : Array Key) :
     CoreM MessageData := do
   let dproc := if simprocData.isDSimproc then "simproc" else "dsimproc"
   let cmd := if simprocData.isRegistered then m!"" else m!"_decl"
-  let doc := if doc == "" then m!"" else m!"/--\n{doc}\n-/\n"
   let keys := m!"({← keysAsPattern keys})"
-  let fullCmd := doc ++ dproc ++ cmd ++ m!" {.ofConstName simprocData.declName} " ++ keys
+  let fullCmd := dproc ++ cmd ++ m!" {.ofConstName simprocData.declName} " ++ keys
   return fullCmd
 
 /-- Print out an array of simprocs, providing the name and the docstring. -/
-def printSimprocList (simprocs : Array SimprocData) : MetaM MessageData := do
-  let env ← getEnv
+def printSimprocList (simprocs : Array SimprocData) : CoreM MessageData := do
   let out ← simprocs.filterMapM fun simprocName ↦ do
     let keys := (← getSimprocDeclKeys? simprocName.declName).getD #[]
-    let doc := (← Lean.findDocString? env simprocName.declName).getD ""
-    return ← simprocOutStr simprocName keys doc
+    return ← simprocOutStr simprocName keys
   return m!"\n\n".joinSep out.toList
 
 /-- Get all simp theorems in the environment that match a pattern in an array of keys. -/
