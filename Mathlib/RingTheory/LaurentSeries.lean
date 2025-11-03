@@ -452,7 +452,7 @@ theorem intValuation_eq_of_coe (P : K[X]) :
 @[simp]
 theorem intValuation_X : (idealX K).intValuation X = exp (-1 : ℤ) := by
   rw [← Polynomial.coe_X, ← intValuation_eq_of_coe]
-  apply intValuation_singleton _ Polynomial.X_ne_zero (by rfl)
+  exact intValuation_singleton _ Polynomial.X_ne_zero (idealX_span _)
 
 end PowerSeries
 
