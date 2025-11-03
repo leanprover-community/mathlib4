@@ -822,7 +822,7 @@ variable [CommRing R] [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W
 operators on the tensor product. May be unnecessary. -/
 def uncurry [PartialOrder Γ] [AddCommGroup U] [Module R U] :
     (U →ₗ[R] HVertexOperator Γ R V W) ≃ₗ[R] HVertexOperator Γ R (U ⊗[R] V) W :=
-  lift.equiv R U V (HahnModule Γ R W)
+  lift.equiv _ U V (HahnModule Γ R W)
 
 @[simp]
 theorem uncurry_apply [PartialOrder Γ] [AddCommGroup U] [Module R U]
