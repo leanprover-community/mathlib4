@@ -211,14 +211,9 @@ def homToNerveMk (F : X.HomotopyCategory ⥤ C) : X ⟶ (truncation 2).obj (nerv
       dsimp at h₁ h₂ ⊢
       have := Edge.CompStruct.exists_of_simplex x
       sorry)
-    (fun x ↦ by
-      refine (ComposableArrows.ext₁ ?_ ?_ ?_).trans
-        (σ_zero_nerveEquiv_symm (F.obj (mk x))).symm
-      · simp [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_one_comp_σ₂_zero]
-      · simp [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_zero]
-      · dsimp
-        simp
-        sorry)
+    (fun x ↦ ComposableArrows.arrowEquiv.injective
+      ((congr_arg F.mapArrow.obj
+        (congr_arrowMk_homMk (Edge.mk' (X.map (σ₂ 0).op x)) (Edge.id x) rfl)).trans (by aesop)))
     ((Nerve.strictSegal C).truncation 1)
 
 @[simp]
@@ -242,24 +237,25 @@ def functorEquiv :
     (X.HomotopyCategory ⥤ C) ≃ (X ⟶ (truncation 2).obj (nerve C)) where
   toFun := homToNerveMk
   invFun := descOfTruncation
-  left_inv F := by
-    refine functor_ext (fun x ↦ by simp) (fun x y f ↦ ?_)
-    · dsimp
+  left_inv F :=
+    functor_ext (fun x ↦ by simp) (fun x y f ↦ by
+      dsimp
       simp only [Category.comp_id, Category.id_comp, descOfTruncation_map_homMk,
         homToNerveMk_app_zero]
-      exact nerveHomEquiv.symm.injective (Edge.ext (by cat_disch))
-  right_inv φ := IsStrictSegal.hom_ext (fun s ↦ by
-    obtain ⟨x₀, x₁, f, rfl⟩ := Edge.exists_of_simplex s
-    dsimp [nerveHomEquiv]
-    simp only [homToNerveMk_app_edge, descOfTruncation_obj_mk, nerve_obj,
-      SimplexCategory.len_mk, descOfTruncation_map_homMk]
-    refine ComposableArrows.ext₁ ?_ ?_ rfl
-    · dsimp [nerveEquiv, ComposableArrows.right]
-      simp only [← f.src_eq, FunctorToTypes.naturality]
-      rfl
-    · dsimp [nerveEquiv, ComposableArrows.right]
-      simp only [← f.tgt_eq, FunctorToTypes.naturality]
-      rfl)
+      exact nerveHomEquiv.symm.injective (Edge.ext (by cat_disch)))
+  right_inv φ :=
+    IsStrictSegal.hom_ext (fun s ↦ by
+      obtain ⟨x₀, x₁, f, rfl⟩ := Edge.exists_of_simplex s
+      dsimp [nerveHomEquiv]
+      simp only [homToNerveMk_app_edge, descOfTruncation_obj_mk, nerve_obj,
+        SimplexCategory.len_mk, descOfTruncation_map_homMk]
+      refine ComposableArrows.ext₁ ?_ ?_ rfl
+      · dsimp [nerveEquiv, ComposableArrows.right]
+        simp only [← f.src_eq, FunctorToTypes.naturality]
+        rfl
+      · dsimp [nerveEquiv, ComposableArrows.right]
+        simp only [← f.tgt_eq, FunctorToTypes.naturality]
+        rfl)
 
 lemma homToNerveMk_comp {D : Type u} [SmallCategory D]
     (F : X.HomotopyCategory ⥤ C) (G : C ⥤ D) :
