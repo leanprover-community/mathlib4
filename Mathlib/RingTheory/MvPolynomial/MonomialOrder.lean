@@ -678,6 +678,7 @@ section Ring
 
 variable {R : Type*} [CommRing R]
 
+variable (m) in
 /-- The S-polynomial of two polynomials -/
 noncomputable def sPolynomial (f g : MvPolynomial σ R) : MvPolynomial σ R :=
   monomial (m.degree g - m.degree f) (m.leadingCoeff g) * f -
