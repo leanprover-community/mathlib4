@@ -185,6 +185,7 @@ theorem lift_fst : lift a b h ≫ fst f g = a := by
 theorem lift_snd : lift a b h ≫ snd f g = b := by
   simp [lift]
 
+/-- The functoriality of `pullbackObj f g` in the first argument. -/
 def pullbackObjMap {Y' : C} (h : Y' ⟶ Y) : pullbackObj (h ≫ f) g ⟶ pullbackObj f g :=
   lift (fst _ _ ≫ h) (snd _ _) (by simp [condition])
 
@@ -208,6 +209,7 @@ theorem isPullback : IsPullback (fst f g) (snd f g) f g where
     ⟨PullbackCone.IsLimit.mk _ (fun s ↦ lift s.fst s.snd s.condition)
       (by simp) (by simp) (by aesop)⟩
 
+/-- If `g` has a chosen pullback, then `Over.ChosenPullback.fst f g` has a chosen pullback. -/
 def chosenPullbackOfFst : ChosenPullback (fst f g) where
   pullback.obj W := Over.mk (pullbackObjMap W.hom)
   pullback.map {W' W} k := Over.homMk
@@ -239,7 +241,6 @@ theorem pullbackIsoOverPullback_hom_app_comp_fst (Z : Over X) :
 theorem pullbackIsoOverPullback_hom_app_comp_snd (Z : Over X) :
     ((pullbackIsoOverPullback g).hom.app Z).left ≫ pullback.snd _ _ = snd _ _ :=
   Over.w ((pullbackIsoOverPullback g).hom.app Z)
-
 
 end PullbackFromChosenPullbacks
 
