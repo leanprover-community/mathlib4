@@ -229,16 +229,29 @@ noncomputable def pullbackIsoOverPullback : ChosenPullback.pullback g ≅ Over.p
   (ChosenPullback.mapPullbackAdj g).rightAdjointUniq (Over.mapPullbackAdj g)
 
 @[reassoc (attr := simp)]
-theorem pullbackIsoOverPullback_hom_app_comp_fst (Z : Over X) :
-    ((pullbackIsoOverPullback g).hom.app Z).left ≫ pullback.fst _ _ = fst _ _ := by
+theorem pullbackIsoOverPullback_hom_app_comp_fst (T : Over X) :
+    ((pullbackIsoOverPullback g).hom.app T).left ≫ pullback.fst _ _ = fst _ _ := by
   simpa using (Over.forget _).congr_map
     ((ChosenPullback.mapPullbackAdj g).rightAdjointUniq_hom_app_counit
-      (Over.mapPullbackAdj g) Z)
+      (Over.mapPullbackAdj g) T)
 
 @[reassoc (attr := simp)]
-theorem pullbackIsoOverPullback_hom_app_comp_snd (Z : Over X) :
-    ((pullbackIsoOverPullback g).hom.app Z).left ≫ pullback.snd _ _ = snd _ _ :=
-  Over.w ((pullbackIsoOverPullback g).hom.app Z)
+theorem pullbackIsoOverPullback_hom_app_comp_snd (T : Over X) :
+    ((pullbackIsoOverPullback g).hom.app T).left ≫ pullback.snd _ _ = snd _ _ :=
+  Over.w ((pullbackIsoOverPullback g).hom.app T)
+
+@[reassoc (attr := simp)]
+theorem pullbackIsoOverPullback_inv_app_comp_fst (T : Over X) :
+    ((pullbackIsoOverPullback g).inv.app T).left ≫ fst _ _ = pullback.fst _ _ := by
+  convert (Over.forget _).congr_map
+    ((Over.mapPullbackAdj g).rightAdjointUniq_hom_app_counit
+       (ChosenPullback.mapPullbackAdj g) T)
+  simp only [forget_map, mapPullbackAdj_counit_app, homMk_left]
+
+@[reassoc (attr := simp)]
+theorem pullbackIsoOverPullback_inv_app_comp_snd (T : Over X) :
+    ((pullbackIsoOverPullback g).inv.app T).left ≫ snd _ _ = pullback.snd _ _ :=
+  Over.w ((pullbackIsoOverPullback g).inv.app T)
 
 end PullbackFromChosenPullbacks
 
