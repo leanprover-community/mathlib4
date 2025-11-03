@@ -56,7 +56,7 @@ theorem Submodule.IsHomogeneous.mem_iff {p : Submodule A M}
     x ∈ p ↔ ∀ i, (decompose ℳ x i : M) ∈ p :=
   AddSubmonoidClass.IsHomogeneous.mem_iff ℳ _ hp
 
-theorem Submodule.IsHomogeneous.closure_isHomogeneousElem {p : Submodule A M}
+theorem Submodule.IsHomogeneous.closure_isHomogeneousElem_eq {p : Submodule A M}
     [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M]
     {ℳ : ιM → σM} [Decomposition ℳ] (hp : p.IsHomogeneous ℳ) :
     AddSubmonoid.closure { x | x ∈ p ∧ SetLike.IsHomogeneousElem ℳ x } = p.toAddSubmonoid := by
@@ -65,11 +65,11 @@ theorem Submodule.IsHomogeneous.closure_isHomogeneousElem {p : Submodule A M}
   rw [← DirectSum.sum_support_decompose ℳ x]
   exact sum_mem fun i hi ↦ AddSubmonoid.subset_closure ⟨hp i hx, i, SetLike.coe_mem _⟩
 
-theorem Submodule.IsHomogeneous.span_isHomogeneousElem {p : Submodule A M}
+theorem Submodule.IsHomogeneous.span_isHomogeneousElem_eq {p : Submodule A M}
     [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M]
     {ℳ : ιM → σM} [Decomposition ℳ] (hp : p.IsHomogeneous ℳ) :
     .span A { x | x ∈ p ∧ SetLike.IsHomogeneousElem ℳ x } = p :=
-  le_antisymm (span_le.mpr fun _ h ↦ h.1) <| (closure_isHomogeneousElem hp).symm.trans_le <|
+  le_antisymm (span_le.mpr fun _ h ↦ h.1) <| (closure_isHomogeneousElem_eq hp).symm.trans_le <|
     AddSubmonoid.closure_le.mpr subset_span
 
 /-- For any `Semiring A`, we collect the homogeneous submodule of `A`-modules into a type. -/
