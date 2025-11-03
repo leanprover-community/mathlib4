@@ -122,6 +122,7 @@ theorem end_mem_support {a b : V} (p : G.Walk a b) : b ∈ p.support := by
 theorem ext_support {a b : V} {p q : G.Walk a b}
   (h : p.support = q.support)
   (adj_sub : ∀ x y, Subsingleton (G.Adj x y)) : p = q := by
+
   sorry
   -- no walk has empty support
   -- have support_ne_nil : ∀ {x y : V} (r : G.Walk x y), r.support ≠ [] := by

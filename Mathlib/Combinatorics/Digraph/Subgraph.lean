@@ -1,77 +1,48 @@
 /-
 Copyright (c) 2025. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors:
+Authors: Shashank Kirtania
 -/
+
 import Mathlib.Combinatorics.Digraph.Basic
+import Mathlib.Data.Set.Basic
 
 /-!
-# Subgraphs of a digraph
+# Subgraphs of Directed Graphs
 
-This file defines subgraphs of a digraph. A subgraph consists of a subset of vertices and a subset of
-the adjacency relation of the original digraph, such that the endpoints of each edge in the subgraph
-are present in the vertex subset.
+This file defines subgraphs of directed graphs and their properties.
 
 ## Main definitions
 
-* `Digraph.Subgraph G` is the type of subgraphs of a `G : Digraph V`.
+* `Digraph.Subgraph` - A subgraph of a directed graph
+* `Digraph.Subgraph.IsInduced` - Predicate for induced subgraphs
+* `Digraph.Subgraph.induced` - The induced subgraph on a set of vertices
 
-* `Digraph.Subgraph.coe` is the coercion from a `G' : Digraph.Subgraph G` to a `Digraph G'.verts`.
-
-* `Digraph.Subgraph.IsSpanning` for whether a subgraph is a spanning subgraph and
-  `Digraph.Subgraph.IsInduced` for whether a subgraph is an induced subgraph.
-
-* Instances for `Lattice (Digraph.Subgraph G)` and `BoundedOrder (Digraph.Subgraph G)`.
-
-## Implementation notes
-
-* Subgraphs maintain the directed nature of the original graph, preserving the adjacency relation's directionality.
 -/
 
 namespace Digraph
 
 universe u v
 
-variable {V : Type u} {W : Type v}
+variable {V : Type u} (G : Digraph V)
 
-/-- A subgraph of a `Digraph` is a subset of vertices along with a restriction of the adjacency
-relation that is supported by the vertex subset. They also form a bounded lattice.
-
-The adjacency relation `Adj` of a subgraph must be a subset of the adjacency relation of the original graph. -/
+/-- A subgraph of a directed graph -/
 @[ext]
-structure Subgraph {V : Type u} (G : Digraph V) where
-  /-- Vertices of the subgraph -/
+structure Subgraph where
+  /-- The vertex set of the subgraph -/
   verts : Set V
-  /-- Edges of the subgraph -/
+  /-- The adjacency relation of the subgraph -/
   Adj : V → V → Prop
-  adj_sub : ∀ {v w : V}, Adj v w → G.Adj v w
-  edge_vert_fst : ∀ {v w : V}, Adj v w → v ∈ verts
-  edge_vert_snd : ∀ {v w : V}, Adj v w → w ∈ verts
+  /-- Edges must have their source in the vertex set -/
+  edge_vert_fst : ∀ {v w}, Adj v w → v ∈ verts
+  /-- Edges must have their target in the vertex set -/
+  edge_vert_snd : ∀ {v w}, Adj v w → w ∈ verts
+  /-- The subgraph's edges are a subset of the parent graph's edges -/
+  adj_sub : ∀ {v w}, Adj v w → G.Adj v w
 
 namespace Subgraph
 
-variable {G : Digraph V} {G₁ G₂ : G.Subgraph} {a b : V}
-
-/-- The one-vertex subgraph. -/
-@[simps]
-protected def singleton (G : Digraph V) (v : V) : G.Subgraph where
-  verts := {v}
-  Adj := ⊥
-  adj_sub := False.elim
-  edge_vert_fst := False.elim
-  edge_vert_snd := False.elim
-
-/-- Coercion from `G' : Subgraph G` to a `Digraph G'.verts`. -/
-@[simps]
-protected def coe (G' : Subgraph G) : Digraph G'.verts where
-  Adj v w := G'.Adj v w
-
-@[simp]
-theorem Adj.adj_sub' (G' : Subgraph G) (u v : G'.verts) (h : G'.Adj u v) : G.Adj u v :=
-  G'.adj_sub h
-
-theorem coe_adj_sub (G' : Subgraph G) (u v : G'.verts) (h : G'.coe.Adj u v) : G.Adj u v :=
-  G'.adj_sub h
+variable {G : Digraph V}
 
 protected theorem Adj.fst_mem {H : G.Subgraph} {u v : V} (h : H.Adj u v) : u ∈ H.verts :=
   H.edge_vert_fst h
@@ -79,177 +50,158 @@ protected theorem Adj.fst_mem {H : G.Subgraph} {u v : V} (h : H.Adj u v) : u ∈
 protected theorem Adj.snd_mem {H : G.Subgraph} {u v : V} (h : H.Adj u v) : v ∈ H.verts :=
   H.edge_vert_snd h
 
-/-- Given a digraph `G` and a predicate on vertices `p`, construct the subgraph consisting of
-vertices satisfying `p` and all edges between them from `G`. -/
-@[simps]
-def induced (G : Digraph V) (p : V → Prop) : G.Subgraph where
-  verts := {v | p v}
-  Adj v w := G.Adj v w ∧ p v ∧ p w
-  adj_sub := fun ⟨h, _, _⟩ ↦ h
-  edge_vert_fst := fun ⟨_, hp, _⟩ ↦ hp
-  edge_vert_snd := fun ⟨_, _, hp⟩ ↦ hp
+protected theorem Adj.adj_sub {H : G.Subgraph} {u v : V} (h : H.Adj u v) : G.Adj u v :=
+  H.adj_sub h
 
-/-- A subgraph is induced if its adjacency relation includes all edges of the original graph
-between vertices of the subgraph. -/
-@[mk_iff]
-class IsInduced (G' : Subgraph G) : Prop where
-  /-- Every edge in the original graph between vertices in the subgraph is also in the subgraph -/
+/-- A subgraph is induced if it contains all edges between its vertices -/
+structure IsInduced (G' : G.Subgraph) : Prop where
   induced : ∀ {v w}, v ∈ G'.verts → w ∈ G'.verts → G.Adj v w → G'.Adj v w
 
-theorem isInduced_iff_subset_induced (G' : G.Subgraph) :
-    IsInduced G' ↔ G' = G.induced fun v ↦ v ∈ G'.verts := by
+/-- The induced subgraph on a set of vertices -/
+def induced (s : Set V) : G.Subgraph where
+  verts := s
+  Adj v w := v ∈ s ∧ w ∈ s ∧ G.Adj v w
+  edge_vert_fst := fun h => h.1
+  edge_vert_snd := fun h => h.2.1
+  adj_sub := fun h => h.2.2
+
+@[simp]
+theorem verts_induced (s : Set V) : (@induced _ G s).verts = s := rfl
+
+@[simp]
+theorem Adj_induced (s : Set V) {v w : V} :
+    (@induced _ G s).Adj v w ↔ v ∈ s ∧ w ∈ s ∧ G.Adj v w := Iff.rfl
+
+theorem induced_adj_of_mem {s : Set V} {v w : V} (hv : v ∈ s) (hw : w ∈ s) :
+    (@induced _ G s).Adj v w ↔ G.Adj v w := by
+  simp only [Adj_induced, hv, hw, true_and]
+
+/-- A subgraph is induced iff it equals the induced subgraph on its vertices -/
+theorem isInduced_iff_eq_induced (G' : G.Subgraph) :
+    IsInduced G' ↔ G' = induced G'.verts := by
   constructor
   · intro h
     ext v w
     · simp
-    · simp [induced_Adj]
+    · simp only [Adj_induced]
       constructor
       · intro h'
-        exact ⟨G'.adj_sub h', G'.edge_vert_fst h', G'.edge_vert_snd h'⟩
-      · rintro ⟨h', hv, hw⟩
-        exact IsInduced.induced hv hw h'
+        exact ⟨G'.edge_vert_fst h', G'.edge_vert_snd h', G'.adj_sub h'⟩
+      · intro ⟨hv, hw, hvw⟩
+        exact h.induced hv hw hvw
   · intro h
     constructor
     intro v w hv hw hvw
     rw [h]
-    simp [induced_Adj, hv, hw, hvw]
+    simp only [Adj_induced, hv, hw, hvw, and_self]
 
-/-- A subgraph is spanning if it contains all vertices of the original graph. -/
-class IsSpanning (G' : Subgraph G) : Prop where
-  /-- All vertices in the original graph are in the subgraph -/
-  verts_eq : G'.verts = Set.univ
+/-- The `top` subgraph is `G` as a subgraph of itself -/
+instance : Top G.Subgraph where
+  top :=
+    { verts := Set.univ
+      Adj := G.Adj
+      edge_vert_fst := fun _ => Set.mem_univ _
+      edge_vert_snd := fun _ => Set.mem_univ _
+      adj_sub := fun h => h }
 
-theorem isSpanning_iff_verts_eq_univ (G' : G.Subgraph) : IsSpanning G' ↔ G'.verts = Set.univ :=
-  ⟨fun h ↦ h.verts_eq, fun h ↦ ⟨h⟩⟩
+/-- The `bot` subgraph has no vertices or edges -/
+instance : Bot G.Subgraph where
+  bot :=
+    { verts := ∅
+      Adj := ⊥
+      edge_vert_fst := fun h => h.elim
+      edge_vert_snd := fun h => h.elim
+      adj_sub := fun h => h.elim }
 
-/-- The empty subgraph, containing no vertices and no edges. -/
-@[simps]
-def bot (G : Digraph V) : G.Subgraph where
-  verts := ∅
-  Adj := ⊥
-  adj_sub := False.elim
-  edge_vert_fst := False.elim
-  edge_vert_snd := False.elim
+theorem top_verts : (⊤ : G.Subgraph).verts = Set.univ := rfl
 
-instance (G : Digraph V) : Bot (G.Subgraph) where
-  bot := G.Subgraph.bot
+theorem top_Adj {v w : V} : (⊤ : G.Subgraph).Adj v w ↔ G.Adj v w := Iff.rfl
 
-/-- The full subgraph, containing all vertices and edges of the original digraph. -/
-@[simps]
-def top (G : Digraph V) : G.Subgraph where
-  verts := Set.univ
-  Adj := G.Adj
-  adj_sub := id
-  edge_vert_fst := fun _ ↦ Set.mem_univ _
-  edge_vert_snd := fun _ ↦ Set.mem_univ _
+theorem bot_verts : (⊥ : G.Subgraph).verts = ∅ := rfl
 
-instance (G : Digraph V) : Top (G.Subgraph) where
-  top := G.Subgraph.top
+theorem not_bot_Adj {v w : V} : ¬ (⊥ : G.Subgraph).Adj v w := not_false
 
-instance isSpanning_top (G : Digraph V) : IsSpanning (⊤ : G.Subgraph) :=
-  ⟨rfl⟩
+/-- Subgraph order: G₁ ≤ G₂ if vertices and edges are subsets -/
+instance : LE G.Subgraph where
+  le G₁ G₂ := G₁.verts ⊆ G₂.verts ∧ ∀ v w, G₁.Adj v w → G₂.Adj v w
 
-instance isInduced_top (G : Digraph V) : IsInduced (⊤ : G.Subgraph) := by
-  constructor
-  intro v w _ _ h
-  exact h
+theorem le_def {G₁ G₂ : G.Subgraph} :
+    G₁ ≤ G₂ ↔ G₁.verts ⊆ G₂.verts ∧ ∀ v w, G₁.Adj v w → G₂.Adj v w := Iff.rfl
 
-/-- The meet (infimum) of two subgraphs. -/
-@[simps]
-def inf (G₁ G₂ : G.Subgraph) : G.Subgraph where
-  verts := G₁.verts ∩ G₂.verts
-  Adj v w := G₁.Adj v w ∧ G₂.Adj v w
-  adj_sub := fun ⟨h, _⟩ ↦ G₁.adj_sub h
-  edge_vert_fst := fun ⟨h, _⟩ ↦ ⟨G₁.edge_vert_fst h, G₂.edge_vert_fst h⟩
-  edge_vert_snd := fun ⟨h, _⟩ ↦ ⟨G₁.edge_vert_snd h, G₂.edge_vert_snd h⟩
+/-- The union of two subgraphs -/
+instance : Max G.Subgraph where
+  max G₁ G₂ :=
+    { verts := G₁.verts ∪ G₂.verts
+      Adj := G₁.Adj ⊔ G₂.Adj
+      edge_vert_fst := fun h =>
+        h.elim (fun h' => Or.inl (G₁.edge_vert_fst h')) (fun h' => Or.inr (G₂.edge_vert_fst h'))
+      edge_vert_snd := fun h =>
+        h.elim (fun h' => Or.inl (G₁.edge_vert_snd h')) (fun h' => Or.inr (G₂.edge_vert_snd h'))
+      adj_sub := fun h => h.elim G₁.adj_sub G₂.adj_sub }
 
-instance (G : Digraph V) : Inf (G.Subgraph) where
-  inf := Subgraph.inf
+/-- The intersection of two subgraphs -/
+instance : Min G.Subgraph where
+  min G₁ G₂ :=
+    { verts := G₁.verts ∩ G₂.verts
+      Adj := G₁.Adj ⊓ G₂.Adj
+      edge_vert_fst := fun h => ⟨G₁.edge_vert_fst h.1, G₂.edge_vert_fst h.2⟩
+      edge_vert_snd := fun h => ⟨G₁.edge_vert_snd h.1, G₂.edge_vert_snd h.2⟩
+      adj_sub := fun h => G₁.adj_sub h.1 }
 
-/-- The join (supremum) of two subgraphs. -/
-@[simps]
-def sup (G₁ G₂ : G.Subgraph) : G.Subgraph where
-  verts := G₁.verts ∪ G₂.verts
-  Adj v w := G₁.Adj v w ∨ G₂.Adj v w
-  adj_sub := fun h ↦ h.elim G₁.adj_sub G₂.adj_sub
-  edge_vert_fst := fun h ↦ h.elim (Set.mem_union_left _ ∘ G₁.edge_vert_fst) (Set.mem_union_right _ ∘ G₂.edge_vert_fst)
-  edge_vert_snd := fun h ↦ h.elim (Set.mem_union_left _ ∘ G₁.edge_vert_snd) (Set.mem_union_right _ ∘ G₂.edge_vert_snd)
+theorem inf_verts (G₁ G₂ : G.Subgraph) :
+    (G₁ ⊓ G₂).verts = G₁.verts ∩ G₂.verts := rfl
 
-instance (G : Digraph V) : Sup (G.Subgraph) where
-  sup := Subgraph.sup
+theorem inf_Adj (G₁ G₂ : G.Subgraph) {v w : V} :
+    (G₁ ⊓ G₂).Adj v w ↔ G₁.Adj v w ∧ G₂.Adj v w := Iff.rfl
 
-/-- A subgraph is contained in another if its vertices and edges are subsets of the other's. -/
-@[simp]
-theorem le_def : G₁ ≤ G₂ ↔ G₁.verts ⊆ G₂.verts ∧ ∀ v w, G₁.Adj v w → G₂.Adj v w := by
-  constructor <;> intro h
-  · rw [← sup_eq_right] at h
-    have verts_eq := congr_arg Subgraph.verts h
-    have adj_eq := congr_arg Subgraph.Adj h
-    simp only [sup_verts, sup_Adj] at verts_eq adj_eq
-    constructor
-    · intro v hv
-      rw [verts_eq]
-      exact Set.mem_union_left _ hv
-    · intro v w hvw
-      rw [adj_eq] at hvw
-      exact hvw.elim id id
-  · ext v
-    · simp only [h.1]
-    · simp only
-      constructor
-      · exact h.2 v v'
-      · intro hvw
-        cases hvw
-        · exact hvw
-        · have hv : v ∈ G₁.verts := by
-            apply G₁.edge_vert_fst hvw
-          have hw : v' ∈ G₁.verts := by
-            apply G₁.edge_vert_snd hvw
-          have := h.1 v hv
-          have := h.1 v' hw
-          exact h.2 v v' hvw
+theorem sup_verts (G₁ G₂ : G.Subgraph) :
+    (G₁ ⊔ G₂).verts = G₁.verts ∪ G₂.verts := rfl
 
-instance (G : Digraph V) : PartialOrder (G.Subgraph) where
+theorem sup_Adj (G₁ G₂ : G.Subgraph) {v w : V} :
+    (G₁ ⊔ G₂).Adj v w ↔ G₁.Adj v w ∨ G₂.Adj v w := Iff.rfl
+
+/-- Partial order on subgraphs -/
+instance : PartialOrder G.Subgraph where
   le := (· ≤ ·)
-  le_refl _ := ⟨Set.Subset.refl _, fun _ _ h ↦ h⟩
-  le_trans _ _ _ ⟨hv12, he12⟩ ⟨hv23, he23⟩ := ⟨Set.Subset.trans hv12 hv23, fun _ _ h ↦ he23 _ _ (he12 _ _ h)⟩
-  le_antisymm _ _ ⟨hv12, he12⟩ ⟨hv21, he21⟩ := by
-    ext v
-    · exact Set.Subset.antisymm hv12 hv21
-    · simp only
-      constructor
-      · exact he12 v v'
-      · exact he21 v v'
+  le_refl G' := ⟨Set.Subset.refl _, fun _ _ h => h⟩
+  le_trans G₁ G₂ G₃ h₁₂ h₂₃ :=
+    ⟨Set.Subset.trans h₁₂.1 h₂₃.1, fun v w h => h₂₃.2 v w (h₁₂.2 v w h)⟩
+  le_antisymm G₁ G₂ h₁₂ h₂₁ := by
+    ext v w
+    · exact ⟨fun hv => h₁₂.1 hv, fun hv => h₂₁.1 hv⟩
+    · exact ⟨h₁₂.2 v w, h₂₁.2 v w⟩
 
-instance (G : Digraph V) : SemilatticeInf (G.Subgraph) where
-  inf := (· ⊓ ·)
-  inf_le_left _ _ := ⟨Set.inter_subset_left _ _, fun _ _ ⟨h, _⟩ ↦ h⟩
-  inf_le_right _ _ := ⟨Set.inter_subset_right _ _, fun _ _ ⟨_, h⟩ ↦ h⟩
-  le_inf _ _ _ ⟨hv1, he1⟩ ⟨hv2, he2⟩ :=
-    ⟨Set.subset_inter hv1 hv2, fun _ _ h ↦ ⟨he1 _ _ h, he2 _ _ h⟩⟩
-
-instance (G : Digraph V) : SemilatticeSup (G.Subgraph) where
+/-- Lattice structure on subgraphs -/
+instance : Lattice G.Subgraph where
   sup := (· ⊔ ·)
-  le_sup_left _ _ := ⟨Set.subset_union_left _ _, fun _ _ h ↦ Or.inl h⟩
-  le_sup_right _ _ := ⟨Set.subset_union_right _ _, fun _ _ h ↦ Or.inr h⟩
-  sup_le _ _ _ ⟨hv1, he1⟩ ⟨hv2, he2⟩ :=
-    ⟨Set.union_subset hv1 hv2, fun _ _ h ↦ h.elim (he1 _ _) (he2 _ _)⟩
-
-instance (G : Digraph V) : Lattice (G.Subgraph) where
-  sup := (· ⊔ ·)
+  le_sup_left G₁ G₂ :=
+    ⟨Set.subset_union_left, fun _ _ h => Or.inl h⟩
+  le_sup_right G₁ G₂ :=
+    ⟨Set.subset_union_right, fun _ _ h => Or.inr h⟩
+  sup_le G₁ G₂ G₃ h₁ h₂ :=
+    ⟨Set.union_subset h₁.1 h₂.1, fun v w h => h.elim (h₁.2 v w) (h₂.2 v w)⟩
   inf := (· ⊓ ·)
-  le_sup_left := SemilatticeSup.le_sup_left
-  le_sup_right := SemilatticeSup.le_sup_right
-  sup_le := SemilatticeSup.sup_le
-  inf_le_left := SemilatticeInf.inf_le_left
-  inf_le_right := SemilatticeInf.inf_le_right
-  le_inf := SemilatticeInf.le_inf
+  inf_le_left G₁ G₂ :=
+    ⟨Set.inter_subset_left, fun _ _ h => h.1⟩
+  inf_le_right G₁ G₂ :=
+    ⟨Set.inter_subset_right, fun _ _ h => h.2⟩
+  le_inf G₁ G₂ G₃ h₁ h₂ :=
+    ⟨Set.subset_inter h₁.1 h₂.1, fun v w h => ⟨h₁.2 v w h, h₂.2 v w h⟩⟩
 
-instance (G : Digraph V) : BoundedOrder (G.Subgraph) where
-  bot := (⊥ : G.Subgraph)
-  bot_le _ := ⟨Set.empty_subset _, fun _ _ h ↦ False.elim h⟩
-  top := (⊤ : G.Subgraph)
-  le_top _ := ⟨Set.subset_univ _, fun _ _ h ↦ G₁.adj_sub h⟩
+theorem bot_le (G' : G.Subgraph) : ⊥ ≤ G' :=
+  ⟨Set.empty_subset _, fun _ _ h => h.elim⟩
+
+theorem le_top (G' : G.Subgraph) : G' ≤ ⊤ :=
+  ⟨Set.subset_univ _, fun _ _ h => G'.adj_sub h⟩
+
+instance : BoundedOrder G.Subgraph where
+  top := ⊤
+  le_top := le_top
+  bot := ⊥
+  bot_le := bot_le
+
+theorem IsInduced.top : (⊤ : G.Subgraph).IsInduced :=
+  ⟨fun _ _ h => h⟩
 
 end Subgraph
 
