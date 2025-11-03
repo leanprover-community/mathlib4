@@ -12,6 +12,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.Ext.Map
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.LinearAlgebra.Dimension.Finite
+import Mathlib.LinearAlgebra.TensorProduct.Pi
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.Flat.Localization
@@ -161,8 +162,8 @@ variable {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddCommGroup M₁] [AddCommGro
   [AddCommGroup N₁] [AddCommGroup N₂] [AddCommGroup N₃] [Module R M₁] [Module R M₂] [Module R M₃]
   [Module R N₁] [Module R N₂] [Module R N₃] [Module S N₁] [Module S N₂] [Module S N₃]
   [IsScalarTower R S N₁] [IsScalarTower R S N₂] [IsScalarTower R S N₃]
-  {f : M₁ →ₗ[R] M₂} {g : M₂ →ₗ[R] M₃} {f' : N₁ →ₗ[S] N₂} {g' : N₂ →ₗ[S] N₃}
   (h₁ : M₁ →ₗ[R] N₁) (h₂ : M₂ →ₗ[R] N₂) (h₃ : M₃ →ₗ[R] N₃)
+  {f : M₁ →ₗ[R] M₂} {g : M₂ →ₗ[R] M₃} {f' : N₁ →ₗ[S] N₂} {g' : N₂ →ₗ[S] N₃}
   (comm1 : h₂.comp f = (f'.restrictScalars R).comp h₁)
   (comm2 : h₃.comp g = (g'.restrictScalars R).comp h₂)
 
@@ -200,6 +201,21 @@ lemma IsBaseChange.of_left_exact [Module.Flat R S] (isb2 : IsBaseChange S h₂)
   · simp only [LinearMap.coe_restrictScalars, LinearMap.baseChange_eq_ltensor]
     exact Module.Flat.lTensor_preserves_injective_linearMap f inj1
 
+lemma IsBaseChange.of_equiv_left (f : M₁ ≃ₗ[R] M₂) (f' : N₁ ≃ₗ[S] N₂)
+    (comm1 : h₂.comp f.toLinearMap = (f'.restrictScalars R).comp h₁)
+    (isb1 : IsBaseChange S h₁) : IsBaseChange S h₂ :=
+  IsBaseChange.of_right_exact S (f := (0 : Unit →ₗ[R] M₁)) (f' := (0 : Unit →ₗ[S] N₁))
+    (g := f) (g' := f') 0 h₁ h₂ (by simp) comm1 (show Function.Bijective _ from by simp) isb1
+      (fun y ↦ (by simpa using eq_comm)) f.bijective.2 (fun y ↦ (by simpa using eq_comm))
+        f'.bijective.2
+
+lemma IsBaseChange.of_equiv_right (f : M₁ ≃ₗ[R] M₂) (f' : N₁ ≃ₗ[S] N₂)
+    (comm1 : h₂.comp f.toLinearMap = (f'.restrictScalars R).comp h₁)
+    (isb2 : IsBaseChange S h₂) : IsBaseChange S h₁ := by
+  refine IsBaseChange.of_equiv_left S h₂ h₁ f.symm f'.symm (LinearMap.ext fun y ↦ ?_) isb2
+  obtain ⟨y, rfl⟩ := f.surjective y
+  exact f'.injective (by simpa using congr($comm1 y).symm)
+
 end
 
 section
@@ -210,7 +226,21 @@ open TensorProduct in
 theorem Module.FinitePresentation.isBaseChange_map [Module.Flat R S]
     [Module.FinitePresentation R M] : IsBaseChange S (LinearMap.baseChangeHom R S M N) := by
   have h_free (n : ℕ) : IsBaseChange S (LinearMap.baseChangeHom R S (Fin n → R) N) := by
-    sorry
+    let e₁ := TensorProduct.piRight R S S (fun _ : Fin n ↦ R)
+    let e₂ := LinearEquiv.congrLeft (S ⊗[R] N) S e₁.symm
+    let e₃ := (LinearEquiv.piCongrRight (fun _ ↦ (LinearMap.ringLmapEquivSelf ..).symm ≪≫ₗ
+      (LinearEquiv.congrLeft (S ⊗[R] N) S (AlgebraTensorModule.rid R S S).symm)
+          )) ≪≫ₗ (LinearMap.lsum S (fun _ : Fin n ↦ _) S) ≪≫ₗ e₂
+    let e₄ : ((Fin n → R) →ₗ[R] N) ≃ₗ[R] (Fin n → N) :=
+      (LinearMap.lsum R (fun _ : Fin n ↦ R) R).symm ≪≫ₗ LinearEquiv.piCongrRight (fun _ ↦
+        LinearMap.ringLmapEquivSelf ..)
+    refine IsBaseChange.of_equiv ((e₄.baseChange R S) ≪≫ₗ
+      (TensorProduct.piRight R S S (fun _ : Fin n ↦ N)) ≪≫ₗ e₃)
+        (fun f ↦ TensorProduct.AlgebraTensorModule.curry_injective
+          (LinearMap.ext fun s ↦ ?_))
+    ext i
+    simpa [e₄, e₃, e₂, e₁, LinearEquiv.congrLeft, LinearEquiv.baseChange] using
+      (tmul_eq_smul_one_tmul s (f (Pi.single i 1))).symm
   obtain ⟨n, m, f, g, hf, hfg⟩ := Module.FinitePresentation.exists_fin' R M
   refine IsBaseChange.of_left_exact S (f := f.lcomp R N) (g := g.lcomp R N)
     (f' := (f.baseChange S).lcomp S (S ⊗[R] N)) (g' := (g.baseChange S).lcomp S (S ⊗[R] N))
@@ -219,10 +249,9 @@ theorem Module.FinitePresentation.isBaseChange_map [Module.Flat R S]
       (LinearMap.ext fun s ↦ (LinearMap.ext fun m ↦ (by simp)))
   · exact LinearMap.ext fun φ ↦ TensorProduct.AlgebraTensorModule.curry_injective
       (LinearMap.ext fun s ↦ (LinearMap.ext fun m ↦ (by simp)))
-  · sorry
-  · sorry
-  · sorry
-  · sorry
+
+  -- Waiting for the left exactness of hom
+  all_goals sorry
 
 end
 

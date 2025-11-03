@@ -91,7 +91,11 @@ theorem Module.FinitePresentation.exists_fin [fp : Module.FinitePresentation R M
 sequence. -/
 theorem Module.FinitePresentation.exists_fin' [fp : Module.FinitePresentation R M] :
     ∃ (n m : ℕ) (f : (Fin n → R) →ₗ[R] M) (g : (Fin m → R) →ₗ[R] (Fin n → R)),
-    Function.Surjective f ∧ Function.Exact g f := sorry
+    Function.Surjective f ∧ Function.Exact g f := by
+  obtain ⟨n, K, e, h⟩ := exists_fin R M
+  obtain ⟨m, g', hg'⟩ := K.fg_iff_exists_fin_linearMap.mp h
+  refine ⟨n, m, e.symm ∘ₗ K.mkQ, g', by simpa using K.mkQ_surjective,
+    e.symm.injective.comp_exact_iff_exact.mpr (LinearMap.exact_iff.mpr (by simpa using hg'.symm))⟩
 
 /-- A finitely presented module is isomorphic to the quotient of a finite free module by a finitely
 generated submodule. -/
