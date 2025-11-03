@@ -367,7 +367,7 @@ lemma exp_injective : Injective (exp : M → Mᵐ⁰) :=
 construct its value at `0` and its value at `exp a` for all `a : M`. -/
 -- TODO: Uncomment once it stops firing on `WithZero M`.
 -- See https://github.com/leanprover-community/mathlib4/issues/31213
--- @[elab_as_elim, induction_eliminator, cases_eliminator]
+@[elab_as_elim] -- , induction_eliminator, cases_eliminator]
 def expRecOn {motive : Mᵐ⁰ → Sort*} (x : Mᵐ⁰) (zero : motive 0) (exp : ∀ a, motive (exp a)) :
     motive x := Option.recOn x zero exp
 
