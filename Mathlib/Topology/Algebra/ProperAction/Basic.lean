@@ -180,7 +180,7 @@ instance [IsTopologicalGroup G] : ProperSMul G G where
 open MulOpposite in
 /-- The action `Gᵐᵒᵖ ↷ G` by right translations is proper. -/
 @[to_additive
-/-- The action `Gᵐᵒᵖ ↷ G` by right translations is proper. -/]
+/-- The action `Gᵃᵒᵖ ↷ G` by right translations is proper. -/]
 instance [IsTopologicalGroup G] : ProperSMul Gᵐᵒᵖ G where
   isProperMap_smul_pair := by
     let Φ : Gᵐᵒᵖ × G ≃ₜ G × G :=

@@ -54,4 +54,4 @@ theorem AnalyticOn.hasFPowerSeriesOnBall :
     0 < p.radius → AnalyticOn 𝕜 f (EMetric.ball x p.radius) →
     HasFPowerSeriesOnBall f p x p.radius := by
   intro hr hs
-  exact hs.hasFPowerSeriesOnSubball hr (by rfl)
+  exact hs.hasFPowerSeriesOnSubball hr le_rfl
