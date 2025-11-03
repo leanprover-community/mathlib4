@@ -221,7 +221,7 @@ def chosenPullbackOfFst : ChosenPullback (fst f g) where
 instance hasPullbackAlong : HasPullbacksAlong g := fun f => (isPullback f g).hasPullback
 
 instance hasPullbacks [ChosenPullbacks C] : HasPullbacks C :=
-  @hasPullbacks_of_hasLimit_cospan C _ (isPullback _ _).hasPullback
+  hasPullbacks_of_hasLimit_cospan _
 
 /-- The computable `ChosenPullback.pullback g` is naturally isomorphic to the noncomputable
 `Over.pullback g`. -/
