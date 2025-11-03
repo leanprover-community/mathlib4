@@ -69,7 +69,7 @@ theorem Submodule.IsHomogeneous.span_isHomogeneousElem {p : Submodule A M}
     [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M]
     {ℳ : ιM → σM} [Decomposition ℳ] (hp : p.IsHomogeneous ℳ) :
     .span A { x | x ∈ p ∧ SetLike.IsHomogeneousElem ℳ x } = p :=
-  le_antisymm (span_le.mpr fun _ h ↦ h.1) <| (closure_isHomogeneousElem ℳ hp).symm.trans_le <|
+  le_antisymm (span_le.mpr fun _ h ↦ h.1) <| (closure_isHomogeneousElem hp).symm.trans_le <|
     AddSubmonoid.closure_le.mpr subset_span
 
 /-- For any `Semiring A`, we collect the homogeneous submodule of `A`-modules into a type. -/
