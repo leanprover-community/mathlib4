@@ -186,6 +186,10 @@ theorem lcomp_apply (f : M →ₗ[R] M₂) (g : M₂ →ₗ[R] N) (x : M) : lcom
 
 theorem lcomp_apply' (f : M →ₗ[R] M₂) (g : M₂ →ₗ[R] N) : lcomp S N f g = g ∘ₗ f := rfl
 
+lemma lcomp_injective_of_surjective (g : M →ₗ[R] M₂) (surj : Function.Surjective g) :
+    Function.Injective (LinearMap.lcomp S N g) :=
+  surj.injective_linearMapComp_right
+
 end lcomp
 
 attribute [local instance] SMulCommClass.symm
