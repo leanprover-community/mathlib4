@@ -58,7 +58,7 @@ theorem Submodule.IsHomogeneous.mem_iff {p : Submodule A M}
 
 theorem Submodule.IsHomogeneous.closure_isHomogeneousElem {p : Submodule A M}
     [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M]
-    (ℳ : ιM → σM) [Decomposition ℳ] (hp : p.IsHomogeneous ℳ) :
+    {ℳ : ιM → σM} [Decomposition ℳ] (hp : p.IsHomogeneous ℳ) :
     AddSubmonoid.closure { x | x ∈ p ∧ SetLike.IsHomogeneousElem ℳ x } = p.toAddSubmonoid := by
   refine le_antisymm (AddSubmonoid.closure_le.mpr fun _ hx ↦ hx.1) fun x hx ↦ ?_
   classical
@@ -67,7 +67,7 @@ theorem Submodule.IsHomogeneous.closure_isHomogeneousElem {p : Submodule A M}
 
 theorem Submodule.IsHomogeneous.span_isHomogeneousElem {p : Submodule A M}
     [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M]
-    (ℳ : ιM → σM) [Decomposition ℳ] (hp : p.IsHomogeneous ℳ) :
+    {ℳ : ιM → σM} [Decomposition ℳ] (hp : p.IsHomogeneous ℳ) :
     .span A { x | x ∈ p ∧ SetLike.IsHomogeneousElem ℳ x } = p :=
   le_antisymm (span_le.mpr fun _ h ↦ h.1) <| (closure_isHomogeneousElem ℳ hp).symm.trans_le <|
     AddSubmonoid.closure_le.mpr subset_span

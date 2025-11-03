@@ -72,7 +72,7 @@ variable {𝒜}
 abbrev HomogeneousIdeal.toIdeal (I : HomogeneousIdeal 𝒜) : Ideal A :=
   I.toSubmodule
 
-theorem HomogeneousIdeal.span_isHomogeneousElem (I : HomogeneousIdeal 𝒜) :
+theorem HomogeneousIdeal.span_isHomogeneousElem_eq (I : HomogeneousIdeal 𝒜) :
     Ideal.span { x | x ∈ I ∧ SetLike.IsHomogeneousElem 𝒜 x } = I.toIdeal :=
   le_antisymm (Ideal.span_le.mpr fun _ h ↦ h.1) <|
     (I.2.closure_isHomogeneousElem 𝒜).symm.trans_le <|
