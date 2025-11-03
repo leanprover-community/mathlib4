@@ -1781,6 +1781,7 @@ import Mathlib.Analysis.LocallyConvex.WeakOperatorTopology
 import Mathlib.Analysis.LocallyConvex.WeakSpace
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Matrix
+import Mathlib.Analysis.Matrix.Normed
 import Mathlib.Analysis.Matrix.Order
 import Mathlib.Analysis.MeanInequalities
 import Mathlib.Analysis.MeanInequalitiesPow
@@ -5492,6 +5493,7 @@ import Mathlib.Probability.Process.FiniteDimensionalLaws
 import Mathlib.Probability.Process.HittingTime
 import Mathlib.Probability.Process.Kolmogorov
 import Mathlib.Probability.Process.PartitionFiltration
+import Mathlib.Probability.Process.Predictable
 import Mathlib.Probability.Process.Stopping
 import Mathlib.Probability.ProductMeasure
 import Mathlib.Probability.StrongLaw
