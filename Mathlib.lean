@@ -5640,6 +5640,7 @@ import Mathlib.RingTheory.Flat.Equalizer
 import Mathlib.RingTheory.Flat.EquationalCriterion
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+import Mathlib.RingTheory.Flat.IsBaseChange
 import Mathlib.RingTheory.Flat.Localization
 import Mathlib.RingTheory.Flat.Stability
 import Mathlib.RingTheory.Flat.Tensor
