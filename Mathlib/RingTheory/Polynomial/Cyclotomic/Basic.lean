@@ -413,7 +413,8 @@ section ArithmeticFunction
 
 open ArithmeticFunction
 
-open scoped ArithmeticFunction
+-- access notation `μ`
+open scoped ArithmeticFunction.Moebius
 
 /-- `cyclotomic n R` can be expressed as a product in a fraction field of `R[X]`
   using Möbius inversion. -/

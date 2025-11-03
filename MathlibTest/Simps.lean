@@ -589,10 +589,8 @@ end BSemigroup
 class ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, HasSubset G where
   new_axiom : ∀ x : G, x * - 0 ⊆ - x
 
-@[simps] def bar : ExtendingStuff ℕ :=
-  { mul := (·*·)
-    zero := 0
-    neg := Nat.succ
+@[simps!] def bar : ExtendingStuff ℕ :=
+  { neg := Nat.succ
     Subset := fun _ _ ↦ True
     new_axiom := fun _ ↦ trivial }
 
@@ -604,10 +602,8 @@ end
 class new_ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, HasSubset G where
   new_axiom : ∀ x : G, x * - 0 ⊆ - x
 
-@[simps] def new_bar : new_ExtendingStuff ℕ :=
-  { mul := (·*·)
-    zero := 0
-    neg := Nat.succ
+@[simps!] def new_bar : new_ExtendingStuff ℕ :=
+  { neg := Nat.succ
     Subset := fun _ _ ↦ True
     new_axiom := fun _ ↦ trivial }
 
@@ -1269,7 +1265,7 @@ end UnderScoreDigit
 
 namespace Grind
 
-@[simps (attr := grind) -isSimp]
+@[simps (attr := grind =) -isSimp]
 def foo := (2, 3)
 
 example : foo.1 = 2 := by grind

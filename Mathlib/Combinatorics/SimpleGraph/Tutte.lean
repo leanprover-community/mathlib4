@@ -166,7 +166,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
   have hM1nac : ¬M1.Adj a c := fun h ↦ by simpa [hnGac, edge_adj, hnac, hxa.ne, hnbc.symm, hab.ne]
     using h.adj_sub
   have hsupG : G ⊔ edge x b ⊔ (G ⊔ edge a c) = (G ⊔ edge a c) ⊔ edge x b := by aesop
-  -- We state conditions for our cycle that hold in all cases and show that that suffices
+  -- We state conditions for our cycle that hold in all cases and show that this suffices
   suffices ∃ (G' : SimpleGraph V), G'.IsAlternating M2.spanningCoe ∧ G'.IsCycles ∧ ¬G'.Adj x b ∧
       G'.Adj a c ∧ G' ≤ G ⊔ edge a c by
     obtain ⟨G', hG', hG'cyc, hG'xb, hnG'ac, hle⟩ := this

@@ -10,7 +10,8 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 # A collection of specific asymptotic results
 
 This file contains specific lemmas about asymptotics which don't have their place in the general
-theory developed in `Mathlib/Analysis/Asymptotics/Asymptotics.lean`.
+theory developed in `Mathlib/Analysis/Asymptotics/Defs.lean` and
+`Mathlib/Analysis/Asymptotics/Lemmas.lean`.
 -/
 
 

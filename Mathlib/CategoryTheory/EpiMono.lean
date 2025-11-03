@@ -275,7 +275,7 @@ lemma epi_comp_iff_of_epi {X Y Z : C} (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) :
 lemma epi_comp_iff_of_isIso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     Epi (f ≫ g) ↔ Epi f := by
   refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
-  simpa using (inferInstance : Epi ((f ≫ g) ≫ inv g ))
+  simpa using (inferInstance : Epi ((f ≫ g) ≫ inv g))
 
 /-- When `f` is an isomorphism, `f ≫ g` is monic iff `g` is. -/
 @[simp]

@@ -91,7 +91,7 @@ open CStarMatrix in
 /-- Linear maps which are completely positive are order homomorphisms (i.e., positive maps). -/
 lemma _root_.OrderHomClass.of_map_cstarMatrix_nonneg
     (h : ∀ (φ : F) (k : ℕ) (M : CStarMatrix (Fin k) (Fin k) A₁), 0 ≤ M → 0 ≤ M.map φ) :
-    OrderHomClass F A₁ A₂ := .ofLinear <| by
+    OrderHomClass F A₁ A₂ := .of_addMonoidHom <| by
   intro φ a ha
   let Ma := toOneByOne (Fin 1) ℂ A₁ a
   have h₁ : 0 ≤ Ma := map_nonneg (toOneByOne (Fin 1) ℂ A₁) ha
