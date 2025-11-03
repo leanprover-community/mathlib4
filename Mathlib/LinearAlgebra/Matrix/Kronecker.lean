@@ -522,6 +522,11 @@ theorem trace_kroneckerTMul [Fintype m] [Fintype n] (A : Matrix m m α) (B : Mat
     trace (A ⊗ₖₜ[R] B) = trace A ⊗ₜ[R] trace B :=
   trace_kroneckerMapBilinear (TensorProduct.mk R α β) _ _
 
+theorem conjTranspose_kroneckerTMul [StarRing R] [StarAddMonoid α] [StarAddMonoid β]
+    [StarModule R α] [StarModule R β] (x : Matrix l m α) (y : Matrix n p β) :
+    (x ⊗ₖₜ[R] y)ᴴ = xᴴ ⊗ₖₜ[R] yᴴ := by
+  ext; simp
+
 end Module
 
 section Algebra
