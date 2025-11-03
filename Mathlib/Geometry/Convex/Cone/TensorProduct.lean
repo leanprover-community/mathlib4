@@ -20,24 +20,24 @@ of the injective and projective tensor products in the theory of operator algebr
 
 We define the minimal and maximal tensor products of two pointed cones:
 
-'minTensorProduct C₁ C₂': all conical combinations of elementary tensor products x ⊗ₜ y
+* 'minTensorProduct C₁ C₂': all conical combinations of elementary tensor products x ⊗ₜ y
   of cone elements x and y.
-'maxTensorProduct C₁ C₂': the dual of the minimal tensor product of the dual cones.
+* 'maxTensorProduct C₁ C₂': the dual of the minimal tensor product of the dual cones.
 
 ## Main results
 
-- `minTensorProduct_le_maxTensorProduct`: the minimal tensor product
+* `minTensorProduct_le_maxTensorProduct`: the minimal tensor product
   is less than or equal to the maximal tensor product
 
 ## Notation
 
-- no special notation defined
-- x, y, z are elements of the (original) cones
-- φ, φ₁, φ₂ are elements of the dual cones
+* no special notation defined
+* x, y, z are elements of the (original) cones
+* φ, φ₁, φ₂ are elements of the dual cones
 
 ## References
 
-- [Aubrun et al. *Entangleability of cones*][aubrunEntangleabilityCones2021]
+* [Aubrun et al. *Entangleability of cones*][aubrunEntangleabilityCones2021]
 
 -/
 
