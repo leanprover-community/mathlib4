@@ -624,8 +624,9 @@ lemma Module.FinitePresentation.linearEquivMapExtendScalars_symm_apply
     (LocalizedModule.mkLinearMap S (M →ₗ[R] N)) f :=
   IsLocalizedModule.linearEquiv_symm_apply S _ _ f
 
+variable (R M N) in
 open TensorProduct LinearMap in
-theorem Module.FinitePresentation.isBaseChange_map {S : Type*} [CommRing S] [Algebra R S]
+theorem Module.FinitePresentation.isBaseChange_map (S : Type*) [CommRing S] [Algebra R S]
     [Module.Flat R S]
     [Module.FinitePresentation R M] : IsBaseChange S (LinearMap.baseChangeHom R S M N) := by
   have h_free (n : ℕ) : IsBaseChange S (LinearMap.baseChangeHom R S (Fin n → R) N) := by
