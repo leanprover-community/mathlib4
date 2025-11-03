@@ -43,7 +43,7 @@ instance instLocallyFiniteOrder [DecidableEq α] : LocallyFiniteOrder (Finset α
     if s ⊆ t then
       (t \ s).powerset.attach.map ⟨fun u ↦ u.1.disjUnion s <|
         disjoint_sdiff_self_left.mono_left <| mem_powerset.mp u.2, fun u₁ u₂ h ↦ by
-          simpa only [disjUnion_inj_left, Subtype.eq_iff] using h⟩
+          simpa only [disjUnion_inj_left, Subtype.ext_iff] using h⟩
     else ∅) fun s t u ↦ by
       by_cases hst : s ⊆ t
       · suffices (∃ a ⊆ t, Disjoint a s ∧ a ∪ s = u) ↔ s ⊆ u ∧ u ⊆ t by

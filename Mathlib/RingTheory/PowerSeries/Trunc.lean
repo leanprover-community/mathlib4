@@ -75,7 +75,7 @@ theorem natDegree_trunc_lt (f : R⟦X⟧) (n) : (trunc (n + 1) f).natDegree < n 
   intros
   rw [coeff_trunc]
   split_ifs with h
-  · rw [lt_succ, ← not_lt] at h
+  · rw [Nat.lt_succ_iff, ← not_lt] at h
     contradiction
   · rfl
 

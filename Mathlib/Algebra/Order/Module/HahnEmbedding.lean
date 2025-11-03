@@ -221,7 +221,7 @@ theorem hahnCoeff_apply {x : seed.baseDomain} {f : Π₀ c, seed.stratum c}
   let f' : ⨁ c, seed.stratum' c :=
     f.mapRange (fun c x ↦ (⟨⟨x.val, hxm x⟩, by simp⟩ : seed.stratum' c)) (by simp)
   have hf : f c = (seed.baseDomain.subtype.submoduleComap (seed.stratum c)) (f' c) := by
-    apply Subtype.eq
+    apply Subtype.ext
     simp [f']
   have hx : x = (decompose seed.stratum').symm f' := by
     change x = f'.coeAddMonoidHom _
@@ -450,7 +450,7 @@ theorem archimedeanClassMk_eq_iff [IsOrderedAddMonoid R] (x y : f.val.domain) :
 theorem orderTop_eq_iff [IsOrderedAddMonoid R] [Archimedean R] (x y : f.val.domain) :
     (ofLex (f.val x)).orderTop = (ofLex (f.val y)).orderTop ↔ mk x.val = mk y.val := by
   obtain hsubsingleton | hnontrivial := subsingleton_or_nontrivial M
-  · have : y = x := Subtype.eq <| hsubsingleton.allEq _ _
+  · have : y = x := Subtype.ext <| hsubsingleton.allEq _ _
     simp [this]
   have hnonempty : Nonempty (FiniteArchimedeanClass M) := inferInstance
   obtain c := hnonempty.some
@@ -744,7 +744,7 @@ theorem eval_lt [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.val
     simpa using hzy.ne
   have hzyclass : FiniteArchimedeanClass.mk (y.val - x) hxy0 =
       FiniteArchimedeanClass.mk (z.val - y.val) hzyne := by
-    suffices mk (y.val - x) = mk (z.val - y.val) by simpa [Subtype.eq_iff] using this
+    suffices mk (y.val - x) = mk (z.val - y.val) by simpa [Subtype.ext_iff] using this
     have : y.val - z.val = y.val - x + (x - z.val) := by abel
     rw [mk_sub_comm z.val y.val, this]
     refine (mk_add_eq_mk_left ?_).symm

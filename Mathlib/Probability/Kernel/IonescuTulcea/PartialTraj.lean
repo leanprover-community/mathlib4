@@ -244,7 +244,7 @@ lemma partialTraj_succ_map_frestrictLe₂ (a b : ℕ) :
     rw [partialTraj_succ_eq_comp hab, map_comp, partialTraj_succ_self, ← map_comp_right,
       frestrictLe₂_comp_IicProdIoc, ← fst_eq, fst_prod, id_comp]
     all_goals fun_prop
-  · rw [partialTraj_le (Nat.succ_le.2 hba), partialTraj_le hba.le, deterministic_map]
+  · rw [partialTraj_le (Nat.succ_le_iff.2 hba), partialTraj_le hba.le, deterministic_map]
     · rfl
     · fun_prop
 

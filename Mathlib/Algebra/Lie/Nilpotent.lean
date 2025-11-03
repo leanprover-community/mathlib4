@@ -468,7 +468,7 @@ theorem lowerCentralSeriesLast_le_of_not_isTrivial [IsNilpotent L M] (h : ¬ IsT
     contradiction
   rcases hk : nilpotencyLength L M with - | k <;> rw [hk] at h
   · contradiction
-  · exact antitone_lowerCentralSeries _ _ _ (Nat.lt_succ.mp h)
+  · exact antitone_lowerCentralSeries _ _ _ (Nat.lt_succ_iff.mp h)
 
 variable [LieModule R L M]
 

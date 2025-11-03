@@ -160,7 +160,7 @@ theorem set_coe_cast :
   | _, _, rfl, _, _ => rfl
 
 theorem SetCoe.ext {s : Set α} {a b : s} : (a : α) = b → a = b :=
-  Subtype.eq
+  Subtype.ext
 
 theorem SetCoe.ext_iff {s : Set α} {a b : s} : (↑a : α) = ↑b ↔ a = b :=
   Iff.intro SetCoe.ext fun h => h ▸ rfl

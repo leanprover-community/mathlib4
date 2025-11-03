@@ -73,7 +73,7 @@ theorem jacobiSymNat.zero_left (b : ℕ) (hb : Nat.beq (b / 2) 0 = false) : jaco
   calc
     1 < 2 * 1       := by decide
     _ ≤ 2 * (b / 2) :=
-      Nat.mul_le_mul_left _ (Nat.succ_le.mpr (Nat.pos_of_ne_zero (Nat.ne_of_beq_eq_false hb)))
+      Nat.mul_le_mul_left _ (Nat.succ_le_iff.mpr (Nat.pos_of_ne_zero (Nat.ne_of_beq_eq_false hb)))
     _ ≤ b           := Nat.mul_div_le b 2
 
 theorem jacobiSymNat.one_left (b : ℕ) : jacobiSymNat 1 b = 1 := by

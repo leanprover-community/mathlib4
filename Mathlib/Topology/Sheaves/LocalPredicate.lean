@@ -336,7 +336,7 @@ theorem stalkToFiber_injective (P : LocalPredicate T) (x : X)
   refine ⟨op W, fun w ↦ fU (iU w : (unop U).1), P.res ?_ _ hU, ?_⟩
   · rcases W with ⟨W, m⟩
     exact iU
-  · exact ⟨colimit_sound iU.op (Subtype.eq rfl), colimit_sound iV.op (Subtype.eq (funext w).symm)⟩
+  · exact ⟨colimit_sound iU.op (Subtype.ext rfl), colimit_sound iV.op (Subtype.ext (funext w).symm)⟩
 
 universe u
 

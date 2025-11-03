@@ -89,7 +89,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
     · dsimp [Fin.cast, Fin.pred]
       rw [Nat.add_right_comm, Nat.add_sub_assoc (by simp : 1 ≤ 3)]
       cutsat
-    · simp only [Fin.lt_iff_val_lt_val]
+    · simp only [Fin.lt_def]
       dsimp [Fin.natAdd, Fin.cast]
       cutsat
   simp only [assoc]
@@ -176,7 +176,7 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFac
   have ham : a ≤ m := by omega
   rw [X.δ_comp_σ_of_gt', j.pred_succ]
   swap
-  · rw [Fin.lt_iff_val_lt_val]
+  · rw [Fin.lt_def]
     simpa only [Fin.val_mk, Fin.val_succ, add_lt_add_iff_right] using haj
   obtain _ | ham'' := ham.lt_or_eq
   · -- case where `a<m`

@@ -34,7 +34,7 @@ theorem natCast_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.of
 /-! ### Miscellaneous lemmas -/
 
 theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
-  | (n : ℕ) => abs_of_nonneg <| ofNat_zero_le _
+  | (n : ℕ) => abs_of_nonneg <| natCast_nonneg _
   | -[_+1] => abs_of_nonpos <| le_of_lt <| negSucc_lt_zero _
 
 @[norm_cast] lemma natCast_natAbs (n : ℤ) : (n.natAbs : ℤ) = |n| := n.abs_eq_natAbs.symm

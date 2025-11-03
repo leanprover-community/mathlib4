@@ -250,7 +250,7 @@ def semicolonLinter : TextbasedLinter := fun opts lines ↦ Id.run do
     if pos != line.rawEndPos && (pos.prev line).get line == ' ' then
       errors := errors.push (StyleError.semicolon, idx + 1)
       -- We spell the bad string pattern this way to avoid the linter firing on itself.
-      fixedLines := fixedLines.set! idx (line.replace [' ', ';'].asString ";")
+      fixedLines := fixedLines.set! idx (line.replace (String.ofList [' ', ';']) ";")
   return (errors, if errors.size > 0 then some fixedLines else none)
 
 
