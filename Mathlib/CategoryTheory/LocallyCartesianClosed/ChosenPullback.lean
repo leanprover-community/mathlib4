@@ -50,6 +50,7 @@ class ChosenPullback {Y X : C} (f : Y ⟶ X) where
   mapPullbackAdj (f) : Over.map f ⊣ pullback
 
 variable (C) in
+/-- A category has chosen pullbacks if every morphism has a chosen pullback. -/
 abbrev ChosenPullbacks := Π {X Y : C} (f : Y ⟶ X), ChosenPullback f
 
 namespace ChosenPullback
