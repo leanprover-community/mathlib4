@@ -11,6 +11,7 @@ import Mathlib.Data.List.TFAE
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 import Mathlib.RingTheory.MvPolynomial.Ideal
+import Mathlib.RingTheory.HopkinsLevitzki
 
 
 /-! # Gröbner Basis Theory
@@ -1286,6 +1287,22 @@ section Field
 
 variable {k : Type*} [Field k]
 variable {σ : Type*} {m : MonomialOrder σ}
+
+variable (m) in
+theorem exists_isGroebnerBasis_finite [Finite σ] (I : Ideal (MvPolynomial σ k)) :
+    ∃ G : Set (MvPolynomial σ k), m.IsGroebnerBasis G ↑I ∧ G.Finite := by
+  have key : (Ideal.span (α:=MvPolynomial σ k) (m.leadingTerm '' ↑I)).FG :=
+    (inferInstance : IsNoetherian _ _).noetherian _
+  -- todo: Ideal.fg_span_iff_fg_span_finset_subset
+  apply (Submodule.fg_span_iff_fg_span_finset_subset _).mp at key
+  simp only [Set.subset_image_iff] at key
+  rcases key with ⟨s, ⟨G', hG'I, hG's⟩, hIs⟩
+  have ⟨G, hG, hG₁⟩ := hG's ▸ Set.exists_subset_bijOn G' m.leadingTerm
+  use G
+  split_ands
+  · exact subset_trans hG hG'I
+  · rwa [hG₁.image_eq]
+  · simp [Set.BijOn.finite_iff_finite hG₁]
 
 /-- A variant of `div_set'` in field -/
 theorem div_set'' (B : Set (MvPolynomial σ k))
