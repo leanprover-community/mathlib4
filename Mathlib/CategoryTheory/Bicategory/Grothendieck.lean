@@ -178,13 +178,9 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
   map_comp {a b c} f g := by
     ext
     · dsimp
-    · simp only [Cat.comp_obj, categoryStruct_comp_base, Quiver.Hom.comp_toLoc,
-        categoryStruct_comp_fiber, eqToHom_refl, naturality_comp_inv_app, Strict.associator_eqToIso,
-        eqToIso_refl, Iso.refl_inv, Cat.id_app, Iso.refl_hom, id_comp, assoc, ← map_comp,
-        Iso.inv_hom_id_app_assoc, NatIso.cancel_natIso_hom_left]
-      have := (α.naturality g.base.toLoc).inv.naturality_assoc
-      simp only [Cat.comp_map] at this
-      simp [this]
+    · dsimp
+      slice_rhs 2 3 => erw [map_comp, assoc, (α.naturality g.base.toLoc).inv.naturality]
+      simp [naturality_comp_inv_app, ← map_comp]
 
 @[simp]
 lemma map_id_map {x y : ∫ F} (f : x ⟶ y) : (map (𝟙 F)).map f = f := by
