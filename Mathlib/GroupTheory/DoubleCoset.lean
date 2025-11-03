@@ -176,7 +176,7 @@ theorem mk_eq_of_doubleCoset_eq {H K : Subgroup G} {a b : G}
 @[deprecated (since := "2025-07-12")]
 alias _root_.Doset.mk_eq_of_doset_eq := mk_eq_of_doubleCoset_eq
 
-theorem mem_quotToDoubleCoset_iff (H K : Subgroup G) (i : Quotient (H : Set G) K) (a : G) :
+theorem mem_quotToDoubleCoset_iff {H K : Subgroup G} (i : Quotient (H : Set G) K) (a : G) :
     a ∈ quotToDoubleCoset H K i ↔ mk H K a = i := by
   constructor
   · intro hg
