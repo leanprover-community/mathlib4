@@ -143,5 +143,3 @@ theorem finsuppPow (ibc : IsBaseChange S ε) :
 end DirectSum
 
 end IsBaseChange
-
-
