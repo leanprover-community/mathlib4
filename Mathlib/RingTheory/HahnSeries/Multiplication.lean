@@ -849,7 +849,7 @@ open TensorProduct in
 /-- The map that tensors a Hahn series with a module on the right. -/
 def rightTensorMap [CommSemiring R] [AddCommMonoid U] [Module R V] [Module R U] :
     HahnModule Γ' R U ⊗[R] V →ₗ[R] HahnModule Γ' R (U ⊗[R] V) :=
-  TensorProduct.uncurry R _ _ _
+  TensorProduct.uncurry _ _ _ _
   { toFun := fun x => {
       toFun := fun v => (of R) {
         coeff := fun g => tmul R (((of R).symm x).coeff g) v
@@ -876,7 +876,7 @@ open TensorProduct in
 /-- The map that tensors a Hahn series with a module on the right. -/
 def leftTensorMap [CommSemiring R] [AddCommMonoid U] [Module R V] [Module R U] :
     U ⊗[R] HahnModule Γ' R V →ₗ[R] HahnModule Γ' R (U ⊗[R] V) :=
-  TensorProduct.uncurry R _ _ _
+  TensorProduct.uncurry _ _ _ _
   { toFun := fun u => {
       toFun := fun x => (of R) {
         coeff := fun g => tmul R u (((of R).symm x).coeff g)
