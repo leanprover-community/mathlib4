@@ -52,14 +52,14 @@ namespace PointedCone
 
 /-- The minimal tensor product of two cones is given by all conical combinations of elementary
 tensor products x ⊗ₜ y of cone elements x and y. -/
-noncomputable def minTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone K H)
-    : PointedCone K (G ⊗[K] H) :=
+noncomputable def minTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone K H) :
+    PointedCone K (G ⊗[K] H) :=
   .span K {z | ∃ x y, x ∈ C₁ ∧ y ∈ C₂ ∧ z = x ⊗ₜ[K] y}
 
 /-- The maximal tensor product is the (algebraic) dual of the minimal tensor product
 of the dual cones. -/
-noncomputable def maxTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone K H)
-    : PointedCone K (G ⊗[K] H) :=
+noncomputable def maxTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone K H) :
+    PointedCone K (G ⊗[K] H) :=
   .dual
     (dualDistrib K G H)
     (minTensorProduct
@@ -68,8 +68,7 @@ noncomputable def maxTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone 
 
 /-- Characterization of the maximal tensor product: `z` lies in
 `maxTensorProduct C₁ C₂` iff all pairings with elementary dual tensors are nonnegative. -/
-theorem mem_maxTensorProduct_iff
-    {C₁ : PointedCone K G} {C₂ : PointedCone K H} {z : G ⊗[K] H} :
+theorem mem_maxTensorProduct_iff {C₁ : PointedCone K G} {C₂ : PointedCone K H} {z : G ⊗[K] H} :
     z ∈ maxTensorProduct (K:=K) C₁ C₂ ↔
       ∀ φ ∈ PointedCone.dual (Module.dualPairing K G).flip C₁.carrier,
       ∀ ψ ∈ PointedCone.dual (Module.dualPairing K H).flip C₂.carrier,
@@ -106,8 +105,8 @@ theorem tmul_subset_maxTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCon
   fun _ ⟨_, _, hx, hy, hw⟩ => hw ▸ tmul_mem_maxTensorProduct hx hy
 
 /-- The minimal tensor product is less than or equal to the maximal tensor product. -/
-theorem minTensorProduct_le_maxTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone K H)
-    : minTensorProduct C₁ C₂ ≤ maxTensorProduct C₁ C₂ := by
+theorem minTensorProduct_le_maxTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone K H) :
+    minTensorProduct C₁ C₂ ≤ maxTensorProduct C₁ C₂ := by
   exact Submodule.span_le.mpr (tmul_subset_maxTensorProduct C₁ C₂)
 
 end PointedCone
