@@ -6,6 +6,12 @@ Authors: Jingting Wang
 import Mathlib.Algebra.FiveLemma
 import Mathlib.RingTheory.Flat.Basic
 
+/-!
+
+# Lemmas about IsBaseChange under Exact Sequences
+
+-/
+
 variable {R : Type*} [CommRing R] (S : Type*) [CommRing S] [Algebra R S]
 
 variable {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
