@@ -311,8 +311,7 @@ theorem union_finset_leftRel_cover (H K : Subgroup G) (t : Finset (Quotient H K)
   contrapose! hx
   simp only [Set.mem_iUnion, exists_prop]
   refine ⟨y, hy, ?_⟩
-  rw [← doubleCoset_eq_of_mem hq]
-  apply mem_doubleCoset.mpr
+  rw [← doubleCoset_eq_of_mem hq,  mem_doubleCoset]
   obtain ⟨a', ha'⟩ := (Quotient.eq).mp hx
   exact ⟨1, one_mem H, (MulOpposite.unop a'⁻¹), Subgroup.mem_op.mp (by simp), by simpa
     using (eq_mul_inv_of_mul_eq ha')⟩
@@ -330,15 +329,10 @@ theorem union_finset_rightRel_cover (H K : Subgroup G) (t : Finset (Quotient H K
   contrapose! hx
   simp only [Set.mem_iUnion, exists_prop]
   refine ⟨y, hy, ?_⟩
-  rw [← doubleCoset_eq_of_mem hq]
-  apply mem_doubleCoset.mpr
+  rw [← doubleCoset_eq_of_mem hq, mem_doubleCoset]
   obtain ⟨a, ha⟩ : ∃ a : H, x = a * q := by
-    obtain ⟨a, ha⟩ : ∃ a : H, a * x = q := by
-      obtain ⟨a', ha'⟩ := Quotient.eq.mp hx
-      exact ⟨a', by simpa using ha'⟩
-    exact ⟨⟨a⁻¹, by simp only [inv_mem_iff, SetLike.coe_mem]⟩, eq_inv_mul_of_mul_eq ha⟩
-  refine ⟨a.1, ?_⟩
-  simp only [Subtype.coe_prop, SetLike.mem_coe, true_and]
-  exact ⟨1, Subgroup.one_mem K, by simpa using ha⟩
+    obtain ⟨a, ha⟩ : ∃ a : H, a * x = q := Quotient.eq.mp hx
+    exact ⟨⟨a⁻¹, by simp⟩, eq_inv_mul_of_mul_eq ha⟩
+  exact ⟨a.1, a.2, ⟨1, Subgroup.one_mem K, by simpa using ha⟩⟩
 
 end DoubleCoset
