@@ -336,7 +336,7 @@ theorem Multipliable.hasProd_iff (h : Multipliable f L) :
 
 @[to_additive]
 theorem tprod_eq_of_filter_le {L₁ L₂ : SummationFilter β} [L₁.NeBot]
-  (h : L₁.filter ≤ L₂.filter) (hf : Multipliable f L₂) : ∏'[L₁] b, f b = ∏'[L₂] b, f b :=
+    (h : L₁.filter ≤ L₂.filter) (hf : Multipliable f L₂) : ∏'[L₁] b, f b = ∏'[L₂] b, f b :=
   (hf.mono_filter h).hasProd_iff.mp (hf.hasProd.mono_left h)
 
 @[to_additive]

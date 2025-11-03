@@ -9,6 +9,9 @@ import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Order.Filter.AtTopBot.Interval
 import Mathlib.Topology.Algebra.InfiniteSum.Defs
 import Mathlib.Topology.Algebra.Monoid.Defs
+import Mathlib.Data.Pi.Interval
+import Mathlib.Tactic.FinCases
+
 
 /-!
 # Sums over symmetric integer intervals
@@ -23,11 +26,11 @@ We also prove that these filters are all `NeBot` and `LeAtTop`.
 
 open Finset Topology Function Filter SummationFilter
 
-variable (G : Type*) [Neg G] [Preorder G] [LocallyFiniteOrder G]
-
 namespace SummationFilter
 
 section IntervalFilters
+
+variable (G : Type*) [Neg G] [Preorder G] [LocallyFiniteOrder G]
 
 /-- The SummationFilter on a locally finite order `G` corresponding to the symmetric
 intervals `Icc (-N) N`· -/
