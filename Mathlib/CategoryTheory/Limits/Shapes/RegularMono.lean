@@ -87,7 +87,7 @@ variable (C) in
 def MorphismProperty.regularMono : MorphismProperty C := fun _ _ f => IsRegularMono f
 
 @[simp]
-theorem MorphismProperty.regularMono.iff (f : X ⟶ Y) :
+theorem MorphismProperty.regularMono_iff (f : X ⟶ Y) :
     (MorphismProperty.regularMono C) f ↔ IsRegularMono f :=
   by rfl
 
@@ -99,7 +99,7 @@ instance MorphismProperty.regularMono.respectsIso :
     (MorphismProperty.regularMono C).RespectsIso :=
   RespectsIso.of_respects_arrow_iso _ (fun _ _ e h ↦ ⟨.ofArrowIso e (h := h.some)⟩)
 
-instance is_regular_mono_of_regular_mono (f : X ⟶ Y) [h : RegularMono f] : IsRegularMono f := ⟨h⟩
+instance isRegularMono_of_regularMono (f : X ⟶ Y) [h : RegularMono f] : IsRegularMono f := ⟨h⟩
 
 instance (priority := low) regularMonoOfIsRegularMono (f : X ⟶ Y) [h : IsRegularMono f] :
     RegularMono f :=
