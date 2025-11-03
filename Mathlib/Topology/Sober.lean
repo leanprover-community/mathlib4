@@ -6,6 +6,8 @@ Authors: Andrew Yang
 import Mathlib.Topology.Sets.Closeds
 import Mathlib.Topology.Sets.OpenCover
 import Mathlib.Algebra.HierarchyDesign
+import Mathlib.Order.KrullDimension
+import Mathlib.Topology.KrullDimension
 
 /-!
 # Sober spaces
@@ -170,6 +172,47 @@ noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
     refine specializes_iff_closure_subset.trans ?_
     simp
     rfl
+
+open TopologicalSpace Topology Order Set IrreducibleCloseds in
+lemma coheight_eq_of_isOpenEmbedding {U X : Type*} [TopologicalSpace U] [TopologicalSpace X]
+    [QuasiSober X] [T0Space X] [QuasiSober U] [T0Space U]
+    {x : U} (f : U → X) (hf : Continuous f) (hf' : IsOpenEmbedding f)
+    : coheight (f x) = coheight x := by
+  rw [← coheight_orderIso (irreducibleSetEquivPoints (α := X)).symm (f x),
+      ← coheight_orderIso (irreducibleSetEquivPoints (α := U)).symm x,
+      ← coheight_orderIso (closureImageOrderIso f hf hf')
+        ((irreducibleSetEquivPoints (α := U)).symm x)]
+  let g : {V : IrreducibleCloseds X | f ⁻¹' ↑V ≠ ∅} ↪o
+      IrreducibleCloseds X :=
+    OrderEmbedding.subtype {V : IrreducibleCloseds X | f ⁻¹' V ≠ ∅}
+  let a := (closureImageOrderIso f hf hf')
+      (irreducibleSetEquivPoints.symm x)
+  have : ∀ p : LTSeries (IrreducibleCloseds X), p.head = g a →
+         ∃ p' : LTSeries ({V : IrreducibleCloseds X | f ⁻¹' ↑V ≠ ∅}),
+           p'.head = a ∧ p = p'.map g (OrderEmbedding.strictMono g) := fun p hp ↦ by
+    let p' : LTSeries {V : IrreducibleCloseds X | f ⁻¹' ↑V ≠ ∅} := {
+      length := p.length
+      toFun i := {
+        val := p i
+        property := by
+          suffices  ¬ f ⁻¹' a = ∅ by
+            rw[← Ne, ← nonempty_iff_ne_empty] at this
+            exact nonempty_iff_ne_empty.mp <|
+              Nonempty.mono (fun _ b ↦ (hp ▸ LTSeries.head_le p i) b) this
+          exact a.2
+      }
+      step := p.step
+    }
+    exact ⟨p', SetCoe.ext hp, rfl⟩
+  have := coheight_eq_of_strictMono g (fun _ _ a ↦ a)
+     ((closureImageOrderIso f hf hf')
+     (irreducibleSetEquivPoints.symm x)) this
+  convert this.symm
+  simp only [irreducibleSetEquivPoints, ne_eq, coe_setOf, mem_setOf_eq, closureImageOrderIso,
+    RelIso.coe_fn_mk]
+  suffices closure {f x} = closure (f '' (closure {x})) from
+    IrreducibleCloseds.ext_iff.mpr this
+  simp [closure_image_closure hf]
 
 lemma Topology.IsClosedEmbedding.quasiSober {f : α → β} (hf : IsClosedEmbedding f) [QuasiSober β] :
     QuasiSober α where
