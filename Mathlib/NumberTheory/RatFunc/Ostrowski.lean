@@ -29,10 +29,9 @@ lemma FiniteField.valuation_algebraMap_eq_one {Fq A Γ₀ : Type*} [Field Fq] [F
     [Ring A] [Algebra Fq A] [LinearOrderedCommMonoidWithZero Γ₀] (v : Valuation A Γ₀) (a : Fq)
     (ha : a ≠ 0) : v ((algebraMap Fq A) a) = 1 := by
   have hpow : (v ((algebraMap Fq A) a)) ^ (Fintype.card Fq - 1) = 1 := by
-    simp only [← _root_.map_pow, FiniteField.pow_card_sub_one_eq_one a ha, _root_.map_one]
-  rwa [pow_eq_one_iff] at hpow
-  have h2 : 2 ≤ Fintype.card Fq := IsPrimePow.two_le (FiniteField.isPrimePow_card _)
-  omega
+    simp [← map_pow, pow_card_sub_one_eq_one a ha]
+  refine (pow_eq_one_iff ?_).mp hpow
+  grind [Fintype.one_lt_card]
 
 variable {Fq Γ : Type*} [Field Fq] [LinearOrderedCommGroupWithZero Γ]
   {v : Valuation (RatFunc Fq) Γ}
@@ -45,39 +44,30 @@ open FunctionField Polynomial Valuation
 
 theorem valuation_eq_valuation_X_zpow_intDegree_of_one_lt_valuation_X {f : RatFunc Fq}
     (h : ∀ a : Fq, a ≠ 0 → v (algebraMap Fq (RatFunc Fq) a) = 1)
-    (hlt : 1 < v X) (hf : f ≠ 0) : v f = v RatFunc.X ^ (f.intDegree) := by
+    (hlt : 1 < v X) (hf : f ≠ 0) : v f = v RatFunc.X ^ f.intDegree := by
   induction f using RatFunc.induction_on with
   | f p q hne0 =>
-    simp_all only [ne_eq, algebraMap_eq_C, div_eq_mul_inv, mul_eq_zero,
-      FaithfulSMul.algebraMap_eq_zero_iff, inv_eq_zero, or_false, map_mul, map_inv₀]
-    rw [intDegree_mul (by aesop) (by aesop)]
-    simp [intDegree_polynomial, intDegree_inv]
-    rw_mod_cast [zpow_add₀ (by aesop),
-      ← valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X _ h hlt hf,
-      zpow_neg, ← valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X _ h hlt hne0]
-    simp
+    rw [intDegree_div (by grind only) (by grind only), v.map_div, zpow_sub₀ (ne_zero_of_lt hlt)]
+    simp_rw [intDegree_polynomial, zpow_natCast, ← coe_polynomial_eq_algebraMap]
+    have hp : p ≠ 0  := by contrapose! hf; simp [hf]
+    congr <;> exact valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X _ h hlt ‹_›
 
 variable [DecidableEq (RatFunc Fq)]
 
 theorem valuation_isEquiv_inftyValuation_of_one_lt_valuation_X
     (h : ∀ a : Fq, a ≠ 0 → v (C a) = 1) (hlt : 1 < v X) : v.IsEquiv (inftyValuation Fq) := by
-  rw [isEquiv_iff_val_lt_one]
-  intro f
-  by_cases hf : f = 0
-  · simp_all
+  refine isEquiv_iff_val_lt_one.mpr fun {f} ↦ ?_
+  rcases eq_or_ne f 0 with rfl | hf
+  · simp
   · have hlt' : 1 < inftyValuation Fq X := by simp [← exp_zero]
     rw [valuation_eq_valuation_X_zpow_intDegree_of_one_lt_valuation_X h hlt hf,
       valuation_eq_valuation_X_zpow_intDegree_of_one_lt_valuation_X
-        (fun _ ha ↦ by simp [inftyValuation.C _ ha]) hlt' hf,
-      ← not_iff_not, not_lt, not_lt, one_le_zpow_iff_right₀ hlt, one_le_zpow_iff_right₀ hlt']
+        (fun _ ha ↦ by simp [inftyValuation.C _ ha]) hlt' hf]
+    grind [one_le_zpow_iff_right₀]
 
 end Infinity
 
-open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum Multiplicative Set
-
-open RatFunc Valuation FunctionField
-
-open Polynomial Valuation WithZero
+open IsDedekindDomain HeightOneSpectrum Set Valuation FunctionField Polynomial
 
 theorem setOf_polynomial_valuation_lt_one_and_ne_zero_nonempty [v.IsNontrivial]
     (h : ∀ a : Fq, a ≠ 0 → v (algebraMap Fq (RatFunc Fq) a) = 1) (hle : v RatFunc.X ≤ 1) :
@@ -95,39 +85,35 @@ theorem setOf_polynomial_valuation_lt_one_and_ne_zero_nonempty [v.IsNontrivial]
       ⟨Polynomial.valuation_le_one_of_valuation_X_le_one _ h hle r, hr⟩, hr0⟩
 
 private lemma one_le_valuation_factor (hne : {p : Fq[X] | v p < 1 ∧ p ≠ 0}.Nonempty) {a b : Fq[X]}
-    (hab : v ↑(a * b) < 1 ∧ a ≠ 0 ∧ b ≠ 0) (hπᵥ : (WellFounded.min degree_lt_wf _ hne) = a * b)
+    (hab : v ↑(a * b) < 1 ∧ a ≠ 0 ∧ b ≠ 0) (hπᵥ : (degree_lt_wf.min _ hne) = a * b)
     (hb : ¬IsUnit b) : 1 ≤ v ↑a := by
-  set πᵥ := (WellFounded.min degree_lt_wf _ hne)
+  set πᵥ := (degree_lt_wf.min _ hne)
   have hda : a.degree < πᵥ.degree := by
-    obtain hbpos := degree_pos_of_ne_zero_of_nonunit hab.2.2 hb
+    have hbpos := degree_pos_of_ne_zero_of_nonunit hab.2.2 hb
     simp_rw [hπᵥ, degree_mul, degree_eq_natDegree hab.2.1, degree_eq_natDegree hab.2.2] at hbpos ⊢
     norm_cast
     simpa using hbpos
-  obtain hlea := imp_not_comm.mp (WellFounded.not_lt_min degree_lt_wf _ hne) hda
-  simp_all only [ne_eq, mem_setOf_eq, not_and, not_not, degree_mul, imp_false, not_lt]
+  have hlea := imp_not_comm.mp (degree_lt_wf.not_lt_min _ hne) hda
+  grind
 
 private theorem irreducible_min_polynomial_valuation_lt_one_and_ne_zero
     (hne : {p : Fq[X] | v p < 1 ∧ p ≠ 0}.Nonempty)
-    (hle : v RatFunc.X ≤ 1) (h : ∀ a : Fq, a ≠ 0 → v (algebraMap Fq (RatFunc Fq) a) = 1) :
-    Irreducible (WellFounded.min degree_lt_wf {p : Fq[X] | v p < 1 ∧ p ≠ 0} hne) := by
-  set πᵥ := (WellFounded.min degree_lt_wf _ hne)
-  have hπᵥ : v πᵥ < 1 ∧ πᵥ ≠ 0 := WellFounded.min_mem degree_lt_wf _ hne
-  rw [irreducible_iff]
-  constructor
-  · simp only [Polynomial.isUnit_iff, isUnit_iff_ne_zero, ne_eq, not_exists, not_and]
-    intro a ha0 ha
-    absurd hπᵥ.1
-    rw [RatFunc.coePolynomial, ← ha, algebraMap_C, ← RatFunc.algebraMap_eq_C, h a ha0]
-    exact lt_irrefl 1
-  · by_contra!
-    obtain ⟨a, b, hab, hua, hub⟩ := this
-    rw [hab, mul_ne_zero_iff] at hπᵥ
-    suffices v a = 1 ∧ v b = 1 by simp_all [RatFunc.coePolynomial]
-    refine ⟨antisymm (Polynomial.valuation_le_one_of_valuation_X_le_one _ h hle _)
-        (one_le_valuation_factor hne hπᵥ hab hub),
-      antisymm (Polynomial.valuation_le_one_of_valuation_X_le_one _ h hle _) ?_⟩
-    simp only [mul_comm a b, And.comm (a := a ≠ 0)] at hπᵥ hab
-    exact one_le_valuation_factor hne hπᵥ hab hua
+    (h : ∀ a : Fq, a ≠ 0 → v (algebraMap Fq (RatFunc Fq) a) = 1) :
+    Irreducible (degree_lt_wf.min {p : Fq[X] | v p < 1 ∧ p ≠ 0} hne) := by
+  set πᵥ := degree_lt_wf.min _ hne
+  have hπᵥ : v πᵥ < 1 ∧ πᵥ ≠ 0 := degree_lt_wf.min_mem _ hne
+  refine irreducible_iff.mpr ⟨?_, fun a b hab ↦ ?_⟩
+  · simp only [Polynomial.isUnit_iff, isUnit_iff_ne_zero]
+    intro ⟨a, ha0, ha⟩
+    rw [← ha, coePolynomial, algebraMap_C, ← algebraMap_eq_C] at hπᵥ
+    grind
+  · by_contra! H
+    simp only [hab, ne_eq, mul_eq_zero, not_or] at hπᵥ
+    have hva := one_le_valuation_factor hne hπᵥ hab H.2
+    simp only [mul_comm a b, @and_comm (¬a = 0)] at hπᵥ hab
+    have := Right.one_le_mul (one_le_valuation_factor hne hπᵥ hab H.1) hva
+    simp only [coe_polynomial_eq_algebraMap, map_mul] at hπᵥ this
+    grind
 
 section valuation_X_le_one
 
@@ -141,9 +127,8 @@ abbrev uniformizingPolynomial : Fq[X] :=
 /-- A uniformizing element for the valuation `v`, as a polynomial in `Fq[X]`. -/
 local notation "πᵥ" => uniformizingPolynomial hle h
 
-lemma uniformizingPolynomial_ne_zero : ¬ πᵥ = 0 := by
-  obtain hπᵥ := WellFounded.min_mem degree_lt_wf _
-    ((setOf_polynomial_valuation_lt_one_and_ne_zero_nonempty h hle))
+lemma uniformizingPolynomial_ne_zero : πᵥ ≠ 0 := by
+  have := degree_lt_wf.min_mem _ (setOf_polynomial_valuation_lt_one_and_ne_zero_nonempty h hle)
   simp_all [uniformizingPolynomial]
 
 open Ideal in
@@ -152,8 +137,8 @@ def valuationIdeal : HeightOneSpectrum Fq[X] where
   asIdeal := Submodule.span Fq[X] {πᵥ}
   isPrime := IsMaximal.isPrime (PrincipalIdealRing.isMaximal_of_irreducible
     (irreducible_min_polynomial_valuation_lt_one_and_ne_zero
-      (setOf_polynomial_valuation_lt_one_and_ne_zero_nonempty h hle) hle h))
-  ne_bot := by simp; exact uniformizingPolynomial_ne_zero hle h
+      (setOf_polynomial_valuation_lt_one_and_ne_zero_nonempty h hle) h))
+  ne_bot := by simpa using uniformizingPolynomial_ne_zero hle h
 
 /-- The maximal ideal of `Fq[X]` generated by the `uniformizingPolynomial` for `v`. -/
 local notation "Pᵥ" => RatFunc.valuationIdeal hle h
@@ -166,37 +151,33 @@ theorem valuation_eq_valuation_πᵥ_pow_of_valuation_X_le_one
     [(p : Associates (Ideal Fq[X])) → Decidable (Irreducible p)] (p : Fq[X]) (hp : p ≠ 0) :
     v (algebraMap Fq[X] (RatFunc Fq) p) = v (πᵥ ^ ((Associates.mk (Pᵥ).asIdeal).count
       (Associates.mk (Ideal.span {p})).factors)) := by
-  obtain ⟨k, q, hnq, heq⟩ := WfDvdMonoid.max_power_factor hp
-    (irreducible_min_polynomial_valuation_lt_one_and_ne_zero _ hle h)
-  obtain hπᵥ := WellFounded.min_mem degree_lt_wf _
-    (setOf_polynomial_valuation_lt_one_and_ne_zero_nonempty h hle)
-  simp only [ne_eq, mem_setOf_eq] at hπᵥ
+  set π := πᵥ
+  have hne := setOf_polynomial_valuation_lt_one_and_ne_zero_nonempty h hle
+  have hπirr : Irreducible π := irreducible_min_polynomial_valuation_lt_one_and_ne_zero hne h
+  obtain ⟨k, q, hnq, heq⟩ := WfDvdMonoid.max_power_factor hp hπirr
+  have hπ : π ∈ _ := degree_lt_wf.min_mem _ hne
+  simp only [ne_eq, mem_setOf] at hπ
   nth_rw 1 [heq]
-  simp only [ne_eq, _root_.map_mul, _root_.map_pow]
-  suffices v ((algebraMap Fq[X] (RatFunc Fq)) q) = 1 by
+  simp only [map_mul, map_pow]
+  suffices v (algebraMap Fq[X] (RatFunc Fq) q) = 1 by
     simp only [this, mul_one]
     congr
-    exact (Ideal.count_associates_eq (irreducible_iff_prime.mp
-      (irreducible_min_polynomial_valuation_lt_one_and_ne_zero _ hle h)) hnq heq).symm
-  rw [← mod_add_div q πᵥ, _root_.map_add]
+    exact (Ideal.count_associates_eq (irreducible_iff_prime.mp hπirr) hnq heq).symm
+  rw [← mod_add_div q π, map_add]
   rw [← mod_eq_zero] at hnq
-  suffices v ((algebraMap Fq[X] (RatFunc Fq)) (q % πᵥ)) = 1 ∧
-    v ((algebraMap Fq[X] (RatFunc Fq)) (πᵥ * (q / πᵥ))) < 1 by
-      rw [← this.1] at *
-      exact Valuation.map_add_eq_of_lt_left _ this.2
+  suffices v (algebraMap Fq[X] (RatFunc Fq) (q % π)) = 1 ∧
+      v (algebraMap Fq[X] (RatFunc Fq) (π * (q / π))) < 1 by
+    obtain ⟨h₁, h₂⟩ := this
+    rw [← h₁] at h₂ ⊢
+    exact Valuation.map_add_eq_of_lt_left _ h₂
   constructor
-  · obtain hnπᵥ := imp_not_comm.mp (WellFounded.not_lt_min degree_lt_wf _
-      (setOf_polynomial_valuation_lt_one_and_ne_zero_nonempty h hle))
-        (EuclideanDomain.remainder_lt q (hπᵥ.2))
-    simp only [ne_eq, mem_setOf_eq, not_and_or, not_not] at hnπᵥ
-    rcases hnπᵥ with hnπᵥ | hnπᵥ
-    · simp_rw [not_lt] at hnπᵥ
-      exact antisymm (Polynomial.valuation_le_one_of_valuation_X_le_one _ h hle _) hnπᵥ
-    · contradiction
-  · simp only [map_mul]
-    rw [← one_mul 1, mul_comm]
-    exact mul_lt_mul_of_le_of_lt_of_nonneg_of_pos
-      (Polynomial.valuation_le_one_of_valuation_X_le_one _ h hle _) hπᵥ.1 zero_le' zero_lt_one
+  · rw [← coe_polynomial_eq_algebraMap]
+    have hnπ : q % π ∉ _ :=
+      imp_not_comm.mp (degree_lt_wf.not_lt_min _ hne) (EuclideanDomain.remainder_lt q hπ.2)
+    have := Polynomial.valuation_le_one_of_valuation_X_le_one _ h hle (q % π)
+    grind
+  · simpa only [map_mul, ← coe_polynomial_eq_algebraMap]
+      using mul_lt_one_of_lt_of_le hπ.1 <| (q / π).valuation_le_one_of_valuation_X_le_one _ h hle
 
 theorem uniformizingPolynomial_isUniformizer [vDisc : IsRankOneDiscrete v] :
     v.IsUniformizer (↑πᵥ) := by
@@ -209,9 +190,8 @@ theorem uniformizingPolynomial_isUniformizer [vDisc : IsRankOneDiscrete v] :
   | f p q hne0 =>
     intro hx
     have hp : p ≠ 0 := by
-      by_contra hp0
-      simp only [hp0, map_zero, zero_div] at hx
-      exact (Valuation.IsUniformizer.ne_zero hx) rfl
+      have := hx.ne_zero
+      grind [FaithfulSMul.algebraMap_eq_zero_iff]
     simp only [IsUniformizer, map_div₀] at hx
     rw [valuation_eq_valuation_πᵥ_pow_of_valuation_X_le_one hle h p hp,
       valuation_eq_valuation_πᵥ_pow_of_valuation_X_le_one hle h q hne0] at hx
