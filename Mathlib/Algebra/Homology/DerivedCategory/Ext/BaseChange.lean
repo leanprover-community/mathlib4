@@ -35,11 +35,6 @@ open CategoryTheory
 
 variable {R} (S : Type u') [CommRing S] [Algebra R S]
 
-lemma isBaseChange_comp_equiv {M1 M2 N : Type*} [AddCommGroup M1] [AddCommGroup M2] [AddCommGroup N]
-    [Module R M1] [Module R M2] [Module R N] [Module S N] [IsScalarTower R S N] (e : M1 ≃ₗ[R] M2)
-    (f : M2 →ₗ[R] N) (isb : IsBaseChange S f) : IsBaseChange S (f.comp e.toLinearMap) := by
-  sorry
-
 section extendscalars'
 
 namespace ModuleCat
@@ -216,6 +211,11 @@ lemma IsBaseChange.of_equiv_right (f : M₁ ≃ₗ[R] M₂) (f' : N₁ ≃ₗ[S]
   obtain ⟨y, rfl⟩ := f.surjective y
   exact f'.injective (by simpa using congr($comm1 y).symm)
 
+lemma IsBaseChange.comp_equiv {M1 M2 N : Type*} [AddCommGroup M1] [AddCommGroup M2] [AddCommGroup N]
+    [Module R M1] [Module R M2] [Module R N] [Module S N] [IsScalarTower R S N] (e : M1 ≃ₗ[R] M2)
+    (f : M2 →ₗ[R] N) (isb : IsBaseChange S f) : IsBaseChange S (f.comp e.toLinearMap) :=
+  IsBaseChange.of_equiv_right S (f.comp e.toLinearMap) f e 1 (LinearMap.ext fun y ↦ by simp) isb
+
 end
 
 section
@@ -338,7 +338,7 @@ lemma CategoryTheory.isBaseChange_hom [IsNoetherianRing R] [Module.Flat R S]
   rw [this]
   apply IsBaseChange.comp
   · apply IsBaseChange.comp
-    · apply isBaseChange_comp_equiv _ _
+    · apply IsBaseChange.comp_equiv _ _
       let _ : Module.FinitePresentation R M := Module.finitePresentation_of_finite R M
       exact Module.FinitePresentation.isBaseChange_map R S M N
     · exact IsBaseChange.ofEquiv _
