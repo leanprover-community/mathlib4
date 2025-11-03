@@ -278,7 +278,7 @@ private abbrev PosSemidef.matrixPreInnerProductSpace {M : Matrix n n 𝕜} (hM :
 `‖x‖ = sqrt (x * M * xᴴ).trace`. -/
 noncomputable def PosSemidef.matrixSeminormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
     SeminormedAddCommGroup (Matrix n n 𝕜) :=
-   @InnerProductSpace.Core.toSeminormedAddCommGroup _ _ _ _ _ hM.matrixPreInnerProductSpace
+  @InnerProductSpace.Core.toSeminormedAddCommGroup _ _ _ _ _ hM.matrixPreInnerProductSpace
 
 /-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`:
 `‖x‖ = sqrt (x * M * xᴴ).trace`. -/
