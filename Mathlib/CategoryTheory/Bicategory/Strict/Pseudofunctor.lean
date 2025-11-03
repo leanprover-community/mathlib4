@@ -221,7 +221,7 @@ end Pseudofunctor
 namespace LaxFunctor
 
 variable {B : Type u₁} {C : Type u₂} [Bicategory.{w₁, v₁} B]
-  [Strict B] [Bicategory.{w₂, v₂} C] (F : LaxFunctor B C)
+  [Strict B] [Bicategory.{w₂, v₂} C] (F : B ⥤ᴸ C)
 
 section associativity
 

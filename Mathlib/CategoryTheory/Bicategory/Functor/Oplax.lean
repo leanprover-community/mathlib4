@@ -83,7 +83,6 @@ structure OplaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
 
 /-- Notation for a pseudofunctor between bicategories. -/
 -- Given similar precedence as ⥤ (26).
--- For example, `C × D ⥤ E` should parse as `(C × D) ⥤ E` not `C × (D ⥤ E)`.
 scoped[CategoryTheory.Bicategory] infixr:26 " ⥤ᴼ " => OplaxFunctor -- type as \func\^O
 
 initialize_simps_projections OplaxFunctor (+toPrelaxFunctor, -obj, -map, -map₂)

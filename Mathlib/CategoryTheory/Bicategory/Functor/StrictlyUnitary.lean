@@ -52,7 +52,7 @@ variable (B C)
 lax functor `F` from `B` to `C` such that the structure 1-cell
 `𝟙 (obj X) ⟶ map (𝟙 X)` is in fact an identity 1-cell for every `X : B`. -/
 @[kerodon 008R]
-structure StrictlyUnitaryLaxFunctor extends LaxFunctor B C where
+structure StrictlyUnitaryLaxFunctor extends B ⥤ᴸ C where
   map_id (X : B) : map (𝟙 X) = 𝟙 (obj X) := by rfl_cat
   mapId_eq_eqToHom (X : B) : (mapId X) = eqToHom (map_id X).symm := by cat_disch
 

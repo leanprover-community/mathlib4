@@ -79,7 +79,6 @@ structure Pseudofunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
 
 /-- Notation for a pseudofunctor between bicategories. -/
 -- Given similar precedence as ⥤ (26).
--- For example, `C × D ⥤ E` should parse as `(C × D) ⥤ E` not `C × (D ⥤ E)`.
 scoped[CategoryTheory.Bicategory] infixr:26 " ⥤ᵖ " => Pseudofunctor -- type as \func\^p
 
 initialize_simps_projections Pseudofunctor (+toPrelaxFunctor, -obj, -map, -map₂)
@@ -119,7 +118,7 @@ instance hasCoeToOplax : Coe (B ⥤ᵖ C) (B ⥤ᴼ C) :=
 
 /-- The Lax functor associated with a pseudofunctor. -/
 @[simps]
-def toLax : LaxFunctor B C where
+def toLax : B ⥤ᴸ C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := fun a => (F.mapId a).inv
   mapComp := fun f g => (F.mapComp f g).inv
@@ -130,7 +129,7 @@ def toLax : LaxFunctor B C where
     rw [← F.map₂Iso_inv, eq_inv_comp, comp_inv_eq]
     simp
 
-instance hasCoeToLax : Coe (B ⥤ᵖ C) (LaxFunctor B C) :=
+instance hasCoeToLax : Coe (B ⥤ᵖ C) (B ⥤ᴸ C) :=
   ⟨toLax⟩
 
 /-- The identity pseudofunctor. -/
@@ -327,7 +326,7 @@ noncomputable def mkOfOplax' (F : B ⥤ᴼ C) [∀ a, IsIso (F.mapId a)]
 
 /-- Construct a pseudofunctor from a lax functor whose `mapId` and `mapComp` are isomorphisms. -/
 @[simps]
-def mkOfLax (F : LaxFunctor B C) (F' : F.PseudoCore) : B ⥤ᵖ C where
+def mkOfLax (F : B ⥤ᴸ C) (F' : F.PseudoCore) : B ⥤ᵖ C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := F'.mapIdIso
   mapComp := F'.mapCompIso
@@ -345,7 +344,7 @@ def mkOfLax (F : LaxFunctor B C) (F' : F.PseudoCore) : B ⥤ᵖ C where
 
 /-- Construct a pseudofunctor from a lax functor whose `mapId` and `mapComp` are isomorphisms. -/
 @[simps!]
-noncomputable def mkOfLax' (F : LaxFunctor B C) [∀ a, IsIso (F.mapId a)]
+noncomputable def mkOfLax' (F : B ⥤ᴸ C) [∀ a, IsIso (F.mapId a)]
     [∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), IsIso (F.mapComp f g)] : B ⥤ᵖ C :=
   mkOfLax F
   { mapIdIso := fun a => (asIso (F.mapId a)).symm
