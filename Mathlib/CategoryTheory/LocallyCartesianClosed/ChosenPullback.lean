@@ -190,7 +190,7 @@ theorem lift_snd : lift a b h ≫ snd f g = b := by
 def pullbackObjMap {Y' : C} (h : Y' ⟶ Y) : pullbackObj (h ≫ f) g ⟶ pullbackObj f g :=
   lift (fst _ _ ≫ h) (snd _ _) (by simp [condition])
 
-@[reassoc]
+@[reassoc (attr := simp)]
 theorem pullbackObjMap_fst {Y' : C} (h : Y' ⟶ Y) :
     pullbackObjMap h ≫ fst f g = fst _ _ ≫ h := by
   simp [pullbackObjMap, lift_fst]
