@@ -506,7 +506,7 @@ theorem concat_acceptsFrom {S1 : Set σ1} :
     rw [mem_acceptsFrom_nil]; tauto
   case cons a z ih =>
     simp only [mem_acceptsFrom_cons, stepSet, mem_image, hmul_concatStep, concatStep, iUnion_exists,
-      biUnion_and', iUnion_iUnion_eq_right, mem_acceptsFrom_biUnion, acceptsFrom_union, add_eq_sup,
+      biUnion_and', iUnion_iUnion_eq_right, acceptsFrom_biUnion, acceptsFrom_union, add_eq_sup,
       max, SemilatticeSup.sup, concat_acceptsFrom_inr]
     rw [Set.mem_iUnion₂]
     simp only [mem_union, ih, mem_iUnion, exists_prop]
@@ -514,13 +514,13 @@ theorem concat_acceptsFrom {S1 : Set σ1} :
     constructor
     · rintro ⟨s1, hs1, ⟨x, hx, y, hy, rfl⟩ | ⟨s2, hstart2, hz, haccept1⟩⟩
       · exists (a :: x); rw [mem_acceptsFrom_cons]
-        simp only [stepSet, mem_acceptsFrom_biUnion, List.cons_append, List.cons.injEq,
+        simp only [stepSet, acceptsFrom_biUnion, List.cons_append, List.cons.injEq,
           List.append_cancel_left_eq, true_and, exists_eq_right]
         rw [Set.mem_iUnion₂]; tauto
       · exists []; rw [mem_acceptsFrom_nil]
         simp only [accepts_acceptsFrom, List.nil_append, exists_eq_right]
         rw [mem_acceptsFrom_cons]
-        simp only [stepSet, mem_acceptsFrom_biUnion]
+        simp only [stepSet, acceptsFrom_biUnion]
         rw [Set.mem_iUnion₂]
         tauto
     · rintro ⟨x, hx, y, hy, heq⟩
@@ -531,13 +531,13 @@ theorem concat_acceptsFrom {S1 : Set σ1} :
         exists s1
         simp at heq; subst y
         rw [accepts_acceptsFrom, mem_acceptsFrom_cons] at hy
-        simp only [stepSet, mem_acceptsFrom_biUnion] at hy
+        simp only [stepSet, acceptsFrom_biUnion] at hy
         rw [Set.mem_iUnion₂] at hy
         tauto
       case cons b x =>
         obtain ⟨rfl, rfl⟩ := heq
         rw [mem_acceptsFrom_cons] at hx
-        simp only [stepSet, mem_acceptsFrom_biUnion] at hx
+        simp only [stepSet, acceptsFrom_biUnion] at hx
         rw [Set.mem_iUnion₂] at hx
         obtain ⟨s1, hs1, hx⟩ := hx
         exists s1
