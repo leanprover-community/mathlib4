@@ -3,7 +3,7 @@ Copyright (c) 2025 Janette Setälä, Yaël Dillies, Kalle Kytölä. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Janette Setälä, Yaël Dillies, Kalle Kytölä
 -/
-import Mathlib.Analysis.NormedSpace.FunctionSeries
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
@@ -18,64 +18,12 @@ attribute [simp] abs_mul abs_inv ENNReal.ofReal_mul ENNReal.ofReal_inv_of_pos EN
 
 namespace ENNReal
 
-lemma ofReal_mono : Monotone ENNReal.ofReal := fun _ _ ↦ ENNReal.ofReal_le_ofReal
-
-@[simp] lemma ofReal_min (x y : ℝ) : ENNReal.ofReal (min x y) = min (.ofReal x) (.ofReal y) :=
-  ofReal_mono.map_min
-
 @[simp] lemma ofReal_dist {X : Type*} [PseudoMetricSpace X] (x y : X) :
     .ofReal (dist x y) = edist x y := by simp [edist_dist]
 
 @[simp] lemma min_eq_zero {x y : ℝ≥0∞} : min x y = 0 ↔ x = 0 ∨ y = 0 := min_eq_bot
 
 end ENNReal
-
-namespace PseudoMetricSpace
-variable {X : Type*}
-
-/-- Build a new pseudometric space from an old one where the distance uniform structure is provably
-(but typically non-definitionaly) equal to some given distance structure. -/
--- See note [forgetful inheritance]
--- See note [reducible non-instances]
-abbrev replaceDist (m : PseudoMetricSpace X) (d : X → X → ℝ) (hd : d = dist) :
-    PseudoMetricSpace X where
-  dist := d
-  dist_self := by simp [hd]
-  dist_comm := by simp [hd, dist_comm]
-  dist_triangle := by simp [hd, dist_triangle]
-  edist_dist := by simp [hd, edist_dist]
-  uniformity_dist := by simp [hd, uniformity_dist]
-  cobounded_sets := by simp [hd, cobounded_sets]
-  __ := m
-
-lemma replaceDist_eq (m : PseudoMetricSpace X) (d : X → X → ℝ) (hd : d = dist) :
-    m.replaceDist d hd = m := by ext : 2; exact hd
-
-end PseudoMetricSpace
-
-namespace PseudoEMetricSpace
-
-/-- One gets a pseudometric space from an emetric space if the edistance
-is everywhere finite, by pushing the edistance to reals. We set it up so that the edist and the
-uniformity are defeq in the pseudometric space and the pseudoemetric space. In this definition, the
-distance is given separately, to be able to prescribe some expression which is not defeq to the
-push-forward of the edistance to reals. See note [reducible non-instances]. -/
-abbrev toPseudoMetricSpaceOfDist' {X : Type*} [e : PseudoEMetricSpace X] (dist : X → X → ℝ)
-    (dist_nonneg : ∀ x y, 0 ≤ dist x y)
-    (h : ∀ x y, edist x y = .ofReal (dist x y)) : PseudoMetricSpace X where
-  dist := dist
-  dist_self x := by simpa [h, (dist_nonneg _ _).ge_iff_eq', -edist_self] using edist_self x
-  dist_comm x y := by simpa [h, dist_nonneg] using edist_comm x y
-  dist_triangle x y z := by
-    simpa [h, dist_nonneg, add_nonneg, ← ENNReal.ofReal_add] using edist_triangle x y z
-  edist := edist
-  edist_dist _ _ := by simp only [h]
-  toUniformSpace := toUniformSpace
-  uniformity_dist := e.uniformity_edist.trans <| by
-    simpa [h, dist_nonneg, ENNReal.coe_toNNReal_eq_toReal]
-      using (Metric.uniformity_edist_aux fun x y : X => (edist x y).toNNReal).symm
-
-end PseudoEMetricSpace
 
 open Function Topology
 
@@ -161,7 +109,7 @@ private lemma summable_min {x y : X} :
   summable_geometric_two.of_norm_bounded min_le_geometric
 
 noncomputable instance : PseudoMetricSpace (PiNatEmbed X Y f) :=
-  PseudoEMetricSpace.toPseudoMetricSpaceOfDist'
+  PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun x y ↦ ∑' n, (1/2) ^ n * min (dist (f n x.ofPiNat) (f n y.ofPiNat)) 1)
     (fun x y ↦ by dsimp; positivity) fun x y ↦ by
       rw [edist_def, ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) summable_min]
