@@ -296,23 +296,28 @@ def functorOfNerveMap (φ : nerveFunctor₂.obj (.of C) ⟶ nerveFunctor₂.obj 
   obj x := nerveEquiv (φ.app (op ⟨⦋0⦌, by simp⟩) (nerveEquiv.symm x))
   map f := nerveHomEquiv (SSet.Truncated.Edge.map (Edge.ofHom f) φ)
   map_id x := by
-    simp
-    have := nerveHomEquiv_id (φ.app (op ⟨⦋0⦌, by simp⟩) (nerveEquiv.symm x))
-    sorry
+    rw [Edge.ofHom_id, SSet.Edge.id, SSet.Truncated.Edge.map_id]
+    exact nerveHomEquiv_id _
   map_comp f g := by
-    refine (nerveHomEquiv_comp ?_).symm
-    sorry
+    obtain ⟨h⟩ := (nerve.nonempty_compStruct_iff f g (f ≫ g)).2 rfl
+    exact (nerveHomEquiv_comp (h.map φ)).symm
+
+-- to be moved...
+lemma nerveMap_app_edge (F : C ⥤ D) {x y : (nerve C) _⦋0⦌} (e : SSet.Edge x y) :
+    (nerveMap F).app (op ⦋1⦌) e.edge =
+      (Edge.ofHom (F.map (nerveHomEquiv e))).edge := sorry
 
 lemma nerveFunctor₂_map_functorOfNerveMap
     (φ : nerveFunctor₂.obj (.of C) ⟶ nerveFunctor₂.obj (.of D)) :
     nerveFunctor₂.map (functorOfNerveMap φ) = φ :=
   SSet.Truncated.IsStrictSegal.hom_ext (fun f ↦ by
     obtain ⟨x, y, f, rfl⟩ := SSet.Truncated.Edge.exists_of_simplex f
-    dsimp
-    refine ComposableArrows.ext₁ ?_ ?_ ?_
-    · sorry
-    · sorry
-    · sorry)
+    refine (nerveMap_app_edge _ _).trans ?_
+    obtain ⟨f, rfl⟩ := nerveHomEquiv.symm.surjective f
+    dsimp [functorOfNerveMap]
+    refine ComposableArrows.ext₁ ?_ sorry sorry
+    simp
+    sorry)
 
 lemma functorOfNerveMap_nerveFunctor₂_map (F : C ⥤ D) :
     functorOfNerveMap ((SSet.truncation 2).map (nerveMap F)) = F :=

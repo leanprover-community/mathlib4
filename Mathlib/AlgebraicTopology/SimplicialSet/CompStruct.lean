@@ -250,6 +250,10 @@ def Edge.ofHom {x y : C} (f : x ⟶ y) :
   .mk (ComposableArrows.mk₁ f) (by cat_disch) (by cat_disch)
 
 @[simp]
+lemma Edge.ofHom_id (x : C) :
+    Edge.ofHom (𝟙 x) = .id _ := sorry
+
+@[simp]
 lemma Edge.ofHom_edge {x y : C} (f : x ⟶ y) :
     (Edge.ofHom f).edge = ComposableArrows.mk₁ f := rfl
 
