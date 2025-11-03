@@ -468,7 +468,7 @@ theorem _root_.Ring.inverse_exp (x : 𝔸) : Ring.inverse (exp 𝕂 x) = exp �
 
 theorem exp_mem_unitary_of_mem_skewAdjoint [StarRing 𝔸] [ContinuousStar 𝔸] {x : 𝔸}
     (h : x ∈ skewAdjoint 𝔸) : exp 𝕂 x ∈ unitary 𝔸 := by
-  rw [unitary.mem_iff, star_exp, skewAdjoint.mem_iff.mp h, ←
+  rw [Unitary.mem_iff, star_exp, skewAdjoint.mem_iff.mp h, ←
     exp_add_of_commute (Commute.refl x).neg_left, ← exp_add_of_commute (Commute.refl x).neg_right,
     neg_add_cancel, add_neg_cancel, exp_zero, and_self_iff]
 

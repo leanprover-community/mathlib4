@@ -53,6 +53,19 @@ lemma IsOpen.relComp [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpa
     arg 1; equals ⋃ b, (fun p => (p.1, b)) ⁻¹' s ∩ (fun p => (b, p.2)) ⁻¹' t => ext ⟨_, _⟩; simp
   exact isOpen_iUnion fun a ↦ hs.preimage (by fun_prop) |>.inter <| ht.preimage (by fun_prop)
 
+lemma IsOpen.relInv [TopologicalSpace α] [TopologicalSpace β]
+    {s : SetRel α β} (hs : IsOpen s) : IsOpen s.inv :=
+  hs.preimage continuous_swap
+
+lemma IsOpen.relImage [TopologicalSpace α] [TopologicalSpace β]
+    {s : SetRel α β} (hs : IsOpen s) {t : Set α} : IsOpen (s.image t) := by
+  simp_rw [SetRel.image, ← exists_prop, Set.setOf_exists]
+  exact isOpen_biUnion fun _ _ => hs.preimage <| .prodMk_right _
+
+lemma IsOpen.relPreimage [TopologicalSpace α] [TopologicalSpace β]
+    {s : SetRel α β} (hs : IsOpen s) {t : Set β} : IsOpen (s.preimage t) :=
+  hs.relInv.relImage
+
 section UniformSpace
 
 variable [UniformSpace α]
@@ -499,6 +512,13 @@ lemma UniformContinuousOn.mono (hf : UniformContinuousOn f s) (ht : t ⊆ s) :
     UniformContinuousOn f t :=
   Tendsto.mono_left hf (inf_le_inf le_rfl (by simp [ht]))
 
+lemma UniformContinuousOn.congr {f g : α → β} {s : Set α}
+    (hf : UniformContinuousOn f s) (h : EqOn f g s) :
+    UniformContinuousOn g s := by
+  apply hf.congr'
+  apply EventuallyEq.filter_mono _ inf_le_right
+  filter_upwards [mem_principal_self _] with ⟨a, b⟩ ⟨ha, hb⟩ using by simp [h ha, h hb]
+
 lemma UniformContinuousOn.comp {g : β → γ} {t : Set β} (hg : UniformContinuousOn g t)
     (hf : UniformContinuousOn f s) (hst : MapsTo f s t) : UniformContinuousOn (g ∘ f) s := by
   change Tendsto ((fun x ↦ (g x.1, g x.2)) ∘ (fun x ↦ (f x.1, f x.2))) (𝓤 α ⊓ 𝓟 (s ×ˢ s)) (𝓤 γ)
@@ -770,22 +790,13 @@ theorem UniformContinuous.prodMk {f₁ : α → β} {f₂ : α → γ} (h₁ : U
   rw [UniformContinuous, uniformity_prod]
   exact tendsto_inf.2 ⟨tendsto_comap_iff.2 h₁, tendsto_comap_iff.2 h₂⟩
 
-@[deprecated (since := "2025-03-10")]
-alias UniformContinuous.prod_mk := UniformContinuous.prodMk
-
 theorem UniformContinuous.prodMk_left {f : α × β → γ} (h : UniformContinuous f) (b) :
     UniformContinuous fun a => f (a, b) :=
   h.comp (uniformContinuous_id.prodMk uniformContinuous_const)
 
-@[deprecated (since := "2025-03-10")]
-alias UniformContinuous.prod_mk_left := UniformContinuous.prodMk_left
-
 theorem UniformContinuous.prodMk_right {f : α × β → γ} (h : UniformContinuous f) (a) :
     UniformContinuous fun b => f (a, b) :=
   h.comp (uniformContinuous_const.prodMk uniformContinuous_id)
-
-@[deprecated (since := "2025-03-10")]
-alias UniformContinuous.prod_mk_right := UniformContinuous.prodMk_right
 
 theorem UniformContinuous.prodMap [UniformSpace δ] {f : α → γ} {g : β → δ}
     (hf : UniformContinuous f) (hg : UniformContinuous g) : UniformContinuous (Prod.map f g) :=
