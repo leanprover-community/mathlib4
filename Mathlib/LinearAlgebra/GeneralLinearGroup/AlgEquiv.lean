@@ -60,11 +60,9 @@ theorem AlgEquiv.coe_eq_linearEquiv_conj [Free K V] (f : End K V ≃ₐ[K] End K
   let T := auxLinear f v z
   have this A : T ∘ₗ A = f A ∘ₗ T := auxLinear_comp f.toAlgHom v z A
   have this' A x : T (A x) = f A (T x) := auxLinear_map_apply f.toAlgHom v z A x
-  have surj : Function.Surjective T := by
-    intro w
+  have surj : Function.Surjective T := fun w ↦ by
     obtain ⟨d, hd⟩ := exists_linearMap_apply_eq_one_of_ne_zero K (by simpa : T u ≠ 0)
-    use f.symm (smulRightₗ d w) u
-    simp [this', hd]
+    exact ⟨f.symm (smulRightₗ d w) u, by simp [this', hd]⟩
   have inj : Function.Injective T := fun x y hxy ↦ by
     have h_smul : smulRightₗ v x = smulRightₗ v y := by
       rw [← f.injective.eq_iff]
