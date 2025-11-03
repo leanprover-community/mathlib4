@@ -50,10 +50,8 @@ theorem AlgEquiv.coe_eq_linearEquiv_conj [Free K V] (f : End K V ≃ₐ[K] End K
     ∃ T : V ≃ₗ[K] V, ⇑f = T.conj := by
   nontriviality V
   simp_rw [funext_iff, LinearEquiv.conj_apply, LinearEquiv.eq_comp_toLinearMap_symm]
-  obtain ⟨u, hu, v, huv⟩ : ∃ u ≠ 0, ∃ v : Dual K V, v u ≠ 0 := by
-    obtain ⟨u, hu⟩ := nontrivial_iff_exists_ne 0 |>.mp ‹Nontrivial V›
-    obtain ⟨v, hv⟩ := exists_linearMap_apply_ne_zero_of_ne_zero K hu
-    exact ⟨u, hu, v, hv⟩
+  obtain ⟨u, hu⟩ := nontrivial_iff_exists_ne 0 |>.mp ‹Nontrivial V›
+  obtain ⟨v, huv⟩ := dual_exists_ne_zero K hu
   obtain ⟨z, hz⟩ : ∃ z : V, f (smulRightₗ v u) z ≠ 0 := by
     simp_rw [ne_eq, ← not_forall]
     suffices ¬ f (smulRightₗ v u) = 0 by rwa [LinearMap.ext_iff] at this
@@ -64,11 +62,9 @@ theorem AlgEquiv.coe_eq_linearEquiv_conj [Free K V] (f : End K V ≃ₐ[K] End K
   have this' A x : T (A x) = f A (T x) := auxLinear_map_apply f.toAlgHom v z A x
   have surj : Function.Surjective T := by
     intro w
-    have : T u ≠ 0 := by simpa [T]
-    obtain ⟨d, hd⟩ := exists_linearMap_apply_eq_one_of_ne_zero K this
+    obtain ⟨d, hd⟩ := exists_linearMap_apply_eq_one_of_ne_zero K (by simpa : T u ≠ 0)
     use f.symm (smulRightₗ d w) u
-    have h : f (f.symm (smulRightₗ d w)) (T u) = w := by simp [hd]
-    simp_rw [this', h]
+    simp [this', hd]
   have inj : Function.Injective T := fun x y hxy ↦ by
     have h_smul : smulRightₗ v x = smulRightₗ v y := by
       rw [← f.injective.eq_iff]
