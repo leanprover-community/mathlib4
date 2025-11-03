@@ -19,7 +19,8 @@ An oplax functor `F` between bicategories `B` and `C` consists of
 
 ## Main definitions
 
-* `CategoryTheory.B ⥤ᴼ C` : an oplax functor between bicategories `B` and `C`
+* `CategoryTheory.OplaxFunctor B C` : an oplax functor between bicategories `B` and `C`.
+  This is also given the notation `B ⥤ᴼ C`.
 * `CategoryTheory.OplaxFunctor.comp F G` : the composition of oplax functors
 
 -/
