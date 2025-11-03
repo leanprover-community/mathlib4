@@ -25,7 +25,8 @@ We provide several constructors for pseudofunctors:
 
 ## Main definitions
 
-* `CategoryTheory.Pseudofunctor B C` : a pseudofunctor between bicategories `B` and `C`
+* `CategoryTheory.Pseudofunctor B C` : a pseudofunctor between bicategories `B` and `C`, which we
+  denote by `B ⥤ᵖ C`.
 * `CategoryTheory.Pseudofunctor.comp F G` : the composition of pseudofunctors
 
 -/
