@@ -276,9 +276,9 @@ theorem iUnion_finset_quotToDoubleCoset (H K : Subgroup G) :
 
 private theorem union_image_mk (H K : Subgroup G) :
     ⋃ (q : Quotient H K), Quot.mk (QuotientGroup.leftRel K) ''
-    (doubleCoset (Quotient.out q : G) H K) = Set.univ ∧
+      (doubleCoset (Quotient.out q : G) H K) = Set.univ ∧
     ⋃ (q : Quotient H K), Quot.mk (QuotientGroup.rightRel H) ''
-    (doubleCoset (Quotient.out q : G) H K) = Set.univ := by
+      (doubleCoset (Quotient.out q : G) H K) = Set.univ := by
   constructor
   all_goals
   have cover := union_quotToDoubleCoset H K
