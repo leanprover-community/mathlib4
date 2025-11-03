@@ -3,13 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.LinearAlgebra.LeftExact
+import Mathlib.LinearAlgebra.TensorProduct.Pi
 import Mathlib.RingTheory.Finiteness.Projective
+import Mathlib.RingTheory.Flat.IsBaseChange
 import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.Noetherian.Basic
-import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 
@@ -625,5 +623,40 @@ lemma Module.FinitePresentation.linearEquivMapExtendScalars_symm_apply
     (LocalizedModule.mkLinearMap S N) (Localization S)) f) =
     (LocalizedModule.mkLinearMap S (M →ₗ[R] N)) f :=
   IsLocalizedModule.linearEquiv_symm_apply S _ _ f
+
+open TensorProduct LinearMap in
+theorem Module.FinitePresentation.isBaseChange_map {S : Type*} [CommRing S] [Algebra R S]
+    [Module.Flat R S]
+    [Module.FinitePresentation R M] : IsBaseChange S (LinearMap.baseChangeHom R S M N) := by
+  have h_free (n : ℕ) : IsBaseChange S (LinearMap.baseChangeHom R S (Fin n → R) N) := by
+    let e₁ := TensorProduct.piRight R S S (fun _ : Fin n ↦ R)
+    let e₂ := LinearEquiv.congrLeft (S ⊗[R] N) S e₁.symm
+    let e₃ := (LinearEquiv.piCongrRight (fun _ ↦ (LinearMap.ringLmapEquivSelf ..).symm ≪≫ₗ
+      (LinearEquiv.congrLeft (S ⊗[R] N) S (AlgebraTensorModule.rid R S S).symm))) ≪≫ₗ
+      (LinearMap.lsum S (fun _ : Fin n ↦ _) S) ≪≫ₗ e₂
+    let e₄ : ((Fin n → R) →ₗ[R] N) ≃ₗ[R] (Fin n → N) :=
+      (LinearMap.lsum R (fun _ : Fin n ↦ R) R).symm ≪≫ₗ
+      LinearEquiv.piCongrRight (fun _ ↦ LinearMap.ringLmapEquivSelf ..)
+    refine IsBaseChange.of_equiv
+      ((e₄.baseChange R S) ≪≫ₗ (TensorProduct.piRight R S S (fun _ : Fin n ↦ N)) ≪≫ₗ e₃)
+        (fun f ↦ TensorProduct.AlgebraTensorModule.curry_injective (LinearMap.ext fun s ↦ ?_))
+    ext i
+    simpa [e₄, e₃, e₂, e₁, LinearEquiv.congrLeft, LinearEquiv.baseChange] using
+      (tmul_eq_smul_one_tmul s (f (Pi.single i 1))).symm
+  obtain ⟨n, m, f, g, hf, hfg⟩ := Module.FinitePresentation.exists_fin' R M
+  refine IsBaseChange.of_left_exact S (f := f.lcomp R N) (g := g.lcomp R N)
+    (f' := (f.baseChange S).lcomp S (S ⊗[R] N)) (g' := (g.baseChange S).lcomp S (S ⊗[R] N))
+    _ _ _ ?_ ?_ (h_free n) (h_free m) ?_ ?_ ?_ ?_
+  · exact LinearMap.ext fun φ ↦ TensorProduct.AlgebraTensorModule.curry_injective
+      (LinearMap.ext fun s ↦ (LinearMap.ext fun m ↦ (by simp)))
+  · exact LinearMap.ext fun φ ↦ TensorProduct.AlgebraTensorModule.curry_injective
+      (LinearMap.ext fun s ↦ (LinearMap.ext fun m ↦ (by simp)))
+  · exact lcomp_exact_of_exact_of_surjective _ g f hfg hf
+  · exact lcomp_injective_of_surjective f hf
+  · apply lcomp_exact_of_exact_of_surjective
+    · exact (lTensor_exact S hfg hf)
+    · exact LinearMap.lTensor_surjective S hf
+  · apply lcomp_injective_of_surjective
+    exact LinearMap.lTensor_surjective S hf
 
 end CommRing
