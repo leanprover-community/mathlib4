@@ -276,13 +276,13 @@ private abbrev PosSemidef.matrixPreInnerProductSpace {M : Matrix n n 𝕜} (hM :
 
 /-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`
 `‖x‖ = sqrt (x * M * xᴴ).trace`. -/
-noncomputable def PosSemidef.matrixSeminormedAddCommGroup {M : Matrix n n 𝕜} (hM : M.PosSemidef) :
+noncomputable def PosSemidef.matrixSeminormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
     SeminormedAddCommGroup (Matrix n n 𝕜) :=
    @InnerProductSpace.Core.toSeminormedAddCommGroup _ _ _ _ _ hM.matrixPreInnerProductSpace
 
 /-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`:
 `‖x‖ = sqrt (x * M * xᴴ).trace`. -/
-noncomputable def PosDef.matrixNormedAddCommGroup {M : Matrix n n 𝕜} (hM : M.PosDef) :
+noncomputable def PosDef.matrixNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDef) :
     NormedAddCommGroup (Matrix n n 𝕜) :=
   letI : InnerProductSpace.Core 𝕜 (Matrix n n 𝕜) :=
   { __ := hM.posSemidef.matrixPreInnerProductSpace
@@ -299,14 +299,14 @@ noncomputable def PosDef.matrixNormedAddCommGroup {M : Matrix n n 𝕜} (hM : M.
 
 /-- A positive definite matrix `M` induces a pre-inner product space on `Matrix n n 𝕜`:
 `⟪x, y⟫ = (y * M * xᴴ).trace`. -/
-def PosSemidef.matrixInnerProductSpace {M : Matrix n n 𝕜} (hM : M.PosSemidef) :
+def PosSemidef.matrixInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
     letI : SeminormedAddCommGroup (Matrix n n 𝕜) := hM.matrixSeminormedAddCommGroup
     InnerProductSpace 𝕜 (Matrix n n 𝕜) :=
   InnerProductSpace.ofCore _
 
 /-- A positive definite matrix `M` induces an inner product space on `Matrix n n 𝕜`:
 `⟪x, y⟫ = (y * M * xᴴ).trace`. -/
-def PosDef.matrixInnerProductSpace {M : Matrix n n 𝕜} (hM : M.PosDef) :
+def PosDef.matrixInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosDef) :
     letI : SeminormedAddCommGroup (Matrix n n 𝕜) :=
       hM.matrixNormedAddCommGroup.toSeminormedAddCommGroup
     InnerProductSpace 𝕜 (Matrix n n 𝕜) :=
