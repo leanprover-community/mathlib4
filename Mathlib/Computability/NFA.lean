@@ -489,22 +489,20 @@ lemma concat_stepSet_inr {S2 : Set σ2} {a : α} :
 lemma concat_acceptsFrom_inr {S2 : Set σ2} :
     (M1 * M2).acceptsFrom (Sum.inr '' S2) = M2.acceptsFrom S2 := by
   ext y
-  induction y generalizing S2
-  case nil => simp
-  case cons a y ih => simp [←ih, concat_stepSet_inr]
+  induction y generalizing S2 with
+  | nil => simp
+  | cons a y ih => simp [←ih, concat_stepSet_inr]
 
 theorem concat_acceptsFrom {S1 : Set σ1} :
     (M1 * M2).acceptsFrom (Sum.inl '' S1) = M1.acceptsFrom S1 * M2.accepts := by
   ext z
   rw [Language.mul_def, Set.mem_image2]
-  induction z generalizing S1
-  case nil =>
-    simp only [mem_acceptsFrom_nil, mem_image, hmul_concatAccept, concatAccept, mem_union,
-      mem_setOf_eq, exists_exists_and_eq_and, Sum.inl.injEq, exists_eq_right, reduceCtorEq,
-      and_false, exists_false, or_false,
-    List.append_eq_nil_iff, exists_eq_right_right]
-    rw [mem_acceptsFrom_nil]; tauto
-  case cons a z ih =>
+  induction z generalizing S1 with
+  | nil =>
+    suffices h : (∃ a ∈ S1, a ∈ M1.accept ∧ [] ∈ M2.accepts)
+      ↔ (∃ s ∈ S1, s ∈ M1.accept) ∧ [] ∈ M2.accepts by simpa [mem_acceptsFrom_nil M1]
+    tauto
+  | cons a z ih =>
     simp only [mem_acceptsFrom_cons, stepSet, mem_image, hmul_concatStep, concatStep, iUnion_exists,
       biUnion_and', iUnion_iUnion_eq_right, acceptsFrom_biUnion, acceptsFrom_union, add_eq_sup,
       max, SemilatticeSup.sup, concat_acceptsFrom_inr]
