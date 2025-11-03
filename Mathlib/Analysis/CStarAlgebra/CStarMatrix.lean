@@ -5,7 +5,7 @@ Authors: Frédéric Dupuis
 -/
 
 import Mathlib.Analysis.CStarAlgebra.Module.Constructions
-import Mathlib.Analysis.Matrix
+import Mathlib.Analysis.Matrix.Normed
 import Mathlib.Topology.UniformSpace.Matrix
 
 /-!
