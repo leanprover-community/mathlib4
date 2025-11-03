@@ -57,7 +57,7 @@ lemma cast_comm (q : ℚ≥0) (a : α) : q * a = a * q := cast_commute _ _
     obtain ⟨k, rfl⟩ : d ∣ b := by simpa [Int.natCast_dvd_natCast, this] using Rat.den_dvd a b
     simp [*]
   have hb' : b ≠ 0 := by rintro rfl; exact hb Nat.cast_zero
-  simp_rw [Rat.mk'_eq_divInt, mk_divInt, divNat_inj hb' h] at e
+  simp_rw [Rat.mk_eq_divInt, mk_divInt, divNat_inj hb' h] at e
   rw [cast_def]
   dsimp
   rw [Commute.div_eq_div_iff _ hd hb]
@@ -148,7 +148,7 @@ lemma cast_divInt_of_ne_zero (a : ℤ) {b : ℤ} (b0 : (b : α) ≠ 0) : (a /. b
     have : (b : α) = (d : α) * (k : α) := by rw [ke, Int.cast_mul, Int.cast_natCast]
     rw [d0, zero_mul] at this
     contradiction
-  rw [mk'_eq_divInt] at e
+  rw [mk_eq_divInt] at e
   have := congr_arg ((↑) : ℤ → α)
     ((divInt_eq_divInt_iff b0' <| ne_of_gt <| Int.natCast_pos.2 h.bot_lt).1 e)
   rw [Int.cast_mul, Int.cast_mul, Int.cast_natCast] at this

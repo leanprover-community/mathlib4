@@ -48,7 +48,7 @@ in the input string `docString`.
 If/when the `docString` linter expands, it may take on more string processing.
 -/
 def deindentString (currIndent : Nat) (docString : String) : String :=
-  let indent : String := ('\n' :: List.replicate currIndent ' ').asString
+  let indent : String := String.ofList ('\n' :: List.replicate currIndent ' ')
   docString.replace indent " "
 
 namespace Style

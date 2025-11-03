@@ -368,7 +368,7 @@ theorem scanl_get (i : Fin n) :
     refine Fin.cases ?_ ?_ i
     · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
     · intro i'
-      simp only [hn, Fin.castSucc_fin_succ, get_cons_succ]
+      simp only [hn, Fin.castSucc_succ, get_cons_succ]
 
 end Scan
 

@@ -319,7 +319,7 @@ lemma genWeightSpace_zsmul_add_ne_bot {n : ℤ}
     (hn : -chainBotCoeff α β ≤ n) (hn' : n ≤ chainTopCoeff α β) :
       genWeightSpace M (n • α + β : L → R) ≠ ⊥ := by
   rcases n with (n | n)
-  · simp only [Int.ofNat_eq_coe, Nat.cast_le, Nat.cast_smul_eq_nsmul] at hn' ⊢
+  · simp only [Int.ofNat_eq_natCast, Nat.cast_le, Nat.cast_smul_eq_nsmul] at hn' ⊢
     exact genWeightSpace_nsmul_add_ne_bot_of_le α β hn'
   · simp only [Int.negSucc_eq, ← Nat.cast_succ, neg_le_neg_iff, Nat.cast_le] at hn ⊢
     rw [neg_smul, ← smul_neg, Nat.cast_smul_eq_nsmul]
