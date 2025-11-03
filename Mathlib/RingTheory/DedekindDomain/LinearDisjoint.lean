@@ -95,7 +95,7 @@ variable [Algebra A B] [Module.Finite A B] [NoZeroSMulDivisors A B] [NoZeroSMulD
   [Module.Finite R₁ B] [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
   [IsScalarTower A R₁ B]
 
-namespace FractionalIdeal
+namespace IsDedekindDomain
 
 theorem map_differentIdeal_dvd_differentIdeal
     (h : IsCoprime ((differentIdeal A R₁).map (algebraMap R₁ B))
@@ -106,7 +106,8 @@ theorem map_differentIdeal_dvd_differentIdeal
   h.symm.dvd_of_dvd_mul_right (dvd_of_mul_left_eq _ this)
 
 theorem differentIdeal_eq_map_differentIdeal [Module.Free A R₂] (h₁ : F₁.LinearDisjoint F₂)
-    (h₂ : F₁ ⊔ F₂ = ⊤) (h₃ : IsCoprime ((differentIdeal A R₁).map (algebraMap R₁ B))
+    (h₂ : F₁ ⊔ F₂ = ⊤)
+    (h₃ : IsCoprime ((differentIdeal A R₁).map (algebraMap R₁ B))
       ((differentIdeal A R₂).map (algebraMap R₂ B))) :
     differentIdeal R₁ B = Ideal.map (algebraMap R₂ B) (differentIdeal A R₂) := by
   apply dvd_antisymm
@@ -129,7 +130,7 @@ theorem differentIdeal_eq_differentIdeal_mul_differentIdeal_of_isCoprime
   rwa [← differentIdeal_eq_map_differentIdeal A B R₁ R₂ h₁ h₂ h₃,
     mul_comm] at this
 
-end FractionalIdeal
+end IsDedekindDomain
 
 theorem Submodule.traceDual_eq_span_map_traceDual_of_linearDisjoint [Module.Free A R₂]
     [IsLocalization (Algebra.algebraMapSubmonoid R₂ A⁰) F₂] (h₁ : F₁.LinearDisjoint F₂)
@@ -150,7 +151,8 @@ theorem Submodule.traceDual_eq_span_map_traceDual_of_linearDisjoint [Module.Free
       rw [← Submodule.span_span_of_tower R₁ B]
       exact Submodule.subset_span
     · exact traceDual_le_span_map_traceDual A B R₁ R₂ h₁ h₂
-  have := dvd_of_eq <| (differentIdeal_eq_map_differentIdeal A B R₁ R₂ h₁ h₂ h₃).symm
+  have := dvd_of_eq <|
+    (IsDedekindDomain.differentIdeal_eq_map_differentIdeal A B R₁ R₂ h₁ h₂ h₃).symm
   rwa [Ideal.dvd_iff_le, ← coeIdeal_le_coeIdeal (K := L), coeIdeal_differentIdeal R₁ F₁,
     inv_le_comm, ← extendedHomₐ_coeIdeal_eq_map (K := F₂), coeIdeal_differentIdeal A K, map_inv₀,
     inv_inv, ← coe_le_coe, coe_extendedHomₐ_eq_span, coe_dual_one, ← coeToSet_coeToSubmodule,
@@ -241,7 +243,7 @@ Let `A ⊆ B` be a finite extension of Dedekind domains and assume that `A ⊆ R
 subrings such that `Frac R₁ ⊔ Frac R₂ = Frac B`, `Frac R₁` and `Frac R₂` are linearly disjoint
 over `Frac A`, and that `𝓓(R₁/A)` and `𝓓(R₂/A)` are coprime where `𝓓` denotes the different ideal
 and `Frac R` denotes the fraction field of a domain `R`.
-`B` is generated (as an `A`-algebra) by `R₁` and `R₂`.
+Then `B` is generated (as an `A`-algebra) by `R₁` and `R₂`.
 -/
 theorem range_sup_range_eq_top_of_isCoprime_differentIdeal
     (h₁ : F₁.LinearDisjoint F₂)
