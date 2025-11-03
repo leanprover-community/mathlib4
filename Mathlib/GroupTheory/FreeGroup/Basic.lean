@@ -13,7 +13,7 @@ import Mathlib.Data.List.Chain
 
 This file defines free groups over a type. Furthermore, it is shown that the free group construction
 is an instance of a monad. For the result that `FreeGroup` is the left adjoint to the forgetful
-functor from groups to types, see `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
+functor from groups to types, see `Mathlib/Algebra/Category/GrpCat/Adjunctions.lean`.
 
 ## Main definitions
 
@@ -57,8 +57,8 @@ variable {α : Type u}
 
 attribute [local simp] List.append_eq_has_append
 
--- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20to_additive.2Emap_namespace
-run_cmd Lean.Elab.Command.liftCoreM <| ToAdditive.insertTranslation `FreeGroup `FreeAddGroup
+/- Ensure that `@[to_additive]` uses the right namespace before the definition of `FreeGroup`. -/
+run_meta ToAdditive.insertTranslation `FreeGroup `FreeAddGroup
 
 /-- Reduction step for the additive free group relation: `w + x + (-x) + v ~> w + v` -/
 inductive FreeAddGroup.Red.Step : List (α × Bool) → List (α × Bool) → Prop
@@ -595,9 +595,6 @@ theorem red_invRev_iff : Red (invRev L₁) (invRev L₂) ↔ Red L₁ L₂ :=
 
 @[to_additive]
 instance : Group (FreeGroup α) where
-  mul := (· * ·)
-  one := 1
-  inv := Inv.inv
   mul_assoc := by rintro ⟨L₁⟩ ⟨L₂⟩ ⟨L₃⟩; simp
   one_mul := by rintro ⟨L⟩; rfl
   mul_one := by rintro ⟨L⟩; simp [one_eq_mk]
@@ -716,6 +713,10 @@ theorem range_lift_eq_closure : (lift f).range = Subgroup.closure (Set.range f) 
   rw [Subgroup.closure_le]
   rintro _ ⟨a, rfl⟩
   exact ⟨FreeGroup.of a, by simp only [lift_apply_of]⟩
+
+@[to_additive]
+theorem closure_eq_range (s : Set β) : Subgroup.closure s = (lift ((↑) : s → β)).range := by
+  rw [FreeGroup.range_lift_eq_closure, Subtype.range_coe]
 
 /-- The generators of `FreeGroup α` generate `FreeGroup α`. That is, the subgroup closure of the
 set of generators equals `⊤`. -/

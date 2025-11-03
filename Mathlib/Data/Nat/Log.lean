@@ -200,7 +200,7 @@ theorem log_eq_log_succ_iff {b n : ℕ} (hb : 1 < b) (hn : n ≠ 0) :
     log b n = log b (n + 1) ↔ b ^ log b (n + 1) ≠ n + 1 := by
   rw [ne_eq, ← log_lt_log_succ_iff hb hn, not_lt]
   simp only [le_antisymm_iff, and_iff_right_iff_imp]
-  exact fun  _ ↦ log_monotone (le_add_right n 1)
+  exact fun _ ↦ log_monotone (le_add_right n 1)
 
 theorem log_anti_left {b c n : ℕ} (hc : 1 < c) (hb : c ≤ b) : log b n ≤ log c n := by
   rcases eq_or_ne n 0 with (rfl | hn); · rw [log_zero_right, log_zero_right]
@@ -224,6 +224,11 @@ theorem log_div_base (b n : ℕ) : log b (n / b) = log b n - 1 := by
   rcases lt_or_ge n b with h | h
   · rw [div_eq_of_lt h, log_of_lt h, log_zero_right]
   rw [log_of_one_lt_of_le hb h, Nat.add_sub_cancel_right]
+
+lemma log_div_base_pow (b n k : ℕ) : log b (n / b ^ k) = log b n - k := by
+  induction k with
+  | zero => grind
+  | succ k hk => rw [Nat.pow_succ, ← Nat.div_div_eq_div_mul, log_div_base, hk, sub_add_eq]
 
 @[simp]
 theorem log_div_mul_self (b n : ℕ) : log b (n / b * b) = log b n := by

@@ -209,6 +209,11 @@ theorem isNoetherianRing (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
 theorem _root_.Subalgebra.fg_iff_finiteType (S : Subalgebra R A) : S.FG ↔ Algebra.FiniteType R S :=
   S.fg_top.symm.trans ⟨fun h => ⟨h⟩, fun h => h.out⟩
 
+lemma adjoin_of_finite {A : Type*} [CommSemiring A] [Algebra R A] {t : Set A} (h : Set.Finite t) :
+    FiniteType R (Algebra.adjoin R t) := by
+  rw [← Subalgebra.fg_iff_finiteType]
+  exact ⟨h.toFinset, by simp⟩
+
 end FiniteType
 
 end Algebra

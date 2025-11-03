@@ -111,9 +111,7 @@ lemma finiteCoproduct.ι_jointly_surjective (R : finiteCoproduct X) :
 
 lemma finiteCoproduct.ι_desc_apply {B : CompHausLike P} {π : (a : α) → X a ⟶ B} (a : α) :
     ∀ x, finiteCoproduct.desc X π (finiteCoproduct.ι X a x) = π a x := by
-  intro x
-  change (ι X a ≫ desc X π) _ = _
-  simp only [ι_desc]
+  tauto
 
 instance : HasCoproduct X where
   exists_colimit := ⟨finiteCoproduct.cofan X, finiteCoproduct.isColimit X⟩

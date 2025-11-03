@@ -597,17 +597,11 @@ theorem ContDiffWithinAt.prodMap' {s : Set E} {t : Set E'} {f : E → F} {g : E'
   (hf.comp p contDiffWithinAt_fst (prod_subset_preimage_fst _ _)).prodMk
     (hg.comp p contDiffWithinAt_snd (prod_subset_preimage_snd _ _))
 
-@[deprecated (since := "2025-03-09")]
-alias ContDiffWithinAt.prod_map' := ContDiffWithinAt.prodMap'
-
 @[fun_prop]
 theorem ContDiffWithinAt.prodMap {s : Set E} {t : Set E'} {f : E → F} {g : E' → F'} {x : E} {y : E'}
     (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g t y) :
     ContDiffWithinAt 𝕜 n (Prod.map f g) (s ×ˢ t) (x, y) :=
   ContDiffWithinAt.prodMap' hf hg
-
-@[deprecated (since := "2025-03-09")]
-alias ContDiffWithinAt.prod_map := ContDiffWithinAt.prodMap
 
 /-- The product map of two `C^n` functions on a set is `C^n` on the product set. -/
 @[fun_prop]
@@ -617,9 +611,6 @@ theorem ContDiffOn.prodMap {E' : Type*} [NormedAddCommGroup E'] [NormedSpace �
   (hf.comp contDiffOn_fst (prod_subset_preimage_fst _ _)).prodMk
     (hg.comp contDiffOn_snd (prod_subset_preimage_snd _ _))
 
-@[deprecated (since := "2025-03-09")]
-alias ContDiffOn.prod_map := ContDiffOn.prodMap
-
 /-- The product map of two `C^n` functions within a set at a point is `C^n`
 within the product set at the product point. -/
 @[fun_prop]
@@ -628,18 +619,12 @@ theorem ContDiffAt.prodMap {f : E → F} {g : E' → F'} {x : E} {y : E'} (hf : 
   rw [ContDiffAt] at *
   simpa only [univ_prod_univ] using hf.prodMap hg
 
-@[deprecated (since := "2025-03-09")]
-alias ContDiffAt.prod_map := ContDiffAt.prodMap
-
 /-- The product map of two `C^n` functions within a set at a point is `C^n`
 within the product set at the product point. -/
 @[fun_prop]
 theorem ContDiffAt.prodMap' {f : E → F} {g : E' → F'} {p : E × E'} (hf : ContDiffAt 𝕜 n f p.1)
     (hg : ContDiffAt 𝕜 n g p.2) : ContDiffAt 𝕜 n (Prod.map f g) p :=
   hf.prodMap hg
-
-@[deprecated (since := "2025-03-09")]
-alias ContDiffAt.prod_map' := ContDiffAt.prodMap'
 
 /-- The product map of two `C^n` functions is `C^n`. -/
 @[fun_prop]
@@ -648,22 +633,13 @@ theorem ContDiff.prodMap {f : E → F} {g : E' → F'} (hf : ContDiff 𝕜 n f) 
   rw [contDiff_iff_contDiffAt] at *
   exact fun ⟨x, y⟩ => (hf x).prodMap (hg y)
 
-@[deprecated (since := "2025-03-09")]
-alias ContDiff.prod_map := ContDiff.prodMap
-
 @[fun_prop]
 theorem contDiff_prodMk_left (f₀ : F) : ContDiff 𝕜 n fun e : E => (e, f₀) :=
   contDiff_id.prodMk contDiff_const
 
-@[deprecated (since := "2025-03-09")]
-alias contDiff_prod_mk_left := contDiff_prodMk_left
-
 @[fun_prop]
 theorem contDiff_prodMk_right (e₀ : E) : ContDiff 𝕜 n fun f : F => (e₀, f) :=
   contDiff_const.prodMk contDiff_id
-
-@[deprecated (since := "2025-03-09")]
-alias contDiff_prod_mk_right := contDiff_prodMk_right
 
 end prodMap
 

@@ -10,7 +10,7 @@ import Lean.Server.InfoUtils
 import Mathlib.Tactic.DeclarationNames
 
 /-!
-#  The `have` vs `let` linter
+# The `have` vs `let` linter
 
 The `have` vs `let` linter flags uses of `have` to introduce a hypothesis whose Type is not `Prop`.
 
