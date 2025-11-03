@@ -624,7 +624,7 @@ lemma Module.FinitePresentation.linearEquivMapExtendScalars_symm_apply
     (LocalizedModule.mkLinearMap S (M →ₗ[R] N)) f :=
   IsLocalizedModule.linearEquiv_symm_apply S _ _ f
 
-open TensorProduct in
+open TensorProduct LinearMap in
 theorem Module.FinitePresentation.isBaseChange_map {S : Type*} [CommRing S] [Algebra R S]
     [Module.Flat R S]
     [Module.FinitePresentation R M] : IsBaseChange S (LinearMap.baseChangeHom R S M N) := by
@@ -652,7 +652,7 @@ theorem Module.FinitePresentation.isBaseChange_map {S : Type*} [CommRing S] [Alg
   · exact LinearMap.ext fun φ ↦ TensorProduct.AlgebraTensorModule.curry_injective
       (LinearMap.ext fun s ↦ (LinearMap.ext fun m ↦ (by simp)))
   · exact lcomp_exact_of_exact_of_surjective _ g f hfg hf
-  · exact lcomp_injective_of_surjective _ f hf
+  · exact lcomp_injective_of_surjective f hf
   · apply lcomp_exact_of_exact_of_surjective
     · exact (lTensor_exact S hfg hf)
     · exact LinearMap.lTensor_surjective S hf
