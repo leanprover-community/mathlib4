@@ -68,13 +68,13 @@ def directSumLeft : (⨁ i₁, M₁ i₁) ⊗[R] M₂' ≃ₗ[R] ⨁ i, M₁ i �
     (DirectSum.linearMap_ext R fun i =>
       TensorProduct.ext <|
         LinearMap.ext₂ fun m₁ m₂ => by
-          dsimp only [comp_apply, compr₂_apply, id_apply, mk_apply]
+          dsimp only [comp_apply, compr₂ₛₗ_apply, id_apply, mk_apply]
           simp_rw [DirectSum.toModule_lof, rTensor_tmul, lift.tmul, DirectSum.toModule_lof,
             compr₂_apply, mk_apply])
     (TensorProduct.ext <|
       DirectSum.linearMap_ext R fun i =>
         LinearMap.ext₂ fun m₁ m₂ => by
-          dsimp only [comp_apply, compr₂_apply, id_apply, mk_apply]
+          dsimp only [comp_apply, compr₂ₛₗ_apply, id_apply, mk_apply]
           simp_rw [lift.tmul, DirectSum.toModule_lof, compr₂_apply,
             mk_apply, DirectSum.toModule_lof, rTensor_tmul])
 

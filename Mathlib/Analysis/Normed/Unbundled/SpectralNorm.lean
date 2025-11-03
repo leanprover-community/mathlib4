@@ -57,7 +57,7 @@ As a prerequisite, we formalize the proof of [S. Bosch, U. Güntzer, R. Remmert,
 * `spectralNorm_eq_of_equiv` : the `K`-algebra automorphisms of `L` are isometries with respect to
   the spectral norm.
 * `spectralNorm_eq_iSup_of_finiteDimensional_normal` : if `L/K` is finite and normal, then
-  `spectralNorm K L x = iSup (fun (σ : L ≃ₐ[K] L) ↦ f (σ x))`.
+  `spectralNorm K L x = iSup (fun (σ : Gal(L/K)) ↦ f (σ x))`.
 * `isPowMul_spectralNorm` : the spectral norm is power-multiplicative.
 * `isNonarchimedean_spectralNorm` : the spectral norm is nonarchimedean.
 * `spectralNorm_extends` : the spectral norm extends the norm on `K`.
@@ -203,24 +203,18 @@ section NormedDivisionRing
 variable [NormedDivisionRing R]
 
 /-- The spectral value of a monic polynomial `P` is less than or equal to one if and only
-  if all of its coefficients have norm less than or equal to 1. -/
+if all of its coefficients have norm less than or equal to 1. -/
 theorem spectralValue_le_one_iff {P : R[X]} (hP : Monic P) :
     spectralValue P ≤ 1 ↔ ∀ n : ℕ, ‖P.coeff n‖ ≤ 1 := by
   rw [spectralValue]
   refine ⟨fun h n ↦ ?_, fun h ↦ ?_⟩
-  · by_contra! hn
-    have hsupr : 1 < iSup (spectralValueTerms P) := by
-      refine lt_of_lt_of_le ?_ (le_ciSup (spectralValueTerms_bddAbove P) n)
-      simp only [spectralValueTerms]
-      split_ifs with hPn
-      · exact Real.one_lt_rpow hn (by simp [hPn])
-      · rw [not_lt, le_iff_lt_or_eq] at hPn
-        rcases hPn with hlt | heq
-        · simpa [coeff_eq_zero_of_natDegree_lt hlt, norm_zero] using hn
-        · rw [Monic, leadingCoeff, heq] at hP
-          rw [hP, norm_one] at hn
-          exact hn.false.elim
-    exact (hsupr.trans_le h).false
+  · obtain hPn | hPn | hPn := lt_trichotomy P.natDegree n
+    · simp [coeff_eq_zero_of_natDegree_lt hPn]
+    · rw [← hPn, hP.coeff_natDegree, norm_one]
+    · have : spectralValueTerms P n ≤ 1 := le_ciSup (spectralValueTerms_bddAbove P) n |>.trans h
+      contrapose! this
+      simp only [spectralValueTerms_of_lt_natDegree _ hPn]
+      exact Real.one_lt_rpow this (by simp [hPn])
   · apply ciSup_le (fun n ↦ ?_)
     rw [spectralValueTerms]
     split_ifs with hn
@@ -251,8 +245,7 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
   by_cases hx0 : f x = 0
   · rw [hx0]; exact spectralValue_nonneg p
   · by_contra h_ge
-    have hn_lt : ∀ (n : ℕ) (_ : n < p.natDegree), ‖p.coeff n‖ < f x ^ (p.natDegree - n) := by
-      intro n hn
+    have hn_lt (n : ℕ) (hn : n < p.natDegree) : ‖p.coeff n‖ < f x ^ (p.natDegree - n) := by
       have hexp : (‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ))) ^ (p.natDegree - n) =
           ‖p.coeff n‖ := by
         rw [← rpow_natCast, ← rpow_mul (norm_nonneg _), mul_comm, rpow_mul (norm_nonneg _),
@@ -269,8 +262,7 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     have h_deg : 0 < p.natDegree := natDegree_pos_of_monic_of_aeval_eq_zero hp hx
     have h_lt : f ((Finset.range p.natDegree).sum fun i : ℕ ↦ p.coeff i • x ^ i) <
         f (x ^ p.natDegree) := by
-      have hn' : ∀ (n : ℕ) (_ : n < p.natDegree), f (p.coeff n • x ^ n) < f (x ^ p.natDegree) := by
-        intro n hn
+      have hn' (n : ℕ) (hn : n < p.natDegree) : f (p.coeff n • x ^ n) < f (x ^ p.natDegree) := by
         by_cases hn0 : n = 0
         · rw [hn0, pow_zero, map_smul_eq_mul, hf_pm _ (succ_le_iff.mpr h_deg),
             ← Nat.sub_zero p.natDegree, ← hn0]
@@ -463,7 +455,7 @@ theorem norm_le_spectralNorm {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     (by rw [minpoly.aeval])
 
 /-- The `K`-algebra automorphisms of `L` are isometries with respect to the spectral norm. -/
-theorem spectralNorm_eq_of_equiv (σ : L ≃ₐ[K] L) (x : L) :
+theorem spectralNorm_eq_of_equiv (σ : Gal(L/K)) (x : L) :
     spectralNorm K L x = spectralNorm K L (σ x) := by
   simp only [spectralNorm, minpoly.algEquiv_eq]
 
@@ -474,11 +466,11 @@ section FiniteNormal
 variable (K L) [h_fin : FiniteDimensional K L] [hn : Normal K L]
 
 /--
-If `L/K` is finite and normal, then `spectralNorm K L x = supr (λ (σ : L ≃ₐ[K] L), f (σ x))`. -/
+If `L/K` is finite and normal, then `spectralNorm K L x = supr (λ (σ : Gal(L/K)), f (σ x))`. -/
 theorem spectralNorm_eq_iSup_of_finiteDimensional_normal
     {f : AlgebraNorm K L} (hf_pm : IsPowMul f) (hf_na : IsNonarchimedean f)
     (hf_ext : ∀ (x : K), f (algebraMap K L x) = ‖x‖) (x : L) :
-    spectralNorm K L x = ⨆ σ : L ≃ₐ[K] L, f (σ x) := by
+    spectralNorm K L x = ⨆ σ : Gal(L/K), f (σ x) := by
   classical
   have hf1 : f 1 = 1 := by
     rw [← (algebraMap K L).map_one, hf_ext]
@@ -497,7 +489,7 @@ theorem spectralNorm_eq_iSup_of_finiteDimensional_normal
     apply ciSup_le
     intro y
     split_ifs with h
-    · obtain ⟨σ, hσ⟩ : ∃ σ : L ≃ₐ[K] L, σ x = y := minpoly.exists_algEquiv_of_root'
+    · obtain ⟨σ, hσ⟩ : ∃ σ : Gal(L/K), σ x = y := minpoly.exists_algEquiv_of_root'
         (Algebra.IsAlgebraic.isAlgebraic x) (aeval_root_of_mapAlg_eq_multiset_prod_X_sub_C s h hs)
       rw [← hσ]
       convert le_ciSup (Finite.bddAbove_range _) σ
@@ -571,9 +563,9 @@ theorem spectralNorm_extends_of_finiteDimensional [IsUltrametricDist K] (x : K) 
 theorem spectralNorm_unique_of_finiteDimensional_normal {f : AlgebraNorm K L}
     (hf_pm : IsPowMul f) (hf_na : IsNonarchimedean f)
     (hf_ext : ∀ (x : K), f (algebraMap K L x) = ‖x‖₊)
-    (hf_iso : ∀ (σ : L ≃ₐ[K] L) (x : L), f x = f (σ x)) (x : L) : f x = spectralNorm K L x := by
-  have h_sup : (⨆ σ : L ≃ₐ[K] L, f (σ x)) = f x := by
-    rw [← @ciSup_const _ (L ≃ₐ[K] L) _ _ (f x)]
+    (hf_iso : ∀ (σ : Gal(L/K)) (x : L), f x = f (σ x)) (x : L) : f x = spectralNorm K L x := by
+  have h_sup : (⨆ σ : Gal(L/K), f (σ x)) = f x := by
+    rw [← @ciSup_const _ Gal(L/K) _ _ (f x)]
     exact iSup_congr fun σ ↦ by rw [hf_iso σ x]
   rw [spectralNorm_eq_iSup_of_finiteDimensional_normal K L hf_pm hf_na hf_ext, h_sup]
 

@@ -21,7 +21,7 @@ import Mathlib.RingTheory.Valuation.LocalSubring
   it is quasi-separated and satisfies the uniqueness part of the valuative criterion.
 - `AlgebraicGeometry.IsProper.eq_valuativeCriterion`:
   A morphism is proper if and only if
-  it is qcqs and of fintite type and satisfies the valuative criterion.
+  it is qcqs and of finite type and satisfies the valuative criterion.
 
 ## Future projects
 Show that it suffices to check discrete valuation rings when the base is Noetherian.
@@ -241,12 +241,8 @@ lemma IsSeparated.of_valuativeCriterion [QuasiSeparated f]
     (hf : ValuativeCriterion.Uniqueness f) : IsSeparated f where
   diagonal_isClosedImmersion := by
     suffices h : ValuativeCriterion.Existence (pullback.diagonal f) by
-      have : QuasiCompact (pullback.diagonal f) :=
-        AlgebraicGeometry.QuasiSeparated.diagonalQuasiCompact
-      apply IsClosedImmersion.of_isPreimmersion
-      apply IsClosedMap.isClosed_range
-      apply (topologically @IsClosedMap).universally_le
-      exact (UniversallyClosed.of_valuativeCriterion (pullback.diagonal f) h).out
+      have := UniversallyClosed.of_valuativeCriterion (pullback.diagonal f) h
+      exact .of_isPreimmersion _ (pullback.diagonal f).isClosedMap.isClosed_range
     intro S
     have hc : CommSq S.i₁ (Spec.map (CommRingCat.ofHom (algebraMap S.R S.K)))
         f (S.i₂ ≫ pullback.fst f f ≫ f) := ⟨by simp [← S.commSq.w_assoc]⟩

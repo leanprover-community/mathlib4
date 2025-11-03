@@ -71,9 +71,6 @@ theorem measurable_kernel_prodMk_left_of_finite {t : Set (α × β)} (ht : Measu
       · exact fun i ↦ measurable_prodMk_left (hf_meas i)
     simpa only [this] using Measurable.ennreal_tsum hf
 
-@[deprecated (since := "2025-03-05")]
-alias measurable_kernel_prod_mk_left_of_finite := measurable_kernel_prodMk_left_of_finite
-
 theorem measurable_kernel_prodMk_left [IsSFiniteKernel κ] {t : Set (α × β)}
     (ht : MeasurableSet t) : Measurable fun a => κ a (Prod.mk a ⁻¹' t) := by
   rw [← Kernel.kernel_sum_seq κ]
@@ -84,9 +81,6 @@ theorem measurable_kernel_prodMk_left [IsSFiniteKernel κ] {t : Set (α × β)}
   refine Measurable.ennreal_tsum fun n => ?_
   exact measurable_kernel_prodMk_left_of_finite ht inferInstance
 
-@[deprecated (since := "2025-03-05")]
-alias measurable_kernel_prod_mk_left := measurable_kernel_prodMk_left
-
 theorem measurable_kernel_prodMk_left' [IsSFiniteKernel η] {s : Set (β × γ)} (hs : MeasurableSet s)
     (a : α) : Measurable fun b => η (a, b) (Prod.mk b ⁻¹' s) := by
   have (b : _) : Prod.mk b ⁻¹' s = {c | ((a, b), c) ∈ {p : (α × β) × γ | (p.1.2, p.2) ∈ s}} := rfl
@@ -94,15 +88,9 @@ theorem measurable_kernel_prodMk_left' [IsSFiniteKernel η] {s : Set (β × γ)}
   refine (measurable_kernel_prodMk_left ?_).comp measurable_prodMk_left
   exact (measurable_fst.snd.prodMk measurable_snd) hs
 
-@[deprecated (since := "2025-03-05")]
-alias measurable_kernel_prod_mk_left' := measurable_kernel_prodMk_left'
-
 theorem measurable_kernel_prodMk_right [IsSFiniteKernel κ] {s : Set (β × α)}
     (hs : MeasurableSet s) : Measurable fun y => κ y ((fun x => (x, y)) ⁻¹' s) :=
   measurable_kernel_prodMk_left (measurableSet_swap_iff.mpr hs)
-
-@[deprecated (since := "2025-03-05")]
-alias measurable_kernel_prod_mk_right := measurable_kernel_prodMk_right
 
 end Kernel
 

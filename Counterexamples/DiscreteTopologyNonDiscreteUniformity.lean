@@ -107,7 +107,7 @@ lemma Int.eq_of_pow_sub_le {d : ℕ} {m n : ℤ} (hd1 : 1 < d)
       neg_add_cancel_left, ← abs_neg, neg_sub,
       abs_of_nonneg (a := (d : ℝ) ^ (-n)) (le_of_lt <| zpow_pos _ _), ← zpow_neg_one,
       ← zpow_add₀ <| Nat.cast_ne_zero.mpr (ne_of_gt hd0), ← sub_eq_add_neg]
-    exact h
+    · exact h
     all_goals exact Nat.cast_pos'.mpr hd0
   by_cases H : (m : ℤ) ≤ n
   · obtain ⟨a, ha⟩ := Int.eq_ofNat_of_zero_le (sub_nonneg.mpr H)

@@ -211,10 +211,6 @@ private theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := 
   simp
 
 instance commSemiring : CommSemiring Cardinal.{u} where
-  zero := 0
-  one := 1
-  add := (· + ·)
-  mul := (· * ·)
   zero_add a := inductionOn a fun α => mk_congr <| Equiv.emptySum _ α
   add_zero a := inductionOn a fun α => mk_congr <| Equiv.sumEmpty α _
   add_assoc a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumAssoc α β γ
@@ -292,8 +288,8 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
         exact (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
           Equiv.Set.sumCompl (range f)
       ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
-  le_self_add a _ := (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
-  le_add_self a _ := (zero_add a).ge.trans <| add_le_add_right (Cardinal.zero_le _) _
+  le_self_add a b := (add_zero a).ge.trans <| by grw [Cardinal.zero_le b]
+  le_add_self a _ := (zero_add a).ge.trans <| by grw [Cardinal.zero_le]
 
 instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
   CanonicallyOrderedAdd.toIsOrderedRing
@@ -457,9 +453,12 @@ theorem not_isStrongLimit_zero : ¬ IsStrongLimit (0 : Cardinal) :=
 
 /-! ### Indexed cardinal `sum` -/
 
-theorem le_sum {ι} (f : ι → Cardinal) (i) : f i ≤ sum f := by
+theorem lift_le_sum {ι : Type u} (f : ι → Cardinal.{v}) (i) : lift.{u, v} (f i) ≤ sum f := by
   rw [← Quotient.out_eq (f i)]
-  exact ⟨⟨fun a => ⟨i, a⟩, fun a b h => by injection h⟩⟩
+  exact ⟨⟨fun a => ⟨i, a.down⟩, fun a b h => by simpa using h⟩⟩
+
+theorem le_sum {ι : Type u} (f : ι → Cardinal.{max u v}) (i) : f i ≤ sum f := by
+  simpa [← lift_umax] using lift_le_sum f i
 
 theorem iSup_le_sum {ι} (f : ι → Cardinal) : iSup f ≤ sum f :=
   ciSup_le' <| le_sum _

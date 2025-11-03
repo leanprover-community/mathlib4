@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Integral.FinMeasAdditive
-import Mathlib.Analysis.Normed.Operator.Completeness
+import Mathlib.Analysis.Normed.Operator.Extend
 
 /-!
 # Extension of a linear function from indicators to L1
@@ -634,9 +634,6 @@ theorem setToFun_non_aestronglyMeasurable (hT : DominatedFinMeasAdditive μ T C)
     (hf : ¬AEStronglyMeasurable f μ) : setToFun μ T hT f = 0 :=
   setToFun_undef hT (not_and_of_not_left _ hf)
 
-@[deprecated (since := "2025-04-09")]
-alias setToFun_non_aEStronglyMeasurable := setToFun_non_aestronglyMeasurable
-
 theorem setToFun_congr_left (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (h : T = T') (f : α → E) :
     setToFun μ T hT f = setToFun μ T' hT' f := by
@@ -971,8 +968,7 @@ theorem setToFun_congr_measure_of_add_left {μ' : Measure α}
     setToFun (μ + μ') T hT_add f = setToFun μ' T hT f := by
   refine setToFun_congr_measure_of_integrable 1 one_ne_top ?_ hT_add hT f hf
   rw [one_smul]
-  nth_rw 1 [← zero_add μ']
-  exact add_le_add_right bot_le μ'
+  exact Measure.le_add_left le_rfl
 
 theorem setToFun_top_smul_measure (hT : DominatedFinMeasAdditive (∞ • μ) T C) (f : α → E) :
     setToFun (∞ • μ) T hT f = 0 := by

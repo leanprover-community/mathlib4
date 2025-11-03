@@ -73,11 +73,6 @@ theorem obj_mem_essImage (F : D ⥤ C) (Y : D) : essImage F (F.obj Y) :=
 /-- The essential image of a functor, interpreted as a full subcategory of the target category. -/
 abbrev EssImageSubcategory (F : C ⥤ D) := F.essImage.FullSubcategory
 
-/-- The essential image as a subcategory has a fully faithful inclusion into the target category. -/
-@[deprecated "use F.essImage.ι" (since := "2025-03-04")]
-def essImageInclusion (F : C ⥤ D) : F.EssImageSubcategory ⥤ D :=
-  F.essImage.ι
-
 lemma essImage_ext (F : C ⥤ D) {X Y : F.EssImageSubcategory} (f g : X ⟶ Y)
     (h : F.essImage.ι.map f = F.essImage.ι.map g) : f = g :=
   F.essImage.ι.map_injective h
@@ -96,9 +91,6 @@ surjective and the second is fully faithful.
 @[simps!]
 def toEssImageCompι (F : C ⥤ D) : F.toEssImage ⋙ F.essImage.ι ≅ F :=
   ObjectProperty.liftCompιIso _ _ _
-
-@[deprecated (since := "2025-03-04")] alias toEssImageCompEssentialImageInclusio :=
-  toEssImageCompι
 
 /-- A functor `F : C ⥤ D` is essentially surjective if every object of `D` is in the essential
 image of `F`. In other words, for every `Y : D`, there is some `X : C` with `F.obj X ≅ Y`. -/
