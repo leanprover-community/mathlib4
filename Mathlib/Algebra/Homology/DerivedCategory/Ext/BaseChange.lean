@@ -224,7 +224,7 @@ lemma CategoryTheory.isBaseChange_hom [IsNoetherianRing R] [Module.Flat R S]
   · apply IsBaseChange.comp
     · apply IsBaseChange.comp_equiv _ _
       let _ : Module.FinitePresentation R M := Module.finitePresentation_of_finite R M
-      exact Module.FinitePresentation.isBaseChange_map R S M N
+      exact Module.FinitePresentation.isBaseChange_map R M N S
     · exact IsBaseChange.ofEquiv _
   · exact IsBaseChange.ofEquiv _
 
