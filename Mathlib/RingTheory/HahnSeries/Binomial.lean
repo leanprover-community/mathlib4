@@ -58,7 +58,7 @@ variable [BinomialRing R] [CommRing A] [Algebra R A]
 terms give a formal expansion of `x^r` as `(1 + (x-1))^r`. -/
 def binomialFamily (x : HahnSeries Γ A) (r : R) :
     SummableFamily Γ A ℕ :=
-  SummableFamily.powerSeriesFamily (x - 1) (PowerSeries.mk (fun n => Ring.choose r n))
+  SummableFamily.powerSeriesFamily (x - 1) (PowerSeries.binomialSeries A r)
 
 @[simp]
 theorem binomialFamily_apply {x : HahnSeries Γ A} (hx : 0 < (x - 1).orderTop) (r : R) (n : ℕ) :
@@ -75,7 +75,8 @@ theorem binomialFamily_apply_of_orderTop_nonpos {x : HahnSeries Γ A} (hx : ¬ 0
 theorem binomialFamily_orderTop_pos {x : HahnSeries Γ A} (hx : 0 < (x - 1).orderTop) (r : R) {n : ℕ}
     (hn : 0 < n) :
     0 < (binomialFamily x r n).orderTop := by
-  simp only [binomialFamily, smulFamily_toFun, PowerSeries.coeff_mk, powers_toFun, hx, ↓reduceIte]
+  simp only [binomialFamily, smulFamily_toFun, PowerSeries.binomialSeries_coeff, powers_toFun, hx,
+    ↓reduceIte, smul_assoc, one_smul]
   have : n ≠ 0 := by exact Nat.ne_zero_of_lt hn
   calc
     0 < n • (x - 1).orderTop := (nsmul_pos_iff (Nat.ne_zero_of_lt hn)).mpr hx
