@@ -75,6 +75,7 @@ theorem intrinsicStar_comp (f : E →ₗ[R] F) (g : G →ₗ[R] E) :
   ext; simp
 @[simp] theorem intrinsicStar_zero : star (0 : E →ₗ[R] F) = 0 := by ext; simp
 
+-- move section to `Algebra/Algebra/Bilinear`?
 section NonUnitalNonAssocSemiring
 variable {R' E : Type*} [CommSemiring R'] [StarRing R']
   [NonUnitalNonAssocSemiring E] [StarRing E] [Module R E] [Module R' E]
@@ -97,6 +98,7 @@ lemma intrinsicStarModule : StarModule R (E →ₗ[R] F) where
 
 scoped[IntrinsicStar] attribute [instance] LinearMap.intrinsicStarModule
 
+-- move section to `Algebra/Star/TensorProduct`?
 section TensorProduct
 variable {R E F G H : Type*} [CommSemiring R] [StarRing R]
   [AddCommMonoid E] [StarAddMonoid E] [Module R E] [StarModule R E]
@@ -116,6 +118,7 @@ theorem intrinsicStar_rTensor (f : E →ₗ[R] F) : star (rTensor G f) = rTensor
 
 end TensorProduct
 
+-- move section to `LinearAlgebra/Matrix/ToLin`?
 section Matrix
 variable {R m n : Type*} [CommSemiring R] [StarRing R] [Fintype m] [DecidableEq m]
 
