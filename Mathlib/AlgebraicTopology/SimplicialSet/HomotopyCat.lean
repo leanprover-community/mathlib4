@@ -296,6 +296,14 @@ is induced by an edge. -/
 def homMk {x₀ x₁ : V _⦋0⦌₂} (e : Edge x₀ x₁) : mk x₀ ⟶ mk x₁ :=
   (quotientFunctor V).map (Cat.FreeRefl.homMk e)
 
+lemma congr_arrowMk_homMk {x₀ x₁ : V _⦋0⦌₂} (e : Edge x₀ x₁)
+    {y₀ y₁ : V _⦋0⦌₂} (e' : Edge y₀ y₁) (h : e.edge = e'.edge) :
+    Arrow.mk (homMk e) = Arrow.mk (homMk e') := by
+  obtain rfl : x₀ = y₀ := by rw [← e.src_eq, ← e'.src_eq, h]
+  obtain rfl : x₁ = y₁ := by rw [← e.tgt_eq, ← e'.tgt_eq, h]
+  obtain rfl : e = e' := by aesop
+  rfl
+
 @[simp]
 lemma homMk_id (x : V _⦋0⦌₂) :
     homMk (.id x) = 𝟙 (mk x) := by

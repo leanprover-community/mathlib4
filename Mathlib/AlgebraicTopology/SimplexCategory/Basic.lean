@@ -387,6 +387,18 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
         (Fin.succ_le_castSucc_iff.mpr (H.trans_lt' h)), Fin.predAbove_of_le_castSucc _ k.succ
         (Fin.succ_le_castSucc_iff.mpr h)]
 
+lemma δ_zero_eq_const : δ (0 : Fin 2) = const _ _ 1 := by
+  -- should be `by decide`
+  ext i
+  fin_cases i
+  rfl
+
+lemma δ_one_eq_const : δ (1 : Fin 2) = const _ _ 0 := by
+  -- should be `by decide`
+  ext i
+  fin_cases i
+  rfl
+
 /--
 If `f : ⦋m⦌ ⟶ ⦋n+1⦌` is a morphism and `j` is not in the range of `f`,
 then `factor_δ f j` is a morphism `⦋m⦌ ⟶ ⦋n⦌` such that

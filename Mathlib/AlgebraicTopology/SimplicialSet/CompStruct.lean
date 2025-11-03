@@ -42,6 +42,10 @@ attribute [simp] src_eq tgt_eq
 def mk' (s : X _⦋1⦌₂) : Edge (X.map (δ₂ 1).op s) (X.map (δ₂ 0).op s) where
   edge := s
 
+lemma exists_of_simplex (s : X _⦋1⦌₂) :
+    ∃ (x₀ x₁ : X _⦋0⦌₂) (e : Edge x₀ x₁), e.edge = s :=
+  ⟨_, _, mk' s, rfl⟩
+
 /-- The constant edge on a `0`-simplex. -/
 @[simps]
 def id (x : X _⦋0⦌₂) : Edge x x where
@@ -80,6 +84,18 @@ structure CompStruct {x₀ x₁ x₂ : X _⦋0⦌₂}
 namespace CompStruct
 
 attribute [simp] d₀ d₁ d₂
+
+lemma exists_of_simplex (s : X _⦋2⦌₂) :
+    ∃ (x₀ x₁ x₂ : X _⦋0⦌₂) (e₀₁ : Edge x₀ x₁) (e₁₂ : Edge x₁ x₂)
+      (e₀₂ : Edge x₀ x₂) (h : CompStruct e₀₁ e₁₂ e₀₂), h.simplex = s := by
+  refine ⟨X.map (Hom.tr (SimplexCategory.const _ _ 0)).op s,
+    X.map (Hom.tr (SimplexCategory.const _ _ 1)).op s,
+    X.map (Hom.tr (SimplexCategory.const _ _ 2)).op s,
+    .mk _ ?_ ?_, .mk _ ?_ ?_, .mk _ ?_ ?_, .mk s rfl rfl rfl, rfl⟩
+  all_goals
+  · rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+    apply congr_fun; congr
+    ext i; fin_cases i; rfl
 
 /-- The composition of `Edge.id x` with `e : Edge x y` is `e`. -/
 def idComp {x y : X _⦋0⦌₂} (e : Edge x y) :
@@ -169,9 +185,33 @@ def id (x : X _⦋0⦌) : Edge x x :=
 lemma id_edge (x : X _⦋0⦌) :
     (id x).edge = X.σ 0 x := rfl
 
-def CompStruct {x₀ x₁ x₂ : X _⦋0⦌}
-    (e₀₁ : Edge x₀ x₁) (e₁₂ : Edge x₁ x₂) (e₀₂ : Edge x₀ x₂) :=
-  Truncated.Edge.CompStruct e₀₁ e₁₂ e₀₂
+def map (e : Edge x y) {Y : SSet} (f : X ⟶ Y) :
+    Edge (f.app _ x) (f.app _ y) :=
+  Truncated.Edge.map e ((truncation 2).map f)
+
+@[simp]
+def map_edge (e : Edge x y) {Y : SSet} (f : X ⟶ Y) :
+    (e.map f).edge = f.app _ e.edge := rfl
+
+section
+
+variable {x₀ x₁ x₂ : X _⦋0⦌}
+  (e₀₁ : Edge x₀ x₁) (e₁₂ : Edge x₁ x₂) (e₀₂ : Edge x₀ x₂)
+
+def CompStruct := Truncated.Edge.CompStruct e₀₁ e₁₂ e₀₂
+
+variable {e₀₁ e₁₂ e₀₂} in
+def CompStruct.mk (simplex : X _⦋2⦌)
+    (d₂ : X.δ 2 simplex = e₀₁.edge)
+    (d₀ : X.δ 0 simplex = e₁₂.edge)
+    (d₁ : X.δ 1 simplex = e₀₂.edge) :
+    CompStruct e₀₁ e₁₂ e₀₂ where
+  simplex := simplex
+  d₂ := d₂
+  d₀ := d₀
+  d₁ := d₁
+
+end
 
 end Edge
 
@@ -180,6 +220,8 @@ end SSet
 namespace CategoryTheory
 
 open SSet
+
+attribute [local ext (iff := false)] ComposableArrows.ext₀ ComposableArrows.ext₁
 
 variable {C : Type u} [Category.{v} C]
 
@@ -200,30 +242,53 @@ def nerveHomEquiv {x y : (nerve C) _⦋0⦌} :
   toFun e := eqToHom (by simp only [nerveEquiv, ← e.src_eq]; rfl) ≫ e.edge.hom ≫
     eqToHom (by simp only [nerveEquiv, ← e.tgt_eq]; rfl)
   invFun f := .mk (ComposableArrows.mk₁ f) (ComposableArrows.ext₀ rfl) (ComposableArrows.ext₀ rfl)
-  left_inv e := by
-    ext
-    exact ComposableArrows.ext₁ (by simp) (by simp) rfl
+  left_inv e := by cat_disch
   right_inv f := by simp
 
 def Edge.ofHom {x y : C} (f : x ⟶ y) :
     Edge (nerveEquiv.symm x) (nerveEquiv.symm y) :=
-  .mk (ComposableArrows.mk₁ f) sorry sorry
+  .mk (ComposableArrows.mk₁ f) (by cat_disch) (by cat_disch)
+
+@[simp]
+lemma Edge.ofHom_edge {x y : C} (f : x ⟶ y) :
+    (Edge.ofHom f).edge = ComposableArrows.mk₁ f := rfl
+
 
 lemma Edge.ofHom_surjective {x y : C} :
-    Function.Surjective (Edge.ofHom : (x ⟶ y) → _) := sorry
+    Function.Surjective (Edge.ofHom : (x ⟶ y) → _) := by
+  intro e
+  refine ⟨eqToHom (by simp) ≫ nerveHomEquiv e ≫ eqToHom (by simp), by cat_disch⟩
 
 lemma nerve.nonempty_compStruct_iff {x₀ x₁ x₂ : C}
     (f₀₁ : x₀ ⟶ x₁) (f₁₂ : x₁ ⟶ x₂) (f₀₂ : x₀ ⟶ x₂) :
     Nonempty (Edge.CompStruct (Edge.ofHom f₀₁) (Edge.ofHom f₁₂) (Edge.ofHom f₀₂)) ↔
-      f₀₁ ≫ f₁₂ = f₀₂ := sorry
+      f₀₁ ≫ f₁₂ = f₀₂ := by
+  have h' : Edge.CompStruct (Edge.ofHom f₀₁) (Edge.ofHom f₁₂) (Edge.ofHom (f₀₁ ≫ f₁₂)) :=
+      Edge.CompStruct.mk (ComposableArrows.mk₂ f₀₁ f₁₂)
+        (by cat_disch) (by cat_disch) (by cat_disch)
+  refine ⟨fun ⟨h⟩ ↦ ?_, fun h ↦ ⟨?_⟩⟩
+  · rw [← Arrow.mk_inj]
+    apply ComposableArrows.arrowEquiv.symm.injective
+    convert_to ((nerve C).δ 1) h'.simplex = ((nerve C).δ 1) h.simplex
+    · exact (h'.d₁).symm
+    · exact (h.d₁).symm
+    · refine congr_arg _ (ComposableArrows.ext₂_of_arrow ?_ ?_)
+      · apply ComposableArrows.arrowEquiv.symm.injective
+        trans ComposableArrows.mk₁ f₀₁
+        · refine Eq.trans ?_ h'.d₂
+          exact ComposableArrows.ext₁ rfl rfl (by aesop)
+        · exact Eq.trans h.d₂.symm (ComposableArrows.ext₁ rfl rfl (by aesop))
+      · apply ComposableArrows.arrowEquiv.symm.injective
+        trans ComposableArrows.mk₁ f₁₂
+        · refine Eq.trans ?_ h'.d₀
+          exact ComposableArrows.ext₁ rfl rfl (by aesop)
+        · exact Eq.trans h.d₀.symm (ComposableArrows.ext₁ rfl rfl (by aesop))
+  · rwa [← h]
 
 @[simp]
 lemma nerveHomEquiv_ofHom {x y : C} (f : x ⟶ y) :
     nerveHomEquiv (Edge.ofHom f) = f :=
-  nerveHomEquiv.symm.injective (by
-    ext
-    simp only [Equiv.symm_apply_apply]
-    exact ComposableArrows.ext₁ rfl rfl (by aesop))
+  nerveHomEquiv.symm.injective (by cat_disch)
 
 @[simp]
 lemma nerveHomEquiv_id (x : (nerve C) _⦋0⦌) :
@@ -244,7 +309,13 @@ lemma nerveHomEquiv_comp {x₀ x₁ x₂ : (nerve C) _⦋0⦌} {e₀₁ : Edge x
   convert (nerve.nonempty_compStruct_iff _ _ _).1 ⟨h⟩ <;> apply nerveHomEquiv_ofHom
 
 lemma σ_zero_nerveEquiv_symm (x : C) :
-    (nerve C).σ 0 (nerveEquiv.symm x) = ComposableArrows.mk₁ (𝟙 x) :=
-  ComposableArrows.ext₁ rfl rfl (by aesop)
+    (nerve C).σ 0 (nerveEquiv.symm x) = ComposableArrows.mk₁ (𝟙 x) := by
+  cat_disch
+
+@[simp]
+lemma nerveHomEquiv_ofHom_map_nerveMap {D : Type u} [Category.{v} D] {x y : C}
+    (f : x ⟶ y) (F : C ⥤ D) :
+    nerveHomEquiv ((Edge.ofHom f).map (nerveMap F)) = F.map f := by
+  simp [nerveHomEquiv]
 
 end CategoryTheory
