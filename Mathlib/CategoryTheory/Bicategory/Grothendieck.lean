@@ -174,7 +174,7 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
   map_id a := by
     ext
     · dsimp
-    · simp [StrongTrans.naturality_id_inv_app, ← Functor.map_comp]
+    · simp [StrongTrans.naturality_id_inv_app, ← map_comp]
   map_comp {a b c} f g := by
     ext
     · dsimp
