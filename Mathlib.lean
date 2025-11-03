@@ -1076,6 +1076,7 @@ import Mathlib.Algebra.PresentedMonoid.Basic
 import Mathlib.Algebra.Prime.Defs
 import Mathlib.Algebra.Prime.Lemmas
 import Mathlib.Algebra.QuadraticAlgebra
+import Mathlib.Algebra.QuadraticAlgebra.Basic
 import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.Algebra.Quandle
 import Mathlib.Algebra.Quaternion
@@ -1532,6 +1533,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Comp
 import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 import Mathlib.Analysis.Calculus.FDeriv.Congr
 import Mathlib.Analysis.Calculus.FDeriv.Const
+import Mathlib.Analysis.Calculus.FDeriv.ContinuousMultilinearMap
 import Mathlib.Analysis.Calculus.FDeriv.Defs
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
 import Mathlib.Analysis.Calculus.FDeriv.Extend
@@ -3862,6 +3864,7 @@ import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
 import Mathlib.Dynamics.TopologicalEntropy.NetEntropy
 import Mathlib.Dynamics.TopologicalEntropy.Semiconj
 import Mathlib.Dynamics.TopologicalEntropy.Subset
+import Mathlib.Dynamics.Transitive
 import Mathlib.FieldTheory.AbelRuffini
 import Mathlib.FieldTheory.AbsoluteGaloisGroup
 import Mathlib.FieldTheory.AlgebraicClosure
