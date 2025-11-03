@@ -127,24 +127,22 @@ theorem evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
 
 theorem evalFrom_union (S1 S2 : Set σ) (x : List α) :
     M.evalFrom (S1 ∪ S2) x = M.evalFrom S1 x ∪ M.evalFrom S2 x := by
-  induction x generalizing S1 S2
-  case nil => simp
-  case cons a x ih => simp [stepSet_union, ih]
+  induction x generalizing S1 S2 with
+  | nil => simp
+  | cons a x ih => simp [stepSet_union, ih]
 
 variable (M) in
 @[simp]
-theorem evalFrom_iUnion.{i} {ι : Type i} (f : ι → Set σ) (x : List α) :
-    M.evalFrom (⋃ (i : ι), f i) x = ⋃ (i : ι), M.evalFrom (f i) x := by
-  induction x generalizing f
-  case nil => simp
-  case cons a x ih =>
-    simp [stepSet, Set.iUnion_comm (ι:=σ) (ι':=ι), ih]
+theorem evalFrom_iUnion {ι : Sort*} (s : ι → Set σ) (x : List α) :
+    M.evalFrom (⋃ (i : ι), s i) x = ⋃ (i : ι), M.evalFrom (s i) x := by
+  induction x generalizing s with
+  | nil => simp
+  | cons a x ih => simp [stepSet, Set.iUnion_comm (ι:=σ) (ι':=ι), ih]
 
 variable (M) in
-theorem evalFrom_biUnion {ι : Type*} (t : Set ι) (f : ι → Set σ) :
-    ∀ (x : List α), M.evalFrom (⋃ i ∈ t, f i) x = ⋃ i ∈ t, M.evalFrom (f i) x
-  | [] => by simp
-  | a :: x => by simp [stepSet, evalFrom_biUnion _ _ x]
+theorem evalFrom_biUnion {ι : Type*} (t : Set ι) (f : ι → Set σ) (x : List α) :
+    M.evalFrom (⋃ i ∈ t, f i) x = ⋃ i ∈ t, M.evalFrom (f i) x := by
+  simp [evalFrom_iUnion]
 
 variable (M) in
 theorem evalFrom_eq_biUnion_singleton (S : Set σ) (x : List α) :
@@ -174,10 +172,18 @@ theorem mem_acceptsFrom_cons {S : Set σ} {a : α} {x : List α} :
     a :: x ∈ M.acceptsFrom S ↔ x ∈ M.acceptsFrom (M.stepSet S a) := by
   simp [mem_acceptsFrom]
 
+theorem acceptsFrom_cons {S : Set σ} {a : α} :
+    (a :: ·) ⁻¹' M.acceptsFrom S = M.acceptsFrom (M.stepSet S a) := by
+  ext x; simp only [mem_preimage]; rw [mem_acceptsFrom_cons]
+
 @[simp]
 theorem append_mem_acceptsFrom {S : Set σ} {x y : List α} :
     x ++ y ∈ M.acceptsFrom S ↔ y ∈ M.acceptsFrom (M.evalFrom S x) := by
   simp [mem_acceptsFrom]
+
+theorem append_preimage_acceptsFrom {S : Set σ} {x : List α} :
+    (x ++ ·) ⁻¹'  M.acceptsFrom S = M.acceptsFrom (M.evalFrom S x) := by
+  ext y; simp only [mem_preimage]; rw [append_mem_acceptsFrom]
 
 theorem acceptsFrom_union {S1 S2 : Set σ} :
     M.acceptsFrom (S1 ∪ S2) = M.acceptsFrom S1 + M.acceptsFrom S2 := by
@@ -189,17 +195,15 @@ theorem acceptsFrom_union {S1 S2 : Set σ} :
     · right; tauto
   · rintro (⟨s, hs, h⟩ | ⟨s, hs, h⟩) <;> exists s <;> tauto
 
-theorem acceptsFrom_iUnion.{i} {ι : Type i} (f : ι → Set σ) :
-    M.acceptsFrom (⋃ (i : ι), f i) = ⋃ (i : ι), M.acceptsFrom (f i) := by
+theorem acceptsFrom_iUnion {ι : Sort*} (s : ι → Set σ) :
+    M.acceptsFrom (⋃ (i : ι), s i) = ⋃ (i : ι), M.acceptsFrom (s i) := by
   ext x
   simp only [acceptsFrom, evalFrom_iUnion, mem_iUnion]
   simp_rw [↑mem_iUnion, ↑mem_setOf_eq]; tauto
 
 theorem acceptsFrom_biUnion {ι : Type*} (t : Set ι) (f : ι → Set σ) :
     M.acceptsFrom (⋃ i ∈ t, f i) = ⋃ i ∈ t, M.acceptsFrom (f i) := by
-  ext x
-  simp only [acceptsFrom, evalFrom_biUnion, mem_iUnion, exists_prop]
-  simp_rw [↑mem_iUnion, ↑mem_setOf_eq]; tauto
+  simp [acceptsFrom_iUnion]
 
 theorem mem_acceptsFrom_sep_fact {S : Set σ} {p : Prop} {x : List α} :
     x ∈ M.acceptsFrom {s ∈ S | p} ↔ x ∈ M.acceptsFrom S ∧ p := by
