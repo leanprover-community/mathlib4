@@ -36,9 +36,7 @@ private theorem auxLinear_map_apply (f : End R V →ₐ[R] End R V) (y : Dual R 
     (z : V) (A : End R V) (x : V) :
     auxLinear f y z (A x) = f A (auxLinear f y z x) := by
   simp_rw [auxLinear_apply, coe_coe, ← mul_apply, ← map_mul]
-  congr
-  ext
-  simp
+  congr; ext; simp
 
 private theorem auxLinear_comp (f : End R V →ₐ[R] End R V) (y : Dual R V) (z : V) (A : End R V) :
     auxLinear f y z ∘ₗ A = f A ∘ₗ auxLinear f y z :=
@@ -65,8 +63,7 @@ theorem AlgEquiv.coe_eq_linearEquiv_conj [Free K V] (f : End K V ≃ₐ[K] End K
     exact ⟨f.symm (smulRightₗ d w) u, by simp [this', hd]⟩
   have inj : Function.Injective T := fun x y hxy ↦ by
     have h_smul : smulRightₗ v x = smulRightₗ v y := by
-      rw [← f.injective.eq_iff]
-      ext z
+      apply f.injective <| ext fun z ↦ ?_
       obtain ⟨w, rfl⟩ := surj z
       simp_rw [← this', smulRightₗ_apply, map_smul, hxy]
     simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
