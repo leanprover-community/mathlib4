@@ -189,13 +189,13 @@ theorem acceptsFrom_union {S1 S2 : Set σ} :
     · right; tauto
   · rintro (⟨s, hs, h⟩ | ⟨s, hs, h⟩) <;> exists s <;> tauto
 
-theorem mem_acceptsFrom_iUnion.{i} {ι : Type i} (f : ι → Set σ) :
+theorem acceptsFrom_iUnion.{i} {ι : Type i} (f : ι → Set σ) :
     M.acceptsFrom (⋃ (i : ι), f i) = ⋃ (i : ι), M.acceptsFrom (f i) := by
   ext x
   simp only [acceptsFrom, evalFrom_iUnion, mem_iUnion]
   simp_rw [↑mem_iUnion, ↑mem_setOf_eq]; tauto
 
-theorem mem_acceptsFrom_biUnion {ι : Type*} (t : Set ι) (f : ι → Set σ) :
+theorem acceptsFrom_biUnion {ι : Type*} (t : Set ι) (f : ι → Set σ) :
     M.acceptsFrom (⋃ i ∈ t, f i) = ⋃ i ∈ t, M.acceptsFrom (f i) := by
   ext x
   simp only [acceptsFrom, evalFrom_biUnion, mem_iUnion, exists_prop]
