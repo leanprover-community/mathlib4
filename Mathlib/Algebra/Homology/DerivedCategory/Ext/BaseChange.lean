@@ -229,15 +229,14 @@ theorem Module.FinitePresentation.isBaseChange_map [Module.Flat R S]
     let e₁ := TensorProduct.piRight R S S (fun _ : Fin n ↦ R)
     let e₂ := LinearEquiv.congrLeft (S ⊗[R] N) S e₁.symm
     let e₃ := (LinearEquiv.piCongrRight (fun _ ↦ (LinearMap.ringLmapEquivSelf ..).symm ≪≫ₗ
-      (LinearEquiv.congrLeft (S ⊗[R] N) S (AlgebraTensorModule.rid R S S).symm)
-          )) ≪≫ₗ (LinearMap.lsum S (fun _ : Fin n ↦ _) S) ≪≫ₗ e₂
+      (LinearEquiv.congrLeft (S ⊗[R] N) S (AlgebraTensorModule.rid R S S).symm))) ≪≫ₗ
+      (LinearMap.lsum S (fun _ : Fin n ↦ _) S) ≪≫ₗ e₂
     let e₄ : ((Fin n → R) →ₗ[R] N) ≃ₗ[R] (Fin n → N) :=
-      (LinearMap.lsum R (fun _ : Fin n ↦ R) R).symm ≪≫ₗ LinearEquiv.piCongrRight (fun _ ↦
-        LinearMap.ringLmapEquivSelf ..)
-    refine IsBaseChange.of_equiv ((e₄.baseChange R S) ≪≫ₗ
-      (TensorProduct.piRight R S S (fun _ : Fin n ↦ N)) ≪≫ₗ e₃)
-        (fun f ↦ TensorProduct.AlgebraTensorModule.curry_injective
-          (LinearMap.ext fun s ↦ ?_))
+      (LinearMap.lsum R (fun _ : Fin n ↦ R) R).symm ≪≫ₗ
+      LinearEquiv.piCongrRight (fun _ ↦ LinearMap.ringLmapEquivSelf ..)
+    refine IsBaseChange.of_equiv
+      ((e₄.baseChange R S) ≪≫ₗ (TensorProduct.piRight R S S (fun _ : Fin n ↦ N)) ≪≫ₗ e₃)
+        (fun f ↦ TensorProduct.AlgebraTensorModule.curry_injective (LinearMap.ext fun s ↦ ?_))
     ext i
     simpa [e₄, e₃, e₂, e₁, LinearEquiv.congrLeft, LinearEquiv.baseChange] using
       (tmul_eq_smul_one_tmul s (f (Pi.single i 1))).symm
@@ -322,10 +321,6 @@ lemma CategoryTheory.isBaseChange_hom [IsNoetherianRing R] [Module.Flat R S]
       simp }
   let _ :  IsScalarTower R S (((ModuleCat.extendScalars'.{v, v'} R S).obj M) →ₗ[S]
     ((ModuleCat.extendScalars'.{v, v'} R S).obj N)) := hsca
-  let f := ((((Shrink.linearEquiv.{v'} S (TensorProduct R S N)).symm.congrRight).trans
-    ((Shrink.linearEquiv.{v'} S (TensorProduct R S M)).symm.congrLeft (Shrink.{v'}
-    (TensorProduct R S N)) S)).restrictScalars R).toLinearMap.comp
-    ((LinearMap.baseChangeHom R S M N).comp ModuleCat.homLinearEquiv.toLinearMap)
   have : ModuleCat.extendScalars'_map_LinearMap.{v, v'} S M N =
     ((ModuleCat.homLinearEquiv (S := S)).symm.restrictScalars R).toLinearMap.comp
     (((((Shrink.linearEquiv.{v'} S (TensorProduct R S N)).symm.congrRight).trans
