@@ -136,7 +136,6 @@ def cochainComplex : CochainComplex C ℤ where
   d := h.d
   shape := h.shape
 
-
 open HomologicalComplex
 
 /-- If `h : ConnectData K L`, then `h.cochainComplex` identifies to `L` in degrees `≥ 0`. -/
@@ -195,6 +194,7 @@ variable
   (fK : K ⟶ K') (fL : L ⟶ L') (f_comm : fK.f 0 ≫ h'.d₀ = h.d₀ ≫ fL.f 0)
   (fK' : K' ⟶ K'') (fL' : L' ⟶ L'') (f_comm' : fK'.f 0 ≫ h''.d₀ = h'.d₀ ≫ fL'.f 0)
 
+/-- Connecting complexes is functorial. -/
 @[simps]
 protected def map : h.cochainComplex ⟶ h'.cochainComplex where
   f
