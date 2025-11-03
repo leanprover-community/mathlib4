@@ -1281,6 +1281,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
 import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
 import Mathlib.AlgebraicGeometry.Noetherian
 import Mathlib.AlgebraicGeometry.OpenImmersion
+import Mathlib.AlgebraicGeometry.OrderOfVanishing
 import Mathlib.AlgebraicGeometry.Over
 import Mathlib.AlgebraicGeometry.PointsPi
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Basic
@@ -5876,7 +5877,8 @@ import Mathlib.RingTheory.Norm.Transitivity
 import Mathlib.RingTheory.NormTrace
 import Mathlib.RingTheory.NormalClosure
 import Mathlib.RingTheory.Nullstellensatz
-import Mathlib.RingTheory.OrderOfVanishing
+import Mathlib.RingTheory.OrderOfVanishing.Basic
+import Mathlib.RingTheory.OrderOfVanishing.Properties
 import Mathlib.RingTheory.OreLocalization.Basic
 import Mathlib.RingTheory.OreLocalization.Cardinality
 import Mathlib.RingTheory.OreLocalization.NonZeroDivisors
