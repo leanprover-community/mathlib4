@@ -2839,6 +2839,9 @@ Q4949984:
 
 Q4950096:
   title: Bourbaki–Witt theorem
+  decl: ChainCompletePartialOrder.nonempty_fixedPoints_of_inflationary
+  authors: Finn Mortimore
+  date: 2025
 
 Q4956438:
   title: Branching theorem
