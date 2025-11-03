@@ -207,9 +207,10 @@ theorem acceptsFrom_biUnion {ι : Type*} (t : Set ι) (f : ι → Set σ) :
 
 theorem mem_acceptsFrom_sep_fact {S : Set σ} {p : Prop} {x : List α} :
     x ∈ M.acceptsFrom {s ∈ S | p} ↔ x ∈ M.acceptsFrom S ∧ p := by
-  induction x generalizing S <;> simp
-  case nil => tauto
-  case cons a x ih =>
+  induction x generalizing S with
+  | nil => simp only [mem_acceptsFrom_nil, mem_setOf_eq]; tauto
+  | cons a x ih =>
+    simp only [mem_acceptsFrom_cons]
     have h : M.stepSet {s ∈ S | p} a = {s ∈ M.stepSet S a | p} := by
       ext s; simp only [stepSet, mem_setOf_eq, mem_iUnion, exists_prop]; tauto
     rw [h, ih]
