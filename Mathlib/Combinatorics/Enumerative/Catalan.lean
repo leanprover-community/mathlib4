@@ -194,7 +194,7 @@ end Tree
 /-!
 # Schroder numbers
 
-The Schröder numbers (http://oeis.org/A006318) are a sequence of integers that appear in various
+The Schröder numbers (https://oeis.org/A006318) are a sequence of integers that appear in various
 combinatorial contexts.
 
 ## Main definitions
@@ -230,19 +230,20 @@ theorem largeSchroder_two : largeSchroder 2 = 6 := by
 
 theorem largeSchroder_succ (n : ℕ) :
   largeSchroder (n + 1) = largeSchroder n +
-    ∑ i : Fin n.succ, largeSchroder i * largeSchroder (n - i) := by
-  rw [largeSchroder]
-
-theorem largeSchroder_succ' (n : ℕ) :
-  largeSchroder (n + 1) = largeSchroder n +
-    ∑ ij ∈ antidiagonal n, largeSchroder ij.1 * largeSchroder ij.2 := by
-  rw [largeSchroder_succ, Nat.sum_antidiagonal_eq_sum_range_succ
-      (fun x y => largeSchroder x * largeSchroder y) n, sum_range]
+    ∑ i ∈ Iic n, largeSchroder i * largeSchroder (n - i) := by
+  rw [largeSchroder, Iic_eq_Icc]
+  simp only [succ_eq_add_one, Nat.bot_eq_zero, Nat.add_left_cancel_iff]
+  rw [Icc_eq_range', ← Ico_eq_range', sum_Ico_eq_sum_range]
+  simp only [tsub_zero, zero_add, sum_range]
 
 theorem largeSchroder_succ_range (n : ℕ) :
   largeSchroder (n + 1) = largeSchroder n +
     ∑ i ∈ range (n + 1), largeSchroder i * largeSchroder (n - i) := by
-  rw [largeSchroder_succ, sum_range]
+  rw [largeSchroder_succ]
+  rw [Iic_eq_Icc]
+  simp only [Nat.bot_eq_zero, Nat.add_left_cancel_iff]
+  rw [Icc_eq_range', ← Ico_eq_range', sum_Ico_eq_sum_range]
+  simp only [tsub_zero, zero_add]
 
 /-- The small Schroder number is equal to : `largeSchroder n = 2 * smallSchroder (n + 1), n ≥ 1` -/
 def smallSchroder (n : ℕ) : ℚ :=
