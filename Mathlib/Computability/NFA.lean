@@ -84,6 +84,8 @@ variable (M) in
 theorem stepSet_singleton (s : σ) (a : α) : M.stepSet {s} a = M.step s a := by
   simp [stepSet]
 
+variable (M) in
+@[simp]
 theorem stepSet_union {S1 S2 : Set σ} {a : α} :
     M.stepSet (S1 ∪ S2) a = M.stepSet S1 a ∪ M.stepSet S2 a := by
   ext s
@@ -116,6 +118,7 @@ theorem evalFrom_cons (S : Set σ) (a : α) (x : List α) :
     M.evalFrom S (a :: x) = M.evalFrom (M.stepSet S a) x :=
   rfl
 
+variable (M) in
 @[simp]
 theorem evalFrom_append (S : Set σ) (x y : List α) :
     M.evalFrom S (x ++ y) = M.evalFrom (M.evalFrom S x) y := by
@@ -125,11 +128,13 @@ theorem evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
     M.evalFrom S (x ++ [a]) = M.stepSet (M.evalFrom S x) a := by
   simp only [evalFrom_append, evalFrom_cons, evalFrom_nil]
 
+variable (M) in
+@[simp]
 theorem evalFrom_union (S1 S2 : Set σ) (x : List α) :
     M.evalFrom (S1 ∪ S2) x = M.evalFrom S1 x ∪ M.evalFrom S2 x := by
   induction x generalizing S1 S2 with
   | nil => simp
-  | cons a x ih => simp [stepSet_union, ih]
+  | cons a x ih => simp [ih]
 
 variable (M) in
 @[simp]
@@ -142,7 +147,7 @@ theorem evalFrom_iUnion {ι : Sort*} (s : ι → Set σ) (x : List α) :
 variable (M) in
 theorem evalFrom_biUnion {ι : Type*} (t : Set ι) (f : ι → Set σ) (x : List α) :
     M.evalFrom (⋃ i ∈ t, f i) x = ⋃ i ∈ t, M.evalFrom (f i) x := by
-  simp [evalFrom_iUnion]
+  simp
 
 variable (M) in
 theorem evalFrom_eq_biUnion_singleton (S : Set σ) (x : List α) :
@@ -159,61 +164,73 @@ variable (M) in
 in `M.evalFrom S x`. -/
 def acceptsFrom (S : Set σ) : Language α := {x | ∃ s ∈ M.accept, s ∈ M.evalFrom S x}
 
+variable (M) in
 theorem mem_acceptsFrom {S : Set σ} {x : List α} :
     x ∈ M.acceptsFrom S ↔ ∃ s ∈ M.accept, s ∈ M.evalFrom S x := by
   rfl
 
+variable (M) in
 @[simp]
 theorem mem_acceptsFrom_nil {S : Set σ} : [] ∈ M.acceptsFrom S ↔ ∃ s ∈ S, s ∈ M.accept := by
   simp only [mem_acceptsFrom, evalFrom_nil]; tauto
 
+variable (M) in
 @[simp]
 theorem mem_acceptsFrom_cons {S : Set σ} {a : α} {x : List α} :
     a :: x ∈ M.acceptsFrom S ↔ x ∈ M.acceptsFrom (M.stepSet S a) := by
   simp [mem_acceptsFrom]
 
+variable (M) in
 theorem acceptsFrom_cons {S : Set σ} {a : α} :
     (a :: ·) ⁻¹' M.acceptsFrom S = M.acceptsFrom (M.stepSet S a) := by
-  ext x; simp only [mem_preimage]; rw [mem_acceptsFrom_cons]
+  ext x; simp [mem_acceptsFrom_cons M]
 
+variable (M) in
 @[simp]
 theorem append_mem_acceptsFrom {S : Set σ} {x y : List α} :
     x ++ y ∈ M.acceptsFrom S ↔ y ∈ M.acceptsFrom (M.evalFrom S x) := by
   simp [mem_acceptsFrom]
 
+variable (M) in
 theorem append_preimage_acceptsFrom {S : Set σ} {x : List α} :
     (x ++ ·) ⁻¹'  M.acceptsFrom S = M.acceptsFrom (M.evalFrom S x) := by
-  ext y; simp only [mem_preimage]; rw [append_mem_acceptsFrom]
+  ext y; simp [append_mem_acceptsFrom M]
 
+variable (M) in
+@[simp]
 theorem acceptsFrom_union {S1 S2 : Set σ} :
     M.acceptsFrom (S1 ∪ S2) = M.acceptsFrom S1 + M.acceptsFrom S2 := by
   rw [Language.add_def]; ext x
-  rw [Set.mem_union]; simp_rw [↑mem_acceptsFrom, evalFrom_union]
+  simp only [mem_acceptsFrom, evalFrom_union, mem_union]
   constructor
   · rintro ⟨s, hs, h | h⟩
     · left; tauto
     · right; tauto
   · rintro (⟨s, hs, h⟩ | ⟨s, hs, h⟩) <;> exists s <;> tauto
 
+variable (M) in
+@[simp]
 theorem acceptsFrom_iUnion {ι : Sort*} (s : ι → Set σ) :
     M.acceptsFrom (⋃ (i : ι), s i) = ⋃ (i : ι), M.acceptsFrom (s i) := by
   ext x
   simp only [acceptsFrom, evalFrom_iUnion, mem_iUnion]
   simp_rw [↑mem_iUnion, ↑mem_setOf_eq]; tauto
 
+variable (M) in
 theorem acceptsFrom_biUnion {ι : Type*} (t : Set ι) (f : ι → Set σ) :
     M.acceptsFrom (⋃ i ∈ t, f i) = ⋃ i ∈ t, M.acceptsFrom (f i) := by
-  simp [acceptsFrom_iUnion]
+  simp
 
+variable (M) in
+@[simp]
 theorem mem_acceptsFrom_sep_fact {S : Set σ} {p : Prop} {x : List α} :
     x ∈ M.acceptsFrom {s ∈ S | p} ↔ x ∈ M.acceptsFrom S ∧ p := by
   induction x generalizing S with
   | nil => simp only [mem_acceptsFrom_nil, mem_setOf_eq]; tauto
   | cons a x ih =>
-    simp only [mem_acceptsFrom_cons]
     have h : M.stepSet {s ∈ S | p} a = {s ∈ M.stepSet S a | p} := by
       ext s; simp only [stepSet, mem_setOf_eq, mem_iUnion, exists_prop]; tauto
-    rw [h, ih]
+    simp [h, ih]
 
 variable (M) in
 /-- `M.eval x` computes all possible paths though `M` with input `x` starting at an element of
