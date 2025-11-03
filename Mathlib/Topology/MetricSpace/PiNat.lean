@@ -763,124 +763,174 @@ namespace PiCountable
 ### Products of (possibly non-discrete) metric spaces
 -/
 
+variable {ι : Type*} [Encodable ι] {F : ι → Type*}
+open Encodable ENNReal
+section EDist
+variable [∀ i, EDist (F i)] {x y : ∀ i, F i} {i : ι} {r : ℝ≥0∞}
 
-variable {ι : Type*} [Encodable ι] {F : ι → Type*} [∀ i, MetricSpace (F i)]
+/-- Given a countable family of extended metric spaces,
+one may put an extended distance on their product `Π i, E i`.
 
-open Encodable
-
-/-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
 It is highly non-canonical, though, and therefore not registered as a global instance.
-The distance we use here is `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`. -/
-protected def dist : Dist (∀ i, F i) :=
-  ⟨fun x y => ∑' i : ι, min ((1 / 2) ^ encode i) (dist (x i) (y i))⟩
+The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+protected def edist : EDist (∀ i, F i) where
+  edist x y := ∑' i, min (2⁻¹ ^ encode i) (edist (x i) (y i))
 
-attribute [local instance] PiCountable.dist
+attribute [scoped instance] PiCountable.edist
 
-theorem dist_eq_tsum (x y : ∀ i, F i) :
-    dist x y = ∑' i : ι, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) :=
-  rfl
+lemma edist_eq_tsum (x y : ∀ i, F i) :
+    edist x y = ∑' i, min (2⁻¹ ^ encode i) (edist (x i) (y i)) := rfl
 
-theorem dist_summable (x y : ∀ i, F i) :
-    Summable fun i : ι => min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) := by
-  refine .of_nonneg_of_le (fun i => ?_) (fun i => min_le_left _ _)
-    summable_geometric_two_encode
-  exact le_min (pow_nonneg (by simp) _) dist_nonneg
+lemma min_edist_le_edist_pi (x y : ∀ i, F i) (i : ι) :
+    min (2⁻¹ ^ encode i) (edist (x i) (y i)) ≤ edist x y := ENNReal.le_tsum _
 
-theorem min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) :
-    min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) ≤ dist x y :=
-  (dist_summable x y).le_tsum i fun j _ => le_min (by simp) dist_nonneg
+lemma edist_le_two : edist x y ≤ 2 :=
+  (ENNReal.tsum_geometric_two_encode_le_two).trans' <| by
+    rw [edist_eq_tsum]; gcongr; exact min_le_left ..
 
-theorem dist_le_dist_pi_of_dist_lt {x y : ∀ i, F i} {i : ι} (h : dist x y < (1 / 2) ^ encode i) :
-    dist (x i) (y i) ≤ dist x y := by
-  simpa only [not_le.2 h, false_or] using min_le_iff.1 (min_dist_le_dist_pi x y i)
+lemma edist_lt_top : edist x y < ∞ := edist_le_two.trans_lt (by simp)
 
-open Topology Filter NNReal
+lemma edist_le_edist_pi_of_edist_lt (h : edist x y < 2⁻¹ ^ encode i) :
+    edist (x i) (y i) ≤ edist x y := by
+  simpa only [not_le.2 h, false_or] using min_le_iff.1 (min_edist_le_edist_pi x y i)
 
-variable (E)
+end EDist
 
-/-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`,
-defining the right topology and uniform structure. It is highly non-canonical, though, and therefore
-not registered as a global instance.
-The distance we use here is `dist x y = ∑' n, min (1/2)^(encode i) (dist (x n) (y n))`. -/
-protected def metricSpace : MetricSpace (∀ i, F i) where
-  dist_self x := by simp [dist_eq_tsum]
-  dist_comm x y := by simp [dist_eq_tsum, dist_comm]
-  dist_triangle x y z :=
-    have I : ∀ i, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (z i)) ≤
-        min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
-          min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i)) := fun i =>
-      calc
-        min ((1 / 2) ^ encode i : ℝ) (dist (x i) (z i)) ≤
-            min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i) + dist (y i) (z i)) :=
-          min_le_min le_rfl (dist_triangle _ _ _)
-        _ = min ((1 / 2) ^ encode i : ℝ) (min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
-              min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i))) := by
-          convert congr_arg ((↑) : ℝ≥0 → ℝ)
-            (min_add_distrib ((1 / 2 : ℝ≥0) ^ encode i) (nndist (x i) (y i))
-              (nndist (y i) (z i)))
-        _ ≤ min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
-              min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i)) :=
-          min_le_right _ _
-    calc dist x z ≤ ∑' i, (min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
-          min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i))) :=
-        (dist_summable x z).tsum_le_tsum I ((dist_summable x y).add (dist_summable y z))
-      _ = dist x y + dist y z := (dist_summable x y).tsum_add (dist_summable y z)
-  eq_of_dist_eq_zero hxy := by
-    ext1 n
-    rw [← dist_le_zero, ← hxy]
-    apply dist_le_dist_pi_of_dist_lt
-    rw [hxy]
-    simp
+attribute [scoped instance] PiCountable.edist
+
+section PseudoEMetricSpace
+variable [∀ i, PseudoEMetricSpace (F i)]
+
+/-- Given a countable family of extended pseudo metric spaces,
+one may put an extended distance on their product `Π i, E i`.
+
+It is highly non-canonical, though, and therefore not registered as a global instance.
+The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
+  edist_self x := by simp [edist_eq_tsum]
+  edist_comm x y := by simp [edist_eq_tsum, edist_comm]
+  edist_triangle x y z := calc
+        ∑' i, min (2⁻¹ ^ encode i) (edist (x i) (z i))
+    _ ≤ ∑' i, (min (2⁻¹ ^ encode i) (edist (x i) (y i)) +
+         min (2⁻¹ ^ encode i) (edist (y i) (z i))) := by
+      gcongr with n; grw [edist_triangle _ (y n), min_add_distrib, min_le_right]
+    _ = _ := ENNReal.tsum_add ..
   toUniformSpace := Pi.uniformSpace _
-  uniformity_dist := by
+  uniformity_edist := by
     simp only [Pi.uniformity, comap_iInf, gt_iff_lt, preimage_setOf_eq, comap_principal,
-      PseudoMetricSpace.uniformity_dist]
-    apply le_antisymm
-    · simp only [le_iInf_iff, le_principal_iff]
-      intro ε εpos
+      PseudoEMetricSpace.uniformity_edist, le_antisymm_iff, le_iInf_iff, le_principal_iff]
+    constructor
+    · intro ε hε
       classical
-      obtain ⟨K, hK⟩ :
-        ∃ K : Finset ι, (∑' i : { j // j ∉ K }, (1 / 2 : ℝ) ^ encode (i : ι)) < ε / 2 :=
-        ((tendsto_order.1 (tendsto_tsum_compl_atTop_zero fun i : ι => (1 / 2 : ℝ) ^ encode i)).2 _
-            (half_pos εpos)).exists
-      obtain ⟨δ, δpos, hδ⟩ : ∃ δ : ℝ, 0 < δ ∧ (K.card : ℝ) * δ < ε / 2 :=
-        exists_pos_mul_lt (half_pos εpos) _
+      obtain ⟨K, hK⟩ : ∃ K : Finset ι, ∑' i : {j // j ∉ K}, 2⁻¹ ^ encode (i : ι) < ε / 2 :=
+        ((tendsto_order.1 <| ENNReal.tendsto_tsum_compl_atTop_zero
+          (tsum_geometric_encode_lt_top ENNReal.one_half_lt_one).ne).2 _
+            <| by simpa using hε.ne').exists
+      obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ δ * K.card < ε / 2 :=
+        ENNReal.exists_pos_mul_lt (by simp) (by simpa using hε.ne')
       apply @mem_iInf_of_iInter _ _ _ _ _ K.finite_toSet fun i =>
-          { p : (∀ i : ι, F i) × ∀ i : ι, F i | dist (p.fst i) (p.snd i) < δ }
+          {p : (∀ i : ι, F i) × ∀ i : ι, F i | edist (p.fst i) (p.snd i) < δ}
       · rintro ⟨i, hi⟩
         refine mem_iInf_of_mem δ (mem_iInf_of_mem δpos ?_)
         simp only [mem_principal, Subset.rfl]
       · rintro ⟨x, y⟩ hxy
         simp only [mem_iInter, mem_setOf_eq, SetCoe.forall, Finset.mem_coe] at hxy
         calc
-          dist x y = ∑' i : ι, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) := rfl
-          _ = (∑ i ∈ K, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i))) +
-                ∑' i : ↑(K : Set ι)ᶜ, min ((1 / 2) ^ encode (i : ι) : ℝ) (dist (x i) (y i)) :=
-            (Summable.sum_add_tsum_compl (dist_summable _ _)).symm
-          _ ≤ (∑ i ∈ K, dist (x i) (y i)) +
-                ∑' i : ↑(K : Set ι)ᶜ, ((1 / 2) ^ encode (i : ι) : ℝ) := by
+          edist x y = ∑' i : ι, min (2⁻¹ ^ encode i) (edist (x i) (y i)) := rfl
+          _ = ∑ i ∈ K, min (2⁻¹ ^ encode i) (edist (x i) (y i)) +
+                ∑' i : ↑(K : Set ι)ᶜ, min (2⁻¹ ^ encode (i : ι)) (edist (x i) (y i)) :=
+            (ENNReal.sum_add_tsum_compl ..).symm
+          _ ≤ ∑ i ∈ K, edist (x i) (y i) + ∑' i : ↑(K : Set ι)ᶜ, 2⁻¹ ^ encode (i : ι) := by
             gcongr
             · apply min_le_right
-            · apply Summable.subtype (dist_summable x y) (↑K : Set ι)ᶜ
-            · apply Summable.subtype summable_geometric_two_encode (↑K : Set ι)ᶜ
             · apply min_le_left
-          _ < (∑ _i ∈ K, δ) + ε / 2 := by
-            apply add_lt_add_of_le_of_lt _ hK
-            refine Finset.sum_le_sum fun i hi => (hxy i ?_).le
-            simpa using hi
-          _ ≤ ε / 2 + ε / 2 := by
-            gcongr
-            simpa using hδ.le
-          _ = ε := add_halves _
-    · simp only [le_iInf_iff, le_principal_iff]
-      intro i ε εpos
-      refine mem_iInf_of_mem (min ((1 / 2) ^ encode i : ℝ) ε) ?_
-      have : 0 < min ((1 / 2) ^ encode i : ℝ) ε := lt_min (by simp) εpos
-      refine mem_iInf_of_mem this ?_
+          _ < ∑ _i ∈ K, δ + ε / 2 := by
+            refine ENNReal.add_lt_add_of_le_of_lt (by simpa using fun i hi ↦ (hxy i hi).ne_top) ?_
+              hK
+            gcongr with i hi
+            exact (hxy i hi).le
+          _ ≤ ε / 2 + ε / 2 := by gcongr; simpa [mul_comm] using hδ.le
+          _ = ε := ENNReal.add_halves _
+    · intro i ε hε₀
+      have : (0 : ℝ≥0∞) < 2⁻¹ ^ encode i := ENNReal.pow_pos (by norm_num) _
+      refine mem_iInf_of_mem (min (2⁻¹ ^ encode i) ε) <| mem_iInf_of_mem (by positivity) ?_
       simp only [and_imp, Prod.forall, setOf_subset_setOf, lt_min_iff, mem_principal]
-      intro x y hn hε
-      calc
-        dist (x i) (y i) ≤ dist x y := dist_le_dist_pi_of_dist_lt hn
-        _ < ε := hε
+      intro x y hn
+      exact (edist_le_edist_pi_of_edist_lt hn).trans_lt
 
+end PseudoEMetricSpace
+
+attribute [scoped instance] PiCountable.pseudoEMetricSpace
+
+section EMetricSpace
+variable [∀ i, EMetricSpace (F i)]
+
+/-- Given a countable family of extended metric spaces,
+one may put an extended distance on their product `Π i, E i`.
+
+It is highly non-canonical, though, and therefore not registered as a global instance.
+The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+protected def emetricSpace : EMetricSpace (∀ i, F i) where
+  eq_of_edist_eq_zero := by simp [edist_eq_tsum, funext_iff]
+
+end EMetricSpace
+
+attribute [scoped instance] PiCountable.emetricSpace
+
+section PseudoMetricSpace
+variable [∀ i, PseudoMetricSpace (F i)] {x y : ∀ i, F i} {i : ι}
+
+
+/-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
+
+It is highly non-canonical, though, and therefore not registered as a global instance.
+The distance we use here is `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`. -/
+protected def dist : Dist (∀ i, F i) where
+  dist x y := ∑' i, min (2⁻¹ ^ encode i) (dist (x i) (y i))
+
+attribute [scoped instance] PiCountable.dist
+
+lemma dist_eq_tsum (x y : ∀ i, F i) : dist x y = ∑' i, min (2⁻¹ ^ encode i) (dist (x i) (y i)) :=
+  rfl
+
+lemma dist_summable (x y : ∀ i, F i) :
+    Summable fun i ↦ min (2⁻¹ ^ encode i) (dist (x i) (y i)) := by
+  refine .of_nonneg_of_le (fun i => ?_) (fun i => min_le_left _ _) <| by
+    simpa [one_div] using summable_geometric_two_encode
+  exact le_min (by positivity) dist_nonneg
+
+lemma min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) :
+    min (2⁻¹ ^ encode i) (dist (x i) (y i)) ≤ dist x y :=
+  (dist_summable x y).le_tsum i fun j _ => le_min (by simp) dist_nonneg
+
+lemma dist_le_dist_pi_of_dist_lt (h : dist x y < 2⁻¹ ^ encode i) : dist (x i) (y i) ≤ dist x y := by
+  simpa only [not_le.2 h, false_or] using min_le_iff.1 (min_dist_le_dist_pi x y i)
+
+/-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
+
+It is highly non-canonical, though, and therefore not registered as a global instance.
+The distance we use here is `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`. -/
+protected def pseudoMetricSpace : PseudoMetricSpace (∀ i, F i) :=
+  PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
+    (fun x y ↦ by simp [dist_eq_tsum]; positivity) fun x y ↦ by
+      rw [edist_eq_tsum, dist_eq_tsum,
+        ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) (dist_summable ..)]
+      simp [edist, ENNReal.inv_pow]
+      congr! with a
+      exact PseudoMetricSpace.edist_dist (x a) (y a)
+
+end PseudoMetricSpace
+
+attribute [scoped instance] PiCountable.pseudoMetricSpace
+
+section MetricSpace
+variable [∀ i, MetricSpace (F i)]
+/-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
+
+It is highly non-canonical, though, and therefore not registered as a global instance.
+The distance we use here is edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+protected def metricSpace : MetricSpace (∀ i, F i) :=
+  EMetricSpace.toMetricSpaceOfDist dist (by simp) (by simp [edist_dist])
+
+end MetricSpace
 end PiCountable
