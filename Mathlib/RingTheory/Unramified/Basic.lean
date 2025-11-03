@@ -7,6 +7,7 @@ import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 import Mathlib.RingTheory.Kaehler.Basic
 import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+import Mathlib.Algebra.Algebra.Shrink
 
 /-!
 
@@ -72,19 +73,29 @@ theorem comp_injective [FormallyUnramified R A] (hI : I ^ 2 = ⊥) :
           (derivationToSquareZeroEquivLift I hI)).surjective.subsingleton
   exact Subtype.ext_iff.mp (@Subsingleton.elim _ this ⟨f₁, rfl⟩ ⟨f₂, e.symm⟩)
 
-theorem iff_comp_injective :
+theorem iff_comp_injective [Small.{w} A] :
     FormallyUnramified R A ↔
-      ∀ ⦃B : Type u⦄ [CommRing B],
+      ∀ ⦃B : Type w⦄ [CommRing B],
         ∀ [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
           Function.Injective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) := by
   constructor
   · intros; exact comp_injective _ ‹_›
   · intro H
+    replace H : ∀ ⦃B : Type u⦄ [CommRing B] [Small.{w} B],
+        ∀ [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
+          Function.Injective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) := by
+      intro B _ _ _ I hI f g e
+      simpa [DFunLike.ext_iff] using H (B := Shrink B) (I.comap (Shrink.ringEquiv _))
+        (by rw [← Ideal.map_symm, ← Ideal.map_pow, hI]; simp)
+        (a₁ := (Shrink.algEquiv _ _).symm.toAlgHom.comp f)
+        (a₂ := (Shrink.algEquiv _ _).symm.toAlgHom.comp g)
+        (by simpa [DFunLike.ext_iff, Ideal.Quotient.mk_eq_mk_iff_sub_mem, Shrink.ringEquiv] using e)
     constructor
     by_contra! h
     obtain ⟨f₁, f₂, e⟩ := (KaehlerDifferential.endEquiv R A).injective.nontrivial
     apply e
     ext1
+    let f := RingHom.ker (TensorProduct.lmul' R (S := A)).kerSquareLift.toRingHom
     refine H
       (RingHom.ker (TensorProduct.lmul' R (S := A)).kerSquareLift.toRingHom) ?_ ?_
     · rw [AlgHom.ker_kerSquareLift]
@@ -92,22 +103,6 @@ theorem iff_comp_injective :
     · ext x
       apply RingHom.kerLift_injective (TensorProduct.lmul' R (S := A)).kerSquareLift.toRingHom
       simpa using DFunLike.congr_fun (f₁.2.trans f₂.2.symm) x
-
-/-- A variant where the universes matches those of `FormallyEtale.iff_comp_bijective`. -/
-theorem iff_comp_injective' :
-    FormallyUnramified R A ↔
-      ∀ ⦃B : Type max u v⦄ [CommRing B],
-        ∀ [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
-          Function.Injective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) := by
-  constructor
-  · intros; exact comp_injective _ ‹_›
-  · intro H
-    refine iff_comp_injective.mpr fun B _ _ I hI f g e ↦ ?_
-    have := H (B := ULift B) (I.comap ULift.ringEquiv)
-      (by rw [← Ideal.map_symm, ← Ideal.map_pow, hI]; simp)
-      (a₁ := ULift.algEquiv.symm.toAlgHom.comp f) (a₂ := ULift.algEquiv.symm.toAlgHom.comp g)
-      (by simpa [DFunLike.ext_iff, Ideal.Quotient.mk_eq_mk_iff_sub_mem, ← map_sub] using e)
-    simpa [DFunLike.ext_iff] using this
 
 theorem lift_unique
     [FormallyUnramified R A] (I : Ideal B) (hI : IsNilpotent I) (g₁ g₂ : A →ₐ[R] B)

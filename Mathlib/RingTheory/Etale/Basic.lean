@@ -53,19 +53,25 @@ namespace FormallyEtale
 
 section
 
-instance (priority := 100) to_unramified [FormallyEtale R A] :
-    FormallyUnramified R A := ⟨subsingleton_kaehlerDifferential⟩
+instance (priority := 100) [FormallyEtale R A] :
+    FormallyUnramified R A := ⟨inferInstance⟩
 
-instance (priority := 100) to_smooth [FormallyEtale R A] : FormallySmooth R A :=
+instance (priority := 100) [FormallyEtale R A] : FormallySmooth R A :=
   ⟨inferInstance, inferInstance⟩
 
-theorem iff_unramified_and_smooth :
+theorem iff_formallyUnramified_and_formallySmooth :
     FormallyEtale R A ↔ FormallyUnramified R A ∧ FormallySmooth R A :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ ⟨inferInstance, inferInstance⟩⟩
 
-theorem of_unramified_and_smooth [FormallyUnramified R A]
+@[deprecated (since := "2025-11-03")]
+alias iff_unramified_and_smooth := iff_formallyUnramified_and_formallySmooth
+
+theorem of_formallyUnramified_and_formallySmooth [FormallyUnramified R A]
     [FormallySmooth R A] : FormallyEtale R A :=
-  FormallyEtale.iff_unramified_and_smooth.mpr ⟨‹_›, ‹_›⟩
+  FormallyEtale.iff_formallyUnramified_and_formallySmooth.mpr ⟨‹_›, ‹_›⟩
+
+@[deprecated (since := "2025-11-03")]
+alias of_unramified_and_smooth := of_formallyUnramified_and_formallySmooth
 
 variable (R A) in
 lemma comp_bijective [FormallyEtale R A] (I : Ideal B) (hI : I ^ 2 = ⊥) :
@@ -85,14 +91,14 @@ theorem iff_comp_bijective :
       (by aesop (add safe Function.Bijective.injective))
     have : FormallySmooth R A := FormallySmooth.of_comp_surjective
       (by aesop (add safe Function.Bijective.surjective))
-   FormallyEtale.of_unramified_and_smooth⟩
+   .of_formallyUnramified_and_formallySmooth⟩
 
 end
 
 section OfEquiv
 
 theorem of_equiv [FormallyEtale R A] (e : A ≃ₐ[R] B) : FormallyEtale R B :=
-  FormallyEtale.iff_unramified_and_smooth.mpr
+  FormallyEtale.iff_formallyUnramified_and_formallySmooth.mpr
     ⟨FormallyUnramified.of_equiv e, FormallySmooth.of_equiv e⟩
 
 theorem iff_of_equiv (e : A ≃ₐ[R] B) : FormallyEtale R A ↔ FormallyEtale R B :=
@@ -105,7 +111,7 @@ section Comp
 variable (R A B) in
 theorem comp [Algebra A B] [IsScalarTower R A B] [FormallyEtale R A] [FormallyEtale A B] :
     FormallyEtale R B :=
-  FormallyEtale.iff_unramified_and_smooth.mpr
+  FormallyEtale.iff_formallyUnramified_and_formallySmooth.mpr
     ⟨FormallyUnramified.comp R A B, FormallySmooth.comp R A B⟩
 
 end Comp
@@ -115,8 +121,8 @@ section BaseChange
 open scoped TensorProduct
 
 variable (B) in
-instance base_change [FormallyEtale R A] : FormallyEtale B (B ⊗[R] A) :=
-  FormallyEtale.iff_unramified_and_smooth.mpr ⟨inferInstance, inferInstance⟩
+instance [FormallyEtale R A] : FormallyEtale B (B ⊗[R] A) :=
+  .of_formallyUnramified_and_formallySmooth
 
 end BaseChange
 
@@ -150,11 +156,11 @@ variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R S)) Sₘ]
 include M
 
 theorem of_isLocalization : FormallyEtale R Rₘ :=
-  FormallyEtale.iff_unramified_and_smooth.mpr
+  FormallyEtale.iff_formallyUnramified_and_formallySmooth.mpr
     ⟨FormallyUnramified.of_isLocalization M, FormallySmooth.of_isLocalization M⟩
 
 theorem localization_base [FormallyEtale R Sₘ] : FormallyEtale Rₘ Sₘ :=
-  FormallyEtale.iff_unramified_and_smooth.mpr
+  FormallyEtale.iff_formallyUnramified_and_formallySmooth.mpr
     ⟨FormallyUnramified.localization_base M, FormallySmooth.localization_base M⟩
 
 /-- The localization of a formally étale map is formally étale. -/
@@ -203,9 +209,11 @@ instance baseChange [Etale R A] : Etale B (B ⊗[R] A) where
 end Comp
 
 /-- Localization at an element is étale. -/
-theorem of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Etale R A where
+theorem of_isLocalizationAway (r : R) [IsLocalization.Away r A] : Etale R A where
   formallyEtale := Algebra.FormallyEtale.of_isLocalization (Submonoid.powers r)
   finitePresentation := IsLocalization.Away.finitePresentation r
+
+@[deprecated (since := "2025-11-03")] alias of_isLocalization_Away := of_isLocalizationAway
 
 end Etale
 
