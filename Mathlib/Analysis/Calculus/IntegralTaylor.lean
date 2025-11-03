@@ -50,9 +50,9 @@ variable [NormedSpace ℝ E] [NormedSpace ℝ F]
 
 variable {f : E → F} {x y : E} {n : ℕ}
 
-variable [CompleteSpace F] [FiniteDimensional ℝ E]
+variable [CompleteSpace F]
 
-theorem baz (hf : ∀ (t : ℝ) (ht : t ∈ Set.uIcc 0 1), ContDiffAt ℝ (n + 1) f (x + t • y)) :
+theorem baz (hf : ∀ (t : ℝ) (_ht : t ∈ Set.uIcc 0 1), ContDiffAt ℝ (n + 1) f (x + t • y)) :
     f (x + y) = ∑ k ∈ Finset.range (n + 1), (k ! : ℝ)⁻¹ • (iteratedFDeriv ℝ k f x (fun _ ↦ y)) +
     (n ! : ℝ)⁻¹ • ∫ t in 0..1, (1 - t)^n • iteratedFDeriv ℝ (n + 1) f (x + t • y) (fun _ ↦ y) := by
   induction n with
@@ -71,8 +71,7 @@ theorem baz (hf : ∀ (t : ℝ) (ht : t ∈ Set.uIcc 0 1), ContDiffAt ℝ (n + 1
     have hint : IntervalIntegrable (deriv (fun s ↦ f (x + s • y))) MeasureTheory.volume 0 1 := by
       apply ContinuousOn.intervalIntegrable
       apply ContinuousOn.congr _ h_eq.symm
-      -- We need `FiniteDimensional ℝ E` here:
-      apply continuousOn_clm_apply.mp _
+      apply ContinuousOn.clm_apply _ (by fun_prop)
       apply ContinuousOn.comp (t := (fun t ↦ x + t • y) '' (Set.uIcc (0 : ℝ) 1))
       · intro z ⟨t, ht, hz⟩
         rw [← hz]
@@ -110,17 +109,25 @@ theorem baz (hf : ∀ (t : ℝ) (ht : t ∈ Set.uIcc 0 1), ContDiffAt ℝ (n + 1
       intro t ht
       unfold v
       rw [← foo t (hf t ht)]
+      have h_diff : DifferentiableAt ℝ (iteratedFDeriv ℝ (n + 1) f) (x + t • y) := by
+        apply ((hf t ht).iteratedFDeriv_right (i := n + 1) (m := 1) _).differentiableAt (le_refl _)
+        norm_cast
+        grind
       refine DifferentiableAt.hasDerivAt ?_
-      sorry
+      apply DifferentiableAt.continuousMultilinear_apply_const
+      exact h_diff.comp t (by fun_prop)
     have hv' : IntervalIntegrable (v (n + 1 + 1)) MeasureTheory.volume 0 1 := by
       apply ContinuousOn.intervalIntegrable
       intro t ht
-      specialize hf t ht
-
-      sorry
-      -- below is bad
-      --exact (hv (n + 1 + 1) (by sorry) t ht).hasDerivWithinAt.continuousWithinAt
-    -- We rest of the proof is integration by parts
+      unfold v
+      have : ContinuousWithinAt (fun t ↦ (iteratedFDeriv ℝ (n + 1 + 1) f (x + t • y)))
+          (Set.uIcc 0 1) t := by
+        apply ContinuousAt.continuousWithinAt
+        have h_cont₁ : ContinuousAt (iteratedFDeriv ℝ (n + 1 + 1) f) (x + t • y) :=
+          ((hf t ht).iteratedFDeriv_right (i := n + 1 + 1) (m := 0) (by simp)).continuousAt
+        have h_cont₂ : ContinuousAt (fun t ↦ x + t • y) t := by fun_prop
+        exact h_cont₁.comp (x := t) h_cont₂
+      apply this.eval_const
     have := intervalIntegral.integral_smul_deriv_eq_deriv_smul (fun t _ ↦ hu t) hv (hu' n).neg hv'
     simp only [← eq_neg_add_iff_add_eq, ← intervalIntegral.integral_smul, smul_smul]
     nth_rw 1 [sub_eq_add_neg] at this
