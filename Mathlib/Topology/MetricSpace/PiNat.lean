@@ -47,6 +47,10 @@ in general), and `ι` is countable.
     `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`.
 * `PiCountable.metricSpace` is the corresponding metric space structure, adjusted so that
   the uniformity is definitionally the product uniformity. Not registered as an instance.
+* `PiNatEmbed` gives an equivalence between a space and itself in a sequence of spaces
+* `Metric.PiNatEmbed.metricSpace` proves that a topological `X` separated by countably many
+  continuous functions to metric spaces, can be embedded inside their product.
+
 -/
 
 noncomputable section
@@ -936,19 +940,13 @@ protected def metricSpace : MetricSpace (∀ i, F i) :=
 end MetricSpace
 end PiCountable
 
-/-!
-# Embedding a countably separated space inside a space of sequences
-
-This file proves that a topological `X` separated by countably many continuous functions `X → Y i`
-where the `Y i` are metric spaces, then `X` can be embedded inside the product `∀ i, Y i`.
--/
+/-! # Embedding a countably separated space inside a space of sequences -/
+namespace Metric
 
 open Encodable Function TopologicalSpace Topology
 open scoped PiCountable
 
 variable {ι X : Type*} {Y : ι → Type*} {f : ∀ i, X → Y i}
-
-namespace Metric
 
 include f in
 variable (X Y f) in
