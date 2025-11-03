@@ -189,12 +189,12 @@ lemma indicator_indepFun_pi_of_prod_bcf
     rw [Set.indicator_apply]
     split_ifs <;> simp_all
   have hg {c : ℝ} : Integrable (fun ω ↦ c * ∏ s, g s (X s ω)) P := by
-    refine Integrable.of_bound ?_ (|c| * ∏ s, ‖g s‖) (ae_of_all _ fun ω ↦ ?_)
+    refine Integrable.of_bound ?_ (‖c‖ * ∏ s, ‖g s‖) (ae_of_all _ fun ω ↦ ?_)
     · exact (Finset.aestronglyMeasurable_fun_prod _ fun s _ ↦
         (g s).continuous.aestronglyMeasurable.comp_aemeasurable (mX s)).const_mul _
-    · rw [Real.norm_eq_abs, abs_mul, Finset.abs_prod]
+    · rw [norm_mul, norm_prod]
       gcongr with s
-      exact (g s).abs_apply_le_norm _
+      exact (g s).norm_coe_le_norm _
   simp_rw [Pi.mul_apply, Finset.prod_apply, Function.comp_apply, h1, h2]
   rw [integral_sub, integral_add, integral_indicator₀ mA, integral_indicator₀ mA,
     integral_const_mul, integral_const_mul, integral_const_mul, integral_add,
