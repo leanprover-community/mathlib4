@@ -64,7 +64,7 @@ instance [P.IsStableUnderBaseChange] {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z) [P.HasP
   HasPullbacksAlong.hasPullback (pullback.snd A.hom g)
   (P.of_isPullback (IsPullback.of_hasPullback A.hom g) A.prop)
 
-/-- If `P` and `Q` are stable under base change and pullbacks exist in `T`,
+/-- If `P` and `Q` are stable under base change and pullbacks along `f` exist for morphisms in `P`,
 this is the functor `P.Over Q Y ⥤ P.Over Q X` given by base change along `f`. -/
 @[simps! obj_left obj_hom map_left]
 noncomputable def Over.pullback (f : X ⟶ Y) [P.HasPullbacksAlong f] :
@@ -112,7 +112,7 @@ section Adjunction
 variable [P.IsStableUnderComposition] [P.IsStableUnderBaseChange]
   [Q.IsStableUnderBaseChange]
 
-/-- `P.Over.map` is left adjoint to `P.Over.pullback` if `f` satisfies `P`. -/
+/-- `P.Over.map` is left adjoint to `P.Over.pullback` if `f` satisfies `P` and `Q`. -/
 noncomputable def Over.mapPullbackAdj (f : X ⟶ Y) [P.HasPullbacksAlong f]
     [Q.HasOfPostcompProperty Q] (hPf : P f) (hQf : Q f) :
     Over.map Q hPf ⊣ Over.pullback P Q f :=
