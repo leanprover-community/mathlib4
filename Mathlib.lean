@@ -2977,7 +2977,12 @@ import Mathlib.Combinatorics.Derangements.Basic
 import Mathlib.Combinatorics.Derangements.Exponential
 import Mathlib.Combinatorics.Derangements.Finite
 import Mathlib.Combinatorics.Digraph.Basic
+import Mathlib.Combinatorics.Digraph.Connected
 import Mathlib.Combinatorics.Digraph.Orientation
+import Mathlib.Combinatorics.Digraph.Paths
+import Mathlib.Combinatorics.Digraph.Subgraph
+import Mathlib.Combinatorics.Digraph.Walk
+import Mathlib.Combinatorics.Digraph.WalkDecomp
 import Mathlib.Combinatorics.Enumerative.Bell
 import Mathlib.Combinatorics.Enumerative.Catalan
 import Mathlib.Combinatorics.Enumerative.Composition
