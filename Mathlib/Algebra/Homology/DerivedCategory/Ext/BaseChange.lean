@@ -29,6 +29,38 @@ universe v v' u u'
 
 variable (R : Type u) [CommRing R]
 
+section
+
+variable {R} {M1 M2 M3 : Type*} (N : Type*) [AddCommGroup M1] [AddCommGroup M2] [AddCommGroup M3]
+  [AddCommGroup N] [Module R M1] [Module R M2] [Module R M3] [Module R N]
+
+lemma lcomp_exact_of_exact_of_surjective (f : M1 →ₗ[R] M2) (g : M2 →ₗ[R] M3)
+    (exac : Function.Exact f g) (surj : Function.Surjective g) :
+    Function.Exact (LinearMap.lcomp R N g) (LinearMap.lcomp R N f) := by
+  intro h
+  simp only [LinearMap.lcomp_apply', Set.mem_range]
+  refine ⟨fun hh ↦ ?_, fun ⟨y, hy⟩ ↦ ?_⟩
+  · have (x : M2) : (g.quotKerEquivOfSurjective surj).symm (g x) = Submodule.Quotient.mk x := by
+      simp [LinearEquiv.symm_apply_eq]
+    let y' := (LinearMap.ker g).liftQ h
+      (le_of_eq_of_le (LinearMap.exact_iff.mp exac) (LinearMap.range_le_ker_iff.mpr hh))
+    use y'.comp (LinearMap.quotKerEquivOfSurjective g surj).symm.toLinearMap
+    ext x
+    simp [y', this]
+  · rw [← hy, LinearMap.comp_assoc, exac.linearMap_comp_eq_zero, LinearMap.comp_zero y]
+
+lemma lcomp_injective_of_surjective (g : M2 →ₗ[R] M3) (surj : Function.Surjective g) :
+    Function.Injective (LinearMap.lcomp R N g) := by
+  rw [← LinearMap.ker_eq_bot, eq_bot_iff]
+  intro h hh
+  simp only [LinearMap.mem_ker, LinearMap.lcomp_apply'] at hh
+  simp only [Submodule.mem_bot]
+  ext x
+  rcases surj x with ⟨y, hy⟩
+  rw [← hy, LinearMap.zero_apply, ← LinearMap.comp_apply, hh, LinearMap.zero_apply]
+
+end
+
 section basechange
 
 open CategoryTheory
@@ -248,9 +280,13 @@ theorem Module.FinitePresentation.isBaseChange_map [Module.Flat R S]
       (LinearMap.ext fun s ↦ (LinearMap.ext fun m ↦ (by simp)))
   · exact LinearMap.ext fun φ ↦ TensorProduct.AlgebraTensorModule.curry_injective
       (LinearMap.ext fun s ↦ (LinearMap.ext fun m ↦ (by simp)))
-
-  -- Waiting for the left exactness of hom
-  all_goals sorry
+  · exact lcomp_exact_of_exact_of_surjective _ g f hfg hf
+  · exact lcomp_injective_of_surjective _ f hf
+  · apply lcomp_exact_of_exact_of_surjective
+    · exact (lTensor_exact S hfg hf)
+    · exact LinearMap.lTensor_surjective S hf
+  · apply lcomp_injective_of_surjective
+    exact LinearMap.lTensor_surjective S hf
 
 end
 
