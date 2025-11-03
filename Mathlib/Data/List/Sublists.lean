@@ -118,14 +118,6 @@ theorem sublistsAux_eq_flatMap :
       rw [flatMap_append, ← ih, flatMap_singleton, sublistsAux, foldl_append]
       simp [sublistsAux])
 
-@[csimp] theorem sublists_eq_sublistsFast : @sublists = @sublistsFast := by
-  ext α l : 2
-  trans l.foldr sublistsAux [[]]
-  · rw [sublistsAux_eq_flatMap, sublists]
-  · simp only [sublistsFast, sublistsAux_eq_array_foldl]
-    rw [← foldr_hom Array.toList]
-    · intros; congr
-
 theorem sublists_append (l₁ l₂ : List α) :
     sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x => (sublists l₁).map (· ++ x)) := by
   simp only [sublists, foldr_append]
