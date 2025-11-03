@@ -25,7 +25,8 @@ section
 
 variable {C : Type u} [Category.{v} C]
 
-theorem Ind.isSeparating_range_yoneda : IsSeparating (Set.range (Ind.yoneda : C ⥤ _).obj) := by
+theorem Ind.isSeparating_range_yoneda :
+    ObjectProperty.IsSeparating (.ofObj (Ind.yoneda : C ⥤ _).obj) := by
   refine fun X Y f g h => (cancel_epi (Ind.colimitPresentationCompYoneda X).hom).1 ?_
   exact colimit.hom_ext (fun i => by simp [← Category.assoc, h])
 

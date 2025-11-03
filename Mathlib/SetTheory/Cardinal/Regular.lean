@@ -103,6 +103,18 @@ theorem isRegular_aleph_succ (o : Ordinal) : IsRegular (ℵ_ (succ o)) := by
   rw [aleph_succ]
   exact isRegular_succ (aleph0_le_aleph o)
 
+lemma IsRegular.lift {κ : Cardinal.{v}} (h : κ.IsRegular) :
+    (Cardinal.lift.{u} κ).IsRegular := by
+  obtain ⟨h₁, h₂⟩ := h
+  constructor
+  · simpa
+  · rwa [← Cardinal.lift_ord, ← Ordinal.lift_cof, lift_le]
+
+@[simp]
+lemma isRegular_lift_iff {κ : Cardinal.{v}} :
+    (Cardinal.lift.{u} κ).IsRegular ↔ κ.IsRegular :=
+  ⟨fun ⟨h₁, h₂⟩ ↦ ⟨by simpa using h₁, by simpa [← lift_le.{u, v}]⟩, fun h ↦ h.lift⟩
+
 theorem lsub_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} #ι < c) : (∀ i, f i < c.ord) → Ordinal.lsub.{u, v} f < c.ord :=
   lsub_lt_ord_lift (by rwa [hc.cof_eq])
