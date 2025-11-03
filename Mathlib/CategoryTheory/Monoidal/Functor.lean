@@ -1166,22 +1166,8 @@ variable {C D}
 
 /--
 Auxiliary definition for `Functor.Monoidal.transport`
-
-We generate the lemmas `coreMonoidalTransport_εIso_hom`, `coreMonoidalTransport_εIso_inv`,
-`coreMonoidalTransport_μIso_hom`, and `coreMonoidalTransport_μIso_hom` with `@[simps!]`, but they
-should probably not be global simp lemmas (in some cases, we might want to define a monoidal
-structure on a functor by transporting it along an natural isomorphism, but then forget where it
-came from and only use the abstract properties of monoidal functors).
-Turn them on as simp lemmas locally using:
-
-```lean
-attribute [local simp] Functor.Monoidal.coreMonoidalTransport_εIso_hom
-  Functor.Monoidal.coreMonoidalTransport_εIso_inv
-  Functor.Monoidal.coreMonoidalTransport_μIso_hom
-  Functor.Monoidal.coreMonoidalTransport_μIso_hom
-```
 -/
-@[simps! -isSimp]
+@[simps!]
 def coreMonoidalTransport {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) : G.CoreMonoidal where
   εIso := εIso F ≪≫ i.app _
   μIso X Y := tensorIso (i.symm.app _) (i.symm.app _) ≪≫ μIso F X Y ≪≫ i.app _
@@ -1250,11 +1236,6 @@ end Functor.Monoidal
 namespace Equivalence
 
 variable {C D}
-
-attribute [local simp] Functor.Monoidal.coreMonoidalTransport_εIso_hom
-  Functor.Monoidal.coreMonoidalTransport_εIso_inv
-  Functor.Monoidal.coreMonoidalTransport_μIso_hom
-  Functor.Monoidal.coreMonoidalTransport_μIso_hom
 
 /--
 Given a functor `F` and an equivalence of categories `e` such that `e.inverse` and `e.functor ⋙ F`
