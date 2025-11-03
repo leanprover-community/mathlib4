@@ -47,19 +47,20 @@ open scoped Convex Topology
 theorem isLittleO_sub_sub_fderiv
     {α 𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] [NormedAddCommGroup E]
     [NormedSpace ℝ E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    {x : E} {y z : α → E} {l : Filter α} {f : α → E → F} {f' : α → E → E →L[𝕜] F} {φ : E →L[𝕜] F}
-    (s : Set E := .univ) (seg : ∀ᶠ χ in l, [z χ -[ℝ] y χ] ⊆ s := by simp)
-    (hy : Tendsto y l (𝓝 x)) (hz : Tendsto z l (𝓝 x)) (cf' : Tendsto ↿f' (l ×ˢ 𝓝[s] x) (𝓝 φ))
-    (df' : ∀ᶠ p in l ×ˢ 𝓝[s] x, HasFDerivWithinAt (f p.1) (f' p.1 p.2) s p.2) :
+    {x : E} {y z : α → E} {l : Filter α} (hy : Tendsto y l (𝓝 x)) (hz : Tendsto z l (𝓝 x))
+    (s : Set E := Set.univ) (seg : ∀ᶠ χ in l, [z χ -[ℝ] y χ] ⊆ s := by simp)
+    {f : α → E → F} {f' : α → E → E →L[𝕜] F}
+    (df' : ∀ᶠ p in l ×ˢ 𝓝[s] x, HasFDerivWithinAt (f p.1) (f' p.1 p.2) s p.2)
+    {φ : E →L[𝕜] F} (cf' : Tendsto ↿f' (l ×ˢ 𝓝[s] x) (𝓝 φ)) :
     (fun χ => f χ (y χ) - f χ (z χ) - φ (y χ - z χ)) =o[l] (fun χ => y χ - z χ) := by
   rw [isLittleO_iff]
   intro ε hε
+  replace df' : ∀ᶠ χ in l, ∀ v ∈ [z χ -[ℝ] y χ], HasFDerivWithinAt (f χ) (f' χ v) s v :=
+    df'.segment_of_prod_nhdsWithin hz hy seg
   replace cf' : ∀ᶠ χ in l, ∀ v ∈ [z χ -[ℝ] y χ], dist (f' χ v) φ < ε := by
     rw [Metric.tendsto_nhds] at cf'
     exact (cf' ε hε).segment_of_prod_nhdsWithin hz hy seg
-  replace df' : ∀ᶠ χ in l, ∀ v ∈ [z χ -[ℝ] y χ], HasFDerivWithinAt (f χ) (f' χ v) s v :=
-    df'.segment_of_prod_nhdsWithin hz hy seg
-  filter_upwards [seg, cf', df'] with χ seg cf' df'
+  filter_upwards [seg, df', cf'] with χ seg df' cf'
   exact Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le'
     (fun v hv => (df' v hv).mono seg) (fun v hv => (cf' v hv).le)
     (convex_segment ..) (left_mem_segment ..) (right_mem_segment ..)
@@ -71,96 +72,87 @@ variable {𝕜 E₁ E₂ F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCom
 `(x₁, x₂)` and if they are continuous at that point then the uncurried function `↿f` is strictly
 differentiable there with its derivative mapping `(h₁, h₂)` to `f₁ x₁ x₂ h₁ + f₂ x₁ x₂ h₂`. -/
 theorem hasStrictFDerivAt_uncurry_coprod
-    [IsRCLikeNormedField 𝕜] {x₁ : E₁} {x₂ : E₂} {f : E₁ → E₂ → F}
-    {f₁ : E₁ → E₂ → E₁ →L[𝕜] F} (cf₁ : ContinuousAt ↿f₁ (x₁, x₂))
-    (df₁ : ∀ᶠ y in 𝓝 (x₁, x₂), HasFDerivAt (f · y.2) (f₁ y.1 y.2) y.1)
-    {f₂ : E₁ → E₂ → E₂ →L[𝕜] F} (cf₂ : ContinuousAt ↿f₂ (x₁, x₂))
-    (df₂ : ∀ᶠ y in 𝓝 (x₁, x₂), HasFDerivAt (f y.1 ·) (f₂ y.1 y.2) y.2) :
-    HasStrictFDerivAt ↿f ((f₁ x₁ x₂).coprod (f₂ x₁ x₂)) (x₁, x₂) := by
-  unfold ContinuousAt at cf₁ cf₂
-  rw [nhds_prod_eq] at cf₁ cf₂ df₁ df₂
+    [IsRCLikeNormedField 𝕜] {x : E₁ × E₂} {f : E₁ → E₂ → F} {f₁ : E₁ → E₂ → E₁ →L[𝕜] F}
+    {f₂ : E₁ → E₂ → E₂ →L[𝕜] F} (df₁ : ∀ᶠ y in 𝓝 x, HasFDerivAt (f · y.2) (↿f₁ y) y.1)
+    (df₂ : ∀ᶠ y in 𝓝 x, HasFDerivAt (f y.1 ·) (↿f₂ y) y.2) (cf₁ : ContinuousAt ↿f₁ x)
+    (cf₂ : ContinuousAt ↿f₂ x) : HasStrictFDerivAt ↿f ((↿f₁ x).coprod (↿f₂ x)) x := by
   rw [hasStrictFDerivAt_iff_isLittleO]
+  unfold ContinuousAt at cf₁ cf₂
+  rw [nhds_prod_eq] at df₁ df₂ cf₁ cf₂
   calc
-    fun (y, z) => f y.1 y.2 - f z.1 z.2 - ((f₁ x₁ x₂).coprod (f₂ x₁ x₂)) (y - z)
-    _ = fun (y, z) => (f y.1 z.2 - f z.1 z.2 - f₁ x₁ x₂ (y.1 - z.1))
-          + (f y.1 y.2 - f y.1 z.2 - f₂ x₁ x₂ (y.2 - z.2)) := by
+    fun (y, z) => f y.1 y.2 - f z.1 z.2 - ((↿f₁ x).coprod (↿f₂ x)) (y - z)
+    _ = fun (y, z) => (f y.1 z.2 - f z.1 z.2 - ↿f₁ x (y.1 - z.1))
+          + (f y.1 y.2 - f y.1 z.2 - ↿f₂ x (y.2 - z.2)) := by
       ext
       dsimp only [ContinuousLinearMap.coprod_apply]
       abel
-    _ =o[𝓝 ((x₁, x₂), (x₁, x₂))] fun (y, z) => y - z := by
+    _ =o[𝓝 (x, x)] fun (y, z) => y - z := by
       let : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
+      rw [nhds_prod_eq, nhds_prod_eq]
       apply IsLittleO.add
       · calc
-          fun (y, z) => f y.1 z.2 - f z.1 z.2 - f₁ x₁ x₂ (y.1 - z.1)
-          _ =o[𝓝 ((x₁, x₂), (x₁, x₂))] (fun (y, z) => y.1 - z.1 : _ → E₁) := by
+          fun (y, z) => f y.1 z.2 - f z.1 z.2 - ↿f₁ x (y.1 - z.1)
+          _ =o[(𝓝 x.1 ×ˢ 𝓝 x.2) ×ˢ (𝓝 x.1 ×ˢ 𝓝 x.2)] (fun (y, z) => y.1 - z.1 : _ → E₁) := by
             have h := tendsto_snd.prodMk <| tendsto_snd.comp <| tendsto_snd.comp <|
-              tendsto_fst (f := (𝓝 x₁ ×ˢ 𝓝 x₂) ×ˢ (𝓝 x₁ ×ˢ 𝓝 x₂)) (g := 𝓝 x₁)
+              tendsto_fst (f := (𝓝 x.1 ×ˢ 𝓝 x.2) ×ˢ (𝓝 x.1 ×ˢ 𝓝 x.2)) (g := 𝓝 x.1)
             let : NormedSpace ℝ E₁ := RestrictScalars.normedSpace ℝ 𝕜 E₁
             apply isLittleO_sub_sub_fderiv (α := (E₁ × E₂) × (E₁ × E₂))
               (f := fun (y, z) u => f u z.2) (f' := fun (y, z) u => f₁ u z.2)
-            · simpa [nhds_prod_eq] using tendsto_fst.comp tendsto_fst
-            · simpa [nhds_prod_eq] using tendsto_fst.comp tendsto_snd
-            · simpa [nhds_prod_eq] using cf₁.comp h
-            · simpa [nhds_prod_eq] using h.eventually df₁
-          _ =O[𝓝 ((x₁, x₂), (x₁, x₂))] (fun (y, z) => y - z : _ → E₁ × E₂) := by
+              (tendsto_fst.comp tendsto_fst) (tendsto_fst.comp tendsto_snd)
+            · simpa using h.eventually df₁
+            · simpa using cf₁.comp h
+          _ =O[(𝓝 x.1 ×ˢ 𝓝 x.2) ×ˢ (𝓝 x.1 ×ˢ 𝓝 x.2)] (fun (y, z) => y - z : _ → E₁ × E₂) := by
             simp [isBigO_of_le]
       · calc
-          fun (y, z) => f y.1 y.2 - f y.1 z.2 - f₂ x₁ x₂ (y.2 - z.2)
-          _ =o[𝓝 ((x₁, x₂), (x₁, x₂))] (fun (y, z) => y.2 - z.2 : _ → E₂) := by
+          fun (y, z) => f y.1 y.2 - f y.1 z.2 - ↿f₂ x (y.2 - z.2)
+          _ =o[(𝓝 x.1 ×ˢ 𝓝 x.2) ×ˢ (𝓝 x.1 ×ˢ 𝓝 x.2)] (fun (y, z) => y.2 - z.2 : _ → E₂) := by
             have h := (tendsto_fst.comp <| tendsto_fst.comp tendsto_fst).prodMk <|
-              tendsto_snd (f := (𝓝 x₁ ×ˢ 𝓝 x₂) ×ˢ (𝓝 x₁ ×ˢ 𝓝 x₂)) (g := 𝓝 x₂)
+              tendsto_snd (f := (𝓝 x.1 ×ˢ 𝓝 x.2) ×ˢ (𝓝 x.1 ×ˢ 𝓝 x.2)) (g := 𝓝 x.2)
             let : NormedSpace ℝ E₂ := RestrictScalars.normedSpace ℝ 𝕜 E₂
-            apply isLittleO_sub_sub_fderiv (α := (E₁ × E₂) × (E₁ × E₂))
-              (f := fun (y, z) v => f y.1 v) (f' := fun (y, z) v => f₂ y.1 v)
-            · simpa [nhds_prod_eq] using tendsto_snd.comp tendsto_fst
-            · simpa [nhds_prod_eq] using tendsto_snd.comp tendsto_snd
-            · simpa [nhds_prod_eq] using cf₂.comp h
-            · simpa [nhds_prod_eq] using h.eventually df₂
-          _ =O[𝓝 ((x₁, x₂), (x₁, x₂))] (fun (y, z) => y - z : _ → E₁ × E₂) := by
+            apply isLittleO_sub_sub_fderiv (f' := fun (y, z) v => f₂ y.1 v)
+              (tendsto_snd.comp tendsto_fst) (tendsto_snd.comp tendsto_snd)
+            · simpa using h.eventually df₂
+            · simpa using cf₂.comp h
+          _ =O[(𝓝 x.1 ×ˢ 𝓝 x.2) ×ˢ (𝓝 x.1 ×ˢ 𝓝 x.2)] (fun (y, z) => y - z : _ → E₁ × E₂) := by
             simp [isBigO_of_le]
 
 /-- If a bivariate function `f` has partial derivatives `f₁x` at `(x₁, x₂)` and `f₂` in a
 neighbourhood of `(x₁, x₂)`, continuous there, then the uncurried function `↿f` is differentiable at
 `(x₁, x₂)` with its derivative mapping `(h₁, h₂)` to `f₁x h₁ + f₂ x₁ x₂ h₂`. -/
 theorem hasFDerivWithinAt_uncurry_coprod_of_continuousWithinAt_snd
-    [IsRCLikeNormedField 𝕜] [NormedSpace ℝ E₂] {x₁ : E₁} {x₂ : E₂} {f : E₁ → E₂ → F}
-    {s₁ : Set E₁} {s₂ : Set E₂} (seg : ∀ᶠ v in 𝓝[s₂] x₂, [x₂ -[ℝ] v] ⊆ s₂)
-    {f₁x : E₁ →L[𝕜] F} (df₁x : HasFDerivWithinAt (f · x₂) f₁x s₁ x₁)
-    {f₂ : E₁ → E₂ → E₂ →L[𝕜] F} (cf₂ : ContinuousWithinAt ↿f₂ (s₁ ×ˢ s₂) (x₁, x₂))
-    (df₂ : ∀ᶠ y in 𝓝[s₁ ×ˢ s₂] (x₁, x₂), HasFDerivWithinAt (f y.1 ·) (f₂ y.1 y.2) s₂ y.2) :
-    HasFDerivWithinAt ↿f (f₁x.coprod (f₂ x₁ x₂)) (s₁ ×ˢ s₂) (x₁, x₂) := by
-  unfold ContinuousWithinAt at cf₂
-  rw [nhdsWithin_prod_eq] at cf₂ df₂
+    [IsRCLikeNormedField 𝕜] [NormedSpace ℝ E₂] {x : E₁ × E₂} {s₁ : Set E₁} {s₂ : Set E₂}
+    (seg : ∀ᶠ v in 𝓝[s₂] x.2, [x.2 -[ℝ] v] ⊆ s₂) {f : E₁ → E₂ → F} {f₁x : E₁ →L[𝕜] F}
+    {f₂ : E₁ → E₂ → E₂ →L[𝕜] F} (df₁x : HasFDerivWithinAt (f · x.2) f₁x s₁ x.1)
+    (df₂ : ∀ᶠ y in 𝓝[s₁ ×ˢ s₂] x, HasFDerivWithinAt (f y.1 ·) (↿f₂ y) s₂ y.2)
+    (cf₂ : ContinuousWithinAt ↿f₂ (s₁ ×ˢ s₂) x) :
+    HasFDerivWithinAt ↿f (f₁x.coprod (↿f₂ x)) (s₁ ×ˢ s₂) x := by
   rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO]
+  unfold ContinuousWithinAt at cf₂
+  rw [nhdsWithin_prod_eq] at ⊢ df₂ cf₂
   calc
-    fun y => ↿f y - f x₁ x₂ - (f₁x.coprod (f₂ x₁ x₂)) (y.1 - x₁, y.2 - x₂)
-    _ = fun y => f y.1 x₂ - f x₁ x₂ - f₁x (y.1 - x₁) + (↿f y - f y.1 x₂ - f₂ x₁ x₂ (y.2 - x₂)) := by
+    fun y => ↿f y - ↿f x - (f₁x.coprod (↿f₂ x)) (y - x)
+    _ = fun y => (f y.1 x.2 - ↿f x - f₁x (y - x).1) + (↿f y - f y.1 x.2 - ↿f₂ x (y - x).2) := by
       ext
       rw [ContinuousLinearMap.coprod_apply]
       abel
-    _ =o[𝓝[s₁ ×ˢ s₂] (x₁, x₂)] fun y => (y.1 - x₁, y.2 - x₂) := by
+    _ =o[𝓝[s₁] x.1 ×ˢ 𝓝[s₂] x.2] fun y => y - x := by
       apply IsLittleO.add
       · calc
-          _ = (fun y₁ => f y₁ x₂ - f x₁ x₂ - f₁x (y₁ - x₁)) ∘ Prod.fst := by
-            rw [Function.comp_def]
-          _ =o[𝓝[s₁ ×ˢ s₂] (x₁, x₂)] ((fun y₁ => y₁ - x₁) ∘ Prod.fst) := by
-            rw [nhdsWithin_prod_eq]
+          (fun u => f u x.2 - f x.1 x.2 - f₁x (u - x.1)) ∘ Prod.fst
+          _ =o[𝓝[s₁] x.1 ×ˢ 𝓝[s₂] x.2] ((fun u => u - x.1) ∘ Prod.fst) := by
             apply IsLittleO.comp_fst
             rwa [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO] at df₁x
-          _ =O[𝓝[s₁ ×ˢ s₂] (x₁, x₂)] fun y => (y.1 - x₁, y.2 - x₂) := by
+          _ =O[𝓝[s₁] x.1 ×ˢ 𝓝[s₂] x.2] fun y => (y.1 - x.1, y.2 - x.2) := by
             simp [isBigO_of_le]
       · calc
-          fun y => f y.1 y.2 - f y.1 x₂ - f₂ x₁ x₂ (y.2 - x₂)
-          _ =o[𝓝[s₁ ×ˢ s₂] (x₁, x₂)] fun y => y.2 - x₂ := by
+          fun y => f y.1 y.2 - f y.1 x.2 - ↿f₂ x (y.2 - x.2)
+          _ =o[𝓝[s₁] x.1 ×ˢ 𝓝[s₂] x.2] fun y => y.2 - x.2 := by
             have h := (tendsto_fst.comp tendsto_fst).prodMk <|
-              tendsto_snd (f := 𝓝[s₁] x₁ ×ˢ 𝓝[s₂] x₂) (g := 𝓝[s₂] x₂)
-            apply isLittleO_sub_sub_fderiv (f' := fun y v => f₂ y.1 v)
-              s₂ (by simpa [nhdsWithin_prod_eq] using seg.prod_inr _)
-            · simpa [nhdsWithin_prod_eq] using tendsto_nhds_of_tendsto_nhdsWithin tendsto_snd
-            · exact tendsto_const_nhds
-            · simpa [nhdsWithin_prod_eq] using cf₂.comp h
-            · simpa [nhdsWithin_prod_eq] using h.eventually df₂
-          _ =O[𝓝[s₁ ×ˢ s₂] (x₁, x₂)] fun y => (y.1 - x₁, y.2 - x₂) := by
+              tendsto_snd (f := 𝓝[s₁] x.1 ×ˢ 𝓝[s₂] x.2) (g := 𝓝[s₂] x.2)
+            exact isLittleO_sub_sub_fderiv (f' := fun y v => f₂ y.1 v)
+              (tendsto_nhds_of_tendsto_nhdsWithin tendsto_snd) tendsto_const_nhds
+              s₂ (seg.prod_inr _) (h.eventually df₂) (cf₂.comp h)
+          _ =O[𝓝[s₁] x.1 ×ˢ 𝓝[s₂] x.2] fun y => (y.1 - x.1, y.2 - x.2) := by
             simp [isBigO_of_le]
 
 section PartialFDeriv
