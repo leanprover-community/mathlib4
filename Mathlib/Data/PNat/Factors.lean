@@ -149,7 +149,7 @@ theorem to_ofPNatMultiset (v : Multiset ℕ+) (h) : (ofPNatMultiset v h : Multis
   dsimp [ofPNatMultiset, toPNatMultiset]
   have : (fun (p : ℕ+) (h : p.Prime) => ((↑) : Nat.Primes → ℕ+) ⟨p, h⟩) = fun p _ => id p := by
     funext p h
-    apply Subtype.eq
+    apply Subtype.ext
     rfl
   rw [Multiset.map_pmap, this, Multiset.pmap_eq_map, Multiset.map_id]
 

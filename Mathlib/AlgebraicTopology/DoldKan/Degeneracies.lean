@@ -48,7 +48,7 @@ theorem HigherFacesVanish.comp_σ {Y : C} {X : SimplicialObject C} {n b q : ℕ}
     simp only [hnbq, add_comm b, add_assoc, hj', Fin.val_zero, zero_add, add_le_iff_nonpos_right,
       nonpos_iff_eq_zero, add_eq_zero, false_and, reduceCtorEq] at hj
   · dsimp
-    rw [Fin.lt_iff_val_lt_val, Fin.val_succ]
+    rw [Fin.lt_def, Fin.val_succ]
     linarith
 
 theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1)) (hi : n + 1 ≤ i + q) :

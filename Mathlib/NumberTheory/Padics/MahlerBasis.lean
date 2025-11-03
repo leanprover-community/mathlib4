@@ -313,7 +313,7 @@ lemma fwdDiff_mahlerSeries (ha : Tendsto a atTop (𝓝 0)) (n) :
     simp only [fwdDiff_iter_eq_sum_shift, zero_add]
     refine Finset.sum_congr rfl fun j hj ↦ ?_
     rw [nsmul_one, nsmul_one,
-      mahlerSeries_apply_nat ha (Nat.lt_succ.mp <| Finset.mem_range.mp hj), Nat.cast_id]
+      mahlerSeries_apply_nat ha (Nat.lt_succ_iff.mp <| Finset.mem_range.mp hj), Nat.cast_id]
   -- bring `Δ_[1]` inside sum
   _ = ∑ j ∈ range (n + 1), Δ_[1]^[n] (fun k ↦ k.choose j • (a j)) 0 := by
     simp only [fwdDiff_iter_eq_sum_shift, smul_sum]

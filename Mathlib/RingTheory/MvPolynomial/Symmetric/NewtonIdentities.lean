@@ -103,7 +103,7 @@ private theorem pairMap_mem_pairs {k : ℕ} (t : Finset σ × σ) (h : t ∈ pai
   · rw [pairMap_of_snd_mem_fst σ h1]
     simp only [h1, implies_true, and_true] at h
     simp only [card_erase_of_mem h1, tsub_le_iff_right, mem_erase, ne_eq, h1]
-    refine ⟨le_step h, ?_⟩
+    refine ⟨le_succ_of_le h, ?_⟩
     by_contra h2
     simp only [not_true_eq_false, and_true, not_forall, not_false_eq_true, exists_prop] at h2
     rw [← h2] at h

@@ -54,14 +54,14 @@ theorem num_den_mk {q : ℚ} {n d : ℤ} (hd : d ≠ 0) (qdf : q = n /. d) :
 
 theorem num_mk (n d : ℤ) : (n /. d).num = d.sign * n / n.gcd d := by
   have (m : ℕ) : Int.natAbs (m + 1) = m + 1 := by
-    rw [← Nat.cast_one, ← Nat.cast_add, Int.natAbs_cast]
+    rw [← Nat.cast_one, ← Nat.cast_add, Int.natAbs_natCast]
   rcases d with ((_ | _) | _) <;>
   simp [divInt, mkRat, Rat.normalize_eq, Int.sign, Int.gcd,
     Int.zero_ediv, this]
 
 theorem den_mk (n d : ℤ) : (n /. d).den = if d = 0 then 1 else d.natAbs / n.gcd d := by
   have (m : ℕ) : Int.natAbs (m + 1) = m + 1 := by
-    rw [← Nat.cast_one, ← Nat.cast_add, Int.natAbs_cast]
+    rw [← Nat.cast_one, ← Nat.cast_add, Int.natAbs_natCast]
   rcases d with ((_ | _) | _) <;>
     simp [divInt, mkRat, Rat.normalize_eq, Int.gcd,
       if_neg (Nat.cast_add_one_ne_zero _), this]

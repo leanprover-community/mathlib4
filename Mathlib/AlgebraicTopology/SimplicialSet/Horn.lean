@@ -162,7 +162,7 @@ def primitiveTriangle {n : ℕ} (i : Fin (n + 4))
       simp only [Fin.zero_eta, zero_add, Fin.mk_one, mem_insert, Fin.ext_iff, Fin.val_last,
         Fin.val_zero, AddLeftCancelMonoid.add_eq_zero, OfNat.ofNat_ne_zero, and_false,
         Fin.val_one, Nat.reduceEqDiff, mem_singleton, or_self, or_false] at this
-      simp only [Fin.lt_iff_val_lt_val, Fin.val_last] at hₙ
+      simp only [Fin.lt_def, Fin.val_last] at hₙ
       cutsat
     · have := Finset.mem_univ (0 : Fin (n + 4))
       rw [← hS] at this

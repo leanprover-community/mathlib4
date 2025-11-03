@@ -232,7 +232,7 @@ instance Subtype.instSingleton [MeasurableSingletonClass α] :
 
 instance Subtype.instLawfulSingleton [MeasurableSingletonClass α] :
     LawfulSingleton α (Subtype (MeasurableSet : Set α → Prop)) :=
-  ⟨fun _ => Subtype.eq <| insert_empty_eq _⟩
+  ⟨fun _ => Subtype.ext <| insert_empty_eq _⟩
 
 instance Subtype.instHasCompl : HasCompl (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x => ⟨xᶜ, x.prop.compl⟩⟩

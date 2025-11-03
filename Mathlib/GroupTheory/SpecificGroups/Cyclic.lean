@@ -243,7 +243,7 @@ theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
 
 @[to_additive]
 instance Bot.isCyclic : IsCyclic (⊥ : Subgroup α) :=
-  ⟨⟨1, fun x => ⟨0, Subtype.eq <| (zpow_zero (1 : α)).trans <| Eq.symm (Subgroup.mem_bot.1 x.2)⟩⟩⟩
+  ⟨⟨1, fun x => ⟨0, Subtype.ext <| (zpow_zero (1 : α)).trans <| Eq.symm (Subgroup.mem_bot.1 x.2)⟩⟩⟩
 
 @[to_additive]
 instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H :=
@@ -258,7 +258,7 @@ instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H :=
         Nat.pos_of_ne_zero fun h => hx₂ <| by
           rw [← hk, Int.natAbs_eq_zero.mp h, zpow_zero], by
             rcases k with k | k
-            · rw [Int.ofNat_eq_coe, Int.natAbs_cast k, ← zpow_natCast, ← Int.ofNat_eq_coe, hk]
+            · rw [Int.ofNat_eq_coe, Int.natAbs_natCast k, ← zpow_natCast, ← Int.ofNat_eq_coe, hk]
               exact hx₁
             · rw [Int.natAbs_negSucc, ← Subgroup.inv_mem_iff H]; simp_all⟩
     ⟨⟨⟨g ^ Nat.find hex, (Nat.find_spec hex).2⟩, fun ⟨x, hx⟩ =>
@@ -448,7 +448,7 @@ private theorem card_pow_eq_one_eq_orderOf_aux (a : α) : #{b : α | b ^ orderOf
                   let ⟨i, hi⟩ := b.2
                   rw [← hi, ← zpow_natCast, ← zpow_mul, mul_comm, zpow_mul, zpow_natCast,
                     pow_orderOf_eq_one, one_zpow]⟩⟩)
-          fun _ _ h => Subtype.eq (Subtype.mk.inj h))
+          fun _ _ h => Subtype.ext (Subtype.mk.inj h))
       _ = #{b : α | b ^ orderOf a = 1} := Fintype.card_ofFinset _ _
       )
 

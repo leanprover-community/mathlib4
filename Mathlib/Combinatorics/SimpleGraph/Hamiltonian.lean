@@ -115,7 +115,7 @@ lemma IsHamiltonianCycle.mem_support (hp : p.IsHamiltonianCycle) (b : α) :
 lemma IsHamiltonianCycle.length_eq [Fintype α] (hp : p.IsHamiltonianCycle) :
     p.length = Fintype.card α := by
   rw [← length_tail_add_one hp.not_nil, hp.isHamiltonian_tail.length_eq, Nat.sub_add_cancel]
-  rw [Nat.succ_le, Fintype.card_pos_iff]
+  rw [Nat.succ_le_iff, Fintype.card_pos_iff]
   exact ⟨a⟩
 
 lemma IsHamiltonianCycle.count_support_self (hp : p.IsHamiltonianCycle) :

@@ -32,12 +32,12 @@ class IsInvariantSubring : Prop where
 instance IsInvariantSubring.toMulSemiringAction [IsInvariantSubring M S] :
     MulSemiringAction M S where
   smul m x := ⟨m • ↑x, IsInvariantSubring.smul_mem m x.2⟩
-  one_smul s := Subtype.eq <| one_smul M (s : R)
-  mul_smul m₁ m₂ s := Subtype.eq <| mul_smul m₁ m₂ (s : R)
-  smul_add m s₁ s₂ := Subtype.eq <| smul_add m (s₁ : R) (s₂ : R)
-  smul_zero m := Subtype.eq <| smul_zero m
-  smul_one m := Subtype.eq <| smul_one m
-  smul_mul m s₁ s₂ := Subtype.eq <| smul_mul' m (s₁ : R) (s₂ : R)
+  one_smul s := Subtype.ext <| one_smul M (s : R)
+  mul_smul m₁ m₂ s := Subtype.ext <| mul_smul m₁ m₂ (s : R)
+  smul_add m s₁ s₂ := Subtype.ext <| smul_add m (s₁ : R) (s₂ : R)
+  smul_zero m := Subtype.ext <| smul_zero m
+  smul_one m := Subtype.ext <| smul_one m
+  smul_mul m s₁ s₂ := Subtype.ext <| smul_mul' m (s₁ : R) (s₂ : R)
 
 end Ring
 
