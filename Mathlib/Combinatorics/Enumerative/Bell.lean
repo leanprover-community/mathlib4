@@ -24,7 +24,7 @@ The definition presents it as a natural number.
   `m.bell * (m.map (fun j ↦ j !)).prod * Π j ∈ (m.toFinset.erase 0), (m.count j)! = m.sum !`
 
 * `Nat.uniformBell_mul_eq`  shows that
-  `uniformBell m n * n ! ^ m * m ! = (m * n)!`
+  `uniformBell m n * n ! ^ m * m ! = (m * n) !`
 
 * `Nat.uniformBell_succ_left` computes `Nat.uniformBell (m + 1) n` from `Nat.uniformBell m n`
 
