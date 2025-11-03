@@ -189,6 +189,19 @@ theorem lift_fst : lift a b h ≫ fst f g = a := by
 theorem lift_snd : lift a b h ≫ snd f g = b := by
   simp [lift]
 
+def pullbackObjMap {Y' : C} (h : Y' ⟶ Y) : pullbackObj (h ≫ f) g ⟶ pullbackObj f g :=
+  lift (fst _ _ ≫ h) (snd _ _) (by simp [condition])
+
+@[reassoc]
+theorem pullbackObjMap_fst {Y' : C} (h : Y' ⟶ Y) :
+    pullbackObjMap h ≫ fst f g = fst _ _ ≫ h := by
+  simp [pullbackObjMap, lift_fst]
+
+@[reassoc (attr := simp)]
+theorem pullbackObjMap_snd {Y' : C} (h : Y' ⟶ Y) :
+    pullbackObjMap h ≫ snd f g = snd _ _ := by
+  simp [pullbackObjMap, lift_snd]
+
 end Lift
 
 variable (f g)
@@ -198,6 +211,16 @@ theorem isPullback : IsPullback (fst f g) (snd f g) f g where
   isLimit' :=
     ⟨PullbackCone.IsLimit.mk _ (fun s ↦ lift s.fst s.snd s.condition)
       (by simp) (by simp) (by aesop)⟩
+
+def chosenPullbackOfFst : ChosenPullback (fst f g) where
+  pullback.obj W := Over.mk (pullbackObjMap W.hom)
+  pullback.map {W' W} k := Over.homMk
+    (lift (fst _ g ≫ k.left) (snd _ g) (by simp [condition]))
+    (by simp only [pullbackObjMap]; aesop)
+  mapPullbackAdj.unit.app Q :=
+    Over.homMk (lift (𝟙 _) (Q.hom ≫ snd _ _) (by simp [condition]))
+    (by simp only [pullbackObjMap]; aesop)
+  mapPullbackAdj.counit.app W := Over.homMk (fst _ g) (by simp [pullbackObjMap])
 
 instance hasPullbackAlong : HasPullbacksAlong g := fun f => (isPullback f g).hasPullback
 
@@ -210,14 +233,14 @@ noncomputable def pullbackIsoOverPullback : ChosenPullback.pullback g ≅ Over.p
   (ChosenPullback.mapPullbackAdj g).rightAdjointUniq (Over.mapPullbackAdj g)
 
 @[reassoc (attr := simp)]
-lemma pullbackIsoOverPullback_hom_app_comp_fst (Z : Over X) :
+theorem pullbackIsoOverPullback_hom_app_comp_fst (Z : Over X) :
     ((pullbackIsoOverPullback g).hom.app Z).left ≫ pullback.fst _ _ = fst _ _ := by
   simpa using (Over.forget _).congr_map
     ((ChosenPullback.mapPullbackAdj g).rightAdjointUniq_hom_app_counit
       (Over.mapPullbackAdj g) Z)
 
 @[reassoc (attr := simp)]
-lemma pullbackIsoOverPullback_hom_app_comp_snd (Z : Over X) :
+theorem pullbackIsoOverPullback_hom_app_comp_snd (Z : Over X) :
     ((pullbackIsoOverPullback g).hom.app Z).left ≫ pullback.snd _ _ = snd _ _ :=
   Over.w ((pullbackIsoOverPullback g).hom.app Z)
 
