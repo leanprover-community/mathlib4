@@ -121,7 +121,7 @@ theorem logEmbedding_eq_zero_iff {x : (𝓞 K)ˣ} :
 theorem logEmbedding_ker : (logEmbedding K).ker = (torsion K).toAddSubgroup := by
   ext x
   rw [AddMonoidHom.mem_ker, ← ofMul_toMul x, logEmbedding_eq_zero_iff]
-  rfl
+  simp
 
 theorem map_logEmbedding_sup_torsion (s : AddSubgroup (Additive (𝓞 K)ˣ)) :
     (s ⊔ (torsion K).toAddSubgroup).map (logEmbedding K) = s.map (logEmbedding K) := by

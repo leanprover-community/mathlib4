@@ -49,19 +49,19 @@ def parallelPairOpIso {X Y : C} (f g : X ⟶ Y) :
 
 @[simp]
 lemma parallelPairOpIso_hom_app_zero {X Y : C} (f g : X ⟶ Y) :
-  (parallelPairOpIso f g).hom.app WalkingParallelPair.zero = 𝟙 _ := rfl
+    (parallelPairOpIso f g).hom.app WalkingParallelPair.zero = 𝟙 _ := rfl
 
 @[simp]
 lemma parallelPairOpIso_hom_app_one {X Y : C} (f g : X ⟶ Y) :
-  (parallelPairOpIso f g).hom.app WalkingParallelPair.one = 𝟙 _ := rfl
+    (parallelPairOpIso f g).hom.app WalkingParallelPair.one = 𝟙 _ := rfl
 
 @[simp]
 lemma parallelPairOpIso_inv_app_zero {X Y : C} (f g : X ⟶ Y) :
-  (parallelPairOpIso f g).inv.app WalkingParallelPair.zero = 𝟙 _ := rfl
+    (parallelPairOpIso f g).inv.app WalkingParallelPair.zero = 𝟙 _ := rfl
 
 @[simp]
 lemma parallelPairOpIso_inv_app_one {X Y : C} (f g : X ⟶ Y) :
-  (parallelPairOpIso f g).inv.app WalkingParallelPair.one = 𝟙 _ := rfl
+    (parallelPairOpIso f g).inv.app WalkingParallelPair.one = 𝟙 _ := rfl
 
 /-- The canonical isomorphism relating `(parallelPair f g).op` and `parallelPair f.op g.op` -/
 def opParallelPairIso {X Y : C} (f g : X ⟶ Y) :
@@ -77,19 +77,23 @@ def opParallelPairIso {X Y : C} (f g : X ⟶ Y) :
 
 @[simp]
 lemma opParallelPairIso_hom_app_zero {X Y : C} (f g : X ⟶ Y) :
-  (opParallelPairIso f g).hom.app (op WalkingParallelPair.zero) = 𝟙 _ := by simp [opParallelPairIso]
+    (opParallelPairIso f g).hom.app (op WalkingParallelPair.zero) = 𝟙 _ := by
+  simp [opParallelPairIso]
 
 @[simp]
 lemma opParallelPairIso_hom_app_one {X Y : C} (f g : X ⟶ Y) :
-  (opParallelPairIso f g).hom.app (op WalkingParallelPair.one) = 𝟙 _ := by simp [opParallelPairIso]
+    (opParallelPairIso f g).hom.app (op WalkingParallelPair.one) = 𝟙 _ := by
+  simp [opParallelPairIso]
 
 @[simp]
 lemma opParallelPairIso_inv_app_zero {X Y : C} (f g : X ⟶ Y) :
-  (opParallelPairIso f g).inv.app (op WalkingParallelPair.zero) = 𝟙 _ := by simp [opParallelPairIso]
+    (opParallelPairIso f g).inv.app (op WalkingParallelPair.zero) = 𝟙 _ := by
+  simp [opParallelPairIso]
 
 @[simp]
 lemma opParallelPairIso_inv_app_one {X Y : C} (f g : X ⟶ Y) :
-  (opParallelPairIso f g).inv.app (op WalkingParallelPair.one) = 𝟙 _ := by simp [opParallelPairIso]
+    (opParallelPairIso f g).inv.app (op WalkingParallelPair.one) = 𝟙 _ := by
+  simp [opParallelPairIso]
 
 namespace Cofork
 

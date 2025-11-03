@@ -38,7 +38,7 @@ noncomputable instance : Module R (Ext X Y n) :=
 
 lemma smul_eq_comp_mk₀ (x : Ext X Y n) (r : R) :
     r • x = x.comp (mk₀ (r • 𝟙 Y)) (add_zero _) := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   ext
   apply ((Equiv.linearEquiv R homEquiv).map_smul r x).trans
   change r • homEquiv x = (x.comp (mk₀ (r • 𝟙 Y)) (add_zero _)).hom
@@ -54,14 +54,14 @@ lemma smul_hom (x : Ext X Y n) (r : R) [HasDerivedCategory C] :
 lemma comp_smul {X Y Z : C} {a b : ℕ} (α : Ext X Y a) (β : Ext Y Z b)
     {c : ℕ} (h : a + b = c) (r : R) :
     α.comp (r • β) h = r • α.comp β h := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   aesop
 
 @[simp]
 lemma smul_comp {X Y Z : C} {a b : ℕ} (α : Ext X Y a) (β : Ext Y Z b)
     {c : ℕ} (h : a + b = c) (r : R) :
     (r • α).comp β h = r • α.comp β h := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   aesop
 
 open DerivedCategory in
@@ -76,7 +76,7 @@ noncomputable def homLinearEquiv [HasDerivedCategory.{w'} C] :
   map_smul' := by simp
 
 lemma mk₀_smul (r : R) (f : X ⟶ Y) : mk₀ (r • f) = r • mk₀ f := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   aesop
 
 /-- The linear equivalence `Ext X Y 0 ≃ₜ[R] (X ⟶ Y)`. -/

@@ -135,7 +135,7 @@ lemma φ_iterate_apply (n : ℕ) (a : R) : (φ^[n] a) = ((ofAdd n) • a) := by
   induction n with
   | zero => simp
   | succ n hn =>
-      simp_all [MulSemiringAction.toRingHom_apply, Function.iterate_succ', -Function.iterate_succ,
+    simp_all [MulSemiringAction.toRingHom_apply, Function.iterate_succ', -Function.iterate_succ,
       ← mul_smul, mul_comm]
 
 end phi
@@ -145,8 +145,8 @@ def monomial (n : ℕ) : R →ₗ[R] SkewPolynomial R := lsingle (ofAdd n)
 
 lemma monomial_zero_right (n : ℕ) : monomial n (0 : R) = 0 := single_zero _
 
-lemma monomial_zero_one [MulSemiringAction (Multiplicative ℕ) R] :
-  monomial (0 : ℕ) (1 : R) = 1 := by rfl
+lemma monomial_zero_one [MulSemiringAction (Multiplicative ℕ) R] : monomial (0 : ℕ) (1 : R) = 1 :=
+  rfl
 
 lemma monomial_def (n : ℕ) (a : R) : monomial n a = single (ofAdd n) a := rfl
 
