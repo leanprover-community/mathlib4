@@ -60,7 +60,7 @@ instance (priority := 100) RegularMono.mono (f : X ⟶ Y) [RegularMono f] : Mono
   mono_of_isLimit_fork RegularMono.isLimit
 
 /-- Every isomorphism is a regular monomorphism. -/
-instance (priority := 100) RegularMono.ofIso (f : X ⟶ Y) [IsIso f] : RegularMono f where
+def RegularMono.ofIso (f : X ⟶ Y) [IsIso f] : RegularMono f where
   Z := Y
   left := 𝟙 Y
   right := 𝟙 Y
@@ -76,7 +76,7 @@ def RegularMono.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
   right := e.inv.right ≫ h.right
   w := by
     have := Arrow.mk_hom g ▸ Arrow.w_mk_right e.inv
-    rw [← reassoc_of% this, ← reassoc_of% this, h.w]
+    simp_rw [← reassoc_of% this, h.w]
   isLimit := Fork.isLimitOfIsos _ h.isLimit _ (Comma.rightIso e) (Iso.refl _) (Comma.leftIso e)
 
 /-- `IsRegularMono f` is the assertion that `f` is a regular monomorphism. -/
@@ -232,7 +232,7 @@ instance (priority := 100) RegularEpi.epi (f : X ⟶ Y) [RegularEpi f] : Epi f :
   epi_of_isColimit_cofork RegularEpi.isColimit
 
 /-- Every isomorphism is a regular epimorphism. -/
-instance (priority := 100) RegularEpi.ofIso (f : X ⟶ Y) [IsIso f] : RegularEpi f where
+def RegularEpi.ofIso (f : X ⟶ Y) [IsIso f] : RegularEpi f where
   W := X
   left := 𝟙 X
   right := 𝟙 X
