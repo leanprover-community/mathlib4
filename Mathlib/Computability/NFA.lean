@@ -175,7 +175,7 @@ theorem mem_acceptsFrom_cons {S : Set σ} {a : α} {x : List α} :
   simp [mem_acceptsFrom]
 
 @[simp]
-theorem mem_acceptsFrom_append {S : Set σ} {x y : List α} :
+theorem append_mem_acceptsFrom {S : Set σ} {x y : List α} :
     x ++ y ∈ M.acceptsFrom S ↔ y ∈ M.acceptsFrom (M.evalFrom S x) := by
   simp [mem_acceptsFrom]
 
