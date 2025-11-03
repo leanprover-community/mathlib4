@@ -3,6 +3,7 @@ Copyright (c) 2025 Nailin Guan, Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Jingting Wang
 -/
+import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
 import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
@@ -44,15 +45,25 @@ section
 
 universe t t'
 
+lemma Functor.mapHomologicalComplex_map_exact {ι : Type*} (c : ComplexShape ι)
+    (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exact) :
+    (S.map (F.mapHomologicalComplex c)).Exact := by
+  refine (HomologicalComplex.exact_iff_degreewise_exact _).mpr (fun i ↦ ?_)
+  have : (F.mapHomologicalComplex c) ⋙ (HomologicalComplex.eval D c i) =
+    (HomologicalComplex.eval C c i) ⋙ F := by aesop_cat
+  simp_rw [← ShortComplex.map_comp, this, ShortComplex.map_comp]
+  exact ((HomologicalComplex.exact_iff_degreewise_exact S).mp hS i).map F
+
 variable [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
 
-instance {ι : Type*} (c : ComplexShape ι) :
-    PreservesFiniteLimits (F.mapHomologicalComplex c) where
-  preservesFiniteLimits := sorry
+instance {ι : Type*} (c : ComplexShape ι) : PreservesFiniteLimits (F.mapHomologicalComplex c) := by
+  have := ((F.mapHomologicalComplex c).exact_tfae.out 1 3).mp
+  exact (this (F.mapHomologicalComplex_map_exact c)).1
 
 instance {ι : Type*} (c : ComplexShape ι) :
-    PreservesFiniteColimits (F.mapHomologicalComplex c) where
-  preservesFiniteColimits := sorry
+    PreservesFiniteColimits (F.mapHomologicalComplex c) := by
+  have := ((F.mapHomologicalComplex c).exact_tfae.out 1 3).mp
+  exact (this (F.mapHomologicalComplex_map_exact c)).2
 
 open DerivedCategory
 

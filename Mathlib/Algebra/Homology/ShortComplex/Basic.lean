@@ -166,6 +166,10 @@ short complex in `C`, assuming that `F` preserves zero morphisms. -/
 def map (F : C ⥤ D) [F.PreservesZeroMorphisms] : ShortComplex D :=
   ShortComplex.mk (F.map S.f) (F.map S.g) (by rw [← F.map_comp, S.zero, F.map_zero])
 
+lemma map_comp {E : Type*} [Category E] [HasZeroMorphisms E]
+    (F : C ⥤ D) (G : D ⥤ E) [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms]
+    (S : ShortComplex C) : S.map (F ⋙ G) = (S.map F).map G := rfl
+
 /-- The morphism of short complexes `S.map F ⟶ S.map G` induced by
 a natural transformation `F ⟶ G`. -/
 @[simps]

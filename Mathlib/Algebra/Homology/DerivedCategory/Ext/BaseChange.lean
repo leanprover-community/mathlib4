@@ -5,11 +5,14 @@ Authors: Nailin Guan
 -/
 import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.Algebra.Category.ModuleCat.Projective
+import Mathlib.Algebra.FiveLemma
+import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.Map
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.LinearAlgebra.Dimension.Finite
+import Mathlib.LinearAlgebra.TensorProduct.Pi
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.Flat.Localization
@@ -42,10 +45,14 @@ instance (M N : Type*) [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R 
     small_of_surjective (FreeAddMonoid.freeAddMonoidCongr (equivShrink (M × N)).symm).surjective
   small_of_surjective Quotient.mk''_surjective
 
+/-- Auxiliary construction for `ModuleCat.ExtendScalars'.obj`,
+turning an `R`-module into an `S`-module by `M` ↦ `Shrink S ⨂ M`. -/
 noncomputable def ExtendScalars'.obj' [UnivLE.{v, v'}] [Small.{v'} S]
     (M : ModuleCat.{v} R) : ModuleCat.{v'} S :=
   ModuleCat.of S (Shrink.{v'} (TensorProduct R S M))
 
+/-- Auxiliary construction for `ModuleCat.ExtendScalars'.map`,
+sending `l : M1 ⟶ M2` to `s ⊗ m ↦ s ⊗ l m` with compostion of `Shrink.linearEquiv`. -/
 noncomputable def ExtendScalars'.map' [UnivLE.{v, v'}] [Small.{v'} S]
     {M1 M2 : ModuleCat.{v} R} (g : M1 ⟶ M2) : obj' S M1 ⟶ obj' S M2 :=
   ModuleCat.ofHom (((Shrink.linearEquiv.{v'} S (TensorProduct R S M2)).symm.toLinearMap.comp
@@ -69,6 +76,9 @@ lemma ExtendScalars'.map'_comp [UnivLE.{v, v'}] [Small.{v'} S]
   simp [LinearMap.baseChange_comp]
 
 variable (R) in
+/-- A version of `ModuleCat.extendScalars` with more general universe level,
+turning an `R`-module into an `S`-module by `M` ↦ `Shrink S ⨂ M`,
+sending `l : M1 ⟶ M2` to `s ⊗ m ↦ s ⊗ l m` with compostion of `Shrink.linearEquiv`. -/
 noncomputable def extendScalars' [UnivLE.{v, v'}] [Small.{v'} S] :
     (ModuleCat.{v} R) ⥤ (ModuleCat.{v'} S) where
   obj := ExtendScalars'.obj' S
@@ -84,45 +94,28 @@ instance : (extendScalars' R S).Additive where
     ext x
     simp
 
-lemma extendScalars'_map_shortExact [Module.Flat R S]
-    (T : ShortComplex (ModuleCat.{v} R)) (h : T.ShortExact) :
-    (T.map (extendScalars' R S)).ShortExact where
-  exact := by
-    have exac : Function.Exact (T.f.hom.baseChange S) (T.g.hom.baseChange S) :=
-      lTensor_exact S ((ShortComplex.ShortExact.moduleCat_exact_iff_function_exact T).mp h.exact)
-        h.moduleCat_surjective_g
-    have : Function.Exact (ExtendScalars'.map' S T.f) (ExtendScalars'.map' S T.g) := by
-      simp only [ExtendScalars'.map', hom_ofHom, LinearMap.exact_iff, LinearEquiv.range_comp]
-      rw [LinearMap.comp_assoc, LinearEquiv.ker_comp]
-      ext x
-      simp only [LinearMap.mem_ker, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
-      convert exac ((Shrink.linearEquiv S (TensorProduct R S T.X₂)) x)
-      rw [LinearMap.range_comp, ← Submodule.comap_equiv_eq_map_symm, Submodule.mem_comap]
-      rfl
-    exact (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr this
-  mono_f := by
-    have inj : Function.Injective (T.f.hom.baseChange S) :=
-      Module.Flat.lTensor_preserves_injective_linearMap T.f.hom h.moduleCat_injective_f
-    have : Function.Injective (ExtendScalars'.map' S T.f) := by
-      simp only [ExtendScalars'.map', hom_ofHom, ← LinearMap.ker_eq_bot]
-      rw [LinearMap.comp_assoc, LinearEquiv.ker_comp, LinearMap.ker_eq_bot]
-      exact inj.comp (LinearEquiv.injective _)
-    exact (mono_iff_injective (T.map (extendScalars' R S)).f).mpr this
-  epi_g := by
-    have surj : Function.Surjective (T.g.hom.baseChange S) :=
-      LinearMap.lTensor_surjective S h.moduleCat_surjective_g
-    have : Function.Surjective (ExtendScalars'.map' S T.g) := by
-      simp only [ExtendScalars'.map', hom_ofHom, ← LinearMap.range_eq_top]
-      rw [LinearEquiv.range_comp, LinearMap.range_eq_top]
-      exact (Shrink.linearEquiv S (TensorProduct R S T.X₃)).symm.surjective.comp surj
-    exact (epi_iff_surjective (T.map (extendScalars' R S)).g).mpr this
+lemma extendScalars'_map_exact [Module.Flat R S]
+    (T : ShortComplex (ModuleCat.{v} R)) (h : T.Exact) :
+    (T.map (extendScalars' R S)).Exact := by
+  have exac : Function.Exact (T.f.hom.baseChange S) (T.g.hom.baseChange S) :=
+    Module.Flat.lTensor_exact S
+      ((ShortComplex.ShortExact.moduleCat_exact_iff_function_exact T).mp h)
+  have : Function.Exact (ExtendScalars'.map' S T.f) (ExtendScalars'.map' S T.g) := by
+    simp only [ExtendScalars'.map', hom_ofHom, LinearMap.exact_iff, LinearEquiv.range_comp]
+    rw [LinearMap.comp_assoc, LinearEquiv.ker_comp]
+    ext x
+    simp only [LinearMap.mem_ker, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
+    convert exac ((Shrink.linearEquiv S (TensorProduct R S T.X₂)) x)
+    rw [LinearMap.range_comp, ← Submodule.comap_equiv_eq_map_symm, Submodule.mem_comap]
+    rfl
+  exact (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr this
 
 instance [Module.Flat R S] : Limits.PreservesFiniteLimits (extendScalars' R S) := by
-  have := (((extendScalars' R S).exact_tfae.out 0 3).mp (extendScalars'_map_shortExact S))
+  have := (((extendScalars' R S).exact_tfae.out 1 3).mp (extendScalars'_map_exact S))
   exact this.1
 
 instance [Module.Flat R S] : Limits.PreservesFiniteColimits (extendScalars' R S) := by
-  have := (((extendScalars' R S).exact_tfae.out 0 3).mp (extendScalars'_map_shortExact S))
+  have := (((extendScalars' R S).exact_tfae.out 1 3).mp (extendScalars'_map_exact S))
   exact this.2
 
 namespace Algebra'
@@ -148,54 +141,6 @@ end ModuleCat
 
 end extendscalars'
 
-lemma IsBaseChange.of_exact {M₁ M₂ M₃ : Type*} [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
-    [Module R M₁] [Module R M₂] [Module R M₃] {N₁ N₂ N₃ : Type*} [AddCommGroup N₁] [AddCommGroup N₂]
-    [AddCommGroup N₃] [Module R N₁] [Module R N₂] [Module R N₃] [Module S N₁] [Module S N₂]
-    [Module S N₃] [IsScalarTower R S N₁] [IsScalarTower R S N₂] [IsScalarTower R S N₃]
-    {f : M₁ →ₗ[R] M₂} {g : M₂ →ₗ[R] M₃} (exac1 : Function.Exact f g) (surj1 : Function.Surjective g)
-    {f' : N₁ →ₗ[S] N₂} {g' : N₂ →ₗ[S] N₃} (exac2 : Function.Exact f' g')
-    (surj2 : Function.Surjective g') (h₁ : M₁ →ₗ[R] N₁) (h₂ : M₂ →ₗ[R] N₂) (h₃ : M₃ →ₗ[R] N₃)
-    (isb1 : IsBaseChange S h₁) (isb2 : IsBaseChange S h₂)
-    (comm1 : h₂.comp f = (f'.restrictScalars R).comp h₁)
-    (comm2 : h₃.comp g = (g'.restrictScalars R).comp h₂) : IsBaseChange S h₃ := by
-  have eqmap : f' = (isb2.equiv.toLinearMap.comp (f.baseChange S)).comp
-    isb1.equiv.symm.toLinearMap := by
-    apply isb1.algHom_ext
-    intro x
-    have : h₂ (f x) = f' (h₁ x) := congrFun (congrArg DFunLike.coe comm1) x
-    simp [isb1.equiv_symm_apply, isb2.equiv_tmul, this]
-  let N₃' := TensorProduct R S M₃
-  let g'' : N₂ →ₗ[S] N₃' := (g.baseChange S).comp isb2.equiv.symm.toLinearMap
-  have exac2' : Function.Exact f' g'' := by
-    have exac2'' : Function.Exact (f.baseChange S) (g.baseChange S) := lTensor_exact S exac1 surj1
-    simp only [LinearMap.exact_iff, eqmap, g'', LinearEquiv.range_comp]
-    ext x
-    rw [LinearMap.mem_ker, LinearMap.comp_apply]
-    convert exac2'' (isb2.equiv.symm x)
-    rw [LinearMap.range_comp, Submodule.map_equiv_eq_comap_symm, Submodule.mem_comap]
-    rfl
-  have surj2' : Function.Surjective g'' :=
-    (LinearMap.lTensor_surjective S surj1).comp isb2.equiv.symm.surjective
-  have kereq : LinearMap.ker g'' = LinearMap.ker g' := by
-    rw [LinearMap.exact_iff.mp exac2', LinearMap.exact_iff.mp exac2]
-  let e : N₃' ≃ₗ[S] N₃ := ((LinearMap.quotKerEquivOfSurjective _ surj2').symm.trans
-      (Submodule.quotEquivOfEq _ _ kereq)).trans (LinearMap.quotKerEquivOfSurjective _ surj2)
-  have comm3 : e.comp g'' = g' := by
-    ext x
-    have : ((g''.quotKerEquivOfSurjective surj2').symm (g'' x)) = Submodule.Quotient.mk x := by
-      apply (g''.quotKerEquivOfSurjective surj2').injective
-      simp
-    simp [e, this]
-  apply IsBaseChange.of_equiv e
-  intro x
-  rcases surj1 x with ⟨y, hy⟩
-  rw [← hy, ← LinearMap.comp_apply, comm2, LinearMap.comp_apply, LinearMap.coe_restrictScalars]
-  have : 1 ⊗ₜ[R] g y = g'' (h₂ y) := by
-    change 1 ⊗ₜ[R] g y = (LinearMap.baseChange S g) (isb2.equiv.symm (h₂ y))
-    simp [IsBaseChange.equiv_symm_apply isb2]
-  simp only [this, ← comm3, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
-  rfl
-
 section
 
 open Abelian
@@ -212,7 +157,7 @@ instance hasExt_of_small1 [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{
 instance hasExt_of_small2 [Small.{v'} S] : CategoryTheory.HasExt.{w'} (ModuleCat.{v'} S) :=
   CategoryTheory.hasExt_of_enoughProjectives.{w'} (ModuleCat.{v'} S)
 
-variable [Small.{v} R] [Small.{v'} S]
+variable [Small.{v} R]
 
 noncomputable instance (n : ℕ) (M N : ModuleCat.{v'} S) : Module R (Ext M N n) :=
   letI : Linear R (ModuleCat.{v'} S) := ModuleCat.Algebra.instLinear
@@ -234,6 +179,8 @@ instance (M N : ModuleCat.{v'} S) : IsScalarTower R S (M ⟶ N) where
     rw [Algebra.smul_def, ← smul_smul]
     rfl
 
+/-- The separate definition of `(ModuleCat.extendScalars' R S).mapLinearMap`
+to avoid some instance in namespace `ModuleCat.Algebra`. -/
 noncomputable def ModuleCat.extendScalars'_map_LinearMap (M N : ModuleCat.{v} R) :
   (M ⟶ N) →ₗ[R] ((ModuleCat.extendScalars'.{v, v'} R S).obj M ⟶
     (ModuleCat.extendScalars'.{v, v'} R S).obj N) :=
@@ -241,18 +188,48 @@ noncomputable def ModuleCat.extendScalars'_map_LinearMap (M N : ModuleCat.{v} R)
   letI := ModuleCat.Algebra'.extendScalars'_linear.{v, v'} R S
   (ModuleCat.extendScalars'.{v, v'} R S).mapLinearMap R (X := M) (Y := N)
 
---This is false alarm
-set_option linter.unusedSectionVars false in
 omit [UnivLE.{v, w}] [UnivLE.{v', w'}] [Small.{v, u} R] in
 lemma ModuleCat.extendScalars'_map_LinearMap_eq_mapAddHom (M N : ModuleCat.{v} R) :
   extendScalars'_map_LinearMap.{v, v'} S M N =
   (ModuleCat.extendScalars'.{v, v'} R S).mapAddHom (X := M) (Y := N) := rfl
 
+omit [UnivLE.{v, w}] [UnivLE.{v', w'}] [Small.{v, u} R] in
 lemma CategoryTheory.isBaseChange_hom [IsNoetherianRing R] [Module.Flat R S]
-    (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Finite R N] :
+    (M N : ModuleCat.{v} R) [Module.Finite R M] :
     IsBaseChange S (ModuleCat.extendScalars'_map_LinearMap.{v, v'} S M N) := by
-  sorry
+  let _ : SMulCommClass S R (Shrink.{v', max v u'} (TensorProduct R S N)) :=
+    Equiv.smulCommClass S R (equivShrink (TensorProduct R S ↑N)).symm
+  let hmod : Module R (Shrink.{v'} (TensorProduct R S M) →ₗ[S] Shrink.{v'} (TensorProduct R S N)) :=
+    LinearMap.module
+  let _ :  Module R (((ModuleCat.extendScalars'.{v, v'} R S).obj M) →ₗ[S]
+    ((ModuleCat.extendScalars'.{v, v'} R S).obj N)) := hmod
+  let hsca : IsScalarTower R S
+    (Shrink.{v'} (TensorProduct R S M) →ₗ[S] Shrink.{v'} (TensorProduct R S N)) := {
+    smul_assoc r s x := by
+      ext
+      simp }
+  let _ :  IsScalarTower R S (((ModuleCat.extendScalars'.{v, v'} R S).obj M) →ₗ[S]
+    ((ModuleCat.extendScalars'.{v, v'} R S).obj N)) := hsca
+  have : ModuleCat.extendScalars'_map_LinearMap.{v, v'} S M N =
+    ((ModuleCat.homLinearEquiv (S := S)).symm.restrictScalars R).toLinearMap.comp
+    (((((Shrink.linearEquiv.{v'} S (TensorProduct R S N)).symm.congrRight).trans
+    ((Shrink.linearEquiv.{v'} S (TensorProduct R S M)).symm.congrLeft (Shrink.{v'}
+    (TensorProduct R S N)) S)).restrictScalars R).toLinearMap.comp
+    ((LinearMap.baseChangeHom R S M N).comp ModuleCat.homLinearEquiv.toLinearMap)) := by
+    apply LinearMap.ext
+    intro f
+    rfl
+  rw [this]
+  apply IsBaseChange.comp
+  · apply IsBaseChange.comp
+    · apply IsBaseChange.comp_equiv _ _
+      let _ : Module.FinitePresentation R M := Module.finitePresentation_of_finite R M
+      exact Module.FinitePresentation.isBaseChange_map R M N S
+    · exact IsBaseChange.ofEquiv _
+  · exact IsBaseChange.ofEquiv _
 
+/-- The map between `Ext` induced by `ModuleCat.extendScalars' R S`,
+separated out to avoid some instance in namespace `ModuleCat.Algebra`. -/
 noncomputable def ModuleCat.extendScalars'.mapExtLinearMap [Module.Flat R S]
   (M N : ModuleCat.{v} R) (n : ℕ) :
   Ext M N n →ₗ[R] Ext ((ModuleCat.extendScalars'.{v, v'} R S).obj M)
@@ -261,19 +238,14 @@ noncomputable def ModuleCat.extendScalars'.mapExtLinearMap [Module.Flat R S]
   letI := ModuleCat.Algebra'.extendScalars'_linear.{v, v'} R S
   ((ModuleCat.extendScalars'.{v, v'} R S).mapExtLinearMap R M N n)
 
---This is false alarm
-set_option linter.unusedSectionVars false in
 lemma ModuleCat.extendScalars'.mapExtLinearMap_eq_mapExt [Module.Flat R S]
   (M N : ModuleCat.{v} R) (n : ℕ) : extendScalars'.mapExtLinearMap.{v, v'} S M N n =
     (ModuleCat.extendScalars'.{v, v'} R S).mapExt M N n := rfl
 
 open ModuleCat
 
---This is false alarm
-set_option linter.unusedSectionVars false in
 set_option maxHeartbeats 350000 in
---The dimension shifting is just too complicated
-@[nolint unusedArguments]
+-- The dimension shifting is just too complicated
 theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module.Flat R S]
     (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Finite R N] (n : ℕ) :
     IsBaseChange S (extendScalars'.mapExtLinearMap.{v, v'} S M N n) := by
@@ -353,7 +325,7 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
     let h₂ : Ext T.X₁ N n →ₗ[R] Ext TS.X₁ NS n := extendScalars'.mapExtLinearMap.{v, v'} S T.X₁ N n
     let h₃ : Ext T.X₃ N (n + 1) →ₗ[R] Ext TS.X₃ NS (n + 1) :=
       extendScalars'.mapExtLinearMap.{v, v'} S T.X₃ N (n + 1)
-    apply IsBaseChange.of_exact S exac1 surj1 exac2 surj2 h₁ h₂ h₃ (ih T.X₂ N) (ih T.X₁ N)
+    apply IsBaseChange.of_right_exact S h₁ h₂ h₃ _ _ (ih T.X₂ N) (ih T.X₁ N) exac1 surj1 exac2 surj2
     · ext x
       simp only [ShortComplex.map_X₁, ZeroHom.toFun_eq_coe,
         AddMonoidHom.toZeroHom_coe, LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk,
@@ -371,6 +343,8 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
       erw [extendScalars'.mapExtLinearMap_eq_mapExt, extendScalars'.mapExtLinearMap_eq_mapExt]
       rw [Ext.mapExt_comp_eq_comp_mapExt, this]
 
+/-- If `MS` in `ModuleCat S` is base change of an `R`-module `M`,
+then it is isomporhic to `(ModuleCat.extendScalars' R S).obj M`. -/
 noncomputable def ModuleCat.iso_extendScalars'_of_isBaseChange {M : ModuleCat.{v} R}
     {MS : ModuleCat.{v'} S} (f : M →ₗ[R] (RestrictScalars R S MS))
     (isb1 : letI := RestrictScalars.moduleOrig R S MS; IsBaseChange S f) :
@@ -378,6 +352,8 @@ noncomputable def ModuleCat.iso_extendScalars'_of_isBaseChange {M : ModuleCat.{v
   letI := RestrictScalars.moduleOrig R S MS
   (isb1.equiv.symm.trans (Shrink.linearEquiv S (TensorProduct R S M)).symm).toModuleIso
 
+/-- If `MS` in `ModuleCat S` is base change of an `R`-module `M`,
+then it is isomporhic to `(ModuleCat.extendScalars' R S).obj M`. -/
 noncomputable def ModuleCat.iso_extendScalars'_of_isBaseChange' {M : ModuleCat.{v} R}
     {MS : ModuleCat.{v'} S} [Module R MS] [IsScalarTower R S MS] (f : M →ₗ[R] MS)
     (isb1 : IsBaseChange S f) : MS ≅ (ModuleCat.extendScalars'.{v, v'} R S).obj M :=
@@ -386,6 +362,7 @@ noncomputable def ModuleCat.iso_extendScalars'_of_isBaseChange' {M : ModuleCat.{
 
 namespace CategoryTheory.Abelian
 
+/-- The isomprohism on `Ext` induced by `ModuleCat.iso_extendScalars'_of_isBaseChange`. -/
 noncomputable def Ext.isBaseChangeMap_aux {M N : ModuleCat.{v} R}
     {MS NS : ModuleCat.{v'} S} (f : M →ₗ[R] (RestrictScalars R S MS))
     (isb1 : letI := RestrictScalars.moduleOrig R S MS; IsBaseChange S f)
@@ -398,6 +375,7 @@ noncomputable def Ext.isBaseChangeMap_aux {M N : ModuleCat.{v} R}
   (iso_extendScalars'_of_isBaseChange S f isb1).op).app NS)).addCommGroupIsoToAddEquiv
   map_smul' s x := by simp [Iso.addCommGroupIsoToAddEquiv] }
 
+/-- The isomprohism on `Ext` induced by `ModuleCat.iso_extendScalars'_of_isBaseChange'`. -/
 noncomputable def Ext.isBaseChangeMap_aux' {M N : ModuleCat.{v} R}
     {MS NS : ModuleCat.{v'} S} [Module R MS] [IsScalarTower R S MS]
     [Module R NS] [IsScalarTower R S NS] (f : M →ₗ[R] MS) (isb1 : IsBaseChange S f)
@@ -409,6 +387,7 @@ noncomputable def Ext.isBaseChangeMap_aux' {M N : ModuleCat.{v} R}
   (iso_extendScalars'_of_isBaseChange' S f isb1).op).app NS)).addCommGroupIsoToAddEquiv
   map_smul' s x := by simp [Iso.addCommGroupIsoToAddEquiv] }
 
+/-- Compostion of `Ext.isBaseChangeMap_aux` and `ModuleCat.extendScalars'.mapExtLinearMap`. -/
 noncomputable def Ext.isBaseChangeMap [Module.Flat R S] {M N : ModuleCat.{v} R}
     {MS NS : ModuleCat.{v'} S} (f : M →ₗ[R] (RestrictScalars R S MS))
     (isb1 : letI := RestrictScalars.moduleOrig R S MS; IsBaseChange S f)
@@ -418,6 +397,7 @@ noncomputable def Ext.isBaseChangeMap [Module.Flat R S] {M N : ModuleCat.{v} R}
   ((Ext.isBaseChangeMap_aux S f isb1 g isb2 n).restrictScalars R).toLinearMap.comp
     (extendScalars'.mapExtLinearMap.{v, v'} S M N n)
 
+/-- Compostion of `Ext.isBaseChangeMap_aux'` and `ModuleCat.extendScalars'.mapExtLinearMap`. -/
 noncomputable def Ext.isBaseChangeMap' [Module.Flat R S] {M N : ModuleCat.{v} R}
     {MS NS : ModuleCat.{v'} S} [Module R MS] [IsScalarTower R S MS]
     [Module R NS] [IsScalarTower R S NS] (f : M →ₗ[R] MS) (isb1 : IsBaseChange S f)
@@ -471,6 +451,7 @@ variable [UnivLE.{v, v'}] [Small.{v', u'} A] [UnivLE.{v, w}] [UnivLE.{v', w'}] [
 
 variable {R}
 
+/-- `Ext.isBaseChangeMap` specifying to localization. -/
 noncomputable def Ext.isLocalizedModuleMap {M N : ModuleCat.{v} R} {MS NS : ModuleCat.{v'} A}
     (f : M →ₗ[R] (RestrictScalars R A MS))
     (isl1 : letI := RestrictScalars.moduleOrig R A MS; IsLocalizedModule S f)
@@ -483,6 +464,7 @@ noncomputable def Ext.isLocalizedModuleMap {M N : ModuleCat.{v} R} {MS NS : Modu
     (Ext.isBaseChangeMap.{v, v'} A f (IsLocalizedModule.isBaseChange S A f) g
       (IsLocalizedModule.isBaseChange S A g) n)
 
+/-- `Ext.isBaseChangeMap'` specifying to localization. -/
 noncomputable def Ext.isLocalizedModuleMap' {M N : ModuleCat.{v} R} {MS NS : ModuleCat.{v'} A}
     [Module R MS] [IsScalarTower R A MS] [Module R NS] [IsScalarTower R A NS]
     (f : M →ₗ[R] MS) (isl1 : IsLocalizedModule S f) (g : N →ₗ[R] NS) (isl2 : IsLocalizedModule S g)
