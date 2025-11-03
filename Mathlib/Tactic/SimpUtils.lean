@@ -74,7 +74,7 @@ private def simprocOutStr (simprocData : SimprocData) (keys : Array Key) (doc : 
   let cmd := if simprocData.isRegistered then m!"" else m!"_decl"
   let doc := if doc == "" then m!"" else m!"/--\n{doc}\n-/\n"
   let keys := m!"({← keysAsPattern keys})"
-  let fullCmd := doc ++ dproc ++ cmd ++ m!" {simprocData.declName} " ++ keys
+  let fullCmd := doc ++ dproc ++ cmd ++ m!" {.ofConstName simprocData.declName} " ++ keys
   return fullCmd
 
 /-- Print out an array of simprocs, providing the name and the docstring. -/
