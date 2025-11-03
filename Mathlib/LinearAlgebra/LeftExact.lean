@@ -19,7 +19,7 @@ variable {R : Type*} [CommRing R] {M1 M2 M3 : Type*} (N : Type*)
   [AddCommGroup M1] [AddCommGroup M2] [AddCommGroup M3] [AddCommGroup N]
   [Module R M1] [Module R M2] [Module R M3] [Module R N]
 
-lemma lcomp_exact_of_exact_of_surjective (f : M1 →ₗ[R] M2) (g : M2 →ₗ[R] M3)
+lemma exact_lcomp_of_exact_of_surjective {f : M1 →ₗ[R] M2} {g : M2 →ₗ[R] M3}
     (exac : Function.Exact f g) (surj : Function.Surjective g) :
     Function.Exact (LinearMap.lcomp R N g) (LinearMap.lcomp R N f) := by
   intro h

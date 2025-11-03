@@ -651,9 +651,9 @@ theorem Module.FinitePresentation.isBaseChange_map {S : Type*} [CommRing S] [Alg
       (LinearMap.ext fun s ↦ (LinearMap.ext fun m ↦ (by simp)))
   · exact LinearMap.ext fun φ ↦ TensorProduct.AlgebraTensorModule.curry_injective
       (LinearMap.ext fun s ↦ (LinearMap.ext fun m ↦ (by simp)))
-  · exact lcomp_exact_of_exact_of_surjective _ g f hfg hf
+  · exact exact_lcomp_of_exact_of_surjective _ hfg hf
   · exact lcomp_injective_of_surjective f hf
-  · apply lcomp_exact_of_exact_of_surjective
+  · apply exact_lcomp_of_exact_of_surjective
     · exact (lTensor_exact S hfg hf)
     · exact LinearMap.lTensor_surjective S hf
   · apply lcomp_injective_of_surjective
