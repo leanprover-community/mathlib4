@@ -210,16 +210,13 @@ theorem isPullback : IsPullback (fst f g) (snd f g) f g where
     ⟨PullbackCone.IsLimit.mk _ (fun s ↦ lift s.fst s.snd s.condition)
       (by simp) (by simp) (by aesop)⟩
 
+attribute [local simp] condition in
 /-- If `g` has a chosen pullback, then `Over.ChosenPullback.fst f g` has a chosen pullback. -/
 def chosenPullbackOfFst : ChosenPullback (fst f g) where
   pullback.obj W := Over.mk (pullbackObjMap W.hom)
-  pullback.map {W' W} k := Over.homMk
-    (lift (fst _ g ≫ k.left) (snd _ g) (by simp [condition]))
-    (by simp only [pullbackObjMap]; aesop)
-  mapPullbackAdj.unit.app Q :=
-    Over.homMk (lift (𝟙 _) (Q.hom ≫ snd _ _) (by simp [condition]))
-    (by simp only [pullbackObjMap]; aesop)
-  mapPullbackAdj.counit.app W := Over.homMk (fst _ g) (by simp [pullbackObjMap])
+  pullback.map {W' W} k := Over.homMk (lift (fst _ g ≫ k.left) (snd _ g))
+  mapPullbackAdj.unit.app Q := Over.homMk (lift (𝟙 _) (Q.hom ≫ snd _ _))
+  mapPullbackAdj.counit.app W := Over.homMk (fst _ g)
 
 instance hasPullbackAlong : HasPullbacksAlong g := fun f => (isPullback f g).hasPullback
 
