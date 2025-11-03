@@ -34,6 +34,11 @@ open CategoryTheory
 
 variable {R} (S : Type u') [CommRing S] [Algebra R S]
 
+lemma isBaseChange_comp_equiv {M1 M2 N : Type*} [AddCommGroup M1] [AddCommGroup M2] [AddCommGroup N]
+    [Module R M1] [Module R M2] [Module R N] [Module S N] [IsScalarTower R S N] (e : M1 ≃ₗ[R] M2)
+    (f : M2 →ₗ[R] N) (isb : IsBaseChange S f) : IsBaseChange S (f.comp e.toLinearMap) := by
+  sorry
+
 section extendscalars'
 
 namespace ModuleCat
@@ -214,7 +219,10 @@ theorem Module.FinitePresentation.isBaseChange_map [Module.Flat R S]
       (LinearMap.ext fun s ↦ (LinearMap.ext fun m ↦ (by simp)))
   · exact LinearMap.ext fun φ ↦ TensorProduct.AlgebraTensorModule.curry_injective
       (LinearMap.ext fun s ↦ (LinearMap.ext fun m ↦ (by simp)))
-  all_goals sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
 
 end
 
@@ -268,10 +276,44 @@ lemma ModuleCat.extendScalars'_map_LinearMap_eq_mapAddHom (M N : ModuleCat.{v} R
   extendScalars'_map_LinearMap.{v, v'} S M N =
   (ModuleCat.extendScalars'.{v, v'} R S).mapAddHom (X := M) (Y := N) := rfl
 
+omit [UnivLE.{v, w}] [UnivLE.{v', w'}] [Small.{v, u} R] in
 lemma CategoryTheory.isBaseChange_hom [IsNoetherianRing R] [Module.Flat R S]
     (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Finite R N] :
     IsBaseChange S (ModuleCat.extendScalars'_map_LinearMap.{v, v'} S M N) := by
-  sorry
+  let _ : SMulCommClass S R (Shrink.{v', max v u'} (TensorProduct R S N)) :=
+    Equiv.smulCommClass S R (equivShrink (TensorProduct R S ↑N)).symm
+  let hmod : Module R (Shrink.{v'} (TensorProduct R S M) →ₗ[S] Shrink.{v'} (TensorProduct R S N)) :=
+    LinearMap.module
+  let _ :  Module R (((ModuleCat.extendScalars'.{v, v'} R S).obj M) →ₗ[S]
+    ((ModuleCat.extendScalars'.{v, v'} R S).obj N)) := hmod
+  let hsca : IsScalarTower R S
+    (Shrink.{v'} (TensorProduct R S M) →ₗ[S] Shrink.{v'} (TensorProduct R S N)) := {
+    smul_assoc r s x := by
+      ext
+      simp }
+  let _ :  IsScalarTower R S (((ModuleCat.extendScalars'.{v, v'} R S).obj M) →ₗ[S]
+    ((ModuleCat.extendScalars'.{v, v'} R S).obj N)) := hsca
+  let f := ((((Shrink.linearEquiv.{v'} S (TensorProduct R S N)).symm.congrRight).trans
+    ((Shrink.linearEquiv.{v'} S (TensorProduct R S M)).symm.congrLeft (Shrink.{v'}
+    (TensorProduct R S N)) S)).restrictScalars R).toLinearMap.comp
+    ((LinearMap.baseChangeHom R S M N).comp ModuleCat.homLinearEquiv.toLinearMap)
+  have : ModuleCat.extendScalars'_map_LinearMap.{v, v'} S M N =
+    ((ModuleCat.homLinearEquiv (S := S)).symm.restrictScalars R).toLinearMap.comp
+    (((((Shrink.linearEquiv.{v'} S (TensorProduct R S N)).symm.congrRight).trans
+    ((Shrink.linearEquiv.{v'} S (TensorProduct R S M)).symm.congrLeft (Shrink.{v'}
+    (TensorProduct R S N)) S)).restrictScalars R).toLinearMap.comp
+    ((LinearMap.baseChangeHom R S M N).comp ModuleCat.homLinearEquiv.toLinearMap)) := by
+    apply LinearMap.ext
+    intro f
+    rfl
+  rw [this]
+  apply IsBaseChange.comp
+  · apply IsBaseChange.comp
+    · apply isBaseChange_comp_equiv _ _
+      let _ : Module.FinitePresentation R M := Module.finitePresentation_of_finite R M
+      exact Module.FinitePresentation.isBaseChange_map R S M N
+    · exact IsBaseChange.ofEquiv _
+  · exact IsBaseChange.ofEquiv _
 
 noncomputable def ModuleCat.extendScalars'.mapExtLinearMap [Module.Flat R S]
   (M N : ModuleCat.{v} R) (n : ℕ) :
