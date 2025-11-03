@@ -68,6 +68,10 @@ theorem orderTop_smul_not_lt (r : R) (x : HahnSeries Γ V) : ¬ (r • x).orderT
     exact Set.IsWF.min_of_subset_not_lt_min
       (Function.support_smul_subset_right (fun _ => r) x.coeff)
 
+theorem orderTop_le_orderTop_smul {Γ} [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) :
+    x.orderTop ≤ (r • x).orderTop :=
+  le_of_not_gt <| orderTop_smul_not_lt r x
+
 theorem order_smul_not_lt [Zero Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
     ¬ (r • x).order < x.order := by
   have hx : x ≠ 0 := right_ne_zero_of_smul h
@@ -413,6 +417,22 @@ theorem leadingCoeff_sub {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
   rw [sub_eq_add_neg]
   rw [← orderTop_neg (x := y)] at hxy
   exact leadingCoeff_add_eq_left hxy
+
+theorem orderTop_sub_ne {x y : HahnSeries Γ R} {g : Γ}
+    (hxg : x.orderTop = g) (hyg : y.orderTop = g) (hxyc : x.leadingCoeff = y.leadingCoeff) :
+    (x - y).orderTop ≠ g := by
+  refine orderTop_ne_of_coeff_zero ?_
+  have hx : x ≠ 0 := by
+    rw [← orderTop_ne_top, hxg]
+    exact WithTop.coe_ne_top
+  rw [orderTop_of_ne_zero hx, WithTop.coe_eq_coe] at hxg
+  have hy : y ≠ 0 := by
+    rw [← orderTop_ne_top, hyg]
+    exact WithTop.coe_ne_top
+  rw [orderTop_of_ne_zero hy, WithTop.coe_eq_coe] at hyg
+  simp only [leadingCoeff_of_ne_zero hx, leadingCoeff_of_ne_zero hy, untop_orderTop_of_ne_zero hx,
+    untop_orderTop_of_ne_zero hy, hxg, hyg] at hxyc
+  rwa [coeff_sub, sub_eq_zero]
 
 end AddGroup
 

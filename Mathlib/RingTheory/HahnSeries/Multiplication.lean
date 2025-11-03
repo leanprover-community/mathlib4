@@ -81,7 +81,7 @@ theorem support_one [MulZeroOneClass R] [Nontrivial R] : support (1 : HahnSeries
   support_single_of_ne one_ne_zero
 
 @[simp]
-theorem orderTop_one [MulZeroOneClass R] [Nontrivial R] : orderTop (1 : HahnSeries Γ R) = 0 := by
+theorem orderTop_one [Zero R] [One R] [NeZero (1 : R)] : orderTop (1 : HahnSeries Γ R) = 0 := by
   rw [← single_zero_one, orderTop_single one_ne_zero, WithTop.coe_eq_zero]
 
 @[simp]
@@ -488,6 +488,16 @@ theorem support_mul_subset_add_support [NonUnitalNonAssocSemiring R] {x y : Hahn
   rw [← of_symm_smul_of_eq_mul, ← vadd_eq_add]
   exact HahnModule.support_smul_subset_vadd_support
 
+instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (HahnSeries Γ R) :=
+  { inferInstanceAs (AddCommMonoid (HahnSeries Γ R)),
+    inferInstanceAs (Distrib (HahnSeries Γ R)) with
+    zero_mul := fun _ => by
+      ext
+      simp [coeff_mul]
+    mul_zero := fun _ => by
+      ext
+      simp [coeff_mul] }
+
 section orderLemmas
 
 variable {Γ : Type*} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
@@ -497,6 +507,19 @@ theorem coeff_mul_order_add_order (x y : HahnSeries Γ R) :
     (x * y).coeff (x.order + y.order) = x.leadingCoeff * y.leadingCoeff := by
   simp only [← of_symm_smul_of_eq_mul]
   exact HahnModule.coeff_smul_order_add_order x y
+
+theorem orderTop_mul_of_nonzero {x y : HahnSeries Γ R} (h : x.leadingCoeff * y.leadingCoeff ≠ 0) :
+    (x * y).orderTop = x.orderTop + y.orderTop := by
+  by_cases hx : x = 0; · simp [hx]
+  by_cases hy : y = 0; · simp [hy]
+  have : (x * y).coeff (x.order + y.order) ≠ 0 := by rwa [coeff_mul_order_add_order x y]
+  have hxy : x * y ≠ 0 := fun h ↦ (by simp [h] at this)
+  rw [← order_eq_orderTop_of_ne_zero hx, ← order_eq_orderTop_of_ne_zero hy,
+    ← order_eq_orderTop_of_ne_zero hxy, ← WithTop.coe_add, WithTop.coe_eq_coe]
+  refine le_antisymm (order_le_of_coeff_ne_zero this) ?_
+  rw [HahnSeries.order_of_ne hx, HahnSeries.order_of_ne hy, HahnSeries.order_of_ne hxy,
+    ← Set.IsWF.min_add]
+  exact Set.IsWF.min_le_min_of_subset support_mul_subset_add_support
 
 theorem orderTop_add_le_mul {x y : HahnSeries Γ R} :
     x.orderTop + y.orderTop ≤ (x * y).orderTop := by
@@ -514,6 +537,11 @@ theorem order_mul_of_nonzero {x y : HahnSeries Γ R}
   rw [order_of_ne <| leadingCoeff_ne_zero.mp hx, order_of_ne <| leadingCoeff_ne_zero.mp hy,
     order_of_ne <| ne_zero_of_coeff_ne_zero hxy, ← Set.IsWF.min_add]
   exact Set.IsWF.min_le_min_of_subset support_mul_subset_add_support
+
+theorem leadingCoeff_mul_of_nonzero {x y : HahnSeries Γ R}
+    (h : x.leadingCoeff * y.leadingCoeff ≠ 0) :
+    (x * y).leadingCoeff = x.leadingCoeff * y.leadingCoeff := by
+  simp only [leadingCoeff_eq, order_mul_of_nonzero h, coeff_mul_order_add_order]
 
 theorem order_single_mul_of_isRegular {g : Γ} {r : R} (hr : IsRegular r)
     {x : HahnSeries Γ R} (hx : x ≠ 0) : (((single g) r) * x).order = g + x.order := by
@@ -534,16 +562,6 @@ private theorem mul_assoc' [NonUnitalSemiring R] (x y z : HahnSeries Γ R) :
   apply Finset.sum_nbij' (fun ⟨⟨_i, j⟩, ⟨k, l⟩⟩ ↦ ⟨(k, l + j), (l, j)⟩)
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;>
     aesop (add safe Set.add_mem_add) (add simp [add_assoc, mul_assoc])
-
-instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (HahnSeries Γ R) :=
-  { inferInstanceAs (AddCommMonoid (HahnSeries Γ R)),
-    inferInstanceAs (Distrib (HahnSeries Γ R)) with
-    zero_mul := fun _ => by
-      ext
-      simp [coeff_mul]
-    mul_zero := fun _ => by
-      ext
-      simp [coeff_mul] }
 
 instance [NonUnitalSemiring R] : NonUnitalSemiring (HahnSeries Γ R) :=
   { inferInstanceAs (NonUnitalNonAssocSemiring (HahnSeries Γ R)) with
@@ -605,9 +623,10 @@ theorem orderTop_nsmul_le_orderTop_pow {Γ}
   induction n with
   | zero =>
     simp only [zero_smul, pow_zero]
-    by_cases h : (0 : R) = 1
-    · simp [subsingleton_iff_zero_eq_one.mp h]
-    · simp [nontrivial_of_ne 0 1 h]
+    by_cases h : NeZero (1 : R)
+    · simp
+    · have : Subsingleton R := not_nontrivial_iff_subsingleton.mp fun _ ↦ h NeZero.one
+      simp
   | succ n ih =>
     rw [add_nsmul, pow_add]
     calc
