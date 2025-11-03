@@ -48,7 +48,7 @@ theorem sum_nonneg (h : ∀ i ∈ f.support, 0 ≤ h₁ i (f i)) : 0 ≤ f.sum h
 
 theorem sum_nonneg' (h : ∀ i, 0 ≤ h₁ i (f i)) : 0 ≤ f.sum h₁ := sum_nonneg fun _ _ ↦ h _
 
-theorem sum_nonpos (h : ∀ i ∈ f.support, h₁ i (f i) ≤ 0) : f.sum h₁ ≤ 0:= Finset.sum_nonpos h
+theorem sum_nonpos (h : ∀ i ∈ f.support, h₁ i (f i) ≤ 0) : f.sum h₁ ≤ 0 := Finset.sum_nonpos h
 
 end OrderedAddCommMonoid
 
