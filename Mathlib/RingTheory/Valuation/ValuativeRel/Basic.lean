@@ -101,6 +101,18 @@ namespace ValuativeRel
 
 variable {R : Type*} [CommRing R] [ValuativeRel R]
 
+/-- The strict version of the valuative relation. -/
+def srel (x y : R) : Prop := ¬ y ≤ᵥ x
+
+@[inherit_doc] infix:50 " <ᵥ " => ValuativeRel.srel
+
+macro_rules | `($a <ᵥ $b) => `(binrel% ValuativeRel.srel $a $b)
+
+lemma srel_iff (x y : R) : x <ᵥ y ↔ ¬ y ≤ᵥ x := Iff.rfl
+
+@[simp]
+lemma not_srel_iff {x y : R} : ¬ x <ᵥ y ↔ y ≤ᵥ x := Iff.rfl.not_left
+
 @[simp]
 lemma rel_refl (x : R) : x ≤ᵥ x := by
   cases rel_total x x <;> assumption
@@ -115,6 +127,10 @@ protected alias rel.rfl := rel_rfl
 @[simp]
 theorem zero_rel (x : R) : 0 ≤ᵥ x := by
   simpa using rel_mul_right x ((rel_total 0 1).resolve_right not_rel_one_zero)
+
+@[simp]
+lemma zero_srel_one : (0 : R) <ᵥ 1 :=
+  not_rel_one_zero
 
 lemma rel_mul_left {x y : R} (z) : x ≤ᵥ y → (z * x) ≤ᵥ (z * y) := by
   rw [mul_comm z x, mul_comm z y]
@@ -137,19 +153,21 @@ lemma rel_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : (x * x') �
 theorem rel_add_cases (x y : R) : x + y ≤ᵥ x ∨ x + y ≤ᵥ y :=
   (rel_total y x).imp (fun h => rel_add .rfl h) (fun h => rel_add h .rfl)
 
+lemma zero_srel_mul {x y : R} (hx : 0 <ᵥ x) (hy : 0 <ᵥ y) : 0 <ᵥ x * y := by
+  contrapose! hy
+  rw [not_srel_iff] at hy ⊢
+  rw [show (0 : R) = x * 0 by simp, mul_comm x y, mul_comm x 0] at hy
+  exact rel_mul_cancel hx hy
+
 variable (R) in
 /-- The submonoid of elements `x : R` whose valuation is positive. -/
 def posSubmonoid : Submonoid R where
-  carrier := { x | ¬ x ≤ᵥ 0}
-  mul_mem' {x y} hx hy := by
-    dsimp only [Set.mem_setOf_eq] at hx hy ⊢
-    contrapose! hy
-    rw [show (0 : R) = x * 0 by simp, mul_comm x y, mul_comm x 0] at hy
-    exact rel_mul_cancel hx hy
-  one_mem' := not_rel_one_zero
+  carrier := { x | 0 <ᵥ x }
+  mul_mem' := zero_srel_mul
+  one_mem' := zero_srel_one
 
 @[simp]
-lemma posSubmonoid_def (x : R) : x ∈ posSubmonoid R ↔ ¬ x ≤ᵥ 0 := Iff.refl _
+lemma posSubmonoid_def (x : R) : x ∈ posSubmonoid R ↔ 0 <ᵥ x := Iff.rfl
 
 @[simp]
 lemma right_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
@@ -421,9 +439,8 @@ instance : LinearOrder (ValueGroupWithZero R) where
 
 @[simp]
 theorem ValueGroupWithZero.mk_lt_mk (x y : R) (t s : posSubmonoid R) :
-    ValueGroupWithZero.mk x t < ValueGroupWithZero.mk y s ↔
-      x * s ≤ᵥ y * t ∧ ¬ y * t ≤ᵥ x * s :=
-  Iff.rfl
+    ValueGroupWithZero.mk x t < ValueGroupWithZero.mk y s ↔ x * s <ᵥ y * t := by
+  rw [lt_iff_not_ge, srel_iff, mk_le_mk]
 
 instance : Bot (ValueGroupWithZero R) where
   bot := 0
@@ -443,8 +460,7 @@ instance : IsOrderedMonoid (ValueGroupWithZero R) where
     simp only [ValueGroupWithZero.mk_mul_mk, ValueGroupWithZero.mk_le_mk, Submonoid.coe_mul]
     conv_lhs => apply mul_mul_mul_comm
     conv_rhs => apply mul_mul_mul_comm
-    apply rel_mul_left
-    exact hab
+    exact rel_mul_left _ hab
 
 instance : Inv (ValueGroupWithZero R) where
   inv := ValueGroupWithZero.lift (fun x s => by
@@ -526,7 +542,7 @@ def ofValuation
   rel_total x y := le_total (v x) (v y)
   rel_trans := le_trans
   rel_add hab hbc := (map_add_le_max v _ _).trans (sup_le hab hbc)
-  rel_mul_right _ h := by simp only [map_mul, mul_le_mul_right' h]
+  rel_mul_right _ h := by simp [map_mul]; gcongr
   rel_mul_cancel h0 h := by
     rw [map_zero, le_zero_iff] at h0
     simp only [map_mul] at h
@@ -551,6 +567,11 @@ lemma isEquiv {Γ₁ Γ₂ : Type*}
     v₁.IsEquiv v₂ := by
   intro x y
   simp_rw [← Valuation.Compatible.rel_iff_le]
+
+lemma _root_.Valuation.Compatible.srel_iff_lt {Γ₀ : Type*}
+    [LinearOrderedCommMonoidWithZero Γ₀] {v : Valuation R Γ₀} [v.Compatible] {x y : R} :
+    x <ᵥ y ↔ v x < v y := by
+  simp [lt_iff_not_ge, ← Valuation.Compatible.rel_iff_le, srel_iff]
 
 @[simp]
 lemma _root_.Valuation.apply_posSubmonoid_ne_zero {Γ : Type*} [LinearOrderedCommMonoidWithZero Γ]
@@ -689,9 +710,9 @@ lemma exists_valuation_posSubmonoid_div_valuation_posSubmonoid_eq (γ : (ValueGr
     ∃ (a b : posSubmonoid R), valuation R a / valuation _ (b : R) = γ := by
   obtain ⟨a, b, hab⟩ := exists_valuation_div_valuation_eq γ.val
   lift a to posSubmonoid R using by
-    rw [posSubmonoid_def, ← valuation_eq_zero_iff]
-    intro H
-    simp [H, eq_comm] at hab
+    contrapose! hab
+    rw [posSubmonoid_def, not_srel_iff, ← valuation_eq_zero_iff] at hab
+    simp [hab, eq_comm]
   use a, b
 
 -- See `exists_valuation_div_valuation_eq` for the version that works for all rings.
@@ -784,13 +805,17 @@ variable {A B : Type*} [CommRing A] [CommRing B]
   [ValuativeRel A] [ValuativeRel B] [Algebra A B]
   [ValuativeExtension A B]
 
+lemma srel_iff_srel (a b : A) :
+    algebraMap A B a <ᵥ algebraMap A B b ↔ a <ᵥ b := by
+  rw [srel_iff, rel_iff_rel, srel_iff]
+
 variable (A B) in
 /-- The morphism of `posSubmonoid`s associated to an algebra map.
   This is used in constructing `ValuativeExtension.mapValueGroupWithZero`. -/
 @[simps]
 def mapPosSubmonoid : posSubmonoid A →* posSubmonoid B where
   toFun := fun ⟨a,ha⟩ => ⟨algebraMap _ _ a,
-    by simpa only [posSubmonoid_def, ← (algebraMap A B).map_zero, rel_iff_rel] using ha⟩
+    by simpa only [posSubmonoid_def, ← (algebraMap A B).map_zero, srel_iff_srel] using ha⟩
   map_one' := by simp
   map_mul' := by simp
 

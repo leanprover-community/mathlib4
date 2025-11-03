@@ -837,11 +837,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
   right_inv := by
     intro s
     ext i
-    have : (i : ℕ) + 1 ≠ n := by
-      apply ne_of_lt
-      convert add_lt_add_right i.is_lt 1
-      apply (Nat.succ_pred_eq_of_pos _).symm
-      exact Nat.lt_of_lt_pred (Fin.pos i)
+    have : (i : ℕ) + 1 ≠ n := by cutsat
     simp_rw [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.toFinset_setOf,
       Finset.mem_filter_univ, reduceCtorEq, this, false_or, add_left_inj, ← Fin.ext_iff,
       exists_eq_right']

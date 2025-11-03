@@ -100,7 +100,7 @@ lemma schwartz_zippel_sup_sum :
         calc
           #{x ∈ S ^^ (n + 1) | eval x p = 0 ∧ eval (tail x) pₖ = 0} / ∏ i, (#(S i) : ℚ≥0)
             ≤ #{x ∈ S ^^ (n + 1) | eval (tail x) pₖ = 0} / ∏ i, (#(S i) : ℚ≥0) := by
-            gcongr; exact fun x hx ↦ hx.2
+            gcongr with x; exact And.right
           _ = #(S 0) * #{xₜ ∈ tail S ^^ n | eval xₜ pₖ = 0}
               / (#(S 0) * (∏ i, #(S (.succ i)) : ℚ≥0)) := by
             rw [card_consEquiv_filter_piFinset S fun x ↦ eval x pₖ = 0, prod_univ_succ, tail_def]

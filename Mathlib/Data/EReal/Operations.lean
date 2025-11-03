@@ -145,7 +145,7 @@ theorem add_lt_add {x y z t : EReal} (h1 : x < y) (h2 : z < t) : x + z < y + t :
   · simp [h1, bot_le.trans_lt h2]
   · lift x to ℝ using ⟨h1.ne_top, hx⟩
     calc (x : EReal) + z < x + t := add_lt_add_left_coe h2 _
-    _ ≤ y + t := add_le_add_right h1.le _
+    _ ≤ y + t := by gcongr
 
 theorem add_lt_add_of_lt_of_le' {x y z t : EReal} (h : x < y) (h' : z ≤ t) (hbot : t ≠ ⊥)
     (htop : t = ⊤ → z = ⊤ → x = ⊥) : x + z < y + t := by
@@ -303,12 +303,12 @@ def negOrderIso : EReal ≃o ERealᵒᵈ :=
     map_rel_iff' := neg_le_neg_iff }
 
 lemma neg_add {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊤) (h2 : x ≠ ⊤ ∨ y ≠ ⊥) :
-    - (x + y) = - x - y := by
+    -(x + y) = -x - y := by
   induction x <;> induction y <;> try tauto
   rw [← coe_add, ← coe_neg, ← coe_neg, ← coe_sub, neg_add']
 
 lemma neg_sub {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊥) (h2 : x ≠ ⊤ ∨ y ≠ ⊤) :
-    - (x - y) = - x + y := by
+    -(x - y) = -x + y := by
   rw [sub_eq_add_neg, neg_add _ _, sub_eq_add_neg, neg_neg] <;> simp_all
 
 /-- Induction principle for `EReal`s splitting into cases `↑(x : ℝ≥0∞)` and `-↑(x : ℝ≥0∞)`.
