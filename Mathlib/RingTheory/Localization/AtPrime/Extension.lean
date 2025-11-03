@@ -90,9 +90,15 @@ between the primes of `S` over `p` and the primes over the maximal ideal of `R�
 `Rₚ` and `Sₚ` are resp. the localizations of `R` and `S` at the complement of `p`.
 -/
 noncomputable def primesOverEquivPrimesOver (hp : p ≠ ⊥) :
-    p.primesOver S ≃ (maximalIdeal Rₚ).primesOver Sₚ := {
+    p.primesOver S ≃o (maximalIdeal Rₚ).primesOver Sₚ := {
   toFun := fun P ↦ ⟨map (algebraMap S Sₚ) P.1, isPrime_map_of_liesOver p Sₚ P.1,
     liesOver_map_of_liesOver p Rₚ Sₚ P.1⟩
+  map_rel_iff' := by
+    intro Q Q'
+    refine ⟨fun h ↦ ?_, fun h ↦ map_mono h⟩
+    have : Q'.1.IsMaximal :=
+      (primesOver.isPrime p Q').isMaximal (ne_bot_of_mem_primesOver hp Q'.prop)
+    simpa [comap_map_of_isMaximal p] using le_comap_of_map_le h
   invFun := fun Q ↦ ⟨comap (algebraMap S Sₚ) Q.1, IsPrime.under S Q.1,
     liesOver_comap_of_liesOver p Rₚ Q.1⟩
   left_inv P := by
