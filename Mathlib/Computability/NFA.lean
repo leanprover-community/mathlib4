@@ -84,6 +84,8 @@ variable (M) in
 theorem stepSet_singleton (s : σ) (a : α) : M.stepSet {s} a = M.step s a := by
   simp [stepSet]
 
+variable (M) in
+@[simp]
 theorem stepSet_union {S1 S2 : Set σ} {a : α} :
     M.stepSet (S1 ∪ S2) a = M.stepSet S1 a ∪ M.stepSet S2 a := by
   ext s
@@ -177,6 +179,7 @@ variable (M) in
 in `M.evalFrom S x`. -/
 def acceptsFrom (S : Set σ) : Language α := {x | ∃ s ∈ M.accept, s ∈ M.evalFrom S x}
 
+variable (M) in
 theorem mem_acceptsFrom {S : Set σ} {x : List α} :
     x ∈ M.acceptsFrom S ↔ ∃ s ∈ M.accept, s ∈ M.evalFrom S x := by
   rfl
