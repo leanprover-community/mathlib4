@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Data.Real.Irrational
 import Mathlib.Topology.Algebra.Order.Floor
+import Mathlib.NumberTheory.Real.Irrational
 
 /-!
 # `Real.pi` is irrational
@@ -123,8 +123,8 @@ private lemma recursion (n : ℕ) :
     I (n + 2) θ * θ ^ 2 =
       2 * (n + 2) * (2 * n + 3) * I (n + 1) θ - 4 * (n + 2) * (n + 1) * I n θ := by
   rw [recursion' (n + 1)]
-  simp
-  ring!
+  push_cast
+  ring
 
 /--
 Auxiliary for the proof that `π` is irrational.

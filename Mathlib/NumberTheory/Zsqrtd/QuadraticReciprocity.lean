@@ -42,12 +42,9 @@ theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
         rw [pow_two, ← CharP.cast_eq_zero_iff (ZMod p) p, Nat.cast_add, Nat.cast_mul, Nat.cast_one,
           ← hk, neg_add_cancel]
       have hkmul : (k ^ 2 + 1 : ℤ[i]) = ⟨k, 1⟩ * ⟨k, -1⟩ := by ext <;> simp [sq]
-      have hkltp : 1 + k * k < p * p :=
-        calc
-          1 + k * k ≤ k + k * k := by
-            apply add_le_add_right
-            exact (Nat.pos_of_ne_zero fun (hk0 : k = 0) => by clear_aux_decl; simp_all)
-          _ = k * (k + 1) := by simp [add_comm, mul_add]
+      have hk₀ : k ≠ 0 := by rintro rfl; simp at hk
+      have hkltp := calc
+          1 + k * k ≤ k * (k + 1) := by cutsat
           _ < p * p := mul_lt_mul k_lt_p k_lt_p (Nat.succ_pos _) (Nat.zero_le _)
       have hpk₁ : ¬(p : ℤ[i]) ∣ ⟨k, -1⟩ := fun ⟨x, hx⟩ =>
         lt_irrefl (p * x : ℤ[i]).norm.natAbs <|

@@ -8,6 +8,7 @@ import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.Module.Submodule.Order
 import Mathlib.Algebra.Order.Module.Archimedean
 import Mathlib.Algebra.Order.Module.Equiv
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.RingTheory.HahnSeries.Lex
 
@@ -27,7 +28,7 @@ under `ArchimedeanClass.closedBall K c`. The embeddings from these submodules ar
 `HahnEmbedding.Seed K M R`.
 
 By setting `K = ℚ` and `R = ℝ`, the condition can be trivially satisfied, leading
-to a proof of the classic Hahn embedding theorem. (TODO: implement this)
+to a proof of the classic Hahn embedding theorem. (See `hahnEmbedding_isOrderedAddMonoid`)
 
 ## Main theorem
 
@@ -76,6 +77,13 @@ structure ArchimedeanStrata where
 
 namespace ArchimedeanStrata
 variable (u : ArchimedeanStrata K M) {c : ArchimedeanClass M}
+
+instance : Nonempty (ArchimedeanStrata K M) := by
+  have hstratum (c : ArchimedeanClass M) :
+      ∃ G : Submodule K M, Disjoint (ball K c) G ∧ ball K c ⊔ G = closedBall K c :=
+    IsModularLattice.exists_disjoint_and_sup_eq <| ball_le_closedBall _
+  choose g h1 h2 using hstratum
+  exact ⟨g, h1, h2⟩
 
 @[simp] lemma ball_eq_closedBall : ball K c = closedBall K c ↔ c = ⊤ where
   mp h := by

@@ -89,14 +89,6 @@ theorem trans_app {F G H : C ⥤ D} (α : F ≅ G) (β : G ≅ H) (X : C) :
     (α ≪≫ β).app X = α.app X ≪≫ β.app X :=
   rfl
 
-@[deprecated Iso.app_hom (since := "2025-03-11")]
-theorem app_hom {F G : C ⥤ D} (α : F ≅ G) (X : C) : (α.app X).hom = α.hom.app X :=
-  rfl
-
-@[deprecated Iso.app_hom (since := "2025-03-11")]
-theorem app_inv {F G : C ⥤ D} (α : F ≅ G) (X : C) : (α.app X).inv = α.inv.app X :=
-  rfl
-
 variable {F G : C ⥤ D}
 
 instance hom_app_isIso (α : F ≅ G) (X : C) : IsIso (α.hom.app X) :=
@@ -184,10 +176,6 @@ theorem isIso_inv_app (α : F ⟶ G) {_ : IsIso α} (X) : (inv α).app X = inv (
 theorem inv_map_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
     inv ((F.map e.inv).app Z) = (F.map e.hom).app Z := by cat_disch
 
--- TODO: `hom_inv_id` and `inv_hom_id` are not yet working via `grind`,
--- but they work fine in my minimization in the `grind` test suite.
--- Investigate on nightly-testing / the next release?
-set_option mathlib.tactic.category.grind false in
 /-- Construct a natural isomorphism between functors by giving object level isomorphisms,
 and checking naturality only in the forward direction.
 -/
@@ -238,7 +226,6 @@ namespace Functor
 
 variable (F : C ⥤ D) (obj : C → D) (e : ∀ X, F.obj X ≅ obj X)
 
-set_option mathlib.tactic.category.grind false in
 /-- Constructor for a functor that is isomorphic to a given functor `F : C ⥤ D`,
 while being definitionally equal on objects to a given map `obj : C → D`
 such that for all `X : C`, we have an isomorphism `F.obj X ≅ obj X`. -/
