@@ -109,12 +109,12 @@ variable (F : B ⥤ᵖ C)
 
 /-- The oplax functor associated with a pseudofunctor. -/
 @[simps]
-def toOplax : OplaxFunctor B C where
+def toOplax : B ⥤ᴼ C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := fun a => (F.mapId a).hom
   mapComp := fun f g => (F.mapComp f g).hom
 
-instance hasCoeToOplax : Coe (B ⥤ᵖ C) (OplaxFunctor B C) :=
+instance hasCoeToOplax : Coe (B ⥤ᵖ C) (B ⥤ᴼ C) :=
   ⟨toOplax⟩
 
 /-- The Lax functor associated with a pseudofunctor. -/
@@ -291,7 +291,7 @@ end
 
 /-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms. -/
 @[simps]
-def mkOfOplax (F : OplaxFunctor B C) (F' : F.PseudoCore) : B ⥤ᵖ C where
+def mkOfOplax (F : B ⥤ᴼ C) (F' : F.PseudoCore) : B ⥤ᵖ C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := F'.mapIdIso
   mapComp := F'.mapCompIso
@@ -308,7 +308,7 @@ def mkOfOplax (F : OplaxFunctor B C) (F' : F.PseudoCore) : B ⥤ᵖ C where
 
 /-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms. -/
 @[simps!]
-noncomputable def mkOfOplax' (F : OplaxFunctor B C) [∀ a, IsIso (F.mapId a)]
+noncomputable def mkOfOplax' (F : B ⥤ᴼ C) [∀ a, IsIso (F.mapId a)]
     [∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), IsIso (F.mapComp f g)] : B ⥤ᵖ C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := fun a => asIso (F.mapId a)

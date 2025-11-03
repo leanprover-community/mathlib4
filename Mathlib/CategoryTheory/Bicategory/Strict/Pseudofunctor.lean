@@ -254,7 +254,7 @@ end LaxFunctor
 namespace OplaxFunctor
 
 variable {B : Type u₁} {C : Type u₂} [Bicategory.{w₁, v₁} B]
-  [Strict B] [Bicategory.{w₂, v₂} C] (F : OplaxFunctor B C)
+  [Strict B] [Bicategory.{w₂, v₂} C] (F : B ⥤ᴼ C)
 
 section associativity
 
