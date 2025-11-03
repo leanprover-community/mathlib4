@@ -263,6 +263,8 @@ theorem coe_top [CompactSpace α] [Nonempty α] : (↑(⊤ : NonemptyCompacts α
 instance : Singleton α (NonemptyCompacts α) where
   singleton x := ⟨{x}, singleton_nonempty x⟩
 
+@[deprecated (since := "2025-11-03")] alias toCompacts_singleton := singleton_toCompacts
+
 @[simp]
 theorem mem_singleton (x y : α) : x ∈ ({y} : NonemptyCompacts α) ↔ x = y :=
   Iff.rfl
@@ -270,6 +272,8 @@ theorem mem_singleton (x y : α) : x ∈ ({y} : NonemptyCompacts α) ↔ x = y :
 @[simp]
 theorem singleton_toCloseds [T2Space α] (x : α) : toCloseds {x} = Closeds.singleton x :=
   rfl
+
+@[deprecated (since := "2025-11-03")] alias toCloseds_singleton := singleton_toCloseds
 
 /-- In an inhabited space, the type of nonempty compact subsets is also inhabited, with
 default element the singleton set containing the default element. -/
