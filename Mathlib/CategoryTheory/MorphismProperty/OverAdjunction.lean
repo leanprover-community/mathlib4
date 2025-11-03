@@ -70,10 +70,10 @@ this is the functor `P.Over Q Y ⥤ P.Over Q X` given by base change along `f`. 
 noncomputable def Over.pullback (f : X ⟶ Y) [P.HasPullbacksAlong f] :
     P.Over Q Y ⥤ P.Over Q X where
   obj A := Over.mk Q (Limits.pullback.snd A.hom f)
-    (baseChange_obj f A.toComma A.prop)
+    (pullback_snd A.hom f A.prop)
   map {A B} g := Over.homMk (pullback.lift (pullback.fst A.hom f ≫ g.left)
     (pullback.snd A.hom f) (by simp [pullback.condition])) (by simp)
-    (baseChange_map f ⟨g.left, g.right, _⟩ g.prop_hom_left)
+    (baseChange_map' _ _ g.prop_hom_left)
 
 variable {P} {Q}
 

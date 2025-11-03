@@ -132,15 +132,6 @@ lemma of_isPullback [P.IsStableUnderBaseChange]
     (sq : IsPullback f' g' g f) (hg : P g) : P g' :=
   IsStableUnderBaseChange.of_isPullback sq hg
 
-instance [P.IsStableUnderBaseChange] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [P.HasPullbacksAlong f] [P.HasPullbacksAlong g] : P.HasPullbacksAlong (f ≫ g) where
-  hasPullback h p :=
-  have : HasPullback h g := HasPullbacksAlong.hasPullback h p
-  have : HasPullback (pullback.snd h g) f := HasPullbacksAlong.hasPullback
-    (pullback.snd h g) (P.of_isPullback (IsPullback.of_hasPullback ..) p)
-  IsPullback.hasPullback (IsPullback.paste_horiz (IsPullback.of_hasPullback
-    (pullback.snd h g) f) (IsPullback.of_hasPullback h g))
-
 lemma isStableUnderBaseChange_iff_pullbacks_le :
     P.IsStableUnderBaseChange ↔ P.pullbacks ≤ P := by
   constructor
@@ -206,30 +197,37 @@ theorem pullback_snd [IsStableUnderBaseChange P]
   of_isPullback (IsPullback.of_hasPullback f g) H
 
 theorem baseChange_obj [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S)
-    (X : Over S) (H : P X.hom) [HasPullback X.hom f] :
-    P (pullback.snd X.hom f) :=
+    [HasPullbacksAlong f] (X : Over S) (H : P X.hom) :
+    P ((Over.pullback f).obj X).hom :=
   pullback_snd X.hom f H
 
-theorem baseChange_map [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S)
-    {X Y : Over S} [HasPullback X.hom f] [HasPullback Y.hom f] (g : X ⟶ Y)
-    (H : P g.left) : P (pullback.lift (f := Y.hom) (g := f) (pullback.fst X.hom f ≫ g.left)
-    (pullback.snd X.hom f) (by simp [pullback.condition])) := by
-  refine of_isPullback (f' := pullback.fst X.hom f)
-    (f := pullback.fst Y.hom f) ?_ H
-  refine IsPullback.of_bot ?_ (by simp) (IsPullback.of_hasPullback Y.hom f)
-  simpa using IsPullback.of_hasPullback X.hom f
+theorem baseChange_map' [IsStableUnderBaseChange P] {S S' X Y : C} (f : S' ⟶ S)
+    {v₁₂ : X ⟶ S} {v₂₂ : Y ⟶ S} {g : X ⟶ Y} (hv₁₂ : v₁₂ = g ≫ v₂₂) [HasPullback v₁₂ f]
+    [HasPullback v₂₂ f] (H : P g) : P (pullback.lift (f := v₂₂) (g := f) (pullback.fst v₁₂ f ≫ g)
+    (pullback.snd v₁₂ f) (by simp [pullback.condition, ← hv₁₂])) := by
+  subst hv₁₂
+  refine of_isPullback (f' := pullback.fst (g ≫ v₂₂) f)
+    (f := pullback.fst v₂₂ f) ?_ H
+  refine IsPullback.of_bot ?_ (by simp) (IsPullback.of_hasPullback v₂₂ f)
+  simpa using IsPullback.of_hasPullback (g ≫ v₂₂) f
 
-local instance {S X Y : C} {f : X ⟶ S} [Limits.HasPullbacksAlong f] {g : Y ⟶ S} :
+theorem baseChange_map [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S)
+    [HasPullbacksAlong f] {X Y : Over S} (g : X ⟶ Y) (H : P g.left) :
+    P ((Over.pullback f).map g).left := by
+  dsimp only [Over.pullback_obj_left, Over.pullback_map_left]
+  convert baseChange_map' f (g.w.symm) H <;> simp
+
+local instance {S X Y : C} {f : X ⟶ S} [HasPullbacksAlong f] {g : Y ⟶ S} :
     HasPullback f g := hasPullback_symmetry g f
 
 theorem pullback_map
     [IsStableUnderBaseChange P] [P.IsStableUnderComposition] {S X X' Y Y' : C} {f : X ⟶ S}
-    [Limits.HasPullbacksAlong f] {g : Y ⟶ S} {f' : X' ⟶ S} {g' : Y' ⟶ S} {i₁ : X ⟶ X'}
-    [Limits.HasPullbacksAlong g'] {i₂ : Y ⟶ Y'} (h₁ : P i₁) (h₂ : P i₂)
+    [HasPullbacksAlong f] {g : Y ⟶ S} {f' : X' ⟶ S} {g' : Y' ⟶ S} {i₁ : X ⟶ X'}
+    [HasPullbacksAlong g'] {i₂ : Y ⟶ Y'} (h₁ : P i₁) (h₂ : P i₂)
     (e₁ : f = i₁ ≫ f') (e₂ : g = i₂ ≫ g') :
     P (pullback.map f g f' g' i₁ i₂ (𝟙 _) ((Category.comp_id _).trans e₁)
         ((Category.comp_id _).trans e₂)) := by
-  have : Limits.HasPullbacksAlong (Over.mk f).hom := by aesop_cat
+  have : HasPullbacksAlong (Over.mk f).hom := by aesop_cat
   have : pullback.map f g f' g' i₁ i₂ (𝟙 _) ((Category.comp_id _).trans e₁)
         ((Category.comp_id _).trans e₂) =
       ((pullbackSymmetry _ _).hom ≫
@@ -869,6 +867,18 @@ protected class HasPullbacks : Prop where
 instance [HasPullbacks C] : P.HasPullbacks where
 
 alias hasPullback := HasPullbacks.hasPullback
+
+instance [P.HasPullbacks] {X Y : C} {f : X ⟶ Y} : P.HasPullbacksAlong f where
+  hasPullback _ := hasPullback _
+
+instance [P.IsStableUnderBaseChange] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [P.HasPullbacksAlong f] [P.HasPullbacksAlong g] : P.HasPullbacksAlong (f ≫ g) where
+  hasPullback h p :=
+    have : HasPullback h g := HasPullbacksAlong.hasPullback h p
+    have : HasPullback (pullback.snd h g) f := HasPullbacksAlong.hasPullback (pullback.snd h g)
+      (P.pullback_snd h g p)
+    IsPullback.hasPullback (IsPullback.paste_horiz (IsPullback.of_hasPullback
+      (pullback.snd h g) f) (IsPullback.of_hasPullback h g))
 
 end MorphismProperty
 
