@@ -177,6 +177,7 @@ theorem mk_eq_of_doubleCoset_eq {H K : Subgroup G} {a b : G}
 alias _root_.Doset.mk_eq_of_doset_eq := mk_eq_of_doubleCoset_eq
 
 theorem mem_quotToDoubleCoset_iff {H K : Subgroup G} (i : Quotient (H : Set G) K) (a : G) :
+    a ∈ quotToDoubleCoset H K i ↔ mk H K a = i := by
   refine ⟨fun hg ↦ by simp [mk_eq_of_doubleCoset_eq (doubleCoset_eq_of_mem hg)], fun hg ↦ ?_⟩
   rw [← out_eq' _ _ i] at hg
   exact mem_doubleCoset.mpr ((eq _ _ _ a).mp hg.symm)
@@ -270,7 +271,7 @@ theorem iUnion_finset_quotToDoubleCoset (H K : Subgroup G) :
     use Finset.univ
     simpa using union_quotToDoubleCoset H K
 
-private theorem union_image_mk (H K : Subgroup G) :
+private theorem union_image_mk {H K : Subgroup G} :
     ⋃ (q : Quotient H K), Quot.mk (QuotientGroup.leftRel K) ''
       (doubleCoset (Quotient.out q : G) H K) = Set.univ ∧
     ⋃ (q : Quotient H K), Quot.mk (QuotientGroup.rightRel H) ''
@@ -291,11 +292,11 @@ private theorem union_image_mk (H K : Subgroup G) :
 
 theorem union_image_mk_leftRel (H K : Subgroup G) :
     ⋃ (q : Quotient H K), Quot.mk (QuotientGroup.leftRel K) ''
-      (doubleCoset (Quotient.out q : G) H K) = Set.univ := (union_image_mk H K).1
+      (doubleCoset (Quotient.out q : G) H K) = Set.univ := (union_image_mk).1
 
 theorem union_image_mk_rightRel (H K : Subgroup G) :
     ⋃ (q : Quotient H K), Quot.mk (QuotientGroup.rightRel H) ''
-      (doubleCoset (Quotient.out q : G) H K) = Set.univ := (union_image_mk H K).2
+      (doubleCoset (Quotient.out q : G) H K) = Set.univ := (union_image_mk).2
 
 theorem union_finset_leftRel_cover (H K : Subgroup G) (t : Finset (Quotient H K))
     (ht : Set.univ ⊆
