@@ -6,22 +6,22 @@ Authors: Kexing Ying
 import Mathlib.Probability.Process.Adapted
 
 /-!
-# Progressively Measurable σ-algebra
+# Predictable σ-algebra
 
-This file defines the progressively measurable σ-algebra associated to a filtration, as well as the
+This file defines the predictable σ-algebra associated to a filtration, as well as the
 notion of predictable processes. We prove that predictable processes are progressively measurable
 and adapted. We also give an equivalent characterization of predictability for discrete processes.
 
 ## Main definitions
 
 * `Filtration.predictable` : The predictable σ-algebra associated to a filtration.
-* `Filtration.IsPredictable` : A process is predictable if it is measurable with respect to the
+* `IsPredictable` : A process is predictable if it is measurable with respect to the
   predictable σ-algebra.
 
 ## Main results
 
-* `Filtration.IsPredictable.progMeasurable` : A predictable process is progressively measurable.
-* `Filtration.IsPredictable.measurable_succ` : `u` is a discrete predictable process iff
+* `IsPredictable.progMeasurable` : A predictable process is progressively measurable.
+* `isPredictable_iff_measurable_add_one` : `u` is a discrete predictable process iff
   `u (n + 1)` is `𝓕 n`-measurable and `u 0` is `𝓕 0`-measurable.
 
 ## Tags
