@@ -50,14 +50,7 @@ variable [NormedSpace ℝ E] [NormedSpace ℝ F]
 
 variable {f : E → F} {x y : E} {n : ℕ}
 
-example {a b c : ℝ} : a + b = c ↔ b = (-a) + c := by
-  exact Iff.symm eq_neg_add_iff_add_eq
-
---#exit
-
-#check intervalIntegral.integral_smul_deriv_eq_deriv_smul
-
-variable [CompleteSpace F]
+variable [CompleteSpace F] [FiniteDimensional ℝ E]
 
 theorem baz (hf : ∀ (t : ℝ) (ht : t ∈ Set.uIcc 0 1), ContDiffAt ℝ (n + 1) f (x + t • y)) :
     f (x + y) = ∑ k ∈ Finset.range (n + 1), (k ! : ℝ)⁻¹ • (iteratedFDeriv ℝ k f x (fun _ ↦ y)) +
@@ -69,44 +62,69 @@ theorem baz (hf : ∀ (t : ℝ) (ht : t ∈ Set.uIcc 0 1), ContDiffAt ℝ (n + 1
     rw [← sub_eq_iff_eq_add', Eq.comm]
     have hf' : ∀ (t : ℝ) (ht : t ∈ Set.uIcc 0 1), DifferentiableAt ℝ (fun s ↦ f (x + s • y)) t :=
       fun t ht ↦ ((hf t ht).differentiableAt (by simp)).comp t (by fun_prop)
+    have h_eq : Set.EqOn (fun t ↦ (fderiv ℝ f (x + t • y)) y) (deriv fun (s : ℝ) ↦ f (x + s • y))
+        (Set.uIcc 0 1) := by
+      intro t ht
+      rw [foo_zero]
+      apply (hf t ht).differentiableAt
+      simp
     have hint : IntervalIntegrable (deriv (fun s ↦ f (x + s • y))) MeasureTheory.volume 0 1 := by
       apply ContinuousOn.intervalIntegrable
-      have : ContDiffOn ℝ 1 (fun (s : ℝ) ↦ f (x + s • y)) (Set.uIcc 0 1) := sorry
-      intro t ht
-      specialize hf t ht
-      simp only [CharP.cast_eq_zero, zero_add] at hf
-
-      sorry
+      apply ContinuousOn.congr _ h_eq.symm
+      -- We need `FiniteDimensional ℝ E` here:
+      apply continuousOn_clm_apply.mp _
+      apply ContinuousOn.comp (t := (fun t ↦ x + t • y) '' (Set.uIcc (0 : ℝ) 1))
+      · intro z ⟨t, ht, hz⟩
+        rw [← hz]
+        exact (((hf t ht).fderiv_right (le_refl _)).continuousAt (n := 0)).continuousWithinAt
+      · fun_prop
+      · intro t ht
+        use t
     have := intervalIntegral.integral_deriv_eq_sub hf' hint
     simp only [one_smul, zero_smul, add_zero] at this
     rw [← this]
-    apply intervalIntegral.integral_congr
-    intro t ht
-    rw [foo_zero]
-    apply (hf t ht).differentiableAt
-    simp
+    apply intervalIntegral.integral_congr h_eq
   | succ n ih =>
     specialize ih (fun t ht ↦ (hf t ht).of_le (by simp))
     rw [Finset.sum_range_succ, add_assoc]
     convert ih using 2
     set u := fun (k : ℕ) (t : ℝ) ↦ (k ! : ℝ)⁻¹ * (1 - t) ^ k
-    have hu : ∀ (k : ℕ) (t : ℝ), HasDerivAt (u k) (-u (k - 1) t) t := by
-      intro k t
+    have hu : ∀ (t : ℝ), HasDerivAt (u (n + 1)) (-u n t) t := by
+      intro t
       unfold u
-      sorry
+      have : (-((n ! : ℝ)⁻¹ * (1 - t) ^ n)) =
+          ((n + 1) ! : ℝ)⁻¹ * ((n + 1) * (1 - t) ^ n * (-1)) := by
+        field_simp
+        congr 1
+        rw [Nat.factorial_succ]
+        grind
+      rw [this]
+      convert (((hasDerivAt_id t).const_sub 1).pow _).const_mul _
+      simp
     have hu' : ∀ (k : ℕ), IntervalIntegrable (u k) MeasureTheory.volume 0 1 := by
-      sorry
+      intro k
+      apply Continuous.intervalIntegrable
+      fun_prop
     set v := fun (k : ℕ) (t : ℝ) ↦ iteratedFDeriv ℝ k f (x + t • y) (fun _ ↦ y)
-    have hv : ∀ (k : ℕ) (t : ℝ), HasDerivAt (v k) (v (k + 1) t) t := by
+    have hv : ∀ (t : ℝ) (ht : t ∈ Set.uIcc 0 1), HasDerivAt (v (n + 1)) (v (n + 1 + 1) t) t := by
+      intro t ht
+      unfold v
+      rw [← foo t (hf t ht)]
+      refine DifferentiableAt.hasDerivAt ?_
       sorry
-    have hv' : ∀ (k : ℕ), IntervalIntegrable (v k) MeasureTheory.volume 0 1 := by
+    have hv' : IntervalIntegrable (v (n + 1 + 1)) MeasureTheory.volume 0 1 := by
+      apply ContinuousOn.intervalIntegrable
+      intro t ht
+      specialize hf t ht
+
       sorry
+      -- below is bad
+      --exact (hv (n + 1 + 1) (by sorry) t ht).hasDerivWithinAt.continuousWithinAt
     -- We rest of the proof is integration by parts
-    have := intervalIntegral.integral_smul_deriv_eq_deriv_smul
-      (fun t _ ↦ hu (n + 1) t) (fun t _ ↦ hv (n + 1) t) (hu' n).neg (hv' _)
+    have := intervalIntegral.integral_smul_deriv_eq_deriv_smul (fun t _ ↦ hu t) hv (hu' n).neg hv'
     simp only [← eq_neg_add_iff_add_eq, ← intervalIntegral.integral_smul, smul_smul]
     nth_rw 1 [sub_eq_add_neg] at this
-    simp only [← intervalIntegral.integral_neg, add_tsub_cancel_right, neg_smul, neg_neg] at this
+    simp only [← intervalIntegral.integral_neg, neg_smul, neg_neg] at this
     convert this using 1
     congr 1
     simp [u, v]
