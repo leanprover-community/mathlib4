@@ -72,7 +72,9 @@ variable [IsDomain A] [IsDedekindDomain B] [IsDedekindDomain R₁] [IsDedekindDo
     [IsFractionRing B L] [IsFractionRing R₁ F₁] [IsFractionRing R₂ F₂] [IsIntegrallyClosed A]
     [IsIntegralClosure B R₁ L] [NoZeroSMulDivisors R₁ B] [NoZeroSMulDivisors R₂ B]
 
-theorem FractionalIdeal.differentIdeal_dvd_map_differentIdeal [Algebra.IsIntegral R₂ B]
+namespace IsDedekindDomain
+
+theorem differentIdeal_dvd_map_differentIdeal [Algebra.IsIntegral R₂ B]
     [Module.Free A R₂] [IsLocalization (Algebra.algebraMapSubmonoid R₂ A⁰) F₂]
     (h₁ : F₁.LinearDisjoint F₂) (h₂ : F₁ ⊔ F₂ = ⊤) :
     differentIdeal R₁ B ∣ Ideal.map (algebraMap R₂ B) (differentIdeal A R₂) := by
@@ -94,8 +96,6 @@ variable [Algebra A B] [Module.Finite A B] [NoZeroSMulDivisors A B] [NoZeroSMulD
   [NoZeroSMulDivisors A R₂] [Module.Finite A R₁] [Module.Finite R₂ B] [IsScalarTower A R₂ B]
   [Module.Finite R₁ B] [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
   [IsScalarTower A R₁ B]
-
-namespace IsDedekindDomain
 
 theorem map_differentIdeal_dvd_differentIdeal
     (h : IsCoprime ((differentIdeal A R₁).map (algebraMap R₁ B))
@@ -131,6 +131,11 @@ theorem differentIdeal_eq_differentIdeal_mul_differentIdeal_of_isCoprime
     mul_comm] at this
 
 end IsDedekindDomain
+
+variable [Algebra A B] [Module.Finite A B] [NoZeroSMulDivisors A B] [NoZeroSMulDivisors A R₁]
+  [NoZeroSMulDivisors A R₂] [Module.Finite A R₁] [Module.Finite R₂ B] [IsScalarTower A R₂ B]
+  [Module.Finite R₁ B] [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
+  [IsScalarTower A R₁ B]
 
 theorem Submodule.traceDual_eq_span_map_traceDual_of_linearDisjoint [Module.Free A R₂]
     [IsLocalization (Algebra.algebraMapSubmonoid R₂ A⁰) F₂] (h₁ : F₁.LinearDisjoint F₂)
