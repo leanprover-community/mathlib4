@@ -67,129 +67,6 @@ open CategoryTheory
 
 variable {R} (S : Type u') [CommRing S] [Algebra R S]
 
-section extendscalars'
-
-namespace ModuleCat
-
-instance (M N : Type*) [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
-    [Small.{v'} M] [Small.{v'} N] : Small.{v'} (TensorProduct R M N) :=
-  let _ : Small.{v'} (FreeAddMonoid (M × N)) :=
-    small_of_surjective (FreeAddMonoid.freeAddMonoidCongr (equivShrink (M × N)).symm).surjective
-  small_of_surjective Quotient.mk''_surjective
-
-/-- Auxiliary construction for `ModuleCat.ExtendScalars'.obj`,
-turning an `R`-module into an `S`-module by `M` ↦ `Shrink S ⨂ M`. -/
-noncomputable def ExtendScalars'.obj' [UnivLE.{v, v'}] [Small.{v'} S]
-    (M : ModuleCat.{v} R) : ModuleCat.{v'} S :=
-  ModuleCat.of S (Shrink.{v'} (TensorProduct R S M))
-
-/-- Auxiliary construction for `ModuleCat.ExtendScalars'.map`,
-sending `l : M1 ⟶ M2` to `s ⊗ m ↦ s ⊗ l m` with compostion of `Shrink.linearEquiv`. -/
-noncomputable def ExtendScalars'.map' [UnivLE.{v, v'}] [Small.{v'} S]
-    {M1 M2 : ModuleCat.{v} R} (g : M1 ⟶ M2) : obj' S M1 ⟶ obj' S M2 :=
-  ModuleCat.ofHom (((Shrink.linearEquiv.{v'} S (TensorProduct R S M2)).symm.toLinearMap.comp
-    (g.hom.baseChange S)).comp (Shrink.linearEquiv.{v'} S (TensorProduct R S M1)).toLinearMap)
-
-lemma ExtendScalars'.map'_id [UnivLE.{v, v'}] [Small.{v'} S]
-    (M : ModuleCat.{v} R) : map' S (𝟙 M) = 𝟙 (obj' S M) := by
-  simp [map', obj']
-
-lemma ExtendScalars'.map'_comp [UnivLE.{v, v'}] [Small.{v'} S]
-    {M1 M2 M3 : ModuleCat.{v} R} (g : M1 ⟶ M2) (h : M2 ⟶ M3) :
-    map' S (g ≫ h) = (map' S g) ≫ (map' S h) := by
-  ext x
-  change (Shrink.linearEquiv S (TensorProduct R S M3)).symm
-      (((h.hom ∘ₗ g.hom).baseChange S) ((Shrink.linearEquiv S (TensorProduct R S M1)) x)) =
-      (Shrink.linearEquiv S (TensorProduct R S M3)).symm ((h.hom.baseChange S)
-      ((Shrink.linearEquiv S (TensorProduct R S M2))
-      ((Shrink.linearEquiv S (TensorProduct R S M2)).symm ((g.hom.baseChange S)
-      ((Shrink.linearEquiv S (TensorProduct R S M1)) x)))))
-  rw [LinearEquiv.apply_symm_apply]
-  simp [LinearMap.baseChange_comp]
-
-variable (R) in
-/-- A version of `ModuleCat.extendScalars` with more general universe level,
-turning an `R`-module into an `S`-module by `M` ↦ `Shrink S ⨂ M`,
-sending `l : M1 ⟶ M2` to `s ⊗ m ↦ s ⊗ l m` with compostion of `Shrink.linearEquiv`. -/
-noncomputable def extendScalars' [UnivLE.{v, v'}] [Small.{v'} S] :
-    (ModuleCat.{v} R) ⥤ (ModuleCat.{v'} S) where
-  obj := ExtendScalars'.obj' S
-  map := ExtendScalars'.map' S
-  map_id := ExtendScalars'.map'_id S
-  map_comp := ExtendScalars'.map'_comp S
-
-variable [UnivLE.{v, v'}] [Small.{v'} S]
-
-instance : (extendScalars' R S).Additive where
-  map_add {X Y} f g := by
-    simp only [extendScalars', ExtendScalars'.map', hom_add, LinearMap.baseChange_add]
-    ext x
-    simp
-
-lemma extendScalars'_map_shortExact [Module.Flat R S]
-    (T : ShortComplex (ModuleCat.{v} R)) (h : T.ShortExact) :
-    (T.map (extendScalars' R S)).ShortExact where
-  exact := by
-    have exac : Function.Exact (T.f.hom.baseChange S) (T.g.hom.baseChange S) :=
-      lTensor_exact S ((ShortComplex.ShortExact.moduleCat_exact_iff_function_exact T).mp h.exact)
-        h.moduleCat_surjective_g
-    have : Function.Exact (ExtendScalars'.map' S T.f) (ExtendScalars'.map' S T.g) := by
-      simp only [ExtendScalars'.map', hom_ofHom, LinearMap.exact_iff, LinearEquiv.range_comp]
-      rw [LinearMap.comp_assoc, LinearEquiv.ker_comp]
-      ext x
-      simp only [LinearMap.mem_ker, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
-      convert exac ((Shrink.linearEquiv S (TensorProduct R S T.X₂)) x)
-      rw [LinearMap.range_comp, ← Submodule.comap_equiv_eq_map_symm, Submodule.mem_comap]
-      rfl
-    exact (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr this
-  mono_f := by
-    have inj : Function.Injective (T.f.hom.baseChange S) :=
-      Module.Flat.lTensor_preserves_injective_linearMap T.f.hom h.moduleCat_injective_f
-    have : Function.Injective (ExtendScalars'.map' S T.f) := by
-      simp only [ExtendScalars'.map', hom_ofHom, ← LinearMap.ker_eq_bot]
-      rw [LinearMap.comp_assoc, LinearEquiv.ker_comp, LinearMap.ker_eq_bot]
-      exact inj.comp (LinearEquiv.injective _)
-    exact (mono_iff_injective (T.map (extendScalars' R S)).f).mpr this
-  epi_g := by
-    have surj : Function.Surjective (T.g.hom.baseChange S) :=
-      LinearMap.lTensor_surjective S h.moduleCat_surjective_g
-    have : Function.Surjective (ExtendScalars'.map' S T.g) := by
-      simp only [ExtendScalars'.map', hom_ofHom, ← LinearMap.range_eq_top]
-      rw [LinearEquiv.range_comp, LinearMap.range_eq_top]
-      exact (Shrink.linearEquiv S (TensorProduct R S T.X₃)).symm.surjective.comp surj
-    exact (epi_iff_surjective (T.map (extendScalars' R S)).g).mpr this
-
-instance [Module.Flat R S] : Limits.PreservesFiniteLimits (extendScalars' R S) := by
-  have := (((extendScalars' R S).exact_tfae.out 0 3).mp (extendScalars'_map_shortExact S))
-  exact this.1
-
-instance [Module.Flat R S] : Limits.PreservesFiniteColimits (extendScalars' R S) := by
-  have := (((extendScalars' R S).exact_tfae.out 0 3).mp (extendScalars'_map_shortExact S))
-  exact this.2
-
-namespace Algebra'
-
-variable (R) in
-scoped instance extendScalars'_linear :
-    letI : Linear R (ModuleCat.{v'} S) := ModuleCat.Algebra.instLinear
-    Functor.Linear R (ModuleCat.extendScalars' R S) :=
-  letI : Linear R (ModuleCat.{v'} S) := ModuleCat.Algebra.instLinear
-  {
-  map_smul {X Y} g r := by
-    simp only [extendScalars', ExtendScalars'.map', hom_smul, LinearMap.baseChange_smul]
-    let _ : IsScalarTower R S (ExtendScalars'.obj' S X ⟶ ExtendScalars'.obj' S Y) := {
-      smul_assoc r s z := by
-        rw [Algebra.smul_def, ← smul_smul]
-        rfl }
-    rw [← algebraMap_smul S r, ← algebraMap_smul S r, LinearMap.comp_smul, LinearMap.smul_comp]
-    rfl }
-
-end Algebra'
-
-end ModuleCat
-
-end extendscalars'
-
 section
 
 variable {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
@@ -296,6 +173,112 @@ theorem Module.FinitePresentation.isBaseChange_map [Module.Flat R S]
     exact LinearMap.lTensor_surjective S hf
 
 end
+
+section extendscalars'
+
+namespace ModuleCat
+
+instance (M N : Type*) [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+    [Small.{v'} M] [Small.{v'} N] : Small.{v'} (TensorProduct R M N) :=
+  let _ : Small.{v'} (FreeAddMonoid (M × N)) :=
+    small_of_surjective (FreeAddMonoid.freeAddMonoidCongr (equivShrink (M × N)).symm).surjective
+  small_of_surjective Quotient.mk''_surjective
+
+/-- Auxiliary construction for `ModuleCat.ExtendScalars'.obj`,
+turning an `R`-module into an `S`-module by `M` ↦ `Shrink S ⨂ M`. -/
+noncomputable def ExtendScalars'.obj' [UnivLE.{v, v'}] [Small.{v'} S]
+    (M : ModuleCat.{v} R) : ModuleCat.{v'} S :=
+  ModuleCat.of S (Shrink.{v'} (TensorProduct R S M))
+
+/-- Auxiliary construction for `ModuleCat.ExtendScalars'.map`,
+sending `l : M1 ⟶ M2` to `s ⊗ m ↦ s ⊗ l m` with compostion of `Shrink.linearEquiv`. -/
+noncomputable def ExtendScalars'.map' [UnivLE.{v, v'}] [Small.{v'} S]
+    {M1 M2 : ModuleCat.{v} R} (g : M1 ⟶ M2) : obj' S M1 ⟶ obj' S M2 :=
+  ModuleCat.ofHom (((Shrink.linearEquiv.{v'} S (TensorProduct R S M2)).symm.toLinearMap.comp
+    (g.hom.baseChange S)).comp (Shrink.linearEquiv.{v'} S (TensorProduct R S M1)).toLinearMap)
+
+lemma ExtendScalars'.map'_id [UnivLE.{v, v'}] [Small.{v'} S]
+    (M : ModuleCat.{v} R) : map' S (𝟙 M) = 𝟙 (obj' S M) := by
+  simp [map', obj']
+
+lemma ExtendScalars'.map'_comp [UnivLE.{v, v'}] [Small.{v'} S]
+    {M1 M2 M3 : ModuleCat.{v} R} (g : M1 ⟶ M2) (h : M2 ⟶ M3) :
+    map' S (g ≫ h) = (map' S g) ≫ (map' S h) := by
+  ext x
+  change (Shrink.linearEquiv S (TensorProduct R S M3)).symm
+      (((h.hom ∘ₗ g.hom).baseChange S) ((Shrink.linearEquiv S (TensorProduct R S M1)) x)) =
+      (Shrink.linearEquiv S (TensorProduct R S M3)).symm ((h.hom.baseChange S)
+      ((Shrink.linearEquiv S (TensorProduct R S M2))
+      ((Shrink.linearEquiv S (TensorProduct R S M2)).symm ((g.hom.baseChange S)
+      ((Shrink.linearEquiv S (TensorProduct R S M1)) x)))))
+  rw [LinearEquiv.apply_symm_apply]
+  simp [LinearMap.baseChange_comp]
+
+variable (R) in
+/-- A version of `ModuleCat.extendScalars` with more general universe level,
+turning an `R`-module into an `S`-module by `M` ↦ `Shrink S ⨂ M`,
+sending `l : M1 ⟶ M2` to `s ⊗ m ↦ s ⊗ l m` with compostion of `Shrink.linearEquiv`. -/
+noncomputable def extendScalars' [UnivLE.{v, v'}] [Small.{v'} S] :
+    (ModuleCat.{v} R) ⥤ (ModuleCat.{v'} S) where
+  obj := ExtendScalars'.obj' S
+  map := ExtendScalars'.map' S
+  map_id := ExtendScalars'.map'_id S
+  map_comp := ExtendScalars'.map'_comp S
+
+variable [UnivLE.{v, v'}] [Small.{v'} S]
+
+instance : (extendScalars' R S).Additive where
+  map_add {X Y} f g := by
+    simp only [extendScalars', ExtendScalars'.map', hom_add, LinearMap.baseChange_add]
+    ext x
+    simp
+
+lemma extendScalars'_map_shortExact [Module.Flat R S]
+    (T : ShortComplex (ModuleCat.{v} R)) (h : T.Exact) :
+    (T.map (extendScalars' R S)).Exact := by
+  have exac : Function.Exact (T.f.hom.baseChange S) (T.g.hom.baseChange S) :=
+    Module.Flat.lTensor_exact S
+      ((ShortComplex.ShortExact.moduleCat_exact_iff_function_exact T).mp h)
+  have : Function.Exact (ExtendScalars'.map' S T.f) (ExtendScalars'.map' S T.g) := by
+    simp only [ExtendScalars'.map', hom_ofHom, LinearMap.exact_iff, LinearEquiv.range_comp]
+    rw [LinearMap.comp_assoc, LinearEquiv.ker_comp]
+    ext x
+    simp only [LinearMap.mem_ker, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
+    convert exac ((Shrink.linearEquiv S (TensorProduct R S T.X₂)) x)
+    rw [LinearMap.range_comp, ← Submodule.comap_equiv_eq_map_symm, Submodule.mem_comap]
+    rfl
+  exact (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr this
+
+instance [Module.Flat R S] : Limits.PreservesFiniteLimits (extendScalars' R S) := by
+  have := (((extendScalars' R S).exact_tfae.out 1 3).mp (extendScalars'_map_shortExact S))
+  exact this.1
+
+instance [Module.Flat R S] : Limits.PreservesFiniteColimits (extendScalars' R S) := by
+  have := (((extendScalars' R S).exact_tfae.out 1 3).mp (extendScalars'_map_shortExact S))
+  exact this.2
+
+namespace Algebra'
+
+variable (R) in
+scoped instance extendScalars'_linear :
+    letI : Linear R (ModuleCat.{v'} S) := ModuleCat.Algebra.instLinear
+    Functor.Linear R (ModuleCat.extendScalars' R S) :=
+  letI : Linear R (ModuleCat.{v'} S) := ModuleCat.Algebra.instLinear
+  {
+  map_smul {X Y} g r := by
+    simp only [extendScalars', ExtendScalars'.map', hom_smul, LinearMap.baseChange_smul]
+    let _ : IsScalarTower R S (ExtendScalars'.obj' S X ⟶ ExtendScalars'.obj' S Y) := {
+      smul_assoc r s z := by
+        rw [Algebra.smul_def, ← smul_smul]
+        rfl }
+    rw [← algebraMap_smul S r, ← algebraMap_smul S r, LinearMap.comp_smul, LinearMap.smul_comp]
+    rfl }
+
+end Algebra'
+
+end ModuleCat
+
+end extendscalars'
 
 section
 
