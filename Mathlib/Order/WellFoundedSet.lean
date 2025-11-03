@@ -46,7 +46,7 @@ This file introduces versions of `WellFounded` and `WellQuasiOrdered` for sets.
 * [Nash-Williams, *On Well-Quasi-Ordering Finite Trees*][Nash-Williams63]
 -/
 
-assert_not_exists OrderedSemiring
+assert_not_exists IsOrderedRing
 
 open scoped Function -- required for scoped `on` notation
 
