@@ -21,8 +21,8 @@ A lax functor `F` between bicategories `B` and `C` consists of
 
 ## Main definitions
 
-* `CategoryTheory.LaxFunctor B C` : an lax functor between bicategories `B` and `C`.
-  This is also given the notation `B ⥤ᴸ C`.
+* `CategoryTheory.LaxFunctor B C` : an lax functor between bicategories `B` and `C`, which we
+  denote by `B ⥤ᴸ C`.
 * `CategoryTheory.LaxFunctor.comp F G` : the composition of lax functors
 * `CategoryTheory.LaxFunctor.Pseudocore` : a structure on an Lax functor that promotes a
   Lax functor to a pseudofunctor
