@@ -323,6 +323,6 @@ instance (priority := 900) [IsStandardSmoothOfRelativeDimension 0 R S] : Etale R
   formallyEtale :=
     have : IsStandardSmooth R S := IsStandardSmoothOfRelativeDimension.isStandardSmooth 0
     have : FormallyUnramified R S := ⟨inferInstance⟩
-    Algebra.FormallyEtale.of_unramified_and_smooth
+    .of_formallyUnramified_and_formallySmooth
 
 end Algebra

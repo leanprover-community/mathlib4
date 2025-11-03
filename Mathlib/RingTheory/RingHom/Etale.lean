@@ -35,10 +35,8 @@ lemma etale_algebraMap [Algebra R S] : (algebraMap R S).Etale ↔ Algebra.Etale 
 lemma etale_iff_formallyUnramified_and_smooth : f.Etale ↔ f.FormallyUnramified ∧ f.Smooth := by
   algebraize [f]
   simp only [Etale, Smooth, FormallyUnramified]
-  refine ⟨fun h ↦ ⟨inferInstance, ?_⟩, fun ⟨h1, h2⟩ ↦ ⟨?_, inferInstance⟩⟩
-  · constructor <;> infer_instance
-  · rw [Algebra.FormallyEtale.iff_unramified_and_smooth]
-    constructor <;> infer_instance
+  exact ⟨fun h ↦ ⟨inferInstance, inferInstance, inferInstance⟩,
+    fun ⟨h1, h2⟩ ↦ ⟨.of_formallyUnramified_and_formallySmooth, inferInstance⟩⟩
 
 lemma Etale.eq_formallyUnramified_and_smooth :
     @Etale = fun R S (_ : CommRing R) (_ : CommRing S) f ↦ f.FormallyUnramified ∧ f.Smooth := by

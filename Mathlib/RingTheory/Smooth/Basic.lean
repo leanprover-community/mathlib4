@@ -24,6 +24,23 @@ and that it is stable under `R`-algebra homomorphisms and compositions.
 We show that smooth is stable under algebra isomorphisms, composition and
 localization at an element.
 
+## Main results
+- `Algebra.FormallySmooth`: The class of formally smooth algebras.
+- `Algebra.formallySmooth_iff` :
+  Formally smooth iff `Ω[A⁄R]` is `A`-projective and `H¹(L_{S/R}) = 0`.
+- `Algebra.FormallySmooth.lift`: If `A` is formally smooth and `I` is nilpotent,
+  any map `A →ₐ[R] B ⧸ I` lifts to `A →ₐ[R] B`.
+- `Algebra.FormallySmooth.iff_comp_surjective`: `A` is formally smooth iff
+  any map `A →ₐ[R] B ⧸ I` lifts to `A →ₐ[R] B` for any square zero `I`.
+
+Suppose `P` is a formally smooth `R` algebra that surjects onto `A` with kernel `I`, then
+- `Algebra.FormallySmooth.iff_split_surjection`: `A` is formally smooth iff
+  the algebra map `P ⧸ I² →ₐ[R] A` has an `R`-algebra section.
+- `Algebra.Extension.equivH1CotangentOfFormallySmooth`:
+  `H¹(L_{S/R})` is isomorphic to `ker(I/I² → A ⊗[P] Ω[P⁄R])`.
+- `Algebra.FormallySmooth.iff_split_injection`: `A` is formally smooth iff
+  the `P`-linear map `I/I² → A ⊗[P] Ω[P⁄R]` is split injective.
+
 -/
 
 open scoped TensorProduct
@@ -232,6 +249,12 @@ def equivH1CotangentOfFormallySmooth (P : Extension R A) [FormallySmooth R P.Rin
     inferInstanceAs (FormallySmooth R (MvPolynomial _ _))
   H1Cotangent.equivOfFormallySmooth _ _
 
+lemma injective_cotangentComplex_iff
+    (P : Extension R A) [FormallySmooth R P.Ring] :
+    Function.Injective P.cotangentComplex ↔ Subsingleton (Algebra.H1Cotangent R A) := by
+  rw [← LinearMap.ker_eq_bot, ← P.equivH1CotangentOfFormallySmooth.subsingleton_congr,
+    ← Submodule.subsingleton_iff_eq_bot, Extension.H1Cotangent]
+
 end Algebra.Extension
 
 namespace Algebra.FormallySmooth
@@ -239,6 +262,13 @@ namespace Algebra.FormallySmooth
 section iff_split
 
 variable [Algebra.FormallySmooth R P]
+
+lemma injective_kerCotangentToTensor_iff
+    [Algebra P A] [IsScalarTower R P A] (hf : Function.Surjective (algebraMap P A)) :
+    Function.Injective (kerCotangentToTensor R P A) ↔ Subsingleton (Algebra.H1Cotangent R A) :=
+  let P' : Algebra.Extension R A := ⟨P, _, Function.surjInv_eq hf⟩
+  have : Algebra.FormallySmooth R P'.Ring := ‹_›
+  P'.injective_cotangentComplex_iff
 
 /--
 Given a formally smooth `R`-algebra `P` and a surjective algebra homomorphism `f : P →ₐ[R] A`
@@ -253,12 +283,9 @@ theorem iff_split_injection
     Algebra.FormallySmooth R A ↔ ∃ l, l ∘ₗ (kerCotangentToTensor R P A) = LinearMap.id := by
   rw [formallySmooth_iff, and_comm,
     Module.Projective.iff_split_of_projective (KaehlerDifferential.mapBaseChange R P A)
-      (mapBaseChange_surjective R P A hf)]
+      (mapBaseChange_surjective R P A hf), ← injective_kerCotangentToTensor_iff hf]
   convert (((exact_kerCotangentToTensor_mapBaseChange R _ _ hf).split_tfae'
     (g := (KaehlerDifferential.mapBaseChange R P A).restrictScalars P)).out 0 1) using 2
-  · let P' : Extension R A := ⟨P, _, Function.surjInv_eq hf⟩
-    rw [← P'.equivH1CotangentOfFormallySmooth.subsingleton_congr, P'.subsingleton_h1Cotangent]
-    rfl
   · rw [← (LinearMap.extendScalarsOfSurjectiveEquiv hf).exists_congr_right]
     simp only [LinearMap.ext_iff]; rfl
   · rw [and_iff_right (by exact mapBaseChange_surjective R P A hf)]
@@ -380,7 +407,7 @@ variable {R : Type*} [CommRing R]
 variable {A : Type*} [CommRing A] [Algebra R A]
 variable (B : Type*) [CommRing B] [Algebra R B]
 
-instance base_change [FormallySmooth R A] : FormallySmooth B (B ⊗[R] A) := by
+instance [FormallySmooth R A] : FormallySmooth B (B ⊗[R] A) := by
   refine .of_comp_surjective fun C _ _ I hI f ↦ ?_
   letI := ((algebraMap B C).comp (algebraMap R B)).toAlgebra
   haveI : IsScalarTower R B C := IsScalarTower.of_algebraMap_eq' rfl

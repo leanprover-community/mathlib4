@@ -33,7 +33,7 @@ localization at an element.
 
 open scoped TensorProduct
 
-universe u v w
+universe w u v
 
 namespace Algebra
 
@@ -73,7 +73,7 @@ theorem comp_injective [FormallyUnramified R A] (hI : I ^ 2 = ⊥) :
           (derivationToSquareZeroEquivLift I hI)).surjective.subsingleton
   exact Subtype.ext_iff.mp (@Subsingleton.elim _ this ⟨f₁, rfl⟩ ⟨f₂, e.symm⟩)
 
-theorem iff_comp_injective [Small.{w} A] :
+theorem iff_comp_injective_of_small [Small.{w} A] :
     FormallyUnramified R A ↔
       ∀ ⦃B : Type w⦄ [CommRing B],
         ∀ [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
@@ -103,6 +103,14 @@ theorem iff_comp_injective [Small.{w} A] :
     · ext x
       apply RingHom.kerLift_injective (TensorProduct.lmul' R (S := A)).kerSquareLift.toRingHom
       simpa using DFunLike.congr_fun (f₁.2.trans f₂.2.symm) x
+
+/-- A version without stray universes that is more easy to rewrite with. -/
+theorem iff_comp_injective :
+    FormallyUnramified R A ↔
+      ∀ ⦃B : Type u⦄ [CommRing B],
+        ∀ [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
+          Function.Injective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) :=
+  iff_comp_injective_of_small
 
 theorem lift_unique
     [FormallyUnramified R A] (I : Ideal B) (hI : IsNilpotent I) (g₁ g₂ : A →ₐ[R] B)
@@ -170,7 +178,7 @@ theorem ext_of_iInf [FormallyUnramified R A] (hI : ⨅ i, I ^ i = ⊥) {g₁ g�
 
 end
 
-instance {R : Type*} [CommRing R] : FormallyUnramified R R := by
+instance {R : Type u} [CommRing R] : FormallyUnramified R R := by
   rw [iff_comp_injective]
   intro B _ _ _ _ f₁ f₂ _
   exact Subsingleton.elim _ _

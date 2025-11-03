@@ -87,7 +87,7 @@ theorem iff_comp_bijective :
    FormallyEtale R A ↔ ∀ ⦃B : Type max u v⦄ [CommRing B] [Algebra R B] (I : Ideal B), I ^ 2 = ⊥ →
       Function.Bijective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) :=
   ⟨fun _ _ ↦ comp_bijective R A, fun H ↦
-    have : FormallyUnramified R A := FormallyUnramified.iff_comp_injective'.mpr
+    have : FormallyUnramified R A := FormallyUnramified.iff_comp_injective_of_small.{max u v}.mpr
       (by aesop (add safe Function.Bijective.injective))
     have : FormallySmooth R A := FormallySmooth.of_comp_surjective
       (by aesop (add safe Function.Bijective.surjective))
@@ -120,7 +120,6 @@ section BaseChange
 
 open scoped TensorProduct
 
-variable (B) in
 instance [FormallyEtale R A] : FormallyEtale B (B ⊗[R] A) :=
   .of_formallyUnramified_and_formallySmooth
 
