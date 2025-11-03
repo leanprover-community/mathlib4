@@ -37,8 +37,7 @@ We define the minimal and maximal tensor products of two pointed cones:
 
 ## References
 
-[Aubrun et al. "Entangleability of cones"] Geom. Funct. Anal. Vol. 31 (2021) 181–205
-available as https://arxiv.org/abs/1911.09663
+- [Aubrun et al. *Entangleability of cones*][aubrunEntangleabilityCones2021]
 
 -/
 
