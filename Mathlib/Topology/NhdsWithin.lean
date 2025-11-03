@@ -21,7 +21,7 @@ to develop relative versions `ContinuousOn` and `ContinuousWithinAt` of `Continu
 * `𝓝 x`: the filter of neighborhoods of a point `x`;
 * `𝓟 s`: the principal filter of a set `s`;
 * `𝓝[s] x`: the filter `nhdsWithin x s` of neighborhoods of a point `x` within a set `s`;
-* `𝓝ˢ[t] s`: the filter `nhdsWithin s t` of neighborhoods of a set `s` within a set `t`.
+* `𝓝ˢ[t] s`: the filter `nhdsSetWithin s t` of neighborhoods of a set `s` within a set `t`.
 
 -/
 
@@ -546,6 +546,9 @@ lemma nhdsSetWithin_univ' {s : Set α} : 𝓝ˢ[s] univ = 𝓟 s := by
 lemma nhdsSetWithin_self {s : Set α} : 𝓝ˢ[s] s = 𝓟 s := by
   simp [nhdsSetWithin, principal_le_nhdsSet]
 
+lemma nhdsSetWithin_eq_principal_of_subset {s t : Set α} (h : t ⊆ s) : 𝓝ˢ[t] s = 𝓟 t := by
+  simp [nhdsSetWithin, (principal_mono.2 h).trans principal_le_nhdsSet]
+
 @[simp]
 lemma nhdsSetWithin_empty {s : Set α} : 𝓝ˢ[∅] s = ⊥ := by
   simp [nhdsSetWithin]
@@ -561,7 +564,7 @@ lemma nhdsSetWithin_prod_le {s s' : Set α} {t t' : Set β} :
     𝓝ˢ[s' ×ˢ t'] (s ×ˢ t) ≤ 𝓝ˢ[s'] s ×ˢ 𝓝ˢ[t'] t := by
   simpa [nhdsSetWithin, ← prod_inf_prod] using inf_le_of_left_le <| nhdsSet_prod_le _ _
 
-theorem mem_nhdsSet_induced {α β : Type*} {t : TopologicalSpace β} (f : α → β) (s u : Set α) :
+lemma mem_nhdsSet_induced {α β : Type*} {t : TopologicalSpace β} (f : α → β) (s u : Set α) :
     u ∈ @nhdsSet α (t.induced f) s ↔ ∃ v ∈ 𝓝ˢ (f '' s), f ⁻¹' v ⊆ u := by
   letI := t.induced f
   simp_rw [mem_nhdsSet_iff_exists, isOpen_induced_iff]
@@ -570,12 +573,12 @@ theorem mem_nhdsSet_induced {α β : Type*} {t : TopologicalSpace β} (f : α �
     exact (image_mono hv.1).trans (by simp [hv'])
   · exact ⟨f ⁻¹' v', ⟨v', hv'.1, rfl⟩, image_subset_iff.1 hv'.2.1, (preimage_mono hv'.2.2).trans hv⟩
 
-theorem nhdsSet_induced {α β : Type*} {t : TopologicalSpace β} (f : α → β) (s : Set α) :
+lemma nhdsSet_induced {α β : Type*} {t : TopologicalSpace β} (f : α → β) (s : Set α) :
     @nhdsSet α (t.induced f) s = comap f (𝓝ˢ (f '' s)) := by
   ext s
   rw [mem_nhdsSet_induced, mem_comap]
 
-theorem map_nhdsSet_induced_eq {α β : Type*} {t : TopologicalSpace β} {f : α → β} (s : Set α) :
+lemma map_nhdsSet_induced_eq {α β : Type*} {t : TopologicalSpace β} {f : α → β} (s : Set α) :
     map f (@nhdsSet α (t.induced f) s) = 𝓝ˢ[range f] (f '' s) := by
   rw [nhdsSet_induced, Filter.map_comap, nhdsSetWithin]
 
