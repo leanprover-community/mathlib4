@@ -14,6 +14,7 @@ We introduce binomial expansions using `embDomain`.
   * `HahnSeries.orderTopSubOnePos` is the group of invertible Hahn series close to 1, i.e., those
   series such that subtracting one yields a series with strictly positive `orderTop`.
   * `HahnSeries.binomialFamily`
+
 ## Main results
   * coefficients of powers of binomials
 
@@ -30,23 +31,6 @@ suppress_compilation
 
 variable {Γ R A : Type*}
 
-theorem orderTop_self_sub_one_pos_iff [LinearOrder Γ] [Zero Γ] [NonAssocRing R] [Nontrivial R]
-    (x : HahnSeries Γ R) :
-    0 < (x - 1).orderTop ↔ x.orderTop = 0 ∧ x.leadingCoeff = 1 := by
-  constructor
-  · intro hx
-    constructor
-    · rw [← sub_add_cancel x 1, add_comm, ← orderTop_one (R := R)]
-      exact orderTop_add_eq_left (Γ := Γ) (R := R) (orderTop_one (R := R) (Γ := Γ) ▸ hx)
-    · rw [← sub_add_cancel x 1, add_comm, ← leadingCoeff_one (Γ := Γ) (R := R)]
-      exact leadingCoeff_add_eq_left (Γ := Γ) (R := R) (orderTop_one (R := R) (Γ := Γ) ▸ hx)
-  · intro h
-    refine lt_of_le_of_ne (le_of_eq_of_le (by simp_all)
-      (min_orderTop_le_orderTop_sub (Γ := Γ) (R := R))) <| Ne.symm <|
-      orderTop_sub_ne h.1 orderTop_one ?_
-    rw [h.2, leadingCoeff_one]
---#find_home! orderTop_self_sub_one_pos_iff --[Mathlib.RingTheory.HahnSeries.Multiplication]
-
 variable [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
 
 namespace SummableFamily
@@ -58,7 +42,7 @@ variable [BinomialRing R] [CommRing A] [Algebra R A]
 terms give a formal expansion of `x^r` as `(1 + (x-1))^r`. -/
 def binomialFamily (x : HahnSeries Γ A) (r : R) :
     SummableFamily Γ A ℕ :=
-  SummableFamily.powerSeriesFamily (x - 1) (PowerSeries.binomialSeries A r)
+  powerSeriesFamily (x - 1) (PowerSeries.binomialSeries A r)
 
 @[simp]
 theorem binomialFamily_apply {x : HahnSeries Γ A} (hx : 0 < (x - 1).orderTop) (r : R) (n : ℕ) :
@@ -111,20 +95,6 @@ theorem orderTop_hsum_binomialFamily_pos {x : HahnSeries Γ A} (hx : 0 < (x - 1)
 
 end SummableFamily
 
-
-theorem isUnit_of_orderTop_pos {x : HahnSeries Γ R} (h : 0 < (x - 1).orderTop) :
-    IsUnit x := by
-  obtain _ | _ := subsingleton_or_nontrivial R
-  · exact isUnit_of_subsingleton x
-  · refine isUnit_of_isUnit_leadingCoeff_AddUnitOrder ?_ ?_
-    · rw [(x.orderTop_self_sub_one_pos_iff.mp h).2]
-      exact isUnit_one
-    · have := (x.orderTop_self_sub_one_pos_iff.mp h).1
-      rw [← order_eq_orderTop_of_ne_zero
-        (fun h ↦ WithTop.top_ne_zero (orderTop_eq_top.mpr h ▸ this)), WithTop.coe_eq_zero] at this
-      rw [this]
-      exact isAddUnit_zero
-
 /-- The group of invertible Hahn series close to 1, i.e., those series such that subtracting 1
   yields a series with strictly positive `orderTop`. -/
 @[simps]
@@ -167,12 +137,6 @@ def toOrderTopSubOnePos {x : HahnSeries Γ R} (h : 0 < (x - 1).orderTop) :
   val := ⟨x, (isUnit_of_orderTop_pos h).unit.inv, IsUnit.mul_val_inv (isUnit_of_orderTop_pos h),
     IsUnit.val_inv_mul (isUnit_of_orderTop_pos h)⟩
   property := h
-
-omit [IsOrderedCancelAddMonoid Γ] in
-theorem orderTop_sub_pos {g : Γ} (hg : 0 < g) (r : R) :
-    0 < ((1 + single g r) - 1).orderTop := by
-  by_cases hr : r = 0 <;> simp [hr, hg]
---#find_home! orderTop_sub_pos --[Mathlib.RingTheory.HahnSeries.Multiplication]
 
 theorem one_plus_single_mem_orderTopSubOnePos {g : Γ} (hg : 0 < g) (r : R) :
     (toOrderTopSubOnePos (orderTop_sub_pos hg r)).val ∈ orderTopSubOnePos Γ R :=

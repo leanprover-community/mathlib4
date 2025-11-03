@@ -798,6 +798,19 @@ theorem isUnit_of_isUnit_leadingCoeff_AddUnitOrder {x : HahnSeries Γ R} (hx : I
   rw [sub_sub_cancel] at h'
   exact isUnit_of_mul_isUnit_right (isUnit_of_mul_eq_one _ _ h')
 
+theorem isUnit_of_orderTop_pos {x : HahnSeries Γ R} (h : 0 < (x - 1).orderTop) :
+    IsUnit x := by
+  obtain _ | _ := subsingleton_or_nontrivial R
+  · exact isUnit_of_subsingleton x
+  · refine isUnit_of_isUnit_leadingCoeff_AddUnitOrder ?_ ?_
+    · rw [(x.orderTop_self_sub_one_pos_iff.mp h).2]
+      exact isUnit_one
+    · have := (x.orderTop_self_sub_one_pos_iff.mp h).1
+      rw [← order_eq_orderTop_of_ne_zero
+        (fun h ↦ WithTop.top_ne_zero (orderTop_eq_top.mpr h ▸ this)), WithTop.coe_eq_zero] at this
+      rw [this]
+      exact isAddUnit_zero
+
 end CommRing
 
 section IsDomain

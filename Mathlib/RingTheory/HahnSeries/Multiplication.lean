@@ -635,6 +635,27 @@ theorem orderTop_nsmul_le_orderTop_pow {Γ}
       (x ^ n).orderTop + x.orderTop ≤ (x ^ n * x).orderTop := orderTop_add_le_mul
       (x ^ n * x).orderTop ≤ (x ^ n * x ^ 1).orderTop := by rw [pow_one]
 
+theorem orderTop_self_sub_one_pos_iff {Γ} [LinearOrder Γ] [Zero Γ] [NonAssocRing R] [Nontrivial R]
+    (x : HahnSeries Γ R) :
+    0 < (x - 1).orderTop ↔ x.orderTop = 0 ∧ x.leadingCoeff = 1 := by
+  constructor
+  · intro hx
+    constructor
+    · rw [← sub_add_cancel x 1, add_comm, ← orderTop_one (R := R)]
+      exact orderTop_add_eq_left (Γ := Γ) (R := R) (orderTop_one (R := R) (Γ := Γ) ▸ hx)
+    · rw [← sub_add_cancel x 1, add_comm, ← leadingCoeff_one (Γ := Γ) (R := R)]
+      exact leadingCoeff_add_eq_left (Γ := Γ) (R := R) (orderTop_one (R := R) (Γ := Γ) ▸ hx)
+  · intro h
+    refine lt_of_le_of_ne (le_of_eq_of_le (by simp_all)
+      (min_orderTop_le_orderTop_sub (Γ := Γ) (R := R))) <| Ne.symm <|
+      orderTop_sub_ne h.1 orderTop_one ?_
+    rw [h.2, leadingCoeff_one]
+
+theorem orderTop_sub_pos {Γ} [PartialOrder Γ] [Zero Γ] [AddCommGroup R] [One R] {g : Γ} (hg : 0 < g)
+    (r : R) :
+    0 < ((1 + single g r) - 1).orderTop := by
+  by_cases hr : r = 0 <;> simp [hr, hg]
+
 end HahnSeries
 
 namespace HahnModule
