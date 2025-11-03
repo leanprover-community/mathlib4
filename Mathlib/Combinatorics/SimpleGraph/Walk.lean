@@ -1319,7 +1319,8 @@ variable {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} (p : G.Walk u v)
 abbrev mapLe : G'.Walk u v :=
   p.map (.ofLE h)
 
-lemma length_mapLe_eq_length : (p.mapLe h).length = p.length := by simp
+lemma length_mapLe_eq_length : (p.mapLe h).length = p.length :=
+  length_map ..
 
 lemma support_mapLe_eq_support : (p.mapLe h).support = p.support := by simp
 
@@ -1327,7 +1328,8 @@ lemma edges_mapLe_eq_edges : (p.mapLe h).edges = p.edges := by simp
 
 lemma edgeSet_mapLe_eq_edgeSet : (p.mapLe h).edgeSet = p.edgeSet := by simp
 
-lemma reverse_mapLe_eq_mapLe_reverse : (p.mapLe h).reverse = p.reverse.mapLe h := by simp
+lemma reverse_mapLe_eq_mapLe_reverse : (p.mapLe h).reverse = p.reverse.mapLe h :=
+  reverse_map ..
 
 lemma mapLe_append_eq_append_mapLe {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
     (p.append q).mapLe h = (p.mapLe h).append (q.mapLe h) :=
