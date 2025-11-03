@@ -322,7 +322,7 @@ theorem union_finset_leftRel_cover (H K : Subgroup G) (t : Finset (Quotient H K)
 
 theorem union_finset_rightRel_cover (H K : Subgroup G) (t : Finset (Quotient H K))
     (ht : Set.univ ⊆
-    ⋃ i ∈ t, Quot.mk ⇑(QuotientGroup.rightRel H) '' doubleCoset (Quotient.out i)
+      ⋃ i ∈ t, Quot.mk ⇑(QuotientGroup.rightRel H) '' doubleCoset (Quotient.out i)
     H K) : ⋃ q ∈ t, doubleCoset (Quotient.out q) H K = Set.univ := by
   contrapose ht
   simp only [Set.univ_subset_iff, ← ne_eq] at ⊢ ht
