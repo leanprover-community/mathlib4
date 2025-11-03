@@ -62,8 +62,13 @@ instance categoryStruct [CategoryStruct.{v} C] : CategoryStruct (LocallyDiscrete
 
 variable [CategoryStruct.{v} C]
 
+/-- Construct a 1-morphism in the locally discrete bicategory. -/
+abbrev mkHom {a b : C} (f : a ⟶ b) :
+    mk a ⟶ mk b :=
+  ⟨f⟩
+
 @[simp]
-lemma id_as (a : LocallyDiscrete C) : (𝟙 a : Discrete (a.as ⟶ a.as)).as = 𝟙 a.as :=
+lemma id_as (a : LocallyDiscrete C) : (𝟙 a : a ⟶ a).as = 𝟙 a.as :=
   rfl
 
 @[simp]
@@ -80,6 +85,10 @@ instance subsingleton2Hom {a b : LocallyDiscrete C} (f g : a ⟶ b) : Subsinglet
 /-- Extract the equation from a 2-morphism in a locally discrete 2-category. -/
 theorem eq_of_hom {X Y : LocallyDiscrete C} {f g : X ⟶ Y} (η : f ⟶ g) : f = g :=
   Discrete.ext η.1.1
+
+theorem eq_eqToHom {X Y : LocallyDiscrete C} {f g : X ⟶ Y} (η : f ⟶ g) :
+    η = eqToHom (eq_of_hom η) :=
+  Subsingleton.elim _ _
 
 end LocallyDiscrete
 
@@ -106,6 +115,36 @@ instance locallyDiscreteBicategory.strict : Strict (LocallyDiscrete C) where
 end
 
 namespace Bicategory
+
+namespace LocallyDiscrete
+
+theorem associator_hom {C : Type u} [Category.{v} C] {a b c d : LocallyDiscrete C}
+    (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+    (α_ f g h).hom = eqToHom (Category.assoc _ _ _) :=
+  rfl
+
+theorem associator_inv {C : Type u} [Category.{v} C] {a b c d : LocallyDiscrete C}
+    (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+    (α_ f g h).inv = eqToHom (Category.assoc _ _ _).symm :=
+  rfl
+
+theorem leftUnitor_hom {C : Type u} [Category.{v} C] {a b : LocallyDiscrete C} (f : a ⟶ b) :
+    (λ_ f).hom = eqToHom (Category.id_comp _) :=
+  rfl
+
+theorem leftUnitor_inv {C : Type u} [Category.{v} C] {a b : LocallyDiscrete C} (f : a ⟶ b) :
+    (λ_ f).inv = eqToHom (Category.id_comp _).symm :=
+  rfl
+
+theorem rightUnitor_hom {C : Type u} [Category.{v} C] {a b : LocallyDiscrete C} (f : a ⟶ b) :
+    (ρ_ f).hom = eqToHom (Category.comp_id _) :=
+  rfl
+
+theorem rightUnitor_inv {C : Type u} [Category.{v} C] {a b : LocallyDiscrete C} (f : a ⟶ b) :
+    (ρ_ f).inv = eqToHom (Category.comp_id _).symm :=
+  rfl
+
+end LocallyDiscrete
 
 /-- A bicategory is locally discrete if the categories of 1-morphisms are discrete. -/
 abbrev IsLocallyDiscrete (B : Type*) [Bicategory B] := ∀ (b c : B), IsDiscrete (b ⟶ c)

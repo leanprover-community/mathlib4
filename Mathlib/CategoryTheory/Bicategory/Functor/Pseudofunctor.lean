@@ -155,7 +155,37 @@ def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D whe
 
 section
 
-variable (F : Pseudofunctor B C) {a b : B}
+variable (F : Pseudofunctor B C) {a b c d : B}
+
+@[reassoc, to_app]
+lemma map₂_associator_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+    F.map₂ (α_ f g h).inv =
+    (F.mapComp f (g ≫ h)).hom ≫ F.map f ◁ (F.mapComp g h).hom ≫
+    (α_ (F.map f) (F.map g) (F.map h)).inv ≫
+    (F.mapComp f g).inv ▷ F.map h ≫ (F.mapComp (f ≫ g) h).inv := by
+  apply eq_of_inv_eq_inv
+  simp only [IsIso.inv_comp, IsIso.Iso.inv_inv, inv_whiskerRight, assoc, inv_whiskerLeft,
+    IsIso.Iso.inv_hom]
+  rw [← F.map₂_inv]
+  simp
+
+@[reassoc, to_app]
+lemma map₂_left_unitor_inv (f : a ⟶ b) :
+    F.map₂ (λ_ f).inv =
+    (λ_ (F.map f)).inv ≫ (F.mapId a).inv ▷ F.map f ≫ (F.mapComp (𝟙 a) f).inv := by
+  apply eq_of_inv_eq_inv
+  simp only [IsIso.inv_comp, IsIso.Iso.inv_inv, inv_whiskerRight, assoc]
+  rw [← F.map₂_inv]
+  simp
+
+@[reassoc, to_app]
+lemma map₂_right_unitor_inv (f : a ⟶ b) :
+    F.map₂ (ρ_ f).inv =
+    (ρ_ (F.map f)).inv ≫ F.map f ◁ (F.mapId b).inv ≫ (F.mapComp f (𝟙 b)).inv := by
+  apply eq_of_inv_eq_inv
+  simp only [IsIso.inv_comp, IsIso.Iso.inv_inv, inv_whiskerLeft, assoc]
+  rw [← F.map₂_inv]
+  simp
 
 @[to_app (attr := reassoc)]
 lemma mapComp_assoc_right_hom {c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
@@ -184,6 +214,34 @@ lemma mapComp_assoc_left_inv {c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d)
     (α_ (F.map f) (F.map g) (F.map h)).hom ≫ F.map f ◁ (F.mapComp g h).inv ≫
     (F.mapComp f (g ≫ h)).inv ≫ F.map₂ (α_ f g h).inv :=
   F.toLax.mapComp_assoc_left _ _ _
+
+@[reassoc, to_app]
+lemma mapComp_comp_left (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+    (F.mapComp (f ≫ g) h).hom = F.map₂ (α_ f g h).hom ≫
+      (F.mapComp f (g ≫ h)).hom ≫ F.map f ◁ (F.mapComp g h).hom ≫
+        (α_ (F.map f) (F.map g) (F.map h)).inv ≫ (F.mapComp f g).inv ▷ F.map h := by
+  simp [map₂_associator]
+
+@[reassoc, to_app]
+lemma mapComp_comp_left_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+    (F.mapComp (f ≫ g) h).inv = (F.mapComp f g).hom ▷ F.map h ≫
+      (α_ (F.map f) (F.map g) (F.map h)).hom ≫ F.map f ◁ (F.mapComp g h).inv ≫
+        (F.mapComp f (g ≫ h)).inv ≫ F.map₂ (α_ f g h).inv := by
+  simp [map₂_associator_inv]
+
+@[reassoc, to_app]
+lemma mapComp_comp_right (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+    (F.mapComp f (g ≫ h)).hom = F.map₂ (α_ f g h).inv ≫
+      (F.mapComp (f ≫ g) h).hom ≫ (F.mapComp f g).hom ▷ F.map h ≫
+        (α_ (F.map f) (F.map g) (F.map h)).hom ≫ F.map f ◁ (F.mapComp g h).inv := by
+  simp [map₂_associator_inv]
+
+@[reassoc, to_app]
+lemma mapComp_comp_right_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+    (F.mapComp f (g ≫ h)).inv = F.map f ◁ (F.mapComp g h).hom ≫
+      (α_ (F.map f) (F.map g) (F.map h)).inv ≫ (F.mapComp f g).inv ▷ F.map h ≫
+        (F.mapComp (f ≫ g) h).inv ≫ F.map₂ (α_ f g h).hom := by
+  simp [map₂_associator]
 
 @[reassoc, to_app]
 lemma mapComp_id_left_hom (f : a ⟶ b) : (F.mapComp (𝟙 a) f).hom =
@@ -240,6 +298,20 @@ lemma whiskerLeft_mapId_hom (f : a ⟶ b) : F.map f ◁ (F.mapId b).hom =
 lemma whiskerLeft_mapId_inv (f : a ⟶ b) : F.map f ◁ (F.mapId b).inv =
     (ρ_ (F.map f)).hom ≫ F.map₂ (ρ_ f).inv ≫ (F.mapComp f (𝟙 b)).hom := by
   simpa using congrArg (·.inv) (F.whiskerLeftIso_mapId f)
+
+theorem mapComp_eq_left {a b c : B} {f f' : a ⟶ b} (η : f = f') (g : b ⟶ c) :
+    F.mapComp f g = eqToIso (by rw [η]) ≪≫ F.mapComp f' g ≪≫ eqToIso (by rw [η]) := by
+  ext
+  dsimp only [trans_hom, eqToIso.hom]
+  rw [eqToHom_iso_hom_naturality (fun i ↦ F.mapComp i g) η.symm]
+  simp only [eqToHom_trans_assoc, eqToHom_refl, id_comp]
+
+theorem mapComp_eq_right {a b c : B} (f : a ⟶ b) {g g' : b ⟶ c} (η : g = g') :
+    F.mapComp f g = eqToIso (by rw [η]) ≪≫ F.mapComp f g' ≪≫ eqToIso (by rw [η]) := by
+  ext
+  dsimp only [trans_hom, eqToIso.hom]
+  rw [eqToHom_iso_hom_naturality (fun i ↦ F.mapComp f i) η.symm]
+  simp only [eqToHom_trans_assoc, eqToHom_refl, id_comp]
 
 /-- More flexible variant of `mapId`. (See the file `Bicategory.Functor.Strict`
 for applications to strict bicategories.) -/
