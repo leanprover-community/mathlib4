@@ -129,6 +129,10 @@ def StrongFEPair.symm (P : StrongFEPair E) : StrongFEPair E where
   hf₀ := P.hg₀
   hg₀ := P.hf₀
 
+lemma StrongFEPair.symm_toWeakFEPair (P : StrongFEPair E) :
+    P.symm.toWeakFEPair = P.toWeakFEPair.symm :=
+  rfl
+
 end symmetry
 
 namespace WeakFEPair
@@ -495,12 +499,5 @@ lemma symm_Λ_eq : P.symm.Λ = mellin P.g := funext fun s ↦ (P.symm.hasMellin 
 /-- If `(f, g)` are a strong FE pair, then the Mellin transform of `f` is entire. -/
 theorem differentiable_Λ : Differentiable ℂ P.Λ := by
   simpa only [Λ_aux_eq_Λ] using P.differentiable_Λ_aux
-
-/-- Main theorem about strong FE pairs: if `(f, g)` are a strong FE pair, then the Mellin
-transforms of `f` and `g` are related by `s ↦ k - s`.
-
-This is proved by making a substitution `t ↦ t⁻¹` in the Mellin transform integral. -/
-theorem functional_equation (s : ℂ) : P.Λ (P.k - s) = P.ε • P.symm.Λ s := by
-  simpa only [Λ_aux_eq_Λ] using P.functional_equation_aux s
 
 end StrongFEPair

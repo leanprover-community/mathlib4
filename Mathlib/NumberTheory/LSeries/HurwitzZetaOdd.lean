@@ -371,7 +371,7 @@ theorem completedHurwitzZetaOdd_one_sub (a : UnitAddCircle) (s : ℂ) :
   rw [completedHurwitzZetaOdd, completedSinZeta,
     (by { push_cast; ring } : (1 - s + 1) / 2 = ↑(3 / 2 : ℝ) - (s + 1) / 2),
     ← hurwitzOddFEPair_k, (hurwitzOddFEPair a).functional_equation ((s + 1) / 2),
-    hurwitzOddFEPair_ε, one_smul]
+    hurwitzOddFEPair_ε, one_smul, StrongFEPair.symm_toWeakFEPair]
 
 /-- Functional equation for the odd Hurwitz zeta function (alternative form). -/
 lemma completedSinZeta_one_sub (a : UnitAddCircle) (s : ℂ) :
