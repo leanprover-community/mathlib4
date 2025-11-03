@@ -284,7 +284,8 @@ lemma CStarAlgebra.isUnit_of_le (a : A) {b : A} (hab : a ≤ b)
   peel h₀ with r hr _
   exact this.trans hab
 
-lemma le_iff_norm_sqrt_mul_rpow {a b : A} (hb : IsStrictlyPositive b) (ha : 0 ≤ a) :
+lemma le_iff_norm_sqrt_mul_rpow {a : A} (ha : 0 ≤ a) (b : A)
+    (hb : IsStrictlyPositive b := by cfc_tac) :
     a ≤ b ↔ ‖sqrt a * (b : A) ^ (-(1 / 2) : ℝ)‖ ≤ 1 := by
   lift b to Aˣ using hb.isUnit
   have hbab : 0 ≤ (b : A) ^ (-(1 / 2) : ℝ) * a * (b : A) ^ (-(1 / 2) : ℝ) :=
@@ -313,7 +314,7 @@ lemma le_iff_norm_sqrt_mul_sqrt_inv {a : A} {b : Aˣ} (ha : 0 ≤ a) (hb : 0 ≤
     a ≤ b ↔ ‖sqrt a * sqrt (↑b⁻¹ : A)‖ ≤ 1 := by
   rw [CFC.sqrt_eq_rpow (a := (↑b⁻¹ : A)), ← CFC.rpow_neg_one_eq_inv b,
     CFC.rpow_rpow (b : A) _ _ (by simp) (by simp),
-    le_iff_norm_sqrt_mul_rpow (b.isUnit.isStrictlyPositive hb) ha]
+    le_iff_norm_sqrt_mul_rpow ha _ (b.isUnit.isStrictlyPositive hb)]
   simp
 
 namespace CStarAlgebra
@@ -359,7 +360,8 @@ lemma inv_le_one {a : Aˣ} (ha : 1 ≤ a) : (↑a⁻¹ : A) ≤ 1 :=
 lemma le_one_of_one_le_inv {a : Aˣ} (ha : 1 ≤ (↑a⁻¹ : A)) : (a : A) ≤ 1 := by
   simpa using CStarAlgebra.inv_le_one ha
 
-lemma rpow_neg_one_le_rpow_neg_one {a b : A} (ha : IsStrictlyPositive a) (hab : a ≤ b) :
+lemma rpow_neg_one_le_rpow_neg_one {a b : A} (hab : a ≤ b)
+    (ha : IsStrictlyPositive a := by cfc_tac) :
     b ^ (-1 : ℝ) ≤ a ^ (-1 : ℝ) := by
   lift b to Aˣ using isUnit_of_le a hab
   lift a to Aˣ using ha.isUnit
