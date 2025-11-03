@@ -388,7 +388,7 @@ lemma minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ [Fintype α]
       simp_rw [add_assoc, add_comm k, ← add_assoc, ← Wc, add_assoc, ← two_mul, mul_add,
                ← hw.card_inter, card_eq_sum_ones, ← mul_assoc, mul_sum, mul_one, mul_comm 2]
       gcongr with i <;> exact minDegree_le_degree ..
-    _ ≤ (#X * (#W - 3) + #Xᶜ * (#W - 1)) + 2 *(#X * #(s ∩ t) + #Xᶜ * (#(s ∩ t) - 1)) := by gcongr
+    _ ≤ (#X * (#W - 3) + #Xᶜ * (#W - 1)) + 2 * (#X * #(s ∩ t) + #Xᶜ * (#(s ∩ t) - 1)) := by gcongr
     _ = #X * (#W - 3 + 2 * k) + #Xᶜ * ((#W - 1) + 2 * (k - 1)) := by grind
     _ ≤ _ := by
         by_cases hk : k = 0 -- so `s ∩ t = ∅` and hence `Xᶜ = ∅`
