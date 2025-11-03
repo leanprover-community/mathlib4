@@ -342,9 +342,6 @@ theorem shiftLeft_natCast (m n : ℕ) : (m : ℤ) <<< (n : ℤ) = ↑(m <<< n) :
 @[simp]
 theorem shiftRight_natCast (m n : ℕ) : (m : ℤ) >>> (n : ℤ) = m >>> n := by cases n <;> rfl
 
-@[deprecated (since := "2025-03-10")] alias shiftLeft_coe_nat := shiftLeft_natCast
-@[deprecated (since := "2025-03-10")] alias shiftRight_coe_nat := shiftRight_natCast
-
 @[simp]
 theorem shiftLeft_negSucc (m n : ℕ) : -[m+1] <<< (n : ℤ) = -[Nat.shiftLeft' true m n+1] :=
   rfl
