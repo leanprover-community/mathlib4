@@ -31,7 +31,7 @@ open Bicategory
 namespace Pseudofunctor
 
 variable {B : Type u₁} {C : Type u₂} [Bicategory.{w₁, v₁} B]
-  [Strict B] [Bicategory.{w₂, v₂} C] (F : Pseudofunctor B C)
+  [Strict B] [Bicategory.{w₂, v₂} C] (F : B ⥤ᵖ C)
 
 lemma mapComp'_comp_id {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
     F.mapComp' f (𝟙 b₁) f = (ρ_ _).symm ≪≫ whiskerLeftIso _ (F.mapId b₁).symm := by

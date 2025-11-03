@@ -21,7 +21,7 @@ open Bicategory
 
 namespace Pseudofunctor
 
-variable {B : Type u} [Bicategory.{w, v} B] (F : Pseudofunctor B Cat.{v', u'})
+variable {B : Type u} [Bicategory.{w, v} B] (F : B ⥤ᵖ Cat.{v', u'})
 
 section naturality
 
