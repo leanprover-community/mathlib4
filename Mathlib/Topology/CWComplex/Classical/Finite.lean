@@ -306,11 +306,10 @@ variable {X : Type*} [TopologicalSpace X] {C D : Set X} [RelCWComplex C D]
 lemma RelCWComplex.finite_of_finite_cells (finite : _root_.Finite (Σ n, cell C n)) : Finite C where
   eventually_isEmpty_cell := by
     simp only [Filter.eventually_atTop, ge_iff_le]
-    by_cases h : IsEmpty (Σ n, cell C n)
+    cases isEmpty_or_nonempty (Σ n, cell C n)
     · exact ⟨0, by simp_all⟩
     -- We take the greatest `n` such that there is a `j : cell C n` and show that this fulfills
     -- the necessary conditions.
-    push_neg at h
     have _ := Fintype.ofFinite (Σ n, cell C n)
     classical
     let A := (Finset.univ : Finset (Σ n, cell C n)).image Sigma.fst

@@ -9,7 +9,7 @@ import Mathlib.Tactic.TautoSet
 /-!
 # Matroid Contraction
 
-Instead of deleting the the elements of `X : Set α` from `M : Matroid α`, we can contract them.
+Instead of deleting the elements of `X : Set α` from `M : Matroid α`, we can contract them.
 The *contraction* of `X` from `M`, denoted `M ／ X`, is the matroid on ground set `M.E \ X`
 in which a set `I` is independent if and only if `I ∪ J` is independent in `M`,
 where `J` is an arbitrarily chosen basis for `X`. Contraction corresponds to contracting

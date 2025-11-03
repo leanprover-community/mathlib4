@@ -141,10 +141,8 @@ theorem edist_congr {w x y z : α} (hl : edist w x = 0) (hr : edist y z = 0) :
     edist w y = edist x z :=
   (edist_congr_right hl).trans (edist_congr_left hr)
 
-theorem edist_triangle4 (x y z t : α) : edist x t ≤ edist x y + edist y z + edist z t :=
-  calc
-    edist x t ≤ edist x z + edist z t := edist_triangle x z t
-    _ ≤ edist x y + edist y z + edist z t := add_le_add_right (edist_triangle x y z) _
+theorem edist_triangle4 (x y z t : α) : edist x t ≤ edist x y + edist y z + edist z t := by
+  grw [edist_triangle _ z, edist_triangle]
 
 /-- Reformulation of the uniform structure in terms of the extended distance -/
 theorem uniformity_pseudoedist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | edist p.1 p.2 < ε } :=

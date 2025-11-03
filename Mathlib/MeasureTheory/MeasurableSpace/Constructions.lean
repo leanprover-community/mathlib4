@@ -401,28 +401,16 @@ theorem Measurable.prodMk {β γ} {_ : MeasurableSpace β} {_ : MeasurableSpace 
     {g : α → γ} (hf : Measurable f) (hg : Measurable g) : Measurable fun a : α => (f a, g a) :=
   Measurable.prod hf hg
 
-@[deprecated (since := "2025-03-05")]
-alias Measurable.prod_mk := Measurable.prodMk
-
 @[fun_prop]
 theorem Measurable.prodMap [MeasurableSpace δ] {f : α → β} {g : γ → δ} (hf : Measurable f)
     (hg : Measurable g) : Measurable (Prod.map f g) :=
   (hf.comp measurable_fst).prodMk (hg.comp measurable_snd)
 
-@[deprecated (since := "2025-03-05")]
-alias Measurable.prod_map := Measurable.prodMap
-
 theorem measurable_prodMk_left {x : α} : Measurable (@Prod.mk _ β x) :=
   measurable_const.prodMk measurable_id
 
-@[deprecated (since := "2025-03-05")]
-alias measurable_prod_mk_left := measurable_prodMk_left
-
 theorem measurable_prodMk_right {y : β} : Measurable fun x : α => (x, y) :=
   measurable_id.prodMk measurable_const
-
-@[deprecated (since := "2025-03-05")]
-alias measurable_prod_mk_right := measurable_prodMk_right
 
 theorem Measurable.of_uncurry_left {f : α → β → γ} (hf : Measurable (uncurry f)) {x : α} :
     Measurable (f x) :=
@@ -937,3 +925,51 @@ lemma MeasurableSet.sep_infinite [Countable α] {S : Set (Set α)} (hS : Measura
   hS.inter .setOf_infinite
 
 end Set
+
+section curry
+
+variable {ι : Type*}
+
+section Function
+
+variable {κ X : Type*} [MeasurableSpace X]
+
+@[fun_prop, measurability]
+lemma measurable_curry : Measurable (@curry ι κ X) :=
+  measurable_pi_lambda _ fun _ ↦ measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+
+-- This cannot be tagged with `fun_prop` because `fun_prop` can see through `Function.uncurry`.
+@[measurability]
+lemma measurable_uncurry : Measurable (@uncurry ι κ X) := by fun_prop
+
+@[fun_prop, measurability]
+lemma measurable_equivCurry : Measurable (Equiv.curry ι κ X) := measurable_curry
+
+@[fun_prop, measurability]
+lemma measurable_equivCurry_symm : Measurable (Equiv.curry ι κ X).symm := measurable_uncurry
+
+end Function
+
+section Sigma
+
+variable {κ : ι → Type*} {X : (i : ι) → κ i → Type*} [∀ i j, MeasurableSpace (X i j)]
+
+@[fun_prop, measurability]
+lemma measurable_sigmaCurry : Measurable (Sigma.curry (γ := X)) :=
+    measurable_pi_lambda _ fun _ ↦ measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+
+@[fun_prop, measurability]
+lemma measurable_sigmaUncurry : Measurable (Sigma.uncurry (γ := X)) := by
+  refine measurable_pi_lambda _ fun _ ↦ ?_
+  simp only [Sigma.uncurry]
+  fun_prop
+
+@[fun_prop, measurability]
+lemma measurable_piCurry : Measurable (Equiv.piCurry X) := measurable_sigmaCurry
+
+@[fun_prop, measurability]
+lemma measurable_piCurry_symm : Measurable (Equiv.piCurry X).symm := measurable_sigmaUncurry
+
+end Sigma
+
+end curry
