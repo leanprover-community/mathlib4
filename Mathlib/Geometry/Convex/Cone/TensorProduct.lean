@@ -44,7 +44,7 @@ We define the minimal and maximal tensor products of two pointed cones:
 open Set Module Convex TensorProduct LinearMap
 open scoped TensorProduct
 
-variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+variable {K : Type*} [CommRing K] [LinearOrder K] [IsStrictOrderedRing K]
 variable {G : Type*} [AddCommGroup G] [Module K G]
 variable {H : Type*} [AddCommGroup H] [Module K H]
 
@@ -69,7 +69,7 @@ noncomputable def maxTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone 
 /-- Characterization of the maximal tensor product: `z` lies in
 `maxTensorProduct C₁ C₂` iff all pairings with elementary dual tensors are nonnegative. -/
 theorem mem_maxTensorProduct_iff {C₁ : PointedCone K G} {C₂ : PointedCone K H} {z : G ⊗[K] H} :
-    z ∈ maxTensorProduct (K:=K) C₁ C₂ ↔
+    z ∈ maxTensorProduct (K := K) C₁ C₂ ↔
       ∀ φ ∈ PointedCone.dual (Module.dualPairing K G).flip C₁.carrier,
       ∀ ψ ∈ PointedCone.dual (Module.dualPairing K H).flip C₂.carrier,
         0 ≤ (dualDistrib K G H (φ ⊗ₜ[K] ψ)) z := by
