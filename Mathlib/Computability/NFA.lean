@@ -499,20 +499,30 @@ theorem concat_acceptsFrom {S1 : Set σ1} :
   rw [Language.mul_def, Set.mem_image2]
   induction z generalizing S1
   case nil =>
-    simp; rw [mem_acceptsFrom_nil]; tauto
+    simp only [mem_acceptsFrom_nil, mem_image, hmul_concatAccept, concatAccept, mem_union,
+      mem_setOf_eq, exists_exists_and_eq_and, Sum.inl.injEq, exists_eq_right, reduceCtorEq,
+      and_false, exists_false, or_false,
+    List.append_eq_nil_iff, exists_eq_right_right]
+    rw [mem_acceptsFrom_nil]; tauto
   case cons a z ih =>
-    simp [stepSet, mem_acceptsFrom_biUnion, acceptsFrom_union, max, SemilatticeSup.sup]
-    simp [ih, concat_acceptsFrom_inr]; clear ih
-    simp_rw [↑mem_acceptsFrom_biUnion]
-    simp
-    simp_rw [↑mem_acceptsFrom_setOf_fact]
+    simp only [mem_acceptsFrom_cons, stepSet, mem_image, hmul_concatStep, concatStep, iUnion_exists,
+      biUnion_and', iUnion_iUnion_eq_right, mem_acceptsFrom_biUnion, acceptsFrom_union, add_eq_sup,
+      max, SemilatticeSup.sup, concat_acceptsFrom_inr]
+    rw [Set.mem_iUnion₂]
+    simp only [mem_union, ih, mem_iUnion, exists_prop]
+    simp_rw [↑mem_acceptsFrom_sep_fact]
     constructor
     · rintro ⟨s1, hs1, ⟨x, hx, y, hy, rfl⟩ | ⟨s2, hstart2, hz, haccept1⟩⟩
       · exists (a :: x); rw [mem_acceptsFrom_cons]
-        simp [stepSet, mem_acceptsFrom_biUnion]; tauto
+        simp only [stepSet, mem_acceptsFrom_biUnion, List.cons_append, List.cons.injEq,
+          List.append_cancel_left_eq, true_and, exists_eq_right]
+        rw [Set.mem_iUnion₂]; tauto
       · exists []; rw [mem_acceptsFrom_nil]
-        simp [accepts_acceptsFrom]; rw [mem_acceptsFrom_cons]
-        simp [stepSet, mem_acceptsFrom_biUnion]; tauto
+        simp only [accepts_acceptsFrom, List.nil_append, exists_eq_right]
+        rw [mem_acceptsFrom_cons]
+        simp only [stepSet, mem_acceptsFrom_biUnion]
+        rw [Set.mem_iUnion₂]
+        tauto
     · rintro ⟨x, hx, y, hy, heq⟩
       cases x
       case nil =>
@@ -521,12 +531,14 @@ theorem concat_acceptsFrom {S1 : Set σ1} :
         exists s1
         simp at heq; subst y
         rw [accepts_acceptsFrom, mem_acceptsFrom_cons] at hy
-        simp [stepSet, mem_acceptsFrom_biUnion] at hy
+        simp only [stepSet, mem_acceptsFrom_biUnion] at hy
+        rw [Set.mem_iUnion₂] at hy
         tauto
       case cons b x =>
         obtain ⟨rfl, rfl⟩ := heq
         rw [mem_acceptsFrom_cons] at hx
-        simp [stepSet, mem_acceptsFrom_biUnion] at hx
+        simp only [stepSet, mem_acceptsFrom_biUnion] at hx
+        rw [Set.mem_iUnion₂] at hx
         obtain ⟨s1, hs1, hx⟩ := hx
         exists s1
         constructor; next => assumption
