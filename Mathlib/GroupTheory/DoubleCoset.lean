@@ -177,13 +177,9 @@ theorem mk_eq_of_doubleCoset_eq {H K : Subgroup G} {a b : G}
 alias _root_.Doset.mk_eq_of_doset_eq := mk_eq_of_doubleCoset_eq
 
 theorem mem_quotToDoubleCoset_iff {H K : Subgroup G} (i : Quotient (H : Set G) K) (a : G) :
-    a ∈ quotToDoubleCoset H K i ↔ mk H K a = i := by
-  constructor
-  · intro hg
-    simp_rw [mk_eq_of_doubleCoset_eq (doubleCoset_eq_of_mem hg), Quotient.out_eq]
-  · intro hg
-    rw [← out_eq' _ _ i] at hg
-    exact mem_doubleCoset.mpr ((eq _ _ _ a).mp hg.symm)
+  refine ⟨fun hg ↦ by simp [mk_eq_of_doubleCoset_eq (doubleCoset_eq_of_mem hg)], fun hg ↦ ?_⟩
+  rw [← out_eq' _ _ i] at hg
+  exact mem_doubleCoset.mpr ((eq _ _ _ a).mp hg.symm)
 
 theorem disjoint_out {H K : Subgroup G} {a b : Quotient H K} :
     a ≠ b → Disjoint (doubleCoset a.out H K) (doubleCoset b.out (H : Set G) K) := by
