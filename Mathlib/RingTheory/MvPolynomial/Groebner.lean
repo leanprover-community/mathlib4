@@ -1281,18 +1281,12 @@ theorem existsUnique_isRemainder_of_isGroebnerBasis₀ {G : Set (MvPolynomial σ
   convert m.existsUnique_isRemainder_of_isGroebnerBasis h _ p
   simp_intro .. [or_iff_not_imp_right.mp (hG _ _)]
 
-end CommRing
-
-section Field
-
-variable {k : Type*} [Field k]
-variable {σ : Type*} {m : MonomialOrder σ}
-
 variable (m) in
-theorem exists_isGroebnerBasis_finite [Finite σ] (I : Ideal (MvPolynomial σ k)) :
-    ∃ G : Set (MvPolynomial σ k), m.IsGroebnerBasis G ↑I ∧ G.Finite := by
-  have key : (Ideal.span (α:=MvPolynomial σ k) (m.leadingTerm '' ↑I)).FG :=
-    (inferInstance : IsNoetherian _ _).noetherian _
+theorem exists_isGroebnerBasis_finite [Finite σ] [IsNoetherianRing R]
+    (I : Ideal (MvPolynomial σ R)) :
+    ∃ G : Set (MvPolynomial σ R), m.IsGroebnerBasis G ↑I ∧ G.Finite := by
+  have key : (Ideal.span (α:=MvPolynomial σ R) (m.leadingTerm '' ↑I)).FG :=
+    (inferInstance : IsNoetherianRing _).noetherian _
   -- todo: Ideal.fg_span_iff_fg_span_finset_subset
   apply (Submodule.fg_span_iff_fg_span_finset_subset _).mp at key
   simp only [Set.subset_image_iff] at key
@@ -1303,6 +1297,13 @@ theorem exists_isGroebnerBasis_finite [Finite σ] (I : Ideal (MvPolynomial σ k)
   · exact subset_trans hG hG'I
   · rwa [hG₁.image_eq]
   · simp [Set.BijOn.finite_iff_finite hG₁]
+
+end CommRing
+
+section Field
+
+variable {k : Type*} [Field k]
+variable {σ : Type*} {m : MonomialOrder σ}
 
 /-- A variant of `div_set'` in field -/
 theorem div_set'' (B : Set (MvPolynomial σ k))
