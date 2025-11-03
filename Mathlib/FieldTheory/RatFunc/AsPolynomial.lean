@@ -254,7 +254,7 @@ theorem valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X (w : 
     {p : Polynomial K} (hp : p ≠ 0) : v (p.aeval w) = v w ^ p.natDegree := by
   rw [← valuation_aeval_monomial_eq_valuation_pow _ _ hv _ _ ((leadingCoeff_ne_zero).mpr hp)]
   nth_rw 1 [as_sum_range p, map_sum]
-  apply Valuation.map_sum_eq_of_lt _ (by simp) (by aesop)
+  apply Valuation.map_sum_eq_of_lt _ (by simp)
   intro i hi
   simp only [Finset.mem_sdiff, Finset.mem_range, Nat.lt_add_one_iff, Finset.mem_singleton,
     ← lt_iff_le_and_ne] at hi
