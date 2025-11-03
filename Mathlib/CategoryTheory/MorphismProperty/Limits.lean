@@ -121,8 +121,8 @@ instance : P.pushouts.IsStableUnderCobaseChange where
     rintro _ _ _ _ _ _ _ _ h ⟨_, _, _, _, _, hp, hq⟩
     exact P.pushouts_mk (hq.paste_horiz h) hp
 
-/-- `P.HasPullbacksAlong f` means that all morphisms satisfying morphism property `P`
-have pullbacks along `f`. -/
+/-- `P.HasPullbacksAlong f` states that for any morphism satifying `P` with the same codomain
+as `f`, the pullback of that morphism along `f` exists. -/
 protected class HasPullbacksAlong {X Y : C} (f : X ⟶ Y) : Prop where
   hasPullback {W} (g : W ⟶ Y) : P g → HasPullback g f
 
