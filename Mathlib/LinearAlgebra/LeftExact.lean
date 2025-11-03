@@ -23,21 +23,13 @@ lemma lcomp_exact_of_exact_of_surjective (f : M1 →ₗ[R] M2) (g : M2 →ₗ[R]
   intro h
   simp only [LinearMap.lcomp_apply', Set.mem_range]
   refine ⟨fun hh ↦ ?_, fun ⟨y, hy⟩ ↦ ?_⟩
-  · have (x : M2) : (g.quotKerEquivOfSurjective surj).symm (g x) = Submodule.Quotient.mk x := by
-      simp [LinearEquiv.symm_apply_eq]
-    let y' := (LinearMap.ker g).liftQ h
+  · let y' := (LinearMap.ker g).liftQ h
       (le_of_eq_of_le (LinearMap.exact_iff.mp exac) (LinearMap.range_le_ker_iff.mpr hh))
     use y'.comp (LinearMap.quotKerEquivOfSurjective g surj).symm.toLinearMap
     ext x
-    simp [y', this]
+    simp [y']
   · rw [← hy, LinearMap.comp_assoc, exac.linearMap_comp_eq_zero, LinearMap.comp_zero y]
 
 lemma lcomp_injective_of_surjective (g : M2 →ₗ[R] M3) (surj : Function.Surjective g) :
-    Function.Injective (LinearMap.lcomp R N g) := by
-  rw [← LinearMap.ker_eq_bot, eq_bot_iff]
-  intro h hh
-  simp only [LinearMap.mem_ker, LinearMap.lcomp_apply'] at hh
-  simp only [Submodule.mem_bot]
-  ext x
-  rcases surj x with ⟨y, hy⟩
-  rw [← hy, LinearMap.zero_apply, ← LinearMap.comp_apply, hh, LinearMap.zero_apply]
+    Function.Injective (LinearMap.lcomp R N g) :=
+  surj.injective_linearMapComp_right
