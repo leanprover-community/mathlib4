@@ -29,110 +29,11 @@ universe v v' u u'
 
 variable (R : Type u) [CommRing R]
 
-section
-
-variable {R} {M1 M2 M3 : Type*} (N : Type*) [AddCommGroup M1] [AddCommGroup M2] [AddCommGroup M3]
-  [AddCommGroup N] [Module R M1] [Module R M2] [Module R M3] [Module R N]
-
-lemma lcomp_exact_of_exact_of_surjective (f : M1 →ₗ[R] M2) (g : M2 →ₗ[R] M3)
-    (exac : Function.Exact f g) (surj : Function.Surjective g) :
-    Function.Exact (LinearMap.lcomp R N g) (LinearMap.lcomp R N f) := by
-  intro h
-  simp only [LinearMap.lcomp_apply', Set.mem_range]
-  refine ⟨fun hh ↦ ?_, fun ⟨y, hy⟩ ↦ ?_⟩
-  · have (x : M2) : (g.quotKerEquivOfSurjective surj).symm (g x) = Submodule.Quotient.mk x := by
-      simp [LinearEquiv.symm_apply_eq]
-    let y' := (LinearMap.ker g).liftQ h
-      (le_of_eq_of_le (LinearMap.exact_iff.mp exac) (LinearMap.range_le_ker_iff.mpr hh))
-    use y'.comp (LinearMap.quotKerEquivOfSurjective g surj).symm.toLinearMap
-    ext x
-    simp [y', this]
-  · rw [← hy, LinearMap.comp_assoc, exac.linearMap_comp_eq_zero, LinearMap.comp_zero y]
-
-lemma lcomp_injective_of_surjective (g : M2 →ₗ[R] M3) (surj : Function.Surjective g) :
-    Function.Injective (LinearMap.lcomp R N g) := by
-  rw [← LinearMap.ker_eq_bot, eq_bot_iff]
-  intro h hh
-  simp only [LinearMap.mem_ker, LinearMap.lcomp_apply'] at hh
-  simp only [Submodule.mem_bot]
-  ext x
-  rcases surj x with ⟨y, hy⟩
-  rw [← hy, LinearMap.zero_apply, ← LinearMap.comp_apply, hh, LinearMap.zero_apply]
-
-end
-
 section basechange
 
 open CategoryTheory
 
 variable {R} (S : Type u') [CommRing S] [Algebra R S]
-
-section
-
-variable {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
-  [AddCommGroup N₁] [AddCommGroup N₂] [AddCommGroup N₃] [Module R M₁] [Module R M₂] [Module R M₃]
-  [Module R N₁] [Module R N₂] [Module R N₃] [Module S N₁] [Module S N₂] [Module S N₃]
-  [IsScalarTower R S N₁] [IsScalarTower R S N₂] [IsScalarTower R S N₃]
-  (h₁ : M₁ →ₗ[R] N₁) (h₂ : M₂ →ₗ[R] N₂) (h₃ : M₃ →ₗ[R] N₃)
-  {f : M₁ →ₗ[R] M₂} {g : M₂ →ₗ[R] M₃} {f' : N₁ →ₗ[S] N₂} {g' : N₂ →ₗ[S] N₃}
-  (comm1 : h₂.comp f = (f'.restrictScalars R).comp h₁)
-  (comm2 : h₃.comp g = (g'.restrictScalars R).comp h₂)
-
-include comm1 comm2 in
-lemma IsBaseChange.of_right_exact (isb1 : IsBaseChange S h₁) (isb2 : IsBaseChange S h₂)
-    (exac1 : Function.Exact f g) (surj1 : Function.Surjective g)
-    (exac2 : Function.Exact f' g') (surj2 : Function.Surjective g') : IsBaseChange S h₃ := by
-  change Function.Bijective _ at isb1 isb2 ⊢
-  refine LinearMap.bijective_of_surjective_of_bijective_of_right_exact
-    ((f.baseChange S).restrictScalars R) ((g.baseChange S).restrictScalars R)
-    (f'.restrictScalars R) (g'.restrictScalars R) _ _ _ ?_ ?_ ?_ exac2 isb1.2 isb2 ?_ surj2
-  · ext s m
-    simpa using congr(s • ($comm1 m)).symm
-  · ext s m
-    simpa using congr(s • ($comm2 m)).symm
-  · simp only [LinearMap.coe_restrictScalars, LinearMap.baseChange_eq_ltensor]
-    exact lTensor_exact S exac1 surj1
-  · simp only [LinearMap.coe_restrictScalars, LinearMap.baseChange_eq_ltensor]
-    exact LinearMap.lTensor_surjective S surj1
-
-include comm1 comm2 in
-lemma IsBaseChange.of_left_exact [Module.Flat R S] (isb2 : IsBaseChange S h₂)
-    (isb3 : IsBaseChange S h₃) (exac1 : Function.Exact f g) (inj1 : Function.Injective f)
-    (exac2 : Function.Exact f' g') (inj2 : Function.Injective f') : IsBaseChange S h₁ := by
-  change Function.Bijective _ at isb2 isb3 ⊢
-  refine LinearMap.bijective_of_bijective_of_injective_of_left_exact
-    ((f.baseChange S).restrictScalars R) ((g.baseChange S).restrictScalars R)
-    (f'.restrictScalars R) (g'.restrictScalars R) _ _ _ ?_ ?_ ?_ exac2 isb2 isb3.1 ?_ inj2
-  · ext s m
-    simpa using congr(s • ($comm1 m)).symm
-  · ext s m
-    simpa using congr(s • ($comm2 m)).symm
-  · simp only [LinearMap.coe_restrictScalars, LinearMap.baseChange_eq_ltensor]
-    exact Module.Flat.lTensor_exact S exac1
-  · simp only [LinearMap.coe_restrictScalars, LinearMap.baseChange_eq_ltensor]
-    exact Module.Flat.lTensor_preserves_injective_linearMap f inj1
-
-lemma IsBaseChange.of_equiv_left (f : M₁ ≃ₗ[R] M₂) (f' : N₁ ≃ₗ[S] N₂)
-    (comm1 : h₂.comp f.toLinearMap = (f'.restrictScalars R).comp h₁)
-    (isb1 : IsBaseChange S h₁) : IsBaseChange S h₂ :=
-  IsBaseChange.of_right_exact S (f := (0 : Unit →ₗ[R] M₁)) (f' := (0 : Unit →ₗ[S] N₁))
-    (g := f) (g' := f') 0 h₁ h₂ (by simp) comm1 (show Function.Bijective _ from by simp) isb1
-      (fun y ↦ (by simpa using eq_comm)) f.bijective.2 (fun y ↦ (by simpa using eq_comm))
-        f'.bijective.2
-
-lemma IsBaseChange.of_equiv_right (f : M₁ ≃ₗ[R] M₂) (f' : N₁ ≃ₗ[S] N₂)
-    (comm1 : h₂.comp f.toLinearMap = (f'.restrictScalars R).comp h₁)
-    (isb2 : IsBaseChange S h₂) : IsBaseChange S h₁ := by
-  refine IsBaseChange.of_equiv_left S h₂ h₁ f.symm f'.symm (LinearMap.ext fun y ↦ ?_) isb2
-  obtain ⟨y, rfl⟩ := f.surjective y
-  exact f'.injective (by simpa using congr($comm1 y).symm)
-
-lemma IsBaseChange.comp_equiv {M1 M2 N : Type*} [AddCommGroup M1] [AddCommGroup M2] [AddCommGroup N]
-    [Module R M1] [Module R M2] [Module R N] [Module S N] [IsScalarTower R S N] (e : M1 ≃ₗ[R] M2)
-    (f : M2 →ₗ[R] N) (isb : IsBaseChange S f) : IsBaseChange S (f.comp e.toLinearMap) :=
-  IsBaseChange.of_equiv_right S (f.comp e.toLinearMap) f e 1 (LinearMap.ext fun y ↦ by simp) isb
-
-end
 
 section
 
@@ -233,7 +134,7 @@ instance : (extendScalars' R S).Additive where
     ext x
     simp
 
-lemma extendScalars'_map_shortExact [Module.Flat R S]
+lemma extendScalars'_map_exact [Module.Flat R S]
     (T : ShortComplex (ModuleCat.{v} R)) (h : T.Exact) :
     (T.map (extendScalars' R S)).Exact := by
   have exac : Function.Exact (T.f.hom.baseChange S) (T.g.hom.baseChange S) :=
@@ -250,11 +151,11 @@ lemma extendScalars'_map_shortExact [Module.Flat R S]
   exact (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr this
 
 instance [Module.Flat R S] : Limits.PreservesFiniteLimits (extendScalars' R S) := by
-  have := (((extendScalars' R S).exact_tfae.out 1 3).mp (extendScalars'_map_shortExact S))
+  have := (((extendScalars' R S).exact_tfae.out 1 3).mp (extendScalars'_map_exact S))
   exact this.1
 
 instance [Module.Flat R S] : Limits.PreservesFiniteColimits (extendScalars' R S) := by
-  have := (((extendScalars' R S).exact_tfae.out 1 3).mp (extendScalars'_map_shortExact S))
+  have := (((extendScalars' R S).exact_tfae.out 1 3).mp (extendScalars'_map_exact S))
   exact this.2
 
 namespace Algebra'
