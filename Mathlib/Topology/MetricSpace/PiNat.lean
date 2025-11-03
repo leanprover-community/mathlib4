@@ -813,13 +813,7 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
         ∑' i, min (2⁻¹ ^ encode i) (edist (x i) (z i))
     _ ≤ ∑' i, (min (2⁻¹ ^ encode i) (edist (x i) (y i)) +
          min (2⁻¹ ^ encode i) (edist (y i) (z i))) := by
-      gcongr with n
-      calc  min (2⁻¹ ^ encode n) (edist (x n) (z n))
-        _ ≤ min (2⁻¹ ^ encode n) (edist (x n) (y n) + edist (y n) (z n)) := by
-          gcongr; exact edist_triangle _ _ _
-        _ ≤ min (2⁻¹ ^ encode n) (edist (x n) (y n)) +
-              min (2⁻¹ ^ encode n) (edist (y n) (z n)) := by
-          rw [min_add_distrib]; exact min_le_right ..
+      gcongr with n; grw [edist_triangle _ (y n), min_add_distrib, min_le_right]
     _ = _ := ENNReal.tsum_add ..
   toUniformSpace := Pi.uniformSpace _
   uniformity_edist := by
@@ -905,7 +899,7 @@ lemma dist_summable (x y : ∀ i, F i) :
     simpa [one_div] using summable_geometric_two_encode
   exact le_min (by positivity) dist_nonneg
 
-lemma min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) : 
+lemma min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) :
     min (2⁻¹ ^ encode i) (dist (x i) (y i)) ≤ dist x y :=
   (dist_summable x y).le_tsum i fun j _ => le_min (by simp) dist_nonneg
 
