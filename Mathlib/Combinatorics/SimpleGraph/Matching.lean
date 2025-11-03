@@ -214,7 +214,7 @@ theorem IsMatching.support_eq_verts (h : M.IsMatching) : M.support = M.verts := 
 
 theorem isMatching_iff_forall_degree [∀ v, Fintype (M.neighborSet v)] :
     M.IsMatching ↔ ∀ v : V, v ∈ M.verts → M.degree v = 1 := by
-  simp only [degree_eq_one_iff_unique_adj, IsMatching]
+  simp only [degree_eq_one_iff_existsUnique_adj, IsMatching]
 
 theorem IsMatching.even_card [Fintype M.verts] (h : M.IsMatching) : Even M.verts.toFinset.card := by
   classical
@@ -232,7 +232,7 @@ theorem isPerfectMatching_iff : M.IsPerfectMatching ↔ ∀ v, ∃! w, M.Adj v w
 
 theorem isPerfectMatching_iff_forall_degree [∀ v, Fintype (M.neighborSet v)] :
     M.IsPerfectMatching ↔ ∀ v, M.degree v = 1 := by
-  simp [degree_eq_one_iff_unique_adj, isPerfectMatching_iff]
+  simp [degree_eq_one_iff_existsUnique_adj, isPerfectMatching_iff]
 
 theorem IsPerfectMatching.even_card [Fintype V] (h : M.IsPerfectMatching) :
     Even (Fintype.card V) := by

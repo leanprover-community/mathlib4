@@ -490,8 +490,7 @@ theorem ppow_zero {f : ArithmeticFunction R} : f.ppow 0 = ζ := by rw [ppow, dif
 
 @[simp]
 theorem ppow_one {f : ArithmeticFunction R} : f.ppow 1 = f := by
-  simp only [ppow, pow_one]
-  rfl
+  ext; simp [ppow]
 
 @[simp]
 theorem ppow_apply {f : ArithmeticFunction R} {k x : ℕ} (kpos : 0 < k) : f.ppow k x = f x ^ k := by
