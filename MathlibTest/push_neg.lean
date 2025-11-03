@@ -225,7 +225,7 @@ example {p q : Nat} : ¬ g.Adj p q := by
 
 end no_proj
 
--- text that binder names are preserved by `push_neg`
+-- test that binder names are preserved by `push_neg`
 /-- info: ∀ (a b : ℕ), ∃ c d, a + b ≠ c + d -/
 #guard_msgs in
 #push_neg ¬ ∃ a b : Nat, ∀ c d : Nat, a + b = c + d
