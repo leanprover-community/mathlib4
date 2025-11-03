@@ -212,8 +212,7 @@ theorem AnalyticWithinAt.eventually_analyticWithinAt
     (hf : AnalyticWithinAt 𝕜 f s x) : ∀ᶠ y in 𝓝[s] x, AnalyticWithinAt 𝕜 f s y := by
   obtain ⟨g, hfg, hga⟩ := analyticWithinAt_iff_exists_analyticAt.mp hf
   simp only [Filter.EventuallyEq, eventually_nhdsWithin_iff] at hfg ⊢
-  filter_upwards [hfg.eventually_nhds, hga.eventually_analyticAt]
-  intro z hfgz hgaz hz
+  filter_upwards [hfg.eventually_nhds, hga.eventually_analyticAt] with z hfgz hgaz hz
   refine analyticWithinAt_iff_exists_analyticAt.mpr ⟨g, ?_, hgaz⟩
   rw [← eventually_nhdsWithin_iff] at hfgz
   refine hfgz.filter_mono (nhdsWithin_mono _ ?_)
