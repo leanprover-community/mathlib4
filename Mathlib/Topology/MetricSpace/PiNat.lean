@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 import Mathlib.Topology.MetricSpace.HausdorffDistance
-import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Topological study of spaces `Π (n : ℕ), E n`
@@ -668,6 +667,7 @@ theorem exists_retraction_subtype_of_isClosed {s : Set (∀ n, E n)} (hs : IsClo
 end PiNat
 
 open PiNat
+
 /-- Any nonempty complete second countable metric space is the continuous image of the
 fundamental space `ℕ → ℕ`. For a version of this theorem in the context of Polish spaces, see
 `exists_nat_nat_continuous_surjective_of_polishSpace`. -/
@@ -919,8 +919,8 @@ theorem dist_le_dist_pi_of_dist_lt (h : dist x y < 2⁻¹ ^ encode i) :
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`. -/
 protected def pseudoMetricSpace : PseudoMetricSpace (∀ i, F i) :=
-  PseudoEMetricSpace.toPseudoMetricSpaceOfDist' dist
-    (fun x y ↦ by dsimp [dist_eq_tsum]; positivity) fun x y ↦ by
+  PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
+    (fun x y ↦ by simp [dist_eq_tsum]; positivity) fun x y ↦ by
       rw [edist_eq_tsum, dist_eq_tsum,
         ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) (dist_summable ..)]
       simp [edist, ENNReal.inv_pow]
