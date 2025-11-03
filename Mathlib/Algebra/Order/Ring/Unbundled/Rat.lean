@@ -22,7 +22,7 @@ For the bundled `LinearOrderedCommRing` instance on `ℚ`, see `Algebra.Order.Ri
 rat, rationals, field, ℚ, numerator, denominator, num, denom, order, ordering
 -/
 
-assert_not_exists OrderedCommMonoid Field Finset Set.Icc GaloisConnection
+assert_not_exists IsOrderedMonoid Field Finset Set.Icc GaloisConnection
 
 namespace Rat
 
@@ -41,6 +41,11 @@ theorem ofScientific_nonneg (m : ℕ) (s : Bool) (e : ℕ) : 0 ≤ Rat.ofScienti
 instance _root_.NNRatCast.toOfScientific {K} [NNRatCast K] : OfScientific K where
   ofScientific (m : ℕ) (b : Bool) (d : ℕ) :=
     NNRat.cast ⟨Rat.ofScientific m b d, ofScientific_nonneg m b d⟩
+
+theorem _root_.NNRatCast.toOfScientific_def {K} [NNRatCast K] (m : ℕ) (b : Bool) (d : ℕ) :
+    (OfScientific.ofScientific m b d : K) =
+      NNRat.cast ⟨(OfScientific.ofScientific m b d : ℚ), ofScientific_nonneg m b d⟩ :=
+  rfl
 
 /-- Casting a scientific literal via `ℚ≥0` is the same as casting directly. -/
 @[simp, norm_cast]
@@ -120,7 +125,10 @@ instance : AddLeftMono ℚ where
 
 theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d) :
     (a : ℚ) / b < c / d ↔ a * d < c * b := by
-  grind [lt_iff_le_not_ge, Rat.divInt_le_divInt, div_def', num_intCast, den_intCast]
+  simp only [lt_iff_le_not_ge]
+  apply and_congr
+  · simp [div_def', Rat.divInt_le_divInt b_pos d_pos]
+  · simp [div_def', Rat.divInt_le_divInt d_pos b_pos]
 
 theorem lt_one_iff_num_lt_denom {q : ℚ} : q < 1 ↔ q.num < q.den := by simp [Rat.lt_iff]
 

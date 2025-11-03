@@ -605,9 +605,9 @@ lemma disjoint_genEigenspace [NoZeroSMulDivisors R M]
       (isNilpotent_restrict_of_le inf_le_right _)
       (isNilpotent_restrict_of_le inf_le_left _)
     · ext; simp [f₁, f₂, smul_sub, sub_sub, smul_comm μ₁, add_sub_left_comm]
-    apply mapsTo_genEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f _)
-    apply isNilpotent_restrict_genEigenspace_nat
-    apply mapsTo_genEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f _)
+    · apply mapsTo_genEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f _)
+    · apply isNilpotent_restrict_genEigenspace_nat
+    · apply mapsTo_genEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f _)
     apply isNilpotent_restrict_genEigenspace_nat
   have hf₁₂ : f₂ - f₁ = algebraMap R (End R p) (μ₁ - μ₂) := by ext; simp [f₁, f₂]
   rw [hf₁₂, IsNilpotent.map_iff (FaithfulSMul.algebraMap_injective R (End R p)),
@@ -673,7 +673,7 @@ theorem independent_maxGenEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
 any eigenspace has trivial intersection with the span of all the other eigenspaces. -/
 theorem eigenspaces_iSupIndep [NoZeroSMulDivisors R M] (f : End R M) :
     iSupIndep f.eigenspace :=
-  (f.independent_genEigenspace 1).mono fun _ ↦ le_rfl
+  f.independent_genEigenspace 1
 
 /-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
 independent. -/

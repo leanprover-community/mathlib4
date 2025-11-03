@@ -12,7 +12,7 @@ import Mathlib.RepresentationTheory.Invariants
 # The low-degree homology of a `k`-linear `G`-representation
 
 Let `k` be a commutative ring and `G` a group. This file contains specialised API for
-the cycles and group homology  of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
+the cycles and group homology of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
 In `Mathlib/RepresentationTheory/Homological/GroupHomology/Basic.lean`, we define the `n`th group
 homology of `A` to be the homology of a complex `inhomogeneousChains A`, whose objects are
 `(Fin n →₀ G) → A`; this is unnecessarily unwieldy in low degree.
@@ -93,7 +93,7 @@ theorem d₁₀_single_one (a : A) : d₁₀ A (single 1 a) = 0 := by
   simp [d₁₀]
 
 theorem d₁₀_single_inv (g : G) (a : A) :
-    d₁₀ A (single g⁻¹ a) = - d₁₀ A (single g (A.ρ g a)) := by
+    d₁₀ A (single g⁻¹ a) = -d₁₀ A (single g (A.ρ g a)) := by
   simp [d₁₀]
 
 theorem range_d₁₀_eq_coinvariantsKer :

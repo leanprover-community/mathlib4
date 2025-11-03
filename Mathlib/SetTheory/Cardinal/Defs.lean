@@ -273,7 +273,7 @@ instance instPowCardinal : Pow Cardinal.{u} Cardinal.{u} :=
 theorem power_def (α β : Type u) : #α ^ #β = #(β → α) :=
   rfl
 
-theorem mk_arrow (α : Type u) (β : Type v) : #(α → β) = (lift.{u} #β^lift.{v} #α) :=
+theorem mk_arrow (α : Type u) (β : Type v) : #(α → β) = (lift.{u} #β ^ lift.{v} #α) :=
   mk_congr (Equiv.ulift.symm.arrowCongr Equiv.ulift.symm)
 
 @[simp]
@@ -380,7 +380,7 @@ theorem lift_sum {ι : Type u} (f : ι → Cardinal.{v}) :
     Equiv.ulift.trans <|
       Equiv.sigmaCongrRight fun a =>
     -- Porting note: Inserted universe hint .{_,_,v} below
-        Nonempty.some <| by rw [← lift_mk_eq.{_,_,v}, mk_out, mk_out, lift_lift]
+        Nonempty.some <| by rw [← lift_mk_eq.{_, _, v}, mk_out, mk_out, lift_lift]
 
 theorem sum_nat_eq_add_sum_succ (f : ℕ → Cardinal.{u}) :
     Cardinal.sum f = f 0 + Cardinal.sum fun i => f (i + 1) := by
