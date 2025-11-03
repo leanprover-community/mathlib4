@@ -9,7 +9,6 @@ import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Order.Filter.AtTopBot.Interval
 import Mathlib.Topology.Algebra.InfiniteSum.Defs
 import Mathlib.Topology.Algebra.Monoid.Defs
-import Mathlib.Data.Pi.Interval
 import Mathlib.Tactic.FinCases
 
 
