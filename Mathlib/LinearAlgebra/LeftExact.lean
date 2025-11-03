@@ -13,6 +13,8 @@ import Mathlib.LinearAlgebra.Isomorphisms
 
 -/
 
+namespace LinearMap
+
 variable {R : Type*} [CommRing R] {M1 M2 M3 : Type*} (N : Type*)
   [AddCommGroup M1] [AddCommGroup M2] [AddCommGroup M3] [AddCommGroup N]
   [Module R M1] [Module R M2] [Module R M3] [Module R N]
@@ -30,6 +32,4 @@ lemma lcomp_exact_of_exact_of_surjective (f : M1 →ₗ[R] M2) (g : M2 →ₗ[R]
     simp [y']
   · rw [← hy, LinearMap.comp_assoc, exac.linearMap_comp_eq_zero, LinearMap.comp_zero y]
 
-lemma lcomp_injective_of_surjective (g : M2 →ₗ[R] M3) (surj : Function.Surjective g) :
-    Function.Injective (LinearMap.lcomp R N g) :=
-  surj.injective_linearMapComp_right
+end LinearMap
