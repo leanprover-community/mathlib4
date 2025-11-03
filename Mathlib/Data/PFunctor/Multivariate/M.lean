@@ -80,7 +80,7 @@ instance M.Path.inhabited (x : P.last.M) {i} [Inhabited (P.drop.B x.head i)] :
       (PFunctor.M.casesOn' x
         (r := fun _ => PFunctor.M.dest x = ⟨a, f⟩)
         <| by
-        intros; simp [a, PFunctor.M.dest_mk, PFunctor.M.children_mk]; rfl)
+        intros; simp [a]; rfl)
       _ default⟩
 
 /-- Polynomial functor of the M-type of `P`. `A` is a data-less
@@ -257,7 +257,7 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   rw [map_eq, map_eq] at h
   injection h with h₀ h₁
   subst ay
-  simp? at h₁ says simp only [heq_eq_eq] at h₁
+  simp only [heq_eq_eq] at h₁
   have Hdrop : dropFun fx = dropFun fy := by
     replace h₁ := congr_arg dropFun h₁
     simpa using h₁

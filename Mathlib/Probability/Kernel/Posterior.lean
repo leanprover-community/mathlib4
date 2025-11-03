@@ -286,6 +286,38 @@ lemma posterior_eq_withDensity (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) 
     with ω h h_eq hωs
   rw [← h, h_eq, Kernel.const_apply]
 
+lemma posterior_eq_withDensity_of_countable {Ω : Type*} [Countable Ω] [MeasurableSpace Ω]
+    [Nonempty Ω] [StandardBorelSpace Ω] (κ : Kernel Ω 𝓧) [IsFiniteKernel κ]
+    (μ : Measure Ω) [IsFiniteMeasure μ] :
+    ∀ᵐ x ∂(κ ∘ₘ μ), (κ†μ) x = μ.withDensity (fun ω ↦ (κ ω).rnDeriv (κ ∘ₘ μ) x) := by
+  have h_rnDeriv ω := Kernel.rnDeriv_eq_rnDeriv_measure (κ := κ) (η := Kernel.const Ω (κ ∘ₘ μ))
+    (a := ω)
+  simp only [Filter.EventuallyEq, Kernel.const_apply] at h_rnDeriv
+  rw [← ae_all_iff] at h_rnDeriv
+  filter_upwards [posterior_eq_withDensity Measure.absolutelyContinuous_comp_of_countable,
+    h_rnDeriv] with x hx hx_all
+  simp_rw [hx, hx_all]
+
 end CountableOrCountablyGenerated
+
+section Bool
+
+lemma posterior_boolKernel_apply_false (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (π : Measure Bool) [IsFiniteMeasure π] :
+    ∀ᵐ x ∂Kernel.boolKernel μ ν ∘ₘ π, ((Kernel.boolKernel μ ν)†π) x {false}
+      = π {false} * μ.rnDeriv (Kernel.boolKernel μ ν ∘ₘ π) x := by
+  filter_upwards [posterior_eq_withDensity_of_countable (Kernel.boolKernel μ ν) π] with x hx
+  rw [hx]
+  simp
+
+lemma posterior_boolKernel_apply_true (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (π : Measure Bool) [IsFiniteMeasure π] :
+    ∀ᵐ x ∂Kernel.boolKernel μ ν ∘ₘ π, ((Kernel.boolKernel μ ν)†π) x {true}
+      = π {true} * ν.rnDeriv (Kernel.boolKernel μ ν ∘ₘ π) x := by
+  filter_upwards [posterior_eq_withDensity_of_countable (Kernel.boolKernel μ ν) π] with x hx
+  rw [hx]
+  simp
+
+end Bool
 
 end ProbabilityTheory

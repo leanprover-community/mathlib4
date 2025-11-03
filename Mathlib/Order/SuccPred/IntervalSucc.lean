@@ -28,6 +28,27 @@ open Set Order
 
 variable {α β : Type*} [LinearOrder α]
 
+theorem biUnion_Ici_Ico_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β] {f : α → β}
+    {a : α} (hf : ∀ i ∈ Ici a, f a ≤ f i) (h2f : ¬BddAbove (f '' Ici a)) :
+    ⋃ i ∈ Ici a, Ico (f i) (f (succ i)) = Ici (f a) := by
+  apply subset_antisymm <|
+    iUnion₂_subset fun i hi ↦ Ico_subset_Ico_left (hf i hi) |>.trans Ico_subset_Ici_self
+  intro b hb
+  contrapose! h2f
+  use b
+  simp only [upperBounds, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+  exact Succ.rec (P := fun i _ ↦ f i ≤ b) hb (by aesop)
+
+theorem biUnion_Ici_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β] {f : α → β}
+    {a : α} (hf : ∀ i ∈ Ici a, f a ≤ f i) (h2f : ¬BddAbove (f '' Ici a)) :
+    ⋃ i ∈ Ici a, Ioc (f i) (f (succ i)) = Ioi (f a) := by
+  apply subset_antisymm <|
+    iUnion₂_subset fun i hi ↦ Ioc_subset_Ioc_left (hf i hi) |>.trans Ioc_subset_Ioi_self
+  intro b hb
+  contrapose! h2f
+  suffices ∀ i, a ≤ i → f i < b from ⟨b, by aesop (add simp [upperBounds, le_of_lt])⟩
+  exact Succ.rec (P := fun i _ ↦ f i < b) hb (by aesop)
+
 namespace Monotone
 
 /-- If `α` is a linear archimedean succ order and `β` is a linear order, then for any monotone

@@ -13,7 +13,7 @@ import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 # Gagliardo-Nirenberg-Sobolev inequality
 
 In this file we prove the Gagliardo-Nirenberg-Sobolev inequality.
-This states that for compactly supported `C¹`-functions between finite dimensional vector spaces,
+This states that for compactly supported `C¹`-functions between finite-dimensional vector spaces,
 we can bound the `L^p`-norm of `u` by the `L^q` norm of the derivative of `u`.
 The bound is up to a constant that is independent of the function `u`.
 Let `n` be the dimension of the domain.
@@ -132,11 +132,10 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
             * ∏ j ∈ insert i s, (∫⋯∫⁻_{j}, f ∂μ) (update x i t) ^ p)  ∂ (μ i)) ∂μ := by
           -- pull out the integral over `xᵢ`
           rw [lmarginal_insert' _ _ hi]
-          · congr! with x t
-            simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
+          · simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
           · change Measurable (fun x ↦ _)
             simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
-            refine (hf.pow_const _).mul <| Finset.measurable_prod _ ?_
+            refine (hf.pow_const _).mul <| Finset.measurable_fun_prod _ ?_
             exact fun _ _ ↦ hf.lmarginal μ |>.pow_const _
     _ ≤ T μ p (∫⋯∫⁻_{i}, f ∂μ) s := lmarginal_mono (s := s) (fun x ↦ ?_)
   -- The remainder of the computation happens within an `|s|`-fold iterated integral
@@ -165,7 +164,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
                 exact Iff.mpr Finset.mem_singleton rfl
               simp_rw [this]
               rw [lintegral_const_mul]
-              exact (hF₀.pow_const _).mul <| Finset.measurable_prod _ fun _ _ ↦ hF₁.pow_const _
+              exact (hF₀.pow_const _).mul <| Finset.measurable_fun_prod _ fun _ _ ↦ hF₁.pow_const _
     _ ≤ (∫⋯∫⁻_{i}, f ∂μ) x ^ p *
           ((∫⁻ t, f (X t) ∂μ i) ^ (1 - k * p)
           * ∏ j ∈ s, (∫⁻ t, (∫⋯∫⁻_{j}, f ∂μ) (X t) ∂μ i) ^ p) := by
@@ -186,7 +185,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
               · rw [lmarginal_singleton]
               refine prod_congr rfl fun j hj => ?_
               have hi' : i ∉ ({j} : Finset ι) := by
-                simp only [Finset.mem_singleton, Finset.mem_insert, Finset.mem_compl] at hj ⊢
+                simp only [Finset.mem_singleton] at hj ⊢
                 exact fun h ↦ hi (h ▸ hj)
               rw [lmarginal_insert _ hf hi']
     _ = (∫⋯∫⁻_{i}, f ∂μ) x ^ (p + (1 - k * p)) *  ∏ j ∈ s, (∫⋯∫⁻_{i, j}, f ∂μ) x ^ p := by
@@ -206,7 +205,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
                   rw [Finset.union_comm]
                   rfl
                 · rw [Finset.disjoint_singleton]
-                  simp only [Finset.mem_insert, Finset.mem_compl] at hj
+                  simp only at hj
                   exact fun h ↦ hi (h ▸ hj)
 
 /-- Auxiliary result for the grid-lines lemma.  Given a nonnegative function on a finitary product
@@ -277,11 +276,12 @@ theorem lintegral_prod_lintegral_pow_le [Fintype ι] [∀ i, SigmaFinite (μ i)]
   have h0 : (1 : ℝ) < #ι := by norm_cast; exact Fintype.one_lt_card
   have h1 : (0 : ℝ) < #ι - 1 := by linarith
   have h2 : 0 ≤ ((1 : ℝ) / (#ι - 1 : ℝ)) := by positivity
-  have h3 : (#ι - 1 : ℝ) * ((1 : ℝ) / (#ι - 1 : ℝ)) ≤ 1 := by field_simp
-  have h4 : p = 1 + 1 / (↑#ι - 1) := by field_simp; rw [mul_comm, hp.sub_one_mul_conj]
+  have h3 : (#ι - 1 : ℝ) * ((1 : ℝ) / (#ι - 1 : ℝ)) ≤ 1 := by field_simp; rfl
+  have h4 : p = 1 + 1 / (↑#ι - 1) := by simp [field]; rw [mul_comm, hp.sub_one_mul_conj]
   rw [h4]
   convert lintegral_mul_prod_lintegral_pow_le μ h2 h3 hf using 2
   field_simp
+  simp
 
 end DecidableEq
 
@@ -335,10 +335,8 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux [Fintype ι]
         · exact hu.comp (by convert contDiff_update 1 x i)
         · exact h2u.comp_isClosedEmbedding (isClosedEmbedding_update x i)
     _ ≤ ∫⁻ xᵢ, ‖fderiv ℝ u (update x i xᵢ)‖ₑ := ?_
-  gcongr
+  gcongr with y
   · exact Measure.restrict_le_self
-  intro y
-  dsimp
   -- bound the derivative which appears
   calc ‖deriv (u ∘ update x i) y‖ₑ = ‖fderiv ℝ u (update x i y) (deriv (update x i) y)‖ₑ := by
         rw [fderiv_comp_deriv _ (hu.differentiable le_rfl).differentiableAt
@@ -383,8 +381,6 @@ theorem lintegral_pow_le_pow_lintegral_fderiv {u : E → F}
   have hιcard : #ι = finrank ℝ E := Fintype.card_fin (finrank ℝ E)
   have : finrank ℝ E = finrank ℝ (ι → ℝ) := by simp [hιcard]
   let e : E ≃L[ℝ] ι → ℝ := ContinuousLinearEquiv.ofFinrankEq this
-  have : IsAddHaarMeasure ((volume : Measure (ι → ℝ)).map e.symm) :=
-    (e.symm : (ι → ℝ) ≃+ E).isAddHaarMeasure_map _ e.symm.continuous e.symm.symm.continuous
   have hp : Real.HolderConjugate #ι p := by rwa [hιcard]
   have h0p : 0 ≤ p := hp.symm.nonneg
   let c := addHaarScalarFactor μ ((volume : Measure (ι → ℝ)).map e.symm)
@@ -489,25 +485,23 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
   have h1n : 1 ≤ (n : ℝ≥0) := hn.lt.le
   have h2n : (0 : ℝ) < n - 1 := by simp_rw [sub_pos]; exact hn.coe.lt
   have hnp : (0 : ℝ) < n - p := by simp_rw [sub_pos]; exact h2p
-  rcases hp.eq_or_lt with rfl|hp
+  rcases hp.eq_or_lt with rfl | hp
   -- the case `p = 1`
   · convert eLpNorm_le_eLpNorm_fderiv_one μ hu h2u hn using 2
     · suffices (p' : ℝ) = n' by simpa using this
       rw [← inv_inj, hp']
-      field_simp [n', NNReal.conjExponent]
+      simp [field, n', NNReal.conjExponent, *]
     · norm_cast
       simp_rw [n', n, eLpNormLESNormFDerivOfEqInnerConst]
+      simp only [n, NNReal.coe_one] at hnp
       field_simp
+      simp
   -- the case `p > 1`
   let q := Real.conjExponent p
   have hq : Real.HolderConjugate p q := .conjExponent hp
   have h0p : p ≠ 0 := zero_lt_one.trans hp |>.ne'
   have h1p : (p : ℝ) ≠ 1 := hq.lt.ne'
   have h3p : (p : ℝ) - 1 ≠ 0 := sub_ne_zero_of_ne h1p
-  have h0p' : p' ≠ 0 := by
-    suffices 0 < (p' : ℝ) from (show 0 < p' from this) |>.ne'
-    rw [← inv_pos, hp', sub_pos]
-    exact inv_strictAnti₀ hq.pos h2p
   have h2q : 1 / n' - 1 / q = 1 / p' := by
     simp_rw -zeta [one_div, hp']
     rw [← hq.one_sub_inv, ← hn.coe.one_sub_inv, sub_sub_sub_cancel_left]
@@ -519,18 +513,18 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
     exact hn.coe.pos
   have h2γ : γ * n' = p' := by
     rw [← NNReal.coe_inj, ← inv_inj, hp', NNReal.coe_mul, h0γ, hn.coe.conjugate_eq]
-    field_simp; ring
+    simp [field]
   have h3γ : (γ - 1) * q = p' := by
     rw [← inv_inj, hp', h0γ, hq.conjugate_eq]
     have : (p : ℝ) * (n - 1) - (n - p) = n * (p - 1) := by ring
-    field_simp [this]; ring
+    simp [field, this]
   have h4γ : (γ : ℝ) ≠ 0 := (zero_lt_one.trans h1γ).ne'
   by_cases h3u : ∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ = 0
-  · rw [eLpNorm_nnreal_eq_lintegral h0p', h3u, ENNReal.zero_rpow_of_pos] <;> positivity
+  · rw [eLpNorm_nnreal_eq_lintegral hp'0, h3u, ENNReal.zero_rpow_of_pos] <;> positivity
   have h4u : ∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ ≠ ∞ := by
     refine lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top
-      ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr h0p') ?_ |>.ne
-    rw [← eLpNorm_nnreal_eq_eLpNorm' h0p']
+      ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr hp'0) ?_ |>.ne
+    rw [← eLpNorm_nnreal_eq_eLpNorm' hp'0]
     exact hu.continuous.memLp_of_hasCompactSupport (μ := μ) h2u |>.eLpNorm_lt_top
   have h5u : (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ 0 :=
     ENNReal.rpow_pos (pos_iff_ne_zero.mpr h3u) h4u |>.ne'
@@ -543,15 +537,14 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
   have :=
   calc (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / (n' : ℝ)) = eLpNorm v n' μ := by
         rw [← h2γ, eLpNorm_nnreal_eq_lintegral hn.symm.pos.ne']
-        simp (discharger := positivity) [v, Real.enorm_rpow_of_nonneg, ENNReal.rpow_mul,
-          ← ENNReal.coe_rpow_of_nonneg]
+        simp (discharger := positivity) [v, Real.enorm_rpow_of_nonneg, ENNReal.rpow_mul]
     _ ≤ C * eLpNorm (fderiv ℝ v) 1 μ := eLpNorm_le_eLpNorm_fderiv_one μ hv h2v hn
     _ = C * ∫⁻ x, ‖fderiv ℝ v x‖ₑ ∂μ := by rw [eLpNorm_one_eq_lintegral_enorm]
     _ ≤ C * γ * ∫⁻ x, ‖u x‖ₑ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖ₑ ∂μ := by
       rw [mul_assoc, ← lintegral_const_mul γ]
-      gcongr
-      simp_rw [← mul_assoc]
-      exact enorm_fderiv_norm_rpow_le (hu.differentiable le_rfl) h1γ
+      · gcongr
+        simp_rw [← mul_assoc]
+        exact enorm_fderiv_norm_rpow_le (hu.differentiable le_rfl) h1γ
       dsimp [enorm]
       fun_prop
     _ ≤ C * γ * ((∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) *
@@ -567,7 +560,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
       (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) := by ring
   calc
     eLpNorm u p' μ
-      = (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / (p' : ℝ)) := eLpNorm_nnreal_eq_lintegral h0p'
+      = (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / (p' : ℝ)) := eLpNorm_nnreal_eq_lintegral hp'0
     _ ≤ C * γ * (∫⁻ x, ‖fderiv ℝ u x‖ₑ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) := by
       rwa [← h2q, ENNReal.rpow_sub _ _ h3u h4u, ENNReal.div_le_iff h5u h6u]
     _ = eLpNormLESNormFDerivOfEqInnerConst μ p *  eLpNorm (fderiv ℝ u) (↑p) μ := by
@@ -596,7 +589,7 @@ with Haar measure, let `1 < p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
 Then the `Lᵖ'` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
 the Fréchet derivative of `u`.
 
-This is the version where the codomain of `u` is a finite dimensional normed space.
+This is the version where the codomain of `u` is a finite-dimensional normed space.
 -/
 theorem eLpNorm_le_eLpNorm_fderiv_of_eq [FiniteDimensional ℝ F]
     {u : E → F} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u)
@@ -652,7 +645,7 @@ function `u` supported in a bounded set `s` in a normed space `E` of finite dime
 Then the `L^q` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
 the Fréchet derivative of `u`.
 
-Note: The codomain of `u` needs to be a finite dimensional normed space.
+Note: The codomain of `u` needs to be a finite-dimensional normed space.
 -/
 theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
     {u : E → F} {s : Set E} (hu : ContDiff ℝ 1 u) (h2u : u.support ⊆ s)
@@ -666,10 +659,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
   have hp' : p'⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹ := by
     rw [inv_inv, NNReal.coe_sub]
     · simp
-    · #adaptation_note /-- nightly-2024-11-20
-      This should just be `gcongr`, but this is not working as of nightly-2024-11-20.
-      Possibly related to #19262 (since this proof fails at `with_reducible_and_instances`). -/
-      exact inv_anti₀ (by positivity) h2p.le
+    · gcongr
   have : (q : ℝ≥0∞) ≤ p' := by
     have H : (p' : ℝ)⁻¹ ≤ (↑q)⁻¹ := trans hp' hpq
     norm_cast at H ⊢
@@ -677,10 +667,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
     · dsimp
       have : 0 < p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹ := by
         simp only [tsub_pos_iff_lt]
-        #adaptation_note /-- nightly-2024-11-20
-        This should just be `gcongr`, but this is not working as of nightly-2024-11-20.
-        Possibly related to #19262 (since this proof fails at `with_reducible_and_instances`). -/
-        exact inv_strictAnti₀ (by positivity) h2p
+        gcongr
       positivity
     · positivity
   set t := (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ)
@@ -710,7 +697,7 @@ function `u` supported in a bounded set `s` in a normed space `E` of finite dime
 Then the `Lᵖ` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
 the Fréchet derivative of `u`.
 
-Note: The codomain of `u` needs to be a finite dimensional normed space.
+Note: The codomain of `u` needs to be a finite-dimensional normed space.
 -/
 theorem eLpNorm_le_eLpNorm_fderiv [FiniteDimensional ℝ F]
     {u : E → F} {s : Set E} (hu : ContDiff ℝ 1 u) (h2u : u.support ⊆ s)

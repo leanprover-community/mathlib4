@@ -30,13 +30,14 @@ This file gathers various results about finite modules over a local ring `(R, �
   `l` is a split injection if and only if `k ⊗ l` is a (split) injection.
 -/
 
-universe u
+open Module
 
-variable {R} [CommRing R]
+universe u
+variable {R M N P : Type*} [CommRing R]
 
 section
 
-variable {M N} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+variable [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
 open Function (Injective Surjective Exact)
 open IsLocalRing TensorProduct
@@ -44,7 +45,7 @@ open IsLocalRing TensorProduct
 local notation "k" => ResidueField R
 local notation "𝔪" => maximalIdeal R
 
-variable {P} [AddCommGroup P] [Module R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
+variable [AddCommGroup P] [Module R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
 
 namespace IsLocalRing
 
@@ -111,21 +112,6 @@ lemma Module.mem_support_iff_nontrivial_residueField_tensorProduct [Module.Finit
     ← not_iff_not, not_nontrivial_iff_subsingleton, not_nontrivial_iff_subsingleton,
     IsLocalRing.subsingleton_tensorProduct]
 
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.map_mkQ_eq := IsLocalRing.map_mkQ_eq
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.map_mkQ_eq_top := IsLocalRing.map_mkQ_eq_top
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.map_tensorProduct_mk_eq_top := IsLocalRing.map_tensorProduct_mk_eq_top
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.subsingleton_tensorProduct := IsLocalRing.subsingleton_tensorProduct
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.span_eq_top_of_tmul_eq_basis := IsLocalRing.span_eq_top_of_tmul_eq_basis
-
 open Function in
 /--
 Given `M₁ → M₂ → M₃ → 0` and `N₁ → N₂ → N₃ → 0`,
@@ -171,7 +157,7 @@ variable [IsLocalRing R]
 `𝔪 ⊗ M → M` is injective, then every family of elements that is a `k`-basis of
 `k ⊗ M` is an `R`-basis of `M`. -/
 lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
-    {ι : Type u} (v : ι → M) (hli : LinearIndependent k (TensorProduct.mk R k M 1 ∘ v))
+    {ι : Type*} (v : ι → M) (hli : LinearIndependent k (TensorProduct.mk R k M 1 ∘ v))
     (hsp : Submodule.span k (Set.range (TensorProduct.mk R k M 1 ∘ v)) = ⊤)
     (H : Function.Injective ((𝔪).subtype.rTensor M)) :
     ∃ (b : Basis ι R M), ∀ i, b i = v i := by
@@ -260,10 +246,11 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
 
 theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι → M)
     (h : LinearIndependent k (TensorProduct.mk R k M 1 ∘ v)) : LinearIndependent R v := by
-  rw [linearIndependent_iff']; intro s f hfv
+  rw [linearIndependent_iff']; intro s f hfv i hi
   classical
-  induction' s using Finset.induction with n s hn ih generalizing v <;> intro i hi
-  · exact (Finset.notMem_empty _ hi).elim
+  induction s using Finset.induction generalizing v i with
+  | empty => exact (Finset.notMem_empty _ hi).elim
+  | insert n s hn ih => ?_
   rw [← Finset.sum_coe_sort] at hfv
   have ⟨l, a, y, hay, hfa⟩ := Flat.isTrivialRelation_of_sum_smul_eq_zero hfv
   have : v n ∉ 𝔪 • (⊤ : Submodule R M) := by
@@ -300,8 +287,6 @@ theorem free_of_flat_of_isLocalRing [Module.Finite R P] [Flat R P] : Free R P :=
   have ⟨v, eq⟩ := (TensorProduct.mk_surjective R P k Quotient.mk_surjective).comp_left w
   .of_basis <| .mk (IsLocalRing.linearIndependent_of_flat _ (eq ▸ w.linearIndependent)) <| by
     exact (span_eq_top_of_tmul_eq_basis _ w <| congr_fun eq).ge
-
-@[deprecated (since := "2024-11-12")] alias free_of_flat_of_localRing := free_of_flat_of_isLocalRing
 
 /--
 If `M → N → P → 0` is a presentation of `P` over a local ring `(R, 𝔪, k)` with
@@ -377,9 +362,5 @@ theorem IsLocalRing.split_injective_iff_lTensor_residueField_injective [IsLocalR
     have := (Exact.split_tfae l.exact_map_mkQ_range this (Submodule.mkQ_surjective _)).out 0 1
     rw [← this]
     exact Module.projective_lifting_property _ _ (Submodule.mkQ_surjective _)
-
-@[deprecated (since := "2024-11-09")]
-alias LocalRing.split_injective_iff_lTensor_residueField_injective :=
-  IsLocalRing.split_injective_iff_lTensor_residueField_injective
 
 end

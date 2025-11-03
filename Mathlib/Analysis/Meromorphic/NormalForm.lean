@@ -85,7 +85,7 @@ theorem meromorphicNFAt_iff_analyticAt_or :
       filter_upwards [eventually_nhdsWithin_iff.1 h₃g]
       intro z hz
       by_cases h₁z : z = x
-      · simp only [h₁z, h₂, Pi.smul_apply', Pi.pow_apply, sub_self]
+      · simp only [h₁z, Pi.smul_apply', Pi.pow_apply, sub_self]
         rw [h₃]
         apply (smul_eq_zero_of_left (zero_zpow n _) (g x)).symm
         by_contra hCon
@@ -158,10 +158,10 @@ theorem MeromorphicNFAt.meromorphicOrderAt_eq_zero_iff (hf : MeromorphicNFAt f x
         have := h₃g.eq_of_nhds
         simp only [Pi.smul_apply', Pi.pow_apply, sub_self, zero_zpow n hContra, zero_smul] at this
         tauto
-      simp only [this, zpow_zero, smul_eq_mul, one_mul] at h₃g
+      simp only [this, zpow_zero] at h₃g
       apply (meromorphicOrderAt_eq_int_iff hf.meromorphicAt).2
       use g, h₁g, h₂g
-      simp only [zpow_zero, smul_eq_mul, one_mul]
+      simp only [zpow_zero]
       exact h₃g.filter_mono nhdsWithin_le_nhds
 
 @[deprecated (since := "2025-05-22")] alias MeromorphicNFAt.order_eq_zero_iff :=
@@ -284,9 +284,13 @@ noncomputable def toMeromorphicNFAt :
   · exact 0
 
 /-- Conversion to normal form at `x` changes the value only at x. -/
-lemma MeromorphicAt.eqOn_compl_singleton_toMermomorphicNFAt (hf : MeromorphicAt f x) :
+lemma MeromorphicAt.eqOn_compl_singleton_toMeromorphicNFAt (hf : MeromorphicAt f x) :
     Set.EqOn f (toMeromorphicNFAt f x) {x}ᶜ :=
   fun _ _ ↦ by simp_all [toMeromorphicNFAt]
+
+@[deprecated (since := "2025-07-27")]
+alias MeromorphicAt.eqOn_compl_singleton_toMermomorphicNFAt :=
+  MeromorphicAt.eqOn_compl_singleton_toMeromorphicNFAt
 
 /-- If `f` is not meromorphic, conversion to normal form at `x` maps the function to `0`. -/
 @[simp] lemma toMeromorphicNFAt_of_not_meromorphicAt (hf : ¬MeromorphicAt f x) :
@@ -296,7 +300,7 @@ lemma MeromorphicAt.eqOn_compl_singleton_toMermomorphicNFAt (hf : MeromorphicAt 
 /-- Conversion to normal form at `x` changes the value only at x. -/
 lemma MeromorphicAt.eq_nhdsNE_toMeromorphicNFAt (hf : MeromorphicAt f x) :
     f =ᶠ[𝓝[≠] x] toMeromorphicNFAt f x :=
-  eventually_nhdsWithin_of_forall (fun _ hz ↦ hf.eqOn_compl_singleton_toMermomorphicNFAt hz)
+  eventually_nhdsWithin_of_forall (fun _ hz ↦ hf.eqOn_compl_singleton_toMeromorphicNFAt hz)
 
 @[deprecated (since := "2025-05-22")]
 alias MeromorphicAt.eq_nhdNE_toMeromorphicNFAt := MeromorphicAt.eq_nhdsNE_toMeromorphicNFAt
@@ -341,7 +345,7 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
     funext z
     by_cases hz : z = x
     · rw [hz]
-      simp only [toMeromorphicNFAt, hf.meromorphicAt, WithTop.coe_zero, ne_eq, Function.update_self]
+      simp only [toMeromorphicNFAt, hf.meromorphicAt, WithTop.coe_zero, ne_eq]
       have h₀f := hf
       rcases hf with h₁f | h₁f
       · simpa [meromorphicOrderAt_eq_top_iff.2 (h₁f.filter_mono nhdsWithin_le_nhds)]
@@ -377,7 +381,7 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
           by_contra hn
           rw [hn] at this
           tauto
-    · exact (hf.meromorphicAt.eqOn_compl_singleton_toMermomorphicNFAt hz).symm
+    · exact (hf.meromorphicAt.eqOn_compl_singleton_toMeromorphicNFAt hz).symm
 
 /--
 If `f` is meromorphic in normal form, then so is its inverse.
@@ -444,7 +448,7 @@ theorem MeromorphicNFOn.divisor_nonneg_iff_analyticOnNhd
     · simp only [Function.locallyFinsuppWithin.coe_zero, Pi.zero_apply, h₁f.meromorphicOn, hx,
         MeromorphicOn.divisor_apply, untop₀_nonneg]
       exact (h₁f hx).meromorphicOrderAt_nonneg_iff_analyticAt.2 (h x hx)
-    · simp [h₁f.meromorphicOn, hx]
+    · simp [hx]
 
 /-- Analytic functions are meromorphic in normal form. -/
 theorem AnalyticOnNhd.meromorphicNFOn (h₁f : AnalyticOnNhd 𝕜 f U) :
@@ -475,7 +479,7 @@ theorem MeromorphicNFOn.zero_set_eq_divisor_support (h₁f : MeromorphicNFOn f U
         |>.meromorphicOrderAt_eq_zero_iff.not
       simp only [h₁f.meromorphicOn, (MeromorphicOn.divisor f U).supportWithinDomain hu,
         MeromorphicOn.divisor_apply, WithTop.untop₀_eq_zero, not_or] at hu
-      simp_all [this, hu.1]
+      simp_all [hu.1]
 
 /-!
 ## Criteria to guarantee normal form
@@ -544,7 +548,7 @@ noncomputable def toMeromorphicNFOn :
   · exact 0
 
 /--
-If `f` is not meromorphic on `U`, conversion to normal form  maps the function
+If `f` is not meromorphic on `U`, conversion to normal form maps the function
 to `0`.
 -/
 @[simp] lemma toMeromorphicNFOn_of_not_meromorphicOn (hf : ¬MeromorphicOn f U) :
@@ -621,9 +625,7 @@ theorem meromorphicNFOn_toMeromorphicNFOn :
   · intro z hz
     rw [meromorphicNFAt_congr (toMeromorphicNFOn_eq_toMeromorphicNFAt_on_nhds hf hz)]
     exact meromorphicNFAt_toMeromorphicNFAt
-  · simp [hf]
-    apply AnalyticOnNhd.meromorphicNFOn
-    exact analyticOnNhd_const
+  · simpa [hf] using analyticOnNhd_const.meromorphicNFOn
 
 /--
 If `f` has normal form on `U`, then `f` equals `toMeromorphicNFOn f U`.

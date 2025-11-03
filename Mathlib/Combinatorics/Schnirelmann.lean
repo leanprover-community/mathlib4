@@ -113,15 +113,14 @@ alias schnirelmannDensity_eq_zero_of_one_not_mem := schnirelmannDensity_eq_zero_
 /-- The Schnirelmann density is increasing with the set. -/
 lemma schnirelmannDensity_le_of_subset {B : Set ℕ} [DecidablePred (· ∈ B)] (h : A ⊆ B) :
     schnirelmannDensity A ≤ schnirelmannDensity B :=
-  ciInf_mono ⟨0, fun _ ⟨_, hx⟩ ↦ hx ▸ by positivity⟩ fun _ ↦ by
-    gcongr; exact h
+  ciInf_mono ⟨0, fun _ ⟨_, hx⟩ ↦ hx ▸ by positivity⟩ fun _ ↦ by gcongr
 
 /-- The Schnirelmann density of `A` is `1` if and only if `A` contains all the positive naturals. -/
 lemma schnirelmannDensity_eq_one_iff : schnirelmannDensity A = 1 ↔ {0}ᶜ ⊆ A := by
   rw [le_antisymm_iff, and_iff_right schnirelmannDensity_le_one]
   constructor
   · rw [← not_imp_not, not_le]
-    simp only [Set.not_subset, forall_exists_index, true_and, and_imp, Set.mem_singleton_iff]
+    simp only [Set.not_subset, forall_exists_index, and_imp]
     intro x hx hx'
     apply (schnirelmannDensity_le_of_notMem hx').trans_lt
     simpa only [one_div, sub_lt_self_iff, inv_pos, Nat.cast_pos, pos_iff_ne_zero] using hx
@@ -159,7 +158,7 @@ lemma schnirelmannDensity_le_iff_forall {x : ℝ} :
 
 lemma schnirelmannDensity_congr' {B : Set ℕ} [DecidablePred (· ∈ B)]
     (h : ∀ n > 0, n ∈ A ↔ n ∈ B) : schnirelmannDensity A = schnirelmannDensity B := by
-  rw [schnirelmannDensity, schnirelmannDensity]; congr; ext ⟨n, hn⟩; congr 3; ext x; aesop
+  rw [schnirelmannDensity, schnirelmannDensity]; congr; ext ⟨n, hn⟩; congr 3; ext x; simp_all
 
 /-- The Schnirelmann density is unaffected by adding `0`. -/
 @[simp] lemma schnirelmannDensity_insert_zero [DecidablePred (· ∈ insert 0 A)] :
@@ -173,7 +172,7 @@ lemma schnirelmannDensity_diff_singleton_zero [DecidablePred (· ∈ A \ {0})] :
 
 lemma schnirelmannDensity_congr {B : Set ℕ} [DecidablePred (· ∈ B)] (h : A = B) :
     schnirelmannDensity A = schnirelmannDensity B :=
-  schnirelmannDensity_congr' (by aesop)
+  schnirelmannDensity_congr' (by simp_all)
 
 /--
 If the Schnirelmann density is `0`, there is a positive natural for which

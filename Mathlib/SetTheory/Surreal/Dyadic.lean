@@ -11,6 +11,11 @@ import Mathlib.RingTheory.Localization.Defs
 import Mathlib.SetTheory.Game.Birthday
 import Mathlib.SetTheory.Surreal.Multiplication
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Surreal.Dyadic` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Dyadic numbers
@@ -121,22 +126,22 @@ theorem add_powHalf_succ_self_eq_powHalf (n) : powHalf (n + 1) + powHalf (n + 1)
     swap
     · exact Sum.inl default
     calc
-      powHalf n.succ + powHalf (n.succ + 1) ≤ powHalf n.succ + powHalf n.succ :=
-        add_le_add_left (powHalf_succ_le_powHalf _) _
+      powHalf n.succ + powHalf (n.succ + 1) ≤ powHalf n.succ + powHalf n.succ := by
+        grw [powHalf_succ_le_powHalf (n + 1)]
       _ ≈ powHalf n := hn _ (Nat.lt_succ_self n)
   · simp only [powHalf_moveLeft, forall_const]
     apply lf_of_lt
     calc
       0 ≈ 0 + 0 := Equiv.symm (add_zero_equiv 0)
-      _ ≤ powHalf n.succ + 0 := add_le_add_right (zero_le_powHalf _) _
-      _ < powHalf n.succ + powHalf n.succ := add_lt_add_left (powHalf_pos _) _
+      _ ≤ powHalf n.succ + 0 := by grw [← zero_le_powHalf]
+      _ < powHalf n.succ + powHalf n.succ := by gcongr; exact powHalf_pos _
   · rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> apply lf_of_lt
     · calc
         powHalf n ≈ powHalf n + 0 := Equiv.symm (add_zero_equiv _)
-        _ < powHalf n + powHalf n.succ := add_lt_add_left (powHalf_pos _) _
+        _ < powHalf n + powHalf n.succ := by gcongr; exact powHalf_pos _
     · calc
         powHalf n ≈ 0 + powHalf n := Equiv.symm (zero_add_equiv _)
-        _ < powHalf n.succ + powHalf n := add_lt_add_right (powHalf_pos _) _
+        _ < powHalf n.succ + powHalf n := by gcongr; exact powHalf_pos _
 
 theorem half_add_half_equiv_one : powHalf 1 + powHalf 1 ≈ 1 :=
   add_powHalf_succ_self_eq_powHalf 0
@@ -173,7 +178,7 @@ theorem nsmul_pow_two_powHalf (n : ℕ) : 2 ^ n * powHalf n = 1 := by
 theorem nsmul_pow_two_powHalf' (n k : ℕ) : 2 ^ n * powHalf (n + k) = powHalf k := by
   induction k with
   | zero =>
-    simp only [add_zero, Surreal.nsmul_pow_two_powHalf, eq_self_iff_true, Surreal.powHalf_zero]
+    simp only [add_zero, Surreal.nsmul_pow_two_powHalf, Surreal.powHalf_zero]
   | succ k hk =>
     rw [← double_powHalf_succ_eq_powHalf (n + k), ← double_powHalf_succ_eq_powHalf k,
       ← mul_assoc, mul_comm (2 ^ n) 2, mul_assoc] at hk
@@ -198,7 +203,7 @@ theorem dyadic_aux {m₁ m₂ : ℤ} {y₁ y₂ : ℕ} (h₂ : m₁ * 2 ^ y₁ =
   · rw [h₂, add_comm]
     simp_rw [Int.cast_mul, Int.cast_pow, Int.cast_ofNat, zsmul_pow_two_powHalf m₂ c y₁]
   · have := Nat.one_le_pow y₁ 2 Nat.succ_pos'
-    norm_cast at h₂; omega
+    norm_cast at h₂; cutsat
 
 /-- The additive monoid morphism `dyadicMap` sends ⟦⟨m, 2^n⟩⟧ to m • half ^ n. -/
 noncomputable def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal where
@@ -206,7 +211,7 @@ noncomputable def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal where
     (Localization.liftOn x fun x y => x * powHalf (Submonoid.log y)) <| by
       intro m₁ m₂ n₁ n₂ h₁
       obtain ⟨⟨n₃, y₃, hn₃⟩, h₂⟩ := Localization.r_iff_exists.mp h₁
-      simp only [Subtype.coe_mk, mul_eq_mul_left_iff] at h₂
+      simp only [mul_eq_mul_left_iff] at h₂
       cases h₂
       · obtain ⟨a₁, ha₁⟩ := n₁.prop
         obtain ⟨a₂, ha₂⟩ := n₂.prop

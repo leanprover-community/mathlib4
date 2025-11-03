@@ -35,12 +35,7 @@ def revAtFun (N i : ℕ) : ℕ :=
 
 theorem revAtFun_invol {N i : ℕ} : revAtFun N (revAtFun N i) = i := by
   unfold revAtFun
-  split_ifs with h j
-  · exact tsub_tsub_cancel_of_le h
-  · exfalso
-    apply j
-    exact Nat.sub_le N i
-  · rfl
+  grind
 
 theorem revAtFun_inj {N : ℕ} : Function.Injective (revAtFun N) := by
   intro a b hab
@@ -151,24 +146,18 @@ lemma reflect_map {S : Type*} [Semiring S] (f : R →+* S) (p : R[X]) (n : ℕ) 
 lemma reflect_one (n : ℕ) : (1 : R[X]).reflect n = Polynomial.X ^ n := by
   rw [← C.map_one, reflect_C, map_one, one_mul]
 
-theorem reflect_mul_induction (cf cg : ℕ) :
-    ∀ N O : ℕ,
-      ∀ f g : R[X],
-        #f.support ≤ cf.succ →
-          #g.support ≤ cg.succ →
-            f.natDegree ≤ N →
-              g.natDegree ≤ O → reflect (N + O) (f * g) = reflect N f * reflect O g := by
-  induction' cf with cf hcf
-  --first induction (left): base case
-  · induction' cg with cg hcg
-    -- second induction (right): base case
-    · intro N O f g Cf Cg Nf Og
+theorem reflect_mul_induction (cf cg : ℕ) (N O : ℕ) (f g : R[X]) (Cf : #f.support ≤ cf.succ)
+    (Cg : #g.support ≤ cg.succ) (Nf : f.natDegree ≤ N) (Og : g.natDegree ≤ O) :
+    reflect (N + O) (f * g) = reflect N f * reflect O g := by
+  induction cf generalizing f with
+  | zero =>
+    induction cg generalizing g with
+    | zero =>
       rw [← C_mul_X_pow_eq_self Cf, ← C_mul_X_pow_eq_self Cg]
       simp_rw [mul_assoc, X_pow_mul, mul_assoc, ← pow_add (X : R[X]), reflect_C_mul,
         reflect_monomial, add_comm, revAt_add Nf Og, mul_assoc, X_pow_mul, mul_assoc, ←
         pow_add (X : R[X]), add_comm]
-    -- second induction (right): induction step
-    · intro N O f g Cf Cg Nf Og
+    | succ cg hcg =>
       by_cases g0 : g = 0
       · rw [g0, reflect_zero, mul_zero, mul_zero, reflect_zero]
       rw [← eraseLead_add_C_mul_X_pow g, mul_add, reflect_add, reflect_add, mul_add, hcg, hcg] <;>
@@ -177,8 +166,7 @@ theorem reflect_mul_induction (cf cg : ℕ) :
       · exact le_trans (natDegree_C_mul_X_pow_le g.leadingCoeff g.natDegree) Og
       · exact Nat.lt_succ_iff.mp (lt_of_lt_of_le (eraseLead_support_card_lt g0) Cg)
       · exact le_trans eraseLead_natDegree_le_aux Og
-  --first induction (left): induction step
-  · intro N O f g Cf Cg Nf Og
+  | succ cf hcf =>
     by_cases f0 : f = 0
     · rw [f0, reflect_zero, zero_mul, zero_mul, reflect_zero]
     rw [← eraseLead_add_C_mul_X_pow f, add_mul, reflect_add, reflect_add, add_mul, hcf, hcf] <;>
@@ -198,9 +186,9 @@ section Eval₂
 variable {S : Type*} [CommSemiring S]
 
 theorem eval₂_reflect_mul_pow (i : R →+* S) (x : S) [Invertible x] (N : ℕ) (f : R[X])
-    (hf : f.natDegree ≤ N) : eval₂ i (⅟ x) (reflect N f) * x ^ N = eval₂ i x f := by
+    (hf : f.natDegree ≤ N) : eval₂ i (⅟x) (reflect N f) * x ^ N = eval₂ i x f := by
   refine
-    induction_with_natDegree_le (fun f => eval₂ i (⅟ x) (reflect N f) * x ^ N = eval₂ i x f) _ ?_ ?_
+    induction_with_natDegree_le (fun f => eval₂ i (⅟x) (reflect N f) * x ^ N = eval₂ i x f) _ ?_ ?_
       ?_ f hf
   · simp
   · intro n r _ hnN
@@ -211,13 +199,13 @@ theorem eval₂_reflect_mul_pow (i : R →+* S) (x : S) [Invertible x] (N : ℕ)
     simp [*, add_mul]
 
 theorem eval₂_reflect_eq_zero_iff (i : R →+* S) (x : S) [Invertible x] (N : ℕ) (f : R[X])
-    (hf : f.natDegree ≤ N) : eval₂ i (⅟ x) (reflect N f) = 0 ↔ eval₂ i x f = 0 := by
+    (hf : f.natDegree ≤ N) : eval₂ i (⅟x) (reflect N f) = 0 ↔ eval₂ i x f = 0 := by
   conv_rhs => rw [← eval₂_reflect_mul_pow i x N f hf]
   constructor
   · intro h
     rw [h, zero_mul]
   · intro h
-    rw [← mul_one (eval₂ i (⅟ x) _), ← one_pow N, ← mul_invOf_self x, mul_pow, ← mul_assoc, h,
+    rw [← mul_one (eval₂ i (⅟x) _), ← one_pow N, ← mul_invOf_self x, mul_pow, ← mul_assoc, h,
       zero_mul]
 
 end Eval₂
@@ -338,12 +326,12 @@ section Eval₂
 variable {S : Type*} [CommSemiring S]
 
 theorem eval₂_reverse_mul_pow (i : R →+* S) (x : S) [Invertible x] (f : R[X]) :
-    eval₂ i (⅟ x) (reverse f) * x ^ f.natDegree = eval₂ i x f :=
+    eval₂ i (⅟x) (reverse f) * x ^ f.natDegree = eval₂ i x f :=
   eval₂_reflect_mul_pow i _ _ f le_rfl
 
 @[simp]
 theorem eval₂_reverse_eq_zero_iff (i : R →+* S) (x : S) [Invertible x] (f : R[X]) :
-    eval₂ i (⅟ x) (reverse f) = 0 ↔ eval₂ i x f = 0 :=
+    eval₂ i (⅟x) (reverse f) = 0 ↔ eval₂ i x f = 0 :=
   eval₂_reflect_eq_zero_iff i x _ _ le_rfl
 
 end Eval₂

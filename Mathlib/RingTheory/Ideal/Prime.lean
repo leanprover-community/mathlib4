@@ -44,6 +44,12 @@ theorem isPrime_iff {I : Ideal α} : IsPrime I ↔ I ≠ ⊤ ∧ ∀ {x y : α},
 theorem IsPrime.ne_top {I : Ideal α} (hI : I.IsPrime) : I ≠ ⊤ :=
   hI.1
 
+theorem IsPrime.one_notMem {I : Ideal α} (hI : I.IsPrime) : 1 ∉ I :=
+  mt (eq_top_iff_one I).2 hI.1
+
+theorem one_notMem (I : Ideal α) [hI : I.IsPrime] : 1 ∉ I :=
+  hI.one_notMem
+
 theorem IsPrime.mem_or_mem {I : Ideal α} (hI : I.IsPrime) {x y : α} : x * y ∈ I → x ∈ I ∨ y ∈ I :=
   hI.2
 
@@ -62,7 +68,7 @@ theorem IsPrime.mem_of_pow_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : ℕ
   induction n with
   | zero =>
     rw [pow_zero] at H
-    exact (mt (eq_top_iff_one _).2 hI.1).elim H
+    exact hI.one_notMem.elim H
   | succ n ih =>
     rw [pow_succ] at H
     exact Or.casesOn (hI.mem_or_mem H) ih id
@@ -92,8 +98,12 @@ theorem IsPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : �
 /-- The complement of a prime ideal `P ⊆ R` is a submonoid of `R`. -/
 def primeCompl (P : Ideal α) [hp : P.IsPrime] : Submonoid α where
   carrier := (Pᶜ : Set α)
-  one_mem' := by convert P.ne_top_iff_one.1 hp.1
+  one_mem' := P.one_notMem
   mul_mem' {_ _} hnx hny hxy := Or.casesOn (hp.mem_or_mem hxy) hnx hny
+
+@[simp]
+theorem mem_primeCompl_iff {P : Ideal α} [P.IsPrime] {x : α} :
+    x ∈ P.primeCompl ↔ x ∉ P := Iff.rfl
 
 end Ideal
 
@@ -102,8 +112,7 @@ end Semiring
 section Ring
 
 theorem IsDomain.of_bot_isPrime (A : Type*) [Ring A] [hbp : (⊥ : Ideal A).IsPrime] : IsDomain A :=
-  @NoZeroDivisors.to_isDomain A _
-    ⟨1, 0, fun h => hbp.ne_top ((Ideal.eq_top_iff_one ⊥).mpr h)⟩ ⟨fun h => hbp.2 h⟩
+  @NoZeroDivisors.to_isDomain A _ ⟨1, 0, fun h => hbp.one_notMem h⟩ ⟨fun h => hbp.2 h⟩
 
 end Ring
 

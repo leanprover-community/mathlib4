@@ -16,8 +16,6 @@ open Nat
 
 namespace Int
 
-export private decNonneg from Init.Data.Int.Basic
-
 theorem le.elim {a b : ℤ} (h : a ≤ b) {P : Prop} (h' : ∀ n : ℕ, a + ↑n = b → P) : P :=
   Exists.elim (le.dest h) h'
 
@@ -29,11 +27,11 @@ theorem lt.elim {a b : ℤ} (h : a < b) {P : Prop} (h' : ∀ n : ℕ, a + ↑(Na
 alias ⟨lt_of_ofNat_lt_ofNat, ofNat_lt_ofNat_of_lt⟩ := ofNat_lt
 
 instance instLinearOrder : LinearOrder ℤ where
-  le := (·≤·)
+  le := (· ≤ ·)
   le_refl := Int.le_refl
   le_trans := @Int.le_trans
   le_antisymm := @Int.le_antisymm
-  lt := (·<·)
+  lt := (· < ·)
   lt_iff_le_not_ge := @Int.lt_iff_le_not_le
   le_total := Int.le_total
   toDecidableEq := by infer_instance
@@ -50,11 +48,11 @@ theorem nonneg_or_nonpos_of_mul_nonneg {a b : ℤ} : 0 ≤ a * b → 0 ≤ a ∧
   · refine .inr ⟨?_, le_of_not_ge hb⟩
     obtain _ | _ := Int.mul_eq_zero.mp <|
       Int.le_antisymm (Int.mul_nonpos_of_nonneg_of_nonpos ha <| le_of_not_ge hb) h
-    all_goals omega
+    all_goals cutsat
   · refine .inr ⟨le_of_not_ge ha, ?_⟩
     obtain _ | _ := Int.mul_eq_zero.mp <|
       Int.le_antisymm (Int.mul_nonpos_of_nonpos_of_nonneg (le_of_not_ge ha) hb) h
-    all_goals omega
+    all_goals cutsat
   · exact .inr ⟨le_of_not_ge ha, le_of_not_ge hb⟩
 
 theorem mul_nonneg_of_nonneg_or_nonpos {a b : ℤ} : 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 → 0 ≤ a * b

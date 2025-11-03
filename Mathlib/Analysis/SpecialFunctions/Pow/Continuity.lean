@@ -430,7 +430,7 @@ theorem continuousOn_rpow_const_compl_zero {r : ℝ} :
 @[fun_prop]
 theorem continuousOn_rpow_const {r : ℝ} {s : Set ℝ≥0}
     (h : 0 ∉ s ∨ 0 ≤ r) : ContinuousOn (fun z : ℝ≥0 => z ^ r) s :=
-  h.elim (fun _ ↦ ContinuousOn.mono (s := {0}ᶜ) (by fun_prop) (by aesop))
+  h.elim (fun _ ↦ ContinuousOn.mono (s := {0}ᶜ) (by fun_prop) (by simp_all))
     (NNReal.continuous_rpow_const · |>.continuousOn)
 
 end NNReal

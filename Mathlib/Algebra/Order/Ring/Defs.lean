@@ -10,6 +10,7 @@ import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Ring.GrindInstances
 import Mathlib.Tactic.Tauto
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 
@@ -114,61 +115,49 @@ variable {R : Type u}
 /-- An ordered semiring is a semiring with a partial order such that addition is monotone and
 multiplication by a nonnegative number is monotone. -/
 class IsOrderedRing (R : Type*) [Semiring R] [PartialOrder R] extends
-    IsOrderedAddMonoid R, ZeroLEOneClass R where
-  /-- In an ordered semiring, we can multiply an inequality `a ≤ b` on the left
-  by a non-negative element `0 ≤ c` to obtain `c * a ≤ c * b`. -/
-  protected mul_le_mul_of_nonneg_left : ∀ a b c : R, a ≤ b → 0 ≤ c → c * a ≤ c * b
-  /-- In an ordered semiring, we can multiply an inequality `a ≤ b` on the right
-  by a non-negative element `0 ≤ c` to obtain `a * c ≤ b * c`. -/
-  protected mul_le_mul_of_nonneg_right : ∀ a b c : R, a ≤ b → 0 ≤ c → a * c ≤ b * c
+    IsOrderedAddMonoid R, ZeroLEOneClass R, PosMulMono R, MulPosMono R where
 
+-- See note [lower instance priority]
 attribute [instance 100] IsOrderedRing.toZeroLEOneClass
+attribute [instance 200] IsOrderedRing.toPosMulMono
+attribute [instance 200] IsOrderedRing.toMulPosMono
 
 /-- A strict ordered semiring is a nontrivial semiring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
 class IsStrictOrderedRing (R : Type*) [Semiring R] [PartialOrder R] extends
-    IsOrderedCancelAddMonoid R, ZeroLEOneClass R, Nontrivial R where
-  /-- In a strict ordered semiring, we can multiply an inequality `a < b` on the left
-  by a positive element `0 < c` to obtain `c * a < c * b`. -/
-  protected mul_lt_mul_of_pos_left : ∀ a b c : R, a < b → 0 < c → c * a < c * b
-  /-- In a strict ordered semiring, we can multiply an inequality `a < b` on the right
-  by a positive element `0 < c` to obtain `a * c < b * c`. -/
-  protected mul_lt_mul_of_pos_right : ∀ a b c : R, a < b → 0 < c → a * c < b * c
+    IsOrderedCancelAddMonoid R, ZeroLEOneClass R, Nontrivial R, PosMulStrictMono R,
+    MulPosStrictMono R where
 
+-- See note [lower instance priority]
 attribute [instance 100] IsStrictOrderedRing.toZeroLEOneClass
 attribute [instance 100] IsStrictOrderedRing.toNontrivial
+attribute [instance 200] IsStrictOrderedRing.toPosMulStrictMono
+attribute [instance 200] IsStrictOrderedRing.toMulPosStrictMono
+
+instance [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] : Lean.Grind.OrderedRing R where
+  zero_lt_one := zero_lt_one
+  mul_lt_mul_of_pos_left := mul_lt_mul_of_pos_left
+  mul_lt_mul_of_pos_right := mul_lt_mul_of_pos_right
 
 lemma IsOrderedRing.of_mul_nonneg [Ring R] [PartialOrder R] [IsOrderedAddMonoid R]
     [ZeroLEOneClass R] (mul_nonneg : ∀ a b : R, 0 ≤ a → 0 ≤ b → 0 ≤ a * b) :
     IsOrderedRing R where
-  mul_le_mul_of_nonneg_left a b c ab hc := by
-    simpa only [mul_sub, sub_nonneg] using mul_nonneg _ _ hc (sub_nonneg.2 ab)
-  mul_le_mul_of_nonneg_right a b c ab hc := by
-    simpa only [sub_mul, sub_nonneg] using mul_nonneg _ _ (sub_nonneg.2 ab) hc
+  mul_le_mul_of_nonneg_left a ha b c hbc := by
+    simpa only [mul_sub, sub_nonneg] using mul_nonneg _ _ ha (sub_nonneg.2 hbc)
+  mul_le_mul_of_nonneg_right a ha b c hbc := by
+    simpa only [sub_mul, sub_nonneg] using mul_nonneg _ _ (sub_nonneg.2 hbc) ha
 
 lemma IsStrictOrderedRing.of_mul_pos [Ring R] [PartialOrder R] [IsOrderedAddMonoid R]
     [ZeroLEOneClass R] [Nontrivial R] (mul_pos : ∀ a b : R, 0 < a → 0 < b → 0 < a * b) :
     IsStrictOrderedRing R where
-  mul_lt_mul_of_pos_left a b c ab hc := by
-    simpa only [mul_sub, sub_pos] using mul_pos _ _ hc (sub_pos.2 ab)
-  mul_lt_mul_of_pos_right a b c ab hc := by
-    simpa only [sub_mul, sub_pos] using mul_pos _ _ (sub_pos.2 ab) hc
-
-section IsOrderedRing
-variable [Semiring R] [PartialOrder R] [IsOrderedRing R]
+  mul_lt_mul_of_pos_left a ha b c hbc := by
+    simpa only [mul_sub, sub_pos] using mul_pos _ _ ha (sub_pos.2 hbc)
+  mul_lt_mul_of_pos_right a ha b c hbc := by
+    simpa only [sub_mul, sub_pos] using mul_pos _ _ (sub_pos.2 hbc) ha
 
 -- see Note [lower instance priority]
-instance (priority := 200) IsOrderedRing.toPosMulMono : PosMulMono R where
-  elim x _ _ h := IsOrderedRing.mul_le_mul_of_nonneg_left _ _ _ h x.2
-
--- see Note [lower instance priority]
-instance (priority := 200) IsOrderedRing.toMulPosMono : MulPosMono R where
-  elim x _ _ h := IsOrderedRing.mul_le_mul_of_nonneg_right _ _ _ h x.2
-
-end IsOrderedRing
-
 /-- Turn an ordered domain into a strict ordered ring. -/
-lemma IsOrderedRing.toIsStrictOrderedRing (R : Type*)
+instance (priority := 50) IsOrderedRing.toIsStrictOrderedRing (R : Type*)
     [Ring R] [PartialOrder R] [IsOrderedRing R] [NoZeroDivisors R] [Nontrivial R] :
     IsStrictOrderedRing R :=
   .of_mul_pos fun _ _ ap bp ↦ (mul_nonneg ap.le bp.le).lt_of_ne' (mul_ne_zero ap.ne' bp.ne')
@@ -177,18 +166,8 @@ section IsStrictOrderedRing
 variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
 
 -- see Note [lower instance priority]
-instance (priority := 200) IsStrictOrderedRing.toPosMulStrictMono : PosMulStrictMono R where
-  elim x _ _ h := IsStrictOrderedRing.mul_lt_mul_of_pos_left _ _ _ h x.prop
-
--- see Note [lower instance priority]
-instance (priority := 200) IsStrictOrderedRing.toMulPosStrictMono : MulPosStrictMono R where
-  elim x _ _ h := IsStrictOrderedRing.mul_lt_mul_of_pos_right _ _ _ h x.prop
-
--- see Note [lower instance priority]
 instance (priority := 100) IsStrictOrderedRing.toIsOrderedRing : IsOrderedRing R where
   __ := ‹IsStrictOrderedRing R›
-  mul_le_mul_of_nonneg_left _ _ _ := mul_le_mul_of_nonneg_left
-  mul_le_mul_of_nonneg_right _ _ _ := mul_le_mul_of_nonneg_right
 
 /-- This is not an instance, as it would loop with `NeZero.charZero_one`. -/
 theorem AddMonoidWithOne.toCharZero {R}
@@ -222,10 +201,10 @@ instance (priority := 100) IsStrictOrderedRing.noZeroDivisors : NoZeroDivisors R
 -- Note that we can't use `NoZeroDivisors.to_isDomain` since we are merely in a semiring.
 -- See note [lower instance priority]
 instance (priority := 100) IsStrictOrderedRing.isDomain : IsDomain R where
-  mul_left_cancel_of_ne_zero {a b c} ha h := by
+  mul_left_cancel_of_ne_zero {a} ha _ _ h := by
     obtain ha | ha := ha.lt_or_gt
     exacts [(strictAnti_mul_left ha).injective h, (strictMono_mul_left_of_pos ha).injective h]
-  mul_right_cancel_of_ne_zero {b a c} ha h := by
+  mul_right_cancel_of_ne_zero {a} ha _ _ h := by
     obtain ha | ha := ha.lt_or_gt
     exacts [(strictAnti_mul_right ha).injective h, (strictMono_mul_right_of_pos ha).injective h]
 
@@ -233,135 +212,6 @@ end LinearOrder
 
 /-! Note that `OrderDual` does not satisfy any of the ordered ring typeclasses due to the
 `zero_le_one` field. -/
-
-set_option linter.deprecated false in
-/-- An `OrderedSemiring` is a semiring with a partial order such that addition is monotone and
-multiplication by a nonnegative number is monotone. -/
-@[deprecated "Use `[Semiring R] [PartialOrder R] [IsOrderedRing R]` instead."
-  (since := "2025-04-10")]
-structure OrderedSemiring (R : Type u) extends Semiring R, OrderedAddCommMonoid R where
-  /-- `0 ≤ 1` in any ordered semiring. -/
-  protected zero_le_one : (0 : R) ≤ 1
-  /-- In an ordered semiring, we can multiply an inequality `a ≤ b` on the left
-  by a non-negative element `0 ≤ c` to obtain `c * a ≤ c * b`. -/
-  protected mul_le_mul_of_nonneg_left : ∀ a b c : R, a ≤ b → 0 ≤ c → c * a ≤ c * b
-  /-- In an ordered semiring, we can multiply an inequality `a ≤ b` on the right
-  by a non-negative element `0 ≤ c` to obtain `a * c ≤ b * c`. -/
-  protected mul_le_mul_of_nonneg_right : ∀ a b c : R, a ≤ b → 0 ≤ c → a * c ≤ b * c
-
-set_option linter.deprecated false in
-/-- An `OrderedCommSemiring` is a commutative semiring with a partial order such that addition is
-monotone and multiplication by a nonnegative number is monotone. -/
-@[deprecated "Use `[CommSemiring R] [PartialOrder R] [IsOrderedRing R]` instead."
-  (since := "2025-04-10")]
-structure OrderedCommSemiring (R : Type u) extends OrderedSemiring R, CommSemiring R where
-  mul_le_mul_of_nonneg_right a b c ha hc :=
-    -- parentheses ensure this generates an `optParam` rather than an `autoParam`
-    (by simpa only [mul_comm] using mul_le_mul_of_nonneg_left a b c ha hc)
-
-set_option linter.deprecated false in
-/-- An `OrderedRing` is a ring with a partial order such that addition is monotone and
-multiplication by a nonnegative number is monotone. -/
-@[deprecated "Use `[Ring R] [PartialOrder R] [IsOrderedRing R]` instead."
-  (since := "2025-04-10")]
-structure OrderedRing (R : Type u) extends Ring R, OrderedAddCommGroup R where
-  /-- `0 ≤ 1` in any ordered ring. -/
-  protected zero_le_one : 0 ≤ (1 : R)
-  /-- The product of non-negative elements is non-negative. -/
-  protected mul_nonneg : ∀ a b : R, 0 ≤ a → 0 ≤ b → 0 ≤ a * b
-
-set_option linter.deprecated false in
-/-- An `OrderedCommRing` is a commutative ring with a partial order such that addition is monotone
-and multiplication by a nonnegative number is monotone. -/
-@[deprecated "Use `[CommRing R] [PartialOrder R] [IsOrderedRing R]` instead."
-  (since := "2025-04-10")]
-structure OrderedCommRing (R : Type u) extends OrderedRing R, CommRing R
-
-set_option linter.deprecated false in
-/-- A `StrictOrderedSemiring` is a nontrivial semiring with a partial order such that addition is
-strictly monotone and multiplication by a positive number is strictly monotone. -/
-@[deprecated "Use `[Semiring R] [PartialOrder R] [IsStrictOrderedRing R]` instead."
-  (since := "2025-04-10")]
-structure StrictOrderedSemiring (R : Type u) extends Semiring R, OrderedCancelAddCommMonoid R,
-    Nontrivial R where
-  /-- In a strict ordered semiring, `0 ≤ 1`. -/
-  protected zero_le_one : (0 : R) ≤ 1
-  /-- Left multiplication by a positive element is strictly monotone. -/
-  protected mul_lt_mul_of_pos_left : ∀ a b c : R, a < b → 0 < c → c * a < c * b
-  /-- Right multiplication by a positive element is strictly monotone. -/
-  protected mul_lt_mul_of_pos_right : ∀ a b c : R, a < b → 0 < c → a * c < b * c
-
-set_option linter.deprecated false in
-/-- A `StrictOrderedCommSemiring` is a commutative semiring with a partial order such that
-addition is strictly monotone and multiplication by a positive number is strictly monotone. -/
-@[deprecated "Use `[CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R]` instead."
-  (since := "2025-04-10")]
-structure StrictOrderedCommSemiring (R : Type u) extends StrictOrderedSemiring R, CommSemiring R
-
-set_option linter.deprecated false in
-/-- A `StrictOrderedRing` is a ring with a partial order such that addition is strictly monotone
-and multiplication by a positive number is strictly monotone. -/
-@[deprecated "Use `[Ring R] [PartialOrder R] [IsStrictOrderedRing R]` instead."
-  (since := "2025-04-10")]
-structure StrictOrderedRing (R : Type u) extends Ring R, OrderedAddCommGroup R, Nontrivial R where
-  /-- In a strict ordered ring, `0 ≤ 1`. -/
-  protected zero_le_one : 0 ≤ (1 : R)
-  /-- The product of two positive elements is positive. -/
-  protected mul_pos : ∀ a b : R, 0 < a → 0 < b → 0 < a * b
-
-set_option linter.deprecated false in
-/-- A `StrictOrderedCommRing` is a commutative ring with a partial order such that addition is
-strictly monotone and multiplication by a positive number is strictly monotone. -/
-@[deprecated "Use `[CommRing R] [PartialOrder R] [IsStrictOrderedRing R]` instead."
-  (since := "2025-04-10")]
-structure StrictOrderedCommRing (R : Type*) extends StrictOrderedRing R, CommRing R
-
-/- It's not entirely clear we should assume `Nontrivial` at this point; it would be reasonable to
-explore changing this, but be warned that the instances involving `Domain` may cause typeclass
-search loops. -/
-set_option linter.deprecated false in
-/-- A `LinearOrderedSemiring` is a nontrivial semiring with a linear order such that
-addition is monotone and multiplication by a positive number is strictly monotone. -/
-@[deprecated "Use `[Semiring R] [LinearOrder R] [IsStrictOrderedRing R]` instead."
-  (since := "2025-04-10")]
-structure LinearOrderedSemiring (R : Type u) extends StrictOrderedSemiring R,
-  LinearOrderedAddCommMonoid R
-
-set_option linter.deprecated false in
-/-- A `LinearOrderedCommSemiring` is a nontrivial commutative semiring with a linear order such
-that addition is monotone and multiplication by a positive number is strictly monotone. -/
-@[deprecated "Use `[CommSemiring R] [LinearOrder R] [IsStrictOrderedRing R]` instead."
-  (since := "2025-04-10")]
-structure LinearOrderedCommSemiring (R : Type*) extends StrictOrderedCommSemiring R,
-  LinearOrderedSemiring R
-
-set_option linter.deprecated false in
-/-- A `LinearOrderedRing` is a ring with a linear order such that addition is monotone and
-multiplication by a positive number is strictly monotone. -/
-@[deprecated "Use `[Ring R] [LinearOrder R] [IsStrictOrderedRing R]` instead."
-  (since := "2025-04-10")]
-structure LinearOrderedRing (R : Type u) extends StrictOrderedRing R, LinearOrder R
-
-set_option linter.deprecated false in
-/-- A `LinearOrderedCommRing` is a commutative ring with a linear order such that addition is
-monotone and multiplication by a positive number is strictly monotone. -/
-@[deprecated "Use `[CommRing R] [LinearOrder R] [IsStrictOrderedRing R]` instead."
-  (since := "2025-04-10")]
-structure LinearOrderedCommRing (R : Type u) extends LinearOrderedRing R, CommMonoid R
-
-attribute [nolint docBlame]
-  StrictOrderedSemiring.toOrderedCancelAddCommMonoid
-  StrictOrderedCommSemiring.toCommSemiring
-  LinearOrderedSemiring.toLinearOrderedAddCommMonoid
-  LinearOrderedRing.toLinearOrder
-  OrderedSemiring.toOrderedAddCommMonoid
-  OrderedCommSemiring.toCommSemiring
-  StrictOrderedCommRing.toCommRing
-  OrderedRing.toOrderedAddCommGroup
-  OrderedCommRing.toCommRing
-  StrictOrderedRing.toOrderedAddCommGroup
-  LinearOrderedCommSemiring.toLinearOrderedSemiring
-  LinearOrderedCommRing.toCommMonoid
 
 section OrderedRing
 

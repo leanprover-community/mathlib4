@@ -34,7 +34,7 @@ def MulAction.toPerm (a : α) : Equiv.Perm β :=
 add_decl_doc AddAction.toPerm
 
 /-- `MulAction.toPerm` is injective on faithful actions. -/
-@[to_additive "`AddAction.toPerm` is injective on faithful actions."]
+@[to_additive /-- `AddAction.toPerm` is injective on faithful actions. -/]
 lemma MulAction.toPerm_injective [FaithfulSMul α β] :
     Function.Injective (MulAction.toPerm : α → Equiv.Perm β) :=
   (show Function.Injective (Equiv.toFun ∘ MulAction.toPerm) from smul_left_injective').of_comp
@@ -68,7 +68,7 @@ section Monoid
 variable [Monoid α] [MulAction α β] (c : α) (x y : β) [Invertible c]
 
 @[simp] lemma invOf_smul_smul : ⅟c • c • x = x := inv_smul_smul (unitOfInvertible c) _
-@[simp] lemma smul_invOf_smul : c • (⅟ c • x) = x := smul_inv_smul (unitOfInvertible c) _
+@[simp] lemma smul_invOf_smul : c • (⅟c • x) = x := smul_inv_smul (unitOfInvertible c) _
 
 variable {c x y}
 
@@ -85,14 +85,14 @@ variable {G A B : Type*} [DivisionMonoid G] [MulAction G A]
 
 /-- If `G` acts on `A`, then it acts also on `A → B`, by `(g • F) a = F (g⁻¹ • a)`. -/
 @[to_additive (attr := simps) arrowAddAction
-"If `G` acts on `A`, then it acts also on `A → B`, by `(g +ᵥ F) a = F (g⁻¹ +ᵥ a)`"]
+/-- If `G` acts on `A`, then it acts also on `A → B`, by `(g +ᵥ F) a = F (g⁻¹ +ᵥ a)` -/]
 def arrowAction : MulAction G (A → B) where
   smul g F a := F (g⁻¹ • a)
   one_smul f := by
-    show (fun x => f ((1 : G)⁻¹ • x)) = f
+    change (fun x => f ((1 : G)⁻¹ • x)) = f
     simp only [inv_one, one_smul]
   mul_smul x y f := by
-    show (fun a => f ((x*y)⁻¹ • a)) = (fun a => f (y⁻¹ • x⁻¹ • a))
+    change (fun a => f ((x*y)⁻¹ • a)) = (fun a => f (y⁻¹ • x⁻¹ • a))
     simp only [mul_smul, mul_inv_rev]
 
 attribute [local instance] arrowAction
@@ -115,12 +115,6 @@ theorem smul_bijective {m : α} (hm : IsUnit m) :
   lift m to αˣ using hm
   exact MulAction.bijective m
 
-@[deprecated (since := "2025-03-03")]
-alias _root_.AddAction.vadd_bijective_of_is_addUnit := IsAddUnit.vadd_bijective
-
-@[to_additive existing, deprecated (since := "2025-03-03")]
-alias _root_.MulAction.smul_bijective_of_is_unit := IsUnit.smul_bijective
-
 @[to_additive]
 lemma smul_left_cancel {a : α} (ha : IsUnit a) {x y : β} : a • x = a • y ↔ x = y :=
   let ⟨u, hu⟩ := ha
@@ -142,7 +136,7 @@ variable [Monoid M] [MulAction M α]
 variable (M α) in
 /-- Embedding of `α` into functions `M → α` induced by a multiplicative action of `M` on `α`. -/
 @[to_additive
-"Embedding of `α` into functions `M → α` induced by an additive action of `M` on `α`."]
+/-- Embedding of `α` into functions `M → α` induced by an additive action of `M` on `α`. -/]
 def toFun : α ↪ M → α :=
   ⟨fun y x ↦ x • y, fun y₁ y₂ H ↦ one_smul M y₁ ▸ one_smul M y₂ ▸ by convert congr_fun H 1⟩
 
@@ -200,5 +194,8 @@ variable [Monoid M] [Group A] [MulDistribMulAction M A]
 
 lemma smul_div' (r : M) (x y : A) : r • (x / y) = r • x / r • y :=
   map_div (MulDistribMulAction.toMonoidHom A r) x y
+
+lemma smul_zpow' (r : M) (x : A) (z : ℤ) : r • (x ^ z) = (r • x) ^ z :=
+  map_zpow (MulDistribMulAction.toMonoidHom A r) x z
 
 end MulDistribMulAction

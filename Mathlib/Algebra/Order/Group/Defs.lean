@@ -31,24 +31,6 @@ universe u
 
 variable {α : Type u}
 
-/-- An ordered additive commutative group is an additive commutative group
-with a partial order in which addition is strictly monotone. -/
-@[deprecated "Use `[AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]` instead."
-  (since := "2025-04-10")]
-structure OrderedAddCommGroup (α : Type u) extends AddCommGroup α, PartialOrder α where
-  /-- Addition is monotone in an ordered additive commutative group. -/
-  protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
-
-set_option linter.existingAttributeWarning false in
-/-- An ordered commutative group is a commutative group
-with a partial order in which multiplication is strictly monotone. -/
-@[to_additive,
-  deprecated "Use `[CommGroup α] [PartialOrder α] [IsOrderedMonoid α]` instead."
-  (since := "2025-04-10")]
-structure OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
-  /-- Multiplication is monotone in an ordered commutative group. -/
-  protected mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b
-
 alias OrderedCommGroup.mul_lt_mul_left' := mul_lt_mul_left'
 
 attribute [to_additive OrderedAddCommGroup.add_lt_add_left] OrderedCommGroup.mul_lt_mul_left'
@@ -72,28 +54,12 @@ instance (priority := 100) IsOrderedMonoid.toIsOrderedCancelMonoid
 /-!
 ### Linearly ordered commutative groups
 -/
+/- `LinearOrderedCommGroup` and `LinearOrderedAddCommGroup` no longer exist,
+but we still use the namespaces.
 
-
-set_option linter.deprecated false in
-/-- A linearly ordered additive commutative group is an
-additive commutative group with a linear order in which
-addition is monotone. -/
-@[deprecated "Use `[AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]` instead."
-  (since := "2025-04-10")]
-structure LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α, LinearOrder α
-
-set_option linter.existingAttributeWarning false in
-set_option linter.deprecated false in
-/-- A linearly ordered commutative group is a
-commutative group with a linear order in which
-multiplication is monotone. -/
-@[to_additive,
-  deprecated "Use `[CommGroup α] [LinearOrder α] [IsOrderedMonoid α]` instead."
-  (since := "2025-04-10")]
-structure LinearOrderedCommGroup (α : Type u) extends OrderedCommGroup α, LinearOrder α
-
-attribute [nolint docBlame]
-  LinearOrderedCommGroup.toLinearOrder LinearOrderedAddCommGroup.toLinearOrder
+TODO: everything in these namespaces should be renamed; even if these typeclasses still existed,
+it's unconventional to put theorems in namespaces named after them. -/
+run_meta ToAdditive.insertTranslation `LinearOrderedCommGroup `LinearOrderedAddCommGroup
 
 section LinearOrderedCommGroup
 
@@ -117,7 +83,7 @@ theorem eq_one_of_inv_eq' (h : a⁻¹ = a) : a = 1 :=
 @[to_additive exists_zero_lt]
 theorem exists_one_lt' [Nontrivial α] : ∃ a : α, 1 < a := by
   obtain ⟨y, hy⟩ := Decidable.exists_ne (1 : α)
-  obtain h|h := hy.lt_or_gt
+  obtain h | h := hy.lt_or_gt
   · exact ⟨y⁻¹, one_lt_inv'.mpr h⟩
   · exact ⟨y, h⟩
 

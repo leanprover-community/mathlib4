@@ -10,7 +10,6 @@ import Mathlib.Order.Basic
 import Mathlib.Order.Bounds.Defs
 import Mathlib.Algebra.Group.Int.Defs
 import Mathlib.Data.Int.Basic
-import Batteries.Data.Nat.Gcd
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Nat.Defs
 
@@ -101,7 +100,7 @@ theorem xgcdAux_val (x y) : xgcdAux x 1 0 y 0 1 = (gcd x y, xgcd x y) := by
   rw [xgcd, ← xgcdAux_fst x y 1 0 0 1]
 
 theorem xgcd_val (x y) : xgcd x y = (gcdA x y, gcdB x y) := by
-  unfold gcdA gcdB; cases xgcd x y; rfl
+  unfold gcdA gcdB; constructor
 
 section
 
@@ -179,13 +178,8 @@ theorem gcd_eq_gcd_ab : ∀ x y : ℤ, (gcd x y : ℤ) = x * gcdA x y + y * gcdB
 theorem lcm_def (i j : ℤ) : lcm i j = Nat.lcm (natAbs i) (natAbs j) :=
   rfl
 
-@[deprecated (since := "2025-04-04")] alias coe_nat_lcm := Int.lcm_natCast_natCast
-
 alias gcd_div := gcd_ediv
 alias gcd_div_gcd_div_gcd := gcd_ediv_gcd_ediv_gcd
-
-@[deprecated (since := "2025-04-04")] alias gcd_dvd_gcd_mul_left := gcd_dvd_gcd_mul_left_left
-@[deprecated (since := "2025-04-04")] alias gcd_dvd_gcd_mul_right := gcd_dvd_gcd_mul_right_left
 
 /-- If `gcd a (m * n) = 1`, then `gcd a m = 1`. -/
 theorem gcd_eq_one_of_gcd_mul_right_eq_one_left {a : ℤ} {m n : ℕ} (h : a.gcd (m * n) = 1) :
@@ -273,10 +267,10 @@ variable [GroupWithZero α] {a b : α} {m n : ℕ}
 protected lemma Commute.pow_eq_pow_iff_of_coprime (hab : Commute a b) (hmn : m.Coprime n) :
     a ^ m = b ^ n ↔ ∃ c, a = c ^ n ∧ b = c ^ m := by
   refine ⟨fun h ↦ ?_, by rintro ⟨c, rfl, rfl⟩; rw [← pow_mul, ← pow_mul']⟩
-  by_cases m = 0; · aesop
-  by_cases n = 0; · aesop
-  by_cases hb : b = 0; · exact ⟨0, by aesop⟩
-  by_cases ha : a = 0; · exact ⟨0, by have := h.symm; aesop⟩
+  by_cases m = 0; · simp_all
+  by_cases n = 0; · simp_all
+  by_cases hb : b = 0; · exact ⟨0, by simp_all⟩
+  by_cases ha : a = 0; · exact ⟨0, by have := h.symm; simp_all⟩
   refine ⟨a ^ Nat.gcdB m n * b ^ Nat.gcdA m n, ?_, ?_⟩ <;>
   · refine (pow_one _).symm.trans ?_
     conv_lhs => rw [← zpow_natCast, ← hmn, Nat.gcd_eq_gcd_ab]

@@ -64,9 +64,8 @@ theorem taylor_monomial (i : ℕ) (k : R) : taylor r (monomial i k) = C k * (X +
 theorem taylor_coeff (n : ℕ) : (taylor r f).coeff n = (hasseDeriv n f).eval r :=
   show (lcoeff R n).comp (taylor r) f = (leval r).comp (hasseDeriv n) f by
     congr 1; clear! f; ext i
-    simp only [leval_apply, mul_one, one_mul, eval_monomial, LinearMap.comp_apply, coeff_C_mul,
-      hasseDeriv_monomial, taylor_apply, monomial_comp, C_1, (commute_X (C r)).add_pow i,
-      map_sum]
+    simp only [leval_apply, mul_one, one_mul, eval_monomial, LinearMap.comp_apply, map_sum,
+      hasseDeriv_monomial, taylor_apply, monomial_comp, C_1, (commute_X (C r)).add_pow i]
     simp only [lcoeff_apply, ← C_eq_natCast, mul_assoc, ← C_pow, ← C_mul, coeff_mul_C,
       (Nat.cast_commute _ _).eq, coeff_X_pow, boole_mul, Finset.sum_ite_eq, Finset.mem_range]
     split_ifs with h; · rfl
@@ -83,7 +82,7 @@ theorem taylor_coeff_one : (taylor r f).coeff 1 = f.derivative.eval r := by
 @[simp]
 theorem coeff_taylor_natDegree : (taylor r f).coeff f.natDegree = f.leadingCoeff := by
   by_cases hf : f = 0
-  · rw [hf, map_zero]; rfl
+  · rw [hf, map_zero, coeff_natDegree]
   · rw [taylor_coeff, hasseDeriv_natDegree_eq_C, eval_C]
 
 @[simp]
@@ -148,7 +147,7 @@ theorem taylor_pow (n : ℕ) : taylor r (f ^ n) = taylor r f ^ n :=
   rfl
 
 theorem taylor_taylor (f : R[X]) (r s : R) : taylor r (taylor s f) = taylor (r + s) f := by
-  simp only [taylor_apply, comp_assoc, map_add, add_comp, X_comp, C_comp, C_add, add_assoc]
+  simp only [taylor_apply, comp_assoc, map_add, add_comp, X_comp, C_comp, add_assoc]
 
 theorem taylor_eval (r : R) (f : R[X]) (s : R) : (taylor r f).eval s = f.eval (s + r) := by
   simp only [taylor_apply, eval_comp, eval_C, eval_X, eval_add]
@@ -173,8 +172,9 @@ noncomputable def taylorEquiv (r : R) : R[X] ≃ₐ[R] R[X] where
   right_inv P := by simp [taylor, comp_assoc]
   __ := taylorAlgHom r
 
-@[simp, norm_cast] lemma coe_taylorEquiv : taylorEquiv r = taylorAlgHom r :=
-  rfl
+@[simp, norm_cast] lemma toAlgHom_taylorEquiv : taylorEquiv r = taylorAlgHom r := rfl
+
+@[simp, norm_cast] lemma coe_taylorEquiv : taylorEquiv r = taylor r := rfl
 
 @[simp] lemma taylorEquiv_symm : (taylorEquiv r).symm = taylorEquiv (-r) :=
   AlgEquiv.ext fun _ ↦ rfl

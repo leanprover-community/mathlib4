@@ -12,7 +12,7 @@ import Mathlib.Algebra.Group.Units.Equiv
 # More lemmas about irreducible elements
 -/
 
-assert_not_exists MonoidWithZero OrderedCommMonoid Multiset
+assert_not_exists MonoidWithZero IsOrderedMonoid Multiset
 
 variable {F M N : Type*}
 
@@ -84,7 +84,7 @@ Note that surjective + local hom is not enough. Consider the additive monoids `M
 with x surjective local (additive) hom `f : M →+ N` sending `(m, n)` to `2m + n`.
 It is local because the only add unit in `N` is `0`, with preimage `{(0, 0)}` also an add unit.
 Then `x = (1, 0)` is irreducible in `M`, but `f x = 2 = 1 + 1` is not irreducible in `N`. -/
-@[to_additive "Irreducibility is preserved by additive equivalences."]
+@[to_additive /-- Irreducibility is preserved by additive equivalences. -/]
 alias ⟨_, Irreducible.map⟩ := MulEquiv.irreducible_iff
 
 end MulEquivClass
@@ -100,10 +100,6 @@ lemma Irreducible.not_isSquare (ha : Irreducible x) : ¬IsSquare x := by
   rw [isSquare_iff_exists_sq]
   rintro ⟨y, rfl⟩
   exact not_irreducible_pow (by decide) ha
-
-set_option linter.existingAttributeWarning false in
-@[deprecated (since := "2025-04-17"), to_additive existing]
-alias Irreducible.not_square := Irreducible.not_isSquare
 
 @[to_additive]
 lemma IsSquare.not_irreducible (ha : IsSquare x) : ¬Irreducible x := fun h => h.not_isSquare ha

@@ -14,9 +14,11 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 
 -/
 
+open Module
+open scoped DirectSum
+
 namespace Ideal
 
-open scoped DirectSum
 
 variable {ι R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable [IsDomain R] [IsPrincipalIdealRing R] [IsDomain S] [Finite ι]
@@ -41,9 +43,6 @@ theorem finiteQuotientOfFreeOfNeBot [Module.Free ℤ S] [Module.Finite ℤ S]
     (I : Ideal S) (hI : I ≠ ⊥) : Finite (S ⧸ I) :=
   let b := Module.Free.chooseBasis ℤ S
   Submodule.finiteQuotientOfFreeOfRankEq (I.restrictScalars ℤ) <| finrank_eq_finrank b I hI
-
-@[deprecated (since := "2025-03-15")] alias fintypeQuotientOfFreeOfNeBot :=
-  finiteQuotientOfFreeOfNeBot
 
 variable (F : Type*) [CommRing F] [Algebra F R] [Algebra F S] [IsScalarTower F R S]
   (b : Basis ι R S) {I : Ideal S} (hI : I ≠ ⊥)

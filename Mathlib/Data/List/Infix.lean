@@ -5,6 +5,8 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.TakeDrop
 import Mathlib.Data.List.Induction
+import Mathlib.Data.Nat.Basic
+import Mathlib.Order.Basic
 
 /-!
 # Prefixes, suffixes, infixes
@@ -112,6 +114,17 @@ theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.lengt
   convert List.take_append_drop (x.length + 1) y using 2
   rw [← List.take_concat_get, List.concat_eq_append]; rfl
 
+theorem prefix_append_drop {l₁ l₂ : List α} (h : l₁ <+: l₂) :
+    l₂ = l₁ ++ l₂.drop l₁.length := by
+  induction l₂ generalizing l₁ with
+  | nil => simp [List.prefix_nil.mp h]
+  | cons _ _ ih =>
+    cases l₁ with
+    | nil => rfl
+    | cons =>
+      obtain ⟨rfl, h'⟩ := List.cons_prefix_cons.mp h
+      simpa using ih h'
+
 instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+: l₂)
   | [], l₂ => isTrue ⟨[], l₂, rfl⟩
   | a :: l₁, [] => isFalse fun ⟨s, t, te⟩ => by simp at te
@@ -123,6 +136,33 @@ instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l
 protected theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂) :
     l₁.reduceOption <+: l₂.reduceOption :=
   h.filterMap id
+
+theorem singleton_infix_iff (x : α) (xs : List α) :
+    [x] <:+: xs ↔ x ∈ xs := by
+  rw [List.mem_iff_append, List.IsInfix]
+  congr! 4
+  simp [eq_comm]
+
+@[simp]
+theorem singleton_infix_singleton_iff {x y : α} :
+    [x] <:+: [y] ↔ x = y := by
+  constructor
+  · rintro ⟨_ | _, bs, h⟩ <;> simp_all
+  · rintro rfl; rfl
+
+theorem infix_singleton_iff (xs : List α) (x : α) :
+    xs <:+: [x] ↔ xs = [] ∨ xs = [x] := by
+  match xs with
+  | [] => simp
+  | [_] => simp [List.singleton_infix_singleton_iff]
+  | _ :: _ :: _ =>
+    constructor
+    · rintro ⟨_ | _, _, h⟩ <;> simp at h
+    · simp
+
+lemma infix_antisymm {l₁ l₂ : List α} (h₁ : l₁ <:+: l₂) (h₂ : l₂ <:+: l₁) :
+    l₁ = l₂ :=
+  h₁.sublist.antisymm h₂.sublist
 
 instance : IsPartialOrder (List α) (· <+: ·) where
   refl _ := prefix_rfl
@@ -205,29 +245,29 @@ theorem inits_eq_tails : ∀ l : List α, l.inits = (reverse <| map reverse <| t
 
 theorem tails_eq_inits : ∀ l : List α, l.tails = (reverse <| map reverse <| inits <| reverse l)
   | [] => by simp
-  | a :: l => by simp [tails_eq_inits l, append_left_inj]
+  | a :: l => by simp [tails_eq_inits l]
 
 theorem inits_reverse (l : List α) : inits (reverse l) = reverse (map reverse l.tails) := by
   rw [tails_eq_inits l]
-  simp [reverse_involutive.comp_self, ← map_reverse]
+  simp [← map_reverse]
 
 theorem tails_reverse (l : List α) : tails (reverse l) = reverse (map reverse l.inits) := by
   rw [inits_eq_tails l]
-  simp [reverse_involutive.comp_self, ← map_reverse]
+  simp [← map_reverse]
 
 theorem map_reverse_inits (l : List α) : map reverse l.inits = (reverse <| tails <| reverse l) := by
   rw [inits_eq_tails l]
-  simp [reverse_involutive.comp_self, ← map_reverse]
+  simp [← map_reverse]
 
 theorem map_reverse_tails (l : List α) : map reverse l.tails = (reverse <| inits <| reverse l) := by
   rw [tails_eq_inits l]
-  simp [reverse_involutive.comp_self, ← map_reverse]
+  simp [← map_reverse]
 
 @[simp]
 theorem length_tails (l : List α) : length (tails l) = length l + 1 := by
-  induction' l with x l IH
-  · simp
-  · simpa using IH
+  induction l with
+  | nil => simp
+  | cons x l IH => simpa using IH
 
 @[simp]
 theorem length_inits (l : List α) : length (inits l) = length l + 1 := by simp [inits_eq_tails]
@@ -259,10 +299,10 @@ theorem get_inits (l : List α) (n : Fin (length (inits l))) : (inits l).get n =
   simp
 
 lemma map_inits {β : Type*} (g : α → β) : (l.map g).inits = l.inits.map (map g) := by
-  induction' l using reverseRecOn <;> simp [*]
+  induction l using reverseRecOn <;> simp [*]
 
 lemma map_tails {β : Type*} (g : α → β) : (l.map g).tails = l.tails.map (map g) := by
-  induction' l using reverseRecOn <;> simp [*]
+  induction l using reverseRecOn <;> simp [*]
 
 lemma take_inits {n} : (l.take n).inits = l.inits.take (n + 1) := by
   apply ext_getElem <;> (simp [take_take] <;> omega)
@@ -283,8 +323,8 @@ theorem insert_eq_ite (a : α) (l : List α) : insert a l = if a ∈ l then l el
 @[simp]
 theorem suffix_insert (a : α) (l : List α) : l <:+ l.insert a := by
   by_cases h : a ∈ l
-  · simp only [insert_of_mem h, insert, suffix_refl]
-  · simp only [insert_of_not_mem h, suffix_cons, insert]
+  · simp only [insert_of_mem h, suffix_refl]
+  · simp only [insert_of_not_mem h, suffix_cons]
 
 theorem infix_insert (a : α) (l : List α) : l <:+: l.insert a :=
   (suffix_insert a l).isInfix

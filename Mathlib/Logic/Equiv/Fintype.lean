@@ -35,8 +35,11 @@ if `α` is a `Fintype`. Has poor computational performance, due to exhaustive se
 constructed inverse. When a better inverse is known, use `Equiv.ofLeftInverse'` or
 `Equiv.ofLeftInverse` instead. This is the computable version of `Equiv.ofInjective`.
 -/
-def Function.Embedding.toEquivRange : α ≃ Set.range f :=
-  ⟨fun a => ⟨f a, Set.mem_range_self a⟩, f.invOfMemRange, fun _ => by simp, fun _ => by simp⟩
+def Function.Embedding.toEquivRange : α ≃ Set.range f where
+  toFun := fun a => ⟨f a, Set.mem_range_self a⟩
+  invFun := f.invOfMemRange
+  left_inv := fun _ => by simp
+  right_inv := fun _ => by simp
 
 @[simp]
 theorem Function.Embedding.toEquivRange_apply (a : α) :
@@ -71,7 +74,7 @@ theorem Equiv.Perm.viaFintypeEmbedding_apply_image (a : α) :
 theorem Equiv.Perm.viaFintypeEmbedding_apply_mem_range {b : β} (h : b ∈ Set.range f) :
     e.viaFintypeEmbedding f b = f (e (f.invOfMemRange ⟨b, h⟩)) := by
   simp only [viaFintypeEmbedding, Function.Embedding.invOfMemRange]
-  rw [Equiv.Perm.extendDomain_apply_subtype]
+  rw [Equiv.Perm.extendDomain_apply_subtype _ _ h]
   congr
 
 theorem Equiv.Perm.viaFintypeEmbedding_apply_notMem_range {b : β} (h : b ∉ Set.range f) :
@@ -113,7 +116,7 @@ theorem extendSubtype_apply_of_mem (e : { x // p x } ≃ { x // q x }) (x) (hx :
     e.extendSubtype x = e ⟨x, hx⟩ := by
   dsimp only [extendSubtype]
   simp only [subtypeCongr, Equiv.trans_apply, Equiv.sumCongr_apply]
-  rw [sumCompl_apply_symm_of_pos _ _ hx, Sum.map_inl, sumCompl_apply_inl]
+  rw [sumCompl_symm_apply_of_pos hx, Sum.map_inl, sumCompl_apply_inl]
 
 theorem extendSubtype_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : p x) :
     q (e.extendSubtype x) := by
@@ -124,7 +127,7 @@ theorem extendSubtype_apply_of_not_mem (e : { x // p x } ≃ { x // q x }) (x) (
     e.extendSubtype x = e.toCompl ⟨x, hx⟩ := by
   dsimp only [extendSubtype]
   simp only [subtypeCongr, Equiv.trans_apply, Equiv.sumCongr_apply]
-  rw [sumCompl_apply_symm_of_neg _ _ hx, Sum.map_inr, sumCompl_apply_inr]
+  rw [sumCompl_symm_apply_of_neg hx, Sum.map_inr, sumCompl_apply_inr]
 
 theorem extendSubtype_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
     ¬q (e.extendSubtype x) := by

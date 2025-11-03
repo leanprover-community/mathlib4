@@ -56,7 +56,7 @@ theorem mod3_eq_1_or_mod3_eq_2 {a b : ℕ} (h1 : a % 3 = 1 ∨ a % 3 = 2)
   rcases h2 with h2 | h2
   · rw [h2]; exact h1
   · rcases h1 with h1 | h1
-    · right; simp [h2, mul_mod, h1, Nat.succ_lt_succ]
+    · right; simp [h2, mul_mod, h1]
     · left; simp only [h2, mul_mod, h1, mod_mod]
 
 /-- `count_equiv_one_or_two_mod3_of_derivable` shows any derivable string must have a `count I` that

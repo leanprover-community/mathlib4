@@ -145,7 +145,7 @@ lemma isRelUpperSet_Icc_le : IsRelUpperSet (Icc a c) (· ≤ c) := fun _ b ↦ b
   exact fun _ x _ ↦ b.1.trans x
 
 lemma isRelLowerSet_Icc_ge : IsRelLowerSet (Icc c a) (c ≤ ·) := fun _ b ↦ by
-  simp_all only [mem_Icc, and_true, true_and]
+  simp_all only [mem_Icc, true_and]
   exact fun _ x _ ↦ x.trans b.2
 
 end Preorder

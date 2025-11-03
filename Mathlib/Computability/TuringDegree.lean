@@ -7,17 +7,16 @@ import Mathlib.Computability.Partrec
 import Mathlib.Order.Antisymmetrization
 
 /-!
-# Oracle Computability and Turing Degrees
+# Oracle computability and Turing degrees
 
-This file defines a model of oracle computability using partial recursive functions.
-This file introduces Turing reducibility and equivalence, prove that Turing equivalence is an
-equivalence relation, and define Turing degrees as the quotient under this relation.
+This file defines a model of oracle computability using partial recursive functions. It introduces
+Turing reducibility and equivalence, proves that Turing equivalence is an equivalence relation, and
+defines Turing degrees as the quotient under this relation.
 
-## Main Definitions
+## Main definitions
 
-- `RecursiveIn O f`:
-  An inductive definition representing that a partial function `f` is partial recursive given access
-  to a set of oracles O.
+- `RecursiveIn O f`: An inductive definition representing that a partial function `f` is partially
+  recursive given access to a set of oracles O.
 - `TuringReducible`: A relation defining Turing reducibility between partial functions.
 - `TuringEquivalent`: An equivalence relation defining Turing equivalence between partial functions.
 - `TuringDegree`: The type of Turing degrees, defined as the quotient of partial functions under
@@ -28,9 +27,9 @@ equivalence relation, and define Turing degrees as the quotient under this relat
 - `f ≤ᵀ g` : `f` is Turing reducible to `g`.
 - `f ≡ᵀ g` : `f` is Turing equivalent to `g`.
 
-## Implementation Notes
+## Implementation notes
 
-The type of partial functions recursive in a set of oracle `O` is the smallest type containing
+The type of partial functions recursive in a set of oracles `O` is the smallest type containing
 the constant zero, the successor, left and right projections, each oracle `g ∈ O`,
 and is closed under pairing, composition, primitive recursion, and μ-recursion.
 
@@ -119,8 +118,6 @@ theorem partrec_iff_forall_turingReducible : Nat.Partrec f ↔ ∀ g, f ≤ᵀ g
 protected theorem TuringReducible.refl (f : ℕ →. ℕ) : f ≤ᵀ f := .oracle _ <| by simp
 protected theorem TuringReducible.rfl : f ≤ᵀ f := .refl _
 
-instance : IsRefl (ℕ →. ℕ) TuringReducible where refl _ := .rfl
-
 theorem TuringReducible.trans (hg : f ≤ᵀ g) (hh : g ≤ᵀ h) : f ≤ᵀ h := by
   induction hg with repeat {constructor}
   | oracle _ hg => rw [Set.mem_singleton_iff] at hg; rw [hg]; exact hh
@@ -129,11 +126,9 @@ theorem TuringReducible.trans (hg : f ≤ᵀ g) (hh : g ≤ᵀ h) : f ≤ᵀ h :
   | prec _ _ ih₁ ih₂ => exact RecursiveIn.prec ih₁ ih₂
   | rfind _ ih => exact RecursiveIn.rfind ih
 
-instance : IsTrans (ℕ →. ℕ) TuringReducible :=
-  ⟨@TuringReducible.trans⟩
-
 instance : IsPreorder (ℕ →. ℕ) TuringReducible where
-  refl := .refl
+  refl _ := .rfl
+  trans := @TuringReducible.trans
 
 theorem TuringEquivalent.equivalence : Equivalence TuringEquivalent :=
   (AntisymmRel.setoid _ _).iseqv
@@ -149,13 +144,6 @@ theorem TuringEquivalent.symm {f g : ℕ →. ℕ} (h : f ≡ᵀ g) : g ≡ᵀ f
 @[trans]
 theorem TuringEquivalent.trans (f g h : ℕ →. ℕ) (h₁ : f ≡ᵀ g) (h₂ : g ≡ᵀ h) : f ≡ᵀ h :=
   Equivalence.trans equivalence h₁ h₂
-
-/--
-Instance declaring that `RecursiveIn` is a preorder.
--/
-instance : IsPreorder (ℕ →. ℕ) TuringReducible where
-  refl := TuringReducible.refl
-  trans := @TuringReducible.trans
 
 /--
 Turing degrees are the equivalence classes of partial functions under Turing equivalence.

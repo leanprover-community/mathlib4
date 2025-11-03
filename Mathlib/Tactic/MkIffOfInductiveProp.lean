@@ -52,7 +52,7 @@ This relation is user-visible, so we compact it by removing each `b_j` where a `
 hence `a_i = b_j`. We need to take care when there are `p_i` and `p_j` with `p_i = p_j = b_k`.
 -/
 partial def compactRelation :
-  List Expr → List (Expr × Expr) → List (Option Expr) × List (Expr × Expr) × (Expr → Expr)
+    List Expr → List (Expr × Expr) → List (Option Expr) × List (Expr × Expr) × (Expr → Expr)
 | [],    as_ps => ([], as_ps, id)
 | b::bs, as_ps =>
   match as_ps.span (fun ⟨_, p⟩ ↦ p != b) with
@@ -333,10 +333,13 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM
 
 /--
 Applying the `mk_iff` attribute to an inductively-defined proposition `mk_iff` makes an `iff` rule
-`r` with the shape `∀ps is, i as ↔ ⋁_j, ∃cs, is = cs`, where `ps` are the type parameters, `is` are
-the indices, `j` ranges over all possible constructors, the `cs` are the parameters for each of the
-constructors, and the equalities `is = cs` are the instantiations for each constructor for each of
-the indices to the inductive type `i`.
+`r` with the shape `∀ ps is, i as ↔ ⋁_j, ∃ cs, is = cs`, where
+* `ps` are the type parameters,
+* `is` are the indices,
+* `j` ranges over all possible constructors,
+* the `cs` are the parameters for each of the constructors, and
+* the equalities `is = cs` are the instantiations for each constructor for each of
+  the indices to the inductive type `i`.
 
 In each case, we remove constructor parameters (i.e. `cs`) when the corresponding equality would
 be just `c = i` for some index `i`.
@@ -374,10 +377,13 @@ syntax (name := mkIff) "mk_iff" (ppSpace ident)? : attr
 
 /--
 `mk_iff_of_inductive_prop i r` makes an `iff` rule for the inductively-defined proposition `i`.
-The new rule `r` has the shape `∀ps is, i as ↔ ⋁_j, ∃cs, is = cs`, where `ps` are the type
-parameters, `is` are the indices, `j` ranges over all possible constructors, the `cs` are the
-parameters for each of the constructors, and the equalities `is = cs` are the instantiations for
-each constructor for each of the indices to the inductive type `i`.
+The new rule `r` has the shape `∀ ps is, i as ↔ ⋁_j, ∃ cs, is = cs`, where
+* `ps` are the type parameters,
+* `is` are the indices,
+* `j` ranges over all possible constructors,
+* the `cs` are the parameters for each of the constructors, and
+* the equalities `is = cs` are the instantiations for
+  each constructor for each of the indices to the inductive type `i`.
 
 In each case, we remove constructor parameters (i.e. `cs`) when the corresponding equality would
 be just `c = i` for some index `i`.
@@ -386,7 +392,7 @@ For example, `mk_iff_of_inductive_prop` on `List.Chain` produces:
 
 ```lean
 ∀ { α : Type*} (R : α → α → Prop) (a : α) (l : List α),
-  Chain R a l ↔ l = [] ∨ ∃(b : α) (l' : List α), R a b ∧ Chain R b l ∧ l = b :: l'
+  Chain R a l ↔ l = [] ∨ ∃ (b : α) (l' : List α), R a b ∧ Chain R b l ∧ l = b :: l'
 ```
 
 See also the `mk_iff` user attribute.

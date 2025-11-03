@@ -18,8 +18,6 @@ In this file we show:
 This file essentially mirrors `Mathlib/Algebra/Category/AlgCat/Symmetric.lean`.
 -/
 
-suppress_compilation
-
 open CategoryTheory
 
 universe v u
@@ -31,14 +29,13 @@ namespace QuadraticModuleCat
 open QuadraticForm
 
 instance : BraidedCategory (QuadraticModuleCat.{u} R) :=
-  braidedCategoryOfFaithful (forget₂ (QuadraticModuleCat R) (ModuleCat R))
-    (fun X Y => ofIso <| tensorComm X.form Y.form)
-    (by aesop_cat)
+  .ofFaithful (forget₂ (QuadraticModuleCat R) (ModuleCat R))
+    fun X Y ↦ ofIso <| tensorComm X.form Y.form
 
 /-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` is a braided functor. -/
 instance : (forget₂ (QuadraticModuleCat R) (ModuleCat R)).Braided where
 
 instance instSymmetricCategory : SymmetricCategory (QuadraticModuleCat.{u} R) :=
-  symmetricCategoryOfFaithful (forget₂ (QuadraticModuleCat R) (ModuleCat R))
+  .ofFaithful (forget₂ (QuadraticModuleCat R) (ModuleCat R))
 
 end QuadraticModuleCat

@@ -34,7 +34,7 @@ variable [Group A] [Group B]
 
 @[to_additive]
 theorem ker_eq_bot_of_cancel {f : A →* B} (h : ∀ u v : f.ker →* A, f.comp u = f.comp v → u = v) :
-    f.ker = ⊥ := by simpa using congr_arg range (h f.ker.subtype 1 (by aesop_cat))
+    f.ker = ⊥ := by simpa using congr_arg range (h f.ker.subtype 1 (by cat_disch))
 
 end
 
@@ -62,9 +62,9 @@ section
 
 open CategoryTheory
 
-namespace Grp
+namespace GrpCat
 
-variable {A B : Grp.{u}} (f : A ⟶ B)
+variable {A B : GrpCat.{u}} (f : A ⟶ B)
 
 @[to_additive]
 theorem ker_eq_bot_of_mono [Mono f] : f.hom.ker = ⊥ :=
@@ -118,7 +118,7 @@ theorem one_smul (x : X') : (1 : B) • x = x :=
   match x with
   | fromCoset y => by
     change fromCoset _ = fromCoset _
-    simp only [one_leftCoset, Subtype.ext_iff_val]
+    simp only [one_leftCoset]
   | ∞ => rfl
 
 theorem fromCoset_eq_of_mem_range {b : B} (hb : b ∈ f.hom.range) :
@@ -218,7 +218,7 @@ theorem g_apply_infinity (x : B) : (g x) ∞ = ∞ := rfl
 
 theorem h_apply_infinity (x : B) (hx : x ∈ f.hom.range) : (h x) ∞ = ∞ := by
   change ((τ).symm.trans (g x)).trans τ _ = _
-  simp only [MonoidHom.coe_mk, Equiv.toFun_as_coe, Equiv.coe_trans, Function.comp_apply]
+  simp only [Equiv.coe_trans, Function.comp_apply]
   rw [τ_symm_apply_infinity, g_apply_fromCoset]
   simpa only using τ_apply_fromCoset' f x hx
 
@@ -235,7 +235,7 @@ theorem h_apply_fromCoset' (x : B) (b : B) (hb : b ∈ f.hom.range) :
 theorem h_apply_fromCoset_nin_range (x : B) (hx : x ∈ f.hom.range) (b : B) (hb : b ∉ f.hom.range) :
     h x (fromCoset ⟨b • f.hom.range, b, rfl⟩) = fromCoset ⟨(x * b) • ↑f.hom.range, x * b, rfl⟩ := by
   change ((τ).symm.trans (g x)).trans τ _ = _
-  simp only [tau, MonoidHom.coe_mk, Equiv.toFun_as_coe, Equiv.coe_trans, Function.comp_apply]
+  simp only [tau, Equiv.coe_trans, Function.comp_apply]
   rw [Equiv.symm_swap,
     @Equiv.swap_apply_of_ne_of_ne X' _ (fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩) ∞
       (fromCoset ⟨b • ↑f.hom.range, b, rfl⟩) (fromCoset_ne_of_nin_range _ hb) (by simp)]
@@ -291,7 +291,7 @@ theorem surjective_of_epi [Epi f] : Function.Surjective f := by
   rcases r with ⟨b, hb⟩
   exact
     SurjectiveOfEpiAuxs.g_ne_h f b (fun ⟨c, hc⟩ => hb _ hc)
-      (congr_arg Grp.Hom.hom ((cancel_epi f).1 (SurjectiveOfEpiAuxs.comp_eq f)))
+      (congr_arg GrpCat.Hom.hom ((cancel_epi f).1 (SurjectiveOfEpiAuxs.comp_eq f)))
 
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f :=
   ⟨fun _ => surjective_of_epi f, ConcreteCategory.epi_of_surjective f⟩
@@ -299,44 +299,44 @@ theorem epi_iff_surjective : Epi f ↔ Function.Surjective f :=
 theorem epi_iff_range_eq_top : Epi f ↔ f.hom.range = ⊤ :=
   Iff.trans (epi_iff_surjective _) (Subgroup.eq_top_iff' f.hom.range).symm
 
-end Grp
+end GrpCat
 
-namespace AddGrp
+namespace AddGrpCat
 
 
-variable {A B : AddGrp.{u}} (f : A ⟶ B)
+variable {A B : AddGrpCat.{u}} (f : A ⟶ B)
 
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
   have i1 : Epi f ↔ Epi (groupAddGroupEquivalence.inverse.map f) := by
     refine ⟨?_, groupAddGroupEquivalence.inverse.epi_of_epi_map⟩
     intro e'
     apply groupAddGroupEquivalence.inverse.map_epi
-  rwa [Grp.epi_iff_surjective] at i1
+  rwa [GrpCat.epi_iff_surjective] at i1
 
 theorem epi_iff_range_eq_top : Epi f ↔ f.hom.range = ⊤ :=
   Iff.trans (epi_iff_surjective _) (AddSubgroup.eq_top_iff' f.hom.range).symm
 
-end AddGrp
+end AddGrpCat
 
-namespace Grp
+namespace GrpCat
 
 
-variable {A B : Grp.{u}} (f : A ⟶ B)
+variable {A B : GrpCat.{u}} (f : A ⟶ B)
 
-@[to_additive AddGrp.forget_grp_preserves_mono]
-instance forget_grp_preserves_mono : (forget Grp).PreservesMonomorphisms where
+@[to_additive AddGrpCat.forget_grp_preserves_mono]
+instance forget_grp_preserves_mono : (forget GrpCat).PreservesMonomorphisms where
   preserves f e := by rwa [mono_iff_injective, ← CategoryTheory.mono_iff_injective] at e
 
-@[to_additive AddGrp.forget_grp_preserves_epi]
-instance forget_grp_preserves_epi : (forget Grp).PreservesEpimorphisms where
+@[to_additive AddGrpCat.forget_grp_preserves_epi]
+instance forget_grp_preserves_epi : (forget GrpCat).PreservesEpimorphisms where
   preserves f e := by rwa [epi_iff_surjective, ← CategoryTheory.epi_iff_surjective] at e
 
-end Grp
+end GrpCat
 
-namespace CommGrp
+namespace CommGrpCat
 
 
-variable {A B : CommGrp.{u}} (f : A ⟶ B)
+variable {A B : CommGrpCat.{u}} (f : A ⟶ B)
 
 @[to_additive]
 theorem ker_eq_bot_of_mono [Mono f] : f.hom.ker = ⊥ :=
@@ -367,14 +367,14 @@ theorem epi_iff_range_eq_top : Epi f ↔ f.hom.range = ⊤ :=
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
   rw [epi_iff_range_eq_top, MonoidHom.range_eq_top]
 
-@[to_additive AddCommGrp.forget_commGrp_preserves_mono]
-instance forget_commGrp_preserves_mono : (forget CommGrp).PreservesMonomorphisms where
+@[to_additive AddCommGrpCat.forget_commGrp_preserves_mono]
+instance forget_commGrp_preserves_mono : (forget CommGrpCat).PreservesMonomorphisms where
   preserves f e := by rwa [mono_iff_injective, ← CategoryTheory.mono_iff_injective] at e
 
-@[to_additive AddCommGrp.forget_commGrp_preserves_epi]
-instance forget_commGrp_preserves_epi : (forget CommGrp).PreservesEpimorphisms where
+@[to_additive AddCommGrpCat.forget_commGrp_preserves_epi]
+instance forget_commGrp_preserves_epi : (forget CommGrpCat).PreservesEpimorphisms where
   preserves f e := by rwa [epi_iff_surjective, ← CategoryTheory.epi_iff_surjective] at e
 
-end CommGrp
+end CommGrpCat
 
 end

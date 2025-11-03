@@ -18,7 +18,7 @@ This notion specializes, e.g. in the subgroup lattice of a group to the Frattini
 or in the lattices of ideals in a ring `R` to the Jacobson ideal.
 -/
 def Order.radical (α : Type*) [Preorder α] [OrderTop α] [InfSet α] : α :=
-   ⨅ a ∈ {H | IsCoatom H}, a
+  ⨅ a ∈ {H | IsCoatom H}, a
 
 variable {α : Type*} [CompleteLattice α]
 

@@ -173,6 +173,37 @@ example : Int.natAbs 0 = 0 := by norm_num1
 
 end Int
 
+section NNRat
+open scoped NNRat
+
+variable [DivisionSemiring α] [CharZero α]
+
+-- Normalize to True
+example : (1 : ℚ≥0) = 1 := by norm_num1
+example : (1/2 : ℚ≥0) = 1/2 := by norm_num1
+example : (1 : α) = 1 := by norm_num1
+example : (1/2 : α) = 1/2 := by norm_num1
+example : (1 : ℚ≥0) ≠ 2 := by norm_num1
+example : (1/2 : ℚ≥0) ≠ 1 := by norm_num1
+example : (1/2 : ℚ≥0) ≠ 1/3 := by norm_num1
+example : (1/2 : ℚ≥0) ≠ 5/2 := by norm_num1
+example : (1/2 : α) ≠ 1/3 := by norm_num1
+example : (1/2 : α) ≠ 5/2 := by norm_num1
+example : (1 : α) / 3 ≠ 0 := by norm_num1
+example : (1 : α) / 3 ≠ 2 / 7 := by norm_num1
+
+-- Normalize to False
+example : ((1 : ℚ≥0) = 2) = False := by norm_num1
+example : ((1/2 : ℚ≥0) = 2) = False := by norm_num1
+example : ((1 : α) = 2) = False := by norm_num1
+example : ((1/2 : α) = 2) = False := by norm_num1
+
+example : ((1 : ℚ≥0) ≠ 1) = False := by norm_num1
+example : ((1/2 : ℚ≥0) ≠ 1/2) = False := by norm_num1
+example : ((1/2 : α) ≠ 1/2) = False := by norm_num1
+
+end NNRat
+
 section Rat
 
 variable [DivisionRing α] [CharZero α]
@@ -362,6 +393,14 @@ example : (63:ℚ) ≥ 5 := by norm_num1
 example (x : ℤ) (h : 1000 + 2000 < x) : 100 * 30 < x := by
   norm_num at *; exact h
 
+set_option linter.unusedVariables false in
+example {P : ℝ → Prop} (h1 : P (3 * 9 + 2)) (h2 : P (12 - 6 ^ 2)) : P (7 + 7) := by
+  norm_num at *
+  guard_hyp h1 : P 29
+  guard_hyp h2 : P (-24)
+  guard_target = P 14
+  exact test_sorry
+
 example : (1103 : ℤ) ≤ (2102 : ℤ) := by norm_num1
 example : (110474 : ℤ) ≤ (210485 : ℤ) := by norm_num1
 example : (11047462383473829263 : ℤ) ≤ (21048574677772382462 : ℤ) := by norm_num1
@@ -535,6 +574,7 @@ example : - (-4 / 3) = 1 / (3 / (4 : α)) := by norm_num1
 end
 
 -- user command
+set_option linter.style.commandStart false
 
 /-- info: True -/
 #guard_msgs in #norm_num 1 = 1
@@ -568,6 +608,13 @@ example : 3 ^ 3 + 4 = 31 := by
   norm_num1
   guard_target =ₛ 3 ^ 3 + 4 = 31
   rfl
+
+set_option linter.unusedTactic false in
+set_option linter.unusedVariables false in
+example {a b : ℚ} (h : a = b) : True := by
+  norm_num [*] at h
+  guard_hyp h : a = b
+  exact trivial
 
 /- Check that the scoping above works: -/
 example : 3 ^ 3 + 4 = 31 := by norm_num1
@@ -682,7 +729,7 @@ set_option linter.unusedTactic false in
 -- `simp` will continue even if given invalid theorem names (but generates an error)
 -- and this felicitously applies to `norm_num` too.
 -- Previous this was a `fail_if_success` test, but now we just check for the error.
-/-- error: unknown identifier 'this_doesnt_exist' -/
+/-- error: Unknown identifier `this_doesnt_exist` -/
 #guard_msgs in
 example : 1 + 1 = 2 := by
   norm_num [this_doesnt_exist]
@@ -704,3 +751,9 @@ example : (1 : R PUnit.{u+1} PUnit.{v+1}) <= 2 := by
 -- asymptotically slower than the GMP implementation.
 -- It would be great to fix that, and restore this test.
 example : 10^400000 = 10^400000 := by norm_num
+
+theorem large1 {α} [Ring α] : 2^(2^2000) + (2*2) - 2^(2^2000) = (4 : α) := by
+  -- large powers ignored rather than hanging
+  set_option exponentiation.threshold 20 in
+    norm_num1 -- TODO: this should warn, but the warning is discarded
+  simp only [add_sub_cancel_left]

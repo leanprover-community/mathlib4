@@ -3,9 +3,10 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection
-import Mathlib.Analysis.Normed.Affine.ContinuousAffineMap
+import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 /-!
 # Orthogonal projection in Euclidean affine spaces
@@ -47,7 +48,7 @@ def orthogonalProjectionFn (s : AffineSubspace ℝ P) [Nonempty s]
       (mk'_nonempty p s.directionᗮ)
       (by
         rw [direction_mk' p s.directionᗮ]
-        exact Submodule.isCompl_orthogonal_of_completeSpace)
+        exact Submodule.isCompl_orthogonal_of_hasOrthogonalProjection)
 
 /-- The intersection of the subspace and the orthogonal subspace
 through the given point is the `orthogonalProjectionFn` of that
@@ -62,7 +63,7 @@ theorem inter_eq_singleton_orthogonalProjectionFn {s : AffineSubspace ℝ P} [No
       (mk'_nonempty p s.directionᗮ)
       (by
         rw [direction_mk' p s.directionᗮ]
-        exact Submodule.isCompl_orthogonal_of_completeSpace)
+        exact Submodule.isCompl_orthogonal_of_hasOrthogonalProjection)
 
 /-- The `orthogonalProjectionFn` lies in the given subspace. This
 lemma is only intended for use in setting up the bundled version and
@@ -91,8 +92,6 @@ theorem orthogonalProjectionFn_vsub_mem_direction_orthogonal {s : AffineSubspace
   direction_mk' p s.directionᗮ ▸
     vsub_mem_direction (orthogonalProjectionFn_mem_orthogonal p) (self_mem_mk' _ _)
 
-attribute [local instance] AffineSubspace.toAddTorsor
-
 /-- Auxiliary definition for setting up the orthogonal projection. This one is a bundled affine
 map; the final `orthogonalProjection` is a continuous affine map. -/
 nonrec def orthogonalProjectionAux (s : AffineSubspace ℝ P) [Nonempty s]
@@ -100,18 +99,18 @@ nonrec def orthogonalProjectionAux (s : AffineSubspace ℝ P) [Nonempty s]
   toFun p := ⟨orthogonalProjectionFn s p, orthogonalProjectionFn_mem p⟩
   linear := s.direction.orthogonalProjection
   map_vadd' p v := by
-    have hs : (s.direction.orthogonalProjection v : V) +ᵥ orthogonalProjectionFn s p ∈ s :=
+    have hs : s.direction.starProjection v +ᵥ orthogonalProjectionFn s p ∈ s :=
       vadd_mem_of_mem_direction (s.direction.orthogonalProjection v).2
         (orthogonalProjectionFn_mem p)
     have ho :
-      (s.direction.orthogonalProjection v : V) +ᵥ orthogonalProjectionFn s p ∈
+      s.direction.starProjection v +ᵥ orthogonalProjectionFn s p ∈
         mk' (v +ᵥ p) s.directionᗮ := by
       rw [← vsub_right_mem_direction_iff_mem (self_mem_mk' _ _) _, direction_mk',
         vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_comm, add_sub_assoc]
       refine Submodule.add_mem _ (orthogonalProjectionFn_vsub_mem_direction_orthogonal p) ?_
       rw [Submodule.mem_orthogonal']
       intro w hw
-      rw [← neg_sub, inner_neg_left, Submodule.orthogonalProjection_inner_eq_zero _ w hw, neg_zero]
+      rw [← neg_sub, inner_neg_left, Submodule.starProjection_inner_eq_zero _ w hw, neg_zero]
     have hm :
       (s.direction.orthogonalProjection v : V) +ᵥ orthogonalProjectionFn s p ∈
         ({orthogonalProjectionFn s (v +ᵥ p)} : Set P) := by
@@ -223,10 +222,8 @@ theorem orthogonalProjection_mem_subspace_eq_self {s : AffineSubspace ℝ P} [No
 /-- Orthogonal projection is idempotent. -/
 theorem orthogonalProjection_orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] (p : P) :
-    orthogonalProjection s (orthogonalProjection s p) = orthogonalProjection s p := by
-  ext
-  rw [orthogonalProjection_eq_self_iff]
-  exact orthogonalProjection_mem p
+    orthogonalProjection s (orthogonalProjection s p) = orthogonalProjection s p :=
+  orthogonalProjection_mem_subspace_eq_self ((orthogonalProjection s) p)
 
 theorem eq_orthogonalProjection_of_eq_subspace {s s' : AffineSubspace ℝ P} [Nonempty s]
     [Nonempty s'] [s.direction.HasOrthogonalProjection] [s'.direction.HasOrthogonalProjection]
@@ -279,6 +276,54 @@ theorem orthogonalProjection_vsub_orthogonalProjection (s : AffineSubspace ℝ P
   rw [← neg_vsub_eq_vsub_rev, inner_neg_right,
     orthogonalProjection_vsub_mem_direction_orthogonal s p c hc, neg_zero]
 
+/-- The characteristic property of the orthogonal projection, for a point given in the underlying
+space. This form is typically more convenient to use than
+`inter_eq_singleton_orthogonalProjection`. -/
+lemma coe_orthogonalProjection_eq_iff_mem {s : AffineSubspace ℝ P} [Nonempty s]
+    [s.direction.HasOrthogonalProjection] {p q : P} :
+    orthogonalProjection s p = q ↔ q ∈ s ∧ p -ᵥ q ∈ s.directionᗮ := by
+  constructor
+  · rintro rfl
+    exact ⟨orthogonalProjection_mem _, vsub_orthogonalProjection_mem_direction_orthogonal _ _⟩
+  · rintro ⟨hqs, hpq⟩
+    have hq : q ∈ mk' p s.directionᗮ := by
+      rwa [mem_mk', ← neg_mem_iff, neg_vsub_eq_vsub_rev]
+    suffices q ∈ ({(orthogonalProjection s p : P)} : Set P) by
+      simpa [eq_comm] using this
+    rw [← inter_eq_singleton_orthogonalProjection]
+    simp only [Set.mem_inter_iff, SetLike.mem_coe]
+    exact ⟨hqs, hq⟩
+
+/-- The characteristic property of the orthogonal projection, for a point given in the relevant
+subspace. This form is typically more convenient to use than
+`inter_eq_singleton_orthogonalProjection`. -/
+lemma orthogonalProjection_eq_iff_mem {s : AffineSubspace ℝ P} [Nonempty s]
+    [s.direction.HasOrthogonalProjection] {p : P} {q : s} :
+    orthogonalProjection s p = q ↔ p -ᵥ q ∈ s.directionᗮ := by
+  simpa using coe_orthogonalProjection_eq_iff_mem (s := s) (p := p) (q := (q : P))
+
+/-- A condition for two points to have the same orthogonal projection onto a given subspace. -/
+lemma orthogonalProjection_eq_orthogonalProjection_iff_vsub_mem {s : AffineSubspace ℝ P}
+    [Nonempty s] [s.direction.HasOrthogonalProjection] {p q : P} :
+    orthogonalProjection s p = orthogonalProjection s q ↔ p -ᵥ q ∈ s.directionᗮ := by
+  rw [orthogonalProjection_eq_iff_mem, ← s.directionᗮ.add_mem_iff_left (x := p -ᵥ q)
+    (vsub_orthogonalProjection_mem_direction_orthogonal s q)]
+  simp
+
+/-- If the orthogonal projections of a point onto two subspaces are equal, so is the projection
+onto their supremum. -/
+lemma orthogonalProjection_sup_of_orthogonalProjection_eq {s₁ s₂ : AffineSubspace ℝ P} [Nonempty s₁]
+    [Nonempty s₂] [s₁.direction.HasOrthogonalProjection] [s₂.direction.HasOrthogonalProjection]
+    {p : P} (h : (orthogonalProjection s₁ p : P) = orthogonalProjection s₂ p)
+    [(s₁ ⊔ s₂).direction.HasOrthogonalProjection] :
+    (orthogonalProjection (s₁ ⊔ s₂) p : P) = orthogonalProjection s₁ p := by
+  rw [coe_orthogonalProjection_eq_iff_mem]
+  refine ⟨SetLike.le_def.1 le_sup_left (orthogonalProjection_mem _), ?_⟩
+  rw [direction_sup_eq_sup_direction (orthogonalProjection_mem p) (h ▸ orthogonalProjection_mem p),
+    ← Submodule.inf_orthogonal]
+  exact ⟨vsub_orthogonalProjection_mem_direction_orthogonal _ _,
+    h ▸ vsub_orthogonalProjection_mem_direction_orthogonal _ _⟩
+
 /-- Adding a vector to a point in the given subspace, then taking the
 orthogonal projection, produces the original point if the vector was
 in the orthogonal direction. -/
@@ -301,6 +346,14 @@ theorem orthogonalProjection_vadd_smul_vsub_orthogonalProjection {s : AffineSubs
     orthogonalProjection s (r • (p₂ -ᵥ orthogonalProjection s p₂ : V) +ᵥ p₁) = ⟨p₁, hp⟩ :=
   orthogonalProjection_vadd_eq_self hp
     (Submodule.smul_mem _ _ (vsub_orthogonalProjection_mem_direction_orthogonal s _))
+
+lemma orthogonalProjection_orthogonalProjection_of_le {s₁ s₂ : AffineSubspace ℝ P} [Nonempty s₁]
+    [Nonempty s₂] [s₁.direction.HasOrthogonalProjection] [s₂.direction.HasOrthogonalProjection]
+    (h : s₁ ≤ s₂) (p : P) :
+    orthogonalProjection s₁ (orthogonalProjection s₂ p) = orthogonalProjection s₁ p := by
+  rw [orthogonalProjection_eq_orthogonalProjection_iff_vsub_mem]
+  exact SetLike.le_def.1 (Submodule.orthogonal_le (direction_le h))
+    (orthogonalProjection_vsub_mem_direction_orthogonal _ _)
 
 /-- The square of the distance from a point in `s` to `p₂` equals the
 sum of the squares of the distances of the two points to the
@@ -445,7 +498,7 @@ theorem reflection_reflection (s : AffineSubspace ℝ P) [Nonempty s]
   have : ∀ a : s, ∀ b : V, s.direction.orthogonalProjection b = 0 →
       reflection s (reflection s (b +ᵥ (a : P))) = b +ᵥ (a : P) := by
     intro _ _ h
-    simp [reflection, h]
+    simp [reflection]
   rw [← vsub_vadd p (orthogonalProjection s p)]
   exact this (orthogonalProjection s p) _ (orthogonalProjection_vsub_orthogonalProjection s p)
 
@@ -580,6 +633,17 @@ theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
   exact
     Submodule.inner_right_of_mem_orthogonal (vsub_orthogonalProjection_mem_direction p₂ hp₁)
       (orthogonalProjection_vsub_mem_direction_orthogonal _ p₂)
+
+@[simp]
+lemma orthogonalProjectionSpan_eq_point (s : Simplex ℝ P 0) (p : P) :
+    s.orthogonalProjectionSpan p = s.points 0 := by
+  rw [orthogonalProjectionSpan]
+  convert orthogonalProjection_affineSpan_singleton _ _
+  simp [Fin.fin_one_eq_zero]
+
+lemma orthogonalProjectionSpan_faceOpposite_eq_point_rev (s : Simplex ℝ P 1) (i : Fin 2)
+    (p : P) : (s.faceOpposite i).orthogonalProjectionSpan p = s.points i.rev := by
+  simp [faceOpposite_point_eq_point_rev]
 
 end Simplex
 

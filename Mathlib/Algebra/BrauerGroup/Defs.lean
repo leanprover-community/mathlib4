@@ -17,7 +17,8 @@ central simple algebras `A` and `B` are Brauer Equivalent if there exist `n, m �
 that `Mₙ(A) ≃ₐ[K] Mₘ(B)`.
 
 # TODOs
-1. Prove that the Brauer group is an abelian group where multiplication is defined as tensorproduct.
+1. Prove that the Brauer group is an abelian group where multiplication is defined as tensor
+   product.
 2. Prove that the Brauer group is a functor from the category of fields to the category of groups.
 3. Prove that over a field, being Brauer equivalent is the same as being Morita equivalent.
 
@@ -30,8 +31,8 @@ Brauer group, Central simple algebra, Galois Cohomology
 
 universe u v
 
-/-- `CSA` is the set of all finite dimensional central simple algebras over field `K`, for its
-generalisation over a `CommRing` please find `IsAzumaya` in `Mathlib/Algebra/Azumaya/Defs.lean`. -/
+/-- `CSA` is the set of all finite-dimensional central simple algebras over a field `K`. For the
+generalization to a `CommRing`, see `IsAzumaya` in `Mathlib/Algebra/Azumaya/Defs.lean`. -/
 structure CSA (K : Type u) [Field K] extends AlgCat.{v} K where
   /-- Any member of `CSA` is central. -/
   [isCentral : Algebra.IsCentral K carrier]
@@ -46,8 +47,8 @@ instance : CoeSort (CSA.{u, v} K) (Type v) := ⟨(·.carrier)⟩
 
 attribute [instance] CSA.isCentral CSA.isSimple CSA.fin_dim
 
-/-- Two finite dimensional central simple algebras `A` and `B` are Brauer Equivalent
-  if there exist `n, m ∈ ℕ+` such that the `Mₙ(A) ≃ₐ[K] Mₙ(B)`. -/
+/-- Two finite-dimensional central simple algebras `A` and `B` are Brauer Equivalent
+  if there exist `n, m ∈ ℕ+` such that the `Mₙ(A) ≃ₐ[K] Mₘ(B)`. -/
 abbrev IsBrauerEquivalent (A B : CSA K) : Prop :=
   ∃ n m : ℕ, n ≠ 0 ∧ m ≠ 0 ∧ (Nonempty <| Matrix (Fin n) (Fin n) A ≃ₐ[K] Matrix (Fin m) (Fin m) B)
 
@@ -84,7 +85,7 @@ end IsBrauerEquivalent
 variable (K)
 
 /-- `CSA` equipped with Brauer Equivalence is indeed a setoid. -/
-def Brauer.CSA_Setoid: Setoid (CSA K) where
+def Brauer.CSA_Setoid : Setoid (CSA K) where
   r := IsBrauerEquivalent
   iseqv := IsBrauerEquivalent.is_eqv
 

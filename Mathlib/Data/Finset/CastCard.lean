@@ -20,7 +20,7 @@ cardinality as element of an `AddGroupWithOne`.
 * `Finset.cast_card_sdiff`: cardinality of `t \ s` is the difference of cardinalities if `s ⊆ t`.
 -/
 
-assert_not_exists MonoidWithZero OrderedCommMonoid
+assert_not_exists MonoidWithZero IsOrderedMonoid
 
 open Nat
 
@@ -43,6 +43,6 @@ lemma cast_card_union : (#(s ∪ t) : R) = #s + #t - #(s ∩ t) := by
   rw [eq_sub_iff_add_eq, ← cast_add, card_union_add_card_inter, cast_add]
 
 lemma cast_card_sdiff (h : s ⊆ t) : (#(t \ s) : R) = #t - #s := by
-  rw [card_sdiff h, Nat.cast_sub (card_mono h)]
+  rw [card_sdiff_of_subset h, Nat.cast_sub (card_mono h)]
 
 end Finset

@@ -6,6 +6,11 @@ Authors: Fox Thomson, Markus Himmel
 import Mathlib.SetTheory.Game.Birthday
 import Mathlib.SetTheory.Game.Impartial
 import Mathlib.SetTheory.Nimber.Basic
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.Specific.Nim` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Nim and the Sprague-Grundy theorem
@@ -49,21 +54,18 @@ noncomputable def nim (o : Ordinal.{u}) : PGame.{u} :=
 termination_by o
 decreasing_by all_goals exact ((enumIsoToType o).symm x).prop
 
-@[deprecated "you can use `rw [nim]` directly" (since := "2025-01-23")]
-theorem nim_def (o : Ordinal) : nim o =
-    ⟨o.toType, o.toType,
-      fun x => nim ((enumIsoToType o).symm x).val,
-      fun x => nim ((enumIsoToType o).symm x).val⟩ := by
-  rw [nim]
-
 theorem leftMoves_nim (o : Ordinal) : (nim o).LeftMoves = o.toType := by rw [nim]; rfl
 theorem rightMoves_nim (o : Ordinal) : (nim o).RightMoves = o.toType := by rw [nim]; rfl
 
-theorem moveLeft_nim_hEq (o : Ordinal) :
-    HEq (nim o).moveLeft fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim]; rfl
+theorem moveLeft_nim_heq (o : Ordinal) :
+    (nim o).moveLeft ≍ fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim]; rfl
 
-theorem moveRight_nim_hEq (o : Ordinal) :
-    HEq (nim o).moveRight fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim]; rfl
+@[deprecated (since := "2025-07-05")] alias moveLeft_nim_hEq := moveLeft_nim_heq
+
+theorem moveRight_nim_heq (o : Ordinal) :
+    (nim o).moveRight ≍ fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim]; rfl
+
+@[deprecated (since := "2025-07-05")] alias moveRight_nim_hEq := moveRight_nim_heq
 
 /-- Turns an ordinal less than `o` into a left move for `nim o` and vice versa. -/
 noncomputable def toLeftMovesNim {o : Ordinal} : Set.Iio o ≃ (nim o).LeftMoves :=
@@ -85,10 +87,7 @@ theorem toRightMovesNim_symm_lt {o : Ordinal} (i : (nim o).RightMoves) :
 
 @[simp]
 theorem moveLeft_nim {o : Ordinal} (i) : (nim o).moveLeft i = nim (toLeftMovesNim.symm i).val :=
-  (congr_heq (moveLeft_nim_hEq o).symm (cast_heq _ i)).symm
-
-@[deprecated moveLeft_nim (since := "2024-10-30")]
-alias moveLeft_nim' := moveLeft_nim
+  (congr_heq (moveLeft_nim_heq o).symm (cast_heq _ i)).symm
 
 theorem moveLeft_toLeftMovesNim {o : Ordinal} (i) :
     (nim o).moveLeft (toLeftMovesNim i) = nim i := by
@@ -96,10 +95,7 @@ theorem moveLeft_toLeftMovesNim {o : Ordinal} (i) :
 
 @[simp]
 theorem moveRight_nim {o : Ordinal} (i) : (nim o).moveRight i = nim (toRightMovesNim.symm i).val :=
-  (congr_heq (moveRight_nim_hEq o).symm (cast_heq _ i)).symm
-
-@[deprecated moveRight_nim (since := "2024-10-30")]
-alias moveRight_nim' := moveRight_nim
+  (congr_heq (moveRight_nim_heq o).symm (cast_heq _ i)).symm
 
 theorem moveRight_toRightMovesNim {o : Ordinal} (i) :
     (nim o).moveRight (toRightMovesNim i) = nim i := by

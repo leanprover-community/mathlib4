@@ -59,7 +59,7 @@ section Involutive
 
 theorem coe_eq_inv_of_involutive (hφ : FixedPointFree φ) (h2 : Function.Involutive φ) :
     ⇑φ = (·⁻¹) :=
-  coe_eq_inv_of_sq_eq_one hφ  (funext h2)
+  coe_eq_inv_of_sq_eq_one hφ (funext h2)
 
 theorem commute_all_of_involutive (hφ : FixedPointFree φ) (h2 : Function.Involutive φ) (g h : G) :
     Commute g h := by
@@ -67,7 +67,7 @@ theorem commute_all_of_involutive (hφ : FixedPointFree φ) (h2 : Function.Invol
   rwa [hφ.coe_eq_inv_of_involutive h2, inv_eq_iff_eq_inv, mul_inv_rev, inv_inv, inv_inv] at key
 
 /-- If a finite group admits a fixed-point-free involution, then it is commutative. -/
-def commGroupOfInvolutive (hφ : FixedPointFree φ) (h2 : Function.Involutive φ):
+def commGroupOfInvolutive (hφ : FixedPointFree φ) (h2 : Function.Involutive φ) :
     CommGroup G := .mk (hφ.commute_all_of_involutive h2)
 
 theorem orderOf_ne_two_of_involutive (hφ : FixedPointFree φ) (h2 : Function.Involutive φ) (g : G) :

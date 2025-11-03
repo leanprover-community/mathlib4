@@ -49,6 +49,9 @@ We show that `L μ s` converges absolutely if and only if `re s > 1`.
 
 namespace ArithmeticFunction
 
+-- access notation `μ`
+open scoped Moebius
+
 open LSeries Nat Complex
 
 lemma not_LSeriesSummable_moebius_at_one : ¬ LSeriesSummable ↗μ 1 := by
@@ -133,6 +136,7 @@ lemma delta_mul {n : ℕ} (χ : DirichletCharacter ℂ n) : δ * ↗χ = δ :=
   mul_comm δ _ ▸ mul_delta ..
 
 open ArithmeticFunction in
+open scoped Moebius in -- access notation `μ`
 /-- The convolution of a Dirichlet character `χ` with the twist `χ * μ` is `δ`,
 the indicator function of `{1}`. -/
 lemma convolution_mul_moebius {n : ℕ} (χ : DirichletCharacter ℂ n) : ↗χ ⍟ (↗χ * ↗μ) = δ := by
@@ -246,11 +250,14 @@ theorem LSeriesSummable_one_iff {s : ℂ} : LSeriesSummable 1 s ↔ 1 < s.re :=
 
 namespace ArithmeticFunction
 
+-- access notation `ζ` and `μ`
+open scoped zeta Moebius
+
 /-- The `LSeries` of the arithmetic function `ζ` is the same as the `LSeries` associated
 to the constant sequence `1`. -/
 lemma LSeries_zeta_eq : L ↗ζ = L 1 := by
   ext s
-  exact (LSeries_congr s const_one_eq_zeta).symm
+  exact (LSeries_congr const_one_eq_zeta s).symm
 
 /-- The `LSeries` associated to the arithmetic function `ζ` converges at `s` if and only if
 `re s > 1`. -/
@@ -300,6 +307,7 @@ domain of convergence `1 < re s`. -/
 lemma LSeriesHasSum_one {s : ℂ} (hs : 1 < s.re) : LSeriesHasSum 1 s (riemannZeta s) :=
   LSeries_one_eq_riemannZeta hs ▸ (LSeriesSummable_one_iff.mpr hs).LSeriesHasSum
 
+open scoped Moebius in -- access notation `μ`
 /-- The L-series of the constant sequence `1` and of the Möbius function are inverses. -/
 lemma LSeries_one_mul_Lseries_moebius {s : ℂ} (hs : 1 < s.re) : L 1 s * L ↗μ s = 1 :=
   LSeries_zeta_eq ▸ LSeries_zeta_mul_Lseries_moebius hs
@@ -325,6 +333,9 @@ section vonMangoldt
 open LSeries Nat Complex ArithmeticFunction
 
 namespace ArithmeticFunction
+
+-- access notation `ζ`
+open scoped zeta
 
 /-- A translation of the relation `Λ * ↑ζ = log` of (real-valued) arithmetic functions
 to an equality of complex sequences. -/
@@ -366,7 +377,7 @@ lemma LSeriesSummable_twist_vonMangoldt {N : ℕ} (χ : DirichletCharacter ℂ N
 /-- The L-series of the twist of the von Mangoldt function `Λ` by a Dirichlet character `χ` at `s`
 equals the negative logarithmic derivative of the L-series of `χ` when `re s > 1`. -/
 lemma LSeries_twist_vonMangoldt_eq {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 < s.re) :
-    L (↗χ * ↗Λ) s = - deriv (L ↗χ) s / L ↗χ s := by
+    L (↗χ * ↗Λ) s = -deriv (L ↗χ) s / L ↗χ s := by
   rcases eq_or_ne N 0 with rfl | hN
   · simp [modZero_eq_delta, delta_mul_eq_smul_delta, LSeries_delta]
   -- now `N ≠ 0`
@@ -376,7 +387,7 @@ lemma LSeries_twist_vonMangoldt_eq {N : ℕ} (χ : DirichletCharacter ℂ N) {s 
   have hΛ : LSeriesSummable (↗χ * ↗Λ) s := LSeriesSummable_twist_vonMangoldt χ hs
   rw [eq_div_iff <| LSeries_ne_zero_of_one_lt_re χ hs, ← LSeries_convolution' hΛ hχ,
     convolution_twist_vonMangoldt, LSeries_deriv hs', neg_neg]
-  exact LSeries_congr s fun _ ↦ by simp [mul_comm, logMul]
+  exact LSeries_congr (fun _ ↦ by simp [mul_comm, logMul]) s
 
 end DirichletCharacter
 
@@ -386,7 +397,7 @@ open DirichletCharacter in
 /-- The L-series of the von Mangoldt function `Λ` equals the negative logarithmic derivative
 of the L-series of the constant sequence `1` on its domain of convergence `re s > 1`. -/
 lemma LSeries_vonMangoldt_eq {s : ℂ} (hs : 1 < s.re) : L ↗Λ s = - deriv (L 1) s / L 1 s := by
-  refine (LSeries_congr s fun {n} _ ↦ ?_).trans <|
+  refine (LSeries_congr (fun {n} _ ↦ ?_) s).trans <|
     LSeries_modOne_eq ▸ LSeries_twist_vonMangoldt_eq χ₁ hs
   simp [Subsingleton.eq_one (n : ZMod 1)]
 

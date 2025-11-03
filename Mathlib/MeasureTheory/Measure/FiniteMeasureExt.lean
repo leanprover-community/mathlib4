@@ -41,7 +41,7 @@ theorem ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_count
   have hA_toReal : (A_toReal.map (toContinuousMapₐ ℝ)).SeparatesPoints := by
     rw [RCLike.restrict_toContinuousMap_eq_toContinuousMapStar_restrict]
     exact Subalgebra.SeparatesPoints.rclike_to_real hA
-  --integrals of elements of the real subalgebra wrt P, P', respectively, coincide
+  --integrals of elements of the real subalgebra w.r.t. P, P', respectively, coincide
   have heq' : ∀ g ∈ A_toReal, ∫ x, (g : E → ℝ) x ∂P = ∫ x, (g : E → ℝ) x ∂P' := by
     intro g hgA_toReal
     rw [← @ofReal_inj 𝕜, ← integral_ofReal, ← integral_ofReal]

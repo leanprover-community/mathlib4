@@ -42,6 +42,12 @@ variable [LE α] {s t : NonemptyInterval α}
 theorem toProd_injective : Injective (toProd : NonemptyInterval α → α × α) :=
   fun s t h => by cases s; cases t; congr
 
+/-- Allow lifting a pair `(a, b)` with `a ≤ b` to `NonemptyInterval`
+in the `lift` tactic. -/
+instance instCanLift :
+    CanLift (α × α) (NonemptyInterval α) NonemptyInterval.toProd (fun x ↦ x.1 ≤ x.2) where
+  prf x hx := ⟨⟨x, hx⟩, rfl⟩
+
 /-- The injection that induces the order on intervals. -/
 def toDualProd : NonemptyInterval α → αᵒᵈ × α :=
   toProd
@@ -59,11 +65,17 @@ instance [IsEmpty α] : IsEmpty (NonemptyInterval α) :=
 instance [Subsingleton α] : Subsingleton (NonemptyInterval α) :=
   toDualProd_injective.subsingleton
 
+instance [DecidableEq α] : DecidableEq (NonemptyInterval α) :=
+  toDualProd_injective.decidableEq
+
 instance le : LE (NonemptyInterval α) :=
   ⟨fun s t => t.fst ≤ s.fst ∧ s.snd ≤ t.snd⟩
 
 theorem le_def : s ≤ t ↔ t.fst ≤ s.fst ∧ s.snd ≤ t.snd :=
   Iff.rfl
+
+instance [DecidableLE α] : DecidableLE (NonemptyInterval α) :=
+  fun _ _ => decidable_of_iff' _ le_def
 
 /-- `toDualProd` as an order embedding. -/
 @[simps]
@@ -93,6 +105,10 @@ variable [Preorder α] [Preorder β] [Preorder γ] {s : NonemptyInterval α} {x 
 
 instance : Preorder (NonemptyInterval α) :=
   Preorder.lift toDualProd
+
+theorem toDualProd_mono : Monotone (toDualProd : _ → αᵒᵈ × α) := fun _ _ => id
+
+theorem toDualProd_strictMono : StrictMono (toDualProd : _ → αᵒᵈ × α) := fun _ _ => id
 
 instance : Coe (NonemptyInterval α) (Set α) :=
   ⟨fun s => Icc s.fst s.snd⟩
@@ -190,6 +206,9 @@ variable [PartialOrder α] [PartialOrder β] {s t : NonemptyInterval α} {a b : 
 instance : PartialOrder (NonemptyInterval α) :=
   PartialOrder.lift _ toDualProd_injective
 
+instance [DecidableLE α] : DecidableLE (NonemptyInterval α) :=
+  fun _ _ => decidable_of_iff' _ le_def
+
 /-- Consider a nonempty interval `[a, b]` as the set `[a, b]`. -/
 def coeHom : NonemptyInterval α ↪o Set α :=
   OrderEmbedding.ofMapLEIff (fun s => Icc s.fst s.snd) fun s _ => Icc_subset_Icc_iff s.fst_le_snd
@@ -271,9 +290,10 @@ variable [LE α]
 
 -- The `Inhabited, LE, OrderBot` instances should be constructed by a deriving handler.
 -- https://github.com/leanprover-community/mathlib4/issues/380
+-- Note(kmill): `Interval` is an `abbrev`, so none of these `instance`s are needed.
 instance : Inhabited (Interval α) := WithBot.inhabited
-instance : LE (Interval α) := WithBot.le
-instance : OrderBot (Interval α) := WithBot.orderBot
+instance : LE (Interval α) := WithBot.instLE
+instance : OrderBot (Interval α) := WithBot.instOrderBot
 
 instance : Coe (NonemptyInterval α) (Interval α) :=
   WithBot.coe
@@ -307,7 +327,7 @@ instance [IsEmpty α] : Unique (Interval α) :=
 
 /-- Turn an interval into an interval in the dual order. -/
 def dual : Interval α ≃ Interval αᵒᵈ :=
-  NonemptyInterval.dual.optionCongr
+  NonemptyInterval.dual.withBotCongr
 
 end LE
 
@@ -316,7 +336,7 @@ section Preorder
 variable [Preorder α] [Preorder β] [Preorder γ]
 
 instance : Preorder (Interval α) :=
-  WithBot.preorder
+  WithBot.instPreorder
 
 /-- `{a}` as an interval. -/
 def pure (a : α) : Interval α :=
@@ -378,7 +398,7 @@ section PartialOrder
 variable [PartialOrder α] [PartialOrder β] {s t : Interval α} {a b : α}
 
 instance partialOrder : PartialOrder (Interval α) :=
-  WithBot.partialOrder
+  WithBot.instPartialOrder
 
 /-- Consider an interval `[a, b]` as the set `[a, b]`. -/
 def coeHom : Interval α ↪o Set α :=

@@ -68,17 +68,13 @@ theorem finRange_map_getElem (l : List α) : (finRange l.length).map (l[·.1]) =
 @[simp] theorem idxOf_finRange {k : ℕ} (i : Fin k) : (finRange k).idxOf i = i := by
   simpa using idxOf_getElem (nodup_finRange k) i
 
-@[deprecated (since := "2025-01-30")] alias indexOf_finRange := idxOf_get
-
 @[simp]
 theorem map_coe_finRange (n : ℕ) : ((finRange n) : List (Fin n)).map (Fin.val) = List.range n := by
   apply List.ext_getElem <;> simp
 
-theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map Fin.succ := by
-  apply map_injective_iff.mpr Fin.val_injective
-  rw [map_cons, map_coe_finRange, range_succ_eq_map, Fin.val_zero, ← map_coe_finRange, map_map,
-    map_map]
-  simp only [Function.comp_def, Fin.val_succ]
+@[deprecated finRange_succ (since := "2025-10-10")]
+theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map Fin.succ :=
+  finRange_succ
 
 theorem ofFn_eq_pmap {n} {f : Fin n → α} :
     ofFn f = pmap (fun i hi => f ⟨i, hi⟩) (range n) fun _ => mem_range.1 := by

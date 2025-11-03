@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Kim Morrison, Johan Commelin
 -/
 import Mathlib.Data.Finset.Card
-import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Fin.Embedding
 
 /-!
 # Finsets in `Fin n`
@@ -74,40 +74,6 @@ lemma attachFin_ssubset_attachFin_iff {s t : Finset ℕ} (hs : ∀ m ∈ s, m < 
 lemma attachFin_ssubset_attachFin {s t : Finset ℕ} (hst : s ⊂ t) (ht : ∀ m ∈ t, m < n) :
     s.attachFin (fun m hm ↦ ht m (hst.subset hm)) ⊂ t.attachFin ht := by simpa
 
-/-- Given a finset `s` of natural numbers and a bound `n`,
-`s.fin n` is the finset of all elements of `s` less than `n`.
-
-This definition was introduced to define a `LocallyFiniteOrder` instance on `Fin n`.
-Later, this instance was rewritten using a more efficient `attachFin`.
-Since this definition had no other uses in the library, it was deprecated.
--/
-@[deprecated attachFin (since := "2025-04-08")]
-protected def fin (n : ℕ) (s : Finset ℕ) : Finset (Fin n) :=
-  (s.subtype _).map Fin.equivSubtype.symm.toEmbedding
-
 set_option linter.deprecated false
-
-@[simp, deprecated mem_attachFin (since := "2025-04-08")]
-theorem mem_fin {s : Finset ℕ} : ∀ a : Fin n, a ∈ s.fin n ↔ (a : ℕ) ∈ s
-  | ⟨a, ha⟩ => by simp [Finset.fin, ha, and_comm]
-
-@[simp, deprecated coe_attachFin (since := "2025-04-08")]
-theorem coe_fin (n : ℕ) (s : Finset ℕ) : (s.fin n : Set (Fin n)) = Fin.val ⁻¹' s := by ext; simp
-
-@[mono, deprecated attachFin_subset_attachFin (since := "2025-04-08")]
-theorem fin_mono : Monotone (Finset.fin n) := fun s t h x => by simpa using @h x
-
-@[gcongr, deprecated attachFin_subset_attachFin (since := "2025-04-08")]
-theorem fin_subset_fin (n : ℕ) {s t : Finset ℕ} (h : s ⊆ t) : s.fin n ⊆ t.fin n := fin_mono h
-
-@[simp, deprecated map_valEmbedding_attachFin (since := "2025-04-08")]
-theorem fin_map {s : Finset ℕ} : (s.fin n).map Fin.valEmbedding = s.filter (· < n) := by
-  simp [Finset.fin, Finset.map_map]
-
-@[deprecated "No replacement" (since := "2025-04-08")]
-theorem attachFin_eq_fin {s : Finset ℕ} (h : ∀ m ∈ s, m < n) :
-    attachFin s h = s.fin n := by
-  ext
-  simp
 
 end Finset

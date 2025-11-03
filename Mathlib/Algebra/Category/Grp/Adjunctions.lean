@@ -15,21 +15,23 @@ category of abelian groups.
 
 ## Main definitions
 
-* `AddCommGrp.free`: constructs the functor associating to a type `X` the free abelian group
+* `AddCommGrpCat.free`: constructs the functor associating to a type `X` the free abelian group
   with generators `x : X`.
-* `Grp.free`: constructs the functor associating to a type `X` the free group with
+* `GrpCat.free`: constructs the functor associating to a type `X` the free group with
   generators `x : X`.
-* `Grp.abelianize`: constructs the functor which associates to a group `G` its abelianization `Gᵃᵇ`.
+* `GrpCat.abelianize`: constructs the functor which sends a group `G` to its abelianization `Gᵃᵇ`.
 
 ## Main statements
 
-* `AddCommGrp.adj`: proves that `AddCommGrp.free` is the left adjoint
+* `AddCommGrpCat.adj`: proves that `AddCommGrpCat.free` is the left adjoint
   of the forgetful functor from abelian groups to types.
-* `Grp.adj`: proves that `Grp.free` is the left adjoint of the forgetful functor
+* `GrpCat.adj`: proves that `GrpCat.free` is the left adjoint of the forgetful functor
   from groups to types.
-* `abelianizeAdj`: proves that `Grp.abelianize` is left adjoint to the forgetful functor from
+* `abelianizeAdj`: proves that `GrpCat.abelianize` is left adjoint to the forgetful functor from
   abelian groups to groups.
 -/
+
+assert_not_exists Cardinal
 
 noncomputable section
 
@@ -37,16 +39,16 @@ universe u
 
 open CategoryTheory Limits
 
-namespace AddCommGrp
+namespace AddCommGrpCat
 
 /-- The free functor `Type u ⥤ AddCommGroup` sending a type `X` to the
 free abelian group with generators `x : X`.
 -/
-def free : Type u ⥤ AddCommGrp where
+def free : Type u ⥤ AddCommGrpCat where
   obj α := of (FreeAbelianGroup α)
   map f := ofHom (FreeAbelianGroup.map f)
-  map_id _ := AddCommGrp.ext FreeAbelianGroup.map_id_apply
-  map_comp _ _ := AddCommGrp.ext FreeAbelianGroup.map_comp_apply
+  map_id _ := AddCommGrpCat.ext FreeAbelianGroup.map_id_apply
+  map_comp _ _ := AddCommGrpCat.ext FreeAbelianGroup.map_comp_apply
 
 @[simp]
 theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = FreeAbelianGroup α :=
@@ -61,23 +63,19 @@ theorem free_map_coe {α β : Type u} {f : α → β} (x : FreeAbelianGroup α) 
 
 /-- The free-forgetful adjunction for abelian groups.
 -/
-def adj : free ⊣ forget AddCommGrp.{u} :=
+def adj : free ⊣ forget AddCommGrpCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ => ConcreteCategory.homEquiv.trans FreeAbelianGroup.lift.symm
-      -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): used to be just `by intros; ext; rfl`.
+      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be just `by intros; ext; rfl`.
       homEquiv_naturality_left_symm := by
         intros
         ext
-        simp
-        apply FreeAbelianGroup.lift_comp }
+        simpa using FreeAbelianGroup.lift_comp .. }
 
 instance : free.{u}.IsLeftAdjoint :=
   ⟨_, ⟨adj⟩⟩
 
-instance : (forget AddCommGrp.{u}).IsRightAdjoint :=
-  ⟨_, ⟨adj⟩⟩
-
-instance : AddCommGrp.free.{u}.IsLeftAdjoint :=
+instance : (forget AddCommGrpCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩
 
 /-- As an example, we now give a high-powered proof that
@@ -85,8 +83,8 @@ the monomorphisms in `AddCommGroup` are just the injective functions.
 
 (This proof works in all universes.)
 -/
-example {G H : AddCommGrp.{u}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
-  (mono_iff_injective (f : G → H)).mp (Functor.map_mono (forget AddCommGrp) f)
+example {G H : AddCommGrpCat.{u}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
+  (mono_iff_injective (f : G → H)).mp (Functor.map_mono (forget AddCommGrpCat) f)
 
 instance : (free.{u}).PreservesMonomorphisms where
   preserves {X Y} f _ := by
@@ -95,45 +93,45 @@ instance : (free.{u}).PreservesMonomorphisms where
       intros
       apply (IsInitial.isInitialObj free _
         ((Types.initial_iff_empty X).2 hX).some).isZero.eq_of_tgt
-    · simp only [not_isEmpty_iff] at hX
+    · push_neg at hX
       have hf : Function.Injective f := by rwa [← mono_iff_injective]
       obtain ⟨g, hg⟩ := hf.hasLeftInverse
       have : IsSplitMono f := IsSplitMono.mk' { retraction := g }
       infer_instance
 
-end AddCommGrp
+end AddCommGrpCat
 
-namespace Grp
+namespace GrpCat
 
 /-- The free functor `Type u ⥤ Group` sending a type `X` to the free group with generators `x : X`.
 -/
-def free : Type u ⥤ Grp where
+def free : Type u ⥤ GrpCat where
   obj α := of (FreeGroup α)
   map f := ofHom (FreeGroup.map f)
 
 /-- The free-forgetful adjunction for groups.
 -/
-def adj : free ⊣ forget Grp.{u} :=
+def adj : free ⊣ forget GrpCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ => ConcreteCategory.homEquiv.trans FreeGroup.lift.symm
       homEquiv_naturality_left_symm := by
         intros
         ext : 1
-        -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): `ext` doesn't apply this theorem anymore
+        -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` doesn't apply this theorem anymore
         apply FreeGroup.ext_hom
         intros
         rfl }
 
-instance : (forget Grp.{u}).IsRightAdjoint  :=
+instance : (forget GrpCat.{u}).IsRightAdjoint  :=
   ⟨_, ⟨adj⟩⟩
 
 section Abelianization
 
 /-- The abelianization functor `Group ⥤ CommGroup` sending a group `G` to its abelianization `Gᵃᵇ`.
 -/
-def abelianize : Grp.{u} ⥤ CommGrp.{u} where
-  obj G := CommGrp.of (Abelianization G)
-  map f := CommGrp.ofHom (Abelianization.lift (Abelianization.of.comp f.hom))
+def abelianize : GrpCat.{u} ⥤ CommGrpCat.{u} where
+  obj G := CommGrpCat.of (Abelianization G)
+  map f := CommGrpCat.ofHom (Abelianization.lift (Abelianization.of.comp f.hom))
   map_id := by
     intros
     ext : 1
@@ -145,66 +143,66 @@ def abelianize : Grp.{u} ⥤ CommGrp.{u} where
     apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr
     rfl
 
-/-- The abelianization-forgetful adjuction from `Group` to `CommGroup`. -/
-def abelianizeAdj : abelianize ⊣ forget₂ CommGrp.{u} Grp.{u} :=
+/-- The abelianization-forgetful adjunction from `Group` to `CommGroup`. -/
+def abelianizeAdj : abelianize ⊣ forget₂ CommGrpCat.{u} GrpCat.{u} :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun _ _ => ((ConcreteCategory.homEquiv (C := CommGrp)).trans
+    { homEquiv := fun _ _ => ((ConcreteCategory.homEquiv (C := CommGrpCat)).trans
         Abelianization.lift.symm).trans
-        (ConcreteCategory.homEquiv (C := Grp)).symm
-      -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): used to be just `by intros; ext1; rfl`.
+        (ConcreteCategory.homEquiv (C := GrpCat)).symm
+      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be just `by intros; ext1; rfl`.
       homEquiv_naturality_left_symm := by
         intros
         ext
-        simp only [Equiv.symm_symm]
+        simp only
         apply Eq.symm
-        apply Abelianization.lift.unique
+        apply Abelianization.lift_unique
         intros
-        apply Abelianization.lift.of }
+        apply Abelianization.lift_apply_of }
 
 end Abelianization
 
-end Grp
+end GrpCat
 
 /-- The functor taking a monoid to its subgroup of units. -/
 @[simps!]
-def MonCat.units : MonCat.{u} ⥤ Grp.{u} where
-  obj R := Grp.of Rˣ
-  map f := Grp.ofHom <| Units.map f.hom
-  map_id _ := Grp.ext fun _ => Units.ext rfl
-  map_comp _ _ := Grp.ext fun _ => Units.ext rfl
+def MonCat.units : MonCat.{u} ⥤ GrpCat.{u} where
+  obj R := GrpCat.of Rˣ
+  map f := GrpCat.ofHom <| Units.map f.hom
+  map_id _ := GrpCat.ext fun _ => Units.ext rfl
+  map_comp _ _ := GrpCat.ext fun _ => Units.ext rfl
 
-/-- The forgetful-units adjunction between `Grp` and `MonCat`. -/
-def Grp.forget₂MonAdj : forget₂ Grp MonCat ⊣ MonCat.units.{u} := Adjunction.mk' {
+/-- The forgetful-units adjunction between `GrpCat` and `MonCat`. -/
+def GrpCat.forget₂MonAdj : forget₂ GrpCat MonCat ⊣ MonCat.units.{u} := Adjunction.mk' {
   homEquiv _ Y :=
     { toFun f := ofHom (MonoidHom.toHomUnits f.hom)
       invFun f := MonCat.ofHom ((Units.coeHom Y).comp f.hom) }
   unit :=
     { app X := ofHom (@toUnits X _)
-      naturality _ _ _ := Grp.ext fun _ => Units.ext rfl }
+      naturality _ _ _ := GrpCat.ext fun _ => Units.ext rfl }
   counit :=
     { app X := MonCat.ofHom (Units.coeHom X)
       naturality _ _ _ := MonCat.ext fun _ => rfl } }
 
 instance : MonCat.units.{u}.IsRightAdjoint :=
-  ⟨_, ⟨Grp.forget₂MonAdj⟩⟩
+  ⟨_, ⟨GrpCat.forget₂MonAdj⟩⟩
 
 /-- The functor taking a monoid to its subgroup of units. -/
 @[simps!]
-def CommMonCat.units : CommMonCat.{u} ⥤ CommGrp.{u} where
-  obj R := CommGrp.of Rˣ
-  map f := CommGrp.ofHom <| Units.map f.hom
-  map_id _ := CommGrp.ext fun _ => Units.ext rfl
-  map_comp _ _ := CommGrp.ext fun _ => Units.ext rfl
+def CommMonCat.units : CommMonCat.{u} ⥤ CommGrpCat.{u} where
+  obj R := CommGrpCat.of Rˣ
+  map f := CommGrpCat.ofHom <| Units.map f.hom
+  map_id _ := CommGrpCat.ext fun _ => Units.ext rfl
+  map_comp _ _ := CommGrpCat.ext fun _ => Units.ext rfl
 
-/-- The forgetful-units adjunction between `CommGrp` and `CommMonCat`. -/
-def CommGrp.forget₂CommMonAdj : forget₂ CommGrp CommMonCat ⊣ CommMonCat.units.{u} :=
+/-- The forgetful-units adjunction between `CommGrpCat` and `CommMonCat`. -/
+def CommGrpCat.forget₂CommMonAdj : forget₂ CommGrpCat CommMonCat ⊣ CommMonCat.units.{u} :=
   Adjunction.mk' {
     homEquiv := fun _ Y ↦
       { toFun f := ofHom (MonoidHom.toHomUnits f.hom)
         invFun f := CommMonCat.ofHom ((Units.coeHom Y).comp f.hom) }
     unit.app X := ofHom toUnits.toMonoidHom
     -- `aesop` can find the following proof but it takes `0.5`s.
-    unit.naturality _ _ _ := CommGrp.ext fun _ => Units.ext rfl
+    unit.naturality _ _ _ := CommGrpCat.ext fun _ => Units.ext rfl
     counit.app X := CommMonCat.ofHom (Units.coeHom X)
     -- `aesop` can find the following proof but it takes `0.5`s.
     counit.naturality _ _ _ := CommMonCat.ext fun _ => rfl
@@ -214,4 +212,4 @@ def CommGrp.forget₂CommMonAdj : forget₂ CommGrp CommMonCat ⊣ CommMonCat.un
     homEquiv_counit := by intros; rfl }
 
 instance : CommMonCat.units.{u}.IsRightAdjoint :=
-  ⟨_, ⟨CommGrp.forget₂CommMonAdj⟩⟩
+  ⟨_, ⟨CommGrpCat.forget₂CommMonAdj⟩⟩

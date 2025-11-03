@@ -37,7 +37,7 @@ lemma Finset.univ_of_card_le_three (h : Fintype.card R ≤ 3) :
   · have : Nontrivial R := by
       refine Fintype.one_lt_card_iff_nontrivial.1 ?_
       rw [h]
-      norm_num
+      simp
     rw [card_univ, h, card_insert_of_notMem, card_insert_of_notMem, card_singleton]
     · rw [mem_singleton]
       intro H
@@ -45,7 +45,7 @@ lemma Finset.univ_of_card_le_three (h : Fintype.card R ≤ 3) :
       apply_fun (ringEquivOfPrime R Nat.prime_three h).symm at H
       simp only [map_ofNat, map_zero] at H
       replace H : ((2 : ℕ) : ZMod 3) = 0 := H
-      rw [natCast_zmod_eq_zero_iff_dvd] at H
+      rw [natCast_eq_zero_iff] at H
       norm_num at H
     · intro h
       simp only [mem_insert, mem_singleton, zero_eq_neg] at h
@@ -61,7 +61,7 @@ variable (M₀ : Type*) [MonoidWithZero M₀] [Nontrivial M₀]
 
 open scoped Classical in
 theorem card_units_lt [Fintype M₀] : Fintype.card M₀ˣ < Fintype.card M₀ :=
-  Fintype.card_lt_of_injective_of_notMem Units.val Units.ext not_isUnit_zero
+  Fintype.card_lt_of_injective_of_notMem Units.val Units.val_injective not_isUnit_zero
 
 lemma natCard_units_lt [Finite M₀] : Nat.card M₀ˣ < Nat.card M₀ := by
   have : Fintype M₀ := Fintype.ofFinite M₀

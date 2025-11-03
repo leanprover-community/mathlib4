@@ -32,13 +32,13 @@ section
 variable (X Y : C)
 
 /-- `f +ₗ g` is the composite `X ⟶ Y ⊞ Y ⟶ Y`, where the first map is `(f, g)` and the second map
-    is `(𝟙 𝟙)`. -/
+is `(𝟙 𝟙)`. -/
 @[simp]
 def leftAdd (f g : X ⟶ Y) : X ⟶ Y :=
   biprod.lift f g ≫ biprod.desc (𝟙 Y) (𝟙 Y)
 
 /-- `f +ᵣ g` is the composite `X ⟶ X ⊞ X ⟶ Y`, where the first map is `(𝟙, 𝟙)` and the second map
-    is `(f g)`. -/
+is `(f g)`. -/
 @[simp]
 def rightAdd (f g : X ⟶ Y) : X ⟶ Y :=
   biprod.lift (𝟙 X) (𝟙 X) ≫ biprod.desc f g
@@ -52,12 +52,12 @@ theorem isUnital_leftAdd : EckmannHilton.IsUnital (· +ₗ ·) 0 := by
     intro f
     ext
     · simp
-    · simp [biprod.lift_fst, Category.assoc, biprod.inr_fst, comp_zero]
+    · simp [Category.assoc]
   have hl : ∀ f : X ⟶ Y, biprod.lift f (0 : X ⟶ Y) = f ≫ biprod.inl := by
     intro f
     ext
     · simp
-    · simp [biprod.lift_snd, Category.assoc, biprod.inl_snd, comp_zero]
+    · simp [biprod.lift_snd, Category.assoc, comp_zero]
   exact {
     left_id := fun f => by simp [hr f, leftAdd, Category.assoc, Category.comp_id, biprod.inr_desc],
     right_id := fun f => by simp [hl f, leftAdd, Category.assoc, Category.comp_id, biprod.inl_desc]
@@ -84,7 +84,7 @@ theorem distrib (f g h k : X ⟶ Y) : (f +ᵣ g) +ₗ h +ᵣ k = (f +ₗ h) +ᵣ
   have hd₁ : biprod.inl ≫ diag = biprod.lift f h := by ext <;> simp [diag]
   have hd₂ : biprod.inr ≫ diag = biprod.lift g k := by ext <;> simp [diag]
   have h₁ : biprod.lift (f +ᵣ g) (h +ᵣ k) = biprod.lift (𝟙 X) (𝟙 X) ≫ diag := by
-    ext <;> aesop_cat
+    ext <;> cat_disch
   have h₂ : diag ≫ biprod.desc (𝟙 Y) (𝟙 Y) = biprod.desc (f +ₗ h) (g +ₗ k) := by
     ext <;> simp [reassoc_of% hd₁, reassoc_of% hd₂]
   rw [leftAdd, h₁, Category.assoc, h₂, rightAdd]
@@ -94,7 +94,6 @@ def addCommMonoidHomOfHasBinaryBiproducts : AddCommMonoid (X ⟶ Y) where
   add := (· +ᵣ ·)
   add_assoc :=
     (EckmannHilton.mul_assoc (isUnital_leftAdd X Y) (isUnital_rightAdd X Y) (distrib X Y)).assoc
-  zero := 0
   zero_add := (isUnital_rightAdd X Y).left_id
   add_zero := (isUnital_rightAdd X Y).right_id
   add_comm :=

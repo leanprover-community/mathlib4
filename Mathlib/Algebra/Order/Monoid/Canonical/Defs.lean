@@ -21,10 +21,15 @@ variable {α : Type u}
   if the ordering coincides with the subtractibility relation,
   which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
   This is satisfied by the natural numbers, for example, but not
-  the integers or other nontrivial `OrderedAddCommGroup`s. -/
+  the integers or other nontrivial `OrderedAddCommGroup`s.
+
+  We have `a ≤ b + a` and `a ≤ a + b` as separate fields. In the commutative case the second field
+  is redundant, but in the noncommutative case (satisfied most relevantly by the ordinals), this
+  extra field allows us to prove more things without the extra commutativity assumption. -/
 class CanonicallyOrderedAdd (α : Type*) [Add α] [LE α] : Prop
     extends ExistsAddOfLE α where
   /-- For any `a` and `b`, `a ≤ a + b` -/
+  protected le_add_self : ∀ a b : α, a ≤ b + a
   protected le_self_add : ∀ a b : α, a ≤ a + b
 
 attribute [instance 50] CanonicallyOrderedAdd.toExistsAddOfLE
@@ -41,44 +46,10 @@ attribute [instance 50] CanonicallyOrderedAdd.toExistsAddOfLE
 class CanonicallyOrderedMul (α : Type*) [Mul α] [LE α] : Prop
     extends ExistsMulOfLE α where
   /-- For any `a` and `b`, `a ≤ a * b` -/
+  protected le_mul_self : ∀ a b : α, a ≤ b * a
   protected le_self_mul : ∀ a b : α, a ≤ a * b
 
 attribute [instance 50] CanonicallyOrderedMul.toExistsMulOfLE
-
-set_option linter.deprecated false in
-/-- A canonically ordered additive monoid is an ordered commutative additive monoid
-  in which the ordering coincides with the subtractibility relation,
-  which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
-  This is satisfied by the natural numbers, for example, but not
-  the integers or other nontrivial `OrderedAddCommGroup`s. -/
-@[deprecated "Use `[OrderedAddCommMonoid α] [CanonicallyOrderedAdd α]` instead."
-  (since := "2025-01-13")]
-structure CanonicallyOrderedAddCommMonoid (α : Type*) extends
-    OrderedAddCommMonoid α, OrderBot α where
-  /-- For `a ≤ b`, there is a `c` so `b = a + c`. -/
-  protected exists_add_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a + c
-  /-- For any `a` and `b`, `a ≤ a + b` -/
-  protected le_self_add : ∀ a b : α, a ≤ a + b
-
-set_option linter.deprecated false in
-set_option linter.existingAttributeWarning false in
-/-- A canonically ordered monoid is an ordered commutative monoid
-  in which the ordering coincides with the divisibility relation,
-  which is to say, `a ≤ b` iff there exists `c` with `b = a * c`.
-  Examples seem rare; it seems more likely that the `OrderDual`
-  of a naturally-occurring lattice satisfies this than the lattice
-  itself (for example, dual of the lattice of ideals of a PID or
-  Dedekind domain satisfy this; collections of all things ≤ 1 seem to
-  be more natural that collections of all things ≥ 1).
--/
-@[to_additive,
-  deprecated "Use `[OrderedCommMonoid α] [CanonicallyOrderedMul α]` instead."
-  (since := "2025-01-13")]
-structure CanonicallyOrderedCommMonoid (α : Type*) extends OrderedCommMonoid α, OrderBot α where
-  /-- For `a ≤ b`, there is a `c` so `b = a * c`. -/
-  protected exists_mul_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a * c
-  /-- For any `a` and `b`, `a ≤ a * b` -/
-  protected le_self_mul : ∀ a b : α, a ≤ a * b
 
 section Mul
 variable [Mul α]
@@ -87,8 +58,16 @@ section LE
 variable [LE α] [CanonicallyOrderedMul α] {a b c : α}
 
 @[to_additive]
+theorem le_mul_self : a ≤ b * a :=
+  CanonicallyOrderedMul.le_mul_self _ _
+
+@[to_additive]
 theorem le_self_mul : a ≤ a * b :=
   CanonicallyOrderedMul.le_self_mul _ _
+
+@[to_additive (attr := simp)]
+theorem self_le_mul_left (a b : α) : a ≤ b * a :=
+  le_mul_self
 
 @[to_additive (attr := simp)]
 theorem self_le_mul_right (a b : α) : a ≤ a * b :=
@@ -113,32 +92,6 @@ theorem le_of_mul_le_left : a * b ≤ c → a ≤ c :=
 theorem le_mul_of_le_left : a ≤ b → a ≤ b * c :=
   le_self_mul.trans'
 
-@[to_additive] alias le_mul_right := le_mul_of_le_left
-
-end Preorder
-
-end Mul
-
-section CommMagma
-variable [CommMagma α]
-
-section LE
-variable [LE α] [CanonicallyOrderedMul α] {a b : α}
-
-@[to_additive]
-theorem le_mul_self : a ≤ b * a := by
-  rw [mul_comm]
-  exact le_self_mul
-
-@[to_additive (attr := simp)]
-theorem self_le_mul_left (a b : α) : a ≤ b * a :=
-  le_mul_self
-
-end LE
-
-section Preorder
-variable [Preorder α] [CanonicallyOrderedMul α] {a b c : α}
-
 @[to_additive]
 theorem le_of_mul_le_right : a * b ≤ c → b ≤ c :=
   le_mul_self.trans
@@ -148,12 +101,18 @@ theorem le_mul_of_le_right : a ≤ c → a ≤ b * c :=
   le_mul_self.trans'
 
 @[to_additive] alias le_mul_left := le_mul_of_le_right
+@[to_additive] alias le_mul_right := le_mul_of_le_left
+
+end Preorder
+
+end Mul
+
+section CommMagma
+variable [CommMagma α] [Preorder α] [CanonicallyOrderedMul α] {a b c : α}
 
 @[to_additive]
 theorem le_iff_exists_mul' : a ≤ b ↔ ∃ c, b = c * a := by
   simp only [mul_comm _ a, le_iff_exists_mul]
-
-end Preorder
 
 end CommMagma
 
@@ -174,7 +133,7 @@ end LE
 section Preorder
 variable [Preorder α] [CanonicallyOrderedMul α] {a b : α}
 
-@[to_additive] -- `(attr := simp)` can not be used here because `a` can not be inferred by `simp`.
+@[to_additive] -- `(attr := simp)` cannot be used here because `a` cannot be inferred by `simp`.
 theorem one_lt_of_gt (h : a < b) : 1 < b :=
   (one_le _).trans_lt h
 
@@ -191,7 +150,7 @@ theorem bot_eq_one [OrderBot α] : (⊥ : α) = 1 := isBot_one.eq_bot.symm
 
 @[to_additive (attr := simp)]
 theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=
-  (one_le a).le_iff_eq
+  (one_le a).ge_iff_eq'
 
 @[to_additive]
 theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
@@ -219,7 +178,7 @@ theorem exists_one_lt_mul_of_lt (h : a < b) : ∃ (c : _) (_ : 1 < c), a * c = b
   obtain ⟨c, hc⟩ := le_iff_exists_mul.1 h.le
   refine ⟨c, one_lt_iff_ne_one.2 ?_, hc.symm⟩
   rintro rfl
-  simp [hc, lt_irrefl] at h
+  simp [hc] at h
 
 @[to_additive]
 theorem lt_iff_exists_mul [MulLeftStrictMono α] : a < b ↔ ∃ c > 1, b = a * c := by
@@ -315,30 +274,9 @@ theorem of_ge {M} [AddZeroClass M] [PartialOrder M] [CanonicallyOrderedAdd M]
 
 end NeZero
 
-set_option linter.deprecated false in
-/-- A canonically linear-ordered additive monoid is a canonically ordered additive monoid
-    whose ordering is a linear order. -/
-@[deprecated "Use `[LinearOrderedAddCommMonoid α] [CanonicallyOrderedAdd α]` instead."
-  (since := "2025-01-13")]
-structure CanonicallyLinearOrderedAddCommMonoid (α : Type*)
-  extends CanonicallyOrderedAddCommMonoid α, LinearOrderedAddCommMonoid α
+section CanonicallyLinearOrderedMonoid
 
-set_option linter.deprecated false in
-set_option linter.existingAttributeWarning false in
-/-- A canonically linear-ordered monoid is a canonically ordered monoid
-    whose ordering is a linear order. -/
-@[to_additive,
-  deprecated "Use `[LinearOrderedCommMonoid α] [CanonicallyOrderedMul α]` instead."
-  (since := "2025-01-13")]
-structure CanonicallyLinearOrderedCommMonoid (α : Type*)
-  extends CanonicallyOrderedCommMonoid α, LinearOrderedCommMonoid α
-
-attribute [nolint docBlame] CanonicallyLinearOrderedAddCommMonoid.toLinearOrderedAddCommMonoid
-attribute [nolint docBlame] CanonicallyLinearOrderedCommMonoid.toLinearOrderedCommMonoid
-
-section CanonicallyLinearOrderedCommMonoid
-
-variable [CommMonoid α] [LinearOrder α] [CanonicallyOrderedMul α]
+variable [Monoid α] [LinearOrder α] [CanonicallyOrderedMul α]
 
 @[to_additive]
 theorem min_mul_distrib (a b c : α) : min a (b * c) = min a (min a b * min a c) := by
@@ -362,8 +300,8 @@ theorem min_one (a : α) : min a 1 = 1 :=
 
 /-- In a linearly ordered monoid, we are happy for `bot_eq_one` to be a `@[simp]` lemma. -/
 @[to_additive (attr := simp)
-  "In a linearly ordered monoid, we are happy for `bot_eq_zero` to be a `@[simp]` lemma"]
+  /-- In a linearly ordered monoid, we are happy for `bot_eq_zero` to be a `@[simp]` lemma -/]
 theorem bot_eq_one' [OrderBot α] : (⊥ : α) = 1 :=
   bot_eq_one
 
-end CanonicallyLinearOrderedCommMonoid
+end CanonicallyLinearOrderedMonoid

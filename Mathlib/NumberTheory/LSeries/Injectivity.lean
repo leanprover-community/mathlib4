@@ -3,7 +3,6 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.Normed.Group.Tannery
 import Mathlib.NumberTheory.LSeries.Convergence
 import Mathlib.NumberTheory.LSeries.Linearity
@@ -51,7 +50,7 @@ open Filter Real in
 /-- If the coefficients `f m` of an L-series are zero for `m ≤ n` and the L-series converges
 at some point, then `f (n+1)` is the limit of `(n+1)^x * LSeries f x` as `x → ∞`. -/
 lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ n, f m = 0)
-    (ha : abscissaOfAbsConv f < ⊤):
+    (ha : abscissaOfAbsConv f < ⊤) :
     Tendsto (fun x : ℝ ↦ (n + 1) ^ (x : ℂ) * LSeries f x) atTop (nhds (f (n + 1))) := by
   obtain ⟨y, hay, hyt⟩ := exists_between ha
   lift y to ℝ using ⟨hyt.ne, ((OrderBot.bot_le _).trans_lt hay).ne'⟩
@@ -118,13 +117,13 @@ lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ 
 open Filter in
 /-- If the L-series of `f` converges at some point, then `f 1` is the limit of `LSeries f x`
 as `x → ∞`. -/
-lemma LSeries.tendsto_atTop {f : ℕ → ℂ} (ha : abscissaOfAbsConv f < ⊤):
+lemma LSeries.tendsto_atTop {f : ℕ → ℂ} (ha : abscissaOfAbsConv f < ⊤) :
     Tendsto (fun x : ℝ ↦ LSeries f x) atTop (nhds (f 1)) := by
   let F (n : ℕ) : ℂ := if n = 0 then 0 else f n
   have hF₀ : F 0 = 0 := rfl
   have hF {n : ℕ} (hn : n ≠ 0) : F n = f n := if_neg hn
   have ha' : abscissaOfAbsConv F < ⊤ := (abscissaOfAbsConv_congr hF).symm ▸ ha
-  simp_rw [← LSeries_congr _ hF]
+  simp_rw [← LSeries_congr hF]
   convert LSeries.tendsto_cpow_mul_atTop (n := 0) (fun _ hm ↦ Nat.le_zero.mp hm ▸ hF₀) ha' using 1
   simp
 
@@ -149,7 +148,7 @@ lemma LSeries_eventually_eq_zero_iff' {f : ℕ → ℂ} :
       have hF {n : ℕ} (hn : n ≠ 0) : F n = f n := if_neg hn
       suffices ∀ n, F n = 0 from fun n hn ↦ (hF hn).symm.trans (this n)
       have ha : ¬ abscissaOfAbsConv F = ⊤ := abscissaOfAbsConv_congr hF ▸ h
-      have h' (x : ℝ) : LSeries F x = LSeries f x := LSeries_congr x hF
+      have h' (x : ℝ) : LSeries F x = LSeries f x := LSeries_congr hF x
       have H' (n : ℕ) : (fun x : ℝ ↦ n ^ (x : ℂ) * LSeries F x) =ᶠ[atTop] fun _ ↦ 0 := by
         simp only [h']
         rw [eventuallyEq_iff_exists_mem] at H ⊢
@@ -167,7 +166,7 @@ lemma LSeries_eventually_eq_zero_iff' {f : ℕ → ℂ} :
       | succ n =>
           simpa using LSeries.tendsto_cpow_mul_atTop (fun m hm ↦ ih m <| lt_succ_of_le hm) <|
             Ne.lt_top ha
-    · simp [LSeries_congr x fun {n} ↦ H n, show (fun _ : ℕ ↦ (0 : ℂ)) = 0 from rfl]
+    · simp [LSeries_congr (fun {n} ↦ H n) x, show (fun _ : ℕ ↦ (0 : ℂ)) = 0 from rfl]
 
 open Nat in
 /-- Assuming `f 0 = 0`, the `LSeries` of `f` is zero if and only if either `f = 0` or the
@@ -228,7 +227,7 @@ if `f n = g n` whenever `n ≠ 0`. -/
 lemma LSeries_eq_iff_of_abscissaOfAbsConv_lt_top {f g : ℕ → ℂ} (hf : abscissaOfAbsConv f < ⊤)
     (hg : abscissaOfAbsConv g < ⊤) :
     LSeries f = LSeries g ↔ ∀ n ≠ 0, f n = g n := by
-  refine ⟨fun H n hn ↦ ?_, fun H ↦ funext (LSeries_congr · fun {n} ↦ H n)⟩
+  refine ⟨fun H n hn ↦ ?_, fun H ↦ funext (LSeries_congr fun {n} ↦ H n)⟩
   refine eq_of_LSeries_eventually_eq hf hg ?_ hn
   exact Filter.Eventually.of_forall fun x ↦ congr_fun H x
 

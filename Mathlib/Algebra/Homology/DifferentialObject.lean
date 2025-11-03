@@ -23,7 +23,7 @@ noncomputable section
 /-!
 We first prove some results about differential graded objects.
 
-Porting note: after the port, move these to their own file.
+TODO: We should move these to their own file.
 -/
 namespace CategoryTheory.DifferentialObject
 
@@ -89,10 +89,8 @@ def dgoToHomologicalComplex :
       comm' := fun i j h => by
         dsimp at h ⊢
         subst h
-        simp only [dite_true, Category.assoc, eqToHom_f']
-        -- Porting note: this `rw` used to be part of the `simp`.
         have : f.f i ≫ Y.d i = X.d i ≫ f.f _ := (congr_fun f.comm i).symm
-        rw [reassoc_of% this] }
+        simp only [dite_true, Category.assoc, eqToHom_f', reassoc_of% this] }
 
 /-- The functor from homological complexes to differential graded objects.
 -/

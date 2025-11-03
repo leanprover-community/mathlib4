@@ -5,9 +5,7 @@ Authors: Mario Carneiro, Simon Hudon, Kim Morrison, Keeley Hoek, Robert Y. Lewis
 Floris van Doorn, Edward Ayers, Arthur Paulino
 -/
 import Mathlib.Init
-import Lean.Meta.Tactic.Rewrite
-import Batteries.Tactic.Alias
-import Lean.Elab.Binders
+import Lean.Expr
 
 /-!
 # Additional operations on Expr and related types
@@ -38,7 +36,7 @@ namespace Name
 
 /-- Find the largest prefix `n` of a `Name` such that `f n != none`, then replace this prefix
 with the value of `f n`. -/
-def mapPrefix (f : Name → Option Name) (n : Name) : Name := Id.run do
+@[specialize] def mapPrefix (f : Name → Option Name) (n : Name) : Name := Id.run do
   if let some n' := f n then return n'
   match n with
   | anonymous => anonymous
@@ -242,7 +240,7 @@ def ofNat (α : Expr) (n : Nat) : MetaM Expr := do
 (doing typeclass search for the `OfNat` and `Neg` instances required). -/
 def ofInt (α : Expr) : Int → MetaM Expr
   | Int.ofNat n => Expr.ofNat α n
-  | Int.negSucc n => do mkAppM ``Neg.neg #[← Expr.ofNat α (n+1)]
+  | Int.negSucc n => do mkAppM ``Neg.neg #[← Expr.ofNat α (n + 1)]
 
 section recognizers
 
@@ -363,6 +361,11 @@ def getBinderName (e : Expr) : MetaM (Option Name) := do
   | .forallE (binderName := n) .. | .lam (binderName := n) .. => pure (some n)
   | _ => pure none
 
+/-- Map binder names in a nested forall `(a₁ : α₁) → ... → (aₙ : αₙ) → _` -/
+def mapForallBinderNames : Expr → (Name → Name) → Expr
+  | .forallE n d b bi, f => .forallE (f n) d (mapForallBinderNames b f) bi
+  | e, _ => e
+
 open Lean.Elab.Term
 /-- Annotates a `binderIdent` with the binder information from an `fvar`. -/
 def addLocalVarInfoForBinderIdent (fvar : Expr) (tk : TSyntax ``binderIdent) : MetaM Unit :=
@@ -421,28 +424,9 @@ def reduceProjStruct? (e : Expr) : MetaM (Option Expr) := do
     return none
 
 /-- Returns true if `e` contains a name `n` where `p n` is true. -/
+@[specialize]
 def containsConst (e : Expr) (p : Name → Bool) : Bool :=
   Option.isSome <| e.find? fun | .const n _ => p n | _ => false
-
-/--
-Rewrites `e` via some `eq`, producing a proof `e = e'` for some `e'`.
-
-Rewrites with a fresh metavariable as the ambient goal.
-Fails if the rewrite produces any subgoals.
--/
-def rewrite (e eq : Expr) : MetaM Expr := do
-  let ⟨_, eq', []⟩ ← (← mkFreshExprMVar none).mvarId!.rewrite e eq
-    | throwError "Expr.rewrite may not produce subgoals."
-  return eq'
-
-/--
-Rewrites the type of `e` via some `eq`, then moves `e` into the new type via `Eq.mp`.
-
-Rewrites with a fresh metavariable as the ambient goal.
-Fails if the rewrite produces any subgoals.
--/
-def rewriteType (e eq : Expr) : MetaM Expr := do
-  mkEqMP (← (← inferType e).rewrite eq) e
 
 /-- Given `(hNotEx : Not ex)` where `ex` is of the form `Exists x, p x`,
 return a `forall x, Not (p x)` and a proof for it.

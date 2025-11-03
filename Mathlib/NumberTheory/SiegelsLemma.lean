@@ -11,7 +11,7 @@ import Mathlib.Tactic.Rify
 # Siegel's Lemma
 
 In this file we introduce and prove Siegel's Lemma in its most basic version. This is a fundamental
-tool in diophantine approximation and transcendency and says that there exists a "small" integral
+tool in diophantine approximation and transcendence and says that there exists a "small" integral
 non-zero solution of a non-trivial underdetermined system of linear equations with integer
 coefficients.
 
@@ -49,9 +49,9 @@ local notation3 "B" => Nat.floor (((n : ℝ) * max 1 ‖A‖) ^ e)
 -- B' is the vector with all components = B
 local notation3 "B'" => fun _ : β => (B : ℤ)
 -- T is the box [0 B]^n
-local notation3 "T" =>  Finset.Icc 0 B'
+local notation3 "T" => Finset.Icc 0 B'
 local notation3 "P" => fun i : α => ∑ j : β, B * posPart (A i j)
-local notation3 "N" => fun i : α => ∑ j : β, B * (- negPart (A i j))
+local notation3 "N" => fun i : α => ∑ j : β, B * (-negPart (A i j))
 -- S is the box where the image of T goes
 local notation3 "S" => Finset.Icc N P
 
@@ -93,8 +93,7 @@ private lemma image_T_subset_S [DecidableEq α] [DecidableEq β] (v) (hv : v ∈
 
 private lemma card_T_eq [DecidableEq β] : #T = (B + 1) ^ n := by
   rw [Pi.card_Icc 0 B']
-  simp only [Pi.zero_apply, card_Icc, sub_zero, toNat_natCast_add_one, prod_const, card_univ,
-    add_pos_iff, zero_lt_one, or_true]
+  simp only [Pi.zero_apply, card_Icc, sub_zero, toNat_natCast_add_one, prod_const, card_univ]
 
 -- This lemma is necessary to be able to apply the formula #(Icc a b) = b + 1 - a
 private lemma N_le_P_add_one (i : α) : N i ≤ P i + 1 := by
@@ -153,13 +152,13 @@ private lemma card_S_lt_card_T [DecidableEq α] [DecidableEq β]
         gcongr with j _
         rw [posPart_add_negPart (A i j), Int.cast_abs]
         exact le_trans (norm_entry_le_entrywise_sup_norm A) (le_max_right ..)
-  _  = (n * max 1 ‖A‖ * B + 1) ^ m := by simp
-  _  ≤ (n * max 1 ‖A‖) ^ m * (B + 1) ^ m := by
+  _ = (n * max 1 ‖A‖ * B + 1) ^ m := by simp
+  _ ≤ (n * max 1 ‖A‖) ^ m * (B + 1) ^ m := by
         rw [← mul_pow, mul_add, mul_one]
         gcongr
         have H : 1 ≤ (n : ℝ) := mod_cast (hm.trans hn)
         exact one_le_mul_of_one_le_of_one_le H <| le_max_left ..
-  _ = ((n * max 1 ‖A‖) ^ (m / ((n : ℝ) - m))) ^ ((n : ℝ) - m)  * (B + 1) ^ m := by
+  _ = ((n * max 1 ‖A‖) ^ (m / ((n : ℝ) - m))) ^ ((n : ℝ) - m) * (B + 1) ^ m := by
         congr 1
         rw [← rpow_mul (mul_nonneg (Nat.cast_nonneg' n) (le_trans zero_le_one (le_max_left ..))),
           ← Real.rpow_natCast, div_mul_cancel₀]

@@ -35,7 +35,6 @@ variable (J : Type w)
 /-- A wide pullback shape for any type `J` can be written simply as `Option J`. -/
 def WidePullbackShape := Option J
 
--- Porting note: strangely this could be synthesized
 instance : Inhabited (WidePullbackShape J) where
   default := none
 
@@ -57,9 +56,8 @@ inductive Hom : WidePullbackShape J → WidePullbackShape J → Type w
   | term : ∀ j : J, Hom (some j) none
   deriving DecidableEq
 
--- This is relying on an automatically generated instance name, generated in a `deriving` handler.
--- See https://github.com/leanprover/lean4/issues/2343
-attribute [nolint unusedArguments] instDecidableEqHom
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] instDecidableEqHom.decEq
 
 instance struct : CategoryStruct (WidePullbackShape J) where
   Hom := Hom
@@ -80,7 +78,7 @@ aesop rule directing on `WidePushoutOut` and it didn't take for some reason -/
 def evalCasesBash : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePullbackShape _,
-      (_ : WidePullbackShape _) ⟶ (_ : WidePullbackShape _) ))
+      (_ : WidePullbackShape _) ⟶ (_ : WidePullbackShape _)))
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] evalCasesBash
 
@@ -115,7 +113,7 @@ def wideCospan (B : C) (objs : J → C) (arrows : ∀ j : J, objs j ⟶ B) : Wid
 /-- Every diagram is naturally isomorphic (actually, equal) to a `wideCospan` -/
 def diagramIsoWideCospan (F : WidePullbackShape J ⥤ C) :
     F ≅ wideCospan (F.obj none) (fun j => F.obj (some j)) fun j => F.map (Hom.term j) :=
-  NatIso.ofComponents fun j => eqToIso <| by aesop_cat
+  NatIso.ofComponents fun j => eqToIso <| by cat_disch
 
 /-- Construct a cone over a wide cospan. -/
 @[simps]
@@ -138,6 +136,7 @@ def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') :
   unitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
   counitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
 
+attribute [local instance] uliftCategory in
 /-- Lifting universe and morphism levels preserves wide pullback diagrams. -/
 def uliftEquivalence :
     ULiftHom.{w'} (ULift.{w'} (WidePullbackShape J)) ≌ WidePullbackShape (ULift J) :=
@@ -158,9 +157,8 @@ inductive Hom : WidePushoutShape J → WidePushoutShape J → Type w
   | init : ∀ j : J, Hom none (some j)
   deriving DecidableEq
 
--- This is relying on an automatically generated instance name, generated in a `deriving` handler.
--- See https://github.com/leanprover/lean4/issues/2343
-attribute [nolint unusedArguments] instDecidableEqHom
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] instDecidableEqHom.decEq
 
 instance struct : CategoryStruct (WidePushoutShape J) where
   Hom := Hom
@@ -180,7 +178,7 @@ open Lean Elab Tactic
 def evalCasesBash' : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePushoutShape _,
-      (_ : WidePushoutShape _) ⟶ (_ : WidePushoutShape _) ))
+      (_ : WidePushoutShape _) ⟶ (_ : WidePushoutShape _)))
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] evalCasesBash'
 
@@ -211,9 +209,9 @@ def wideSpan (B : C) (objs : J → C) (arrows : ∀ j : J, B ⟶ objs j) : WideP
     · exact arrows j
   map_comp := fun f g => by
     cases f
-    · simp only [Eq.ndrec, hom_id, eq_rec_constant, Category.id_comp]; congr
+    · simp only [hom_id, Category.id_comp]; congr
     · cases g
-      simp only [Eq.ndrec, hom_id, eq_rec_constant, Category.comp_id]; congr
+      simp only [hom_id, Category.comp_id]; congr
 
 /-- Every diagram is naturally isomorphic (actually, equal) to a `wideSpan` -/
 def diagramIsoWideSpan (F : WidePushoutShape J ⥤ C) :
@@ -240,6 +238,7 @@ def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePushoutShape J ≌ Wi
   unitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
   counitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
 
+attribute [local instance] uliftCategory in
 /-- Lifting universe and morphism levels preserves wide pushout diagrams. -/
 def uliftEquivalence :
     ULiftHom.{w'} (ULift.{w'} (WidePushoutShape J)) ≌ WidePushoutShape (ULift J) :=
@@ -250,11 +249,13 @@ end WidePushoutShape
 
 variable (C : Type u) [Category.{v} C]
 
-/-- `HasWidePullbacks` represents a choice of wide pullback for every collection of morphisms -/
+/-- A category `HasWidePullbacks` if it has all limits of shape `WidePullbackShape J`, i.e. if it
+has a wide pullback for every collection of morphisms with the same codomain. -/
 abbrev HasWidePullbacks : Prop :=
   ∀ J : Type w, HasLimitsOfShape (WidePullbackShape J) C
 
-/-- `HasWidePushouts` represents a choice of wide pushout for every collection of morphisms -/
+/-- A category `HasWidePushouts` if it has all colimits of shape `WidePushoutShape J`, i.e. if it
+has a wide pushout for every collection of morphisms with the same domain. -/
 abbrev HasWidePushouts : Prop :=
   ∀ J : Type w, HasColimitsOfShape (WidePushoutShape J) C
 
@@ -324,9 +325,7 @@ theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
 
 theorem hom_eq_lift (g : X ⟶ widePullback _ _ arrows) :
     g = lift (g ≫ base arrows) (fun j => g ≫ π arrows j) (by simp) := by
-  apply eq_lift_of_comp_eq
-  · simp
-  · rfl  -- Porting note: quite a few missing refl's in aesop_cat now
+  aesop
 
 @[ext 1100]
 theorem hom_ext (g1 g2 : X ⟶ widePullback _ _ arrows) : (∀ j : J,
@@ -387,9 +386,7 @@ theorem hom_eq_desc (g : widePushout _ _ arrows ⟶ X) :
       desc (head arrows ≫ g) (fun j => ι arrows j ≫ g) fun j => by
         rw [← Category.assoc]
         simp := by
-  apply eq_desc_of_comp_eq
-  · simp
-  · rfl -- Porting note: another missing rfl
+  cat_disch
 
 @[ext 1100]
 theorem hom_ext (g1 g2 : widePushout _ _ arrows ⟶ X) : (∀ j : J,

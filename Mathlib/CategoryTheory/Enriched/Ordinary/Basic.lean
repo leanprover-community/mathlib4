@@ -24,7 +24,7 @@ using an abbreviation for `EnrichedOrdinaryCategory SSet C`.
 
 -/
 
-universe v' v u u'
+universe v' v v'' u u' u''
 
 open CategoryTheory Category MonoidalCategory Opposite
 
@@ -37,13 +37,12 @@ variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
 over a category `V` in such a way that morphisms `X ⟶ Y` in `C` identify
 to morphisms `𝟙_ V ⟶ (X ⟶[V] Y)` in `V`. -/
 class EnrichedOrdinaryCategory extends EnrichedCategory V C where
-  /-- morphisms `X ⟶ Y` in the category identify morphisms
-    `𝟙_ V ⟶ (X ⟶[V] Y)` in `V` -/
+  /-- morphisms `X ⟶ Y` in the category identify morphisms `𝟙_ V ⟶ (X ⟶[V] Y)` in `V` -/
   homEquiv {X Y : C} : (X ⟶ Y) ≃ (𝟙_ V ⟶ (X ⟶[V] Y))
-  homEquiv_id (X : C) : homEquiv (𝟙 X) = eId V X := by aesop_cat
+  homEquiv_id (X : C) : homEquiv (𝟙 X) = eId V X := by cat_disch
   homEquiv_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     homEquiv (f ≫ g) = (λ_ _).inv ≫ (homEquiv f ⊗ₘ homEquiv g) ≫
-      eComp V X Y Z := by aesop_cat
+      eComp V X Y Z := by cat_disch
 
 variable [EnrichedOrdinaryCategory V C] {C}
 
@@ -120,14 +119,14 @@ lemma eComp_eHomWhiskerLeft (X Y : C) {Z Z' : C} (g : Z ⟶ Z') :
       _ ◁ eHomWhiskerLeft V Y g ≫ eComp V X Y Z' := by
   dsimp [eHomWhiskerLeft]
   rw [rightUnitor_inv_naturality_assoc, ← whisker_exchange_assoc]
-  simp [e_assoc']
+  simp
 
 /-- Given an isomorphism `α : Y ≅ Y₁` in C, the enriched composition map
 `eComp V X Y Z : (X ⟶[V] Y) ⊗ (Y ⟶[V] Z) ⟶ (X ⟶[V] Z)` factors through the `V`
 object `(X ⟶[V] Y₁) ⊗ (Y₁ ⟶[V] Z)` via the map defined by whiskering in the
 middle with `α.hom` and `α.inv`. -/
 @[reassoc]
-lemma eHom_whisker_cancel {X Y Y₁ Z : C} (α : Y  ≅ Y₁) :
+lemma eHom_whisker_cancel {X Y Y₁ Z : C} (α : Y ≅ Y₁) :
     eHomWhiskerLeft V X α.hom ▷ _ ≫ _ ◁ eHomWhiskerRight V α.inv Z ≫
       eComp V X Y₁ Z = eComp V X Y Z := by
   dsimp [eHomWhiskerLeft, eHomWhiskerRight]
@@ -138,7 +137,7 @@ lemma eHom_whisker_cancel {X Y Y₁ Z : C} (α : Y  ≅ Y₁) :
   simp [← eHomWhiskerLeft_comp]
 
 @[reassoc]
-lemma eHom_whisker_cancel_inv {X Y Y₁ Z : C} (α : Y  ≅ Y₁) :
+lemma eHom_whisker_cancel_inv {X Y Y₁ Z : C} (α : Y ≅ Y₁) :
     eHomWhiskerLeft V X α.inv ▷ _ ≫ _ ◁ eHomWhiskerRight V α.hom Z ≫
       eComp V X Y Z = eComp V X Y₁ Z := eHom_whisker_cancel V α.symm
 
@@ -166,14 +165,147 @@ def eHomFunctor : Cᵒᵖ ⥤ C ⥤ V where
   map φ :=
     { app := fun Y => eHomWhiskerRight V φ.unop Y }
 
-instance ForgetEnrichment.EnrichedOrdinaryCategory {D : Type*} [EnrichedCategory V D] :
+instance ForgetEnrichment.enrichedOrdinaryCategory {D : Type*} [EnrichedCategory V D] :
     EnrichedOrdinaryCategory V (ForgetEnrichment V D) where
   toEnrichedCategory := inferInstanceAs (EnrichedCategory V D)
   homEquiv := Equiv.refl _
   homEquiv_id _ := Category.id_comp _
   homEquiv_comp _ _ := Category.assoc _ _ _
 
+/-- If `D` is already an enriched ordinary category, there is a canonical functor from `D` to
+`ForgetEnrichment V D`. -/
+@[simps]
+def ForgetEnrichment.equivInverse (D : Type u') [Category.{v'} D] [EnrichedOrdinaryCategory V D] :
+    D ⥤ ForgetEnrichment V D where
+  obj X := .of V X
+  map f := ForgetEnrichment.homOf V (eHomEquiv V f)
+  map_comp f g := by simp [eHomEquiv_comp]
+
+/-- If `D` is already an enriched ordinary category, there is a canonical functor from
+`ForgetEnrichment V D` to `D`. -/
+@[simps]
+def ForgetEnrichment.equivFunctor (D : Type u') [Category.{v'} D] [EnrichedOrdinaryCategory V D] :
+    ForgetEnrichment V D ⥤ D where
+  obj X := ForgetEnrichment.to V X
+  map f := (eHomEquiv V).symm (ForgetEnrichment.homTo V f)
+  map_id X := by rw [ForgetEnrichment.homTo_id, ← eHomEquiv_id, Equiv.symm_apply_apply]
+  map_comp {X} {Y} {Z} f g :=  Equiv.injective
+    (eHomEquiv V (X := ForgetEnrichment.to V X) (Y := ForgetEnrichment.to V Z))
+    (by simp [eHomEquiv_comp])
+
+/-- If `D` is already an enriched ordinary category, it is equivalent to `ForgetEnrichment V D`. -/
+@[simps]
+def ForgetEnrichment.equiv {D : Type u'} [Category.{v'} D] [EnrichedOrdinaryCategory V D] :
+    ForgetEnrichment V D ≌ D where
+  functor := equivFunctor V D
+  inverse := equivInverse V D
+  unitIso := NatIso.ofComponents (fun X => Iso.refl _)
+  counitIso := NatIso.ofComponents (fun X => Iso.refl _)
+  functor_unitIso_comp X := Equiv.injective
+    (eHomEquiv V (X := ForgetEnrichment.to V X) (Y := ForgetEnrichment.to V X)) (by simp)
+
 /-- enriched coyoneda functor `(X ⟶[V] _) : C ⥤ V`. -/
 abbrev eCoyoneda (X : C) := (eHomFunctor V C).obj (op X)
+
+section TransportEnrichment
+
+variable {V} {W : Type u''} [Category.{v''} W] [MonoidalCategory W]
+  (F : V ⥤ W) [F.LaxMonoidal]
+  (C)
+
+instance : Category (TransportEnrichment F C) := inferInstanceAs (Category C)
+
+/-- If `C` is an ordinary enriched category, the category structure on `TransportEnrichment F C`
+is trivially equivalent to the one on `C` itself. -/
+def TransportEnrichment.ofOrdinaryEnrichedCategoryEquiv : TransportEnrichment F C ≌ C :=
+  Equivalence.refl
+
+open EnrichedCategory
+
+/-- If for a lax monoidal functor `F : V ⥤ W` the canonical function
+`(𝟙_ V ⟶ v) → (𝟙_ W ⟶ F.obj v)` is bijective, and `C` is an enriched ordinary category on `V`,
+then `F` induces the structure of a `W`-enriched ordinary category on `TransportEnrichment F C`,
+i.e. on the same underlying category `C`. -/
+noncomputable def TransportEnrichment.enrichedOrdinaryCategory
+    (h : ∀ v : V, Function.Bijective fun (f : 𝟙_ V ⟶ v) => Functor.LaxMonoidal.ε F ≫ F.map f) :
+    EnrichedOrdinaryCategory W (TransportEnrichment F C) where
+  homEquiv {X Y} := (eHomEquiv V (C := C)).trans <| Equiv.ofBijective _ (h (Hom (C := C) X Y))
+  homEquiv_comp f g := by
+    simp [← tensorHom_comp_tensorHom, eHomEquiv_comp, eComp_eq,
+      tensorHom_def (Functor.LaxMonoidal.ε F), unitors_inv_equal]
+
+section Equiv
+
+variable {W : Type u''} [Category.{v''} W] [MonoidalCategory W]
+  (F : V ⥤ W) [F.LaxMonoidal]
+  (D : Type u) [EnrichedCategory V D]
+  (e : ∀ v : V, (𝟙_ V ⟶ v) ≃ (𝟙_ W ⟶ F.obj v))
+  (h : ∀ (v : V) (f : 𝟙_ V ⟶ v), (e v) f = Functor.LaxMonoidal.ε F ≫ F.map f)
+
+/-- The functor that makes up `TransportEnrichment.forgetEnrichmentEquiv`. -/
+@[simps]
+def TransportEnrichment.forgetEnrichmentEquivFunctor :
+    TransportEnrichment F (ForgetEnrichment V D) ⥤
+      ForgetEnrichment W (TransportEnrichment F D) where
+  obj X := ForgetEnrichment.of W X
+  map {X} {Y} f := ForgetEnrichment.homOf W <| (e (Hom (C := ForgetEnrichment V D) X Y)) <|
+    ForgetEnrichment.homTo V f
+  map_id X := by
+    rw [h, ForgetEnrichment.homTo_id, ← TransportEnrichment.eId_eq]
+    simp [ForgetEnrichment.to]
+  map_comp f g := by
+    rw [h, h, h, ForgetEnrichment.homTo_comp, F.map_comp, F.map_comp, ← Category.assoc,
+      ← Functor.LaxMonoidal.left_unitality_inv, Category.assoc, Category.assoc, Category.assoc,
+      Category.assoc, ← Functor.LaxMonoidal.μ_natural_assoc, ← TransportEnrichment.eComp_eq,
+      ← ForgetEnrichment.homOf_comp, leftUnitor_inv_naturality_assoc, ← tensorHom_def'_assoc,
+      tensorHom_comp_tensorHom_assoc]
+    rfl
+
+/-- The inverse functor that makes up `TransportEnrichment.forgetEnrichmentEquiv`. -/
+@[simps]
+def TransportEnrichment.forgetEnrichmentEquivInverse :
+    ForgetEnrichment W (TransportEnrichment F D) ⥤ TransportEnrichment F (ForgetEnrichment V D)
+      where
+  obj X := ForgetEnrichment.of V (ForgetEnrichment.to (C := TransportEnrichment F D) W X)
+  map f := ForgetEnrichment.homOf V ((e _).symm (ForgetEnrichment.homTo W f))
+  map_id X := by
+    rw [← ForgetEnrichment.homOf_eId]
+    congr 1
+    apply Equiv.injective (e _)
+    rw [ForgetEnrichment.homTo_id, Equiv.apply_symm_apply, h, TransportEnrichment.eId_eq]
+  map_comp f g := by
+    rw [← ForgetEnrichment.homOf_comp]
+    congr
+    apply Equiv.injective (e _)
+    rw [Equiv.apply_symm_apply, h]
+    simp only [ForgetEnrichment.homTo_comp, eComp_eq, Category.assoc, Functor.map_comp]
+    slice_rhs 1 3 =>
+      rw [← Functor.LaxMonoidal.left_unitality_inv, Category.assoc, Category.assoc,
+        ← Functor.LaxMonoidal.μ_natural, ← leftUnitor_inv_comp_tensorHom_assoc,
+        tensorHom_comp_tensorHom_assoc]
+    simp [← h]
+
+/-- If `D` is a `V`-enriched category, then forgetting the enrichment and transporting the resulting
+enriched ordinary category along a functor `F : V ⥤ W`, for which
+`f ↦ Functor.LaxMonoidal.ε F ≫ F.map f` has an inverse, results in a category equivalent to
+transporting along `F` and then forgetting about the resulting `W`-enrichment. -/
+@[simps]
+def TransportEnrichment.forgetEnrichmentEquiv : TransportEnrichment F (ForgetEnrichment V D) ≌
+    ForgetEnrichment W (TransportEnrichment F D) where
+  functor := forgetEnrichmentEquivFunctor _ _ e h
+  inverse := forgetEnrichmentEquivInverse _ _ e h
+  unitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) fun f => by
+    simp [ForgetEnrichment.to, ForgetEnrichment.of]
+  functor_unitIso_comp X := by
+    simp only [Functor.id_obj, forgetEnrichmentEquivFunctor_obj, Functor.comp_obj,
+      forgetEnrichmentEquivInverse_obj, ForgetEnrichment.to_of, NatIso.ofComponents_hom_app,
+      Iso.refl_hom, forgetEnrichmentEquivFunctor_map, h, Category.comp_id]
+    rw [← ForgetEnrichment.homOf_eId, TransportEnrichment.eId_eq, ForgetEnrichment.homTo_id]
+    rfl
+
+end Equiv
+
+end TransportEnrichment
 
 end CategoryTheory

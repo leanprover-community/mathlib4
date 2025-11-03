@@ -208,34 +208,26 @@ lemma lawsonClosed_iff_dirSupClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s
     IsClosed[L] s ↔ DirSupClosed s := by
   rw [lawsonClosed_iff_scottClosed_of_isLowerSet L S _ h,
     @IsScott.isClosed_iff_isLowerSet_and_dirSupClosed]
-  aesop
+  simp_all
 
 end Preorder
 
 namespace IsLawson
-
-section PartialOrder
-
 variable [PartialOrder α] [TopologicalSpace α] [IsLawson α]
 
-lemma singleton_isClosed (a : α) : IsClosed ({a} : Set α) := by
-  simp only [IsLawson.topology_eq_lawson]
-  rw [← (Set.OrdConnected.upperClosure_inter_lowerClosure ordConnected_singleton),
-    ← WithLawson.isClosed_preimage_ofLawson]
-  apply IsClosed.inter
-    (lawsonClosed_of_lowerClosed _ (IsLower.isClosed_upperClosure (finite_singleton a)))
-  rw [lowerClosure_singleton, LowerSet.coe_Iic, ← WithLawson.isClosed_preimage_ofLawson]
-  apply lawsonClosed_of_scottClosed
-  exact IsScott.isClosed_Iic
-
+/-- The Lawson topology on a partial order is T₁. -/
 -- see Note [lower instance priority]
-/-- The Lawson topology on a partial order is T₀. -/
-instance (priority := 90) t0Space : T0Space α :=
-  (t0Space_iff_inseparable α).2 fun a b h => by
-    simpa only [inseparable_iff_closure_eq, closure_eq_iff_isClosed.mpr (singleton_isClosed a),
-      closure_eq_iff_isClosed.mpr (singleton_isClosed b), singleton_eq_singleton_iff] using h
+instance (priority := 90) toT1Space : T1Space α where
+  t1 a := by
+    simp only [IsLawson.topology_eq_lawson]
+    rw [← (Set.OrdConnected.upperClosure_inter_lowerClosure ordConnected_singleton),
+      ← WithLawson.isClosed_preimage_ofLawson]
+    apply IsClosed.inter
+      (lawsonClosed_of_lowerClosed _ (IsLower.isClosed_upperClosure (finite_singleton a)))
+    rw [lowerClosure_singleton, LowerSet.coe_Iic, ← WithLawson.isClosed_preimage_ofLawson]
+    exact lawsonClosed_of_scottClosed _ isClosed_Iic
 
-end PartialOrder
+@[deprecated (since := "2025-07-02")] protected alias singleton_isClosed := isClosed_singleton
 
 end IsLawson
 

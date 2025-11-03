@@ -21,8 +21,8 @@ We also construct the subcategory of subterminal objects.
 ## TODO
 
 * Define exponential ideals, and show this subcategory is an exponential ideal.
-* Use the above to show that in a locally cartesian closed category, every subobject lattice
-  is cartesian closed (equivalently, a Heyting algebra).
+* Use the above to show that in a locally Cartesian closed category, every subobject lattice
+  is Cartesian closed (equivalently, a Heyting algebra).
 
 -/
 
@@ -87,7 +87,7 @@ theorem IsSubterminal.isIso_diag (hA : IsSubterminal A) [HasBinaryProduct A A] :
   ⟨⟨Limits.prod.fst,
       ⟨by simp, by
         rw [IsSubterminal.def] at hA
-        aesop_cat⟩⟩⟩
+        cat_disch⟩⟩⟩
 
 /-- If the diagonal morphism of `A` is an isomorphism, then it is subterminal.
 The converse of `isSubterminal.isIso_diag`.
@@ -113,8 +113,8 @@ to the lattice of open subsets of `X`. More generally, if `C` is a topos, this i
 def Subterminals (C : Type u₁) [Category.{v₁} C] :=
   ObjectProperty.FullSubcategory fun A : C => IsSubterminal A
 
-instance (C : Type u₁) [Category.{v₁} C] :
-  Category (Subterminals C) := ObjectProperty.FullSubcategory.category _
+instance (C : Type u₁) [Category.{v₁} C] : Category (Subterminals C) :=
+  ObjectProperty.FullSubcategory.category _
 
 instance [HasTerminal C] : Inhabited (Subterminals C) :=
   ⟨⟨⊤_ C, isSubterminal_of_terminal⟩⟩

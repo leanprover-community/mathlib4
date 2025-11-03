@@ -303,35 +303,23 @@ of `OnePoint X`. -/
 instance nhdsNE_coe_neBot (x : X) [h : NeBot (𝓝[≠] x)] : NeBot (𝓝[≠] (x : OnePoint X)) := by
   simpa [nhdsWithin_coe, preimage, coe_eq_coe] using h.map some
 
-@[deprecated (since := "2025-03-02")]
-alias nhdsWithin_compl_coe_neBot := nhdsNE_coe_neBot
-
 theorem nhdsNE_infty_eq : 𝓝[≠] (∞ : OnePoint X) = map (↑) (coclosedCompact X) := by
   refine (nhdsWithin_basis_open ∞ _).ext (hasBasis_coclosedCompact.map _) ?_ ?_
   · rintro s ⟨hs, hso⟩
     refine ⟨_, (isOpen_iff_of_mem hs).mp hso, ?_⟩
-    simp [Subset.rfl]
+    simp
   · rintro s ⟨h₁, h₂⟩
     refine ⟨_, ⟨mem_compl infty_notMem_image_coe, isOpen_compl_image_coe.2 ⟨h₁, h₂⟩⟩, ?_⟩
-    simp [compl_image_coe, ← diff_eq, subset_preimage_image]
-
-@[deprecated (since := "2025-03-02")]
-alias nhdsWithin_compl_infty_eq := nhdsNE_infty_eq
+    simp [compl_image_coe, ← diff_eq]
 
 /-- If `X` is a non-compact space, then `∞` is not an isolated point of `OnePoint X`. -/
 instance nhdsNE_infty_neBot [NoncompactSpace X] : NeBot (𝓝[≠] (∞ : OnePoint X)) := by
   rw [nhdsNE_infty_eq]
   infer_instance
 
-@[deprecated (since := "2025-03-02")]
-alias nhdsWithin_compl_infty_neBot := nhdsNE_infty_neBot
-
 instance (priority := 900) nhdsNE_neBot [∀ x : X, NeBot (𝓝[≠] x)] [NoncompactSpace X]
     (x : OnePoint X) : NeBot (𝓝[≠] x) :=
   OnePoint.rec OnePoint.nhdsNE_infty_neBot (fun y => OnePoint.nhdsNE_coe_neBot y) x
-
-@[deprecated (since := "2025-03-02")]
-alias nhdsWithin_compl_neBot := nhdsNE_neBot
 
 theorem nhds_infty_eq : 𝓝 (∞ : OnePoint X) = map (↑) (coclosedCompact X) ⊔ pure ∞ := by
   rw [← nhdsNE_infty_eq, nhdsNE_sup_pure]
@@ -368,7 +356,7 @@ theorem tendsto_nhds_infty {α : Type*} {f : OnePoint X → α} {l : Filter α} 
       ∀ s ∈ l, f ∞ ∈ s ∧ ∃ t : Set X, IsClosed t ∧ IsCompact t ∧ MapsTo (f ∘ (↑)) tᶜ s :=
   tendsto_nhds_infty'.trans <| by
     simp only [tendsto_pure_left, hasBasis_coclosedCompact.tendsto_left_iff, forall_and,
-      and_assoc, exists_prop]
+      and_assoc]
 
 theorem continuousAt_infty' {Y : Type*} [TopologicalSpace Y] {f : OnePoint X → Y} :
     ContinuousAt f ∞ ↔ Tendsto (f ∘ (↑)) (coclosedCompact X) (𝓝 (f ∞)) :=
@@ -644,7 +632,7 @@ open OnePoint
 to the homeomorphism of their one point compactifications. -/
 @[simps]
 def onePointCongr (h : X ≃ₜ Y) : OnePoint X ≃ₜ OnePoint Y where
-  __ := h.toEquiv.optionCongr
+  __ := h.toEquiv.withTopCongr
   toFun := OnePoint.map h
   invFun := OnePoint.map h.symm
   continuous_toFun := continuous_map (map_continuous h) h.map_coclosedCompact.le

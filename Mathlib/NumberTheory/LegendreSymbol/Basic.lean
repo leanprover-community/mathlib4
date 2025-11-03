@@ -63,7 +63,7 @@ theorem euler_criterion {a : ZMod p} (ha : a ≠ 0) : IsSquare (a : ZMod p) ↔ 
   · rintro ⟨y, rfl⟩
     have hy : y ≠ 0 := by
       rintro rfl
-      simp [zero_pow, mul_zero, ne_eq, not_true] at ha
+      simp [mul_zero, ne_eq] at ha
     refine ⟨Units.mk0 y hy, ?_⟩; simp
 
 /-- If `a : ZMod p` is nonzero, then `a^(p/2)` is either `1` or `-1`. -/
@@ -146,7 +146,7 @@ theorem at_one : legendreSym p 1 = 1 := by rw [legendreSym, Int.cast_one, MulCha
 
 /-- The Legendre symbol is multiplicative in `a` for `p` fixed. -/
 protected theorem mul (a b : ℤ) : legendreSym p (a * b) = legendreSym p a * legendreSym p b := by
-  simp [legendreSym, Int.cast_mul, map_mul, quadraticCharFun_mul]
+  simp [legendreSym, Int.cast_mul, map_mul]
 
 /-- The Legendre symbol is a homomorphism of monoids with zero. -/
 @[simps]

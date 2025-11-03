@@ -5,6 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 import Mathlib.Topology.Algebra.ContinuousAffineMap
+import Mathlib.Topology.Algebra.Group.AddTorsor
 
 /-!
 # Topology of affine subspaces.
@@ -24,8 +25,6 @@ namespace AffineSubspace
 variable {R V P : Type*} [Ring R] [AddCommGroup V] [Module R V] [TopologicalSpace P]
   [AddTorsor V P]
 
-attribute [local instance] toAddTorsor
-
 /-- Embedding of an affine subspace to the ambient space, as a continuous affine map. -/
 def subtypeA (s : AffineSubspace R P) [Nonempty s] : s →ᴬ[R] P where
   toAffineMap := s.subtype
@@ -37,5 +36,22 @@ def subtypeA (s : AffineSubspace R P) [Nonempty s] : s →ᴬ[R] P where
 @[simp] lemma subtypeA_toAffineMap (s : AffineSubspace R P) [Nonempty s] :
     s.subtypeA.toAffineMap = s.subtype :=
   rfl
+
+variable [TopologicalSpace V] [IsTopologicalAddTorsor P]
+
+instance {s : AffineSubspace R P} [Nonempty s] : IsTopologicalAddTorsor s where
+  continuous_vadd := by
+    rw [Topology.IsEmbedding.subtypeVal.continuous_iff]
+    fun_prop
+  continuous_vsub := by
+    rw [Topology.IsEmbedding.subtypeVal.continuous_iff]
+    fun_prop
+
+theorem isClosed_direction_iff [T1Space V] (s : AffineSubspace R P) :
+    IsClosed (s.direction : Set V) ↔ IsClosed (s : Set P) := by
+  rcases s.eq_bot_or_nonempty with (rfl | ⟨x, hx⟩); · simp
+  rw [← (Homeomorph.vaddConst x).symm.isClosed_image,
+    AffineSubspace.coe_direction_eq_vsub_set_right hx]
+  simp only [Homeomorph.vaddConst_symm_apply]
 
 end AffineSubspace

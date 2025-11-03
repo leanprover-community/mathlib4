@@ -142,7 +142,7 @@ lemma LSeries.term_sum_apply (n : ℕ) :
   rcases eq_or_ne n 0 with hn | hn <;>
   simp [hn, Finset.sum_div]
 
-lemma LSeries.term_sum : term (∑ i ∈ S, f i) s  = ∑ i ∈ S, term (f i) s :=
+lemma LSeries.term_sum : term (∑ i ∈ S, f i) s = ∑ i ∈ S, term (f i) s :=
   funext fun _ ↦ by simp
 
 variable {f S s}

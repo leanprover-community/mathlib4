@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Floor.Div
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Nat.Factorization.Defs
 
 /-!
@@ -49,7 +50,7 @@ we special-case the following values:
 def floorRoot (n a : ℕ) : ℕ :=
   if n = 0 ∨ a = 0 then 0 else a.factorization.prod fun p k ↦ p ^ (k / n)
 
-/-- The RHS is a noncomputable version of `Nat.floorRoot` with better order theoretical
+/-- The RHS is a noncomputable version of `Nat.floorRoot` with better order-theoretic
 properties. -/
 lemma floorRoot_def :
     floorRoot n a = if n = 0 ∨ a = 0 then 0 else (a.factorization ⌊/⌋ n).prod (· ^ ·) := by
@@ -65,7 +66,7 @@ lemma floorRoot_def :
   simp [floorRoot_def, pos_iff_ne_zero.2, hn]; split_ifs <;> simp [*]
 
 lemma floorRoot_ne_zero : floorRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
-  simp +contextual [floorRoot, not_imp_not, not_or]
+  simp +contextual [floorRoot, not_or]
 
 @[simp] lemma floorRoot_eq_zero : floorRoot n a = 0 ↔ n = 0 ∨ a = 0 :=
   floorRoot_ne_zero.not_right.trans <| by simp only [not_and_or, ne_eq, not_not]
@@ -109,7 +110,7 @@ we special-case the following values:
 def ceilRoot (n a : ℕ) : ℕ :=
   if n = 0 ∨ a = 0 then 0 else a.factorization.prod fun p k ↦ p ^ ((k + n - 1) / n)
 
-/-- The RHS is a noncomputable version of `Nat.ceilRoot` with better order theoretical
+/-- The RHS is a noncomputable version of `Nat.ceilRoot` with better order-theoretic
 properties. -/
 lemma ceilRoot_def :
     ceilRoot n a = if n = 0 ∨ a = 0 then 0 else (a.factorization ⌈/⌉ n).prod (· ^ ·) := by
@@ -127,7 +128,7 @@ lemma ceilRoot_def :
   simp [ceilRoot_def, pos_iff_ne_zero.2, hn]; split_ifs <;> simp [*]
 
 lemma ceilRoot_ne_zero : ceilRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
-  simp +contextual [ceilRoot_def, not_imp_not, not_or]
+  simp +contextual [ceilRoot_def, not_or]
 
 @[simp] lemma ceilRoot_eq_zero : ceilRoot n a = 0 ↔ n = 0 ∨ a = 0 :=
   ceilRoot_ne_zero.not_right.trans <| by simp only [not_and_or, ne_eq, not_not]
@@ -145,7 +146,7 @@ lemma ceilRoot_ne_zero : ceilRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
 by divisibility.
 
 Note that this cannot possibly hold for `n = 0`, regardless of the value of `ceilRoot 0 a`, because
-the statement reduces to `a = 1 ↔ ceilRoot 0 a ∣ b`, which is false for eg `a = 0`,
+the statement reduces to `a = 1 ↔ ceilRoot 0 a ∣ b`, which is false for e.g. `a = 0`,
 `b = ceilRoot 0 a`. -/
 lemma dvd_pow_iff_ceilRoot_dvd (hn : n ≠ 0) : a ∣ b ^ n ↔ ceilRoot n a ∣ b := by
   obtain rfl | ha := eq_or_ne a 0

@@ -150,7 +150,7 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : P α) :
 
 theorem liftP_iff' {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (a : P.A) (f : P.B a ⟹ α) :
     @LiftP.{u} _ P.Obj _ α p ⟨a, f⟩ ↔ ∀ i x, p (f i x) := by
-  simp only [liftP_iff, Sigma.mk.inj_iff]; constructor
+  simp only [liftP_iff]; constructor
   · rintro ⟨_, _, ⟨⟩, _⟩
     assumption
   · intro

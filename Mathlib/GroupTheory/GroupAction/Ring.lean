@@ -29,7 +29,7 @@ instance NonUnitalNonAssocSemiring.nat_isScalarTower [NonUnitalNonAssocSemiring 
     IsScalarTower ℕ R R where
   smul_assoc n x y := by
     induction n with
-    | zero => simp [zero_nsmul]
+    | zero => simp
     | succ n ih => simp_rw [succ_nsmul, ← ih, smul_eq_mul, add_mul]
 
 /-- Note that `AddCommGroup.int_isScalarTower` requires stronger assumptions on `R`. -/

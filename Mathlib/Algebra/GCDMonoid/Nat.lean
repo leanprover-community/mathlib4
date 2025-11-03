@@ -23,7 +23,7 @@ import Mathlib.Algebra.GroupWithZero.Nat
 natural numbers, integers, normalization monoid, gcd monoid, greatest common divisor
 -/
 
-assert_not_exists OrderedCommMonoid
+assert_not_exists IsOrderedMonoid
 
 /-- `ℕ` is a gcd_monoid. -/
 instance : GCDMonoid ℕ where
@@ -84,7 +84,7 @@ theorem nonneg_of_normalize_eq_self {z : ℤ} (hz : normalize z = z) : 0 ≤ z :
   by_cases h : 0 ≤ z
   · exact h
   · rw [normalize_of_nonpos (le_of_not_ge h)] at hz
-    omega
+    cutsat
 
 theorem nonneg_iff_normalize_eq_self (z : ℤ) : normalize z = z ↔ 0 ≤ z :=
   ⟨nonneg_of_normalize_eq_self, normalize_of_nonneg⟩
@@ -146,7 +146,7 @@ def associatesIntEquivNat : Associates ℤ ≃ ℕ := by
   refine ⟨(·.out.natAbs), (Associates.mk ·), ?_, fun n ↦ ?_⟩
   · refine Associates.forall_associated.2 fun a ↦ ?_
     refine Associates.mk_eq_mk_iff_associated.2 <| Associated.symm <| ⟨normUnit a, ?_⟩
-    simp [Int.abs_eq_normalize, normalize_apply]
+    simp [Int.natCast_natAbs, Int.abs_eq_normalize, normalize_apply]
   · dsimp only [Associates.out_mk]
     rw [← Int.abs_eq_normalize, Int.natAbs_abs, Int.natAbs_natCast]
 

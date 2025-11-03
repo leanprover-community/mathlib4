@@ -2,7 +2,10 @@ name: Label New Contributors
 
 # Written with ChatGPT: https://chat.openai.com/share/3777ceb1-d722-4705-bacd-ba3f04b387be
 
-on: pull_request_target
+on: 
+  pull_request_target:
+    types:
+      - opened
 
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
@@ -21,7 +24,7 @@ jobs:
       contents: read
     steps:
       - name: Label PR and report count
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
           script: |
             const creator = context.payload.sender.login
@@ -35,6 +38,10 @@ jobs:
             })
             const issues = await github.paginate(opts)
             const pullRequestCount = issues.length;
+
+            // We could filter out bot users here, with:
+            // const isBot = (github.rest.users.getByUsername(creator).type === "Bot");
+            // But we choose to label PRs by new bot contributors as well.
 
             // Determine if the creator has 5 or fewer pull requests
             if (pullRequestCount <= 5) {

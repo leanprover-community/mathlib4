@@ -20,7 +20,7 @@ are also topological spaces.
 * `ContinuousAlgEquiv R A B`: the type of continuous `R`-algebra isomorphisms
   from `A` to `B` with continuous inverses.
 
-## Notations
+## Notation
 
 `A ≃A[R] B` : notation for `ContinuousAlgEquiv R A B`.
 
@@ -294,6 +294,8 @@ theorem _root_.AlgEquiv.isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E�
     [Ring E₁] [IsUniformAddGroup E₁] [Algebra R E₁] [Ring E₂] [IsUniformAddGroup E₂] [Algebra R E₂]
     (e : E₁ ≃ₐ[R] E₂) (h₁ : Continuous e) (h₂ : Continuous e.symm) :
     IsUniformEmbedding e :=
-  ContinuousAlgEquiv.isUniformEmbedding { e with continuous_toFun := h₁ }
+  ContinuousAlgEquiv.isUniformEmbedding { e with
+    continuous_toFun := h₁
+    continuous_invFun := by dsimp; fun_prop }
 
 end ContinuousAlgEquiv

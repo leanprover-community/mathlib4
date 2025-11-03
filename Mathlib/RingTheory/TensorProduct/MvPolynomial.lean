@@ -237,12 +237,25 @@ lemma algebraTensorAlgEquiv_symm_monomial (m : σ →₀ ℕ) (a : A) :
     nth_rw 2 [← mul_one a]
     rw [Algebra.TensorProduct.tmul_mul_tmul]
 
+@[simp]
+lemma algebraTensorAlgEquiv_symm_comp_aeval :
+    (((algebraTensorAlgEquiv (σ := σ) R A).symm.restrictScalars R) :
+        MvPolynomial σ A →ₐ[R] A ⊗[R] MvPolynomial σ R).comp
+      (MvPolynomial.mapAlgHom (R := R) (S₁ := R) (S₂ := A) (Algebra.ofId R A)) =
+      Algebra.TensorProduct.includeRight := by
+  ext
+  simp
+
+@[simp]
+lemma algebraTensorAlgEquiv_symm_map (x : MvPolynomial σ R) :
+    (algebraTensorAlgEquiv R A).symm (map (algebraMap R A) x) = 1 ⊗ₜ x :=
+  DFunLike.congr_fun (algebraTensorAlgEquiv_symm_comp_aeval R A) x
+
 lemma aeval_one_tmul (f : σ → S) (p : MvPolynomial σ R) :
     (aeval fun x ↦ (1 ⊗ₜ[R] f x : N ⊗[R] S)) p = 1 ⊗ₜ[R] (aeval f) p := by
   induction p using MvPolynomial.induction_on with
   | C a =>
-    simp only [map_C, algHom_C, Algebra.TensorProduct.algebraMap_apply,
-      RingHomCompTriple.comp_apply]
+    simp only [algHom_C, Algebra.TensorProduct.algebraMap_apply]
     rw [← mul_one ((algebraMap R N) a), ← Algebra.smul_def, smul_tmul, Algebra.smul_def, mul_one]
   | add p q hp hq => simp [hp, hq, tmul_add]
   | mul_X p i h => simp [h]

@@ -15,7 +15,7 @@ import Mathlib.Tactic.TryThis
 
 Defines a category, as a type class parametrised by the type of objects.
 
-## Notations
+## Notation
 
 Introduces notations in the `CategoryTheory` scope
 * `X ⟶ Y` for the morphism spaces (type as `\hom`),
@@ -30,7 +30,7 @@ local notation:80 g " ⊚ " f:80 => CategoryTheory.CategoryStruct.comp f g    --
 -/
 
 
-library_note "CategoryTheory universes"
+library_note2 «category theory universes»
 /--
 The typeclass `Category C` describes morphisms associated to objects of type `C : Type u`.
 
@@ -55,7 +55,7 @@ for which objects live in `Type u` and morphisms live in `Type v`.
 
 Because the universe parameter `u` for the objects can be inferred from `C`
 when we write `Category C`, while the universe parameter `v` for the morphisms
-can not be automatically inferred, through the category theory library
+cannot be automatically inferred, through the category theory library
 we introduce universe parameters with morphism levels listed first,
 as in
 ```
@@ -160,21 +160,46 @@ macro (name := aesop_cat_nonterminal) "aesop_cat_nonterminal" c:Aesop.tactic_cla
 
 attribute [aesop safe (rule_sets := [CategoryTheory])] Subsingleton.elim
 
+open Lean Elab Tactic in
+/-- A tactic for discharging easy category theory goals, widely used as an autoparameter.
+Currently this defaults to the `aesop_cat` wrapper around `aesop`, but by setting
+the option `mathlib.tactic.category.grind` to `true`, it will use the `grind` tactic instead.
+-/
+def categoryTheoryDischarger : TacticM Unit := do
+  if ← getBoolOption `mathlib.tactic.category.grind then
+    if ← getBoolOption `mathlib.tactic.category.log_grind then
+      logInfo "Category theory discharger using `grind`."
+    evalTacticSeq (← `(tacticSeq|
+      intros; (try dsimp only) <;> ((try ext); grind (gen := 20) (ematch := 20))))
+  else
+    if ← getBoolOption `mathlib.tactic.category.log_aesop then
+      logInfo "Category theory discharger using `aesop`."
+    evalTactic (← `(tactic| aesop_cat))
+
+@[inherit_doc categoryTheoryDischarger]
+elab (name := cat_disch) "cat_disch" : tactic =>
+  categoryTheoryDischarger
+
+set_option mathlib.tactic.category.grind true
+
 /-- The typeclass `Category C` describes morphisms associated to objects of type `C`.
 The universe levels of the objects and morphisms are unconstrained, and will often need to be
 specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallCategory`.) -/
 @[pp_with_univ, stacks 0014]
 class Category (obj : Type u) : Type max u (v + 1) extends CategoryStruct.{v} obj where
   /-- Identity morphisms are left identities for composition. -/
-  id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f := by aesop_cat
+  id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f := by cat_disch
   /-- Identity morphisms are right identities for composition. -/
-  comp_id : ∀ {X Y : obj} (f : X ⟶ Y), f ≫ 𝟙 Y = f := by aesop_cat
+  comp_id : ∀ {X Y : obj} (f : X ⟶ Y), f ≫ 𝟙 Y = f := by cat_disch
   /-- Composition in a category is associative. -/
   assoc : ∀ {W X Y Z : obj} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z), (f ≫ g) ≫ h = f ≫ g ≫ h := by
-    aesop_cat
+    cat_disch
 
 attribute [simp] Category.id_comp Category.comp_id Category.assoc
 attribute [trans] CategoryStruct.comp
+
+attribute [grind =] Category.id_comp Category.comp_id
+attribute [grind _=_] Category.assoc
 
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : 𝟙 X ≫ f = f := by simp
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : f ≫ 𝟙 Y = f := by simp
@@ -331,6 +356,18 @@ theorem epi_of_epi_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Ep
     (w : f ≫ g = h) : Epi g := by
   subst h; exact epi_of_epi f g
 
+/-- `f : X ⟶ Y` is a monomorphism iff for all `Z`, composition of morphisms `Z ⟶ X` with `f`
+is injective. -/
+lemma mono_iff_forall_injective {X Y : C} (f : X ⟶ Y) :
+    Mono f ↔ ∀ Z, (fun g : Z ⟶ X ↦ g ≫ f).Injective :=
+  ⟨fun _ _ _ _ hg ↦ (cancel_mono f).1 hg, fun h ↦ ⟨fun _ _ hg ↦ h _ hg⟩⟩
+
+/-- `f : X ⟶ Y` is an epimorphism iff for all `Z`, composition of morphisms `Y ⟶ Z` with `f`
+is injective. -/
+lemma epi_iff_forall_injective {X Y : C} (f : X ⟶ Y) :
+    Epi f ↔ ∀ Z, (fun g : Y ⟶ Z ↦ f ≫ g).Injective :=
+  ⟨fun _ _ _ _ hg ↦ (cancel_epi f).1 hg, fun h ↦ ⟨fun _ _ hg ↦ h _ hg⟩⟩
+
 section
 
 variable [Quiver.IsThin C] (f : X ⟶ Y)
@@ -352,11 +389,15 @@ variable [Category.{v} C]
 
 universe u'
 
-instance uliftCategory : Category.{v} (ULift.{u'} C) where
+/-- The category structure on `ULift C` that is induced from the category
+structure on `C`. This is not made a global instance because of a diamond
+when `C` is a preordered type. -/
+def uliftCategory : Category.{v} (ULift.{u'} C) where
   Hom X Y := X.down ⟶ Y.down
   id X := 𝟙 X.down
   comp f g := f ≫ g
 
+attribute [local instance] uliftCategory in
 -- We verify that this previous instance can lift small categories to large categories.
 example (D : Type u) [SmallCategory D] : LargeCategory (ULift.{u + 1} D) := by infer_instance
 

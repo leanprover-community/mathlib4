@@ -10,7 +10,7 @@ import Mathlib.Order.Minimal
 
 # Minimal primes
 
-We provide various results concerning the minimal primes above an ideal
+We provide various results concerning the minimal primes above an ideal.
 
 ## Main results
 - `Ideal.minimalPrimes`: `I.minimalPrimes` is the set of ideals that are minimal primes over `I`.
@@ -83,10 +83,10 @@ theorem Ideal.radical_minimalPrimes : I.radical.minimalPrimes = I.minimalPrimes 
   ext p
   refine ⟨?_, ?_⟩ <;> rintro ⟨⟨a, ha⟩, b⟩
   · refine ⟨⟨a, a.radical_le_iff.1 ha⟩, ?_⟩
-    simp only [Set.mem_setOf_eq, and_imp] at *
+    simp only [and_imp] at *
     exact fun _ h2 h3 h4 => b h2 (h2.radical_le_iff.2 h3) h4
   · refine ⟨⟨a, a.radical_le_iff.2 ha⟩, ?_⟩
-    simp only [Set.mem_setOf_eq, and_imp] at *
+    simp only [and_imp] at *
     exact fun _ h2 h3 h4 => b h2 (h2.radical_le_iff.1 h3) h4
 
 @[simp]

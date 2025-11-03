@@ -53,10 +53,10 @@ lemma isReduced_iff' : P.IsReduced ↔ ∀ i j : ι, i ≠ j →
     · tauto
     · exact Or.inr (h i j h' hLin)
 
-lemma IsReduced.linearIndependent [P.IsReduced] (h : i ≠ j) (h' : P.root i ≠ - P.root j) :
+lemma IsReduced.linearIndependent [P.IsReduced] (h : i ≠ j) (h' : P.root i ≠ -P.root j) :
     LinearIndependent R ![P.root i, P.root j] := by
   have := IsReduced.eq_or_eq_neg (P := P) i j
-  aesop
+  simp_all
 
 lemma IsReduced.linearIndependent_iff [Nontrivial R] [P.IsReduced] :
     LinearIndependent R ![P.root i, P.root j] ↔ i ≠ j ∧ P.root i ≠ - P.root j := by
@@ -68,34 +68,39 @@ lemma IsReduced.linearIndependent_iff [Nontrivial R] [P.IsReduced] :
   · rw [h h']
     exact ⟨1, 1, by simp⟩
 
-lemma two_smul_notMem_range_root [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i : ι} :
-    (2 : R) • P.root i ∉ range P.root := by
-  have _i : Nontrivial R := ⟨2, 0, two_ne_zero⟩
-  have : ¬ LinearIndependent R ![(2 : R) • P.root i, P.root i] := by
-    simpa only [LinearIndependent.pair_iff, not_forall] using ⟨1, -2, by simp, by simp⟩
+lemma nsmul_notMem_range_root [CharZero R] [NoZeroSMulDivisors ℤ M] [P.IsReduced]
+    {n : ℕ} [n.AtLeastTwo] {i : ι} :
+    n • P.root i ∉ range P.root := by
+  have : ¬ LinearIndependent R ![n • P.root i, P.root i] := by
+    simpa only [LinearIndependent.pair_iff, not_forall] using
+      ⟨1, -(n : R), by simp [Nat.cast_smul_eq_nsmul], by simp⟩
   rintro ⟨j, hj⟩
   replace this : j = i ∨ P.root j = -P.root i := by
     simpa only [← hj, IsReduced.linearIndependent_iff, not_and_or, not_not] using this
   rcases this with rfl | this
-  · simp [two_smul, P.ne_zero j] at hj
-  · rw [← one_smul ℤ (P.root i), ← neg_smul] at this
-    rw [← Int.cast_ofNat, Int.cast_smul_eq_zsmul (R := R), this,
-      (smul_left_injective ℤ <| P.ne_zero i).eq_iff] at hj
-    norm_num at hj
+  · replace hj : (1 : ℤ) • P.root j = (n : ℤ) • P.root j := by simpa
+    rw [(smul_left_injective ℤ <| P.ne_zero j).eq_iff, eq_comm] at hj
+    have : 2 ≤ n := Nat.AtLeastTwo.prop
+    cutsat
+  · rw [← one_smul ℤ (P.root i), ← neg_smul, hj] at this
+    replace this : (n : ℤ) • P.root i = -1 • P.root i := by simpa
+    rw [(smul_left_injective ℤ <| P.ne_zero i).eq_iff] at this
+    cutsat
 
+@[deprecated (since := "2025-07-06")] alias two_smul_notMem_range_root := nsmul_notMem_range_root
 @[deprecated (since := "2025-05-24")] alias two_smul_nmem_range_root := two_smul_notMem_range_root
 
 lemma linearIndependent_of_add_mem_range_root
-    [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i j : ι}
+    [CharZero R] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i j : ι}
     (h : P.root i + P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] := by
   refine IsReduced.linearIndependent P (fun hij ↦ ?_) (fun hij ↦ P.zero_notMem_range_root ?_)
-  · rw [hij, ← two_smul (R := R)] at h
-    exact P.two_smul_notMem_range_root h
+  · rw [hij, ← two_smul (R := ℕ)] at h
+    exact P.nsmul_notMem_range_root h
   · rwa [hij, neg_add_cancel] at h
 
 lemma linearIndependent_of_sub_mem_range_root
-    [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i j : ι}
+    [CharZero R] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i j : ι}
     (h : P.root i - P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] := by
   suffices LinearIndependent R ![P.root i, P.root (P.reflectionPerm j j)] by simpa using this
@@ -105,14 +110,14 @@ lemma linearIndependent_of_sub_mem_range_root
 lemma linearIndependent_of_add_mem_range_root' [CharZero R] [IsDomain R] [P.IsReduced] {i j : ι}
     (h : P.root i + P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] :=
-  have _i := P.reflexive_left
+  have : IsReflexive R M := .of_isPerfPair P.toLinearMap
   have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
   P.linearIndependent_of_add_mem_range_root h
 
 lemma linearIndependent_of_sub_mem_range_root' [CharZero R] [IsDomain R] [P.IsReduced] {i j : ι}
     (h : P.root i - P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] :=
-  have _i := P.reflexive_left
+  have : IsReflexive R M := .of_isPerfPair P.toLinearMap
   have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
   P.linearIndependent_of_sub_mem_range_root h
 
@@ -217,7 +222,7 @@ lemma pairing_one_four_iff' (h2 : IsSMulRegular R (2 : R)) :
   have _i : NoZeroSMulDivisors ℤ N := NoZeroSMulDivisors.int_of_charZero R N
   refine ⟨fun ⟨h₁, h₂⟩ ↦ ?_, fun h ↦ ?_⟩
   · have : ¬ LinearIndependent R ![P.root i, P.root j] := by
-      rw [← coxeterWeight_eq_four_iff_not_linearIndependent, coxeterWeight, h₁, h₂]; norm_num
+      rw [← coxeterWeight_eq_four_iff_not_linearIndependent, coxeterWeight, h₁, h₂]; simp
     replace this := P.pairing_smul_root_eq_of_not_linearIndependent this
     rw [h₂, show (4 : R) = 2 * 2 by norm_num, mul_smul] at this
     exact smul_right_injective M two_ne_zero this.symm
@@ -261,7 +266,7 @@ lemma coxeterWeightIn_eq_four_iff_not_linearIndependent :
     P.coxeterWeightIn S i j = 4 ↔ ¬ LinearIndependent R ![P.root i, P.root j] := by
   rw [P.linearIndependent_iff_coxeterWeightIn_ne_four S, not_not]
 
-lemma coxeterWeightIn_ne_four [P.IsReduced] (h : i ≠ j) (h' : P.root i ≠ - P.root j) :
+lemma coxeterWeightIn_ne_four [P.IsReduced] (h : i ≠ j) (h' : P.root i ≠ -P.root j) :
     P.coxeterWeightIn S i j ≠ 4 := by
   rw [ne_eq, coxeterWeightIn_eq_four_iff_not_linearIndependent, not_not]
   exact IsReduced.linearIndependent P h h'

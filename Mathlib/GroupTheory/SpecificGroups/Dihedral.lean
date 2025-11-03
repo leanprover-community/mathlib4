@@ -8,6 +8,7 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.Exponent
 import Mathlib.GroupTheory.GroupAction.CardCommute
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
+import Mathlib.GroupTheory.SpecificGroups.KleinFour
 
 /-!
 # Dihedral Groups
@@ -108,14 +109,14 @@ theorem one_def : (1 : DihedralGroup n) = r 0 :=
   rfl
 
 @[simp]
-theorem r_pow (i : ZMod n) (k : ℕ) : (r i)^k = r (i * k : ZMod n) := by
+theorem r_pow (i : ZMod n) (k : ℕ) : (r i) ^ k = r (i * k : ZMod n) := by
   induction k with
   | zero => simp only [pow_zero, Nat.cast_zero, mul_zero, r_zero]
   | succ k IH =>
     rw [pow_add, pow_one, IH, r_mul_r, Nat.cast_add, Nat.cast_one, r.injEq, mul_add, mul_one]
 
 @[simp]
-theorem r_zpow (i : ZMod n) (k : ℤ) : (r i)^k = r (i * k : ZMod n) := by
+theorem r_zpow (i : ZMod n) (k : ℤ) : (r i) ^ k = r (i * k : ZMod n) := by
   cases k <;> simp [r_pow, neg_mul_eq_mul_neg]
 
 private def fintypeHelper : (ZMod n) ⊕ (ZMod n) ≃ DihedralGroup n where
@@ -233,6 +234,10 @@ lemma not_isCyclic (h1 : n ≠ 1) : ¬ IsCyclic (DihedralGroup n) := fun h => by
 lemma isCyclic_iff : IsCyclic (DihedralGroup n) ↔ n = 1 where
   mp := not_imp_not.mp not_isCyclic
   mpr h := h ▸ isCyclic_of_prime_card (p := 2) nat_card
+
+instance : IsKleinFour (DihedralGroup 2) where
+  card_four := DihedralGroup.nat_card
+  exponent_two := DihedralGroup.exponent
 
 /-- If n is odd, then the Dihedral group of order $2n$ has $n(n+3)$ pairs (represented as
 $n + n + n + n*n$) of commuting elements. -/

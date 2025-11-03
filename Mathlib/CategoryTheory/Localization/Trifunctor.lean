@@ -20,6 +20,8 @@ The main result in this file is that we can localize "associator" isomorphisms
 
 namespace CategoryTheory
 
+open Functor
+
 variable {C₁ C₂ C₃ C₁₂ C₂₃ D₁ D₂ D₃ D₁₂ D₂₃ C D E : Type*}
   [Category C₁] [Category C₂] [Category C₃] [Category D₁] [Category D₂] [Category D₃]
   [Category C₁₂] [Category C₂₃] [Category D₁₂] [Category D₂₃]
@@ -47,28 +49,24 @@ variable (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) (L₃ : C₃ ⥤ D₃)
 morphisms properties `W₁` on `C₁`, `W₂` on `C₂`, `W₃` on `C₃`, and
 functors `F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E` and `F' : D₁ ⥤ D₂ ⥤ D₃ ⥤ E`, we say
 `Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃ F F'` holds if `F` is induced by `F'`, up to an isomorphism. -/
-class Lifting₃ (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
-    (W₃ : MorphismProperty C₃)
+class Lifting₃ (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) (L₃ : C₃ ⥤ D₃)
+    (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) (W₃ : MorphismProperty C₃)
     (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E) (F' : D₁ ⥤ D₂ ⥤ D₃ ⥤ E) where
   /-- the isomorphism `((((whiskeringLeft₃ E).obj L₁).obj L₂).obj L₃).obj F' ≅ F` expressing
   that `F` is induced by `F'` up to an isomorphism -/
-  iso' : ((((whiskeringLeft₃ E).obj L₁).obj L₂).obj L₃).obj F' ≅ F
+  iso (L₁ L₂ L₃ W₁ W₂ W₃ F F') : ((((whiskeringLeft₃ E).obj L₁).obj L₂).obj L₃).obj F' ≅ F
 
 variable (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) (W₃ : MorphismProperty C₃)
   (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E) (F' : D₁ ⥤ D₂ ⥤ D₃ ⥤ E) [Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃ F F']
 
-/-- The isomorphism `((((whiskeringLeft₃ E).obj L₁).obj L₂).obj L₃).obj F' ≅ F`
-when `Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃ F F'` holds. -/
-noncomputable def Lifting₃.iso :
-    ((((whiskeringLeft₃ E).obj L₁).obj L₂).obj L₃).obj F' ≅ F :=
-  Lifting₃.iso' W₁ W₂ W₃
+@[deprecated (since := "2025-08-22")] alias Lifting₃.iso' := Lifting₃.iso
 
 variable (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E) (F' : D₁ ⥤ D₂ ⥤ D₃ ⥤ E)
 
 noncomputable instance Lifting₃.uncurry [Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃ F F'] :
     Lifting (L₁.prod (L₂.prod L₃)) (W₁.prod (W₂.prod W₃))
       (uncurry₃.obj F) (uncurry₃.obj F') where
-  iso' := uncurry₃.mapIso (Lifting₃.iso L₁ L₂ L₃ W₁ W₂ W₃ F F')
+  iso := uncurry₃.mapIso (Lifting₃.iso L₁ L₂ L₃ W₁ W₂ W₃ F F')
 
 end
 
@@ -90,7 +88,7 @@ noncomputable def lift₃ : D₁ ⥤ D₂ ⥤ D₃ ⥤ E :=
   curry₃.obj (lift (uncurry₃.obj F) hF (L₁.prod (L₂.prod L₃)))
 
 noncomputable instance : Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃ F (lift₃ F hF L₁ L₂ L₃) where
-  iso' :=
+  iso :=
     (curry₃ObjProdComp L₁ L₂ L₃ _).symm ≪≫
       curry₃.mapIso (fac (uncurry₃.obj F) hF (L₁.prod (L₂.prod L₃))) ≪≫
         currying₃.unitIso.symm.app F
@@ -143,8 +141,8 @@ and `Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃ F₂ F₂'` hold. -/
 noncomputable def lift₃NatIso : F₁' ≅ F₂' where
   hom := lift₃NatTrans L₁ L₂ L₃ W₁ W₂ W₃ F₁ F₂ F₁' F₂' e.hom
   inv := lift₃NatTrans L₁ L₂ L₃ W₁ W₂ W₃ F₂ F₁ F₂' F₁' e.inv
-  hom_inv_id := natTrans₃_ext L₁ L₂ L₃ W₁ W₂ W₃ (by aesop_cat)
-  inv_hom_id := natTrans₃_ext L₁ L₂ L₃ W₁ W₂ W₃ (by aesop_cat)
+  hom_inv_id := natTrans₃_ext L₁ L₂ L₃ W₁ W₂ W₃ (by cat_disch)
+  inv_hom_id := natTrans₃_ext L₁ L₂ L₃ W₁ W₂ W₃ (by cat_disch)
 
 end
 
@@ -172,7 +170,7 @@ noncomputable def Lifting₃.bifunctorComp₁₂ :
     Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃
       ((Functor.postcompose₃.obj L).obj (bifunctorComp₁₂ F₁₂ G))
       (bifunctorComp₁₂ F₁₂' G') where
-  iso' :=
+  iso :=
     ((whiskeringRight C₁ _ _).obj
       ((whiskeringRight C₂ _ _).obj ((whiskeringLeft _ _ D).obj L₃))).mapIso
         ((bifunctorComp₁₂Functor.mapIso
@@ -186,7 +184,7 @@ noncomputable def Lifting₃.bifunctorComp₂₃ :
     Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃
       ((Functor.postcompose₃.obj L).obj (bifunctorComp₂₃ F G₂₃))
       (bifunctorComp₂₃ F' G₂₃') where
-  iso' :=
+  iso :=
     ((whiskeringLeft _ _ _).obj L₁).mapIso ((bifunctorComp₂₃Functor.obj F').mapIso
       (Lifting₂.iso L₂ L₃ W₂ W₃ (G₂₃ ⋙ (whiskeringRight _ _ _).obj L₂₃) G₂₃')) ≪≫
         (bifunctorComp₂₃Functor.mapIso
@@ -207,12 +205,12 @@ lemma associator_hom_app_app_app (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) :
           (F₁₂ ⋙ (whiskeringRight C₂ C₁₂ D₁₂).obj L₁₂) F₁₂').hom.app X₁).app X₂)).app (L₃.obj X₃) ≫
           ((Lifting₂.iso L₁₂ L₃ W₁₂ W₃ (G ⋙ (whiskeringRight C₃ C D).obj L) G').hom.app
               ((F₁₂.obj X₁).obj X₂)).app X₃ ≫
-            L.map (((iso.hom.app X₁).app X₂).app X₃) ≫
+          L.map (((iso.hom.app X₁).app X₂).app X₃) ≫
           ((Lifting₂.iso L₁ L₂₃ W₁ W₂₃
             (F ⋙ (whiskeringRight _ _ _).obj L) F').inv.app X₁).app ((G₂₃.obj X₂).obj X₃) ≫
-        (F'.obj (L₁.obj X₁)).map
-          (((Lifting₂.iso L₂ L₃ W₂ W₃
-            (G₂₃ ⋙ (whiskeringRight _ _ _).obj L₂₃) G₂₃').inv.app X₂).app X₃) := by
+          (F'.obj (L₁.obj X₁)).map
+            (((Lifting₂.iso L₂ L₃ W₂ W₃
+              (G₂₃ ⋙ (whiskeringRight _ _ _).obj L₂₃) G₂₃').inv.app X₂).app X₃) := by
   dsimp [associator]
   rw [lift₃NatTrans_app_app_app]
   dsimp [Lifting₃.iso, Lifting₃.bifunctorComp₁₂, Lifting₃.bifunctorComp₂₃]

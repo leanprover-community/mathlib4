@@ -133,7 +133,6 @@ private theorem mul_smul' [DecidableEq ιA] [DecidableEq ιB] [GSemiring A] [Gmo
 /-- The `Module` derived from `gmodule A M`. -/
 instance module [DecidableEq ιA] [DecidableEq ιB] [GSemiring A] [Gmodule A M] :
     Module (⨁ i, A i) (⨁ i, M i) where
-  smul := (· • ·)
   one_smul := one_smul' _ _
   mul_smul := mul_smul' _ _
   smul_add r := (smulAddMonoidHom A M r).map_add
@@ -218,8 +217,7 @@ def linearEquiv [DecidableEq ιA] [DecidableEq ιM] [GradedRing 𝓐] [DirectSum
   rw [show (decompose 𝓐 x i : A) • (decomposeAddEquiv 𝓜 ↑(decompose 𝓜 y j) : (⨁ i, 𝓜 i)) =
     DirectSum.Gmodule.smulAddMonoidHom _ _ (decompose 𝓐 ↑(decompose 𝓐 x i))
     (decomposeAddEquiv 𝓜 ↑(decompose 𝓜 y j)) from DirectSum.Gmodule.smul_def _ _ _ _]
-  simp only [decomposeAddEquiv_apply, Equiv.invFun_as_coe, Equiv.symm_symm, decompose_coe,
-    Gmodule.smulAddMonoidHom_apply_of_of]
+  simp only [decomposeAddEquiv_apply, decompose_coe, Gmodule.smulAddMonoidHom_apply_of_of]
   convert DirectSum.decompose_coe 𝓜 _
   rfl
 

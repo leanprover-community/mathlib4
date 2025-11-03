@@ -48,7 +48,7 @@ inductive Key where
 
 /-
 At the root, `.const` is the most common key, and it is very uncommon
-to get the same contant name with a different arity.
+to get the same constant name with a different arity.
 So for performance, we just use `hash name` to hash `.const name _`.
 -/
 private nonrec def Key.hash : Key → UInt64
@@ -157,9 +157,6 @@ structure ExprInfo where
   localInsts : LocalInstances
   /-- The `Meta.Config` used by this entry. -/
   cfg : Config
-  /-- The current transparency level. Recall that unification uses the `default`
-  transparency level when unifying implicit arguments. So we index implicit arguments -/
-  transparency : TransparencyMode
 
 /-- Creates an `ExprInfo` using the current context. -/
 def mkExprInfo (expr : Expr) (bvars : List FVarId) : MetaM ExprInfo :=
@@ -168,7 +165,6 @@ def mkExprInfo (expr : Expr) (bvars : List FVarId) : MetaM ExprInfo :=
     lctx := ← getLCtx
     localInsts := ← getLocalInstances
     cfg := ← getConfig
-    transparency := ← getTransparency
   }
 
 /-- The possible values that can appear in the stack -/

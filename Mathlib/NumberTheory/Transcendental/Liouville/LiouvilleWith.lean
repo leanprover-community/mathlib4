@@ -117,7 +117,7 @@ theorem mul_rat (h : LiouvilleWith p x) (hr : r ≠ 0) : LiouvilleWith p (x * r)
     calc _ < C / ↑n ^ p * |↑r| := by gcongr
       _ = ↑r.den ^ p * (↑|r| * C) / (↑r.den * ↑n) ^ p := ?_
     rw [mul_rpow, mul_div_mul_left, mul_comm, mul_div_assoc]
-    · simp only [Rat.cast_abs, le_refl]
+    · simp only [Rat.cast_abs]
     all_goals positivity
 
 /-- The product `x * r`, `r : ℚ`, `r ≠ 0`, is a Liouville number with exponent `p` if and only if
@@ -295,7 +295,7 @@ exists a numerator `a` such that `x ≠ a / b` and `|x - a / b| < 1 / b ^ n`. -/
 theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
     ∃ᶠ b : ℕ in atTop, ∃ a : ℤ, x ≠ a / b ∧ |x - a / b| < 1 / (b : ℝ) ^ n := by
   refine Classical.not_not.1 fun H => ?_
-  simp only [Liouville, not_forall, not_exists, not_frequently, not_and, not_lt,
+  simp only [not_exists, not_frequently, not_and, not_lt,
     eventually_atTop] at H
   rcases H with ⟨N, hN⟩
   have : ∀ b > (1 : ℕ), ∀ᶠ m : ℕ in atTop, ∀ a : ℤ, 1 / (b : ℝ) ^ m ≤ |x - a / b| := by

@@ -34,17 +34,11 @@ def toMeasurableEquiv : E ≃ᵐ F where
   measurable_toFun := f.continuous.measurable
   measurable_invFun := f.symm.continuous.measurable
 
-@[deprecated (since := "2025-03-22")] alias toMeasureEquiv := toMeasurableEquiv
-
 @[simp] theorem coe_toMeasurableEquiv : (f.toMeasurableEquiv : E → F) = f := rfl
-
-@[deprecated (since := "2025-03-22")] alias coe_toMeasureEquiv := coe_toMeasurableEquiv
 
 @[simp] theorem toMeasurableEquiv_symm : f.symm.toMeasurableEquiv = f.toMeasurableEquiv.symm := rfl
 
 @[simp] lemma coe_symm_toMeasurableEquiv : ⇑f.toMeasurableEquiv.symm = f.symm := rfl
-
-@[deprecated (since := "2025-03-22")] alias toMeasureEquiv_symm := toMeasurableEquiv_symm
 
 end LinearIsometryEquiv
 
@@ -132,25 +126,25 @@ theorem EuclideanSpace.volume_preserving_measurableEquiv :
 
 /-- A copy of `EuclideanSpace.volume_preserving_measurableEquiv` for the canonical spelling of the
 equivalence. -/
-theorem PiLp.volume_preserving_equiv : MeasurePreserving (WithLp.equiv 2 (ι → ℝ)) :=
+theorem PiLp.volume_preserving_ofLp : MeasurePreserving (@WithLp.ofLp 2 (ι → ℝ)) :=
   EuclideanSpace.volume_preserving_measurableEquiv ι
 
 /-- The reverse direction of `PiLp.volume_preserving_measurableEquiv`, since
 `MeasurePreserving.symm` only works for `MeasurableEquiv`s. -/
-theorem PiLp.volume_preserving_equiv_symm : MeasurePreserving (WithLp.equiv 2 (ι → ℝ)).symm :=
+theorem PiLp.volume_preserving_toLp : MeasurePreserving (@WithLp.toLp 2 (ι → ℝ)) :=
   (EuclideanSpace.volume_preserving_measurableEquiv ι).symm
 
 lemma volume_euclideanSpace_eq_dirac [IsEmpty ι] :
     (volume : Measure (EuclideanSpace ℝ ι)) = Measure.dirac 0 := by
   rw [← ((EuclideanSpace.volume_preserving_measurableEquiv ι).symm).map_eq,
     volume_pi_eq_dirac 0, map_dirac (MeasurableEquiv.measurable _),
-    EuclideanSpace.coe_measurableEquiv_symm, WithLp.equiv_symm_zero]
+    EuclideanSpace.coe_measurableEquiv_symm, WithLp.toLp_zero]
 
 end PiLp
 
 namespace LinearIsometryEquiv
 
-/-- Every linear isometry on a real finite dimensional Hilbert space is measure-preserving. -/
+/-- Every linear isometry on a real finite-dimensional Hilbert space is measure-preserving. -/
 theorem measurePreserving (f : E ≃ₗᵢ[ℝ] F) :
     MeasurePreserving f := by
   refine ⟨f.continuous.measurable, ?_⟩

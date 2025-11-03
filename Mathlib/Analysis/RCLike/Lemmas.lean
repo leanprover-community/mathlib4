@@ -5,12 +5,19 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Topology.Instances.RealVectorSpace
 
 /-! # Further lemmas about `RCLike` -/
 
 open scoped Finset
 
 variable {K E : Type*} [RCLike K]
+
+open ComplexOrder RCLike in
+lemma convex_RCLike_iff_convex_real [AddCommMonoid E] [Module K E] [Module ℝ E]
+    [IsScalarTower ℝ K E] {s : Set E} : Convex K s ↔ Convex ℝ s :=
+  ⟨Convex.lift ℝ,
+  fun hs => convex_of_nonneg_surjective_algebraMap _ (fun _ => nonneg_iff_exists_ofReal.mp) hs⟩
 
 namespace Polynomial
 
@@ -45,7 +52,7 @@ namespace FiniteDimensional
 
 open RCLike
 
-library_note "RCLike instance"/--
+library_note2 «RCLike instance» /--
 This instance generates a type-class problem with a metavariable `?m` that should satisfy
 `RCLike ?m`. Since this can only be satisfied by `ℝ` or `ℂ`, this does not cause problems. -/
 
@@ -55,13 +62,14 @@ instance rclike_to_real : FiniteDimensional ℝ K := ⟨{1, I}, by simp [span_on
 variable (K E)
 variable [NormedAddCommGroup E] [NormedSpace K E]
 
-/-- A finite dimensional vector space over an `RCLike` is a proper metric space.
+/-- A finite-dimensional vector space over an `RCLike` is a proper metric space.
 
 This is not an instance because it would cause a search for `FiniteDimensional ?x E` before
 `RCLike ?x`. -/
 theorem proper_rclike [FiniteDimensional K E] : ProperSpace E := by
-  letI : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ K E
-  letI : FiniteDimensional ℝ E := FiniteDimensional.trans ℝ K E
+  -- Using `have` not `let` since it is only existence of `NormedSpace` structure that we need.
+  have : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ K E
+  have : FiniteDimensional ℝ E := FiniteDimensional.trans ℝ K E
   infer_instance
 
 variable {E}
@@ -75,9 +83,9 @@ end FiniteDimensional
 namespace RCLike
 
 @[simp, rclike_simps]
-theorem reCLM_norm : ‖(reCLM : K →L[ℝ] ℝ)‖ = 1 := by
+theorem reCLM_norm : ‖(reCLM : StrongDual ℝ K)‖ = 1 := by
   apply le_antisymm (LinearMap.mkContinuous_norm_le _ zero_le_one _)
-  convert ContinuousLinearMap.ratio_le_opNorm (reCLM : K →L[ℝ] ℝ) (1 : K)
+  convert ContinuousLinearMap.ratio_le_opNorm (reCLM : StrongDual ℝ K) (1 : K)
   simp
 
 @[simp, rclike_simps]
@@ -86,8 +94,6 @@ theorem conjCLE_norm : ‖(@conjCLE K _ : K →L[ℝ] K)‖ = 1 :=
 
 @[simp, rclike_simps]
 theorem ofRealCLM_norm : ‖(ofRealCLM : ℝ →L[ℝ] K)‖ = 1 :=
-  -- Porting note: the following timed out
-  -- LinearIsometry.norm_toContinuousLinearMap ofRealLI
   LinearIsometry.norm_toContinuousLinearMap _
 
 end RCLike

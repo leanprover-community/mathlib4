@@ -21,29 +21,31 @@ import Mathlib.Topology.Algebra.Ring.Ideal
 
 ## Main results
 - `IsArtinianRing.finite_of_compactSpace_of_t2Space`:
-  Compact hausdorff artinian rings are finite (and thus discrete).
+  Compact Hausdorff Artinian rings are finite (and thus discrete).
 - `Ideal.isOpen_of_isMaximal`:
-  Maximal ideals are open in compact hausdorff noetherian rings.
+  Maximal ideals are open in compact Hausdorff Noetherian rings.
 - `IsLocalRing.isOpen_iff_finite_quotient`:
-  An ideal in a compact hausdorff noetherian local ring is open iff it has finite index.
+  An ideal in a compact Hausdorff Noetherian local ring is open iff it has finite index.
 - `IsDedekindDomain.isOpen_iff`:
-  An ideal in a compact hausdorff dedekind domain (that is not a field) is open iff it is non-zero.
+  An ideal in a compact Hausdorff Dedekind domain (that is not a field) is open iff it is non-zero.
 
 ## Future projects
-Show that compact hausdoff rings are totally disconnected and linearly topologized.
+Show that compact Hausdorff rings are totally disconnected and linearly topologized.
 See https://ncatlab.org/nlab/show/compact+Hausdorff+rings+are+profinite
 
 -/
 
 attribute [local instance] Ideal.Quotient.field Fintype.ofFinite finite_of_compact_of_discrete
+  DivisionRing.finite_of_compactSpace_of_t2Space
 
 variable {R : Type*} [CommRing R] [TopologicalSpace R]
 variable [IsTopologicalRing R] [CompactSpace R] [T2Space R]
 
 namespace IsArtinianRing
 
-/-- Compact hausdorff artinian (commutative) rings are finite. -/
-instance (priority := low) finite_of_compactSpace_of_t2Space [IsArtinianRing R] :
+/-- Compact Hausdorff Artinian (commutative) rings are finite. This is not an instance, as it would
+apply to every `Finite` goal, causing slowly failing typeclass search in some cases. -/
+theorem finite_of_compactSpace_of_t2Space [IsArtinianRing R] :
     Finite R := by
   obtain ⟨n, hn⟩ := IsArtinianRing.isNilpotent_jacobson_bot (R := R)
   have H : (∏ p : PrimeSpectrum R, p.asIdeal) ^ n = ⊥ := by
@@ -102,7 +104,7 @@ instance finite_residueField_of_compactSpace : Finite (ResidueField R) :=
 lemma isOpen_iff_finite_quotient {I : Ideal R} :
     IsOpen (X := R) I ↔ Finite (R ⧸ I) := by
   refine ⟨AddSubgroup.quotient_finite_of_isOpen I.toAddSubgroup, fun H ↦ ?_⟩
-  obtain ⟨n, hn⟩ := exists_maximalIdeal_pow_le_of_finite_quotient I
+  obtain ⟨n, hn⟩ := exists_maximalIdeal_pow_le_of_isArtinianRing_quotient I
   exact AddSubgroup.isOpen_mono (H₁ := (maximalIdeal R ^ n).toAddSubgroup)
     (H₂ := I.toAddSubgroup) hn (isOpen_maximalIdeal_pow R n)
 

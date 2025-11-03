@@ -94,9 +94,8 @@ theorem iteratedDerivWithin_vcomp_three
     ← (OrderedFinpartition.extendEquiv 2).sum_comp, Fintype.sum_sigma,
     Fintype.sum_option, Nat.reduceAdd, OrderedFinpartition.extendEquiv_apply,
     OrderedFinpartition.extend_none, OrderedFinpartition.extend_some,
-    OrderedFinpartition.extendMiddle_length, OrderedFinpartition.default_eq,
-    OrderedFinpartition.atomic_length, OrderedFinpartition.extendLeft_length,
-    Fintype.sum_unique, Fin.sum_univ_zero, Fin.sum_univ_two]
+    OrderedFinpartition.extendMiddle_length, OrderedFinpartition.default_eq, Fintype.sum_unique,
+    OrderedFinpartition.atomic_length, OrderedFinpartition.extendLeft_length, Fin.sum_univ_two]
   simp? [add_assoc, two_smul, iteratedFDerivWithin_one_apply (ht _ <| hst hx)] says
     simp only [OrderedFinpartition.extendLeft_partSize, OrderedFinpartition.extendLeft_length,
       OrderedFinpartition.atomic_length, Nat.reduceAdd, OrderedFinpartition.atomic_partSize,
@@ -104,7 +103,7 @@ theorem iteratedDerivWithin_vcomp_three
       Fin.cons_one, Fin.default_eq_zero, OrderedFinpartition.extendMiddle_length, Fin.cons_update,
       Fin.succ_zero_eq_one, update_self, update_idem,
       iteratedFDerivWithin_one_apply (ht _ <| hst hx), add_assoc, two_smul]
-  have (j) : (Fin.cons 1 (Fin.cons 1 fun _ ↦ 1) : Fin 3 → ℕ) j = 1 := by
+  have (j : _) : (Fin.cons 1 (Fin.cons 1 fun _ ↦ 1) : Fin 3 → ℕ) j = 1 := by
     fin_cases j <;> rfl
   congr <;> ext x <;> fin_cases x <;> simp [this]
 
@@ -168,13 +167,8 @@ theorem iteratedDerivWithin_scomp_three
       3 • iteratedDerivWithin 2 f s x • derivWithin f s x • iteratedDerivWithin 2 g t (f x) +
       iteratedDerivWithin 3 f s x • derivWithin g t (f x) := by
   rw [iteratedDerivWithin_vcomp_three hg hf ht hs hx hst]
-  simp? [← derivWithin_fderivWithin, mul_smul, smul_comm (iteratedDerivWithin 2 f s x),
-      iteratedFDerivWithin_apply_eq_iteratedDerivWithin_mul_prod] says
-    simp only [iteratedFDerivWithin_apply_eq_iteratedDerivWithin_mul_prod, Finset.prod_const,
-      Finset.card_univ, Fintype.card_fin, Fin.prod_univ_two, Fin.isValue, Matrix.cons_val_zero,
-      Matrix.cons_val_one, Matrix.cons_val_fin_one, mul_smul,
-      smul_comm (iteratedDerivWithin 2 f s x), ← derivWithin_fderivWithin,
-      ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, add_left_inj]
+  simp [← derivWithin_fderivWithin, mul_smul, smul_comm (iteratedDerivWithin 2 f s x),
+        iteratedFDerivWithin_apply_eq_iteratedDerivWithin_mul_prod]
   abel
 
 theorem iteratedDeriv_scomp_three (hg : ContDiffAt 𝕜 3 g (f x)) (hf : ContDiffAt 𝕜 3 f x) :

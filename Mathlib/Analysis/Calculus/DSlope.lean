@@ -59,9 +59,6 @@ theorem dslope_eventuallyEq_slope_of_ne (f : 𝕜 → E) (h : b ≠ a) : dslope 
 theorem dslope_eventuallyEq_slope_nhdsNE (f : 𝕜 → E) : dslope f a =ᶠ[𝓝[≠] a] slope f a :=
   (eqOn_dslope_slope f a).eventuallyEq_of_mem self_mem_nhdsWithin
 
-@[deprecated (since := "2025-03-02")]
-alias dslope_eventuallyEq_slope_punctured_nhds := dslope_eventuallyEq_slope_nhdsNE
-
 @[simp]
 theorem sub_smul_dslope (f : 𝕜 → E) (a b : 𝕜) : (b - a) • dslope f a b = f b - f a := by
   rcases eq_or_ne b a with (rfl | hne) <;> simp [dslope_of_ne, *]
@@ -115,7 +112,7 @@ theorem continuousOn_dslope (h : s ∈ 𝓝 a) :
 theorem DifferentiableWithinAt.of_dslope (h : DifferentiableWithinAt 𝕜 (dslope f a) s b) :
     DifferentiableWithinAt 𝕜 f s b := by
   simpa only [id, sub_smul_dslope f a, sub_add_cancel] using
-    ((differentiableWithinAt_id.sub_const a).smul h).add_const (f a)
+    ((differentiableWithinAt_id.sub_const a).fun_smul h).add_const (f a)
 
 theorem DifferentiableAt.of_dslope (h : DifferentiableAt 𝕜 (dslope f a) b) :
     DifferentiableAt 𝕜 f b :=

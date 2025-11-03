@@ -46,8 +46,6 @@ instance : CanLift (Set α) (Closeds α) (↑) IsClosed where
 theorem isClosed (s : Closeds α) : IsClosed (s : Set α) :=
   s.isClosed'
 
-@[deprecated (since := "2025-04-20")] alias closed := isClosed
-
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Closeds α) : Set α := s
 
@@ -83,7 +81,7 @@ theorem gc : GaloisConnection Closeds.closure ((↑) : Closeds α → Set α) :=
 lemma closure_le {s : Set α} {t : Closeds α} : .closure s ≤ t ↔ s ⊆ t :=
   t.isClosed.closure_subset_iff
 
-/-- The galois insertion between sets and closeds. -/
+/-- The Galois insertion between sets and closeds. -/
 def gi : GaloisInsertion (@Closeds.closure α _) (↑) where
   choice s hs := ⟨s, closure_eq_iff_isClosed.1 <| hs.antisymm subset_closure⟩
   gc := gc
@@ -362,8 +360,8 @@ end Clopens
 structure IrreducibleCloseds (α : Type*) [TopologicalSpace α] where
   /-- the carrier set, i.e. the points in this set -/
   carrier : Set α
-  is_irreducible' : IsIrreducible carrier
-  is_closed' : IsClosed carrier
+  isIrreducible' : IsIrreducible carrier
+  isClosed' : IsClosed carrier
 
 namespace IrreducibleCloseds
 
@@ -374,9 +372,13 @@ instance : SetLike (IrreducibleCloseds α) α where
 instance : CanLift (Set α) (IrreducibleCloseds α) (↑) (fun s ↦ IsIrreducible s ∧ IsClosed s) where
   prf s hs := ⟨⟨s, hs.1, hs.2⟩, rfl⟩
 
-theorem isIrreducible (s : IrreducibleCloseds α) : IsIrreducible (s : Set α) := s.is_irreducible'
+theorem isIrreducible (s : IrreducibleCloseds α) : IsIrreducible (s : Set α) := s.isIrreducible'
 
-theorem isClosed (s : IrreducibleCloseds α) : IsClosed (s : Set α) := s.is_closed'
+@[deprecated (since := "2025-10-14")] alias is_irreducible' := isIrreducible
+
+theorem isClosed (s : IrreducibleCloseds α) : IsClosed (s : Set α) := s.isClosed'
+
+@[deprecated (since := "2025-10-14")] alias is_closed' := isClosed
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : IrreducibleCloseds α) : Set α := s

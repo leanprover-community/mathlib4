@@ -10,7 +10,7 @@ import Lean.Util.FoldConsts
 /-!
 A rudimentary export format, adapted from
 <https://github.com/leanprover-community/lean/blob/master/doc/export_format.md>
-with support for lean 4 kernel primitives.
+with support for Lean 4 kernel primitives.
 -/
 
 open Lean
@@ -73,7 +73,7 @@ namespace Export
 
 def alloc {α} [BEq α] [Hashable α] [OfState α] (a : α) : ExportM Nat := do
   let n := (OfState.get (α := α) (← get)).next
-  modify <| OfState.modify (α := α) fun s ↦ {map := s.map.insert a n, next := n+1}
+  modify <| OfState.modify (α := α) fun s ↦ {map := s.map.insert a n, next := n + 1}
   pure n
 
 def exportName (n : Name) : ExportM Nat := do

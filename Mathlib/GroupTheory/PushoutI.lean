@@ -88,7 +88,7 @@ theorem of_comp_eq_base (i : ι) : (of i).comp (φ i) = (base φ) := by
   ext x
   apply (Con.eq _).2
   refine ConGen.Rel.of _ _ ?_
-  simp only [MonoidHom.comp_apply, Set.mem_iUnion, Set.mem_range]
+  simp only [MonoidHom.comp_apply]
   exact ⟨_, _, rfl, rfl⟩
 
 variable (φ) in
@@ -350,8 +350,8 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
     · intro h
       apply_fun (d.compl i).equiv at h
       simp only [Prod.ext_iff, equiv_one (d.compl i) (one_mem _) (d.one_mem _),
-        equiv_mul_left_of_mem (d.compl i) ⟨_, rfl⟩ , hhead, Subtype.ext_iff,
-        Prod.ext_iff, Subgroup.coe_mul] at h
+        equiv_mul_left_of_mem (d.compl i) ⟨_, rfl⟩, hhead, Subtype.ext_iff,
+        Prod.ext_iff] at h
       rcases h with ⟨h₁, h₂⟩
       rw [h₂, equiv_one (d.compl i) (one_mem _) (d.one_mem _)] at h₁
       erw [mul_one] at h₁
@@ -442,7 +442,7 @@ noncomputable instance summandAction (i : ι) : MulAction (G i) (NormalWord d) :
       exact (equivPair i).symm_apply_apply _
     mul_smul := fun _ _ _ => by
       dsimp [instHSMul]
-      simp [mul_assoc, Equiv.apply_symm_apply, Function.End.mul_def] }
+      simp [mul_assoc, Equiv.apply_symm_apply] }
 
 theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
     g • w = (equivPair i).symm
@@ -466,18 +466,12 @@ noncomputable instance mulAction : MulAction (PushoutI φ) (NormalWord d) :=
       smul_inv_smul, base_smul_def', MonoidHom.apply_ofInjective_symm]
 
 theorem base_smul_def (h : H) (w : NormalWord d) :
-    base φ h • w = { w with head := h * w.head } := by
-  dsimp [NormalWord.mulAction, instHSMul, SMul.smul]
-  rw [lift_base]
-  rfl
+    base φ h • w = { w with head := h * w.head } := rfl
 
 theorem summand_smul_def {i : ι} (g : G i) (w : NormalWord d) :
     of (φ := φ) i g • w = (equivPair i).symm
       { equivPair i w with
-        head := g * (equivPair i w).head } := by
-  dsimp [NormalWord.mulAction, instHSMul, SMul.smul]
-  rw [lift_of]
-  rfl
+        head := g * (equivPair i w).head } := rfl
 
 theorem of_smul_eq_smul {i : ι} (g : G i) (w : NormalWord d) :
     of (φ := φ) i g • w = g • w := by
@@ -506,8 +500,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
       convert cons i g ⟨w, 1, fun _ _ h => h3 _ _ (List.mem_cons_of_mem _ h)⟩
         h1 (h3 _ _ List.mem_cons_self) ?_ rfl
         (ih ?_)
-      · ext
-        simp only [Word.cons, Option.mem_def, NormalWord.cons, map_one, mul_one,
+      · simp only [Word.cons, NormalWord.cons, map_one, mul_one,
           (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
           (h3 _ _ List.mem_cons_self)]
       · apply d.injective i
@@ -522,9 +515,9 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
 
 theorem cons_eq_smul {i : ι} (g : G i)
     (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
-    (hgr : g ∉ (φ i).range) : cons g w hmw hgr = of (φ := φ) i g  • w := by
+    (hgr : g ∉ (φ i).range) : cons g w hmw hgr = of (φ := φ) i g • w := by
   apply ext_smul i
-  simp only [cons, ne_eq, Word.cons_eq_smul, MonoidHom.apply_ofInjective_symm,
+  simp only [cons, Word.cons_eq_smul, MonoidHom.apply_ofInjective_symm,
     equiv_fst_eq_mul_inv, mul_assoc, map_mul, map_inv, mul_smul, inv_smul_smul, summand_smul_def,
     equivPair, rcons, Word.equivPair_symm, Word.rcons_eq_smul, Equiv.coe_fn_mk,
     Word.equivPair_tail_eq_inv_smul, Equiv.coe_fn_symm_mk, smul_inv_smul]
@@ -592,7 +585,7 @@ theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
   let _ := fun i => Classical.decEq (G i)
   refine Function.Injective.of_comp
     (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
-  intros _ _ h
+  intro _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
     by simp_all [funext_iff, of_smul_eq_smul])
 
@@ -603,7 +596,7 @@ theorem base_injective (hφ : ∀ i, Function.Injective (φ i)) :
   let _ := fun i => Classical.decEq (G i)
   refine Function.Injective.of_comp
     (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
-  intros _ _ h
+  intro _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
     by simp_all [funext_iff, base_smul_eq_smul])
 
@@ -672,13 +665,13 @@ theorem inf_of_range_eq_base_range
         exact hx (of_apply_eq_base φ j y ▸ MonoidHom.mem_range.2 ⟨y, rfl⟩)
       let w : Word G := ⟨[⟨_, g₁⟩, ⟨_, g₂⁻¹⟩], by simp_all, by simp_all⟩
       have hw : Reduced φ w := by
-        simp only [w, not_exists, ne_eq, Reduced, List.find?, List.mem_cons,
-          List.mem_singleton, forall_eq_or_imp, not_false_eq_true, forall_const, forall_eq,
-          true_and, hg₁r, hg₂r, List.mem_nil_iff, false_imp_iff, imp_true_iff, and_true,
+        simp only [w, Reduced, List.mem_cons,
+          forall_eq_or_imp, not_false_eq_true,
+          hg₁r, hg₂r, List.mem_nil_iff, false_imp_iff, imp_true_iff, and_true,
           inv_mem_iff]
       have := hw.eq_empty_of_mem_range hφ (by
         simp only [w, Word.prod, List.map_cons, List.prod_cons, List.prod_nil,
-          List.map_nil, map_mul, ofCoprodI_of, hg₁, hg₂, map_inv, map_one, mul_one,
+          List.map_nil, map_mul, ofCoprodI_of, hg₁, hg₂, map_inv, mul_one,
           mul_inv_cancel, one_mem])
       simp [w, Word.empty] at this)
     (le_inf

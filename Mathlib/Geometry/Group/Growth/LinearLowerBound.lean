@@ -37,7 +37,7 @@ lemma pow_ssubset_pow_succ_of_pow_ne_closure (hX₁ : (1 : G) ∈ X) (hX : X.Non
         rw [pow_add, pow_one] at hXn
         rw [← add_assoc, pow_add, pow_one, hd, ← hXn]
     exact mod_cast this (one_mem_pow hX₁) (hX.pow hn) one_ne_zero
-      (by simp [hXn, ← pow_mul, mul_two]) (by simp [hXn, ← pow_mul, mul_two])
+      (by simp [hXn, ← pow_mul, mul_two]) (by simp)
   subst hn₁
   simp only [ne_eq, one_ne_zero, not_false_eq_true, Nat.reduceAdd, pow_one] at *
   let Xgp : Subgroup G :=
@@ -67,7 +67,7 @@ lemma pow_right_strictMonoOn (hX₁ : 1 ∈ X) (hX : X.Nontrivial) :
   · simp [eq_comm (a := (1 : Set _)), coe_set_eq_one, -Set.subset_singleton_iff,
       hX.coe.not_subset_singleton] at hm
   · calc (X : Set G) ^ (n - 1)
-    _ = X ^ (n - m) * X ^ (m - 1) := by rw [← pow_add]; congr 1; omega
+    _ = X ^ (n - m) * X ^ (m - 1) := by rw [← pow_add]; congr 1; cutsat
     _ = closure (X : Set G) := by rw [hm, Set.pow_mul_subgroupClosure hX.nonempty.to_set]
 
 @[to_additive]
@@ -80,11 +80,11 @@ lemma pow_right_strictMono (hX₁ : 1 ∈ X) (hXclosure : (closure (X : Set G) :
   simpa [h] using pow_right_strictMonoOn hX₁ hX
 
 /-- The growth of a set generating an infinite group is at least linear. -/
-@[to_additive "The growth of a set generating an infinite group is at least linear."]
+@[to_additive /-- The growth of a set generating an infinite group is at least linear. -/]
 lemma add_one_le_card_pow (hX₁ : 1 ∈ X) (hXclosure : (closure (X : Set G) : Set G).Infinite) :
     ∀ n, n + 1 ≤ #(X ^ n)
   | 0 => by simp
   | n + 1 => (add_one_le_card_pow hX₁ hXclosure _).trans_lt <| card_lt_card <|
-      pow_right_strictMono hX₁ (by simp [hXclosure, Set.infinite_univ]) n.lt_succ_self
+      pow_right_strictMono hX₁ (by simp [hXclosure]) n.lt_succ_self
 
 end Finset

@@ -62,7 +62,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
       (-1) ^ ((p ^ (k + 1)).totient / 2) * p ^ (p ^ k * ((p - 1) * (k + 1) - 1)) := by
   haveI hne := IsCyclotomicExtension.neZero' (p ^ (k + 1)) K L
   haveI mf : Module.Finite K L := finiteDimensional {p ^ (k + 1)} K L
-  haveI se : Algebra.IsSeparable K L := (isGalois (p ^ (k + 1)) K L).to_isSeparable
+  haveI se : Algebra.IsSeparable K L := isSeparable {p ^ (k + 1)} K L
   rw [discr_powerBasis_eq_norm, finrank L hirr, hζ.powerBasis_gen _,
     ← hζ.minpoly_eq_cyclotomic_of_irreducible hirr, totient_prime_pow hp.out (succ_pos k),
     Nat.add_one_sub_one]
@@ -108,8 +108,8 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
     replace H := (mul_left_inj' fun h => ?_).1 H
     · simp only [H, mul_comm _ (k + 1)]; norm_cast
     · have := hne.1
-      rw [Nat.cast_pow, Ne, pow_eq_zero_iff (by omega)] at this
-      exact absurd (pow_eq_zero h) this
+      rw [Nat.cast_pow, Ne, pow_eq_zero_iff (by cutsat)] at this
+      exact absurd (eq_zero_of_pow_eq_zero h) this
 
 /-- If `p` is a prime and `IsCyclotomicExtension {p ^ (k + 1)} K L`, then the discriminant of
 `hζ.powerBasis K` is `(-1) ^ (p ^ k * (p - 1) / 2) * p ^ (p ^ k * ((p - 1) * (k + 1) - 1))`
@@ -130,19 +130,18 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact p
     discr K (hζ.powerBasis K).basis =
       (-1) ^ ((p ^ k).totient / 2) * p ^ (p ^ (k - 1) * ((p - 1) * k - 1)) := by
   rcases k with - | k
-  · simp only [coe_basis, _root_.pow_zero, powerBasis_gen _ hζ, totient_one, mul_zero, mul_one,
+  · simp only [coe_basis, _root_.pow_zero, powerBasis_gen _ hζ, totient_one, mul_zero,
       show 1 / 2 = 0 by rfl, discr, traceMatrix]
     have hζone : ζ = 1 := by simpa using hζ
     rw [hζ.powerBasis_dim _, hζone, ← (algebraMap K L).map_one,
       minpoly.eq_X_sub_C_of_algebraMap_inj _ (algebraMap K L).injective, natDegree_X_sub_C]
-    simp only [traceMatrix, map_one, one_pow, Matrix.det_unique, traceForm_apply, mul_one]
+    simp only [map_one, one_pow, Matrix.det_unique, traceForm_apply, mul_one]
     rw [← (algebraMap K L).map_one, trace_algebraMap, finrank _ hirr]
-    norm_num
+    simp
   · by_cases hk : p ^ (k + 1) = 2
-    · have hp : p = 2 := by
+    · obtain rfl : p = 2 := by
         rw [← pow_one 2] at hk
         exact eq_of_prime_pow_eq (prime_iff.1 hp.out) (prime_iff.1 Nat.prime_two) (succ_pos _) hk
-      subst hp
       nth_rw 2 [← pow_one 2] at hk
       replace hk := Nat.pow_right_injective rfl.le hk
       rw [add_eq_right] at hk
@@ -156,7 +155,7 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact p
       rw [← Algebra.discr_reindex K (hζ.powerBasis K).basis e, coe_basis, powerBasis_gen]; norm_num
       simp_rw [hζ.eq_neg_one_of_two_right, show (-1 : L) = algebraMap K L (-1) by simp]
       convert_to (discr K fun i : Fin 1 ↦ (algebraMap K L) (-1) ^ ↑i) = _
-      · congr
+      · congr 1
         ext i
         simp only [map_neg, map_one, Function.comp_apply, Fin.val_eq_zero, _root_.pow_zero]
         suffices (e.symm i : ℕ) = 0 by simp [this]
@@ -165,7 +164,7 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact p
         rw [this]
       · simp only [discr, traceMatrix_apply, Matrix.det_unique, Fin.default_eq_zero, Fin.val_zero,
           _root_.pow_zero, traceForm_apply, mul_one]
-        rw [← (algebraMap K L).map_one, trace_algebraMap, finrank _ hirr]; norm_num
+        rw [← (algebraMap K L).map_one, trace_algebraMap, finrank _ hirr]; simp
     · exact discr_prime_pow_ne_two hζ hirr hk
 
 /-- If `p` is a prime and `IsCyclotomicExtension {p ^ k} K L`, then there are `u : ℤˣ` and
@@ -177,9 +176,9 @@ theorem discr_prime_pow_eq_unit_mul_pow [IsCyclotomicExtension {p ^ k} K L]
     ∃ (u : ℤˣ) (n : ℕ), discr K (hζ.powerBasis K).basis = u * p ^ n := by
   rw [discr_prime_pow hζ hirr]
   by_cases heven : Even ((p ^ k).totient / 2)
-  · exact ⟨1, p ^ (k - 1) * ((p - 1) * k - 1), by rw [heven.neg_one_pow]; norm_num⟩
+  · exact ⟨1, p ^ (k - 1) * ((p - 1) * k - 1), by rw [heven.neg_one_pow]; simp⟩
   · exact ⟨-1, p ^ (k - 1) * ((p - 1) * k - 1), by
-      rw [(not_even_iff_odd.1 heven).neg_one_pow]; norm_num⟩
+      rw [(not_even_iff_odd.1 heven).neg_one_pow]; simp⟩
 
 /-- If `p` is an odd prime and `IsCyclotomicExtension {p} K L`, then
 `discr K (hζ.powerBasis K).basis = (-1) ^ ((p - 1) / 2) * p ^ (p - 2)` if

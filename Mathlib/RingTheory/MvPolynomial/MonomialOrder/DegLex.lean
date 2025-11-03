@@ -6,7 +6,7 @@ Authors: Antoine Chambert-Loir
 import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 import Mathlib.Data.Finsupp.MonomialOrder.DegLex
 
-/-! # Some lemmas about the deglex monomial order on multivariate polynomials -/
+/-! # Some lemmas about the degree lexicographic monomial order on multivariate polynomials -/
 
 namespace MvPolynomial
 
@@ -42,6 +42,6 @@ theorem totalDegree_mul_of_isDomain [IsCancelMulZero R] (hf : f ≠ 0) (hg : g �
   cases exists_wellOrder σ
   rw [← degree_degLexDegree (σ := σᵒᵈ), ← degree_degLexDegree (σ := σᵒᵈ),
     ← degree_degLexDegree (σ := σᵒᵈ), MonomialOrder.degree_mul hf hg]
-  simp [Finsupp.sum_add_index]
+  simp
 
 end MvPolynomial

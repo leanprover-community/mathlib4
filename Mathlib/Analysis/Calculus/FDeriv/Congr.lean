@@ -8,7 +8,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Basic
 /-!
 # The Fréchet derivative: congruence properties
 
-Lemmas about congruence properties of the Frechet derivative under change of function, set, etc.
+Lemmas about congruence properties of the Fréchet derivative under change of function, set, etc.
 
 ## Tags
 

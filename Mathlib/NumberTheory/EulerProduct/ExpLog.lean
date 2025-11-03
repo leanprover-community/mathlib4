@@ -5,7 +5,7 @@ Authors: Michael Stoll
 -/
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
-import Mathlib.Data.Complex.FiniteDimensional
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 import Mathlib.NumberTheory.EulerProduct.Basic
 
 /-!
@@ -20,7 +20,7 @@ open Complex
 
 open Topology in
 /-- If `f : α → ℂ` is summable, then so is `n ↦ log (1 - f n)`. -/
-lemma Summable.clog_one_sub {α  : Type*} {f : α → ℂ} (hsum : Summable f) :
+lemma Summable.clog_one_sub {α : Type*} {f : α → ℂ} (hsum : Summable f) :
     Summable fun n ↦ log (1 - f n) := by
   have hg : DifferentiableAt ℂ (fun z ↦ log (1 - z)) 0 := by
     have : 1 - 0 ∈ slitPlane := (sub_zero (1 : ℂ)).symm ▸ one_mem_slitPlane

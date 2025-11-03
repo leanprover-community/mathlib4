@@ -84,7 +84,7 @@ end StoneanProfinite
 namespace ProfiniteCompHaus
 
 /-- The equivalence from coherent sheaves on `Profinite` to coherent sheaves on `CompHaus`
-    (i.e. condensed sets). -/
+(i.e. condensed sets). -/
 noncomputable
 def equivalence (A : Type*) [Category A]
     [∀ X, HasLimitsOfShape (StructuredArrow X profiniteToCompHaus.op) A] :

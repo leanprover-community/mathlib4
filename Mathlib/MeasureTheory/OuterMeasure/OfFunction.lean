@@ -34,7 +34,7 @@ outer measure, Carathéodory-measurable, Carathéodory's criterion
 
 -/
 
-assert_not_exists Basis
+assert_not_exists Module.Basis
 
 noncomputable section
 
@@ -62,7 +62,7 @@ protected def ofFunction (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0) : Out
       ENNReal.le_of_forall_pos_le_add <| by
         intro ε hε (hb : (∑' i, μ (s i)) < ∞)
         rcases ENNReal.exists_pos_sum_of_countable (ENNReal.coe_pos.2 hε).ne' ℕ with ⟨ε', hε', hl⟩
-        refine le_trans ?_ (add_le_add_left (le_of_lt hl) _)
+        grw [← hl]
         rw [← ENNReal.tsum_add]
         choose f hf using
           show ∀ i, ∃ f : ℕ → Set α, (s i ⊆ ⋃ i, f i) ∧ (∑' i, m (f i)) < μ (s i) + ε' i by
@@ -211,7 +211,7 @@ theorem map_ofFunction {β} {f : α → β} (hf : Injective f) :
   intro t ht
   refine iInf_le_of_le (fun n => (range f)ᶜ ∪ f '' t n) (iInf_le_of_le ?_ ?_)
   · rw [← union_iUnion, ← inter_subset, ← image_preimage_eq_inter_range, ← image_iUnion]
-    exact image_subset _ ht
+    exact image_mono ht
   · refine ENNReal.tsum_le_tsum fun n => le_of_eq ?_
     simp [hf.preimage_image]
 
@@ -270,7 +270,7 @@ theorem boundedBy_eq_self (m : OuterMeasure α) : boundedBy m = m :=
   ext fun _ => boundedBy_eq _ measure_empty (fun _ ht => measure_mono ht) measure_iUnion_le
 
 theorem le_boundedBy {μ : OuterMeasure α} : μ ≤ boundedBy m ↔ ∀ s, μ s ≤ m s := by
-  rw [boundedBy , le_ofFunction, forall_congr']; intro s
+  rw [boundedBy, le_ofFunction, forall_congr']; intro s
   rcases s.eq_empty_or_nonempty with h | h <;> simp [h, Set.not_nonempty_empty]
 
 theorem le_boundedBy' {μ : OuterMeasure α} :
@@ -292,7 +292,7 @@ theorem boundedBy_zero : boundedBy (0 : Set α → ℝ≥0∞) = 0 := by
   apply boundedBy_le
 
 theorem smul_boundedBy {c : ℝ≥0∞} (hc : c ≠ ∞) : c • boundedBy m = boundedBy (c • m) := by
-  simp only [boundedBy , smul_ofFunction hc]
+  simp only [boundedBy, smul_ofFunction hc]
   congr 1 with s : 1
   rcases s.eq_empty_or_nonempty with (rfl | hs) <;> simp [*]
 
@@ -423,11 +423,10 @@ theorem map_iInf_comap {ι β} [Nonempty ι] {f : α → β} (m : ι → OuterMe
   refine fun t ht => iInf_le_of_le (fun n => f '' t n ∪ (range f)ᶜ) (iInf_le_of_le ?_ ?_)
   · rw [← iUnion_union, Set.union_comm, ← inter_subset, ← image_iUnion, ←
       image_preimage_eq_inter_range]
-    exact image_subset _ ht
+    exact image_mono ht
   · refine ENNReal.tsum_le_tsum fun n => iInf_mono fun i => (m i).mono ?_
-    simp only [preimage_union, preimage_compl, preimage_range, compl_univ, union_empty,
-      image_subset_iff]
-    exact subset_refl _
+    simpa only [preimage_union, preimage_compl, preimage_range, compl_univ, union_empty,
+      image_subset_iff] using subset_rfl
 
 theorem map_biInf_comap {ι β} {I : Set ι} (hI : I.Nonempty) {f : α → β} (m : ι → OuterMeasure β) :
     map f (⨅ i ∈ I, comap f (m i)) = ⨅ i ∈ I, map f (comap f (m i)) := by

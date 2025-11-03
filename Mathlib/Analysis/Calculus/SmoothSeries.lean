@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Analysis.Calculus.UniformLimitsDeriv
 import Mathlib.Topology.Algebra.InfiniteSum.Module
-import Mathlib.Analysis.NormedSpace.FunctionSeries
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 
 /-!
 # Smoothness of series
@@ -48,7 +48,7 @@ theorem summable_of_summable_hasFDerivAt_of_isPreconnected (hu : Summable u) (hs
     (tendstoUniformlyOn_tsum hu hf').uniformCauchySeqOn
   refine cauchy_map_of_uniformCauchySeqOn_fderiv (f := fun t x ↦ ∑ i ∈ t, f i x)
     hs h's A (fun t y hy => ?_) hx₀ hx hf0
-  exact HasFDerivAt.sum fun i _ => hf i y hy
+  exact HasFDerivAt.fun_sum fun i _ => hf i y hy
 
 /-- Consider a series of functions `∑' n, f n x` on a preconnected open set. If the series converges
 at a point, and all functions in the series are differentiable with a summable bound on the
@@ -59,7 +59,7 @@ theorem summable_of_summable_hasDerivAt_of_isPreconnected (hu : Summable u) (ht 
     (hy : y ∈ t) : Summable fun n => g n y := by
   simp_rw [hasDerivAt_iff_hasFDerivAt] at hg
   refine summable_of_summable_hasFDerivAt_of_isPreconnected hu ht h't hg ?_ hy₀ hg0 hy
-  simpa? says simpa only [ContinuousLinearMap.norm_smulRight_apply, norm_one, one_mul]
+  simpa
 
 /-- Consider a series of functions `∑' n, f n x` on a preconnected open set. If the series converges
 at a point, and all functions in the series are differentiable with a summable bound on the
@@ -77,7 +77,7 @@ theorem hasFDerivAt_tsum_of_isPreconnected (hu : Summable u) (hs : IsOpen s)
       exact summable_of_summable_hasFDerivAt_of_isPreconnected hu hs h's hf hf' hx₀ hf0 hy
     refine hasFDerivAt_of_tendstoUniformlyOn hs (tendstoUniformlyOn_tsum hu hf')
       (fun t y hy => ?_) A hx
-    exact HasFDerivAt.sum fun n _ => hf n y hy
+    exact HasFDerivAt.fun_sum fun n _ => hf n y hy
 
 /-- Consider a series of functions `∑' n, f n x` on a preconnected open set. If the series converges
 at a point, and all functions in the series are differentiable with a summable bound on the
@@ -91,7 +91,7 @@ theorem hasDerivAt_tsum_of_isPreconnected (hu : Summable u) (ht : IsOpen t)
   convert hasFDerivAt_tsum_of_isPreconnected hu ht h't hg ?_ hy₀ hg0 hy
   · exact (ContinuousLinearMap.smulRightL 𝕜 𝕜 F 1).map_tsum <|
       .of_norm_bounded hu fun n ↦ hg' n y hy
-  · simpa? says simpa only [ContinuousLinearMap.norm_smulRight_apply, norm_one, one_mul]
+  · simpa
 
 /-- Consider a series of functions `∑' n, f n x`. If the series converges at a
 point, and all functions in the series are differentiable with a summable bound on the derivatives,
@@ -156,7 +156,7 @@ theorem differentiable_tsum' (hu : Summable u) (hg : ∀ n y, HasDerivAt (g n) (
     (hg' : ∀ n y, ‖g' n y‖ ≤ u n) : Differentiable 𝕜 fun z => ∑' n, g n z := by
   simp_rw [hasDerivAt_iff_hasFDerivAt] at hg
   refine differentiable_tsum hu hg ?_
-  simpa? says simpa only [ContinuousLinearMap.norm_smulRight_apply, norm_one, one_mul]
+  simpa
 
 theorem fderiv_tsum_apply (hu : Summable u) (hf : ∀ n, Differentiable 𝕜 (f n))
     (hf' : ∀ n x, ‖fderiv 𝕜 (f n) x‖ ≤ u n) (hf0 : Summable fun n => f n x₀) (x : E) :
@@ -189,11 +189,13 @@ theorem iteratedFDeriv_tsum (hf : ∀ i, ContDiff 𝕜 N (f i))
     (h'f : ∀ (k : ℕ) (i : α) (x : E), (k : ℕ∞) ≤ N → ‖iteratedFDeriv 𝕜 k (f i) x‖ ≤ v k i) {k : ℕ}
     (hk : (k : ℕ∞) ≤ N) :
     (iteratedFDeriv 𝕜 k fun y => ∑' n, f n y) = fun x => ∑' n, iteratedFDeriv 𝕜 k (f n) x := by
-  induction' k with k IH
-  · ext1 x
+  induction k with
+  | zero =>
+    ext1 x
     simp_rw [iteratedFDeriv_zero_eq_comp]
     exact (continuousMultilinearCurryFin0 𝕜 E F).symm.toContinuousLinearEquiv.map_tsum
-  · have h'k : (k : ℕ∞) < N := lt_of_lt_of_le (WithTop.coe_lt_coe.2 (Nat.lt_succ_self _)) hk
+  | succ k IH =>
+    have h'k : (k : ℕ∞) < N := lt_of_lt_of_le (WithTop.coe_lt_coe.2 (Nat.lt_succ_self _)) hk
     have A : Summable fun n => iteratedFDeriv 𝕜 k (f n) 0 :=
       .of_norm_bounded (hv k h'k.le) fun n ↦ h'f k n 0 h'k.le
     simp_rw [iteratedFDeriv_succ_eq_comp_left, IH h'k.le]

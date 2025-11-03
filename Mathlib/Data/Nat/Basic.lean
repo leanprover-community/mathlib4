@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Nat.Init
+import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Nontrivial.Defs
+import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Util.AssertExists
@@ -42,13 +44,10 @@ instance instLinearOrder : LinearOrder ℕ where
 -- Shortcut instances
 instance : Preorder ℕ := inferInstance
 instance : PartialOrder ℕ := inferInstance
-instance : Min ℕ := inferInstance
-instance : Max ℕ := inferInstance
-instance : Ord ℕ := inferInstance
 
 instance instNontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
-attribute [gcongr] Nat.succ_le_succ Nat.div_le_div_right Nat.div_le_div_left Nat.div_le_div
+attribute [gcongr] Nat.succ_le_succ Nat.div_le_div_right Nat.div_le_div
 
 /-! ### `succ`, `pred` -/
 
@@ -112,10 +111,26 @@ lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S �
 
 /-! ### `mod`, `dvd` -/
 
-@[deprecated (since := "2025-04-01")] alias dvd_sub' := dvd_sub
-
 /-- `dvd` is injective in the left argument -/
 lemma dvd_left_injective : Function.Injective ((· ∣ ·) : ℕ → ℕ → Prop) := fun _ _ h =>
   dvd_right_iff_eq.mp fun a => iff_of_eq (congr_fun h a)
+
+@[simp]
+protected lemma dvd_sub_self_left {n m : ℕ} :
+    n ∣ n - m ↔ m = 0 ∨ n ≤ m := by
+  rcases le_or_gt n m with h | h
+  · simp [h]
+  · rcases eq_or_ne m 0 with rfl | hm
+    · simp
+    · simp only [hm, h.not_ge, or_self, iff_false]
+      refine not_dvd_of_pos_of_lt ?_ ?_ <;>
+      grind
+
+@[simp]
+protected lemma dvd_sub_self_right {n m : ℕ} :
+    n ∣ m - n ↔ n ∣ m ∨ m ≤ n := by
+  rcases le_or_gt m n with h | h
+  · simp [h]
+  · simp [dvd_sub_iff_left (le_of_lt h) (Nat.dvd_refl _), h.not_ge]
 
 end Nat
