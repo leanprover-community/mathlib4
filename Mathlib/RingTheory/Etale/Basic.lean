@@ -37,7 +37,7 @@ variable {R : Type u} {A : Type v} {B : Type*} [CommRing R] [CommRing A] [Algebr
 section
 
 variable (R A) in
-/-- An `R`-algebra `A` is formally etale if both `Ω[A⁄R]` and `H¹(L_{S/R})` are zero.
+/-- An `R`-algebra `A` is formally etale if both `Ω[A⁄R]` and `H¹(L_{A/R})` are zero.
 For the infinitesimal lifting definition, see `FormallyEtale.iff_comp_bijective`. -/
 @[mk_iff, stacks 00UQ]
 class FormallyEtale : Prop where
