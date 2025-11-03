@@ -19,7 +19,8 @@ For a topological space `α`,
 -/
 
 
-open Order OrderDual Set
+open Order OrderDual Set Topology
+
 
 variable {ι α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
@@ -427,6 +428,39 @@ variable (α) in
 order isomorphism. -/
 def orderIsoSubtype' : IrreducibleCloseds α ≃o { x : Set α // IsClosed x ∧ IsIrreducible x } :=
   equivSubtype'.toOrderIso (fun _ _ h ↦ h) (fun _ _ h ↦ h)
+
+/-! ### Partial order structure on irreducible closed sets and maps thereof.-/
+
+/-- The map on irreducible closed sets induced by a continuous map `f`. -/
+def map (f : β → α) (hf : Continuous f)
+    (c : IrreducibleCloseds β) : IrreducibleCloseds α where
+  carrier := closure (f '' c)
+  isIrreducible' := c.isIrreducible.image f hf.continuousOn |>.closure
+  isClosed' := isClosed_closure
+
+@[simp]
+lemma coe_map (f : β → α) (hf : Continuous f) (s : IrreducibleCloseds β) :
+    (map f hf s : Set α) = closure (f '' s) :=
+  rfl
+
+lemma map_mono {f : β → α} (hf : Continuous f) : Monotone (map f hf) :=
+  fun _ _ h_le => closure_mono <| Set.image_mono h_le
+
+/-- The map `IrreducibleCloseds.map` is injective when `f` is inducing.
+This relies on the property of embeddings that a closed set in the domain is the preimage
+of the closure of its image. -/
+lemma map_injective_of_isInducing {f : β → α} (hf : IsInducing f) :
+    Function.Injective (map f hf.continuous) := by
+  intro A B h_images_eq
+  apply SetLike.coe_injective
+  replace h_images_eq : closure (f '' A) = closure (f '' B) := congr($h_images_eq)
+  rw [← A.isClosed.closure_eq, hf.closure_eq_preimage_closure_image, h_images_eq,
+    ← hf.closure_eq_preimage_closure_image, B.isClosed.closure_eq]
+
+/-- The map `IrreducibleCloseds.map` is strictly monotone when `f` is inducing. -/
+lemma map_strictMono_of_isInducing {f : β → α} (hf : IsInducing f) :
+    StrictMono (map f hf.continuous) :=
+  Monotone.strictMono_of_injective (map_mono hf.continuous) (map_injective_of_isInducing hf)
 
 end IrreducibleCloseds
 
