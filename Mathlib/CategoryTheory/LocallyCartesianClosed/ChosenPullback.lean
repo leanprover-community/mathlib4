@@ -54,10 +54,6 @@ abbrev ChosenPullbacks := Π {X Y : C} (f : Y ⟶ X), ChosenPullback f
 
 namespace ChosenPullback
 
-/-- `ChosenPullback (Over.mk f).hom` from  `ChosenPullback f`. -/
-def overMkHom {Y X : C} (f : Y ⟶ X) [ChosenPullback f] : ChosenPullback (Over.mk f).hom :=
-  inferInstanceAs (ChosenPullback f)
-
 /-- Relating the existing noncomputable `HasPullbacksAlong` typeclass to `ChosenPullback`. -/
 @[simps]
 noncomputable def ofHasPullbacksAlong {Y X : C} (f : Y ⟶ X) [HasPullbacksAlong f] :
