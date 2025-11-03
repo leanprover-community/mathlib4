@@ -5,7 +5,6 @@ Authors: Nailin Guan
 -/
 import Mathlib.Algebra.Exact
 import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
 
