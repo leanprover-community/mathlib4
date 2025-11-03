@@ -424,9 +424,9 @@ include hs ht in
 lemma fun_mul : MeromorphicOn (fun z ↦ s z * t z) U := fun x hx ↦ (hs x hx).mul (ht x hx)
 
 /-- Finite products of meromorphic functions are meromorphic. -/
-lemma prod {U : Set 𝕜} {ι : Type*} {s : Finset ι} {F : ι → 𝕜 → 𝕜}
-    (h : ∀ σ, MeromorphicOn (F σ) U) :
-    MeromorphicOn (∏ n ∈ s, F n) U :=
+lemma prod {U : Set 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
+    (h : ∀ σ, MeromorphicOn (f σ) U) :
+    MeromorphicOn (∏ n ∈ s, f n) U :=
   fun z hz ↦ MeromorphicAt.prod (fun σ ↦ h σ z hz)
 
 /-- Finite products of meromorphic functions are meromorphic. -/
