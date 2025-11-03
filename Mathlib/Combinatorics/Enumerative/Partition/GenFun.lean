@@ -7,10 +7,10 @@ import Mathlib.Combinatorics.Enumerative.Partition.Basic
 import Mathlib.RingTheory.PowerSeries.PiTopology
 
 /-!
-# Generating functions for partition functions
+# Generating functions for partitions
 
 This file defines generating functions related to partitions. Given a character function $f(i, c)$
-of a part $i$ and the number of the part $c$, the related generating function is
+of a part $i$ and the number of occurrences of the part $c$, the related generating function is
 $$
 G_f(X) = \sum_{n = 0}^{\infty} \left(\sum_{p \in P_{n}} \prod_{i \in p} f(i, \#i)\right) X^n
 = \prod_{i = 1}^{\infty}\left(1 + \sum_{j = 1}^{\infty} f(i, j) X^{ij}\right)
@@ -56,8 +56,8 @@ theorem summable_genFun_term (f : ℕ → ℕ → M) (i : ℕ) :
   apply WithPiTopology.summable_of_tendsto_order_atTop_nhds_top
   refine ENat.tendsto_nhds_top_iff_natCast_lt.mpr (fun n ↦ Filter.eventually_atTop.mpr ⟨n, ?_⟩)
   intro m hm
-  rw [PowerSeries.smul_eq_C_mul]
-  refine (lt_of_lt_of_le (lt_add_of_nonneg_of_lt (by simp) ?_) (le_order_mul _ _))
+  grw [PowerSeries.smul_eq_C_mul, ← le_order_mul]
+  refine lt_add_of_nonneg_of_lt (by simp) ?_
   rw [order_X_pow]
   norm_cast
   grind
@@ -84,7 +84,7 @@ private theorem aux_mapsTo_sub_one_parts {n : ℕ} (p : Partition n) :
   rw [Multiset.mem_toFinset, Multiset.mem_map]
   exact ⟨a, by simpa using ha⟩
 
-private def aux_toFinsuppAntidiag {n : ℕ} (p : Partition n) : ℕ →₀ ℕ where
+private def toFinsuppAntidiag {n : ℕ} (p : Partition n) : ℕ →₀ ℕ where
   toFun m := p.parts.count (m + 1) * (m + 1)
   support := (p.parts.map (· - 1)).toFinset
   mem_support_toFun m := by
@@ -95,8 +95,8 @@ private def aux_toFinsuppAntidiag {n : ℕ} (p : Partition n) : ℕ →₀ ℕ w
     · simp
 
 private theorem aux_toFinsuppAntidiag_injective (n : ℕ) :
-    Function.Injective (aux_toFinsuppAntidiag (n := n)) := by
-  unfold aux_toFinsuppAntidiag
+    Function.Injective (toFinsuppAntidiag (n := n)) := by
+  unfold toFinsuppAntidiag
   intro p q h
   rw [Finsupp.mk.injEq] at h
   obtain ⟨hfinset, hcount⟩ := h
@@ -113,8 +113,8 @@ private theorem aux_toFinsuppAntidiag_injective (n : ℕ) :
     convert funext_iff.mp hcount (m - 1) <;> exact (Nat.sub_eq_iff_eq_add h0).mp rfl
 
 private theorem aux_range_toFinsuppAntidiag (n : ℕ) :
-    Set.range (aux_toFinsuppAntidiag (n := n)) ⊆ (Finset.range n).finsuppAntidiag n := by
-  unfold aux_toFinsuppAntidiag
+    Set.range (toFinsuppAntidiag (n := n)) ⊆ (Finset.range n).finsuppAntidiag n := by
+  unfold toFinsuppAntidiag
   rw [Set.range_subset_iff]
   intro p
   suffices ∑ m ∈ Finset.range n, Multiset.count (m + 1) p.parts * (m + 1) = n by
@@ -156,7 +156,7 @@ private theorem aux_dvd_of_coeff_ne_zero {f : ℕ → ℕ → M} {d : ℕ} {s : 
 
 private theorem aux_prod_coeff_eq_zero_of_notMem_range (f : ℕ → ℕ → M) {d : ℕ} {s : Finset ℕ}
     {g : ℕ →₀ ℕ} (hg : g ∈ s.finsuppAntidiag d)
-    (hg' : g ∉ Set.range (aux_toFinsuppAntidiag (n := d))) :
+    (hg' : g ∉ Set.range (toFinsuppAntidiag (n := d))) :
     ∏ i ∈ s, (coeff (g i)) (1 + ∑' (j : ℕ),
     f (i + 1) (j + 1) • X ^ ((i + 1) * (j + 1)) : M⟦X⟧) = 0 := by
   suffices ∃ i ∈ s, (coeff (g i)) ((1 : M⟦X⟧) +
@@ -184,12 +184,12 @@ private theorem aux_prod_coeff_eq_zero_of_notMem_range (f : ℕ → ℕ → M) {
       grind)]
     exact Finset.sum_congr rfl fun x _ ↦ Nat.div_mul_cancel <| aux_dvd_of_coeff_ne_zero hg hprod x
   · ext x
-    simpa [aux_toFinsuppAntidiag] using Nat.div_mul_cancel <| aux_dvd_of_coeff_ne_zero hg hprod x
+    simpa [toFinsuppAntidiag] using Nat.div_mul_cancel <| aux_dvd_of_coeff_ne_zero hg hprod x
 
 private theorem aux_prod_f_eq_prod_coeff
     (f : ℕ → ℕ → M) {n : ℕ} (p : Partition n) {s : Finset ℕ} (hs : Finset.range n ≤ s) :
     ∏ i ∈ p.parts.toFinset, f i (Multiset.count i p.parts) =
-    ∏ i ∈ s, coeff (p.aux_toFinsuppAntidiag i)
+    ∏ i ∈ s, coeff (p.toFinsuppAntidiag i)
     (1 + ∑' j : ℕ, f (i + 1) (j + 1) • X ^ ((i + 1) * (j + 1))) := by
   refine Finset.prod_of_injOn (· - 1) (aux_injOn_sub_one_parts _)
     ((aux_mapsTo_sub_one_parts p).mono_right hs) ?_ ?_
@@ -198,13 +198,13 @@ private theorem aux_prod_f_eq_prod_coeff
       contrapose! h
       exact ⟨x + 1, by simpa using h⟩
     have hsum := (summable_genFun_term f x).map_tsum _ (WithPiTopology.continuous_constantCoeff M)
-    simp [aux_toFinsuppAntidiag, hx, hsum]
+    simp [toFinsuppAntidiag, hx, hsum]
   · intro i hi
     have hi : i ∈ p.parts := by simpa using hi
     rw [map_add, (summable_genFun_term f _).map_tsum _ (WithPiTopology.continuous_coeff _ _)]
     suffices f i (Multiset.count i p.parts) =
       ∑' j : ℕ, if Multiset.count i p.parts * i = i * (j + 1) then f i (j + 1) else 0 by
-      simpa [Nat.one_le_of_lt (p.parts_pos hi), aux_toFinsuppAntidiag, hi,
+      simpa [Nat.one_le_of_lt (p.parts_pos hi), toFinsuppAntidiag, hi,
         Nat.ne_zero_of_lt (p.parts_pos hi), coeff_X_pow]
     rw [tsum_eq_single (Multiset.count i p.parts - 1) ?_]
     · rw [mul_comm]
@@ -220,9 +220,9 @@ theorem hasProd_genFun (f : ℕ → ℕ → M) :
   rw [HasProd, WithPiTopology.tendsto_iff_coeff_tendsto]
   refine fun d ↦ tendsto_atTop_of_eventually_const (fun s (hs : s ≥ Finset.range d) ↦ ?_)
   rw [genFun, coeff_mk, coeff_prod]
-  refine (Finset.sum_of_injOn aux_toFinsuppAntidiag
+  refine (Finset.sum_of_injOn toFinsuppAntidiag
     (aux_toFinsuppAntidiag_injective d).injOn ?_ ?_ ?_).symm
-  · refine Set.MapsTo.mono_right (Set.mapsTo_range _ _) ((aux_range_toFinsuppAntidiag d).trans ?_)
+  · refine (Set.mapsTo_range _ _).mono_right ((aux_range_toFinsuppAntidiag d).trans ?_)
     simpa using Finset.finsuppAntidiag_mono hs.le _
   · exact fun g hg hg' ↦ aux_prod_coeff_eq_zero_of_notMem_range f hg (by simpa using hg')
   · exact fun p _ ↦ aux_prod_f_eq_prod_coeff f p hs.le
