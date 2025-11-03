@@ -19,14 +19,14 @@ example (x y : Nat) : True := by
   #check x + y
   trivial
 
-theorem bar {a b c : Nat} (h : a = b + c) : a = b := sorry
+theorem bar {a b c : Nat} (h : a = b + c) (hc : c = 0) : a = b := by rwa [hc] at h
 
 -- #check does show implicit arguments (and also typeclass arguments) when present
 set_option linter.unusedTactic false in
 /--
-info: bar {a b c : Nat} (h : a = b + c) : a = b
+info: bar {a b c : Nat} (h : a = b + c) (hc : c = 0) : a = b
 ---
-info: bar : ?m✝ = ?m✝ + ?m✝ → ?m✝ = ?m✝
+info: bar : ?m✝ = ?m✝ + ?m✝ → ?m✝ = 0 → ?m✝ = ?m✝
 -/
 #guard_msgs in
 example : True := by
@@ -163,9 +163,9 @@ example (x : Nat) : True := by
 -- #check' only shows explicit arguments, no implicit or typeclass arguments
 set_option linter.unusedTactic false in
 /--
-info: bar (h : a = b + c) : a = b
+info: bar (h : a = b + c) (hc : c = 0) : a = b
 ---
-info: bar : ?m✝ = ?m✝ + ?m✝ → ?m✝ = ?m✝
+info: bar : ?m✝ = ?m✝ + ?m✝ → ?m✝ = 0 → ?m✝ = ?m✝
 -/
 #guard_msgs in
 example : True := by
