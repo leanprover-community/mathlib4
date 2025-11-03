@@ -677,13 +677,6 @@ theorem uniqueDiffWithinAt_iff_accPt {s : Set 𝕜} {x : 𝕜} :
 
 alias ⟨_, AccPt.uniqueDiffWithinAt⟩ := uniqueDiffWithinAt_iff_accPt
 
-/-- In one dimension, every point is either a point of unique differentiability, or isolated. -/
-@[deprecated uniqueDiffWithinAt_iff_accPt (since := "2025-04-20")]
-theorem uniqueDiffWithinAt_or_nhdsWithin_eq_bot (s : Set 𝕜) (x : 𝕜) :
-    UniqueDiffWithinAt 𝕜 s x ∨ 𝓝[s \ {x}] x = ⊥ :=
-  (em (AccPt x (𝓟 s))).imp AccPt.uniqueDiffWithinAt fun h ↦ by
-    rwa [accPt_principal_iff_nhdsWithin, not_neBot] at h
-
 end Real
 
 end UniqueDiff
