@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.NonUnitalHom
+import Mathlib.Algebra.Star.LinearMap
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
@@ -262,5 +263,19 @@ theorem toSpanSingleton_eq_algebra_linearMap : toSpanSingleton R A 1 = Algebra.l
   ext; simp
 
 end Semiring
+
+section NonUnitalNonAssocSemiring
+variable {R E : Type*} [Semiring R] [InvolutiveStar R]
+  [NonUnitalNonAssocSemiring E] [StarRing E] [Module R E]
+  [StarModule R E] [SMulCommClass R E E] [IsScalarTower R E E]
+
+open IntrinsicStar
+
+theorem intrinsicStar_mulLeft (x : E) : star (mulLeft R x) = mulRight R (star x) := by ext; simp
+
+theorem intrinsicStar_mulRight (x : E) : star (mulRight R x) = mulLeft R (star x) := by
+  rw [star_eq_iff_star_eq, intrinsicStar_mulLeft, star_star]
+
+end NonUnitalNonAssocSemiring
 
 end LinearMap
