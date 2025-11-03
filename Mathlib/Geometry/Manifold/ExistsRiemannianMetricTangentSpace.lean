@@ -26,7 +26,7 @@ open Bundle ContDiff Manifold
 -- Let E be a smooth vector bundle over a manifold E
 
 variable
-  {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB] [InnerProductSpace ℝ EB]
+  {EB : Type*} [NormedAddCommGroup EB] [InnerProductSpace ℝ EB]
   {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
   {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
@@ -151,21 +151,6 @@ noncomputable def g (i : B) (p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _
   letI dψ := mfderiv IB 𝓘(ℝ, EB) (extChartAt IB i) p
   @Inner.inner ℝ EB _ (dψ v) (dψ w)
 
--- Yet another attempt to prove continuity
-
-variable (i p : B)
-
--- #check (inferInstance : Norm (TangentSpace IB p))
-#check (inferInstance : Norm (TangentSpace IB p →L[ℝ] ℝ))
-
-noncomputable
-instance tangent_norm : Norm (TangentSpace IB p) := sorry
-instance cotangent_norm :  Norm (TangentSpace IB p → ℝ) := sorry
-
-lemma g_bounded (i p : B) :
-  ∃ C, ∀ v : TangentSpace IB p, ‖fun w => g i p v w‖ ≤ C * ‖v‖ := by
-  sorry
-
 variable (IB) in
 noncomputable def g' (i p : B) : TangentSpace IB p → TangentSpace IB p → ℝ := fun v w ↦
   letI dψ := mfderiv IB 𝓘(ℝ, EB) (extChartAt IB i) p
@@ -256,14 +241,6 @@ lemma g_continuous_prod (i p : B) :
   · exact (mfderiv IB 𝓘(ℝ, EB) (extChartAt IB i) p).continuous.comp continuous_fst
   · exact (mfderiv IB 𝓘(ℝ, EB) (extChartAt IB i) p).continuous.comp continuous_snd
 
-lemma g_cont' (i p : B) :
-  Continuous (fun (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p ) ↦ ContinuousLinearMap.mk
-    { toFun := fun w ↦ g i p v w
-      map_add' := fun x y ↦ g_add' i p x y v
-      map_smul' := fun m x ↦ g_smul' i p x v m }
-    (g_cont i p v)) := by
-  exact sorry
-
 noncomputable
 def g_bilinear (i p : B) :
     W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p :=
@@ -285,6 +262,30 @@ def g_bilinear (i p : B) :
                     change g i p (m • x) w = m • g i p x w
                     exact g_smul'' i p w x m }
     (by sorry : Continuous _)
+
+noncomputable instance (p : B) : NormedAddCommGroup (TangentSpace IB p) := by
+  change NormedAddCommGroup EB
+  infer_instance
+
+noncomputable instance (p : B) : NormedSpace ℝ (TangentSpace IB p) := by
+  change NormedSpace ℝ EB
+  infer_instance
+
+noncomputable
+def g_bilin (i p : B) :
+  (TangentSpace IB) p →L[ℝ]  ((TangentSpace IB) p →L[ℝ] Trivial B ℝ p) := by
+  let dψ := mfderiv IB 𝓘(ℝ, EB) (extChartAt IB i) p
+  let inner := innerSL ℝ (E := EB)
+  exact inner.comp dψ |>.flip.comp dψ
+
+example (j b : B) (v w : TangentSpace IB b) :
+  ((g_bilin j b).toFun v).toFun w = g j b v w := by
+  dsimp [g_bilin, g]
+  exact sorry
+
+example (x y : EB) : (innerSL ℝ (E := EB)) x y = Inner.inner ℝ x y := rfl
+
+example (x y : EB) : (innerSL ℝ (E := EB)).flip y x = (innerSL ℝ (E := EB)) x y := rfl
 
 open SmoothPartitionOfUnity
 
@@ -352,6 +353,10 @@ lemma g_global_symm (f : SmoothPartitionOfUnity B IB B)
 noncomputable
 def g_global_bilinear (f : SmoothPartitionOfUnity B IB B) (p : B) :
     W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p := ∑ᶠ (j : B), (f j) p • g_bilinear j p
+
+noncomputable
+def g_global_bilin (f : SmoothPartitionOfUnity B IB B) (p : B) :
+    W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p := ∑ᶠ (j : B), (f j) p • g_bilin j p
 
 lemma smul_bilinear_toFun (f : SmoothPartitionOfUnity B IB B) {b : B} (j : B)
                           (v w : TangentSpace IB b) :
@@ -427,6 +432,55 @@ lemma h_needed (f : SmoothPartitionOfUnity B IB B) (b : B) (v w : TangentSpace I
         _ = ∑ᶠ (j : B), (((f j) b • g_bilinear j b).toFun w).toFun v := h_gbilin_symm
         _ = ∑ j ∈ h_fin.toFinset, (((f j) b • g_bilinear j b).toFun w).toFun v := hb'
         _ = ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilinear j b).toFun w).toFun v := ha'
+
+#check LinearMap.continuous_of_finiteDimensional
+
+lemma h_need (f : SmoothPartitionOfUnity B IB B) (b : B) (v w : TangentSpace IB b)
+  (h_fin : (Function.support fun j ↦ ((f j) b • (g_bilin j b) : W (TangentSpace IB) b)).Finite) :
+  ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilin j b).toFun v).toFun w =
+  ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilin j b).toFun w).toFun v := by
+
+
+    have ha : ∑ j ∈ h_fin.toFinset, (((f j) b • g_bilin j b).toFun v).toFun w =
+              ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilin j b).toFun v).toFun w := by
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe]
+      rw [ContinuousLinearMap.sum_apply, ContinuousLinearMap.sum_apply]
+
+    have ha' : ∑ j ∈ h_fin.toFinset, (((f j) b • g_bilin j b).toFun w).toFun v =
+              ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilin j b).toFun w).toFun v := by
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe]
+      rw [ContinuousLinearMap.sum_apply, ContinuousLinearMap.sum_apply]
+
+    let h : (j : B) → W ((@TangentSpace ℝ _ _ _ _ _ _ IB B _ _)) b :=
+      fun j ↦ (f j) b • g_bilin j b
+
+    have h_inc : (Function.support h) ⊆ h_fin.toFinset :=
+      Set.Finite.toFinset_subset.mp fun ⦃a⦄ a ↦ a
+
+    have hb : ∑ᶠ (j : B), (((f j) b • g_bilin j b).toFun v).toFun w =
+           ∑ j ∈ h_fin.toFinset, (((f j) b • g_bilin j b).toFun v).toFun w :=
+      finsum_image_eq_sum (evalAt b v w) h h_fin.toFinset h_inc
+
+    have hb' : ∑ᶠ (j : B), (((f j) b • g_bilin j b).toFun w).toFun v =
+           ∑ j ∈ h_fin.toFinset, (((f j) b • g_bilin j b).toFun w).toFun v :=
+      finsum_image_eq_sum (evalAt b w v) h h_fin.toFinset h_inc
+
+    have h_gbilin_symm : ∑ᶠ (j : B), (((f j) b • g_bilin j b).toFun v).toFun w =
+                         ∑ᶠ (j : B), (((f j) b • g_bilin j b).toFun w).toFun v := by
+      have h2 : ∀ (j : B), g j b v w = g j b w v := fun j => g_symm j b v w
+      have h3 : ∀ (j : B), (f j b) * g j b v w = (f j b) * g j b w v :=
+        fun j ↦ congrArg (HMul.hMul ((f j) b)) (h2 j)
+      have h4 : ∀ (j : B), (((f j b) • g_bilin j b).toFun v).toFun w =
+                           (((f j b) • g_bilin j b).toFun w).toFun v := fun j ↦ sorry -- h3 j
+      exact finsum_congr h4
+
+    calc
+        ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilin j b).toFun v).toFun w
+          = ∑ j ∈ h_fin.toFinset, (((f j) b • g_bilin j b).toFun v).toFun w := ha.symm
+        _ = ∑ᶠ (j : B), (((f j) b • g_bilin j b).toFun v).toFun w := hb.symm
+        _ = ∑ᶠ (j : B), (((f j) b • g_bilin j b).toFun w).toFun v := h_gbilin_symm
+        _ = ∑ j ∈ h_fin.toFinset, (((f j) b • g_bilin j b).toFun w).toFun v := hb'
+        _ = ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilin j b).toFun w).toFun v := ha'
 
 lemma foo (f : SmoothPartitionOfUnity B IB B) (b : B) (v w : TangentSpace IB b) :
  ((g_global_bilinear f b).toFun v).toFun w = ((g_global_bilinear f b).toFun w).toFun v := by
