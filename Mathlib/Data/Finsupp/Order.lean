@@ -41,20 +41,14 @@ section OrderedAddCommMonoid
 variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β] {f : ι →₀ α} {h₁ h₂ : ι → α → β}
 
 @[gcongr]
-
 lemma sum_le_sum (h : ∀ i ∈ f.support, h₁ i (f i) ≤ h₂ i (f i)) : f.sum h₁ ≤ f.sum h₂ :=
   Finset.sum_le_sum h
 
 theorem sum_nonneg (h : ∀ i ∈ f.support, 0 ≤ h₁ i (f i)) : 0 ≤ f.sum h₁ := Finset.sum_nonneg h
 
-theorem sum_nonneg' (h : ∀ i, 0 ≤ h₁ i (f i)) : 0 ≤ f.sum h₁ := by
-  apply sum_nonneg
-  intro i iin
-  exact h i
+theorem sum_nonneg' (h : ∀ i, 0 ≤ h₁ i (f i)) : 0 ≤ f.sum h₁ := sum_nonneg fun _ _ ↦ h _
 
 theorem sum_nonpos (h : ∀ i ∈ f.support, h₁ i (f i) ≤ 0) : f.sum h₁ ≤ 0:= Finset.sum_nonpos h
-
-
 end OrderedAddCommMonoid
 
 section Preorder
