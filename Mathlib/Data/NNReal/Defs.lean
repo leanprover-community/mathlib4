@@ -349,9 +349,6 @@ theorem mk_natCast (n : ℕ) : @Eq ℝ≥0 (⟨(n : ℝ), n.cast_nonneg⟩ : ℝ
 theorem _root_.Real.toNNReal_coe_nat (n : ℕ) : Real.toNNReal n = n :=
   NNReal.eq <| by simp [Real.coe_toNNReal]
 
-@[deprecated Real.toNNReal_coe_nat (since := "2025-03-12")]
-alias toNNReal_coe_nat := Real.toNNReal_coe_nat
-
 @[simp]
 theorem _root_.Real.toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
     Real.toNNReal ofNat(n) = OfNat.ofNat n :=
