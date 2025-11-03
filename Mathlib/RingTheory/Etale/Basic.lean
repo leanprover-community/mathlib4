@@ -11,7 +11,7 @@ import Mathlib.RingTheory.Unramified.Basic
 
 # Étale morphisms
 
-An `R`-algebra `A` is formally etale if `Ω[A⁄R]` and `H¹(L_{S/R})` both vanish.
+An `R`-algebra `A` is formally etale if `Ω[A⁄R]` and `H¹(L_{A/R})` both vanish.
 This is equivalent to the standard definition that "for every `R`-algebra `B`,
 every square-zero ideal `I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists
 exactly one lift `A →ₐ[R] B`".
