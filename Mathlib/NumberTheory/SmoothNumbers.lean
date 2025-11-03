@@ -379,7 +379,7 @@ lemma pow_mul_mem_smoothNumbers {p n : ℕ} (hp : p ≠ 0) (e : ℕ) (hn : n ∈
   refine ⟨mul_ne_zero hp' hn.1, fun q hq ↦ ?_⟩
   rcases (mem_primeFactorsList_mul hp' hn.1).mp hq with H | H
   · rw [mem_primeFactorsList hp'] at H
-    exact Nat.lt_succ_iff.mpr <| le_of_dvd hp.bot_lt <| H.1.dvd_of_dvd_pow H.2
+    exact Nat.lt_succ_of_le <| le_of_dvd hp.bot_lt <| H.1.dvd_of_dvd_pow H.2
   · exact (hn.2 q H).trans <| lt_succ_self p
 
 /-- If `p` is a prime and `n` is `p`-smooth, then `p` and `n` are coprime. -/

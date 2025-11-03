@@ -671,7 +671,7 @@ theorem append_cons {α : Sort*} (a : α) (as : Fin n → α) (bs : Fin m → α
   · split_ifs with h
     · have : i < n := Nat.lt_of_succ_lt_succ h
       simp [addCases, this]
-    · have : ¬i < n := Nat.not_le.mpr <| Nat.lt_succ_iff.mp <| Nat.not_le.mp h
+    · have : ¬i < n := Nat.not_le_of_gt <| Nat.le_of_lt_succ <| Nat.gt_of_not_le h
       simp [addCases, this]
 
 theorem append_snoc {α : Sort*} (as : Fin n → α) (bs : Fin m → α) (b : α) :

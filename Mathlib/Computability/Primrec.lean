@@ -1085,7 +1085,7 @@ theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g 
       induction i with
       | zero => symm; simpa [graph] using bindList_eq_nil
       | succ i ih =>
-        simp only [graph_succ, ih (Nat.le_of_lt hi), Nat.succ_sub (Nat.lt_succ_iff.mp hi),
+        simp only [graph_succ, ih (Nat.le_of_lt hi), Nat.succ_sub (Nat.le_of_lt_succ hi),
           Nat.succ_eq_add_one, bindList_succ, Nat.reduceSubDiff]
         apply List.filterMap_eq_map_iff_forall_eq_some.mpr
         intro b' ha'; simp; rw [mapGraph_graph]
