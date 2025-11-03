@@ -1,6 +1,6 @@
 import Mathlib.Tactic.TacticAnalysis.Declarations
 import Mathlib.Tactic.AdaptationNote
-import Lean.PremiseSelection
+import Lean.LibrarySuggestions
 
 section terminalReplacement
 
@@ -198,17 +198,15 @@ section
 def P (_ : Nat) := True
 theorem p : P 37 := trivial
 
-set_premise_selector fun _ _ => pure #[{ name := `p, score := 1.0 }]
-
--- FIXME: remove this one `grind +premises` lands.
-macro_rules | `(tactic| grind +premises) => `(tactic| grind [p])
+set_library_suggestions fun _ _ => pure #[{ name := `p, score := 1.0 }]
 
 example : P 37 := by
-  grind +premises
+  grind +suggestions
 
-set_option linter.tacticAnalysis.tryAtEachStepGrindPremises true
+set_option linter.tacticAnalysis.tryAtEachStepGrindSuggestions true
 
-/-- info: `trivial` can be replaced with `grind +premises✝` -/
+-- FIXME: why is the dagger here?
+/-- info: `trivial` can be replaced with `grind +suggestions✝` -/
 #guard_msgs in
 example : P 37 := by
   trivial

@@ -686,7 +686,7 @@ variable {r} [IsTotal α r] [IsTrans α r]
 
 theorem Sorted.merge {l l' : List α} (h : Sorted r l) (h' : Sorted r l') :
     Sorted r (merge l l' (r · ·)) := by
-  simpa using sorted_merge (le := (r · ·))
+  simpa using pairwise_merge (le := (r · ·))
     (fun a b c h₁ h₂ => by simpa using _root_.trans (by simpa using h₁) (by simpa using h₂))
     (fun a b => by simpa using IsTotal.total a b)
     l l' (by simpa using h) (by simpa using h')
@@ -695,7 +695,7 @@ variable (r)
 
 /-- Variant of `sorted_mergeSort` using relation typeclasses. -/
 theorem sorted_mergeSort' (l : List α) : Sorted r (mergeSort l (r · ·)) := by
-  simpa using sorted_mergeSort (le := (r · ·))
+  simpa using pairwise_mergeSort (le := (r · ·))
     (fun _ _ _ => by simpa using trans_of r)
     (by simpa using total_of r)
     l

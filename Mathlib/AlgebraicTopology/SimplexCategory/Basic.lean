@@ -275,7 +275,7 @@ theorem δ_comp_σ_of_le {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ j.ca
   · rw [Fin.succAbove_of_castSucc_lt _ _ (Fin.castSucc_lt_castSucc_iff.mpr hik)]
     have hjk := H.trans_lt' hik
     rw [Fin.predAbove_of_le_castSucc _ _ (Fin.castSucc_le_castSucc_iff.mpr
-      (hjk.trans (Fin.castSucc_lt_succ _)).le),
+      (hjk.trans Fin.castSucc_lt_succ).le),
       Fin.predAbove_of_le_castSucc _ _ hjk.le, Fin.castPred_castSucc, Fin.succAbove_of_castSucc_lt,
       Fin.castSucc_castPred]
     rwa [Fin.castSucc_castPred]
@@ -728,7 +728,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋
       congr 1
       dsimp [δ]
       rw [Fin.succAbove_of_castSucc_lt i.succ]
-      exact Fin.lt_succ
+      exact Fin.castSucc_lt_succ
     · dsimp [δ]
       rw [Fin.succAbove_of_le_castSucc i.succ _]
       simp only [Fin.lt_def, Fin.le_iff_val_le_val, Fin.val_succ, Fin.coe_castSucc,
@@ -751,7 +751,7 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋n
   use x.castPred ((Fin.le_last _).trans_lt' h₂).ne
   apply eq_σ_comp_of_not_injective'
   apply le_antisymm
-  · exact θ.toOrderHom.monotone (le_of_lt (Fin.castSucc_lt_succ _))
+  · exact θ.toOrderHom.monotone (le_of_lt Fin.castSucc_lt_succ)
   · rw [Fin.castSucc_castPred, h₁]
     exact θ.toOrderHom.monotone ((Fin.succ_castPred_le_iff _).mpr h₂)
 
