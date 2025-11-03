@@ -25,11 +25,10 @@ lemma lcomp_exact_of_exact_of_surjective (f : M1 →ₗ[R] M2) (g : M2 →ₗ[R]
   intro h
   simp only [LinearMap.lcomp_apply', Set.mem_range]
   refine ⟨fun hh ↦ ?_, fun ⟨y, hy⟩ ↦ ?_⟩
-  · let y' := (LinearMap.ker g).liftQ h
-      (le_of_eq_of_le (LinearMap.exact_iff.mp exac) (LinearMap.range_le_ker_iff.mpr hh))
-    use y'.comp (LinearMap.quotKerEquivOfSurjective g surj).symm.toLinearMap
+  · use ((LinearMap.range f).liftQ h (LinearMap.range_le_ker_iff.mpr hh)).comp
+      (exac.linearEquivOfSurjective surj).symm.toLinearMap
     ext x
-    simp [y']
+    simp
   · rw [← hy, LinearMap.comp_assoc, exac.linearMap_comp_eq_zero, LinearMap.comp_zero y]
 
 end LinearMap
