@@ -55,18 +55,17 @@ theorem AlgEquiv.coe_eq_linearEquiv_conj [Free K V] (f : End K V ≃ₐ[K] End K
     simp only [EmbeddingLike.map_eq_zero_iff, LinearMap.ext_iff, not_forall]
     exact ⟨u, huv.isUnit.smul_eq_zero.not.mpr hu⟩
   let T := auxLinear f v z
-  have this A : T ∘ₗ A = f A ∘ₗ T := auxLinear_comp f.toAlgHom v z A
-  have this' A x : T (A x) = f A (T x) := auxLinear_map_apply f.toAlgHom v z A x
+  have this A x : T (A x) = f A (T x) := auxLinear_map_apply f.toAlgHom v z A x
   have surj : Function.Surjective T := fun w ↦ by
     obtain ⟨d, hd⟩ := exists_linearMap_apply_eq_one_of_ne_zero K (by simpa : T u ≠ 0)
-    exact ⟨f.symm (smulRightₗ d w) u, by simp [this', hd]⟩
+    exact ⟨f.symm (smulRightₗ d w) u, by simp [this, hd]⟩
   have inj : Function.Injective T := fun x y hxy ↦ by
     have h_smul : smulRightₗ v x = smulRightₗ v y := by
       apply f.injective <| ext fun z ↦ ?_
       obtain ⟨w, rfl⟩ := surj z
-      simp_rw [← this', smulRightₗ_apply, map_smul, hxy]
+      simp_rw [← this, smulRightₗ_apply, map_smul, hxy]
     simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
-  exact ⟨LinearEquiv.ofBijective T ⟨inj, surj⟩, fun A ↦ this A |>.symm⟩
+  exact ⟨.ofBijective T ⟨inj, surj⟩, fun A ↦ auxLinear_comp f.toAlgHom v z A |>.symm⟩
 
 /-- Alternate statement of `coe_eq_linearEquiv_conj`. -/
 theorem mulSemiringActionToAlgEquiv_conjAct_surjective [Free K V] :
