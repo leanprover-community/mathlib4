@@ -3329,6 +3329,7 @@ import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Finset.SymmDiff
 import Mathlib.Data.Finset.Union
 import Mathlib.Data.Finset.Update
+import Mathlib.Data.Finset.WithBot
 import Mathlib.Data.Finsupp.AList
 import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Data.Finsupp.Basic
@@ -4543,6 +4544,7 @@ import Mathlib.Logic.Basic
 import Mathlib.Logic.Denumerable
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Embedding.Set
+import Mathlib.Logic.Embedding.WithBot
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Logic.Encodable.Lattice
 import Mathlib.Logic.Encodable.Pi
@@ -4565,6 +4567,7 @@ import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.Logic.Equiv.Prod
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Logic.Equiv.Sum
+import Mathlib.Logic.Equiv.WithBot
 import Mathlib.Logic.ExistsUnique
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Function.Coequalizer
@@ -5388,7 +5391,9 @@ import Mathlib.Order.UpperLower.Relative
 import Mathlib.Order.WellFounded
 import Mathlib.Order.WellFoundedSet
 import Mathlib.Order.WellQuasiOrder
-import Mathlib.Order.WithBot
+import Mathlib.Order.WithBot.Basic
+import Mathlib.Order.WithBot.BooleanAlgebra
+import Mathlib.Order.WithBot.NAry
 import Mathlib.Order.Zorn
 import Mathlib.Order.ZornAtoms
 import Mathlib.Probability.BorelCantelli

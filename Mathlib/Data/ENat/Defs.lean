@@ -21,8 +21,8 @@ instance instNatCast : NatCast ℕ∞ := ⟨WithTop.some⟩
 /-- Recursor for `ENat` using the preferred forms `⊤` and `↑a`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
 def recTopCoe {C : ℕ∞ → Sort*} (top : C ⊤) (coe : ∀ a : ℕ, C a) : ∀ n : ℕ∞, C n
-  | none => top
-  | Option.some a => coe a
+  | .top => top
+  | .some a => coe a
 
 @[simp]
 theorem recTopCoe_top {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) :
