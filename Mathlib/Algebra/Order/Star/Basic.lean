@@ -365,7 +365,7 @@ lemma IsUnit.star_right_conjugate_nonneg_iff {u x : R} (hu : IsUnit u) :
   refine ⟨fun h ↦ ?_, fun h ↦ star_right_conjugate_nonneg h _⟩
   obtain ⟨v, hv⟩ := hu.exists_left_inv
   have := by simpa [← mul_assoc] using star_right_conjugate_nonneg h v
-  simpa [hv]
+  rwa [hv, one_mul, mul_assoc, ← star_mul, hv, star_one, mul_one] at this
 
 lemma IsUnit.star_left_conjugate_nonneg_iff {u x : R} (hu : IsUnit u) :
     0 ≤ star u * x * u ↔ 0 ≤ x := by
