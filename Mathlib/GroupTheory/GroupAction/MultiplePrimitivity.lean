@@ -155,7 +155,7 @@ theorem isMultiplyPreprimitive_ofStabilizer
       aesop
     exact IsPreprimitive.of_surjective ofFixingSubgroup_insert_map_bijective.surjective
 
-/-- A pretransitive action is `n.succ-`preprimitive  iff
+/-- A pretransitive action is `n.succ-`preprimitive iff
   the action of stabilizers is `n`-preprimitive. -/
 @[to_additive]
 theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
@@ -278,7 +278,7 @@ theorem IsMultiplyPreprimitive.of_bijective_map
       ⟨φ m, fun ⟨y, hy⟩ => by
         rw [← hs', Set.mem_image] at hy
         obtain ⟨x, hx, hx'⟩ := hy
-        simp only []
+        simp only
         rw [← hx', ← map_smulₛₗ]
         apply congr_arg
         rw [mem_fixingSubgroup_iff] at hm

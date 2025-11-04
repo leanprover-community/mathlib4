@@ -241,7 +241,7 @@ theorem pure_bindOnSupport (a : α) (f : ∀ (a' : α) (_ : a' ∈ (pure a).supp
   refine PMF.ext fun b => ?_
   simp only [bindOnSupport_apply, pure_apply]
   classical
-  refine _root_.trans (tsum_congr fun a' => ?_) (tsum_ite_eq a _)
+  refine _root_.trans (tsum_congr fun a' => ?_) (tsum_ite_eq a (fun _ ↦ _))
   by_cases h : a' = a <;> simp [h]
 
 theorem bindOnSupport_pure (p : PMF α) : (p.bindOnSupport fun a _ => pure a) = p := by
