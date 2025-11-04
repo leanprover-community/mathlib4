@@ -180,7 +180,7 @@ variable [DecidableEq α] {s t u v : Finset α} {a b : α} {f : α → β}
 theorem disjoint_insert_left : Disjoint (insert a s) t ↔ a ∉ t ∧ Disjoint s t := by
   simp only [disjoint_left, mem_insert, or_imp, forall_and, forall_eq]
 
-@[simp]
+@[simp, grind =]
 theorem disjoint_insert_right : Disjoint s (insert a t) ↔ a ∉ s ∧ Disjoint s t :=
   disjoint_comm.trans <| by rw [disjoint_insert_left, _root_.disjoint_comm]
 

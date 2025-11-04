@@ -513,4 +513,18 @@ end Coproduct
 instance : CartesianMonoidalCategory Scheme := .ofHasFiniteProducts
 instance : BraidedCategory Scheme := .ofCartesianMonoidalCategory
 
+section IsAffine
+
+lemma Scheme.isAffine_of_isLimit {I : Type*} [Category I] {D : I ⥤ Scheme.{u}}
+    (c : Cone D) (hc : IsLimit c) [∀ i, IsAffine (D.obj i)] :
+    IsAffine c.pt := by
+  let α : D ⟶ (D ⋙ Scheme.Γ.rightOp) ⋙ Scheme.Spec := D.whiskerLeft ΓSpec.adjunction.unit
+  have (i : _) : IsIso (α.app i) := IsAffine.affine
+  have : IsIso α := NatIso.isIso_of_isIso_app α
+  have : c.pt ≅ Spec Γ(c.pt, ⊤) := hc.conePointUniqueUpToIso ((IsLimit.postcomposeHomEquiv
+    (asIso α).symm _).symm (isLimitOfPreserves (Scheme.Γ.rightOp ⋙ Scheme.Spec) hc))
+  exact .of_isIso this.hom
+
+end IsAffine
+
 end AlgebraicGeometry
