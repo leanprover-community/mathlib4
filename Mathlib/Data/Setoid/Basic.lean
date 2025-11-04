@@ -346,7 +346,7 @@ theorem lift_injective_iff_ker_eq_of_le {r : Setoid α} {f : α → β}
 variable (r : Setoid α) (f : α → β)
 
 /-- The image of `f` lifted to the quotient by its kernel is equal to the image of `f` itself. -/
-theorem range_kerLift_eq_range : Set.range (kerLift f) = Set.range f :=
+@[simp] theorem range_kerLift_eq_range : Set.range (kerLift f) = Set.range f :=
   Set.range_quotient_lift (s := ker f) _
 
 /-- The quotient of `α` by the kernel of a function `f`
