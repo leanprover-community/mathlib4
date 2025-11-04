@@ -258,7 +258,7 @@ theorem isPullback : IsPullback (fst f g) (snd f g) f g where
   w := condition
   isLimit' :=
     ⟨PullbackCone.IsLimit.mk _ (fun s ↦ lift s.fst s.snd s.condition)
-      (by simp) (by simp) (by aesop)⟩
+      (by simp) (by simp) (by cat_disch)⟩
 
 attribute [local simp] condition in
 /-- If `g` has a chosen pullback, then `Over.ChosenPullback.fst f g` has a chosen pullback. -/
