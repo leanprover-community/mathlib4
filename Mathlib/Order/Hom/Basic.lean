@@ -358,6 +358,26 @@ higher universe. -/
 def uliftMap (f : α →o β) : ULift α →o ULift β :=
   ⟨fun i => ⟨f i.down⟩, fun _ _ h ↦ f.monotone h⟩
 
+/-- Lift an order homomorphism `f : α →o β` to an order homomorphism `α →o ULift β` in a
+higher universe. -/
+@[simps!]
+def uliftRightMap (f : α →o β) : α →o ULift β :=
+  ⟨fun i => ⟨f i⟩, fun _ _ h ↦ f.monotone h⟩
+
+/-- Lift an order homomorphism `f : α →o β` to an order homomorphism `ULift α →o β` in a
+higher universe. -/
+@[simps!]
+def uliftLeftMap (f : α →o β) : ULift α →o β :=
+  ⟨fun i => f i.down, fun _ _ h ↦ f.monotone h⟩
+
+@[simp]
+theorem uliftLeftMap_uliftRightMap_eq (f : α →o β) : f.uliftLeftMap.uliftRightMap = f.uliftMap :=
+  rfl
+
+@[simp]
+theorem uliftRightMap_uliftLeftMap_eq (f : α →o β) : f.uliftRightMap.uliftLeftMap = f.uliftMap :=
+  rfl
+
 end OrderHom
 
 /-- `OrderHomClass F α b` asserts that `F` is a type of `≤`-preserving morphisms. -/
@@ -1252,3 +1272,10 @@ lemma denselyOrdered_iff_of_strictAnti {X Y F : Type*} [LinearOrder X] [Preorder
     rw [hf.le_iff_ge]
 
 end DenselyOrdered
+
+universe v u in
+/-- The bijection `ULift.{v} α ≃ α` as an isomorphism of orders. -/
+@[pp_with_univ, simps!]
+def ULift.orderIso {α : Type u} [Preorder α] :
+    ULift.{v} α ≃o α :=
+  Equiv.ulift.toOrderIso (fun _ _ ↦ id) (fun _ _ ↦ id)

@@ -231,8 +231,6 @@ class GMonoid [AddMonoid ι] extends GMul A, GOne A where
 
 /-- `GMonoid` implies a `Monoid (GradedMonoid A)`. -/
 instance GMonoid.toMonoid [AddMonoid ι] [GMonoid A] : Monoid (GradedMonoid A) where
-  one := 1
-  mul := (· * ·)
   npow n a := GradedMonoid.mk _ (GMonoid.gnpow n a.snd)
   npow_zero a := GMonoid.gnpow_zero' a
   npow_succ n a := GMonoid.gnpow_succ' n a
@@ -446,7 +444,6 @@ structure. -/
 instance Monoid.gMonoid [AddMonoid ι] [Monoid R] : GradedMonoid.GMonoid fun _ : ι => R :=
   -- { Mul.gMul ι, One.gOne ι with
   { One.gOne ι with
-    mul := fun x y => x * y
     one_mul := fun _ => Sigma.ext (zero_add _) (heq_of_eq (one_mul _))
     mul_one := fun _ => Sigma.ext (add_zero _) (heq_of_eq (mul_one _))
     mul_assoc := fun _ _ _ => Sigma.ext (add_assoc _ _ _) (heq_of_eq (mul_assoc _ _ _))

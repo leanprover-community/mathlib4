@@ -213,8 +213,7 @@ This is a generalization of the binary entropy function `binEntropy`. -/
 
 lemma qaryEntropy_pos (hp₀ : 0 < p) (hp₁ : p < 1) : 0 < qaryEntropy q p := by
   unfold qaryEntropy
-  have := binEntropy_pos hp₀ hp₁
-  positivity
+  positivity [binEntropy_pos hp₀ hp₁]
 
 lemma qaryEntropy_nonneg (hp₀ : 0 ≤ p) (hp₁ : p ≤ 1) : 0 ≤ qaryEntropy q p := by
   obtain rfl | hp₀ := hp₀.eq_or_lt
@@ -340,7 +339,7 @@ lemma deriv2_qaryEntropy :
           simp [field, sub_ne_zero_of_ne xne1.symm, this, d_oneminus]
           ring
       · apply DifferentiableAt.add
-        simp only [differentiableAt_const]
+        · simp only [differentiableAt_const]
         exact DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr xne1.symm)
     filter_upwards [eventually_ne_nhds xne0, eventually_ne_nhds xne1]
       with y xne0 h2 using deriv_qaryEntropy xne0 h2
@@ -409,14 +408,11 @@ lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
         ring_nf
         simp only [add_lt_iff_neg_right, neg_add_lt_iff_lt_add, add_zero, gt_iff_lt]
         have : (q : ℝ) - 1 < p * q := by
-          have tmp := mul_lt_mul_of_pos_right hp.1 qpos
-          simp at tmp
-          have : (q : ℝ) ≠ 0 := (ne_of_lt qpos).symm
-          have asdfasfd : (1 - (q : ℝ)⁻¹) * ↑q = q - 1 := by calc (1 - (q : ℝ)⁻¹) * ↑q
+          have h1 := mul_lt_mul_of_pos_right hp.1 qpos
+          have h2 : (1 - (q : ℝ)⁻¹) * ↑q = q - 1 := by calc (1 - (q : ℝ)⁻¹) * ↑q
             _ = q - (q : ℝ)⁻¹ * (q : ℝ) := by ring
-            _ = q - 1 := by simp_all only [ne_eq, isUnit_iff_ne_zero,
-              not_false_eq_true, IsUnit.inv_mul_cancel]
-          rwa [asdfasfd] at tmp
+            _ = q - 1 := by simp [qpos.ne']
+          rwa [h2] at h1
         nlinarith
     exact (ne_of_gt (lt_add_neg_iff_lt.mp zero_lt_1_sub_p : p < 1)).symm
 

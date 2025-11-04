@@ -137,12 +137,13 @@ theorem Fintype.card_subtype_or_disjoint (p q : α → Prop) (h : Disjoint p q) 
     convert Fintype.card_congr (subtypeOrEquiv p q h)
     simp
 
-section
+theorem Fintype.card_subtype_eq_or_eq_of_ne {α : Type*} [Fintype α] [DecidableEq α] {a b : α}
+    (h : a ≠ b) : Fintype.card { c : α // c = a ∨ c = b } = 2 :=
+  Fintype.card_subtype_or_disjoint _ _ fun _ ha hb _ hc ↦ ha _ hc ▸ hb _ hc ▸ h <| rfl
 
+attribute [local instance] Fintype.ofFinite in
 @[simp]
 theorem infinite_sum : Infinite (α ⊕ β) ↔ Infinite α ∨ Infinite β := by
   refine ⟨fun H => ?_, fun H => H.elim (@Sum.infinite_of_left α β) (@Sum.infinite_of_right α β)⟩
-  contrapose! H; haveI := fintypeOfNotInfinite H.1; haveI := fintypeOfNotInfinite H.2
-  exact Infinite.false
-
-end
+  contrapose! H; cases H
+  infer_instance

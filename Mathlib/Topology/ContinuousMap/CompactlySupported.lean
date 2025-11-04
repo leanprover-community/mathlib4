@@ -20,8 +20,8 @@ continuous functions.
 When `β` has more structures, `C_c(α, β)` inherits such structures as `AddCommGroup`,
 `NonUnitalRing` and `StarRing`.
 
-When the domain `α` is compact, `ContinuousMap.liftCompactlySupported` gives the identification
-`C(α, β) ≃ C_c(α, β)`.
+When the domain `α` is compact, `CompactlySupportedContinuousMap.continuousMapEquiv`
+gives the identification `C(α, β) ≃ C_c(α, β)`.
 
 -/
 
@@ -116,11 +116,14 @@ theorem eq_of_empty [IsEmpty α] (f g : C_c(α, β)) : f = g :=
 
 /-- A continuous function on a compact space automatically has compact support. -/
 @[simps]
-def ContinuousMap.liftCompactlySupported [CompactSpace α] : C(α, β) ≃ C_c(α, β) where
+def continuousMapEquiv [CompactSpace α] : C(α, β) ≃ C_c(α, β) where
   toFun f :=
     { toFun := f
       hasCompactSupport' := HasCompactSupport.of_compactSpace f }
   invFun f := f
+
+@[deprecated (since := "2025-10-21")] alias ContinuousMap.liftCompactlySupported :=
+    continuousMapEquiv
 
 variable {γ : Type*} [TopologicalSpace γ] [Zero γ]
 
@@ -715,45 +718,10 @@ lemma exists_add_nnrealPart_add_eq (f g : C_c(α, ℝ)) : ∃ (h : C_c(α, ℝ�
   use h
   refine ⟨hh, ?_⟩
   ext x
+  have hhx := congr(($hh x : ℝ))
   simp only [coe_add, Pi.add_apply, nnrealPart_apply, coe_neg, Pi.neg_apply, NNReal.coe_add,
-    Real.coe_toNNReal', ← neg_add]
-  have hhx : (f x + g x) ⊔ 0 + ↑(h x) = f x ⊔ 0 + g x ⊔ 0 := by
-    rw [← Real.coe_toNNReal', ← Real.coe_toNNReal', ← Real.coe_toNNReal', ← NNReal.coe_add,
-      ← NNReal.coe_add]
-    have hhx' : ((f + g).nnrealPart + h) x = (f.nnrealPart + g.nnrealPart) x := by congr
-    simp only [coe_add, Pi.add_apply, nnrealPart_apply] at hhx'
-    exact congrArg toReal hhx'
-  rcases le_total 0 (f x) with hfx | hfx
-  · rcases le_total 0 (g x) with hgx | hgx
-    · simp only [hfx, hgx, add_nonneg, sup_of_le_left, add_eq_left, coe_eq_zero] at hhx
-      simp [hhx, hfx, hgx, add_nonpos]
-    · rcases le_total 0 (f x + g x) with hfgx | hfgx
-      · simp only [hfgx, sup_of_le_left, add_assoc, hfx, hgx, sup_of_le_right, add_zero,
-        add_eq_left] at hhx
-        rw [sup_of_le_right (neg_nonpos.mpr hfx), sup_of_le_left (neg_nonneg.mpr hgx),
-          sup_of_le_right (neg_nonpos.mpr hfgx)]
-        linarith
-      · simp only [hfgx, sup_of_le_right, zero_add, hfx, sup_of_le_left, hgx, add_zero] at hhx
-        rw [sup_of_le_right (neg_nonpos.mpr hfx), sup_of_le_left (neg_nonneg.mpr hgx),
-          sup_of_le_left (neg_nonneg.mpr hfgx), hhx]
-        ring
-  · rcases le_total 0 (g x) with hgx | hgx
-    · rcases le_total 0 (f x + g x) with hfgx | hfgx
-      · simp only [hfgx, sup_of_le_left, add_comm, hfx, sup_of_le_right, hgx, zero_add] at hhx
-        rw [sup_of_le_left (neg_nonneg.mpr hfx), sup_of_le_right (neg_nonpos.mpr hgx),
-          sup_of_le_right (neg_nonpos.mpr hfgx), zero_add, add_zero]
-        linarith
-      · simp only [hfgx, sup_of_le_right, zero_add, hfx, hgx, sup_of_le_left] at hhx
-        rw [sup_of_le_left (neg_nonneg.mpr hfx), sup_of_le_right (neg_nonpos.mpr hgx),
-          sup_of_le_left (neg_nonneg.mpr hfgx), hhx]
-        ring
-    · simp only [(add_nonpos hfx hgx), sup_of_le_right, zero_add, hfx, hgx, add_zero,
-        coe_eq_zero] at hhx
-      rw [sup_of_le_left (neg_nonneg.mpr hfx),
-        sup_of_le_left (neg_nonneg.mpr hgx),
-        sup_of_le_left (neg_nonneg.mpr (add_nonpos hfx hgx)), hhx, neg_add_rev, NNReal.coe_zero,
-        add_zero]
-      ring
+    Real.coe_toNNReal', ← neg_add, max_neg_zero] at hhx ⊢
+  linear_combination hhx
 
 /-- The compactly supported continuous `ℝ≥0`-valued function as a compactly supported `ℝ`-valued
 function. -/

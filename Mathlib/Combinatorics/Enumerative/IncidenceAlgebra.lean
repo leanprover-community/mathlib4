@@ -211,10 +211,8 @@ end Mul
 instance instNonUnitalNonAssocSemiring [Preorder α] [LocallyFiniteOrder α]
     [NonUnitalNonAssocSemiring 𝕜] : NonUnitalNonAssocSemiring (IncidenceAlgebra 𝕜 α) where
   __ := instAddCommMonoid
-  mul := (· * ·)
-  zero := 0
-  zero_mul := fun f ↦ by ext; exact sum_eq_zero fun x _ ↦ MulZeroClass.zero_mul _
-  mul_zero := fun f ↦ by ext; exact sum_eq_zero fun x _ ↦ MulZeroClass.mul_zero _
+  zero_mul := fun f ↦ by ext; exact sum_eq_zero fun x _ ↦ zero_mul _
+  mul_zero := fun f ↦ by ext; exact sum_eq_zero fun x _ ↦ mul_zero _
   left_distrib := fun f g h ↦ by
     ext; exact Eq.trans (sum_congr rfl fun x _ ↦ left_distrib _ _ _) sum_add_distrib
   right_distrib := fun f g h ↦ by
@@ -223,23 +221,17 @@ instance instNonUnitalNonAssocSemiring [Preorder α] [LocallyFiniteOrder α]
 instance instNonAssocSemiring [Preorder α] [LocallyFiniteOrder α] [DecidableEq α]
     [NonAssocSemiring 𝕜] : NonAssocSemiring (IncidenceAlgebra 𝕜 α) where
   __ := instNonUnitalNonAssocSemiring
-  mul := (· * ·)
-  zero := 0
-  one := 1
   one_mul := fun f ↦ by ext; simp [*]
   mul_one := fun f ↦ by ext; simp [*]
 
 instance instSemiring [Preorder α] [LocallyFiniteOrder α] [DecidableEq α] [Semiring 𝕜] :
     Semiring (IncidenceAlgebra 𝕜 α) where
   __ := instNonAssocSemiring
-  mul := (· * ·)
   mul_assoc f g h := by
     ext a b
     simp only [mul_apply, sum_mul, mul_sum, sum_sigma']
     apply sum_nbij' (fun ⟨a, b⟩ ↦ ⟨b, a⟩) (fun ⟨a, b⟩ ↦ ⟨b, a⟩) <;>
       aesop (add simp mul_assoc) (add unsafe le_trans)
-  one := 1
-  zero := 0
 
 instance instRing [Preorder α] [LocallyFiniteOrder α] [DecidableEq α] [Ring 𝕜] :
     Ring (IncidenceAlgebra 𝕜 α) where
@@ -273,7 +265,6 @@ instance instIsScalarTower [Preorder α] [LocallyFiniteOrder α] [AddCommMonoid 
 
 instance [Preorder α] [LocallyFiniteOrder α] [DecidableEq α] [Semiring 𝕜] [Semiring 𝕝]
     [Module 𝕜 𝕝] : Module (IncidenceAlgebra 𝕜 α) (IncidenceAlgebra 𝕝 α) where
-  smul := (· • ·)
   one_smul f := by ext a b hab; simp [ite_smul, hab]
   mul_smul := smul_assoc
   smul_add f g h := by ext; exact Eq.trans (sum_congr rfl fun x _ ↦ smul_add _ _ _) sum_add_distrib
@@ -300,14 +291,11 @@ instance algebraRight [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α]
     map_mul' c d := by
         ext a b
         obtain rfl | h := eq_or_ne a b
-        · simp only [one_apply, Algebra.id.smul_eq_mul, mul_apply,
-            constSMul_apply, map_mul,
+        · simp only [one_apply, Algebra.id.smul_eq_mul, mul_apply, constSMul_apply, map_mul,
             eq_comm, Icc_self]
           simp
-        · simp only [one_apply, mul_one, Algebra.id.smul_eq_mul,
-            mul_apply, MulZeroClass.zero_mul, constSMul_apply,
-            ← ite_and, ite_mul, mul_ite, map_mul,
-            MulZeroClass.mul_zero, if_neg h]
+        · simp only [one_apply, mul_one, Algebra.id.smul_eq_mul, mul_apply, zero_mul,
+            constSMul_apply, ← ite_and, ite_mul, mul_ite, map_mul, mul_zero, if_neg h]
           refine (sum_eq_zero fun x _ ↦ ?_).symm
           exact if_neg fun hx ↦ h <| hx.2.trans hx.1
     map_zero' := by rw [map_zero, zero_smul]
@@ -352,12 +340,7 @@ lemma zeta_mul_zeta [NonAssocSemiring 𝕜] [Preorder α] [LocallyFiniteOrder α
   rw [mem_Icc] at hx
   rw [zeta_of_le hx.1, zeta_of_le hx.2, one_mul]
 
-lemma zeta_mul_kappa [NonAssocSemiring 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableLE α]
-    (a b : α) : (zeta 𝕜 * zeta 𝕜 : IncidenceAlgebra 𝕜 α) a b = (Icc a b).card := by
-  rw [mul_apply, card_eq_sum_ones, Nat.cast_sum, Nat.cast_one]
-  refine sum_congr rfl fun x hx ↦ ?_
-  rw [mem_Icc] at hx
-  rw [zeta_of_le hx.1, zeta_of_le hx.2, one_mul]
+@[deprecated (since := "2025-09-28")] alias zeta_mul_kappa := zeta_mul_zeta
 
 section Mu
 variable (𝕜) [AddCommGroup 𝕜] [One 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableEq α]
@@ -561,7 +544,7 @@ lemma moebius_inversion_top (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Ici 
     _ = ∑ z ∈ Ici x, ∑ y ∈ Icc x z, mu 𝕜 x y * zeta 𝕜 y z * f z := by
       rw [sum_sigma' (Ici x) fun y ↦ Ici y]
       rw [sum_sigma' (Ici x) fun z ↦ Icc x z]
-      simp only [mul_boole, MulZeroClass.zero_mul, ite_mul, zeta_apply]
+      simp only [mul_boole, zero_mul, ite_mul, zeta_apply]
       apply sum_nbij' (fun ⟨a, b⟩ ↦ ⟨b, a⟩) (fun ⟨a, b⟩ ↦ ⟨b, a⟩) <;>
         aesop (add simp mul_assoc) (add unsafe le_trans)
     _ = ∑ z ∈ Ici x, (mu 𝕜 * zeta 𝕜 : IncidenceAlgebra 𝕜 α) x z * f z := by

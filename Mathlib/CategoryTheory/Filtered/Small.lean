@@ -5,6 +5,7 @@ Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.CategoryTheory.Filtered.Basic
+import Mathlib.Tactic.DepRewrite
 
 /-!
 # A functor from a small category to a filtered category factors through a small filtered category
@@ -34,8 +35,6 @@ inductive filteredClosure : ObjectProperty C
   | max : {j j' : C} → filteredClosure j → filteredClosure j' → filteredClosure (max j j')
   | coeq : {j j' : C} → filteredClosure j → filteredClosure j' → (f f' : j ⟶ j') →
       filteredClosure (coeq f f')
-
-@[deprecated (since := "2025-03-05")] alias FilteredClosure := filteredClosure
 
 /-- The full subcategory induced by the filtered closure of a family of objects is filtered. -/
 instance : IsFilteredOrEmpty (filteredClosure f).FullSubcategory where
@@ -78,11 +77,8 @@ private noncomputable def inductiveStepRealization (n : ℕ)
 
 /--
 All steps of building the abstract filtered closure together with the realization function,
-as a function of `ℕ`.
-
-The function is defined by well-founded recursion, but we really want to use its
-definitional equalities in the proofs below, so lets make it semireducible. -/
-@[semireducible] private noncomputable def bundledAbstractFilteredClosure :
+as a function of `ℕ`. -/
+private noncomputable def bundledAbstractFilteredClosure :
     ℕ → Σ t : Type (max v w), t → C
   | 0 => ⟨ULift.{v} α, f ∘ ULift.down⟩
   | (n + 1) => ⟨_, inductiveStepRealization (n + 1) (fun m _ => bundledAbstractFilteredClosure m)⟩
@@ -103,19 +99,35 @@ theorem small_fullSubcategory_filteredClosure :
     (fun _ _ => ObjectProperty.FullSubcategory.ext) ?_
   rintro ⟨j, h⟩
   induction h with
-  | base x => exact ⟨⟨0, ⟨x⟩⟩, rfl⟩
+  | base x =>
+      refine ⟨⟨0, ?_⟩, ?_⟩
+      · simp only [FilteredClosureSmall.bundledAbstractFilteredClosure]
+        exact ULift.up x
+      · simp only [FilteredClosureSmall.abstractFilteredClosureRealization]
+        rw! [FilteredClosureSmall.bundledAbstractFilteredClosure]
+        rfl
   | max hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
-    refine ⟨⟨(Max.max n m).succ, FilteredClosureSmall.InductiveStep.max ?_ ?_ x y⟩, rfl⟩
-    all_goals apply Nat.lt_succ_of_le
-    exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
+    refine ⟨⟨(Max.max n m).succ, ?_⟩, ?_⟩
+    · simp only [FilteredClosureSmall.bundledAbstractFilteredClosure]
+      refine FilteredClosureSmall.InductiveStep.max ?_ ?_ x y
+      all_goals apply Nat.lt_succ_of_le
+      exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
+    · simp only [FilteredClosureSmall.abstractFilteredClosureRealization]
+      rw! [FilteredClosureSmall.bundledAbstractFilteredClosure]
+      rfl
   | coeq hj₁ hj₂ g g' ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
-    refine ⟨⟨(Max.max n m).succ, FilteredClosureSmall.InductiveStep.coeq ?_ ?_ x y g g'⟩, rfl⟩
-    all_goals apply Nat.lt_succ_of_le
-    exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
+    refine ⟨⟨(Max.max n m).succ, ?_⟩, ?_⟩
+    · simp only [FilteredClosureSmall.bundledAbstractFilteredClosure]
+      refine FilteredClosureSmall.InductiveStep.coeq ?_ ?_ x y g g'
+      all_goals apply Nat.lt_succ_of_le
+      exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
+    · simp only [FilteredClosureSmall.abstractFilteredClosureRealization]
+      rw! [FilteredClosureSmall.bundledAbstractFilteredClosure]
+      rfl
 
 instance : EssentiallySmall.{max v w} (filteredClosure f).FullSubcategory :=
   have : LocallySmall.{max v w} (filteredClosure f).FullSubcategory := locallySmall_max.{w, v, u}
@@ -186,8 +198,6 @@ inductive cofilteredClosure : ObjectProperty C
   | eq : {j j' : C} → cofilteredClosure j → cofilteredClosure j' → (f f' : j ⟶ j') →
       cofilteredClosure (eq f f')
 
-@[deprecated (since := "2025-03-05")] alias CofilteredClosure := cofilteredClosure
-
 /-- The full subcategory induced by the cofiltered closure of a family is cofiltered. -/
 instance : IsCofilteredOrEmpty (cofilteredClosure f).FullSubcategory where
   cone_objs j j' :=
@@ -213,11 +223,8 @@ private noncomputable def inductiveStepRealization (n : ℕ)
   | (InductiveStep.eq _ _ _ _ f g) => eq f g
 
 /-- Implementation detail for the instance
-`EssentiallySmall.{max v w} (FullSubcategory (cofilteredClosure f))`.
-
-The function is defined by well-founded recursion, but we really want to use its
-definitional equalities in the proofs below, so lets make it semireducible. -/
-@[semireducible] private noncomputable def bundledAbstractCofilteredClosure :
+`EssentiallySmall.{max v w} (FullSubcategory (cofilteredClosure f))`. -/
+private noncomputable def bundledAbstractCofilteredClosure :
     ℕ → Σ t : Type (max v w), t → C
   | 0 => ⟨ULift.{v} α, f ∘ ULift.down⟩
   | (n + 1) => ⟨_, inductiveStepRealization (n + 1) (fun m _ => bundledAbstractCofilteredClosure m)⟩
@@ -241,20 +248,35 @@ theorem small_fullSubcategory_cofilteredClosure :
     (fun _ _ => ObjectProperty.FullSubcategory.ext) ?_
   rintro ⟨j, h⟩
   induction h with
-  | base x => exact ⟨⟨0, ⟨x⟩⟩, rfl⟩
+  | base x =>
+    refine ⟨⟨0, ?_⟩,?_⟩
+    · simp only [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
+      exact ULift.up x
+    · simp only [CofilteredClosureSmall.abstractCofilteredClosureRealization]
+      rw! [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
+      rfl
   | min hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
-    refine ⟨⟨(Max.max n m).succ, CofilteredClosureSmall.InductiveStep.min ?_ ?_ x y⟩, rfl⟩
-    all_goals apply Nat.lt_succ_of_le
-    exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
+    refine ⟨⟨(Max.max n m).succ, ?_⟩, ?_⟩
+    · simp only [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
+      refine CofilteredClosureSmall.InductiveStep.min ?_ ?_ x y
+      all_goals apply Nat.lt_succ_of_le
+      exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
+    · simp only [CofilteredClosureSmall.abstractCofilteredClosureRealization]
+      rw! [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
+      rfl
   | eq hj₁ hj₂ g g' ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
-    refine ⟨⟨(Max.max n m).succ, CofilteredClosureSmall.InductiveStep.eq ?_ ?_ x y g g'⟩, rfl⟩
-    all_goals apply Nat.lt_succ_of_le
-    exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
-
+    refine ⟨⟨(Max.max n m).succ, ?_⟩, ?_⟩
+    · simp only [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
+      refine CofilteredClosureSmall.InductiveStep.eq ?_ ?_ x y g g'
+      all_goals apply Nat.lt_succ_of_le
+      exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
+    · simp only [CofilteredClosureSmall.abstractCofilteredClosureRealization]
+      rw! [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
+      rfl
 instance : EssentiallySmall.{max v w} (cofilteredClosure f).FullSubcategory :=
   have : LocallySmall.{max v w} (cofilteredClosure f).FullSubcategory :=
     locallySmall_max.{w, v, u}

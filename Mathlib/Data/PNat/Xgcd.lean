@@ -432,10 +432,7 @@ theorem gcd_props :
   constructor
   · apply eq
     rw [succPNat_coe, Nat.succ_eq_add_one, mul_coe, hwb']
-  rw [ha'', hb'']
-  repeat rw [← @mul_assoc]
-  rw [hza', hwb']
-  constructor <;> ring
+  grind
 
 theorem gcd_eq : gcdD a b = gcd a b := by
   rcases gcd_props a b with ⟨_, h₁, h₂, _, _, h₅, _⟩

@@ -358,9 +358,6 @@ theorem isCyclic_units_iff (n : ℕ) :
   apply iff_of_false
   · rw [← mul_assoc, show 2 * 2 = 4 from rfl, isCyclic_units_four_mul_iff]
     cutsat
-  rintro (⟨p, m, -, odd, -, eq⟩ | ⟨p, m, -, odd, -, eq⟩)
-  on_goal 1 => have := eq ▸ odd.pow
-  on_goal 2 => have := (Nat.mul_left_cancel_iff zero_lt_two).mp eq ▸ odd.pow
-  all_goals simp [← Nat.not_even_iff_odd] at this
+  grind
 
 end ZMod

@@ -433,6 +433,30 @@ theorem Icc_add_Icc (f : α → E) {s : Set α} {a b c : α} (hab : a ≤ b) (hb
     ⟨⟨hb, le_rfl, hbc⟩, inter_subset_right.trans Icc_subset_Ici_self⟩
   rw [← eVariationOn.union f A B, ← inter_union_distrib_left, Icc_union_Icc_eq_Icc hab hbc]
 
+theorem sum (f : α → E) {s : Set α} {E : ℕ → α} (hE : Monotone E) {n : ℕ}
+    (hn : ∀ i, 0 < i → i < n → E i ∈ s) :
+    ∑ i ∈ Finset.range n, eVariationOn f (s ∩ Icc (E i) (E (i + 1))) =
+      eVariationOn f (s ∩ Icc (E 0) (E n)) := by
+  induction n with
+  | zero => simp [eVariationOn.subsingleton f Subsingleton.inter_singleton]
+  | succ n ih =>
+    by_cases hn₀ : n = 0
+    · simp [hn₀]
+    rw [← Icc_add_Icc (b := E n)]
+    · rw [← ih (by intros; apply hn <;> omega), Finset.sum_range_succ]
+    · apply hE; omega
+    · apply hE; omega
+    · apply hn <;> omega
+
+theorem sum' (f : α → E) {I : ℕ → α} (hI : Monotone I) {n : ℕ} :
+    ∑ i ∈ Finset.range n, eVariationOn f (Icc (I i) (I (i + 1)))
+     = eVariationOn f (Icc (I 0) (I n)) := by
+  convert sum f hI (s := Icc (I 0) (I n)) (n := n)
+    (hn := by intros; rw [mem_Icc]; constructor <;> (apply hI; omega)) with i hi
+  · simp only [right_eq_inter]
+    gcongr <;> (apply hI; rw [Finset.mem_range] at hi; omega)
+  · simp
+
 section Monotone
 
 variable {β : Type*} [LinearOrder β]
@@ -703,7 +727,7 @@ theorem LipschitzOnWith.comp_eVariationOn_le {f : E → F} {C : ℝ≥0} {t : Se
         ∑ i ∈ Finset.range n, C * edist (g (u (i + 1))) (g (u i)) :=
       Finset.sum_le_sum fun i _ => h (hg (us _)) (hg (us _))
     _ = C * ∑ i ∈ Finset.range n, edist (g (u (i + 1))) (g (u i)) := by rw [Finset.mul_sum]
-    _ ≤ C * eVariationOn g s := mul_le_mul_left' (eVariationOn.sum_le _ _ hu us) _
+    _ ≤ C * eVariationOn g s := by grw [eVariationOn.sum_le _ _ hu us]
 
 theorem LipschitzOnWith.comp_boundedVariationOn {f : E → F} {C : ℝ≥0} {t : Set E}
     (hf : LipschitzOnWith C f t) {g : α → E} {s : Set α} (hg : MapsTo g s t)

@@ -81,8 +81,7 @@ theorem iff_comp_injective :
   · intros; exact comp_injective _ ‹_›
   · intro H
     constructor
-    rw [← not_nontrivial_iff_subsingleton]
-    intro h
+    by_contra! h
     obtain ⟨f₁, f₂, e⟩ := (KaehlerDifferential.endEquiv R A).injective.nontrivial
     apply e
     ext1

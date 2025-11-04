@@ -203,40 +203,40 @@ variable [PartialOrder α] [PartialOrder β] [PartialOrder γ]
 def withTopCongr (e : α ≃o β) : WithTop α ≃o WithTop β where
   toFun := WithTop.map e
   __ := e.toOrderEmbedding.withTopMap
-  __ := e.toEquiv.optionCongr
+  __ := e.toEquiv.withTopCongr
 
 @[simp]
 theorem withTopCongr_refl : (OrderIso.refl α).withTopCongr = OrderIso.refl _ :=
-  RelIso.toEquiv_injective Equiv.optionCongr_refl
+  RelIso.toEquiv_injective Equiv.withTopCongr_refl
 
 @[simp]
 theorem withTopCongr_symm (e : α ≃o β) : e.symm.withTopCongr = e.withTopCongr.symm :=
-  RelIso.toEquiv_injective e.toEquiv.optionCongr_symm
+  RelIso.toEquiv_injective e.toEquiv.withTopCongr_symm
 
 @[simp]
 theorem withTopCongr_trans (e₁ : α ≃o β) (e₂ : β ≃o γ) :
     (e₁.trans e₂).withTopCongr = e₁.withTopCongr.trans e₂.withTopCongr :=
-  RelIso.toEquiv_injective <| e₁.toEquiv.optionCongr_trans e₂.toEquiv
+  RelIso.toEquiv_injective <| e₁.toEquiv.withTopCongr_trans e₂.toEquiv
 
 /-- A version of `Equiv.optionCongr` for `WithBot`. -/
 @[simps -fullyApplied]
 def withBotCongr (e : α ≃o β) : WithBot α ≃o WithBot β where
   toFun := WithBot.map e
   __ := e.toOrderEmbedding.withBotMap
-  __ := e.toEquiv.optionCongr
+  __ := e.toEquiv.withBotCongr
 
 @[simp]
 theorem withBotCongr_refl : (OrderIso.refl α).withBotCongr = OrderIso.refl _ :=
-  RelIso.toEquiv_injective Equiv.optionCongr_refl
+  RelIso.toEquiv_injective Equiv.withBotCongr_refl
 
 @[simp]
 theorem withBotCongr_symm (e : α ≃o β) : e.symm.withBotCongr = e.withBotCongr.symm :=
-  RelIso.toEquiv_injective e.toEquiv.optionCongr_symm
+  RelIso.toEquiv_injective e.toEquiv.withBotCongr_symm
 
 @[simp]
 theorem withBotCongr_trans (e₁ : α ≃o β) (e₂ : β ≃o γ) :
     (e₁.trans e₂).withBotCongr = e₁.withBotCongr.trans e₂.withBotCongr :=
-  RelIso.toEquiv_injective <| e₁.toEquiv.optionCongr_trans e₂.toEquiv
+  RelIso.toEquiv_injective <| e₁.toEquiv.withBotCongr_trans e₂.toEquiv
 
 end OrderIso
 
@@ -393,12 +393,12 @@ lemma withTop_apply (f : LatticeHom α β) (a : WithTop α) : f.withTop a = a.ma
 
 @[simp]
 theorem withTop_id : (LatticeHom.id α).withTop = LatticeHom.id _ :=
-  DFunLike.coe_injective Option.map_id
+  DFunLike.coe_injective WithTop.map_id
 
 @[simp]
 theorem withTop_comp (f : LatticeHom β γ) (g : LatticeHom α β) :
     (f.comp g).withTop = f.withTop.comp g.withTop :=
-  DFunLike.coe_injective <| Eq.symm <| Option.map_comp_map _ _
+  DFunLike.coe_injective <| Eq.symm <| WithTop.map_comp_map _ _
 
 /-- Adjoins a `⊥` to the domain and codomain of a `LatticeHom`. -/
 @[simps]
@@ -407,18 +407,18 @@ protected def withBot (f : LatticeHom α β) : LatticeHom (WithBot α) (WithBot 
 
 -- Porting note: `simps` doesn't generate those
 @[simp, norm_cast]
-lemma coe_withBot (f : LatticeHom α β) : ⇑f.withBot = Option.map f := rfl
+lemma coe_withBot (f : LatticeHom α β) : ⇑f.withBot = WithBot.map f := rfl
 
 lemma withBot_apply (f : LatticeHom α β) (a : WithBot α) : f.withBot a = a.map f := rfl
 
 @[simp]
 theorem withBot_id : (LatticeHom.id α).withBot = LatticeHom.id _ :=
-  DFunLike.coe_injective Option.map_id
+  DFunLike.coe_injective WithBot.map_id
 
 @[simp]
 theorem withBot_comp (f : LatticeHom β γ) (g : LatticeHom α β) :
     (f.comp g).withBot = f.withBot.comp g.withBot :=
-  DFunLike.coe_injective <| Eq.symm <| Option.map_comp_map _ _
+  DFunLike.coe_injective <| Eq.symm <| WithBot.map_comp_map _ _
 
 /-- Adjoins a `⊤` and `⊥` to the domain and codomain of a `LatticeHom`. -/
 @[simps]
@@ -428,17 +428,17 @@ def withTopWithBot (f : LatticeHom α β) :
 
 -- Porting note: `simps` doesn't generate those
 @[simp, norm_cast]
-lemma coe_withTopWithBot (f : LatticeHom α β) : ⇑f.withTopWithBot = Option.map (Option.map f) := rfl
+lemma coe_withTopWithBot (f : LatticeHom α β) :
+    ⇑f.withTopWithBot = WithTop.map (WithBot.map f) :=
+  rfl
 
 lemma withTopWithBot_apply (f : LatticeHom α β) (a : WithTop <| WithBot α) :
-    f.withTopWithBot a = a.map (Option.map f) := rfl
+    f.withTopWithBot a = a.map (WithBot.map f) :=
+  rfl
 
 @[simp]
 theorem withTopWithBot_id : (LatticeHom.id α).withTopWithBot = BoundedLatticeHom.id _ :=
-  DFunLike.coe_injective <| by
-    refine (congr_arg Option.map ?_).trans Option.map_id
-    rw [withBot_id]
-    rfl
+  DFunLike.coe_injective <| by simp [WithTop.map_id, WithBot.map_id]
 
 @[simp]
 theorem withTopWithBot_comp (f : LatticeHom β γ) (g : LatticeHom α β) :

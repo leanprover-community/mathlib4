@@ -90,13 +90,13 @@ variable {R : Type*} [LinearOrder R] {a b c : R}
 private lemma le_min_of_lt_of_le (ha : a < b) (hb : a ≤ c) : a ≤ min b c := le_min ha.le hb
 private lemma le_min_of_le_of_lt (ha : a ≤ b) (hb : a < c) : a ≤ min b c := le_min ha hb.le
 private lemma min_ne (ha : a ≠ c) (hb : b ≠ c) : min a b ≠ c := by
-  rw [min_def]; split_ifs <;> assumption
+  grind
 
 private lemma min_ne_of_ne_of_lt (ha : a ≠ c) (hb : c < b) : min a b ≠ c := min_ne ha hb.ne'
 private lemma min_ne_of_lt_of_ne (ha : c < a) (hb : b ≠ c) : min a b ≠ c := min_ne ha.ne' hb
 
 private lemma max_ne (ha : a ≠ c) (hb : b ≠ c) : max a b ≠ c := by
-  rw [max_def]; split_ifs <;> assumption
+  grind
 
 end LinearOrder
 
