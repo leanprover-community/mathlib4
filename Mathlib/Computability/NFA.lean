@@ -89,12 +89,7 @@ variable (M) in
 theorem stepSet_union {S1 S2 : Set σ} {a : α} :
     M.stepSet (S1 ∪ S2) a = M.stepSet S1 a ∪ M.stepSet S2 a := by
   ext s
-  simp only [mem_stepSet, mem_union]
-  constructor
-  · rintro ⟨s', (h1 | h2), hstep⟩
-    · left; tauto
-    · right; tauto
-  · rintro (⟨s', h, hstep⟩ | ⟨s', h, hstep⟩) <;> exists s' <;> tauto
+  simp [mem_stepSet, or_and_right, exists_or]
 
 variable (M) in
 @[simp]
