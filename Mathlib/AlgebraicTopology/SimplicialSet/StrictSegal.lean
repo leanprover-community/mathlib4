@@ -448,17 +448,17 @@ def spineToSimplexAux : { s : X _⦋n⦌ // X.spine _ s = p } := by
   induction n with
   | zero => exact ⟨p.vertex 0, by aesop⟩
   | succ n hn =>
-    refine ⟨(h n).concat (p.arrow 0) (hn (p.interval 1 n)).1 ?_, ?_⟩
+    refine ⟨(h n).concat (p.arrow 0) (hn (p.interval 1 n)).val ?_, ?_⟩
     · rw [p.arrow_tgt 0]
-      exact Path.congr_vertex ((hn (p.interval 1 n)).2).symm 0
+      exact Path.congr_vertex (hn (p.interval 1 n)).prop.symm 0
     · ext i
       obtain rfl | ⟨i, rfl⟩ := i.eq_zero_or_eq_succ
       · dsimp
         rw [map_mkOfSucc_zero_concat]
-      · simp only [spine_arrow, ← SimplexCategory.mkOfSucc_δ_gt (j := 0) (i := i) (by simp),
+      · simpa [spine_arrow, ← SimplexCategory.mkOfSucc_δ_gt (j := 0) (i := i) (by simp),
           op_comp, FunctorToTypes.map_comp_apply, ← SimplicialObject.δ_def, δ₀_concat,
-          ← p.arrow_interval 1 n i i.succ (by omega) (by simp only [Fin.val_succ]; omega)]
-        exact Path.congr_arrow (hn (p.interval 1 n)).2 i
+          ← p.arrow_interval 1 n i i.succ (by grind) (by grind [Fin.val_succ])] using
+            Path.congr_arrow (hn (p.interval 1 n)).prop i
 
 /-- Auxiliary definition for `StrictSegal.ofCore`. -/
 def spineToSimplex : X _⦋n⦌ := (spineToSimplexAux h p).1
