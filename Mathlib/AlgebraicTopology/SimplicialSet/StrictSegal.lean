@@ -475,7 +475,7 @@ lemma spineToSimplex_succ (p : X.Path (n + 1)) :
   rfl
 
 lemma map_mkOfSucc_zero_spineToSimplex (p : X.Path (n + 1)) :
-    X.map ((mkOfSucc 0).op) (spineToSimplex h p) = p.arrow 0 := by
+    X.map (mkOfSucc 0).op (spineToSimplex h p) = p.arrow 0 := by
   rw [spineToSimplex_succ, map_mkOfSucc_zero_concat]
 
 lemma δ₀_spineToSimplex (p : X.Path (n + 1)) :
