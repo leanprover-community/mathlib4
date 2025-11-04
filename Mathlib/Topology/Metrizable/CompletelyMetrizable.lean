@@ -76,7 +76,7 @@ theorem complete_completelyPseudoMetrizableMetric (X : Type*) [ht : TopologicalS
   exact PseudoMetricSpace.replaceTopology_eq _ _
 
 /-- This definition endows a completely pseudometrizable space with a complete pseudometric.
-Use it as: `letI := upgradeIsCompletelyMetrizable X`. -/
+Use it as: `letI := upgradeIsCompletelyPseudoMetrizable X`. -/
 noncomputable
 def upgradeIsCompletelyPseudoMetrizable (X : Type*) [TopologicalSpace X]
     [IsCompletelyPseudoMetrizableSpace X] :
