@@ -830,7 +830,7 @@ theorem edges_eq_zipWith_support {u v : V} {p : G.Walk u v} :
   | nil => simp
   | cons _ p' ih => cases p' <;> simp [edges_cons, ih]
 
-theorem darts_eq_getVert {u v : V} {p : G.Walk u v} (n : ℕ) (h : n < p.darts.length) :
+theorem darts_getElem_eq_getVert {u v : V} {p : G.Walk u v} (n : ℕ) (h : n < p.darts.length) :
     p.darts[n] = ⟨⟨p.getVert n, p.getVert (n + 1)⟩, p.adj_getVert_succ (p.length_darts ▸ h)⟩ := by
   rw [p.length_darts] at h
   ext
@@ -1122,11 +1122,12 @@ lemma edge_lastDart (p : G.Walk v w) (hp : ¬ p.Nil) :
 
 theorem firstDart_eq {p : G.Walk v w} (h₁ : ¬ p.Nil) (h₂ : 0 < p.darts.length) :
     p.firstDart h₁ = p.darts[0] := by
-  simp [Dart.ext_iff, firstDart_toProd, darts_eq_getVert]
+  simp [Dart.ext_iff, firstDart_toProd, darts_getElem_eq_getVert]
 
 theorem lastDart_eq {p : G.Walk v w} (h₁ : ¬ p.Nil) (h₂ : 0 < p.darts.length) :
     p.lastDart h₁ = p.darts[p.darts.length - 1] := by
-  simp (disch := grind) [Dart.ext_iff, lastDart_toProd, darts_eq_getVert, p.getVert_of_length_le]
+  simp (disch := grind) [Dart.ext_iff, lastDart_toProd, darts_getElem_eq_getVert,
+    p.getVert_of_length_le]
 
 lemma cons_tail_eq (p : G.Walk u v) (hp : ¬ p.Nil) :
     cons (p.adj_snd hp) p.tail = p := by
