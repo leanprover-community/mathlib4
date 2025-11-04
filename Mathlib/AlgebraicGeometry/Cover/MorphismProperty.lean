@@ -231,7 +231,7 @@ def AffineCover.cover {X : Scheme.{u}} (𝒰 : X.AffineCover P) :
 @[simps!]
 def Cover.ulift (𝒰 : Cover.{v} (precoverage P) X) : Cover.{u} (precoverage P) X where
   I₀ := X
-  X x := 𝒰.X (𝒰.exists_eq x).choose
+  X x := 𝒰.X (𝒰.idx x)
   f x := 𝒰.f _
   mem₀ := by
     rw [presieve₀_mem_precoverage_iff]
