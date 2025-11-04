@@ -76,6 +76,13 @@ lemma IsHamiltonian.length_support (hp : p.IsHamiltonian) : p.support.length = F
 
 end
 
+theorem isHamiltonian_iff_support_get_bijective : p.IsHamiltonian ↔ p.support.get.Bijective :=
+  p.support.get_bijective_iff.symm
+
+theorem IsHamiltonian.getVert_surjective (hp : p.IsHamiltonian) : p.getVert.Surjective :=
+  .of_comp <| p.getVert_comp_val_eq_get_support ▸
+    isHamiltonian_iff_support_get_bijective.mp hp |>.surjective
+
 /-- A Hamiltonian cycle is a cycle that visits every vertex once. -/
 structure IsHamiltonianCycle (p : G.Walk a a) : Prop extends p.IsCycle where
   isHamiltonian_tail : p.tail.IsHamiltonian

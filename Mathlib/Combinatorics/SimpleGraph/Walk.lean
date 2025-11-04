@@ -1311,9 +1311,21 @@ theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f)
       apply ih
       simpa using h.2
 
+section mapLe
+
+variable {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} (p : G.Walk u v)
+
 /-- The specialization of `SimpleGraph.Walk.map` for mapping walks to supergraphs. -/
-abbrev mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} (p : G.Walk u v) : G'.Walk u v :=
+abbrev mapLe : G'.Walk u v :=
   p.map (.ofLE h)
+
+lemma support_mapLe_eq_support : (p.mapLe h).support = p.support := by simp
+
+lemma edges_mapLe_eq_edges : (p.mapLe h).edges = p.edges := by simp
+
+lemma edgeSet_mapLe_eq_edgeSet : (p.mapLe h).edgeSet = p.edgeSet := by simp
+
+end mapLe
 
 /-! ### Transferring between graphs -/
 
