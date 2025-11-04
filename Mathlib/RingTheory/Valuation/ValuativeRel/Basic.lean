@@ -80,6 +80,8 @@ class ValuativeRel (R : Type*) [CommRing R] where
 
 macro_rules | `($a ≤ᵥ $b) => `(binrel% ValuativeRel.Rel $a $b)
 
+attribute [gcongr] ValuativeRel.rel_mul_right
+
 namespace Valuation
 
 variable {R Γ : Type*} [CommRing R] [LinearOrderedCommMonoidWithZero Γ]
@@ -132,6 +134,7 @@ theorem zero_rel (x : R) : 0 ≤ᵥ x := by
 lemma zero_srel_one : (0 : R) <ᵥ 1 :=
   not_rel_one_zero
 
+@[gcongr]
 lemma rel_mul_left {x y : R} (z) : x ≤ᵥ y → z * x ≤ᵥ z * y := by
   rw [mul_comm z x, mul_comm z y]
   apply rel_mul_right
@@ -147,9 +150,11 @@ lemma rel_trans' {x y z : R} (h1 : y ≤ᵥ z) (h2 : x ≤ᵥ y) : x ≤ᵥ z :=
 protected alias rel.trans' := rel_trans'
 
 @[gcongr]
-lemma rel_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x' ≤ᵥ y * y' := by
+lemma mul_rel_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x' ≤ᵥ y * y' := by
   calc x * x' ≤ᵥ x * y' := rel_mul_left _ h2
     _ ≤ᵥ y * y' := rel_mul_right _ h1
+
+@[deprecated (since := "2025-11-04")] alias rel_mul := mul_rel_mul
 
 theorem rel_add_cases (x y : R) : x + y ≤ᵥ x ∨ x + y ≤ᵥ y :=
   (rel_total y x).imp (fun h => rel_add .rfl h) (fun h => rel_add h .rfl)
@@ -197,14 +202,14 @@ def valueSetoid : Setoid (R × posSubmonoid R) where
     trans := by
       rintro ⟨r, u⟩ ⟨s, v⟩ ⟨t, w⟩ ⟨h1, h2⟩ ⟨h3, h4⟩
       constructor
-      · have := rel_mul h1 (rel_refl ↑w)
+      · have := mul_rel_mul h1 (rel_refl ↑w)
         rw [mul_right_comm s] at this
-        have := rel_trans this (rel_mul h3 (rel_refl _))
+        have := rel_trans this (mul_rel_mul h3 (rel_refl _))
         rw [mul_right_comm r, mul_right_comm t] at this
         simpa using this
-      · have := rel_mul h4 (rel_refl ↑u)
+      · have := mul_rel_mul h4 (rel_refl ↑u)
         rw [mul_right_comm s] at this
-        have := rel_trans this (rel_mul h2 (rel_refl _))
+        have := rel_trans this (mul_rel_mul h2 (rel_refl _))
         rw [mul_right_comm t, mul_right_comm r] at this
         simpa using this
   }
@@ -317,10 +322,10 @@ instance : Mul (ValueGroupWithZero R) where
     apply ValueGroupWithZero.sound
     · rw [Submonoid.coe_mul, Submonoid.coe_mul,
         mul_mul_mul_comm x, mul_mul_mul_comm y]
-      exact rel_mul h₁ h₃
+      exact mul_rel_mul h₁ h₃
     · rw [Submonoid.coe_mul, Submonoid.coe_mul,
         mul_mul_mul_comm x, mul_mul_mul_comm y]
-      exact rel_mul h₂ h₄
+      exact mul_rel_mul h₂ h₄
 
 @[simp]
 theorem ValueGroupWithZero.mk_mul_mk (a b : R) (c d : posSubmonoid R) :
@@ -396,17 +401,17 @@ instance : LE (ValueGroupWithZero R) where
         apply rel_mul_cancel hz
         calc y * u * s * z
           _ = y * s * (z * u) := by ring
-          _ ≤ᵥ x * t * (w * v) := rel_mul h₂ h₃
+          _ ≤ᵥ x * t * (w * v) := by gcongr
           _ = x * v * (t * w) := by ring
-          _ ≤ᵥ z * s * (t * w) := rel_mul_right (t * w) h
+          _ ≤ᵥ z * s * (t * w) := by gcongr
           _ = w * t * s * z := by ring
       · apply rel_mul_cancel t.prop
         apply rel_mul_cancel hw
         calc x * v * t * w
           _ = x * t * (w * v) := by ring
-          _ ≤ᵥ y * s * (z * u) := rel_mul h₁ h₄
+          _ ≤ᵥ y * s * (z * u) := by gcongr
           _ = y * u * (s * z) := by ring
-          _ ≤ᵥ w * t * (s * z) := rel_mul_right (s * z) h
+          _ ≤ᵥ w * t * (s * z) := by gcongr
           _ = z * s * t * w := by ring
 
 @[simp]
@@ -702,9 +707,6 @@ lemma srel_mul_left_iff (hc : 0 <ᵥ c) : c * a <ᵥ c * b ↔ a <ᵥ b :=
   (rel_mul_left_iff hc).not
 
 @[gcongr] alias ⟨_, srel_mul_left⟩ := srel_mul_left_iff
-
-lemma mul_rel_mul (hab : a ≤ᵥ b) (hcd : c ≤ᵥ d) : a * c ≤ᵥ b * d :=
-  (rel_mul_left a hcd).trans (rel_mul_right d hab)
 
 lemma mul_srel_mul_of_srel_of_rel (hab : a <ᵥ b) (hcd : c ≤ᵥ d) (hd : 0 <ᵥ d) :
     a * c <ᵥ b * d :=
