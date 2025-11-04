@@ -2719,10 +2719,10 @@ lemma eq5zero : 1 ≤ norm
       · simp only [map_zero]
         rw [H]
         sorry
-        sorry
       · sorry
     · exact RingHom.injective h7.σ
     }
+  sorry
 
   -- calc 1 ≤ ‖h7.cρ q hq0 h2mq‖ ^ Module.finrank ℚ h7.K := h7.h1 q hq0 h2mq
   --      _ ≤ ‖h7.cρ q hq0 h2mq‖ ^ Module.finrank ℚ h7.K *
