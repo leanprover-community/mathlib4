@@ -87,15 +87,15 @@ theorem lift_card_range_le {α} [Small.{v, u} α] {f : α → ZFSet.{v}} :
     lift_umax.{u, v + 1}]
   exact mk_range_le_lift
 
-theorem iSup_card_le_card_sUnion_range {α} [Small.{v, u} α] {f : α → ZFSet.{v}} :
-    ⨆ i, card (f i) ≤ card (⋃₀ range f) := by
-  rw [← lift_le.{v + 1}, card_eq, toSet_sUnion_range, lift_iSup (bddAbove_of_small _)]
+theorem iSup_card_le_card_iUnion {α} [Small.{v, u} α] {f : α → ZFSet.{v}} :
+    ⨆ i, card (f i) ≤ card (⋃ i, f i) := by
+  rw [← lift_le.{v + 1}, card_eq, toSet_iUnion, lift_iSup (bddAbove_of_small _)]
   simp_rw [card_eq]
   exact iSup_mk_le_mk_iUnion
 
-theorem lift_card_sUnion_range_le_sum_card {α} [Small.{v, u} α] {f : α → ZFSet.{v}} :
-    lift (card (⋃₀ range f)) ≤ sum fun i => card (f i) := by
-  rw [← lift_le.{max u (v + 1)}, lift_lift, ← lift_lift.{v + 1}, card_eq, toSet_sUnion_range,
+theorem lift_card_iUnion_le_sum_card {α} [Small.{v, u} α] {f : α → ZFSet.{v}} :
+    lift (card (⋃ i, f i)) ≤ sum fun i => card (f i) := by
+  rw [← lift_le.{max u (v + 1)}, lift_lift, ← lift_lift.{v + 1}, card_eq, toSet_iUnion,
     lift_umax.{max u v, v + 1}, lift_sum.{u, v, v + 1}]
   simp_rw [card_eq]
   exact mk_iUnion_le_sum_mk_lift
