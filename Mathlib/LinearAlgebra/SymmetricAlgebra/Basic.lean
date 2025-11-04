@@ -184,7 +184,7 @@ lemma equiv_symm_comp : h.equiv.symm ∘ₗ f = SymmetricAlgebra.ι R M :=
   LinearMap.ext fun x ↦ equiv_symm_apply h x
 
 lemma of_equiv (e : SymmetricAlgebra R M ≃ₐ[R] A)
-    (he : e.toLinearMap ∘ₗ (SymmetricAlgebra.ι R M) = f) :
+    (he : (e : SymmetricAlgebra R M →ₗ[R] A) ∘ₗ SymmetricAlgebra.ι R M = f) :
     IsSymmetricAlgebra f := by
   suffices h : e = SymmetricAlgebra.lift f by
     change Function.Bijective _
