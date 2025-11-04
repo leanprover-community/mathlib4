@@ -128,7 +128,7 @@ satisfying `HasProd f a`. Similar remarks apply to more general summation filter
 @[to_additive /-- `∑' i, f i` is the unconditional sum of `f` if it exists, or 0 otherwise.
 
 More generally, if `L` is a `SummationFilter`, `∑'[L] i, f i` is the sum of `f` with respect to
-`L` if it exists, and `1` otherwise.
+`L` if it exists, and `0` otherwise.
 
 (Note that even if the unconditional sum exists, it might not be unique if the topology is not
 separated. When the support of `f` is finite, we make the most reasonable choice, to use the sum
