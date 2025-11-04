@@ -471,7 +471,7 @@ lemma spineToSimplex_zero (p : X.Path 0) : spineToSimplex h p = p.vertex 0 := rf
 lemma spineToSimplex_succ (p : X.Path (n + 1)) :
     spineToSimplex h p = (h n).concat (p.arrow 0) (spineToSimplex h (p.interval 1 n)) (by
       rw [p.arrow_tgt 0]
-      exact Path.congr_vertex (spine_spineToSimplex h (p.interval 1 n)).symm 0) := 
+      exact Path.congr_vertex (spine_spineToSimplex h (p.interval 1 n)).symm 0) :=
   rfl
 
 lemma map_mkOfSucc_zero_spineToSimplex (p : X.Path (n + 1)) :
