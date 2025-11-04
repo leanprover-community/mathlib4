@@ -521,7 +521,10 @@ Q535366:
 
 Q536640:
   title: Hall's marriage theorem
-  decl: Finset.all_card_le_biUnion_card_iff_exists_injective
+  decls:
+    - Finset.all_card_le_biUnion_card_iff_exists_injective
+    - SimpleGraph.exists_isPerfectMatching_of_forall_ncard_le
+  authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 
 Q537618:
   title: Banach–Alaoglu theorem

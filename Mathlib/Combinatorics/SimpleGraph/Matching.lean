@@ -45,8 +45,6 @@ one edge, and the edges of the subgraph represent the paired vertices.
 * Provide a bicoloring for matchings (https://leanprover.zulipchat.com/#narrow/stream/252551-graph-theory/topic/matchings/near/265495120)
 
 * Tutte's Theorem
-
-* Hall's Marriage Theorem (see `Mathlib/Combinatorics/Hall/Basic.lean`)
 -/
 
 assert_not_exists Field TwoSidedIdeal
