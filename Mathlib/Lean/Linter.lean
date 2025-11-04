@@ -13,13 +13,15 @@ open Lean Elab Command Linter
 
 namespace Lean.Linter
 
+variable {m : Type → Type} [Monad m] [MonadOptions m] [MonadEnv m]
+
 /--
 Runs a `CommandElabM` action when the provided linter option is `true`.
 
 Note: this definition is marked as `@[macro_inline]`, so it is okay to supply it with a linter option which has been registered in the same module.
 -/
 @[macro_inline]
-def whenLinterOption (opt : Lean.Option Bool) (x : CommandElabM Unit) : CommandElabM Unit := do
+def whenLinterOption (opt : Lean.Option Bool) (x : m Unit) : m Unit := do
   if getLinterValue opt (← getLinterOptions) then x
 
 /--
@@ -28,7 +30,7 @@ Runs a `CommandElabM` action when the provided linter option is `false`.
 Note: this definition is marked as `@[macro_inline]`, so it is okay to supply it with a linter option which has been registered in the same module.
 -/
 @[macro_inline]
-def whenNotLinterOption (opt : Lean.Option Bool) (x : CommandElabM Unit) : CommandElabM Unit := do
+def whenNotLinterOption (opt : Lean.Option Bool) (x : m Unit) : m Unit := do
   unless getLinterValue opt (← getLinterOptions) do x
 
 /--
