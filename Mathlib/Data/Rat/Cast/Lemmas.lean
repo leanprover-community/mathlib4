@@ -74,6 +74,12 @@ theorem cast_zpow_of_ne_zero {K} [DivisionSemiring K] (q : ℚ≥0) (z : ℤ) (h
     congr
     rw [cast_inv_of_ne_zero hq]
 
+@[simp]
+theorem cast_mk {K} [DivisionRing K] (q : ℚ) (h : 0 ≤ q) :
+    (NNRat.cast ⟨q, h⟩ : K) = (q : K) := by
+  simp only [NNRat.cast_def, NNRat.num_mk, Nat.cast_natAbs, NNRat.den_mk, Rat.cast_def]
+  rw [abs_of_nonneg (by simpa)]
+
 open OfScientific in
 theorem Nonneg.coe_ofScientific {K} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
     (m : ℕ) (s : Bool) (e : ℕ) :
