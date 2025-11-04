@@ -83,6 +83,10 @@ lemma of_obj_bijective : Function.Bijective (of C).obj where
   left _ _ h := by cases h; rfl
   right X := ⟨X.as.as, rfl⟩
 
+abbrev mk (X : C) : Category.FreeGroupoid C := (of C).obj X
+
+abbrev homMk {X Y : C} (f : X ⟶ Y) : mk X ⟶ mk Y := (of C).map f
+
 section UniversalProperty
 
 variable {G : Type u₁} [Groupoid.{v₁} G]
@@ -153,6 +157,22 @@ theorem map_comp (φ : C ⥤ D) (φ' : D ⥤ E) : map (φ ⋙ φ') = map φ ⋙ 
 /-- The functor induced by a composition is the composition of the functors they induce. -/
 def mapComp (φ : C ⥤ D) (φ' : D ⥤ E) : map (φ ⋙ φ') ≅ map φ ⋙ map φ':=
   eqToIso (map_comp φ φ')
+
+@[simp]
+lemma map_obj_mk (φ : C ⥤ D) (X : C) : (map φ).obj (mk X) = mk (φ.obj X) := rfl
+
+@[simp]
+lemma map_map_homMk (φ : C ⥤ D) {X Y : C} (f : X ⟶ Y) :
+    (map φ).map (homMk f) = homMk (φ.map f) := rfl
+
+@[simp]
+lemma lift_obj_mk {E : Type u₂} [Groupoid.{v₂} E] (φ : C ⥤ E) (X : C) :
+    (lift φ).obj (mk X) = φ.obj X := rfl
+
+@[simp]
+lemma lift_map_mk {E : Type u₂} [Groupoid.{v₂} E] (φ : C ⥤ E) {X Y : C} (f : X ⟶ Y) :
+    (lift φ).map (homMk f) = φ.map f := by
+  simpa using Functor.congr_hom (lift_spec φ) f
 
 lemma of_map (F : C ⥤ D) : of C ⋙ map F = F ⋙ of D := rfl
 
