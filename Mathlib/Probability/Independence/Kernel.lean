@@ -1096,18 +1096,15 @@ theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
   classical
   let sets_s' : ∀ i : ι, Set (β i) := fun i =>
     dite (i ∈ S) (fun hi => sets_s ⟨i, hi⟩) fun _ => Set.univ
-  have h_sets_s'_eq : ∀ {i} (hi : i ∈ S), sets_s' i = sets_s ⟨i, hi⟩ := by
-    intro i hi; simp_rw [sets_s', dif_pos hi]
+  have h_sets_s'_eq : ∀ {i} (hi : i ∈ S), sets_s' i = sets_s ⟨i, hi⟩ := by grind
   have h_sets_s'_univ : ∀ {i} (_hi : i ∈ T), sets_s' i = Set.univ := by
-    intro i hi; simp_rw [sets_s', dif_neg (Finset.disjoint_right.mp hST hi)]
+    grind [Finset.disjoint_right]
   let sets_t' : ∀ i : ι, Set (β i) := fun i =>
     dite (i ∈ T) (fun hi => sets_t ⟨i, hi⟩) fun _ => Set.univ
   have h_sets_t'_univ : ∀ {i} (_hi : i ∈ S), sets_t' i = Set.univ := by
-    intro i hi; simp_rw [sets_t', dif_neg (Finset.disjoint_left.mp hST hi)]
-  have h_meas_s' : ∀ i ∈ S, MeasurableSet (sets_s' i) := by
-    intro i hi; rw [h_sets_s'_eq hi]; exact hs1 _
-  have h_meas_t' : ∀ i ∈ T, MeasurableSet (sets_t' i) := by
-    intro i hi; simp_rw [sets_t', dif_pos hi]; exact ht1 _
+    grind [Finset.disjoint_left]
+  have h_meas_s' : ∀ i ∈ S, MeasurableSet (sets_s' i) := by grind
+  have h_meas_t' : ∀ i ∈ T, MeasurableSet (sets_t' i) := by grind
   have h_eq_inter_S : (fun (ω : Ω) (i : ↥S) =>
     f (↑i) ω) ⁻¹' Set.pi Set.univ sets_s = ⋂ i ∈ S, f i ⁻¹' sets_s' i := by
     ext1 x
@@ -1117,9 +1114,7 @@ theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
     = ⋂ i ∈ T, f i ⁻¹' sets_t' i := by
     ext1 x
     simp only [Set.mem_preimage, Set.mem_univ_pi, Set.mem_iInter]
-    constructor <;> intro h
-    · intro i hi; simp_rw [sets_t', dif_pos hi]; exact h ⟨i, hi⟩
-    · rintro ⟨i, hi⟩; specialize h i hi; simp_rw [sets_t', dif_pos hi] at h; exact h
+    grind
   replace hf_Indep := hf_Indep.congr η_eq
   rw [iIndepFun_iff_measure_inter_preimage_eq_mul] at hf_Indep
   have h_Inter_inter :
@@ -1127,26 +1122,13 @@ theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
       ⋂ i ∈ S ∪ T, f i ⁻¹' (sets_s' i ∩ sets_t' i) := by
     ext1 x
     simp_rw [Set.mem_inter_iff, Set.mem_iInter, Set.mem_preimage, Finset.mem_union]
-    constructor <;> intro h
-    · grind
-    · exact ⟨fun i hi => (h i (Or.inl hi)).1, fun i hi => (h i (Or.inr hi)).2⟩
+    grind
   have h_meas_inter : ∀ i ∈ S ∪ T, MeasurableSet (sets_s' i ∩ sets_t' i) := by
-    intro i hi_mem
-    rw [Finset.mem_union] at hi_mem
-    rcases hi_mem with hi_mem | hi_mem
-    · rw [h_sets_t'_univ hi_mem, Set.inter_univ]
-      exact h_meas_s' i hi_mem
-    · rw [h_sets_s'_univ hi_mem, Set.univ_inter]
-      exact h_meas_t' i hi_mem
+    grind [inter_univ, univ_inter]
   filter_upwards [hf_Indep S h_meas_s', hf_Indep T h_meas_t', hf_Indep (S ∪ T) h_meas_inter]
     with a h_indepS h_indepT h_indepST
-  rw [h_eq_inter_S, h_eq_inter_T, h_indepS, h_indepT, h_Inter_inter, h_indepST,
-    Finset.prod_union hST]
-  congr 1
-  · refine Finset.prod_congr rfl fun i hi => ?_
-    rw [h_sets_t'_univ hi, Set.inter_univ]
-  · refine Finset.prod_congr rfl fun i hi => ?_
-    rw [h_sets_s'_univ hi, Set.univ_inter]
+  have := Finset.prod_union hST (f := fun i => (η a) (f i ⁻¹' (sets_s' i ∩ sets_t' i)))
+  grind [Finset.prod_congr, inter_univ, univ_inter]
 
 theorem iIndepFun.indepFun_finset₀ (S T : Finset ι) (hST : Disjoint S T)
     (hf_Indep : iIndepFun f κ μ) (hf_meas : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ)) :
