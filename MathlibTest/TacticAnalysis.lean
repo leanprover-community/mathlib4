@@ -203,10 +203,29 @@ set_library_suggestions fun _ _ => pure #[{ name := `p, score := 1.0 }]
 example : P 37 := by
   grind +suggestions
 
-set_option linter.tacticAnalysis.tryAtEachStepGrindSuggestions true
+/--
+info: Try this:
+  [apply] simp_all only [p]
+-/
+#guard_msgs in
+example : P 37 := by
+  simp_all? +suggestions
 
+set_option linter.tacticAnalysis.tryAtEachStepGrindSuggestions true in
 -- FIXME: why is the dagger here?
 /-- info: `trivial` can be replaced with `grind +suggestions✝` -/
+#guard_msgs in
+example : P 37 := by
+  trivial
+
+set_option linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions true in
+-- FIXME: why is the dagger here?
+/--
+info: Try this:
+  [apply] simp_all +suggestions✝ only [p]
+---
+info: `trivial` can be replaced with `simp_all? +suggestions✝`
+-/
 #guard_msgs in
 example : P 37 := by
   trivial
