@@ -245,13 +245,18 @@ def nerveHomEquiv {x y : (nerve C) _⦋0⦌} :
   left_inv e := by cat_disch
   right_inv f := by simp
 
+lemma mk₁_nerveHomEquiv_apply {x y : (nerve C) _⦋0⦌} (e : Edge x y) :
+    ComposableArrows.mk₁ (nerveHomEquiv e) = ComposableArrows.mk₁ e.edge.hom := by
+  simp [nerveHomEquiv, ComposableArrows.mk₁_eqToHom_comp, ComposableArrows.mk₁_comp_eqToHom]
+
 def Edge.ofHom {x y : C} (f : x ⟶ y) :
     Edge (nerveEquiv.symm x) (nerveEquiv.symm y) :=
   .mk (ComposableArrows.mk₁ f) (by cat_disch) (by cat_disch)
 
 @[simp]
 lemma Edge.ofHom_id (x : C) :
-    Edge.ofHom (𝟙 x) = .id _ := sorry
+    Edge.ofHom (𝟙 x) = .id _ := by
+  aesop
 
 @[simp]
 lemma Edge.ofHom_edge {x y : C} (f : x ⟶ y) :

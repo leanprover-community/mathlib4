@@ -207,10 +207,29 @@ def homToNerveMk (F : X.HomotopyCategory ⥤ C) : X ⟶ (truncation 2).obj (nerv
     (fun f ↦ ComposableArrows.mk₁ (F.map (homMk (Truncated.Edge.mk' f))))
     (fun f ↦ ComposableArrows.ext₀ rfl)
     (fun f ↦ ComposableArrows.ext₀ rfl)
-    (fun x y h₂ h₁ ↦ by
-      dsimp at h₁ h₂ ⊢
-      have := Edge.CompStruct.exists_of_simplex x
-      sorry)
+    (fun x y h₂ h₀ ↦ by
+      have h' {a b : X _⦋0⦌₂} (e : Edge a b) :
+          ComposableArrows.mk₁ (F.map (homMk (Edge.mk' e.edge))) =
+            ComposableArrows.mk₁ (F.map (homMk e)) :=
+        ComposableArrows.arrowEquiv.injective
+          (congr_arg F.mapArrow.obj (congr_arrowMk_homMk (Edge.mk' e.edge) e rfl))
+      obtain ⟨x₀, x₁, x₂, e₀₁, e₁₂, e₀₂, h, rfl⟩ := Edge.CompStruct.exists_of_simplex x
+      dsimp at h₀ h₂ ⊢
+      have : ComposableArrows.mk₂ (F.map (homMk e₀₁)) (F.map (homMk e₁₂)) = y := by
+        rw [h.d₂, h'] at h₂
+        rw [h.d₀, h'] at h₀
+        refine (spine_bijective (X := (truncation 2).obj (nerve C)) _ _).injective ?_
+        ext i
+        fin_cases i
+        · dsimp
+          simp only [SimplexCategory.mkOfSucc_zero_eq_δ, ← h₂]
+          apply nerve.δ₂_mk₂_eq
+        · dsimp
+          simp only [SimplexCategory.mkOfSucc_one_eq_δ, ← h₀]
+          apply nerve.δ₀_mk₂_eq
+      rw [h.d₁, ← this]
+      have := (nerve.δ₁_mk₂_eq (F.map (homMk e₀₁)) (F.map (homMk e₁₂))).symm
+      rwa [← Functor.map_comp, homMk_comp_homMk h, ← h'] at this)
     (fun x ↦ ComposableArrows.arrowEquiv.injective
       ((congr_arg F.mapArrow.obj
         (congr_arrowMk_homMk (Edge.mk' (X.map (σ₂ 0).op x)) (Edge.id x) rfl)).trans (by aesop)))
@@ -298,22 +317,18 @@ def functorOfNerveMap (φ : nerveFunctor₂.obj (.of C) ⟶ nerveFunctor₂.obj 
     obtain ⟨h⟩ := (nerve.nonempty_compStruct_iff f g (f ≫ g)).2 rfl
     exact (nerveHomEquiv_comp (h.map φ)).symm
 
--- to be moved...
-lemma nerveMap_app_edge (F : C ⥤ D) {x y : (nerve C) _⦋0⦌} (e : SSet.Edge x y) :
-    (nerveMap F).app (op ⦋1⦌) e.edge =
-      (Edge.ofHom (F.map (nerveHomEquiv e))).edge := sorry
+lemma nerveMap_app_mk₁ (F : C ⥤ D) {x y : C} (f : x ⟶ y) :
+    (nerveMap F).app (op ⦋1⦌) (ComposableArrows.mk₁ f) =
+      ComposableArrows.mk₁ (F.map f) :=
+  ComposableArrows.ext₁ rfl rfl (by simp)
 
 lemma nerveFunctor₂_map_functorOfNerveMap
     (φ : nerveFunctor₂.obj (.of C) ⟶ nerveFunctor₂.obj (.of D)) :
     nerveFunctor₂.map (functorOfNerveMap φ) = φ :=
   SSet.Truncated.IsStrictSegal.hom_ext (fun f ↦ by
-    obtain ⟨x, y, f, rfl⟩ := SSet.Truncated.Edge.exists_of_simplex f
-    refine (nerveMap_app_edge _ _).trans ?_
-    obtain ⟨f, rfl⟩ := nerveHomEquiv.symm.surjective f
-    dsimp [functorOfNerveMap]
-    refine ComposableArrows.ext₁ ?_ sorry sorry
-    simp
-    sorry)
+    obtain ⟨x, y, f, rfl⟩ := ComposableArrows.mk₁_surjective f
+    exact (nerveMap_app_mk₁ _ _).trans ((mk₁_nerveHomEquiv_apply _).trans
+      (ComposableArrows.mk₁_hom _)))
 
 lemma functorOfNerveMap_nerveFunctor₂_map (F : C ⥤ D) :
     functorOfNerveMap ((SSet.truncation 2).map (nerveMap F)) = F :=
@@ -326,5 +341,12 @@ def fullyFaithfulNerveFunctor₂ : nerveFunctor₂.{u, u}.FullyFaithful where
   preimage_map _ := functorOfNerveMap_nerveFunctor₂_map _
 
 end nerve
+
+open SSet
+
+/-- The adjunction between the nerve functor and the homotopy category functor is, up to
+isomorphism, the composite of the adjunctions `SSet.coskAdj 2` and `nerve₂Adj`. -/
+noncomputable def nerveAdjunction : hoFunctor ⊣ nerveFunctor :=
+  Adjunction.ofNatIsoRight ((SSet.coskAdj 2).comp Truncated.nerve₂Adj) Nerve.cosk₂Iso.symm
 
 end CategoryTheory
