@@ -80,7 +80,7 @@ to learn about it as well!
   and suggests `lake exe graph` commands to visualize the largest "rectangles" of unused imports.
 
 **Analyzing hammer tactic suggestions**
-- `analyze_hammer_suggestions.py` analyzes which of {simp_all, aesop, canonical, grind} can replace existing tactics at each location, with and without +suggestions. Generates summary tables showing counts for all possible subsets. Use `--raw` for location:tactic pairs. Defaults to analyzing all of Mathlib.
+- `analyze_hammer_suggestions.py` analyzes which tactics can replace existing tactics at each location, with and without +suggestions. By default analyzes simp_all and grind on all of Mathlib. Use `--aesop` and `--canonical` to enable additional tactics, or `--no-<tactic>` to disable defaults. Use `--raw` for location:tactic pairs instead of summary tables.
 
 **CI workflow**
 - `lake-build-with-retry.sh`
