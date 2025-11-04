@@ -28,9 +28,15 @@ variable {R M N L : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
   [AddCommMonoid N] [Module R N] [AddCommMonoid L] [Module R L]
 
 variable
+  (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
+  [∀ (P : Ideal R) [P.IsMaximal], CommSemiring (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], Algebra R (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsLocalization.AtPrime (Rₚ P) P]
   (Mₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
   [∀ (P : Ideal R) [P.IsMaximal], AddCommMonoid (Mₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Module R (Mₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], Module (Rₚ P) (Mₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsScalarTower R (Rₚ P) (Mₚ P)]
   (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P)
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule.AtPrime P (f P)]
   (Nₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
@@ -75,6 +81,17 @@ theorem exact_of_isLocalized_maximal (H : ∀ (J : Ideal R) [J.IsMaximal],
   ext x
   simp only [mem_range, mem_ker] at this ⊢
   exact this x
+
+theorem LinearIndependent.of_isLocalized_maximal {ι} (v : ι → M)
+    (H : ∀ (P : Ideal R) [P.IsMaximal], LinearIndependent (Rₚ P) (f P ∘ v)) :
+    LinearIndependent R v :=
+  let l (P) [IsMaximal P] := Finsupp.mapRange.linearMap (α := ι) (Algebra.linearMap R (Rₚ P))
+  injective_of_isLocalized_maximal _ (fun P _ ↦ l P) _ f _ fun P _ ↦ by
+    simp_rw [LinearIndependent, ← LinearMap.coe_restrictScalars R (S := Rₚ _)] at H
+    convert H P
+    apply linearMap_ext (S := P.primeCompl) (l P) (f P)
+    ext
+    simp [IsLocalizedModule.map_comp, l]
 
 end isLocalized_maximal
 
