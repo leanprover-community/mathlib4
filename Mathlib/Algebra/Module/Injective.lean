@@ -464,7 +464,6 @@ theorem pi (R : Type*) [Ring R] {ι : Type*} (M : ι → Type*)
 
   -- Pointwise equality for each component
   funext i
-  let hg_i_pt := congr_fun (congr_arg DFunLike.coe (hgi_eq i)) x
-  exact hg_i_pt
+ exact congr_fun (congr_arg DFunLike.coe (hgi_eq i)) x
 
 end injective_products
