@@ -19,6 +19,22 @@ namespace Mathlib.Tactic.Algebra
 section ring
 
 variable {R A : Type*} [sR : CommRing R] [sA : CommRing A] [sAlg : Algebra R A]
+#check Nat.ofNat_nsmul_eq_mul
+
+
+
+-- theorem Nat.cast_eq_ofNat (n : ℕ) [n.AtLeastTwo] : (n:R) = ofNat(n) :=
+--   rfl
+
+-- theorem ofNat_smul {n : ℕ} {a : A} [n.AtLeastTwo] :  (ofNat(n) : R) • a = ofNat(n) * a := by
+--   simp [@Algebra.smul_def, ← Nat.cast_eq_ofNat]
+
+-- theorem neg_ofNat_smul {n : ℕ} {a : A} :
+--     (-ofNat(n) : R) •  a = (-ofNat(n):A) * a := by
+--   simp [ofNat_smul]
+
+-- theorem neg_ofNat_smul {n d : ℕ} {a : A} [n.AtLeastTwo] [d.AtLeastTwo] :
+
 
 theorem neg_smul_one {r s : R} (h : -r = s) :
     -(r • (1 : A)) = s • 1 := by
@@ -104,6 +120,23 @@ theorem mul_eq_mul_of_eq {c a b : A}
 section Nat
 
 variable {n d : ℕ}
+
+theorem nat_rawCast_smul {R A} [CommSemiring R] [CommSemiring A] [Algebra R A]
+    [n.AtLeastTwo] {a : A} :
+    (n.rawCast : R) • a = n.rawCast * a := by
+  simp [Nat.cast_smul_eq_nsmul]
+
+theorem int_rawCast_smul {R A} [CommRing R] [CommRing A] [Algebra R A] {n : ℤ} {a : A} :
+    (n.rawCast : R) • a = n.rawCast * a := by
+  simp [Int.cast_smul_eq_zsmul]
+
+theorem nnrat_rawCast_smul {R A} [Semifield R] [Semifield A] [Algebra R A] {a : A} :
+    (NNRat.rawCast n d : R) • a = (NNRat.rawCast n d) * a := by
+  simp [Algebra.smul_def]
+
+theorem rat_rawCast_smul {R A} [Field R] [Field A] [Algebra R A] {n : ℤ} {a : A} :
+    (Rat.rawCast n d : R) • a = (Rat.rawCast n d) * a := by
+  simp [Algebra.smul_def]
 
 theorem add_assoc_rev (a b c : R) : a + (b + c) = a + b + c := (add_assoc ..).symm
 theorem mul_assoc_rev (a b c : R) : a * (b * c) = a * b * c := (mul_assoc ..).symm

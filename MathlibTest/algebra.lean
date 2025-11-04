@@ -134,9 +134,8 @@ example (x : ℚ) (hx : x = 0) : (x+1)^10 = 1 := by
   -- TODO: decide if we want to turn nsmul/zsmul/qsmul with literals into multiplication.
   -- TODO: Now it's erroring because we're normalizing over ℚ and the target here is expressed in terms of ℤ. To avoid surprises here it might be helpful to convert to multiplying by a nat lit.
   guard_target =
-    1 + (10:ℚ) • x + (45:ℚ) • x ^ 2 + (120:ℚ) • x ^ 3 + (210:ℚ) • x ^ 4 + (252:ℚ) • x ^ 5 +
-      (210:ℚ) • x ^ 6 + (120:ℚ) • x ^ 7 + (45:ℚ) • x ^ 8 +
-      (10:ℚ) • x ^ 9 + x ^ 10 = 1
+      1 + 10 * x + 45 * x ^ 2 + 120 * x ^ 3 + 210 * x ^ 4 + 252 * x ^ 5 + 210 * x ^ 6 + 120 * x ^ 7 + 45 * x ^ 8 +
+        10 * x ^ 9 + x ^ 10 = 1
   simp [hx]
 
 example {a b : ℤ} (x y : ℚ) (ha : a = 2) : (a + b) • (x + y) = b • x + (2:ℤ) • (x + y) + b • y := by
@@ -177,9 +176,9 @@ info: Try this:
    'algebra_nf' without specifying the base ring is unstable. Use `algebra_nf with` instead.
 -/
 #guard_msgs in
-example (x : ℚ) (n : ℕ) : (x^n + 1)^2 = 0 := by
+example (x : ℚ) (n : ℕ) : (x^n - 1)^2 = 0 := by
   algebra_nf
-  guard_target =  1 + (2:ℚ) • x ^ n + x ^ (n * 2) = 0
+  guard_target =  1 - 2 * x ^ n + x ^ (n * 2) = 0
   exact sorryAlgebraTest
 
 -- Tests for rational constant handling (evalCast function)
