@@ -34,9 +34,9 @@ theorem DirectSum.SetLike.IsHomogeneous.mem_iff (hR : IsHomogeneous 𝒜 R) {a} 
     a ∈ R ↔ ∀ i, (decompose 𝒜 a i : A) ∈ R :=
   AddSubmonoidClass.IsHomogeneous.mem_iff 𝒜 _ hR
 
-/-- We collect all homogeneous subsemirings into a type. -/
+/-- A `HomogeneousSubsemiring` is a `Subsemiring` that satisfies `IsHomogeneous`. -/
 structure HomogeneousSubsemiring extends Subsemiring A where
-  is_homogeneous' : toSubsemiring.IsHomogeneous 𝒜
+  is_homogeneous' : IsHomogeneous 𝒜 toSubsemiring
 
 variable {𝒜}
 
