@@ -81,7 +81,7 @@ theorem ContDiffAt.contDiffAt_norm_of_smul (h : ContDiffAt ℝ n (‖·‖) (t �
     · rw [zero_smul] at h
       exact (mt (ContDiffAt.differentiableAt · (mod_cast hn)))
         (not_differentiableAt_norm_zero E) h |>.elim
-    · rw [not_nontrivial_iff_subsingleton] at hE
+    · push_neg at hE
       rw [eq_const_of_subsingleton (‖·‖) 0]
       exact contDiffAt_const
   · exact contDiffAt_norm_smul_iff ht |>.2 h
@@ -148,7 +148,7 @@ theorem DifferentiableAt.differentiableAt_norm_of_smul (h : DifferentiableAt ℝ
   · by_cases hE : Nontrivial E
     · rw [zero_smul] at h
       exact not_differentiableAt_norm_zero E h |>.elim
-    · rw [not_nontrivial_iff_subsingleton] at hE
+    · push_neg at hE
       exact (hasFDerivAt_of_subsingleton _ _).differentiableAt
   · exact differentiableAt_norm_smul ht |>.2 h
 
@@ -169,7 +169,8 @@ theorem DifferentiableAt.fderiv_norm_self {x : E} (h : DifferentiableAt ℝ (‖
 variable (x t) in
 theorem fderiv_norm_smul :
     fderiv ℝ (‖·‖) (t • x) = (SignType.sign t : ℝ) • (fderiv ℝ (‖·‖) x) := by
-  by_cases hE : Nontrivial E
+  cases subsingleton_or_nontrivial E
+  · simp_rw [(hasFDerivAt_of_subsingleton _ _).fderiv, smul_zero]
   · by_cases hd : DifferentiableAt ℝ (‖·‖) x
     · obtain rfl | ht := eq_or_ne t 0
       · simp only [zero_smul, _root_.sign_zero, SignType.coe_zero]
@@ -178,8 +179,6 @@ theorem fderiv_norm_smul :
     · rw [fderiv_zero_of_not_differentiableAt hd, fderiv_zero_of_not_differentiableAt]
       · simp
       · exact mt DifferentiableAt.differentiableAt_norm_of_smul hd
-  · rw [not_nontrivial_iff_subsingleton] at hE
-    simp_rw [(hasFDerivAt_of_subsingleton _ _).fderiv, smul_zero]
 
 theorem fderiv_norm_smul_pos (ht : 0 < t) :
     fderiv ℝ (‖·‖) (t • x) = fderiv ℝ (‖·‖) x := by

@@ -170,7 +170,7 @@ notation3"∏ᶠ " (...) ", " r:67:(scoped f => finprod f) => r
 theorem finprod_eq_prod_plift_of_mulSupport_toFinset_subset {f : α → M}
     (hf : (mulSupport (f ∘ PLift.down)).Finite) {s : Finset (PLift α)} (hs : hf.toFinset ⊆ s) :
     ∏ᶠ i, f i = ∏ i ∈ s, f i.down := by
-  rw [finprod, dif_pos]
+  rw [finprod, dif_pos hf]
   refine Finset.prod_subset hs fun x _ hxf => ?_
   rwa [hf.mem_toFinset, notMem_mulSupport] at hxf
 
@@ -685,7 +685,6 @@ theorem finprod_mem_union_inter' (hs : (s ∩ mulSupport f).Finite) (ht : (t ∩
   rw [← finprod_mem_inter_mulSupport f s, ← finprod_mem_inter_mulSupport f t, ←
     finprod_mem_union_inter hs ht, ← union_inter_distrib_right, finprod_mem_inter_mulSupport, ←
     finprod_mem_inter_mulSupport f (s ∩ t)]
-  congr 2
   rw [inter_left_comm, inter_assoc, inter_assoc, inter_self, inter_left_comm]
 
 /-- A more general version of `finprod_mem_union` that requires `s ∩ mulSupport f` and

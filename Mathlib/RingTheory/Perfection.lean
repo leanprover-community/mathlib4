@@ -488,8 +488,9 @@ theorem valAux_eq {f : PreTilt O p} {n : ℕ} (hfn : coeff _ _ n f ≠ 0) :
   rw [valAux, dif_pos h]
   classical
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le (Nat.find_min' h hfn)
-  induction' k with k ih
-  · rfl
+  induction k with
+  | zero => rfl
+  | succ k ih => ?_
   obtain ⟨x, hx⟩ := Ideal.Quotient.mk_surjective (coeff (ModP O p) p (Nat.find h + k + 1) f)
   have h1 : (Ideal.Quotient.mk _ x : ModP O p) ≠ 0 := hx.symm ▸ hfn
   have h2 : (Ideal.Quotient.mk _ (x ^ p) : ModP O p) ≠ 0 := by

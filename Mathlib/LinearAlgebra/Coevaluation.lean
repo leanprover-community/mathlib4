@@ -6,9 +6,9 @@ Authors: Jakob von Raumer
 import Mathlib.LinearAlgebra.Contraction
 
 /-!
-# The coevaluation map on finite dimensional vector spaces
+# The coevaluation map on finite-dimensional vector spaces
 
-Given a finite dimensional vector space `V` over a field `K` this describes the canonical linear map
+Given a finite-dimensional vector space `V` over a field `K` this describes the canonical linear map
 from `K` to `V ⊗ Dual K V` which corresponds to the identity function on `V`.
 
 ## Tags
@@ -34,7 +34,7 @@ universe u v
 variable (K : Type u) [Field K]
 variable (V : Type v) [AddCommGroup V] [Module K V] [FiniteDimensional K V]
 
-/-- The coevaluation map is a linear map from a field `K` to a finite dimensional
+/-- The coevaluation map is a linear map from a field `K` to a finite-dimensional
   vector space `V`. -/
 def coevaluation : K →ₗ[K] V ⊗[K] Module.Dual K V :=
   let bV := Basis.ofVectorSpace K V

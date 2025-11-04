@@ -380,7 +380,7 @@ lemma minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ [Fintype α]
   rw [Nat.le_div_iff_mul_le <| Nat.add_pos_right _ zero_lt_three]
   have Wc : #W + k = 2 * r + 3 := by
     change #(insert _ <| insert _ <| insert _ _) + _ = _
-    grind [card_insert_of_notMem, card_inter_add_card_union]
+    grind [card_inter_add_card_union]
   -- The sum of the degree sum over `W` and twice the degree sum over `s ∩ t`
   -- is at least `G.minDegree * (#W + 2 * #(s ∩ t))` which implies the result
   calc
@@ -402,7 +402,7 @@ lemma minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ [Fintype α]
         have hap : #W - 1 + 2 * (k - 1) = #W - 3 + 2 * k := by omega
         rw [hap, ← add_mul, card_add_card_compl, mul_comm, two_mul, ← add_assoc]
         gcongr
-        omega
+        cutsat
 
 end IsFiveWheelLike
 

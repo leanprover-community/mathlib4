@@ -16,7 +16,7 @@ import Mathlib.Algebra.Ring.Int.Defs
 instance Int.euclideanDomain : EuclideanDomain ℤ :=
   { inferInstanceAs (CommRing Int), inferInstanceAs (Nontrivial Int) with
     quotient := (· / ·), quotient_zero := Int.ediv_zero, remainder := (· % ·),
-    quotient_mul_add_remainder_eq := Int.ediv_add_emod,
+    quotient_mul_add_remainder_eq := Int.mul_ediv_add_emod,
     r := fun a b => a.natAbs < b.natAbs,
     r_wellFounded := (measure natAbs).wf
     remainder_lt := fun a b b0 => Int.ofNat_lt.1 <| by

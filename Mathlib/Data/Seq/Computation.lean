@@ -98,18 +98,17 @@ unsafe def run : Computation α → α
 
 theorem destruct_eq_pure {s : Computation α} {a : α} : destruct s = Sum.inl a → s = pure a := by
   dsimp [destruct]
-  induction' f0 : s.1 0 with _ <;> intro h
+  cases f0 : s.1 0 <;> intro h
   · contradiction
   · apply Subtype.eq
     funext n
-    induction' n with n IH
-    · injection h with h'
-      rwa [h'] at f0
-    · exact s.2 IH
+    induction n with
+    | zero => injection h with h'; rwa [h'] at f0
+    | succ n IH => exact s.2 IH
 
 theorem destruct_eq_think {s : Computation α} {s'} : destruct s = Sum.inr s' → s = think s' := by
   dsimp [destruct]
-  induction' f0 : s.1 0 with a' <;> intro h
+  rcases f0 : s.1 0 with - | a' <;> intro h
   · injection h with h'
     rw [← h']
     obtain ⟨f, al⟩ := s
@@ -148,8 +147,7 @@ theorem tail_pure (a : α) : tail (pure a) = pure a :=
   rfl
 
 @[simp]
-theorem tail_think (s : Computation α) : tail (think s) = s := by
-  obtain ⟨f, al⟩ := s; apply Subtype.eq; dsimp [tail, think]
+theorem tail_think (s : Computation α) : tail (think s) = s := rfl
 
 @[simp]
 theorem tail_empty : tail (empty α) = empty α :=
@@ -187,13 +185,15 @@ def corec (f : β → α ⊕ β) (b : β) : Computation α := by
   refine ⟨Stream'.corec' (Corec.f f) (Sum.inr b), fun n a' h => ?_⟩
   rw [Stream'.corec'_eq]
   change Stream'.corec' (Corec.f f) (Corec.f f (Sum.inr b)).2 n = some a'
-  revert h; generalize Sum.inr b = o; revert o
-  induction' n with n IH <;> intro o
-  · change (Corec.f f o).1 = some a' → (Corec.f f (Corec.f f o).2).1 = some a'
+  revert h; generalize Sum.inr b = o
+  induction n generalizing o with
+  | zero =>
+    change (Corec.f f o).1 = some a' → (Corec.f f (Corec.f f o).2).1 = some a'
     rcases o with _ | b <;> intro h
     · exact h
     unfold Corec.f at *; split <;> simp_all
-  · rw [Stream'.corec'_eq (Corec.f f) (Corec.f f o).2, Stream'.corec'_eq (Corec.f f) o]
+  | succ n IH =>
+    rw [Stream'.corec'_eq (Corec.f f) (Corec.f f o).2, Stream'.corec'_eq (Corec.f f) o]
     exact IH (Corec.f f o).2
 
 /-- left map of `⊕` -/
@@ -218,7 +218,7 @@ theorem corec_eq (f : β → α ⊕ β) (b : β) : destruct (corec f b) = rmap (
     | Sum.inl x => rfl
     | Sum.inr x => rfl
     ]
-  induction' h : f b with a b'; · rfl
+  rcases h : f b with a | b'; · rfl
   dsimp [Corec.f, destruct]
   apply congr_arg; apply Subtype.eq
   dsimp [corec, tail]
@@ -282,8 +282,9 @@ instance : Membership α (Computation α) :=
 
 theorem le_stable (s : Computation α) {a m n} (h : m ≤ n) : s.1 m = some a → s.1 n = some a := by
   obtain ⟨f, al⟩ := s
-  induction' h with n _ IH
-  exacts [id, fun h2 => al (IH h2)]
+  induction h with
+  | refl => exact id
+  | step _ IH => exact fun h2 ↦ al (IH h2)
 
 theorem mem_unique {s : Computation α} {a b : α} : a ∈ s → b ∈ s → a = b
   | ⟨m, ha⟩, ⟨n, hb⟩ => by
@@ -348,7 +349,7 @@ theorem not_terminates_empty : ¬Terminates (empty α) := fun ⟨⟨a, h⟩⟩ =
 
 theorem eq_empty_of_not_terminates {s} (H : ¬Terminates s) : s = empty α := by
   apply Subtype.eq; funext n
-  induction' h : s.val n with _; · rfl
+  rcases h : s.val n; · rfl
   refine absurd ?_ H; exact ⟨⟨_, _, h.symm⟩⟩
 
 theorem thinkN_mem {s : Computation α} {a} : ∀ n, a ∈ thinkN s n ↔ a ∈ s
@@ -525,7 +526,7 @@ def memRecOn {C : Computation α → Sort v} {a s} (M : a ∈ s) (h1 : C (pure a
   haveI T := terminates_of_mem M
   rw [eq_thinkN' s, get_eq_of_mem s M]
   generalize length s = n
-  induction' n with n IH; exacts [h1, h2 _ IH]
+  induction n with | zero => exact h1 | succ n IH => exact h2 _ IH
 
 /-- Recursor based on assertion of `Terminates` -/
 def terminatesRecOn
@@ -540,7 +541,7 @@ def map (f : α → β) : Computation α → Computation β
   | ⟨s, al⟩ =>
     ⟨s.map fun o => Option.casesOn o none (some ∘ f), fun n b => by
       dsimp [Stream'.map, Stream'.get]
-      induction' e : s n with a <;> intro h
+      rcases e : s n with - | a <;> intro h
       · contradiction
       · rw [al e]; exact h⟩
 

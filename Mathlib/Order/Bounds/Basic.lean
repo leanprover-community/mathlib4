@@ -20,9 +20,7 @@ open Function Set
 
 open OrderDual (toDual ofDual)
 
-universe u v
-
-variable {α : Type u} {γ : Type v}
+variable {α β γ : Type*}
 
 section
 
@@ -861,7 +859,7 @@ end
 
 section Preorder
 
-variable [Preorder α] {s : Set α} {a b : α}
+variable [Preorder α] [Preorder β] {s : Set α} {t : Set β} {a b : α}
 
 theorem lowerBounds_le_upperBounds (ha : a ∈ lowerBounds s) (hb : b ∈ upperBounds s) :
     s.Nonempty → a ≤ b
@@ -882,6 +880,20 @@ theorem le_of_isLUB_le_isGLB {x y} (ha : IsGLB s a) (hb : IsLUB s b) (hab : b �
     x ≤ b := hb.1 hx
     _ ≤ a := hab
     _ ≤ y := ha.1 hy
+
+@[simp] lemma upperBounds_prod (hs : s.Nonempty) (ht : t.Nonempty) :
+    upperBounds (s ×ˢ t) = upperBounds s ×ˢ upperBounds t := by
+  ext; rw [← nonempty_coe_sort] at hs ht; aesop (add simp [upperBounds, Prod.le_def, forall_and])
+
+@[simp] lemma lowerBounds_prod (hs : s.Nonempty) (ht : t.Nonempty) :
+    lowerBounds (s ×ˢ t) = lowerBounds s ×ˢ lowerBounds t := by
+  ext; rw [← nonempty_coe_sort] at hs ht; aesop (add simp [lowerBounds, Prod.le_def, forall_and])
+
+lemma IsLUB.prod {b : β} (hs : s.Nonempty) (ht : t.Nonempty) (ha : IsLUB s a) (hb : IsLUB t b) :
+    IsLUB (s ×ˢ t) (a, b) := by simp_all +contextual [IsLUB, IsLeast, lowerBounds]
+
+lemma IsGLB.prod {b : β} (hs : s.Nonempty) (ht : t.Nonempty) (ha : IsGLB s a) (hb : IsGLB t b) :
+    IsGLB (s ×ˢ t) (a, b) := by simp_all +contextual [IsGLB, IsGreatest, upperBounds]
 
 end Preorder
 

@@ -13,7 +13,7 @@ import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 # Gagliardo-Nirenberg-Sobolev inequality
 
 In this file we prove the Gagliardo-Nirenberg-Sobolev inequality.
-This states that for compactly supported `C¹`-functions between finite dimensional vector spaces,
+This states that for compactly supported `C¹`-functions between finite-dimensional vector spaces,
 we can bound the `L^p`-norm of `u` by the `L^q` norm of the derivative of `u`.
 The bound is up to a constant that is independent of the function `u`.
 Let `n` be the dimension of the domain.
@@ -381,8 +381,6 @@ theorem lintegral_pow_le_pow_lintegral_fderiv {u : E → F}
   have hιcard : #ι = finrank ℝ E := Fintype.card_fin (finrank ℝ E)
   have : finrank ℝ E = finrank ℝ (ι → ℝ) := by simp [hιcard]
   let e : E ≃L[ℝ] ι → ℝ := ContinuousLinearEquiv.ofFinrankEq this
-  have : IsAddHaarMeasure ((volume : Measure (ι → ℝ)).map e.symm) :=
-    (e.symm : (ι → ℝ) ≃+ E).isAddHaarMeasure_map _ e.symm.continuous e.symm.symm.continuous
   have hp : Real.HolderConjugate #ι p := by rwa [hιcard]
   have h0p : 0 ≤ p := hp.symm.nonneg
   let c := addHaarScalarFactor μ ((volume : Measure (ι → ℝ)).map e.symm)
@@ -591,7 +589,7 @@ with Haar measure, let `1 < p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
 Then the `Lᵖ'` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
 the Fréchet derivative of `u`.
 
-This is the version where the codomain of `u` is a finite dimensional normed space.
+This is the version where the codomain of `u` is a finite-dimensional normed space.
 -/
 theorem eLpNorm_le_eLpNorm_fderiv_of_eq [FiniteDimensional ℝ F]
     {u : E → F} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u)
@@ -647,7 +645,7 @@ function `u` supported in a bounded set `s` in a normed space `E` of finite dime
 Then the `L^q` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
 the Fréchet derivative of `u`.
 
-Note: The codomain of `u` needs to be a finite dimensional normed space.
+Note: The codomain of `u` needs to be a finite-dimensional normed space.
 -/
 theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
     {u : E → F} {s : Set E} (hu : ContDiff ℝ 1 u) (h2u : u.support ⊆ s)
@@ -699,7 +697,7 @@ function `u` supported in a bounded set `s` in a normed space `E` of finite dime
 Then the `Lᵖ` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
 the Fréchet derivative of `u`.
 
-Note: The codomain of `u` needs to be a finite dimensional normed space.
+Note: The codomain of `u` needs to be a finite-dimensional normed space.
 -/
 theorem eLpNorm_le_eLpNorm_fderiv [FiniteDimensional ℝ F]
     {u : E → F} {s : Set E} (hu : ContDiff ℝ 1 u) (h2u : u.support ⊆ s)

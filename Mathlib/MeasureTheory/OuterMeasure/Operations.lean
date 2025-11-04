@@ -77,10 +77,10 @@ instance instSMul : SMul R (OuterMeasure α) :=
       empty := by simp only [measure_empty]; rw [← smul_one_mul c]; simp
       mono := fun {s t} h => by
         rw [← smul_one_mul c, ← smul_one_mul c (m t)]
-        exact mul_left_mono (m.mono h)
+        exact mul_right_mono (m.mono h)
       iUnion_nat := fun s _ => by
         simp_rw [← smul_one_mul c (m _), ENNReal.tsum_mul_left]
-        exact mul_left_mono (measure_iUnion_le _) }⟩
+        exact mul_right_mono (measure_iUnion_le _) }⟩
 
 @[simp]
 theorem coe_smul (c : R) (m : OuterMeasure α) : ⇑(c • m) = c • ⇑m :=
@@ -138,6 +138,9 @@ instance instPartialOrder : PartialOrder (OuterMeasure α) where
   le_refl _ _ := le_rfl
   le_trans _ _ _ hab hbc s := le_trans (hab s) (hbc s)
   le_antisymm _ _ hab hba := ext fun s => le_antisymm (hab s) (hba s)
+
+instance instIsOrderedAddMonoid {α : Type*} : IsOrderedAddMonoid (OuterMeasure α) where
+  add_le_add_left _ _ h _ s := add_le_add_left (h s) _
 
 instance orderBot : OrderBot (OuterMeasure α) :=
   { bot := 0,

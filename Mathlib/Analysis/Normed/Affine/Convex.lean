@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
 -/
 import Mathlib.Analysis.Convex.Between
+import Mathlib.Analysis.Normed.Affine.AddTorsor
 import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 import Mathlib.Analysis.Normed.Module.Convex
 
@@ -13,6 +14,8 @@ We prove the following facts:
 
 * `exists_mem_interior_convexHull_affineBasis` : We can intercalate a simplex between a point and
   one of its neighborhoods.
+* `Convex.exists_subset_interior_convexHull_finset_of_isCompact`: We can intercalate a convex
+  polytope between a compact convex set and one of its neighborhoods.
 -/
 
 variable {E P : Type*}
@@ -36,7 +39,7 @@ theorem dist_add_dist_of_mem_segment {x y z : E} (h : y ∈ [x -[ℝ] z]) :
 end SeminormedAddCommGroup
 
 section NormedAddCommGroup
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] {s : Set E} {x : E}
+variable [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] {s t : Set E} {x : E}
 
 /-- We can intercalate a simplex between a point and one of its neighborhoods. -/
 lemma exists_mem_interior_convexHull_affineBasis (hs : s ∈ 𝓝 x) :
@@ -82,5 +85,28 @@ lemma exists_mem_interior_convexHull_affineBasis (hs : s ∈ 𝓝 x) :
       convexHull ℝ (range d) ⊆ closedBall 0 (ε / 2) := convexHull_min hdnorm (convex_closedBall ..)
       _ ⊆ ball 0 ε := closedBall_subset_ball (by linarith)
       _ ⊆ s := hεs
+
+/-- We can intercalate a convex polytope between a compact convex set and one of its neighborhoods.
+-/
+theorem Convex.exists_subset_interior_convexHull_finset_of_isCompact
+    (hs₁ : Convex ℝ s) (hs₂ : IsCompact s) (ht : t ∈ 𝓝ˢ s) :
+    ∃ u : Finset E, s ⊆ interior (convexHull ℝ u) ∧ convexHull ℝ u ⊆ t := by
+  classical
+  rcases mem_nhdsSet_iff_exists.1 ht with ⟨U, hU₁, hU₂, hU₃⟩
+  rcases compact_open_separated_add_left hs₂ hU₁ hU₂ with ⟨V, hV₁, hV₂⟩
+  rcases exists_mem_interior_convexHull_affineBasis hV₁ with ⟨b, hb₁, hb₂⟩
+  rcases hs₂.elim_finite_subcover_image (b := s)
+      (c := fun x => interior (convexHull ℝ (Set.range b)) + {x})
+      (fun _ _ => isOpen_interior.add_right)
+      (fun x hx => Set.mem_iUnion₂_of_mem hx <| by simpa using hb₁)
+    with ⟨u, hu₁, hu₂, hu₃⟩
+  lift u to Finset E using hu₂
+  refine ⟨Finset.univ.image b + u, ?_, ?_⟩
+  all_goals rw [Finset.coe_add, Finset.coe_image, Finset.coe_univ, Set.image_univ, convexHull_add]
+  · grw [hu₃, ← subset_interior_add_left, Set.iUnion₂_subset_iff, ← subset_convexHull _ u.toSet]
+    intros
+    gcongr
+    simpa
+  · grw [hu₁, hs₁.convexHull_eq, hb₂, hV₂, hU₃]
 
 end NormedAddCommGroup

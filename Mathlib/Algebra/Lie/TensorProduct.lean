@@ -192,7 +192,7 @@ theorem lieIdeal_oper_eq_tensor_map_range :
     ⁅I, N⁆ = ((toModuleHom R L M).comp (mapIncl I N : I ⊗[R] N →ₗ⁅R,L⁆ L ⊗[R] M)).range := by
   rw [← toSubmodule_inj, lieIdeal_oper_eq_linear_span, LieModuleHom.toSubmodule_range,
     LieModuleHom.toLinearMap_comp, LinearMap.range_comp, mapIncl_def, toLinearMap_map,
-    TensorProduct.map_range_eq_span_tmul, Submodule.map_span]
+    TensorProduct.range_map_eq_span_tmul, Submodule.map_span]
   congr; ext m; constructor
   · rintro ⟨⟨x, hx⟩, ⟨n, hn⟩, rfl⟩; use x ⊗ₜ n; constructor
     · use ⟨x, hx⟩, ⟨n, hn⟩; rfl

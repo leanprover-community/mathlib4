@@ -29,7 +29,7 @@ variable (C : Type*) [Category C]
 
 -- We could enable:
 -- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opposite
--- but this would probably require https://github.com/JLimperg/aesop/issues/59
+-- but this would probably require https://github.com/leanprover-community/aesop/issues/59
 -- In any case, it doesn't seem to help in this file.
 
 namespace AlgebraicGeometry

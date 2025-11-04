@@ -219,17 +219,15 @@ The underlying function of this morphism is `WittVector.frobeniusFun`.
 def frobenius : 𝕎 R →+* 𝕎 R where
   toFun := frobeniusFun
   map_zero' := by
-    -- Porting note: removing the placeholders give an error
-    refine IsPoly.ext (@IsPoly.comp p _ _ (frobeniusFun_isPoly p) WittVector.zeroIsPoly)
-      (@IsPoly.comp p _ _ WittVector.zeroIsPoly
-      (frobeniusFun_isPoly p)) ?_ _ 0
+    refine IsPoly.ext (IsPoly.comp (hg := frobeniusFun_isPoly p) (hf := WittVector.zeroIsPoly))
+      (IsPoly.comp (hg := WittVector.zeroIsPoly) (hf := frobeniusFun_isPoly p))
+      ?_ _ 0
     simp only [Function.comp_apply, map_zero, forall_const]
     ghost_simp
   map_one' := by
     refine
-      -- Porting note: removing the placeholders give an error
-      IsPoly.ext (@IsPoly.comp p _ _ (frobeniusFun_isPoly p) WittVector.oneIsPoly)
-        (@IsPoly.comp p _ _ WittVector.oneIsPoly (frobeniusFun_isPoly p)) ?_ _ 0
+      IsPoly.ext (IsPoly.comp (hg := frobeniusFun_isPoly p) (hf := WittVector.oneIsPoly))
+        (IsPoly.comp (hg := WittVector.oneIsPoly) (hf := frobeniusFun_isPoly p)) ?_ _ 0
     simp only [Function.comp_apply, map_one, forall_const]
     ghost_simp
   map_add' := by ghost_calc _ _; ghost_simp

@@ -113,14 +113,9 @@ def MemLp {α} {_ : MeasurableSpace α} [TopologicalSpace ε] (f : α → ε) (p
     (μ : Measure α := by volume_tac) : Prop :=
   AEStronglyMeasurable f μ ∧ eLpNorm f p μ < ∞
 
-@[deprecated (since := "2025-02-21")] alias Memℒp := MemLp
-
 theorem MemLp.aestronglyMeasurable [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0∞} (h : MemLp f p μ) :
     AEStronglyMeasurable f μ :=
   h.1
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.aestronglyMeasurable := MemLp.aestronglyMeasurable
 
 lemma MemLp.aemeasurable [MeasurableSpace ε] [TopologicalSpace ε]
     [TopologicalSpace.PseudoMetrizableSpace ε] [BorelSpace ε]

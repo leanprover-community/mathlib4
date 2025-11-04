@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patience Ablett, Kevin Buzzard, Harald Carlens, Wayne Ng Kwing King, Michael Schlößer,
   Justus Springer, Andrew Yang, Jujian Zhang
 -/
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Basic
 import Mathlib.AlgebraicGeometry.ValuativeCriterion
 
@@ -74,20 +75,20 @@ lemma lift_awayMapₐ_awayMapₐ_surjective {d e : ℕ} {f : A} (hf : f ∈ 𝒜
 
 open TensorProduct in
 instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
-  refine ⟨IsLocalAtTarget.of_openCover (Pullback.openCoverOfLeftRight
+  refine ⟨IsZariskiLocalAtTarget.of_openCover (Pullback.openCoverOfLeftRight
     (affineOpenCover 𝒜).openCover (affineOpenCover 𝒜).openCover _ _) ?_⟩
   intro ⟨i, j⟩
   dsimp [Scheme, Cover.pullbackHom]
   refine (MorphismProperty.cancel_left_of_respectsIso (P := @IsClosedImmersion)
     (f := (pullbackDiagonalMapIdIso ..).inv) _).mp ?_
-  let e₁ : pullback ((affineOpenCover 𝒜).map i ≫ toSpecZero 𝒜)
-        ((affineOpenCover 𝒜).map j ≫ toSpecZero 𝒜) ≅
-        Spec(TensorProduct (𝒜 0) (Away 𝒜 i.2) (Away 𝒜 j.2)) := by
+  let e₁ : pullback ((affineOpenCover 𝒜).f i ≫ toSpecZero 𝒜)
+        ((affineOpenCover 𝒜).f j ≫ toSpecZero 𝒜) ≅
+        Spec (.of <| TensorProduct (𝒜 0) (Away 𝒜 i.2) (Away 𝒜 j.2)) := by
     refine pullback.congrHom ?_ ?_ ≪≫ pullbackSpecIso (𝒜 0) (Away 𝒜 i.2) (Away 𝒜 j.2)
-    · simp [affineOpenCover, openCoverOfISupEqTop, awayι_toSpecZero]; rfl
-    · simp [affineOpenCover, openCoverOfISupEqTop, awayι_toSpecZero]; rfl
-  let e₂ : pullback ((affineOpenCover 𝒜).map i) ((affineOpenCover 𝒜).map j) ≅
-        Spec(Away 𝒜 (i.2 * j.2)) :=
+    · simp [affineOpenCover, affineOpenCoverOfIrrelevantLESpan, awayι_toSpecZero]; rfl
+    · simp [affineOpenCover, affineOpenCoverOfIrrelevantLESpan, awayι_toSpecZero]; rfl
+  let e₂ : pullback ((affineOpenCover 𝒜).f i) ((affineOpenCover 𝒜).f j) ≅
+        Spec (.of <| Away 𝒜 (i.2 * j.2)) :=
     pullbackAwayιIso 𝒜 _ _ _ _ rfl
   rw [← MorphismProperty.cancel_right_of_respectsIso (P := @IsClosedImmersion) _ e₁.hom,
     ← MorphismProperty.cancel_left_of_respectsIso (P := @IsClosedImmersion) e₂.inv]
@@ -129,7 +130,7 @@ section LocallyOfFiniteType
 instance [Algebra.FiniteType (𝒜 0) A] : LocallyOfFiniteType (Proj.toSpecZero 𝒜) := by
   obtain ⟨x, hx, hx'⟩ := GradedAlgebra.exists_finset_adjoin_eq_top_and_homogeneous_ne_zero 𝒜
   choose d hd hxd using hx'
-  rw [IsLocalAtSource.iff_of_iSup_eq_top (P := @LocallyOfFiniteType) _
+  rw [IsZariskiLocalAtSource.iff_of_iSup_eq_top (P := @LocallyOfFiniteType) _
     (Proj.iSup_basicOpen_eq_top' 𝒜 (ι := x) (↑) (fun i ↦ ⟨_, hxd _ i.2⟩) (by simpa using hx))]
   intro i
   rw [← MorphismProperty.cancel_left_of_respectsIso (P := @LocallyOfFiniteType)
@@ -316,12 +317,13 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
     rintro _ ⟨x, rfl⟩
     obtain rfl := Subsingleton.elim x (IsLocalRing.closedPoint K)
     exact hi
-  let φ : Spec(K) ⟶ _ := IsOpenImmersion.lift _ _ this
+  let φ : Spec (.of <| K) ⟶ _ := IsOpenImmersion.lift _ _ this
   have H : Spec.preimage i₂ ≫ CommRingCat.ofHom (algebraMap O K) =
       CommRingCat.ofHom (fromZeroRingHom 𝒜 _) ≫ Spec.preimage φ := by
     apply Spec.map_injective
     simp only [Spec.map_comp, Spec.map_preimage, ← w.w]
-    rw [← Proj.awayι_toSpecZero, IsOpenImmersion.lift_fac_assoc]
+    rw [← Proj.awayι_toSpecZero _ _ (hxd i i.2), IsOpenImmersion.lift_fac_assoc]
+    exact Nat.zero_lt_of_ne_zero (hd i i.2)
   obtain ⟨i₀, φ', hφ, hφ'⟩ :=
     valuativeCriterion_existence_aux 𝒜 (Spec.preimage i₂).hom x (↑) (by simpa using hx) i
       (O := O) (K := K) (Spec.preimage φ).hom congr(($H).hom)
@@ -346,7 +348,8 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
     apply IsFractionRing.injective O K
     refine (DFunLike.congr_fun hφ'' (fromZeroRingHom 𝒜 _ _)).trans ?_
     simp only [RingHom.coe_comp, Function.comp_apply]
-    rw [awayMap_fromZeroRingHom, ← awayMap_fromZeroRingHom 𝒜 _ rfl, ← RingHom.comp_apply, hφ]
+    rw [awayMap_fromZeroRingHom, ← awayMap_fromZeroRingHom 𝒜 (hxd i₀ i₀.2) rfl,
+      ← RingHom.comp_apply, hφ]
     exact congr($(H.symm) x)
 
 instance [Algebra.FiniteType (𝒜 0) A] : UniversallyClosed (Proj.toSpecZero 𝒜) := by

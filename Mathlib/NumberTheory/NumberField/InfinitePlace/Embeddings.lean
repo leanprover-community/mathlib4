@@ -169,6 +169,11 @@ variable {K}
 abbrev conjugate (φ : K →+* ℂ) : K →+* ℂ := star φ
 
 @[simp]
+theorem conjugate_comp (φ : K →+* ℂ) (σ : k →+* K) :
+    (conjugate φ).comp σ = conjugate (φ.comp σ) :=
+  rfl
+
+@[simp]
 theorem conjugate_coe_eq (φ : K →+* ℂ) (x : K) : (conjugate φ) x = conj (φ x) := rfl
 
 theorem place_conjugate (φ : K →+* ℂ) : place (conjugate φ) = place φ := by
@@ -267,5 +272,53 @@ theorem IsConj.comp (hσ : IsConj φ σ) (ν : K ≃ₐ[k] K) :
 lemma orderOf_isConj_two_of_ne_one (hσ : IsConj φ σ) (hσ' : σ ≠ 1) :
     orderOf σ = 2 :=
   orderOf_eq_prime_iff.mpr ⟨by ext; simpa using isConj_apply_apply hσ _, hσ'⟩
+
+section Extension
+
+variable {K : Type*} (L : Type*) [Field K] [Field L] (ψ : K →+* ℂ) [Algebra K L]
+
+/-- If `L/K` and `ψ : K →+* ℂ`, then the type of `ComplexEmbedding.Extension L ψ` consists of all
+`φ : L →+* ℂ` such that `φ.comp (algebraMap K L) = ψ`. -/
+protected abbrev Extension := { φ : L →+* ℂ // φ.comp (algebraMap K L) = ψ }
+
+namespace Extension
+
+variable (φ : ComplexEmbedding.Extension L ψ) {L ψ}
+
+theorem comp_eq : φ.1.comp (algebraMap K L) = ψ := φ.2
+
+theorem conjugate_comp_ne (h : ¬IsReal ψ) : (conjugate φ).comp (algebraMap K L) ≠ ψ := by
+  simp_all [ComplexEmbedding.isReal_iff, comp_eq]
+
+theorem not_isReal_of_not_isReal (h : ¬IsReal ψ) : ¬IsReal φ.1 :=
+  mt (IsReal.comp _) (comp_eq φ ▸ h)
+
+end Extension
+
+variable (K) {L ψ}
+
+/-- If `L/K` and `φ : L →+* ℂ`, then `IsMixed K φ` if the image of `φ` is complex while the image
+of `φ` restricted to `K` is real.
+
+This is the complex embedding analogue of `InfinitePlace.IsRamified K w`, where
+`w : InfinitePlace L`. It is not the same concept because conjugation of `φ` in this case
+leads to two distinct mixed embeddings but only a single ramified place `w`, leading to a
+two-to-one isomorphism between them. -/
+abbrev IsMixed (φ : L →+* ℂ) :=
+  ComplexEmbedding.IsReal (φ.comp (algebraMap K L)) ∧ ¬ComplexEmbedding.IsReal φ
+
+/-- If `L/K` and `φ : L →+* ℂ`, then `IsMixed K φ` if `φ` is not mixed in `K`, i.e., `φ` is real
+if and only if it's restriction to `K` is.
+
+This is the complex embedding analogue of `InfinitePlace.IsUnramified K w`, where
+`w : InfinitePlace L`. In this case there is an isomorphism between unmixed embeddings and
+unramified infinite places. -/
+abbrev IsUnmixed (φ : L →+* ℂ) := IsReal (φ.comp (algebraMap K L)) → IsReal φ
+
+theorem IsUnmixed.isReal_iff_isReal {φ : L →+* ℂ} (h : IsUnmixed K φ) :
+    IsReal (φ.comp (algebraMap K L)) ↔ IsReal φ := by
+  aesop (add simp [IsReal.comp])
+
+end Extension
 
 end NumberField.ComplexEmbedding

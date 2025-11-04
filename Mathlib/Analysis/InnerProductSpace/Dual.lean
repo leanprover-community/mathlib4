@@ -163,7 +163,7 @@ def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
           ⟪(ℓ z† / ⟪z, z⟫) • z, x⟫ = ℓ z / ⟪z, z⟫ * ⟪z, x⟫ := by simp [inner_smul_left]
           _ = ℓ z * ⟪z, x⟫ / ⟪z, z⟫ := by rw [← div_mul_eq_mul_div]
           _ = ℓ x * ⟪z, z⟫ / ⟪z, z⟫ := by rw [h₂]
-          _ = ℓ x := by field_simp [inner_self_ne_zero.2 z_ne_0])
+          _ = ℓ x := by field_simp [inner_self_ne_zero.2])
 
 variable {𝕜} {E}
 

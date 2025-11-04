@@ -9,7 +9,7 @@ import Mathlib.Tactic.ToAdditive
 /-!
 # Notations for operations involving order and algebraic structure
 
-## Notations
+## Notation
 
 * `a⁺ᵐ = a ⊔ 1`: *Positive component* of an element `a` of a multiplicative lattice ordered group
 * `a⁻ᵐ = a⁻¹ ⊔ 1`: *Negative component* of an element `a` of a multiplicative lattice ordered group

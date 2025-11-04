@@ -361,7 +361,7 @@ def comapMk'OrderIso (N : Subgroup G) [hn : N.Normal] :
   toFun H' := ⟨Subgroup.comap (mk' N) H', le_comap_mk' N _⟩
   invFun H := Subgroup.map (mk' N) H
   left_inv H' := Subgroup.map_comap_eq_self <| by simp
-  right_inv := fun ⟨H, hH⟩ => Subtype.ext_val <| by simpa
+  right_inv := fun ⟨H, hH⟩ => Subtype.ext <| by simpa
   map_rel_iff' := Subgroup.comap_le_comap_of_surjective <| mk'_surjective _
 
 end CorrespTheorem

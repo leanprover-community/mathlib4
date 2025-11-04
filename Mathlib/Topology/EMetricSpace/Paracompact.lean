@@ -122,13 +122,13 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
       rw [disjoint_iff_inf_le]
       rintro y ⟨hym, hyx⟩
       rcases memD.1 hym with ⟨z, rfl, _hzi, H, hz⟩
-      have : z ∉ ball x (2⁻¹ ^ k) := fun hz' => H n (by omega) i (hsub hz')
+      have : z ∉ ball x (2⁻¹ ^ k) := fun hz' => H n (by cutsat) i (hsub hz')
       apply this
       calc
         edist z x ≤ edist y z + edist y x := edist_triangle_left _ _ _
         _ < 2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1) := ENNReal.add_lt_add hz hyx
         _ ≤ 2⁻¹ ^ (k + 1) + 2⁻¹ ^ (k + 1) :=
-          (add_le_add (hpow_le <| by omega) (hpow_le <| by omega))
+          (add_le_add (hpow_le <| by cutsat) (hpow_le <| by cutsat))
         _ = 2⁻¹ ^ k := by rw [← two_mul, h2pow]
     -- For each `m ≤ n + k` there is at most one `j` such that `D m j ∩ B` is nonempty.
     have Hle (m) (hm : m ≤ n + k) : Set.Subsingleton { j | (D m j ∩ B).Nonempty } := by

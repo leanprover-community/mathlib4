@@ -263,7 +263,7 @@ theorem add_const_nat {f : Filtration ℕ m} {τ : Ω → ℕ} (hτ : IsStopping
     convert @MeasurableSet.empty _ (f.1 j)
     ext ω
     simp only [Set.mem_empty_iff_false, iff_false, Set.mem_setOf]
-    omega
+    cutsat
 
 -- generalize to certain countable type?
 theorem add {f : Filtration ℕ m} {τ π : Ω → ℕ} (hτ : IsStoppingTime f τ) (hπ : IsStoppingTime f π) :
@@ -274,7 +274,7 @@ theorem add {f : Filtration ℕ m} {τ π : Ω → ℕ} (hτ : IsStoppingTime f 
       MeasurableSet.iUnion fun hk => (hπ.measurableSet_eq_le hk).inter (hτ.add_const_nat i)
   ext ω
   simp only [Pi.add_apply, Set.mem_setOf_eq, Set.mem_iUnion, Set.mem_inter_iff, exists_prop]
-  refine ⟨fun h => ⟨π ω, by omega, rfl, h⟩, ?_⟩
+  refine ⟨fun h => ⟨π ω, by cutsat, rfl, h⟩, ?_⟩
   rintro ⟨j, hj, rfl, h⟩
   assumption
 

@@ -99,8 +99,8 @@ theorem cantorSet_eq_union_halves :
   simp only [cantorSet]
   rw [Set.image_iInter, Set.image_iInter]
   rotate_left
-  · exact (mulRight_bijective₀ 3⁻¹ (by norm_num)).comp (AddGroup.addLeft_bijective 2)
-  · exact mulRight_bijective₀ 3⁻¹ (by norm_num)
+  · exact (mulRight_bijective₀ 3⁻¹ (by simp)).comp (AddGroup.addLeft_bijective 2)
+  · exact mulRight_bijective₀ 3⁻¹ (by simp)
   simp_rw [← Function.comp_def,
     ← Set.iInter_union_of_antitone
       (Set.monotone_image.comp_antitone preCantorSet_antitone)

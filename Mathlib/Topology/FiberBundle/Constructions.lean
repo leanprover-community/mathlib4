@@ -53,7 +53,7 @@ def homeomorphProd : TotalSpace F (Trivial B F) ≃ₜ B × F :=
 /-- Local trivialization for trivial bundle. -/
 @[simps!]
 def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
-  toPartialHomeomorph := (homeomorphProd B F).toPartialHomeomorph
+  toOpenPartialHomeomorph := (homeomorphProd B F).toOpenPartialHomeomorph
   baseSet := univ
   open_baseSet := isOpen_univ
   source_eq := rfl
@@ -65,8 +65,8 @@ def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
   simp [trivialization, homeomorphProd, TotalSpace.toProd, Trivialization.symm,
     Pretrivialization.symm, Trivialization.toPretrivialization]
 
-@[simp] lemma toPartialHomeomorph_trivialization_symm_apply (v : B × F) :
-    (trivialization B F).toPartialHomeomorph.symm v = ⟨v.1, v.2⟩ := rfl
+@[simp] lemma toOpenPartialHomeomorph_trivialization_symm_apply (v : B × F) :
+    (trivialization B F).toOpenPartialHomeomorph.symm v = ⟨v.1, v.2⟩ := rfl
 
 /-- Fiber bundle instance on the trivial bundle. -/
 @[simps] instance fiberBundle : FiberBundle F (Bundle.Trivial B F) where
@@ -139,7 +139,7 @@ theorem Prod.continuous_to_fun : ContinuousOn (Prod.toFun' e₁ e₂)
   let f₃ : (B × F₁) × B × F₂ → B × F₁ × F₂ := fun p ↦ ⟨p.1.1, p.1.2, p.2.2⟩
   have hf₁ : Continuous f₁ := (Prod.isInducing_diag F₁ E₁ F₂ E₂).continuous
   have hf₂ : ContinuousOn f₂ (e₁.source ×ˢ e₂.source) :=
-    e₁.toPartialHomeomorph.continuousOn.prodMap e₂.toPartialHomeomorph.continuousOn
+    e₁.toOpenPartialHomeomorph.continuousOn.prodMap e₂.toOpenPartialHomeomorph.continuousOn
   have hf₃ : Continuous f₃ := by fun_prop
   refine ((hf₃.comp_continuousOn hf₂).comp hf₁.continuousOn ?_).congr ?_
   · rw [e₁.source_eq, e₂.source_eq]

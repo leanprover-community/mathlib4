@@ -182,4 +182,25 @@ instance (c : E) : IsGaussian (μ.map (fun x ↦ c - x)) := by
     convert this using 1
   infer_instance
 
+/-- A product of Gaussian distributions is Gaussian. -/
+instance [SecondCountableTopologyEither E F] {ν : Measure F} [IsGaussian ν] :
+    IsGaussian (μ.prod ν) := by
+  refine isGaussian_of_charFunDual_eq fun L ↦ ?_
+  rw [charFunDual_prod, IsGaussian.charFunDual_eq, IsGaussian.charFunDual_eq, ← Complex.exp_add]
+  congr
+  let L₁ := L.comp (.inl ℝ E F)
+  let L₂ := L.comp (.inr ℝ E F)
+  suffices μ[L₁] * I - Var[L₁; μ] / 2 + (ν[L₂] * I - Var[L₂; ν] / 2)
+      = (μ.prod ν)[L] * I - Var[L; μ.prod ν] / 2 by convert this
+  rw [sub_add_sub_comm, ← add_mul]
+  congr
+  · simp_rw [integral_complex_ofReal]
+    rw [integral_continuousLinearMap_prod' (IsGaussian.integrable_dual μ (L.comp (.inl ℝ E F)))
+      (IsGaussian.integrable_dual ν (L.comp (.inr ℝ E F)))]
+    norm_cast
+  · field_simp
+    rw [variance_dual_prod' (IsGaussian.memLp_dual μ (L.comp (.inl ℝ E F)) 2 (by simp))
+      (IsGaussian.memLp_dual ν (L.comp (.inr ℝ E F)) 2 (by simp))]
+    norm_cast
+
 end ProbabilityTheory

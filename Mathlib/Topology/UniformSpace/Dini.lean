@@ -18,7 +18,7 @@ This theorem is true in a different generality as well: when `G` is a linearly o
 group with the order topology. This weakens the norm assumption, in exchange for strengthening to
 a linear order. This separate generality is not included in this file, but that generality was
 included in initial drafts of the original
-[PR #19068](https://github.com/leanprover-community/mathlib4/pull/19068) and can be recovered if
+https://github.com/leanprover-community/mathlib4/pull/19068 and can be recovered if
 necessary.
 
 The key idea of the proof is to use a particular basis of `𝓝 0` which consists of open sets that

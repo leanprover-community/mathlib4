@@ -34,10 +34,6 @@ We prove the following results characterizing the weak topology:
 * `tendsto_iff_forall_eval_tendsto`: Convergence in `WeakBilin B` can be characterized
   in terms of convergence of the evaluations at all points `y : F`.
 
-## Notations
-
-No new notation is introduced.
-
 ## References
 
 * [H. H. Schaefer, *Topological Vector Spaces*][schaefer1966]

@@ -64,9 +64,6 @@ theorem getElem?_succ_scanl {i : ℕ} : (scanl f b l)[i + 1]? =
     · simp
     · simp only [hl, getElem?_cons_succ]
 
-@[deprecated (since := "2025-02-21")]
-alias get?_succ_scanl := getElem?_succ_scanl
-
 theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
     (scanl f b l)[i + 1] =
       f ((scanl f b l)[i]'(Nat.lt_of_succ_lt h))
@@ -79,11 +76,11 @@ theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
   | succ i hi =>
     cases l
     · simp only [scanl, length] at h
-      exact absurd h (by omega)
+      exact absurd h (by cutsat)
     · simp_rw [scanl_cons]
       rw [getElem_append_right]
       · simp only [length, Nat.zero_add 1, succ_add_sub_one, hi]; rfl
-      · simp only [length_singleton]; omega
+      · simp only [length_singleton]; cutsat
 
 /-! ### List.scanr -/
 
@@ -128,7 +125,7 @@ theorem drop_scanr {i : ℕ} (h : i ≤ l.length) : (scanr f b l).drop i = scanr
   | zero => simp
   | succ i ih =>
     rw [← drop_drop]
-    simp [ih (by omega), tail_scanr (l := l.drop i) (by rw [length_drop]; omega)]
+    simp [ih (by cutsat), tail_scanr (l := l.drop i) (by rw [length_drop]; cutsat)]
 
 @[simp]
 theorem getElem_scanr_zero : (scanr f b l)[0] = foldr f b l := by

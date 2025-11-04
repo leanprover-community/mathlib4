@@ -317,7 +317,7 @@ theorem kruskal_katona_lovasz_form (hir : i ≤ r) (hrk : r ≤ k) (hkn : k ≤ 
         obtain ⟨C, BsubC, hCrange, hcard⟩ := this
         rw [hB, ← Nat.add_sub_assoc hir, Nat.add_sub_cancel_left] at hcard
         refine ⟨C, mem_powersetCard.2 ⟨hCrange, hcard⟩, BsubC, ?_⟩
-        rw [card_sdiff BsubC, hcard, hB, Nat.sub_sub_self hir]
+        rw [card_sdiff_of_subset BsubC, hcard, hB, Nat.sub_sub_self hir]
       · rintro ⟨A, Ah, hBA, card_sdiff_i⟩
         rw [mem_powersetCard] at Ah
         refine ⟨hBA.trans Ah.1, eq_tsub_of_add_eq ?_⟩
@@ -357,7 +357,7 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
   -- Consider 𝒜ᶜˢ = {sᶜ | s ∈ 𝒜}
   -- Its iterated shadow (∂^[n-2k] 𝒜ᶜˢ) is disjoint from 𝒜 by intersecting-ness
   have : Disjoint 𝒜 (∂^[n - 2 * r] 𝒜ᶜˢ) := disjoint_right.2 fun A hAbar hA ↦ by
-    simp [mem_shadow_iterate_iff_exists_sdiff, mem_compls] at hAbar
+    simp only [mem_shadow_iterate_iff_exists_sdiff, mem_compls] at hAbar
     obtain ⟨C, hC, hAC, _⟩ := hAbar
     exact h𝒜 hA hC (disjoint_of_subset_left hAC disjoint_compl_right)
   have : r ≤ n := h₃.trans (Nat.div_le_self n 2)
@@ -368,7 +368,7 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
   -- and everything in 𝒜ᶜˢ has size n-r.
   have h𝒜bar : (𝒜ᶜˢ : Set (Finset (Fin n))).Sized (n - r) := by simpa using h₂.compls
   -- We can use the Lovasz form of Kruskal-Katona to get |∂^[n-2k] 𝒜ᶜˢ| ≥ (n-1) choose r
-  have kk := kruskal_katona_lovasz_form (i := n - 2 * r) (by omega)
+  have kk := kruskal_katona_lovasz_form (i := n - 2 * r) (by cutsat)
     ((tsub_le_tsub_iff_left ‹1 ≤ n›).2 h1r) tsub_le_self h𝒜bar z.le
   have : n - r - (n - 2 * r) = r := by omega
   rw [this] at kk
@@ -384,6 +384,6 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
   rw [coe_union, Set.sized_union]
   refine ⟨‹_›, ?_⟩
   convert h𝒜bar.shadow_iterate
-  omega
+  cutsat
 
 end Finset

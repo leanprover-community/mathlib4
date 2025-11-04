@@ -339,7 +339,7 @@ theorem restrict_union_congr :
     _ = ν (US ∪ u ∩ t) := measure_add_diff hm.nullMeasurableSet _
     _ = ν (u ∩ s ∪ u ∩ t) := .symm <| measure_union_congr_of_subset hsub hν.le Subset.rfl le_rfl
 
-theorem restrict_finset_biUnion_congr {s : Finset ι} {t : ι → Set α} :
+theorem restrict_biUnion_finset_congr {s : Finset ι} {t : ι → Set α} :
     μ.restrict (⋃ i ∈ s, t i) = ν.restrict (⋃ i ∈ s, t i) ↔
       ∀ i ∈ s, μ.restrict (t i) = ν.restrict (t i) := by
   classical
@@ -349,6 +349,9 @@ theorem restrict_finset_biUnion_congr {s : Finset ι} {t : ι → Set α} :
     simp only [forall_eq_or_imp, iUnion_iUnion_eq_or_left, Finset.mem_insert]
     rw [restrict_union_congr, ← hs]
 
+@[deprecated (since := "2025-08-28")]
+alias restrict_finset_biUnion_congr := restrict_biUnion_finset_congr
+
 theorem restrict_iUnion_congr [Countable ι] {s : ι → Set α} :
     μ.restrict (⋃ i, s i) = ν.restrict (⋃ i, s i) ↔ ∀ i, μ.restrict (s i) = ν.restrict (s i) := by
   refine ⟨fun h i => restrict_congr_mono (subset_iUnion _ _) h, fun h => ?_⟩
@@ -356,7 +359,7 @@ theorem restrict_iUnion_congr [Countable ι] {s : ι → Set α} :
   have D : Directed (· ⊆ ·) fun t : Finset ι => ⋃ i ∈ t, s i :=
     Monotone.directed_le fun t₁ t₂ ht => biUnion_subset_biUnion_left ht
   rw [iUnion_eq_iUnion_finset]
-  simp only [restrict_iUnion_apply_eq_iSup D ht, restrict_finset_biUnion_congr.2 fun i _ => h i]
+  simp only [restrict_iUnion_apply_eq_iSup D ht, restrict_biUnion_finset_congr.2 fun i _ => h i]
 
 theorem restrict_biUnion_congr {s : Set ι} {t : ι → Set α} (hc : s.Countable) :
     μ.restrict (⋃ i ∈ s, t i) = ν.restrict (⋃ i ∈ s, t i) ↔
@@ -383,8 +386,8 @@ theorem exists_mem_of_measure_ne_zero_of_ae (hs : μ s ≠ 0) {p : α → Prop}
   rw [← μ.restrict_apply_self, ← frequently_ae_mem_iff] at hs
   exact (hs.and_eventually hp).exists
 
-/-- If a quasi measure preserving map `f` maps a set `s` to a set `t`,
-then it is quasi measure preserving with respect to the restrictions of the measures. -/
+/-- If a quasi-measure-preserving map `f` maps a set `s` to a set `t`,
+then it is quasi-measure-preserving with respect to the restrictions of the measures. -/
 theorem QuasiMeasurePreserving.restrict {ν : Measure β} {f : α → β}
     (hf : QuasiMeasurePreserving f μ ν) {t : Set β} (hmaps : MapsTo f s t) :
     QuasiMeasurePreserving f (μ.restrict s) (ν.restrict t) where

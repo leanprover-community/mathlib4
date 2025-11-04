@@ -527,7 +527,7 @@ def depRewriteTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config :=
 def depRewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
     (config : DepRewrite.Config := {}) : TacticM Unit := withMainContext do
   -- Note: we cannot execute `replaceLocalDecl` inside `Term.withSynthesize`.
-  -- See issues #2711 and #2727.
+  -- See issues https://github.com/leanprover-community/mathlib4/issues/2711 and https://github.com/leanprover-community/mathlib4/issues/2727.
   let rwResult ← Term.withSynthesize <| withMainContext do
     let e ← elabTerm stx none true
     let localDecl ← fvarId.getDecl
@@ -592,7 +592,7 @@ def depRwTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config := {}) 
 def depRwLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
     (config : DepRewrite.Config := {}) : TacticM Unit := withMainContext do
   -- Note: we cannot execute `replaceLocalDecl` inside `Term.withSynthesize`.
-  -- See issues #2711 and #2727.
+  -- See issues https://github.com/leanprover-community/mathlib4/issues/2711 and https://github.com/leanprover-community/mathlib4/issues/2727.
   let rwResult ← Term.withSynthesize <| withMainContext do
     let e ← elabTerm stx none true
     let localDecl ← fvarId.getDecl

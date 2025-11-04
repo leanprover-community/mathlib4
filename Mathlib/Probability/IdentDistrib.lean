@@ -209,15 +209,9 @@ theorem memLp_snd [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : 
   rw [← h.eLpNorm_eq]
   exact hf.2
 
-@[deprecated (since := "2025-02-21")]
-alias memℒp_snd := memLp_snd
-
 theorem memLp_iff [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν) :
     MemLp f p μ ↔ MemLp g p ν :=
   ⟨fun hf => h.memLp_snd hf, fun hg => h.symm.memLp_snd hg⟩
-
-@[deprecated (since := "2025-02-21")]
-alias memℒp_iff := memLp_iff
 
 theorem integrable_snd [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν)
     (hf : Integrable f μ) : Integrable g ν := by
@@ -317,9 +311,6 @@ theorem MemLp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → α 
   rw [this, this, ← eLpNorm_map_measure F_meas.aestronglyMeasurable (hf i).aemeasurable_fst,
     (hf i).map_eq, eLpNorm_map_measure F_meas.aestronglyMeasurable (hf j).aemeasurable_fst]
 
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.uniformIntegrable_of_identDistrib_aux := MemLp.uniformIntegrable_of_identDistrib_aux
-
 /-- A sequence of identically distributed Lᵖ functions is p-uniformly integrable. -/
 theorem MemLp.uniformIntegrable_of_identDistrib {ι : Type*} {f : ι → α → E} {j : ι} {p : ℝ≥0∞}
     (hp : 1 ≤ p) (hp' : p ≠ ∞) (hℒp : MemLp (f j) p μ) (hf : ∀ i, IdentDistrib (f i) (f j) μ μ) :
@@ -334,9 +325,6 @@ theorem MemLp.uniformIntegrable_of_identDistrib {ι : Type*} {f : ι → α → 
     (MemLp.uniformIntegrable_of_identDistrib_aux hp hp' hgℒp hgmeas fun i =>
       (IdentDistrib.of_ae_eq (hgmeas i).aemeasurable (hgeq i)).trans
         ((hf i).trans <| IdentDistrib.of_ae_eq (hfmeas j).aemeasurable (hgeq j).symm)) hgeq
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.uniformIntegrable_of_identDistrib := MemLp.uniformIntegrable_of_identDistrib
 
 end UniformIntegrable
 

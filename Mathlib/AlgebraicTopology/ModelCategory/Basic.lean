@@ -105,7 +105,6 @@ private lemma mk'.cm3a_aux [CategoryWithFibrations C] [CategoryWithCofibrations 
   have sq : CommSq h.r.left hw.i f (hw.p ≫ h.r.right) := ⟨by simp⟩
   have hf : fibrations C f := by rwa [← fibration_iff]
   have : HasLiftingProperty hw.i f := hasLiftingProperty_of_wfs _ _ hw.hi hf
-  have : WeakEquivalence hw.i := by simpa only [weakEquivalence_iff] using hw.hi.2
   have : RetractArrow f hw.p :=
     { i := Arrow.homMk (h.i.left ≫ hw.i) h.i.right
       r := Arrow.homMk sq.lift h.r.right }

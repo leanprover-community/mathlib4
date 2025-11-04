@@ -7,7 +7,6 @@ import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Data.Set.Finite.Range
 import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Finite.Sigma
 import Mathlib.Data.Finite.Vector
 
 /-!

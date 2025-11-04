@@ -5,6 +5,7 @@ Authors: Heather Macbeth, Arend Mellendijk, Michael Rothgang
 -/
 import Mathlib.Algebra.BigOperators.Group.List.Basic
 import Mathlib.Algebra.Field.Power
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Util.Qq
 
 /-! # Lemmas for the field_simp tactic
@@ -41,6 +42,9 @@ theorem zpow'_add (a : α) (m n : ℤ) :
 
 theorem zpow'_of_ne_zero_right (a : α) (n : ℤ) (hn : n ≠ 0) : zpow' a n = a ^ n := by
   simp [zpow', hn]
+
+theorem zpow'_of_ne_zero_left (a : α) (n : ℤ) (ha : a ≠ 0) : zpow' a n = a ^ n := by
+  simp [zpow', ha]
 
 @[simp]
 lemma zero_zpow' (n : ℤ) : zpow' (0 : α) n = 0 := by
@@ -147,6 +151,22 @@ theorem eq_eq_cancel_eq {M : Type*} [CancelMonoidWithZero M] {e₁ e₂ f₁ f�
   subst H₁ H₂
   rw [mul_right_inj' HL]
 
+theorem le_eq_cancel_le {M : Type*} [CancelMonoidWithZero M] [PartialOrder M] [PosMulMono M]
+    [PosMulReflectLE M] {e₁ e₂ f₁ f₂ L : M}
+    (H₁ : e₁ = L * f₁) (H₂ : e₂ = L * f₂) (HL : 0 < L) :
+    (e₁ ≤ e₂) = (f₁ ≤ f₂) := by
+  subst H₁ H₂
+  apply Iff.eq
+  exact mul_le_mul_iff_right₀ HL
+
+theorem lt_eq_cancel_lt {M : Type*} [CancelMonoidWithZero M] [PartialOrder M] [PosMulStrictMono M]
+    [PosMulReflectLT M] {e₁ e₂ f₁ f₂ L : M}
+    (H₁ : e₁ = L * f₁) (H₂ : e₂ = L * f₂) (HL : 0 < L) :
+    (e₁ < e₂) = (f₁ < f₂) := by
+  subst H₁ H₂
+  apply Iff.eq
+  exact mul_lt_mul_iff_of_pos_left HL
+
 /-! ### Theory of lists of pairs (exponent, atom)
 
 This section contains the lemmas which are orchestrated by the `field_simp` tactic
@@ -185,6 +205,15 @@ theorem cons_ne_zero [GroupWithZero M] (r : ℤ) {x : M} (hx : x ≠ 0) {l : NF 
   unfold eval cons
   apply mul_ne_zero ?_ hl
   simp [zpow'_eq_zero_iff, hx]
+
+theorem cons_pos [GroupWithZero M] [PartialOrder M] [PosMulStrictMono M] [PosMulReflectLT M]
+    [ZeroLEOneClass M] (r : ℤ) {x : M} (hx : 0 < x) {l : NF M} (hl : 0 < l.eval) :
+    0 < ((r, x) ::ᵣ l).eval := by
+  unfold eval cons
+  apply mul_pos ?_ hl
+  simp only
+  rw [zpow'_of_ne_zero_left _ _ hx.ne']
+  apply zpow_pos hx
 
 theorem atom_eq_eval [GroupWithZero M] (x : M) : x = NF.eval [(1, x)] := by simp [eval]
 

@@ -49,7 +49,7 @@ def shiftShortComplexFunctor' (n i j k i' j' k' : ℤ)
 noncomputable def shiftShortComplexFunctorIso (n i i' : ℤ) (hi : n + i = i') :
     shiftFunctor C n ⋙ shortComplexFunctor C _ i ≅ shortComplexFunctor C _ i' :=
   shiftShortComplexFunctor' C n _ i _ _ i' _
-    (by simp only [prev]; omega) hi (by simp only [next]; omega)
+    (by simp only [prev]; cutsat) hi (by simp only [next]; cutsat)
 
 variable {C}
 
@@ -137,7 +137,7 @@ lemma quasiIso_shift_iff {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n : ℤ) :
   simp only [quasiIso_iff, fun i ↦ quasiIsoAt_shift_iff φ n i _ rfl]
   constructor
   · intro h j
-    obtain ⟨i, rfl⟩ : ∃ i, j = n + i := ⟨j - n, by omega⟩
+    obtain ⟨i, rfl⟩ : ∃ i, j = n + i := ⟨j - n, by cutsat⟩
     exact h i
   · intro h i
     exact h (n + i)
@@ -161,10 +161,10 @@ lemma liftCycles_shift_homologyπ
     (hj : (up ℤ).next i = j) (hf : f ≫ (K⟦n⟧).d i j = 0) (i' : ℤ) (hi' : n + i = i') (j' : ℤ)
     (hj' : (up ℤ).next i' = j') :
     (K⟦n⟧).liftCycles f j hj hf ≫ (K⟦n⟧).homologyπ i =
-      K.liftCycles (f ≫ (K.shiftFunctorObjXIso n i i' (by omega)).hom) j' hj' (by
+      K.liftCycles (f ≫ (K.shiftFunctorObjXIso n i i' (by cutsat)).hom) j' hj' (by
         simp only [next] at hj hj'
-        obtain rfl : i' = i + n := by omega
-        obtain rfl : j' = j + n := by omega
+        obtain rfl : i' = i + n := by cutsat
+        obtain rfl : j' = j + n := by cutsat
         dsimp at hf ⊢
         simp only [Linear.comp_units_smul] at hf
         apply (one_smul (M := ℤˣ) _).symm.trans _

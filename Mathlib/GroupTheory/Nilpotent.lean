@@ -368,7 +368,7 @@ variable [hG : IsNilpotent G]
 variable (G) in
 open scoped Classical in
 /-- The nilpotency class of a nilpotent group is the smallest natural `n` such that
-the `n`'th term of the upper central series is `G`. -/
+the `n`-th term of the upper central series is `G`. -/
 noncomputable def Group.nilpotencyClass : ℕ := Nat.find (IsNilpotent.nilpotent G)
 
 open scoped Classical in
@@ -388,7 +388,7 @@ theorem upperCentralSeries_eq_top_iff_nilpotencyClass_le {n : ℕ} :
 
 open scoped Classical in
 /-- The nilpotency class of a nilpotent `G` is equal to the smallest `n` for which an ascending
-central series reaches `G` in its `n`'th term. -/
+central series reaches `G` in its `n`-th term. -/
 theorem least_ascending_central_series_length_eq_nilpotencyClass :
     Nat.find ((nilpotent_iff_finite_ascending_central_series G).mp hG) =
     Group.nilpotencyClass G := by
@@ -401,7 +401,7 @@ theorem least_ascending_central_series_length_eq_nilpotencyClass :
 
 open scoped Classical in
 /-- The nilpotency class of a nilpotent `G` is equal to the smallest `n` for which the descending
-central series reaches `⊥` in its `n`'th term. -/
+central series reaches `⊥` in its `n`-th term. -/
 theorem least_descending_central_series_length_eq_nilpotencyClass :
     Nat.find ((nilpotent_iff_finite_descending_central_series G).mp hG) =
     Group.nilpotencyClass G := by

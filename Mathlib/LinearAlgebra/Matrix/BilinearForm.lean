@@ -18,7 +18,7 @@ This file defines the conversion between bilinear forms and matrices.
 * `BilinForm.toMatrix`: calculate the matrix coefficients of a bilinear form
 * `BilinForm.toMatrix'`: calculate the matrix coefficients of a bilinear form on `n → R`
 
-## Notations
+## Notation
 
 In this file we use the following type variables:
 - `M₁` is a module over the commutative semiring `R₁`,

@@ -3,7 +3,8 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Module.OrderedSMul
+import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Order.Monotone.Monovary
@@ -359,7 +360,7 @@ end LinearOrderedSemifield
 section LinearOrderedAddCommGroup
 variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
   [AddCommGroup β] [LinearOrder β] [IsOrderedAddMonoid β] [Module α β]
-  [OrderedSMul α β] {f : ι → α} {g : ι → β} {s : Set ι}
+  [IsStrictOrderedModule α β] {f : ι → α} {g : ι → β} {s : Set ι}
 
 lemma monovaryOn_iff_forall_smul_nonneg :
     MonovaryOn f g s ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → 0 ≤ (f j - f i) • (g j - g i) := by

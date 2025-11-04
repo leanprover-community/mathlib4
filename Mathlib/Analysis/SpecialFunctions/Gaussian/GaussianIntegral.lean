@@ -325,7 +325,7 @@ theorem integral_gaussian_Ioi (b : ℝ) :
   convert integral_gaussian_complex_Ioi (by rwa [ofReal_re] : 0 < (b : ℂ).re)
   · simp
   · rw [sqrt_eq_rpow, ← ofReal_div, ofReal_div, ofReal_cpow]
-    · norm_num
+    · simp
     · exact (div_pos pi_pos hb).le
 
 -- see https://github.com/leanprover-community/mathlib4/issues/29041

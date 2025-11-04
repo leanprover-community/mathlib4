@@ -250,7 +250,7 @@ variable [TopologicalSpace β] [MetrizableSpace β] [mβ : MeasurableSpace β] [
   [Preorder ι]
 
 /-- Given a sequence of functions, the natural filtration is the smallest sequence
-of σ-algebras such that that sequence of functions is measurable with respect to
+of σ-algebras such that the sequence of functions is measurable with respect to
 the filtration. -/
 def natural (u : ι → Ω → β) (hum : ∀ i, StronglyMeasurable (u i)) : Filtration ι m where
   seq i := ⨆ j ≤ i, MeasurableSpace.comap (u j) mβ
@@ -330,9 +330,6 @@ theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Ty
     simp_rw [liminf_eq, eventually_atTop]
     exact sSup_le fun b ⟨a, ha⟩ => (ha a le_rfl).trans (hbdd _)
   · exact MemLp.zero
-
-@[deprecated (since := "2025-02-21")]
-alias memℒp_limitProcess_of_eLpNorm_bdd := memLp_limitProcess_of_eLpNorm_bdd
 
 end Limit
 

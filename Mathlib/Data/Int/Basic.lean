@@ -40,7 +40,7 @@ lemma inductionOn'_add_one (hz : b ≤ z) :
     (z + 1).inductionOn' b H0 Hs Hp = Hs z hz (z.inductionOn' b H0 Hs Hp) := by
   apply cast_eq_iff_heq.mpr
   lift z - b to ℕ using Int.sub_nonneg.mpr hz with zb hzb
-  rw [show z + 1 - b = zb + 1 by omega]
+  rw [show z + 1 - b = zb + 1 by cutsat]
   have : b + zb = z := by omega
   subst this
   convert cast_heq _ _
@@ -102,6 +102,6 @@ lemma natAbs_le_of_dvd_ne_zero (hmn : m ∣ n) (hn : n ≠ 0) : natAbs m ≤ nat
   not_lt.mp (mt (eq_zero_of_dvd_of_natAbs_lt_natAbs hmn) hn)
 
 theorem gcd_emod (m n : ℤ) : (m % n).gcd n = m.gcd n := by
-  conv_rhs => rw [← m.emod_add_ediv n, gcd_add_mul_left_left]
+  conv_rhs => rw [← m.emod_add_mul_ediv n, gcd_add_mul_left_left]
 
 end Int

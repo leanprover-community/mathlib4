@@ -230,7 +230,7 @@ theorem sum_hom_units (f : G →* R) [Decidable (f = 1)] :
     ∑ g : G, f g = if f = 1 then Fintype.card G else 0 := by
   split_ifs with h
   · simp [h]
-  · rw [Nat.cast_zero] -- Porting note: added
+  · rw [Nat.cast_zero]
     exact sum_hom_units_eq_zero f h
 
 end

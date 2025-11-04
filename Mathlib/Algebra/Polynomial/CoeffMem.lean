@@ -31,9 +31,11 @@ lemma coeff_divModByMonicAux_mem_span_pow_mul_span : ∀ (p q : S[X]) (hq : q.Mo
   | p, q, hq, i => by
     rw [divModByMonicAux]
     have H₀ (i) : p.coeff i ∈ spanCoeffs(q) ^ deg(p) * spanCoeffs(p) := by
-      refine Submodule.mul_le_mul_left (pow_le_pow_left' le_sup_left _) ?_
-      simp only [one_pow, one_mul]
-      exact SetLike.le_def.mp le_sup_right (subset_span (mem_range_self i))
+      refine SetLike.le_def.mp ?_ <| subset_span <| mem_range_self i
+      calc
+        span R coeffs(p)
+        _ = 1 ^ deg(p) * span R coeffs(p) := by simp
+        _ ≤ spanCoeffs(q) ^ deg(p) * spanCoeffs(p) := by gcongr; exacts [le_sup_left, le_sup_right]
     split_ifs with hpq; swap
     · simpa using H₀ _
     simp only [coeff_add, coeff_C_mul, coeff_X_pow]

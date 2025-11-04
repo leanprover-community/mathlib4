@@ -41,6 +41,9 @@ in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives ac
 to the dot notation. -/
 protected def Nonempty (s : Finset α) : Prop := ∃ x : α, x ∈ s
 
+@[grind =]
+theorem nonempty_def {s : Finset α} : s.Nonempty ↔ ∃ x, x ∈ s := Iff.rfl
+
 instance decidableNonempty {s : Finset α} : Decidable s.Nonempty :=
   decidable_of_iff (∃ a ∈ s, true) <| by simp [Finset.Nonempty]
 
@@ -168,7 +171,7 @@ instance : OrderBot (Finset α) where
   bot := ∅
   bot_le := empty_subset
 
-@[simp]
+@[simp, grind =]
 theorem bot_eq_empty : (⊥ : Finset α) = ∅ :=
   rfl
 

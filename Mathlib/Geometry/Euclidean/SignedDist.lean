@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Geometry.Euclidean.Projection
+import Mathlib.Analysis.NormedSpace.Normalize
 
 /-!
 # Signed distance to an affine subspace in a Euclidean space.
@@ -26,7 +27,7 @@ reference point.
 -/
 
 
-open EuclideanGeometry
+open EuclideanGeometry NormedSpace
 open scoped RealInnerProductSpace
 
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
@@ -36,12 +37,12 @@ section signedDist
 
 /-- Auxiliary definition for `signedDist`. It is the underlying linear map of `signedDist`. -/
 private noncomputable def signedDistLinear (v : V) : V →ₗ[ℝ] P →ᴬ[ℝ] ℝ where
-  toFun w := .const ℝ P ⟪-(‖v‖⁻¹ • v), w⟫
+  toFun w := .const ℝ P ⟪-normalize v, w⟫
   map_add' x y := by ext; simp [inner_add_right]
   map_smul' r x := by ext; simp [inner_smul_right]
 
 private lemma signedDistLinear_apply (v w : V) :
-    signedDistLinear v w = .const ℝ P ⟪-(‖v‖⁻¹ • v), w⟫ := rfl
+    signedDistLinear v w = .const ℝ P ⟪-normalize v, w⟫ := rfl
 
 /--
 The signed distance between two points `p` and `q`, in the direction of a reference vector `v`.
@@ -51,49 +52,49 @@ In the degenerate case `v = 0`, it returns `0`.
 TODO: once we have a topology on `P →ᴬ[ℝ] ℝ`, the type should be `P →ᴬ[ℝ] P →ᴬ[ℝ] ℝ`.
 -/
 noncomputable def signedDist (v : V) : P →ᵃ[ℝ] P →ᴬ[ℝ] ℝ where
-  toFun p := (innerSL ℝ (‖v‖⁻¹ • v)).toContinuousAffineMap.comp
+  toFun p := (innerSL ℝ (normalize v)).toContinuousAffineMap.comp
     (ContinuousAffineMap.id ℝ P -ᵥ .const ℝ P p)
   linear := signedDistLinear v
   map_vadd' p v' := by
     ext q
     rw [signedDistLinear_apply]
-    generalize ‖v‖⁻¹ • v = x
     simp [vsub_vadd_eq_vsub_sub, inner_sub_right, ← sub_eq_neg_add]
 
 variable (v w : V) (p q r : P)
 
 -- Lemmas about the definition of `signedDist`
 
-lemma signedDist_apply : signedDist v p = (innerSL ℝ (‖v‖⁻¹ • v)).toContinuousAffineMap.comp
+lemma signedDist_apply : signedDist v p = (innerSL ℝ (normalize v)).toContinuousAffineMap.comp
     (ContinuousAffineMap.id ℝ P -ᵥ .const ℝ P p) :=
   rfl
 
-lemma signedDist_apply_apply : signedDist v p q = ⟪‖v‖⁻¹ • v, q -ᵥ p⟫ :=
+lemma signedDist_apply_apply : signedDist v p q = ⟪normalize v, q -ᵥ p⟫ :=
   rfl
 
-lemma signedDist_apply_linear : (signedDist v p).linear = innerₗ V (‖v‖⁻¹ • v) := by
-  change (innerₗ V (‖v‖⁻¹ • v)).comp (LinearMap.id - 0) = _
+lemma signedDist_apply_linear : (signedDist v p).linear = innerₗ V (normalize v) := by
+  change (innerₗ V (normalize v)).comp (LinearMap.id - 0) = _
   simp
 
-lemma signedDist_apply_linear_apply : (signedDist v p).linear w = ⟪‖v‖⁻¹ • v, w⟫ := by
-  simp [signedDist_apply_linear, real_inner_smul_left]
+lemma signedDist_apply_linear_apply : (signedDist v p).linear w = ⟪normalize v, w⟫ := by
+  simp [signedDist_apply_linear]
 
-lemma signedDist_linear_apply : (signedDist v).linear w = .const ℝ P ⟪-(‖v‖⁻¹ • v), w⟫ :=
+lemma signedDist_linear_apply : (signedDist v).linear w = .const ℝ P ⟪-normalize v, w⟫ :=
   rfl
 
-lemma signedDist_linear_apply_apply : (signedDist v).linear w p = ⟪-(‖v‖⁻¹ • v), w⟫ :=
+lemma signedDist_linear_apply_apply : (signedDist v).linear w p = ⟪-normalize v, w⟫ :=
   rfl
 
 -- Lemmas about the vector argument of `signedDist`
 
 lemma signedDist_smul (r : ℝ) : signedDist (r • v) p q = SignType.sign r * signedDist v p q := by
   simp only [signedDist_apply_apply]
-  rw [norm_smul, mul_inv_rev, smul_smul, mul_rotate, ← smul_smul, real_inner_smul_left]
-  congr
-  by_cases h : r = 0
-  · simp [h]
-  · rw [inv_mul_eq_iff_eq_mul₀ (by positivity)]
-    simp only [Real.norm_eq_abs, abs_mul_sign]
+  rw [normalize_smul, real_inner_smul_left]
+
+lemma signedDist_smul_of_pos {r : ℝ} (h : 0 < r) : signedDist (r • v) p q = signedDist v p q := by
+  simp [signedDist_smul, h]
+
+lemma signedDist_smul_of_neg {r : ℝ} (h : r < 0) : signedDist (r • v) p q = -signedDist v p q := by
+  simp [signedDist_smul, h]
 
 @[simp] lemma signedDist_zero : signedDist 0 p q = 0 := by
   simpa using signedDist_smul 0 p q 0
@@ -129,10 +130,10 @@ lemma signedDist_triangle_right : signedDist v p r - signedDist v q r = signedDi
 
 -- Lemmas about offsetting the point arguments of `signedDist` (with `+ᵥ` or `-ᵥ`)
 
-lemma signedDist_vadd_left : signedDist v (w +ᵥ p) q = -⟪‖v‖⁻¹ • v, w⟫ + signedDist v p q := by
+lemma signedDist_vadd_left : signedDist v (w +ᵥ p) q = -⟪normalize v, w⟫ + signedDist v p q := by
   simp [signedDist_linear_apply_apply]
 
-lemma signedDist_vadd_right : signedDist v p (w +ᵥ q) = ⟪‖v‖⁻¹ • v, w⟫ + signedDist v p q := by
+lemma signedDist_vadd_right : signedDist v p (w +ᵥ q) = ⟪normalize v, w⟫ + signedDist v p q := by
   simp [signedDist_apply_linear_apply]
 
 -- TODO: find a better name for these 2 lemmas
@@ -148,11 +149,11 @@ lemma signedDist_vadd_vadd : signedDist v (w +ᵥ p) (w +ᵥ q) = signedDist v p
 variable {v p q} in
 lemma signedDist_left_congr (h : ⟪v, p -ᵥ q⟫ = 0) : signedDist v p = signedDist v q := by
   ext r
-  simpa [real_inner_smul_left, h] using signedDist_vadd_left v (p -ᵥ q) q r
+  simpa [NormedSpace.normalize, real_inner_smul_left, h] using signedDist_vadd_left v (p -ᵥ q) q r
 
 variable {v q r} in
 lemma signedDist_right_congr (h : ⟪v, q -ᵥ r⟫ = 0) : signedDist v p q = signedDist v p r := by
-  simpa [real_inner_smul_left, h] using signedDist_vadd_right v (q -ᵥ r) p r
+  simpa [NormedSpace.normalize, real_inner_smul_left, h] using signedDist_vadd_right v (q -ᵥ r) p r
 
 variable {v p q} in
 lemma signedDist_eq_zero_of_orthogonal (h : ⟪v, q -ᵥ p⟫ = 0) : signedDist v p q = 0 := by
@@ -164,9 +165,8 @@ lemma abs_signedDist_le_dist : |signedDist v p q| ≤ dist p q := by
   rw [signedDist_apply_apply]
   by_cases h : v = 0
   · simp [h]
-  · convert abs_real_inner_le_norm (‖v‖⁻¹ • v) (q -ᵥ p)
-    simp [norm_smul, dist_eq_norm_vsub']
-    field_simp
+  · grw [abs_real_inner_le_norm]
+    simp [norm_normalize h, dist_eq_norm_vsub']
 
 lemma signedDist_le_dist : signedDist v p q ≤ dist p q :=
   le_trans (le_abs_self _) (abs_signedDist_le_dist _ _ _)
@@ -174,7 +174,8 @@ lemma signedDist_le_dist : signedDist v p q ≤ dist p q :=
 lemma abs_signedDist_eq_dist_iff_vsub_mem_span :
     |signedDist v p q| = dist p q ↔ q -ᵥ p ∈ ℝ ∙ v := by
   rw [Submodule.mem_span_singleton]
-  rw [signedDist_apply_apply, dist_eq_norm_vsub', real_inner_smul_left, abs_mul, abs_inv, abs_norm]
+  rw [signedDist_apply_apply, dist_eq_norm_vsub', NormedSpace.normalize, real_inner_smul_left,
+    abs_mul, abs_inv, abs_norm]
   by_cases h : v = 0
   · simp [h, eq_comm (a := (0 : ℝ)), eq_comm (a := (0 : V))]
   rw [inv_mul_eq_iff_eq_mul₀ (by positivity)]
@@ -184,7 +185,7 @@ lemma abs_signedDist_eq_dist_iff_vsub_mem_span :
 open NNReal in
 lemma signedDist_eq_dist_iff_vsub_mem_span : signedDist v p q = dist p q ↔ q -ᵥ p ∈ ℝ≥0 ∙ v := by
   rw [Submodule.mem_span_singleton]
-  rw [signedDist_apply_apply, dist_eq_norm_vsub', real_inner_smul_left]
+  rw [signedDist_apply_apply, dist_eq_norm_vsub', NormedSpace.normalize, real_inner_smul_left]
   by_cases h : v = 0
   · simp [h, eq_comm (a := (0 : ℝ)), eq_comm (a := (0 : V))]
   rw [inv_mul_eq_iff_eq_mul₀ (by positivity)]

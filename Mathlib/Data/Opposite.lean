@@ -18,7 +18,7 @@ opposite category, with all arrows reversed.
 
 universe v u
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 variable (α : Sort u)
 
 /-- The type of objects of the opposite of `α`; used to define the opposite category.
@@ -105,9 +105,8 @@ instance [Subsingleton α] : Subsingleton αᵒᵖ := unop_injective.subsingleto
 @[deprecated Opposite.rec (since := "2025-04-04")]
 protected def rec' {F : αᵒᵖ → Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
 
-/-- If `X` is `u`-small, also `Xᵒᵖ` is `u`-small.
-Note: This is not an instance, because it tends to mislead typeclass search. -/
-lemma small {X : Type v} [Small.{u} X] : Small.{u} Xᵒᵖ := by
+/-- If `X` is `u`-small, also `Xᵒᵖ` is `u`-small. -/
+instance small {X : Type v} [Small.{u} X] : Small.{u} Xᵒᵖ := by
   obtain ⟨S, ⟨e⟩⟩ := Small.equiv_small (α := X)
   exact ⟨S, ⟨equivToOpposite.symm.trans e⟩⟩
 

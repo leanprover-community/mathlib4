@@ -57,7 +57,6 @@ theorem Functor.preservesMonomorphisms_of_adjunction_of_preservesInjectiveObject
     F.PreservesMonomorphisms where
   preserves {X Y} f _ := by
     suffices ∃ h, F.map f ≫ h = Injective.ι (F.obj X) from mono_of_mono_fac this.choose_spec
-    have : Injective (G.obj (Injective.under (F.obj X))) := G.injective_obj _
     exact ⟨F.map (Injective.factorThru (adj.unit.app X ≫ G.map (Injective.ι _)) f) ≫
       adj.counit.app (Injective.under (F.obj X)), by simp [← Functor.map_comp_assoc]⟩
 

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Order.Compare
-import Mathlib.Data.List.Defs
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Option.Basic
 
@@ -596,7 +595,7 @@ instance [DecidableEq α] : DecidableRel (@Equiv α) := fun x y =>
 def powerset (t : Ordnode α) : Ordnode (Ordnode α) :=
   insertMin nil <| foldr (fun x ts => glue (insertMin (ι x) (map (insertMin x) ts)) ts) t nil
 
-/-- O(m * n). The cartesian product of two sets: `(a, b) ∈ s.prod t` iff `a ∈ s` and `b ∈ t`.
+/-- O(m * n). The Cartesian product of two sets: `(a, b) ∈ s.prod t` iff `a ∈ s` and `b ∈ t`.
 
      prod {1, 2} {2, 3} = {(1, 2), (1, 3), (2, 2), (2, 3)} -/
 protected def prod {β} (t₁ : Ordnode α) (t₂ : Ordnode β) : Ordnode (α × β) :=
@@ -1194,7 +1193,7 @@ def ofList (l : List α) : Ordnode α :=
     ofList' [2, 1, 1, 3] = {1, 2, 3} -/
 def ofList' : List α → Ordnode α
   | [] => nil
-  | x :: xs => if List.Chain (fun a b => ¬b ≤ a) x xs then ofAscList (x :: xs) else ofList (x :: xs)
+  | l@(_ :: _) => if List.IsChain (fun a b => ¬b ≤ a) l then ofAscList l else ofList l
 
 /-- O(n * log n). Map a function on a set. Unlike `map` this has no requirements on
 `f`, and the resulting set may be smaller than the input if `f` is noninjective.

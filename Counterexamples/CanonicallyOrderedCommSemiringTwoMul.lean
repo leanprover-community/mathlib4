@@ -91,18 +91,20 @@ theorem le_of_add_le_add_left : ∀ a b c : ℕ × ZMod 2, a + b ≤ a + c → b
 instance : ZeroLEOneClass (ℕ × ZMod 2) :=
   ⟨by dsimp only [LE.le]; decide⟩
 
-theorem mul_lt_mul_of_pos_left : ∀ a b c : ℕ × ZMod 2, a < b → 0 < c → c * a < c * b :=
-  fun _ _ _ ab c0 => lt_def.mpr ((mul_lt_mul_left (lt_def.mp c0)).mpr (lt_def.mp ab))
+instance : PosMulStrictMono (ℕ × ZMod 2) where
+  elim := by
+    rintro ⟨a, ha⟩ b c hbc; dsimp at *; rw [lt_def] at *; exact mul_lt_mul_of_pos_left hbc ha
 
-theorem mul_lt_mul_of_pos_right : ∀ a b c : ℕ × ZMod 2, a < b → 0 < c → a * c < b * c :=
-  fun _ _ _ ab c0 => lt_def.mpr ((mul_lt_mul_right (lt_def.mp c0)).mpr (lt_def.mp ab))
+instance : MulPosStrictMono (ℕ × ZMod 2) where
+  elim := by
+    rintro ⟨a, ha⟩ b c hbc; dsimp at *; rw [lt_def] at *; exact mul_lt_mul_of_pos_right hbc ha
 
 instance isorN2 : IsStrictOrderedRing (ℕ × ZMod 2) :=
   { add_le_add_left := add_le_add_left
     le_of_add_le_add_left := le_of_add_le_add_left
     zero_le_one := zero_le_one
-    mul_lt_mul_of_pos_left := mul_lt_mul_of_pos_left
-    mul_lt_mul_of_pos_right := mul_lt_mul_of_pos_right }
+    mul_lt_mul_of_pos_left _ _ _ := mul_lt_mul_of_pos_left
+    mul_lt_mul_of_pos_right _ _ _ := mul_lt_mul_of_pos_right }
 
 end Nxzmod2
 
@@ -210,7 +212,8 @@ instance : PartialOrder L := inferInstance
 instance : IsOrderedRing L := inferInstance
 
 instance : CanonicallyOrderedAdd L where
-  exists_add_of_le := @(exists_add_of_le)
+  exists_add_of_le := exists_add_of_le _ _
+  le_add_self a b := by rw [add_comm]; exact le_self_add a b
   le_self_add := le_self_add
 
 instance : NoZeroDivisors L where

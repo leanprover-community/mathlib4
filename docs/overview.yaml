@@ -12,7 +12,7 @@ General algebra:
     presheafed space: 'AlgebraicGeometry.PresheafedSpace'
     sheafed space: 'AlgebraicGeometry.SheafedSpace'
     monoidal category: 'CategoryTheory.MonoidalCategory'
-    cartesian closed: 'CategoryTheory.CartesianClosed'
+    Cartesian closed: 'CategoryTheory.CartesianClosed'
     abelian category: 'CategoryTheory.Abelian'
 
   Numbers:
@@ -149,7 +149,7 @@ General algebra:
 
   Representation theory:
     representation : 'Representation'
-    category of finite dimensional representations : 'FDRep'
+    category of finite-dimensional representations : 'FDRep'
     character : 'FDRep.character'
     orthogonality of characters : 'FDRep.char_orthonormal'
 
@@ -268,8 +268,8 @@ Analysis:
     normed vector space over a normed field: 'NormedSpace'
     topology on a normed vector space: 'NormSMulClass.toIsBoundedSMul'
     equivalence of norms in finite dimension: 'LinearEquiv.toContinuousLinearEquiv'
-    finite dimensional normed spaces over complete normed fields are complete: 'Submodule.complete_of_finiteDimensional'
-    Heine-Borel theorem (finite dimensional normed spaces are proper): 'FiniteDimensional.proper'
+    finite-dimensional normed spaces over complete normed fields are complete: 'Submodule.complete_of_finiteDimensional'
+    Heine-Borel theorem (finite-dimensional normed spaces are proper): 'FiniteDimensional.proper'
     norm of a continuous linear map: 'LinearMap.mkContinuous'
     Banach-Steinhaus theorem: 'banach_steinhaus'
     Banach open mapping theorem: 'ContinuousLinearMap.isOpenMap'
@@ -362,6 +362,7 @@ Analysis:
     removable singularity: 'Complex.differentiableOn_update_limUnder_insert_of_isLittleO'
     Phragmen-Lindelöf principle: 'PhragmenLindelof.horizontal_strip'
     fundamental theorem of algebra: 'Complex.isAlgClosed'
+    First Main Theorem of Value Distribution Theory: 'ValueDistribution.characteristic_sub_characteristic_inv_le'
 
   Distribution theory:
     Schwartz space: 'SchwartzMap'

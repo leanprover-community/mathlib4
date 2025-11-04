@@ -7,9 +7,9 @@ import Mathlib.Algebra.Category.CommAlgCat.Basic
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
 /-!
-# The cocartesian monoidal category structure on commutative `R`-algebras
+# The co-Cartesian monoidal category structure on commutative `R`-algebras
 
-This file provides the cocartesian-monoidal category structure on `CommAlgCat R` constructed
+This file provides the co-Cartesian-monoidal category structure on `CommAlgCat R` constructed
 explicitly using the tensor product.
 -/
 

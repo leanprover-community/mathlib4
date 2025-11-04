@@ -85,7 +85,7 @@ lemma exists_triangle (A : C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     refine Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _) ?_ ?_ ?_
     all_goals simp [T]
   exact ⟨_, _, t.le_shift _ _ _ (neg_add_cancel n₀) _ hX,
-    t.ge_shift _ _ _ (by omega) _ hY, _, _, _, hT'⟩
+    t.ge_shift _ _ _ (by cutsat) _ hY, _, _, _, hT'⟩
 
 lemma shift_le (a n n' : ℤ) (hn' : a + n = n') :
     (t.le n).shift a = t.le n' := by
@@ -93,7 +93,7 @@ lemma shift_le (a n n' : ℤ) (hn' : a + n = n') :
   constructor
   · intro hX
     exact ((t.le n').prop_iff_of_iso ((shiftEquiv C a).unitIso.symm.app X)).1
-      (t.le_shift n (-a) n' (by omega) _ hX)
+      (t.le_shift n (-a) n' (by cutsat) _ hX)
   · intro hX
     exact t.le_shift _ _ _ hn' X hX
 
@@ -103,7 +103,7 @@ lemma shift_ge (a n n' : ℤ) (hn' : a + n = n') :
   constructor
   · intro hX
     exact ((t.ge n').prop_iff_of_iso ((shiftEquiv C a).unitIso.symm.app X)).1
-      (t.ge_shift n (-a) n' (by omega) _ hX)
+      (t.ge_shift n (-a) n' (by cutsat) _ hX)
   · intro hX
     exact t.ge_shift _ _ _ hn' X hX
 
@@ -112,7 +112,7 @@ lemma le_monotone : Monotone t.le := by
   suffices ∀ (a : ℕ), H a by
     intro n₀ n₁ h
     obtain ⟨a, ha⟩ := Int.nonneg_def.1 h
-    obtain rfl : n₁ = n₀ + a := by omega
+    obtain rfl : n₁ = n₀ + a := by cutsat
     apply this
   have H_zero : H 0 := fun n => by
     simp only [Nat.cast_zero, add_zero]
@@ -135,7 +135,7 @@ lemma ge_antitone : Antitone t.ge := by
   suffices ∀ (a : ℕ), H a by
     intro n₀ n₁ h
     obtain ⟨a, ha⟩ := Int.nonneg_def.1 h
-    obtain rfl : n₁ = n₀ + a := by omega
+    obtain rfl : n₁ = n₀ + a := by cutsat
     apply this
   have H_zero : H 0 := fun n => by
     simp only [Nat.cast_zero, add_zero]

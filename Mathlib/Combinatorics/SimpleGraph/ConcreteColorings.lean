@@ -121,21 +121,21 @@ def cycleGraph.tricoloring (n : ℕ) (h : 2 ≤ n) : Coloring (cycleGraph n)
     | 1 => simp at h
     | n + 2 =>
       simp only
-      simp [cycleGraph_adj] at hadj
+      simp only [cycleGraph_adj] at hadj
       split_ifs with hu hv
       · simp [Fin.eq_mk_iff_val_eq.mpr hu, Fin.eq_mk_iff_val_eq.mpr hv] at hadj
       · refine (Fin.ne_of_lt (Fin.mk_lt_of_lt_val (?_))).symm
         exact v.val.mod_lt Nat.zero_lt_two
       · refine (Fin.ne_of_lt (Fin.mk_lt_of_lt_val ?_))
         exact u.val.mod_lt Nat.zero_lt_two
-      · simp [Fin.ext_iff]
+      · simp only [ne_eq, Fin.ext_iff]
         have hu' : u.val + (1 : Fin (n + 2)) < n + 2 := by fin_omega
         have hv' : v.val + (1 : Fin (n + 2)) < n + 2 := by fin_omega
         cases hadj with
         | inl huv | inr huv =>
           rw [← add_eq_of_eq_sub' huv.symm]
           simp only [Fin.val_add_eq_of_add_lt hv', Fin.val_add_eq_of_add_lt hu', Fin.val_one]
-          rw [show ∀ x y : ℕ, x % 2 = y % 2 ↔ (Even x ↔ Even y) by simp [Nat.even_iff]; omega,
+          rw [show ∀ x y : ℕ, x % 2 = y % 2 ↔ (Even x ↔ Even y) by simp [Nat.even_iff]; cutsat,
             Nat.even_add]
           simp only [Nat.not_even_one, iff_false, not_iff_self, iff_not_self]
           exact id
@@ -190,6 +190,6 @@ lemma two_colorable_iff_forall_loop_even {α : Type*} {G : SimpleGraph α} :
     have : ((Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ a)).length) % 2 =
         (Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ b)).length % 2 := by
       simp_rw [← Fin.val_natCast, ← Fin.ofNat_eq_cast, he]
-    exact (Nat.even_iff.mpr (by omega)).add_one
+    exact (Nat.even_iff.mpr (by cutsat)).add_one
 
 end SimpleGraph

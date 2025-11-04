@@ -6,6 +6,7 @@ Authors: Kim Morrison
 import Lean.Meta.Tactic.TryThis
 import Batteries.Linter.UnreachableTactic
 import Batteries.Control.Nondet.Basic
+import Mathlib.Init
 
 /-!
 # The `hint` tactic.
@@ -64,6 +65,20 @@ initialize
   Batteries.Linter.UnreachableTactic.ignoreTacticKindsRef.modify fun s => s.insert ``registerHintStx
 
 /--
+Extracts the `MessageData` from the first clickable `Try This:` diff widget in the message.
+Preserves (only) contexts and tags.
+-/
+private def getFirstTryThisFromMessage? : MessageData → Option MessageData
+  | .ofWidget w msg => if w.id == ``Meta.Hint.tryThisDiffWidget then msg else none
+  | .nest _ msg
+  | .group msg => getFirstTryThisFromMessage? msg
+  | .compose msg₁ msg₂ => getFirstTryThisFromMessage? msg₁ <|> getFirstTryThisFromMessage? msg₂
+  | .withContext ctx msg => (getFirstTryThisFromMessage? msg).map <| .withContext ctx
+  | .withNamingContext ctx msg => (getFirstTryThisFromMessage? msg).map <| .withNamingContext ctx
+  | .tagged tag msg => (getFirstTryThisFromMessage? msg).map <| .tagged tag
+  | .ofFormatWithInfos _ | .ofGoal _ | .trace .. | .ofLazy .. => none
+
+/--
 Construct a suggestion for a tactic.
 * Check the passed `MessageLog` for an info message beginning with "Try this: ".
 * If found, use that as the suggestion.
@@ -80,13 +95,18 @@ def suggestion (tac : TSyntax `tactic) (msgs : MessageLog := {}) : TacticM Sugge
       let e ← PrettyPrinter.ppExpr (← instantiateMVars (← g.getType))
       str := str ++ Format.pretty ("\n⊢ " ++ e)
     pure (some str)
-  let style? := if goals.isEmpty then some .success else none
-  let msg? ← msgs.toList.findM? fun m => do pure <|
-    m.severity == MessageSeverity.information && (← m.data.toString).startsWith "Try this: "
+  /-
+  #adaptation_note 2025-08-27
+  Suggestion styling was deprecated in lean4#9966.
+  We use emojis for now instead.
+  -/
+  -- let style? := if goals.isEmpty then some .success else none
+  let preInfo? := if goals.isEmpty then some "🎉 " else none
+  let msg? : Option MessageData := msgs.toList.firstM (getFirstTryThisFromMessage? ·.data)
   let suggestion ← match msg? with
-  | some m => pure <| SuggestionText.string ((← m.data.toString).drop 10)
+  | some m => pure <| SuggestionText.string (← m.toString)
   | none => pure <| SuggestionText.tsyntax tac
-  return { suggestion, postInfo?, style? }
+  return { preInfo?, suggestion, postInfo? }
 
 /-- Run a tactic, returning any new messages rather than adding them to the message log. -/
 def withMessageLog (t : TacticM Unit) : TacticM MessageLog := do
