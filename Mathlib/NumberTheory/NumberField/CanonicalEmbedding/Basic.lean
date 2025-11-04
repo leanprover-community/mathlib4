@@ -809,10 +809,6 @@ instance : Ring (euclidean.mixedSpace K) :=
   have : Ring (EuclideanSpace ℂ {w : InfinitePlace K // IsComplex w}) := Pi.ring
   inferInstanceAs (Ring (_ × _))
 
-instance : MeasurableSpace (euclidean.mixedSpace K) := borel _
-
-instance : BorelSpace (euclidean.mixedSpace K) := ⟨rfl⟩
-
 variable [NumberField K]
 
 open Classical in
