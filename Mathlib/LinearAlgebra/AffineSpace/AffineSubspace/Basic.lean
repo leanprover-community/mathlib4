@@ -622,6 +622,12 @@ end AffineMap
 
 namespace AffineEquiv
 
+/-- If two affine equivalences agree on a set that spans the entire space, then they are equal. -/
+theorem ext_on {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
+    {s : Set P₁} (h_span : affineSpan k s = ⊤)
+    (T₁ T₂ : P₁ ≃ᵃ[k] P₂) (h_agree : s.EqOn T₁ T₂) : T₁ = T₂ :=
+  (AffineEquiv.toAffineMap_inj).mp <| AffineMap.ext_on h_span h_agree
+
 section ofEq
 variable (S₁ S₂ : AffineSubspace k P₁) [Nonempty S₁] [Nonempty S₂]
 

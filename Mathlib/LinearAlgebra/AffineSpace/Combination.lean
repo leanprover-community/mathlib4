@@ -952,20 +952,3 @@ def weightedVSubOfPoint (w : ι → k) : (ι → P) × P →ᵃ[k] V where
 
 end AffineMap
 
-namespace AffineEquiv
-
-variable {k : Type*} {V : Type*} {P : Type*}
-
-/-- If two affine automorphisms agree on a set that spans the entire space, then they are equal.
-
-Specialization of `AffineMap.ext_on` to affine automorphisms. -/
-theorem ext_of_span_eq_top [CommRing k] [AddCommGroup V] [Module k V] [AffineSpace V P]
-    {s : Set P}
-    (h_span : affineSpan k s = ⊤)
-    (T₁ T₂ : P ≃ᵃ[k] P)
-    (h_agree : s.restrict T₁ = s.restrict T₂) : T₁ = T₂ := by
-  rw [← AffineEquiv.toAffineMap_inj]
-  apply AffineMap.ext_on h_span
-  exact fun x hx => congr_fun h_agree ⟨x, hx⟩
-
-end AffineEquiv
