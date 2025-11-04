@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
 -/
 import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
-import Mathlib.CategoryTheory.Limits.Types.Shapes
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Order.Fin.SuccAboveOrderIso
 
