@@ -276,3 +276,27 @@ lemma Function.update_eventuallyEq [DecidableEq α] (f : α → β) (a : α) (b 
 lemma Function.update_eventuallyEq_cofinite [DecidableEq α] (f : α → β) (a : α) (b : β) :
     Function.update f a b =ᶠ[cofinite] f :=
   (Function.update_eventuallyEq f a b).filter_mono (by simp)
+
+/--
+A filter is free iff it is smaller than the cofinite filter.
+-/
+theorem le_cofinite_iff_ker {α : Type*} (f : Filter α) : f ≤ cofinite ↔ f.ker = ∅ := by
+  rw [le_cofinite_iff_compl_singleton_mem, ker_def, iInter₂_eq_empty_iff]
+  conv =>
+    enter [2, x]
+    equals {x}ᶜ ∈ f =>
+      exact Eq.propIntro (exists_imp.2 fun s => exists_imp.2
+          fun hs hx => f.mem_of_superset hs (by simpa using hx))
+        fun h => ⟨{x}ᶜ, h, by simp⟩
+
+/--
+Every filter is the disjoint supremum of a principal filter and a free filter.
+-/
+theorem exists_eq_principal_sup_free {α : Type*} (f : Filter α) :
+    ∃ s g, g ≤ cofinite ∧ Disjoint (𝓟 s) g ∧ f = 𝓟 s ⊔ g := by
+  refine ⟨f.ker, f ⊓ 𝓟 f.kerᶜ, ?_, ?_, ?_⟩
+  · rw [le_cofinite_iff_ker, ker_inf, ker_principal, inter_compl_self]
+  · rw [disjoint_iff_inf_le, inf_rotate', inf_principal,
+      compl_inter_self, principal_empty, inf_bot_eq]
+  · rw [sup_inf_left]
+    simpa using gi_principal_ker.gc.l_u_le f
