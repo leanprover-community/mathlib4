@@ -323,6 +323,18 @@ def tryAtEachStepAesop := tryAtEachStep
   fun _ _ => return ⟨TSyntax.raw <|
     mkNode `Aesop.Frontend.Parser.aesopTactic #[mkAtom "aesop", mkNullNode]⟩
 
+-- /-- Run `canonical` at every step in proofs, reporting where it succeeds. -/
+-- register_option linter.tacticAnalysis.tryAtEachStepCanonical : Bool := {
+--   defValue := false
+-- }
+
+-- @[tacticAnalysis linter.tacticAnalysis.tryAtEachStepCanonical,
+--    inherit_doc linter.tacticAnalysis.tryAtEachStepCanonical]
+-- def tryAtEachStepCanonical := tryAtEachStep
+--   -- As `canonical` isn't imported here, we construct the tactic syntax manually.
+--   fun _ _ => return ⟨TSyntax.raw <|
+--     mkNode `Mathlib.Tactic.Canonical.canonical #[mkAtom "canonical", mkNullNode]⟩
+
 /-- Run `grind +suggestions` at every step in proofs, reporting where it succeeds. -/
 register_option linter.tacticAnalysis.tryAtEachStepGrindSuggestions : Bool := {
   defValue := false
@@ -340,6 +352,18 @@ register_option linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions : Bool := 
 @[tacticAnalysis linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions,
    inherit_doc linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions]
 def tryAtEachStepSimpAllSuggestions := tryAtEachStep fun _ _ => `(tactic| simp_all? +suggestions)
+
+-- /-- Run `canonical +suggestions` at every step in proofs, reporting where it succeeds. -/
+-- register_option linter.tacticAnalysis.tryAtEachStepCanonicalSuggestions : Bool := {
+--   defValue := false
+-- }
+
+-- @[tacticAnalysis linter.tacticAnalysis.tryAtEachStepCanonicalSuggestions,
+--    inherit_doc linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions]
+-- def tryAtEachStepCanonicalSuggestions := tryAtEachStep
+--   -- As `canonical` isn't imported here, we construct the tactic syntax manually.
+--   fun _ _ => return ⟨TSyntax.raw <|
+--     mkNode `Mathlib.Tactic.Canonical.canonical #[mkAtom "canonical", mkNullNode]⟩
 
 -- TODO: add compatibility with `rintro` and `intros`
 /-- Suggest merging two adjacent `intro` tactics which don't pattern match. -/
