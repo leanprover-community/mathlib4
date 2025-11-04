@@ -824,7 +824,7 @@ theorem coe_mul : ((φ * ψ : MvPolynomial σ R) : MvPowerSeries σ R) = φ * ψ
 
 @[simp, norm_cast]
 lemma coe_smul (φ : MvPolynomial σ R) (r : R) :
-  (r • φ : MvPolynomial σ R) = r • (φ : MvPowerSeries σ R) := rfl
+    (r • φ : MvPolynomial σ R) = r • (φ : MvPowerSeries σ R) := rfl
 
 @[simp, norm_cast]
 theorem coe_C (a : R) : ((C a : MvPolynomial σ R) : MvPowerSeries σ R) = MvPowerSeries.C a :=

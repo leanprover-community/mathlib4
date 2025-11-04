@@ -810,7 +810,7 @@ theorem coe_mul : ((φ * ψ : R[X]) : PowerSeries R) = φ * ψ :=
 
 @[simp, norm_cast]
 lemma coe_smul (φ : R[X]) (r : R) :
-  (r • φ : Polynomial R) = r • (φ : PowerSeries R) := rfl
+    (r • φ : Polynomial R) = r • (φ : PowerSeries R) := rfl
 
 @[simp, norm_cast]
 theorem coe_C (a : R) : ((C a : R[X]) : PowerSeries R) = PowerSeries.C a := by
