@@ -212,6 +212,8 @@ instance : MonObj H where
   mul_one := MonObj.mul_one H.toMon
   mul_assoc := MonObj.mul_assoc H.toMon
 
+@[simp] lemma hom_one (H : Grp C) [IsCommMonObj H.X] : η[H].hom = η[H.X] := rfl
+@[simp] lemma hom_mul (H : Grp C) [IsCommMonObj H.X] : μ[H].hom = μ[H.X] := rfl
 
 namespace Hom
 
