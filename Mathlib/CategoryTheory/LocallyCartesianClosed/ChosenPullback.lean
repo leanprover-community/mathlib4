@@ -240,10 +240,10 @@ theorem pullbackMap_comp {Y' Z' X' Y'' Z'' X'' : C}
     {δ₁ : Y'' ⟶ Y'} {δ₂ : Z'' ⟶ Z'} {δ₃ : X'' ⟶ X'}
     (comm₁ comm₂ comm₁' comm₂' := by cat_disch) :
     pullbackMap f' g' f'' g'' δ₁ δ₂ δ₃ comm₁' comm₂' ≫
-    pullbackMap f g f' g'  γ₁ γ₂ γ₃ comm₁ comm₂ =
+      pullbackMap f g f' g'  γ₁ γ₂ γ₃ comm₁ comm₂ =
     pullbackMap f g f'' g'' (δ₁ ≫ γ₁) (δ₂ ≫ γ₂) (δ₃ ≫ γ₃)
       (by rw [reassoc_of% comm₁', comm₁, assoc]) (by rw [reassoc_of% comm₂', comm₂, assoc]) := by
-  apply hom_ext <;> simp [assoc]
+  apply hom_ext <;> simp
 
 end PullbackMap
 
@@ -253,7 +253,7 @@ theorem isPullback : IsPullback (fst f g) (snd f g) f g where
   w := condition
   isLimit' :=
     ⟨PullbackCone.IsLimit.mk _ (fun s ↦ lift s.fst s.snd s.condition)
-      (by simp) (by simp) (by aesop)⟩
+      (by simp) (by simp) (by cat_disch)⟩
 
 attribute [local simp] condition in
 /-- If `g` has a chosen pullback, then `Over.ChosenPullback.fst f g` has a chosen pullback. -/
