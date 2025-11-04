@@ -44,7 +44,7 @@ lemma IsLocalRing.ResidueField.map_bijective_of_surjective [IsLocalRing R] {S : 
 variable {R} in
 lemma _root_.ringKrullDim_le_ringKrullDim_add_card [IsLocalRing R] [IsNoetherianRing R]
     {S : Finset R} (hS : (S : Set R) ⊆ maximalIdeal R) :
-    ringKrullDim R ≤ ringKrullDim (R ⧸ Ideal.span S.toSet) + S.card := by
+    ringKrullDim R ≤ ringKrullDim (R ⧸ Ideal.span (S : Set R)) + S.card := by
   sorry
 
 lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
@@ -53,9 +53,9 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
      LinearIndependent (ResidueField R) ((⇑(maximalIdeal R).toCotangent).comp (Set.inclusion sub)),
      IsRegularLocalRing (R ⧸ Ideal.span (S : Set R)) ∧
      (ringKrullDim (R ⧸ Ideal.span (S : Set R)) + S.card = ringKrullDim R)].TFAE := by
-  have : Nontrivial (R ⧸ Ideal.span S.toSet) :=
+  have : Nontrivial (R ⧸ Ideal.span (S : Set R)) :=
     Ideal.Quotient.nontrivial (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (Ideal.span_le.mpr sub))
-  have lochom : IsLocalHom (Ideal.Quotient.mk (Ideal.span S.toSet)) :=
+  have lochom : IsLocalHom (Ideal.Quotient.mk (Ideal.span (S : Set R))) :=
     IsLocalHom.of_surjective _ (Ideal.Quotient.mk_surjective)
   tfae_have 1 → 2 := by
     rintro ⟨T, h, card, span⟩
@@ -63,9 +63,8 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
     have : LinearIndependent (ResidueField R)
       ((⇑(maximalIdeal R).toCotangent).comp (Set.inclusion Tsub)) := by
       apply linearIndependent_of_top_le_span_of_card_eq_finrank
-      · simp only [Finset.coe_sort_coe, Set.range_comp, Set.range_inclusion Tsub,
-          SetLike.coe_sort_coe, Finset.mem_coe, top_le_iff,
-          IsLocalRing.CotangentSpace.span_image_eq_top_iff]
+      · simp only [Set.range_comp, Set.range_inclusion Tsub, SetLike.coe_sort_coe, Finset.mem_coe,
+          top_le_iff, IsLocalRing.CotangentSpace.span_image_eq_top_iff]
         apply Submodule.map_injective_of_injective (maximalIdeal R).injective_subtype
         simp only [Submodule.map_span, Submodule.subtype_apply, Ideal.submodule_span_eq,
           Submodule.map_top, Submodule.range_subtype]
@@ -79,16 +78,16 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
     simpa [← Function.comp_assoc, ← inc] using li
   tfae_have 2 → 3 := by
     intro li
-    let _ : IsLocalRing (R ⧸ Ideal.span S.toSet) :=
+    let _ : IsLocalRing (R ⧸ Ideal.span (S : Set R)) :=
       IsLocalRing.of_surjective _ Ideal.Quotient.mk_surjective
     rw [isRegularLocalRing_def]
     have le := ringKrullDim_le_ringKrullDim_add_card sub
-    have ge : (Submodule.spanFinrank (maximalIdeal (R ⧸ Ideal.span S.toSet))) + S.card ≤
+    have ge : (Submodule.spanFinrank (maximalIdeal (R ⧸ Ideal.span (S : Set R)))) + S.card ≤
       ringKrullDim R := by
       simp only [← Nat.cast_add, ← (iff_finrank_cotangentSpace R).mp ‹_›, Nat.cast_le,
         spanFinrank_maximalIdeal_eq_finrank_cotangentSpace]
-      let f := Ideal.mapCotangent (maximalIdeal R) (maximalIdeal (R ⧸ Ideal.span S.toSet))
-        (Ideal.Quotient.mkₐ R (Ideal.span S.toSet)) (fun x hx ↦ by simpa)
+      let f := Ideal.mapCotangent (maximalIdeal R) (maximalIdeal (R ⧸ Ideal.span (S : Set R)))
+        (Ideal.Quotient.mkₐ R (Ideal.span (S : Set R))) (fun x hx ↦ by simpa)
       have ker : (LinearMap.ker f : Set (maximalIdeal R).Cotangent) = (Submodule.span
         (ResidueField R) (Set.range (⇑(maximalIdeal R).toCotangent ∘ Set.inclusion sub))) := by
         simp only [ Submodule.coe_span_eq_span_of_surjective R (ResidueField R)
@@ -97,11 +96,11 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
         induction x using Submodule.Quotient.induction_on
         rename_i x
         simp only [Ideal.mapCotangent, LinearMap.mem_ker, f]
-        change (maximalIdeal (R ⧸ Ideal.span S.toSet)).toCotangent ⟨(Ideal.Quotient.mkₐ R
-          (Ideal.span S.toSet)) x, _⟩ = 0 ↔ (maximalIdeal R).toCotangent x ∈ _
+        change (maximalIdeal (R ⧸ Ideal.span (S : Set R))).toCotangent ⟨(Ideal.Quotient.mkₐ R
+          (Ideal.span (S : Set R))) x, _⟩ = 0 ↔ (maximalIdeal R).toCotangent x ∈ _
         simp only [Ideal.Quotient.mkₐ_eq_mk, Set.range_comp,
           Submodule.span_image', Ideal.toCotangent_eq_zero]
-        have : maximalIdeal (R ⧸ Ideal.span S.toSet) =
+        have : maximalIdeal (R ⧸ Ideal.span (S : Set R)) =
           (maximalIdeal R).map (Ideal.Quotient.mk _) := by
           simp only [← ((local_hom_TFAE _).out 0 4).mp lochom,
             Ideal.map_comap_of_surjective _ Ideal.Quotient.mk_surjective]
@@ -119,7 +118,7 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
         · exact (Ideal.map_toCotangent_ker (maximalIdeal R)).symm
       let Q := (CotangentSpace R) ⧸ (Submodule.span (ResidueField R)
         (Set.range (⇑(maximalIdeal R).toCotangent ∘ Set.inclusion sub)))
-      let f' : Q →+ (CotangentSpace (R ⧸ Ideal.span S.toSet)) :=
+      let f' : Q →+ (CotangentSpace (R ⧸ Ideal.span (S : Set R))) :=
         QuotientAddGroup.lift _ f
         (le_of_eq (AddSubgroup.ext (fun x ↦ (congrFun ker.symm x).to_iff)))
       have bij : Function.Bijective f' := by
@@ -138,27 +137,29 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
           have : z ∈ maximalIdeal R := by simp [← ((local_hom_TFAE _).out 0 4).mp lochom, hz]
           use (maximalIdeal R).toCotangent ⟨z, this⟩
           simp [f, ← hy, hz]
-      let e : Q ≃+ (CotangentSpace (R ⧸ Ideal.span S.toSet)) :=
+      let e : Q ≃+ (CotangentSpace (R ⧸ Ideal.span (S : Set R))) :=
         AddEquiv.ofBijective f' bij
-      have rk := rank_eq_of_equiv_equiv (ResidueField.map (Ideal.Quotient.mk (Ideal.span S.toSet)))
+      have rk := rank_eq_of_equiv_equiv
+        (ResidueField.map (Ideal.Quotient.mk (Ideal.span (S : Set R))))
         e (ResidueField.map_bijective_of_surjective _ Ideal.Quotient.mk_surjective) (fun r m ↦ by
           induction m using Submodule.Quotient.induction_on
           induction r using Submodule.Quotient.induction_on
           rw [← Submodule.Quotient.mk_smul]
           simp only [Finset.coe_sort_coe, AddEquiv.ofBijective_apply, e, f']
           rename_i m r
-          change f (r • m) = (ResidueField.map (Ideal.Quotient.mk (Ideal.span S.toSet)))
+          change f (r • m) = (ResidueField.map (Ideal.Quotient.mk (Ideal.span (S : Set R))))
             (IsLocalRing.residue R r) • (f m)
           simp only [map_smul]
           rfl)
       have frk : Module.finrank (ResidueField R) Q = Module.finrank
-        (ResidueField (R ⧸ Ideal.span S.toSet)) (CotangentSpace (R ⧸ Ideal.span S.toSet)) := by
+        (ResidueField (R ⧸ Ideal.span (S : Set R)))
+          (CotangentSpace (R ⧸ Ideal.span (S : Set R))) := by
         simp [Module.finrank, rk]
-      have : Fintype.card S.toSet = S.card := Fintype.card_ofFinset S (fun x ↦ Finset.mem_coe)
+      have : Fintype.card (S : Set R) = S.card := Fintype.card_ofFinset S (fun x ↦ Finset.mem_coe)
       rw [← frk, ← this, ← finrank_span_eq_card li]
       apply Module.finrank_quotient_add_finrank_le
-    have : ringKrullDim (R ⧸ Ideal.span S.toSet) + S.card ≤
-      (Submodule.spanFinrank (maximalIdeal (R ⧸ Ideal.span S.toSet))) + S.card :=
+    have : ringKrullDim (R ⧸ Ideal.span (S : Set R)) + S.card ≤
+      (Submodule.spanFinrank (maximalIdeal (R ⧸ Ideal.span (S : Set R)))) + S.card :=
       add_le_add_right (ringKrullDim_le_spanFinrank_maximalIdeal _) _
     exact ⟨(WithBot.add_natCast_cancel _ _ S.card).mp
       (le_antisymm (ge.trans le) this), le_antisymm (this.trans ge) le⟩
@@ -167,18 +168,18 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
     rintro ⟨reg, dim⟩
     simp only [← (isRegularLocalRing_def _).mp reg, ← Nat.cast_add, ←
       (isRegularLocalRing_def R).mp ‹_›, Nat.cast_inj] at dim
-    let fg : (maximalIdeal (R ⧸ Ideal.span S.toSet)).FG :=
+    let fg : (maximalIdeal (R ⧸ Ideal.span (S : Set R))).FG :=
       (isNoetherianRing_iff_ideal_fg _).mp inferInstance _
-    have fin : (maximalIdeal (R ⧸ Ideal.span S.toSet)).generators.Finite :=
+    have fin : (maximalIdeal (R ⧸ Ideal.span (S : Set R))).generators.Finite :=
       Submodule.FG.finite_generators fg
-    let U := Quotient.out '' (maximalIdeal (R ⧸ Ideal.span S.toSet)).generators
+    let U := Quotient.out '' (maximalIdeal (R ⧸ Ideal.span (S : Set R))).generators
     let _ : Fintype U := (Set.Finite.image _ fin).fintype
     use S ∪ U.toFinset
     have span : Ideal.span (S ∪ U) = maximalIdeal R := by
-      rw [Ideal.span_union, ← Ideal.mk_ker (I := Ideal.span S.toSet), sup_comm,
+      rw [Ideal.span_union, ← Ideal.mk_ker (I := Ideal.span (S : Set R)), sup_comm,
         ← Ideal.comap_map_of_surjective' _ Ideal.Quotient.mk_surjective, Ideal.map_span]
       have : Ideal.span (⇑(Ideal.Quotient.mk (Ideal.span ↑S)) '' U) =
-        Submodule.span _ (maximalIdeal (R ⧸ Ideal.span S.toSet)).generators := by
+        Submodule.span _ (maximalIdeal (R ⧸ Ideal.span (S : Set R))).generators := by
         simp [U, ← Set.image_comp]
       rw [this, Submodule.span_generators]
       exact ((local_hom_TFAE _).out 0 4).mp lochom
@@ -196,7 +197,6 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
 lemma quotient_span_singleton [IsRegularLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
     (nmem : x ∉ (maximalIdeal R) ^ 2) : IsRegularLocalRing (R ⧸ Ideal.span {x}) ∧
     (ringKrullDim (R ⧸ Ideal.span {x}) + 1 = ringKrullDim R) := by
-  have : ({x} : Finset R).toSet = {x} := by exact Finset.coe_singleton x
   rw [← Nat.cast_one, ← Finset.card_singleton x, ← Finset.coe_singleton x]
   apply ((quotient_isRegularLocalRing_tfae R {x} (by simpa)).out 1 2).mp
   simpa [← LinearMap.mem_ker, Ideal.mem_toCotangent_ker] using nmem
