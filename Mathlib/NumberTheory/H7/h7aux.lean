@@ -171,6 +171,59 @@ lemma house_leq_one_pow (α : K) (n : ℕ) (hn : n ≠ 0) (hα0 : α ≠ 0)
   1 ≤ house α ^ n :=
 (house_gt_one_of_isIntegral H hα0).trans (house_leq_pow_pow α n hn hα0 H)
 
+lemma rho_norm_le_house_rho (α : K) :
+    ‖((canonicalEmbedding K) α)‖ ≤ house (α) := by
+  unfold house
+  simp only [le_refl]
+
+instance : DecidableEq (K →ₐ[ℚ] ℂ) := by {
+  apply Classical.typeDecidableEq
+  }
+
+omit [NumberField K] in
+lemma etc [Field L] [Field E] [Algebra K L] [Algebra K E]
+ [Fintype (L →ₐ[K] E)] [DecidableEq (L →ₐ[K] E)] (x : L) (σ0 : L →ₐ[K] E) :
+  (∏ σ : L →ₐ[K] E, σ x) =
+  σ0 x * ∏ σ ∈ (Finset.univ.erase σ0), σ x := by
+  have hmem : σ0 ∈ (Finset.univ : Finset (L →ₐ[K] E)) :=
+    Finset.mem_univ _
+  exact (Finset.mul_prod_erase (Finset.univ : Finset (L →ₐ[K] E))
+    (fun σ => σ x) hmem).symm
+
+lemma abs_norm_eq_prod_embeddings_norm (α : K) :
+    ‖Algebra.norm ℚ (α)‖ = ‖∏ σ : K →ₐ[ℚ] ℂ, σ (α)‖ := by
+    rw [← Algebra.norm_eq_prod_embeddings]
+    simp only [eq_ratCast, norm_ratCast]
+    congr
+
+lemma norm_le_house_norm (α : K) (σ : K →+* ℂ) : ‖Algebra.norm ℚ (α)‖ ≤
+    ‖σ α‖ * (house (α)) ^ (Module.finrank ℚ K -1) := by
+  have hcard := NumberField.Embeddings.card K ℂ
+  have := abs_norm_eq_prod_embeddings_norm α
+  rw [etc (σ0 := σ.toRatAlgHom)] at this
+  calc _ = ‖(σ α) * ∏ σ ∈ (Finset.univ.erase σ.toRatAlgHom), σ α‖ := ?_
+       _ = ‖σ α‖ * ‖∏ σ ∈ (Finset.univ.erase σ.toRatAlgHom), σ α‖ := ?_
+       _ ≤ ‖σ α‖ * ∏ σ ∈ (Finset.univ.erase σ.toRatAlgHom), ‖σ α‖ := ?_
+       _ ≤ ‖σ α‖ * ∏ σ ∈ (Finset.univ.erase σ.toRatAlgHom), house (α) := ?_
+       _ = ‖σ α‖ * (house (α)) ^ (Module.finrank ℚ K -1) := ?_
+  · rw [this]
+    simp only [RingHom.toRatAlgHom_apply, Complex.norm_mul, norm_prod]
+  · rw [Complex.norm_mul]
+  · apply mul_le_mul_of_nonneg_left
+    exact Finset.norm_prod_le (Finset.univ.erase σ.toRatAlgHom) fun i ↦ i α
+    exact norm_nonneg _
+  · apply mul_le_mul_of_nonneg_left
+    refine prod_le_prod ?_ ?_
+    · intros i hi
+      simp only [Finset.mem_erase] at hi
+      exact norm_nonneg (i α)
+    · intros i hi
+      simp only [mem_erase, ne_eq, Finset.mem_univ, and_true] at hi
+      rw [house_eq_sup']
+      sorry
+    · exact norm_nonneg (σ α)
+  · congr
+    simp only [prod_const, Finset.mem_univ, card_erase_of_mem, card_univ, AlgHom.card]
 
 def shift {w : ℕ} (s : Fin w) : ℕ := s + 1
 
