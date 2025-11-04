@@ -39,6 +39,7 @@ section LinearMapRight
 
 variable [Module S P] [IsScalarTower R S P]
 
+/-- The base change homomorphism underlying `IsBaseChange.linearMapRight` -/
 def linearMapRightBaseChangeHom (ε : N →ₗ[R] P) :
     (S ⊗[R] (M →ₗ[R] N)) →ₗ[S] (M →ₗ[R] P) where
   toAddHom := (TensorProduct.lift {
@@ -56,6 +57,7 @@ variable [Module.Free R M] [Module.Finite R M]
 
 variable {S}
 
+/-- The base change isomorphism funderlying `IsBaseChange.linearMapRight` -/
 noncomputable def linearMapRightBaseChangeEquiv
     {ε : N →ₗ[R] P} (ibc : IsBaseChange S ε) :
     S ⊗[R] (M →ₗ[R] N) ≃ₗ[S] (M →ₗ[R] P) := by
