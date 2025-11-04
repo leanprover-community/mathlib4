@@ -111,7 +111,7 @@ end Submonoid
 variable (M)
 
 /-- For a monoid, the units of the center inject into the center of the units. This is not an
-equivalence in general; one case when it is is for groups with zero, which is covered in
+equivalence in general; one case where this holds is for groups with zero, which is covered in
 `centerUnitsEquivUnitsCenter`. -/
 @[to_additive (attr := simps! apply_coe_val)
   /-- For an additive monoid, the units of the center inject into the center of the units. -/]

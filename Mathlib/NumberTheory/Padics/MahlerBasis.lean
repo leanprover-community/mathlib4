@@ -18,7 +18,7 @@ import Mathlib.Topology.MetricSpace.Ultra.ContinuousMaps
 In this file we introduce the Mahler basis function `mahler k`, for `k : ℕ`, which is the unique
 continuous map `ℤ_[p] → ℤ_[p]` agreeing with `n ↦ n.choose k` for `n ∈ ℕ`.
 
-Using this, we prove Mahler's theorem, showing that for any any continuous function `f` on `ℤ_[p]`
+Using this, we prove Mahler's theorem, showing that for any continuous function `f` on `ℤ_[p]`
 (valued in a normed `ℤ_[p]`-module `E`), the Mahler series `x ↦ ∑' k, mahler k x • Δ^[n] f 0`
 converges (uniformly) to `f`, and this construction defines a Banach-space isomorphism between
 `C(ℤ_[p], E)` and the space of sequences `ℕ → E` tending to 0.

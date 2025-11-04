@@ -2,7 +2,7 @@
 
  : <<'BASH_DOC_MODULE'
 
-#  The `declarations_diff` script
+# The `declarations_diff` script
 
 The `declarations_diff` script is a text-based script that attempts to find which declarations
 have been removed and which declarations have been added in the current PR with respect to `master`.

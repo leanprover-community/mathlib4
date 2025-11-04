@@ -292,19 +292,20 @@ theorem mk'_pow (x : R) (y : M) (n : ℕ) : mk' S (x ^ n) (y ^ n) = mk' S x y ^ 
 
 variable (M)
 
-theorem mk'_surjective (z : S) : ∃ (x : _) (y : M), mk' S x y = z :=
+theorem mk'_surjective : Surjective fun ((r, m) : R × M) ↦ mk' S r m := fun z ↦
   let ⟨r, hr⟩ := IsLocalization.surj _ z
-  ⟨r.1, r.2, (eq_mk'_iff_mul_eq.2 hr).symm⟩
+  ⟨r, (eq_mk'_iff_mul_eq.2 hr).symm⟩
 
-variable (S)
+theorem exists_mk'_eq (z : S) : ∃ (x : R) (y : M), mk' S x y = z :=
+  let ⟨⟨r, m⟩, hz⟩ := mk'_surjective M z; ⟨r, m, hz⟩
 
+variable (S) in
 /-- The localization of a `Fintype` is a `Fintype`. Cannot be an instance. -/
 noncomputable def fintype' [Fintype R] : Fintype S :=
   have := Classical.propDecidable
-  Fintype.ofSurjective (Function.uncurry <| IsLocalization.mk' S) fun a =>
-    Prod.exists'.mpr <| IsLocalization.mk'_surjective M a
+  .ofSurjective (Function.uncurry <| IsLocalization.mk' S) <| mk'_surjective M
 
-variable {M S}
+variable {M}
 
 /-- Localizing at a submonoid with 0 inside it leads to the trivial ring. -/
 def uniqueOfZeroMem (h : (0 : R) ∈ M) : Unique S :=
@@ -332,6 +333,17 @@ theorem mk'_zero (s : M) : IsLocalization.mk' S 0 s = 0 :=
 theorem ne_zero_of_mk'_ne_zero {x : R} {y : M} (hxy : IsLocalization.mk' S x y ≠ 0) : x ≠ 0 := by
   rintro rfl
   exact hxy (IsLocalization.mk'_zero _)
+
+/-- If we localise a ring `R` at a submonoid `M` made of regular elements, then `r / m : R[1/M]` is
+regular iff `r : R` is. -/
+@[simp] lemma isRegular_mk' (hM : ∀ m ∈ M, IsRegular m) {r : R} {m : M} :
+    IsRegular (IsLocalization.mk' S r m) ↔ IsRegular r := by
+  have (n : M) (x y : R) : n * x = n * y ↔ x = y := (hM _ n.2).1.eq_iff
+  simp +contextual only [← isLeftRegular_iff_isRegular, IsLeftRegular, Function.Injective,
+    (mk'_surjective M).forall, ← mk'_mul, Prod.forall, Subtype.forall, IsLocalization.eq,
+    Submonoid.coe_mul, this, exists_const, mul_assoc]
+  simp_rw [← mul_left_comm r]
+  exact ⟨fun h a b ↦ by simpa using h a 1 M.one_mem b 1 M.one_mem, fun h ha s hs b t ht ↦ @h _ _⟩
 
 include M in
 variable (M) in
@@ -513,18 +525,19 @@ section
 include M
 
 /-- See note [partially-applied ext lemmas] -/
-theorem monoidHom_ext ⦃j k : S →* P⦄
+theorem monoidHom_ext {P : Type*} [Monoid P] ⦃j k : S →* P⦄
     (h : j.comp (algebraMap R S : R →* S) = k.comp (algebraMap R S)) : j = k :=
-  Submonoid.LocalizationMap.epic_of_localizationMap (toLocalizationMap M S) <| DFunLike.congr_fun h
+  (toLocalizationMap M S).epic_of_localizationMap h
 
 /-- See note [partially-applied ext lemmas] -/
-theorem ringHom_ext ⦃j k : S →+* P⦄ (h : j.comp (algebraMap R S) = k.comp (algebraMap R S)) :
+theorem ringHom_ext {P : Type*} [Semiring P] ⦃j k : S →+* P⦄
+    (h : j.comp (algebraMap R S) = k.comp (algebraMap R S)) :
     j = k :=
   RingHom.coe_monoidHom_injective <| monoidHom_ext M <| MonoidHom.ext <| RingHom.congr_fun h
 
 /-- To show `j` and `k` agree on the whole localization, it suffices to show they agree
 on the image of the base ring, if they preserve `1` and `*`. -/
-protected theorem ext (j k : S → P) (hj1 : j 1 = 1) (hk1 : k 1 = 1)
+protected theorem ext {P : Type*} [Monoid P] (j k : S → P) (hj1 : j 1 = 1) (hk1 : k 1 = 1)
     (hjm : ∀ a b, j (a * b) = j a * j b) (hkm : ∀ a b, k (a * b) = k a * k b)
     (h : ∀ a, j (algebraMap R S a) = k (algebraMap R S a)) : j = k :=
   let j' : MonoidHom S P :=
@@ -864,8 +877,6 @@ theorem sec_snd_ne_zero [Nontrivial R] (hM : M ≤ nonZeroDivisors R) (x : S) :
 
 variable [IsDomain R]
 
-@[deprecated (since := "2025-03-18")] alias noZeroDivisors_of_le_nonZeroDivisors := noZeroDivisors
-
 variable (S) in
 /-- A `CommRing` `S` which is the localization of an integral domain `R` at a subset of
 non-zero elements is an integral domain. -/
@@ -902,7 +913,7 @@ namespace IsLocalization
 variable [IsLocalization M S]
 
 theorem mk'_neg (x : R) (y : M) :
-    mk' S (-x) y = - mk' S x y := by
+    mk' S (-x) y = -mk' S x y := by
   rw [eq_comm, eq_mk'_iff_mul_eq, neg_mul, map_neg, mk'_spec]
 
 theorem mk'_sub (x₁ x₂ : R) (y₁ y₂ : M) :

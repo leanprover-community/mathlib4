@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 
 # Separated morphisms
 
-A morphism of schemes is separated if its diagonal morphism is a closed immmersion.
+A morphism of schemes is separated if its diagonal morphism is a closed immersion.
 
 ## Main definitions
 - `AlgebraicGeometry.IsSeparated`: The class of separated morphisms.
@@ -77,12 +77,27 @@ instance : IsZariskiLocalAtTarget @IsSeparated := by
   rw [isSeparated_eq_diagonal_isClosedImmersion]
   infer_instance
 
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsSeparated g] :
+    IsSeparated (pullback.fst f g) :=
+  MorphismProperty.pullback_fst f g inferInstance
+
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsSeparated f] :
+    IsSeparated (pullback.snd f g) :=
+  MorphismProperty.pullback_snd f g inferInstance
+
+instance (f : X ⟶ Y) (V : Y.Opens) [IsSeparated f] : IsSeparated (f ∣_ V) :=
+  IsZariskiLocalAtTarget.restrict ‹_› V
+
+instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [IsSeparated f] :
+    IsSeparated (f.resLE V U e) := by
+  delta Scheme.Hom.resLE; infer_instance
+
 instance (R S : CommRingCat.{u}) (f : R ⟶ S) : IsSeparated (Spec.map f) := by
   constructor
   letI := f.hom.toAlgebra
   change IsClosedImmersion
     (Limits.pullback.diagonal (Spec.map (CommRingCat.ofHom (algebraMap R S))))
-  rw [diagonal_Spec_map, MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion]
+  rw [diagonal_SpecMap, MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion]
   exact .spec_of_surjective _ fun x ↦ ⟨.tmul R 1 x,
     (Algebra.TensorProduct.lmul'_apply_tmul (R := R) (S := S) 1 x).trans (one_mul x)⟩
 
@@ -122,21 +137,21 @@ open Scheme Pullback
 variable (𝒰 : Y.OpenCover) (𝒱 : ∀ i, (pullback f (𝒰.f i)).OpenCover)
 
 lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
-    (hf : Function.Injective f.base) :
+    (hf : Function.Injective f) :
     diagonalCoverDiagonalRange f 𝒰 𝒱 = ⊤ := by
   rw [← top_le_iff]
   rintro x -
   simp only [diagonalCoverDiagonalRange, openCoverOfBase_I₀, openCoverOfBase_X,
     openCoverOfLeftRight_I₀, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.coe_mk,
     Set.mem_iUnion, Set.mem_range, Sigma.exists]
-  have H : (pullback.fst f f).base x = (pullback.snd f f).base x :=
-    hf (by rw [← Scheme.comp_base_apply, ← Scheme.comp_base_apply, pullback.condition])
-  let i := 𝒰.idx (f.base ((pullback.fst f f).base x))
-  obtain ⟨y : 𝒰.X i, hy : (𝒰.f i).base y = f.base _⟩ :=
-    𝒰.covers (f.base ((pullback.fst f f).base x))
+  have H : pullback.fst f f x = pullback.snd f f x :=
+    hf (by rw [← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply, pullback.condition])
+  let i := 𝒰.idx (f (pullback.fst f f x))
+  obtain ⟨y : 𝒰.X i, hy : 𝒰.f i y = f _⟩ :=
+    𝒰.covers (f (pullback.fst f f x))
   obtain ⟨z, hz₁, hz₂⟩ := exists_preimage_pullback _ _ hy.symm
   let j := (𝒱 i).idx z
-  obtain ⟨w : (𝒱 i).X j, hy : ((𝒱 i).f j).base w = z⟩ := (𝒱 i).covers z
+  obtain ⟨w : (𝒱 i).X j, hy : (𝒱 i).f j w = z⟩ := (𝒱 i).covers z
   refine ⟨i, j, ?_⟩
   simp_rw [diagonalCover_map]
   change x ∈ Set.range _
@@ -148,25 +163,25 @@ lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
   simp [← H, ← hz₁, ← hy]
 
 lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange :
-    Set.range (pullback.diagonal f).base ⊆ diagonalCoverDiagonalRange f 𝒰 𝒱 := by
+    Set.range (pullback.diagonal f) ⊆ diagonalCoverDiagonalRange f 𝒰 𝒱 := by
   rintro _ ⟨x, rfl⟩
   simp only [diagonalCoverDiagonalRange, openCoverOfBase_I₀, openCoverOfBase_X,
     openCoverOfLeftRight_I₀, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.coe_mk,
     Set.mem_iUnion, Set.mem_range, Sigma.exists]
-  let i := 𝒰.idx (f.base x)
-  obtain ⟨y : 𝒰.X i, hy : (𝒰.f i).base y = f.base x⟩ := 𝒰.covers (f.base x)
+  let i := 𝒰.idx (f x)
+  obtain ⟨y : 𝒰.X i, hy : 𝒰.f i y = f x⟩ := 𝒰.covers (f x)
   obtain ⟨z, hz₁, hz₂⟩ := exists_preimage_pullback _ _ hy.symm
   let j := (𝒱 i).idx z
-  obtain ⟨w : (𝒱 i).X j, hy : ((𝒱 i).f j).base w = z⟩ := (𝒱 i).covers z
-  refine ⟨i, j, (pullback.diagonal ((𝒱 i).f j ≫ pullback.snd f (𝒰.f i))).base w, ?_⟩
-  rw [← hz₁, ← hy, ← Scheme.comp_base_apply, ← Scheme.comp_base_apply]
+  obtain ⟨w : (𝒱 i).X j, hy : (𝒱 i).f j w = z⟩ := (𝒱 i).covers z
+  refine ⟨i, j, pullback.diagonal ((𝒱 i).f j ≫ pullback.snd f (𝒰.f i)) w, ?_⟩
+  rw [← hz₁, ← hy, ← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply]
   simp only [diagonalCover, openCoverOfBase_I₀,
     Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover, PreZeroHypercover.pullback₁_X,
     Cover.pullbackHom, Precoverage.ZeroHypercover.bind_toPreZeroHypercover, openCoverOfBase_X,
     PreZeroHypercover.bind_X, openCoverOfLeftRight_I₀, openCoverOfLeftRight_X,
-    PreZeroHypercover.bind_f, openCoverOfLeftRight_f, openCoverOfBase_f, comp_coeBase,
+    PreZeroHypercover.bind_f, openCoverOfLeftRight_f, openCoverOfBase_f, Hom.comp_base,
     TopCat.hom_comp, ContinuousMap.comp_apply, ContinuousMap.comp_assoc]
-  simp_rw [← Scheme.comp_base_apply]
+  simp_rw [← Scheme.Hom.comp_apply]
   congr 5
   apply pullback.hom_ext <;> simp
 
@@ -177,8 +192,7 @@ lemma isClosedImmersion_diagonal_restrict_diagonalCoverDiagonalRange
     (diagonalCoverDiagonalRange f 𝒰 𝒱).ι ⁻¹ᵁ ((diagonalCover f 𝒰 𝒱).f ⟨i.1, i.2, i.2⟩).opensRange
   have hU (i) : (diagonalCoverDiagonalRange f 𝒰 𝒱).ι ''ᵁ U i =
       ((diagonalCover f 𝒰 𝒱).f ⟨i.1, i.2, i.2⟩).opensRange := by
-    rw [TopologicalSpace.Opens.functor_obj_map_obj, inf_eq_right, Hom.image_top_eq_opensRange,
-      Opens.opensRange_ι]
+    rw [Scheme.Hom.image_preimage_eq_opensRange_inf, inf_eq_right, Opens.opensRange_ι]
     exact le_iSup (fun i : Σ i, (𝒱 i).I₀ ↦ ((diagonalCover f 𝒰 𝒱).f ⟨i.1, i.2, i.2⟩).opensRange) i
   have hf : iSup U = ⊤ := (TopologicalSpace.Opens.map_iSup _ _).symm.trans
     (diagonalCoverDiagonalRange f 𝒰 𝒱).ι_preimage_self
@@ -190,7 +204,7 @@ lemma isClosedImmersion_diagonal_restrict_diagonalCoverDiagonalRange
   infer_instance
 
 @[stacks 0DVA]
-lemma isSeparated_of_injective (hf : Function.Injective f.base) :
+lemma isSeparated_of_injective (hf : Function.Injective f) :
     IsSeparated f := by
   constructor
   let 𝒰 := Y.affineCover
@@ -201,10 +215,17 @@ lemma isSeparated_of_injective (hf : Function.Injective f.base) :
 
 end of_injective
 
+instance : MorphismProperty.HasOfPostcompProperty @IsClosedImmersion @IsSeparated :=
+  MorphismProperty.hasOfPostcompProperty_iff_le_diagonal.mpr
+    fun _ _ _ _ ↦ inferInstanceAs (IsClosedImmersion _)
+
 lemma IsClosedImmersion.of_comp [IsClosedImmersion (f ≫ g)] [IsSeparated g] :
-    IsClosedImmersion f := by
-  rw [← pullback.lift_snd (𝟙 _) f (Category.id_comp (f ≫ g))]
-  infer_instance
+    IsClosedImmersion f := MorphismProperty.of_postcomp _ _ g ‹_› ‹_›
+
+variable {f g} in
+lemma IsClosedImmersion.comp_iff [IsClosedImmersion g] :
+    IsClosedImmersion (f ≫ g) ↔ IsClosedImmersion f :=
+  ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩
 
 instance {I J : X.IdealSheafData} (h : I ≤ J) : IsClosedImmersion (I.inclusion h) := by
   have : IsClosedImmersion (I.inclusion h ≫ I.subschemeι) := by
@@ -221,15 +242,18 @@ variable {f g} in
 lemma IsSeparated.comp_iff [IsSeparated g] : IsSeparated (f ≫ g) ↔ IsSeparated f :=
   ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩
 
+instance : MorphismProperty.HasOfPostcompProperty @IsSeparated ⊤ where
+  of_postcomp f g _ _ := .of_comp f g
+
+instance : MorphismProperty.HasOfPostcompProperty @IsAffineHom @IsSeparated :=
+  MorphismProperty.hasOfPostcompProperty_iff_le_diagonal.mpr
+    fun _ _ _ _ ↦ inferInstanceAs (IsAffineHom _)
+
 lemma IsAffineHom.of_comp [IsAffineHom (f ≫ g)] [IsSeparated g] :
-    IsAffineHom f := by
-  rw [← pullback.lift_snd (𝟙 _) f (Category.id_comp (f ≫ g))]
-  have := MorphismProperty.pullback_snd (P := @IsAffineHom) (f ≫ g) g inferInstance
-  infer_instance
+    IsAffineHom f := MorphismProperty.of_postcomp _ _ g ‹_› ‹_›
 
 variable {f g} in
-lemma IsAffineHom.comp_iff [IsAffineHom g] :
-    IsAffineHom (f ≫ g) ↔ IsAffineHom f :=
+lemma IsAffineHom.comp_iff [IsAffineHom g] : IsAffineHom (f ≫ g) ↔ IsAffineHom f :=
   ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩
 
 @[stacks 01KM]
