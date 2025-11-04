@@ -801,26 +801,14 @@ def cleanup_pull_smul (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Resul
   /- Now turn e.g. `(4 : ℚ) • x` into `4 * x`. -/
   let thms ← [``add_zero, ``add_assoc_rev, ``_root_.one_mul, ``_root_.mul_one,
     ``mul_assoc_rev, ``_root_.pow_one, ``neg_mul, ``add_neg, ``one_smul,
-    ``mul_smul_comm].foldlM (·.addConst ·) thms
+    ``mul_smul_comm
+    ].foldlM (·.addConst ·) thms
   let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
     (simpTheorems := #[thms])
     (congrTheorems := ← getSimpCongrTheorems)
   pure <| ←
     r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
 
-def cleanup_consts (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
-  let thms : SimpTheorems := {}
-  /- Now turn e.g. `(4 : ℚ) • x` into `4 * x`. -/
-  let thms ← [``add_zero, ``add_assoc_rev, ``_root_.one_mul, ``_root_.mul_one,
-    ``mul_assoc_rev, ``_root_.pow_one, ``neg_mul, ``add_neg, ``one_smul,
-    ``mul_smul_comm].foldlM (·.addConst ·) thms
-  let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_smul, ``int_rawCast_smul,
-    ``nnrat_rawCast_smul, ``rat_rawCast_smul].foldlM (·.addConst · (post := false)) thms
-  let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
-    (simpTheorems := #[thms])
-    (congrTheorems := ← getSimpCongrTheorems)
-  pure <| ←
-    r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
 
 def cleanup_aux (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
   match cfg.mode with
@@ -837,18 +825,35 @@ def cleanup_aux (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := d
     pure <| ←
       r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
 
+def cleanup_consts (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
+  let thms : SimpTheorems := {}
+  /- Now turn e.g. `(4 : ℚ) • x` into `4 * x`. -/
+  let thms ← [``add_zero, ``_root_.one_mul, ``_root_.mul_one,
+    ``neg_mul, ``add_neg].foldlM (·.addConst ·) thms
+  let thms ← [``ofNat_smul, ``neg_ofNat_smul, ``neg_1_smul, ``nnRat_ofNat_smul_1,
+    ``nnRat_ofNat_smul_2, ``rat_ofNat_smul_1, ``rat_ofNat_smul_2
+    ].foldlM (·.addConst · (post := false)) thms
+  let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
+    (simpTheorems := #[thms])
+    (congrTheorems := ← getSimpCongrTheorems)
+  pure <| ←
+    r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
+
 /-- A cleanup routine for `algebra_nf`, which simplifies normalized expressions
 to a more human-friendly format. -/
 def cleanup (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
   match cfg.mode with
   | .raw => pure r
   | .SOP => do
-    let r ← cleanup_pull_smul cfg r
-    IO.println s!"{← ppExpr r.expr}"
-    let r ← cleanup_consts cfg r
-    IO.println s!"{← ppExpr r.expr}"
+    /- These need to come first, it turns rawCast (nat_lit 4) into ofNat (nat_lit 4)
+    If we don't do this first an empty simpset turns nat_lit 4 into ofNat 4. -/
     let r ← cleanup_aux cfg r
-    IO.println s!"{← ppExpr r.expr}"
+    /- Pull the scalar multiplication from the end of of the term to the start.
+    i.e. x * y * (r • 1) → r • (x * y)-/
+    let r ← cleanup_pull_smul cfg r
+    /- If the base expression in a scalar product is a constant, turn the scalar multiplication into
+    normal multiplication. i.e. (-3) • x → -3 * x -/
+    let r ← cleanup_consts cfg r
     return r
 
 

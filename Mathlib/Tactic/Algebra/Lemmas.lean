@@ -121,23 +121,6 @@ section Nat
 
 variable {n d : ℕ}
 
-theorem nat_rawCast_smul {R A} [CommSemiring R] [CommSemiring A] [Algebra R A]
-    [n.AtLeastTwo] {a : A} :
-    (n.rawCast : R) • a = n.rawCast * a := by
-  simp [Nat.cast_smul_eq_nsmul]
-
-theorem int_rawCast_smul {R A} [CommRing R] [CommRing A] [Algebra R A] {n : ℤ} {a : A} :
-    (n.rawCast : R) • a = n.rawCast * a := by
-  simp [Int.cast_smul_eq_zsmul]
-
-theorem nnrat_rawCast_smul {R A} [Semifield R] [Semifield A] [Algebra R A] {a : A} :
-    (NNRat.rawCast n d : R) • a = (NNRat.rawCast n d) * a := by
-  simp [Algebra.smul_def]
-
-theorem rat_rawCast_smul {R A} [Field R] [Field A] [Algebra R A] {n : ℤ} {a : A} :
-    (Rat.rawCast n d : R) • a = (Rat.rawCast n d) * a := by
-  simp [Algebra.smul_def]
-
 theorem add_assoc_rev (a b c : R) : a + (b + c) = a + b + c := (add_assoc ..).symm
 theorem mul_assoc_rev (a b c : R) : a * (b * c) = a * b * c := (mul_assoc ..).symm
 theorem mul_neg {R} [Ring R] (a b : R) : a * -b = -(a * b) := by simp
@@ -150,6 +133,42 @@ theorem nnrat_rawCast {R} [DivisionSemiring R] :
     (NNRat.rawCast n d : R) = Nat.rawCast n / Nat.rawCast d := by simp
 theorem rat_rawCast_neg {R} [DivisionRing R] :
     (Rat.rawCast (.negOfNat n) d : R) = Int.rawCast (.negOfNat n) / Nat.rawCast d := by simp
+
+theorem ofNat_smul {R A} [CommSemiring R] [CommSemiring A] [Algebra R A]
+    [n.AtLeastTwo] {a : A} :
+    (ofNat(n) : R) • a = ofNat(n) * a := by
+  simp_rw [← nat_rawCast_2]
+  simp [Nat.cast_smul_eq_nsmul]
+
+theorem neg_ofNat_smul {R A} [CommRing R] [CommRing A] [Algebra R A] {a : A} [n.AtLeastTwo] :
+    (- ofNat(n) : R) • a = - (ofNat(n)) * a := by
+  simpa [← nat_rawCast_2] using ofNat_smul
+
+theorem neg_1_smul {R A} [CommRing R] [CommRing A] [Algebra R A] {a : A} :
+    (-1 : R) • a = - a := by
+  simp
+
+theorem nnRat_ofNat_smul_1 {R A} [Semifield R] [Semifield A] [Algebra R A] {a : A}
+    [d.AtLeastTwo] :
+    (1 / ofNat(d) : R) • a = (1 / ofNat(d)) * a := by
+  simp [Algebra.smul_def, ← nat_rawCast_2]
+
+theorem nnRat_ofNat_smul_2 {R A} [Semifield R] [Semifield A] [Algebra R A] {a : A}
+    [n.AtLeastTwo] [d.AtLeastTwo] :
+    (ofNat(n) / ofNat(d) : R) • a = (ofNat(n) / ofNat(d)) * a := by
+  simp [Algebra.smul_def, ← nat_rawCast_2]
+
+theorem rat_ofNat_smul_1 {R A} [Field R] [Field A] [Algebra R A] {a : A}
+    [d.AtLeastTwo] :
+    ((- 1) / ofNat(d) : R) • a = ((- 1) / ofNat(d)) * a := by
+  simp [Algebra.smul_def, ← nat_rawCast_2]
+
+theorem rat_ofNat_smul_2 {R A} [Field R] [Field A] [Algebra R A] {a : A}
+    [n.AtLeastTwo] [d.AtLeastTwo] :
+    ((- ofNat(n)) / ofNat(d) : R) • a = ((- ofNat(n)) / ofNat(d)) * a := by
+  simp [Algebra.smul_def, ← nat_rawCast_2]
+
+
 end Nat
 
 theorem mul_pow_add_overlap_zero {b₁ b₂ x : A} {e : ℕ}

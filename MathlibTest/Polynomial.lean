@@ -65,6 +65,11 @@ example (a : ℚ) : (2*X + C a)^2 = 4 * monomial 2 1 + monomial 1 (4*a) + monomi
 example (a : ℚ) : (X - C a)*(X + C a) = X^2 - C (a^2) := by
   polynomial
 
+example (a : ℚ) : (C a * X + C 4)^2 = 0 := by
+  polynomial_nf
+  guard_target = C 16 + C (a * 8) * X + C (a ^ 2) * X ^ 2 = 0
+  apply sorryPolynomialTest
+
 example (a b c : ℚ) : (X + C a)^2 = X^2 + C c * X + C b := by
   match_coefficients
   · guard_target = a^2 = b

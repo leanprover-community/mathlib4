@@ -10,7 +10,7 @@ example (x : ℚ) (n : ℕ) : n • x + x = (n: ℤ) • x + x := by
 
 /--
 info: Try this:
-  algebra_nf with _
+  [apply] algebra_nf with _
   ⏎
    'algebra_nf' without specifying the base ring is unstable. Use `algebra_nf with` instead.
 -/
@@ -28,7 +28,7 @@ example (x : ℚ) (a : ℤ) : algebraMap ℤ ℚ a * x = a • x := by
 
 /--
 info: Try this:
-  algebra_nf with _
+  [apply] algebra_nf with _
   ⏎
    'algebra_nf' without specifying the base ring is unstable. Use `algebra_nf with` instead.
 -/
@@ -68,11 +68,11 @@ example (x : ℚ) : (x + x) + (x + x)  = x + x + x + x := by
 
 /--
 info: Try this:
-  algebra_nf with _
+  [apply] algebra_nf with _
   ⏎
    'algebra_nf' without specifying the base ring is unstable. Use `algebra_nf with` instead.
 -/
-#guard_msgs in
+-- #guard_msgs in
 example (x y : ℚ) : x + (y)*(x+y) = 0 := by
   algebra_nf
   guard_target = x + x * y + y ^ 2 = 0
@@ -80,12 +80,12 @@ example (x y : ℚ) : x + (y)*(x+y) = 0 := by
 
 example (x y : ℚ) : x + (x)*(x + -y) = 0 := by
   algebra_nf with ℤ
-  guard_target = x + -1 • (x * y) + x ^ 2 = 0
+  guard_target = x - (x * y) + x ^ 2 = 0
   exact sorryAlgebraTest
 
 /--
 info: Try this:
-  algebra_nf with _
+  [apply] algebra_nf with _
   ⏎
    'algebra_nf' without specifying the base ring is unstable. Use `algebra_nf with` instead.
 -/
@@ -103,7 +103,7 @@ example (x y : ℚ) : (x + (-3) * y)*(x+y) = x*x + (-2) * x * y + (-3) * y^2 := 
 
 /--
 info: Try this:
-  algebra_nf with _
+  [apply] algebra_nf with _
   ⏎
    'algebra_nf' without specifying the base ring is unstable. Use `algebra_nf with` instead.
 -/
@@ -124,7 +124,7 @@ example (x : ℚ) : (x + 1)^3 = x^3 + 3*x^2 + 3*x + 1 := by
 
 /--
 info: Try this:
-  algebra_nf with _
+  [apply] algebra_nf with _
   ⏎
    'algebra_nf' without specifying the base ring is unstable. Use `algebra_nf with` instead.
 -/
@@ -145,7 +145,7 @@ example {a b : ℤ} (x y : ℚ) (ha : a = 2) : (a + b) • (x + y) = b • x + (
 
 /--
 info: Try this:
-  algebra_nf with _
+  [apply] algebra_nf with _
   ⏎
    'algebra_nf' without specifying the base ring is unstable. Use `algebra_nf with` instead.
 -/
@@ -171,7 +171,7 @@ example (x : ℚ) (n : ℕ) : (x + 2) ^ (2 * n+1) = ((x+2)^n)^2 * (x+2) := by
 
 /--
 info: Try this:
-  algebra_nf with _
+  [apply] algebra_nf with _
   ⏎
    'algebra_nf' without specifying the base ring is unstable. Use `algebra_nf with` instead.
 -/
@@ -236,12 +236,17 @@ example (x : ℚ) : (3/4 : ℚ) • x + (1/4 : ℚ) • x = x := by
 -- Test algebra_nf with rational constants
 example (x : ℚ) : (1/2) * x + (1/3) * x = 1 := by
   algebra_nf with ℚ
-  guard_target = (5/6 : ℚ) • x = 1
+  guard_target = (5/6 : ℚ) * x = 1
   exact sorryAlgebraTest
 
 example (x y : ℚ) : ((2/5) * x + (3/5) * y)^2 = 0 := by
   algebra_nf with ℚ
-  guard_target = (12 / 25 : ℚ) • (x * y) + (4 / 25 : ℚ) • x ^ 2 + (9 / 25 : ℚ) • y ^ 2 = 0
+  guard_target = (12 / 25 : ℚ) * (x * y) + (4 / 25 : ℚ) * x ^ 2 + (9 / 25 : ℚ) * y ^ 2 = 0
+  exact sorryAlgebraTest
+
+example (x y : ℚ) : ((2/5) * x - (3/5) * y)^2 = 0 := by
+  algebra_nf with ℚ
+  guard_target = -12 / 25 * (x * y) + 4 / 25 * x ^ 2 + 9 / 25 * y ^ 2 = 0
   exact sorryAlgebraTest
 
 -- Test with Algebra over ℚ
