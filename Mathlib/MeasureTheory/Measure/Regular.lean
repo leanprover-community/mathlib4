@@ -216,6 +216,13 @@ theorem measure_eq_iSup (H : InnerRegularWRT μ p q) (hU : q U) :
     le_antisymm (le_of_forall_lt fun r hr => ?_) (iSup₂_le fun K hK => iSup_le fun _ => μ.mono hK)
   simpa only [lt_iSup_iff, exists_prop] using H hU r hr
 
+theorem eq_of_innerRegularWRT_of_forall_eq {ν : Measure α} (hμ : μ.InnerRegularWRT p q)
+    (hν : ν.InnerRegularWRT p q) (hμν : ∀ U, p U → μ U = ν U)
+    {U : Set α} (hU : q U) : μ U = ν U := by
+  rw [hμ.measure_eq_iSup hU, hν.measure_eq_iSup hU]
+  congr! 4 with t _ ht2
+  exact hμν t ht2
+
 theorem exists_subset_lt_add (H : InnerRegularWRT μ p q) (h0 : p ∅) (hU : q U) (hμU : μ U ≠ ∞)
     (hε : ε ≠ 0) : ∃ K, K ⊆ U ∧ p K ∧ μ U < μ K + ε := by
   rcases eq_or_ne (μ U) 0 with h₀ | h₀
@@ -460,6 +467,14 @@ lemma measure_closure_eq_of_isCompact [R1Space α] [OuterRegular μ]
   simp only [measure_eq_iInf_isOpen k, le_iInf_iff]
   intro u ku u_open
   exact measure_mono (hk.closure_subset_of_isOpen u_open ku)
+
+/-- Outer regular measures are determined by values on open sets. -/
+theorem ext_isOpen {ν : Measure α} [OuterRegular μ] [OuterRegular ν]
+    (hμν : ∀ U, IsOpen U → μ U = ν U) : μ = ν := by
+  ext s ms
+  rw [Set.measure_eq_iInf_isOpen, Set.measure_eq_iInf_isOpen]
+  congr! 4 with t _ ht2
+  exact hμν t ht2
 
 end OuterRegular
 
