@@ -95,7 +95,7 @@ lemma span_leadingTerm_eq_span_monomial {B : Set (MvPolynomial σ R)}
       apply Finset.sum_congr rfl
       · -- simp?
         simp only [Finset.univ_eq_attach, Finset.mem_attach, smul_eq_mul, dite_mul, zero_mul,
-        forall_const, Subtype.forall]
+          forall_const, Subtype.forall]
         intro a ha
         simp [Set.mem_of_mem_of_subset ha ht, smul_mul_assoc, ←mul_smul_comm,
           MvPolynomial.smul_monomial, IsUnit.inv_smul]

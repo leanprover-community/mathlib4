@@ -645,7 +645,6 @@ lemma image_leadingTerm_insert_zero (B : Set (MvPolynomial σ R)) :
 lemma degree_leadingTerm (f : MvPolynomial σ R) :
     m.degree (m.leadingTerm f) = m.degree f := by
   classical
-  -- simp? [leadingTerm, degree_monomial]
   simp only [leadingTerm, degree_monomial, leadingCoeff_eq_zero_iff, ite_eq_right_iff]
   simp_intro h
 
@@ -718,7 +717,6 @@ theorem degree_sub_leadingTerm_lt_iff {f : MvPolynomial σ R} :
     m.degree (f - m.leadingTerm f) ≺[m] m.degree f ↔ m.degree f ≠ 0 := by
   constructor
   · intro h h'
-    -- simp? [h'] at h
     simp only [h', map_zero] at h
     exact not_lt_bot h
   · intro h
