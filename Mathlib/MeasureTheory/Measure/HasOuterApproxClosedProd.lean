@@ -70,8 +70,7 @@ lemma ext_of_lintegral_mul_boundedContinuousFunction [IsFiniteMeasure μ]
   have (z : X × Y) := ENNReal.continuous_coe.tendsto _ |>.comp <|
     (tendsto_pi_nhds.1 (HasOuterApproxClosed.tendsto_apprSeq hs₁) z.1).mul
     (tendsto_pi_nhds.1 (HasOuterApproxClosed.tendsto_apprSeq hs₂) z.2)
-  simp_rw [show (fun _ ↦ 1 : X → ℝ≥0) = 1 from rfl, show (fun _ ↦ 1 : Y → ℝ≥0) = 1 from rfl,
-    ← Set.indicator_prod_one] at this
+  simp_rw [← Pi.one_def, ← Set.indicator_prod_one] at this
   have h1 : Tendsto (fun n ↦ ∫⁻ z, (hs₁.apprSeq n z.1 * hs₂.apprSeq n z.2 : ℝ≥0) ∂μ)
       atTop (𝓝 (∫⁻ z, ((s₁ ×ˢ s₂).indicator 1 z : ℝ≥0) ∂μ)) := by
     refine tendsto_lintegral_filter_of_dominated_convergence 1
