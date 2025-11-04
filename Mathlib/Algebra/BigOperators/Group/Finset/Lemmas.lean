@@ -7,7 +7,6 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Notation.Support
-import Mathlib.Order.Disjointed
 
 
 /-!
@@ -54,20 +53,5 @@ lemma isSquare_prod {s : Finset ι} (f : ι → M) (h : ∀ c ∈ s, IsSquare (f
   ext i
   rw [← @sq]
   exact ((isSquare_iff_exists_sq _).mp (h _ i.2)).choose_spec
-
-/-- Given a sequence of finite sets `s₀ ⊆ s₁ ⊆ s₂ ⋯`, the product of `gᵢ` over `i ∈ sₙ` is equal
-to `∏_{i ∈ s₀} gᵢ` * `∏_{j < n, i ∈ sⱼ₊₁ \ sⱼ} gᵢ`. -/
-@[to_additive /-- Given a sequence of finite sets `s₀ ⊆ s₁ ⊆ s₂ ⋯`, the sum of `gᵢ` over `i ∈ sₙ` is
-equal to `∑_{i ∈ s₀} gᵢ` + `∑_{j < n, i ∈ sⱼ₊₁ \ sⱼ} gᵢ`.-/]
-lemma prod_eq_prod_range_sdiff
-    {α β : Type*} [DecidableEq α] [CommMonoid β] (s : ℕ → Finset α) (hs : Monotone s)
-    (g : α → β) (n : ℕ) :
-    ∏ i ∈ s n, g i = (∏ i ∈ s 0, g i) * ∏ i ∈ range n, ∏ j ∈ s (i + 1) \ s i, g j := by
-  conv_lhs => rw [← hs.partialSups_eq, ← disjiUnion_Iic_disjointed, Iic_eq_Icc,
-    prod_disjiUnion, Nat.bot_eq_zero, ← Nat.range_succ_eq_Icc_zero, prod_range_succ', mul_comm]
-  congrm (∏ x ∈ ?_, g x) * ∏ k ∈ range n, ∏ x ∈ s (k + 1) \ ?_, g x
-  · simp
-  · change (Iic k).sup (s ∘ id) = s k
-    rw [← comp_sup_eq_sup_comp_of_nonempty hs nonempty_Iic, sup_Iic]
 
 end Finset
