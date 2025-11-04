@@ -280,9 +280,6 @@ theorem LinearIndepOn.id_imageₛ {s : Set M} {f : M →ₗ[R] M'} (hs : LinearI
     (hf_inj : Set.InjOn f (span R s)) : LinearIndepOn R id (f '' s) :=
   id_image <| hs.map_injOn f (by simpa using hf_inj)
 
-@[deprecated (since := "2025-02-14")] alias
-    LinearIndependent.image_subtypeₛ := LinearIndepOn.id_imageₛ
-
 end union
 
 theorem surjective_of_linearIndependent_of_span [Nontrivial R] (hv : LinearIndependent R v)

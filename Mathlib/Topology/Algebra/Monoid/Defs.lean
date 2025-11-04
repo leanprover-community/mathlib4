@@ -54,6 +54,12 @@ theorem Filter.Tendsto.mul {α : Type*} {f g : α → M} {x : Filter α} {a b : 
     (hf : Tendsto f x (𝓝 a)) (hg : Tendsto g x (𝓝 b)) : Tendsto (fun x ↦ f x * g x) x (𝓝 (a * b)) :=
   (continuous_mul.tendsto _).comp (hf.prodMk_nhds hg)
 
+@[to_additive]
+lemma Filter.tendsto_of_div_tendsto_one {α E : Type*} [CommGroup E] [TopologicalSpace E]
+    [ContinuousMul E] {f g : α → E} (m : E) {x : Filter α} (hf : Tendsto f x (𝓝 m))
+    (hfg : Tendsto (g / f) x (𝓝 1)) : Tendsto g x (𝓝 m) := by
+  simpa using Tendsto.mul hf hfg
+
 variable {X : Type*} [TopologicalSpace X] {f g : X → M} {s : Set X} {x : X}
 
 @[to_additive (attr := continuity, fun_prop)]
