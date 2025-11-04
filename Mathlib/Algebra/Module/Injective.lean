@@ -5,6 +5,7 @@ Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Module.Shrink
 import Mathlib.LinearAlgebra.LinearPMap
+import Mathlib.LinearAlgebra.Pi
 import Mathlib.Logic.Small.Basic
 import Mathlib.RingTheory.Ideal.Defs
 
@@ -435,3 +436,36 @@ lemma Module.Injective.extension_property
   (Module.Baer.of_injective inj).extension_property f hf g
 
 end lifting_property
+
+section injective_products
+
+theorem pi (R : Type) [Ring R] {ι : Type} (M : ι → Type)
+  [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
+  [∀ i, Module.Injective R (M i)] :
+  Module.Injective R (∀ i, M i) := by
+  constructor
+  intros X Y _ _ _ _ f hf g
+
+  -- For each i, extract the extension using `choose`
+  have h_family : ∀ i, ∃ g_i_ext : Y →ₗ[R] M i,
+      g_i_ext ∘ₗ f = (LinearMap.proj i).comp g := by
+    intro i
+    exact (
+      Module.Injective.extension_property (R := R) (M := M i)
+        (P := X) (P' := Y) (f := f) (hf := hf)
+        (g := (LinearMap.proj i).comp g)
+    )
+  choose g_i_ext hgi_eq using h_family
+
+  -- Build the extension into the product
+  let g_ext : Y →ₗ[R] ∀ i, M i := LinearMap.pi fun i => g_i_ext i
+
+  use g_ext
+  intro x
+
+  -- Pointwise equality for each component
+  funext i
+  let hg_i_pt := congr_fun (congr_arg DFunLike.coe (hgi_eq i)) x
+  exact hg_i_pt
+
+end injective_products
