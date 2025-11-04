@@ -54,7 +54,7 @@ theorem Imo1961Q3 {n : ℕ} {x : ℝ} (h₀ : n ≠ 0) :
               using cos_sq_add_sin_sq x
           simp [hsinx, hcosx] at this
         | 2 =>
-          rw [← cos_sq_add_sin_sq x, sub_eq_add_neg, add_right_inj, neg_eq_self ℝ] at h
+          rw [← cos_sq_add_sin_sq x, sub_eq_add_neg, add_right_inj, neg_eq_self] at h
           exact absurd (eq_zero_of_pow_eq_zero h) hsinx
         | (n + 1 + 2) =>
           set m := n + 1
