@@ -6,6 +6,8 @@ Authors: Yaël Dillies, Michał Mrugała, Yunzhou Xie
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Coalgebra.Hom
+import Mathlib.RingTheory.Coalgebra.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Convolution product on linear maps from a coalgebra to an algebra
@@ -71,6 +73,16 @@ scoped[ConvolutionProduct] attribute [instance] LinearMap.convNonUnitalNonAssocS
 
 @[simp] lemma toSpanSingleton_convMul_toSpanSingleton (x y : A) :
     toSpanSingleton R A x * toSpanSingleton R A y = toSpanSingleton R A (x * y) := by ext; simp
+
+theorem _root_.TensorProduct.map_convMul_map {D : Type*} [AddCommMonoid B] [Module R B]
+    [CoalgebraStruct R B] [NonUnitalNonAssocSemiring D] [Module R D] [SMulCommClass R D D]
+    [IsScalarTower R D D] {f h : C →ₗ[R] A} {g k : B →ₗ[R] D} :
+    (f ⊗ₘ g) * (h ⊗ₘ k) = (f * h) ⊗ₘ (g * k) := by
+  simp_rw [convMul_def, comul_def, mul'_tensor, comp_assoc, AlgebraTensorModule.map_eq,
+    ← comp_assoc _ _ (tensorTensorTensorComm R _ _ _ _).toLinearMap]
+  nth_rw 2 [← comp_assoc, comp_assoc]
+  simp [AlgebraTensorModule.tensorTensorTensorComm_eq, ← tensorTensorTensorComm_comp_map,
+    ← comp_assoc, map_comp]
 
 end NonUnitalNonAssocSemiring
 
