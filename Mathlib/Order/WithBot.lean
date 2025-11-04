@@ -1031,9 +1031,6 @@ variable [NoTopOrder α]
 lemma eq_of_forall_le_coe_iff (h : ∀ a : α, x ≤ a ↔ y ≤ a) : x = y :=
   WithBot.eq_of_forall_coe_le_iff (α := αᵒᵈ) h
 
-lemma eq_of_forall_le_coe_iff (h : ∀ a : α, x ≤ a ↔ y ≤ a) : x = y :=
-  WithBot.eq_of_forall_coe_le_iff (α := αᵒᵈ) h
-
 lemma eq_of_forall_coe_le_iff (h : ∀ a : α, a ≤ x ↔ a ≤ y) : x = y :=
   WithBot.eq_of_forall_le_coe_iff (α := αᵒᵈ) h
 
