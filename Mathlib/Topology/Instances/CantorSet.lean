@@ -351,5 +351,7 @@ noncomputable def cantorSet_homeomorph_nat_to_bool : cantorSet ≃ₜ (ℕ → B
   Homeomorph.symm <| Continuous.homeoOfEquivCompactToT2 (f := cantorSet_equiv_nat_to_bool.symm)
     (Continuous.subtype_mk (Continuous.comp ofDigits_continuous (by fun_prop)) _)
 
+/-- Canonical mapping from `ℕ → Bool` (infinite binary tree) to the Cantor set.
+This is an inverse of `cantorSet_homeomorph_nat_to_bool`. -/
 noncomputable def natToBoolToCantorSet (f : ℕ → Bool) : ℝ :=
-  cantorSet_equiv_nat_to_bool.symm f
+  cantorSet_equiv_nat_to_bool.invFun f
