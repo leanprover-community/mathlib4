@@ -245,7 +245,7 @@ theorem pullbackMap_comp {Y' Z' X' Y'' Z'' X'' : C}
     {δ₁ : Y'' ⟶ Y'} {δ₂ : Z'' ⟶ Z'} {δ₃ : X'' ⟶ X'}
     (comm₁ comm₂ comm₁' comm₂' := by cat_disch) :
     pullbackMap f' g' f'' g'' δ₁ δ₂ δ₃ comm₁' comm₂' ≫
-    pullbackMap f g f' g'  γ₁ γ₂ γ₃ comm₁ comm₂ =
+      pullbackMap f g f' g'  γ₁ γ₂ γ₃ comm₁ comm₂ =
     pullbackMap f g f'' g'' (δ₁ ≫ γ₁) (δ₂ ≫ γ₂) (δ₃ ≫ γ₃)
       (by rw [reassoc_of% comm₁', comm₁, assoc]) (by rw [reassoc_of% comm₂', comm₂, assoc]) := by
   apply hom_ext <;> simp
