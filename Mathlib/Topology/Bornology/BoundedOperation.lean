@@ -64,23 +64,6 @@ lemma boundedSub_of_lipschitzWith_sub [PseudoMetricSpace R] [Sub R] {K : NNReal}
     convert lip.isBounded_image bdd
     simp
 
-open Bornology
-
-variable [Bornology R] [AddGroup R] [BoundedSub R]
-
--- TODO:
--- * make BoundedSub instance for SeminormedAddGroup
--- * deprecate `Bornology.IsBounded.neg` in favor of the following
-lemma Bornology.IsBounded.neg' {s : Set R} (h : IsBounded s) : IsBounded (-s) := by
-  rw [show -s = {0} - s by simp]
-  exact isBounded_sub isBounded_singleton h
-
-@[simp]
-lemma isBounded_neg_iff {s : Set R} : IsBounded (-s) ↔ IsBounded s := by
-  refine ⟨fun H ↦ ?_, Bornology.IsBounded.neg'⟩
-  rw [← neg_neg s]
-  exact H.neg'
-
 end bounded_sub
 
 section bounded_mul
@@ -179,7 +162,7 @@ open Filter Pointwise Bornology
 /-
 TODO:
 * Generalize the following to bornologies and `BoundedFoo` classes.
-* Add `BoundedNeg` and `BoundedInv` in the process.
+* Add `BoundedNeg`, `BoundedInv` and `BoundedDiv` in the process.
 -/
 
 @[simp]
