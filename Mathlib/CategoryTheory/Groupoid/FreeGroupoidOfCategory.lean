@@ -77,9 +77,15 @@ def of : C ⥤ Category.FreeGroupoid C where
   map_id X := Quotient.sound _ (Category.FreeGroupoid.homRel.map_id X)
   map_comp f g := Quotient.sound _ (Category.FreeGroupoid.homRel.map_comp f g)
 
+variable {C}
+
+lemma of_obj_bijective : Function.Bijective (of C).obj where
+  left _ _ h := by cases h; rfl
+  right X := ⟨X.as.as, rfl⟩
+
 section UniversalProperty
 
-variable {C} {G : Type u₁} [Groupoid.{v₁} G]
+variable {G : Type u₁} [Groupoid.{v₁} G]
 
 /-- The lift of a functor from `C` to a groupoid to a functor from
 `FreeGroupoid C` to the groupoid -/
@@ -90,14 +96,12 @@ def lift (φ : C ⥤ G) : Category.FreeGroupoid C ⥤ G :=
         Prefunctor.congr_hom (Quiver.FreeGroupoid.lift_spec φ.toPrefunctor) f
       induction r <;> cat_disch)
 
-theorem lift_spec (φ : C ⥤ G) : of C ⋙ lift φ = φ := by
-  have : Quiver.FreeGroupoid.of C ⋙q (Quotient.functor (FreeGroupoid.homRel C)).toPrefunctor ⋙q
-      (lift φ).toPrefunctor = φ.toPrefunctor := by
-    simp [lift, Quotient.lift_spec, Quiver.FreeGroupoid.lift_spec]
-  fapply Functor.ext
-  · apply Prefunctor.congr_obj this
-  · intro _ _
-    simpa using Prefunctor.congr_hom this
+theorem lift_spec (φ : C ⥤ G) : of C ⋙ lift φ = φ :=
+  Functor.toPrefunctor_injective (by
+    change Quiver.FreeGroupoid.of C ⋙q
+      (Quotient.functor (FreeGroupoid.homRel C)).toPrefunctor ⋙q
+        (lift φ).toPrefunctor = φ.toPrefunctor
+    simp [lift, Quotient.lift_spec, Quiver.FreeGroupoid.lift_spec])
 
 theorem lift_unique (φ : C ⥤ G) (Φ : Category.FreeGroupoid C ⥤ G) (hΦ : of C ⋙ Φ = φ) :
     Φ = lift φ := by
@@ -128,10 +132,10 @@ end UniversalProperty
 
 section Functoriality
 
-variable {C : Type u} [Category.{v} C] {D : Type u₁} [Category.{v₁} D]
+variable {D : Type u₁} [Category.{v₁} D]
   {E : Type u₂} [Category.{v₂} E]
 
-/-- The functor of free groupoid induced by a prefunctor of quivers -/
+/-- The functor of free groupoid induced by a functor between the original categories. -/
 def map (φ : C ⥤ D) : Category.FreeGroupoid C ⥤ Category.FreeGroupoid D :=
   lift (φ ⋙ of D)
 
@@ -139,11 +143,35 @@ theorem map_id : map (𝟭 C) = 𝟭 (Category.FreeGroupoid C) := by
   dsimp only [map]; symm
   apply lift_unique; rfl
 
+/-- The functor induced by the identity is the identity. -/
+def mapId : map (𝟭 C) ≅ 𝟭 (Category.FreeGroupoid C) :=
+  eqToIso map_id
+
 theorem map_comp (φ : C ⥤ D) (φ' : D ⥤ E) : map (φ ⋙ φ') = map φ ⋙ map φ' := by
   dsimp only [map]; symm
   apply lift_unique; rfl
 
+/-- The functor induced by a composition is the composition of the functors they induce. -/
+def mapComp (φ : C ⥤ D) (φ' : D ⥤ E) : map (φ ⋙ φ') ≅ map φ ⋙ map φ':=
+  eqToIso (map_comp φ φ')
+
 end Functoriality
+
+@[simps]
+def functorEquiv {D : Type*} [Groupoid D] :
+    (Category.FreeGroupoid C ⥤ D) ≃ (C ⥤ D) where
+  toFun G := of C ⋙ G
+  invFun := lift
+  right_inv := lift_spec
+  left_inv _ := (lift_unique _ _ rfl).symm
+
+lemma map_lift
+    {C C' : Type*} [Category C] [Category C'] {D : Type*} [Groupoid D]
+    (F : C ⥤ C') (G : C' ⥤ D) :
+  map F ⋙ lift G = lift (F ⋙ G) := by
+    have : of C ⋙ map F = F ⋙ of C' := rfl  -- should be a separate lemma
+    refine (lift_unique _ _ ?_)
+    rw [← Functor.assoc, this, Functor.assoc, lift_spec G]
 
 end FreeGroupoid
 
@@ -155,7 +183,7 @@ open Category.FreeGroupoid
 
 /-- The free groupoid construction on a category as a functor. -/
 @[simps]
-def free : Cat.{u,u} ⥤ Grpd.{u,u} where
+def free : Cat.{u, u} ⥤ Grpd.{u, u} where
   obj C := Grpd.of <| Category.FreeGroupoid C
   map {C D} F := map F
   map_id C := by simp [Grpd.id_eq_id, ← map_id]; rfl
@@ -176,16 +204,11 @@ def freeForgetAdjunction.counit : forgetToCat ⋙ free ⟶ 𝟭 Grpd where
       lift_spec, Functor.comp_id]
 
 /-- The free-forgetful adjunction between `Grpd` and `Cat`. -/
-def freeForgetAdjunction : free ⊣ Grpd.forgetToCat where
-  unit := freeForgetAdjunction.unit
-  counit := freeForgetAdjunction.counit
-  left_triangle_components C := by
-    simp only [free_obj, free_map, map, coe_of, comp_eq_comp, ← lift_comp]
-    symm
-    apply lift_unique
-    simp [Functor.assoc, lift_spec, Grpd.id_eq_id]
-  right_triangle_components G := by
-    simp [forgetToCat, Cat.comp_eq_comp, lift_spec, Cat.id_eq_id]
+def freeForgetAdjunction : free ⊣ Grpd.forgetToCat :=
+  Adjunction.mkOfHomEquiv
+    { homEquiv _ _ := Category.FreeGroupoid.functorEquiv
+      homEquiv_naturality_left_symm _ _ := (Category.FreeGroupoid.map_lift _ _).symm
+      homEquiv_naturality_right _ _ := rfl }
 
 instance : Reflective Grpd.forgetToCat where
   L := free
