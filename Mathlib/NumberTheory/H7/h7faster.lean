@@ -2731,10 +2731,9 @@ lemma eq5zero : 1 ≤ norm
   --       simp only [zero_lt_one]
   --     · sorry
   --       }
-#exit
+
 def c₅ : ℝ := ((abs (h7.c₁) + 1) ^ (((↑(h7.h) * (1+4 * h7.m^2)))))
 
-include u t in
 lemma eq5 : h7.c₅ ^ (-(h7.r q hq0 h2mq) : ℤ)
   < norm (Algebra.norm ℚ (rho h7 q hq0 h2mq)) := by
 
@@ -4985,7 +4984,7 @@ lemma fix_embeddings: ‖h7.σ (h7.rho q hq0 h2mq)‖ =
   ‖(canonicalEmbedding h7.K) (h7.rho q hq0 h2mq)‖ := sorry
 
 lemma use6and8 :
-  |(Algebra.norm ℚ (rho h7 q hq0 h2mq))| ≤ (h7.c₁₄)^(h7.r q hq0 h2mq) *
+  norm ((Algebra.norm ℚ (rho h7 q hq0 h2mq))) ≤ (h7.c₁₄)^(h7.r q hq0 h2mq) *
   (h7.r q hq0 h2mq)^((-(h7.r q hq0 h2mq) : ℤ)/2 + 3 * (h7.h)/2) := by
   -- have : (((h7.h - 1 : ℤ) * (h7.r q hq0 h2mq + 3/2 : ℤ) +
   --  (3 - h7.m) * (h7.r q hq0 h2mq) * 1/2 + 3/2)) =
@@ -5007,8 +5006,7 @@ lemma use6and8 :
        _ = ((h7.c₁₄)^(h7.r q hq0 h2mq: ℝ)) * (↑(h7.r q hq0 h2mq: ℝ))^(
          (-(↑(h7.r q hq0 h2mq) : ℤ))/2 + 3 * (↑h7.h) / 2) := ?_
 
-  · apply norm_le_house_norm h7 q hq0 h2mq
-
+  · sorry --apply norm_le_house_norm
   · nth_rw 2 [mul_comm]
     apply mul_le_mul
     · apply eq8 h7 q hq0 h2mq
@@ -5045,7 +5043,8 @@ lemma use6and8 :
     rw [mul_add]
     have :
      (( h7.r q hq0 h2mq * (h7.h - 1 : ℝ)  +
-      ((h7.r q hq0 h2mq * (((3 - (2 * h7.h + 2))) / 2))))) + (h7.h - 1 : ℝ) * (3 / 2) + 3 / 2=
+      ((h7.r q hq0 h2mq * (((3 - (2 * h7.h + 2))) / 2))))) +
+       (h7.h - 1 : ℝ) * (3 / 2) + 3 / 2 =
       ((h7.h - 1 : ℝ) * h7.r q hq0 h2mq + (h7.h - 1 : ℝ) * (3 / 2) +
       ((h7.r q hq0 h2mq * ((3 - (2 * h7.h + 2))) / 2) + 3 / 2 : ℝ)) := by {
       rw [← mul_comm  (h7.h - 1 : ℝ)  (h7.r q hq0 h2mq : ℝ)]
@@ -5061,23 +5060,58 @@ lemma use6and8 :
     -- have : (h7.h - 1) = (h7.h + (-1 : ℝ)) := by {rfl}
     -- rw [this]
 
-def c₁₅ : ℝ := h7.c₁₄ * h7.c₅ q hq0 h2mq
+def c₁₅ : ℝ := h7.c₁₄ * h7.c₅
 
--- include α β σ hq0 h2mq hd hirr htriv K σ α' β' γ' habc h2mq u t in
-theorem main : (h7.r q hq0 h2mq) ^ (((h7.r q hq0 h2mq) - 3 * (h7.h)) / 2) ≥
-   h7.c₁₅ q hq0 h2mq ^ (h7.r q hq0 h2mq) := by
-  --have := rgeqn α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
-  sorry
-  --use r_geq_n K α β hirr htriv σ hd α' β' γ' habc q u t hq0 h2mq
+-- -- include α β σ hq0 h2mq hd hirr htriv K σ α' β' γ' habc h2mq u t in
+-- theorem main : (h7.r q hq0 h2mq) ^ (((h7.r q hq0 h2mq) - 3 * (h7.h)) / 2) ≥
+--    h7.c₁₅ ^ (h7.r q hq0 h2mq) := by
+--   --have := rgeqn α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+--   sorry
+--   --use r_geq_n K α β hirr htriv σ hd α' β' γ' habc q u t hq0 h2mq
 
 lemma use5 : (h7.r q hq0 h2mq)^(((h7.r q hq0 h2mq) - 3 * (h7.h)) / 2) <
-    (h7.c₁₅ q hq0 h2mq) ^ (h7.r q hq0 h2mq) := by
-  calc _ < h7.c₁₄^(h7.r q hq0 h2mq) * (h7.c₅ q hq0 h2mq) ^(h7.r q hq0 h2mq) := ?_
-       _ = (h7.c₁₅ q hq0 h2mq) ^(h7.r q hq0 h2mq) := ?_
-  · sorry
-  · rw [← mul_pow]
-    simp only [c₁₅]
+    (h7.c₁₅) ^ (h7.r q hq0 h2mq) := by
+  have use6and8 := use6and8 h7 q hq0 h2mq
+  -- have eq5 := eq5 h7 q hq0 h2mq
+  -- have eq5inv: norm ((Algebra.norm ℚ) (h7.rho q hq0 h2mq)) ⁻¹
+  --  < h7.c₅ ^ ((h7.r q hq0 h2mq)) := by {
+  --   simp only [zpow_neg, zpow_natCast] at eq5
+  --   rw [← inv_lt_inv₀] at eq5
+  --   simp only [inv_inv] at eq5
+  --   · sorry
+  --   · sorry
+  --   · simp only [inv_pos]
+  --     sorry
+  --  }
+  have :
+    norm (↑((Algebra.norm ℚ) (h7.rho q hq0 h2mq))) *
+     (↑(h7.r q hq0 h2mq : ℝ) ^ (-(h7.r q hq0 h2mq : ℤ) / 2 + 3 * ↑h7.h / 2))⁻¹ ≤
+     h7.c₁₄ ^ h7.r q hq0 h2mq  := by {
+      refine mul_inv_le_of_le_mul₀ ?_ ?_ use6and8
+      · sorry
+      · sorry}
 
+  calc _ = (↑(h7.r q hq0 h2mq : ℝ) ^ (-(h7.r q hq0 h2mq : ℤ) / 2 + 3 * ↑h7.h / 2))⁻¹ := ?_
+       _ ≤ (↑(h7.r q hq0 h2mq : ℝ) ^ (-(h7.r q hq0 h2mq : ℤ) / 2 + 3 * ↑h7.h / 2))⁻¹ *
+     (norm (↑((Algebra.norm ℚ) (h7.rho q hq0 h2mq)))) := ?_
+       _ < h7.c₁₄^(h7.r q hq0 h2mq) := ?_
+       _ = (h7.c₁₅) ^(h7.r q hq0 h2mq) := ?_
+  · sorry
+  · simp only at this
+    sorry
+  · rw [mul_comm]
+    sorry
+    -- have etc : ((h7.r q hq0 h2mq - 3 * h7.h) / 2) =
+    --   (-(h7.r q hq0 h2mq : ℤ) / 2 + 3 * ↑h7.h / 2) := by {sorry
+    --   }
+    -- rw [← etc] at this
+  · --rw [← mul_pow]
+    sorry
+    -- rw [← mul_pow]
+    -- simp only [c₁₅]
+    -- rw [mul_comm]
+
+#exit
 --include hα hβ α β σ hq0 h2mq hd hirr htriv K σ h2mq t q in
 theorem hilbert7 (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgebraic ℚ β)
   (htriv : α ≠ 0 ∧ α ≠ 1) (hirr : ∀ i j : ℤ, β ≠ i / j) :
