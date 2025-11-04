@@ -12,11 +12,7 @@ This file defines homogeneous subsemirings of a graded semiring, as well as oper
 
 ## Main definitions
 
-For any `R : Subsemiring A`:
-* `Subsemiring.IsHomogeneous 𝒜 R`: The property that a subsemiring is closed under
-  `GradedRing.proj`.
-* `HomogeneousSubsemiring 𝒜`: The structure extending subsemirings which satisfy
-  `Subsemiring.IsHomogeneous`.
+* `HomogeneousSubsemiring 𝒜`: The type of subsemirings which satisfy `SetLike.IsHomogeneous`.
 -/
 
 open DirectSum Set SetLike
