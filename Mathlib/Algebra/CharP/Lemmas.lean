@@ -22,31 +22,43 @@ namespace Commute
 variable [Semiring R] {p : ℕ} (hp : p.Prime) {x y : R}
 include hp
 
-protected theorem add_pow_prime_pow_eq (h : Commute x y) (n : ℕ) :
+protected lemma add_pow_prime_pow_eq' (h : Commute x y) (n : ℕ) :
     (x + y) ^ p ^ n =
       x ^ p ^ n + y ^ p ^ n +
-        p * x * y *
-          ∑ k ∈ Ioo 0 (p ^ n), x ^ (k - 1) * y ^ (p ^ n - k - 1) * ↑((p ^ n).choose k / p) := calc
+        p * ∑ k ∈ Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) := calc
   _ = ∑ k ∈ Icc 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * (p ^ n).choose k := by
     rw [h.add_pow, ← Nat.Ico_zero_eq_range, Ico_add_one_right_eq_Icc]
   _ = x ^ p ^ n + y ^ p ^ n + ∑ k ∈ Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * (p ^ n).choose k := by
     simp_rw [Icc_eq_cons_Ico (zero_le _), Ico_eq_cons_Ioo (pow_pos hp.pos _)]
     simp [-cons_eq_insert, add_assoc]
   _ = _ := by
-    simp_rw [Finset.mul_sum]
+    simp_rw [mul_sum]
     congr! 2 with k hk
     obtain ⟨hk₀, hk⟩ := mem_Ioo.1 hk
-    rw [← mul_pow_sub_one (by omega), ← mul_pow_sub_one (n := p ^ n - k) (by omega)]
     -- The maths is over now. We just commute things to their place.
-    rw [Nat.cast_comm, mul_assoc x _ y, Nat.cast_comm, ← mul_assoc x y,
-      (p.commute_cast _).symm.mul_mul_mul_comm (x * y), (h.pow_left _).symm.mul_mul_mul_comm]
+    rw [Nat.cast_comm, mul_assoc (_ * _)]
     norm_cast
-    rw [Nat.mul_div_cancel' (hp.dvd_choose_pow _ _)] <;> omega
+    rw [Nat.div_mul_cancel (hp.dvd_choose_pow _ _)] <;> omega
 
-protected theorem add_pow_prime_eq (h : Commute x y) :
+protected lemma add_pow_prime_pow_eq (h : Commute x y) (n : ℕ) :
+    (x + y) ^ p ^ n =
+      x ^ p ^ n + y ^ p ^ n +
+        p * x * y *
+          ∑ k ∈ Ioo 0 (p ^ n), x ^ (k - 1) * y ^ (p ^ n - k - 1) * ↑((p ^ n).choose k / p) := by
+  rw [h.add_pow_prime_pow_eq' hp, mul_assoc _ x, mul_assoc, mul_sum _ _ (_ * _)]
+  congr! 3 with k hk
+  obtain ⟨hk₀, hk⟩ := mem_Ioo.1 hk
+  rw [← mul_pow_sub_one (by omega), ← mul_pow_sub_one (n := p ^ n - k) (by omega)]
+  rw [(h.pow_left _).mul_mul_mul_comm, mul_assoc (x * y)]
+
+protected lemma add_pow_prime_eq' (h : Commute x y) :
+    (x + y) ^ p = x ^ p + y ^ p + p * ∑ k ∈ Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) := by
+  simpa using h.add_pow_prime_pow_eq' hp 1
+
+protected lemma add_pow_prime_eq (h : Commute x y) :
     (x + y) ^ p =
       x ^ p + y ^ p + p * x * y *
-        ∑ k ∈ Finset.Ioo 0 p, x ^ (k - 1) * y ^ (p - k - 1) * ↑(p.choose k / p) := by
+        ∑ k ∈ Ioo 0 p, x ^ (k - 1) * y ^ (p - k - 1) * ↑(p.choose k / p) := by
   simpa using h.add_pow_prime_pow_eq hp 1
 
 protected theorem exists_add_pow_prime_pow_eq (h : Commute x y) (n : ℕ) :
@@ -64,17 +76,27 @@ section CommSemiring
 variable [CommSemiring R] {p : ℕ} (hp : p.Prime) (x y : R) (n : ℕ)
 include hp
 
-theorem add_pow_prime_pow_eq :
+lemma add_pow_prime_pow_eq' :
+    (x + y) ^ p ^ n =
+      x ^ p ^ n + y ^ p ^ n +
+        p * ∑ k ∈ Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) :=
+  (Commute.all x y).add_pow_prime_pow_eq' hp n
+
+lemma add_pow_prime_pow_eq :
     (x + y) ^ p ^ n =
       x ^ p ^ n + y ^ p ^ n +
         p * x * y *
           ∑ k ∈ Ioo 0 (p ^ n), x ^ (k - 1) * y ^ (p ^ n - k - 1) * ↑((p ^ n).choose k / p) :=
   (Commute.all x y).add_pow_prime_pow_eq hp n
 
+lemma add_pow_prime_eq' :
+    (x + y) ^ p = x ^ p + y ^ p + p * ∑ k ∈ Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) :=
+  (Commute.all x y).add_pow_prime_eq' hp
+
 theorem add_pow_prime_eq :
     (x + y) ^ p =
       x ^ p + y ^ p + p * x * y *
-        ∑ k ∈ Finset.Ioo 0 p, x ^ (k - 1) * y ^ (p - k - 1) * ↑(p.choose k / p) :=
+        ∑ k ∈ Ioo 0 p, x ^ (k - 1) * y ^ (p - k - 1) * ↑(p.choose k / p) :=
   (Commute.all x y).add_pow_prime_eq hp
 
 theorem exists_add_pow_prime_pow_eq :
