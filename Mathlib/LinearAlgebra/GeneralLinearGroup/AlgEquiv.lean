@@ -48,7 +48,7 @@ theorem AlgEquiv.coe_eq_linearEquiv_conj [Free K V] (f : End K V ≃ₐ[K] End K
     ∃ T : V ≃ₗ[K] V, ⇑f = T.conj := by
   nontriviality V
   simp_rw [funext_iff, LinearEquiv.conj_apply, LinearEquiv.eq_comp_toLinearMap_symm]
-  obtain ⟨u, hu⟩ := nontrivial_iff_exists_ne 0 |>.mp ‹Nontrivial V›
+  obtain ⟨u, hu⟩ := exists_ne (0 : V)
   obtain ⟨v, huv⟩ := exists_linearMap_apply_ne_zero_of_ne_zero K hu
   obtain ⟨z, hz⟩ : ∃ z : V, ¬ f (smulRightₗ v u) z = 0 := by
     suffices ¬ f (smulRightₗ v u) = 0 by rwa [LinearMap.ext_iff, not_forall] at this
