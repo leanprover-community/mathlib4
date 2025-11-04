@@ -324,7 +324,7 @@ protected abbrev idemSemiring [IdemSemiring α] [LE β] [LT β] [Zero β] [One �
     (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥) :
     IdemSemiring β where
   __ := hf.semiring f zero one add mul nsmul npow natCast
-  __ := hf.semilatticeSup _ le lt sup
+  __ := hf.semilatticeSup f le lt sup
   add_eq_sup a b := hf <| by rw [sup, add, add_eq_sup]
   bot_le a := le.1 <| bot.trans_le bot_le
 
