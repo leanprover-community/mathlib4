@@ -325,11 +325,11 @@ theorem volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
   · suffices volume (Metric.ball (0 : EuclideanSpace ℝ ι) 1) =
         .ofReal (√π ^ card ι / Gamma (card ι / 2 + 1)) by
       rw [Measure.addHaar_ball _ _ hr, this, ofReal_pow hr, finrank_euclideanSpace]
-    rw [← ((volume_preserving_measurableEquiv _).symm).measure_preimage
+    rw [← ((volume_preserving_symm_measurableEquiv_toLp _).symm).measure_preimage
       measurableSet_ball.nullMeasurableSet]
     simp only [Set.preimage, ball_zero_eq _ zero_le_one, one_pow, Set.mem_setOf_eq]
     convert volume_sum_rpow_lt_one ι one_le_two using 4
-    · simp [sq_abs, EuclideanSpace.measurableEquiv]
+    · simp [sq_abs]
     · rw [Gamma_add_one (by simp), Gamma_one_half_eq, ← mul_assoc, mul_div_cancel₀ _
         two_ne_zero, one_mul]
 

@@ -11,7 +11,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 
 In this file we define a constructor `affineAnd Q` for affine target morphism properties of schemes
 from a property of ring homomorphisms `Q`: A morphism `f : X ⟶ Y` with affine target satisfies
-`affineAnd Q` if it is an affine morphim (i.e. `X` is affine) and the induced ring map on global
+`affineAnd Q` if it is an affine morphism (i.e. `X` is affine) and the induced ring map on global
 sections satisfies `Q`.
 
 `affineAnd Q` inherits most stability properties of `Q` and is local at the target if `Q` is local

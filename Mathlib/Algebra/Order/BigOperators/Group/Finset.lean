@@ -71,7 +71,7 @@ such that `f 1 = 1` and `f` is submultiplicative on `{x | p x}`, i.e.,
 that `∀ i ∈ s, p (g i)`. Then `f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i)`. -/
 @[to_additive le_sum_of_subadditive_on_pred]
 theorem le_prod_of_submultiplicative_on_pred [IsOrderedMonoid N] (f : M → N) (p : M → Prop)
-    (h_one : f 1 = 1) (h_mul : ∀ x y, p x → p y → f (x * y) ≤ f x * f y)
+    (h_one : f 1 ≤ 1) (h_mul : ∀ x y, p x → p y → f (x * y) ≤ f x * f y)
     (hp_mul : ∀ x y, p x → p y → p (x * y)) (g : ι → M) {s : Finset ι} (hs : ∀ i ∈ s, p (g i)) :
     f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) := by
   rcases eq_empty_or_nonempty s with (rfl | hs_nonempty)
@@ -87,7 +87,7 @@ add_decl_doc le_sum_of_subadditive_on_pred
 /-- If `f : M → N` is a submultiplicative function, `f (x * y) ≤ f x * f y`, `f 1 = 1`, and `g i`,
 `i ∈ s`, is a finite family of elements of `M`, then `f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i)`. -/
 @[to_additive le_sum_of_subadditive]
-theorem le_prod_of_submultiplicative [IsOrderedMonoid N] (f : M → N) (h_one : f 1 = 1)
+theorem le_prod_of_submultiplicative [IsOrderedMonoid N] (f : M → N) (h_one : f 1 ≤ 1)
     (h_mul : ∀ x y, f (x * y) ≤ f x * f y) (s : Finset ι) (g : ι → M) :
     f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) :=
   le_trans (Multiset.le_prod_of_submultiplicative f h_one h_mul _) (by simp)
@@ -248,7 +248,7 @@ lemma prod_min_le [CommMonoid M] [LinearOrder M] [IsOrderedMonoid M] {f g : ι �
 
 theorem abs_sum_le_sum_abs {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
     (f : ι → G) (s : Finset ι) :
-    |∑ i ∈ s, f i| ≤ ∑ i ∈ s, |f i| := le_sum_of_subadditive _ abs_zero abs_add_le s f
+    |∑ i ∈ s, f i| ≤ ∑ i ∈ s, |f i| := le_sum_of_subadditive _ abs_zero.le abs_add_le s f
 
 theorem abs_sum_of_nonneg {G : Type*} [AddCommGroup G] [LinearOrder G] [AddLeftMono G]
     {f : ι → G} {s : Finset ι}
@@ -352,18 +352,13 @@ theorem card_le_card_biUnion {s : Finset ι} {f : ι → Finset α} (hs : (s : S
 theorem card_le_card_biUnion_add_card_fiber {s : Finset ι} {f : ι → Finset α}
     (hs : (s : Set ι).PairwiseDisjoint f) : #s ≤ #(s.biUnion f) + #{i ∈ s | f i = ∅} := by
   rw [← Finset.filter_card_add_filter_neg_card_eq_card fun i ↦ f i = ∅, add_comm]
-  exact
-    add_le_add_right
-      ((card_le_card_biUnion (hs.subset <| filter_subset _ _) fun i hi ↦
-            nonempty_of_ne_empty <| (mem_filter.1 hi).2).trans <|
-        card_le_card <| biUnion_subset_biUnion_of_subset_left _ <| filter_subset _ _)
-      _
+  grw [card_le_card_biUnion (hs.subset <| filter_subset _ _) fun i hi ↦
+    nonempty_of_ne_empty (mem_filter.1 hi).2, filter_subset]
 
 theorem card_le_card_biUnion_add_one {s : Finset ι} {f : ι → Finset α} (hf : Injective f)
-    (hs : (s : Set ι).PairwiseDisjoint f) : #s ≤ #(s.biUnion f) + 1 :=
-  (card_le_card_biUnion_add_card_fiber hs).trans <|
-    add_le_add_left
-      (card_le_one.2 fun _ hi _ hj ↦ hf <| (mem_filter.1 hi).2.trans (mem_filter.1 hj).2.symm) _
+    (hs : (s : Set ι).PairwiseDisjoint f) : #s ≤ #(s.biUnion f) + 1 := by
+  grw [card_le_card_biUnion_add_card_fiber hs,
+    card_le_one.2 fun _ hi _ hj ↦ hf <| (mem_filter.1 hi).2.trans (mem_filter.1 hj).2.symm]
 
 end DoubleCounting
 

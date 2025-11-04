@@ -21,7 +21,7 @@ universe v u
 variable (R : Type u) [Ring R]
 
 instance : EnoughInjectives (ModuleCat.{v} ℤ) :=
-  EnoughInjectives.of_equivalence (forget₂ (ModuleCat ℤ) AddCommGrp)
+  EnoughInjectives.of_equivalence (forget₂ (ModuleCat ℤ) AddCommGrpCat)
 
 lemma ModuleCat.enoughInjectives : EnoughInjectives (ModuleCat.{max v u} R) :=
   EnoughInjectives.of_adjunction (ModuleCat.restrictCoextendScalarsAdj.{max v u} (algebraMap ℤ R))

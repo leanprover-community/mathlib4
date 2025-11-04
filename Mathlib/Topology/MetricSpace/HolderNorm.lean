@@ -216,8 +216,7 @@ lemma MemHolder.nsmul [NormedSpace ℝ Y] (n : ℕ) (hf : MemHolder r f) :
 
 lemma MemHolder.nnHolderNorm_add_le (hf : MemHolder r f) (hg : MemHolder r g) :
     nnHolderNorm r (f + g) ≤ nnHolderNorm r f + nnHolderNorm r g :=
-  (hf.add hg).holderWith.nnholderNorm_le.trans <|
-    coe_le_coe.2 (hf.holderWith.add hg.holderWith).nnholderNorm_le
+  (hf.add hg).holderWith.nnholderNorm_le.trans (hf.holderWith.add hg.holderWith).nnholderNorm_le
 
 lemma eHolderNorm_add_le :
     eHolderNorm r (f + g) ≤ eHolderNorm r f + eHolderNorm r g := by

@@ -44,6 +44,12 @@ variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β] {f : ι �
 lemma sum_le_sum (h : ∀ i ∈ f.support, h₁ i (f i) ≤ h₂ i (f i)) : f.sum h₁ ≤ f.sum h₂ :=
   Finset.sum_le_sum h
 
+theorem sum_nonneg (h : ∀ i ∈ f.support, 0 ≤ h₁ i (f i)) : 0 ≤ f.sum h₁ := Finset.sum_nonneg h
+
+theorem sum_nonneg' (h : ∀ i, 0 ≤ h₁ i (f i)) : 0 ≤ f.sum h₁ := sum_nonneg fun _ _ ↦ h _
+
+theorem sum_nonpos (h : ∀ i ∈ f.support, h₁ i (f i) ≤ 0) : f.sum h₁ ≤ 0 := Finset.sum_nonpos h
+
 end OrderedAddCommMonoid
 
 section Preorder
@@ -81,11 +87,9 @@ variable [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
 instance isOrderedAddMonoid : IsOrderedAddMonoid (ι →₀ α) :=
   { add_le_add_left := fun _a _b h c s => add_le_add_left (h s) (c s) }
 
+@[gcongr]
 lemma mapDomain_mono : Monotone (mapDomain f : (ι →₀ α) → (κ →₀ α)) := by
   classical exact fun g₁ g₂ h ↦ sum_le_sum_index h (fun _ _ ↦ single_mono) (by simp)
-
-@[gcongr] protected lemma GCongr.mapDomain_mono (hg : g₁ ≤ g₂) : g₁.mapDomain f ≤ g₂.mapDomain f :=
-  mapDomain_mono hg
 
 lemma mapDomain_nonneg (hg : 0 ≤ g) : 0 ≤ g.mapDomain f := by simpa using mapDomain_mono hg
 lemma mapDomain_nonpos (hg : g ≤ 0) : g.mapDomain f ≤ 0 := by simpa using mapDomain_mono hg
