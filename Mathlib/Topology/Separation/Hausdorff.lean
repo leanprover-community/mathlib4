@@ -445,7 +445,7 @@ lemma compatible {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Spac
     ∀ (a b : X), a ≈ b → f a = f b := by
   change t2Setoid X ≤ Setoid.ker f
   exact sInf_le <| .of_injective_continuous
-    (Setoid.ker_lift_injective _) (hf.quotient_lift fun _ _ ↦ id)
+    (Setoid.kerLift_injective _) (hf.quotient_lift fun _ _ ↦ id)
 
 /-- The universal property of the largest T2 quotient of a topological space `X`: any continuous
 map from `X` to a T2 space `Y` uniquely factors through `T2Quotient X`. This declaration builds the
