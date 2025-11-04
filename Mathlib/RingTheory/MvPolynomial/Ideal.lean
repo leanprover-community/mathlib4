@@ -113,7 +113,7 @@ lemma span_leadingTerm_eq_span_monomial₀ {B : Set (MvPolynomial σ R)}
 
 lemma span_leadingTerm_eq_span_monomial' {k : Type*} [Field k] {B : Set (MvPolynomial σ k)} :
     span (m.leadingTerm '' B) =
-    span ((fun p ↦ MvPolynomial.monomial (m.degree p) 1) '' (B \ {0})) := by
+      span ((fun p ↦ MvPolynomial.monomial (m.degree p) 1) '' (B \ {0})) := by
   apply span_leadingTerm_eq_span_monomial₀
   simp [em']
 
