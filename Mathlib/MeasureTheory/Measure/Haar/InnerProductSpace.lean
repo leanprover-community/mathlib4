@@ -139,7 +139,7 @@ theorem EuclideanSpace.coe_measurableEquiv_symm :
 variable [Fintype ι]
 
 /-- The measure equivalence between `EuclideanSpace ℝ ι` and `ι → ℝ` is volume preserving. -/
-theorem EuclideanSpace.volume_preserving_measurableEquiv_toLp_symm :
+theorem EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp :
     MeasurePreserving (MeasurableEquiv.toLp 2 (ι → ℝ)).symm := by
   suffices volume = map (MeasurableEquiv.toLp 2 (ι → ℝ)) volume by
     convert ((MeasurableEquiv.toLp 2 (ι → ℝ)).measurable.measurePreserving _).symm
@@ -148,17 +148,17 @@ theorem EuclideanSpace.volume_preserving_measurableEquiv_toLp_symm :
   exact (EuclideanSpace.basisFun _ _).addHaar_eq_volume.symm
 
 @[deprecated (since := "2025-07-26")] alias EuclideanSpace.volume_preserving_measurableEquiv :=
-  EuclideanSpace.volume_preserving_measurableEquiv_toLp_symm
+  EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp
 
-/-- A copy of `EuclideanSpace.volume_preserving_measurableEquiv_toLp_symm`
+/-- A copy of `EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp`
 for the canonical spelling of the equivalence. -/
 theorem PiLp.volume_preserving_ofLp : MeasurePreserving (@ofLp 2 (ι → ℝ)) :=
-  EuclideanSpace.volume_preserving_measurableEquiv_toLp_symm ι
+  EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp ι
 
-/-- The reverse direction of `EuclideanSpace.volume_preserving_measurableEquiv_toLp_symm`, since
+/-- The reverse direction of `EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp`, since
 `MeasurePreserving.symm` only works for `MeasurableEquiv`s. -/
 theorem PiLp.volume_preserving_toLp : MeasurePreserving (@toLp 2 (ι → ℝ)) :=
-  (EuclideanSpace.volume_preserving_measurableEquiv_toLp_symm ι).symm
+  (EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp ι).symm
 
 lemma volume_euclideanSpace_eq_dirac [IsEmpty ι] :
     (volume : Measure (EuclideanSpace ℝ ι)) = Measure.dirac 0 := by

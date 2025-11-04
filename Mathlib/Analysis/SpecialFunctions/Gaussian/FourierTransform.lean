@@ -257,7 +257,7 @@ theorem integrable_cexp_neg_mul_sum_add {ι : Type*} [Fintype ι] (hb : 0 < b.re
 theorem integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ℂ) (w : EuclideanSpace ℝ ι) :
     Integrable (fun (v : EuclideanSpace ℝ ι) ↦ cexp (-b * ‖v‖ ^ 2 + c * ⟪w, v⟫)) := by
-  have := EuclideanSpace.volume_preserving_measurableEquiv_toLp_symm ι
+  have := EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp ι
   rw [← MeasurePreserving.integrable_comp_emb this.symm (MeasurableEquiv.measurableEmbedding _)]
   simp only [neg_mul, Function.comp_def]
   convert integrable_cexp_neg_mul_sum_add hb (fun i ↦ c * w i) using 3 with v
@@ -302,7 +302,7 @@ theorem integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ℂ) (w : EuclideanSpace ℝ ι) :
     ∫ v : EuclideanSpace ℝ ι, cexp (-b * ‖v‖ ^ 2 + c * ⟪w, v⟫) =
       (π / b) ^ (Fintype.card ι / 2 : ℂ) * cexp (c ^ 2 * ‖w‖ ^ 2 / (4 * b)) := by
-  have := (EuclideanSpace.volume_preserving_measurableEquiv_toLp_symm ι).symm
+  have := (EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp ι).symm
   rw [← this.integral_comp (MeasurableEquiv.measurableEmbedding _)]
   simp only [neg_mul]
   convert integral_cexp_neg_mul_sum_add hb (fun i ↦ c * w i) using 5 with _x y
