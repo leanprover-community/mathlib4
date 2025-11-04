@@ -39,11 +39,15 @@ variable {α : Type*} {cmp}
 /--
 `O(n₂ * log (n₁ + n₂))`. Merges the maps `t₁` and `t₂`.
 If equal keys exist in both, the key from `t₂` is preferred.
--/
-def union (t₁ t₂ : TreeSet α cmp) : TreeSet α cmp :=
-  t₂.foldl .insert t₁
 
-instance : Union (TreeSet α cmp) := ⟨TreeSet.union⟩
+Note: this has been renamed to `union'` as there is now an upstream definition.
+The new definition has a different implementation,
+and switching to using the upstream definition below breaks some tests.
+
+I've made this definition private to avoid confusion.
+-/
+private def union' (t₁ t₂ : TreeSet α cmp) : TreeSet α cmp :=
+  t₂.foldl .insert t₁
 
 /--
 `O(n₁ * (log n₁ + log n₂))`. Constructs the set of all elements of `t₁` that are not in `t₂`.
@@ -162,7 +166,7 @@ iff `k' ≥ k`. Thus we can compute the intersection of officially and implicitl
 by taking the set of implicitly eliminated variables with indices ≥ `elimedGE`.
 -/
 def PComp.maybeMinimal (c : PComp) (elimedGE : ℕ) : Bool :=
-  c.history.size ≤ 1 + ((c.implicit.filter (· ≥ elimedGE)).union c.effective).size
+  c.history.size ≤ 1 + ((c.implicit.filter (· ≥ elimedGE)).union' c.effective).size
 
 /--
 The `src : CompSource` field is ignored when comparing `PComp`s. Two `PComp`s proving the same
@@ -189,16 +193,16 @@ additional fields of `PComp`.
   `vars` but not `c.vars` or `effective`.
 (Note that the description of the implicitly eliminated variables of `c1 + c2` in the algorithm
 described in Section 6 of https://doi.org/10.1016/B978-0-444-88771-9.50019-2 seems to be wrong:
-that says it should be `(c1.implicit.union c2.implicit).sdiff explicit`.
+that says it should be `(c1.implicit.union' c2.implicit).sdiff explicit`.
 Since the implicitly eliminated sets start off empty for the assumption,
 this formula would leave them always empty.)
 -/
 def PComp.add (c1 c2 : PComp) (elimVar : ℕ) : PComp :=
   let c := c1.c.add c2.c
   let src := c1.src.add c2.src
-  let history := c1.history.union c2.history
-  let vars := c1.vars.union c2.vars
-  let effective := (c1.effective.union c2.effective).insert elimVar
+  let history := c1.history.union' c2.history
+  let vars := c1.vars.union' c2.vars
+  let effective := (c1.effective.union' c2.effective).insert elimVar
   let implicit := (vars.sdiff (.ofList c.vars _)).sdiff effective
   ⟨c, src, history, effective, implicit, vars⟩
 
@@ -331,7 +335,7 @@ def elimVarM (a : ℕ) : LinarithM Unit := do
     let ⟨pos, neg, notPresent⟩ := splitSetByVarSign a (← getPCompSet)
     update (vs - 1) (← pos.foldlM (fun s p => do
       Lean.Core.checkSystem decl_name%.toString
-      pure (s.union (elimWithSet a p neg))) notPresent)
+      pure (s.union' (elimWithSet a p neg))) notPresent)
   else
     pure ()
 
