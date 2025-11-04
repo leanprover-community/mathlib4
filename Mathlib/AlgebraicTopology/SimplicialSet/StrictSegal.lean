@@ -71,7 +71,7 @@ lemma IsStrictSegal.ext [X.IsStrictSegal] {d : ℕ} {hd} {x y : X.obj (op ⟨⦋
       X.map (SimplexCategory.Truncated.Hom.tr (mkOfSucc i)).op x =
         X.map (SimplexCategory.Truncated.Hom.tr (mkOfSucc i)).op y) :
     x = y :=
-  (X.spine_bijective _ _).injective (by ext i; apply h)
+  X.spine_injective (by ext i; apply h)
 
 variable {X} in
 lemma IsStrictSegal.hom_ext {Y : SSet.Truncated.{u} (n + 1)} [Y.IsStrictSegal]
