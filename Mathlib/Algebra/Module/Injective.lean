@@ -439,7 +439,7 @@ end lifting_property
 
 section injective_products
 
-theorem pi (R : Type) [Ring R] {ι : Type} (M : ι → Type)
+theorem pi (R : Type*) [Ring R] {ι : Type*} (M : ι → Type*)
     [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
     [∀ i, Module.Injective R (M i)] :
     Module.Injective R (∀ i, M i) := by
