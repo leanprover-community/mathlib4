@@ -415,11 +415,6 @@ lemma forall_coe_le_iff_le [NoBotOrder α] : (∀ a : α, a ≤ x → a ≤ y) �
   · simpa [WithBot.none_eq_bot, eq_bot_iff_forall_le] using fun a ha ↦ (not_isBot _ ha).elim
   · exact ⟨fun h ↦ h _ le_rfl, fun hay b ↦ hay.trans'⟩
 
-lemma forall_coe_le_iff_le [NoBotOrder α] : (∀ a : α, a ≤ x → a ≤ y) ↔ x ≤ y := by
-  obtain _ | a := x
-  · simpa [WithBot.none_eq_bot, eq_bot_iff_forall_le] using fun a ha ↦ (not_isBot _ ha).elim
-  · exact ⟨fun h ↦ h _ le_rfl, fun hay b ↦ hay.trans'⟩
-
 lemma forall_le_coe_iff_le [NoBotOrder α] : (∀ a : α, y ≤ a → x ≤ a) ↔ x ≤ y := by
   obtain _ | y := y
   · simp [WithBot.none_eq_bot, eq_bot_iff_forall_le]
