@@ -134,7 +134,14 @@ def authorsLineChecks (line : String) (offset : String.Pos.Raw) : Array (Syntax 
     stxs := stxs.push
       (toSyntax line "." offset,
        s!"Please, do not end the authors' line with a period.")
-  return stxs
+  -- If there are no previous exceptions, then we try to validate the names.
+  if !stxs.isEmpty then
+    return stxs
+  if (line.drop "Authors:".length).trim.isEmpty then
+    return #[(toSyntax line "Authors:" offset,
+       s!"Please, add at least one author!")]
+  else
+    return #[]
 
 /-- The main function to validate the copyright string.
 The input is the copyright string, the output is an array of `Syntax × String` encoding:
@@ -180,6 +187,15 @@ def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.
       output := output.push
         (toSyntax copyright (copyrightAuthor.take copStart.length),
          s!"Copyright line should start with 'Copyright (c) YYYY'")
+    let author := (copyrightAuthor.drop (copStart.length + 2))
+    if output.isEmpty && author.take 1 != " " then
+      output := output.push
+        (toSyntax copyright (copyrightAuthor.drop (copStart.length + 2)),
+         s!"'Copyright (c) YYYY' should be followed by a space")
+    if output.isEmpty && #["", ".", ","].contains ((author.drop 1).take 1).trim then
+      output := output.push
+        (toSyntax copyright (copyrightAuthor.drop (copStart.length + 3)),
+         s!"There should be at least one copyright author, separated from the year by exactly one space.")
     if !copyrightAuthor.endsWith copStop then
       output := output.push
         (toSyntax copyright (copyrightAuthor.takeRight copStop.length),

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: EtienneMarion
+Authors: Etienne Marion
 -/
 import Mathlib.Probability.Density
 import Mathlib.Probability.Moments.Variance
