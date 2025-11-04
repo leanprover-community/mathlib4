@@ -186,21 +186,71 @@ theorem lift_fst : lift a b h ≫ fst f g = a := by
 theorem lift_snd : lift a b h ≫ snd f g = b := by
   simp [lift]
 
-/-- The functoriality of `pullbackObj f g` in the first argument. -/
-def pullbackObjMap {Y' : C} (h : Y' ⟶ Y) : pullbackObj (h ≫ f) g ⟶ pullbackObj f g :=
-  lift (fst _ _ ≫ h) (snd _ _) (by simp [condition])
-
-@[reassoc (attr := simp)]
-theorem pullbackObjMap_fst {Y' : C} (h : Y' ⟶ Y) :
-    pullbackObjMap h ≫ fst f g = fst _ _ ≫ h := by
-  simp [pullbackObjMap, lift_fst]
-
-@[reassoc (attr := simp)]
-theorem pullbackObjMap_snd {Y' : C} (h : Y' ⟶ Y) :
-    pullbackObjMap h ≫ snd f g = snd _ _ := by
-  simp [pullbackObjMap, lift_snd]
-
 end Lift
+
+section PullbackMap
+
+variable (f g)
+
+/-- The functoriality of `pullbackObj f g` in both arguments: Given a map from the pullback cospans
+of `f' : Y' ⟶ X'` and `g' : Z' ⟶ X'` to the pullback cospan of `f : Y ⟶ X` and `g : Z ⟶ X`
+as in the diagram below
+```
+Y' ⟶ Y
+  ↘   ↘
+  X' ⟶ X
+  ↗   ↗
+Z' ⟶ Z
+```
+if the morphisms `g'` and `g` both have chosen pullbacks, then we get an induced morphism
+`pullbackMap f g f' g' comm₁ comm₂` from the chosen pullback of
+`f' : Y' ⟶ X'` along `g'` to the chosen pullback of `f : Y ⟶ X` along `g`.
+Here `comm₁` and `comm₂` are the commutativity conditions of the squares in the diagram above.
+-/
+def pullbackMap {Y' Z' X' : C} (f' : Y' ⟶ X') (g' : Z' ⟶ X') [ChosenPullback g']
+    (γ₁ : Y' ⟶ Y) (γ₂ : Z' ⟶ Z) (γ₃ : X' ⟶ X)
+    (comm₁ : f' ≫ γ₃ = γ₁ ≫ f := by cat_disch) (comm₂ : g' ≫ γ₃ = γ₂ ≫ g := by cat_disch) :
+    pullbackObj f' g' ⟶ pullbackObj f g :=
+  lift (fst f' g' ≫ γ₁) (snd f' g' ≫ γ₂)
+    (by rw [assoc, ← comm₁, ← assoc, condition, assoc, comm₂, assoc])
+
+/-- The canonical morphism `pullbackObj f g ⟶ pullbackObj (f ≫ i) (g ≫ i)`. -/
+def pullbackMapDesc {X' : C} (i : X ⟶ X') [ChosenPullback (g ≫ i)] :
+    pullbackObj f g ⟶ pullbackObj (f ≫ i) (g ≫ i) :=
+  pullbackMap (f ≫ i) (g ≫ i) f g (𝟙 _) (𝟙 _) i
+
+variable {f g}
+
+@[reassoc (attr := simp)]
+theorem pullbackMap_fst {Y' Z' X' : C} {f' : Y' ⟶ X'} {g' : Z' ⟶ X'} [ChosenPullback g']
+    {γ₁ : Y' ⟶ Y} {γ₂ : Z' ⟶ Z} {γ₃ : X' ⟶ X} (comm₁ comm₂ := by cat_disch) :
+    pullbackMap f g f' g' γ₁ γ₂ γ₃ comm₁ comm₂ ≫ fst f g = fst f' g' ≫ γ₁ := by
+  simp only [pullbackMap, lift_fst]
+
+@[reassoc (attr := simp)]
+theorem pullbackMap_snd {Y' Z' X' : C} {f' : Y' ⟶ X'} {g' : Z' ⟶ X'} [ChosenPullback g']
+    {γ₁ : Y' ⟶ Y} {γ₂ : Z' ⟶ Z} {γ₃ : X' ⟶ X} (comm₁ comm₂ := by cat_disch) :
+    pullbackMap f g f' g' γ₁ γ₂ γ₃ comm₁ comm₂ ≫ snd f g = snd f' g' ≫ γ₂ := by
+  simp only [pullbackMap, lift_snd]
+
+@[simp]
+theorem pullbackMap_id : pullbackMap f g f g (𝟙 Y) (𝟙 Z) (𝟙 X) = 𝟙 _ := by
+  apply hom_ext <;> simp
+
+@[reassoc (attr := simp)]
+theorem pullbackMap_comp {Y' Z' X' Y'' Z'' X'' : C}
+    {f' : Y' ⟶ X'} {g' : Z' ⟶ X'} {f'' : Y'' ⟶ X''} {g'' : Z'' ⟶ X''}
+    [ChosenPullback g'] [ChosenPullback g'']
+    {γ₁ : Y' ⟶ Y} {γ₂ : Z' ⟶ Z} {γ₃ : X' ⟶ X}
+    {δ₁ : Y'' ⟶ Y'} {δ₂ : Z'' ⟶ Z'} {δ₃ : X'' ⟶ X'}
+    (comm₁ comm₂ comm₁' comm₂' := by cat_disch) :
+    pullbackMap f' g' f'' g'' δ₁ δ₂ δ₃ comm₁' comm₂' ≫
+    pullbackMap f g f' g'  γ₁ γ₂ γ₃ comm₁ comm₂ =
+    pullbackMap f g f'' g'' (δ₁ ≫ γ₁) (δ₂ ≫ γ₂) (δ₃ ≫ γ₃)
+      (by rw [reassoc_of% comm₁', comm₁, assoc]) (by rw [reassoc_of% comm₂', comm₂, assoc]) := by
+  apply hom_ext <;> simp [assoc]
+
+end PullbackMap
 
 variable (f g)
 
@@ -213,8 +263,8 @@ theorem isPullback : IsPullback (fst f g) (snd f g) f g where
 attribute [local simp] condition in
 /-- If `g` has a chosen pullback, then `Over.ChosenPullback.fst f g` has a chosen pullback. -/
 def chosenPullbackOfFst : ChosenPullback (fst f g) where
-  pullback.obj W := Over.mk (pullbackObjMap W.hom)
-  pullback.map {W' W} k := Over.homMk (lift (fst _ g ≫ k.left) (snd _ g))
+  pullback.obj W := Over.mk (pullbackMap _ _ _ _ W.hom (𝟙 _) (𝟙 _))
+  pullback.map {W' W} k := Over.homMk (lift (fst _ g ≫ k.left) (snd _ g)) _
   mapPullbackAdj.unit.app Q := Over.homMk (lift (𝟙 _) (Q.hom ≫ snd _ _))
   mapPullbackAdj.counit.app W := Over.homMk (fst _ g)
 
@@ -229,16 +279,29 @@ noncomputable def pullbackIsoOverPullback : ChosenPullback.pullback g ≅ Over.p
   (ChosenPullback.mapPullbackAdj g).rightAdjointUniq (Over.mapPullbackAdj g)
 
 @[reassoc (attr := simp)]
-theorem pullbackIsoOverPullback_hom_app_comp_fst (Z : Over X) :
-    ((pullbackIsoOverPullback g).hom.app Z).left ≫ pullback.fst _ _ = fst _ _ := by
+theorem pullbackIsoOverPullback_hom_app_comp_fst (T : Over X) :
+    ((pullbackIsoOverPullback g).hom.app T).left ≫ pullback.fst _ _ = fst _ _ := by
   simpa using (Over.forget _).congr_map
     ((ChosenPullback.mapPullbackAdj g).rightAdjointUniq_hom_app_counit
-      (Over.mapPullbackAdj g) Z)
+      (Over.mapPullbackAdj g) T)
 
 @[reassoc (attr := simp)]
-theorem pullbackIsoOverPullback_hom_app_comp_snd (Z : Over X) :
-    ((pullbackIsoOverPullback g).hom.app Z).left ≫ pullback.snd _ _ = snd _ _ :=
-  Over.w ((pullbackIsoOverPullback g).hom.app Z)
+theorem pullbackIsoOverPullback_hom_app_comp_snd (T : Over X) :
+    ((pullbackIsoOverPullback g).hom.app T).left ≫ pullback.snd _ _ = snd _ _ :=
+  Over.w ((pullbackIsoOverPullback g).hom.app T)
+
+@[reassoc (attr := simp)]
+theorem pullbackIsoOverPullback_inv_app_comp_fst (T : Over X) :
+    ((pullbackIsoOverPullback g).inv.app T).left ≫ fst _ _ = pullback.fst _ _ := by
+  convert (Over.forget _).congr_map
+    ((Over.mapPullbackAdj g).rightAdjointUniq_hom_app_counit
+       (ChosenPullback.mapPullbackAdj g) T)
+  simp only [forget_map, mapPullbackAdj_counit_app, homMk_left]
+
+@[reassoc (attr := simp)]
+theorem pullbackIsoOverPullback_inv_app_comp_snd (T : Over X) :
+    ((pullbackIsoOverPullback g).inv.app T).left ≫ snd _ _ = pullback.snd _ _ :=
+  Over.w ((pullbackIsoOverPullback g).inv.app T)
 
 end PullbackFromChosenPullbacks
 
