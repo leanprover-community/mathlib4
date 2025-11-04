@@ -599,7 +599,7 @@ lemma apply_posSubmonoid_ne_zero (x : posSubmonoid R) : v (x : R) ≠ 0 := by
   simp [(isEquiv v (valuation R)).ne_zero, valuation_posSubmonoid_ne_zero]
 
 @[deprecated (since := "2025-08-06")]
-alias valuation_posSubmonoid_ne_zero_of_compatible := apply_posSubmonoid_ne_zero
+alias _root_.ValuativeRel.valuation_posSubmonoid_ne_zero_of_compatible := apply_posSubmonoid_ne_zero
 
 @[simp]
 lemma apply_posSubmonoid_pos (x : posSubmonoid R) : 0 < v x :=
