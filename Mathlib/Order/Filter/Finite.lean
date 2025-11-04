@@ -185,22 +185,35 @@ theorem mem_iInf_finite' {f : ι → Filter α} (s) :
   (Set.ext_iff.1 (iInf_sets_eq_finite' f) s).trans mem_iUnion
 
 /-- The dual version does not hold! `Filter α` is not a `CompleteDistribLattice`. -/
--- See note [reducible non-instances]
-abbrev coframeMinimalAxioms : Coframe.MinimalAxioms (Filter α) :=
-  { Filter.instCompleteLatticeFilter with
-    iInf_sup_le_sup_sInf := fun f s t ⟨h₁, h₂⟩ => by
-      classical
-      rw [iInf_subtype']
-      rw [sInf_eq_iInf', ← Filter.mem_sets, iInf_sets_eq_finite, mem_iUnion] at h₂
-      obtain ⟨u, hu⟩ := h₂
-      rw [← Finset.inf_eq_iInf] at hu
-      suffices ⨅ i : s, f ⊔ ↑i ≤ f ⊔ u.inf fun i => ↑i from this ⟨h₁, hu⟩
-      refine Finset.induction_on u (le_sup_of_le_right le_top) ?_
-      rintro ⟨i⟩ u _ ih
-      rw [Finset.inf_insert, sup_inf_left]
-      exact le_inf (iInf_le _ _) ih }
+instance instCoframe : Coframe (Filter α) where
+  sdiff f g := {
+    sets := {s | ∀ ⦃t⦄, s ⊆ t → t ∈ g → t ∈ f}
+    univ_sets := by simp +contextual
+    sets_of_superset hx hxy t hyt ht := hx (hxy.trans hyt) ht
+    inter_sets {x y} hx hy s ht htg := by
+      filter_upwards [hx subset_union_left (mem_of_superset htg subset_union_right),
+        hy subset_union_right (mem_of_superset htg subset_union_left)] with c hcx hcy
+      cases hcx <;> cases hcy <;> solve_by_elim
+  }
+  sdiff_le_iff a b c :=
+    ⟨fun h s hs ↦ h hs.right (subset_refl s) hs.left,
+      fun h s hsc t hst htb ↦ h ⟨htb, mem_of_superset hsc hst⟩⟩
+  hnot f := 𝓟 f.kerᶜ
+  top_sdiff f := by
+    ext s
+    simp only [mem_top, Filter.mem_mk, mem_setOf_eq, eq_univ_iff_forall]
+    rw [mem_principal, compl_subset_comm]
+    constructor
+    · intro h x hxs t ht
+      by_contra hxt
+      exact (h subset_union_left (mem_of_superset ht subset_union_right) x).elim hxs hxt
+    · intro h t hst ht x
+      by_cases hx : x ∈ s
+      · exact hst hx
+      · exact h hx t ht
 
-instance instCoframe : Coframe (Filter α) := .ofMinimalAxioms coframeMinimalAxioms
+theorem mem_sdiff : s ∈ f \ g ↔ ∀ t, s ⊆ t → t ∈ g → t ∈ f := .rfl
+protected theorem hnot_def : ￢f = 𝓟 f.kerᶜ := rfl
 
 theorem mem_iInf_finset {s : Finset α} {f : α → Filter β} {t : Set β} :
     (t ∈ ⨅ a ∈ s, f a) ↔ ∃ p : α → Set β, (∀ a ∈ s, p a ∈ f a) ∧ t = ⋂ a ∈ s, p a := by
