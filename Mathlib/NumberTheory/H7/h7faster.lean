@@ -2687,11 +2687,12 @@ lemma house_geq_1 : 1 ≤ house (h7.c1ρ q hq0 h2mq : h7.K) := by
 lemma eq5zero : 1 ≤ norm
     (Algebra.norm ℚ ((algebraMap (𝓞 h7.K) h7.K) (h7.c1ρ q hq0 h2mq))) := by
   --rw [this]
-  have := abs_norm_eq_prod_embeddings_norm
-    ((algebraMap (𝓞 h7.K) h7.K) (h7.c1ρ q hq0 h2mq))
-  rw [etc (σ0 := ((h7.σ)).toRatAlgHom)] at this
-  rw [this]
-  simp only [RingHom.toRatAlgHom_apply, Complex.norm_mul, norm_prod] at this
+  have := norm_le_house_norm ((algebraMap (𝓞 h7.K) h7.K) (h7.c1ρ q hq0 h2mq))
+  -- have := abs_norm_eq_prod_embeddings_norm
+  --   ((algebraMap (𝓞 h7.K) h7.K) (h7.c1ρ q hq0 h2mq))
+  -- rw [etc (σ0 := ((h7.σ)).toRatAlgHom)] at this
+  -- rw [this]
+  -- simp only [RingHom.toRatAlgHom_apply, Complex.norm_mul, norm_prod] at this
   sorry
 
 
@@ -2730,7 +2731,7 @@ lemma eq5zero : 1 ≤ norm
   --       simp only [zero_lt_one]
   --     · sorry
   --       }
-
+#exit
 def c₅ : ℝ := ((abs (h7.c₁) + 1) ^ (((↑(h7.h) * (1+4 * h7.m^2)))))
 
 include u t in
@@ -2787,7 +2788,7 @@ lemma eq5 : h7.c₅ ^ (-(h7.r q hq0 h2mq) : ℤ)
   calc _ = _ := ?_
        h7.c₅ ^ ((-h7.r q hq0 h2mq : ℤ)) <
         abs (h7.c₁)^ ((- h7.h : ℤ) * (h7.r q hq0 h2mq + 2 * h7.m * q) ) := ?_
-       _ = ‖(h7.cρ q hq0 h2mq) ^ Module.finrank ℚ h7.K‖⁻¹ := ?_
+       _ ≤ ‖(h7.cρ q hq0 h2mq) ^ Module.finrank ℚ h7.K‖⁻¹ := ?_
        _ ≤ norm (Algebra.norm ℚ (rho h7 q hq0 h2mq)) := ?_
 
   · simp only [zpow_neg, zpow_natCast]
@@ -2878,7 +2879,6 @@ lemma eq5 : h7.c₅ ^ (-(h7.r q hq0 h2mq) : ℤ)
             exact h2
     ·
       unfold c₅
-      --unfold _root_.c₁
       trans
       · have : (0 : ℝ) < 1 := by {simp only [zero_lt_one]}
         apply this
@@ -2893,44 +2893,44 @@ lemma eq5 : h7.c₅ ^ (-(h7.r q hq0 h2mq) : ℤ)
         exact one_leq_abs_c₁ h7
         }
       calc (0 : ℝ) < 1 := by {simp only [zero_lt_one]}
-       --needs the fact that 1 ≤ c₁
            (1 : ℝ) ≤ abs (h7.c₁) ^ (↑(h7.h) *
            ((↑(h7.r q hq0 h2mq)) + 2 * ↑(h7.m) * (↑q))) := mod_cast this
   · unfold cρ
     simp only [neg_mul, zpow_neg]
-    simp only [_root_.inv_inj]
     simp only [Int.cast_abs, norm_pow]
     rw [Int.norm_eq_abs]
     simp only [Int.cast_abs, Int.cast_mul, Int.cast_pow, abs_abs]
-    rw [pow_mul]
-    sorry
-
-
-    -- rw [← pow_add]
-    -- simp only [neg_mul, zpow_neg, abs_pow, norm_pow]
-    -- rw [Int.norm_eq_abs]
-    -- simp only [Int.cast_abs, abs_abs]
-    -- rw [← pow_mul]
-    -- rw [mul_comm]
-    -- unfold h
-    -- sorry
+    rw [← abs_pow]
+    rw [← Real.rpow_natCast]
+    rw [← Real.rpow_natCast]
+    rw [← Real.rpow_natCast]
+    rw [← Real.rpow_add]
+    rw [← Real.rpow_mul]
+    rw [mul_comm]
+    norm_cast
+    simp only [Int.cast_pow, Int.cast_abs, abs_pow]
+    unfold h
+    simp only [le_refl]
+    · simp only [Int.cast_nonneg]; exact zero_leq_c₁ h7
+    · rw [lt_iff_le_and_ne]
+      constructor
+      · simp only [Int.cast_nonneg]
+        exact zero_leq_c₁ h7
+      · simp only [ne_eq]
+        intros H
+        apply c₁_neq_zero h7
+        symm
+        exact mod_cast H
   · exact h2
 
-
-#exit
-
-
-
 lemma crho_abs_eq : |h7.c₁ ^ h7.r q hq0 h2mq * h7.c₁ ^ (2 * h7.m * q)| =
-  h7.c₁ ^ h7.r q hq0 h2mq * h7.c₁ ^ (2 * h7.m * q) := by {
+  h7.c₁ ^ h7.r q hq0 h2mq * h7.c₁ ^ (2 * h7.m * q) := by
     rw [abs_eq_self]
     apply mul_nonneg
     · apply pow_nonneg
       exact zero_leq_c₁ h7
     · apply pow_nonneg
       exact zero_leq_c₁ h7
-    }
-
 
 def c₆ : ℝ := house (1 + h7.β')
 
@@ -3003,7 +3003,8 @@ lemma eq6a : house (rho h7 q hq0 h2mq) ≤ (q*q) * ((h7.c₄ ^ (h7.n q : ℝ)) *
       house_sum_le_sum_house Finset.univ fun i ↦
         (algebraMap (𝓞 h7.K) h7.K) (h7.η q hq0 h2mq i) * h7.sys_coe_r q hq0 i h2mq
     · exact
-      house_nonneg (∑ t, (algebraMap (𝓞 h7.K) h7.K) (h7.η q hq0 h2mq t) * h7.sys_coe_r q hq0 t h2mq)
+      house_nonneg (∑ t, (algebraMap (𝓞 h7.K) h7.K)
+        (h7.η q hq0 h2mq t) * h7.sys_coe_r q hq0 t h2mq)
     · exact norm_nonneg (h7.cρ q hq0 h2mq)
   · rw [mul_sum]
     sorry
