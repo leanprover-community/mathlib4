@@ -776,7 +776,7 @@ In this section, we prove results about 2-connected components of a graph, but w
 
 Should we explicitly have
 ```
-def IsTwoReachable (u v : V) : Prop := ∀ e, (G.deleteEdges {e}).Reachable u v
+def IsTwoEdgeReachable (u v : V) : Prop := ∀ e, (G.deleteEdges {e}).Reachable u v
 ```
 ? This is equivalent to the less idiomatic condition
 `∃ x, ¬ (G.deleteEdges {s(x, y)}).Reachable u y` we use below.
