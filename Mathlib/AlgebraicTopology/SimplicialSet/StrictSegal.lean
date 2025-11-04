@@ -432,11 +432,11 @@ end StrictSegal
 structure StrictSegalCore (n : ℕ) where
   /-- Map which produces a `n + 1`-simplex from a `1`-simplex and a `n`-simplex when
   the target vertex of the `1`-simplex equals the zeroth simplex of the `n`-simplex. -/
-  concat (x : X _⦋1⦌) (s : X _⦋n⦌) (h : X.δ 0 x = X.map ((SimplexCategory.const _ _ 0).op) s) :
+  concat (x : X _⦋1⦌) (s : X _⦋n⦌) (h : X.δ 0 x = X.map (SimplexCategory.const _ _ 0).op s) :
     X _⦋n + 1⦌
-  map_mkOfSucc_zero_concat x s h : X.map ((mkOfSucc 0).op) (concat x s h) = x
+  map_mkOfSucc_zero_concat x s h : X.map (mkOfSucc 0).op (concat x s h) = x
   δ₀_concat x s h : X.δ 0 (concat x s h) = s
-  injective {x y : X _⦋n + 1⦌} (h : X.map ((mkOfSucc 0).op) x = X.map ((mkOfSucc 0).op) y)
+  injective {x y : X _⦋n + 1⦌} (h : X.map (mkOfSucc 0).op x = X.map (mkOfSucc 0).op y)
     (h₀ : X.δ 0 x = X.δ 0 y) : x = y
 
 namespace StrictSegalCore
