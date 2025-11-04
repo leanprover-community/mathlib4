@@ -245,7 +245,7 @@ lemma H1Cotangent.equivOfFormallySmooth_symm (P₁ P₂ : Extension R A)
 noncomputable
 def equivH1CotangentOfFormallySmooth (P : Extension R A) [FormallySmooth R P.Ring] :
     P.H1Cotangent ≃ₗ[A] H1Cotangent R A :=
-  have : FormallySmooth R (Generators.self R A).toExtension.Ring :=
+  haveI : FormallySmooth R (Generators.self R A).toExtension.Ring :=
     inferInstanceAs (FormallySmooth R (MvPolynomial _ _))
   H1Cotangent.equivOfFormallySmooth _ _
 
