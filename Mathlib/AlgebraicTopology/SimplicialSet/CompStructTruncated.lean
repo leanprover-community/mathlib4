@@ -77,7 +77,7 @@ lemma map_id (x : X _⦋0⦌₂) (f : X ⟶ Y) :
 `e₀₁` an edge from `x₀` to `x₁`, `e₁₂` an edge from `x₁` to `x₂`,
 `e₀₂` an edge from `x₀` to `x₂`. This is the data of a `2`-simplex whose
 faces are respectively `e₀₂`, `e₁₂` and `e₀₁`. Such structures shall provide
-relations in the homotopy category of arbitrary (truncated) simplicial sets `X`
+relations in the homotopy category of arbitrary (truncated) simplicial sets
 (and specialized constructions for quasicategories and Kan complexes.). -/
 structure CompStruct {x₀ x₁ x₂ : X _⦋0⦌₂}
     (e₀₁ : Edge x₀ x₁) (e₁₂ : Edge x₁ x₂) (e₀₂ : Edge x₀ x₂) where
