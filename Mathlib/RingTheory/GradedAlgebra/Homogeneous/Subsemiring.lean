@@ -40,17 +40,16 @@ structure HomogeneousSubsemiring extends Subsemiring A where
 
 variable {𝒜}
 
-theorem HomogeneousSubsemiring.isHomogeneous (R : HomogeneousSubsemiring 𝒜) :
-    R.toSubsemiring.IsHomogeneous 𝒜 := R.is_homogeneous'
-
-theorem HomogeneousSubsemiring.toSubsemiring_injective :
-    Function.Injective
-      (HomogeneousSubsemiring.toSubsemiring : HomogeneousSubsemiring 𝒜 → Subsemiring A) :=
+theorem toSubsemiring_injective :
+    (toSubsemiring : HomogeneousSubsemiring 𝒜 → Subsemiring A).Injective :=
   fun ⟨x, hx⟩ ⟨y, hy⟩ => fun (h : x = y) => by simp [h]
 
-instance HomogeneousSubsemiring.setLike : SetLike (HomogeneousSubsemiring 𝒜) A where
-  coe x := x.toSubsemiring
-  coe_injective' _ _ h := HomogeneousSubsemiring.toSubsemiring_injective <| SetLike.coe_injective h
+instance setLike : SetLike (HomogeneousSubsemiring 𝒜) A where
+  coe x := x.carrier
+  coe_injective' _ _ h := toSubsemiring_injective <| SetLike.coe_injective h
+
+theorem isHomogeneous (R : HomogeneousSubsemiring 𝒜) :
+    IsHomogeneous 𝒜 R := R.is_homogeneous'
 
 instance HomogeneousSubsemiring.subsemiringClass :
     SubsemiringClass (HomogeneousSubsemiring 𝒜) A where
