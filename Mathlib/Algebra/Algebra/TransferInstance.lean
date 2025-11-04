@@ -23,8 +23,7 @@ variable (R) in
 /-- Transfer `Algebra` across an `Equiv` -/
 protected abbrev algebra (e : α ≃ β) [Semiring β] :
     let _ := Equiv.semiring e
-    ∀ [Algebra R β], Algebra R α := by
-  intros
+    ∀ [Algebra R β], Algebra R α := fast_instance% by
   letI := Equiv.semiring e
   letI := e.smul R
   refine ⟨{
