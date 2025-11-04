@@ -278,7 +278,7 @@ theorem IsMultiplyPreprimitive.of_bijective_map
       ⟨φ m, fun ⟨y, hy⟩ => by
         rw [← hs', Set.mem_image] at hy
         obtain ⟨x, hx, hx'⟩ := hy
-        simp only []
+        simp only
         rw [← hx', ← map_smulₛₗ]
         apply congr_arg
         rw [mem_fixingSubgroup_iff] at hm

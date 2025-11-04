@@ -393,7 +393,7 @@ theorem isPretransitive_of_isCycle_mem {g : Perm α}
 
 /-- A primitive subgroup of `Equiv.Perm α` that contains a swap
 is the full permutation group (Jordan). -/
-theorem eq_top_of_isPreprimitive_of_isSwap_mem
+theorem subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
     (hG : IsPreprimitive G α) (g : Perm α) (h2g : IsSwap g) (hg : g ∈ G) :
     G = ⊤ := by
   classical
