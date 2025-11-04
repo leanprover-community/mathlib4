@@ -243,6 +243,10 @@ instance (C : Type u) [Category.{v} C] :
 recorded by the composite functor `nerveFunctor₂`. -/
 def nerveFunctor₂ : Cat.{v, u} ⥤ SSet.Truncated 2 := nerveFunctor ⋙ truncation 2
 
+instance (X : Cat.{v, u}) : (nerveFunctor₂.obj X).IsStrictSegal := by
+  dsimp [nerveFunctor₂]
+  infer_instance
+
 /-- The natural isomorphism between `nerveFunctor` and `nerveFunctor₂ ⋙ Truncated.cosk 2` whose
 components `nerve C ≅ (Truncated.cosk 2).obj (nerveFunctor₂.obj C)` shows that nerves of categories
 are 2-coskeletal. -/
