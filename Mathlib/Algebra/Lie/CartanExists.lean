@@ -68,7 +68,7 @@ open LieModule LinearMap
 
 local notation "φ" => LieModule.toEnd R L M
 
-/-- Let `x` and `y` be elements of a Lie `R`-algebra `L`, and `M` a Lie module over `M`.
+/-- Let `x` and `y` be elements of a Lie `R`-algebra `L`, and `M` a Lie module over `L`.
 Then the characteristic polynomials of the family of endomorphisms `⁅r • y + x, _⁆` of `M`
 have coefficients that are polynomial in `r : R`.
 In other words, we obtain a polynomial over `R[X]`

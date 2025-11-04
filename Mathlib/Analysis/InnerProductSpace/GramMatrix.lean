@@ -56,7 +56,7 @@ lemma gram_single [DecidableEq n] (i : n) (x : E) :
   simp
 
 lemma submatrix_gram (v : n → E) {m : Set n} (f : m → n) :
-  (gram 𝕜 v).submatrix f f = gram 𝕜 (v ∘ f) := rfl
+    (gram 𝕜 v).submatrix f f = gram 𝕜 (v ∘ f) := rfl
 
 variable (𝕜) in
 /-- A Gram matrix is Hermitian. -/
