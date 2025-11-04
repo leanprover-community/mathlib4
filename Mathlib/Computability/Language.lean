@@ -35,7 +35,7 @@ with respect to other language operations.
   concatenated together. Note that this notation uses the Unicode asterisk operator `∗`, as opposed
   to the more common ASCII asterisk `*`.
 * `lᶜ`: complement, language of strings `x` such that `x ∉ l`
-* `l ∩ m`: intersection of languages `l` and `m`
+* `l ⊓ m`: intersection of languages `l` and `m`
 
 ## Main definitions
 
@@ -96,12 +96,6 @@ instance : Sub (Language α) where
 `x ∈ l` and `y ∈ m`. -/
 instance : Mul (Language α) :=
   ⟨image2 (· ++ ·)⟩
-
-instance : HasCompl (Language α) :=
-  ⟨((· ᶜ) : Set (List α) → Set (List α))⟩
-
-instance : Inter (Language α) :=
-  ⟨((· ∩ ·) : Set (List α) → Set (List α) → Set (List α))⟩
 
 theorem zero_def : (0 : Language α) = (∅ : Set _) :=
   rfl
@@ -413,7 +407,7 @@ lemma reverse_kstar (l : Language α) : l∗.reverse = l.reverse∗ := by
   simp only [kstar_eq_iSup_pow, reverse_iSup, reverse_pow]
 
 @[simp]
-lemma mem_inter (x : List α) (l m : Language α) : x ∈ l ∩ m ↔ x ∈ l ∧ x ∈ m := by
+lemma mem_inf (x : List α) (l m : Language α) : x ∈ l ⊓ m ↔ x ∈ l ∧ x ∈ m := by
   apply Set.mem_inter_iff
 
 lemma compl_compl {l : Language α} : lᶜᶜ = l := by

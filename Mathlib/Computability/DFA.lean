@@ -291,7 +291,8 @@ def union (M1 : DFA α σ1) (M2 : DFA α σ2) : DFA α (σ1 × σ2) where
   start := (M1.start, M2.start)
   accept := {s : σ1 × σ2 | s.1 ∈ M1.accept ∨ s.2 ∈ M2.accept}
 
-instance : HAdd (DFA α σ1) (DFA α σ2) (DFA α (σ1 × σ2)) := ⟨union⟩
+instance : HAdd (DFA α σ1) (DFA α σ2) (DFA α (σ1 × σ2)) :=
+  ⟨union⟩
 
 theorem hadd_eq_union (M1 : DFA α σ1) (M2 : DFA α σ2) : M1 + M2 = M1.union M2 :=
   rfl
@@ -324,15 +325,15 @@ def inter : DFA α (σ1 × σ2) where
   accept := {s : σ1 × σ2 | s.1 ∈ M1.accept ∧ s.2 ∈ M2.accept}
 
 theorem acceptsFrom_inter (s1 : σ1) (s2 : σ2) :
-    (M1.inter M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 ∩ M2.acceptsFrom s2 := by
+    (M1.inter M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 ⊓ M2.acceptsFrom s2 := by
   ext x
-  simp only [acceptsFrom, Language.mem_inter]
+  simp only [acceptsFrom, Language.mem_inf]
   simp_rw [↑Set.mem_setOf]
   induction x generalizing s1 s2 with
   | nil => simp
   | cons a x ih => simp only [evalFrom_cons, inter_step, ih]
 
-theorem accepts_inter : (M1.inter M2).accepts = M1.accepts ∩ M2.accepts := by
+theorem accepts_inter : (M1.inter M2).accepts = M1.accepts ⊓ M2.accepts := by
   simp [accepts, acceptsFrom_inter]
 
 end inter
@@ -376,15 +377,17 @@ theorem IsRegular_compl_iff {T : Type u} {L : Language T} : Lᶜ.IsRegular ↔ L
   ⟨.from_compl, .compl⟩
 
 /-- Regular languages are closed under union. -/
-theorem IsRegular_union {T : Type u} {L1 L2 : Language T} :
-    L1.IsRegular → L2.IsRegular → (L1 + L2).IsRegular :=
-  fun ⟨σ1, _, M1, hM1⟩ ⟨σ2, _, M2, hM2⟩ =>
-    ⟨σ1 × σ2, inferInstance, M1 + M2, by rw [DFA.accepts_union, hM1, hM2]⟩
+theorem IsRegular_union {T : Type u} {L1 L2 : Language T} (h1 : L1.IsRegular) (h2 : L2.IsRegular) :
+    (L1 + L2).IsRegular :=
+  have ⟨σ1, _, M1, hM1⟩ := h1
+  have ⟨σ2, _, M2, hM2⟩ := h2
+  ⟨σ1 × σ2, inferInstance, M1 + M2, by rw [DFA.accepts_union, hM1, hM2]⟩
 
 /-- Regular languages are closed under intersection. -/
-theorem IsRegular_inter {T : Type u} {L1 L2 : Language T} :
-    L1.IsRegular → L2.IsRegular → (L1 ∩ L2).IsRegular :=
-  fun ⟨σ1, _, M1, hM1⟩ ⟨σ2, _, M2, hM2⟩ =>
-    ⟨σ1 × σ2, inferInstance, M1.inter M2, by rw [DFA.accepts_inter, hM1, hM2]⟩
+theorem IsRegular_inter {T : Type u} {L1 L2 : Language T} (h1 : L1.IsRegular) (h2 : L2.IsRegular) :
+    (L1 ⊓ L2).IsRegular :=
+  have ⟨σ1, _, M1, hM1⟩ := h1
+  have ⟨σ2, _, M2, hM2⟩ := h2
+  ⟨σ1 × σ2, inferInstance, M1.inter M2, by rw [DFA.accepts_inter, hM1, hM2]⟩
 
 end Language
