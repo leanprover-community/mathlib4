@@ -12,7 +12,6 @@ import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 import Mathlib.RingTheory.MvPolynomial.Ideal
 
-
 /-! # Gröbner Basis Theory
 
 ## Division algorithm
