@@ -256,7 +256,7 @@ theorem tensorTensorTensorComm_symm :
     (tensorTensorTensorComm R M N P Q).symm = tensorTensorTensorComm R M P N Q :=
   rfl
 
-@[simp] theorem tensorTensorTensorComm_trans_symm :
+@[simp] theorem tensorTensorTensorComm_trans_eq_refl :
     tensorTensorTensorComm R M N P Q ≪≫ₗ tensorTensorTensorComm R M P N Q = .refl R _ := by
   rw [← tensorTensorTensorComm_symm]
   exact LinearEquiv.symm_trans_self _
