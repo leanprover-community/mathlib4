@@ -860,6 +860,10 @@ def inclusion {S T : Subring R} (h : S ≤ T) : S →+* T :=
   S.subtype.codRestrict _ fun x => h x.2
 
 @[simp]
+theorem coe_inclusion {S T : Subring R} (h : S ≤ T) (x : S) :
+    (Subring.inclusion h x : R) = x := by simp [Subring.inclusion]
+
+@[simp]
 theorem range_subtype (s : Subring R) : s.subtype.range = s :=
   SetLike.coe_injective <| (coe_rangeS _).trans Subtype.range_coe
 

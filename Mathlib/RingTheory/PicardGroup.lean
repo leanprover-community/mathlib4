@@ -51,7 +51,6 @@ invertible `R`-modules (in the sense that `M` is invertible if there exists anot
 ## TODO
 
 Show:
-- All commutative semi-local rings, in particular Artinian rings, have trivial Picard group.
 - All unique factorization domains have trivial Picard group.
 - Invertible modules over a commutative ring have the same cardinality as the ring.
 
@@ -250,13 +249,13 @@ theorem free_iff_linearEquiv : Free R M ↔ Nonempty (M ≃ₗ[R] R) := by
 considering the localization at a prime (which is free of rank 1) using the strong rank condition.
 The ≥ direction fails in general but holds for domains and Noetherian rings,
 see https://math.stackexchange.com/q/5089900 and https://mathoverflow.net/a/499611. -/
-theorem finrank_eq_one [StrongRankCondition R] [Free R M] : finrank R M = 1 := by
+protected theorem finrank_eq_one [StrongRankCondition R] [Free R M] : finrank R M = 1 := by
   cases subsingleton_or_nontrivial R
   · rw [← rank_eq_one_iff_finrank_eq_one, rank_subsingleton]
   · rw [(free_iff_linearEquiv.mp ‹_›).some.finrank_eq, finrank_self]
 
 theorem rank_eq_one [StrongRankCondition R] [Free R M] : Module.rank R M = 1 :=
-  rank_eq_one_iff_finrank_eq_one.mpr (finrank_eq_one R M)
+  rank_eq_one_iff_finrank_eq_one.mpr (Invertible.finrank_eq_one R M)
 
 open TensorProduct (comm lid) in
 theorem toModuleEnd_bijective : Function.Bijective (toModuleEnd R (S := R) M) := by
@@ -501,6 +500,11 @@ not be). See Remark 7.10, Example 9.6 and 9.8, and Theorem 11.7 in [BorgerJun202
 instance (R) [CommRing R] [IsLocalRing R] : Subsingleton (Pic R) :=
   subsingleton_iff.mpr fun _ _ _ _ ↦ free_of_flat_of_isLocalRing
 
+/-- The Picard group of a semilocal ring is trivial. -/
+instance [Finite (MaximalSpectrum R)] : Subsingleton (Pic R) :=
+  subsingleton_iff.mpr fun _ _ _ _ ↦ free_of_flat_of_finrank_eq _ _ 1
+    fun _ ↦ let _ := @Ideal.Quotient.field; Invertible.finrank_eq_one ..
+
 variable (R) (A : Type*) [CommSemiring A]
 
 open AlgebraTensorModule in
@@ -523,6 +527,8 @@ noncomputable def relPic : Subgroup (Pic R) := (Pic.mapAlgebra R A).ker
 
 theorem relPic_eq_top [Subsingleton (Pic A)] : relPic R A = ⊤ :=
   top_unique fun _ _ ↦ Subsingleton.elim ..
+
+end CommRing.Pic
 
 end CommRing
 
