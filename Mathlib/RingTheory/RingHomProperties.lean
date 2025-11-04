@@ -84,9 +84,6 @@ theorem RespectsIso.isLocalization_away_iff (hP : RingHom.RespectsIso @P) {R S :
   dsimp [e, e₁, e₂, IsLocalization.Away.map]
   simp only [IsLocalization.map_eq, id_apply, RingHomCompTriple.comp_apply]
 
-@[deprecated (since := "2025-03-01")]
-alias RespectsIso.is_localization_away_iff := RespectsIso.isLocalization_away_iff
-
 lemma RespectsIso.and (hP : RespectsIso P) (hQ : RespectsIso Q) :
     RespectsIso (fun f ↦ P f ∧ Q f) := by
   refine ⟨?_, ?_⟩
