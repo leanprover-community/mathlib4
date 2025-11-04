@@ -175,7 +175,6 @@ lemma _root_.IsBlock.subsingleton_of_ssubset_compl_of_stabilizer_le
     {s B : Set α} {G : Subgroup (Perm α)}
     (hB_ss_sc : B ⊂ sᶜ) (hG : stabilizer (Perm α) s ≤ G) (hB : IsBlock G B) :
     B.Subsingleton := by
-  -- have : B ⊆ sᶜ := by exact subset_of_ssubset hB_ss_sc
   rw [← inter_eq_self_of_subset_right (subset_of_ssubset hB_ss_sc), ← Subtype.image_preimage_val]
   apply Set.Subsingleton.image
   suffices IsTrivialBlock (Subtype.val ⁻¹' B : Set (sᶜ : Set α)) by
