@@ -9,7 +9,7 @@ import Lean.Elab.ElabRules
 import Lean.DocString
 
 /-!
-#  `extend_doc` command
+# `extend_doc` command
 
 In a file where declaration `decl` is defined, writing
 ```lean

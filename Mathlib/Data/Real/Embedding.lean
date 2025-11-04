@@ -227,10 +227,9 @@ omit [One M] [ZeroLEOneClass M] [NeZero (1 : M)] in
 variable (M) in
 theorem exists_orderAddMonoidHom_real_injective :
     ∃ f : M →+o ℝ, Function.Injective f := by
-  by_cases h : Subsingleton M
+  cases subsingleton_or_nontrivial M
   · exact ⟨0, Function.injective_of_subsingleton _⟩
-  · push_neg at h
-    obtain ⟨a, ha⟩ := exists_ne (0 : M)
+  · obtain ⟨a, ha⟩ := exists_ne (0 : M)
     let one : One M := ⟨|a|⟩
     have : ZeroLEOneClass M := ⟨abs_nonneg a⟩
     have : NeZero (1 : M) := ⟨abs_ne_zero.mpr ha⟩

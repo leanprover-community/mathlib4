@@ -778,8 +778,7 @@ theorem MeasureTheory.measurableSet_range_of_continuous_injective {β : Type*} [
       intro a ha
       calc
         dist a z ≤ dist a (y n) + dist (y n) z := dist_triangle _ _ _
-        _ ≤ u n + dist (y n) z :=
-          (add_le_add_right ((dist_le_diam_of_mem (hs n).1 ha (hy n)).trans (hs n).2) _)
+        _ ≤ u n + dist (y n) z := by grw [dist_le_diam_of_mem (hs n).1 ha (hy n), (hs n).2]
         _ < δ := hn
     -- as `x` belongs to the closure of `f '' (s n)`, it belongs to the closure of `v`.
     have : x ∈ closure v := closure_mono fsnv (hxs n).1

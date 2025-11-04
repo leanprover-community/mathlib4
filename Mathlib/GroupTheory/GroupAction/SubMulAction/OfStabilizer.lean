@@ -84,21 +84,32 @@ theorem neq_of_mem_ofStabilizer (a : α) {x : ofStabilizer G a} : ↑x ≠ a :=
   x.prop
 
 @[to_additive]
-lemma Enat_card_ofStabilizer_eq_add_one (a : α) :
+lemma ENat_card_ofStabilizer_add_one_eq (a : α) :
     ENat.card (ofStabilizer G a) + 1 = ENat.card α := by
   dsimp only [ENat.card]
   rw [← Cardinal.mk_sum_compl {a}, map_add, add_comm, eq_comm]
   congr
   simp
 
+@[deprecated (since := "2025-07-15")]
+alias Enat_card_ofStabilizer_eq_add_one := ENat_card_ofStabilizer_add_one_eq
+
 @[to_additive]
-lemma nat_card_ofStabilizer_eq [Finite α] (a : α) :
-    Nat.card (ofStabilizer G a) = Nat.card α - 1 := by
+lemma nat_card_ofStabilizer_add_one_eq [Finite α] (a : α) :
+    Nat.card (ofStabilizer G a) + 1 = Nat.card α := by
   dsimp only [Nat.card]
   rw [← Cardinal.mk_sum_compl {a},
     Cardinal.toNat_add Cardinal.mk_lt_aleph0 Cardinal.mk_lt_aleph0]
-  simp only [Cardinal.mk_fintype, Fintype.card_unique, Nat.cast_one, map_one, add_tsub_cancel_left]
+  simp only [Cardinal.mk_fintype, Fintype.card_unique, Nat.cast_one, map_one, add_comm]
   congr
+
+@[deprecated  (since := "2025-10-03")]
+alias nat_card_ofStabilizer_eq_add_one := nat_card_ofStabilizer_add_one_eq
+
+@[to_additive]
+lemma nat_card_ofStabilizer_eq [Finite α] (a : α) :
+    Nat.card (ofStabilizer G a) = Nat.card α - 1 :=
+  Nat.eq_sub_of_add_eq (nat_card_ofStabilizer_add_one_eq G a)
 
 variable {G}
 
@@ -217,3 +228,51 @@ lemma exists_smul_of_last_eq [IsPretransitive G α] {n : ℕ} (a : α) (x : Fin 
   · simpa only [smul_apply, ofStabilizer.snoc, Fin.Embedding.snoc_last]
 
 end SubMulAction
+
+section Pointwise
+
+open MulAction Set
+
+variable (G : Type*) [Group G] (α : Type*) [MulAction G α]
+
+/-- The stabilizer of a set acts on that set. -/
+@[to_additive /-- The stabilizer of a set acts on that set. -/]
+instance _root_.SMul.ofStabilizer (s : Set α) :
+    SMul (stabilizer G s) s where
+  smul g x := ⟨g • ↑x, by
+    convert Set.smul_mem_smul_set x.prop
+    exact (mem_stabilizer_iff.mp g.prop).symm⟩
+
+@[simp]
+theorem _root_.SMul.smul_stabilizer_def (s : Set α) (g : stabilizer G s) (x : s) :
+    ((g • x : ↥s) : α) = (g : G) • (x : α) :=
+  rfl
+
+/-- The stabilizer of a set acts on that set -/
+@[to_additive /-- The stabilizer of a set acts on that set. -/]
+instance (s : Set α) : MulAction (stabilizer G s) s where
+  one_smul x := by
+    simp only [← Subtype.coe_inj, SMul.smul_stabilizer_def, OneMemClass.coe_one, one_smul]
+  mul_smul g k x := by
+    simp only [← Subtype.coe_inj, SMul.smul_stabilizer_def, Subgroup.coe_mul,
+      MulAction.mul_smul]
+
+theorem stabilizer_empty_eq_top :
+    stabilizer G (∅ : Set α) = ⊤ := by
+  aesop
+
+theorem stabilizer_univ_eq_top :
+    stabilizer G (Set.univ : Set α) = ⊤ := by
+  aesop
+
+/-- The stabilizer of the complement is the stabilizer of the set. -/
+@[simp]
+theorem stabilizer_compl {s : Set α} :
+    stabilizer G sᶜ = stabilizer G s := by
+  have (s : Set α) : stabilizer G s ≤ stabilizer G (sᶜ) := by
+    intro g h
+    simp [Set.smul_set_compl, mem_stabilizer_iff.1 h]
+  refine le_antisymm (le_of_le_of_eq (this _) ?_) (this _)
+  rw [compl_compl]
+
+end Pointwise

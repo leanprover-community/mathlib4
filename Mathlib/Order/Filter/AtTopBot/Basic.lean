@@ -128,9 +128,6 @@ end IsCodirected
 ### Sequences
 -/
 
-@[deprecated (since := "2025-04-20")] alias extraction_of_frequently_atTop' :=
-  Nat.exists_strictMono_subsequence
-
 theorem extraction_of_frequently_atTop {P : ℕ → Prop} (h : ∃ᶠ n in atTop, P n) :
     ∃ φ : ℕ → ℕ, StrictMono φ ∧ ∀ n, P (φ n) := by
   rw [frequently_atTop'] at h

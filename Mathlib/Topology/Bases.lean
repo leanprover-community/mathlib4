@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Data.Set.Constructions
 import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 import Mathlib.Topology.Constructions
-import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.NhdsWithin
 
 /-!
 # Bases of topologies. Countability axioms.
@@ -907,7 +907,7 @@ lemma IsTopologicalBasis.exists_countable
     obtain ⟨w, ws, xw⟩ : ∃ w ∈ s u, x ∈ w := by simpa using this
     refine ⟨w, ⟨u, u_mem, ws⟩, xw, ?_⟩
     apply Subset.trans (Subset.trans _ (hs u u_mem).symm.subset) uv
-    exact subset_iUnion₂_of_subset w ws fun ⦃a⦄ a ↦ a
+    exact subset_iUnion₂_of_subset w ws (Subset.refl _)
 
 /-- In a second countable topological space, any family generating the topology admits a
 countable generating subfamily. -/

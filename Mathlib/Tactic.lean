@@ -13,6 +13,7 @@ import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Bound
 import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.ByCases
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.CC
 import Mathlib.Tactic.CC.Addition
@@ -87,6 +88,7 @@ import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FBinop
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Field
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FieldSimp.Attr
 import Mathlib.Tactic.FieldSimp.Discharger
@@ -149,12 +151,14 @@ import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.LinearCombination'
 import Mathlib.Tactic.LinearCombination.Lemmas
 import Mathlib.Tactic.Linter
+import Mathlib.Tactic.Linter.CommandRanges
 import Mathlib.Tactic.Linter.CommandStart
 import Mathlib.Tactic.Linter.DeprecatedModule
 import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 import Mathlib.Tactic.Linter.DirectoryDependency
 import Mathlib.Tactic.Linter.DocPrime
 import Mathlib.Tactic.Linter.DocString
+import Mathlib.Tactic.Linter.FindDeprecations
 import Mathlib.Tactic.Linter.FlexibleLinter
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter

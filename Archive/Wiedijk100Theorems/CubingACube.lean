@@ -166,11 +166,11 @@ theorem w_ne_one [Nontrivial ι] (i : ι) : (cs i).w ≠ 1 := by
   have hp : p ∈ (cs i').toSet := (cs i').b_mem_toSet
   have h2p : p ∈ (cs i).toSet := by
     intro j; constructor
-    trans (0 : ℝ)
-    · rw [← add_le_add_iff_right (1 : ℝ)]; convert b_add_w_le_one h
-      · rw [hi]
-      · rw [zero_add]
-    · apply zero_le_b h
+    · trans (0 : ℝ)
+      · rw [← add_le_add_iff_right (1 : ℝ)]; convert b_add_w_le_one h
+        · rw [hi]
+        · rw [zero_add]
+      · apply zero_le_b h
     · apply lt_of_lt_of_le (side_subset h <| (cs i').b_mem_side j).2
       simp [hi, zero_le_b h]
   exact (h.PairwiseDisjoint hi').le_bot ⟨hp, h2p⟩
@@ -295,7 +295,7 @@ theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
   rw [if_pos]
   · gcongr
     exact (hi.2 _).1
-  rfl
+  simp [j]
 
 /-- There is a cube in the valley -/
 theorem nonempty_bcubes : (bcubes cs c).Nonempty :=

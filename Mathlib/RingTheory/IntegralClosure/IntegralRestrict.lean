@@ -13,7 +13,7 @@ import Mathlib.RingTheory.Norm.Transitivity
 # Restriction of various maps between fields to integrally closed subrings.
 
 In this file, we assume `A` is an integrally closed domain; `K` is the fraction ring of `A`;
-`L` is a finite (separable) extension of `K`; `B` is the integral closure of `A` in `L`.
+`L` is a finite extension of `K`; `B` is the integral closure of `A` in `L`.
 We call this the AKLB setup.
 
 ## Main definition
@@ -76,7 +76,7 @@ variable [Algebra.IsAlgebraic K L]
 section galLift
 variable {A B B₂ B₃}
 
-/-- A generalization of the the lift `End(B/A) → End(L/K)` in an ALKB setup.
+/-- A generalization of the lift `End(B/A) → End(L/K)` in an ALKB setup.
 This is inverse to the restriction. See `galRestrictHom`. -/
 noncomputable
 def galLift (σ : B →ₐ[A] B₂) : L →ₐ[K] L₂ :=
@@ -170,21 +170,21 @@ lemma galRestrictHom_symm_algebraMap_apply (σ : B →ₐ[A] B) (x : B) :
 
 /-- The restriction `Aut(L/K) → Aut(B/A)` in an AKLB setup. -/
 noncomputable
-def galRestrict : (L ≃ₐ[K] L) ≃* (B ≃ₐ[A] B) :=
+def galRestrict : Gal(L/K) ≃* (B ≃ₐ[A] B) :=
   (AlgEquiv.algHomUnitsEquiv K L).symm.trans
     ((Units.mapEquiv <| galRestrictHom A K L B).trans (AlgEquiv.algHomUnitsEquiv A B))
 
 variable {K L}
 
-lemma coe_galRestrict_apply (σ : L ≃ₐ[K] L) :
+lemma coe_galRestrict_apply (σ : Gal(L/K)) :
     (galRestrict A K L B σ : B →ₐ[A] B) = galRestrictHom A K L B σ := rfl
 
 variable {B}
 
-lemma galRestrict_apply (σ : L ≃ₐ[K] L) (x : B) :
+lemma galRestrict_apply (σ : Gal(L/K)) (x : B) :
     galRestrict A K L B σ x = galRestrictHom A K L B σ x := rfl
 
-lemma algebraMap_galRestrict_apply (σ : L ≃ₐ[K] L) (x : B) :
+lemma algebraMap_galRestrict_apply (σ : Gal(L/K)) (x : B) :
     algebraMap B L (galRestrict A K L B σ x) = σ (algebraMap B L x) :=
   algebraMap_galRestrictHom_apply A K L B σ.toAlgHom x
 
@@ -198,7 +198,7 @@ end galois
 variable [FiniteDimensional K L]
 
 lemma prod_galRestrict_eq_norm [IsGalois K L] [IsIntegrallyClosed A] (x : B) :
-    (∏ σ : L ≃ₐ[K] L, galRestrict A K L B σ x) =
+    (∏ σ : Gal(L/K), galRestrict A K L B σ x) =
     algebraMap A B (IsIntegralClosure.mk' (R := A) A (Algebra.norm K <| algebraMap B L x)
       (Algebra.isIntegral_norm K (IsIntegralClosure.isIntegral A L x).algebraMap)) := by
   apply IsIntegralClosure.algebraMap_injective B A L
@@ -352,7 +352,7 @@ variable [IsIntegrallyClosed A]
 /-- The restriction of the norm on `L/K` restricted onto `B/A` in an AKLB setup.
 See `Algebra.intNorm` instead. -/
 noncomputable
-def Algebra.intNormAux [Algebra.IsSeparable K L] :
+def Algebra.intNormAux :
     B →* A where
   toFun := fun s ↦ IsIntegralClosure.mk' (R := A) A (Algebra.norm K (algebraMap B L s))
     (isIntegral_norm K <| IsIntegral.map (IsScalarTower.toAlgHom A B L)
@@ -362,7 +362,8 @@ def Algebra.intNormAux [Algebra.IsSeparable K L] :
 
 variable {A K L B}
 
-lemma Algebra.map_intNormAux [Algebra.IsSeparable K L] (x : B) :
+omit [FiniteDimensional K L] in
+lemma Algebra.map_intNormAux (x : B) :
     algebraMap A K (Algebra.intNormAux A K L B x) = Algebra.norm K (algebraMap B L x) := by
   dsimp [Algebra.intNormAux]
   exact IsIntegralClosure.algebraMap_mk' _ _ _
@@ -370,7 +371,6 @@ lemma Algebra.map_intNormAux [Algebra.IsSeparable K L] (x : B) :
 variable (A B)
 variable [IsDomain A] [IsDomain B] [IsIntegrallyClosed B]
 variable [Module.Finite A B] [NoZeroSMulDivisors A B]
-variable [Algebra.IsSeparable (FractionRing A) (FractionRing B)] -- TODO: remove this
 
 /-- The norm of a finite extension of integrally closed domains `B/A` is the restriction of
 the norm on `Frac(B)/Frac(A)` onto `B/A`. See `Algebra.algebraMap_intNorm`. -/
@@ -416,9 +416,7 @@ variable (A B)
 
 theorem Algebra.intNorm_intNorm {C : Type*} [CommRing C] [IsDomain C] [IsIntegrallyClosed C]
     [Algebra A C] [Algebra B C] [IsScalarTower A B C] [Module.Finite A C] [Module.Finite B C]
-    [NoZeroSMulDivisors A C] [NoZeroSMulDivisors B C]
-    [Algebra.IsSeparable (FractionRing A) (FractionRing C)]
-    [Algebra.IsSeparable (FractionRing B) (FractionRing C)] (x : C) :
+    [NoZeroSMulDivisors A C] [NoZeroSMulDivisors B C] (x : C) :
     intNorm A B (intNorm B C x) = intNorm A C x := by
   apply FaithfulSMul.algebraMap_injective A (FractionRing A)
   rw [algebraMap_intNorm_fractionRing, algebraMap_intNorm_fractionRing,
@@ -447,8 +445,7 @@ variable {A B}
 
 @[simp]
 theorem Algebra.intNorm_map_algEquiv [IsDomain B₂] [IsIntegrallyClosed B₂] [Module.Finite A B₂]
-    [NoZeroSMulDivisors A B₂] [Algebra.IsSeparable (FractionRing A) (FractionRing B₂)] (x : B)
-    (σ : B ≃ₐ[A] B₂) :
+    [NoZeroSMulDivisors A B₂] (x : B) (σ : B ≃ₐ[A] B₂) :
     Algebra.intNorm A B₂ (σ x) = Algebra.intNorm A B x := by
   apply FaithfulSMul.algebraMap_injective A (FractionRing A)
   rw [algebraMap_intNorm_fractionRing, algebraMap_intNorm_fractionRing,
@@ -469,7 +466,6 @@ lemma Algebra.intNorm_ne_zero {x : B} : Algebra.intNorm A B x ≠ 0 ↔ x ≠ 0 
 
 variable [IsDomain Aₘ] [IsIntegrallyClosed Aₘ] [IsDomain Bₘ] [IsIntegrallyClosed Bₘ]
 variable [NoZeroSMulDivisors Aₘ Bₘ] [Module.Finite Aₘ Bₘ]
-variable [Algebra.IsSeparable (FractionRing Aₘ) (FractionRing Bₘ)]
 
 include M in
 lemma Algebra.intNorm_eq_of_isLocalization (x : B) :
@@ -528,8 +524,8 @@ lemma Algebra.algebraMap_intNorm_of_isGalois [IsGalois (FractionRing A) (Fractio
   simp only [MulEquiv.toEquiv_eq_coe, EquivLike.coe_coe]
   convert (prod_galRestrict_eq_norm A (FractionRing A) (FractionRing B) B x).symm
 
-theorem Algebra.dvd_algebraMap_intNorm_self [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
-    (x : B) : x ∣ algebraMap A B (intNorm A B x) := by
+open Polynomial IsScalarTower in
+theorem Algebra.dvd_algebraMap_intNorm_self (x : B) : x ∣ algebraMap A B (intNorm A B x) := by
   classical
   by_cases hx : x = 0
   · exact ⟨1, by simp [hx]⟩
@@ -541,18 +537,27 @@ theorem Algebra.dvd_algebraMap_intNorm_self [Algebra.IsSeparable (FractionRing A
       _root_.IsIntegral.tower_top (A := B) this
     refine ⟨y, ?_⟩
     apply FaithfulSMul.algebraMap_injective B L
-    rw [← IsScalarTower.algebraMap_apply, map_mul, hy, mul_inv_cancel_left₀]
+    rw [← algebraMap_apply, map_mul, hy, mul_inv_cancel_left₀]
     exact (map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective B L)).mpr hx
-  rw [← isIntegral_algHom_iff (IsScalarTower.toAlgHom A L E)
-    (FaithfulSMul.algebraMap_injective L E), IsScalarTower.coe_toAlgHom', map_mul, map_inv₀,
-    IsScalarTower.algebraMap_apply A K L, algebraMap_intNorm (L := L),
-    ← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply, norm_eq_prod_embeddings,
-    ← Finset.univ.mul_prod_erase _ (Finset.mem_univ (IsScalarTower.toAlgHom K L E)),
-    IsScalarTower.coe_toAlgHom', ← IsScalarTower.algebraMap_apply, inv_mul_cancel_left₀]
-  · refine _root_.IsIntegral.prod _ fun σ _ ↦ ?_
-    change IsIntegral A ((σ.restrictScalars A) (IsScalarTower.toAlgHom A B L x))
-    rw [isIntegral_algHom_iff _ (RingHom.injective _),
-      isIntegral_algHom_iff _ (FaithfulSMul.algebraMap_injective B L)]
-    exact IsIntegral.isIntegral x
+  rw [← isIntegral_algHom_iff (toAlgHom A L E)
+    (FaithfulSMul.algebraMap_injective L E), coe_toAlgHom', map_mul, map_inv₀,
+    algebraMap_apply A K L, algebraMap_intNorm (L := L), ← algebraMap_apply, ← algebraMap_apply,
+    norm_eq_prod_roots _ (IsAlgClosed.splits_codomain _), ← Multiset.prod_erase
+    (a := algebraMap B E x)]
   · have := NoZeroSMulDivisors.trans_faithfulSMul B L E
-    exact (map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective B E)).mpr hx
+    rw [mul_pow, ← mul_pow_sub_one (Nat.pos_iff_ne_zero.1 Module.finrank_pos) (algebraMap B E x),
+      mul_assoc, inv_mul_cancel_left₀]
+    · refine IsIntegral.mul (IsIntegral.pow ?_ _)
+        (IsIntegral.pow (IsIntegral.multiset_prod (fun a ha ↦ ⟨minpoly A x, minpoly.monic
+          (IsIntegral.isIntegral x), ?_⟩)) _)
+      · exact (isIntegral_algebraMap_iff (NoZeroSMulDivisors.iff_algebraMap_injective.1 this)).mpr
+          (IsIntegral.isIntegral x)
+      · replace ha := Multiset.erase_subset _ _ ha
+        suffices (aeval a) ((minpoly A x).map (algebraMap A K)) = 0 by simpa
+        rw [← minpoly.isIntegrallyClosed_eq_field_fractions K L (IsIntegral.isIntegral x)]
+        simp only [mem_roots', ne_eq, Polynomial.map_eq_zero, IsRoot.def, eval_map_algebraMap] at ha
+        exact ha.2
+    · exact (map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective B E)).mpr hx
+  · simp only [mem_roots', ne_eq, Polynomial.map_eq_zero, IsRoot.def, eval_map_algebraMap]
+    refine ⟨minpoly.ne_zero (IsIntegral.isIntegral _), ?_⟩
+    simp [algebraMap_apply B L E, aeval_algebraMap_apply]
