@@ -284,7 +284,7 @@ lemma CStarAlgebra.isUnit_of_le (a : A) {b : A} (hab : a ≤ b)
   peel h₀ with r hr _
   exact this.trans hab
 
-lemma le_iff_norm_sqrt_mul_rpow {a : A} (ha : 0 ≤ a) (b : A)
+lemma le_iff_norm_sqrt_mul_rpow (a b : A) (ha : 0 ≤ a := by cfc_tac)
     (hb : IsStrictlyPositive b := by cfc_tac) :
     a ≤ b ↔ ‖sqrt a * (b : A) ^ (-(1 / 2) : ℝ)‖ ≤ 1 := by
   lift b to Aˣ using hb.isUnit
@@ -314,7 +314,7 @@ lemma le_iff_norm_sqrt_mul_sqrt_inv {a : A} {b : Aˣ} (ha : 0 ≤ a) (hb : 0 ≤
     a ≤ b ↔ ‖sqrt a * sqrt (↑b⁻¹ : A)‖ ≤ 1 := by
   rw [CFC.sqrt_eq_rpow (a := (↑b⁻¹ : A)), ← CFC.rpow_neg_one_eq_inv b,
     CFC.rpow_rpow (b : A) _ _ (by simp) (by simp),
-    le_iff_norm_sqrt_mul_rpow ha _ (b.isUnit.isStrictlyPositive hb)]
+    le_iff_norm_sqrt_mul_rpow a (hb := b.isUnit.isStrictlyPositive hb)]
   simp
 
 namespace CStarAlgebra
