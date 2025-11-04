@@ -190,7 +190,7 @@ theorem gauge_add_le (hs : Convex ℝ s) (absorbs : Absorbent ℝ s) (x y : E) :
 
 theorem gauge_sum_le {ι : Type*} (hs : Convex ℝ s) (absorbs : Absorbent ℝ s) (t : Finset ι)
     (f : ι → E) : gauge s (∑ i ∈ t, f i) ≤ ∑ i ∈ t, gauge s (f i) :=
-  Finset.le_sum_of_subadditive _ gauge_zero (gauge_add_le hs absorbs) _ _
+  Finset.le_sum_of_subadditive _ gauge_zero.le (gauge_add_le hs absorbs) _ _
 
 theorem self_subset_gauge_le_one : s ⊆ { x | gauge s x ≤ 1 } := fun _ => gauge_le_one_of_mem
 
