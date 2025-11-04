@@ -677,7 +677,7 @@ noncomputable def range (f : α → ZFSet.{u}) : ZFSet.{u} :=
   ⟦⟨_, Quotient.out ∘ f ∘ (equivShrink α).symm⟩⟧
 
 @[simp]
-theorem mem_range {f : α → ZFSet.{u}} {x : ZFSet.{u}} : x ∈ range f ↔ x ∈ Set.range f :=
+theorem mem_range {f : α → ZFSet.{u}} {x : ZFSet.{u}} : x ∈ range f ↔ ∃ i, f i = x :=
   Quotient.inductionOn x fun y => by
     constructor
     · rintro ⟨z, hz⟩
