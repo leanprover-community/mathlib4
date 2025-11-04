@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Monoidal.Closed.Types
 import Mathlib.CategoryTheory.Sites.CartesianClosed
 import Mathlib.CategoryTheory.Sites.Equivalence
 import Mathlib.Condensed.Light.Basic
+import Mathlib.Condensed.Light.Instances
 /-!
 
 # Light condensed sets form a Cartesian closed category
@@ -23,5 +24,4 @@ variable {C : Type u} [SmallCategory C]
 instance : CartesianMonoidalCategory (LightCondSet.{u}) :=
   inferInstanceAs (CartesianMonoidalCategory (Sheaf _ _))
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : CartesianClosed (LightCondSet.{u}) := inferInstanceAs (CartesianClosed (Sheaf _ _))
