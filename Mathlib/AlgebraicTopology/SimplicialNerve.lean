@@ -71,7 +71,7 @@ lemma Path.le {J : Type*} [LinearOrder J] {i j : J} (f : Path i j) : i ≤ j :=
   f.left_le _ f.right
 
 instance {J : Type*} [LinearOrder J] (i j : J) : Category (Path i j) :=
-  InducedCategory.category (fun f : Path i j ↦ f.I)
+  inferInstanceAs (Category (InducedCategory _ (fun f : Path i j ↦ f.I)))
 
 @[simps]
 instance (J : Type*) [LinearOrder J] : CategoryStruct (SimplicialThickening J) where
@@ -109,7 +109,7 @@ Composition of morphisms in `SimplicialThickening J`, as a functor `(i ⟶ j) ×
 def compFunctor {J : Type*} [LinearOrder J]
     (i j k : SimplicialThickening J) : (i ⟶ j) × (j ⟶ k) ⥤ (i ⟶ k) where
   obj x := x.1 ≫ x.2
-  map f := ⟨⟨Set.union_subset_union f.1.1.1 f.2.1.1⟩⟩
+  map f := ⟨⟨⟨Set.union_subset_union f.1.1.1.1 f.2.1.1.1⟩⟩⟩
 
 namespace SimplicialCategory
 
@@ -126,21 +126,23 @@ abbrev id (i : SimplicialThickening J) : 𝟙_ SSet ⟶ Hom i i :=
 abbrev comp (i j k : SimplicialThickening J) : Hom i j ⊗ Hom j k ⟶ Hom i k :=
   ⟨fun _ x ↦ x.1.prod' x.2 ⋙ compFunctor i j k, fun _ _ _ ↦ by simp; rfl⟩
 
+attribute [local ext (iff := false)] Functor.ext
+
 @[simp]
 lemma id_comp (i j : SimplicialThickening J) :
     (λ_ (Hom i j)).inv ≫ id i ▷ Hom i j ≫ comp i i j = 𝟙 (Hom i j) := by
-  aesop
+  cat_disch
 
 @[simp]
 lemma comp_id (i j : SimplicialThickening J) :
     (ρ_ (Hom i j)).inv ≫ Hom i j ◁ id j ≫ comp i j j = 𝟙 (Hom i j) := by
-  aesop
+  cat_disch
 
 @[simp]
 lemma assoc (i j k l : SimplicialThickening J) :
     (α_ (Hom i j) (Hom j k) (Hom k l)).inv ≫ comp i j k ▷ Hom k l ≫ comp i k l =
       Hom i j ◁ comp j k l ≫ comp i j l := by
-  aesop
+  cat_disch
 
 end SimplicialCategory
 
@@ -163,7 +165,7 @@ noncomputable abbrev functorMap {J K : Type u} [LinearOrder J] [LinearOrder K]
   obj I := ⟨f '' I.I, Set.mem_image_of_mem f I.left, Set.mem_image_of_mem f I.right,
     by rintro _ ⟨k, hk, rfl⟩; exact f.monotone (I.left_le k hk),
     by rintro _ ⟨k, hk, rfl⟩; exact f.monotone (I.le_right k hk)⟩
-  map f := ⟨⟨Set.image_mono f.1.1⟩⟩
+  map f := ⟨⟨⟨Set.image_mono f.1.1.1⟩⟩⟩
 
 /--
 The simplicial thickening defines a functor from the category of linear orders to the category of

@@ -156,9 +156,14 @@ lemma isLocallyNoetherian_of_isOpenImmersion {Y : Scheme} (f : X ⟶ Y) [IsOpenI
   · apply IsOpenImmersion.ΓIso
   · suffices Scheme.Hom.opensRange f ⊓ V = V by
       rw [this]
+<<<<<<< HEAD
+    rw [← Opens.coe_inj, Opens.coe_inf, IsOpenMap.coe_functor_obj]
+    simp
+=======
     rw [← Opens.coe_inj]
     rw [Opens.coe_inf, Scheme.Hom.coe_opensRange, Set.inter_eq_right]
     exact Set.image_subset_range _ _
+>>>>>>> origin/master
 
 /-- If `𝒰` is an open cover of a scheme `X`, then `X` is locally Noetherian if and only if
 `𝒰.X i` are all locally Noetherian. -/

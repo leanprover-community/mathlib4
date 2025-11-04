@@ -292,7 +292,7 @@ def functor : (W.Localization ⥤ D) ⥤ W.FunctorsInverting D :=
 @[simps!]
 def inverse : W.FunctorsInverting D ⥤ W.Localization ⥤ D where
   obj G := lift G.obj G.property
-  map τ := natTransExtension (eqToHom (by rw [fac]) ≫ τ ≫ eqToHom (by rw [fac]))
+  map τ := natTransExtension (eqToHom (by rw [fac]) ≫ τ.hom ≫ eqToHom (by rw [fac]))
   map_id G :=
     natTrans_hcomp_injective
       (by
@@ -335,7 +335,10 @@ def counitIso : inverse W D ⋙ functor W D ≅ 𝟭 (W.FunctorsInverting D) :=
         exact fac G hG
       · rintro ⟨G₁, hG₁⟩ ⟨G₂, hG₂⟩ f
         ext
-        apply NatTransExtension.app_eq)
+        dsimp
+        rw [NatTransExtension.app_eq, InducedCategory.eqToHom_hom,
+          InducedCategory.eqToHom_hom]
+        simp)
 
 end WhiskeringLeftEquivalence
 

@@ -46,13 +46,14 @@ lemma Algebra.FiniteType.exists_fgAlgCatSkeleton (A : Type v) [CommRing A] [Alge
 /-- Universe lift functor for finitely generated algebras. -/
 def FGAlgCat.uliftFunctor : FGAlgCat.{v} R ⥤ FGAlgCat.{max v w} R where
   obj A := ⟨.of R <| ULift A.1, .equiv inferInstance ULift.algEquiv.symm⟩
-  map {A B} f := CommAlgCat.ofHom <|
-    ULift.algEquiv.symm.toAlgHom.comp <| f.hom.comp ULift.algEquiv.toAlgHom
+  map {A B} f := ConcreteCategory.ofHom <|
+    ULift.algEquiv.symm.toAlgHom.comp <| f.hom.hom.comp ULift.algEquiv.toAlgHom
 
 /-- The universe lift functor for finitely generated algebras is fully faithful. -/
 def FGAlgCat.fullyFaithfulUliftFunctor : (FGAlgCat.uliftFunctor R).FullyFaithful where
   preimage {A B} f :=
-    CommAlgCat.ofHom <| ULift.algEquiv.toAlgHom.comp <| f.hom.comp ULift.algEquiv.symm.toAlgHom
+    ConcreteCategory.ofHom <| ULift.algEquiv.toAlgHom.comp <|
+      f.hom.hom.comp ULift.algEquiv.symm.toAlgHom
 
 instance : (FGAlgCat.uliftFunctor R).Full :=
   (FGAlgCat.fullyFaithfulUliftFunctor R).full
@@ -91,9 +92,9 @@ def FGAlgCat.equivUnder (R : CommRingCat.{u}) :
     FGAlgCat R ≌ MorphismProperty.Under (toMorphismProperty FiniteType) ⊤ R where
   functor.obj A := ⟨(commAlgCatEquivUnder R).functor.obj A.obj,
     (RingHom.finiteType_algebraMap (A := R) (B := A.obj)).mpr A.2⟩
-  functor.map {A B} f := ⟨(commAlgCatEquivUnder R).functor.map f, trivial, trivial⟩
+  functor.map {A B} f := ⟨(commAlgCatEquivUnder R).functor.map f.hom, trivial, trivial⟩
   inverse.obj A := ⟨(commAlgCatEquivUnder R).inverse.obj A.1, A.2⟩
-  inverse.map {A B} f := (commAlgCatEquivUnder R).inverse.map f.hom
+  inverse.map {A B} f := ObjectProperty.homMk ((commAlgCatEquivUnder R).inverse.map f.hom)
   unitIso := NatIso.ofComponents fun A ↦
     ObjectProperty.isoMk _ (CommAlgCat.isoMk { toRingEquiv := .refl A.1, commutes' _ := rfl })
   counitIso := .refl _

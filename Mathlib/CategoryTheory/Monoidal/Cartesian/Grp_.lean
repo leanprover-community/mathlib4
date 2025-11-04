@@ -23,6 +23,10 @@ universe w v u
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
   {M G H X Y : C} [MonObj M] [GrpObj G] [GrpObj H]
 
+<<<<<<< HEAD
+abbrev Grp_.ofHom (f : G ⟶ H) [IsMon_Hom f] : Grp_.mk G ⟶ Grp_.mk H :=
+  Grp_.homMk f
+=======
 /-- Construct a morphism `G ⟶ H` of `Grp C` C from a map `f : G ⟶ H` and a `IsMonHom f`
 instance. -/
 @[simps]
@@ -34,6 +38,7 @@ def Grp.homMk (f : G ⟶ H) [IsMonHom f] : .mk G ⟶ Grp.mk H := ⟨f⟩
 lemma Grp.homMk_hom' {G H : Grp C} (f : G ⟶ H) : homMk (G := G.X) (H := H.X) f.hom = f := rfl
 
 @[deprecated (since := "2025-10-13")] alias Grp_.homMk_hom' := Grp.homMk_hom'
+>>>>>>> origin/master
 
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
@@ -113,7 +118,11 @@ def yonedaGrpObjIsoOfRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{v}) (α : (F ⋙ f
 @[simps]
 def yonedaGrp : Grp C ⥤ Cᵒᵖ ⥤ GrpCat.{v} where
   obj G := yonedaGrpObj G.X
+<<<<<<< HEAD
+  map {G H} ψ := { app Y := Grp.ofHom ((yonedaMon.map ψ.hom).app Y).hom }
+=======
   map {G H} ψ := { app Y := GrpCat.ofHom ((yonedaMon.map ψ).app Y).hom }
+>>>>>>> origin/master
 
 @[reassoc]
 lemma yonedaGrp_naturality (α : yonedaGrpObj G ⟶ yonedaGrpObj H) (f : X ⟶ Y) (g : Y ⟶ G) :
@@ -122,12 +131,24 @@ lemma yonedaGrp_naturality (α : yonedaGrpObj G ⟶ yonedaGrpObj H) (f : X ⟶ Y
 /-- The yoneda embedding for `Grp_C` is fully faithful. -/
 def yonedaGrpFullyFaithful : yonedaGrp (C := C).FullyFaithful where
   preimage {G H} α :=
+<<<<<<< HEAD
+    Grp_.homMk' (yonedaMonFullyFaithful.preimage ((Functor.whiskerRight α (forget₂ Grp MonCat))))
+  map_preimage {G H} α := by
+    ext X : 3
+    exact congr(($(yonedaMonFullyFaithful.map_preimage (X := G.toMon_) (Y := H.toMon_)
+      (Functor.whiskerRight α (forget₂ Grp MonCat))).app X).hom)
+  preimage_map f := by
+    ext
+    congr
+    apply yonedaMonFullyFaithful.preimage_map
+=======
     yonedaMonFullyFaithful.preimage (Functor.whiskerRight α (forget₂ GrpCat MonCat))
   map_preimage {G H} α := by
     ext X : 3
     exact congr(($(yonedaMonFullyFaithful.map_preimage (X := G.toMon) (Y := H.toMon)
       (Functor.whiskerRight α (forget₂ GrpCat MonCat))).app X).hom)
   preimage_map := yonedaMonFullyFaithful.preimage_map
+>>>>>>> origin/master
 
 instance : yonedaGrp (C := C).Full := yonedaGrpFullyFaithful.full
 instance : yonedaGrp (C := C).Faithful := yonedaGrpFullyFaithful.faithful
@@ -151,16 +172,24 @@ lemma GrpObj.inv_comp (f : X ⟶ G) (g : G ⟶ H) [IsMonHom g] : f⁻¹ ≫ g = 
 @[reassoc]
 lemma GrpObj.div_comp (f g : X ⟶ G) (h : G ⟶ H) [IsMonHom h] :
     (f / g) ≫ h = (f ≫ h) / (g ≫ h) :=
+<<<<<<< HEAD
+  ((yonedaGrp.map <| Grp_.ofHom h).app <| op X).hom.map_div f g
+=======
   ((yonedaGrp.map <| Grp.homMk h).app <| op X).hom.map_div f g
 
 @[deprecated (since := "2025-09-13")] alias Grp_Class.div_comp := GrpObj.div_comp
+>>>>>>> origin/master
 
 @[reassoc]
 lemma GrpObj.zpow_comp (f : X ⟶ G) (n : ℤ) (g : G ⟶ H) [IsMonHom g] :
     (f ^ n) ≫ g = (f ≫ g) ^ n :=
+<<<<<<< HEAD
+  ((yonedaGrp.map <| Grp_.ofHom g).app <| op X).hom.map_zpow f n
+=======
   ((yonedaGrp.map <| Grp.homMk g).app <| op X).hom.map_zpow f n
 
 @[deprecated (since := "2025-09-13")] alias Grp_Class.zpow_comp := GrpObj.zpow_comp
+>>>>>>> origin/master
 
 @[reassoc]
 lemma GrpObj.comp_inv (f : X ⟶ Y) (g : Y ⟶ G) : f ≫ g⁻¹ = (f ≫ g)⁻¹ :=

@@ -191,9 +191,18 @@ lemma isClosedImmersion_diagonal_restrict_diagonalCoverDiagonalRange
   let U : (Σ i, (𝒱 i).I₀) → (diagonalCoverDiagonalRange f 𝒰 𝒱).toScheme.Opens := fun i ↦
     (diagonalCoverDiagonalRange f 𝒰 𝒱).ι ⁻¹ᵁ ((diagonalCover f 𝒰 𝒱).f ⟨i.1, i.2, i.2⟩).opensRange
   have hU (i) : (diagonalCoverDiagonalRange f 𝒰 𝒱).ι ''ᵁ U i =
+<<<<<<< HEAD
+      ((diagonalCover f 𝒰 𝒱).map ⟨i.1, i.2, i.2⟩).opensRange :=
+    (TopologicalSpace.Opens.functor_obj_map_obj _ _ ).trans (by
+      rw [inf_eq_right, Hom.image_top_eq_opensRange,
+        Opens.opensRange_ι]
+      exact le_iSup (fun i : Σ i, (𝒱 i).J ↦
+        ((diagonalCover f 𝒰 𝒱).map ⟨i.1, i.2, i.2⟩).opensRange) i)
+=======
       ((diagonalCover f 𝒰 𝒱).f ⟨i.1, i.2, i.2⟩).opensRange := by
     rw [Scheme.Hom.image_preimage_eq_opensRange_inf, inf_eq_right, Opens.opensRange_ι]
     exact le_iSup (fun i : Σ i, (𝒱 i).I₀ ↦ ((diagonalCover f 𝒰 𝒱).f ⟨i.1, i.2, i.2⟩).opensRange) i
+>>>>>>> origin/master
   have hf : iSup U = ⊤ := (TopologicalSpace.Opens.map_iSup _ _).symm.trans
     (diagonalCoverDiagonalRange f 𝒰 𝒱).ι_preimage_self
   rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := @IsClosedImmersion) _ hf]

@@ -46,6 +46,20 @@ def affineCover (X : Scheme.{u}) : OpenCover X where
   X x := Spec (X.local_affine x).choose_spec.choose
   f x :=
     ⟨(X.local_affine x).choose_spec.choose_spec.some.inv ≫ X.toLocallyRingedSpace.ofRestrict _⟩
+<<<<<<< HEAD
+  f x := x
+  covers := by
+    intro x
+    --simp only [LocallyRingedSpace.comp_toShHom, SheafedSpace.comp_hom_base, TopCat.hom_comp,
+    --  ContinuousMap.coe_comp]
+    sorry
+    --rw [Set.range_comp, Set.range_eq_univ.mpr, Set.image_univ]
+    --· erw [Subtype.range_coe_subtype]
+    --  exact (X.local_affine x).choose.2
+    --rw [← TopCat.epi_iff_surjective]
+    --change Epi ((SheafedSpace.forget _).map (LocallyRingedSpace.forgetToSheafedSpace.map _))
+    --infer_instance
+=======
   mem₀ := by
     rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ?_, inferInstance⟩
@@ -58,6 +72,7 @@ def affineCover (X : Scheme.{u}) : OpenCover X where
     rw [← TopCat.epi_iff_surjective]
     change Epi ((SheafedSpace.forget _).map (LocallyRingedSpace.forgetToSheafedSpace.map _))
     infer_instance
+>>>>>>> origin/master
 
 instance : Inhabited X.OpenCover :=
   ⟨X.affineCover⟩

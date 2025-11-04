@@ -94,8 +94,8 @@ def pairwiseToOpensLeCoverMap :
     ∀ {V W : Pairwise ι}, (V ⟶ W) → (pairwiseToOpensLeCoverObj U V ⟶ pairwiseToOpensLeCoverObj U W)
   | _, _, id_single _ => 𝟙 _
   | _, _, id_pair _ _ => 𝟙 _
-  | _, _, left _ _ => homOfLE inf_le_left
-  | _, _, right _ _ => homOfLE inf_le_right
+  | _, _, left _ _ => homOfLE (by rw [← Subtype.coe_le_coe]; exact inf_le_left)
+  | _, _, right _ _ => homOfLE (by rw [← Subtype.coe_le_coe]; exact inf_le_right)
 
 /-- The category of single and double intersections of the `U i` maps into the category
 of open sets below some `U i`.
@@ -118,9 +118,10 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
     isConnected_of_zigzag fun A B => by
       rcases A with ⟨⟨⟨⟩⟩, ⟨i⟩ | ⟨i, j⟩, a⟩ <;> rcases B with ⟨⟨⟨⟩⟩, ⟨i'⟩ | ⟨i', j'⟩, b⟩
       · refine
-          ⟨[{   left := ⟨⟨⟩⟩
-                right := pair i i'
-                hom := (le_inf a.le b.le).hom }, _], ?_, rfl⟩
+          ⟨[{ left := ⟨⟨⟩⟩
+              right := pair i i'
+              hom := homOfLE (by simpa only [OpensLeCover.le_iff] using le_inf a.le b.le) }, _],
+              ?_, rfl⟩
         exact
           List.IsChain.cons_cons
             (Or.inr
@@ -134,10 +135,15 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
       · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := pair i' i
-                hom := (le_inf (b.le.trans inf_le_left) a.le).hom },
+                hom := homOfLE (by
+                  simp only [OpensLeCover.le_iff]
+                  exact le_inf ((OpensLeCover.le_iff.1 b.le).trans (by simp))
+                    (OpensLeCover.le_iff.1 a.le)) },
               { left := ⟨⟨⟩⟩
                 right := single i'
-                hom := (b.le.trans inf_le_left).hom }, _], ?_, rfl⟩
+                hom := homOfLE (by
+                  simp only [OpensLeCover.le_iff]
+                  exact (OpensLeCover.le_iff.1 b.le).trans (by simp)) }, _], ?_, rfl⟩
         exact
           List.IsChain.cons_cons
             (Or.inr
@@ -155,10 +161,13 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
       · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := single i
-                hom := (a.le.trans inf_le_left).hom },
+                hom := homOfLE (a.le.trans (by simp)) },
               { left := ⟨⟨⟩⟩
                 right := pair i i'
-                hom := (le_inf (a.le.trans inf_le_left) b.le).hom }, _], ?_, rfl⟩
+                hom := homOfLE (by
+                    simp only [OpensLeCover.le_iff]
+                    exact le_inf ((OpensLeCover.le_iff.1 a.le).trans (by simp)) b.le) }, _],
+                ?_, rfl⟩
         exact
           List.IsChain.cons_cons
             (Or.inl
@@ -176,13 +185,20 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
       · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := single i
-                hom := (a.le.trans inf_le_left).hom },
+                hom := homOfLE (by
+                  simp only [OpensLeCover.le_iff]
+                  exact (OpensLeCover.le_iff.1 a.le).trans (by simp)) },
               { left := ⟨⟨⟩⟩
                 right := pair i i'
-                hom := (le_inf (a.le.trans inf_le_left) (b.le.trans inf_le_left)).hom },
+                hom := homOfLE (by
+                  simp only [OpensLeCover.le_iff]
+                  exact le_inf ((OpensLeCover.le_iff.1 a.le).trans (by simp))
+                    ((OpensLeCover.le_iff.1 b.le).trans (by simp))) },
               { left := ⟨⟨⟩⟩
                 right := single i'
-                hom := (b.le.trans inf_le_left).hom }, _], ?_, rfl⟩
+                hom := homOfLE (by
+                  simp only [OpensLeCover.le_iff]
+                  exact (OpensLeCover.le_iff.1 b.le).trans (by simp)) }, _], ?_, rfl⟩
         exact
           List.IsChain.cons_cons
             (Or.inl
@@ -206,7 +222,7 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
 (in fact, equal) to the diagram factored through `OpensLeCover U`.
 -/
 def pairwiseDiagramIso :
-    Pairwise.diagram U ≅ pairwiseToOpensLeCover U ⋙ ObjectProperty.ι _ where
+    Pairwise.diagram U ≅ pairwiseToOpensLeCover U ⋙ OpensLeCover.incl _ where
   hom := { app := by rintro (i | ⟨i, j⟩) <;> exact 𝟙 _ }
   inv := { app := by rintro (i | ⟨i, j⟩) <;> exact 𝟙 _ }
 

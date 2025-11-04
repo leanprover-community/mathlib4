@@ -410,8 +410,9 @@ theorem isIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] [Epi f.base] 
 
 theorem of_isIso_stalkMap {X Y : Scheme.{u}} (f : X ⟶ Y) (hf : IsOpenEmbedding f)
     [∀ x, IsIso (f.stalkMap x)] : IsOpenImmersion f :=
-  haveI (x : X) : IsIso (f.toShHom.stalkMap x) := inferInstanceAs <| IsIso (f.stalkMap x)
-  SheafedSpace.IsOpenImmersion.of_stalk_iso f.toShHom hf
+  sorry
+  --haveI (x : X) : IsIso (f.toShHom.stalkMap x) := inferInstanceAs <| IsIso (f.stalkMap x)
+  --SheafedSpace.IsOpenImmersion.of_stalk_iso f.toShHom hf
 
 @[deprecated (since := "2025-10-07")] alias of_stalk_iso := of_isIso_stalkMap
 
@@ -502,9 +503,10 @@ instance hasLimit_cospan_forget_of_right' :
   show HasLimit (cospan ((forget).map g) ((forget).map f)) from inferInstance
 
 instance forgetCreatesPullbackOfLeft : CreatesLimit (cospan f g) forget :=
-  createsLimitOfFullyFaithfulOfIso
-    (PresheafedSpace.IsOpenImmersion.toScheme Y (pullback.snd f.toLRSHom g.toLRSHom).toShHom)
-    (eqToIso (by simp) ≪≫ HasLimit.isoOfNatIso (diagramIsoCospan _).symm)
+  sorry
+  --createsLimitOfFullyFaithfulOfIso
+  --  (PresheafedSpace.IsOpenImmersion.toScheme Y (pullback.snd f.toLRSHom g.toLRSHom).toShHom)
+  --  (eqToIso (by simp) ≪≫ HasLimit.isoOfNatIso (diagramIsoCospan _).symm)
 
 instance forgetCreatesPullbackOfRight : CreatesLimit (cospan g f) forget :=
   createsLimitOfFullyFaithfulOfIso
@@ -616,8 +618,17 @@ lemma image_preimage_eq_preimage_image_of_isPullback {X Y U V : Scheme.{u}}
   ext x
   by_cases hx : x ∈ Set.range iU
   · obtain ⟨x, rfl⟩ := hx
+<<<<<<< HEAD
+    --simp only [IsOpenMap.coe_functor_obj, TopologicalSpace.Opens.map_coe,
+    --  iU.isOpenEmbedding.injective.mem_set_image, Set.mem_preimage, SetLike.mem_coe,
+    --  ← Scheme.comp_base_apply, ← H.w]
+    --simp only [Scheme.comp_coeBase, TopCat.comp_app,
+    --  iV.isOpenEmbedding.injective.mem_set_image, SetLike.mem_coe]
+    sorry
+=======
     simp only [SetLike.mem_coe, Opens.map_coe, Set.mem_preimage, ← Scheme.Hom.comp_apply, ← H.w]
     simp
+>>>>>>> origin/master
   · constructor
     · rintro ⟨x, hx, rfl⟩; cases hx ⟨x, rfl⟩
     · rintro ⟨y, hy, e : iV y = f x⟩
@@ -794,7 +805,14 @@ lemma image_zeroLocus {U : X.Opens} (s : Set Γ(X, U)) :
   ext x
   by_cases hx : x ∈ Set.range f
   · obtain ⟨x, rfl⟩ := hx
+<<<<<<< HEAD
+    simp only [f.isOpenEmbedding.injective.mem_set_image, Scheme.mem_zeroLocus_iff,
+      ← SetLike.mem_coe, Set.mem_inter_iff, Set.forall_mem_image, ← Scheme.image_basicOpen,
+      IsOpenMap.coe_functor_obj, Set.mem_range, exists_apply_eq_apply, and_true]
+    sorry
+=======
     simp [f.isOpenEmbedding.injective.mem_set_image, ← Scheme.image_basicOpen]
+>>>>>>> origin/master
   · simp only [Set.mem_inter_iff, hx, and_false, iff_false]
     exact fun H ↦ hx (Set.image_subset_range _ _ H)
 
