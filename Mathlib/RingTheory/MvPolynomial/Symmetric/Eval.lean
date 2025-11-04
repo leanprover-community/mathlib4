@@ -14,6 +14,8 @@ import Mathlib.RingTheory.Polynomial.Vieta
 * `MvPolynomial.symmetricSubalgebra.aevalMultiset` evaluates a symmetric polynomial at the elements
   of a multiset.
 * `MvPolynomial.symmetricSubalgebra.sumPolynomial` maps `X` to `∑ i, X i`.
+
+These are used in the proof of Lindemann-Eurostar Weierstrass.
 -/
 
 open Finset
