@@ -350,3 +350,6 @@ noncomputable def cantorSet_equiv_nat_to_bool : cantorSet ≃ (ℕ → Bool) whe
 noncomputable def cantorSet_homeomorph_nat_to_bool : cantorSet ≃ₜ (ℕ → Bool) :=
   Homeomorph.symm <| Continuous.homeoOfEquivCompactToT2 (f := cantorSet_equiv_nat_to_bool.symm)
     (Continuous.subtype_mk (Continuous.comp ofDigits_continuous (by fun_prop)) _)
+
+noncomputable def natToBoolToCantorSet (f : ℕ → Bool) : ℝ :=
+  cantorSet_equiv_nat_to_bool.symm f
