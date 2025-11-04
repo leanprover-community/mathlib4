@@ -877,8 +877,6 @@ theorem sec_snd_ne_zero [Nontrivial R] (hM : M ≤ nonZeroDivisors R) (x : S) :
 
 variable [IsDomain R]
 
-@[deprecated (since := "2025-03-18")] alias noZeroDivisors_of_le_nonZeroDivisors := noZeroDivisors
-
 variable (S) in
 /-- A `CommRing` `S` which is the localization of an integral domain `R` at a subset of
 non-zero elements is an integral domain. -/

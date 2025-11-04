@@ -575,7 +575,7 @@ instance preservesBinaryProduct (X Y : SSet) :
 `Discrete Limits.WalkingPair`. -/
 instance preservesBinaryProducts :
     PreservesLimitsOfShape (Discrete Limits.WalkingPair) hoFunctor where
-  preservesLimit {F} := preservesLimit_of_iso_diagram hoFunctor (id (diagramIsoPair F).symm)
+  preservesLimit {F} := preservesLimit_of_iso_diagram hoFunctor (diagramIsoPair F).symm
 
 /-- The functor `hoFunctor : SSet ⥤ Cat` preserves finite products of simplicial sets. -/
 instance preservesFiniteProducts : PreservesFiniteProducts hoFunctor :=
