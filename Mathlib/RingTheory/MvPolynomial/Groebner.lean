@@ -11,7 +11,6 @@ import Mathlib.Data.List.TFAE
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 import Mathlib.RingTheory.MvPolynomial.Ideal
-import Mathlib.RingTheory.HopkinsLevitzki
 
 
 /-! # Gröbner Basis Theory
@@ -743,6 +742,21 @@ lemma exists_degree_le_degree_of_isRemainder_zero₀ {R : Type*} [CommSemiring R
     rw [and_assoc]
   · simp_intro a b [or_iff_not_imp_right.mp (hB _ _)]
 
+theorem exists_isGroebnerBasis_finite [inst : IsNoetherianRing (MvPolynomial σ R)]
+    (I : Ideal (MvPolynomial σ R)) :
+    ∃ G : Set (MvPolynomial σ R), m.IsGroebnerBasis G ↑I ∧ G.Finite := by
+  -- todo: Ideal.fg_span_iff_fg_span_finset_subset
+  have key := (Submodule.fg_span_iff_fg_span_finset_subset _).mp <|
+    inst.noetherian <| Ideal.span <| m.leadingTerm '' ↑I
+  simp only [Set.subset_image_iff] at key
+  rcases key with ⟨s, ⟨G', hG'I, hG's⟩, hIs⟩
+  have ⟨G, hG, hG₁⟩ := hG's ▸ Set.exists_subset_bijOn G' m.leadingTerm
+  use G
+  split_ands
+  · exact subset_trans hG hG'I
+  · rwa [hG₁.image_eq]
+  · simp [Set.BijOn.finite_iff_finite hG₁]
+
 end CommSemiring
 
 section CommRing
@@ -1280,23 +1294,6 @@ theorem existsUnique_isRemainder_of_isGroebnerBasis₀ {G : Set (MvPolynomial σ
   simp_rw [← m.isRemainder_sdiff_singleton_zero_iff_isRemainder p G]
   convert m.existsUnique_isRemainder_of_isGroebnerBasis h _ p
   simp_intro .. [or_iff_not_imp_right.mp (hG _ _)]
-
-variable (m) in
-theorem exists_isGroebnerBasis_finite [Finite σ] [IsNoetherianRing R]
-    (I : Ideal (MvPolynomial σ R)) :
-    ∃ G : Set (MvPolynomial σ R), m.IsGroebnerBasis G ↑I ∧ G.Finite := by
-  have key : (Ideal.span (α:=MvPolynomial σ R) (m.leadingTerm '' ↑I)).FG :=
-    (inferInstance : IsNoetherianRing _).noetherian _
-  -- todo: Ideal.fg_span_iff_fg_span_finset_subset
-  apply (Submodule.fg_span_iff_fg_span_finset_subset _).mp at key
-  simp only [Set.subset_image_iff] at key
-  rcases key with ⟨s, ⟨G', hG'I, hG's⟩, hIs⟩
-  have ⟨G, hG, hG₁⟩ := hG's ▸ Set.exists_subset_bijOn G' m.leadingTerm
-  use G
-  split_ands
-  · exact subset_trans hG hG'I
-  · rwa [hG₁.image_eq]
-  · simp [Set.BijOn.finite_iff_finite hG₁]
 
 end CommRing
 
