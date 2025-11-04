@@ -9,7 +9,6 @@ import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.LinearAlgebra.Dimension.Finrank
-import Mathlib.Topology.Algebra.InfiniteSum.Basic
 
 /-!
 # Euler characteristic of homological complexes
