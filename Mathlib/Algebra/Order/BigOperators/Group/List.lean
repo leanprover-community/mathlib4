@@ -168,7 +168,7 @@ variable {α β : Type*} [Monoid α] [CommMonoid β] [PartialOrder β] [IsOrdere
 
 @[to_additive le_sum_of_subadditive_on_pred]
 lemma le_prod_of_submultiplicative_on_pred (f : α → β)
-    (p : α → Prop) (h_one : f 1 = 1) (hp_one : p 1)
+    (p : α → Prop) (h_one : f 1 ≤ 1) (hp_one : p 1)
     (h_mul : ∀ a b, p a → p b → f (a * b) ≤ f a * f b) (hp_mul : ∀ a b, p a → p b → p (a * b))
     (l : List α) (hpl : ∀ a, a ∈ l → p a) : f l.prod ≤ (l.map f).prod := by
   induction l with
@@ -179,7 +179,7 @@ lemma le_prod_of_submultiplicative_on_pred (f : α → β)
     grw [prod_cons, map_cons, prod_cons, h_mul a s.prod (hpl _ mem_cons_self) hp_prod, ih hpla]
 
 @[to_additive le_sum_of_subadditive]
-lemma le_prod_of_submultiplicative (f : α → β) (h_one : f 1 = 1)
+lemma le_prod_of_submultiplicative (f : α → β) (h_one : f 1 ≤ 1)
     (h_mul : ∀ a b, f (a * b) ≤ f a * f b) (l : List α) : f l.prod ≤ (l.map f).prod :=
   le_prod_of_submultiplicative_on_pred f (fun _ => True) h_one trivial (fun x y _ _ => h_mul x y)
     (by simp) l (by simp)
