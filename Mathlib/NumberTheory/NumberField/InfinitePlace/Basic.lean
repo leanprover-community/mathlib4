@@ -517,18 +517,18 @@ namespace NumberField.InfinitePlace
 variable {K : Type*} [Field K] {v w : InfinitePlace K}
 
 /-- If `v` and `w` are infinite places of `K` and `v = w ^ t` for some `t` then `t = 1`. -/
-theorem rpow_one_of_rpow_eq {t : ℝ} (h : (fun x => w x ^ t) = v) : t = 1 := by
+theorem eq_one_of_rpow_eq {t : ℝ} (h : (w ·) ^ t = v) : t = 1 := by
   let ⟨ψ, hψ⟩ := v.2
   let ⟨φ, hφ⟩ := w.2
   simp only [coe_apply, ← hψ, ← hφ, funext_iff] at h
-  simpa [place_apply, map_ofNat] using congrArg (Real.logb 2) (h 2)
+  simpa [place_apply, map_ofNat] using congr_arg (Real.logb 2) (h 2)
 
 /-- Two infinite places `v` and `w` are equal if and only if their underlying absolute values
 are equivalent. -/
 theorem eq_iff_isEquiv : w = v ↔ w.1.IsEquiv v.1 := by
   refine ⟨fun h ↦ h ▸ .rfl, fun h ↦ ?_⟩
   let ⟨t, _, h⟩ := w.1.isEquiv_iff_exists_rpow_eq.1 h
-  exact ext _ _ fun k ↦ by simpa [rpow_one_of_rpow_eq h, ext, coe_apply] using funext_iff.1 h k
+  exact ext _ _ fun k ↦ by simpa [eq_one_of_rpow_eq h, ext, coe_apply] using funext_iff.1 h k
 
 variable (v)
 
