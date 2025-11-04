@@ -518,8 +518,8 @@ def strictSegal : StrictSegal (nerve C) :=
       δ₀_concat f s h := rfl
       injective {f g} h h₀ :=
         ComposableArrows.ext_succ (Functor.congr_obj h 0) h₀
-          (((Arrow.mk_eq_mk_iff _ _).1
-            (DFunLike.congr_arg ComposableArrows.arrowEquiv h)).2.2) })
+          ((Arrow.mk_eq_mk_iff _ _).1
+            (DFunLike.congr_arg ComposableArrows.arrowEquiv h)).2.2 })
 
 instance isStrictSegal : IsStrictSegal (nerve C) :=
   strictSegal C |>.isStrictSegal
