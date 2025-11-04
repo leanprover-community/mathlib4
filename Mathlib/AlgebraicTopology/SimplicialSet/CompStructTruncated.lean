@@ -101,7 +101,7 @@ lemma exists_of_simplex (s : X _⦋2⦌₂) :
   all_goals
   · rw [← FunctorToTypes.map_comp_apply, ← op_comp]
     apply congr_fun; congr
-    ext i; fin_cases i; rfl
+    decide
 
 /-- The composition of `Edge.id x` with `e : Edge x y` is `e`. -/
 def idComp {x y : X _⦋0⦌₂} (e : Edge x y) :
