@@ -400,7 +400,7 @@ theorem _root_.MeasureTheory.Measure.ext_of_integral_eq_on_compactlySupported
     [μ.Regular] [ν.Regular] (hμν : ∀ f : C_c(X, ℝ), ∫ x, f x ∂μ = ∫ x, f x ∂ν) :
     μ = ν := by
   apply Measure.OuterRegular.ext_isOpen
-  apply Measure.InnerRegularWRT.eq_on_outer_of_eq_on_inner Measure.Regular.innerRegular
+  apply Measure.InnerRegularWRT.eq_of_innerRegularWRT_of_forall_eq Measure.Regular.innerRegular
     Measure.Regular.innerRegular
   intro K hK
   apply le_antisymm

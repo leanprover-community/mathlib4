@@ -216,7 +216,7 @@ theorem measure_eq_iSup (H : InnerRegularWRT μ p q) (hU : q U) :
     le_antisymm (le_of_forall_lt fun r hr => ?_) (iSup₂_le fun K hK => iSup_le fun _ => μ.mono hK)
   simpa only [lt_iSup_iff, exists_prop] using H hU r hr
 
-theorem eq_on_outer_of_eq_on_inner {ν : Measure α} (hμ : μ.InnerRegularWRT p q)
+theorem eq_of_innerRegularWRT_of_forall_eq {ν : Measure α} (hμ : μ.InnerRegularWRT p q)
     (hν : ν.InnerRegularWRT p q) (hμν : ∀ U, p U → μ U = ν U)
     {U : Set α} (hU : q U) : μ U = ν U := by
   rw [hμ.measure_eq_iSup hU, hν.measure_eq_iSup hU]
