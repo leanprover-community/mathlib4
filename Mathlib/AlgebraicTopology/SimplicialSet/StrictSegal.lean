@@ -461,7 +461,7 @@ def spineToSimplexAux : { s : X _⦋n⦌ // X.spine _ s = p } := by
             Path.congr_arrow (hn (p.interval 1 n)).prop i
 
 /-- Auxiliary definition for `StrictSegal.ofCore`. -/
-def spineToSimplex : X _⦋n⦌ := (spineToSimplexAux h p).1
+def spineToSimplex : X _⦋n⦌ := (spineToSimplexAux h p).val
 
 @[simp]
 lemma spine_spineToSimplex : X.spine n (spineToSimplex h p) = p := (spineToSimplexAux h p).2
