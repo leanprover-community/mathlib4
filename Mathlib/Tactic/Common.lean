@@ -149,4 +149,4 @@ register_hint (priority := 200) fun_prop
 
 end Hint
 
--- example : True := by canonical
+-- example : True := by canonical +suggestions

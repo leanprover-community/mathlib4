@@ -17,7 +17,7 @@ require "leanprover-community" / "proofwidgets" @ git "v0.0.77" -- ProofWidgets 
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "nightly-testing"
-require "chasenorman" / "Canonical"
+require "chasenorman" / "Canonical" @ git "nightly-2025-11-03"
 
 
 /-!
