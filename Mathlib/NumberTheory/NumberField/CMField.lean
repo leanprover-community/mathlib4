@@ -60,19 +60,23 @@ section maximalRealSubfield
 A number field `K` is `CM` if `K` is a totally complex quadratic extension of its maximal
 real subfield `K⁺`.
 -/
-class IsCMField (K : Type*) [Field K] [NumberField K] [IsTotallyComplex K] : Prop where
-  is_quadratic : IsQuadraticExtension (maximalRealSubfield K) K
+class IsCMField (K : Type*) [Field K] [NumberField K] : Prop where
+  [to_isTotallyComplex : IsTotallyComplex K]
+  [is_quadratic : IsQuadraticExtension (maximalRealSubfield K) K]
 
 namespace IsCMField
 
 open ComplexEmbedding
 
-variable (K : Type*) [Field K] [NumberField K] [IsTotallyComplex K] [IsCMField K]
+variable (K : Type*) [Field K] [NumberField K] [IsCMField K]
 
 local notation3 "K⁺" => maximalRealSubfield K
 
 instance isQuadraticExtension : IsQuadraticExtension K⁺ K :=
   IsCMField.is_quadratic
+
+instance isTotallyComplex : IsTotallyComplex K :=
+  IsCMField.to_isTotallyComplex
 
 theorem card_infinitePlace_eq_card_infinitePlace :
     Fintype.card (InfinitePlace K⁺) = Fintype.card (InfinitePlace K) := by
@@ -87,8 +91,8 @@ The equiv between the infinite places of `K` and the infinite places of `K⁺` i
 restriction to `K⁺`, see `equivInfinitePlace_apply`.
 -/
 noncomputable def equivInfinitePlace : InfinitePlace K ≃ InfinitePlace K⁺ :=
-  Equiv.ofBijective (fun w ↦ w.comap (algebraMap K⁺ K))
-   <| (Fintype.bijective_iff_surjective_and_card _).mpr
+  Equiv.ofBijective (fun w ↦ w.comap (algebraMap K⁺ K)) <|
+    (Fintype.bijective_iff_surjective_and_card _).mpr
       ⟨comap_surjective, (card_infinitePlace_eq_card_infinitePlace K).symm⟩
 
 @[simp]
@@ -251,7 +255,7 @@ by the complex conjugation, see `IsCMField.unitsComplexConj_eq_self_iff`.
 -/
 def realUnits : Subgroup (𝓞 K)ˣ := (Units.map (algebraMap (𝓞 K⁺) (𝓞 K)).toMonoidHom).range
 
-omit [IsTotallyComplex K] [IsCMField K] in
+omit [IsCMField K] in
 theorem mem_realUnits_iff (u : (𝓞 K)ˣ) :
     u ∈ realUnits K ↔ ∃ v : (𝓞 K⁺)ˣ, algebraMap (𝓞 K⁺) (𝓞 K) v = u := by
   simp [realUnits, MonoidHom.mem_range, RingHom.toMonoidHom_eq_coe, Units.ext_iff]
@@ -385,8 +389,8 @@ theorem indexRealUnits_eq_two_iff :
 /--
 The fundamental system of units of `K⁺` as a family of `(𝓞 K)ˣ`.
 -/
-noncomputable def realFundSystem : Fin (rank K) → (𝓞 K)ˣ :=
-   fun i ↦ (Units.map (algebraMap (𝓞 K⁺) (𝓞 K)).toMonoidHom)
+noncomputable def realFundSystem (i : Fin (rank K)) : (𝓞 K)ˣ :=
+  (Units.map (algebraMap (𝓞 K⁺) (𝓞 K)).toMonoidHom)
     (fundSystem K⁺ (finCongr (units_rank_eq_units_rank K).symm i))
 
 theorem closure_realFundSystem_sup_torsion :
@@ -489,7 +493,7 @@ open IntermediateField in
 /--
 A totally complex field that has a unique complex conjugation is CM.
 -/
-theorem _root_.NumberField.IsCMField.of_forall_isConj {σ : K ≃ₐ[ℚ] K}
+theorem _root_.NumberField.IsCMField.of_forall_isConj {σ : Gal(K/ℚ)}
     (hσ : ∀ φ : K →+* ℂ, IsConj φ σ) : IsCMField K := by
   have : IsTotallyReal (fixedField (Subgroup.zpowers σ)) := ⟨fun w ↦ by
     obtain ⟨W, rfl⟩ := w.comap_surjective (K := K)
@@ -506,10 +510,10 @@ theorem _root_.NumberField.IsCMField.of_forall_isConj {σ : K ≃ₐ[ℚ] K}
 /--
 A totally complex abelian extension of `ℚ` is CM.
 -/
-instance of_isMulCommutative [IsGalois ℚ K] [IsMulCommutative (K ≃ₐ[ℚ] K)] :
+instance of_isMulCommutative [IsGalois ℚ K] [IsMulCommutative Gal(K/ℚ)] :
     IsCMField K := by
   let φ : K →+* ℂ := Classical.choice (inferInstance : Nonempty _)
-  obtain ⟨σ, hσ₁⟩ : ∃ σ : K ≃ₐ[ℚ] K, ComplexEmbedding.IsConj φ σ :=
+  obtain ⟨σ, hσ₁⟩ : ∃ σ : Gal(K/ℚ), ComplexEmbedding.IsConj φ σ :=
     exists_isConj_of_isRamified <|
       isRamified_iff.mpr ⟨IsTotallyComplex.isComplex _, IsTotallyReal.isReal _⟩
   have hσ₂ : ∀ (φ : K →+* ℂ), ComplexEmbedding.IsConj φ σ := by

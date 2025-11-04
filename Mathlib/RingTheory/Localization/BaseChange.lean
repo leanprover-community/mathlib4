@@ -91,7 +91,7 @@ include S
 
 theorem tensorProduct_compatibleSMul : CompatibleSMul R A M₁ M₂ where
   smul_tmul a _ _ := by
-    obtain ⟨r, s, rfl⟩ := mk'_surjective S a
+    obtain ⟨r, s, rfl⟩ := exists_mk'_eq S a
     rw [← (map_units A s).smul_left_cancel]
     simp_rw [algebraMap_smul, smul_tmul', ← smul_assoc, smul_tmul, ← smul_assoc, smul_mk'_self,
       algebraMap_smul, smul_tmul]
@@ -139,14 +139,14 @@ lemma Algebra.isPushout_of_isLocalization [IsLocalization (Algebra.algebraMapSub
     Algebra.IsPushout R T A B :=
   (Algebra.isLocalization_iff_isPushout S _).mp inferInstance
 
+variable (R M) in
 open TensorProduct in
-instance (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
-    {α} (S : Submonoid R) {Mₛ} [AddCommGroup Mₛ] [Module R Mₛ] (f : M →ₗ[R] Mₛ)
-    [IsLocalizedModule S f] : IsLocalizedModule S (Finsupp.mapRange.linearMap (α := α) f) := by
+instance {α} [IsLocalizedModule S f] :
+    IsLocalizedModule S (Finsupp.mapRange.linearMap (α := α) f) := by
   classical
-  let e : Localization S ⊗[R] M ≃ₗ[R] Mₛ :=
+  let e : Localization S ⊗[R] M ≃ₗ[R] M' :=
     (LocalizedModule.equivTensorProduct S M).symm.restrictScalars R ≪≫ₗ IsLocalizedModule.iso S f
-  let e' : Localization S ⊗[R] (α →₀ M) ≃ₗ[R] (α →₀ Mₛ) :=
+  let e' : Localization S ⊗[R] (α →₀ M) ≃ₗ[R] (α →₀ M') :=
     finsuppRight R (Localization S) M α ≪≫ₗ Finsupp.mapRange.linearEquiv e
   suffices IsLocalizedModule S (e'.symm.toLinearMap ∘ₗ Finsupp.mapRange.linearMap f) by
     convert this.of_linearEquiv (e := e')

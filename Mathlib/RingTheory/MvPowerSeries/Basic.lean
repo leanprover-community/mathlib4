@@ -206,8 +206,7 @@ instance : AddMonoidWithOne (MvPowerSeries σ R) :=
   { show AddMonoid (MvPowerSeries σ R) by infer_instance with
     natCast := fun n => monomial 0 n
     natCast_zero := by simp [Nat.cast]
-    natCast_succ := by simp [Nat.cast, monomial_zero_one]
-    one := 1 }
+    natCast_succ := by simp [Nat.cast, monomial_zero_one] }
 
 instance : Mul (MvPowerSeries σ R) :=
   letI := Classical.decEq σ
