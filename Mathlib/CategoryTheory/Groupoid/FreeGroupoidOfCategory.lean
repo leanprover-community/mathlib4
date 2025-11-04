@@ -132,46 +132,49 @@ end UniversalProperty
 
 section Functoriality
 
-variable {D : Type u₁} [Category.{v₁} D]
-  {E : Type u₂} [Category.{v₂} E]
+variable {D : Type u₁} [Category.{v₁} D] {E : Type u₂} [Category.{v₂} E]
 
 /-- The functor of free groupoid induced by a functor between the original categories. -/
 def map (φ : C ⥤ D) : Category.FreeGroupoid C ⥤ Category.FreeGroupoid D :=
   lift (φ ⋙ of D)
 
 theorem map_id : map (𝟭 C) = 𝟭 (Category.FreeGroupoid C) := by
-  dsimp only [map]; symm
-  apply lift_unique; rfl
+  symm; apply lift_unique; rfl
 
 /-- The functor induced by the identity is the identity. -/
 def mapId : map (𝟭 C) ≅ 𝟭 (Category.FreeGroupoid C) :=
   eqToIso map_id
 
 theorem map_comp (φ : C ⥤ D) (φ' : D ⥤ E) : map (φ ⋙ φ') = map φ ⋙ map φ' := by
-  dsimp only [map]; symm
-  apply lift_unique; rfl
+  symm; apply lift_unique; rfl
 
 /-- The functor induced by a composition is the composition of the functors they induce. -/
 def mapComp (φ : C ⥤ D) (φ' : D ⥤ E) : map (φ ⋙ φ') ≅ map φ ⋙ map φ':=
   eqToIso (map_comp φ φ')
+j
+lemma of_map (F : C ⥤ D) : of C ⋙ map F = F ⋙ of D := rfl
+
+/-- The operation `of` is natural. -/
+def ofMap (F : C ⥤ D) : of C ⋙ map F ≅ F ⋙ of D := Iso.refl _
+
+lemma map_lift {E : Type u₂} [Groupoid.{v₂} E] (F : C ⥤ D) (G : D ⥤ E) :
+  map F ⋙ lift G = lift (F ⋙ G) := by
+    apply lift_unique
+    rw [← Functor.assoc, of_map, Functor.assoc, lift_spec G]
+
+/-- The operation `lift` is natural. -/
+def mapLift {E : Type u₂} [Groupoid.{v₂} E] (F : C ⥤ D) (G : D ⥤ E) :
+  map F ⋙ lift G ≅ lift (F ⋙ G) := eqToIso (map_lift F G)
 
 end Functoriality
 
+/-- Functors out of the free groupoid biject with functors out of the original category. -/
 @[simps]
-def functorEquiv {D : Type*} [Groupoid D] :
-    (Category.FreeGroupoid C ⥤ D) ≃ (C ⥤ D) where
+def functorEquiv {D : Type*} [Groupoid D] : (Category.FreeGroupoid C ⥤ D) ≃ (C ⥤ D) where
   toFun G := of C ⋙ G
   invFun := lift
   right_inv := lift_spec
   left_inv _ := (lift_unique _ _ rfl).symm
-
-lemma map_lift
-    {C C' : Type*} [Category C] [Category C'] {D : Type*} [Groupoid D]
-    (F : C ⥤ C') (G : C' ⥤ D) :
-  map F ⋙ lift G = lift (F ⋙ G) := by
-    have : of C ⋙ map F = F ⋙ of C' := rfl  -- should be a separate lemma
-    refine (lift_unique _ _ ?_)
-    rw [← Functor.assoc, this, Functor.assoc, lift_spec G]
 
 end FreeGroupoid
 
