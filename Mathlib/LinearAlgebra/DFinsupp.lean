@@ -350,14 +350,10 @@ theorem dfinsuppSum_mem {β : ι → Type*} [∀ i, Zero (β i)] [∀ (i) (x : �
     f.sum g ∈ S :=
   _root_.dfinsuppSum_mem S f g h
 
-@[deprecated (since := "2025-04-06")] alias dfinsupp_sum_mem := dfinsuppSum_mem
-
 theorem dfinsuppSumAddHom_mem {β : ι → Type*} [∀ i, AddZeroClass (β i)] (S : Submodule R N)
     (f : Π₀ i, β i) (g : ∀ i, β i →+ N) (h : ∀ c, f c ≠ 0 → g c (f c) ∈ S) :
     DFinsupp.sumAddHom g f ∈ S :=
   _root_.dfinsuppSumAddHom_mem S f g h
-
-@[deprecated (since := "2025-04-06")] alias dfinsupp_sumAddHom_mem := dfinsuppSumAddHom_mem
 
 /-- The supremum of a family of submodules is equal to the range of `DFinsupp.lsum`; that is
 every element in the `iSup` can be produced from taking a finite number of non-zero elements
@@ -506,9 +502,6 @@ theorem iSupIndep_of_dfinsuppSumAddHom_injective (p : ι → AddSubmonoid N)
   rw [← iSupIndep_map_orderIso_iff (AddSubmonoid.toNatSubmodule : AddSubmonoid N ≃o _)]
   exact iSupIndep_of_dfinsupp_lsum_injective _ h
 
-@[deprecated (since := "2025-04-06")]
-alias iSupIndep_of_dfinsupp_sumAddHom_injective := iSupIndep_of_dfinsuppSumAddHom_injective
-
 /-- Combining `DFinsupp.lsum` with `LinearMap.toSpanSingleton` is the same as
 `Finsupp.linearCombination` -/
 theorem lsum_comp_mapRange_toSpanSingleton [∀ m : R, Decidable (m ≠ 0)] (p : ι → Submodule R N)
@@ -533,9 +526,6 @@ theorem iSupIndep_of_dfinsuppSumAddHom_injective' (p : ι → AddSubgroup N)
     (h : Function.Injective (sumAddHom fun i => (p i).subtype)) : iSupIndep p := by
   rw [← iSupIndep_map_orderIso_iff (AddSubgroup.toIntSubmodule : AddSubgroup N ≃o _)]
   exact iSupIndep_of_dfinsupp_lsum_injective _ h
-
-@[deprecated (since := "2025-04-06")]
-alias iSupIndep_of_dfinsupp_sumAddHom_injective' := iSupIndep_of_dfinsuppSumAddHom_injective'
 
 /-- The canonical map out of a direct sum of a family of submodules is injective when the submodules
 are `iSupIndep`.
@@ -568,9 +558,6 @@ theorem iSupIndep.dfinsuppSumAddHom_injective {p : ι → AddSubgroup N} (h : iS
     Function.Injective (sumAddHom fun i => (p i).subtype) := by
   rw [← iSupIndep_map_orderIso_iff (AddSubgroup.toIntSubmodule : AddSubgroup N ≃o _)] at h
   exact h.dfinsupp_lsum_injective
-
-@[deprecated (since := "2025-04-06")]
-alias iSupIndep.dfinsupp_sumAddHom_injective := iSupIndep.dfinsuppSumAddHom_injective
 
 /-- A family of submodules over an additive group are independent if and only iff `DFinsupp.lsum`
 applied with `Submodule.subtype` is injective.
@@ -620,9 +607,6 @@ theorem iSupIndep_iff_finset_sum_eq_imp_eq (p : ι → Submodule R N) :
 theorem iSupIndep_iff_dfinsuppSumAddHom_injective (p : ι → AddSubgroup N) :
     iSupIndep p ↔ Function.Injective (sumAddHom fun i => (p i).subtype) :=
   ⟨iSupIndep.dfinsuppSumAddHom_injective, iSupIndep_of_dfinsuppSumAddHom_injective' p⟩
-
-@[deprecated (since := "2025-04-06")]
-alias iSupIndep_iff_dfinsupp_sumAddHom_injective := iSupIndep_iff_dfinsuppSumAddHom_injective
 
 /-- If `(pᵢ)ᵢ` is a family of independent submodules that generates the whole module `N`, then
 `N` is isomorphic to the direct sum of the submodules. -/
@@ -694,13 +678,10 @@ variable [∀ i, Zero (γ i)] [∀ (i) (x : γ i), Decidable (x ≠ 0)]
 theorem coe_dfinsuppSum (t : Π₀ i, γ i) (g : ∀ i, γ i → M →ₛₗ[σ₁₂] M₂) :
     ⇑(t.sum g) = t.sum fun i d => g i d := rfl
 
-@[deprecated (since := "2025-04-06")] alias coe_dfinsupp_sum := coe_dfinsuppSum
 @[simp]
 theorem dfinsuppSum_apply (t : Π₀ i, γ i) (g : ∀ i, γ i → M →ₛₗ[σ₁₂] M₂) (b : M) :
     (t.sum g) b = t.sum fun i d => g i d b :=
   sum_apply _ _ _
-
-@[deprecated (since := "2025-04-06")] alias dfinsupp_sum_apply := dfinsuppSum_apply
 
 end Sum
 
@@ -712,8 +693,6 @@ variable [∀ i, AddZeroClass (γ i)]
 theorem map_dfinsuppSumAddHom (f : M →ₛₗ[σ₁₂] M₂) {t : Π₀ i, γ i} {g : ∀ i, γ i →+ M} :
     f (sumAddHom g t) = sumAddHom (fun i => f.toAddMonoidHom.comp (g i)) t :=
   f.toAddMonoidHom.map_dfinsuppSumAddHom _ _
-
-@[deprecated (since := "2025-04-06")] alias map_dfinsupp_sumAddHom := map_dfinsuppSumAddHom
 
 end SumAddHom
 
@@ -743,8 +722,6 @@ theorem map_dfinsuppSumAddHom [∀ i, AddZeroClass (γ i)] (f : M ≃ₛₗ[τ�
     (g : ∀ i, γ i →+ M) :
     f (sumAddHom g t) = sumAddHom (fun i => f.toAddEquiv.toAddMonoidHom.comp (g i)) t :=
   f.toAddEquiv.map_dfinsuppSumAddHom _ _
-
-@[deprecated (since := "2025-04-06")] alias map_dfinsupp_sumAddHom := map_dfinsuppSumAddHom
 
 end DFinsupp
 
