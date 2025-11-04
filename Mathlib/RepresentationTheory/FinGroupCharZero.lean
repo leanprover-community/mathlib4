@@ -85,30 +85,27 @@ lemma simple_iff_end_is_rank_one [NeZero (Fintype.card G : k)] (V : FDRep k G) :
     Simple V ↔ Module.finrank k (V ⟶ V) = 1 where
   mp h := finrank_endomorphism_simple_eq_one k V
   mpr h := by
-    refine {mono_isIso_iff_nonzero f _ := ⟨fun hf habs ↦ ?_, fun hf ↦ ?_⟩}
-    · rw [habs] at hf
-      obtain ⟨g, hg⟩ := (Module.finrank_pos_iff_exists_ne_zero (R := k) (M := V ⟶ V)).mp
-        (by rw [h]; exact zero_lt_one)
-      exact hg (Limits.IsZero.eq_zero_of_src (IsZero.of_iso (isZero_zero _)
-        ((isIsoZeroEquivIsoZero _ _).toFun hf).2) g)
-    · have : Epi f := by
-        have : Epi (Abelian.image.ι f) := by
-          have h₁ := Injective.comp_factorThru (𝟙 _) (Abelian.image.ι f)
-          have h₂ : Injective.factorThru (𝟙 _) (Abelian.image.ι f) ≫ Abelian.image.ι f ≠ 0 := by
-            intro habs
-            apply_fun (fun x ↦ x ≫ Abelian.image.ι f) at h₁
-            rw [Category.id_comp, Category.assoc, habs, Limits.comp_zero] at h₁
-            rw [← Abelian.image.fac f, ← h₁, Limits.comp_zero] at hf
-            exact hf (Eq.refl _)
-          obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_nonzero' _ h₂).mp h (𝟙 V)
-          refine Preadditive.epi_of_cancel_zero _ (fun g hg ↦ ?_)
-          apply_fun (fun x ↦ x ≫ g) at hc
-          simp only [equalizer_as_kernel, Linear.smul_comp, Category.assoc, hg, Limits.comp_zero,
-            smul_zero, Category.id_comp] at hc
-          exact hc.symm
+    refine { mono_isIso_iff_nonzero {W} f _ := ⟨fun hf habs ↦ ?_, fun hf ↦ ?_⟩ }
+    · rw [habs, isIsoZero_iff_source_target_isZero] at hf
+      obtain ⟨g, hg⟩ : ∃ g : V ⟶ V, g ≠ 0 :=
+        (Module.finrank_pos_iff_exists_ne_zero (R := k)).mp (by grind)
+      exact hg (hf.2.eq_zero_of_src g)
+    · suffices Epi f by exact isIso_of_mono_of_epi f
+      suffices Epi (Abelian.image.ι f) by
         rw [← Abelian.image.fac f]
         exact epi_comp _ _
-      exact isIso_of_mono_of_epi f
+      rw [← Abelian.image.fac f] at hf
+      set ι := Abelian.image.ι f
+      set φ := Injective.factorThru (𝟙 _) ι
+      have hφι : φ ≫ ι ≠ 0 := by
+        intro habs
+        have hιφ : 𝟙 _ = ι ≫ φ := (Injective.comp_factorThru (𝟙 _) ι).symm
+        apply_fun (· ≫ ι) at hιφ
+        simp_all
+      obtain ⟨c, hc⟩ : ∃ c : k, c • _ = 𝟙 V := (finrank_eq_one_iff_of_nonzero' _ hφι).mp h (𝟙 V)
+      refine Preadditive.epi_of_cancel_zero _ (fun g hg ↦ ?_)
+      apply_fun (· ≫ g) at hc
+      simpa [hg] using hc.symm
 
 /--
 If `G` is finite and `k` an algebraically closed field of characteristic `0`,
