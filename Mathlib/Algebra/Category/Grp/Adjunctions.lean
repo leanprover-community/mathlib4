@@ -5,8 +5,8 @@ Authors: Kim Morrison, Johannes Hölzl
 -/
 import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.GroupTheory.FreeAbelianGroup
+import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Types.Coproducts
-import Mathlib.CategoryTheory.Limits.Types.Multiequalizer
 
 /-!
 # Adjunctions regarding the category of (abelian) groups
