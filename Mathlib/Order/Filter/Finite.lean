@@ -190,10 +190,11 @@ instance instCoframe : Coframe (Filter α) where
     sets := {s | ∀ ⦃t⦄, t ∈ g → s ⊆ t → t ∈ f}
     univ_sets := by simp +contextual
     sets_of_superset hx hxy t ht hyt := hx ht (hxy.trans hyt)
-    inter_sets {x y} hx hy s htg ht := by
-      filter_upwards [hx (mem_of_superset htg subset_union_right) subset_union_left,
-        hy (mem_of_superset htg subset_union_left) subset_union_right] with c hcx hcy
-      cases hcx <;> cases hcy <;> solve_by_elim
+    inter_sets hx hy t htg ht := by
+      rw [← union_eq_right.2 ht, inter_union_distrib_right]
+      apply inter_mem
+      · exact hx (mem_of_superset htg subset_union_right) subset_union_left
+      · exact hy (mem_of_superset htg subset_union_right) subset_union_left
   }
   sdiff_le_iff a b c :=
     ⟨fun h s hs ↦ h hs.right hs.left (subset_refl s),
