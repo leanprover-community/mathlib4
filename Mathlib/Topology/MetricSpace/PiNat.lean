@@ -762,6 +762,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
     simpa only [nonempty_coe_sort] using g_surj.nonempty
   exact ⟨g ∘ f, g_cont.comp f_cont, g_surj.comp f_surj⟩
 
+open Encodable ENNReal
 namespace PiCountable
 
 /-!
@@ -769,7 +770,7 @@ namespace PiCountable
 -/
 
 variable {ι : Type*} [Encodable ι] {F : ι → Type*}
-open Encodable ENNReal
+
 section EDist
 variable [∀ i, EDist (F i)] {x y : ∀ i, F i} {i : ι} {r : ℝ≥0∞}
 
@@ -943,7 +944,6 @@ end PiCountable
 /-! # Embedding a countably separated space inside a space of sequences -/
 namespace Metric
 
-open Encodable Function TopologicalSpace Topology
 open scoped PiCountable
 
 variable {ι X : Type*} {Y : ι → Type*} {f : ∀ i, X → Y i}
@@ -1036,7 +1036,7 @@ lemma isUniformEmbedding_embed (separating_f : Pairwise fun x y ↦ ∃ i, f i x
 
 end EMetricSpace
 
-open Set
+
 section MetricSpace
 variable [∀ i, MetricSpace (Y i)]
 
