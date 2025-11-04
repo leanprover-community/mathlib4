@@ -162,7 +162,7 @@ lemma ZLattice.sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq �
 
 variable (L)
 
-lemma ZLattice.exists_finset_sum_norm_rpow_le_tsum :
+lemma ZLattice.exists_finsetSum_norm_rpow_le_tsum :
     ∃ A > (0 : ℝ), ∀ r < (-Module.finrank ℤ L : ℝ), ∀ s : Finset L,
       ∑ z ∈ s, ‖z‖ ^ r ≤ A ^ r * ∑' k : ℕ, (k : ℝ) ^ (Module.finrank ℤ L - 1 + r) := by
   classical
@@ -223,15 +223,15 @@ Then `∑ z ∈ L, ‖z‖⁻ʳ ≤ A⁻ʳ * ∑ k : ℕ, kᵈ⁻ʳ⁻¹` for so
 This is an arbitrary choice of `A`. See `ZLattice.tsum_norm_rpow_le`.
 -/
 def ZLattice.tsumNormRPowBound : ℝ :=
-  (exists_finset_sum_norm_rpow_le_tsum L).choose
+  (exists_finsetSum_norm_rpow_le_tsum L).choose
 
 lemma ZLattice.tsumNormRPowBound_pos : 0 < tsumNormRPowBound L :=
-  (exists_finset_sum_norm_rpow_le_tsum L).choose_spec.1
+  (exists_finsetSum_norm_rpow_le_tsum L).choose_spec.1
 
 lemma ZLattice.tsumNormRPowBound_spec (r : ℝ) (h : r < -Module.finrank ℤ L) (s : Finset L) :
     ∑ z ∈ s, ‖z‖ ^ r ≤
       tsumNormRPowBound L ^ r * ∑' k : ℕ, (k : ℝ) ^ (Module.finrank ℤ L - 1 + r) :=
-  (ZLattice.exists_finset_sum_norm_rpow_le_tsum L).choose_spec.2 r h s
+  (ZLattice.exists_finsetSum_norm_rpow_le_tsum L).choose_spec.2 r h s
 
 /-- If `L` is a `ℤ`-lattice with rank `d` in `E`, then `∑ z ∈ L, ‖z‖ʳ` converges when `r < -d`. -/
 lemma ZLattice.summable_norm_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L) :
