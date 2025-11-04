@@ -64,8 +64,8 @@ namespace FDRep
 If `G` is finite and its order is nonzero in the field `k`, then every object of
 `FDRep k G` is injective.
 -/
-instance [NeZero (Fintype.card G : k)] (V : FDRep k G) : Injective V := (forget₂ (FDRep k G)
-  (Rep k G)).injective_of_map_injective inferInstance
+instance [NeZero (Fintype.card G : k)] (V : FDRep k G) : Injective V :=
+  (forget₂ (FDRep k G) (Rep k G)).injective_of_map_injective inferInstance
 
 /--
 If `G` is finite and its order is nonzero in the field `k`, then every object of
