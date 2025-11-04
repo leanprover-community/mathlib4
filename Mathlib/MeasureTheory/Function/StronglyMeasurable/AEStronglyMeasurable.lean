@@ -505,10 +505,22 @@ theorem _root_.aestronglyMeasurable_indicator_iff [Zero β] {s : Set α} (hs : M
       (indicator_ae_eq_restrict_compl hs).trans (indicator_ae_eq_restrict_compl hs).symm
     exact ae_of_ae_restrict_of_ae_restrict_compl _ A B
 
+theorem _root_.aestronglyMeasurable_indicator_iff₀
+    [Zero β] {s : Set α} (hs : NullMeasurableSet s μ) :
+    AEStronglyMeasurable (indicator s f) μ ↔ AEStronglyMeasurable f (μ.restrict s) := by
+  rw [← aestronglyMeasurable_congr (indicator_ae_eq_of_ae_eq_set hs.toMeasurable_ae_eq),
+    aestronglyMeasurable_indicator_iff (measurableSet_toMeasurable ..),
+    restrict_congr_set hs.toMeasurable_ae_eq]
+
 @[fun_prop, measurability]
 protected theorem indicator [Zero β] (hfm : AEStronglyMeasurable f μ) {s : Set α}
     (hs : MeasurableSet s) : AEStronglyMeasurable (s.indicator f) μ :=
   (aestronglyMeasurable_indicator_iff hs).mpr hfm.restrict
+
+@[fun_prop, measurability]
+protected theorem indicator₀ [Zero β] (hfm : AEStronglyMeasurable f μ) {s : Set α}
+    (hs : NullMeasurableSet s μ) : AEStronglyMeasurable (s.indicator f) μ :=
+  (aestronglyMeasurable_indicator_iff₀ hs).2 hfm.restrict
 
 theorem nullMeasurableSet_eq_fun {E} [TopologicalSpace E] [MetrizableSpace E] {f g : α → E}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
