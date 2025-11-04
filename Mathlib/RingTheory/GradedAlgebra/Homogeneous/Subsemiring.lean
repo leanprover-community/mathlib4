@@ -118,8 +118,8 @@ def Subsemiring.homogeneousCore : HomogeneousSubsemiring 𝒜 where
   is_homogeneous' := IsHomogneous.subsemiringClosure_of_isHomogeneousElem fun x ↦ by
     rintro ⟨x, _, rfl⟩; exact x.2
 
-theorem Subsemiring.homogeneousCore'_mono : Monotone (Subsemiring.homogeneousCore' 𝒜) :=
-  fun _ _ h => Subsemiring.closure_mono <| Set.image_subset _ fun _ => @h _
+theorem Subsemiring.homogeneousCore_mono : Monotone (Subsemiring.homogeneousCore 𝒜) :=
+  fun _ _ h => Subsemiring.closure_mono <| Set.image_mono <| fun _ ↦ @h _
 
 theorem Subsemiring.toSubsemiring_homogeneousCore_le : (R.homogeneousCore 𝒜).toSubsemiring ≤ R :=
   Subsemiring.closure_le.2 <| image_preimage_subset _ _
