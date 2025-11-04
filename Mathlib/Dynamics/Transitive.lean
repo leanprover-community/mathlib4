@@ -38,10 +38,10 @@ class MulAction.IsPointTransitive (M α : Type*) [Monoid M] [TopologicalSpace α
     Prop where
   exists_dense_orbit : ∃ x : α, Dense (orbit M x)
 
-/-- Given an action of a monoid on a topological space `α`, a point `x` is said to be *transitive*
-if the orbit of `x` under `M` is dense in `α`. -/
+/-- Given an action of a monoid on a topological space `α`, a point `x` is called *transitive* if
+the orbit of `x` under `M` is dense in `α`. -/
 @[to_additive /-- Given an action of an additive monoid on a topological space `α`, a point `x` is
-said to be *transitive* if the orbit of `x` under `M` is dense in `α`. -/]
+called *transitive* if the orbit of `x` under `M` is dense in `α`. -/]
 def MulAction.transitivePoints (M α : Type*) [Monoid M] [TopologicalSpace α] [MulAction M α] :
     Set α := {x : α | Dense (orbit M x)}
 
