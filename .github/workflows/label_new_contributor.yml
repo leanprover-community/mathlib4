@@ -31,7 +31,9 @@ jobs:
             const { owner, repo } = context.repo;
 
             // Use search API to find merged PRs by this author
-            const searchQuery = `repo:${owner}/${repo}+is:pr+author:${creator}+is:merged`;
+            // Note: mathlib4 uses bors for merging, which doesn't mark PRs as merged in GitHub's sense
+            // Instead, we search for the exact "[Merged by Bors] - " prefix that bors adds to PR titles
+            const searchQuery = `repo:${owner}/${repo}+is:pr+author:${creator}+in:title+"[Merged by Bors] -"`;
             const searchResult = await github.rest.search.issuesAndPullRequests({
               q: searchQuery
             });
