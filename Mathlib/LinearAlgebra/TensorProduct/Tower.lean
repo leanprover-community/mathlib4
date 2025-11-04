@@ -643,6 +643,11 @@ variable (R A M N)
 def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A ⊗[R] N :=
   AlgebraTensorModule.congr (.refl _ _) e
 
+@[simp]
+lemma LinearEquiv.baseChange_apply (e : M ≃ₗ[R] N) (a : A) (m : M) :
+    (e.baseChange R A M N) (a ⊗ₜ m) = a ⊗ₜ (e m) := by
+  simp [LinearEquiv.baseChange]
+
 /-- `baseChange` as a linear map.
 
 When `M = N`, this is true more strongly as `Module.End.baseChangeHom`. -/

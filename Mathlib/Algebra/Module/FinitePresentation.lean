@@ -642,8 +642,7 @@ theorem Module.FinitePresentation.isBaseChange_map (S : Type*) [CommRing S] [Alg
       ((e₄.baseChange R S) ≪≫ₗ (TensorProduct.piRight R S S (fun _ : Fin n ↦ N)) ≪≫ₗ e₃)
         (fun f ↦ TensorProduct.AlgebraTensorModule.curry_injective (LinearMap.ext fun s ↦ ?_))
     ext i
-    simpa [e₄, e₃, e₂, e₁, LinearEquiv.congrLeft, LinearEquiv.baseChange] using
-      (tmul_eq_smul_one_tmul s (f (Pi.single i 1))).symm
+    simpa [e₄, e₃, e₂, e₁] using (tmul_eq_smul_one_tmul s (f (Pi.single i 1))).symm
   obtain ⟨n, m, f, g, hf, hfg⟩ := Module.FinitePresentation.exists_fin' R M
   refine IsBaseChange.of_left_exact S (f := f.lcomp R N) (g := g.lcomp R N)
     (f' := (f.baseChange S).lcomp S (S ⊗[R] N)) (g' := (g.baseChange S).lcomp S (S ⊗[R] N))
