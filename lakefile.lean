@@ -32,7 +32,7 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.allScriptsDocumented, true⟩,
   ⟨`linter.pythonStyle, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
-  ⟨`linter.tacticAnalysis.tryAtEachStepAesop, true⟩,
+  -- ⟨`linter.tacticAnalysis.tryAtEachStepAesop, true⟩,
   ⟨`linter.tacticAnalysis.tryAtEachStepSimpAll, true⟩,
   ⟨`linter.tacticAnalysis.tryAtEachStepGrind, true⟩,
   ⟨`linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions, true⟩,
