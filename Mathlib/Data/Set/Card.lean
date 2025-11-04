@@ -113,6 +113,9 @@ theorem encard_ne_zero : s.encard ≠ 0 ↔ s.Nonempty := by
 
 protected alias ⟨_, Nonempty.encard_pos⟩ := encard_pos
 
+theorem encard_ne_zero_of_mem {a : α} (h : a ∈ s) : s.encard ≠ 0 :=
+  (encard_pos.mpr ⟨a, h⟩).ne.symm
+
 @[simp] theorem encard_singleton (e : α) : ({e} : Set α).encard = 1 := by
   rw [encard, ENat.card_eq_coe_fintype_card, Fintype.card_ofSubsingleton, Nat.cast_one]
 
@@ -177,11 +180,20 @@ section Lattice
 theorem encard_le_encard (h : s ⊆ t) : s.encard ≤ t.encard := by
   rw [← union_diff_cancel h, encard_union_eq disjoint_sdiff_right]; exact le_self_add
 
+theorem encard_le_card : s.encard ≤ ENat.card α :=
+  encard_univ _ ▸ encard_le_encard s.subset_univ
+
 theorem encard_mono {α : Type*} : Monotone (encard : Set α → ℕ∞) :=
   fun _ _ ↦ encard_le_encard
 
 theorem encard_diff_add_encard_of_subset (h : s ⊆ t) : (t \ s).encard + s.encard = t.encard := by
   rw [← encard_union_eq disjoint_sdiff_left, diff_union_self, union_eq_self_of_subset_right h]
+
+theorem encard_diff (h : s ⊆ t) (hs : s.Finite) :
+    (t \ s).encard = t.encard - s.encard := by
+  rw [← @Set.encard_diff_add_encard_of_subset _ s t h]
+  exact AddLECancellable.eq_tsub_of_add_eq
+    (ENat.addLECancellable_of_ne_top (encard_ne_top_iff.mpr hs)) rfl
 
 @[simp] theorem one_le_encard_iff_nonempty : 1 ≤ s.encard ↔ s.Nonempty := by
   rw [nonempty_iff_ne_empty, Ne, ← encard_eq_zero, ENat.one_le_iff_ne_zero]
@@ -261,6 +273,9 @@ variable {a b : α}
 
 theorem encard_insert_le (s : Set α) (x : α) : (insert x s).encard ≤ s.encard + 1 := by
   rw [← union_singleton, ← encard_singleton x]; apply encard_union_le
+
+theorem one_le_encard_insert (s : Set α) : 1 ≤ (insert a s).encard :=
+  ENat.one_le_iff_ne_zero.mpr <| encard_ne_zero_of_mem (mem_insert a s)
 
 theorem encard_singleton_inter (s : Set α) (x : α) : ({x} ∩ s).encard ≤ 1 := by
   rw [← encard_singleton x]; exact encard_le_encard inter_subset_left
@@ -652,6 +667,10 @@ theorem ncard_insert_le (a : α) (s : Set α) : (insert a s).ncard ≤ s.ncard +
   · to_encard_tac; rw [hs.cast_ncard_eq, (hs.insert _).cast_ncard_eq]; apply encard_insert_le
   rw [(hs.mono (subset_insert a s)).ncard]
   exact Nat.zero_le _
+
+theorem one_le_ncard_insert (a : α) (s : Set α) (hs : s.Finite := by toFinite_tac) :
+    1 ≤ (insert a s).ncard :=
+  Nat.one_le_iff_ne_zero.mpr <| ncard_ne_zero_of_mem (mem_insert a s) (by simp [hs])
 
 theorem ncard_insert_eq_ite {a : α} [Decidable (a ∈ s)] (hs : s.Finite := by toFinite_tac) :
     ncard (insert a s) = if a ∈ s then s.ncard else s.ncard + 1 := by
