@@ -132,7 +132,7 @@ theorem zero_rel (x : R) : 0 ≤ᵥ x := by
 lemma zero_srel_one : (0 : R) <ᵥ 1 :=
   not_rel_one_zero
 
-lemma rel_mul_left {x y : R} (z) : x ≤ᵥ y → (z * x) ≤ᵥ (z * y) := by
+lemma rel_mul_left {x y : R} (z) : x ≤ᵥ y → z * x ≤ᵥ z * y := by
   rw [mul_comm z x, mul_comm z y]
   apply rel_mul_right
 
@@ -146,7 +146,8 @@ lemma rel_trans' {x y z : R} (h1 : y ≤ᵥ z) (h2 : x ≤ᵥ y) : x ≤ᵥ z :=
 
 protected alias rel.trans' := rel_trans'
 
-lemma rel_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : (x * x') ≤ᵥ y * y' := by
+@[gcongr]
+lemma rel_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x' ≤ᵥ y * y' := by
   calc x * x' ≤ᵥ x * y' := rel_mul_left _ h2
     _ ≤ᵥ y * y' := rel_mul_right _ h1
 
@@ -569,37 +570,46 @@ lemma isEquiv {Γ₁ Γ₂ : Type*}
   intro x y
   simp_rw [← Valuation.Compatible.rel_iff_le]
 
-section Valuation
+end ValuativeRel
 
+namespace Valuation
+
+open ValuativeRel
+
+variable {R : Type*} [CommRing R] [ValuativeRel R]
 variable {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀] (v : Valuation R Γ₀) [v.Compatible]
 variable {x y : R}
 
-lemma _root_.Valuation.rel_iff_le : x ≤ᵥ y ↔ v x ≤ v y :=
-  Valuation.Compatible.rel_iff_le _ _
+lemma rel_iff_le : x ≤ᵥ y ↔ v x ≤ v y :=
+  Compatible.rel_iff_le _ _
 
-lemma _root_.Valuation.srel_iff_lt : x <ᵥ y ↔ v x < v y := by
-  simp [lt_iff_not_ge, ← Valuation.Compatible.rel_iff_le, srel_iff]
+lemma srel_iff_lt : x <ᵥ y ↔ v x < v y := by
+  simp [lt_iff_not_ge, ← Compatible.rel_iff_le, srel_iff]
 
 @[deprecated (since := "2025-10-09")]
-alias _root_.Valuation.Compatible.srel_iff_lt := _root_.Valuation.srel_iff_lt
+alias Compatible.srel_iff_lt := srel_iff_lt
 
-lemma _root_.Valuation.rel_one_iff : x ≤ᵥ 1 ↔ v x ≤ 1 := by simp [v.rel_iff_le]
-lemma _root_.Valuation.srel_one_iff : x <ᵥ 1 ↔ v x < 1 := by simp [v.srel_iff_lt]
-lemma _root_.Valuation.one_rel_iff : 1 ≤ᵥ x ↔ 1 ≤ v x := by simp [v.rel_iff_le]
-lemma _root_.Valuation.one_srel_iff : 1 <ᵥ x ↔ 1 < v x := by simp [v.srel_iff_lt]
+lemma rel_one_iff : x ≤ᵥ 1 ↔ v x ≤ 1 := by simp [v.rel_iff_le]
+lemma srel_one_iff : x <ᵥ 1 ↔ v x < 1 := by simp [v.srel_iff_lt]
+lemma one_rel_iff : 1 ≤ᵥ x ↔ 1 ≤ v x := by simp [v.rel_iff_le]
+lemma one_srel_iff : 1 <ᵥ x ↔ 1 < v x := by simp [v.srel_iff_lt]
 
 @[simp]
-lemma _root_.Valuation.apply_posSubmonoid_ne_zero (x : posSubmonoid R) : v (x : R) ≠ 0 := by
+lemma apply_posSubmonoid_ne_zero (x : posSubmonoid R) : v (x : R) ≠ 0 := by
   simp [(isEquiv v (valuation R)).ne_zero, valuation_posSubmonoid_ne_zero]
 
 @[deprecated (since := "2025-08-06")]
-alias valuation_posSubmonoid_ne_zero_of_compatible := _root_.Valuation.apply_posSubmonoid_ne_zero
+alias valuation_posSubmonoid_ne_zero_of_compatible := apply_posSubmonoid_ne_zero
 
 @[simp]
-lemma _root_.Valuation.apply_posSubmonoid_pos (x : posSubmonoid R) : 0 < v x :=
+lemma apply_posSubmonoid_pos (x : posSubmonoid R) : 0 < v x :=
   zero_lt_iff.mpr <| v.apply_posSubmonoid_ne_zero x
 
 end Valuation
+
+namespace ValuativeRel
+
+variable {R : Type*} [CommRing R] [ValuativeRel R]
 
 variable (R) in
 /-- An alias for endowing a ring with a preorder defined as the valuative relation. -/
@@ -681,39 +691,38 @@ lemma rel_mul_right_iff (hc : 0 <ᵥ c) : a * c ≤ᵥ b * c ↔ a ≤ᵥ b :=
   ⟨rel_mul_cancel hc, rel_mul_right _⟩
 
 lemma rel_mul_left_iff (hc : 0 <ᵥ c) : c * a ≤ᵥ c * b ↔ a ≤ᵥ b := by
-  simp only [mul_comm c, rel_mul_right_iff hc]
+  simp [mul_comm c, rel_mul_right_iff hc]
 
 lemma srel_mul_right_iff (hc : 0 <ᵥ c) : a * c <ᵥ b * c ↔ a <ᵥ b :=
   (rel_mul_right_iff hc).not
 
-alias ⟨_, srel_mul_right⟩ := srel_mul_right_iff
+@[gcongr] alias ⟨_, srel_mul_right⟩ := srel_mul_right_iff
 
 lemma srel_mul_left_iff (hc : 0 <ᵥ c) : c * a <ᵥ c * b ↔ a <ᵥ b :=
   (rel_mul_left_iff hc).not
 
-alias ⟨_, srel_mul_left⟩ := srel_mul_left_iff
+@[gcongr] alias ⟨_, srel_mul_left⟩ := srel_mul_left_iff
 
 lemma mul_rel_mul (hab : a ≤ᵥ b) (hcd : c ≤ᵥ d) : a * c ≤ᵥ b * d :=
   (rel_mul_left a hcd).trans (rel_mul_right d hab)
 
-lemma mul_srel_mul_of_srel_rel (hab : a <ᵥ b) (hcd : c ≤ᵥ d) (hd : 0 <ᵥ d) :
+lemma mul_srel_mul_of_srel_of_rel (hab : a <ᵥ b) (hcd : c ≤ᵥ d) (hd : 0 <ᵥ d) :
     a * c <ᵥ b * d :=
   (rel_mul_left _ hcd).trans_srel (srel_mul_right hd hab)
 
-lemma mul_srel_mul_of_rel_srel (hab : a ≤ᵥ b) (hcd : c <ᵥ d) (ha : 0 <ᵥ a) :
+lemma mul_srel_mul_of_rel_of_srel (hab : a ≤ᵥ b) (hcd : c <ᵥ d) (ha : 0 <ᵥ a) :
     a * c <ᵥ b * d :=
   (srel_mul_left ha hcd).trans_rel (rel_mul_right _ hab)
 
 lemma mul_srel_mul (hab : a <ᵥ b) (hcd : c <ᵥ d) : a * c <ᵥ b * d :=
   (rel_mul_left _ hcd.rel).trans_srel (srel_mul_right ((zero_rel c).trans_srel hcd) hab)
 
-lemma pow_rel_pow (ha : a ≤ᵥ b) (n : ℕ) : a ^ n ≤ᵥ b ^ n := by
-  induction n
-  · simp
-  · rw [pow_succ, pow_succ]
-    exact mul_rel_mul ‹_› ‹_›
+lemma pow_rel_pow (hab : a ≤ᵥ b) (n : ℕ) : a ^ n ≤ᵥ b ^ n := by
+  induction n with
+  | zero => simp
+  | succ _ hn => simp [pow_succ, mul_rel_mul hn hab]
 
-lemma pow_srel_pow (ha : a <ᵥ b) (n : ℕ) (hn : n ≠ 0) : a ^ n <ᵥ b ^ n := by
+lemma pow_srel_pow (hab : a <ᵥ b) (n : ℕ) (hn : n ≠ 0) : a ^ n <ᵥ b ^ n := by
   obtain (rfl | n) := n
   · aesop
   clear hn
