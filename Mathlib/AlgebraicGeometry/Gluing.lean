@@ -732,7 +732,7 @@ def isColimitForgetToLocallyRingedSpace :
         reassoc_of% GlueData.ι_isoLocallyRingedSpace_inv,
         ← cancel_epi (Hom.isoOpensRange (F.map _)).hom.toLRSHom]
       simp only [Opens.iSupOpenCover, Cover.ulift, V, ← Hom.comp_toLRSHom_assoc,
-        Cover.ι_fromGlued_assoc, homOfLE_ι, Hom.isoOpensRange_hom_ι]
+        Cover.ι_fromGlued_assoc, homOfLE_ι, Hom.isoOpensRange_hom_ι, Cover.idx]
       generalize_proofs _ _ h
       rw [homOfLE_tAux F ↓i ↓j h.choose.2.1 h.choose.2.2, Iso.hom_inv_id_assoc]
       exact (s.w h.choose.2.1).trans (s.w h.choose.2.2).symm)
