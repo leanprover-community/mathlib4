@@ -328,6 +328,30 @@ namespace CongruenceSubgroup
     strictWidthInfty (Gamma1 N : Subgroup (GL (Fin 2) ℝ)) = 1 :=
   strictWidthInfty_eq_one_of_T_mem <| by simp [ModularGroup.T]
 
+@[simp] lemma strictPeriods_Gamma (N : ℕ) :
+    strictPeriods (Gamma N : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples ↑N := by
+  ext x
+  have : AddSubgroup.zmultiples ↑N = .map (Int.castAddHom ℝ) (.zmultiples N) := by simp
+  simp only [this, mem_strictPeriods_iff, Subgroup.mem_map, Gamma_mem]
+  constructor
+  · rintro ⟨g, ⟨-, hg, -, -⟩, hx⟩
+    rw [show x = g 0 1 by simpa using congr_arg (· 0 1) hx.symm]
+    apply AddSubgroup.mem_map_of_mem
+    rwa [Int.mem_zmultiples_iff, ← ZMod.intCast_zmod_eq_zero_iff_dvd]
+  · simp only [AddSubgroup.mem_map, AddSubgroup.mem_zmultiples_iff, existsAndEq, true_and,
+      Units.ext_iff, mapGL_coe_matrix, map_apply_coe, forall_exists_index]
+    refine fun a ha ↦ ⟨ModularGroup.T ^ (a * N), by simp [ModularGroup.coe_T_zpow], ?_⟩
+    ext i j
+    fin_cases i <;> fin_cases j <;> simp [ModularGroup.coe_T_zpow, ← ha]
+
+@[simp] lemma strictWidthInfty_Gamma (N : ℕ) [NeZero N] :
+    strictWidthInfty (Gamma N : Subgroup (GL (Fin 2) ℝ)) = N := by
+  have hsp := strictPeriods_Gamma N
+  rw [strictPeriods_eq_zmultiples_strictWidthInfty, Eq.comm,
+    AddSubgroup.zmultiples_eq_zmultiples_iff
+      (not_isOfFinAddOrder_of_isAddTorsionFree (NeZero.ne _))] at hsp
+  grind [strictWidthInfty_nonneg, Nat.cast_nonneg]
+
 end CongruenceSubgroup
 
 end Width
