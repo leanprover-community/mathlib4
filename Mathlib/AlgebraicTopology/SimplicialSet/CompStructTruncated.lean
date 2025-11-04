@@ -117,7 +117,7 @@ def idComp {x y : X _⦋0⦌₂} (e : Edge x y) :
     rw [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_one_comp_σ₂_zero]
     simp
 
-/-- The composition of `e : Edge x y` with `Edge.id y` is `e`. -/
+/-- `e : Edge x y` is a composition of `Edge.id y` with `e`. -/
 def compId {x y : X _⦋0⦌₂} (e : Edge x y) :
     CompStruct e (.id y) e where
   simplex := X.map (σ₂ 1).op e.edge
