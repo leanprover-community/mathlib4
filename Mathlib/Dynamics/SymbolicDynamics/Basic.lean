@@ -249,8 +249,14 @@ composed of:
 * `carrier`: the underlying set of allowed configurations.
 * `isClosed`: the set is topologically closed in `A^G`.
 * `shiftInvariant`: the set is invariant under all right-translation shifts
-  `(shift g)`. -/
-@[to_additive existing]
+  `(mulShift g)`. -/
+@[to_additive existing
+/-- A *subshift* on alphabet A is a closed, shift-invariant subset of `G → A`. Formally, it is
+composed of:
+* `carrier`: the underlying set of allowed configurations.
+* `isClosed`: the set is topologically closed in `A^G`.
+* `shiftInvariant`: the set is invariant under all right-translation shifts
+  `(shift g)`. -/]
 structure MulSubshift where
   /-- The underlying set of configurations. -/
   carrier : Set (G → A)
@@ -483,8 +489,7 @@ lemma mulExtend_apply_mul_right_of_mem
     simpa [w'] using h_eq     -- <-- use `using h_eq`, only unfold `[w']`
   -- then replace the proof component (same carrier w)
   have h3 : (⟨w, hw_w⟩ : p.support) = (⟨w, hw⟩ : p.support) := by
-    apply Subtype.ext
-    rfl
+    apply Subtype.ext; rfl
   -- put the rewrites together
   calc
     p.mulExtend v (w * v)
@@ -568,7 +573,7 @@ in which a pattern `p` occurs at position `g`.
 This proves that it is exactly the cylinder corresponding to the
 pattern obtained by translating `p` by `g`.
 
-Equivalently, `p.occursInAt x g` iff on every translated site `w * g` (with `w ∈ p.support`)
+Equivalently, `p.mulOccursInAt x g` iff on every translated site `w * g` (with `w ∈ p.support`)
 the configuration `x` agrees with the translated pattern `Pattern.mulExtend p g`.
 
 (This uses `[IsRightCancelMul G]` to identify the preimage along right-multiplication by `g`.) -/
@@ -618,10 +623,15 @@ lemma isOpen_mulOccursInAt (p : Pattern A G) (g : G) :
 
 /-- Avoiding a fixed family of patterns is a closed condition (in the product topology on `G → A`).
 
-Since each occurrence set `{ x | p.occursIn x v }` is open (when `A` is discrete),
-its complement `{ x | ¬ p.occursIn x v }` is closed; `forbidden F` is the intersection
+Since each occurrence set `{ x | p.mulOccursInAt x v }` is open (when `A` is discrete),
+its complement `{ x | ¬ p.mulOccursInAt x v }` is closed; `forbidden F` is the intersection
 of these closed sets over `p ∈ F` and `v ∈ G`. -/
-@[to_additive forbidden_closed]
+@[to_additive forbidden_closed
+/-- Avoiding a fixed family of patterns is a closed condition (in the product topology on `G → A`).
+
+Since each occurrence set `{ x | p.occursInAt x v }` is open (when `A` is discrete),
+its complement `{ x | ¬ p.occursInAt x v }` is closed; `forbidden F` is the intersection
+of these closed sets over `p ∈ F` and `v ∈ G`. -/]
 lemma mulForbidden_closed (F : Set (Pattern A G)) :
     IsClosed (mulForbidden F) := by
   rw [mulForbidden]
@@ -664,7 +674,7 @@ attribute [inherit_doc SymbolicDynamics.FullShift.mulSubshift_from_forbidden]
 a *finite* family of patterns.
 
 Formally, `subshift_of_finite_type F` is `subshift_from_forbidden F` where `F` is a
-`Finset (pattern A G)`. -/
+`Finset (Pattern A G)`. -/
 @[to_additive]
 def mulSubshift_of_finite_type (F : Finset (Pattern A G)) : MulSubshift A G :=
   mulSubshift_from_forbidden (F : Set (Pattern A G))
