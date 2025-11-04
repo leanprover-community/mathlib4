@@ -25,14 +25,17 @@ variable {α : Type u}
 lemma count_finRange {n : ℕ} (a : Fin n) : count a (finRange n) = 1 := by
   simp [count_eq_of_nodup (nodup_finRange n)]
 
+@[simp] theorem idxOf_finRange {k : ℕ} (i : Fin k) : (finRange k).idxOf i = i := by
+  simpa using idxOf_getElem (nodup_finRange k) i
+
+@[deprecated (since := "2025-11-04")]
+alias finRange_eq_nil := finRange_eq_nil_iff
+
 @[deprecated (since := "2025-11-04")]
 alias finRange_map_get := map_get_finRange
 
 @[deprecated (since := "2025-11-04")]
 alias finRange_map_getElem := map_getElem_finRange
-
-@[simp] theorem idxOf_finRange {k : ℕ} (i : Fin k) : (finRange k).idxOf i = i := by
-  simpa using idxOf_getElem (nodup_finRange k) i
 
 @[deprecated (since := "2025-11-04")]
 alias map_coe_finRange := map_coe_finRange_eq_range
