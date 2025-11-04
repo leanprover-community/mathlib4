@@ -287,11 +287,12 @@ theorem pullbackIsoOverPullback_hom_app_comp_snd (T : Over X) :
 
 @[reassoc (attr := simp)]
 theorem pullbackIsoOverPullback_inv_app_comp_fst (T : Over X) :
-    ((pullbackIsoOverPullback g).inv.app T).left ≫ fst _ _ = pullback.fst _ _ := by
-  convert (Over.forget _).congr_map
-    ((Over.mapPullbackAdj g).rightAdjointUniq_hom_app_counit
-       (ChosenPullback.mapPullbackAdj g) T)
-  simp only [forget_map, mapPullbackAdj_counit_app, homMk_left]
+    ((pullbackIsoOverPullback g).inv.app T).left ≫ fst (T.hom) g = pullback.fst T.hom g := by
+  let iso : pullbackObj T.hom g ≅ (Limits.pullback T.hom g) :=
+    isoLeftIso <| pullbackIsoOverPullback g |>.app T
+  have : ((pullbackIsoOverPullback g).inv.app T).left = iso.inv := by rfl
+  rw [this, Iso.inv_comp_eq, isoLeftIso_hom]
+  simp
 
 @[reassoc (attr := simp)]
 theorem pullbackIsoOverPullback_inv_app_comp_snd (T : Over X) :

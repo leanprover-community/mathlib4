@@ -123,6 +123,15 @@ lemma inv_left_hom_left {f g : Over X} (e : f ≅ g) :
     e.inv.left ≫ e.hom.left = 𝟙 g.left := by
   simp [← Over.comp_left]
 
+def isoLeftIso {f g : Over X} (e : f ≅ g) : f.left ≅ g.left :=
+  Iso.mk e.hom.left e.inv.left (hom_left_inv_left e) (inv_left_hom_left e)
+
+@[reassoc (attr := simp)]
+lemma isoLeftIso_hom {f g : Over X} (e : f ≅ g) : (isoLeftIso e).hom = e.hom.left := rfl
+
+@[reassoc (attr := simp)]
+lemma isoLeftIso_inv {f g : Over X} (e : f ≅ g) : (isoLeftIso e).inv = e.inv.left := rfl
+
 lemma forall_iff (P : Over X → Prop) :
     (∀ Y, P Y) ↔ (∀ (Y) (f : Y ⟶ X), P (.mk f)) := by
   aesop
