@@ -24,11 +24,6 @@ variable (R : Subsemiring A)
 
 section HomogeneousDef
 
-/-- A subsemiring `R` is said to be homogeneous if for every `a ∈ R`, all homogeneous components of
-`a` are in `R`. -/
-def Subsemiring.IsHomogeneous : Prop :=
-  SetLike.IsHomogeneous 𝒜 R
-
 variable {R} in
 theorem DirectSum.SetLike.IsHomogeneous.mem_iff (hR : IsHomogeneous 𝒜 R) {a} :
     a ∈ R ↔ ∀ i, (decompose 𝒜 a i : A) ∈ R :=
@@ -127,11 +122,11 @@ end HomogeneousCore
 section IsHomogeneousSubsemiringDefs
 
 theorem Subsemiring.isHomogeneous_iff_forall_subset :
-    R.IsHomogeneous 𝒜 ↔ ∀ i, (R : Set A) ⊆ GradedRing.proj 𝒜 i ⁻¹' (R : Set A) :=
+    SetLike.IsHomogeneous 𝒜 R ↔ ∀ i, (R : Set A) ⊆ GradedRing.proj 𝒜 i ⁻¹' (R : Set A) :=
   Iff.rfl
 
 theorem Subsemiring.isHomogeneous_iff_subset_iInter :
-    R.IsHomogeneous 𝒜 ↔ (R : Set A) ⊆ ⋂ i, GradedRing.proj 𝒜 i ⁻¹' R :=
+    SetLike.IsHomogeneous 𝒜 R ↔ (R : Set A) ⊆ ⋂ i, GradedRing.proj 𝒜 i ⁻¹' R :=
   subset_iInter_iff.symm
 
 end IsHomogeneousSubsemiringDefs
