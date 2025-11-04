@@ -35,7 +35,7 @@ def Subsemiring.IsHomogeneous : Prop :=
   SetLike.IsHomogeneous 𝒜 R
 
 variable {R} in
-theorem Subsemiring.IsHomogeneous.mem_iff (hR : R.IsHomogeneous 𝒜) {a} :
+theorem DirectSum.SetLike.IsHomogeneous.mem_iff (hR : IsHomogeneous 𝒜 R) {a} :
     a ∈ R ↔ ∀ i, (decompose 𝒜 a i : A) ∈ R :=
   AddSubmonoidClass.IsHomogeneous.mem_iff 𝒜 _ hR
 
