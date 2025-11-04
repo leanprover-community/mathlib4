@@ -3,8 +3,8 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Disjoint
 import Mathlib.Algebra.Module.ZLattice.Basic
+import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 import Mathlib.Analysis.PSeries
 
 /-!
@@ -202,14 +202,13 @@ lemma ZLattice.exists_finsetSum_norm_rpow_le_tsum :
     convert ZLattice.sum_piFinset_Icc_rpow_le b rfl n r hr with x
     simp [e, Finsupp.linearCombination]
     rfl
-  have (r : ℝ) : 0 ≤ ∑' k : ℕ, (k : ℝ) ^ (d - 1 + r) := tsum_nonneg fun _ ↦ by positivity
   by_cases hA' : A ≤ 1
   · refine ⟨B, hB, fun r hr s ↦ (H r hr s).trans ?_⟩
     rw [mul_assoc]
-    exact mul_le_of_le_one_left (mul_nonneg (by positivity) (this r)) hA'
+    exact mul_le_of_le_one_left (mul_nonneg (by positivity) (by positivity)) hA'
   · refine ⟨A⁻¹ * B, mul_pos (inv_pos.mpr hA) hB, fun r hr s ↦ (H r hr s).trans ?_⟩
     rw [Real.mul_rpow (inv_pos.mpr hA).le hB.le, mul_assoc, mul_assoc]
-    refine mul_le_mul_of_nonneg_right ?_ (mul_nonneg (by positivity) (this r))
+    refine mul_le_mul_of_nonneg_right ?_ (mul_nonneg (by positivity) (by positivity))
     rw [← Real.rpow_neg_one, ← Real.rpow_mul hA.le]
     refine Real.self_le_rpow_of_one_le (not_le.mp hA').le ?_
     simp only [neg_mul, one_mul, le_neg (b := r)]
@@ -269,8 +268,8 @@ lemma ZLattice.summable_norm_sub_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L)
   simpa using show ‖t.1‖ ≤ 2 * ‖x‖ by linarith
 
 lemma ZLattice.summable_norm_sub_zpow (n : ℤ) (hn : n < -Module.finrank ℤ L) (x : E) :
-    Summable fun z : L ↦ ‖z - x‖ ^ n := by
-  exact_mod_cast summable_norm_sub_rpow L n (by exact_mod_cast hn) x
+    Summable fun z : L ↦ ‖z - x‖ ^ n :=
+  mod_cast summable_norm_sub_rpow L n (mod_cast hn) x
 
 lemma ZLattice.summable_norm_zpow (n : ℤ) (hn : n < -Module.finrank ℤ L) :
     Summable fun z : L ↦ ‖z‖ ^ n := by
