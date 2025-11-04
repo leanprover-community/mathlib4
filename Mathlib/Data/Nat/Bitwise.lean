@@ -12,6 +12,7 @@ import Mathlib.Data.Nat.Bits
 import Mathlib.Order.Basic
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Common
+import Batteries.Data.Nat.Bitwise
 
 /-!
 # Bitwise operations on natural numbers
@@ -283,45 +284,28 @@ theorem land_assoc (n m k : ℕ) : (n &&& m) &&& k = n &&& (m &&& k) := by bitwi
 
 theorem lor_assoc (n m k : ℕ) : (n ||| m) ||| k = n ||| (m ||| k) := by bitwise_assoc_tac
 
--- These lemmas match `mul_inv_cancel_right` and `mul_inv_cancel_left`.
-theorem xor_cancel_right (n m : ℕ) : (m ^^^ n) ^^^ n = m := by
-  rw [Nat.xor_assoc, Nat.xor_self, xor_zero]
+@[deprecated Nat.xor_xor_cancel_right (since := "2025-10-02")]
+theorem xor_cancel_right (n m : ℕ) : (m ^^^ n) ^^^ n = m := Nat.xor_xor_cancel_right ..
 
-theorem xor_cancel_left (n m : ℕ) : n ^^^ (n ^^^ m) = m := by
-  rw [← Nat.xor_assoc, Nat.xor_self, zero_xor]
+@[deprecated Nat.xor_xor_cancel_left (since := "2025-10-02")]
+theorem xor_cancel_left (n m : ℕ) : n ^^^ (n ^^^ m) = m := Nat.xor_xor_cancel_left ..
 
-theorem xor_right_injective {n : ℕ} : Function.Injective (HXor.hXor n : ℕ → ℕ) := fun m m' h => by
-  rw [← xor_cancel_left n m, ← xor_cancel_left n m', h]
+@[deprecated Nat.xor_eq_zero_iff (since := "2025-10-02")]
+theorem xor_eq_zero {n m : ℕ} : n ^^^ m = 0 ↔ n = m := Nat.xor_eq_zero_iff
 
-theorem xor_left_injective {n : ℕ} : Function.Injective fun m => m ^^^ n :=
-  fun m m' (h : m ^^^ n = m' ^^^ n) => by
-  rw [← xor_cancel_right n m, ← xor_cancel_right n m', h]
-
-@[simp]
-theorem xor_right_inj {n m m' : ℕ} : n ^^^ m = n ^^^ m' ↔ m = m' :=
-  xor_right_injective.eq_iff
-
-@[simp]
-theorem xor_left_inj {n m m' : ℕ} : m ^^^ n = m' ^^^ n ↔ m = m' :=
-  xor_left_injective.eq_iff
-
-@[simp]
-theorem xor_eq_zero {n m : ℕ} : n ^^^ m = 0 ↔ n = m := by
-  rw [← Nat.xor_self n, xor_right_inj, eq_comm]
-
-theorem xor_ne_zero {n m : ℕ} : n ^^^ m ≠ 0 ↔ n ≠ m :=
-  xor_eq_zero.not
+@[deprecated Nat.xor_ne_zero_iff (since := "2025-10-02")]
+theorem xor_ne_zero {n m : ℕ} : n ^^^ m ≠ 0 ↔ n ≠ m := Nat.xor_ne_zero_iff
 
 theorem xor_trichotomy {a b c : ℕ} (h : a ^^^ b ^^^ c ≠ 0) :
     b ^^^ c < a ∨ c ^^^ a < b ∨ a ^^^ b < c := by
   set v := a ^^^ b ^^^ c with hv
   -- The xor of any two of `a`, `b`, `c` is the xor of `v` and the third.
   have hab : a ^^^ b = c ^^^ v := by
-    rw [Nat.xor_comm c, xor_cancel_right]
+    rw [Nat.xor_comm c, Nat.xor_xor_cancel_right]
   have hbc : b ^^^ c = a ^^^ v := by
-    rw [← Nat.xor_assoc, xor_cancel_left]
+    rw [← Nat.xor_assoc, Nat.xor_xor_cancel_left]
   have hca : c ^^^ a = b ^^^ v := by
-    rw [hv, Nat.xor_assoc, Nat.xor_comm a, ← Nat.xor_assoc, xor_cancel_left]
+    rw [hv, Nat.xor_assoc, Nat.xor_comm a, ← Nat.xor_assoc, Nat.xor_xor_cancel_left]
   -- If `i` is the position of the most significant bit of `v`, then at least one of `a`, `b`, `c`
   -- has a one bit at position `i`.
   obtain ⟨i, ⟨hi, hi'⟩⟩ := exists_most_significant_bit h
@@ -343,7 +327,7 @@ theorem xor_trichotomy {a b c : ℕ} (h : a ^^^ b ^^^ c ≠ 0) :
     · simp only [testBit_xor, hi' _ hj, Bool.bne_false]
 
 theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b < c := by
-  obtain ha | hb | hc := xor_trichotomy <| Nat.xor_assoc _ _ _ ▸ xor_ne_zero.2 h.ne
+  obtain ha | hb | hc := xor_trichotomy <| Nat.xor_assoc _ _ _ ▸ xor_ne_zero_iff.2 h.ne
   exacts [(h.asymm ha).elim, Or.inl <| Nat.xor_comm _ _ ▸ hb, Or.inr hc]
 
 @[simp]
