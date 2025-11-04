@@ -176,11 +176,10 @@ end ofChosenFiniteProducts
 
 open ofChosenFiniteProducts
 
-/-- Constructs an instance of `SemiCartesianMonoidalCategory C` given a terminal object and
-limit cones over arbitrary pairs of objects. -/
-abbrev _root_.SemiCartesianMonoidalCategory.ofChosenFiniteProducts :
-    SemiCartesianMonoidalCategory C :=
-   letI : MonoidalCategoryStruct C := {
+/-- Construct an instance of `CartesianMonoidalCategory C` given a terminal object and limit cones
+over arbitrary pairs of objects. -/
+abbrev ofChosenFiniteProducts : CartesianMonoidalCategory C :=
+  letI : MonoidalCategoryStruct C := {
     tensorUnit := 𝒯.cone.pt
     tensorObj := tensorObj ℬ
     tensorHom := tensorHom ℬ
@@ -203,24 +202,16 @@ abbrev _root_.SemiCartesianMonoidalCategory.ofChosenFiniteProducts :
     .ofUniqueHom (𝒯.isLimit.lift <| asEmptyCone ·) fun _ _ ↦ 𝒯.isLimit.hom_ext (by simp)
   fst X Y := BinaryFan.fst (ℬ X Y).cone
   snd X Y := BinaryFan.snd (ℬ X Y).cone
-  fst_def X Y := (((ℬ X 𝒯.cone.pt).isLimit.fac
-    (BinaryFan.mk _ _) ⟨.left⟩).trans (Category.comp_id _)).symm
-  snd_def X Y := (((ℬ 𝒯.cone.pt Y).isLimit.fac
-    (BinaryFan.mk _ _) ⟨.right⟩).trans (Category.comp_id _)).symm
-  }
-
-/-- Constructs an instance of `CartesianMonoidalCategory C` given a terminal object and limit cones
-over arbitrary pairs of objects. -/
-abbrev ofChosenFiniteProducts : CartesianMonoidalCategory C :=
-  letI : SemiCartesianMonoidalCategory C :=
-    SemiCartesianMonoidalCategory.ofChosenFiniteProducts 𝒯 ℬ
-  {
   tensorProductIsBinaryProduct X Y := BinaryFan.IsLimit.mk _
     (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).1)
     (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).2.1)
     (fun f g ↦ (BinaryFan.IsLimit.lift' (ℬ X Y).isLimit f g).2.2)
     (fun f g m hf hg ↦
       BinaryFan.IsLimit.hom_ext (ℬ X Y).isLimit (by simpa using hf) (by simpa using hg))
+  fst_def X Y := (((ℬ X 𝒯.cone.pt).isLimit.fac
+    (BinaryFan.mk _ _) ⟨.left⟩).trans (Category.comp_id _)).symm
+  snd_def X Y := (((ℬ 𝒯.cone.pt Y).isLimit.fac
+    (BinaryFan.mk _ _) ⟨.right⟩).trans (Category.comp_id _)).symm
   }
 
 omit 𝒯 in
@@ -235,7 +226,7 @@ end OfChosenFiniteProducts
 
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
 
-open MonoidalCategory SemiCartesianMonoidalCategory
+open MonoidalCategory
 
 /--
 Constructs a morphism to the product given its two components.
@@ -815,7 +806,7 @@ instance fullSubcategory
 
 end CartesianMonoidalCategory
 
-open MonoidalCategory CartesianMonoidalCategory SemiCartesianMonoidalCategory
+open MonoidalCategory CartesianMonoidalCategory
 
 variable
   {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory C]
