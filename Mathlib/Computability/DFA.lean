@@ -265,7 +265,7 @@ theorem comap_reindex (f : α' → α) (g : σ ≃ σ') :
 
 end Maps
 
-section complement
+section compl
 
 /-- DFAs are closed under complement:
 Given a DFA `M`, `Mᶜ` is also a DFA such that `L(Mᶜ) = {x ∣ x ∉ L(M)}`. -/
@@ -278,7 +278,7 @@ theorem acceptsFrom_compl (s : σ) : (Mᶜ).acceptsFrom s = (M.acceptsFrom s)ᶜ
 theorem accepts_compl : (Mᶜ).accepts = (M.accepts)ᶜ := by
   simp only [accepts, acceptsFrom_compl]; simp [compl]
 
-end complement
+end compl
 
 section union
 
@@ -311,6 +311,31 @@ theorem accepts_union (M1 : DFA α σ1) (M2 : DFA α σ2) :
   simp only [accepts, ←acceptsFrom_union]; rfl
 
 end union
+
+section inter
+
+variable {σ1 σ2 : Type v} (M1 : DFA α σ1) (M2 : DFA α σ2)
+
+/-- DFAs are closed under intersection. -/
+@[simps]
+def inter : DFA α (σ1 × σ2) where
+  step (s : σ1 × σ2) (a : α) : σ1 × σ2 := (M1.step s.1 a, M2.step s.2 a)
+  start := (M1.start, M2.start)
+  accept := {s : σ1 × σ2 | s.1 ∈ M1.accept ∧ s.2 ∈ M2.accept}
+
+theorem acceptsFrom_inter (s1 : σ1) (s2 : σ2) :
+    (M1.inter M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 ∩ M2.acceptsFrom s2 := by
+  ext x
+  simp only [acceptsFrom, Language.mem_inter]
+  simp_rw [↑Set.mem_setOf]
+  induction x generalizing s1 s2 with
+  | nil => simp
+  | cons a x ih => simp only [evalFrom_cons, inter_step, ih]
+
+theorem accepts_inter : (M1.inter M2).accepts = M1.accepts ∩ M2.accepts := by
+  simp [accepts, acceptsFrom_inter]
+
+end inter
 
 end DFA
 
@@ -355,5 +380,11 @@ theorem IsRegular_union {T : Type u} {L1 L2 : Language T} :
     L1.IsRegular → L2.IsRegular → (L1 + L2).IsRegular :=
   fun ⟨σ1, _, M1, hM1⟩ ⟨σ2, _, M2, hM2⟩ =>
     ⟨σ1 × σ2, inferInstance, M1 + M2, by rw [DFA.accepts_union, hM1, hM2]⟩
+
+/-- Regular languages are closed under intersection. -/
+theorem IsRegular_inter {T : Type u} {L1 L2 : Language T} :
+    L1.IsRegular → L2.IsRegular → (L1 ∩ L2).IsRegular :=
+  fun ⟨σ1, _, M1, hM1⟩ ⟨σ2, _, M2, hM2⟩ =>
+    ⟨σ1 × σ2, inferInstance, M1.inter M2, by rw [DFA.accepts_inter, hM1, hM2]⟩
 
 end Language

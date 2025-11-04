@@ -95,6 +95,12 @@ instance : Sub (Language α) where
 instance : Mul (Language α) :=
   ⟨image2 (· ++ ·)⟩
 
+instance : HasCompl (Language α) :=
+  ⟨((· ᶜ) : Set (List α) → Set (List α))⟩
+
+instance : Inter (Language α) :=
+  ⟨((· ∩ ·) : Set (List α) → Set (List α) → Set (List α))⟩
+
 theorem zero_def : (0 : Language α) = (∅ : Set _) :=
   rfl
 
@@ -404,7 +410,9 @@ lemma reverse_pow (l : Language α) (n : ℕ) : (l ^ n).reverse = l.reverse ^ n 
 lemma reverse_kstar (l : Language α) : l∗.reverse = l.reverse∗ := by
   simp only [kstar_eq_iSup_pow, reverse_iSup, reverse_pow]
 
-instance : HasCompl (Language α) := ⟨compl⟩
+@[simp]
+lemma mem_inter (x : List α) (l m : Language α) : x ∈ l ∩ m ↔ x ∈ l ∧ x ∈ m := by
+  apply Set.mem_inter_iff
 
 lemma compl_compl {l : Language α} : lᶜᶜ = l := by
   simp [compl]
