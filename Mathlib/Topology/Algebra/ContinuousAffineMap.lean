@@ -450,6 +450,6 @@ theorem _root_.ContinuousAffineMap.decomp (f : V →ᴬ[R] W) :
     (f : V → W) = f.contLinear + Function.const V (f 0) := by
   rcases f with ⟨f, h⟩
   rw [ContinuousAffineMap.coe_mk_contLinear_eq_linear, ContinuousAffineMap.coe_mk, f.decomp,
-    Pi.add_apply, map_zero, zero_add, ← Function.const_def]
+    Pi.add_apply, LinearMap.map_zero, zero_add, ← Function.const_def]
 
 end ContinuousLinearMap
