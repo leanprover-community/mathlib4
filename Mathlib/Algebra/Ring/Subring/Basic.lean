@@ -58,7 +58,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 subring, subrings
 -/
 
-assert_not_exists OrderedRing
+assert_not_exists IsOrderedRing
 
 universe u v w
 
@@ -858,6 +858,10 @@ theorem mem_closure_image_of (f : R →+* S) {s : Set R} {x : R} (hx : x ∈ Sub
 /-- The ring homomorphism associated to an inclusion of subrings. -/
 def inclusion {S T : Subring R} (h : S ≤ T) : S →+* T :=
   S.subtype.codRestrict _ fun x => h x.2
+
+@[simp]
+theorem coe_inclusion {S T : Subring R} (h : S ≤ T) (x : S) :
+    (Subring.inclusion h x : R) = x := by simp [Subring.inclusion]
 
 @[simp]
 theorem range_subtype (s : Subring R) : s.subtype.range = s :=

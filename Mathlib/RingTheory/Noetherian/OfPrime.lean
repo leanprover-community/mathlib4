@@ -69,3 +69,9 @@ theorem IsNoetherianRing.of_prime (H : ∀ I : Ideal R, I.IsPrime → I.FG) :
     exact (Submodule.mem_sSup_of_directed ⟨I, hI⟩ hC₂.directedOn).1 <| hG ▸ subset_span hx
   suffices J_eq_sSup : J = sSup C from J_eq_sSup ▸ J_mem_C
   exact le_antisymm (le_sSup J_mem_C) (hG ▸ Ideal.span_le.2 G_subset_J)
+
+/-- If all non-zero prime ideals in a commutative ring are finitely generated,
+so are all other ideals. -/
+theorem IsNoetherianRing.of_prime_ne_bot (H : ∀ I : Ideal R, I.IsPrime → I ≠ ⊥ → I.FG) :
+    IsNoetherianRing R :=
+  .of_prime fun I hi ↦ (eq_or_ne I ⊥).elim (· ▸ Submodule.fg_bot) <| H _ hi

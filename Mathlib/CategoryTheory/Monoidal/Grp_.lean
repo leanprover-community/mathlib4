@@ -22,9 +22,8 @@ universe v₁ v₂ v₃ u₁ u₂ u₃ u
 
 open CategoryTheory Category Limits MonoidalCategory CartesianMonoidalCategory Mon MonObj
 
+namespace CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory.{v₁} C]
-
-section
 
 /-- A group object internal to a cartesian monoidal category. Also see the bundled `Grp`. -/
 class GrpObj (X : C) extends MonObj X where
@@ -51,8 +50,6 @@ instance : GrpObj (𝟙_ C) where
   inv := 𝟙 (𝟙_ C)
 
 end GrpObj
-
-end
 
 variable (C) in
 /-- A group object in a Cartesian monoidal category. -/
@@ -426,7 +423,6 @@ instance instBraidedCategory : BraidedCategory (Grp C) :=
 
 end Grp
 
-namespace CategoryTheory
 variable
   {D : Type u₂} [Category.{v₂} D] [CartesianMonoidalCategory D]
   {E : Type u₃} [Category.{v₃} E] [CartesianMonoidalCategory E]
@@ -449,7 +445,7 @@ abbrev grpObjObj {G : C} [GrpObj G] : GrpObj (F.obj G) where
     simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc,
       Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp]
 
-scoped[Obj] attribute [instance] CategoryTheory.Functor.grpObjObj
+scoped[CategoryTheory.Obj] attribute [instance] CategoryTheory.Functor.grpObjObj
 
 @[reassoc, simp] lemma obj.ι_def {G : C} [GrpObj G] : ι[F.obj G] =  F.map ι := rfl
 

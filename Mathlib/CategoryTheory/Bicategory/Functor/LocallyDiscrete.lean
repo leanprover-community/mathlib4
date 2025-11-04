@@ -49,7 +49,7 @@ def pseudofunctorOfIsLocallyDiscrete
     (map₂_right_unitor : ∀ {b₀ b₁ : B} (f : b₀ ⟶ b₁),
       (mapComp f (𝟙 b₁)).hom ≫ map f ◁ (mapId b₁).hom ≫ (ρ_ (map f)).hom = eqToHom (by simp) := by
         cat_disch) :
-    Pseudofunctor B C where
+    B ⥤ᵖ C where
   obj := obj
   map := map
   map₂ φ := eqToHom (by
@@ -107,7 +107,7 @@ A functor between two categories `C` and `D` can be lifted to a pseudofunctor be
 corresponding locally discrete bicategories.
 -/
 @[simps! obj map mapId mapComp]
-def Functor.toPseudoFunctor : Pseudofunctor (LocallyDiscrete C) (LocallyDiscrete D) :=
+def Functor.toPseudoFunctor : LocallyDiscrete C ⥤ᵖ (LocallyDiscrete D) :=
   pseudofunctorOfIsLocallyDiscrete
     (fun ⟨X⟩ ↦.mk <| F.obj X) (fun ⟨f⟩ ↦ (F.map f).toLoc)
     (fun ⟨X⟩ ↦ eqToIso (by simp)) (fun f g ↦ eqToIso (by simp))
@@ -136,7 +136,7 @@ If `B` is a strict bicategory and `I` is a (1-)category, any functor (of 1-categ
 be promoted to a pseudofunctor from `LocallyDiscrete I` to `B`.
 -/
 @[simps! obj map mapId mapComp]
-def Functor.toPseudoFunctor' : Pseudofunctor (LocallyDiscrete I) B :=
+def Functor.toPseudoFunctor' : LocallyDiscrete I ⥤ᵖ B :=
   pseudofunctorOfIsLocallyDiscrete
     (fun ⟨X⟩ ↦ F.obj X) (fun ⟨f⟩ ↦ F.map f)
     (fun ⟨X⟩ ↦ eqToIso (by simp)) (fun f g ↦ eqToIso (by simp))
@@ -171,7 +171,7 @@ def mkPseudofunctor {B₀ C : Type*} [Category B₀] [Bicategory C]
     (map₂_right_unitor : ∀ {b₀ b₁ : B₀} (f : b₀ ⟶ b₁),
       (mapComp f (𝟙 b₁)).hom ≫ map f ◁ (mapId b₁).hom ≫ (ρ_ (map f)).hom = eqToHom (by simp) := by
         cat_disch) :
-    Pseudofunctor (LocallyDiscrete B₀) C :=
+    LocallyDiscrete B₀ ⥤ᵖ C :=
   pseudofunctorOfIsLocallyDiscrete (fun b ↦ obj b.as) (fun f ↦ map f.as)
     (fun _ ↦ mapId _) (fun _ _ ↦ mapComp _ _) (fun _ _ _ ↦ map₂_associator _ _ _)
     (fun _ ↦ map₂_left_unitor _) (fun _ ↦ map₂_right_unitor _)

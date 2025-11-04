@@ -59,13 +59,17 @@ To show `Polynomial.Splits p f` for an arbitrary ring homomorphism `f`,
 see `IsSepClosed.splits_codomain` and `IsSepClosed.splits_domain`.
 -/
 class IsSepClosed : Prop where
-  splits_of_separable : ∀ p : k[X], p.Separable → (p.Splits <| RingHom.id k)
+  factors_of_separable : ∀ p : k[X], p.Separable → p.Factors
 
 /-- An algebraically closed field is also separably closed. -/
 instance IsSepClosed.of_isAlgClosed [IsAlgClosed k] : IsSepClosed k :=
-  ⟨fun p _ ↦ IsAlgClosed.splits p⟩
+  ⟨fun p _ ↦ IsAlgClosed.factors p⟩
 
 variable {k} {K}
+
+theorem IsSepClosed.splits_of_separable [IsSepClosed k] (p : k[X]) (hp : p.Separable) :
+    p.Splits (RingHom.id k) :=
+  (factors_of_separable p hp).map (RingHom.id k)
 
 /-- Every separable polynomial splits in the field extension `f : k →+* K` if `K` is
 separably closed.
@@ -173,7 +177,6 @@ theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → Separabl
     IsSepClosed k := by
   refine ⟨fun p hsep ↦ factors_iff_splits.mpr <| Or.inr ?_⟩
   intro q hq hdvd
-  simp only [map_id] at hdvd
   have hlc : IsUnit (leadingCoeff q)⁻¹ := IsUnit.inv <| Ne.isUnit <|
     leadingCoeff_ne_zero.2 <| Irreducible.ne_zero hq
   have hsep' : Separable (q * C (leadingCoeff q)⁻¹) :=

@@ -43,7 +43,7 @@ def Ring.perfectionSubsemiring (R : Type u₁) [CommSemiring R] (p : ℕ) [hp : 
     [CharP R p] : Subsemiring (ℕ → R) :=
   { Monoid.perfection R p with
     zero_mem' := fun _ ↦ zero_pow hp.1.ne_zero
-    add_mem' := fun hf hg n => (frobenius_add R p _ _).trans <| congr_arg₂ _ (hf n) (hg n) }
+    add_mem' := fun hf hg n => (map_add (frobenius R p) _ _).trans <| congr_arg₂ _ (hf n) (hg n) }
 
 /-- The perfection of a ring `R` with characteristic `p`, as a subring,
 defined to be the projective limit of `R` using the Frobenius maps `R → R`

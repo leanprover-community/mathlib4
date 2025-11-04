@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hans Parshall
 -/
 import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Analysis.Matrix
+import Mathlib.Analysis.Matrix.Normed
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.LinearAlgebra.UnitaryGroup
 import Mathlib.Topology.UniformSpace.Matrix
@@ -68,7 +68,7 @@ theorem entry_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.uni
     rw [diag_eq_norm_sum.1]
     norm_cast
   -- Since U is unitary, the diagonal entries of U * Uᴴ are all 1
-  have mul_eq_one : U * Uᴴ = 1 := unitary.mul_star_self_of_mem hU
+  have mul_eq_one : U * Uᴴ = 1 := Unitary.mul_star_self_of_mem hU
   have diag_eq_one : RCLike.re ((U * Uᴴ) i i) = 1 := by
     simp only [mul_eq_one, Matrix.one_apply_eq, RCLike.one_re]
   -- Putting it all together

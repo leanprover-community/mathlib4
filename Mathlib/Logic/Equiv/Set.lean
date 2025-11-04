@@ -251,12 +251,6 @@ protected def singleton {α} (a : α) : ({a} : Set α) ≃ PUnit.{u} :=
     subst x
     rfl, fun ⟨⟩ => rfl⟩
 
-@[deprecated (since := "2025-03-19"), simps! apply symm_apply]
-protected alias ofEq := Equiv.setCongr
-
-attribute [deprecated Equiv.setCongr_apply (since := "2025-03-19")] Set.ofEq_apply
-attribute [deprecated Equiv.setCongr_symm_apply (since := "2025-03-19")] Set.ofEq_symm_apply
-
 lemma Equiv.strictMono_setCongr {α : Type*} [Preorder α] {S T : Set α} (h : S = T) :
     StrictMono (setCongr h) := fun _ _ ↦ id
 

@@ -256,7 +256,7 @@ theorem expMap_target :
 
 theorem injective_expMap :
     Function.Injective (expMap : realSpace K → realSpace K) :=
-  Set.injective_iff_injOn_univ.mpr ((expMap_source K) ▸ expMap.injOn)
+  Set.injOn_univ.1 (expMap_source K ▸ expMap.injOn)
 
 theorem continuous_expMap :
     Continuous (expMap : realSpace K → realSpace K) :=

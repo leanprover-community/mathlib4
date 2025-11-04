@@ -204,27 +204,19 @@ variable {ι : Type*}
 theorem replicateCol_empty (v : Fin 0 → α) : replicateCol ι v = vecEmpty :=
   empty_eq _
 
-@[deprecated (since := "2025-03-20")] alias col_empty := replicateCol_empty
-
 @[simp]
 theorem replicateCol_cons (x : α) (u : Fin m → α) :
     replicateCol ι (vecCons x u) = of (vecCons (fun _ => x) (replicateCol ι u)) := by
   ext i j
   refine Fin.cases ?_ ?_ i <;> simp
 
-@[deprecated (since := "2025-03-20")] alias col_cons := replicateCol_cons
-
 @[simp]
 theorem replicateRow_empty : replicateRow ι (vecEmpty : Fin 0 → α) = of fun _ => vecEmpty := rfl
-
-@[deprecated (since := "2025-03-20")] alias row_empty := replicateRow_empty
 
 @[simp]
 theorem replicateRow_cons (x : α) (u : Fin m → α) :
     replicateRow ι (vecCons x u) = of fun _ => vecCons x u :=
   rfl
-
-@[deprecated (since := "2025-03-20")] alias row_cons := replicateRow_cons
 
 end ColRow
 

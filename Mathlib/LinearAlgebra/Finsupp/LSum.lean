@@ -248,8 +248,6 @@ protected theorem Submodule.finsuppSum_mem {ι β : Type*} [Zero β] (S : Submod
     (g : ι → β → M) (h : ∀ c, f c ≠ 0 → g c (f c) ∈ S) : f.sum g ∈ S :=
   AddSubmonoidClass.finsuppSum_mem S f g h
 
-@[deprecated (since := "2025-04-06")] alias Submodule.finsupp_sum_mem := Submodule.finsuppSum_mem
-
 end
 
 namespace LinearMap

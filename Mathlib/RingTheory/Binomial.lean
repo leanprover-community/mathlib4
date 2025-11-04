@@ -89,9 +89,6 @@ namespace Ring
 
 variable {R : Type*} [AddCommMonoid R] [Pow R ℕ] [BinomialRing R]
 
-@[deprecated (since := "2025-03-15")] protected alias nsmul_right_injective := nsmul_right_injective
-@[deprecated (since := "2025-03-15")] protected alias nsmul_right_inj := nsmul_right_inj
-
 /-- The multichoose function is the quotient of ascending Pochhammer evaluation by the corresponding
 factorial. When applied to natural numbers, `multichoose k n` describes choosing a multiset of `n`
 items from a type of size `k`, i.e., choosing with replacement. -/
