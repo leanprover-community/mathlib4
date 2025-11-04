@@ -312,19 +312,19 @@ open Subgroup
 
 namespace CongruenceSubgroup
 
-@[simp] lemma strictPeriods_Gamma0 (N : ℕ) [NeZero N] :
+@[simp] lemma strictPeriods_Gamma0 (N : ℕ) :
     strictPeriods (Gamma0 N : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples 1 :=
   strictPeriods_eq_zmultiples_one_of_T_mem <| by simp [ModularGroup.T]
 
-@[simp] lemma strictPeriods_Gamma1 (N : ℕ) [NeZero N] :
+@[simp] lemma strictPeriods_Gamma1 (N : ℕ) :
     strictPeriods (Gamma1 N : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples 1 :=
   strictPeriods_eq_zmultiples_one_of_T_mem <| by simp [ModularGroup.T]
 
-@[simp] lemma strictWidthInfty_Gamma0 (N : ℕ) [NeZero N] :
+@[simp] lemma strictWidthInfty_Gamma0 (N : ℕ) :
     strictWidthInfty (Gamma0 N : Subgroup (GL (Fin 2) ℝ)) = 1 :=
   strictWidthInfty_eq_one_of_T_mem <| by simp [ModularGroup.T]
 
-@[simp] lemma strictWidthInfty_Gamma1 (N : ℕ) [NeZero N] :
+@[simp] lemma strictWidthInfty_Gamma1 (N : ℕ) :
     strictWidthInfty (Gamma1 N : Subgroup (GL (Fin 2) ℝ)) = 1 :=
   strictWidthInfty_eq_one_of_T_mem <| by simp [ModularGroup.T]
 
