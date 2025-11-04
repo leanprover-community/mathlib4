@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Notation.Support
 
-
 /-!
 # Miscellaneous lemmas on big operators
 
