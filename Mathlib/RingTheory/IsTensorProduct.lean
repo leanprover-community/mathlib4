@@ -4,9 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.TensorProduct.Maps
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.LinearAlgebra.DirectSum.TensorProduct
-
 /-!
 # The characteristic predicate of tensor product
 
