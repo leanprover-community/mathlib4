@@ -2693,7 +2693,6 @@ lemma eq5zero : 1 ≤ norm
   -- rw [etc (σ0 := ((h7.σ)).toRatAlgHom)] at this
   -- rw [this]
   -- simp only [RingHom.toRatAlgHom_apply, Complex.norm_mul, norm_prod] at this
-  sorry
 
 
   --have := exists_conjugate_abs_gt_one (h7.c1rho_neq_0 q hq0 h2mq)
@@ -2704,18 +2703,26 @@ lemma eq5zero : 1 ≤ norm
   -- rw [this]
   -- simp only [norm_pow, Int.norm_cast_rat, ge_iff_le]
 
-  -- have h2 : 0 < ‖(Algebra.norm ℚ) (ρᵣ h7 q hq0 h2mq)‖ := by {
-  --   rw [norm_pos_iff]
-  --   rw [← rho_eq_ρᵣ]
-  --   have Hnorm_neq_0 := norm_neq_0
-  --   have := ρᵣ_nonzero h7 q hq0 h2mq
-  --   rw [← rho_eq_ρᵣ] at this
-  --   simp only [ne_eq, norm_eq_zero, Algebra.norm_eq_zero_iff] at Hnorm_neq_0
-  --   intros H
-  --   apply this
-  --   simp only [map_eq_zero]
-
-  --   }
+  have h2 : 0 < ‖(Algebra.norm ℚ) (ρᵣ h7 q hq0 h2mq)‖ := by {
+    rw [norm_pos_iff]
+    rw [← rho_eq_ρᵣ]
+    have := abs_norm_eq_prod_embeddings_norm ( α := rho h7 q hq0 h2mq)
+    --have Hnorm_neq_0 := norm_ne_zero_iff
+    have := ρᵣ_nonzero h7 q hq0 h2mq
+    rw [← rho_eq_ρᵣ] at this
+    --simp only [ne_eq, norm_eq_zero, Algebra.norm_eq_zero_iff] at Hnorm_neq_0
+    intros H
+    apply this
+    simp only [map_eq_zero]
+    apply_fun h7.σ
+    · apply_fun (Algebra.norm ℚ)
+      · simp only [map_zero]
+        rw [H]
+        sorry
+        sorry
+      · sorry
+    · exact RingHom.injective h7.σ
+    }
 
   -- calc 1 ≤ ‖h7.cρ q hq0 h2mq‖ ^ Module.finrank ℚ h7.K := h7.h1 q hq0 h2mq
   --      _ ≤ ‖h7.cρ q hq0 h2mq‖ ^ Module.finrank ℚ h7.K *
@@ -5071,30 +5078,37 @@ def c₁₅ : ℝ := h7.c₁₄ * h7.c₅
 
 lemma use5 : (h7.r q hq0 h2mq)^(((h7.r q hq0 h2mq) - 3 * (h7.h)) / 2) <
     (h7.c₁₅) ^ (h7.r q hq0 h2mq) := by
-  have use6and8 := use6and8 h7 q hq0 h2mq
-  -- have eq5 := eq5 h7 q hq0 h2mq
-  -- have eq5inv: norm ((Algebra.norm ℚ) (h7.rho q hq0 h2mq)) ⁻¹
-  --  < h7.c₅ ^ ((h7.r q hq0 h2mq)) := by {
-  --   simp only [zpow_neg, zpow_natCast] at eq5
-  --   rw [← inv_lt_inv₀] at eq5
-  --   simp only [inv_inv] at eq5
-  --   · sorry
-  --   · sorry
-  --   · simp only [inv_pos]
-  --     sorry
-  --  }
-  have :
-    norm (↑((Algebra.norm ℚ) (h7.rho q hq0 h2mq))) *
-     (↑(h7.r q hq0 h2mq : ℝ) ^ (-(h7.r q hq0 h2mq : ℤ) / 2 + 3 * ↑h7.h / 2))⁻¹ ≤
-     h7.c₁₄ ^ h7.r q hq0 h2mq  := by {
-      refine mul_inv_le_of_le_mul₀ ?_ ?_ use6and8
-      · sorry
-      · sorry}
+  have eq5 := eq5 h7 q hq0 h2mq
+  have eq5inv: norm ((Algebra.norm ℚ) (h7.rho q hq0 h2mq)) ⁻¹
+   < h7.c₅ ^ ((h7.r q hq0 h2mq)) := by {
+    simp only [zpow_neg, zpow_natCast] at eq5
+    rw [← inv_lt_inv₀] at eq5
+    simp only [inv_inv] at eq5
+    · sorry
+    · sorry
+    · simp only [inv_pos]
+      sorry
+   }
+  have Hpow : ↑(h7.r q hq0 h2mq : ℝ) ^ ((h7.r q hq0 h2mq - 3 * h7.h) / 2) =
+  (↑(h7.r q hq0 h2mq : ℝ) ^ (-(h7.r q hq0 h2mq : ℤ) / 2 + 3 * ↑h7.h / 2))⁻¹ := sorry
 
-  calc _ = (↑(h7.r q hq0 h2mq : ℝ) ^ (-(h7.r q hq0 h2mq : ℤ) / 2 + 3 * ↑h7.h / 2))⁻¹ := ?_
-       _ ≤ (↑(h7.r q hq0 h2mq : ℝ) ^ (-(h7.r q hq0 h2mq : ℤ) / 2 + 3 * ↑h7.h / 2))⁻¹ *
-     (norm (↑((Algebra.norm ℚ) (h7.rho q hq0 h2mq)))) := ?_
-       _ < h7.c₁₄^(h7.r q hq0 h2mq) := ?_
+  have :  ↑(h7.r q hq0 h2mq : ℝ)^ (((h7.r q hq0 h2mq) - 3 * h7.h) / 2) ≤
+    (norm (↑((Algebra.norm ℚ) (h7.rho q hq0 h2mq))) ⁻¹)
+      * h7.c₁₄ ^ h7.r q hq0 h2mq := by {
+    simp only [norm_inv]
+    refine (le_inv_mul_iff₀' ?_).mpr ?_
+    · sorry
+    · rw [Hpow]
+      refine mul_inv_le_of_le_mul₀ ?_ ?_ (use6and8 h7 q hq0 h2mq)
+      · sorry
+      · sorry
+    }
+
+  calc _ = (↑(h7.r q hq0 h2mq : ℝ) ^
+         (-(h7.r q hq0 h2mq : ℤ) / 2 + 3 * ↑h7.h / 2))⁻¹ := ?_
+       _ ≤ (norm (↑((Algebra.norm ℚ) (h7.rho q hq0 h2mq))))⁻¹
+           * h7.c₁₄ ^ h7.r q hq0 h2mq := ?_
+       _ < h7.c₁₄^(h7.r q hq0 h2mq) * h7.c₅ ^(h7.r q hq0 h2mq) := ?_
        _ = (h7.c₁₅) ^(h7.r q hq0 h2mq) := ?_
   · sorry
   · simp only at this
