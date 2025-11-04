@@ -49,7 +49,7 @@ structure StrictSegal where
 /-- For an `n + 1`-truncated simplicial set `X`, `IsStrictSegal X` asserts the
 mere existence of an inverse to `spine X m` for all `m ≤ n + 1`. -/
 class IsStrictSegal (X : SSet.Truncated.{u} (n + 1)) : Prop where
-  spine_bijective (X) (m : ℕ) (h : m ≤ n + 1 := by omega) : Function.Bijective (X.spine m)
+  spine_bijective (X) (m : ℕ) (h : m ≤ n + 1 := by grind) : Function.Bijective (X.spine m)
 
 export IsStrictSegal (spine_bijective)
 
@@ -61,12 +61,12 @@ lemma spine_injective (X : SSet.Truncated.{u} (n + 1)) [X.IsStrictSegal]
   (spine_bijective X m).injective
 
 lemma spine_surjective (X : SSet.Truncated.{u} (n + 1)) [X.IsStrictSegal]
-    {m : ℕ} (p : X.Path m) (h : m ≤ n + 1 := by omega) :
+    {m : ℕ} (p : X.Path m) (h : m ≤ n + 1 := by grind) :
     ∃ (x : X _⦋m⦌ₙ₊₁), X.spine m _ x = p :=
   (spine_bijective X m).surjective p
 
 variable {X} in
-lemma IsStrictSegal.ext [X.IsStrictSegal] {d : ℕ} {hd} {x y : X.obj (op ⟨⦋d + 1⦌, hd⟩)}
+lemma IsStrictSegal.ext [X.IsStrictSegal] {d : ℕ} {hd} {x y : X _⦋d + 1⦌ₙ₊₁}
     (h : ∀ (i : Fin (d + 1)),
       X.map (SimplexCategory.Truncated.Hom.tr (mkOfSucc i)).op x =
         X.map (SimplexCategory.Truncated.Hom.tr (mkOfSucc i)).op y) :

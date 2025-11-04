@@ -232,11 +232,11 @@ lemma ext₀ {f g : Path X 0} (h : f.vertex 0 = g.vertex 0) : f = g := by
 
 /-- For `j + l ≤ n`, a path of length `n` restricts to a path of length `l`, namely
 the subpath spanned by the vertices `j ≤ i ≤ j + l` and edges `j ≤ i < j + l`. -/
-def interval (f : Path X n) (j l : ℕ) (h : j + l ≤ n := by omega) : Path X l :=
+def interval (f : Path X n) (j l : ℕ) (h : j + l ≤ n := by grind) : Path X l :=
   Truncated.Path.interval f j l h
 
 lemma arrow_interval (f : Path X n) (j l : ℕ) (k' : Fin l) (k : Fin n)
-    (h : j + l ≤ n := by omega) (hkk' : j + k' = k := by omega) :
+    (h : j + l ≤ n := by omega) (hkk' : j + k' = k := by grind) :
     (f.interval j l h).arrow k' = f.arrow k := by
   dsimp [interval, arrow, Truncated.Path.interval, Truncated.Path.arrow]
   congr
@@ -295,7 +295,7 @@ lemma spine_δ₀ {m : ℕ} (x : X _⦋m + 1⦌) :
     rw [SimplicialObject.δ_def, ← FunctorToTypes.map_comp_apply, ← op_comp,
       SimplexCategory.mkOfSucc_δ_gt (j := 0) (i := i) (by simp)]
     symm
-    exact (Path.arrow_interval _ _ _ _ _ _ (by rw [Fin.val_succ, add_comm]))
+    exact Path.arrow_interval _ _ _ _ _ _ (by rw [Fin.val_succ, add_comm])
 
 /-- For `m ≤ n + 1`, the `m`-spine of `X` factors through the `n + 1`-truncation
 of `X`. -/
