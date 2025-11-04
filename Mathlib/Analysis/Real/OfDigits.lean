@@ -156,29 +156,24 @@ theorem ofDigits_digits {b : ℕ} [NeZero b] {x : ℝ} (hb : 1 < b) (hx : x ∈ 
   · exact summable_ofDigitsTerm
 
 theorem ofDigits_continuous {b : ℕ} : Continuous (@ofDigits b) := by
-  by_cases hb0 : b = 0
-  · subst hb0
-    fun_prop
-  by_cases hb : b = 1
-  · subst hb
-    fun_prop
-  replace hb : 1 < b := by
-    omega
-  rify at hb0 hb
-  unfold ofDigits
-  apply continuous_tsum (u := fun i ↦ (b : ℝ)⁻¹ ^ i)
-  · intro i
-    simp [ofDigitsTerm]
-    fun_prop
-  · apply summable_geometric_of_lt_one (by positivity) ((inv_lt_one_of_one_lt₀ hb))
-  · intro n x
-    simp [abs_of_nonneg ofDigitsTerm_nonneg]
-    apply le_trans ofDigitsTerm_le
-    calc
-      _ ≤ b * ((b : ℝ) ^ (n + 1))⁻¹ := by
-        gcongr
-        linarith
-      _ = _ := by
-        grind
+  match b with
+  | 0 => fun_prop
+  | 1 => fun_prop
+  | n + 2 =>
+    obtain ⟨hb0, hb⟩ : 0 < n + 2 ∧ 1 < n + 2 := by grind
+    generalize n + 2 = b at hb
+    rify at hb0 hb
+    refine continuous_tsum (u := fun i ↦ (b : ℝ)⁻¹ ^ i) ?_ ?_ fun n x ↦ ?_
+    · simp only [ofDigitsTerm]
+      fun_prop
+    · exact summable_geometric_of_lt_one (by positivity) ((inv_lt_one_of_one_lt₀ hb))
+    · simp only [norm_eq_abs, abs_of_nonneg ofDigitsTerm_nonneg, inv_pow]
+      apply ofDigitsTerm_le.trans
+      calc
+        _ ≤ b * ((b : ℝ) ^ (n + 1))⁻¹ := by
+          gcongr
+          linarith
+        _ = _ := by
+          grind
 
 end Real

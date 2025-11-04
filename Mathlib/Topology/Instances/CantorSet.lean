@@ -249,6 +249,10 @@ using only digits `0` and `2`, such that `x = 0.d₀d₁...` in base-3. -/
 noncomputable def cantorToTernary (x : ℝ) : Stream' (Fin 3) :=
   (cantorToBinary x).map (cond · 2 0)
 
+theorem ofDigits_bool_to_fin_3_mem_cantorSet (f : ℕ → Bool) :
+    ofDigits (fun i ↦ cond (f i) (2 : Fin 3) 0) ∈ cantorSet :=
+  ofDigits_zero_two_sequence_mem_cantorSet (by grind)
+
 theorem cantorToTernary_ne_one {x : ℝ} {n : ℕ} : (cantorToTernary x).get n ≠ 1 := by
   intro h
   grind [cantorToTernary, Fin.isValue, Stream'.get_map]
@@ -324,14 +328,7 @@ open Real
 noncomputable def cantorSet_equiv_nat_to_bool : cantorSet ≃ (ℕ → Bool) where
   toFun := fun ⟨x, h⟩ ↦ (cantorToBinary x).get
   invFun (y : ℕ → Bool) :=
-    let x : ℝ := ofDigits (Pi.map (fun _ b ↦ cond b 2 0) y)
-    have hx : x ∈ cantorSet := by
-      simp only [x]
-      apply ofDigits_zero_two_sequence_mem_cantorSet
-      intro n
-      simp only [Fin.isValue, Pi.map_apply, ne_eq]
-      cases y n <;> simp
-    ⟨x, hx⟩
+    ⟨ofDigits (fun i ↦ cond (y i) 2 0), ofDigits_bool_to_fin_3_mem_cantorSet y⟩
   left_inv := by
     intro ⟨x, hx⟩
     simp only [Fin.isValue, Subtype.mk.injEq]
@@ -339,38 +336,17 @@ noncomputable def cantorSet_equiv_nat_to_bool : cantorSet ≃ (ℕ → Bool) whe
   right_inv := by
     intro y
     simp only [Fin.isValue]
-    set x := @ofDigits 3 (Pi.map (fun _ b ↦ cond b 2 0) y)
-    have hx : x ∈ cantorSet := by
-      apply ofDigits_zero_two_sequence_mem_cantorSet
-      intro n
-      simp only [Fin.isValue, Pi.map_apply, ne_eq]
-      cases y n <;> simp
-    have := ofDigits_cantorToTernary hx
-    conv at this => rhs; unfold x
+    set x := @ofDigits 3 (fun i ↦ cond (y i) 2 0)
+    have := ofDigits_cantorToTernary (ofDigits_bool_to_fin_3_mem_cantorSet y)
     apply ofDigits_zero_two_sequence_unique at this
     rotate_left
     · exact fun n ↦ cantorToTernary_ne_one
-    · intro n
-      simp only [Fin.isValue, Pi.map_apply, ne_eq]
-      cases y n <;> simp
+    · grind
     ext n
     apply congrFun (a := n) at this
-    simp only [cantorToTernary, Fin.isValue, Stream'.get_map, Pi.map_apply] at this
-    generalize (cantorToBinary x).get n = a at this
-    generalize y n = b at this
-    cases a <;> cases b <;> first | rfl | simp at this
+    grind [cantorToTernary, Stream'.get_map]
 
 /-- Canonical homeomorphism between the Cantor set and `ℕ → Bool`. -/
 noncomputable def cantorSet_homeomorph_nat_to_bool : cantorSet ≃ₜ (ℕ → Bool) :=
-  Homeomorph.symm <| Continuous.homeoOfEquivCompactToT2 (f := cantorSet_equiv_nat_to_bool.symm) (by
-    simp only [cantorSet_equiv_nat_to_bool, Fin.isValue, Equiv.coe_fn_symm_mk]
-    apply Continuous.subtype_mk
-    change Continuous (ofDigits ∘ (fun x ↦ Pi.map (fun x b ↦ bif b then 2 else 0) x))
-    apply Continuous.comp ofDigits_continuous
-    have : (fun x ↦ Pi.map (fun (_ : ℕ) b ↦ bif b then (2 : Fin 3) else 0) x) =
-        (Pi.map (fun x b ↦ bif b then (2 : Fin 3) else 0)) := by
-      eta_expand
-      rfl
-    rw [this]
-    exact Continuous.piMap (fun _ ↦ continuous_of_discreteTopology)
-  )
+  Homeomorph.symm <| Continuous.homeoOfEquivCompactToT2 (f := cantorSet_equiv_nat_to_bool.symm)
+    (Continuous.subtype_mk (Continuous.comp ofDigits_continuous (by fun_prop)) _)
