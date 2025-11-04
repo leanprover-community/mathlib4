@@ -71,7 +71,7 @@ lemma tendstoInDistribution_const [OpensMeasurableSpace E] (hZ : AEMeasurable Z 
   tendsto := tendsto_const_nhds
 
 @[simp]
-lemma tendstoInDistribution_of_isEmpty [OpensMeasurableSpace E] [IsEmpty E] :
+lemma tendstoInDistribution_of_isEmpty [IsEmpty E] :
     TendstoInDistribution X l Z μ where
   forall_aemeasurable := fun _ ↦ (measurable_of_subsingleton_codomain _).aemeasurable
   aemeasurable_limit := (measurable_of_subsingleton_codomain _).aemeasurable
@@ -112,7 +112,7 @@ to `Z`, and `Y n - X n` converges in probability to `0`.
 Then `Y n` converges in distribution to `Z`. -/
 lemma tendstoInDistribution_of_tendstoInMeasure_sub
     [l.IsCountablyGenerated] (Y : ι → Ω → E) (Z : Ω → E)
-    (hXZ : TendstoInDistribution X l Z μ) (hXY : TendstoInMeasure μ (fun n ↦ Y n - X n) l 0)
+    (hXZ : TendstoInDistribution X l Z μ) (hXY : TendstoInMeasure μ (Y - X) l 0)
     (hY : ∀ i, AEMeasurable (Y i) μ) :
     TendstoInDistribution Y l Z μ := by
   have hZ : AEMeasurable Z μ := hXZ.aemeasurable_limit
@@ -130,34 +130,27 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub
   rintro F ⟨M, hF_bounded⟩ ⟨L, hF_lip⟩
   have hF_cont : Continuous F := hF_lip.continuous
   -- If `F` is 0-Lipschitz, then it is constant, and all integrals are equal to that constant
-  by_cases hL : L = 0
-  · simp only [hL, LipschitzWith.zero_iff] at hF_lip
+  obtain rfl | hL := eq_zero_or_pos L
+  · simp only [LipschitzWith.zero_iff] at hF_lip
     specialize hF_lip x₀
-    simp_rw [eq_comm (a := F x₀)] at hF_lip
-    simp only [hF_lip, integral_const, smul_eq_mul]
+    simp only [← hF_lip, integral_const, smul_eq_mul]
     have h_prob n : IsProbabilityMeasure (μ.map (Y n)) := Measure.isProbabilityMeasure_map (hY n)
     have : IsProbabilityMeasure (μ.map Z) := Measure.isProbabilityMeasure_map hZ
-    simp only [measureReal_univ_eq_one, one_mul]
-    exact tendsto_const_nhds
+    simpa using tendsto_const_nhds
   -- now `F` is `L`-Lipschitz with `L > 0`
-  replace hL : 0 < L := lt_of_le_of_ne L.2 (Ne.symm hL)
-  rw [Metric.tendsto_nhds]
-  simp_rw [Real.dist_eq]
+  simp_rw [Metric.tendsto_nhds, Real.dist_eq]
   suffices ∀ ε > 0, ∀ᶠ n in l, |∫ ω, F ω ∂(μ.map (Y n)) - ∫ ω, F ω ∂(μ.map Z)| < L * ε by
     intro ε hε
-    specialize this (ε / L) (by positivity)
-    convert this
+    convert this (ε / L) (by positivity)
     field_simp
   intro ε hε
   -- We cut the difference into three pieces, two of which are small by the convergence assumptions
   have h_le n : |∫ ω, F ω ∂(μ.map (Y n)) - ∫ ω, F ω ∂(μ.map Z)|
       ≤ L * (ε / 2) + M * μ.real {ω | ε / 2 ≤ ‖Y n ω - X n ω‖}
         + |∫ ω, F ω ∂(μ.map (X n)) - ∫ ω, F ω ∂(μ.map Z)| := by
-    refine (dist_triangle (∫ ω, F ω ∂(μ.map (Y n))) (∫ ω, F ω ∂(μ.map (X n)))
+    refine (abs_sub_le (∫ ω, F ω ∂(μ.map (Y n))) (∫ ω, F ω ∂(μ.map (X n)))
       (∫ ω, F ω ∂(μ.map Z))).trans ?_
     gcongr
-    swap; · rw [Real.dist_eq]
-    rw [Real.dist_eq]
     -- `⊢ |∫ ω, F ω ∂(μ.map (Y n)) - ∫ ω, F ω ∂(μ.map (X n))|`
     -- `    ≤ L * (ε / 2) + M * μ.real {ω | ε / 2 ≤ ‖Y n ω - X n ω‖}`
     -- We prove integrability of the functions involved to be able to manipulate the integrals.
@@ -176,8 +169,7 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub
       exact h_int_Y.sub h_int_X
     -- Now we prove the inequality
     rw [integral_map (by fun_prop) (by fun_prop), integral_map (by fun_prop) (by fun_prop),
-      ← integral_sub h_int_Y h_int_X]
-    rw [← Real.norm_eq_abs]
+      ← integral_sub h_int_Y h_int_X, ← Real.norm_eq_abs]
     calc ‖∫ a, F (Y n a) - F (X n a) ∂μ‖
     _ ≤ ∫ a, ‖F (Y n a) - F (X n a)‖ ∂μ := norm_integral_le_integral_norm _
     -- Either `‖Y n x - X n x‖` is smaller than `ε / 2`, or it is not
@@ -194,10 +186,7 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub
       gcongr ?_ + ?_
       · refine setIntegral_mono_on₀ h_int_sub.integrableOn integrableOn_const ?_ ?_
         · exact nullMeasurableSet_lt (by fun_prop) (by fun_prop)
-        · intro x hx
-          simp only [Set.mem_setOf_eq] at hx
-          rw [← dist_eq_norm] at hx ⊢
-          exact hF_lip.dist_le_mul_of_le hx.le
+        · exact fun x hx ↦ hF_lip.norm_sub_le_of_le hx.le
       · refine setIntegral_mono h_int_sub.integrableOn integrableOn_const fun a ↦ ?_
         rw [← dist_eq_norm]
         convert hF_bounded _ _
@@ -210,9 +199,7 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub
     _ ≤ L * (ε / 2) + M * μ.real {ω | ε / 2 ≤ ‖Y n ω - X n ω‖} := by
       rw [mul_assoc]
       gcongr
-      conv_rhs => rw [← mul_one (ε / 2)]
-      gcongr
-      exact measureReal_le_one
+      grw [measureReal_le_one, mul_one]
   -- We finally show that the right-hand side tends to `L * ε / 2`, which is smaller than `L * ε`
   have h_tendsto :
       Tendsto (fun n ↦ L * (ε / 2) + M * μ.real {ω | ε / 2 ≤ ‖Y n ω - X n ω‖}
@@ -230,10 +217,7 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub
     · replace hXZ := hXZ.tendsto
       simp_rw [tendsto_iff_forall_lipschitz_integral_tendsto] at hXZ
       simpa [tendsto_iff_dist_tendsto_zero] using hXZ F ⟨M, hF_bounded⟩ ⟨L, hF_lip⟩
-  have h_lt : L * ε / 2 < L * ε := by
-    rw [mul_div_assoc]
-    gcongr
-    exact half_lt_self hε
+  have h_lt : L * ε / 2 < L * ε := half_lt_self (by positivity)
   filter_upwards [h_tendsto.eventually_lt_const h_lt] with n hn using (h_le n).trans_lt hn
 
 /-- Convergence in probability (`TendstoInMeasure`) implies convergence in distribution
@@ -266,7 +250,7 @@ theorem TendstoInDistribution.prodMk_of_tendstoInMeasure_const
       refine fun x y ↦ (hF_lip (x, c) (y, c)).trans ?_
       simp [edist_eq_enorm_sub, enorm_eq_nnnorm]
     have h_eq (f : Ω → E) (hf : AEMeasurable f μ) :
-        ∫ ω, F ω ∂μ.map (fun ω ↦ (f ω, c)) = ∫ ω, (fun x ↦ F (x, c)) ω ∂(μ.map f) := by
+        ∫ ω, F ω ∂μ.map (fun ω ↦ (f ω, c)) = ∫ ω, F (ω, c) ∂(μ.map f) := by
       rw [integral_map (by fun_prop), integral_map (by fun_prop)]
       · exact hFc_lip.continuous.stronglyMeasurable.aestronglyMeasurable
       · exact hF_lip.continuous.stronglyMeasurable.aestronglyMeasurable
