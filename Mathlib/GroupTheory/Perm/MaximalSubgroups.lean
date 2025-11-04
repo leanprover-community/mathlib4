@@ -212,9 +212,9 @@ lemma _root_.IsBlock.subsingleton_of_ssubset_compl_of_stabilizer_le
   · rw [mem_stabilizer_iff, Subgroup.mk_smul, ← mem_stabilizer_iff]
     exact ofSubtype_mem_stabilizer g
   · ext ⟨x, hx⟩
-    change Perm.ofSubtype g • x = _
-    simp only [Perm.smul_def]
-    rw [Perm.ofSubtype_apply_of_mem]
+    trans ofSubtype g x
+    · simp [φ]
+    · exact ofSubtype_apply_of_mem g hx
 
 lemma _root_.IsBlock.subsingleton_of_stabilizer_lt_of_subset
     {s B : Set α} {G : Subgroup (Perm α)}
