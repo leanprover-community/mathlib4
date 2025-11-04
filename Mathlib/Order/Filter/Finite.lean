@@ -205,8 +205,7 @@ instance instCoframe : Coframe (Filter α) where
     rw [mem_principal, compl_subset_comm]
     constructor
     · intro h x hxs t ht
-      by_contra hxt
-      exact (h (mem_of_superset ht subset_union_right) subset_union_left x).elim hxs hxt
+      exact (h (mem_of_superset ht subset_union_right) subset_union_left x).resolve_left hxs
     · intro h t ht hst x
       by_cases hx : x ∈ s
       · exact hst hx
