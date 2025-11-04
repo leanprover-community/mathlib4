@@ -115,16 +115,6 @@ theorem HasTemperateGrowth.neg (hf : f.HasTemperateGrowth) : (-f).HasTemperateGr
   obtain ⟨k, C, h⟩ := hf.2 n
   exact ⟨k, C, fun x ↦ by simpa [iteratedFDeriv_neg_apply] using h x⟩
 
-variable {α : Type*} {l : Filter α}
-
-theorem _root_.Asymptotics.isBigO.pow_of_le_right {f : α → ℝ}
-    (hf : 1 ≤ᶠ[l] f) {m n : ℕ}
-    (h : n ≤ m) : (f ^ n) =O[l] (f ^ m) := by
-  rw [IsBigO_def]
-  refine ⟨1, ?_⟩
-  rw [IsBigOWith_def]
-  exact hf.mono fun x hx ↦ by simp [abs_eq_self.mpr (zero_le_one.trans hx), pow_le_pow_right₀ hx h]
-
 theorem HasTemperateGrowth.add (hf : f.HasTemperateGrowth) (hg : g.HasTemperateGrowth) :
     (f + g).HasTemperateGrowth := by
   rw [hasTemperateGrowth_iff_isBigO] at *
