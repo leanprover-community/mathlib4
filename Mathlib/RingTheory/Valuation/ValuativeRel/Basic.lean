@@ -728,9 +728,7 @@ lemma pow_srel_pow (hab : a <ᵥ b) (n : ℕ) (hn : n ≠ 0) : a ^ n <ᵥ b ^ n 
   clear hn
   induction n with
   | zero => aesop
-  | succ n IH =>
-    rw [pow_succ a, pow_succ b]
-    exact mul_srel_mul ‹_› ‹_›
+  | succ _ _ => simp_all [pow_succ, mul_srel_mul]
 
 lemma pow_rel_pow_of_rel_one (ha : a ≤ᵥ 1) {n m : ℕ} (hnm : n ≤ m) : a ^ m ≤ᵥ a ^ n := by
   obtain ⟨m, rfl⟩ := exists_add_of_le hnm
@@ -986,7 +984,7 @@ lemma mapValueGroupWithZero_strictMono : StrictMono (mapValueGroupWithZero A B) 
 variable (B) in
 lemma _root_.ValuativeRel.IsRankLeOne.of_valuativeExtension [IsRankLeOne B] : IsRankLeOne A := by
     obtain ⟨⟨f, hf⟩⟩ := IsRankLeOne.nonempty (R := B)
-    refine ⟨⟨f.comp (mapValueGroupWithZero _ _), hf.comp mapValueGroupWithZero_strictMono⟩⟩
+    exact ⟨⟨f.comp (mapValueGroupWithZero _ _), hf.comp mapValueGroupWithZero_strictMono⟩⟩
 
 end ValuativeExtension
 
