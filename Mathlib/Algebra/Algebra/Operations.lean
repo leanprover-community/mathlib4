@@ -95,6 +95,9 @@ theorem one_eq_span_one_set : (1 : Submodule R A) = span R 1 :=
 theorem one_le {P : Submodule R A} : (1 : Submodule R A) ≤ P ↔ (1 : A) ∈ P := by
   simp [one_eq_span]
 
+instance : AddCommMonoidWithOne (Submodule R A) where
+  add_comm := sup_comm
+
 variable {M : Type*} [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
 
 instance : SMul (Submodule R A) (Submodule R M) where

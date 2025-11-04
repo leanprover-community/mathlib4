@@ -348,8 +348,8 @@ private theorem edgeDensity_chunk_aux [Nonempty α] (hP)
     _ = (G.edgeDensity U V - ε ^ 5 / 50) ^ 2 := by ring
     _ ≤ _ := by
       gcongr
-      have rflU := Set.Subset.refl (chunk hP G ε hU).parts.toSet
-      have rflV := Set.Subset.refl (chunk hP G ε hV).parts.toSet
+      have rflU := Subset.refl (chunk hP G ε hU).parts
+      have rflV := Subset.refl (chunk hP G ε hV).parts
       refine (le_trans ?_ <| density_sub_eps_le_sum_density_div_card hPα hPε rflU rflV).trans ?_
       · rw [biUnion_parts, biUnion_parts]
       · rw [card_chunk (m_pos hPα).ne', card_chunk (m_pos hPα).ne', ← cast_mul, ← mul_pow, cast_pow]

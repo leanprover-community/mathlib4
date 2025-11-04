@@ -213,7 +213,7 @@ theorem squarefree_mul_iff : Squarefree (x * y) ↔ IsRelPrime x y ∧ Squarefre
 
 open scoped Function in
 theorem Finset.squarefree_prod_of_pairwise_isCoprime {ι : Type*} {s : Finset ι}
-    {f : ι → R} (hs : Set.Pairwise s.toSet (IsRelPrime on f)) (hs' : ∀ i ∈ s, Squarefree (f i)) :
+    {f : ι → R} (hs : Set.Pairwise s (IsRelPrime on f)) (hs' : ∀ i ∈ s, Squarefree (f i)) :
     Squarefree (∏ i ∈ s, f i) := by
   induction s using Finset.cons_induction with
   | empty => simp
