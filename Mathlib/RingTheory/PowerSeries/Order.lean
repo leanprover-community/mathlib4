@@ -198,7 +198,7 @@ alias order_mul_ge := le_order_mul
 theorem order_monomial (n : ℕ) (a : R) [Decidable (a = 0)] :
     order (monomial n a) = if a = 0 then (⊤ : ℕ∞) else n := by
   split_ifs with h
-  · rw [h, order_eq_top, LinearMap.map_zero]
+  · rw [h, order_eq_top, map_zero]
   · rw [order_eq]
     constructor <;> intro i hi
     · simp only [Nat.cast_inj] at hi

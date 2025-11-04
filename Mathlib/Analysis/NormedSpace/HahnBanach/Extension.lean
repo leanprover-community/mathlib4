@@ -96,10 +96,10 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
     apply ext
     · simp only [add_zero, Algebra.id.smul_eq_mul, I_re, ofReal_im, AddMonoidHom.map_add, zero_sub,
         I_im', zero_mul, ofReal_re, sub_zero, mul_neg, ofReal_neg,
-        mul_re, mul_zero, sub_neg_eq_add, ContinuousLinearMap.map_smul]
+        mul_re, mul_zero, sub_neg_eq_add, map_smul]
     · simp only [Algebra.id.smul_eq_mul, I_re, ofReal_im, AddMonoidHom.map_add, zero_sub, I_im',
         zero_mul, ofReal_re, mul_neg, mul_im, zero_add, ofReal_neg, mul_re,
-        sub_neg_eq_add, ContinuousLinearMap.map_smul]
+        sub_neg_eq_add, map_smul]
   -- And we derive the equality of the norms by bounding on both sides.
   refine ⟨h, le_antisymm ?_ ?_⟩
   · calc

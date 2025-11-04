@@ -191,14 +191,14 @@ def tensorKaehlerEquiv [h : Algebra.IsPushout R S A B] :
     | add x y e₁ e₂ => simp only [map_add, e₁, e₂]
     | tmul x y =>
       dsimp
-      simp only [Derivation.tensorProductTo_tmul, LinearMap.map_smul,
+      simp only [Derivation.tensorProductTo_tmul, map_smul,
         Derivation.liftKaehlerDifferential_comp_D, map_liftBaseChange_smul]
       induction y using h.1.inductionOn
       · simp only [map_zero, smul_zero]
       · simp only [AlgHom.toLinearMap_apply, IsScalarTower.coe_toAlgHom',
           derivationTensorProduct_algebraMap, LinearMap.liftBaseChange_tmul,
           LinearMap.coe_restrictScalars, map_D, one_smul]
-      · simp only [Derivation.map_smul, LinearMap.map_smul, *, smul_comm x]
+      · simp only [Derivation.map_smul, map_smul, *, smul_comm x]
       · simp only [map_add, smul_add, *]
 
 @[simp]

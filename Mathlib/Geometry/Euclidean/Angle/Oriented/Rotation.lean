@@ -154,7 +154,7 @@ theorem rotation_trans (θ₁ θ₂ : Real.Angle) :
 @[simp]
 theorem kahler_rotation_left (x y : V) (θ : Real.Angle) :
     o.kahler (o.rotation θ x) y = conj (θ.toCircle : ℂ) * o.kahler x y := by
-  simp only [o.rotation_apply, map_add, map_mul, LinearMap.map_smulₛₗ, RingHom.id_apply,
+  simp only [o.rotation_apply, map_add, map_mul, map_smulₛₗ, RingHom.id_apply,
     LinearMap.add_apply, LinearMap.smul_apply, real_smul, kahler_rightAngleRotation_left,
     Real.Angle.coe_toCircle, Complex.conj_ofReal, conj_I]
   ring
@@ -183,7 +183,7 @@ theorem kahler_rotation_left' (x y : V) (θ : Real.Angle) :
 @[simp]
 theorem kahler_rotation_right (x y : V) (θ : Real.Angle) :
     o.kahler x (o.rotation θ y) = θ.toCircle * o.kahler x y := by
-  simp only [o.rotation_apply, map_add, LinearMap.map_smulₛₗ, RingHom.id_apply, real_smul,
+  simp only [o.rotation_apply, map_add, map_smulₛₗ, RingHom.id_apply, real_smul,
     kahler_rightAngleRotation_right, Real.Angle.coe_toCircle]
   ring
 

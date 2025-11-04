@@ -44,7 +44,7 @@ theorem coeff_trunc (m) (n) (φ : R⟦X⟧) :
 @[simp]
 theorem trunc_zero (n) : trunc n (0 : R⟦X⟧) = 0 :=
   Polynomial.ext fun m => by
-    rw [coeff_trunc, LinearMap.map_zero, Polynomial.coeff_zero]
+    rw [coeff_trunc, map_zero, Polynomial.coeff_zero]
     split_ifs <;> rfl
 
 @[simp]

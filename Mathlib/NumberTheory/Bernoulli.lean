@@ -242,7 +242,7 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
   -- constant coefficient is a special case
   cases n with | zero => simp | succ n =>
   simp only [bernoulliPowerSeries, coeff_mul, coeff_X, sum_antidiagonal_succ', one_div, coeff_mk,
-    coeff_one, coeff_exp, LinearMap.map_sub, factorial, if_pos, cast_succ, cast_mul,
+    coeff_one, coeff_exp, map_sub, factorial, if_pos, cast_succ, cast_mul,
     sub_zero, add_eq_zero, if_false, one_ne_zero,
     and_false, ← RingHom.map_mul, ← map_sum]
   cases n with | zero => simp | succ n =>

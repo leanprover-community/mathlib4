@@ -157,7 +157,7 @@ def lsum [Semiring S] [Module S N] [SMulCommClass R S N] :
         · intro a b f _ _ hf
           rw [smul_add, AddMonoidHom.map_add, AddMonoidHom.map_add, smul_add, hf, ← single_smul,
             sumAddHom_single, sumAddHom_single, LinearMap.toAddMonoidHom_coe,
-            LinearMap.map_smul] }
+            map_smul] }
   invFun F i := F.comp (lsingle i)
   left_inv F := by
     ext
@@ -323,7 +323,7 @@ def coprodMap (f : ∀ i : ι, M i →ₗ[R] N) : (Π₀ i, M i) →ₗ[R] N :=
 
 theorem coprodMap_apply [∀ x : N, Decidable (x ≠ 0)] (f : ∀ i : ι, M i →ₗ[R] N) (x : Π₀ i, M i) :
     coprodMap f x =
-      DFinsupp.sum (mapRange (fun i => f i) (fun _ => LinearMap.map_zero _) x) fun _ =>
+      DFinsupp.sum (mapRange (fun i => f i) (fun _ => map_zero _) x) fun _ =>
         id :=
   DFinsupp.sumAddHom_apply _ _
 
@@ -549,7 +549,7 @@ theorem iSupIndep.dfinsupp_lsum_injective {p : ι → Submodule R N} (h : iSupIn
   -- split `m` into the piece at `i` and the pieces elsewhere, to match `h`
   rw [DFinsupp.zero_apply, ← neg_eq_zero]
   refine h i (-m i) m ?_
-  rwa [← erase_add_single i m, LinearMap.map_add, lsum_single, Submodule.subtype_apply,
+  rwa [← erase_add_single i m, map_add, lsum_single, Submodule.subtype_apply,
     add_eq_zero_iff_eq_neg, ← Submodule.coe_neg] at hm
 
 /-- The canonical map out of a direct sum of a family of additive subgroups is injective when the

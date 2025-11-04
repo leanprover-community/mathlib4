@@ -231,7 +231,7 @@ theorem bernoulli_generating_function (t : A) :
   intro i hi
   -- deal with coefficients of e^X-1
   simp only [Nat.cast_choose ℚ (mem_range_le hi), coeff_mk, if_neg (mem_range_sub_ne_zero hi),
-    one_div, PowerSeries.coeff_one, coeff_exp, sub_zero, LinearMap.map_sub,
+    one_div, PowerSeries.coeff_one, coeff_exp, sub_zero, map_sub,
     Algebra.smul_def, mul_right_comm _ ((aeval t) _), ← mul_assoc, ←
     RingHom.map_mul, ← Polynomial.C_eq_algebraMap, Polynomial.aeval_mul,
     Polynomial.aeval_C]

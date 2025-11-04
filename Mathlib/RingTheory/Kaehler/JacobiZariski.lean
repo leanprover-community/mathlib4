@@ -255,9 +255,9 @@ lemma δAux_toAlgHom (f : Hom Q Q') (x) :
       ← @IsScalarTower.algebraMap_smul Q'.Ring T, algebraMap_self, δAux_X,
       RingHom.id_apply, coe_eval₂Hom, IH, Hom.aeval_val, smul_add, map_aeval, tmul_add, tmul_smul,
       ← @IsScalarTower.algebraMap_smul Q.Ring T, smul_zero, aeval_X, zero_add, Derivation.leibniz,
-      LinearEquiv.map_add, LinearEquiv.map_smul, Basis.repr_self, LinearMap.map_add, one_smul,
-      LinearMap.map_smul, Finsupp.linearCombination_single, RingHomCompTriple.comp_eq,
-      Function.comp_apply, ← cotangentSpaceBasis_apply]
+      LinearEquiv.map_add, LinearEquiv.map_smul, Basis.repr_self, map_add, one_smul, map_smul,
+      Finsupp.linearCombination_single, RingHomCompTriple.comp_eq, Function.comp_apply,
+      ← cotangentSpaceBasis_apply]
     rw [add_left_comm]
     rfl
 
@@ -279,7 +279,7 @@ lemma δAux_ofComp (x : (Q.comp P).Ring) :
       algebraMap_self, map_aeval, RingHomCompTriple.comp_eq, comp_val, RingHom.id_apply,
       IH, Derivation.leibniz, tmul_add, tmul_smul, ← cotangentSpaceBasis_apply, coe_eval₂Hom,
       ← @IsScalarTower.algebraMap_smul (Q.comp P).Ring T, aeval_X, LinearEquiv.map_add,
-      LinearMapClass.map_smul, Prod.snd_add, Prod.smul_snd, LinearMap.map_add]
+      LinearMapClass.map_smul, Prod.snd_add, Prod.smul_snd, map_add]
     obtain (n | n) := n
     · simp only [Sum.elim_inl, δAux_X, smul_zero, aeval_X,
         CotangentSpace.compEquiv, LinearEquiv.trans_apply, Basis.repr_symm_apply, zero_add,

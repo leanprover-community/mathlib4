@@ -784,9 +784,8 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
       intro x y hx hy
       rw [map_add, add_smul, hx, hy]
   right_inv t := by simp
-  map_add' := LinearMap.map_add _
-  map_smul' := fun r x => by
-    exact LinearMap.map_smul _ r x
+  map_add' := map_add _
+  map_smul' := map_smul _
 
 @[simp]
 theorem isEmptyEquiv_apply_tprod [IsEmpty ι] (f : Π i, s i) :
@@ -809,15 +808,14 @@ def subsingletonEquiv [Subsingleton ι] (i₀ : ι) : (⨂[R] _ : ι, M) ≃ₗ[
       rw [Subsingleton.elim i i₀, Function.update_self]
     refine x.induction_on ?_ ?_
     · intro r f
-      simp only [LinearMap.map_smul, LinearMap.id_apply, lift.tprod, ofSubsingleton_apply_apply,
+      simp only [map_smul, LinearMap.id_apply, lift.tprod, ofSubsingleton_apply_apply,
         this f, MultilinearMap.map_update_smul, update_eq_self]
     · intro x y hx hy
-      rw [LinearMap.map_add, this 0 (_ + _), MultilinearMap.map_update_add, ← this 0 (lift _ _), hx,
+      rw [map_add, this 0 (_ + _), MultilinearMap.map_update_add, ← this 0 (lift _ _), hx,
         ← this 0 (lift _ _), hy]
   right_inv t := by simp only [ofSubsingleton_apply_apply, LinearMap.id_apply, lift.tprod]
-  map_add' := LinearMap.map_add _
-  map_smul' := fun r x => by
-    exact LinearMap.map_smul _ r x
+  map_add' := map_add _
+  map_smul' := map_smul _
 
 @[simp]
 theorem subsingletonEquiv_apply_tprod [Subsingleton ι] (i : ι) (f : ι → M) :

@@ -214,7 +214,7 @@ theorem algebraMap₀_mul {n} (r : R) (a : ⨂[R]^n M) :
 
 theorem mul_algebraMap₀ {n} (r : R) (a : ⨂[R]^n M) :
     cast R M (add_zero _) (a ₜ* algebraMap₀ r) = r • a := by
-  rw [gMul_eq_coe_linearMap, algebraMap₀_eq_smul_one, LinearMap.map_smul,
+  rw [gMul_eq_coe_linearMap, algebraMap₀_eq_smul_one, map_smul,
     LinearEquiv.map_smul, ← gMul_eq_coe_linearMap, mul_one]
 
 theorem algebraMap₀_mul_algebraMap₀ (r s : R) :
@@ -224,9 +224,9 @@ theorem algebraMap₀_mul_algebraMap₀ (r s : R) :
 
 instance gsemiring : DirectSum.GSemiring fun i => ⨂[R]^i M :=
   { TensorPower.gmonoid with
-    mul_zero := fun _ => LinearMap.map_zero _
+    mul_zero := fun _ => map_zero _
     zero_mul := fun _ => LinearMap.map_zero₂ _ _
-    mul_add := fun _ _ _ => LinearMap.map_add _ _ _
+    mul_add := fun _ _ _ => map_add _ _ _
     add_mul := fun _ _ _ => LinearMap.map_add₂ _ _ _ _
     natCast := fun n => algebraMap₀ (n : R)
     natCast_zero := by simp only [Nat.cast_zero, map_zero]
