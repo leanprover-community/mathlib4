@@ -93,9 +93,7 @@ instance {R : Type*} [CommSemiring R] [Algebra R 𝕜] [DistribMulAction R A] [I
 
 @[simp]
 lemma unitization_algebraMap (r : 𝕜) :
-    ofLp (algebraMap 𝕜 (WithLp 1 (Unitization 𝕜 A)) r) = algebraMap 𝕜 (Unitization 𝕜 A) r := by
-  rw [Equiv.algebraMap_def]
-  rfl
+    ofLp (algebraMap 𝕜 (WithLp 1 (Unitization 𝕜 A)) r) = algebraMap 𝕜 (Unitization 𝕜 A) r := rfl
 
 /-- `equiv` bundled as an algebra isomorphism with `Unitization 𝕜 A`. -/
 @[simps!]
@@ -104,7 +102,7 @@ def unitizationAlgEquiv (R : Type*) [CommSemiring R] [Algebra R 𝕜] [DistribMu
   __ := WithLp.linearEquiv _ R _
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
-  commutes' _ := by rw [Equiv.algebraMap_def]; rfl
+  commutes' _ := rfl
 
 noncomputable instance instUnitizationNormedRing : NormedRing (WithLp 1 (Unitization 𝕜 A)) where
   dist_eq := dist_eq_norm
