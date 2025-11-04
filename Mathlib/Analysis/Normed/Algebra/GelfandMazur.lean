@@ -331,12 +331,13 @@ private lemma tendsto_φ_cobounded {x : F} {c : ℝ} (hc₀ : 0 < c)
   refine tendsto_const_sub_cobounded _ |>.comp ?_
   rw [← tendsto_norm_atTop_iff_cobounded]
   -- split into statements involving each of the two components separately.
-  refine .cobounded_prod (fun s hs ↦ ?_) ?_
+  refine Tendsto.coprod_of_prod_top_right (α := ℝ) (fun s hs ↦ ?_) ?_
     -- the first component is bounded and the second one is unbounded
-  · obtain ⟨M, hM_pos, hM⟩ : ∃ M > 0, ∀ y ∈ s, ‖y‖ ≤ M := hs.exists_pos_norm_le
-    suffices Tendsto (‖algebraMap ℝ F ·.2‖ - M * ‖x‖) (𝓟 s ×ˢ cobounded ℝ) atTop by
+  · rw [← isCobounded_def, ← isBounded_compl_iff] at hs
+    obtain ⟨M, hM_pos, hM⟩ : ∃ M > 0, ∀ y ∈ sᶜ, ‖y‖ ≤ M := hs.exists_pos_norm_le
+    suffices Tendsto (‖algebraMap ℝ F ·.2‖ - M * ‖x‖) (𝓟 sᶜ ×ˢ cobounded ℝ) atTop by
       refine tendsto_atTop_mono' _ ?_ this
-      filter_upwards [prod_mem_prod (mem_principal_self s) univ_mem] with w hw
+      filter_upwards [prod_mem_prod (mem_principal_self sᶜ) univ_mem] with w hw
       rw [norm_sub_rev]
       refine le_trans ?_ (norm_sub_norm_le ..)
       specialize hM _ (Set.mem_prod.mp hw).1
