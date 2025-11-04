@@ -76,17 +76,47 @@ theorem mem_iff {R : HomogeneousSubsemiring 𝒜} {a} :
     a ∈ R.toSubsemiring ↔ a ∈ R :=
   Iff.rfl
 
+theorem IsHomogneous.subsemiringClosure {s : Set A}
+    (h : ∀ (i : ι) ⦃x : A⦄, x ∈ s → (decompose 𝒜 x i : A) ∈ s) :
+    IsHomogeneous 𝒜 (Subsemiring.closure s) := fun i x hx ↦ by
+  induction hx using Subsemiring.closure_induction generalizing i with
+  | mem _ hx => exact Subsemiring.subset_closure <| h i hx
+  | zero => simp
+  | one =>
+    rw [decompose_one, one_def]
+    obtain rfl | h := eq_or_ne i 0 <;> simp [of_eq_of_ne, *]
+  | add _ _ _ _ h₁ h₂ => simpa using add_mem (h₁ i) (h₂ i)
+  | mul x y _ _ h₁ h₂ =>
+    classical
+    rw [decompose_mul, DirectSum.mul_eq_dfinsuppSum]
+    rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finset_sum]
+    refine sum_mem fun j _ ↦ ?_
+    rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finset_sum]
+    refine sum_mem fun k _ ↦ ?_
+    obtain rfl | h := eq_or_ne i (j + k) <;> simp [of_eq_of_ne, mul_mem, *]
+
+theorem IsHomogneous.subsemiringClosure_of_isHomogeneousElem {s : Set A}
+    (h : ∀ x ∈ s, IsHomogeneousElem 𝒜 x) :
+    IsHomogeneous 𝒜 (Subsemiring.closure s) :=
+  Subsemiring.closure_insert_zero s ▸ IsHomogneous.subsemiringClosure fun i x hx ↦
+    hx.elim (by subst ·; simp) fun hx ↦ by
+    obtain ⟨j, hj⟩ := h x hx
+    obtain rfl | h := eq_or_ne i j <;> simp [decompose_of_mem _ hj, of_eq_of_ne, *]
+
 end HomogeneousDef
 
 section HomogeneousCore
 
-variable {ι σ A : Type*} [Semiring A] [SetLike σ A]
-variable (𝒜 : ι → σ) (R : Subsemiring A)
+variable {ι σ A : Type*} [Semiring A] [SetLike σ A] [AddSubmonoidClass σ A]
+variable [AddMonoid ι] [DecidableEq ι]
+variable (𝒜 : ι → σ) [GradedRing 𝒜] (R : Subsemiring A)
 
-/-- For any subsemiring `R`, not necessarily homogeneous, `R.homogeneousCore' 𝒜` is the largest
-homogeneous subsemiring contained in `R`, as a subsemiring. -/
-def Subsemiring.homogeneousCore' : Subsemiring A :=
-  Subsemiring.closure ((↑) '' (((↑) : Subtype (IsHomogeneousElem 𝒜) → A) ⁻¹' R))
+/-- For any subsemiring `R`, not necessarily homogeneous, `R.homogeneousCore 𝒜` is the largest
+homogeneous subsemiring contained in `R`. -/
+def Subsemiring.homogeneousCore : HomogeneousSubsemiring 𝒜 where
+  __ := Subsemiring.closure ((↑) '' (((↑) : Subtype (IsHomogeneousElem 𝒜) → A) ⁻¹' R))
+  is_homogeneous' := IsHomogneous.subsemiringClosure_of_isHomogeneousElem fun x ↦ by
+    rintro ⟨x, _, rfl⟩; exact x.2
 
 theorem Subsemiring.homogeneousCore'_mono : Monotone (Subsemiring.homogeneousCore' 𝒜) :=
   fun _ _ h => Subsemiring.closure_mono <| Set.image_subset _ fun _ => @h _
