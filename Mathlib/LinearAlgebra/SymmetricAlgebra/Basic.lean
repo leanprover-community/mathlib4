@@ -183,16 +183,17 @@ lemma equiv_symm_apply (a : M) : h.equiv.symm (f a) = SymmetricAlgebra.ι R M a 
 lemma equiv_symm_comp : h.equiv.symm ∘ₗ f = SymmetricAlgebra.ι R M :=
   LinearMap.ext fun x ↦ equiv_symm_apply h x
 
-lemma of_equiv (e : SymmetricAlgebra R M ≃ₐ[R] A) (he : ∀ x, e (.ι R M x) = f x) :
+lemma of_equiv (e : SymmetricAlgebra R M ≃ₐ[R] A)
+    (he : e.toLinearMap ∘ₗ (SymmetricAlgebra.ι R M) = f) :
     IsSymmetricAlgebra f := by
   suffices h : e = SymmetricAlgebra.lift f by
     change Function.Bijective _
     exact h ▸ e.bijective
   ext x
-  simpa using (he x)
+  simpa using congr($he x)
 
 lemma comp_equiv (e : SymmetricAlgebra R M ≃ₐ[R] A) :
-    IsSymmetricAlgebra (e.toLinearMap ∘ₗ (SymmetricAlgebra.ι R M)) := .of_equiv e (fun _ ↦ rfl)
+    IsSymmetricAlgebra (e.toLinearMap ∘ₗ (SymmetricAlgebra.ι R M)) := .of_equiv e rfl
 
 end equiv
 
