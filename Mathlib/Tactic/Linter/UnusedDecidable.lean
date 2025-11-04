@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas R. Murrills
 -/
 import Mathlib.Init
+import Mathlib.Data.String.Defs
 
 /-!
 # Unused `Decidable*` hypotheses linter
@@ -43,6 +44,57 @@ Note that this linter is off by default for now.
 -/
 
 open Lean Meta Elab Command Linter
+
+
+#check getInfoTrees
+
+def NoType := Unit
+
+def Lean.Elab.TermInfo.toMessageData (i : TermInfo) (ctx : ContextInfo) : MetaM MessageData := do
+  let type := i.expectedType?.getD <| mkConst ``NoType
+  let n := if i.isBinder then i.elaborator ++ `binder else i.elaborator
+  let g ← mkFreshExprMVarAt i.lctx #[] type .syntheticOpaque n
+  return m!"{← i.format ctx}\n{.ofGoal g.mvarId!}"
+
+inductive ListTree where
+| node (h : MessageData) (j : List ListTree)
+
+def Lean.MessageData.indentBy (msg : MessageData) (i : Nat) : MessageData :=
+  m!"{String.replicate (2 * i) ' '}{msg}"
+
+def ListTree.toMessageData (t : ListTree) : MessageData :=
+  go 0 t
+where
+  go (indent : Nat) : ListTree → MessageData
+  | .node msg subMsgs => Id.run do
+    let mut msg := MessageData.nest indent m!"• {msg}"
+    for s in subMsgs do
+      msg := msg ++ "\n" ++ .nest (indent + 1) (go (indent + 1) s)
+    return msg
+
+instance : ToMessageData ListTree where
+  toMessageData := ListTree.toMessageData
+
+elab tk:"#info_trees!" " in" cmd:command : command => do
+    if ! (← getInfoState).enabled then
+      logError "Info trees are disabled, can not use `#info_trees`."
+    else
+      elabCommand cmd
+      let infoTrees := (← getInfoState).substituteLazy.get.trees
+      liftTermElabM <| withRef tk do for t in infoTrees do
+        let some (l : ListTree) ← t.visitM (postNode := fun ctx i _ch l => do
+          let l := l.reduceOption
+          match i with
+          | .ofTermInfo i => return ListTree.node m!"{← i.toMessageData ctx}" l
+          | i => return ListTree.node m!"{← i.format ctx}" l
+        )
+          | continue
+        logInfo l.toMessageData
+
+variable (q : String)
+
+#info_trees! in
+def foo {α : Type} : α = α := rfl
 
 /--
 Gets the indices `i` of the binders of a nested `.forallE`, `(x₀ : A₀) → (x₁ : A₁) → ⋯ → X`,
