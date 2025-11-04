@@ -6,6 +6,7 @@ Authors: Andrew Yang
 import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.Geometry.RingedSpace.OpenImmersion
+import Mathlib.CategoryTheory.Limits.Types.Coequalizers
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 
 /-!
