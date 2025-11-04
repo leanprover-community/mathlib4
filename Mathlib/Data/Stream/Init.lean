@@ -666,7 +666,7 @@ theorem inits_eq (s : Stream' α) :
     rfl
 
 theorem zip_inits_tails (s : Stream' α) : zip appendStream' (inits s) (tails s) = const s := by
-  apply Stream'.ext
+  ext
   simp
 
 theorem identity (s : Stream' α) : pure id ⊛ s = s :=

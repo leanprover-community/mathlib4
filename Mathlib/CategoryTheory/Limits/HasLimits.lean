@@ -790,9 +790,7 @@ def colimit.homIso' (F : J ⥤ C) [HasColimit F] (W : C) :
   (colimit.isColimit F).homIso' W
 
 theorem colimit.desc_extend (F : J ⥤ C) [HasColimit F] (c : Cocone F) {X : C} (f : c.pt ⟶ X) :
-    colimit.desc F (c.extend f) = colimit.desc F c ≫ f := by
-  ext
-  simp
+    colimit.desc F (c.extend f) = colimit.desc F c ≫ f := by ext; simp
 
 -- This has the isomorphism pointing in the opposite direction than in `has_limit_of_iso`.
 -- This is intentional; it seems to help with elaboration.
