@@ -118,12 +118,11 @@ lemma simple_iff_char_is_norm_one [CharZero k] (V : FDRep k G) :
     Simple V ↔ ∑ g : G, V.character g * V.character g⁻¹ = Fintype.card G where
   mp h := by
     have := invertibleOfNonzero (NeZero.ne (Fintype.card G : k))
-    have := char_orthonormal V V
-    simp only [Nonempty.intro (Iso.refl V), ↓reduceIte] at this
-    apply_fun (fun x ↦ x * (Fintype.card G : k)) at this
-    rw [mul_comm, ← smul_eq_mul, smul_smul, mul_invOf_self] at this
-    simp only [smul_eq_mul, one_mul] at this
-    exact this
+    classical
+    have : ⅟(Fintype.card G : k) • ∑ g, V.character g * V.character g⁻¹ = 1 := by
+      simpa only [Nonempty.intro (Iso.refl V), ↓reduceIte] using char_orthonormal V V
+    apply_fun (· * (Fintype.card G : k)) at this
+    rwa [mul_comm, ← smul_eq_mul, smul_smul, mul_invOf_self, smul_eq_mul, one_mul, one_mul] at this
   mpr h := by
     have := invertibleOfNonzero (NeZero.ne (Fintype.card G : k))
     have eq := FDRep.scalar_product_char_eq_finrank_equivariant V V
