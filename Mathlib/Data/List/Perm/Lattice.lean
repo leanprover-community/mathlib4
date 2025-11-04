@@ -40,14 +40,17 @@ lemma Disjoint_self (l : List α) :
     (∃ a, a ∈ l) → ¬ l.Disjoint l := by simp [Disjoint]
 
 lemma Nodup.splits₃_left_nodup (l : List α) : l.splits₃_left.Nodup := by
-  simp [List.splits₃_left, List.nodup_flatMap]
+  simp only [splits₃_left, Function.comp_apply, nodup_flatMap, Prod.forall]
   constructor
   · intros t d htd_splits
     apply List.Nodup.map_on
     · rintro ⟨ta1, ta2⟩ hta_splits ⟨tb1, tb2⟩ htb_splits; simp
     · apply Nodup.splits_nodup
-  · induction l <;> simp
-    case cons a l ihl =>
+  · induction l with
+    | nil => simp
+    | cons a l ihl =>
+      simp only [splits_cons, pairwise_cons, mem_map, Prod.exists, forall_exists_index, and_imp,
+        Prod.forall, Prod.mk.injEq]
       constructor
       · rintro b c x1 x2 hx1x2_l_splits rfl rfl
         simp [Function.onFun]
@@ -74,18 +77,18 @@ lemma Nodup.splits₃_left_nodup (l : List α) : l.splits₃_left.Nodup := by
           assumption
 
 lemma Nodup.splits₃_right_nodup (l : List α) : l.splits₃_right.Nodup := by
-  simp [List.splits₃_right, List.nodup_flatMap]
+  simp only [splits₃_right, Function.comp_apply, nodup_flatMap, Prod.forall]
   constructor
   · intros t d htd_l_splits
     apply List.Nodup.map_on
     · rintro ⟨d1, d2⟩ hd_splits ⟨d1', d2'⟩ hd'_splits ⟨_, rfl, rfl⟩
       rfl
     · apply Nodup.splits_nodup
-  · induction l
-    case nil =>
-      simp
-    case cons a l ihl =>
-      simp
+  · induction l with
+    | nil => simp
+    | cons a l ihl =>
+      simp only [splits_cons, pairwise_cons, mem_map, Prod.exists, forall_exists_index, and_imp,
+        Prod.forall, Prod.mk.injEq]
       constructor
       · clear ihl
         rintro b c l1 l2 hl_splits rfl rfl
