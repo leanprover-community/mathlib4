@@ -53,8 +53,7 @@ instance setLike : SetLike (HomogeneousSubsemiring 𝒜) A where
 theorem isHomogeneous (R : HomogeneousSubsemiring 𝒜) :
     IsHomogeneous 𝒜 R := R.is_homogeneous'
 
-instance HomogeneousSubsemiring.subsemiringClass :
-    SubsemiringClass (HomogeneousSubsemiring 𝒜) A where
+instance subsemiringClass : SubsemiringClass (HomogeneousSubsemiring 𝒜) A where
   mul_mem {a} := a.toSubsemiring.mul_mem
   one_mem {a} := a.toSubsemiring.one_mem
   add_mem {a} := a.toSubsemiring.add_mem
