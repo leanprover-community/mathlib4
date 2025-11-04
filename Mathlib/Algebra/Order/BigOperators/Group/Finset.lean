@@ -236,6 +236,22 @@ lemma prod_image_le_of_one_le [MulLeftMono N]
 
 end OrderedCommMonoid
 
+section ProdSum
+
+variable [CommMonoid α] [AddCommMonoid β] [Preorder β] [AddLeftMono β]
+  (s : Finset ι) {f : ι → α} (g : α → β)
+
+theorem prod_le_sum (h_one : g 1 ≤ 0) (h_mul : ∀ (a b : α), g (a * b) ≤ g a + g b) :
+    g (∏ x ∈ s, f x) ≤ ∑ x ∈ s, g (f x) := by
+  refine (Multiset.prod_le_sum _ _ h_one h_mul).trans_eq ?_
+  rw [Multiset.map_map, Function.comp_def, Finset.sum_map_val]
+
+theorem sum_le_prod (h_one : 0 ≤ g 1) (h_mul : ∀ (a b : α), g a + g b ≤ g (a * b)) :
+    ∑ x ∈ s, g (f x) ≤ g (∏ x ∈ s, f x) :=
+  s.prod_le_sum (β := βᵒᵈ) g h_one h_mul
+
+end ProdSum
+
 @[to_additive]
 lemma max_prod_le [CommMonoid M] [LinearOrder M] [IsOrderedMonoid M] {f g : ι → M} {s : Finset ι} :
     max (s.prod f) (s.prod g) ≤ s.prod (fun i ↦ max (f i) (g i)) :=
@@ -627,10 +643,3 @@ theorem sup_powerset_len [DecidableEq α] (x : Multiset α) :
     Eq.symm (finset_sum_eq_sup_iff_disjoint.mpr fun _ _ _ _ h => pairwise_disjoint_powersetCard x h)
 
 end Multiset
-
-theorem Finset.prod_le_sum [CommMonoid α] [AddCommMonoid β] [Preorder β] [AddLeftMono β]
-    (s : Finset ι) {f : ι → α} (g : α → β) (h_one : g 1 ≤ 0)
-    (h_mul : ∀ (a b : α), g (a * b) ≤ g a + g b) :
-    g (∏ x ∈ s, f x) ≤ ∑ x ∈ s, g (f x) := by
-  refine (Multiset.prod_le_sum _ _ h_one h_mul).trans_eq ?_
-  rw [Multiset.map_map, Function.comp_def, Finset.sum_map_val]
