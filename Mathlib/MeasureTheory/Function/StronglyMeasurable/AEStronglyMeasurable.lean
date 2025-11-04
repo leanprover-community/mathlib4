@@ -115,14 +115,6 @@ lemma AEStronglyMeasurable.of_subsingleton_dom [Subsingleton α] : AEStronglyMea
 lemma AEStronglyMeasurable.of_subsingleton_cod [Subsingleton β] : AEStronglyMeasurable[m] f μ :=
   StronglyMeasurable.of_subsingleton_cod.aestronglyMeasurable
 
-@[deprecated AEStronglyMeasurable.of_subsingleton_cod (since := "2025-04-09")]
-theorem Subsingleton.aestronglyMeasurable [Subsingleton β] (f : α → β) : AEStronglyMeasurable f μ :=
-  .of_subsingleton_cod
-
-@[deprecated AEStronglyMeasurable.of_subsingleton_dom (since := "2025-04-09")]
-lemma Subsingleton.aestronglyMeasurable' [Subsingleton α] (f : α → β) : AEStronglyMeasurable f μ :=
-  .of_subsingleton_dom
-
 @[fun_prop, simp]
 theorem aestronglyMeasurable_zero_measure (f : α → β) :
     AEStronglyMeasurable[m] f (0 : Measure[m₀] α) := by
@@ -139,9 +131,6 @@ namespace AEStronglyMeasurable
 @[fun_prop]
 lemma of_discrete [Countable α] [MeasurableSingletonClass α] : AEStronglyMeasurable f μ :=
   StronglyMeasurable.of_discrete.aestronglyMeasurable
-
-@[deprecated of_discrete (since := "2025-04-09")]
-lemma of_finite [DiscreteMeasurableSpace α] [Finite α] : AEStronglyMeasurable f μ := .of_discrete
 
 section Mk
 
@@ -234,9 +223,6 @@ protected theorem prodMk {f : α → β} {g : α → γ} (hf : AEStronglyMeasura
     (hg : AEStronglyMeasurable[m] g μ) : AEStronglyMeasurable[m] (fun x => (f x, g x)) μ :=
   ⟨fun x => (hf.mk f x, hg.mk g x), hf.stronglyMeasurable_mk.prodMk hg.stronglyMeasurable_mk,
     hf.ae_eq_mk.prodMk hg.ae_eq_mk⟩
-
-@[deprecated (since := "2025-03-05")]
-protected alias prod_mk := AEStronglyMeasurable.prodMk
 
 /-- The composition of a continuous function of two variables and two ae strongly measurable
 functions is ae strongly measurable. -/
@@ -519,10 +505,22 @@ theorem _root_.aestronglyMeasurable_indicator_iff [Zero β] {s : Set α} (hs : M
       (indicator_ae_eq_restrict_compl hs).trans (indicator_ae_eq_restrict_compl hs).symm
     exact ae_of_ae_restrict_of_ae_restrict_compl _ A B
 
+theorem _root_.aestronglyMeasurable_indicator_iff₀
+    [Zero β] {s : Set α} (hs : NullMeasurableSet s μ) :
+    AEStronglyMeasurable (indicator s f) μ ↔ AEStronglyMeasurable f (μ.restrict s) := by
+  rw [← aestronglyMeasurable_congr (indicator_ae_eq_of_ae_eq_set hs.toMeasurable_ae_eq),
+    aestronglyMeasurable_indicator_iff (measurableSet_toMeasurable ..),
+    restrict_congr_set hs.toMeasurable_ae_eq]
+
 @[fun_prop, measurability]
 protected theorem indicator [Zero β] (hfm : AEStronglyMeasurable f μ) {s : Set α}
     (hs : MeasurableSet s) : AEStronglyMeasurable (s.indicator f) μ :=
   (aestronglyMeasurable_indicator_iff hs).mpr hfm.restrict
+
+@[fun_prop, measurability]
+protected theorem indicator₀ [Zero β] (hfm : AEStronglyMeasurable f μ) {s : Set α}
+    (hs : NullMeasurableSet s μ) : AEStronglyMeasurable (s.indicator f) μ :=
+  (aestronglyMeasurable_indicator_iff₀ hs).2 hfm.restrict
 
 theorem nullMeasurableSet_eq_fun {E} [TopologicalSpace E] [MetrizableSpace E] {f g : α → E}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
