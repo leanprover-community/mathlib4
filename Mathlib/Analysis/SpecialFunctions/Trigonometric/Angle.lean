@@ -896,7 +896,7 @@ lemma abs_toReal_add_abs_toReal_eq_pi_of_two_nsmul_add_eq_zero_of_sign_eq {θ ψ
     rw [← this, eq_comm, abs_add_eq_add_abs_iff]
     have hθ := sign_toReal (sign_ne_zero_iff.1 h0).2
     have hψ := sign_toReal (sign_ne_zero_iff.1 (hs ▸ h0)).2
-    obtain hθs | hθs := (by simpa [h0] using θ.sign.trichotomy : θ.sign = -1 ∨ θ.sign = 1)
+    obtain hθs | hθs : θ.sign = -1 ∨ θ.sign = 1 := by simpa [h0] using θ.sign.trichotomy
     · rw [hθs, eq_comm, ← toReal_neg_iff_sign_neg] at hs
       exact .inr ⟨(toReal_neg_iff_sign_neg.mpr hθs).le, hs.le⟩
     · simp [toReal_nonneg_iff_sign_nonneg, hs.symm, hθs]
@@ -916,7 +916,7 @@ lemma abs_toReal_add_abs_toReal_eq_pi_of_two_nsmul_add_eq_zero_of_sign_eq {θ ψ
     grw [show k ≤ -2 by cutsat] at hn
     simp only [Int.cast_neg, Int.cast_ofNat] at hn
     linarith [pi_pos]
-  obtain rfl | rfl := (by cutsat : k = -1 ∨ k = 0) <;> grind
+  obtain rfl | rfl : k = -1 ∨ k = 0 := (by cutsat) <;> grind
 
 lemma abs_toReal_add_abs_toReal_eq_pi_of_two_zsmul_add_eq_zero_of_sign_eq {θ ψ : Angle}
     (h : (2 : ℤ) • (θ + ψ) = 0) (hs : θ.sign = ψ.sign) (h0 : θ.sign ≠ 0) :
