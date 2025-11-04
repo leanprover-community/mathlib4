@@ -331,6 +331,15 @@ register_option linter.tacticAnalysis.tryAtEachStepGrindSuggestions : Bool := {
    inherit_doc linter.tacticAnalysis.tryAtEachStepGrindSuggestions]
 def tryAtEachStepGrindSuggestions := tryAtEachStep fun _ _ => `(tactic| grind +suggestions)
 
+/-- Run `simp_all? +suggestions` at every step in proofs, reporting where it succeeds. -/
+register_option linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions,
+   inherit_doc linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions]
+def tryAtEachStepSimpAllSuggestions := tryAtEachStep fun _ _ => `(tactic| simp_all? +suggestions)
+
 -- TODO: add compatibility with `rintro` and `intros`
 /-- Suggest merging two adjacent `intro` tactics which don't pattern match. -/
 register_option linter.tacticAnalysis.introMerge : Bool := {
