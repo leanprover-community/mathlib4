@@ -25,20 +25,17 @@ variable {α : Type u}
 lemma count_finRange {n : ℕ} (a : Fin n) : count a (finRange n) = 1 := by
   simp [count_eq_of_nodup (nodup_finRange n)]
 
-@[simp]
-theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=
-  List.ext_get (by simp) (by simp)
+@[deprecated (since := "2025-11-04")]
+alias finRange_map_get := map_get_finRange
 
-@[simp]
-theorem finRange_map_getElem (l : List α) : (finRange l.length).map (l[·.1]) = l :=
-  finRange_map_get l
+@[deprecated (since := "2025-11-04")]
+alias finRange_map_getElem := map_getElem_finRange
 
 @[simp] theorem idxOf_finRange {k : ℕ} (i : Fin k) : (finRange k).idxOf i = i := by
   simpa using idxOf_getElem (nodup_finRange k) i
 
-@[simp]
-theorem map_coe_finRange (n : ℕ) : ((finRange n) : List (Fin n)).map (Fin.val) = List.range n := by
-  apply List.ext_getElem <;> simp
+@[deprecated (since := "2025-11-04")]
+alias map_coe_finRange := map_coe_finRange_eq_range
 
 @[deprecated finRange_succ (since := "2025-10-10")]
 theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map Fin.succ :=
