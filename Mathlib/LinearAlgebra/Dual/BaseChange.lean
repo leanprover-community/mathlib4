@@ -5,8 +5,9 @@ Authors: Antoine Chambert-Loir
 -/
 
 import Mathlib.LinearAlgebra.Dual.Defs
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
-
+import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
 /-!
 # Base change for the dual of a module
 
@@ -123,12 +124,24 @@ noncomputable def toDual (f : Module.Dual R V) :
     Module.Dual A W :=
   (f.baseChange A).congr ibc.equiv
 
+theorem toDual_comp_apply (f : Module.Dual R V) (v : V) :
+    ibc.toDual f (j v) = algebraMap R A (f v) := by
+  simp [toDual, Module.Dual.congr, LinearEquiv.congrLeft,
+    IsBaseChange.equiv_symm_apply, Algebra.algebraMap_eq_smul_one]
+
 /-- The base change of an element of the dual. -/
 noncomputable def toDualHom :
-    Module.Dual R V →ₗ[R] Module.Dual A W where
-  toFun f := ibc.toDual f
-  map_add' f g := by unfold toDual; aesop
-  map_smul' r f := by unfold toDual; aesop
+    Module.Dual R V →ₗ[R] Module.Dual A W :=
+  IsBaseChange.linearMapLeftRightHom ibc (Algebra.linearMap R A)
+
+theorem toDualHom_apply :
+    ⇑ibc.toDualHom = ibc.toDual := by
+  ext f w
+  induction w using ibc.inductionOn with
+  | zero => simp
+  | add x y hx hy => simp [hx, hy]
+  | tmul v => simp [toDual_comp_apply, toDualHom, linearMapLeftRightHom_comp_apply]
+  | smul a w h => simp [h]
 
 noncomputable def toDualBaseChangeHom :
     A ⊗[R] Module.Dual R V →ₗ[A] Module.Dual A W where
@@ -145,19 +158,18 @@ noncomputable def toDualBaseChangeHom :
     | tmul b f =>
       simp [TensorProduct.smul_tmul', mul_smul]
 
-theorem toDualBaseChangeHom_apply_comp (f : Module.Dual R V) (v : V) :
-    ibc.toDualBaseChangeHom (1 ⊗ₜ[R] f) (j v) = algebraMap R A (f v) := by
-  simp [toDualBaseChangeHom, toDualHom, toDual, Module.Dual.congr, LinearEquiv.congrLeft,
-        IsBaseChange.equiv_symm_apply, Algebra.algebraMap_eq_smul_one]
+theorem toDualBaseChangeHom_tmul (a : A) (f : Module.Dual R V) (v : V) :
+    (ibc.toDualBaseChangeHom (a ⊗ₜ[R] f)) (j v) = a * algebraMap R A (f v) := by
+  simp [toDualBaseChangeHom, toDualHom_apply, toDual_comp_apply]
 
 variable [Module.Free R V] [Module.Finite R V]
 
 noncomputable def toDualBaseChangeLinearEquiv :
-        A ⊗[R] Module.Dual R V ≃ₗ[A] Module.Dual A W := by
+    A ⊗[R] Module.Dual R V ≃ₗ[A] Module.Dual A W := by
   apply LinearEquiv.ofBijective ibc.toDualBaseChangeHom
-  classical
   let b := Module.Free.chooseBasis R V
   set ι := Module.Free.ChooseBasisIndex R V
+  have : Fintype ι := Module.Free.ChooseBasisIndex.fintype R V
   have ibc' : IsBaseChange A (Algebra.linearMap R A) := linearMap R A
   have ibc'_pow := ibc'.finitePow ι
   suffices ibc.toDualBaseChangeHom = (((b.constr R).symm.baseChange ..).trans ibc'_pow.equiv).trans
@@ -170,7 +182,7 @@ noncomputable def toDualBaseChangeLinearEquiv :
   induction w using ibc.inductionOn with
   | zero => simp
   | tmul v =>
-    rw [toDualBaseChangeHom_apply_comp]
+    simp only [toDualBaseChangeHom_tmul, one_mul]
     conv_lhs => rw [← Module.Basis.sum_equivFun b v, map_sum]
     simp [LinearEquiv.baseChange, IsBaseChange.equiv_tmul,
       basis_repr_comp_apply, b.constr_symm_apply]

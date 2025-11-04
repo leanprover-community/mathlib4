@@ -34,7 +34,6 @@ variable {R : Type*} [CommSemiring R]
     (S : Type*) [CommSemiring S] [Algebra R S]
     (M : Type*) [AddCommMonoid M] [Module R M] -- [Module S M] [IsScalarTower R S M]
     {N : Type*} [AddCommMonoid N] [Module R N]
-    {ι : Type*} [DecidableEq ι]
     {P : Type*} [AddCommMonoid P] [Module R P] -- [Module S P] [IsScalarTower R S P]
 
 section LinearMapRight
@@ -117,6 +116,11 @@ theorem linearMapLeftRightHom_apply
     {α : M →ₗ[R] P} (j : IsBaseChange S α) (β : N →ₗ[R] Q) (f : M →ₗ[R] N) (p : P) :
     linearMapLeftRightHom j β f p = ((liftBaseChangeEquiv S) (β ∘ₗ f)) (j.equiv.symm p) := by
   rfl
+
+theorem linearMapLeftRightHom_comp_apply
+    {α : M →ₗ[R] P} (j : IsBaseChange S α) (β : N →ₗ[R] Q) (f : M →ₗ[R] N) (m : M) :
+    linearMapLeftRightHom j β f (α m) = β (f m) := by
+  simp [linearMapLeftRightHom_apply, IsBaseChange.equiv_symm_apply]
 
 variable [Module.Free R M] [Module.Finite R M]
 
