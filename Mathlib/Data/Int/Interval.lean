@@ -164,3 +164,31 @@ theorem image_Ico_emod (n a : ℤ) (h : 0 ≤ a) : (Ico n (n + a)).image (· % a
     · rw [Int.add_mul_emod_self_left, Int.emod_eq_of_lt hia.left hia.right]
 
 end Int
+
+section Nat
+
+lemma Finset.Icc_succ_succ (m n : ℕ) :
+    Icc (-(m + 1) : ℤ) (n + 1) = Icc (-m : ℤ) n ∪ {(-(m + 1) : ℤ), (n + 1 : ℤ)} := by
+  ext
+  simp only [mem_Icc, union_insert, union_singleton, mem_insert]
+  omega
+
+lemma Finset.Ico_succ_succ (m n : ℕ) :
+    Ico (-(m + 1) : ℤ) (n + 1) = Ico (-m : ℤ) n ∪ {(-(m + 1) : ℤ), (n : ℤ)} := by
+  ext
+  simp only [mem_Ico, union_insert, union_singleton, mem_insert]
+  omega
+
+lemma Finset.Ioc_succ_succ (m n : ℕ) :
+    Ioc (-(m + 1) : ℤ) (n + 1) = Ioc (-m : ℤ) n ∪ {-(m : ℤ), (n + 1 : ℤ)} := by
+  ext
+  simp only [mem_Ioc, union_insert, union_singleton, mem_insert]
+  omega
+
+lemma Finset.Ioo_succ_succ (m n : ℕ) :
+    Ioo (-(m + 1) : ℤ) (n + 1) = Ioo (-m : ℤ) n ∪ {-(m : ℤ), (n : ℤ)} := by
+  ext
+  simp only [mem_Ioo, union_insert, union_singleton, mem_insert]
+  omega
+
+end Nat
