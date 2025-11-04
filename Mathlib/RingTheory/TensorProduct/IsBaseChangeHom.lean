@@ -7,7 +7,7 @@ import Mathlib.LinearAlgebra.TensorProduct.Pi
 import Mathlib.LinearAlgebra.TensorProduct.Prod
 import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
+import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 
 /-! # Base change properties for modules of linear maps
 
@@ -15,12 +15,14 @@ import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
   If `M` is finite free and `P` is a base change of `N` to `S`,
   then `M →ₗ[R] P` is a base change of `M →ₗ[R] N` to `S`.
 
-## TODO
+* `IsBaseChange.linearMapLeftRight`:
+  If `M` has a finite basis and `P` is a base change of `M` to `S`,
+  if `Q` is a base change of `N` to `S`,
+  then `P →ₗ[S] Q` is a base change of `M →ₗ[R] N` to `S`.
 
-* When `M` is finite free and base changes to `Q`,
-then `Q →ₗ[A] P` is a base change of `M →ₗ[R] N`.
-
-* Apply to `Module.Dual`.
+* `IsBaseChange.endom`:
+  If `M` has a finite basis and `P` is a base change of `M` to `S`,
+  then `P →ₗ[S] P` is a base change of `M →ₗ[R] M` to `S`.
 
 -/
 
@@ -72,7 +74,6 @@ noncomputable def linearMapRightBaseChangeEquiv
     LinearEquiv.baseChange R S (M →ₗ[R] N) (ι → N) e
   let h' := (f.toLinearMap.comp (linearMapRightBaseChangeHom S M ε)).comp e'.symm.toLinearMap
   suffices Function.Bijective h' by simpa [h'] using this
-  have := IsBaseChange.pi (ι := ι) (f := fun _ ↦ ε) (fun _ ↦ ibc)
   suffices h' = (finitePow ι ibc).equiv by
     simp only [this]
     apply LinearEquiv.bijective
@@ -96,4 +97,71 @@ theorem linearMapRight {ε : N →ₗ[R] P} (ibc : IsBaseChange S ε) :
 
 end LinearMapRight
 
+<<<<<<< HEAD
+=======
+section LinearMapLeftRight
+
+variable {S M}
+  {Q : Type*} [AddCommMonoid Q] [Module R Q]
+  [Module S P] [IsScalarTower R S P]
+  [Module S Q] [IsScalarTower R S Q]
+
+/-- The base change map for linear maps with source a free finite module. -/
+noncomputable def linearMapLeftRightHom {α : M →ₗ[R] P} (j : IsBaseChange S α)
+    (β : N →ₗ[R] Q) :
+    (M →ₗ[R] N) →ₗ[R] (P →ₗ[S] Q) :=
+  ((LinearMap.llcomp (σ₂₃ := RingHom.id S) S P (S ⊗[R] M) Q).flip
+    j.equiv.symm.toLinearMap) ∘ₗ
+    (liftBaseChangeEquiv S).toLinearMap.restrictScalars R ∘ₗ
+      (compRight R β (M := M))
+
+theorem linearMapLeftRightHom_apply
+    {α : M →ₗ[R] P} (j : IsBaseChange S α) (β : N →ₗ[R] Q) (f : M →ₗ[R] N) (p : P) :
+    linearMapLeftRightHom j β f p = ((liftBaseChangeEquiv S) (β ∘ₗ f)) (j.equiv.symm p) := by
+  rfl
+
+variable [Module.Free R M] [Module.Finite R M]
+
+theorem linearMapLeftRight {α : M →ₗ[R] P} (j : IsBaseChange S α)
+    {β : N →ₗ[R] Q} (k : IsBaseChange S β) :
+    IsBaseChange S (linearMapLeftRightHom j β) := by
+  apply of_equiv <|
+      (k.linearMapRight M).equiv ≪≫ₗ liftBaseChangeEquiv S ≪≫ₗ LinearEquiv.congrLeft Q S j.equiv
+  intro f
+  ext p
+  simp [IsBaseChange.equiv_tmul, LinearEquiv.congrLeft, linearMapLeftRightHom_apply]
+
+end LinearMapLeftRight
+
+section End
+
+variable {S M}
+  [Module S P] [IsScalarTower R S P]
+
+/-- The base change map for endomorphisms of a free finite module. -/
+noncomputable def endomHom {α : M →ₗ[R] P} (j : IsBaseChange S α) :
+    (M →ₗ[R] M) →ₗ[R] (P →ₗ[S] P) :=
+  ((LinearMap.llcomp (σ₂₃ := RingHom.id S) S P (S ⊗[R] M) P).flip
+    j.equiv.symm.toLinearMap) ∘ₗ
+    (liftBaseChangeEquiv S).toLinearMap.restrictScalars R ∘ₗ
+      (compRight R α (M := M))
+
+theorem endomHom_apply
+    {α : M →ₗ[R] P} (j : IsBaseChange S α) (f : M →ₗ[R] M) (p : P) :
+    endomHom j f p = ((liftBaseChangeEquiv S) (α ∘ₗ f)) (j.equiv.symm p) := by
+  rfl
+
+variable [Module.Free R M] [Module.Finite R M]
+
+theorem endom {α : M →ₗ[R] P} (j : IsBaseChange S α) :
+    IsBaseChange S (endomHom j) := by
+  apply of_equiv <|
+      (j.linearMapRight M).equiv ≪≫ₗ liftBaseChangeEquiv S ≪≫ₗ LinearEquiv.congrLeft P S j.equiv
+  intro f
+  ext p
+  simp [IsBaseChange.equiv_tmul, LinearEquiv.congrLeft, endomHom_apply]
+
+end End
+
+>>>>>>> ACL/SL-basechange
 end IsBaseChange
