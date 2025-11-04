@@ -351,7 +351,7 @@ register_option linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions : Bool := 
 
 @[tacticAnalysis linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions,
    inherit_doc linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions]
-def tryAtEachStepSimpAllSuggestions := tryAtEachStep fun _ _ => `(tactic| simp_all? +suggestions)
+def tryAtEachStepSimpAllSuggestions := tryAtEachStep fun _ _ => `(tactic| try simp_all? +suggestions)
 
 -- /-- Run `canonical +suggestions` at every step in proofs, reporting where it succeeds. -/
 -- register_option linter.tacticAnalysis.tryAtEachStepCanonicalSuggestions : Bool := {
