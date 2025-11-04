@@ -244,18 +244,16 @@ theorem TendstoInDistribution.prodMk_of_tendstoInMeasure_const
     (Y := fun n ω ↦ (X n ω, Y n ω)) (Z := fun ω ↦ (Z ω, c)) (μ := μ) (l := l) ?_ ?_ (by fun_prop)
   · replace hXZ := hXZ.tendsto
     refine ⟨by fun_prop, by fun_prop, ?_⟩
-    rw [tendsto_iff_forall_lipschitz_integral_tendsto] at hXZ ⊢
-    intro F ⟨M, hF_bounded⟩ ⟨L, hF_lip⟩
-    have hFc_lip : LipschitzWith L (fun x ↦ F (x, c)) := by
-      refine fun x y ↦ (hF_lip (x, c) (y, c)).trans ?_
-      simp [edist_eq_enorm_sub, enorm_eq_nnnorm]
+    rw [ProbabilityMeasure.tendsto_iff_forall_integral_tendsto] at hXZ ⊢
+    intro F
+    let Fc : BoundedContinuousFunction E ℝ := ⟨⟨fun x ↦ F (x, c), by fun_prop⟩, by
+      obtain ⟨C, hC⟩ := F.map_bounded'
+      exact ⟨C, fun x y ↦ hC (x, c) (y, c)⟩⟩
     have h_eq (f : Ω → E) (hf : AEMeasurable f μ) :
         ∫ ω, F ω ∂μ.map (fun ω ↦ (f ω, c)) = ∫ ω, F (ω, c) ∂(μ.map f) := by
-      rw [integral_map (by fun_prop), integral_map (by fun_prop)]
-      · exact hFc_lip.continuous.stronglyMeasurable.aestronglyMeasurable
-      · exact hF_lip.continuous.stronglyMeasurable.aestronglyMeasurable
+      rw [integral_map (by fun_prop) (by fun_prop), integral_map (by fun_prop) (by fun_prop)]
     simp_rw [ProbabilityMeasure.coe_mk, h_eq (X _) (hX _), h_eq Z hZ]
-    simpa using hXZ (fun x ↦ F (x, c)) ⟨M, fun x y ↦ hF_bounded (x, c) (y, c)⟩ ⟨L, hFc_lip⟩
+    simpa using hXZ Fc
   · suffices TendstoInMeasure μ (fun n ω ↦ ((0 : E), Y n ω - c)) l 0 by
       convert this with n ω
       simp
