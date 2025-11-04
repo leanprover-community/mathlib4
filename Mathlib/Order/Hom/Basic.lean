@@ -1012,7 +1012,8 @@ def piIso [Preorder α] : (α →o ∀ i, π i) ≃o ∀ i, α →o π i where
   map_rel_iff' := forall_swap
 
 /-- `OrderHom.dual` as an order isomorphism. -/
-def _root_.OrderHom.dualIso (α β : Type*) [Preorder α] [Preorder β] : (α →o β) ≃o (αᵒᵈ →o βᵒᵈ)ᵒᵈ where
+def _root_.OrderHom.dualIso (α β : Type*) [Preorder α] [Preorder β] :
+    (α →o β) ≃o (αᵒᵈ →o βᵒᵈ)ᵒᵈ where
   toEquiv := OrderHom.dual.trans OrderDual.toDual
   map_rel_iff' := Iff.rfl
 

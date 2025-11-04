@@ -52,7 +52,7 @@ instance [SemilatticeInf β] : Min (α →o β) where
 
 instance [SemilatticeInf β] : SemilatticeInf (α →o β) :=
   { (_ : PartialOrder (α →o β)),
-    (OrderIso.dualIso α β).symm.toGaloisInsertion.liftSemilatticeInf with inf := (· ⊓ ·) }
+    (OrderHom.dualIso α β).symm.toGaloisInsertion.liftSemilatticeInf with inf := (· ⊓ ·) }
 
 instance lattice [Lattice β] : Lattice (α →o β) :=
   { (_ : SemilatticeSup (α →o β)), (_ : SemilatticeInf (α →o β)) with }
