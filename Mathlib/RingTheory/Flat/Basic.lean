@@ -10,6 +10,7 @@ import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.Finiteness.Small
 import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.TensorProduct.Finite
+import Mathlib.RingTheory.Adjoin.FGBasechange
 
 /-!
 # Flat modules
