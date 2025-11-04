@@ -445,7 +445,6 @@ theorem pi (R : Type*) [Ring R] {ι : Type*} (M : ι → Type*)
     Module.Injective R (∀ i, M i) := by
   constructor
   intros X Y _ _ _ _ f hf g
-
   -- For each i, extract the extension using `choose`
   have h_family : ∀ i, ∃ g_i_ext : Y →ₗ[R] M i,
       g_i_ext ∘ₗ f = (LinearMap.proj i).comp g := by
