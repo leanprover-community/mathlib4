@@ -108,6 +108,11 @@ to learn about it as well!
   with respect to `master`, and posts a comment on github with the result.
 - `autolabel.lean` is the Lean script in charge of automatically adding a `t-`label on eligible PRs.
   Autolabelling is inferred by which directories the current PR modifies.
+- `test_contributor_check.sh`
+  Test script for the new contributor labeling workflow (`.github/workflows/label_new_contributor.yml`).
+  Verifies that the search query correctly identifies bors-merged PRs when counting a contributor's
+  PR history. This is for CI development/testing purposes only and is not used in the regular
+  Mathlib build process.
 
 **Managing nightly-testing and bump branches**
 - `create-adaptation-pr.sh` implements some of the steps in the workflow described at
