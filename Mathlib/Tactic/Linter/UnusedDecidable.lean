@@ -5,7 +5,7 @@ Authors: Thomas R. Murrills
 -/
 import Mathlib.Init
 
-/-
+/-!
 # Unused `Decidable*` hypotheses linter
 
 This linter a declaration's type for `Decidable*` instance hypotheses which are not used in the
@@ -15,37 +15,31 @@ Note that this linter is off by default for now.
 
 ## TODO
 
-- It is awkward to both (1) only consider binders which are used in the resulting expression (and
-  not, e.g., introduced by `variable`) and (2) associate binders used in the final expression with
-  their originating syntax. But not impossible! We would want to:
+- It is awkward to associate binders used in the final expression with their originating syntax.
+  But not impossible! We would want to:
   - look at the local context of the (single) `TermInfo` child of the `CustomInfo` node whose value
     is of type `Lean.Elab.Term.BodyInfo` and whose `parentDecl?` is the declaration in question.
-  - Then, process these in the same way `elabMutualDef` does (i.e. with `withSectionFVars`, an
+  - Then, process these in the same way `elabMutualDef` does (i.e. with `withHeaderSecVars`, an
     unfortunately `private` definition).
   - Get the used fvars, search for them as expressions in the infotree, and *hope* that them
     appearing immediately subsequent to the `TermInfo` for their type is a real invariant and not
-    something that just usually happens. (Why do we need to do this type? Because a binder like `
-    [DecidableEq α]` creates an fvar `inst†` which is not recorded along with any position info in
+    something that just usually happens. (Why do we need this? Because a binder like
+    `[DecidableEq α]` creates an fvar `inst†` which is not recorded along with any position info in
     the infotree--only the type has source info. TODO: see how macro expansions in the type affect
-    this.)
+    this. Also see what `include` does to the infotrees, if anything.)
   - Match the syntax of the type (and its position info) to the command syntax so as to extract the
     full binder syntax (e.g. to get the syntax `[DecidableEq α]` from the syntax `Decidable Eq`)
 
   Whew! Ideally, Lean core eventually simply gives us more information to link the used binders
   with their source syntax, and all this becomes unnecessary.
 
-- It would be nice to try to insert `classical` ourselves. The `bodyStx?` should be available in
-  the snap for this purpose; we'd need to handle match alts and some other special syntax, though
-  (e.g. how does a structure instance `where` work?).
+- It would be nice to try to insert `classical` ourselves. It might be worth creating API for
+  matching against all the necessary syntax here--or, maybe getting to `mkDefView` is sufficient.
 
 - It would also be nice to re-elaborate to check that our suggestion actually works before
   suggesting it to the user. We might have to be careful here; we're halfway to `elabMutualDef` or
-  similar, so maybe we could just try that. But we'd want to not maodify the environment (and more).
-
-- Once feature-complete, this linter deserves a comprehensive "Implementation notes" section
-  explaining the constraints that lead us to this specific (and somewhat unusual) design. It would
-  have been nice to just use the infotrees or just use the command snap, but at this point in time
-  Lean does not leave sufficient information in just one of them.
+  similar, so maybe we could just try that. But we'd want to be careful to do it correctly, and
+  avoid any issues arising from the fact that the declaration has already been elaborated.
 -/
 
 open Lean Meta Elab Command Linter
