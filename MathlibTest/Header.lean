@@ -57,10 +57,10 @@ It logs details of what the linter would report if the `cop` is "malformed".
 -/
 elab "#check_copyright " copStx:str : command => do
   let cop := copStx.getString
-  let offset := copStx.raw.getPos?.get! + ⟨1⟩
+  let offset := copStx.raw.getPos?.get!.increaseBy 1
   for (s, m) in Mathlib.Linter.copyrightHeaderChecks cop do
     if let some rg := s.getRange? then
-      logInfoAt (.ofRange ({start := rg.start + offset, stop := rg.stop + offset}))
+      logInfoAt (.ofRange ({start := rg.start.offsetBy offset, stop := rg.stop.offsetBy offset}))
         m!"Text: `{replaceMultilineComments s.getAtomVal}`\n\
            Range: {(rg.start, rg.stop)}\n\
            Message: '{replaceMultilineComments m}'"
