@@ -117,15 +117,13 @@ theorem HasTemperateGrowth.neg (hf : f.HasTemperateGrowth) : (-f).HasTemperateGr
 
 variable {α : Type*} {l : Filter α}
 
-theorem _root_.Asymptotics.isBigO_pow_of_le_right {f : α → ℝ} (hf : ∀ x, 1 ≤ f x) {m n : ℕ}
-    (h : n ≤ m) :
-    (fun x ↦ (f x) ^ n) =O[l] fun x ↦ (f x) ^ m := by
-  apply IsBigO.of_norm_le
-  intro x
-  specialize hf x
-  rw [norm_pow, Real.norm_eq_abs, abs_of_nonneg (zero_le_one.trans hf)]
-  gcongr
-  exact hf
+theorem _root_.Asymptotics.isBigO.pow_of_le_right {f : α → ℝ}
+    (hf : 1 ≤ᶠ[l] f) {m n : ℕ}
+    (h : n ≤ m) : (f ^ n) =O[l] (f ^ m) := by
+  rw [IsBigO_def]
+  refine ⟨1, ?_⟩
+  rw [IsBigOWith_def]
+  exact hf.mono fun x hx ↦ by simp [abs_eq_self.mpr (zero_le_one.trans hx), pow_le_pow_right₀ hx h]
 
 theorem HasTemperateGrowth.add (hf : f.HasTemperateGrowth) (hg : g.HasTemperateGrowth) :
     (f + g).HasTemperateGrowth := by
@@ -135,8 +133,10 @@ theorem HasTemperateGrowth.add (hf : f.HasTemperateGrowth) (hg : g.HasTemperateG
   obtain ⟨k₂, h₂⟩ := hg.2 n
   use max k₁ k₂
   rw [iteratedFDeriv_add (hf.1.of_le (le_of_lt trivial)) (hg.1.of_le (le_of_lt trivial))]
-  exact (h₁.trans (isBigO_pow_of_le_right (by simp) (k₁.le_max_left k₂))).add
-    (h₂.trans (isBigO_pow_of_le_right (by simp) (k₁.le_max_right k₂)))
+  have : 1 ≤ᶠ[⊤] fun (x : E) ↦ 1 + ‖x‖ :=
+    Filter.Eventually.of_forall (fun _ ↦ (le_add_iff_nonneg_right _).mpr (by positivity))
+  exact (h₁.trans (IsBigO.pow_of_le_right this (k₁.le_max_left k₂))).add
+    (h₂.trans (IsBigO.pow_of_le_right this (k₁.le_max_right k₂)))
 
 theorem HasTemperateGrowth.sub (hf : f.HasTemperateGrowth) (hg : g.HasTemperateGrowth) :
     (f - g).HasTemperateGrowth := by
