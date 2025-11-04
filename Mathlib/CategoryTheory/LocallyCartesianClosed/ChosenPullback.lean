@@ -214,11 +214,6 @@ def pullbackMap {Y' Z' X' : C} (f' : Y' ⟶ X') (g' : Z' ⟶ X') [ChosenPullback
   lift (fst f' g' ≫ γ₁) (snd f' g' ≫ γ₂)
     (by rw [assoc, ← comm₁, ← assoc, condition, assoc, comm₂, assoc])
 
-/-- The canonical morphism `pullbackObj f g ⟶ pullbackObj (f ≫ i) (g ≫ i)`. -/
-def pullbackMapDesc {X' : C} (i : X ⟶ X') [ChosenPullback (g ≫ i)] :
-    pullbackObj f g ⟶ pullbackObj (f ≫ i) (g ≫ i) :=
-  pullbackMap (f ≫ i) (g ≫ i) f g (𝟙 _) (𝟙 _) i
-
 variable {f g}
 
 @[reassoc (attr := simp)]
