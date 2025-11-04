@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fox Thomson, Martin Dvorak
+Authors: Fox Thomson, Martin Dvorak, Rudy Peterson
 -/
 module
 
@@ -34,6 +34,8 @@ with respect to other language operations.
 * `l∗`: Kleene star – language of strings consisting of arbitrarily many members of `l`
   concatenated together. Note that this notation uses the Unicode asterisk operator `∗`, as opposed
   to the more common ASCII asterisk `*`.
+* `lᶜ`: complement, language of strings `x` such that `x ∉ l`
+* `l ∩ m`: intersection of languages `l` and `m`
 
 ## Main definitions
 
