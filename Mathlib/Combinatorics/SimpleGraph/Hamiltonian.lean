@@ -76,6 +76,21 @@ lemma IsHamiltonian.length_support (hp : p.IsHamiltonian) : p.support.length = F
 
 end
 
+/-- If a path `p` is Hamiltonian, then `p.support.get` defines an equivalence between
+`Fin p.support.length` and `α`. -/
+@[simps!]
+def IsHamiltonian.supportGetEquiv (hp : p.IsHamiltonian) : Fin p.support.length ≃ α :=
+  p.support.getEquivOfForallCountEqOne hp
+
+/-- If a path `p` is Hamiltonian, then `p.getVert` defines an equivalence between
+`Fin p.support.length` and `α`. -/
+@[simps]
+def IsHamiltonian.getVertEquiv (hp : p.IsHamiltonian) : Fin p.support.length ≃ α where
+  toFun := p.getVert ∘ Fin.val
+  invFun := hp.supportGetEquiv.invFun
+  left_inv := p.getVert_comp_val_eq_get_support ▸ hp.supportGetEquiv.left_inv
+  right_inv := p.getVert_comp_val_eq_get_support ▸ hp.supportGetEquiv.right_inv
+
 theorem isHamiltonian_iff_support_get_bijective : p.IsHamiltonian ↔ p.support.get.Bijective :=
   p.support.get_bijective_iff.symm
 
