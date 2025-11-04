@@ -464,7 +464,7 @@ def spineToSimplexAux : { s : X _⦋n⦌ // X.spine _ s = p } := by
 def spineToSimplex : X _⦋n⦌ := (spineToSimplexAux h p).val
 
 @[simp]
-lemma spine_spineToSimplex : X.spine n (spineToSimplex h p) = p := (spineToSimplexAux h p).2
+lemma spine_spineToSimplex : X.spine n (spineToSimplex h p) = p := (spineToSimplexAux h p).prop
 
 lemma spineToSimplex_zero (p : X.Path 0) : spineToSimplex h p = p.vertex 0 := rfl
 
