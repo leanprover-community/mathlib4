@@ -396,7 +396,9 @@ variable (M)
 /-- The identity map is a continuous multiplicative isomorphism. -/
 @[to_additive (attr := refl) /-- The identity map is a continuous additive isomorphism. -/]
 def refl : M ≃ₜ* M :=
-  { MulEquiv.refl _ with }
+  { MulEquiv.refl _ with
+    continuous_toFun := by dsimp; fun_prop
+    continuous_invFun := by dsimp; fun_prop }
 
 @[to_additive]
 instance : Inhabited (M ≃ₜ* M) := ⟨ContinuousMulEquiv.refl M⟩
