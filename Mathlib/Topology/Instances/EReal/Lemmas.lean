@@ -213,9 +213,6 @@ lemma _root_.Continuous.ereal_toENNReal {α : Type*} [TopologicalSpace α] {f : 
     Continuous fun x => (f x).toENNReal :=
   continuous_toENNReal.comp hf
 
-@[deprecated (since := "2025-03-05")] alias _root_.Continous.ereal_toENNReal :=
-  _root_.Continuous.ereal_toENNReal
-
 @[fun_prop]
 lemma _root_.ContinuousOn.ereal_toENNReal {α : Type*} [TopologicalSpace α] {s : Set α}
     {f : α → EReal} (hf : ContinuousOn f s) :

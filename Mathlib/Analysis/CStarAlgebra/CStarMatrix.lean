@@ -5,7 +5,7 @@ Authors: Frédéric Dupuis
 -/
 
 import Mathlib.Analysis.CStarAlgebra.Module.Constructions
-import Mathlib.Analysis.Matrix
+import Mathlib.Analysis.Matrix.Normed
 import Mathlib.Topology.UniformSpace.Matrix
 
 /-!
@@ -713,9 +713,6 @@ instance instIsTopologicalAddGroup : IsTopologicalAddGroup (CStarMatrix m n A) :
 
 instance instIsUniformAddGroup : IsUniformAddGroup (CStarMatrix m n A) :=
   Pi.instIsUniformAddGroup
-
-@[deprecated (since := "2025-03-31")] alias instUniformAddGroup :=
-  CStarMatrix.instIsUniformAddGroup
 
 instance instContinuousSMul {R : Type*} [SMul R A] [TopologicalSpace R] [ContinuousSMul R A] :
     ContinuousSMul R (CStarMatrix m n A) := instContinuousSMulForall

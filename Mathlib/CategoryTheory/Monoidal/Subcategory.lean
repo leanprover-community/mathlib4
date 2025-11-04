@@ -204,7 +204,4 @@ end Closed
 
 end ObjectProperty
 
-@[deprecated (since := "2025-03-05")]
-alias MonoidalCategory.MonoidalPredicate := ObjectProperty.IsMonoidal
-
 end CategoryTheory
