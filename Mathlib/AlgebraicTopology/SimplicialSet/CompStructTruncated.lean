@@ -103,7 +103,7 @@ lemma exists_of_simplex (s : X _⦋2⦌₂) :
     apply congr_fun; congr
     decide
 
-/-- The composition of `Edge.id x` with `e : Edge x y` is `e`. -/
+/-- `e : Edge x y` is a composition of `Edge.id x` with `e`. -/
 def idComp {x y : X _⦋0⦌₂} (e : Edge x y) :
     CompStruct (.id x) e e where
   simplex := X.map (σ₂ 0).op e.edge
