@@ -90,8 +90,7 @@ private def toFinsuppAntidiag {n : ℕ} (p : Partition n) : ℕ →₀ ℕ where
   mem_support_toFun m := by
     suffices (∃ a ∈ p.parts, a - 1 = m) ↔ m + 1 ∈ p.parts by simpa
     trans (∃ a ∈ p.parts, a = m + 1)
-    · refine ⟨fun ⟨a, h1, h2⟩ ↦ ⟨a, h1, ?_⟩, fun ⟨a, h1, h2⟩ ↦ ⟨a, h1, Nat.sub_eq_of_eq_add h2⟩⟩
-      exact Nat.eq_add_of_sub_eq (Nat.one_le_of_lt (p.parts_pos h1)) h2
+    · grind [→ Partition.parts_pos]
     · simp
 
 private theorem aux_toFinsuppAntidiag_injective (n : ℕ) :
@@ -105,10 +104,10 @@ private theorem aux_toFinsuppAntidiag_injective (n : ℕ) :
   obtain rfl | h0 := Nat.eq_zero_or_pos m
   · trans 0
     · rw [Multiset.count_eq_zero]
-      exact fun h ↦ (lt_self_iff_false _).mp <| p.parts_pos h
+      exact fun h ↦ lt_irrefl _ <| p.parts_pos h
     · symm
       rw [Multiset.count_eq_zero]
-      exact fun h ↦ (lt_self_iff_false _).mp <| q.parts_pos h
+      exact fun h ↦ lt_irrefl _ <| q.parts_pos h
   · refine Nat.eq_of_mul_eq_mul_right h0 <| ?_
     convert funext_iff.mp hcount (m - 1) <;> exact (Nat.sub_eq_iff_eq_add h0).mp rfl
 
