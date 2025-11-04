@@ -179,9 +179,7 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
     ext
     · dsimp
     · dsimp
-      have := (α.naturality g.base.toLoc).inv.naturality_assoc
-      simp only [Cat.comp_obj, Cat.comp_map] at this
-      simp only [map_comp, assoc, this]
+      simp only [map_comp, assoc, ← Cat.comp_map, (α.naturality g.base.toLoc).inv.naturality_assoc]
       simp [naturality_comp_inv_app, ← map_comp]
 
 @[simp]
