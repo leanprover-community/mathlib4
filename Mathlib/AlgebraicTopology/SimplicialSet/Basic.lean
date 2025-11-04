@@ -115,6 +115,17 @@ abbrev trunc (n m : ℕ) (h : m ≤ n := by omega) :
     SSet.Truncated n ⥤ SSet.Truncated m :=
   SimplicialObject.Truncated.trunc (Type u) n m
 
+@[simp]
+lemma id_app {n : ℕ} (X : Truncated n) (d : (SimplexCategory.Truncated n)ᵒᵖ) :
+    NatTrans.app (𝟙 X) d = 𝟙 _ :=
+  rfl
+
+@[simp, reassoc]
+lemma comp_app {n : ℕ} {X Y Z : Truncated n} (f : X ⟶ Y) (g : Y ⟶ Z)
+    (d : (SimplexCategory.Truncated n)ᵒᵖ) :
+    (f ≫ g).app d = f.app d ≫ g.app d :=
+  rfl
+
 end Truncated
 
 /-- The truncation functor on simplicial sets. -/
