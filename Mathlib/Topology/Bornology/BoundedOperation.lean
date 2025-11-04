@@ -160,27 +160,27 @@ instance [PseudoMetricSpace R] [Monoid R] [LipschitzMul R] : BoundedMul R where
 
 end bounded_mul
 
-section AddGroup
+section SeminormedAddCommGroup
+/-!
+### Bounded operations in seminormed additive commutative groups
+-/
 
-namespace Bornology
+variable {R : Type*} [SeminormedAddCommGroup R]
 
-open Filter Pointwise
+lemma SeminormedAddCommGroup.lipschitzWith_sub :
+    LipschitzWith 2 (fun (p : R × R) ↦ p.1 - p.2) := by
+  convert LipschitzWith.prod_fst.sub LipschitzWith.prod_snd
+  norm_num
 
-variable {R : Type*} [Bornology R] [AddGroup R] [BoundedSub R]
+instance : BoundedSub R := boundedSub_of_lipschitzWith_sub SeminormedAddCommGroup.lipschitzWith_sub
 
-instance : BoundedAdd R where
-  isBounded_add := fun {s t} hs ht ↦ by
-    rw [← neg_neg t, ← sub_eq_add_neg]
-    exact isBounded_sub hs <| isBounded_neg_iff.mpr ht
+open Filter Pointwise Bornology
 
-@[simp]
-lemma tendsto_neg_cobounded :
-    Tendsto (-·) (cobounded R) (cobounded R) := by
-  intro s hs
-  rw [mem_map]
-  rw [← isCobounded_def, ← isBounded_compl_iff] at hs ⊢
-  rw [← Set.preimage_compl]
-  exact hs.neg'
+/-
+TODO:
+* Generalize the following to bornologies and `BoundedFoo` classes.
+* Add `BoundedNeg` and `BoundedInv` in the process.
+-/
 
 @[simp]
 lemma tendsto_add_const_cobounded (x : R) :
@@ -213,24 +213,6 @@ theorem tendsto_sub_const_cobounded (x : R) :
 theorem tendsto_const_sub_cobounded (x : R) :
     Tendsto (x - ·) (cobounded R) (cobounded R) := by
   simpa only [sub_eq_add_neg] using (tendsto_const_add_cobounded x).comp tendsto_neg_cobounded
-
-end Bornology
-
-end AddGroup
-
-section SeminormedAddCommGroup
-/-!
-### Bounded operations in seminormed additive commutative groups
--/
-
-variable {R : Type*} [SeminormedAddCommGroup R]
-
-lemma SeminormedAddCommGroup.lipschitzWith_sub :
-    LipschitzWith 2 (fun (p : R × R) ↦ p.1 - p.2) := by
-  convert LipschitzWith.prod_fst.sub LipschitzWith.prod_snd
-  norm_num
-
-instance : BoundedSub R := boundedSub_of_lipschitzWith_sub SeminormedAddCommGroup.lipschitzWith_sub
 
 end SeminormedAddCommGroup
 
