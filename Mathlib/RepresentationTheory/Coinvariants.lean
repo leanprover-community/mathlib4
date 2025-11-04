@@ -301,6 +301,13 @@ abbrev toCoinvariantsKer : Rep k G := Rep.of (A.ρ.toCoinvariantsKer S)
 the `S`-coinvariants `A_S`. -/
 abbrev toCoinvariants : Rep k G := Rep.of (A.ρ.toCoinvariants S)
 
+/-- The quotient map `A → A_S` as a representation morphism. -/
+def toCoinvariantsMkQ : A ⟶ toCoinvariants A S := mkQ _ _ _
+
+@[simp]
+lemma toCoinvariantsMkQ_hom :
+    (toCoinvariantsMkQ A S).hom.hom = Coinvariants.mk (A.ρ.comp S.subtype) := rfl
+
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
 the coinvariants of `ρ|_S`. -/
 abbrev quotientToCoinvariants : Rep k (G ⧸ S) := ofQuotient (toCoinvariants A S) S
@@ -314,7 +321,7 @@ def coinvariantsShortComplex : ShortComplex (Rep k G) where
   X₂ := A
   X₃ := toCoinvariants A S
   f := subtype ..
-  g := mkQ ..
+  g := toCoinvariantsMkQ A S
   zero := by ext x; exact (Submodule.Quotient.mk_eq_zero _).2 x.2
 
 lemma coinvariantsShortComplex_shortExact : (coinvariantsShortComplex A S).ShortExact where
