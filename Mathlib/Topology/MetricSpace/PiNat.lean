@@ -49,6 +49,10 @@ in general), and `ι` is countable.
     `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`.
 * `PiCountable.metricSpace` is the corresponding metric space structure, adjusted so that
   the uniformity is definitionally the product uniformity. Not registered as an instance.
+* `PiNatEmbed` gives an equivalence between a space and itself in a sequence of spaces
+* `Metric.PiNatEmbed.metricSpace` proves that a topological `X` separated by countably many
+  continuous functions to metric spaces, can be embedded inside their product.
+
 -/
 
 namespace PseudoEMetricSpace
@@ -512,7 +516,7 @@ protected def metricSpace : MetricSpace (∀ n, E n) :=
 where the distance is given by `dist x y = (1/2)^n`, where `n` is the smallest index where `x` and
 `y` differ. Not registered as a global instance by default. -/
 protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, UniformSpace (E n)]
-    (h : ∀ n, uniformity (E n) = 𝓟 idRel) : MetricSpace (∀ n, E n) :=
+    (h : ∀ n, uniformity (E n) = 𝓟 SetRel.id) : MetricSpace (∀ n, E n) :=
   haveI : ∀ n, DiscreteTopology (E n) := fun n => discreteTopology_of_discrete_uniformity (h n)
   { dist_triangle := PiNat.dist_triangle
     dist_comm := PiNat.dist_comm
@@ -520,7 +524,7 @@ protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, Unifor
     eq_of_dist_eq_zero := PiNat.eq_of_dist_eq_zero _ _
     toUniformSpace := Pi.uniformSpace _
     uniformity_dist := by
-      simp only [Pi.uniformity, h, idRel, comap_principal, preimage_setOf_eq]
+      simp only [Pi.uniformity, h, SetRel.id, comap_principal, preimage_setOf_eq]
       apply le_antisymm
       · simp only [le_iInf_iff, le_principal_iff]
         intro ε εpos
@@ -881,6 +885,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
     simpa only [nonempty_coe_sort] using g_surj.nonempty
   exact ⟨g ∘ f, g_cont.comp f_cont, g_surj.comp f_surj⟩
 
+open Encodable ENNReal
 namespace PiCountable
 
 /-!
@@ -888,7 +893,7 @@ namespace PiCountable
 -/
 
 variable {ι : Type*} [Encodable ι] {F : ι → Type*}
-open Encodable ENNReal
+
 section EDist
 variable [∀ i, EDist (F i)] {x y : ∀ i, F i} {i : ι} {r : ℝ≥0∞}
 
@@ -937,13 +942,7 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
         ∑' i, min (2⁻¹ ^ encode i) (edist (x i) (z i))
     _ ≤ ∑' i, (min (2⁻¹ ^ encode i) (edist (x i) (y i)) +
          min (2⁻¹ ^ encode i) (edist (y i) (z i))) := by
-      gcongr with n
-      calc  min (2⁻¹ ^ encode n) (edist (x n) (z n))
-        _ ≤ min (2⁻¹ ^ encode n) (edist (x n) (y n) + edist (y n) (z n)) := by
-          gcongr; exact edist_triangle _ _ _
-        _ ≤ min (2⁻¹ ^ encode n) (edist (x n) (y n)) +
-              min (2⁻¹ ^ encode n) (edist (y n) (z n)) := by
-          rw [min_add_distrib]; exact min_le_right ..
+      gcongr with n; grw [edist_triangle _ (y n), min_add_distrib, min_le_right]
     _ = _ := ENNReal.tsum_add ..
   toUniformSpace := Pi.uniformSpace _
   uniformity_edist := by
@@ -1020,22 +1019,20 @@ protected def dist : Dist (∀ i, F i) where
 
 attribute [scoped instance] PiCountable.dist
 
-theorem dist_eq_tsum (x y : ∀ i, F i) :
-    dist x y = ∑' i, min (2⁻¹ ^ encode i) (dist (x i) (y i)) :=
+lemma dist_eq_tsum (x y : ∀ i, F i) : dist x y = ∑' i, min (2⁻¹ ^ encode i) (dist (x i) (y i)) :=
   rfl
 
-theorem dist_summable (x y : ∀ i, F i) :
-    Summable fun i => min (2⁻¹ ^ encode i) (dist (x i) (y i)) := by
+lemma dist_summable (x y : ∀ i, F i) :
+    Summable fun i ↦ min (2⁻¹ ^ encode i) (dist (x i) (y i)) := by
   refine .of_nonneg_of_le (fun i => ?_) (fun i => min_le_left _ _) <| by
     simpa [one_div] using summable_geometric_two_encode
-  exact le_min (pow_nonneg (by simp) _) dist_nonneg
+  exact le_min (by positivity) dist_nonneg
 
-theorem min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) :
+lemma min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) :
     min (2⁻¹ ^ encode i) (dist (x i) (y i)) ≤ dist x y :=
   (dist_summable x y).le_tsum i fun j _ => le_min (by simp) dist_nonneg
 
-theorem dist_le_dist_pi_of_dist_lt (h : dist x y < 2⁻¹ ^ encode i) :
-    dist (x i) (y i) ≤ dist x y := by
+lemma dist_le_dist_pi_of_dist_lt (h : dist x y < 2⁻¹ ^ encode i) : dist (x i) (y i) ≤ dist x y := by
   simpa only [not_le.2 h, false_or] using min_le_iff.1 (min_dist_le_dist_pi x y i)
 
 /-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
@@ -1043,8 +1040,8 @@ theorem dist_le_dist_pi_of_dist_lt (h : dist x y < 2⁻¹ ^ encode i) :
 It is highly non-canonical, though, and therefore not registered as a global instance.
 The distance we use here is `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`. -/
 protected def pseudoMetricSpace : PseudoMetricSpace (∀ i, F i) :=
-  PseudoEMetricSpace.toPseudoMetricSpaceOfDist' dist
-    (fun x y ↦ by dsimp [dist_eq_tsum]; positivity) fun x y ↦ by
+  PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
+    (fun x y ↦ by simp [dist_eq_tsum]; positivity) fun x y ↦ by
       rw [edist_eq_tsum, dist_eq_tsum,
         ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) (dist_summable ..)]
       simp [edist, ENNReal.inv_pow]
@@ -1067,19 +1064,13 @@ protected def metricSpace : MetricSpace (∀ i, F i) :=
 end MetricSpace
 end PiCountable
 
-/-!
-# Embedding a countably separated space inside a space of sequences
+/-! ### Embedding a countably separated space inside a space of sequences -/
 
-This file proves that a topological `X` separated by countably many continuous functions `X → Y i`
-where the `Y i` are metric spaces, then `X` can be embedded inside the product `∀ i, Y i`.
--/
+namespace Metric
 
-open Encodable Function TopologicalSpace Topology
 open scoped PiCountable
 
 variable {ι X : Type*} {Y : ι → Type*} {f : ∀ i, X → Y i}
-
-namespace Metric
 
 include f in
 variable (X Y f) in
@@ -1169,7 +1160,7 @@ lemma isUniformEmbedding_embed (separating_f : Pairwise fun x y ↦ ∃ i, f i x
 
 end EMetricSpace
 
-open Set
+
 section MetricSpace
 variable [∀ i, MetricSpace (Y i)]
 

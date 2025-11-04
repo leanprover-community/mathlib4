@@ -16,7 +16,7 @@ This file contains the additive and multiplicative monoid instances on `Fin n`.
 See note [foundational algebra order theory].
 -/
 
-assert_not_exists OrderedCommMonoid MonoidWithZero
+assert_not_exists IsOrderedMonoid MonoidWithZero
 
 open Nat
 
@@ -40,7 +40,7 @@ This is not a global instance, but can introduced locally using `open Fin.NatCas
 
 This is not an instance because the `binop%` elaborator assumes that
 there are no non-trivial coercion loops,
-but this instance  would introduce a coercion from `Nat` to `Fin n` and back.
+but this instance would introduce a coercion from `Nat` to `Fin n` and back.
 Non-trivial loops lead to undesirable and counterintuitive elaboration behavior.
 
 For example, for `x : Fin k` and `n : Nat`,

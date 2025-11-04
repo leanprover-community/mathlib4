@@ -611,6 +611,11 @@ protected theorem tsum_comm {f : α → β → ℝ≥0∞} : ∑' a, ∑' b, f a
 protected theorem tsum_add : ∑' a, (f a + g a) = ∑' a, f a + ∑' a, g a :=
   ENNReal.summable.tsum_add ENNReal.summable
 
+protected lemma sum_add_tsum_compl {ι : Type*} (s : Finset ι) (f : ι → ℝ≥0∞) :
+    ∑ i ∈ s, f i + ∑' i : ↥(s : Set ι)ᶜ, f i = ∑' i, f i := by
+  rw [tsum_subtype, sum_eq_tsum_indicator]
+  simp [← ENNReal.tsum_add]
+
 protected theorem tsum_le_tsum (h : ∀ a, f a ≤ g a) : ∑' a, f a ≤ ∑' a, g a :=
   ENNReal.summable.tsum_le_tsum h ENNReal.summable
 
@@ -767,7 +772,7 @@ theorem tsum_biUnion_le_tsum {ι : Type*} (f : α → ℝ≥0∞) (s : Set ι) (
 
 theorem tsum_biUnion_le {ι : Type*} (f : α → ℝ≥0∞) (s : Finset ι) (t : ι → Set α) :
     ∑' x : ⋃ i ∈ s, t i, f x ≤ ∑ i ∈ s, ∑' x : t i, f x :=
-  (tsum_biUnion_le_tsum f s.toSet t).trans_eq (Finset.tsum_subtype s fun i => ∑' x : t i, f x)
+  (tsum_biUnion_le_tsum f s t).trans_eq (Finset.tsum_subtype s fun i => ∑' x : t i, f x)
 
 theorem tsum_iUnion_le {ι : Type*} [Fintype ι] (f : α → ℝ≥0∞) (t : ι → Set α) :
     ∑' x : ⋃ i, t i, f x ≤ ∑ i, ∑' x : t i, f x := by

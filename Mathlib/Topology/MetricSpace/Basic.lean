@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
@@ -81,7 +81,7 @@ abbrev EMetricSpace.toMetricSpaceOfDist {α : Type u} [EMetricSpace α] (dist : 
 /-- One gets a metric space from an emetric space if the edistance
 is everywhere finite, by pushing the edistance to reals. We set it up so that the edist and the
 uniformity are defeq in the metric space and the emetric space. -/
-def EMetricSpace.toMetricSpace {α : Type u} [EMetricSpace α] (h : ∀ x y : α, edist x y ≠ ⊤) :
+abbrev EMetricSpace.toMetricSpace {α : Type u} [EMetricSpace α] (h : ∀ x y : α, edist x y ≠ ⊤) :
     MetricSpace α :=
   EMetricSpace.toMetricSpaceOfDist (ENNReal.toReal <| edist · ·) (by simp) (by simp [h])
 
@@ -190,3 +190,113 @@ instance SeparationQuotient.instMetricSpace {α : Type u} [PseudoMetricSpace α]
     surjective_mk.forall₂.2 edist_dist
 
 end EqRel
+
+namespace PseudoEMetricSpace
+
+open ENNReal
+
+variable {X : Type*} (m : PseudoEMetricSpace X) (d : X → X → ℝ≥0∞) (hd : d = edist)
+
+/-- Build new pseudoemetric space from an old one where the edistance is provably (but typically
+non-definitionally) equal to some given edistance. We also provide convenience versions for
+PseudoMetric, Emetric and Metric spaces. -/
+-- See note [forgetful inheritance]
+-- See note [reducible non-instances]
+abbrev replaceEDist : PseudoEMetricSpace X where
+  edist := d
+  edist_self := by simp [hd]
+  edist_comm := by simp [hd, edist_comm]
+  edist_triangle := by simp [hd, edist_triangle]
+  uniformity_edist := by simp [hd, uniformity_edist]
+  __ := m
+
+lemma replaceEDist_eq : m.replaceEDist d hd = m := by ext : 2; exact hd
+
+-- Check uniformity is unchanged
+example : (replaceEDist m d hd).toUniformSpace = m.toUniformSpace := by
+  with_reducible dsimp [replaceEDist]
+
+end PseudoEMetricSpace
+
+namespace PseudoMetricSpace
+variable {X : Type*} (m : PseudoMetricSpace X) (d : X → X → ℝ) (hd : d = dist)
+
+/-- Build new pseudometric space from an old one where the distance is provably (but typically
+non-definitionally) equal to some given distance. We also provide convenience versions for
+PseudoEMetric, Emetric and Metric spaces. -/
+-- See note [forgetful inheritance]
+-- See note [reducible non-instances]
+abbrev replaceDist : PseudoMetricSpace X where
+  dist := d
+  dist_self := by simp [hd]
+  dist_comm := by simp [hd, dist_comm]
+  dist_triangle := by simp [hd, dist_triangle]
+  edist_dist := by simp [hd, edist_dist]
+  uniformity_dist := by simp [hd, uniformity_dist]
+  cobounded_sets := by simp [hd, cobounded_sets]
+  __ := m
+
+lemma replaceDist_eq : m.replaceDist d hd = m := by ext : 2; exact hd
+
+-- Check uniformity is unchanged
+example : (replaceDist m d hd).toUniformSpace = m.toUniformSpace := by
+  with_reducible dsimp [replaceDist]
+
+-- Check Bornology is unchanged
+example : (replaceDist m d hd).toBornology = m.toBornology := by
+  with_reducible dsimp [replaceDist]
+
+end PseudoMetricSpace
+
+namespace EMetricSpace
+
+open ENNReal
+
+variable {X : Type*} (m : EMetricSpace X) (d : X → X → ℝ≥0∞) (hd : d = edist)
+
+/-- Build new emetric space from an old one where the edistance is provably (but typically
+non-definitionally) equal to some given edistance. We also provide convenience versions for
+PseudoEMetric, PseudoMetric and Metric spaces. -/
+-- See note [forgetful inheritance]
+-- See note [reducible non-instances]
+abbrev replaceEDist : EMetricSpace X where
+  edist := d
+  edist_self := by simp [hd]
+  edist_comm := by simp [hd, edist_comm]
+  edist_triangle := by simp [hd, edist_triangle]
+  eq_of_edist_eq_zero := by simp [hd]
+
+lemma replaceEDist_eq : m.replaceEDist d hd = m := by ext : 2; exact hd
+
+-- Check uniformity is unchanged
+example : (replaceEDist m d hd).toUniformSpace = m.toUniformSpace := by
+  with_reducible simp [replaceEDist_eq]
+
+end EMetricSpace
+
+namespace MetricSpace
+variable {X : Type*} (m : MetricSpace X) (d : X → X → ℝ) (hd : d = dist)
+
+/-- Build new metric space from an old one where the distance is provably (but typically
+non-definitionally) equal to some given distance. We also provide convenience versions for
+PseudoEMetric, PseudoMatric and EMetric spaces. -/
+-- See note [forgetful inheritance]
+-- See note [reducible non-instances]
+abbrev replaceDist : MetricSpace X where
+  dist := d
+  dist_self := by simp [hd]
+  dist_comm := by simp [hd, dist_comm]
+  dist_triangle := by simp [hd, dist_triangle]
+  eq_of_dist_eq_zero := by simp [hd]
+
+lemma replaceDist_eq : m.replaceDist d hd = m := by ext : 2; exact hd
+
+-- Check uniformity is unchanged
+example : (replaceDist m d hd).toUniformSpace = m.toUniformSpace := by
+  with_reducible simp [replaceDist_eq]
+
+-- Check Bornology is unchanged
+example : (replaceDist m d hd).toBornology = m.toBornology := by
+  with_reducible simp [replaceDist_eq]
+
+end MetricSpace

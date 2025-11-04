@@ -839,7 +839,7 @@ lemma lift_smul_lift {α R N} [SMul R N] (f : { f : α → α → R // ∀ a₁ 
     (g : { g : α → α → N // ∀ a₁ a₂, g a₁ a₂ = g a₂ a₁ }) :
     lift f • lift g = lift ⟨f.val • g.val, fun _ _ => by
       rw [Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', f.prop, g.prop]⟩ := by
-  ext ⟨i,j⟩
+  ext ⟨i, j⟩
   simp_all only [Pi.smul_apply', lift_mk]
 
 /--

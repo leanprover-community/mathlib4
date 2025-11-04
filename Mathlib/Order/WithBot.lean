@@ -155,8 +155,6 @@ lemma ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, ↑a = x :=
 lemma eq_bot_iff_forall_ne {x : WithBot α} : x = ⊥ ↔ ∀ a : α, ↑a ≠ x :=
   Option.eq_none_iff_forall_some_ne
 
-@[deprecated (since := "2025-03-19")] alias forall_ne_iff_eq_bot := eq_bot_iff_forall_ne
-
 theorem forall_ne_bot {p : WithBot α → Prop} : (∀ x, x ≠ ⊥ → p x) ↔ ∀ x : α, p x := by
   simp [ne_bot_iff_exists]
 
@@ -249,16 +247,17 @@ section LE
 
 variable [LE α] {x y : WithBot α}
 
-/-- The order on `WithBot α`, defined by `⊥ ≤ ⊥`, `⊥ ≤ ↑a` and `a ≤ b → ↑a ≤ ↑b`.
-
-Equivalently, `x ≤ y` can be defined as `∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b`,
-see `le_if_forall`. The definition as an inductive predicate is preferred since it
-cannot be accidentally unfolded too far. -/
+/-- Auxiliary definition for the order on `WithBot`. -/
 @[mk_iff le_def_aux]
 protected inductive LE : WithBot α → WithBot α → Prop
   | protected bot_le (x : WithBot α) : WithBot.LE ⊥ x
   | protected coe_le_coe {a b : α} : a ≤ b → WithBot.LE a b
 
+/-- The order on `WithBot α`, defined by `⊥ ≤ y` and `a ≤ b → ↑a ≤ ↑b`.
+
+Equivalently, `x ≤ y` can be defined as `∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b`,
+see `le_iff_forall`. The definition as an inductive predicate is preferred since it
+cannot be accidentally unfolded too far. -/
 instance (priority := 10) instLE : LE (WithBot α) where le := WithBot.LE
 
 lemma le_def : x ≤ y ↔ x = ⊥ ∨ ∃ a b : α, a ≤ b ∧ x = a ∧ y = b := le_def_aux ..
@@ -295,10 +294,8 @@ lemma unbot_le_iff (hx : x ≠ ⊥) : unbot x hx ≤ b ↔ x ≤ b := by lift x 
 lemma unbotD_le_iff (hx : x = ⊥ → a ≤ b) : x.unbotD a ≤ b ↔ x ≤ b := by cases x <;> simp [hx]
 
 @[simp] lemma unbot_le_unbot (hx hy) : unbot x hx ≤ unbot y hy ↔ x ≤ y := by
-  -- TODO: Fix `lift` so that it doesn't try to clear the hypotheses I give it when it is
-  -- impossible to do so. See https://github.com/leanprover-community/mathlib4/issues/19160
-  lift x to α using id hx
-  lift y to α using id hy
+  lift x to α using hx
+  lift y to α using hy
   simp
 
 end LE
@@ -307,20 +304,24 @@ section LT
 
 variable [LT α] {x y : WithBot α}
 
+/-- Auxiliary definition for the order on `WithBot`. -/
+@[mk_iff lt_def_aux]
+protected inductive LT : WithBot α → WithBot α → Prop
+  | protected bot_lt (b : α) : WithBot.LT ⊥ b
+  | protected coe_lt_coe {a b : α} : a < b → WithBot.LT a b
+
 /-- The order on `WithBot α`, defined by `⊥ < ↑a` and `a < b → ↑a < ↑b`.
 
-Equivalently, `x ≤ y` can be defined as `∀ b : α, y = ↑v → ∃ a : α, x = ↑a ∧ a ≤ b`,
-see `le_if_forall`. The definition as an inductive predicate is preferred since it
+Equivalently, `x < y` can be defined as `∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b`,
+see `lt_iff_exists`. The definition as an inductive predicate is preferred since it
 cannot be accidentally unfolded too far. -/
-instance (priority := 10) instLT : LT (WithBot α) where
-  lt
-  | ⊥, ⊥ => False
-  | (a : α), ⊥ => False
-  | ⊥, (b : α) => True
-  | (a : α), (b : α) => a < b
+instance (priority := 10) instLT : LT (WithBot α) where lt := WithBot.LT
 
-lemma lt_def : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b := by
-  cases x <;> cases y <;> simp [LT.lt]
+lemma lt_def : x < y ↔ (x = ⊥ ∧ ∃ b : α, y = b) ∨ ∃ a b : α, a < b ∧ x = a ∧ y = b :=
+  (lt_def_aux ..).trans <| by simp
+
+lemma lt_iff_exists : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b := by
+  cases x <;> cases y <;> simp [lt_def]
 
 @[simp, norm_cast] lemma coe_lt_coe : (a : WithBot α) < b ↔ a < b := by simp [lt_def]
 @[simp] lemma bot_lt_coe (a : α) : ⊥ < (a : WithBot α) := by simp [lt_def]
@@ -328,21 +329,19 @@ lemma lt_def : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b
 
 lemma lt_iff_exists_coe : x < y ↔ ∃ b : α, y = b ∧ x < b := by cases y <;> simp
 
-lemma lt_coe_iff : x < b ↔ ∀ a : α, x = a → a < b := by simp [lt_def]
+lemma lt_coe_iff : x < b ↔ ∀ a : α, x = a → a < b := by simp [lt_iff_exists]
 
 /-- A version of `bot_lt_iff_ne_bot` for `WithBot` that only requires `LT α`, not
 `PartialOrder α`. -/
 protected lemma bot_lt_iff_ne_bot : ⊥ < x ↔ x ≠ ⊥ := by cases x <;> simp
 
-lemma lt_unbot_iff (hy : y ≠ ⊥) : a < unbot y hy ↔ a < y := by lift y to α using id hy; simp
-lemma unbot_lt_iff (hx : x ≠ ⊥) : unbot x hx < b ↔ x < b := by lift x to α using id hx; simp
+lemma lt_unbot_iff (hy : y ≠ ⊥) : a < unbot y hy ↔ a < y := by lift y to α using hy; simp
+lemma unbot_lt_iff (hx : x ≠ ⊥) : unbot x hx < b ↔ x < b := by lift x to α using hx; simp
 lemma unbotD_lt_iff (hx : x = ⊥ → a < b) : x.unbotD a < b ↔ x < b := by cases x <;> simp [hx]
 
 @[simp] lemma unbot_lt_unbot (hx hy) : unbot x hx < unbot y hy ↔ x < y := by
-  -- TODO: Fix `lift` so that it doesn't try to clear the hypotheses I give it when it is
-  -- impossible to do so. See https://github.com/leanprover-community/mathlib4/issues/19160
-  lift x to α using id hx
-  lift y to α using id hy
+  lift x to α using hx
+  lift y to α using hy
   simp
 
 end LT
@@ -411,8 +410,10 @@ lemma eq_bot_iff_forall_le [NoBotOrder α] : x = ⊥ ↔ ∀ b : α, x ≤ b := 
   rintro rfl
   exact not_isBot y fun z => coe_le_coe.1 (h z)
 
-@[deprecated (since := "2025-03-19")] alias forall_lt_iff_eq_bot := eq_bot_iff_forall_lt
-@[deprecated (since := "2025-03-19")] alias forall_le_iff_eq_bot := eq_bot_iff_forall_le
+lemma forall_coe_le_iff_le [NoBotOrder α] : (∀ a : α, a ≤ x → a ≤ y) ↔ x ≤ y := by
+  obtain _ | a := x
+  · simpa [WithBot.none_eq_bot, eq_bot_iff_forall_le] using fun a ha ↦ (not_isBot _ ha).elim
+  · exact ⟨fun h ↦ h _ le_rfl, fun hay b ↦ hay.trans'⟩
 
 lemma forall_coe_le_iff_le [NoBotOrder α] : (∀ a : α, a ≤ x → a ≤ y) ↔ x ≤ y := by
   obtain _ | a := x
@@ -748,8 +749,6 @@ lemma ne_top_iff_exists {x : WithTop α} : x ≠ ⊤ ↔ ∃ a : α, ↑a = x :=
 lemma eq_top_iff_forall_ne {x : WithTop α} : x = ⊤ ↔ ∀ a : α, ↑a ≠ x :=
   Option.eq_none_iff_forall_some_ne
 
-@[deprecated (since := "2025-03-19")] alias forall_ne_iff_eq_top := eq_top_iff_forall_ne
-
 theorem forall_ne_top {p : WithTop α → Prop} : (∀ x, x ≠ ⊤ → p x) ↔ ∀ x : α, p x := by
   simp [ne_top_iff_exists]
 
@@ -838,7 +837,11 @@ section LE
 
 variable [LE α] {x y : WithTop α}
 
-/-- The order on `WithTop α`, defined by `⊤ ≤ ⊤`, `↑a ≤ ⊤` and `a ≤ b → ↑a ≤ ↑b`. -/
+/-- The order on `WithTop α`, defined by `x ≤ ⊤` and `a ≤ b → ↑a ≤ ↑b`.
+
+Equivalently, `x ≤ y` can be defined as `∀ b : α, y = ↑b → ∃ a : α, x = ↑a ∧ a ≤ b`,
+see `le_iff_forall`. The definition as an inductive predicate is preferred since it
+cannot be accidentally unfolded too far. -/
 instance (priority := 10) instLE : LE (WithTop α) where le a b := WithBot.LE (α := αᵒᵈ) b a
 
 lemma le_def : x ≤ y ↔ y = ⊤ ∨ ∃ a b : α, a ≤ b ∧ x = a ∧ y = b :=
@@ -876,7 +879,30 @@ protected theorem _root_.IsMin.withTop (h : IsMin a) : IsMin (a : WithTop α) :=
 
 lemma untop_le_iff (hx : x ≠ ⊤) : untop x hx ≤ b ↔ x ≤ b := by lift x to α using id hx; simp
 lemma le_untop_iff (hy : y ≠ ⊤) : a ≤ untop y hy ↔ a ≤ y := by lift y to α using id hy; simp
+
+lemma untopD_le_iff (hy : y ≠ ⊤) : y.untopD a ≤ b ↔ y ≤ b := by lift y to α using id hy; simp
 lemma le_untopD_iff (hy : y = ⊤ → a ≤ b) : a ≤ y.untopD b ↔ a ≤ y := by cases y <;> simp [hy]
+
+lemma untopA_le_iff [Nonempty α] (hy : y ≠ ⊤) : y.untopA ≤ b ↔ y ≤ b := untopD_le_iff hy
+lemma le_untopA_iff [Nonempty α] (hy : y ≠ ⊤) : a ≤ y.untopA ↔ a ≤ y := by
+  lift y to α using id hy; simp
+
+lemma untop_mono (hx : x ≠ ⊤) (hy : y ≠ ⊤) (h : x ≤ y) :
+    x.untop hx ≤ y.untop hy := by
+  lift x to α using id hx
+  lift y to α using id hy
+  simp only [untop_coe]
+  exact mod_cast h
+
+lemma untopD_mono (hy : y ≠ ⊤) (h : x ≤ y) :
+    x.untopD a ≤ y.untopD a := by
+  lift y to α using hy
+  cases x with
+  | top => simp at h
+  | coe a => simp only [WithTop.untopD_coe]; exact mod_cast h
+
+lemma untopA_mono [Nonempty α] (hy : y ≠ ⊤) (h : x ≤ y) :
+    x.untopA ≤ y.untopA := untopD_mono hy h
 
 end LE
 
@@ -884,17 +910,19 @@ section LT
 
 variable [LT α] {x y : WithTop α}
 
-/-- The order on `WithTop α`, defined by `↑a < ⊤` and `a < b → ↑a < ↑b`. -/
-instance (priority := 10) instLT : LT (WithTop α) where
-  -- We match on `b, a` rather than `a, b` to keep the defeq with `WithBot.instLT (α := αᵒᵈ)`
-  lt a b := match b, a with
-  | ⊤, ⊤ => False
-  | (b : α), ⊤ => False
-  | ⊤, (a : α) => True
-  | (b : α), (a : α) => a < b
+/-- The order on `WithTop α`, defined by `↑a < ⊤` and `a < b → ↑a < ↑b`.
 
-lemma lt_def : x < y ↔ ∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b := by
-  cases x <;> cases y <;> simp [LT.lt]
+Equivalently, `x < y` can be defined as `∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b`,
+see `le_if_forall`. The definition as an inductive predicate is preferred since it
+cannot be accidentally unfolded too far. -/
+instance (priority := 10) instLT : LT (WithTop α) where lt a b := WithBot.LT (α := αᵒᵈ) b a
+
+lemma lt_def : x < y ↔ (∃ a : α, x = ↑a) ∧ y = ⊤ ∨ ∃ a b : α, a < b ∧ x = ↑a ∧ y = ↑b :=
+  WithBot.lt_def.trans <| or_congr and_comm <| exists_swap.trans <|
+    exists₂_congr fun _ _ ↦ and_congr_right' and_comm
+
+lemma lt_iff_exists : x < y ↔ ∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b := by
+  cases x <;> cases y <;> simp [lt_def]
 
 @[simp, norm_cast] lemma coe_lt_coe : (a : WithTop α) < b ↔ a < b := by simp [lt_def]
 @[simp] lemma coe_lt_top (a : α) : (a : WithTop α) < ⊤ := by simp [lt_def]
@@ -902,7 +930,7 @@ lemma lt_def : x < y ↔ ∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b
 
 lemma lt_iff_exists_coe : x < y ↔ ∃ a : α, x = a ∧ a < y := by cases x <;> simp
 
-lemma coe_lt_iff : a < y ↔ ∀ b : α, y = b → a < b := by simp [lt_def]
+lemma coe_lt_iff : a < y ↔ ∀ b : α, y = b → a < b := by simp [lt_iff_exists]
 
 /-- A version of `lt_top_iff_ne_top` for `WithTop` that only requires `LT α`, not
 `PartialOrder α`. -/
@@ -910,7 +938,14 @@ protected lemma lt_top_iff_ne_top : x < ⊤ ↔ x ≠ ⊤ := by cases x <;> simp
 
 @[simp] lemma lt_untop_iff (hy : y ≠ ⊤) : a < y.untop hy ↔ a < y := by lift y to α using id hy; simp
 @[simp] lemma untop_lt_iff (hx : x ≠ ⊤) : x.untop hx < b ↔ x < b := by lift x to α using id hx; simp
+
 lemma lt_untopD_iff (hy : y = ⊤ → a < b) : a < y.untopD b ↔ a < y := by cases y <;> simp [hy]
+lemma untopD_lt_iff (hx : x ≠ ⊤) : x.untopD a < b ↔ x < b := by
+  lift x to α using id hx; simp
+
+lemma lt_untopA_iff [Nonempty α] (hy : y ≠ ⊤) : a < y.untopA ↔ a < y := by
+  lift y to α using id hy; simp
+lemma untopA_lt_iff [Nonempty α] (hx : x ≠ ⊤) : x.untopA < b ↔ x < b := untopD_lt_iff hx
 
 end LT
 
@@ -974,9 +1009,6 @@ lemma eq_top_iff_forall_gt : y = ⊤ ↔ ∀ a : α, a < y := by
 lemma eq_top_iff_forall_ge [NoTopOrder α] : y = ⊤ ↔ ∀ a : α, a ≤ y :=
   WithBot.eq_bot_iff_forall_le (α := αᵒᵈ)
 
-@[deprecated (since := "2025-03-19")] alias forall_gt_iff_eq_top := eq_top_iff_forall_gt
-@[deprecated (since := "2025-03-19")] alias forall_ge_iff_eq_top := eq_top_iff_forall_ge
-
 lemma forall_coe_le_iff_le [NoTopOrder α] : (∀ a : α, a ≤ x → a ≤ y) ↔ x ≤ y :=
   WithBot.forall_le_coe_iff_le (α := αᵒᵈ)
 
@@ -986,7 +1018,18 @@ lemma forall_le_coe_iff_le [NoTopOrder α] : (∀ a : α, y ≤ a → x ≤ a) �
 end Preorder
 
 section PartialOrder
-variable [PartialOrder α] [NoTopOrder α] {x y : WithTop α}
+variable [PartialOrder α] {x y : WithTop α}
+
+lemma untopD_le (hy : y ≤ b) : y.untopD a ≤ b := by
+  rwa [untopD_le_iff]
+  exact ne_top_of_le_ne_top (by simp) hy
+
+lemma untopA_le [Nonempty α] (hy : y ≤ b) : y.untopA ≤ b := untopD_le hy
+
+variable [NoTopOrder α]
+
+lemma eq_of_forall_le_coe_iff (h : ∀ a : α, x ≤ a ↔ y ≤ a) : x = y :=
+  WithBot.eq_of_forall_coe_le_iff (α := αᵒᵈ) h
 
 lemma eq_of_forall_le_coe_iff (h : ∀ a : α, x ≤ a ↔ y ≤ a) : x = y :=
   WithBot.eq_of_forall_coe_le_iff (α := αᵒᵈ) h

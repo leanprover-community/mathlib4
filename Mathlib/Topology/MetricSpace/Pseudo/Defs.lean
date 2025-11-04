@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
@@ -707,12 +707,16 @@ theorem uniformContinuous_iff [PseudoMetricSpace β] {f : α → β} :
 theorem uniformContinuousOn_iff [PseudoMetricSpace β] {f : α → β} {s : Set α} :
     UniformContinuousOn f s ↔
       ∀ ε > 0, ∃ δ > 0, ∀ x ∈ s, ∀ y ∈ s, dist x y < δ → dist (f x) (f y) < ε :=
-  Metric.uniformity_basis_dist.uniformContinuousOn_iff Metric.uniformity_basis_dist
+  uniformity_basis_dist.uniformContinuousOn_iff uniformity_basis_dist
+
+theorem uniformContinuous_iff_le [PseudoMetricSpace β] {f : α → β} :
+    UniformContinuous f ↔ ∀ ε > 0, ∃ δ > 0, ∀ ⦃a b : α⦄, dist a b ≤ δ → dist (f a) (f b) ≤ ε :=
+  uniformity_basis_dist_le.uniformContinuous_iff uniformity_basis_dist_le
 
 theorem uniformContinuousOn_iff_le [PseudoMetricSpace β] {f : α → β} {s : Set α} :
     UniformContinuousOn f s ↔
       ∀ ε > 0, ∃ δ > 0, ∀ x ∈ s, ∀ y ∈ s, dist x y ≤ δ → dist (f x) (f y) ≤ ε :=
-  Metric.uniformity_basis_dist_le.uniformContinuousOn_iff Metric.uniformity_basis_dist_le
+  uniformity_basis_dist_le.uniformContinuousOn_iff uniformity_basis_dist_le
 
 theorem nhds_basis_ball : (𝓝 x).HasBasis (0 < ·) (ball x) :=
   nhds_basis_uniformity uniformity_basis_dist

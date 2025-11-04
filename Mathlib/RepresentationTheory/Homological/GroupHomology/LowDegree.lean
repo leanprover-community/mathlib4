@@ -12,7 +12,7 @@ import Mathlib.RepresentationTheory.Invariants
 # The low-degree homology of a `k`-linear `G`-representation
 
 Let `k` be a commutative ring and `G` a group. This file contains specialised API for
-the cycles and group homology  of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
+the cycles and group homology of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
 In `Mathlib/RepresentationTheory/Homological/GroupHomology/Basic.lean`, we define the `n`th group
 homology of `A` to be the homology of a complex `inhomogeneousChains A`, whose objects are
 `(Fin n →₀ G) → A`; this is unnecessarily unwieldy in low degree.
@@ -122,6 +122,12 @@ def chains₁ToCoinvariantsKer :
     ModuleCat.of k (G →₀ A) ⟶ ModuleCat.of k (Coinvariants.ker A.ρ) :=
   ModuleCat.ofHom <| (d₁₀ A).hom.codRestrict _ <|
     range_d₁₀_eq_coinvariantsKer A ▸ LinearMap.mem_range_self _
+
+lemma chains₁ToCoinvariantsKer_surjective :
+    Function.Surjective (chains₁ToCoinvariantsKer A) := by
+  rintro ⟨x, hx⟩
+  rcases range_d₁₀_eq_coinvariantsKer A ▸ hx with ⟨y, hy⟩
+  use y, Subtype.ext hy
 
 @[simp]
 theorem d₁₀_eq_zero_of_isTrivial [A.IsTrivial] : d₁₀ A = 0 := by

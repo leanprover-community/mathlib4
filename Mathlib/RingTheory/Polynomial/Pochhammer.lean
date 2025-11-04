@@ -228,6 +228,29 @@ theorem ascPochhammer_eval_succ (r n : ℕ) :
     (n + r) * (ascPochhammer S r).eval (n : S) :=
   mod_cast congr_arg Nat.cast (ascPochhammer_nat_eval_succ r n)
 
+namespace Nat
+variable (a b : ℕ)
+
+theorem cast_ascFactorial : a.ascFactorial b = (ascPochhammer S b).eval (a : S) := by
+  rw [← ascPochhammer_nat_eq_ascFactorial, ascPochhammer_eval_cast]
+
+theorem cast_descFactorial :
+    a.descFactorial b = (ascPochhammer S b).eval (a - (b - 1) : S) := by
+  rw [← ascPochhammer_eval_cast, ascPochhammer_nat_eq_descFactorial]
+  induction b with
+  | zero => simp
+  | succ b =>
+    simp_rw [add_succ, Nat.add_one_sub_one]
+    obtain h | h := le_total a b
+    · rw [descFactorial_of_lt (lt_succ_of_le h), descFactorial_of_lt (lt_succ_of_le _)]
+      rw [tsub_eq_zero_iff_le.mpr h, zero_add]
+    · rw [tsub_add_cancel_of_le h]
+
+theorem cast_factorial : (a ! : S) = (ascPochhammer S a).eval 1 := by
+  rw [← one_ascFactorial, cast_ascFactorial, cast_one]
+
+end Nat
+
 end Factorial
 
 section Ring
@@ -484,3 +507,27 @@ theorem monotoneOn_descPochhammer_eval (n : ℕ) :
       (sub_nonneg_of_le ha) (descPochhammer_nonneg hb_sub1)
 
 end StrictOrderedRing
+
+variable (K : Type*)
+
+namespace Nat
+section DivisionSemiring
+variable [DivisionSemiring K] [CharZero K]
+
+theorem cast_choose_eq_ascPochhammer_div (a b : ℕ) :
+    (a.choose b : K) = (ascPochhammer K b).eval ↑(a - (b - 1)) / b ! := by
+  rw [eq_div_iff_mul_eq (cast_ne_zero.2 b.factorial_ne_zero : (b ! : K) ≠ 0), ← cast_mul,
+    mul_comm, ← descFactorial_eq_factorial_mul_choose, ← cast_descFactorial]
+
+end DivisionSemiring
+
+section DivisionRing
+variable [DivisionRing K] [CharZero K]
+
+theorem cast_choose_eq_descPochhammer_div (a b : ℕ) :
+    (a.choose b : K) = (descPochhammer K b).eval ↑a / b ! := by
+  rw [eq_div_iff_mul_eq (cast_ne_zero.2 b.factorial_ne_zero : (b ! : K) ≠ 0), ← cast_mul,
+    mul_comm, ← descFactorial_eq_factorial_mul_choose, descPochhammer_eval_eq_descFactorial]
+
+end DivisionRing
+end Nat
