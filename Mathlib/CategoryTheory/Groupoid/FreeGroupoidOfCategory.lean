@@ -151,7 +151,7 @@ theorem map_comp (φ : C ⥤ D) (φ' : D ⥤ E) : map (φ ⋙ φ') = map φ ⋙ 
 /-- The functor induced by a composition is the composition of the functors they induce. -/
 def mapComp (φ : C ⥤ D) (φ' : D ⥤ E) : map (φ ⋙ φ') ≅ map φ ⋙ map φ':=
   eqToIso (map_comp φ φ')
-j
+
 lemma of_map (F : C ⥤ D) : of C ⋙ map F = F ⋙ of D := rfl
 
 /-- The operation `of` is natural. -/
