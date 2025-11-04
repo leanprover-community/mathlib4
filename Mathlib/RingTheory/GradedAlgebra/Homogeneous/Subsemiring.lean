@@ -8,8 +8,7 @@ import Mathlib.RingTheory.GradedAlgebra.Basic
 /-!
 # Homogeneous subsemirings of a graded semiring
 
-This file defines homogeneous subsemirings of `GradedRing 𝒜` where `𝒜 : ι → σ`, `SetLike σ A` and
-`AddSubmonoidClass σ A`, as well as operations on them.
+This file defines homogeneous subsemirings of a graded semiring, as well as operations on them.
 
 ## Main definitions
 
