@@ -40,6 +40,8 @@ structure HomogeneousSubsemiring extends Subsemiring A where
 
 variable {𝒜}
 
+namespace HomogeneousSubsemiring
+
 theorem toSubsemiring_injective :
     (toSubsemiring : HomogeneousSubsemiring 𝒜 → Subsemiring A).Injective :=
   fun ⟨x, hx⟩ ⟨y, hy⟩ => fun (h : x = y) => by simp [h]
