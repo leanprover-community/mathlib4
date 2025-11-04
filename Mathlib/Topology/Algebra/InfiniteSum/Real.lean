@@ -99,7 +99,4 @@ protected theorem Summable.tsum_lt_tsum_of_nonneg {i : ℕ} {f g : ℕ → ℝ} 
     (h : ∀ b : ℕ, f b ≤ g b) (hi : f i < g i) (hg : Summable g) : ∑' n, f n < ∑' n, g n :=
   Summable.tsum_lt_tsum h hi (.of_nonneg_of_le h0 h hg) hg
 
-@[deprecated (since := "2025-04-12")] alias tsum_lt_tsum_of_nonneg :=
-  Summable.tsum_lt_tsum_of_nonneg
-
 end summable

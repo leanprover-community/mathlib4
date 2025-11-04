@@ -261,7 +261,7 @@ irreducible_def hausdorffEdist {α : Type u} [PseudoEMetricSpace α] (s t : Set 
 
 section HausdorffEdist
 
-variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {x : α} {s t u : Set α} {Φ : α → β}
+variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {x y : α} {s t u : Set α} {Φ : α → β}
 
 /-- The Hausdorff edistance of a set to itself vanishes. -/
 @[simp]
@@ -415,6 +415,12 @@ theorem empty_or_nonempty_of_hausdorffEdist_ne_top (fin : hausdorffEdist s t ≠
     · rw [hausdorffEdist_comm] at fin
       exact Or.inr ⟨nonempty_of_hausdorffEdist_ne_top ht fin, ht⟩
   · exact Or.inr ⟨hs, nonempty_of_hausdorffEdist_ne_top hs fin⟩
+
+@[simp]
+theorem hausdorffEdist_singleton : hausdorffEdist {x} {y} = edist x y := by
+  simp_rw [hausdorffEdist, iSup_singleton, infEdist_singleton]
+  nth_rw 2 [edist_comm]
+  exact max_self _
 
 end HausdorffEdist
 
@@ -811,6 +817,10 @@ theorem _root_.IsClosed.hausdorffDist_zero_iff_eq (hs : IsClosed s) (ht : IsClos
     (fin : hausdorffEdist s t ≠ ⊤) : hausdorffDist s t = 0 ↔ s = t := by
   simp [← hausdorffEdist_zero_iff_eq_of_closed hs ht, hausdorffDist, ENNReal.toReal_eq_zero_iff,
     fin]
+
+@[simp]
+theorem hausdorffDist_singleton : hausdorffDist {x} {y} = dist x y := by
+  rw [hausdorffDist, hausdorffEdist_singleton, dist_edist]
 
 end
 
