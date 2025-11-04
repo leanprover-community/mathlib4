@@ -52,7 +52,7 @@ open Quiver in
 /-- The relation on the free groupoid on the underlying *quiver* of C that
 promotes the prefunctor `C ⥤q FreeGroupoid C` into a functor
 `C ⥤ Quotient (FreeGroupoid.homRel C)`. -/
-inductive FreeGroupoid.homRel : HomRel (FreeGroupoid C) where
+inductive FreeGroupoid.homRel : HomRel (Quiver.FreeGroupoid C) where
 | map_id (X : C) : homRel ((FreeGroupoid.of C).map (𝟙 X)) (𝟙 ((FreeGroupoid.of C).obj X))
 | map_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : homRel ((FreeGroupoid.of C).map (f ≫ g))
   ((FreeGroupoid.of C).map f ≫ (FreeGroupoid.of C).map g)
@@ -63,38 +63,19 @@ by the relation that promotes the prefunctor `C ⥤q FreeGroupoid C` into a func
 `C ⥤ Quotient (FreeGroupoid.homRel C)`. -/
 protected def FreeGroupoid := Quotient (FreeGroupoid.homRel C)
 
-variable {C} in
-instance [Nonempty C] : Nonempty (Category.FreeGroupoid C) := by
-  have : Inhabited (Quiver.FreeGroupoid C) := by
-    inhabit Quiver.FreeGroupoid C
-    exact ⟨@default (Quiver.FreeGroupoid C) _⟩
-  have : Inhabited (Category.FreeGroupoid C) := inferInstanceAs (Inhabited <| Quotient _)
-  inhabit Category.FreeGroupoid C
-  exact ⟨@default (Category.FreeGroupoid C) _⟩
+instance [Nonempty C] : Nonempty (Category.FreeGroupoid C) :=
+  ⟨Quotient.mk (Quotient.mk ((Paths.of _).obj (Classical.arbitrary C)))⟩
 
-variable {C} in
 instance : Groupoid (Category.FreeGroupoid C) :=
   Quotient.groupoid (Category.FreeGroupoid.homRel C)
 
 namespace FreeGroupoid
 
-@[simp]
-lemma of.map_id (X : C) : (Quotient.functor (FreeGroupoid.homRel C)).map
-    ((Quiver.FreeGroupoid.of C).map (𝟙 X)) = 𝟙 _:= by
-  simp [Quotient.sound _ (Category.FreeGroupoid.homRel.map_id X)]
-
-@[simp]
-lemma of.map_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (Quotient.functor (FreeGroupoid.homRel C)).map ((Quiver.FreeGroupoid.of C).map (f ≫ g)) =
-    (Quotient.functor (FreeGroupoid.homRel C)).map ((Quiver.FreeGroupoid.of C).map f) ≫
-    (Quotient.functor (FreeGroupoid.homRel C)).map ((Quiver.FreeGroupoid.of C).map g) := by
-  simp [Quotient.sound _ (Category.FreeGroupoid.homRel.map_comp f g)]
-
 /-- The localization map from the category `C` to the groupoid `Category.FreeGroupoid C` -/
 def of : C ⥤ Category.FreeGroupoid C where
   __ := Quiver.FreeGroupoid.of C ⋙q (Quotient.functor (FreeGroupoid.homRel C)).toPrefunctor
-  map_id X := by simp
-  map_comp {X Y Z} f g := by simp
+  map_id X := Quotient.sound _ (Category.FreeGroupoid.homRel.map_id X)
+  map_comp f g := Quotient.sound _ (Category.FreeGroupoid.homRel.map_comp f g)
 
 section UniversalProperty
 
@@ -103,16 +84,11 @@ variable {C} {G : Type u₁} [Groupoid.{v₁} G]
 /-- The lift of a functor from `C` to a groupoid to a functor from
 `FreeGroupoid C` to the groupoid -/
 def lift (φ : C ⥤ G) : Category.FreeGroupoid C ⥤ G :=
-  Quotient.lift (FreeGroupoid.homRel C) (Quiver.FreeGroupoid.lift φ.toPrefunctor) (by
-    intros X Y f g r
-    rcases r with X | ⟨ f , g ⟩
-    · simpa using Prefunctor.congr_hom (Quiver.FreeGroupoid.lift_spec φ.toPrefunctor) (𝟙 X)
-    · have hf := Prefunctor.congr_hom (Quiver.FreeGroupoid.lift_spec φ.toPrefunctor) f
-      have hg := Prefunctor.congr_hom (Quiver.FreeGroupoid.lift_spec φ.toPrefunctor) g
-      have hfg := Prefunctor.congr_hom (Quiver.FreeGroupoid.lift_spec φ.toPrefunctor) (f ≫ g)
-      simp only [Functor.toPrefunctor_obj, Prefunctor.comp_obj, Prefunctor.comp_map,
-        Functor.toPrefunctor_map, Quiver.homOfEq_rfl, Functor.map_comp] at *
-      rw [hf, hg, hfg])
+  Quotient.lift (FreeGroupoid.homRel C) (Quiver.FreeGroupoid.lift φ.toPrefunctor)
+    (fun _ _ f g r ↦ by
+      have {X Y : C} (f : X ⟶ Y) :=
+        Prefunctor.congr_hom (Quiver.FreeGroupoid.lift_spec φ.toPrefunctor) f
+      induction r <;> cat_disch)
 
 theorem lift_spec (φ : C ⥤ G) : of C ⋙ lift φ = φ := by
   have : Quiver.FreeGroupoid.of C ⋙q (Quotient.functor (FreeGroupoid.homRel C)).toPrefunctor ⋙q
