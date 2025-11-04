@@ -24,7 +24,7 @@ lemma Ideal.ResidueField.exists_smul_eq_tensor_one
   obtain ⟨t, r, a, hrt, e⟩ := RingHom.SurjectiveOnStalks.exists_mul_eq_tmul
     p.surjectiveOnStalks_residueField x ⊥ bot_prime
   obtain ⟨t, rfl⟩ := IsLocalRing.residue_surjective t
-  obtain ⟨y, t, rfl⟩ := IsLocalization.mk'_surjective p.primeCompl t
+  obtain ⟨⟨y, t⟩, rfl⟩ := IsLocalization.mk'_surjective p.primeCompl t
   simp only [smul_def, Submodule.mem_bot, mul_eq_zero, algebraMap_residueField_eq_zero,
     IsLocalRing.residue_eq_zero_iff, not_or, IsLocalization.AtPrime.mk'_mem_maximal_iff] at hrt
   refine ⟨r * y, p.primeCompl.mul_mem hrt.1 hrt.2, y • a, ?_⟩
