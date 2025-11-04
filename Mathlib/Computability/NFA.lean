@@ -416,6 +416,10 @@ end NFA
 
 namespace NFA
 
+section concat
+
+open Sum
+
 /-!
 ### Declarations about `NFA.concat`
 
@@ -438,14 +442,14 @@ variable {σ1 σ2 : Type v} (M1 : NFA α σ1) (M2 : NFA α σ2)
 
 /-- `M1.concatStart` is `(M1 * M2).start`, merely including `M1.start`. -/
 @[simp]
-def concatStart : Set (σ1 ⊕ σ2) := Sum.inl '' M1.start
+def concatStart : Set (σ1 ⊕ σ2) := inl '' M1.start
 
 /-- `concatAccept M1 M2` is `(M1 * M2).accept`, including `M2.accepts`, and if `[] ∈ M2.accepts`
 then also `M1.accepts`. If [] ∈ M2.accepts`, then without including `M1.accepts`, a final state in
 `M2.accept` is unreachable in `M1 * M2`. -/
 @[simp]
 def concatAccept : Set (σ1 ⊕ σ2) :=
-  Sum.inl '' { s1 ∈ M1.accept | [] ∈ M2.accepts } ∪ Sum.inr '' M2.accept
+  inl '' { s1 ∈ M1.accept | [] ∈ M2.accepts } ∪ inr '' M2.accept
 
 /-- `concatStep M1 M2 s a` is `(M1 * M2).step s a`, the set of states available in `M1 * M2` by a
 transition from state `s` via character `a`. We include all transitions from `M1.step` and
@@ -455,9 +459,9 @@ transition from state `s` via character `a`. We include all transitions from `M1
 @[simp]
 def concatStep : σ1 ⊕ σ2 → α → Set (σ1 ⊕ σ2)
 | .inl s1, a =>
-  Sum.inl '' M1.step s1 a ∪ Sum.inr '' ⋃ s2 ∈ M2.start, { s2' ∈ M2.step s2 a | s1 ∈ M1.accept }
+  inl '' M1.step s1 a ∪ inr '' ⋃ s2 ∈ M2.start, { s2' ∈ M2.step s2 a | s1 ∈ M1.accept }
 | .inr s2, a =>
-  Sum.inr '' M2.step s2 a
+  inr '' M2.step s2 a
 
 /-- `M1.concat M2` is `M1 * M2`, the concatenation of `M1` and `M2` achieved without ε-transitions.
 We decline to attatch a `@[simp]` nor `@[simps]` attribute in order to avoid unfolding the entire
@@ -483,18 +487,18 @@ lemma hmul_concatAccept : (M1 * M2).accept = concatAccept M1 M2 := rfl
 lemma hmul_concatStep : (M1 * M2).step = concatStep M1 M2 := rfl
 
 lemma concat_stepSet_inr {S2 : Set σ2} {a : α} :
-    (M1 * M2).stepSet (Sum.inr '' S2) a = Sum.inr '' M2.stepSet S2 a := by
+    (M1 * M2).stepSet (inr '' S2) a = inr '' M2.stepSet S2 a := by
   ext (s1 | s2) <;> simp [stepSet]
 
 lemma concat_acceptsFrom_inr {S2 : Set σ2} :
-    (M1 * M2).acceptsFrom (Sum.inr '' S2) = M2.acceptsFrom S2 := by
+    (M1 * M2).acceptsFrom (inr '' S2) = M2.acceptsFrom S2 := by
   ext y
   induction y generalizing S2 with
   | nil => simp
   | cons a y ih => simp [←ih, concat_stepSet_inr]
 
 theorem concat_acceptsFrom {S1 : Set σ1} :
-    (M1 * M2).acceptsFrom (Sum.inl '' S1) = M1.acceptsFrom S1 * M2.accepts := by
+    (M1 * M2).acceptsFrom (inl '' S1) = M1.acceptsFrom S1 * M2.accepts := by
   ext z
   rw [Language.mul_def, Set.mem_image2]
   induction z generalizing S1 with
@@ -546,6 +550,8 @@ theorem concat_acceptsFrom {S1 : Set σ1} :
 (`M1.concat M2`) is exactly equal to `L = L1 * L2`. -/
 theorem concat_accepts : (M1 * M2).accepts = M1.accepts * M2.accepts := by
   simp [concat_acceptsFrom, accepts_acceptsFrom]
+
+end concat
 
 end NFA
 
