@@ -39,8 +39,11 @@ in the Euclidean plane, such that:
 This structure ensures the graph can be drawn in the plane without edge crossings.
 -/
 structure PlanarEmbedding (V : Type*) (G : SimpleGraph V) where
+  /-- The function that maps each vertex of `G` to its position in the plane. -/
   embed : V → ℝ × ℝ
+  /-- The embedding is injective: distinct vertices map to distinct points. -/
   inj : Function.Injective embed
+  /-- Distinct edges of the graph are represented by disjoint open segments in the plane. -/
   edge_segments_disjoint :
     ∀ ⦃u v x y : V⦄,
       G.Adj u v → G.Adj x y →
