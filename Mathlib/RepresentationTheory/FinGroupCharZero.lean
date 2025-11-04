@@ -71,8 +71,8 @@ instance [NeZero (Fintype.card G : k)] (V : FDRep k G) : Injective V :=
 If `G` is finite and its order is nonzero in the field `k`, then every object of
 `FDRep k G` is projective.
 -/
-instance [NeZero (Fintype.card G : k)] (V : FDRep k G) : Projective V := (forget₂ (FDRep k G)
-  (Rep k G)).projective_of_map_projective inferInstance
+instance [NeZero (Fintype.card G : k)] (V : FDRep k G) : Projective V :=
+  (forget₂ (FDRep k G) (Rep k G)).projective_of_map_projective inferInstance
 
 variable [IsAlgClosed k]
 
