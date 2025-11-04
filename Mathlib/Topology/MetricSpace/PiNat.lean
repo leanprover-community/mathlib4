@@ -941,7 +941,8 @@ protected def metricSpace : MetricSpace (∀ i, F i) :=
 end MetricSpace
 end PiCountable
 
-/-! # Embedding a countably separated space inside a space of sequences -/
+/-! ### Embedding a countably separated space inside a space of sequences -/
+
 namespace Metric
 
 open scoped PiCountable
