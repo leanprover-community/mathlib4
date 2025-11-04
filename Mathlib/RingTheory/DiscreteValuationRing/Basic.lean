@@ -9,6 +9,7 @@ import Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 import Mathlib.RingTheory.Valuation.PrimeMultiplicity
 import Mathlib.RingTheory.Valuation.ValuationRing
+import Mathlib.Algebra.GroupWithZero.Action.Basic
 
 /-!
 # Discrete valuation rings
@@ -337,16 +338,6 @@ theorem eq_unit_mul_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irre
   obtain ⟨u, rfl⟩ := hn.symm
   use n, u
   apply mul_comm
-
-/-
-TODO: Find somewhere reasonable for this to go
--/
-theorem div_smul_div_comm {G K : Type*}
-    [Group G] [Field K] [DistribMulAction G K] [IsScalarTower G K K]
-    (g h : G) (a b : K) (hb : b ≠ 0) :
-    (g / h) • (a / b) = (g • a) / (h • b) := by
-  rw [eq_div_iff_mul_eq (ne_of_apply_ne (h⁻¹ • ·) (by simpa)), smul_mul_smul_comm]
-  simp [hb]
 
 /--
 If `K` is the fraction field of a discrete valuation ring `R`, any element `x` of `K` can be

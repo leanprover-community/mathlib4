@@ -113,3 +113,13 @@ lemma IsUnit.smul_sub_iff_sub_inv_smul [Group G] [Monoid R] [AddGroup R] [Distri
     [IsScalarTower G R R] [SMulCommClass G R R] (r : G) (a : R) :
     IsUnit (r • (1 : R) - a) ↔ IsUnit (1 - r⁻¹ • a) := by
   rw [← isUnit_smul_iff r (1 - r⁻¹ • a), smul_sub, smul_inv_smul]
+
+theorem div_smul_div_comm {G K : Type*}
+    [Group G] [GroupWithZero K] [MulAction G K]
+    [IsScalarTower G K K] [SMulCommClass G K K] (g h : G) (a b : K) :
+    (g / h) • (a / b) = (g • a) / (h • b) := by
+  have (x : G) : x • (0 : K) = 0 := by simpa using (smul_assoc x (0 : K) (0 : K)).symm
+  by_cases hb : b = 0
+  · simp [hb, this]
+  rw [eq_div_iff_mul_eq (ne_of_apply_ne (h⁻¹ • ·) (by simpa [this])), smul_mul_smul_comm]
+  simp [hb]
