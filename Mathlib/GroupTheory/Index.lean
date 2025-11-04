@@ -688,9 +688,6 @@ lemma index_prod (H : Subgroup G) (K : Subgroup G') : (H.prod K).index = H.index
     ((Quotient.congrRight (fun x y ↦ ?_)).trans (Setoid.prodQuotientEquiv _ _).symm)
   rw [QuotientGroup.leftRel_prod]
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddSubgroup.index_sum := AddSubgroup.index_prod
-
 @[to_additive (attr := simp)]
 lemma index_pi {ι : Type*} [Fintype ι] (H : ι → Subgroup G) :
     (Subgroup.pi Set.univ H).index = ∏ i, (H i).index := by
@@ -731,17 +728,12 @@ class _root_.AddSubgroup.FiniteIndex {G : Type*} [AddGroup G] (H : AddSubgroup G
   recall that `AddSubgroup.index` returns 0 when the index is infinite. -/
   index_ne_zero : H.index ≠ 0
 
-@[deprecated (since := "2025-04-13")]
-alias _root_AddSubgroup.FiniteIndex.finiteIndex := AddSubgroup.FiniteIndex.index_ne_zero
-
 variable (H) in
 /-- Typeclass for finite index subgroups. -/
 @[to_additive] class FiniteIndex : Prop where
   /-- The subgroup has finite index;
   recall that `Subgroup.index` returns 0 when the index is infinite. -/
   index_ne_zero : H.index ≠ 0
-
-@[deprecated (since := "2025-04-13")] alias FiniteIndex.finiteIndex := FiniteIndex.index_ne_zero
 
 /-- Typeclass for a subgroup `H` to have finite index in a subgroup `K`. -/
 class _root_.AddSubgroup.IsFiniteRelIndex {G : Type*} [AddGroup G] (H K : AddSubgroup G) :
