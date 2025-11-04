@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Module.TransferInstance
 import Mathlib.Algebra.Ring.TransferInstance
 
 /-!
