@@ -78,7 +78,7 @@ lemma span_leadingTerm_eq_span_monomial {B : Set (MvPolynomial σ R)}
     simp_rw [MonomialOrder.leadingTerm, ← submodule_span_eq,
       Submodule.mem_span_image_iff_exists_fun] at *
     rcases hl with ⟨t, ht, c, hc⟩
-    rw [←hc]
+    rw [← hc]
     use t
   · split_ands
     · exact ht
