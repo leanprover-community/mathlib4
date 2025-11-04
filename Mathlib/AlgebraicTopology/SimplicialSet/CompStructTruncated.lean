@@ -79,6 +79,7 @@ lemma map_id (x : X _⦋0⦌₂) (f : X ⟶ Y) :
 faces are respectively `e₀₂`, `e₁₂` and `e₀₁`. Such structures shall provide
 relations in the homotopy category of arbitrary (truncated) simplicial sets
 (and specialized constructions for quasicategories and Kan complexes.). -/
+@[ext]
 structure CompStruct {x₀ x₁ x₂ : X _⦋0⦌₂}
     (e₀₁ : Edge x₀ x₁) (e₁₂ : Edge x₁ x₂) (e₀₂ : Edge x₀ x₂) where
   /-- A `2`-simplex with prescribed `1`-dimensional faces -/
@@ -117,7 +118,7 @@ def idComp {x y : X _⦋0⦌₂} (e : Edge x y) :
     rw [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_one_comp_σ₂_zero]
     simp
 
-/-- `e : Edge x y` is a composition of `Edge.id y` with `e`. -/
+/-- `e : Edge x y` is a composition of `e` with `Edge.id y`. -/
 def compId {x y : X _⦋0⦌₂} (e : Edge x y) :
     CompStruct e (.id y) e where
   simplex := X.map (σ₂ 1).op e.edge
