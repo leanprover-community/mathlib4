@@ -603,18 +603,20 @@ theorem linear_eqOn_vectorSpan {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k
   rintro - ⟨x, hx, y, hy, rfl⟩
   simp [h_agree hx, h_agree hy]
 
+/-- Two affine maps which agree on a set, agree on its affine span. -/
+theorem eqOn_affineSpan {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
+    {s : Set P₁} {f g : P₁ →ᵃ[k] P₂}
+    (h_agree : s.EqOn f g) : Set.EqOn f g (affineSpan k s) := by
+  rcases s.eq_empty_or_nonempty with rfl | ⟨q, hq⟩; · simp
+  rintro - ⟨x, hx, y, hy, rfl⟩
+  simp [h_agree hx, linear_eqOn_vectorSpan h_agree hy]
+
 /-- If two affine maps agree on a set that spans the entire space, then they are equal. -/
 theorem ext_on {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
     {s : Set P₁} {f g : P₁ →ᵃ[k] P₂}
     (h_span : affineSpan k s = ⊤)
     (h_agree : s.EqOn f g) : f = g := by
-  have aux : Set.EqOn f.linear g.linear (affineSpan k s).direction := by
-    rw [direction_affineSpan]
-    exact linear_eqOn_vectorSpan h_agree
-  obtain ⟨q, hq⟩ : s.Nonempty := by contrapose! h_span; simp [h_span]
-  refine AffineMap.ext_linear (LinearMap.ext_on ?_ aux) (h_agree hq)
-  simpa [direction_affineSpan] using
-    AffineSubspace.vectorSpan_eq_top_of_affineSpan_eq_top k V₁ P₁ h_span
+  simpa [h_span]  using eqOn_affineSpan h_agree
 
 end AffineMap
 
