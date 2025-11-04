@@ -297,18 +297,17 @@ end NNReal
 
 variable (𝕜)
 
+open Filter Bornology in
 /-- Preimages of cobounded sets under the algebra map are cobounded. -/
 @[simp]
 theorem tendsto_algebraMap_cobounded (𝕜 𝕜' : Type*) [NormedField 𝕜] [SeminormedRing 𝕜']
     [NormedAlgebra 𝕜 𝕜'] [NormOneClass 𝕜'] :
     Tendsto (algebraMap 𝕜 𝕜') (cobounded 𝕜) (cobounded 𝕜') := by
   intro c hc
-  rw [Filter.mem_map, ← Bornology.isCobounded_def, ← Bornology.isBounded_compl_iff,
-    isBounded_iff_forall_norm_le]
-  obtain ⟨s, hs⟩ := isBounded_iff_forall_norm_le.1
-    (Bornology.isBounded_compl_iff.2 (Bornology.isCobounded_def.1 hc))
-  use s
-  exact fun x hx ↦ by simpa [norm_algebraMap, norm_one] using hs ((algebraMap 𝕜 𝕜') x) hx
+  rw [mem_map]
+  rw [← isCobounded_def, ← isBounded_compl_iff, isBounded_iff_forall_norm_le] at hc ⊢
+  obtain ⟨s, hs⟩ := hc
+  exact ⟨s, fun x hx ↦ by simpa using hs (algebraMap 𝕜 𝕜' x) hx⟩
 
 @[deprecated (since := "2025-11-04")] alias
   algebraMap_cobounded_le_cobounded := tendsto_algebraMap_cobounded
