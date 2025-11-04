@@ -165,23 +165,22 @@ def restrictionLEIso :
       cochainComplex_d, d_negSucc]
     simp)
 
-/-- Given `h : ConnectData K L` and `n : ℕ`, the homology
-of `h.cochainComplex` in degree `n + 1` identifies to the homology of `L` in degree `n + 1`. -/
-noncomputable def homologyIsoPos (n : ℕ) (m : ℤ)
-    [h.cochainComplex.HasHomology m] [L.HasHomology (n + 1)]
-    (hm : m = (n + 1 : ℕ)) :
-    h.cochainComplex.homology m ≅ L.homology (n + 1) :=
-  have := hasHomology_of_iso h.restrictionGEIso.symm (n + 1)
+/-- Given `h : ConnectData K L` and `n : ℕ` non-zero, the homology
+of `h.cochainComplex` in degree `n` identifies to the homology of `L` in degree `n`. -/
+noncomputable def homologyIsoPos (n : ℕ) [NeZero n] (m : ℤ) (hm : m = n)
+    [h.cochainComplex.HasHomology m] [L.HasHomology n] :
+    h.cochainComplex.homology m ≅ L.homology n :=
+  have := hasHomology_of_iso h.restrictionGEIso.symm n
   (h.cochainComplex.restrictionHomologyIso
-    (ComplexShape.embeddingUpIntGE 0) n (n + 1) (n + 2) (by simp) (by simp)
-      (i' := m - 1) (j' := m) (k' := m + 1) (by simp; cutsat) (by simp; cutsat)
-      (by simp; cutsat) (by simp) (by simp)).symm ≪≫
-    HomologicalComplex.homologyMapIso h.restrictionGEIso (n + 1)
+    (ComplexShape.embeddingUpIntGE 0) (n - 1) n (n + 1) (by cases n <;> simp) (by simp)
+      (i' := m - 1) (j' := m) (k' := m + 1) (by have := NeZero.ne n; cases n <;> simp <;> cutsat)
+      (by simp; cutsat) (by simp; cutsat) (by simp) (by simp)).symm ≪≫
+    HomologicalComplex.homologyMapIso h.restrictionGEIso n
 
-/-- Given `h : ConnectData K L` and `n : ℕ`, the homology
-of `h.cochainComplex` in degree `-(n + 2)` identifies to the homology of `K` in degree `n + 1`. -/
-noncomputable def homologyIsoNeg (n : ℕ) [NeZero n] (m : ℤ)
-    [h.cochainComplex.HasHomology m] [K.HasHomology n] (hm : m = -(n + 1 : ℕ)) :
+/-- Given `h : ConnectData K L` and `n : ℕ`non-zero, the homology
+of `h.cochainComplex` in degree `-(n + 1)` identifies to the homology of `K` in degree `n`. -/
+noncomputable def homologyIsoNeg (n : ℕ) [NeZero n] (m : ℤ) (hm : m = -(n + 1 : ℕ))
+    [h.cochainComplex.HasHomology m] [K.HasHomology n] :
     h.cochainComplex.homology m ≅ K.homology n :=
   have := hasHomology_of_iso h.restrictionLEIso.symm n
   (h.cochainComplex.restrictionHomologyIso
@@ -213,18 +212,18 @@ lemma map_comp_map :
      = h.map h'' (fK ≫ fK') (fL ≫ fL') (by simp [f_comm', reassoc_of% f_comm]) := by
   ext (m | _ | m) <;> simp; rfl
 
-lemma homologyMap_map_of_eq_succ (n : ℕ) (m : ℤ) (hmn : m = n + 1)
-    [HasHomology h.cochainComplex m] [HasHomology L (n + 1)]
-    [HasHomology h'.cochainComplex m] [HasHomology L' (n + 1)] :
+lemma homologyMap_map_of_eq_succ (n : ℕ) [NeZero n] (m : ℤ) (hmn : m = n)
+    [HasHomology h.cochainComplex m] [HasHomology L n]
+    [HasHomology h'.cochainComplex m] [HasHomology L' n] :
     homologyMap (h.map h' fK fL f_comm) m =
-    (h.homologyIsoPos n m hmn).hom ≫ homologyMap fL (n + 1) ≫ (h'.homologyIsoPos n m hmn).inv := by
+    (h.homologyIsoPos n m hmn).hom ≫ homologyMap fL n ≫ (h'.homologyIsoPos n m hmn).inv := by
   rw [← cancel_mono (HomologicalComplex.homologyι ..)]
   dsimp [homologyIsoPos]
   simp only [homologyι_naturality, Category.assoc, restrictionHomologyIso_hom_homologyι,
     homologyι_naturality_assoc, restrictionHomologyIso_inv_homologyι_assoc]
   congr 1
   rw [← cancel_epi (HomologicalComplex.pOpcycles ..)]
-  obtain rfl : m = ↑(n + 1) := hmn
+  subst hmn
   simp [ConnectData.map, -Int.natCast_add]
 
 lemma homologyMap_map_of_eq_neg_succ (n : ℕ) [NeZero n] (m : ℤ) (hmn : m = -↑(n + 1))
