@@ -953,26 +953,19 @@ def weightedVSubOfPoint (w : ι → k) : (ι → P) × P →ᵃ[k] V where
 variable {P}
 
 /-- If two affine maps agree on a set that spans the entire space, then they are equal. -/
-theorem ext_of_span_eq_top {V₁ V₂ P₁ P₂ : Type*}
-    [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁]
-    [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
-    {s : Set P₁}
+theorem ext_on {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
+    {s : Set P} {f g : P →ᵃ[k] P₂}
     (h_span : affineSpan k s = ⊤)
-    (f g : P₁ →ᵃ[k] P₂)
-    (h_agree : s.restrict f = s.restrict g) : f = g := by
-  ext x
-  have hx : x ∈ affineSpan k s := by
-    rw [h_span]
-    exact AffineSubspace.mem_top k V₁ x
-  rw [← Subtype.range_coe (s := s)] at hx
-  obtain ⟨t, w, hw_sum, hw_eq⟩ := eq_affineCombination_of_mem_affineSpan hx
-  rw [hw_eq]
-  rw [Finset.map_affineCombination t (Subtype.val : s → P₁) w hw_sum f,
-      Finset.map_affineCombination t (Subtype.val : s → P₁) w hw_sum g]
-  apply Finset.affineCombination_congr
-  · simp
-  · intro i _
-    exact congr_fun h_agree i
+    (h_agree : s.EqOn f g) : f = g := by
+  have aux : Set.EqOn f.linear g.linear (affineSpan k s).direction := by
+    simp only [direction_affineSpan, vectorSpan_def]
+    apply LinearMap.eqOn_span
+    rintro - ⟨x, hx, y, hy, rfl⟩
+    simp [h_agree hx, h_agree hy]
+  obtain ⟨q, hq⟩ : s.Nonempty := by contrapose! h_span; simp [h_span]
+  refine AffineMap.ext_linear (LinearMap.ext_on ?_ aux) (h_agree hq)
+  simpa [direction_affineSpan] using
+    AffineSubspace.vectorSpan_eq_top_of_affineSpan_eq_top k V P h_span
 
 end AffineMap
 
