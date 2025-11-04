@@ -5,7 +5,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Group.Indicator
-import Mathlib.Algebra.GroupWithZero.Action.End
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Data.Rat.Lemmas
 import Mathlib.Tactic.Zify
@@ -22,14 +21,6 @@ open scoped NNRat
 
 namespace NNRat
 variable {α : Type*} {q : ℚ≥0}
-
-/-- A `MulAction` over `ℚ` restricts to a `MulAction` over `ℚ≥0`. -/
-instance [MulAction ℚ α] : MulAction ℚ≥0 α :=
-  MulAction.compHom α coeHom.toMonoidHom
-
-/-- A `DistribMulAction` over `ℚ` restricts to a `DistribMulAction` over `ℚ≥0`. -/
-instance [AddCommMonoid α] [DistribMulAction ℚ α] : DistribMulAction ℚ≥0 α :=
-  DistribMulAction.compHom α coeHom.toMonoidHom
 
 @[simp, norm_cast]
 lemma coe_indicator (s : Set α) (f : α → ℚ≥0) (a : α) :

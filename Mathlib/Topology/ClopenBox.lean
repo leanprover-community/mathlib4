@@ -85,7 +85,7 @@ lemma countable_iff_secondCountable [T2Space X]
     exact (injective_of_le_imp_le f fun a ↦ a).countable
   · apply IsTopologicalBasis.eq_generateFrom
     exact loc_compact_Haus_tot_disc_of_zero_dim
-  · have : ∀ (s : Clopens X), ∃ (t : Finset (countableBasis X)), s.1 = t.toSet.sUnion :=
+  · have : ∀ (s : Clopens X), ∃ (t : Finset (countableBasis X)), s.1 = (SetLike.coe t).sUnion :=
       fun s ↦ eq_sUnion_finset_of_isTopologicalBasis_of_isCompact_open _
         (isBasis_countableBasis X) s.1 s.2.1.isCompact s.2.2
     let f : Clopens X → Finset (countableBasis X) := fun s ↦ (this s).choose

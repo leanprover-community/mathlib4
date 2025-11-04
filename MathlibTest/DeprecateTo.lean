@@ -7,7 +7,7 @@ info: * Pairings:
 
 Try this:
 
-  /-- I also have a doc-string -/
+  [apply] /-- I also have a doc-string -/
   @[to_additive /-- With its additive doc-string -/
       ]
   theorem new_name_mul : True :=

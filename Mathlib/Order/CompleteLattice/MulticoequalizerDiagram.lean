@@ -81,7 +81,8 @@ structure MulticoequalizerDiagram : Prop where
 
 namespace MulticoequalizerDiagram
 
-attribute [local grind] MulticoequalizerDiagram MultispanShape.prod_fst MultispanShape.prod_snd
+attribute [local grind] MulticoequalizerDiagram
+attribute [local grind =] MultispanShape.prod_fst MultispanShape.prod_snd
 
 variable {x u v} (d : MulticoequalizerDiagram x u v)
 

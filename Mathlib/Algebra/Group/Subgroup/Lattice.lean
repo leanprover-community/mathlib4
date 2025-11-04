@@ -42,7 +42,7 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
-assert_not_exists OrderedAddCommMonoid Multiset Ring
+assert_not_exists IsOrderedMonoid Multiset Ring
 
 open Function
 open scoped Int
@@ -66,9 +66,17 @@ def Subgroup.toAddSubgroup : Subgroup G ≃o AddSubgroup (Additive G) where
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
 
-/-- Additive subgroup of an additive group `Additive G` are isomorphic to subgroup of `G`. -/
+@[simp] lemma Additive.mem_toAddSubgroup (S : Subgroup G) (g : Additive G) :
+    g ∈ S.toAddSubgroup ↔ Additive.toMul g ∈ S :=
+  .rfl
+
+/-- Additive subgroups of an additive group `Additive G` are isomorphic to subgroups of `G`. -/
 abbrev AddSubgroup.toSubgroup' : AddSubgroup (Additive G) ≃o Subgroup G :=
   Subgroup.toAddSubgroup.symm
+
+@[simp] lemma AddSubgroup.mem_toSubgroup' (S : AddSubgroup (Additive G)) (g : G) :
+    g ∈ toSubgroup' S ↔ Additive.ofMul g ∈ S :=
+  .rfl
 
 /-- Additive subgroups of an additive group `A` are isomorphic to subgroups of `Multiplicative A`.
 -/
@@ -80,10 +88,18 @@ def AddSubgroup.toSubgroup : AddSubgroup A ≃o Subgroup (Multiplicative A) wher
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
 
+@[simp] lemma Multiplicative.mem_toSubgroup (S : AddSubgroup A) (a : Multiplicative A) :
+    a ∈ S.toSubgroup ↔ Multiplicative.toAdd a ∈ S :=
+  .rfl
+
 /-- Subgroups of an additive group `Multiplicative A` are isomorphic to additive subgroups of `A`.
 -/
 abbrev Subgroup.toAddSubgroup' : Subgroup (Multiplicative A) ≃o AddSubgroup A :=
   AddSubgroup.toSubgroup.symm
+
+@[simp] lemma Subgroup.mem_toAddSubgroup' (S : Subgroup (Multiplicative A)) (a : A) :
+    a ∈ toAddSubgroup' S ↔ Multiplicative.ofAdd a ∈ S :=
+  .rfl
 
 end mul_add
 

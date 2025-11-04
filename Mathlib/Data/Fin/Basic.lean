@@ -259,10 +259,6 @@ section Add
 theorem val_one' (n : ℕ) [NeZero n] : ((1 : Fin n) : ℕ) = 1 % n :=
   rfl
 
-@[deprecated val_one' (since := "2025-03-10")]
-theorem val_one'' {n : ℕ} : ((1 : Fin (n + 1)) : ℕ) = 1 % (n + 1) :=
-  rfl
-
 theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
   simp [← not_subsingleton_iff_nontrivial, subsingleton_iff_le_one]; cutsat
 
@@ -514,20 +510,13 @@ section Mul
 ### mul
 -/
 
-protected theorem mul_one' [NeZero n] (k : Fin n) : k * 1 = k := by
-  rcases n with - | n
-  · simp [eq_iff_true_of_subsingleton]
-  cases n
-  · simp [fin_one_eq_zero]
-  simp [mul_def, mod_eq_of_lt (is_lt k)]
+@[deprecated (since := "2025-10-06")] alias mul_one' := Fin.mul_one
 
-protected theorem one_mul' [NeZero n] (k : Fin n) : (1 : Fin n) * k = k := by
-  rw [Fin.mul_comm, Fin.mul_one']
+@[deprecated (since := "2025-10-06")] alias one_mul' := Fin.one_mul
 
-protected theorem mul_zero' [NeZero n] (k : Fin n) : k * 0 = 0 := by simp [mul_def]
+@[deprecated (since := "2025-10-06")] alias mul_zero' := Fin.mul_zero
 
-protected theorem zero_mul' [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
-  simp [mul_def]
+@[deprecated (since := "2025-10-06")] alias zero_mul' := Fin.zero_mul
 
 end Mul
 

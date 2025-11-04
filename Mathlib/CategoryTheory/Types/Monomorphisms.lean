@@ -12,12 +12,12 @@ import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 In this file, we show that in the category `Type u`, monomorphisms
 are stable under cobase change, filtered colimits.
-After importing `CategoryTheory.MorphismProperty.TransfiniteComposition`,
+After importing `Mathlib/CategoryTheory/MorphismProperty/TransfiniteComposition.lean`,
 the fact that monomorphisms are stable under transfinite composition
 will also be inferred automatically.
 
 (The stability by retracts holds in any category: it is shown
-in the file `CategoryTheory.MorphismProperty.Retract`.)
+in the file `Mathlib/CategoryTheory/MorphismProperty/Retract.lean`.)
 
 -/
 

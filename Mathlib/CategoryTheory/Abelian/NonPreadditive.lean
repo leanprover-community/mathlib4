@@ -400,12 +400,9 @@ theorem add_comp (X Y Z : C) (f g : X ⟶ Y) (h : Y ⟶ Z) : (f + g) ≫ h = f �
 /-- Every `NonPreadditiveAbelian` category is preadditive. -/
 def preadditive : Preadditive C where
   homGroup X Y :=
-    { add := (· + ·)
-      add_assoc := add_assoc
-      zero := 0
+    { add_assoc := add_assoc
       zero_add := neg_neg
       add_zero := add_zero
-      neg f := -f
       neg_add_cancel := neg_add_cancel
       sub_eq_add_neg f g := (add_neg f g).symm
       add_comm := add_comm

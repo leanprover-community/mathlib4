@@ -72,7 +72,8 @@ open Lean Parser Elab Tactic Meta
 * Usage: `'lift' expr 'to' expr ('using' expr)? ('with' id (id id?)?)?`.
 * If `n : ℤ` and `hn : n ≥ 0` then the tactic `lift n to ℕ using hn` creates a new
   constant of type `ℕ`, also named `n` and replaces all occurrences of the old variable `(n : ℤ)`
-  with `↑n` (where `n` in the new variable). It will remove `n` and `hn` from the context.
+  with `↑n` (where `n` in the new variable). It will clear `n` from the context and
+  try to clear `hn` from the context.
   + So for example the tactic `lift n to ℕ using hn` transforms the goal
     `n : ℤ, hn : n ≥ 0, h : P n ⊢ n = 3` to `n : ℕ, h : P ↑n ⊢ ↑n = 3`
     (here `P` is some term of type `ℤ → Prop`).
@@ -165,7 +166,6 @@ def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
   -- Clear the "using" hypothesis if it's a variable in the context
   if prf.isFVar && !keepUsing then
     let some hUsingStx := hUsing | throwError "lift tactic failed: unreachable code was reached"
-    evalTactic (← `(tactic| clear $hUsingStx))
     evalTactic (← `(tactic| try clear $hUsingStx))
   if hUsing.isNone then withMainContext <| setGoals (prf.mvarId! :: (← getGoals))
 

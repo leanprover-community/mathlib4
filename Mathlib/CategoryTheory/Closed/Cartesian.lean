@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
 /-!
-# Cartesian-closed categories
+# Cartesian closed categories
 
 We define exponentiable objects to be closed objects in a Cartesian monoidal category,
 i.e. `(X × -)` is a left adjoint.
@@ -19,7 +19,7 @@ Show that exponential forms a difunctor and define the exponential comparison mo
 
 ## Implementation Details
 
-Cartesian-closed categories require a `CartesianMonoidalCategory` instance. If one wishes to state
+Cartesian closed categories require a `CartesianMonoidalCategory` instance. If one wishes to state
 that a category that `hasFiniteProducts` is Cartesian closed, they should first promote the
 `hasFiniteProducts` instance to a `CartesianMonoidalCategory` one using
 `CategoryTheory.ofChosenFiniteProducts`.
@@ -56,7 +56,7 @@ def binaryProductExponentiable (hX : Exponentiable X) (hY : Exponentiable Y) :
     Exponentiable (X ⊗ Y) := tensorClosed hX hY
 
 /-- The terminal object is always exponentiable.
-This isn't an instance because most of the time we'll prove Cartesian-closed for all objects
+This isn't an instance because most of the time we'll prove Cartesian closed for all objects
 at once, rather than just for this one.
 -/
 def terminalExponentiable : Exponentiable (𝟙_ C) := unitClosed
@@ -125,6 +125,11 @@ theorem coev_ev : (coev A).app (A ⟹ B) ≫ (exp A).map ((ev A).app B) = 𝟙 (
 
 end exp
 
+lemma CartesianMonoidalCategory.isLeftAdjoint_prod_functor
+    (A : C) [Closed A] :
+    (prod.functor.obj A).IsLeftAdjoint :=
+  Functor.isLeftAdjoint_of_iso (CartesianMonoidalCategory.tensorLeftIsoProd A)
+
 instance : PreservesColimits (tensorLeft A) :=
   (ihom.adjunction A).leftAdjoint_preservesColimits
 
@@ -133,11 +138,11 @@ variable {A}
 -- Wrap these in a namespace so we don't clash with the core versions.
 namespace CartesianClosed
 
-/-- Currying in a Cartesian-closed category. -/
+/-- Currying in a Cartesian closed category. -/
 def curry : (A ⊗ Y ⟶ X) → (Y ⟶ A ⟹ X) :=
   (exp.adjunction A).homEquiv _ _
 
-/-- Uncurrying in a Cartesian-closed category. -/
+/-- Uncurrying in a Cartesian closed category. -/
 def uncurry : (Y ⟶ A ⟹ X) → (A ⊗ Y ⟶ X) :=
   ((exp.adjunction A).homEquiv _ _).symm
 
@@ -255,7 +260,7 @@ theorem pre_map {A₁ A₂ A₃ : C} [Exponentiable A₁] [Exponentiable A₂] [
 
 end Pre
 
-/-- The internal hom functor given by the Cartesian-closed structure. -/
+/-- The internal hom functor given by the Cartesian closed structure. -/
 def internalHom [CartesianClosed C] : Cᵒᵖ ⥤ C ⥤ C where
   obj X := exp X.unop
   map f := pre f.unop
