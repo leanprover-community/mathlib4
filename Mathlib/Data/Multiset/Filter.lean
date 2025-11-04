@@ -196,9 +196,9 @@ theorem filterMap_cons_some (f : α → Option β) (a : α) (s : Multiset α) {b
 
 theorem filterMap_cons (f : α → Option β) (a : α) (s : Multiset α) :
     filterMap f (a ::ₘ s) = ((f a).map singleton).getD 0 + filterMap f s := by
-  cases h : f a
-  case none => simp [filterMap_cons_none a s h]
-  case some b => simp [filterMap_cons_some f a s h]
+  cases h : f a with
+  | none => simp [filterMap_cons_none a s h]
+  | some b => simp [filterMap_cons_some f a s h]
 
 @[simp]
 theorem filterMap_add (f : α → Option β) (s t : Multiset α) :
@@ -255,9 +255,9 @@ theorem filterMap_le_filterMap (f : α → Option β) {s t : Multiset α} (h : s
 
 theorem map_filter_eq_filterMap (f : α → β) (p : α → Prop) [DecidablePred p] (s : Multiset α) :
     map f (filter p s) = filterMap (fun a => if p a then .some (f a) else .none) s := by
-  induction s using Multiset.induction
-  case empty => simp
-  case cons a s ih =>
+  induction s using Multiset.induction with
+  | empty => simp
+  | cons a s ih =>
     simp only [filter_cons, map_add, ih, filterMap_cons, Option.map_if]; clear ih; congr
     split_ifs <;> simp
 
