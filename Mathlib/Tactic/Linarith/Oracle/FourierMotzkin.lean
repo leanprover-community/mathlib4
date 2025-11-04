@@ -37,15 +37,6 @@ namespace Std.TreeSet
 variable {α : Type*} {cmp}
 
 /--
-`O(n₂ * log (n₁ + n₂))`. Merges the maps `t₁` and `t₂`.
-If equal keys exist in both, the key from `t₂` is preferred.
--/
-def union (t₁ t₂ : TreeSet α cmp) : TreeSet α cmp :=
-  t₂.foldl .insert t₁
-
-instance : Union (TreeSet α cmp) := ⟨TreeSet.union⟩
-
-/--
 `O(n₁ * (log n₁ + log n₂))`. Constructs the set of all elements of `t₁` that are not in `t₂`.
 -/
 def sdiff (t₁ t₂ : TreeSet α cmp) : TreeSet α cmp := t₁.filter (!t₂.contains ·)
