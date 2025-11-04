@@ -71,7 +71,7 @@ theorem HomogeneousSubsemiring.ext' {R S : HomogeneousSubsemiring 𝒜}
   exact fun i ↦ h i _ (decompose 𝒜 _ i).2
 
 @[simp high]
-theorem HomogeneousSubsemiring.mem_iff {R : HomogeneousSubsemiring 𝒜} {a} :
+theorem mem_iff {R : HomogeneousSubsemiring 𝒜} {a} :
     a ∈ R.toSubsemiring ↔ a ∈ R :=
   Iff.rfl
 
