@@ -210,10 +210,8 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub
     refine (Tendsto.add ?_ (Tendsto.const_mul _ ?_)).add ?_
     · rw [mul_div_assoc]
       exact tendsto_const_nhds
-    · simp only [tendstoInMeasure_iff_norm, Pi.zero_apply, sub_zero] at hXY
-      have h_tendsto := hXY (ε / 2) (by positivity) -- the result, up to `μ.real` vs `μ`
-      refine Tendsto.comp ?_ h_tendsto
-      exact ENNReal.tendsto_toReal (ENNReal.zero_ne_top)
+    · simp only [tendstoInMeasure_iff_measureReal_norm, Pi.zero_apply, sub_zero] at hXY
+      exact hXY (ε / 2) (by positivity)
     · replace hXZ := hXZ.tendsto
       simp_rw [tendsto_iff_forall_lipschitz_integral_tendsto] at hXZ
       simpa [tendsto_iff_dist_tendsto_zero] using hXZ F ⟨M, hF_bounded⟩ ⟨L, hF_lip⟩
