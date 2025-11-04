@@ -216,3 +216,40 @@ example : P 37 := by
 end
 
 end tryAtEachStep
+
+section grindReplacement
+
+set_option linter.tacticAnalysis.regressions.omegaToCutsat true
+
+-- We should not complain about `omega` (and others) failing in a `try` context.
+example : x = y := by
+  try omega
+  rfl
+
+-- Example with more than one tactic step:
+example : x = y := by
+  try
+    symm
+    symm
+    omega
+  rfl
+
+set_option linter.unusedVariables false in
+theorem create_a_few_goals (h1 : 1 + 1 = 2) (h2 : y = z) : x = y := rfl
+
+-- We should not complain about `omega` (and others) failing in an `any_goals` context.
+example : x = y := by
+  apply create_a_few_goals
+  any_goals omega
+  rfl
+
+-- Example with more than one tactic step:
+example : x = y := by
+  apply create_a_few_goals
+  any_goals
+    symm
+    symm
+    omega
+  rfl
+
+end grindReplacement
