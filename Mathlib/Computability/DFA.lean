@@ -8,6 +8,7 @@ module
 public import Mathlib.Computability.Language
 public import Mathlib.Data.Countable.Small
 public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Tactic.NormNum
 
 /-!
@@ -75,6 +76,11 @@ def evalFrom (s : σ) : List α → σ :=
 
 @[simp]
 theorem evalFrom_nil (s : σ) : M.evalFrom s [] = s :=
+  rfl
+
+@[simp]
+theorem evalFrom_cons (s : σ) (a : α) (x : List α) :
+    M.evalFrom s (a :: x) = M.evalFrom (M.step s a) x :=
   rfl
 
 @[simp]
@@ -274,6 +280,38 @@ theorem accepts_compl : (Mᶜ).accepts = (M.accepts)ᶜ := by
 
 end complement
 
+section union
+
+variable {σ1 σ2 : Type v}
+
+/-- DFAs are closed under union. -/
+@[simps]
+def union (M1 : DFA α σ1) (M2 : DFA α σ2) : DFA α (σ1 × σ2) where
+  step (s : σ1 × σ2) (a : α) : σ1 × σ2 := (M1.step s.1 a, M2.step s.2 a)
+  start := (M1.start, M2.start)
+  accept := {s : σ1 × σ2 | s.1 ∈ M1.accept ∨ s.2 ∈ M2.accept}
+
+instance : HAdd (DFA α σ1) (DFA α σ2) (DFA α (σ1 × σ2)) := ⟨union⟩
+
+theorem hadd_eq_union (M1 : DFA α σ1) (M2 : DFA α σ2) : M1 + M2 = M1.union M2 :=
+  rfl
+
+theorem acceptsFrom_union (M1 : DFA α σ1) (M2 : DFA α σ2) (s1 : σ1) (s2 : σ2) :
+    (M1 + M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 + M2.acceptsFrom s2 := by
+  ext x
+  simp only [acceptsFrom]
+  rw [hadd_eq_union, Language.add_def, Set.mem_union]
+  simp_rw [↑Set.mem_setOf]
+  induction x generalizing s1 s2 with
+  | nil => simp
+  | cons a x ih => simp only [evalFrom_cons, union_step, ih]
+
+theorem accepts_union (M1 : DFA α σ1) (M2 : DFA α σ2) :
+    (M1 + M2).accepts = M1.accepts + M2.accepts := by
+  simp only [accepts, ←acceptsFrom_union]; rfl
+
+end union
+
 end DFA
 
 namespace Language
@@ -302,7 +340,7 @@ theorem isRegular_iff {T : Type u} {L : Language T} :
 
 protected theorem IsRegular.compl {T : Type u} {L : Language T} (h : L.IsRegular) : Lᶜ.IsRegular :=
   have ⟨σ, _, M, hM⟩ := h
-  ⟨_, inferInstance, Mᶜ, by simp [DFA.accepts_compl, hM]⟩
+  ⟨σ, inferInstance, Mᶜ, by simp [DFA.accepts_compl, hM]⟩
 
 protected theorem IsRegular.from_compl {T : Type u} {L : Language T} (h : Lᶜ.IsRegular) :
   L.IsRegular :=
@@ -311,5 +349,11 @@ protected theorem IsRegular.from_compl {T : Type u} {L : Language T} (h : Lᶜ.I
 /-- Regular languages are closed under complement. -/
 theorem IsRegular_compl_iff {T : Type u} {L : Language T} : Lᶜ.IsRegular ↔ L.IsRegular :=
   ⟨.from_compl, .compl⟩
+
+/-- Regular languages are closed under union. -/
+theorem IsRegular_union {T : Type u} {L1 L2 : Language T} :
+    L1.IsRegular → L2.IsRegular → (L1 + L2).IsRegular :=
+  fun ⟨σ1, _, M1, hM1⟩ ⟨σ2, _, M2, hM2⟩ =>
+    ⟨σ1 × σ2, inferInstance, M1 + M2, by rw [DFA.accepts_union, hM1, hM2]⟩
 
 end Language
