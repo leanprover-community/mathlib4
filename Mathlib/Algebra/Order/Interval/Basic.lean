@@ -647,7 +647,7 @@ theorem length_sub_le : (s - t).length ≤ s.length + t.length := by
 
 theorem length_sum_le (f : ι → Interval α) (s : Finset ι) :
     (∑ i ∈ s, f i).length ≤ ∑ i ∈ s, (f i).length :=
-  Finset.le_sum_of_subadditive _ length_zero length_add_le _ _
+  Finset.le_sum_of_subadditive _ length_zero.le length_add_le _ _
 
 end Interval
 
