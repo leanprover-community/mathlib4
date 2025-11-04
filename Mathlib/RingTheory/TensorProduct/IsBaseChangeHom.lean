@@ -97,8 +97,6 @@ theorem linearMapRight {ε : N →ₗ[R] P} (ibc : IsBaseChange S ε) :
 
 end LinearMapRight
 
-<<<<<<< HEAD
-=======
 section LinearMapLeftRight
 
 variable {S M}
@@ -163,5 +161,4 @@ theorem endom {α : M →ₗ[R] P} (j : IsBaseChange S α) :
 
 end End
 
->>>>>>> ACL/SL-basechange
 end IsBaseChange
