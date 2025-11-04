@@ -17,12 +17,12 @@ This file defines homogeneous subsemirings of a graded semiring, as well as oper
 
 open DirectSum Set SetLike
 
-section HomogeneousDef
-
 variable {ι σ A : Type*} [AddMonoid ι] [Semiring A]
 variable [SetLike σ A] [AddSubmonoidClass σ A]
 variable (𝒜 : ι → σ) [DecidableEq ι] [GradedRing 𝒜]
 variable (R : Subsemiring A)
+
+section HomogeneousDef
 
 /-- A subsemiring `R` is said to be homogeneous if for every `a ∈ R`, all homogeneous components of
 `a` are in `R`. -/
@@ -60,11 +60,11 @@ instance subsemiringClass : SubsemiringClass (HomogeneousSubsemiring 𝒜) A whe
   zero_mem {a} := a.toSubsemiring.zero_mem
 
 @[ext]
-theorem HomogeneousSubsemiring.ext {R S : HomogeneousSubsemiring 𝒜}
+theorem ext {R S : HomogeneousSubsemiring 𝒜}
     (h : R.toSubsemiring = S.toSubsemiring) : R = S :=
   HomogeneousSubsemiring.toSubsemiring_injective h
 
-theorem HomogeneousSubsemiring.ext' {R S : HomogeneousSubsemiring 𝒜}
+theorem ext' {R S : HomogeneousSubsemiring 𝒜}
     (h : ∀ i, ∀ a ∈ 𝒜 i, a ∈ R ↔ a ∈ S) : R = S := by
   ext
   rw [R.isHomogeneous.mem_iff, S.isHomogeneous.mem_iff]
@@ -75,6 +75,8 @@ theorem HomogeneousSubsemiring.ext' {R S : HomogeneousSubsemiring 𝒜}
 theorem mem_iff {R : HomogeneousSubsemiring 𝒜} {a} :
     a ∈ R.toSubsemiring ↔ a ∈ R :=
   Iff.rfl
+
+end HomogeneousSubsemiring
 
 theorem IsHomogneous.subsemiringClosure {s : Set A}
     (h : ∀ (i : ι) ⦃x : A⦄, x ∈ s → (decompose 𝒜 x i : A) ∈ s) :
@@ -107,10 +109,6 @@ end HomogeneousDef
 
 section HomogeneousCore
 
-variable {ι σ A : Type*} [Semiring A] [SetLike σ A] [AddSubmonoidClass σ A]
-variable [AddMonoid ι] [DecidableEq ι]
-variable (𝒜 : ι → σ) [GradedRing 𝒜] (R : Subsemiring A)
-
 /-- For any subsemiring `R`, not necessarily homogeneous, `R.homogeneousCore 𝒜` is the largest
 homogeneous subsemiring contained in `R`. -/
 def Subsemiring.homogeneousCore : HomogeneousSubsemiring 𝒜 where
@@ -127,11 +125,6 @@ theorem Subsemiring.toSubsemiring_homogeneousCore_le : (R.homogeneousCore 𝒜).
 end HomogeneousCore
 
 section IsHomogeneousSubsemiringDefs
-
-variable {ι σ A : Type*} [AddMonoid ι] [Semiring A]
-variable [SetLike σ A] [AddSubmonoidClass σ A]
-variable (𝒜 : ι → σ) [DecidableEq ι] [GradedRing 𝒜]
-variable (R : Subsemiring A)
 
 theorem Subsemiring.isHomogeneous_iff_forall_subset :
     R.IsHomogeneous 𝒜 ↔ ∀ i, (R : Set A) ⊆ GradedRing.proj 𝒜 i ⁻¹' (R : Set A) :=
