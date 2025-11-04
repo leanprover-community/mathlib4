@@ -138,12 +138,14 @@ variable {D : Type u₁} [Category.{v₁} D] {E : Type u₂} [Category.{v₂} E]
 def map (φ : C ⥤ D) : Category.FreeGroupoid C ⥤ Category.FreeGroupoid D :=
   lift (φ ⋙ of D)
 
+variable (C) in
 theorem map_id : map (𝟭 C) = 𝟭 (Category.FreeGroupoid C) := by
   symm; apply lift_unique; rfl
 
+variable (C) in
 /-- The functor induced by the identity is the identity. -/
 def mapId : map (𝟭 C) ≅ 𝟭 (Category.FreeGroupoid C) :=
-  eqToIso map_id
+  eqToIso (map_id C)
 
 theorem map_comp (φ : C ⥤ D) (φ' : D ⥤ E) : map (φ ⋙ φ') = map φ ⋙ map φ' := by
   symm; apply lift_unique; rfl
@@ -191,20 +193,6 @@ def free : Cat.{u, u} ⥤ Grpd.{u, u} where
   map {C D} F := map F
   map_id C := by simp [Grpd.id_eq_id, ← map_id]; rfl
   map_comp F G := by simp [Grpd.comp_eq_comp, ← map_comp]; rfl
-
-/-- The unit of the free-forgetful adjunction between `Grpd` and `Cat`. -/
-@[simps]
-def freeForgetAdjunction.unit : 𝟭 Cat ⟶ free ⋙ forgetToCat where
-  app C := Category.FreeGroupoid.of C
-  naturality C D F := by simp [forgetToCat, Cat.comp_eq_comp, map, lift_spec]
-
-/-- The counit of the free-forgetful adjunction between `Grpd` and `Cat`. -/
-@[simps]
-def freeForgetAdjunction.counit : forgetToCat ⋙ free ⟶ 𝟭 Grpd where
-  app G := lift (𝟭 G)
-  naturality G H φ := by
-    simp [map, Grpd.comp_eq_comp, ← lift_comp, forgetToCat, Functor.id_comp, Functor.assoc,
-      lift_spec, Functor.comp_id]
 
 /-- The free-forgetful adjunction between `Grpd` and `Cat`. -/
 def freeForgetAdjunction : free ⊣ Grpd.forgetToCat :=
