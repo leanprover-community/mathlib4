@@ -209,9 +209,7 @@ lemma _root_.IsBlock.subsingleton_of_ssubset_compl_of_stabilizer_le
   · apply hG
     rw [← stabilizer_compl]
     exact ofSubtype_mem_stabilizer g
-  · rw [mem_stabilizer_iff]
-    change Perm.ofSubtype g • sᶜ = sᶜ
-    rw [← mem_stabilizer_iff]
+  · rw [mem_stabilizer_iff, Subgroup.mk_smul, ← mem_stabilizer_iff]
     exact ofSubtype_mem_stabilizer g
   · ext ⟨x, hx⟩
     change Perm.ofSubtype g • x = _
