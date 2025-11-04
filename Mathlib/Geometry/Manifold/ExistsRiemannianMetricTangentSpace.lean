@@ -278,10 +278,26 @@ def g_bilin (i p : B) :
   let inner := innerSL ℝ (E := EB)
   exact inner.comp dψ |>.flip.comp dψ
 
-example (j b : B) (v w : TangentSpace IB b) :
-  ((g_bilin j b).toFun v).toFun w = g j b v w := by
-  dsimp [g_bilin, g]
-  exact sorry
+#check innerSLFlip_apply
+#check innerSL_real_flip
+#check innerSL_apply
+#check ContinuousLinearMap.flip_apply
+
+@[simp]
+theorem linear_flip_apply
+  {𝕜 E F G : Type*}
+  [NontriviallyNormedField 𝕜]
+  [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup G]
+  [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
+  (f : E →L[𝕜] F →L[𝕜] G) (x : F) (y : E) :
+  f.flip x y = f y x := rfl
+
+theorem g_bilin_symm (i p : B) (v w : TangentSpace IB p) :
+    ((g_bilin i p).toFun v).toFun w =
+    ((g_bilin i p).toFun w).toFun v := by
+  unfold g_bilin
+  simp
+  rw [real_inner_comm]
 
 example (x y : EB) : (innerSL ℝ (E := EB)) x y = Inner.inner ℝ x y := rfl
 
@@ -467,12 +483,12 @@ lemma h_need (f : SmoothPartitionOfUnity B IB B) (b : B) (v w : TangentSpace IB 
 
     have h_gbilin_symm : ∑ᶠ (j : B), (((f j) b • g_bilin j b).toFun v).toFun w =
                          ∑ᶠ (j : B), (((f j) b • g_bilin j b).toFun w).toFun v := by
-      have h2 : ∀ (j : B), g j b v w = g j b w v := fun j => g_symm j b v w
-      have h3 : ∀ (j : B), (f j b) * g j b v w = (f j b) * g j b w v :=
-        fun j ↦ congrArg (HMul.hMul ((f j) b)) (h2 j)
-      have h4 : ∀ (j : B), (((f j b) • g_bilin j b).toFun v).toFun w =
-                           (((f j b) • g_bilin j b).toFun w).toFun v := fun j ↦ sorry -- h3 j
-      exact finsum_congr h4
+      have h5 : ∀ (j : B), (((g_bilin j b)).toFun v).toFun w =
+                           (((g_bilin j b)).toFun w).toFun v := fun j => g_bilin_symm j b v w
+      have h6 : ∀ (j : B), (f j b) * ((g_bilin j b).toFun v).toFun w =
+                           (f j b) * ((g_bilin j b).toFun w).toFun v :=
+        fun j ↦ congrArg (HMul.hMul ((f j) b)) (h5 j)
+      exact finsum_congr h6
 
     calc
         ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilin j b).toFun v).toFun w
