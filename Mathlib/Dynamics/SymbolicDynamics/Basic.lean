@@ -709,8 +709,8 @@ attribute [inherit_doc SymbolicDynamics.FullShift.mulLanguageOn]
   SymbolicDynamics.FullShift.languageOn
 
 /-- The language of a subshift `Y` on a finite shape `U`. -/
-@[to_additive]
-def MulSubshift.languageOn {A G} [Fintype A] [TopologicalSpace A] [Monoid G]
+@[to_additive /-- The language of a subshift `Y` on a finite shape `U`. -/]
+def MulSubshift.languageOn {A G} [TopologicalSpace A] [Monoid G]
     (Y : MulSubshift A G) (U : Finset G) : Set (Pattern A G) :=
   SymbolicDynamics.FullShift.mulLanguageOn (A:=A) (G:=G) Y.carrier U
 
