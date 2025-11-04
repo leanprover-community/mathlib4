@@ -21,20 +21,18 @@ The definition presents it as a natural number.
 * `Nat.uniformBell m n` : short name for `Multiset.bell (replicate m n)`
 
 * `Multiset.bell_mul_eq` shows that
-    `m.bell * (m.map (fun j ↦ j !)).prod *
-      Π j ∈ (m.toFinset.erase 0), (m.count j)! = m.sum !`
+  `m.bell * (m.map (fun j ↦ j !)).prod * Π j ∈ (m.toFinset.erase 0), (m.count j)! = m.sum !`
 
 * `Nat.uniformBell_mul_eq`  shows that
-    `uniformBell m n * n ! ^ m * m ! = (m * n)!`
+  `uniformBell m n * n ! ^ m * m ! = (m * n) !`
 
 * `Nat.uniformBell_succ_left` computes `Nat.uniformBell (m + 1) n` from `Nat.uniformBell m n`
 
 * `Nat.bell n`: the `n`th standard Bell number,
-    which counts the number of partitions of a set of cardinality `n`
+  which counts the number of partitions of a set of cardinality `n`
 
 * `Nat.bell_succ n` shows that
-    `Nat.bell (n + 1) = ∑ k ∈ Finset.range (n + 1),
-      Nat.choose n k * Nat.bell (n - k)`
+  `Nat.bell (n + 1) = ∑ k ∈ Finset.range (n + 1), Nat.choose n k * Nat.bell (n - k)`
 
 ## TODO
 
@@ -190,15 +188,14 @@ protected def bell : ℕ → ℕ
   | n + 1 => ∑ i : Fin n.succ, choose n i * Nat.bell (n - i)
 
 theorem bell_succ (n : ℕ) :
-  Nat.bell (n + 1) = ∑ i : Fin n.succ, Nat.choose n i *
-    Nat.bell (n - i) := by
+    Nat.bell (n + 1) = ∑ i : Fin n.succ, Nat.choose n i * Nat.bell (n - i) := by
   rw [Nat.bell]
 
 theorem bell_succ' (n : ℕ) :
-  Nat.bell (n + 1) =
-    ∑ ij ∈ Finset.antidiagonal n, Nat.choose n ij.1 * Nat.bell ij.2 := by
-  rw [Nat.bell_succ, Finset.Nat.sum_antidiagonal_eq_sum_range_succ
-    (fun x y => Nat.choose n x * Nat.bell y) n, Finset.sum_range]
+    Nat.bell (n + 1) = ∑ ij ∈ Finset.antidiagonal n, Nat.choose n ij.1 * Nat.bell ij.2 := by
+  rw [Nat.bell_succ,
+    Finset.Nat.sum_antidiagonal_eq_sum_range_succ (fun x y => Nat.choose n x * Nat.bell y) n,
+    Finset.sum_range]
 
 
 @[simp]
