@@ -179,7 +179,9 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
     ext
     · dsimp
     · dsimp
-      slice_rhs 2 3 => erw [map_comp, assoc, (α.naturality g.base.toLoc).inv.naturality]
+      have := (α.naturality g.base.toLoc).inv.naturality_assoc
+      simp only [Cat.comp_obj, Cat.comp_map] at this
+      simp only [map_comp, assoc, this]
       simp [naturality_comp_inv_app, ← map_comp]
 
 @[simp]
