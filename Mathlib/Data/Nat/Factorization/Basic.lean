@@ -107,7 +107,7 @@ theorem ordCompl_pos {n : ℕ} (p : ℕ) (hn : n ≠ 0) : 0 < ordCompl[p] n := b
   if pp : p.Prime then
     exact Nat.div_pos (ordProj_le p hn) (ordProj_pos n p)
   else
-    simpa [Nat.factorization_eq_zero_of_non_prime n pp] using hn.bot_lt
+    simpa [Nat.factorization_eq_zero_of_not_prime n pp] using hn.bot_lt
 
 theorem ordCompl_le (n p : ℕ) : ordCompl[p] n ≤ n :=
   Nat.div_le_self _ _
@@ -132,7 +132,7 @@ theorem factorization_lt {n : ℕ} (p : ℕ) (hn : n ≠ 0) : n.factorization p 
   by_cases pp : p.Prime
   · exact (Nat.pow_lt_pow_iff_right pp.one_lt).1 <| (ordProj_le p hn).trans_lt <|
       Nat.lt_pow_self pp.one_lt
-  · simpa only [factorization_eq_zero_of_non_prime n pp] using hn.bot_lt
+  · simpa only [factorization_eq_zero_of_not_prime n pp] using hn.bot_lt
 
 /-- An upper bound on `n.factorization p` -/
 theorem factorization_le_of_le_pow {n p b : ℕ} (hb : n ≤ p ^ b) : n.factorization p ≤ b := by
@@ -140,13 +140,13 @@ theorem factorization_le_of_le_pow {n p b : ℕ} (hb : n ≤ p ^ b) : n.factoriz
   if pp : p.Prime then
     exact (Nat.pow_le_pow_iff_right pp.one_lt).1 ((ordProj_le p hn).trans hb)
   else
-    simp [factorization_eq_zero_of_non_prime n pp]
+    simp [factorization_eq_zero_of_not_prime n pp]
 
 theorem factorization_prime_le_iff_dvd {d n : ℕ} (hd : d ≠ 0) (hn : n ≠ 0) :
     (∀ p : ℕ, p.Prime → d.factorization p ≤ n.factorization p) ↔ d ∣ n := by
   rw [← factorization_le_iff_dvd hd hn]
   refine ⟨fun h p => (em p.Prime).elim (h p) fun hp => ?_, fun h p _ => h p⟩
-  simp_rw [factorization_eq_zero_of_non_prime _ hp]
+  simp_rw [factorization_eq_zero_of_not_prime _ hp]
   rfl
 
 theorem factorization_le_factorization_mul_left {a b : ℕ} (hb : b ≠ 0) :
@@ -386,7 +386,7 @@ theorem Ico_pow_dvd_eq_Ico_of_lt {n p b : ℕ} (pp : p.Prime) (hn : n ≠ 0) (hb
   simp only [Finset.mem_filter, mem_Ico, and_congr_left_iff, and_congr_right_iff]
   refine fun h1 h2 ↦ ⟨fun h ↦ ?_, fun h ↦ lt_of_pow_dvd_right hn (Prime.one_lt pp) h1⟩
   rcases p with - | p
-  · rw [zero_pow (by omega), zero_dvd_iff] at h1
+  · rw [zero_pow (by cutsat), zero_dvd_iff] at h1
     exact (hn h1).elim
   · rw [← Nat.pow_lt_pow_iff_right (Prime.one_lt pp)]
     apply lt_of_le_of_lt (le_of_dvd (Nat.zero_lt_of_ne_zero hn) h1) hb
@@ -396,7 +396,7 @@ divides `n`. Note `m` is prime. This set is expressed by filtering `Ico 1 b` whe
 greater than `log m n`. -/
 theorem factorization_eq_card_pow_dvd_of_lt (hm : m.Prime) (hn : 0 < n) (hb : n < m ^ b) :
     n.factorization m = #{i ∈ Ico 1 b | m ^ i ∣ n} := by
-  rwa [factorization_eq_card_pow_dvd n hm, Ico_pow_dvd_eq_Ico_of_lt hm (by omega)]
+  rwa [factorization_eq_card_pow_dvd n hm, Ico_pow_dvd_eq_Ico_of_lt hm (by cutsat)]
 
 /-! ### Factorization and coprimes -/
 
@@ -426,7 +426,7 @@ theorem eq_iff_prime_padicValNat_eq (a b : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) :
     refine eq_of_factorization_eq ha hb fun p => ?_
     by_cases pp : p.Prime
     · simp [factorization_def, pp, h p pp]
-    · simp [factorization_eq_zero_of_non_prime, pp]
+    · simp [factorization_eq_zero_of_not_prime, pp]
 
 theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < m) :
     ∏ p ∈ range m with p.Prime, p ^ padicValNat p n = n := by
@@ -455,27 +455,18 @@ theorem card_multiples (n p : ℕ) : #{e ∈ range n | p ∣ e + 1} = n / p := b
 
 /-- Exactly `n / p` naturals in `(0, n]` are multiples of `p`. -/
 theorem Ioc_filter_dvd_card_eq_div (n p : ℕ) : #{x ∈ Ioc 0 n | p ∣ x} = n / p := by
-  induction n with
-  | zero => simp
-  | succ n IH =>
-    -- TODO: Golf away `h1` after Yaël PRs a lemma asserting this
-    have h1 : Ioc 0 n.succ = insert n.succ (Ioc 0 n) := by
-      rcases n.eq_zero_or_pos with (rfl | hn)
-      · simp
-      simp_rw [← Ico_add_one_add_one_eq_Ioc, Ico_insert_right (add_le_add_right hn.le 1),
-        Ico_add_one_right_eq_Icc]
-    simp [Nat.succ_div, add_ite, add_zero, h1, filter_insert, apply_ite card, IH,
-      Finset.mem_filter, mem_Ioc, not_le.2 (lt_add_one n)]
+  induction n <;> simp [Nat.succ_div, add_ite, ← insert_Ioc_right_eq_Ioc_add_one, filter_insert,
+    apply_ite card, *]
 
 /-- There are exactly `⌊N/n⌋` positive multiples of `n` that are `≤ N`.
 See `Nat.card_multiples` for a "shifted-by-one" version. -/
 lemma card_multiples' (N n : ℕ) : #{k ∈ range N.succ | k ≠ 0 ∧ n ∣ k} = N / n := by
   induction N with
-    | zero => simp [Finset.filter_false_of_mem]
-    | succ N ih =>
-        rw [Finset.range_add_one, Finset.filter_insert]
-        by_cases h : n ∣ N.succ
-        · simp [h, succ_div_of_dvd, ih]
-        · simp [h, succ_div_of_not_dvd, ih]
+  | zero => simp [Finset.filter_false_of_mem]
+  | succ N ih =>
+    rw [Finset.range_add_one, Finset.filter_insert]
+    by_cases h : n ∣ N.succ
+    · simp [h, succ_div_of_dvd, ih]
+    · simp [h, succ_div_of_not_dvd, ih]
 
 end Nat

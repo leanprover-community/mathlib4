@@ -5,6 +5,7 @@ Authors: Alexander Bentkamp
 -/
 import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Eigs
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.LinearAlgebra.Matrix.Rank
@@ -22,7 +23,7 @@ spectral theorem, diagonalization theorem -/
 namespace Matrix
 
 variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
-variable {A : Matrix n n 𝕜}
+variable {A B : Matrix n n 𝕜}
 
 lemma finite_real_spectrum [DecidableEq n] : (spectrum ℝ A).Finite := by
   rw [← spectrum.preimage_algebraMap 𝕜]
@@ -42,12 +43,15 @@ namespace IsHermitian
 section DecidableEq
 
 variable [DecidableEq n]
-variable (hA : A.IsHermitian)
+variable (hA : A.IsHermitian) (hB : B.IsHermitian)
 
 /-- The eigenvalues of a Hermitian matrix, indexed by `Fin (Fintype.card n)` where `n` is the index
 type of the matrix. -/
 noncomputable def eigenvalues₀ : Fin (Fintype.card n) → ℝ :=
   (isHermitian_iff_isSymmetric.1 hA).eigenvalues finrank_euclideanSpace
+
+lemma eigenvalues₀_antitone : Antitone hA.eigenvalues₀ :=
+  LinearMap.IsSymmetric.eigenvalues_antitone ..
 
 /-- The eigenvalues of a Hermitian matrix, reusing the index `n` of the matrix entries. -/
 noncomputable def eigenvalues : n → ℝ := fun i =>
@@ -105,7 +109,7 @@ theorem eigenvectorUnitary_mulVec (j : n) :
 
 theorem star_eigenvectorUnitary_mulVec (j : n) :
     (star (eigenvectorUnitary hA : Matrix n n 𝕜)) *ᵥ ⇑(hA.eigenvectorBasis j) = Pi.single j 1 := by
-  rw [← eigenvectorUnitary_mulVec, mulVec_mulVec, unitary.coe_star_mul_self, one_mulVec]
+  rw [← eigenvectorUnitary_mulVec, mulVec_mulVec, Unitary.coe_star_mul_self, one_mulVec]
 
 /-- Unitary diagonalization of a Hermitian matrix. -/
 theorem star_mul_self_mul_eq_diagonal :
@@ -141,16 +145,48 @@ theorem eigenvalues_eq (i : n) :
     inner_self_eq_norm_sq_to_K, RCLike.smul_re, hA.eigenvectorBasis.orthonormal.1 i,
     mul_one, algebraMap.coe_one, one_pow, RCLike.one_re]
 
+open Polynomial in
+lemma charpoly_eq : A.charpoly = ∏ i, (X - C (hA.eigenvalues i : 𝕜)) := by
+  conv_lhs => rw [hA.spectral_theorem, charpoly_mul_comm, ← mul_assoc]
+  simp [charpoly_diagonal]
+
+lemma roots_charpoly_eq_eigenvalues :
+    A.charpoly.roots = Multiset.map (RCLike.ofReal ∘ hA.eigenvalues) Finset.univ.val := by
+  rw [hA.charpoly_eq, Polynomial.roots_prod]
+  · simp
+  · simp [Finset.prod_ne_zero_iff, Polynomial.X_sub_C_ne_zero]
+
+lemma roots_charpoly_eq_eigenvalues₀ :
+    A.charpoly.roots = Multiset.map (RCLike.ofReal ∘ hA.eigenvalues₀) Finset.univ.val := by
+  rw [hA.roots_charpoly_eq_eigenvalues]
+  simp only [← Multiset.map_map, eigenvalues, ← Function.comp_apply (f := hA.eigenvalues₀)]
+  simp
+
+lemma sort_roots_charpoly_eq_eigenvalues₀ :
+    (A.charpoly.roots.map RCLike.re).sort (· ≥ ·) = List.ofFn hA.eigenvalues₀ := by
+  simp_rw [hA.roots_charpoly_eq_eigenvalues₀, Fin.univ_val_map, Multiset.map_coe, List.map_ofFn,
+    Function.comp_def, RCLike.ofReal_re, Multiset.coe_sort]
+  rw [List.mergeSort_of_sorted]
+  simpa [List.Sorted] using (eigenvalues₀_antitone hA).ofFn_sorted
+
+lemma eigenvalues_eq_eigenvalues_iff :
+    hA.eigenvalues = hB.eigenvalues ↔ A.charpoly = B.charpoly := by
+  constructor <;> intro h
+  · rw [hA.charpoly_eq, hB.charpoly_eq, h]
+  · suffices hA.eigenvalues₀ = hB.eigenvalues₀ by unfold eigenvalues; rw [this]
+    simp_rw [← List.ofFn_inj, ← sort_roots_charpoly_eq_eigenvalues₀, h]
+
+theorem splits_charpoly (hA : A.IsHermitian) : A.charpoly.Splits (RingHom.id 𝕜) :=
+  Polynomial.splits_iff_card_roots.mpr (by simp [hA.roots_charpoly_eq_eigenvalues])
+
 /-- The determinant of a Hermitian matrix is the product of its eigenvalues. -/
 theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
-  convert congr_arg det hA.spectral_theorem
-  rw [det_mul_right_comm]
-  simp
+  simp [det_eq_prod_roots_charpoly_of_splits hA.splits_charpoly, hA.roots_charpoly_eq_eigenvalues]
 
 /-- rank of a Hermitian matrix is the rank of after diagonalization by the eigenvector unitary -/
 lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
-  conv_lhs => rw [hA.spectral_theorem, ← unitary.coe_star]
-  simp [-isUnit_iff_ne_zero, -unitary.coe_star, rank_diagonal]
+  conv_lhs => rw [hA.spectral_theorem, ← Unitary.coe_star]
+  simp [-isUnit_iff_ne_zero, -Unitary.coe_star, rank_diagonal]
 
 /-- rank of a Hermitian matrix is the number of nonzero eigenvalues of the Hermitian matrix -/
 lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
@@ -195,8 +231,7 @@ lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
 
 theorem trace_eq_sum_eigenvalues [DecidableEq n] (hA : A.IsHermitian) :
     A.trace = ∑ i, (hA.eigenvalues i : 𝕜) := by
-  conv_lhs => rw [hA.spectral_theorem, trace_mul_cycle]
-  simp
+  simp [trace_eq_sum_roots_charpoly_of_splits hA.splits_charpoly, hA.roots_charpoly_eq_eigenvalues]
 
 end IsHermitian
 

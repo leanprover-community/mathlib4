@@ -34,17 +34,11 @@ def toMeasurableEquiv : E ≃ᵐ F where
   measurable_toFun := f.continuous.measurable
   measurable_invFun := f.symm.continuous.measurable
 
-@[deprecated (since := "2025-03-22")] alias toMeasureEquiv := toMeasurableEquiv
-
 @[simp] theorem coe_toMeasurableEquiv : (f.toMeasurableEquiv : E → F) = f := rfl
-
-@[deprecated (since := "2025-03-22")] alias coe_toMeasureEquiv := coe_toMeasurableEquiv
 
 @[simp] theorem toMeasurableEquiv_symm : f.symm.toMeasurableEquiv = f.toMeasurableEquiv.symm := rfl
 
 @[simp] lemma coe_symm_toMeasurableEquiv : ⇑f.toMeasurableEquiv.symm = f.symm := rfl
-
-@[deprecated (since := "2025-03-22")] alias toMeasureEquiv_symm := toMeasurableEquiv_symm
 
 end LinearIsometryEquiv
 
@@ -150,7 +144,7 @@ end PiLp
 
 namespace LinearIsometryEquiv
 
-/-- Every linear isometry on a real finite dimensional Hilbert space is measure-preserving. -/
+/-- Every linear isometry on a real finite-dimensional Hilbert space is measure-preserving. -/
 theorem measurePreserving (f : E ≃ₗᵢ[ℝ] F) :
     MeasurePreserving f := by
   refine ⟨f.continuous.measurable, ?_⟩

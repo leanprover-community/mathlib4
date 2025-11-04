@@ -19,10 +19,10 @@ namespace Nat
 variable {n : ℕ}
 
 theorem modEq_three_digits_sum (n : ℕ) : n ≡ (digits 10 n).sum [MOD 3] :=
-  modEq_digits_sum 3 10 (by norm_num) n
+  modEq_digits_sum 3 10 (by simp) n
 
 theorem modEq_nine_digits_sum (n : ℕ) : n ≡ (digits 10 n).sum [MOD 9] :=
-  modEq_digits_sum 9 10 (by norm_num) n
+  modEq_digits_sum 9 10 (by simp) n
 
 theorem modEq_eleven_digits_sum (n : ℕ) :
     n ≡ ((digits 10 n).map fun n : ℕ => (n : ℤ)).alternatingSum [ZMOD 11] := by
@@ -39,10 +39,10 @@ theorem dvd_iff_dvd_digits_sum (b b' : ℕ) (h : b' % b = 1) (n : ℕ) :
 
 /-- **Divisibility by 3 Rule** -/
 theorem three_dvd_iff (n : ℕ) : 3 ∣ n ↔ 3 ∣ (digits 10 n).sum :=
-  dvd_iff_dvd_digits_sum 3 10 (by norm_num) n
+  dvd_iff_dvd_digits_sum 3 10 (by simp) n
 
 theorem nine_dvd_iff (n : ℕ) : 9 ∣ n ↔ 9 ∣ (digits 10 n).sum :=
-  dvd_iff_dvd_digits_sum 9 10 (by norm_num) n
+  dvd_iff_dvd_digits_sum 9 10 (by simp) n
 
 theorem dvd_iff_dvd_ofDigits (b b' : ℕ) (c : ℤ) (h : (b : ℤ) ∣ (b' : ℤ) - c) (n : ℕ) :
     b ∣ n ↔ (b : ℤ) ∣ ofDigits c (digits b' n) := by
@@ -52,7 +52,7 @@ theorem dvd_iff_dvd_ofDigits (b b' : ℕ) (c : ℤ) (h : (b : ℤ) ∣ (b' : ℤ
 
 theorem eleven_dvd_iff :
     11 ∣ n ↔ (11 : ℤ) ∣ ((digits 10 n).map fun n : ℕ => (n : ℤ)).alternatingSum := by
-  have t := dvd_iff_dvd_ofDigits 11 10 (-1 : ℤ) (by norm_num) n
+  have t := dvd_iff_dvd_ofDigits 11 10 (-1 : ℤ) (by simp) n
   rw [ofDigits_neg_one] at t
   exact t
 

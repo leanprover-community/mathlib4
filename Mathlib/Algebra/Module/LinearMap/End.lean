@@ -171,7 +171,7 @@ theorem iterate_bijective (h : Bijective f') : ∀ n : ℕ, Bijective (f' ^ n)
 
 theorem injective_of_iterate_injective {n : ℕ} (hn : n ≠ 0) (h : Injective (f' ^ n)) :
     Injective f' := by
-  rw [← Nat.succ_pred_eq_of_pos (show 0 < n by omega), iterate_succ, coe_comp] at h
+  rw [← Nat.succ_pred_eq_of_pos (show 0 < n by cutsat), iterate_succ, coe_comp] at h
   exact h.of_comp
 
 theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjective (f' ^ n)) :
@@ -280,9 +280,6 @@ def RingEquiv.moduleEndSelfOp : R ≃+* Module.End Rᵐᵒᵖ R :=
     invFun := fun f ↦ f 1
     left_inv := mul_one
     right_inv := fun _ ↦ LinearMap.ext_ring_op <| mul_one _ }
-
-@[deprecated (since := "2025-04-13")] alias Module.moduleEndSelf := RingEquiv.moduleEndSelf
-@[deprecated (since := "2025-04-13")] alias Module.moduleEndSelfOp := RingEquiv.moduleEndSelfOp
 
 theorem Module.End.natCast_def (n : ℕ) [AddCommMonoid N₁] [Module R N₁] :
     (↑n : Module.End R N₁) = Module.toModuleEnd R N₁ n :=

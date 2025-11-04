@@ -41,11 +41,11 @@ macro:max atomic("|" noWs) a:term noWs "|" : term => `(abs $a)
 
 /-- Unexpander for the notation `|a|ₘ` for `mabs a`.
 Tries to add discretionary parentheses in unparsable cases. -/
-@[app_unexpander abs]
+@[app_unexpander mabs]
 def mabs.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $a) =>
     match a with
-    | `(|$_|ₘ) | `(-$_) => `(|($a)|ₘ)
+    | `(|$_|) | `(|$_|ₘ) | `(-$_) => `(|($a)|ₘ)
     | _ => `(|$a|ₘ)
   | _ => throw ()
 
@@ -55,7 +55,7 @@ Tries to add discretionary parentheses in unparsable cases. -/
 def abs.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $a) =>
     match a with
-    | `(|$_|) | `(-$_) => `(|($a)|)
+    | `(|$_|) | `(|$_|ₘ) | `(-$_) => `(|($a)|)
     | _ => `(|$a|)
   | _ => throw ()
 
@@ -239,7 +239,7 @@ variable [MulLeftMono α] {a b : α}
   · simp [mabs_of_le_one h]
 
 @[to_additive add_abs_nonneg] lemma one_le_mul_mabs (a : α) : 1 ≤ a * |a|ₘ := by
-  rw [← mul_inv_cancel a]; exact mul_le_mul_left' (inv_le_mabs a) _
+  grw [← mul_inv_cancel a, inv_le_mabs a]
 
 @[to_additive] lemma inv_mabs_le_inv (a : α) : |a|ₘ⁻¹ ≤ a⁻¹ := by simpa using inv_mabs_le a⁻¹
 
@@ -296,6 +296,7 @@ variable {ι : Type*} {α : ι → Type*} [∀ i, AddGroup (α i)] [∀ i, Latti
 
 @[simp] lemma abs_apply (f : ∀ i, α i) (i : ι) : |f| i = |f i| := rfl
 
+@[push ←]
 lemma abs_def (f : ∀ i, α i) : |f| = fun i ↦ |f i| := rfl
 
 end Pi

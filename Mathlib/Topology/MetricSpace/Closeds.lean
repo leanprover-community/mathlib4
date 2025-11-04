@@ -134,7 +134,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
         mem_closure_of_tendsto y_lim
           (by
             simp only [exists_prop, Set.mem_iUnion, Filter.eventually_atTop]
-            exact ⟨k, fun m hm => ⟨n + m, by omega, (z m).2⟩⟩)
+            exact ⟨k, fun m hm => ⟨n + m, by cutsat, (z m).2⟩⟩)
     use this
     -- Then, we check that `y` is close to `x = z n`. This follows from the fact that `y`
     -- is the limit of `z k`, and the distance between `z n` and `z k` has already been estimated.
@@ -220,6 +220,9 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
       have : edist u t < ε := lt_of_le_of_lt Dut0 δlt
       apply mem_iUnion₂.2
       exact ⟨t, ‹t ∈ F›, this⟩⟩
+
+theorem Closeds.isometry_singleton : Isometry (Closeds.singleton (α := α)) :=
+  fun _ _ => hausdorffEdist_singleton
 
 namespace NonemptyCompacts
 
@@ -382,6 +385,9 @@ instance secondCountableTopology [SecondCountableTopology α] :
       -- we have proved that `d` is a good approximation of `t` as requested
       exact ⟨d, ‹d ∈ v›, Dtc⟩
   UniformSpace.secondCountable_of_separable (NonemptyCompacts α)
+
+theorem isometry_singleton : Isometry ({·} : α → NonemptyCompacts α) :=
+  fun _ _ => hausdorffEdist_singleton
 
 end NonemptyCompacts
 

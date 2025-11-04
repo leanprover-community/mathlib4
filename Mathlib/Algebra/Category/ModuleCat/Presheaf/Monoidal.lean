@@ -110,7 +110,7 @@ noncomputable instance monoidalCategory :
     MonoidalCategory (PresheafOfModules.{u} (R ⋙ forget₂ _ _)) where
   tensorHom_def _ _ := by ext1; apply tensorHom_def
   id_tensorHom_id _ _ := by ext1; apply id_tensorHom_id
-  tensor_comp _ _ _ _ := by ext1; apply tensor_comp
+  tensorHom_comp_tensorHom _ _ _ _ := by ext1; apply tensorHom_comp_tensorHom
   whiskerLeft_id M₁ M₂ := by
     ext1 X
     apply MonoidalCategory.whiskerLeft_id (C := ModuleCat (R.obj X))

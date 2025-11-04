@@ -141,24 +141,33 @@ end
 
 section SMul
 
-variable [PartialOrder Γ] [AddCommMonoid V] [SMul R V]
+variable [PartialOrder Γ] [SMul R V]
 
-instance instAddCommMonoid : AddCommMonoid (HahnModule Γ R V) :=
+instance instZero [Zero V] : Zero (HahnModule Γ R V) :=
+  inferInstanceAs <| Zero (HahnSeries Γ V)
+instance instAddCommMonoid [AddCommMonoid V] : AddCommMonoid (HahnModule Γ R V) :=
   inferInstanceAs <| AddCommMonoid (HahnSeries Γ V)
+instance instAddCommGroup [AddCommGroup V] : AddCommGroup (HahnModule Γ R V) :=
+  inferInstanceAs <| AddCommGroup (HahnSeries Γ V)
 instance instBaseSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
     SMul R (HahnModule Γ R V) :=
   inferInstanceAs <| SMul R (HahnSeries Γ V)
 
-@[simp] theorem of_zero : of R (0 : HahnSeries Γ V) = 0 := rfl
-@[simp] theorem of_add (x y : HahnSeries Γ V) : of R (x + y) = of R x + of R y := rfl
+@[simp] theorem of_zero [Zero V] : of R (0 : HahnSeries Γ V) = 0 := rfl
+@[simp] theorem of_add [AddCommMonoid V] (x y : HahnSeries Γ V) :
+    of R (x + y) = of R x + of R y := rfl
+@[simp] theorem of_sub [AddCommGroup V] (x y : HahnSeries Γ V) :
+    of R (x - y) = of R x - of R y := rfl
 
-@[simp] theorem of_symm_zero : (of R).symm (0 : HahnModule Γ R V) = 0 := rfl
-@[simp] theorem of_symm_add (x y : HahnModule Γ R V) :
+@[simp] theorem of_symm_zero [Zero V] : (of R).symm (0 : HahnModule Γ R V) = 0 := rfl
+@[simp] theorem of_symm_add [AddCommMonoid V] (x y : HahnModule Γ R V) :
     (of R).symm (x + y) = (of R).symm x + (of R).symm y := rfl
+@[simp] theorem of_symm_sub [AddCommGroup V] (x y : HahnModule Γ R V) :
+    (of R).symm (x - y) = (of R).symm x - (of R).symm y := rfl
 
-variable [PartialOrder Γ'] [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ']
+variable [PartialOrder Γ'] [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [Zero R] [AddCommMonoid V]
 
-instance instSMul [Zero R] : SMul (HahnSeries Γ R) (HahnModule Γ' R V) where
+instance instSMul : SMul (HahnSeries Γ R) (HahnModule Γ' R V) where
   smul x y := (of R) {
     coeff := fun a =>
       ∑ ij ∈ VAddAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support a,
@@ -175,7 +184,7 @@ instance instSMul [Zero R] : SMul (HahnSeries Γ R) (HahnModule Γ' R V) where
           simp [not_nonempty_iff_eq_empty.1 ha]
         isPWO_support_vaddAntidiagonal.mono h }
 
-theorem coeff_smul [Zero R] (x : HahnSeries Γ R) (y : HahnModule Γ' R V) (a : Γ') :
+theorem coeff_smul (x : HahnSeries Γ R) (y : HahnModule Γ' R V) (a : Γ') :
     ((of R).symm <| x • y).coeff a =
       ∑ ij ∈ VAddAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support a,
         x.coeff ij.fst • ((of R).symm y).coeff ij.snd :=
@@ -602,8 +611,7 @@ theorem orderTop_nsmul_le_orderTop_pow {Γ}
   | succ n ih =>
     rw [add_nsmul, pow_add]
     calc
-      n • x.orderTop + 1 • x.orderTop ≤ (x ^ n).orderTop + 1 • x.orderTop :=
-        add_le_add_right ih (1 • x.orderTop)
+      n • x.orderTop + 1 • x.orderTop ≤ (x ^ n).orderTop + 1 • x.orderTop := by gcongr
       (x ^ n).orderTop + 1 • x.orderTop = (x ^ n).orderTop + x.orderTop := by rw [one_nsmul]
       (x ^ n).orderTop + x.orderTop ≤ (x ^ n * x).orderTop := orderTop_add_le_mul
       (x ^ n * x).orderTop ≤ (x ^ n * x ^ 1).orderTop := by rw [pow_one]
@@ -768,10 +776,8 @@ theorem C_injective : Function.Injective (C : R → HahnSeries Γ R) := by
   have h := rs 0
   rwa [C_apply, coeff_single_same, C_apply, coeff_single_same] at h
 
-theorem C_ne_zero {r : R} (h : r ≠ 0) : (C r : HahnSeries Γ R) ≠ 0 := by
-  contrapose! h
-  rw [← C_zero] at h
-  exact C_injective h
+theorem C_ne_zero {r : R} (h : r ≠ 0) : (C r : HahnSeries Γ R) ≠ 0 :=
+  C_injective.ne_iff' C_zero |>.mpr h
 
 theorem order_C {r : R} : order (C r : HahnSeries Γ R) = 0 := by
   by_cases h : r = 0

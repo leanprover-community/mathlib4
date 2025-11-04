@@ -27,13 +27,13 @@ section OrderedAddCommMonoid
 variable [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α]
   {s : Finset ι} {f g : ι → α}
 
-lemma expect_eq_zero_iff_of_nonneg (hs : s.Nonempty) (hf : ∀ i ∈ s, 0 ≤ f i) :
+lemma expect_eq_zero_iff_of_nonneg (hf : ∀ i ∈ s, 0 ≤ f i) :
     𝔼 i ∈ s, f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
-  simp [expect, sum_eq_zero_iff_of_nonneg hf, hs.ne_empty]
+  simp +contextual [expect, sum_eq_zero_iff_of_nonneg hf]
 
-lemma expect_eq_zero_iff_of_nonpos (hs : s.Nonempty) (hf : ∀ i ∈ s, f i ≤ 0) :
+lemma expect_eq_zero_iff_of_nonpos (hf : ∀ i ∈ s, f i ≤ 0) :
     𝔼 i ∈ s, f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
-  simp [expect, sum_eq_zero_iff_of_nonpos hf, hs.ne_empty]
+  simp +contextual [expect, sum_eq_zero_iff_of_nonpos hf]
 
 section PosSMulMono
 variable [PosSMulMono ℚ≥0 α] {a : α}
@@ -136,7 +136,7 @@ section LinearOrderedAddCommGroup
 variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α] [PosSMulMono ℚ≥0 α]
 
 lemma abs_expect_le (s : Finset ι) (f : ι → α) : |𝔼 i ∈ s, f i| ≤ 𝔼 i ∈ s, |f i| :=
-  le_expect_of_subadditive abs_zero abs_add (fun _ ↦ abs_nnqsmul _)
+  le_expect_of_subadditive abs_zero abs_add_le (fun _ ↦ abs_nnqsmul _)
 
 end LinearOrderedAddCommGroup
 
@@ -162,11 +162,13 @@ variable [Fintype ι]
 section OrderedAddCommMonoid
 variable [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α] {f : ι → α}
 
-lemma expect_eq_zero_iff_of_nonneg [Nonempty ι] (hf : 0 ≤ f) : 𝔼 i, f i = 0 ↔ f = 0 := by
-  simp [expect, sum_eq_zero_iff_of_nonneg hf]
+lemma expect_eq_zero_iff_of_nonneg (hf : 0 ≤ f) : 𝔼 i, f i = 0 ↔ f = 0 := by
+  rw [Finset.expect_eq_zero_iff_of_nonneg (by aesop)]
+  aesop
 
-lemma expect_eq_zero_iff_of_nonpos [Nonempty ι] (hf : f ≤ 0) : 𝔼 i, f i = 0 ↔ f = 0 := by
-  simp [expect, sum_eq_zero_iff_of_nonpos hf]
+lemma expect_eq_zero_iff_of_nonpos (hf : f ≤ 0) : 𝔼 i, f i = 0 ↔ f = 0 := by
+  rw [Finset.expect_eq_zero_iff_of_nonpos (by aesop)]
+  aesop
 
 end OrderedAddCommMonoid
 end Fintype

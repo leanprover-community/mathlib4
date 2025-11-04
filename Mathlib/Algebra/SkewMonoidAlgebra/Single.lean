@@ -109,20 +109,22 @@ theorem coeff_update_apply [DecidableEq α] :
   rw [coeff_update, Function.update_apply]
 
 @[simp]
-theorem coeff_update_same [DecidableEq α] : (f.update a b).coeff a = b := by
+theorem coeff_update_same : (f.update a b).coeff a = b := by
+  classical
   rw [f.coeff_update_apply, if_pos rfl]
 
 variable {a a'} in
 @[simp]
-theorem coeff_update_ne [DecidableEq α] (h : a' ≠ a) : (f.update a b).coeff a' = f.coeff a' := by
+theorem coeff_update_ne (h : a' ≠ a) : (f.update a b).coeff a' = f.coeff a' := by
+  classical
   rw [f.coeff_update_apply, if_neg h]
 
-theorem update_eq_erase_add_single [DecidableEq α] : f.update a b = f.erase a + single a b := by
-  ext x; by_cases hx : x = a <;> aesop (add norm coeff_single_apply)
+theorem update_eq_erase_add_single : f.update a b = f.erase a + single a b := by
+  classical ext x; by_cases hx : x = a <;> aesop (add norm coeff_single_apply)
 
 @[simp]
-theorem update_zero_eq_erase [DecidableEq α] : f.update a 0 = f.erase a := by
-  ext; simp [coeff_update_apply, coeff_erase_apply]
+theorem update_zero_eq_erase : f.update a 0 = f.erase a := by
+  classical ext; simp [coeff_update_apply, coeff_erase_apply]
 
 end update
 

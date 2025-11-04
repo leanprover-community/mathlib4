@@ -87,7 +87,7 @@ theorem mem_fixedPoints_iff_card_orbit_eq_one {a : α} [Fintype (orbit M a)] :
     a ∈ fixedPoints M α ↔ Fintype.card (orbit M a) = 1 := by
   simp only [← subsingleton_orbit_iff_mem_fixedPoints, le_antisymm_iff,
     Fintype.card_le_one_iff_subsingleton, Nat.add_one_le_iff, Fintype.card_pos_iff,
-    Set.subsingleton_coe, iff_self_and, Set.nonempty_coe_sort, orbit_nonempty, implies_true]
+    Set.subsingleton_coe, iff_self_and, Set.nonempty_coe_sort, nonempty_orbit, implies_true]
 
 @[to_additive instDecidablePredMemSetFixedByAddOfDecidableEq]
 instance (m : M) [DecidableEq β] :

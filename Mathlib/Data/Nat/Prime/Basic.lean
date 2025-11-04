@@ -124,11 +124,11 @@ theorem Prime.not_coprime_iff_dvd {m n : ℕ} : ¬Coprime m n ↔ ∃ p, Prime p
     apply Nat.not_coprime_of_dvd_of_dvd (Prime.one_lt hp.1) hp.2.1 hp.2.2
 
 /-- If `0 < m < minFac n`, then `n` and `m` are coprime. -/
-lemma coprime_of_lt_minFac {n m : ℕ} (h₀ : m ≠ 0) (h : m < minFac n) : Coprime n m  := by
+lemma coprime_of_lt_minFac {n m : ℕ} (h₀ : m ≠ 0) (h : m < minFac n) : Coprime n m := by
   rw [← not_not (a := n.Coprime m), Prime.not_coprime_iff_dvd]
   push_neg
   exact fun p hp hn hm ↦
-    ((le_of_dvd (by omega) hm).trans_lt <| h.trans_le <| minFac_le_of_dvd hp.two_le hn).false
+    ((le_of_dvd (by cutsat) hm).trans_lt <| h.trans_le <| minFac_le_of_dvd hp.two_le hn).false
 
 /-- If `0 < m < minFac n`, then `n` and `m` have gcd equal to `1`. -/
 lemma gcd_eq_one_of_lt_minFac {n m : ℕ} (h₀ : m ≠ 0) (h : m < minFac n) : n.gcd m = 1 :=

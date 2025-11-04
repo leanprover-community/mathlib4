@@ -131,7 +131,7 @@ theorem one_lt_rootMultiplicity_iff_isRoot
   rw [one_lt_rootMultiplicity_iff_isRoot_iterate_derivative h]
   refine ⟨fun h ↦ ⟨h 0 (by simp), h 1 (by simp)⟩, fun ⟨h0, h1⟩ m hm ↦ ?_⟩
   obtain (_ | _ | m) := m
-  exacts [h0, h1, by omega]
+  exacts [h0, h1, by cutsat]
 
 end CommRing
 
@@ -188,7 +188,7 @@ theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : 
   rw [rootMultiplicity_mul hdfg0, derivative_rootMultiplicity_of_root haf,
     rootMultiplicity_eq_zero hg, add_zero, rootMultiplicity_mul (hr ▸ hdfg0), add_comm,
     Nat.sub_eq_iff_eq_add (Nat.succ_le_iff.2 ((rootMultiplicity_pos hf0).2 haf))] at hr'
-  omega
+  cutsat
 
 section NormalizationMonoid
 
@@ -337,6 +337,8 @@ theorem mod_X_sub_C_eq_C_eval (p : R[X]) (a : R) : p % (X - C a) = C (p.eval a) 
 
 theorem mul_div_eq_iff_isRoot : (X - C a) * (p / (X - C a)) = p ↔ IsRoot p a :=
   divByMonic_eq_div p (monic_X_sub_C a) ▸ mul_divByMonic_eq_iff_isRoot
+
+alias ⟨_, IsRoot.mul_div_eq⟩ := mul_div_eq_iff_isRoot
 
 instance instEuclideanDomain : EuclideanDomain R[X] :=
   { Polynomial.commRing,
@@ -691,6 +693,10 @@ theorem map_normalize [DecidableEq R] [Field S] [DecidableEq S] (f : R →+* S) 
   by_cases hp : p = 0
   · simp [hp]
   · simp [normalize_apply, Polynomial.map_mul, normUnit, hp]
+
+theorem monic_mapAlg_iff [Semiring S] [Nontrivial S] [Algebra R S] {p : R[X]} :
+    (mapAlg R S p).Monic ↔ p.Monic := by
+  simp [mapAlg_eq_map, monic_map_iff]
 
 end Field
 

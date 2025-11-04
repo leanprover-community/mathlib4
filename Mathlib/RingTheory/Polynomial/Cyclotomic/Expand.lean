@@ -113,7 +113,7 @@ theorem cyclotomic_irreducible_pow_of_irreducible_pow {p : ℕ} (hp : Nat.Prime 
   | succ k hk =>
     have : m + k ≠ 0 := (add_pos_of_pos_of_nonneg hm k.zero_le).ne'
     rw [Nat.add_succ, pow_succ, ← cyclotomic_expand_eq_cyclotomic hp <| dvd_pow_self p this] at h
-    exact hk (by omega) (of_irreducible_expand hp.ne_zero h)
+    exact hk (by cutsat) (of_irreducible_expand hp.ne_zero h)
 
 /-- If `Irreducible (cyclotomic (p ^ n) R)` then `Irreducible (cyclotomic p R).` -/
 theorem cyclotomic_irreducible_of_irreducible_pow {p : ℕ} (hp : Nat.Prime p) {R} [CommRing R]
@@ -172,7 +172,7 @@ theorem isRoot_cyclotomic_prime_pow_mul_iff_of_charP {m k p : ℕ} {R : Type*} [
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [IsRoot.def, cyclotomic_mul_prime_pow_eq R (NeZero.not_char_dvd R p m) hk, eval_pow]
       at h
-    replace h := pow_eq_zero h
+    replace h := eq_zero_of_pow_eq_zero h
     rwa [← IsRoot.def, isRoot_cyclotomic_iff] at h
   · rw [← isRoot_cyclotomic_iff, IsRoot.def] at h
     rw [cyclotomic_mul_prime_pow_eq R (NeZero.not_char_dvd R p m) hk, IsRoot.def, eval_pow,

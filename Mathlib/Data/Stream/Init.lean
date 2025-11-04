@@ -279,11 +279,7 @@ end Bisim
 theorem bisim_simple (s₁ s₂ : Stream' α) :
     head s₁ = head s₂ → s₁ = tail s₁ → s₂ = tail s₂ → s₁ = s₂ := fun hh ht₁ ht₂ =>
   eq_of_bisim (fun s₁ s₂ => head s₁ = head s₂ ∧ s₁ = tail s₁ ∧ s₂ = tail s₂)
-    (fun s₁ s₂ ⟨h₁, h₂, h₃⟩ => by
-      constructor
-      · exact h₁
-      rw [← h₂, ← h₃]
-      (repeat' constructor) <;> assumption)
+    (fun s₁ s₂ ⟨h₁, h₂, h₃⟩ => by grind)
     (And.intro hh (And.intro ht₁ ht₂))
 
 theorem coinduction {s₁ s₂ : Stream' α} :
@@ -513,11 +509,11 @@ theorem take_succ (n : ℕ) (s : Stream' α) : take (succ n) s = head s::take n 
   rfl
 
 @[simp] theorem take_succ_cons {a : α} (n : ℕ) (s : Stream' α) :
-    take (n+1) (a::s) = a :: take n s := rfl
+    take (n + 1) (a::s) = a :: take n s := rfl
 
-theorem take_succ' {s : Stream' α} : ∀ n, s.take (n+1) = s.take n ++ [s.get n]
+theorem take_succ' {s : Stream' α} : ∀ n, s.take (n + 1) = s.take n ++ [s.get n]
   | 0 => rfl
-  | n+1 => by rw [take_succ, take_succ' n, ← List.cons_append, ← take_succ, get_tail]
+  | n + 1 => by rw [take_succ, take_succ' n, ← List.cons_append, ← take_succ, get_tail]
 
 @[simp]
 theorem length_take (n : ℕ) (s : Stream' α) : (take n s).length = n := by
@@ -527,14 +523,14 @@ theorem length_take (n : ℕ) (s : Stream' α) : (take n s).length = n := by
 theorem take_take {s : Stream' α} : ∀ {m n}, (s.take n).take m = s.take (min n m)
   | 0, n => by rw [Nat.min_zero, List.take_zero, take_zero]
   | m, 0 => by rw [Nat.zero_min, take_zero, List.take_nil]
-  | m+1, n+1 => by rw [take_succ, List.take_succ_cons, Nat.succ_min_succ, take_succ, take_take]
+  | m + 1, n + 1 => by rw [take_succ, List.take_succ_cons, Nat.succ_min_succ, take_succ, take_take]
 
 @[simp] theorem concat_take_get {n : ℕ} {s : Stream' α} : s.take n ++ [s.get n] = s.take (n + 1) :=
   (take_succ' n).symm
 
 theorem getElem?_take {s : Stream' α} : ∀ {k n}, k < n → (s.take n)[k]? = s.get k
-  | 0, _+1, _ => by simp only [length_take, zero_lt_succ, List.getElem?_eq_getElem]; rfl
-  | k+1, n+1, h => by
+  | 0, _ + 1, _ => by simp only [length_take, zero_lt_succ, List.getElem?_eq_getElem]; rfl
+  | k + 1, n + 1, h => by
     rw [take_succ, List.getElem?_cons_succ, getElem?_take (Nat.lt_of_succ_lt_succ h), get_succ]
 
 theorem getElem?_take_succ (n : ℕ) (s : Stream' α) :
@@ -542,7 +538,7 @@ theorem getElem?_take_succ (n : ℕ) (s : Stream' α) :
   getElem?_take (Nat.lt_succ_self n)
 
 @[simp] theorem dropLast_take {n : ℕ} {xs : Stream' α} :
-    (Stream'.take n xs).dropLast = Stream'.take (n-1) xs := by
+    (Stream'.take n xs).dropLast = Stream'.take (n - 1) xs := by
   cases n with
   | zero => simp
   | succ n => rw [take_succ', List.dropLast_concat, Nat.add_one_sub_one]
@@ -566,7 +562,7 @@ theorem take_append_of_le_length (h : n ≤ x.length) :
 
 lemma take_add : a.take (m + n) = a.take m ++ (a.drop m).take n := by
   apply append_left_injective _ _ (a.drop (m + n)) ((a.drop m).drop n) <;>
-    simp [- drop_drop]
+    simp [-drop_drop]
 
 @[gcongr] lemma take_prefix_take_left (h : m ≤ n) : a.take m <+: a.take n := by
   rw [(by simp [h] : a.take m = (a.take n).take m)]

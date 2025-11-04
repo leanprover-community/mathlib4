@@ -114,7 +114,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
         rw [Set.left_mem_Icc]
         gcongr
         · norm_num
-        · omega
+        · cutsat
       simp only [ih, mul_zero, Set.Icc_self, Set.mem_singleton_iff] at hx
       refine hx ⟨?lb₁, ?ub₁⟩
       case lb₁ =>
@@ -601,10 +601,10 @@ protected lemma GrowsPolynomially.rpow (p : ℝ) (hf : GrowsPolynomially f)
       refine ⟨?lb, ?ub⟩
       case lb => calc
         c₂^p * (f x)^p = (c₂ * f x)^p := by rw [mul_rpow (le_of_lt hc₂_mem) (le_of_lt hf_pos)]
-          _ ≤ _ := rpow_le_rpow_of_exponent_nonpos (hf_pos₂ u hu.1) (hf₁ u hu).2 (le_of_lt hp)
+          _ ≤ _ := rpow_le_rpow_of_nonpos (hf_pos₂ u hu.1) (hf₁ u hu).2 (le_of_lt hp)
       case ub => calc
         (f u)^p ≤ (c₁ * f x)^p := by
-              exact rpow_le_rpow_of_exponent_nonpos (by positivity) (hf₁ u hu).1 (le_of_lt hp)
+              exact rpow_le_rpow_of_nonpos (by positivity) (hf₁ u hu).1 (le_of_lt hp)
           _ = _ := by rw [← mul_rpow (le_of_lt hc₁_mem) (le_of_lt hf_pos)]
     | .inr (.inr hneg) => -- eventually negative (which is impossible)
       have : ∀ᶠ (_ : ℝ) in atTop, False := by
@@ -645,12 +645,7 @@ lemma growsPolynomially_log : GrowsPolynomially Real.log := by
   refine ⟨?lb, ?ub⟩
   case lb => calc
     1 / 2 * Real.log x = Real.log x + (-1 / 2) * Real.log x := by ring
-      _ ≤ Real.log x + Real.log b := by
-              gcongr
-              rw [neg_div, neg_mul, ← neg_le]
-              refine le_of_lt (hx x ?_)
-              calc b * x ≤ 1 * x := by gcongr; exact le_of_lt hb.2
-                       _ = x := by rw [one_mul]
+      _ ≤ Real.log x + Real.log b := by grind
       _ = Real.log (b * x) := by rw [← Real.log_mul (by positivity) (by positivity), mul_comm]
       _ ≤ Real.log u := by gcongr; exact hu.1
   case ub =>

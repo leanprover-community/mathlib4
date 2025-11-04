@@ -52,7 +52,7 @@ theorem _root_.Squarefree.natFactorization_le_one {n : ℕ} (p : ℕ) (hn : Squa
     rw [← multiplicity_eq_factorization hp hn']
     simp only [Nat.isUnit_iff, hp.ne_one, or_false] at this
     exact multiplicity_le_of_emultiplicity_le this
-  · rw [factorization_eq_zero_of_non_prime _ hp]
+  · rw [factorization_eq_zero_of_not_prime _ hp]
     exact zero_le_one
 
 lemma factorization_eq_one_of_squarefree (hn : Squarefree n) (hp : p.Prime) (hpn : p ∣ n) :
@@ -79,8 +79,8 @@ theorem Squarefree.ext_iff {n m : ℕ} (hn : Squarefree n) (hm : Squarefree m) :
       hp.dvd_iff_one_le_factorization hm.ne_zero, not_le, lt_one_iff] at h₁
     have h₂ := hn.natFactorization_le_one p
     have h₃ := hm.natFactorization_le_one p
-    omega
-  rw [factorization_eq_zero_of_non_prime _ hp, factorization_eq_zero_of_non_prime _ hp]
+    cutsat
+  rw [factorization_eq_zero_of_not_prime _ hp, factorization_eq_zero_of_not_prime _ hp]
 
 theorem squarefree_pow_iff {n k : ℕ} (hn : n ≠ 1) (hk : k ≠ 0) :
     Squarefree (n ^ k) ↔ Squarefree n ∧ k = 1 := by
@@ -173,7 +173,7 @@ theorem minSqFacAux_has_prop {n : ℕ} (k) (n0 : 0 < n) (i) (e : k = 2 * i + 3)
     change 2 * (i + 2) ∣ n' at d
     have := ih _ prime_two (dvd_trans (dvd_of_mul_right_dvd d) nd')
     rw [e] at this
-    exact absurd this (by omega)
+    exact absurd this (by cutsat)
   have pk : k ∣ n → Prime k := by
     refine fun dk => prime_def_minFac.2 ⟨k2, le_antisymm (minFac_le k0) ?_⟩
     exact ih _ (minFac_prime (ne_of_gt k2)) (dvd_trans (minFac_dvd _) dk)

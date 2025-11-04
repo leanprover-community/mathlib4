@@ -58,7 +58,7 @@ lemma cos_ne_zero_of_arctan_bounds {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π 
     rw [nr, ← one_mul (π / 2), mul_div_assoc, mul_le_mul_iff_of_pos_right (by positivity)] at h₂
     norm_cast at h₁ h₂
     change -1 < _ at h₁
-    rwa [show 2 * k + 1 = 1 by omega, Int.cast_one, one_mul] at nr
+    rwa [show 2 * k + 1 = 1 by cutsat, Int.cast_one, one_mul] at nr
   · exact Or.inr ni
 
 theorem arctan_tan {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π / 2) < z.re) (h₂ : z.re ≤ π / 2) :

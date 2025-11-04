@@ -37,12 +37,12 @@ lemma tendsto_zero_pow_of_le_exp_neg_one [Valued R ℤᵐ⁰] {x : R} (hx : v x 
     Tendsto (fun n : ℕ ↦ x ^ n) atTop (𝓝 0) := by
   refine tendsto_zero_pow_of_v_lt_one (hx.trans_lt ?_)
   rw [← exp_zero, exp_lt_exp]
-  norm_num
+  simp
 
 lemma exists_pow_lt_of_le_exp_neg_one [Valued R ℤᵐ⁰] {x : R} (hx : v x ≤ exp (-1)) (γ : ℤᵐ⁰ˣ) :
     ∃ n, v x ^ n < γ := by
   refine exists_pow_lt₀ (hx.trans_lt ?_) _
   rw [← exp_zero, exp_lt_exp]
-  norm_num
+  simp
 
 end Valued

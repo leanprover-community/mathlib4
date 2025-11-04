@@ -59,13 +59,13 @@ its values on the frontier of the set. All these lemmas assume that `E` is a non
 this section `f g : E → F` are functions that are complex differentiable on a bounded set `s` and
 are continuous on its closure. We prove the following theorems.
 
-- `Complex.exists_mem_frontier_isMaxOn_norm`: If `E` is a finite dimensional space and `s` is a
+- `Complex.exists_mem_frontier_isMaxOn_norm`: If `E` is a finite-dimensional space and `s` is a
   nonempty bounded set, then there exists a point `z ∈ frontier s` such that `(‖f ·‖)` takes it
   maximum value on `closure s` at `z`.
 
 - `Complex.norm_le_of_forall_mem_frontier_norm_le`: if `‖f z‖ ≤ C` for all `z ∈ frontier s`, then
-  `‖f z‖ ≤ C` for all `z ∈ s`; note that this theorem does not require `E` to be a finite
-  dimensional space.
+  `‖f z‖ ≤ C` for all `z ∈ s`; note that this theorem does not require `E` to be a
+  finite-dimensional space.
 
 - `Complex.eqOn_closure_of_eqOn_frontier`: if `f x = g x` on the frontier of `s`, then `f x = g x`
   on `closure s`;
@@ -397,7 +397,7 @@ theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : I
     (hz : z ∈ closure U) : ‖f z‖ ≤ C := by
   rw [closure_eq_self_union_frontier, union_comm, mem_union] at hz
   rcases hz with hz | hz; · exact hC z hz
-  /- In case of a finite dimensional domain, one can just apply
+  /- In case of a finite-dimensional domain, one can just apply
     `Complex.exists_mem_frontier_isMaxOn_norm`. To make it work in any Banach space, we restrict
     the function to a line first. -/
   rcases exists_ne z with ⟨w, hne⟩

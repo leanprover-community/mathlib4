@@ -24,8 +24,6 @@ with respect to the new monoidal structure on `D`.
 
 universe v₁ v₂ u₁ u₂
 
-noncomputable section
-
 open CategoryTheory
 
 open CategoryTheory.Category
@@ -84,7 +82,7 @@ def induced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
     rw [fData.tensorHom_eq, Functor.map_comp, fData.whiskerRight_eq, fData.whiskerLeft_eq]
     simp only [tensorHom_def, assoc, Iso.hom_inv_id_assoc]
   id_tensorHom_id X₁ X₂ := F.map_injective <| by cases fData; cat_disch
-  tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂} f₁ f₂ g₁ g₂ := F.map_injective <| by cases fData; cat_disch
+  tensorHom_comp_tensorHom f₁ f₂ g₁ g₂ := F.map_injective <| by cases fData; cat_disch
   whiskerLeft_id X Y := F.map_injective <| by simp [fData.whiskerLeft_eq]
   id_whiskerRight X Y := F.map_injective <| by simp [fData.whiskerRight_eq]
   triangle X Y := F.map_injective <| by cases fData; cat_disch
@@ -188,10 +186,10 @@ instance : (equivalenceTransported e).inverse.Monoidal := by
 instance : (equivalenceTransported e).symm.functor.Monoidal :=
   inferInstanceAs (equivalenceTransported e).inverse.Monoidal
 
-instance : (equivalenceTransported e).functor.Monoidal :=
+noncomputable instance : (equivalenceTransported e).functor.Monoidal :=
   (equivalenceTransported e).symm.inverseMonoidal
 
-instance : (equivalenceTransported e).symm.inverse.Monoidal :=
+noncomputable instance : (equivalenceTransported e).symm.inverse.Monoidal :=
   inferInstanceAs (equivalenceTransported e).functor.Monoidal
 
 instance : (equivalenceTransported e).symm.IsMonoidal := by

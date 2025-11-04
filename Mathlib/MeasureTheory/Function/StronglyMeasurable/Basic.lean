@@ -94,14 +94,6 @@ lemma StronglyMeasurable.of_subsingleton_cod [Subsingleton β] : StronglyMeasura
   · exact ⟨fun _ => f_sf, fun x => tendsto_const_nhds⟩
   · simp [Set.preimage, eq_iff_true_of_subsingleton]
 
-@[deprecated StronglyMeasurable.of_subsingleton_cod (since := "2025-04-09")]
-lemma Subsingleton.stronglyMeasurable [Subsingleton β] (f : α → β) : StronglyMeasurable f :=
-  .of_subsingleton_cod
-
-@[deprecated StronglyMeasurable.of_subsingleton_dom (since := "2025-04-09")]
-lemma Subsingleton.stronglyMeasurable' [Subsingleton α] (f : α → β) : StronglyMeasurable f :=
-  .of_subsingleton_dom
-
 @[fun_prop]
 theorem stronglyMeasurable_const {b : β} : StronglyMeasurable fun _ : α => b :=
   ⟨fun _ => SimpleFunc.const α b, fun _ => tendsto_const_nhds⟩
@@ -145,9 +137,6 @@ lemma StronglyMeasurable.of_discrete [Countable α] : StronglyMeasurable f := by
   obtain ⟨g, hg⟩ := exists_surjective_nat α
   exact ⟨simpleFuncAux f g, hg.forall.2 fun m ↦
     tendsto_nhds_of_eventually_eq simpleFuncAux_eventuallyEq⟩
-
-@[deprecated StronglyMeasurable.of_discrete (since := "2025-04-09")]
-theorem StronglyMeasurable.of_finite [Finite α] : StronglyMeasurable f := .of_discrete
 
 end StronglyMeasurable
 
@@ -359,8 +348,6 @@ protected theorem prodMk {m : MeasurableSpace α} [TopologicalSpace β] [Topolog
   refine ⟨fun n => SimpleFunc.pair (hf.approx n) (hg.approx n), fun x => ?_⟩
   rw [nhds_prod_eq]
   exact Tendsto.prodMk (hf.tendsto_approx x) (hg.tendsto_approx x)
-
-@[deprecated (since := "2025-03-05")] protected alias prod_mk := StronglyMeasurable.prodMk
 
 @[fun_prop]
 theorem comp_measurable [TopologicalSpace β] {_ : MeasurableSpace α} {_ : MeasurableSpace γ}
@@ -625,7 +612,7 @@ variable {n : MeasurableSpace β} in
 lemma Finset.stronglyMeasurable_prod_apply {ι : Type*} {f : ι → α → β → M} {g : α → β}
     {s : Finset ι} (hf : ∀ i ∈ s, StronglyMeasurable ↿(f i)) (hg : Measurable g) :
     StronglyMeasurable fun a ↦ (∏ i ∈ s, f i a) (g a) := by
-  simp; fun_prop (discharger := assumption)
+  simp only [Finset.prod_apply]; fun_prop (discharger := assumption)
 
 end CommMonoid
 

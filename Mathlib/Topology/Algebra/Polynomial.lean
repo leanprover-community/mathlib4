@@ -144,7 +144,7 @@ open Multiset
 
 theorem eq_one_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (hB : B < 0) (h1 : p.Monic)
     (h2 : Splits f p) (h3 : ∀ z ∈ (map f p).roots, ‖z‖ ≤ B) : p = 1 :=
-  h1.natDegree_eq_zero_iff_eq_one.mp (by
+  h1.natDegree_eq_zero.mp (by
     contrapose! hB
     rw [← h1.natDegree_map f, natDegree_eq_card_roots' h2] at hB
     obtain ⟨z, hz⟩ := card_pos_iff_exists_mem.mp (zero_lt_iff.mpr hB)

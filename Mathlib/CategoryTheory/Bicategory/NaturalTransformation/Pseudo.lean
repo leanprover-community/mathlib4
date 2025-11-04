@@ -76,7 +76,7 @@ attribute [reassoc (attr := simp)] StrongTrans.naturality_naturality
 
 namespace StrongTrans
 
-variable {F G : Pseudofunctor B C}
+variable {F G : B ⥤ᵖ C}
 
 /-- The underlying oplax transformation of a strong transformation. -/
 @[simps]
@@ -107,17 +107,17 @@ def id : StrongTrans F F where
 instance : Inhabited (StrongTrans F F) :=
   ⟨id F⟩
 
-variable {H : Pseudofunctor B C}
+variable {H : B ⥤ᵖ C}
 
 /-- Vertical composition of strong transformations. -/
 def vcomp (η : StrongTrans F G) (θ : StrongTrans G H) : StrongTrans F H :=
   mkOfOplax (Oplax.StrongTrans.vcomp η.toOplax θ.toOplax)
 
-/-- `CategoryStruct` on `Pseudofunctor B C` where the (1-)morphisms are given by strong
+/-- `CategoryStruct` on `B ⥤ᵖ C` where the (1-)morphisms are given by strong
 transformations. -/
 @[simps! id_app id_naturality_hom id_naturality_inv comp_naturality_hom
 comp_naturality_inv]
-scoped instance categoryStruct : CategoryStruct (Pseudofunctor B C) where
+scoped instance categoryStruct : CategoryStruct (B ⥤ᵖ C) where
   Hom F G := StrongTrans F G
   id F := StrongTrans.id F
   comp := StrongTrans.vcomp
@@ -133,7 +133,6 @@ variable (F) in
 @[simp]
 lemma id.toOplax : Oplax.StrongTrans.id F.toOplax = 𝟙 F :=
   rfl
-
 
 section
 
@@ -237,6 +236,7 @@ lemma naturality_comp_iso (α : F ⟶ G) {a b c : B} (f : a ⟶ b) (g : b ⟶ c)
   ext
   simp [naturality_comp_hom α f g]
 
+@[reassoc, to_app]
 lemma naturality_comp_inv (α : F ⟶ G) {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
     (α.naturality (f ≫ g)).inv =
       α.app a ◁ (G.mapComp f g).hom ≫ (α_ _ _ _).inv ≫  (α.naturality f).inv ▷ G.map g ≫

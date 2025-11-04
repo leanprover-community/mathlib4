@@ -10,7 +10,7 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Formula
 # Nonsingular points and the group law in projective coordinates
 
 Let `W` be a Weierstrass curve over a field `F`. The nonsingular projective points of `W` can be
-endowed with an group law, which is uniquely determined by the formulae in
+endowed with a group law, which is uniquely determined by the formulae in
 `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Formula.lean` and follows from an equivalence
 with the nonsingular points `W⟮F⟯` in affine coordinates.
 
@@ -42,8 +42,8 @@ the nonsingularity condition already implies `(x, y, z) ≠ (0, 0, 0)`, so a non
 point on `W` can be given by `[x : y : z]` and the nonsingular condition on any representative.
 
 A nonsingular projective point representative can be converted to a nonsingular point in affine
-coordinates using `WeiestrassCurve.Projective.Point.toAffine`, which lifts to a map on nonsingular
-projective points using `WeiestrassCurve.Projective.Point.toAffineLift`. Conversely, a nonsingular
+coordinates using `WeierstrassCurve.Projective.Point.toAffine`, which lifts to a map on nonsingular
+projective points using `WeierstrassCurve.Projective.Point.toAffineLift`. Conversely, a nonsingular
 point in affine coordinates can be converted to a nonsingular projective point using
 `WeierstrassCurve.Projective.Point.fromAffine` or `WeierstrassCurve.Affine.Point.toProjective`.
 
@@ -390,8 +390,6 @@ lemma fromAffine_some_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingu
     fromAffine (.some h) ≠ 0 :=
   mk_ne_zero <| (nonsingularLift_some ..).mpr h
 
-@[deprecated (since := "2025-03-01")] alias fromAffine_ne_zero := fromAffine_some_ne_zero
-
 /-- The negation of a nonsingular projective point on a Weierstrass curve `W`.
 
 Given a nonsingular projective point `P` on `W`, use `-P` instead of `neg P`. -/
@@ -567,17 +565,29 @@ noncomputable def toAffineAddEquiv [DecidableEq F] : W.Point ≃+ W.toAffine.Poi
     · rw [fromAffine_some, toAffineLift_some]
   map_add' := toAffineLift_add
 
-noncomputable instance [DecidableEq F] : AddCommGroup W.Point where
+noncomputable instance : AddCommGroup W.Point where
   nsmul := nsmulRec
   zsmul := zsmulRec
-  zero_add _ := (toAffineAddEquiv W).injective <| by
+  zero_add _ := by
+    classical
+    apply (toAffineAddEquiv W).injective
     simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, zero_add]
-  add_zero _ := (toAffineAddEquiv W).injective <| by
+  add_zero _ := by
+    classical
+    apply (toAffineAddEquiv W).injective
     simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, add_zero]
-  neg_add_cancel P := (toAffineAddEquiv W).injective <| by
+  neg_add_cancel P := by
+    classical
+    apply (toAffineAddEquiv W).injective
     simp only [map_add, toAffineAddEquiv_apply, toAffineLift_neg, neg_add_cancel, toAffineLift_zero]
-  add_comm _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_comm]
-  add_assoc _ _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_assoc]
+  add_comm _ _ := by
+    classical
+    apply (toAffineAddEquiv W).injective
+    simp only [map_add, add_comm]
+  add_assoc _ _ _ := by
+    classical
+    apply (toAffineAddEquiv W).injective
+    simp only [map_add, add_assoc]
 
 end Point
 

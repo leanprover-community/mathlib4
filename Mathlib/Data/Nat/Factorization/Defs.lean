@@ -118,15 +118,15 @@ theorem factorization_eq_zero_iff (n p : ℕ) :
   simp_rw [← notMem_support_iff, support_factorization, mem_primeFactors, not_and_or, not_ne_iff]
 
 @[simp]
-theorem factorization_eq_zero_of_non_prime (n : ℕ) {p : ℕ} (hp : ¬p.Prime) :
+theorem factorization_eq_zero_of_not_prime (n : ℕ) {p : ℕ} (hp : ¬p.Prime) :
     n.factorization p = 0 := by simp [factorization_eq_zero_iff, hp]
 
--- TODO: Replace
-alias factorization_eq_zero_of_not_prime := factorization_eq_zero_of_non_prime
+@[deprecated (since := "2025-10-24")]
+alias factorization_eq_zero_of_non_prime := factorization_eq_zero_of_not_prime
 
 @[simp]
 theorem factorization_zero_right (n : ℕ) : n.factorization 0 = 0 :=
-  factorization_eq_zero_of_non_prime _ not_prime_zero
+  factorization_eq_zero_of_not_prime _ not_prime_zero
 
 @[simp]
 theorem factorization_one_right (n : ℕ) : n.factorization 1 = 0 :=
@@ -210,7 +210,7 @@ lemma factorization_minFac_ne_zero {n : ℕ} (hn : 1 < n) :
     n.factorization n.minFac ≠ 0 := by
   refine mt (factorization_eq_zero_iff _ _).mp ?_
   push_neg
-  exact ⟨minFac_prime (by omega), minFac_dvd n, Nat.ne_zero_of_lt hn⟩
+  exact ⟨minFac_prime (by cutsat), minFac_dvd n, Nat.ne_zero_of_lt hn⟩
 
 /-! ### Equivalence between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/
 

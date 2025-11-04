@@ -12,7 +12,7 @@ import Mathlib.MeasureTheory.Integral.Pi
 /-!
 # Volume of balls
 
-Let `E` be a finite dimensional normed `ℝ`-vector space equipped with a Haar measure `μ`. We
+Let `E` be a finite-dimensional normed `ℝ`-vector space equipped with a Haar measure `μ`. We
 prove that
 `μ (Metric.ball 0 1) = (∫ (x : E), Real.exp (- ‖x‖ ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)`
 for any real number `p` with `0 < p`, see `MeasureTheory.measure_unitBall_eq_integral_div_gamma`. We
@@ -22,19 +22,19 @@ defining a norm on `E`, see `MeasureTheory.measure_lt_one_eq_integral_div_gamma`
 Using these formulas, we compute the volume of the unit balls in several cases.
 
 * `MeasureTheory.volume_sum_rpow_lt` / `MeasureTheory.volume_sum_rpow_le`: volume of the open and
-  closed balls for the norm `Lp` over a real finite dimensional vector space with `1 ≤ p`. These
+  closed balls for the norm `Lp` over a real finite-dimensional vector space with `1 ≤ p`. These
   are computed as `volume {x : ι → ℝ | (∑ i, |x i| ^ p) ^ (1 / p) < r}` and
   `volume {x : ι → ℝ | (∑ i, |x i| ^ p) ^ (1 / p) ≤ r}` since the spaces `PiLp` do not have a
   `MeasureSpace` instance.
 
 * `Complex.volume_sum_rpow_lt_one` / `Complex.volume_sum_rpow_lt`: same as above but for complex
-  finite dimensional vector space.
+  finite-dimensional vector space.
 
 * `EuclideanSpace.volume_ball` / `EuclideanSpace.volume_closedBall` : volume of open and closed
-  balls in a finite dimensional Euclidean space.
+  balls in a finite-dimensional Euclidean space.
 
 * `InnerProductSpace.volume_ball` / `InnerProductSpace.volume_closedBall`: volume of open and closed
-  balls in a finite dimensional real inner product space.
+  balls in a finite-dimensional real inner product space.
 
 * `Complex.volume_ball` / `Complex.volume_closedBall`: volume of open and closed balls in `ℂ`.
 -/

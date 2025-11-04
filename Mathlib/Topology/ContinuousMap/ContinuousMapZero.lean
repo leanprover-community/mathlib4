@@ -124,12 +124,12 @@ lemma continuous_comp_left {X Y Z : Type*} [TopologicalSpace X]
 
 /-- The identity function as an element of `C(s, R)₀` when `0 ∈ (s : Set R)`. -/
 @[simps!]
-protected def id {s : Set R} [Zero s] (h0 : ((0 : s) : R) = 0) : C(s, R)₀ :=
-  ⟨.restrict s (.id R), h0⟩
+protected def id (s : Set R) [Fact (0 ∈ s)] : C(s, R)₀ :=
+  ⟨.restrict s (.id R), rfl⟩
 
 @[simp]
-lemma toContinuousMap_id {s : Set R} [Zero s] (h0 : ((0 : s) : R) = 0) :
-    (ContinuousMapZero.id h0 : C(s, R)) = .restrict s (.id R) :=
+lemma toContinuousMap_id {s : Set R} [Fact (0 ∈ s)] :
+    (ContinuousMapZero.id s : C(s, R)) = .restrict s (.id R) :=
   rfl
 
 end Basic

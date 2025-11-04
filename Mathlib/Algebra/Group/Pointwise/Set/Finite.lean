@@ -58,7 +58,6 @@ instance decidableMemPow [Fintype α] [DecidableEq α] [DecidablePred (· ∈ s)
     simp only [pow_zero, mem_one]
     infer_instance
   | succ n ih =>
-    letI := ih
     rw [pow_succ]
     infer_instance
 

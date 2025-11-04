@@ -169,7 +169,10 @@ Note that the actual function used in the definition of `circleIntegral` is
 `(deriv (circleMap c R) θ) • f (circleMap c R θ)`. Integrability of this function is equivalent
 to integrability of `f ∘ circleMap c R` whenever `R ≠ 0`. -/
 def CircleIntegrable (f : ℂ → E) (c : ℂ) (R : ℝ) : Prop :=
-  IntervalIntegrable (fun θ : ℝ => f (circleMap c R θ)) volume 0 (2 * π)
+  IntervalIntegrable (fun θ : ℝ ↦ f (circleMap c R θ)) volume 0 (2 * π)
+
+theorem circleIntegrable_def (f : ℂ → E) (c : ℂ) (R : ℝ) : CircleIntegrable f c R ↔
+    IntervalIntegrable (fun θ : ℝ ↦ f (circleMap c R θ)) volume 0 (2 * π) := Iff.rfl
 
 @[simp]
 theorem circleIntegrable_const (a : E) (c : ℂ) (R : ℝ) : CircleIntegrable (fun _ => a) c R :=
@@ -314,7 +317,7 @@ theorem circleIntegrable_sub_zpow_iff {c w : ℂ} {R : ℝ} {n : ℤ} :
 @[simp]
 theorem circleIntegrable_sub_inv_iff {c w : ℂ} {R : ℝ} :
     CircleIntegrable (fun z => (z - w)⁻¹) c R ↔ R = 0 ∨ w ∉ sphere c |R| := by
-  simp only [← zpow_neg_one, circleIntegrable_sub_zpow_iff]; norm_num
+  simp only [← zpow_neg_one, circleIntegrable_sub_zpow_iff]; simp
 
 variable [NormedSpace ℂ E]
 
@@ -323,7 +326,7 @@ def circleIntegral (f : ℂ → E) (c : ℂ) (R : ℝ) : E :=
   ∫ θ : ℝ in 0..2 * π, deriv (circleMap c R) θ • f (circleMap c R θ)
 
 /-- `∮ z in C(c, R), f z` is the circle integral $\oint_{|z-c|=R} f(z)\,dz$. -/
-notation3 "∮ "(...)" in ""C("c", "R")"", "r:(scoped f => circleIntegral f c R) => r
+notation3 "∮ "(...)" in ""C("c", "R")"", "r:60:(scoped f => circleIntegral f c R) => r
 
 theorem circleIntegral_def_Icc (f : ℂ → E) (c : ℂ) (R : ℝ) :
     (∮ z in C(c, R), f z) = ∫ θ in Icc 0 (2 * π),
@@ -418,7 +421,7 @@ theorem norm_integral_lt_of_norm_le_const_of_lt {f : ℂ → E} {c : ℂ} {R C :
       · exact continuousOn_const.mul (hc.comp (continuous_circleMap _ _).continuousOn fun θ _ =>
           circleMap_mem_sphere _ hR.le _).norm
       · exact mul_le_mul_of_nonneg_left (hf _ <| circleMap_mem_sphere _ hR.le _) hR.le
-      · exact (mul_lt_mul_left hR).2 hlt
+      · gcongr
     _ = 2 * π * R * C := by simp [mul_assoc]; ring
 
 @[simp]

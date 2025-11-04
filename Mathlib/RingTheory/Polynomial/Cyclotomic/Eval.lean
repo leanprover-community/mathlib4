@@ -113,7 +113,7 @@ theorem cyclotomic_pos_and_nonneg (n : ℕ) {R}
       and_self]
   · simp only [zero_add, reduceAdd, cyclotomic_two, eval_add, eval_X, eval_one]
     constructor <;> intro <;> linarith
-  · constructor <;> intro <;> [skip; apply le_of_lt] <;> apply cyclotomic_pos (by omega)
+  · constructor <;> intro <;> [skip; apply le_of_lt] <;> apply cyclotomic_pos (by cutsat)
 
 /-- Cyclotomic polynomials are always positive on inputs larger than one.
 Similar to `cyclotomic_pos` but with the condition on the input rather than index of the

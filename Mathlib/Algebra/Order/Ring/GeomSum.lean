@@ -45,11 +45,11 @@ lemma geom_sum_alternating_of_le_neg_one (hx : x + 1 ≤ 0) (n : ℕ) :
   | zero => simp only [range_zero, sum_empty, le_refl, ite_true, Even.zero]
   | succ n ih =>
     simp only [Nat.even_add_one, geom_sum_succ]
-    split_ifs at ih with h
-    · rw [if_neg (not_not_intro h), le_add_iff_nonneg_left]
+    split_ifs at ih ⊢ with h
+    · rw [le_add_iff_nonneg_left]
       exact mul_nonneg_of_nonpos_of_nonpos hx0 ih
-    · rw [if_pos h]
-      refine (add_le_add_right ?_ _).trans hx
+    · grw [← hx]
+      gcongr
       simpa only [mul_one] using mul_le_mul_of_nonpos_left ih hx0
 
 end IsOrderedRing
@@ -77,18 +77,12 @@ lemma geom_sum_alternating_of_lt_neg_one (hx : x + 1 < 0) (hn : 1 < n) :
   clear hn
   intro n _ ihn
   simp only [Nat.even_add_one, geom_sum_succ]
-  by_cases hn' : Even n
-  · rw [if_pos hn'] at ihn
-    rw [if_neg, lt_add_iff_pos_left]
-    · exact mul_pos_of_neg_of_neg hx0 ihn
-    · exact not_not_intro hn'
-  · rw [if_neg hn'] at ihn
-    rw [if_pos]
-    swap
-    · exact hn'
-    have := add_lt_add_right (mul_lt_mul_of_neg_left ihn hx0) 1
-    rw [mul_one] at this
-    exact this.trans hx
+  split_ifs at ihn ⊢ with hn'
+  · rw [lt_add_iff_pos_left]
+    exact mul_pos_of_neg_of_neg hx0 ihn
+  · grw [← hx]
+    gcongr
+    simpa only [mul_one] using mul_lt_mul_of_neg_left ihn hx0
 
 end IsStrictOrderedRing
 end PartialOrder
@@ -182,7 +176,7 @@ lemma Nat.geom_sum_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
 lemma Nat.geom_sum_Ico_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
     ∑ i ∈ Ico 1 n, a / b ^ i ≤ a / (b - 1) := by
   rcases n with - | n
-  · rw [Ico_eq_empty_of_le (by omega), sum_empty]
+  · rw [Ico_eq_empty_of_le (by cutsat), sum_empty]
     exact Nat.zero_le _
   rw [← add_le_add_iff_left a]
   calc
@@ -192,7 +186,7 @@ lemma Nat.geom_sum_Ico_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
       rw [range_eq_Ico, ← Finset.insert_Ico_add_one_left_eq_Ico (Nat.succ_pos _), sum_insert] <;>
         simp
     _ ≤ a * b / (b - 1) := Nat.geom_sum_le hb a _
-    _ = (a * 1 + a * (b - 1)) / (b - 1) := by rw [← mul_add, add_tsub_cancel_of_le (by omega)]
+    _ = (a * 1 + a * (b - 1)) / (b - 1) := by rw [← mul_add, add_tsub_cancel_of_le (by cutsat)]
     _ = a + a / (b - 1) := by rw [mul_one, Nat.add_mul_div_right _ _ (tsub_pos_of_lt hb), add_comm]
 
 variable {m n : ℕ} {s : Finset ℕ}
@@ -205,4 +199,4 @@ lemma Nat.geomSum_lt (hm : 2 ≤ m) (hs : ∀ k ∈ s, k < n) : ∑ k ∈ s, m ^
       mem_range.2 <| hs _ hk
     _ = (m ^ n - 1) / (m - 1) := Nat.geomSum_eq hm _
     _ ≤ m ^ n - 1 := Nat.div_le_self _ _
-    _ < m ^ n := tsub_lt_self (Nat.pow_pos <| by omega) (by omega)
+    _ < m ^ n := tsub_lt_self (Nat.pow_pos <| by cutsat) (by cutsat)

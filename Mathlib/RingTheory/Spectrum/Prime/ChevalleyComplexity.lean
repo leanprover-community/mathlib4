@@ -340,7 +340,7 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
             RingHom.algebraMap_toAlgebra]; exact Set.union_compl_self _) _
       _ = (⋃ C ∈ S₁, C.toSet) ∪ ⋃ C ∈ S₂, C.toSet := ?_
       _ = ⋃ C ∈ S₁ ∪ S₂, C.toSet := by
-        simpa using (Set.biUnion_union S₁.toSet S₂.toSet _).symm
+        simpa using (Set.biUnion_union (SetLike.coe S₁) S₂ _).symm
     congr 1
     · convert congr(comap q₁.toRingHom '' $hT₁)
       · dsimp only [e₁]
@@ -405,13 +405,13 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
           gcongr
           · exact one_le_coeffSubmodule
           · exact Set.subset_union_right
-          · omega
+          · cutsat
     · exact le_self_pow one_le_coeffSubmodule powBound_ne_zero <| subset_span <| .inr <| by
         simpa using ⟨_, _, hi.symm⟩
     · unfold powBound
       gcongr
       · exact one_le_coeffSubmodule
-      · omega
+      · cutsat
 
 /-- The main induction in the proof of Chevalley's theorem for `R →+* R[X]`.
 See the docstring of `induction_structure` for the overview. -/

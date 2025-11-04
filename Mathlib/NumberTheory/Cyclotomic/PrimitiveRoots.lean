@@ -8,7 +8,7 @@ import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.Data.PNat.Prime
 import Mathlib.NumberTheory.Cyclotomic.Basic
 import Mathlib.RingTheory.Adjoin.PowerBasis
-import Mathlib.RingTheory.Norm.Basic
+import Mathlib.RingTheory.Norm.Transitivity
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 import Mathlib.RingTheory.SimpleModule.Basic
@@ -129,10 +129,9 @@ theorem powerBasis_gen_mem_adjoin_zeta_sub_one :
 
 /-- The `PowerBasis` given by `η - 1`. -/
 @[simps!]
-noncomputable def subOnePowerBasis : PowerBasis K L :=
-  (hζ.powerBasis K).ofGenMemAdjoin
-    (((integral {n} K L).isIntegral ζ).sub isIntegral_one)
-    (hζ.powerBasis_gen_mem_adjoin_zeta_sub_one _)
+noncomputable def subOnePowerBasis : PowerBasis K L := by
+  apply PowerBasis.ofAdjoinEqTop (((integral {n} K L).isIntegral ζ).sub isIntegral_one)
+  exact PowerBasis.adjoin_eq_top_of_gen_mem_adjoin  (hζ.powerBasis_gen_mem_adjoin_zeta_sub_one _)
 
 variable {K} (C)
 
@@ -390,7 +389,7 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
     (hirr : Irreducible (cyclotomic (p ^ (k + 1)) K)) (hs : s ≤ k)
     (htwo : p ^ (k - s + 1) ≠ 2) : norm K (ζ ^ p ^ s - 1) = (p : K) ^ p ^ s := by
   have hirr₁ : Irreducible (cyclotomic (p ^ (k - s + 1)) K) :=
-    cyclotomic_irreducible_pow_of_irreducible_pow hpri.1 (by omega) hirr
+    cyclotomic_irreducible_pow_of_irreducible_pow hpri.1 (by cutsat) hirr
   set η := ζ ^ p ^ s - 1
   let η₁ : K⟮η⟯ := IntermediateField.AdjoinSimple.gen K η
   have hη : IsPrimitiveRoot (η + 1) (p ^ (k + 1 - s)) := by
@@ -472,7 +471,8 @@ theorem norm_pow_sub_one_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (2 ^ (k + 1)))
     [IsCyclotomicExtension {2 ^ (k + 1)} K L]
     (hirr : Irreducible (cyclotomic (2 ^ (k + 1)) K)) :
     norm K (ζ ^ 2 ^ k - 1) = (-2 : K) ^ 2 ^ k := by
-  have := hζ.pow_of_dvd (fun h => two_ne_zero (pow_eq_zero h)) (pow_dvd_pow 2 (le_succ k))
+  have := hζ.pow_of_dvd
+    (fun h => two_ne_zero (eq_zero_of_pow_eq_zero h)) (pow_dvd_pow 2 (le_succ k))
   rw [Nat.pow_div (le_succ k) zero_lt_two, Nat.succ_sub (le_refl k), Nat.sub_self, pow_one] at this
   have H : (-1 : L) - (1 : L) = algebraMap K L (-2) := by
     simp only [map_neg, map_ofNat]

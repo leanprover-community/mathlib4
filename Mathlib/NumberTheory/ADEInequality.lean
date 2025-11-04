@@ -156,15 +156,15 @@ theorem lt_three {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r) (H : 1 < sumInv 
   have hp : (p : ℚ)⁻¹ ≤ 3⁻¹ := by
     rw [inv_le_inv₀ _ h3]
     · assumption_mod_cast
-    · norm_num
+    · simp
   have hq : (q : ℚ)⁻¹ ≤ 3⁻¹ := by
     rw [inv_le_inv₀ _ h3]
     · assumption_mod_cast
-    · norm_num
+    · simp
   have hr : (r : ℚ)⁻¹ ≤ 3⁻¹ := by
     rw [inv_le_inv₀ _ h3]
     · assumption_mod_cast
-    · norm_num
+    · simp
   calc
     (p : ℚ)⁻¹ + (q : ℚ)⁻¹ + (r : ℚ)⁻¹ ≤ 3⁻¹ + 3⁻¹ + 3⁻¹ := add_le_add (add_le_add hp hq) hr
     _ = 1 := by norm_num
@@ -177,11 +177,11 @@ theorem lt_four {q r : ℕ+} (hqr : q ≤ r) (H : 1 < sumInv {2, q, r}) : q < 4 
   have hq : (q : ℚ)⁻¹ ≤ 4⁻¹ := by
     rw [inv_le_inv₀ _ h4]
     · assumption_mod_cast
-    · norm_num
+    · simp
   have hr : (r : ℚ)⁻¹ ≤ 4⁻¹ := by
     rw [inv_le_inv₀ _ h4]
     · assumption_mod_cast
-    · norm_num
+    · simp
   calc
     (2⁻¹ + (q : ℚ)⁻¹ + (r : ℚ)⁻¹) ≤ 2⁻¹ + 4⁻¹ + 4⁻¹ := add_le_add (add_le_add le_rfl hq) hr
     _ = 1 := by norm_num
@@ -193,7 +193,7 @@ theorem lt_six {r : ℕ+} (H : 1 < sumInv {2, 3, r}) : r < 6 := by
   have hr : (r : ℚ)⁻¹ ≤ 6⁻¹ := by
     rw [inv_le_inv₀ _ h6]
     · assumption_mod_cast
-    · norm_num
+    · simp
   calc
     (2⁻¹ + 3⁻¹ + (r : ℚ)⁻¹ : ℚ) ≤ 2⁻¹ + 3⁻¹ + 6⁻¹ := add_le_add (add_le_add le_rfl le_rfl) hr
     _ = 1 := by norm_num
@@ -229,9 +229,9 @@ theorem admissible_of_one_lt_sumInv_aux :
 theorem admissible_of_one_lt_sumInv {p q r : ℕ+} (H : 1 < sumInv {p, q, r}) :
     Admissible {p, q, r} := by
   simp only [Admissible]
-  let S := sort ((· ≤ ·) : ℕ+ → ℕ+ → Prop) {p, q, r}
+  let S := sort (α := ℕ+) {p, q, r}
   have hS : S.Sorted (· ≤ ·) := sort_sorted _ _
-  have hpqr : ({p, q, r} : Multiset ℕ+) = S := (sort_eq LE.le {p, q, r}).symm
+  have hpqr : ({p, q, r} : Multiset ℕ+) = S := (sort_eq {p, q, r} LE.le).symm
   rw [hpqr]
   rw [hpqr] at H
   apply admissible_of_one_lt_sumInv_aux hS _ H

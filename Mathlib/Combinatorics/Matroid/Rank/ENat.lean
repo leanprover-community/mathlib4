@@ -24,7 +24,7 @@ The rank function `Matroid.eRk` satisfies three properties, often known as (R1),
 * `M.eRk X ≤ M.eRk Y` for all `X ⊆ Y`,
 * `M.eRk X + M.eRk Y ≥ M.eRk (X ∪ Y) + M.eRk (X ∩ Y)` for all `X, Y`.
 
-In fact, if `α` is finite, then any function `Set α → ℕ∞` satisfying these these properties
+In fact, if `α` is finite, then any function `Set α → ℕ∞` satisfying these properties
 is the rank function of a `Matroid α`; in other words, properties (R1) - (R3) give an alternative
 definition of finite matroids, and a finite matroid is determined by its rank function.
 Because of this, and the convenient quantitative language of these axioms,
@@ -311,7 +311,7 @@ lemma eRk_union_le_eRk_add_eRk (M : Matroid α) (X Y : Set α) : M.eRk (X ∪ Y)
   le_add_self.trans (M.eRk_submod X Y)
 
 lemma eRk_eq_eRk_union_eRk_le_zero (X : Set α) (hY : M.eRk Y ≤ 0) : M.eRk (X ∪ Y) = M.eRk X :=
-  (((M.eRk_union_le_eRk_add_eRk X Y).trans (add_le_add_left hY _)).trans_eq (add_zero _)).antisymm
+  (((M.eRk_union_le_eRk_add_eRk X Y).trans (by gcongr)).trans_eq (add_zero _)).antisymm
     (M.eRk_mono subset_union_left)
 
 lemma eRk_eq_eRk_diff_eRk_le_zero (X : Set α) (hY : M.eRk Y ≤ 0) : M.eRk (X \ Y) = M.eRk X := by
@@ -327,11 +327,11 @@ lemma eRk_le_eRk_add_eRk_diff (M : Matroid α) (h : Y ⊆ X) :
 
 lemma eRk_union_le_encard_add_eRk (M : Matroid α) (X Y : Set α) :
     M.eRk (X ∪ Y) ≤ X.encard + M.eRk Y :=
-  (M.eRk_union_le_eRk_add_eRk X Y).trans <| add_le_add_right (M.eRk_le_encard _) _
+  (M.eRk_union_le_eRk_add_eRk X Y).trans <| by grw [M.eRk_le_encard]
 
 lemma eRk_union_le_eRk_add_encard (M : Matroid α) (X Y : Set α) :
     M.eRk (X ∪ Y) ≤ M.eRk X + Y.encard :=
-  (M.eRk_union_le_eRk_add_eRk X Y).trans <| add_le_add_left (M.eRk_le_encard _) _
+  (M.eRk_union_le_eRk_add_eRk X Y).trans <| by grw [← M.eRk_le_encard]
 
 lemma eRank_le_encard_add_eRk_compl (M : Matroid α) (X : Set α) :
     M.eRank ≤ X.encard + M.eRk (M.E \ X) :=
@@ -347,13 +347,9 @@ lemma eRank_ne_top_iff (M : Matroid α) : M.eRank ≠ ⊤ ↔ M.RankFinite := by
   rw [← hB.encard_eq_eRank, encard_ne_top_iff]
   exact ⟨fun h ↦ hB.rankFinite_of_finite h, fun h ↦ hB.finite⟩
 
-@[deprecated (since := "2025-04-13")] alias rankFinite_iff_eRk_ne_top := eRank_ne_top_iff
-
 @[simp]
 lemma eRank_eq_top_iff (M : Matroid α) : M.eRank = ⊤ ↔ M.RankInfinite := by
   rw [← not_rankFinite_iff, ← eRank_ne_top_iff, not_not]
-
-@[deprecated (since := "2025-04-13")] alias rankInfinite_iff_eRk_eq_top := eRank_eq_top_iff
 
 @[simp]
 lemma eRank_lt_top_iff : M.eRank < ⊤ ↔ M.RankFinite := by
@@ -377,8 +373,6 @@ lemma eRk_lt_top_iff : M.eRk X < ⊤ ↔ M.IsRkFinite X := by
 
 lemma IsRkFinite.eRk_lt_top (h : M.IsRkFinite X) : M.eRk X < ⊤ :=
   eRk_lt_top_iff.2 h
-
-@[deprecated (since := "2025-04-13")] alias eRk_lt_top_of_finite := IsRkFinite.eRk_lt_top
 
 /-- If `X` is a finite-rank set, and `I` is a subset of `X` of cardinality
 no larger than the rank of `X` that spans `X`, then `I` is a basis for `X`. -/
@@ -408,8 +402,8 @@ lemma IsRkFinite.closure_eq_closure_of_subset_of_eRk_ge_eRk (hX : M.IsRkFinite X
 
 lemma eRk_insert_le_add_one (M : Matroid α) (e : α) (X : Set α) :
     M.eRk (insert e X) ≤ M.eRk X + 1 :=
-  union_singleton ▸ (M.eRk_union_le_eRk_add_eRk _ _).trans <|
-    add_le_add_left (by simpa using M.eRk_le_encard {e}) _
+  union_singleton ▸ (M.eRk_union_le_eRk_add_eRk _ _).trans <| by
+    gcongr; simpa using M.eRk_le_encard {e}
 
 lemma eRk_insert_eq_add_one (he : e ∈ M.E \ M.closure X) : M.eRk (insert e X) = M.eRk X + 1 := by
   obtain ⟨I, hI⟩ := M.exists_isBasis' X

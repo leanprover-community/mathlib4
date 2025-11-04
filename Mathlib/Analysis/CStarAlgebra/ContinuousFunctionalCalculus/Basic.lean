@@ -172,7 +172,7 @@ lemma inr_comp_cfcₙHom_eq_cfcₙAux {A : Type*} [NonUnitalCStarAlgebra A] (a :
       cfcₙAux (isStarNormal_inr (R := ℂ) (A := A)) a ha := by
   have h (a : A) := isStarNormal_inr (R := ℂ) (A := A) (a := a)
   refine @ContinuousMapZero.UniqueHom.eq_of_continuous_of_map_id
-    _ _ _ _ _ _ _ _ _ _ _ inferInstance inferInstance _ (σₙ ℂ a) _ _ rfl _ _ ?_ ?_ ?_
+    _ _ _ _ _ _ _ _ _ _ _ inferInstance inferInstance _ (σₙ ℂ a) _ _ _ _ ?_ ?_ ?_
   · change Continuous (fun f ↦ (cfcₙHom ha f : A⁺¹)); fun_prop
   · exact isClosedEmbedding_cfcₙAux @(h) a ha |>.continuous
   · trans (a : A⁺¹)
@@ -284,7 +284,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
   rw [h_c_spec₁.mul_comm.eq_zero_of_neg (.star_mul_self c) h_c_spec₀, neg_zero, CFC.negPart_def,
     cfcₙ_eq_cfc (hf0 := by simp), ← cfc_pow _ _ (ha := ha), ← cfc_zero a (R := ℝ)] at h_eq_negPart_a
   have h_eqOn := eqOn_of_cfc_eq_cfc (ha := ha) h_eq_negPart_a
-  exact fun x hx ↦ negPart_eq_zero.mp <| pow_eq_zero (h_eqOn hx).symm
+  exact fun x hx ↦ negPart_eq_zero.mp <| eq_zero_of_pow_eq_zero (h_eqOn hx).symm
 
 lemma IsSelfAdjoint.coe_mem_spectrum_complex {A : Type*} [TopologicalSpace A] [Ring A]
     [StarRing A] [Algebra ℂ A] [ContinuousFunctionalCalculus ℂ A IsStarNormal]

@@ -10,6 +10,7 @@ import Mathlib.Data.Nat.Prime.Int
 import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.FieldTheory.Finiteness
+import Mathlib.FieldTheory.Galois.Notation
 import Mathlib.FieldTheory.Perfect
 import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.IntegralDomain
@@ -130,7 +131,7 @@ theorem card_cast_subgroup_card_ne_zero [Ring K] [NoZeroDivisors K] [Nontrivial 
     -- u ^ p = 1 implies (u - 1) ^ p = 0 and hence u = 1 ...
     have h : u = 1 := by
       rw [← sub_left_inj, sub_self 1]
-      apply pow_eq_zero (n := p)
+      apply eq_zero_of_pow_eq_zero (n := p)
       rw [sub_pow_char_of_commute, one_pow, ← hu, pow_orderOf_eq_one, sub_self]
       exact Commute.one_right u
     -- ... meaning x didn't have order p after all, contradiction
@@ -325,7 +326,7 @@ variable (R) [CommRing R] [Algebra K R]
   map_add' _ _ := by
     obtain ⟨p, _, _, hp, card_eq⟩ := card' K
     nontriviality R
-    have : CharP R p := charP_of_injective_algebraMap' K R p
+    have : CharP R p := charP_of_injective_algebraMap' K p
     have : ExpChar R p := .prime hp
     simp only [OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, powMonoidHom_apply, card_eq]
     exact add_pow_expChar_pow ..
@@ -349,7 +350,7 @@ variable (L : Type*) [Field L] [Algebra K L]
 
 /-- If `L/K` is an algebraic extension of a finite field, the Frobenius `K`-algebra endomorphism
   of `L` is an automorphism. -/
-@[simps!] noncomputable def frobeniusAlgEquivOfAlgebraic [Algebra.IsAlgebraic K L] : L ≃ₐ[K] L :=
+@[simps!] noncomputable def frobeniusAlgEquivOfAlgebraic [Algebra.IsAlgebraic K L] : Gal(L/K) :=
   (Algebra.IsAlgebraic.algEquivEquivAlgHom K L).symm (frobeniusAlgHom K L)
 
 theorem coe_frobeniusAlgEquivOfAlgebraic [Algebra.IsAlgebraic K L] :
@@ -394,7 +395,7 @@ theorem bijective_frobeniusAlgEquivOfAlgebraic_pow :
   ((Algebra.IsAlgebraic.algEquivEquivAlgHom K L).bijective.of_comp_iff' _).mp <| by
     simpa only [Function.comp_def, map_pow] using bijective_frobeniusAlgHom_pow K L
 
-instance (K L) [Finite L] [Field K] [Field L] [Algebra K L] : IsCyclic (L ≃ₐ[K] L) where
+instance (K L) [Finite L] [Field K] [Field L] [Algebra K L] : IsCyclic Gal(L/K) where
   exists_zpow_surjective :=
     have := Finite.of_injective _ (algebraMap K L).injective
     have := Fintype.ofFinite K
@@ -470,7 +471,6 @@ open Polynomial
 
 theorem expand_card (f : K[X]) : expand K q f = f ^ q := by
   obtain ⟨p, hp⟩ := CharP.exists K
-  letI := hp
   rcases FiniteField.card K p with ⟨⟨n, npos⟩, ⟨hp, hn⟩⟩
   haveI : Fact p.Prime := ⟨hp⟩
   dsimp at hn

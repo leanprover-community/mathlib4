@@ -5,8 +5,10 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.Algebra.Lie.Weights.Cartan
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.RingTheory.Finiteness.Nilpotent
 import Mathlib.Data.Int.Interval
+import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Chains of roots and weights

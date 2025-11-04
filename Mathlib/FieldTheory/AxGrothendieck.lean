@@ -30,7 +30,7 @@ then any injective polynomial map `K^n → K^n` is also surjective.
 
 ## References
 
-The first order theory of algebraically closed fields, along with the Lefschetz Principle and
+The first-order theory of algebraically closed fields, along with the Lefschetz Principle and
 the Ax-Grothendieck Theorem were first formalized in Lean 3 by Joseph Hua
 [here](https://github.com/Jlh18/ModelTheoryInLean8) with the master's thesis
 [here](https://github.com/Jlh18/ModelTheory8Report)
@@ -91,7 +91,7 @@ open MvPolynomial FreeCommRing Language Field Ring BoundedFormula
 
 variable {ι α : Type*} [Finite α] {K : Type*} [Field K] [CompatibleRing K]
 
-/-- The collection of first order formulas corresponding to the Ax-Grothendieck theorem. -/
+/-- The collection of first-order formulas corresponding to the Ax-Grothendieck theorem. -/
 noncomputable def genericPolyMapSurjOnOfInjOn [Finite ι]
     (φ : ring.Formula (α ⊕ ι))
     (mons : ι → Finset (ι →₀ ℕ)) : Language.ring.Sentence :=
@@ -241,5 +241,4 @@ algebraically closed field. -/
 theorem ax_grothendieck_univ (p : ι → MvPolynomial ι K) :
     (fun v i => eval v (p i)).Injective →
     (fun v i => eval v (p i)).Surjective := by
-  simpa [Set.injective_iff_injOn_univ, Set.surjective_iff_surjOn_univ] using
-      ax_grothendieck_zeroLocus 0 p
+  simpa using ax_grothendieck_zeroLocus 0 p

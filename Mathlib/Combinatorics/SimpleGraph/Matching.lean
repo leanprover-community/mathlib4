@@ -45,8 +45,6 @@ one edge, and the edges of the subgraph represent the paired vertices.
 * Provide a bicoloring for matchings (https://leanprover.zulipchat.com/#narrow/stream/252551-graph-theory/topic/matchings/near/265495120)
 
 * Tutte's Theorem
-
-* Hall's Marriage Theorem (see `Mathlib/Combinatorics/Hall/Basic.lean`)
 -/
 
 assert_not_exists Field TwoSidedIdeal
@@ -214,7 +212,7 @@ theorem IsMatching.support_eq_verts (h : M.IsMatching) : M.support = M.verts := 
 
 theorem isMatching_iff_forall_degree [∀ v, Fintype (M.neighborSet v)] :
     M.IsMatching ↔ ∀ v : V, v ∈ M.verts → M.degree v = 1 := by
-  simp only [degree_eq_one_iff_unique_adj, IsMatching]
+  simp only [degree_eq_one_iff_existsUnique_adj, IsMatching]
 
 theorem IsMatching.even_card [Fintype M.verts] (h : M.IsMatching) : Even M.verts.toFinset.card := by
   classical
@@ -232,7 +230,7 @@ theorem isPerfectMatching_iff : M.IsPerfectMatching ↔ ∀ v, ∃! w, M.Adj v w
 
 theorem isPerfectMatching_iff_forall_degree [∀ v, Fintype (M.neighborSet v)] :
     M.IsPerfectMatching ↔ ∀ v, M.degree v = 1 := by
-  simp [degree_eq_one_iff_unique_adj, isPerfectMatching_iff]
+  simp [degree_eq_one_iff_existsUnique_adj, isPerfectMatching_iff]
 
 theorem IsPerfectMatching.even_card [Fintype V] (h : M.IsPerfectMatching) :
     Even (Fintype.card V) := by
@@ -353,7 +351,7 @@ lemma IsCycles.other_adj_of_adj (h : G.IsCycles) (hadj : G.Adj v w) :
     ∃ w', w ≠ w' ∧ G.Adj v w' := by
   simp_rw [← SimpleGraph.mem_neighborSet] at hadj ⊢
   have := h ⟨w, hadj⟩
-  obtain ⟨w', hww'⟩ := (G.neighborSet v).exists_ne_of_one_lt_ncard (by omega) w
+  obtain ⟨w', hww'⟩ := (G.neighborSet v).exists_ne_of_one_lt_ncard (by cutsat) w
   exact ⟨w', ⟨hww'.2.symm, hww'.1⟩⟩
 
 lemma IsCycles.existsUnique_ne_adj (h : G.IsCycles) (hadj : G.Adj v w) :
@@ -435,7 +433,7 @@ lemma IsCycles.snd_of_mem_support_of_isPath_of_adj [Finite V] {v w w' : V}
   have e : G.neighborSet (p.getVert n) ≃ p.toSubgraph.neighborSet (p.getVert n) := by
     refine @Classical.ofNonempty _ ?_
     rw [← Cardinal.eq, ← Set.cast_ncard (Set.toFinite _), ← Set.cast_ncard (Set.toFinite _),
-        hp.ncard_neighborSet_toSubgraph_internal_eq_two (by omega) (by omega),
+        hp.ncard_neighborSet_toSubgraph_internal_eq_two (by cutsat) (by cutsat),
         hcyc (Set.nonempty_of_mem hadj.symm)]
   rw [Subgraph.adj_comm, Subgraph.adj_iff_of_neighborSet_equiv e (Set.toFinite _)]
   exact hadj.symm
@@ -455,7 +453,7 @@ private lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe_aux [Fintype V] {v
   have hnpvw' : ¬ p.toSubgraph.Adj v w' := by
     intro h
     exact hw'1 (hp.snd_of_toSubgraph_adj h)
-  -- If w = w', then then the reachability can be proved with just one edge
+  -- If w = w', then the reachability can be proved with just one edge
   by_cases hww' : w = w'
   · subst hww'
     have : (G \  p.toSubgraph.spanningCoe).Adj w v := by
@@ -480,7 +478,7 @@ termination_by Fintype.card V + 1 - p.length
 decreasing_by
   simp_wf
   have := Walk.IsPath.length_lt hp
-  omega
+  cutsat
 
 lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe [Finite V] {v w : V} (hcyc : G.IsCycles)
     (p : G.Walk v w) (hp : p.IsPath) : (G \ p.toSubgraph.spanningCoe).Reachable w v := by

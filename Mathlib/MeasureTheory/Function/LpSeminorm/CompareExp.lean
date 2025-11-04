@@ -185,7 +185,6 @@ theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (f : α → E) {g : 
   simp only [← ENNReal.mul_rpow_of_nonneg (hz := hp.le)]
   apply lintegral_mono_ae
   filter_upwards [h, enorm_ae_le_eLpNormEssSup f μ] with x hb hf
-  refine ENNReal.rpow_le_rpow ?_ hp.le
   gcongr
   exact hf
 
@@ -210,10 +209,11 @@ theorem eLpNorm'_le_eLpNorm'_mul_eLpNorm' {p q r : ℝ} (hf : AEStronglyMeasurab
     eLpNorm' (fun x => b (f x) (g x)) r μ
       ≤ eLpNorm' (fun x ↦ (c : ℝ) • ‖f x‖ * ‖g x‖) r μ := by
       simp only [eLpNorm']
-      refine (ENNReal.rpow_le_rpow_iff <| one_div_pos.mpr hro_lt).mpr <|
-        lintegral_mono_ae <| h.mono fun a ha ↦ (ENNReal.rpow_le_rpow_iff hro_lt).mpr <| ?_
-      simp only [enorm_eq_nnnorm, ENNReal.coe_le_coe, ← NNReal.coe_le_coe]
-      simpa [Real.nnnorm_of_nonneg (by positivity)] using ha
+      gcongr ?_ ^ _
+      refine lintegral_mono_ae <| h.mono fun a ha ↦ ?_
+      gcongr
+      simp only [enorm_eq_nnnorm, ENNReal.coe_le_coe]
+      simpa using ha
     _ ≤ c * eLpNorm' f p μ * eLpNorm' g q μ := by
       simp only [smul_mul_assoc, ← Pi.smul_def, eLpNorm'_const_smul _ hro_lt]
       rw [Real.enorm_eq_ofReal c.coe_nonneg, ENNReal.ofReal_coe_nnreal, mul_assoc]

@@ -15,8 +15,6 @@ universe v₁ v₂ u₁ u₂
 
 open CategoryTheory Category Monoidal MonoidalCategory
 
-noncomputable section
-
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 
@@ -26,15 +24,18 @@ open Functor.LaxMonoidal Functor.OplaxMonoidal
 
 instance Transported.instBraidedCategory (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     BraidedCategory (Transported e) :=
-  BraidedCategory.ofFullyFaithful (equivalenceTransported e).inverse
+  .ofFaithful e.inverse (fun _ _ ↦ e.functor.mapIso (β_ _ _)) fun _ _ ↦ by
+    simp [fromInducedCoreMonoidal, Functor.CoreMonoidal.toLaxMonoidal]
 
 local notation "e'" e => equivalenceTransported e
 
 instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     (e' e).inverse.Braided where
   braided X Y := by
-    simp [Transported.instBraidedCategory, BraidedCategory.ofFullyFaithful,
-      BraidedCategory.ofFaithful]
+    simp [Transported.instBraidedCategory, BraidedCategory.ofFaithful,
+      fromInducedCoreMonoidal, Functor.CoreMonoidal.toLaxMonoidal]
+
+noncomputable section
 
 /--
 This is a def because once we have that both `(e' e).inverse` and `(e' e).functor` are
@@ -72,8 +73,10 @@ instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
         Equivalence.inv_fun_map, Functor.id_obj, comp_δ, assoc] at this
     simp [-Adjunction.rightAdjointLaxMonoidal_μ, ← this]
 
+end
+
 instance Transported.instSymmetricCategory (e : C ≌ D) [MonoidalCategory C]
     [SymmetricCategory C] : SymmetricCategory (Transported e) :=
-  symmetricCategoryOfFullyFaithful (equivalenceTransported e).inverse
+  .ofFaithful (equivalenceTransported e).inverse
 
 end CategoryTheory.Monoidal

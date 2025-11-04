@@ -18,16 +18,14 @@ open IsAbsoluteValue Finset CauSeq Complex
 theorem exp_one_near_10 : |exp 1 - 2244083 / 825552| ≤ 1 / 10 ^ 10 := by
   apply exp_approx_start
   iterate 13 refine exp_1_approx_succ_eq (by norm_num1; rfl) (by norm_cast) ?_
-  norm_num1
   refine exp_approx_end' _ (by norm_num1; rfl) _ (by norm_cast) (by simp) ?_
-  rw [_root_.abs_one, abs_of_pos] <;> norm_num1
+  norm_num1
 
 theorem exp_one_near_20 : |exp 1 - 363916618873 / 133877442384| ≤ 1 / 10 ^ 20 := by
   apply exp_approx_start
   iterate 21 refine exp_1_approx_succ_eq (by norm_num1; rfl) (by norm_cast) ?_
-  norm_num1
   refine exp_approx_end' _ (by norm_num1; rfl) _ (by norm_cast) (by simp) ?_
-  rw [_root_.abs_one, abs_of_pos] <;> norm_num1
+  norm_num1
 
 theorem exp_one_gt_d9 : 2.7182818283 < exp 1 :=
   lt_of_lt_of_le (by norm_num) (sub_le_comm.1 (abs_sub_le_iff.1 exp_one_near_10).2)
@@ -57,7 +55,6 @@ theorem log_two_near_10 : |log 2 - 287209 / 414355| ≤ 1 / 10 ^ 10 := by
   apply le_trans (_root_.abs_sub_le _ _ _) (add_le_add z _)
   simp_rw [sum_range_succ]
   norm_num
-  rw [abs_of_pos] <;> norm_num
 
 theorem log_two_gt_d9 : 0.6931471803 < log 2 :=
   lt_of_lt_of_le (by norm_num1) (sub_le_comm.1 (abs_sub_le_iff.1 log_two_near_10).2)
