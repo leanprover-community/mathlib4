@@ -104,12 +104,9 @@ lemma span_leadingTerm_eq_span_monomial₀ {B : Set (MvPolynomial σ R)}
     (hB : ∀ p ∈ B, IsUnit (m.leadingCoeff p) ∨ p = 0) :
     span (m.leadingTerm '' B) =
       span ((fun p ↦ MvPolynomial.monomial (m.degree p) 1) '' (B \ {0})) := by
-  calc
-    _ = span (m.leadingTerm '' B \ {0}) := Ideal.span_sdiff_singleton_zero.symm
-    _ = span (m.leadingTerm '' (B \ {0})) := by rw [m.image_leadingTerm_sdiff_singleton_zero]
-    _ = _ := by
-      apply span_leadingTerm_eq_span_monomial
-      simp_intro .. [or_iff_not_imp_right.mp (hB _ _)]
+  rw [← m.span_leadingTerm_sdiff_singleton_zero]
+  apply span_leadingTerm_eq_span_monomial
+  simp_intro .. [or_iff_not_imp_right.mp (hB _ _)]
 
 lemma span_leadingTerm_eq_span_monomial' {k : Type*} [Field k] {B : Set (MvPolynomial σ k)} :
     span (m.leadingTerm '' B) =
