@@ -5,6 +5,7 @@ Authors: Sihan Su, Yongle Hu, Yi Song
 -/
 import Mathlib.Algebra.Exact
 import Mathlib.RingTheory.LocalProperties.Submodule
+import Mathlib.RingTheory.Localization.Algebra
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.Algebra.Module.LocalizedModule.AtPrime
 import Mathlib.Algebra.Module.LocalizedModule.Away
@@ -27,9 +28,15 @@ variable {R M N L : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
   [AddCommMonoid N] [Module R N] [AddCommMonoid L] [Module R L]
 
 variable
+  (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
+  [∀ (P : Ideal R) [P.IsMaximal], CommSemiring (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], Algebra R (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsLocalization.AtPrime (Rₚ P) P]
   (Mₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
   [∀ (P : Ideal R) [P.IsMaximal], AddCommMonoid (Mₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Module R (Mₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], Module (Rₚ P) (Mₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsScalarTower R (Rₚ P) (Mₚ P)]
   (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P)
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule.AtPrime P (f P)]
   (Nₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
@@ -74,6 +81,17 @@ theorem exact_of_isLocalized_maximal (H : ∀ (J : Ideal R) [J.IsMaximal],
   ext x
   simp only [mem_range, mem_ker] at this ⊢
   exact this x
+
+theorem LinearIndependent.of_isLocalized_maximal {ι} (v : ι → M)
+    (H : ∀ (P : Ideal R) [P.IsMaximal], LinearIndependent (Rₚ P) (f P ∘ v)) :
+    LinearIndependent R v :=
+  let l (P) [IsMaximal P] := Finsupp.mapRange.linearMap (α := ι) (Algebra.linearMap R (Rₚ P))
+  injective_of_isLocalized_maximal _ (fun P _ ↦ l P) _ f _ fun P _ ↦ by
+    simp_rw [LinearIndependent, ← LinearMap.coe_restrictScalars R (S := Rₚ _)] at H
+    convert H P
+    apply linearMap_ext (S := P.primeCompl) (l P) (f P)
+    ext
+    simp [IsLocalizedModule.map_comp, l]
 
 end isLocalized_maximal
 
@@ -194,3 +212,49 @@ lemma exact_of_localized_span
     _ (fun _ ↦ mkLinearMap _ _) f g h
 
 end localized_span
+
+section IsLocalization
+
+variable {R S : Type*} [CommSemiring R] [CommSemiring S]
+variable {s : Set R} (hs : span s = ⊤)
+  (Rᵣ : s → Type*) [∀ r, CommSemiring (Rᵣ r)] [∀ r, Algebra R (Rᵣ r)]
+  (Sᵣ : s → Type*) [∀ r, CommSemiring (Sᵣ r)] [∀ r, Algebra S (Sᵣ r)]
+variable (f : R →+* S) [∀ r, IsLocalization.Away r.val (Rᵣ r)]
+    [∀ r, IsLocalization.Away (f r.val) (Sᵣ r)]
+include hs
+
+lemma injective_of_isLocalization_of_span_eq_top
+    (h : ∀ r : s, Function.Injective (IsLocalization.Away.map (Rᵣ r) (Sᵣ r) f r.1)) :
+    Function.Injective f := by
+  algebraize [f]
+  letI (r : s) : Algebra R (Sᵣ r) := (algebraMap S (Sᵣ r)).comp f |>.toAlgebra
+  have (r : s) : IsScalarTower R S (Sᵣ r) := IsScalarTower.of_algebraMap_eq' rfl
+  have : ∀ r, IsLocalization.Away (algebraMap R S r.val) (Sᵣ r) := ‹_›
+  letI (r : s) : Algebra (Rᵣ r) (Sᵣ r) := localizationAlgebra (.powers r.val) S
+  have (r : s) : IsScalarTower R (Rᵣ r) (Sᵣ r) :=
+    .of_algebraMap_eq <| by simp [RingHom.algebraMap_toAlgebra]
+  apply injective_of_isLocalized_span s hs Rᵣ (fun r : s ↦ Algebra.linearMap _ _) _
+    (fun r : s ↦ ((IsScalarTower.toAlgHom R S (Sᵣ r)).toLinearMap)) (Algebra.linearMap R S)
+  simpa [IsLocalization.map_linearMap_eq_toLinearMap_mapₐ] using h
+
+lemma surjective_of_isLocalization_of_span_eq_top
+    (h : ∀ r : s, Function.Surjective (IsLocalization.Away.map (Rᵣ r) (Sᵣ r) f r.1)) :
+    Function.Surjective f := by
+  algebraize [f]
+  letI (r : s) : Algebra R (Sᵣ r) := (algebraMap S (Sᵣ r)).comp f |>.toAlgebra
+  have (r : s) : IsScalarTower R S (Sᵣ r) := IsScalarTower.of_algebraMap_eq' rfl
+  have : ∀ r, IsLocalization.Away (algebraMap R S r.val) (Sᵣ r) := ‹_›
+  letI (r : s) : Algebra (Rᵣ r) (Sᵣ r) := localizationAlgebra (.powers r.val) S
+  have (r : s) : IsScalarTower R (Rᵣ r) (Sᵣ r) :=
+    .of_algebraMap_eq <| by simp [RingHom.algebraMap_toAlgebra]
+  apply surjective_of_isLocalized_span s hs Rᵣ (fun r : s ↦ Algebra.linearMap _ _) _
+    (fun r : s ↦ ((IsScalarTower.toAlgHom R S (Sᵣ r)).toLinearMap)) (Algebra.linearMap R S)
+  simpa [IsLocalization.map_linearMap_eq_toLinearMap_mapₐ] using h
+
+lemma bijective_of_isLocalization_of_span_eq_top
+    (h : ∀ r : s, Function.Bijective (IsLocalization.Away.map (Rᵣ r) (Sᵣ r) f r.1)) :
+    Function.Bijective f :=
+  ⟨injective_of_isLocalization_of_span_eq_top hs _ _ _ (fun r ↦ (h r).1),
+    surjective_of_isLocalization_of_span_eq_top hs _ _ _ (fun r ↦ (h r).2)⟩
+
+end IsLocalization

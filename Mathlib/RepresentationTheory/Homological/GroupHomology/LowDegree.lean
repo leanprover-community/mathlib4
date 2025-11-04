@@ -12,7 +12,7 @@ import Mathlib.RepresentationTheory.Invariants
 # The low-degree homology of a `k`-linear `G`-representation
 
 Let `k` be a commutative ring and `G` a group. This file contains specialised API for
-the cycles and group homology  of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
+the cycles and group homology of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
 In `Mathlib/RepresentationTheory/Homological/GroupHomology/Basic.lean`, we define the `n`th group
 homology of `A` to be the homology of a complex `inhomogeneousChains A`, whose objects are
 `(Fin n →₀ G) → A`; this is unnecessarily unwieldy in low degree.
@@ -93,7 +93,7 @@ theorem d₁₀_single_one (a : A) : d₁₀ A (single 1 a) = 0 := by
   simp [d₁₀]
 
 theorem d₁₀_single_inv (g : G) (a : A) :
-    d₁₀ A (single g⁻¹ a) = - d₁₀ A (single g (A.ρ g a)) := by
+    d₁₀ A (single g⁻¹ a) = -d₁₀ A (single g (A.ρ g a)) := by
   simp [d₁₀]
 
 theorem range_d₁₀_eq_coinvariantsKer :
@@ -122,6 +122,12 @@ def chains₁ToCoinvariantsKer :
     ModuleCat.of k (G →₀ A) ⟶ ModuleCat.of k (Coinvariants.ker A.ρ) :=
   ModuleCat.ofHom <| (d₁₀ A).hom.codRestrict _ <|
     range_d₁₀_eq_coinvariantsKer A ▸ LinearMap.mem_range_self _
+
+lemma chains₁ToCoinvariantsKer_surjective :
+    Function.Surjective (chains₁ToCoinvariantsKer A) := by
+  rintro ⟨x, hx⟩
+  rcases range_d₁₀_eq_coinvariantsKer A ▸ hx with ⟨y, hy⟩
+  use y, Subtype.ext hy
 
 @[simp]
 theorem d₁₀_eq_zero_of_isTrivial [A.IsTrivial] : d₁₀ A = 0 := by
@@ -559,10 +565,10 @@ theorem isBoundary₀_iff (a : A) :
     IsBoundary₀ G a ↔ ∃ x : G →₀ A, x.sum (fun g z => g • z - z) = a := by
   constructor
   · rintro ⟨x, hx⟩
-    use x.sum (fun g a => single g (- (g⁻¹ • a)))
+    use x.sum (fun g a => single g (-(g⁻¹ • a)))
     simp_all [sum_neg_index, sum_sum_index, neg_add_eq_sub]
   · rintro ⟨x, hx⟩
-    use x.sum (fun g a => single g (- (g • a)))
+    use x.sum (fun g a => single g (-(g • a)))
     simp_all [sum_neg_index, sum_sum_index, neg_add_eq_sub]
 
 theorem isBoundary₁_iff (x : G →₀ A) :
