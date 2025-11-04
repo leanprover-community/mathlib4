@@ -81,10 +81,8 @@ theorem _root_.TensorProduct.map_convMul_map {D : Type*} [AddCommMonoid B] [Modu
   simp_rw [convMul_def, comul_def, mul'_tensor, comp_assoc, AlgebraTensorModule.map_eq,
     ← comp_assoc _ _ (tensorTensorTensorComm R _ _ _ _).toLinearMap]
   nth_rw 2 [← comp_assoc, comp_assoc]
-  rw [AlgebraTensorModule.tensorTensorTensorComm_eq,
-    ← tensorTensorTensorComm_comp_map, ← tensorTensorTensorComm_symm,
-    ← comp_assoc _ _ (tensorTensorTensorComm R _ _ _ _).symm.toLinearMap]
-  simp only [LinearEquiv.symm_comp, id_comp, ← map_comp]
+  simp [AlgebraTensorModule.tensorTensorTensorComm_eq, ← tensorTensorTensorComm_comp_map,
+    ← comp_assoc, map_comp]
 
 end NonUnitalNonAssocSemiring
 
