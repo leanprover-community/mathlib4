@@ -12,10 +12,17 @@ import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
 /-! # Base change properties for modules of linear maps
 
 * `IsBaseChange.linearMapRight`:
-  If `M` has a finite basis and `P` is a base change of `N` to `S`,
+  If `M` is finite free and `P` is a base change of `N` to `S`,
   then `M →ₗ[R] P` is a base change of `M →ₗ[R] N` to `S`.
 
-  -/
+## TODO
+
+* When `M` is finite free and base changes to `Q`,
+then `Q →ₗ[A] P` is a base change of `M →ₗ[R] N`.
+
+* Apply to `Module.Dual`.
+
+-/
 
 namespace IsBaseChange
 
@@ -86,9 +93,5 @@ theorem linearMapRight {ε : N →ₗ[R] P} (ibc : IsBaseChange S ε) :
   simp [linearMapRightBaseChangeEquiv, linearMapRightBaseChangeHom]
 
 end LinearMapRight
-
-section LinearMapLeft
-
-end LinearMapLeft
 
 end IsBaseChange
