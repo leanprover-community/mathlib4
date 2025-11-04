@@ -886,6 +886,44 @@ theorem sign_two_zsmul_eq_sign_iff {θ : Angle} :
     ((2 : ℤ) • θ).sign = θ.sign ↔ θ = π ∨ |θ.toReal| < π / 2 := by
   rw [two_zsmul, ← two_nsmul, sign_two_nsmul_eq_sign_iff]
 
+lemma abs_toReal_add_abs_toReal_eq_pi_of_two_nsmul_add_eq_zero_of_sign_eq {θ ψ : Angle}
+    (h : (2 : ℕ) • (θ + ψ) = 0) (hs : θ.sign = ψ.sign) (h0 : θ.sign ≠ 0) :
+    |θ.toReal| + |ψ.toReal| = π := by
+  rcases two_nsmul_eq_zero_iff.mp h with h | h
+  · simp_all [add_eq_zero_iff_eq_neg.mp h]
+  rw [← coe_toReal θ, ← coe_toReal ψ, ← coe_add] at h
+  suffices |θ.toReal + ψ.toReal| = π by
+    rw [← this, eq_comm, abs_add_eq_add_abs_iff]
+    have hθ := sign_toReal (sign_ne_zero_iff.1 h0).2
+    have hψ := sign_toReal (sign_ne_zero_iff.1 (hs ▸ h0)).2
+    obtain hθs | hθs : θ.sign = -1 ∨ θ.sign = 1 := by simpa [h0] using θ.sign.trichotomy
+    · rw [hθs, eq_comm, ← toReal_neg_iff_sign_neg] at hs
+      exact .inr ⟨(toReal_neg_iff_sign_neg.mpr hθs).le, hs.le⟩
+    · simp [toReal_nonneg_iff_sign_nonneg, hs.symm, hθs]
+  rw [abs_eq pi_nonneg]
+  rcases angle_eq_iff_two_pi_dvd_sub.mp h with ⟨k, hk⟩
+  rw [sub_eq_iff_eq_add] at hk
+  have hu : θ.toReal + ψ.toReal ≤ 2 * π := by linarith [toReal_le_pi θ, toReal_le_pi ψ]
+  have hn : -2 * π < θ.toReal + ψ.toReal := by linarith [neg_pi_lt_toReal θ, neg_pi_lt_toReal ψ]
+  rw [hk] at hu hn
+  have hk0 : k ≤ 0 := by
+    by_contra hk1
+    grw [← show 1 ≤ k by cutsat] at hu
+    simp only [Int.cast_one] at hu
+    linarith [pi_pos]
+  have hkn1 : -1 ≤ k := by
+    by_contra hkn2
+    grw [show k ≤ -2 by cutsat] at hn
+    simp only [Int.cast_neg, Int.cast_ofNat] at hn
+    linarith [pi_pos]
+  obtain rfl | rfl : k = -1 ∨ k = 0 := (by cutsat) <;> grind
+
+lemma abs_toReal_add_abs_toReal_eq_pi_of_two_zsmul_add_eq_zero_of_sign_eq {θ ψ : Angle}
+    (h : (2 : ℤ) • (θ + ψ) = 0) (hs : θ.sign = ψ.sign) (h0 : θ.sign ≠ 0) :
+    |θ.toReal| + |ψ.toReal| = π := by
+  rw [two_zsmul, ← two_nsmul] at h
+  exact abs_toReal_add_abs_toReal_eq_pi_of_two_nsmul_add_eq_zero_of_sign_eq h hs h0
+
 theorem continuousAt_sign {θ : Angle} (h0 : θ ≠ 0) (hpi : θ ≠ π) : ContinuousAt sign θ :=
   (continuousAt_sign_of_ne_zero (sin_ne_zero_iff.2 ⟨h0, hpi⟩)).comp continuous_sin.continuousAt
 
