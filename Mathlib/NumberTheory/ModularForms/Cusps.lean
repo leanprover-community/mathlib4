@@ -5,7 +5,7 @@ Authors: David Loeffler
 -/
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Analysis.RCLike.Basic
-import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
+import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 import Mathlib.RingTheory.Localization.NumDen
 import Mathlib.Topology.Algebra.Order.ArchimedeanDiscrete
 import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
@@ -223,15 +223,19 @@ instance instDiscreteTopStrictPeriods [hG : DiscreteTopology 𝒢] :
 
 end Ring
 
-@[simp] lemma strictPeriods_SL2Z : strictPeriods 𝒮ℒ = AddSubgroup.zmultiples 1 := by
+lemma strictPeriods_eq_zmultiples_one_of_T_mem {Γ : Subgroup SL(2, ℤ)} (hΓ : ModularGroup.T ∈ Γ) :
+    strictPeriods (Γ : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples 1 := by
   ext x
-  simp only [mem_strictPeriods_iff, MonoidHom.mem_range, Units.ext_iff, mapGL_coe_matrix,
+  simp only [mem_strictPeriods_iff, Subgroup.mem_map, Units.ext_iff, mapGL_coe_matrix,
     map_apply_coe]
-  refine ⟨fun ⟨g, hg⟩ ↦ ⟨g 0 1, by simpa using congr_fun₂ hg 0 1⟩, ?_⟩
+  refine ⟨fun ⟨g, _, hg⟩ ↦ ⟨g 0 1, by simpa using congr_fun₂ hg 0 1⟩, ?_⟩
   rintro ⟨m, rfl⟩
-  use ModularGroup.T ^ m
+  refine ⟨ModularGroup.T ^ m, zpow_mem hΓ m, ?_⟩
   ext i j
   fin_cases i <;> fin_cases j <;> simp [ModularGroup.coe_T_zpow]
+
+@[simp] lemma strictPeriods_SL2Z : strictPeriods 𝒮ℒ = AddSubgroup.zmultiples 1 := by
+  simpa [MonoidHom.range_eq_map] using strictPeriods_eq_zmultiples_one_of_T_mem (mem_top _)
 
 section Real
 
@@ -256,13 +260,20 @@ lemma strictPeriods_eq_zmultiples_strictWidthInfty [DiscreteTopology 𝒢.strict
     Exists.choose_spec <| 𝒢.strictPeriods.isAddCyclic_iff_exists_zmultiples_eq_top.mp
       <| AddSubgroup.discrete_iff_addCyclic.mpr inferInstance]
 
-lemma strictWidthInfty_SL2Z : strictWidthInfty 𝒮ℒ = 1 := by
-  have := strictPeriods_SL2Z
+lemma strictWidthInfty_eq_one_of_T_mem {Γ : Subgroup SL(2, ℤ)} (hΓ : ModularGroup.T ∈ Γ) :
+    strictWidthInfty (Γ : Subgroup (GL (Fin 2) ℝ)) = 1 := by
+  have hsp := strictPeriods_eq_zmultiples_one_of_T_mem hΓ
+  have : DiscreteTopology (Γ : Subgroup (GL (Fin 2) ℝ)).strictPeriods := by
+    -- In fact the image of `Γ` in `GL (Fin 2) ℝ` is itself discrete, but this is quicker:
+    rw [hsp]
+    infer_instance
   rw [strictPeriods_eq_zmultiples_strictWidthInfty, Eq.comm,
     AddSubgroup.zmultiples_eq_zmultiples_iff (not_isOfFinAddOrder_of_isAddTorsionFree one_ne_zero)]
-    at this
-  have := strictWidthInfty_nonneg 𝒮ℒ
-  grind
+    at hsp
+  grind [strictWidthInfty_nonneg]
+
+lemma strictWidthInfty_SL2Z : strictWidthInfty 𝒮ℒ = 1 := by
+  simpa [MonoidHom.range_eq_map] using strictWidthInfty_eq_one_of_T_mem (mem_top _)
 
 lemma strictWidthInfty_mem_strictPeriods : 𝒢.strictWidthInfty ∈ 𝒢.strictPeriods := by
   by_cases h : DiscreteTopology 𝒢.strictPeriods
@@ -296,5 +307,27 @@ lemma strictWidthInfty_pos_iff [DiscreteTopology 𝒢.strictPeriods] [𝒢.HasDe
 end Real
 
 end Subgroup
+
+open Subgroup
+
+namespace CongruenceSubgroup
+
+@[simp] lemma strictPeriods_Gamma0 (N : ℕ) [NeZero N] :
+    strictPeriods (Gamma0 N : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples 1 :=
+  strictPeriods_eq_zmultiples_one_of_T_mem <| by simp [ModularGroup.T]
+
+@[simp] lemma strictPeriods_Gamma1 (N : ℕ) [NeZero N] :
+    strictPeriods (Gamma1 N : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples 1 :=
+  strictPeriods_eq_zmultiples_one_of_T_mem <| by simp [ModularGroup.T]
+
+@[simp] lemma strictWidthInfty_Gamma0 (N : ℕ) [NeZero N] :
+    strictWidthInfty (Gamma0 N : Subgroup (GL (Fin 2) ℝ)) = 1 :=
+  strictWidthInfty_eq_one_of_T_mem <| by simp [ModularGroup.T]
+
+@[simp] lemma strictWidthInfty_Gamma1 (N : ℕ) [NeZero N] :
+    strictWidthInfty (Gamma1 N : Subgroup (GL (Fin 2) ℝ)) = 1 :=
+  strictWidthInfty_eq_one_of_T_mem <| by simp [ModularGroup.T]
+
+end CongruenceSubgroup
 
 end Width
