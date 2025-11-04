@@ -290,7 +290,7 @@ theorem lTensor_exact : Exact (lTensor Q f) (lTensor Q g) := by
 
 /-- Right-exactness of tensor product -/
 lemma lTensor_mkQ (N : Submodule R M) :
-    ker (lTensor Q (N.mkQ)) = range (lTensor Q N.subtype) := by
+    ker (lTensor Q N.mkQ) = range (lTensor Q N.subtype) := by
   rw [← exact_iff]
   exact lTensor_exact Q (LinearMap.exact_subtype_mkQ N) (Submodule.mkQ_surjective N)
 
