@@ -69,6 +69,12 @@ then it holds whether or not `x ≠ y`. Unlike `Reflexive.ne_imp_iff`, this uses
 theorem reflexive_ne_imp_iff [IsRefl α r] {x y : α} : x ≠ y → r x y ↔ r x y :=
   IsRefl.reflexive.ne_imp_iff
 
+theorem reflexive_iff_subrelation_eq : Reflexive r ↔ Subrelation Eq r := by
+  grind [Reflexive, Subrelation]
+
+theorem irreflexive_iff_subrelation_ne : Irreflexive r ↔ Subrelation r Ne := by
+  grind [Irreflexive, Subrelation]
+
 protected theorem Symmetric.iff (H : Symmetric r) (x y : α) : r x y ↔ r y x :=
   ⟨fun h ↦ H h, fun h ↦ H h⟩
 
