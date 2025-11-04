@@ -259,14 +259,31 @@ theorem comap_reindex (f : α' → α) (g : σ ≃ σ') :
 
 end Maps
 
+section complement
+
+/-- DFAs are closed under complement:
+Given a DFA `M`, `Mᶜ` is also a DFA such that `L(Mᶜ) = {x ∣ x ∉ L(M)}`. -/
+instance : HasCompl (DFA α σ) where
+  compl M := DFA.mk M.step M.start M.acceptᶜ
+
+theorem acceptsFrom_compl (s : σ) : (Mᶜ).acceptsFrom s = (M.acceptsFrom s)ᶜ := by
+  ext x; simp [compl, acceptsFrom, evalFrom]
+
+theorem accepts_compl : (Mᶜ).accepts = (M.accepts)ᶜ := by
+  simp only [accepts, acceptsFrom_compl]; simp [compl]
+
+end complement
+
 end DFA
 
+namespace Language
+
 /-- A regular language is a language that is defined by a DFA with finite states. -/
-def Language.IsRegular {T : Type u} (L : Language T) : Prop :=
+def IsRegular {T : Type u} (L : Language T) : Prop :=
   ∃ σ : Type, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L
 
 /-- Lifts the state type `σ` inside `Language.IsRegular` to a different universe. -/
-private lemma Language.isRegular_iff.helper.{v'} {T : Type u} {L : Language T}
+private lemma isRegular_iff.helper.{v'} {T : Type u} {L : Language T}
     (hL : ∃ σ : Type v, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L) :
     ∃ σ' : Type v', ∃ _ : Fintype σ', ∃ M : DFA T σ', M.accepts = L :=
   have ⟨σ, _, M, hM⟩ := hL
@@ -279,6 +296,20 @@ A language is regular if and only if it is defined by a DFA with finite states.
 This is more general than using the definition of `Language.IsRegular` directly, as the state type
 `σ` is universe-polymorphic.
 -/
-theorem Language.isRegular_iff {T : Type u} {L : Language T} :
+theorem isRegular_iff {T : Type u} {L : Language T} :
     L.IsRegular ↔ ∃ σ : Type v, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L :=
   ⟨Language.isRegular_iff.helper, Language.isRegular_iff.helper⟩
+
+protected theorem IsRegular.compl {T : Type u} {L : Language T} (h : L.IsRegular) : Lᶜ.IsRegular :=
+  have ⟨σ, _, M, hM⟩ := h
+  ⟨_, inferInstance, Mᶜ, by simp [DFA.accepts_compl, hM]⟩
+
+protected theorem IsRegular.from_compl {T : Type u} {L : Language T} (h : Lᶜ.IsRegular) :
+  L.IsRegular :=
+  L.compl_compl ▸ h.compl
+
+/-- Regular languages are closed under complement. -/
+theorem IsRegular_compl_iff {T : Type u} {L : Language T} : Lᶜ.IsRegular ↔ L.IsRegular :=
+  ⟨.from_compl, .compl⟩
+
+end Language
