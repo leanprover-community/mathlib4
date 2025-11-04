@@ -29,21 +29,21 @@ jobs:
           script: |
             const creator = context.payload.sender.login
             const { owner, repo } = context.repo;
-            const opts = github.rest.issues.listForRepo.endpoint.merge({
-              ...context.issue,
-              owner,
-              repo,
-              creator,
-              state: 'closed'
-            })
-            const issues = await github.paginate(opts)
-            const pullRequestCount = issues.length;
+
+            // Use search API to find merged PRs by this author
+            // Note: mathlib4 uses bors for merging, which doesn't mark PRs as merged in GitHub's sense
+            // Instead, we search for the exact "[Merged by Bors] - " prefix that bors adds to PR titles
+            const searchQuery = `repo:${owner}/${repo}+is:pr+author:${creator}+in:title+"[Merged by Bors] -"`;
+            const searchResult = await github.rest.search.issuesAndPullRequests({
+              q: searchQuery
+            });
+            const pullRequestCount = searchResult.data.total_count;
 
             // We could filter out bot users here, with:
             // const isBot = (github.rest.users.getByUsername(creator).type === "Bot");
             // But we choose to label PRs by new bot contributors as well.
 
-            // Determine if the creator has 5 or fewer pull requests
+            // Determine if the creator has 5 or fewer merged pull requests
             if (pullRequestCount <= 5) {
               // Add the "new-contributor" label to the current pull request
               await github.rest.issues.addLabels({
@@ -54,8 +54,8 @@ jobs:
               });
             }
 
-            // Create a check run with a message about the PR count by this author
-            const message = `Found ${pullRequestCount} PRs by ${creator}.`;
+            // Create a check run with a message about the merged PR count by this author
+            const message = `Found ${pullRequestCount} merged PRs by ${creator}.`;
             await github.rest.checks.create({
               owner,
               repo,
