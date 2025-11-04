@@ -112,6 +112,27 @@ def coreId : (𝟭 C).core ≅ 𝟭 (Core C) := Iso.refl _
 def coreComp {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E) :
     (F ⋙ G).core ≅ F.core ⋙ G.core := Iso.refl _
 
+/-- The natural isomorphism
+```
+                  F.core
+            Core C ⥤ Core D
+ inclusion C  ‖          ‖  inclusion D
+              V          V
+              C    ⥤    D
+                    F
+```
+thought of as pseudonaturality of `inclusion`,
+when viewing `Core` as a pseudofunctor.
+-/
+@[simps!]
+def coreCompInclusionIso (F : C ⥤ D) :
+    F.core ⋙ Core.inclusion D ≅ Core.inclusion C ⋙ F :=
+  Iso.refl _
+
+lemma core_comp_inclusion (F : C ⥤ D) :
+    F.core ⋙ Core.inclusion D = Core.inclusion C ⋙ F :=
+  Functor.ext_of_iso (coreCompInclusionIso F) (by cat_disch)
+
 end Functor
 
 namespace Iso
@@ -159,6 +180,44 @@ lemma coreAssociator {E : Type u₃} [Category.{v₃} E] {E' : Type u₄} [Categ
   cat_disch
 
 end Iso
+
+namespace Core
+
+variable {G : Type u₂} [Groupoid.{v₂} G]
+
+/-- The functor `functorToCore (F ⋙ H)` factors through `functortoCore H`. -/
+def functorToCoreCompLeftIso {G' : Type u₃} [Groupoid.{v₃} G'] (H : G ⥤ C) (F : G' ⥤ G) :
+    functorToCore (F ⋙ H) ≅ F ⋙ functorToCore H :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+
+lemma functorToCore_comp_left {G' : Type u₃} [Groupoid.{v₃} G'] (H : G ⥤ C) (F : G' ⥤ G) :
+    functorToCore (F ⋙ H) = F ⋙ functorToCore H :=
+  Functor.ext_of_iso (functorToCoreCompLeftIso H F) (by cat_disch)
+
+/-- The functor `functorToCore (H ⋙ F)` factors through `functorToCore H`. -/
+def functorToCoreCompRightIso {C' : Type u₄} [Category.{v₄} C'] (H : G ⥤ C) (F : C ⥤ C') :
+    functorToCore (H ⋙ F) ≅ functorToCore H ⋙ F.core :=
+  Iso.refl _
+
+lemma functorToCore_comp_right {C' : Type u₄} [Category.{v₄} C'] (H : G ⥤ C) (F : C ⥤ C') :
+    functorToCore (H ⋙ F) = functorToCore H ⋙ F.core :=
+  Functor.ext_of_iso (functorToCoreCompRightIso H F) (by cat_disch)
+
+/-- The functor `functorToCore (𝟭 G)` is a section of `inclusion G`. -/
+def inclusionCompFunctorToCoreIso : inclusion G ⋙ functorToCore (𝟭 G) ≅ 𝟭 (Core G) :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+
+theorem inclusion_comp_functorToCore : inclusion G ⋙ functorToCore (𝟭 G) = 𝟭 (Core G) :=
+  Functor.ext_of_iso inclusionCompFunctorToCoreIso (by cat_disch)
+
+/-- The functor `functorToCore (inclusion C)` is isomorphic to the identity on `Core C`. -/
+def functorToCoreInclusionIso : functorToCore (inclusion C) ≅ 𝟭 (Core C) :=
+  Iso.refl _
+
+theorem functorToCore_inclusion : functorToCore (inclusion C) = 𝟭 (Core C) :=
+  Functor.ext_of_iso functorToCoreInclusionIso (by cat_disch)
+
+end Core
 
 variable (D : Type u₂) [Category.{v₂} D]
 
