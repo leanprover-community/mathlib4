@@ -7,7 +7,7 @@ import Mathlib.LinearAlgebra.TensorProduct.Pi
 import Mathlib.LinearAlgebra.TensorProduct.Prod
 import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
+import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 
 /-! # Base change properties for modules of linear maps
 
