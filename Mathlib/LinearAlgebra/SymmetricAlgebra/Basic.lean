@@ -104,7 +104,7 @@ lemma lift_ι_apply (a : M) : lift f (ι R M a) = f a := by
 @[simp]
 lemma lift_comp_ι : lift f ∘ₗ ι R M = f := LinearMap.ext <| lift_ι_apply f
 
-@[ext]
+@[ext 1100]
 theorem algHom_ext {F G : SymmetricAlgebra R M →ₐ[R] A}
     (h : F ∘ₗ ι R M = (G ∘ₗ ι R M : M →ₗ[R] A)) : F = G := by
   ext x
@@ -183,6 +183,17 @@ lemma equiv_symm_apply (a : M) : h.equiv.symm (f a) = SymmetricAlgebra.ι R M a 
 lemma equiv_symm_comp : h.equiv.symm ∘ₗ f = SymmetricAlgebra.ι R M :=
   LinearMap.ext fun x ↦ equiv_symm_apply h x
 
+lemma of_equiv (e : SymmetricAlgebra R M ≃ₐ[R] A) (he : ∀ x, e (.ι R M x) = f x) :
+    IsSymmetricAlgebra f := by
+  suffices h : e = SymmetricAlgebra.lift f by
+    change Function.Bijective _
+    exact h ▸ e.bijective
+  ext x
+  simpa using (he x)
+
+lemma comp_equiv (e : SymmetricAlgebra R M ≃ₐ[R] A) :
+    IsSymmetricAlgebra (e.toLinearMap ∘ₗ (SymmetricAlgebra.ι R M)) := .of_equiv e (fun _ ↦ rfl)
+
 end equiv
 
 section UniversalProperty
@@ -212,5 +223,21 @@ lemma lift_unique {F : A →ₐ[R] A'} (hF : F ∘ₗ f = g) : F = h.lift g :=
   h.algHom_ext (by simpa)
 
 end UniversalProperty
+
+include h in
+@[elab_as_elim]
+theorem induction {motive : A → Prop}
+    (algebraMap : ∀ r, motive ((algebraMap R A) r)) (ι : ∀ x, motive (f x))
+    (mul : ∀ a b, motive a → motive b → motive (a * b))
+    (add : ∀ a b, motive a → motive b → motive (a + b))
+    (a : A) : motive a := by
+  rw [← h.equiv.right_inv a]
+  generalize h.equiv.invFun a = y
+  change motive (SymmetricAlgebra.lift f y)
+  induction y using SymmetricAlgebra.induction with
+    | algebraMap r => simpa using algebraMap r
+    | ι y => simpa using ι y
+    | mul _ _ hx hy => simpa using mul _ _ hx hy
+    | add _ _ hx hy => simpa using add _ _ hx hy
 
 end IsSymmetricAlgebra
