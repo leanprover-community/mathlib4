@@ -4,14 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
-import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.CategoryTheory.Monoidal.Skeleton
 import Mathlib.LinearAlgebra.Contraction
-import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-import Mathlib.LinearAlgebra.TensorProduct.Pi
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.LinearAlgebra.TensorProduct.Submodule
 import Mathlib.RingTheory.ClassGroup
+import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 import Mathlib.RingTheory.LocalRing.Module
 
 /-!
@@ -743,10 +740,13 @@ end PicardGroup
 
 open CommRing Pic
 
+section Ideal
+
+variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] [Module.Invertible R M]
+
 /-- If `FractionRing R` has trivial Picard group,
 every invertible `R`-module is isomorphic to an ideal. -/
-theorem Module.Invertible.exists_linearEquiv_ideal (R M) [CommRing R] [AddCommGroup M] [Module R M]
-    [Subsingleton (Pic (FractionRing R))] [Module.Invertible R M] :
+theorem Module.Invertible.exists_linearEquiv_ideal [Subsingleton (Pic (FractionRing R))] :
     ∃ I : Ideal R, Nonempty (M ≃ₗ[R] I) :=
   have : Pic.mk R M ∈ relPic R (FractionRing R) := Subsingleton.elim ..
   have ⟨I, eq⟩ := Submodule.range_unitsToPic R (FractionRing R) ▸ this
@@ -754,9 +754,13 @@ theorem Module.Invertible.exists_linearEquiv_ideal (R M) [CommRing R] [AddCommGr
   ⟨_, ⟨e ≪≫ₗ FractionalIdeal.equivNumOfIsLocalization
     ⟨_, I.submodule_isFractional (S := nonZeroDivisors R)⟩⟩⟩
 
-/- Every invertible module over a domain is isomorphic to an ideal.
-TODO: show this is also true for Noetherian `R`, by showing that `FractionRing R` is semilocal
-and semilocal rings have trivial Picard groups. -/
-example (R M) [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M] [Module.Invertible R M] :
-    ∃ I : Ideal R, Nonempty (M ≃ₗ[R] I) :=
+/- Every invertible module over a domain is isomorphic to an ideal. -/
+example [IsDomain R] : ∃ I : Ideal R, Nonempty (M ≃ₗ[R] I) :=
   Module.Invertible.exists_linearEquiv_ideal R M
+
+/- Every invertible module over a Noetherian ring is isomorphic to an ideal.
+See https://mathoverflow.net/a/499611. -/
+example [IsNoetherianRing R] : ∃ I : Ideal R, Nonempty (M ≃ₗ[R] I) :=
+  Module.Invertible.exists_linearEquiv_ideal R M
+
+end Ideal
