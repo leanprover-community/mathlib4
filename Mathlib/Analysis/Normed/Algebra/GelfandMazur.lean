@@ -64,6 +64,7 @@ Mathlib does not provide a normed `ℂ`-algebra instance for `F'` (neither for
 `F' := AdjoinRoot (X ^ 2 + 1 : F[X])` nor for `F' := TensorProduct ℝ ℂ F`),
 and it is not so straight-forward to set this up. So we take inspiration from the
 proof sketched above for the complex case to obtain a direct proof.
+An additional benefit is that this approach minimizes imports.
 
 Since irreducible polynomials over `ℝ` have degree at most `2`, it must be the case
 that each element is annihilated by a monic polynomial of degree `2`.
