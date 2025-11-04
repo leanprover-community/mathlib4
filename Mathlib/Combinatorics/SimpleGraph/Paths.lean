@@ -694,7 +694,7 @@ This is intended to be used for closed walks, for which `Walk.bypass` unhelpfull
 walk. -/
 def cycleBypass : G.Walk v v → G.Walk v v
   | .nil => .nil
-  | .cons hvv' w => .cons hvv' (w.takeUntil v w.end_mem_support).bypass
+  | .cons hvv' w => .cons hvv' w.bypass
 
 @[simp] lemma cycleBypass_nil : (.nil : G.Walk v v).cycleBypass = .nil := rfl
 
@@ -704,14 +704,14 @@ lemma edges_cycleBypass_subset : ∀ {w : G.Walk v v}, w.cycleBypass.edges ⊆ w
     classical
     dsimp [cycleBypass]
     gcongr
-    exact (edges_bypass_subset _).trans <| edges_takeUntil_subset ..
+    exact edges_bypass_subset _
 
 lemma IsTrail.isCycle_cycleBypass : ∀ {w : G.Walk v v}, w ≠ .nil → w.IsTrail → w.cycleBypass.IsCycle
   | .cons (v := v') hvv' w, _, hw => by
     dsimp [cycleBypass]
     refine ⟨⟨(bypass_isPath _).isTrail.cons _ fun hvv' ↦ ?_, by simp⟩, ?_⟩
     · simp only [isTrail_cons] at hw
-      exact hw.2 <| edges_takeUntil_subset _ _ <| edges_bypass_subset _ hvv'
+      exact hw.2 <| edges_bypass_subset _ hvv'
     · simpa using (bypass_isPath _).support_nodup
 
 end Walk
