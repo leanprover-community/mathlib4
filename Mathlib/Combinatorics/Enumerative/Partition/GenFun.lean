@@ -89,9 +89,7 @@ private def toFinsuppAntidiag {n : ℕ} (p : Partition n) : ℕ →₀ ℕ where
   support := (p.parts.map (· - 1)).toFinset
   mem_support_toFun m := by
     suffices (∃ a ∈ p.parts, a - 1 = m) ↔ m + 1 ∈ p.parts by simpa
-    trans (∃ a ∈ p.parts, a = m + 1)
-    · grind [→ Partition.parts_pos]
-    · simp
+    grind [→ Partition.parts_pos]
 
 private theorem aux_toFinsuppAntidiag_injective (n : ℕ) :
     Function.Injective (toFinsuppAntidiag (n := n)) := by
