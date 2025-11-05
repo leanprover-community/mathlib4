@@ -592,13 +592,15 @@ instance [LeftCancelMonoid G] : IsLeftCancelSMul G G where
 
 /-- A vector addition is cancellative if it is pointwise injective on the left and right.
 
-A group action is cancellative in this sense if and only if it is **free**. -/
+A group action is cancellative in this sense if and only if it is **free**.
+See `isCancelVAdd_iff_eq_zero_of_vadd_eq` for a more familiar condition. -/
 class IsCancelVAdd [VAdd G P] : Prop extends IsLeftCancelVAdd G P where
   protected right_cancel' : ∀ (a b : G) (c : P), a +ᵥ c = b +ᵥ c → a = b
 
 /-- A scalar multiplication is cancellative if it is pointwise injective on the left and right.
 
-A group action is cancellative in this sense if and only if it is **free**. -/
+A group action is cancellative in this sense if and only if it is **free**.
+See `isCancelSMul_iff_eq_one_of_smul_eq` for a more familiar condition. -/
 @[to_additive]
 class IsCancelSMul [SMul G P] : Prop extends IsLeftCancelSMul G P where
   protected right_cancel' : ∀ (a b : G) (c : P), a • c = b • c → a = b
