@@ -25,12 +25,12 @@ namespace ZFSet
 /-- The cardinality of a ZFC set. -/
 def card (x : ZFSet.{u}) : Cardinal.{u} := #(Shrink x.toSet)
 
+variable {x y : ZFSet.{u}}
+
 /-- `ZFSet.card x` is equal to the cardinality of `x` as a set of `ZFSet`s. -/
 @[simp]
-theorem card_toSet {x : ZFSet.{u}} : #x.toSet = lift.{u + 1, u} (card x) := by
+theorem card_toSet : #x.toSet = lift.{u + 1, u} (card x) := by
   rw [card, lift_mk_shrink'']
-
-variable {x y : ZFSet.{u}}
 
 @[gcongr]
 theorem card_mono (h : x ⊆ y) : card x ≤ card y := by
