@@ -66,6 +66,8 @@ lemma sectionsMap_comp {X X' X'' : Over I} (u : X ⟶ X') (v : X' ⟶ X'') :
     sectionsMap (u ≫ v) = sectionsMap u ≫ sectionsMap v := by
   apply hom_ext <;> simp [sectionsMap]
 
+#exit
+
 variable (I)
 
 /-- The functor which maps an object `X` in `C` to the projection `I ⊗ X ⟶ I` in `Over I`.
