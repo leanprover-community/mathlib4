@@ -46,7 +46,17 @@ variable [TopologicalSpace α] [TopologicalSpace β] [Group α] [MulAction α β
   [ContinuousSMul α β] {s : Set α} {t : Set β}
 
 open Prod in
-@[to_additive]
+/-- If `G` acts on `X` continuously, the set `s • t` is closed when `s : Set G` is *compact* and
+`t : Set X` is *closed*.
+
+See also `IsClosed.smul_right_of_isCompact` for a version with the assumptions on `s` and `t`
+reversed, assuming that the action is *proper*. -/
+@[to_additive
+/-- If `G` acts on `X` continuously, the set `s +ᵥ t` is closed when `s : Set G` is *compact* and
+`t : Set X` is *closed*.
+
+See also `IsClosed.vadd_right_of_isCompact` for a version with the assumptions on `s` and `t`
+reversed, assuming that the action is *proper*. -/]
 theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
     IsClosed (s • t) := by
   let Φ : s × β ≃ₜ s × β :=
@@ -62,16 +72,6 @@ theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
   have : CompactSpace s := isCompact_iff_compactSpace.mp hs
   exact (isProperMap_snd_of_compactSpace.comp Φ.isProperMap).isClosedMap _
     (ht.preimage continuous_snd)
-
-/-! One may expect a version of `IsClosed.smul_left_of_isCompact` where `t` is compact and `s` is
-closed, but such a lemma can't be true in this level of generality. For a counterexample, consider
-`ℚ` acting on `ℝ` by translation, and let `s : Set ℚ := univ`, `t : set ℝ := {0}`. Then `s` is
-closed and `t` is compact, but `s +ᵥ t` is the set of all rationals, which is definitely not
-closed in `ℝ`.
-
-To fix the proof, one needs to assume that the action is **proper** (in the sense of `ProperSMul`),
-see `IsClosed.smul_right_of_isCompact`. In particular, this applies in the case of an
-`IsTopologicalAddTorsor`. -/
 
 @[to_additive]
 theorem MulAction.isClosedMap_quotient [CompactSpace α] :
