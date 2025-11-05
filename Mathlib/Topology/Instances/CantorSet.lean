@@ -259,7 +259,7 @@ theorem ofDigits_bool_to_fin_three_mem_cantorSet (f : ℕ → Bool) :
 
 theorem cantorToTernary_ne_one {x : ℝ} {n : ℕ} : (cantorToTernary x).get n ≠ 1 := by
   intro h
-  grind [cantorToTernary, Fin.isValue, Stream'.get_map]
+  grind [cantorToTernary, Stream'.get_map]
 
 theorem cantorSequence_get_succ (x : ℝ) (n : ℕ) :
     (cantorSequence x).get (n + 1) =
