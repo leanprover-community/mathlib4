@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
 import Mathlib.CategoryTheory.LocallyCartesianClosed.Prelim
-import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullback
 
 /-!
 # The section functor as a right adjoint to the star functor
@@ -15,28 +14,70 @@ of `X` over `I`.
 
 -/
 
+noncomputable section
 
 universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Category Limits MonoidalCategory CartesianClosed
+open Category Limits MonoidalCategory CartesianClosed Adjunction Over
 
-variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory C]
+variable {C : Type u₁} [Category.{v₁} C]
+
+attribute [local instance] hasBinaryProducts_of_hasTerminal_and_pullbacks
+attribute [local instance] hasFiniteProducts_of_has_binary_and_terminal
+attribute [local instance] CartesianMonoidalCategory.ofFiniteProducts
+
+section
+
+variable [HasFiniteProducts C]
+
+/-- The isomorphism between `X ⨯ Y` and `X ⊗ Y` for objects `X` and `Y` in `C`.
+This is tautological by the definition of the cartesian monoidal structure on `C`.
+This isomorphism provides an interface between `prod.fst` and `ChosenFiniteProducts.fst`
+as well as between `prod.map` and `tensorHom`. -/
+def prodIsoTensorObj (X Y : C) : X ⨯ Y ≅ X ⊗ Y := Iso.refl _
+
+@[reassoc (attr := simp)]
+theorem prodIsoTensorObj_inv_fst {X Y : C} :
+    (prodIsoTensorObj X Y).inv ≫ prod.fst = CartesianMonoidalCategory.fst X Y :=
+  Category.id_comp _
+
+@[reassoc (attr := simp)]
+theorem prodIsoTensorObj_inv_snd {X Y : C} :
+    (prodIsoTensorObj X Y).inv ≫ prod.snd = CartesianMonoidalCategory.snd X Y :=
+  Category.id_comp _
+
+@[reassoc (attr := simp)]
+theorem prodIsoTensorObj_hom_fst {X Y : C} :
+    (prodIsoTensorObj X Y).hom ≫ CartesianMonoidalCategory.fst X Y = prod.fst :=
+  Category.id_comp _
+
+@[reassoc (attr := simp)]
+theorem prodIsoTensorObj_hom_snd {X Y : C} :
+    (prodIsoTensorObj X Y).hom ≫ CartesianMonoidalCategory.snd X Y = prod.snd :=
+  Category.id_comp _
+
+@[reassoc (attr := simp)]
+theorem prodMap_comp_prodIsoTensorObj_hom {X Y Z W : C} (f : X ⟶ Y) (g : Z ⟶ W) :
+    prod.map f g ≫ (prodIsoTensorObj _ _).hom = (prodIsoTensorObj _ _).hom ≫ (f ⊗ₘ g) := by
+  apply CartesianMonoidalCategory.hom_ext <;> simp
+
+end
+
+variable [HasTerminal C] [HasPullbacks C]
 
 variable (I : C) [Exponentiable I]
 
 /-- The first leg of a cospan constructing a pullback diagram in `C` used to define `sections` . -/
-def curryId : 𝟙_ C ⟶ (I ⟹ I) :=
-  curry <| (ρ_ _).hom
+def curryId : ⊤_ C ⟶ (I ⟹ I) :=
+  CartesianClosed.curry (CartesianMonoidalCategory.fst I (⊤_ C))
+
+variable {I}
 
 namespace Over
 
-open ChosenPullback
-
-variable {I} [ChosenPullback (curryId I)]
-
-/-- The object of sections of `X : Over I` defined by the following
+/-- Given `X : Over I`, `sectionsObj X` is the object of sections of `X` defined by the following
 pullback diagram:
 
 ```
@@ -48,47 +89,47 @@ pullback diagram:
 ```
 -/
 abbrev sectionsObj (X : Over I) : C :=
-  pullbackObj (exp I |>.map X.hom) (curryId I)
+  Limits.pullback (curryId I) ((exp I).map X.hom)
 
 /-- The functoriality of `sectionsObj`. -/
 def sectionsMap {X X' : Over I} (u : X ⟶ X') :
-    sectionsObj X ⟶ sectionsObj X' :=
-  pullbackMap _ _ _ _ (exp I |>.map u.left) (𝟙 _) (𝟙 _)
-    (by simp [← Functor.map_comp] ) (by simp only [comp_id, id_comp])
+    sectionsObj X ⟶ sectionsObj X' := by
+  fapply pullback.map
+  · exact 𝟙 _
+  · exact (exp I).map u.left
+  · exact 𝟙 _
+  · simp only [comp_id, id_comp]
+  · simp only [comp_id, ← Functor.map_comp, w]
 
-
-@[reassoc (attr := simp)]
+@[simp]
 lemma sectionsMap_id {X : Over I} : sectionsMap (𝟙 X) = 𝟙 _ := by
-  apply hom_ext <;> simp [sectionsMap]
+  apply pullback.hom_ext
+  · aesop
+  · simp [sectionsMap]
 
-@[reassoc (attr := simp)]
+@[simp]
 lemma sectionsMap_comp {X X' X'' : Over I} (u : X ⟶ X') (v : X' ⟶ X'') :
     sectionsMap (u ≫ v) = sectionsMap u ≫ sectionsMap v := by
-  apply hom_ext <;> simp [sectionsMap]
+  apply pullback.hom_ext
+  · aesop
+  · simp [sectionsMap]
 
 variable (I)
 
-/-- The functor which maps an object `X` in `C` to the projection `I ⊗ X ⟶ I` in `Over I`.
-This is the computable analogue of the functor `Over.star`. -/
-@[simps! obj_left obj_hom map_left]
-def _root_.toOver : C ⥤ Over I where
-  obj X := Over.mk (CartesianMonoidalCategory.fst I X)
-  map {X Y} f := Over.homMk (I ◁ f)
-
 /-- The functor mapping an object `X` in `C` to the object of sections of `X` over `I`. -/
 @[simps]
-def sections : Over I ⥤ C where
+def sections :
+    Over I ⥤ C where
   obj X := sectionsObj X
   map u := sectionsMap u
 
 variable {I}
 
-open ChosenPullback
-
 /-- An auxiliary morphism used to define the currying of a morphism in `Over I` to a morphism
 in `C`. See `sectionsCurry`. -/
-def sectionsCurryAux {X : Over I} {A : C} (u : (star I).obj A ⟶ X) : A ⟶ (I ⟹ X.left) :=
-  curry (u.left)
+def sectionsCurryAux {X : Over I} {A : C} (u : (star I).obj A ⟶ X) :
+    A ⟶ (I ⟹ X.left) :=
+  CartesianClosed.curry (u.left)
 
 /-- The currying operation `Hom ((star I).obj A) X → Hom A (I ⟹ X.left)`. -/
 def sectionsCurry {X : Over I} {A : C} (u : (star I).obj A ⟶ X) :
