@@ -18,7 +18,7 @@ a type `I` to the coproduct of copies indexed by `I` of `unit R`.
 * In case the category `C` has a terminal object `X`, promote `freeHomEquiv`
   into an adjunction between `freeFunctor` and the evaluation functor at `X`.
   (Alternatively, assuming specific universe parameters, we could show that
-  `freeHomEquiv` is a left adjoint to `SheafOfModules.sectionsFunctor`.)
+  `freeFunctor` is a left adjoint to `SheafOfModules.sectionsFunctor`.)
 
 -/
 
@@ -62,7 +62,6 @@ noncomputable def freeHomEquiv (M : SheafOfModules.{u} R) {I : Type u} :
     apply Cofan.IsColimit.fac)
   right_inv f := by
     ext1 i
-    dsimp
     apply M.unitHomEquiv.symm.injective
     simp only [Equiv.symm_apply_apply]
     apply Cofan.IsColimit.fac
