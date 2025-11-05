@@ -158,18 +158,22 @@ theorem roots_eq_zero_iff [IsSepClosed k] {p : k[X]} (hsep : p.Separable) :
     rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
     simp at hz
 
-theorem exists_eval₂_eq_zero [IsSepClosed K] (f : k →+* K)
-    (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.Separable) :
+theorem exists_eval₂_eq_zero_of_injective {k : Type*} [CommSemiring k] [IsSepClosed K] (f : k →+* K)
+    (hf : Function.Injective f) (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.Separable) :
     ∃ x, p.eval₂ f x = 0 :=
-  let ⟨x, hx⟩ := exists_root (p.map f) (by rwa [degree_map_eq_of_injective f.injective])
+  let ⟨x, hx⟩ := exists_root (p.map f) (by rwa [degree_map_eq_of_injective hf])
     (Separable.map hsep)
   ⟨x, by rwa [eval₂_eq_eval_map, ← IsRoot]⟩
 
+theorem exists_eval₂_eq_zero {k : Type*} [CommRing k] [IsSimpleRing k] [IsSepClosed K] (f : k →+* K)
+    (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.Separable) : ∃ x, p.eval₂ f x = 0 :=
+  exists_eval₂_eq_zero_of_injective _ f.injective _ hp hsep
+
 variable (K)
 
-theorem exists_aeval_eq_zero [IsSepClosed K] [Algebra k K] (p : k[X])
-    (hp : p.degree ≠ 0) (hsep : p.Separable) : ∃ x : K, aeval x p = 0 :=
-  exists_eval₂_eq_zero (algebraMap k K) p hp hsep
+theorem exists_aeval_eq_zero {k : Type*} [CommRing k] [IsSimpleRing k] [IsSepClosed K] [Algebra k K]
+    (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.Separable) : ∃ x : K, p.aeval x = 0 :=
+  exists_eval₂_eq_zero _ _ hp hsep
 
 variable (k) {K}
 

@@ -170,11 +170,8 @@ theorem normalizedTrace_algebraMap_of_lifts [CharZero E] [Algebra.IsIntegral E K
     (h : minpoly E a ∈ Polynomial.lifts (algebraMap F E)) :
     algebraMap F E (normalizedTrace F K a) = normalizedTrace E K a := by
   have ha : IsIntegral F a := IsIntegral.isIntegral a
-  simp [normalizedTrace_minpoly F a, normalizedTrace_minpoly E a,
-    ← minpoly.map_algebraMap ha h,
-    (minpoly F a).natDegree_map,
-    (minpoly F a).nextCoeff_map (algebraMap F E).injective,
-    map_mul, map_neg]
+  simp [normalizedTrace_minpoly F a, normalizedTrace_minpoly E a, ← minpoly.map_algebraMap ha h,
+    (minpoly F a).nextCoeff_map_eq, map_mul, map_neg]
 
 /- An auxiliary result to prove `normalizedTrace_trans_apply`. It differs from
 `normalizedTrace_trans_apply` only by the extra assumption about finiteness of `E` over `F`. -/
