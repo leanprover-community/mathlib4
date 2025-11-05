@@ -426,6 +426,27 @@ theorem chromaticNumber_top_eq_top_of_infinite (V : Type*) [Infinite V] :
   obtain ⟨n, ⟨hn⟩⟩ := hc
   exact not_injective_infinite_finite _ hn.injective_of_top_hom
 
+theorem eq_top_of_chromaticNumber_eq_card [DecidableEq V] [Fintype V]
+    (h : G.chromaticNumber = Fintype.card V) : G = ⊤ := by
+  by_contra! hh
+  have : G.chromaticNumber ≤ Fintype.card V - 1 := by
+    obtain ⟨a, b, hne, _⟩ := ne_top_iff_exists_not_adj.mp hh
+    apply chromaticNumber_le_iff_colorable.mpr
+    suffices G.Coloring (Finset.univ.erase b) by simpa using Coloring.colorable this
+    apply Coloring.mk (fun x ↦ if h' : x ≠ b then ⟨x, by simp [h']⟩ else ⟨a, by simp [hne]⟩)
+    grind [Adj.ne', adj_symm]
+  rw [h, ← ENat.coe_one, ← ENat.coe_sub, ENat.coe_le_coe] at this
+  have := Fintype.one_lt_card_iff_nontrivial.mpr <| SimpleGraph.nontrivial_iff.mp ⟨_, _, hh⟩
+  grind
+
+theorem chromaticNumber_eq_card_iff [DecidableEq V] [Fintype V] :
+    G.chromaticNumber = Fintype.card V ↔ G = ⊤ :=
+  ⟨eq_top_of_chromaticNumber_eq_card, fun h ↦ h ▸ chromaticNumber_top⟩
+
+theorem chromaticNumber_le_card [Fintype V] : G.chromaticNumber ≤ Fintype.card V := by
+  rw [← chromaticNumber_top]
+  exact chromaticNumber_mono_of_hom G.selfColoring
+
 /-- The bicoloring of a complete bipartite graph using whether a vertex
 is on the left or on the right. -/
 def CompleteBipartiteGraph.bicoloring (V W : Type*) : (completeBipartiteGraph V W).Coloring Bool :=
