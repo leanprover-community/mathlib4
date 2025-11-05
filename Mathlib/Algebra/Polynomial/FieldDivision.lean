@@ -277,8 +277,7 @@ theorem leadingCoeff_map (f : R →+* S) : (p.map f).leadingCoeff = f p.leadingC
 theorem nextCoeff_map_eq (p : R[X]) (f : R →+* S) : (p.map f).nextCoeff = f p.nextCoeff :=
   nextCoeff_map f.injective _
 
-theorem monic_map_iff {f : R →+* S} {p : R[X]} :
-    (p.map f).Monic ↔ p.Monic :=
+@[simp] theorem monic_map_iff {f : R →+* S} {p : R[X]} : (p.map f).Monic ↔ p.Monic :=
   Function.Injective.monic_map_iff f.injective |>.symm
 
 end SimpleRing
