@@ -671,6 +671,10 @@ open Topology
 
 variable {f : M → N} (g : M' → N') {s : Set (M ⊕ M')} {t : Set M'} {p : M ⊕ M'}
 
+lemma foo {α : Type*} [TopologicalSpace α] {s u : Set α} {x : α} : u ∈ 𝓝[s ∩ u] x := by
+  refine mem_nhdsWithin_iff_eventuallyEq.mpr ?_
+  filter_upwards with y using by simp [inter_assoc]
+
 attribute [fun_prop] Continuous.continuousWithinAt
 theorem hasMFDerivWithinAt_sumSwap :
     HasMFDerivWithinAt I I (@Sum.swap M M') s p
@@ -696,7 +700,22 @@ theorem hasMFDerivWithinAt_sumSwap :
         dsimp
         rw [Sum.inr_injective.extend_apply, (chartAt H x).right_inv (by grind)]
         exact I.right_inv (by grind)
-      sorry -- basic question about filters now!
+      apply Filter.eventually_of_mem (h := this)
+      set x' := ((chartAt H (@Sum.inl M M' x)).extend I) (Sum.inl x)
+
+      simp only [t, U]
+      simp only [Filter.inter_mem_iff]
+      refine ⟨?_, foo⟩
+      -- too optimistic! apply mem_nhdsWithin_of_mem_nhds
+      -- goal: chartAt H x.target is open, and
+      -- we're taking neighbourhoods within the codomain of I, right?
+
+      -- just for fun; not actually answering the question
+      have : Nonempty H := sorry -- surely?
+      simp
+      rw [ChartedSpace.sum_chartAt_inl, OpenPartialHomeomorph.lift_openEmbedding_symm]
+
+      sorry -- need to think now!
     | inr x =>
       let t := I.symm ⁻¹' (chartAt H x).target ∩ range I
       have : EqOn (writtenInExtChartAt I I (Sum.inr x) (@Sum.swap M M')) id t := by
