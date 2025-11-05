@@ -72,7 +72,7 @@ theorem binomialSeries_radius_eq_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type 
   conv at ha => ext; rw [ne_comm]
   exact ordinaryHypergeometricSeries_radius_eq_one _ _ _ _ (by norm_cast; grind)
 
-theorem binomialSeries_radius_ge_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type u} [NormedDivisionRing 𝔸]
+theorem binomialSeries_radius_ge_one {𝕂 : Type*} [RCLike 𝕂] {𝔸 : Type*} [NormedDivisionRing 𝔸]
     [NormedAlgebra 𝕂 𝔸] {a : 𝕂} :
     1 ≤ (binomialSeries 𝔸 a).radius := by
   by_cases ha : ∀ (k : ℕ), a ≠ k
@@ -82,7 +82,7 @@ theorem binomialSeries_radius_ge_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type 
     simp [binomialSeries_radius_eq_top_of_nat]
 
 theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
-    HasFPowerSeriesOnBall (fun x ↦ (1 + x)^a) (binomialSeries ℂ a) 0 1 := by
+    HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ a) (binomialSeries ℂ a) 0 1 := by
   suffices (binomialSeries ℂ a = FormalMultilinearSeries.ofScalars ℂ
       fun n ↦ iteratedDeriv n (fun (x : ℂ) ↦ (1 + x) ^ a) 0 / n !) by
     convert AnalyticOn.hasFPowerSeriesOnSubball _ _ _
@@ -101,13 +101,13 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
   congr
   let B := Metric.ball (0 : ℂ) 1
   suffices Set.EqOn (iteratedDerivWithin n (fun x ↦ (1 + x) ^ a) B)
-      (fun x ↦ (descPochhammer ℤ n).smeval a * (1 + x)^(a - n)) B by
+      (fun x ↦ (descPochhammer ℤ n).smeval a * (1 + x) ^ (a - n)) B by
     specialize this (show 0 ∈ _ by simp [B])
     rw [iteratedDerivWithin_of_isOpen Metric.isOpen_ball (by simp)] at this
     symm
     simpa using this
   induction n with
-  | zero =>simp [Set.EqOn]
+  | zero => simp [Set.EqOn]
   | succ n ih =>
     have : iteratedDerivWithin (n + 1) (fun (x : ℂ) ↦ (1 + x) ^ a) B =
         derivWithin (iteratedDerivWithin n (fun x ↦ (1 + x) ^ a) B) B := by
@@ -130,12 +130,12 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
       simpa [B] using hz
 
 theorem one_add_cpow_hasFPowerSeriesAt_zero {a : ℂ} :
-    HasFPowerSeriesAt (fun x ↦ (1 + x)^a) (binomialSeries ℂ a) 0 :=
+    HasFPowerSeriesAt (fun x ↦ (1 + x) ^ a) (binomialSeries ℂ a) 0 :=
   one_add_cpow_hasFPowerSeriesOnBall_zero.hasFPowerSeriesAt
 
 theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
-    HasFPowerSeriesOnBall (fun x ↦ (1 + x)^a) (binomialSeries ℝ a) 0 1 := by
-  have h : HasFPowerSeriesOnBall (fun x ↦ (1 + x)^(a : ℂ)) (binomialSeries ℂ a) 0 1 := by
+    HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ a) (binomialSeries ℝ a) 0 1 := by
+  have h : HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ (a : ℂ)) (binomialSeries ℂ a) 0 1 := by
     have : binomialSeries ℂ a = (binomialSeries ℂ (a : ℂ)).restrictScalars (𝕜 := ℝ) := by
       ext n v
       simp only [binomialSeries, FormalMultilinearSeries.ofScalars,
@@ -186,5 +186,5 @@ theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
   simp [Complex.ofReal_re, binomialSeries]
 
 theorem one_add_rpow_hasFPowerSeriesAt_zero {a : ℝ} :
-    HasFPowerSeriesAt (fun x ↦ (1 + x)^a) (binomialSeries ℝ a) 0 :=
+    HasFPowerSeriesAt (fun x ↦ (1 + x) ^ a) (binomialSeries ℝ a) 0 :=
   one_add_rpow_hasFPowerSeriesOnBall_zero.hasFPowerSeriesAt
