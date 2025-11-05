@@ -37,8 +37,9 @@ protected abbrev algebra (e : α ≃ β) [Semiring β] :
         simp [Algebra.smul_def] }
 
 lemma algebraMap_def (e : α ≃ β) [Semiring β] [Algebra R β] (r : R) :
-    (@algebraMap R α _ (Equiv.semiring e) (Equiv.algebra R e)) r = e.symm ((algebraMap R β) r) :=
-  rfl
+    letI := Equiv.semiring e
+    letI := Equiv.algebra R e
+    algebraMap R α r = e.symm (algebraMap R β r) := rfl
 
 variable (R) in
 /-- An equivalence `e : α ≃ β` gives an algebra equivalence `α ≃ₐ[R] β`
