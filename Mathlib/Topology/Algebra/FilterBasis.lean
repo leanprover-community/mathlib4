@@ -206,6 +206,20 @@ instance (priority := 100) isTopologicalGroup (B : GroupFilterBasis G) :
     intro U U_in
     exact conj x₀ U_in
 
+@[to_additive]
+lemma t2Space_iff [t : TopologicalSpace G] (F : GroupFilterBasis G)
+    (hG : F.topology = t) : T2Space G ↔ ⋂₀ F.sets = {1} := by
+  have : IsTopologicalGroup G := hG ▸ F.isTopologicalGroup
+  rw [IsTopologicalGroup.t2Space_iff_one_closed, ← closure_eq_iff_isClosed,
+    R0Space.closure_singleton, ← hG, F.nhds_one_eq, FilterBasis.ker_filter]
+
+@[to_additive]
+lemma t2Space_iff_sInter_subset [t : TopologicalSpace G] (F : GroupFilterBasis G)
+    (hG : F.topology = t) : T2Space G ↔ ⋂₀ F.sets ⊆ {1} := by
+  rw [F.t2Space_iff hG, subset_antisymm_iff, and_iff_left_iff_imp]
+  rintro -
+  simpa using fun _ ↦ F.one
+
 end GroupFilterBasis
 
 /-- A `RingFilterBasis` on a ring is a `FilterBasis` satisfying some additional axioms.

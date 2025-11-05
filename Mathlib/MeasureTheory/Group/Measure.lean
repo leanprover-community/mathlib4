@@ -413,6 +413,9 @@ instance : (count : Measure G).IsMulRightInvariant where
       count_apply (measurable_mul_const _ hs),
       encard_preimage_of_bijective (Group.mulRight_bijective _)]
 
+/- TODO: To avoid repeating the proofs, the following two lemmas should be consequences of
+a similar result about `SMulInvariantMeasure`. -/
+
 @[to_additive]
 protected theorem IsMulLeftInvariant.comap {H} [Group H] {mH : MeasurableSpace H} [MeasurableMul H]
     (μ : Measure H) [IsMulLeftInvariant μ] {f : G →* H} (hf : MeasurableEmbedding f) :
@@ -429,6 +432,24 @@ protected theorem IsMulLeftInvariant.comap {H} [Group H] {mH : MeasurableSpace H
       · intro ⟨y, yins, hy⟩
         exact ⟨g⁻¹ * y, by simp [yins], by simp [hy]⟩
     rw [this, ← map_apply (by fun_prop), IsMulLeftInvariant.map_mul_left_eq_self]
+    exact hf.measurableSet_image.mpr hs
+
+@[to_additive]
+protected theorem IsMulRightInvariant.comap {H} [Group H] {mH : MeasurableSpace H} [MeasurableMul H]
+    (μ : Measure H) [IsMulRightInvariant μ] {f : G →* H} (hf : MeasurableEmbedding f) :
+    (μ.comap f).IsMulRightInvariant where
+  map_mul_right_eq_self g := by
+    ext s hs
+    rw [map_apply (by fun_prop) hs]
+    repeat rw [hf.comap_apply]
+    have : f '' ((· * g) ⁻¹' s) = (· * f g) ⁻¹' (f '' s) := by
+      ext
+      constructor
+      · rintro ⟨y, hy, rfl⟩
+        exact ⟨y * g, hy, by simp⟩
+      · intro ⟨y, yins, hy⟩
+        exact ⟨y * g⁻¹, by simp [yins], by simp [hy]⟩
+    rw [this, ← map_apply (by fun_prop), IsMulRightInvariant.map_mul_right_eq_self]
     exact hf.measurableSet_image.mpr hs
 
 end MeasurableMul
@@ -828,7 +849,7 @@ nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [ContinuousMul G
     [Group H] [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H]
     [IsTopologicalGroup H] (e : G ≃* H) (he : Continuous e) (hesymm : Continuous e.symm) :
     IsHaarMeasure (Measure.map e μ) :=
-  let f : G ≃ₜ H := .mk e
+  let f : G ≃ₜ H := .mk e he hesymm
   -- We need to write `e.toMonoidHom` instead of just `e`, to avoid unification issues.
   isHaarMeasure_map μ e.toMonoidHom he e.surjective f.isClosedEmbedding.tendsto_cocompact
 
