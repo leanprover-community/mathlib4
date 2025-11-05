@@ -9,6 +9,9 @@ public import Mathlib.Tactic.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import all Mathlib.CategoryTheory.Limits.Cones
+import all Mathlib.CategoryTheory.Limits.HasLimits
+import all Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 /-!
 In this file we provide various simp lemmas in its elementwise form via `Tactic.Elementwise`.

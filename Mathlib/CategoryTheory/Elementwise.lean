@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Tactic.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import all Mathlib.CategoryTheory.Iso  -- for accessing proofs
 
 /-!
 # Use the `elementwise` attribute to create applied versions of lemmas.
