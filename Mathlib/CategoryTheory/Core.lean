@@ -233,6 +233,14 @@ theorem functorToCore_apply_comp_inclusion (F : G ⥤ Core C) :
     functorToCore (F ⋙ inclusion C) = F :=
   Functor.ext_of_iso (functorToCoreApplyCompInclusionIso F) (by cat_disch)
 
+/-- Functors into `C` are equivalent to functors into the core category `Core C`. -/
+@[simps]
+def functorEquiv : (G ⥤ C) ≃ (G ⥤ Core C) where
+  toFun := functorToCore
+  invFun F := F ⋙ inclusion C
+  left_inv := functorToCore_comp_inclusion
+  right_inv := functorToCore_apply_comp_inclusion
+
 end Core
 
 variable (D : Type u₂) [Category.{v₂} D]

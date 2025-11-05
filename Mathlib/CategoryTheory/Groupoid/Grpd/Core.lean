@@ -23,26 +23,19 @@ to the forgetful functor from `Grpd ⥤ Cat`.
 
 -/
 
-universe w v u v₁ u₁ v₂ u₂ v₃ u₃
+universe v u v₁ u₁
 
 noncomputable section
 
 namespace CategoryTheory
 namespace Core
 
-variable {C : Type u} [Category.{v} C] {D : Type u₁} [Groupoid.{v₁} D]
+variable {G : Type u₁} [Groupoid.{v₁} G] {C : Type u} [Category.{v} C]
 
 /-- The functor from `Cat` to `Grpd` that takes the core of a category, on objects. -/
 def functor : Cat.{v,u} ⥤ Grpd.{v,u} where
   obj C := Grpd.of (Core C)
   map F := F.core
-
-@[simps]
-def functorEquiv : (D ⥤ C) ≃ (D ⥤ Core C) where
-  toFun := functorToCore
-  invFun F := F ⋙ inclusion C
-  left_inv := functorToCore_comp_inclusion
-  right_inv := functorToCore_apply_comp_inclusion
 
 attribute [local instance] Groupoid.ofIsGroupoid in
 /-- The adjunction between the forgetful functor from `Grpd` to `Cat` and the core
