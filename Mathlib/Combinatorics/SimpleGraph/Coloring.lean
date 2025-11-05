@@ -449,7 +449,7 @@ theorem chromaticNumber_le_card [Fintype V] : G.chromaticNumber ≤ Fintype.card
 
 theorem two_le_chromaticNumber_of_adj {u v : V} (hadj : G.Adj u v) : 2 ≤ G.chromaticNumber := by
   refine le_of_not_gt fun h ↦ ?_
-  let c := chromaticNumber_le_iff_colorable.mp (Order.le_of_lt_add_one h) |>.some
+  obtain ⟨c⟩ := chromaticNumber_le_iff_colorable.mp (Order.le_of_lt_add_one h)
   exact c.valid hadj (Subsingleton.elim (c u) (c v))
 
 theorem chromaticNumber_eq_one_iff : G.chromaticNumber = 1 ↔ G = ⊥ ∧ Nonempty V := by

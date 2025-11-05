@@ -34,8 +34,8 @@ theorem chromaticNumber_eq_two_iff {V : Type*} {G : SimpleGraph V} :
   ⟨fun h ↦ ⟨chromaticNumber_le_two_iff_isBipartite.mp (by simp [h]),
             two_le_chromaticNumber_iff_ne_bot.mp (by simp [h])⟩,
    fun ⟨h₁, h₂⟩ ↦ ENat.eq_of_forall_natCast_le_iff fun _ ↦
-      ⟨fun h ↦ Std.le_trans h (chromaticNumber_le_two_iff_isBipartite.mpr h₁),
-       fun h ↦ Std.le_trans h (two_le_chromaticNumber_iff_ne_bot.mpr h₂)⟩⟩
+      ⟨fun h ↦ h.trans <| chromaticNumber_le_two_iff_isBipartite.mpr h₁,
+       fun h ↦ h.trans <| two_le_chromaticNumber_iff_ne_bot.mpr h₂⟩⟩
 
 /-- Bicoloring of a path graph -/
 def pathGraph.bicoloring (n : ℕ) :
