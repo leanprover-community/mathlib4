@@ -490,6 +490,12 @@ lemma concat_stepSet_inr {S2 : Set σ2} {a : α} :
     (M1 * M2).stepSet (inr '' S2) a = inr '' M2.stepSet S2 a := by
   ext (s1 | s2) <;> simp [stepSet]
 
+lemma concat_stepSet_inl {S1 : Set σ1} {a : α} :
+    (M1 * M2).stepSet (inl '' S1) a =
+      inl '' M1.stepSet S1 a ∪
+      inr '' ⋃ s1 ∈ S1, ⋃ s2 ∈ M2.start, { s2' ∈ M2.step s2 a | s1 ∈ M1.accept } := by
+  ext (s1 | s2) <;> simp [stepSet]
+
 lemma concat_acceptsFrom_inr {S2 : Set σ2} :
     (M1 * M2).acceptsFrom (inr '' S2) = M2.acceptsFrom S2 := by
   ext y
@@ -507,43 +513,39 @@ theorem concat_acceptsFrom {S1 : Set σ1} :
       ↔ (∃ s ∈ S1, s ∈ M1.accept) ∧ [] ∈ M2.accepts by simpa [mem_acceptsFrom_nil M1]
     tauto
   | cons a z ih =>
-    simp only [mem_acceptsFrom_cons, stepSet, mem_image, hmul_concatStep, concatStep, iUnion_exists,
-      biUnion_and', iUnion_iUnion_eq_right, acceptsFrom_biUnion, acceptsFrom_union, add_eq_sup,
-      max, SemilatticeSup.sup, concat_acceptsFrom_inr]
-    rw [Set.mem_iUnion₂]
-    simp only [mem_union, ih, mem_iUnion, exists_prop]
+    simp only [mem_acceptsFrom_cons, ↓concat_stepSet_inl, stepSet, acceptsFrom_union,
+      concat_acceptsFrom_inr, acceptsFrom_iUnion, add_eq_sup, max, SemilatticeSup.sup,
+      Set.mem_union z, ih, mem_iUnion, exists_prop]; clear ih
     simp_rw [↑mem_acceptsFrom_sep_fact]
     constructor
-    · rintro ⟨s1, hs1, ⟨x, hx, y, hy, rfl⟩ | ⟨s2, hstart2, hz, haccept1⟩⟩
-      · exists (a :: x); rw [mem_acceptsFrom_cons]
-        simp only [stepSet, acceptsFrom_biUnion, List.cons_append, List.cons.injEq,
-          List.append_cancel_left_eq, true_and, exists_eq_right]
-        rw [Set.mem_iUnion₂]; tauto
-      · exists []; rw [mem_acceptsFrom_nil]
-        simp only [accepts_acceptsFrom, List.nil_append, exists_eq_right]
-        rw [mem_acceptsFrom_cons]
-        simp only [stepSet, acceptsFrom_biUnion]
-        rw [Set.mem_iUnion₂]
-        tauto
+    · rintro (⟨x, hx, ⟨y, hy, rfl⟩⟩ | ⟨s1, hs1, s2, hs2, hz, haccept1⟩)
+      · exists (a :: x)
+        constructor
+        · simpa [mem_acceptsFrom_cons (M:=M1), stepSet,
+            Set.mem_iUnion₂ (s:=fun i _ => M1.acceptsFrom (M1.step i a))]
+        · tauto
+      · exists []
+        constructor
+        · simp only [mem_acceptsFrom_nil (M:=M1)]
+          tauto
+        · exists (a :: z)
+          simp only [accepts_acceptsFrom, mem_acceptsFrom_cons (M:=M2), stepSet,
+            acceptsFrom_biUnion,
+            Set.mem_iUnion₂ (s:=fun i _ => M2.acceptsFrom (M2.step i a))]
+          tauto
     · rintro ⟨x, hx, y, hy, heq⟩
-      cases x
-      case nil =>
+      cases x with
+      | nil =>
         rw [mem_acceptsFrom_nil] at hx
         obtain ⟨s1, hs1, haccept1⟩ := hx
-        exists s1
-        simp at heq; subst y
-        rw [accepts_acceptsFrom, mem_acceptsFrom_cons] at hy
-        simp only [stepSet, acceptsFrom_biUnion] at hy
-        rw [Set.mem_iUnion₂] at hy
+        simp only [List.nil_append] at heq; subst y
+        simp only [accepts_acceptsFrom, mem_acceptsFrom_cons (M:=M2), stepSet, acceptsFrom_biUnion,
+          Set.mem_iUnion₂ (s:=fun i _ => M2.acceptsFrom (M2.step i a))] at hy
         tauto
-      case cons b x =>
+      | cons b x =>
         obtain ⟨rfl, rfl⟩ := heq
-        rw [mem_acceptsFrom_cons] at hx
-        simp only [stepSet, acceptsFrom_biUnion] at hx
-        rw [Set.mem_iUnion₂] at hx
-        obtain ⟨s1, hs1, hx⟩ := hx
-        exists s1
-        constructor; next => assumption
+        simp only [mem_acceptsFrom_cons (M:=M1), stepSet, acceptsFrom_biUnion,
+          Set.mem_iUnion₂ (s:=fun i _ => M1.acceptsFrom (M1.step i a))] at hx
         left; tauto
 
 /-- If `M1` accepts language `L1` and `M2` accepts language `L2`, then the language `L` of `M1 * M2`
