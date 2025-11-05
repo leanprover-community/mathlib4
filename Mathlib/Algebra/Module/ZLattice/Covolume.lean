@@ -113,9 +113,6 @@ theorem covolume_eq_det_mul_measureReal {ι : Type*} [Fintype ι] [DecidableEq �
   ext
   exact b.ofZLatticeBasis_apply ℝ L _
 
-@[deprecated (since := "2025-04-19")]
-alias covolume_eq_det_mul_measure := covolume_eq_det_mul_measureReal
-
 theorem covolume_eq_det {ι : Type*} [Fintype ι] [DecidableEq ι] (L : Submodule ℤ (ι → ℝ))
     [DiscreteTopology L] [IsZLattice ℝ L] (b : Basis ι ℤ L) :
     covolume L = |(Matrix.of ((↑) ∘ b)).det| := by
@@ -171,7 +168,7 @@ theorem covolume_div_covolume_eq_relIndex' {E : Type*} [NormedAddCommGroup E]
   let f := (EuclideanSpace.equiv _ ℝ).symm.trans
     (stdOrthonormalBasis ℝ E).repr.toContinuousLinearEquiv.symm
   have hf : MeasurePreserving f := (stdOrthonormalBasis ℝ E).measurePreserving_repr_symm.comp
-    (EuclideanSpace.volume_preserving_measurableEquiv _).symm
+    (EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp _).symm
   rw [← covolume_comap L₁ volume volume hf, ← covolume_comap L₂ volume volume hf,
     covolume_div_covolume_eq_relIndex _ _ (fun _ h' ↦ h h'), ZLattice.comap_toAddSubgroup,
     ZLattice.comap_toAddSubgroup, Nat.cast_inj, LinearEquiv.toAddMonoidHom_commutes,
@@ -202,7 +199,7 @@ theorem volume_image_eq_volume_div_covolume' {E : Type*} [NormedAddCommGroup E]
     ((stdOrthonormalBasis ℝ E).reindex e).repr.toContinuousLinearEquiv.symm
   have hf : MeasurePreserving f :=
     ((stdOrthonormalBasis ℝ E).reindex e).measurePreserving_repr_symm.comp
-      (EuclideanSpace.volume_preserving_measurableEquiv ι).symm
+      (EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp ι).symm
   rw [← hf.measure_preimage hs, ← (covolume_comap L volume volume hf),
     ← volume_image_eq_volume_div_covolume (ZLattice.comap ℝ L f.toLinearMap)
     (b.ofZLatticeComap ℝ L f.toLinearEquiv), Basis.ofZLatticeBasis_comap,

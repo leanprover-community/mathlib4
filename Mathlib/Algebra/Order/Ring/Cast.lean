@@ -30,14 +30,13 @@ section OrderedAddCommGroupWithOne
 variable [AddCommGroupWithOne R] [PartialOrder R] [AddLeftMono R]
 variable [ZeroLEOneClass R]
 
+@[gcongr]
 lemma cast_mono : Monotone (Int.cast : ℤ → R) := by
   intro m n h
   rw [← sub_nonneg] at h
   lift n - m to ℕ using h with k hk
   rw [← sub_nonneg, ← cast_sub, ← hk, cast_natCast]
   exact k.cast_nonneg'
-
-@[gcongr] protected lemma GCongr.intCast_mono {m n : ℤ} (hmn : m ≤ n) : (m : R) ≤ n := cast_mono hmn
 
 variable [NeZero (1 : R)] {m n : ℤ}
 
