@@ -212,14 +212,17 @@ theorem nonempty_of_mem {x u : ZFSet} (h : x ∈ u) : u.Nonempty :=
 
 @[simp, norm_cast] lemma nonempty_coe : (x : Set ZFSet.{u}).Nonempty ↔ x.Nonempty := .rfl
 
-@[deprecated (since := "2025-11-05")] alias nonempty_toSet := nonempty_coe
+@[deprecated (since := "2025-11-05")] alias nonempty_toSet_iff := nonempty_coe
 
 /-- `x ⊆ y` as ZFC sets means that all members of `x` are members of `y`. -/
 protected def Subset (x y : ZFSet.{u}) :=
   ∀ ⦃z⦄, z ∈ x → z ∈ y
 
-instance hasSubset : HasSubset ZFSet :=
-  ⟨ZFSet.Subset⟩
+instance hasSubset : HasSubset ZFSet := ⟨ZFSet.Subset⟩
+instance : HasSSubset ZFSet := ⟨(· < ·)⟩
+
+@[simp] lemma le_def : x ≤ y ↔ x ⊆ y := .rfl
+@[simp] lemma lt_def : x < y ↔ x ⊂ y := .rfl
 
 theorem subset_def {x y : ZFSet.{u}} : x ⊆ y ↔ ∀ ⦃z⦄, z ∈ x → z ∈ y :=
   Iff.rfl
@@ -238,26 +241,16 @@ theorem subset_iff : ∀ {x y : PSet}, mk x ⊆ mk y ↔ x ⊆ y
         let ⟨b, ab⟩ := h a
         ⟨b, za.trans ab⟩⟩
 
-@[deprecated SetLike.coe_subset_coe (since := "2025-11-05")]
-theorem toSet_subset_iff {x y : ZFSet} : (x : Set ZFSet.{u}) ⊆ y ↔ x ⊆ y := by
-  simp [subset_def, Set.subset_def]
+lemma coe_subset_coe : (x : Set ZFSet.{u}) ⊆ y ↔ x ⊆ y := by simp
+
+@[deprecated (since := "2025-11-05")] alias toSet_subset_iff := coe_subset_coe
 
 @[deprecated SetLike.coe_injective (since := "2025-11-05")]
 theorem toSet_injective : Function.Injective ((↑) : ZFSet.{u} → Set ZFSet.{u}) :=
- SetLike.coe_injective
+  SetLike.coe_injective
 
 @[deprecated SetLike.coe_set_eq (since := "2025-11-05")]
 lemma toSet_inj : (x : Set ZFSet.{u}) = y ↔ x = y := SetLike.coe_set_eq
-
-instance : HasSSubset ZFSet := ⟨(· < ·)⟩
-
-@[simp]
-theorem le_def (x y : ZFSet) : x ≤ y ↔ x ⊆ y :=
-  Iff.rfl
-
-@[simp]
-theorem lt_def (x y : ZFSet) : x < y ↔ x ⊂ y :=
-  Iff.rfl
 
 instance : IsAntisymm ZFSet (· ⊆ ·) :=
   ⟨@le_antisymm ZFSet _⟩
