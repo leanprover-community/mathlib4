@@ -104,7 +104,7 @@ lemma connected_sup {H K : G.Subgraph}
   · exact Reachable.map (Subgraph.inclusion (le_sup_left : H ≤ H ⊔ K)) (hH ⟨u, hu⟩ ⟨v, hv⟩)
   · exact Reachable.map (Subgraph.inclusion (le_sup_right : K ≤ H ⊔ K)) (hK ⟨u, hu'⟩ ⟨v, hv⟩)
 
-@[deprecated Subgraph.connected_sup (since := "2025-10-22")]
+@[deprecated Subgraph.connected_sup (since := "2025-11-05")]
 protected lemma Connected.sup {H K : G.Subgraph}
     (hH : H.Connected) (hK : K.Connected) (hn : (H ⊓ K).verts.Nonempty) :
     (H ⊔ K).Connected :=
@@ -456,7 +456,7 @@ lemma induce_union_connected_of_nonempty_inf {H : G.Subgraph} {s t : Set V}
     (H.induce (s ∪ t)).Connected :=
   (Subgraph.connected_sup sconn tconn sintert).mono le_induce_union <| by simp
 
-@[deprecated induce_union_connected_of_nonempty_inf (since := "2025-10-22")]
+@[deprecated induce_union_connected_of_nonempty_inf (since := "2025-11-05")]
 lemma induce_union_connected {H : G.Subgraph} {s t : Set V}
     (sconn : (H.induce s).Connected) (tconn : (H.induce t).Connected)
     (sintert : (s ⊓ t).Nonempty) :
@@ -471,7 +471,7 @@ lemma connected_induce_top_sup {H K : G.Subgraph} (Hconn : H.Preconnected) (Kcon
   · exact ⟨u, by simp [uH]⟩
   · exact ⟨v, by simp [vK]⟩
 
-@[deprecated connected_induce_top_sup (since := "2025-10-22")]
+@[deprecated connected_induce_top_sup (since := "2025-11-05")]
 lemma Connected.adj_union {H K : G.Subgraph}
     (Hconn : H.Connected) (Kconn : K.Connected) {u v : V} (uH : u ∈ H.verts) (vK : v ∈ K.verts)
     (huv : G.Adj u v) :
@@ -518,7 +518,7 @@ lemma induce_union_connected_of_nonempty_inter {s t : Set V}
   rw [preconnected_induce_iff] at sconn tconn
   exact Subgraph.induce_union_connected_of_nonempty_inf sconn tconn sintert
 
-@[deprecated induce_union_connected_of_nonempty_inter (since := "2025-10-22")]
+@[deprecated induce_union_connected_of_nonempty_inter (since := "2025-11-05")]
 lemma induce_union_connected {s t : Set V}
     (sconn : (G.induce s).Connected) (tconn : (G.induce t).Connected)
     (sintert : (s ∩ t).Nonempty) :
@@ -555,7 +555,7 @@ lemma connected_induce_union {v w : V} {s t : Set V}
     rw [Set.union_assoc]
     simp [Set.insert_subset_iff, Set.singleton_subset_iff, hv, hw]
 
-@[deprecated connected_induce_union (since := "2025-10-22")]
+@[deprecated connected_induce_union (since := "2025-11-05")]
 lemma induce_connected_adj_union {v w : V} {s t : Set V}
     (sconn : (G.induce s).Connected) (tconn : (G.induce t).Connected)
     (hv : v ∈ s) (hw : w ∈ t) (ha : G.Adj v w) :
