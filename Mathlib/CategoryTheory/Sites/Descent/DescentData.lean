@@ -29,6 +29,13 @@ universe t t' t'' v' v u' u
 
 namespace CategoryTheory
 
+-- to be moved
+lemma CommSq.toLoc {C : Type*} [Category C] {X₁ X₂ X₃ X₄ : C}
+    {t : X₁ ⟶ X₂} {l : X₁ ⟶ X₃} {r : X₂ ⟶ X₄} {b : X₃ ⟶ X₄}
+    (h : CommSq t l r b) :
+    CommSq t.toLoc l.toLoc r.toLoc b.toLoc :=
+  ⟨by simp only [← Quiver.Hom.comp_toLoc, h.w]⟩
+
 open Opposite
 
 namespace Pseudofunctor
@@ -237,10 +244,23 @@ def pullFunctor : F.DescentData f ⥤ F.DescentData f' where
         rw [mapComp'_inv_naturality_assoc, ← mapComp'_hom_naturality,
           reassoc_of% this] }
 
-/- TODO:
+/-- Given family of morphisms `f : X i ⟶ S` and `f' : X' j ⟶ S'`, suitable
+commutative diagrams `w j : p' j ≫ f (α j) = f' j ≫ p`, this is the natural
+isomorphism between the descent data relative to `f'` that are obtained either:
+* by considering the obvious descent data relative to `f` given by an object `D : F.obj (op S)`,
+followed by the application of `pullFunctor F w : F.DescentData f ⥤ F.DescentData f'`;
+* by considering the obvious descent data relative to `f'` given by pulling
+back the object `D` to `S'`. -/
 def toDescentDataCompPullFunctorIso :
-    F.toDescentData f ⋙ pullFunctor F w ≅ F.map p.op.toLoc ⋙ F.toDescentData f' := ...
--/
+    F.toDescentData f ⋙ pullFunctor F w ≅ F.map p.op.toLoc ⋙ F.toDescentData f' :=
+  NatIso.ofComponents
+    (fun D ↦ isoMk (fun i ↦ (F.isoMapOfCommSq (CommSq.mk (w i)).op.toLoc).symm.app D)
+      (fun Y q i₁ i₂ f₁ f₂ hf₁ hf₂ ↦ by
+        dsimp
+        sorry))
+    (fun f ↦ by
+      ext i
+      exact (F.isoMapOfCommSq (CommSq.mk (w i)).op.toLoc).inv.naturality f)
 
 /-- Up to a (unique) isomorphism, the functor
 `pullFunctor : F.DescentData f ⥤ F.DescentData f'` does not depend
@@ -292,7 +312,7 @@ def pullFunctorCompIso
         dsimp
         rw [← hr', Category.assoc, w, reassoc_of% w', hr]) :=
   NatIso.ofComponents
-    (fun D ↦ isoMk (fun _ ↦ (F.mapComp' _ _ _ (by aesoptoloc)).symm.app _) (by
+    (fun D ↦ isoMk (fun _ ↦ (F.mapComp' _ _ _ (by grind)).symm.app _) (by
       intro Y s k₁ k₂ f₁ f₂ hf₁ hf₂
       dsimp
       rw [pullFunctorObjHom_eq _ _ _ _ _  (s ≫ r) _ _ rfl,
@@ -304,7 +324,7 @@ def pullFunctorCompIso
       dsimp
       simp only [Category.assoc]
       rw [mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv_app_assoc _ _ _ _ _ _ _
-        (by aesoptoloc) rfl rfl, mapComp'₀₂₃_hom_app _ _ _ _ _ _ _ _ rfl rfl]))
+        (by grind) rfl rfl, mapComp'₀₂₃_hom_app _ _ _ _ _ _ _ _ rfl rfl]))
 
 end
 
