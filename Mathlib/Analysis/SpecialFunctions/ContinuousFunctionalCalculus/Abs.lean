@@ -17,7 +17,7 @@ and provides basic API.
 
 ## Main declarations
 
-+ `CFC.abs`: The absolute value declaration as `abs a := CFC.sqrt (star a * a)`.
++ `CFC.abs`: The absolute value as `abs a := CFC.sqrt (star a * a)`.
 
 -/
 
@@ -25,8 +25,6 @@ variable {𝕜 A : Type*}
 
 open scoped NNReal
 open CFC
-
-alias ⟨Commute.star_right, Commute.star_left⟩ := commute_star_comm
 
 namespace CFC
 
@@ -65,7 +63,7 @@ lemma abs_mul_abs (a : A) : abs a * abs a = star a * a :=
 in that case one should simply use `Commute.cfcₙ_nnreal` directly.
 
 The point of this theorem is to have simpler hypotheses. -/
-lemma Commute.abs_left {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
+lemma _root_.Commute.cfcAbs_left {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
     Commute (abs a) b :=
   .cfcₙ_nnreal (by simp_all [h₂.star_left]) _
 
@@ -73,33 +71,33 @@ lemma Commute.abs_left {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)
 in that case one should simply use `Commute.cfcₙ_nnreal` directly.
 
 The point of this theorem is to have simpler hypotheses. -/
-lemma Commute.abs_right {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
+lemma _root_.Commute.cfcAbs_right {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
     Commute b (abs a) :=
-  h₁.abs_left h₂ |>.symm
+  h₁.cfcAbs_left h₂ |>.symm
 
 /- The hypotheses could be weakened to `Commute (star a * a) (star b * b)`, but
 in that case one should simply use `Commute.cfcₙ_nnreal` (twice) directly.
 
 The point of this theorem is to have simpler hypotheses. -/
-lemma Commute.abs_abs {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
+lemma _root_.Commute.cfcAbs_cfcAbs {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
     Commute (abs a) (abs b) :=
   Commute.cfcₙ_nnreal (by simp_all [h₂.star_left]) _ |>.symm.cfcₙ_nnreal _ |>.symm
 
 /-- Normal elements commute with their absolute value. -/
 lemma commute_abs_self (a : A) (ha : IsStarNormal a := by cfc_tac) :
     Commute (abs a) a :=
-  .abs_left (.refl a) ha.star_comm_self.symm
+  .cfcAbs_left (.refl a) ha.star_comm_self.symm
 
-lemma Commute.abs_mul_eq {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
+lemma _root_.Commute.cfcAbs_mul_eq {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
     abs (a * b) = abs a * abs b := by
-  have hab := h₁.abs_abs h₂
+  have hab := h₁.cfcAbs_cfcAbs h₂
   rw [abs, CFC.sqrt_eq_iff _ _ (star_mul_self_nonneg _)
     (hab.mul_nonneg (abs_nonneg a) (abs_nonneg b)), hab.eq, hab.mul_mul_mul_comm,
     abs_mul_abs, abs_mul_abs, star_mul, h₂.star_left.symm.mul_mul_mul_comm, h₁.eq]
 
 lemma abs_mul_self (a : A) (ha : IsStarNormal a := by cfc_tac) :
     abs (a * a) = star a * a := by
-  rw [Commute.abs_mul_eq (.refl a) ha.star_comm_self.symm, abs_mul_abs]
+  rw [Commute.cfcAbs_mul_eq (.refl a) ha.star_comm_self.symm, abs_mul_abs]
 
 lemma abs_nnrpow_two (a : A) : abs a ^ (2 : ℝ≥0) = star a * a := by
   simp only [abs_nonneg, nnrpow_two]
@@ -132,7 +130,7 @@ protected lemma posPart_add_negPart (a : A) (ha : IsSelfAdjoint a := by cfc_tac)
   exact cfcₙ_congr fun x hx ↦ posPart_add_negPart x
 
 lemma abs_sub_self (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : abs a - a = 2 • a⁻ := by
- simpa [two_smul] using
+  simpa [two_smul] using
     congr($(CFC.posPart_add_negPart a) - $(CFC.posPart_sub_negPart a)).symm
 
 lemma abs_add_self (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : abs a + a = 2 • a⁺ := by
@@ -140,7 +138,7 @@ lemma abs_add_self (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : abs a + a = 2 
     congr($(CFC.posPart_add_negPart a) + $(CFC.posPart_sub_negPart a)).symm
 
 @[simp, grind =]
-lemma abs_abs (a : A) : abs (abs a) = abs a := abs_of_nonneg ..
+lemma cfcAbs_cfcAbs (a : A) : abs (abs a) = abs a := abs_of_nonneg ..
 
 variable [StarModule ℝ A]
 
@@ -165,10 +163,10 @@ variable {p : A → Prop} [RCLike 𝕜]
 
 open ComplexOrder
 
-lemma cfcₙ_norm_sq_nonneg (f : 𝕜 → 𝕜) (a : A) : 0 ≤ cfcₙ (fun z ↦ star (f z) * (f z)) a :=
+lemma _root_.cfcₙ_norm_sq_nonneg (f : 𝕜 → 𝕜) (a : A) : 0 ≤ cfcₙ (fun z ↦ star (f z) * (f z)) a :=
   cfcₙ_nonneg fun _ _ ↦ star_mul_self_nonneg _
 
-lemma cfcₙ_norm_nonneg (f : 𝕜 → 𝕜) (a : A) : 0 ≤ cfcₙ (‖f ·‖ : 𝕜 → 𝕜) a :=
+lemma _root_.cfcₙ_norm_nonneg (f : 𝕜 → 𝕜) (a : A) : 0 ≤ cfcₙ (‖f ·‖ : 𝕜 → 𝕜) a :=
   cfcₙ_nonneg fun _ _ ↦ by simp
 
 variable [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
@@ -192,7 +190,7 @@ lemma abs_eq_cfcₙ_coe_norm (a : A) (ha : p a := by cfc_tac) :
   conv_rhs => rw [← cfcₙ_id' 𝕜 a, ← cfcₙ_star, ← cfcₙ_mul ..]
   simp [RCLike.conj_mul, sq]
 
-lemma cfcₙ_comp_norm (f : 𝕜 → 𝕜) (a : A) (ha : p a := by cfc_tac)
+lemma _root_.cfcₙ_comp_norm (f : 𝕜 → 𝕜) (a : A) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f ((fun z ↦ (‖z‖ : 𝕜)) '' quasispectrum 𝕜 a) := by cfc_cont_tac) :
     cfcₙ (f ‖·‖) a = cfcₙ f (abs a) := by
   obtain (hf0 | hf0) := em (f 0 = 0)
@@ -263,7 +261,7 @@ variable [StarModule 𝕜 A] [StarModule ℝ A] [IsScalarTower ℝ 𝕜 A] in
 lemma abs_algebraMap (c : 𝕜) : abs (algebraMap 𝕜 A c) = algebraMap ℝ A ‖c‖ := by
   simp [Algebra.algebraMap_eq_smul_one]
 
-lemma cfc_comp_norm (f : 𝕜 → 𝕜) (a : A) (ha : p a := by cfc_tac)
+lemma _root_.cfc_comp_norm (f : 𝕜 → 𝕜) (a : A) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f ((fun z ↦ (‖z‖ : 𝕜)) '' spectrum 𝕜 a) := by cfc_cont_tac) :
     cfc (f ‖·‖) a = cfc f (abs a) := by
   rw [abs_eq_cfcₙ_coe_norm 𝕜 a, cfcₙ_eq_cfc, ← cfc_comp' ..]

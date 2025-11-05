@@ -157,9 +157,8 @@ lemma isLocallyNoetherian_of_isOpenImmersion {Y : Scheme} (f : X ⟶ Y) [IsOpenI
   · suffices Scheme.Hom.opensRange f ⊓ V = V by
       rw [this]
     rw [← Opens.coe_inj]
-    rw [Opens.coe_inf, Scheme.Hom.coe_opensRange, IsOpenMap.coe_functor_obj,
-      Set.inter_eq_right, Set.image_subset_iff, Set.preimage_range]
-    exact Set.subset_univ _
+    rw [Opens.coe_inf, Scheme.Hom.coe_opensRange, Set.inter_eq_right]
+    exact Set.image_subset_range _ _
 
 /-- If `𝒰` is an open cover of a scheme `X`, then `X` is locally Noetherian if and only if
 `𝒰.X i` are all locally Noetherian. -/
@@ -194,7 +193,7 @@ lemma noetherianSpace_of_isAffineOpen (U : X.Opens) (hU : IsAffineOpen U)
 @[stacks 01OX]
 instance (priority := 100) {Z : Scheme} [IsLocallyNoetherian X]
     {f : Z ⟶ X} [IsOpenImmersion f] : QuasiCompact f := by
-  apply (quasiCompact_iff_forall_affine f).mpr
+  apply quasiCompact_iff_forall_isAffineOpen.mpr
   intro U hU
   rw [Opens.map_coe, ← Set.preimage_inter_range]
   apply f.isOpenEmbedding.isInducing.isCompact_preimage'
@@ -208,7 +207,7 @@ instance (priority := 100) {Z : Scheme} [IsLocallyNoetherian X]
 @[stacks 01OY]
 instance (priority := 100) IsLocallyNoetherian.quasiSeparatedSpace [IsLocallyNoetherian X] :
     QuasiSeparatedSpace X := by
-  apply (quasiSeparatedSpace_iff_affine X).mpr
+  apply quasiSeparatedSpace_iff_forall_affineOpens.mpr
   intro U V
   have hInd := U.2.fromSpec.isOpenEmbedding.isInducing
   apply (hInd.isCompact_preimage_iff ?_).mp
@@ -269,7 +268,7 @@ instance (priority := 100) IsNoetherian.noetherianSpace [IsNoetherian X] :
   apply TopologicalSpace.noetherian_univ_iff.mp
   let 𝒰 := X.affineCover.finiteSubcover
   rw [← 𝒰.iUnion_range]
-  suffices ∀ i : 𝒰.I₀, NoetherianSpace (Set.range <| (𝒰.f i).base) by
+  suffices ∀ i : 𝒰.I₀, NoetherianSpace (Set.range <| (𝒰.f i)) by
     apply NoetherianSpace.iUnion
   intro i
   have : IsAffine (𝒰.X i) := by
@@ -308,7 +307,7 @@ instance {R : CommRingCat} [IsNoetherianRing R] :
     IsNoetherian (Spec R) where
 
 instance {R} [CommRing R] [IsNoetherianRing R] :
-    IsNoetherian Spec(R) := by
+    IsNoetherian <| Spec <| .of R := by
   suffices IsNoetherianRing (CommRingCat.of R) by infer_instance
   assumption
 

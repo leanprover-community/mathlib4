@@ -179,11 +179,8 @@ section IsAlgClosed
 
 variable {k : Type*} [Field k] [CharP k p] [IsAlgClosed k]
 
-/-- Recursively defines the sequence of coefficients for `WittVector.frobeniusRotation`.
--/
--- Constructions by well-founded recursion are by default irreducible.
--- As we rely on definitional properties below, we mark this `@[semireducible]`.
-@[semireducible] noncomputable def frobeniusRotationCoeff {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0)
+/-- Recursively defines the sequence of coefficients for `WittVector.frobeniusRotation`. -/
+noncomputable def frobeniusRotationCoeff {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0)
     (ha₂ : a₂.coeff 0 ≠ 0) : ℕ → k
   | 0 => solution p a₁ a₂
   | n + 1 => succNthVal p n a₁ a₂ (fun i => frobeniusRotationCoeff ha₁ ha₂ i.val) ha₁ ha₂
@@ -204,15 +201,16 @@ theorem frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 �
     frobenius (frobeniusRotation p ha₁ ha₂) * a₁ = frobeniusRotation p ha₁ ha₂ * a₂ := by
   ext n
   rcases n with - | n
-  · simp only [WittVector.mul_coeff_zero, WittVector.coeff_frobenius_charP, frobeniusRotation]
-    apply solution_spec' _ ha₁
+  · simp only [WittVector.mul_coeff_zero, WittVector.coeff_frobenius_charP, frobeniusRotation,
+      coeff_mk, frobeniusRotationCoeff]
+    exact solution_spec' _ ha₁ _
   · simp only [nthRemainder_spec, WittVector.coeff_frobenius_charP,
-      frobeniusRotation]
+      frobeniusRotation, coeff_mk, frobeniusRotationCoeff]
     have :=
       succNthVal_spec' p n a₁ a₂ (fun i : Fin (n + 1) => frobeniusRotationCoeff p ha₁ ha₂ i.val)
         ha₁ ha₂
     simp only [frobeniusRotationCoeff, Fin.val_zero] at this
-    convert this using 3
+    convert this using 3; clear this
     apply TruncatedWittVector.ext
     intro i
     simp only [WittVector.coeff_truncateFun, WittVector.coeff_frobenius_charP]

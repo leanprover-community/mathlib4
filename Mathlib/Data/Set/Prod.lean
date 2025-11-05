@@ -224,8 +224,6 @@ theorem prod_range_range_eq {m₁ : α → γ} {m₂ : β → δ} :
 theorem range_prodMap {m₁ : α → γ} {m₂ : β → δ} : range (Prod.map m₁ m₂) = range m₁ ×ˢ range m₂ :=
   prod_range_range_eq.symm
 
-@[deprecated (since := "2025-04-10")] alias range_prod_map := range_prodMap
-
 theorem prod_range_univ_eq {m₁ : α → γ} :
     range m₁ ×ˢ (univ : Set β) = range fun p : α × β => (m₁ p.1, p.2) :=
   ext <| by simp [range]
@@ -535,7 +533,7 @@ theorem offDiag_eq_empty : s.offDiag = ∅ ↔ s.Subsingleton := by
 
 alias ⟨_, Nontrivial.offDiag_nonempty⟩ := offDiag_nonempty
 
-alias ⟨_, Subsingleton.offDiag_eq_empty⟩ := offDiag_nonempty
+alias ⟨_, Subsingleton.offDiag_eq_empty⟩ := offDiag_eq_empty
 
 variable (s t)
 
@@ -864,6 +862,9 @@ theorem subset_pi_eval_image (s : Set ι) (u : Set (∀ i, α i)) : u ⊆ pi s f
 
 theorem univ_pi_ite (s : Set ι) [DecidablePred (· ∈ s)] (t : ∀ i, Set (α i)) :
     (pi univ fun i => if i ∈ s then t i else univ) = s.pi t := by grind
+
+lemma uncurry_preimage_prod_pi {κ α : Type*} (s : Set ι) (t : Set κ) (u : ι × κ → Set α) :
+    Function.uncurry ⁻¹' (s ×ˢ t).pi u = s.pi (fun i ↦ t.pi fun j ↦ u ⟨i, j⟩) := by grind
 
 end Pi
 

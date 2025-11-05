@@ -48,13 +48,13 @@ Note this is heterobasic; the bilinear map on the left can take values in a modu
 (commutative) algebra over the ring of the module in which the right bilinear map is valued. -/
 def tensorDistrib :
     (BilinMap A M₁ N₁ ⊗[R] BilinMap R M₂ N₂) →ₗ[A] BilinMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
-  (TensorProduct.lift.equiv A (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂)).symm.toLinearMap ∘ₗ
+  (TensorProduct.lift.equiv (.id A) (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂)).symm.toLinearMap ∘ₗ
   ((LinearMap.llcomp A _ _ _).flip
     (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R R A A M₁ M₂ M₁ M₂).toLinearMap)
   ∘ₗ TensorProduct.AlgebraTensorModule.homTensorHomMap R _ _ _ _ _ _
   ∘ₗ (TensorProduct.AlgebraTensorModule.congr
-    (TensorProduct.lift.equiv A M₁ M₁ N₁)
-    (TensorProduct.lift.equiv R _ _ _)).toLinearMap
+    (TensorProduct.lift.equiv (.id A) M₁ M₁ N₁)
+    (TensorProduct.lift.equiv (.id R) _ _ _)).toLinearMap
 
 @[simp]
 theorem tensorDistrib_tmul (B₁ : BilinMap A M₁ N₁) (B₂ : BilinMap R M₂ N₂) (m₁ : M₁) (m₂ : M₂)
@@ -86,7 +86,7 @@ protected def baseChange (B : BilinMap R M₂ N₂) : BilinMap A (A ⊗[R] M₂)
 @[simp]
 theorem baseChange_tmul (B₂ : BilinMap R M₂ N₂) (a : A) (m₂ : M₂)
     (a' : A) (m₂' : M₂) :
-    B₂.baseChange A (a ⊗ₜ m₂) (a' ⊗ₜ m₂') = (a * a') ⊗ₜ (B₂ m₂ m₂')  :=
+    B₂.baseChange A (a ⊗ₜ m₂) (a' ⊗ₜ m₂') = (a * a') ⊗ₜ (B₂ m₂ m₂') :=
   rfl
 
 lemma baseChange_isSymm {B₂ : BilinMap R M₂ N₂} (hB₂ : ∀ x y, B₂ x y = B₂ y x) (x y : A ⊗[R] M₂) :
@@ -163,10 +163,11 @@ noncomputable def tensorDistribEquiv :
     BilinForm R M₁ ⊗[R] BilinForm R M₂ ≃ₗ[R] BilinForm R (M₁ ⊗[R] M₂) :=
   -- the same `LinearEquiv`s as from `tensorDistrib`,
   -- but with the inner linear map also as an equiv
-  TensorProduct.congr (TensorProduct.lift.equiv R _ _ _) (TensorProduct.lift.equiv R _ _ _) ≪≫ₗ
+  TensorProduct.congr
+    (TensorProduct.lift.equiv (.id R) _ _ _) (TensorProduct.lift.equiv (.id R) _ _ _) ≪≫ₗ
   TensorProduct.dualDistribEquiv R (M₁ ⊗ M₁) (M₂ ⊗ M₂) ≪≫ₗ
   (TensorProduct.tensorTensorTensorComm R _ _ _ _).dualMap ≪≫ₗ
-  (TensorProduct.lift.equiv R _ _ _).symm
+  (TensorProduct.lift.equiv (.id R) _ _ _).symm
 
 @[simp]
 theorem tensorDistribEquiv_tmul (B₁ : BilinForm R M₁) (B₂ : BilinForm R M₂) (m₁ : M₁) (m₂ : M₂)

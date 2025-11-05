@@ -106,7 +106,7 @@ lemma Int.padicValuation_self (p : ℕ) [Fact p.Prime] :
 lemma Int.padicValuation_le_one (p : ℕ) [Fact p.Prime] (x : ℤ) :
     Int.padicValuation p x ≤ 1 := by
   simp only [← Rat.padicValuation_cast, Rat.padicValuation, Valuation.coe_mk,
-    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Rat.intCast_eq_zero, padicValRat.of_int]
+    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Rat.intCast_eq_zero_iff, padicValRat.of_int]
   split_ifs
   · simp
   · rw [← le_log_iff_exp_le] <;>
@@ -115,7 +115,7 @@ lemma Int.padicValuation_le_one (p : ℕ) [Fact p.Prime] (x : ℤ) :
 lemma Int.padicValuation_eq_one_iff {p : ℕ} [Fact p.Prime] {x : ℤ} :
     Int.padicValuation p x = 1 ↔ ¬ (p : ℤ) ∣ x := by
   simp only [← Rat.padicValuation_cast, Rat.padicValuation, Valuation.coe_mk,
-    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Rat.intCast_eq_zero, padicValRat.of_int]
+    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Rat.intCast_eq_zero_iff, padicValRat.of_int]
   split_ifs
   · simp_all
   · rw [← exp_zero, exp_injective.eq_iff]
@@ -140,6 +140,18 @@ lemma Rat.padicValuation_le_one_iff {p : ℕ} [Fact p.Prime] {x : ℚ} :
         rw [Int.natCast_dvd] at h'
         exact Nat.not_coprime_of_dvd_of_dvd (Nat.Prime.one_lt Fact.out) h h' x.reduced.symm
   · simp [zero_lt_iff]
+
+theorem Rat.surjective_padicValuation (p : ℕ) [hp : Fact (p.Prime)] :
+    Function.Surjective (Rat.padicValuation p) := by
+  intro x
+  induction x with
+  | zero => simp
+  | coe x =>
+    induction x with | ofAdd x
+    simp_rw [Rat.padicValuation, WithZero.exp, Valuation.coe_mk, MonoidWithZeroHom.coe_mk]
+    rcases le_or_gt 0 x with (hx | hx)
+    · exact ⟨(p ^ x.natAbs)⁻¹, by simp [hp.out.ne_zero, hx]⟩
+    · exact ⟨p ^ x.natAbs, by simp [hp.out.ne_zero, padicValRat.pow, abs_eq_neg_self.2 hx.le]⟩
 
 noncomputable section
 

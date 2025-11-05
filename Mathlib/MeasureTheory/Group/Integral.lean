@@ -112,7 +112,8 @@ to a left-invariant measure is 0. -/
       respect to a left-invariant measure is 0. -/]
 theorem integral_eq_zero_of_mul_left_eq_neg [IsMulLeftInvariant μ] (hf' : ∀ x, f (g * x) = -f x) :
     ∫ x, f x ∂μ = 0 := by
-  simp_rw [← self_eq_neg ℝ E, ← integral_neg, ← hf', integral_mul_left_eq_self]
+  have := noZeroSMulDivisors_nat_iff_isAddTorsionFree.1 <| Nat.noZeroSMulDivisors ℝ E
+  simp_rw [← self_eq_neg, ← integral_neg, ← hf', integral_mul_left_eq_self]
 
 /-- If some right-translate of a function negates it, then the integral of the function with respect
 to a right-invariant measure is 0. -/
@@ -121,7 +122,8 @@ to a right-invariant measure is 0. -/
       respect to a right-invariant measure is 0. -/]
 theorem integral_eq_zero_of_mul_right_eq_neg [IsMulRightInvariant μ] (hf' : ∀ x, f (x * g) = -f x) :
     ∫ x, f x ∂μ = 0 := by
-  simp_rw [← self_eq_neg ℝ E, ← integral_neg, ← hf', integral_mul_right_eq_self]
+  have := noZeroSMulDivisors_nat_iff_isAddTorsionFree.1 <| Nat.noZeroSMulDivisors ℝ E
+  simp_rw [← self_eq_neg, ← integral_neg, ← hf', integral_mul_right_eq_self]
 
 @[to_additive]
 theorem Integrable.comp_mul_left {f : G → F} [IsMulLeftInvariant μ] (hf : Integrable f μ) (g : G) :
