@@ -33,7 +33,7 @@ structure PairingCore where
   ι : Type v
   /-- the dimension of a type (II) simplex -/
   d (s : ι) : ℕ
-  /-- a type (I) simplex -/
+  /-- the family of type (I) simplices -/
   simplex (s : ι) : X _⦋d s + 1⦌
   /-- the corresponding type (II) is the `1`-codimensional face given by this index -/
   index (s : ι) : Fin (d s + 2)
