@@ -120,7 +120,7 @@ lemma id_app {n : ℕ} (X : Truncated n) (d : (SimplexCategory.Truncated n)ᵒ�
     NatTrans.app (𝟙 X) d = 𝟙 _ :=
   rfl
 
-@[reassoc (attr := simp)]
+@[simp, reassoc]
 lemma comp_app {n : ℕ} {X Y Z : Truncated n} (f : X ⟶ Y) (g : Y ⟶ Z)
     (d : (SimplexCategory.Truncated n)ᵒᵖ) :
     (f ≫ g).app d = f.app d ≫ g.app d :=

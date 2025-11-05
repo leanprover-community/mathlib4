@@ -17,6 +17,9 @@ open Simplicial CategoryTheory
 
 namespace SimplexCategory.Truncated
 
+instance {d : ℕ} {n m : Truncated d} : DecidableEq (n ⟶ m) := fun a b =>
+  decidable_of_iff (a.toOrderHom = b.toOrderHom) SimplexCategory.Hom.ext_iff.symm
+
 /-- For `0 < n`, the inclusion functor from the `n`-truncated simplex category to the untruncated
 simplex category is initial. -/
 instance initial_inclusion {n : ℕ} [NeZero n] : (inclusion n).Initial := by
@@ -88,24 +91,12 @@ lemma δ₂_two_comp_σ₂_one : δ₂ (2 : Fin 3) ≫ σ₂ 1 = 𝟙 _ :=
 lemma δ₂_two_comp_σ₂_zero : δ₂ (2 : Fin 3) ≫ σ₂ 0 = σ₂ 0 ≫ δ₂ 1 :=
   SimplexCategory.δ_comp_σ_of_gt' (by decide)
 
-lemma δ₂_one_eq_const : δ₂ (1 : Fin 2) = const _ _ 0 := by
-  -- should be `by decide`
-  ext i
-  fin_cases i
-  rfl
+lemma δ₂_one_eq_const : δ₂ (1 : Fin 2) = const _ _ 0 := by decide
 
-lemma δ₂_zero_eq_const : δ₂ (0 : Fin 2) = const _ _ 1 := by
-  -- should be `by decide`
-  ext i
-  fin_cases i
-  rfl
+lemma δ₂_zero_eq_const : δ₂ (0 : Fin 2) = const _ _ 1 := by decide
 
 @[reassoc]
-lemma δ₂_zero_comp_δ₂_two : δ₂ (0 : Fin 2) ≫ δ₂ 2 = δ₂ 1 ≫ δ₂ 0 := by
-  -- should be `by decide`
-  ext i
-  fin_cases i
-  rfl
+lemma δ₂_zero_comp_δ₂_two : δ₂ (0 : Fin 2) ≫ δ₂ 2 = δ₂ 1 ≫ δ₂ 0 := by decide
 
 end Two
 

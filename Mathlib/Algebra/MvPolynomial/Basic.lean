@@ -402,9 +402,6 @@ theorem monomial_add_induction_on {motive : MvPolynomial σ R → Prop} (p : MvP
     motive p :=
   Finsupp.induction p (C_0.rec <| C 0) monomial_add
 
-@[deprecated (since := "2025-03-11")]
-alias induction_on''' := monomial_add_induction_on
-
 /--
 Similar to `MvPolynomial.induction_on` but only a yet weaker form of `h_add` is required.
 In particular, this version only requires us to show
