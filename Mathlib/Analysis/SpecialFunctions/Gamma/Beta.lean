@@ -385,7 +385,7 @@ theorem GammaSeq_mul (z : ℂ) {n : ℕ} (hn : n ≠ 0) :
     intro j
     push_cast
     have : (j : ℂ) + 1 ≠ 0 := by rw [← Nat.cast_succ, Nat.cast_ne_zero]; exact Nat.succ_ne_zero j
-    field_simp; ring
+    field
   simp_rw [this]
   rw [Finset.prod_mul_distrib, ← Nat.cast_prod, Finset.prod_pow,
     Finset.prod_range_add_one_eq_factorial, Nat.cast_pow,

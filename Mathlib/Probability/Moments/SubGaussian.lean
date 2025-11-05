@@ -316,7 +316,7 @@ lemma measure_ge_le (h : HasSubgaussianMGF X c κ ν) {ε : ℝ} (hε : 0 ≤ ε
   calc (κ ω').real {ω | ε ≤ X ω}
   -- choose the minimizer of the r.h.s. of `h` for `t ≥ 0`. That is, `t = ε / c`.
   _ ≤ exp (-(ε / c) * ε + c * (ε / c) ^ 2 / 2) := h (ε / c) (by positivity)
-  _ = exp (- ε ^ 2 / (2 * c)) := by congr; field_simp; ring
+  _ = exp (- ε ^ 2 / (2 * c)) := by congr; field
 
 end ChernoffBound
 

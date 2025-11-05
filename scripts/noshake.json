@@ -103,6 +103,7 @@
   "Mathlib.Tactic.FastInstance",
   "Mathlib.Tactic.Field",
   "Mathlib.Tactic.FieldSimp",
+  "Mathlib.Tactic.Field",
   "Mathlib.Tactic.FinCases",
   "Mathlib.Tactic.Find",
   "Mathlib.Tactic.Finiteness",

@@ -86,14 +86,13 @@ theorem IsRoot.norm_lt_cauchyBound {p : K[X]} (hp : p ≠ 0) {a : K} (h : p.IsRo
     · rw [geom_sum_of_one_lt ha] at this
       calc
         ‖a‖₊ = ‖a‖₊ - 1 + 1 := (tsub_add_cancel_of_le ha.le).symm
-        _ = ‖a‖₊ ^ p.natDegree * (‖a‖₊ - 1) / ‖a‖₊ ^ p.natDegree + 1 := by
-          field_simp
+        _ = ‖a‖₊ ^ p.natDegree * (‖a‖₊ - 1) / ‖a‖₊ ^ p.natDegree + 1 := by field
         _ ≤ (cauchyBound p - 1) * ((‖a‖₊ ^ p.natDegree - 1) / (‖a‖₊ - 1)) * (‖a‖₊ - 1)
             / ‖a‖₊ ^ p.natDegree + 1 := by gcongr
         _ = (cauchyBound p - 1) * (‖a‖₊ ^ p.natDegree - 1) / ‖a‖₊ ^ p.natDegree + 1 := by
           congr 2
           have : ‖a‖₊ - 1 ≠ 0 := fun nh ↦ (ha.trans_le (tsub_eq_zero_iff_le.mp nh)).false
-          field_simp
+          field
         _ < (cauchyBound p - 1) * ‖a‖₊ ^ p.natDegree / ‖a‖₊ ^ p.natDegree + 1 := by
           gcongr
           · apply lt_of_le_of_ne (by simp)
@@ -122,6 +121,6 @@ theorem IsRoot.norm_lt_cauchyBound {p : K[X]} (hp : p ≠ 0) {a : K} (h : p.IsRo
       apply le_sup (f := (‖p.coeff ·‖₊)) ‹_›
     _ = (cauchyBound p - 1) * ∑ x ∈ range p.natDegree, ‖a‖₊ ^ x := by
       simp only [← mul_sum]
-      field_simp
+      field
 
 end Polynomial

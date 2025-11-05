@@ -95,7 +95,7 @@ theorem dist_inversion_center (c x : P) (R : ℝ) : dist (inversion c R x) c = R
   field_simp
   simp only [sq, dist_vadd_left, norm_smul, norm_div, norm_mul, Real.norm_eq_abs, abs_mul_abs_self,
     abs_dist, ← dist_eq_norm_vsub]
-  field_simp
+  field
 
 /-- Distance from the center of an inversion to the image of a point under the inversion. This
 formula accidentally works for `x = c`. -/
@@ -161,8 +161,7 @@ theorem dist_inversion_mul_dist_center_eq (hx : x ≠ c) (hy : y ≠ c) :
   have hy' : inversion c R y ≠ c := by simp [*]
   conv in dist _ y => rw [← inversion_inversion c hR y]
   rw [dist_inversion_inversion hx hy', dist_inversion_center]
-  have : dist x c ≠ 0 := dist_ne_zero.2 hx
-  field_simp
+  field [dist_ne_zero.2 hx]
 
 /-!
 ### Ptolemy's inequality

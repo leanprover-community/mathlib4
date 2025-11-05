@@ -403,7 +403,7 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
         linarith only
       · have ID : ‖D / (1 + D) - 1‖ = 1 / (1 + D) := by
           rw [Real.norm_of_nonpos]
-          · simp [field]
+          · field
           · field_simp
             linarith only
         rw [← mem_closedBall_iff_norm']
@@ -504,14 +504,14 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
           abs_of_nonneg A.le]
         calc
           2 / (R + 1) * ‖x‖ ≤ 2 / (R + 1) := mul_le_of_le_one_right (by positivity) hx
-          _ = 1 - (R - 1) / (R + 1) := by field_simp; ring
+          _ = 1 - (R - 1) / (R + 1) := by field
       support := fun R hR => by
         have A : 0 < (R + 1) / 2 := by linarith
         have C : (R - 1) / (R + 1) < 1 := by apply (div_lt_one _).2 <;> linarith
         simp only [hR, if_true, support_comp_inv_smul₀ A.ne', y_support _ (IR R hR) C,
           _root_.smul_ball A.ne', Real.norm_of_nonneg A.le, smul_zero]
         refine congr (congr_arg ball (Eq.refl 0)) ?_
-        field_simp; ring }
+        field }
 
 end ExistsContDiffBumpBase
 
