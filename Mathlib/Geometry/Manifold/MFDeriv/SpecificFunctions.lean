@@ -714,8 +714,7 @@ theorem mfderivWithin_sumSwap (hU : UniqueMDiffWithinAt I s p) :
   (hasMFDerivWithinAt_sumSwap).mfderivWithin hU
 
 theorem mfderiv_sumSwap :
-    mfderiv I I (@Sum.swap M M') p
-      = ContinuousLinearMap.id 𝕜 (TangentSpace I p) := by
+    mfderiv I I (@Sum.swap M M') p = ContinuousLinearMap.id 𝕜 (TangentSpace I p) := by
   simpa [mfderivWithin_univ] using (mfderivWithin_sumSwap (uniqueMDiffWithinAt_univ I))
 
 end disjointUnion
