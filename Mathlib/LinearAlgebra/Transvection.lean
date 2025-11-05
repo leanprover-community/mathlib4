@@ -154,8 +154,8 @@ theorem baseChange (f : Module.Dual R V) (v : V) :
   ext; simp [transvection, TensorProduct.tmul_add]
 
 theorem _root_.LinearEquiv.transvection.baseChange
-    {f : Module.Dual R V} {v : V}
-    (h : f v = 0) (hA : f.baseChange A (1 ⊗ₜ[R] v) = 0) :
+    {f : Module.Dual R V} {v : V} (h : f v = 0)
+    (hA : f.baseChange A (1 ⊗ₜ[R] v) = 0 := by simp [Algebra.algebraMap_eq_smul_one]) :
     (LinearEquiv.transvection h).baseChange R A V V = LinearEquiv.transvection hA := by
   simp [← toLinearMap_inj, coe_baseChange,
     LinearEquiv.transvection.coe_toLinearMap, LinearMap.transvection.baseChange]
