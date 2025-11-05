@@ -38,11 +38,9 @@ section -- TODO: move
 variable {C D : Type*} (E : Type*) [Category C] [Category D] [Category E] [MonoidalCategory E]
     (F : C ⥤ D)
 
-def whiskeringLeftCoreMonoidal : ((whiskeringLeft _ _ E).obj F).CoreMonoidal where
+instance : ((whiskeringLeft _ _ E).obj F).Monoidal := Functor.CoreMonoidal.toMonoidal {
   εIso := Iso.refl _
-  μIso _ _ := Iso.refl _
-
-instance : ((whiskeringLeft _ _ E).obj F).Monoidal := (whiskeringLeftCoreMonoidal E F).toMonoidal
+  μIso _ _ := Iso.refl _ }
 
 end
 
