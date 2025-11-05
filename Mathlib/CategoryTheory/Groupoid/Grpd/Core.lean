@@ -30,36 +30,28 @@ noncomputable section
 namespace CategoryTheory
 namespace Core
 
-variable {C : Type u} [Category.{v} C] {D : Type u₁} [Category.{v₁} D]
-  {G : Type u₂} [Groupoid.{v₂} G]
+variable {C : Type u} [Category.{v} C] {D : Type u₁} [Groupoid.{v₁} D]
 
 /-- The functor from `Cat` to `Grpd` that takes the core of a category, on objects. -/
 def functor : Cat.{v,u} ⥤ Grpd.{v,u} where
   obj C := Grpd.of (Core C)
   map F := F.core
 
-def functorEquiv : (G ⥤ C) ≃ (G ⥤ Core C) where
-  toFun F := sorry
-  invFun := sorry
-  left_inv := sorry
-  right_inv := sorry
+@[simps]
+def functorEquiv : (D ⥤ C) ≃ (D ⥤ Core C) where
+  toFun := functorToCore
+  invFun F := F ⋙ inclusion C
+  left_inv := functorToCore_comp_inclusion
+  right_inv := functorToCore_apply_comp_inclusion
 
+attribute [local instance] Groupoid.ofIsGroupoid in
 /-- The adjunction between the forgetful functor from `Grpd` to `Cat` and the core
 functor from `Cat` to `Grpd`. -/
 def adjunction : Grpd.forgetToCat ⊣ functor :=
   Adjunction.mkOfHomEquiv
-    { homEquiv G C := by
-        dsimp [Grpd.forgetToCat, functor]
-        sorry
-      homEquiv_naturality_left_symm := sorry
-      homEquiv_naturality_right := sorry }
--- where
-  -- unit := {
-  --   app G := functorToCore (𝟭 _)
-  --   naturality _ _ F := by
-  --     simp [functor, Grpd.comp_eq_comp, ← functorToCore_comp_left, ← functorToCore_comp_right,
-  --       Functor.id_comp, Functor.comp_id, Grpd.forgetToCat]}
-  -- counit := {app C := inclusion C}
+    { homEquiv _ _ := functorEquiv
+      homEquiv_naturality_left_symm _ _ := rfl
+      homEquiv_naturality_right := functorToCore_comp_right }
 
 end Core
 
@@ -68,10 +60,10 @@ namespace Grpd
 open Functor Core
 
 instance : IsLeftAdjoint Grpd.forgetToCat :=
-  IsLeftAdjoint.mk ⟨ functor , ⟨ adjunction ⟩ ⟩
+  IsLeftAdjoint.mk ⟨functor, ⟨adjunction⟩⟩
 
 instance : IsRightAdjoint functor :=
-  IsRightAdjoint.mk ⟨ Grpd.forgetToCat , ⟨ adjunction ⟩ ⟩
+  IsRightAdjoint.mk ⟨Grpd.forgetToCat, ⟨adjunction⟩⟩
 
 instance : Coreflective Grpd.forgetToCat where
   R := functor
