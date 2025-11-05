@@ -164,7 +164,7 @@ def map (F : C ⥤ D) [F.PreservesZeroMorphisms] : ShortComplex D :=
 @[simp] lemma map_id (S : ShortComplex C) : S.map (𝟭 C) = S := rfl
 
 @[simp] lemma map_comp (S : ShortComplex C)
-    (F : Functor C D) [F.PreservesZeroMorphisms] (G : Functor D E) [G.PreservesZeroMorphisms] :
+    (F : C ⥤ D) [F.PreservesZeroMorphisms] (G : D ⥤ E) [G.PreservesZeroMorphisms] :
     S.map (F ⋙ G) = (S.map F).map G := rfl
 
 /-- The morphism of short complexes `S.map F ⟶ S.map G` induced by
