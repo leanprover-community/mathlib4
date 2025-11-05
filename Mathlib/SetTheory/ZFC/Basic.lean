@@ -246,10 +246,8 @@ theorem toSet_subset_iff {x y : ZFSet} : (x : Set ZFSet.{u}) ⊆ y ↔ x ⊆ y :
 theorem toSet_injective : Function.Injective ((↑) : ZFSet.{u} → Set ZFSet.{u}) :=
  SetLike.coe_injective
 
-@[simp, norm_cast]
-lemma coe_inj : (x : Set ZFSet.{u}) = y ↔ x = y := SetLike.coe_injective.eq_iff
-
-@[deprecated (since := "2025-11-05")] alias toSet_inj := coe_inj
+@[deprecated SetLike.coe_set_eq (since := "2025-11-05")]
+lemma toSet_inj : (x : Set ZFSet.{u}) = y ↔ x = y := SetLike.coe_set_eq
 
 instance : HasSSubset ZFSet := ⟨(· < ·)⟩
 
