@@ -31,7 +31,7 @@ and that the dimensions of these are definitionally `d` or `d + 1`. -/
 structure PairingCore where
   /-- the index type -/
   ι : Type v
-  /-- the dimension of a type (II) simplex -/
+  /-- the dimension of each type (II) simplex -/
   d (s : ι) : ℕ
   /-- the family of type (I) simplices -/
   simplex (s : ι) : X _⦋d s + 1⦌
