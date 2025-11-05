@@ -150,7 +150,7 @@ theorem maximalRealSubfield_eq_top [IsTotallyReal K] : maximalRealSubfield K = �
 
 theorem isTotallyReal_iff_maximalRealSubfield_eq_top :
     maximalRealSubfield K = ⊤ ↔ IsTotallyReal K :=
-  ⟨fun h ↦ by rw [←isTotallyReal_top_iff_top_iff, isTotallyReal_iff_le_maximalRealSubfield, h],
+  ⟨fun h ↦ by rw [← isTotallyReal_top_iff_top_iff, isTotallyReal_iff_le_maximalRealSubfield, h],
     fun _ ↦ maximalRealSubfield_eq_top⟩
 
 end maximalRealSubfield
