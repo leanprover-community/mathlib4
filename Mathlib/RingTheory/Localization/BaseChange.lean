@@ -164,6 +164,13 @@ instance {α} [IsLocalizedModule S f] :
   · simp [e]
   · simp only [tmul_zero, map_zero]
 
+open Finsupp in
+theorem IsLocalizedModule.map_linearCombination {α : Type*} {v : α → M} [IsLocalizedModule S f] :
+    map S (mapRange.linearMap (Algebra.linearMap R A)) f (linearCombination R v) =
+      linearCombination A (f ∘ v) :=
+  linearMap_ext (S := S) (mapRange.linearMap (Algebra.linearMap R A)) f <| by
+    ext; simp [IsLocalizedModule.map_comp]
+
 section
 
 variable (S : Submonoid A) {N : Type*} [AddCommMonoid N] [Module R N]
