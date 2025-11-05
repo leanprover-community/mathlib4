@@ -29,13 +29,15 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable [FiniteDimensional ℝ E] {L : Submodule ℤ E} [DiscreteTopology L]
 variable {ι : Type*} (b : Basis ι ℤ L)
 
-lemma ZLattice.exists_forall_abs_repr_le_norm :
+namespace ZLattice
+
+lemma exists_forall_abs_repr_le_norm :
     ∃ (ε : ℝ), 0 < ε ∧ ∀ (x : L), ∀ i, ε * |b.repr x i| ≤ ‖x‖ := by
   wlog H : IsZLattice ℝ L
   · let E' := Submodule.span ℝ (L : Set E)
     let L' : Submodule ℤ E' := ZLattice.comap ℝ L E'.subtype
     have inst : DiscreteTopology L' :=
-      ZLattice.comap_discreteTopology _ _ (by fun_prop) Subtype.val_injective
+      comap_discreteTopology _ _ (by fun_prop) Subtype.val_injective
     let e : L' ≃ₗ[ℤ] L := Submodule.comapSubtypeEquivOfLe (p := L) (q := E'.restrictScalars ℤ)
       Submodule.subset_span
     have inst : IsZLattice ℝ L' :=
@@ -64,33 +66,33 @@ Given a basis of a (possibly not full rank) `ℤ`-lattice, there exists a `ε > 
 `|b.repr x i| < n` for all `‖x‖ < n * ε` (i.e. `b.repr x i = O(x)` depending only on `b`).
 This is an arbitrary choice of such an `ε`.
 -/
-def ZLattice.normBound {ι : Type*} (b : Basis ι ℤ L) : ℝ :=
+def normBound {ι : Type*} (b : Basis ι ℤ L) : ℝ :=
   (exists_forall_abs_repr_le_norm b).choose
 
-lemma ZLattice.normBound_pos {ι : Type*} (b : Basis ι ℤ L) : 0 < normBound b :=
+lemma normBound_pos {ι : Type*} (b : Basis ι ℤ L) : 0 < normBound b :=
   (exists_forall_abs_repr_le_norm b).choose_spec.1
 
-lemma ZLattice.normBound_spec {ι : Type*} (b : Basis ι ℤ L) (x : L) (i : ι) :
+lemma normBound_spec {ι : Type*} (b : Basis ι ℤ L) (x : L) (i : ι) :
     normBound b * |b.repr x i| ≤ ‖x‖ :=
   (exists_forall_abs_repr_le_norm b).choose_spec.2 x i
 
-lemma ZLattice.abs_repr_le {ι : Type*} (b : Basis ι ℤ L) (x : L) (i : ι) :
+lemma abs_repr_le {ι : Type*} (b : Basis ι ℤ L) (x : L) (i : ι) :
     |b.repr x i| ≤ (normBound b)⁻¹ * ‖x‖ := by
   rw [le_inv_mul_iff₀ (normBound_pos b)]
   exact normBound_spec b x i
 
-lemma ZLattice.abs_repr_lt_of_norm_lt {ι : Type*} (b : Basis ι ℤ L) (x : L) (n : ℕ)
+lemma abs_repr_lt_of_norm_lt {ι : Type*} (b : Basis ι ℤ L) (x : L) (n : ℕ)
     (hxn : ‖x‖ < normBound b * n) (i : ι) : |b.repr x i| < n := by
   refine Int.cast_lt.mp ((abs_repr_le b x i).trans_lt ?_)
   rwa [inv_mul_lt_iff₀ (normBound_pos b)]
 
-lemma ZLattice.le_norm_of_le_abs_repr {ι : Type*} (b : Basis ι ℤ L) (x : L) (n : ℕ) (i : ι)
+lemma le_norm_of_le_abs_repr {ι : Type*} (b : Basis ι ℤ L) (x : L) (n : ℕ) (i : ι)
     (hi : n ≤ |b.repr x i|) : normBound b * n ≤ ‖x‖ := by
   contrapose! hi
   exact abs_repr_lt_of_norm_lt b x n hi i
 
 open Finset in
-lemma ZLattice.sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq ι]
+lemma sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq ι]
     (b : Basis ι ℤ L) {d : ℕ} (hd : d = Fintype.card ι)
     (n : ℕ) (r : ℝ) (hr : r < -d) :
     ∑ p ∈ Fintype.piFinset fun _ : ι ↦ Icc (-n : ℤ) n, ‖∑ i, p i • b i‖ ^ r ≤
@@ -130,7 +132,7 @@ lemma ZLattice.sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq �
         rw [← Nat.cast_one, ← Nat.cast_add]
         refine Real.rpow_le_rpow_of_nonpos (by positivity) ?_ hr'.le
         obtain ⟨j, hj⟩ : ∃ i, v i ∉ Icc (-k : ℤ) k := by simpa [s] using (mem_sdiff.mp hv).2
-        refine mul_comm _ ε ▸ ZLattice.le_norm_of_le_abs_repr b _ _ j ?_
+        refine mul_comm _ ε ▸ le_norm_of_le_abs_repr b _ _ j ?_
         suffices ↑k + 1 ≤ |v j| by simpa [Finsupp.single_apply] using this
         by_contra! H
         rw [Int.lt_add_one_iff, abs_le, ← Finset.mem_Icc] at H
@@ -162,7 +164,7 @@ lemma ZLattice.sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq �
 
 variable (L)
 
-lemma ZLattice.exists_finsetSum_norm_rpow_le_tsum :
+lemma exists_finsetSum_norm_rpow_le_tsum :
     ∃ A > (0 : ℝ), ∀ r < (-Module.finrank ℤ L : ℝ), ∀ s : Finset L,
       ∑ z ∈ s, ‖z‖ ^ r ≤ A ^ r * ∑' k : ℕ, (k : ℝ) ^ (Module.finrank ℤ L - 1 + r) := by
   classical
@@ -199,7 +201,7 @@ lemma ZLattice.exists_finsetSum_norm_rpow_le_tsum :
     refine (Finset.sum_le_sum_of_subset_of_nonneg hn (by intros; positivity)).trans ?_
     dsimp
     simp only [Submodule.norm_coe]
-    convert ZLattice.sum_piFinset_Icc_rpow_le b rfl n r hr with x
+    convert sum_piFinset_Icc_rpow_le b rfl n r hr with x
     simp [e, Finsupp.linearCombination]
     rfl
   by_cases hA' : A ≤ 1
@@ -221,29 +223,29 @@ Let `L` be a lattice with (possibly non-full) rank `d`, and `r : ℝ` such that 
 Then `∑ z ∈ L, ‖z‖⁻ʳ ≤ A⁻ʳ * ∑ k : ℕ, kᵈ⁻ʳ⁻¹` for some `A > 0` depending only on `L`.
 This is an arbitrary choice of `A`. See `ZLattice.tsum_norm_rpow_le`.
 -/
-def ZLattice.tsumNormRPowBound : ℝ :=
+def tsumNormRPowBound : ℝ :=
   (exists_finsetSum_norm_rpow_le_tsum L).choose
 
-lemma ZLattice.tsumNormRPowBound_pos : 0 < tsumNormRPowBound L :=
+lemma tsumNormRPowBound_pos : 0 < tsumNormRPowBound L :=
   (exists_finsetSum_norm_rpow_le_tsum L).choose_spec.1
 
-lemma ZLattice.tsumNormRPowBound_spec (r : ℝ) (h : r < -Module.finrank ℤ L) (s : Finset L) :
+lemma tsumNormRPowBound_spec (r : ℝ) (h : r < -Module.finrank ℤ L) (s : Finset L) :
     ∑ z ∈ s, ‖z‖ ^ r ≤
       tsumNormRPowBound L ^ r * ∑' k : ℕ, (k : ℝ) ^ (Module.finrank ℤ L - 1 + r) :=
-  (ZLattice.exists_finsetSum_norm_rpow_le_tsum L).choose_spec.2 r h s
+  (exists_finsetSum_norm_rpow_le_tsum L).choose_spec.2 r h s
 
 /-- If `L` is a `ℤ`-lattice with rank `d` in `E`, then `∑ z ∈ L, ‖z‖ʳ` converges when `r < -d`. -/
-lemma ZLattice.summable_norm_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L) :
+lemma summable_norm_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L) :
     Summable fun z : L ↦ ‖z‖ ^ r :=
   summable_of_sum_le (fun _ ↦ by positivity) (tsumNormRPowBound_spec L r hr)
 
 /-- `∑ z ∈ L, ‖z‖⁻ʳ ≤ A⁻ʳ * ∑ k : ℕ, kᵈ⁻ʳ⁻¹` for some `A > 0` depending only on `L`. -/
-lemma ZLattice.tsum_norm_rpow_le (r : ℝ) (hr : r < -Module.finrank ℤ L) :
+lemma tsum_norm_rpow_le (r : ℝ) (hr : r < -Module.finrank ℤ L) :
     ∑' z : L, ‖z‖ ^ r ≤
       tsumNormRPowBound L ^ r * ∑' k : ℕ, (k : ℝ) ^ (Module.finrank ℤ L - 1 + r) :=
   Summable.tsum_le_of_sum_le (summable_norm_rpow L r hr) (tsumNormRPowBound_spec L r hr)
 
-lemma ZLattice.summable_norm_sub_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L) (x : E) :
+lemma summable_norm_sub_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L) (x : E) :
     Summable fun z : L ↦ ‖z - x‖ ^ r := by
   cases subsingleton_or_nontrivial L
   · exact .of_finite
@@ -267,18 +269,20 @@ lemma ZLattice.summable_norm_sub_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L)
   rw [sub_lt_iff_lt_add, ← sub_lt_iff_lt_add', AddSubgroupClass.coe_norm] at this
   simpa using show ‖t.1‖ ≤ 2 * ‖x‖ by linarith
 
-lemma ZLattice.summable_norm_sub_zpow (n : ℤ) (hn : n < -Module.finrank ℤ L) (x : E) :
+lemma summable_norm_sub_zpow (n : ℤ) (hn : n < -Module.finrank ℤ L) (x : E) :
     Summable fun z : L ↦ ‖z - x‖ ^ n :=
   mod_cast summable_norm_sub_rpow L n (mod_cast hn) x
 
-lemma ZLattice.summable_norm_zpow (n : ℤ) (hn : n < -Module.finrank ℤ L) :
+lemma summable_norm_zpow (n : ℤ) (hn : n < -Module.finrank ℤ L) :
     Summable fun z : L ↦ ‖z‖ ^ n := by
   simpa using summable_norm_sub_zpow L n hn 0
 
-lemma ZLattice.summable_norm_sub_inv_pow (n : ℕ) (hn : Module.finrank ℤ L < n) (x : E) :
+lemma summable_norm_sub_inv_pow (n : ℕ) (hn : Module.finrank ℤ L < n) (x : E) :
     Summable fun z : L ↦ ‖z - x‖⁻¹ ^ n := by
   simpa using summable_norm_sub_zpow L (-n) (by gcongr) x
 
-lemma ZLattice.summable_norm_pow_inv (n : ℕ) (hn : Module.finrank ℤ L < n) :
+lemma summable_norm_pow_inv (n : ℕ) (hn : Module.finrank ℤ L < n) :
     Summable fun z : L ↦ ‖z‖⁻¹ ^ n := by
   simpa using summable_norm_sub_inv_pow L n hn 0
+
+end ZLattice
