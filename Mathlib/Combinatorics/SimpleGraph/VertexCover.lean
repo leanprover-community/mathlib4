@@ -37,7 +37,7 @@ theorem isVertexCover_empty_iff_bot : IsVertexCover G ∅ ↔ G = ⊥ := by
   constructor
   · intro h
     contrapose! h
-    simp [IsVertexCover, exists_adj_of_ne_bot h]
+    simp [IsVertexCover, ne_bot_iff_exists_adj.mp h]
   · simp_all [IsVertexCover]
 
 theorem not_isVertexCover_of_ne_bot (h : G ≠ ⊥) : ¬IsVertexCover G ∅ :=
@@ -111,7 +111,7 @@ theorem minVertexCover_bot_eq : @minVertexCover V ⊥ = 0 :=
 
 @[simp]
 theorem minVertexCover_of_subsingleton [S : Subsingleton V] : minVertexCover G = 0 := by
-  simp [subsingleton_iff_subsingleton.mp S |>.allEq G ⊥]
+  simp [SimpleGraph.subsingleton_iff.mpr S |>.allEq G ⊥]
 
 @[simp]
 theorem minVertexCover_eq_zero_iff : minVertexCover G = 0 ↔ G = ⊥ := by
@@ -138,7 +138,7 @@ theorem minVertexCover_le_edgeSet_encard : minVertexCover G ≤ G.edgeSet.encard
   by_cases h' : G.edgeSet = ∅
   · simp [h', SimpleGraph.edgeSet_eq_empty.mp]
   · simp at h'
-    have := exists_adj_of_ne_bot h'
+    have := ne_bot_iff_exists_adj.mp h'
     refine ENat.forall_natCast_le_iff_le.mp fun n hn ↦ ?_
     simp only [minVertexCover, le_iInf_iff, Subtype.forall] at hn
     have := hn ((·.out.1) '' G.edgeSet) (fun v w hadj ↦ by
@@ -165,7 +165,7 @@ theorem minVertexCover_top_eq : @minVertexCover V ⊤ = ENat.card V - 1 := by
       obtain ⟨t, ht₁, ht₂⟩ := exists_of_le_minVertexCover (n - 1) (ENat.le_sub_one_of_lt hh) this
       have : 1 < (Set.univ \ t).encard := by
         refine ENat.add_one_le_iff (by simp) |>.mp ?_
-        rw [Set.encard_diff (by simp) (by simp [ht₁]), Set.encard_univ]
+        rw [Set.encard_diff (by simp) (Set.finite_of_encard_eq_coe ht₁), Set.encard_univ]
         refine ENat.le_sub_of_add_le_left (by simp [ht₁]) ?_
         refine add_le_of_le_tsub_right_of_le (Order.add_one_le_of_lt ENat.one_lt_card) ?_
         grw [ht₁, ENat.coe_sub, hn]
@@ -185,8 +185,8 @@ theorem minVertexCover_le_of_relHom (f : G →g H) (hf : Function.Injective f) :
   exact Function.Embedding.encard_le <| Function.Embedding.mk f hf |>.subtypeMap (by simp)
 
 theorem minVertexCover_eq_of_relIso (f : G ≃g H) : minVertexCover G = minVertexCover H :=
-  le_antisymm (minVertexCover_le_of_relEmbedding f.toRelEmbedding)
-    (minVertexCover_le_of_relEmbedding f.symm.toRelEmbedding)
+  le_antisymm (minVertexCover_le_of_relHom f.toHom f.injective)
+    (minVertexCover_le_of_relHom f.symm.toHom f.symm.injective)
 
 end minVertexCover
 end SimpleGraph
