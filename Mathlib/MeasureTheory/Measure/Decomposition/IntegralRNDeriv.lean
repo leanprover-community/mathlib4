@@ -65,7 +65,7 @@ lemma mul_le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsFiniteMeasure ν]
   · simp [hν]
   have : NeZero ν := ⟨hν⟩
   let μ' := (ν univ)⁻¹ • μ
-  let ν' := (ν univ)⁻¹ • ν
+  let ν' : Measure α := (ν univ)⁻¹ • ν
   have : IsFiniteMeasure μ' := μ.smul_finite (by simp [hν])
   have hμν' : μ' ≪ ν' := hμν.smul _
   have h_rnDeriv_eq : μ'.rnDeriv ν' =ᵐ[ν] μ.rnDeriv ν := by
