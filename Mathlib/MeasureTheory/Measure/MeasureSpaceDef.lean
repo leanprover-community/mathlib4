@@ -94,13 +94,14 @@ def elabMeasure (μ : TSyntax `term) (expectedType? : Option Expr) : TermElabM E
     let ty ← mkFreshExprMVarQ q(Type v)
     let _ ← mkFreshExprMVarQ q(MeasurableSpace $ty)
     elabTerm μ q(Measure $ty)
+  | _, _ => throwUnsupportedSyntax
 
 /-- Try to elaborate `μ` as a term of type `T` where `OuterMeasureClass T ?Ω`. If that fails, try to
 elaborate `μ` as `Measure ?Ω`. -/
 elab "elab_as_measure% " t:term : term => do elabMeasure t ‹_›
 
 /-- `f =ᵐ[μ] g` means `f` and `g` are eventually equal along the a.e. filter,
-i.e. `f=g` away from a null set.
+i.e. `f = g` away from a null set.
 
 This is notation for `Filter.EventuallyEq (MeasureTheory.ae μ) f g`. -/
 macro:50 (name := aeEq) f:term:50 " =ᵐ[" μ:term:50 "] " g:term:50 : term =>

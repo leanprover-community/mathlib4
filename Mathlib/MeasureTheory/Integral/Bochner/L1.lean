@@ -341,8 +341,8 @@ lemma integral_mono {f g : α →ₛ F} (h : f ≤ᵐ[μ] g) (hf : Integrable f 
   rw [← sub_nonneg_ae] at h
   exact integral_nonneg h
 
-lemma integral_mono_measure {ν} {f : α →ₛ F} (hf : 0 ≤ᵐ[ν] f) (hμν : μ ≤ ν) (hfν : Integrable f ν) :
-    f.integral μ ≤ f.integral ν := by
+lemma integral_mono_measure {ν : Measure _} {f : α →ₛ F} (hf : 0 ≤ᵐ[ν] f) (hμν : μ ≤ ν)
+    (hfν : Integrable f ν) : f.integral μ ≤ f.integral ν := by
   simp only [integral_eq]
   apply Finset.sum_le_sum
   simp only [forall_mem_range]

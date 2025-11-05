@@ -56,7 +56,7 @@ This is notation for `Filter.Frequently p (MeasureTheory.ae μ)`. -/
 notation3 "∃ᵐ "(...)" ∂"μ", "r:(scoped P => Filter.Frequently P <| MeasureTheory.ae μ) => r
 
 /-- `f =ᵐ[μ] g` means `f` and `g` are eventually equal along the a.e. filter,
-i.e. `f=g` away from a null set.
+i.e. `f = g` away from a null set.
 
 This is notation for `Filter.EventuallyEq (MeasureTheory.ae μ) f g`. -/
 local notation:50 f " =ᵐ[" μ:50 "] " g:50 => Filter.EventuallyEq (MeasureTheory.ae μ) f g
