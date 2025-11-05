@@ -100,3 +100,12 @@ lemma prodRight_symm_tmul (a : A) (b : B) (c : C) :
 end
 
 end Algebra.TensorProduct
+
+theorem TensorProduct.piScalarRight_symm_algebraMap
+    (R : Type*) [CommSemiring R] (S : Type*) [CommSemiring S] [Algebra R S]
+    (ι : Type*) [Fintype ι] [DecidableEq ι]
+    {N : Type*} [Semiring N] [Algebra R N] [Module S N] [IsScalarTower R S N]
+    (x : ι → R) :
+    (TensorProduct.piScalarRight R S N ι).symm (algebraMap _ _ x) = 1 ⊗ₜ[R] x := by
+  simp [Algebra.algebraMap_eq_smul_one, Pi.smul_def', LinearEquiv.symm_apply_eq,
+    piScalarRight_apply, piScalarRightHom_tmul]
