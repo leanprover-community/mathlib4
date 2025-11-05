@@ -66,18 +66,6 @@ theorem baseChange_apply_tmul (f : Module.Dual R V) (a : A) (v : V) :
     f.baseChange A (a ⊗ₜ v) = (f v) • a := by
   simp [baseChange]
 
-@[simp]
-theorem baseChange_add (f g : Module.Dual R V) :
-    (f + g).baseChange A = f.baseChange A + g.baseChange A := by
-  unfold baseChange; aesop
-
-@[simp]
-theorem baseChange_smul (r : R) (f : Module.Dual R V) :
-    (r • f).baseChange A = r • f.baseChange A := by
-  unfold baseChange
-  ext x
-  simp [LinearMap.baseChange_smul, ← TensorProduct.tmul_smul, mul_smul]
-
 /-- `Module.Dual.baseChange` as a linear map. -/
 def baseChangeHom :
     Module.Dual R V →ₗ[R] Module.Dual A (A ⊗[R] V) where

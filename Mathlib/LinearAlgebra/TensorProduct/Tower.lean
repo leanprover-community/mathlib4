@@ -639,14 +639,6 @@ lemma baseChange_mul (f g : Module.End R M) :
 
 variable (R A M N)
 
-/-- `baseChange A e` for `e : M ≃ₗ[R] N` is the `A`-linear map `A ⊗[R] M ≃ₗ[A] A ⊗[R] N`. -/
-def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A ⊗[R] N :=
-  AlgebraTensorModule.congr (.refl _ _) e
-
-theorem _root_.LinearEquiv.coe_baseChange (f : M ≃ₗ[R] N) :
-    (f.baseChange R A M N).toLinearMap = f.toLinearMap.baseChange A :=
-   rfl
-
 /-- `baseChange` as a linear map.
 
 When `M = N`, this is true more strongly as `Module.End.baseChangeHom`. -/
