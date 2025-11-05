@@ -679,20 +679,10 @@ lemma mem_nhdsWithin_inter_self : t ∈ 𝓝[s ∩ t] x := by
 
 attribute [fun_prop] Continuous.continuousWithinAt -- unrelated, but probably desirable
 
-theorem hasMFDerivWithinAt_sumSwap :
-    HasMFDerivWithinAt I I (@Sum.swap M M') s p
-      (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
-  refine ⟨by fun_prop, ?_⟩
-  set U := (extChartAt I p).symm ⁻¹' s ∩ range I
-  have : HasFDerivWithinAt id (ContinuousLinearMap.id 𝕜 _) U (((chartAt H p).extend I) p) :=
-    hasFDerivWithinAt_id _ U
-  apply this.congr_of_eventuallyEq
-  swap
-  · simp only [mfld_simps]
-    cases p with
-    | inl x => simp
-    | inr x => simp
-  -- extract as a lemma about writtenInExtChartAt of Sum.swap?
+/-- In extended charts at `p`, `Sum.swap` looks like the identity near `p`. -/
+lemma writtenInExtChartAt_sumSwap_eventuallyEq_id :
+    writtenInExtChartAt I I p Sum.swap =ᶠ[𝓝[(extChartAt I p).symm ⁻¹' s ∩ range I]
+      extChartAt I p p] id := by
   cases p with
     | inl x =>
       let t := I.symm ⁻¹' (chartAt H x).target ∩ range I
@@ -720,6 +710,17 @@ theorem hasMFDerivWithinAt_sumSwap :
       rw [Filter.inter_mem_iff]
       refine ⟨I.continuousWithinAt_symm.preimage_mem_nhdsWithin ?_, mem_nhdsWithin_inter_self⟩
       exact (chartAt H x).open_target.mem_nhds (by simp)
+
+theorem hasMFDerivWithinAt_sumSwap :
+    HasMFDerivWithinAt I I (@Sum.swap M M') s p
+      (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
+  refine ⟨by fun_prop, ?_⟩
+  set U := (extChartAt I p).symm ⁻¹' s ∩ range I
+  have : HasFDerivWithinAt id (ContinuousLinearMap.id 𝕜 _) U (((chartAt H p).extend I) p) :=
+    hasFDerivWithinAt_id _ U
+  apply this.congr_of_eventuallyEq writtenInExtChartAt_sumSwap_eventuallyEq_id
+  simp only [mfld_simps]
+  cases p <;> simp
 
 theorem hasMFDerivAt_sumSwap :
     HasMFDerivAt I I (@Sum.swap M M') p (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
