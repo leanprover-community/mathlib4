@@ -135,7 +135,7 @@ theorem hyperplane_separation_point (C : ProperCone ℝ E) (hx₀ : x₀ ∉ C) 
 @[simp] theorem dual_flip_dual (p : E →ₗ[ℝ] F →ₗ[ℝ] ℝ) [p.IsContPerfPair] (C : ProperCone ℝ E) :
     dual p.flip (dual p (C : Set E)) = C := by
   refine le_antisymm (fun x ↦ ?_) subset_dual_dual
-  simp only [mem_toPointedCone, mem_dual, SetLike.mem_coe]
+  simp only [mem_dual, SetLike.mem_coe]
   contrapose!
   simpa [p.flip.toContPerfPair.surjective.exists] using C.hyperplane_separation_point
 

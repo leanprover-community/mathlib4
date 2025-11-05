@@ -147,8 +147,8 @@ theorem coe_compl (a : Regular α) : (↑aᶜ : α) = (a : α)ᶜ :=
 instance : Inhabited (Regular α) :=
   ⟨⊥⟩
 
-instance : SemilatticeInf (Regular α) :=
-  coe_injective.semilatticeInf _ coe_inf
+instance : PartialOrder (Regular α) :=
+  PartialOrder.lift _ coe_injective
 
 instance boundedOrder : BoundedOrder (Regular α) :=
   BoundedOrder.lift ((↑) : Regular α → α) (fun _ _ => id) coe_top coe_bot
