@@ -1997,6 +1997,13 @@ Q2226650:
 
 Q2226677:
   title: Gelfand–Mazur theorem
+  decls:
+    - NormedRing.algEquivComplexOfComplete
+    - NormedAlgebra.Complex.algEquivOfNormMul
+    - NormedAlgebra.Real.nonempty_algEquiv_or
+  authors: Jireh Loreaux, Michael Stoll
+  date: 2021, 2025
+  comment: "The first two are over the complex numbers (with different assumptions), the third is over the real numbers."
 
 Q2226682:
   title: Gelfand–Naimark theorem
