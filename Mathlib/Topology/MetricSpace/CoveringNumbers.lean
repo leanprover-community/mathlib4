@@ -149,7 +149,7 @@ lemma externalCoveringNumber_le_coveringNumber (ε : ℝ≥0) (A : Set X) :
   simp only [externalCoveringNumber, coveringNumber, le_iInf_iff]
   exact fun C _ hC_cover ↦ iInf₂_le C hC_cover
 
-theorem packingNumber_two_le_externalCoveringNumber (A : Set X) (hε : ε ≠ ∞) :
+theorem packingNumber_two_le_externalCoveringNumber (A : Set X) :
     packingNumber (2 * ε) A ≤ externalCoveringNumber ε A := by
   simp only [packingNumber, externalCoveringNumber, le_iInf_iff, iSup_le_iff, Nat.cast_le]
   intro C hC_cover D hD_subset hD_separated
@@ -162,8 +162,8 @@ theorem packingNumber_two_le_externalCoveringNumber (A : Set X) (hε : ε ≠ �
   specialize hD_separated x.2 y.2 ?_
   · rwa [Subtype.ext_iff] at hxy
   suffices 0 < edist (f x) (f y) by simp [hfxy] at this
-  have hx_ne_top : edist x.1 (f x) ≠ ∞ := ne_top_of_le_ne_top hε (hf' x)
-  have hy_ne_top : edist y.1 (f y) ≠ ∞ := ne_top_of_le_ne_top hε (hf' y)
+  have hx_ne_top : edist x.1 (f x) ≠ ∞ := ne_top_of_le_ne_top (by simp : ε ≠ ∞) (hf' x)
+  have hy_ne_top : edist y.1 (f y) ≠ ∞ := ne_top_of_le_ne_top (by simp : ε ≠ ∞) (hf' y)
   calc 0
   _ ≤ 2 * ε - edist x.1 (f x) - edist y.1 (f y) := zero_le'
   _ < edist x y - edist x.1 (f x) - edist y.1 (f y) := by
@@ -188,8 +188,7 @@ theorem packingNumber_two_le_externalCoveringNumber (A : Set X) (hε : ε ≠ �
   _ = edist (f x) (f y) := by
     simp only [hfxy, edist_self, add_zero]
     rw [edist_comm (f y : X), add_comm, ENNReal.add_sub_cancel_right, tsub_self]
-    rw [← hfxy]
-    exact hx_ne_top
+    rwa [← hfxy]
 
 end Comparisons
 
