@@ -662,14 +662,7 @@ end Prod
 
 section disjointUnion
 
-variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ∞}
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
-  {J : Type*} {J : ModelWithCorners 𝕜 E' H'}
-  {N N' : Type*} [TopologicalSpace N] [TopologicalSpace N'] [ChartedSpace H' N] [ChartedSpace H' N']
-
-open Topology
-
-variable {s : Set (M ⊕ M')} {p : M ⊕ M'}
+variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {s : Set (M ⊕ M')} {p : M ⊕ M'}
 
 /-- In extended charts at `p`, `Sum.swap` looks like the identity near `p`. -/
 lemma writtenInExtChartAt_sumSwap_eventuallyEq_id :

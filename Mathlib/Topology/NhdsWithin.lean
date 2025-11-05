@@ -111,8 +111,10 @@ theorem mem_nhdsWithin_iff_eventuallyEq {s t : Set α} {x : α} :
   simp_rw [mem_nhdsWithin_iff_eventually, eventuallyEq_set, mem_inter_iff, iff_self_and]
 
 lemma mem_nhdsWithin_inter_self {s t : Set α} {x : α} : t ∈ 𝓝[s ∩ t] x := by
-  refine mem_nhdsWithin_iff_eventuallyEq.mpr ?_
-  filter_upwards with y using by simp [inter_assoc]
+  mem_nhdsWithin_iff_eventuallyEq.mpr <| by simp [inter_assoc]
+
+lemma mem_nhdsWithin_self_inter {s t : Set α} {x : α} : s ∈ 𝓝[s ∩ t] x :=
+  mem_nhdsWithin_iff_eventuallyEq.mpr <| by simp [inter_comm s t, inter_assoc]
 
 theorem nhdsWithin_eq_iff_eventuallyEq {s t : Set α} {x : α} : 𝓝[s] x = 𝓝[t] x ↔ s =ᶠ[𝓝 x] t :=
   set_eventuallyEq_iff_inf_principal.symm
