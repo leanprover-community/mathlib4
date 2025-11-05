@@ -123,6 +123,7 @@ lemma inv_left_hom_left {f g : Over X} (e : f ≅ g) :
     e.inv.left ≫ e.hom.left = 𝟙 g.left := by
   simp [← Over.comp_left]
 
+/-- An isomorphism of objects in the over category induces an isomorphism of their domains. -/
 def isoLeftIso {f g : Over X} (e : f ≅ g) : f.left ≅ g.left :=
   Iso.mk e.hom.left e.inv.left (hom_left_inv_left e) (inv_left_hom_left e)
 
