@@ -518,6 +518,25 @@ lemma foo (f : SmoothPartitionOfUnity B IB B) (b : B) (v w : TangentSpace IB b) 
       h_needed f b v w h_fin
     exact this
 
+lemma foo' (f : SmoothPartitionOfUnity B IB B) (b : B) (v w : TangentSpace IB b) :
+  ((g_global_bilin f b).toFun v).toFun w = ((g_global_bilin f b).toFun w).toFun v := by
+  unfold g_global_bilin
+  simp
+  have h_fin : (Function.support fun j ↦ ((f j) b • (g_bilin j b) :
+                  W (TangentSpace IB) b)).Finite := by
+      apply (f.locallyFinite'.point_finite b).subset
+      intro i hi
+      simp only [Function.mem_support, ne_eq, smul_eq_zero, not_or] at hi
+      simp only [Set.mem_setOf_eq, Function.mem_support, ne_eq]
+      exact hi.1
+  have h6a : (∑ᶠ (j : B), (f j) b • g_bilin j b) =
+            ∑ j ∈ h_fin.toFinset, (f j) b • g_bilin j b := finsum_eq_sum _ h_fin
+  rw [h6a]
+  have : ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilin j b).toFun v).toFun w =
+         ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilin j b).toFun w).toFun v :=
+    h_need f b v w h_fin
+  exact this
+
 lemma g_global_pos (f : SmoothPartitionOfUnity B IB B)
   (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source))
   (p : B) (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) :
@@ -552,6 +571,9 @@ lemma g_global_pos (f : SmoothPartitionOfUnity B IB B)
 lemma g_global_bilinear_eq_sum (f : SmoothPartitionOfUnity B IB B) (p : B) :
   g_global_bilinear f p = ∑ᶠ (j : B), (f j) p • g_bilinear j p := rfl
 
+lemma g_global_bilin_eq_sum (f : SmoothPartitionOfUnity B IB B) (p : B) :
+  g_global_bilin f p = ∑ᶠ (j : B), (f j) p • g_bilin j p := rfl
+
 lemma urk i : ContMDiffOn IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ∞
   (fun (x : B) ↦ (TotalSpace.mk' (EB →L[ℝ] EB →L[ℝ] ℝ) x (g_bilinear i x) :
     TotalSpace (EB →L[ℝ] EB →L[ℝ] ℝ) (W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _))))
@@ -563,6 +585,77 @@ lemma urk i : ContMDiffOn IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) 
       TotalSpace (EB →L[ℝ] EB →L[ℝ] ℝ) (W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _))))
     (extChartAt IB i).source := sorry
   exact goal
+
+noncomputable
+example (i x : B)
+    (hx : x ∈ (extChartAt IB i).source)
+    (hbase : (FiberBundle.trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
+              (fun b ↦ TangentSpace IB b →L[ℝ] TangentSpace IB b →L[ℝ] ℝ) i).baseSet
+              = (extChartAt IB i).source) :
+    True := by
+  let e := FiberBundle.trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
+    (fun b ↦ TangentSpace IB b →L[ℝ] TangentSpace IB b →L[ℝ] ℝ) i
+  let p : TotalSpace (EB →L[ℝ] EB →L[ℝ] ℝ)
+          fun x ↦ TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ := ⟨x, g_bilin i x⟩
+  let pe := e.toPartialEquiv.toFun p
+  let m := pe.2
+  have hp : p ∈ e.toPartialEquiv.source := by
+    have : e.baseSet = (extChartAt IB i).source := hbase
+    simp [e.source_eq, this]
+    exact Set.mem_of_mem_inter_left hx
+  have : e.invFun (x, m) = p := by calc
+    e.toPartialEquiv.invFun (x, m)
+      = e.toPartialEquiv.invFun (e.toPartialEquiv.toFun p) := rfl
+    _ = p := e.toPartialEquiv.left_inv' hp
+  trivial
+
+example i : ContMDiffOn IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ∞
+    (fun x ↦ (TotalSpace.mk' (EB →L[ℝ] EB →L[ℝ] ℝ) x (g_bilin i x) :
+      TotalSpace (EB →L[ℝ] EB →L[ℝ] ℝ)
+       (fun b ↦ (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b →L[ℝ]
+          ((@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b →L[ℝ] ℝ))))
+    (extChartAt IB i).source := by
+  exact sorry
+
+noncomputable
+example (i x : B)
+ (hbase : (FiberBundle.trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
+            (fun b ↦ TangentSpace IB b →L[ℝ] TangentSpace IB b →L[ℝ] ℝ) i).baseSet =
+          (extChartAt IB i).source) : ContMDiffOn IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ∞
+    (fun x ↦ (TotalSpace.mk' (EB →L[ℝ] EB →L[ℝ] ℝ) x (g_bilin i x) :
+      TotalSpace (EB →L[ℝ] EB →L[ℝ] ℝ)
+       (fun b ↦ (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b →L[ℝ]
+          ((@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b →L[ℝ] ℝ))))
+    (extChartAt IB i).source := by
+  intros x hx
+  let e := FiberBundle.trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
+              (fun b ↦ TangentSpace IB b →L[ℝ] (TangentSpace IB b →L[ℝ] ℝ)) i
+  let F := fun (x : B) ↦ e.invFun (x, (e.toPartialEquiv.toFun ⟨x, g_bilin i x⟩).2)
+  have h_eq : ∀ x ∈ (extChartAt IB i).source,
+    TotalSpace.mk' (EB →L[ℝ] EB →L[ℝ] ℝ) x (g_bilin i x) = F x := by
+    intros x hx
+    let p : TotalSpace (EB →L[ℝ] EB →L[ℝ] ℝ)
+        fun x ↦ TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ := ⟨x, g_bilin i x⟩
+    let pe := e.toPartialEquiv.toFun p
+    let m := pe.2
+    have hp : p ∈ e.toPartialEquiv.source := by
+      have : e.baseSet = (extChartAt IB i).source := hbase
+      simp [e.source_eq, this]
+      exact Set.mem_of_mem_inter_left hx
+    have : e.invFun (x, m) = p := by calc
+      e.toPartialEquiv.invFun (x, m)
+        = e.toPartialEquiv.invFun (e.toPartialEquiv.toFun p) := rfl
+      _ = p := e.toPartialEquiv.left_inv' hp
+    have h_er : TotalSpace.mk' (EB →L[ℝ] EB →L[ℝ] ℝ) x (g_bilin i x)
+              = e.toPartialEquiv.invFun (x, m) := by
+      exact id (Eq.symm this)
+    exact h_er
+
+  have h_easier : ContMDiffOn IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ∞ F
+                  (extChartAt IB i).source := sorry
+
+  apply ContMDiffOn.congr h_easier h_eq
+  exact hx
 
 lemma bar (f : SmoothPartitionOfUnity B IB B)
         (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source)) :
@@ -589,6 +682,13 @@ lemma g_global_bilinear_smooth (f : SmoothPartitionOfUnity B IB B)
   simp_rw [g_global_bilinear_eq_sum]
   exact (bar f h_sub)
 
+lemma g_global_bilin_smooth (f : SmoothPartitionOfUnity B IB B)
+  (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source)) :
+  ContMDiff IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ∞
+    (fun x ↦ TotalSpace.mk' (EB →L[ℝ] EB →L[ℝ] ℝ) x (g_global_bilin f x)) := by
+  simp_rw [g_global_bilin_eq_sum]
+  exact sorry
+
 example : (W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _)) =
   fun b ↦ (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b →L[ℝ]
           ((@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b →L[ℝ] Trivial B ℝ b)
@@ -602,6 +702,15 @@ def g_global_smooth_section
       (V := (W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _))) :=
   { toFun := g_global_bilinear f
     contMDiff_toFun := g_global_bilinear_smooth f h_sub}
+
+noncomputable
+def g_global_smooth_section'
+    (f : SmoothPartitionOfUnity B IB B)
+    (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source)) :
+    ContMDiffSection (I := IB) (F := (EB →L[ℝ] EB →L[ℝ] ℝ)) (n := ∞)
+      (V := (W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _))) :=
+  { toFun := g_global_bilin f
+    contMDiff_toFun := g_global_bilin_smooth f h_sub}
 
 lemma baz (f : SmoothPartitionOfUnity B IB B) (b : B) (v : TangentSpace IB b) :
   v ≠ 0 → 0 < ((g_global_bilinear f b).toFun v).toFun v := sorry
@@ -618,4 +727,18 @@ def riemannian_metric_exists
     pos := baz f
     isVonNBounded := sorry
     contMDiff := (g_global_smooth_section f h_sub).contMDiff_toFun
+     }
+
+noncomputable
+def riemannian_metric_exists'
+    (f : SmoothPartitionOfUnity B IB B)
+    (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source))
+    (hf : f.IsSubordinate fun x ↦ (chartAt HB x).source) :
+    ContMDiffRiemannianMetric (IB := IB) (n := ∞) (F := EB)
+     (E := @TangentSpace ℝ _ _ _ _ _ _ IB B _ _) :=
+  { inner := g_global_bilin f
+    symm := foo' f
+    pos := sorry
+    isVonNBounded := sorry
+    contMDiff := (g_global_smooth_section' f h_sub).contMDiff_toFun
      }
