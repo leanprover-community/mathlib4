@@ -130,7 +130,7 @@ protected lemma posPart_add_negPart (a : A) (ha : IsSelfAdjoint a := by cfc_tac)
   exact cfcₙ_congr fun x hx ↦ posPart_add_negPart x
 
 lemma abs_sub_self (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : abs a - a = 2 • a⁻ := by
- simpa [two_smul] using
+  simpa [two_smul] using
     congr($(CFC.posPart_add_negPart a) - $(CFC.posPart_sub_negPart a)).symm
 
 lemma abs_add_self (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : abs a + a = 2 • a⁺ := by
