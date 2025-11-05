@@ -16,7 +16,7 @@ approximated uniformly by smooth functions.
 More precisely, we strengthen this result in three ways :
 * instead of a single number `ε > 0`, one may prescribe the precision of the approximation using
   an arbitrary continuous positive function `ε : M → ℝ`. This allows, for example, a control
-  on the asymptotic behaviour of the approximation (e.g, choosing a precision `ε` which vanishing
+  on the asymptotic behaviour of the approximation (e.g, choosing a precision `ε` which vanishes
   at infinity yields that continuous functions vanishing at infinity can be approximated by
   smooth functions vanishing at infinity).
 * if the original map `f` already has the desired regularity on some neighborhood of a closed
