@@ -14,7 +14,7 @@ import Mathlib.Tactic.Field
 # Weierstrass ℘ functions
 
 ## Main definitions
-- `PeriodPair.℘`: The Weierstrass `℘`-function associated to
+- `PeriodPair.℘`: The Weierstrass `℘`-function associated to a pair of periods.
 
 ## tags
 
