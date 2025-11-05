@@ -177,7 +177,7 @@ end Semiring
 variable {M} in
 /-- This is a linear map version of `SeparatingDual.exists_eq_one` in a vector space. -/
 theorem dual_exists_eq_one (K : Type*) [AddCommMonoid M] [Semifield K]
-    [Module K M] [Free K M] {x : M} (hx : x ≠ 0) : ∃ f : M →ₗ[K] K, f x = 1 :=
+    [Module K M] [Free K M] {x : M} (hx : x ≠ 0) : ∃ f : Dual K M, f x = 1 :=
   have ⟨f, hf⟩ := dual_exists_ne_zero K hx
   ⟨(f x)⁻¹ • f, inv_mul_cancel₀ hf⟩
 

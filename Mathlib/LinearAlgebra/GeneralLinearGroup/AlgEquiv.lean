@@ -30,7 +30,7 @@ private def auxLinear (f : End R V →ₗ[R] End R V) (y : Dual R V) (z : V) : E
   applyₗ z ∘ₗ f ∘ₗ smulRightₗ y
 
 @[simp] private theorem auxLinear_apply (f : End R V →ₗ[R] End R V) (y : Dual R V) (x z : V) :
-  auxLinear f y z x = f (smulRightₗ y x) z := rfl
+  auxLinear f y z x = f (smulRight y x) z := rfl
 
 private theorem auxLinear_map_apply (f : End R V →ₐ[R] End R V) (y : Dual R V)
     (z : V) (A : End R V) (x : V) :
