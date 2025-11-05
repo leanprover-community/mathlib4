@@ -80,7 +80,7 @@ nonrec lemma IsCover.of_maximal_isSeparated (hN : Maximal (fun N ↦ N ⊆ s ∧
 
 /-- A totally bounded set has finite `ε`-covers for all `ε > 0`. -/
 lemma _root_.TotallyBounded.exists_finite_isCover (hs : TotallyBounded s) (hε : 0 < ε) :
-    ∃ N, N ⊆ s ∧ N.Finite ∧ IsCover ε s N := by
+    ∃ N ⊆ s, N.Finite ∧ IsCover ε s N := by
   rw [EMetric.totallyBounded_iff'] at hs
   obtain ⟨N, hNA, hN_finite, hN⟩ := hs ε (mod_cast hε)
   simp only [isCover_iff_subset_iUnion_emetricClosedBall]
