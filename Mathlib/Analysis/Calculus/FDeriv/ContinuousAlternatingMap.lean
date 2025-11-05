@@ -19,12 +19,16 @@ variable {𝕜 ι E F G H : Type*}
   [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
+
+open ContinuousAlternatingMap
+open scoped Topology BigOperators
+
+section CompContinuousLinearMap
+
+variable
   {f : E → G [⋀^ι]→L[𝕜] H} {f' : E →L[𝕜] G [⋀^ι]→L[𝕜] H}
   {g : E → F →L[𝕜] G} {g' : E →L[𝕜] F →L[𝕜] G}
   {s : Set E} {x : E}
-
-open ContinuousAlternatingMap
-open scoped Topology
 
 theorem ContinuousAlternatingMap.hasStrictFDerivAt_toContinuousMultilinearMap_comp_iff
     [Finite ι] :
@@ -116,3 +120,107 @@ theorem DifferentiableAt.continuousAlternatingMapCompContinuousLinearMap
   classical
   exact hf.hasFDerivAt.continuousAlternatingMapCompContinuousLinearMap hg.hasFDerivAt
     |>.differentiableAt
+
+end CompContinuousLinearMap
+
+section Apply
+
+variable {f : E → F [⋀^ι]→L[𝕜] G} {f' : E →L[𝕜] F [⋀^ι]→L[𝕜] G}
+  {g : ι → E → F} {g' : ι → E →L[𝕜] F}
+  {s : Set E} {x : E}
+
+section HasFDerivAt
+
+variable [Fintype ι] [DecidableEq ι]
+
+namespace ContinuousAlternatingMap
+
+theorem hasStrictFDerivAt (f : E [⋀^ι]→L[𝕜] F) (x : ι → E) :
+    HasStrictFDerivAt f (f.1.linearDeriv x) x :=
+  f.1.hasStrictFDerivAt x
+
+theorem hasFDerivAt (f : E [⋀^ι]→L[𝕜] F) (x : ι → E) : HasFDerivAt f (f.1.linearDeriv x) x :=
+  f.1.hasFDerivAt x
+
+theorem hasFDerivWithinAt (f : E [⋀^ι]→L[𝕜] F) (s : Set (ι → E)) (x : ι → E) :
+    HasFDerivWithinAt f (f.1.linearDeriv x) s x :=
+  (f.hasFDerivAt x).hasFDerivWithinAt
+
+end ContinuousAlternatingMap
+
+theorem HasStrictFDerivAt.continuousAlternatingMap_apply (hf : HasStrictFDerivAt f f' x)
+    (hg : ∀ i, HasStrictFDerivAt (g i) (g' i) x) :
+    HasStrictFDerivAt
+      (fun x ↦ f x (g · x))
+      (apply 𝕜 F G (g · x) ∘L f' + ∑ i, (f x).toContinuousLinearMap (g · x) i ∘L g' i)
+      x :=
+  (toContinuousMultilinearMapCLM 𝕜).hasStrictFDerivAt.comp x hf
+    |>.continuousMultilinearMap_apply hg
+
+theorem HasFDerivAt.continuousAlternatingMap_apply (hf : HasFDerivAt f f' x)
+    (hg : ∀ i, HasFDerivAt (g i) (g' i) x) :
+    HasFDerivAt
+      (fun x ↦ f x (g · x))
+      (apply 𝕜 F G (g · x) ∘L f' + ∑ i, (f x).toContinuousLinearMap (g · x) i ∘L g' i)
+      x :=
+  (toContinuousMultilinearMapCLM 𝕜).hasFDerivAt.comp x hf
+    |>.continuousMultilinearMap_apply hg
+
+theorem HasFDerivWithinAt.continuousAlternatingMap_apply (hf : HasFDerivWithinAt f f' s x)
+    (hg : ∀ i, HasFDerivWithinAt (g i) (g' i) s x) :
+    HasFDerivWithinAt
+      (fun x ↦ f x (g · x))
+      (apply 𝕜 F G (g · x) ∘L f' + ∑ i, (f x).toContinuousLinearMap (g · x) i ∘L g' i)
+      s x :=
+  (toContinuousMultilinearMapCLM 𝕜).hasFDerivAt.comp_hasFDerivWithinAt x hf
+    |>.continuousMultilinearMap_apply hg
+
+theorem fderivWithin_continuousAlternatingMap_apply (hf : DifferentiableWithinAt 𝕜 f s x)
+    (hg : ∀ i, DifferentiableWithinAt 𝕜 (g i) s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
+    fderivWithin 𝕜 (fun x ↦ f x (g · x)) s x =
+      apply 𝕜 F G (g · x) ∘L fderivWithin 𝕜 f s x +
+        ∑ i, (f x).toContinuousLinearMap (g · x) i ∘L fderivWithin 𝕜 (g i) s x :=
+  hf.hasFDerivWithinAt.continuousAlternatingMap_apply (fun i ↦ (hg i).hasFDerivWithinAt)
+    |>.fderivWithin hs
+
+theorem fderiv_continuousAlternatingMap_apply (hf : DifferentiableAt 𝕜 f x)
+    (hg : ∀ i, DifferentiableAt 𝕜 (g i) x) :
+    fderiv 𝕜 (fun x ↦ f x (g · x)) x =
+      apply 𝕜 F G (g · x) ∘L fderiv 𝕜 f x +
+        ∑ i, (f x).toContinuousLinearMap (g · x) i ∘L fderiv 𝕜 (g i) x :=
+  hf.hasFDerivAt.continuousAlternatingMap_apply (fun i ↦ (hg i).hasFDerivAt) |>.fderiv
+
+end HasFDerivAt
+
+variable [Finite ι]
+
+theorem DifferentiableWithinAt.continuousAlternatingMap_apply (hf : DifferentiableWithinAt 𝕜 f s x)
+    (hg : ∀ i, DifferentiableWithinAt 𝕜 (g i) s x) :
+    DifferentiableWithinAt 𝕜 (fun x ↦ f x (g · x)) s x := by
+  cases nonempty_fintype ι
+  classical
+  exact hf.hasFDerivWithinAt.continuousAlternatingMap_apply (fun i ↦ (hg i).hasFDerivWithinAt)
+    |>.differentiableWithinAt
+
+theorem DifferentiableAt.continuousAlternatingMap_apply (hf : DifferentiableAt 𝕜 f x)
+    (hg : ∀ i, DifferentiableAt 𝕜 (g i) x) : DifferentiableAt 𝕜 (fun x ↦ f x (g · x)) x := by
+  cases nonempty_fintype ι
+  classical
+  exact hf.hasFDerivAt.continuousAlternatingMap_apply (fun i ↦ (hg i).hasFDerivAt)
+    |>.differentiableAt
+
+theorem DifferentiableOn.continuousAlternatingMap_apply (hf : DifferentiableOn 𝕜 f s)
+    (hg : ∀ i, DifferentiableOn 𝕜 (g i) s) : DifferentiableOn 𝕜 (fun x ↦ f x (g · x)) s :=
+  fun x hx ↦ (hf x hx).continuousAlternatingMap_apply (hg · x hx)
+
+theorem Differentiable.continuousAlternatingMap_apply (hf : Differentiable 𝕜 f)
+    (hg : ∀ i, Differentiable 𝕜 (g i)) : Differentiable 𝕜 (fun x ↦ f x (g · x)) :=
+  fun x ↦ (hf x).continuousAlternatingMap_apply (hg · x)
+
+theorem ContinuousAlternatingMap.differentiable (f : E [⋀^ι]→L[𝕜] F) : Differentiable 𝕜 f := by
+  cases nonempty_fintype ι
+  -- TODO: marking `Differentiable.continuousAlternatingMap_apply` as `fun_prop` doesn't work.
+  -- Fix it
+  apply Differentiable.continuousAlternatingMap_apply <;> fun_prop
+
+end Apply
