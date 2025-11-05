@@ -33,7 +33,7 @@ We define the minimal and maximal tensor products of two pointed cones:
 
 * no special notation defined
 * x, y, z are elements of the (original) cones
-* φ, φ₁, φ₂ are elements of the dual cones
+* φ, ψ are elements of the dual cones
 
 ## References
 
@@ -55,51 +55,43 @@ noncomputable def minTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCone 
     PointedCone R (G ⊗[R] H) :=
   .span R (.image2 (· ⊗ₜ[R] ·) C₁ C₂)
 
-/-- The maximal tensor product is the (algebraic) dual of the minimal tensor product
+/-- The maximal tensor product of two cones is the dual (pointed cone) of the minimal tensor product
 of the dual cones. -/
 noncomputable def maxTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCone R H) :
     PointedCone R (G ⊗[R] H) :=
   .dual (dualDistrib R G H) (minTensorProduct (.dual (Module.dualPairing R G).flip C₁)
     (.dual (Module.dualPairing R H).flip C₂))
 
-/-- Characterization of the maximal tensor product: `z` lies in
-`maxTensorProduct C₁ C₂` iff all pairings with elementary dual tensors are nonnegative. -/
-theorem mem_maxTensorProduct_iff {C₁ : PointedCone R G} {C₂ : PointedCone R H} {z : G ⊗[R] H} :
+/-- Characterization of the maximal tensor product: `z` lies in `maxTensorProduct C₁ C₂` iff
+all pairings with elementary dual tensors are nonnegative. -/
+@[simp]
+theorem mem_maxTensorProduct {C₁ : PointedCone R G} {C₂ : PointedCone R H} {z : G ⊗[R] H} :
     z ∈ maxTensorProduct (R := R) C₁ C₂ ↔
       ∀ φ ∈ PointedCone.dual (Module.dualPairing R G).flip C₁,
       ∀ ψ ∈ PointedCone.dual (Module.dualPairing R H).flip C₂,
       0 ≤ dualDistrib R G H (φ ⊗ₜ[R] ψ) z := by
-  constructor
-  · intro hz φ hφ ψ hψ
-    exact hz (by simpa [minTensorProduct] using (subset_span (Set.mem_image2_of_mem hφ hψ)))
-  · intro h
-    simp only [maxTensorProduct, mem_dual, minTensorProduct, dual_span]
-    rintro x ⟨φ, hφ, ψ, hψ, rfl⟩
-    exact h φ hφ ψ hψ
+  simp only [maxTensorProduct, minTensorProduct, dual_span, mem_dual, Set.forall_mem_image2]
+  rfl
 
 /-- Individual elementary tensors are in the maximal tensor product. -/
 theorem tmul_mem_maxTensorProduct {x y} {C₁ : PointedCone R G} {C₂ : PointedCone R H} (hx : x ∈ C₁)
     (hy : y ∈ C₂) : x ⊗ₜ[R] y ∈ maxTensorProduct C₁ C₂ := by
-  rw [mem_maxTensorProduct_iff]
-  intro φ hφ ψ hψ
-  simp only [dualDistrib_apply]
-  exact mul_nonneg (hφ hx) (hψ hy)
+  simp only [mem_maxTensorProduct, dualDistrib_apply]
+  exact fun φ hφ ψ hψ => mul_nonneg (hφ hx) (hψ hy)
 
 /-- Individual elementary tensors are in the minimal tensor product. -/
 theorem tmul_mem_minTensorProduct {x y} {C₁ : PointedCone R G} {C₂ : PointedCone R H} (hx : x ∈ C₁)
-    (hy : y ∈ C₂) : x ⊗ₜ[R] y ∈ minTensorProduct C₁ C₂ := by
-  apply Submodule.subset_span
-  exact Set.mem_image2_of_mem hx hy
+    (hy : y ∈ C₂) : x ⊗ₜ[R] y ∈ minTensorProduct C₁ C₂ :=
+  Submodule.subset_span (Set.mem_image2_of_mem hx hy)
 
 /-- The maximal tensor product contains the set of all elementary tensors. -/
 theorem tmul_subset_maxTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCone R H) :
-    --alternative version
-    --.image2 (· ⊗ₜ[R] ·) C₁ C₂ ⊆ (maxTensorProduct C₁ C₂).carrier :=
     .image2 (· ⊗ₜ[R] ·) C₁ C₂ ⊆ (maxTensorProduct C₁ C₂ : Set (G ⊗[R] H)) :=
-  fun _ ⟨_, hx, _, hy, hw⟩ => hw ▸ tmul_mem_maxTensorProduct hx hy
+  fun _ ⟨_, hx, _, hy, hz⟩ => hz ▸ tmul_mem_maxTensorProduct hx hy
 
 /-- The minimal tensor product is less than or equal to the maximal tensor product. -/
 theorem minTensorProduct_le_maxTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCone R H) :
     minTensorProduct C₁ C₂ ≤ maxTensorProduct C₁ C₂ := by
   exact Submodule.span_le.mpr (tmul_subset_maxTensorProduct C₁ C₂)
+
 end PointedCone
