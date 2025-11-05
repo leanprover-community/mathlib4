@@ -35,6 +35,10 @@ instance (X Y : LightCondensed.{u} C) : Small.{max u v} (X ⟶ Y) where
     ⟨(equivSmall C).functor.obj X ⟶ (equivSmall C).functor.obj Y,
       ⟨(equivSmall C).fullyFaithfulFunctor.homEquiv⟩⟩
 
+/--
+Sheafifying is preserved under conjugating with the equivalence between light condensed objects
+and sheaves on a small site.
+-/
 noncomputable def equivSmallSheafificationIso
     [HasWeakSheafify (coherentTopology LightProfinite.{u}) C]
     [HasWeakSheafify ((equivSmallModel.{u} LightProfinite.{u}).inverse.inducedTopology
@@ -51,7 +55,7 @@ variable (R : Type u) [CommRing R]
 
 /--
 Taking the free condensed module is preserved under conjugating with the equivalence between
-light condensed objects and sheaves on a small site.
+light condensed modules and sheaves on a small site.
 -/
 noncomputable def equivSmallFreeIso :
     (equivSmall (Type u)).inverse ⋙ free R ⋙ (equivSmall (ModuleCat R)).functor ≅
