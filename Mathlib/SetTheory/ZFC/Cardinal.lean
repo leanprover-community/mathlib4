@@ -62,17 +62,9 @@ theorem card_union_le : card (x ∪ y) ≤ card x + card y := by
   simpa [← card_toSet] using mk_union_le x.toSet y.toSet
 
 @[simp]
-theorem card_powerset (x : ZFSet) : card (powerset x) = 2 ^ card x := by
-  rw [← lift_inj, ← card_toSet, lift_power, lift_two, ← card_toSet, ← mk_powerset, Cardinal.eq]
-  refine ⟨⟨fun ⟨y, h⟩ => ⟨y.toSet, Set.mem_powerset (toSet_subset_iff.2 (mem_powerset.1 h))⟩,
-    fun ⟨s, h⟩ => ⟨x.sep (· ∈ s), mem_powerset.2 (sep_subset _ _)⟩,
-    fun ⟨y, h⟩ => ?_, fun ⟨s, h⟩ => ?_⟩⟩
-  · simp only [mem_toSet, mem_powerset] at h
-    ext z
-    simpa using @h z
-  · simp only [Set.mem_powerset_iff] at h
-    ext y
-    simpa using @h y
+theorem card_powerset (x : ZFSet.{u}) : card (powerset x) = 2 ^ card x := by
+  rw [← lift_inj.{u, u + 1}]
+  simpa using mk_congr (powersetEquiv x)
 
 theorem card_image_le {f : ZFSet → ZFSet} [Definable₁ f] :
     card (image f x) ≤ card x := by
