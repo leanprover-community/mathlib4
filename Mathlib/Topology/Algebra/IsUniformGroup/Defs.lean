@@ -11,7 +11,7 @@ import Mathlib.Topology.Algebra.Group.Basic
 
 Given a topological group `G`, one can naturally build two uniform structures
 (the "left" and "right" ones) on `G` inducing its topology.
-This file defines typeclasses for groups equipped with either of these uniform strucure, as well
+This file defines typeclasses for groups equipped with either of these uniform strucures, as well
 as a separate typeclass for the (very common) case where the given uniform structure
 coincides with **both** the left and right uniform structures.
 
@@ -111,7 +111,7 @@ class inductive IsLeftOrRightUniformAddGroup (G : Type*) [UniformSpace G] [AddGr
 | left [IsLeftUniformAddGroup G] : IsLeftOrRightUniformAddGroup G
 
 /-- `IsLeftOrRightUniformGroup G` means that we have either `IsRightUniformGroup G`
-or `IsRightUniformGroup G`. This is a purely utilitary typeclass to avoid duplicating
+or `IsLeftUniformGroup G`. This is a purely utilitary typeclass to avoid duplicating
 API for results common to the left and the right uniformity.
 
 For example, `UniformContinuous.mul_const` will eventually hold in this generality. -/
