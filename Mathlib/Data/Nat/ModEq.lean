@@ -226,7 +226,7 @@ theorem of_div (h : a / c ≡ b / c [MOD m / c]) (ha : c ∣ a) (ha : c ∣ b) (
 end ModEq
 
 @[simp]
-theorem self_modEq_zero : n ≡ 0 [MOD n] := by simp [ModEq]
+theorem modulus_modEq_zero : n ≡ 0 [MOD n] := by simp [ModEq]
 
 @[simp]
 theorem add_modEq_left_iff : a + b ≡ a [MOD n] ↔ n ∣ b := by
