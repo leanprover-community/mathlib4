@@ -325,7 +325,7 @@ end ternary02
 open Real
 
 /-- Canonical bijection between the Cantor set and infinite binary tree. -/
-noncomputable def cantorSet_equiv_nat_to_bool : cantorSet ≃ (ℕ → Bool) where
+noncomputable def cantorSetEquivNatToBool : cantorSet ≃ (ℕ → Bool) where
   toFun := fun ⟨x, h⟩ ↦ (cantorToBinary x).get
   invFun (y : ℕ → Bool) :=
     ⟨ofDigits (fun i ↦ cond (y i) 2 0), ofDigits_bool_to_fin_3_mem_cantorSet y⟩
@@ -347,11 +347,6 @@ noncomputable def cantorSet_equiv_nat_to_bool : cantorSet ≃ (ℕ → Bool) whe
     grind [cantorToTernary, Stream'.get_map]
 
 /-- Canonical homeomorphism between the Cantor set and `ℕ → Bool`. -/
-noncomputable def cantorSet_homeomorph_nat_to_bool : cantorSet ≃ₜ (ℕ → Bool) :=
-  Homeomorph.symm <| Continuous.homeoOfEquivCompactToT2 (f := cantorSet_equiv_nat_to_bool.symm)
+noncomputable def cantorSetHomeomorphNatToBool : cantorSet ≃ₜ (ℕ → Bool) :=
+  Homeomorph.symm <| Continuous.homeoOfEquivCompactToT2 (f := cantorSetEquivNatToBool.symm)
     (Continuous.subtype_mk (Continuous.comp ofDigits_continuous (by fun_prop)) _)
-
-/-- Canonical mapping from `ℕ → Bool` (infinite binary tree) to the Cantor set.
-This is an inverse of `cantorSet_homeomorph_nat_to_bool`. -/
-noncomputable def natToBoolToCantorSet (f : ℕ → Bool) : ℝ :=
-  cantorSet_equiv_nat_to_bool.invFun f
