@@ -10,6 +10,7 @@ public meta import Batteries.Tactic.OpenPrivate
 public meta import Batteries.Data.List.Basic
 public meta import Batteries.Lean.Expr
 public meta import Mathlib.Init
+import all Lean.Elab.Tactic.Induction
 
 /-!
 # Backward compatible implementation of lean 3 `cases` tactic
@@ -72,7 +73,6 @@ def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg 
     subgoals := subgoals.push g
   pure subgoals
 
-open private getElimNameInfo generalizeTargets generalizeVars from Lean.Elab.Tactic.Induction
 /-- The `induction'` tactic is similar to the `induction` tactic in Lean 4 core,
 but with slightly different syntax (such as, no requirement to name the constructors).
 

@@ -205,7 +205,7 @@ theorem orElse_eq_none (o o' : Option α) : (o <|> o') = none ↔ o = none ∧ o
 section
 
 theorem choice_eq_none (α : Type*) [IsEmpty α] : choice α = none :=
-  dif_neg (not_nonempty_iff_imp_false.mpr isEmptyElim)
+  choice_eq_none_iff_not_nonempty.mpr (not_nonempty_iff_imp_false.mpr isEmptyElim)
 
 end
 

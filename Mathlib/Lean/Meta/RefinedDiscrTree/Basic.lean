@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Init
+public import Lean.Meta
 
 /-!
 # Basic Definitions for `RefinedDiscrTree`

@@ -6,6 +6,8 @@ Authors: Vasilii Nesterov
 module
 
 public meta import Mathlib.Data.PNat.Basic
+import all Lean.Elab.Tactic.Induction
+
 
 /-!
 # `pnat_to_nat`
@@ -22,8 +24,6 @@ The implementation follows these steps:
 public meta section
 
 namespace Mathlib.Tactic.PNatToNat
-
-open private getElimNameInfo generalizeTargets generalizeVars from Lean.Elab.Tactic.Induction
 
 open Lean Meta Elab Tactic Qq
 

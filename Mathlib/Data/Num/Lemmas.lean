@@ -12,6 +12,7 @@ public import Mathlib.Data.Nat.Cast.Order.Basic
 public import Mathlib.Data.Nat.PSub
 public import Mathlib.Data.Nat.Size
 public import Mathlib.Data.Num.Bitwise
+import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `bitwise`
 
 /-!
 # Properties of the binary representation of integers

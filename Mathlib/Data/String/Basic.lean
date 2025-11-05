@@ -9,6 +9,7 @@ public import Batteries.Data.String.Lemmas
 public import Mathlib.Data.List.Lex
 public import Mathlib.Data.Char
 public import Mathlib.Algebra.Order.Group.Nat
+import all Init.Data.String.Iterator  -- for unfolding `Iterator.curr`
 
 /-!
 # Strings
@@ -40,7 +41,7 @@ instance decidableLT' : DecidableLT String := by
   infer_instance -- short-circuit type class inference
 
 /-- Induction on `String.ltb`. -/
-def ltb.inductionOn.{u} {motive : Legacy.Iterator → Legacy.Iterator → Sort u}
+@[no_expose] def ltb.inductionOn.{u} {motive : Legacy.Iterator → Legacy.Iterator → Sort u}
     (it₁ it₂ : Legacy.Iterator)
     (ind : ∀ s₁ s₂ i₁ i₂, Legacy.Iterator.hasNext ⟨s₂, i₂⟩ → Legacy.Iterator.hasNext ⟨s₁, i₁⟩ →
       i₁.get s₁ = i₂.get s₂ →

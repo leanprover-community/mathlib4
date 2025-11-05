@@ -641,7 +641,7 @@ private def traverseAux {α β : Type u} (f : α → F β) : ∀ x : List α, F 
   | x :: xs => Vector.cons <$> f x <*> traverseAux f xs
 
 /-- Apply an applicative function to each component of a vector. -/
-protected def traverse {α β : Type u} (f : α → F β) : Vector α n → F (Vector β n)
+@[no_expose] protected def traverse {α β : Type u} (f : α → F β) : Vector α n → F (Vector β n)
   | ⟨v, Hv⟩ => cast (by rw [Hv]) <| traverseAux f v
 
 section
