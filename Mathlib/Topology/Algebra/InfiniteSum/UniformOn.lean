@@ -65,6 +65,9 @@ lemma hasProdUniformlyOn_iff_tendstoUniformlyOn : HasProdUniformlyOn f g 𝔖 �
     UniformOnFun.tendsto_iff_tendstoUniformlyOn
 
 @[to_additive]
+alias ⟨HasProdUniformlyOn.tendstoUniformlyOn, _⟩ := hasProdUniformlyOn_iff_tendstoUniformlyOn
+
+@[to_additive]
 lemma HasProdUniformlyOn.congr {f' : ι → β → α}
     (h : HasProdUniformlyOn f g 𝔖)
     (hff' : ∀ s ∈ 𝔖, ∀ᶠ (n : Finset ι) in atTop,
@@ -116,6 +119,11 @@ theorem MultipliableUniformlyOn.hasProdUniformlyOn [T2Space α] (h : Multipliabl
   simp only [hasProdUniformlyOn_iff_tendstoUniformlyOn]
   intro s hs
   exact (hasProdUniformlyOn_iff_tendstoUniformlyOn.mp hg s hs).congr_right (hg.tprod_eqOn hs).symm
+
+@[to_additive]
+theorem multipliableUniformlyOn_iff_hasProdUniformlyOn [T2Space α] :
+    MultipliableUniformlyOn f 𝔖 ↔ HasProdUniformlyOn f (∏' i, f i ·) 𝔖 :=
+  ⟨MultipliableUniformlyOn.hasProdUniformlyOn, HasProdUniformlyOn.multipliableUniformlyOn⟩
 
 end UniformlyOn
 
@@ -183,6 +191,11 @@ theorem HasProdLocallyUniformlyOn.multipliableLocallyUniformlyOn
     (h : HasProdLocallyUniformlyOn f g s) : MultipliableLocallyUniformlyOn f s :=
   ⟨g, h⟩
 
+@[to_additive]
+lemma HasProdLocallyUniformlyOn.mono {t : Set β}
+    (h : HasProdLocallyUniformlyOn f g t) (hst : s ⊆ t) : HasProdLocallyUniformlyOn f g s :=
+  TendstoLocallyUniformlyOn.mono h hst
+
 /-- If every `x ∈ s` has a neighbourhood within `s` on which `b ↦ ∏' i, f i b` converges uniformly,
 then the product converges locally uniformly on `s`. Note that this is not a tautology, and the
 converse is only true if the domain is locally compact. -/
@@ -240,4 +253,210 @@ lemma HasProdLocallyUniformlyOn.tendstoLocallyUniformlyOn_finsetRange
   obtain ⟨t, ht, htr⟩ := h v hv r hr
   exact ⟨t, ht, Filter.tendsto_finset_range.eventually htr⟩
 
+@[to_additive]
+theorem multipliableLocallyUniformlyOn_iff_hasProdLocallyUniformlyOn [T2Space α] :
+    MultipliableLocallyUniformlyOn f s ↔ HasProdLocallyUniformlyOn f (∏' i, f i ·) s :=
+  ⟨MultipliableLocallyUniformlyOn.hasProdLocallyUniformlyOn,
+    HasProdLocallyUniformlyOn.multipliableLocallyUniformlyOn⟩
+
 end LocallyUniformlyOn
+
+section Uniformly
+
+variable (f g) in
+/-- `HasProdUniformly f g` means that
+the product `∏ i, f i b` converges uniformly (wrt `b`) to `g`. -/
+@[to_additive /-- `HasSumUniformly f g` means that
+the sum `∑ i, f i b` converges uniformly (wrt `b`) to `g`. -/]
+def HasProdUniformly : Prop := HasProd (UniformFun.ofFun ∘ f) (UniformFun.ofFun g)
+
+variable (f g 𝔖) in
+/-- `MultipliableUniformly f` means that there is some infinite product to which
+`f` converges uniformly. Use `fun x ↦ ∏' i, f i x` to get the product function. -/
+@[to_additive /-- `SummableUniformly f` means that there is some infinite sum to which
+`f` converges uniformly. Use `fun x ↦ ∑' i, f i x` to get the product function. -/]
+def MultipliableUniformly : Prop := Multipliable (UniformFun.ofFun ∘ f)
+
+@[to_additive]
+lemma MultipliableUniformly.exists (h : MultipliableUniformly f) :
+    ∃ g, HasProdUniformly f g :=
+  h
+
+@[to_additive]
+theorem HasProdUniformly.multipliableUniformly (h : HasProdUniformly f g) :
+    MultipliableUniformly f :=
+  ⟨g, h⟩
+
+@[to_additive]
+lemma hasProdUniformly_iff_tendstoUniformly :
+    HasProdUniformly f g ↔ TendstoUniformly (∏ i ∈ ·, f i ·) g atTop := by
+  simpa [HasProdUniformly, HasProd, ← UniformFun.ofFun_prod, Finset.prod_fn] using
+    UniformFun.tendsto_iff_tendstoUniformly
+
+@[to_additive]
+alias ⟨HasProdUniformly.tendstoUniformly, _⟩ := hasProdUniformly_iff_tendstoUniformly
+
+@[to_additive]
+theorem HasProdUniformly.hasProdUniformlyOn (h : HasProdUniformly f g) :
+    HasProdUniformlyOn f g 𝔖 :=
+  hasProdUniformlyOn_iff_tendstoUniformlyOn.mpr fun _ _ ↦ h.tendstoUniformly.tendstoUniformlyOn
+
+@[to_additive]
+lemma hasProdUniformlyOn_univ_iff :
+    HasProdUniformlyOn f g {.univ} ↔ HasProdUniformly f g := by
+  simp [hasProdUniformly_iff_tendstoUniformly, hasProdUniformlyOn_iff_tendstoUniformlyOn,
+    tendstoUniformlyOn_univ]
+
+@[to_additive]
+theorem MultipliableUniformly.multipliableUniformlyOn (h : MultipliableUniformly f) :
+    MultipliableUniformlyOn f 𝔖 :=
+  h.exists.choose_spec.hasProdUniformlyOn.multipliableUniformlyOn
+
+@[to_additive]
+lemma multipliableUniformlyOn_univ_iff :
+    MultipliableUniformlyOn f {.univ} ↔ MultipliableUniformly f :=
+  ⟨fun h ↦ (hasProdUniformlyOn_univ_iff.mp h.exists.choose_spec).multipliableUniformly,
+    MultipliableUniformly.multipliableUniformlyOn⟩
+
+@[to_additive]
+lemma HasProdUniformly.congr {f' : ι → β → α}
+    (h : HasProdUniformly f g)
+    (hff' : ∀ᶠ (n : Finset ι) in atTop, ∀ b, ∏ i ∈ n, f i b = ∏ i ∈ n, f' i b) :
+    HasProdUniformly f' g := by
+  rw [hasProdUniformly_iff_tendstoUniformly] at *
+  exact (tendstoUniformly_congr (by simpa only [EventuallyEq, funext_iff])).mp h
+
+@[to_additive]
+lemma HasProdUniformly.tendstoUniformlyOn_finsetRange {f : ℕ → β → α} (h : HasProdUniformly f g) :
+    TendstoUniformly (∏ i ∈ Finset.range ·, f i ·) g atTop := by
+  exact fun v hv => Filter.tendsto_finset_range.eventually (h.tendstoUniformly v hv)
+
+@[to_additive]
+theorem HasProdUniformly.hasProd (h : HasProdUniformly f g) : HasProd (f · x) (g x) :=
+  h.tendstoUniformly.tendsto_at _
+
+@[to_additive]
+theorem MultipliableUniformly.multipliable (h : MultipliableUniformly f) : Multipliable (f · x) :=
+  h.exists.choose_spec.hasProd.multipliable
+
+@[to_additive]
+theorem MultipliableUniformly.hasProdUniformly [T2Space α] (h : MultipliableUniformly f) :
+    HasProdUniformly f (∏' i, f i ·) := by
+  simpa [fun x ↦ (h.exists.choose_spec.hasProd (x := x)).tprod_eq] using h.exists.choose_spec
+
+@[to_additive]
+theorem multipliableUniformly_iff_hasProdUniformly [T2Space α] :
+    MultipliableUniformly f ↔ HasProdUniformly f (∏' i, f i ·) :=
+  ⟨MultipliableUniformly.hasProdUniformly, HasProdUniformly.multipliableUniformly⟩
+
+end Uniformly
+
+section LocallyUniformly
+/-!
+## Locally uniform convergence of sums and products
+-/
+
+variable [TopologicalSpace β]
+
+variable (f g s) in
+/-- `HasProdLocallyUniformly f g` means that the (potentially infinite) product `∏' i, f i b`
+for `b : β` converges locally uniformly to `g b` (in the sense of
+`TendstoLocallyUniformly`). -/
+@[to_additive /-- `HasSumLocallyUniformly f g` means that the (potentially infinite) sum
+`∑' i, f i b` for `b : β` converges locally uniformly to `g b` (in the sense of
+`TendstoLocallyUniformly`). -/]
+def HasProdLocallyUniformly : Prop := TendstoLocallyUniformly (∏ i ∈ ·, f i ·) g atTop
+
+variable (f g s) in
+/-- `MultipliableLocallyUniformly f` means that the product `∏' i, f i b` converges locally
+uniformly to something. -/
+@[to_additive /-- `SummableLocallyUniformly f` means that `∑' i, f i b` converges locally
+uniformly to something. -/]
+def MultipliableLocallyUniformly : Prop := ∃ g, HasProdLocallyUniformly f g
+
+@[to_additive]
+lemma MultipliableLocallyUniformly.exists (h : MultipliableLocallyUniformly f) :
+    ∃ g, HasProdLocallyUniformly f g := h
+
+@[to_additive]
+theorem HasProdLocallyUniformly.multipliableLocallyUniformly
+    (h : HasProdLocallyUniformly f g) : MultipliableLocallyUniformly f :=
+  ⟨g, h⟩
+
+@[to_additive]
+lemma hasProdLocallyUniformly_iff_tendstoLocallyUniformly :
+    HasProdLocallyUniformly f g ↔ TendstoLocallyUniformly (∏ i ∈ ·, f i ·) g atTop :=
+  .rfl
+
+@[to_additive]
+theorem HasProdLocallyUniformly.hasProdLocallyUniformlyOn (h : HasProdLocallyUniformly f g) :
+    HasProdLocallyUniformlyOn f g s :=
+  h.tendstoLocallyUniformlyOn
+
+@[to_additive]
+theorem MultipliableLocallyUniformly.multipliableLocallyUniformlyOn
+    (h : MultipliableLocallyUniformly f) :
+    MultipliableLocallyUniformlyOn f s :=
+  h.exists.choose_spec.hasProdLocallyUniformlyOn.multipliableLocallyUniformlyOn
+
+/-- If every `x` has a neighbourhood on which `b ↦ ∏' i, f i b` converges uniformly
+to `g`, then the product converges locally uniformly to `g`. Note that this is not a
+tautology, and the converse is only true if the domain is locally compact. -/
+@[to_additive /-- If every `x` has a neighbourhood on which `b ↦ ∑' i, f i b`
+converges uniformly to `g`, then the sum converges locally uniformly. Note that this is not a
+tautology, and the converse is only true if the domain is locally compact. -/]
+lemma hasProdLocallyUniformly_of_of_forall_exists_nhds
+    (h : ∀ x, ∃ t ∈ 𝓝 x, HasProdUniformlyOn f g {t}) : HasProdLocallyUniformly f g :=
+  tendstoLocallyUniformly_of_forall_exists_nhds <| by
+    simpa [hasProdUniformlyOn_iff_tendstoUniformlyOn] using h
+
+@[to_additive]
+lemma HasProdUniformly.hasProdLocallyUniformly (h : HasProdUniformly f g) :
+    HasProdLocallyUniformly f g := by
+  simp [HasProdLocallyUniformly, hasProdUniformly_iff_tendstoUniformly] at *
+  exact TendstoUniformly.tendstoLocallyUniformly h
+
+@[to_additive]
+lemma hasProdLocallyUniformly_of_forall_compact [LocallyCompactSpace β]
+    (h : ∀ K, IsCompact K → HasProdUniformlyOn f g {K}) : HasProdLocallyUniformly f g := by
+  rw [HasProdLocallyUniformly, tendstoLocallyUniformly_iff_forall_isCompact]
+  simpa [hasProdUniformlyOn_iff_tendstoUniformlyOn] using h
+
+@[to_additive]
+lemma multipliableLocallyUniformly_of_of_forall_exists_nhds [T2Space α]
+    (h : ∀ x, ∃ t ∈ 𝓝 x, MultipliableUniformlyOn f {t}) :
+    MultipliableLocallyUniformly f :=
+  hasProdLocallyUniformly_of_of_forall_exists_nhds
+    (by simpa only [multipliableUniformlyOn_iff_hasProdUniformlyOn] using h)
+    |>.multipliableLocallyUniformly
+
+@[to_additive]
+theorem HasProdLocallyUniformly.hasProd (h : HasProdLocallyUniformly f g) : HasProd (f · x) (g x) :=
+  h.tendstoLocallyUniformlyOn.tendsto_at (Set.mem_univ x)
+
+@[to_additive]
+theorem MultipliableLocallyUniformly.multipliable
+    (h : MultipliableLocallyUniformly f) : Multipliable (f · x) :=
+  h.choose_spec.hasProd.multipliable
+
+@[to_additive]
+theorem MultipliableLocallyUniformly.hasProdLocallyUniformly [T2Space α]
+    (h : MultipliableLocallyUniformly f) :
+    HasProdLocallyUniformly f (∏' i, f i ·) := by
+  obtain ⟨g, hg⟩ := h.exists
+  simpa [fun x ↦ (hg.hasProd (x := x)).tprod_eq]
+
+@[to_additive]
+theorem multipliableLocallyUniformly_iff_hasProdLocallyUniformly [T2Space α] :
+    MultipliableLocallyUniformly f ↔ HasProdLocallyUniformly f (∏' i, f i ·) :=
+  ⟨MultipliableLocallyUniformly.hasProdLocallyUniformly,
+    HasProdLocallyUniformly.multipliableLocallyUniformly⟩
+
+@[to_additive]
+lemma HasProdLocallyUniformly.tendstoLocallyUniformly_finsetRange
+    {f : ℕ → β → α} (h : HasProdLocallyUniformly f g) :
+    TendstoLocallyUniformly (∏ i ∈ Finset.range ·, f i ·) g atTop := by
+  simpa only [tendstoLocallyUniformlyOn_univ] using
+    (h.hasProdLocallyUniformlyOn (s := .univ)).tendstoLocallyUniformlyOn_finsetRange
+
+end LocallyUniformly
