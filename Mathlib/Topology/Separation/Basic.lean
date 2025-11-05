@@ -293,6 +293,9 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
     R0Space (∀ i, X i) where
   specializes_symmetric _ _ h := specializes_pi.2 fun i ↦ (specializes_pi.1 h i).symm
 
+lemma R0Space.closure_singleton (x : X) : closure {x} = (𝓝 x).ker := by
+  ext; simp [ker_nhds_eq_specializes, ← specializes_iff_mem_closure, specializes_comm]
+
 /-- In an R₀ space, the closure of a singleton is a compact set. -/
 theorem isCompact_closure_singleton : IsCompact (closure {x}) := by
   refine isCompact_of_finite_subcover fun U hUo hxU ↦ ?_

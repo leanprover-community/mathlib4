@@ -394,8 +394,8 @@ theorem add_nat (a b : ℕ) : ∗a + ∗b = ∗(a ^^^ b) := by
     rw [hc', OrderIso.lt_iff_lt, Nat.cast_lt] at hc
     obtain h | h := Nat.lt_xor_cases hc
     · apply h.ne
-      simpa [Nat.xor_comm, Nat.xor_cancel_left, ← hc'] using add_nat (c ^^^ b) b
+      simpa [Nat.xor_comm, Nat.xor_xor_cancel_left, ← hc'] using add_nat (c ^^^ b) b
     · apply h.ne
-      simpa [Nat.xor_comm, Nat.xor_cancel_left, ← hc'] using add_nat a (c ^^^ a)
+      simpa [Nat.xor_comm, Nat.xor_xor_cancel_left, ← hc'] using add_nat a (c ^^^ a)
 
 end Nimber
