@@ -967,7 +967,7 @@ variable (α β : Type*)
 /-- This definition allows to endow `α × β` with the Lp distance with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `a × β` with the
 Lp distance. -/
-def pseudoMetricSpaceToProd [PseudoMetricSpace α] [PseudoMetricSpace β] :
+abbrev pseudoMetricSpaceToProd [PseudoMetricSpace α] [PseudoMetricSpace β] :
     PseudoMetricSpace (α × β) :=
   (isUniformInducing_toLp p α β).comapPseudoMetricSpace.replaceBornology
     fun s => Filter.ext_iff.1
@@ -980,7 +980,7 @@ lemma dist_pseudoMetricSpaceToProd [PseudoMetricSpace α] [PseudoMetricSpace β]
 /-- This definition allows to endow `α × β` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `a × β` with the
 Lp norm. -/
-def seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] :
+abbrev seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] :
     SeminormedAddCommGroup (α × β) where
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToProd p α β
@@ -1027,7 +1027,7 @@ instance normedSpaceSeminormedAddCommGroupToProd
 /-- This definition allows to endow `α × β` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `α × β` with the
 Lp norm. -/
-def normedAddCommGroupToProd [NormedAddCommGroup α] [NormedAddCommGroup β] :
+abbrev normedAddCommGroupToProd [NormedAddCommGroup α] [NormedAddCommGroup β] :
     NormedAddCommGroup (α × β) where
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToProd p α β

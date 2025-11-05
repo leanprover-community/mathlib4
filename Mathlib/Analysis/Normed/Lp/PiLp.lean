@@ -1086,7 +1086,7 @@ variable [Fact (1 ≤ p)] [Fintype ι]
 /-- This definition allows to endow `Π i, α i` with the Lp distance with the uniformity and
 bornology being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with
 the Lp distance. -/
-def pseudoMetricSpaceToPi [∀ i, PseudoMetricSpace (α i)] :
+abbrev pseudoMetricSpaceToPi [∀ i, PseudoMetricSpace (α i)] :
     PseudoMetricSpace (Π i, α i) :=
   (isUniformInducing_toLp p α).comapPseudoMetricSpace.replaceBornology
     fun s => Filter.ext_iff.1
@@ -1099,7 +1099,7 @@ lemma dist_pseudoMetricSpaceToPi [∀ i, PseudoMetricSpace (α i)] (x y : Π i, 
 /-- This definition allows to endow `Π i, α i` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with the
 Lp norm. -/
-def seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] :
+abbrev seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] :
     SeminormedAddCommGroup (Π i, α i) where
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToPi p α
@@ -1144,7 +1144,7 @@ instance normedSpaceSeminormedAddCommGroupToPi
 /-- This definition allows to endow `Π i, α i` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with the
 Lp norm. -/
-def normedAddCommGroupToPi [∀ i, NormedAddCommGroup (α i)] :
+abbrev normedAddCommGroupToPi [∀ i, NormedAddCommGroup (α i)] :
     NormedAddCommGroup (Π i, α i) where
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToPi p α
