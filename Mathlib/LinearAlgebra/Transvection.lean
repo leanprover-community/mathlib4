@@ -203,11 +203,16 @@ theorem _root_.LinearEquiv.transvection.baseChange
 variable {W : Type*} [AddCommGroup W] [Module R W] [Module A W] [IsScalarTower R A W]
   {ε : V →ₗ[R] W} (ibc_VW : IsBaseChange A ε)
 
-end transvection
+
+end LinearMap.transvection
+
+end baseChange
 
 section determinant
 
-open Polynomial LinearMap
+namespace LinearMap.transvection
+
+open Polynomial
 
 open scoped TensorProduct
 
@@ -325,18 +330,6 @@ theorem det_eq_one_ofDomain [IsDomain R]
     ← algebraMap.coe_one (R := R) (A := K)] at this
   simpa using this
 
-end determinant
-
-end LinearMap
-
-section
-
-namespace LinearMap.transvection
-
-open scoped TensorProduct
-
-open LinearMap
-
 -- [Mathlib.LinearAlgebra.Finsupp.LinearCombination]
 theorem span_range_eq_top_iff_surjective_finsuppLinearCombination
     {ι : Type*} {v : ι → V} :
@@ -430,8 +423,9 @@ theorem det_eq_one {f : Module.Dual R V} {v : V} (hfv : f v = 0) :
     simp only [smul_eq_mul, ← map_mul, ← map_sum, mul_comm]
     exact Ideal.Quotient.mk_singleton_self (MvPolynomial.sum_X_mul_Y (Fin n) ℤ)
   let tM := transvection fM vM
+  -- Unfinished
+  -- One need the abstract base change for transvections
   have := LinearMap.transvection.baseChange R fM vM
-
   sorry
 
 theorem det_eq_one' {f : Module.Dual R V} {v : V} (hfv : f v = 0) :
