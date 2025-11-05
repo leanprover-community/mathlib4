@@ -219,32 +219,18 @@ theorem pow_left_inj {x y : FreeGroup α} {n : ℕ} (hn : n ≠ 0) : x ^ n = y ^
     rwa [mul_comm, pow_mul, pow_mul]
   have hn₂ : 2 * n ≠ 0 := by omega
   apply_fun toWord at heq heq₂
-  rw [toWord_pow, toWord_pow, reduce_flatten_replicate x.isReduced_toWord,
-  reduce_flatten_replicate y.isReduced_toWord] at heq heq₂
-  simp only [hn, ↓reduceIte, append_assoc, hn₂] at heq heq₂
+  simp only [toWord_pow, reduce_flatten_replicate, x.isReduced_toWord,
+    y.isReduced_toWord, hn, ↓reduceIte, append_assoc, hn₂] at heq heq₂
   have leq := congr_arg List.length heq
   have leq₂ := congr_arg List.length heq₂
   simp only [length_append, length_flatten, map_replicate, sum_replicate, smul_eq_mul,
     invRev_length] at leq leq₂
-  have hm : (reduceCyclically x.toWord).length = (reduceCyclically y.toWord).length := by
-    apply Nat.mul_left_cancel (Nat.ne_zero_iff_zero_lt.mp hn)
-    linarith
-  have hc : conjugator x.toWord = conjugator y.toWord := by
-    have : (conjugator x.toWord).length =
-      (conjugator y.toWord).length :=
-      by linarith
-    apply_fun (·.take (conjugator x.toWord).length) at heq
-    rwa [take_left' rfl, this, take_left' rfl] at heq
-  have hm : reduceCyclically x.toWord = reduceCyclically y.toWord := by
-    simp [hc] at heq
-    apply_fun (·.take (reduceCyclically x.toWord).length) at heq
-    match n with
-    | 0 => contradiction
-    | n + 1 =>
-      rw [replicate_succ, flatten_cons, take_left' rfl] at heq
-      rwa [replicate_succ, flatten_cons, hm, take_left' rfl] at heq
+  obtain ⟨hc, heq⟩ := List.append_inj heq (by grind)
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn
+  simp only [replicate_succ, flatten_cons, append_assoc] at heq
+  obtain ⟨hm, heq⟩ := List.append_inj heq <| mul_left_cancel₀ hn <| by grind
   have := congr_arg mk <| (conj_conjugator_reduceCyclically x.toWord).symm
-  rwa [hc, hm, conj_conjugator_reduceCyclically (y.toWord), mk_toWord, mk_toWord] at this
+  rwa [hc, hm, conj_conjugator_reduceCyclically, mk_toWord, mk_toWord] at this
 
 @[to_additive FreeAddGroup.nsmul_right_injective]
 theorem pow_left_injective {n : ℕ} (hn : n ≠ 0) :
