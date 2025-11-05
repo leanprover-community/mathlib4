@@ -71,14 +71,14 @@ def liftRingHom (f : (n : ℕ) → R →+* S ⧸ I ^ n)
 variable (f : (n : ℕ) → R →+* S ⧸ I ^ n)
   (hf : ∀ {m n : ℕ} (hle : m ≤ n), (factorPow I hle).comp (f n) = f m)
 
-theorem factor_eval_liftRingHom_apply (n : ℕ) (x : R) :
-    (factor (le_of_eq (mul_top _))) (eval I S n (liftRingHom I f hf x)) = (f n x) := by
+theorem factor_eval_liftRingHom (n : ℕ) (x : R) (h : I ^ n • ⊤ ≤ I ^ n) :
+    (factor h) (eval I S n (liftRingHom I f hf x)) = (f n x) := by
   simp [liftRingHom, eval]
 
 @[simp]
-theorem evalₐ_liftRingHom_apply (n : ℕ) (x : R) :
+theorem evalₐ_liftRingHom (n : ℕ) (x : R) :
     (evalₐ I n) (liftRingHom I f hf x) = f n x := by
-  rw [← factor_eval_eq_evalₐ I n _ (le_of_eq (mul_top _))]
+  rw [← factor_eval_eq_evalₐ I _ (le_of_eq (mul_top _))]
   simp [liftRingHom, eval]
 
 @[simp]
@@ -87,6 +87,7 @@ theorem evalₐ_comp_liftRingHom (n : ℕ) :
   ext; simp
 
 variable [IsAdicComplete I S]
+
 /--
 When `S` is `I`-adic complete, the canonical map from `S` to
 its `I`-adic completion is an `S`-algebra isomorphism.
@@ -97,24 +98,24 @@ noncomputable def ofAlgEquiv : S ≃ₐ[S] AdicCompletion I S where
   commutes' _ := rfl
 
 @[simp]
-theorem ofAlgEquiv_apply (x : S) : ofAlgEquiv I x = of I S x :=
+theorem ofAlgEquiv_apply (x : S) : ofAlgEquiv I x = of I S x := by
   rfl
 
 @[simp]
-theorem of_ofAlgEquiv_symm_apply (x : AdicCompletion I S) :
+theorem of_ofAlgEquiv_symm (x : AdicCompletion I S) :
     of I S ((ofAlgEquiv I).symm x) = x := by
   simp [ofAlgEquiv]
 
-theorem mk_smul_top_ofAlgEquiv_symm_apply (n : ℕ) (x : AdicCompletion I S) :
+theorem mk_smul_top_ofAlgEquiv_symm (n : ℕ) (x : AdicCompletion I S) :
     Ideal.Quotient.mk (I ^ n • ⊤) ((ofAlgEquiv I).symm x) = eval I S n x := by
-  nth_rw 2 [← of_ofAlgEquiv_symm_apply I x]
-  simp [-of_ofAlgEquiv_symm_apply, eval]
+  nth_rw 2 [← of_ofAlgEquiv_symm I x]
+  simp [-of_ofAlgEquiv_symm, eval,-smul_eq_mul,-Algebra.id.smul_eq_mul]
 
 @[simp]
-theorem mk_ofAlgEquiv_symm_apply (n : ℕ) (x : AdicCompletion I S) :
+theorem mk_ofAlgEquiv_symm (n : ℕ) (x : AdicCompletion I S) :
     Ideal.Quotient.mk (I ^ n) ((ofAlgEquiv I).symm x) = evalₐ I n x := by
   simp only [evalₐ, AlgHom.coe_comp, Function.comp_apply, AlgHom.ofLinearMap_apply]
-  rw [← mk_smul_top_ofAlgEquiv_symm_apply I n x]
+  rw [← mk_smul_top_ofAlgEquiv_symm I n x]
   simp
 
 end AdicCompletion
@@ -138,7 +139,7 @@ noncomputable def liftRingHom :
   ((ofAlgEquiv I).symm : _ →+* _).comp (AdicCompletion.liftRingHom I f hf)
 
 @[simp]
-theorem of_liftRingHom_apply (x : R) :
+theorem of_liftRingHom (x : R) :
     of I S (liftRingHom I f hf x) = (AdicCompletion.liftRingHom I f hf x) := by
   simp [liftRingHom]
 
@@ -153,7 +154,7 @@ The composition of lift linear map `lift I f hf : R →+* S` with the canonical
 projection `S →+* S ⧸ (I ^ n)` is `f n` .
 -/
 @[simp]
-theorem mk_liftRingHom_apply (n : ℕ) (x : R) :
+theorem mk_liftRingHom (n : ℕ) (x : R) :
     Ideal.Quotient.mk (I ^ n) (liftRingHom I f hf x) = f n x:= by
   simp only [liftRingHom, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply]
   rw [← evalₐ_of_apply I n]
@@ -240,10 +241,10 @@ from a strictly increasing sequence `a n`.
 noncomputable def liftRingHom : R →+* S :=
   IsAdicComplete.liftRingHom I (extendRingHom ha f) (factorPow_comp_extendRingHom ha f hf)
 
-theorem of_liftRingHom_apply (x : R) :
+theorem of_liftRingHom (x : R) :
     of I S (liftRingHom I ha f hf x) =
     AdicCompletion.liftRingHom I (extendRingHom ha f) (factorPow_comp_extendRingHom ha f hf) x :=
-  IsAdicComplete.of_liftRingHom_apply I (extendRingHom ha f)
+  IsAdicComplete.of_liftRingHom I (extendRingHom ha f)
       (factorPow_comp_extendRingHom ha f hf) x
 
 theorem ofAlgEquiv_comp_liftRingHom :
@@ -253,7 +254,7 @@ theorem ofAlgEquiv_comp_liftRingHom :
       (factorPow_comp_extendRingHom ha f hf)
 
 @[simp]
-theorem mk_liftRingHom_apply {n : ℕ} (x : R) :
+theorem mk_liftRingHom {n : ℕ} (x : R) :
     (Ideal.Quotient.mk _ (liftRingHom I ha f hf x)) = f n x := by
   simp [liftRingHom, IsAdicComplete.liftRingHom, extendRingHom_eq ha f hf]
 
@@ -269,7 +270,7 @@ theorem eq_liftRingHom {F : R →+* S}
   intro n
   simp only [smul_eq_mul, mul_top]
   apply SModEq.mono (Ideal.pow_le_pow_right (ha.id_le n))
-  simp [SModEq, hF, mk_liftRingHom_apply I ha f hf]
+  simp [SModEq, hF, mk_liftRingHom I ha f hf]
 
 end StrictMono
 
