@@ -45,13 +45,10 @@ in the two arguments. -/
 class LipschitzMul [Monoid β] : Prop where
   lipschitz_mul : ∃ C, LipschitzWith C fun p : β × β => p.1 * p.2
 
-/-- The Lipschitz constant of an `AddMonoid` `β` satisfying `LipschitzAdd` -/
-def LipschitzAdd.C [AddMonoid β] [_i : LipschitzAdd β] : ℝ≥0 := Classical.choose _i.lipschitz_add
-
 variable [Monoid β]
 
 /-- The Lipschitz constant of a monoid `β` satisfying `LipschitzMul` -/
-@[to_additive existing] -- Porting note: had to add `LipschitzAdd.C`. to_additive silently failed
+@[to_additive /-- The Lipschitz constant of an `AddMonoid` `β` satisfying `LipschitzAdd` -/]
 def LipschitzMul.C [_i : LipschitzMul β] : ℝ≥0 := Classical.choose _i.lipschitz_mul
 
 variable {β}
@@ -92,7 +89,7 @@ instance Real.hasLipschitzAdd : LipschitzAdd ℝ where
   lipschitz_add := ⟨2, LipschitzWith.of_dist_le_mul fun p q => by
     simp only [Real.dist_eq, Prod.dist_eq, NNReal.coe_ofNat,
       add_sub_add_comm, two_mul]
-    refine le_trans (abs_add (p.1 - q.1) (p.2 - q.2)) ?_
+    refine le_trans (abs_add_le (p.1 - q.1) (p.2 - q.2)) ?_
     exact add_le_add (le_max_left _ _) (le_max_right _ _)⟩
 
 -- this instance has the same proof as `AddSubmonoid.lipschitzAdd`, but the former can't
@@ -120,8 +117,6 @@ class IsBoundedSMul : Prop where
   dist_smul_pair' : ∀ x : α, ∀ y₁ y₂ : β, dist (x • y₁) (x • y₂) ≤ dist x 0 * dist y₁ y₂
   dist_pair_smul' : ∀ x₁ x₂ : α, ∀ y : β, dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0
 
-@[deprecated (since := "2025-03-10")] alias BoundedSMul := IsBoundedSMul
-
 variable {α β}
 variable [IsBoundedSMul α β]
 
@@ -148,9 +143,7 @@ instance (priority := 100) IsBoundedSMul.continuousSMul : ContinuousSMul α β w
         ≤ dist (a' • b') (a • b') + dist (a • b') (a • b) := dist_triangle ..
       _ ≤ dist a' a * dist b' 0 + dist a 0 * dist b' b :=
         add_le_add (dist_pair_smul _ _ _) (dist_smul_pair _ _ _)
-      _ ≤ δ * (δ + dist b 0) + dist a 0 * δ := by
-          have : dist b' 0 ≤ δ + dist b 0 := (dist_triangle _ _ _).trans <| add_le_add_right hb.le _
-          gcongr
+      _ ≤ δ * (δ + dist b 0) + dist a 0 * δ := by gcongr; grw [dist_triangle b' b 0, hb]
       _ < ε := hδε
 
 instance (priority := 100) IsBoundedSMul.toUniformContinuousConstSMul :

@@ -117,6 +117,14 @@ theorem coe_finset_sup {ι : Type*} {s : Finset ι} {f : ι → Compacts α} :
   simp_rw [Finset.sup_cons, coe_sup, sup_eq_union]
   congr
 
+@[simps]
+instance : Singleton α (Compacts α) where
+  singleton x := ⟨{x}, isCompact_singleton⟩
+
+@[simp]
+theorem mem_singleton (x y : α) : x ∈ ({y} : Compacts α) ↔ x = y :=
+  Iff.rfl
+
 /-- The image of a compact set under a continuous function. -/
 protected def map (f : α → β) (hf : Continuous f) (K : Compacts α) : Compacts β :=
   ⟨f '' K.1, K.2.image hf⟩
@@ -132,6 +140,10 @@ theorem map_id (K : Compacts α) : K.map id continuous_id = K :=
 theorem map_comp (f : β → γ) (g : α → β) (hf : Continuous f) (hg : Continuous g) (K : Compacts α) :
     K.map (f ∘ g) (hf.comp hg) = (K.map g hg).map f hf :=
   Compacts.ext <| Set.image_comp _ _ _
+
+@[simp]
+theorem map_singleton {f : α → β} (hf : Continuous f) (x : α) : Compacts.map f hf {x} = {f x} :=
+  Compacts.ext Set.image_singleton
 
 /-- A homeomorphism induces an equivalence on compact sets, by taking the image. -/
 @[simps]
@@ -173,6 +185,11 @@ protected def prod (K : Compacts α) (L : Compacts β) : Compacts (α × β) whe
 theorem coe_prod (K : Compacts α) (L : Compacts β) :
     (K.prod L : Set (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
   rfl
+
+@[simp]
+theorem singleton_prod_singleton (x : α) (y : β) :
+    Compacts.prod {x} {y} = {(x, y)} :=
+  Compacts.ext Set.singleton_prod_singleton
 
 -- todo: add `pi`
 
@@ -242,12 +259,26 @@ theorem coe_sup (s t : NonemptyCompacts α) : (↑(s ⊔ t) : Set α) = ↑s ∪
 theorem coe_top [CompactSpace α] [Nonempty α] : (↑(⊤ : NonemptyCompacts α) : Set α) = univ :=
   rfl
 
+@[simps!]
+instance : Singleton α (NonemptyCompacts α) where
+  singleton x := ⟨{x}, singleton_nonempty x⟩
+
+@[simp]
+theorem mem_singleton (x y : α) : x ∈ ({y} : NonemptyCompacts α) ↔ x = y :=
+  Iff.rfl
+
+@[simp]
+theorem toCompacts_singleton (x : α) : toCompacts {x} = {x} :=
+  rfl
+
+@[simp]
+theorem toCloseds_singleton [T2Space α] (x : α) : toCloseds {x} = Closeds.singleton x :=
+  rfl
+
 /-- In an inhabited space, the type of nonempty compact subsets is also inhabited, with
 default element the singleton set containing the default element. -/
 instance [Inhabited α] : Inhabited (NonemptyCompacts α) :=
-  ⟨{  carrier := {default}
-      isCompact' := isCompact_singleton
-      nonempty' := singleton_nonempty _ }⟩
+  ⟨{default}⟩
 
 instance toCompactSpace {s : NonemptyCompacts α} : CompactSpace s :=
   isCompact_iff_compactSpace.1 s.isCompact
@@ -264,6 +295,11 @@ protected def prod (K : NonemptyCompacts α) (L : NonemptyCompacts β) : Nonempt
 theorem coe_prod (K : NonemptyCompacts α) (L : NonemptyCompacts β) :
     (K.prod L : Set (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
   rfl
+
+@[simp]
+theorem singleton_prod_singleton (x : α) (y : β) :
+    NonemptyCompacts.prod {x} {y} = {(x, y)} :=
+  NonemptyCompacts.ext Set.singleton_prod_singleton
 
 end NonemptyCompacts
 
@@ -397,7 +433,7 @@ end PositiveCompacts
 
 /-! ### Compact open sets -/
 
-/-- The type of compact open sets of a topological space. This is useful in non Hausdorff contexts,
+/-- The type of compact open sets of a topological space. This is useful in non-Hausdorff contexts,
 in particular spectral spaces. -/
 structure CompactOpens (α : Type*) [TopologicalSpace α] extends Compacts α where
   isOpen' : IsOpen carrier

@@ -94,7 +94,7 @@ theorem map_monotone (f : V ↪ W) : Monotone (SimpleGraph.map f) := by
 
 theorem support_map (f : V ↪ W) (G : SimpleGraph V) :
     (G.map f).support = f '' G.support := by
-  ext; simp [mem_support]; tauto
+  ext; simp [mem_support]
 
 /-- Given a function, there is a contravariant induced map on graphs by pulling back the
 adjacency relation.
@@ -125,9 +125,13 @@ lemma comap_symm (G : SimpleGraph V) (e : V ≃ W) :
 lemma map_symm (G : SimpleGraph W) (e : V ≃ W) :
     G.map e.symm.toEmbedding = G.comap e.toEmbedding := by rw [← comap_symm, e.symm_symm]
 
-theorem comap_monotone (f : V ↪ W) : Monotone (SimpleGraph.comap f) := by
-  intro G G' h _ _ ha
-  exact h ha
+theorem comap_monotone (f : V ↪ W) : Monotone (SimpleGraph.comap f) :=
+  fun _ _ h _ _ ha ↦ h ha
+
+@[simp] lemma comap_bot (f : V → W) : (emptyGraph W).comap f = emptyGraph V := rfl
+
+lemma comap_top {f : V → W} (hf : f.Injective) : (completeGraph W).comap f = completeGraph V := by
+  ext; simp [hf.eq_iff]
 
 @[simp]
 theorem comap_map_eq (f : V ↪ W) (G : SimpleGraph V) : (G.map f).comap f = G := by
@@ -188,11 +192,17 @@ lemma _root_.Equiv.symm_simpleGraph (e : V ≃ W) : e.simpleGraph.symm = e.symm.
 /- Given a set `s` of vertices, we can restrict a graph to those vertices by restricting its
 adjacency relation. This gives a map between `SimpleGraph V` and `SimpleGraph s`.
 
-There is also a notion of induced subgraphs (see `SimpleGraph.subgraph.induce`). -/
+There is also a notion of induced subgraphs (see `SimpleGraph.Subgraph.induce`). -/
 /-- Restrict a graph to the vertices in the set `s`, deleting all edges incident to vertices
 outside the set. This is a wrapper around `SimpleGraph.comap`. -/
 abbrev induce (s : Set V) (G : SimpleGraph V) : SimpleGraph s :=
   G.comap (Function.Embedding.subtype _)
+
+variable {G} in
+lemma induce_adj {s : Set V} {u v : s} : (G.induce s).Adj u v ↔ G.Adj u v := .rfl
+
+@[simp] lemma induce_top (s : Set V) : (completeGraph V).induce s = completeGraph s :=
+  comap_top Subtype.val_injective
 
 @[simp] lemma induce_singleton_eq_top (v : V) : G.induce {v} = ⊤ := by
   rw [eq_top_iff]; apply le_comap_of_subsingleton
@@ -288,21 +298,6 @@ def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩
 @[simp, norm_cast] lemma coe_ofLE (h : G₁ ≤ G₂) : ⇑(ofLE h) = id := rfl
 
 lemma ofLE_apply (h : G₁ ≤ G₂) (v : V) : ofLE h v = v := rfl
-
-/-- The induced map for spanning subgraphs, which is the identity on vertices. -/
-@[deprecated ofLE (since := "2025-03-17")]
-def mapSpanningSubgraphs {G G' : SimpleGraph V} (h : G ≤ G') : G →g G' where
-  toFun x := x
-  map_rel' ha := h ha
-
-@[deprecated "This is true by simp" (since := "2025-03-17")]
-lemma mapSpanningSubgraphs_inj {G G' : SimpleGraph V} {v w : V} (h : G ≤ G') :
-    ofLE h v = ofLE h w ↔ v = w := by simp
-
-@[deprecated "This is true by simp" (since := "2025-03-17")]
-lemma mapSpanningSubgraphs_injective {G G' : SimpleGraph V} (h : G ≤ G') :
-    Injective (ofLE h) :=
-  fun v w hvw ↦ by simpa using hvw
 
 theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective f.mapEdgeSet := by
   rintro ⟨e₁, h₁⟩ ⟨e₂, h₂⟩

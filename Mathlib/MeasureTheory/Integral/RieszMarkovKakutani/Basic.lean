@@ -8,7 +8,7 @@ import Mathlib.Topology.ContinuousMap.CompactlySupported
 import Mathlib.Topology.PartitionOfUnity
 
 /-!
-#  Riesz–Markov–Kakutani representation theorem
+# Riesz–Markov–Kakutani representation theorem
 
 This file prepares technical definitions and results for the Riesz-Markov-Kakutani representation
 theorem on a locally compact T2 space `X`. As a special case, the statements about linear

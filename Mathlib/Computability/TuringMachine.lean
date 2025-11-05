@@ -33,7 +33,7 @@ computation. These are the parameters for the language:
 
 All of these variables denote "essentially finite" types, but for technical reasons it is
 convenient to allow them to be infinite anyway. When using an infinite type, we will be interested
-to prove that only finitely many values of the type are ever interacted with.
+in proving that only finitely many values of the type are ever interacted with.
 
 Given these parameters, there are a few common structures for the model that arise:
 
@@ -117,7 +117,7 @@ variable (σ : Type*)
 /-- The TM2 model removes the tape entirely from the TM1 model,
   replacing it with an arbitrary (finite) collection of stacks.
   The operation `push` puts an element on one of the stacks,
-  and `pop` removes an element from a stack (and modifying the
+  and `pop` removes an element from a stack (and modifies the
   internal state based on the result). `peek` modifies the
   internal state but does not remove an element. -/
 inductive Stmt
@@ -217,7 +217,7 @@ theorem stmts₁_trans {q₁ q₂ : Stmt Γ Λ σ} : q₁ ∈ stmts₁ q₂ → 
     · exact Finset.mem_insert_of_mem (Finset.mem_union_right _ (IH₂ h₁₂))
   | goto l => subst h₁₂; exact h₀₁
   | halt => subst h₁₂; exact h₀₁
-  | load  _ q IH | _ _ _ q IH =>
+  | load _ q IH | _ _ _ q IH =>
     rcases h₁₂ with (rfl | h₁₂)
     · unfold stmts₁ at h₀₁
       exact h₀₁
@@ -488,7 +488,7 @@ theorem step_run {k : K} (q : TM2.Stmt Γ Λ σ) (v : σ) (S : ∀ k, List (Γ k
 
 end
 
-/-- The translation of TM2 statements to TM1 statements. regular actions have direct equivalents,
+/-- The translation of TM2 statements to TM1 statements. Regular actions have direct equivalents,
 but stack actions are deferred by going to the corresponding `go` state, so that we can find the
 appropriate stack top. -/
 def trNormal : TM2.Stmt Γ Λ σ → TM1.Stmt (Γ' K Γ) (Λ' K Γ Λ σ) σ

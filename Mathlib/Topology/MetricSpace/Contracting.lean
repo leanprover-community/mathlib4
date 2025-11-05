@@ -244,7 +244,7 @@ theorem dist_inequality (x y) : dist x y ≤ (dist x (f x) + dist y (f y)) / (1 
     rwa [le_div_iff₀ hf.one_sub_K_pos, mul_comm, _root_.sub_mul, one_mul, sub_le_iff_le_add]
   calc
     dist x y ≤ dist x (f x) + dist y (f y) + dist (f x) (f y) := dist_triangle4_right _ _ _ _
-    _ ≤ dist x (f x) + dist y (f y) + K * dist x y := add_le_add_left (hf.dist_le_mul _ _) _
+    _ ≤ dist x (f x) + dist y (f y) + K * dist x y := by grw [hf.dist_le_mul]
 
 theorem dist_le_of_fixedPoint (x) {y} (hy : IsFixedPt f y) : dist x y ≤ dist x (f x) / (1 - K) := by
   simpa only [hy.eq, dist_self, add_zero] using hf.dist_inequality x y
@@ -315,7 +315,6 @@ theorem isFixedPt_fixedPoint_iterate {n : ℕ} (hf : ContractingWith K f^[n]) :
   have := hf.toLipschitzWith.dist_le_mul x (f x)
   rw [← iterate_succ_apply, iterate_succ_apply', hx] at this
   contrapose! this
-  have := dist_pos.2 (Ne.symm this)
-  simpa only [NNReal.coe_one, one_mul, NNReal.val_eq_coe] using (mul_lt_mul_right this).mpr hf.left
+  simpa using mul_lt_mul_of_pos_right (NNReal.coe_lt_one.2 hf.left) <| dist_pos.2 (Ne.symm this)
 
 end ContractingWith

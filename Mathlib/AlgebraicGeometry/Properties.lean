@@ -31,16 +31,16 @@ variable (X : Scheme)
 
 instance : T0Space X :=
   T0Space.of_open_cover fun x => ⟨_, X.affineCover.covers x,
-    (X.affineCover.map x).opensRange.2, IsEmbedding.t0Space (Y := PrimeSpectrum _)
-    (isAffineOpen_opensRange (X.affineCover.map x)).isoSpec.schemeIsoToHomeo.isEmbedding⟩
+    (X.affineCover.f _).opensRange.2, IsEmbedding.t0Space (Y := PrimeSpectrum _)
+    (isAffineOpen_opensRange (X.affineCover.f _)).isoSpec.schemeIsoToHomeo.isEmbedding⟩
 
 instance : QuasiSober X := by
   apply (config := { allowSynthFailures := true })
-    quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.map x).base)
-  · rintro ⟨_, i, rfl⟩; exact (X.affineCover.map_prop i).base_open.isOpen_range
+    quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.f x))
+  · rintro ⟨_, i, rfl⟩; exact (X.affineCover.f i).isOpenEmbedding.isOpen_range
   · rintro ⟨_, i, rfl⟩
     exact @IsOpenEmbedding.quasiSober _ _ _ _ _
-      (X.affineCover.map_prop i).base_open.isEmbedding.toHomeomorph.symm.isOpenEmbedding
+      (X.affineCover.f i).isOpenEmbedding.isEmbedding.toHomeomorph.symm.isOpenEmbedding
         PrimeSpectrum.quasiSober
   · rw [Set.top_eq_univ, Set.sUnion_range, Set.eq_univ_iff_forall]
     intro x; exact ⟨_, ⟨_, rfl⟩, X.affineCover.covers x⟩
@@ -49,8 +49,8 @@ instance {X : Scheme.{u}} : PrespectralSpace X :=
   have (Y : Scheme.{u}) (_ : IsAffine Y) : PrespectralSpace Y :=
     .of_isClosedEmbedding (Y := PrimeSpectrum _) _
       Y.isoSpec.hom.homeomorph.isClosedEmbedding
-  have (i : _) : PrespectralSpace (X.affineCover.map i).opensRange.1 :=
-    this (X.affineCover.map i).opensRange (isAffineOpen_opensRange (X.affineCover.map i))
+  have (i : _) : PrespectralSpace (X.affineCover.f i).opensRange.1 :=
+    this (X.affineCover.f i).opensRange (isAffineOpen_opensRange (X.affineCover.f i))
   .of_isOpenCover X.affineCover.isOpenCover_opensRange
 
 /-- A scheme `X` is reduced if all `𝒪ₓ(U)` are reduced. -/
@@ -81,13 +81,11 @@ instance isReduced_stalk_of_isReduced [IsReduced X] (x : X) :
   replace e' := (IsNilpotent.mk _ _ e').eq_zero (R := Γ(X, V))
   rw [← X.presheaf.germ_res iU x hxV, CommRingCat.comp_apply, e', map_zero]
 
-theorem isReduced_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f]
+theorem isReduced_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f]
     [IsReduced Y] : IsReduced X := by
   constructor
   intro U
-  have : U = f ⁻¹ᵁ f ''ᵁ U := by
-    ext1; exact (Set.preimage_image_eq _ H.base_open.injective).symm
-  rw [this]
+  rw [← f.preimage_image_eq U]
   exact isReduced_of_injective (inv <| f.app (f ''ᵁ U)).hom
     (asIso <| f.app (f ''ᵁ U) : Γ(Y, f ''ᵁ U) ≅ _).symm.commRingCatIsoToRingEquiv.injective
 
@@ -128,20 +126,20 @@ theorem reduce_to_affine_global (P : ∀ {X : Scheme} (_ : X.Opens), Prop)
   intro x
   obtain ⟨_, ⟨j, rfl⟩, hx, i⟩ :=
     X.affineBasisCover_is_basis.exists_subset_of_mem_open (SetLike.mem_coe.2 x.prop) U.isOpen
-  let U' : Opens _ := ⟨_, (X.affineBasisCover.map_prop j).base_open.isOpen_range⟩
+  let U' : Opens _ := ⟨_, (X.affineBasisCover.f j).isOpenEmbedding.isOpen_range⟩
   let i' : U' ⟶ U := homOfLE i
   refine ⟨U', hx, i', ?_⟩
-  obtain ⟨_, _, rfl, rfl, h₂'⟩ := h₂ _ _ (X.affineBasisCover.map j)
+  obtain ⟨_, _, rfl, rfl, h₂'⟩ := h₂ _ _ (X.affineBasisCover.f j)
   apply h₂'
   apply h₃
 
 theorem reduce_to_affine_nbhd (P : ∀ (X : Scheme) (_ : X), Prop)
     (h₁ : ∀ R x, P (Spec R) x)
-    (h₂ : ∀ {X Y} (f : X ⟶ Y) [IsOpenImmersion f] (x : X), P X x → P Y (f.base x)) :
+    (h₂ : ∀ {X Y} (f : X ⟶ Y) [IsOpenImmersion f] (x : X), P X x → P Y (f x)) :
     ∀ (X : Scheme) (x : X), P X x := by
   intro X x
   obtain ⟨y, e⟩ := X.affineCover.covers x
-  convert h₂ (X.affineCover.map (X.affineCover.f x)) y _
+  convert h₂ (X.affineCover.f (X.affineCover.idx x)) y _
   · rw [e]
   apply h₁
 
@@ -166,7 +164,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : X.Opens
     specialize H (f.app _ s) _ x ⟨x, rfl⟩
     · rw [← Scheme.preimage_basicOpen, hs]; ext1; simp [Opens.map]
     · have H : (X.presheaf.germ _ x _).hom _ = 0 := H
-      rw [← Scheme.stalkMap_germ_apply f ⟨_, _⟩ x] at H
+      rw [← Scheme.Hom.germ_stalkMap_apply f ⟨_, _⟩ x] at H
       apply_fun inv <| f.stalkMap x at H
       rw [← CommRingCat.comp_apply, CategoryTheory.IsIso.hom_inv_id, map_zero] at H
       exact H
@@ -257,12 +255,11 @@ theorem isIntegral_iff_irreducibleSpace_and_isReduced :
   ⟨fun _ => ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ =>
     isIntegral_of_irreducibleSpace_of_isReduced X⟩
 
-theorem isIntegral_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f]
+theorem isIntegral_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f]
     [IsIntegral Y] [Nonempty X] : IsIntegral X := by
   constructor; · infer_instance
   intro U hU
-  have : U = f ⁻¹ᵁ f ''ᵁ U := by ext1; exact (Set.preimage_image_eq _ H.base_open.injective).symm
-  rw [this]
+  rw [← f.preimage_image_eq U]
   have : IsDomain Γ(Y, f ''ᵁ U) := by
     apply (config := { allowSynthFailures := true }) IsIntegral.component_integral
     exact ⟨⟨_, _, hU.some.prop, rfl⟩⟩

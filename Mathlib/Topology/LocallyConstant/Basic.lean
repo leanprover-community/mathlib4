@@ -112,9 +112,6 @@ theorem prodMk {Y'} {f : X → Y} {f' : X → Y'} (hf : IsLocallyConstant f)
   (iff_eventually_eq _).2 fun x =>
     (hf.eventually_eq x).mp <| (hf'.eventually_eq x).mono fun _ hf' hf => Prod.ext hf hf'
 
-@[deprecated (since := "2025-03-10")]
-alias prod_mk := prodMk
-
 theorem comp₂ {Y₁ Y₂ Z : Type*} {f : X → Y₁} {g : X → Y₂} (hf : IsLocallyConstant f)
     (hg : IsLocallyConstant g) (h : Y₁ → Y₂ → Z) : IsLocallyConstant fun x => h (f x) (g x) :=
   (hf.prodMk hg).comp fun x : Y₁ × Y₂ => h x.1 x.2
@@ -258,8 +255,6 @@ protected theorem continuous : Continuous f :=
 
 /-- As a shorthand, `LocallyConstant.toContinuousMap` is available as a coercion -/
 instance : Coe (LocallyConstant X Y) C(X, Y) := ⟨toContinuousMap⟩
-
--- Porting note: became a syntactic `rfl`
 
 @[simp] theorem coe_continuousMap : ((f : C(X, Y)) : X → Y) = (f : X → Y) := rfl
 

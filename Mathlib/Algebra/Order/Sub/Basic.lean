@@ -206,7 +206,7 @@ namespace CanonicallyOrderedAdd
 
 variable [AddCommMonoid α] [LinearOrder α] [CanonicallyOrderedAdd α]
 
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 /-- `Sub` structure in linearly canonically ordered monoid using choice. -/
 noncomputable abbrev toSub : Sub α where
   sub x y := if h : y ≤ x then (exists_add_of_le h).choose else 0

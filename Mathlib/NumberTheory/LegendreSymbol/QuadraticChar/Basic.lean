@@ -149,7 +149,7 @@ theorem quadraticChar_dichotomy {a : F} (ha : a ≠ 0) :
 /-- The quadratic character is `1` or `-1` on nonzero arguments. -/
 theorem quadraticChar_eq_neg_one_iff_not_one {a : F} (ha : a ≠ 0) :
     quadraticChar F a = -1 ↔ ¬quadraticChar F a = 1 :=
-  ⟨fun h ↦ by rw [h]; omega, fun h₂ ↦ (or_iff_right h₂).mp (quadraticChar_dichotomy ha)⟩
+  ⟨fun h ↦ by rw [h]; cutsat, fun h₂ ↦ (or_iff_right h₂).mp (quadraticChar_dichotomy ha)⟩
 
 /-- For `a : F`, `quadraticChar F a = -1 ↔ ¬ IsSquare a`. -/
 theorem quadraticChar_neg_one_iff_not_isSquare {a : F} : quadraticChar F a = -1 ↔ ¬IsSquare a := by
@@ -271,6 +271,6 @@ theorem FiniteField.isSquare_neg_one_iff : IsSquare (-1 : F) ↔ Fintype.card F 
   · have h₁ := FiniteField.odd_card_of_char_ne_two hF
     rw [← quadraticChar_one_iff_isSquare (neg_ne_zero.mpr (one_ne_zero' F)),
       quadraticChar_neg_one hF, χ₄_nat_eq_if_mod_four, h₁]
-    omega
+    cutsat
 
 end SpecialValues

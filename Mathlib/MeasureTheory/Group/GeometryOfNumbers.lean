@@ -112,7 +112,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
       exact ⟨⟨x, by simp_all⟩, by aesop⟩
     · exact (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.2.2
   have h_clos : IsClosed ((L : Set E) \ {0}) := by
-    rsuffices ⟨U, hU⟩ : ∃ U : Set E, IsOpen U ∧  U ∩ L = {0}
+    rsuffices ⟨U, hU⟩ : ∃ U : Set E, IsOpen U ∧ U ∩ L = {0}
     · rw [sdiff_eq_sdiff_iff_inf_eq_inf (z := U).mpr (by simp [Set.inter_comm .. ▸ hU.2, zero_mem])]
       exact AddSubgroup.isClosed_of_discrete.sdiff hU.1
     exact isOpen_inter_eq_singleton_of_mem_discrete (zero_mem L)

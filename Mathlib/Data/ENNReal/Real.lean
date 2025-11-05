@@ -147,6 +147,10 @@ theorem ofReal_le_ofReal_iff {p q : ℝ} (h : 0 ≤ q) :
 lemma ofReal_le_ofReal_iff' {p q : ℝ} : ENNReal.ofReal p ≤ .ofReal q ↔ p ≤ q ∨ p ≤ 0 :=
   coe_le_coe.trans Real.toNNReal_le_toNNReal_iff'
 
+@[simp, norm_cast]
+lemma ofReal_le_coe {a : ℝ} {b : ℝ≥0} : ENNReal.ofReal a ≤ b ↔ a ≤ b := by
+  simp [← ofReal_le_ofReal_iff]
+
 lemma ofReal_lt_ofReal_iff' {p q : ℝ} : ENNReal.ofReal p < .ofReal q ↔ p < q ∧ 0 < q :=
   coe_lt_coe.trans Real.toNNReal_lt_toNNReal_iff'
 
@@ -361,7 +365,6 @@ protected theorem trichotomy₂ {p q : ℝ≥0∞} (hpq : p ≤ q) :
   · simpa using q.trichotomy
   rcases eq_or_lt_of_le (le_top : q ≤ ∞) with (rfl | hq)
   · simpa using p.trichotomy
-  repeat' right
   have hq' : 0 < q := lt_of_lt_of_le hp hpq
   have hp' : p < ∞ := lt_of_le_of_lt hpq hq
   simp [ENNReal.toReal_mono hq.ne hpq, ENNReal.toReal_pos_iff, hp, hp', hq', hq]
@@ -379,6 +382,7 @@ theorem toReal_pos_iff_ne_top (p : ℝ≥0∞) [Fact (1 ≤ p)] : 0 < p.toReal �
 
 end Real
 
+@[deprecated max_eq_zero_iff (since := "2025-10-25")]
 theorem sup_eq_zero {a b : ℝ≥0∞} : a ⊔ b = 0 ↔ a = 0 ∧ b = 0 :=
   sup_eq_bot_iff
 
