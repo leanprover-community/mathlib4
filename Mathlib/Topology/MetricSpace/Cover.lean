@@ -52,7 +52,7 @@ nonrec lemma IsCover.mono (hN : N₁ ⊆ N₂) (h₁ : IsCover ε s N₁) : IsCo
 
 nonrec lemma IsCover.anti (hst : s ⊆ t) (ht : IsCover ε t N) : IsCover ε s N := ht.anti hst
 
-lemma IsCover.mono' (hεδ : ε ≤ δ) (hε : IsCover ε s N) : IsCover δ s N :=
+lemma IsCover.mono_radius (hεδ : ε ≤ δ) (hε : IsCover ε s N) : IsCover δ s N :=
   hε.mono_entourage fun xy hxy ↦ by dsimp at *; exact le_trans hxy <| mod_cast hεδ
 
 lemma isCover_iff_subset_iUnion_emetricClosedBall :
