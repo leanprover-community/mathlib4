@@ -30,7 +30,8 @@ open scoped ENNReal Topology
 /-- `f =ᵐ[μ] g` means `f` and `g` are eventually equal along the a.e. filter,
 i.e. `f = g` away from a null set.
 
-This is notation for `Filter.EventuallyEq (MeasureTheory.ae μ) f g`. -/
+This is local notation for `Filter.EventuallyEq (MeasureTheory.ae μ) f g` before we define the more
+general one in a later file knowing about `Measure`. -/
 local notation:50 f " =ᵐ[" μ:50 "] " g:50 => Filter.EventuallyEq (MeasureTheory.ae μ) f g
 
 namespace MeasureTheory
