@@ -34,10 +34,6 @@ section prelim
 
 open Over CartesianMonoidalCategory
 
-#check Functor.toOver
-
-#check Over.star
-
 /-- The functor which maps an object `X` in `C` to the projection `X ⊗ I ⟶ I` in `Over I`.
 This is the computable analogue of the functor `Over.star`. -/
 @[simps! obj_left obj_hom map_left]
@@ -226,9 +222,6 @@ def toOverSectionsAdj : toOver I ⊣ sections I :=
   .mkOfHomEquiv coreHomEquivToOverSections
 
 example {X : C} : (toOverSectionsAdj I).unit.app X = sectionsCurry (𝟙 ((toOver I).obj X)) := rfl
-
-#check toOverSectionsAdj_unit_app I
-
 
 end Over
 
