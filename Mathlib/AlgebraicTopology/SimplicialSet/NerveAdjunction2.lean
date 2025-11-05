@@ -183,9 +183,9 @@ variable {X : Truncated.{u} 2} {C D : Type u} [SmallCategory C] [SmallCategory D
 
 def descOfTruncation (φ : X ⟶ (truncation 2).obj (nerve C)) :
     X.HomotopyCategory ⥤ C :=
-  lift (fun x ↦ nerveEquiv (φ.app _ x)) (fun e ↦ nerveHomEquiv (e.map φ))
-    (fun x ↦ by simpa using nerveHomEquiv_id (φ.app _ x))
-      (fun h ↦ nerveHomEquiv_comp (h.map φ))
+  lift (fun x ↦ nerveEquiv (φ.app _ x)) (fun e ↦ nerve.homEquiv (e.map φ))
+    (fun x ↦ by simpa using nerve.homEquiv_id (φ.app _ x))
+      (fun h ↦ nerve.homEquiv_comp (h.map φ))
 
 @[simp]
 lemma descOfTruncation_obj_mk (φ : X ⟶ (truncation 2).obj (nerve C)) (x : X _⦋0⦌₂) :
@@ -194,7 +194,7 @@ lemma descOfTruncation_obj_mk (φ : X ⟶ (truncation 2).obj (nerve C)) (x : X _
 @[simp]
 lemma descOfTruncation_map_homMk (φ : X ⟶ (truncation 2).obj (nerve C))
     {x₀ x₁ : X _⦋0⦌₂} (e : Edge x₀ x₁) :
-    (descOfTruncation φ).map (homMk e) = nerveHomEquiv (e.map φ) :=
+    (descOfTruncation φ).map (homMk e) = nerve.homEquiv (e.map φ) :=
   Category.id_comp _
 
 lemma descOfTruncation_comp {X' : Truncated.{u} 2} (ψ : X ⟶ X')
@@ -261,13 +261,13 @@ def functorEquiv :
       dsimp
       simp only [Category.comp_id, Category.id_comp, descOfTruncation_map_homMk,
         homToNerveMk_app_zero]
-      exact nerveHomEquiv.symm.injective (Edge.ext (by cat_disch)))
+      exact nerve.homEquiv.symm.injective (Edge.ext (by cat_disch)))
   right_inv φ :=
     IsStrictSegal.hom_ext (fun s ↦ by
       obtain ⟨x₀, x₁, f, rfl⟩ := Edge.exists_of_simplex s
-      dsimp [nerveHomEquiv]
-      simp only [homToNerveMk_app_edge, descOfTruncation_obj_mk, nerve_obj,
-        SimplexCategory.len_mk, descOfTruncation_map_homMk]
+      dsimp [nerve.homEquiv]
+      simp only [homToNerveMk_app_edge, descOfTruncation_obj_mk,
+        descOfTruncation_map_homMk]
       refine ComposableArrows.ext₁ ?_ ?_ rfl
       · dsimp [nerveEquiv, ComposableArrows.right]
         simp only [← f.src_eq, FunctorToTypes.naturality]
@@ -309,31 +309,29 @@ variable {C D : Type u} [SmallCategory C] [SmallCategory D]
 def functorOfNerveMap (φ : nerveFunctor₂.obj (.of C) ⟶ nerveFunctor₂.obj (.of D)) :
     C ⥤ D where
   obj x := nerveEquiv (φ.app (op ⟨⦋0⦌, by simp⟩) (nerveEquiv.symm x))
-  map f := nerveHomEquiv (SSet.Truncated.Edge.map (Edge.ofHom f) φ)
+  map f := nerve.homEquiv ((nerve.edgeMk f).toTruncated.map φ)
   map_id x := by
-    rw [Edge.ofHom_id, SSet.Edge.id, SSet.Truncated.Edge.map_id]
-    exact nerveHomEquiv_id _
+    rw [edgeMk_id, SSet.Edge.toTruncated_id, SSet.Truncated.Edge.map_id]
+    exact nerve.homEquiv_id _
   map_comp f g := by
     obtain ⟨h⟩ := (nerve.nonempty_compStruct_iff f g (f ≫ g)).2 rfl
-    exact (nerveHomEquiv_comp (h.map φ)).symm
-
-lemma nerveMap_app_mk₁ (F : C ⥤ D) {x y : C} (f : x ⟶ y) :
-    (nerveMap F).app (op ⦋1⦌) (ComposableArrows.mk₁ f) =
-      ComposableArrows.mk₁ (F.map f) :=
-  ComposableArrows.ext₁ rfl rfl (by simp)
+    exact (nerve.homEquiv_comp (h.toTruncated.map φ)).symm
 
 lemma nerveFunctor₂_map_functorOfNerveMap
     (φ : nerveFunctor₂.obj (.of C) ⟶ nerveFunctor₂.obj (.of D)) :
     nerveFunctor₂.map (functorOfNerveMap φ) = φ :=
   SSet.Truncated.IsStrictSegal.hom_ext (fun f ↦ by
     obtain ⟨x, y, f, rfl⟩ := ComposableArrows.mk₁_surjective f
-    exact (nerveMap_app_mk₁ _ _).trans ((mk₁_nerveHomEquiv_apply _).trans
+    exact (nerveMap_app_mk₁ _ _).trans ((nerve.mk₁_homEquiv_apply _).trans
       (ComposableArrows.mk₁_hom _)))
 
 lemma functorOfNerveMap_nerveFunctor₂_map (F : C ⥤ D) :
     functorOfNerveMap ((SSet.truncation 2).map (nerveMap F)) = F :=
   Functor.ext (fun x ↦ by cat_disch)
-    (fun x y f ↦ by simpa using nerveHomEquiv_ofHom_map_nerveMap f F)
+    (fun x y f ↦ by
+      dsimp
+      simpa only [Category.comp_id, Category.id_comp] using
+        nerve.homEquiv_edgeMk_map_nerveMap f F)
 
 def fullyFaithfulNerveFunctor₂ : nerveFunctor₂.{u, u}.FullyFaithful where
   preimage φ := functorOfNerveMap φ

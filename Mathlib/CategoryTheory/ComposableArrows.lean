@@ -278,11 +278,11 @@ lemma mk₁_surjective (X : ComposableArrows C 1) : ∃ (X₀ X₁ : C) (f : X�
 
 lemma mk₁_eqToHom_comp {X₀' X₀ X₁ : C} (h : X₀' = X₀) (f : X₀ ⟶ X₁) :
     ComposableArrows.mk₁ (eqToHom h ≫ f) = ComposableArrows.mk₁ f := by
-  aesop
+  cat_disch
 
 lemma mk₁_comp_eqToHom {X₀ X₁ X₁' : C} (f : X₀ ⟶ X₁) (h : X₁ = X₁') :
     ComposableArrows.mk₁ (f ≫ eqToHom h) = ComposableArrows.mk₁ f := by
-  aesop
+  cat_disch
 
 lemma mk₁_hom (X : ComposableArrows C 1) :
     mk₁ X.hom = X :=

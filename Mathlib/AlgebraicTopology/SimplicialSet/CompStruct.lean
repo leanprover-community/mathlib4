@@ -3,328 +3,219 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
-import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
+import Mathlib.AlgebraicTopology.SimplicialSet.CompStructTruncated
 
 /-!
-# Edges and "triangles" in (truncated) simplicial sets
+# Edges and "triangles" in simplicial sets
+
+Given a simplicial set `X`, we introduce two types:
+* Given `0`-simplices `x₀` and `x₁`, we define `Edge x₀ x₁`
+which is the type of `1`-simplices with faces `x₁` and `x₀` respectively;
+* Given `0`-simplices `x₀`, `x₁`, `x₂`, edges `e₀₁ : Edge x₀ x₁`, `e₁₂ : Edge x₁ x₂`,
+`e₀₂ : Edge x₀ x₂`, a structure `CompStruct e₀₁ e₁₂ e₀₂` which records the
+data of a `2`-simplex with faces `e₁₂`, `e₀₂` and `e₀₁` respectively. This data
+will allow to obtain relations in the homotopy category of `X`.
+(This API parallels similar definitions for `2`-truncated simplicial sets.
+The definitions in this file are definitionally equal to their `2`-truncated
+counterparts.)
 
 -/
 
 universe v u
 
-open CategoryTheory Simplicial SimplicialObject.Truncated
-  SimplexCategory.Truncated
+open CategoryTheory Simplicial
 
 namespace SSet
 
-namespace Truncated
+variable {X Y : SSet.{u}} {x₀ x₁ x₂ : X _⦋0⦌}
 
-variable {X Y : Truncated.{u} 2}
-
-/-- In a `2`-truncated simplicial set, an edge from a vertex `x₀` to `x₁` is
+variable (x₀ x₁) in
+/-- In a simplicial set, an edge from a vertex `x₀` to `x₁` is
 a `1`-simplex with prescribed `0`-dimensional faces. -/
-@[ext]
-structure Edge (x₀ x₁ : X _⦋0⦌₂) where
-  /-- A `1`-simplex -/
-  edge : X _⦋1⦌₂
-  /-- The source of the edge is `x₀`. -/
-  src_eq : X.map (δ₂ 1).op edge = x₀ := by cat_disch
-  /-- The target of the edge is `x₁`. -/
-  tgt_eq : X.map (δ₂ 0).op edge = x₁ := by cat_disch
+def Edge := Truncated.Edge (X := (truncation 2).obj X) x₀ x₁
 
 namespace Edge
 
-attribute [simp] src_eq tgt_eq
+/-- Constructor for `SSet.Edge` which takes as an input a term in the definitionally
+equal type `SSet.Truncated.Edge` for the `2`-truncation of the simplicial set.
+(This definition is made to contain abuse of defeq in other definitions.) -/
+def ofTruncated (e : Truncated.Edge (X := (truncation 2).obj X) x₀ x₁) :
+    Edge x₀ x₁ := e
 
-/-- The edge given by a `1`-simplex. -/
-@[simps]
-def mk' (s : X _⦋1⦌₂) : Edge (X.map (δ₂ 1).op s) (X.map (δ₂ 0).op s) where
-  edge := s
+/-- The edge of the `2`-truncation of a simplicial set `X` that is induced
+by an edge of `X`. -/
+def toTruncated (e : Edge x₀ x₁) :
+    Truncated.Edge (X := (truncation 2).obj X) x₀ x₁ :=
+  e
 
-lemma exists_of_simplex (s : X _⦋1⦌₂) :
-    ∃ (x₀ x₁ : X _⦋0⦌₂) (e : Edge x₀ x₁), e.edge = s :=
-  ⟨_, _, mk' s, rfl⟩
-
-/-- The constant edge on a `0`-simplex. -/
-@[simps]
-def id (x : X _⦋0⦌₂) : Edge x x where
-  edge := X.map (σ₂ 0).op x
-  src_eq := by simp [← FunctorToTypes.map_comp_apply, ← op_comp]
-  tgt_eq := by simp [← FunctorToTypes.map_comp_apply, ← op_comp]
-
-/-- The image of an edge by a morphism of truncated simplicial sets. -/
-@[simps]
-def map {x₀ x₁ : X _⦋0⦌₂} (e : Edge x₀ x₁) (f : X ⟶ Y) :
-    Edge (f.app _ x₀) (f.app _ x₁) where
-  edge := f.app _ e.edge
-  src_eq := by simp [← FunctorToTypes.naturality]
-  tgt_eq := by simp [← FunctorToTypes.naturality]
+/-- In a simplicial set, an edge from a vertex `x₀` to `x₁` is
+a `1`-simplex with prescribed `0`-dimensional faces. -/
+def edge (e : Edge x₀ x₁) : X _⦋1⦌ := e.toTruncated.edge
 
 @[simp]
-lemma map_id (x : X _⦋0⦌₂) (f : X ⟶ Y) :
-    (Edge.id x).map f = Edge.id (f.app _ x) := by
-  ext
-  simp [FunctorToTypes.naturality]
+lemma ofTruncated_edge (e : Truncated.Edge (X := (truncation 2).obj X) x₀ x₁) :
+    (ofTruncated e).edge = e.edge := rfl
 
-/-- Let `x₀`, `x₁`, `x₂` be `0`-simplices of a `2`-truncated simplicial set `X`,
+@[simp]
+lemma toTruncated_edge (e : Edge x₀ x₁) :
+    (toTruncated e).edge = e.edge := rfl
+
+@[simp]
+lemma src_eq (e : Edge x₀ x₁) : X.δ 1 e.edge = x₀ := Truncated.Edge.src_eq e
+
+@[simp]
+lemma tgt_eq (e : Edge x₀ x₁) : X.δ 0 e.edge = x₁ := Truncated.Edge.tgt_eq e
+
+@[ext]
+lemma ext {e e' : Edge x₀ x₁} (h : e.edge = e'.edge) :
+    e = e' := Truncated.Edge.ext h
+
+section
+
+variable (edge : X _⦋1⦌) (src_eq : X.δ 1 edge = x₀ := by cat_disch)
+  (tgt_eq : X.δ 0 edge = x₁ := by cat_disch)
+
+/-- Constructor for edges in a simplicial set. -/
+def mk : Edge x₀ x₁ := ofTruncated { edge := edge }
+
+@[simp]
+lemma mk_edge : (mk edge src_eq tgt_eq).edge = edge := rfl
+
+end
+
+variable (x₀) in
+/-- The constant edge on a `0`-simplex. -/
+def id : Edge x₀ x₀ := ofTruncated (.id _)
+
+variable (x₀) in
+@[simp]
+lemma toTruncated_id :
+    toTruncated (id x₀) = Truncated.Edge.id (X := (truncation 2).obj X) x₀ := rfl
+
+variable (x₀) in
+@[simp]
+lemma id_edge : (id x₀).edge = X.σ 0 x₀ := rfl
+
+/-- The image of an edge by a morphism of simplicial sets. -/
+def map (e : Edge x₀ x₁) (f : X ⟶ Y) : Edge (f.app _ x₀) (f.app _ x₁) :=
+  ofTruncated (e.toTruncated.map ((truncation 2).map f))
+
+@[simp]
+lemma map_edge (e : Edge x₀ x₁) (f : X ⟶ Y) :
+    (e.map f).edge = f.app _ e.edge := rfl
+
+variable (x₀) in
+@[simp]
+lemma map_id (f : X ⟶ Y) :
+    (Edge.id x₀).map f = Edge.id (f.app _ x₀) :=
+  Truncated.Edge.map_id _ _
+
+/-- The edge given by a `1`-simplex. -/
+def mk' (s : X _⦋1⦌) : Edge (X.δ 1 s) (X.δ 0 s) :=
+  .ofTruncated (Truncated.Edge.mk' (X := (truncation 2).obj X) s)
+
+@[simp]
+lemma mk'_edge (s : X _⦋1⦌) : (mk' s).edge = s := rfl
+
+lemma exists_of_simplex (s : X _⦋1⦌) :
+    ∃ (x₀ x₁ : X _⦋0⦌) (e : Edge x₀ x₁), e.edge = s :=
+  ⟨_, _, mk' s, rfl⟩
+
+/-- Let `x₀`, `x₁`, `x₂` be `0`-simplices of a simplicial set `X`,
 `e₀₁` an edge from `x₀` to `x₁`, `e₁₂` an edge from `x₁` to `x₂`,
 `e₀₂` an edge from `x₀` to `x₂`. This is the data of a `2`-simplex whose
 faces are respectively `e₀₂`, `e₁₂` and `e₀₁`. Such structures shall provide
-relations in the homotopy category of arbitrary (truncated) simplicial sets `X`
+relations in the homotopy category of arbitrary simplicial sets
 (and specialized constructions for quasicategories and Kan complexes.). -/
-structure CompStruct {x₀ x₁ x₂ : X _⦋0⦌₂}
-    (e₀₁ : Edge x₀ x₁) (e₁₂ : Edge x₁ x₂) (e₀₂ : Edge x₀ x₂) where
-  /-- A `2`-simplex with prescribed `1`-dimensional faces -/
-  simplex : X _⦋2⦌₂
-  d₂ : X.map (δ₂ 2).op simplex = e₀₁.edge
-  d₀ : X.map (δ₂ 0).op simplex = e₁₂.edge
-  d₁ : X.map (δ₂ 1).op simplex = e₀₂.edge
+def CompStruct (e₀₁ : Edge x₀ x₁) (e₁₂ : Edge x₁ x₂) (e₀₂ : Edge x₀ x₂) :=
+  Truncated.Edge.CompStruct e₀₁.toTruncated e₁₂.toTruncated e₀₂.toTruncated
 
 namespace CompStruct
 
-attribute [simp] d₀ d₁ d₂
+variable {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂} {e₀₂ : Edge x₀ x₂}
 
-lemma exists_of_simplex (s : X _⦋2⦌₂) :
-    ∃ (x₀ x₁ x₂ : X _⦋0⦌₂) (e₀₁ : Edge x₀ x₁) (e₁₂ : Edge x₁ x₂)
-      (e₀₂ : Edge x₀ x₂) (h : CompStruct e₀₁ e₁₂ e₀₂), h.simplex = s := by
-  refine ⟨X.map (Hom.tr (SimplexCategory.const _ _ 0)).op s,
-    X.map (Hom.tr (SimplexCategory.const _ _ 1)).op s,
-    X.map (Hom.tr (SimplexCategory.const _ _ 2)).op s,
-    .mk _ ?_ ?_, .mk _ ?_ ?_, .mk _ ?_ ?_, .mk s rfl rfl rfl, rfl⟩
-  all_goals
-  · rw [← FunctorToTypes.map_comp_apply, ← op_comp]
-    apply congr_fun; congr
-    ext i; fin_cases i; rfl
+/-- Constructor for `SSet.Edge.CompStruct` which takes as an input a term in the
+definitionally equal type `SSet.Truncated.Edge.CompStruct` for the `2`-truncation of
+the simplicial set. (This definition is made to contain abuse of defeq in
+other definitions.) -/
+def ofTruncated (h : Truncated.Edge.CompStruct e₀₁.toTruncated e₁₂.toTruncated e₀₂.toTruncated) :
+    CompStruct e₀₁ e₁₂ e₀₂ := h
 
-/-- The composition of `Edge.id x` with `e : Edge x y` is `e`. -/
-def idComp {x y : X _⦋0⦌₂} (e : Edge x y) :
-    CompStruct (.id x) e e where
-  simplex := X.map (σ₂ 0).op e.edge
-  d₂ := by
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_two_comp_σ₂_zero]
-    simp
-  d₀ := by
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_zero]
-    simp
-  d₁ := by
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_one_comp_σ₂_zero]
-    simp
+/-- Conversion from `SSet.Edge.CompStruct` to `SSet.Truncated.Edge.CompStruct`. -/
+def toTruncated (h : CompStruct e₀₁ e₁₂ e₀₂) :
+    Truncated.Edge.CompStruct e₀₁.toTruncated e₁₂.toTruncated e₀₂.toTruncated :=
+  h
 
-/-- The composition of `e : Edge x y` with `Edge.id y` is `e`. -/
-def compId {x y : X _⦋0⦌₂} (e : Edge x y) :
-    CompStruct e (.id y) e where
-  simplex := X.map (σ₂ 1).op e.edge
-  d₂ := by
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_two_comp_σ₂_one]
-    simp
-  d₀ := by
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_one]
-    simp
-  d₁ := by
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_one_comp_σ₂_one]
-    simp
+section
 
-/-- The image of a `Edge.CompStruct` by a morphism of `2`-truncated
-simplicial sets. -/
-@[simps]
-def map {x₀ x₁ x₂ : X _⦋0⦌₂}
-    {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂} {e₀₂ : Edge x₀ x₂}
-    (h : CompStruct e₀₁ e₁₂ e₀₂) (f : X ⟶ Y) :
-    CompStruct (e₀₁.map f) (e₁₂.map f) (e₀₂.map f) where
-  simplex := f.app _ h.simplex
-  d₂ := by simp [← FunctorToTypes.naturality]
-  d₀ := by simp [← FunctorToTypes.naturality]
-  d₁ := by simp [← FunctorToTypes.naturality]
+variable (h : CompStruct e₀₁ e₁₂ e₀₂)
+
+/-- The underlying `2`-simplex in a structure `SSet.Edge.CompStruct`. -/
+def simplex : X _⦋2⦌ :=
+    h.toTruncated.simplex
+
+@[simp]
+lemma d₂ : X.δ 2 h.simplex = e₀₁.edge := Truncated.Edge.CompStruct.d₂ h
+
+@[simp]
+lemma d₀ : X.δ 0 h.simplex = e₁₂.edge := Truncated.Edge.CompStruct.d₀ h
+
+@[simp]
+lemma d₁ : X.δ 1 h.simplex = e₀₂.edge := Truncated.Edge.CompStruct.d₁ h
+
+end
+
+section
+
+variable (simplex : X _⦋2⦌)
+  (d₂ : X.δ 2 simplex = e₀₁.edge := by cat_disch)
+  (d₀ : X.δ 0 simplex = e₁₂.edge := by cat_disch)
+  (d₁ : X.δ 1 simplex = e₀₂.edge := by cat_disch)
+
+/-- Constructor for `SSet.Edge.CompStruct`. -/
+def mk : CompStruct e₀₁ e₁₂ e₀₂ where
+  simplex := simplex
+
+@[simp]
+lemma mk_simplex : (mk simplex).simplex = simplex := rfl
+
+end
+
+@[ext]
+lemma ext {h h' : CompStruct e₀₁ e₁₂ e₀₂} (eq : h.simplex = h'.simplex) :
+    h = h' :=
+  Truncated.Edge.CompStruct.ext eq
+
+lemma exists_of_simplex (s : X _⦋2⦌) :
+    ∃ (x₀ x₁ x₂ : X _⦋0⦌) (e₀₁ : Edge x₀ x₁) (e₁₂ : Edge x₁ x₂)
+      (e₀₂ : Edge x₀ x₂) (h : CompStruct e₀₁ e₁₂ e₀₂), h.simplex = s :=
+  Truncated.Edge.CompStruct.exists_of_simplex (X := (truncation 2).obj X) s
+
+/-- `e : Edge x₀ x₁` is a composition of `Edge.id x₀` with `e`. -/
+def idComp (e : Edge x₀ x₁) : CompStruct (.id x₀) e e :=
+  ofTruncated (.idComp _)
+
+@[simp]
+lemma idComp_simplex (e : Edge x₀ x₁) : (idComp e).simplex = X.σ 0 e.edge := rfl
+
+/-- `e : Edge x₀ x₁` is a composition of `e` with `Edge.id x₁` -/
+def compId (e : Edge x₀ x₁) : CompStruct e (.id x₁) e :=
+  ofTruncated (.compId _)
+
+@[simp]
+lemma compId_simplex (e : Edge x₀ x₁) : (compId e).simplex = X.σ 1 e.edge := rfl
+
+/-- The image of a `Edge.CompStruct` by a morphism of simplicial sets. -/
+def map (h : CompStruct e₀₁ e₁₂ e₀₂) (f : X ⟶ Y) :
+    CompStruct (e₀₁.map f) (e₁₂.map f) (e₀₂.map f) :=
+  .ofTruncated (h.toTruncated.map ((truncation 2).map f))
+
+@[simp]
+lemma map_simplex (h : CompStruct e₀₁ e₁₂ e₀₂) (f : X ⟶ Y) :
+    (h.map f).simplex = f.app _ h.simplex := rfl
 
 end CompStruct
 
 end Edge
 
-end Truncated
-
-variable {X : SSet.{u}}
-
-/-- In a simplicial set, an edge from a vertex `x₀` to `x₁` is
-a `1`-simplex with prescribed `0`-dimensional faces. -/
-def Edge (x y : X _⦋0⦌) := Truncated.Edge (X := (truncation 2).obj X) x y
-
-namespace Edge
-
-variable {x y : X _⦋0⦌}
-
-def edge (e : Edge x y) : X _⦋1⦌ := Truncated.Edge.edge e
-
-@[simp]
-lemma src_eq (e : Edge x y) : X.δ 1 e.edge = x := Truncated.Edge.src_eq e
-
-@[simp]
-lemma tgt_eq (e : Edge x y) : X.δ 0 e.edge = y := Truncated.Edge.tgt_eq e
-
-@[ext]
-lemma ext {x y : X _⦋0⦌} {e e' : Edge x y} (h : e.edge = e'.edge) :
-    e = e' := Truncated.Edge.ext h
-
-section
-
-variable {x y : X _⦋0⦌} (s : X _⦋1⦌) (src_eq : X.δ 1 s = x) (tgt_eq : X.δ 0 s = y)
-
-def mk : Edge x y where
-  edge := s
-
-@[simp]
-lemma mk_edge : (mk s src_eq tgt_eq).edge = s := rfl
-
-end
-
-/-- The constant edge on a `0`-simplex. -/
-def id (x : X _⦋0⦌) : Edge x x :=
-  Truncated.Edge.id _
-
-@[simp]
-lemma id_edge (x : X _⦋0⦌) :
-    (id x).edge = X.σ 0 x := rfl
-
-def map (e : Edge x y) {Y : SSet} (f : X ⟶ Y) :
-    Edge (f.app _ x) (f.app _ y) :=
-  Truncated.Edge.map e ((truncation 2).map f)
-
-@[simp]
-def map_edge (e : Edge x y) {Y : SSet} (f : X ⟶ Y) :
-    (e.map f).edge = f.app _ e.edge := rfl
-
-section
-
-variable {x₀ x₁ x₂ : X _⦋0⦌}
-  (e₀₁ : Edge x₀ x₁) (e₁₂ : Edge x₁ x₂) (e₀₂ : Edge x₀ x₂)
-
-def CompStruct := Truncated.Edge.CompStruct e₀₁ e₁₂ e₀₂
-
-variable {e₀₁ e₁₂ e₀₂} in
-def CompStruct.mk (simplex : X _⦋2⦌)
-    (d₂ : X.δ 2 simplex = e₀₁.edge)
-    (d₀ : X.δ 0 simplex = e₁₂.edge)
-    (d₁ : X.δ 1 simplex = e₀₂.edge) :
-    CompStruct e₀₁ e₁₂ e₀₂ where
-  simplex := simplex
-  d₂ := d₂
-  d₀ := d₀
-  d₁ := d₁
-
-end
-
-end Edge
-
 end SSet
-
-namespace CategoryTheory
-
-open SSet
-
-attribute [local ext (iff := false)] ComposableArrows.ext₀ ComposableArrows.ext₁
-
-variable {C : Type u} [Category.{v} C]
-
-@[simp]
-lemma nerve.left {x y : (nerve C) _⦋0⦌} (e : Edge x y) :
-    ComposableArrows.left e.edge = nerveEquiv x := by
-  simp only [← e.src_eq]
-  rfl
-
-@[simp]
-lemma nerve.right {x y : (nerve C) _⦋0⦌} (e : Edge x y) :
-    ComposableArrows.right (n := 1) e.edge = nerveEquiv y := by
-  simp only [← e.tgt_eq]
-  rfl
-
-def nerveHomEquiv {x y : (nerve C) _⦋0⦌} :
-    Edge x y ≃ (nerveEquiv x ⟶ nerveEquiv y) where
-  toFun e := eqToHom (by simp only [nerveEquiv, ← e.src_eq]; rfl) ≫ e.edge.hom ≫
-    eqToHom (by simp only [nerveEquiv, ← e.tgt_eq]; rfl)
-  invFun f := .mk (ComposableArrows.mk₁ f) (ComposableArrows.ext₀ rfl) (ComposableArrows.ext₀ rfl)
-  left_inv e := by cat_disch
-  right_inv f := by simp
-
-lemma mk₁_nerveHomEquiv_apply {x y : (nerve C) _⦋0⦌} (e : Edge x y) :
-    ComposableArrows.mk₁ (nerveHomEquiv e) = ComposableArrows.mk₁ e.edge.hom := by
-  simp [nerveHomEquiv, ComposableArrows.mk₁_eqToHom_comp, ComposableArrows.mk₁_comp_eqToHom]
-
-def Edge.ofHom {x y : C} (f : x ⟶ y) :
-    Edge (nerveEquiv.symm x) (nerveEquiv.symm y) :=
-  .mk (ComposableArrows.mk₁ f) (by cat_disch) (by cat_disch)
-
-@[simp]
-lemma Edge.ofHom_id (x : C) :
-    Edge.ofHom (𝟙 x) = .id _ := by
-  aesop
-
-@[simp]
-lemma Edge.ofHom_edge {x y : C} (f : x ⟶ y) :
-    (Edge.ofHom f).edge = ComposableArrows.mk₁ f := rfl
-
-
-lemma Edge.ofHom_surjective {x y : C} :
-    Function.Surjective (Edge.ofHom : (x ⟶ y) → _) := by
-  intro e
-  refine ⟨eqToHom (by simp) ≫ nerveHomEquiv e ≫ eqToHom (by simp), by cat_disch⟩
-
-lemma nerve.nonempty_compStruct_iff {x₀ x₁ x₂ : C}
-    (f₀₁ : x₀ ⟶ x₁) (f₁₂ : x₁ ⟶ x₂) (f₀₂ : x₀ ⟶ x₂) :
-    Nonempty (Edge.CompStruct (Edge.ofHom f₀₁) (Edge.ofHom f₁₂) (Edge.ofHom f₀₂)) ↔
-      f₀₁ ≫ f₁₂ = f₀₂ := by
-  have h' : Edge.CompStruct (Edge.ofHom f₀₁) (Edge.ofHom f₁₂) (Edge.ofHom (f₀₁ ≫ f₁₂)) :=
-      Edge.CompStruct.mk (ComposableArrows.mk₂ f₀₁ f₁₂)
-        (by cat_disch) (by cat_disch) (by cat_disch)
-  refine ⟨fun ⟨h⟩ ↦ ?_, fun h ↦ ⟨?_⟩⟩
-  · rw [← Arrow.mk_inj]
-    apply ComposableArrows.arrowEquiv.symm.injective
-    convert_to ((nerve C).δ 1) h'.simplex = ((nerve C).δ 1) h.simplex
-    · exact (h'.d₁).symm
-    · exact (h.d₁).symm
-    · refine congr_arg _ (ComposableArrows.ext₂_of_arrow ?_ ?_)
-      · apply ComposableArrows.arrowEquiv.symm.injective
-        trans ComposableArrows.mk₁ f₀₁
-        · refine Eq.trans ?_ h'.d₂
-          exact ComposableArrows.ext₁ rfl rfl (by aesop)
-        · exact Eq.trans h.d₂.symm (ComposableArrows.ext₁ rfl rfl (by aesop))
-      · apply ComposableArrows.arrowEquiv.symm.injective
-        trans ComposableArrows.mk₁ f₁₂
-        · refine Eq.trans ?_ h'.d₀
-          exact ComposableArrows.ext₁ rfl rfl (by aesop)
-        · exact Eq.trans h.d₀.symm (ComposableArrows.ext₁ rfl rfl (by aesop))
-  · rwa [← h]
-
-@[simp]
-lemma nerveHomEquiv_ofHom {x y : C} (f : x ⟶ y) :
-    nerveHomEquiv (Edge.ofHom f) = f :=
-  nerveHomEquiv.symm.injective (by cat_disch)
-
-@[simp]
-lemma nerveHomEquiv_id (x : (nerve C) _⦋0⦌) :
-    nerveHomEquiv (Edge.id x) = 𝟙 _ := by
-  obtain ⟨x, rfl⟩ := nerveEquiv.symm.surjective x
-  dsimp [nerveHomEquiv]
-  cat_disch
-
-lemma nerveHomEquiv_comp {x₀ x₁ x₂ : (nerve C) _⦋0⦌} {e₀₁ : Edge x₀ x₁}
-    {e₁₂ : Edge x₁ x₂} {e₀₂ : Edge x₀ x₂} (h : Edge.CompStruct e₀₁ e₁₂ e₀₂) :
-    nerveHomEquiv e₀₁ ≫ nerveHomEquiv e₁₂ = nerveHomEquiv e₀₂ := by
-  obtain ⟨x₀, rfl⟩ := nerveEquiv.symm.surjective x₀
-  obtain ⟨x₁, rfl⟩ := nerveEquiv.symm.surjective x₁
-  obtain ⟨x₂, rfl⟩ := nerveEquiv.symm.surjective x₂
-  obtain ⟨f₀₁, rfl⟩ := Edge.ofHom_surjective e₀₁
-  obtain ⟨f₁₂, rfl⟩ := Edge.ofHom_surjective e₁₂
-  obtain ⟨f₀₂, rfl⟩ := Edge.ofHom_surjective e₀₂
-  convert (nerve.nonempty_compStruct_iff _ _ _).1 ⟨h⟩ <;> apply nerveHomEquiv_ofHom
-
-lemma σ_zero_nerveEquiv_symm (x : C) :
-    (nerve C).σ 0 (nerveEquiv.symm x) = ComposableArrows.mk₁ (𝟙 x) := by
-  cat_disch
-
-@[simp]
-lemma nerveHomEquiv_ofHom_map_nerveMap {D : Type u} [Category.{v} D] {x y : C}
-    (f : x ⟶ y) (F : C ⥤ D) :
-    nerveHomEquiv ((Edge.ofHom f).map (nerveMap F)) = F.map f := by
-  simp [nerveHomEquiv]
-
-end CategoryTheory
