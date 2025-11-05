@@ -666,8 +666,7 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {s : Set (M ⊕ 
 
 /-- In extended charts at `p`, `Sum.swap` looks like the identity near `p`. -/
 lemma writtenInExtChartAt_sumSwap_eventuallyEq_id :
-    writtenInExtChartAt I I p Sum.swap =ᶠ[𝓝[(extChartAt I p).symm ⁻¹' s ∩ range I]
-      extChartAt I p p] id := by
+    writtenInExtChartAt I I p Sum.swap =ᶠ[𝓝[range I] I (chartAt H p p)] id := by
   cases p with
     | inl x =>
       let t := I.symm ⁻¹' (chartAt H x).target ∩ range I
@@ -680,7 +679,7 @@ lemma writtenInExtChartAt_sumSwap_eventuallyEq_id :
         exact I.right_inv (by grind)
       apply Filter.eventually_of_mem ?_ this
       rw [Filter.inter_mem_iff]
-      refine ⟨I.continuousWithinAt_symm.preimage_mem_nhdsWithin ?_, mem_nhdsWithin_inter_self⟩
+      refine ⟨I.continuousWithinAt_symm.preimage_mem_nhdsWithin ?_, self_mem_nhdsWithin⟩
       exact (chartAt H x).open_target.mem_nhds (by simp)
     | inr x =>
       let t := I.symm ⁻¹' (chartAt H x).target ∩ range I
@@ -693,19 +692,21 @@ lemma writtenInExtChartAt_sumSwap_eventuallyEq_id :
         exact I.right_inv (by grind)
       apply Filter.eventually_of_mem ?_ this
       rw [Filter.inter_mem_iff]
-      refine ⟨I.continuousWithinAt_symm.preimage_mem_nhdsWithin ?_, mem_nhdsWithin_inter_self⟩
+      refine ⟨I.continuousWithinAt_symm.preimage_mem_nhdsWithin ?_, self_mem_nhdsWithin⟩
       exact (chartAt H x).open_target.mem_nhds (by simp)
 
 theorem hasMFDerivWithinAt_sumSwap :
     HasMFDerivWithinAt I I (@Sum.swap M M') s p
       (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
-  refine ⟨by fun_prop, ?_⟩
+  refine ⟨by sorry/-fun_prop-/, ?_⟩
   set U := (extChartAt I p).symm ⁻¹' s ∩ range I
   have : HasFDerivWithinAt id (ContinuousLinearMap.id 𝕜 _) U (((chartAt H p).extend I) p) :=
     hasFDerivWithinAt_id _ U
-  apply this.congr_of_eventuallyEq writtenInExtChartAt_sumSwap_eventuallyEq_id
-  simp only [mfld_simps]
-  cases p <;> simp
+  apply this.congr_of_eventuallyEq
+  · exact writtenInExtChartAt_sumSwap_eventuallyEq_id.filter_mono <|
+      nhdsWithin_mono _ inter_subset_right
+  · simp only [mfld_simps]
+    cases p <;> simp
 
 theorem hasMFDerivAt_sumSwap :
     HasMFDerivAt I I (@Sum.swap M M') p (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
