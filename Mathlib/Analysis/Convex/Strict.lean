@@ -362,7 +362,7 @@ theorem strictConvex_iff_div :
     StrictConvex 𝕜 s ↔
       s.Pairwise fun x y =>
         ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → (a / (a + b)) • x + (b / (a + b)) • y ∈ interior s :=
-  ⟨fun h x hx y hy hxy a b ha hb ↦ h hx hy hxy (by positivity) (by positivity) (by field_simp),
+  ⟨fun h x hx y hy hxy a b ha hb ↦ h hx hy hxy (by positivity) (by positivity) (by field),
     fun h x hx y hy hxy a b ha hb hab ↦ by
     convert h hx hy hxy ha hb <;> rw [hab, div_one]⟩
 

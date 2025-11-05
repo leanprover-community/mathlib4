@@ -379,7 +379,7 @@ theorem Convex.second_derivative_within_at_symmetric_of_mem_interior {v w : E}
     apply C.congr' _ _
     · filter_upwards [self_mem_nhdsWithin]
       intro h (hpos : 0 < h)
-      match_scalars <;> field_simp
+      match_scalars <;> field
     · filter_upwards [self_mem_nhdsWithin] with h (hpos : 0 < h)
       simp [field]
   simpa only [sub_eq_zero] using isLittleO_const_const_iff.1 B

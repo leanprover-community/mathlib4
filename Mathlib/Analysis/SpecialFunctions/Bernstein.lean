@@ -114,9 +114,9 @@ theorem variance {n : ℕ} (hn : n ≠ 0) (x : I) :
       Polynomial.eval_natCast, Polynomial.eval_X, Polynomial.eval_one]
     field_simp
     rw [← Finset.sum_div]
-    field_simp
+    field
   · simp
-    field_simp
+    field
 
 end bernstein
 

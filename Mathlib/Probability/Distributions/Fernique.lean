@@ -321,8 +321,7 @@ lemma logRatio_mul_normThreshold_add_one_le {c : ℝ≥0∞}
     · exact sq_normThreshold_add_one_le n
   _ = 2⁻¹ * Real.log (c.toReal / (1 - c).toReal) * 2 ^ n := by
     unfold logRatio
-    field_simp
-    ring
+    field
 
 open Metric in
 /-- Auxiliary lemma for `lintegral_exp_mul_sq_norm_le_mul`, in which we find an upper bound on an
@@ -369,9 +368,8 @@ lemma lintegral_closedBall_diff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ]
     rw [mul_comm _ c, mul_assoc, ← ENNReal.ofReal_mul (by positivity), ← Real.exp_add]
     congr
     norm_cast
-    simp only [Nat.cast_pow, Nat.cast_ofNat, ENNReal.toReal_div, neg_mul]
-    field_simp
-    ring
+    simp only [Nat.cast_pow, Nat.cast_ofNat, ENNReal.toReal_div]
+    field
 
 open Metric in
 lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]

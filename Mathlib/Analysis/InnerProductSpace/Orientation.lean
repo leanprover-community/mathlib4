@@ -277,7 +277,7 @@ theorem abs_volumeForm_apply_of_pairwise_orthogonal {v : Fin n → E}
   have hb : b i = ‖v i‖⁻¹ • v i := gramSchmidtOrthonormalBasis_apply_of_orthogonal hdim hv (h i)
   simp only [hb, inner_smul_left, real_inner_self_eq_norm_mul_norm, RCLike.conj_to_real]
   rw [abs_of_nonneg]
-  · field_simp
+  · field
   · positivity
 
 /-- The output of the volume form of an oriented real inner product space `E` when evaluated on an

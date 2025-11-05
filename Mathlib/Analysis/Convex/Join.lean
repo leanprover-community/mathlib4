@@ -122,10 +122,10 @@ theorem convexJoin_assoc_aux (s t u : Set E) :
     linear_combination (norm := module) -hab₂ • (a₁ • x + b₁ • y)
   refine
     ⟨x, hx, (a₂ * b₁ / (a₂ * b₁ + b₂)) • y + (b₂ / (a₂ * b₁ + b₂)) • z,
-      ⟨y, hy, z, hz, _, _, by positivity, by positivity, by field_simp, rfl⟩,
+      ⟨y, hy, z, hz, _, _, by positivity, by positivity, by field, rfl⟩,
       a₂ * a₁, a₂ * b₁ + b₂, by positivity, by positivity, ?_, ?_⟩
   · linear_combination a₂ * hab₁ + hab₂
-  · match_scalars <;> field_simp
+  · match_scalars <;> field
 
 theorem convexJoin_assoc (s t u : Set E) :
     convexJoin 𝕜 (convexJoin 𝕜 s t) u = convexJoin 𝕜 s (convexJoin 𝕜 t u) := by

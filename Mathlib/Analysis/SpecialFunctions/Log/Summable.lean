@@ -162,7 +162,7 @@ lemma multipliable_one_add_of_summable [CompleteSpace R]
   refine ⟨Metric.ball (∏ i ∈ s, (1 + f i)) (ε / 2), ⟨s, fun b hb ↦ ?_⟩, ?_⟩
   · rw [← union_sdiff_of_subset hb, prod_union sdiff_disjoint.symm,
       Metric.mem_ball, dist_eq_norm_sub, ← mul_sub_one,
-      show ε / 2 = r₁ * (ε / (2 * r₁)) by field_simp]
+      show ε / 2 = r₁ * (ε / (2 * r₁)) by field]
     apply (norm_mul_le _ _).trans_lt
     refine lt_of_le_of_lt (b := r₁ * ‖∏ x ∈ b \ s, (1 + f x) - 1‖) ?_ ?_
     · refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
