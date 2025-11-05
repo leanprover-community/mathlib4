@@ -3,6 +3,7 @@ Copyright (c) 2025 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
+import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
@@ -60,11 +61,8 @@ theorem ext {R S : HomogeneousSubsemiring 𝒜}
   HomogeneousSubsemiring.toSubsemiring_injective h
 
 theorem ext' {R S : HomogeneousSubsemiring 𝒜}
-    (h : ∀ i, ∀ a ∈ 𝒜 i, a ∈ R ↔ a ∈ S) : R = S := by
-  ext
-  rw [R.isHomogeneous.mem_iff, S.isHomogeneous.mem_iff]
-  apply forall_congr'
-  exact fun i ↦ h i _ (decompose 𝒜 _ i).2
+    (h : ∀ i, ∀ a ∈ 𝒜 i, a ∈ R ↔ a ∈ S) : R = S :=
+  AddSubmonoidClass.IsHomogeneous.ext' R.2 S.2 h
 
 @[simp high]
 theorem mem_iff {R : HomogeneousSubsemiring 𝒜} {a} :
