@@ -312,7 +312,7 @@ jobs:
           echo "::endgroup::"
 
           ../master-branch/scripts/lake-build-with-retry.sh Mathlib
-          # results of build at pr-branch/.lake/build_summary_Mathlib*.json
+          # results of build at pr-branch/.lake/build_summary_Mathlib.json
       - name: end gh-problem-match-wrap for build step
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
@@ -381,7 +381,7 @@ jobs:
         run: |
           cd pr-branch
           ../master-branch/scripts/lake-build-with-retry.sh Archive
-          # results of build at pr-branch/.lake/build_summary_Archive*.json
+          # results of build at pr-branch/.lake/build_summary_Archive.json
 
       - name: build counterexamples
         id: counterexamples
@@ -389,7 +389,7 @@ jobs:
         run: |
           cd pr-branch
           ../master-branch/scripts/lake-build-with-retry.sh Counterexamples
-          # results of build at pr-branch/.lake/build_summary_Counterexamples*.json
+          # results of build at pr-branch/.lake/build_summary_Counterexamples.json
 
       - name: Check if building Archive or Counterexamples failed
         if: steps.archive.outcome == 'failure' || steps.counterexamples.outcome == 'failure'
@@ -436,7 +436,7 @@ jobs:
         id: test
         run: |
           cd pr-branch
-          lake --iofail test
+          ../master-branch/scripts/lake-build-wrapper.py .lake/build_summary_MathlibTest.json lake --iofail test
       - name: end gh-problem-match-wrap for test step
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
@@ -460,7 +460,7 @@ jobs:
         id: lint
         run: |
           cd pr-branch
-          env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
+          env LEAN_ABORT_ON_PANIC=1 ../master-branch/scripts/lake-build-wrapper.py .lake/build_summary_lint.json lake exe runLinter Mathlib
 
       - name: end gh-problem-match-wrap for shake and lint steps
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
