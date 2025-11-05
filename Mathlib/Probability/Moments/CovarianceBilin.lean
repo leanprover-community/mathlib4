@@ -152,7 +152,7 @@ lemma covarianceBilin_apply_pi {ι Ω : Type*} [Fintype ι] {mΩ : MeasurableSpa
   have (i : ι) := (hX i).aemeasurable
   nth_rw 1 [covarianceBilin_apply_eq_cov, covariance_map_fun, ← (basisFun ι ℝ).sum_repr' x,
     ← (basisFun ι ℝ).sum_repr' y]
-  · simp_rw [sum_inner, real_inner_smul_left, basisFun_inner, PiLp.toLp_apply]
+  · simp_rw [sum_inner, real_inner_smul_left, basisFun_inner]
     rw [covariance_fun_sum_fun_sum]
     · refine Finset.sum_congr rfl fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ ?_
       rw [covariance_mul_left, covariance_mul_right]
