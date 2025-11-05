@@ -27,7 +27,7 @@ variable (C) in
 /-- A short complex in a category `C` with zero morphisms is the datum
 of two composable morphisms `f : X₁ ⟶ X₂` and `g : X₂ ⟶ X₃` such that
 `f ≫ g = 0`. -/
-structure ShortComplex [HasZeroMorphisms C] where
+structure ShortComplex where
   /-- the first (left) object of a `ShortComplex` -/
   {X₁ : C}
   /-- the second (middle) object of a `ShortComplex` -/
