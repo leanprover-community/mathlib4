@@ -139,7 +139,7 @@ lemma factorPowSucc.isUnit_of_isUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ I
   rw [factor_ker (pow_le_pow_right n.le_succ)] at hb
   rcases Ideal.mem_image_of_mem_map_of_surjective (Ideal.Quotient.mk (I ^ (n + 1)))
     Ideal.Quotient.mk_surjective hb with ⟨c, hc, eq⟩
-  apply isUnit_of_mul_eq_one _ (b' * (1 - ((Ideal.Quotient.mk (I ^ (n + 1))) c)))
+  apply .of_mul_eq_one (b' * (1 - ((Ideal.Quotient.mk (I ^ (n + 1))) c)))
   calc
     _ = (a * b' - 1) * (1 - ((Ideal.Quotient.mk (I ^ (n + 1))) c)) +
         (1 - ((Ideal.Quotient.mk (I ^ (n + 1))) c)) := by ring

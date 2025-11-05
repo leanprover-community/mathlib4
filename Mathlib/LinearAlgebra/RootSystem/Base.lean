@@ -177,7 +177,7 @@ lemma eq_one_or_neg_one_of_mem_support_of_smul_mem [Finite ι]
     (i : ι) (h : i ∈ b.support) (t : R) (ht : t • P.root i ∈ range P.root) :
     t = 1 ∨ t = -1 := by
   obtain ⟨z, hz⟩ := b.eq_one_or_neg_one_of_mem_support_of_smul_mem_aux i h t ht
-  obtain ⟨s, hs⟩ := IsUnit.exists_left_inv <| isUnit_of_mul_eq_one_right _ t hz
+  obtain ⟨s, hs⟩ := IsUnit.exists_left_inv <| .of_mul_eq_one_right t hz
   replace ht : s • P.coroot i ∈ range P.coroot := by
     obtain ⟨j, hj⟩ := ht
     simpa only [coroot_eq_smul_coroot_iff.mpr hj, smul_smul, hs, one_smul] using mem_range_self j

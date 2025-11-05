@@ -260,10 +260,10 @@ instance (priority := 100) isLocalRing : IsLocalRing A :=
       intro a
       obtain ⟨c, h | h⟩ := PreValuationRing.cond a (1 - a)
       · left
-        apply isUnit_of_mul_eq_one _ (c + 1)
+        apply .of_mul_eq_one (c + 1)
         simp [mul_add, h]
       · right
-        apply isUnit_of_mul_eq_one _ (c + 1)
+        apply .of_mul_eq_one (c + 1)
         simp [mul_add, h])
 
 instance le_total_ideal : IsTotal (Ideal A) LE.le := by

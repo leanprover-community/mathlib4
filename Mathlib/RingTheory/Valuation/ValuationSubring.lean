@@ -176,7 +176,7 @@ theorem valuation_eq_one_iff (a : A) : IsUnit a ↔ A.valuation a = 1 :=
       rw [c, A.valuation.map_zero] at h
       exact zero_ne_one h
     have ha' : (a : K)⁻¹ ∈ A := by rw [← valuation_le_one_iff, map_inv₀, h, inv_one]
-    apply isUnit_of_mul_eq_one a ⟨a⁻¹, ha'⟩; ext; simp [field]⟩
+    apply .of_mul_eq_one ⟨a⁻¹, ha'⟩; ext; simp [field]⟩
 
 theorem valuation_lt_one_or_eq_one (a : A) : A.valuation a < 1 ∨ A.valuation a = 1 :=
   lt_or_eq_of_le (A.valuation_le_one a)
@@ -309,7 +309,7 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
         SetLike.mem_coe, idealOfLE, Ideal.mem_comap, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
         not_not]
       change IsUnit (⟨x⁻¹, h hr⟩ : S)
-      apply isUnit_of_mul_eq_one _ (⟨x, hx⟩ : S)
+      apply .of_mul_eq_one (⟨x, hx⟩ : S)
       ext; simp [field]
     · simp
 
