@@ -362,13 +362,15 @@ theorem IndepSets.iUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : M
   obtain ⟨n, ht1⟩ := ht1
   exact hyp n t1 t2 ht1 ht2
 
-theorem IndepSets.bUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
+theorem IndepSets.biUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} {u : Set ι} (hyp : ∀ n ∈ u, IndepSets (s n) s' κ μ) :
     IndepSets (⋃ n ∈ u, s n) s' κ μ := by
   intro t1 t2 ht1 ht2
   simp_rw [Set.mem_iUnion] at ht1
   rcases ht1 with ⟨n, hpn, ht1⟩
   exact hyp n hpn t1 t2 ht1 ht2
+
+@[deprecated (since := "2025-11-02")] alias IndepSets.bUnion := IndepSets.biUnion
 
 theorem IndepSets.inter {s₁ s' : Set (Set Ω)} (s₂ : Set (Set Ω)) {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} (h₁ : IndepSets s₁ s' κ μ) :
