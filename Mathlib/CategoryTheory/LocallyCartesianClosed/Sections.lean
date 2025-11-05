@@ -65,10 +65,13 @@ def equivOverTerminal : Over (𝟙_ C) ≌ C :=
 
 attribute [local instance] Over.ChosenPullback.cartesianMonoidalCategoryToTerminal
 
+/-- The isomorphism of functors `toOverTerminal C ⋙ ChosenPullback.pullback (toUnit I)` and
+`toOver I`. -/
 def toOverCompOverMap (I : C) :
     toOverTerminal C ⋙ ChosenPullback.pullback (toUnit I) ≅ toOver I :=
   NatIso.ofComponents fun X => Iso.refl _
 
+/-- The functor `toOver I` is the right adjoint to the functor `Over.forget I`. -/
 @[simps! unit_app counit_app]
 def forgetAdjToOver (I : C) : Over.forget I ⊣ toOver I where
   unit.app X := Over.homMk (lift (𝟙 X.left) (X.hom))
@@ -193,8 +196,7 @@ open Adjunction
 
 /-- An auxiliary definition which is used to define the adjunction between the star functor
 and the sections functor. See starSectionsAdjunction`. -/
-@[simps! +simpRhs]
-def coreHomEquiv : CoreHomEquiv (toOver I) (sections I) where
+def coreHomEquivToOverSections : CoreHomEquiv (toOver I) (sections I) where
   homEquiv A X := {
     toFun := sectionsCurry
     invFun := sectionsUncurry
@@ -221,7 +223,7 @@ variable (I)
 /-- The adjunction between the star functor and the sections functor. -/
 @[simps! unit_app counit_app]
 def toOverSectionsAdj : toOver I ⊣ sections I :=
-  .mkOfHomEquiv coreHomEquiv
+  .mkOfHomEquiv coreHomEquivToOverSections
 
 example {X : C} : (toOverSectionsAdj I).unit.app X = sectionsCurry (𝟙 ((toOver I).obj X)) := rfl
 
