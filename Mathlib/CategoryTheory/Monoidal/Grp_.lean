@@ -65,7 +65,7 @@ attribute [instance] Grp.grp
 namespace Grp
 
 /-- A group object is a monoid object. -/
-@[simps X]
+@[simps -isSimp X]
 abbrev toMon (A : Grp C) : Mon C := ⟨A.X⟩
 
 @[deprecated (since := "2025-09-15")] alias toMon_ := toMon
