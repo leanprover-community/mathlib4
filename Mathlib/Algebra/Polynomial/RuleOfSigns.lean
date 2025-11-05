@@ -262,7 +262,6 @@ private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (
         grind [leadingCoeff_eraseLead_eq_nextCoeff]
       suffices monomial P.natDegree ((X - C η) * P).nextCoeff =
           monomial P.natDegree P.nextCoeff - C η * monomial P.natDegree P.leadingCoeff by
-        rw [← self_sub_monomial_natDegree_leadingCoeff]
         grind [X_mul_monomial, sub_mul, mul_sub, self_sub_monomial_natDegree_leadingCoeff,
           natDegree_eraseLead_add_one, leadingCoeff_eraseLead_eq_nextCoeff]
       rw [nextCoeff_of_natDegree_pos (h₇ ▸ P.natDegree.succ_pos), h₇] at h₉
@@ -297,8 +296,7 @@ theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
     signVariations P + 1 ≤ signVariations ((X - C η) * P) := by
   -- do induction on the degree
   generalize hd : P.natDegree = d
-  induction d using Nat.strong_induction_on generalizing P
-  rename_i d ih
+  induction d using Nat.strong_induction_on generalizing P with | _ d ih =>
 
   -- can assume it starts positive, otherwise negate P
   wlog h_lC : 0 < leadingCoeff P generalizing P with H
