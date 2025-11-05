@@ -47,7 +47,7 @@ set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
 
-assert_not_exists Set.iUnion MulAction MonoidWithZero OrderedAddCommMonoid
+assert_not_exists Set.iUnion MulAction MonoidWithZero IsOrderedMonoid
 
 library_note2 «pointwise nat action» /--
 Pointwise monoids (`Set`, `Finset`, `Filter`) have derived pointwise actions of the form
@@ -130,9 +130,6 @@ theorem coe_singletonOneHom : (singletonOneHom : α → Set α) = singleton :=
 @[to_additive (attr := simp) zero_prod_zero]
 lemma one_prod_one [One β] : (1 ×ˢ 1 : Set (α × β)) = 1 := by ext; simp [Prod.ext_iff]
 
-@[deprecated (since := "2025-03-11")]
-alias zero_sum_zero := zero_prod_zero
-
 end One
 
 /-! ### Set negation/inversion -/
@@ -190,9 +187,6 @@ theorem compl_inv : sᶜ⁻¹ = s⁻¹ᶜ :=
 
 @[to_additive (attr := simp) neg_prod]
 lemma inv_prod [Inv β] (s : Set α) (t : Set β) : (s ×ˢ t)⁻¹ = s⁻¹ ×ˢ t⁻¹ := rfl
-
-@[deprecated (since := "2025-03-11")]
-alias neg_sum := neg_prod
 
 end Inv
 
@@ -394,9 +388,6 @@ theorem image_op_mul : op '' (s * t) = op '' t * op '' s :=
 @[to_additive (attr := simp) prod_add_prod_comm]
 lemma prod_mul_prod_comm [Mul β] (s₁ s₂ : Set α) (t₁ t₂ : Set β) :
     (s₁ ×ˢ t₁) * (s₂ ×ˢ t₂) = (s₁ * s₂) ×ˢ (t₁ * t₂) := by ext; simp [mem_mul]; aesop
-
-@[deprecated (since := "2025-03-11")]
-alias sum_add_sum_comm := prod_add_prod_comm
 
 end Mul
 

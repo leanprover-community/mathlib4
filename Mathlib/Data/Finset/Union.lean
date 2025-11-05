@@ -52,7 +52,7 @@ lemma mem_disjiUnion {b : β} {h} : b ∈ s.disjiUnion t h ↔ ∃ a ∈ s, b �
 
 @[simp, norm_cast]
 lemma coe_disjiUnion {h} : (s.disjiUnion t h : Set β) = ⋃ x ∈ (s : Set α), t x := by
-  simp [Set.ext_iff, mem_disjiUnion, Set.mem_iUnion, mem_coe]
+  simp [Set.ext_iff, mem_disjiUnion, Set.mem_iUnion]
 
 @[simp] lemma disjiUnion_cons (a : α) (s : Finset α) (ha : a ∉ s) (f : α → Finset β) (H) :
     disjiUnion (cons a s ha) f H =
@@ -154,7 +154,7 @@ protected def biUnion (s : Finset α) (t : α → Finset β) : Finset β :=
 
 @[simp, norm_cast]
 lemma coe_biUnion : (s.biUnion t : Set β) = ⋃ x ∈ (s : Set α), t x := by
-  simp [Set.ext_iff, mem_biUnion, Set.mem_iUnion, mem_coe]
+  simp [Set.ext_iff, mem_biUnion, Set.mem_iUnion]
 
 @[simp]
 lemma biUnion_insert [DecidableEq α] {a : α} : (insert a s).biUnion t = t a ∪ s.biUnion t := by
