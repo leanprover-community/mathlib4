@@ -243,13 +243,11 @@ lemma mem_of_subsingleton {A F} [Subsingleton A] [SetLike F A] (S : F) [h : None
   obtain ⟨s, hs⟩ := nonempty_subtype.mp h
   simpa [Subsingleton.elim a s]
 
-variable {A : Type*} {S : Type*} [SetLike S A] [PartialOrder S] [OrderTop S]
-
 /-- If `s` is a proper element of a `SetLike` structure (i.e., `s ≠ ⊤`) and the top element
 coerces to the universal set, then there exists an element not in `s`. -/
-lemma exists_not_mem_of_ne_top (s : S) (hs : s ≠ ⊤) (h_top : ((⊤ : S) : Set A) = Set.univ) :
-    ∃ a : A, a ∉ s := by
-  have : (s : Set A) ≠ Set.univ := fun h_eq => hs (coe_injective (h_eq.trans h_top.symm))
-  exact (Set.ne_univ_iff_exists_notMem _).mp this
+lemma exists_not_mem_of_ne_top [PartialOrder A] [OrderTop A] (s : A) (hs : s ≠ ⊤)
+    (h_top : ((⊤ : A) : Set B) = Set.univ := by simp) :
+    ∃ b : B, b ∉ s := by
+  simpa [-SetLike.coe_set_eq, SetLike.ext'_iff, h_top, Set.ne_univ_iff_exists_notMem] using hs
 
 end SetLike
