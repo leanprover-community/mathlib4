@@ -809,10 +809,6 @@ instance : Ring (euclidean.mixedSpace K) :=
   have : Ring (EuclideanSpace ℂ {w : InfinitePlace K // IsComplex w}) := Pi.ring
   inferInstanceAs (Ring (_ × _))
 
-instance : MeasurableSpace (euclidean.mixedSpace K) := borel _
-
-instance : BorelSpace (euclidean.mixedSpace K) := ⟨rfl⟩
-
 variable [NumberField K]
 
 open Classical in
@@ -915,8 +911,6 @@ theorem negAt_apply_snd (x : mixedSpace K) :
 theorem negAt_apply_norm_isReal (x : mixedSpace K) (w : {w // IsReal w}) :
     ‖(negAt s x).1 w‖ = ‖x.1 w‖ := by
   by_cases hw : w ∈ s <;> simp [hw]
-
-@[deprecated (since := "2025-03-01")] alias negAt_apply_abs_isReal := negAt_apply_norm_isReal
 
 open MeasureTheory Classical in
 /-- `negAt` preserves the volume . -/

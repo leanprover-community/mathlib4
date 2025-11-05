@@ -140,13 +140,33 @@ lemma slope_nonneg_iff_of_le (hxy : x ≤ y) : 0 ≤ slope f x y ↔ f x ≤ f y
       vsub_eq_sub, sub_nonneg] at this
   · rwa [vsub_eq_sub, sub_nonneg]
 
+lemma MonotoneOn.slope_nonneg {s : Set k} (hf : MonotoneOn f s) (hx : x ∈ s) (hy : y ∈ s) :
+    0 ≤ slope f x y := by
+  rcases le_total x y with hxy | hxy
+  · exact (slope_nonneg_iff_of_le hxy).mpr (hf hx hy hxy)
+  · exact slope_comm f x y ▸ (slope_nonneg_iff_of_le hxy).mpr (hf hy hx hxy)
+
 lemma slope_nonpos_iff_of_le (hxy : x ≤ y) : slope f x y ≤ 0 ↔ f y ≤ f x := by
   simpa using slope_nonneg_iff_of_le (f := -f) hxy
+
+lemma AntitoneOn.slope_nonpos {s : Set k} (hf : AntitoneOn f s) (hx : x ∈ s) (hy : y ∈ s) :
+    slope f x y ≤ 0:= by
+  simpa using hf.neg.slope_nonneg hx hy
 
 lemma slope_pos_iff_of_le (hxy : x ≤ y) : 0 < slope f x y ↔ f x < f y := by
   simp_rw [lt_iff_le_and_ne, slope_nonneg_iff_of_le hxy, Ne, eq_comm, slope_eq_zero_iff]
 
+lemma StrictMonoOn.slope_pos {s : Set k} (hf : StrictMonoOn f s) (hx : x ∈ s) (hy : y ∈ s)
+    (hxy : x ≠ y) : 0 < slope f x y := by
+  rcases lt_or_gt_of_ne hxy with hxy | hxy
+  · exact (slope_pos_iff_of_le hxy.le).mpr (hf hx hy hxy)
+  · exact slope_comm f x y ▸ (slope_pos_iff_of_le hxy.le).mpr (hf hy hx hxy)
+
 lemma slope_neg_iff_of_le (hxy : x ≤ y) : slope f x y < 0 ↔ f y < f x := by
   simpa using slope_pos_iff_of_le (f := -f) hxy
+
+lemma StrictAntiOn.slope_neg {s : Set k} (hf : StrictAntiOn f s) (hx : x ∈ s) (hy : y ∈ s)
+    (hxy : x ≠ y) : slope f x y < 0:= by
+  simpa using hf.neg.slope_pos hx hy hxy
 
 end Order
