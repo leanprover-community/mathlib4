@@ -26,13 +26,25 @@ We specialize these results to the cases where one of the families contains only
 
 # Main statements
 
-* `ext_of_integral_prod_mul_prod_boundedContinuousFunction`: A finite measure on a product space is
-  characterized by the integrals of products of real bounded continuous functions.
+* `ext_of_integral_prod_mul_prod_boundedContinuousFunction`: A finite measure `μ`
+  over `(Π i, X i) × (Π j, Y j)` is determined by the values
+  `∫ p, (Π i, f i (p.1 i)) * (Π j, g j (p.2 j)) ∂μ`, for `f : (i : ι) → X i → ℝ`
+  and `g : (j : κ) → Y j → ℝ` any families of bounded continuous functions.
+
+  This is stronger than `ext_of_integral_mul_boundedContinuousFunction` because we do not require
+  `Π i, X i` and `Π j, Y j` to be Borel spaces and only consider products of continuous bounded
+  functions rather than general continuous bounded functions `(Π i, X i) → ℝ` and `(Π j, Y j) → ℝ`.
 * `eq_prod_of_integral_prod_mul_prod_boundedContinuousFunction`: The product of two finite measures
-  `μ` and `ν` is the only finite measure `ξ` such that for all families of real bounded continuous
-  functions `f` and `g` we have
+  `μ` and `ν` is the only finite measure `ξ` over `(Π i, X i) × (Π j, Y j)` such that for all
+  families of real bounded continuous functions `f` and `g` we have
   `∫ p, (Π i, f i (p.1 i)) * (Π j, g j (p.2 j)) ∂ξ =
   (∫ x, Π i, f i (x i) ∂μ) * (∫ y, Π j, g j (y j) ∂ν)`.
+* `ext_of_integral_mul_boundedContinuousFunction`: A finite measure `μ` over `X × Y` is determined
+  by the values `∫ p, f p.1 * g p.2 ∂μ`, for `f : X → ℝ` and `g : Y → ℝ`
+  any bounded continuous functions.
+* `eq_prod_of_integral_mul_boundedContinuousFunction`: The product of two finite measures `μ` and
+  `ν` is the only finite measure `ξ` such that for all real bounded continuous functions
+  `f` and `g` we have `∫ z, f z.1 * g z.2 ∂ξ = ∫ x, f x ∂μ * ∫ y, g y ∂ν`.
 
 # Tags
 
@@ -52,8 +64,9 @@ variable {ι κ Z T : Type*} [Fintype ι] [Fintype κ] {X : ι → Type*} {Y : �
   {mZ : MeasurableSpace Z} [TopologicalSpace Z] [BorelSpace Z] [HasOuterApproxClosed Z]
   {mT : MeasurableSpace T} [TopologicalSpace T] [BorelSpace T] [HasOuterApproxClosed T]
 
-/-- A finite measure on a product space is characterized by the integrals of products of nonnegative
-bounded continuous functions. -/
+/-- A finite measure `μ` over `(Π i, X i) × (Π j, Y j)` is determined by the values
+`∫⁻ p, (Π i, f i (p.1 i)) * (Π j, g j (p.2 j)) ∂μ`, for `f : (i : ι) → X i → ℝ≥0`
+and `g : (j : κ) → Y j → ℝ≥0` any families of bounded continuous functions. -/
 lemma ext_of_lintegral_prod_mul_prod_boundedContinuousFunction
     {μ ν : Measure ((Π i, X i) × (Π j, Y j))} [IsFiniteMeasure μ]
     (h : ∀ (f : (i : ι) → X i →ᵇ ℝ≥0) (g : (j : κ) → Y j →ᵇ ℝ≥0),
@@ -133,8 +146,9 @@ lemma ext_of_lintegral_prod_mul_prod_boundedContinuousFunction
     simp [(MeasurableSet.univ_pi (fun i ↦ (hs i).measurableSet)).prod
       (.univ_pi (fun j ↦ (ht j).measurableSet))]
 
-/-- A finite measure on a product space is characterized by the integrals of products of real
-bounded continuous functions. -/
+/-- A finite measure `μ` over `(Π i, X i) × (Π j, Y j)` is determined by the values
+`∫ p, (Π i, f i (p.1 i)) * (Π j, g j (p.2 j)) ∂μ`, for `f : (i : ι) → X i → ℝ`
+and `g : (j : κ) → Y j → ℝ` any families of bounded continuous functions. -/
 lemma ext_of_integral_prod_mul_prod_boundedContinuousFunction
     {μ ν : Measure ((Π i, X i) × (Π j, Y j))} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (h : ∀ (f : (i : ι) → X i →ᵇ ℝ) (g : (j : κ) → Y j →ᵇ ℝ),
@@ -275,8 +289,8 @@ lemma eq_prod_of_integral_mul_prod_boundedContinuousFunction' {μ : Measure Z}
     ξ = μ.prod ν :=
   ext_of_integral_mul_prod_boundedContinuousFunction' fun f g ↦ by rw [h, ← integral_prod_mul]
 
-/-- A finite measure on a product space is characterized by the integrals of products of real and
-bounded continuous functions. -/
+/-- A finite measure `μ` over `X × Y` is determined by the values `∫ p, f p.1 * g p.2 ∂μ`,
+for `f : X → ℝ` and `g : Y → ℝ` any bounded continuous functions. -/
 lemma ext_of_integral_mul_boundedContinuousFunction {μ ν : Measure (Z × T)}
     [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (h : ∀ (f : Z →ᵇ ℝ) (g : T →ᵇ ℝ), ∫ p, f p.1 * g p.2 ∂μ = ∫ p, f p.1 * g p.2 ∂ν) :
@@ -293,8 +307,9 @@ lemma ext_of_integral_mul_boundedContinuousFunction {μ ν : Measure (Z × T)}
   rw [integral_map_equiv, integral_map_equiv]
   simpa [e] using h (f ()) (g ())
 
-/-- The product of two finite measures μ and ν is the only finite measure ξ such that for all real
-bounded continuous functions f and g we have ∫ z, f z.1 * g z.2 ∂ξ = ∫ x, f x ∂μ * ∫ y, g y ∂ν. -/
+/-- The product of two finite measures `μ` and `ν` is the only finite measure `ξ` such that
+for all real bounded continuous functions `f` and `g` we have
+`∫ z, f z.1 * g z.2 ∂ξ = ∫ x, f x ∂μ * ∫ y, g y ∂ν`. -/
 lemma eq_prod_of_integral_mul_boundedContinuousFunction {μ : Measure Z}
     {ν : Measure T} {ξ : Measure (Z × T)}
     [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure ξ]
