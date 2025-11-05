@@ -33,6 +33,11 @@ open scoped Nat
 
 universe u v
 
+@[norm_cast]
+lemma Complex.ofReal_choose (a : ℝ) (n : ℕ) :
+    ↑(Ring.choose a n) = Ring.choose (a : ℂ) n :=
+  Ring.map_choose (algebraMap ℝ ℂ) _ _
+
 /-- **Binomial series**: the (scalar) formal multilinear series with coefficients given
 by `Ring.choose a`. The sum of this series is `fun x ↦ (1 + x) ^ a` within the radius
 of convergence. -/
@@ -87,7 +92,8 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
       fun n ↦ iteratedDeriv n (fun (x : ℂ) ↦ (1 + x) ^ a) 0 / n !) by
     convert AnalyticOn.hasFPowerSeriesOnSubball _ _ _
     · norm_num
-    · apply AnalyticOn.cpow (analyticOn_const.add analyticOn_id) analyticOn_const
+    · -- TODO: use `fun_prop` for this subgoal
+      apply AnalyticOn.cpow (analyticOn_const.add analyticOn_id) analyticOn_const
       intro z hz
       apply Complex.mem_slitPlane_of_norm_lt_one
       rw [← ENNReal.ofReal_one, Metric.emetric_ball] at hz
@@ -144,15 +150,7 @@ theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
         ContinuousMultilinearMap.coe_restrictScalars, smul_eq_mul, mul_eq_mul_right_iff,
         List.prod_eq_zero_iff, List.mem_ofFn]
       left
-      -- ↑(Ring.choose a n) = Ring.choose (↑a) n
-      simp only [Ring.choose_eq_smul, smul_eq_mul, Complex.ofReal_mul, Complex.ofReal_inv,
-        Complex.ofReal_natCast, mul_eq_mul_left_iff, inv_eq_zero, Nat.cast_eq_zero]
-      left
-      rw [Polynomial.smeval_def, Polynomial.smeval_def]
-      simp only [Polynomial.sum, Complex.ofReal_sum]
-      congr
-      ext n
-      simp [Polynomial.smul_pow]
+      norm_cast
     rw [this]
     exact one_add_cpow_hasFPowerSeriesOnBall_zero.restrictScalars
   rw [show 0 = Complex.ofRealCLM 0 by simp] at h
