@@ -56,17 +56,14 @@ inductive FreeGroupoid.redStep : HomRel (Paths (Quiver.Symmetrify V))
     redStep (𝟙 ((Paths.of (Quiver.Symmetrify V)).obj X)) (f.toPath ≫ (Quiver.reverse f).toPath)
 
 /-- The underlying vertices of the free groupoid -/
-def FreeGroupoid (V) [Q : Quiver V] :=
+protected def FreeGroupoid (V) [Q : Quiver V] :=
   CategoryTheory.Quotient (@FreeGroupoid.redStep V Q)
-
-@[deprecated (since := "2025-10-02")] protected alias _root_.CategoryTheory.FreeGroupoid :=
-  FreeGroupoid
 
 namespace FreeGroupoid
 
 open Quiver
 
-instance {V} [Quiver V] [Nonempty V] : Nonempty (FreeGroupoid V) := by
+instance {V} [Quiver V] [Nonempty V] : Nonempty (Quiver.FreeGroupoid V) := by
   inhabit V; exact ⟨⟨@default V _⟩⟩
 
 theorem congr_reverse {X Y : Paths <| Quiver.Symmetrify V} (p q : X ⟶ Y) :
@@ -114,21 +111,21 @@ theorem congr_reverse_comp {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
   nth_rw 2 [← Quiver.Path.reverse_reverse p]
   apply congr_comp_reverse
 
-instance : Category (FreeGroupoid V) :=
+instance : Category (Quiver.FreeGroupoid V) :=
   Quotient.category redStep
 
 /-- The inverse of an arrow in the free groupoid -/
-def quotInv {X Y : FreeGroupoid V} (f : X ⟶ Y) : Y ⟶ X :=
+def quotInv {X Y : Quiver.FreeGroupoid V} (f : X ⟶ Y) : Y ⟶ X :=
   Quot.liftOn f (fun pp => Quot.mk _ <| pp.reverse) fun pp qq con =>
     Quot.sound <| congr_reverse pp qq con
 
-instance instGroupoid : Groupoid (FreeGroupoid V) where
+instance instGroupoid : Groupoid (Quiver.FreeGroupoid V) where
   inv := quotInv
   inv_comp p := Quot.inductionOn p fun pp => congr_reverse_comp pp
   comp_inv p := Quot.inductionOn p fun pp => congr_comp_reverse pp
 
 /-- The inclusion of the quiver on `V` to the underlying quiver on `FreeGroupoid V` -/
-def of (V) [Quiver V] : V ⥤q FreeGroupoid V where
+def of (V) [Quiver V] : V ⥤q Quiver.FreeGroupoid V where
   obj X := ⟨X⟩
   map f := Quot.mk _ f.toPosPath
 

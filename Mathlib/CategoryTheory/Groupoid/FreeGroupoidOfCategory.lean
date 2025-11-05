@@ -18,16 +18,16 @@ extension as a functor from the free groupoid, and proves uniqueness of this ext
 
 Given a type `C` and a category instance on `C`:
 
-- `CategoryTheory.Category.FreeGroupoid C`: the underlying type of the free groupoid on `C`.
-- `CategoryTheory.Category.FreeGroupoid.instGroupoid`: the `Groupoid` instance on `FreeGroupoid C`.
-- `CategoryTheory.Category.FreeGroupoid.lift`: the lifting of a functor `C ⥤ G` where `G` is a
-  groupoid, to a functor `CategoryTheory.Category.FreeGroupoid C ⥤ G`.
-- `CategoryTheory.Category.FreeGroupoid.lift_spec` and
-  `CategoryTheory.Category.FreeGroupoid.lift_unique`:
-  the proofs that, respectively, `CategoryTheory.Category.FreeGroupoid.lift` indeed is a lifting
+- `CategoryTheory.FreeGroupoid C`: the underlying type of the free groupoid on `C`.
+- `CategoryTheory.FreeGroupoid.instGroupoid`: the `Groupoid` instance on `FreeGroupoid C`.
+- `CategoryTheory.FreeGroupoid.lift`: the lifting of a functor `C ⥤ G` where `G` is a
+  groupoid, to a functor `CategoryTheory.FreeGroupoid C ⥤ G`.
+- `CategoryTheory.FreeGroupoid.lift_spec` and
+  `CategoryTheory.FreeGroupoid.lift_unique`:
+  the proofs that, respectively, `CategoryTheory.FreeGroupoid.lift` indeed is a lifting
   and is the unique one.
-- `CategoryTheory.Category.Grpd.free`: the free functor from `Grpd` to `Cat`
-- `CategoryTheory.Category.Grpd.freeForgetAdjunction`: that `free` is left adjoint to
+- `CategoryTheory.Grpd.free`: the free functor from `Grpd` to `Cat`
+- `CategoryTheory.Grpd.freeForgetAdjunction`: that `free` is left adjoint to
   `Grpd.forgetToCat`.
 
 ## Implementation notes
@@ -44,8 +44,6 @@ namespace CategoryTheory
 
 universe v u v₁ u₁ v₂ u₂
 
-namespace Category
-
 variable (C : Type u) [Category.{v} C]
 
 open Quiver in
@@ -61,21 +59,21 @@ inductive FreeGroupoid.homRel : HomRel (Quiver.FreeGroupoid C) where
 defined by quotienting the free groupoid on the underlying quiver of `C`
 by the relation that promotes the prefunctor `C ⥤q FreeGroupoid C` into a functor
 `C ⥤ Quotient (FreeGroupoid.homRel C)`. -/
-protected def FreeGroupoid := Quotient (FreeGroupoid.homRel C)
+def FreeGroupoid := Quotient (FreeGroupoid.homRel C)
 
-instance [Nonempty C] : Nonempty (Category.FreeGroupoid C) :=
+instance [Nonempty C] : Nonempty (FreeGroupoid C) :=
   ⟨Quotient.mk (Quotient.mk ((Paths.of _).obj (Classical.arbitrary C)))⟩
 
-instance : Groupoid (Category.FreeGroupoid C) :=
-  Quotient.groupoid (Category.FreeGroupoid.homRel C)
+instance : Groupoid (FreeGroupoid C) :=
+  Quotient.groupoid (FreeGroupoid.homRel C)
 
 namespace FreeGroupoid
 
-/-- The localization map from the category `C` to the groupoid `Category.FreeGroupoid C` -/
-def of : C ⥤ Category.FreeGroupoid C where
+/-- The localization map from the category `C` to the groupoid `FreeGroupoid C` -/
+def of : C ⥤ FreeGroupoid C where
   __ := Quiver.FreeGroupoid.of C ⋙q (Quotient.functor (FreeGroupoid.homRel C)).toPrefunctor
-  map_id X := Quotient.sound _ (Category.FreeGroupoid.homRel.map_id X)
-  map_comp f g := Quotient.sound _ (Category.FreeGroupoid.homRel.map_comp f g)
+  map_id X := Quotient.sound _ (FreeGroupoid.homRel.map_id X)
+  map_comp f g := Quotient.sound _ (FreeGroupoid.homRel.map_comp f g)
 
 variable {C}
 
@@ -84,7 +82,7 @@ lemma of_obj_bijective : Function.Bijective (of C).obj where
   right X := ⟨X.as.as, rfl⟩
 
 /-- Consruct an object of the free groupoid on `C` by providing an object `C`. -/
-abbrev mk (X : C) : Category.FreeGroupoid C := (of C).obj X
+abbrev mk (X : C) : FreeGroupoid C := (of C).obj X
 
 /-- Consruct a morphism in the free groupoid on `C` by providing a morphism `C`. -/
 abbrev homMk {X Y : C} (f : X ⟶ Y) : mk X ⟶ mk Y := (of C).map f
@@ -95,7 +93,7 @@ variable {G : Type u₁} [Groupoid.{v₁} G]
 
 /-- The lift of a functor from `C` to a groupoid to a functor from
 `FreeGroupoid C` to the groupoid -/
-def lift (φ : C ⥤ G) : Category.FreeGroupoid C ⥤ G :=
+def lift (φ : C ⥤ G) : FreeGroupoid C ⥤ G :=
   Quotient.lift (FreeGroupoid.homRel C) (Quiver.FreeGroupoid.lift φ.toPrefunctor)
     (fun _ _ f g r ↦ by
       have {X Y : C} (f : X ⟶ Y) :=
@@ -109,7 +107,7 @@ theorem lift_spec (φ : C ⥤ G) : of C ⋙ lift φ = φ :=
         (lift φ).toPrefunctor = φ.toPrefunctor
     simp [lift, Quotient.lift_spec, Quiver.FreeGroupoid.lift_spec])
 
-theorem lift_unique (φ : C ⥤ G) (Φ : Category.FreeGroupoid C ⥤ G) (hΦ : of C ⋙ Φ = φ) :
+theorem lift_unique (φ : C ⥤ G) (Φ : FreeGroupoid C ⥤ G) (hΦ : of C ⋙ Φ = φ) :
     Φ = lift φ := by
   apply Quotient.lift_unique
   apply Quiver.FreeGroupoid.lift_unique
@@ -141,16 +139,16 @@ section Functoriality
 variable {D : Type u₁} [Category.{v₁} D] {E : Type u₂} [Category.{v₂} E]
 
 /-- The functor of free groupoid induced by a functor between the original categories. -/
-def map (φ : C ⥤ D) : Category.FreeGroupoid C ⥤ Category.FreeGroupoid D :=
+def map (φ : C ⥤ D) : FreeGroupoid C ⥤ FreeGroupoid D :=
   lift (φ ⋙ of D)
 
 variable (C) in
-theorem map_id : map (𝟭 C) = 𝟭 (Category.FreeGroupoid C) := by
+theorem map_id : map (𝟭 C) = 𝟭 (FreeGroupoid C) := by
   symm; apply lift_unique; rfl
 
 variable (C) in
 /-- The functor induced by the identity is the identity. -/
-def mapId : map (𝟭 C) ≅ 𝟭 (Category.FreeGroupoid C) :=
+def mapId : map (𝟭 C) ≅ 𝟭 (FreeGroupoid C) :=
   eqToIso (map_id C)
 
 theorem map_comp (φ : C ⥤ D) (φ' : D ⥤ E) : map (φ ⋙ φ') = map φ ⋙ map φ' := by
@@ -194,7 +192,7 @@ end Functoriality
 
 /-- Functors out of the free groupoid biject with functors out of the original category. -/
 @[simps]
-def functorEquiv {D : Type*} [Groupoid D] : (Category.FreeGroupoid C ⥤ D) ≃ (C ⥤ D) where
+def functorEquiv {D : Type*} [Groupoid D] : (FreeGroupoid C ⥤ D) ≃ (C ⥤ D) where
   toFun G := of C ⋙ G
   invFun := lift
   right_inv := lift_spec
@@ -202,16 +200,14 @@ def functorEquiv {D : Type*} [Groupoid D] : (Category.FreeGroupoid C ⥤ D) ≃ 
 
 end FreeGroupoid
 
-end Category
-
 namespace Grpd
 
-open Category.FreeGroupoid
+open FreeGroupoid
 
 /-- The free groupoid construction on a category as a functor. -/
 @[simps]
 def free : Cat.{u, u} ⥤ Grpd.{u, u} where
-  obj C := Grpd.of <| Category.FreeGroupoid C
+  obj C := Grpd.of <| FreeGroupoid C
   map {C D} F := map F
   map_id C := by simp [Grpd.id_eq_id, ← map_id]; rfl
   map_comp F G := by simp [Grpd.comp_eq_comp, ← map_comp]; rfl
@@ -219,8 +215,8 @@ def free : Cat.{u, u} ⥤ Grpd.{u, u} where
 /-- The free-forgetful adjunction between `Grpd` and `Cat`. -/
 def freeForgetAdjunction : free ⊣ Grpd.forgetToCat :=
   Adjunction.mkOfHomEquiv
-    { homEquiv _ _ := Category.FreeGroupoid.functorEquiv
-      homEquiv_naturality_left_symm _ _ := (Category.FreeGroupoid.map_lift _ _).symm
+    { homEquiv _ _ := FreeGroupoid.functorEquiv
+      homEquiv_naturality_left_symm _ _ := (FreeGroupoid.map_lift _ _).symm
       homEquiv_naturality_right _ _ := rfl }
 
 instance : Reflective Grpd.forgetToCat where
