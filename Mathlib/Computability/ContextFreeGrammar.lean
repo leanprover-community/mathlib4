@@ -6,6 +6,7 @@ Authors: Martin Dvorak
 module
 
 public import Mathlib.Computability.Language
+import Mathlib.Data.Finset.Image
 
 /-!
 # Context-Free Grammars

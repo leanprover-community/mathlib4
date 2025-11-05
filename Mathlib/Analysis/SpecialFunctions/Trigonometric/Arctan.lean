@@ -390,7 +390,7 @@ open Lean Meta Qq
 
 /-- Extension for `Real.arctan`. -/
 @[positivity Real.arctan _]
-def evalRealArctan : PositivityExt where eval {u α} z p e := do
+meta def evalRealArctan : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.arctan $a) =>
     let ra ← core z p a
@@ -404,7 +404,7 @@ def evalRealArctan : PositivityExt where eval {u α} z p e := do
 
 /-- Extension for `Real.cos (Real.arctan _)`. -/
 @[positivity Real.cos (Real.arctan _)]
-def evalRealCosArctan : PositivityExt where eval {u α} _ _ e := do
+meta def evalRealCosArctan : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.cos (Real.arctan $a)) =>
     assumeInstancesCommute
@@ -413,7 +413,7 @@ def evalRealCosArctan : PositivityExt where eval {u α} _ _ e := do
 
 /-- Extension for `Real.sin (Real.arctan _)`. -/
 @[positivity Real.sin (Real.arctan _)]
-def evalRealSinArctan : PositivityExt where eval {u α} z p e := do
+meta def evalRealSinArctan : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.sin (Real.arctan $a)) =>
     assumeInstancesCommute

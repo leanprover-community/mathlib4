@@ -117,7 +117,7 @@ open Lean Meta Qq
 /-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℤ)`,
 such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity _ ^ (_ : ℤ), Pow.pow _ (_ : ℤ)]
-def evalZPow : PositivityExt where eval {u α} zα pα e := do
+meta def evalZPow : PositivityExt where eval {u α} zα pα e := do
   let .app (.app _ (a : Q($α))) (b : Q(ℤ)) ← withReducible (whnf e) | throwError "not ^"
   let result ← catchNone do
     let _a ← synthInstanceQ q(Field $α)

@@ -322,6 +322,6 @@ elab (name := finsetStx) "finset% " t:term : term => do
 
 open Lean.Elab.Term.Quotation in
 /-- `quot_precheck` for the `finset%` syntax. -/
-@[quot_precheck finsetStx] def precheckFinsetStx : Precheck
+@[quot_precheck finsetStx] meta def precheckFinsetStx : Precheck
   | `(finset% $t) => precheck t
   | _ => Elab.throwUnsupportedSyntax

@@ -173,6 +173,7 @@ initialize registerBuiltinAttribute {
   add := fun declName stx kind ↦ match stx with
     | `(attr| norm_num $es,*) => do
       let env ← getEnv
+      ensureAttrDeclIsMeta `norm_num declName kind
       unless (env.getModuleIdxFor? declName).isNone do
         throwError "invalid attribute 'norm_num', declaration is in an imported module"
       if (IR.getSorryDep env declName).isSome then return -- ignore in progress definitions

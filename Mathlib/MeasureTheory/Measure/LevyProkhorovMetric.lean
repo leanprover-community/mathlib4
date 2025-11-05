@@ -269,7 +269,7 @@ open Lean.PrettyPrinter.Delaborator in
 /-- This prevents `ofMeasure x` being printed as `{ toMeasure := x }` by `delabStructureInstance`.
 -/
 @[app_delab LevyProkhorov.ofMeasure]
-def LevyProkhorov.delabOfMeasure : Delab := delabApp
+meta def LevyProkhorov.delabOfMeasure : Delab := delabApp
 
 namespace LevyProkhorov
 

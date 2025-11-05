@@ -1384,7 +1384,7 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: multiplicative norms are always nonnegative, and positive
 on non-one inputs. -/
 @[positivity ‖_‖]
-def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
+meta def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
     let _seminormedGroup_E ← synthInstanceQ q(SeminormedGroup $E)
@@ -1406,7 +1406,7 @@ def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
 /-- Extension for the `positivity` tactic: additive norms are always nonnegative, and positive
 on non-zero inputs. -/
 @[positivity ‖_‖]
-def evalAddNorm : PositivityExt where eval {u α} _ _ e := do
+meta def evalAddNorm : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
     let _seminormedAddGroup_E ← synthInstanceQ q(SeminormedAddGroup $E)

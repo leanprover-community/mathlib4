@@ -7,6 +7,7 @@ module
 
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
+public meta import Lean.Linter.Basic
 -- This file is imported by the Header linter, hence has no mathlib imports.
 
 /-! # The `directoryDependency` linter
@@ -95,7 +96,7 @@ prefixes `n₁'` of `n₁` and `n₂'` of `n₂` such that `n₁' R n₂'`.
 The current implementation is a `NameMap` of `NameSet`s, testing each prefix of `n₁` and `n₂` in
 turn. This can probably be optimized.
 -/
-def NamePrefixRel := NameMap NameSet
+@[expose] def NamePrefixRel := NameMap NameSet
 
 namespace NamePrefixRel
 
@@ -639,7 +640,7 @@ private def checkBlocklist (env : Environment) (mainModule : Name) (imports : Ar
 
 @[inherit_doc Mathlib.Linter.linter.directoryDependency]
 def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageData) := do
-  unless Linter.getLinterValue linter.directoryDependency (← getLinterOptions) do
+  unless Linter.getLinterValue linter.directoryDependency (← Linter.getLinterOptions) do
     return #[]
   let env ← getEnv
   let imports := env.allImportedModuleNames

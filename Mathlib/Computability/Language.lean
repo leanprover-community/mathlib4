@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.Kleene
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Data.Set.Lattice
 public import Mathlib.Tactic.DeriveFintype
+import Mathlib.Data.Fintype.Sum
 
 /-!
 # Languages

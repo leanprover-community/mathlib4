@@ -6,8 +6,8 @@ Authors: Henrik Böving, Simon Hudon
 module
 
 public import Mathlib.Data.Int.Order.Basic
-public import Mathlib.Data.List.Monad
-public import Mathlib.Data.PNat.Defs
+public meta import Mathlib.Data.List.Monad
+public meta import Mathlib.Data.PNat.Defs
 public import Plausible.Sampleable
 
 /-!
@@ -23,11 +23,11 @@ open Random Gen
 
 section Shrinkers
 
-instance Rat.shrinkable : Shrinkable Rat where
+meta instance Rat.shrinkable : Shrinkable Rat where
   shrink r :=
     (Shrinkable.shrink r.num).flatMap fun d => Nat.shrink r.den |>.map fun n => Rat.divInt d n
 
-instance PNat.shrinkable : Shrinkable PNat where
+meta instance PNat.shrinkable : Shrinkable PNat where
   shrink m := Nat.shrink m.natPred |>.map Nat.succPNat
 
 end Shrinkers
@@ -36,7 +36,7 @@ section Samplers
 
 open SampleableExt
 
-instance Rat.sampleableExt : SampleableExt Rat :=
+meta instance Rat.sampleableExt : SampleableExt Rat :=
   mkSelfContained (do
     let d ← choose Int (-(← getSize)) (← getSize)
       (le_trans (Int.neg_nonpos_of_nonneg (Int.natCast_nonneg _)) (Int.natCast_nonneg _))
@@ -44,7 +44,7 @@ instance Rat.sampleableExt : SampleableExt Rat :=
     return Rat.divInt d n)
 
 
-instance PNat.sampleableExt : SampleableExt PNat :=
+meta instance PNat.sampleableExt : SampleableExt PNat :=
   mkSelfContained (do
     let n ← chooseNat
     return Nat.succPNat n)

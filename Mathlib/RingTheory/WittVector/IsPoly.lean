@@ -412,7 +412,7 @@ so it is easier (and prettier) to put it in a tactic script.
 -/
 syntax (name := ghostCalc) "ghost_calc" (ppSpace colGt term:max)* : tactic
 
-private def runIntro (ref : Syntax) (n : Name) : TacticM FVarId := do
+private meta def runIntro (ref : Syntax) (n : Name) : TacticM FVarId := do
   let fvarId ← liftMetaTacticAux fun g => do
     let (fv, g') ← g.intro n
     return (fv, [g'])
@@ -420,7 +420,7 @@ private def runIntro (ref : Syntax) (n : Name) : TacticM FVarId := do
     Elab.Term.addLocalVarInfo ref (mkFVar fvarId)
   return fvarId
 
-private def getLocalOrIntro (t : Term) : TacticM FVarId := do
+private meta def getLocalOrIntro (t : Term) : TacticM FVarId := do
   match t with
     | `(_) => runIntro t `_
     | `($id:ident) => getFVarId id <|> runIntro id id.getId

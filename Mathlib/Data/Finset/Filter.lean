@@ -59,7 +59,7 @@ open Lean Elab Term Meta Batteries.ExtendedBinder
 
 /-- Return `true` if `expectedType?` is `some (Finset ?α)`, throws `throwUnsupportedSyntax` if it is
 `some (Set ?α)`, and returns `false` otherwise. -/
-def knownToBeFinsetNotSet (expectedType? : Option Expr) : TermElabM Bool :=
+meta def knownToBeFinsetNotSet (expectedType? : Option Expr) : TermElabM Bool :=
   -- As we want to reason about the expected type, we would like to wait for it to be available.
   -- However this means that if we fall back on `elabSetBuilder` we will have postponed.
   -- This is undesirable as we want set builder notation to quickly elaborate to a `Set` when no
@@ -92,7 +92,7 @@ See also
 TODO: Write a delaborator
 -/
 @[term_elab setBuilder]
-def elabFinsetBuilderSep : TermElab
+meta def elabFinsetBuilderSep : TermElab
   | `({ $x:ident ∈ $s:term | $p }), expectedType? => do
     -- If the expected type is known to be `Set ?α`, give up. If it is not known to be `Set ?α` or
     -- `Finset ?α`, check the expected type of `s`.

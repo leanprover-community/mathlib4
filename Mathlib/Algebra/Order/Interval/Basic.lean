@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Order.Ring.Canonical
 public import Mathlib.Order.Interval.Basic
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
 /-!
 # Interval arithmetic
@@ -662,7 +663,7 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity NonemptyInterval.length _]
-def evalNonemptyIntervalLength : PositivityExt where
+meta def evalNonemptyIntervalLength : PositivityExt where
   eval {u α} _ _ e := do
     let ~q(@NonemptyInterval.length _ $ig $ipo $a) := e |
       throwError "not NonemptyInterval.length"
@@ -672,7 +673,7 @@ def evalNonemptyIntervalLength : PositivityExt where
 
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity Interval.length _]
-def evalIntervalLength : PositivityExt where
+meta def evalIntervalLength : PositivityExt where
   eval {u α} _ _ e := do
     let ~q(@Interval.length _ $ig $ipo $a) := e | throwError "not Interval.length"
     let _i ← synthInstanceQ q(IsOrderedAddMonoid $α)

@@ -139,7 +139,7 @@ See also
   form `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
 -/
 @[term_elab setBuilder]
-def elabFinsetBuilderSetOf : TermElab
+meta def elabFinsetBuilderSetOf : TermElab
   | `({ $x:ident | $p }), expectedType? => do
     -- If the expected type is not known to be `Finset ?α`, give up.
     unless ← knownToBeFinsetNotSet expectedType? do throwUnsupportedSyntax
@@ -168,7 +168,7 @@ def elabFinsetBuilderSetOf : TermElab
 
 /-- Delaborator for `Finset.filter`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the filter is over `Finset.univ`. -/
-@[app_delab Finset.filter] def delabFinsetFilter : Delab :=
+@[app_delab Finset.filter] meta def delabFinsetFilter : Delab :=
   whenPPOption getPPNotation do
   let #[_, p, _, t] := (← getExpr).getAppArgs | failure
   guard p.isLambda

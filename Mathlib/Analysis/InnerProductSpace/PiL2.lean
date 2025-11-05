@@ -123,7 +123,7 @@ macro_rules | `(!$p:subscript[$e:term,*]) => do
 
 /-- Unexpander for the `!₂[x, y, ...]` notation. -/
 @[app_delab WithLp.toLp]
-def EuclideanSpace.delabVecNotation : Delab :=
+meta def EuclideanSpace.delabVecNotation : Delab :=
   whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 3 do
     -- check that the `WithLp.toLp _` is present
     let p : Term ← withNaryArg 0 <| delab

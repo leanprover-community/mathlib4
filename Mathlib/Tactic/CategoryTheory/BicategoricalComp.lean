@@ -5,7 +5,7 @@ Authors: Yuma Mizuno
 -/
 module
 
-public meta import Mathlib.CategoryTheory.Bicategory.Basic
+public import Mathlib.CategoryTheory.Bicategory.Basic
 
 /-!
 # Bicategorical composition `⊗≫` (composition up to associators)
@@ -15,7 +15,7 @@ which automatically inserts associators and unitors as needed
 to make the target of `f` match the source of `g`.
 -/
 
-public meta section
+@[expose] public section
 
 universe w v u
 

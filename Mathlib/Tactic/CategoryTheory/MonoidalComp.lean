@@ -5,7 +5,7 @@ Authors: Kim Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
 module
 
-public meta import Mathlib.CategoryTheory.Monoidal.Category
+public import Mathlib.CategoryTheory.Monoidal.Category
 
 /-!
 # Monoidal composition `⊗≫` (composition up to associators)
@@ -32,7 +32,7 @@ are completed as `𝟙 (V₁ ⊗ V₂ ⊗ V₃ ⊗ V₄ ⊗ V₅)` and `𝟙 (V�
 
 -/
 
-public meta section
+@[expose] public section
 
 universe v u
 

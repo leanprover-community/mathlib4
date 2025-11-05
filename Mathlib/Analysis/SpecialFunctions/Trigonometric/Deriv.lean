@@ -1467,7 +1467,7 @@ private alias ⟨_, sinh_ne_zero_of_ne_zero⟩ := Real.sinh_ne_zero
 /-- Extension for the `positivity` tactic: `Real.sinh` is positive/nonnegative/nonzero if its input
 is. -/
 @[positivity Real.sinh _]
-def evalSinh : PositivityExt where eval {u α} _ _ e := do
+meta def evalSinh : PositivityExt where eval {u α} _ _ e := do
   let zα : Q(Zero ℝ) := q(inferInstance)
   let pα : Q(PartialOrder ℝ) := q(inferInstance)
   match u, α, e with

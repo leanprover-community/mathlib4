@@ -11,6 +11,7 @@ public meta import Mathlib.Tactic.NormNum.DivMod
 public meta import Mathlib.Tactic.NormNum.PowMod
 public meta import Mathlib.Tactic.ReduceModChar.Ext
 public meta import Mathlib.Util.AtLocation
+import all Mathlib.Tactic.NormNum.DivMod  -- for accessing `evalIntMod.go`
 
 /-!
 # `reduce_mod_char` tactic

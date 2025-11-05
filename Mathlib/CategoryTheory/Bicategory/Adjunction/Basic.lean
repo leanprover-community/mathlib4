@@ -6,6 +6,7 @@ Authors: Yuma Mizuno
 module
 
 public import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
+public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
 /-!
 # Adjunctions in bicategories

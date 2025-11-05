@@ -5,11 +5,11 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Data.Finsupp.ToDFinsupp
-public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Data.Int.Range
-public import Mathlib.Data.List.Sigma
-public import Plausible.Functions
+public meta import Mathlib.Data.Finsupp.ToDFinsupp
+public meta import Mathlib.Algebra.Order.Group.Nat
+public meta import Mathlib.Data.Int.Range
+public meta import Mathlib.Data.List.Sigma
+public meta import Plausible.Functions
 
 /-!
 ## `Plausible`: generators for functions
@@ -42,7 +42,7 @@ their defining property is invariant through shrinking. Injective
 functions are an example of how complicated it can get.
 -/
 
-@[expose] public section
+@[expose] public meta section
 
 universe u v
 

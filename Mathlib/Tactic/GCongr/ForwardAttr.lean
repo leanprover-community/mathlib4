@@ -47,7 +47,8 @@ initialize registerBuiltinAttribute {
   add := fun declName stx kind => match stx with
     | `(attr| gcongr_forward) => do
       unless kind == AttributeKind.global do
-        throwError "invalid attribute 'gcongr_forward', must be global"
+        throwAttrMustBeGlobal `gcongr_forward kind
+      ensureAttrDeclIsMeta `gcongr_forward declName kind
       let env ← getEnv
       unless (env.getModuleIdxFor? declName).isNone do
         throwError "invalid attribute 'gcongr_forward', declaration is in an imported module"

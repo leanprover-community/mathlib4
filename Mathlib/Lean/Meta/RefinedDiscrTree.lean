@@ -99,7 +99,7 @@ Improve the unification lookup.
 
 -/
 
-@[expose] public section
+public section
 
 namespace Lean.Meta.RefinedDiscrTree
 

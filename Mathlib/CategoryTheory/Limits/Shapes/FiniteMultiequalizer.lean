@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.FinCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 public import Mathlib.Tactic.DeriveFintype
+import Mathlib.Data.Fintype.Sum
 
 /-!
 # Finiteness instances on multi-spans

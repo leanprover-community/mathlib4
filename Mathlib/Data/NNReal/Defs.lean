@@ -985,7 +985,7 @@ private alias ⟨_, nnreal_coe_pos⟩ := coe_pos
 
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0` to `ℝ`. -/
 @[positivity NNReal.toReal _]
-def evalNNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(NNReal.toReal $a) =>
     let ra ← core q(inferInstance) q(inferInstance) a

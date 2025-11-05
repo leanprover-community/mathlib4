@@ -259,7 +259,7 @@ namespace DenomCondition
 
 /-- Given a field-simp-normal-form expression `L` (a product of powers of atoms), a proof (according
 to the value of `DenomCondition`) of that expression's nonzeroness, strict positivity, etc. -/
-def proof {iM : Q(GroupWithZero $M)} (L : qNF M) : DenomCondition iM → Type
+@[expose] def proof {iM : Q(GroupWithZero $M)} (L : qNF M) : DenomCondition iM → Type
   | .none => Unit
   | .nonzero => Q(NF.eval $(qNF.toNF L) ≠ 0)
   | .positive _ _ _ _ => Q(0 < NF.eval $(qNF.toNF L))

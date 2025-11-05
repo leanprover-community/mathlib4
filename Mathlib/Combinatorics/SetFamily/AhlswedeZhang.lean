@@ -14,6 +14,7 @@ public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Positivity
 public import Mathlib.Tactic.Ring
 public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+import Mathlib.Data.Rat.Defs
 
 /-!
 # The Ahlswede-Zhang identity

@@ -961,7 +961,7 @@ macro_rules | `($A[$n]) => `(torsionBy $A $n)
 
 /-- Unexpander for `torsionBy`. -/
 @[scoped app_unexpander torsionBy]
-def torsionByUnexpander : Lean.PrettyPrinter.Unexpander
+meta def torsionByUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $A $n) => `($A[$n])
   | _ => throw ()
 

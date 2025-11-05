@@ -207,7 +207,7 @@ You can add lemmas to the rule-set by tagging them with either:
 
 TODO: should some of the lemmas be `aesop safe simp` instead?
 -/
-def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
+meta def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
     MetaM (Option Q(Finset.Nonempty $s)) := do
   -- Aesop expects to operate on goals, so we're going to make a new goal.
   let goal ← Lean.Meta.mkFreshExprMVar q(Finset.Nonempty $s)

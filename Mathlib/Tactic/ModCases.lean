@@ -28,7 +28,7 @@ there exists `0 ≤ z < n` such that `a ≡ z (mod n)`.
 It asserts that if `∃ z, lb ≤ z < n ∧ a ≡ z (mod n)` holds, then `p`
 (where `p` is the current goal).
 -/
-def OnModCases (n : ℕ) (a : ℤ) (lb : ℕ) (p : Sort*) :=
+@[expose] def OnModCases (n : ℕ) (a : ℤ) (lb : ℕ) (p : Sort*) :=
   ∀ z, lb ≤ z ∧ z < n ∧ a ≡ ↑z [ZMOD ↑n] → p
 
 /--
@@ -105,7 +105,7 @@ there exists `0 ≤ m < n` such that `a ≡ m (mod n)`.
 It asserts that if `∃ m, lb ≤ m < n ∧ a ≡ m (mod n)` holds, then `p`
 (where `p` is the current goal).
 -/
-def OnModCases (n : ℕ) (a : ℕ) (lb : ℕ) (p : Sort _) :=
+@[expose] def OnModCases (n : ℕ) (a : ℕ) (lb : ℕ) (p : Sort _) :=
   ∀ m, lb ≤ m ∧ m < n ∧ a ≡ m [MOD n] → p
 
 /--
