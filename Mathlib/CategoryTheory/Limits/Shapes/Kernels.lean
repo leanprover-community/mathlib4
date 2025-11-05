@@ -395,7 +395,7 @@ theorem lift_comp_kernelIsoOfEq_inv {Z} {f g : X ⟶ Y} [HasKernel f] [HasKernel
 @[simp]
 theorem kernelIsoOfEq_trans {f g h : X ⟶ Y} [HasKernel f] [HasKernel g] [HasKernel h] (w₁ : f = g)
     (w₂ : g = h) : kernelIsoOfEq w₁ ≪≫ kernelIsoOfEq w₂ = kernelIsoOfEq (w₁.trans w₂) := by
-  cases w₁; cases w₂; ext; simp [kernelIsoOfEq]
+  cases w₁; simp
 
 variable {f}
 
@@ -877,7 +877,7 @@ theorem cokernelIsoOfEq_inv_comp_desc {Z} {f g : X ⟶ Y} [HasCokernel f] [HasCo
 theorem cokernelIsoOfEq_trans {f g h : X ⟶ Y} [HasCokernel f] [HasCokernel g] [HasCokernel h]
     (w₁ : f = g) (w₂ : g = h) :
     cokernelIsoOfEq w₁ ≪≫ cokernelIsoOfEq w₂ = cokernelIsoOfEq (w₁.trans w₂) := by
-  cases w₁; cases w₂; ext; simp [cokernelIsoOfEq]
+  cases w₁; simp
 
 variable {f}
 
