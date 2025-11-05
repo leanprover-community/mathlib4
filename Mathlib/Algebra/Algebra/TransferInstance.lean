@@ -28,18 +28,13 @@ protected abbrev algebra (e : α ≃ β) [Semiring β] :
   { algebraMap :=
     { toFun r := e.symm (algebraMap R β r)
       __ := e.ringEquiv.symm.toRingHom.comp (algebraMap R β) }
-    commutes' r x := by
-      simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
-      calc
-      _ = e.symm ((e (e.symm (algebraMap R β r)) * e x)) := rfl
-      _ = e.symm (e x * e (e.symm (algebraMap R β r))) := by simp [Algebra.commutes]
-      _ = x * e.symm (algebraMap R β r) := rfl
-    smul_def' r x := by
-      simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
-      calc r • x
-        = e.symm (r • e x) := rfl
-      _ = e.symm (e (e.symm (algebraMap R β r)) * e x) := by simp [Algebra.smul_def]
-      _ = e.symm (algebraMap R β r) * x := rfl }
+    commutes' r x :=
+      show e.symm ((e (e.symm (algebraMap R β r)) * e x)) =
+          e.symm (e x * e (e.symm (algebraMap R β r))) by
+        simp [Algebra.commutes]
+    smul_def' r x :=
+      show e.symm (r • e x) = e.symm (e (e.symm (algebraMap R β r)) * e x) by
+        simp [Algebra.smul_def] }
 
 lemma algebraMap_def (e : α ≃ β) [Semiring β] [Algebra R β] (r : R) :
     (@algebraMap R α _ (Equiv.semiring e) (Equiv.algebra R e)) r = e.symm ((algebraMap R β) r) :=
