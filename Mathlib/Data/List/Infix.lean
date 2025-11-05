@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.TakeDrop
 import Mathlib.Data.List.Induction
+import Mathlib.Data.Nat.Basic
 import Mathlib.Order.Basic
 
 /-!
@@ -264,9 +265,9 @@ theorem map_reverse_tails (l : List α) : map reverse l.tails = (reverse <| init
 
 @[simp]
 theorem length_tails (l : List α) : length (tails l) = length l + 1 := by
-  induction' l with x l IH
-  · simp
-  · simpa using IH
+  induction l with
+  | nil => simp
+  | cons x l IH => simpa using IH
 
 @[simp]
 theorem length_inits (l : List α) : length (inits l) = length l + 1 := by simp [inits_eq_tails]
@@ -298,10 +299,10 @@ theorem get_inits (l : List α) (n : Fin (length (inits l))) : (inits l).get n =
   simp
 
 lemma map_inits {β : Type*} (g : α → β) : (l.map g).inits = l.inits.map (map g) := by
-  induction' l using reverseRecOn <;> simp [*]
+  induction l using reverseRecOn <;> simp [*]
 
 lemma map_tails {β : Type*} (g : α → β) : (l.map g).tails = l.tails.map (map g) := by
-  induction' l using reverseRecOn <;> simp [*]
+  induction l using reverseRecOn <;> simp [*]
 
 lemma take_inits {n} : (l.take n).inits = l.inits.take (n + 1) := by
   apply ext_getElem <;> (simp [take_take] <;> omega)

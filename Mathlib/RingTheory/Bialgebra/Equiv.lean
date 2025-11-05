@@ -16,7 +16,7 @@ This file defines bundled isomorphisms of `R`-bialgebras. We simply mimic the ea
 
 * `BialgEquiv R A B`: the type of `R`-bialgebra isomorphisms between `A` and `B`.
 
-## Notations
+## Notation
 
 * `A ≃ₐc[R] B` : `R`-bialgebra equivalence from `A` to `B`.
 -/

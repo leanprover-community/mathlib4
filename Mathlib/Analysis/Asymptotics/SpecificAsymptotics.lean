@@ -10,7 +10,8 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 # A collection of specific asymptotic results
 
 This file contains specific lemmas about asymptotics which don't have their place in the general
-theory developed in `Mathlib/Analysis/Asymptotics/Asymptotics.lean`.
+theory developed in `Mathlib/Analysis/Asymptotics/Defs.lean` and
+`Mathlib/Analysis/Asymptotics/Lemmas.lean`.
 -/
 
 
@@ -51,13 +52,13 @@ theorem tendsto_pow_div_pow_atTop_atTop {p q : ℕ} (hpq : q < p) :
     Tendsto (fun x : 𝕜 => x ^ p / x ^ q) atTop atTop := by
   rw [tendsto_congr' pow_div_pow_eventuallyEq_atTop]
   apply tendsto_zpow_atTop_atTop
-  omega
+  cutsat
 
 theorem tendsto_pow_div_pow_atTop_zero [TopologicalSpace 𝕜] [OrderTopology 𝕜] {p q : ℕ}
     (hpq : p < q) : Tendsto (fun x : 𝕜 => x ^ p / x ^ q) atTop (𝓝 0) := by
   rw [tendsto_congr' pow_div_pow_eventuallyEq_atTop]
   apply tendsto_zpow_atTop_zero
-  omega
+  cutsat
 
 end LinearOrderedField
 

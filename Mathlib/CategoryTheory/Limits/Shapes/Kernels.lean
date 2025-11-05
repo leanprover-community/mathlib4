@@ -370,22 +370,21 @@ theorem kernelIsoOfEq_refl {h : f = f} : kernelIsoOfEq h = Iso.refl (kernel f) :
   ext
   simp [kernelIsoOfEq]
 
-/- Porting note: induction on Eq is trying instantiate another g... -/
 @[reassoc (attr := simp)]
 theorem kernelIsoOfEq_hom_comp_ι {f g : X ⟶ Y} [HasKernel f] [HasKernel g] (h : f = g) :
     (kernelIsoOfEq h).hom ≫ kernel.ι g = kernel.ι f := by
-  cases h; simp
+  subst h; simp
 
 @[reassoc (attr := simp)]
 theorem kernelIsoOfEq_inv_comp_ι {f g : X ⟶ Y} [HasKernel f] [HasKernel g] (h : f = g) :
     (kernelIsoOfEq h).inv ≫ kernel.ι _ = kernel.ι _ := by
-  cases h; simp
+  subst h; simp
 
 @[reassoc (attr := simp)]
 theorem lift_comp_kernelIsoOfEq_hom {Z} {f g : X ⟶ Y} [HasKernel f] [HasKernel g] (h : f = g)
     (e : Z ⟶ X) (he) :
     kernel.lift _ e he ≫ (kernelIsoOfEq h).hom = kernel.lift _ e (by simp [← h, he]) := by
-  cases h; simp
+  subst h; simp
 
 @[reassoc (attr := simp)]
 theorem lift_comp_kernelIsoOfEq_inv {Z} {f g : X ⟶ Y} [HasKernel f] [HasKernel g] (h : f = g)
@@ -756,7 +755,6 @@ theorem cokernel.π_desc {W : C} (k : Y ⟶ W) (h : f ≫ k = 0) :
     cokernel.π f ≫ cokernel.desc f k h = k :=
   (cokernelIsCokernel f).fac (CokernelCofork.ofπ k h) WalkingParallelPair.one
 
--- Porting note: added to ease the port of `Abelian.Exact`
 @[reassoc (attr := simp)]
 lemma colimit_ι_zero_cokernel_desc {C : Type*} [Category C]
     [HasZeroMorphisms C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : f ≫ g = 0) [HasCokernel f] :
@@ -1201,4 +1199,35 @@ instance (priority := 100) hasKernels_of_hasEqualizers [HasEqualizers C] : HasKe
 instance (priority := 100) hasCokernels_of_hasCoequalizers [HasCoequalizers C] :
     HasCokernels C where
 
+section HasKernels
+variable [HasKernels C]
+
+/-- The kernel of an arrow is natural. -/
+@[simps]
+noncomputable def ker : Arrow C ⥤ C where
+  obj f := kernel f.hom
+  map {f g} u := kernel.lift _ (kernel.ι _ ≫ u.left) (by simp)
+
+/-- The kernel inclusion is natural. -/
+@[simps] def ker.ι : ker (C := C) ⟶ Arrow.leftFunc where app f := kernel.ι _
+
+@[reassoc (attr := simp)] lemma ker.condition : ι C ≫ Arrow.leftToRight = 0 := by cat_disch
+
+end HasKernels
+
+section HasCokernels
+variable [HasCokernels C]
+
+/-- The cokernel of an arrow is natural. -/
+@[simps]
+noncomputable def coker : Arrow C ⥤ C where
+  obj f := cokernel f.hom
+  map {f g} u := cokernel.desc _ (u.right ≫ cokernel.π _) (by simp [← Arrow.w_assoc u])
+
+/-- The cokernel projection is natural. -/
+@[simps] def coker.π : Arrow.rightFunc ⟶ coker (C := C) where app f := cokernel.π _
+
+@[reassoc (attr := simp)] lemma coker.condition : Arrow.leftToRight ≫ π C = 0 := by cat_disch
+
+end HasCokernels
 end CategoryTheory.Limits

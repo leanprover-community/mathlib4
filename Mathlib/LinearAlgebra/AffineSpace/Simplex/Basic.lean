@@ -235,7 +235,6 @@ theorem reindex_map {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n 
   rfl
 
 section restrict
-attribute [local instance] AffineSubspace.toAddTorsor
 
 /-- Restrict an affine simplex to an affine subspace that contains it. -/
 @[simps]
@@ -271,7 +270,6 @@ theorem restrict_map_restrict
     (S₁ : AffineSubspace k P) (S₂ : AffineSubspace k P₂)
     (hS₁ : affineSpan k (Set.range s.points) ≤ S₁) (hfS : AffineSubspace.map f S₁ ≤ S₂) :
     letI := Nonempty.map (AffineSubspace.inclusion hS₁) inferInstance
-    letI : Nonempty (S₁.map f) := AffineSubspace.nonempty_map
     letI := Nonempty.map (AffineSubspace.inclusion hfS) inferInstance
     (s.restrict S₁ hS₁).map (f.restrict hfS) (AffineMap.restrict.injective hf _) =
       (s.map f hf).restrict S₂ (

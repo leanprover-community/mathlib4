@@ -8,10 +8,13 @@ import Mathlib.Algebra.Module.Torsion
 import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Flat.EquationalCriterion
+import Mathlib.RingTheory.Ideal.Quotient.ChineseRemainder
+import Mathlib.RingTheory.LocalProperties.Exactness
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.Nakayama
 import Mathlib.RingTheory.Support
+import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
 # Finite modules over local rings
@@ -246,10 +249,11 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
 
 theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι → M)
     (h : LinearIndependent k (TensorProduct.mk R k M 1 ∘ v)) : LinearIndependent R v := by
-  rw [linearIndependent_iff']; intro s f hfv
+  rw [linearIndependent_iff']; intro s f hfv i hi
   classical
-  induction' s using Finset.induction with n s hn ih generalizing v <;> intro i hi
-  · exact (Finset.notMem_empty _ hi).elim
+  induction s using Finset.induction generalizing v i with
+  | empty => exact (Finset.notMem_empty _ hi).elim
+  | insert n s hn ih => ?_
   rw [← Finset.sum_coe_sort] at hfv
   have ⟨l, a, y, hay, hfa⟩ := Flat.isTrivialRelation_of_sum_smul_eq_zero hfv
   have : v n ∉ 𝔪 • (⊤ : Submodule R M) := by
@@ -363,3 +367,59 @@ theorem IsLocalRing.split_injective_iff_lTensor_residueField_injective [IsLocalR
     exact Module.projective_lifting_property _ _ (Submodule.mkQ_surjective _)
 
 end
+
+namespace Module
+
+open Ideal TensorProduct Submodule
+
+variable (R M) [Finite (MaximalSpectrum R)] [AddCommGroup M] [Module R M]
+
+/-- If `M` is a finite flat module over a commutative semilocal ring `R` that has the same rank `n`
+at every maximal ideal, then `M` is free of rank `n`. -/
+@[stacks 02M9] theorem nonempty_basis_of_flat_of_finrank_eq [Module.Finite R M] [Flat R M]
+    (n : ℕ) (rk : ∀ P : MaximalSpectrum R, finrank (R ⧸ P.1) ((R ⧸ P.1) ⊗[R] M) = n) :
+    Nonempty (Basis (Fin n) R M) := by
+  let := @Quotient.field
+  have coprime : Pairwise fun I J : MaximalSpectrum R ↦ IsCoprime I.1 J.1 :=
+    fun _ _ ne ↦ isCoprime_of_isMaximal (MaximalSpectrum.ext_iff.ne.mp ne)
+  /- For every maximal ideal `P`, `R⧸P ⊗[R] M` is an `n`-dimensional vector space over the field
+    `R⧸P` by assumption, so we can choose a basis `b' P` indexed by `Fin n`. -/
+  have b' (P) := Module.finBasisOfFinrankEq _ _ (rk P)
+  /- By Chinese remainder theorem for modules, there exist `n` elements `b i : M` that reduces
+    to `b' P i` modulo each maximal ideal `P`. -/
+  choose b hb using fun i ↦ pi_tensorProductMk_quotient_surjective M _ coprime (b' · i)
+  /- It suffices to show `b` spans `M` and is linearly independent when localized at each
+    maximal ideal. -/
+  refine ⟨.mk (v := b) (.of_isLocalized_maximal (fun P _ ↦ Localization P.primeCompl) _
+    (fun P _ ↦ TensorProduct.mk R (Localization P.primeCompl) M 1) _ fun P _ ↦ ?_) ?_⟩
+  · /- Since `M` is finite flat, linear independence in `Rₚ ⊗[R] M` is equivalent to linear
+      independence in `Rₚ⧸PRₚ ⊗[Rₚ] (Rₚ ⊗[R] M) ≃ Rₚ⧸PRₚ ⊗[R⧸P] (R⧸P ⊗[R] M)`. -/
+    apply IsLocalRing.linearIndependent_of_flat
+    rw [← LinearMap.linearIndependent_iff _ (AlgebraTensorModule.cancelBaseChange R _ _ _ M).ker]
+    convert LinearMap.linearIndependent_iff _ (AlgebraTensorModule.cancelBaseChange R _ _ _ M).ker
+      |>.mpr (Algebra.TensorProduct.basis P.ResidueField (b' ⟨P, ‹_›⟩)).linearIndependent
+    ext
+    simp [← funext_iff.mp (hb _)]
+  · -- To show `b` spans `M`, it suffices to show `M = Rb + J(R)M` by Nakayama.
+    refine Submodule.le_of_le_smul_of_le_jacobson_bot (Module.finite_def.mp ‹_›) le_rfl fun m _ ↦ ?_
+    /- For each `m : M` and maximal ideal `P`, `1 ⊗ₜ m : R⧸P ⊗[R] M` is in the span of `b' P`.
+      By Chinese remainder theorem for rings, we may lift the coefficients `r i : R`. -/
+    choose r hr using fun i ↦ pi_quotient_surjective coprime fun P ↦ (b' P).repr (1 ⊗ₜ m) i
+    rw [← add_sub_cancel (∑ i, r i • b i) m]
+    /- It suffices to show `m - ∑ i, r i • b i` is `J(R)M`, which equals the kernel of
+      `M → Πₚ R⧸P ⊗[R] M` by Chinese remainder theorem for modules. -/
+    refine Submodule.add_mem_sup (sum_mem fun i _ ↦ smul_mem _ _ <| subset_span ⟨i, rfl⟩) <|
+      ((ker_tensorProductMk_quotient M _ coprime).le.trans <| smul_mono_left <|
+        le_sInf fun i hi ↦ iInf_le_of_le ⟨i, hi.2⟩ le_rfl) ?_
+    ext P
+    simp_rw [map_sub, map_sum, map_smul, hb, Pi.sub_apply]
+    refine sub_eq_zero.mpr (((b' P).sum_repr _).symm.trans ?_)
+    simp [← hr, ← Quotient.algebraMap_eq]
+
+@[stacks 02M9] theorem free_of_flat_of_finrank_eq [Module.Finite R M] [Flat R M]
+    (n : ℕ) (rk : ∀ P : MaximalSpectrum R, finrank (R ⧸ P.1) ((R ⧸ P.1) ⊗[R] M) = n) :
+    Free R M :=
+  have ⟨b⟩ := nonempty_basis_of_flat_of_finrank_eq R M n rk
+  .of_basis b
+
+end Module

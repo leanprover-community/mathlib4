@@ -89,7 +89,7 @@ theorem map_smul (c : 𝕜) (x : V) : e (c • x) = ‖c‖₊ * e x := by
   · simp [hc]
   calc
     (‖c‖₊ : ℝ≥0∞) * e x = ‖c‖₊ * e (c⁻¹ • c • x) := by rw [inv_smul_smul₀ hc]
-    _ ≤ ‖c‖₊ * (‖c⁻¹‖₊ * e (c • x)) := mul_le_mul_left' (e.map_smul_le' _ _) _
+    _ ≤ ‖c‖₊ * (‖c⁻¹‖₊ * e (c • x)) := by grw [e.map_smul_le']
     _ = e (c • x) := by
       rw [← mul_assoc, nnnorm_inv, ENNReal.coe_inv, ENNReal.mul_inv_cancel _ ENNReal.coe_ne_top,
         one_mul]
@@ -99,7 +99,7 @@ theorem map_smul (c : 𝕜) (x : V) : e (c • x) = ‖c‖₊ * e x := by
   simp]
 theorem map_zero : e 0 = 0 := by
   rw [← zero_smul 𝕜 (0 : V), e.map_smul]
-  norm_num
+  simp
 
 @[deprecated "Use ENormedAddCommMonoid or talk to the Carleson project" (since := "2025-05-07"),
   simp]

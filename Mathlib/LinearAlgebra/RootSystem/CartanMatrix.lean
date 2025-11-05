@@ -112,7 +112,6 @@ variable [IsDomain R]
 lemma cartanMatrix_apply_eq_zero_iff_symm {i j : b.support} :
     b.cartanMatrix i j = 0 ↔ b.cartanMatrix j i = 0 := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : Module.IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
   simp only [cartanMatrix_apply_eq_zero_iff_pairing, P.pairing_eq_zero_iff]
 
 variable [Finite ι]
@@ -170,7 +169,6 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
     (p : b.support → Prop) {i j : b.support} (hi : p i)
     (hp : ∀ i j, p i → b.cartanMatrix j i ≠ 0 → p j) :
     p j := by
-  have _i : Nontrivial M := ⟨P.root i, 0, P.ne_zero i⟩
   let q : Submodule R M := span R (P.root ∘ (↑) '' {i | p i})
   have hq₀ : q ≠ ⊥ := q.ne_bot_iff.mpr ⟨P.root i, subset_span <| by simpa, P.ne_zero i⟩
   have hq_mem (k : b.support) : P.root k ∈ q ↔ p k := by

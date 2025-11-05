@@ -82,7 +82,7 @@ lemma rpowIntegrand₀₁_eq_pow_div (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) (hx : 0
     calc _ = (t : ℝ) ^ p * (t⁻¹ - (t + x)⁻¹) := rfl
       _ = (t : ℝ) ^ p * ((t + x - t) / (t * (t + x))) := by
           simp only [inv_eq_one_div]
-          rw [div_sub_div _ _ (by omega) (by omega)]
+          rw [div_sub_div _ _ (by cutsat) (by cutsat)]
           simp
       _ = t ^ p / t * x / (t + x) := by simp [field]
       _ = t ^ (p - 1) * x / (t + x) := by congr; exact (Real.rpow_sub_one ht' p).symm
@@ -334,14 +334,12 @@ lemma exists_measure_rpow_eq_integral (hp : p ∈ Ioo 0 1) :
       property := by
         rw [inv_nonneg]
         exact le_of_lt <| integral_rpowIntegrand₀₁_one_pos hp }
-  let μ : Measure ℝ := C • volume
-  refine ⟨μ, fun x hx => ⟨?_, ?_⟩⟩
-  · unfold μ IntegrableOn
+  refine ⟨C • volume, fun x hx => ⟨?_, ?_⟩⟩
+  · unfold IntegrableOn
     rw [Measure.restrict_smul]
     exact Integrable.smul_measure_nnreal <| integrableOn_rpowIntegrand₀₁_Ioi hp hx
-  · unfold μ
-    rw [Measure.restrict_smul, integral_smul_nnreal_measure, rpow_eq_const_mul_integral hp hx]
-    rfl
+  · simp_rw [Measure.restrict_smul, integral_smul_nnreal_measure, rpow_eq_const_mul_integral hp hx,
+      NNReal.smul_def, C, NNReal.coe_mk, smul_eq_mul]
 
 end Real
 
@@ -451,7 +449,7 @@ private lemma monotoneOn_nnrpow_Ioo {p : ℝ≥0} (hp : p ∈ Ioo 0 1) :
       (fun a : A => ∫ t in Ioi 0, cfcₙ (rpowIntegrand₀₁ p t) a ∂μ) :=
     fun a ha => (hμ a ha).2
   refine MonotoneOn.congr ?_ h₃'.symm
-  refine MeasureTheory.integral_monotoneOn_of_integrand_ae ?_ fun a ha => (hμ a ha).1
+  refine integral_monotoneOn_of_integrand_ae ?_ fun a ha => (hμ a ha).1
   filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
   exact monotoneOn_cfcₙ_rpowIntegrand₀₁ hp ht
 

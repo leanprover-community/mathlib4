@@ -113,9 +113,8 @@ theorem pair_lt_pair_left {a₁ a₂} (b) (h : a₁ < a₂) : pair a₁ b < pair
   · by_cases h₂ : a₂ < b
     · simp [h₂, h]
     simp only [h₂, ↓reduceIte]
-    simp? at h₂ says simp only [not_lt] at h₂
     apply Nat.add_lt_add_of_le_of_lt
-    · exact Nat.mul_self_le_mul_self h₂
+    · exact Nat.mul_self_le_mul_self (not_lt.mp h₂)
     · exact Nat.lt_add_right _ h
   · simp at h₁
     simp only [not_lt_of_gt (lt_of_le_of_lt h₁ h), ite_false]
@@ -129,10 +128,9 @@ theorem pair_lt_pair_right (a) {b₁ b₂} (h : b₁ < b₂) : pair a b₁ < pai
   · simp only [pair, h₁, ↓reduceIte, Nat.add_assoc]
     by_cases h₂ : a < b₂; swap; · simp [h₂, h]
     simp only [h₂, ↓reduceIte]
-    simp? at h₁ says simp only [not_lt] at h₁
     rw [Nat.add_comm, Nat.add_comm _ a, Nat.add_assoc, Nat.add_lt_add_iff_left]
     rwa [Nat.add_comm, ← sqrt_lt, sqrt_add_eq]
-    exact le_trans h₁ (Nat.le_add_left _ _)
+    exact le_trans (not_lt.mp h₁) (Nat.le_add_left _ _)
 
 theorem pair_lt_max_add_one_sq (m n : ℕ) : pair m n < (max m n + 1) ^ 2 := by
   simp only [pair, Nat.pow_two, Nat.mul_add, Nat.add_mul, Nat.mul_one, Nat.one_mul, Nat.add_assoc]
@@ -150,7 +148,7 @@ theorem add_le_pair (m n : ℕ) : m + n ≤ pair m n := by
   simp only [pair, Nat.add_assoc]
   split_ifs
   · have := le_mul_self n
-    omega
+    cutsat
   · exact Nat.le_add_left _ _
 
 theorem unpair_add_le (n : ℕ) : (unpair n).1 + (unpair n).2 ≤ n :=

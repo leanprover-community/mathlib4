@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Order.Module.OrderedSMul
+import Mathlib.Algebra.Order.Nonneg.Module
 import Mathlib.Data.Real.Archimedean
 
 /-!
@@ -40,7 +40,7 @@ replace `x : ℝ` and `hx : 0 ≤ x` in the proof context with `x : ℝ≥0` whi
 of `x` with `↑x`. This tactic also works for a function `f : α → ℝ` with a hypothesis
 `hf : ∀ x, 0 ≤ f x`.
 
-## Notations
+## Notation
 
 This file defines `ℝ≥0` as a localized notation for `NNReal`.
 -/
@@ -263,7 +263,6 @@ instance {M : Type*} [AddCommMonoid M] [Module ℝ M] : Module ℝ≥0 M :=
 
 /-- An `Algebra` over `ℝ` restricts to an `Algebra` over `ℝ≥0`. -/
 instance {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
-  smul := (· • ·)
   commutes' r x := by simp [Algebra.commutes]
   smul_def' r x := by simp [← Algebra.smul_def (r : ℝ) x, smul_def]
   algebraMap := (algebraMap ℝ A).comp (toRealHom : ℝ≥0 →+* ℝ)
@@ -314,7 +313,8 @@ noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 
 @[simp, norm_cast] lemma coe_lt_coe : (r₁ : ℝ) < r₂ ↔ r₁ < r₂ := Iff.rfl
 
-@[bound] private alias ⟨_, Bound.coe_lt_coe_of_lt⟩ := coe_lt_coe
+@[gcongr] private alias ⟨_, GCongr.coe_le_coe_of_le⟩ := coe_le_coe
+@[gcongr, bound] private alias ⟨_, Bound.coe_lt_coe_of_lt⟩ := coe_lt_coe
 
 @[simp, norm_cast] lemma coe_pos : (0 : ℝ) < r ↔ 0 < r := Iff.rfl
 
@@ -348,9 +348,6 @@ theorem mk_natCast (n : ℕ) : @Eq ℝ≥0 (⟨(n : ℝ), n.cast_nonneg⟩ : ℝ
 @[simp]
 theorem _root_.Real.toNNReal_coe_nat (n : ℕ) : Real.toNNReal n = n :=
   NNReal.eq <| by simp [Real.coe_toNNReal]
-
-@[deprecated Real.toNNReal_coe_nat (since := "2025-03-12")]
-alias toNNReal_coe_nat := Real.toNNReal_coe_nat
 
 @[simp]
 theorem _root_.Real.toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
@@ -393,11 +390,11 @@ example : NoMaxOrder ℝ≥0 := by infer_instance
 
 instance instPosSMulStrictMono {α} [Preorder α] [MulAction ℝ α] [PosSMulStrictMono ℝ α] :
     PosSMulStrictMono ℝ≥0 α where
-  elim _r hr _a₁ _a₂ ha := (smul_lt_smul_of_pos_left ha (coe_pos.2 hr):)
+  smul_lt_smul_of_pos_left _r hr _a₁ _a₂ ha := (smul_lt_smul_of_pos_left ha (coe_pos.2 hr) :)
 
 instance instSMulPosStrictMono {α} [Zero α] [Preorder α] [MulAction ℝ α] [SMulPosStrictMono ℝ α] :
     SMulPosStrictMono ℝ≥0 α where
-  elim _a ha _r₁ _r₂ hr := (smul_lt_smul_of_pos_right (coe_lt_coe.2 hr) ha :)
+  smul_lt_smul_of_pos_right _a ha _r₁ _r₂ hr := (smul_lt_smul_of_pos_right (coe_lt_coe.2 hr) ha :)
 
 /-- If `a` is a nonnegative real number, then the closed interval `[0, a]` in `ℝ` is order
 isomorphic to the interval `Set.Iic a`. -/
@@ -510,12 +507,9 @@ theorem coe_min (x y : ℝ≥0) : ((min x y : ℝ≥0) : ℝ) = min (x : ℝ) (y
 theorem zero_le_coe {q : ℝ≥0} : 0 ≤ (q : ℝ) :=
   q.2
 
-instance instOrderedSMul {M : Type*} [AddCommMonoid M] [PartialOrder M]
-    [Module ℝ M] [OrderedSMul ℝ M] :
-    OrderedSMul ℝ≥0 M where
-  smul_lt_smul_of_pos hab hc := (smul_lt_smul_of_pos_left hab (NNReal.coe_pos.2 hc) :)
-  lt_of_smul_lt_smul_of_pos {_ _ c} hab _ :=
-    lt_of_smul_lt_smul_of_nonneg_left (by exact hab) (NNReal.coe_nonneg c)
+instance instIsStrictOrderedModule {M : Type*} [AddCommMonoid M] [PartialOrder M]
+    [Module ℝ M] [IsStrictOrderedModule ℝ M] :
+    IsStrictOrderedModule ℝ≥0 M := Nonneg.instIsStrictOrderedModule
 
 end NNReal
 
@@ -758,7 +752,7 @@ theorem le_inv_iff_mul_le {r p : ℝ≥0} (h : p ≠ 0) : r ≤ p⁻¹ ↔ r * p
 
 @[simp]
 theorem lt_inv_iff_mul_lt {r p : ℝ≥0} (h : p ≠ 0) : r < p⁻¹ ↔ r * p < 1 := by
-  rw [← mul_lt_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h, mul_comm]
+  rw [← mul_lt_mul_iff_right₀ (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h, mul_comm]
 
 theorem div_le_of_le_mul {a b c : ℝ≥0} (h : a ≤ b * c) : a / c ≤ b :=
   if h0 : c = 0 then by simp [h0] else (div_le_iff₀ (pos_iff_ne_zero.2 h0)).2 h

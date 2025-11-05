@@ -51,6 +51,11 @@ lemma IsPath.isHamiltonian_of_mem (hp : p.IsPath) (hp' : ∀ w, w ∈ p.support)
 lemma IsPath.isHamiltonian_iff (hp : p.IsPath) : p.IsHamiltonian ↔ ∀ w, w ∈ p.support :=
   ⟨(·.mem_support), hp.isHamiltonian_of_mem⟩
 
+/-- If a path `p` is Hamiltonian then its vertex set must be finite. -/
+protected def IsHamiltonian.fintype (hp : p.IsHamiltonian) : Fintype α where
+  elems := p.support.toFinset
+  complete x := List.mem_toFinset.mpr (mem_support hp x)
+
 section
 variable [Fintype α]
 
@@ -64,7 +69,34 @@ lemma IsHamiltonian.length_eq (hp : p.IsHamiltonian) : p.length = Fintype.card �
     rw [← length_support, ← List.sum_toFinset_count_eq_length, Finset.sum_congr rfl fun _ _ ↦ hp _,
       ← card_eq_sum_ones, hp.support_toFinset, card_univ]
 
+/-- The length of the support of a Hamiltonian path equals the number of vertices of the graph. -/
+lemma IsHamiltonian.length_support (hp : p.IsHamiltonian) : p.support.length = Fintype.card α := by
+  have : Inhabited α := ⟨a⟩
+  grind [Fintype.card_ne_zero, length_support, length_eq]
+
 end
+
+/-- If a path `p` is Hamiltonian, then `p.support.get` defines an equivalence between
+`Fin p.support.length` and `α`. -/
+@[simps!]
+def IsHamiltonian.supportGetEquiv (hp : p.IsHamiltonian) : Fin p.support.length ≃ α :=
+  p.support.getEquivOfForallCountEqOne hp
+
+/-- If a path `p` is Hamiltonian, then `p.getVert` defines an equivalence between
+`Fin p.support.length` and `α`. -/
+@[simps]
+def IsHamiltonian.getVertEquiv (hp : p.IsHamiltonian) : Fin p.support.length ≃ α where
+  toFun := p.getVert ∘ Fin.val
+  invFun := hp.supportGetEquiv.invFun
+  left_inv := p.getVert_comp_val_eq_get_support ▸ hp.supportGetEquiv.left_inv
+  right_inv := p.getVert_comp_val_eq_get_support ▸ hp.supportGetEquiv.right_inv
+
+theorem isHamiltonian_iff_support_get_bijective : p.IsHamiltonian ↔ p.support.get.Bijective :=
+  p.support.get_bijective_iff.symm
+
+theorem IsHamiltonian.getVert_surjective (hp : p.IsHamiltonian) : p.getVert.Surjective :=
+  .of_comp <| p.getVert_comp_val_eq_get_support ▸
+    isHamiltonian_iff_support_get_bijective.mp hp |>.surjective
 
 /-- A Hamiltonian cycle is a cycle that visits every vertex once. -/
 structure IsHamiltonianCycle (p : G.Walk a a) : Prop extends p.IsCycle where
@@ -84,8 +116,8 @@ lemma IsHamiltonianCycle.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective
     rcases p with (_ | ⟨y, p⟩)
     · cases hp.ne_nil rfl
     simp only [map_cons, getVert_cons_succ, tail_cons, support_copy,support_map]
-    rw [List.count_map_of_injective _ _ hf.injective, ← support_copy, ← tail_cons]
-    exact hp.isHamiltonian_tail _
+    rw [List.count_map_of_injective _ _ hf.injective]
+    simpa using hp.isHamiltonian_tail x
 
 lemma isHamiltonianCycle_isCycle_and_isHamiltonian_tail :
     p.IsHamiltonianCycle ↔ p.IsCycle ∧ p.tail.IsHamiltonian :=

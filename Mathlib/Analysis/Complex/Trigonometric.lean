@@ -336,7 +336,7 @@ theorem cos_eq (z : ℂ) : cos z = cos z.re * cosh z.im - sin z.re * sinh z.im *
 theorem sin_sub_sin : sin x - sin y = 2 * sin ((x - y) / 2) * cos ((x + y) / 2) := by
   have s1 := sin_add ((x + y) / 2) ((x - y) / 2)
   have s2 := sin_sub ((x + y) / 2) ((x - y) / 2)
-  rw [div_add_div_same, add_sub, add_right_comm, add_sub_cancel_right, add_self_div_two] at s1
+  rw [← add_div, add_sub, add_right_comm, add_sub_cancel_right, add_self_div_two] at s1
   rw [div_sub_div_same, ← sub_add, add_sub_cancel_left, add_self_div_two] at s2
   rw [s1, s2]
   ring
@@ -344,7 +344,7 @@ theorem sin_sub_sin : sin x - sin y = 2 * sin ((x - y) / 2) * cos ((x + y) / 2) 
 theorem cos_sub_cos : cos x - cos y = -2 * sin ((x + y) / 2) * sin ((x - y) / 2) := by
   have s1 := cos_add ((x + y) / 2) ((x - y) / 2)
   have s2 := cos_sub ((x + y) / 2) ((x - y) / 2)
-  rw [div_add_div_same, add_sub, add_right_comm, add_sub_cancel_right, add_self_div_two] at s1
+  rw [← add_div, add_sub, add_right_comm, add_sub_cancel_right, add_self_div_two] at s1
   rw [div_sub_div_same, ← sub_add, add_sub_cancel_left, add_self_div_two] at s2
   rw [s1, s2]
   ring
@@ -464,7 +464,7 @@ theorem sin_two_mul : sin (2 * x) = 2 * sin x * cos x := by
   rw [two_mul, sin_add, two_mul, add_mul, mul_comm]
 
 theorem cos_sq : cos x ^ 2 = 1 / 2 + cos (2 * x) / 2 := by
-  simp [cos_two_mul, div_add_div_same, mul_div_cancel_left₀, -one_div]
+  simp [cos_two_mul, ← add_div, mul_div_cancel_left₀, -one_div]
 
 theorem cos_sq' : cos x ^ 2 = 1 - sin x ^ 2 := by rw [← sin_sq_add_cos_sq x, add_sub_cancel_left]
 
@@ -771,14 +771,6 @@ nonrec theorem sinh_three_mul : sinh (3 * x) = 4 * sinh x ^ 3 + 3 * sinh x := by
 
 open IsAbsoluteValue Nat
 
-private theorem add_one_lt_exp_of_pos {x : ℝ} (hx : 0 < x) : x + 1 < exp x :=
-  (by nlinarith : x + 1 < 1 + x + x ^ 2 / 2).trans_le (quadratic_le_exp_of_nonneg hx.le)
-
-private theorem add_one_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : x + 1 ≤ exp x := by
-  rcases eq_or_lt_of_le hx with (rfl | h)
-  · simp
-  exact (add_one_lt_exp_of_pos h).le
-
 /-- `Real.cosh` is always positive -/
 theorem cosh_pos (x : ℝ) : 0 < Real.cosh x :=
   (cosh_eq x).symm ▸ half_pos (add_pos (exp_pos x) (exp_pos (-x)))
@@ -883,7 +875,7 @@ theorem sin_pos_of_pos_of_le_two {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 2) : 0 < si
   have : x / 2 ≤ 1 := (div_le_iff₀ (by simp)).mpr (by simpa)
   calc
     0 < 2 * sin (x / 2) * cos (x / 2) :=
-      mul_pos (mul_pos (by norm_num) (sin_pos_of_pos_of_le_one (half_pos hx0) this))
+      mul_pos (mul_pos (by simp) (sin_pos_of_pos_of_le_one (half_pos hx0) this))
         (cos_pos_of_le_one (by rwa [abs_of_nonneg (le_of_lt (half_pos hx0))]))
     _ = sin x := by rw [← sin_two_mul, two_mul, add_halves]
 
@@ -933,6 +925,36 @@ theorem norm_cos_add_sin_mul_I (x : ℝ) : ‖cos x + sin x * I‖ = 1 := by
 @[simp]
 theorem norm_exp_ofReal_mul_I (x : ℝ) : ‖exp (x * I)‖ = 1 := by
   rw [exp_mul_I, norm_cos_add_sin_mul_I]
+
+@[simp]
+theorem norm_exp_I_mul_ofReal (x : ℝ) : ‖exp (I * x)‖ = 1 := by
+  rw [mul_comm, norm_exp_ofReal_mul_I]
+
+@[simp]
+theorem nnnorm_exp_ofReal_mul_I (x : ℝ) : ‖exp (x * I)‖₊ = 1 := by
+  rw [← nnnorm_norm, norm_exp_ofReal_mul_I, ← NNReal.coe_eq_one]; simp
+
+@[simp]
+theorem nnnorm_exp_I_mul_ofReal (x : ℝ) : ‖exp (I * x)‖₊ = 1 := by
+  rw [← nnnorm_norm, norm_exp_I_mul_ofReal, ← NNReal.coe_eq_one]; simp
+
+@[simp]
+theorem enorm_exp_ofReal_mul_I (x : ℝ) : ‖exp (x * I)‖ₑ = 1 := by
+  simp [← ENNReal.toReal_eq_one_iff]
+
+@[simp]
+theorem enorm_exp_I_mul_ofReal (x : ℝ) : ‖exp (I * x)‖ₑ = 1 := by
+  simp [← ENNReal.toReal_eq_one_iff]
+
+theorem norm_exp_I_mul_ofReal_sub_one (x : ℝ) : ‖exp (I * x) - 1‖ = ‖2 * Real.sin (x / 2)‖ := by
+  rw [show ‖2 * Real.sin (x / 2)‖ = ‖2 * sin (x / 2)‖ by norm_cast, two_sin]
+  nth_rw 2 [← one_mul (_ - _), ← exp_zero]
+  rw [← neg_add_cancel (x / 2 * I), exp_add, mul_assoc _ _ (_ - _), mul_sub, ← exp_add, ← exp_add,
+    ← add_mul, ← add_mul]; norm_cast
+  rw [add_neg_cancel, ofReal_zero, zero_mul, exp_zero, add_halves, ← neg_mul, Complex.norm_mul,
+    norm_I, mul_one, Complex.norm_mul,
+    show -(ofReal (x / 2)) = ofReal (-x / 2) by norm_cast; exact neg_div' 2 x,
+    norm_exp_ofReal_mul_I, one_mul, ← norm_neg, neg_sub, mul_comm]
 
 theorem norm_exp (z : ℂ) : ‖exp z‖ = Real.exp z.re := by
   rw [exp_eq_exp_re_mul_sin_add_cos, Complex.norm_mul, norm_exp_ofReal, norm_cos_add_sin_mul_I,

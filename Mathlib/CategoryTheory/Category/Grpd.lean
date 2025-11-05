@@ -84,7 +84,17 @@ theorem comp_eq_comp {C D E : Grpd.{v, u}} (f : C ⟶ D) (g : D ⟶ E) : f ≫ g
   rfl
 
 /-- Converts identity in the category of groupoids to the functor identity -/
+<<<<<<< HEAD
 theorem id_eq_id {C : Grpd.{v, u}} : 𝟙 C = 𝟭 C  :=
+=======
+theorem id_eq_id {C : Grpd.{v, u}} : 𝟙 C = 𝟭 C :=
+  rfl
+
+@[deprecated (since := "2025-09-04")] alias hom_to_functor := comp_eq_comp
+
+@[deprecated "Deprecated in favor of using `CategoryTheory.Grpd.id_eq_id`" (since := "2025-09-04")]
+theorem id_to_functor {C : Grpd.{v, u}} : 𝟭 C = 𝟙 C :=
+>>>>>>> master
   rfl
 
 section Products

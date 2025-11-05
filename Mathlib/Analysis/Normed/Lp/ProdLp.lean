@@ -342,26 +342,17 @@ abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
     (fun f g => by
       rcases p.dichotomy with (rfl | h)
-      · exact prod_sup_edist_ne_top_aux f g
-      · rw [prod_edist_eq_add (zero_lt_one.trans_le h)]
-        finiteness)
+      · simp [prod_dist_eq_sup]
+      · simp only [dist, one_div, dite_eq_ite]
+        split_ifs with hp' <;> positivity)
     fun f g => by
     rcases p.dichotomy with (rfl | h)
-    · rw [prod_edist_eq_sup, prod_dist_eq_sup]
-      refine le_antisymm (sup_le ?_ ?_) ?_
-      · rw [← ENNReal.ofReal_le_iff_le_toReal (prod_sup_edist_ne_top_aux f g),
-          ← PseudoMetricSpace.edist_dist]
-        exact le_sup_left
-      · rw [← ENNReal.ofReal_le_iff_le_toReal (prod_sup_edist_ne_top_aux f g),
-          ← PseudoMetricSpace.edist_dist]
-        exact le_sup_right
-      · refine ENNReal.toReal_le_of_le_ofReal ?_ ?_
-        · simp only [le_sup_iff, dist_nonneg, or_self]
-        · simp [-ofReal_max]
-    · have h1 : edist f.fst g.fst ^ p.toReal ≠ ⊤ := by finiteness
-      have h2 : edist f.snd g.snd ^ p.toReal ≠ ⊤ := by finiteness
-      simp only [prod_edist_eq_add (zero_lt_one.trans_le h), dist_edist, ENNReal.toReal_rpow,
-        prod_dist_eq_add (zero_lt_one.trans_le h), ← ENNReal.toReal_add h1 h2]
+    · refine ENNReal.eq_of_forall_le_nnreal_iff fun r ↦ ?_
+      simp [prod_edist_eq_sup, prod_dist_eq_sup]
+    · have : 0 < p.toReal := by rw [ENNReal.toReal_pos_iff_ne_top]; rintro rfl; norm_num at h
+      simp only [prod_edist_eq_add, edist_dist, one_div, prod_dist_eq_add, this]
+      rw [← ENNReal.ofReal_rpow_of_nonneg, ENNReal.ofReal_add, ← ENNReal.ofReal_rpow_of_nonneg,
+        ← ENNReal.ofReal_rpow_of_nonneg] <;> simp [Real.rpow_nonneg, add_nonneg]
 
 attribute [local instance] WithLp.prodPseudoMetricAux
 
@@ -449,6 +440,15 @@ lemma prod_continuous_toLp : Continuous (@toLp p (α × β)) := continuous_id
 @[continuity, fun_prop]
 lemma prod_continuous_ofLp : Continuous (@ofLp p (α × β)) := continuous_id
 
+/-- `WithLp.equiv` as a homeomorphism. -/
+def homeomorphProd : WithLp p (α × β) ≃ₜ α × β where
+  toEquiv := WithLp.equiv p (α × β)
+  continuous_toFun := prod_continuous_ofLp p α β
+  continuous_invFun := prod_continuous_toLp p α β
+
+@[simp]
+lemma toEquiv_homeomorphProd : (homeomorphProd p α β).toEquiv = WithLp.equiv p (α × β) := rfl
+
 variable [T0Space α] [T0Space β]
 
 instance instProdT0Space : T0Space (WithLp p (α × β)) :=
@@ -474,6 +474,19 @@ lemma prod_uniformContinuous_toLp : UniformContinuous (@toLp p (α × β)) :=
 lemma prod_uniformContinuous_ofLp : UniformContinuous (@ofLp p (α × β)) :=
   uniformContinuous_id
 
+/-- `WithLp.equiv` as a uniform isomorphism. -/
+def uniformEquivProd : WithLp p (α × β) ≃ᵤ α × β where
+  toEquiv := WithLp.equiv p (α × β)
+  uniformContinuous_toFun := prod_uniformContinuous_ofLp p α β
+  uniformContinuous_invFun := prod_uniformContinuous_toLp p α β
+
+@[simp]
+lemma toHomeomorph_uniformEquivProd :
+    (uniformEquivProd p α β).toHomeomorph = homeomorphProd p α β := rfl
+
+@[simp]
+lemma toEquiv_uniformEquivProd : (uniformEquivProd p α β).toEquiv = WithLp.equiv p (α × β) := rfl
+
 variable [CompleteSpace α] [CompleteSpace β]
 
 instance instProdCompleteSpace : CompleteSpace (WithLp p (α × β)) :=
@@ -492,6 +505,7 @@ variable [Module 𝕜 α] [Module 𝕜 β]
 
 /-- `WithLp.equiv` as a continuous linear equivalence. -/
 -- This is not specific to products and should be generalised!
+@[simps!]
 def prodContinuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × β where
   toLinearEquiv := WithLp.linearEquiv _ _ _
   continuous_toFun := continuous_id
@@ -571,9 +585,17 @@ lemma prod_lipschitzWith_ofLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     LipschitzWith 1 (@ofLp p (α × β)) :=
   prod_lipschitzWith_ofLp_aux p α β
 
+lemma prod_antilipschitzWith_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+    AntilipschitzWith 1 (@toLp p (α × β)) :=
+  (prod_lipschitzWith_ofLp p α β).to_rightInverse (ofLp_toLp p)
+
 lemma prod_antilipschitzWith_ofLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     AntilipschitzWith ((2 : ℝ≥0) ^ (1 / p).toReal) (@ofLp p (α × β)) :=
   prod_antilipschitzWith_ofLp_aux p α β
+
+lemma prod_lipschitzWith_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+    LipschitzWith ((2 : ℝ≥0) ^ (1 / p).toReal) (@toLp p (α × β)) :=
+  (prod_antilipschitzWith_ofLp p α β).to_rightInverse (ofLp_toLp p)
 
 lemma prod_isometry_ofLp_infty [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     Isometry (@ofLp ∞ (α × β)) :=
@@ -594,6 +616,11 @@ instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedA
     · simp only [prod_dist_eq_add (zero_lt_one.trans_le h),
         prod_norm_eq_add (zero_lt_one.trans_le h), dist_eq_norm]
       rfl
+
+lemma isUniformInducing_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+    IsUniformInducing (@toLp p (α × β)) :=
+  (prod_antilipschitzWith_toLp p α β).isUniformInducing
+    (prod_lipschitzWith_toLp p α β).uniformContinuous
 
 section
 variable {β p}
@@ -822,7 +849,7 @@ variable {𝕜 p α β}
 /-- The canonical map `WithLp.equiv` between `WithLp ∞ (α × β)` and `α × β` as a linear isometric
 equivalence. -/
 def prodEquivₗᵢ : WithLp ∞ (α × β) ≃ₗᵢ[𝕜] α × β where
-  __ := WithLp.equiv p _
+  __ := WithLp.equiv ∞ _
   map_add' _f _g := rfl
   map_smul' _c _f := rfl
   norm_map' := prod_norm_toLp

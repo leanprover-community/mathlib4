@@ -61,14 +61,13 @@ lemma CFC.monotoneOn_one_sub_one_add_inv :
   rw [h_cfc_one_sub (a : A⁺¹), h_cfc_one_sub (b : A⁺¹)]
   gcongr
   rw [← CFC.rpow_neg_one_eq_cfc_inv, ← CFC.rpow_neg_one_eq_cfc_inv]
-  exact rpow_neg_one_le_rpow_neg_one (add_nonneg zero_le_one ha) (by gcongr) <|
-    isUnit_of_le isUnit_one zero_le_one <| le_add_of_nonneg_right ha
+  exact rpow_neg_one_le_rpow_neg_one (by gcongr)
 
 lemma CFC.monotoneOn_one_sub_one_add_inv_real :
     MonotoneOn (cfcₙ (fun x : ℝ => 1 - (1 + x)⁻¹)) (Set.Ici (0 : A)) := by
   intro a (ha : 0 ≤ a) b (hb : 0 ≤ b) hab
   calc _ = cfcₙ (fun x : ℝ≥0 => 1 - (1 + x)⁻¹) a := by
-          rw [cfcₙ_nnreal_eq_real _ ha]
+          rw [cfcₙ_nnreal_eq_real _ _ ha]
           refine cfcₙ_congr ?_
           intro x hx
           have hx' : 0 ≤ x := by grind
@@ -76,7 +75,7 @@ lemma CFC.monotoneOn_one_sub_one_add_inv_real :
     _ ≤ cfcₙ (fun x : ℝ≥0 => 1 - (1 + x)⁻¹) b :=
           CFC.monotoneOn_one_sub_one_add_inv ha hb hab
     _ = cfcₙ (fun x : ℝ => 1 - (1 + x)⁻¹) b := by
-          rw [cfcₙ_nnreal_eq_real _ hb]
+          rw [cfcₙ_nnreal_eq_real _ _ hb]
           refine cfcₙ_congr ?_
           intro x hx
           have hx' : 0 ≤ x := by grind

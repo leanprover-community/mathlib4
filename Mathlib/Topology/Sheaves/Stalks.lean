@@ -38,8 +38,7 @@ https://stacks.math.columbia.edu/tag/007L
 
 -/
 
-assert_not_exists OrderedCommMonoid
-
+assert_not_exists IsOrderedMonoid
 
 noncomputable section
 
@@ -384,8 +383,6 @@ section Concrete
 variable {C} {CC : C → Type v} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
 variable [instCC : ConcreteCategory.{v} C FC]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: @[ext] attribute only applies to structures or lemmas proving x = y
--- @[ext]
 theorem germ_ext (F : X.Presheaf C) {U V : Opens X} {x : X} {hxU : x ∈ U} {hxV : x ∈ V}
     (W : Opens X) (hxW : x ∈ W) (iWU : W ⟶ U) (iWV : W ⟶ V)
     {sU : ToType (F.obj (op U))} {sV : ToType (F.obj (op V))}

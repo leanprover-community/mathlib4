@@ -301,7 +301,7 @@ theorem polar_sub_right (x y y' : M) : polar Q x (y - y') = polar Q x y - polar 
 @[simp]
 theorem polar_self (x : M) : polar Q x x = 2 • Q x := by
   rw [polar, map_add_self, sub_sub, sub_eq_iff_eq_add, ← two_smul ℕ, ← two_smul ℕ, ← mul_smul]
-  norm_num
+  simp
 
 /-- `QuadraticMap.polar` as a bilinear map -/
 @[simps!]

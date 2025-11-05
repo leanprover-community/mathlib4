@@ -51,8 +51,12 @@ lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = 
   SimplicialObject.hom_ext _ _ w
 
 @[simp]
+lemma id_app (X : SSet) (n : SimplexCategoryᵒᵖ) :
+    NatTrans.app (𝟙 X) n = 𝟙 _ := rfl
+
+@[simp, reassoc]
 lemma comp_app {X Y Z : SSet} (f : X ⟶ Y) (g : Y ⟶ Z) (n : SimplexCategoryᵒᵖ) :
-    (f ≫ g).app n = f.app n ≫ g.app n := NatTrans.comp_app _ _ _
+    (f ≫ g).app n = f.app n ≫ g.app n := rfl
 
 /-- The constant map of simplicial sets `X ⟶ Y` induced by a simplex `y : Y _[0]`. -/
 @[simps]
@@ -110,6 +114,17 @@ lemma hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n 
 abbrev trunc (n m : ℕ) (h : m ≤ n := by omega) :
     SSet.Truncated n ⥤ SSet.Truncated m :=
   SimplicialObject.Truncated.trunc (Type u) n m
+
+@[simp]
+lemma id_app {n : ℕ} (X : Truncated n) (d : (SimplexCategory.Truncated n)ᵒᵖ) :
+    NatTrans.app (𝟙 X) d = 𝟙 _ :=
+  rfl
+
+@[simp, reassoc]
+lemma comp_app {n : ℕ} {X Y Z : Truncated n} (f : X ⟶ Y) (g : Y ⟶ Z)
+    (d : (SimplexCategory.Truncated n)ᵒᵖ) :
+    (f ≫ g).app d = f.app d ≫ g.app d :=
+  rfl
 
 end Truncated
 

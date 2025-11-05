@@ -128,11 +128,11 @@ theorem lt_succ_floor (a : R) : a < ⌊a⌋.succ :=
 theorem lt_floor_add_one (a : R) : a < ⌊a⌋ + 1 := by
   simpa only [Int.succ, Int.cast_add, Int.cast_one] using lt_succ_floor a
 
-@[mono]
+@[gcongr, mono]
 theorem floor_mono : Monotone (floor : R → ℤ) :=
   gc_coe_floor.monotone_u
 
-@[gcongr, bound] lemma floor_le_floor (hab : a ≤ b) : ⌊a⌋ ≤ ⌊b⌋ := floor_mono hab
+@[bound] lemma floor_le_floor (hab : a ≤ b) : ⌊a⌋ ≤ ⌊b⌋ := floor_mono hab
 
 theorem floor_pos : 0 < ⌊a⌋ ↔ 1 ≤ a := by
   rw [Int.lt_iff_add_one_le, zero_add, le_floor, cast_one]
@@ -182,8 +182,6 @@ theorem floor_add_intCast (a : R) (z : ℤ) : ⌊a + z⌋ = ⌊a⌋ + z :=
   eq_of_forall_le_iff fun a => by
     rw [le_floor, ← sub_le_iff_le_add, ← sub_le_iff_le_add, le_floor, Int.cast_sub]
 
-@[deprecated (since := "2025-04-01")] alias floor_add_int := floor_add_intCast
-
 @[simp]
 theorem floor_add_one (a : R) : ⌊a + 1⌋ = ⌊a⌋ + 1 := by
   rw [← cast_one, floor_add_intCast]
@@ -204,13 +202,9 @@ theorem le_floor_add_floor (a b : R) : ⌊a + b⌋ - 1 ≤ ⌊a⌋ + ⌊b⌋ := 
 theorem floor_intCast_add (z : ℤ) (a : R) : ⌊↑z + a⌋ = z + ⌊a⌋ := by
   simpa only [add_comm] using floor_add_intCast a z
 
-@[deprecated (since := "2025-04-01")] alias floor_int_add := floor_intCast_add
-
 @[simp]
 theorem floor_add_natCast (a : R) (n : ℕ) : ⌊a + n⌋ = ⌊a⌋ + n := by
   rw [← Int.cast_natCast, floor_add_intCast]
-
-@[deprecated (since := "2025-04-01")] alias floor_add_nat := floor_add_natCast
 
 @[simp]
 theorem floor_add_ofNat (a : R) (n : ℕ) [n.AtLeastTwo] :
@@ -221,8 +215,6 @@ theorem floor_add_ofNat (a : R) (n : ℕ) [n.AtLeastTwo] :
 theorem floor_natCast_add (n : ℕ) (a : R) : ⌊↑n + a⌋ = n + ⌊a⌋ := by
   rw [← Int.cast_natCast, floor_intCast_add]
 
-@[deprecated (since := "2025-04-01")] alias floor_nat_add := floor_natCast_add
-
 @[simp]
 theorem floor_ofNat_add (n : ℕ) [n.AtLeastTwo] (a : R) :
     ⌊ofNat(n) + a⌋ = ofNat(n) + ⌊a⌋ :=
@@ -232,13 +224,9 @@ theorem floor_ofNat_add (n : ℕ) [n.AtLeastTwo] (a : R) :
 theorem floor_sub_intCast (a : R) (z : ℤ) : ⌊a - z⌋ = ⌊a⌋ - z :=
   Eq.trans (by rw [Int.cast_neg, sub_eq_add_neg]) (floor_add_intCast _ _)
 
-@[deprecated (since := "2025-04-01")] alias floor_sub_int := floor_sub_intCast
-
 @[simp]
 theorem floor_sub_natCast (a : R) (n : ℕ) : ⌊a - n⌋ = ⌊a⌋ - n := by
   rw [← Int.cast_natCast, floor_sub_intCast]
-
-@[deprecated (since := "2025-04-01")] alias floor_sub_nat := floor_sub_natCast
 
 @[simp] theorem floor_sub_one (a : R) : ⌊a - 1⌋ = ⌊a⌋ - 1 := mod_cast floor_sub_natCast a 1
 
@@ -279,7 +267,7 @@ lemma mul_cast_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : k) : ⌊a * n
   rw [mul_comm, cast_mul_floor_div_cancel_of_pos hn]
 
 theorem natCast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : k) : ⌊n * a⌋ / n = ⌊a⌋ := by
-  simpa using cast_mul_floor_div_cancel_of_pos (n := n) (by omega) a
+  simpa using cast_mul_floor_div_cancel_of_pos (n := n) (by cutsat) a
 
 theorem mul_natCast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) {a : k} : ⌊a * n⌋ / n = ⌊a⌋ := by
   rw [mul_comm, natCast_mul_floor_div_cancel hn]
@@ -313,10 +301,7 @@ theorem fract_sub_self (a : R) : fract a - a = -⌊a⌋ :=
   sub_sub_cancel_left _ _
 
 theorem fract_add (a b : R) : ∃ z : ℤ, fract (a + b) - fract a - fract b = z :=
-  ⟨⌊a⌋ + ⌊b⌋ - ⌊a + b⌋, by
-    unfold fract
-    simp only [sub_eq_add_neg, neg_add_rev, neg_neg, cast_add, cast_neg]
-    abel⟩
+  ⟨⌊a⌋ + ⌊b⌋ - ⌊a + b⌋, by unfold fract; grind⟩
 
 variable [IsStrictOrderedRing R]
 
@@ -324,14 +309,10 @@ variable [IsStrictOrderedRing R]
 theorem fract_add_intCast (a : R) (m : ℤ) : fract (a + m) = fract a := by
   rw [fract]
   simp
-@[deprecated (since := "2025-04-01")] alias fract_add_int := fract_add_intCast
-
 @[simp]
 theorem fract_add_natCast (a : R) (m : ℕ) : fract (a + m) = fract a := by
   rw [fract]
   simp
-@[deprecated (since := "2025-04-01")] alias fract_add_nat := fract_add_natCast
-
 @[simp]
 theorem fract_add_one (a : R) : fract (a + 1) = fract a := mod_cast fract_add_natCast a 1
 
@@ -343,13 +324,9 @@ theorem fract_add_ofNat (a : R) (n : ℕ) [n.AtLeastTwo] :
 @[simp]
 theorem fract_intCast_add (m : ℤ) (a : R) : fract (↑m + a) = fract a := by
   rw [add_comm, fract_add_intCast]
-@[deprecated (since := "2025-04-01")] alias fract_int_add := fract_intCast_add
-
 @[simp]
 theorem fract_natCast_add (n : ℕ) (a : R) : fract (↑n + a) = fract a := by
   rw [add_comm, fract_add_natCast]
-@[deprecated (since := "2025-04-01")] alias fract_nat_add := fract_natCast_add
-
 @[simp]
 theorem fract_one_add (a : R) : fract (1 + a) = fract a := mod_cast fract_natCast_add 1 a
 
@@ -362,14 +339,10 @@ theorem fract_ofNat_add (n : ℕ) [n.AtLeastTwo] (a : R) :
 theorem fract_sub_intCast (a : R) (m : ℤ) : fract (a - m) = fract a := by
   rw [fract]
   simp
-@[deprecated (since := "2025-04-01")] alias fract_sub_int := fract_sub_intCast
-
 @[simp]
 theorem fract_sub_natCast (a : R) (n : ℕ) : fract (a - n) = fract a := by
   rw [fract]
   simp
-@[deprecated (since := "2025-04-01")] alias fract_sub_nat := fract_sub_natCast
-
 @[simp]
 theorem fract_sub_one (a : R) : fract (a - 1) = fract a := mod_cast fract_sub_natCast a 1
 
@@ -484,8 +457,6 @@ theorem fract_mul_natCast (a : R) (b : ℕ) : ∃ z : ℤ, fract a * b - fract (
     use z - y
     rw [Int.cast_sub, ← hz, ← hy]
     abel
-
-@[deprecated (since := "2025-04-01")] alias fract_mul_nat := fract_mul_natCast
 
 theorem preimage_fract (s : Set R) :
     fract ⁻¹' s = ⋃ m : ℤ, (fun x => x - (m : R)) ⁻¹' (s ∩ Ico (0 : R) 1) := by
@@ -636,13 +607,9 @@ theorem ceil_ofNat (n : ℕ) [n.AtLeastTwo] : ⌈(ofNat(n) : R)⌉ = ofNat(n) :=
 theorem ceil_add_intCast (a : R) (z : ℤ) : ⌈a + z⌉ = ⌈a⌉ + z := by
   rw [← neg_inj, neg_add', ← floor_neg, ← floor_neg, neg_add', floor_sub_intCast]
 
-@[deprecated (since := "2025-04-01")] alias ceil_add_int := ceil_add_intCast
-
 @[simp]
 theorem ceil_add_natCast (a : R) (n : ℕ) : ⌈a + n⌉ = ⌈a⌉ + n := by
   rw [← Int.cast_natCast, ceil_add_intCast]
-
-@[deprecated (since := "2025-04-01")] alias ceil_add_nat := ceil_add_natCast
 
 @[simp]
 theorem ceil_add_one (a : R) : ⌈a + 1⌉ = ⌈a⌉ + 1 := by
@@ -657,14 +624,10 @@ theorem ceil_add_ofNat (a : R) (n : ℕ) [n.AtLeastTwo] :
 theorem ceil_sub_intCast (a : R) (z : ℤ) : ⌈a - z⌉ = ⌈a⌉ - z :=
   Eq.trans (by rw [Int.cast_neg, sub_eq_add_neg]) (ceil_add_intCast _ _)
 
-@[deprecated (since := "2025-04-01")] alias ceil_sub_int := ceil_sub_intCast
-
 @[simp]
 theorem ceil_sub_natCast (a : R) (n : ℕ) : ⌈a - n⌉ = ⌈a⌉ - n := by
   convert ceil_sub_intCast a n using 1
   simp
-
-@[deprecated (since := "2025-04-01")] alias ceil_sub_nat := ceil_sub_natCast
 
 @[simp]
 theorem ceil_sub_one (a : R) : ⌈a - 1⌉ = ⌈a⌉ - 1 := by

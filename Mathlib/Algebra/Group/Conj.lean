@@ -85,9 +85,9 @@ theorem conj_mul {a b c : α} : b * a * b⁻¹ * (b * c * b⁻¹) = b * (a * c) 
 
 @[simp]
 theorem conj_pow {i : ℕ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
-  induction' i with i hi
-  · simp
-  · simp [pow_succ, hi]
+  induction i with
+  | zero => simp
+  | succ i hi => simp [pow_succ, hi]
 
 @[simp]
 theorem conj_zpow {i : ℤ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
@@ -164,7 +164,7 @@ theorem map_surjective {f : α →* β} (hf : Function.Surjective f) :
   obtain ⟨a, rfl⟩ := hf b
   exact ⟨ConjClasses.mk a, rfl⟩
 
-library_note "slow-failing instance priority"/--
+library_note2 «slow-failing instance priority» /--
 Certain instances trigger further searches when they are considered as candidate instances;
 these instances should be assigned a priority lower than the default of 1000 (for example, 900).
 

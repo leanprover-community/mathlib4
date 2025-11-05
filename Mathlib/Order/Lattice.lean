@@ -32,7 +32,7 @@ of `sup` over `inf`, on the left or on the right.
 
 * `DistribLattice`: a type class for distributive lattices.
 
-## Notations
+## Notation
 
 * `a ⊔ b`: the supremum or join of `a` and `b`
 * `a ⊓ b`: the infimum or meet of `a` and `b`
@@ -518,6 +518,14 @@ theorem sup_le_inf : a ⊔ b ≤ a ⊓ b ↔ a = b := by simp [le_antisymm_iff, 
 @[simp] lemma sup_eq_inf : a ⊔ b = a ⊓ b ↔ a = b := eq_comm.trans inf_eq_sup
 @[simp] lemma inf_lt_sup : a ⊓ b < a ⊔ b ↔ a ≠ b := by rw [inf_le_sup.lt_iff_ne, Ne, inf_eq_sup]
 
+@[simp] lemma inf_left_le_sup_right : (a ⊓ b) ≤ (b ⊔ c) := le_trans inf_le_right le_sup_left
+
+@[simp] lemma inf_right_le_sup_right : (b ⊓ a) ≤ (b ⊔ c) := le_trans inf_le_left le_sup_left
+
+@[simp] lemma inf_left_le_sup_left : (a ⊓ b) ≤ (c ⊔ b) := le_trans inf_le_right le_sup_right
+
+@[simp] lemma inf_right_le_sup_left : (b ⊓ a) ≤ (c ⊔ b) := le_trans inf_le_left le_sup_right
+
 lemma inf_eq_and_sup_eq_iff : a ⊓ b = c ∧ a ⊔ b = c ↔ a = c ∧ b = c := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · obtain rfl := sup_eq_inf.1 (h.2.trans h.1.symm)
@@ -780,6 +788,7 @@ instance [∀ i, Max (α' i)] : Max (∀ i, α' i) :=
 theorem sup_apply [∀ i, Max (α' i)] (f g : ∀ i, α' i) (i : ι) : (f ⊔ g) i = f i ⊔ g i :=
   rfl
 
+@[push ←]
 theorem sup_def [∀ i, Max (α' i)] (f g : ∀ i, α' i) : f ⊔ g = fun i => f i ⊔ g i :=
   rfl
 
@@ -790,6 +799,7 @@ instance [∀ i, Min (α' i)] : Min (∀ i, α' i) :=
 theorem inf_apply [∀ i, Min (α' i)] (f g : ∀ i, α' i) (i : ι) : (f ⊓ g) i = f i ⊓ g i :=
   rfl
 
+@[push ←]
 theorem inf_def [∀ i, Min (α' i)] (f g : ∀ i, α' i) : f ⊓ g = fun i => f i ⊓ g i :=
   rfl
 
@@ -1259,8 +1269,7 @@ instance [DistribLattice α] : DistribLattice (ULift.{v} α) :=
   ULift.down_injective.distribLattice _ down_sup down_inf
 
 instance [LinearOrder α] : LinearOrder (ULift.{v} α) :=
-  LinearOrder.liftWithOrd ULift.down ULift.down_injective down_sup down_inf
-    fun _x _y => (down_compare _ _).symm
+  ULift.down_injective.linearOrder _ down_le down_lt down_inf down_sup down_compare
 
 end ULift
 
