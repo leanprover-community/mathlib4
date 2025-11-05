@@ -81,7 +81,6 @@ lemma arithGeom_same_eq_mul_div' (ha : a ≠ 1) (n : ℕ) :
   rw [arithGeom_eq ha n]
   field [sub_ne_zero.mpr ha.symm]
 
-
 lemma arithGeom_same_eq_mul_div (ha : a ≠ 1) (n : ℕ) :
     arithGeom a b b n = b * (a ^ (n + 1) - 1) / (a - 1) := by
   rw [arithGeom_same_eq_mul_div' ha n, ← neg_sub _ a, div_neg,
