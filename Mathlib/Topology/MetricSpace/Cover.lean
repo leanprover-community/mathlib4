@@ -45,8 +45,12 @@ def IsCover (ε : ℝ≥0) (s N : Set X) : Prop := SetRel.IsCover {(x, y) | edis
 
 @[simp] protected nonrec lemma IsCover.empty : IsCover ε ∅ N := .empty
 
+@[simp] lemma isCover_empty_right : IsCover ε s ∅ ↔ s = ∅ := by simp [IsCover]
+
 protected nonrec lemma IsCover.nonempty (hsN : IsCover ε s N) (hs : s.Nonempty) : N.Nonempty :=
   hsN.nonempty hs
+
+@[simp] lemma IsCover.self (ε : ℝ≥0) (s : Set X) : IsCover ε s s := fun a ha ↦ ⟨a, ha, by simp⟩
 
 nonrec lemma IsCover.mono (hN : N₁ ⊆ N₂) (h₁ : IsCover ε s N₁) : IsCover ε s N₂ := h₁.mono hN
 
