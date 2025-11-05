@@ -439,31 +439,16 @@ end lifting_property
 
 section injective_products
 
-theorem pi (R : Type*) [Ring R] {ι : Type*} (M : ι → Type*)
+universe w in
+instance Module.Injective.pi
+    (R : Type u) [Ring R] {ι : Type w} (M : ι → Type v) [Small.{v} R]
     [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
     [∀ i, Module.Injective R (M i)] :
-    Module.Injective R (∀ i, M i) := by
-  constructor
-  intros X Y _ _ _ _ f hf g
-  -- For each i, extract the extension using `choose`
-  have h_family : ∀ i, ∃ g_i_ext : Y →ₗ[R] M i,
-      g_i_ext ∘ₗ f = (LinearMap.proj i).comp g := by
-    intro i
-    exact (
-      Module.Injective.extension_property (R := R) (M := M i)
-        (P := X) (P' := Y) (f := f) (hf := hf)
-        (g := (LinearMap.proj i).comp g)
-    )
-  choose g_i_ext hgi_eq using h_family
-
-  -- Build the extension into the product
-  let g_ext : Y →ₗ[R] ∀ i, M i := LinearMap.pi fun i => g_i_ext i
-
-  use g_ext
-  intro x
-
-  -- Pointwise equality for each component
-  funext i
-  exact congr_fun (congr_arg DFunLike.coe (hgi_eq i)) x
+    Module.Injective R (∀ i, M i) :=
+  ⟨fun X Y _ _ _ _ f hf g ↦ by
+    choose l hl using fun i ↦ extension_property R _ _ _ f hf ((LinearMap.proj i).comp g)
+    refine ⟨LinearMap.pi l, fun x ↦ ?_⟩
+    ext i
+    exact DFunLike.congr_fun (hl i) x⟩
 
 end injective_products
