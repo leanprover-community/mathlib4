@@ -134,12 +134,12 @@ theorem trunc_derivative' (f : R⟦X⟧) (n : ℕ) :
 
 end CommutativeSemiring
 
-/- In the next lemma, we use `smul_right_inj`, which requires not only `NoZeroSMulDivisors ℕ R`, but
+/- In the next lemma, we use `smul_right_inj`, which requires not only `IsAddTorsionFree R`, but
 also cancellation of addition in `R`. For this reason, the next lemma is stated in the case that `R`
 is a `CommRing`. -/
 
 /-- If `f` and `g` have the same constant term and derivative, then they are equal. -/
-theorem derivative.ext {R} [CommRing R] [NoZeroSMulDivisors ℕ R] {f g} (hD : d⁄dX R f = d⁄dX R g)
+theorem derivative.ext {R} [CommRing R] [IsAddTorsionFree R] {f g} (hD : d⁄dX R f = d⁄dX R g)
     (hc : constantCoeff f = constantCoeff g) : f = g := by
   ext n
   cases n with
