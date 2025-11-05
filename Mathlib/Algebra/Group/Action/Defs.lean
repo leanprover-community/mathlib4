@@ -605,11 +605,17 @@ lemma IsLeftCancelSMul.left_cancel {G P} [SMul G P] [IsLeftCancelSMul G P] (a : 
 instance [LeftCancelMonoid G] : IsLeftCancelSMul G G where
   left_cancel' := IsLeftCancelMul.mul_left_cancel
 
-/-- A vector addition is cancellative if it is pointwise injective on the left and right. -/
+/-- A vector addition is cancellative if it is pointwise injective on the left and right.
+
+A group action is cancellative in this sense if and only if it is **free**.
+See `isCancelVAdd_iff_eq_zero_of_vadd_eq` for a more familiar condition. -/
 class IsCancelVAdd [VAdd G P] : Prop extends IsLeftCancelVAdd G P where
   protected right_cancel' : ∀ (a b : G) (c : P), a +ᵥ c = b +ᵥ c → a = b
 
-/-- A scalar multiplication is cancellative if it is pointwise injective on the left and right. -/
+/-- A scalar multiplication is cancellative if it is pointwise injective on the left and right.
+
+A group action is cancellative in this sense if and only if it is **free**.
+See `isCancelSMul_iff_eq_one_of_smul_eq` for a more familiar condition. -/
 @[to_additive]
 class IsCancelSMul [SMul G P] : Prop extends IsLeftCancelSMul G P where
   protected right_cancel' : ∀ (a b : G) (c : P), a • c = b • c → a = b
@@ -621,6 +627,11 @@ lemma IsCancelSMul.left_cancel {G P} [SMul G P] [IsCancelSMul G P] (a : G) (b c 
 @[to_additive]
 lemma IsCancelSMul.right_cancel {G P} [SMul G P] [IsCancelSMul G P] (a b : G) (c : P) :
     a • c = b • c → a = b := IsCancelSMul.right_cancel' a b c
+
+@[to_additive]
+lemma IsCancelSMul.eq_one_of_smul {G P} [Monoid G] [MulAction G P] [IsCancelSMul G P] {g : G}
+    {x : P} (h : g • x = x) : g = 1 :=
+  IsCancelSMul.right_cancel g 1 x ((one_smul G x).symm ▸ h)
 
 @[to_additive]
 instance [CancelMonoid G] : IsCancelSMul G G where
