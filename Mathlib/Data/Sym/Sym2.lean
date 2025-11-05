@@ -544,7 +544,7 @@ theorem fromRel_mono_iff (sym₁ : Symmetric r₁) (sym₂ : Symmetric r₂) :
 alias ⟨_, fromRel_mono⟩ := fromRel_mono_iff
 
 /-- `fromRel` induces an order embedding from symmetric relations to `Sym2` sets. -/
-def fromRel_orderEmbedding : { r : α → α → Prop // Symmetric r } ↪o Set (Sym2 α) :=
+def fromRelOrderEmbedding : { r : α → α → Prop // Symmetric r } ↪o Set (Sym2 α) :=
   OrderEmbedding.ofMapLEIff (fun r ↦ Sym2.fromRel r.prop) fun _ _ ↦ fromRel_mono_iff ..
 
 theorem fromRel_bot : fromRel (fun (_ _ : α) z => z : Symmetric ⊥) = ∅ := by
