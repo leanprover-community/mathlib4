@@ -123,7 +123,8 @@ theorem HasTemperateGrowth.add (hf : f.HasTemperateGrowth) (hg : g.HasTemperateG
   obtain ⟨k₁, h₁⟩ := hf.2 n
   obtain ⟨k₂, h₂⟩ := hg.2 n
   use max k₁ k₂
-  rw [iteratedFDeriv_add (hf.1.of_le (le_of_lt trivial)) (hg.1.of_le (le_of_lt trivial))]
+  rw [iteratedFDeriv_add (hf.1.of_le (WithTop.coe_le_coe.mpr (le_of_lt (ENat.coe_lt_top _))))
+    (hg.1.of_le (WithTop.coe_le_coe.mpr (le_of_lt (ENat.coe_lt_top _))))]
   have : 1 ≤ᶠ[⊤] fun (x : E) ↦ 1 + ‖x‖ := by
     filter_upwards with _ using (le_add_iff_nonneg_right _).mpr (by positivity)
   exact (h₁.trans (IsBigO.pow_of_le_right this (k₁.le_max_left k₂))).add
