@@ -9,7 +9,7 @@ import Mathlib.Geometry.Manifold.PartitionOfUnity
 /-!
 # Approximation of continuous functions by smooth functions
 
-In this file, we deduce from the existence of smooth partitions of unity that any continuous maps
+In this file, we deduce from the existence of smooth partitions of unity that any continuous map
 from a real σ-compact finite dimensional manifold `M` to a real normed space `F` can be
 approximated uniformly by smooth functions.
 
@@ -21,7 +21,7 @@ More precisely, we strengthen this result in three ways :
   smooth functions vanishing at infinity).
 * if the original map `f` already has the desired regularity on some neighborhood of a closed
   set `M`, one can choose an approximation which stays equal to `f` on `S`. This allows
-  for some extra-control in a setting with iterated approximations.
+  for some additional control in a setting with iterated approximations.
 * finally, one may prescribe the approximation to vanish wherever the original function vanishes.
   For example, this shows that continuous functions supported on some compact set `K` may be
   approximated uniformly by smooth function supported on the **same** compact `K`.
@@ -35,7 +35,7 @@ More precisely, we strengthen this result in three ways :
   in the neighborhood of which `f` is already `C^n`.
 * `Continuous.exists_msmooth_approx`: a simpler version of the previous result when one does not
   care about prescribing points with `g x = f x`. One still gets `support g ⊆ support f` for free,
-  so we put in in the conclusion.
+  so we put it in the conclusion.
 * `Continuous.exists_contDiff_approx_and_eqOn`, `Continuous.exists_msmooth_approx`: specializations
   of the previous results when `M = E` is a normed space.
 
@@ -48,7 +48,7 @@ With minor work, we could strenghten the statements in the following ways:
 
 This file depends on the manifold library, which may be annoying is you only need the normed space
 statements. **Please do not let this refrain you from using them** if they apply naturally in your
-context : if this is too much of a problem, you should complain on Zulip, so that we get more data
+context: if this is too much of a problem, you should complain on Zulip, so that we get more data
 about the need for a non-manifold version of `SmoothPartitionOfUnity`.
 
 ## TODO
