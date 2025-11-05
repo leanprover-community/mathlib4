@@ -696,13 +696,9 @@ lemma writtenInExtChartAt_sumSwap_eventuallyEq_id :
       exact (chartAt H x).open_target.mem_nhds (by simp)
 
 theorem hasMFDerivWithinAt_sumSwap :
-    HasMFDerivWithinAt I I (@Sum.swap M M') s p
-      (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
+    HasMFDerivWithinAt I I (@Sum.swap M M') s p (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
   refine ⟨by fun_prop, ?_⟩
-  set U := (extChartAt I p).symm ⁻¹' s ∩ range I
-  have : HasFDerivWithinAt id (ContinuousLinearMap.id 𝕜 _) U (((chartAt H p).extend I) p) :=
-    hasFDerivWithinAt_id _ U
-  apply this.congr_of_eventuallyEq
+  apply (hasFDerivWithinAt_id _ <| (extChartAt I p).symm ⁻¹' s ∩ range I).congr_of_eventuallyEq
   · exact writtenInExtChartAt_sumSwap_eventuallyEq_id.filter_mono <|
       nhdsWithin_mono _ inter_subset_right
   · simp only [mfld_simps]
