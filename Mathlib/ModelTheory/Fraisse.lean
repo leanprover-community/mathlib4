@@ -420,7 +420,7 @@ theorem isFraisseLimit_of_countable_infinite
     have : Finite S := hS.finite
     have : Infinite { x // x ∉ S } := ((Set.toFinite _).infinite_compl).to_subtype
     have : Finite f.toHom.range := (((Substructure.fg_iff_structure_fg S).1 hS).range _).finite
-    have : Infinite { x // x ∉ f.toHom.range } := ((Set.toFinite _).infinite_compl ).to_subtype
+    have : Infinite { x // x ∉ f.toHom.range } := ((Set.toFinite _).infinite_compl).to_subtype
     refine ⟨StrongHomClass.toEquiv (f.equivRange.subtypeCongr nonempty_equiv_of_countable.some), ?_⟩
     ext x
     simp [Equiv.subtypeCongr]

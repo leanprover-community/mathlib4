@@ -31,6 +31,7 @@ namespace Function.FromTypes
 
 open Matrix (vecCons vecHead vecTail vecEmpty)
 
+set_option linter.style.commandStart false in -- TODO decide on the right style
 /-- Uncurry all the arguments of `Function.FromTypes p τ` to get
 a function from a tuple.
 
@@ -40,6 +41,7 @@ def uncurry : {n : ℕ} → {p : Fin n → Type u} → {τ : Type u} →
   | 0    , _, _, f => fun _    => f
   | _ + 1, _, _, f => fun args => (f (args 0)).uncurry (args ∘' Fin.succ)
 
+set_option linter.style.commandStart false in -- TODO decide on the right style
 /-- Curry all the arguments of `Function.FromTypes p τ` to get a function from a tuple. -/
 def curry : {n : ℕ} → {p : Fin n → Type u} → {τ : Type u} →
     (((i : Fin n) → p i) → τ) → Function.FromTypes p τ

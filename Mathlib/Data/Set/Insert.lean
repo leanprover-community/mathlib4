@@ -383,6 +383,7 @@ theorem Nonempty.subset_pair_iff_eq (hs : s.Nonempty) :
 
 /-! ### Powerset -/
 
+set_option linter.style.commandStart false in -- TODO decide about this!
 /-- The powerset of a singleton contains only `∅` and the singleton itself. -/
 theorem powerset_singleton (x : α) : 𝒫({x} : Set α) = {∅, {x}} := by grind
 

@@ -67,7 +67,7 @@ noncomputable def functorEnrichedHomCoyonedaObjEquiv (M : A) (F G : Cᵒᵖ ⥤ 
       congr 1
       let α : Over.mk j'.hom.unop ⟶ Over.mk j.hom.unop := Over.homMk φ.right.unop
         (Quiver.Hom.op_inj (by simp))
-      simpa using (g.naturality α.op).symm )
+      simpa using (g.naturality α.op).symm)
   left_inv f := by
     dsimp
     ext j

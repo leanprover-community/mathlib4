@@ -382,6 +382,7 @@ theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
     suffices n.minFac = 1 by simp_all
     exact (le_antisymm (Nat.succ_le_of_lt lb) (Nat.lt_succ_iff.mp h')).symm
 
+set_option linter.style.commandStart false in -- TODO decide about this!
 theorem factors_lemma {k} : (k + 2) / minFac (k + 2) < k + 2 :=
   div_lt_self (Nat.zero_lt_succ _) (minFac_prime (by
       apply Nat.ne_of_gt

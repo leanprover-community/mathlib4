@@ -33,6 +33,7 @@ open Nat
 
 universe u
 
+set_option linter.style.commandStart false in -- TODO fix the linter
 /-- An alternate definition of `Fin n` defined as an inductive type instead of a subtype of `ℕ`. -/
 inductive Fin2 : ℕ → Type
   /-- `0` as a member of `Fin (n + 1)` (`Fin 0` is empty) -/
@@ -121,7 +122,7 @@ def castSucc {n} : Fin2 n → Fin2 (n + 1)
 
 /-- The greatest value of `Fin2 (n+1)`. -/
 def last : {n : Nat} → Fin2 (n + 1)
-  | 0   => fz
+  | 0 => fz
   | n + 1 => fs (@last n)
 
 /-- Maps `0` to `n-1`, `1` to `n-2`, ..., `n-1` to `0`. -/
@@ -146,7 +147,7 @@ instance : Inhabited (Fin2 1) :=
   ⟨fz⟩
 
 instance instFintype : ∀ n, Fintype (Fin2 n)
-  | 0   => ⟨∅, Fin2.elim0⟩
+  | 0 => ⟨∅, Fin2.elim0⟩
   | n + 1 =>
     let ⟨elems, compl⟩ := instFintype n
     { elems    := elems.map ⟨Fin2.fs, @fs.inj _⟩ |>.cons .fz (by simp)

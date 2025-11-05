@@ -254,6 +254,7 @@ theorem neg_eq_bot_iff {x : EReal} : -x = ⊥ ↔ x = ⊤ :=
 theorem neg_eq_zero_iff {x : EReal} : -x = 0 ↔ x = 0 :=
   neg_injective.eq_iff' neg_zero
 
+set_option linter.style.commandStart false in -- TODO investigate and fix!
 theorem neg_strictAnti : StrictAnti (- · : EReal → EReal) :=
   WithBot.strictAnti_iff.2 ⟨WithTop.strictAnti_iff.2
     ⟨coe_strictMono.comp_strictAnti fun _ _ => neg_lt_neg, fun _ => bot_lt_coe _⟩,

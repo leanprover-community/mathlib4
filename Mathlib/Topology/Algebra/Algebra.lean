@@ -285,7 +285,7 @@ theorem id_apply (x : A) : ContinuousAlgHom.id R A x = x := rfl
 theorem coe_id : ((ContinuousAlgHom.id R A) : A →ₐ[R] A) = AlgHom.id R A:= rfl
 
 @[simp, norm_cast]
-theorem coe_id' : ⇑(ContinuousAlgHom.id R A ) = _root_.id := rfl
+theorem coe_id' : ⇑(ContinuousAlgHom.id R A) = _root_.id := rfl
 
 @[simp, norm_cast]
 theorem coe_eq_id {f : A →A[R] A} :

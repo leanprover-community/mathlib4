@@ -155,6 +155,7 @@ instance coyoneda_full : (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁).Full :=
 instance coyoneda_faithful : (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁).Faithful :=
   fullyFaithful.faithful
 
+set_option linter.style.commandStart false in -- TODO investigate and fix!
 /-- Extensionality via Coyoneda. The typical usage would be
 ```
 -- Goal is `X ≅ Y`

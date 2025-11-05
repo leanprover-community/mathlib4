@@ -87,7 +87,7 @@ unit is an isomorphism.
 -/
 def unitAsIsoOfIso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : 𝟭 C ≅ L ⋙ R where
   hom := adj.unit
-  inv :=  i.hom ≫ (adj.toMonad.transport i).μ
+  inv := i.hom ≫ (adj.toMonad.transport i).μ
   hom_inv_id := by
     rw [← assoc]
     ext X

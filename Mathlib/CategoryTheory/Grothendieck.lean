@@ -349,7 +349,7 @@ def mapWhiskerRightAsSmallFunctor (α : F ⟶ G) :
           compAsSmallFunctorEquivalenceFunctor_map_fiber, eqToHom_comp_iff, comp_eqToHom_iff]
         simp only [conj_eqToHom_iff_heq']
         rw [G.map_id]
-        simp )
+        simp)
 
 end
 

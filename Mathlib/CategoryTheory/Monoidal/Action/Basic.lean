@@ -93,6 +93,7 @@ scoped notation "αₗ " => MonoidalLeftActionStruct.actionAssocIso
 
 /-- Notation for `actionUnitIso`, the structural isomorphism `𝟙_ C ⊙ₗ - ≅ -`. -/
 scoped notation "λₗ " => MonoidalLeftActionStruct.actionUnitIso
+set_option linter.style.commandStart false in -- TODO decide on the right style
 /-- Notation for `actionUnitIso`, the structural isomorphism `𝟙_ C ⊙ₗ - ≅ -`,
 allowing one to specify the acting category. -/
 scoped notation "λₗ["J"]" => MonoidalLeftActionStruct.actionUnitIso (C := J)
@@ -407,6 +408,7 @@ scoped notation "αᵣ " => MonoidalRightActionStruct.actionAssocIso
 
 /-- Notation for `actionUnitIso`, the structural isomorphism `- ⊙ᵣ 𝟙_ C  ≅ -`. -/
 scoped notation "ρᵣ " => MonoidalRightActionStruct.actionUnitIso
+set_option linter.style.commandStart false in -- TODO fix linter!
 /-- Notation for `actionUnitIso`, the structural isomorphism `- ⊙ᵣ 𝟙_ C  ≅ -`,
 allowing one to specify the acting category. -/
 scoped notation "ρᵣ["J"]" => MonoidalRightActionStruct.actionUnitIso (C := J)

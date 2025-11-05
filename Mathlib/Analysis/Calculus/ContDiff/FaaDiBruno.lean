@@ -811,7 +811,7 @@ def compAlongOrderedFinpartitionₗ :
         ext v
         simp [applyOrderedFinpartition_update_left])
   map_add' _ _ := rfl
-  map_smul' _ _ :=  rfl
+  map_smul' _ _ := rfl
 
 variable (𝕜 E F G) in
 /-- Bundled version of `compAlongOrderedFinpartition`, depending continuously linearly on `f`

@@ -62,8 +62,8 @@ composition monoidal structure. -/
 @[simps!]
 instance curriedActionMopMonoidal : (curriedActionMop C D).Monoidal where
   ε := .mop <| (actionUnitNatIso C D).inv
-  μ _ _ := .mop <| {app _ := αₗ _ _ _|>.inv}
-  δ _ _ := .mop <| {app _ := αₗ _ _ _|>.hom}
+  μ _ _ := .mop <| {app _ := αₗ _ _ _ |>.inv}
+  δ _ _ := .mop <| {app _ := αₗ _ _ _ |>.hom}
   η := .mop <| (actionUnitNatIso C D).hom
   associativity c₁ c₂ c₃ := by
     apply (mopEquiv (D ⥤ D)).fullyFaithfulInverse.map_injective
@@ -157,8 +157,8 @@ is monoidal, where `D ⥤ D` has the composition monoidal structure. -/
 instance curriedActionMonoidal [MonoidalRightAction C D] :
     (curriedAction C D).Monoidal where
   ε := (actionUnitNatIso C D).inv
-  μ _ _ := {app _ := αᵣ _ _ _|>.inv}
-  δ _ _ := {app _ := αᵣ _ _ _|>.hom}
+  μ _ _ := {app _ := αᵣ _ _ _ |>.inv}
+  δ _ _ := {app _ := αᵣ _ _ _ |>.hom}
   η := (actionUnitNatIso C D).hom
   associativity c₁ c₂ c₃ := by
     ext d

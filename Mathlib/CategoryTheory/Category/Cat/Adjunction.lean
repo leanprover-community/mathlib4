@@ -47,7 +47,7 @@ def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects :=
       naturality := fun _ _ _  ↦  Functor.hext (fun _ ↦ rfl)
         (by intro ⟨_⟩ ⟨_⟩ f
             obtain rfl := Discrete.eq_of_hom f
-            cat_disch ) } }
+            cat_disch) } }
 
 /-- The connected components functor -/
 def connectedComponents : Cat.{v, u} ⥤ Type u where

@@ -39,7 +39,7 @@ variable [BraidedCategory C]
 noncomputable instance : Lifting₂ L' L' W W ((curriedTensor C).flip ⋙ (whiskeringRight C C
     (LocalizedMonoidal L W ε)).obj L') (tensorBifunctor L W ε).flip :=
   inferInstanceAs (Lifting₂ L' L' W W (((curriedTensor C) ⋙ (whiskeringRight C C
-    (LocalizedMonoidal L W ε)).obj L')).flip (tensorBifunctor L W ε).flip )
+    (LocalizedMonoidal L W ε)).obj L')).flip (tensorBifunctor L W ε).flip)
 
 /-- The braiding on the localized category as a natural isomorphism of bifunctors. -/
 noncomputable def braidingNatIso : tensorBifunctor L W ε ≅ (tensorBifunctor L W ε).flip :=

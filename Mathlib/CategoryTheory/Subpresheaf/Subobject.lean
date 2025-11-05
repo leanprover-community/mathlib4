@@ -33,7 +33,7 @@ noncomputable def equivalenceMonoOver : Subpresheaf F ≌ MonoOver F where
     { obj X := Subpresheaf.range X.arrow
       map {X Y} f := homOfLE (by
         rw [← MonoOver.w f]
-        apply range_comp_le ) }
+        apply range_comp_le) }
   unitIso := NatIso.ofComponents (fun A ↦ eqToIso (by simp))
   counitIso := NatIso.ofComponents
     (fun X ↦ MonoOver.isoMk ((asIso (toRange X.arrow)).symm))

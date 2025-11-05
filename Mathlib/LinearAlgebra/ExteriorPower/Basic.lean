@@ -163,7 +163,7 @@ are equal. -/
 @[ext]
 lemma linearMap_ext {f : ⋀[R]^n M →ₗ[R] N} {g : ⋀[R]^n M →ₗ[R] N}
     (heq : f.compAlternatingMap (ιMulti R n) = g.compAlternatingMap (ιMulti R n)) : f = g :=
-  (presentation R n M).postcomp_injective (by ext f; apply DFunLike.congr_fun heq )
+  (presentation R n M).postcomp_injective (by ext f; apply DFunLike.congr_fun heq)
 
 /-- The linear equivalence between `n`-fold alternating maps from `M` to `N` and linear maps from
 `⋀[R]^n M` to `N`: this is the universal property of the `n`th exterior power of `M`. -/

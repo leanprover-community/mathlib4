@@ -58,7 +58,7 @@ Note that `(externalProductCompDiagIso _ _).app (F₁, F₂) : Functor.diag J₁
 type checks. -/
 @[simps!]
 def externalProductCompDiagIso :
-    externalProductBifunctor J₁ J₁ C ⋙ (whiskeringLeft _ _ _|>.obj <| Functor.diag J₁) ≅
+    externalProductBifunctor J₁ J₁ C ⋙ (whiskeringLeft _ _ _ |>.obj <| Functor.diag J₁) ≅
     tensor (J₁ ⥤ C) :=
   NatIso.ofComponents
     (fun _ ↦ NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp [tensorHom_def]))
@@ -70,7 +70,7 @@ Note that `(externalProductSwap _ _ _).app (F₁, F₂) : Prod.swap _ _ ⋙ F₁
 type checks. -/
 @[simps!]
 def externalProductSwap [BraidedCategory C] :
-    externalProductBifunctor J₁ J₂ C ⋙ (whiskeringLeft _ _ _|>.obj <| Prod.swap _ _) ≅
+    externalProductBifunctor J₁ J₂ C ⋙ (whiskeringLeft _ _ _ |>.obj <| Prod.swap _ _) ≅
     Prod.swap _ _ ⋙ externalProductBifunctor J₂ J₁ C :=
   NatIso.ofComponents
     (fun _ ↦ NatIso.ofComponents (fun _ ↦ β_ _ _) (by simp [whisker_exchange]))

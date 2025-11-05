@@ -57,7 +57,7 @@ def LambdaTheoremArgs.type (t : LambdaTheoremArgs) : LambdaTheoremType :=
   | .id => .id
   | .const => .const
   | .comp .. => .comp
-  | .apply  => .apply
+  | .apply => .apply
   | .pi => .pi
 
 /-- Decides whether `f` is a function corresponding to one of the lambda theorems. -/

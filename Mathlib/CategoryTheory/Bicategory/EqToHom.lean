@@ -110,7 +110,7 @@ lemma whiskerRight_congr {y z : B} {g g' : y ⟶ z} (h : g = g') {x : B}
   simp
 
 lemma leftUnitor_hom_congr {x y : B} {f f' : x ⟶ y} (h : f = f') :
-    (λ_ f).hom = 𝟙 _ ◁ (eqToHom h)  ≫ (λ_ f').hom ≫ eqToHom h.symm := by
+    (λ_ f).hom = 𝟙 _ ◁ (eqToHom h) ≫ (λ_ f').hom ≫ eqToHom h.symm := by
   subst h
   simp
 
@@ -120,7 +120,7 @@ lemma leftUnitor_inv_congr {x y : B} {f f' : x ⟶ y} (h : f = f') :
   simp
 
 lemma rightUnitor_hom_congr {x y : B} {f f' : x ⟶ y} (h : f = f') :
-    (ρ_ f).hom = (eqToHom h) ▷ 𝟙 _  ≫ (ρ_ f').hom ≫ eqToHom h.symm := by
+    (ρ_ f).hom = (eqToHom h) ▷ 𝟙 _ ≫ (ρ_ f').hom ≫ eqToHom h.symm := by
   subst h
   simp
 

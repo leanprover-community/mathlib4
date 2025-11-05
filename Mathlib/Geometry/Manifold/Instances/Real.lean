@@ -156,9 +156,9 @@ theorem interior_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
     interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
       { y | ∀ i : Fin n, a < y i } := by
   let f : Fin n → StrongDual ℝ (Π _ : Fin n, ℝ) := fun i ↦ ContinuousLinearMap.proj i
-  have h : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } = ⋂ i, (f i )⁻¹' Ici a := by
+  have h : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } = ⋂ i, (f i)⁻¹' Ici a := by
     ext; simp; rfl
-  have h' : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a < y i } = ⋂ i, (f i )⁻¹' Ioi a := by
+  have h' : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a < y i } = ⋂ i, (f i)⁻¹' Ioi a := by
     ext; simp; rfl
   rw [h, h', interior_iInter_of_finite]
   apply iInter_congr fun i ↦ ?_

@@ -42,13 +42,13 @@ this definition. -/
 def dayConvolutionInternalHomDiagramFunctor (F : C ⥤ V) :
     (C ⥤ V) ⥤ C ⥤ Cᵒᵖ ⥤ C ⥤ V where
   obj G :=
-    { obj c := Functor.whiskeringLeft₂ _|>.obj F.op|>.obj
+    { obj c := Functor.whiskeringLeft₂ _ |>.obj F.op|>.obj
         (tensorRight c ⋙ G)|>.obj MonoidalClosed.internalHom
-      map {c c'} f := Functor.whiskeringLeft₂ _|>.obj F.op|>.map
+      map {c c'} f := Functor.whiskeringLeft₂ _ |>.obj F.op|>.map
         (Functor.whiskerRight (curriedTensor C|>.flip.map f) G)|>.app
           MonoidalClosed.internalHom }
   map {G G'} η :=
-    { app c := Functor.whiskeringLeft₂ _|>.obj F.op|>.map
+    { app c := Functor.whiskeringLeft₂ _ |>.obj F.op|>.map
         (Functor.whiskerLeft _ η) |>.app MonoidalClosed.internalHom
       naturality {c c'} f := by
         ext j k
@@ -114,10 +114,10 @@ def map (ℌ : DayConvolutionInternalHom F G H) {G' : C ⥤ V} {H' : C ⥤ V}
     dsimp
     simp only [Category.assoc, map_comp_π]
     rw [← Wedge.mk_ι
-        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c')
+        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _ |>.obj c')
         (H'.obj c') (ℌ'.π c') (ℌ'.hπ c'),
       ← Wedge.mk_ι
-        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c)
+        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _ |>.obj c)
         (H'.obj c) (ℌ'.π c) (ℌ'.hπ c),
       Wedge.IsLimit.lift_ι (ℌ'.isLimitWedge c'),
       Wedge.IsLimit.lift_ι_assoc (ℌ'.isLimitWedge c) ]
@@ -131,7 +131,7 @@ lemma map_app_comp_π (ℌ : DayConvolutionInternalHom F G H)
     ℌ.π c j ≫ (ihom <| F.obj j).map (f.app <| j ⊗ c) := by
   dsimp [map]
   rw [← Wedge.mk_ι
-      (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c)
+      (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _ |>.obj c)
       (H'.obj c) (ℌ'.π c) (ℌ'.hπ c),
     Wedge.IsLimit.lift_ι (ℌ'.isLimitWedge c)]
 
@@ -208,10 +208,10 @@ def coev_app : G ⟶ H where
       dayConvolutionInternalHomDiagramFunctor_obj_obj_obj_obj, Multifork.ofι_pt,
       Wedge.mk_ι, Category.assoc, map_comp_π]
     rw [← Wedge.mk_ι
-        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c)
+        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _ |>.obj c)
         (H.obj c) (ℌ.π c) (ℌ.hπ c),
       ← Wedge.mk_ι
-        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c')
+        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _ |>.obj c')
         (H.obj c') (ℌ.π c') (ℌ.hπ c'),
       Wedge.IsLimit.lift_ι_assoc, Wedge.IsLimit.lift_ι]
     have := DayConvolution.unit_naturality F G (𝟙 j) f
@@ -227,7 +227,7 @@ lemma coev_app_π (c j : C) :
     MonoidalClosed.curry ((DayConvolution.unit F G).app (j, c)) := by
   dsimp [coev_app]
   rw [← Wedge.mk_ι
-      (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c)
+      (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _ |>.obj c)
       (H.obj c) (ℌ.π c) (ℌ.hπ c),
     Wedge.IsLimit.lift_ι]
 

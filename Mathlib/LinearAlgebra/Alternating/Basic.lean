@@ -896,6 +896,7 @@ variable {R' : Type*} {M'' M₂'' N'' N₂'' : Type*} [CommSemiring R'] [AddComm
   [AddCommMonoid M₂''] [AddCommMonoid N''] [AddCommMonoid N₂''] [Module R' M''] [Module R' M₂'']
   [Module R' N''] [Module R' N₂'']
 
+set_option linter.style.commandStart false in -- TODO fix linter/pretty-printing!
 /-- An isomorphism of multilinear maps given an isomorphism between their codomains.
 
 This is `Linear.compAlternatingMap` as an isomorphism,

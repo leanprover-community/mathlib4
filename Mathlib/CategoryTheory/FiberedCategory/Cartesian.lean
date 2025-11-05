@@ -356,7 +356,7 @@ lemma isIso_of_base_isIso (φ : a ⟶ b) [IsStronglyCartesian p f φ] [IsIso f] 
   have inv_hom : φ' ≫ φ = 𝟙 b := fac p (p.map φ) φ _ (𝟙 b)
   refine ⟨?_, inv_hom⟩
   -- We will now show that `φ ≫ φ' = 𝟙 a` by showing that `(φ ≫ φ') ≫ φ = 𝟙 a ≫ φ`.
-  have h₁ : IsHomLift p (𝟙 (p.obj a)) (φ  ≫ φ') := by
+  have h₁ : IsHomLift p (𝟙 (p.obj a)) (φ ≫ φ') := by
     rw [← IsIso.hom_inv_id (p.map φ)]
     apply IsHomLift.comp
   apply IsStronglyCartesian.ext p (p.map φ) φ (𝟙 (p.obj a))

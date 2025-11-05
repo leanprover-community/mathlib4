@@ -147,7 +147,7 @@ lemma liftHomotopyZeroSucc_comp {Y Z : C} {P : ProjectiveResolution Y} {Q : Proj
 /-- Any lift of the zero morphism is homotopic to zero. -/
 def liftHomotopyZero {Y Z : C} {P : ProjectiveResolution Y} {Q : ProjectiveResolution Z}
     (f : P.complex ⟶ Q.complex) (comm : f ≫ Q.π = 0) : Homotopy f 0 :=
-  Homotopy.mkInductive _ (liftHomotopyZeroZero f comm) (by simp )
+  Homotopy.mkInductive _ (liftHomotopyZeroZero f comm) (by simp)
     (liftHomotopyZeroOne f comm) (by simp) fun n ⟨g, g', w⟩ =>
     ⟨liftHomotopyZeroSucc f n g g' w, by simp⟩
 

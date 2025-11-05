@@ -560,7 +560,7 @@ def IsPowMul {R : Type*} [Pow R ℕ] (f : R → ℝ) :=
 
 lemma IsPowMul.map_one_le_one {R : Type*} [Monoid R] {f : R → ℝ} (hf : IsPowMul f) :
     f 1 ≤ 1 := by
-  have hf1 : (f 1)^2 = f 1 := by conv_rhs => rw [← one_pow 2, hf _ one_le_two]
+  have hf1 : (f 1) ^ 2 = f 1 := by conv_rhs => rw [← one_pow 2, hf _ one_le_two]
   rcases eq_zero_or_one_of_sq_eq_self hf1 with h | h <;> rw [h]
   exact zero_le_one
 

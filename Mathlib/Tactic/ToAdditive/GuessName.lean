@@ -144,6 +144,7 @@ def applyNameDict : List String → List String
   | x :: s => (capitalizeFirstLike x (nameDict x.toLower)) ++ applyNameDict s
   | [] => []
 
+set_option linter.style.commandStart false in -- TODO decide about the manual alignment
 /--
 There are a few abbreviations we use. For example "Nonneg" instead of "ZeroLE"
 or "addComm" instead of "commAdd".
@@ -218,8 +219,8 @@ def fixAbbreviation : List String → List String
   | "Order" :: "Of" :: s              => "AddOrderOf" :: fixAbbreviation s
   | "is"::"Of"::"Fin"::"Order"::s     => "isOfFinAddOrder" :: fixAbbreviation s
   | "Is"::"Of"::"Fin"::"Order"::s     => "IsOfFinAddOrder" :: fixAbbreviation s
-  | "is" :: "Central" :: "Scalar" :: s  => "isCentralVAdd" :: fixAbbreviation s
-  | "Is" :: "Central" :: "Scalar" :: s  => "IsCentralVAdd" :: fixAbbreviation s
+  | "is" :: "Central" :: "Scalar" :: s => "isCentralVAdd" :: fixAbbreviation s
+  | "Is" :: "Central" :: "Scalar" :: s => "IsCentralVAdd" :: fixAbbreviation s
   | "is" :: "Scalar" :: "Tower" :: s  => "vaddAssocClass" :: fixAbbreviation s
   | "Is" :: "Scalar" :: "Tower" :: s  => "VAddAssocClass" :: fixAbbreviation s
   | "function" :: "_" :: "add" :: "Semiconj" :: s

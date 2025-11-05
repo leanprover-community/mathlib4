@@ -105,7 +105,7 @@ theorem hη :
         (N₁Γ₀ : Γ ⋙ N₁ ≅ (toKaroubiEquivalence (ChainComplex C ℕ)).functor) := by
   ext K : 3
   simp only [Compatibility.τ₀_hom_app, Compatibility.τ₁_hom_app]
-  exact (N₂Γ₂_compatible_with_N₁Γ₀ K).trans (by simp )
+  exact (N₂Γ₂_compatible_with_N₁Γ₀ K).trans (by simp)
 
 /-- The counit isomorphism induced by `N₁Γ₀` -/
 @[simps!]
