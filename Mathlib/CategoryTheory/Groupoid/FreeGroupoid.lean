@@ -16,10 +16,10 @@ extension as a functor from the free groupoid, and proves uniqueness of this ext
 
 Given the type `V` and a quiver instance on `V`:
 
-- `FreeGroupoid V`: a type synonym for `V`.
-- `FreeGroupoid.instGroupoid`: the `Groupoid` instance on `FreeGroupoid V`.
+- `Quiver.FreeGroupoid V`: a type synonym for `V`.
+- `Quiver.FreeGroupoid.instGroupoid`: the `Groupoid` instance on `Quiver.FreeGroupoid V`.
 - `lift`: the lifting of a prefunctor from `V` to `V'` where `V'` is a groupoid, to a functor.
-  `FreeGroupoid V ⥤ V'`.
+  `Quiver.FreeGroupoid V ⥤ V'`.
 - `lift_spec` and `lift_unique`: the proofs that, respectively, `lift` indeed is a lifting
   and is the unique one.
 
@@ -138,7 +138,7 @@ section UniversalProperty
 variable {V' : Type u'} [Groupoid V']
 
 /-- The lift of a prefunctor to a groupoid, to a functor from `FreeGroupoid V` -/
-def lift (φ : V ⥤q V') : FreeGroupoid V ⥤ V' :=
+def lift (φ : V ⥤q V') : Quiver.FreeGroupoid V ⥤ V' :=
   CategoryTheory.Quotient.lift _ (Paths.lift <| Quiver.Symmetrify.lift φ) <| by
     rintro _ _ _ _ ⟨X, Y, f⟩
     -- Porting note: `simp` does not work, so manually `rewrite`
@@ -152,8 +152,8 @@ theorem lift_spec (φ : V ⥤q V') : of V ⋙q (lift φ).toPrefunctor = φ := by
   dsimp [lift]
   rw [Quotient.lift_spec, Paths.lift_spec, Quiver.Symmetrify.lift_spec]
 
-theorem lift_unique (φ : V ⥤q V') (Φ : FreeGroupoid V ⥤ V') (hΦ : of V ⋙q Φ.toPrefunctor = φ) :
-    Φ = lift φ := by
+theorem lift_unique (φ : V ⥤q V') (Φ : Quiver.FreeGroupoid V ⥤ V')
+    (hΦ : of V ⋙q Φ.toPrefunctor = φ) : Φ = lift φ := by
   apply Quotient.lift_unique
   apply Paths.lift_unique
   fapply @Quiver.Symmetrify.lift_unique _ _ _ _ _ _ _ _ _
@@ -177,11 +177,11 @@ open FreeGroupoid
 variable {V' : Type u'} [Quiver.{v' + 1} V'] {V'' : Type u''} [Quiver.{v'' + 1} V'']
 
 /-- The functor of free groupoid induced by a prefunctor of quivers -/
-def freeGroupoidFunctor (φ : V ⥤q V') : FreeGroupoid V ⥤ FreeGroupoid V' :=
+def freeGroupoidFunctor (φ : V ⥤q V') : Quiver.FreeGroupoid V ⥤ Quiver.FreeGroupoid V' :=
   lift (φ ⋙q of V')
 
 theorem freeGroupoidFunctor_id :
-    freeGroupoidFunctor (Prefunctor.id V) = Functor.id (FreeGroupoid V) := by
+    freeGroupoidFunctor (Prefunctor.id V) = Functor.id (Quiver.FreeGroupoid V) := by
   dsimp only [freeGroupoidFunctor]; symm
   apply lift_unique; rfl
 
