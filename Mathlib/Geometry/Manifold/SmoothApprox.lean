@@ -47,9 +47,9 @@ With minor work, we could strenghten the statements in the following ways:
   may be strenghtened to `∀ x, f x = h x → g x = h x` for some arbitrary smooth `h : M → F`.
 
 This file depends on the manifold library, which may be annoying is you only need the normed space
-statements. **Please do not let this refrain you from using them** if they apply naturally to your
-setup : if this is too much of a problem, you should complain on Zulip, so that we get more data
-about the need of a non-manifold version of `SmoothPartitionOfUnity`.
+statements. **Please do not let this refrain you from using them** if they apply naturally in your
+context : if this is too much of a problem, you should complain on Zulip, so that we get more data
+about the need for a non-manifold version of `SmoothPartitionOfUnity`.
 
 ## TODO
 
