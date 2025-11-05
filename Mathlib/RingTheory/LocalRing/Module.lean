@@ -388,15 +388,14 @@ at every maximal ideal, then `M` is free of rank `n`. -/
 @[stacks 02M9] theorem nonempty_basis_of_flat_of_finrank_eq [Module.Finite R M] [Flat R M]
     (n : ℕ) (rk : ∀ P : MaximalSpectrum R, finrank (R ⧸ P.1) ((R ⧸ P.1) ⊗[R] M) = n) :
     Nonempty (Basis (Fin n) R M) := by
-  let := @Quotient.field
-  have coprime : Pairwise fun I J : MaximalSpectrum R ↦ IsCoprime I.1 J.1 :=
-    fun _ _ ne ↦ isCoprime_of_isMaximal (MaximalSpectrum.ext_iff.ne.mp ne)
+  let := @Quotient.field    
   /- For every maximal ideal `P`, `R⧸P ⊗[R] M` is an `n`-dimensional vector space over the field
     `R⧸P` by assumption, so we can choose a basis `b' P` indexed by `Fin n`. -/
   have b' (P) := Module.finBasisOfFinrankEq _ _ (rk P)
   /- By Chinese remainder theorem for modules, there exist `n` elements `b i : M` that reduces
     to `b' P i` modulo each maximal ideal `P`. -/
-  choose b hb using fun i ↦ pi_tensorProductMk_quotient_surjective M _ coprime (b' · i)
+  choose b hb using fun i ↦ pi_tensorProductMk_quotient_surjective M _
+    (fun _ _ ne ↦ isCoprime_of_isMaximal (MaximalSpectrum.ext_iff.ne.mp ne)) (b' · i)
   /- It suffices to show the linear map `Rⁿ → M` induced by `b` is bijective, for which
     it suffices to show `Rₚⁿ → Rₚ ⊗[R] M` is bijective for each maximal ideal `P`. -/
   refine ⟨⟨.symm <| .ofBijective (Finsupp.linearCombination R b) <| bijective_of_isLocalized_maximal
