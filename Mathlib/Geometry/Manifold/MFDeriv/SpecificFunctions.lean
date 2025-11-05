@@ -671,14 +671,6 @@ open Topology
 
 variable {f : M → N} (g : M' → N') {s : Set (M ⊕ M')} {t : Set M'} {p : M ⊕ M'}
 
--- TODO: move to the right location!
-variable {α : Type*} [TopologicalSpace α] {s t : Set α} {x : α} in
-lemma mem_nhdsWithin_inter_self : t ∈ 𝓝[s ∩ t] x := by
-  refine mem_nhdsWithin_iff_eventuallyEq.mpr ?_
-  filter_upwards with y using by simp [inter_assoc]
-
-attribute [fun_prop] Continuous.continuousWithinAt -- unrelated, but probably desirable
-
 /-- In extended charts at `p`, `Sum.swap` looks like the identity near `p`. -/
 lemma writtenInExtChartAt_sumSwap_eventuallyEq_id :
     writtenInExtChartAt I I p Sum.swap =ᶠ[𝓝[(extChartAt I p).symm ⁻¹' s ∩ range I]
