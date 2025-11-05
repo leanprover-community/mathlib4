@@ -122,14 +122,8 @@ theorem reflect_C_mul (f : R[X]) (r : R) (N : ℕ) : reflect N (C r * f) = C r *
 
 theorem reflect_C_mul_X_pow (N n : ℕ) {c : R} : reflect N (C c * X ^ n) = C c * X ^ revAt N n := by
   ext
-  rw [reflect_C_mul, coeff_C_mul, coeff_C_mul, coeff_X_pow, coeff_reflect]
-  split_ifs with h
-  · rw [h, revAt_invol, coeff_X_pow_self]
-  · rw [notMem_support_iff.mp]
-    intro a
-    rw [← one_mul (X ^ n), ← C_1] at a
-    apply h
-    rw [← mem_support_C_mul_X_pow a, revAt_invol]
+  grind [coeff_C_mul, coeff_reflect, coeff_X_pow, revAt_invol]
+
 
 @[simp]
 theorem reflect_C (r : R) (N : ℕ) : reflect N (C r) = C r * X ^ N := by
