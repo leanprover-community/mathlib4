@@ -109,7 +109,7 @@ namespace Mathlib.Meta.NormNum
 open Qq
 
 /-!
-### `norm_num` extesion for `Nat.floor`
+### `norm_num` extension for `Nat.floor`
 -/
 
 theorem IsNat.natFloor {R : Type*} [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]

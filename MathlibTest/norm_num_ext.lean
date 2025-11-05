@@ -471,7 +471,7 @@ example : ⌈(-15 / 16 : K)⌉ + 1 = 1 := by norm_num1
 example : ⌊(-35 / 16 : K)⌋₊ = 0 := by norm_num1
 example : ⌈(-35 / 16 : K)⌉₊ = 0 := by norm_num1
 example : round (-35 / 16 : K) = -2 := by norm_num1
-example : Int.fract (16 / 15 : K) = 1 / 15 := by norm_num
+example : Int.fract (16 / 15 : K) = 1 / 15 := by norm_num1
 example : Int.fract (-35 / 16 : K) = 13 / 16 := by norm_num1
 example : Int.fract (3.7 : ℚ) = 0.7 := by norm_num1
 example : Int.fract (-3.7 : ℚ) = 0.3 := by norm_num1

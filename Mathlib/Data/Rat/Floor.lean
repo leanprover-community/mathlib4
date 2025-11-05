@@ -284,7 +284,7 @@ def evalIntFract : NormNumExt where eval {u α} e := do
   | _, _, _ => failure
 
 /-!
-### `norm_num` extesion for `round`
+### `norm_num` extension for `round`
 -/
 
 theorem isNat_round {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]

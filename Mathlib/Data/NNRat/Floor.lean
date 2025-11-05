@@ -98,7 +98,7 @@ namespace Mathlib.Meta.NormNum
 open Qq
 
 /-!
-### `norm_num` extesion for `Nat.ceil`
+### `norm_num` extension for `Nat.ceil`
 -/
 
 theorem IsNat.natCeil {R : Type*} [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
