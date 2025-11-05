@@ -38,7 +38,7 @@ theorem length'_of_not_terminates {s : Seq α} (h : ¬ s.Terminates) :
   simp [length', h]
 
 @[simp]
-theorem length_nil : length (nil : Seq α) terminates_nil = 0 := rfl
+theorem length_nil : length (nil : Seq α) terminates_nil = 0 := by simp [length]; exact rfl
 
 @[simp]
 theorem length'_nil : length' (nil : Seq α) = 0 := by

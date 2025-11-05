@@ -7,6 +7,7 @@ module
 
 public meta import Mathlib.Tactic.Positivity.Core
 public meta import Mathlib.Util.DischargerAsTactic
+import all Lean.Meta.Tactic.Simp.Rewrite
 
 /-!
 # Discharger for `field_simp` tactic
@@ -48,8 +49,6 @@ private def dischargerTraceMessage {ε : Type*} (prop : Expr) :
     Except ε (Option Expr) → SimpM MessageData
 | .error _ | .ok none => return m!"{crossEmoji} discharge {prop}"
 | .ok (some _) => return m!"{checkEmoji} discharge {prop}"
-
-open private Simp.dischargeUsingAssumption? from Lean.Meta.Tactic.Simp.Rewrite
 
 /-- Discharge strategy for the `field_simp` tactic. -/
 partial def discharge (prop : Expr) : SimpM (Option Expr) :=

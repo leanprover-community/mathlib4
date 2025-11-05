@@ -15,6 +15,7 @@ public import Mathlib.Order.Basic
 public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Tactic.Common
 public import Batteries.Data.Nat.Bitwise
+import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `bitwise`
 
 /-!
 # Bitwise operations on natural numbers
