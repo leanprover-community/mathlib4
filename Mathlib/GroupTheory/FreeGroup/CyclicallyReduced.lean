@@ -10,14 +10,12 @@ import Mathlib.Tactic.Group
 
 /-!
 This file defines some extra lemmas for free groups, in particular about cyclically reduced words.
+In particular, in this file we show that free groups are torsion-free in the sense of
+`Mathlib.Algebra.Group.Torsion`.
 
 ## Main declarations
 
 * `FreeGroup.IsCyclicallyReduced`: the predicate for cyclically reduced words
-
-## Main statements
-* `FreeGroup.infinite_order`: nontrivial elements of a free group have infinite order
-* `FreeGroup.zpow_left_injective`: taking n-th powers is an injective function on the free group
 
 -/
 open List
