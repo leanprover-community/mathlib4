@@ -169,14 +169,14 @@ section ProdSum
 
 variable [CommMonoid α] [AddCommMonoid β] [Preorder β] [AddLeftMono β] (m : Multiset α) (f : α → β)
 
-lemma prod_le_sum (h_one : f 1 ≤ 0) (h_mul : ∀ (a b : α), f (a * b) ≤ f a + f b) :
+lemma apply_prod_le_sum_map (h_one : f 1 ≤ 0) (h_mul : ∀ (a b : α), f (a * b) ≤ f a + f b) :
     f m.prod ≤ (m.map f).sum := by
   induction m using Quotient.inductionOn with
-  | h l => simp [l.prod_le_sum _ h_one h_mul]
+  | h l => simp [l.apply_prod_le_sum_map _ h_one h_mul]
 
-lemma sum_le_prod (h_one : 0 ≤ f 1) (h_mul : ∀ (a b : α), f a + f b ≤ f (a * b)) :
+lemma sum_map_le_apply_prod (h_one : 0 ≤ f 1) (h_mul : ∀ (a b : α), f a + f b ≤ f (a * b)) :
     (m.map f).sum ≤ f m.prod :=
-  m.prod_le_sum (β := βᵒᵈ) f h_one h_mul
+  m.apply_prod_le_sum_map (β := βᵒᵈ) f h_one h_mul
 
 end ProdSum
 

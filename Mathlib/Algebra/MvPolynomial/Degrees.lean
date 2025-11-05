@@ -432,15 +432,15 @@ theorem totalDegree_X_pow [Nontrivial R] (s : σ) (n : ℕ) :
 
 theorem totalDegree_list_prod (l : List (MvPolynomial σ R)) :
     l.prod.totalDegree ≤ (l.map MvPolynomial.totalDegree).sum :=
-  l.prod_le_sum _ totalDegree_one.le totalDegree_mul
+  l.apply_prod_le_sum_map _ totalDegree_one.le totalDegree_mul
 
 theorem totalDegree_multiset_prod (s : Multiset (MvPolynomial σ R)) :
     s.prod.totalDegree ≤ (s.map MvPolynomial.totalDegree).sum :=
-  s.prod_le_sum _ totalDegree_one.le totalDegree_mul
+  s.apply_prod_le_sum_map _ totalDegree_one.le totalDegree_mul
 
 theorem totalDegree_finset_prod {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) :
     (s.prod f).totalDegree ≤ ∑ i ∈ s, (f i).totalDegree :=
-  s.prod_le_sum _ totalDegree_one.le totalDegree_mul
+  s.apply_prod_le_sum_apply _ totalDegree_one.le totalDegree_mul
 
 theorem totalDegree_finset_sum {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) :
     (s.sum f).totalDegree ≤ Finset.sup s fun i => (f i).totalDegree := by

@@ -241,14 +241,14 @@ section ProdSum
 variable [CommMonoid α] [AddCommMonoid β] [Preorder β] [AddLeftMono β]
   (s : Finset ι) {f : ι → α} (g : α → β)
 
-theorem prod_le_sum (h_one : g 1 ≤ 0) (h_mul : ∀ (a b : α), g (a * b) ≤ g a + g b) :
+theorem apply_prod_le_sum_apply (h_one : g 1 ≤ 0) (h_mul : ∀ (a b : α), g (a * b) ≤ g a + g b) :
     g (∏ x ∈ s, f x) ≤ ∑ x ∈ s, g (f x) := by
-  refine (Multiset.prod_le_sum _ _ h_one h_mul).trans_eq ?_
+  refine (Multiset.apply_prod_le_sum_map _ _ h_one h_mul).trans_eq ?_
   rw [Multiset.map_map, Function.comp_def, Finset.sum_map_val]
 
-theorem sum_le_prod (h_one : 0 ≤ g 1) (h_mul : ∀ (a b : α), g a + g b ≤ g (a * b)) :
+theorem sum_apply_le_apply_prod (h_one : 0 ≤ g 1) (h_mul : ∀ (a b : α), g a + g b ≤ g (a * b)) :
     ∑ x ∈ s, g (f x) ≤ g (∏ x ∈ s, f x) :=
-  s.prod_le_sum (β := βᵒᵈ) g h_one h_mul
+  s.apply_prod_le_sum_apply (β := βᵒᵈ) g h_one h_mul
 
 end ProdSum
 

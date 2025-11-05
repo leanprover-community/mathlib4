@@ -1156,7 +1156,7 @@ theorem norm_multiset_sum_le {E} [SeminormedAddCommGroup E] (m : Multiset E) :
 
 @[to_additive existing]
 theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x => ‖x‖).sum :=
-  m.prod_le_sum _ norm_one'.le norm_mul_le'
+  m.apply_prod_le_sum_map _ norm_one'.le norm_mul_le'
 
 variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddCommMonoid ε] in
 @[bound]
@@ -1171,11 +1171,11 @@ theorem norm_sum_le {E} [SeminormedAddCommGroup E] (s : Finset ι) (f : ι → E
 
 @[to_additive existing]
 theorem enorm_prod_le (s : Finset ι) (f : ι → ε) : ‖∏ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ :=
-  s.prod_le_sum _ enorm_one'.le enorm_mul_le'
+  s.apply_prod_le_sum_apply _ enorm_one'.le enorm_mul_le'
 
 @[to_additive existing]
 theorem norm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ :=
-  s.prod_le_sum _ norm_one'.le norm_mul_le'
+  s.apply_prod_le_sum_apply _ norm_one'.le norm_mul_le'
 
 @[to_additive]
 theorem enorm_prod_le_of_le (s : Finset ι) {f : ι → ε} {n : ι → ℝ≥0∞} (h : ∀ b ∈ s, ‖f b‖ₑ ≤ n b) :
