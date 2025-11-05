@@ -155,7 +155,7 @@ scoped[ProbabilityTheory] notation3 X:50 " ⟂ᵢ " Y:50 => ProbabilityTheory.In
 
 section Definition_lemmas
 variable {π : ι → Set (Set Ω)} {m : ι → MeasurableSpace Ω} {_ : MeasurableSpace Ω} {μ : Measure Ω}
-  {S : Finset ι} {s : ι → Set Ω}
+  {S : Finset ι} {s : ι → Set Ω} {ι' : Type*} {g : ι' → ι}
 
 lemma iIndepSets_iff (π : ι → Set (Set Ω)) (μ : Measure Ω) :
     iIndepSets π μ ↔ ∀ (s : Finset ι) {f : ι → Set Ω} (_H : ∀ i, i ∈ s → f i ∈ π i),
@@ -282,6 +282,56 @@ lemma IndepFun.meas_inter [mβ : MeasurableSpace β] [mγ : MeasurableSpace γ] 
     (ht : MeasurableSet[mγ.comap g] t) :
     μ (s ∩ t) = μ s * μ t :=
   (IndepFun_iff _ _ _).1 hfg _ _ hs ht
+
+lemma iIndepSets.comp_of_injective (hg : Function.Injective g) (h : iIndepSets π μ) :
+    iIndepSets (π ∘ g) μ :=
+  Kernel.iIndepSets.comp_of_injective hg h
+
+lemma iIndepSets.of_comp_of_surjective (hg : Function.Surjective g) (h : iIndepSets (π ∘ g) μ) :
+    iIndepSets π μ :=
+  Kernel.iIndepSets.of_comp_of_surjective hg h
+
+lemma iIndepSets.comp_iff (hg : Function.Bijective g) :
+    iIndepSets (π ∘ g) μ ↔ iIndepSets π μ :=
+  Kernel.iIndepSets.comp_iff hg
+
+lemma iIndep.comp_of_injective (hg : Function.Injective g) (h : iIndep m μ) :
+    iIndep (m ∘ g) μ :=
+  Kernel.iIndep.comp_of_injective hg h
+
+lemma iIndep.of_comp_of_surjective (hg : Function.Surjective g) (h : iIndep (m ∘ g) μ) :
+    iIndep m μ :=
+  Kernel.iIndep.of_comp_of_surjective hg h
+
+lemma iIndep.comp_iff (hg : Function.Bijective g) :
+    iIndep (m ∘ g) μ ↔ iIndep m μ :=
+  Kernel.iIndep.comp_iff hg
+
+lemma iIndepSet.comp_of_injective (hg : Function.Injective g) (h : iIndepSet s μ) :
+    iIndepSet (s ∘ g) μ :=
+  Kernel.iIndepSet.comp_of_injective hg h
+
+lemma iIndepSet.of_comp_of_surjective (hg : Function.Surjective g) (h : iIndepSet (s ∘ g) μ) :
+    iIndepSet s μ :=
+  Kernel.iIndepSet.of_comp_of_surjective hg h
+
+lemma iIndepSet.comp_iff (hg : Function.Bijective g) :
+    iIndepSet (s ∘ g) μ ↔ iIndepSet s μ :=
+  Kernel.iIndepSet.comp_iff hg
+
+variable {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)} {f : ∀ x : ι, Ω → β x}
+
+lemma iIndepFun.comp_of_injective (hg : Function.Injective g) (h : iIndepFun f μ) :
+    iIndepFun (f ∘' g) μ :=
+  Kernel.iIndepFun.comp_of_injective hg h
+
+lemma iIndepFun.of_comp_of_surjective (hg : Function.Surjective g) (h : iIndepFun (f ∘' g) μ) :
+    iIndepFun f μ :=
+  Kernel.iIndepFun.of_comp_of_surjective hg h
+
+lemma iIndepFun.comp_iff (hg : Function.Bijective g) :
+    iIndepFun (f ∘' g) μ ↔ iIndepFun f μ :=
+  Kernel.iIndepFun.comp_iff hg
 
 end Definition_lemmas
 
