@@ -36,7 +36,7 @@ More precisely, we strengthen this result in three ways :
 * `Continuous.exists_msmooth_approx`: a simpler version of the previous result when one does not
   care about prescribing points with `g x = f x`. One still gets `support g ⊆ support f` for free,
   so we put it in the conclusion.
-* `Continuous.exists_contDiff_approx_and_eqOn`, `Continuous.exists_msmooth_approx`: specializations
+* `Continuous.exists_contDiff_approx_and_eqOn`, `Continuous.exists_smooth_approx`: specializations
   of the previous results when `M = E` is a normed space.
 
 ## Implementation notes
