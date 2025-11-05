@@ -76,7 +76,7 @@ variable [CategoryWithHomology C]
 namespace ShiftSequence
 
 variable (C) in
-/-- The natural isomorphism `(K⟦n⟧).homology a ≅ K.homology a'`when `n + a = a`. -/
+/-- The natural isomorphism `(K⟦n⟧).homology a ≅ K.homology a'` when `n + a = a'`. -/
 noncomputable def shiftIso (n a a' : ℤ) (ha' : n + a = a') :
     (CategoryTheory.shiftFunctor _ n) ⋙ homologyFunctor C (ComplexShape.up ℤ) a ≅
       homologyFunctor C (ComplexShape.up ℤ) a' :=

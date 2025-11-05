@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.PProd
+import Mathlib.Data.Sum.Basic
 import Mathlib.Logic.Equiv.Basic
 
 /-!
@@ -299,6 +300,8 @@ variable {α α' : Type*} {β : α → Type*} {β' : α' → Type*}
 @[simps apply]
 def sigmaMk (a : α) : β a ↪ Σ x, β x :=
   ⟨Sigma.mk a, sigma_mk_injective⟩
+
+attribute [grind =] sigmaMk_apply
 
 /-- If `f : α ↪ α'` is an embedding and `g : Π a, β α ↪ β' (f α)` is a family
 of embeddings, then `Sigma.map f g` is an embedding. -/

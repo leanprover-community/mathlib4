@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
+import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 import Mathlib.AlgebraicGeometry.IdealSheaf.Basic
 import Mathlib.CategoryTheory.Adjunction.Opposites
 
@@ -72,15 +73,15 @@ lemma ker_glueDataObjι_appTop (U : X.affineOpens) :
 
 open scoped Set.Notation in
 lemma range_glueDataObjι (U : X.affineOpens) :
-    Set.range (I.glueDataObjι U).base =
-      U.2.isoSpec.inv.base '' PrimeSpectrum.zeroLocus (I.ideal U) := by
+    Set.range (I.glueDataObjι U) =
+      U.2.isoSpec.inv '' PrimeSpectrum.zeroLocus (I.ideal U) := by
   simp only [glueDataObjι, Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp]
   erw [range_comap_of_surjective]
   swap; · exact Ideal.Quotient.mk_surjective
   simp only [Ideal.mk_ker, CommRingCat.hom_ofHom]
 
 lemma range_glueDataObjι_ι (U : X.affineOpens) :
-    Set.range ⇑(I.glueDataObjι U ≫ U.1.ι).base = X.zeroLocus (U := U) (I.ideal U) ∩ U := by
+    Set.range (I.glueDataObjι U ≫ U.1.ι) = X.zeroLocus (U := U) (I.ideal U) ∩ U := by
   simp only [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp, range_glueDataObjι]
   rw [← Set.image_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base, IsAffineOpen.isoSpec_inv_ι,
     IsAffineOpen.fromSpec_image_zeroLocus]
@@ -146,8 +147,8 @@ lemma ideal_le_ker_glueDataObjι (U V : X.affineOpens) :
   intro x hx
   apply (I.glueDataObj U).IsSheaf.section_ext
   intro p hp
-  obtain ⟨f, g, hfg, hf⟩ := exists_basicOpen_le_affine_inter U.2 V.2 ((I.glueDataObjι U).base p).1
-      ⟨((I.glueDataObjι U).base p).2, hp⟩
+  obtain ⟨f, g, hfg, hf⟩ := exists_basicOpen_le_affine_inter U.2 V.2 (I.glueDataObjι U p).1
+      ⟨(I.glueDataObjι U p).2, hp⟩
   refine ⟨(I.glueDataObjι U ⁻¹ᵁ U.1.ι ⁻¹ᵁ X.basicOpen f),
     fun x hx ↦ X.basicOpen_le g (hfg ▸ hx), hf, ?_⟩
   have := Hom.isIso_app (I.glueDataObjMap (X.affineBasicOpen_le f))
@@ -190,7 +191,7 @@ def glueDataT (U V : X.affineOpens) :
       TopologicalSpace.Opens.map_top, homOfLE_app, homOfLE_leOfHom, Category.assoc, RingHom.mem_ker]
     convert_to (U.1.ι.app V.1 ≫ (F ≫ X.homOfLE inf_le_left).appLE (U.1.ι ⁻¹ᵁ V.1) ⊤
       (by rw [← Scheme.Hom.comp_preimage, Category.assoc, X.homOfLE_ι]
-          exact fun x _ ↦ by simpa using (F.base x).2.2)).hom x = 0 using 3
+          exact fun x _ ↦ by simpa using (F x).2.2)).hom x = 0 using 3
     · simp only [homOfLE_leOfHom, Opens.ι_app, Hom.comp_appLE, homOfLE_app]
       have H : ⊤ ≤ X.homOfLE (inf_le_left (b := V.1)) ⁻¹ᵁ U.1.ι ⁻¹ᵁ V.1 := by
         rw [← Scheme.Hom.comp_preimage, X.homOfLE_ι]; exact fun x _ ↦ by simpa using x.2.2
@@ -336,25 +337,24 @@ private lemma glueDataObjMap_ι (U V : X.affineOpens) (h : U ≤ V) :
   simp [pullback_inv_fst_snd_of_right_isIso_assoc, H]
 
 private lemma gluedTo_injective :
-    Function.Injective I.gluedTo.base := by
+    Function.Injective I.gluedTo := by
   intro a b e
   obtain ⟨ia, a : I.glueDataObj ia, rfl⟩ :=
     I.glueData.toGlueData.ι_jointly_surjective forget a
   obtain ⟨ib, b : I.glueDataObj ib, rfl⟩ :=
     I.glueData.toGlueData.ι_jointly_surjective forget b
-  change (I.glueData.ι ia).base a = (I.glueData.ι ib).base b
-  have : ((I.glueDataObjι ia).base a).1 = ((I.glueDataObjι ib).base b).1 := by
-    have : (I.glueData.ι ia ≫ I.gluedTo).base a =
-      (I.glueData.ι ib ≫ I.gluedTo).base b := e
+  change I.glueData.ι ia a = I.glueData.ι ib b
+  have : (I.glueDataObjι ia a).1 = (I.glueDataObjι ib b).1 := by
+    have : (I.glueData.ι ia ≫ I.gluedTo) a = (I.glueData.ι ib ≫ I.gluedTo) b := e
     rwa [ι_gluedTo, ι_gluedTo] at this
   obtain ⟨f, g, hfg, H⟩ := exists_basicOpen_le_affine_inter ia.2 ib.2
-    ((I.glueDataObjι ia).base a).1
-      ⟨((I.glueDataObjι ia).base a).2, this ▸ ((I.glueDataObjι ib).base b).2⟩
+    (I.glueDataObjι ia a).1
+      ⟨(I.glueDataObjι ia a).2, this ▸ (I.glueDataObjι ib b).2⟩
   have hmem (W) (hW : W = X.affineBasicOpen g) :
-      b ∈ Set.range (I.glueDataObjMap (hW.trans_le (X.affineBasicOpen_le g))).base := by
+      b ∈ Set.range (I.glueDataObjMap (hW.trans_le (X.affineBasicOpen_le g))) := by
     subst hW
     refine (I.opensRange_glueDataObjMap g).ge ?_
-    change ((I.glueDataObjι ib).base b).1 ∈ X.basicOpen g
+    change (I.glueDataObjι ib b).1 ∈ X.basicOpen g
     rwa [← this, ← hfg]
   obtain ⟨a, rfl⟩ := (I.opensRange_glueDataObjMap f).ge H
   obtain ⟨b, rfl⟩ := hmem (X.affineBasicOpen f) (Subtype.ext hfg)
@@ -365,15 +365,15 @@ private lemma gluedTo_injective :
   simp only [glueDataObjMap_ι]
 
 lemma range_glueDataObjι_ι_eq_support_inter (U : X.affineOpens) :
-    Set.range (I.glueDataObjι U ≫ U.1.ι).base = (I.support : Set X) ∩ U :=
+    Set.range (I.glueDataObjι U ≫ U.1.ι) = (I.support : Set X) ∩ U :=
   (I.range_glueDataObjι_ι U).trans (I.coe_support_inter U).symm
 
 private lemma range_gluedTo :
-    Set.range I.gluedTo.base = I.support := by
+    Set.range I.gluedTo = I.support := by
   refine subset_antisymm (Set.range_subset_iff.mpr fun x ↦ ?_) ?_
   · obtain ⟨ix, x : I.glueDataObj ix, rfl⟩ :=
       I.glueData.toGlueData.ι_jointly_surjective forget x
-    change (I.glueData.ι _ ≫ I.gluedTo).base x ∈ I.support
+    change (I.glueData.ι _ ≫ I.gluedTo) x ∈ I.support
     rw [ι_gluedTo]
     exact ((I.range_glueDataObjι_ι_eq_support_inter ix).le ⟨_, rfl⟩).1
   · intro x hx
@@ -449,7 +449,7 @@ def subschemeι : I.subscheme ⟶ X :=
     change (I.gluedHomeo (I.gluedHomeo.symm x)).1 = x.1
     rw [I.gluedHomeo.apply_symm_apply]
 
-lemma subschemeι_apply (x : I.subscheme) : I.subschemeι.base x = x.1 := rfl
+lemma subschemeι_apply (x : I.subscheme) : I.subschemeι x = x.1 := rfl
 
 private lemma subschemeι_def : I.subschemeι = I.subschemeIso.hom ≫ I.gluedTo :=
   Scheme.Hom.copyBase_eq _ _ _
@@ -464,7 +464,7 @@ instance : QuasiCompact I.subschemeι := by
   infer_instance
 
 @[simp]
-lemma range_subschemeι : Set.range I.subschemeι.base = I.support := by
+lemma range_subschemeι : Set.range I.subschemeι = I.support := by
   simp [← range_gluedTo, I.subschemeι_def, Set.range_comp]
 
 private lemma opensRange_glueData_ι_subschemeIso_inv (U : X.affineOpens) :
@@ -613,7 +613,7 @@ noncomputable section image
 
 open Limits
 
-variable {X Y : Scheme.{u}} (f : X.Hom Y) (U : Y.affineOpens)
+variable {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.affineOpens)
 
 /-- The scheme-theoretic image of a morphism. -/
 abbrev Hom.image : Scheme.{u} := f.ker.subscheme
@@ -659,8 +659,8 @@ private lemma Hom.toImageAux_spec :
 /-- The morphism from the domain to the scheme-theoretic image. -/
 noncomputable
 def Hom.toImage : X ⟶ f.image :=
-  f.toImageAux.copyBase (fun x ↦ ⟨f.base x, f.range_subset_ker_support ⟨x, rfl⟩⟩)
-    (funext fun x ↦ Subtype.ext congr(($f.toImageAux_spec).base x))
+  f.toImageAux.copyBase (fun x ↦ ⟨f x, f.range_subset_ker_support ⟨x, rfl⟩⟩)
+    (funext fun x ↦ Subtype.ext congr($f.toImageAux_spec x))
 
 @[reassoc (attr := simp)]
 lemma Hom.toImage_imageι :
@@ -674,6 +674,10 @@ instance [QuasiCompact f] : IsDominant f.toImage where
       ← Set.univ_subset_iff, ← Set.image_subset_iff, Set.image_univ,
       IdealSheafData.range_subschemeι, Hom.support_ker, ← Set.range_comp,
       ← TopCat.coe_comp, ← Scheme.Hom.comp_base, f.toImage_imageι]
+
+instance [QuasiCompact f] : QuasiCompact f.toImage :=
+  have : QuasiCompact (f.toImage ≫ f.imageι) := by simpa
+  .of_comp _ f.imageι
 
 instance : IsIso (IdealSheafData.subschemeι ⊥ : _ ⟶ X) :=
   ⟨Scheme.Hom.toImage (𝟙 X) ≫ IdealSheafData.inclusion bot_le,
