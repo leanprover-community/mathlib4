@@ -419,7 +419,7 @@ theorem isClosed_range_toBCF : IsClosed (range (toBCF : C₀(α, β) → α →�
     calc
       dist (f x) 0 ≤ dist (g.toBCF x) (f x) + dist (g x) 0 := dist_triangle_left _ _ _
       _ < dist g.toBCF f + ε / 2 := add_lt_add_of_le_of_lt (dist_coe_le_dist x) hx
-      _ < ε := by simpa [add_halves ε] using add_lt_add_right (mem_ball.1 hg) (ε / 2)
+      _ ≤ ε := by grw [mem_ball.1 hg, add_halves ε]
   exact ⟨⟨f.toContinuousMap, this⟩, rfl⟩
 
 
