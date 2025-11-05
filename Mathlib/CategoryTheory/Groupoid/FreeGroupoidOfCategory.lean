@@ -77,15 +77,17 @@ def of : C ⥤ FreeGroupoid C where
 
 variable {C}
 
-lemma of_obj_bijective : Function.Bijective (of C).obj where
-  left _ _ h := by cases h; rfl
-  right X := ⟨X.as.as, rfl⟩
-
 /-- Construct an object in the free groupoid on `C` by providing an object in `C`. -/
 abbrev mk (X : C) : FreeGroupoid C := (of C).obj X
 
 /-- Construct a morphism in the free groupoid on `C` by providing a morphism in `C`. -/
 abbrev homMk {X Y : C} (f : X ⟶ Y) : mk X ⟶ mk Y := (of C).map f
+
+lemma eq_mk (X : FreeGroupoid C) : X = .mk (X.as.as) := rfl
+
+lemma of_obj_bijective : Function.Bijective (of C).obj where
+  left _ _ h := by cases h; rfl
+  right X := ⟨X.as.as, rfl⟩
 
 section UniversalProperty
 
@@ -132,6 +134,21 @@ attribute [local instance] Localization.groupoid
 instance : (of C).IsLocalization ⊤ :=
   .mk' _ _ strictUniversalPropertyFixedTarget strictUniversalPropertyFixedTarget
 
+/-- In order to define a natural isomorphism `F ≅ G` with `F G : FreeGroupoid ⥤ D`,
+it suffices to do so after precomposing with `FreeGroupoid.of C`. -/
+def liftNatIso (F₁ F₂ : FreeGroupoid C ⥤ G) (τ : of C ⋙ F₁ ≅ of C ⋙ F₂) : F₁ ≅ F₂ :=
+  Localization.liftNatIso (of C) ⊤ (of C ⋙ F₁) (of C ⋙ F₂) _ _ τ
+
+@[simp]
+lemma liftNatIso_hom_app (F₁ F₂ : FreeGroupoid C ⥤ G) (τ : of C ⋙ F₁ ≅ of C ⋙ F₂) (X) :
+    (liftNatIso F₁ F₂ τ).hom.app X = τ.hom.app X.as.as := by
+  rw [eq_mk X]; simp [liftNatIso]; rfl
+
+@[simp]
+lemma liftNatIso_inv_app (F₁ F₂ : FreeGroupoid C ⥤ G) (τ : of C ⋙ F₁ ≅ of C ⋙ F₂) (X) :
+    (liftNatIso F₁ F₂ τ).inv.app X = τ.inv.app X.as.as := by
+  rw [eq_mk X]; simp [liftNatIso]; rfl
+
 end UniversalProperty
 
 section Functoriality
@@ -142,21 +159,40 @@ variable {D : Type u₁} [Category.{v₁} D] {E : Type u₂} [Category.{v₂} E]
 def map (φ : C ⥤ D) : FreeGroupoid C ⥤ FreeGroupoid D :=
   lift (φ ⋙ of D)
 
-variable (C) in
-theorem map_id : map (𝟭 C) = 𝟭 (FreeGroupoid C) := by
-  symm; apply lift_unique; rfl
+lemma of_map (F : C ⥤ D) : of C ⋙ map F = F ⋙ of D := rfl
+
+/-- The operation `of` is natural. -/
+def ofMap (F : C ⥤ D) : of C ⋙ map F ≅ F ⋙ of D := Iso.refl _
 
 variable (C) in
 /-- The functor induced by the identity is the identity. -/
 def mapId : map (𝟭 C) ≅ 𝟭 (FreeGroupoid C) :=
-  eqToIso (map_id C)
+  liftNatIso _ _ (Iso.refl _)
 
-theorem map_comp (φ : C ⥤ D) (φ' : D ⥤ E) : map (φ ⋙ φ') = map φ ⋙ map φ' := by
+@[simp]
+lemma mapId_hom_app (X) : (mapId C).hom.app X = 𝟙 _ :=
+  liftNatIso_hom_app ..
+
+@[simp]
+lemma mapId_inv_app (X) : (mapId C).inv.app X = 𝟙 _ :=
+  liftNatIso_inv_app ..
+
+variable (C) in
+theorem map_id : map (𝟭 C) = 𝟭 (FreeGroupoid C) := by
   symm; apply lift_unique; rfl
 
 /-- The functor induced by a composition is the composition of the functors they induce. -/
 def mapComp (φ : C ⥤ D) (φ' : D ⥤ E) : map (φ ⋙ φ') ≅ map φ ⋙ map φ':=
-  eqToIso (map_comp φ φ')
+  liftNatIso _ _ (Iso.refl _)
+
+lemma mapComp_hom_app (φ : C ⥤ D) (φ' : D ⥤ E) (X) : (mapComp φ φ').hom.app X = 𝟙 _ :=
+  liftNatIso_hom_app ..
+
+lemma mapComp_inv_app (φ : C ⥤ D) (φ' : D ⥤ E) (X) : (mapComp φ φ').inv.app X = 𝟙 _ :=
+  liftNatIso_inv_app ..
+
+theorem map_comp (φ : C ⥤ D) (φ' : D ⥤ E) : map (φ ⋙ φ') = map φ ⋙ map φ' := by
+  symm; apply lift_unique; rfl
 
 @[simp]
 lemma map_obj_mk (φ : C ⥤ D) (X : C) : (map φ).obj (mk X) = mk (φ.obj X) := rfl
@@ -174,19 +210,23 @@ lemma lift_map_mk {E : Type u₂} [Groupoid.{v₂} E] (φ : C ⥤ E) {X Y : C} (
     (lift φ).map (homMk f) = φ.map f := by
   simpa using Functor.congr_hom (lift_spec φ) f
 
-lemma of_map (F : C ⥤ D) : of C ⋙ map F = F ⋙ of D := rfl
+variable {E : Type u₂} [Groupoid.{v₂} E]
 
-/-- The operation `of` is natural. -/
-def ofMap (F : C ⥤ D) : of C ⋙ map F ≅ F ⋙ of D := Iso.refl _
-
-lemma map_lift {E : Type u₂} [Groupoid.{v₂} E] (F : C ⥤ D) (G : D ⥤ E) :
-  map F ⋙ lift G = lift (F ⋙ G) := by
-    apply lift_unique
-    rw [← Functor.assoc, of_map, Functor.assoc, lift_spec G]
+lemma map_lift (F : C ⥤ D) (G : D ⥤ E) : map F ⋙ lift G = lift (F ⋙ G) := by
+  apply lift_unique
+  rw [← Functor.assoc, of_map, Functor.assoc, lift_spec G]
 
 /-- The operation `lift` is natural. -/
-def mapLift {E : Type u₂} [Groupoid.{v₂} E] (F : C ⥤ D) (G : D ⥤ E) :
-  map F ⋙ lift G ≅ lift (F ⋙ G) := eqToIso (map_lift F G)
+def mapLift (F : C ⥤ D) (G : D ⥤ E) : map F ⋙ lift G ≅ lift (F ⋙ G) :=
+  liftNatIso _ _ (Iso.refl _)
+
+@[simp]
+lemma mapLift_hom_app (F : C ⥤ D) (G : D ⥤ E) (X) : (mapLift F G).hom.app X = 𝟙 _ :=
+  liftNatIso_hom_app ..
+
+@[simp]
+lemma mapLift_inv_app (F : C ⥤ D) (G : D ⥤ E) (X) : (mapLift F G).inv.app X = 𝟙 _ :=
+  liftNatIso_inv_app ..
 
 end Functoriality
 
