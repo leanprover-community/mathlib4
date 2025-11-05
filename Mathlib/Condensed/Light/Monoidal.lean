@@ -35,16 +35,17 @@ open CategoryTheory Monoidal Sheaf MonoidalCategory MonoidalClosed MonoidalClose
 
 namespace LightCondensed
 
-attribute [local instance] monoidalCategory symmetricCategory
-
 variable (R : Type u) [CommRing R]
 
+attribute [local instance] monoidalCategory in
 instance : MonoidalCategory (LightCondMod.{u} R) :=
   inferInstanceAs (MonoidalCategory (Transported (equivSmall (ModuleCat R)).symm))
 
+attribute [local instance] monoidalCategory symmetricCategory in
 instance : SymmetricCategory (LightCondMod.{u} R) :=
   inferInstanceAs (SymmetricCategory (Transported (equivSmall (ModuleCat R)).symm))
 
+attribute [local instance] monoidalCategory symmetricCategory in
 /--
 The category of sheaves on a small site that is equivalent to light condensed modules is monoidal
 closed.
@@ -54,12 +55,15 @@ local instance : MonoidalClosed
       (coherentTopology LightProfinite.{u})) (ModuleCat R)) :=
   Reflective.monoidalClosed (sheafificationAdjunction _ _)
 
+attribute [local instance] monoidalCategory in
 instance : MonoidalClosed (LightCondMod.{u} R) :=
   inferInstanceAs (MonoidalClosed (Transported (equivSmall (ModuleCat R)).symm))
 
+attribute [local instance] monoidalCategory in
 instance : (equivSmall (ModuleCat R)).functor.Monoidal :=
   inferInstanceAs (equivalenceTransported (equivSmall (ModuleCat R)).symm).inverse.Monoidal
 
+attribute [local instance] monoidalCategory in
 instance : (equivSmall (ModuleCat R)).inverse.Monoidal :=
   inferInstanceAs (equivalenceTransported (equivSmall (ModuleCat R)).symm).functor.Monoidal
 
@@ -70,6 +74,8 @@ instance : (equivSmall (Type u)).inverse.Monoidal :=
   ((Monoidal.nonempty_monoidal_iff_preservesFiniteProducts _).mpr inferInstance).some
 
 instance : (free R).Monoidal := by
+  letI : MonoidalCategory (Sheaf ((equivSmallModel LightProfinite).inverse.inducedTopology
+      (coherentTopology LightProfinite)) (ModuleCat R)) := monoidalCategory _ _
   apply (config := {allowSynthFailures := true}) (equivSmall _).symm.monoidalOfPostcompInverse
   apply (config := {allowSynthFailures := true}) (equivSmall _).symm.monoidalOfPrecompFunctor
   exact Monoidal.transport (equivSmallFreeIso R).symm
