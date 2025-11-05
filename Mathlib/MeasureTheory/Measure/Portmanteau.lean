@@ -640,7 +640,79 @@ theorem tendsto_of_forall_isClosed_limsup_le
   exact (limsup_comp (fun i ↦ μs i F) u _).trans_le
     (limsup_le_limsup_of_le hu (by isBoundedDefault) ⟨1, by simp⟩)
 
+lemma tendsto_of_forall_isClosed_limsup_real_le' {L : Filter ι} [L.IsCountablyGenerated]
+    (h : ∀ F : Set Ω, IsClosed F →
+      limsup (fun i ↦ (μs i : Measure Ω).real F) L ≤ (μ : Measure Ω).real F) :
+    Tendsto μs L (𝓝 μ) := by
+  refine tendsto_of_forall_isClosed_limsup_le' fun F hF ↦ ?_
+  rcases L.eq_or_neBot with rfl | hne
+  · simp
+  specialize h F hF
+  simp only [Measure.real_def] at h
+  rwa [ENNReal.limsup_toReal_eq (b := 1) (by simp) (.of_forall fun i ↦ prob_le_one),
+    ENNReal.toReal_le_toReal _ (by finiteness)] at h
+  refine ne_top_of_le_ne_top (b := 1) (by simp) ?_
+  refine limsup_le_of_le ?_ (.of_forall fun i ↦ prob_le_one)
+  exact isCoboundedUnder_le_of_le L (x := 0) (by simp)
+
 end Closed
+
+section Lipschitz
+
+/-- Weak convergence of probability measures is equivalent to the property that the integrals of
+every bounded Lipschitz function converge to the integral of the function against
+the limit measure. -/
+theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : MeasurableSpace Ω}
+    [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] {F : Filter γ} [F.IsCountablyGenerated]
+    {μs : γ → ProbabilityMeasure Ω} {μ : ProbabilityMeasure Ω} :
+    Tendsto μs F (𝓝 μ) ↔
+      ∀ f : Ω → ℝ, (∃ (C : ℝ), ∀ x y, dist (f x) (f y) ≤ C) → (∃ L, LipschitzWith L f) →
+        Tendsto (fun i ↦ ∫ ω, f ω ∂(μs i)) F (𝓝 (∫ ω, f ω ∂μ)) := by
+  constructor
+  · -- A bounded Lipschitz function is in particular a bounded continuous function, and we already
+    -- know that weak convergence implies convergence of their integrals
+    intro h f hf_bounded hf_lip
+    simp_rw [ProbabilityMeasure.tendsto_iff_forall_integral_tendsto] at h
+    let f' : BoundedContinuousFunction Ω ℝ :=
+    { toFun := f
+      continuous_toFun := hf_lip.choose_spec.continuous
+      map_bounded' := hf_bounded }
+    simpa using h f'
+  -- To prove the other direction, we prove convergence of the measure of closed sets.
+  -- We approximate the indicator function of a closed set by bounded Lipschitz functions.
+  rcases F.eq_or_neBot with rfl | hne
+  · simp
+  refine fun h ↦ tendsto_of_forall_isClosed_limsup_real_le' fun s hs ↦ ?_
+  refine le_of_forall_pos_le_add fun ε ε_pos ↦ ?_
+  let fs : ℕ → Ω → ℝ := fun n ω ↦ thickenedIndicator (δ := (1 : ℝ) / (n + 1)) (by positivity) s ω
+  have key₁ : Tendsto (fun n ↦ ∫ ω, fs n ω ∂μ) atTop (𝓝 ((μ : Measure Ω).real s)) :=
+    tendsto_integral_thickenedIndicator_of_isClosed μ hs (δs := fun n ↦ (1 : ℝ) / (n + 1))
+      (fun _ ↦ by positivity) tendsto_one_div_add_atTop_nhds_zero_nat
+  have room₁ : (μ : Measure Ω).real s < (μ : Measure Ω).real s + ε / 2 := by simp [ε_pos]
+  obtain ⟨M, hM⟩ := eventually_atTop.mp <| key₁.eventually_lt_const room₁
+  have key₂ : Tendsto (fun i ↦ ∫ ω, fs M ω ∂(μs i)) F (𝓝 (∫ ω, fs M ω ∂μ)) :=
+    h (fs M) ⟨1, fun x y ↦ ?_⟩
+      ⟨_, lipschitzWith_thickenedIndicator (δ := (1 : ℝ) / (M + 1)) (by positivity) s⟩
+  swap
+  · simp only [Real.dist_eq, abs_le]
+    have h1 x : fs M x ≤ 1 := thickenedIndicator_le_one _ _ _
+    have h2 x : 0 ≤ fs M x := by simp [fs]
+    grind
+  have room₂ : ∫ a, fs M a ∂μ < ∫ a, fs M a ∂μ + ε / 2 := by simp [ε_pos]
+  have ev_near : ∀ᶠ x in F, (μs x : Measure Ω).real s ≤ ∫ a, fs M a ∂μ + ε / 2 := by
+    refine (key₂.eventually_le_const room₂).mono fun x hx ↦ le_trans ?_ hx
+    rw [← integral_indicator_one hs.measurableSet]
+    refine integral_mono ?_ (integrable_thickenedIndicator _ _) ?_
+    · exact (integrable_indicator_iff hs.measurableSet).mpr (integrable_const _).integrableOn
+    · have h : _ ≤ fs M :=
+        indicator_le_thickenedIndicator (δ := (1 : ℝ) / (M + 1)) (by positivity) s
+      simpa using h
+  apply (Filter.limsup_le_of_le ?_ ev_near).trans
+  · apply (add_le_add (hM M rfl.le).le (le_refl (ε / 2))).trans_eq
+    ring
+  · exact isCoboundedUnder_le_of_le F (x := 0) (by simp)
+
+end Lipschitz
 
 section convergenceCriterion
 

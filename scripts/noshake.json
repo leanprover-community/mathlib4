@@ -68,6 +68,7 @@
   "Mathlib.Tactic.Attr.Register",
   "Mathlib.Tactic.Basic",
   "Mathlib.Tactic.Bound.Attribute",
+  "Mathlib.Tactic.ByCases",
   "Mathlib.Tactic.ByContra",
   "Mathlib.Tactic.CC",
   "Mathlib.Tactic.CancelDenoms",
@@ -201,9 +202,11 @@
  ["Batteries.Tactic.Basic",
   "Mathlib.Mathport.Syntax",
   "Mathlib.Tactic.Linter",
+  "Mathlib.Tactic.Common",
   "Mathlib.Init"],
  "ignore":
  {"Mathlib.Util.Notation3": ["Lean.Elab.AuxDef", "Lean.Elab.BuiltinCommand"],
+  "Mathlib.Topology.UniformSpace.OfCompactT2": ["Mathlib.Tactic.TautoSet"],
   "Mathlib.Topology.UniformSpace.Defs": ["Mathlib.Tactic.Monotonicity.Basic"],
   "Mathlib.Topology.Sober": ["Mathlib.Algebra.HierarchyDesign"],
   "Mathlib.Topology.Sheaves.Forget": ["Mathlib.Algebra.Category.Ring.Limits"],
@@ -214,6 +217,7 @@
   "Mathlib.Topology.Order.LeftRightNhds":
   ["Mathlib.Algebra.Ring.Pointwise.Set"],
   "Mathlib.Topology.Instances.ENNReal.Lemmas": ["Mathlib.Tactic.Bound"],
+  "Mathlib.Topology.Instances.CantorSet": ["Mathlib.Data.Stream.Init"],
   "Mathlib.Topology.DiscreteSubset": ["Mathlib.Tactic.TautoSet"],
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Topology.Category.UniformSpace":
@@ -261,7 +265,7 @@
   "Mathlib.Tactic.NormNum.ModEq":
   ["Mathlib.Data.Int.ModEq", "Mathlib.Tactic.NormNum.DivMod"],
   "Mathlib.Tactic.NormNum.Ineq":
-  ["Mathlib.Algebra.Order.Field.Defs", "Mathlib.Algebra.Order.Monoid.WithTop"],
+  ["Mathlib.Algebra.Order.Monoid.WithTop"],
   "Mathlib.Tactic.NormNum.BigOperators":
   ["Mathlib.Algebra.BigOperators.Group.Finset.Basic",
    "Mathlib.Data.List.FinRange"],
@@ -338,6 +342,7 @@
   "Mathlib.Tactic.CC.Datatypes":
   ["Mathlib.Lean.Meta.CongrTheorems", "Mathlib.Lean.Meta.Datatypes"],
   "Mathlib.Tactic.ByContra": ["Batteries.Tactic.Init"],
+  "Mathlib.Tactic.ByCases": ["Batteries.Tactic.PermuteGoals"],
   "Mathlib.Tactic.Bound.Init": ["Aesop.Frontend.Command"],
   "Mathlib.Tactic.Bound.Attribute":
   ["Mathlib.Algebra.Group.ZeroOne", "Mathlib.Tactic.Bound.Init"],
@@ -427,9 +432,7 @@
   "Mathlib.Geometry.Manifold.Notation":
   ["Mathlib.Geometry.Manifold.ContMDiff.Defs",
    "Mathlib.Geometry.Manifold.MFDeriv.Defs"],
-  "Mathlib.FieldTheory.Normal.Defs": ["Mathlib.FieldTheory.Galois.Notation"],
   "Mathlib.FieldTheory.Galois.Notation": ["Mathlib.Algebra.Algebra.Equiv"],
-  "Mathlib.FieldTheory.Finite.Basic": ["Mathlib.FieldTheory.Galois.Notation"],
   "Mathlib.Deprecated.NatLemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
   "Mathlib.Deprecated.MinMax": ["Mathlib.Order.MinMax"],
   "Mathlib.Deprecated.LazyList": ["Mathlib.Lean.Thunk"],
