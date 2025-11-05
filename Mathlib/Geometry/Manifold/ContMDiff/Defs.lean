@@ -215,8 +215,6 @@ theorem contMDiffWithinAt_univ : ContMDiffWithinAt I I' n f univ x ↔ ContMDiff
 theorem contMDiffOn_univ : ContMDiffOn I I' n f univ ↔ ContMDiff I I' n f := by
   simp only [ContMDiffOn, ContMDiff, contMDiffWithinAt_univ, forall_prop_of_true, mem_univ]
 
-theorem contMDiffOn_empty : ContMDiffOn I I' n f ∅ := fun _ ↦ False.elim
-
 /-- One can reformulate being `C^n` within a set at a point as continuity within this set at this
 point, and being `C^n` in the corresponding extended chart. -/
 theorem contMDiffWithinAt_iff :

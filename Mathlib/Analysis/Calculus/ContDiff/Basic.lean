@@ -95,6 +95,13 @@ theorem contDiffAt_const {c : F} : ContDiffAt 𝕜 n (fun _ : E => c) x :=
 theorem contDiffWithinAt_const {c : F} : ContDiffWithinAt 𝕜 n (fun _ : E => c) s x :=
   contDiffAt_const.contDiffWithinAt
 
+@[simp, fun_prop]
+theorem contDiffWithinAt_empty : ContDiffWithinAt 𝕜 m f ∅ x :=
+  contDiffWithinAt_const.congr (fun _ ↦ False.elim) rfl
+
+@[simp, fun_prop]
+theorem contDiffOn_empty : ContDiffOn 𝕜 m f ∅ := fun _ ↦ False.elim
+
 @[nontriviality]
 theorem contDiff_of_subsingleton [Subsingleton F] : ContDiff 𝕜 n f := by
   rw [Subsingleton.elim f fun _ => 0]; exact contDiff_const

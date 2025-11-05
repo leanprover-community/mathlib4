@@ -465,8 +465,6 @@ theorem ContDiffOn.contDiffWithinAt (h : ContDiffOn 𝕜 n f s) (hx : x ∈ s) :
 theorem ContDiffOn.of_le (h : ContDiffOn 𝕜 n f s) (hmn : m ≤ n) : ContDiffOn 𝕜 m f s := fun x hx =>
   (h x hx).of_le hmn
 
-theorem contDiffOn_empty : ContDiffOn 𝕜 m f ∅ := fun _ ↦ False.elim
-
 theorem ContDiffWithinAt.contDiffOn' (hm : m ≤ n) (h' : m = ∞ → n = ω)
     (h : ContDiffWithinAt 𝕜 n f s x) :
     ∃ u, IsOpen u ∧ x ∈ u ∧ ContDiffOn 𝕜 m f (insert x s ∩ u) := by
