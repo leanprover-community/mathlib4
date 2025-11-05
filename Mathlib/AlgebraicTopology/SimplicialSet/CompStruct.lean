@@ -70,6 +70,19 @@ lemma tgt_eq (e : Edge x₀ x₁) : X.δ 0 e.edge = x₁ := Truncated.Edge.tgt_e
 lemma ext {e e' : Edge x₀ x₁} (h : e.edge = e'.edge) :
     e = e' := Truncated.Edge.ext h
 
+section
+
+variable (edge : X _⦋1⦌) (src_eq : X.δ 1 edge = x₀ := by cat_disch)
+  (tgt_eq : X.δ 0 edge = x₁ := by cat_disch)
+
+/-- Constructor for edges in a simplicial set. -/
+def mk : Edge x₀ x₁ := ofTruncated { edge := edge }
+
+@[simp]
+lemma mk_edge : (mk edge src_eq tgt_eq).edge = edge := rfl
+
+end
+
 variable (x₀) in
 /-- The constant edge on a `0`-simplex. -/
 def id : Edge x₀ x₀ := ofTruncated (.id _)
@@ -81,6 +94,10 @@ lemma id_edge : (id x₀).edge = X.σ 0 x₀ := rfl
 /-- The image of an edge by a morphism of simplicial sets. -/
 def map (e : Edge x₀ x₁) (f : X ⟶ Y) : Edge (f.app _ x₀) (f.app _ x₁) :=
   ofTruncated (e.toTruncated.map ((truncation 2).map f))
+
+@[simp]
+lemma map_edge (e : Edge x₀ x₁) (f : X ⟶ Y) :
+    (e.map f).edge = f.app _ e.edge := rfl
 
 variable (x₀) in
 @[simp]
@@ -124,9 +141,24 @@ def toTruncated (h : CompStruct e₀₁ e₁₂ e₀₂) :
     Truncated.Edge.CompStruct e₀₁.toTruncated e₁₂.toTruncated e₀₂.toTruncated :=
   h
 
+section
+
+variable (h : CompStruct e₀₁ e₁₂ e₀₂)
+
 /-- The underlying `2`-simplex in a structure `SSet.Edge.CompStruct`. -/
-def simplex (h : CompStruct e₀₁ e₁₂ e₀₂) : X _⦋2⦌ :=
+def simplex : X _⦋2⦌ :=
     h.toTruncated.simplex
+
+@[simp]
+lemma d₂ : X.δ 2 h.simplex = e₀₁.edge := Truncated.Edge.CompStruct.d₂ h
+
+@[simp]
+lemma d₀ : X.δ 0 h.simplex = e₁₂.edge := Truncated.Edge.CompStruct.d₀ h
+
+@[simp]
+lemma d₁ : X.δ 1 h.simplex = e₀₂.edge := Truncated.Edge.CompStruct.d₁ h
+
+end
 
 section
 
