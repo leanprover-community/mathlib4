@@ -57,15 +57,15 @@ see `IsAlgClosed.splits_codomain` and `IsAlgClosed.splits_domain`.
 -/
 @[stacks 09GR "The definition of `IsAlgClosed` in mathlib is 09GR (4)"]
 class IsAlgClosed : Prop where
-  splits : ∀ p : k[X], p.Splits <| RingHom.id k
+  factors : ∀ p : k[X], p.Factors
 
 /-- Every polynomial splits in the field extension `f : K →+* k` if `k` is algebraically closed.
 
 See also `IsAlgClosed.splits_domain` for the case where `K` is algebraically closed.
 -/
 theorem IsAlgClosed.splits_codomain {k K : Type*} [Field k] [IsAlgClosed k] [CommRing K]
-    {f : K →+* k} (p : K[X]) : p.Splits f := by
-  convert IsAlgClosed.splits (p.map f); simp [splits_map_iff]
+    {f : K →+* k} (p : K[X]) : p.Splits f :=
+  IsAlgClosed.factors (p.map f)
 
 /-- Every polynomial splits in the field extension `f : K →+* k` if `K` is algebraically closed.
 
@@ -73,11 +73,14 @@ See also `IsAlgClosed.splits_codomain` for the case where `k` is algebraically c
 -/
 theorem IsAlgClosed.splits_domain {k K : Type*} [Field k] [IsAlgClosed k] [Field K] {f : k →+* K}
     (p : k[X]) : p.Splits f :=
-  Polynomial.splits_of_splits_id _ <| IsAlgClosed.splits _
+  (IsAlgClosed.factors p).map f
 
 namespace IsAlgClosed
 
 variable {k}
+
+theorem splits [IsAlgClosed k] (p : k[X]) : p.Splits (RingHom.id k) :=
+  (IsAlgClosed.factors p).map (RingHom.id k)
 
 /--
 If `k` is algebraically closed, then every nonconstant polynomial has a root.
@@ -184,11 +187,6 @@ theorem ringHom_bijective_of_isIntegral {k K : Type*} [Field k] [CommRing K] [Is
   let _ : Algebra k K := f.toAlgebra
   have : Algebra.IsIntegral k K := ⟨hf⟩
   algebraMap_bijective_of_isIntegral
-
-@[deprecated "ringHom_bijective_of_isIntegral" (since := "2025-04-16")]
-theorem algebraMap_surjective_of_isIntegral' {k K : Type*} [Field k] [CommRing K] [IsDomain K]
-    [IsAlgClosed k] (f : k →+* K) (hf : f.IsIntegral) : Function.Surjective f :=
-  (ringHom_bijective_of_isIntegral f hf).surjective
 
 end IsAlgClosed
 
