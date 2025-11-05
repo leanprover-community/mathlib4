@@ -43,11 +43,9 @@ theorem IsCyclotomicExtension_single_iff_single_two_mul_of_odd (n : ℕ) (hn : O
         apply Algebra.subset_adjoin
         rw [Set.mem_setOf_eq, neg_pow, Odd.neg_one_pow hn, neg_mul, one_mul, hb, neg_neg]
 
-
-
 -- Golf `IsCyclotomicExtension.of_union_of_dvd` using this
-theorem IsCyclotomicExtension.exists_prim_root_of_dvd {n : ℕ} [NeZero n] {S : Set ℕ} (A B : Type*)
-    [CommRing A] [CommRing B] [Algebra A B] (h : ∃ s ∈ S, s ≠ 0 ∧ n ∣ s)
+theorem IsCyclotomicExtension.exists_isPrimitiveRoot_of_dvd {n : ℕ} [NeZero n] {S : Set ℕ}
+    (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] (h : ∃ s ∈ S, s ≠ 0 ∧ n ∣ s)
     [H : IsCyclotomicExtension S A B] :
     ∃ (r : B), IsPrimitiveRoot r n := by
   obtain ⟨m, hm, hm', ⟨x, rfl⟩⟩ := h

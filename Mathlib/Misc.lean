@@ -1,6 +1,55 @@
 import Mathlib
 import Batteries.Tactic.Instances
 
+section ringChar
+
+theorem ringChar_prime (R : Type*) [NonAssocRing R] [NoZeroDivisors R] [Nontrivial R] [Finite R] :
+    Nat.Prime (ringChar R) :=
+  CharP.char_prime_of_ne_zero R <| CharP.ringChar_ne_zero_of_finite R
+
+theorem ringChar_zero_or_prime (R : Type*) [NonAssocRing R] [NoZeroDivisors R] [Nontrivial R] :
+    ringChar R = 0 ∨ Nat.Prime (ringChar R) := by
+  rw [or_iff_not_imp_left]
+  exact fun h ↦  CharP.char_prime_of_ne_zero R h
+
+end ringChar
+
+section JacobiSum
+
+theorem jacobiSum_ne_zero {F F' : Type*} [Field F] [Fintype F] [Field F'] {χ ψ : MulChar F F'}
+    (hF₁ : Fintype.card F ≠ (2 : F')) (hF₂ : ringChar F' ≠ ringChar F) :
+    jacobiSum χ ψ ≠ 0 := by
+  by_cases h : χ = 1 ∧ ψ = 1
+  · rwa [h.1, h.2, jacobiSum_one_one, sub_ne_zero]
+  rw [not_and] at h
+  by_cases hχ : χ = 1
+  · rw [hχ, jacobiSum_one_nontrivial (h hχ), neg_ne_zero]
+    exact one_ne_zero
+  by_cases hψ : ψ = 1
+  · rw [hψ, jacobiSum_comm, jacobiSum_one_nontrivial hχ, neg_ne_zero]
+    exact one_ne_zero
+  by_cases h : ψ = χ⁻¹
+  · rw [h, jacobiSum_nontrivial_inv hχ, neg_ne_zero]
+    intro h
+    have := congr_arg (· ^ 2) h
+    dsimp at this
+    rw [zero_pow, ← map_pow, neg_one_pow_two, map_one] at this
+    exact one_ne_zero this
+    exact two_ne_zero
+  have := jacobiSum_mul_jacobiSum_inv hF₂ hχ hψ (by rwa [ne_eq, mul_eq_one_iff_eq_inv'])
+  have : (Fintype.card F : F') ≠ 0 := by
+    rw [ne_eq, CharP.cast_eq_zero_iff]
+    have hF : Nat.Prime (ringChar F) := ringChar_prime F
+    have : Fact (Nat.Prime (ringChar F)) := ⟨hF⟩
+    obtain (hF' | hF') := ringChar_zero_or_prime F'
+    · rw [hF', Nat.zero_dvd]
+      exact Fintype.card_ne_zero
+    · have : Fact (Nat.Prime (ringChar F') ):= ⟨hF'⟩
+      rwa [← prime_dvd_char_iff_dvd_card, Nat.prime_dvd_prime_iff_eq hF' hF]
+  grind
+
+end JacobiSum
+
 section IsPrimitiveRoot
 
 theorem IsPrimitiveRoot.eq_neg_one_of_two_right' {R : Type*} [CommRing R] [NoZeroDivisors R]
@@ -9,9 +58,114 @@ theorem IsPrimitiveRoot.eq_neg_one_of_two_right' {R : Type*} [CommRing R] [NoZer
 
 end IsPrimitiveRoot
 
+section Associates
+
+@[simp]
+theorem Associates.count_top {α : Type*} [CancelCommMonoidWithZero α] [DecidableEq (Associates α)]
+    [(p : Associates α) → Decidable (Irreducible p)] {p : Associates α} :
+    Associates.count p ⊤ = 0 := by
+  unfold Associates.count
+  split_ifs <;> rfl
+
+end Associates
+
+
 section IsDedekindDomain.HeightOneSpectrum
 
 namespace IsDedekindDomain.HeightOneSpectrum
+open Associates UniqueFactorizationMonoid Classical in
+theorem aux {R S : Type*} [CommRing R] [CommRing S] [IsDedekindDomain R] [IsDedekindDomain S]
+    [Algebra R S] [NoZeroSMulDivisors R S] [Algebra.IsIntegral R S] (v : HeightOneSpectrum R)
+    (w : HeightOneSpectrum S) [h₀ : w.asIdeal.LiesOver v.asIdeal] (I : Ideal R) :
+    (Associates.mk w.asIdeal).count (Associates.mk (Ideal.map (algebraMap R S) I)).factors =
+    Ideal.ramificationIdx (algebraMap R S) v.asIdeal w.asIdeal *
+      (Associates.mk v.asIdeal).count (Associates.mk I).factors := by
+  by_cases hI : I = ⊥
+  · simp_rw [hI, Ideal.map_bot, ← Ideal.zero_eq_bot, mk_zero, Associates.factors_zero]
+    simp
+  rw [factors_mk _ hI, factors_mk _ (Ideal.map_ne_bot_of_ne_bot hI),
+    count_some (irreducible_mk.mpr v.irreducible), count_some (irreducible_mk.mpr w.irreducible)]
+  rw [← Multiset.count_map_eq_count' _ _ Subtype.val_injective, map_subtype_coe_factors']
+  rw [← Multiset.count_map_eq_count' _ _ Subtype.val_injective, map_subtype_coe_factors']
+  rw [factors_eq_normalizedFactors, Multiset.count_map_eq_count' _ _ (mk_injective (M := Ideal R))]
+  rw [factors_eq_normalizedFactors, Multiset.count_map_eq_count' _ _ (mk_injective (M := Ideal S))]
+  have := Ideal.IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count (f := algebraMap R S)
+    (p := v.asIdeal) (P := w.asIdeal) (Ideal.map_ne_bot_of_ne_bot v.ne_bot) w.isPrime w.ne_bot
+  rw [← prod_normalizedFactors_eq_self hI]
+  refine Multiset.prod_induction
+    (fun I ↦ Multiset.count w.asIdeal (normalizedFactors (Ideal.map (algebraMap R S) I)) =
+        Ideal.ramificationIdx (algebraMap R S) v.asIdeal w.asIdeal *
+          Multiset.count v.asIdeal (normalizedFactors I)) _ ?_ ?_ ?_
+  · intro I J hI hJ
+    by_cases hIJ : I * J = ⊥
+    · simp_rw [hIJ, Ideal.map_bot, ← Ideal.zero_eq_bot, normalizedFactors_zero]
+      simp
+    rw [← Ideal.zero_eq_bot, ← ne_eq, mul_ne_zero_iff] at hIJ
+    rw [Ideal.map_mul, normalizedFactors_mul (Ideal.map_ne_bot_of_ne_bot hIJ.1)
+      (Ideal.map_ne_bot_of_ne_bot hIJ.2), Multiset.count_add, hI, hJ, ← mul_add,
+      ← Multiset.count_add, ← normalizedFactors_mul hIJ.1 hIJ.2]
+  · simp_rw [Ideal.one_eq_top, Ideal.map_top, ← Ideal.one_eq_top, normalizedFactors_one]
+    simp only [Multiset.notMem_zero, not_false_eq_true, Multiset.count_eq_zero_of_notMem, mul_zero]
+  · intro P hP
+    have hP' : P ≠ ⊥ := ne_zero_of_mem_normalizedFactors hP
+    rw [mem_normalizedFactors_iff hI] at hP
+    have : P.IsMaximal := by
+      refine Ideal.IsPrime.isMaximal ?_ hP'
+      refine Ideal.isPrime_of_prime ?_
+      exact hP.1
+    rw [normalizedFactors_irreducible hP.1.irreducible, normalize_eq,
+      Ideal.map_algebraMap_eq_finset_prod_pow hP', Finset.prod_eq_multiset_prod,
+      normalizedFactors_multiset_prod, Multiset.map_map]
+    · simp_rw [Function.comp_apply, normalizedFactors_pow]
+      rw [Finset.sum_map_val, Multiset.count_sum']
+      have : ∀ x ∈ (P.primesOver S).toFinset, Irreducible x := by
+        intro x hx
+        rw [Set.mem_toFinset] at hx
+        apply Prime.irreducible
+        apply Ideal.prime_of_isPrime
+        · apply Ideal.ne_bot_of_mem_primesOver hP' hx
+        · exact hx.1
+      simp_rw +contextual [Multiset.count_nsmul, normalizedFactors_irreducible (this _ _),
+        normalize_eq, Multiset.count_singleton]
+      simp only [mul_ite, mul_one, mul_zero, Finset.sum_ite_eq, Set.mem_toFinset]
+      by_cases hP : v.asIdeal = P
+      · rw [hP, if_pos, if_pos rfl]
+        refine ⟨w.isPrime, ?_⟩
+        rwa [← hP]
+      · rw [if_neg, if_neg hP]
+        intro h
+        have := h.2
+        rw [Ideal.liesOver_iff] at this h₀
+        have := h₀.trans this.symm
+        exact hP this
+    · simp
+      intro x hx
+      rw [← Ideal.zero_eq_bot]
+      rw [pow_eq_zero_iff]
+      · exact Ideal.ne_bot_of_mem_primesOver hP' hx
+      · have := hx.1
+        have := hx.2
+        apply Ideal.IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver _ hP'
+
+open Associates UniqueFactorizationMonoid in
+theorem intValuation_algebraMap {R S : Type*} [CommRing R] [CommRing S] [IsDedekindDomain R]
+    [IsDedekindDomain S] [Algebra R S] [NoZeroSMulDivisors R S] [Algebra.IsIntegral R S]
+    (v : HeightOneSpectrum R) (w : HeightOneSpectrum S) [w.asIdeal.LiesOver v.asIdeal]
+    (h : Ideal.ramificationIdx (algebraMap R S) v.asIdeal w.asIdeal ≠ 0) (r : R) :
+    w.intValuation (algebraMap R S r) =
+      (v.intValuation r) ^ Ideal.ramificationIdx (algebraMap R S) v.asIdeal w.asIdeal := by
+  classical
+  by_cases hr : r = 0
+  · simpa [hr] using (zero_pow h).symm
+  rw [intValuation_def, intValuation_def, if_neg hr, if_neg]
+  · simp only [WithZero.exp_neg, inv_pow, ← WithZero.exp_nsmul, Int.nsmul_eq_mul, inv_inj,
+      WithZero.exp_inj, ← Nat.cast_mul]
+    rw [Nat.cast_inj]
+    rw [← aux, Ideal.map_span]
+    simp
+  rw [← ne_eq]
+  rwa [map_ne_zero_iff]
+  exact FaithfulSMul.algebraMap_injective R S
 
 theorem intValuation_pow_le_iff_not_dvd {R : Type*} [CommRing R] [IsDedekindDomain R]
     (v : HeightOneSpectrum R) {r : R} (hr : r ≠ 0) (n : ℕ) :
