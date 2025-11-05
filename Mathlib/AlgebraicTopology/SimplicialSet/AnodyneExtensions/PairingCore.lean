@@ -82,8 +82,7 @@ noncomputable def Pairing.pairingCore (P : A.Pairing) [P.IsProper] :
   surjective' x := by
     obtain ⟨s, rfl | rfl⟩ := P.exists_or x
     · refine ⟨s, Or.inr ?_⟩
-      rw [(P.isUniquelyCodimOneFace s).δ_index rfl]
-      rfl
+      simp [(P.isUniquelyCodimOneFace s).δ_index]
     · refine ⟨s, Or.inl ?_⟩
       nth_rw 1 [← (P.p s).1.cast_eq_self (P.isUniquelyCodimOneFace s).dim_eq]
       rfl
