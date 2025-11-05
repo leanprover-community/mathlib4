@@ -446,6 +446,7 @@ def mkOfUnitCounit (adj : CoreUnitCounit F G) : F ⊣ G where
     simpa [-CoreUnitCounit.right_triangle] using this Y
 
 /-- The adjunction between the identity functor on a category and itself. -/
+@[simps]
 def id : 𝟭 C ⊣ 𝟭 C where
   unit := 𝟙 _
   counit := 𝟙 _
