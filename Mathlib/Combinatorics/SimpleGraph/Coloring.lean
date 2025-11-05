@@ -432,7 +432,7 @@ theorem eq_top_of_chromaticNumber_eq_card [DecidableEq V] [Fintype V]
   have : G.chromaticNumber ≤ Fintype.card V - 1 := by
     obtain ⟨a, b, hne, _⟩ := ne_top_iff_exists_not_adj.mp hh
     apply chromaticNumber_le_iff_colorable.mpr
-    suffices G.Coloring ↑(Finset.univ \ {b}) by simpa using Coloring.colorable this
+    suffices G.Coloring (Finset.univ.erase b) by simpa using Coloring.colorable this
     apply Coloring.mk (fun x ↦ if h' : x ≠ b then ⟨x, by simp [h']⟩ else ⟨a, by simp [hne]⟩)
     grind [Adj.ne', adj_symm]
   rw [h, ← ENat.coe_one, ← ENat.coe_sub, ENat.coe_le_coe] at this
