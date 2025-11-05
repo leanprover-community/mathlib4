@@ -395,7 +395,7 @@ partial def evalAdd {a b : Q($α)} (va : ExSum sα a) (vb : ExSum sα b) :
   | .zero, vb => return ⟨b, vb, q(add_pf_zero_add $b)⟩
   | va, .zero => return ⟨a, va, q(add_pf_add_zero $a)⟩
   | .add (a := a₁) (b := _a₂) va₁ va₂, .add (a := b₁) (b := _b₂) vb₁ vb₂ =>
-    have va := .add va₁ va₂; have vb := .add vb₁ vb₂
+    have va := .add va₁ va₂; have vb := .add vb₁ vb₂ -- FIXME: why does `va@(...)` fail?
     match ← (evalAddOverlap sα va₁ vb₁).run with
     | some (.nonzero ⟨_, vc₁, pc₁⟩) =>
       let ⟨_, vc₂, pc₂⟩ ← evalAdd va₂ vb₂
@@ -592,6 +592,8 @@ polynomial expressions.
 def evalNSMul {a : Q(ℕ)} {b : Q($α)} (va : ExSum sℕ a) (vb : ExSum sα b) :
     AtomM (Result (ExSum sα) q($a • $b)) := do
   if ← isDefEq sα sℕ then
+    /- We want to tell Qq that `α` and `ℕ` are the same, but unfortunately
+    there is no way to tell it that universe `u` is the same as unverse `0`. -/
     let ⟨_, va'⟩ := va.cast
     have _b : Q(ℕ) := b
     let ⟨(_c : Q(ℕ)), vc, (pc : Q($a * $_b = $_c))⟩ ← evalMul sα va' vb
@@ -690,6 +692,8 @@ polynomial expressions.
 def evalZSMul {a : Q(ℤ)} {b : Q($α)} (rα : Q(CommRing $α)) (va : ExSum sℤ a) (vb : ExSum sα b) :
     AtomM (Result (ExSum sα) q($a • $b)) := do
   if ← isDefEq sα sℤ then
+    /- We want to tell Qq that `α` and `ℤ` are the same, but unfortunately
+    there is no way to tell it that universe `u` is the same as universe `0`. -/
     let ⟨_, va'⟩ := va.cast
     have _b : Q(ℤ) := b
     let ⟨(_c : Q(ℤ)), vc, (pc : Q($a * $_b = $_c))⟩ ← evalMul sα va' vb
@@ -1082,7 +1086,11 @@ def evalCast {α : Q(Type u)} (sα : Q(CommSemiring $α)) {e : Q($α)} :
     pure ⟨_, .zero, q(cast_zero $p)⟩
   | .isNat _ lit p => do
     assumeInstancesCommute
-    pure ⟨_, (ExProd.mkNat sα lit.natLit!).2.toSum, (q(cast_pos $p) : Expr)⟩
+    have ⟨e', s⟩ := ExProd.mkNat sα lit.natLit!
+    have : $e' =Q ($lit).rawCast := ⟨⟩
+    pure ⟨_, s.toSum, q(cast_pos $p)⟩
+  /- In the following cases, Qq needs help identifying the `0` in the produced type with the `0`
+  in the expected type, which arise from different instances. -/
   | .isNegNat rα lit p =>
     pure ⟨_, (ExProd.mkNegNat sα rα lit.natLit!).2.toSum, (q(cast_neg $p) : Expr)⟩
   | .isNNRat dsα q n d p =>
@@ -1286,13 +1294,13 @@ partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
       let ⟨c, vc, p⟩ ← evalMul sα va vb
       pure ⟨c, vc, q(mul_congr $pa $pb $p)⟩
     | _ => els
-  | ``HSMul.hSMul, rα, _ => match e, rα with
-    | ~q(($a : ℕ) • ($b : «$α»)), _ =>
+  | ``HSMul.hSMul, rα, _ => match rα, e with
+    | _, ~q(($a : ℕ) • ($b : «$α»)) =>
       let ⟨_, va, pa⟩ ← eval sℕ .nat a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ ← evalNSMul sα va vb
       pure ⟨c, vc, q(nsmul_congr $pa $pb $p)⟩
-    | ~q(@HSMul.hSMul ℤ _ _ (@instHSMul _ _ $_i) $a $b), some rα =>
+    | some rα, ~q(($a : ℤ) • ($b : «$α»)) =>
       let ⟨_, va, pa⟩ ← eval sℤ .int a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ ← evalZSMul sα rα va vb
