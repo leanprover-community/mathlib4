@@ -698,7 +698,7 @@ lemma writtenInExtChartAt_sumSwap_eventuallyEq_id :
 theorem hasMFDerivWithinAt_sumSwap :
     HasMFDerivWithinAt I I (@Sum.swap M M') s p
       (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
-  refine ⟨by sorry/-fun_prop-/, ?_⟩
+  refine ⟨by fun_prop, ?_⟩
   set U := (extChartAt I p).symm ⁻¹' s ∩ range I
   have : HasFDerivWithinAt id (ContinuousLinearMap.id 𝕜 _) U (((chartAt H p).extend I) p) :=
     hasFDerivWithinAt_id _ U
