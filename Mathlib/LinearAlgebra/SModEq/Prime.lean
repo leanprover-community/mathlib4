@@ -17,7 +17,7 @@ include pr hpI
 theorem pow_prime {x y : R} {m : ℕ} (hm : m ≠ 0) (h : x ≡ y [SMOD I ^ m]) :
     x ^ p ≡ y ^ p [SMOD I ^ (m + 1)] := by
   rw [SModEq.sub_mem] at h ⊢
-  obtain ⟨r, hr⟩ := exists_add_pow_prime_eq' pr (x - y) y
+  obtain ⟨r, hr⟩ := exists_add_pow_prime_eq pr (x - y) y
   rw [sub_add_cancel] at hr
   rw [hr, add_right_comm, add_sub_cancel_right, mul_assoc _ y]
   refine add_mem ?_ ?_
