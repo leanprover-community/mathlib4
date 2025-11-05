@@ -93,11 +93,16 @@ def implicitFunctionData (h : IsContDiffImplicitAt n f f' a) :
     · ext x
       rw [Submodule.mem_inf, Submodule.mem_bot, LinearMap.mem_ker, ContinuousLinearMap.coe_fst',
         LinearMap.mem_ker]
-      refine ⟨fun ⟨h1, h2⟩ => ?_, by rintro rfl; exact ⟨rfl, map_zero _⟩⟩
-      rw [Prod.ext_iff]; refine ⟨h1, h.bijective.injective ?_⟩
-      change f' (0, x.2) = f' (0, 0)
-      rw [show (0, x.2) = x by ext; exacts [h1.symm, rfl], h2]; exact (map_zero _).symm
-    · ext x; simp only [Submodule.mem_sup, Submodule.mem_top, iff_true]
+      constructor
+      · intro ⟨h1, h2⟩
+        rw [← Prod.mk.eta (p := x), h1] at h2
+        rw [Prod.ext_iff]
+        refine ⟨h1, h.bijective.injective ?_⟩
+        simp [h2, map_zero]
+      · rintro rfl
+        exact ⟨rfl, map_zero _⟩
+    · ext x
+      simp only [Submodule.mem_sup, Submodule.mem_top, iff_true]
       obtain ⟨y, hy⟩ := h.bijective.surjective (f' x)
       exact ⟨(0, y), by simp, x - (0, y), by simp [map_sub, ← hy], by abel⟩
 
