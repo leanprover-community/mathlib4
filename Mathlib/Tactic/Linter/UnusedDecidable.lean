@@ -5,6 +5,7 @@ Authors: Thomas R. Murrills
 -/
 import Mathlib.Init
 import Mathlib.Data.String.Defs
+import Batteries
 
 /-!
 # Unused `Decidable*` hypotheses linter
@@ -34,6 +35,8 @@ Note that this linter is off by default for now.
   Whew! Ideally, Lean core eventually simply gives us more information to link the used binders
   with their source syntax, and all this becomes unnecessary.
 
+  Or...we could restrict to `theorem`s in the first place. `theorem`s have the variables unused in the type excluded from the context of the `BodyInfo`. I think I'm right in saying there's always an `AsyncBodyInfo`?
+
 - It would be nice to try to insert `classical` ourselves. It might be worth creating API for
   matching against all the necessary syntax here--or, maybe getting to `mkDefView` is sufficient.
 
@@ -41,6 +44,8 @@ Note that this linter is off by default for now.
   suggesting it to the user. We might have to be careful here; we're halfway to `elabMutualDef` or
   similar, so maybe we could just try that. But we'd want to be careful to do it correctly, and
   avoid any issues arising from the fact that the declaration has already been elaborated.
+
+- Technical: be sure to exclude implementation details when access fvarIds. Also
 -/
 
 open Lean Meta Elab Command Linter
@@ -55,6 +60,22 @@ def Lean.Elab.TermInfo.toMessageData (i : TermInfo) (ctx : ContextInfo) : MetaM 
   let n := if i.isBinder then i.elaborator ++ `binder else i.elaborator
   let g ← mkFreshExprMVarAt i.lctx #[] type .syntheticOpaque n
   return m!"{← i.format ctx}\n{.ofGoal g.mvarId!}"
+
+#check MetavarContext
+
+def Lean.Elab.TacticInfo.lctxsBefore (i : TacticInfo) : List LocalContext :=
+  i.goalsBefore.map fun g => i.mctxBefore.getDecl g |>.lctx
+
+def Lean.Elab.TacticInfo.lctxsAfter (i : TacticInfo) : List LocalContext :=
+  i.goalsAfter.map fun g => i.mctxAfter.getDecl g |>.lctx
+
+
+def Lean.Elab.TacticInfo.toMessageData (i : TacticInfo) (ctx : ContextInfo) : MetaM MessageData := do
+  let type :=  mkConst ``NoType
+  let n := i.elaborator
+  Meta.withLCtx' i.lctxsBefore[0]! do
+  let g ← mkFreshExprMVar type .syntheticOpaque n
+  return ← addMessageContext m!"{← i.format ctx}\n{.ofGoal g.mvarId!}"
 
 inductive ListTree where
 | node (h : MessageData) (j : List ListTree)
@@ -72,6 +93,8 @@ where
       msg := msg ++ "\n" ++ .nest (indent + 1) (go (indent + 1) s)
     return msg
 
+#check TermInfo
+
 instance : ToMessageData ListTree where
   toMessageData := ListTree.toMessageData
 
@@ -85,16 +108,33 @@ elab tk:"#info_trees!" " in" cmd:command : command => do
         let some (l : ListTree) ← t.visitM (postNode := fun ctx i _ch l => do
           let l := l.reduceOption
           match i with
-          | .ofTermInfo i => return ListTree.node m!"{← i.toMessageData ctx}" l
+          | .ofTermInfo i => return ListTree.node m!"{repr i.expr} {← i.toMessageData ctx}" l
           | i => return ListTree.node m!"{← i.format ctx}" l
         )
           | continue
         logInfo l.toMessageData
 
-variable (q : String)
+variable {α} (q : α = α) {α} [DecidableEq α]
 
-#info_trees! in
-def foo {α : Type} : α = α := rfl
+
+
+#check Lean.Parser.Command.«include»
+#info_trees in
+-- include inst in
+theorem foo {α : Type} : Nat → α = α
+| n => by
+  -- run_tac do
+  --   logInfo m!"{(← getLCtx).decls.toArray.reduceOption.map (·.isImplementationDetail)}"
+  exact go n
+where
+  go (n : Nat) : α = α := rfl
+
+
+
+run_cmd do
+  let e := wasOriginallyTheorem (← getEnv) `foo.go
+  logInfo m!"{e}"
+
 
 /--
 Gets the indices `i` of the binders of a nested `.forallE`, `(x₀ : A₀) → (x₁ : A₁) → ⋯ → X`,
@@ -103,10 +143,12 @@ such that
 -  `p Aᵢ` is `true`
 - `Aᵢ₊₁ → ⋯ → X` does not depend on `xᵢ`. (It's in this sense that `xᵢ : Aᵢ` is "unused".)
 
+Note that the argument to `p` may have loose bvars.
+
 This function runs `cleanupAnnotations` on each expression before examining it.
 
-For performance, it also simply looks for loose bound variables to test dependence instead of
-creating intermediate telescopes.
+For performance, we test dependence via   loose bound variables instead of creating intermediate
+telescopes.
 -/
 private partial def Lean.Expr.getUnusedForallInstanceBinderIdxsWhere (p : Expr → Bool) (e : Expr) :
     Array Nat :=
@@ -121,6 +163,62 @@ where
         acc
     | _ => acc
 
+namespace Lean.Elab.InfoTree
+
+/--
+Get the `parentDecl`s of every elaborated body. This includes `let rec`/`where`
+definitions. Assumes that every declaration elaboration proceeds through `Lean.Elab.Term.BodyInfo`.
+-/
+def getDecls (t : InfoTree) : List Name :=
+  t.collectNodesBottomUp fun ctx i _ decls =>
+    match i with
+    | .ofCustomInfo i =>
+      if i.value.typeName == ``Lean.Elab.Term.BodyInfo then
+        if let some decl := ctx.parentDecl? then
+          decl :: decls
+        else decls
+      else decls
+    | _ => decls
+
+-- Id.run do
+--   let some decls ← t.visitM
+--     (postNode := fun ctx i _ decls => do
+--       let decls := decls.reduceOption.flatten
+--       match i with
+--       | .ofCustomInfo i =>
+--         if i.value.typeName == ``Lean.Elab.Term.BodyInfo then
+--           if let some decl := ctx.parentDecl? then
+--             return decl :: decls
+--           else return decls
+--         else return decls
+--       | _ => return decls)
+--     | return []
+--   return decls
+
+partial def findSome? (p : Info → Option α) (t : InfoTree) : Option α :=
+  match t with
+  | .context _ t => findSome? p t
+  | .node i ts   => p i <|> ts.findSome? (findSome? p)
+  | _ => none
+
+/--
+Given a constant name, find the first `TermInfo` whose expression is exactly that constant. Does
+not resolve names.
+-/
+def getTermInfoForConst? (t : InfoTree) (decl : Name) : Option TermInfo :=
+  t.findSome? fun
+    | .ofTermInfo ti => if ti.expr.isConstOf decl then some ti else none
+    | _ => none
+
+/-- Get the syntax for the first occurrence of `decl` as the expression of some `TermInfo`. -/
+def getConstRef? (t : InfoTree) (decl : Name) : Option Syntax :=
+  t.getTermInfoForConst? decl |>.map (·.stx)
+
+def getFVarTypeRefsOfBod
+
+
+end Lean.Elab.InfoTree
+
 namespace Mathlib.Linter.UnusedDecidable
 
 /--
@@ -132,7 +230,7 @@ checks if the constant is one of: `DecidableEq`, `DecidableLE`, `DecidableLT`, `
 
 Runs `cleanupAnnotations` on `type` and `forallE` bodies, and ignores metadata in applications.
 -/
-@[inline] partial def isAppOfDecidable (type : Expr) : Bool :=
+@[inline] partial def isAppOrForallOfDecidable (type : Expr) : Bool :=
     match type.cleanupAnnotations.getAppFn' with
     | .const n _ =>
       n == ``DecidableEq   ||
@@ -141,7 +239,7 @@ Runs `cleanupAnnotations` on `type` and `forallE` bodies, and ignores metadata i
       n == ``DecidableRel  ||
       n == ``DecidablePred ||
       n == ``Decidable
-    | .forallE _ _ body _ => isAppOfDecidable body
+    | .forallE _ _ body _ => isAppOrForallOfDecidable body
     | _ => false
 
 /--
@@ -165,42 +263,27 @@ def unusedDecidable : Linter where
     unless getLinterValue linter.unusedDecidable (← getLinterOptions) do
       return
     for t in ← getInfoTrees do
-      -- TODO: combine visits, since relevant term infos always come afterwards anyway
-      -- TODO: check if some `Term.State` lets us see let recs to lift? Or jsut find names via def
-      -- view?
-      let some decls ← t.visitM
-        (postNode := fun ctx i ch decls => do
-          let decls := decls.reduceOption.flatten
-          match i with
-          | .ofCustomInfo i =>
-            if i.value.typeName == ``Lean.Elab.Term.BodyInfo then
-              if let some decl := ctx.parentDecl? then
-                let s := ctx.env
-                return decl :: decls
-              else return decls
-            else return decls
-          | _ => return decls)
-        | return
-      let env ← getEnv
-      let vals? := decls.map env.findConstVal?
-      liftTermElabM do for val? in vals? do
-        if let some val := val? then
-          unless (← inferType val.type).isProp do continue
-          let unusedDecidableHyps :=
-            val.type.getUnusedForallInstanceBinderIdxsWhere isAppOfDecidable
-          unless unusedDecidableHyps.isEmpty do
-            -- TODO: get syntax from infotrees for logging ref
-            forallBoundedTelescope val.type (some <| unusedDecidableHyps.back! + 1)
-              (cleanupAnnotations := true) fun fvars body => do
-                let decidables ← unusedDecidableHyps.mapM fun idx =>
-                  return m!"`[{← inferType fvars[idx]!}]`"
-                logLint linter.unusedDecidable (← getRef) m!"\
-                  `{.ofConstName val.name}` has the \
-                  {if decidables.size = 1 then "hypothesis" else "hypotheses"} \
-                  {.andList decidables.toList} which \
-                  {if decidables.size = 1 then "is" else "are"} not used in the remainder of the \
-                  type.\n\
-                  Consider removing these hypotheses and using `classical` in the proof instead."
+      let decls := t.getDecls
+      -- For now, only handle `theorem`s.
+      -- TODO: handle `def` propositions too?
+      let decls := decls.filter <| wasOriginallyTheorem (← getEnv)
+      liftTermElabM do for decl in decls do
+        let some val := (← getEnv).findConstVal? decl | continue
+        let unusedDecidableHyps :=
+          val.type.getUnusedForallInstanceBinderIdxsWhere isAppOrForallOfDecidable
+        unless unusedDecidableHyps.isEmpty do
+          -- TODO: get syntax from infotrees for logging ref
+          forallBoundedTelescope val.type (some <| unusedDecidableHyps.back! + 1)
+            (cleanupAnnotations := true) fun fvars body => do
+              let decidables ← unusedDecidableHyps.mapM fun idx =>
+                return m!"`[{← inferType fvars[idx]!}]`"
+              logLint linter.unusedDecidable (← getRef) m!"\
+                `{.ofConstName val.name}` has the \
+                {if decidables.size = 1 then "hypothesis" else "hypotheses"} \
+                {.andList decidables.toList} which \
+                {if decidables.size = 1 then "is" else "are"} not used in the remainder of the \
+                type.\n\
+                Consider removing these hypotheses and using `classical` in the proof instead."
 
 initialize addLinter unusedDecidable
 
