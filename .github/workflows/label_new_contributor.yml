@@ -36,7 +36,7 @@ jobs:
               owner,
               repo,
               state: 'closed',
-              creator: creator,
+              creator,
               per_page: 100
             });
             console.log(`Found ${prs.data.length} closed PRs`);
