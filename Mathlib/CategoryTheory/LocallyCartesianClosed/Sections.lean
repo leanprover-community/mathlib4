@@ -9,9 +9,13 @@ import Mathlib.CategoryTheory.Closed.Cartesian
 /-!
 # The section functor as a right adjoint to the star functor
 
-We show that if `C` is cartesian closed then `star I : C ⥤ Over I`
-has a right adjoint `sectionsFunctor` whose object part is the object of sections
+We show that in a cartesian monoidal category `C`, for any exponentiable object `I`, the functor
+`toOver I : C ⥤ Over I` mapping an object `X` to the projection `snd : X ⊗ I ⟶ I` in `Over I`
+has a right adjoint `sections I : Over I ⥤ C` whose object part is the object of sections
 of `X` over `I`.
+
+In particular, if `C` is cartesian closed, then for all objects `I` in `C`, `toOver I : C ⥤ Over I`
+has a right adjoint.
 
 -/
 
@@ -20,42 +24,72 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Category Limits MonoidalCategory CartesianClosed CartesianMonoidalCategory
+open Category Limits MonoidalCategory CartesianClosed CartesianMonoidalCategory Over
 
 variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory C]
 
 attribute [local instance] BraidedCategory.ofCartesianMonoidalCategory
 
-
 section prelim
 
-open Over CartesianMonoidalCategory ChosenPullback
+open Over CartesianMonoidalCategory
 
-/-- The functor which maps an object `X` in `C` to the projection `I ⊗ X ⟶ I` in `Over I`.
+#check Functor.toOver
+
+#check Over.star
+
+/-- The functor which maps an object `X` in `C` to the projection `X ⊗ I ⟶ I` in `Over I`.
 This is the computable analogue of the functor `Over.star`. -/
 @[simps! obj_left obj_hom map_left]
 def toOver (I : C) : C ⥤ Over I where
   obj X := Over.mk (CartesianMonoidalCategory.snd X I)
   map {X Y} f := Over.homMk (f ▷ I)
 
-@[reassoc (attr := simp)]
-lemma toOver_map [HasBinaryProducts C] {I : C} {Y Z : C} (f : Y ⟶ Z) :
+@[simp]
+lemma toOver_map {I : C} {Y Z : C} (f : Y ⟶ Z) :
     (toOver I).map f = Over.homMk (f ▷ I) := by
   simp only [toOver]
+
+variable (C) in
+/-- The functor from `C` to `Over (𝟙_ C)` which sends `X : C` to `Over.mk <| toUnit X`. -/
+@[simps! obj_left obj_hom map_left]
+def toOverTerminal : C ⥤ Over (𝟙_ C) where
+  obj X := Over.mk <| toUnit X
+  map {X Y} f := Over.homMk f
+
+/-- The slice category over the terminal object is equivalent to the original category. -/
+def equivOverTerminal : Over (𝟙_ C) ≌ C :=
+  CategoryTheory.Equivalence.mk (Over.forget _) (toOverTerminal C)
+    (NatIso.ofComponents fun X => Over.isoMk (Iso.refl _))
+    (NatIso.ofComponents fun X => Iso.refl _)
+
+attribute [local instance] Over.ChosenPullback.cartesianMonoidalCategoryToTerminal
+
+def toOverCompOverMap (I : C) :
+    toOverTerminal C ⋙ ChosenPullback.pullback (toUnit I) ≅ toOver I :=
+  NatIso.ofComponents fun X => Iso.refl _
+
+@[simps! unit_app counit_app]
+def forgetAdjToOver (I : C) : Over.forget I ⊣ toOver I where
+  unit.app X := Over.homMk (lift (𝟙 X.left) (X.hom))
+  counit.app X := fst X I
+
+theorem homEquiv_symm {I : C} (X : Over I) (A : C) (f : X ⟶ (toOver I).obj A) :
+     ((forgetAdjToOver I).homEquiv X A).symm f = f.left ≫ (fst _ _) := by
+   rw [Adjunction.homEquiv_counit, forgetAdjToOver_counit_app]
+   simp
 
 attribute [local instance] Over.ChosenPullback.cartesianMonoidalCategoryToTerminal
 
 variable {I : C} (X : C)
 
-#synth ChosenPullback (toUnit I : I ⟶ 𝟙_ C)
+example : ChosenPullback.pullbackObj (toUnit X) (toUnit I) = X ⊗ I := by rfl
 
-theorem foo : pullbackObj (toUnit X) (toUnit I) = X ⊗ I := by rfl
+example : ChosenPullback.snd (toUnit X) (toUnit I) = CartesianMonoidalCategory.snd X I := rfl
 
-theorem bar : ChosenPullback.snd (toUnit X) (toUnit I) = CartesianMonoidalCategory.snd X I := rfl
+example : (toOver I).obj X = Over.mk (ChosenPullback.snd (toUnit X) (toUnit I)) := by rfl
 
-theorem boo : (toOver I).obj X = Over.mk (ChosenPullback.snd (toUnit X) (toUnit I)) := by rfl
-
-theorem baz : ((toOver I).obj X).hom = CartesianMonoidalCategory.snd X I := by rfl
+example : ((toOver I).obj X).hom = CartesianMonoidalCategory.snd X I := by rfl
 
 end prelim
 
@@ -95,11 +129,11 @@ def sectionsMap {X X' : Over I} (u : X ⟶ X') :
   pullbackMap _ _ _ _ (exp I |>.map u.left) (𝟙 _) (𝟙 _)
     (by simp [← Functor.map_comp] ) (by simp only [comp_id, id_comp])
 
-@[reassoc (attr := simp)]
+@[simp]
 lemma sectionsMap_id {X : Over I} : sectionsMap (𝟙 X) = 𝟙 _ := by
   apply ChosenPullback.hom_ext <;> simp [sectionsMap]
 
-@[reassoc (attr := simp)]
+@[simp]
 lemma sectionsMap_comp {X X' X'' : Over I} (u : X ⟶ X') (v : X' ⟶ X'') :
     sectionsMap (u ≫ v) = sectionsMap u ≫ sectionsMap v := by
   apply ChosenPullback.hom_ext <;> simp [sectionsMap]
@@ -116,11 +150,6 @@ variable {I}
 
 open ChosenPullback
 
-/-- An auxiliary morphism used to define the currying of a morphism in `Over I` to a morphism
-in `C`. See `sectionsCurry`. -/
-def sectionsCurryAux {X : Over I} {A : C} (u : (toOver I).obj A ⟶ X) : A ⟶ (I ⟹ X.left) :=
-  curry ((β_ I A).hom ≫ u.left)
-
 /-- The currying operation `Hom ((star I).obj A) X → Hom A (I ⟹ X.left)`. -/
 def sectionsCurry {X : Over I} {A : C} (u : (toOver I).obj A ⟶ X) :
     A ⟶ (sections I).obj X :=
@@ -134,13 +163,13 @@ def sectionsCurry {X : Over I} {A : C} (u : (toOver I).obj A ⟶ X) :
 def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ (sections I).obj X) :
     (toOver I).obj A ⟶ X := by
   let v₂ : A ⟶ (I ⟹ X.left) := v ≫ ChosenPullback.fst (exp I |>.map X.hom) (curryId I)
-  have w : toUnit A ≫ (curryId I) = v₂ ≫ (exp I).map X.hom := by
+  have comm : toUnit A ≫ (curryId I) = v₂ ≫ (exp I).map X.hom := by
     rw [IsTerminal.hom_ext isTerminalTensorUnit (toUnit A ) (v ≫ snd ..)]
     simp [v₂, condition]
-  dsimp [curryId] at w
-  have w' := (exp.adjunction I).homEquiv_naturality_right_square _ _ _ _ w
+  dsimp [curryId] at comm
+  have w' := (exp.adjunction I).homEquiv_naturality_right_square _ _ _ _ comm
   simp [curry] at w'
-  exact Over.homMk ((β_ A I).hom ≫ CartesianClosed.uncurry v₂) (by
+  exact Over.homMk ((β_ A I).hom ≫ uncurry v₂) (by
     dsimp [CartesianClosed.uncurry] at *
     simp only [assoc, ← w', whiskerLeft_toUnit_comp_rightUnitor_hom, braiding_hom_fst])
 
@@ -164,7 +193,7 @@ open Adjunction
 
 /-- An auxiliary definition which is used to define the adjunction between the star functor
 and the sections functor. See starSectionsAdjunction`. -/
-@[simps]
+@[simps! +simpRhs]
 def coreHomEquiv : CoreHomEquiv (toOver I) (sections I) where
   homEquiv A X := {
     toFun := sectionsCurry
@@ -194,7 +223,7 @@ variable (I)
 def toOverSectionsAdj : toOver I ⊣ sections I :=
   .mkOfHomEquiv coreHomEquiv
 
-theorem foo {X : C} : (toOverSectionsAdj I).unit.app X = sectionsCurry (𝟙 ((toOver I).obj X)) := rfl
+example {X : C} : (toOverSectionsAdj I).unit.app X = sectionsCurry (𝟙 ((toOver I).obj X)) := rfl
 
 #check toOverSectionsAdj_unit_app I
 
