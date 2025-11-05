@@ -184,10 +184,7 @@ theorem le_order_mul (φ ψ : R⟦X⟧) : order φ + order ψ ≤ order (φ * ψ
 theorem le_order_pow (φ : R⟦X⟧) (n : ℕ) : n • order φ ≤ order (φ ^ n) := by
   induction n with
   | zero => simp
-  | succ n hn =>
-    simp only [add_smul, one_smul, pow_succ]
-    apply le_trans _ (le_order_mul _ _)
-    exact add_le_add_right hn φ.order
+  | succ n ih => grw [add_smul, one_smul, pow_succ, ih, le_order_mul]
 
 theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*} (φ : ι → R⟦X⟧) (s : Finset ι) :
     ∑ i ∈ s, (φ i).order ≤ (∏ i ∈ s, φ i).order := by
@@ -255,9 +252,6 @@ dividing out the largest power of X that divides `f`, that is its order -/
 def divXPowOrder (f : R⟦X⟧) : R⟦X⟧ :=
   .mk fun n ↦ coeff (n + f.order.toNat) f
 
-@[deprecated (since := "2025-04-15")]
-noncomputable alias divided_by_X_pow_order := divXPowOrder
-
 @[simp]
 lemma coeff_divXPowOrder {f : R⟦X⟧} {n : ℕ} :
     coeff n (divXPowOrder f) = coeff (n + f.order.toNat) f :=
@@ -287,9 +281,6 @@ theorem X_pow_order_mul_divXPowOrder {f : R⟦X⟧} :
   · simp [h]
   · push_neg at h
     rw [coeff_of_lt_order_toNat _ h]
-
-@[deprecated (since := "2025-04-15")]
-alias self_eq_X_pow_order_mul_divided_by_X_pow_order := X_pow_order_mul_divXPowOrder
 
 theorem X_pow_order_dvd : X ^ φ.order.toNat ∣ φ := by
   simpa only [X_pow_dvd_iff] using coeff_of_lt_order_toNat
@@ -355,8 +346,6 @@ theorem divXPowOrder_X :
   ext n
   simp [coeff_X]
 
-@[deprecated (since := "2025-04-15")] alias divided_by_X_pow_order_of_X_eq_one := divXPowOrder_X
-
 end OrderZeroNeOne
 
 section NoZeroDivisors
@@ -418,9 +407,6 @@ theorem divXPowOrder_mul_divXPowOrder {f g : R⟦X⟧} :
         simp [X_pow_order_mul_divXPowOrder]
     _ = X ^ (f.order.toNat + g.order.toNat) * (f * g).divXPowOrder := by
         rw [order_mul, ENat.toNat_add (order_eq_top.not.mpr h.1) (order_eq_top.not.mpr h.2)]
-
-@[deprecated (since := "2025-04-15")] alias divided_by_X_pow_orderMul :=
-  divXPowOrder_mul_divXPowOrder
 
 end NoZeroDivisors
 

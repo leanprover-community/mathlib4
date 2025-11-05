@@ -562,7 +562,7 @@ theorem tangentConeAt_mono_field : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜
     · intro β hβ
       rw [mem_map, mem_atTop_sets]
       obtain ⟨n, hn⟩ := mem_atTop_sets.1
-        (mem_map.1 (h₁ (algebraMap_cobounded_le_cobounded (𝕜 := 𝕜) (𝕜' := 𝕜') hβ)))
+        (mem_map.1 (h₁ (tendsto_algebraMap_cobounded (𝕜 := 𝕜) (𝕜' := 𝕜') hβ)))
       use n, fun _ _ ↦ by simp_all
     · simpa
 
@@ -676,13 +676,6 @@ theorem uniqueDiffWithinAt_iff_accPt {s : Set 𝕜} {x : 𝕜} :
     ⟨by simp [tangentConeAt_eq_univ h], mem_closure_iff_clusterPt.mpr h.clusterPt⟩⟩
 
 alias ⟨_, AccPt.uniqueDiffWithinAt⟩ := uniqueDiffWithinAt_iff_accPt
-
-/-- In one dimension, every point is either a point of unique differentiability, or isolated. -/
-@[deprecated uniqueDiffWithinAt_iff_accPt (since := "2025-04-20")]
-theorem uniqueDiffWithinAt_or_nhdsWithin_eq_bot (s : Set 𝕜) (x : 𝕜) :
-    UniqueDiffWithinAt 𝕜 s x ∨ 𝓝[s \ {x}] x = ⊥ :=
-  (em (AccPt x (𝓟 s))).imp AccPt.uniqueDiffWithinAt fun h ↦ by
-    rwa [accPt_principal_iff_nhdsWithin, not_neBot] at h
 
 end Real
 
