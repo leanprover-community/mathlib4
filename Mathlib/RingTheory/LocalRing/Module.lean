@@ -388,7 +388,7 @@ at every maximal ideal, then `M` is free of rank `n`. -/
 @[stacks 02M9] theorem nonempty_basis_of_flat_of_finrank_eq [Module.Finite R M] [Flat R M]
     (n : ℕ) (rk : ∀ P : MaximalSpectrum R, finrank (R ⧸ P.1) ((R ⧸ P.1) ⊗[R] M) = n) :
     Nonempty (Basis (Fin n) R M) := by
-  let := @Quotient.field    
+  let := @Quotient.field
   /- For every maximal ideal `P`, `R⧸P ⊗[R] M` is an `n`-dimensional vector space over the field
     `R⧸P` by assumption, so we can choose a basis `b' P` indexed by `Fin n`. -/
   have b' (P) := Module.finBasisOfFinrankEq _ _ (rk P)
