@@ -107,7 +107,5 @@ theorem TensorProduct.piScalarRight_symm_algebraMap
     {N : Type*} [Semiring N] [Algebra R N] [Module S N] [IsScalarTower R S N]
     (x : ι → R) :
     (TensorProduct.piScalarRight R S N ι).symm (algebraMap _ _ x) = 1 ⊗ₜ[R] x := by
-  simp only [Algebra.algebraMap_eq_smul_one, LinearEquiv.symm_apply_eq, piScalarRight_apply,
-    piScalarRightHom_tmul]
-  ext
-  simp
+  simp [Algebra.algebraMap_eq_smul_one, Pi.smul_def', LinearEquiv.symm_apply_eq,
+    piScalarRight_apply, piScalarRightHom_tmul]
