@@ -205,6 +205,11 @@ theorem convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : �
   · simpa using convexOn_id (convex_Ici _)
   exact (strictConvexOn_rpow hp).convexOn
 
+theorem convexOn_rpow_left {b : ℝ} (hb : 0 < b) : ConvexOn ℝ Set.univ (fun (x : ℝ) => b ^ x) := by
+  convert convexOn_exp.comp_linearMap (LinearMap.mul ℝ ℝ (Real.log b)) using 1
+  ext x
+  simp [Real.rpow_def_of_pos hb]
+
 theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
   refine ⟨convex_Iio _, ?_⟩
   intro x (hx : x < 0) y (hy : y < 0) hxy a b ha hb hab
