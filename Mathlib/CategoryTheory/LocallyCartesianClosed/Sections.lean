@@ -20,58 +20,15 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Category Limits MonoidalCategory CartesianClosed Adjunction Over
+open Category Limits MonoidalCategory CartesianClosed Over CartesianMonoidalCategory
 
-variable {C : Type u₁} [Category.{v₁} C]
-
-attribute [local instance] hasBinaryProducts_of_hasTerminal_and_pullbacks
-attribute [local instance] hasFiniteProducts_of_has_binary_and_terminal
-attribute [local instance] CartesianMonoidalCategory.ofFiniteProducts
-
-section
-
-variable [HasFiniteProducts C]
-
-/-- The isomorphism between `X ⨯ Y` and `X ⊗ Y` for objects `X` and `Y` in `C`.
-This is tautological by the definition of the cartesian monoidal structure on `C`.
-This isomorphism provides an interface between `prod.fst` and `ChosenFiniteProducts.fst`
-as well as between `prod.map` and `tensorHom`. -/
-def prodIsoTensorObj (X Y : C) : X ⨯ Y ≅ X ⊗ Y := Iso.refl _
-
-@[reassoc (attr := simp)]
-theorem prodIsoTensorObj_inv_fst {X Y : C} :
-    (prodIsoTensorObj X Y).inv ≫ prod.fst = CartesianMonoidalCategory.fst X Y :=
-  Category.id_comp _
-
-@[reassoc (attr := simp)]
-theorem prodIsoTensorObj_inv_snd {X Y : C} :
-    (prodIsoTensorObj X Y).inv ≫ prod.snd = CartesianMonoidalCategory.snd X Y :=
-  Category.id_comp _
-
-@[reassoc (attr := simp)]
-theorem prodIsoTensorObj_hom_fst {X Y : C} :
-    (prodIsoTensorObj X Y).hom ≫ CartesianMonoidalCategory.fst X Y = prod.fst :=
-  Category.id_comp _
-
-@[reassoc (attr := simp)]
-theorem prodIsoTensorObj_hom_snd {X Y : C} :
-    (prodIsoTensorObj X Y).hom ≫ CartesianMonoidalCategory.snd X Y = prod.snd :=
-  Category.id_comp _
-
-@[reassoc (attr := simp)]
-theorem prodMap_comp_prodIsoTensorObj_hom {X Y Z W : C} (f : X ⟶ Y) (g : Z ⟶ W) :
-    prod.map f g ≫ (prodIsoTensorObj _ _).hom = (prodIsoTensorObj _ _).hom ≫ (f ⊗ₘ g) := by
-  apply CartesianMonoidalCategory.hom_ext <;> simp
-
-end
-
-variable [HasTerminal C] [HasPullbacks C]
+variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory C]
 
 variable (I : C) [Exponentiable I]
 
 /-- The first leg of a cospan constructing a pullback diagram in `C` used to define `sections` . -/
 def curryId : ⊤_ C ⟶ (I ⟹ I) :=
-  CartesianClosed.curry (CartesianMonoidalCategory.fst I (⊤_ C))
+  curry (fst I (⊤_ C))
 
 variable {I}
 
