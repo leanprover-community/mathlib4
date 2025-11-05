@@ -424,7 +424,7 @@ theorem mem_sep {p : ZFSet.{u} → Prop} {x y : ZFSet.{u}} :
 theorem sep_empty (p : ZFSet → Prop) : (∅ : ZFSet).sep p = ∅ :=
   (eq_empty _).mpr fun _ h ↦ notMem_empty _ (mem_sep.mp h).1
 
-theorem sep_subset (x p) : ZFSet.sep p x ⊆ x :=
+theorem sep_subset {x p} : ZFSet.sep p x ⊆ x :=
   fun _ h => (mem_sep.1 h).1
 
 @[simp]
@@ -454,7 +454,7 @@ theorem mem_powerset {x y : ZFSet.{u}} : y ∈ powerset x ↔ y ⊆ x :=
 /-- `ZFSet.powerset` is equivalent to `Set.powerset`. -/
 def powersetEquiv (x : ZFSet.{u}) : x.powerset.toSet ≃ 𝒫 x.toSet where
   toFun y := ⟨y.1.toSet, Set.mem_powerset (toSet_subset_iff.2 (mem_powerset.1 y.2))⟩
-  invFun s := ⟨x.sep (· ∈ s.1), mem_powerset.2 (sep_subset _ _)⟩
+  invFun s := ⟨x.sep (· ∈ s.1), mem_powerset.2 sep_subset⟩
   left_inv := by
     intro ⟨y, h⟩
     simp only [mem_toSet, mem_powerset] at h
