@@ -179,7 +179,7 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
     ext
     · dsimp
     · dsimp
-      simp only [map_comp, assoc, ← Cat.comp_map, (α.naturality g.base.toLoc).inv.naturality_assoc]
+      simp only [map_comp, assoc, ← Cat.comp_map, NatTrans.naturality_assoc]
       simp [naturality_comp_inv_app, ← map_comp]
 
 @[simp]
@@ -264,7 +264,7 @@ lemma Hom.ext (f g : a ⟶ b) (hfg₁ : f.base = g.base)
     (hfg₂ : f.fiber = g.fiber ≫ eqToHom (hfg₁ ▸ rfl)) : f = g := by
   cases f; cases g
   dsimp at hfg₁
-  aesop_cat
+  cat_disch
 
 lemma Hom.ext_iff (f g : a ⟶ b) :
     f = g ↔ ∃ (hfg : f.base = g.base), f.fiber = g.fiber ≫ eqToHom (hfg ▸ rfl) where
