@@ -509,8 +509,8 @@ def diagSet : Set (Sym2 α) :=
 theorem isDiag_iff_mem_diagSet (z : Sym2 α) : z.IsDiag ↔ z ∈ diagSet :=
   ⟨z.ind fun a b (h : a = b) ↦ ⟨a, h ▸ rfl⟩, fun ⟨_, h⟩ ↦ h ▸ rfl⟩
 
-@[deprecated (since := "2025-10-14")] alias isDiag_iff_mem_range_diag := isDiag_iff_mem_diagSet
-@[deprecated (since := "2025-10-14")] alias ⟨IsDiag.mem_range_diag, _⟩ := isDiag_iff_mem_diagSet
+@[deprecated (since := "2025-11-05")] alias isDiag_iff_mem_range_diag := isDiag_iff_mem_diagSet
+@[deprecated (since := "2025-11-05")] alias ⟨IsDiag.mem_range_diag, _⟩ := isDiag_iff_mem_diagSet
 
 theorem mem_diagSet_iff_eq {a b : α} : s(a, b) ∈ diagSet ↔ a = b :=
   isDiag_iff_mem_diagSet _ |>.symm
