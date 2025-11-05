@@ -297,9 +297,6 @@ def LEquiv.onTerm (φ : L ≃ᴸ L') : L.Term α ≃ L'.Term α where
   right_inv := by
     rw [Function.rightInverse_iff_comp, ← LHom.comp_onTerm, φ.right_inv, LHom.id_onTerm]
 
-/-- Maps a term's symbols along a language equivalence. Deprecated in favor of `LEquiv.onTerm`. -/
-@[deprecated LEquiv.onTerm (since := "2025-03-31")] alias Lequiv.onTerm := LEquiv.onTerm
-
 variable (L) (α)
 
 /-- `BoundedFormula α n` is the type of formulas with free variables indexed by `α` and `n` in-scope
