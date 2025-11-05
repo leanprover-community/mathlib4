@@ -506,17 +506,21 @@ theorem isDiag_of_subsingleton [Subsingleton α] (z : Sym2 α) : z.IsDiag :=
 def diagSet : Set (Sym2 α) :=
   Set.range diag
 
-theorem isDiag_iff_mem_diagSet (z : Sym2 α) : z.IsDiag ↔ z ∈ diagSet :=
-  ⟨z.ind fun a b (h : a = b) ↦ ⟨a, h ▸ rfl⟩, fun ⟨_, h⟩ ↦ h ▸ rfl⟩
+@[simp]
+theorem mem_diagSet_iff_isDiag (z : Sym2 α) : z ∈ diagSet ↔ z.IsDiag :=
+  ⟨fun ⟨_, h⟩ ↦ h ▸ rfl, z.ind fun a b (h : a = b) ↦ ⟨a, h ▸ rfl⟩⟩
 
-@[deprecated (since := "2025-11-05")] alias isDiag_iff_mem_range_diag := isDiag_iff_mem_diagSet
-@[deprecated (since := "2025-11-05")] alias ⟨IsDiag.mem_range_diag, _⟩ := isDiag_iff_mem_diagSet
+@[deprecated (since := "2025-11-05")] alias ⟨_, IsDiag.mem_range_diag⟩ := mem_diagSet_iff_isDiag
+
+@[deprecated mem_diagSet_iff_isDiag (since := "2025-11-05")]
+theorem isDiag_iff_mem_range_diag (z : Sym2 α) : IsDiag z ↔ z ∈ Set.range (@diag α) :=
+  z.mem_diagSet_iff_isDiag.symm
 
 theorem mem_diagSet_iff_eq {a b : α} : s(a, b) ∈ diagSet ↔ a = b :=
-  isDiag_iff_mem_diagSet _ |>.symm
+  mem_diagSet_iff_isDiag _
 
 theorem diagSet_eq_setOf_isDiag : diagSet = { z : Sym2 α | z.IsDiag } :=
-  Set.ext fun _ ↦ isDiag_iff_mem_diagSet _ |>.symm
+  Set.ext mem_diagSet_iff_isDiag
 
 theorem diagSet_compl_eq_setOf_not_isDiag : diagSetᶜ = { z : Sym2 α | ¬z.IsDiag } :=
   congrArg _ diagSet_eq_setOf_isDiag
