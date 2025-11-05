@@ -219,8 +219,9 @@ lemma nnnorm_sub_mul_self_le {A : Type*} [CStarAlgebra A] [PartialOrder A] [Star
   have hy₀ : y ∈ Set.Icc 0 1 := ⟨hx₀.trans hy.1, hy.2⟩
   have hy' : 1 - y ∈ Set.Icc 0 1 := Set.sub_mem_Icc_zero_iff_right.mpr hy₀
   rw [hy₀.1.star_eq, ← mul_assoc, mul_assoc (star _), ← sq]
-  refine nnnorm_le_nnnorm_of_nonneg_of_le (conjugate_nonneg (pow_nonneg hy'.1 2) _) ?_ |>.trans h
-  refine conjugate_le_conjugate ?_ _
+  refine nnnorm_le_nnnorm_of_nonneg_of_le (star_left_conjugate_nonneg (pow_nonneg hy'.1 2) _) ?_
+    |>.trans h
+  refine star_left_conjugate_le_conjugate ?_ _
   trans (1 - y)
   · simpa using pow_antitone hy'.1 hy'.2 one_le_two
   · gcongr
