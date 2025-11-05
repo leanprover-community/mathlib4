@@ -13,8 +13,9 @@ import Mathlib.Tactic.StacksAttribute
 /-!
 # Semirings and rings
 
-This file defines semirings, rings and domains. This is analogous to `Mathlib/Algebra/Group/Defs.lean` and
-`Mathlib/Algebra/Group/Basic.lean`, the difference being that those are about `+` and `*` separately, while
+This file defines semirings, rings and domains. This is analogous to
+`Mathlib/Algebra/Group/Defs.lean` and `Mathlib/Algebra/Group/Basic.lean`, the difference being that
+those are about `+` and `*` separately, while the present file is about their interaction.
 the present file is about their interaction.
 
 ## Main definitions
