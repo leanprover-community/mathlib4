@@ -39,7 +39,7 @@ section LeftExtension
 
 open LeftExtension
 
-/-- For an adjuntion `f ⊣ u`, `u` is an absolute left Kan extension of the identity along `f`.
+/-- For an adjunction `f ⊣ u`, `u` is an absolute left Kan extension of the identity along `f`.
 The unit of this Kan extension is given by the unit of the adjunction. -/
 def Adjunction.isAbsoluteLeftKan {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u) :
     IsAbsKan (.mk u adj.unit) := fun {x} h ↦
@@ -94,7 +94,7 @@ def LeftExtension.IsKan.adjunction {f : a ⟶ b} {t : LeftExtension f (𝟙 a)}
         _ = _ := by
           rw [← leftZigzag, Hε]; bicategory }
 
-/-- For an adjuntion `f ⊣ u`, `u` is a left Kan extension of the identity along `f`.
+/-- For an adjunction `f ⊣ u`, `u` is a left Kan extension of the identity along `f`.
 The unit of this Kan extension is given by the unit of the adjunction. -/
 def LeftExtension.IsAbsKan.adjunction {f : a ⟶ b} (t : LeftExtension f (𝟙 a)) (H : IsAbsKan t) :
     f ⊣ t.extension :=
@@ -119,7 +119,7 @@ section LeftLift
 
 open LeftLift
 
-/-- For an adjuntion `f ⊣ u`, `f` is an absolute left Kan lift of the identity along `u`.
+/-- For an adjunction `f ⊣ u`, `f` is an absolute left Kan lift of the identity along `u`.
 The unit of this Kan lift is given by the unit of the adjunction. -/
 def Adjunction.isAbsoluteLeftKanLift {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u) :
     IsAbsKan (.mk f adj.unit) := fun {x} h ↦
@@ -173,7 +173,7 @@ def LeftLift.IsKan.adjunction {u : b ⟶ a} {t : LeftLift u (𝟙 a)}
           rw [← rightZigzag, Hε]; bicategory
     right_triangle := Hε }
 
-/-- For an adjuntion `f ⊣ u`, `f` is a left Kan lift of the identity along `u`.
+/-- For an adjunction `f ⊣ u`, `f` is a left Kan lift of the identity along `u`.
 The unit of this Kan lift is given by the unit of the adjunction. -/
 def LeftLift.IsAbsKan.adjunction {u : b ⟶ a} (t : LeftLift u (𝟙 a)) (H : IsAbsKan t) :
     t.lift ⊣ u :=

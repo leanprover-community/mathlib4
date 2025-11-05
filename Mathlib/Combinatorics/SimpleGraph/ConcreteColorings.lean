@@ -12,7 +12,7 @@ import Mathlib.Data.Fin.Parity
 /-!
 # Concrete colorings of common graphs
 
-This file defines colorings for some common graphs
+This file defines colorings for some common graphs.
 
 ## Main declarations
 
@@ -121,14 +121,14 @@ def cycleGraph.tricoloring (n : ℕ) (h : 2 ≤ n) : Coloring (cycleGraph n)
     | 1 => simp at h
     | n + 2 =>
       simp only
-      simp [cycleGraph_adj] at hadj
+      simp only [cycleGraph_adj] at hadj
       split_ifs with hu hv
       · simp [Fin.eq_mk_iff_val_eq.mpr hu, Fin.eq_mk_iff_val_eq.mpr hv] at hadj
       · refine (Fin.ne_of_lt (Fin.mk_lt_of_lt_val (?_))).symm
         exact v.val.mod_lt Nat.zero_lt_two
       · refine (Fin.ne_of_lt (Fin.mk_lt_of_lt_val ?_))
         exact u.val.mod_lt Nat.zero_lt_two
-      · simp [Fin.ext_iff]
+      · simp only [ne_eq, Fin.ext_iff]
         have hu' : u.val + (1 : Fin (n + 2)) < n + 2 := by fin_omega
         have hv' : v.val + (1 : Fin (n + 2)) < n + 2 := by fin_omega
         cases hadj with

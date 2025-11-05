@@ -121,7 +121,7 @@ theorem logEmbedding_eq_zero_iff {x : (𝓞 K)ˣ} :
 theorem logEmbedding_ker : (logEmbedding K).ker = (torsion K).toAddSubgroup := by
   ext x
   rw [AddMonoidHom.mem_ker, ← ofMul_toMul x, logEmbedding_eq_zero_iff]
-  rfl
+  simp
 
 theorem map_logEmbedding_sup_torsion (s : AddSubgroup (Additive (𝓞 K)ˣ)) :
     (s ⊔ (torsion K).toAddSubgroup).map (logEmbedding K) = s.map (logEmbedding K) := by
@@ -380,11 +380,11 @@ theorem unitLattice_rank :
 /-- The map obtained by quotienting by the kernel of `logEmbedding`. -/
 def logEmbeddingQuot :
     Additive ((𝓞 K)ˣ ⧸ (torsion K)) →+ logSpace K :=
-  MonoidHom.toAdditive' <|
-    (QuotientGroup.kerLift (AddMonoidHom.toMultiplicative' (logEmbedding K))).comp
+  MonoidHom.toAdditiveLeft <|
+    (QuotientGroup.kerLift (AddMonoidHom.toMultiplicativeRight (logEmbedding K))).comp
       (QuotientGroup.quotientMulEquivOfEq (by
         ext
-        rw [MonoidHom.mem_ker, AddMonoidHom.toMultiplicative'_apply_apply, ofAdd_eq_one,
+        rw [MonoidHom.mem_ker, AddMonoidHom.toMultiplicativeRight_apply_apply, ofAdd_eq_one,
           ← logEmbedding_eq_zero_iff])).toMonoidHom
 
 @[simp]
@@ -396,7 +396,7 @@ theorem logEmbeddingQuot_injective :
     Function.Injective (logEmbeddingQuot K) := by
   unfold logEmbeddingQuot
   intro _ _ h
-  simp_rw [MonoidHom.toAdditive'_apply_apply, MonoidHom.coe_comp, MulEquiv.coe_toMonoidHom,
+  simp_rw [MonoidHom.toAdditiveLeft_apply_apply, MonoidHom.coe_comp, MulEquiv.coe_toMonoidHom,
     Function.comp_apply, EmbeddingLike.apply_eq_iff_eq] at h
   exact (EmbeddingLike.apply_eq_iff_eq _).mp <| (QuotientGroup.kerLift_injective _).eq_iff.mp h
 

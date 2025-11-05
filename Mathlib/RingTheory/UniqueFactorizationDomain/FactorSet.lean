@@ -259,14 +259,12 @@ theorem eq_of_factors_eq_factors {a b : Associates α} (h : a.factors = b.factor
   have : a.factors.prod = b.factors.prod := by rw [h]
   rwa [factors_prod, factors_prod] at this
 
-theorem eq_of_prod_eq_prod [Nontrivial α] {a b : FactorSet α} (h : a.prod = b.prod) : a = b := by
-  have : a.prod.factors = b.prod.factors := by rw [h]
-  rwa [prod_factors, prod_factors] at this
+@[deprecated (since := "2025-10-06")] alias eq_of_prod_eq_prod := FactorSet.unique
 
 @[simp]
 theorem factors_mul (a b : Associates α) : (a * b).factors = a.factors + b.factors := by
   nontriviality α
-  refine eq_of_prod_eq_prod <| eq_of_factors_eq_factors ?_
+  refine FactorSet.unique <| eq_of_factors_eq_factors ?_
   rw [prod_add, factors_prod, factors_prod, factors_prod]
 
 @[gcongr]
@@ -433,12 +431,12 @@ theorem coprime_iff_inf_one {a b : α} (ha0 : a ≠ 0) (hb0 : b ≠ 0) :
 
 theorem factors_self [Nontrivial α] {p : Associates α} (hp : Irreducible p) :
     p.factors = WithTop.some {⟨p, hp⟩} :=
-  eq_of_prod_eq_prod
+  FactorSet.unique
     (by rw [factors_prod, FactorSet.prod.eq_def]; dsimp; rw [prod_singleton])
 
 theorem factors_prime_pow [Nontrivial α] {p : Associates α} (hp : Irreducible p) (k : ℕ) :
     factors (p ^ k) = WithTop.some (Multiset.replicate k ⟨p, hp⟩) :=
-  eq_of_prod_eq_prod
+  FactorSet.unique
     (by
       rw [Associates.factors_prod, FactorSet.prod.eq_def]
       dsimp; rw [Multiset.map_replicate, Multiset.prod_replicate, Subtype.coe_mk])
@@ -452,7 +450,7 @@ theorem prime_pow_le_iff_le_bcount [DecidableEq (Associates α)] {m p : Associat
 
 @[simp]
 theorem factors_one [Nontrivial α] : factors (1 : Associates α) = 0 := by
-  apply eq_of_prod_eq_prod
+  apply FactorSet.unique
   rw [Associates.factors_prod]
   exact Multiset.prod_zero
 

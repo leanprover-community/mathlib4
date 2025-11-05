@@ -21,10 +21,10 @@ open CategoryTheory.Limits
 
 universe u
 
-namespace Grp
+namespace GrpCat
 
 @[to_additive]
-theorem isZero_of_subsingleton (G : Grp) [Subsingleton G] : IsZero G := by
+theorem isZero_of_subsingleton (G : GrpCat) [Subsingleton G] : IsZero G := by
   refine ⟨fun X => ⟨⟨⟨1⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨1⟩, fun f => ?_⟩⟩⟩
   · ext x
     have : x = 1 := Subsingleton.elim _ _
@@ -32,22 +32,22 @@ theorem isZero_of_subsingleton (G : Grp) [Subsingleton G] : IsZero G := by
   · ext
     subsingleton
 
-@[to_additive AddGrp.hasZeroObject]
-instance : HasZeroObject Grp :=
+@[to_additive AddGrpCat.hasZeroObject]
+instance : HasZeroObject GrpCat :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 
-@[to_additive AddGrp.hasZeroMorphisms]
-instance : HasZeroMorphisms Grp where
+@[to_additive AddGrpCat.hasZeroMorphisms]
+instance : HasZeroMorphisms GrpCat where
   zero _ _ := ⟨ofHom 1⟩
   comp_zero := by rfl_cat
   zero_comp _ _ _ f := hom_ext (MonoidHom.ext fun x ↦ MonoidHom.map_one (Hom.hom f))
 
-end Grp
+end GrpCat
 
-namespace CommGrp
+namespace CommGrpCat
 
 @[to_additive]
-theorem isZero_of_subsingleton (G : CommGrp) [Subsingleton G] : IsZero G := by
+theorem isZero_of_subsingleton (G : CommGrpCat) [Subsingleton G] : IsZero G := by
   refine ⟨fun X => ⟨⟨⟨1⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨1⟩, fun f => ?_⟩⟩⟩
   · ext x
     have : x = 1 := Subsingleton.elim _ _
@@ -55,14 +55,14 @@ theorem isZero_of_subsingleton (G : CommGrp) [Subsingleton G] : IsZero G := by
   · ext
     subsingleton
 
-@[to_additive AddCommGrp.hasZeroObject]
-instance : HasZeroObject CommGrp :=
+@[to_additive AddCommGrpCat.hasZeroObject]
+instance : HasZeroObject CommGrpCat :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 
-@[to_additive AddCommGrp.hasZeroMorphisms]
-instance : HasZeroMorphisms CommGrp where
+@[to_additive AddCommGrpCat.hasZeroMorphisms]
+instance : HasZeroMorphisms CommGrpCat where
   zero _ _ := ⟨ofHom 1⟩
   comp_zero := by rfl_cat
   zero_comp _ _ _ f := hom_ext (MonoidHom.ext fun x ↦ MonoidHom.map_one (Hom.hom f))
 
-end CommGrp
+end CommGrpCat

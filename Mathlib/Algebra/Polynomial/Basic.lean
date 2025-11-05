@@ -597,6 +597,7 @@ theorem coeff_monomial_of_ne {m n : ℕ} (c : R) (h : m ≠ n) : (monomial n c).
 theorem coeff_zero (n : ℕ) : coeff (0 : R[X]) n = 0 :=
   rfl
 
+@[aesop simp]
 theorem coeff_one {n : ℕ} : coeff (1 : R[X]) n = if n = 0 then 1 else 0 := by
   simp_rw [eq_comm (a := n) (b := 0)]
   exact coeff_monomial
@@ -616,6 +617,7 @@ theorem coeff_X_zero : coeff (X : R[X]) 0 = 0 :=
 @[simp]
 theorem coeff_monomial_succ : coeff (monomial (n + 1) a) 0 = 0 := by simp [coeff_monomial]
 
+@[aesop simp]
 theorem coeff_X : coeff (X : R[X]) n = if 1 = n then 1 else 0 :=
   coeff_monomial
 
@@ -631,6 +633,7 @@ theorem notMem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
 
 @[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
 
+@[aesop simp]
 theorem coeff_C : coeff (C a) n = ite (n = 0) a 0 := by
   convert coeff_monomial (a := a) (m := n) (n := 0) using 2
   simp [eq_comm]
@@ -1162,6 +1165,13 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R[X] where
 
 instance [IsCancelAdd R] [IsDomain R] : IsDomain R[X] where
 
+/-- See also `Polynomial.isCancelMulZero_iff`: in order for `R[X]` to have cancellative
+multiplication (stronger than `NoZeroDivisors` in general, but equivalent if `R` is a ring),
+`R` must have both cancellative multiplication and cancellative addition. -/
+theorem noZeroDivisors_iff : NoZeroDivisors R[X] ↔ NoZeroDivisors R where
+  mp _ := C_injective.noZeroDivisors _ C_0 fun _ _ ↦ C_mul
+  mpr _ := inferInstance
+
 end Semiring
 
 section DivisionSemiring
@@ -1204,7 +1214,7 @@ protected instance repr [Repr R] [DecidableEq R] : Repr R[X] :=
           if coeff p n = 1
           then (80, "X ^ " ++ Nat.repr n)
           else (70, "C " ++ reprArg (coeff p n) ++ " * X ^ " ++ Nat.repr n))
-      (p.support.sort (· ≤ ·))
+      p.support.sort
     match termPrecAndReprs with
     | [] => "0"
     | [(tprec, t)] => if prec ≥ tprec then Lean.Format.paren t else t

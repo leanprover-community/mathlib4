@@ -9,7 +9,7 @@ import Mathlib.Order.Lattice
 /-!
 # Sorting the elements of `Sym2`
 
-This files provides `Sym2.sortEquiv`, the forward direction of which is somewhat analogous to
+This file provides `Sym2.sortEquiv`, the forward direction of which is somewhat analogous to
 `Multiset.sort`.
 -/
 
