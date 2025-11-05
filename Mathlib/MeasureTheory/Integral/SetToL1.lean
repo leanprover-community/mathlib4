@@ -634,9 +634,6 @@ theorem setToFun_non_aestronglyMeasurable (hT : DominatedFinMeasAdditive μ T C)
     (hf : ¬AEStronglyMeasurable f μ) : setToFun μ T hT f = 0 :=
   setToFun_undef hT (not_and_of_not_left _ hf)
 
-@[deprecated (since := "2025-04-09")]
-alias setToFun_non_aEStronglyMeasurable := setToFun_non_aestronglyMeasurable
-
 theorem setToFun_congr_left (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (h : T = T') (f : α → E) :
     setToFun μ T hT f = setToFun μ T' hT' f := by
