@@ -24,7 +24,7 @@ finite-dimensional modules over a division ring.
 
 ## Main Result
 
-* `eulerChar_eq_homology_eulerChar`: For ℤ-indexed bounded complexes of
+* `ChainComplex.eulerChar_eq_homologyEulerChar`: For ℤ-indexed bounded complexes of
   finite-dimensional modules over a division ring, the alternating sum of dimensions equals
   the alternating sum of homology dimensions
 
