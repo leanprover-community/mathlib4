@@ -297,7 +297,7 @@ theorem natDegree_map_eq_of_injective {f : R →+* S} (hf : Function.Injective f
 
 theorem leadingCoeff_map_of_injective {f : R →+* S} (hf : Function.Injective f)
     (p : Polynomial R) : (p.map f).leadingCoeff = f p.leadingCoeff := by
-  grind [leadingCoeff, natDegree_map_eq_of_injective, coeff_map]
+  simp only [leadingCoeff, natDegree_map_eq_of_injective hf, coeff_map]
 
 theorem nextCoeff_map {f : R →+* S} (hf : Function.Injective f) (p : Polynomial R) :
     (p.map f).nextCoeff = f p.nextCoeff := by
@@ -358,8 +358,10 @@ lemma natDegree_eq_one : p.natDegree = 1 ↔ ∃ a ≠ 0, ∃ b, C a * X + C b =
 
 theorem subsingleton_isRoot_of_natDegree_eq_one [IsLeftCancelMulZero R] [IsRightCancelAdd R]
     (h : p.natDegree = 1) : { x | IsRoot p x }.Subsingleton := by
-  intro
-  grind [natDegree_eq_one, IsRoot, eval_add, eval_mul_X, eval_C, mul_left_cancel₀]
+  intro r₁
+  obtain ⟨r₂, hr₂, r₃, rfl⟩ : ∃ a, a ≠ 0 ∧ ∃ b, C a * X + C b = p := by rwa [natDegree_eq_one] at h
+  have (x y : R) := mul_left_cancel₀ hr₂ (b := x) (c := y)
+  grind [IsRoot, eval_add, eval_mul_X, eval_C]
 
 variable [NoZeroDivisors R]
 

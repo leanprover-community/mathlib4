@@ -117,10 +117,8 @@ theorem roots_eq_zero_iff_isRoot_eq_bot (hp0 : p ≠ 0) : p.roots = 0 ↔ p.IsRo
   simp only [Pi.bot_apply, Prop.bot_eq_false, mem_roots hp0 |>.not.mp <| by simp [h]]
 
 theorem roots_eq_zero_iff_eq_zero_or_isRoot_eq_bot : p.roots = 0 ↔ p = 0 ∨ p.IsRoot = ⊥ := by
-  by_cases hp0 : p = 0
-  · exact ⟨fun _ ↦ Or.inl hp0, fun _ ↦ hp0 ▸ roots_zero⟩
-  refine ⟨fun h ↦ Or.inr <| roots_eq_zero_iff_isRoot_eq_bot hp0 |>.mp h, fun h ↦ Or.elim h ?_ ?_⟩
-  exacts [fun h ↦ False.elim <| hp0 h, fun h ↦ roots_eq_zero_iff_isRoot_eq_bot hp0 |>.mpr h]
+  rcases eq_or_ne p 0 with rfl | hp0; · simp
+  simp [roots_eq_zero_iff_isRoot_eq_bot hp0, hp0]
 
 theorem mem_roots_map_of_injective [Semiring S] {p : S[X]} {f : S →+* R}
     (hf : Function.Injective f) {x : R} (hp : p ≠ 0) : x ∈ (p.map f).roots ↔ p.eval₂ f x = 0 := by

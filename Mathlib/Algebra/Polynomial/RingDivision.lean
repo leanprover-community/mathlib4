@@ -130,7 +130,7 @@ theorem mem_nonZeroDivisors_of_trailingCoeff {p : R[X]} (h : p.trailingCoeff ∈
 
 end nonZeroDivisors
 
-lemma aeval_ne_zero_of_irredicble_natDegree_ne_one [IsDomain R] [Ring S] [Algebra R S]
+lemma _root_.Irreducible.aeval_ne_zero_of_natDegree_ne_one [IsDomain R] [Ring S] [Algebra R S]
     [FaithfulSMul R S] {p : R[X]} (hp : Irreducible p) (hdeg : p.natDegree ≠ 1) {x : S}
     (hx : x ∈ (algebraMap R S).range) : p.aeval x ≠ 0 := by
   obtain ⟨_, rfl⟩ := hx
