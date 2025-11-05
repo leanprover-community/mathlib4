@@ -247,16 +247,26 @@ def pullFunctor : F.DescentData f ⥤ F.DescentData f' where
 /-- Given family of morphisms `f : X i ⟶ S` and `f' : X' j ⟶ S'`, suitable
 commutative diagrams `w j : p' j ≫ f (α j) = f' j ≫ p`, this is the natural
 isomorphism between the descent data relative to `f'` that are obtained either:
-* by considering the obvious descent data relative to `f` given by an object `D : F.obj (op S)`,
+* by considering the obvious descent data relative to `f` given by an object `M : F.obj (op S)`,
 followed by the application of `pullFunctor F w : F.DescentData f ⥤ F.DescentData f'`;
 * by considering the obvious descent data relative to `f'` given by pulling
-back the object `D` to `S'`. -/
+back the object `M` to `S'`. -/
 def toDescentDataCompPullFunctorIso :
     F.toDescentData f ⋙ pullFunctor F w ≅ F.map p.op.toLoc ⋙ F.toDescentData f' :=
   NatIso.ofComponents
-    (fun D ↦ isoMk (fun i ↦ (F.isoMapOfCommSq (CommSq.mk (w i)).op.toLoc).symm.app D)
+    (fun M ↦ isoMk (fun i ↦ (F.isoMapOfCommSq (CommSq.mk (w i)).op.toLoc).symm.app M)
       (fun Y q i₁ i₂ f₁ f₂ hf₁ hf₂ ↦ by
         dsimp
+        rw [F.isoMapOfCommSq_eq _ _  rfl, F.isoMapOfCommSq_eq _ _  rfl]
+        dsimp
+        simp only [Functor.map_comp, Category.assoc]
+        rw [← F.mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom_app_assoc p.op.toLoc
+            (f' i₁).op.toLoc f₁.op.toLoc _ q.op.toLoc (p.op.toLoc ≫ q.op.toLoc) rfl
+            (by grind) (by grind) M,
+          pullFunctorObjHom_eq _ _ _ _ _ (q ≫ p) (f₁ ≫ p' i₁) (f₂ ≫ p' i₂)]
+        dsimp
+        simp only [Category.assoc]
+        all_goals
         sorry))
     (fun f ↦ by
       ext i
