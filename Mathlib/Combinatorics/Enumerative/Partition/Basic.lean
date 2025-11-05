@@ -60,6 +60,7 @@ deriving DecidableEq
 
 namespace Partition
 
+@[grind →]
 theorem le_of_mem_parts {n : ℕ} {p : Partition n} {m : ℕ} (h : m ∈ p.parts) : m ≤ n := by
   simpa [p.parts_sum] using Multiset.le_sum_of_mem h
 
