@@ -143,6 +143,7 @@ theorem toDualHom_apply :
   | tmul v => simp [toDual_comp_apply, toDualHom, linearMapLeftRightHom_comp_apply]
   | smul a w h => simp [h]
 
+/-- The linear map underlying `IsBaseChange.toDualBaseChangeLinearEquiv`. -/
 noncomputable def toDualBaseChangeHom :
     A ⊗[R] Module.Dual R V →ₗ[A] Module.Dual A W where
   toAddHom := (TensorProduct.lift {
@@ -164,6 +165,7 @@ theorem toDualBaseChangeHom_tmul (a : A) (f : Module.Dual R V) (v : V) :
 
 variable [Module.Free R V] [Module.Finite R V]
 
+/-- The linear equivalence underlying `IsBaseChange.dual`. -/
 noncomputable def toDualBaseChangeLinearEquiv :
     A ⊗[R] Module.Dual R V ≃ₗ[A] Module.Dual A W := by
   apply LinearEquiv.ofBijective ibc.toDualBaseChangeHom
