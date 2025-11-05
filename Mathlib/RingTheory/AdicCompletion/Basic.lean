@@ -591,6 +591,81 @@ end AdicCompletion
 
 namespace IsAdicComplete
 
+open AdicCompletion
+
+section lift
+
+variable [IsAdicComplete I N]
+
+variable {M}
+
+/--
+Universal property of `IsAdicComplete`.
+The lift linear map `lift I f h : M →ₗ[R] N` of a sequence of compatible
+linear maps `f n : M →ₗ[R] N ⧸ (I ^ n • ⊤)`.
+-/
+def lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
+    (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) :
+    M →ₗ[R] N := (ofLinearEquiv I N).symm ∘ₗ AdicCompletion.lift I f h
+
+@[simp]
+theorem of_lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
+    (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) (x : M) :
+    of I N (lift I f h x) = AdicCompletion.lift I f h x := by
+  simp [lift]
+
+@[simp]
+theorem of_comp_lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
+    (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) :
+    (of I N) ∘ₗ (lift I f h) = AdicCompletion.lift I f h := by
+  ext1; simp
+
+/--
+The composition of lift linear map `lift I f h : M →ₗ[R] N` with the canonical
+projection `N → N ⧸ (I ^ n • ⊤)` is `f n` .
+-/
+@[simp]
+theorem mk_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
+    (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) (n : ℕ) (x : M) :
+    (Submodule.Quotient.mk (lift I f h x)) = f n x := by
+  simp only [lift, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
+  rw [← mkQ_apply, ← eval_of]
+  simp
+
+/--
+The composition of lift linear map `lift I f h : M →ₗ[R] N` with the canonical
+projection `N →ₗ[R] N ⧸ (I ^ n • ⊤)` is `f n` .
+-/
+@[simp]
+theorem mkQ_comp_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
+    (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) (n : ℕ) :
+    (mkQ (I ^ n • ⊤ : Submodule R N)) ∘ₗ (lift I f h) = f n := by
+  ext; simp
+
+/--
+Uniqueness of the lift.
+Given a compatible family of linear maps `f n : M →ₗ[R] N ⧸ (I ^ n • ⊤)`.
+If `F : M →ₗ[R] N` makes the following diagram commutes
+```
+  N
+  | \
+ F|  \ f n
+  |   \
+  v    v
+  M --> M ⧸ (I ^ n • ⊤)
+```
+Then it is the map `IsAdicComplete.lift`.
+-/
+theorem eq_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
+    (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) {F : M →ₗ[R] N}
+    (hF : ∀ {m s}, Submodule.Quotient.mk (F s) = f m s) : F = lift I f h := by
+  ext s
+  rw [IsHausdorff.eq_iff_smodEq (I := I)]
+  intro n
+  simp [SModEq, hF]
+
+end lift
+
 instance bot : IsAdicComplete (⊥ : Ideal R) M where
 
 protected theorem subsingleton (h : IsAdicComplete (⊤ : Ideal R) M) : Subsingleton M :=
