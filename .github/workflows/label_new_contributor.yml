@@ -31,15 +31,15 @@ jobs:
             const { owner, repo } = context.repo;
 
             console.log(`Checking PRs for user: ${creator}`);
-            // Fetch PRs by this author using REST API
+            // Fetch closed PRs by this author using REST API
             const prs = await github.rest.pulls.list({
               owner,
               repo,
-              state: 'all',
+              state: 'closed',
               creator: creator,
               per_page: 100
             });
-            console.log(`Found ${prs.data.length} total PRs`);
+            console.log(`Found ${prs.data.length} closed PRs`);
             
             // Filter to only PRs with "[Merged by Bors] -" in the title
             const mergedByBorsPRs = prs.data.filter(pr => 
