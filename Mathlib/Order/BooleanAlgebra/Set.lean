@@ -436,8 +436,6 @@ lemma diff_singleton_eq_self (h : a ∉ s) : s \ {a} = s :=
 
 lemma diff_singleton_ssubset : s \ {a} ⊂ s ↔ a ∈ s := by simp
 
-@[deprecated (since := "2025-03-20")] alias diff_singleton_sSubset := diff_singleton_ssubset
-
 @[simp]
 lemma insert_diff_singleton : insert a (s \ {a}) = insert a s := by
   simp [insert_eq, union_diff_self, -union_singleton, -singleton_union]

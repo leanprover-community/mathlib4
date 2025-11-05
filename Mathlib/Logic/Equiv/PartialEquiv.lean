@@ -11,7 +11,7 @@ import Mathlib.Tactic.Attr.Core
 /-!
 # Partial equivalences
 
-This files defines equivalences between subsets of given types.
+This file defines equivalences between subsets of given types.
 An element `e` of `PartialEquiv α β` is made of two maps `e.toFun` and `e.invFun` respectively
 from α to β and from β to α (just like equivs), which are inverse to each other on the subsets
 `e.source` and `e.target` of respectively α and β.
@@ -878,11 +878,9 @@ end Pi
 
 lemma surjective_of_target_eq_univ (h : e.target = univ) :
     Surjective e :=
-  surjective_iff_surjOn_univ.mpr <| e.surjOn.mono (by simp) (by simp [h])
+  surjOn_univ.mp <| e.surjOn.mono (by simp) (by simp [h])
 
-lemma injective_of_source_eq_univ (h : e.source = univ) :
-    Injective e := by
-  simpa [injective_iff_injOn_univ, h] using e.injOn
+lemma injective_of_source_eq_univ (h : e.source = univ) : Injective e := by simpa [h] using e.injOn
 
 lemma injective_symm_of_target_eq_univ (h : e.target = univ) :
     Injective e.symm :=

@@ -30,8 +30,6 @@ protected theorem Summable.tsum_const_smul [T2Space α] [L.NeBot] (b : γ) (hf :
     ∑'[L] i, b • f i = b • ∑'[L] i, f i :=
   (hf.hasSum.const_smul _).tsum_eq
 
-@[deprecated (since := "2025-04-12")] alias tsum_const_smul := Summable.tsum_const_smul
-
 /-- Infinite sums commute with scalar multiplication. Version for scalars living in a `Group`, but
   not requiring any summability hypothesis. -/
 lemma tsum_const_smul' {γ : Type*} [Group γ] [DistribMulAction γ α] [ContinuousConstSMul γ α]
@@ -72,8 +70,6 @@ theorem Summable.smul_const (hf : Summable f L) (a : M) : Summable (fun z ↦ f 
 protected theorem Summable.tsum_smul_const [T2Space M] [L.NeBot] (hf : Summable f L) (a : M) :
     ∑'[L] z, f z • a = (∑'[L] z, f z) • a :=
   (hf.hasSum.smul_const _).tsum_eq
-
-@[deprecated (since := "2025-04-12")] alias tsum_smul_const := Summable.tsum_smul_const
 
 end SMulConst
 

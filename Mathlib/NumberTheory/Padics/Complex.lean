@@ -185,7 +185,7 @@ theorem isNonarchimedean : IsNonarchimedean (Norm.norm : ℂ_[p] → ℝ) := fun
 
 end PadicComplex
 
-/-- We define `𝓞_ℂ_[p]` as the valuation subring of of `ℂ_[p]`, consisting of those elements with
+/-- We define `𝓞_ℂ_[p]` as the valuation subring of `ℂ_[p]`, consisting of those elements with
   valuation `≤ 1`. -/
 def PadicComplexInt : ValuationSubring ℂ_[p] := (PadicComplex.valued p).v.valuationSubring
 

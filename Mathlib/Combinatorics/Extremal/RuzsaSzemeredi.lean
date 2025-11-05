@@ -59,7 +59,7 @@ lemma ruzsaSzemerediNumber_spec :
       #(G.cliqueFinset 3) = m ∧ G.LocallyLinear) _ _ (Nat.zero_le _)
     ⟨⊥, inferInstance, by simp, locallyLinear_bot⟩
 
-variable {n : ℕ}
+variable {m n : ℕ}
 
 lemma SimpleGraph.LocallyLinear.le_ruzsaSzemerediNumber [DecidableRel G.Adj]
     (hG : G.LocallyLinear) : #(G.cliqueFinset 3) ≤ ruzsaSzemerediNumber α := by
@@ -88,6 +88,7 @@ noncomputable def ruzsaSzemerediNumberNat (n : ℕ) : ℕ := ruzsaSzemerediNumbe
 lemma ruzsaSzemerediNumberNat_card : ruzsaSzemerediNumberNat (card α) = ruzsaSzemerediNumber α :=
   ruzsaSzemerediNumber_congr (Fintype.equivFin _).symm
 
+@[gcongr]
 lemma ruzsaSzemerediNumberNat_mono : Monotone ruzsaSzemerediNumberNat := fun _m _n h =>
   ruzsaSzemerediNumber_mono (Fin.castLEEmb h)
 
@@ -205,8 +206,7 @@ theorem rothNumberNat_le_ruzsaSzemerediNumberNat' :
       _ ≤ (↑(2 * (n / 6) + 1) : ℝ) * rothNumberNat (n / 6) :=
         mul_le_mul_of_nonneg_right ?_ (Nat.cast_nonneg _)
       _ ≤ (ruzsaSzemerediNumberNat (6 * (n / 6) + 3) : ℝ) := ?_
-      _ ≤ _ :=
-        Nat.cast_le.2 (ruzsaSzemerediNumberNat_mono <| add_le_add_right (Nat.mul_div_le _ _) _)
+      _ ≤ _ := by grw [Nat.mul_div_le]
     · norm_num
       rw [← div_add_one (three_ne_zero' ℝ), ← le_sub_iff_add_le, div_le_iff₀ (zero_lt_three' ℝ),
         add_assoc, add_sub_assoc, add_mul, mul_right_comm]
