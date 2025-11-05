@@ -51,6 +51,30 @@ example : Fact (x = z) where
     rw [xy]
     rw [yz]
 
+universe u
+
+def a : PUnit.{u} := ⟨⟩
+def b : PUnit.{u} := ⟨⟩
+def c : PUnit.{u} := ⟨⟩
+theorem ab : a = b := rfl
+theorem bc : b = c := rfl
+
+/--
+warning: Try this: rw [ab.{u}, bc.{u}]
+-/
+#guard_msgs in
+example : a.{u} = c := by
+  rw [ab.{u}]
+  rw [bc.{u}]
+
+theorem xyz (h : x = z → y = z) : x = y := by rw [h yz]; rfl
+
+-- The next example tripped up `rwMerge` because `rw [xyz fun h => ?_, ← h, xy]` gives
+-- an unknown identifier `h`.
+example : x = y := by
+  rw [xyz fun h => ?_]
+  rw [← h, xy]
+
 end rwMerge
 
 section mergeWithGrind

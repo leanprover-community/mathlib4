@@ -231,7 +231,7 @@ register_option linter.tacticAnalysis.tautoToGrind : Bool := {
 @[tacticAnalysis linter.tacticAnalysis.tautoToGrind,
   inherit_doc linter.tacticAnalysis.tautoToGrind]
 def tautoToGrind :=
-  terminalReplacement "tauto" "grind" ``Mathlib.Tactic.Tauto.tauto (fun _ _ => `(tactic| grind))
+  terminalReplacement "tauto" "grind" ``Mathlib.Tactic.Tauto.tauto (fun _ _ _ => `(tactic| grind))
     (reportSuccess := true) (reportFailure := false)
 
 /-- Debug `grind` by identifying places where it does not yet supersede `tauto`. -/
