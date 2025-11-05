@@ -110,24 +110,15 @@ lemma MeasurableEmbedding.prodMk_left {β γ : Type*} [MeasurableSingletonClass 
     ext x
     simp [Prod.ext_iff, eq_comm, ← exists_and_left, and_left_comm]
 
-@[deprecated (since := "2025-03-05")]
-alias MeasurableEmbedding.prod_mk_left := MeasurableEmbedding.prodMk_left
-
 lemma measurableEmbedding_prodMk_left [MeasurableSingletonClass α] (x : α) :
     MeasurableEmbedding (Prod.mk x : β → α × β) :=
   MeasurableEmbedding.prodMk_left x MeasurableEmbedding.id
-
-@[deprecated (since := "2025-03-05")]
-alias measurableEmbedding_prod_mk_left := measurableEmbedding_prodMk_left
 
 lemma MeasurableEmbedding.prodMk_right {β γ : Type*} [MeasurableSingletonClass α]
     {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
     {f : γ → β} (hf : MeasurableEmbedding f) (x : α) :
     MeasurableEmbedding (fun y ↦ (f y, x)) :=
   MeasurableEquiv.prodComm.measurableEmbedding.comp (hf.prodMk_left _)
-
-@[deprecated (since := "2025-03-05")]
-alias MeasurableEmbedding.prod_mk_right := MeasurableEmbedding.prodMk_right
 
 lemma measurableEmbedding_prod_mk_right [MeasurableSingletonClass α] (x : α) :
     MeasurableEmbedding (fun y ↦ (y, x) : β → β × α) :=
