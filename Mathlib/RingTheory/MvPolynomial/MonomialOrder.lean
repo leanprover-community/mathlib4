@@ -117,6 +117,12 @@ def Monic (f : MvPolynomial σ R) : Prop :=
 noncomputable def leadingTerm (f : MvPolynomial σ R) : MvPolynomial σ R :=
   monomial (m.degree f) (m.leadingCoeff f)
 
+@[simp]
+lemma C_mul_leadingCoeff_monomial_degree (p : MvPolynomial σ R) :
+    MvPolynomial.C (m.leadingCoeff p : R) * MvPolynomial.monomial (m.degree p) (1 : R) =
+      m.leadingTerm p := by
+  rw [MvPolynomial.C_mul_monomial, mul_one, leadingTerm]
+
 @[nontriviality] theorem Monic.of_subsingleton [Subsingleton R] {f : MvPolynomial σ R} :
     m.Monic f :=
   Subsingleton.eq_one (m.leadingCoeff f)
