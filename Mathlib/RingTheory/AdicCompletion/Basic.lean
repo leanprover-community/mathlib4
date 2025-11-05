@@ -23,6 +23,10 @@ with respect to an ideal `I`:
 - `AdicCompletion I M`: if `I` is finitely generated, then this is the universal complete module
   with a linear map `AdicCompletion.coeHom` from `M`. This map is injective iff `M` is Hausdorff
   and surjective iff `M` is precomplete.
+- `IsAdicComplete.lift`: if `N` is `I`-adically complete, then a compatible family of
+  linear maps `M →ₗ[R] N ⧸ (I ^ n • ⊤)` can be lifted to a unique linear map `M →ₗ[R] N`.
+  Together with `mk_lift_apply` and `eq_lift`, it gives the universal property of being
+  `I`-adically complete.
 -/
 
 suppress_compilation
