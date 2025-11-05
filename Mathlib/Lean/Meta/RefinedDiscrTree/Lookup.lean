@@ -30,7 +30,7 @@ and when it is attempted to be assigned again, we check that it is the same assi
 
 -/
 
-@[expose] public section
+public section
 
 namespace Lean.Meta.RefinedDiscrTree
 

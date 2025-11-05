@@ -16,7 +16,7 @@ public import Std.Data.HashMap.Basic
 We provide `allNames` and `allNamesByModule`.
 -/
 
-@[expose] public section
+public section
 
 open Lean Meta Elab
 

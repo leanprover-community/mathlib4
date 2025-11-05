@@ -86,7 +86,7 @@ theorem ofFn_eq_pmap {n} {f : Fin n → α} :
   exact ext_getElem (by simp) fun i hi1 hi2 => by simp [List.getElem_ofFn hi1]
 
 theorem ofFn_id (n) : ofFn id = finRange n :=
-  rfl
+  (rfl)
 
 theorem ofFn_eq_map {n} {f : Fin n → α} : ofFn f = (finRange n).map f := by
   rw [← ofFn_id, map_ofFn, Function.comp_id]

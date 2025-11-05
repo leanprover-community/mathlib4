@@ -11,6 +11,7 @@ public import Mathlib.Data.List.OfFn
 public import Mathlib.Data.List.Nodup
 public import Mathlib.Data.List.TakeWhile
 public import Mathlib.Order.Fin.Basic
+import all Init.Data.List.Sort.Basic  -- for exposing `mergeSort`
 
 /-!
 # Sorting algorithms on lists

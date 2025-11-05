@@ -481,7 +481,7 @@ def oneEquiv : α ≃ Sym α 1 where
     (fun l ↦ l.1.head <| List.length_pos_iff.mp <| by simp)
     fun ⟨_, _⟩ ⟨_, h⟩ ↦ fun perm ↦ by
       obtain ⟨a, rfl⟩ := List.length_eq_one_iff.mp h
-      exact List.eq_of_mem_singleton (perm.mem_iff.mp <| List.head_mem _)
+      exact List.eq_of_mem_singleton (List.Perm.mem_iff perm |>.mp <| List.head_mem _)
   right_inv := by rintro ⟨⟨l⟩, h⟩; obtain ⟨a, rfl⟩ := List.length_eq_one_iff.mp h; rfl
 
 /-- Fill a term `m : Sym α (n - i)` with `i` copies of `a` to obtain a term of `Sym α n`.
