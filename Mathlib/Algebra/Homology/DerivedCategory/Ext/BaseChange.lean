@@ -247,7 +247,7 @@ open ModuleCat
 set_option maxHeartbeats 350000 in
 -- The dimension shifting is just too complicated
 theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module.Flat R S]
-    (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Finite R N] (n : ℕ) :
+    (M N : ModuleCat.{v} R) [Module.Finite R M] (n : ℕ) :
     IsBaseChange S (extendScalars'.mapExtLinearMap.{v, v'} S M N n) := by
   induction n generalizing M N
   · have isb : IsBaseChange S (extendScalars'_map_LinearMap.{v, v'} S M N) :=
@@ -263,7 +263,7 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
       LinearEquiv.coe_symm_mk', LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
       Equiv.ofBijective_symm_apply_apply, Equiv.ofBijective_apply]
     congr 1
-  · rename_i n ih _ _
+  · rename_i n ih _
     rcases Module.Finite.exists_fin' R M with ⟨m, f', hf'⟩
     let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)).trans
       (Finsupp.linearEquivFunOnFinite R R (Fin m))).1
@@ -405,11 +405,8 @@ noncomputable def Ext.isBaseChangeMap' [Module.Flat R S] {M N : ModuleCat.{v} R}
   ((Ext.isBaseChangeMap_aux' S f isb1 g isb2 n).restrictScalars R).toLinearMap.comp
     (extendScalars'.mapExtLinearMap.{v, v'} S M N n)
 
---This is false alarm
-set_option linter.unusedSectionVars false in
-@[nolint unusedArguments]
 theorem Ext.isBaseChange [IsNoetherianRing R] [Module.Flat R S] (M N : ModuleCat.{v} R)
-    [Module.Finite R M] [Module.Finite R N] {MS NS : ModuleCat.{v'} S}
+    [Module.Finite R M] {MS NS : ModuleCat.{v'} S}
     (f : M →ₗ[R] (RestrictScalars R S MS))
     (isb1 : letI := RestrictScalars.moduleOrig R S MS; IsBaseChange S f)
     (g : N →ₗ[R] (RestrictScalars R S NS))
@@ -418,11 +415,8 @@ theorem Ext.isBaseChange [IsNoetherianRing R] [Module.Flat R S] (M N : ModuleCat
   (Ext.isBaseChange_aux.{v, v'} S M N n).comp
   (IsBaseChange.ofEquiv (isBaseChangeMap_aux S f isb1 g isb2 n))
 
---This is false alarm
-set_option linter.unusedSectionVars false in
-@[nolint unusedArguments]
 theorem Ext.isBaseChange' [IsNoetherianRing R] [Module.Flat R S] (M N : ModuleCat.{v} R)
-    [Module.Finite R M] [Module.Finite R N] {MS NS : ModuleCat.{v'} S}
+    [Module.Finite R M] {MS NS : ModuleCat.{v'} S}
     [Module R MS] [IsScalarTower R S MS] [Module R NS] [IsScalarTower R S NS]
     (f : M →ₗ[R] MS) (isb1 : IsBaseChange S f)
     (g : N →ₗ[R] NS) (isb2 : IsBaseChange S g)
@@ -447,7 +441,6 @@ universe w w'
 variable (S : Submonoid R) (A : Type u') [CommRing A] [Algebra R A] [IsLocalization S A]
 
 variable [UnivLE.{v, v'}] [Small.{v', u'} A] [UnivLE.{v, w}] [UnivLE.{v', w'}] [Small.{v, u} R]
-  [Small.{v', u'} A]
 
 variable {R}
 
@@ -473,11 +466,8 @@ noncomputable def Ext.isLocalizedModuleMap' {M N : ModuleCat.{v} R} {MS NS : Mod
     (Ext.isBaseChangeMap'.{v, v'} A f (IsLocalizedModule.isBaseChange S A f) g
       (IsLocalizedModule.isBaseChange S A g) n)
 
---This is false alarm
-set_option linter.unusedSectionVars false in
-@[nolint unusedArguments]
 theorem Ext.isLocalizedModule [IsNoetherianRing R] {M N : ModuleCat.{v} R}
-    [Module.Finite R M] [Module.Finite R N] {MS NS : ModuleCat.{v'} A}
+    [Module.Finite R M] {MS NS : ModuleCat.{v'} A}
     (f : M →ₗ[R] (RestrictScalars R A MS))
     (isl1 : letI := RestrictScalars.moduleOrig R A MS; IsLocalizedModule S f)
     (g : N →ₗ[R] (RestrictScalars R A NS))
@@ -489,11 +479,8 @@ theorem Ext.isLocalizedModule [IsNoetherianRing R] {M N : ModuleCat.{v} R}
   (isLocalizedModule_iff_isBaseChange S A _).mpr (Ext.isBaseChange.{v, v'} A M N
     f (IsLocalizedModule.isBaseChange S A f) g (IsLocalizedModule.isBaseChange S A g) n)
 
---This is false alarm
-set_option linter.unusedSectionVars false in
-@[nolint unusedArguments]
 theorem Ext.isLocalizedModule' [IsNoetherianRing R] {M N : ModuleCat.{v} R}
-    [Module.Finite R M] [Module.Finite R N] {MS NS : ModuleCat.{v'} A}
+    [Module.Finite R M] {MS NS : ModuleCat.{v'} A}
     [Module R MS] [IsScalarTower R A MS] [Module R NS] [IsScalarTower R A NS]
     (f : M →ₗ[R] MS) (isl1 : IsLocalizedModule S f) (g : N →ₗ[R] NS) (isl2 : IsLocalizedModule S g)
     (n : ℕ) : IsLocalizedModule S (Ext.isLocalizedModuleMap'.{v, v'} S A f isl1 g isl2 n) :=

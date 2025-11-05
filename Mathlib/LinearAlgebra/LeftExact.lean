@@ -7,8 +7,15 @@ import Mathlib.Algebra.Exact
 import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
-
 # The Left Exactness of Hom
+
+In this file, we proved the left exactness of `Hom`,
+injective part `LinearMap.lcomp_injective_of_surjective` is in earlier file.
+
+# Main Result
+
+* `exact_lcomp_of_exact_of_surjective` : for `f : M1 →ₗ[R] M2` and `g : M2 →ₗ[R] M3` exact with
+  `g` surjective, `LinearMap.lcomp R N g` and `LinearMap.lcomp R N f` are exact.
 
 -/
 
