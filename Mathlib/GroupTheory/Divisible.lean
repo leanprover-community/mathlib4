@@ -10,6 +10,7 @@ public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.Tactic.NormNum.Eq
+public import Mathlib.Algebra.Field.Defs
 
 /-!
 # Divisible Group and rootable group

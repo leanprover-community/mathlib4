@@ -501,7 +501,7 @@ end
 
 open Lean in
 /-- Supporting function for the `F⟮x₁,x₂,...,xₙ⟯` adjunction notation. -/
-private partial def mkInsertTerm {m : Type → Type} [Monad m] [MonadQuotation m]
+private meta def mkInsertTerm {m : Type → Type} [Monad m] [MonadQuotation m]
     (xs : TSyntaxArray `term) : m Term := run 0 where
   run (i : Nat) : m Term := do
     if h : i + 1 = xs.size then
@@ -517,7 +517,7 @@ scoped macro:max K:term "⟮" xs:term,* "⟯" : term => do ``(adjoin $K $(← mk
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 @[app_delab IntermediateField.adjoin]
-partial def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
+meta def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
   let e ← getExpr
   guard <| e.isAppOfArity ``adjoin 6
   let F ← withNaryArg 0 delab

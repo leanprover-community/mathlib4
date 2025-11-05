@@ -11,6 +11,7 @@ public import Mathlib.Data.Nat.Choose.Central
 public import Mathlib.Tactic.Field
 public import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.Positivity
+import Mathlib.Data.Tree.Basic
 
 /-!
 # Catalan numbers

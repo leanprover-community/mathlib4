@@ -76,7 +76,7 @@ This feature wasn't needed yet, so it's not implemented yet.
 ring, semiring, exponent, power
 -/
 
-public meta section
+@[expose] public meta section
 
 assert_not_exists IsOrderedMonoid
 
@@ -265,7 +265,7 @@ Constructs the expression corresponding to `.const n`.
 (The `.const` constructor does not check that the expression is correct.)
 -/
 def ExProd.mkNat (n : ℕ) : (e : Q($α)) × ExProd sα e :=
-  let lit : Q(ℕ) := mkRawNatLit n
+  let lit : Q(ℕ) := .lit (.natVal n)
   ⟨q(($lit).rawCast : $α), .const n none⟩
 
 /--
@@ -964,6 +964,7 @@ def extractCoeff {a : Q(ℕ)} (va : ExProd sℕ a) : ExtractCoeff a :=
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃ =>
     let ⟨k, _, vc, pc⟩ := extractCoeff va₃
     ⟨k, _, .mul va₁ va₂ vc, q(coeff_mul $a₁ $a₂ $pc)⟩
+termination_by structural a
 
 theorem pow_one_cast (a : R) : a ^ (nat_lit 1).rawCast = a := by simp
 

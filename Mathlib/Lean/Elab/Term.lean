@@ -12,7 +12,7 @@ public import Lean.Elab.Term
 # Additions to `Lean.Elab.Term`
 -/
 
-@[expose] public section
+public meta section
 
 namespace Lean.Elab.Term
 

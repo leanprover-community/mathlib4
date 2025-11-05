@@ -123,7 +123,7 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `UpperHalfPlane.im`. -/
 @[positivity UpperHalfPlane.im _]
-def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(UpperHalfPlane.im $a) =>
     assertInstancesCommute
@@ -132,7 +132,7 @@ def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: `UpperHalfPlane.coe`. -/
 @[positivity UpperHalfPlane.coe _]
-def evalUpperHalfPlaneCoe : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalUpperHalfPlaneCoe : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℂ), ~q(UpperHalfPlane.coe $a) =>
     assertInstancesCommute

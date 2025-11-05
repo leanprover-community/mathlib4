@@ -523,7 +523,7 @@ See also
 TODO: Write a delaborator
 -/
 @[term_elab setBuilder]
-def elabFinsetBuilderIxx : TermElab
+meta def elabFinsetBuilderIxx : TermElab
   | `({ $x:ident ≤ $a | $p }), expectedType? => do
     -- If the expected type is not known to be `Finset ?α`, give up.
     unless ← knownToBeFinsetNotSet expectedType? do throwUnsupportedSyntax

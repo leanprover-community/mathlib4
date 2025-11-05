@@ -7,7 +7,9 @@ Floris van Doorn, Edward Ayers, Arthur Paulino
 module
 
 public import Mathlib.Init
-public import Lean.Expr
+public import Lean.Meta.Tactic.Rewrite
+public import Batteries.Tactic.Alias
+public import Lean.Elab.Binders
 
 /-!
 # Additional operations on Expr and related types
@@ -17,7 +19,7 @@ This file defines basic operations on the types expr, name, declaration, level, 
 This file is mostly for non-tactics.
 -/
 
-@[expose] public section
+public section
 
 namespace Lean
 

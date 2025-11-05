@@ -110,7 +110,7 @@ attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
 to locally give `cat_disch` the ability to call `cases` on
 `Discrete` and `(_ : Discrete _) ⟶ (_ : Discrete _)` hypotheses.
 -/
-def discreteCases : TacticM Unit := do
+meta def discreteCases : TacticM Unit := do
   evalTactic (← `(tactic| discrete_cases))
 
 -- TODO: investigate turning on either

@@ -74,7 +74,7 @@ macro_rules | `($R[$M]) => `(AddMonoidAlgebra $R $M)
 
 /-- Unexpander for `AddMonoidAlgebra`. -/
 @[scoped app_unexpander AddMonoidAlgebra]
-def unexpander : Lean.PrettyPrinter.Unexpander
+meta def unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $k $g) => `($k[$g])
   | _ => throw ()
 

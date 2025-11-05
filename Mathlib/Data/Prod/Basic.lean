@@ -303,19 +303,19 @@ open Lean PrettyPrinter Delaborator
 When true, then `Prod.fst x` and `Prod.snd x` pretty print as `x.1` and `x.2`
 rather than as `x.fst` and `x.snd`.
 -/
-register_option pp.numericProj.prod : Bool := {
+meta register_option pp.numericProj.prod : Bool := {
   defValue := true
   descr := "enable pretty printing `Prod.fst x` as `x.1` and `Prod.snd x` as `x.2`."
 }
 
 /-- Tell whether pretty-printing should use numeric projection notations `.1`
 and `.2` for `Prod.fst` and `Prod.snd`. -/
-def getPPNumericProjProd (o : Options) : Bool :=
+meta def getPPNumericProjProd (o : Options) : Bool :=
   o.get pp.numericProj.prod.name pp.numericProj.prod.defValue
 
 /-- Delaborator for `Prod.fst x` as `x.1`. -/
 @[app_delab Prod.fst]
-def delabProdFst : Delab :=
+meta def delabProdFst : Delab :=
   whenPPOption getPPNumericProjProd <|
   whenPPOption getPPFieldNotation <|
   whenNotPPOption getPPExplicit <|
@@ -325,7 +325,7 @@ def delabProdFst : Delab :=
 
 /-- Delaborator for `Prod.snd x` as `x.2`. -/
 @[app_delab Prod.snd]
-def delabProdSnd : Delab :=
+meta def delabProdSnd : Delab :=
   whenPPOption getPPNumericProjProd <|
   whenPPOption getPPFieldNotation <|
   whenNotPPOption getPPExplicit <|

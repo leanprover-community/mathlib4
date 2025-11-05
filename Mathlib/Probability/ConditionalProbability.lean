@@ -91,7 +91,7 @@ open Lean PrettyPrinter.Delaborator SubExpr
 
 /-- Unexpander for `μ[|s]` notation. -/
 @[app_unexpander ProbabilityTheory.cond]
-def condUnexpander : Lean.PrettyPrinter.Unexpander
+meta def condUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $μ $s) => `($μ[|$s])
   | _ => throw ()
 
@@ -101,7 +101,7 @@ def condUnexpander : Lean.PrettyPrinter.Unexpander
 
 /-- Delaborator for `μ[t|s]` notation. -/
 @[app_delab DFunLike.coe]
-def delabCondApplied : Delab :=
+meta def delabCondApplied : Delab :=
   whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 6 do
     let e ← getExpr
     guard <| e.isAppOfArity' ``DFunLike.coe 6

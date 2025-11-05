@@ -211,7 +211,7 @@ splits. The first component, an `MVarId`, is the goal corresponding to this bran
 given as a metavariable. The `List Expr` component is the list of hypotheses for `linarith`
 in this branch.
 -/
-def Branch : Type := MVarId × List Expr
+@[expose] def Branch : Type := MVarId × List Expr
 
 /--
 Some preprocessors perform branching case splits.

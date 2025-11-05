@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public import Mathlib.Lean.Expr.ExtraRecognizers
+public meta import Mathlib.Lean.Expr.ExtraRecognizers
 
 /-!
 
@@ -105,7 +105,7 @@ in case the family of vectors is over a `Set`.
 Type hints look like `LinearIndependent fun (v : ↑s) => ↑v` or `LinearIndependent (ι := ↑s) f`,
 depending on whether the family is a lambda expression or not. -/
 @[app_delab LinearIndependent]
-def delabLinearIndependent : Delab :=
+meta def delabLinearIndependent : Delab :=
   whenPPOption getPPNotation <|
   whenNotPPOption getPPAnalysisSkip <|
   withOptionAtCurrPos `pp.analysis.skip true do

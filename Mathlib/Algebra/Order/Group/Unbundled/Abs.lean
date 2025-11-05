@@ -46,7 +46,7 @@ macro:max atomic("|" noWs) a:term noWs "|" : term => `(abs $a)
 /-- Unexpander for the notation `|a|ₘ` for `mabs a`.
 Tries to add discretionary parentheses in unparsable cases. -/
 @[app_unexpander mabs]
-def mabs.unexpander : Lean.PrettyPrinter.Unexpander
+meta def mabs.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $a) =>
     match a with
     | `(|$_|) | `(|$_|ₘ) | `(-$_) => `(|($a)|ₘ)
@@ -56,7 +56,7 @@ def mabs.unexpander : Lean.PrettyPrinter.Unexpander
 /-- Unexpander for the notation `|a|` for `abs a`.
 Tries to add discretionary parentheses in unparsable cases. -/
 @[app_unexpander abs]
-def abs.unexpander : Lean.PrettyPrinter.Unexpander
+meta def abs.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $a) =>
     match a with
     | `(|$_|) | `(|$_|ₘ) | `(-$_) => `(|($a)|)

@@ -103,7 +103,7 @@ notation:20 A " ⟹ " B:19 => (exp A).obj B
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Delaborator for `Functor.obj` -/
 @[app_delab Functor.obj]
-def delabFunctorObjExp : Delab := whenPPOption getPPNotation <| withOverApp 6 <| do
+meta def delabFunctorObjExp : Delab := whenPPOption getPPNotation <| withOverApp 6 <| do
   let e ← getExpr
   guard <| e.isAppOfArity' ``Functor.obj 6
   let A ← withNaryArg 4 do

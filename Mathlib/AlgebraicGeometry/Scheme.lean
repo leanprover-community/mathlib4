@@ -54,7 +54,7 @@ instance : CoeSort Scheme Type* where
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Pretty printer for coercing schemes to types. -/
 @[app_delab TopCat.carrier]
-partial def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
+meta def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
   guard <| (← getExpr).isAppOfArity ``TopCat.carrier 1
   withNaryArg 0 do
   guard <| (← getExpr).isAppOfArity ``PresheafedSpace.carrier 3

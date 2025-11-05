@@ -86,7 +86,7 @@ the following.
 
 -/
 
-@[expose] public section
+public meta section
 
 open scoped Bundle Manifold ContDiff
 

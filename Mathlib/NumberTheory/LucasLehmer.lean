@@ -82,7 +82,7 @@ alias ⟨_, mersenne_pos_of_pos⟩ := mersenne_pos
 
 /-- Extension for the `positivity` tactic: `mersenne`. -/
 @[positivity mersenne _]
-def evalMersenne : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalMersenne : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(mersenne $a) =>
     let ra ← core q(inferInstance) q(inferInstance) a
@@ -659,13 +659,14 @@ theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : �
       Int.add_emod_right, ← sub_eq_add_neg]
 
 /-- Tail-recursive version of `sModNat`. -/
-def sModNatTR (q k : ℕ) : ℕ :=
+meta def sModNatTR (q k : ℕ) : ℕ :=
   go k (4 % q)
 where
   /-- Helper function for `sMod''`. -/
   go : ℕ → ℕ → ℕ
   | 0, acc => acc
   | n + 1, acc => go n ((acc ^ 2 + (q - 2)) % q)
+termination_by structural x => x
 
 /--
 Generalization of `sModNat` with arbitrary base case,
@@ -720,7 +721,7 @@ theorem isNat_not_lucasLehmerTest : {p np : ℕ} →
 /-- Calculate `LucasLehmer.LucasLehmerTest p` for `2 ≤ p` by using kernel reduction for the
 `sMod'` function. -/
 @[norm_num LucasLehmer.LucasLehmerTest (_ : ℕ)]
-def evalLucasLehmerTest : NormNumExt where eval {_ _} e := do
+meta def evalLucasLehmerTest : NormNumExt where eval {_ _} e := do
   let .app _ (p : Q(ℕ)) ← Meta.whnfR e | failure
   let ⟨ep, hp⟩ ← deriveNat p _
   let np := ep.natLit!

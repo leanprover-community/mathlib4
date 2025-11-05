@@ -109,7 +109,7 @@ we know whether we want an iff, eq, or heq, while also allowing it to choose
 to elaborate as an iff, eq, or heq.
 Later, the congruence generator handles any discrepancies.
 See `Mathlib/Tactic/TermCongr/CongrResult.lean`. -/
-@[reducible, nolint unusedArguments]
+@[reducible, nolint unusedArguments, expose]
 def cHole {α : Sort u} (val : α) {p : Prop} (_pf : p) : α := val
 
 /-- For error reporting purposes, make the hole pretty print as its value.

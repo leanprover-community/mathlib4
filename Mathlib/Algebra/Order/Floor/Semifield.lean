@@ -140,7 +140,7 @@ theorem IsRat.natFloor {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRin
 open Lean in
 /-- `norm_num` extension for `Nat.floor` -/
 @[norm_num ⌊_⌋₊]
-def evalNatFloor : NormNumExt where eval {u αZ} e := do
+meta def evalNatFloor : NormNumExt where eval {u αZ} e := do
   match u, αZ, e with
   | 0, ~q(ℕ), ~q(@Nat.floor $α $instSemiring $instPartialOrder $instFloorSemiring $x) =>
     match ← derive x with

@@ -101,7 +101,7 @@ end NoZeroSMulDivisors
 
 /-- Positivity extension for scalar multiplication. -/
 @[positivity HSMul.hSMul _ _]
-def evalSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
+meta def evalSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
   let .app (.app (.app (.app (.app (.app
         (.const ``HSMul.hSMul [u1, _, _]) (β : Q(Type u1))) _) _) _)
           (a : Q($β))) (b : Q($α)) ← whnfR e | throwError "failed to match hSMul"

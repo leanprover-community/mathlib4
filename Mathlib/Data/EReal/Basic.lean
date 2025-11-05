@@ -825,7 +825,7 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: cast from `ℝ` to `EReal`. -/
 @[positivity Real.toEReal _]
-def evalRealToEReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalRealToEReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(EReal), ~q(Real.toEReal $a) =>
     let ra ← core q(inferInstance) q(inferInstance) a
@@ -839,7 +839,7 @@ def evalRealToEReal : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0∞` to `EReal`. -/
 @[positivity ENNReal.toEReal _]
-def evalENNRealToEReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalENNRealToEReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(EReal), ~q(ENNReal.toEReal $a) =>
     let ra ← core q(inferInstance) q(inferInstance) a
@@ -856,7 +856,7 @@ We prove that `EReal.toReal x` is nonnegative whenever `x` is nonnegative.
 Since `EReal.toReal ⊤ = 0`, we cannot prove a stronger statement,
 at least without relying on a tactic like `finiteness`. -/
 @[positivity EReal.toReal _]
-def evalERealToReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalERealToReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(Real), ~q(EReal.toReal $a) =>
     assertInstancesCommute
@@ -872,7 +872,7 @@ and it is nonnegative otherwise.
 We cannot deduce any corollaries from `x ≠ 0`, since `EReal.toENNReal x = 0` for `x < 0`.
 -/
 @[positivity EReal.toENNReal _]
-def evalERealToENNReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalERealToENNReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ENNReal), ~q(EReal.toENNReal $a) =>
     assertInstancesCommute

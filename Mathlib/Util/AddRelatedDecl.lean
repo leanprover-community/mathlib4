@@ -52,7 +52,7 @@ def addRelatedDecl (src : Name) (suffix : String) (ref : Syntax)
     | Name.str n s => Name.mkStr n <| s ++ suffix
     | x => x
   addDeclarationRangesFromSyntax tgt (← getRef) ref
-  let info ← getConstInfo src
+  let info ← withoutExporting <| getConstInfo src
   let (newValue, newLevels) ← construct info.type info.value! info.levelParams
   let newValue ← instantiateMVars newValue
   let newType ← instantiateMVars (← inferType newValue)
