@@ -703,10 +703,12 @@ theorem hasMFDerivAt_sumSwap :
   · simp only [mfld_simps]
     cases p <;> simp
 
+@[simp]
 theorem mfderivWithin_sumSwap (hs : UniqueMDiffWithinAt I s p) :
     mfderivWithin I I (@Sum.swap M M') s p = ContinuousLinearMap.id 𝕜 (TangentSpace I p) :=
   hasMFDerivAt_sumSwap.hasMFDerivWithinAt.mfderivWithin hs
 
+@[simp]
 theorem mfderiv_sumSwap :
     mfderiv I I (@Sum.swap M M') p = ContinuousLinearMap.id 𝕜 (TangentSpace I p) := by
   simpa [mfderivWithin_univ] using (mfderivWithin_sumSwap (uniqueMDiffWithinAt_univ I))
