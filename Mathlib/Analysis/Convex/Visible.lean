@@ -107,8 +107,7 @@ lemma IsVisible.of_convexHull_of_pos {ι : Type*} {t : Finset ι} {a : ι → V}
       match_scalars <;> field_simp <;> ring
     refine (convex_convexHull _ _).mem_of_wbtw this hε <| (convex_convexHull _ _).sum_mem ?_ ?_ ?_
     · intro j hj
-      have := hw₀ j <| erase_subset _ _ hj
-      positivity
+      positivity [hw₀ j <| erase_subset _ _ hj]
     · rw [← sum_div, sum_erase_eq_sub hi, hw₁, div_self hwi.ne']
     · exact fun j hj ↦ subset_convexHull _ _ <| ha _ <| erase_subset _ _ hj
   · exact lt_add_of_pos_left _ <| by positivity

@@ -250,9 +250,11 @@ theorem monic_of_natDegree_le_of_coeff_eq_one (n : ℕ) (pn : p.natDegree ≤ n)
   refine (congr_arg _ <| natDegree_eq_of_le_of_coeff_ne_zero pn ?_).trans p1
   exact ne_of_eq_of_ne p1 one_ne_zero
 
-theorem monic_of_degree_le_of_coeff_eq_one (n : ℕ) (pn : p.degree ≤ n) (p1 : p.coeff n = 1) :
-    Monic p :=
+theorem monic_of_degree_le (n : ℕ) (pn : p.degree ≤ n) (p1 : p.coeff n = 1) : Monic p :=
   monic_of_natDegree_le_of_coeff_eq_one n (natDegree_le_of_degree_le pn) p1
+
+@[deprecated (since := "2025-10-24")]
+alias monic_of_degree_le_of_coeff_eq_one := monic_of_degree_le
 
 theorem leadingCoeff_add_of_degree_lt (h : degree p < degree q) :
     leadingCoeff (p + q) = leadingCoeff q := by
@@ -431,7 +433,7 @@ theorem coeff_pow_mul_natDegree (p : R[X]) (n : ℕ) :
           exact leadingCoeff_eq_zero.mp hi
         calc
           (p ^ i * p).natDegree ≤ (p ^ i).natDegree + p.natDegree := natDegree_mul_le
-          _ < i * p.natDegree + p.natDegree := add_lt_add_right h1 _
+          _ < i * p.natDegree + p.natDegree := by gcongr
     · rw [← natDegree_pow' hp1, ← leadingCoeff_pow' hp1]
       exact coeff_mul_degree_add_degree _ _
 
@@ -488,6 +490,7 @@ theorem eq_one_of_monic_natDegree_zero (hf : p.Monic) (hfd : p.natDegree = 0) : 
   rw [Monic.def, leadingCoeff, hfd] at hf
   rw [eq_C_of_natDegree_eq_zero hfd, hf, map_one]
 
+@[simp]
 theorem Monic.natDegree_eq_zero (hf : p.Monic) : p.natDegree = 0 ↔ p = 1 :=
   ⟨eq_one_of_monic_natDegree_zero hf, by rintro rfl; simp⟩
 
