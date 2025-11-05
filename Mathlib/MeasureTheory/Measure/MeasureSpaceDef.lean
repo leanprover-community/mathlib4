@@ -87,14 +87,13 @@ open Lean Elab Term Meta Qq MeasureTheory
 /-- Try to elaborate `μ` as a term of type `T` where `OuterMeasureClass T ?Ω`. If that fails, try to
 elaborate `μ` as `Measure ?Ω`. -/
 def elabMeasure (μ : TSyntax `term) (expectedType? : Option Expr) : TermElabM Expr := do
-  let ⟨u, T, _⟩ ← inferTypeQ (← elabTerm μ expectedType?)
-  match u, T with
-  | .succ v, ~q(OuterMeasure $α) => elabTerm μ <| .some q(OuterMeasure $α)
-  | .succ v, _ =>
-    let ty ← mkFreshExprMVarQ q(Type v)
+  let ⟨u, T, _⟩ ← inferTypeQ' (← elabTerm μ expectedType?)
+  match T with
+  | ~q(OuterMeasure $α) => elabTerm μ <| .some q(OuterMeasure $α)
+  | _ =>
+    let ty ← mkFreshExprMVarQ q(Type u)
     let _ ← mkFreshExprMVarQ q(MeasurableSpace $ty)
     elabTerm μ q(Measure $ty)
-  | _, _ => throwUnsupportedSyntax
 
 /-- Try to elaborate `μ` as a term of type `T` where `OuterMeasureClass T ?Ω`. If that fails, try to
 elaborate `μ` as `Measure ?Ω`. -/
