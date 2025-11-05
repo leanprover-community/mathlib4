@@ -33,6 +33,19 @@ noncomputable section
 open CategoryTheory Monoidal Sheaf MonoidalCategory MonoidalClosed MonoidalClosed.FunctorCategory
   Functor
 
+section -- TODO: move
+
+variable {C D : Type*} (E : Type*) [Category C] [Category D] [Category E] [MonoidalCategory E]
+    (F : C ⥤ D)
+
+def whiskeringLeftCoreMonoidal : ((whiskeringLeft _ _ E).obj F).CoreMonoidal where
+  εIso := Iso.refl _
+  μIso _ _ := Iso.refl _
+
+instance : ((whiskeringLeft _ _ E).obj F).Monoidal := (whiskeringLeftCoreMonoidal E F).toMonoidal
+
+end
+
 namespace LightCondensed
 
 variable (R : Type u) [CommRing R]
@@ -44,6 +57,12 @@ instance : MonoidalCategory (LightCondMod.{u} R) :=
 attribute [local instance] monoidalCategory symmetricCategory in
 instance : SymmetricCategory (LightCondMod.{u} R) :=
   inferInstanceAs (SymmetricCategory (Transported (equivSmall (ModuleCat R)).symm))
+
+instance : MonoidalCategory (Sheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R)) :=
+  inferInstanceAs (MonoidalCategory (LightCondMod _))
+
+instance : HasWeakSheafify (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R) :=
+  inferInstance
 
 attribute [local instance] monoidalCategory symmetricCategory in
 /--
@@ -72,6 +91,16 @@ instance : (equivSmall (Type u)).functor.Monoidal :=
 
 instance : (equivSmall (Type u)).inverse.Monoidal :=
   ((Monoidal.nonempty_monoidal_iff_preservesFiniteProducts _).mpr inferInstance).some
+
+instance : (presheafToSheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R)).Monoidal := by
+  letI : MonoidalCategory (Sheaf ((equivSmallModel LightProfinite).inverse.inducedTopology
+      (coherentTopology LightProfinite)) (ModuleCat R)) := monoidalCategory _ _
+  apply (config := {allowSynthFailures := true}) (equivSmall _).symm.monoidalOfPostcompInverse
+  apply (config := {allowSynthFailures := true})
+    (equivSmallModel LightProfinite.{u}).symm.op.congrLeft.monoidalOfPrecompFunctor
+  · dsimp [Equivalence.congrLeft]
+    infer_instance
+  · exact Monoidal.transport (equivSmallSheafificationIso (C := ModuleCat.{u} R)).symm
 
 instance : (free R).Monoidal := by
   letI : MonoidalCategory (Sheaf ((equivSmallModel LightProfinite).inverse.inducedTopology

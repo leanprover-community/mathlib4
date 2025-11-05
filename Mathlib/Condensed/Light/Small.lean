@@ -35,6 +35,12 @@ instance (X Y : LightCondensed.{u} C) : Small.{max u v} (X ⟶ Y) where
     ⟨(equivSmall C).functor.obj X ⟶ (equivSmall C).functor.obj Y,
       ⟨(equivSmall C).fullyFaithfulFunctor.homEquiv⟩⟩
 
+def equivSmallSheafificationIso [HasWeakSheafify (coherentTopology LightProfinite.{u}) C]
+    [HasWeakSheafify ((equivSmallModel.{u} LightProfinite.{u}).inverse.inducedTopology
+        (coherentTopology LightProfinite.{u})) C] :
+  (equivSmallModel LightProfinite.{u}).op.congrLeft.inverse ⋙ presheafToSheaf _ _ ⋙
+    (equivSmall C).functor ≅ presheafToSheaf _ _ := sorry
+
 variable (R : Type u) [CommRing R]
 
 /--
