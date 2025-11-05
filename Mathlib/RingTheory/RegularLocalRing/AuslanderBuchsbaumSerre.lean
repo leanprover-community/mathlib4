@@ -664,7 +664,7 @@ theorem IsRegularLocalRing.of_maximalIdeal_hasProjectiveDimensionLE
     IsRegularLocalRing R := by
   classical
   rcases generate_by_regular h with ⟨rs, reg, span⟩
-  apply of_span_eq R rs.toFinset.toSet rs.toFinset.finite_toSet
+  apply of_span_eq R (rs.toFinset : Set R) rs.toFinset.finite_toSet
     (by simpa only [List.coe_toFinset] using span)
   rw [Set.ncard_coe_finset rs.toFinset]
   apply le_trans (Nat.cast_le.mpr rs.toFinset_card_le)
