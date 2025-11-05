@@ -25,15 +25,17 @@ protected abbrev algebra (e : α ≃ β) [Semiring β] :
     ∀ [Algebra R β], Algebra R α := fast_instance%
   letI := Equiv.semiring e
   letI := e.smul R
-  { algebraMap := e.ringEquiv.symm.toRingHom.comp (algebraMap R β)
+  { algebraMap :=
+    { toFun r := e.symm (algebraMap R β r)
+      __ := e.ringEquiv.symm.toRingHom.comp (algebraMap R β) }
     commutes' r x := by
-      simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply]
+      simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
       calc
       _ = e.symm ((e (e.symm (algebraMap R β r)) * e x)) := rfl
       _ = e.symm (e x * e (e.symm (algebraMap R β r))) := by simp [Algebra.commutes]
       _ = x * e.symm (algebraMap R β r) := rfl
     smul_def' r x := by
-      simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply]
+      simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
       calc r • x
         = e.symm (r • e x) := rfl
       _ = e.symm (e (e.symm (algebraMap R β r)) * e x) := by simp [Algebra.smul_def]
