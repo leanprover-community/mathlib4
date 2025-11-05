@@ -273,7 +273,7 @@ theorem eventually_div_right_iff (μ : Measure G) [IsMulRightInvariant μ] (t : 
   rfl
 
 @[to_additive AddSubgroup.index_mul_measure]
-lemma Subgroup.index_mul_measure {H : Subgroup G} [H.FiniteIndex] (hH : MeasurableSet (H : Set G))
+lemma Subgroup.index_mul_measure (H : Subgroup G) [H.FiniteIndex] (hH : MeasurableSet (H : Set G))
     (μ : Measure G) [IsMulLeftInvariant μ] : H.index * μ H = μ univ := by
   obtain ⟨s, hs, -⟩ := H.exists_isComplement_left 1
   have hs' : Finite s := hs.finite_left_iff.mpr inferInstance
