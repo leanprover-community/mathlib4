@@ -9,13 +9,6 @@ import Mathlib.Data.Nat.Choose.Sum
 
 /-!
 # Characteristic of semirings
-
-## Implementation Notes
-
-In the lemma `add_pow_prime_pow_eq` and its variants, we take a sum indexed by `Ioo 0 (p ^ n)`. This
-is done intentionally so that we can exclude the `0`-th and `p^n`-th terms from the sum, so that
-the rest of the terms are divisible by `p * x * y`.
-
 -/
 
 assert_not_exists Algebra LinearMap orderOf
@@ -112,15 +105,6 @@ theorem exists_add_pow_prime_pow_eq :
 
 theorem exists_add_pow_prime_eq : ∃ r, (x + y) ^ p = x ^ p + y ^ p + p * x * y * r :=
   (Commute.all x y).exists_add_pow_prime_eq hp
-
-theorem exists_add_pow_prime_pow_eq' :
-    ∃ r, (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n + p * x * y * r :=
-  ⟨_, add_pow_prime_pow_eq' hp x y n⟩
-
-theorem exists_add_pow_prime_eq' :
-    ∃ r, (x + y) ^ p = x ^ p + y ^ p + p * x * y * r := by
-  obtain ⟨r, hr⟩ := exists_add_pow_prime_pow_eq' hp x y 1
-  exact ⟨r, by simpa using hr⟩
 
 end CommSemiring
 
