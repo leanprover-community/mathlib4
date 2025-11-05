@@ -38,10 +38,6 @@ private theorem auxLinear_map_apply (f : End R V →ₐ[R] End R V) (y : Dual R 
   simp_rw [auxLinear_apply, coe_coe, ← mul_apply, ← map_mul]
   congr; ext; simp
 
-private theorem auxLinear_comp (f : End R V →ₐ[R] End R V) (y : Dual R V) (z : V) (A : End R V) :
-    auxLinear f y z ∘ₗ A = f A ∘ₗ auxLinear f y z :=
-  LinearMap.ext <| auxLinear_map_apply f y z A
-
 /-- Given an algebra automorphism `f` in `End K V`, there exists a linear isomorphism `T`
 such that `f` is given by `x ↦ T ∘ₗ x ∘ₗ T.symm`. -/
 theorem AlgEquiv.coe_eq_linearEquiv_conj [Free K V] (f : End K V ≃ₐ[K] End K V) :
@@ -65,7 +61,7 @@ theorem AlgEquiv.coe_eq_linearEquiv_conj [Free K V] (f : End K V ≃ₐ[K] End K
       obtain ⟨w, rfl⟩ := surj z
       simp_rw [← this, smulRightₗ_apply, map_smul, hxy]
     simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
-  exact ⟨.ofBijective T ⟨inj, surj⟩, fun A ↦ auxLinear_comp f.toAlgHom v z A |>.symm⟩
+  exact ⟨.ofBijective T ⟨inj, surj⟩, fun A ↦ (ext <| auxLinear_map_apply f v z A).symm⟩
 
 /-- Alternate statement of `coe_eq_linearEquiv_conj`. -/
 theorem mulSemiringActionToAlgEquiv_conjAct_surjective [Free K V] :
@@ -73,6 +69,6 @@ theorem mulSemiringActionToAlgEquiv_conjAct_surjective [Free K V] :
       (MulSemiringAction.toAlgEquiv (G := ConjAct (GeneralLinearGroup K V)) K (End K V)) := by
   intro f
   obtain ⟨T, hT⟩ := f.coe_eq_linearEquiv_conj
-  exact ⟨GeneralLinearGroup.ofLinearEquiv T, (DFunLike.coe_injective hT).symm⟩
+  exact ⟨.ofLinearEquiv T, (DFunLike.coe_injective hT).symm⟩
 
 end Module.End
