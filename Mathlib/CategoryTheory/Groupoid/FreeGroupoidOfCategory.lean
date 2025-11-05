@@ -83,8 +83,10 @@ lemma of_obj_bijective : Function.Bijective (of C).obj where
   left _ _ h := by cases h; rfl
   right X := ⟨X.as.as, rfl⟩
 
+/-- Consruct an object of the free groupoid on `C` by providing an object `C`. -/
 abbrev mk (X : C) : Category.FreeGroupoid C := (of C).obj X
 
+/-- Consruct a morphism in the free groupoid on `C` by providing a morphism `C`. -/
 abbrev homMk {X Y : C} (f : X ⟶ Y) : mk X ⟶ mk Y := (of C).map f
 
 section UniversalProperty
