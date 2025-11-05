@@ -171,8 +171,7 @@ def cleanup (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
   match cfg.mode with
   | .raw => pure r
   | .SOP => do
-    let r ← Algebra.cleanup_aux cfg r
-    let r ← Algebra.cleanup_pull_smul cfg r
+    let r ← cleanupRingNF cfg r
     let thms : SimpTheorems ← polynomialPostExt.getTheorems
     let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
       (simpTheorems := #[thms])

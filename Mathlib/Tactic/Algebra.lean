@@ -796,38 +796,28 @@ def inferLevelQ (e : Expr) : MetaM (Σ u : Lean.Level, Q(Type u)) := do
   let some v := (← instantiateLevelMVars u).dec | throwError "not a Type{indentExpr e}"
   return ⟨v, e⟩
 
-def cleanup_pull_smul (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
+/-- Clean up the normal form into a more human-friendly format. This does everything
+  `RingNF.cleanup` does and also pulls the scalar multiplication from the end of of each term to
+  the start. i.e. x * y * (r • 1) → r • (x * y)
+  Used by `cleanup`. -/
+def cleanupSMul (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
   let thms : SimpTheorems := {}
-  /- Now turn e.g. `(4 : ℚ) • x` into `4 * x`. -/
-  let thms ← [``add_zero, ``add_assoc_rev, ``_root_.one_mul, ``_root_.mul_one,
-    ``mul_assoc_rev, ``_root_.pow_one, ``neg_mul, ``add_neg, ``one_smul,
-    ``mul_smul_comm
-    ].foldlM (·.addConst ·) thms
+  let thms ← [``add_zero, ``add_assoc_rev, ``_root_.mul_one, ``mul_assoc_rev, ``_root_.pow_one,
+    ``mul_neg, ``add_neg, ``one_smul, ``mul_smul_comm].foldlM (·.addConst ·) thms
+  let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_neg,
+      ``nnrat_rawCast, ``rat_rawCast_neg].foldlM (·.addConst · (post := false)) thms
   let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
     (simpTheorems := #[thms])
     (congrTheorems := ← getSimpCongrTheorems)
   pure <| ←
     r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
 
+/-- Turn scalar multiplication by an explicit constant in `R` into multiplication in `A`.
 
-def cleanup_aux (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
-  match cfg.mode with
-  | .raw => pure r
-  | .SOP => do
-    let thms : SimpTheorems := {}
-    let thms ← [``add_zero, ``add_assoc_rev, ``_root_.mul_one, ``mul_assoc_rev, ``_root_.pow_one,
-      ``mul_neg, ``add_neg, ``one_smul, ``mul_smul_comm].foldlM (·.addConst ·) thms
-    let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_neg,
-       ``nnrat_rawCast, ``rat_rawCast_neg].foldlM (·.addConst · (post := false)) thms
-    let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
-      (simpTheorems := #[thms])
-      (congrTheorems := ← getSimpCongrTheorems)
-    pure <| ←
-      r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
-
-def cleanup_consts (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
+e.g. `(4 : ℚ) • x` becomes `4 * x` but `↑n • x` stays `↑n • x`.
+-/
+def cleanupConsts (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
   let thms : SimpTheorems := {}
-  /- Now turn e.g. `(4 : ℚ) • x` into `4 * x`. -/
   let thms ← [``add_zero, ``_root_.one_mul, ``_root_.mul_one,
     ``neg_mul, ``add_neg].foldlM (·.addConst ·) thms
   let thms ← [``ofNat_smul, ``neg_ofNat_smul, ``neg_1_smul, ``nnRat_ofNat_smul_1,
@@ -845,15 +835,10 @@ def cleanup (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
   match cfg.mode with
   | .raw => pure r
   | .SOP => do
-    /- These need to come first, it turns rawCast (nat_lit 4) into ofNat (nat_lit 4)
-    If we don't do this first an empty simpset turns nat_lit 4 into ofNat 4. -/
-    let r ← cleanup_aux cfg r
-    /- Pull the scalar multiplication from the end of of the term to the start.
-    i.e. x * y * (r • 1) → r • (x * y)-/
-    let r ← cleanup_pull_smul cfg r
-    /- If the base expression in a scalar product is a constant, turn the scalar multiplication into
-    normal multiplication. i.e. (-3) • x → -3 * x -/
-    let r ← cleanup_consts cfg r
+    /- These two routines cannot be combined into one because the rules
+    "x * (n • y) → n • (x * y)" and "4 • x → 4 * x" are not confluent. -/
+    let r ← cleanupSMul cfg r
+    let r ← cleanupConsts cfg r
     return r
 
 

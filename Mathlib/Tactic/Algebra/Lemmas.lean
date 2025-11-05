@@ -19,22 +19,6 @@ namespace Mathlib.Tactic.Algebra
 section ring
 
 variable {R A : Type*} [sR : CommRing R] [sA : CommRing A] [sAlg : Algebra R A]
-#check Nat.ofNat_nsmul_eq_mul
-
-
-
--- theorem Nat.cast_eq_ofNat (n : ℕ) [n.AtLeastTwo] : (n:R) = ofNat(n) :=
---   rfl
-
--- theorem ofNat_smul {n : ℕ} {a : A} [n.AtLeastTwo] :  (ofNat(n) : R) • a = ofNat(n) * a := by
---   simp [@Algebra.smul_def, ← Nat.cast_eq_ofNat]
-
--- theorem neg_ofNat_smul {n : ℕ} {a : A} :
---     (-ofNat(n) : R) •  a = (-ofNat(n):A) * a := by
---   simp [ofNat_smul]
-
--- theorem neg_ofNat_smul {n d : ℕ} {a : A} [n.AtLeastTwo] [d.AtLeastTwo] :
-
 
 theorem neg_smul_one {r s : R} (h : -r = s) :
     -(r • (1 : A)) = s • 1 := by

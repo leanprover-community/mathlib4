@@ -155,11 +155,6 @@ example {a b : ℤ} (x y : ℚ) : (a - b) • (x + y) = 0 := by
   guard_target = (a - b) • x + (a - b) • y = 0
   exact sorryAlgebraTest
 
-
-example (x y : ℚ) (a : ℤ) (h : 2 * a = 3) : (x + a • y)^2 = x^2 + 3 * x*y + a^2 • y^2 := by
-  grind
-
-
 example : 2 = 1 := by
   match_scalars_alg with ℕ
   exact sorryAlgebraTest
