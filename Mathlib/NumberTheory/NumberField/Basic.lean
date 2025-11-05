@@ -420,6 +420,10 @@ theorem coe_ringOfIntegersEquiv (z : 𝓞 ℚ) :
   obtain ⟨z, rfl⟩ := Rat.ringOfIntegersEquiv.symm.surjective z
   simp
 
+theorem ringOfIntegersEquiv_symm_coe (x : ℤ) :
+    (ringOfIntegersEquiv.symm x : ℚ) = ↑x :=
+  eq_intCast ringOfIntegersEquiv.symm _ ▸ rfl
+
 end Rat
 
 namespace AdjoinRoot
