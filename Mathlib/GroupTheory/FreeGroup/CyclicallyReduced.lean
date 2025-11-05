@@ -8,7 +8,6 @@ import Mathlib.GroupTheory.FreeGroup.Basic
 import Mathlib.GroupTheory.FreeGroup.Reduce
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Tactic.Group
-import Mathlib.Tactic.Linarith
 
 /-!
 This file defines some extra lemmas for free groups, in particular about cyclically reduced words.
