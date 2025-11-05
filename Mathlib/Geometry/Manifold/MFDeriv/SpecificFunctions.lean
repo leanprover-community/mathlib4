@@ -669,7 +669,7 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ
 
 open Topology
 
-variable {f : M → N} (g : M' → N') {s : Set (M ⊕ M')} {t : Set M'} {p : M ⊕ M'}
+variable {s : Set (M ⊕ M')} {p : M ⊕ M'}
 
 /-- In extended charts at `p`, `Sum.swap` looks like the identity near `p`. -/
 lemma writtenInExtChartAt_sumSwap_eventuallyEq_id :
