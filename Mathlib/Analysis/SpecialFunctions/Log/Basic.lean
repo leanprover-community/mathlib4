@@ -544,7 +544,7 @@ lemma log_nz_of_isRat_neg {n : ℤ} : (NormNum.IsRat e n d) → (decide (n / d <
 
 /-- Extension for the `positivity` tactic: `Real.log` of a natural number is always nonnegative. -/
 @[positivity Real.log (Nat.cast _)]
-def evalLogNatCast : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalLogNatCast : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.log (Nat.cast $a)) =>
     assertInstancesCommute
@@ -553,7 +553,7 @@ def evalLogNatCast : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: `Real.log` of an integer is always nonnegative. -/
 @[positivity Real.log (Int.cast _)]
-def evalLogIntCast : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalLogIntCast : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.log (Int.cast $a)) =>
     assertInstancesCommute
@@ -562,7 +562,7 @@ def evalLogIntCast : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: `Real.log` of a numeric literal. -/
 @[positivity Real.log _]
-def evalLogNatLit : PositivityExt where eval {u α} _ _ e := do
+meta def evalLogNatLit : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.log $a) =>
     match ← NormNum.derive a with

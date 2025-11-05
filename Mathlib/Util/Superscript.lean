@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
-public meta import Mathlib.Init
-public meta import Batteries.Tactic.Lint
+public import Mathlib.Init
+public import Batteries.Tactic.Lint
 
 /-!
 # A parser for superscripts and subscripts
@@ -109,7 +109,6 @@ def partitionPoint (lo := 0) (hi := as.size) : Nat :=
     else
       partitionPoint lo m
   else lo
-  termination_by hi - lo
 
 /-- The core function for super/subscript parsing. It consists of three stages:
 

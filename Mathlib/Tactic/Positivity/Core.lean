@@ -106,6 +106,7 @@ initialize registerBuiltinAttribute {
   applicationTime := .afterCompilation
   add := fun declName stx kind => match stx with
     | `(attr| positivity $es,*) => do
+      ensureAttrDeclIsMeta `positivity declName kind
       unless kind == AttributeKind.global do
         throwError "invalid attribute 'positivity', must be global"
       let env ← getEnv

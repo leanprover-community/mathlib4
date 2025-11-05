@@ -198,7 +198,7 @@ theorem forall_ge_iff_le : (∀ ⦃c⦄, a ≤ c → b ≤ c) ↔ b ≤ a :=
 namespace Mathlib.Tactic.GCongr
 
 /-- See if the term is `a < b` and the goal is `a ≤ b`. -/
-@[gcongr_forward] def exactLeOfLt : ForwardExt where
+@[gcongr_forward] meta def exactLeOfLt : ForwardExt where
   eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``le_of_lt #[h])
 
 end Mathlib.Tactic.GCongr

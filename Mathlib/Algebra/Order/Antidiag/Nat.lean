@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Antidiag.Pi
 public import Mathlib.NumberTheory.ArithmeticFunction
 public import Mathlib.Tactic.IntervalCases
+import Mathlib.Data.PNat.Basic
 
 /-!
 # Sets of tuples with a fixed product

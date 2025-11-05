@@ -6,6 +6,8 @@ Authors: Mario Carneiro, Kim Morrison
 module
 
 public import Mathlib.Init
+public import Batteries.Tactic.Alias
+public import Lean.ToExpr
 
 /-!
 # Additional operations on Expr and rational numbers
@@ -18,7 +20,7 @@ This file defines some operations involving `Expr` and rational numbers.
   This includes natural numbers, integers and rationals.
 -/
 
-@[expose] public section
+public section
 
 open Lean in
 instance : ToExpr Rat where

@@ -159,7 +159,7 @@ def withResetServerInfo {α : Type} (t : TacticM α) :
 end Mathlib.Tactic
 
 /-- A mathlib library note: the note's content should be contained in its doc-string. -/
-def LibraryNote := Unit
+@[expose] def LibraryNote := Unit
 
 open Lean in
 /-- `library_note2 «my note» /-- documentation -/` creates a library note named `my note`

@@ -186,7 +186,7 @@ open scoped BigOperators
 attribute [local instance] monadLiftOptionMetaM in
 /-- Positivity extension for `Finset.expect`. -/
 @[positivity Finset.expect _ _]
-def evalFinsetExpect : PositivityExt where eval {u α} zα pα e := do
+meta def evalFinsetExpect : PositivityExt where eval {u α} zα pα e := do
   match e with
   | ~q(@Finset.expect $ι _ $instα $instmod $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque

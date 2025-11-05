@@ -56,7 +56,7 @@ def elabDelta : TermElab := fun stx expectedType? =>
       elabTerm t expectedType?
     synthesizeSyntheticMVars
     let t ← instantiateMVars t
-    let some t ← delta? t | throwError "cannot delta reduce {t}"
+    let some t ← withoutExporting do delta? t | throwError "cannot delta reduce {t}"
     pure t
   | _ => throwUnsupportedSyntax
 

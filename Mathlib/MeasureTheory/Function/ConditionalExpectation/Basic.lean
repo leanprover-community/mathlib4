@@ -106,7 +106,7 @@ scoped macro:max μ:term noWs "[" f:term "|" m:term "]" : term =>
 
 /-- Unexpander for `μ[f|m]` notation. -/
 @[app_unexpander MeasureTheory.condExp]
-def condExpUnexpander : Lean.PrettyPrinter.Unexpander
+meta def condExpUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $m $μ $f) => `($μ[$f|$m])
   | _ => throw ()
 

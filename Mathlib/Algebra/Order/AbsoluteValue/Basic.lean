@@ -410,7 +410,7 @@ lemma abv_nonneg (x) : 0 ≤ abv x := abv_nonneg' x
 open Lean Meta Mathlib Meta Positivity Qq in
 /-- The `positivity` extension which identifies expressions of the form `abv a`. -/
 @[positivity _]
-def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα _pα e := do
+meta def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα _pα e := do
   let (.app f a) ← whnfR e | throwError "not abv ·"
   let pa' ← mkAppM ``abv_nonneg #[f, a]
   pure (.nonnegative pa')

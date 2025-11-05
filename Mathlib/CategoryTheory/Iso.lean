@@ -6,6 +6,7 @@ Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 module
 
 public import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Isomorphisms

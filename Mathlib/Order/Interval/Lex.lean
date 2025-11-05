@@ -8,6 +8,8 @@ module
 public import Mathlib.Order.Interval.Basic
 public import Mathlib.Data.Prod.Lex
 public import Mathlib.Tactic.FastInstance
+meta import Mathlib.Order.Interval.Basic  -- for `#eval` testing
+
 /-!
 # The lexicographic order on intervals
 

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Batteries.Data.Rat.Float
+meta import Batteries.Data.Rat.Float  -- for `#eval` sanity check
 
 /-!
 # Chudnovsky's formula for π

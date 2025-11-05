@@ -33,7 +33,7 @@ A delaborator for the x′ notation. This is required because it's not direct fu
 so the default delaborator doesn't work.
 -/
 @[app_delab DFunLike.coe]
-def delabDeriv : Delab := do
+meta def delabDeriv : Delab := do
   let e ← getExpr
   guard <| e.isAppOfArity' ``DFunLike.coe 6
   guard <| (e.getArg!' 4).isAppOf' ``Differential.deriv

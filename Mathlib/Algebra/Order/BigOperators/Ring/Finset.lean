@@ -275,7 +275,7 @@ example (s : Finset ℕ) (f : ℕ → ℤ) (hf : ∀ n, 0 ≤ f n) : 0 ≤ s.pro
 because `compareHyp` can't look for assumptions behind binders.
 -/
 @[positivity Finset.prod _ _]
-def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
+meta def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
   match e with
   | ~q(@Finset.prod $ι _ $instα $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque

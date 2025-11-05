@@ -87,7 +87,7 @@ open Lean Meta Qq
 
 /-- Extension for `Nat.doubleFactorial`. -/
 @[positivity Nat.doubleFactorial _]
-def evalDoubleFactorial : PositivityExt where eval {u α} _ _ e := do
+meta def evalDoubleFactorial : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.doubleFactorial $n) =>
     assumeInstancesCommute

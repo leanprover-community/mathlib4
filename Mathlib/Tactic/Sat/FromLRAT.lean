@@ -42,7 +42,7 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
   to load CNF / LRAT files from disk.
 -/
 
-public meta section
+@[expose] public meta section
 
 open Lean hiding Literal
 open Std (HashMap)
@@ -115,6 +115,7 @@ all literals in the clause are falsified. -/
 def Valuation.satisfies (v : Valuation) : Clause → Prop
   | [] => False
   | l::c => v.neg l → v.satisfies c
+termination_by structural ps => ps
 
 /-- `v.satisfies_fmla f` asserts that formula `f` is satisfied by the valuation.
 A formula is satisfied if all clauses in it are satisfied. -/
@@ -150,6 +151,7 @@ This is used to introduce assumptions about the first `n` values of `v` during r
 def Valuation.implies (v : Valuation) (p : Prop) : List Prop → Nat → Prop
   | [], _ => p
   | a::as, n => (v n ↔ a) → v.implies p as (n + 1)
+termination_by structural ps => ps
 
 /-- `Valuation.mk [a, b, c]` is a valuation which is `a` at 0, `b` at 1 and `c` at 2, and false
 everywhere else. -/
@@ -157,6 +159,7 @@ def Valuation.mk : List Prop → Valuation
   | [], _ => False
   | a::_, 0 => a
   | _::as, n + 1 => mk as n
+termination_by structural ps => ps
 
 /-- The fundamental relationship between `mk` and `implies`:
 `(mk ps).implies p ps 0` is equivalent to `p`. -/

@@ -1447,7 +1447,7 @@ open Lean Meta Qq
 
 /-- Extension for `ArithmeticFunction.sigma`. -/
 @[positivity ArithmeticFunction.sigma _ _]
-def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p e := do
+meta def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(ArithmeticFunction.sigma $k $n) =>
     let rn ← core z p n
@@ -1459,7 +1459,7 @@ def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p e := do
 
 /-- Extension for `ArithmeticFunction.zeta`. -/
 @[positivity ArithmeticFunction.zeta _]
-def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p e := do
+meta def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(ArithmeticFunction.zeta $n) =>
     let rn ← core z p n

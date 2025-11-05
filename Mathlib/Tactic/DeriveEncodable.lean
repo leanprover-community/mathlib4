@@ -9,8 +9,8 @@ public meta import Lean.Meta.Transform
 public meta import Lean.Meta.Inductive
 public meta import Lean.Elab.Deriving.Basic
 public meta import Lean.Elab.Deriving.Util
-public meta import Mathlib.Logic.Encodable.Basic
-public meta import Mathlib.Data.Nat.Pairing
+import Mathlib.Logic.Encodable.Basic
+import Mathlib.Data.Nat.Pairing
 
 /-!
 # `Encodable` deriving handler
@@ -21,7 +21,7 @@ The resulting `Encodable` instance should be considered to be opaque.
 The specific encoding used is an implementation detail.
 -/
 
-public meta section
+public section
 
 namespace Mathlib.Deriving.Encodable
 open Lean Parser.Term Elab Deriving Meta
@@ -130,7 +130,9 @@ private def S_equiv : S ≃ ℕ where
         · have := Nat.unpair_lt (by omega : 1 ≤ n' + 1)
           omega
 
-instance : Encodable S := Encodable.ofEquiv ℕ S_equiv
+private local instance : Encodable S := Encodable.ofEquiv ℕ S_equiv
+
+public meta section
 
 /-!
 ### Implementation
@@ -366,5 +368,3 @@ def mkEncodableInstance (declNames : Array Name) : CommandElabM Bool := do
 initialize
   registerDerivingHandler ``Encodable mkEncodableInstance
   registerTraceClass `Mathlib.Deriving.Encodable
-
-end Mathlib.Deriving.Encodable

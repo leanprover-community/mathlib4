@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.List.Sort
 public import Mathlib.Data.Multiset.Range
 public import Mathlib.Util.Qq
+meta import Mathlib.Data.Multiset.Defs
 
 /-!
 # Construct a sorted list from a multiset.
@@ -93,7 +94,7 @@ end sort
 
 open Qq in
 universe u in
-unsafe instance {α : Type u} [Lean.ToLevel.{u}] [Lean.ToExpr α] :
+meta unsafe instance {α : Type u} [Lean.ToLevel.{u}] [Lean.ToExpr α] :
     Lean.ToExpr (Multiset α) :=
   haveI u' := Lean.toLevel.{u}
   haveI α' : Q(Type u') := Lean.toTypeExpr α

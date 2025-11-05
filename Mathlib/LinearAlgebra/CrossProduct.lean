@@ -70,7 +70,7 @@ end Matrix
 
 open Lean Elab Meta.Tactic Term in
 @[term_elab Matrix._root_.«term_×₃_», inherit_doc «term_×₃_»]
-def elabDeprecatedCross : TermElab
+meta def elabDeprecatedCross : TermElab
 | `($x ×₃%$tk $y) => fun ty? => do
   logWarningAt tk <| .tagged ``Linter.deprecatedAttr <| m!"The ×₃ notation has been deprecated"
   TryThis.addSuggestion tk { suggestion := "⨯₃" }

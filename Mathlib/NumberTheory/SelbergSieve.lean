@@ -86,7 +86,7 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `BoundingSieve.weights`. -/
 @[positivity BoundingSieve.weights _ _]
-def evalBoundingSieveWeights : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalBoundingSieveWeights : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@BoundingSieve.weights $s $n) =>
     assertInstancesCommute

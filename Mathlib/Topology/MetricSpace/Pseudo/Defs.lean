@@ -237,7 +237,7 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: distances are nonnegative. -/
 @[positivity Dist.dist _ _]
-def evalDist : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalDist : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Dist.dist $β $inst $a $b) =>
     let _inst ← synthInstanceQ q(PseudoMetricSpace $β)

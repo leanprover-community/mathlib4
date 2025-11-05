@@ -117,7 +117,7 @@ syntax bigOpBinders := bigOpBinderCollection <|> (ppSpace bigOpBinder)
 /-- Collects additional binder/Finset pairs for the given `bigOpBinder`.
 
 Note: this is not extensible at the moment, unlike the usual `bigOpBinder` expansions. -/
-def processBigOpBinder (processed : (Array (Term × Term))) (binder : TSyntax ``bigOpBinder) :
+meta def processBigOpBinder (processed : (Array (Term × Term))) (binder : TSyntax ``bigOpBinder) :
     MacroM (Array (Term × Term)) :=
   set_option hygiene false in
   withRef binder do
@@ -138,7 +138,7 @@ def processBigOpBinder (processed : (Array (Term × Term))) (binder : TSyntax ``
     | _ => Macro.throwUnsupported
 
 /-- Collects the binder/Finset pairs for the given `bigOpBinders`. -/
-def processBigOpBinders (binders : TSyntax ``bigOpBinders) :
+meta def processBigOpBinders (binders : TSyntax ``bigOpBinders) :
     MacroM (Array (Term × Term)) :=
   match binders with
   | `(bigOpBinders| $b:bigOpBinder) => processBigOpBinder #[] b
@@ -146,7 +146,7 @@ def processBigOpBinders (binders : TSyntax ``bigOpBinders) :
   | _ => Macro.throwUnsupported
 
 /-- Collects the binderIdents into a `⟨...⟩` expression. -/
-def bigOpBindersPattern (processed : Array (Term × Term)) : MacroM Term := do
+meta def bigOpBindersPattern (processed : Array (Term × Term)) : MacroM Term := do
   let ts := processed.map Prod.fst
   if h : ts.size = 1 then
     return ts[0]
@@ -154,7 +154,7 @@ def bigOpBindersPattern (processed : Array (Term × Term)) : MacroM Term := do
     `(⟨$ts,*⟩)
 
 /-- Collects the terms into a product of sets. -/
-def bigOpBindersProd (processed : Array (Term × Term)) : MacroM Term := do
+meta def bigOpBindersProd (processed : Array (Term × Term)) : MacroM Term := do
   if h₀ : processed.size = 0 then
     `((Finset.univ : Finset Unit))
   else if h₁ : processed.size = 1 then
@@ -237,7 +237,7 @@ private inductive FinsetResult where
 
 /-- Delaborates a finset indexing a big operator. In case it is a `Finset.filter`, `i` is used for
 the binder name. -/
-private def delabFinsetArg (i : Ident) : DelabM FinsetResult := do
+private meta def delabFinsetArg (i : Ident) : DelabM FinsetResult := do
   let s ← getExpr
   if s.isAppOfArity ``Finset.univ 2 then
     return .univ
@@ -261,7 +261,7 @@ private def delabFinsetArg (i : Ident) : DelabM FinsetResult := do
 
 /-- Delaborator for `Finset.prod`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the product is over `Finset.univ`. -/
-@[app_delab Finset.prod] def delabFinsetProd : Delab :=
+@[app_delab Finset.prod] meta def delabFinsetProd : Delab :=
   whenPPOption getPPNotation <| withOverApp 5 do
   let #[_, _, _, _, f] := (← getExpr).getAppArgs | failure
   guard f.isLambda
@@ -292,7 +292,7 @@ to show the domain type when the product is over `Finset.univ`. -/
 
 /-- Delaborator for `Finset.sum`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the sum is over `Finset.univ`. -/
-@[app_delab Finset.sum] def delabFinsetSum : Delab :=
+@[app_delab Finset.sum] meta def delabFinsetSum : Delab :=
   whenPPOption getPPNotation <| withOverApp 5 do
   let #[_, _, _, _, f] := (← getExpr).getAppArgs | failure
   guard f.isLambda

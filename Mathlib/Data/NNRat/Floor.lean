@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Floor.Semiring
 public import Mathlib.Data.NNRat.Order
 public import Mathlib.Data.Rat.Floor
+public meta import Mathlib.Data.Rat.Floor
 
 /-!
 # Floor Function for Non-negative Rational Numbers
@@ -130,7 +131,7 @@ theorem IsRat.natCeil {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing
 open Lean in
 /-- `norm_num` extension for `Nat.ceil` -/
 @[norm_num ⌈_⌉₊]
-def evalNatCeil : NormNumExt where eval {u αZ} e := do
+meta def evalNatCeil : NormNumExt where eval {u αZ} e := do
   match u, αZ, e with
   | 0, ~q(ℕ), ~q(@Nat.ceil $α $instSemiring $instPartialOrder $instFloorSemiring $x) =>
     match ← derive x with

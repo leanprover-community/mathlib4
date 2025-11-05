@@ -7,7 +7,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébasti
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
-public import Mathlib.Data.Nat.NthRoot.Defs
+public meta import Mathlib.Data.Nat.NthRoot.Defs
 public import Qq
 
 /-! # Power function on `ℝ`
@@ -366,7 +366,7 @@ open Lean Meta Qq
 /-- Extension for the `positivity` tactic: exponentiation by a real number is positive (namely 1)
 when the exponent is zero. The other cases are done in `evalRpow`. -/
 @[positivity (_ : ℝ) ^ (0 : ℝ)]
-def evalRpowZero : PositivityExt where eval {u α} _ _ e := do
+meta def evalRpowZero : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q($a ^ (0 : ℝ)) =>
     assertInstancesCommute
@@ -376,7 +376,7 @@ def evalRpowZero : PositivityExt where eval {u α} _ _ e := do
 /-- Extension for the `positivity` tactic: exponentiation by a real number is nonnegative when
 the base is nonnegative and positive when the base is positive. -/
 @[positivity (_ : ℝ) ^ (_ : ℝ)]
-def evalRpow : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalRpow : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q($a ^ ($b : ℝ)) =>
     let ra ← core q(inferInstance) q(inferInstance) a
@@ -1132,7 +1132,7 @@ returns a tuple of
 
 Fails if `na` is not a `db`th power of a natural number.
 -/
-def proveIsNatRPowIsNNRat
+meta def proveIsNatRPowIsNNRat
     (a : Q(ℝ)) (na : Q(ℕ)) (pa : Q(IsNat $a $na))
     (b : Q(ℝ)) (nb db : Q(ℕ)) (pb : Q(IsNNRat $b $nb $db)) :
     MetaM (ℕ × Σ r : Q(ℕ), Q(IsNat ($a ^ $b) $r)) := do
@@ -1152,7 +1152,7 @@ except for the case `a < 0`, `b` isn't integer.
 TODO: simplify terms like  `(-a : ℝ) ^ (b / 3 : ℝ)` and `(-a : ℝ) ^ (b / 2 : ℝ)` too,
 possibly after first considering changing the junk value. -/
 @[norm_num (_ : ℝ) ^ (_ : ℝ)]
-def evalRPow : NormNumExt where eval {u αR} e := do
+meta def evalRPow : NormNumExt where eval {u αR} e := do
   match u, αR, e with
   | 0, ~q(ℝ), ~q(($a : ℝ)^($b : ℝ)) =>
     match ← derive b with
