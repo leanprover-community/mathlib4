@@ -84,9 +84,8 @@ lemma _root_.TotallyBounded.exists_finite_isCover (hs : TotallyBounded s) (hε :
   rw [EMetric.totallyBounded_iff'] at hs
   obtain ⟨N, hNA, hN_finite, hN⟩ := hs ε (mod_cast hε)
   simp only [isCover_iff_subset_iUnion_emetricClosedBall]
-  refine ⟨Set.Finite.toFinset hN_finite, by simpa, by simpa, ?_⟩
-  · simp only [Finite.coe_toFinset]
-    refine hN.trans fun x hx ↦ ?_
+  refine ⟨N, by simpa, by simpa, ?_⟩
+  · refine hN.trans fun x hx ↦ ?_
     simp only [Set.mem_iUnion, EMetric.mem_ball, exists_prop, EMetric.mem_closedBall] at hx ⊢
     obtain ⟨y, hyN, hy⟩ := hx
     exact ⟨y, hyN, hy.le⟩
@@ -96,6 +95,16 @@ lemma _root_.TotallyBounded.exists_finset_isCover (hs : TotallyBounded s) (hε :
     ∃ N : Finset X, ↑N ⊆ s ∧ IsCover ε s (N : Set X) := by
   obtain ⟨N, hNA, hN_finite, hN⟩ := hs.exists_finite_isCover hε
   exact ⟨Set.Finite.toFinset hN_finite, by simpa, by simpa⟩
+
+/-- A relatively compact set admits a finite cover. -/
+lemma exists_finite_isCover_of_isCompact_closure (hε : ε ≠ 0) (hs : IsCompact (closure s)) :
+    ∃ N ⊆ s, N.Finite ∧ IsCover ε s N :=
+  (hs.totallyBounded.subset subset_closure).exists_finite_isCover (by positivity)
+
+/-- A compact set admits a finite cover. -/
+lemma exists_finite_isCover_of_isCompact (hε : ε ≠ 0) (hs : IsCompact s) :
+    ∃ N ⊆ s, N.Finite ∧ IsCover ε s N :=
+  hs.totallyBounded.exists_finite_isCover (by positivity)
 
 end PseudoEMetricSpace
 
@@ -107,23 +116,6 @@ lemma isCover_iff_subset_iUnion_closedBall : IsCover ε s N ↔ s ⊆ ⋃ y ∈ 
 
 alias ⟨IsCover.subset_iUnion_closedBall, IsCover.of_subset_iUnion_closedBall⟩ :=
   isCover_iff_subset_iUnion_closedBall
-
-/-- A relatively compact set admits a finite cover. -/
-lemma exists_finite_isCover_of_isCompact_closure (hε : ε ≠ 0) (hs : IsCompact (closure s)) :
-    ∃ N ⊆ s, N.Finite ∧ IsCover ε s N := by
-  obtain ⟨N, hNs, hN, hsN⟩ :=
-    exists_finite_cover_balls_of_isCompact_closure hs (ε := ε) (by positivity)
-  refine ⟨N, hNs, hN, .of_subset_iUnion_closedBall <| hsN.trans ?_⟩
-  gcongr
-  exact ball_subset_closedBall
-
-/-- A compact set admits a finite cover. -/
-lemma exists_finite_isCover_of_isCompact (hε : ε ≠ 0) (hs : IsCompact s) :
-    ∃ N ⊆ s, N.Finite ∧ IsCover ε s N := by
-  obtain ⟨N, hNs, hN, hsN⟩ := hs.finite_cover_balls (e := ε) (by positivity)
-  refine ⟨N, hNs, hN, .of_subset_iUnion_closedBall <| hsN.trans ?_⟩
-  gcongr
-  exact ball_subset_closedBall
 
 lemma IsCover.of_subset_cthickening_of_lt {δ : ℝ≥0} (hsN : s ⊆ cthickening ε N) (hεδ : ε < δ) :
     IsCover δ s N :=
