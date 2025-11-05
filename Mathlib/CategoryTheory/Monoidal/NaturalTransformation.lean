@@ -212,7 +212,7 @@ namespace Functor.Monoidal
 Transporting a monoidal structure along a natural isomorphism of functors makes the isomorphism
 a monoidal natural transformation.
 -/
-instance transport_iso_isMonoidal {F G : C ⥤ D} [F.Monoidal] (e : F ≅ G) :
+lemma transport_iso_isMonoidal {F G : C ⥤ D} [F.Monoidal] (e : F ≅ G) :
     letI : G.Monoidal := transport e
     e.hom.IsMonoidal := by
   letI G.Monoidal := transport e
