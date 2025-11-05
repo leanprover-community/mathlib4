@@ -58,10 +58,6 @@ theorem quotient_iff_le_ker_natCast (n : ℕ) [CharP R n] (I : Ideal R) :
     CharP (R ⧸ I) n ↔ I.comap (Nat.castRingHom R) ≤ RingHom.ker (Nat.castRingHom R) := by
   rw [CharP.quotient_iff, RingHom.ker_eq_comap_bot]; rfl
 
-theorem mem {R : Type*} [CommRing R] (p : ℕ) (I : Ideal R)
-    [CharP (R ⧸ I) p] : (p : R) ∈ I :=
-  Ideal.Quotient.eq_zero_iff_mem.mp <| by simp
-
 end CharP
 
 lemma Ideal.natCast_mem_of_charP_quotient (p : ℕ) (I : Ideal R) [CharP (R ⧸ I) p] :
