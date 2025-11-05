@@ -130,17 +130,17 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
         rwa [n_eq_zero, eq_C_of_natDegree_eq_zero <| S.natDegree_eq 0,
           smul_C, smul_eq_mul, map_mul, ← C_mul, rightinv, smul_C, smul_eq_mul,
           mul_one, C_eq_zero, leadingCoeff_eq_zero]
-      · apply head.ne_zero_of_degree_gt
+      · apply head.ne_zero_of_degree_gt (n := 0)
         rw [← head_degree_eq]
         exact natDegree_pos_iff_degree_pos.mp (by cutsat)
     -- and that they have matching leading coefficients
     have hPhead : P.leadingCoeff = head.leadingCoeff := by
-      rw [degree_eq_natDegree, head_degree_eq_natDegree] at head_degree_eq
+      rw [degree_eq_natDegree p_ne_zero, head_degree_eq_natDegree] at head_degree_eq
       nth_rw 2 [← coeff_natDegree]
       rw_mod_cast [← head_degree_eq, hp]
       dsimp [head]
       nth_rw 2 [← S.natDegree_eq n]
-      rwa [coeff_smul, coeff_smul, coeff_natDegree, smul_eq_mul, smul_eq_mul, rightinv, mul_one]
+      rw [coeff_smul, coeff_smul, coeff_natDegree, smul_eq_mul, smul_eq_mul, rightinv, mul_one]
     -- which we can now combine to show that `P - head` must have strictly lower degree,
     -- as its leading term has been cancelled, completing our proof.
     have tail_degree_lt := P.degree_sub_lt head_degree_eq p_ne_zero hPhead
