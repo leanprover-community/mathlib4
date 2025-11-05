@@ -106,8 +106,7 @@ theorem summable_genFun_term' (f : ℕ → ℕ → M) {i : ℕ} (hi : i ≠ 0) :
 
 variable [T2Space M]
 
-private theorem aux_dvd_of_coeff_ne_zero {f : ℕ → ℕ → M} {d : ℕ} {s : Finset ℕ}
-    (hs0 : 0 ∉ s)
+private theorem aux_dvd_of_coeff_ne_zero {f : ℕ → ℕ → M} {d : ℕ} {s : Finset ℕ} (hs0 : 0 ∉ s)
     {g : ℕ →₀ ℕ} (hg : g ∈ s.finsuppAntidiag d)
     (hprod : ∀ i ∈ s, (coeff (g i)) (1 + ∑' j, f i (j + 1) • X ^ (i * (j + 1))) ≠ (0 : M))
     (x : ℕ) : x ∣ g x := by
@@ -156,9 +155,8 @@ private theorem aux_prod_coeff_eq_zero_of_notMem_range (f : ℕ → ℕ → M) {
   · ext x
     simpa [toFinsuppAntidiag] using Nat.div_mul_cancel <| aux_dvd_of_coeff_ne_zero hs0 hg hprod x
 
-private theorem aux_prod_f_eq_prod_coeff
-    (f : ℕ → ℕ → M) {n : ℕ} (p : Partition n) {s : Finset ℕ} (hs : Finset.Icc 1 n ⊆ s)
-    (hs0 : 0 ∉ s) :
+private theorem aux_prod_f_eq_prod_coeff (f : ℕ → ℕ → M) {n : ℕ} (p : Partition n) {s : Finset ℕ}
+    (hs : Finset.Icc 1 n ⊆ s) (hs0 : 0 ∉ s) :
     ∏ i ∈ p.parts.toFinset, f i (Multiset.count i p.parts) =
     ∏ i ∈ s, coeff (p.toFinsuppAntidiag i) (1 + ∑' j, f i (j + 1) • X ^ (i * (j + 1))) := by
   apply Finset.prod_subset_one_on_sdiff
