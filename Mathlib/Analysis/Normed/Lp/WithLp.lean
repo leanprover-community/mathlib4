@@ -3,8 +3,9 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.Module.TransferInstance
 import Mathlib.Data.ENNReal.Basic
-import Mathlib.RingTheory.Finiteness.Defs
+import Mathlib.RingTheory.Finiteness.Basic
 
 /-! # The `WithLp` type synonym
 
@@ -44,20 +45,25 @@ universe uK uK' uV
 /-- A type synonym for the given `V`, associated with the L`p` norm. Note that by default this just
 forgets the norm structure on `V`; it is up to downstream users to implement the L`p` norm (for
 instance, on `Prod` and finite `Pi` types). -/
-@[nolint unusedArguments]
-def WithLp (_p : ℝ≥0∞) (V : Type uV) : Type uV := V
+structure WithLp (p : ℝ≥0∞) (V : Type uV) : Type uV where
+  /-- Converts an element of `V` to an element of `WithLp p V`. -/
+  toLp (p) ::
+  /-- Converts an element of `WithLp p V` to an element of `V`. -/
+  ofLp : V
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prevents `toLp p x` being printed as `{ ofLp := x }` by `delabStructureInstance`. -/
+@[app_delab WithLp.toLp]
+def WithLp.delabToLp : Delab := delabApp
+
+end Notation
 
 variable (p : ℝ≥0∞) (K : Type uK) (K' : Type uK') (V : Type uV)
 
 namespace WithLp
-
-variable {V} in
-/-- The canonical inclusion of `V` into `WithLp p V`. -/
-def toLp : V → WithLp p V := id
-
-variable {p V} in
-/-- The canonical inclusion of `WithLp p V` into `V`. -/
-def ofLp : WithLp p V → V := id
 
 /-- `WithLp.ofLp` and `WithLp.toLp` as an equivalence. -/
 @[simps]
@@ -67,47 +73,30 @@ protected def equiv : WithLp p V ≃ V where
   left_inv _ := rfl
   right_inv _ := rfl
 
-/-- A recursor for `WithLp p V`, that reduces to the underlying space `V`.
-
-This unfortunately cannot be registered with `cases_eliminator`, but it can still be used as
-`cases v using WithLp.rec with | toLp v =>`. -/
-@[elab_as_elim]
-protected def rec {motive : WithLp p V → Sort*} (toLp : ∀ v : V, motive (toLp p v)) :
-    ∀ v, motive v :=
-  fun v => toLp (ofLp v)
+@[simp]
+lemma equiv_symm_apply : ⇑(WithLp.equiv p V).symm = toLp p := rfl
 
 /-! `WithLp p V` inherits various module-adjacent structures from `V`. -/
 
-instance instNontrivial [Nontrivial V] : Nontrivial (WithLp p V) := ‹Nontrivial V›
-instance instUnique [Unique V] : Unique (WithLp p V) := ‹Unique V›
-instance instDecidableEq [DecidableEq V] : DecidableEq (WithLp p V) := ‹DecidableEq V›
+instance instNontrivial [Nontrivial V] : Nontrivial (WithLp p V) := (WithLp.equiv p V).nontrivial
+instance instUnique [Unique V] : Unique (WithLp p V) := (WithLp.equiv p V).unique
+instance instDecidableEq [DecidableEq V] : DecidableEq (WithLp p V) :=
+  (WithLp.equiv p V).decidableEq
 
-instance instAddCommGroup [AddCommGroup V] : AddCommGroup (WithLp p V) := ‹AddCommGroup V›
-@[to_additive] instance instSMul [SMul K V] : SMul K (WithLp p V) := ‹SMul K V›
-@[to_additive] instance instMulAction [Monoid K] [MulAction K V] : MulAction K V := ‹MulAction K V›
+instance instAddCommGroup [AddCommGroup V] : AddCommGroup (WithLp p V) :=
+  (WithLp.equiv p V).addCommGroup
+@[to_additive] instance instSMul [SMul K V] : SMul K (WithLp p V) :=
+  (WithLp.equiv p V).smul K
+@[to_additive] instance instMulAction [Monoid K] [MulAction K V] : MulAction K (WithLp p V) :=
+  fast_instance% (WithLp.equiv p V).mulAction K
 instance instDistribMulAction [Monoid K] [AddCommGroup V] [DistribMulAction K V] :
-    DistribMulAction K (WithLp p V) := ‹DistribMulAction K V›
+    DistribMulAction K (WithLp p V) := fast_instance% (WithLp.equiv p V).distribMulAction K
 instance instModule [Semiring K] [AddCommGroup V] [Module K V] : Module K (WithLp p V) :=
-  ‹Module K V›
-
-@[to_additive]
-instance instIsScalarTower [SMul K K'] [SMul K V] [SMul K' V] [IsScalarTower K K' V] :
-    IsScalarTower K K' (WithLp p V) :=
-  ‹IsScalarTower K K' V›
-
-@[to_additive]
-instance instSMulCommClass [SMul K V] [SMul K' V] [SMulCommClass K K' V] :
-    SMulCommClass K K' (WithLp p V) :=
-  ‹SMulCommClass K K' V›
-
-instance instModuleFinite
-    [Semiring K] [AddCommGroup V] [Module K V] [Module.Finite K V] :
-    Module.Finite K (WithLp p V) :=
-  ‹Module.Finite K V›
+  fast_instance% (WithLp.equiv p V).module K
 
 variable {K V}
 
-@[simp] lemma ofLp_toLp (x : V) : ofLp (toLp p x) = x := rfl
+lemma ofLp_toLp (x : V) : ofLp (toLp p x) = x := rfl
 @[simp] lemma toLp_ofLp (x : WithLp p V) : toLp p (ofLp x) = x := rfl
 
 lemma ofLp_surjective : Function.Surjective (@ofLp p V) :=
@@ -143,13 +132,27 @@ variable [AddCommGroup V]
 @[simp] lemma toLp_neg (x : V) : toLp p (-x) = -toLp p x := rfl
 @[simp] lemma ofLp_neg (x : WithLp p V) : ofLp (-x) = -ofLp x := rfl
 
-@[simp] lemma toLp_eq_zero {x : V} : toLp p x = 0 ↔ x = 0 := .rfl
-@[simp] lemma ofLp_eq_zero {x : WithLp p V} : ofLp x = 0 ↔ x = 0 := .rfl
+@[simp] lemma toLp_eq_zero {x : V} : toLp p x = 0 ↔ x = 0 := (toLp_injective p).eq_iff
+@[simp] lemma ofLp_eq_zero {x : WithLp p V} : ofLp x = 0 ↔ x = 0 := (ofLp_injective p).eq_iff
 
 end AddCommGroup
 
 @[simp] lemma toLp_smul [SMul K V] (c : K) (x : V) : toLp p (c • x) = c • (toLp p x) := rfl
 @[simp] lemma ofLp_smul [SMul K V] (c : K) (x : WithLp p V) : ofLp (c • x) = c • ofLp x := rfl
+
+@[to_additive]
+instance instIsScalarTower [SMul K K'] [SMul K V] [SMul K' V] [IsScalarTower K K' V] :
+    IsScalarTower K K' (WithLp p V) where
+  smul_assoc x y z := by
+    change toLp p ((x • y) • (ofLp z)) = toLp p (x • y • ofLp z)
+    simp
+
+@[to_additive]
+instance instSMulCommClass [SMul K V] [SMul K' V] [SMulCommClass K K' V] :
+    SMulCommClass K K' (WithLp p V) where
+  smul_comm x y z := by
+    change toLp p (x • y • ofLp z) = toLp p (y • x • ofLp z)
+    rw [smul_comm]
 
 section equiv
 
@@ -163,11 +166,11 @@ theorem equiv_symm_zero [AddCommGroup V] : (WithLp.equiv p V).symm 0 = 0 :=
 
 @[deprecated toLp_eq_zero (since := "2025-06-08")]
 theorem equiv_symm_eq_zero_iff [AddCommGroup V] {x : V} :
-    (WithLp.equiv p V).symm x = 0 ↔ x = 0 := Iff.rfl
+    (WithLp.equiv p V).symm x = 0 ↔ x = 0 := toLp_eq_zero p
 
 @[deprecated ofLp_eq_zero (since := "2025-06-08")]
 theorem equiv_eq_zero_iff [AddCommGroup V] {x : WithLp p V} :
-    WithLp.equiv p V x = 0 ↔ x = 0 := Iff.rfl
+    WithLp.equiv p V x = 0 ↔ x = 0 := ofLp_eq_zero p
 
 @[deprecated ofLp_add (since := "2025-06-08")]
 theorem equiv_add [AddCommGroup V] (x y : WithLp p V) :
@@ -213,12 +216,16 @@ end equiv
 variable (K V)
 
 /-- `WithLp.equiv` as a linear equivalence. -/
-@[simps -fullyApplied]
+@[simps -fullyApplied apply symm_apply]
 protected def linearEquiv [Semiring K] [AddCommGroup V] [Module K V] : WithLp p V ≃ₗ[K] V where
-  __ := WithLp.equiv _ _
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
   toFun := WithLp.ofLp
   invFun := WithLp.toLp p
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+instance instModuleFinite
+    [Semiring K] [AddCommGroup V] [Module K V] [Module.Finite K V] :
+    Module.Finite K (WithLp p V) :=
+  Module.Finite.equiv (WithLp.linearEquiv p K V).symm
 
 end WithLp
