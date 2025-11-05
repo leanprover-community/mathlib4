@@ -191,6 +191,11 @@ lemma FractionalIdeal.inv_le_comm {I J : FractionalIdeal A⁰ K} (hI : I ≠ 0) 
     I⁻¹ ≤ J ↔ J⁻¹ ≤ I := by
   simpa using le_inv_comm (A := A) (K := K) (inv_ne_zero hI) (inv_ne_zero hJ)
 
+@[simp]
+theorem FractionalIdeal.inv_le_inv_iff {I J : FractionalIdeal A⁰ K} (hI : I ≠ 0) (hJ : J ≠ 0) :
+    I⁻¹ ≤ J⁻¹ ↔ J ≤ I := by
+  rw [le_inv_comm (inv_ne_zero hI) hJ, inv_inv]
+
 open FractionalIdeal
 
 
@@ -1007,6 +1012,10 @@ theorem coe_primesOverFinset : primesOverFinset p B = primesOver p B := by
   exact (P.mem_normalizedFactors_iff (map_ne_bot_of_ne_bot hpb)).trans <| Iff.intro
     (fun ⟨hPp, h⟩ => ⟨hPp, ⟨hpm.eq_of_le (comap_ne_top _ hPp.ne_top) (le_comap_of_map_le h)⟩⟩)
     (fun ⟨hPp, h⟩ => ⟨hPp, map_le_of_le_comap h.1.le⟩)
+
+include hpb in
+theorem mem_primesOverFinset_iff {P : Ideal B} : P ∈ primesOverFinset p B ↔ P ∈ primesOver p B := by
+  rw [← Finset.mem_coe, coe_primesOverFinset hpb]
 
 variable {R} (A) in
 theorem IsLocalRing.primesOverFinset_eq [IsLocalRing A] [IsDedekindDomain A]

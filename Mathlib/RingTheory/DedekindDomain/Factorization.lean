@@ -74,7 +74,7 @@ theorem IsDedekindDomain.HeightOneSpectrum.maxPowDividing_eq_pow_multiset_count
   classical
   rw [maxPowDividing, factors_mk _ hI, count_some (irreducible_mk.mpr v.irreducible),
     ← Multiset.count_map_eq_count' _ _ Subtype.val_injective, map_subtype_coe_factors',
-    factors_eq_normalizedFactors, ← Multiset.count_map_eq_count' _ _ (mk_injective (M := Ideal R))]
+    factors_eq_normalizedFactors, Multiset.count_map_eq_count' _ _ (mk_injective (M := Ideal R))]
 
 /-- Only finitely many maximal ideals of `R` divide a given nonzero ideal. -/
 theorem Ideal.finite_factors {I : Ideal R} (hI : I ≠ 0) :
