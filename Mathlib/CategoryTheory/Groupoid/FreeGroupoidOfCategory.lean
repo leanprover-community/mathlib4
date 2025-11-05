@@ -185,9 +185,11 @@ theorem map_id : map (𝟭 C) = 𝟭 (FreeGroupoid C) := by
 def mapComp (φ : C ⥤ D) (φ' : D ⥤ E) : map (φ ⋙ φ') ≅ map φ ⋙ map φ':=
   liftNatIso _ _ (Iso.refl _)
 
+@[simp]
 lemma mapComp_hom_app (φ : C ⥤ D) (φ' : D ⥤ E) (X) : (mapComp φ φ').hom.app X = 𝟙 _ :=
   liftNatIso_hom_app ..
 
+@[simp]
 lemma mapComp_inv_app (φ : C ⥤ D) (φ' : D ⥤ E) (X) : (mapComp φ φ').inv.app X = 𝟙 _ :=
   liftNatIso_inv_app ..
 
