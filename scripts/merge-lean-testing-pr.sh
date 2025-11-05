@@ -29,7 +29,7 @@ if git ls-files -u | grep -q '^'; then
     exit 1
 fi
 
-if ! lake update; then
+if ! lake update -v; then
     echo "Lake update failed. Please resolve conflicts manually."
     git status
     exit 1

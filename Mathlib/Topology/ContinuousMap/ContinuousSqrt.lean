@@ -24,7 +24,7 @@ instance (priority := 100) instContinuousSqrtRCLike {𝕜 : Type*} [RCLike 𝕜]
   continuousOn_sqrt := by fun_prop
   sqrt_nonneg _ _ := by simp
   sqrt_mul_sqrt x hx := by
-    simp only [Function.comp_apply,star_def]
+    simp only [Function.comp_apply,]
     rw [← sub_nonneg] at hx
     obtain hx' := nonneg_iff.mp hx |>.right
     rw [← conj_eq_iff_im, conj_eq_iff_re] at hx'

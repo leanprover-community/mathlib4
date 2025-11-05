@@ -14,9 +14,11 @@ import Mathlib.RingTheory.Nilpotent.Defs
 This file contains results about nilpotent elements that involve ring theory.
 -/
 
+assert_not_exists Cardinal
+
 universe u v
 
-open Function Set
+open Function Module Set
 
 variable {R S : Type*} {x y : R}
 
@@ -92,6 +94,14 @@ lemma isNilpotent_toMatrix_iff (b : Basis ι R M) (f : M →ₗ[R] M) :
   exact (toMatrix b b).map_eq_zero_iff
 
 end LinearMap
+
+@[simp]
+lemma Matrix.isNilpotent_toLin'_iff {ι : Type*} [DecidableEq ι] [Fintype ι] [CommSemiring R]
+    (A : Matrix ι ι R) :
+    IsNilpotent A.toLin' ↔ IsNilpotent A := by
+  have : A.toLin'.toMatrix (Pi.basisFun R ι) (Pi.basisFun R ι) = A := LinearMap.toMatrix'_toLin' A
+  conv_rhs => rw [← this]
+  rw [LinearMap.isNilpotent_toMatrix_iff]
 
 namespace Module.End
 

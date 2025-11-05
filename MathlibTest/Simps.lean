@@ -15,6 +15,11 @@ set_option linter.style.commandStart false
 
 open Lean Meta Elab Term Command Simps
 
+/-- Tests whether `declName` has the `@[simp]` attribute in `env`. -/
+def hasSimpAttribute (env : Environment) (declName : Name) : Bool :=
+  simpExtension.getState env |>.lemmaNames.contains <| .decl declName
+
+
 structure Foo1 : Type where
   Projone : Nat
   two : Bool
@@ -293,7 +298,7 @@ run_cmd liftTermElabM <| do
     #[`partially_applied_term_data_fst, `partially_applied_term_data_snd]
 
 structure VeryPartiallyAppliedStr where
-  (data : ∀β, ℕ → β → MyProd ℕ β)
+  (data : ∀ β, ℕ → β → MyProd ℕ β)
 
 /- if we have a partially applied constructor, we treat it as if it were eta-expanded.
   (this is not very useful, and we could remove this behavior if convenient) -/
@@ -490,7 +495,7 @@ def IdentityPreunctor : Prefunctor (Type u) Nat where
   obj _ := 5
   map _ := ⟨⟨rfl⟩⟩
 
-/-- error: unknown identifier 'IdentityPreunctor_map_down_down' -/
+/-- error: Unknown identifier `IdentityPreunctor_map_down_down` -/
 #guard_msgs in
 #check IdentityPreunctor_map_down_down
 
@@ -584,10 +589,8 @@ end BSemigroup
 class ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, HasSubset G where
   new_axiom : ∀ x : G, x * - 0 ⊆ - x
 
-@[simps] def bar : ExtendingStuff ℕ :=
-  { mul := (·*·)
-    zero := 0
-    neg := Nat.succ
+@[simps!] def bar : ExtendingStuff ℕ :=
+  { neg := Nat.succ
     Subset := fun _ _ ↦ True
     new_axiom := fun _ ↦ trivial }
 
@@ -599,10 +602,8 @@ end
 class new_ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, HasSubset G where
   new_axiom : ∀ x : G, x * - 0 ⊆ - x
 
-@[simps] def new_bar : new_ExtendingStuff ℕ :=
-  { mul := (·*·)
-    zero := 0
-    neg := Nat.succ
+@[simps!] def new_bar : new_ExtendingStuff ℕ :=
+  { neg := Nat.succ
     Subset := fun _ _ ↦ True
     new_axiom := fun _ ↦ trivial }
 
@@ -1261,3 +1262,15 @@ structure Prod3 (X Y : Type _) extends toProd_1 : Prod X Y
 @[simps toProd_1] def foo' : Prod3 Nat Nat := { fst := 1, snd := 3 }
 
 end UnderScoreDigit
+
+namespace Grind
+
+@[simps (attr := grind =) -isSimp]
+def foo := (2, 3)
+
+example : foo.1 = 2 := by grind
+example : foo.1 = 2 := by
+  fail_if_success simp
+  rfl
+
+end Grind

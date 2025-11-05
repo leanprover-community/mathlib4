@@ -34,7 +34,7 @@ lemma continuous_mul_log : Continuous fun x ↦ x * log x := by
   nth_rewrite 1 [← nhdsWithin_univ]
   have : (Set.univ : Set ℝ) = Set.Iio 0 ∪ Set.Ioi 0 ∪ {0} := by ext; simp [em]
   rw [this, nhdsWithin_union, nhdsWithin_union]
-  simp only [nhdsWithin_singleton, sup_le_iff, Filter.nonpos_iff, Filter.tendsto_sup]
+  simp only [nhdsWithin_singleton, Filter.tendsto_sup]
   refine ⟨⟨tendsto_log_mul_self_nhdsLT_zero, ?_⟩, ?_⟩
   · simpa only [rpow_one] using tendsto_log_mul_rpow_nhdsGT_zero zero_lt_one
   · convert tendsto_pure_nhds (fun x ↦ log x * x) 0
@@ -149,7 +149,7 @@ lemma negMulLog_nonneg {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) : 0 ≤ negMulLog
   simpa only [negMulLog_eq_neg, neg_nonneg] using mul_log_nonpos h1 h2
 
 lemma negMulLog_mul (x y : ℝ) : negMulLog (x * y) = y * negMulLog x + x * negMulLog y := by
-  simp only [negMulLog, neg_mul, neg_add_rev]
+  simp only [negMulLog, neg_mul]
   by_cases hx : x = 0
   · simp [hx]
   by_cases hy : y = 0
@@ -192,7 +192,7 @@ lemma deriv2_negMulLog (x : ℝ) : deriv^[2] negMulLog x = - x⁻¹ := by
   rw [negMulLog_eq_neg]
   have h := deriv2_mul_log
   simp only [Function.iterate_succ, Function.iterate_zero, Function.id_comp, deriv.fun_neg',
-    Function.comp_apply, differentiableAt_fun_id, differentiableAt_log_iff, ne_eq] at h ⊢
+    Function.comp_apply] at h ⊢
   rw [h]
 
 lemma strictConcaveOn_negMulLog : StrictConcaveOn ℝ (Set.Ici (0 : ℝ)) negMulLog := by

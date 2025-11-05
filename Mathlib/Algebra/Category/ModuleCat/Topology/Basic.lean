@@ -85,20 +85,18 @@ abbrev ofHom {X Y : Type v}
     (f : X →L[R] Y) : of R X ⟶ of R Y :=
   ConcreteCategory.ofHom f
 
-@[simp] lemma hom_ofHom  {X Y : Type v}
+@[simp] lemma hom_ofHom {X Y : Type v}
     [AddCommGroup X] [Module R X] [TopologicalSpace X] [ContinuousAdd X] [ContinuousSMul R X]
     [AddCommGroup Y] [Module R Y] [TopologicalSpace Y] [ContinuousAdd Y] [ContinuousSMul R Y]
     (f : X →L[R] Y) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f := rfl
 
-@[simp] lemma ofHom_hom {X Y : TopModuleCat R} (f : X.Hom Y) :
-  ofHom f.hom = f := rfl
+@[simp] lemma ofHom_hom {X Y : TopModuleCat R} (f : X.Hom Y) : ofHom f.hom = f := rfl
 
 @[simp] lemma hom_comp {X Y Z : TopModuleCat R} (f : X ⟶ Y) (g : Y ⟶ Z) :
-  (f ≫ g).hom = g.hom.comp f.hom := rfl
+    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
-@[simp] lemma hom_id (X : TopModuleCat R) :
-  hom (𝟙 X) = .id _ _ := rfl
+@[simp] lemma hom_id (X : TopModuleCat R) : hom (𝟙 X) = .id _ _ := rfl
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
 def Hom.Simps.hom (A B : TopModuleCat.{v} R) (f : A.Hom B) :=
@@ -118,8 +116,8 @@ def _root_.CategoryTheory.Iso.toContinuousLinearEquiv
     {X Y : TopModuleCat R} (e : X ≅ Y) : X ≃L[R] Y where
   __ := e.hom.hom
   invFun := e.inv.hom
-  left_inv x := by aesop_cat
-  right_inv x := by aesop_cat
+  left_inv x := by cat_disch
+  right_inv x := by cat_disch
 
 instance {X Y : TopModuleCat R} : AddCommGroup (X ⟶ Y) where
   add f g := ofHom (f.hom + g.hom)
@@ -157,8 +155,7 @@ instance [CommRing S] : Linear S (TopModuleCat S) where
   comp_smul _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.smul_comp _ _ _)
 
 @[simp]
-lemma hom_smul {M₁ M₂ : TopModuleCat S} (s : S) (φ : M₁ ⟶ M₂) :
-  (s • φ).hom = s • φ.hom := rfl
+lemma hom_smul {M₁ M₂ : TopModuleCat S} (s : S) (φ : M₁ ⟶ M₂) : (s • φ).hom = s • φ.hom := rfl
 
 end CommRing
 
@@ -179,12 +176,12 @@ instance : (forget₂ (TopModuleCat R) TopCat).ReflectsIsomorphisms where
   reflects {X Y} f hf := by
     let e : X ≃L[R] Y :=
       { __ := f.hom, __ := TopCat.homeoOfIso (asIso ((forget₂ (TopModuleCat R) TopCat).map f)) }
-    show IsIso (ofIso e).hom
+    change IsIso (ofIso e).hom
     infer_instance
 
 @[simp]
 lemma hom_forget₂_TopCat_map {X Y : TopModuleCat R} (f : X ⟶ Y) :
-  ((forget₂ _ TopCat).map f).hom = f.hom := rfl
+    ((forget₂ _ TopCat).map f).hom = f.hom := rfl
 
 @[simp]
 lemma forget₂_TopCat_obj {X : TopModuleCat R} : ((forget₂ _ TopCat).obj X : Type _) = X := rfl
@@ -197,7 +194,7 @@ variable {R}
 
 variable {M : ModuleCat R} {I : Type*} {X : I → TopModuleCat R} (f : ∀ i, (X i).toModuleCat ⟶ M)
 
-/-- The coinduced topology on `M` from a family of continuous linear map into `M`, which is the
+/-- The coinduced topology on `M` from a family of continuous linear maps into `M`, which is the
 finest topology that makes it into a topological module and makes every map continuous. -/
 def coinduced : TopModuleCat R :=
   letI : TopologicalSpace M := sInf { t | @ContinuousSMul R M _ _ t ∧ @ContinuousAdd M t _ ∧
@@ -230,7 +227,7 @@ def isColimit {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
     refine sInf_le ⟨continuousSMul_induced (M₂ := s.pt) (hc.desc ((forget₂ _ _).mapCocone s)).hom,
       continuousAdd_induced (N := s.pt) (hc.desc ((forget₂ _ _).mapCocone s)).hom, fun i ↦ ?_⟩
     rw [coinduced_le_iff_le_induced, induced_compose, ← continuous_iff_le_induced]
-    show Continuous (X := F.obj i) (Y := s.pt)
+    change Continuous (X := F.obj i) (Y := s.pt)
       (c.ι.app i ≫ hc.desc ((forget₂ _ (ModuleCat R)).mapCocone s)).hom
     rw [hc.fac]
     exact (s.ι.app i).hom.2⟩
@@ -258,7 +255,7 @@ variable {R}
 
 variable {M : ModuleCat R} {I : Type*} {X : I → TopModuleCat R} (f : ∀ i, M ⟶ (X i).toModuleCat)
 
-/-- The induced topology on `M` from a family of continuous linear map from `M`, which is the
+/-- The induced topology on `M` from a family of continuous linear maps from `M`, which is the
 coarsest topology that makes every map continuous. -/
 def induced : TopModuleCat R :=
   letI : TopologicalSpace M := ⨅ i, (X i).topologicalSpace.induced (f i)
@@ -290,7 +287,7 @@ def isLimit {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
     rw [continuous_iff_coinduced_le]
     refine le_iInf fun i ↦ ?_
     rw [coinduced_le_iff_le_induced, induced_compose, ← continuous_iff_le_induced]
-    show Continuous (X := s.pt) (Y := F.obj i)
+    change Continuous (X := s.pt) (Y := F.obj i)
       (hc.lift ((forget₂ _ (ModuleCat R)).mapCone s) ≫ c.π.app i).hom
     rw [hc.fac]
     exact (s.π.app i).hom.2⟩
@@ -400,10 +397,9 @@ def freeMap {X Y : TopCat.{v}} (f : X ⟶ Y) : freeObj R X ⟶ freeObj R Y :=
     refine sInf_le ⟨continuousSMul_induced (Finsupp.lmapDomain _ _ f.hom),
       continuousAdd_induced (Finsupp.lmapDomain _ _ f.hom), ?_⟩
     rw [← coinduced_le_iff_le_induced]
-    refine le_trans ?_ hτ₃
-    refine le_of_eq_of_le ?_ (coinduced_mono (continuous_iff_coinduced_le.mp f.hom.2))
+    grw [← hτ₃, ← coinduced_mono (continuous_iff_coinduced_le.mp f.hom.2)]
     rw [coinduced_compose, coinduced_compose]
-    congr 1
+    congr! 1
     ext x
     simp [coe_freeObj]⟩
 
@@ -448,7 +444,7 @@ def freeAdj : free.{max v u} R ⊣ forget₂ (TopModuleCat.{max v u} R) TopCat.{
     simp [freeMap, freeObj]
   right_triangle_components X := by
     ext
-    simp [freeMap, freeObj]
+    simp [freeObj]
 
 instance : (forget₂ (TopModuleCat.{max v u} R) TopCat).IsRightAdjoint := ⟨_, ⟨freeAdj R⟩⟩
 instance : (free.{max v u} R).IsLeftAdjoint := ⟨_, ⟨freeAdj R⟩⟩

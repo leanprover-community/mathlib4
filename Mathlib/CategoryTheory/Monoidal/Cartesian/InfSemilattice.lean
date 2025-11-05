@@ -7,9 +7,9 @@ import Mathlib.CategoryTheory.Limits.Preorder
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
 /-!
-# The preorder category of a meet-semilattice with a greatest element is cartesian monoidal
+# The preorder category of a meet-semilattice with a greatest element is Cartesian monoidal
 
-The preorder category of a meet-semilattice `C` with a greatest element is cartesian monoidal.
+The preorder category of a meet-semilattice `C` with a greatest element is Cartesian monoidal.
 
 A symmetric monoidal structure on the preorder category is automatically provided by the
 instance and `CartesianMonoidalCategory.toSymmetricCategory`.

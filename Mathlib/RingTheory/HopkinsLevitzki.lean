@@ -57,8 +57,9 @@ variable [IsSemiprimaryRing R]
     have := (h.semilinearMap.isSemisimpleModule_iff_of_bijective Function.bijective_id).2
       inferInstance
     exact h0 _ h
-  induction' n with n ih generalizing M
-  · rw [Jac.pow_zero, Ideal.one_eq_top] at hn; exact this (le_top.trans hn)
+  induction n generalizing M with
+  | zero => rw [Jac.pow_zero, Ideal.one_eq_top] at hn; exact this (le_top.trans hn)
+  | succ n ih => ?_
   obtain _ | n := n
   · rw [Jac.pow_one] at hn; exact this hn
   refine h1 _ (ih _ ?_) (ih _ ?_)
@@ -101,6 +102,18 @@ theorem isNoetherian_iff_isArtinian : IsNoetherian R M ↔ IsArtinian R M :=
     (fun M _ _ _ _ _ _ ↦ IsSemisimpleModule.finite_tfae.out 1 2)
     fun M _ _ _ _ h h' ↦ let N : Submodule R M := Ring.jacobson R • ⊤; by
       simp_rw [isNoetherian_iff_submodule_quotient N, isArtinian_iff_submodule_quotient N, N, h, h']
+
+theorem isNoetherian_iff_finite_of_jacobson_fg (fg : (Ring.jacobson R).FG) :
+    IsNoetherian R M ↔ Module.Finite R M :=
+  ⟨fun _ ↦ inferInstance, IsSemiprimaryRing.induction R R M
+    (P := fun M ↦ Module.Finite R M → IsNoetherian R M)
+    (fun M _ _ _ _ _ _ ↦ (IsSemisimpleModule.finite_tfae.out 0 1).mp)
+    fun M _ _ _ _ hs hq fin ↦ (isNoetherian_iff_submodule_quotient (Ring.jacobson R • ⊤)).mpr
+      ⟨hs (Module.Finite.iff_fg.mpr (.smul fg fin.1)), hq inferInstance⟩⟩
+
+theorem isNoetherianRing_iff_jacobson_fg : IsNoetherianRing R ↔ (Ring.jacobson R).FG :=
+  ⟨fun _ ↦ IsNoetherian.noetherian .., fun fg ↦
+    (IsSemiprimaryRing.isNoetherian_iff_finite_of_jacobson_fg fg).mpr inferInstance⟩
 
 end IsSemiprimaryRing
 

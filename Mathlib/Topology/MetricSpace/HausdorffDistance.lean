@@ -13,13 +13,13 @@ import Mathlib.Tactic.Finiteness
 The Hausdorff distance on subsets of a metric (or emetric) space.
 
 Given two subsets `s` and `t` of a metric space, their Hausdorff distance is the smallest `d`
-such that any point `s` is within `d` of a point in `t`, and conversely. This quantity
+such that any point of `s` is within `d` of a point in `t`, and conversely. This quantity
 is often infinite (think of `s` bounded and `t` unbounded), and therefore better
 expressed in the setting of emetric spaces.
 
 ## Main definitions
 
-This files introduces:
+This file introduces:
 * `EMetric.infEdist x s`, the infimum edistance of a point `x` to a set `s` in an emetric space
 * `EMetric.hausdorffEdist s t`, the Hausdorff edistance of two sets in an emetric space
 * Versions of these notions on metric spaces, called respectively `Metric.infDist`
@@ -103,6 +103,7 @@ theorem infEdist_zero_of_mem (h : x ∈ s) : infEdist x s = 0 :=
   nonpos_iff_eq_zero.1 <| @edist_self _ _ x ▸ infEdist_le_edist_of_mem h
 
 /-- The edist is antitone with respect to inclusion. -/
+@[gcongr]
 theorem infEdist_anti (h : s ⊆ t) : infEdist x t ≤ infEdist x s :=
   iInf_le_iInf_of_subset h
 
@@ -225,7 +226,7 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
     have : Filter.Tendsto (fun n => a ^ n) atTop (𝓝 0) :=
       ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one a_lt_one
     rcases ((tendsto_order.1 this).2 _ B).exists with ⟨n, hn⟩
-    simp only [mem_iUnion, mem_Ici, mem_preimage]
+    simp only [mem_iUnion]
     exact ⟨n, hn.le⟩
   show Monotone F
   intro m n hmn x hx
@@ -249,6 +250,11 @@ theorem exists_pos_forall_lt_edist (hs : IsCompact s) (ht : IsClosed t) (hst : D
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 this with ⟨r, h₀, hr⟩
   exact ⟨r, ENNReal.coe_pos.mp h₀, fun y hy z hz => hr.trans_le <| le_infEdist.1 (h hy) z hz⟩
 
+theorem infEdist_prod (x : α × β) (s : Set α) (t : Set β) :
+    infEdist x (s ×ˢ t) = max (infEdist x.1 s) (infEdist x.2 t) := by
+  simp_rw +singlePass [infEdist, Prod.edist_eq, iInf_prod, Set.mem_prod, iInf_and, iInf_sup_eq,
+    sup_iInf_eq, iInf_sup_eq, sup_iInf_eq]
+
 end InfEdist
 
 /-! ### The Hausdorff distance as a function into `ℝ≥0∞`. -/
@@ -260,7 +266,7 @@ irreducible_def hausdorffEdist {α : Type u} [PseudoEMetricSpace α] (s t : Set 
 
 section HausdorffEdist
 
-variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {x : α} {s t u : Set α} {Φ : α → β}
+variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {x y : α} {s t u : Set α} {Φ : α → β}
 
 /-- The Hausdorff edistance of a set to itself vanishes. -/
 @[simp]
@@ -268,7 +274,7 @@ theorem hausdorffEdist_self : hausdorffEdist s s = 0 := by
   simp only [hausdorffEdist_def, sup_idem, ENNReal.iSup_eq_zero]
   exact fun x hx => infEdist_zero_of_mem hx
 
-/-- The Haudorff edistances of `s` to `t` and of `t` to `s` coincide. -/
+/-- The Hausdorff edistances of `s` to `t` and of `t` to `s` coincide. -/
 theorem hausdorffEdist_comm : hausdorffEdist s t = hausdorffEdist t s := by
   simp only [hausdorffEdist_def]; apply sup_comm
 
@@ -345,26 +351,24 @@ theorem hausdorffEdist_triangle : hausdorffEdist s u ≤ hausdorffEdist s t + ha
   rw [hausdorffEdist_def]
   simp only [sup_le_iff, iSup_le_iff]
   constructor
-  · show ∀ x ∈ s, infEdist x u ≤ hausdorffEdist s t + hausdorffEdist t u
+  · change ∀ x ∈ s, infEdist x u ≤ hausdorffEdist s t + hausdorffEdist t u
     exact fun x xs =>
       calc
         infEdist x u ≤ infEdist x t + hausdorffEdist t u :=
           infEdist_le_infEdist_add_hausdorffEdist
-        _ ≤ hausdorffEdist s t + hausdorffEdist t u :=
-          add_le_add_right (infEdist_le_hausdorffEdist_of_mem xs) _
-  · show ∀ x ∈ u, infEdist x s ≤ hausdorffEdist s t + hausdorffEdist t u
+        _ ≤ hausdorffEdist s t + hausdorffEdist t u := by grw [infEdist_le_hausdorffEdist_of_mem xs]
+  · change ∀ x ∈ u, infEdist x s ≤ hausdorffEdist s t + hausdorffEdist t u
     exact fun x xu =>
       calc
         infEdist x s ≤ infEdist x t + hausdorffEdist t s :=
           infEdist_le_infEdist_add_hausdorffEdist
-        _ ≤ hausdorffEdist u t + hausdorffEdist t s :=
-          add_le_add_right (infEdist_le_hausdorffEdist_of_mem xu) _
+        _ ≤ hausdorffEdist u t + hausdorffEdist t s := by grw [infEdist_le_hausdorffEdist_of_mem xu]
         _ = hausdorffEdist s t + hausdorffEdist t u := by simp [hausdorffEdist_comm, add_comm]
 
 /-- Two sets are at zero Hausdorff edistance if and only if they have the same closure. -/
 theorem hausdorffEdist_zero_iff_closure_eq_closure :
     hausdorffEdist s t = 0 ↔ closure s = closure t := by
-  simp only [hausdorffEdist_def, ENNReal.sup_eq_zero, ENNReal.iSup_eq_zero, ← subset_def,
+  simp only [hausdorffEdist_def, ENNReal.max_eq_zero_iff, ENNReal.iSup_eq_zero, ← subset_def,
     ← mem_closure_iff_infEdist_zero, subset_antisymm_iff, isClosed_closure.closure_subset_iff]
 
 /-- The Hausdorff edistance between a set and its closure vanishes. -/
@@ -397,7 +401,7 @@ theorem hausdorffEdist_zero_iff_eq_of_closed (hs : IsClosed s) (ht : IsClosed t)
     hausdorffEdist s t = 0 ↔ s = t := by
   rw [hausdorffEdist_zero_iff_closure_eq_closure, hs.closure_eq, ht.closure_eq]
 
-/-- The Haudorff edistance to the empty set is infinite. -/
+/-- The Hausdorff edistance to the empty set is infinite. -/
 theorem hausdorffEdist_empty (ne : s.Nonempty) : hausdorffEdist s ∅ = ∞ := by
   rcases ne with ⟨x, xs⟩
   have : infEdist x ∅ ≤ hausdorffEdist s ∅ := infEdist_le_hausdorffEdist_of_mem xs
@@ -416,6 +420,18 @@ theorem empty_or_nonempty_of_hausdorffEdist_ne_top (fin : hausdorffEdist s t ≠
     · rw [hausdorffEdist_comm] at fin
       exact Or.inr ⟨nonempty_of_hausdorffEdist_ne_top ht fin, ht⟩
   · exact Or.inr ⟨hs, nonempty_of_hausdorffEdist_ne_top hs fin⟩
+
+@[simp]
+theorem hausdorffEdist_singleton : hausdorffEdist {x} {y} = edist x y := by
+  simp_rw [hausdorffEdist, iSup_singleton, infEdist_singleton]
+  nth_rw 2 [edist_comm]
+  exact max_self _
+
+theorem hausdorffEdist_prod_le {s₁ t₁ : Set α} {s₂ t₂ : Set β} :
+    hausdorffEdist (s₁ ×ˢ s₂) (t₁ ×ˢ t₂) ≤ max (hausdorffEdist s₁ t₁) (hausdorffEdist s₂ t₂) := by
+  refine le_of_forall_ge fun _ _ => ?_
+  simp_all only [hausdorffEdist, infEdist_prod, max_le_iff, iSup_le_iff, mem_prod, true_and,
+    implies_true]
 
 end HausdorffEdist
 
@@ -458,7 +474,7 @@ theorem infDist_empty : infDist x ∅ = 0 := by simp [infDist]
 
 lemma isGLB_infDist (hs : s.Nonempty) : IsGLB ((dist x ·) '' s) (infDist x s) := by
   simpa [infDist_eq_iInf, sInf_image']
-    using isGLB_csInf (hs.image _) ⟨0, by simp [lowerBounds, dist_nonneg]⟩
+    using isGLB_csInf (hs.image _) ⟨0, by simp [lowerBounds]⟩
 
 /-- In a metric space, the minimal edistance to a nonempty set is finite. -/
 theorem infEdist_ne_top (h : s.Nonempty) : infEdist x s ≠ ⊤ := by
@@ -557,7 +573,7 @@ theorem mem_closure_iff_infDist_zero (h : s.Nonempty) : x ∈ closure s ↔ infD
 
 theorem infDist_pos_iff_notMem_closure (hs : s.Nonempty) :
     x ∉ closure s ↔ 0 < infDist x s :=
-  (mem_closure_iff_infDist_zero hs).not.trans infDist_nonneg.gt_iff_ne.symm
+  (mem_closure_iff_infDist_zero hs).not.trans infDist_nonneg.lt_iff_ne'.symm
 
 @[deprecated (since := "2025-05-23")]
 alias infDist_pos_iff_not_mem_closure := infDist_pos_iff_notMem_closure
@@ -569,7 +585,7 @@ theorem _root_.IsClosed.mem_iff_infDist_zero (h : IsClosed s) (hs : s.Nonempty) 
 /-- Given a closed set `s`, a point belongs to `s` iff its infimum distance to this set vanishes. -/
 theorem _root_.IsClosed.notMem_iff_infDist_pos (h : IsClosed s) (hs : s.Nonempty) :
     x ∉ s ↔ 0 < infDist x s := by
-  simp [h.mem_iff_infDist_zero hs, infDist_nonneg.gt_iff_ne]
+  simp [h.mem_iff_infDist_zero hs, infDist_nonneg.lt_iff_ne']
 
 @[deprecated (since := "2025-05-23")]
 alias _root_.IsClosed.not_mem_iff_infDist_pos := _root_.IsClosed.notMem_iff_infDist_pos
@@ -812,6 +828,10 @@ theorem _root_.IsClosed.hausdorffDist_zero_iff_eq (hs : IsClosed s) (ht : IsClos
     (fin : hausdorffEdist s t ≠ ⊤) : hausdorffDist s t = 0 ↔ s = t := by
   simp [← hausdorffEdist_zero_iff_eq_of_closed hs ht, hausdorffDist, ENNReal.toReal_eq_zero_iff,
     fin]
+
+@[simp]
+theorem hausdorffDist_singleton : hausdorffDist {x} {y} = dist x y := by
+  rw [hausdorffDist, hausdorffEdist_singleton, dist_edist]
 
 end
 

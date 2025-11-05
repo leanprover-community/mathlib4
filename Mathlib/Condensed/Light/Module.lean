@@ -11,11 +11,12 @@ import Mathlib.CategoryTheory.Sites.Abelian
 import Mathlib.CategoryTheory.Sites.Adjunction
 import Mathlib.CategoryTheory.Sites.Equivalence
 import Mathlib.Condensed.Light.Basic
+import Mathlib.Condensed.Light.Instances
 /-!
 
 # Light condensed `R`-modules
 
-This files defines light condensed modules over a ring `R`.
+This file defines light condensed modules over a ring `R`.
 
 ## Main results
 
@@ -33,19 +34,20 @@ open CategoryTheory
 variable (R : Type u) [Ring R]
 
 /--
-The category of condensed `R`-modules, defined as sheaves of `R`-modules over
-`CompHaus` with respect to the coherent Grothendieck topology.
+The category of light condensed `R`-modules, defined as sheaves of `R`-modules over
+`LightProfinite.{u}` with respect to the coherent Grothendieck topology.
 -/
 abbrev LightCondMod := LightCondensed.{u} (ModuleCat.{u} R)
 
 noncomputable instance : Abelian (LightCondMod.{u} R) := sheafIsAbelian
 
-/-- The forgetful functor from condensed `R`-modules to condensed sets. -/
+/-- The forgetful functor from light condensed `R`-modules to light condensed sets. -/
 def LightCondensed.forget : LightCondMod R ⥤ LightCondSet :=
   sheafCompose _ (CategoryTheory.forget _)
 
 /--
-The left adjoint to the forgetful functor. The *free condensed `R`-module* on a condensed set.
+The left adjoint to the forgetful functor. The *free light condensed `R`-module* on a light
+condensed set.
 -/
 noncomputable
 def LightCondensed.free : LightCondSet ⥤ LightCondMod R :=
@@ -53,11 +55,11 @@ def LightCondensed.free : LightCondSet ⥤ LightCondMod R :=
 
 /-- The condensed version of the free-forgetful adjunction. -/
 noncomputable
-def LightCondensed.freeForgetAdjunction : free R ⊣ forget R :=  Sheaf.adjunction _ (ModuleCat.adj R)
+def LightCondensed.freeForgetAdjunction : free R ⊣ forget R := Sheaf.adjunction _ (ModuleCat.adj R)
 
 /--
-The category of condensed abelian groups, defined as sheaves of abelian groups over
-`CompHaus` with respect to the coherent Grothendieck topology.
+The category of light condensed abelian groups, defined as sheaves of `ℤ`-modules over
+`LightProfinite.{0}` with respect to the coherent Grothendieck topology.
 -/
 abbrev LightCondAb := LightCondMod ℤ
 

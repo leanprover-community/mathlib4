@@ -106,7 +106,7 @@ theorem isGood_sqrt2_iff : IsGood x (sqrt 2) ↔ x ∈ Icc (1 / 2) 1 := by
   exact ⟨h.one_half_le, not_lt.1 fun h₁ ↦ (h.sqrt_two_lt_of_one_lt h₁).false⟩
 
 theorem not_isGood_one : ¬IsGood x 1 := fun h ↦
-  h.sqrt_two_le.not_gt <| (lt_sqrt zero_le_one).2 (by norm_num)
+  h.sqrt_two_le.not_gt <| (lt_sqrt zero_le_one).2 (by simp)
 
 theorem isGood_two_iff : IsGood x 2 ↔ x = 3 / 2 :=
   (isGood_iff_of_sqrt_two_lt <| (sqrt_lt' two_pos).2 (by norm_num)).trans <| by norm_num

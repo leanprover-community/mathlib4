@@ -48,17 +48,19 @@ open Function (Injective Surjective)
 
 variable {M N G H α β γ δ : Type*}
 
+attribute [to_additive Add.toVAdd /-- See also `AddMonoid.toAddAction` -/] instSMulOfMul
+
 -- see Note [lower instance priority]
 /-- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
-@[to_additive "See also `AddMonoid.toAddAction`"]
-instance (priority := 910) Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
+@[deprecated instSMulOfMul (since := "2025-10-18")]
+def Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
 
 /-- Like `Mul.toSMul`, but multiplies on the right.
 
 See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWithZero`. -/
-@[to_additive "Like `Add.toVAdd`, but adds on the right.
+@[to_additive /-- Like `Add.toVAdd`, but adds on the right.
 
-  See also `AddMonoid.toOppositeAddAction`."]
+  See also `AddMonoid.toOppositeAddAction`. -/]
 instance (priority := 910) Mul.toSMulMulOpposite (α : Type*) [Mul α] : SMul αᵐᵒᵖ α where
   smul a b := b * a.unop
 
@@ -124,7 +126,7 @@ export AddAction (add_vadd)
 export SMulCommClass (smul_comm)
 export VAddCommClass (vadd_comm)
 
-library_note "bundled maps over different rings"/--
+library_note2 «bundled maps over different rings» /--
 Frequently, we find ourselves wanting to express a bilinear map `M →ₗ[R] N →ₗ[R] P` or an
 equivalence between maps `(M →ₗ[R] N) ≃ₗ[R] (M' →ₗ[R] N')` where the maps have an associated ring
 `R`. Unfortunately, using definitions like these requires that `R` satisfy `CommSemiring R`, and
@@ -188,6 +190,19 @@ lemma smul_assoc {M N} [SMul M N] [SMul N α] [SMul M α] [IsScalarTower M N α]
 @[to_additive]
 instance Semigroup.isScalarTower [Semigroup α] : IsScalarTower α α α := ⟨mul_assoc⟩
 
+/-- An instance of `SMulDistribClass G R S` states that the multiplicative
+action of `G` on `S` is determined by the multiplicative actions of `G` on `R`
+and `R` on `S`.
+
+This is similar to `IsScalarTower` except that the action of `G` distributes
+over the action of `R` on `S`.
+
+E.g. if `M/L/K` is a tower of galois extensions then `SMulDistribClass Gal(M/K) L M`. -/
+class SMulDistribClass (G R S : Type*) [SMul G R] [SMul G S] [SMul R S] : Prop where
+  smul_distrib_smul (g : G) (r : R) (s : S) : g • r • s = (g • r) • (g • s)
+
+export SMulDistribClass (smul_distrib_smul)
+
 /-- A typeclass indicating that the right (aka `AddOpposite`) and left actions by `M` on `α` are
 equal, that is that `M` acts centrally on `α`. This can be thought of as a version of commutativity
 for `+ᵥ`. -/
@@ -241,7 +256,7 @@ variable [SMul M α]
 
 /-- Auxiliary definition for `SMul.comp`, `MulAction.compHom`,
 `DistribMulAction.compHom`, `Module.compHom`, etc. -/
-@[to_additive (attr := simp) " Auxiliary definition for `VAdd.comp`, `AddAction.compHom`, etc. "]
+@[to_additive (attr := simp) /-- Auxiliary definition for `VAdd.comp`, `AddAction.compHom`, etc. -/]
 def comp.smul (g : N → M) (n : N) (a : α) : α := g n • a
 
 variable (α)
@@ -250,8 +265,8 @@ variable (α)
 -- See note [reducible non-instances]
 -- Since this is reducible, we make sure to go via
 -- `SMul.comp.smul` to prevent typeclass inference unfolding too far
-@[to_additive
-"An additive action of `M` on `α` and a function `N → M` induces an additive action of `N` on `α`."]
+@[to_additive /-- An additive action of `M` on `α` and a function `N → M` induces an additive
+action of `N` on `α`. -/]
 abbrev comp (g : N → M) : SMul N α where smul := SMul.comp.smul g
 
 variable {α}
@@ -263,11 +278,11 @@ tower of scalar actions `N → α → β`.
 This cannot be an instance because it can cause infinite loops whenever the `SMul` arguments
 are still metavariables. -/
 @[to_additive
-"Given a tower of additive actions `M → α → β`, if we use `SMul.comp` to pull back both of
+/-- Given a tower of additive actions `M → α → β`, if we use `SMul.comp` to pull back both of
 `M`'s actions by a map `g : N → M`, then we obtain a new tower of scalar actions `N → α → β`.
 
 This cannot be an instance because it can cause infinite loops whenever the `SMul` arguments
-are still metavariables."]
+are still metavariables. -/]
 lemma comp.isScalarTower [SMul M β] [SMul α β] [IsScalarTower M α β] (g : N → M) : by
     haveI := comp α g; haveI := comp β g; exact IsScalarTower N α β where
   __ := comp α g
@@ -277,8 +292,8 @@ lemma comp.isScalarTower [SMul M β] [SMul α β] [IsScalarTower M α β] (g : N
 /-- This cannot be an instance because it can cause infinite loops whenever the `SMul` arguments
 are still metavariables. -/
 @[to_additive
-"This cannot be an instance because it can cause infinite loops whenever the `VAdd` arguments
-are still metavariables."]
+/-- This cannot be an instance because it can cause infinite loops whenever the `VAdd` arguments
+are still metavariables. -/]
 lemma comp.smulCommClass [SMul β α] [SMulCommClass M β α] (g : N → M) :
     haveI := comp α g
     SMulCommClass N β α where
@@ -288,8 +303,8 @@ lemma comp.smulCommClass [SMul β α] [SMulCommClass M β α] (g : N → M) :
 /-- This cannot be an instance because it can cause infinite loops whenever the `SMul` arguments
 are still metavariables. -/
 @[to_additive
-"This cannot be an instance because it can cause infinite loops whenever the `VAdd` arguments
-are still metavariables."]
+/-- This cannot be an instance because it can cause infinite loops whenever the `VAdd` arguments
+are still metavariables. -/]
 lemma comp.smulCommClass' [SMul β α] [SMulCommClass β M α] (g : N → M) :
     haveI := comp α g
     SMulCommClass β N α where
@@ -363,11 +378,11 @@ variable (M)
 lemma one_smul (b : α) : (1 : M) • b = b := MulAction.one_smul _
 
 /-- `SMul` version of `one_mul_eq_id` -/
-@[to_additive "`VAdd` version of `zero_add_eq_id`"]
+@[to_additive /-- `VAdd` version of `zero_add_eq_id` -/]
 lemma one_smul_eq_id : (((1 : M) • ·) : α → α) = id := funext <| one_smul _
 
 /-- `SMul` version of `comp_mul_left` -/
-@[to_additive "`VAdd` version of `comp_add_left`"]
+@[to_additive /-- `VAdd` version of `comp_add_left` -/]
 lemma comp_smul_left (a₁ a₂ : M) : (a₁ • ·) ∘ (a₂ • ·) = (((a₁ * a₂) • ·) : α → α) :=
   funext fun _ ↦ (mul_smul _ _ _).symm
 
@@ -385,20 +400,18 @@ lemma smul_iterate_apply (a : M) (n : ℕ) (x : α) : (a • ·)^[n] x = a ^ n �
 /-- Pullback a multiplicative action along an injective map respecting `•`.
 See note [reducible non-instances]. -/
 @[to_additive
-    "Pullback an additive action along an injective map respecting `+ᵥ`."]
+    /-- Pullback an additive action along an injective map respecting `+ᵥ`. -/]
 protected abbrev Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Injective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulAction M β where
-  smul := (· • ·)
   one_smul x := hf <| (smul _ _).trans <| one_smul _ (f x)
   mul_smul c₁ c₂ x := hf <| by simp only [smul, mul_smul]
 
 /-- Pushforward a multiplicative action along a surjective map respecting `•`.
 See note [reducible non-instances]. -/
 @[to_additive
-    "Pushforward an additive action along a surjective map respecting `+ᵥ`."]
+    /-- Pushforward an additive action along a surjective map respecting `+ᵥ`. -/]
 protected abbrev Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Surjective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulAction M β where
-  smul := (· • ·)
   one_smul := by simp [hf.forall, ← smul]
   mul_smul := by simp [hf.forall, ← smul, mul_smul]
 
@@ -410,9 +423,9 @@ variable (M)
 This is promoted to a module by `Semiring.toModule`. -/
 -- see Note [lower instance priority]
 @[to_additive
-"The regular action of a monoid on itself by left addition.
+/-- The regular action of a monoid on itself by left addition.
 
-This is promoted to an `AddTorsor` by `addGroup_is_addTorsor`."]
+This is promoted to an `AddTorsor` by `addGroup_is_addTorsor`. -/]
 instance (priority := 910) Monoid.toMulAction : MulAction M M where
   smul := (· * ·)
   one_smul := one_mul
@@ -478,6 +491,16 @@ lemma SMulCommClass.of_commMonoid
     rw [← one_smul G (s • x), ← smul_assoc, ← one_smul G x, ← smul_assoc s 1 x,
       smul_comm, smul_assoc, one_smul, smul_assoc, one_smul]
 
+lemma IsScalarTower.of_commMonoid (R₁ R : Type*)
+    [Monoid R₁] [CommMonoid R] [MulAction R₁ R] [SMulCommClass R₁ R R] : IsScalarTower R₁ R R where
+  smul_assoc x₁ y z := by rw [smul_eq_mul, mul_comm, ← smul_eq_mul, ← smul_comm, smul_eq_mul,
+    mul_comm, ← smul_eq_mul]
+
+lemma isScalarTower_iff_smulCommClass_of_commMonoid (R₁ R : Type*)
+    [Monoid R₁] [CommMonoid R] [MulAction R₁ R] :
+    SMulCommClass R₁ R R ↔ IsScalarTower R₁ R R :=
+  ⟨fun _ ↦ IsScalarTower.of_commMonoid R₁ R, fun _ ↦ SMulCommClass.of_commMonoid R₁ R R⟩
+
 end
 
 section CompatibleScalar
@@ -504,6 +527,34 @@ lemma IsScalarTower.of_smul_one_mul {M N} [Monoid N] [SMul M N]
 lemma SMulCommClass.of_mul_smul_one {M N} [Monoid N] [SMul M N]
     (H : ∀ (x : M) (y : N), y * x • (1 : N) = x • y) : SMulCommClass M N N :=
   ⟨fun x y z ↦ by rw [← H x z, smul_eq_mul, ← H, smul_eq_mul, mul_assoc]⟩
+
+/--
+Let `Q / P / N / M` be a tower. If `P / N / M`, `Q / P / M` and `Q / P / N` are
+scalar towers, then `Q / N / M` is also a scalar tower.
+-/
+@[to_additive] lemma IsScalarTower.to₁₂₄ (M N P Q)
+    [SMul M N] [SMul M P] [SMul M Q] [SMul N P] [SMul N Q] [Monoid P] [MulAction P Q]
+    [IsScalarTower M N P] [IsScalarTower M P Q] [IsScalarTower N P Q] : IsScalarTower M N Q where
+  smul_assoc m n q := by rw [← smul_one_smul P, smul_assoc m, smul_assoc, smul_one_smul]
+
+/--
+Let `Q / P / N / M` be a tower. If `P / N / M`, `Q / N / M` and `Q / P / N` are
+scalar towers, then `Q / P / M` is also a scalar tower.
+-/
+@[to_additive] lemma IsScalarTower.to₁₃₄ (M N P Q)
+    [SMul M N] [SMul M P] [SMul M Q] [SMul P Q] [Monoid N] [MulAction N P] [MulAction N Q]
+    [IsScalarTower M N P] [IsScalarTower M N Q] [IsScalarTower N P Q] : IsScalarTower M P Q where
+  smul_assoc m p q := by rw [← smul_one_smul N m, smul_assoc, smul_one_smul]
+
+/--
+Let `Q / P / N / M` be a tower. If `P / N / M`, `Q / N / M` and `Q / P / M` are
+scalar towers, then `Q / P / N` is also a scalar tower.
+-/
+@[to_additive] lemma IsScalarTower.to₂₃₄ (M N P Q)
+    [SMul M N] [SMul M P] [SMul M Q] [SMul P Q] [Monoid N] [MulAction N P] [MulAction N Q]
+    [IsScalarTower M N P] [IsScalarTower M N Q] [IsScalarTower M P Q]
+    (h : Function.Surjective fun m : M ↦ m • (1 : N)) : IsScalarTower N P Q where
+  smul_assoc n p q := by obtain ⟨m, rfl⟩ := h n; simp_rw [smul_one_smul, smul_assoc]
 
 end CompatibleScalar
 
@@ -532,3 +583,52 @@ lemma smul_mul' (a : M) (b₁ b₂ : N) : a • (b₁ * b₂) = a • b₁ * a �
   MulDistribMulAction.smul_mul ..
 
 end MulDistribMulAction
+
+section IsCancelSMul
+
+variable (G P : Type*)
+
+/-- A vector addition is left-cancellative if it is pointwise injective on the left. -/
+class IsLeftCancelVAdd [VAdd G P] : Prop where
+  protected left_cancel' : ∀ (a : G) (b c : P), a +ᵥ b = a +ᵥ c → b = c
+
+/-- A scalar multiplication is left-cancellative if it is pointwise injective on the left. -/
+@[to_additive]
+class IsLeftCancelSMul [SMul G P] : Prop where
+  protected left_cancel' : ∀ (a : G) (b c : P), a • b = a • c → b = c
+
+@[to_additive]
+lemma IsLeftCancelSMul.left_cancel {G P} [SMul G P] [IsLeftCancelSMul G P] (a : G) (b c : P) :
+    a • b = a • c → b = c := IsLeftCancelSMul.left_cancel' a b c
+
+@[to_additive]
+instance [LeftCancelMonoid G] : IsLeftCancelSMul G G where
+  left_cancel' := IsLeftCancelMul.mul_left_cancel
+
+/-- A vector addition is cancellative if it is pointwise injective on the left and right. -/
+class IsCancelVAdd [VAdd G P] : Prop extends IsLeftCancelVAdd G P where
+  protected right_cancel' : ∀ (a b : G) (c : P), a +ᵥ c = b +ᵥ c → a = b
+
+/-- A scalar multiplication is cancellative if it is pointwise injective on the left and right. -/
+@[to_additive]
+class IsCancelSMul [SMul G P] : Prop extends IsLeftCancelSMul G P where
+  protected right_cancel' : ∀ (a b : G) (c : P), a • c = b • c → a = b
+
+@[to_additive]
+lemma IsCancelSMul.left_cancel {G P} [SMul G P] [IsCancelSMul G P] (a : G) (b c : P) :
+    a • b = a • c → b = c := IsLeftCancelSMul.left_cancel' a b c
+
+@[to_additive]
+lemma IsCancelSMul.right_cancel {G P} [SMul G P] [IsCancelSMul G P] (a b : G) (c : P) :
+    a • c = b • c → a = b := IsCancelSMul.right_cancel' a b c
+
+@[to_additive]
+instance [CancelMonoid G] : IsCancelSMul G G where
+  left_cancel' := IsLeftCancelMul.mul_left_cancel
+  right_cancel' _ _ _ := mul_right_cancel
+
+@[to_additive]
+instance [Group G] [MulAction G P] : IsLeftCancelSMul G P where
+  left_cancel' a b c h := by rw [← inv_smul_smul a b, h, inv_smul_smul]
+
+end IsCancelSMul
