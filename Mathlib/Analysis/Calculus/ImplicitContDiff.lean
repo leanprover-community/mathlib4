@@ -60,8 +60,7 @@ structure IsContDiffImplicitAt {𝕜 : Type*} [RCLike 𝕜]
     (n : WithTop ℕ∞) (f : E × F → G) (f' : E × F →L[𝕜] G) (a : E × F) : Prop where
   hasFDerivAt : HasFDerivAt f f' a
   contDiffAt : ContDiffAt 𝕜 n f a
-  range_eq_top : range f' = ⊤
-  ker_eq_left : ker f' = range (LinearMap.inl 𝕜 E F)
+  bijective : Function.Bijective (f'.comp (ContinuousLinearMap.inr 𝕜 E F))
   one_le : 1 ≤ n
 
 namespace IsContDiffImplicitAt
@@ -85,11 +84,22 @@ def implicitFunctionData (h : IsContDiffImplicitAt n f f' a) :
   hasStrictFDerivAt_leftFun := by fun_prop
   hasStrictFDerivAt_rightFun := h.contDiffAt.hasStrictFDerivAt' h.hasFDerivAt h.one_le
   range_leftDeriv := LinearMap.range_eq_top_of_surjective _ fun x ↦ ⟨(x, 0), rfl⟩
-  range_rightDeriv := h.range_eq_top
+  range_rightDeriv := by
+    apply top_unique
+    rw [← LinearMap.range_eq_top_of_surjective _ h.bijective.surjective]
+    exact LinearMap.range_comp_le_range _ _
   isCompl_ker := by
-    have : ker (ContinuousLinearMap.fst 𝕜 E F) = ker (LinearMap.fst 𝕜 E F) := rfl
-    rw [isCompl_comm, this, LinearMap.ker_fst, h.ker_eq_left]
-    exact LinearMap.isCompl_range_inl_inr
+    apply IsCompl.of_eq
+    · ext x
+      rw [Submodule.mem_inf, Submodule.mem_bot, LinearMap.mem_ker, ContinuousLinearMap.coe_fst',
+        LinearMap.mem_ker]
+      refine ⟨fun ⟨h1, h2⟩ => ?_, by rintro rfl; exact ⟨rfl, map_zero _⟩⟩
+      rw [Prod.ext_iff]; refine ⟨h1, h.bijective.injective ?_⟩
+      change f' (0, x.2) = f' (0, 0)
+      rw [show (0, x.2) = x by ext; exacts [h1.symm, rfl], h2]; exact (map_zero _).symm
+    · ext x; simp only [Submodule.mem_sup, Submodule.mem_top, iff_true]
+      obtain ⟨y, hy⟩ := h.bijective.surjective (f' x)
+      exact ⟨(0, y), by simp, x - (0, y), by simp [map_sub, ← hy], by abel⟩
 
 @[simp]
 lemma implicitFunctionData_leftFun_pt (h : IsContDiffImplicitAt n f f' a) :
