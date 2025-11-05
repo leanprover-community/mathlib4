@@ -6,7 +6,6 @@ Authors: Amir Livne Bar-on, Bernhard Reinke
 import Mathlib.Data.List.Induction
 import Mathlib.GroupTheory.FreeGroup.Basic
 import Mathlib.GroupTheory.FreeGroup.Reduce
-import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Tactic.Group
 
 /-!
