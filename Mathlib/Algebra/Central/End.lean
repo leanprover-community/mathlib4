@@ -24,5 +24,5 @@ instance Algebra.IsCentral.end : IsCentral K (End K V) where
       simpa using congr($(Subalgebra.mem_center_iff.mp hT <| f.smulRight y) v)
     nontriviality V
     obtain ⟨x, hx⟩ := exists_ne (0 : V)
-    obtain ⟨f, hf⟩ := Free.dual_exists_eq_one K hx
+    obtain ⟨f, hf⟩ := Free.exists_dual_eq_one K hx
     exact ⟨f (T x), LinearMap.ext fun _ => by simp [h', hf]⟩
