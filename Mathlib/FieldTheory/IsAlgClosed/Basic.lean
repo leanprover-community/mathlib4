@@ -158,7 +158,8 @@ theorem dvd_iff_roots_le_roots [IsAlgClosed k] {p q : k[X]} (hp : p ≠ 0) (hq :
 
 theorem associated_iff_roots_eq_roots [IsAlgClosed k] {p q : k[X]} (hp : p ≠ 0) (hq : q ≠ 0) :
     Associated p q ↔ p.roots = q.roots :=
-  ⟨roots_congr, fun h ↦ associated_of_dvd_dvd (dvd_iff_roots_le_roots hp hq |>.mpr <| le_of_eq h)
+  ⟨Associated.roots_eq, fun h ↦ associated_of_dvd_dvd
+    (dvd_iff_roots_le_roots hp hq |>.mpr <| le_of_eq h)
     (dvd_iff_roots_le_roots hq hp |>.mpr <| le_of_eq h.symm)⟩
 
 theorem exists_eval₂_eq_zero_of_injective {R : Type*} [Semiring R] [IsAlgClosed k] (f : R →+* k)
