@@ -671,11 +671,14 @@ open Topology
 
 variable {f : M → N} (g : M' → N') {s : Set (M ⊕ M')} {t : Set M'} {p : M ⊕ M'}
 
-lemma foo {α : Type*} [TopologicalSpace α] {s u : Set α} {x : α} : u ∈ 𝓝[s ∩ u] x := by
+-- TODO: move to the right location!
+variable {α : Type*} [TopologicalSpace α] {s t : Set α} {x : α} in
+lemma mem_nhdsWithin_inter_self : t ∈ 𝓝[s ∩ t] x := by
   refine mem_nhdsWithin_iff_eventuallyEq.mpr ?_
   filter_upwards with y using by simp [inter_assoc]
 
-attribute [fun_prop] Continuous.continuousWithinAt
+attribute [fun_prop] Continuous.continuousWithinAt -- unrelated, but probably desirable
+
 theorem hasMFDerivWithinAt_sumSwap :
     HasMFDerivWithinAt I I (@Sum.swap M M') s p
       (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
@@ -689,7 +692,7 @@ theorem hasMFDerivWithinAt_sumSwap :
     cases p with
     | inl x => simp
     | inr x => simp
-  -- extract as a lemma about writtenInExtChartAt of Sum.swap? maybe!
+  -- extract as a lemma about writtenInExtChartAt of Sum.swap?
   cases p with
     | inl x =>
       let t := I.symm ⁻¹' (chartAt H x).target ∩ range I
@@ -700,22 +703,10 @@ theorem hasMFDerivWithinAt_sumSwap :
         dsimp
         rw [Sum.inr_injective.extend_apply, (chartAt H x).right_inv (by grind)]
         exact I.right_inv (by grind)
-      apply Filter.eventually_of_mem (h := this)
-      set x' := ((chartAt H (@Sum.inl M M' x)).extend I) (Sum.inl x)
-
-      simp only [t, U]
-      simp only [Filter.inter_mem_iff]
-      refine ⟨?_, foo⟩
-      -- too optimistic! apply mem_nhdsWithin_of_mem_nhds
-      -- goal: chartAt H x.target is open, and
-      -- we're taking neighbourhoods within the codomain of I, right?
-
-      -- just for fun; not actually answering the question
-      have : Nonempty H := sorry -- surely?
-      simp
-      rw [ChartedSpace.sum_chartAt_inl, OpenPartialHomeomorph.lift_openEmbedding_symm]
-
-      sorry -- need to think now!
+      apply Filter.eventually_of_mem ?_ this
+      rw [Filter.inter_mem_iff]
+      refine ⟨I.continuousWithinAt_symm.preimage_mem_nhdsWithin ?_, mem_nhdsWithin_inter_self⟩
+      exact (chartAt H x).open_target.mem_nhds (by simp)
     | inr x =>
       let t := I.symm ⁻¹' (chartAt H x).target ∩ range I
       have : EqOn (writtenInExtChartAt I I (Sum.inr x) (@Sum.swap M M')) id t := by
@@ -725,7 +716,10 @@ theorem hasMFDerivWithinAt_sumSwap :
         dsimp
         rw [Sum.inl_injective.extend_apply, (chartAt H x).right_inv (by grind)]
         exact I.right_inv (by grind)
-      sorry -- same sorry as above
+      apply Filter.eventually_of_mem ?_ this
+      rw [Filter.inter_mem_iff]
+      refine ⟨I.continuousWithinAt_symm.preimage_mem_nhdsWithin ?_, mem_nhdsWithin_inter_self⟩
+      exact (chartAt H x).open_target.mem_nhds (by simp)
 
 theorem hasMFDerivAt_sumSwap :
     HasMFDerivAt I I (@Sum.swap M M') p (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
