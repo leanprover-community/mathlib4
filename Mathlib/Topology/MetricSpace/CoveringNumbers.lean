@@ -20,8 +20,6 @@ We prove inequalities between these covering and packing numbers.
 
 ## Main definitions
 
-* `IsCover`: a set `C` is an `ε`-cover of another set `A` if every point in `A` belongs to a ball
-  with radius `ε` around a point of `C`.
 * `externalCoveringNumber`: the extenal covering number of a set `A` for radius `ε` is the minimal
   cardinal of an `ε`cover.
 * `coveringNumber`: the covering number(or internal covering number) of a set `A` for radius `ε` is
@@ -48,33 +46,6 @@ open scoped ENNReal NNReal
 namespace Metric
 
 variable {X : Type*} [PseudoEMetricSpace X] {A B C : Set X} {ε δ : ℝ≥0} {x : X}
-
-section IsCover
-
-lemma isCover_singleton_of_ediam_le (hA : EMetric.diam A ≤ ε) (hx : x ∈ A) :
-    IsCover ε A ({x} : Set X) :=
-  fun _ h_mem ↦ ⟨x, by simp, (edist_le_diam_of_mem h_mem hx).trans hA⟩
-
-lemma isCover_singleton_finset_of_ediam_le (hA : EMetric.diam A ≤ ε) (hx : x ∈ A) :
-    IsCover ε A ({x} : Finset X) :=
-  fun _ h_mem ↦ ⟨x, by simp, (edist_le_diam_of_mem h_mem hx).trans hA⟩
-
-/-- A totally bounded set has finite `ε`-covers for all `ε > 0`. -/
-lemma TotallyBounded.exists_isCover (hA : TotallyBounded A) (hε : 0 < ε) :
-    ∃ C : Finset X, ↑C ⊆ A ∧ IsCover ε A (C : Set X) := by
-  rw [EMetric.totallyBounded_iff'] at hA
-  obtain ⟨C, hCA, hC_finite, hC⟩ := hA ε (mod_cast hε)
-  simp only [isCover_iff_subset_iUnion_emetricClosedBall, Finset.mem_coe]
-  refine ⟨Set.Finite.toFinset hC_finite, by simpa, ?_⟩
-  · simp only [Set.Finite.mem_toFinset]
-    refine hC.trans fun x hx ↦ ?_
-    simp only [Set.mem_iUnion, EMetric.mem_ball, exists_prop, EMetric.mem_closedBall] at hx ⊢
-    obtain ⟨y, hyC, hy⟩ := hx
-    exact ⟨y, hyC, hy.le⟩
-
-end IsCover
-
-section CoveringNumber
 
 section Definitions
 
@@ -221,7 +192,5 @@ theorem packingNumber_two_le_externalCoveringNumber (A : Set X) (hε : ε ≠ �
     exact hx_ne_top
 
 end Comparisons
-
-end CoveringNumber
 
 end Metric

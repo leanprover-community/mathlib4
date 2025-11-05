@@ -59,6 +59,14 @@ nonrec lemma IsCover.anti (hst : s ⊆ t) (ht : IsCover ε t N) : IsCover ε s N
 lemma IsCover.mono_radius (hεδ : ε ≤ δ) (hε : IsCover ε s N) : IsCover δ s N :=
   hε.mono_entourage fun xy hxy ↦ by dsimp at *; exact le_trans hxy <| mod_cast hεδ
 
+lemma isCover_singleton_of_ediam_le (hA : EMetric.diam s ≤ ε) (hx : x ∈ s) :
+    IsCover ε s ({x} : Set X) :=
+  fun _ h_mem ↦ ⟨x, by simp, (EMetric.edist_le_diam_of_mem h_mem hx).trans hA⟩
+
+lemma isCover_singleton_finset_of_ediam_le (hA : EMetric.diam s ≤ ε) (hx : x ∈ s) :
+    IsCover ε s ({x} : Finset X) :=
+  fun _ h_mem ↦ ⟨x, by simp, (EMetric.edist_le_diam_of_mem h_mem hx).trans hA⟩
+
 lemma isCover_iff_subset_iUnion_emetricClosedBall :
     IsCover ε s N ↔ s ⊆ ⋃ y ∈ N, EMetric.closedBall y ε := by
   simp [IsCover, SetRel.IsCover, subset_def]
@@ -69,6 +77,25 @@ lemma isCover_iff_subset_iUnion_emetricClosedBall :
 nonrec lemma IsCover.of_maximal_isSeparated (hN : Maximal (fun N ↦ N ⊆ s ∧ IsSeparated ε N) N) :
     IsCover ε s N :=
   .of_maximal_isSeparated <| by simpa [isSeparated_iff_setRelIsSeparated] using hN
+
+/-- A totally bounded set has finite `ε`-covers for all `ε > 0`. -/
+lemma _root_.TotallyBounded.exists_finite_isCover (hA : TotallyBounded s) (hε : 0 < ε) :
+    ∃ C, C ⊆ s ∧ C.Finite ∧ IsCover ε s C := by
+  rw [EMetric.totallyBounded_iff'] at hA
+  obtain ⟨C, hCA, hC_finite, hC⟩ := hA ε (mod_cast hε)
+  simp only [isCover_iff_subset_iUnion_emetricClosedBall]
+  refine ⟨Set.Finite.toFinset hC_finite, by simpa, by simpa, ?_⟩
+  · simp only [Finite.coe_toFinset]
+    refine hC.trans fun x hx ↦ ?_
+    simp only [Set.mem_iUnion, EMetric.mem_ball, exists_prop, EMetric.mem_closedBall] at hx ⊢
+    obtain ⟨y, hyC, hy⟩ := hx
+    exact ⟨y, hyC, hy.le⟩
+
+/-- A totally bounded set has finite `ε`-covers for all `ε > 0`. -/
+lemma _root_.TotallyBounded.exists_finset_isCover (hA : TotallyBounded s) (hε : 0 < ε) :
+    ∃ C : Finset X, ↑C ⊆ s ∧ IsCover ε s (C : Set X) := by
+  obtain ⟨C, hCA, hC_finite, hC⟩ := hA.exists_finite_isCover hε
+  exact ⟨Set.Finite.toFinset hC_finite, by simpa, by simpa⟩
 
 end PseudoEMetricSpace
 
