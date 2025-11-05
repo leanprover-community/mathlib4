@@ -10,9 +10,10 @@ import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing
 
 In this file, we introduce a helper structure `Subcomplex.PairingCore`
 in order to construct a pairing for a subcomplex of a simplicial set.
-The main differences with `Subcomplex.Pairing` are that we provide
-an index type `ι` in order to parametrize type (I) and type (II) simplices,
-and that the dimensions of these are definitionally `d` or `d + 1`.
+The main difference with `Subcomplex.Pairing` are that we provide
+an index type `ι` and a function `dim : ι → ℕ` which allow to
+parametrize type (II) and (I) simplices in such a way that, *definitionally*,
+their dimensions are respectively `dim s` or `dim s + 1` for `s : ι`.
 
 -/
 
@@ -25,18 +26,20 @@ namespace SSet.Subcomplex
 variable {X : SSet.{u}} (A : X.Subcomplex)
 
 /-- An helper structure in order to construct a pairing for a subcomplex of a
-simplicial set. The main differences with `Pairing` are that we provide
-an index type `ι` in order to parametrize type (I) and type (II) simplices,
-and that the dimensions of these are definitionally `d` or `d + 1`. -/
+simplicial set `X`. The main difference with `Pairing` is that we provide
+an index type `ι` and a function `dim : ι → ℕ` which allow to
+parametrize type (I) simplices as `simplex s : X _⦋dim s + 1⦌` for `s : ι`,
+and type (II) simplices as a face of `simplex s` in `X _⦋dim s⦌`. -/
 structure PairingCore where
   /-- the index type -/
   ι : Type v
   /-- the dimension of each type (II) simplex -/
-  d (s : ι) : ℕ
+  dim (s : ι) : ℕ
   /-- the family of type (I) simplices -/
-  simplex (s : ι) : X _⦋d s + 1⦌
-  /-- the corresponding type (II) is the `1`-codimensional face given by this index -/
-  index (s : ι) : Fin (d s + 2)
+  simplex (s : ι) : X _⦋dim s + 1⦌
+  /-- the corresponding type (II) simplex is the `1`-codimensional
+    face given by this index -/
+  index (s : ι) : Fin (dim s + 2)
   nonDegenerate₁ (s : ι) : simplex s ∈ X.nonDegenerate _
   nonDegenerate₂ (s : ι) : X.δ (index s) (simplex s) ∈ X.nonDegenerate _
   notMem₁ (s : ι) : simplex s ∉ A.obj _
@@ -55,36 +58,36 @@ is `PairingCore.pairing`. -/
 noncomputable def Pairing.pairingCore (P : A.Pairing) [P.IsProper] :
     A.PairingCore where
   ι := P.II
-  d s := s.1.dim
-  simplex s := ((P.p s).1.cast (P.isUniquelyCodimOneFace s).dim_eq).simplex
+  dim s := s.val.dim
+  simplex s := ((P.p s).val.cast (P.isUniquelyCodimOneFace s).dim_eq).simplex
   index s := (P.isUniquelyCodimOneFace s).index rfl
-  nonDegenerate₁ s := ((P.p s).1.cast (P.isUniquelyCodimOneFace s).dim_eq).nonDegenerate
+  nonDegenerate₁ s := ((P.p s).val.cast (P.isUniquelyCodimOneFace s).dim_eq).nonDegenerate
   nonDegenerate₂ s := by
     rw [(P.isUniquelyCodimOneFace s).δ_index rfl]
-    exact s.1.nonDegenerate
-  notMem₁ s := ((P.p s).1.cast (P.isUniquelyCodimOneFace s).dim_eq).notMem
+    exact s.val.nonDegenerate
+  notMem₁ s := ((P.p s).val.cast (P.isUniquelyCodimOneFace s).dim_eq).notMem
   notMem₂ s := by
     rw [(P.isUniquelyCodimOneFace s).δ_index rfl]
-    exact s.1.notMem
+    exact s.val.notMem
   injective_type₁' {s t} _ := by
     apply P.p.injective
     rwa [Subtype.ext_iff, N.ext_iff, SSet.N.ext_iff,
-      ← (P.p s).1.cast_eq_self (P.isUniquelyCodimOneFace s).dim_eq,
-      ← (P.p t).1.cast_eq_self (P.isUniquelyCodimOneFace t).dim_eq]
+      ← (P.p s).val.cast_eq_self (P.isUniquelyCodimOneFace s).dim_eq,
+      ← (P.p t).val.cast_eq_self (P.isUniquelyCodimOneFace t).dim_eq]
   injective_type₂' {s t} h := by
     rw [(P.isUniquelyCodimOneFace s).δ_index rfl,
       (P.isUniquelyCodimOneFace t).δ_index rfl] at h
     rwa [Subtype.ext_iff, N.ext_iff, SSet.N.ext_iff]
   type₁_ne_type₂' s t h := (P.ne (P.p s) t) (by
     rw [(P.isUniquelyCodimOneFace t).δ_index rfl] at h
-    rwa [← (P.p s).1.cast_eq_self (P.isUniquelyCodimOneFace s).dim_eq,
+    rwa [← (P.p s).val.cast_eq_self (P.isUniquelyCodimOneFace s).dim_eq,
       N.ext_iff, SSet.N.ext_iff])
   surjective' x := by
     obtain ⟨s, rfl | rfl⟩ := P.exists_or x
     · refine ⟨s, Or.inr ?_⟩
       simp [(P.isUniquelyCodimOneFace s).δ_index]
     · refine ⟨s, Or.inl ?_⟩
-      nth_rw 1 [← (P.p s).1.cast_eq_self (P.isUniquelyCodimOneFace s).dim_eq]
+      nth_rw 1 [← (P.p s).val.cast_eq_self (P.isUniquelyCodimOneFace s).dim_eq]
       rfl
 
 namespace PairingCore
@@ -159,7 +162,9 @@ lemma pairing_p_symm_equivI (x : h.ι) :
     DFunLike.coe (F := h.I ≃ h.II) h.pairing.p.symm (h.equivI x) = h.equivII x := by
   simp [pairing]
 
-/-- The condition that `h : A.PairingCore` is proper. -/
+/-- The condition that `h : A.PairingCore` is proper, i.e. for each `s : h.ι`,
+the type (II) simplex `h.type₂ s` is uniquely a `1`-codimensional
+face of the type (I) simplex `h.type₁ s`. -/
 class IsProper : Prop where
   isUniquelyCodimOneFace (s : h.ι) :
     S.IsUniquelyCodimOneFace (h.type₂ s).toS (h.type₁ s).toS
@@ -180,8 +185,8 @@ lemma isUniquelyCodimOneFace_index [h.IsProper] (s : h.ι) :
   simp [← (h.isUniquelyCodimOneFace s).δ_eq_iff]
 
 lemma isUniquelyCodimOneFace_index_coe
-    [h.IsProper] (s : h.ι) {d : ℕ} (hd : h.d s = d) :
-    ((h.isUniquelyCodimOneFace s).index hd).1 = (h.index s).1 := by
+    [h.IsProper] (s : h.ι) {d : ℕ} (hd : h.dim s = d) :
+    ((h.isUniquelyCodimOneFace s).index hd).val = (h.index s).val := by
   subst hd
   simp
 

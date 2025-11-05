@@ -63,7 +63,7 @@ namespace Pairing
 
 variable {A} (P : A.Pairing)
 
-/-- A pairing is regular when each type (II) simplex
+/-- A pairing is proper when each type (II) simplex
 is uniquely a `1`-codimensional face of the corresponding (I)
 simplex. -/
 class IsProper where
