@@ -19,6 +19,7 @@ public meta import Mathlib.Lean.Name
 public meta import Mathlib.Tactic.Eqns -- just to copy the attribute
 public meta import Mathlib.Tactic.Simps.Basic
 public meta import Mathlib.Tactic.ToAdditive.GuessName
+public meta import Lean.Meta.CoeAttr
 
 /-!
 # The `@[to_additive]` attribute.
@@ -428,7 +429,13 @@ def findTranslation? (env : Environment) : Name → Option Name :=
 falling back to translating a prefix of the name if the full name can't be translated.
 This allows translating automatically generated declarations such as `IsRegular.casesOn`. -/
 def findPrefixTranslation (env : Environment) (nm : Name) : Name :=
-  nm.mapPrefix (findTranslation? env)
+  nm.mapPrefix fun n ↦ do
+    if let some n' := findTranslation? env n then
+      return n'
+    if isPrivateName n then
+      let n' ← findTranslation? env (privateToUserName n)
+      return mkPrivateName env n'
+    none
 
 /-- Add a (multiplicative → additive) name translation to the translations map. -/
 def insertTranslation (src tgt : Name) (failIfExists := true) : CoreM Unit := do
@@ -809,9 +816,9 @@ def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat))
 
 /-- Abstracts the nested proofs in the value of `decl` if it is a def. -/
 def declAbstractNestedProofs (decl : ConstantInfo) : MetaM ConstantInfo := do
+  let decl := decl.updateType (← withExporting <| Meta.abstractNestedProofs decl.type)
   if decl matches .defnInfo _ then
-    return decl.updateValue <| ← withDeclNameForAuxNaming decl.name do
-      Meta.abstractNestedProofs decl.value!
+    return decl.updateValue (← Meta.abstractNestedProofs decl.value!)
   else
     return decl
 
@@ -820,6 +827,10 @@ def findTargetName (env : Environment) (src pre tgt_pre : Name) : CoreM Name :=
   /- This covers auxiliary declarations like `match_i` and `proof_i`. -/
   if let some post := pre.isPrefixOf? src then
     return tgt_pre ++ post
+  else if src.hasMacroScopes then
+    -- This branch should come before the next one because an aux def may be both private and macro
+    -- scoped - but really the next branch shouldn't just assume all private defs are eqns??
+    mkFreshUserName src.eraseMacroScopes
   /- This covers equation lemmas (for other declarations). -/
   else if let some post := privateToUserName? src then
     match findTranslation? env post.getPrefix with
@@ -828,8 +839,6 @@ def findTargetName (env : Environment) (src pre tgt_pre : Name) : CoreM Name :=
     -- this is an equation lemma for a declaration with `to_additive`. We will additivize this.
     -- Note: if this errors we could do this instead by calling `getEqnsFor?`
     | some addName => return src.updatePrefix <| mkPrivateName env addName
-  else if src.hasMacroScopes then
-    mkFreshUserName src.eraseMacroScopes
   else
     throwError "internal @[to_additive] error."
 
@@ -846,7 +855,7 @@ we hadn't unfolded them in `declUnfoldAuxLemmas`.
 -/
 def findAuxDecls (e : Expr) (pre : Name) : NameSet :=
   e.foldConsts ∅ fun n l ↦
-    if n.getPrefix == pre || isPrivateName n || n.hasMacroScopes then
+    if (privateToUserName n).getPrefix == privateToUserName pre || n.hasMacroScopes then
       l.insert n
     else
       l
@@ -874,16 +883,16 @@ partial def transformDeclAux
   -- we find the additive name of `src`
   let tgt ← findTargetName env src pre tgt_pre
   -- we skip if we already transformed this declaration before.
-  if env.contains tgt then
+  if env.setExporting false |>.contains tgt then
     if tgt == src then
       -- Note: this can happen for equation lemmas of declarations without `@[to_additive]`.
       trace[to_additive_detail] "Auxiliary declaration {src} will be translated to itself."
     else
       trace[to_additive_detail] "Already visited {tgt} as translation of {src}."
     return
-  let srcDecl ← getConstInfo src
+  let srcDecl ← withoutExporting do getConstInfo src
   -- we first unfold all auxlemmas, since they are not always able to be additivized on their own
-  let srcDecl ← MetaM.run' do declUnfoldAuxLemmas srcDecl
+  let srcDecl ← withoutExporting do MetaM.run' do declUnfoldAuxLemmas srcDecl
   -- we then transform all auxiliary declarations generated when elaborating `pre`
   for n in findAuxDecls srcDecl.type pre do
     transformDeclAux cfg pre tgt_pre n
@@ -898,6 +907,8 @@ partial def transformDeclAux
   if !pre.isPrefixOf src then
     insertTranslation src tgt
   -- now transform the source declaration
+  -- expose target body when source body is exposed
+  withExporting (isExporting := (← getEnv).setExporting true |>.find? src |>.any (·.hasValue)) do
   let trgDecl : ConstantInfo ← MetaM.run' <|
     if src == pre then
       updateDecl tgt srcDecl cfg.reorder cfg.dontTranslate
@@ -910,7 +921,7 @@ partial def transformDeclAux
   try
     -- make sure that the type is correct,
     -- and emit a more helpful error message if it fails
-    MetaM.run' <| check value
+    withoutExporting <| MetaM.run' <| check value
   catch
     | Exception.error _ msg => throwError "@[to_additive] failed. \
       The translated value is not type correct. For help, see the docstring \
@@ -1178,7 +1189,7 @@ def elabToAdditive : Syntax → CoreM Config
 mutual
 /-- Apply attributes to the multiplicative and additive declarations. -/
 partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr src tgt : Name)
-    (argInfo : ArgInfo) : TermElabM (Array Name) := do
+    (argInfo : ArgInfo) : TermElabM (Array Name) := withoutExporting do
   -- we only copy the `instance` attribute, since `@[to_additive] instance` is nice to allow
   copyInstanceAttribute src tgt
   -- Warn users if the multiplicative version has an attribute
@@ -1192,7 +1203,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
         calling @[{thisAttr}].\nThe preferred method is to use something like \
         `@[{thisAttr} (attr := {appliedAttrs})]`\nto apply the attribute to both \
         {src} and the target declaration {tgt}."
-    warnAttr stx Lean.Meta.Ext.extExtension
+    warnAttr stx Ext.extExtension
       (fun b n => (b.tree.values.any fun t => t.declName = n)) thisAttr `ext src tgt
     warnAttr stx Lean.Meta.Rfl.reflExt (·.values.contains ·) thisAttr `refl src tgt
     warnAttr stx Lean.Meta.Symm.symmExt (·.values.contains ·) thisAttr `symm src tgt
@@ -1265,13 +1276,13 @@ the body using the `translations` dictionary.
 This is used to implement `@[to_additive]`.
 -/
 partial def transformDecl (cfg : Config) (src tgt : Name) (argInfo : ArgInfo := {}) :
-    CoreM (Array Name) := do
+    CoreM (Array Name) := withDeclNameForAuxNaming tgt do
   transformDeclAux cfg src tgt src
   copyMetaData cfg src tgt argInfo
 
 /-- Verify that the type of given `srcDecl` translates to that of `tgtDecl`. -/
 partial def checkExistingType (src tgt : Name) (reorder : List (List Nat)) (dont : List Ident) :
-    MetaM Unit := do
+    MetaM Unit := withoutExporting do
   let mut srcDecl ← getConstInfo src
   let tgtDecl ← getConstInfo tgt
   if 0 ∈ reorder.flatten then
