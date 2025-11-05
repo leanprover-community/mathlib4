@@ -17,10 +17,10 @@ coincides with **both** the left and right uniform structures.
 
 ## Main declarations
 
-* `IsRightUniformGroup` and `IsRightUniformAddGroup`: Multiplicative and topological additive groups
+* `IsRightUniformGroup` and `IsRightUniformAddGroup`: Multiplicative and additive topological groups
   endowed with the associated right uniform structure. This means that two points `x` and `y`
   are close precisely when `y * x⁻¹` is close to `1` / `y + (-x)` close to `0`.
-* `IsLeftUniformGroup` and `IsLeftUniformAddGroup`: Multiplicative and topological additive groups
+* `IsLeftUniformGroup` and `IsLeftUniformAddGroup`: Multiplicative and additive topological groups
   endowed with the associated left uniform structure. This means that two points `x` and `y`
   are close precisely when `x⁻¹ * y` is close to `1` / `(-x) + y` close to `0`.
 * `IsUniformGroup` and `IsUniformAddGroup`: Multiplicative and additive uniform groups,
