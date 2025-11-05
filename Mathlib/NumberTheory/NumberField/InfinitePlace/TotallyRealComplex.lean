@@ -146,7 +146,7 @@ theorem isTotallyReal_top_iff : IsTotallyReal (⊤ : Subfield K) ↔ IsTotallyRe
 
 @[simp]
 theorem maximalRealSubfield_eq_top [IsTotallyReal K] : maximalRealSubfield K = ⊤ :=
-  le_antisymm le_top <| NumberField.IsTotallyReal.le_maximalRealSubfield _
+  top_unique <| NumberField.IsTotallyReal.le_maximalRealSubfield _
 
 theorem isTotallyReal_iff_maximalRealSubfield_eq_top :
     maximalRealSubfield K = ⊤ ↔ IsTotallyReal K :=
