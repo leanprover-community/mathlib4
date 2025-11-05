@@ -113,9 +113,7 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     -- We need to rephrase the result from `HasForget` to `CommRingCat`.
     ∃ gl : X.presheaf.obj (op U), (∀ i, ((sheaf X).val.map (iVU i).op) gl = g i) ∧ _ :=
     X.sheaf.existsUnique_gluing' V U iVU hcover g ic
-  apply .of_mul_eq_one gl
-  apply X.sheaf.eq_of_locally_eq' V U iVU hcover
-  intro i
+  refine .of_mul_eq_one gl <| X.sheaf.eq_of_locally_eq' V U iVU hcover _ _ fun i ↦ ?_
   -- We need to rephrase the goal from `HasForget` to `CommRingCat`.
   change ((sheaf X).val.map (iVU i).op).hom (f * gl) = ((sheaf X).val.map (iVU i).op) 1
   rw [RingHom.map_one, RingHom.map_mul, gl_spec]
