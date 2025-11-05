@@ -201,10 +201,6 @@ instance [IsCommMonObj G] {f : M ⟶ G} [IsMonHom f] : IsMonHom f⁻¹ where
 namespace Grp
 variable {G H : Grp C} [IsCommMonObj H.X]
 
--- TODO: Make `Grp.toMon` an abbrev in mathlib.
-set_option allowUnsafeReducibility true in
-attribute [reducible] Grp.toMon
-
 instance : MonObj H where
   one := η[H.toMon]
   mul := μ[H.toMon]
