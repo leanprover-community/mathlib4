@@ -231,11 +231,11 @@ def sumElim (f : C(X, Z)) (g : C(Y, Z)) : C(X ⊕ Y, Z) where
 
 @[simp]
 lemma sumElim_comp_inl (f : C(X, Z)) (g : C(Y, Z)) : (sumElim f g) ∘ Sum.inl = f := by
-  ext x; simp
+  ext x; rfl
 
 @[simp]
 lemma sumElim_comp_inr (f : C(X, Z)) (g : C(Y, Z)) : (sumElim f g) ∘ Sum.inr = g := by
-  ext x; simp
+  ext x; rfl
 
 /-- A continuous map between sums can be defined fiberwise by its action on the summands.
 This is `Continuous.sumMap` bundled into a continuous map. -/
@@ -246,12 +246,12 @@ def sumMap (f : C(X, Z)) (g : C(Y, W)) : C(X ⊕ Y, Z ⊕ W) where
 @[simp]
 lemma sumMap_comp_inl (f : C(X, Z)) (g : C(Y, W)) :
     (sumMap f g) ∘ Sum.inl = Sum.inl ∘ f := by
-  ext x; simp
+  ext x; rfl
 
 @[simp]
 lemma sumMap_comp_inr (f : C(X, Z)) (g : C(Y, W)) :
     (sumMap f g) ∘ Sum.inr = Sum.inr ∘ g := by
-  ext x; simp
+  ext x; rfl
 
 end Sum
 
@@ -280,7 +280,7 @@ lemma coe_sigma (f : ∀ i, C(X i, A)) : ⇑(sigma f) = Sigma.uncurry (f · ·) 
 lemma sigma_comp_mk
     {I A} {X : I → Type*} [TopologicalSpace A] [(i : I) → TopologicalSpace (X i)]
     (f : (i : I) → C(X i, A)) (i : I) : (sigma f).comp (sigmaMk i) = f i := by
-  ext x; simp
+  ext x; rfl
 
 /-- A continuous map between sigma types can be defined fiberwise by its action on the summands.
 This is `Continuous.sigma_map` bundled into a continuous map. -/
@@ -295,7 +295,7 @@ lemma sigmaMap_comp_mk {ι κ : Type*} {σ : ι → Type*} {τ : κ → Type*}
     [(i : ι) → TopologicalSpace (σ i)] [(k : κ) → TopologicalSpace (τ k)]
     (f₁ : ι → κ) (f₂ : (i : ι) → C(σ i, τ (f₁ i))) (i : ι) :
     (sigmaMap f₁ f₂).comp (sigmaMk i) = (sigmaMk (f₁ i)).comp (f₂ i) := by
-  ext x <;> simp [Sigma.map]
+  ext x <;> rfl
 
 variable (A X) in
 /--
