@@ -1152,25 +1152,25 @@ theorem dist_inv (x y : E) : dist x⁻¹ y = dist x y⁻¹ := by
 
 theorem norm_multiset_sum_le {E} [SeminormedAddCommGroup E] (m : Multiset E) :
     ‖m.sum‖ ≤ (m.map fun x => ‖x‖).sum :=
-  m.le_sum_of_subadditive norm norm_zero norm_add_le
+  m.le_sum_of_subadditive norm norm_zero.le norm_add_le
 
 @[to_additive existing]
 theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x => ‖x‖).sum := by
   rw [← Multiplicative.ofAdd_le, ofAdd_multiset_prod, Multiset.map_map]
   refine Multiset.le_prod_of_submultiplicative (Multiplicative.ofAdd ∘ norm) ?_ (fun x y => ?_) _
-  · simp only [comp_apply, norm_one', ofAdd_zero]
+  · simp
   · exact norm_mul_le' x y
 
 variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddCommMonoid ε] in
 @[bound]
 theorem enorm_sum_le (s : Finset ι) (f : ι → ε) :
     ‖∑ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ :=
-  s.le_sum_of_subadditive enorm enorm_zero enorm_add_le f
+  s.le_sum_of_subadditive enorm enorm_zero.le enorm_add_le f
 
 @[bound]
 theorem norm_sum_le {E} [SeminormedAddCommGroup E] (s : Finset ι) (f : ι → E) :
     ‖∑ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ :=
-  s.le_sum_of_subadditive norm norm_zero norm_add_le f
+  s.le_sum_of_subadditive norm norm_zero.le norm_add_le f
 
 @[to_additive existing]
 theorem enorm_prod_le (s : Finset ι) (f : ι → ε) : ‖∏ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ := by
@@ -1183,7 +1183,7 @@ theorem enorm_prod_le (s : Finset ι) (f : ι → ε) : ‖∏ i ∈ s, f i‖�
 theorem norm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ := by
   rw [← Multiplicative.ofAdd_le, ofAdd_sum]
   refine Finset.le_prod_of_submultiplicative (Multiplicative.ofAdd ∘ norm) ?_ (fun x y => ?_) _ _
-  · simp only [comp_apply, norm_one', ofAdd_zero]
+  · simp
   · exact norm_mul_le' x y
 
 @[to_additive]
