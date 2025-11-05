@@ -40,6 +40,9 @@ We define bi-Cartesian squares, and
 show that the pullback and pushout squares for a biproduct are bi-Cartesian.
 -/
 
+-- TODO: was pushed over the limit by module system adjustments
+set_option linter.style.longFile 1700
+
 @[expose] public section
 
 

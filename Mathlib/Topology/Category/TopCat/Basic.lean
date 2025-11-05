@@ -58,7 +58,7 @@ variable {X} in
 /-- The type of morphisms in `TopCat`. -/
 @[ext]
 structure Hom (X Y : TopCat.{u}) where
-  private mk ::
+  --private mk ::
   /-- The underlying `ContinuousMap`. -/
   hom' : C(X, Y)
 
