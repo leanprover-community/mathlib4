@@ -79,23 +79,23 @@ nonrec lemma IsCover.of_maximal_isSeparated (hN : Maximal (fun N ↦ N ⊆ s ∧
   .of_maximal_isSeparated <| by simpa [isSeparated_iff_setRelIsSeparated] using hN
 
 /-- A totally bounded set has finite `ε`-covers for all `ε > 0`. -/
-lemma _root_.TotallyBounded.exists_finite_isCover (hA : TotallyBounded s) (hε : 0 < ε) :
-    ∃ C, C ⊆ s ∧ C.Finite ∧ IsCover ε s C := by
-  rw [EMetric.totallyBounded_iff'] at hA
-  obtain ⟨C, hCA, hC_finite, hC⟩ := hA ε (mod_cast hε)
+lemma _root_.TotallyBounded.exists_finite_isCover (hs : TotallyBounded s) (hε : 0 < ε) :
+    ∃ N, N ⊆ s ∧ N.Finite ∧ IsCover ε s N := by
+  rw [EMetric.totallyBounded_iff'] at hs
+  obtain ⟨N, hNA, hN_finite, hN⟩ := hs ε (mod_cast hε)
   simp only [isCover_iff_subset_iUnion_emetricClosedBall]
-  refine ⟨Set.Finite.toFinset hC_finite, by simpa, by simpa, ?_⟩
+  refine ⟨Set.Finite.toFinset hN_finite, by simpa, by simpa, ?_⟩
   · simp only [Finite.coe_toFinset]
-    refine hC.trans fun x hx ↦ ?_
+    refine hN.trans fun x hx ↦ ?_
     simp only [Set.mem_iUnion, EMetric.mem_ball, exists_prop, EMetric.mem_closedBall] at hx ⊢
-    obtain ⟨y, hyC, hy⟩ := hx
-    exact ⟨y, hyC, hy.le⟩
+    obtain ⟨y, hyN, hy⟩ := hx
+    exact ⟨y, hyN, hy.le⟩
 
 /-- A totally bounded set has finite `ε`-covers for all `ε > 0`. -/
-lemma _root_.TotallyBounded.exists_finset_isCover (hA : TotallyBounded s) (hε : 0 < ε) :
-    ∃ C : Finset X, ↑C ⊆ s ∧ IsCover ε s (C : Set X) := by
-  obtain ⟨C, hCA, hC_finite, hC⟩ := hA.exists_finite_isCover hε
-  exact ⟨Set.Finite.toFinset hC_finite, by simpa, by simpa⟩
+lemma _root_.TotallyBounded.exists_finset_isCover (hs : TotallyBounded s) (hε : 0 < ε) :
+    ∃ N : Finset X, ↑N ⊆ s ∧ IsCover ε s (N : Set X) := by
+  obtain ⟨N, hNA, hN_finite, hN⟩ := hs.exists_finite_isCover hε
+  exact ⟨Set.Finite.toFinset hN_finite, by simpa, by simpa⟩
 
 end PseudoEMetricSpace
 
