@@ -231,35 +231,9 @@ theorem pow_left_inj {x y : FreeGroup α} {n : ℕ} (hn : n ≠ 0) : x ^ n = y ^
   have := congr_arg mk <| (conj_conjugator_reduceCyclically x.toWord).symm
   rwa [hc, hm, conj_conjugator_reduceCyclically, mk_toWord, mk_toWord] at this
 
-@[to_additive FreeAddGroup.nsmul_right_injective]
-theorem pow_left_injective {n : ℕ} (hn : n ≠ 0) :
-    Function.Injective ((· ^ n) : FreeGroup α → FreeGroup α) := fun _ _ => (pow_left_inj hn).mp
-
-@[to_additive FreeAddGroup.zsmul_right_inj]
-theorem zpow_left_inj {x y : FreeGroup α} {n : ℤ} (hn : n ≠ 0) : x ^ n = y ^ n ↔ x = y := by
-  nth_rw 2 [← pow_left_inj (Int.natAbs_ne_zero.mpr hn)]
-  rcases Int.natAbs_eq n with h | h
-  · rw [h, Int.natAbs_natCast, zpow_natCast, zpow_natCast]
-  · rw [h, Int.natAbs_neg, Int.natAbs_natCast, zpow_neg, zpow_neg, inv_inj, zpow_natCast,
-    zpow_natCast]
-
-@[to_additive FreeAddGroup.zsmul_right_injective]
-theorem zpow_left_injective {n : ℤ} (hn : n ≠ 0) :
-    Function.Injective ((· ^ n) : FreeGroup α → FreeGroup α) := fun _ _ => (zpow_left_inj hn).mp
-
 @[to_additive]
-theorem infinite_order {x : FreeGroup α} (hx : x ≠ 1) : ¬IsOfFinOrder x := by
-  rw [isOfFinOrder_iff_pow_eq_one]
-  rintro ⟨n, hn, eq⟩
-  rw [← one_pow n, pow_left_inj (by omega)] at eq
-  exact hx eq
-
-@[to_additive]
-theorem ne_inv_of_ne_one {x : FreeGroup α} (hx : x ≠ 1) : x ≠ x⁻¹ := by
-  replace hx := infinite_order hx
-  contrapose! hx
-  rw [eq_inv_iff_mul_eq_one, ← sq] at hx
-  grind [isOfFinOrder_iff_pow_eq_one]
+instance : IsMulTorsionFree (FreeGroup α) where
+  pow_left_injective _ hn := fun _ _ => (pow_left_inj hn).mp
 
 end pow_left_inj
 end FreeGroup
