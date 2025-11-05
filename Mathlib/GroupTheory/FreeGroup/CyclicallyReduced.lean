@@ -257,14 +257,10 @@ theorem infinite_order {x : FreeGroup α} (hx : x ≠ 1) : ¬IsOfFinOrder x := b
 
 @[to_additive]
 theorem ne_inv_of_ne_one {x : FreeGroup α} (hx : x ≠ 1) : x ≠ x⁻¹ := by
-  apply_fun (fun r => x*r)
-  simp only [mul_inv_cancel, ne_eq]
-  intro eq
-  apply infinite_order hx
-  rw [isOfFinOrder_iff_pow_eq_one]
-  use 2, (by decide)
-  rw [← eq]
-  exact pow_two x
+  replace hx := infinite_order hx
+  contrapose! hx
+  rw [eq_inv_iff_mul_eq_one, ← sq] at hx
+  grind [isOfFinOrder_iff_pow_eq_one]
 
 end pow_left_inj
 end FreeGroup
