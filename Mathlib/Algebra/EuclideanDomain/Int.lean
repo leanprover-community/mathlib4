@@ -29,4 +29,5 @@ instance Int.euclideanDomain : EuclideanDomain ℤ :=
         exact Nat.mul_le_mul_left _ b0 }
 
 theorem Int.ediv_pow {a b : ℤ} {n : ℕ} (hab : b ∣ a) :
-    (a / b) ^ n = a ^ n / b ^ n := EuclideanDomain.div_pow hab
+    (a / b) ^ n = a ^ n / b ^ n := by
+  rw [EuclideanDomain.div_pow hab]
