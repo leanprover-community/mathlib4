@@ -88,19 +88,19 @@ def comp {Z Y X : C} (f : Y ⟶ X) (g : Z ⟶ Y)
 @[simps]
 def cartesianMonoidalCategoryToTerminal [CartesianMonoidalCategory C] {X : C} (f : X ⟶ 𝟙_ C) :
     ChosenPullback f where
-  pullback.obj Y := Over.mk (fst X Y.left)
-  pullback.map {Y Z} g := Over.homMk (X ◁ g.left)
+  pullback.obj Y := Over.mk (snd Y.left X)
+  pullback.map {Y Z} g := Over.homMk (g.left ▷ X)
   mapPullbackAdj := Adjunction.mkOfHomEquiv
     { homEquiv U Z :=
-      { toFun z := Over.homMk (lift U.hom z.left)
-        invFun u := Over.homMk (u.left ≫ snd X Z.left)
+      { toFun z := Over.homMk (lift z.left U.hom)
+        invFun u := Over.homMk (u.left ≫ fst Z.left X)
         left_inv k := by simp
         right_inv k := by
           ext
           dsimp
           ext
-          · simpa using k.w.symm
-          · aesop } }
+          · simp
+          · simpa using k.w.symm } }
 
 /-- In cartesian monoidal categories, the first product projections `fst` have chosen pullbacks. -/
 @[simps]
