@@ -10,12 +10,19 @@ import Mathlib.RingTheory.MvPolynomial.IrrQuadratic
 import Mathlib.RingTheory.Polynomial.UniqueFactorization
 import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 
+import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.LinearAlgebra.Dual.BaseChange
+
 /-!
-# Transvections
+# Transvections in a module
+
+* When `f : Module.Dual R V` and `v : V`,
+  `LinearMap.transvection f v` is the linear map given by `x ↦ x + f x • v`,
+
+* If, moreover, `f v = 0`, then `LinearEquiv.transvection` shows that it is
+  a linear equivalence.
 
 -/
-
-universe u v
 
 namespace LinearMap
 
@@ -171,10 +178,9 @@ theorem symm_eq' {f : Module.Dual R V} {v : V}
     (transvection hf).symm = transvection hf' := by
   ext; simp [LinearEquiv.symm_apply_eq, comp_of_right_eq_apply hf]
 
-
 end LinearEquiv.transvection
 
-section transvection
+section baseChange
 
 namespace LinearMap.transvection
 
@@ -191,11 +197,11 @@ theorem baseChange (f : Module.Dual R V) (v : V) :
   ext; simp [transvection, TensorProduct.tmul_add]
 
 theorem _root_.LinearEquiv.transvection.baseChange
-    {f : Module.Dual R V} {v : V}
-    (h : f v = 0) (hA : f.baseChange A (1 ⊗ₜ[R] v) = 0) :
+    {f : Module.Dual R V} {v : V} (h : f v = 0)
+    (hA : f.baseChange A (1 ⊗ₜ[R] v) = 0 := by simp [Algebra.algebraMap_eq_smul_one]) :
     (LinearEquiv.transvection h).baseChange R A V V = LinearEquiv.transvection hA := by
-  simp [← toLinearMap_inj, coe_baseChange, LinearEquiv.transvection.coe_toLinearMap,
-    LinearMap.transvection.baseChange]
+  simp [← toLinearMap_inj, coe_baseChange,
+    LinearEquiv.transvection.coe_toLinearMap, LinearMap.transvection.baseChange]
 
 noncomputable def _root_.IsBaseChange.toDual (f : Module.Dual R V) :
     Module.Dual A W := (f.baseChange A).congr ibc_VW.equiv
@@ -206,7 +212,6 @@ noncomputable def _root_.IsBaseChange.toDualHom :
   map_add' f g := by
     rw?
   map_smul' a f := by simp
-
 
 example (f : Module.Dual R V) (v : V) : Module.Dual A W := by
   let fA := f.baseChange A
@@ -475,5 +480,6 @@ end transvection
 end LinearMap
 
 end
-#check Module.Finite
+
 end transvection
+
