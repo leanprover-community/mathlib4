@@ -666,7 +666,7 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {s : Set (M ⊕ 
 
 /-- In extended charts at `p`, `Sum.swap` looks like the identity near `p`. -/
 lemma writtenInExtChartAt_sumSwap_eventuallyEq_id :
-    writtenInExtChartAt I I p Sum.swap =ᶠ[𝓝[range I] I (chartAt H p p)] id := by
+    writtenInExtChartAt I I p Sum.swap =ᶠ[𝓝[range I] (I <|chartAt H p p)] id := by
   cases p with
     | inl x =>
       let t := I.symm ⁻¹' (chartAt H x).target ∩ range I
@@ -695,23 +695,17 @@ lemma writtenInExtChartAt_sumSwap_eventuallyEq_id :
       refine ⟨I.continuousWithinAt_symm.preimage_mem_nhdsWithin ?_, self_mem_nhdsWithin⟩
       exact (chartAt H x).open_target.mem_nhds (by simp)
 
-theorem hasMFDerivWithinAt_sumSwap :
-    HasMFDerivWithinAt I I (@Sum.swap M M') s p (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
+theorem hasMFDerivAt_sumSwap :
+    HasMFDerivAt I I (@Sum.swap M M') p (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
   refine ⟨by fun_prop, ?_⟩
-  apply (hasFDerivWithinAt_id _ <| (extChartAt I p).symm ⁻¹' s ∩ range I).congr_of_eventuallyEq
-  · exact writtenInExtChartAt_sumSwap_eventuallyEq_id.filter_mono <|
-      nhdsWithin_mono _ inter_subset_right
+  apply (hasFDerivWithinAt_id _ (range I)).congr_of_eventuallyEq
+  · exact writtenInExtChartAt_sumSwap_eventuallyEq_id
   · simp only [mfld_simps]
     cases p <;> simp
 
-theorem hasMFDerivAt_sumSwap :
-    HasMFDerivAt I I (@Sum.swap M M') p (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
-  rw [← hasMFDerivWithinAt_univ]
-  exact hasMFDerivWithinAt_sumSwap
-
-theorem mfderivWithin_sumSwap (hU : UniqueMDiffWithinAt I s p) :
+theorem mfderivWithin_sumSwap (hs : UniqueMDiffWithinAt I s p) :
     mfderivWithin I I (@Sum.swap M M') s p = ContinuousLinearMap.id 𝕜 (TangentSpace I p) :=
-  (hasMFDerivWithinAt_sumSwap).mfderivWithin hU
+  hasMFDerivAt_sumSwap.hasMFDerivWithinAt.mfderivWithin hs
 
 theorem mfderiv_sumSwap :
     mfderiv I I (@Sum.swap M M') p = ContinuousLinearMap.id 𝕜 (TangentSpace I p) := by
