@@ -111,14 +111,68 @@ theorem roots_eq_zero_iff [IsAlgClosed k] {p : k[X]} :
     rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
     simp at hz
 
+theorem roots_eq_zero_iff_natDegree_eq_zero [IsAlgClosed k] {p : k[X]} :
+    p.roots = 0 ↔ p.natDegree = 0 :=
+  roots_eq_zero_iff.trans eq_C_coeff_zero_iff_natDegree_eq_zero
+
+theorem roots_eq_zero_iff_degree_nonpos [IsAlgClosed k] {p : k[X]} : p.roots = 0 ↔ p.degree ≤ 0 :=
+  roots_eq_zero_iff_natDegree_eq_zero.trans natDegree_eq_zero_iff_degree_le_zero
+
+theorem card_roots_eq_natDegree [IsAlgClosed k] {p : k[X]} : p.roots.card = p.natDegree := by
+  have ⟨_, _, hdeg, hroots⟩ := exists_prod_multiset_X_sub_C_mul p
+  simp [← hdeg, roots_eq_zero_iff_natDegree_eq_zero.mp hroots]
+
+theorem card_roots_map_eq_natDegree_of_leadingCoeff_ne_zero {A B : Type*} [Semiring A] [Field B]
+    [IsAlgClosed B] {f : A →+* B} {p : A[X]} (hf : f p.leadingCoeff ≠ 0) :
+    (p.map f).roots.card = p.natDegree :=
+  natDegree_map_of_leadingCoeff_ne_zero _ hf ▸ card_roots_eq_natDegree
+
+theorem card_roots_map_eq_natDegree_of_isUnit_leadingCoeff {A B : Type*} [Semiring A] [Field B]
+    [IsAlgClosed B] (f : A →+* B) {p : A[X]} (h : IsUnit p.leadingCoeff) :
+    (p.map f).roots.card = p.natDegree :=
+  natDegree_map_eq_of_isUnit_leadingCoeff f h ▸ card_roots_eq_natDegree
+
+theorem card_roots_map_eq_natDegree_of_injective {A B : Type*} [Semiring A] [Field B]
+    [IsAlgClosed B] {f : A →+* B} (p : A[X]) (hf : Function.Injective f) :
+    (p.map f).roots.card = p.natDegree :=
+  natDegree_map_eq_of_injective hf _ ▸ card_roots_eq_natDegree
+
+theorem card_roots_map_eq_natDegree_from_simpleRing {A B : Type*} [Ring A] [IsSimpleRing A]
+    [Field B] [IsAlgClosed B] (f : A →+* B) (p : A[X]) : (p.map f).roots.card = p.natDegree :=
+  natDegree_map f ▸ card_roots_eq_natDegree
+
+theorem card_aroots_eq_natDegree_of_leadingCoeff_ne_zero {A B : Type*} [CommRing A] [Field B]
+    [IsAlgClosed B] [Algebra A B] {p : A[X]} (hf : algebraMap A B p.leadingCoeff ≠ 0) :
+    (p.aroots B).card = p.natDegree :=
+  card_roots_map_eq_natDegree_of_leadingCoeff_ne_zero hf
+
+theorem card_aroots_eq_natDegree_of_isUnit_leadingCoeff {A B : Type*} [CommRing A] [Field B]
+    [IsAlgClosed B] [Algebra A B] {p : A[X]} (h : IsUnit p.leadingCoeff) :
+    (p.aroots B).card = p.natDegree :=
+  card_roots_map_eq_natDegree_of_isUnit_leadingCoeff _ h
+
+theorem card_aroots_eq_natDegree {A B : Type*} [CommRing A] [Field B] [IsAlgClosed B] [Algebra A B]
+    [FaithfulSMul A B] {p : A[X]} : (p.aroots B).card = p.natDegree :=
+  card_roots_map_eq_natDegree_of_injective _ <| FaithfulSMul.algebraMap_injective _ _
+
+theorem dvd_iff_roots_le_roots [IsAlgClosed k] {p q : k[X]} (hp : p ≠ 0) (hq : q ≠ 0) :
+    p ∣ q ↔ p.roots ≤ q.roots :=
+  Splits.dvd_iff_roots_le_roots (splits _) hp hq
+
+theorem associated_iff_roots_eq_roots [IsAlgClosed k] {p q : k[X]} (hp : p ≠ 0) (hq : q ≠ 0) :
+    Associated p q ↔ p.roots = q.roots :=
+  ⟨Associated.roots_eq, fun h ↦ associated_of_dvd_dvd
+    (dvd_iff_roots_le_roots hp hq |>.mpr <| le_of_eq h)
+    (dvd_iff_roots_le_roots hq hp |>.mpr <| le_of_eq h.symm)⟩
+
 theorem exists_eval₂_eq_zero_of_injective {R : Type*} [Semiring R] [IsAlgClosed k] (f : R →+* k)
     (hf : Function.Injective f) (p : R[X]) (hp : p.degree ≠ 0) : ∃ x, p.eval₂ f x = 0 :=
   let ⟨x, hx⟩ := exists_root (p.map f) (by rwa [degree_map_eq_of_injective hf])
   ⟨x, by rwa [eval₂_eq_eval_map, ← IsRoot]⟩
 
-theorem exists_eval₂_eq_zero {R : Type*} [DivisionRing R] [IsAlgClosed k] (f : R →+* k) (p : R[X])
-    (hp : p.degree ≠ 0) : ∃ x, p.eval₂ f x = 0 :=
-  exists_eval₂_eq_zero_of_injective f f.injective p hp
+theorem exists_eval₂_eq_zero {R : Type*} [Ring R] [IsSimpleRing R] [IsAlgClosed k] (f : R →+* k)
+    (p : R[X]) (hp : p.degree ≠ 0) : ∃ x, p.eval₂ f x = 0 :=
+  exists_eval₂_eq_zero_of_injective _ f.injective _ hp
 
 variable (k)
 
@@ -127,9 +181,9 @@ theorem exists_aeval_eq_zero_of_injective {R : Type*} [CommSemiring R] [IsAlgClo
     ∃ x : k, aeval x p = 0 :=
   exists_eval₂_eq_zero_of_injective (algebraMap R k) hinj p hp
 
-theorem exists_aeval_eq_zero {R : Type*} [Field R] [IsAlgClosed k] [Algebra R k] (p : R[X])
-    (hp : p.degree ≠ 0) : ∃ x : k, aeval x p = 0 :=
-  exists_eval₂_eq_zero (algebraMap R k) p hp
+theorem exists_aeval_eq_zero {R : Type*} [CommRing R] [IsSimpleRing R] [IsAlgClosed k] [Algebra R k]
+    (p : R[X]) (hp : p.degree ≠ 0) : ∃ x : k, p.aeval x = 0 :=
+  exists_eval₂_eq_zero _ _ hp
 
 
 /--
@@ -498,7 +552,7 @@ theorem Polynomial.isRoot_of_isRoot_iff_dvd_derivative_mul {K : Type*} [Field K]
   · rw [eq_C_of_derivative_eq_zero hdf0]
     simp only [derivative_C, zero_mul, dvd_zero, implies_true]
   have hdg :  f.derivative * g ≠ 0 := mul_ne_zero hdf0 hg0
-  classical rw [Splits.dvd_iff_roots_le_roots (IsAlgClosed.splits f) hf0 hdg, Multiset.le_iff_count]
+  classical rw [IsAlgClosed.dvd_iff_roots_le_roots hf0 hdg, Multiset.le_iff_count]
   simp only [count_roots, rootMultiplicity_mul hdg]
   refine forall_imp fun a => ?_
   by_cases haf : f.eval a = 0
