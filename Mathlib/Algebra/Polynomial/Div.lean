@@ -748,13 +748,13 @@ lemma degree_eq_one_of_irreducible_of_root (hi : Irreducible p) {x : R} (hx : Is
       rw [h₁] at h₂; exact absurd h₂ (by decide))
     fun hgu => by rw [hg, degree_mul, degree_X_sub_C, degree_eq_zero_of_isUnit hgu, add_zero]
 
-lemma not_isRoot_of_irreducible_natDegree_ne_one
+lemma _root_.Irreducible.not_isRoot_of_natDegree_ne_one
     (hi : Irreducible p) (hdeg : p.natDegree ≠ 1) {x : R} : ¬p.IsRoot x :=
   fun hr ↦ hdeg <| natDegree_eq_of_degree_eq_some <| degree_eq_one_of_irreducible_of_root hi hr
 
 lemma isRoot_eq_bot_of_irreducible_natDegree_ne_one
     (hi : Irreducible p) (hdeg : p.natDegree ≠ 1) : p.IsRoot = ⊥ :=
-  le_bot_iff.mp fun _ ↦ not_isRoot_of_irreducible_natDegree_ne_one hi hdeg
+  le_bot_iff.mp fun _ ↦ hi.not_isRoot_of_natDegree_ne_one hdeg
 
 lemma subsingleton_isRoot_of_irreducible [IsLeftCancelMulZero R] [IsRightCancelAdd R]
     (hi : Irreducible p) : { x | p.IsRoot x }.Subsingleton :=

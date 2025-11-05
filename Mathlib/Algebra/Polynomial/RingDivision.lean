@@ -135,7 +135,7 @@ lemma aeval_ne_zero_of_irredicble_natDegree_ne_one [IsDomain R] [Ring S] [Algebr
     (hx : x ∈ (algebraMap R S).range) : p.aeval x ≠ 0 := by
   obtain ⟨_, rfl⟩ := hx
   rw [aeval_algebraMap_apply_eq_algebraMap_eval]
-  exact fun heq ↦ not_isRoot_of_irreducible_natDegree_ne_one hp hdeg <|
+  exact fun heq ↦ hp.not_isRoot_of_natDegree_ne_one hdeg <|
     FaithfulSMul.algebraMap_injective _ _ <| map_zero (algebraMap R S) ▸ heq
 
 theorem natDegree_pos_of_monic_of_aeval_eq_zero [Nontrivial R] [Semiring S] [Algebra R S]
