@@ -3,7 +3,6 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.Data.Finsupp.Multiset
 import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 import Mathlib.Tactic.Ring
 
