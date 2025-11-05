@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
-import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.RingTheory.Algebraic.Basic
 
 /-!
