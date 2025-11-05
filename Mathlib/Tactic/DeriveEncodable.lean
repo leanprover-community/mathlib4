@@ -130,7 +130,7 @@ private def S_equiv : S ≃ ℕ where
         · have := Nat.unpair_lt (by omega : 1 ≤ n' + 1)
           omega
 
-private local instance : Encodable S := Encodable.ofEquiv ℕ S_equiv
+private instance : Encodable S := Encodable.ofEquiv ℕ S_equiv
 
 public meta section
 
