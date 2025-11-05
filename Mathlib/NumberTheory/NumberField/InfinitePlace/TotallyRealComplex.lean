@@ -141,7 +141,7 @@ instance isTotallyReal_iSup {ι : Type*} {k : ι → Subfield K} [∀ i, IsTotal
     IsTotallyReal (⨆ i, k i : Subfield K) := by
   simp_all [isTotallyReal_iff_le_maximalRealSubfield]
 
-theorem isTotallyReal_top_iff_top_iff : IsTotallyReal (⊤ : Subfield K) ↔ IsTotallyReal K :=
+theorem isTotallyReal_top_iff : IsTotallyReal (⊤ : Subfield K) ↔ IsTotallyReal K :=
   ⟨fun _ ↦ .ofRingEquiv Subfield.topEquiv, fun _ ↦ .ofRingEquiv Subfield.topEquiv.symm⟩
 
 @[simp]
