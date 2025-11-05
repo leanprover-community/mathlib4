@@ -82,6 +82,13 @@ theorem house_num_mul (α : K) (c : ℕ) :
   rw [Finset.sup'_eq_sup]
   apply NNReal.mul_finset_sup
 
+theorem house_num_mul_int (α : K) (c' : ℤ) (hc : 0 ≤ c') :
+    house ((c' : K)* α) = norm (c' : ℝ) * house (α) := by
+  have t := Int.toNat_of_nonneg hc
+  rw [← t]
+  have := house_num_mul α (c:= ↑c'.toNat)
+  norm_cast
+
 @[simp] theorem house_intCast (x : ℤ) : house (x : K) = |x| := by
   simp only [house, map_intCast, Pi.intCast_def, pi_norm_const,
     Complex.norm_intCast, Int.cast_abs]

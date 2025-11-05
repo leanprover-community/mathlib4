@@ -180,6 +180,48 @@ instance : DecidableEq (K →ₐ[ℚ] ℂ) := by {
   apply Classical.typeDecidableEq
   }
 
+lemma house_prod_le (s : Finset K) :
+    house (∏ x ∈ s, x) ≤ ∏ x ∈ s, house x := by
+  classical
+  refine Finset.induction_on (s := s) ?_ ?_
+  · simp [house]
+  · intro a s ha ih
+    simp [Finset.prod_insert ha]
+    calc
+      house (a * ∏ x ∈ s, x)
+        ≤ house a * house (∏ x ∈ s, x) := house_mul_le a _
+      _ ≤ house a * ∏ x ∈ s, house x := by
+        apply mul_le_mul
+        · simp only [le_refl]
+        · exact ih
+        · exact house_nonneg (∏ x ∈ s, x)
+        · exact house_nonneg a
+
+-- example [DecidableEq K] (a b c d e : K) :
+--     house (a * b * c * d * e) ≤ house a * house b * house c * house d * house e := by
+--   have h := house_prod_le (s := {a, b, c, d, e})
+
+--   have : a * b * c * d * e = ∏ x ∈ { a, b, c, d, e }, x := by {
+--    rw [← Finset.mul_prod_erase (a:=a)]
+--    rw [← Finset.mul_prod_erase (a:=b)]
+--    rw [← Finset.mul_prod_erase (a:=c)]
+--    rw [← Finset.mul_prod_erase (a:=d)]
+--    --rw [← Finset.mul_prod_erase  (a:=e)]
+--    simp only [erase_insert_eq_erase]
+--    simp only [mul_assoc]
+--    congr
+--    refine Eq.symm (prod_eq_single_of_mem e ?_ ?_)
+--    · simp only [mem_erase, ne_eq, Finset.mem_insert,
+--       Finset.mem_singleton, or_true, and_true]
+--      apply?
+
+
+
+
+--   }
+--   rw [this] at h
+--   simpa using h
+
 omit [NumberField K] in
 lemma etc [Field L] [Field E] [Algebra K L] [Algebra K E]
  [Fintype (L →ₐ[K] E)] [DecidableEq (L →ₐ[K] E)] (x : L) (σ0 : L →ₐ[K] E) :
