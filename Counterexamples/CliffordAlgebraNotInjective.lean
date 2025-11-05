@@ -100,8 +100,7 @@ theorem comap_C_kIdeal : kIdeal.comap (C : ZMod 2 →+* MvPolynomial (Fin 3) (ZM
   rw [kIdeal, Ideal.map_span]
   refine (Ideal.span_le).2 ?_
   rintro x ⟨_, ⟨i, rfl⟩, rfl⟩
-  rw [RingHom.map_mul, constantCoeff_X, mul_zero, Submodule.bot_coe,
-    Set.mem_singleton_iff]
+  rw [map_mul, constantCoeff_X, mul_zero, Submodule.bot_coe, Set.mem_singleton_iff]
 
 /-- `k` has characteristic 2. -/
 instance K.charP : CharP K 2 := by
@@ -262,7 +261,7 @@ theorem algebraMap_αβγ_eq_zero : algebraMap K (CliffordAlgebra Q) (α * β * 
 /-- Our final result: for the quadratic form `Q60596.Q`, the algebra map to the Clifford algebra
 is not injective, as it sends the non-zero `α * β * γ` to zero. -/
 theorem algebraMap_not_injective : ¬Function.Injective (algebraMap K <| CliffordAlgebra Q) :=
-  fun h => αβγ_ne_zero <| h <| by rw [algebraMap_αβγ_eq_zero, RingHom.map_zero]
+  fun h => αβγ_ne_zero <| h <| by rw [algebraMap_αβγ_eq_zero, map_zero]
 
 /-- Bonus counterexample: `Q` is a quadratic form that has no bilinear form. -/
 theorem Q_not_in_range_toQuadraticForm : Q ∉ Set.range BilinMap.toQuadraticMap := by

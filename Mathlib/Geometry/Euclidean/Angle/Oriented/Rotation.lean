@@ -140,7 +140,7 @@ theorem rotation_pi_div_two : o.rotation (π / 2 : ℝ) = J := by
 @[simp]
 theorem rotation_rotation (θ₁ θ₂ : Real.Angle) (x : V) :
     o.rotation θ₁ (o.rotation θ₂ x) = o.rotation (θ₁ + θ₂) x := by
-  simp only [o.rotation_apply, Real.Angle.cos_add, Real.Angle.sin_add, LinearIsometryEquiv.map_add,
+  simp only [o.rotation_apply, Real.Angle.cos_add, Real.Angle.sin_add, map_add,
     map_smul, rightAngleRotation_rightAngleRotation]
   module
 
@@ -278,7 +278,7 @@ theorem oangle_eq_iff_eq_norm_div_norm_smul_rotation_of_ne_zero {x y : V} (hx : 
   have hp := div_pos (norm_pos_iff.2 hy) (norm_pos_iff.2 hx)
   constructor
   · rintro rfl
-    rw [← LinearIsometryEquiv.map_smul, ← o.oangle_smul_left_of_pos x y hp, eq_comm,
+    rw [← map_smul, ← o.oangle_smul_left_of_pos x y hp, eq_comm,
       rotation_oangle_eq_iff_norm_eq, norm_smul, Real.norm_of_nonneg hp.le,
       div_mul_cancel₀ _ (norm_ne_zero_iff.2 hx)]
   · intro hye

@@ -299,10 +299,10 @@ instance : SMul R (M ⊗[R] N) :=
   TensorProduct.leftHasSMul
 
 protected theorem smul_zero (r : R') : r • (0 : M ⊗[R] N) = 0 :=
-  AddMonoidHom.map_zero _
+  map_zero _
 
 protected theorem smul_add (r : R') (x y : M ⊗[R] N) : r • (x + y) = r • x + r • y :=
-  AddMonoidHom.map_add _ _ _
+  map_add _ _ _
 
 protected theorem zero_smul (x : M ⊗[R] N) : (0 : R'') • x = 0 :=
   have : ∀ (r : R'') (m : M) (n : N), r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n := fun _ _ _ => rfl

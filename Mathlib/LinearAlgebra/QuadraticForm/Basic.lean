@@ -242,7 +242,7 @@ instance zeroHomClass : ZeroHomClass (QuadraticMap R M N) M N :=
 theorem map_smul_of_tower [CommSemiring S] [Algebra S R] [SMul S M] [IsScalarTower S R M]
     [Module S N] [IsScalarTower S R N] (a : S)
     (x : M) : Q (a • x) = (a * a) • Q x := by
-  rw [← IsScalarTower.algebraMap_smul R a x, Q.map_smul, ← RingHom.map_mul, algebraMap_smul]
+  rw [← IsScalarTower.algebraMap_smul R a x, Q.map_smul, ← map_mul, algebraMap_smul]
 
 end CommSemiring
 

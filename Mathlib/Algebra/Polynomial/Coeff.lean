@@ -180,7 +180,7 @@ theorem coeff_mul_C (p : R[X]) (n : ℕ) (a : R) : coeff (p * C a) n = coeff p n
 
 @[simp]
 theorem coeff_X_pow (k n : ℕ) : coeff (X ^ k : R[X]) n = if n = k then 1 else 0 := by
-  simp only [one_mul, RingHom.map_one, ← coeff_C_mul_X_pow]
+  simp only [one_mul, map_one, ← coeff_C_mul_X_pow]
 
 theorem coeff_X_pow_self (n : ℕ) : coeff (X ^ n : R[X]) n = 1 := by simp
 

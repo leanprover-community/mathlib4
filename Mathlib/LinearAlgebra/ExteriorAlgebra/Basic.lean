@@ -218,7 +218,7 @@ theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x =
     have : r = 0 ∧ 0 = x := Prod.ext_iff.1 hf0
     exact this.symm.imp_left Eq.symm
   · rintro ⟨rfl, rfl⟩
-    rw [map_zero, RingHom.map_zero]
+    rw [map_zero, map_zero]
 
 @[simp]
 theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 := by
@@ -233,7 +233,7 @@ theorem ι_range_disjoint_one :
   rintro _ ⟨x, hx⟩ h
   obtain ⟨r, rfl : algebraMap R (ExteriorAlgebra R M) r = _⟩ := Submodule.mem_one.mp h
   rw [ι_eq_algebraMap_iff x] at hx
-  rw [hx.2, RingHom.map_zero]
+  rw [hx.2, map_zero]
 
 @[simp]
 theorem ι_add_mul_swap (x y : M) : ι R x * ι R y + ι R y * ι R x = 0 :=

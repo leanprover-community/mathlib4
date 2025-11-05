@@ -85,8 +85,8 @@ theorem PowerBasis.trace_gen_eq_nextCoeff_minpoly [Nontrivial S] (pb : PowerBasi
 theorem PowerBasis.trace_gen_eq_sum_roots [Nontrivial S] (pb : PowerBasis K S)
     (hf : (minpoly K pb.gen).Splits (algebraMap K F)) :
     algebraMap K F (trace K S pb.gen) = ((minpoly K pb.gen).aroots F).sum := by
-  rw [PowerBasis.trace_gen_eq_nextCoeff_minpoly, RingHom.map_neg,
-    ← nextCoeff_map_eq, nextCoeff_eq_neg_sum_roots_of_monic_of_splits
+  rw [PowerBasis.trace_gen_eq_nextCoeff_minpoly, map_neg, ← nextCoeff_map_eq,
+    nextCoeff_eq_neg_sum_roots_of_monic_of_splits
       ((minpoly.monic (PowerBasis.isIntegral_gen _)).map _) ((splits_id_iff_splits _).2 hf),
     neg_neg]
 
@@ -143,7 +143,7 @@ theorem trace_eq_sum_roots [FiniteDimensional K L] {x : L}
     (hF : (minpoly K x).Splits (algebraMap K F)) :
     algebraMap K F (Algebra.trace K L x) =
       finrank K⟮x⟯ L • ((minpoly K x).aroots F).sum := by
-  rw [trace_eq_trace_adjoin K x, Algebra.smul_def, RingHom.map_mul, ← Algebra.smul_def,
+  rw [trace_eq_trace_adjoin K x, Algebra.smul_def, map_mul, ← Algebra.smul_def,
     IntermediateField.AdjoinSimple.trace_gen_eq_sum_roots _ hF, IsScalarTower.algebraMap_smul]
 
 end EqSumRoots
@@ -248,7 +248,7 @@ theorem trace_eq_sum_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L
     algebraMap K E (Algebra.trace K L x) = ∑ σ : L →ₐ[K] E, σ x := by
   have hx := Algebra.IsSeparable.isIntegral K x
   let pb := adjoin.powerBasis hx
-  rw [trace_eq_trace_adjoin K x, Algebra.smul_def, RingHom.map_mul, ← adjoin.powerBasis_gen hx,
+  rw [trace_eq_trace_adjoin K x, Algebra.smul_def, map_mul, ← adjoin.powerBasis_gen hx,
     trace_eq_sum_embeddings_gen E pb (IsAlgClosed.splits_codomain _), ← Algebra.smul_def,
     algebraMap_smul]
   · exact (sum_embeddings_eq_finrank_mul L E pb).symm
@@ -457,7 +457,7 @@ variable (pb : PowerBasis K L)
 theorem det_traceMatrix_ne_zero' [Algebra.IsSeparable K L] : det (traceMatrix K pb.basis) ≠ 0 := by
   suffices algebraMap K (AlgebraicClosure L) (det (traceMatrix K pb.basis)) ≠ 0 by
     refine mt (fun ht => ?_) this
-    rw [ht, RingHom.map_zero]
+    rw [ht, map_zero]
   haveI : FiniteDimensional K L := pb.finite
   let e : Fin pb.dim ≃ (L →ₐ[K] AlgebraicClosure L) := (Fintype.equivFinOfCardEq ?_).symm
   · rw [RingHom.map_det, RingHom.mapMatrix_apply,

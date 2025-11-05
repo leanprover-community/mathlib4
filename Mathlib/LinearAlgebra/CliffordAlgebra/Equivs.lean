@@ -153,7 +153,7 @@ theorem toComplex_involute (c : CliffordAlgebra Q) :
 def ofComplex : ℂ →ₐ[ℝ] CliffordAlgebra Q :=
   Complex.lift
     ⟨CliffordAlgebra.ι Q 1, by
-      rw [CliffordAlgebra.ι_sq_scalar, Q_apply, one_mul, RingHom.map_neg, RingHom.map_one]⟩
+      rw [CliffordAlgebra.ι_sq_scalar, Q_apply, one_mul, map_neg, map_one]⟩
 
 @[simp]
 theorem ofComplex_I : ofComplex Complex.I = ι Q 1 :=
@@ -299,7 +299,7 @@ theorem ofQuaternion_comp_toQuaternion :
     dsimp
     rw [toQuaternion_ι]
     dsimp
-    simp only [zero_smul, one_smul, zero_add, add_zero, RingHom.map_zero]
+    simp only [zero_smul, one_smul, zero_add, add_zero, map_zero]
 
 @[simp]
 theorem ofQuaternion_toQuaternion (c : CliffordAlgebra (Q c₁ c₂)) :
@@ -344,7 +344,7 @@ variable {R : Type*} [CommRing R]
 
 theorem ι_mul_ι (r₁ r₂) : ι (0 : QuadraticForm R R) r₁ * ι (0 : QuadraticForm R R) r₂ = 0 := by
   rw [← mul_one r₁, ← mul_one r₂, ← smul_eq_mul r₁, ← smul_eq_mul r₂, map_smul, map_smul,
-    smul_mul_smul_comm, ι_sq_scalar, QuadraticMap.zero_apply, RingHom.map_zero, smul_zero]
+    smul_mul_smul_comm, ι_sq_scalar, QuadraticMap.zero_apply, map_zero, smul_zero]
 
 /-- The clifford algebra over a 1-dimensional vector space with 0 quadratic form is isomorphic to
 the dual numbers. -/

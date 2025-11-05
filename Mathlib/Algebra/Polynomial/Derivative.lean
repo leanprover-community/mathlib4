@@ -43,11 +43,10 @@ def derivative : R[X] →ₗ[R] R[X] where
   toFun p := p.sum fun n a => C (a * n) * X ^ (n - 1)
   map_add' p q := by
     rw [sum_add_index] <;>
-      simp only [add_mul, forall_const, RingHom.map_add, zero_mul, RingHom.map_zero]
+      simp only [add_mul, forall_const, map_add, zero_mul, map_zero]
   map_smul' a p := by
     dsimp; rw [sum_smul_index] <;>
-      simp only [mul_sum, ← C_mul', mul_assoc, RingHom.map_mul, forall_const, zero_mul,
-        RingHom.map_zero, sum]
+      simp only [mul_sum, ← C_mul', mul_assoc, map_mul, forall_const, zero_mul, map_zero, sum]
 
 theorem derivative_apply (p : R[X]) : derivative p = p.sum fun n a => C (a * n) * X ^ (n - 1) :=
   rfl
@@ -518,7 +517,7 @@ theorem derivative_comp (p q : R[X]) :
   induction p using Polynomial.induction_on'
   · simp [*, mul_add]
   · simp only [derivative_pow, derivative_mul, monomial_comp, derivative_monomial, derivative_C,
-      zero_mul, C_eq_natCast, zero_add, RingHom.map_mul]
+      zero_mul, C_eq_natCast, zero_add, map_mul]
     ring
 
 /-- Chain rule for formal derivative of polynomials. -/

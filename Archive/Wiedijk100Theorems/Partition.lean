@@ -339,8 +339,8 @@ theorem same_gf [Field α] (m : ℕ) :
   set! π₃ : PowerSeries α := ∏ i ∈ range m, (1 + X ^ (i + 1)) with hπ₃
   rw [← hπ₃] at ih
   have h : constantCoeff (1 - X ^ (2 * m + 1) : α⟦X⟧) ≠ 0 := by
-    rw [RingHom.map_sub, RingHom.map_pow, constantCoeff_one, constantCoeff_X,
-      zero_pow (2 * m).succ_ne_zero, sub_zero]
+    rw [map_sub, map_pow, constantCoeff_one, constantCoeff_X, zero_pow (2 * m).succ_ne_zero,
+      sub_zero]
     exact one_ne_zero
   calc
     (∏ i ∈ range (m + 1), (1 - X ^ (2 * i + 1))⁻¹) *

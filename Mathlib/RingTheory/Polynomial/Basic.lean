@@ -631,7 +631,7 @@ theorem eq_zero_of_constant_mem_of_maximal (hR : IsField R) (I : Ideal R[X]) [hI
   refine Classical.by_contradiction fun hx0 => hI.ne_top ((eq_top_iff_one I).2 ?_)
   obtain ⟨y, hy⟩ := hR.mul_inv_cancel hx0
   convert I.mul_mem_left (C y) hx
-  rw [← C.map_mul, hR.mul_comm y x, hy, RingHom.map_one]
+  rw [← C.map_mul, hR.mul_comm y x, hy, map_one]
 
 end Ring
 

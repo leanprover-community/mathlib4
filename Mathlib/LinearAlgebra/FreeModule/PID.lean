@@ -63,7 +63,7 @@ theorem eq_bot_of_generator_maximal_map_eq_zero (b : Basis ι R M) {N : Submodul
   intro x hx
   refine b.ext_elem fun i ↦ ?_
   rw [(eq_bot_iff_generator_eq_zero _).mpr hgen] at hϕ
-  rw [LinearEquiv.map_zero, Finsupp.zero_apply]
+  rw [map_zero, Finsupp.zero_apply]
   exact
     (Submodule.eq_bot_iff _).mp (not_bot_lt_iff.1 <| hϕ (Finsupp.lapply i ∘ₗ ↑b.repr)) _
       ⟨x, hx, rfl⟩
@@ -75,7 +75,7 @@ theorem eq_bot_of_generator_maximal_submoduleImage_eq_zero {N O : Submodule R M}
   intro x hx
   refine (mk_eq_zero _ _).mp (show (⟨x, hNO hx⟩ : O) = 0 from b.ext_elem fun i ↦ ?_)
   rw [(eq_bot_iff_generator_eq_zero _).mpr hgen] at hϕ
-  rw [LinearEquiv.map_zero, Finsupp.zero_apply]
+  rw [map_zero, Finsupp.zero_apply]
   refine (Submodule.eq_bot_iff _).mp (not_bot_lt_iff.1 <| hϕ (Finsupp.lapply i ∘ₗ ↑b.repr)) _ ?_
   exact (LinearMap.mem_submoduleImage_of_le hNO).mpr ⟨x, hx, rfl⟩
 

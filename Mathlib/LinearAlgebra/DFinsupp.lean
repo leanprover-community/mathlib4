@@ -153,9 +153,9 @@ def lsum [Semiring S] [Module S N] [SMulCommClass R S N] :
       map_smul' := fun c f => by
         dsimp
         apply DFinsupp.induction f
-        · rw [smul_zero, AddMonoidHom.map_zero, smul_zero]
+        · rw [smul_zero, map_zero, smul_zero]
         · intro a b f _ _ hf
-          rw [smul_add, AddMonoidHom.map_add, AddMonoidHom.map_add, smul_add, hf, ← single_smul,
+          rw [smul_add, map_add, map_add, smul_add, hf, ← single_smul,
             sumAddHom_single, sumAddHom_single, LinearMap.toAddMonoidHom_coe,
             map_smul] }
   invFun F i := F.comp (lsingle i)

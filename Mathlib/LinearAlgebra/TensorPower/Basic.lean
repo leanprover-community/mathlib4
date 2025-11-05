@@ -144,8 +144,7 @@ theorem one_mul {n} (a : ⨂[R]^n M) : cast R M (zero_add n) (ₜ1 ₜ* a) = a :
   rw [gMul_def, gOne_def]
   induction a using PiTensorProduct.induction_on with
   | smul_tprod r a =>
-    rw [TensorProduct.tmul_smul, LinearEquiv.map_smul, LinearEquiv.map_smul, ← gMul_def,
-      tprod_mul_tprod, cast_tprod]
+    rw [TensorProduct.tmul_smul, map_smul, map_smul, ← gMul_def, tprod_mul_tprod, cast_tprod]
     congr 2 with i
     rw [Fin.elim0_append]
     refine congr_arg a (Fin.ext ?_)
@@ -157,8 +156,8 @@ theorem mul_one {n} (a : ⨂[R]^n M) : cast R M (add_zero _) (a ₜ* ₜ1) = a :
   rw [gMul_def, gOne_def]
   induction a using PiTensorProduct.induction_on with
   | smul_tprod r a =>
-    rw [← TensorProduct.smul_tmul', LinearEquiv.map_smul, LinearEquiv.map_smul, ← gMul_def,
-      tprod_mul_tprod R a _, cast_tprod]
+    rw [← TensorProduct.smul_tmul', map_smul, map_smul, ← gMul_def, tprod_mul_tprod R a _,
+      cast_tprod]
     congr 2 with i
     rw [Fin.append_elim0]
     refine congr_arg a (Fin.ext ?_)
@@ -209,17 +208,17 @@ theorem algebraMap₀_one : (algebraMap₀ 1 : (⨂[R]^0) M) = ₜ1 :=
 
 theorem algebraMap₀_mul {n} (r : R) (a : ⨂[R]^n M) :
     cast R M (zero_add _) (algebraMap₀ r ₜ* a) = r • a := by
-  rw [gMul_eq_coe_linearMap, algebraMap₀_eq_smul_one, LinearMap.map_smul₂,
-    LinearEquiv.map_smul, ← gMul_eq_coe_linearMap, one_mul]
+  rw [gMul_eq_coe_linearMap, algebraMap₀_eq_smul_one, LinearMap.map_smul₂, map_smul,
+    ← gMul_eq_coe_linearMap, one_mul]
 
 theorem mul_algebraMap₀ {n} (r : R) (a : ⨂[R]^n M) :
     cast R M (add_zero _) (a ₜ* algebraMap₀ r) = r • a := by
-  rw [gMul_eq_coe_linearMap, algebraMap₀_eq_smul_one, map_smul,
-    LinearEquiv.map_smul, ← gMul_eq_coe_linearMap, mul_one]
+  rw [gMul_eq_coe_linearMap, algebraMap₀_eq_smul_one, map_smul, map_smul, ← gMul_eq_coe_linearMap,
+    mul_one]
 
 theorem algebraMap₀_mul_algebraMap₀ (r s : R) :
     cast R M (add_zero _) (algebraMap₀ r ₜ* algebraMap₀ s) = algebraMap₀ (r * s) := by
-  rw [← smul_eq_mul, LinearEquiv.map_smul]
+  rw [← smul_eq_mul, map_smul]
   exact algebraMap₀_mul r (@algebraMap₀ R M _ _ _ s)
 
 instance gsemiring : DirectSum.GSemiring fun i => ⨂[R]^i M :=

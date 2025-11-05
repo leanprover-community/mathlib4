@@ -124,8 +124,7 @@ theorem map_one_eq_zero : D 1 = 0 :=
 
 @[simp]
 theorem map_algebraMap : D (algebraMap R A r) = 0 := by
-  rw [← mul_one r, RingHom.map_mul, RingHom.map_one, ← smul_def, map_smul, map_one_eq_zero,
-    smul_zero]
+  rw [← mul_one r, map_mul, map_one, ← smul_def, map_smul, map_one_eq_zero, smul_zero]
 
 @[simp]
 theorem map_natCast (n : ℕ) : D (n : A) = 0 := by
