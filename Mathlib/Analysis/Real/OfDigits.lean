@@ -155,7 +155,7 @@ theorem ofDigits_digits {b : ℕ} [NeZero b] {x : ℝ} (hb : 1 < b) (hx : x ∈ 
   · exact hasSum_ofDigitsTerm_digits x hb hx
   · exact summable_ofDigitsTerm
 
-theorem ofDigits_continuous {b : ℕ} : Continuous (@ofDigits b) := by
+theorem continuous_ofDigits {b : ℕ} : Continuous (@ofDigits b) := by
   match b with
   | 0 => fun_prop
   | 1 => fun_prop
