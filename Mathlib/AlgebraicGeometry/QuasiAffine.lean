@@ -95,17 +95,13 @@ lemma IsQuasiAffine.of_isAffineHom [IsAffineHom f] [Y.IsQuasiAffine] : X.IsQuasi
   exact ⟨hr.preimage _, hxr⟩
 
 /-- The affine basic opens of a quasi-affine scheme forms an open cover. -/
-@[simps] def openCoverBasicOpenTop (X : Scheme.{u}) [X.IsQuasiAffine] :
-    X.OpenCover where
-  I₀ := Σ' (r : Γ(X, ⊤)), IsAffineOpen (X.basicOpen r)
-  X r := X.basicOpen r.1
-  f r := (X.basicOpen r.1).ι
-  mem₀ := by
-    rw [presieve₀_mem_precoverage_iff]
-    refine ⟨fun x ↦ ?_, inferInstance⟩
-    obtain ⟨_, ⟨_, ⟨r, hr, rfl⟩, rfl⟩, hxr, -⟩ :=
-      (IsQuasiAffine.isBasis_basicOpen X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
-    exact ⟨⟨r, hr⟩, (X.basicOpen r).opensRange_ι.ge hxr⟩
+@[simps! f] def openCoverBasicOpenTop (X : Scheme.{u}) [X.IsQuasiAffine] :
+    X.OpenCover :=
+  X.openCoverOfIsOpenCover (fun i : { r // IsAffineOpen (X.basicOpen (U := ⊤) r) } ↦
+    X.basicOpen i.1) <| top_le_iff.mp fun x _ ↦ by
+  obtain ⟨_, ⟨_, ⟨r, hr, rfl⟩, rfl⟩, hxr, -⟩ :=
+    (IsQuasiAffine.isBasis_basicOpen X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
+  exact Opens.mem_iSup.mpr ⟨⟨r, hr⟩, hxr⟩
 
 /-- If `f : X ⟶ Y` is an affine morphism between quasi-affine schemes, then it is the pullback of
   `Spec Γ(X, ⊤) ⟶ Spec Γ(Y, ⊤)` along the open immersion `Y ⟶ Spec Γ(Y, ⊤)`. -/
@@ -125,7 +121,7 @@ lemma isPullback_toSpecΓ_toSpecΓ (f : X ⟶ Y) [IsAffineHom f] [Y.IsQuasiAffin
       CommRingCat.Hom.hom (f.appTop ≫ X.presheaf.map _)
     rw [f.map_appLE, Scheme.Hom.appLE]
   refine isPullback_of_openCover _ _ _ _ Y.openCoverBasicOpenTop fun r ↦ ?_
-  let e : pullback f (Y.basicOpen r.fst).ι ≅ Spec Γ(X, X.basicOpen (f.appTop r.1)) :=
+  let e : pullback f (Y.basicOpen r.1).ι ≅ Spec Γ(X, X.basicOpen (f.appTop r.1)) :=
     pullbackRestrictIsoRestrict _ _ ≪≫ X.isoOfEq (Scheme.preimage_basicOpen_top f r.1) ≪≫
     IsAffineOpen.isoSpec (by rw [← Scheme.preimage_basicOpen_top]; exact r.2.preimage f)
   refine .of_iso ((this r.1).op.map Scheme.Spec) e.symm r.2.isoSpec.symm (.refl _) (.refl _)
