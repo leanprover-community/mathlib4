@@ -42,7 +42,7 @@ section
 @[deprecated CartesianMonoidalCategory.ofHasFiniteProducts (since := "2025-10-19")]
 def monoidalOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : MonoidalCategory C :=
   have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
-  have : CartesianMonoidalCategory C := .ofHasFiniteProducts
+  let +nondep : CartesianMonoidalCategory C := .ofHasFiniteProducts
   inferInstance
 
 end
@@ -138,7 +138,7 @@ set_option linter.deprecated false in
 def symmetricOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : SymmetricCategory C :=
   have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
   let : CartesianMonoidalCategory C := .ofHasFiniteProducts
-  have : BraidedCategory C := .ofCartesianMonoidalCategory
+  let +nondep : BraidedCategory C := .ofCartesianMonoidalCategory
   inferInstance
 
 end
