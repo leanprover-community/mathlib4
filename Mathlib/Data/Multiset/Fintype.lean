@@ -76,10 +76,12 @@ protected theorem exists_coe (p : m → Prop) :
 
 instance : Fintype { p : α × ℕ | p.2 < m.count p.1 } :=
   Fintype.ofFinset
-    (m.toFinset.biUnion fun x ↦ (Finset.range (m.count x)).map ⟨_, Prod.mk_right_injective x⟩)
+    (m.toFinset.disjiUnion
+      (fun x ↦ (Finset.range (m.count x)).map ⟨_, Prod.mk_right_injective x⟩)
+      fun x hx y hy hxy => by simp [Function.onFun, Finset.disjoint_right, hxy])
     (by
       rintro ⟨x, i⟩
-      simp only [Finset.mem_biUnion, Multiset.mem_toFinset, Finset.mem_map, Finset.mem_range,
+      simp_rw [Finset.mem_disjiUnion, Multiset.mem_toFinset, Finset.mem_map, Finset.mem_range,
         Function.Embedding.coeFn_mk, Prod.mk_inj, Set.mem_setOf_eq]
       simp only [← and_assoc, exists_eq_right, and_iff_right_iff_imp]
       exact fun h ↦ Multiset.count_pos.mp (by cutsat))
