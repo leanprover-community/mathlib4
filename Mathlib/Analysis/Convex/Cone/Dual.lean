@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
 import Mathlib.Analysis.Convex.Cone.Basic
-import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
+import Mathlib.Analysis.LocallyConvex.Separation
 import Mathlib.Geometry.Convex.Cone.Dual
 import Mathlib.Topology.Algebra.Module.PerfectPairing
 
