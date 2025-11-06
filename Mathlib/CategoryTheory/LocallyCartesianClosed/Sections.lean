@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
 import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullback
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Over
 import Mathlib.CategoryTheory.Closed.Cartesian
 
 /-!
@@ -19,7 +20,6 @@ has a right adjoint.
 
 -/
 
-
 universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
@@ -32,13 +32,13 @@ attribute [local instance] BraidedCategory.ofCartesianMonoidalCategory
 
 section prelim
 
-open Over CartesianMonoidalCategory
+namespace CartesianMonoidalCategory
 
 /-- The functor which maps an object `X` in `C` to the projection `X ⊗ I ⟶ I` in `Over I`.
 This is the computable analogue of the functor `Over.star`. -/
 @[simps! obj_left obj_hom map_left]
 def toOver (I : C) : C ⥤ Over I where
-  obj X := Over.mk (CartesianMonoidalCategory.snd X I)
+  obj X := Over.mk <| CartesianMonoidalCategory.snd X I
   map {X Y} f := Over.homMk (f ▷ I)
 
 @[simp]
@@ -59,9 +59,9 @@ def equivOverUnit : Over (𝟙_ C) ≌ C :=
     (NatIso.ofComponents fun X => Over.isoMk (Iso.refl _))
     (NatIso.ofComponents fun X => Iso.refl _)
 
-attribute [local instance] Over.ChosenPullback.cartesianMonoidalCategoryToTerminal
+attribute [local instance] Over.ChosenPullback.cartesianMonoidalCategoryToUnit
 
-/-- The isomorphism of functors `toOverTerminal C ⋙ ChosenPullback.pullback (toUnit I)` and
+/-- The isomorphism of functors `toOverUnit C ⋙ ChosenPullback.pullback (toUnit I)` and
 `toOver I`. -/
 def toOverCompPullback (I : C) :
     toOverUnit C ⋙ ChosenPullback.pullback (toUnit I) ≅ toOver I :=
@@ -78,7 +78,28 @@ theorem forgetAdjToOver.homEquiv_symm {I : C} (X : Over I) (A : C) (f : X ⟶ (t
    rw [Adjunction.homEquiv_counit, forgetAdjToOver_counit_app]
    simp
 
-attribute [local instance] Over.ChosenPullback.cartesianMonoidalCategoryToTerminal
+/-- The isomorphism of functors `toOver (𝟙_ C)` and `toOverUnit C`. -/
+def toOverIsoToOverUnit :
+    toOver (𝟙_ C) ≅ toOverUnit C  :=
+  Adjunction.rightAdjointUniq (forgetAdjToOver (𝟙_ C)) (equivOverUnit |>.toAdjunction)
+
+/-- A natural isomorphism between the functors `toOver I` and `toOver J ⋙ pullback f`
+for any morphism `f : X ⟶ Y`. -/
+def toOverPullbackIsoToOver {I J : C} (f : I ⟶ J)
+    [ChosenPullback f] :
+    toOver J ⋙ ChosenPullback.pullback f ≅ toOver I :=
+  conjugateIsoEquiv ((ChosenPullback.mapPullbackAdj f).comp (forgetAdjToOver J))
+    (forgetAdjToOver I) (mapForget f)
+
+attribute [local instance] Over.cartesianMonoidalCategory
+
+/-- The functor `Over.pullback f : Over Y ⥤ Over X` is naturally isomorphic to
+`Over.star : Over Y ⥤ Over (Over.mk f)` post-composed with the
+iterated slice equivlanece `Over (Over.mk f) ⥤ Over X`. -/
+noncomputable def starIteratedSliceForwardIsoPullback [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
+    toOver (Over.mk f) ⋙ (Over.mk f).iteratedSliceForward ≅ pullback f :=
+  conjugateIsoEquiv ((Over.mk f).iteratedSliceEquiv.symm.toAdjunction.comp (forgetAdjToOver _))
+  (mapPullbackAdj f) (eqToIso (iteratedSliceBackward_forget (Over.mk f)))
 
 variable {I : C} (X : C)
 
@@ -89,6 +110,8 @@ example : ChosenPullback.snd (toUnit X) (toUnit I) = CartesianMonoidalCategory.s
 example : (toOver I).obj X = Over.mk (ChosenPullback.snd (toUnit X) (toUnit I)) := by rfl
 
 example : ((toOver I).obj X).hom = CartesianMonoidalCategory.snd X I := by rfl
+
+end CartesianMonoidalCategory
 
 end prelim
 
