@@ -42,7 +42,7 @@ class ExponentiableMorphism {I J : C} (f : I ⟶ J) [Over.ChosenPullback f] wher
   /-- The pushforward functor -/
   pushforward : Over I ⥤ Over J
   /-- The pushforward functor is right adjoint to the pullback functor -/
-  pullbackAdjPushforward (f) : pullback f ⊣ pushforward := by infer_instance
+  pullbackAdjPushforward (f) : pullback f ⊣ pushforward
 
 /-- A morphism `f : I ⟶ J` is exponentiable if the pullback functor `Over J ⥤ Over I`
 has a right adjoint. -/
