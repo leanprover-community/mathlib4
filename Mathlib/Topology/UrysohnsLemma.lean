@@ -5,9 +5,10 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Analysis.Normed.Affine.AddTorsor
-import Mathlib.Analysis.NormedSpace.FunctionSeries
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Ordered
+import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Topology.GDelta.Basic
 
@@ -299,13 +300,10 @@ theorem continuous_lim (c : CU P) : Continuous c.lim := by
         compl_subset_compl.2 c.left.left_U_subset_right_C hyl
       simp only [pow_succ, c.lim_eq_midpoint, c.left.lim_eq_midpoint,
         c.left.left.lim_of_notMem_U _ hxl, c.left.left.lim_of_notMem_U _ hyl]
-      refine (dist_midpoint_midpoint_le _ _ _ _).trans ?_
-      refine (div_le_div_of_nonneg_right (add_le_add_right (dist_midpoint_midpoint_le _ _ _ _) _)
-        zero_le_two).trans ?_
-      rw [dist_self, zero_add]
+      grw [dist_midpoint_midpoint_le, dist_midpoint_midpoint_le, dist_self, zero_add]
       set r := (3 / 4 : ℝ) ^ n
       calc _ ≤ (r / 2 + r) / 2 := by gcongr
-        _ = _ := by field_simp; ring
+        _ = _ := by field
 
 end CU
 
@@ -385,7 +383,7 @@ theorem exists_continuous_zero_one_of_isCompact' [RegularSpace X] [LocallyCompac
   refine ⟨?_, ?_, ?_⟩
   · intro x hx
     simp only [ContinuousMap.sub_apply, ContinuousMap.one_apply, Pi.zero_apply]
-    exact sub_eq_zero_of_eq (id (EqOn.symm hgt) hx)
+    exact sub_eq_zero_of_eq (hgt.symm hx)
   · intro x hx
     simp only [ContinuousMap.sub_apply, ContinuousMap.one_apply, Pi.one_apply, sub_eq_self]
     exact hgs hx
@@ -522,6 +520,18 @@ lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
     apply Urysohns.CU.lim_of_notMem_U
     exact notMem_compl_iff.mpr hx
 
+/-- A variation of **Urysohn's lemma**. In a Hausdorff locally compact space, for a compact set `K`
+contained in an open set `V`, there exists a compactly supported continuous function `f` such that
+`0 ≤ f ≤ 1`, `f = 1` on K and the support of `f` is contained in `V`. -/
+lemma exists_continuousMap_one_of_isCompact_subset_isOpen [T2Space X] [LocallyCompactSpace X]
+    {K V : Set X} (hK : IsCompact K) (hV : IsOpen V) (hKV : K ⊆ V) :
+    ∃ f : C(X, ℝ), Set.EqOn f 1 K ∧ IsCompact (tsupport f) ∧
+      tsupport f ⊆ V ∧ ∀ x, f x ∈ Set.Icc 0 1 := by
+  obtain ⟨U, hU1, hU2, hU3, hU4⟩ := exists_open_between_and_isCompact_closure hK hV hKV
+  obtain ⟨f, hf1, hf2, hf3⟩ := exists_tsupport_one_of_isOpen_isClosed hU1 hU4 hK.isClosed hU2
+  have : tsupport f ⊆ closure U := hf1.trans subset_closure
+  exact ⟨f, hf2, hU4.of_isClosed_subset isClosed_closure this, this.trans hU3, hf3⟩
+
 theorem exists_continuous_nonneg_pos [RegularSpace X] [LocallyCompactSpace X] (x : X) :
     ∃ f : C(X, ℝ), HasCompactSupport f ∧ 0 ≤ (f : X → ℝ) ∧ f x ≠ 0 := by
   rcases exists_compact_mem_nhds x with ⟨k, hk, k_mem⟩
@@ -529,5 +539,5 @@ theorem exists_continuous_nonneg_pos [RegularSpace X] [LocallyCompactSpace X] (x
     with ⟨f, fk, -, f_comp, hf⟩
   refine ⟨f, f_comp, fun x ↦ (hf x).1, ?_⟩
   have := fk (mem_of_mem_nhds k_mem)
-  simp only [ContinuousMap.coe_mk, Pi.one_apply] at this
+  simp only [Pi.one_apply] at this
   simp [this]

@@ -39,7 +39,7 @@ on:
 
 name: continuous integration
 EOF
-  include "github.sha" pr "github.repository == 'leanprover-community\/mathlib4'" "" ubuntu-latest
+  include "github.sha" pr "github.repository == 'leanprover-community\/mathlib4' || github.repository == 'leanprover-community\/mathlib4-nightly-testing'" "" ubuntu-latest
 }
 
 bors_yml() {
@@ -54,7 +54,7 @@ on:
 
 name: continuous integration (staging)
 EOF
-  include "github.sha" bors "github.repository == 'leanprover-community\/mathlib4'" "" bors
+  include "github.sha" bors "github.repository == 'leanprover-community\/mathlib4' || github.repository == 'leanprover-community\/mathlib4-nightly-testing'" "" bors
 }
 
 build_fork_yml() {
@@ -73,7 +73,7 @@ on:
 
 name: continuous integration (mathlib forks)
 EOF
-  include "github.event.pull_request.head.sha" pr "github.event.pull_request.head.repo.fork" " (fork)" ubuntu-latest
+  include "github.event.pull_request.head.sha" pr "github.event.pull_request.head.repo.fork \&\& github.repository != 'leanprover-community\/mathlib4-nightly-testing'" " (fork)" ubuntu-latest
 }
 
 include() {

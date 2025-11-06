@@ -19,6 +19,8 @@ the category `D` is locally `w`-small.
 
 universe w v₁ v₂ u₁ u₂
 
+open CategoryTheory.Functor
+
 namespace CategoryTheory.MorphismProperty
 
 variable {C : Type u₁} [Category.{v₁} C] (W : MorphismProperty C)
@@ -54,7 +56,7 @@ noncomputable irreducible_def hasLocalizationOfLocallySmall'
   have : (inducedFunctor L.obj).IsEquivalence := { }
   let e := (inducedFunctor L.obj).asEquivalence
   let e' : (L' ⋙ e.functor) ⋙ e.inverse ≅ L' :=
-    Functor.associator _ _ _ ≪≫ isoWhiskerLeft L' e.unitIso.symm ≪≫ L'.rightUnitor
+    associator _ _ _ ≪≫ isoWhiskerLeft L' e.unitIso.symm ≪≫ L'.rightUnitor
   have : L'.IsLocalization W :=
     Functor.IsLocalization.of_iso W (L₁ := L ⋙ e.inverse) e'
   exact hasLocalizationOfLocallySmall.{w} W L'

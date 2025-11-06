@@ -7,7 +7,7 @@ import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Order.UpperLower.Principal
 
 /-!
-# `UpperSet.Ici` etc as `Sup`/`sSup`/`Inf`/`sInf`-homomorphisms
+# `UpperSet.Ici` etc. as `Sup`/`sSup`/`Inf`/`sInf`-homomorphisms
 
 In this file we define `UpperSet.iciSupHom` etc. These functions are `UpperSet.Ici` and
 `LowerSet.Iic` bundled as `SupHom`s, `InfHom`s, `sSupHom`s, or `sInfHom`s.

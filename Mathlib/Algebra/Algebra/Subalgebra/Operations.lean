@@ -31,7 +31,7 @@ namespace Subalgebra
 
 open Algebra
 
-variable {R S : Type*} [CommSemiring R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
 variable (S' : Subalgebra R S)
 
 /-- Suppose we are given `∑ i, lᵢ * sᵢ = 1` ∈ `S`, and `S'` a subalgebra of `S` that contains
@@ -49,12 +49,12 @@ theorem mem_of_finset_sum_eq_one_of_pow_smul_mem
   let l' : ι → S' := fun x => ⟨l x, hl x⟩
   have e' : ∑ i ∈ ι', l' i * s' i = 1 := by
     ext
-    show S'.subtype (∑ i ∈ ι', l' i * s' i) = 1
+    change S'.subtype (∑ i ∈ ι', l' i * s' i) = 1
     simpa only [map_sum, map_mul] using e
   have : Ideal.span (s' '' ι') = ⊤ := by
     rw [Ideal.eq_top_iff_one, ← e']
     apply sum_mem
-    intros i hi
+    intro i hi
     exact Ideal.mul_mem_left _ _ <| Ideal.subset_span <| Set.mem_image_of_mem s' hi
   let N := ι'.sup n
   have hN := Ideal.span_pow_eq_top _ this N
@@ -75,7 +75,7 @@ end Subalgebra
 
 section MulSemiringAction
 
-variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
+variable (A B : Type*) [CommSemiring A] [Ring B] [Algebra A B]
 variable (G : Type*) [Monoid G] [MulSemiringAction G B] [SMulCommClass G A B]
 
 /-- The set of fixed points under a group action, as a subring. -/

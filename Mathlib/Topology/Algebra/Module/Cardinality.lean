@@ -64,7 +64,7 @@ lemma cardinal_eq_of_mem_nhds_zero
   /- As `s` is a neighborhood of `0`, the space is covered by the rescaled sets `c^n • s`,
   where `c` is any element of `𝕜` with norm `> 1`. All these sets are in bijection and have
   therefore the same cardinality. The conclusion follows. -/
-  obtain ⟨c, hc⟩ : ∃ x : 𝕜 , 1 < ‖x‖ := NormedField.exists_lt_norm 𝕜 1
+  obtain ⟨c, hc⟩ : ∃ x : 𝕜, 1 < ‖x‖ := NormedField.exists_lt_norm 𝕜 1
   have cn_ne : ∀ n, c^n ≠ 0 := by
     intro n
     apply pow_ne_zero

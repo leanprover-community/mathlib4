@@ -3,8 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Torsion
+import Mathlib.Algebra.Notation.Pi.Basic
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Logic.Equiv.Defs
@@ -187,11 +187,11 @@ instance Multiplicative.isLeftCancelMul [Add α] [IsLeftCancelAdd α] :
   ⟨@add_left_cancel α _ _⟩
 
 instance Additive.isRightCancelAdd [Mul α] [IsRightCancelMul α] : IsRightCancelAdd (Additive α) :=
-  ⟨@mul_right_cancel α _ _⟩
+  ⟨fun _ _ _ ↦ mul_right_cancel (G := α)⟩
 
 instance Multiplicative.isRightCancelMul [Add α] [IsRightCancelAdd α] :
     IsRightCancelMul (Multiplicative α) :=
-  ⟨@add_right_cancel α _ _⟩
+  ⟨fun _ _ _ ↦ add_right_cancel (G := α)⟩
 
 instance Additive.isCancelAdd [Mul α] [IsCancelMul α] : IsCancelAdd (Additive α) :=
   ⟨⟩
@@ -253,14 +253,10 @@ lemma toAdd_eq_zero {α : Type*} [Zero α] {x : Multiplicative α} :
   Iff.rfl
 
 instance Additive.addZeroClass [MulOneClass α] : AddZeroClass (Additive α) where
-  zero := 0
-  add := (· + ·)
   zero_add := @one_mul α _
   add_zero := @mul_one α _
 
 instance Multiplicative.mulOneClass [AddZeroClass α] : MulOneClass (Multiplicative α) where
-  one := 1
-  mul := (· * ·)
   one_mul := @zero_add α _
   mul_one := @add_zero α _
 

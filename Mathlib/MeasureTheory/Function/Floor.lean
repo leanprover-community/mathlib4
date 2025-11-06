@@ -73,7 +73,7 @@ theorem Measurable.nat_floor [IsStrictOrderedRing R] (hf : Measurable f) :
 
 theorem Nat.measurable_ceil : Measurable (Nat.ceil : R → ℕ) :=
   measurable_to_countable fun n => by
-    rcases eq_or_ne ⌈n⌉₊ 0 with h | h <;> simp_all [h, Nat.preimage_ceil_of_ne_zero, -ceil_eq_zero]
+    rcases eq_or_ne ⌈n⌉₊ 0 with h | h <;> simp_all [Nat.preimage_ceil_of_ne_zero, -ceil_eq_zero]
 
 @[measurability, fun_prop]
 theorem Measurable.nat_ceil (hf : Measurable f) : Measurable fun x => ⌈f x⌉₊ :=

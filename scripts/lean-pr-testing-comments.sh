@@ -13,6 +13,11 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
+# Set NIGHTLY_TESTING_REPO for comparison URLs (where the branches and tags actually live)
+if [ -z "${NIGHTLY_TESTING_REPO:-}" ]; then
+  NIGHTLY_TESTING_REPO="leanprover-community/mathlib4-nightly-testing"
+fi
+
 # TODO: The whole script ought to be rewritten in javascript, to avoid having to use curl for API calls.
 #
 # This is not meant to be run from the command line, only from CI.
@@ -99,7 +104,7 @@ if [[ "$branch_name" =~ ^$branch_prefix-([0-9]+)$ ]]; then
       -d '{"labels":["breaks-mathlib"]}'
   fi
 
-  branch="[$branch_prefix-$pr_number](https://github.com/leanprover-community/mathlib4/compare/$base_branch...$branch_prefix-$pr_number)"
+  branch="[$branch_prefix-$pr_number](https://github.com/$NIGHTLY_TESTING_REPO/compare/$base_branch...$branch_prefix-$pr_number)"
   # Depending on the success/failure, set the appropriate message
   if [ "$LINT_OUTCOME" == "cancelled" ] || [ "$TEST_OUTCOME" == "cancelled" ] || [ "$COUNTEREXAMPLES_OUTCOME" == "cancelled" ] || [ "$ARCHIVE_OUTCOME" == "cancelled" ] || [ "$NOISY_OUTCOME" == "cancelled" ] || [ "$BUILD_OUTCOME" == "cancelled" ]; then
     message="- 🟡 Mathlib branch $branch build against this PR was cancelled. ($current_time) [View Log]($WORKFLOW_URL)"

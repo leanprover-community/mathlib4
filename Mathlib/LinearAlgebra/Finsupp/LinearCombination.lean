@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Module.Submodule.Equiv
+import Mathlib.Data.Finsupp.Option
 import Mathlib.LinearAlgebra.Finsupp.Supported
 
 /-!
@@ -78,7 +79,7 @@ theorem linearCombination_single_index (c : M) (a : α) (f : α →₀ R) [Decid
     linearCombination R (Pi.single a c) f = f a • c := by
   rw [linearCombination_apply, sum_eq_single a, Pi.single_eq_same]
   · exact fun i _ hi ↦ by rw [Pi.single_eq_of_ne hi, smul_zero]
-  · exact fun _ ↦ by simp only [single_eq_same, zero_smul]
+  · exact fun _ ↦ by simp only [zero_smul]
 
 variable {α M}
 
@@ -134,7 +135,7 @@ theorem range_linearCombination : LinearMap.range (linearCombination R v) = span
 theorem lmapDomain_linearCombination (f : α → α') (g : M →ₗ[R] M') (h : ∀ i, g (v i) = v' (f i)) :
     (linearCombination R v').comp (lmapDomain R R f) = g.comp (linearCombination R v) := by
   ext l
-  simp [linearCombination_apply, Finsupp.sum_mapDomain_index, add_smul, h]
+  simp [linearCombination_apply, h]
 
 theorem linearCombination_comp_lmapDomain (f : α → α') :
     (linearCombination R v').comp (Finsupp.lmapDomain R R f) = linearCombination R (v' ∘ f) := by
@@ -277,8 +278,8 @@ See note [bundled maps over different rings] for why separate `R` and `S` semiri
 -/
 def bilinearCombination : (α → M) →ₗ[S] (α →₀ R) →ₗ[R] M where
   toFun v := linearCombination R v
-  map_add' u v := by ext; simp [Finset.sum_add_distrib, Pi.add_apply, smul_add]
-  map_smul' r v := by ext; simp [Finset.smul_sum, smul_comm]
+  map_add' u v := by ext; simp [Pi.add_apply, smul_add]
+  map_smul' r v := by ext; simp [smul_comm]
 
 @[simp]
 theorem bilinearCombination_apply :
@@ -444,6 +445,16 @@ lemma Submodule.mem_span_finset {s : Finset M} {x : M} :
     simp +contextual [Function.support_subset_iff'.1 hf]
   mpr := by rintro ⟨f, -, rfl⟩; exact sum_mem fun x hx ↦ smul_mem _ _ <| subset_span <| hx
 
+lemma Submodule.mem_span_iff_of_fintype {s : Set M} [Fintype s] {x : M} :
+    x ∈ span R s ↔ ∃ f : s → R, ∑ a : s, f a • a.1 = x := by
+  conv_lhs => rw [← Subtype.range_val (s := s)]
+  exact mem_span_range_iff_exists_fun _
+
+/-- A variant of `Submodule.mem_span_finset` using `s` as the index type. -/
+lemma Submodule.mem_span_finset' {s : Finset M} {x : M} :
+    x ∈ span R s ↔ ∃ f : s → R, ∑ a : s, f a • a.1 = x :=
+  mem_span_iff_of_fintype
+
 /-- An element `m ∈ M` is contained in the `R`-submodule spanned by a set `s ⊆ M`, if and only if
 `m` can be written as a finite `R`-linear combination of elements of `s`.
 The implementation uses `Finsupp.sum`. -/
@@ -493,9 +504,9 @@ def Finsupp.addSingleEquiv : (ι →₀ R) ≃ₗ[R] (ι →₀ R) := by
     (linearCombination _ fun j ↦ single j 1 - single i (c j)) ?_ ?_ <;>
   ext j k <;> obtain rfl | hk := eq_or_ne i k
   · simp [h₀]
-  · simp [single_eq_of_ne hk]
+  · simp [hk]
   · simp [h₀]
-  · simp [single_eq_of_ne hk]
+  · simp [hk]
 
 theorem Finsupp.linearCombination_comp_addSingleEquiv (v : ι → M) :
     linearCombination R v ∘ₗ addSingleEquiv i c h₀ = linearCombination R (v + (c · • v i)) := by

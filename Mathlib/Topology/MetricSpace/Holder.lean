@@ -205,7 +205,7 @@ lemma of_isEmpty [IsEmpty X] : HolderWith C r f := isEmptyElim
 
 lemma mono {C' : ℝ≥0} (hf : HolderWith C r f) (h : C ≤ C') :
     HolderWith C' r f :=
-  fun x₁ x₂ ↦ (hf x₁ x₂).trans (mul_right_mono (coe_le_coe.2 h))
+  fun x₁ x₂ ↦ (hf x₁ x₂).trans (by gcongr)
 
 end HolderWith
 
@@ -283,9 +283,11 @@ variable [PseudoMetricSpace X] [SeminormedAddCommGroup Y] {C C' r : ℝ≥0} {f 
 namespace HolderWith
 
 lemma add (hf : HolderWith C r f) (hg : HolderWith C' r g) :
-    HolderWith (C + C') r (f + g) := fun x₁ x₂ => by
-  refine le_trans (edist_add_add_le _ _ _ _) <| le_trans (add_le_add (hf x₁ x₂) (hg x₁ x₂)) ?_
-  rw [coe_add, add_mul]
+    HolderWith (C + C') r (f + g) := by
+  intro x₁ x₂
+  simp only [Pi.add_apply, coe_add]
+  grw [edist_add_add_le, hf x₁ x₂, hg x₁ x₂]
+  rw [add_mul]
 
 lemma smul {α} [SeminormedAddCommGroup α] [SMulZeroClass α Y] [IsBoundedSMul α Y] (a : α)
     (hf : HolderWith C r f) : HolderWith (C * ‖a‖₊) r (a • f) := fun x₁ x₂ => by

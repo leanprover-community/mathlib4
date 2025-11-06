@@ -47,7 +47,7 @@ def pushTodo (lhs rhs : Expr) (H : EntryExpr) (heqProof : Bool) : CCM Unit := do
 def pushEq (lhs rhs : Expr) (H : EntryExpr) : CCM Unit :=
   pushTodo lhs rhs H false
 
-/-- Add the heterogeneous equality proof `H : HEq lhs rhs` to the end of the todo list. -/
+/-- Add the heterogeneous equality proof `H : lhs ≍ rhs` to the end of the todo list. -/
 @[inline]
 def pushHEq (lhs rhs : Expr) (H : EntryExpr) : CCM Unit :=
   pushTodo lhs rhs H true
@@ -99,7 +99,7 @@ def mkSymmCongruencesKey (lhs rhs : Expr) : CCM SymmCongruencesKey := do
   if hash lhs > hash rhs then return { h₁ := rhs, h₂ := lhs } else return { h₁ := lhs, h₂ := rhs }
 
 /-- Auxiliary function for comparing `lhs₁ ~ rhs₁` and `lhs₂ ~ rhs₂`,
-    when `~` is symmetric/commutative.
+when `~` is symmetric/commutative.
 It returns `true` (equal) for `a ~ b` `b ~ a`. -/
 def compareSymmAux (lhs₁ rhs₁ lhs₂ rhs₂ : Expr) : CCM Bool := do
   let lhs₁ ← getRoot lhs₁
@@ -304,19 +304,19 @@ def eraseRBHSOccs (lhs rhs : ACApps) : CCM Unit := do
   eraseROccs lhs lhs true
   eraseROccs rhs lhs false
 
-/-- Insert `lhs` to the occurrences of arguments of `e` on the right hand side of
+/-- Insert `lhs` to the occurrences of arguments of `e` on the right-hand side of
 an equality in `acR`. -/
 @[inline]
 def insertRRHSOccs (e lhs : ACApps) : CCM Unit :=
   insertROccs e lhs false
 
-/-- Erase `lhs` to the occurrences of arguments of `e` on the right hand side of
+/-- Erase `lhs` to the occurrences of arguments of `e` on the right-hand side of
 an equality in `acR`. -/
 @[inline]
 def eraseRRHSOccs (e lhs : ACApps) : CCM Unit :=
   eraseROccs e lhs false
 
-/-- Try to simplify the right hand sides of equalities in `acR` by `H : lhs = rhs`. -/
+/-- Try to simplify the right-hand sides of equalities in `acR` by `H : lhs = rhs`. -/
 def composeAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
   let some x := (← get).getVarWithLeastRHSOccs lhs | failure
   let some ent := (← get).acEntries[x]? | failure
@@ -339,7 +339,7 @@ def composeAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
           (oldRw ++ ofFormat (Format.line ++ "with" ++ .line) ++ newRw) ++
             ofFormat (Format.line ++ ":=" ++ .line) ++ ccs.ppACApps newRrhs)
 
-/-- Try to simplify the left hand sides of equalities in `acR` by `H : lhs = rhs`. -/
+/-- Try to simplify the left-hand sides of equalities in `acR` by `H : lhs = rhs`. -/
 def collapseAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
   let some x := (← get).getVarWithLeastLHSOccs lhs | failure
   let some ent := (← get).acEntries[x]? | failure
@@ -364,9 +364,9 @@ def collapseAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
             ofFormat (Format.line ++ ":=" ++ .line) ++ ccs.ppACApps newRlhs)
 
 /-- Given `ra := a*r` `sb := b*s` `ts := t*s` `tr := t*r` `tsEqa : t*s = a` `trEqb : t*r = b`,
-    return a proof for `ra = sb`.
+return a proof for `ra = sb`.
 
-    We use `a*b` to denote an AC application. That is, `(a*b)*(c*a)` is the term `a*a*b*c`. -/
+We use `a*b` to denote an AC application. That is, `(a*b)*(c*a)` is the term `a*a*b*c`. -/
 def mkACSuperposeProof (ra sb a b r s ts tr : ACApps) (tsEqa trEqb : DelayedExpr) :
     MetaM DelayedExpr := do
   let .apps _ _ := tr | failure
@@ -621,7 +621,7 @@ partial def internalizeAppLit (e : Expr) : CCM Unit := do
       addCongruenceTable e
     else
       -- Expensive case where we store a quadratic number of occurrences,
-      -- as described in the paper "Congruence Closure in Internsional Type Theory"
+      -- as described in the paper "Congruence Closure in Intensional Type Theory"
       for h : i in [:apps.size] do
         let curr := apps[i]
         let .app currFn currArg := curr | unreachable!
@@ -881,9 +881,9 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
   if let .app (.app (.app (.app (.const ``cast [l₁]) A) B) H) a := e then
     /-
     ```
-    HEq (cast H a) a
+    cast H a ≍ a
 
-    theorem cast_heq.{l₁} : ∀ {A B : Sort l₁} (H : A = B) (a : A), HEq (@cast.{l₁} A B H a) a
+    theorem cast_heq.{l₁} : ∀ {A B : Sort l₁} (H : A = B) (a : A), @cast.{l₁} A B H a ≍ a
     ```
     -/
     let proof := mkApp4 (.const ``cast_heq [l₁]) A B H a
@@ -892,13 +892,13 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
   if let .app (.app (.app (.app (.app (.app (.const ``Eq.rec [l₁, l₂]) A) a) P) p) a') H := e then
     /-
     ```
-    HEq (t ▸ p) p
+    t ▸ p ≍ p
 
-    theorem eqRec_heq'.{l₁, l₂} : ∀ {A : Sort l₂} {a : A} {P : (a' : A) → a = a' → Sort l₁}
-      (p : P a) {a' : A} (H : a = a'), HEq (@Eq.rec.{l₁ l₂} A a P p a' H) p
+    theorem eqRec_heq_self.{l₁, l₂} : ∀ {A : Sort l₁} {a : A} {P : (a' : A) → a = a' → Sort l₂}
+      (p : P a rfl) {a' : A} (H : a = a'), HEq (@Eq.rec.{l₁ l₂} A a P p a' H) p
     ```
     -/
-    let proof := mkApp6 (.const ``eqRec_heq' [l₁, l₂]) A a P p a' H
+    let proof := mkApp6 (.const ``eqRec_heq_self [l₁, l₂]) A a P p a' H
     pushHEq e p proof
 
   if let .app (.app (.app (.const ``Ne [l₁]) α) a) b := e then
@@ -1143,7 +1143,7 @@ partial def propagateConstructorEq (e₁ e₂ : Expr) : CCM Unit := do
       if env.contains name then
         let rec
           /-- Given an injective theorem `val : type`, whose `type` is the form of
-          `a₁ = a₂ ∧ HEq b₁ b₂ ∧ ..`, destruct `val` and push equality proofs to the todo list. -/
+          `a₁ = a₂ ∧ b₁ ≍ b₂ ∧ ..`, destruct `val` and push equality proofs to the todo list. -/
           go (type val : Expr) : CCM Unit := do
             let push (type val : Expr) : CCM Unit :=
               match type.eq? with
@@ -1235,7 +1235,7 @@ def propagateDown (e : Expr) : CCM Unit := do
 /-- Performs one step in the process when the new equation is added.
 
 Here, `H` contains the proof that `e₁ = e₂` (if `heqProof` is false)
-or `HEq e₁ e₂` (if `heqProof` is true). -/
+or `e₁ ≍ e₂` (if `heqProof` is true). -/
 def addEqvStep (e₁ e₂ : Expr) (H : EntryExpr) (heqProof : Bool) : CCM Unit := do
   let some n₁ ← getEntry e₁ | return -- `e₁` have not been internalized
   let some n₂ ← getEntry e₂ | return -- `e₂` have not been internalized
@@ -1411,7 +1411,7 @@ def internalize (e : Expr) : CCM Unit := do
   internalizeCore e none
   processTodo
 
-/-- Add `H : lhs = rhs` or `H : HEq lhs rhs` to the congruence closure. Don't forget to internalize
+/-- Add `H : lhs = rhs` or `H : lhs ≍ rhs` to the congruence closure. Don't forget to internalize
 `lhs` and `rhs` beforehand. -/
 def addEqvCore (lhs rhs H : Expr) (heqProof : Bool) : CCM Unit := do
   pushTodo lhs rhs H heqProof
