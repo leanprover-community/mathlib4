@@ -36,8 +36,8 @@ is characterised by properties 1 and 2 above, and is a linear isometry.
 * `Module.reflection_mul_reflection_pow_apply`: a formula for $(r_1 r_2)^m z$, where $r_1$ and
   $r_2$ are reflections and $z \in M$. It involves the Chebyshev polynomials and holds over any
   commutative ring. This is used to define reflection representations of Coxeter groups.
-* `Module.Dual.eq_of_preReflection_mapsTo`: a uniqueness result about reflections preserving
-  finite spanning sets that is useful in the theory of root data / systems.
+* `Module.Dual.eq_of_preReflection_mapsTo`: a uniqueness result about reflections that preserve
+  finite spanning sets. It is useful in the theory of root data / systems.
 
 ## TODO
 
@@ -412,13 +412,13 @@ lemma reflection_reflection_iterate
       map_nsmul, map_smul, smul_neg, hz, add_smul]
     abel
 
-lemma infinite_range_reflection_reflection_iterate_iff [NoZeroSMulDivisors ℤ M]
+lemma infinite_range_reflection_reflection_iterate_iff [IsAddTorsionFree M]
     (hfx : f x = 2) (hgy : g y = 2) (hgxfy : f y * g x = 4) :
     (range <| fun n ↦ ((reflection hgy).trans (reflection hfx))^[n] y).Infinite ↔
     f y • x ≠ (2 : R) • y := by
   simp only [reflection_reflection_iterate hfx hgy hgxfy, infinite_range_add_nsmul_iff, sub_ne_zero]
 
-lemma eq_of_mapsTo_reflection_of_mem [NoZeroSMulDivisors ℤ M] {Φ : Set M} (hΦ : Φ.Finite)
+lemma eq_of_mapsTo_reflection_of_mem [IsAddTorsionFree M] {Φ : Set M} (hΦ : Φ.Finite)
     (hfx : f x = 2) (hgy : g y = 2) (hgx : g x = 2) (hfy : f y = 2)
     (hxfΦ : MapsTo (preReflection x f) Φ Φ)
     (hygΦ : MapsTo (preReflection y g) Φ Φ)
@@ -437,7 +437,7 @@ lemma eq_of_mapsTo_reflection_of_mem [NoZeroSMulDivisors ℤ M] {Φ : Set M} (h�
     (bijOn_reflection_of_mapsTo hgy hygΦ)).image_eq n]
   exact mem_image_of_mem _ hyΦ
 
-lemma injOn_dualMap_subtype_span_range_range {ι : Type*} [NoZeroSMulDivisors ℤ M]
+lemma injOn_dualMap_subtype_span_range_range {ι : Type*} [IsAddTorsionFree M]
     {r : ι ↪ M} {c : ι → Dual R M} (hfin : (range r).Finite)
     (h_two : ∀ i, c i (r i) = 2)
     (h_mapsTo : ∀ i, MapsTo (preReflection (r i) (c i)) (range r) (range r)) :

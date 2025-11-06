@@ -140,7 +140,7 @@ theorem intCast_complex_norm (x : ℤ[i]) : (x.norm : ℂ) = Complex.normSq (x :
   cases x; rw [Zsqrtd.norm, normSq]; simp
 
 theorem norm_nonneg (x : ℤ[i]) : 0 ≤ norm x :=
-  Zsqrtd.norm_nonneg (by norm_num) _
+  Zsqrtd.norm_nonneg (by simp) _
 
 @[simp]
 theorem norm_eq_zero {x : ℤ[i]} : norm x = 0 ↔ x = 0 := by rw [← @Int.cast_inj ℝ _ _ _]; simp
@@ -199,7 +199,7 @@ theorem normSq_div_sub_div_lt_one (x y : ℤ[i]) :
         I : ℂ) :=
       congr_arg _ <| by apply Complex.ext <;> simp
     _ ≤ Complex.normSq (1 / 2 + 1 / 2 * I) := by
-      have : |(2⁻¹ : ℝ)| = 2⁻¹ := abs_of_nonneg (by norm_num)
+      have : |(2⁻¹ : ℝ)| = 2⁻¹ := abs_of_nonneg (by simp)
       exact normSq_le_normSq_of_re_le_of_im_le
         (by rw [toComplex_re_div]; simp [normSq, this]; simpa using abs_sub_round (x / y : ℂ).re)
         (by rw [toComplex_im_div]; simp [normSq, this]; simpa using abs_sub_round (x / y : ℂ).im)

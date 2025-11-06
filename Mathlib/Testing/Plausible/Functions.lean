@@ -357,10 +357,8 @@ protected theorem injective [DecidableEq α] (f : InjectiveFunction α) : Inject
   · rwa [← h₀, hxs, hperm.nodup_iff]
   · rwa [← hxs, h₀, h₁] at hperm
 
-instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function.Injective f } where
-  proxy := InjectiveFunction ℤ
-  interp f := ⟨apply f, f.injective⟩
-  sample := do
+instance : Arbitrary (InjectiveFunction ℤ) where
+  arbitrary := do
     let ⟨sz⟩ ← Gen.up Gen.getSize
     let xs' := Int.range (-(2 * sz + 2)) (2 * sz + 2)
     let ys ← Gen.permutationOf xs'
@@ -369,6 +367,10 @@ instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function
     let r : InjectiveFunction ℤ :=
       InjectiveFunction.mk.{0} xs' ys.1 ys.2 (ys.2.nodup_iff.1 <| List.nodup_range.map Hinj)
     pure r
+
+instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function.Injective f } where
+  proxy := InjectiveFunction ℤ
+  interp f := ⟨apply f, f.injective⟩
   shrink := {shrink := @InjectiveFunction.shrink ℤ _ }
 
 end InjectiveFunction

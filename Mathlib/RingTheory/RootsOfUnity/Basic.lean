@@ -98,6 +98,18 @@ theorem map_rootsOfUnity (f : Mˣ →* Nˣ) (k : ℕ) : (rootsOfUnity k M).map f
 
 instance : Subsingleton (rootsOfUnity 1 M) := by simp [subsingleton_iff]
 
+lemma rootsOfUnity_inf_rootsOfUnity {m n : ℕ} :
+    (rootsOfUnity m M ⊓ rootsOfUnity n M) = rootsOfUnity (m.gcd n) M := by
+  refine le_antisymm ?_ ?_
+  · intro
+    simp +contextual [pow_gcd_eq_one]
+  · rw [le_inf_iff]
+    exact ⟨rootsOfUnity_le_of_dvd (m.gcd_dvd_left n), rootsOfUnity_le_of_dvd (m.gcd_dvd_right n)⟩
+
+lemma disjoint_rootsOfUnity_of_coprime {m n : ℕ} (h : m.Coprime n) :
+    Disjoint (rootsOfUnity m M) (rootsOfUnity n M) := by
+  simp [disjoint_iff_inf_le, rootsOfUnity_inf_rootsOfUnity, Nat.coprime_iff_gcd_eq_one.mp h]
+
 @[norm_cast]
 theorem rootsOfUnity.coe_pow [CommMonoid R] (ζ : rootsOfUnity k R) (m : ℕ) :
     (((ζ ^ m :) : Rˣ) : R) = ((ζ : Rˣ) : R) ^ m := by

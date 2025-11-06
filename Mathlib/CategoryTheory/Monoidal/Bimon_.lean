@@ -29,12 +29,13 @@ universe v₁ v₂ u₁ u₂ u
 
 open CategoryTheory MonoidalCategory
 
+namespace CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory C]
 
 open scoped MonObj ComonObj
 
 /--
-A bimonoid object in a braided category `C` is a object that is simultaneously monoid and comonoid
+A bimonoid object in a braided category `C` is an object that is simultaneously monoid and comonoid
 objects, and structure morphisms of them satisfy appropriate consistency conditions.
 -/
 class BimonObj (M : C) extends MonObj M, ComonObj M where
@@ -142,6 +143,7 @@ theorem ofMonComonObjX_mul (M : Mon (Comon C)) :
 
 @[deprecated (since := "2025-09-15")] alias ofMon_Comon_ObjX_mul := ofMonComonObjX_mul
 
+attribute [local instance] ComonObj.instTensorUnit in
 attribute [local simp] MonObj.tensorObj.one_def MonObj.tensorObj.mul_def tensorμ in
 /-- The object level part of the backward direction of `Comon (Mon C) ≌ Mon (Comon C)` -/
 @[simps]
@@ -338,3 +340,4 @@ def mk' (X : C) [BimonObj X] : Bimon C where
       comul := .mk' (Δ : X ⟶ X ⊗ X) }
 
 end Bimon
+end CategoryTheory
