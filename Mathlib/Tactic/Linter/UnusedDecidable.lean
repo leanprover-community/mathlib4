@@ -35,7 +35,7 @@ Note that this linter is off by default for now.
   Whew! Ideally, Lean core eventually simply gives us more information to link the used binders
   with their source syntax, and all this becomes unnecessary.
 
-  Or...we could restrict to `theorem`s in the first place. `theorem`s have the variables unused in the type excluded from the context of the `BodyInfo`. I think I'm right in saying there's always an `AsyncBodyInfo`?
+  Or...we could restrict to `theorem`s in the first place. `theorem`s have the variables unused in the type excluded from the context of the `BodyInfo`.
 
 - It would be nice to try to insert `classical` ourselves. It might be worth creating API for
   matching against all the necessary syntax here--or, maybe getting to `mkDefView` is sufficient.
@@ -109,19 +109,20 @@ elab tk:"#info_trees!" " in" cmd:command : command => do
           let l := l.reduceOption
           match i with
           | .ofTermInfo i => return ListTree.node m!"{repr i.expr} {← i.toMessageData ctx}" l
+          | .ofCommandInfo i => return ListTree.node m!"{i.elaborator}: {i.stx}" l
           | i => return ListTree.node m!"{← i.format ctx}" l
         )
           | continue
         logInfo l.toMessageData
 
-variable {α} (q : α = α) {α} [DecidableEq α]
+variable {α} (q : α = α) {α} [inst:DecidableEq α]
 
 
 
 #check Lean.Parser.Command.«include»
-#info_trees in
--- include inst in
-theorem foo {α : Type} : Nat → α = α
+#info_trees! in
+include inst in
+theorem foo.{u} {α : Type u} : Nat → α = α
 | n => by
   -- run_tac do
   --   logInfo m!"{(← getLCtx).decls.toArray.reduceOption.map (·.isImplementationDetail)}"
@@ -129,12 +130,156 @@ theorem foo {α : Type} : Nat → α = α
 where
   go (n : Nat) : α = α := rfl
 
+structure FooRel (i j : Nat) where
+  le : j ≤ 2 * i
+  ge : i < j
+
+
+#info_trees! in
+theorem bar (i : Nat) (h : i ≠ 0) : FooRel i (i+1) where
+  le := by grind
+  ge := by? grind
 
 
 run_cmd do
   let e := wasOriginallyTheorem (← getEnv) `foo.go
   logInfo m!"{e}"
 
+#info_trees! in
+mutual
+
+theorem b : True := True.intro
+
+theorem f : False := sorry
+
+end
+
+/-
+# Support
+- get syntax of declarations; need this for body + good logging
+- can do this by looking at `elabMutual`/`elabDeclaration` nodes. I like that personally? but how to associate with names? well, get the range of the decl from infotrees first. or, could find the first declarations in the body syntax that match our ranges. maybe a bit more uniform, fewer infotree excursions.
+- Okay, so we're just going to use the ref of the declId to search for appropriate declarations.
+- `Parser.Term.whereDecls` then `letRecDecl` for let recs.
+- support just `theorem` for now, but eventually `def` and `instance`...
+- support `∀` and `→` in type signature to the right of `:` eventually, but not now.
+-/
+
+#check expandDeclSig
+
+#check Parser.Term.whereDecls
+
+/-- Searches for some part `result` of `stx` such that `getPiece? result` has the same range as
+`piece`. For example, `getPiece?` might be of the form ``fun | `(term|by $tac) => tac | _ => none``,
+and `stx.findByRangeOfComponent piece getPiece?` would return the first syntax of the form
+`by $tac` such that `tac` had the same range as `piece`.
+
+Returns `.undef` if `piece` itself has no position info.
+
+Note: by default, we ask that the syntax returned by `getPiece?` is canonical.
+-/
+def Lean.Syntax.findByRangeOfComponent? (stx piece : Syntax) (getPiece? : Syntax → Option Syntax)
+    (canonicalOnly := true) : LOption Syntax := Id.run do
+  let some range := piece.getRange? | return .undef
+  (·.toLOption) <| stx.find? fun stx =>
+    if
+      let some range' := (getPiece? stx).bind (·.getRange? canonicalOnly)
+    then
+      range == range'
+    else
+      false
+
+-- TODO: grab the `declSig` and `declVal` here?
+
+#check Syntax.structRangeEq
+
+def Lean.Syntax.findTheoremByDeclIdRef? (cmd declId : Syntax) : LOption Syntax :=
+  cmd.findByRangeOfComponent? declId fun
+    | `(Parser.Command.theorem| theorem $declId:declId $_:declSig $_:declVal) => declId
+    | _ => none
+
+def Lean.Syntax.rangeEq? (stx₁ stx₂ : Syntax) (canonicalOnly₁ canonicalOnly₂ := true) :
+    Option Bool :=
+  match stx₁.getRange? canonicalOnly₁, stx₂.getRange? canonicalOnly₂ with
+  | some r₁, some r₂ => r₁ == r₂
+  | _, _ => none
+
+def Lean.Syntax.hasRange (stx : Syntax) (range : String.Range) (canonicalOnly := true) : Bool :=
+  stx.getRange? canonicalOnly |>.map (· == range) |>.getD false
+
+#check Parser.Command.declVal
+
+open Parser Command Term in
+/-- Ideally, this is expanded to handle all binders. -/
+structure InstanceBinderStx where
+  ref : Syntax
+  id : Option Ident
+  type : Term
+
+/- Note that `DefView` is both too course for our purposes (we need to extract the bodies and let
+recs, whereas `DefView` puts these all in the `value` field and processes them later) and has extra
+information that is irrelevant to us (regarding incrementality). -/
+structure TheoremSyntaxView where
+  decl : Name
+  cmd : Syntax
+  tk : Syntax
+  id : Ident
+  instanceBinders : Array InstanceBinderStx -- Should, ideally, be simply `binders`.
+  type : Term
+  bodies : Array Term
+  -- TODO: process into array of `TheoremSyntaxView`s
+  whereDecls? : Option (Array (TSyntax ``Parser.Term.letRecDecl))
+
+partial def Lean.Syntax.findSomeAux {α} (p : Syntax → Option α) : Syntax → Option α
+  | stx@(.node _ _ args) => p stx <|> args.findSome? (findSomeAux p)
+  | stx                        => p stx
+
+def Lean.Syntax.findSome? {α} (stx : Syntax) (p : Syntax → Option α) : Option α :=
+  findSomeAux p stx
+
+#check Parser.Command.declBody
+
+
+
+
+open Parser Command Term in
+def getTheoremSyntaxView (decl : Name) (idRef : Syntax) (cmd : Syntax) :
+    LOption TheoremSyntaxView := Id.run do
+  let some idRange := idRef.getRange? | return .undef
+  (·.toLOption) <| cmd.findSome? fun
+    /- Note: modifiers are taken care of outside of `Parser.Command.theorem`, so this match is
+    exhaustive. -/
+    | `(Parser.Command.theorem|
+        theorem%$tk $id:ident$[.{$_,*}]? $binders* : $type:term $val:declVal) => do
+      guard <| id.raw.hasRange idRange
+      let instanceBinders := binders.filterMap fun
+        | ref@`(instBinder| [$[$id:ident :]? $type:term]) => some { ref, id, type }
+        | _ => none
+      let (bodies, whereDecls?) :=
+        -- See also `elabHeaders.getBodyTerm` in `Lean.Elab.MutualDef`.
+        -- See also `declValToTerm` and `expandMatchAltsWhereDecls`.
+        match val with
+        -- Note: this match still works despite complications in `declBody`.
+        | `(declValSimple| := $body:term $_ $[where $[$whereDecls?:letRecDecl];*]?) =>
+          (#[body], whereDecls?)
+        | `(declValEqns| $[ | $_:term,* => $bodies:term ]*
+              $_ $[where $[$whereDecls?:letRecDecl];*]?) =>
+          (bodies, whereDecls?)
+        | `(whereStructInst| where $[$lval:structInstLVal $[$[$binders]* $[: $ty?]?
+              $fields:structInstFieldDecl]?];* $[where $[$whereDecls?:letRecDecl];*]?) =>
+          let bodies := fields.flatMap fun
+            | some field => match field with
+              | `(structInstFieldDef| := $body) => #[body]
+              | `(structInstFieldEqns| $[ | $_:term,* => $body:term ]*) => body
+              -- currently unreachable (may change if recursive `where` notation is added)
+              | _ => #[⟨.missing⟩]
+            -- field is given by an abbreviation, e.g. `x` where `x` is in the local context
+            | none => #[]
+          (bodies, whereDecls?)
+        | _ => (#[⟨.missing⟩], none) -- unreachable
+      return {
+        decl, id, tk, cmd, instanceBinders, type, bodies, whereDecls?
+      }
+    | _ => none
 
 /--
 Gets the indices `i` of the binders of a nested `.forallE`, `(x₀ : A₀) → (x₁ : A₁) → ⋯ → X`,
@@ -214,8 +359,15 @@ def getTermInfoForConst? (t : InfoTree) (decl : Name) : Option TermInfo :=
 def getConstRef? (t : InfoTree) (decl : Name) : Option Syntax :=
   t.getTermInfoForConst? decl |>.map (·.stx)
 
-def getFVarTypeRefsOfBod
+/-
+# Next up:
 
+- extract the fvarids from the local context of the node
+- head back up the tree and get the instance type syntax via cursed infotree traversal
+- compare ranges in the `TheoremViewSyntax` to find syntax and/or realize that it's to the right of the `:`, or elsewhere entirely
+- adjust body as appropriate, matching on `by` or not, and checking for `classical`/`open scoped Calssical in` before inserting it
+
+-/
 
 end Lean.Elab.InfoTree
 
@@ -253,7 +405,7 @@ subordinate `where` or `let rec` declarations.
 register_option linter.unusedDecidable : Bool := {
   defValue := false
   descr := "enable the unused `Decidable*` instance linter, which lints against `Decidable*` \
-    instances in the hypotheses of theorems which are not used in the type and can therefore be \
+    instances in the hypotheses of theorems which are not used in the type, and can therefore be \
     replaced with a use of `classical` in the proof."
 }
 
@@ -265,14 +417,14 @@ def unusedDecidable : Linter where
     for t in ← getInfoTrees do
       let decls := t.getDecls
       -- For now, only handle `theorem`s.
-      -- TODO: handle `def` propositions too?
+      -- TODO: handle `def` propositions too; requires re-running `withHeaderSecVars`
       let decls := decls.filter <| wasOriginallyTheorem (← getEnv)
       liftTermElabM do for decl in decls do
         let some val := (← getEnv).findConstVal? decl | continue
         let unusedDecidableHyps :=
           val.type.getUnusedForallInstanceBinderIdxsWhere isAppOrForallOfDecidable
         unless unusedDecidableHyps.isEmpty do
-          -- TODO: get syntax from infotrees for logging ref
+          -- TODO: get syntax from infotrees for logging and Try This suggestion
           forallBoundedTelescope val.type (some <| unusedDecidableHyps.back! + 1)
             (cleanupAnnotations := true) fun fvars body => do
               let decidables ← unusedDecidableHyps.mapM fun idx =>
