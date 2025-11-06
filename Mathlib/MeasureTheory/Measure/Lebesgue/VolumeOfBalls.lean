@@ -60,7 +60,7 @@ theorem MeasureTheory.measure_unitBall_eq_integral_div_gamma {E : Type*} {p : �
         Nat.cast_one]
       rw [integral_rpow_mul_exp_neg_rpow hp (by linarith), sub_add_cancel,
         Real.Gamma_add_one (ne_of_gt (by positivity))]
-      field_simp
+      field
     rw [integral_fun_norm_addHaar μ (fun x => Real.exp (-x ^ p)), nsmul_eq_mul, smul_eq_mul,
       mul_div_assoc, mul_div_assoc, mul_comm, mul_assoc, this, mul_one, ofReal_measureReal _]
     exact ne_of_lt measure_ball_lt_top
@@ -390,7 +390,7 @@ lemma volume_ball_of_dim_odd {k : ℕ} (hk : finrank ℝ E = 2 * k + 1) (x : E) 
   congr 3
   suffices √π / (↑(2 * k + 1)‼ * √π / 2 ^ (k + 1)) = 2 ^ (k + 1) / ↑(2 * k + 1)‼ by
     simpa [add_div, add_right_comm, -one_div, Gamma_nat_add_one_add_half]
-  field_simp
+  field
 
 lemma volume_closedBall_of_dim_odd {k : ℕ} (hk : finrank ℝ E = 2 * k + 1) (x : E) (r : ℝ) :
     volume (closedBall x r) =
