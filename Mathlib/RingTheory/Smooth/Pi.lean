@@ -19,7 +19,9 @@ import Mathlib.RingTheory.Smooth.Basic
 
 namespace Algebra.FormallySmooth
 
-variable {R : Type*} {I : Type*} (A : I → Type*)
+universe u
+
+variable {R : Type u} {I : Type u} (A : I → Type u)
 variable [CommRing R] [∀ i, CommRing (A i)] [∀ i, Algebra R (A i)]
 
 theorem of_pi [FormallySmooth R (Π i, A i)] (i) :

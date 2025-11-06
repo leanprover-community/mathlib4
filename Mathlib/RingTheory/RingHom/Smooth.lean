@@ -15,7 +15,7 @@ In this file we define smooth ring homomorphisms and show their meta properties.
 
 universe u
 
-variable {R S : Type*} [CommRing R] [CommRing S]
+variable {R S : Type u} [CommRing R] [CommRing S]
 
 open TensorProduct
 
@@ -76,7 +76,7 @@ lemma smooth_def {f : R →+* S} : f.Smooth ↔ f.FormallySmooth ∧ f.FinitePre
 
 namespace Smooth
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+variable {R S T : Type u} [CommRing R] [CommRing S] [CommRing T]
 
 /-- Composition of smooth ring homomorphisms is smooth. -/
 lemma comp {f : R →+* S} {g : S →+* T} (hf : f.Smooth) (hg : g.Smooth) : (g.comp f).Smooth := by

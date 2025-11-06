@@ -31,7 +31,7 @@ universe u v
 
 namespace Algebra
 
-variable {R : Type u} {A : Type v} {B : Type*} [CommRing R] [CommRing A] [Algebra R A]
+variable {R : Type u} {A : Type u} {B : Type u} [CommRing R] [CommRing A] [Algebra R A]
   [CommRing B] [Algebra R B]
 
 section
@@ -84,10 +84,10 @@ every square-zero ideal `I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exist
 a unique lift `A →ₐ[R] B`".
 -/
 theorem iff_comp_bijective :
-   FormallyEtale R A ↔ ∀ ⦃B : Type max u v⦄ [CommRing B] [Algebra R B] (I : Ideal B), I ^ 2 = ⊥ →
+   FormallyEtale R A ↔ ∀ ⦃B : Type u⦄ [CommRing B] [Algebra R B] (I : Ideal B), I ^ 2 = ⊥ →
       Function.Bijective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) :=
   ⟨fun _ _ ↦ comp_bijective R A, fun H ↦
-    have : FormallyUnramified R A := FormallyUnramified.iff_comp_injective_of_small.{max u v}.mpr
+    have : FormallyUnramified R A := FormallyUnramified.iff_comp_injective_of_small.{u}.mpr
       (by aesop (add safe Function.Bijective.injective))
     have : FormallySmooth R A := FormallySmooth.of_comp_surjective
       (by aesop (add safe Function.Bijective.surjective))
@@ -144,7 +144,7 @@ subset `M` of `R`.
 -/
 
 /-! Let R, S, Rₘ, Sₘ be commutative rings -/
-variable {R S Rₘ Sₘ : Type*} [CommRing R] [CommRing S] [CommRing Rₘ] [CommRing Sₘ]
+variable {R S Rₘ Sₘ : Type u} [CommRing R] [CommRing S] [CommRing Rₘ] [CommRing Sₘ]
 /-! Let M be a multiplicatively closed subset of `R` -/
 variable (M : Submonoid R)
 /-! Assume that the rings are in a commutative diagram as above. -/
@@ -220,7 +220,7 @@ end Algebra
 
 namespace RingHom
 
-variable {R S : Type*} [CommRing R] [CommRing S]
+variable {R S : Type u} [CommRing R] [CommRing S]
 
 /--
 A ring homomorphism `R →+* A` is formally étale if it is formally unramified and formally smooth.

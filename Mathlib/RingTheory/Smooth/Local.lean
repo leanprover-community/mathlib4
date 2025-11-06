@@ -22,7 +22,7 @@ and `I` is finitely generated.
 Then `S` is formally smooth iff `k ⊗ₛ I/I² → k ⊗ₚ Ω[P/R]` is injective,
 where `k` is the residue field of `S`.
 -/
-theorem Algebra.FormallySmooth.iff_injective_lTensor_residueField.{u} {R S : Type*} [CommRing R]
+theorem Algebra.FormallySmooth.iff_injective_lTensor_residueField.{u} {R S : Type u} [CommRing R]
     [CommRing S] [IsLocalRing S] [Algebra R S] (P : Algebra.Extension.{u} R S)
     [FormallySmooth R P.Ring]
     [Module.Free P.Ring Ω[P.Ring⁄R]] [Module.Finite P.Ring Ω[P.Ring⁄R]]

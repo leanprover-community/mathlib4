@@ -48,8 +48,8 @@ open Algebra.Extension KaehlerDifferential MvPolynomial
 
 universe u v w
 
-variable {R : Type u} {A : Type v} [CommRing R] [CommRing A] [Algebra R A]
-variable {B P C : Type*} [CommRing B] [Algebra R B] [CommRing C] [Algebra R C]
+variable {R : Type u} {A : Type u} [CommRing R] [CommRing A] [Algebra R A]
+variable {B P C : Type u} [CommRing B] [Algebra R B] [CommRing C] [Algebra R C]
   [CommRing P] [Algebra R P]
 namespace Algebra
 
@@ -104,7 +104,7 @@ lemma FormallySmooth.comp_surjective [FormallySmooth R A] (I : Ideal B) (hI : I 
     simpa using (Function.surjInv_eq _ _).symm
   exact ⟨l.comp g, by rw [← AlgHom.comp_assoc, ← this, AlgHom.comp_assoc, hg, AlgHom.comp_id]⟩
 
-instance mvPolynomial (σ : Type*) : FormallySmooth R (MvPolynomial σ R) := by
+instance mvPolynomial (σ : Type u) : FormallySmooth R (MvPolynomial σ R) := by
   let P : Generators R (MvPolynomial σ R) σ :=
     .ofSurjective X (by simp [aeval_X_left, Function.Surjective])
   have : Subsingleton ↥P.toExtension.ker :=
@@ -155,7 +155,7 @@ theorem mk_lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
     (g : A →ₐ[R] B ⧸ I) (x : A) : Ideal.Quotient.mk I (FormallySmooth.lift I hI g x) = g x :=
   AlgHom.congr_fun (FormallySmooth.comp_lift I hI g :) x
 
-variable {C : Type*} [CommRing C] [Algebra R C]
+variable {C : Type u} [CommRing C] [Algebra R C]
 
 /-- For a formally smooth `R`-algebra `A` and a map `f : A →ₐ[R] B ⧸ I` with `I` nilpotent,
 this is an arbitrary lift `A →ₐ[R] B`. -/
@@ -297,7 +297,7 @@ with kernel `I` (typically a presentation `R[X] → S`),
 -/
 @[stacks 031I]
 theorem _root_.Algebra.Extension.formallySmooth_iff_split_injection
-    (P : Algebra.Extension.{w} R A) [FormallySmooth R P.Ring] :
+    (P : Algebra.Extension.{u} R A) [FormallySmooth R P.Ring] :
     Algebra.FormallySmooth R A ↔ ∃ l, l ∘ₗ P.cotangentComplex = LinearMap.id := by
   refine (Algebra.FormallySmooth.iff_split_injection P.algebraMap_surjective).trans ?_
   let e : P.ker.Cotangent ≃ₗ[P.Ring] P.Cotangent :=
@@ -330,7 +330,7 @@ theorem of_split (f : P →ₐ[R] A) (g : A →ₐ[R] P ⧸ RingHom.ker f.toRing
   exact ⟨y, congr(f.kerSquareLift $hy).trans congr($h x)⟩
 
 theorem of_comp_surjective
-    (H : ∀ ⦃B : Type max u v⦄ [CommRing B] [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
+    (H : ∀ ⦃B : Type u⦄ [CommRing B] [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
         Function.Surjective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I)) :
     FormallySmooth R A := by
   let P := Generators.self R A
@@ -355,7 +355,7 @@ every square-zero ideal `I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exist
 at least one lift `A →ₐ[R] B`".
 -/
 theorem iff_comp_surjective :
-   FormallySmooth R A ↔ ∀ ⦃B : Type max u v⦄ [CommRing B] [Algebra R B] (I : Ideal B), I ^ 2 = ⊥ →
+   FormallySmooth R A ↔ ∀ ⦃B : Type u⦄ [CommRing B] [Algebra R B] (I : Ideal B), I ^ 2 = ⊥ →
       Function.Surjective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) :=
   ⟨fun _ _ ↦ comp_surjective R A, of_comp_surjective⟩
 
@@ -363,8 +363,8 @@ end iff_split
 
 section OfEquiv
 
-variable {R : Type*} [CommRing R]
-variable {A B : Type*} [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
+variable {R : Type u} [CommRing R]
+variable {A B : Type u} [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
 
 theorem of_equiv [FormallySmooth R A] (e : A ≃ₐ[R] B) : FormallySmooth R B :=
   (iff_split_surjection e.toAlgHom e.surjective).mpr
@@ -378,16 +378,16 @@ end OfEquiv
 section Polynomial
 
 open scoped Polynomial in
-instance polynomial (R : Type*) [CommRing R] :
-  FormallySmooth R R[X] := .of_equiv (MvPolynomial.pUnitAlgEquiv.{_, 0} R)
+instance polynomial (R : Type u) [CommRing R] :
+  FormallySmooth R R[X] := .of_equiv (MvPolynomial.pUnitAlgEquiv R)
 
 end Polynomial
 
 section Comp
 
-variable (R : Type*) [CommRing R]
-variable (A : Type*) [CommRing A] [Algebra R A]
-variable (B : Type*) [CommRing B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+variable (R : Type u) [CommRing R]
+variable (A : Type u) [CommRing A] [Algebra R A]
+variable (B : Type u) [CommRing B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
 
 theorem comp [FormallySmooth R A] [FormallySmooth A B] : FormallySmooth R B := by
   refine .of_comp_surjective fun C _ _ I hI f ↦ ?_
@@ -403,9 +403,9 @@ section BaseChange
 
 open scoped TensorProduct
 
-variable {R : Type*} [CommRing R]
-variable {A : Type*} [CommRing A] [Algebra R A]
-variable (B : Type*) [CommRing B] [Algebra R B]
+variable {R : Type u} [CommRing R]
+variable {A : Type u} [CommRing A] [Algebra R A]
+variable (B : Type u) [CommRing B] [Algebra R B]
 
 instance [FormallySmooth R A] : FormallySmooth B (B ⊗[R] A) := by
   refine .of_comp_surjective fun C _ _ I hI f ↦ ?_
@@ -423,7 +423,7 @@ end BaseChange
 
 section Localization
 
-variable {R A Rₘ Sₘ : Type*} [CommRing R] [CommRing A] [CommRing Rₘ] [CommRing Sₘ]
+variable {R A Rₘ Sₘ : Type u} [CommRing R] [CommRing A] [CommRing Rₘ] [CommRing Sₘ]
 variable (M : Submonoid R)
 variable [Algebra R A] [Algebra R Sₘ] [Algebra A Sₘ] [Algebra R Rₘ] [Algebra Rₘ Sₘ]
 variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R A Sₘ]
@@ -476,8 +476,8 @@ end FormallySmooth
 
 section
 
-variable (R : Type*) [CommRing R]
-variable (A : Type*) [CommRing A] [Algebra R A]
+variable (R : Type u) [CommRing R]
+variable (A : Type u) [CommRing A] [Algebra R A]
 
 /-- An `R` algebra `A` is smooth if it is formally smooth and of finite presentation. -/
 @[stacks 00T2 "In the stacks project, the definition of smooth is completely different, and tag
@@ -493,8 +493,8 @@ namespace Smooth
 
 attribute [instance] formallySmooth finitePresentation
 
-variable {R : Type*} [CommRing R]
-variable {A B : Type*} [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
+variable {R : Type u} [CommRing R]
+variable {A B : Type u} [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
 
 /-- Being smooth is transported via algebra isomorphisms. -/
 theorem of_equiv [Smooth R A] (e : A ≃ₐ[R] B) : Smooth R B where
