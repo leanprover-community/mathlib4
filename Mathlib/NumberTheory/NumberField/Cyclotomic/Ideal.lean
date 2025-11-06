@@ -48,7 +48,7 @@ theorem associated_norm_zeta_sub_one : Associated (Algebra.norm ℤ (hζ.toInteg
       rw [h, zero_add, pow_one] at hK hζ
       rw [hζ.norm_toInteger_sub_one_of_eq_two, h, Int.ofNat_two, Associated.neg_left_iff]
     | succ n =>
-      rw [h, add_assoc, show 1 + 1 = 2 by rfl] at hK hζ
+      rw [h, add_assoc, one_add_one_eq_two] at hK hζ
       rw [hζ.norm_toInteger_sub_one_of_eq_two_pow, h, Int.ofNat_two]
   · rw [hζ.norm_toInteger_sub_one_of_prime_ne_two h]
 

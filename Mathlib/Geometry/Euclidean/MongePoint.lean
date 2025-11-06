@@ -140,8 +140,8 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
       simp_rw [centroidWeightsWithCircumcenter, circumcenterWeightsWithCircumcenter,
         mongePointWeightsWithCircumcenter] <;>
     rw [add_tsub_assoc_of_le (by decide : 1 ≤ 2), (by decide : 2 - 1 = 1)]
-  · rw [if_pos (mem_univ _), sub_zero, add_zero, card_fin]
-    field_simp
+  · rw [if_pos (mem_univ _), card_fin]
+    field
   · simp [field]
     ring
 
