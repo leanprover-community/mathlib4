@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Computability.DFA
 public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Fintype.Option
 
 /-!
 # Nondeterministic Finite Automata
@@ -407,6 +408,40 @@ theorem mem_accepts_reverse {x : List α} : x ∈ M.reverse.accepts ↔ x.revers
 
 end NFA
 
+namespace NFA
+
+section kstar
+
+open Option
+
+@[simp]
+def kstarStart : Set (Option σ) := {none}
+
+@[simp]
+def kstarAccept : Set (Option σ) := {none}
+
+variable (M) in
+@[simp]
+def kstarStep : Option σ → α → Set (Option σ)
+| none, a => ⋃ s ∈ M.start ∪ M.accept, some '' M.step s a
+| some s, a => some '' (M.step s a \ M.accept) ∪ ⋃ _ ∈ M.step s a ∩ M.accept, {.none}
+
+def kstar : NFA α (Option σ) where
+  step := M.kstarStep
+  start := kstarStart
+  accept := kstarAccept
+
+theorem accepts_kstar : M.kstar.accepts = M.accepts∗ := by
+  ext x
+  simp [Language.kstar_def, kstar, accepts, eval]
+  rw [Set.mem_setOf]
+  rw [Set.mem_setOf]
+  sorry
+
+end kstar
+
+end NFA
+
 namespace Language
 
 protected theorem IsRegular.reverse {L : Language α} (h : L.IsRegular) : L.reverse.IsRegular :=
@@ -420,5 +455,10 @@ protected theorem IsRegular.of_reverse {L : Language α} (h : L.reverse.IsRegula
 @[simp]
 theorem isRegular_reverse_iff {L : Language α} : L.reverse.IsRegular ↔ L.IsRegular :=
   ⟨.of_reverse, .reverse⟩
+
+/-- Regular languages are closed under kleene star. -/
+theorem IsRegular_kstar {L : Language α} (h : L.IsRegular) : L∗.IsRegular :=
+  have ⟨σ, _, M, hM⟩ := h
+  ⟨_, inferInstance, M.toNFA.kstar.toDFA, by simp [hM, NFA.accepts_kstar]⟩
 
 end Language
