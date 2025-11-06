@@ -165,7 +165,7 @@ theorem endomHom_comp_apply
   simp [endomHom_apply, IsBaseChange.equiv_symm_apply]
 
 theorem endomHom_comp
-    {α : M →ₗ[R] P} (j : IsBaseChange S α) (f : M →ₗ[R] M) (m : M) :
+    {α : M →ₗ[R] P} (j : IsBaseChange S α) (f : M →ₗ[R] M) :
     (endomHom j f).restrictScalars R ∘ₗ α = α ∘ₗ f := by
   ext; simp [endomHom_comp_apply]
 

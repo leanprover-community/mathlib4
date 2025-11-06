@@ -7,6 +7,7 @@ Authors: Antoine Chambert-Loir
 import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
+
 /-!
 # Base change for the dual of a module
 
@@ -21,10 +22,6 @@ of `Module.Dual A (A ⊗[R] V)` deduced by base change.
 given by `Module.Dual.baseChange`.
 
 * `IsBaseChange.dual` : for finite free modules, taking dual commutes with base change.
-
-## TODO
-
-Generalize for more general modules of linear maps.
 
 -/
 
@@ -135,7 +132,7 @@ theorem toDualHom_comp_apply (f : Module.Dual R V) (v : V) :
   simp [toDualHom, toDual, Module.Dual.congr, LinearEquiv.congrLeft,
     IsBaseChange.equiv_symm_apply, Algebra.algebraMap_eq_smul_one]
 
-theorem toDualHom_comp (f : Module.Dual R V) (v : V) :
+theorem toDualHom_comp (f : Module.Dual R V) :
     (ibc.toDualHom f).restrictScalars R ∘ₗ j = Algebra.linearMap R A ∘ₗ f := by
   ext; simp [toDualHom_comp_apply]
 
@@ -193,5 +190,3 @@ theorem dual : IsBaseChange A (ibc.toDualHom) := by
   simp [toDualBaseChangeLinearEquiv, toDualBaseChangeHom]
 
 end IsBaseChange
-
-#min_imports
