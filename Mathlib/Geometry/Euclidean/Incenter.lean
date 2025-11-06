@@ -417,6 +417,69 @@ lemma incenter_ne_point (i : Fin (n + 1)) :
     s.incenter ≠ s.points i :=
   s.excenterExists_empty.excenter_ne_point i
 
+variable {s} in
+lemma ExcenterExists.excenterWeights_eq_excenterWeights_iff {signs₁ signs₂ : Finset (Fin (n + 1))}
+    (h₁ : s.ExcenterExists signs₁) (h₂ : s.ExcenterExists signs₂) :
+    s.excenterWeights signs₁ = s.excenterWeights signs₂ ↔ signs₁ = signs₂ ∨ signs₁ = signs₂ᶜ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · have hi : ∀ i, SignType.sign (s.excenterWeights signs₁ i) =
+        SignType.sign (s.excenterWeights signs₂ i) := by
+      simp [h]
+    simp_rw [excenterWeights, Pi.smul_apply, smul_eq_mul, sign_mul] at hi
+    have hn₁ : ∑ i, s.excenterWeightsUnnorm signs₁ i ≠ 0 := h₁
+    have hn₂ : ∑ i, s.excenterWeightsUnnorm signs₂ i ≠ 0 := h₂
+    rcases sign_eq_sign_or_eq_neg (inv_ne_zero hn₁) (inv_ne_zero hn₂) with hs | hs
+    · simp only [hs, mul_eq_mul_left_iff, sign_eq_zero_iff, inv_eq_zero, hn₂, or_false] at hi
+      simp only [excenterWeightsUnnorm, sign_mul, inv_pos, height_pos, sign_pos, mul_one] at hi
+      left
+      ext i
+      replace hi := hi i
+      split_ifs at hi <;> simp_all
+    · simp_rw [hs, neg_mul, ← mul_neg, mul_eq_mul_left_iff] at hi
+      simp only [sign_eq_zero_iff, inv_eq_zero, hn₂, or_false] at hi
+      simp only [excenterWeightsUnnorm, sign_mul, inv_pos, height_pos, sign_pos, mul_one] at hi
+      right
+      ext i
+      replace hi := hi i
+      split_ifs at hi <;> simp_all
+  · rcases h with rfl | rfl
+    · rfl
+    · simp
+
+variable {s} in
+lemma ExcenterExists.excenter_eq_excenter_iff {signs₁ signs₂ : Finset (Fin (n + 1))}
+    (h₁ : s.ExcenterExists signs₁) (h₂ : s.ExcenterExists signs₂) :
+    s.excenter signs₁ = s.excenter signs₂ ↔ signs₁ = signs₂ ∨ signs₁ = signs₂ᶜ := by
+  rw [excenter_eq_affineCombination,
+    h₂.affineCombination_eq_excenter_iff (s.sum_excenterWeights_eq_one_iff.2 h₁)]
+  exact h₁.excenterWeights_eq_excenterWeights_iff h₂
+
+variable {s} in
+lemma ExcenterExists.excenter_eq_incenter_iff {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) :
+    s.excenter signs = s.incenter ↔ signs = ∅ ∨ signs = Finset.univ := by
+  rw [incenter, ← excenter, h.excenter_eq_excenter_iff s.excenterExists_empty]
+  simp
+
+lemma excenter_singleton_ne_incenter [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
+    s.excenter {i} ≠ s.incenter := by
+  intro h
+  rw [(s.excenterExists_singleton i).excenter_eq_incenter_iff] at h
+  simp at h
+
+lemma excenter_singleton_injective [Nat.AtLeastTwo n] :
+    Function.Injective fun i ↦ s.excenter {i} := by
+  intro i j hij
+  dsimp only at hij
+  rw [(s.excenterExists_singleton i).excenter_eq_excenter_iff (s.excenterExists_singleton j)] at hij
+  rcases hij with hij | hij
+  · simpa using hij
+  · have : 2 ≤ n := Nat.AtLeastTwo.prop
+    obtain ⟨k, hki, hkj⟩ : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by cutsat)
+    rw [Finset.ext_iff] at hij
+    replace hij := hij k
+    simp_all
+
 /-- A touchpoint is where an exsphere of a simplex is tangent to one of the faces. -/
 def touchpoint (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : P :=
   (s.faceOpposite i).orthogonalProjectionSpan (s.excenter signs)

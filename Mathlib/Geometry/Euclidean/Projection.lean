@@ -310,6 +310,20 @@ lemma orthogonalProjection_eq_orthogonalProjection_iff_vsub_mem {s : AffineSubsp
     (vsub_orthogonalProjection_mem_direction_orthogonal s q)]
   simp
 
+/-- If the orthogonal projections of a point onto two subspaces are equal, so is the projection
+onto their supremum. -/
+lemma orthogonalProjection_sup_of_orthogonalProjection_eq {s₁ s₂ : AffineSubspace ℝ P} [Nonempty s₁]
+    [Nonempty s₂] [s₁.direction.HasOrthogonalProjection] [s₂.direction.HasOrthogonalProjection]
+    {p : P} (h : (orthogonalProjection s₁ p : P) = orthogonalProjection s₂ p)
+    [(s₁ ⊔ s₂).direction.HasOrthogonalProjection] :
+    (orthogonalProjection (s₁ ⊔ s₂) p : P) = orthogonalProjection s₁ p := by
+  rw [coe_orthogonalProjection_eq_iff_mem]
+  refine ⟨SetLike.le_def.1 le_sup_left (orthogonalProjection_mem _), ?_⟩
+  rw [direction_sup_eq_sup_direction (orthogonalProjection_mem p) (h ▸ orthogonalProjection_mem p),
+    ← Submodule.inf_orthogonal]
+  exact ⟨vsub_orthogonalProjection_mem_direction_orthogonal _ _,
+    h ▸ vsub_orthogonalProjection_mem_direction_orthogonal _ _⟩
+
 /-- Adding a vector to a point in the given subspace, then taking the
 orthogonal projection, produces the original point if the vector was
 in the orthogonal direction. -/
@@ -332,6 +346,14 @@ theorem orthogonalProjection_vadd_smul_vsub_orthogonalProjection {s : AffineSubs
     orthogonalProjection s (r • (p₂ -ᵥ orthogonalProjection s p₂ : V) +ᵥ p₁) = ⟨p₁, hp⟩ :=
   orthogonalProjection_vadd_eq_self hp
     (Submodule.smul_mem _ _ (vsub_orthogonalProjection_mem_direction_orthogonal s _))
+
+lemma orthogonalProjection_orthogonalProjection_of_le {s₁ s₂ : AffineSubspace ℝ P} [Nonempty s₁]
+    [Nonempty s₂] [s₁.direction.HasOrthogonalProjection] [s₂.direction.HasOrthogonalProjection]
+    (h : s₁ ≤ s₂) (p : P) :
+    orthogonalProjection s₁ (orthogonalProjection s₂ p) = orthogonalProjection s₁ p := by
+  rw [orthogonalProjection_eq_orthogonalProjection_iff_vsub_mem]
+  exact SetLike.le_def.1 (Submodule.orthogonal_le (direction_le h))
+    (orthogonalProjection_vsub_mem_direction_orthogonal _ _)
 
 /-- The square of the distance from a point in `s` to `p₂` equals the
 sum of the squares of the distances of the two points to the
