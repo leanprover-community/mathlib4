@@ -201,6 +201,63 @@ theorem index_eq_two_iff : H.index = 2 ↔ ∃ a, ∀ b, Xor' (b * a ∈ H) (b �
     exact one_mem _
   · rwa [ha, inv_mem_iff (x := b)]
 
+/-- A subgroup has index two if and only if there exists `a` such that for all `b`, exactly one
+of `a * b` and `b` belong to `H`. -/
+@[to_additive /-- An additive subgroup has index two if and only if there exists `a` such that
+for all `b`, exactly one of `a + b` and `b` belong to `H`. -/]
+theorem index_eq_two_iff' : H.index = 2 ↔ ∃ a, ∀ b, Xor' (a * b ∈ H) (b ∈ H) := by
+  rw [index_eq_two_iff, (Equiv.inv G).exists_congr]
+  refine fun a ↦ (Equiv.inv G).forall_congr fun b ↦ ?_
+  simp only [Equiv.inv_apply, inv_mem_iff, ← mul_inv_rev]
+
+/-- A subgroup `H` has index two if and only if there exists `a ∉ H` such that for all `b`, one
+of `b * a` and `b` belongs to `H`. -/
+@[to_additive /-- An additive subgroup `H` has index two if and only if there exists `a ∉ H` such
+that for all `b`, one of `b + a` and `b` belongs to `H`. -/]
+lemma index_eq_two_iff_exists_notMem_and :
+    H.index = 2 ↔ ∃ a, a ∉ H ∧ ∀ b, (b * a ∈ H) ∨ (b ∈ H) := by
+  simp only [index_eq_two_iff, xor_iff_or_and_not_and]
+  exact exists_congr fun a ↦ ⟨fun h ↦ ⟨fun ha ↦ ((h a)).2 ⟨mul_mem ha ha, ha⟩, fun b ↦ (h b).1⟩,
+    fun h b ↦ ⟨h.2 b, fun h' ↦ h.1 (by simpa using mul_mem (inv_mem h'.2) h'.1)⟩⟩
+
+/-- A subgroup `H` has index two if and only if there exists `a ∉ H` such that for all `b`, one
+of `a * b` and `b` belongs to `H`. -/
+@[to_additive /-- An additive subgroup has index two if and only if there exists `a ∉ H` such that
+for all `b`, one of `a + b` and `b` belongs to `H`. -/]
+lemma index_eq_two_iff_exists_notMem_and' :
+    H.index = 2 ↔ ∃ a, a ∉ H ∧ ∀ b, (a * b ∈ H) ∨ (b ∈ H) := by
+  simp only [index_eq_two_iff', xor_iff_or_and_not_and]
+  exact exists_congr fun a ↦ ⟨fun h ↦ ⟨fun ha ↦ ((h a)).2 ⟨mul_mem ha ha, ha⟩, fun b ↦ (h b).1⟩,
+    fun h b ↦ ⟨h.2 b, fun h' ↦ h.1 (by simpa using mul_mem h'.1 (inv_mem h'.2))⟩⟩
+
+/-- Relative version of `Subgroup.index_eq_two_iff`. -/
+@[to_additive /-- Relative version of `AddSubgroup.index_eq_two_iff`. -/]
+theorem relIndex_eq_two_iff : H.relIndex K = 2 ↔ ∃ a ∈ K, ∀ b ∈ K, Xor' (b * a ∈ H) (b ∈ H) := by
+  simp [Subgroup.relIndex, Subgroup.index_eq_two_iff, mem_subgroupOf]
+
+/-- Relative version of `Subgroup.index_eq_two_iff'`. -/
+@[to_additive /-- Relative version of `AddSubgroup.index_eq_two_iff'`. -/]
+theorem relIindex_eq_two_iff' : H.relIndex K = 2 ↔ ∃ a ∈ K, ∀ b ∈ K, Xor' (a * b ∈ H) (b ∈ H) := by
+  simp [Subgroup.relIndex, Subgroup.index_eq_two_iff', mem_subgroupOf]
+
+/-- Relative version of `Subgroup.index_eq_two_iff_exists_notMem_and`. -/
+@[to_additive /-- Relative version of `AddSubgroup.index_eq_two_iff_exists_notMem_and`. -/]
+lemma relIndex_eq_two_iff_exists_notMem_and :
+    H.relIndex K = 2 ↔ ∃ a ∈ K, a ∉ H ∧ ∀ b ∈ K, (b * a ∈ H) ∨ (b ∈ H) := by
+  rw [Subgroup.relIndex, Subgroup.index_eq_two_iff_exists_notMem_and]
+  simp only [mem_subgroupOf, coe_mul, Subtype.forall, Subtype.exists, exists_and_left, exists_prop]
+  refine exists_congr fun g ↦ ?_
+  simp only [and_left_comm]
+
+/-- Relative version of `Subgroup.index_eq_two_iff_exists_notMem_and'`. -/
+@[to_additive /-- Relative version of `AddSubgroup.index_eq_two_iff_exists_notMem_and'`. -/]
+lemma relIndex_eq_two_iff_exists_notMem_and' :
+    H.relIndex K = 2 ↔ ∃ a ∈ K, a ∉ H ∧ ∀ b ∈ K, (a * b ∈ H) ∨ (b ∈ H) := by
+  rw [Subgroup.relIndex, Subgroup.index_eq_two_iff_exists_notMem_and']
+  simp only [mem_subgroupOf, coe_mul, Subtype.forall, Subtype.exists, exists_and_left, exists_prop]
+  refine exists_congr fun g ↦ ?_
+  simp only [and_left_comm]
+
 @[to_additive]
 theorem mul_mem_iff_of_index_two (h : H.index = 2) {a b : G} : a * b ∈ H ↔ (a ∈ H ↔ b ∈ H) := by
   by_cases ha : a ∈ H; · simp only [ha, true_iff, mul_mem_cancel_left ha]
@@ -429,7 +486,7 @@ theorem relIndex_inf_le : (H ⊓ K).relIndex L ≤ H.relIndex L * K.relIndex L :
   · exact (le_of_eq (relIndex_eq_zero_of_le_left inf_le_left h)).trans (zero_le _)
   rw [← inf_relIndex_right, inf_assoc, ← relIndex_mul_relIndex _ _ L inf_le_right inf_le_right,
     inf_relIndex_right, inf_relIndex_right]
-  exact mul_le_mul_right' (relIndex_le_of_le_right inf_le_right h) (K.relIndex L)
+  grw [relIndex_le_of_le_right inf_le_right h]
 
 @[deprecated (since := "2025-08-12")] alias relindex_inf_le := relIndex_inf_le
 
@@ -483,6 +540,48 @@ theorem relIndex_eq_one : H.relIndex K = 1 ↔ K ≤ H :=
 @[to_additive (attr := simp) card_eq_one]
 theorem card_eq_one : Nat.card H = 1 ↔ H = ⊥ :=
   H.relIndex_bot_left ▸ relIndex_eq_one.trans le_bot_iff
+
+/-- A subgroup has index dividing 2 if and only if there exists `a` such that for all `b`, at least
+one of `b * a` and `b` belongs to `H`. -/
+@[to_additive /-- An additive subgroup has index dividing 2 if and only if there exists `a` such
+that for all `b`, at least one of `b + a` and `b` belongs to `H`. -/]
+theorem index_dvd_two_iff : H.index ∣ 2 ↔ ∃ a, ∀ b, (b * a ∈ H) ∨ (b ∈ H) where
+  mp hH := by
+    obtain (hH | hH) : H.index = 1 ∨ H.index = 2 := by
+      -- This is just showing that 2 is prime, but we do it "longhand" to avoid making any
+      -- dependence on number theory files.
+      have := Nat.le_succ_iff.mp (Nat.le_of_dvd two_pos hH)
+      rw [Nat.le_one_iff_eq_zero_or_eq_one, or_assoc] at this
+      exact this.resolve_left fun h ↦ (two_ne_zero <| Nat.zero_dvd.mp (h ▸ hH)).elim
+    · simp [index_eq_one.mp hH]
+    · exact match index_eq_two_iff.mp hH with | ⟨a, ha⟩ => ⟨a, fun b ↦ (ha b).or⟩
+  mpr := by
+    rintro ⟨a, ha⟩
+    by_cases ha' : a ∈ H
+    · suffices ∀ b, b ∈ H by simp [(eq_top_iff' _).mpr this]
+      exact fun b ↦ (ha b).elim (fun h ↦ by simpa using mul_mem h (inv_mem ha')) id
+    · refine dvd_of_eq (index_eq_two_iff.mpr
+        ⟨a, fun b ↦ (xor_iff_or_and_not_and _ _).mpr ⟨ha b, fun h ↦ ha' ?_⟩⟩)
+      simpa using mul_mem (inv_mem h.2) h.1
+
+/-- A subgroup has index dividing 2 if and only if there exists `a` such that for all `b`, at least
+one of `a * b` and `b` belongs to `H`. -/
+@[to_additive /-- An additive subgroup has index dividing 2 if and only if there exists `a` such
+that for all `b`, at least one of `a + b` and `b` belongs to `H`. -/]
+theorem index_dvd_two_iff' : H.index ∣ 2 ↔ ∃ a, ∀ b, (a * b ∈ H) ∨ (b ∈ H) := by
+  rw [index_dvd_two_iff, (Equiv.inv G).exists_congr]
+  refine fun a ↦ (Equiv.inv G).forall_congr fun b ↦ ?_
+  simp only [Equiv.inv_apply, inv_mem_iff, ← mul_inv_rev]
+
+/-- Relative version of `Subgroup.index_dvd_two_iff`. -/
+@[to_additive /-- Relative version of `AddSubgroup.index_dvd_two_iff`. -/]
+theorem relIndex_dvd_two_iff : H.relIndex K ∣ 2 ↔ ∃ a ∈ K, ∀ b ∈ K, (b * a ∈ H) ∨ (b ∈ H) := by
+  simp [Subgroup.relIndex, Subgroup.index_dvd_two_iff, mem_subgroupOf]
+
+/-- Relative version of `Subgroup.index_dvd_two_iff'`. -/
+@[to_additive /-- Relative version of `AddSubgroup.index_dvd_two_iff'`. -/]
+theorem relIindex_dvd_two_iff' : H.relIndex K ∣ 2 ↔ ∃ a ∈ K, ∀ b ∈ K, (a * b ∈ H) ∨ (b ∈ H) := by
+  simp [Subgroup.relIndex, Subgroup.index_dvd_two_iff', mem_subgroupOf]
 
 @[to_additive]
 lemma inf_eq_bot_of_coprime (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ K = ⊥ :=
@@ -552,7 +651,7 @@ lemma exists_pow_mem_of_index_ne_zero (h : H.index ≠ 0) (a : G) :
     dsimp only [f] at he
     simpa [hle₁, hle₂, he] using hc'
   have := (fintypeOfIndexNeZero h).finite
-  have hcard := Finite.card_le_of_injective f hf
+  have hcard := Nat.card_le_card_of_injective f hf
   simp [← index_eq_card] at hcard
 
 @[to_additive]
@@ -588,9 +687,6 @@ lemma index_prod (H : Subgroup G) (K : Subgroup G') : (H.prod K).index = H.index
   refine Nat.card_congr
     ((Quotient.congrRight (fun x y ↦ ?_)).trans (Setoid.prodQuotientEquiv _ _).symm)
   rw [QuotientGroup.leftRel_prod]
-
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddSubgroup.index_sum := AddSubgroup.index_prod
 
 @[to_additive (attr := simp)]
 lemma index_pi {ι : Type*} [Fintype ι] (H : ι → Subgroup G) :
@@ -632,17 +728,12 @@ class _root_.AddSubgroup.FiniteIndex {G : Type*} [AddGroup G] (H : AddSubgroup G
   recall that `AddSubgroup.index` returns 0 when the index is infinite. -/
   index_ne_zero : H.index ≠ 0
 
-@[deprecated (since := "2025-04-13")]
-alias _root_AddSubgroup.FiniteIndex.finiteIndex := AddSubgroup.FiniteIndex.index_ne_zero
-
 variable (H) in
 /-- Typeclass for finite index subgroups. -/
 @[to_additive] class FiniteIndex : Prop where
   /-- The subgroup has finite index;
   recall that `Subgroup.index` returns 0 when the index is infinite. -/
   index_ne_zero : H.index ≠ 0
-
-@[deprecated (since := "2025-04-13")] alias FiniteIndex.finiteIndex := FiniteIndex.index_ne_zero
 
 /-- Typeclass for a subgroup `H` to have finite index in a subgroup `K`. -/
 class _root_.AddSubgroup.IsFiniteRelIndex {G : Type*} [AddGroup G] (H K : AddSubgroup G) :

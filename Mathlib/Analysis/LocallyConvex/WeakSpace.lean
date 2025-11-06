@@ -3,7 +3,7 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
+import Mathlib.Analysis.LocallyConvex.Separation
 import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.Topology.Algebra.Module.WeakDual
 
@@ -51,6 +51,14 @@ theorem Convex.toWeakSpace_closure {s : Set E} (hs : Convex ℝ s) :
     rintro - ⟨y, hy, rfl⟩
     simpa [f'] using (hus y <| subset_closure hy).le
   exact (hux'.not_ge <| hus' ·)
+
+open ComplexOrder in
+theorem toWeakSpace_closedConvexHull_eq {s : Set E} :
+    (toWeakSpace 𝕜 E) '' (closedConvexHull 𝕜 s) = closedConvexHull 𝕜 (toWeakSpace 𝕜 E '' s) := by
+  rw [closedConvexHull_eq_closure_convexHull (𝕜 := 𝕜),
+    ((convex_convexHull 𝕜 s).lift ℝ).toWeakSpace_closure _, closedConvexHull_eq_closure_convexHull]
+  congr
+  refine LinearMap.image_convexHull (toWeakSpace 𝕜 E).toLinearMap s
 
 /-- If `e : E →ₗ[𝕜] F` is a linear map between locally convex spaces, and `f ∘ e` is continuous
 for every continuous linear functional `f : StrongDual 𝕜 F`, then `e` commutes with the closure on

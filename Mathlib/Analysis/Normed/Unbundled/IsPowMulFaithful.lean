@@ -75,7 +75,7 @@ theorem eq_seminorms {F : Type*} {α : outParam (Type*)} [Ring α] [FunLike F α
 variable {R S : Type*} [NormedCommRing R] [CommRing S] [Algebra R S]
 
 /-- If `R` is a normed commutative ring and `f₁` and `f₂` are two power-multiplicative `R`-algebra
-  norms on `S`, then if `f₁` and `f₂` are equivalent on every  subring `R[y]` for `y : S`, it
+  norms on `S`, then if `f₁` and `f₂` are equivalent on every subring `R[y]` for `y : S`, it
   follows that `f₁ = f₂` [BGR, Proposition 3.1.5/1][bosch-guntzer-remmert]. -/
 theorem eq_of_powMul_faithful (f₁ : AlgebraNorm R S) (hf₁_pm : IsPowMul f₁) (f₂ : AlgebraNorm R S)
     (hf₂_pm : IsPowMul f₂)
