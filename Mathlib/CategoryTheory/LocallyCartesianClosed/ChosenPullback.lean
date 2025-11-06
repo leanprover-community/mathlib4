@@ -84,23 +84,15 @@ def comp {Z Y X : C} (f : Y ⟶ X) (g : Z ⟶ Y)
   mapPullbackAdj := ((mapPullbackAdj g).comp (mapPullbackAdj f)).ofNatIsoLeft
     (Over.mapComp g f).symm
 
-/-- In cartesian monoidal categories, any morphism to the terminal object has a chosen pullback. -/
+/-- In cartesian monoidal categories, any morphism to the terminal tensor unit has a chosen
+pullback. -/
 @[simps]
 def cartesianMonoidalCategoryToTerminal [CartesianMonoidalCategory C] {X : C} (f : X ⟶ 𝟙_ C) :
     ChosenPullback f where
-  pullback.obj Y := Over.mk (fst X Y.left)
-  pullback.map {Y Z} g := Over.homMk (X ◁ g.left)
-  mapPullbackAdj := Adjunction.mkOfHomEquiv
-    { homEquiv U Z :=
-      { toFun z := Over.homMk (lift U.hom z.left)
-        invFun u := Over.homMk (u.left ≫ snd X Z.left)
-        left_inv k := by simp
-        right_inv k := by
-          ext
-          dsimp
-          ext
-          · simpa using k.w.symm
-          · aesop } }
+  pullback.obj Y := Over.mk (snd Y.left X)
+  pullback.map {Y Z} g := Over.homMk (g.left ▷ X)
+  mapPullbackAdj.unit.app T := Over.homMk (lift (𝟙 _) (T.hom))
+  mapPullbackAdj.counit.app U := Over.homMk (fst _ _)
 
 /-- In cartesian monoidal categories, the first product projections `fst` have chosen pullbacks. -/
 @[simps]
