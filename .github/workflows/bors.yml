@@ -25,7 +25,7 @@ env:
 concurrency:
   # label each workflow run; only the latest with each label will run
   # workflows on master get more expressive labels
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ (contains(fromJSON('["refs/heads/master", "refs/heads/staging"]'), github.ref) && github.run_id) || '' }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ (github.event_name == 'push' && contains(fromJSON('["refs/heads/master", "refs/heads/staging"]'), github.ref) && github.run_id) || '' }}
   # cancel any running workflow with the same label
   cancel-in-progress: true
 
@@ -54,6 +54,17 @@ jobs:
       run:
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
     steps:
+      - name: job info
+        env:
+          WORKFLOW: ${{ github.workflow }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REF: ${{ github.ref }}
+          EVENT_NAME: ${{ github.event_name }}
+          RUN_ID: ${{ github.run_id }}
+          CONCURRENCY_GROUP: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ (github.event_name == 'push' && contains(fromJSON('["refs/heads/master", "refs/heads/staging"]'), github.ref) && github.run_id) || '' }}
+        run: |
+          # We can view these values in the logs under the step environment variables
+          # landrun doesn't see env variables anyways
       - name: cleanup
         shell: bash    # This *just* deletes old files, so is safe to run outside landrun.
         run: |
