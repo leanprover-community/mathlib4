@@ -27,7 +27,7 @@ instance Pi.instStarOrderedRing : StarOrderedRing (Π i, A i) where
         Set.mem_univ, forall_const]
       exact ⟨fun ⟨y, hy⟩ i => ⟨y i, hy i⟩, fun h => ⟨fun i => h i |>.choose,
         fun i => h i |>.choose_spec⟩⟩
-    simp only [this, mem_pi, Set.mem_univ, forall_const]
+    simp only [this, Pi.le_def, StarOrderedRing.le_iff, mem_pi, Set.mem_univ, forall_const]
     refine ⟨fun h => ?_, ?_⟩
     · simp only [funext_iff, add_apply]
       exact ⟨fun i => h i |>.choose, fun i => h i |>.choose_spec.1, fun i => h i |>.choose_spec.2⟩
