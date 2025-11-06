@@ -405,7 +405,7 @@ theorem lift_comp_kernelIsoOfEq_inv {Z} {f g : X ⟶ Y} [HasKernel f] [HasKernel
 @[simp]
 theorem kernelIsoOfEq_trans {f g h : X ⟶ Y} [HasKernel f] [HasKernel g] [HasKernel h] (w₁ : f = g)
     (w₂ : g = h) : kernelIsoOfEq w₁ ≪≫ kernelIsoOfEq w₂ = kernelIsoOfEq (w₁.trans w₂) := by
-  cases w₁; cases w₂; ext; simp [kernelIsoOfEq]
+  cases w₁; simp
 
 variable {f}
 
@@ -898,7 +898,7 @@ theorem cokernelIsoOfEq_inv_comp_desc {Z} {f g : X ⟶ Y} [HasCokernel f] [HasCo
 theorem cokernelIsoOfEq_trans {f g h : X ⟶ Y} [HasCokernel f] [HasCokernel g] [HasCokernel h]
     (w₁ : f = g) (w₂ : g = h) :
     cokernelIsoOfEq w₁ ≪≫ cokernelIsoOfEq w₂ = cokernelIsoOfEq (w₁.trans w₂) := by
-  cases w₁; cases w₂; ext; simp [cokernelIsoOfEq]
+  cases w₁; simp
 
 variable {f}
 
@@ -1220,4 +1220,35 @@ instance (priority := 100) hasKernels_of_hasEqualizers [HasEqualizers C] : HasKe
 instance (priority := 100) hasCokernels_of_hasCoequalizers [HasCoequalizers C] :
     HasCokernels C where
 
+section HasKernels
+variable [HasKernels C]
+
+/-- The kernel of an arrow is natural. -/
+@[simps]
+noncomputable def ker : Arrow C ⥤ C where
+  obj f := kernel f.hom
+  map {f g} u := kernel.lift _ (kernel.ι _ ≫ u.left) (by simp)
+
+/-- The kernel inclusion is natural. -/
+@[simps] def ker.ι : ker (C := C) ⟶ Arrow.leftFunc where app f := kernel.ι _
+
+@[reassoc (attr := simp)] lemma ker.condition : ι C ≫ Arrow.leftToRight = 0 := by cat_disch
+
+end HasKernels
+
+section HasCokernels
+variable [HasCokernels C]
+
+/-- The cokernel of an arrow is natural. -/
+@[simps]
+noncomputable def coker : Arrow C ⥤ C where
+  obj f := cokernel f.hom
+  map {f g} u := cokernel.desc _ (u.right ≫ cokernel.π _) (by simp [← Arrow.w_assoc u])
+
+/-- The cokernel projection is natural. -/
+@[simps] def coker.π : Arrow.rightFunc ⟶ coker (C := C) where app f := cokernel.π _
+
+@[reassoc (attr := simp)] lemma coker.condition : Arrow.leftToRight ≫ π C = 0 := by cat_disch
+
+end HasCokernels
 end CategoryTheory.Limits
