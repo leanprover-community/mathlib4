@@ -203,34 +203,30 @@ theorem reduce_flatten_replicate (h : IsReduced L) (n : ℕ) :
 
 end reduceCyclically
 
-section pow_left_inj
+section IsMulTorsionFree
 variable [DecidableEq α]
 open reduceCyclically
 
-@[to_additive FreeAddGroup.nsmul_right_inj]
-theorem pow_left_inj {x y : FreeGroup α} {n : ℕ} (hn : n ≠ 0) : x ^ n = y ^ n ↔ x = y := by
-  refine ⟨fun heq => ?_, congr_arg (· ^ n)⟩
-  have heq₂ : x ^ (2 * n) = y ^ (2 * n) := by
-    apply_fun (· ^ 2) at heq
-    rwa [mul_comm, pow_mul, pow_mul]
-  have hn₂ : 2 * n ≠ 0 := by omega
-  apply_fun toWord at heq heq₂
-  simp only [toWord_pow, reduce_flatten_replicate, x.isReduced_toWord,
-    y.isReduced_toWord, hn, ↓reduceIte, append_assoc, hn₂] at heq heq₂
-  have leq := congr_arg List.length heq
-  have leq₂ := congr_arg List.length heq₂
-  simp only [length_append, length_flatten, map_replicate, sum_replicate, smul_eq_mul,
-    invRev_length] at leq leq₂
-  obtain ⟨hc, heq⟩ := List.append_inj heq (by grind)
-  obtain ⟨n, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn
-  simp only [replicate_succ, flatten_cons, append_assoc] at heq
-  obtain ⟨hm, heq⟩ := List.append_inj heq <| mul_left_cancel₀ hn <| by grind
-  have := congr_arg mk <| (conj_conjugator_reduceCyclically x.toWord).symm
-  rwa [hc, hm, conj_conjugator_reduceCyclically, mk_toWord, mk_toWord] at this
-
 @[to_additive]
 instance : IsMulTorsionFree (FreeGroup α) where
-  pow_left_injective _ hn := fun _ _ => (pow_left_inj hn).mp
+  pow_left_injective n hn x y heq := by
+    have heq₂ : x ^ (2 * n) = y ^ (2 * n) := by
+      apply_fun (· ^ 2) at heq
+      rwa [mul_comm, pow_mul, pow_mul]
+    have hn₂ : 2 * n ≠ 0 := by omega
+    apply_fun toWord at heq heq₂
+    simp only [toWord_pow, reduce_flatten_replicate, x.isReduced_toWord,
+      y.isReduced_toWord, hn, ↓reduceIte, append_assoc, hn₂] at heq heq₂
+    have leq := congr_arg List.length heq
+    have leq₂ := congr_arg List.length heq₂
+    simp only [length_append, length_flatten, map_replicate, sum_replicate, smul_eq_mul,
+      invRev_length] at leq leq₂
+    obtain ⟨hc, heq⟩ := List.append_inj heq (by grind)
+    obtain ⟨n, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn
+    simp only [replicate_succ, flatten_cons, append_assoc] at heq
+    obtain ⟨hm, heq⟩ := List.append_inj heq <| mul_left_cancel₀ hn <| by grind
+    have := congr_arg mk <| (conj_conjugator_reduceCyclically x.toWord).symm
+    rwa [hc, hm, conj_conjugator_reduceCyclically, mk_toWord, mk_toWord] at this
 
-end pow_left_inj
+end IsMulTorsionFree
 end FreeGroup
