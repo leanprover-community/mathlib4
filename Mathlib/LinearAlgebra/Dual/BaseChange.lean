@@ -139,7 +139,7 @@ theorem toDualHom_comp_apply (f : Module.Dual R V) (v : V) :
   simp [toDualHom, toDual, Module.Dual.congr, LinearEquiv.congrLeft,
     IsBaseChange.equiv_symm_apply, Algebra.algebraMap_eq_smul_one]
 
-theorem toDualHom_comp (f : Module.Dual R V) (v : V) :
+theorem toDualHom_comp (f : Module.Dual R V) :
     (ibc.toDualHom f).restrictScalars R ∘ₗ j = Algebra.linearMap R A ∘ₗ f := by
   ext; simp [toDualHom_comp_apply]
 
