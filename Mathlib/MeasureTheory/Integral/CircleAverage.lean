@@ -205,6 +205,7 @@ theorem circleAverage_const_on_circle [CompleteSpace E] {a : E}
 /--
 Circle averages respect the `≤` relation.
 -/
+@[gcongr]
 theorem circleAverage_mono {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → ℝ} (hf₁ : CircleIntegrable f₁ c R)
     (hf₂ : CircleIntegrable f₂ c R) (h : ∀ x ∈ Metric.sphere c |R|, f₁ x ≤ f₂ x) :
     circleAverage f₁ c R ≤ circleAverage f₂ c R := by

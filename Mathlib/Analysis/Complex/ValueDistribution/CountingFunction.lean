@@ -133,22 +133,16 @@ theorem logCounting_nonneg {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
     {f : locallyFinsuppWithin (univ : Set E) ℤ} {r : ℝ} (h : 0 ≤ f) (hr : 1 ≤ r) :
     0 ≤ logCounting f r := by
   have h₃r : 0 < r := by linarith
-  apply add_nonneg
-  · apply finsum_nonneg
-    · intro a
-      by_cases h₁a : a = 0
-      · simp_all
-      by_cases h₂a : a ∈ closedBall 0 |r|
-      · apply mul_nonneg
-        · simpa [toClosedBall, restrictMonoidHom_apply, restrict_apply, h₂a] using h a
-        · rw [log_nonneg_iff]
-          · rw [← inv_le_iff_one_le_mul₀]
-            · rw [inv_inv, ← abs_of_pos h₃r]
-              simp_all
-            · rwa [inv_pos, norm_pos_iff]
-          · simp_all
-      · simp [apply_eq_zero_of_notMem ((toClosedBall r) _) h₂a]
-  · apply mul_nonneg (by simpa using h 0) (log_nonneg hr)
+  suffices ∀ z, 0 ≤ (((toClosedBall r) f) z) * log (r * ‖z‖⁻¹) from
+    add_nonneg (finsum_nonneg this) <| mul_nonneg (by simpa using h 0) (log_nonneg hr)
+  intro a
+  by_cases h₁a : a = 0
+  · simp_all
+  by_cases h₂a : a ∈ closedBall 0 |r|
+  · refine mul_nonneg ?_ <| log_nonneg ?_
+    · simpa [toClosedBall, restrict_apply, h₂a] using h a -- this should just be a lemma about `toClosedBall`
+    · simpa [mul_comm r, one_le_inv_mul₀ (norm_pos_iff.mpr h₁a), abs_of_pos h₃r] using h₂a
+  · simp [apply_eq_zero_of_notMem ((toClosedBall r) _) h₂a]
 
 /--
 For `1 ≤ r`, the counting function respects the `≤` relation.

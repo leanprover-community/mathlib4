@@ -75,8 +75,7 @@ theorem characteristic_zero_mul_le {f₁ f₂ : ℂ → ℂ} {r : ℝ} (hr : 1 �
     (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z ∈ univ, meromorphicOrderAt f₂ z ≠ ⊤) :
     characteristic (f₁ * f₂) 0 r ≤ (characteristic f₁ 0 + characteristic f₂ 0) r := by
   simp only [characteristic, Pi.add_apply]
-  have {A B C D : ℝ} : A + B + (C + D) = (A + C) + (B + D) := by ring
-  rw [this]
+  rw [add_add_add_comm]
   apply add_le_add (proximity_zero_mul_le h₁f₁ h₁f₂ r)
     (logCounting_zero_mul_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂)
 
@@ -100,8 +99,7 @@ theorem characteristic_top_mul_le {f₁ f₂ : ℂ → ℂ} {r : ℝ} (hr : 1 �
     (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z ∈ univ, meromorphicOrderAt f₂ z ≠ ⊤) :
     characteristic (f₁ * f₂) ⊤ r ≤ (characteristic f₁ ⊤ + characteristic f₂ ⊤) r := by
   simp only [characteristic, Pi.add_apply]
-  have {A B C D : ℝ} : A + B + (C + D) = (A + C) + (B + D) := by ring
-  rw [this]
+  rw [add_add_add_comm]
   apply add_le_add (proximity_top_mul_le h₁f₁ h₁f₂ r)
     (logCounting_top_mul_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂)
 
