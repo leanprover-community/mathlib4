@@ -23,7 +23,6 @@ section MulZeroClass
 variable [MulZeroClass α] {a b : WithTop α}
 
 instance instMulZeroClass : MulZeroClass (WithTop α) where
-  zero := 0
   mul
     | (a : α), (b : α) => ↑(a * b)
     | (a : α), ⊤ => if a = 0 then 0 else ⊤
@@ -374,9 +373,7 @@ instance instCommSemiring [CommSemiring α] [PartialOrder α] [CanonicallyOrdere
   WithTop.instCommSemiring
 
 instance [MulZeroClass α] [Preorder α] [PosMulMono α] : PosMulMono (WithBot α) where
-  elim := by
-    intro ⟨x, x0⟩ a b h
-    simp only
+  mul_le_mul_of_nonneg_left x x0 a b h := by
     rcases eq_or_ne x 0 with rfl | x0'
     · simp
     lift x to α
@@ -391,9 +388,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulMono α] : PosMulMono (WithBot �
     exact mul_le_mul_of_nonneg_left h x0
 
 instance [MulZeroClass α] [Preorder α] [MulPosMono α] : MulPosMono (WithBot α) where
-  elim := by
-    intro ⟨x, x0⟩ a b h
-    simp only
+  mul_le_mul_of_nonneg_right x x0 a b h := by
     rcases eq_or_ne x 0 with rfl | x0'
     · simp
     lift x to α
@@ -408,9 +403,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosMono α] : MulPosMono (WithBot �
     exact mul_le_mul_of_nonneg_right h x0
 
 instance [MulZeroClass α] [Preorder α] [PosMulStrictMono α] : PosMulStrictMono (WithBot α) where
-  elim := by
-    intro ⟨x, x0⟩ a b h
-    simp only
+  mul_lt_mul_of_pos_left x x0 a b h := by
     lift x to α using x0.ne_bot
     cases b
     · exact absurd h not_lt_bot
@@ -421,9 +414,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulStrictMono α] : PosMulStrictMon
     exact mul_lt_mul_of_pos_left h x0
 
 instance [MulZeroClass α] [Preorder α] [MulPosStrictMono α] : MulPosStrictMono (WithBot α) where
-  elim := by
-    intro ⟨x, x0⟩ a b h
-    simp only
+  mul_lt_mul_of_pos_right x x0 a b h := by
     lift x to α using x0.ne_bot
     cases b
     · exact absurd h not_lt_bot
@@ -500,7 +491,5 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLE α] : MulPosReflectLE 
 instance instIsOrderedRing [CommSemiring α] [PartialOrder α] [IsOrderedRing α]
     [CanonicallyOrderedAdd α] [NoZeroDivisors α] [Nontrivial α] :
     IsOrderedRing (WithBot α) where
-  mul_le_mul_of_nonneg_left  _ _ _ := mul_le_mul_of_nonneg_left
-  mul_le_mul_of_nonneg_right _ _ _ := mul_le_mul_of_nonneg_right
 
 end WithBot
