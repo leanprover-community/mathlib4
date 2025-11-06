@@ -106,6 +106,11 @@ theorem of_ofAlgEquiv_symm (x : AdicCompletion I S) :
     of I S ((ofAlgEquiv I).symm x) = x := by
   simp [ofAlgEquiv]
 
+@[simp]
+theorem ofAlgEquiv_symm_of (x : S) :
+    (ofAlgEquiv I).symm (of I S x) = x := by
+  simp [ofAlgEquiv]
+
 theorem mk_smul_top_ofAlgEquiv_symm (n : ℕ) (x : AdicCompletion I S) :
     Ideal.Quotient.mk (I ^ n • ⊤) ((ofAlgEquiv I).symm x) = eval I S n x := by
   nth_rw 2 [← of_ofAlgEquiv_symm I x]
