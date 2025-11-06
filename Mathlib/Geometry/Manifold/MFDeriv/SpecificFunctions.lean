@@ -662,7 +662,7 @@ end Prod
 
 section disjointUnion
 
-variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {s : Set (M ⊕ M')} {p : M ⊕ M'}
+variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {p : M ⊕ M'}
 
 /-- In extended charts at `p`, `Sum.swap` looks like the identity near `p`. -/
 lemma writtenInExtChartAt_sumSwap_eventuallyEq_id :
@@ -704,7 +704,7 @@ theorem hasMFDerivAt_sumSwap :
     cases p <;> simp
 
 @[simp]
-theorem mfderivWithin_sumSwap (hs : UniqueMDiffWithinAt I s p) :
+theorem mfderivWithin_sumSwap {s : Set (M ⊕ M')} (hs : UniqueMDiffWithinAt I s p) :
     mfderivWithin I I (@Sum.swap M M') s p = ContinuousLinearMap.id 𝕜 (TangentSpace I p) :=
   hasMFDerivAt_sumSwap.hasMFDerivWithinAt.mfderivWithin hs
 
