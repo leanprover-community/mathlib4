@@ -5,7 +5,7 @@ Authors: Dion Leijnse
 -/
 
 import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.TensorProduct.Maps
 import Mathlib.RingTheory.Adjoin.FG
 
 /-!
