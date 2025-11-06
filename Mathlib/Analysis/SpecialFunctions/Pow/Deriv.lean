@@ -671,18 +671,18 @@ lemma isBigO_deriv_rpow_const_atTop (p : ℝ) :
 variable {a : ℝ}
 
 theorem HasDerivWithinAt.const_rpow (ha : 0 < a) (hf : HasDerivWithinAt f f' s x) :
-    HasDerivWithinAt (fun x ↦ a ^ f x) (Real.log a * f' * a ^ f x) s x := by
+    HasDerivWithinAt (a ^ f ·) (Real.log a * f' * a ^ f x) s x := by
   convert (hasDerivWithinAt_const x s a).rpow hf ha using 1
   ring
 
 theorem HasDerivAt.const_rpow (ha : 0 < a) (hf : HasDerivAt f f' x) :
-    HasDerivAt (fun x ↦ a ^ f x) (Real.log a * f' * a ^ f x) x := by
+    HasDerivAt (a ^ f ·) (Real.log a * f' * a ^ f x) x := by
   rw [← hasDerivWithinAt_univ] at *
   exact hf.const_rpow ha
 
 theorem derivWithin_const_rpow (ha : 0 < a) (hf : DifferentiableWithinAt ℝ f s x)
     (hxs : UniqueDiffWithinAt ℝ s x) :
-    derivWithin (fun x => a ^ f x) s x = Real.log a * derivWithin f s x * a ^ f x :=
+    derivWithin (a ^ f ·) s x = Real.log a * derivWithin f s x * a ^ f x :=
   (hf.hasDerivWithinAt.const_rpow ha).derivWithin hxs
 
 @[simp]
