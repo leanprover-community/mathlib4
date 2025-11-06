@@ -170,7 +170,7 @@ lemma continuous_iff (g : Y → Z) :
     Continuous g ↔ ∀ ⦃i : ι⦄ (f : C(X i, Y)), Continuous (g ∘ f) := by
   rw [(homeomorph (X := X)).isQuotientMap.continuous_iff,
     WithGeneratedByTopology.continuous_from_iff]
-  rfl
+  simp [Function.comp_assoc g, ← Function.comp_assoc WithGeneratedByTopology.equiv]
 
 lemma equiv_symm_comp_continuous_iff (g : Y → Z) :
     Continuous ((WithGeneratedByTopology.equiv (X := X)).symm ∘ g) ↔ Continuous g := by
