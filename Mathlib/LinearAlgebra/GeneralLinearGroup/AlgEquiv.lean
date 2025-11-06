@@ -47,7 +47,7 @@ theorem AlgEquiv.coe_eq_linearEquiv_conj [Free K V] (f : End K V ≃ₐ[K] End K
   obtain ⟨u, hu⟩ := exists_ne (0 : V)
   obtain ⟨v, huv⟩ := exists_dual_ne_zero K hu
   obtain ⟨z, hz⟩ : ∃ z : V, ¬ f (smulRightₗ v u) z = (0 : End K V) z := by
-    rw [← not_forall, ← LinearMap.ext_iff, _root_.map_eq_zero_iff _ f.injective, LinearMap.ext_iff]
+    rw [← not_forall, ← LinearMap.ext_iff, EmbeddingLike.map_eq_zero_iff, LinearMap.ext_iff]
     exact not_forall.mpr ⟨u, huv.isUnit.smul_eq_zero.not.mpr hu⟩
   set T := auxLinear f v z
   have this A x : T (A x) = f A (T x) := auxLinear_map_apply f.toAlgHom v z A x
