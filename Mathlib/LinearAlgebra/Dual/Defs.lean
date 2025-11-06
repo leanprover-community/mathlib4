@@ -48,8 +48,8 @@ namespace Module
 variable (R A M : Type*)
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-/-- The dual space of an R-module M is the R-module of linear maps `M → R`. -/
-abbrev Dual :=
+/-- The left dual space of an R-module M is the R-module of linear maps `M → R`. -/
+abbrev Dual (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] :=
   M →ₗ[R] R
 
 /-- The canonical pairing of a vector space and its algebraic dual. -/
@@ -63,7 +63,7 @@ theorem dualPairing_apply (v x) : dualPairing R M v x = v x :=
 
 namespace Dual
 
-instance : Inhabited (Dual R M) := ⟨0⟩
+instance (R : Type*) [Semiring R] [Module R M] : Inhabited (Dual R M) := ⟨0⟩
 
 /-- Maps a module M to the dual of the dual of M. See `Module.erange_coe` and
 `Module.evalEquiv`. -/
