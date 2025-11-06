@@ -49,13 +49,13 @@ lemma toOver_map {I : C} {Y Z : C} (f : Y ⟶ Z) :
 variable (C) in
 /-- The functor from `C` to `Over (𝟙_ C)` which sends `X : C` to `Over.mk <| toUnit X`. -/
 @[simps! obj_left obj_hom map_left]
-def toOverTerminal : C ⥤ Over (𝟙_ C) where
+def toOverUnit : C ⥤ Over (𝟙_ C) where
   obj X := Over.mk <| toUnit X
   map {X Y} f := Over.homMk f
 
-/-- The slice category over the terminal object is equivalent to the original category. -/
-def equivOverTerminal : Over (𝟙_ C) ≌ C :=
-  CategoryTheory.Equivalence.mk (Over.forget _) (toOverTerminal C)
+/-- The slice category over the terminal unit object is equivalent to the original category. -/
+def equivOverUnit : Over (𝟙_ C) ≌ C :=
+  CategoryTheory.Equivalence.mk (Over.forget _) (toOverUnit C)
     (NatIso.ofComponents fun X => Over.isoMk (Iso.refl _))
     (NatIso.ofComponents fun X => Iso.refl _)
 
@@ -63,8 +63,8 @@ attribute [local instance] Over.ChosenPullback.cartesianMonoidalCategoryToTermin
 
 /-- The isomorphism of functors `toOverTerminal C ⋙ ChosenPullback.pullback (toUnit I)` and
 `toOver I`. -/
-def toOverCompOverMap (I : C) :
-    toOverTerminal C ⋙ ChosenPullback.pullback (toUnit I) ≅ toOver I :=
+def toOverCompPullback (I : C) :
+    toOverUnit C ⋙ ChosenPullback.pullback (toUnit I) ≅ toOver I :=
   NatIso.ofComponents fun X => Iso.refl _
 
 /-- The functor `toOver I` is the right adjoint to the functor `Over.forget I`. -/
@@ -73,7 +73,7 @@ def forgetAdjToOver (I : C) : Over.forget I ⊣ toOver I where
   unit.app X := Over.homMk (lift (𝟙 X.left) (X.hom))
   counit.app X := fst X I
 
-theorem homEquiv_symm {I : C} (X : Over I) (A : C) (f : X ⟶ (toOver I).obj A) :
+theorem forgetAdjToOver.homEquiv_symm {I : C} (X : Over I) (A : C) (f : X ⟶ (toOver I).obj A) :
      ((forgetAdjToOver I).homEquiv X A).symm f = f.left ≫ (fst _ _) := by
    rw [Adjunction.homEquiv_counit, forgetAdjToOver_counit_app]
    simp
