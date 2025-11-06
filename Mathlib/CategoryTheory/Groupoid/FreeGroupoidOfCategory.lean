@@ -141,13 +141,13 @@ def liftNatIso (F₁ F₂ : FreeGroupoid C ⥤ G) (τ : of C ⋙ F₁ ≅ of C �
 
 @[simp]
 lemma liftNatIso_hom_app (F₁ F₂ : FreeGroupoid C ⥤ G) (τ : of C ⋙ F₁ ≅ of C ⋙ F₂) (X) :
-    (liftNatIso F₁ F₂ τ).hom.app X = τ.hom.app X.as.as := by
-  rw [eq_mk X]; simp [liftNatIso]; rfl
+    (liftNatIso F₁ F₂ τ).hom.app (.mk X) = τ.hom.app X := by
+  simp [liftNatIso]
 
 @[simp]
 lemma liftNatIso_inv_app (F₁ F₂ : FreeGroupoid C ⥤ G) (τ : of C ⋙ F₁ ≅ of C ⋙ F₂) (X) :
-    (liftNatIso F₁ F₂ τ).inv.app X = τ.inv.app X.as.as := by
-  rw [eq_mk X]; simp [liftNatIso]; rfl
+    (liftNatIso F₁ F₂ τ).inv.app (.mk X) = τ.inv.app X := by
+  simp [liftNatIso]
 
 end UniversalProperty
 
@@ -170,11 +170,11 @@ def mapId : map (𝟭 C) ≅ 𝟭 (FreeGroupoid C) :=
   liftNatIso _ _ (Iso.refl _)
 
 @[simp]
-lemma mapId_hom_app (X) : (mapId C).hom.app X = 𝟙 _ :=
+lemma mapId_hom_app (X) : (mapId C).hom.app X = 𝟙 X :=
   liftNatIso_hom_app ..
 
 @[simp]
-lemma mapId_inv_app (X) : (mapId C).inv.app X = 𝟙 _ :=
+lemma mapId_inv_app (X) : (mapId C).inv.app X = 𝟙 X :=
   liftNatIso_inv_app ..
 
 variable (C) in
@@ -216,7 +216,7 @@ variable {E : Type u₂} [Groupoid.{v₂} E]
 
 lemma map_lift (F : C ⥤ D) (G : D ⥤ E) : map F ⋙ lift G = lift (F ⋙ G) := by
   apply lift_unique
-  rw [← Functor.assoc, of_map, Functor.assoc, lift_spec G]
+  rw [← Functor.assoc, of_comp_map, Functor.assoc, lift_spec G]
 
 /-- The operation `lift` is natural. -/
 def mapLift (F : C ⥤ D) (G : D ⥤ E) : map F ⋙ lift G ≅ lift (F ⋙ G) :=
