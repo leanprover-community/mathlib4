@@ -43,7 +43,12 @@ def isPartOfMathlibCache (mod : Name) : Bool := #[
   `OpenAIClient,
   `Reap,
   -- Allow PRs to upload oleans for Canonical for testing.
-  `Canonical,].contains mod.getRoot
+  `Canonical,
+  -- Allow PRs to upload oleans for LeanHammer for testing.
+  `Duper,
+  `Auto,
+  `PremiseSelection,
+  `Hammer].contains mod.getRoot
 
 /-- Target directory for caching -/
 initialize CACHEDIR : FilePath ← do
