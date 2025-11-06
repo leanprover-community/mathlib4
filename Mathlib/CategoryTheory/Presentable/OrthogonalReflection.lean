@@ -119,7 +119,7 @@ lemma D₁.ιLeft_comp_t {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
 variable [HasPushouts C]
 
 /-- The intermediate object in the definition of the morphism `toSucc W Z : Z ⟶ succ W Z`.
-It is the pushout of the following square:
+It is defined by the following pushout square:
 ```lean
 ∐ D₁.obj₁ ⟶ ∐ D₁.obj₂
    |           |
