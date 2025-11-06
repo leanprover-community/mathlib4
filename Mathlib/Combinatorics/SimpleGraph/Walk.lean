@@ -1162,16 +1162,11 @@ lemma not_nil_of_tail_not_nil {p : G.Walk v w} (hp : ¬ p.tail.Nil) : ¬ p.Nil :
     (p.copy hu hv).Nil = p.Nil := by
   subst_vars; rfl
 
-@[simp] lemma support_tail (p : G.Walk u u) (hp : ¬ p.Nil) :
+lemma support_tail_of_not_nil (p : G.Walk u v) (hp : ¬ p.Nil) :
     p.tail.support = p.support.tail := by
   rw [← cons_support_tail p hp, List.tail_cons]
 
-lemma support_tail_of_not_nil (p : G.Walk u v) (hnp : ¬p.Nil) :
-    p.tail.support = p.support.tail := by
-  match p with
-  | .nil => simp only [nil_nil, not_true_eq_false] at hnp
-  | .cons h q =>
-    simp only [tail_cons, getVert_cons_succ, support_copy, support_cons, List.tail_cons]
+@[deprecated (since := "2025-08-26")] alias support_tail := support_tail_of_not_nil
 
 /-- Given a set `S` and a walk `w` from `u` to `v` such that `u ∈ S` but `v ∉ S`,
 there exists a dart in the walk whose start is in `S` but whose end is not. -/
@@ -1417,7 +1412,7 @@ theorem reverse_transfer (hp) :
 
 /-! ### Inducing a walk -/
 
-variable {s : Set V}
+variable {s s' : Set V}
 
 variable (s) in
 /-- A walk in `G` which is fully contained in a set `s` of vertices lifts to a walk of `G[s]`. -/
@@ -1441,6 +1436,11 @@ protected def induce {u v : V} :
     ∀ (w : G.Walk u v) (hw), (w.induce s hw).map (Embedding.induce _).toHom = w
   | .nil, hw => rfl
   | .cons (v := u') huu' w, hw => by simp [map_induce]
+
+lemma map_induce_induceHomOfLE (hs : s ⊆ s') {u v : V} : ∀ (w : G.Walk u v) (hw),
+    (w.induce s hw).map (G.induceHomOfLE hs).toHom = w.induce s' (subset_trans hw hs)
+  | .nil, hw => rfl
+  | .cons (v := u') huu' w, hw => by simp [map_induce_induceHomOfLE]
 
 end Walk
 
