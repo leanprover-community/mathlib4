@@ -204,6 +204,26 @@ lemma sub_one_dvd_pow_sub_one (x : R) (n : ℕ) : x - 1 ∣ x ^ n - 1 := by
 lemma pow_one_sub_dvd_pow_mul_sub_one (x : R) (m n : ℕ) : x ^ m - 1 ∣ x ^ (m * n) - 1 := by
   rw [pow_mul]; exact sub_one_dvd_pow_sub_one (x ^ m) n
 
+theorem dvd_pow_sub_one_of_dvd {r : R} {a b : ℕ} (h : a ∣ b) :
+    r ^ a - 1 ∣ r ^ b - 1 := by
+  obtain ⟨n, rfl⟩ := h
+  exact pow_one_sub_dvd_pow_mul_sub_one r a n
+
+theorem dvd_pow_pow_sub_self_of_dvd {r : R} {p a b : ℕ} (h : a ∣ b) :
+    r ^ p ^ a - r ∣ r ^ p ^ b - r := by
+  by_cases hp₀ : p = 0
+  · by_cases hb₀ : b = 0
+    · rw [hp₀, hb₀, pow_zero, pow_one, sub_self]
+      exact dvd_zero _
+    have ha₀ : a ≠ 0 := by rintro rfl; rw [zero_dvd_iff] at h; tauto
+    rw [hp₀, zero_pow ha₀, zero_pow hb₀]
+  have hp (c) : 1 ≤ p ^ c := Nat.pow_pos <| pos_of_ne_zero hp₀
+  rw [← Nat.sub_add_cancel (hp a), ← Nat.sub_add_cancel (hp b), pow_succ', pow_succ',
+    ← mul_sub_one, ← mul_sub_one]
+  refine mul_dvd_mul_left _ <| dvd_pow_sub_one_of_dvd <| Int.natCast_dvd_natCast.mp ?_
+  rw [Nat.cast_sub (hp a), Nat.cast_sub (hp b), Nat.cast_pow, Nat.cast_pow]
+  exact dvd_pow_sub_one_of_dvd h
+
 lemma geom_sum_mul (x : R) (n : ℕ) : (∑ i ∈ range n, x ^ i) * (x - 1) = x ^ n - 1 := by
   have := (Commute.one_right x).geom_sum₂_mul n
   rw [one_pow, geom_sum₂_with_one] at this
@@ -273,6 +293,14 @@ end Ring
 
 section CommRing
 variable [CommRing R]
+
+theorem pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum {x : R} {m n : ℕ} :
+    (x ^ m - 1) * ∑ k ∈ range n, x ^ k = (x ^ n - 1) * ∑ k ∈ range m, x ^ k := by
+  grind [geom_sum_mul]
+
+@[deprecated (since := "2025-10-31")]
+protected alias IsPrimitiveRoot.pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum :=
+  pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum
 
 lemma geom_sum₂_mul (x y : R) (n : ℕ) :
     (∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) * (x - y) = x ^ n - y ^ n :=

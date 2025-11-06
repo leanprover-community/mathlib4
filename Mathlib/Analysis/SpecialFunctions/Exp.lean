@@ -54,8 +54,7 @@ theorem locally_lipschitz_exp {r : ℝ} (hr_nonneg : 0 ≤ r) (hr_le : r ≤ 1) 
   calc
     ‖exp y - exp x‖ = ‖exp (x + (y - x)) - exp x‖ := by nth_rw 1 [hy_eq]
     _ ≤ ‖y - x‖ * ‖exp x‖ + ‖exp x‖ * ‖y - x‖ ^ 2 := h_sq (y - x) (hyx.le.trans hr_le)
-    _ ≤ ‖y - x‖ * ‖exp x‖ + ‖exp x‖ * (r * ‖y - x‖) :=
-      (add_le_add_left (mul_le_mul le_rfl hyx_sq_le (sq_nonneg _) (norm_nonneg _)) _)
+    _ ≤ ‖y - x‖ * ‖exp x‖ + ‖exp x‖ * (r * ‖y - x‖) := by grw [hyx_sq_le]
     _ = (1 + r) * ‖exp x‖ * ‖y - x‖ := by ring
 
 -- Porting note: proof by term mode `locally_lipschitz_exp zero_le_one le_rfl x`
@@ -134,19 +133,13 @@ lemma UniformContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.
   have h3 := hδ.2 (y := x - y) (by simpa only [dist_zero_right] using hxy)
   rw [dist_eq_norm, exp_zero] at *
   have : cexp x - cexp y = cexp y * (cexp (x - y) - 1) := by
-      rw [mul_sub_one, ← exp_add]
-      ring_nf
+    rw [mul_sub_one, ← exp_add]
+    ring_nf
   rw [this, mul_comm]
-  have hya : ‖cexp y‖ ≤ Real.exp a := by
-    simp only [norm_exp, Real.exp_le_exp]
-    exact hy
+  have hya : ‖cexp y‖ ≤ Real.exp a := by simpa only [norm_exp, Real.exp_le_exp]
   simp only [gt_iff_lt, dist_zero_right, Set.mem_setOf_eq, norm_mul, Complex.norm_exp] at *
-  apply lt_of_le_of_lt (mul_le_mul h3.le hya (Real.exp_nonneg y.re) (le_of_lt ha))
-  have hrr : ε / (2 * a.exp) * a.exp = ε / 2 := by
-    nth_rw 2 [mul_comm]
-    field_simp
-  rw [hrr]
-  exact div_two_lt_of_pos hε
+  apply lt_of_le_of_lt (mul_le_mul h3.le hya (Real.exp_nonneg y.re) ha.le)
+  simp [field]
 
 end ComplexContinuousExpComp
 
