@@ -36,20 +36,20 @@ In later files, this will be automatic, since this holds for any morphism `g`
 this early stage in the import tree, we only know it for open immersions. -/
 class IsJointlySurjectivePreserving (P : MorphismProperty Scheme.{u}) where
   exists_preimage_fst_triplet_of_prop {X Y S : Scheme.{u}} {f : X ⟶ S} {g : Y ⟶ S} [HasPullback f g]
-    (hg : P g) (x : X) (y : Y) (h : f.base x = g.base y) :
-    ∃ a : ↑(pullback f g), (pullback.fst f g).base a = x
+    (hg : P g) (x : X) (y : Y) (h : f x = g y) :
+    ∃ a : ↑(pullback f g), pullback.fst f g a = x
 
 variable {P : MorphismProperty Scheme.{u}}
 
 lemma IsJointlySurjectivePreserving.exists_preimage_snd_triplet_of_prop
     [IsJointlySurjectivePreserving P] {X Y S : Scheme.{u}} {f : X ⟶ S} {g : Y ⟶ S} [HasPullback f g]
-    (hf : P f) (x : X) (y : Y) (h : f.base x = g.base y) :
-    ∃ a : ↑(pullback f g), (pullback.snd f g).base a = y := by
+    (hf : P f) (x : X) (y : Y) (h : f x = g y) :
+    ∃ a : ↑(pullback f g), pullback.snd f g a = y := by
   let iso := pullbackSymmetry f g
   haveI : HasPullback g f := hasPullback_symmetry f g
   obtain ⟨a, ha⟩ := exists_preimage_fst_triplet_of_prop hf y x h.symm
-  use (pullbackSymmetry f g).inv.base a
-  rwa [← Scheme.comp_base_apply, pullbackSymmetry_inv_comp_snd]
+  use (pullbackSymmetry f g).inv a
+  rwa [← Scheme.Hom.comp_apply, pullbackSymmetry_inv_comp_snd]
 
 instance : IsJointlySurjectivePreserving @IsOpenImmersion where
   exists_preimage_fst_triplet_of_prop {X Y S f g} _ hg x y h := by
@@ -76,7 +76,7 @@ def precoverage : Precoverage Scheme.{u} :=
 @[simp]
 lemma ofArrows_mem_precoverage_iff {S : Scheme.{u}} {ι : Type*} {X : ι → Scheme.{u}}
     {f : ∀ i, X i ⟶ S} :
-    .ofArrows X f ∈ precoverage P S ↔ (∀ x, ∃ i, x ∈ Set.range (f i).base) ∧ ∀ i, P (f i) := by
+    .ofArrows X f ∈ precoverage P S ↔ (∀ x, ∃ i, x ∈ Set.range (f i)) ∧ ∀ i, P (f i) := by
   simp_rw [← Scheme.forget_map, ← Scheme.forget_obj,
     ← Presieve.ofArrows_mem_comap_jointlySurjectivePrecoverage_iff]
   exact ⟨fun hmem ↦ ⟨hmem.1, fun i ↦ hmem.2 ⟨i⟩⟩, fun h ↦ ⟨h.1, fun {Y} g ⟨i⟩ ↦ h.2 i⟩⟩
@@ -92,12 +92,12 @@ instance [IsJointlySurjectivePreserving P] [P.IsStableUnderBaseChange] :
   mem_coverings_of_isPullback {ι} S X f hf Y g T p₁ p₂ H := by
     rw [ofArrows_mem_precoverage_iff] at hf ⊢
     refine ⟨fun x ↦ ?_, fun i ↦ P.of_isPullback (H i).flip (hf.2 i)⟩
-    obtain ⟨i, y, hy⟩ := hf.1 (g.base x)
+    obtain ⟨i, y, hy⟩ := hf.1 (g x)
     have := (H i).hasPullback
     obtain ⟨w, hw⟩ := IsJointlySurjectivePreserving.exists_preimage_fst_triplet_of_prop (hf.2 i)
       (f := g) x y hy.symm
-    use i, (H i).isoPullback.inv.base w
-    simpa [← Scheme.comp_base_apply]
+    use i, (H i).isoPullback.inv w
+    simpa [← Scheme.Hom.comp_apply]
 
 /-- The Zariski precoverage on the category of schemes is the precoverage defined by
 jointly surjective families of open immersions. -/

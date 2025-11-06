@@ -7,7 +7,7 @@ import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.LinearRecurrence
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Nat.Fib.Basic
-import Mathlib.Data.Real.Irrational
+import Mathlib.NumberTheory.Real.Irrational
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.Prime
 
@@ -154,8 +154,8 @@ theorem goldenRatio_irrational : Irrational φ := by
   have := Nat.Prime.irrational_sqrt (show Nat.Prime 5 by norm_num)
   have := this.ratCast_add 1
   convert this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
-  norm_num
-  field_simp
+  simp
+  field
 
 @[deprecated (since := "2025-08-23")] alias _root_.gold_irrational := goldenRatio_irrational
 
@@ -164,8 +164,8 @@ theorem goldenConj_irrational : Irrational ψ := by
   have := Nat.Prime.irrational_sqrt (show Nat.Prime 5 by norm_num)
   have := this.ratCast_sub 1
   convert this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
-  norm_num
-  field_simp
+  simp
+  field
 
 @[deprecated (since := "2025-08-23")] alias _root_.goldConj_irrational := goldenConj_irrational
 

@@ -288,7 +288,7 @@ theorem zero_mem_tangentCone {s : Set E} {x : E} (hx : x ∈ closure s) :
         simp only [c, norm_smul, norm_pow, pow_succ, norm_mul, d, ← dist_eq_norm']
         gcongr
         exacts [hm_le n, (hvu n).le]
-      _ = ‖r‖ * u n := by field_simp
+      _ = ‖r‖ * u n := by field
   refine squeeze_zero_norm Hle ?_
   simpa using tendsto_const_nhds.mul u_lim
 
@@ -562,7 +562,7 @@ theorem tangentConeAt_mono_field : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜
     · intro β hβ
       rw [mem_map, mem_atTop_sets]
       obtain ⟨n, hn⟩ := mem_atTop_sets.1
-        (mem_map.1 (h₁ (algebraMap_cobounded_le_cobounded (𝕜 := 𝕜) (𝕜' := 𝕜') hβ)))
+        (mem_map.1 (h₁ (tendsto_algebraMap_cobounded (𝕜 := 𝕜) (𝕜' := 𝕜') hβ)))
       use n, fun _ _ ↦ by simp_all
     · simpa
 
@@ -591,21 +591,24 @@ end Normed
 section RealNormed
 variable [NormedAddCommGroup G] [NormedSpace ℝ G]
 
-/-- In a real vector space, a convex set with nonempty interior is a set of unique
-differentiability at every point of its closure. -/
-theorem uniqueDiffWithinAt_convex {s : Set G} (conv : Convex ℝ s) (hs : (interior s).Nonempty)
-    {x : G} (hx : x ∈ closure s) : UniqueDiffWithinAt ℝ s x := by
+theorem Convex.span_tangentConeAt {s : Set G} (conv : Convex ℝ s) (hs : (interior s).Nonempty)
+    {x : G} (hx : x ∈ closure s) : Submodule.span ℝ (tangentConeAt ℝ s x) = ⊤ := by
   rcases hs with ⟨y, hy⟩
   suffices y - x ∈ interior (tangentConeAt ℝ s x) by
-    refine ⟨Dense.of_closure ?_, hx⟩
-    simp [(Submodule.span ℝ (tangentConeAt ℝ s x)).eq_top_of_nonempty_interior'
-        ⟨y - x, interior_mono Submodule.subset_span this⟩]
+    apply (Submodule.span ℝ (tangentConeAt ℝ s x)).eq_top_of_nonempty_interior'
+    exact ⟨y - x, interior_mono Submodule.subset_span this⟩
   rw [mem_interior_iff_mem_nhds]
   replace hy : interior s ∈ 𝓝 y := IsOpen.mem_nhds isOpen_interior hy
   apply mem_of_superset ((isOpenMap_sub_right x).image_mem_nhds hy)
   rintro _ ⟨z, zs, rfl⟩
   refine mem_tangentConeAt_of_openSegment_subset (Subset.trans ?_ interior_subset)
   exact conv.openSegment_closure_interior_subset_interior hx zs
+
+/-- In a real vector space, a convex set with nonempty interior is a set of unique
+differentiability at every point of its closure. -/
+theorem uniqueDiffWithinAt_convex {s : Set G} (conv : Convex ℝ s) (hs : (interior s).Nonempty)
+    {x : G} (hx : x ∈ closure s) : UniqueDiffWithinAt ℝ s x := by
+  simp [uniqueDiffWithinAt_iff, conv.span_tangentConeAt hs hx, hx]
 
 /-- In a real vector space, a convex set with nonempty interior is a set of unique
 differentiability. -/
@@ -673,13 +676,6 @@ theorem uniqueDiffWithinAt_iff_accPt {s : Set 𝕜} {x : 𝕜} :
     ⟨by simp [tangentConeAt_eq_univ h], mem_closure_iff_clusterPt.mpr h.clusterPt⟩⟩
 
 alias ⟨_, AccPt.uniqueDiffWithinAt⟩ := uniqueDiffWithinAt_iff_accPt
-
-/-- In one dimension, every point is either a point of unique differentiability, or isolated. -/
-@[deprecated uniqueDiffWithinAt_iff_accPt (since := "2025-04-20")]
-theorem uniqueDiffWithinAt_or_nhdsWithin_eq_bot (s : Set 𝕜) (x : 𝕜) :
-    UniqueDiffWithinAt 𝕜 s x ∨ 𝓝[s \ {x}] x = ⊥ :=
-  (em (AccPt x (𝓟 s))).imp AccPt.uniqueDiffWithinAt fun h ↦ by
-    rwa [accPt_principal_iff_nhdsWithin, not_neBot] at h
 
 end Real
 
