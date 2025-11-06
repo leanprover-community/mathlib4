@@ -229,7 +229,7 @@ theorem dvd_of_dvd_mul_left_of_gcd_one {a b c : ℤ} (habc : a ∣ b * c) (hab :
   simp only [hab, Int.ofNat_zero, Int.natCast_succ, zero_add] at this
   have : b * a * gcdA a c + b * c * gcdB a c = b := by simp [mul_assoc, ← Int.mul_add, ← this]
   rw [← this]
-  exact Int.dvd_add (dvd_mul_of_dvd_left (dvd_mul_left a b) _) (dvd_mul_of_dvd_left habc _)
+  exact Int.dvd_add (dvd_mul_of_dvd_left (dvd_mul_left a b)) (dvd_mul_of_dvd_left habc)
 
 /-- Euclid's lemma: if `a ∣ b * c` and `gcd a b = 1` then `a ∣ c`.
 Compare with `IsCoprime.dvd_of_dvd_mul_right` and
