@@ -230,7 +230,7 @@ theorem pullbackMap_snd {Y' Z' X' : C} {f' : Y' ⟶ X'} {g' : Z' ⟶ X'} [Chosen
 
 @[simp]
 theorem pullbackMap_id : pullbackMap f g f g (𝟙 Y) (𝟙 Z) (𝟙 X) = 𝟙 _ := by
-  apply hom_ext <;> simp
+  cat_disch
 
 @[reassoc (attr := simp)]
 theorem pullbackMap_comp {Y' Z' X' Y'' Z'' X'' : C}
@@ -240,10 +240,10 @@ theorem pullbackMap_comp {Y' Z' X' Y'' Z'' X'' : C}
     {δ₁ : Y'' ⟶ Y'} {δ₂ : Z'' ⟶ Z'} {δ₃ : X'' ⟶ X'}
     (comm₁ comm₂ comm₁' comm₂' := by cat_disch) :
     pullbackMap f' g' f'' g'' δ₁ δ₂ δ₃ comm₁' comm₂' ≫
-      pullbackMap f g f' g'  γ₁ γ₂ γ₃ comm₁ comm₂ =
+      pullbackMap f g f' g' γ₁ γ₂ γ₃ comm₁ comm₂ =
     pullbackMap f g f'' g'' (δ₁ ≫ γ₁) (δ₂ ≫ γ₂) (δ₃ ≫ γ₃)
       (by rw [reassoc_of% comm₁', comm₁, assoc]) (by rw [reassoc_of% comm₂', comm₂, assoc]) := by
-  apply hom_ext <;> simp
+  cat_disch
 
 end PullbackMap
 
@@ -287,12 +287,8 @@ theorem pullbackIsoOverPullback_hom_app_comp_snd (T : Over X) :
 
 @[reassoc (attr := simp)]
 theorem pullbackIsoOverPullback_inv_app_comp_fst (T : Over X) :
-    ((pullbackIsoOverPullback g).inv.app T).left ≫ fst (T.hom) g = pullback.fst T.hom g := by
-  let iso : pullbackObj T.hom g ≅ (Limits.pullback T.hom g) :=
-    (Over.forget ..).mapIso <| pullbackIsoOverPullback g |>.app T
-  have : ((pullbackIsoOverPullback g).inv.app T).left = iso.inv := by rfl
-  simp only [pullback_obj_left, this, Iso.inv_comp_eq]
-  aesop
+    ((pullbackIsoOverPullback g).inv.app T).left ≫ fst _ _ = pullback.fst _ _ := by
+  simp [← pullbackIsoOverPullback_hom_app_comp_fst, ← Over.comp_left_assoc]
 
 @[reassoc (attr := simp)]
 theorem pullbackIsoOverPullback_inv_app_comp_snd (T : Over X) :
