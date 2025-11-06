@@ -218,7 +218,7 @@ theorem nonempty_of_mem {x u : ZFSet} (h : x ∈ u) : u.Nonempty :=
 protected def Subset (x y : ZFSet.{u}) :=
   ∀ ⦃z⦄, z ∈ x → z ∈ y
 
-instance hasSubset : HasSubset ZFSet := ⟨ZFSet.Subset⟩
+instance : HasSubset ZFSet := ⟨ZFSet.Subset⟩
 instance : HasSSubset ZFSet := ⟨(· < ·)⟩
 
 @[simp] lemma le_def : x ≤ y ↔ x ⊆ y := .rfl
@@ -578,6 +578,8 @@ instance : SDiff ZFSet :=
 @[simp] lemma mem_union : z ∈ x ∪ y ↔ z ∈ x ∨ z ∈ y := by simp [← sUnion_pair]
 @[simp] lemma mem_inter : z ∈ x ∩ y ↔ z ∈ x ∧ z ∈ y := by simp [← sep_mem]
 @[simp] lemma mem_sdiff : z ∈ x \ y ↔ z ∈ x ∧ z ∉ y := by simp [← sep_notMem]
+
+@[deprecated (since := "2025-11-06")] alias mem_diff := mem_sdiff
 
 @[simp, norm_cast]
 lemma coe_union (x y : ZFSet.{u}) : (↑(x ∪ y) : Set ZFSet) = ↑x ∪ ↑y := by ext; simp
