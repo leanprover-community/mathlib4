@@ -44,7 +44,7 @@ theorem conjStarAlgAut_symm_apply (u : unitary R) (x : R) :
     (conjStarAlgAut S R u).symm = conjStarAlgAut S R (star u) := by
   ext; simp [conjStarAlgAut_symm_apply]
 
-theorem conjStarAlgAut_trans_toStarAlgAut (u₁ u₂ : unitary R) :
+theorem conjStarAlgAut_trans_conjStarAlgAut (u₁ u₂ : unitary R) :
     (conjStarAlgAut S R u₁).trans (conjStarAlgAut S R u₂) = conjStarAlgAut S R (u₂ * u₁) :=
   map_mul _ _ _ |>.symm
 
