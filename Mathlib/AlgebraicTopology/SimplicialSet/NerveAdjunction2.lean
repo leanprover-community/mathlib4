@@ -10,38 +10,43 @@ import Mathlib.CategoryTheory.Closed.FunctorToTypes
 import Mathlib.CategoryTheory.Limits.Presheaf
 
 /-!
+# The adjunction between the nerve and the homotopy category functor
+
+We define an adjunction `nerveAdjunction : hoFunctor ⊣ nerveFunctor` between the functor that
+takes a simplicial set to its homotopy category and the functor that takes a category to its nerve.
+
+Up to natural isomorphism, this is constructed as the composite of two other adjunctions,
+namely `nerve₂Adj : hoFunctor₂ ⊣ nerveFunctor₂` between analogously-defined functors involving
+the category of 2-truncated simplicial sets and `coskAdj 2 : truncation 2 ⊣ Truncated.cosk 2`. The
+aforementioned natural isomorphism
+
+`cosk₂Iso : nerveFunctor ≅ nerveFunctor₂ ⋙ Truncated.cosk 2`
+
+exists because nerves of categories are 2-coskeletal.
+
+We also prove that `nerveFunctor` is fully faithful, demonstrating that `nerveAdjunction` is
+reflective. Since the category of simplicial sets is cocomplete, we conclude in
+`Mathlib/CategoryTheory/Category/Cat/Colimit.lean` that the category of categories has colimits.
+
+Finally we show that `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` preserves finite cartesian products; note
+that it fails to preserve infinite products.
 
 -/
 
 universe u
 
 open CategoryTheory Nerve Simplicial SimplicialObject.Truncated
-  SimplexCategory.Truncated Opposite
+  SimplexCategory.Truncated Opposite Limits
 
 namespace SSet
 
 namespace Truncated
 
-namespace Path
-variable {n : ℕ} {X : Truncated.{u} (n + 1)} (p q : X.Path 1)
-  (h : p.vertex 1 = q.vertex 0)
-
-@[simps!]
-def mk₂ : X.Path 2 where
-  vertex := ![p.vertex 0, p.vertex 1, q.vertex 1]
-  arrow := ![p.arrow 0, q.arrow 0]
-  arrow_src i := by
-    fin_cases i
-    · exact p.arrow_src 0
-    · exact (q.arrow_src 0).trans h.symm
-  arrow_tgt i := by
-    fin_cases i
-    · exact p.arrow_tgt 0
-    · exact q.arrow_tgt 0
-
-end Path
-
-section
+section liftOfIsStrictSegal
+/-! The goal of this section is to define `SSet.Truncated.liftOfIsStrictSegal`
+which allows to construct of morphism `X ⟶ Y` of `2`-truncated simplicial sets
+from the data of maps on `0`- and `1`-simplices when `Y` is strict segal.
+-/
 
 variable {n : ℕ} {X Y : Truncated.{u} 2} (f₀ : X _⦋0⦌₂ → Y _⦋0⦌₂) (f₁ : X _⦋1⦌₂ → Y _⦋1⦌₂)
   (hδ₁ : ∀ (x : X _⦋1⦌₂), f₀ (X.map (δ₂ 1).op x) = Y.map (δ₂ 1).op (f₁ x))
@@ -52,9 +57,9 @@ variable {n : ℕ} {X Y : Truncated.{u} 2} (f₀ : X _⦋0⦌₂ → Y _⦋0⦌�
   (hσ : ∀ (x : X _⦋0⦌₂), f₁ (X.map (σ₂ 0).op x) = Y.map (σ₂ 0).op (f₀ x))
   (hY : Y.StrictSegal)
 
-
 namespace liftOfIsStrictSegal
 
+/-- Auxiliary definition for `SSet.Truncated.liftOfIsStrictSegal`. -/
 def f₂ (x : X _⦋2⦌₂) : Y _⦋2⦌₂ :=
   (hY.spineEquiv 2).symm
     (.mk₂ (Y.spine 1 (by simp) (f₁ (X.map (δ₂ 2).op x)))
@@ -125,6 +130,7 @@ lemma hσ'₁ (x : X _⦋1⦌₂) :
       ← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_one,
       op_comp, FunctorToTypes.map_comp_apply, hδ₀]
 
+/-- Auxiliary definition for `SSet.Truncated.liftOfIsStrictSegal`. -/
 def app (n : (SimplexCategory.Truncated 2)ᵒᵖ) : X.obj n ⟶ Y.obj n := by
   obtain ⟨n, hn⟩ := n
   induction n using SimplexCategory.rec with | _ n
@@ -133,6 +139,8 @@ def app (n : (SimplexCategory.Truncated 2)ᵒᵖ) : X.obj n ⟶ Y.obj n := by
   | 1 => exact f₁
   | 2 => exact f₂ f₀ f₁ hδ₁ hδ₀ hY
 
+/-- The property of morphims in `SimplexCategory.Truncated 2` for
+which `liftOfStrictSegal.app` is natural. -/
 abbrev naturalityProperty : MorphismProperty (SimplexCategory.Truncated 2) :=
   (MorphismProperty.naturalityProperty (app f₀ f₁ hδ₁ hδ₀ hY)).unop
 
@@ -161,6 +169,8 @@ lemma naturalityProperty_eq_top :
 end liftOfIsStrictSegal
 
 open liftOfIsStrictSegal in
+/-- Constructor for morphisms `X ⟶ Y` between `2`-truncated simplicial sets from
+the data of maps on `0`- and `1`-simplices when `Y` is strict segal. -/
 def liftOfIsStrictSegal : X ⟶ Y where
   app := liftOfIsStrictSegal.app f₀ f₁ hδ₁ hδ₀ hY
   naturality _ _ φ :=
@@ -175,12 +185,15 @@ lemma liftOfIsStrictSegal_app_0 :
 lemma liftOfIsStrictSegal_app_1 :
     (liftOfIsStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋1⦌₂) = f₁ := rfl
 
-end
+end liftOfIsStrictSegal
 
 namespace HomotopyCategory
 
 variable {X : Truncated.{u} 2} {C D : Type u} [SmallCategory C] [SmallCategory D]
 
+/-- Given a `2`-truncated simplicial set `X` and a category `C`,
+this is the functor `X.HomotopyCategory ⥤ C` corresponding to
+a morphism `X ⟶ (truncation 2).obj (nerve C)`. -/
 def descOfTruncation (φ : X ⟶ (truncation 2).obj (nerve C)) :
     X.HomotopyCategory ⥤ C :=
   lift (fun x ↦ nerveEquiv (φ.app _ x)) (fun e ↦ nerve.homEquiv (e.map φ))
@@ -202,6 +215,9 @@ lemma descOfTruncation_comp {X' : Truncated.{u} 2} (ψ : X ⟶ X')
     descOfTruncation (ψ ≫ φ) = mapHomotopyCategory ψ ⋙ descOfTruncation φ :=
   functor_ext (fun _ ↦ by simp) (by cat_disch)
 
+/-- Given a `2`-truncated simplicial set `X` and a category `C`,
+this is the morphism `X ⟶ (truncation 2).obj (nerve C)` corresponding
+to a functor `X.HomotopyCategory ⥤ C`. -/
 def homToNerveMk (F : X.HomotopyCategory ⥤ C) : X ⟶ (truncation 2).obj (nerve C) :=
   liftOfIsStrictSegal (fun x ↦ nerveEquiv.symm (F.obj (mk x)))
     (fun f ↦ ComposableArrows.mk₁ (F.map (homMk (Truncated.Edge.mk' f))))
@@ -252,6 +268,10 @@ lemma homToNerveMk_app_edge (F : X.HomotopyCategory ⥤ C) {x y : X _⦋0⦌₂}
   exact ComposableArrows.arrowEquiv.injective
     (congr_arg F.mapArrow.obj (congr_arrowMk_homMk (Edge.mk' e.edge) e rfl))
 
+/-- Given a `2`-truncated simplicial set `X` and a category `C`,
+this is the bijection between morphism `X.HomotopyCategory ⥤ C`
+and `X ⟶ (truncation 2).obj (nerve C)` which is part of the adjunction
+`SSet.Truncated.nerve₂Adj`. -/
 def functorEquiv :
     (X.HomotopyCategory ⥤ C) ≃ (X ⟶ (truncation 2).obj (nerve C)) where
   toFun := homToNerveMk
@@ -276,6 +296,7 @@ def functorEquiv :
         simp only [← f.tgt_eq, FunctorToTypes.naturality]
         rfl)
 
+@[reassoc]
 lemma homToNerveMk_comp {D : Type u} [SmallCategory D]
     (F : X.HomotopyCategory ⥤ C) (G : C ⥤ D) :
     homToNerveMk (F ⋙ G) = homToNerveMk F ≫ (truncation 2).map (nerveMap G) :=
@@ -288,7 +309,7 @@ lemma homToNerveMk_comp {D : Type u} [SmallCategory D]
 end HomotopyCategory
 
 /-- The adjunction between the 2-truncated homotopy category functor
-and the 2-truncated nerve functor and the . -/
+and the 2-truncated nerve functor. -/
 def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ :=
   Adjunction.mkOfHomEquiv
     { homEquiv _ _ := HomotopyCategory.functorEquiv
@@ -305,6 +326,8 @@ namespace nerve
 
 variable {C D : Type u} [SmallCategory C] [SmallCategory D]
 
+/-- The functor `C ⥤ D` that is reconstructed for a morphism
+between the `2`-truncated nerves. -/
 @[simps]
 def functorOfNerveMap (φ : nerveFunctor₂.obj (.of C) ⟶ nerveFunctor₂.obj (.of D)) :
     C ⥤ D where
@@ -333,10 +356,20 @@ lemma functorOfNerveMap_nerveFunctor₂_map (F : C ⥤ D) :
       simpa only [Category.comp_id, Category.id_comp] using
         nerve.homEquiv_edgeMk_map_nerveMap f F)
 
+/-- The `2`-truncated nerve functor is fully faithful. -/
 def fullyFaithfulNerveFunctor₂ : nerveFunctor₂.{u, u}.FullyFaithful where
   preimage φ := functorOfNerveMap φ
   map_preimage _ := nerveFunctor₂_map_functorOfNerveMap _
   preimage_map _ := functorOfNerveMap_nerveFunctor₂_map _
+
+instance : nerveFunctor₂.{u, u}.Faithful :=
+  (fullyFaithfulNerveFunctor₂).faithful
+
+instance : nerveFunctor₂.{u, u}.Full :=
+  (fullyFaithfulNerveFunctor₂).full
+
+
+instance : Reflective nerveFunctor₂.{u, u} := Reflective.mk _ SSet.Truncated.nerve₂Adj
 
 end nerve
 
@@ -346,5 +379,102 @@ open SSet
 isomorphism, the composite of the adjunctions `SSet.coskAdj 2` and `nerve₂Adj`. -/
 noncomputable def nerveAdjunction : hoFunctor ⊣ nerveFunctor :=
   Adjunction.ofNatIsoRight ((SSet.coskAdj 2).comp Truncated.nerve₂Adj) Nerve.cosk₂Iso.symm
+
+
+/-- Repleteness exists for full and faithful functors but not fully faithful functors, which is
+why we do this inefficiently. -/
+instance nerveFunctor.faithful : nerveFunctor.{u, u}.Faithful :=
+  Functor.Faithful.of_iso Nerve.cosk₂Iso.symm
+
+instance nerveFunctor.full : nerveFunctor.{u, u}.Full :=
+  Functor.Full.of_iso Nerve.cosk₂Iso.symm
+
+/-- The nerve functor is both full and faithful and thus is fully faithful. -/
+noncomputable def nerveFunctor.fullyfaithful : nerveFunctor.FullyFaithful :=
+  Functor.FullyFaithful.ofFullyFaithful _
+
+instance nerveAdjunction.isIso_counit : IsIso nerveAdjunction.counit :=
+  Adjunction.counit_isIso_of_R_fully_faithful _
+
+/-- The counit map of `nerveAdjunction` is an isomorphism since the nerve functor is fully
+faithful. -/
+noncomputable def nerveFunctorCompHoFunctorIso : nerveFunctor.{u, u} ⋙ hoFunctor ≅ 𝟭 Cat :=
+  asIso (nerveAdjunction.counit)
+
+noncomputable instance : Reflective nerveFunctor where
+  L := hoFunctor
+  adj := nerveAdjunction
+
+section
+
+instance (C D : Type u) [Category.{u} C] [Category.{u} D] :
+    IsIso (prodComparison (nerveFunctor ⋙ hoFunctor ⋙ nerveFunctor)
+      (Cat.of C) (Cat.of D)) := by
+  let iso : nerveFunctor ⋙ hoFunctor ⋙ nerveFunctor ≅ nerveFunctor :=
+    (nerveFunctor.associator hoFunctor nerveFunctor).symm ≪≫
+      Functor.isoWhiskerRight nerveFunctorCompHoFunctorIso nerveFunctor ≪≫
+        nerveFunctor.leftUnitor
+  exact IsIso.of_isIso_fac_right (prodComparison_natural_of_natTrans iso.hom).symm
+
+namespace hoFunctor
+
+instance : hoFunctor.IsLeftAdjoint := nerveAdjunction.isLeftAdjoint
+
+instance (C D : Type u) [Category.{u} C] [Category.{u} D] :
+    IsIso (prodComparison hoFunctor (nerve C) (nerve D)) := by
+  have : IsIso (nerveFunctor.map (prodComparison hoFunctor (nerve C) (nerve D))) := by
+    have : IsIso (prodComparison (hoFunctor ⋙ nerveFunctor) (nerve C) (nerve D)) :=
+      IsIso.of_isIso_fac_left
+        (prodComparison_comp nerveFunctor (hoFunctor ⋙ nerveFunctor)
+          (A := Cat.of C) (B := Cat.of D)).symm
+    exact IsIso.of_isIso_fac_right (prodComparison_comp hoFunctor nerveFunctor).symm
+  exact isIso_of_fully_faithful nerveFunctor _
+
+instance isIso_prodComparison_stdSimplex.{w} (n m : ℕ) :
+    IsIso (prodComparison hoFunctor (Δ[n] : SSet.{w}) Δ[m]) :=
+  IsIso.of_isIso_fac_right (prodComparison_natural
+    hoFunctor (stdSimplex.isoNerve n).hom (stdSimplex.isoNerve m).hom).symm
+
+lemma isIso_prodComparison_of_stdSimplex {D : SSet.{u}} (X : SSet.{u})
+    (H : ∀ m, IsIso (prodComparison hoFunctor D Δ[m])) :
+    IsIso (prodComparison hoFunctor D X) := by
+  have : IsIso (Functor.whiskerLeft (CostructuredArrow.proj uliftYoneda X ⋙ uliftYoneda)
+      (prodComparisonNatTrans hoFunctor.{u} D)) := by
+    rw [NatTrans.isIso_iff_isIso_app]
+    exact fun x ↦ H (x.left).len
+  exact isIso_app_coconePt_of_preservesColimit _ (prodComparisonNatTrans hoFunctor _) _
+    (Presheaf.isColimitTautologicalCocone' X)
+
+instance isIso_prodComparison (X Y : SSet) :
+    IsIso (prodComparison hoFunctor X Y) := isIso_prodComparison_of_stdSimplex _ fun m ↦ by
+  convert_to IsIso (hoFunctor.map (prod.braiding _ _).hom ≫
+    prodComparison hoFunctor Δ[m] X ≫ (prod.braiding _ _).hom)
+  · ext <;> simp [← Functor.map_comp]
+  suffices IsIso (prodComparison hoFunctor Δ[m] X) by infer_instance
+  exact isIso_prodComparison_of_stdSimplex _ (isIso_prodComparison_stdSimplex _)
+
+/-- The functor `hoFunctor : SSet ⥤ Cat` preserves binary products of simplicial sets `X` and
+`Y`. -/
+instance preservesBinaryProduct (X Y : SSet) :
+    PreservesLimit (pair X Y) hoFunctor :=
+  PreservesLimitPair.of_iso_prod_comparison hoFunctor X Y
+
+/-- The functor `hoFunctor : SSet ⥤ Cat` preserves limits of functors out of
+`Discrete WalkingPair`. -/
+instance preservesBinaryProducts :
+    PreservesLimitsOfShape (Discrete WalkingPair) hoFunctor where
+  preservesLimit {F} := preservesLimit_of_iso_diagram hoFunctor (diagramIsoPair F).symm
+
+/-- The functor `hoFunctor : SSet ⥤ Cat` preserves finite products of simplicial sets. -/
+instance preservesFiniteProducts : PreservesFiniteProducts hoFunctor :=
+  PreservesFiniteProducts.of_preserves_binary_and_terminal _
+
+/-- The homotopy category functor `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` is (cartesian) monoidal. -/
+noncomputable instance Monoidal : hoFunctor.Monoidal :=
+  .ofChosenFiniteProducts hoFunctor
+
+end hoFunctor
+
+end
 
 end CategoryTheory

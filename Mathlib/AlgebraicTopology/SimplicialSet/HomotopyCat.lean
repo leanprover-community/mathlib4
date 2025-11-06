@@ -68,7 +68,6 @@ lemma id_edge {S : SSet.Truncated 2} (x : OneTruncation₂ S) :
     Truncated.Edge.edge (𝟙rq x) = S.map (σ₂ 0).op x := by
   rfl
 
-
 /-- The prefunctor on refl quivers `OneTruncation₂` induced by a morphisms
 of `2`-truncated simplicial sets. -/
 @[simps]
@@ -133,9 +132,18 @@ lemma nerveHomEquiv_id (X : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))
 
 /-- The refl quiver underlying a nerve is isomorphic to the refl quiver underlying the category. -/
 def ofNerve₂ (C : Type u) [Category.{u} C] :
-    ReflQuiv.of (OneTruncation₂ (nerveFunctor₂.obj (Cat.of C))) ≅ ReflQuiv.of C :=
+    ReflQuiv.of (OneTruncation₂ ((truncation 2).obj (nerve C))) ≅ ReflQuiv.of C :=
   ReflQuiv.isoOfEquiv.{u,u} OneTruncation₂.nerveEquiv
     (fun _  _↦ OneTruncation₂.nerveHomEquiv) nerveHomEquiv_id
+
+lemma nerve_hom_ext {X : (SSet.Truncated 2)} {C : Type u} [Category.{u} C]
+    {F G : X ⟶ ((truncation 2).obj (nerve C))}
+    (h : OneTruncation₂.map F = OneTruncation₂.map G) : F = G :=
+  SSet.Truncated.IsStrictSegal.hom_ext (fun f ↦ by
+    obtain ⟨x₀, x₁, f, rfl⟩ := Truncated.Edge.exists_of_simplex f
+    simpa using congr_arg Truncated.Edge.edge (ReflPrefunctor.congr_hom h f))
+
+@[deprecated (since := "2025-11-06")] alias _root_.CategoryTheory.toNerve₂.ext := nerve_hom_ext
 
 end
 end OneTruncation₂
@@ -225,38 +233,7 @@ inductive HoRel₂ : HomRel (Cat.FreeRefl (OneTruncation₂ V)) where
       ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map (Quiver.Hom.toPath e₀₂))
 
 
-/-
-/-- The 2-simplices in a 2-truncated simplicial set `V` generate a hom relation on the free
-category on the underlying refl quiver of `V`. -/
-inductive HoRel₂ {V : SSet.Truncated 2} :
-    (X Y : Cat.FreeRefl (OneTruncation₂ V)) → (f g : X ⟶ Y) → Prop
-  | mk (φ : V _⦋2⦌₂) :
-    HoRel₂ _ _
-      (Quot.mk _ (Quiver.Hom.toPath (ev02₂ φ)))
-      (Quot.mk _ ((Quiver.Hom.toPath (ev01₂ φ)).comp
-        (Quiver.Hom.toPath (ev12₂ φ))))
-
-/-- A 2-simplex whose faces are identified with certain arrows in `OneTruncation₂ V` defines
-a term of type `HoRel₂` between those arrows. -/
-theorem HoRel₂.mk' {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) {X₀ X₁ X₂ : OneTruncation₂ V}
-    (f₀₁ : X₀ ⟶ X₁) (f₁₂ : X₁ ⟶ X₂) (f₀₂ : X₀ ⟶ X₂)
-    (h₀₁ : f₀₁.edge = V.map (δ₂ 2).op φ) (h₁₂ : f₁₂.edge = V.map (δ₂ 0).op φ)
-    (h₀₂ : f₀₂.edge = V.map (δ₂ 1).op φ) :
-    HoRel₂ _ _ (Quot.mk _ (Quiver.Hom.toPath f₀₂))
-      (Quot.mk _ ((Quiver.Hom.toPath f₀₁).comp (Quiver.Hom.toPath f₁₂))) := by
-  obtain rfl : X₀ = ev0₂ φ := by
-    rw [← f₀₂.src_eq, h₀₂, ← FunctorToTypes.map_comp_apply, ← op_comp]
-    rfl
-  obtain rfl : X₁ = ev1₂ φ := by
-    rw [← f₀₁.tgt_eq, h₀₁, ← FunctorToTypes.map_comp_apply, ← op_comp]
-    rfl
-  obtain rfl : X₂ = ev2₂ φ := by
-    rw [← f₁₂.tgt_eq, h₁₂, ← FunctorToTypes.map_comp_apply, ← op_comp]
-    rfl
-  obtain rfl : f₀₁ = ev01₂ φ := by ext; assumption
-  obtain rfl : f₁₂ = ev12₂ φ := by ext; assumption
-  obtain rfl : f₀₂ = ev02₂ φ := by ext; assumption
-  constructor-/
+@[deprecated (since := "2025-11-06")] alias HoRel₂.mk' := HoRel₂.of_compStruct
 
 end OneTruncation₂
 
@@ -474,7 +451,7 @@ end
 
 /-- The functor that takes a 2-truncated simplicial set to its homotopy category. -/
 def hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u,u} where
-  obj V := Cat.of (V.HomotopyCategory)
+  obj V := Cat.of V.HomotopyCategory
   map F := mapHomotopyCategory F
   map_id _ := HomotopyCategory.functor_ext (by simp) (by cat_disch)
   map_comp _ _ := HomotopyCategory.functor_ext (by simp) (by cat_disch)
