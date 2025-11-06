@@ -114,12 +114,14 @@ theorem star_eigenvectorUnitary_mulVec (j : n) :
     (star (eigenvectorUnitary hA : Matrix n n 𝕜)) *ᵥ ⇑(hA.eigenvectorBasis j) = Pi.single j 1 := by
   rw [← eigenvectorUnitary_mulVec, mulVec_mulVec, Unitary.coe_star_mul_self, one_mulVec]
 
+open Unitary
+
 /-- Unitary diagonalization of a Hermitian matrix. -/
 theorem conjStarAlgAut_star_eigenvectorUnitary :
-    Unitary.conjStarAlgAut 𝕜 _ (star hA.eigenvectorUnitary) A =
+    conjStarAlgAut 𝕜 _ (star hA.eigenvectorUnitary) A =
       diagonal (RCLike.ofReal ∘ hA.eigenvalues) := by
   apply Matrix.toEuclideanLin.injective <| (EuclideanSpace.basisFun n 𝕜).toBasis.ext fun i ↦ ?_
-  simp only [← Unitary.conjStarAlgAut_symm, Unitary.conjStarAlgAut_symm_apply,
+  simp only [← conjStarAlgAut_symm, conjStarAlgAut_symm_apply,
     toEuclideanLin_apply, OrthonormalBasis.coe_toBasis, EuclideanSpace.basisFun_apply,
     EuclideanSpace.ofLp_single, ← mulVec_mulVec, eigenvectorUnitary_mulVec, ← mulVec_mulVec,
     mulVec_eigenvectorBasis, Matrix.diagonal_mulVec_single, mulVec_smul,
@@ -135,9 +137,8 @@ theorem conjStarAlgAut_star_eigenvectorUnitary :
 diagonalized by a change of basis. For the spectral theorem on linear maps, see
 `LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply`. -/
 theorem spectral_theorem :
-    A = Unitary.conjStarAlgAut 𝕜 _ hA.eigenvectorUnitary
-      (diagonal (RCLike.ofReal ∘ hA.eigenvalues)) := by
-  rw [← conjStarAlgAut_star_eigenvectorUnitary, Unitary.conjStarAlgAut_conjStarAlgAut]
+    A = conjStarAlgAut 𝕜 _ hA.eigenvectorUnitary (diagonal (RCLike.ofReal ∘ hA.eigenvalues)) := by
+  rw [← conjStarAlgAut_star_eigenvectorUnitary, conjStarAlgAut_conjStarAlgAut]
   simp
 
 theorem eigenvalues_eq (i : n) :
@@ -150,7 +151,7 @@ theorem eigenvalues_eq (i : n) :
 
 open Polynomial in
 lemma charpoly_eq : A.charpoly = ∏ i, (X - C (hA.eigenvalues i : 𝕜)) := by
-  conv_lhs => rw [hA.spectral_theorem, Unitary.conjStarAlgAut_apply, charpoly_mul_comm, ← mul_assoc]
+  conv_lhs => rw [hA.spectral_theorem, conjStarAlgAut_apply, charpoly_mul_comm, ← mul_assoc]
   simp [charpoly_diagonal]
 
 lemma roots_charpoly_eq_eigenvalues :
@@ -188,8 +189,8 @@ theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
 
 /-- rank of a Hermitian matrix is the rank of after diagonalization by the eigenvector unitary -/
 lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
-  conv_lhs => rw [hA.spectral_theorem, Unitary.conjStarAlgAut_apply, ← Unitary.coe_star]
-  simp [-isUnit_iff_ne_zero, -Unitary.coe_star, rank_diagonal]
+  conv_lhs => rw [hA.spectral_theorem, conjStarAlgAut_apply, ← coe_star]
+  simp [-isUnit_iff_ne_zero, -coe_star, rank_diagonal]
 
 /-- rank of a Hermitian matrix is the number of nonzero eigenvalues of the Hermitian matrix -/
 lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
