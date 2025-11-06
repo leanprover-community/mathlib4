@@ -549,6 +549,4 @@ end transvection
 
 end LinearMap
 
-end
-
-end transvection
+end determinant
