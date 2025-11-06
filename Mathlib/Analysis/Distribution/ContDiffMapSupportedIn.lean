@@ -81,7 +81,7 @@ functions with support in a compact set `K`. -/
 scoped[Distributions] notation "𝓓^{" n "}_{"K"}(" E ", " F ")" =>
   ContDiffMapSupportedIn E F n K
 
-/-- Notation for the space of bundled smooth (inifinitely differentiable)
+/-- Notation for the space of bundled smooth (infinitely differentiable)
 functions with support in a compact set `K`. -/
 scoped[Distributions] notation "𝓓_{"K"}(" E ", " F ")" =>
   ContDiffMapSupportedIn E F ⊤ K
@@ -89,7 +89,7 @@ scoped[Distributions] notation "𝓓_{"K"}(" E ", " F ")" =>
 open Distributions
 
 /-- `ContDiffMapSupportedInClass B E F n K` states that `B` is a type of bundled `n`-times
-continously differentiable functions with support in the compact set `K`. -/
+continuously differentiable functions with support in the compact set `K`. -/
 class ContDiffMapSupportedInClass (B : Type*) (E F : outParam <| Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E)
@@ -137,9 +137,9 @@ theorem toFun_eq_coe {f : 𝓓^{n}_{K}(E, F)} : f.toFun = (f : E → F) :=
   rfl
 
 /-- See note [custom simps projection]. -/
-def Simps.apply (f : 𝓓^{n}_{K}(E, F)) : E → F := f
+def Simps.coe (f : 𝓓^{n}_{K}(E, F)) : E → F := f
 
-initialize_simps_projections ContDiffMapSupportedIn (toFun → apply)
+initialize_simps_projections ContDiffMapSupportedIn (toFun → coe, as_prefix coe)
 
 @[ext]
 theorem ext {f g : 𝓓^{n}_{K}(E, F)} (h : ∀ a, f a = g a) : f = g :=
@@ -165,76 +165,36 @@ theorem toBoundedContinuousFunction_apply (f : 𝓓^{n}_{K}(E, F)) (x : E) :
 
 section AddCommGroup
 
+@[simps -fullyApplied]
 instance : Zero 𝓓^{n}_{K}(E, F) where
   zero := .mk 0 contDiff_zero_fun fun _ _ ↦ rfl
 
-@[simp]
-lemma coe_zero : (0 : 𝓓^{n}_{K}(E, F)) = (0 : E → F) :=
-  rfl
-
-@[simp]
-lemma zero_apply (x : E) : (0 : 𝓓^{n}_{K}(E, F)) x = 0 :=
-  rfl
-
+@[simps -fullyApplied]
 instance : Add 𝓓^{n}_{K}(E, F) where
   add f g := .mk (f + g) (f.contDiff.add g.contDiff) <| by
     rw [← add_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
--- TODO:  can this and the next lemma be auto-generated,
--- e.g. by making `add` a definition tagged with the `simps` attribute?
--- Investigate the same question for `zero` above and `sub` , `neg` and `smul` below.
-@[simp]
-lemma coe_add (f g : 𝓓^{n}_{K}(E, F)) : (f + g : 𝓓^{n}_{K}(E, F)) = (f : E → F) + g :=
-  rfl
-
-@[simp]
-lemma add_apply (f g : 𝓓^{n}_{K}(E, F)) (x : E) : (f + g) x = f x + g x :=
-  rfl
-
+@[simps -fullyApplied]
 instance : Neg 𝓓^{n}_{K}(E, F) where
   neg f := .mk (-f) (f.contDiff.neg) <| by
     rw [← neg_zero]
     exact f.zero_on_compl.comp_left
 
-@[simp]
-lemma coe_neg (f : 𝓓^{n}_{K}(E, F)) : (-f : 𝓓^{n}_{K}(E, F)) = (-f : E → F) :=
-  rfl
-
-@[simp]
-theorem neg_apply {f : 𝓓^{n}_{K}(E, F)} {x : E} : (-f) x = - f x :=
-  rfl
-
+@[simps -fullyApplied]
 instance instSub : Sub 𝓓^{n}_{K}(E, F) where
   sub f g := .mk (f - g) (f.contDiff.sub g.contDiff) <| by
     rw [← sub_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
-@[simp]
-lemma coe_sub (f g : 𝓓^{n}_{K}(E, F)) : (f - g : 𝓓^{n}_{K}(E, F)) = (f : E → F) - g :=
-  rfl
-
-@[simp]
-theorem sub_apply {f g : 𝓓^{n}_{K}(E, F)} {x : E} : (f - g) x = f x - g x :=
-  rfl
-
+@[simps -fullyApplied]
 instance instSMul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
    SMul R 𝓓^{n}_{K}(E, F) where
   smul c f := .mk (c • (f : E → F)) (f.contDiff.const_smul c) <| by
     rw [← smul_zero c]
     exact f.zero_on_compl.comp_left
 
-@[simp]
-lemma coe_smul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
-    (c : R) (f : 𝓓^{n}_{K}(E, F)) : (c • f : 𝓓^{n}_{K}(E, F)) = c • (f : E → F) :=
-  rfl
-
-@[simp]
-lemma smul_apply {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
-    (c : R) (f : 𝓓^{n}_{K}(E, F)) (x : E) : (c • f) x = c • (f x) :=
-  rfl
-
-instance : AddCommGroup 𝓓^{n}_{K}(E, F) :=
+instance : AddCommGroup 𝓓^{n}_{K}(E, F) := fast_instance%
   DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
@@ -260,9 +220,27 @@ end AddCommGroup
 section Module
 
 instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-    Module R 𝓓^{n}_{K}(E, F) :=
+    Module R 𝓓^{n}_{K}(E, F) := fast_instance%
   (coeHom_injective n K).module R (coeHom E F n K) fun _ _ ↦ rfl
 
 end Module
+
+protected theorem support_subset (f : 𝓓^{n}_{K}(E, F)) : support f ⊆ K :=
+  support_subset_iff'.mpr f.zero_on_compl
+
+protected theorem tsupport_subset (f : 𝓓^{n}_{K}(E, F)) : tsupport f ⊆ K :=
+  closure_minimal f.support_subset K.isCompact.isClosed
+
+protected theorem hasCompactSupport (f : 𝓓^{n}_{K}(E, F)) : HasCompactSupport f :=
+  HasCompactSupport.intro K.isCompact f.zero_on_compl
+
+/-- Inclusion of unbundled `n`-times continuously differentiable function with support included
+in a compact `K` into the space `𝓓^{n}_{K}`. -/
+@[simps]
+protected def of_support_subset {f : E → F} (hf : ContDiff ℝ n f) (hsupp : support f ⊆ K) :
+    𝓓^{n}_{K}(E, F) where
+  toFun := f
+  contDiff' := hf
+  zero_on_compl' := support_subset_iff'.mp hsupp
 
 end ContDiffMapSupportedIn

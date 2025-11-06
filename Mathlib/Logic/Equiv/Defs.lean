@@ -210,7 +210,7 @@ theorem nontrivial_congr {α β} (e : α ≃ β) : Nontrivial α ↔ Nontrivial 
   ⟨fun _ ↦ e.symm.nontrivial, fun _ ↦ e.nontrivial⟩
 
 /-- Transfer `DecidableEq` across an equivalence. -/
-protected def decidableEq (e : α ≃ β) [DecidableEq β] : DecidableEq α :=
+protected abbrev decidableEq (e : α ≃ β) [DecidableEq β] : DecidableEq α :=
   e.injective.decidableEq
 
 theorem nonempty_congr (e : α ≃ β) : Nonempty α ↔ Nonempty β := Nonempty.congr e e.symm
@@ -218,10 +218,10 @@ theorem nonempty_congr (e : α ≃ β) : Nonempty α ↔ Nonempty β := Nonempty
 protected theorem nonempty (e : α ≃ β) [Nonempty β] : Nonempty α := e.nonempty_congr.mpr ‹_›
 
 /-- If `α ≃ β` and `β` is inhabited, then so is `α`. -/
-protected def inhabited [Inhabited β] (e : α ≃ β) : Inhabited α := ⟨e.symm default⟩
+protected abbrev inhabited [Inhabited β] (e : α ≃ β) : Inhabited α := ⟨e.symm default⟩
 
 /-- If `α ≃ β` and `β` is a singleton type, then so is `α`. -/
-protected def unique [Unique β] (e : α ≃ β) : Unique α := e.symm.surjective.unique
+protected abbrev unique [Unique β] (e : α ≃ β) : Unique α := e.symm.surjective.unique
 
 /-- Equivalence between equal types. -/
 protected def cast {α β : Sort _} (h : α = β) : α ≃ β where
