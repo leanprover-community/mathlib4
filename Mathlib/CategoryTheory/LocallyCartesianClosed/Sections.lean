@@ -30,7 +30,7 @@ variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory C]
 
 attribute [local instance] BraidedCategory.ofCartesianMonoidalCategory
 
-section prelim
+section Prelim
 
 namespace CartesianMonoidalCategory
 
@@ -60,6 +60,10 @@ def equivOverUnit : Over (𝟙_ C) ≌ C :=
     (NatIso.ofComponents fun X => Iso.refl _)
 
 attribute [local instance] Over.ChosenPullback.cartesianMonoidalCategoryToUnit
+
+@[simps! obj_left obj_hom map_left]
+def toOverTerminal (X : C) (_ : IsTerminal X) : C ⥤ Over X :=
+  toOverUnit C ⋙ ChosenPullback.pullback (toUnit X)
 
 /-- The isomorphism of functors `toOverUnit C ⋙ ChosenPullback.pullback (toUnit I)` and
 `toOver I`. -/
@@ -113,7 +117,9 @@ example : ((toOver I).obj X).hom = CartesianMonoidalCategory.snd X I := by rfl
 
 end CartesianMonoidalCategory
 
-end prelim
+end Prelim
+
+section Sections
 
 variable (I : C) [Exponentiable I]
 
@@ -244,8 +250,14 @@ variable (I)
 def toOverSectionsAdj : toOver I ⊣ sections I :=
   .mkOfHomEquiv coreHomEquivToOverSections
 
+example {X : C} : (sections I).obj ((toOver I).obj X) ≅ (I ⟹ X) := by
+  simp [sectionsObj]
+  sorry
+
 example {X : C} : (toOverSectionsAdj I).unit.app X = sectionsCurry (𝟙 ((toOver I).obj X)) := rfl
 
 end Over
+
+end Sections
 
 end CategoryTheory
