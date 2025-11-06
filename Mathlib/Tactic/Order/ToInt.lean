@@ -3,9 +3,10 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Tactic.Order.CollectFacts
 import Batteries.Data.List.Pairwise
+import Mathlib.Tactic.Order.CollectFacts
 import Mathlib.Tactic.GeneralizeProofs
+import Mathlib.Util.Qq
 
 /-!
 # Translating linear orders to ℤ
@@ -108,12 +109,11 @@ def translateToInt {u : Lean.Level} (type : Q(Type u)) (inst : Q(LinearOrder $ty
     (idxToAtom : Std.HashMap ℕ Q($type))
     (facts : Array AtomicFact) :
     MetaM <| Std.HashMap ℕ Q(ℤ) × Array AtomicFact := do
-  haveI mkNatQ : ℕ → Q(ℕ) := Lean.mkNatLit
-  haveI nE : Q(ℕ) := mkNatQ idxToAtom.size
+  haveI nE : Q(ℕ) := mkNatLitQ idxToAtom.size
   haveI finFun : Q(Fin $nE → $type) :=
     ← mkFinFun (Array.ofFn fun (n : Fin idxToAtom.size) => idxToAtom[n]!)
   let toFinUnsafe : ℕ → Q(Fin $nE) := fun k =>
-    haveI kE := mkNatQ k
+    haveI kE := mkNatLitQ k
     haveI heq : decide ($kE < $nE) =Q true := ⟨⟩
     q(⟨$kE, of_decide_eq_true $heq⟩)
   return Prod.snd <| facts.foldl (fun (curr, map, facts) fact =>
