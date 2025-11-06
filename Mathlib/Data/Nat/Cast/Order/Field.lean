@@ -34,20 +34,6 @@ theorem cast_div_le {m n : ℕ} : ((m / n : ℕ) : α) ≤ m / n := by
   · exact Nat.div_mul_le_self m _
   · exact Nat.cast_pos.2 (Nat.succ_pos _)
 
-/-- Lower bound for `Nat.cast (m / n)`. -/
-theorem cast_div_ge {m n : ℕ} : (m : α) / (n : α) + (n : α)⁻¹ ≤ ((m / n : ℕ) : α) + 1 := by
-  by_cases hn : n = 0
-  · simp [hn]
-  replace hn : 0 < (n : α) := by norm_cast; omega
-  apply le_of_mul_le_mul_right _ hn
-  rw [add_mul, inv_mul_cancel₀ (_root_.ne_of_lt hn).symm,
-    div_mul_cancel₀ _ (_root_.ne_of_lt hn).symm, add_mul, one_mul,
-    ← Nat.cast_mul, Nat.div_mul_self_eq_mod_sub_self, ← Nat.cast_add, ← Nat.cast_one,
-    ← Nat.cast_add, Nat.cast_le]
-  rw [cast_pos] at hn
-  apply Nat.mod_lt m at hn
-  omega
-
 theorem inv_pos_of_nat {n : ℕ} : 0 < ((n : α) + 1)⁻¹ :=
   inv_pos.2 <| add_pos_of_nonneg_of_pos n.cast_nonneg zero_lt_one
 
