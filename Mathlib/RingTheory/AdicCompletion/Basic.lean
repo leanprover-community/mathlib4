@@ -21,7 +21,7 @@ with respect to an ideal `I`:
 - `IsAdicComplete I M`: this says that `M` is Hausdorff and precomplete.
 - `Hausdorffification I M`: this is the universal Hausdorff module with a map from `M`.
 - `AdicCompletion I M`: if `I` is finitely generated, then this is the universal complete module
-  with a linear map `AdicCompletion.coeHom` from `M`. This map is injective iff `M` is Hausdorff
+  with a linear map `AdicCompletion.lift` from `M`. This map is injective iff `M` is Hausdorff
   and surjective iff `M` is precomplete.
 - `IsAdicComplete.lift`: if `N` is `I`-adically complete, then a compatible family of
   linear maps `M →ₗ[R] N ⧸ (I ^ n • ⊤)` can be lifted to a unique linear map `M →ₗ[R] N`.
@@ -572,18 +572,31 @@ theorem of_bijective_iff : Function.Bijective (of I M) ↔ IsAdicComplete I M :=
       toIsPrecomplete := of_surjective_iff.mp h.2 },
    fun h ↦ ⟨of_injective_iff.mpr h.1, of_surjective_iff.mpr h.2⟩⟩
 
-variable (I M) in
-theorem of_bijective [IsAdicComplete I M] : Function.Bijective (of I M) :=
+variable (I M)
+
+variable [IsAdicComplete I M]
+
+theorem of_bijective : Function.Bijective (of I M) :=
   of_bijective_iff.mpr ‹_›
 
-variable (I M) in
 /--
 When `M` is `I`-adic complete, the canonical map from `M` to its `I`-adic completion is a linear
 equivalence.
 -/
-@[simps! apply symm_apply]
-def ofLinearEquiv [IsAdicComplete I M] : M ≃ₗ[R] AdicCompletion I M :=
+@[simps! apply]
+def ofLinearEquiv : M ≃ₗ[R] AdicCompletion I M :=
   LinearEquiv.ofBijective (of I M) (of_bijective I M)
+
+variable {M}
+
+@[simp]
+theorem ofLinearEquiv_symm_of (x : M) : (ofLinearEquiv I M).symm (of I M x) = x := by
+  simp [ofLinearEquiv]
+
+@[simp]
+theorem of_ofLinearEquiv_symm (x : AdicCompletion I M) :
+    of I M ((ofLinearEquiv I M).symm x) = x := by
+  simp [ofLinearEquiv]
 
 end Bijective
 
