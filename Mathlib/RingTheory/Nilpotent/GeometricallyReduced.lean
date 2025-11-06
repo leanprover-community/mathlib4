@@ -68,3 +68,5 @@ theorem IsGeometricallyReduced.of_forall_fg
     IsGeometricallyReduced k A := by
   simp_rw [isGeometricallyReduced_iff] at h
   exact ⟨IsReduced.tensorProduct_of_flat_of_forall_fg h⟩
+
+end Algebra
