@@ -118,6 +118,16 @@ theorem linearMapLeftRightHom_apply
     linearMapLeftRightHom j β f p = ((liftBaseChangeEquiv S) (β ∘ₗ f)) (j.equiv.symm p) := by
   rfl
 
+theorem linearMapLeftRightHom_comp_apply
+    {α : M →ₗ[R] P} (j : IsBaseChange S α) (β : N →ₗ[R] Q) (f : M →ₗ[R] N) (m : M) :
+    linearMapLeftRightHom j β f (α m) = β (f m) := by
+  simp [linearMapLeftRightHom_apply, IsBaseChange.equiv_symm_apply]
+
+theorem linearMapLeftRightHom_comp
+    {α : M →ₗ[R] P} (j : IsBaseChange S α) (β : N →ₗ[R] Q) (f : M →ₗ[R] N) :
+    (linearMapLeftRightHom j β f).restrictScalars R ∘ₗ α = β ∘ₗ f := by
+  ext; simp [linearMapLeftRightHom_comp_apply]
+
 variable [Module.Free R M] [Module.Finite R M]
 
 theorem linearMapLeftRight {α : M →ₗ[R] P} (j : IsBaseChange S α)
@@ -148,6 +158,17 @@ theorem endomHom_apply
     {α : M →ₗ[R] P} (j : IsBaseChange S α) (f : M →ₗ[R] M) (p : P) :
     endomHom j f p = ((liftBaseChangeEquiv S) (α ∘ₗ f)) (j.equiv.symm p) := by
   rfl
+
+theorem endomHom_comp_apply
+    {α : M →ₗ[R] P} (j : IsBaseChange S α) (f : M →ₗ[R] M) (m : M) :
+    endomHom j f (α m) = α (f m) := by
+  simp [endomHom_apply, IsBaseChange.equiv_symm_apply]
+
+theorem endomHom_comp
+    {α : M →ₗ[R] P} (j : IsBaseChange S α) (f : M →ₗ[R] M) (m : M) :
+    (endomHom j f).restrictScalars R ∘ₗ α = α ∘ₗ f := by
+  ext; simp [endomHom_comp_apply]
+
 
 variable [Module.Free R M] [Module.Finite R M]
 
