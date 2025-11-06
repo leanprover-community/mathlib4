@@ -502,13 +502,6 @@ theorem _root_.Matrix.IsUnit.posDef_star_right_conjugate_iff (hU : IsUnit U) :
 
 end conjugate
 
-/-- The eigenvalues of a positive definite matrix are positive. -/
-lemma eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
-    (hA : Matrix.PosDef A) (i : n) : 0 < hA.1.eigenvalues i := by
-  simp only [hA.1.eigenvalues_eq]
-  exact hA.re_dotProduct_pos <| (ofLp_eq_zero 2).ne.2 <|
-    hA.1.eigenvectorBasis.orthonormal.ne_zero i
-
 open Unitary
 
 /-- A Hermitian matrix is positive-definite if and only if its eigenvalues are positive. -/
@@ -517,6 +510,11 @@ lemma _root_.Matrix.IsHermitian.posDef_iff_eigenvalues_pos [DecidableEq n] {A : 
   have : IsUnit (hA.eigenvectorUnitary : Matrix n n 𝕜) := toUnits (hA.eigenvectorUnitary) |>.isUnit
   conv_lhs => rw [hA.spectral_theorem]
   simp [this.posDef_star_right_conjugate_iff, posDef_diagonal_iff]
+
+/-- The eigenvalues of a positive definite matrix are positive. -/
+lemma eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
+    (hA : Matrix.PosDef A) (i : n) : 0 < hA.1.eigenvalues i :=
+  hA.isHermitian.posDef_iff_eigenvalues_pos.mp hA i
 
 theorem trace_pos [Nonempty n] {A : Matrix n n 𝕜} (hA : A.PosDef) : 0 < A.trace := by
   classical
