@@ -17,6 +17,15 @@ in the context of an infotree node.
 
 open Lean Elab Term Command Linter
 
+def Lean.Meta.withWarningAsError {α : Type} (m : MetaM α) : MetaM α := do
+  let s ← saveState
+  let a ← m
+  let msgs := (← getThe Core.State).messages.unreported
+  if msgs.isEmpty then
+    return a
+  else
+    s.restore
+    throwError "{msgs.size} unreported messages"
 namespace Lean.Elab.ContextInfo
 
 variable {α}
@@ -84,6 +93,6 @@ def runTacticCode (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (code : S
   let termCtx ← liftTermElabM read
   let termState ← liftTermElabM get
   ctx.runTactic i goal fun goal =>
-    Lean.Elab.runTactic' (ctx := termCtx) (s := termState) goal code
+    Meta.withWarningAsError <| Lean.Elab.runTactic' (ctx := termCtx) (s := termState) goal code
 
 end Lean.Elab.ContextInfo
