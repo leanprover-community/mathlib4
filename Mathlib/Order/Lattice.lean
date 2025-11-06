@@ -647,7 +647,7 @@ variable [LinearOrder α] {a b c d : α}
 
 theorem sup_ind (a b : α) {p : α → Prop} (ha : p a) (hb : p b) : p (a ⊔ b) :=
   (IsTotal.total a b).elim (fun h : a ≤ b => by rwa [sup_eq_right.2 h]) fun h => by
-  grind
+  rwa [sup_eq_left.2 h]
 
 @[simp]
 theorem le_sup_iff : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c := by
