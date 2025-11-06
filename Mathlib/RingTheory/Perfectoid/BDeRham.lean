@@ -31,14 +31,14 @@ integral perfectoid and define \(\mathbb{B}_dR\).
 
 Currently, the period ring `BDeRhamPlus` takes the ring of integers `O` as the input.
 After the perfectoid theory is developed, we should modify it to
-take a perfectoid field as the input.
+take a perfectoid ring as the input.
 
 ## Reference
 
-* [Scholze, *p-adic Hodge theory for rigid-analytic varieties*][scholze2013adic]
+* [Scholze, *p-adic Hodge theory for rigid-analytic varieties*](scholze2013adic)
 
 ## Tags
-de Rham Representation, Period Rings
+De Rham representation, period rings
 -/
 
 universe u
