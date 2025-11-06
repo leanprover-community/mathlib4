@@ -141,12 +141,12 @@ def liftNatIso (F₁ F₂ : FreeGroupoid C ⥤ G) (τ : of C ⋙ F₁ ≅ of C �
 
 @[simp]
 lemma liftNatIso_hom_app (F₁ F₂ : FreeGroupoid C ⥤ G) (τ : of C ⋙ F₁ ≅ of C ⋙ F₂) (X) :
-    (liftNatIso F₁ F₂ τ).hom.app (.mk X) = τ.hom.app X := by
+    (liftNatIso F₁ F₂ τ).hom.app (mk X) = τ.hom.app X := by
   simp [liftNatIso]
 
 @[simp]
 lemma liftNatIso_inv_app (F₁ F₂ : FreeGroupoid C ⥤ G) (τ : of C ⋙ F₁ ≅ of C ⋙ F₂) (X) :
-    (liftNatIso F₁ F₂ τ).inv.app (.mk X) = τ.inv.app X := by
+    (liftNatIso F₁ F₂ τ).inv.app (mk X) = τ.inv.app X := by
   simp [liftNatIso]
 
 end UniversalProperty
