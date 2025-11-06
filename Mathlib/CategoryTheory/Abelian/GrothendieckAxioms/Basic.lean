@@ -310,9 +310,9 @@ lemma AB5OfSize_of_univLE [HasFilteredColimitsOfSize.{w₂, w₂'} C] [UnivLE.{w
   constructor
   intro J _ _
   haveI := IsFiltered.of_equivalence ((ShrinkHoms.equivalence.{w₂} J).trans <|
-    Shrink.equivalence.{w₂'} (ShrinkHoms.{w'} J))
+    Shrink.equivalence.{w₂', w₂} (ShrinkHoms.{w'} J))
   exact HasExactColimitsOfShape.of_domain_equivalence _ ((ShrinkHoms.equivalence.{w₂} J).trans <|
-    Shrink.equivalence.{w₂'} (ShrinkHoms.{w'} J)).symm
+    Shrink.equivalence.{w₂', w₂} (ShrinkHoms.{w'} J)).symm
 
 lemma AB5OfSize_shrink [HasFilteredColimitsOfSize.{max w w₂, max w' w₂'} C]
     [AB5OfSize.{max w w₂, max w' w₂'} C] :
@@ -344,9 +344,9 @@ lemma AB5StarOfSize_of_univLE [HasCofilteredLimitsOfSize.{w₂, w₂'} C] [UnivL
   constructor
   intro J _ _
   haveI := IsCofiltered.of_equivalence ((ShrinkHoms.equivalence.{w₂} J).trans <|
-    Shrink.equivalence.{w₂'} (ShrinkHoms.{w'} J))
+    Shrink.equivalence.{w₂', w₂} (ShrinkHoms.{w'} J))
   exact HasExactLimitsOfShape.of_domain_equivalence _ ((ShrinkHoms.equivalence.{w₂} J).trans <|
-    Shrink.equivalence.{w₂'} (ShrinkHoms.{w'} J)).symm
+    Shrink.equivalence.{w₂', w₂} (ShrinkHoms.{w'} J)).symm
 
 lemma AB5StarOfSize_shrink [HasCofilteredLimitsOfSize.{max w w₂, max w' w₂'} C]
     [AB5StarOfSize.{max w w₂, max w' w₂'} C] :

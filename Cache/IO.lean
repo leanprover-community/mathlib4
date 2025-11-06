@@ -41,7 +41,9 @@ def isPartOfMathlibCache (mod : Name) : Bool := #[
   -- Allow PRs to upload oleans for Reap for testing.
   `Requests,
   `OpenAIClient,
-  `Reap,].contains mod.getRoot
+  `Reap,
+  -- Allow PRs to upload oleans for Canonical for testing.
+  `Canonical,].contains mod.getRoot
 
 /-- Target directory for caching -/
 initialize CACHEDIR : FilePath ← do
@@ -74,7 +76,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.16-pre4"
+  "0.1.16"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
