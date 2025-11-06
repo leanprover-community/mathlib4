@@ -916,8 +916,7 @@ theorem mulVec_injective [Fintype n] : (mulVec : Matrix m n α → _).Injective 
   intro A B h
   ext i j
   classical
-  convert congrFun₂ h (Pi.single j 1) i
-    <;> simp
+  simpa using congrFun₂ h (Pi.single j 1) i
 
 theorem ext_iff_mulVec [Fintype n] {A B : Matrix m n α} : A = B ↔ ∀ v, A *ᵥ v = B *ᵥ v :=
   mulVec_injective.eq_iff.symm.trans funext_iff
@@ -926,8 +925,7 @@ theorem vecMul_injective [Fintype m] : (·.vecMul : Matrix m n α → _).Injecti
   intro A B h
   ext i j
   classical
-  convert congrFun₂ h (Pi.single i 1) j
-    <;> simp only [single_one_vecMul, row]
+  simpa using congrFun₂ h (Pi.single i 1) j
 
 theorem ext_iff_vecMul [Fintype m] {A B : Matrix m n α} : A = B ↔ ∀ v, v ᵥ* A = v ᵥ* B :=
   vecMul_injective.eq_iff.symm.trans funext_iff
