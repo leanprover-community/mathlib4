@@ -30,7 +30,7 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace W] [Topolog
 namespace Homeomorph
 
 /-- Homeomorphism between `X → Y → Z` and `X × Y → Z`. -/
-def curry {X Y Z : Type*}
+def curry' {X Y Z : Type*}
     [TopologicalSpace Z] :
     (X × Y → Z) ≃ₜ (X → Y → Z) where
   toFun := Function.curry

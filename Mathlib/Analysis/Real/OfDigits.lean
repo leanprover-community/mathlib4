@@ -155,6 +155,25 @@ theorem ofDigits_digits {b : ℕ} [NeZero b] {x : ℝ} (hb : 1 < b) (hx : x ∈ 
   · exact hasSum_ofDigitsTerm_digits x hb hx
   · exact summable_ofDigitsTerm
 
+theorem ofDigits_SurjOn {b : ℕ} [NeZero b] (hb : 1 < b) :
+    Set.SurjOn (ofDigits (b := b)) Set.univ (Set.Icc 0 1) := by
+  intro y hy
+  by_cases hy' : y ∈ Set.Ico 0 1
+  · use digits y b
+    simp [ofDigits_digits hb hy']
+  · replace hy' : y = 1 := by grind
+    use fun _ ↦ ⟨b - 1, by grind⟩
+    simp only [Set.mem_univ, ofDigits, ofDigitsTerm, hy', true_and, ← inv_pow]
+    rw [Summable.tsum_mul_left]
+    · rw [geom_series_succ _ (by simp [inv_lt_one_iff₀, hb]),
+        tsum_geometric_of_lt_one (by positivity) (by simp [inv_lt_one_iff₀, hb])]
+      push_cast [hb]
+      have : 0 < (b : ℝ) - 1 := by rify at hb; linarith
+      field_simp
+      ring
+    · rw [summable_nat_add_iff (f := fun n ↦ (b : ℝ)⁻¹ ^ n) 1]
+      apply summable_geometric_of_lt_one (by positivity) (by simp [inv_lt_one_iff₀, hb])
+
 theorem continuous_ofDigits {b : ℕ} : Continuous (@ofDigits b) := by
   match b with
   | 0 => fun_prop

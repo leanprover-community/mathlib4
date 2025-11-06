@@ -32,50 +32,26 @@ The proof consists of three steps. Let `X` be a compact metric space.
 open Real
 
 /-- Convert a sequence of binary digits to a real number from `unitInterval`. -/
-noncomputable def fromBinary (b : ℕ → Bool) : unitInterval :=
+noncomputable def fromBinary : (ℕ → Bool) → unitInterval :=
   let φ : (ℕ → Bool) ≃ₜ (ℕ → Fin 2) := Homeomorph.piCongrRight
     (fun _ ↦ finTwoEquiv.toHomeomorphOfDiscrete.symm)
-  ⟨ofDigits (φ b), ofDigits_nonneg _, ofDigits_le_one _⟩
+  Subtype.coind (ofDigits ∘ φ) (fun _ ↦ ⟨ofDigits_nonneg _, ofDigits_le_one _⟩)
 
-theorem fromBinary_continuous : Continuous fromBinary := by
-  unfold fromBinary
-  apply Continuous.subtype_mk
-  have : (fun x ↦ ofDigits
-      ((Homeomorph.piCongrRight fun _ ↦ finTwoEquiv.toHomeomorphOfDiscrete.symm) x)) =
-      ofDigits ∘ (Homeomorph.piCongrRight fun _ ↦ finTwoEquiv.toHomeomorphOfDiscrete.symm) := by
-    ext
-    simp
-  rw [this, Homeomorph.comp_continuous_iff']
-  exact continuous_ofDigits
+theorem fromBinary_continuous : Continuous fromBinary :=
+  Continuous.subtype_mk (continuous_ofDigits.comp' (Homeomorph.continuous _)) _
 
-theorem fromBinary_surjective : Function.Surjective fromBinary := by
-  intro x
-  obtain ⟨x, hx⟩ := x
-  by_cases hx_one : x = 1
-  · use fun _ ↦ true
-    have : fromBinary (fun _ ↦ true) = ofDigits (b := 2) (fun _ ↦ 1) := by
-      simp only [fromBinary, Equiv.toHomeomorphOfDiscrete, Equiv.symm_toHomeomorph, Fin.isValue]
-      congr
-    simp only [hx_one, Set.Icc.mk_one, Subtype.eq_iff, this, ofDigits, ofDigitsTerm, Fin.isValue,
-      Fin.val_one, Nat.cast_one, Nat.cast_ofNat, pow_succ, mul_inv_rev, ← inv_pow, one_mul,
-      Set.Icc.coe_one]
-    rw [Summable.tsum_mul_left]
-    · rw [tsum_geometric_inv_two]
-      simp
-    · convert summable_geometric_two
-      eta_expand
-      simp
-  replace hx : x ∈ Set.Ico 0 1 := by
-    simp at hx ⊢
-    exact ⟨hx.left, by apply hx.right.lt_of_ne' (by symm; simpa)⟩
-  use finTwoEquiv ∘ (digits x 2)
-  simp only [fromBinary, Subtype.mk.injEq]
-  conv => rhs; rw [← ofDigits_digits (b := 2) (by simp) hx]
-  congr
-  ext n
-  simp only [Homeomorph.piCongrRight_apply, Function.comp_apply]
-  congr
-  simp [Equiv.toHomeomorphOfDiscrete]
+theorem Subtype.coind_surjective' {α β} {f : α → β} {p : Set β} (h : ∀ a, f a ∈ p)
+    (hf : Set.SurjOn f Set.univ p) :
+    (coind f h).Surjective := fun ⟨_, hb⟩ ↦
+  let ⟨a, _, ha⟩ := hf hb
+  ⟨a, coe_injective ha⟩
+
+theorem fromBinary_surjective : fromBinary.Surjective := by
+  apply Subtype.coind_surjective'
+  apply Set.SurjOn.comp (t := Set.univ)
+  · exact ofDigits_SurjOn (by norm_num)
+  · rw [Set.surjOn_univ]
+    exact Homeomorph.surjective _
 
 /-- A continuous surjection from the Cantor space to the Hilbert cube. -/
 noncomputable def cantorToHilbert (x : ℕ → Bool) : ℕ → unitInterval :=
