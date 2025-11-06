@@ -437,7 +437,6 @@ lemma Module.Injective.extension_property
 
 end lifting_property
 
-section injective_products
 
 universe w in
 instance Module.Injective.pi
@@ -451,4 +450,3 @@ instance Module.Injective.pi
     ext i
     exact DFunLike.congr_fun (hl i) x⟩
 
-end injective_products
