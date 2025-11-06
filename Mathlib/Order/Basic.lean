@@ -380,20 +380,12 @@ end LT.lt
 
 -- Variant of `min_def` with the branches reversed.
 theorem min_def' (a b : α) : min a b = if b ≤ a then b else a := by
-  rw [min_def]
-  rcases lt_trichotomy a b with (lt | eq | gt)
-  · rw [if_pos lt.le, if_neg (not_le.mpr lt)]
-  · rw [if_pos eq.le, if_pos eq.ge, eq]
-  · rw [if_neg (not_le.mpr gt.gt), if_pos gt.le]
+  grind
 
 -- Variant of `min_def` with the branches reversed.
 -- This is sometimes useful as it used to be the default.
 theorem max_def' (a b : α) : max a b = if b ≤ a then a else b := by
-  rw [max_def]
-  rcases lt_trichotomy a b with (lt | eq | gt)
-  · rw [if_pos lt.le, if_neg (not_le.mpr lt)]
-  · rw [if_pos eq.le, if_pos eq.ge, eq]
-  · rw [if_neg (not_le.mpr gt.gt), if_pos gt.le]
+  grind
 
 @[deprecated (since := "2025-05-11")] alias lt_of_not_le := lt_of_not_ge
 @[deprecated (since := "2025-05-11")] alias lt_iff_not_le := lt_iff_not_ge
@@ -448,7 +440,7 @@ variable {P : Sort*} {x y : α}
 
 lemma eq_iff_eq_of_lt_iff_lt_of_gt_iff_gt {x' y' : α}
     (ltc : (x < y) ↔ (x' < y')) (gtc : (y < x) ↔ (y' < x')) :
-    x = y ↔ x' = y' := by simp_rw [eq_iff_le_not_lt, ← not_lt, ltc, gtc]
+    x = y ↔ x' = y' := by grind
 
 variable {p q r s : P}
 
