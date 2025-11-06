@@ -26,8 +26,8 @@ provides the data of a pullback functor `Over X ⥤ Over Y` as a right adjoint t
   `Over.ChosenPullback.fst f g` and `Over.ChosenPullback.snd f g` form a pullback square
   over `f` and `g`.
 
-- We prove that in cartesian monoidal categories, morphisms to the terminal object and the product
-  projections have chosen pullbacks.
+- We prove that in cartesian monoidal categories, morphisms to the terminal tensor unit and
+  the product projections have chosen pullbacks.
 
 -/
 
@@ -84,23 +84,15 @@ def comp {Z Y X : C} (f : Y ⟶ X) (g : Z ⟶ Y)
   mapPullbackAdj := ((mapPullbackAdj g).comp (mapPullbackAdj f)).ofNatIsoLeft
     (Over.mapComp g f).symm
 
-/-- In cartesian monoidal categories, any morphism to the terminal object has a chosen pullback. -/
+/-- In cartesian monoidal categories, any morphism to the terminal tensor unit has a chosen
+pullback. -/
 @[simps]
 def cartesianMonoidalCategoryToTerminal [CartesianMonoidalCategory C] {X : C} (f : X ⟶ 𝟙_ C) :
     ChosenPullback f where
   pullback.obj Y := Over.mk (snd Y.left X)
   pullback.map {Y Z} g := Over.homMk (g.left ▷ X)
-  mapPullbackAdj := Adjunction.mkOfHomEquiv
-    { homEquiv U Z :=
-      { toFun z := Over.homMk (lift z.left U.hom)
-        invFun u := Over.homMk (u.left ≫ fst Z.left X)
-        left_inv k := by simp
-        right_inv k := by
-          ext
-          dsimp
-          ext
-          · simp
-          · simpa using k.w.symm } }
+  mapPullbackAdj.unit.app T := Over.homMk (lift (𝟙 _) (T.hom))
+  mapPullbackAdj.counit.app U := Over.homMk (fst _ _)
 
 /-- In cartesian monoidal categories, the first product projections `fst` have chosen pullbacks. -/
 @[simps]
@@ -230,7 +222,7 @@ theorem pullbackMap_snd {Y' Z' X' : C} {f' : Y' ⟶ X'} {g' : Z' ⟶ X'} [Chosen
 
 @[simp]
 theorem pullbackMap_id : pullbackMap f g f g (𝟙 Y) (𝟙 Z) (𝟙 X) = 𝟙 _ := by
-  apply hom_ext <;> simp
+  cat_disch
 
 @[reassoc (attr := simp)]
 theorem pullbackMap_comp {Y' Z' X' Y'' Z'' X'' : C}
@@ -240,10 +232,10 @@ theorem pullbackMap_comp {Y' Z' X' Y'' Z'' X'' : C}
     {δ₁ : Y'' ⟶ Y'} {δ₂ : Z'' ⟶ Z'} {δ₃ : X'' ⟶ X'}
     (comm₁ comm₂ comm₁' comm₂' := by cat_disch) :
     pullbackMap f' g' f'' g'' δ₁ δ₂ δ₃ comm₁' comm₂' ≫
-      pullbackMap f g f' g'  γ₁ γ₂ γ₃ comm₁ comm₂ =
+      pullbackMap f g f' g' γ₁ γ₂ γ₃ comm₁ comm₂ =
     pullbackMap f g f'' g'' (δ₁ ≫ γ₁) (δ₂ ≫ γ₂) (δ₃ ≫ γ₃)
       (by rw [reassoc_of% comm₁', comm₁, assoc]) (by rw [reassoc_of% comm₂', comm₂, assoc]) := by
-  apply hom_ext <;> simp
+  cat_disch
 
 end PullbackMap
 
@@ -287,12 +279,8 @@ theorem pullbackIsoOverPullback_hom_app_comp_snd (T : Over X) :
 
 @[reassoc (attr := simp)]
 theorem pullbackIsoOverPullback_inv_app_comp_fst (T : Over X) :
-    ((pullbackIsoOverPullback g).inv.app T).left ≫ fst (T.hom) g = pullback.fst T.hom g := by
-  let iso : pullbackObj T.hom g ≅ (Limits.pullback T.hom g) :=
-    isoLeftIso <| pullbackIsoOverPullback g |>.app T
-  have : ((pullbackIsoOverPullback g).inv.app T).left = iso.inv := by rfl
-  rw [this, Iso.inv_comp_eq, isoLeftIso_hom]
-  simp
+    ((pullbackIsoOverPullback g).inv.app T).left ≫ fst _ _ = pullback.fst _ _ := by
+  simp [← pullbackIsoOverPullback_hom_app_comp_fst, ← Over.comp_left_assoc]
 
 @[reassoc (attr := simp)]
 theorem pullbackIsoOverPullback_inv_app_comp_snd (T : Over X) :
