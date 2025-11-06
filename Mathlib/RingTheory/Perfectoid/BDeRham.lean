@@ -30,8 +30,8 @@ of `ℂ_p`, they coincide with the classical de Rham period rings.
 integral perfectoid and define \(\mathbb{B}_dR\).
 
 Currently, the period ring `BDeRhamPlus` takes the ring of integers `O` as the input.
-After the perfectoid theory is developed, we should modify it to
-take a perfectoid ring as the input.
+After the perfectoid theory is developed, we can modify it to
+take a perfectoid field as the input.
 
 ## Reference
 
