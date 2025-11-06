@@ -3,7 +3,7 @@ Copyright (c) 2025 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang
 -/
-
+import Mathlib.RingTheory.AdicCompletion.RingHom
 import Mathlib.RingTheory.Perfectoid.Untilt
 import Mathlib.RingTheory.WittVector.TeichmullerSeries
 
@@ -158,17 +158,19 @@ theorem factorPowSucc_fontaineThetaModPPow_eq (n : ℕ) (x : 𝕎 (O^♭)) :
     fontaineThetaModPPow O p n x:= by
   simp [← factorPowSucc_comp_fontaineThetaModPPow n]
 
+open IsAdicComplete
+
 /--
 The Fontaine's θ map from `𝕎(O^♭)` to `O`.
 It is the limit of the ring maps `fontaineThetaModPPow n` from `𝕎(O^♭)` `O/p^(n+1)`.
 -/
 def fontaineTheta : 𝕎 (O^♭) →+* O :=
-  IsAdicComplete.limRingHom Order.succ_strictMono (factorPowSucc_fontaineThetaModPPow_eq _ _).symm
+  Order.succ_strictMono.liftRingHom (span {(p : O)}) _ (factorPowSucc_comp_fontaineThetaModPPow _)
 
 theorem mk_pow_fontaineTheta (n : ℕ) (x : 𝕎 (O^♭)) :
     Ideal.Quotient.mk (span {(p : O)} ^ (n + 1)) (fontaineTheta x) = fontaineThetaModPPow O p n x :=
-  IsAdicComplete.mk_limRingHom Order.succ_strictMono
-      (factorPowSucc_fontaineThetaModPPow_eq _ _).symm n x
+  Order.succ_strictMono.mk_liftRingHom (span {(p : O)}) _
+      (factorPowSucc_comp_fontaineThetaModPPow _) x
 
 theorem mk_fontaineTheta (x : 𝕎 (O^♭)) :
     Ideal.Quotient.mk (span {(p : O)}) (fontaineTheta x) =
@@ -189,7 +191,8 @@ theorem mk_fontaineTheta (x : 𝕎 (O^♭)) :
 
 @[simp]
 theorem fontaineTheta_teichmuller (x : O^♭) : fontaineTheta (teichmuller p x) = x.untilt := by
-  rw [IsHausdorff.eq_iff_smodEq' (I := span {(p : O)})]
+  rw [IsHausdorff.eq_iff_smodEq (I := span {(p : O)})]
+  simp only [smul_eq_mul, mul_top]
   intro n
   cases n
   · simp
