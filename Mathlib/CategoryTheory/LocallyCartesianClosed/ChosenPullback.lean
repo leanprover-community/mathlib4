@@ -26,8 +26,8 @@ provides the data of a pullback functor `Over X ⥤ Over Y` as a right adjoint t
   `Over.ChosenPullback.fst f g` and `Over.ChosenPullback.snd f g` form a pullback square
   over `f` and `g`.
 
-- We prove that in cartesian monoidal categories, morphisms to the terminal object and the product
-  projections have chosen pullbacks.
+- We prove that in cartesian monoidal categories, morphisms to the terminal tensor unit and
+  the product projections have chosen pullbacks.
 
 -/
 
