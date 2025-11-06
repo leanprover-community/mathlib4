@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 # The Orthogonal-reflection construction
 
 Given `W : MorphismProperty C` (which should be small) and assuming the existence
-of certain colimits in `C`, we construct an object `succ W Z` and a morphism `toSucc W Z : Z ⟶ succ W Z` for
+of certain colimits in `C`, we construct a morphism `toSucc W Z : Z ⟶ succ W Z` for
 any `Z : C`. This morphism belongs to `LeftBousfield.W W.isLocal` and
 is an isomorphism iff `Z` belongs to `W.isLocal` (see the lemma `isIso_toSucc_iff`).
 The morphism `toSucc W Z : Z ⟶ succ W Z` is defined as a composition
@@ -33,9 +33,11 @@ The author of this file was unable to not understand the attempt of the authors
 to fix this mistake in the errata to this book. This led to the definition
 in two steps outlined above.
 
-In future PRs, we will apply a transfinite induction to this construction in
-order to obtain a left adjoint to the inclusion of the full subcategory
-of `W`-local objects under suitable assumptions (TODO).
+These morphisms `toSucc W Z : Z ⟶ succ W Z` for all `Z : C` allow to
+define `succStruct W Z₀ : SuccStruct C` for any `Z₀ : C`. We will apply
+a transfinite induction to this construction in order to obtain a left adjoint
+to the inclusion of the full subcategory of `W`-local objects under
+suitable assumptions (TODO).
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
@@ -119,7 +121,7 @@ lemma D₁.ιLeft_comp_t {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
 variable [HasPushouts C]
 
 /-- The intermediate object in the definition of the morphism `toSucc W Z : Z ⟶ succ W Z`.
-It is defined by the following pushout square:
+It is the pushout of the following square:
 ```lean
 ∐ D₁.obj₁ ⟶ ∐ D₁.obj₂
    |           |
@@ -136,7 +138,7 @@ noncomputable abbrev toStep : Z ⟶ step W Z := pushout.inr _ _
 
 /-- The index type parametrising the data of two morphisms `g₁ g₂ : Y ⟶ step W Z`, and
 a map `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
-def D₂ : Type (max u v) :=
+def D₂ : Type _ :=
   Σ (f : W.toSet),
     { pq : (f.1.right ⟶ step W Z) × (f.1.right ⟶ step W Z) // f.1.hom ≫ pq.1 = f.1.hom ≫ pq.2 }
 
