@@ -216,22 +216,25 @@ non-zero element `n : ℕ` is injective. See the instance for free groups for an
 proof. -/]
 instance : IsMulTorsionFree (FreeGroup α) where
   pow_left_injective n hn x y heq := by
-    have heq₂ : x ^ (2 * n) = y ^ (2 * n) := by
-      apply_fun (· ^ 2) at heq
-      rwa [mul_comm, pow_mul, pow_mul]
-    have hn₂ : 2 * n ≠ 0 := by omega
     classical
-    apply_fun toWord at heq heq₂
-    simp only [toWord_pow, reduce_flatten_replicate, x.isReduced_toWord,
-      y.isReduced_toWord, hn, ↓reduceIte, append_assoc, hn₂] at heq heq₂
-    have leq := congr_arg List.length heq
-    have leq₂ := congr_arg List.length heq₂
-    simp only [length_append, length_flatten, map_replicate, sum_replicate, smul_eq_mul,
-      invRev_length] at leq leq₂
-    obtain ⟨hc, heq⟩ := List.append_inj heq (by grind)
+    let f (a : FreeGroup α) (n : ℕ) : ℕ :=
+        (conjugator a.toWord).length + (n * (reduceCyclically a.toWord).length +
+          (conjugator a.toWord).length)
+    let g (a : FreeGroup α) (k : ℕ) : List (α × Bool) :=
+        conjugator a.toWord ++ ((replicate k (reduceCyclically a.toWord)).flatten ++
+          invRev (conjugator a.toWord))
+    have heq₂ : x ^ (2 * n) = y ^ (2 * n) := by simp_rw [mul_comm, pow_mul, heq]
+    replace heq : g x n = g y n := by
+      simpa [toWord_pow, reduce_flatten_replicate, isReduced_toWord, hn] using congr_arg toWord heq
+    replace heq₂ : g x (2 * n) = g y (2 * n) := by
+      simpa [toWord_pow, reduce_flatten_replicate, isReduced_toWord, hn] using congr_arg toWord heq₂
+    have leq : f x n = f y n := by simpa [g] using congr_arg List.length heq
+    have leq₂ : f x (2 * n) = f y (2 * n) := by simpa [g] using congr_arg List.length heq₂
+    obtain ⟨hc, heq'⟩ := List.append_inj heq (by grind)
     obtain ⟨n, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn
-    simp only [replicate_succ, flatten_cons, append_assoc] at heq
-    obtain ⟨hm, heq⟩ := List.append_inj heq <| mul_left_cancel₀ hn <| by grind
+    have hm : reduceCyclically x.toWord = reduceCyclically y.toWord := by
+      simp only [replicate_succ, flatten_cons, append_assoc] at heq'
+      exact (List.append_inj heq' <| mul_left_cancel₀ hn <| by grind).1
     have := congr_arg mk <| (conj_conjugator_reduceCyclically x.toWord).symm
     rwa [hc, hm, conj_conjugator_reduceCyclically, mk_toWord, mk_toWord] at this
 
