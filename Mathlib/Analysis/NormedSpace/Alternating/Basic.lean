@@ -467,8 +467,16 @@ variable [DecidableEq ι]
 
 /-- Fréchet derivative of `compContinuousLinearMap f g` with respect to `g`.
 
+Recall that `compContinuousLinearMap f g` is the pullback of `f : F [⋀^ι]→L[𝕜] G`
+along `g : E →L[𝕜] F`.
+
 This function is linear in `f`, so its derivative with respect to `f`
-is given by `compContinuousLinearMapCLM f g`. -/
+is given by `compContinuousLinearMapCLM f g`.
+
+The derivative with respect to `g` is given by
+`f.fderivCompContinuousLinearMap g dg v = ∑ i, f fun j ↦ Function.update (fun _ ↦ g) i dg j (v j)`,
+see `fderivCompContinuousLinearMap_apply` below.
+-/
 def fderivCompContinuousLinearMap (f : F [⋀^ι]→L[𝕜] G) (g : E →L[𝕜] F) :
     (E →L[𝕜] F) →L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
   liftCLM (f.1.fderivCompContinuousLinearMap (fun _ : ι ↦ g) ∘L .pi fun _ ↦ .id _ _) <| by
