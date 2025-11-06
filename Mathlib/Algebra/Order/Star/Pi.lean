@@ -18,7 +18,6 @@ variable {ι : Type*} [Finite ι]
 open AddSubmonoid in
 instance Pi.instStarOrderedRing : StarOrderedRing (Π i, A i) where
   le_iff xa xy := by
-    simp only [Pi.le_def, StarOrderedRing.le_iff]
     have : closure (Set.range fun s : Π i, A i ↦ star s * s) =
         pi Set.univ fun i => (closure <| Set.range fun s : A i ↦ star s * s) := by
       rw [← closure_pi fun _ => Set.mem_range.mpr ⟨0, by simp⟩]
