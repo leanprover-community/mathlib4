@@ -10,6 +10,7 @@ import Mathlib.RingTheory.MvPolynomial.IrrQuadratic
 import Mathlib.RingTheory.Polynomial.UniqueFactorization
 import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
 
 /-!
 # Transvections in a module
@@ -200,9 +201,19 @@ theorem _root_.LinearEquiv.transvection.baseChange
   simp [← toLinearMap_inj, coe_baseChange,
     LinearEquiv.transvection.coe_toLinearMap, LinearMap.transvection.baseChange]
 
-variable {W : Type*} [AddCommGroup W] [Module R W] [Module A W] [IsScalarTower R A W]
-  {ε : V →ₗ[R] W} (ibc_VW : IsBaseChange A ε)
+open IsBaseChange
 
+variable {W : Type*} [AddCommMonoid W] [Module R W] [Module A W]
+  [IsScalarTower R A W] {ε : V →ₗ[R] W} (ibc : IsBaseChange A ε)
+
+theorem _root_.IsBaseChange.transvection (f : Module.Dual R V) (v : V) :
+    ibc.endomHom (transvection f v) = transvection (ibc.toDualHom f) (ε v) := by
+  ext w
+  induction w using ibc.inductionOn with
+  | zero => simp
+  | add x y hx hy => simp [hx, hy]
+  | smul a w hw => simp [hw]
+  | tmul x => simp [transvection.apply, endomHom_comp_apply, toDualHom_comp_apply]
 
 end LinearMap.transvection
 

@@ -5,8 +5,8 @@ Authors: Antoine Chambert-Loir
 -/
 
 import Mathlib.LinearAlgebra.Dual.Defs
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
-
 /-!
 # Base change for the dual of a module
 
@@ -134,6 +134,15 @@ noncomputable def toDualHom :
   map_add' f g := by unfold toDual; aesop
   map_smul' r f := by unfold toDual; aesop
 
+theorem toDualHom_comp_apply (f : Module.Dual R V) (v : V) :
+    ibc.toDualHom f (j v) = algebraMap R A (f v) := by
+  simp [toDualHom, toDual, Module.Dual.congr, LinearEquiv.congrLeft,
+    IsBaseChange.equiv_symm_apply, Algebra.algebraMap_eq_smul_one]
+
+theorem toDualHom_comp (f : Module.Dual R V) (v : V) :
+    (ibc.toDualHom f).restrictScalars R ∘ₗ j = Algebra.linearMap R A ∘ₗ f := by
+  ext; simp [toDualHom_comp_apply]
+
 noncomputable def toDualBaseChangeHom :
     A ⊗[R] Module.Dual R V →ₗ[A] Module.Dual A W where
   toAddHom := (TensorProduct.lift {
@@ -162,6 +171,7 @@ noncomputable def toDualBaseChangeLinearEquiv :
   classical
   let b := Module.Free.chooseBasis R V
   set ι := Module.Free.ChooseBasisIndex R V
+  have : Fintype ι := Module.Free.ChooseBasisIndex.fintype R V
   have ibc' : IsBaseChange A (Algebra.linearMap R A) := linearMap R A
   have ibc'_pow := ibc'.finitePow ι
   suffices ibc.toDualBaseChangeHom = (((b.constr R).symm.baseChange ..).trans ibc'_pow.equiv).trans
@@ -187,3 +197,5 @@ theorem dual : IsBaseChange A (ibc.toDualHom) := by
   simp [toDualBaseChangeLinearEquiv, toDualBaseChangeHom]
 
 end IsBaseChange
+
+#min_imports
