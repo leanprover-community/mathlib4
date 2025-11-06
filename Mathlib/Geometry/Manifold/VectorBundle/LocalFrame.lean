@@ -59,21 +59,24 @@ Suppose `{sᵢ}` is a local frame on `U`, and `hs : IsLocalFrameOn s U`.
   ff all of its frame coefficients are
 * `MDifferentiable` versions of the previous three statements
 
-* `Module.Basis.localFrame e b`: the local frame on `V` w.r.t. a local trivialisation `e` of `V` and
-  a basis `b` of `F`. Use `b.localFrame e i` to access the i-th section in that frame.
-* `b.contMDiffOn_localFrame_baseSet`: each section `b.localFrame e i` is smooth on `e.baseSet`
-* `b.basisAt e`: for each `x ∈ e.baseSet`, the vectors `b.localFrame e i x` form a basis of `F`
-* `Module.Basis.localFrame_coeff e b i` describes the coefficient of sections of `V` w.r.t.
-  `b.localFrame e`: `b.localFrame e i` is a linear map from sections of `V` to functions `M → 𝕜`.
-* `b.localFrame_eventually_eq_sum_coeff_smul e`: near `x`, we have
-  `s = ∑ i, (b.localFrame_coeff e i s) • b.localFrame e i`
-* `b.localFrame_coeff_congr e`: the coefficient `b.localFrame_coeff e b i` of `s` in the local frame
+In the following lemmas, let `e` be a compatible local trivialisation of `V`, and `b` a basis of
+the model fiber `F`.
+* `Trivialization.basisAt e b`: for each `x ∈ e.baseSet`,
+  return the basis of `V x` induced by `e` and `b`
+* `e.localFrame b`: the local frame on `V` induced by `e` and `b`.
+  Use `e.localFrame b i` to access the i-th section in that frame.
+* `e.contMDiffOn_localFrame_baseSet`: each section `e.localFrame b i` is smooth on `e.baseSet`
+* `e.localFrame_coeff b i` describes the coefficient of sections of `V` w.r.t. `e.localFrame b`:
+  `e.localFrame b i` is a linear map from sections of `V` to functions `M → 𝕜`.
+* `e.localFrame_eventually_eq_sum_coeff_smul b`: near `x`, we have
+  `s = ∑ i, (e.localFrame_coeff b i s) • e.localFrame b i`
+* `e.localFrame_coeff_congr b`: the coefficient `e.localFrame_coeff b i` of `s` in the local frame
   induced by `e` and `b` at `x` only depends on `s` at `x`.
-* `b.contMDiffOn_localFrame_coeff`: if `s` is a `C^k` section, each coefficient
-  `b.localFrame_coeff e i s` is `C^k` on `e.baseSet`
-* `b.contMDiffAt_iff_localFrame_coeff e`: a section `s` is `C^k` at `x ∈ e.baseSet`
+* `e.contMDiffOn_localFrame_coeff`: if `s` is a `C^k` section, each coefficient
+  `e.localFrame_coeff b i s` is `C^k` on `e.baseSet`
+* `e.contMDiffAt_iff_localFrame_coeff b`: a section `s` is `C^k` at `x ∈ e.baseSet`
   iff all of its frame coefficients are
-* `b.contMDiffOn_iff_localFrame_coeff e`: a section `s` is `C^k` on an open set `t ⊆ e.baseSet`
+* `e.contMDiffOn_iff_localFrame_coeff b`: a section `s` is `C^k` on an open set `t ⊆ e.baseSet`
   iff all of its frame coefficients are
 
 # TODO
@@ -303,6 +306,8 @@ namespace Trivialization
 
 variable [VectorBundle 𝕜 F V] [ContMDiffVectorBundle n F V I] {ι : Type*} {x : M}
 
+/-- Given a compatible local trivialisation `e` of `V` and a basis `b` of the model fiber `F`,
+return the corresponding basis of `V x`. -/
 noncomputable def basisAt
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e]
@@ -310,7 +315,10 @@ noncomputable def basisAt
   b.map (e.linearEquivAt (R := 𝕜) x hx).symm
 
 open scoped Classical in
--- If x is outside of `e.baseSet`, this returns the junk value 0.
+/-- The local frame on `V` induced by a compatible local trivialization `e` of `V` and a basis
+`b` of the model fiber `F`. Use `e.localFrame b i` to access the `i`-th section in that frame.
+
+If `x` is outside of `e.baseSet`, this returns the junk value 0. -/
 noncomputable def localFrame
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e]
@@ -363,11 +371,6 @@ lemma localFrame_apply_of_notMem
     [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) {i : ι} (hx : x ∉ e.baseSet) :
     e.localFrame b i x = 0 := by
   simp [localFrame, hx]
-
-lemma localFrame_basisAt_coe
-    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
-    [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) (i : ι) (hx : x ∈ e.baseSet) :
-    e.basisAt b hx i = e.localFrame b i x := by simp [hx]
 
 variable [ContMDiffVectorBundle 1 F V I]
 
