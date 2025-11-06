@@ -49,13 +49,13 @@ theorem conjStarAlgAut_trans_toStarAlgAut (u₁ u₂ : unitary R) :
   map_mul _ _ _ |>.symm
 
 theorem toRingEquiv_conjStarAlgAut (u : unitary R) :
-    (conjStarAlgAut S R u).toRingEquiv
-    = MulSemiringAction.toRingEquiv _ R (ConjAct.toConjAct <| toUnits u) :=
+    (conjStarAlgAut S R u).toRingEquiv =
+      MulSemiringAction.toRingEquiv _ R (ConjAct.toConjAct <| toUnits u) :=
   rfl
 
 theorem toAlgEquiv_conjStarAlgAut {S : Type*} [CommSemiring S] [Algebra S R] (u : unitary R) :
-    (conjStarAlgAut S R u).toAlgEquiv
-    = MulSemiringAction.toAlgEquiv _ R (ConjAct.toConjAct <| toUnits u) :=
+    (conjStarAlgAut S R u).toAlgEquiv =
+      MulSemiringAction.toAlgEquiv _ R (ConjAct.toConjAct <| toUnits u) :=
   rfl
 
 end Unitary
