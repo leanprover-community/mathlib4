@@ -108,9 +108,8 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
       exact binomialSeries_radius_ge_one
   simp only [binomialSeries, FormalMultilinearSeries.ofScalars_series_eq_iff]
   ext n
-  rw [Ring.choose_eq_smul, smul_eq_mul]
-  field_simp
-  congr
+  rw [eq_div_iff_mul_eq (by simp [Nat.factorial_ne_zero]), ← nsmul_eq_mul',
+    ← Ring.descPochhammer_eq_factorial_smul_choose]
   let B := Metric.ball (0 : ℂ) 1
   suffices Set.EqOn (iteratedDerivWithin n (fun x ↦ (1 + x) ^ a) B)
       (fun x ↦ (descPochhammer ℤ n).smeval a * (1 + x) ^ (a - n)) B by
