@@ -138,7 +138,7 @@ diagonalized by a change of basis. For the spectral theorem on linear maps, see
 `LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply`. -/
 theorem spectral_theorem :
     A = conjStarAlgAut 𝕜 _ hA.eigenvectorUnitary (diagonal (RCLike.ofReal ∘ hA.eigenvalues)) := by
-  rw [← conjStarAlgAut_star_eigenvectorUnitary, conjStarAlgAut_conjStarAlgAut]
+  rw [← conjStarAlgAut_star_eigenvectorUnitary, ← conjStarAlgAut_mul_apply]
   simp
 
 theorem eigenvalues_eq (i : n) :
