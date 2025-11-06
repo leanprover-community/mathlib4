@@ -137,7 +137,8 @@ lemma smul_fin3_ext (P : Fin 3 → R) (u : R) :
   ⟨rfl, rfl, rfl⟩
 
 lemma comp_smul (f : R →+* S) (P : Fin 3 → R) (u : R) : f ∘ (u • P) = f u • f ∘ P := by
-  ext n; fin_cases n <;> simp only [smul_fin3, comp_fin3] <;> map_simp
+  ext
+  simp
 
 /-- The equivalence setoid for a projective point representative on a Weierstrass curve. -/
 @[reducible]
