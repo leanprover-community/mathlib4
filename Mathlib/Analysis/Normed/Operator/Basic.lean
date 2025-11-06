@@ -49,7 +49,11 @@ variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [Nontr
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ] [NormedSpace 𝕜₃ G]
   {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
-variable [FunLike 𝓕 E F] [SemilinearMapClass 𝓕 σ₁₂ E F]
+variable [FunLike 𝓕 E F]
+
+section
+
+variable [SemilinearMapClass 𝓕 σ₁₂ E F]
 
 
 theorem ball_zero_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {r : ℝ}
@@ -74,14 +78,14 @@ theorem closedBall_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f :
 variable {F' 𝓕' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [Nontrivial F']
 {τ : 𝕜 →+* ℝ} [FunLike 𝓕' E F'] [SemilinearMapClass 𝓕' τ E F']
 
-theorem sphere_subset_range_iff_surjective [RingHomSurjective τ] [LinearOrder 𝕜] (hτ : StrictMono τ)
-    {f : 𝓕'} {x : F'} {r : ℝ} (hr : 0 < r) : sphere x r ⊆ Set.range f ↔ (⇑f).Surjective := by
+theorem sphere_subset_range_iff_surjective [RingHomSurjective τ] [LinearOrder 𝕜] {f : 𝓕'} {x : F'}
+    {r : ℝ} (hr : 0 < r) : sphere x r ⊆ Set.range f ↔ (⇑f).Surjective := by
   refine ⟨fun h ↦ ?_, by simp_all⟩
   grw [← (closedBall_subset_range_iff_surjective x hr), ← convexHull_sphere_eq_closedBall x
-    (le_of_lt hr), convexHull_mono h, ]
-  erw [convexHull_eq_self.mpr (Convex.semilinear_range (E := E) (F' := F') hτ f), LinearMap.coe_coe]
+    (le_of_lt hr), convexHull_mono h, (convexHull_eq_self (𝕜 := ℝ) (s := Set.range ↑f)).mpr]
+  exact Submodule.Convex.semilinear_range (E := F') (F' := E) (σ := τ) f
 
-omit [SemilinearMapClass 𝓕 σ₁₂ E F]
+end
 
 /-- If `‖x‖ = 0` and `f` is continuous then `‖f x‖ = 0`. -/
 theorem norm_image_of_norm_zero [SemilinearMapClass 𝓕 σ₁₂ E F] (f : 𝓕) (hf : Continuous f) {x : E}

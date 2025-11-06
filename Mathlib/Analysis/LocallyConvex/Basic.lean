@@ -270,23 +270,26 @@ protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (co
 
 variable {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E]
 
-theorem Absorbent.submodule_eq_top {V : S} (hV : Absorbent 𝕜 (V : Set E)) :
-    (V : Set E) = ⊤ := by
-  rw [eq_top_iff]
-  rintro x -
+theorem Absorbent.eq_univ_of_smulMemClass {V : S} (hV : Absorbent 𝕜 (V : Set E)) :
+    (V : Set E) = univ := by
+  rw [eq_univ_iff_forall]
+  intro x
   obtain ⟨c, hc, hc'⟩ :=
     ((absorbent_iff_eventually_nhdsNE_zero.mp hV x).and eventually_mem_nhdsWithin).exists
   rw [← inv_smul_smul₀ hc' x]
   exact SMulMemClass.smul_mem c⁻¹ hc
 
-variable {F ℱ 𝕜₂ : Type*} [Field 𝕜₂] {σ : 𝕜₂ →+* 𝕜}
+theorem Absorbent.submodule_eq_top {V : Submodule 𝕜 E} (hV : Absorbent 𝕜 (V : Set E)) :
+    V = ⊤ := (StrictMono.apply_eq_top_iff (α := Submodule 𝕜 E) (β := Set E) (fun _ _ a_1 ↦ a_1)).mp
+  hV.eq_univ_of_smulMemClass
+
+variable {F ℱ 𝕜₂ : Type*} [Semiring 𝕜₂] {σ : 𝕜₂ →+* 𝕜}
 variable [AddCommGroup F] [Module 𝕜₂ F]
 variable [FunLike ℱ F E] [SemilinearMapClass ℱ σ F E]
 
 theorem Absorbent.subset_range_iff_surjective [RingHomSurjective σ] {f : ℱ} {s : Set E}
     (hs_abs : Absorbent 𝕜 s) : s ⊆ LinearMap.range f ↔ (⇑f).Surjective :=
-  ⟨fun hs_sub ↦ range_eq_univ.mp (by
-    simp [← LinearMap.coe_range, (hs_abs.mono hs_sub).submodule_eq_top]), fun h a _ ↦ h a⟩
+  ⟨fun hs_sub ↦ LinearMap.range_eq_top.mp ((hs_abs.mono hs_sub).submodule_eq_top), fun h a _ ↦ h a⟩
 
 end NontriviallyNormedField
 

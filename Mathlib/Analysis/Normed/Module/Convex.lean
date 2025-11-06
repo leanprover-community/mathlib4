@@ -70,10 +70,8 @@ theorem convexHull_sphere_eq_closedBall [Nontrivial F] (x : F) {r : ℝ} (hr : 0
   suffices convexHull ℝ (sphere (0 : F) r) = closedBall 0 r by
     rw [← add_zero x, ← vadd_eq_add, ← vadd_sphere, convexHull_vadd,
       this, vadd_closedBall_zero, vadd_eq_add, add_zero]
-  ext x
-  refine ⟨fun h ↦ mem_convexHull_iff.mp h (closedBall 0 r) sphere_subset_closedBall <|
-    convex_closedBall 0 r, fun h ↦ mem_convexHull_iff.mpr ?_⟩
-  intro U hU_sub hU
+  refine subset_antisymm (convexHull_min sphere_subset_closedBall (convex_closedBall 0 r))
+    (fun x h ↦ mem_convexHull_iff.mpr fun U hU_sub hU ↦ ?_)
   have zero_mem : (0 : F) ∈ U := by
     have _ : Invertible (2 : ℝ) := by use 2⁻¹ <;> grind
     obtain ⟨z, hz⟩ := NormedSpace.sphere_nonempty (E := F).mpr hr
