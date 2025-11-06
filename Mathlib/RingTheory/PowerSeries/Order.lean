@@ -393,7 +393,7 @@ theorem divXPowOrder_mul {f g : R⟦X⟧} :
     _ = X ^ (f.order.toNat + g.order.toNat) * (f.divXPowOrder * g.divXPowOrder) := by
         rw [X_pow_mul, add_comm]
 
-@[deprecated divXPowOrder_mul (since := "2025-10-06")]
+@[deprecated divXPowOrder_mul (since := "2025-11-06")]
 theorem divXPowOrder_mul_divXPowOrder {f g : R⟦X⟧} :
     divXPowOrder f * divXPowOrder g = divXPowOrder (f * g) :=
   divXPowOrder_mul.symm
