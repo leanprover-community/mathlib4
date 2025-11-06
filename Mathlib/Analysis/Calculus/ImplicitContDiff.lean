@@ -14,9 +14,9 @@ that the implicit function preserves the smoothness class of the implicit equati
 
 Let `E`, `F`, and `G` be real or complex Banach spaces. Let `f : E × F → G` be a function that is
 $C^n$ at a point `(a, b) : E × F`, where `n ≥ 1`. Let `f'` be the derivative of `f` at `(a, b)`. If
-the range of `f'` is all of `G`, and the kernel of `f'` is the subspace `E × {0}` in `E × F`, then
-there exists a function `φ : E → F` such that `φ a = b`, and `f x (φ x) = f a b` holds for all `x`
-in a neighbourhood of `a`. Furthermore, `φ` is $C^n$ at `a`.
+the map `y ↦ f' (0, y)` is a Banach space isomorphism, then there exists a function `φ : E → F` such
+that `φ a = b`, and `f x (φ x) = f a b` holds for all `x` in a neighbourhood of `a`. Furthermore,
+`φ` is $C^n$ at `a`.
 
 ## TODO
 * Local uniqueness of the implicit function
