@@ -233,7 +233,15 @@ inductive HoRel₂ : HomRel (Cat.FreeRefl (OneTruncation₂ V)) where
       ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map (Quiver.Hom.toPath e₀₂))
 
 
-@[deprecated (since := "2025-11-06")] alias HoRel₂.mk' := HoRel₂.of_compStruct
+@[deprecated "HoRel₂.of_compStruct" (since := "2025-11-06")]
+lemma HoRel₂.mk' {x₀ x₁ x₂ : V _⦋0⦌₂} {e₀₁ : Truncated.Edge x₀ x₁}
+    {e₁₂ : Truncated.Edge x₁ x₂} {e₀₂ : Truncated.Edge x₀ x₂}
+    (h : Truncated.Edge.CompStruct e₀₁ e₁₂ e₀₂) :
+    HoRel₂ V
+      ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map
+        (Quiver.Hom.toPath e₀₁ ≫ Quiver.Hom.toPath e₁₂))
+      ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map (Quiver.Hom.toPath e₀₂)) :=
+  HoRel₂.of_compStruct h
 
 end OneTruncation₂
 
