@@ -5,6 +5,8 @@ Authors: Gabriel Ebner, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Const
 import Mathlib.Analysis.Normed.Operator.NormedSpace
+import Mathlib.Analysis.Calculus.TangentCone.DimOne
+import Mathlib.Analysis.Calculus.TangentCone.Real
 
 /-!
 
