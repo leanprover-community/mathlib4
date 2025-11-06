@@ -159,7 +159,7 @@ variable {D : Type u₁} [Category.{v₁} D] {E : Type u₂} [Category.{v₂} E]
 def map (φ : C ⥤ D) : FreeGroupoid C ⥤ FreeGroupoid D :=
   lift (φ ⋙ of D)
 
-lemma of_map (F : C ⥤ D) : of C ⋙ map F = F ⋙ of D := rfl
+lemma of_comp_map (F : C ⥤ D) : of C ⋙ map F = F ⋙ of D := rfl
 
 /-- The operation `of` is natural. -/
 def ofMap (F : C ⥤ D) : of C ⋙ map F ≅ F ⋙ of D := Iso.refl _
