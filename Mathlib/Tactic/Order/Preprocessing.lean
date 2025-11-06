@@ -156,6 +156,8 @@ def preprocessFactsLinear (facts : Array AtomicFact) (idxToAtom : Std.HashMap Na
       res := res.push fact
   return res
 
+/-- Preprocesses facts for order of `orderType` using either `preprocessFactsPreorder` or
+`preprocessFactsPartial` or `preprocessFactsLinear`. -/
 def preprocessFacts (facts : Array AtomicFact) (idxToAtom : Std.HashMap Nat Expr)
     (orderType : OrderType) : MetaM <| Array AtomicFact :=
   match orderType with
