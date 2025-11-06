@@ -353,4 +353,4 @@ noncomputable def cantorSetHomeomorphNatToBool : cantorSet ≃ₜ (ℕ → Bool)
 
 /-- The Cantor space is homeomorphic to its countable product. -/
 def cantorSpaceHomeomorphNatToCantorSpace : (ℕ → Bool) ≃ₜ (ℕ → ℕ → Bool) :=
-  (Homeomorph.piCongrLeft Nat.pairEquiv.symm).trans Homeomorph.curry'
+  (Homeomorph.piCongrLeft Nat.pairEquiv.symm).trans Homeomorph.piCurry
