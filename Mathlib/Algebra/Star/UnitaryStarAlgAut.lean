@@ -48,6 +48,9 @@ theorem conjStarAlgAut_trans_conjStarAlgAut (u₁ u₂ : unitary R) :
     (conjStarAlgAut S R u₁).trans (conjStarAlgAut S R u₂) = conjStarAlgAut S R (u₂ * u₁) :=
   map_mul _ _ _ |>.symm
 
+theorem conjStarAlgAut_conjStarAlgAut (u₁ u₂ : unitary R) (x : R) :
+    conjStarAlgAut S R u₁ (conjStarAlgAut S R u₂ x) = conjStarAlgAut S R (u₁ * u₂) x := by simp
+
 theorem toRingEquiv_conjStarAlgAut (u : unitary R) :
     (conjStarAlgAut S R u).toRingEquiv =
       MulSemiringAction.toRingEquiv _ R (ConjAct.toConjAct <| toUnits u) :=
