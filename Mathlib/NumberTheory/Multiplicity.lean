@@ -200,7 +200,7 @@ theorem Int.emultiplicity_pow_sub_pow {x y : ℤ} (hxy : ↑p ∣ x - y) (hx : �
   rw [emultiplicity_pow_sub_pow_of_prime hp,
     emultiplicity_pow_prime_pow_sub_pow_prime_pow hp hp1 hxy hx, h.emultiplicity_eq_multiplicity]
   · rw [← geom_sum₂_mul]
-    exact dvd_mul_of_dvd_right hxy _
+    exact dvd_mul_of_dvd_right hxy
   · exact fun h => hx (hp.dvd_of_dvd_pow h)
   · rw [Int.natCast_dvd_natCast]
     rintro ⟨c, rfl⟩
