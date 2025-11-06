@@ -10,8 +10,8 @@ import Mathlib.Tactic.Group
 
 /-!
 This file defines some extra lemmas for free groups, in particular about cyclically reduced words.
-In particular, in this file we show that free groups are torsion-free in the sense of
-`Mathlib.Algebra.Group.Torsion`.
+We show that free groups are (strongly) torsion-free in the sense of `IsMulTorsionFree`, i.e.,
+taking powers by every non-zero element `n : ℕ` is injective.
 
 ## Main declarations
 
