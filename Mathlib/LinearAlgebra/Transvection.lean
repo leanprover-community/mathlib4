@@ -355,6 +355,7 @@ theorem span_range_eq_top_iff_surjective_fintypelinearCombination
   rw [← LinearMap.range_eq_top, Fintype.range_linearCombination]
 ----
 
+open IsBaseChange
 
 theorem det_eq_one {f : Module.Dual R V} {v : V} (hfv : f v = 0) :
     (LinearMap.transvection f v).det = 1 := by
@@ -394,161 +395,34 @@ theorem det_eq_one {f : Module.Dual R V} {v : V} (hfv : f v = 0) :
   let _ : Algebra T R := RingHom.toAlgebra γ
   let _ : Module T V := Module.compHom V γ
   have _ : IsScalarTower T R V := IsScalarTower.of_compHom T R V
-  -- Any basis of a module can express it as the base change of a free module
-  -- from any under-ring
-  let M := Fin n → T
-  let ε : M →ₗ[T] V := Fintype.linearCombination T fun a ↦ b a
-  let ι : R ⊗[T] (Fin n → T) ≃ₗ[R] Fin n → R :=
-    TensorProduct.piScalarRight T R R (Fin n)
-  let θ : R ⊗[T] M →ₗ[R] V := liftBaseChange R ε
-  let κ : (Fin n → R) →ₗ[R] V := θ ∘ₗ ι.symm
-  -- this is just because `b` is a basis
-  have hθ : Function.Bijective θ := by
-    suffices Function.Bijective κ by
-      simp only [κ, coe_comp] at this
-      rwa [LinearEquiv.coe_toLinearMap, ι.symm.bijective.of_comp_iff] at this
-    suffices κ = Fintype.linearCombination R b by
-      simp only [this, Function.Bijective]
-      simp [← span_range_eq_top_iff_surjective_fintypelinearCombination,
-        ← linearIndependent_iff_injective_fintypeLinearCombination,
-        Module.Basis.span_eq, Module.Basis.linearIndependent b]
-    simp only [κ]
-    ext i
-    simp only [coe_comp, coe_single, Function.comp_apply, Fintype.linearCombination_apply_single,
-      one_smul, θ, ι]
-    rw [LinearEquiv.coe_toLinearMap, TensorProduct.piScalarRight_symm_single,
-      liftBaseChange_one_tmul]
-    simp [ε]
-    -- why doesn't `simp` work? this lemma is written @[simp]!
+  have ibc := IsBaseChange.of_fintype_basis T b
+  set ε := Fintype.linearCombination T (fun i ↦ b i)
+  set M := Fin n → T
+  have hε (i) : ε (Pi.single i 1) = b i := by
     rw [Fintype.linearCombination_apply_single, one_smul]
-  have ibc : IsBaseChange R ε := by
-    apply IsBaseChange.of_equiv (LinearEquiv.ofBijective _ hθ)
-    intro m
-    simp [θ]
   let fM : Module.Dual T M :=
     Fintype.linearCombination T fun i ↦ q (MvPolynomial.X (Sum.inl i))
   let vM : M := fun i ↦ q (MvPolynomial.X (Sum.inr i))
-  have hfvM : fM vM = 0 := by
-    simp only [fM, vM]
-    rw [Fintype.linearCombination_apply]
-    simp only [smul_eq_mul, ← map_mul, ← map_sum, mul_comm]
-    exact Ideal.Quotient.mk_singleton_self (MvPolynomial.sum_X_mul_Y (Fin n) ℤ)
-  let tM := transvection fM vM
-  -- Unfinished
-  -- One need the abstract base change for transvections
-  have := LinearMap.transvection.baseChange R fM vM
-  sorry
-
-theorem det_eq_one' {f : Module.Dual R V} {v : V} (hfv : f v = 0) :
-    (LinearMap.transvection f v).det = 1 := by
-  rcases subsingleton_or_nontrivial R with hR | hR
-  · subsingleton
-  by_contra! h
-  have := LinearMap.free_of_det_ne_one h
-  have := LinearMap.finite_of_det_ne_one h
-  apply h
-  let b := Module.finBasis R V
-  set n := Module.finrank R V
-  by_cases hn2 : n < 2
-  · simp [eq_id_of_finrank_le_one hfv (Nat.le_of_lt_succ hn2)]
-  rw [not_lt] at hn2
-  let I := Fin n ⊕ Fin n
-  let S := MvPolynomial I ℤ
-  let _ := MvPolynomial.sum_X_mul_Y (Fin n) S
-  let ε : I → R := Sum.elim (fun i ↦ f (b i)) (fun i ↦ b.coord i v)
-  let fS (i : Fin n) : S := MvPolynomial.X (Sum.inl i)
-  let vS (i : Fin n) : S := MvPolynomial.X (Sum.inr i)
-  let tS := LinearMap.transvection (Fintype.linearCombination S fS) vS
-
-  let pS := (Fintype.linearCombination S fS) vS
-  have hpS : pS = ∑ x, vS x * fS x := by
-    simp [pS, Fintype.linearCombination_apply]
-  have hpS' : Fintype.linearCombination S fS vS = MvPolynomial.sum_X_mul_Y (Fin n) ℤ := by
-    simp only [MvPolynomial.sum_X_mul_Y]
-    rw [Fintype.linearCombination_apply]
-    simp_rw [smul_eq_mul, mul_comm, fS, vS]
-  let T := S ⧸ Ideal.span {pS}
-  let β : S →+* T := Ideal.Quotient.mk _
-  let α : S →+* R := ↑(MvPolynomial.aeval ε : S →ₐ[ℤ] R)
-  have hαfS (x : Fin n) : α (fS x) = f (b x) := by
-    simp only [α, ε, fS, RingHom.coe_coe]
-    rw [MvPolynomial.aeval_X]
+  have hf : ibc.toDualHom fM = f := by
+    apply b.ext
+    intro i
+    rw [← hε, toDualHom_comp_apply]
+    rw [Fintype.linearCombination_apply_single, one_smul,
+      RingHom.algebraMap_toAlgebra, Ideal.Quotient.lift_mk, hε]
     simp
-  have hαvS (x : Fin n) : α (vS x) = b.repr v x := by
-    simp only [α, ε, vS, RingHom.coe_coe]
-    rw [MvPolynomial.aeval_X]
+  have hv : ε vM = v := by
+    rw [of_fintype_basis_eq]
+    ext i
+    rw [RingHom.algebraMap_toAlgebra]
+    simp only [vM, γ, Function.comp_apply]
+    rw [Ideal.Quotient.lift_mk]
     simp
-  have αpS : α pS = 0 := by
-    simp only [pS, Fintype.linearCombination_apply]
-    simp_rw [map_sum, smul_eq_mul, map_mul]
-    simp_rw [hαvS, hαfS]
-    rw [← hfv]
-    conv_rhs => rw [← Module.Basis.sum_equivFun b v, map_sum]
-    apply Finset.sum_congr rfl
-    aesop
-  let γ : T →+* R := Ideal.Quotient.lift _ α (fun p hp ↦ by
-    rw [Ideal.mem_span_singleton] at hp
-    obtain ⟨q, rfl⟩ := hp
-    simp [map_mul, αpS])
-  have hγβ : γ.comp β = α := Ideal.Quotient.lift_comp_mk ..
-  let fT := β ∘ fS
-  let vT := β ∘ vS
-  have hfvT : (Fintype.linearCombination T fT) vT = 0 := by
-    simp only [fT, vT]
-    simp only [Fintype.linearCombination_apply]
-    simp only [Function.comp_apply, smul_eq_mul, ← map_mul]
-    rw [← map_sum, ← hpS]
-    exact Ideal.Quotient.mk_singleton_self pS
-  let tT := LinearMap.transvection (Fintype.linearCombination T fT) vT
-  have : IsDomain T := by
-    simp only [T, Ideal.Quotient.isDomain_iff_prime]
-    suffices Irreducible pS by
-      rw [Ideal.span_singleton_prime this.ne_zero, ← irreducible_iff_prime]
-      exact this
-    simp only [pS, hpS']
-    apply MvPolynomial.irreducible_sum_X_mul_Y
-    rw [Fin.nontrivial_iff_two_le]
-    exact hn2
-  let algTR : Algebra T R := RingHom.toAlgebra γ
-  let fR := tT.baseChange R
-  let j :=   (IsBaseChange.pi
-    (fun _ ↦ Algebra.linearMap T R)
-    (fun i ↦ IsBaseChange.linearMap T ((fun _ ↦ R) i))).equiv.trans b.equivFun.symm
-  have : LinearMap.transvection f v = j ∘ₗ fR ∘ₗ j.symm := by
-    simp only [fR, tT, transvection.baseChange, LinearMap.transvection.congr]
-    congr
-    · ext x
-      simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
-      set y := j.symm x with hy
-      rw [LinearEquiv.eq_symm_apply] at hy
-      rw [← hy]
-      rw [← Module.Dual.baseChangeHom_apply]
-      set lc1S := Fintype.linearCombination S (α := Fin n) (M := S)
-      set lc2T := Fintype.linearCombination T (⇑β ∘ fun i ↦ MvPolynomial.X (Sum.inl i))
-      induction y using TensorProduct.induction_on with
-      | zero => simp
-      | add y y' h h' => simp only [map_add, h, h']
-      | tmul r t =>
-        simp only [Module.Dual.baseChangeHom_apply, Module.Dual.baseChange_apply_tmul]
-        simp only [lc2T, Fintype.linearCombination_apply, Finset.sum_smul]
-        simp [j, IsBaseChange.equiv_tmul]
-        rw [Finset.mul_sum]
-        apply Finset.sum_congr rfl
-        intro x _
-        simp only [Algebra.smul_def, RingHom.algebraMap_toAlgebra,
-          map_mul, ← RingHom.comp_apply, hγβ, ← hαfS x]
-        ring
-    · simp only [LinearEquiv.trans_apply, j, LinearEquiv.eq_symm_apply]
-      -- some API is missing
-      ext i
-      simp [IsBaseChange.equiv, vT, RingHom.algebraMap_toAlgebra]
-      rw [← RingHom.comp_apply, hγβ]
-      simp [α, ε]
-      rw [MvPolynomial.aeval_X]
-      simp
-  rw [this, det_conj]
-  simp only [fR, LinearMap.det_baseChange, tT]
-  rw [det_eq_one_ofDomain hfvT, map_one]
+  rw [← hf, ← hv, ← IsBaseChange.transvection, det_endomHom,
+    det_eq_one_ofDomain ?_, map_one]
+  simp only [fM, vM]
+  rw [Fintype.linearCombination_apply]
+  simp only [smul_eq_mul, ← map_mul, ← map_sum, mul_comm]
+  exact Ideal.Quotient.mk_singleton_self (MvPolynomial.sum_X_mul_Y (Fin n) ℤ)
 
 theorem _root_.LinearEquiv.det_eq_one
     {f : Module.Dual R V} {v : V} (hfv : f v = 0) :
