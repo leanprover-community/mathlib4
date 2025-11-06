@@ -105,8 +105,8 @@ TODO consider relocating these lemmas.
     congrArg One.mk h_one
   have h_natCast : inst₁.toNatCast.natCast = inst₂.toNatCast.natCast := by
     funext n; induction n with
-    | zero     => rewrite [inst₁.natCast_zero, inst₂.natCast_zero]
-                  exact congrArg (@Zero.zero R) h_zero'
+    | zero => rewrite [inst₁.natCast_zero, inst₂.natCast_zero]
+              exact congrArg (@Zero.zero R) h_zero'
     | succ n h => rw [inst₁.natCast_succ, inst₂.natCast_succ, h_add]
                   exact congrArg₂ _ h h_one
   rcases inst₁ with @⟨⟨⟩⟩; rcases inst₂ with @⟨⟨⟩⟩
