@@ -30,7 +30,7 @@ attribute [push ←] ne_eq
 
 @[push] theorem not_iff : ¬ (p ↔ q) ↔ (p ∧ ¬ q) ∨ (¬ p ∧ q) :=
   _root_.not_iff.trans <| iff_iff_and_or_not_and_not.trans <| by rw [not_not, or_comm]
-@[push] theorem not_exists : (¬ ∃ x, s x) ↔ (∀ x, binderNameHint x s <| ¬ s x) :=
+@[push] theorem not_exists : (¬ Exists s) ↔ (∀ x, binderNameHint x s <| ¬ s x) :=
   _root_.not_exists
 
 -- TODO: lemmas involving `∃` should be tagged using `binderNameHint`,
