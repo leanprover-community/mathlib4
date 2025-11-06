@@ -925,7 +925,7 @@ end sections
 section IsAffine
 
 include hc in
-/-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition map.
+/-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition maps.
 If `lim Xᵢ` is quasi-affine, then some `Xᵢ` is quasi-affine. -/
 @[stacks 01Z5]
 lemma Scheme.exists_isQuasiAffine_of_isLimit [IsCofiltered I]
@@ -976,7 +976,7 @@ lemma Scheme.exists_isQuasiAffine_of_isLimit [IsCofiltered I]
   exact ⟨((hf _).preimage _).preimage _, hy⟩
 
 include hc in
-/-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition map.
+/-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition maps.
 If `lim Xᵢ` is affine, then some `Xᵢ` is affine. -/
 @[stacks 01Z5]
 lemma Scheme.exists_isAffine_of_isLimit [IsCofiltered I]
@@ -1019,7 +1019,7 @@ lemma exists_isAffineOpen_preimage_eq
 
 open TopologicalSpace in
 include hc in
-/-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition map.
+/-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition maps.
 Then any affine open cover of `lim Xᵢ` comes from a finite level. -/
 @[stacks 01Z5]
 lemma Scheme.exists_isOpenCover_and_isAffine [IsCofiltered I]
