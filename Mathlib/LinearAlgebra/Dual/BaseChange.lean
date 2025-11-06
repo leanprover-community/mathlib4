@@ -136,6 +136,7 @@ theorem toDualHom_comp (f : Module.Dual R V) :
     (ibc.toDualHom f).restrictScalars R ∘ₗ j = Algebra.linearMap R A ∘ₗ f := by
   ext; simp [toDualHom_comp_apply]
 
+/-- The linear map underlying `IsBaseChange.toDualBaseChangeLinearEquiv`. -/
 noncomputable def toDualBaseChangeHom :
     A ⊗[R] Module.Dual R V →ₗ[A] Module.Dual A W where
   toAddHom := (TensorProduct.lift {
@@ -158,6 +159,7 @@ theorem toDualBaseChangeHom_apply_comp (f : Module.Dual R V) (v : V) :
 
 variable [Module.Free R V] [Module.Finite R V]
 
+/-- The `LinearEquiv` underlying `IsBaseChange.dual`. -/
 noncomputable def toDualBaseChangeLinearEquiv :
         A ⊗[R] Module.Dual R V ≃ₗ[A] Module.Dual A W := by
   apply LinearEquiv.ofBijective ibc.toDualBaseChangeHom
