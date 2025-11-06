@@ -3,7 +3,11 @@ Copyright (c) 2025 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib
+import Mathlib.Algebra.Order.Pi
+import Mathlib.Algebra.Order.Sub.Prod
+import Mathlib.Data.ZMod.Defs
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # IMO 2010 Q5
@@ -226,8 +230,8 @@ lemma tower_inequality : pow 2010 (pow 2010 2010) ≤ pow 2 (pow 2 (pow 2 (pow 2
 
 /-- `(0, 0, 0, 2010 ^ 2010 ^ 2010 / 4, 0, 0)` is reachable. -/
 lemma quarter_target : Reachable (single 3 (pow 2010 (pow 2010 2010) / 4)) := by
-  have R := five_eleven.exp_mid (by positivity)
-  iterate 4 replace R := R.exp_mid (by rw [pow_def]; positivity)
+  have R := five_eleven.exp_mid (by norm_num)
+  iterate 4 replace R := R.exp_mid (by rw [pow_def]; norm_num)
   rw [single_zero, zero_add] at R
   exact R.reduce ((Nat.div_le_self ..).trans tower_inequality)
 
