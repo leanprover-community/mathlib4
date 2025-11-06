@@ -127,6 +127,13 @@ theorem evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
 
 variable (M) in
 @[simp]
+theorem evalFrom_empty (x : List α) : M.evalFrom ∅ x = ∅ := by
+  induction x with
+  | nil => simp
+  | cons a x ih => simp [ih]
+
+variable (M) in
+@[simp]
 theorem evalFrom_union (S T : Set σ) (x : List α) :
     M.evalFrom (S ∪ T) x = M.evalFrom S x ∪ M.evalFrom T x := by
   induction x generalizing S T with
@@ -198,6 +205,12 @@ variable (M) in
 theorem append_preimage_acceptsFrom {S : Set σ} {x : List α} :
     (x ++ ·) ⁻¹'  M.acceptsFrom S = M.acceptsFrom (M.evalFrom S x) := by
   ext y; simp [append_mem_acceptsFrom M]
+
+variable (M) in
+@[simp]
+theorem acceptsFrom_empty : M.acceptsFrom ∅ = 0 := by
+  ext x
+  simp [mem_acceptsFrom]
 
 variable (M) in
 @[simp]
@@ -417,7 +430,7 @@ open Option
 variable (M) in
 @[simp]
 def kstarStates (S : Set σ) : Set (Option σ) :=
-  some '' S ∪ (⋃ _ ∈ S ∩ (M.start ∪ M.accept), {.none})
+  some '' (S ∪ ⋃ s ∈ S ∩ M.accept, M.start)
 
 @[simp]
 def kstarStart : Set (Option σ) := {none} ∪ some '' M.start
@@ -425,13 +438,15 @@ def kstarStart : Set (Option σ) := {none} ∪ some '' M.start
 @[simp]
 def kstarAccept : Set (Option σ) := {none} ∪ some '' M.accept
 
+theorem kstarStart_eq_kstarStates : M.kstarStart = {none} ∪ M.kstarStates M.start := by
+  ext s
+  cases s <;> simp
+
 variable (M) in
 @[simp]
 def kstarStep : Option σ → α → Set (Option σ)
-| none, a => ⋃ s ∈ M.start ∪ M.accept, (M.kstarStates <| M.step s a)
+| none, _ => ∅
 | some s, a => M.kstarStates <| M.step s a
-
-#print kstarStep
 
 variable (M) in
 @[simps]
@@ -457,49 +472,50 @@ theorem mem_acceptsFrom_kstar_sanity {S : Set σ} {x : List α} :
   | nil =>
     simp only [mem_acceptsFrom_nil]
     rintro ⟨s, hs, haccept⟩
-    exists none
+    exists (some s)
     simp
-    exists s
     tauto
   | cons a x ih =>
     simp only [mem_acceptsFrom_cons, stepSet]
     simp
     rw [Set.mem_iUnion₂]
     rw [Set.mem_iUnion₂]
-    rintro ⟨s, hs, hx⟩
-    exists (some s)
-    simp
-    constructor
-    { assumption }
-    have digga := ih hx; clear ih
-    simp [kstarStates] at digga
-    simp [max, SemilatticeSup.sup, Set.mem_union] at *
-    rw [Set.mem_union, Set.mem_iUnion₂] at digga
-    rcases digga with (hx' | ⟨s', hx''⟩)
-    · tauto
-    · right
-      rcases hx'' with ⟨⟨hs', hs''⟩, hx'⟩
-      constructor
-      · exists s'
-      · tauto
+    tauto
 
 theorem acceptsFrom_kstar {S : Set σ} :
-    M.kstar.acceptsFrom (M.kstarStates S) = (M.acceptsFrom S)∗ := by
+    {[]} + M.kstar.acceptsFrom (M.kstarStates S) = (M.acceptsFrom S)∗ := by
   ext x
+  rw [Language.add_def, Set.mem_union]
   induction x generalizing S with
   | nil =>
     simp_rw [Language.nil_mem_kstar]
     apply iff_true_intro
-    simp only [mem_acceptsFrom_nil]
+    rw [Set.mem_singleton_iff]
+    left
+    rfl
+  | cons a x ih =>
     simp
     sorry
-  | cons a x ih =>
-    sorry
+
+theorem acceptsFrom_kstar_none : M.kstar.acceptsFrom {none} = {[]} := by
+  ext x
+  constructor
+  · cases x with
+    | nil =>
+      simp [Set.mem_singleton_iff]
+      sorry
+    | cons a x =>
+      simp
+  · rw [acceptsFrom, Set.mem_setOf, Set.mem_singleton_iff]
+    rintro rfl
+    simp
 
 theorem accepts_kstar : M.kstar.accepts = M.accepts∗ := by
+  rw [accepts_acceptsFrom]
+  rw [kstar_start, kstarStart_eq_kstarStates, acceptsFrom_union, Language.add_def]
+  rw [acceptsFrom_kstar_none]
   ext x
-  simp [accepts, eval, Language.kstar_def]
-  simp_rw [↑Set.mem_setOf]
+  rw [Set.mem_union, Set.mem_singleton_iff]
   constructor
   ·
     sorry
