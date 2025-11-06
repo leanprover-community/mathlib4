@@ -238,17 +238,21 @@ noncomputable def quotientInfRingEquivPiQuotient (f : ι → Ideal R)
 /-- Corollary of Chinese Remainder Theorem: if `Iᵢ` are pairwise coprime ideals in a
 commutative ring then the canonical map `R → ∏ (R ⧸ Iᵢ)` is surjective. -/
 lemma pi_quotient_surjective {I : ι → Ideal R}
-    (hf : Pairwise fun i j ↦ IsCoprime (I i) (I j)) (x : (i : ι) → R ⧸ I i) :
+    (hf : Pairwise (IsCoprime on I)) (x : (i : ι) → R ⧸ I i) :
     ∃ r : R, ∀ i, r = x i := by
   obtain ⟨y, rfl⟩ := Ideal.quotientInfToPiQuotient_surj hf x
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective y
   exact ⟨r, fun i ↦ rfl⟩
 
+lemma pi_mkQ_surjective {I : ι → Ideal R} (hI : Pairwise (IsCoprime on I)) :
+    Surjective (LinearMap.pi fun i ↦ (I i).mkQ) :=
+  fun x ↦ have ⟨r, eq⟩ := pi_quotient_surjective hI x; ⟨r, funext eq⟩
+
 -- variant of `IsDedekindDomain.exists_forall_sub_mem_ideal` which doesn't assume Dedekind domain!
 /-- Corollary of Chinese Remainder Theorem: if `Iᵢ` are pairwise coprime ideals in a
 commutative ring then given elements `xᵢ` you can find `r` with `r - xᵢ ∈ Iᵢ` for all `i`. -/
 lemma exists_forall_sub_mem_ideal
-    {I : ι → Ideal R} (hI : Pairwise fun i j ↦ IsCoprime (I i) (I j)) (x : ι → R) :
+    {I : ι → Ideal R} (hI : Pairwise (IsCoprime on I)) (x : ι → R) :
     ∃ r : R, ∀ i, r - x i ∈ I i := by
   obtain ⟨y, hy⟩ := Ideal.pi_quotient_surjective hI (fun i ↦ x i)
   exact ⟨y, fun i ↦ (Submodule.Quotient.eq (I i)).mp <| hy i⟩
@@ -422,6 +426,10 @@ lemma Quotient.factorₐ_apply_mk (x : A) :
 @[simp]
 lemma Quotient.factorₐ_comp_mk :
     (Ideal.Quotient.factorₐ R₁ hIJ).comp (Ideal.Quotient.mkₐ R₁ I) = Ideal.Quotient.mkₐ R₁ J := rfl
+
+@[simp]
+theorem Quotient.factorₐ_apply (x : A ⧸ I) :
+    Quotient.factorₐ R₁ hIJ x = Quotient.factor hIJ x := rfl
 
 @[simp]
 lemma Quotient.factorₐ_comp {K : Ideal A} [K.IsTwoSided] (hJK : J ≤ K) :
@@ -681,6 +689,16 @@ def quotientEquivAlgOfEq {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (h : I = 
 theorem quotientEquivAlgOfEq_mk {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (h : I = J) (x : A) :
     quotientEquivAlgOfEq R₁ h (Ideal.Quotient.mk I x) = Ideal.Quotient.mk J x :=
   rfl
+
+@[simp]
+theorem quotientEquivAlgOfEq_coe_eq_factorₐ
+    {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (h : I = J) :
+    (quotientEquivAlgOfEq R₁ h : A ⧸ I →ₐ[R₁] A ⧸ J) = Quotient.factorₐ R₁ (le_of_eq h) := rfl
+
+@[simp]
+theorem quotientEquivAlgOfEq_coe_eq_factor
+    {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (h : I = J) :
+    (quotientEquivAlgOfEq R₁ h : A ⧸ I →+* A ⧸ J) = Quotient.factor (le_of_eq h) := rfl
 
 @[simp]
 theorem quotientEquivAlgOfEq_symm {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (h : I = J) :
