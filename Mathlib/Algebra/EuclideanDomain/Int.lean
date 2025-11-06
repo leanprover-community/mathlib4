@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.Algebra.EuclideanDomain.Defs
 import Mathlib.Algebra.Order.Group.Unbundled.Int
 import Mathlib.Algebra.Ring.Int.Defs
 
@@ -27,7 +27,3 @@ instance Int.euclideanDomain : EuclideanDomain ℤ :=
         rw [← mul_one a.natAbs, Int.natAbs_mul]
         rw [← Int.natAbs_pos] at b0
         exact Nat.mul_le_mul_left _ b0 }
-
-theorem Int.ediv_pow {a b : ℤ} {n : ℕ} (hab : b ∣ a) :
-    (a / b) ^ n = a ^ n / b ^ n := by
-  rw [EuclideanDomain.div_pow hab]
