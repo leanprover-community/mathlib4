@@ -168,10 +168,9 @@ attribute [local instance] BinomialRing.toIsAddTorsionFree in
 lemma map_multichoose {R S F : Type*} [Ring R] [Ring S] [BinomialRing R] [BinomialRing S]
     [FunLike F R S] [RingHomClass F R S] (f : F) (a : R) (n : ℕ) :
     f (Ring.multichoose a n) = Ring.multichoose (f a) n := by
-  change RingHomClass.toRingHom f (Ring.multichoose a n) = _
   apply nsmul_right_injective n.factorial_ne_zero
   simp only [← map_nsmul, Ring.factorial_nsmul_multichoose_eq_ascPochhammer,
-    ← Polynomial.eval₂_smulOneHom_eq_smeval, Polynomial.hom_eval₂]
+    ← Polynomial.eval₂_smulOneHom_eq_smeval, Polynomial.hom_eval₂, ← RingHom.coe_coe f]
   congr
   exact Subsingleton.elim _ _
 
