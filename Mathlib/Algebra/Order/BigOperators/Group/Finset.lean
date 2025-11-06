@@ -236,6 +236,22 @@ lemma prod_image_le_of_one_le [MulLeftMono N]
 
 end OrderedCommMonoid
 
+section ProdSum
+
+variable [CommMonoid α] [AddCommMonoid β] [Preorder β] [AddLeftMono β]
+  (s : Finset ι) {f : ι → α} (g : α → β)
+
+theorem apply_prod_le_sum_apply (h_one : g 1 ≤ 0) (h_mul : ∀ (a b : α), g (a * b) ≤ g a + g b) :
+    g (∏ x ∈ s, f x) ≤ ∑ x ∈ s, g (f x) := by
+  refine (Multiset.apply_prod_le_sum_map _ _ h_one h_mul).trans_eq ?_
+  rw [Multiset.map_map, Function.comp_def, Finset.sum_map_val]
+
+theorem sum_apply_le_apply_prod (h_one : 0 ≤ g 1) (h_mul : ∀ (a b : α), g a + g b ≤ g (a * b)) :
+    ∑ x ∈ s, g (f x) ≤ g (∏ x ∈ s, f x) :=
+  s.apply_prod_le_sum_apply (β := βᵒᵈ) g h_one h_mul
+
+end ProdSum
+
 @[to_additive]
 lemma max_prod_le [CommMonoid M] [LinearOrder M] [IsOrderedMonoid M] {f g : ι → M} {s : Finset ι} :
     max (s.prod f) (s.prod g) ≤ s.prod (fun i ↦ max (f i) (g i)) :=

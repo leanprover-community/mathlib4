@@ -549,18 +549,17 @@ lemma mfderivWithin_prodMap {p : M × M'} {t : Set M'} {f : M → N} {g : M' →
     (hs : UniqueMDiffWithinAt I s p.1) (ht : UniqueMDiffWithinAt I' t p.2) :
     mfderivWithin (I.prod I') (J.prod J') (Prod.map f g) (s ×ˢ t) p
       = (mfderivWithin I J f s p.1).prodMap (mfderivWithin I' J' g t p.2) := by
-  have hf' : HasMFDerivWithinAt I J f (Prod.fst '' s ×ˢ t) p.1 (mfderivWithin I J f s p.1) := by
-    apply hf.hasMFDerivWithinAt.mono (by grind)
-  have hg' : HasMFDerivWithinAt I' J' g (Prod.snd '' s ×ˢ t) p.2 (mfderivWithin I' J' g t p.2) := by
-    apply hg.hasMFDerivWithinAt.mono (by grind)
-  apply (hf'.prodMap hg').mfderivWithin (hs.prod ht)
+  have hf' : HasMFDerivWithinAt I J f (Prod.fst '' s ×ˢ t) p.1 (mfderivWithin I J f s p.1) :=
+    hf.hasMFDerivWithinAt.mono (by grind)
+  have hg' : HasMFDerivWithinAt I' J' g (Prod.snd '' s ×ˢ t) p.2 (mfderivWithin I' J' g t p.2) :=
+    hg.hasMFDerivWithinAt.mono (by grind)
+  exact (hf'.prodMap hg').mfderivWithin (hs.prod ht)
 
 lemma mfderiv_prodMap {p : M × M'} {f : M → N} {g : M' → N'}
     (hf : MDifferentiableAt I J f p.1) (hg : MDifferentiableAt I' J' g p.2) :
     mfderiv (I.prod I') (J.prod J') (Prod.map f g) p
       = (mfderiv I J f p.1).prodMap (mfderiv I' J' g p.2) := by
-  simp_rw [← mfderivWithin_univ]
-  rw [← univ_prod_univ]
+  simp_rw [← mfderivWithin_univ, ← univ_prod_univ]
   exact mfderivWithin_prodMap hf.mdifferentiableWithinAt hg.mdifferentiableWithinAt
     (uniqueMDiffWithinAt_univ I) (uniqueMDiffWithinAt_univ I')
 
@@ -575,9 +574,8 @@ theorem tangentMapWithin_prodSnd {s : Set (M × M')} {p : TangentBundle (I.prod 
     (hs : UniqueMDiffWithinAt (I.prod I') s p.proj) :
     tangentMapWithin (I.prod I') I' Prod.snd s p = ⟨p.proj.2, p.2.2⟩ := by
   simp only [tangentMapWithin]
-  rw [mfderivWithin_snd]
-  · rcases p with ⟨⟩; rfl
-  · exact hs
+  rw [mfderivWithin_snd hs]
+  rcases p with ⟨⟩; rfl
 
 -- Kept as an alias for discoverability.
 alias MDifferentiableAt.mfderiv_prod := mfderiv_prodMk
