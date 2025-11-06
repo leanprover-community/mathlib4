@@ -289,18 +289,28 @@ theorem le_of_nhds_le_nhds (h : ∀ x, @nhds α t₁ x ≤ @nhds α t₂ x) : t�
 theorem eq_bot_of_singletons_open {t : TopologicalSpace α} (h : ∀ x, IsOpen[t] {x}) : t = ⊥ :=
   bot_unique fun s _ => biUnion_of_singleton s ▸ isOpen_biUnion fun x _ => h x
 
+theorem discreteTopology_iff_forall_isOpen [TopologicalSpace α] :
+    DiscreteTopology α ↔ ∀ s : Set α, IsOpen s :=
+  ⟨@isOpen_discrete _ _, fun h ↦ ⟨eq_bot_of_singletons_open fun _ ↦ h _⟩⟩
+
+@[deprecated discreteTopology_iff_forall_isOpen (since := "2025-10-10")]
 theorem forall_open_iff_discrete {X : Type*} [TopologicalSpace X] :
     (∀ s : Set X, IsOpen s) ↔ DiscreteTopology X :=
-  ⟨fun h => ⟨eq_bot_of_singletons_open fun _ => h _⟩, @isOpen_discrete _ _⟩
+  discreteTopology_iff_forall_isOpen.symm
 
 theorem discreteTopology_iff_forall_isClosed [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ s : Set α, IsClosed s :=
-  forall_open_iff_discrete.symm.trans <| compl_surjective.forall.trans <| forall_congr' fun _ ↦
+  discreteTopology_iff_forall_isOpen.trans <| compl_surjective.forall.trans <| forall_congr' fun _ ↦
     isOpen_compl_iff
 
+theorem discreteTopology_iff_isOpen_singleton [TopologicalSpace α] :
+    DiscreteTopology α ↔ (∀ a : α, IsOpen ({a} : Set α)):=
+  ⟨fun _ _ ↦ isOpen_discrete _, fun h ↦ ⟨eq_bot_of_singletons_open h⟩⟩
+
+@[deprecated discreteTopology_iff_isOpen_singleton (since := "2025-10-10")]
 theorem singletons_open_iff_discrete {X : Type*} [TopologicalSpace X] :
     (∀ a : X, IsOpen ({a} : Set X)) ↔ DiscreteTopology X :=
-  ⟨fun h => ⟨eq_bot_of_singletons_open h⟩, fun a _ => @isOpen_discrete _ _ a _⟩
+  discreteTopology_iff_isOpen_singleton.symm
 
 theorem DiscreteTopology.of_finite_of_isClosed_singleton [TopologicalSpace α] [Finite α]
     (h : ∀ a : α, IsClosed {a}) : DiscreteTopology α :=
@@ -309,7 +319,8 @@ theorem DiscreteTopology.of_finite_of_isClosed_singleton [TopologicalSpace α] [
 
 theorem discreteTopology_iff_singleton_mem_nhds [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ x : α, {x} ∈ 𝓝 x := by
-  simp only [← singletons_open_iff_discrete, isOpen_iff_mem_nhds, mem_singleton_iff, forall_eq]
+  simp only [discreteTopology_iff_isOpen_singleton,
+    isOpen_iff_mem_nhds, mem_singleton_iff, forall_eq]
 
 /-- This lemma characterizes discrete topological spaces as those whose singletons are
 neighbourhoods. -/
@@ -330,7 +341,8 @@ See also `Embedding.discreteTopology` for an important special case. -/
 theorem DiscreteTopology.of_continuous_injective
     {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [DiscreteTopology β] {f : α → β}
     (hc : Continuous f) (hinj : Injective f) : DiscreteTopology α :=
-  forall_open_iff_discrete.1 fun s ↦ hinj.preimage_image s ▸ (isOpen_discrete _).preimage hc
+  discreteTopology_iff_forall_isOpen.2 fun s ↦
+    hinj.preimage_image s ▸ (isOpen_discrete _).preimage hc
 
 end Lattice
 

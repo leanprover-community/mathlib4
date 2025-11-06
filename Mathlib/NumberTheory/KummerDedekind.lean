@@ -14,7 +14,7 @@ This file proves the Kummer-Dedekind theorem on the splitting of prime ideals in
 the ring of integers. This states the following: assume we are given
   - A prime ideal `I` of Dedekind domain `R`
   - An `R`-algebra `S` that is a Dedekind Domain
-  - An `α : S` such that that is integral over `R` with minimal polynomial `f`
+  - An `α : S` that is integral over `R` with minimal polynomial `f`
 If the conductor `𝓒` of `x` is such that `𝓒 ∩ R` is coprime to `I` then the prime
 factorisations of `I * S` and `f mod I` have the same shape, i.e. they have the same number of
 prime factors, and each prime factors of `I * S` can be paired with a prime factor of `f mod I` in
