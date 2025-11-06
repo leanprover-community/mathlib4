@@ -98,7 +98,7 @@ end
 theorem ascPochhammer_eval_cast (n k : ℕ) :
     (((ascPochhammer ℕ n).eval k : ℕ) : S) = ((ascPochhammer S n).eval k : S) := by
   rw [← ascPochhammer_map (algebraMap ℕ S), eval_map, ← eq_natCast (algebraMap ℕ S),
-      eval₂_at_natCast,Nat.cast_id]
+      eval₂_at_natCast, Nat.cast_id]
 
 theorem ascPochhammer_eval_zero {n : ℕ} : (ascPochhammer S n).eval 0 = if n = 0 then 1 else 0 := by
   cases n
@@ -227,6 +227,29 @@ theorem ascPochhammer_eval_succ (r n : ℕ) :
     (n : S) * (ascPochhammer S r).eval (n + 1 : S) =
     (n + r) * (ascPochhammer S r).eval (n : S) :=
   mod_cast congr_arg Nat.cast (ascPochhammer_nat_eval_succ r n)
+
+namespace Nat
+variable (a b : ℕ)
+
+theorem cast_ascFactorial : a.ascFactorial b = (ascPochhammer S b).eval (a : S) := by
+  rw [← ascPochhammer_nat_eq_ascFactorial, ascPochhammer_eval_cast]
+
+theorem cast_descFactorial :
+    a.descFactorial b = (ascPochhammer S b).eval (a - (b - 1) : S) := by
+  rw [← ascPochhammer_eval_cast, ascPochhammer_nat_eq_descFactorial]
+  induction b with
+  | zero => simp
+  | succ b =>
+    simp_rw [add_succ, Nat.add_one_sub_one]
+    obtain h | h := le_total a b
+    · rw [descFactorial_of_lt (lt_succ_of_le h), descFactorial_of_lt (lt_succ_of_le _)]
+      rw [tsub_eq_zero_iff_le.mpr h, zero_add]
+    · rw [tsub_add_cancel_of_le h]
+
+theorem cast_factorial : (a ! : S) = (ascPochhammer S a).eval 1 := by
+  rw [← one_ascFactorial, cast_ascFactorial, cast_one]
+
+end Nat
 
 end Factorial
 
@@ -361,15 +384,15 @@ theorem descPochhammer_mul (n m : ℕ) :
       ← add_assoc, descPochhammer_succ_right, Nat.cast_add, sub_add_eq_sub_sub]
 
 theorem ascPochhammer_eval_neg_eq_descPochhammer (r : R) : ∀ (k : ℕ),
-    (ascPochhammer R k).eval (-r) = (-1)^k * (descPochhammer R k).eval r
+    (ascPochhammer R k).eval (-r) = (-1) ^ k * (descPochhammer R k).eval r
   | 0 => by
     rw [ascPochhammer_zero, descPochhammer_zero]
     simp only [eval_one, pow_zero, mul_one]
-  | (k+1) => by
+  | (k + 1) => by
     rw [ascPochhammer_succ_right, mul_add, eval_add, eval_mul_X, ← Nat.cast_comm, eval_natCast_mul,
       Nat.cast_comm, ← mul_add, ascPochhammer_eval_neg_eq_descPochhammer r k, mul_assoc,
       descPochhammer_succ_right, mul_sub, eval_sub, eval_mul_X, ← Nat.cast_comm, eval_natCast_mul,
-      pow_add, pow_one, mul_assoc ((-1)^k) (-1), mul_sub, neg_one_mul, neg_mul_eq_mul_neg,
+      pow_add, pow_one, mul_assoc ((-1) ^ k) (-1), mul_sub, neg_one_mul, neg_mul_eq_mul_neg,
       Nat.cast_comm, sub_eq_add_neg, neg_one_mul, neg_neg, ← mul_add]
 
 theorem descPochhammer_eval_eq_descFactorial (n k : ℕ) :
@@ -400,7 +423,7 @@ theorem ascPochhammer_eval_neg_coe_nat_of_lt {n k : ℕ} (h : k < n) :
     rcases lt_trichotomy k n with hkn | rfl | hkn
     · simp [ih hkn]
     · simp
-    · omega
+    · cutsat
 
 /-- Over an integral domain, the Pochhammer polynomial of degree `n` has roots *only* at
 `0`, `-1`, ..., `-(n - 1)`. -/
@@ -415,7 +438,7 @@ theorem ascPochhammer_eval_eq_zero_iff [IsDomain R]
       cases zero' with
       | inl h =>
         obtain ⟨rn, hrn, rrn⟩ := ih h
-        exact ⟨rn, by omega, rrn⟩
+        exact ⟨rn, by cutsat, rrn⟩
       | inr h =>
         exact ⟨n, lt_add_one n, eq_neg_of_add_eq_zero_right h⟩
   · obtain ⟨rn, hrn, rnn⟩ := hrn
@@ -459,7 +482,7 @@ theorem descPochhammer_nonneg {n : ℕ} {s : S} (h : n - 1 ≤ s) :
 
 /-- `descPochhammer S n` is at least `(s-n+1)^n` on `[n-1, ∞)`. -/
 theorem pow_le_descPochhammer_eval {n : ℕ} {s : S} (h : n - 1 ≤ s) :
-    (s - n + 1)^n ≤ (descPochhammer S n).eval s := by
+    (s - n + 1) ^ n ≤ (descPochhammer S n).eval s := by
   induction n with
   | zero => simp
   | succ n ih =>
@@ -484,3 +507,27 @@ theorem monotoneOn_descPochhammer_eval (n : ℕ) :
       (sub_nonneg_of_le ha) (descPochhammer_nonneg hb_sub1)
 
 end StrictOrderedRing
+
+variable (K : Type*)
+
+namespace Nat
+section DivisionSemiring
+variable [DivisionSemiring K] [CharZero K]
+
+theorem cast_choose_eq_ascPochhammer_div (a b : ℕ) :
+    (a.choose b : K) = (ascPochhammer K b).eval ↑(a - (b - 1)) / b ! := by
+  rw [eq_div_iff_mul_eq (cast_ne_zero.2 b.factorial_ne_zero : (b ! : K) ≠ 0), ← cast_mul,
+    mul_comm, ← descFactorial_eq_factorial_mul_choose, ← cast_descFactorial]
+
+end DivisionSemiring
+
+section DivisionRing
+variable [DivisionRing K] [CharZero K]
+
+theorem cast_choose_eq_descPochhammer_div (a b : ℕ) :
+    (a.choose b : K) = (descPochhammer K b).eval ↑a / b ! := by
+  rw [eq_div_iff_mul_eq (cast_ne_zero.2 b.factorial_ne_zero : (b ! : K) ≠ 0), ← cast_mul,
+    mul_comm, ← descFactorial_eq_factorial_mul_choose, descPochhammer_eval_eq_descFactorial]
+
+end DivisionRing
+end Nat

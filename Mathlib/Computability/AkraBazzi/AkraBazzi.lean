@@ -12,18 +12,19 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 # Divide-and-conquer recurrences and the Akra-Bazzi theorem
 
 A divide-and-conquer recurrence is a function `T : ℕ → ℝ` that satisfies a recurrence relation of
-the form `T(n) = ∑_{i=0}^{k-1} a_i T(r_i(n)) + g(n)` for large enough `n`, where `r_i(n)` is some
-function where `‖r_i(n) - b_i n‖ ∈ o(n / (log n)^2)` for every `i`, the `a_i`'s are some positive
-coefficients, and the `b_i`'s are reals `∈ (0,1)`. (Note that this can be improved to
-`O(n / (log n)^(1+ε))`, this is left as future work.) These recurrences arise mainly in the
-analysis of divide-and-conquer algorithms such as mergesort or Strassen's algorithm for matrix
-multiplication.  This class of algorithms works by dividing an instance of the problem of size `n`,
-into `k` smaller instances, where the `i`-th instance is of size roughly `b_i n`, and calling itself
-recursively on those smaller instances. `T(n)` then represents the running time of the algorithm,
-and `g(n)` represents the running time required to actually divide up the instance and process the
-answers that come out of the recursive calls. Since virtually all such algorithms produce instances
-that are only approximately of size `b_i n` (they have to round up or down at the very least), we
-allow the instance sizes to be given by some function `r_i(n)` that approximates `b_i n`.
+the form `T(n) = ∑_{i=0}^{k-1} a_i T(r_i(n)) + g(n)` for sufficiently large `n`, where `r_i(n)` is
+a function such that `‖r_i(n) - b_i n‖ ∈ o(n / (log n)^2)` for every `i`, the coefficients `a_i`
+are positive, and the coefficients `b_i` are real numbers in `(0, 1)`. (This assumption can be
+relaxed to `O(n / (log n)^(1+ε))`, for some `ε > 0`; we leave this as future work.) These
+recurrences arise mainly in the analysis of divide-and-conquer algorithms such as mergesort or
+Strassen's algorithm for matrix multiplication. This class of algorithms works by dividing an
+instance of the problem of size `n`, into `k` smaller instances, where the `i`-th instance is of
+size roughly `b_i n`, and calling itself recursively on those smaller instances. `T(n)` then
+represents the running time of the algorithm, and `g(n)` represents the running time required to
+divide the instance and process the answers produced by the recursive calls. Since virtually all
+such algorithms produce instances that are only approximately of size `b_i n` (they must round up
+or down, at the very least), we allow the instance sizes to be given by a function `r_i(n)` that
+approximates `b_i n`.
 
 The Akra-Bazzi theorem gives the asymptotic order of such a recurrence: it states that
 `T(n) ∈ Θ(n^p (1 + ∑_{u=0}^{n-1} g(n) / u^{p+1}))`,
@@ -31,19 +32,19 @@ where `p` is the unique real number such that `∑ a_i b_i^p = 1`.
 
 ## Main definitions and results
 
-* `asympBound`: The asymptotic bound satisfied by an Akra-Bazzi recurrence, namely
-  `n^p (1 + ∑ g(u) / u^(p+1))`
 * `isTheta_asympBound`: The main result stating that
   `T(n) ∈ Θ(n^p (1 + ∑_{u=0}^{n-1} g(n) / u^{p+1}))`
 
 ## Implementation
 
-Note that the original version of the theorem has an integral rather than a sum in the above
-expression, and first considers the `T : ℝ → ℝ` case before moving on to `ℕ → ℝ`. We prove the
-above version with a sum, as it is simpler and more relevant for algorithms.
+Note that the original version of the Akra–Bazzi theorem uses an integral rather than the sum in
+the above expression, and first considers the `T : ℝ → ℝ` case before moving on to `ℕ → ℝ`. We
+prove the version with a sum here, as it is simpler and more relevant for algorithms.
 
 ## TODO
 
+* Relax the assumption described in the introduction from `o(n / (log n)^2)` to
+  `O(n / (log n)^(1+ε))`, for some `ε > 0`.
 * Specialize this theorem to the very common case where the recurrence is of the form
   `T(n) = ℓT(r_i(n)) + g(n)`
   where `g(n) ∈ Θ(n^t)` for some `t`. (This is often called the "master theorem" in the literature.)
@@ -60,16 +61,6 @@ above version with a sum, as it is simpler and more relevant for algorithms.
 open Finset Real Filter Asymptotics
 open scoped Topology
 
-/-!
-### Definition of Akra-Bazzi recurrences
-
-This section defines the predicate `AkraBazziRecurrence T g a b r` which states that `T`
-satisfies the recurrence
-`T(n) = ∑_{i=0}^{k-1} a_i T(r_i(n)) + g(n)`
-with appropriate conditions on the various parameters.
--/
-
-
 namespace AkraBazziRecurrence
 
 variable {α : Type*} [Fintype α] {T : ℕ → ℝ} {g : ℝ → ℝ} {a b : α → ℝ} {r : α → ℕ → ℕ}
@@ -82,7 +73,7 @@ local notation "ε" => smoothingFn
 /-!
 ### Technical lemmas
 
-The next several lemmas are technical lemmas leading up to `rpow_p_mul_one_sub_smoothingFn_le` and
+The next several lemmas are technical results leading up to `rpow_p_mul_one_sub_smoothingFn_le` and
 `rpow_p_mul_one_add_smoothingFn_ge`, which are key steps in the main proof.
 -/
 
@@ -187,9 +178,7 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
     have h₁ : (fun x => ‖deriv (fun z => z ^ p * (1 - ε z)) x‖)
         =ᶠ[atTop] fun z => z⁻¹ / (log z ^ 2) := by
       filter_upwards [eventually_deriv_one_sub_smoothingFn, eventually_gt_atTop 1] with x hx hx_pos
-      have : 0 ≤ x⁻¹ / (log x ^ 2) := by
-        have hlog : 0 < log x := Real.log_pos hx_pos
-        positivity
+      have : 0 ≤ x⁻¹ / (log x ^ 2) := by positivity
       simp only [hp, Real.rpow_zero, one_mul, hx, Real.norm_of_nonneg this]
     refine GrowsPolynomially.congr_of_eventuallyEq h₁ ?_
     refine GrowsPolynomially.div (GrowsPolynomially.inv growsPolynomially_id)
@@ -208,9 +197,7 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
     have h₁ : (fun x => ‖deriv (fun z => z ^ p * (1 + ε z)) x‖)
         =ᶠ[atTop] fun z => z⁻¹ / (log z ^ 2) := by
       filter_upwards [eventually_deriv_one_add_smoothingFn, eventually_gt_atTop 1] with x hx hx_pos
-      have : 0 ≤ x⁻¹ / (log x ^ 2) := by
-        have hlog : 0 < log x := Real.log_pos hx_pos
-        positivity
+      have : 0 ≤ x⁻¹ / (log x ^ 2) := by positivity
       simp only [neg_div, norm_neg, hp, Real.rpow_zero,
         one_mul, hx, Real.norm_of_nonneg this]
     refine GrowsPolynomially.congr_of_eventuallyEq h₁ ?_
@@ -460,9 +447,8 @@ lemma base_nonempty {n : ℕ} (hn : 0 < n) : (Finset.Ico (⌊b (min_bi b) / 2 * 
                            _ = n := by simp
   exact_mod_cast this
 
-/-- The main proof of the upper bound part of the Akra-Bazzi theorem. The factor
-`1 - ε n` does not change the asymptotic order, but is needed for the induction step to go
-through. -/
+/-- The main proof of the upper-bound part of the Akra-Bazzi theorem. The factor `1 - ε n` does not
+change the asymptotic order, but it is needed for the induction step to go through. -/
 lemma T_isBigO_smoothingFn_mul_asympBound :
     T =O[atTop] (fun n => (1 - ε n) * asympBound g a b n) := by
   let b' := b (min_bi b) / 2
@@ -558,8 +544,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
                 * ((1 + (∑ u ∈ range (r i n), g u / u ^ ((p a b) + 1)))))) + g n := by
         gcongr (∑ i, C * a i * (?_
             * ((1 + (∑ u ∈ range (r i n), g u / u ^ ((p a b) + 1)))))) + g n with i
-        · have := R.a_pos i
-          positivity
+        · positivity [R.a_pos i]
         · refine add_nonneg zero_le_one <| Finset.sum_nonneg fun j _ => ?_
           rw [div_nonneg_iff]
           exact Or.inl ⟨R.g_nonneg j (by positivity), by positivity⟩
@@ -583,10 +568,8 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
       _ ≤ (∑ i, C * a i * ((b i) ^ (p a b) * (1 - ε n)
                 * ((asympBound g a b n - c₁ * g n)))) + g n := by
         gcongr with i
-        · have := R.a_pos i
-          positivity
-        · have := R.b_pos i
-          positivity
+        · positivity [R.a_pos i]
+        · positivity [R.b_pos i]
         · exact h_sumTransform n hn i
       _ = (∑ i, C * (1 - ε n) * ((asympBound g a b n - c₁ * g n))
                 * (a i * (b i) ^ (p a b))) + g n := by
@@ -613,10 +596,9 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
 This linter is only enabled on `nightly-testing`, but it causes a deterministic timeout there.
 Can this proof be refactored into some smaller pieces?
 -/
-set_option linter.tacticAnalysis.linarithToGrind false in
-/-- The main proof of the lower bound part of the Akra-Bazzi theorem. The factor
-`1 + ε n` does not change the asymptotic order, but is needed for the induction step to go
-through. -/
+set_option linter.tacticAnalysis.regressions.linarithToGrind false in
+/-- The main proof of the lower-bound part of the Akra-Bazzi theorem. The factor `1 + ε n` does not
+change the asymptotic order, but it is needed for the induction step to go through. -/
 lemma smoothingFn_mul_asympBound_isBigO_T :
     (fun (n : ℕ) => (1 + ε n) * asympBound g a b n) =O[atTop] T := by
   let b' := b (min_bi b) / 2
@@ -728,8 +710,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
                 * ((1 + (∑ u ∈ range (r i n), g u / u ^ ((p a b) + 1)))))) + g n := by
         gcongr (∑ i, C * a i * (?_ *
             ((1 + (∑ u ∈ range (r i n), g u / u ^ ((p a b) + 1)))))) + g n with i
-        · have := R.a_pos i
-          positivity
+        · positivity [R.a_pos i]
         · refine add_nonneg zero_le_one <| Finset.sum_nonneg fun j _ => ?_
           rw [div_nonneg_iff]
           exact Or.inl ⟨R.g_nonneg j (by positivity), by positivity⟩
@@ -753,10 +734,8 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
       _ ≥ (∑ i, C * a i * ((b i) ^ (p a b) * (1 + ε n)
                 * ((asympBound g a b n - c₁ * g n)))) + g n := by
         gcongr with i
-        · have := R.a_pos i
-          positivity
-        · have := R.b_pos i
-          positivity
+        · positivity [R.a_pos i]
+        · positivity [R.b_pos i]
         · exact h_sumTransform n hn i
       _ = (∑ i, C * (1 + ε n) * ((asympBound g a b n - c₁ * g n))
                 * (a i * (b i) ^ (p a b))) + g n := by congr; ext; ring

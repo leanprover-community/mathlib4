@@ -135,8 +135,8 @@ theorem pluennecke_petridis_inequality_mul (C : Finset G)
     have h₃ : #(C' * A * B) ≤ #(C * A * B) + #(A * B) - #(A' * B) := by
       rw [h₁]
       refine (card_union_le _ _).trans_eq ?_
-      rw [card_sdiff h₂, ← add_tsub_assoc_of_le (card_le_card h₂), mul_assoc {_}, mul_assoc {_},
-        card_singleton_mul, card_singleton_mul]
+      rw [card_sdiff_of_subset h₂, ← add_tsub_assoc_of_le (card_le_card h₂), mul_assoc {_},
+        mul_assoc {_}, card_singleton_mul, card_singleton_mul]
     refine (mul_le_mul_right' h₃ _).trans ?_
     rw [tsub_mul, add_mul]
     refine (tsub_le_tsub (add_le_add_right ih _) <| hA _ inter_subset_left).trans_eq ?_

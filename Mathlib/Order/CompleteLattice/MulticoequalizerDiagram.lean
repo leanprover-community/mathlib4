@@ -81,7 +81,8 @@ structure MulticoequalizerDiagram : Prop where
 
 namespace MulticoequalizerDiagram
 
-attribute [local grind] MulticoequalizerDiagram MultispanShape.prod_fst MultispanShape.prod_snd
+attribute [local grind] MulticoequalizerDiagram
+attribute [local grind =] MultispanShape.prod_fst MultispanShape.prod_snd
 
 variable {x u v} (d : MulticoequalizerDiagram x u v)
 
@@ -116,9 +117,4 @@ lemma Lattice.BicartSq.multicoequalizerDiagram {T : Type u} [CompleteLattice T]
         else bif j then x₁ else x₂) where
   iSup_eq := by rw [← sq.max_eq, sup_comm, sup_eq_iSup]
   min_eq i j := by
-    #adaptation_note
-    /--
-    On `nightly-2025-09-10`, we need to disable the `ac` module due to an internal grind error.
-    This is likely the same problem as at https://github.com/leanprover/lean4/pull/10317
-    -/
-    grind -ac [inf_idem, inf_comm]
+    grind [inf_idem, inf_comm]

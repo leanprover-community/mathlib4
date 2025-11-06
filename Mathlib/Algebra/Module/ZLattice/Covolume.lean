@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 /-!
 # Covolume of ℤ-lattices
 
-Let `E` be a finite dimensional real vector space.
+Let `E` be a finite-dimensional real vector space.
 
 Let `L` be a `ℤ`-lattice `L` defined as a discrete `ℤ`-submodule of `E` that spans `E` over `ℝ`.
 
@@ -43,7 +43,7 @@ index of `L₁` inside `L₂` is equal to `covolume L₁ / covolume L₂`.
 
 ## Naming convention
 
-Some results are true in the case where the ambient finite dimensional real vector space is the
+Some results are true in the case where the ambient finite-dimensional real vector space is the
 pi-space `ι → ℝ` and in the case where it is an `InnerProductSpace`. We use the following
 convention: the plain name is for the pi case, for e.g. `volume_image_eq_volume_div_covolume`. For
 the same result in the `InnerProductSpace` case, we add a `prime`, for e.g.
@@ -113,9 +113,6 @@ theorem covolume_eq_det_mul_measureReal {ι : Type*} [Fintype ι] [DecidableEq �
   ext
   exact b.ofZLatticeBasis_apply ℝ L _
 
-@[deprecated (since := "2025-04-19")]
-alias covolume_eq_det_mul_measure := covolume_eq_det_mul_measureReal
-
 theorem covolume_eq_det {ι : Type*} [Fintype ι] [DecidableEq ι] (L : Submodule ℤ (ι → ℝ))
     [DiscreteTopology L] [IsZLattice ℝ L] (b : Basis ι ℤ L) :
     covolume L = |(Matrix.of ((↑) ∘ b)).det| := by
@@ -171,7 +168,7 @@ theorem covolume_div_covolume_eq_relIndex' {E : Type*} [NormedAddCommGroup E]
   let f := (EuclideanSpace.equiv _ ℝ).symm.trans
     (stdOrthonormalBasis ℝ E).repr.toContinuousLinearEquiv.symm
   have hf : MeasurePreserving f := (stdOrthonormalBasis ℝ E).measurePreserving_repr_symm.comp
-    (EuclideanSpace.volume_preserving_measurableEquiv _).symm
+    (EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp _).symm
   rw [← covolume_comap L₁ volume volume hf, ← covolume_comap L₂ volume volume hf,
     covolume_div_covolume_eq_relIndex _ _ (fun _ h' ↦ h h'), ZLattice.comap_toAddSubgroup,
     ZLattice.comap_toAddSubgroup, Nat.cast_inj, LinearEquiv.toAddMonoidHom_commutes,
@@ -202,7 +199,7 @@ theorem volume_image_eq_volume_div_covolume' {E : Type*} [NormedAddCommGroup E]
     ((stdOrthonormalBasis ℝ E).reindex e).repr.toContinuousLinearEquiv.symm
   have hf : MeasurePreserving f :=
     ((stdOrthonormalBasis ℝ E).reindex e).measurePreserving_repr_symm.comp
-      (EuclideanSpace.volume_preserving_measurableEquiv ι).symm
+      (PiLp.volume_preserving_toLp ι)
   rw [← hf.measure_preimage hs, ← (covolume_comap L volume volume hf),
     ← volume_image_eq_volume_div_covolume (ZLattice.comap ℝ L f.toLinearMap)
     (b.ofZLatticeComap ℝ L f.toLinearEquiv), Basis.ofZLatticeBasis_comap,

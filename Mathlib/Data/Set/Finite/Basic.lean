@@ -467,9 +467,8 @@ The implementation of these constructors ideally should be no more than `Set.toF
 after possibly setting up some `Fintype` and classical `Decidable` instances.
 -/
 
-
 section SetFiniteConstructors
-variable {s t u : Set α}
+variable {s t u : Set α} {a : α}
 
 @[nontriviality]
 theorem Finite.of_subsingleton [Subsingleton α] (s : Set α) : s.Finite :=
@@ -539,9 +538,12 @@ protected theorem Infinite.nonempty {s : Set α} (h : s.Infinite) : s.Nonempty :
 theorem finite_singleton (a : α) : ({a} : Set α).Finite :=
   toFinite _
 
-@[simp]
 protected theorem Finite.insert (a : α) {s : Set α} (hs : s.Finite) : (insert a s).Finite :=
   (finite_singleton a).union hs
+
+@[simp] lemma finite_insert : (insert a s).Finite ↔ s.Finite where
+  mp hs := hs.subset <| subset_insert ..
+  mpr := .insert _
 
 theorem Finite.image {s : Set α} (f : α → β) (hs : s.Finite) : (f '' s).Finite := by
   have := hs.to_subtype
@@ -695,7 +697,7 @@ theorem Finite.induction_on {motive : ∀ s : Set α, s.Finite → Prop} (s : Se
     (insert : ∀ {a s}, a ∉ s →
       ∀ hs : Set.Finite s, motive s hs → motive (insert a s) (hs.insert a)) :
     motive s hs := by
-  lift s to Finset α using id hs
+  lift s to Finset α using hs
   induction s using Finset.cons_induction_on with
   | empty => simpa
   | cons a s ha ih => simpa using @insert a s ha (Set.toFinite _) (ih _)

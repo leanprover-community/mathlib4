@@ -64,7 +64,7 @@ theorem norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_ang
 theorem sin_angle_mul_norm_eq_sin_angle_mul_norm (x y : V) :
     Real.sin (angle x y) * ‖x‖ = Real.sin (angle y (x - y)) * ‖x - y‖ := by
   obtain rfl | hy := eq_or_ne y 0
-  · norm_num
+  · simp
   obtain rfl | hx := eq_or_ne x 0
   · simp [angle_neg_right, angle_self hy]
   obtain rfl | hxy := eq_or_ne x y
@@ -175,7 +175,7 @@ theorem angle_eq_angle_add_add_angle_add (x : V) {y : V} (hy : y ≠ 0) :
     cases eq_zero_or_eq_zero_of_smul_eq_zero this
     · linarith
     · contradiction
-  obtain rfl : n = 0 := by omega
+  obtain rfl : n = 0 := by cutsat
   simpa using h
 
 /-- The sum of the angles of a possibly degenerate triangle (where one of the
@@ -321,10 +321,10 @@ theorem dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq (a b c 
     calc
       dist a b ^ 2 + dist a c ^ 2 = 2 / dist b c * (dist a b ^ 2 *
         ((2 : ℝ)⁻¹ * dist b c) + dist a c ^ 2 * (2⁻¹ * dist b c)) := by
-        field_simp
+        field
       _ = 2 * (dist a (midpoint ℝ b c) ^ 2 + (dist b c / 2) ^ 2) := by
         rw [hm]
-        field_simp
+        field
 
 theorem dist_mul_of_eq_angle_of_dist_mul (a b c a' b' c' : P) (r : ℝ) (h : ∠ a' b' c' = ∠ a b c)
     (hab : dist a' b' = r * dist a b) (hcb : dist c' b' = r * dist c b) :
@@ -403,8 +403,6 @@ theorem angle_lt_iff_dist_lt {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P
 theorem angle_le_iff_dist_le {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P)) :
     ∠ a c b ≤ ∠ a b c ↔ dist a b ≤ dist a c := by
   rw [show ({a, b, c} : Set P) = {a, c, b} by grind] at h
-  have h1 := (angle_lt_iff_dist_lt h).not
-  simp at h1
-  exact h1
+  simpa using (angle_lt_iff_dist_lt h).not
 
 end EuclideanGeometry

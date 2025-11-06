@@ -52,7 +52,7 @@ noncomputable def den (x : K) : nonZeroDivisors A :=
 theorem num_den_reduced (x : K) : IsRelPrime (num A x) (den A x) :=
   (Classical.choose_spec (Classical.choose_spec (exists_reduced_fraction A x))).1
 
--- @[simp] -- Porting note: LHS reduces to give the simp lemma below
+-- `@[simp]` normal form is called `mk'_num_den'`.
 theorem mk'_num_den (x : K) : mk' K (num A x) (den A x) = x :=
   (Classical.choose_spec (Classical.choose_spec (exists_reduced_fraction A x))).2
 
@@ -84,11 +84,7 @@ theorem eq_zero_of_num_eq_zero {x : K} (h : num A x = 0) : x = 0 :=
 lemma num_zero : IsFractionRing.num A (0 : K) = 0 := by
   have := mk'_num_den' A (0 : K)
   simp only [div_eq_zero_iff] at this
-  rcases this with h | h
-  · exact FaithfulSMul.algebraMap_injective A K (by convert h; simp)
-  · replace h : algebraMap A K (den A (0 : K)) = algebraMap A K 0 := by convert h; simp
-    absurd FaithfulSMul.algebraMap_injective A K h
-    apply nonZeroDivisors.coe_ne_zero
+  simp_all
 
 @[simp]
 lemma num_eq_zero (x : K) : IsFractionRing.num A x = 0 ↔ x = 0 :=

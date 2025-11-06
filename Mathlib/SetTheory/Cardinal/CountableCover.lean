@@ -58,7 +58,7 @@ lemma mk_subtype_le_of_countable_eventually_mem_aux {α ι : Type u} {a : Cardin
       _     ≤ sum (fun i ↦ #(f i)) := mk_iUnion_le_sum_mk
       _     ≤ sum (fun _ ↦ a) := sum_le_sum _ _ h'f
       _     = #ι * a := by simp
-      _     ≤ ℵ₀ * a := mul_le_mul_right' mk_le_aleph0 a
+      _     ≤ ℵ₀ * a := by grw [mk_le_aleph0]
       _     = a := aleph0_mul_eq ha
 
 /-- If a set `t` is eventually covered by a countable family of sets, all with cardinality at

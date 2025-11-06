@@ -21,7 +21,7 @@ with respect to a measure `μ` if
 * the sets `g • s`, are pairwise a.e. disjoint, i.e., `μ (g₁ • s ∩ g₂ • s) = 0` whenever `g₁ ≠ g₂`;
   we require this for `g₂ = 1` in the definition, then deduce it for any two `g₁ ≠ g₂`.
 
-In this file we prove that in case of a countable group `G` and a measure preserving action, any two
+In this file we prove that in case of a countable group `G` and a measure-preserving action, any two
 fundamental domains have the same measure, and for a `G`-invariant function, its integrals over any
 two fundamental domains are equal to each other.
 
@@ -342,12 +342,6 @@ protected theorem aestronglyMeasurable_on_iff {β : Type*} [TopologicalSpace β]
     _ ↔ AEStronglyMeasurable f (μ.restrict t) := by
       simp only [← aestronglyMeasurable_sum_measure_iff, ← hs.restrict_restrict,
         hs.sum_restrict_of_ac restrict_le_self.absolutelyContinuous]
-
-@[deprecated (since := "2025-04-09")]
-alias aEStronglyMeasurable_on_iff := MeasureTheory.IsFundamentalDomain.aestronglyMeasurable_on_iff
-@[deprecated (since := "2025-04-09")]
-alias _root_.MeasureTheory.IsAddFundamentalDomain.aEStronglyMeasurable_on_iff :=
-  MeasureTheory.IsAddFundamentalDomain.aestronglyMeasurable_on_iff
 
 @[to_additive]
 protected theorem hasFiniteIntegral_on_iff (hs : IsFundamentalDomain G s μ)
