@@ -597,7 +597,7 @@ def indicatorConst {s : Set α} (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c 
 
 @[simp]
 theorem coe_indicatorConst {s : Set α} (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
-    (↑(indicatorConst p hs hμs c) : Lp E p μ) = indicatorConstLp p hs hμs c :=
+    (↑(indicatorConst p hs hμs c) : Lp E p μ) = indicatorConstLp p hs (.inr hμs) c :=
   rfl
 
 theorem toSimpleFunc_indicatorConst {s : Set α} (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
