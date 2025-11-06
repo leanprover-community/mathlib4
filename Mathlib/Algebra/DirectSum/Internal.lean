@@ -163,7 +163,7 @@ theorem coe_mul_apply_eq_dfinsuppSum [AddMonoid ι] [SetLike.GradedMonoid A]
   · subst h
     rw [of_eq_same]
     rfl
-  · rw [of_eq_of_ne _ _ _ h]
+  · rw [of_eq_of_ne _ _ _ (Ne.symm h)]
     rfl
 
 @[deprecated (since := "2025-04-06")]
@@ -364,6 +364,11 @@ variable (A : ι → σ) [SetLike.GradedMonoid A]
 `SetLike.GradedMonoid A`. -/
 instance instCommSemiring : CommSemiring (A 0) := (subsemiring A).toCommSemiring
 
+instance : Algebra (A 0) R :=
+  Algebra.ofSubsemiring <| SetLike.GradeZero.subsemiring A
+
+@[simp] lemma algebraMap_apply (x : A 0) : algebraMap (A 0) R x = x := rfl
+
 end CommSemiring
 
 section Ring
@@ -413,17 +418,6 @@ instance instAlgebra : Algebra S (A 0) := inferInstanceAs <| Algebra S (subalgeb
 
 end Algebra
 
-section
-
-variable [CommSemiring S] [CommSemiring R] [Algebra S R] [AddCommMonoid ι]
-variable (A : ι → Submodule S R) [SetLike.GradedMonoid A]
-
-instance : Algebra (A 0) R := (SetLike.GradeZero.subalgebra A).toAlgebra
-
-@[simp] lemma algebraMap_apply (x) : algebraMap (A 0) R x = x := rfl
-
-end
-
 end SetLike.GradeZero
 
 section HomogeneousElement
@@ -459,7 +453,7 @@ theorem mul_apply_eq_zero {r r' : ⨁ i, A i} {m n : ι}
   obtain (hx | hx) : x.1 < m ∨ x.2 < n := by
     by_contra! h
     obtain ⟨hm, hn⟩ := h
-    obtain rfl : x.1 + x.2 = k := by aesop
+    obtain rfl : x.1 + x.2 = k := by simp_all
     apply lt_irrefl (m + n) <| lt_of_le_of_lt (by gcongr) hk
   all_goals simp [hr, hr', hx]
 

@@ -197,11 +197,11 @@ noncomputable def d₂ :
     (F.obj (K₁.X i₁)).obj (K₂.X i₂) ⟶ (mapBifunctor K₁ K₂ F c).X j :=
   (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).d₂ c i₁ i₂ j
 
-lemma d₁_eq_zero (h : ¬ c₁.Rel i₁ (c₁.next i₁)):
+lemma d₁_eq_zero (h : ¬ c₁.Rel i₁ (c₁.next i₁)) :
     d₁ K₁ K₂ F c i₁ i₂ j = 0 :=
   HomologicalComplex₂.d₁_eq_zero _ _ _ _ _ h
 
-lemma d₂_eq_zero (h : ¬ c₂.Rel i₂ (c₂.next i₂)):
+lemma d₂_eq_zero (h : ¬ c₂.Rel i₂ (c₂.next i₂)) :
     d₂ K₁ K₂ F c i₁ i₂ j = 0 :=
   HomologicalComplex₂.d₂_eq_zero _ _ _ _ _ h
 

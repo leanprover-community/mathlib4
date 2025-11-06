@@ -13,6 +13,7 @@ jobs:
   build:
     name: "post-or-update-summary-comment"
     runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
 
     steps:
     - name: Checkout code
@@ -85,7 +86,7 @@ jobs:
         git diff --name-only --diff-filter D origin/${{ github.base_ref }}... | tee removed_files.txt
         echo "Checking for renamed files..."
 
-        # Shows the `R`enamed files, in human readable format
+        # Shows the `R`enamed files, in human-readable format
         # The `awk` pipe
         # * extracts into an array the old name as the key and the new name as the value
         # * eventually prints "`oldName` was renamed to `newName`" for each key-value pair.

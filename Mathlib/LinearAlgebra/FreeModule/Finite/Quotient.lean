@@ -18,9 +18,10 @@ import Mathlib.LinearAlgebra.Quotient.Pi
 
 -/
 
-namespace Submodule
-
+open Module
 open scoped DirectSum
+
+namespace Submodule
 
 variable {ι R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 variable [IsDomain R] [IsPrincipalIdealRing R] [Finite ι]
@@ -58,7 +59,7 @@ noncomputable def quotientEquivPiSpan (N : Submodule R M) (b : Basis ι R M)
   have : Submodule.map (b'.equivFun : M →ₗ[R] ι → R) N = N' := by
     ext x
     simp only [N', Submodule.mem_map, Submodule.mem_pi, mem_span_singleton, Set.mem_univ,
-      Submodule.restrictScalars_mem, mem_I_iff, smul_eq_mul, forall_true_left, LinearEquiv.coe_coe,
+      mem_I_iff, smul_eq_mul, forall_true_left, LinearEquiv.coe_coe,
       Basis.equivFun_apply, mul_comm _ (a _), eq_comm (b := (x _))]
     constructor
     · rintro ⟨y, hy, rfl⟩ i

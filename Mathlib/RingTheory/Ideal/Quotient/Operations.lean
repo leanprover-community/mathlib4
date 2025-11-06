@@ -87,6 +87,11 @@ theorem quotientKerEquivOfRightInverse.Symm.apply {g : S → R} (hf : Function.R
 noncomputable def quotientKerEquivOfSurjective (hf : Function.Surjective f) : R ⧸ (ker f) ≃+* S :=
   quotientKerEquivOfRightInverse (Classical.choose_spec hf.hasRightInverse)
 
+@[simp]
+lemma quotientKerEquivOfSurjective_apply_mk {f : R →+* S} (hf : Function.Surjective f) (x : R) :
+    f.quotientKerEquivOfSurjective hf (Ideal.Quotient.mk _ x) = f x :=
+  rfl
+
 /-- The **first isomorphism theorem** for commutative rings (`RingHom.rangeS` version). -/
 noncomputable def quotientKerEquivRangeS (f : R →+* S) : R ⧸ ker f ≃+* f.rangeS :=
   (Ideal.quotEquivOfEq f.ker_rangeSRestrict.symm).trans <|
@@ -208,7 +213,7 @@ lemma quotientInfToPiQuotient_surj {I : ι → Ideal R}
   have key : ∀ i, ∃ e : R, mk (I i) e = 1 ∧ ∀ j, j ≠ i → mk (I j) e = 0 := by
     intro i
     have hI' : ∀ j ∈ ({i} : Finset ι)ᶜ, IsCoprime (I i) (I j) := by
-      intros j hj
+      intro j hj
       exact hI (by simpa [ne_comm, isCoprime_iff_add] using hj)
     rcases isCoprime_iff_exists.mp (isCoprime_biInf hI') with ⟨u, hu, e, he, hue⟩
     replace he : ∀ j, j ≠ i → e ∈ I j := by simpa using he
@@ -220,7 +225,7 @@ lemma quotientInfToPiQuotient_surj {I : ι → Ideal R}
   ext i
   rw [quotientInfToPiQuotient_mk', map_sum, Fintype.sum_eq_single i]
   · simp [(he i).1, hf]
-  · intros j hj
+  · intro j hj
     simp [(he j).2 i hj.symm]
 
 /-- **Chinese Remainder Theorem**. Eisenbud Ex.2.6.
@@ -336,9 +341,7 @@ instance Quotient.algebra {I : Ideal A} [I.IsTwoSided] : Algebra R₁ (A ⧸ I) 
 
 instance {A} [CommRing A] [Algebra R₁ A] (I : Ideal A) : Algebra R₁ (A ⧸ I) := inferInstance
 
--- Lean can struggle to find this instance later if we don't provide this shortcut
--- Porting note: this can probably now be deleted
--- update: maybe not - removal causes timeouts
+-- This instance can be inferred, but is kept around as a useful shortcut.
 instance Quotient.isScalarTower [SMul R₁ R₂] [IsScalarTower R₁ R₂ A] (I : Ideal A) :
     IsScalarTower R₁ R₂ (A ⧸ I) := inferInstance
 
@@ -562,13 +565,12 @@ def quotientEquiv : R ⧸ I ≃+* S ⧸ J where
     simp only [Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, RingHom.toFun_eq_coe,
       quotientMap_mk, RingEquiv.coe_toRingHom, RingEquiv.apply_symm_apply]
 
-/- Porting note: removed simp. LHS simplified. Slightly different version of the simplified
-form closed this and was itself closed by simp -/
+-- Not `@[simp]` since `simp` proves it.
 theorem quotientEquiv_mk (x : R) :
     quotientEquiv I J f hIJ (Ideal.Quotient.mk I x) = Ideal.Quotient.mk J (f x) :=
   rfl
 
-@[simp]
+-- Not `@[simp]` since `simp` proves it.
 theorem quotientEquiv_symm_mk (x : S) :
     (quotientEquiv I J f hIJ).symm (Ideal.Quotient.mk J x) = Ideal.Quotient.mk I (f.symm x) :=
   rfl
@@ -600,8 +602,7 @@ theorem quotientMap_surjective {J : Ideal R} {I : Ideal S} [I.IsTwoSided] [J.IsT
 theorem comp_quotientMap_eq_of_comp_eq {R' S' : Type*} [Ring R'] [Ring S'] {f : R →+* S}
     {f' : R' →+* S'} {g : R →+* R'} {g' : S →+* S'} (hfg : f'.comp g = g'.comp f)
     (I : Ideal S') [I.IsTwoSided] :
-    -- Porting note: was losing track of I
-    let leq := le_of_eq (_root_.trans (comap_comap (I := I) f g') (hfg ▸ comap_comap (I := I) g f'))
+    let leq := le_of_eq (_root_.trans (comap_comap f g') (hfg ▸ comap_comap g f'))
     (quotientMap I g' le_rfl).comp (quotientMap (I.comap g') f le_rfl) =
     (quotientMap I f' le_rfl).comp (quotientMap (I.comap f') g leq) := by
   refine RingHom.ext fun a => ?_
@@ -638,13 +639,7 @@ where`J = f(I)`. -/
 def quotientEquivAlg (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
     (A ⧸ I) ≃ₐ[R₁] B ⧸ J :=
   { quotientEquiv I J (f : A ≃+* B) hIJ with
-    commutes' := fun r => by
-      -- Porting note: Needed to add the below lemma because Equivs coerce weird
-      have : ∀ (e : RingEquiv (A ⧸ I) (B ⧸ J)), Equiv.toFun e.toEquiv = DFunLike.coe e :=
-        fun _ ↦ rfl
-      rw [this]
-      simp only [quotientEquiv_apply, RingHom.toFun_eq_coe, quotientMap_algebraMap,
-      RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes, Quotient.mk_algebraMap]}
+    commutes' r := by simp }
 
 end
 
@@ -778,7 +773,6 @@ def quotQuotToQuotSup : (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) →+* R ⧸ I 
 def quotQuotMk : R →+* (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) :=
   (Ideal.Quotient.mk (J.map (Ideal.Quotient.mk I))).comp (Ideal.Quotient.mk I)
 
--- Porting note: mismatched instances
 /-- The kernel of `quotQuotMk` -/
 theorem ker_quotQuotMk : RingHom.ker (quotQuotMk I J) = I ⊔ J := by
   rw [RingHom.ker_eq_comap_bot, quotQuotMk, ← comap_comap, ← RingHom.ker, mk_ker,
@@ -816,13 +810,11 @@ def quotQuotEquivComm : (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) ≃+*
   ((quotQuotEquivQuotSup I J).trans (quotEquivOfEq (sup_comm ..))).trans
     (quotQuotEquivQuotSup J I).symm
 
--- Porting note: mismatched instances
 @[simp]
 theorem quotQuotEquivComm_quotQuotMk (x : R) :
     quotQuotEquivComm I J (quotQuotMk I J x) = quotQuotMk J I x :=
   rfl
 
--- Porting note: mismatched instances
 @[simp]
 theorem quotQuotEquivComm_comp_quotQuotMk :
     RingHom.comp (↑(quotQuotEquivComm I J)) (quotQuotMk I J) = quotQuotMk J I :=
@@ -830,15 +822,6 @@ theorem quotQuotEquivComm_comp_quotQuotMk :
 
 @[simp]
 theorem quotQuotEquivComm_symm : (quotQuotEquivComm I J).symm = quotQuotEquivComm J I := by
-  /-  Porting note: this proof used to just be rfl but currently rfl opens up a bottomless pit
-  of processor cycles. Synthesizing instances does not seem to be an issue.
-  -/
-  change (((quotQuotEquivQuotSup I J).trans (quotEquivOfEq (sup_comm ..))).trans
-    (quotQuotEquivQuotSup J I).symm).symm =
-      ((quotQuotEquivQuotSup J I).trans (quotEquivOfEq (sup_comm ..))).trans
-        (quotQuotEquivQuotSup I J).symm
-  ext r
-  dsimp
   rfl
 
 variable {I J}
@@ -962,8 +945,7 @@ theorem quotQuotEquivQuotSupₐ_toRingEquiv :
   rfl
 
 @[simp]
--- Porting note: had to add an extra coercion arrow on the right hand side.
-theorem coe_quotQuotEquivQuotSupₐ : ⇑(quotQuotEquivQuotSupₐ R I J) = ⇑(quotQuotEquivQuotSup I J) :=
+theorem coe_quotQuotEquivQuotSupₐ : ⇑(quotQuotEquivQuotSupₐ R I J) = quotQuotEquivQuotSup I J :=
   rfl
 
 @[simp]
@@ -973,9 +955,8 @@ theorem quotQuotEquivQuotSupₐ_symm_toRingEquiv :
   rfl
 
 @[simp]
--- Porting note: had to add an extra coercion arrow on the right hand side.
 theorem coe_quotQuotEquivQuotSupₐ_symm :
-    ⇑(quotQuotEquivQuotSupₐ R I J).symm = ⇑(quotQuotEquivQuotSup I J).symm :=
+    ⇑(quotQuotEquivQuotSupₐ R I J).symm = (quotQuotEquivQuotSup I J).symm :=
   rfl
 
 /-- The natural algebra isomorphism `(A / I) / J' → (A / J) / I'`,
@@ -988,10 +969,7 @@ def quotQuotEquivCommₐ :
 theorem quotQuotEquivCommₐ_toRingEquiv :
     (quotQuotEquivCommₐ R I J : _ ⧸ J.map (Quotient.mkₐ R I) ≃+* _ ⧸ I.map (Quotient.mkₐ R J)) =
       quotQuotEquivComm I J :=
-  -- Porting note: should just be `rfl` but `AlgEquiv.toRingEquiv` and `AlgEquiv.ofRingEquiv`
-  -- involve repacking everything in the structure, so Lean ends up unfolding `quotQuotEquivComm`
-  -- and timing out.
-  RingEquiv.ext fun _ => rfl
+  rfl
 
 @[simp]
 theorem coe_quotQuotEquivCommₐ : ⇑(quotQuotEquivCommₐ R I J) = ⇑(quotQuotEquivComm I J) :=
@@ -999,12 +977,7 @@ theorem coe_quotQuotEquivCommₐ : ⇑(quotQuotEquivCommₐ R I J) = ⇑(quotQuo
 
 @[simp]
 theorem quotQuotEquivComm_symmₐ : (quotQuotEquivCommₐ R I J).symm = quotQuotEquivCommₐ R J I := by
-  -- Porting note: should just be `rfl` but `AlgEquiv.toRingEquiv` and `AlgEquiv.ofRingEquiv`
-  -- involve repacking everything in the structure, so Lean ends up unfolding `quotQuotEquivComm`
-  -- and timing out.
-  ext
-  unfold quotQuotEquivCommₐ
-  congr
+  rfl
 
 @[simp]
 theorem quotQuotEquivComm_comp_quotQuotMkₐ :
@@ -1024,9 +997,8 @@ theorem quotQuotEquivQuotOfLEₐ_toRingEquiv (h : I ≤ J) :
   rfl
 
 @[simp]
--- Porting note: had to add an extra coercion arrow on the right hand side.
 theorem coe_quotQuotEquivQuotOfLEₐ (h : I ≤ J) :
-    ⇑(quotQuotEquivQuotOfLEₐ R h) = ⇑(quotQuotEquivQuotOfLE h) :=
+    ⇑(quotQuotEquivQuotOfLEₐ R h) = quotQuotEquivQuotOfLE h :=
   rfl
 
 @[simp]
@@ -1036,9 +1008,8 @@ theorem quotQuotEquivQuotOfLEₐ_symm_toRingEquiv (h : I ≤ J) :
   rfl
 
 @[simp]
--- Porting note: had to add an extra coercion arrow on the right hand side.
 theorem coe_quotQuotEquivQuotOfLEₐ_symm (h : I ≤ J) :
-    ⇑(quotQuotEquivQuotOfLEₐ R h).symm = ⇑(quotQuotEquivQuotOfLE h).symm :=
+    ⇑(quotQuotEquivQuotOfLEₐ R h).symm = (quotQuotEquivQuotOfLE h).symm :=
   rfl
 
 @[simp]

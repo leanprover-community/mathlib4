@@ -9,7 +9,7 @@ import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
 /-!
 # Results about indicator functions, their integrals, and measures
 
-This file has a few measure theoretic or integration-related results on indicator functions.
+This file has a few measure-theoretic or integration-related results on indicator functions.
 
 ## Implementation notes
 

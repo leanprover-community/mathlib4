@@ -197,8 +197,8 @@ theorem exists_P_σ_P_δ_factorization {x y : SimplexCategoryGenRel} (f : x ⟶ 
 
 instance : MorphismProperty.HasFactorization P_σ P_δ where
   nonempty_mapFactorizationData f := by
-    obtain ⟨z, e , m, he, hm, fac⟩ := exists_P_σ_P_δ_factorization f
-    exact ⟨⟨z, e , m, fac.symm, he, hm⟩⟩
+    obtain ⟨z, e, m, he, hm, fac⟩ := exists_P_σ_P_δ_factorization f
+    exact ⟨⟨z, e, m, fac.symm, he, hm⟩⟩
 
 end ExistenceOfFactorizations
 

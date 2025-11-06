@@ -1,11 +1,9 @@
 /-
 Copyright (c) 2024 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jiedong Jiang, Bichang Lei
+Authors: Jiedong Jiang, Bichang Lei, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.RingTheory.SimpleRing.Basic
-import Mathlib.RingTheory.Valuation.Integers
-import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.RingTheory.Valuation.ValuationSubring
 
 /-!
 # Extension of Valuations
@@ -23,7 +21,7 @@ A motivation for choosing the more flexible `Valuation.Equiv` rather than strict
 to allow for possible normalization. As an example, consider a finite extension `K` of `ℚ_[p]`,
 which is a discretely valued field. We may choose the valuation on `K` to be either:
 
-1. the valuation where the uniformizer is mapped to one (more precisely, `-1` in `ℤₘ₀`) or
+1. the valuation where the uniformizer is mapped to one (more precisely, `-1` in `ℤᵐ⁰`) or
 
 2. the valuation where `p` is mapped to one.
 
@@ -35,7 +33,7 @@ without first determining the normalizations once and for all.
 ## Main Definition
 
 * `Valuation.HasExtension vR vA` : The valuation `vA` on `A` is an extension of the valuation
-`vR` on `R`.
+  `vR` on `R`.
 
 ## References
 
@@ -92,7 +90,7 @@ end algebraMap
 
 instance id : vR.HasExtension vR where
   val_isEquiv_comap := by
-    simp only [Algebra.id.map_eq_id, comap_id, IsEquiv.refl]
+    simp only [Algebra.algebraMap_self, comap_id, IsEquiv.refl]
 
 section integer
 
@@ -141,11 +139,8 @@ instance instNoZeroSMulDivisorsInteger [NoZeroSMulDivisors R A] :
   simpa only [Subtype.ext_iff, smul_eq_zero] using this
 
 theorem algebraMap_injective [vK.HasExtension vA] [Nontrivial A] :
-    Function.Injective (algebraMap vK.integer vA.integer) := by
-  intro x y h
-  simp only [Subtype.ext_iff, val_algebraMap] at h
-  ext
-  apply RingHom.injective (algebraMap K A) h
+    Function.Injective (algebraMap vK.integer vA.integer) :=
+  FaithfulSMul.algebraMap_injective _ _
 
 @[instance]
 theorem instIsLocalHomValuationInteger {S ΓS : Type*} [CommRing S]
@@ -159,6 +154,55 @@ theorem instIsLocalHomValuationInteger {S ΓS : Type*} [CommRing S]
       exact (val_map_eq_one_iff vR vS _).mp hr
 
 end integer
+
+section AlgebraInstances
+
+open IsLocalRing Valuation ValuationSubring
+
+variable {K L Γ₀ Γ₁ : outParam Type*} [Field K] [Field L] [Algebra K L]
+  [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ₁] (vK : Valuation K Γ₀)
+  (vL : Valuation L Γ₁) [vK.HasExtension vL]
+
+local notation "K₀" => Valuation.valuationSubring vK
+local notation "L₀" => Valuation.valuationSubring vL
+
+lemma algebraMap_mem_valuationSubring (x : K₀) : algebraMap K L x ∈ L₀ := by
+  rw [mem_valuationSubring_iff, ← _root_.map_one vL, ← _root_.map_one (algebraMap K L),
+    val_map_le_iff (vR := vK), _root_.map_one]
+  exact x.2
+
+instance instAlgebra_valuationSubring : Algebra K₀ L₀ :=
+  inferInstanceAs (Algebra vK.integer vL.integer)
+
+@[simp]
+lemma coe_algebraMap_valuationSubring_eq (x : K₀) :
+    (algebraMap K₀ L₀ x : L) = algebraMap K L (x : K) := rfl
+
+instance instIsScalarTower_valuationSubring : IsScalarTower K₀ K L :=
+  inferInstanceAs (IsScalarTower vK.integer K L)
+
+instance instIsScalarTower_valuationSubring' : IsScalarTower K₀ L₀ L :=
+  instIsScalarTowerInteger
+
+instance : IsLocalHom (algebraMap K₀ L₀) := instIsLocalHomValuationInteger
+
+lemma algebraMap_mem_maximalIdeal_iff {x : K₀} :
+    algebraMap K₀ L₀ x ∈ (maximalIdeal L₀) ↔ x ∈ maximalIdeal K₀ := by
+  simp [mem_maximalIdeal, map_mem_nonunits_iff, _root_.mem_nonunits_iff]
+
+lemma maximalIdeal_comap_algebraMap_eq_maximalIdeal :
+    (maximalIdeal L₀).comap (algebraMap K₀ L₀) = maximalIdeal K₀ :=
+  Ideal.ext fun _ ↦ by rw [Ideal.mem_comap, algebraMap_mem_maximalIdeal_iff]
+
+instance : Ideal.LiesOver (maximalIdeal L₀) (maximalIdeal K₀) :=
+  ⟨(maximalIdeal_comap_algebraMap_eq_maximalIdeal _ _).symm⟩
+
+lemma algebraMap_residue_eq_residue_algebraMap (x : K₀) :
+    (algebraMap (ResidueField K₀) (ResidueField L₀)) (IsLocalRing.residue K₀ x) =
+      IsLocalRing.residue L₀ (algebraMap K₀ L₀ x) :=
+  rfl
+
+end AlgebraInstances
 
 end HasExtension
 

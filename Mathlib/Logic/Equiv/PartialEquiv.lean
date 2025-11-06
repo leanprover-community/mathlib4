@@ -11,7 +11,7 @@ import Mathlib.Tactic.Attr.Core
 /-!
 # Partial equivalences
 
-This files defines equivalences between subsets of given types.
+This file defines equivalences between subsets of given types.
 An element `e` of `PartialEquiv α β` is made of two maps `e.toFun` and `e.invFun` respectively
 from α to β and from β to α (just like equivs), which are inverse to each other on the subsets
 `e.source` and `e.target` of respectively α and β.
@@ -69,15 +69,15 @@ then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or
 open Lean Meta Elab Tactic
 
 /-! Implementation of the `mfld_set_tac` tactic for working with the domains of partially-defined
-functions (`PartialEquiv`, `PartialHomeomorph`, etc).
+functions (`PartialEquiv`, `OpenPartialHomeomorph`, etc).
 
 This is in a separate file from `Mathlib/Logic/Equiv/MfldSimpsAttr.lean` because attributes need a
 new file to become functional.
 -/
 
 /-- Common `@[simps]` configuration options used for manifold-related declarations. -/
+@[deprecated "Use `@[simps (attr := mfld_simps) -fullyApplied]` instead" (since := "2025-09-23")]
 def mfld_cfg : Simps.Config where
-  attrs := [`mfld_simps]
   fullyApplied := false
 
 namespace Tactic.MfldSetTac
@@ -242,7 +242,7 @@ def _root_.Equiv.toPartialEquivOfImageEq (e : α ≃ β) (s : Set α) (t : Set �
   right_inv' x _ := e.apply_symm_apply x
 
 /-- Associate a `PartialEquiv` to an `Equiv`. -/
-@[simps! (config := mfld_cfg)]
+@[simps! (attr := mfld_simps) -fullyApplied]
 def _root_.Equiv.toPartialEquiv (e : α ≃ β) : PartialEquiv α β :=
   e.toPartialEquivOfImageEq univ univ <| by rw [image_univ, e.surjective.range_eq]
 
@@ -602,8 +602,7 @@ theorem coe_trans_symm : ((e.trans e').symm : γ → α) = e.symm ∘ e'.symm :=
 theorem trans_apply {x : α} : (e.trans e') x = e' (e x) :=
   rfl
 
-theorem trans_symm_eq_symm_trans_symm : (e.trans e').symm = e'.symm.trans e.symm := by
-  cases e; cases e'; rfl
+theorem trans_symm_eq_symm_trans_symm : (e.trans e').symm = e'.symm.trans e.symm := rfl
 
 @[simp, mfld_simps]
 theorem trans_source : (e.trans e').source = e.source ∩ e ⁻¹' e'.source :=
@@ -674,7 +673,7 @@ def EqOnSource (e e' : PartialEquiv α β) : Prop :=
 `PartialEquiv`s. -/
 instance eqOnSourceSetoid : Setoid (PartialEquiv α β) where
   r := EqOnSource
-  iseqv := by constructor <;> simp only [Equivalence, EqOnSource, EqOn] <;> aesop
+  iseqv := by constructor <;> simp only [EqOnSource, EqOn] <;> aesop
 
 theorem eqOnSource_refl : e ≈ e :=
   Setoid.refl _
@@ -700,9 +699,7 @@ theorem EqOnSource.symm' {e e' : PartialEquiv α β} (h : e ≈ e') : e.symm ≈
 /-- Two equivalent partial equivs have coinciding inverses on the target. -/
 theorem EqOnSource.symm_eqOn {e e' : PartialEquiv α β} (h : e ≈ e') :
     EqOn e.symm e'.symm e.target :=
-  -- Porting note: `h.symm'` dot notation doesn't work anymore because `h` is not recognised as
-  -- `PartialEquiv.EqOnSource` for some reason.
-  eqOn (symm' h)
+  eqOn h.symm'
 
 /-- Composition of partial equivs respects equivalence. -/
 theorem EqOnSource.trans' {e e' : PartialEquiv α β} {f f' : PartialEquiv β γ} (he : e ≈ e')
@@ -797,7 +794,7 @@ theorem refl_prod_refl :
 theorem prod_trans {η : Type*} {ε : Type*} (e : PartialEquiv α β) (f : PartialEquiv β γ)
     (e' : PartialEquiv δ η) (f' : PartialEquiv η ε) :
     (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') := by
-  ext ⟨x, y⟩ <;> simp [Set.ext_iff]; tauto
+  ext ⟨x, y⟩ <;> simp; tauto
 
 end Prod
 
@@ -848,7 +845,7 @@ section Pi
 variable {ι : Type*} {αi βi γi : ι → Type*}
 
 /-- The product of a family of partial equivalences, as a partial equivalence on the pi type. -/
-@[simps (config := mfld_cfg) apply source target]
+@[simps (attr := mfld_simps) -fullyApplied apply source target]
 protected def pi (ei : ∀ i, PartialEquiv (αi i) (βi i)) : PartialEquiv (∀ i, αi i) (∀ i, βi i) where
   toFun := Pi.map fun i ↦ ei i
   invFun := Pi.map fun i ↦ (ei i).symm
@@ -986,6 +983,6 @@ theorem transEquiv_transEquiv (e : PartialEquiv α β) (f' : β ≃ γ) (f'' : �
 @[simp, mfld_simps]
 theorem trans_transEquiv (e : PartialEquiv α β) (e' : PartialEquiv β γ) (f'' : γ ≃ δ) :
     (e.trans e').transEquiv f'' = e.trans (e'.transEquiv f'') := by
-  simp only [transEquiv_eq_trans, trans_assoc, Equiv.trans_toPartialEquiv]
+  simp only [transEquiv_eq_trans, trans_assoc]
 
 end PartialEquiv

@@ -342,6 +342,15 @@ protected theorem smul_const {𝕜} [TopologicalSpace 𝕜] [SMul 𝕜 β] [Cont
 
 end Arithmetic
 
+section Star
+
+@[fun_prop, measurability]
+protected theorem star {R : Type*} [TopologicalSpace R] [Star R] [ContinuousStar R] {f : α → R}
+    (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (star f) μ :=
+  ⟨star (hf.mk f), hf.stronglyMeasurable_mk.star, hf.ae_eq_mk.star⟩
+
+end Star
+
 section Order
 
 @[fun_prop, aesop safe 20 apply (rule_sets := [Measurable])]
@@ -368,7 +377,7 @@ section Monoid
 variable {M : Type*} [Monoid M] [TopologicalSpace M] [ContinuousMul M]
 
 @[to_additive (attr := fun_prop, measurability)]
-theorem _root_.List.aestronglyMeasurable_prod' (l : List (α → M))
+theorem _root_.List.aestronglyMeasurable_prod (l : List (α → M))
     (hl : ∀ f ∈ l, AEStronglyMeasurable f μ) : AEStronglyMeasurable l.prod μ := by
   induction l with
   | nil => exact aestronglyMeasurable_one
@@ -377,11 +386,16 @@ theorem _root_.List.aestronglyMeasurable_prod' (l : List (α → M))
     rw [List.prod_cons]
     exact hl.1.mul (ihl hl.2)
 
+@[deprecated (since := "2025-05-30")]
+alias _root_.List.aestronglyMeasurable_sum' := List.aestronglyMeasurable_sum
+@[to_additive existing, deprecated (since := "2025-05-30")]
+alias _root_.List.aestronglyMeasurable_prod' := List.aestronglyMeasurable_prod
+
 @[to_additive (attr := fun_prop, measurability)]
-theorem _root_.List.aestronglyMeasurable_prod
+theorem _root_.List.aestronglyMeasurable_fun_prod
     (l : List (α → M)) (hl : ∀ f ∈ l, AEStronglyMeasurable f μ) :
     AEStronglyMeasurable (fun x => (l.map fun f : α → M => f x).prod) μ := by
-  simpa only [← Pi.list_prod_apply] using l.aestronglyMeasurable_prod' hl
+  simpa only [← Pi.list_prod_apply] using l.aestronglyMeasurable_prod hl
 
 end Monoid
 
@@ -390,29 +404,39 @@ section CommMonoid
 variable {M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
 
 @[to_additive (attr := fun_prop, measurability)]
-theorem _root_.Multiset.aestronglyMeasurable_prod' (l : Multiset (α → M))
+theorem _root_.Multiset.aestronglyMeasurable_prod (l : Multiset (α → M))
     (hl : ∀ f ∈ l, AEStronglyMeasurable f μ) : AEStronglyMeasurable l.prod μ := by
   rcases l with ⟨l⟩
-  simpa using l.aestronglyMeasurable_prod' (by simpa using hl)
+  simpa using l.aestronglyMeasurable_prod (by simpa using hl)
+
+@[deprecated (since := "2025-05-30")]
+alias _root_.Multiset.aestronglyMeasurable_sum' := Multiset.aestronglyMeasurable_sum
+@[to_additive existing, deprecated (since := "2025-05-30")]
+alias _root_.Multiset.aestronglyMeasurable_prod' := Multiset.aestronglyMeasurable_prod
 
 @[to_additive (attr := fun_prop, measurability)]
-theorem _root_.Multiset.aestronglyMeasurable_prod (s : Multiset (α → M))
+theorem _root_.Multiset.aestronglyMeasurable_fun_prod (s : Multiset (α → M))
     (hs : ∀ f ∈ s, AEStronglyMeasurable f μ) :
     AEStronglyMeasurable (fun x => (s.map fun f : α → M => f x).prod) μ := by
-  simpa only [← Pi.multiset_prod_apply] using s.aestronglyMeasurable_prod' hs
-
-@[to_additive (attr := fun_prop, measurability)]
-theorem _root_.Finset.aestronglyMeasurable_prod' {ι : Type*} {f : ι → α → M} (s : Finset ι)
-    (hf : ∀ i ∈ s, AEStronglyMeasurable (f i) μ) : AEStronglyMeasurable (∏ i ∈ s, f i) μ :=
-  Multiset.aestronglyMeasurable_prod' _ fun _g hg =>
-    let ⟨_i, hi, hg⟩ := Multiset.mem_map.1 hg
-    hg ▸ hf _ hi
+  simpa only [← Pi.multiset_prod_apply] using s.aestronglyMeasurable_prod hs
 
 @[to_additive (attr := fun_prop, measurability)]
 theorem _root_.Finset.aestronglyMeasurable_prod {ι : Type*} {f : ι → α → M} (s : Finset ι)
+    (hf : ∀ i ∈ s, AEStronglyMeasurable (f i) μ) : AEStronglyMeasurable (∏ i ∈ s, f i) μ :=
+  Multiset.aestronglyMeasurable_prod _ fun _g hg =>
+    let ⟨_i, hi, hg⟩ := Multiset.mem_map.1 hg
+    hg ▸ hf _ hi
+
+@[deprecated (since := "2025-05-30")]
+alias _root_.Finset.aestronglyMeasurable_sum' := Finset.aestronglyMeasurable_sum
+@[to_additive existing, deprecated (since := "2025-05-30")]
+alias _root_.Finset.aestronglyMeasurable_prod' := Finset.aestronglyMeasurable_prod
+
+@[to_additive (attr := fun_prop, measurability)]
+theorem _root_.Finset.aestronglyMeasurable_fun_prod {ι : Type*} {f : ι → α → M} (s : Finset ι)
     (hf : ∀ i ∈ s, AEStronglyMeasurable (f i) μ) :
     AEStronglyMeasurable (fun a => ∏ i ∈ s, f i a) μ := by
-  simpa only [← Finset.prod_apply] using s.aestronglyMeasurable_prod' hf
+  simpa only [← Finset.prod_apply] using s.aestronglyMeasurable_prod hf
 
 end CommMonoid
 
@@ -465,8 +489,6 @@ a.e. strong measurability. -/
 protected theorem enorm {β : Type*} [TopologicalSpace β] [ContinuousENorm β] {f : α → β}
     (hf : AEStronglyMeasurable f μ) : AEMeasurable (‖f ·‖ₑ) μ :=
   (continuous_enorm.comp_aestronglyMeasurable hf).aemeasurable
-
-@[deprecated (since := "2025-01-20")] alias ennnorm := AEStronglyMeasurable.enorm
 
 /-- Given a.e. strongly measurable functions `f` and `g`, `edist f g` is measurable.
 
@@ -607,14 +629,11 @@ theorem _root_.Topology.IsEmbedding.aestronglyMeasurable_comp_iff [PseudoMetriza
   · let G : β → range g := rangeFactorization g
     have hG : IsClosedEmbedding G :=
       { hg.codRestrict _ _ with
-        isClosed_range := by rw [surjective_onto_range.range_eq]; exact isClosed_univ }
+        isClosed_range := by rw [rangeFactorization_surjective.range_eq]; exact isClosed_univ }
     have : AEMeasurable (G ∘ f) μ := AEMeasurable.subtype_mk H.aemeasurable
     exact hG.measurableEmbedding.aemeasurable_comp_iff.1 this
   · rcases (aestronglyMeasurable_iff_aemeasurable_separable.1 H).2 with ⟨t, ht, h't⟩
     exact ⟨g ⁻¹' t, hg.isSeparable_preimage ht, h't⟩
-
-@[deprecated (since := "2024-10-26")]
-alias _root_.Embedding.aestronglyMeasurable_comp_iff := IsEmbedding.aestronglyMeasurable_comp_iff
 
 /-- An almost everywhere sequential limit of almost everywhere strongly measurable functions is
 almost everywhere strongly measurable. -/

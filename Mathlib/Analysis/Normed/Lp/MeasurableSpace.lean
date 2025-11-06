@@ -20,13 +20,13 @@ variable (p : ℝ≥0∞) (X : Type*) [MeasurableSpace X]
 namespace WithLp
 
 instance measurableSpace : MeasurableSpace (WithLp p X) :=
-  MeasurableSpace.map (WithLp.equiv p X).symm inferInstance
+  MeasurableSpace.map (WithLp.toLp p) inferInstance
 
 @[fun_prop, measurability]
-lemma measurable_equiv : Measurable (WithLp.equiv p X) := fun _ h ↦ h
+lemma measurable_ofLp : Measurable (@WithLp.ofLp p X) := fun _ h ↦ h
 
 @[fun_prop, measurability]
-lemma measurable_equiv_symm : Measurable (WithLp.equiv p X).symm := fun _ h ↦ h
+lemma measurable_toLp : Measurable (@WithLp.toLp p X) := fun _ h ↦ h
 
 variable (Y : Type*) [MeasurableSpace Y] [TopologicalSpace X] [TopologicalSpace Y]
   [BorelSpace X] [BorelSpace Y] [SecondCountableTopologyEither X Y]
@@ -54,15 +54,15 @@ protected def toLp : X ≃ᵐ (WithLp p X) where
   measurable_toFun := measurable_id
   measurable_invFun := measurable_id
 
-lemma coe_toLp : ⇑(MeasurableEquiv.toLp p X) = ⇑(WithLp.equiv p X).symm := rfl
+lemma coe_toLp : ⇑(MeasurableEquiv.toLp p X) = WithLp.toLp p := rfl
 
-lemma coe_toLp_symm : ⇑(MeasurableEquiv.toLp p X).symm = ⇑(WithLp.equiv p X) := rfl
+lemma coe_toLp_symm : ⇑(MeasurableEquiv.toLp p X).symm = WithLp.ofLp := rfl
 
 @[simp]
-lemma toLp_apply (x : X) : MeasurableEquiv.toLp p X x = (WithLp.equiv p X).symm x := rfl
+lemma toLp_apply (x : X) : MeasurableEquiv.toLp p X x = WithLp.toLp p x := rfl
 
 @[simp]
 lemma toLp_symm_apply (x : WithLp p X) :
-    (MeasurableEquiv.toLp p X).symm x = WithLp.equiv p X x := rfl
+    (MeasurableEquiv.toLp p X).symm x = WithLp.ofLp x := rfl
 
 end MeasurableEquiv

@@ -87,14 +87,14 @@ theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasur
   set g : α → β := (⋂ i, s i).piecewise (const α default) f
   refine ⟨g, measurable_of_restrict_of_restrict_compl hsm ?_ ?_, ae_sum_iff.mpr fun i => ?_⟩
   · rw [restrict_piecewise]
-    simp only [s, Set.restrict, const]
+    simp only [s]
     exact measurable_const
   · rw [restrict_piecewise_compl, compl_iInter]
     intro t ht
     refine ⟨⋃ i, (h i).mk f ⁻¹' t ∩ (s i)ᶜ, MeasurableSet.iUnion fun i ↦
       (measurable_mk _ ht).inter (measurableSet_toMeasurable _ _).compl, ?_⟩
     ext ⟨x, hx⟩
-    simp only [mem_preimage, mem_iUnion, Subtype.coe_mk, Set.restrict, mem_inter_iff,
+    simp only [mem_preimage, mem_iUnion, Set.restrict, mem_inter_iff,
       mem_compl_iff] at hx ⊢
     constructor
     · rintro ⟨i, hxt, hxs⟩

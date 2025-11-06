@@ -129,7 +129,7 @@ class GRing [AddMonoid ι] [∀ i, AddCommGroup (A i)] extends GSemiring A where
   intCast_ofNat : ∀ n : ℕ, intCast n = natCast n
   /-- On negative integers, the canonical map from ℤ to a graded ring is the negative extension of
   the canonical map from ℕ to the underlying graded semiring. -/
-  -- Porting note: -(n+1) -> Int.negSucc
+  -- Porting note: -(n + 1) -> Int.negSucc
   intCast_negSucc_ofNat : ∀ n : ℕ, intCast (Int.negSucc n) = -natCast (n + 1 : ℕ)
 
 /-- A graded version of `CommRing`. -/
@@ -199,9 +199,7 @@ theorem mulHom_apply (a b : ⨁ i, A i) : mulHom A a b = a * b := rfl
 
 theorem mulHom_of_of {i j} (a : A i) (b : A j) :
     mulHom A (of A i a) (of A j b) = of A (i + j) (GradedMonoid.GMul.mul a b) := by
-  unfold mulHom
-  simp only [toAddMonoid_of, flip_apply, coe_comp, Function.comp_apply]
-  rfl
+  simp
 
 theorem of_mul_of {i j} (a : A i) (b : A j) :
     of A i a * of A j b = of _ (i + j) (GradedMonoid.GMul.mul a b) :=
@@ -528,7 +526,7 @@ theorem ringHom_ext ⦃f g : (⨁ i, A i) →+* R⦄ (h : ∀ i x, f (of A i x) 
 /-- A family of `AddMonoidHom`s preserving `DirectSum.One.one` and `DirectSum.Mul.mul`
 describes a `RingHom`s on `⨁ i, A i`. This is a stronger version of `DirectSum.toMonoid`.
 
-Of particular interest is the case when `A i` are bundled subojects, `f` is the family of
+Of particular interest is the case when `A i` are bundled subobjects, `f` is the family of
 coercions such as `AddSubmonoid.subtype (A i)`, and the `[GSemiring A]` structure originates from
 `DirectSum.gsemiring.ofAddSubmonoids`, in which case the proofs about `GOne` and `GMul`
 can be discharged by `rfl`. -/
@@ -546,7 +544,7 @@ def toSemiring (f : ∀ i, A i →+ R) (hone : f _ GradedMonoid.GOne.one = 1)
       rw [(toAddMonoid f).map_mul_iff]
       refine DirectSum.addHom_ext' (fun xi ↦ AddMonoidHom.ext (fun xv ↦ ?_))
       refine DirectSum.addHom_ext' (fun yi ↦ AddMonoidHom.ext (fun yv ↦ ?_))
-      show
+      change
         toAddMonoid f (of A xi xv * of A yi yv) =
           toAddMonoid f (of A xi xv) * toAddMonoid f (of A yi yv)
       simp_rw [of_mul_of, toAddMonoid_of]
@@ -578,7 +576,7 @@ def liftRingHom :
       rw [← F.map_one]
       rfl,
       by
-      intros i j ai aj
+      intro i j ai aj
       simp only [AddMonoidHom.comp_apply, AddMonoidHom.coe_coe]
       rw [← F.map_mul (of A i ai), of_mul_of ai]⟩
   left_inv f := by
@@ -587,8 +585,7 @@ def liftRingHom :
   right_inv F := by
     apply RingHom.coe_addMonoidHom_injective
     refine DirectSum.addHom_ext' (fun xi ↦ AddMonoidHom.ext (fun xv ↦ ?_))
-    simp only [RingHom.coe_addMonoidHom_mk, DirectSum.toAddMonoid_of, AddMonoidHom.mk_coe,
-      AddMonoidHom.comp_apply, toSemiring_coe_addMonoidHom]
+    simp only [DirectSum.toAddMonoid_of, AddMonoidHom.comp_apply, toSemiring_coe_addMonoidHom]
 
 end ToSemiring
 

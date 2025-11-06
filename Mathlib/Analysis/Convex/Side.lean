@@ -338,9 +338,9 @@ theorem _root_.Wbtw.wOppSide₁₃ {s : AffineSubspace R P} {x y z : P} (h : Wbt
   rcases h with ⟨t, ⟨ht0, ht1⟩, rfl⟩
   refine ⟨_, hy, _, hy, ?_⟩
   rcases ht1.lt_or_eq with (ht1' | rfl); swap
-  · rw [lineMap_apply_one]; simp
+  · simp
   rcases ht0.lt_or_eq with (ht0' | rfl); swap
-  · rw [lineMap_apply_zero]; simp
+  · simp
   refine Or.inr (Or.inr ⟨1 - t, t, sub_pos.2 ht1', ht0', ?_⟩)
   rw [lineMap_apply, vadd_vsub_assoc, vsub_vadd_eq_vsub_sub, ← neg_vsub_eq_vsub_rev z, vsub_self]
   module
@@ -417,8 +417,7 @@ theorem wOppSide_iff_exists_left {s : AffineSubspace R P} {x y p₁ : P} (h : p�
     · refine Or.inr ⟨(-r₁ / r₂) • (p₁ -ᵥ p₁') +ᵥ p₂', s.smul_vsub_vadd_mem _ h hp₁' hp₂',
         Or.inr (Or.inr ⟨r₁, r₂, hr₁, hr₂, ?_⟩)⟩
       rw [vadd_vsub_assoc, ← vsub_sub_vsub_cancel_right x p₁ p₁']
-      linear_combination (norm := match_scalars <;> field_simp) hr
-      ring
+      linear_combination (norm := match_scalars <;> field_simp <;> ring) hr
   · rintro (h' | ⟨h₁, h₂, h₃⟩)
     · exact wOppSide_of_left_mem y h'
     · exact ⟨p₁, h, h₁, h₂, h₃⟩
@@ -590,7 +589,7 @@ theorem wOppSide_iff_exists_wbtw {s : AffineSubspace R P} {x y : P} :
     · have : (r₂ / (r₁ + r₂)) • (y -ᵥ p₂ + (p₂ -ᵥ p₁) - (x -ᵥ p₁)) + (x -ᵥ p₁) =
           (r₂ / (r₁ + r₂)) • (p₂ -ᵥ p₁) := by
         rw [← neg_vsub_eq_vsub_rev p₂ y]
-        linear_combination (norm := match_scalars <;> field_simp) (r₁ + r₂)⁻¹ • h
+        linear_combination (norm := match_scalars <;> field_simp <;> ring) (r₁ + r₂)⁻¹ • h
       rw [lineMap_apply, ← vsub_vadd x p₁, ← vsub_vadd y p₂, vsub_vadd_eq_vsub_sub, vadd_vsub_assoc,
         ← vadd_assoc, vadd_eq_add, this]
       exact s.smul_vsub_vadd_mem (r₂ / (r₁ + r₂)) hp₂ hp₁ hp₁

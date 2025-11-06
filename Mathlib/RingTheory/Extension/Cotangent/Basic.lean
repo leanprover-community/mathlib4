@@ -35,7 +35,7 @@ apply them to infinitesimal smooth (or versal) extensions later.
 
 -/
 
-open KaehlerDifferential TensorProduct MvPolynomial
+open KaehlerDifferential Module MvPolynomial TensorProduct
 
 namespace Algebra
 
@@ -62,7 +62,7 @@ def cotangentComplex : P.Cotangent →ₗ[S] P.CotangentSpace :=
 
 @[simp]
 lemma cotangentComplex_mk (x) : P.cotangentComplex (.mk x) = 1 ⊗ₜ .D _ _ x :=
-  kerCotangentToTensor_toCotangent _ _ _ _
+  rfl
 
 universe w' u' v'
 
@@ -118,14 +118,13 @@ lemma map_comp (f : Hom P P') (g : Hom P' P'') :
   ext x
   induction x using TensorProduct.induction_on with
   | zero =>
-    simp only [map_zero, LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply]
+    simp only [map_zero]
   | add =>
     simp only [map_add, LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply, *]
   | tmul x y =>
     obtain ⟨y, rfl⟩ := KaehlerDifferential.tensorProductTo_surjective _ _ y
     induction y with
-    | zero => simp only [map_zero, tmul_zero, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
-        Function.comp_apply]
+    | zero => simp only [map_zero, tmul_zero]
     | add => simp only [map_add, tmul_add, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
       Function.comp_apply, *]
     | tmul => simp only [Derivation.tensorProductTo_tmul, tmul_smul, smul_tmul', map_tmul,
@@ -162,9 +161,9 @@ lemma Hom.sub_aux (f g : Hom P P') (x y) :
         ∈ P'.ker ^ 2 := by
     rw [pow_two]
     refine Ideal.add_mem _ (Ideal.mul_mem_mul ?_ ?_) (Ideal.mul_mem_mul ?_ ?_) <;>
-      simp only [RingHom.algebraMap_toAlgebra, AlgHom.toRingHom_eq_coe, RingHom.coe_comp,
-        RingHom.coe_coe, Function.comp_apply, map_aeval, ← IsScalarTower.algebraMap_eq,
-        coe_eval₂Hom, ← aeval_def, ker, RingHom.mem_ker, map_sub, algebraMap_toRingHom,
+      simp only [RingHom.algebraMap_toAlgebra, RingHom.coe_comp,
+        Function.comp_apply,
+        ker, RingHom.mem_ker, map_sub, algebraMap_toRingHom,
         algebraMap_σ, sub_self, toAlgHom_apply]
   convert this using 1
   simp only [map_mul]
@@ -180,9 +179,9 @@ def Hom.subToKer (f g : Hom P P') : P.Ring →ₗ[R] P'.ker := by
   refine ((f.toAlgHom.toLinearMap - g.toAlgHom.toLinearMap).codRestrict
     (P'.ker.restrictScalars R) ?_)
   intro x
-  simp only [LinearMap.sub_apply, AlgHom.toLinearMap_apply, ker, algebraMap_eq,
-    Submodule.restrictScalars_mem, RingHom.mem_ker, map_sub, RingHom.coe_coe, algebraMap_toRingHom,
-    map_aeval, coe_eval₂Hom, sub_self, toAlgHom_apply]
+  simp only [LinearMap.sub_apply, AlgHom.toLinearMap_apply, ker,
+    Submodule.restrictScalars_mem, RingHom.mem_ker, map_sub, algebraMap_toRingHom,
+    sub_self, toAlgHom_apply]
 
 variable [IsScalarTower R S S'] in
 /--
@@ -212,8 +211,7 @@ def Hom.sub (f g : Hom P P') : P.CotangentSpace →ₗ[S] P'.Cotangent := by
     ext
     simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply,
       Cotangent.val_mk, Cotangent.val_add, Cotangent.val_smul''', ← map_smul, ← map_add,
-      Ideal.toCotangent_eq, AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid,
-      SetLike.val_smul, smul_eq_mul]
+      Ideal.toCotangent_eq]
     exact Hom.sub_aux f g x y
 
 variable [IsScalarTower R S S']
@@ -236,14 +234,13 @@ lemma CotangentSpace.map_sub_map (f g : Hom P P') :
   ext x
   induction x using TensorProduct.induction_on with
   | zero =>
-    simp only [map_zero, LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply]
+    simp only [map_zero]
   | add =>
     simp only [map_add, LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply, *]
   | tmul x y =>
     obtain ⟨y, rfl⟩ := KaehlerDifferential.tensorProductTo_surjective _ _ y
     induction y with
-    | zero => simp only [map_zero, tmul_zero, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
-        Function.comp_apply]
+    | zero => simp only [map_zero, tmul_zero]
     | add => simp only [map_add, tmul_add, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
       Function.comp_apply, *]
     | tmul =>
@@ -439,9 +436,9 @@ end Generators
 -- TODO: generalize to essentially of finite presentation algebras
 open KaehlerDifferential in
 attribute [local instance] Module.finitePresentation_of_projective in
-instance [Algebra.FinitePresentation R S] : Module.FinitePresentation S (Ω[S⁄R]) := by
+instance [Algebra.FinitePresentation R S] : Module.FinitePresentation S Ω[S⁄R] := by
   let P := Algebra.Presentation.ofFinitePresentation R S
-  have : Algebra.FiniteType R P.toExtension.Ring := .mvPolynomial _ _
+  have : Algebra.FiniteType R P.toExtension.Ring := by simp [P]; infer_instance
   refine Module.finitePresentation_of_surjective _ P.toExtension.toKaehler_surjective ?_
   rw [LinearMap.exact_iff.mp P.toExtension.exact_cotangentComplex_toKaehler, ← Submodule.map_top]
   exact (Extension.Cotangent.finite P.fg_ker).1.map P.toExtension.cotangentComplex
@@ -485,11 +482,11 @@ def H1Cotangent.mapEquiv (e : S ≃ₐ[R] S') :
   { toFun := map R R S S'
     invFun := map R R S' S
     left_inv x := by
-      show ((map R R S' S).restrictScalars S ∘ₗ map R R S S') x = x
+      change ((map R R S' S).restrictScalars S ∘ₗ map R R S S') x = x
       rw [map, map, ← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq,
         Extension.H1Cotangent.map_id, LinearMap.id_apply]
     right_inv x := by
-      show ((map R R S S').restrictScalars S' ∘ₗ map R R S' S) x = x
+      change ((map R R S S').restrictScalars S' ∘ₗ map R R S' S) x = x
       rw [map, map, ← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq,
         Extension.H1Cotangent.map_id, LinearMap.id_apply]
     map_add' := LinearMap.map_add (map R R S S')
@@ -504,10 +501,10 @@ abbrev Generators.equivH1Cotangent (P : Generators R S ι) :
   Generators.H1Cotangent.equiv _ _
 
 attribute [local instance] Module.finitePresentation_of_projective in
-instance [FinitePresentation R S] [Module.Projective S (Ω[S⁄R])] :
+instance [FinitePresentation R S] [Module.Projective S Ω[S⁄R]] :
     Module.Finite S (H1Cotangent R S) := by
   let P := Algebra.Presentation.ofFinitePresentation R S
-  have : Algebra.FiniteType R P.toExtension.Ring := FiniteType.mvPolynomial R _
+  have : Algebra.FiniteType R P.toExtension.Ring := by simp [P]; infer_instance
   suffices Module.Finite S P.toExtension.H1Cotangent from
     .of_surjective P.equivH1Cotangent.toLinearMap P.equivH1Cotangent.surjective
   rw [Module.finite_def, Submodule.fg_top, ← LinearMap.ker_rangeRestrict]

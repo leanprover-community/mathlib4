@@ -29,7 +29,7 @@ The proof given here uses Newton's method and is taken from Chambert-Loir's note
 
 ## TODO
 
-* Uniqueness of decomposition (once we prove that the sum of commuting semisimple endomorphims is
+* Uniqueness of decomposition (once we prove that the sum of commuting semisimple endomorphisms is
   semisimple, this will follow from `Module.End.eq_zero_of_isNilpotent_isSemisimple`).
 
 -/

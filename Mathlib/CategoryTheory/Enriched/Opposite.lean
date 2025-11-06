@@ -53,8 +53,8 @@ instance EnrichedCategory.opposite : EnrichedCategory V Cᵒᵖ where
     simp only [braiding_naturality_left_assoc,
       MonoidalCategory.whiskerLeft_comp, Category.assoc]
     rw [← EnrichedCategory.assoc]
-    simp only [braiding_tensor_left, Category.assoc, Iso.inv_hom_id_assoc,
-      braiding_naturality_right_assoc, braiding_tensor_right]
+    simp only [braiding_tensor_left_hom, Category.assoc, Iso.inv_hom_id_assoc,
+      braiding_naturality_right_assoc, braiding_tensor_right_hom]
 
 end
 
@@ -88,7 +88,7 @@ def forgetEnrichmentOppositeEquivalence.functor :
   map {x y} f := f.op
   map_comp {x y z} f g := by
     have : (f ≫ g) = homTo V (f ≫ g) := rfl
-    rw [this, forgetEnrichment_comp, Category.assoc, tensorHom_eComp_op_eq,
+    rw [this, ForgetEnrichment.homTo_comp, Category.assoc, tensorHom_eComp_op_eq,
       leftUnitor_inv_braiding_assoc, ← unitors_inv_equal, ← Category.assoc]
     congr 1
 
@@ -101,7 +101,7 @@ def forgetEnrichmentOppositeEquivalence.inverse :
   map_comp {x y z} f g := by
     have : g.unop ≫ f.unop = homTo V (g.unop ≫ f.unop) := rfl
     dsimp
-    rw [this, forgetEnrichment_comp, Category.assoc, unitors_inv_equal,
+    rw [this, ForgetEnrichment.homTo_comp, Category.assoc, unitors_inv_equal,
       ← leftUnitor_inv_braiding_assoc]
     have : (β_ _ _).hom ≫ (homTo V g.unop ⊗ₘ homTo V f.unop) ≫
       eComp V («to» V z.unop) («to» V y.unop) («to» V x.unop) =
@@ -124,7 +124,7 @@ instance EnrichedOrdinaryCategory.opposite {D : Type u} [Category.{v} D]
   homEquiv := Quiver.Hom.opEquiv.symm.trans homEquiv
   homEquiv_id x := homEquiv_id (x.unop)
   homEquiv_comp f g := by
-    simp only [unop_comp, tensorHom_eComp_op_eq, leftUnitor_inv_braiding_assoc, ← unitors_inv_equal]
+    simp only [tensorHom_eComp_op_eq, leftUnitor_inv_braiding_assoc, ← unitors_inv_equal]
     exact homEquiv_comp g.unop f.unop
 
 end

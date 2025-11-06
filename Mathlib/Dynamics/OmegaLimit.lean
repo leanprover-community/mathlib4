@@ -22,9 +22,9 @@ recover the usual definition of the ω-limit set as the set of all `y`
 such that there exist sequences `(tₙ)`, `(xₙ)` such that `ϕ tₙ xₙ ⟶ y`
 as `n ⟶ ∞`.
 
-## Notations
+## Notation
 
-The `omegaLimit` locale provides the localised notation `ω` for
+The `omegaLimit` scope provides the localised notation `ω` for
 `omegaLimit`, as well as `ω⁺` and `ω⁻` for `omegaLimit atTop` and
 `omegaLimit atBot` respectively for when the acting monoid is
 endowed with an order.
@@ -110,8 +110,7 @@ characterising ω-limits:
 -/
 
 /-- An element `y` is in the ω-limit set of `s` w.r.t. `f` if the
-    preimages of an arbitrary neighbourhood of `y` frequently
-    (w.r.t. `f`) intersects of `s`. -/
+preimages of an arbitrary neighbourhood of `y` frequently (w.r.t. `f`) intersects of `s`. -/
 theorem mem_omegaLimit_iff_frequently (y : β) :
     y ∈ ω f ϕ s ↔ ∀ n ∈ 𝓝 y, ∃ᶠ t in f, (s ∩ ϕ t ⁻¹' n).Nonempty := by
   simp_rw [frequently_iff, omegaLimit_def, mem_iInter, mem_closure_iff_nhds]
@@ -123,16 +122,14 @@ theorem mem_omegaLimit_iff_frequently (y : β) :
     rcases h _ hn hu with ⟨_, ht, _, hx, hϕtx⟩
     exact ⟨_, hϕtx, _, ht, _, hx, rfl⟩
 
-/-- An element `y` is in the ω-limit set of `s` w.r.t. `f` if the
-    forward images of `s` frequently (w.r.t. `f`) intersect arbitrary
-    neighbourhoods of `y`. -/
+/-- An element `y` is in the ω-limit set of `s` w.r.t. `f` if the forward images of `s`
+frequently (w.r.t. `f`) intersect arbitrary neighbourhoods of `y`. -/
 theorem mem_omegaLimit_iff_frequently₂ (y : β) :
     y ∈ ω f ϕ s ↔ ∀ n ∈ 𝓝 y, ∃ᶠ t in f, (ϕ t '' s ∩ n).Nonempty := by
   simp_rw [mem_omegaLimit_iff_frequently, image_inter_nonempty_iff]
 
 /-- An element `y` is in the ω-limit of `x` w.r.t. `f` if the forward
-    images of `x` frequently (w.r.t. `f`) falls within an arbitrary
-    neighbourhood of `y`. -/
+images of `x` frequently (w.r.t. `f`) falls within an arbitrary neighbourhood of `y`. -/
 theorem mem_omegaLimit_singleton_iff_map_cluster_point (x : α) (y : β) :
     y ∈ ω f ϕ {x} ↔ MapClusterPt y f fun t ↦ ϕ t x := by
   simp_rw [mem_omegaLimit_iff_frequently, mapClusterPt_iff_frequently, singleton_inter_nonempty,
@@ -226,7 +223,7 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
   have hw₃ : k \ n ⊆ (closure (image2 ϕ w s))ᶜ := by
     apply Subset.trans hg₃
     simp only [j, iUnion_subset_iff, compl_subset_compl]
-    intros u hu
+    intro u hu
     unfold w
     gcongr
     refine iInter_subset_of_subset u (iInter_subset_of_subset hu ?_)

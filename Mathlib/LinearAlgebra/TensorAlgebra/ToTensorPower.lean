@@ -13,8 +13,6 @@ In this file we show that `TensorAlgebra R M` is isomorphic to a direct sum of t
 `TensorAlgebra.equivDirectSum`.
 -/
 
-suppress_compilation
-
 open scoped DirectSum TensorProduct
 
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
@@ -45,18 +43,13 @@ theorem toTensorAlgebra_gMul {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
   refine LinearMap.congr_fun (LinearMap.congr_fun ?_ a) b
   clear! a b
   ext (a b)
-  -- Porting note: pulled the next two lines out of the long `simp only` below.
-  simp only [LinearMap.compMultilinearMap_apply]
-  rw [LinearMap.compr₂_apply, ← gMul_eq_coe_linearMap]
-  simp only [LinearMap.compr₂_apply, LinearMap.mul_apply', LinearMap.compl₂_apply,
-    LinearMap.comp_apply, LinearMap.compMultilinearMap_apply, PiTensorProduct.lift.tprod,
-    TensorPower.tprod_mul_tprod, TensorPower.toTensorAlgebra_tprod, TensorAlgebra.tprod_apply, ←
-    gMul_eq_coe_linearMap]
+  simp only [LinearMap.compMultilinearMap_apply, LinearMap.compr₂_apply, ← gMul_def,
+    TensorProduct.mk_apply, LinearEquiv.coe_coe, tprod_mul_tprod, toTensorAlgebra_tprod,
+    TensorAlgebra.tprod_apply, LinearMap.comp_apply, LinearMap.compl₂_apply]
   refine Eq.trans ?_ List.prod_append
   congr
-  -- Porting note: `erw` for `Function.comp`
-  erw [← List.map_ofFn _ (TensorAlgebra.ι R), ← List.map_ofFn _ (TensorAlgebra.ι R), ←
-    List.map_ofFn _ (TensorAlgebra.ι R), ← List.map_append, List.ofFn_fin_append]
+  rw [List.ofFn_comp' _ (TensorAlgebra.ι R), List.ofFn_comp' _ (TensorAlgebra.ι R),
+    List.ofFn_comp' _ (TensorAlgebra.ι R), ← List.map_append, List.ofFn_fin_append]
 
 @[simp]
 theorem toTensorAlgebra_galgebra_toFun (r : R) :
@@ -96,7 +89,7 @@ theorem toDirectSum_ι (x : M) :
 theorem ofDirectSum_comp_toDirectSum :
     ofDirectSum.comp toDirectSum = AlgHom.id R (TensorAlgebra R M) := by
   ext
-  simp [DirectSum.lof_eq_of, tprod_apply]
+  simp [tprod_apply]
 
 @[simp]
 theorem ofDirectSum_toDirectSum (x : TensorAlgebra R M) :

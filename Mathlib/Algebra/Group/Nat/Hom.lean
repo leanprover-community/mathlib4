@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Group.TypeTags.Hom
+import Mathlib.Tactic.Spread
 
 /-!
 # Extensionality of monoid homs from `ℕ`
@@ -66,7 +67,7 @@ variable (M) in
 /-- Monoid homomorphisms from `Multiplicative ℕ` are defined by the image
 of `Multiplicative.ofAdd 1`. -/
 def powersHom : M ≃ (Multiplicative ℕ →* M) :=
-  Additive.ofMul.trans <| (multiplesHom _).trans <| AddMonoidHom.toMultiplicative''
+  Additive.ofMul.trans <| (multiplesHom _).trans <| AddMonoidHom.toMultiplicativeLeft
 
 @[simp] lemma powersHom_apply (x : M) (n : Multiplicative ℕ) :
     powersHom M x n = x ^ n.toAdd := rfl

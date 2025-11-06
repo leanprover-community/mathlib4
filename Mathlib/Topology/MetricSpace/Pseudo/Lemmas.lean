@@ -52,8 +52,6 @@ variable {x y z : α} {ε ε₁ ε₂ : ℝ} {s : Set α}
 lemma isClosed_closedBall : IsClosed (closedBall x ε) :=
   isClosed_le (continuous_id.dist continuous_const) continuous_const
 
-@[deprecated (since := "2025-02-11")] alias isClosed_ball := isClosed_closedBall
-
 lemma isClosed_sphere : IsClosed (sphere x ε) :=
   isClosed_eq (continuous_id.dist continuous_const) continuous_const
 

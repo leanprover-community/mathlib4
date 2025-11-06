@@ -39,9 +39,9 @@ variable {X Y W Z : Type*}
 structure Homeomorph (X : Type*) (Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
     extends X ≃ Y where
   /-- The forward map of a homeomorphism is a continuous function. -/
-  continuous_toFun : Continuous toFun := by continuity
+  continuous_toFun : Continuous toFun := by fun_prop
   /-- The inverse map of a homeomorphism is a continuous function. -/
-  continuous_invFun : Continuous invFun := by continuity
+  continuous_invFun : Continuous invFun := by fun_prop
 
 @[inherit_doc]
 infixl:25 " ≃ₜ " => Homeomorph
@@ -84,7 +84,7 @@ theorem symm_bijective : Function.Bijective (Homeomorph.symm : (X ≃ₜ Y) → 
 def Simps.symm_apply (h : X ≃ₜ Y) : Y → X :=
   h.symm
 
-initialize_simps_projections Homeomorph (toFun → apply, invFun → symm_apply)
+initialize_simps_projections Homeomorph (toFun → apply, invFun → symm_apply, as_prefix toEquiv)
 
 @[simp]
 theorem coe_toEquiv (h : X ≃ₜ Y) : ⇑h.toEquiv = h :=
@@ -208,24 +208,16 @@ lemma image_compl (h : X ≃ₜ Y) (s : Set X) : h '' (sᶜ) = (h '' s)ᶜ :=
 lemma isInducing (h : X ≃ₜ Y) : IsInducing h :=
   .of_comp h.continuous h.symm.continuous <| by simp only [symm_comp_self, IsInducing.id]
 
-@[deprecated (since := "2024-10-28")] alias inducing := isInducing
-
 theorem induced_eq (h : X ≃ₜ Y) : TopologicalSpace.induced h ‹_› = ‹_› := h.isInducing.1.symm
 
 theorem isQuotientMap (h : X ≃ₜ Y) : IsQuotientMap h :=
   IsQuotientMap.of_comp h.symm.continuous h.continuous <| by
     simp only [self_comp_symm, IsQuotientMap.id]
 
-@[deprecated (since := "2024-10-22")]
-alias quotientMap := isQuotientMap
-
 theorem coinduced_eq (h : X ≃ₜ Y) : TopologicalSpace.coinduced h ‹_› = ‹_› :=
   h.isQuotientMap.2.symm
 
 theorem isEmbedding (h : X ≃ₜ Y) : IsEmbedding h := ⟨h.isInducing, h.injective⟩
-
-@[deprecated (since := "2024-10-26")]
-alias embedding := isEmbedding
 
 protected theorem discreteTopology [DiscreteTopology X] (h : X ≃ₜ Y) : DiscreteTopology Y :=
   h.symm.isEmbedding.discreteTopology
@@ -344,14 +336,18 @@ def toHomeomorph (e : X ≃ Y) (he : ∀ s, IsOpen (e ⁻¹' s) ↔ IsOpen s) : 
   continuous_toFun := continuous_def.2 fun _ ↦ (he _).2
   continuous_invFun := continuous_def.2 fun s ↦ by convert (he _).1; simp
 
+@[deprecated (since := "2025-10-09")] alias toHomeomorph_toEquiv := toEquiv_toHomeomorph
+
 @[simp] lemma coe_toHomeomorph (e : X ≃ Y) (he) : ⇑(e.toHomeomorph he) = e := rfl
 lemma toHomeomorph_apply (e : X ≃ Y) (he) (x : X) : e.toHomeomorph he x = e x := rfl
 
 @[simp] lemma toHomeomorph_refl :
-  (Equiv.refl X).toHomeomorph (fun _s ↦ Iff.rfl) = Homeomorph.refl _ := rfl
+    (Equiv.refl X).toHomeomorph (fun _s ↦ Iff.rfl) = Homeomorph.refl _ := rfl
 
-@[simp] lemma toHomeomorph_symm (e : X ≃ Y) (he) :
-  (e.toHomeomorph he).symm = e.symm.toHomeomorph fun s ↦ by convert (he _).symm; simp := rfl
+@[simp] lemma symm_toHomeomorph (e : X ≃ Y) (he) :
+    (e.toHomeomorph he).symm = e.symm.toHomeomorph fun s ↦ by convert (he _).symm; simp := rfl
+
+@[deprecated (since := "2025-10-09")] alias toHomeomorph_symm := symm_toHomeomorph
 
 lemma toHomeomorph_trans (e : X ≃ Y) (f : Y ≃ Z) (he hf) :
     (e.trans f).toHomeomorph (fun _s ↦ (he _).trans (hf _)) =
@@ -363,8 +359,6 @@ def toHomeomorphOfIsInducing (f : X ≃ Y) (hf : IsInducing f) : X ≃ₜ Y :=
   { f with
     continuous_toFun := hf.continuous
     continuous_invFun := hf.continuous_iff.2 <| by simpa using continuous_id }
-
-@[deprecated (since := "2024-10-28")] alias toHomeomorphOfInducing := toHomeomorphOfIsInducing
 
 @[simp] lemma toHomeomorphOfIsInducing_apply (f : X ≃ Y) (hf : IsInducing f) :
     ⇑(f.toHomeomorphOfIsInducing hf) = f := rfl
@@ -381,8 +375,11 @@ def toHomeomorphOfContinuousOpen (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsO
 @[deprecated (since := "2025-04-16")]
 alias _root_.Homeomorph.homeomorphOfContinuousOpen := toHomeomorphOfContinuousOpen
 
+@[deprecated (since := "2025-10-09")] alias toHomeomorphOfContinuousOpen_toEquiv :=
+  toEquiv_toHomeomorphOfContinuousOpen
+
 @[deprecated (since := "2025-04-16")]
-alias _root_.Homeomorph.homeomorphOfContinuousOpen_toEquiv := toHomeomorphOfContinuousOpen_toEquiv
+alias _root_.Homeomorph.homeomorphOfContinuousOpen_toEquiv := toEquiv_toHomeomorphOfContinuousOpen
 
 @[simp]
 theorem toHomeomorphOfContinuousOpen_apply (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) :

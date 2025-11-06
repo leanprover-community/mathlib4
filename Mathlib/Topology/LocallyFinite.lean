@@ -48,6 +48,13 @@ theorem comp_injective {g : ι' → ι} (hf : LocallyFinite f) (hg : Injective g
     LocallyFinite (f ∘ g) :=
   hf.comp_injOn hg.injOn
 
+theorem of_comp_surjective {g : ι' → ι} (hg : Surjective g) (hfg : LocallyFinite (f ∘ g)) :
+    LocallyFinite f := by
+  simpa only [comp_def, surjInv_eq hg] using hfg.comp_injective (injective_surjInv hg)
+
+theorem on_range (hf : LocallyFinite f) : LocallyFinite ((↑) : range f → Set X) :=
+  of_comp_surjective rangeFactorization_surjective hf
+
 theorem _root_.locallyFinite_iff_smallSets :
     LocallyFinite f ↔ ∀ x, ∀ᶠ s in (𝓝 x).smallSets, { i | (f i ∩ s).Nonempty }.Finite :=
   forall_congr' fun _ => Iff.symm <|
@@ -95,12 +102,12 @@ theorem continuousOn_iUnion {g : X → Y} (hf : LocallyFinite f) (h_cl : ∀ i, 
 protected theorem continuous' {g : X → Y} (hf : LocallyFinite f) (h_cov : ⋃ i, f i = univ)
     (hc : ∀ i x, x ∈ closure (f i) → ContinuousWithinAt g (f i) x) :
     Continuous g :=
-  continuous_iff_continuousOn_univ.2 <| h_cov ▸ hf.continuousOn_iUnion' hc
+  continuousOn_univ.1 <| h_cov ▸ hf.continuousOn_iUnion' hc
 
 protected theorem continuous {g : X → Y} (hf : LocallyFinite f) (h_cov : ⋃ i, f i = univ)
     (h_cl : ∀ i, IsClosed (f i)) (h_cont : ∀ i, ContinuousOn g (f i)) :
     Continuous g :=
-  continuous_iff_continuousOn_univ.2 <| h_cov ▸ hf.continuousOn_iUnion h_cl h_cont
+  continuousOn_univ.1 <| h_cov ▸ hf.continuousOn_iUnion h_cl h_cont
 
 protected theorem closure (hf : LocallyFinite f) : LocallyFinite fun i => closure (f i) := by
   intro x
@@ -194,8 +201,6 @@ theorem locallyFinite_sum {f : ι ⊕ ι' → Set X} :
 theorem LocallyFinite.sumElim {g : ι' → Set X} (hf : LocallyFinite f) (hg : LocallyFinite g) :
     LocallyFinite (Sum.elim f g) :=
   locallyFinite_sum.mpr ⟨hf, hg⟩
-
-@[deprecated (since := "2025-02-20")] alias LocallyFinite.sum_elim := LocallyFinite.sumElim
 
 theorem locallyFinite_option {f : Option ι → Set X} :
     LocallyFinite f ↔ LocallyFinite (f ∘ some) := by

@@ -80,9 +80,11 @@ theorem inv_apply (f : R ≃+* R) (x : R) : f⁻¹ x = f.symm x := rfl
 
 @[simp]
 theorem coe_pow (f : R ≃+* R) (n : ℕ) : ⇑(f ^ n) = f^[n] := by
-  induction' n with n ih
-  · simp
-  · ext
+  induction n with
+  | zero =>
+    simp
+  | succ n ih =>
+    ext
     simp [pow_succ, ih]
 
 end RingAut

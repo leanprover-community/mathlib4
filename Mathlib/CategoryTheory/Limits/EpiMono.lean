@@ -51,10 +51,8 @@ lemma mono_iff_isIso_fst (hc : IsLimit c) : Mono f ↔ IsIso c.fst := by
   · intro h
     obtain ⟨φ, hφ₁, hφ₂⟩ := PullbackCone.IsLimit.lift' hc (𝟙 X) (𝟙 X) (by simp)
     refine ⟨φ, PullbackCone.IsLimit.hom_ext hc ?_ ?_, hφ₁⟩
-    · dsimp
-      simp only [assoc, hφ₁, id_comp, comp_id]
-    · dsimp
-      simp only [assoc, hφ₂, id_comp, comp_id, h]
+    · simp only [assoc, hφ₁, id_comp, comp_id]
+    · simp only [assoc, hφ₂, id_comp, comp_id, h]
   · intro
     obtain ⟨φ, hφ₁, hφ₂⟩ := PullbackCone.IsLimit.lift' hc (𝟙 X) (𝟙 X) (by simp)
     have : IsSplitEpi φ := IsSplitEpi.mk ⟨SplitEpi.mk c.fst (by
@@ -95,10 +93,8 @@ lemma epi_iff_isIso_inl (hc : IsColimit c) : Epi f ↔ IsIso c.inl := by
   · intro h
     obtain ⟨φ, hφ₁, hφ₂⟩ := PushoutCocone.IsColimit.desc' hc (𝟙 Y) (𝟙 Y) (by simp)
     refine ⟨φ, hφ₁, PushoutCocone.IsColimit.hom_ext hc ?_ ?_⟩
-    · dsimp
-      simp only [comp_id, reassoc_of% hφ₁]
-    · dsimp
-      simp only [comp_id, h, reassoc_of% hφ₂]
+    · simp only [comp_id, reassoc_of% hφ₁]
+    · simp only [comp_id, h, reassoc_of% hφ₂]
   · intro
     obtain ⟨φ, hφ₁, hφ₂⟩ := PushoutCocone.IsColimit.desc' hc (𝟙 Y) (𝟙 Y) (by simp)
     have : IsSplitMono φ := IsSplitMono.mk ⟨SplitMono.mk c.inl (by

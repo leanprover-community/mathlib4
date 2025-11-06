@@ -25,12 +25,14 @@ the base change `S ⊗[R] B` as an `S`-coalgebra.
 open TensorProduct
 
 variable {R S A B : Type*} [CommSemiring R] [CommSemiring S] [AddCommMonoid A] [AddCommMonoid B]
-    [Algebra R S] [Module R A] [Module S A] [Module R B] [Coalgebra R B]
-    [Coalgebra S A] [IsScalarTower R S A]
+    [Algebra R S] [Module R A] [Module S A] [Module R B] [IsScalarTower R S A]
 
 namespace TensorProduct
 
 open Coalgebra
+
+section CoalgebraStruct
+variable [CoalgebraStruct R B] [CoalgebraStruct S A]
 
 noncomputable
 instance instCoalgebraStruct : CoalgebraStruct S (A ⊗[R] B) where
@@ -63,6 +65,10 @@ lemma comul_tmul (x : A) (y : B) :
 lemma counit_tmul (x : A) (y : B) :
     counit (R := S) (x ⊗ₜ[R] y) = counit (R := R) y • counit (R := S) x := rfl
 
+end CoalgebraStruct
+
+variable [Coalgebra R B] [Coalgebra S A]
+
 open Lean.Parser.Tactic in
 /-- `hopf_tensor_induction x with x₁ x₂` attempts to replace `x` by
 `x₁ ⊗ₜ x₂` via linearity. This is an implementation detail that is used to set up tensor products
@@ -85,13 +91,13 @@ private lemma coassoc :
     (comul (R := S) (A := (A ⊗[R] B))).lTensor (A ⊗[R] B) ∘ₗ
       (comul (R := S) (A := (A ⊗[R] B))) := by
   ext x y
-  let F : (A ⊗[S] A ⊗[S] A) ⊗[R] (B ⊗[R] B ⊗[R] B) ≃ₗ[S]
-    (A ⊗[R] B) ⊗[S] (A ⊗[R] B) ⊗[S] A ⊗[R] B :=
+  let F : A ⊗[S] (A ⊗[S] A) ⊗[R] (B ⊗[R] (B ⊗[R] B)) ≃ₗ[S]
+    A ⊗[R] B ⊗[S] (A ⊗[R] B ⊗[S] (A ⊗[R] B)) :=
     AlgebraTensorModule.tensorTensorTensorComm _ _ _ _ _ _ _ _ ≪≫ₗ
       AlgebraTensorModule.congr (.refl _ _)
         (AlgebraTensorModule.tensorTensorTensorComm _ _ _ _ _ _ _ _)
-  let F' : (A ⊗[S] A ⊗[S] A) ⊗[R] (B ⊗[R] B ⊗[R] B) →ₗ[S]
-      (A ⊗[R] B) ⊗[S] (A ⊗[R] B) ⊗[S] A ⊗[R] B :=
+  let F' : A ⊗[S] (A ⊗[S] A) ⊗[R] (B ⊗[R] (B ⊗[R] B)) →ₗ[S]
+      A ⊗[R] B ⊗[S] (A ⊗[R] B ⊗[S] (A ⊗[R] B)) :=
     TensorProduct.mapOfCompatibleSMul _ _ _ _ ∘ₗ
         TensorProduct.map .id (TensorProduct.mapOfCompatibleSMul _ _ _ _) ∘ₗ F.toLinearMap
   convert congr(F ($(Coalgebra.coassoc_apply x) ⊗ₜ[R] $(Coalgebra.coassoc_apply y))) using 1

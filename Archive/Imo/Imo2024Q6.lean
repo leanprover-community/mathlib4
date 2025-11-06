@@ -246,7 +246,7 @@ lemma card_range_fExample : #(Set.range (fun x ↦ fExample x + fExample (-x))) 
       · refine ⟨0, by simp [fExample]⟩
       · refine ⟨1 / 2, ?_⟩
         rw [(by norm_num : (-(1 / 2) : ℚ) = (-1 : ℤ) + (1 / 2 : ℚ)), fExample_intCast_add,
-            fExample_of_mem_Ico ⟨by norm_num, by norm_num⟩]
+            fExample_of_mem_Ico ⟨by simp, by norm_num⟩]
         norm_num
   rw [h]
   simp
