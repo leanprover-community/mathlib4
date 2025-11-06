@@ -309,8 +309,7 @@ variable [VectorBundle 𝕜 F V] [ContMDiffVectorBundle n F V I] {ι : Type*} {x
 /-- Given a compatible local trivialisation `e` of `V` and a basis `b` of the model fiber `F`,
 return the corresponding basis of `V x`. -/
 noncomputable def basisAt
-    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
-    [MemTrivializationAtlas e]
+    (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
     (b : Basis ι 𝕜 F) (hx : x ∈ e.baseSet) : Basis ι 𝕜 (V x) :=
   b.map (e.linearEquivAt (R := 𝕜) x hx).symm
 
@@ -320,17 +319,16 @@ open scoped Classical in
 
 If `x` is outside of `e.baseSet`, this returns the junk value 0. -/
 noncomputable def localFrame
-    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
-    [MemTrivializationAtlas e]
+    (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
     (b : Basis ι 𝕜 F) : ι → (x : M) → V x := fun i x ↦
-  -- idea: take the vector b i and apply the trivialisation e to it.
+  -- idea: take the vector `b i` and apply the trivialisation `e` to it.
   if hx : x ∈ e.baseSet then e.basisAt b hx i else 0
 
-/-- Each local frame `s^i ∈ Γ(E)` of a `C^k` vector bundle, defined by a local trivialisation `e`,
+/-- Each local frame `{sᵢ} ∈ Γ(E)` of a `C^k` vector bundle, defined by a local trivialisation `e`,
 is `C^k` on `e.baseSet`. -/
 lemma contMDiffOn_localFrame_baseSet
-    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
-    [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) (i : ι) :
+    (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
+    (b : Basis ι 𝕜 F) (i : ι) :
     CMDiff[e.baseSet] n (T% (e.localFrame b i)) := by
   rw [e.contMDiffOn_section_baseSet_iff]
   apply (contMDiffOn_const (c := b i)).congr
@@ -340,9 +338,8 @@ lemma contMDiffOn_localFrame_baseSet
 variable (I) in
 /-- `b.localFrame e i` is indeed a local frame on `e.baseSet` -/
 lemma localFrame_isLocalFrameOn_baseSet
-    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
-    [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) : IsLocalFrameOn I F n (e.localFrame b) e.baseSet
-    where
+    (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
+    (b : Basis ι 𝕜 F) : IsLocalFrameOn I F n (e.localFrame b) e.baseSet where
   contMDiffOn i := e.contMDiffOn_localFrame_baseSet _ b i
   linearIndependent := by
     intro x hx
@@ -354,21 +351,21 @@ lemma localFrame_isLocalFrameOn_baseSet
     simp [localFrame, hx, basisAt]
 
 lemma _root_.contMDiffAt_localFrame_of_mem
-    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
-    [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) (i : ι) (hx : x ∈ e.baseSet) :
+    (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
+    (b : Basis ι 𝕜 F) (i : ι) (hx : x ∈ e.baseSet) :
     CMDiffAt n (T% (e.localFrame b i)) x :=
   (e.localFrame_isLocalFrameOn_baseSet I n b).contMDiffAt e.open_baseSet hx _
 
 @[simp]
 lemma localFrame_apply_of_mem_baseSet
-    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
-    [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) {i : ι} (hx : x ∈ e.baseSet) :
+    (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
+    (b : Basis ι 𝕜 F) {i : ι} (hx : x ∈ e.baseSet) :
     e.localFrame b i x = e.basisAt b hx i := by
   simp [localFrame, hx]
 
 lemma localFrame_apply_of_notMem
-    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
-    [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) {i : ι} (hx : x ∉ e.baseSet) :
+    (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
+    (b : Basis ι 𝕜 F) {i : ι} (hx : x ∉ e.baseSet) :
     e.localFrame b i x = 0 := by
   simp [localFrame, hx]
 
@@ -380,13 +377,12 @@ variable (I) in
 
 If x is outside of `e.baseSet`, this returns the junk value 0. -/
 noncomputable def localFrame_coeff
-    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
-    [MemTrivializationAtlas e]
+    (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
     (b : Basis ι 𝕜 F) (i : ι) : (Π x : M, V x) →ₗ[𝕜] M → 𝕜 :=
   (e.localFrame_isLocalFrameOn_baseSet I 1 b).coeff i
 
-variable {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
-  [MemTrivializationAtlas e] {b : Basis ι 𝕜 F} {x x' : M}
+variable {e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)} [MemTrivializationAtlas e]
+  {b : Basis ι 𝕜 F} {x x' : M}
 
 variable (e b) in
 @[simp]
@@ -452,8 +448,8 @@ proven in `OrthonormalFrame.lean`).
 -/
 
 variable [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
-  {ι : Type*} {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
-  [MemTrivializationAtlas e] {b : Basis ι 𝕜 F} {x : M}
+  {e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)} [MemTrivializationAtlas e]
+  {ι : Type*} {b : Basis ι 𝕜 F} {x : M}
 
 -- TODO: can this be proven more generally, for any local frame?
 /-- If `s` is `C^k` at `x`, so is its coefficient `b.localFrame_coeff e i` in the local frame
