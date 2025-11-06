@@ -3,14 +3,13 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Faithful
+import Mathlib.Algebra.MvPolynomial.Nilpotent
 import Mathlib.Algebra.Order.Ring.Finset
 import Mathlib.FieldTheory.PurelyInseparable.Tower
 import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
 import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 import Mathlib.RingTheory.Polynomial.GaussLemma
-import Mathlib.Algebra.MvPolynomial.Nilpotent
 
 /-!
 
@@ -405,7 +404,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_perfectField
   intro s hs
   exact LinearIndependent.map_of_injective_injective hs
     (frobeniusEquiv k p).symm (frobenius K p).toAddMonoidHom (by simp) (by simp)
-      (by simp [frobenius, Algebra.smul_def, mul_pow, ← map_pow, frobeniusEquiv_symm_pow'])
+      (by simp [frobenius, Algebra.smul_def, mul_pow, ← map_pow, frobeniusEquiv_symm_pow])
 
 end
 

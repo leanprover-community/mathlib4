@@ -81,14 +81,6 @@ theorem coe_frobeniusEquiv : ⇑(frobeniusEquiv R p) = frobenius R p := rfl
 
 theorem frobeniusEquiv_def (x : R) : frobeniusEquiv R p x = x ^ p := rfl
 
-/-- Variant with `· ^ p` inside of `frobeniusEquiv`. -/
-lemma frobeniusEquiv_symm_pow' (x : R) : (frobeniusEquiv R p).symm (x ^ p) = x :=
-  (frobeniusEquiv R p).symm_apply_apply x
-
-@[simp]
-lemma frobeniusEquiv_symm_pow (x : R) : (frobeniusEquiv R p).symm x ^ p = x :=
-  (frobeniusEquiv R p).apply_symm_apply x
-
 /-- The iterated Frobenius automorphism for a perfect ring. -/
 @[simps! apply]
 noncomputable def iterateFrobeniusEquiv : R ≃+* R :=
@@ -161,6 +153,10 @@ theorem frobeniusEquiv_symm_comp_frobenius :
 @[simp]
 theorem frobeniusEquiv_symm_pow_p (x : R) : ((frobeniusEquiv R p).symm x) ^ p = x :=
   frobenius_apply_frobeniusEquiv_symm R p x
+
+/-- Variant with `· ^ p` inside of `frobeniusEquiv`. -/
+lemma frobeniusEquiv_symm_pow (x : R) : (frobeniusEquiv R p).symm (x ^ p) = x :=
+  (frobeniusEquiv R p).symm_apply_apply x
 
 @[simp]
 theorem iterate_frobeniusEquiv_symm_pow_p_pow (x : R) (n : ℕ) :
