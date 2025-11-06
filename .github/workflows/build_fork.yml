@@ -60,12 +60,12 @@ jobs:
     steps:
       - name: print job info
         run: |
-          echo "workflow: ${{ github.workflow }}"
-          echo "pull request number: ${{ github.event.pull_request.number }}"
-          echo "github ref: ${{ github.ref }}"
-          echo "github event_name: ${{ github.event_name }}"
-          echo "github run id: ${{ github.run_id }}"
-          echo "concurrency group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ (github.event_name == 'push' && contains(fromJSON('["refs/heads/master", "refs/heads/staging"]'), github.ref) && github.run_id) || '' }}"
+          echo 'workflow: ${{ github.workflow }}'
+          echo 'pull request number: ${{ github.event.pull_request.number }}'
+          echo 'github ref: ${{ github.ref }}'
+          echo 'github event_name: ${{ github.event_name }}'
+          echo 'github run id: ${{ github.run_id }}'
+          echo 'concurrency group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ (github.event_name == 'push' && contains(fromJSON('["refs/heads/master", "refs/heads/staging"]'), github.ref) && github.run_id) || '' }}'
       - name: cleanup
         shell: bash    # This *just* deletes old files, so is safe to run outside landrun.
         run: |
