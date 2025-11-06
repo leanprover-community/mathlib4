@@ -222,6 +222,10 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
 theorem Closeds.isometry_singleton : Isometry (Closeds.singleton (α := α)) :=
   fun _ _ => hausdorffEdist_singleton
 
+theorem Closeds.lipschitz_sup :
+    LipschitzWith 1 fun p : Closeds α × Closeds α => p.1 ⊔ p.2 :=
+  .of_edist_le fun _ _ => hausdorffEdist_union_le
+
 namespace NonemptyCompacts
 
 /-- In an emetric space, the type of non-empty compact subsets is an emetric space,
@@ -386,6 +390,10 @@ instance secondCountableTopology [SecondCountableTopology α] :
 
 theorem isometry_singleton : Isometry ({·} : α → NonemptyCompacts α) :=
   fun _ _ => hausdorffEdist_singleton
+
+theorem lipschitz_sup :
+    LipschitzWith 1 fun p : NonemptyCompacts α × NonemptyCompacts α => p.1 ⊔ p.2 :=
+  .of_edist_le fun _ _ => hausdorffEdist_union_le
 
 theorem lipschitz_prod :
     LipschitzWith 1 fun p : NonemptyCompacts α × NonemptyCompacts β => p.1.prod p.2 :=
