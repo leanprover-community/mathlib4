@@ -7,13 +7,14 @@ import Mathlib.CategoryTheory.Monoidal.Cartesian.CommMon_
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp_
 
 /-!
-# Yoneda embedding of `CommGrp_ C`
+# Yoneda embedding of `CommGrp C`
 -/
 
 assert_not_exists Field
 
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory MonObj
 
+namespace CategoryTheory
 universe w v u
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] [BraidedCategory C] {X : C}
 
@@ -24,7 +25,7 @@ class abbrev CommGrpObj := GrpObj X, IsCommMonObj X
 
 @[deprecated (since := "2025-09-13")] alias CommGrp_Class := CommGrpObj
 
-section CommGrp_
+section CommGrp
 
 variable (X) in
 /-- If `X` represents a presheaf of commutative groups, then `X` is a commutative group object. -/
@@ -36,4 +37,5 @@ def CommGrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ CommGrpCat.{w})
 @[deprecated (since := "2025-09-13")]
 alias CommGrp_Class.ofRepresentableBy := CommGrpObj.ofRepresentableBy
 
-end CommGrp_
+end CommGrp
+end CategoryTheory

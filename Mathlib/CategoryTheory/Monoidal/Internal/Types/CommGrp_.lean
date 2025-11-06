@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp_
 import Mathlib.CategoryTheory.Monoidal.CommGrp_
 
 /-!
-# `CommGrp_ (Type u) ≌ CommGrpCat.{u}`
+# `CommGrp (Type u) ≌ CommGrpCat.{u}`
 
 The category of internal commutative group objects in `Type`
 is equivalent to the category of "native" bundled commutative groups.
@@ -28,12 +28,12 @@ instance commGrpCommGroup (A : Type u) [GrpObj A] [IsCommMonObj A] : CommGroup A
     mul_comm := fun x y => by convert congr_fun (IsCommMonObj.mul_comm A) (y, x) }
 
 /-- Converting a commutative group object in `Type u` into a group. -/
-noncomputable def functor : CommGrp_ (Type u) ⥤ CommGrpCat.{u} where
+noncomputable def functor : CommGrp (Type u) ⥤ CommGrpCat.{u} where
   obj A := CommGrpCat.of A.X
   map f := CommGrpCat.ofHom (GrpTypeEquivalenceGrp.functor.map f).hom
 
 /-- Converting a group into a group object in `Type u`. -/
-noncomputable def inverse : CommGrpCat.{u} ⥤ CommGrp_ (Type u) where
+noncomputable def inverse : CommGrpCat.{u} ⥤ CommGrp (Type u) where
   obj A :=
     { grpTypeEquivalenceGrp.inverse.obj ((forget₂ CommGrpCat GrpCat).obj A) with
       comm :=
@@ -55,7 +55,7 @@ end CommGrpTypeEquivalenceCommGrp
 
 /-- The category of commutative group objects in `Type u` is equivalent to the category of
 commutative groups. -/
-noncomputable def commGrpTypeEquivalenceCommGrp : CommGrp_ (Type u) ≌ CommGrpCat.{u} where
+noncomputable def commGrpTypeEquivalenceCommGrp : CommGrp (Type u) ≌ CommGrpCat.{u} where
   functor := CommGrpTypeEquivalenceCommGrp.functor
   inverse := CommGrpTypeEquivalenceCommGrp.inverse
   unitIso := Iso.refl _
@@ -63,18 +63,18 @@ noncomputable def commGrpTypeEquivalenceCommGrp : CommGrp_ (Type u) ≌ CommGrpC
     (fun A => MulEquiv.toCommGrpIso { Equiv.refl _ with map_mul' := fun _ _ => rfl })
     (by cat_disch)
 
-/-- The equivalences `Grp_ (Type u) ≌ GrpCat.{u}` and `CommGrp_ (Type u) ≌ CommGrpCat.{u}`
-are naturally compatible with the forgetful functors to `GrpCat` and `Grp_ (Type u)`.
+/-- The equivalences `Grp (Type u) ≌ GrpCat.{u}` and `CommGrp (Type u) ≌ CommGrpCat.{u}`
+are naturally compatible with the forgetful functors to `GrpCat` and `Grp (Type u)`.
 -/
 noncomputable def commGrpTypeEquivalenceCommGrpForgetGrp :
     CommGrpTypeEquivalenceCommGrp.functor ⋙ forget₂ CommGrpCat GrpCat ≅
-      CommGrp_.forget₂Grp_ (Type u) ⋙ GrpTypeEquivalenceGrp.functor :=
+      CommGrp.forget₂Grp (Type u) ⋙ GrpTypeEquivalenceGrp.functor :=
   Iso.refl _
 
-/-- The equivalences `CommMon (Type u) ≌ CommMonCat.{u}` and `CommGrp_ (Type u) ≌ CommGrpCat.{u}`
-are naturally compatible with the forgetful functors to `GrpCat` and `Grp_ (Type u)`.
+/-- The equivalences `CommMon (Type u) ≌ CommMonCat.{u}` and `CommGrp (Type u) ≌ CommGrpCat.{u}`
+are naturally compatible with the forgetful functors to `GrpCat` and `Grp (Type u)`.
 -/
 noncomputable def commGrpTypeEquivalenceCommGrpForgetCommMon :
     CommGrpTypeEquivalenceCommGrp.functor ⋙ forget₂ CommGrpCat CommMonCat ≅
-      CommGrp_.forget₂CommMon (Type u) ⋙ CommMonTypeEquivalenceCommMon.functor :=
+      CommGrp.forget₂CommMon (Type u) ⋙ CommMonTypeEquivalenceCommMon.functor :=
   Iso.refl _
