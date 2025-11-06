@@ -87,7 +87,7 @@ def comp {Z Y X : C} (f : Y ⟶ X) (g : Z ⟶ Y)
 /-- In cartesian monoidal categories, any morphism to the terminal tensor unit has a chosen
 pullback. -/
 @[simps]
-def cartesianMonoidalCategoryToTerminal [CartesianMonoidalCategory C] {X : C} (f : X ⟶ 𝟙_ C) :
+def cartesianMonoidalCategoryToUnit [CartesianMonoidalCategory C] {X : C} (f : X ⟶ 𝟙_ C) :
     ChosenPullback f where
   pullback.obj Y := Over.mk (snd Y.left X)
   pullback.map {Y Z} g := Over.homMk (g.left ▷ X)
