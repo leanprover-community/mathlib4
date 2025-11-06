@@ -40,13 +40,13 @@ def conjStarAlgAut : unitary R →* (R ≃⋆ₐ[S] R) where
 theorem conjStarAlgAut_symm_apply (u : unitary R) (x : R) :
     (conjStarAlgAut S R u).symm x = (star u : R) * x * u := rfl
 
-theorem conjStarAlgAut_trans_toStarAlgAut (u₁ u₂ : unitary R) :
-    (conjStarAlgAut S R u₁).trans (conjStarAlgAut S R u₂) = conjStarAlgAut S R (u₂ * u₁) :=
-  map_mul _ _ _ |>.symm
-
 @[simp] theorem conjStarAlgAut_symm (u : unitary R) :
     (conjStarAlgAut S R u).symm = conjStarAlgAut S R (star u) := by
   ext; simp [conjStarAlgAut_symm_apply]
+
+theorem conjStarAlgAut_trans_toStarAlgAut (u₁ u₂ : unitary R) :
+    (conjStarAlgAut S R u₁).trans (conjStarAlgAut S R u₂) = conjStarAlgAut S R (u₂ * u₁) :=
+  map_mul _ _ _ |>.symm
 
 theorem toRingEquiv_conjStarAlgAut (u : unitary R) :
     (conjStarAlgAut S R u).toRingEquiv
