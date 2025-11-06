@@ -1479,8 +1479,7 @@ theorem isSubwalk_iff_support_isInfix {v w v' w' : V} {p₁ : G.Walk v w} {p₂ 
     refine ⟨p₂.take s.length |>.copy rfl ?_, p₂.drop (s.length + p₁.length) |>.copy ?_ rfl, ?_⟩
     · simp [p₂.getVert_eq_support_getElem (by cutsat : s.length ≤ p₂.length), ← h,
         List.getElem_zero]
-    · simp [p₂.getVert_eq_support_getElem (by omega), ← h,
-        ← p₁.getVert_eq_support_getElem (Nat.le_refl _)]
+    · simp [p₂.getVert_eq_support_getElem (by omega), ← h, ← p₁.getVert_eq_support_getElem le_rfl]
     apply ext_support
     simp only [← h, support_append, support_copy, take_support_eq_support_take_succ,
       List.take_append, drop_support_eq_support_drop_min, List.tail_drop]
