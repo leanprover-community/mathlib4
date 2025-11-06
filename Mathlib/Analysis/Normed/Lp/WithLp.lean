@@ -61,7 +61,7 @@ open Lean.PrettyPrinter.Delaborator
 
 /-- This prevents `toLp p x` being printed as `{ ofLp := x }` by `delabStructureInstance`. -/
 @[app_delab WithLp.toLp]
-def WithLp.delabToLp : Delab := delabApp
+meta def WithLp.delabToLp : Delab := delabApp
 
 end Notation
 
