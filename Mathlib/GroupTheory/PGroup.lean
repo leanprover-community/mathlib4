@@ -279,7 +279,7 @@ theorem to_sup_of_normal_right' {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsP
     to_sup_of_normal_right (hH.of_equiv (Subgroup.subgroupOfEquivOfLe hHK).symm)
       (hK.of_equiv (Subgroup.subgroupOfEquivOfLe Subgroup.le_normalizer).symm)
   ((congr_arg (fun H : Subgroup K.normalizer => IsPGroup p H)
-            (Subgroup.sup_subgroupOf_eq hHK Subgroup.le_normalizer)).mp
+            ((Subgroup.subgroupOf_sup hHK Subgroup.le_normalizer).symm)).mp
         hHK').of_equiv
     (Subgroup.subgroupOfEquivOfLe (sup_le hHK Subgroup.le_normalizer))
 
