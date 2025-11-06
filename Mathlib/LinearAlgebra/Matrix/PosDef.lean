@@ -470,6 +470,38 @@ theorem toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) :
     toLinearMap₂'_apply']
   apply hM.2 x hx
 
+section conjugate
+variable [DecidableEq n] {x U : Matrix n n R}
+
+/-- For an invertible matrix `U`, `star U * x * U` is positive definite iff `x` is.
+This works on any ⋆-ring with a partial order.
+
+See `IsUnit.isStrictlyPositive_star_left_conjugate_iff'` for a similar statement for star-ordered
+rings. For matrices, positive definiteness is equivalent to strict positivity when the underlying
+field is `ℝ` or `ℂ` (see `Matrix.isStrictlyPositive_iff_posDef`). -/
+theorem _root_.Matrix.IsUnit.posDef_star_left_conjugate_iff (hU : IsUnit U) :
+    PosDef (star U * x * U) ↔ x.PosDef := by
+  simp_rw [PosDef, isHermitian_iff_isSelfAdjoint, hU.isSelfAdjoint_conjugate_iff',
+    and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec, star_eq_conjTranspose, ← star_mulVec,
+    ← dotProduct_mulVec]
+  obtain ⟨V, hV, hV2⟩ := isUnit_iff_exists.mp hU
+  have hV3 (y : n → R) (hy : y ≠ 0) : U *ᵥ y ≠ 0 := fun h => by simpa [hy, hV2] using congr(V *ᵥ $h)
+  have hV4 (y : n → R) (hy : y ≠ 0) : V *ᵥ y ≠ 0 := fun h => by simpa [hy, hV] using congr(U *ᵥ $h)
+  exact fun _ => ⟨fun h x hx => by simpa [hV] using h _ (hV4 _ hx), fun h x hx => h _ (hV3 _ hx)⟩
+
+open Matrix in
+/-- For an invertible matrix `U`, `U * x * star U` is positive definite iff `x` is.
+This works on any ⋆-ring with a partial order.
+
+See `IsUnit.isStrictlyPositive_star_right_conjugate_iff` for a similar statement for star-ordered
+rings. For matrices, positive definiteness is equivalent to strict positivity when the underlying
+field is `ℝ` or `ℂ` (see `Matrix.isStrictlyPositive_iff_posDef`). -/
+theorem _root_.Matrix.IsUnit.posDef_star_right_conjugate_iff (hU : IsUnit U) :
+    PosDef (U * x * star U) ↔ x.PosDef := by
+  simpa using hU.star.posDef_star_left_conjugate_iff
+
+end conjugate
+
 /-- The eigenvalues of a positive definite matrix are positive. -/
 lemma eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : Matrix.PosDef A) (i : n) : 0 < hA.1.eigenvalues i := by
@@ -477,14 +509,14 @@ lemma eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
   exact hA.re_dotProduct_pos <| (ofLp_eq_zero 2).ne.2 <|
     hA.1.eigenvectorBasis.orthonormal.ne_zero i
 
+open Unitary
+
 /-- A Hermitian matrix is positive-definite if and only if its eigenvalues are positive. -/
 lemma _root_.Matrix.IsHermitian.posDef_iff_eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : A.IsHermitian) : A.PosDef ↔ ∀ i, 0 < hA.eigenvalues i := by
-  refine ⟨fun h => h.eigenvalues_pos, fun h => ?_⟩
-  rw [hA.spectral_theorem]
-  refine (posDef_diagonal_iff.mpr <| by simpa using h).mul_mul_conjTranspose_same ?_
-  rw [vecMul_injective_iff_isUnit, ← Unitary.val_toUnits_apply]
-  exact Units.isUnit _
+  have : IsUnit (hA.eigenvectorUnitary : Matrix n n 𝕜) := toUnits (hA.eigenvectorUnitary) |>.isUnit
+  conv_lhs => rw [hA.spectral_theorem]
+  simp [this.posDef_star_right_conjugate_iff, posDef_diagonal_iff]
 
 theorem trace_pos [Nonempty n] {A : Matrix n n 𝕜} (hA : A.PosDef) : 0 < A.trace := by
   classical
@@ -521,38 +553,6 @@ theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n K} :
     Matrix.inv_inv_of_invertible M ▸ h.inv, (·.inv)⟩
 
 end Field
-
-section conjugate
-variable [DecidableEq n] {x U : Matrix n n R}
-
-/-- For an invertible matrix `U`, `star U * x * U` is positive definite iff `x` is.
-This works on any ⋆-ring with a partial order.
-
-See `IsUnit.isStrictlyPositive_star_left_conjugate_iff'` for a similar statement for star-ordered
-rings. For matrices, positive definiteness is equivalent to strict positivity when the underlying
-field is `ℝ` or `ℂ` (see `Matrix.isStrictlyPositive_iff_posDef`). -/
-theorem _root_.Matrix.IsUnit.posDef_star_left_conjugate_iff (hU : IsUnit U) :
-    PosDef (star U * x * U) ↔ x.PosDef := by
-  simp_rw [PosDef, isHermitian_iff_isSelfAdjoint, hU.isSelfAdjoint_conjugate_iff',
-    and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec, star_eq_conjTranspose, ← star_mulVec,
-    ← dotProduct_mulVec]
-  obtain ⟨V, hV, hV2⟩ := isUnit_iff_exists.mp hU
-  have hV3 (y : n → R) (hy : y ≠ 0) : U *ᵥ y ≠ 0 := fun h => by simpa [hy, hV2] using congr(V *ᵥ $h)
-  have hV4 (y : n → R) (hy : y ≠ 0) : V *ᵥ y ≠ 0 := fun h => by simpa [hy, hV] using congr(U *ᵥ $h)
-  exact fun _ => ⟨fun h x hx => by simpa [hV] using h _ (hV4 _ hx), fun h x hx => h _ (hV3 _ hx)⟩
-
-open Matrix in
-/-- For an invertible matrix `U`, `U * x * star U` is positive definite iff `x` is.
-This works on any ⋆-ring with a partial order.
-
-See `IsUnit.isStrictlyPositive_star_right_conjugate_iff` for a similar statement for star-ordered
-rings. For matrices, positive definiteness is equivalent to strict positivity when the underlying
-field is `ℝ` or `ℂ` (see `Matrix.isStrictlyPositive_iff_posDef`). -/
-theorem _root_.Matrix.IsUnit.posDef_star_right_conjugate_iff (hU : IsUnit U) :
-    PosDef (U * x * star U) ↔ x.PosDef := by
-  simpa using hU.star.posDef_star_left_conjugate_iff
-
-end conjugate
 
 section SchurComplement
 
