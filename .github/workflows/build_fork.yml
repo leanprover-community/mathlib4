@@ -60,6 +60,9 @@ jobs:
     steps:
       - name: print job info
         run: |
+          # We don't want any substitution here
+          # (after GitHub does its thing with its expressions),
+          # so I'm using single quotes here.
           echo 'workflow: ${{ github.workflow }}'
           echo 'pull request number: ${{ github.event.pull_request.number }}'
           echo 'github ref: ${{ github.ref }}'
