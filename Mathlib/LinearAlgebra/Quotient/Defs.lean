@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.Module.Submodule.Defs
 import Mathlib.GroupTheory.QuotientGroup.Defs
+import Mathlib.Logic.Small.Basic
 
 /-!
 # Quotients by submodules
@@ -196,6 +197,11 @@ theorem induction_on {C : M ⧸ p → Prop} (x : M ⧸ p) (H : ∀ z, C (Submodu
 theorem mk_surjective : Function.Surjective (@mk _ _ _ _ _ p) := by
   rintro ⟨x⟩
   exact ⟨x, rfl⟩
+
+universe u in
+instance {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] {N : Submodule R M} [Small.{u} M] :
+    Small.{u} (M ⧸ N) :=
+  small_of_surjective (Submodule.Quotient.mk_surjective _)
 
 end Quotient
 

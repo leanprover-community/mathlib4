@@ -18,9 +18,7 @@ import Mathlib.RingTheory.Unramified.Basic
 
 namespace Algebra.FormallyUnramified
 
-universe u v
-
-variable {R : Type max u v} {I : Type v} [Finite I] (f : I → Type max u v)
+variable {R : Type*} {I : Type*} [Finite I] (f : I → Type*)
 variable [CommRing R] [∀ i, CommRing (f i)] [∀ i, Algebra R (f i)]
 
 theorem pi_iff :

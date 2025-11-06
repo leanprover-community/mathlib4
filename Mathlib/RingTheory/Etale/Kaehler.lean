@@ -21,7 +21,7 @@ import Mathlib.RingTheory.Flat.Localization
 
 universe u
 
-variable (R S T : Type u) [CommRing R] [CommRing S] [CommRing T]
+variable (R S T : Type*) [CommRing R] [CommRing S] [CommRing T]
 variable [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 open TensorProduct
