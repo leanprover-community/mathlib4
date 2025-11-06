@@ -46,12 +46,21 @@ theorem ClusterPt.frequently {F : Filter X} {p : X → Prop} (hx : ClusterPt x F
     (hp : ∀ᶠ y in 𝓝 x, p y) : ∃ᶠ y in F, p y :=
   clusterPt_iff_frequently.mp hx {y | p y} hp
 
+theorem Filter.HasBasis.clusterPt_iff_frequently' {ι} {p : ι → Prop} {s : ι → Set X} {F : Filter X}
+    (hx : F.HasBasis p s) : ClusterPt x F ↔ ∀ i, p i → ∃ᶠ x in 𝓝 x, x ∈ s i := by
+  simp only [(𝓝 x).basis_sets.clusterPt_iff hx, Filter.frequently_iff]
+  exact ⟨fun h a b c d ↦ h d b, fun h a b c d ↦ h c d b⟩
+
+theorem clusterPt_iff_frequently' {F : Filter X} : ClusterPt x F ↔ ∀ s ∈ F, ∃ᶠ y in 𝓝 x, y ∈ s :=
+  F.basis_sets.clusterPt_iff_frequently'
+
+theorem ClusterPt.frequently' {F : Filter X} {p : X → Prop} (hx : ClusterPt x F)
+    (hp : ∀ᶠ y in F, p y) : ∃ᶠ y in 𝓝 x, p y :=
+  clusterPt_iff_frequently'.mp hx {y | p y} hp
+
 theorem clusterPt_iff_nonempty {F : Filter X} :
     ClusterPt x F ↔ ∀ ⦃U : Set X⦄, U ∈ 𝓝 x → ∀ ⦃V⦄, V ∈ F → (U ∩ V).Nonempty :=
   inf_neBot_iff
-
-@[deprecated (since := "2025-03-16")]
-alias clusterPt_iff := clusterPt_iff_nonempty
 
 theorem clusterPt_iff_not_disjoint {F : Filter X} :
     ClusterPt x F ↔ ¬Disjoint (𝓝 x) F := by
@@ -77,7 +86,7 @@ theorem clusterPt_principal_iff :
 
 theorem clusterPt_principal_iff_frequently :
     ClusterPt x (𝓟 s) ↔ ∃ᶠ y in 𝓝 x, y ∈ s := by
-  simp only [clusterPt_principal_iff, frequently_iff, Set.Nonempty, exists_prop, mem_inter_iff]
+  simp only [clusterPt_principal_iff, frequently_iff, Set.Nonempty, mem_inter_iff]
 
 theorem ClusterPt.of_le_nhds {f : Filter X} (H : f ≤ 𝓝 x) [NeBot f] : ClusterPt x f := by
   rwa [ClusterPt, inf_eq_right.mpr H]
@@ -135,9 +144,6 @@ theorem Filter.HasBasis.mapClusterPt_iff_frequently {ι : Sort*} {p : ι → Pro
 theorem mapClusterPt_iff_frequently : MapClusterPt x F u ↔ ∀ s ∈ 𝓝 x, ∃ᶠ a in F, u a ∈ s :=
   (𝓝 x).basis_sets.mapClusterPt_iff_frequently
 
-@[deprecated (since := "2025-03-16")]
-alias mapClusterPt_iff := mapClusterPt_iff_frequently
-
 theorem MapClusterPt.frequently (h : MapClusterPt x F u) {p : X → Prop} (hp : ∀ᶠ y in 𝓝 x, p y) :
     ∃ᶠ a in F, p (u a) :=
   h.clusterPt.frequently hp
@@ -161,22 +167,16 @@ theorem accPt_sup {x : X} {F G : Filter X} :
 theorem accPt_iff_clusterPt {x : X} {F : Filter X} : AccPt x F ↔ ClusterPt x (𝓟 {x}ᶜ ⊓ F) := by
   rw [AccPt, nhdsWithin, ClusterPt, inf_assoc]
 
-@[deprecated (since := "2025-04-20")]
-alias acc_iff_cluster := accPt_iff_clusterPt
-
 /-- `x` is an accumulation point of a set `C` iff it is a cluster point of `C ∖ {x}`. -/
 theorem accPt_principal_iff_clusterPt {x : X} {C : Set X} :
     AccPt x (𝓟 C) ↔ ClusterPt x (𝓟 (C \ { x })) := by
   rw [accPt_iff_clusterPt, inf_principal, inter_comm, diff_eq]
 
-@[deprecated (since := "2025-04-20")]
-alias acc_principal_iff_cluster := accPt_principal_iff_clusterPt
-
 /-- `x` is an accumulation point of a set `C` iff every neighborhood
 of `x` contains a point of `C` other than `x`. -/
 theorem accPt_iff_nhds {x : X} {C : Set X} : AccPt x (𝓟 C) ↔ ∀ U ∈ 𝓝 x, ∃ y ∈ U ∩ C, y ≠ x := by
-  simp [accPt_principal_iff_clusterPt, clusterPt_principal_iff, Set.Nonempty, exists_prop,
-    and_assoc, @and_comm (¬_ = x)]
+  simp [accPt_principal_iff_clusterPt, clusterPt_principal_iff, Set.Nonempty,
+    and_assoc]
 
 /-- `x` is an accumulation point of a set `C` iff
 there are points near `x` in `C` and different from `x`. -/
@@ -240,6 +240,9 @@ lemma notMem_closure_iff_nhdsWithin_eq_bot : x ∉ closure s ↔ 𝓝[s] x = ⊥
 @[deprecated (since := "2025-05-23")]
 alias not_mem_closure_iff_nhdsWithin_eq_bot := notMem_closure_iff_nhdsWithin_eq_bot
 
+theorem mem_interior_iff_not_clusterPt_compl : x ∈ interior s ↔ ¬ClusterPt x (𝓟 sᶜ) := by
+  rw [← mem_closure_iff_clusterPt, closure_compl, mem_compl_iff, not_not]
+
 /-- If `x` is not an isolated point of a topological space, then `{x}ᶜ` is dense in the whole
 space. -/
 theorem dense_compl_singleton (x : X) [NeBot (𝓝[≠] x)] : Dense ({x}ᶜ : Set X) := by
@@ -278,12 +281,12 @@ theorem mem_closure_iff_comap_neBot :
 theorem mem_closure_iff_nhds_basis' {p : ι → Prop} {s : ι → Set X} (h : (𝓝 x).HasBasis p s) :
     x ∈ closure t ↔ ∀ i, p i → (s i ∩ t).Nonempty :=
   mem_closure_iff_clusterPt.trans <|
-    (h.clusterPt_iff (hasBasis_principal _)).trans <| by simp only [exists_prop, forall_const]
+    (h.clusterPt_iff (hasBasis_principal _)).trans <| by simp only [forall_const]
 
 theorem mem_closure_iff_nhds_basis {p : ι → Prop} {s : ι → Set X} (h : (𝓝 x).HasBasis p s) :
     x ∈ closure t ↔ ∀ i, p i → ∃ y ∈ t, y ∈ s i :=
   (mem_closure_iff_nhds_basis' h).trans <| by
-    simp only [Set.Nonempty, mem_inter_iff, exists_prop, and_comm]
+    simp only [Set.Nonempty, mem_inter_iff, and_comm]
 
 theorem clusterPt_iff_lift'_closure {F : Filter X} :
     ClusterPt x F ↔ pure x ≤ (F.lift' closure) := by

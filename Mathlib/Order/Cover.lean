@@ -179,7 +179,7 @@ section SemilatticeInf
 variable [SemilatticeInf α] {a b c : α}
 
 theorem WCovBy.inf_eq (hca : c ⩿ a) (hcb : c ⩿ b) (hab : a ≠ b) : a ⊓ b = c :=
-  (le_inf hca.le hcb.le).eq_of_not_gt fun h => hab.inf_lt_or_inf_lt.elim (hca.2 h) (hcb.2 h)
+  (le_inf hca.le hcb.le).eq_of_not_lt' fun h => hab.inf_lt_or_inf_lt.elim (hca.2 h) (hcb.2 h)
 
 end SemilatticeInf
 
@@ -459,6 +459,9 @@ variable {s t : Set α} {a : α}
 @[simp] lemma covBy_insert (ha : a ∉ s) : s ⋖ insert a s :=
   (wcovBy_insert _ _).covBy_of_lt <| ssubset_insert ha
 
+@[simp] lemma empty_covBy_singleton (a : α) : ∅ ⋖ ({a} : Set α) :=
+  insert_empty_eq (β := Set α) a ▸ covBy_insert <| notMem_empty a
+
 @[simp] lemma sdiff_singleton_covBy (ha : a ∈ s) : s \ {a} ⋖ s :=
   ⟨sdiff_lt (singleton_subset_iff.2 ha) <| singleton_ne_empty _, (sdiff_singleton_wcovBy _ _).2⟩
 
@@ -466,7 +469,7 @@ lemma _root_.CovBy.exists_set_insert (h : s ⋖ t) : ∃ a ∉ s, insert a s = t
   let ⟨a, ha, hst⟩ := ssubset_iff_insert.1 h.lt
   ⟨a, ha, (hst.eq_of_not_ssuperset <| h.2 <| ssubset_insert ha).symm⟩
 
-lemma _root_.CovBy.exists_set_sdiff_singleton (h : s ⋖ t) : ∃ a ∈ t, t \ {a} =  s :=
+lemma _root_.CovBy.exists_set_sdiff_singleton (h : s ⋖ t) : ∃ a ∈ t, t \ {a} = s :=
   let ⟨a, ha, hst⟩ := ssubset_iff_sdiff_singleton.1 h.lt
   ⟨a, ha, (hst.eq_of_not_ssubset fun h' ↦ h.2 h' <|
     sdiff_lt (singleton_subset_iff.2 ha) <| singleton_ne_empty _).symm⟩
@@ -483,15 +486,15 @@ section Relation
 
 open Relation
 
-lemma wcovBy_eq_reflGen_covBy [PartialOrder α] : ((· : α) ⩿ ·) = ReflGen (· ⋖ ·) := by
+lemma wcovBy_eq_reflGen_covBy [PartialOrder α] : (· ⩿ · : α → α → Prop) = ReflGen (· ⋖ ·) := by
   ext x y; simp_rw [wcovBy_iff_eq_or_covBy, @eq_comm _ x, reflGen_iff]
 
 lemma transGen_wcovBy_eq_reflTransGen_covBy [PartialOrder α] :
-    TransGen ((· : α) ⩿ ·) = ReflTransGen (· ⋖ ·) := by
+    TransGen (· ⩿ · : α → α → Prop) = ReflTransGen (· ⋖ ·) := by
   rw [wcovBy_eq_reflGen_covBy, transGen_reflGen]
 
 lemma reflTransGen_wcovBy_eq_reflTransGen_covBy [PartialOrder α] :
-    ReflTransGen ((· : α) ⩿ ·) = ReflTransGen (· ⋖ ·) := by
+    ReflTransGen (· ⩿ · : α → α → Prop) = ReflTransGen (· ⋖ ·) := by
   rw [wcovBy_eq_reflGen_covBy, reflTransGen_reflGen]
 
 end Relation
@@ -703,11 +706,11 @@ namespace WithTop
 variable [Preorder α] {a b : α}
 
 @[simp, norm_cast] lemma coe_wcovBy_coe : (a : WithTop α) ⩿ b ↔ a ⩿ b :=
-  Set.OrdConnected.apply_wcovBy_apply_iff OrderEmbedding.withTopCoe <| by
+  Set.OrdConnected.apply_wcovBy_apply_iff WithTop.coeOrderHom <| by
     simp [WithTop.range_coe, ordConnected_Iio]
 
 @[simp, norm_cast] lemma coe_covBy_coe : (a : WithTop α) ⋖ b ↔ a ⋖ b :=
-  Set.OrdConnected.apply_covBy_apply_iff OrderEmbedding.withTopCoe <| by
+  Set.OrdConnected.apply_covBy_apply_iff WithTop.coeOrderHom <| by
     simp [WithTop.range_coe, ordConnected_Iio]
 
 @[simp] lemma coe_covBy_top : (a : WithTop α) ⋖ ⊤ ↔ IsMax a := by
@@ -724,11 +727,11 @@ namespace WithBot
 variable [Preorder α] {a b : α}
 
 @[simp, norm_cast] lemma coe_wcovBy_coe : (a : WithBot α) ⩿ b ↔ a ⩿ b :=
-  Set.OrdConnected.apply_wcovBy_apply_iff OrderEmbedding.withBotCoe <| by
+  Set.OrdConnected.apply_wcovBy_apply_iff WithBot.coeOrderHom <| by
     simp [WithBot.range_coe, ordConnected_Ioi]
 
 @[simp, norm_cast] lemma coe_covBy_coe : (a : WithBot α) ⋖ b ↔ a ⋖ b :=
-  Set.OrdConnected.apply_covBy_apply_iff OrderEmbedding.withBotCoe <| by
+  Set.OrdConnected.apply_covBy_apply_iff WithBot.coeOrderHom <| by
     simp [WithBot.range_coe, ordConnected_Ioi]
 
 @[simp] lemma bot_covBy_coe : ⊥ ⋖ (a : WithBot α) ↔ IsMin a := by

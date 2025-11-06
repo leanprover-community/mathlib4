@@ -3,8 +3,8 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Judith Ludwig, Christian Merten, Jiedong Jiang
 -/
-import Mathlib.Algebra.GeomSum
-import Mathlib.LinearAlgebra.SModEq
+import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.LinearAlgebra.SModEq.Basic
 import Mathlib.RingTheory.Ideal.Quotient.PowTransition
 import Mathlib.RingTheory.Jacobson.Ideal
 
@@ -21,9 +21,12 @@ with respect to an ideal `I`:
 - `IsAdicComplete I M`: this says that `M` is Hausdorff and precomplete.
 - `Hausdorffification I M`: this is the universal Hausdorff module with a map from `M`.
 - `AdicCompletion I M`: if `I` is finitely generated, then this is the universal complete module
-  (TODO) with a map from `M`. This map is injective iff `M` is Hausdorff and surjective iff `M` is
-  precomplete.
-
+  with a linear map `AdicCompletion.lift` from `M`. This map is injective iff `M` is Hausdorff
+  and surjective iff `M` is precomplete.
+- `IsAdicComplete.lift`: if `N` is `I`-adically complete, then a compatible family of
+  linear maps `M →ₗ[R] N ⧸ (I ^ n • ⊤)` can be lifted to a unique linear map `M →ₗ[R] N`.
+  Together with `mk_lift_apply` and `eq_lift`, it gives the universal property of being
+  `I`-adically complete.
 -/
 
 suppress_compilation
@@ -44,407 +47,37 @@ class IsPrecomplete : Prop where
     ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)]
 
 /-- A module `M` is `I`-adically complete if it is Hausdorff and precomplete. -/
+@[mk_iff, stacks 0317 "see also `IsAdicComplete.of_bijective_iff`"]
 class IsAdicComplete : Prop extends IsHausdorff I M, IsPrecomplete I M
 
 variable {I M}
 
-namespace IsHausdorff
-
-theorem haus (_ : IsHausdorff I M) :
+theorem IsHausdorff.haus (_ : IsHausdorff I M) :
     ∀ x : M, (∀ n : ℕ, x ≡ 0 [SMOD (I ^ n • ⊤ : Submodule R M)]) → x = 0 :=
   IsHausdorff.haus'
 
-theorem _root_.isHausdorff_iff :
+theorem isHausdorff_iff :
     IsHausdorff I M ↔ ∀ x : M, (∀ n : ℕ, x ≡ 0 [SMOD (I ^ n • ⊤ : Submodule R M)]) → x = 0 :=
   ⟨IsHausdorff.haus, fun h => ⟨h⟩⟩
 
-variable [IsHausdorff I M]
-
-theorem eq_iff_smodEq {x y : M} :
+theorem IsHausdorff.eq_iff_smodEq [IsHausdorff I M] {x y : M} :
     x = y ↔ ∀ n, x ≡ y [SMOD (I ^ n • ⊤ : Submodule R M)] := by
   refine ⟨fun h _ ↦ h ▸ rfl, fun h ↦ ?_⟩
   rw [← sub_eq_zero]
   apply IsHausdorff.haus' (I := I) (x - y)
   simpa [SModEq.sub_mem] using h
 
-alias ⟨_, eq_of_smodEq⟩ := eq_iff_smodEq
-
-/--
-The `M = R` variant of `IsHausdorff.eq_iff_smodEq`. It helps to solve the problem that `I ^ n`
-is not defeq to `I ^ n • ⊤`.
--/
-theorem eq_iff_smodEq' [IsHausdorff I R]
-    {x y : R} :  x = y ↔ ∀ n, x ≡ y [SMOD I ^ n] := by
-  refine ⟨fun h _ ↦ h ▸ rfl, fun h ↦ ?_⟩
-  rw [← sub_eq_zero]
-  apply IsHausdorff.haus' (I := I) (x - y)
-  simpa [SModEq.sub_mem] using h
-
-alias ⟨_, eq_of_smodEq'⟩ := eq_iff_smodEq'
-
-variable {a : ℕ → ℕ} (ha : StrictMono a)
-include ha
-
-/--
-Given an strictly increasing sequence `a : ℕ → ℕ` and two elements `x y` in a module `M`
-Hausdorff with respect to an ideal `I`, `x = y` if and only if `x ≡ y [SMOD (I ^ a n • ⊤)]`
-for all `n`.
--/
-theorem eq_iff_smodEq_of_strictMono {x y : M} :
-    x = y ↔ ∀ n, x ≡ y [SMOD (I ^ a n • ⊤ : Submodule R M)] := by
-  refine ⟨fun h _ ↦ h ▸ rfl, fun h ↦ ?_⟩
-  rw [← sub_eq_zero]
-  apply IsHausdorff.haus' (I := I) (x - y)
-  intro n
-  simpa only [SModEq.sub_mem, sub_zero] using SModEq.mono (pow_smul_top_le I M (ha.id_le n)) (h n)
-
-/--
-The `M = R` invariant of `IsHausdorff.eq_iff_smodEq_of_strictMono`.
--/
-theorem eq_iff_smodEq_of_strictMono' [IsHausdorff I R] {x y : R} :
-    x = y ↔ ∀ n, x ≡ y [SMOD (I ^ a n)] := by
-  refine ⟨fun h _ ↦ h ▸ rfl, fun h ↦ ?_⟩
-  rw [← sub_eq_zero]
-  apply IsHausdorff.haus' (I := I) (x - y)
-  simp only [smul_eq_mul, mul_top]
-  intro n
-  simpa only [SModEq.sub_mem, sub_zero] using
-      SModEq.mono (Ideal.pow_le_pow_right (ha.id_le n)) (h n)
-
-/--
-If `F : N → M` is the
-limit function of `f n : N → M ⧸ (I ^ a n • ⊤)`, and each
-`f n` is additive, then `F` is additive.
--/
-protected theorem map_add {N : Type*} [Add N] {f : (n : ℕ) → N → M ⧸ (I ^ (a n) • ⊤)}
-    (hf : ∀ (n x y), f n (x + y) = f n x + f n y) {F : N → M}
-    (hF : ∀ (n x), f n x = mkQ (I ^ (a n) • ⊤ : Submodule R M) (F x)) (x y : N) :
-    F (x + y) = F x + F y := by
-  refine (eq_iff_smodEq_of_strictMono (I := I) ha).mpr (fun n ↦ ?_)
-  simp only [mkQ_apply] at hF
-  simp only [SModEq, ← hF, mk_add]
-  exact hf _ _ _
-
-/--
-The `M = R` variant of `IsHausdorff.map_add`.
--/
-protected theorem map_add' [IsHausdorff I R] {N : Type*} [Add N]
-    {f : (n : ℕ) → N → R ⧸ (I ^ a n)} (hf : ∀ (n x y), f n (x + y) = f n x + f n y)
-    {F : N → R} (hF : ∀ (n x), f n x = Ideal.Quotient.mk (I ^ a n) (F x)) (x y : N) :
-    F (x + y) = F x + F y := by
-  refine (eq_iff_smodEq_of_strictMono' (I := I) ha).mpr (fun n ↦ ?_)
-  simp only [SModEq, mk_eq_mk, ← hF, _root_.map_add]
-  exact hf n _ _
-
-/--
-If `F : N → M` is the limit function of `f n : N → M ⧸ (I ^ a n • ⊤)`, and each
-`f n` preserves scalar multiplication, then `F` preserves scalar multiplication.
--/
-protected theorem map_smul {N : Type*} [HSMul R N N]
-    {f : (n : ℕ) → N → M ⧸ (I ^ a n • ⊤)} (hf : ∀ (n : ℕ) (r : R) (x : N), f n (r • x) = r • f n x)
-    {F : N → M} (hF : ∀ (n x), f n x = mkQ (I ^ a n • ⊤ : Submodule R M) (F x)) (r : R) (x : N) :
-    F (r • x) = r • F x := by
-  refine (eq_iff_smodEq_of_strictMono (I := I) ha).mpr (fun n ↦ ?_)
-  simp only [mkQ_apply] at hF
-  simp only [SModEq, ← hF, mk_smul]
-  exact hf _ _ _
-
-/--
-If `F : S → R` is the limit function of `f n : S → R ⧸ (I ^ a n)`, and each
-`f n` preserves multiplication, then `F` preserves multiplication.
--/
-protected theorem map_mul {S : Type*} [IsHausdorff I R] [Mul S]
-    {f : (n : ℕ) → S → R ⧸ I ^ a n} (hf : ∀ (n x y), f n (x * y) = f n x * f n y)
-    {F : S → R} (hF : ∀ (n x), f n x = Ideal.Quotient.mk (I ^ a n) (F x)) (x y : S) :
-    F (x * y) = F x * F y := by
-  refine (eq_iff_smodEq_of_strictMono' (I := I) ha).mpr (fun n ↦ ?_)
-  simp only [SModEq, mk_eq_mk, ← hF, _root_.map_mul]
-  exact hf n _ _
-
-/--
-The limit of `1 : R ⧸ I ^ a n` is `1 : R`.
--/
-protected theorem eq_one [IsHausdorff I R] {L : R} (hL : ∀ n, Ideal.Quotient.mk (I ^ a n) L = 1) :
-    L = 1 := by
-  refine (eq_iff_smodEq_of_strictMono' (I := I) ha).mpr (fun n ↦ ?_)
-  simpa [SModEq, mk_zero] using hL n
-
-/--
-The limit of `0 : M ⧸ I ^ (a n) • ⊤` is `0 : M`.
--/
-protected theorem eq_zero {L : M} (hL : ∀ n, mkQ (I ^ a n • ⊤ : Submodule R M) L = 0) :
-    L = 0 := by
-  refine (eq_iff_smodEq_of_strictMono (I := I) ha).mpr (fun n ↦ ?_)
-  simpa [SModEq, mk_zero] using hL n
-
-/--
-The `M = R` variant of `IsHausdorff.eq_zero`. The limit of `0 : R ⧸ I ^ a n` is `0 : R`.
--/
-protected theorem eq_zero' [IsHausdorff I R] {L : R} (hL : ∀ n, Ideal.Quotient.mk (I ^ a n) L = 0) :
-    L = 0 := by
-  refine (eq_iff_smodEq_of_strictMono' (I := I) ha).mpr (fun n ↦ ?_)
-  simpa [SModEq, mk_zero] using hL n
-
-end IsHausdorff
-
-namespace IsPrecomplete
-
-theorem prec (_ : IsPrecomplete I M) {f : ℕ → M} :
+theorem IsPrecomplete.prec (_ : IsPrecomplete I M) {f : ℕ → M} :
     (∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)]) →
       ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)] :=
   IsPrecomplete.prec' _
 
-theorem _root_.isPrecomplete_iff :
+theorem isPrecomplete_iff :
     IsPrecomplete I M ↔
       ∀ f : ℕ → M,
         (∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)]) →
           ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)] :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
-
-theorem exists_pow_dvd {r : R} (_ : IsPrecomplete (Ideal.span {r}) R)
-    {f : ℕ → R} (hf : ∀ {m n}, m ≤ n → r ^ m ∣ f m - f n) :
-    ∃ L : R, ∀ n, r ^ n ∣ f n - L := by
-  suffices ∃ L, ∀ n, f n ≡ L [SMOD Ideal.span {r} ^ n • (⊤ : Ideal R)] by
-    simpa only [Ideal.span_singleton_pow, smul_eq_mul, Ideal.mul_top, SModEq.sub_mem,
-      Ideal.mem_span_singleton] using this
-  refine IsPrecomplete.prec' f (fun {m n} h ↦ ?_)
-  simpa only [Ideal.span_singleton_pow, smul_eq_mul, Ideal.mul_top, SModEq.sub_mem,
-    Ideal.mem_span_singleton] using hf h
-
-variable [IsPrecomplete I M]
-/--
-A variant of `IsPrecomplete.prec'`. Instead of checking the `SModEq` condition for
-all `n ≥ m`, it suffices to check the condition for `n = m + 1` only.
--/
-theorem of_SModEq_succ {f : ℕ → M}
-    (hf : ∀ {m}, f m ≡ f (m + 1) [SMOD (I ^ m • ⊤ : Submodule R M)]) :
-    ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)] := by
-  refine IsPrecomplete.prec' _ ?_
-  intro m n h
-  simp only [SModEq]
-  rw [← mkQ_apply _ (f n), ← Submodule.factor_mk (pow_smul_top_le I M h), mkQ_apply]
-  apply Submodule.eq_factor_of_eq_factor_succ
-      (p := fun n => I ^ n • ⊤) (x := fun m ↦ Submodule.Quotient.mk (f m))
-  intro m
-  simpa using hf
-
-/--
-A variant of `IsPrecomplete.of_SModEq_succ`. Instead of starting with a compatible sequence
-`f n` in `M`, we start with a compatible sequence `f n` in `M ⧸ I ^ n`.
--/
-theorem of_eq_factorPowSucc {f : (n : ℕ) → M ⧸ (I ^ n • ⊤)}
-    (hf : ∀ {m}, f m = factorPowSucc I M m (f (m + 1))) :
-    ∃ L : M, ∀ n, f n = mkQ _ L := by
-  choose g hmk using fun n ↦ Submodule.Quotient.mk_surjective _ (f n)
-  have hg : ∀ {m}, g m ≡ g (m + 1) [SMOD (I ^ m • ⊤ : Submodule R M)] := by
-    intro m
-    simp only [SModEq]
-    calc
-      _ = f m := (hmk m)
-      _ = factorPowSucc I M m (f (m + 1)) := hf
-      _ = _ := by simp [← (hmk (m + 1))]
-  choose L hL using of_SModEq_succ hg
-  refine ⟨L, fun n ↦ (hmk n).symm.trans ?_⟩
-  simpa using hL n
-
-/--
-The `M = R` variant of `IsPrecomplete.of_eq_factorPowSucc`.
-It helps to solve the problem that `I ^ n` is not defeq to `I ^ n • ⊤`.
--/
-theorem of_eq_factorPowSucc' [IsPrecomplete I R] {f : (n : ℕ) → R ⧸ I ^ n}
-    (hf : ∀ {m}, f m = factorPowSucc I m (f (m + 1))) :
-    ∃ L : R, ∀ n, f n = Ideal.Quotient.mk _ L := by
-  let i := fun n ↦ (I ^ n).quotEquivOfEq (J := I ^ n • ⊤) (mul_top _).symm
-  let f' := fun n => i n (f n)
-  suffices ∃ L : R, ∀ n, f' n = Submodule.mkQ (I ^ n • ⊤ : Ideal R) L by
-    obtain ⟨L, hL⟩ := this
-    refine ⟨L, fun n ↦ ?_⟩
-    have := hL n
-    apply_fun (i n).symm at this
-    simpa only [RingEquiv.symm_apply_apply, mkQ_apply, mk_eq_mk, quotientEquiv_symm_mk,
-      RingEquiv.symm_refl, RingEquiv.refl_apply, i, f'] using this
-  apply IsPrecomplete.of_eq_factorPowSucc
-  intro m
-  have := hf (m := m)
-  apply_fun i m at this
-  simpa [f', i, Submodule.factorPowSucc, Submodule.factorPow,
-      Ideal.quotEquivOfEq_eq_factor] using this
-
-variable {a : ℕ → ℕ} (ha : StrictMono a)
-include ha
-
-/--
-Given an strictly increasing sequence `a : ℕ → ℕ`, a
-sequence `f n` in `M ⧸ I ^ a n • ⊤`
-compatible in the sense that the image of `f (m + 1)` in `M ⧸ I ^ a m • ⊤`
-is `f m`, there exist a limit `L` in `M` such that `f n` the image of `L` in `M ⧸ I ^ a n • ⊤`.
--/
-theorem of_eq_factorPow {f : (n : ℕ) → M ⧸ (I ^ (a n) • ⊤)}
-    (hf : ∀ {m}, f m = factorPow I M (ha.monotone m.le_succ) (f (m + 1))) :
-    ∃ L : M, ∀ n, f n = mkQ _ L := by
-  let f' : (n : ℕ) → M ⧸ (I ^ n • ⊤) :=
-    fun n => Submodule.factor (pow_smul_top_le _ _ <| ha.id_le n) (f n)
-  have : ∀ {m}, f' m = factorPowSucc I M m (f' (m + 1)) := by
-    intro m
-    simp [f', hf (m := m)]
-  choose L hL using of_eq_factorPowSucc this
-  refine ⟨L, fun n ↦ ((hL (a n)).symm.trans ?_).symm⟩
-  suffices hf' : ∀ {m n}, (h : m ≤ n) → f m = factorPow I M (ha.monotone h) (f n) by
-    simpa [f'] using (hf' (ha.id_le n)).symm
-  intro m n h
-  exact Submodule.eq_factor_of_eq_factor_succ
-      (fun _ _ h ↦ pow_smul_top_le I M (ha.monotone h)) f (fun m ↦ hf) m n h
-
-/--
-The `M = R` variant of `IsPrecomplete.of_eq_factorPow`.
--/
-theorem of_eq_factorPow' [IsPrecomplete I R] {f : (n : ℕ) → R ⧸ I ^ (a n)}
-    (hf : ∀ {m}, f m = factorPow I (ha.monotone m.le_succ) (f (m + 1))) :
-    ∃ L : R, ∀ n, f n = Ideal.Quotient.mk _ L := by
-  let f' : (n : ℕ) → R ⧸ I ^ n :=
-    fun n => Ideal.Quotient.factor (I.pow_le_pow_right (ha.id_le n)) (f n)
-  have : ∀ {m}, f' m = factorPowSucc I m (f' (m + 1)) := by
-    intro m
-    simp [f', hf (m := m)]
-  choose L hL using of_eq_factorPowSucc' this
-  refine ⟨L, fun n ↦ ((hL (a n)).symm.trans ?_).symm⟩
-  suffices hf' : ∀ {m n}, (h : m ≤ n) → f m = factorPow I (ha.monotone h) (f n) by
-    simpa [f'] using (hf' (ha.id_le n)).symm
-  intro m n h
-  exact Submodule.eq_factor_of_eq_factor_succ
-      (fun _ _ h ↦ I.pow_le_pow_right (ha.monotone h)) f (fun m ↦ hf) m n h
-
-/--
-The function variant of `IsPrecomplete.of_eq_factorPow`. Instead of construct a single
-element from a compatible sequence of elements in `M ⧸ (I ^ a n • ⊤)`, we construct a function
-from a compatible sequence of functions.
--/
-theorem function_of_eq_factorPow {α : Type*} {f : (n : ℕ) → α → M ⧸ (I ^ (a n) • ⊤)}
-    (hf : ∀ {m s}, f m s = Submodule.factorPow I M (ha.monotone m.le_succ) (f (m + 1) s)) :
-    ∃ F : α → M, ∀ n s, f n s = mkQ (I ^ (a n) • ⊤) (F s) :=
-    ⟨fun s ↦ Classical.choose <| IsPrecomplete.of_eq_factorPow ha (hf (s := s)),
-    fun n s => (Classical.choose_spec <| IsPrecomplete.of_eq_factorPow ha (hf (s := s))) n⟩
-
-/--
-The function variant of `IsPrecomplete.of_eq_factorPowSucc`, the `M = R` variant of
-`IsPrecomplete.function_of_eq_factorPow`. Instead of construct a single
-element from a compatible sequence of elements in `R ⧸ I ^ a n`, we construct a function
-from a compatible sequence of functions.
--/
-theorem function_of_eq_factorPow' [IsPrecomplete I R] {α : Type*} {f : (n : ℕ) → α → R ⧸ I ^ (a n)}
-    (hf : ∀ {m s}, f m s = Ideal.Quotient.factorPow I (ha.monotone m.le_succ) (f (m + 1) s)) :
-    ∃ F : α → R, ∀ n s, f n s = Ideal.Quotient.mk (I ^ (a n)) (F s) :=
-  ⟨fun s ↦ Classical.choose <| IsPrecomplete.of_eq_factorPow' ha (hf (s := s)),
-    fun n s => (Classical.choose_spec <| IsPrecomplete.of_eq_factorPow' ha (hf (s := s))) n⟩
-
-end IsPrecomplete
-
-namespace IsAdicComplete
-
-section LinearMap
-
-variable [IsAdicComplete I M] {N : Type*} [AddCommMonoid N] [Module R N]
-variable {a : ℕ → ℕ} (ha : StrictMono a)
-include ha
-
-/-- `Gneralize this to a sequence a n instead of n`
-The limit linear map `F : N →ₗ[R] M` of a sequence of compatible
-linear maps `N →ₗ[R] M ⧸ (I ^ a n • ⊤)`.
--/
-noncomputable
-def limLinearMap {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ (a n) • ⊤)}
-    (hf : ∀ {m s}, f m s = factorPow I M (ha.monotone m.le_succ) (f (m + 1) s)) :
-    N →ₗ[R] M where
-      toFun := Classical.choose <|
-        IsPrecomplete.function_of_eq_factorPow ha (f := fun n ↦ f n) hf
-      map_add' := IsHausdorff.map_add ha (fun n ↦ (f n).map_add') <|
-        Classical.choose_spec <|
-          IsPrecomplete.function_of_eq_factorPow (I := I) (f := fun n ↦ f n) ha hf
-      map_smul' := IsHausdorff.map_smul ha (fun n ↦ (f n).map_smul') <|
-        Classical.choose_spec <|
-          IsPrecomplete.function_of_eq_factorPow (I := I) (f := fun n ↦ f n) ha hf
-
-/--
-Let `F : N →ₗ[R] M` be the limit of `f n : N →ₗ[R] M ⧸ (I ^ a n • ⊤)`.
-Then the compositon of limit linear map `F : N →ₗ[R] M` with the canonial
-projection `M →ₗ[R] M ⧸ (I ^ a n • ⊤)` is `f n` .
--/
-@[simp]
-theorem mk_limLinearMap {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ a n • ⊤)}
-    (hf : ∀ {m s}, f m s = factorPow I M (ha.monotone m.le_succ) (f (m + 1) s)) (n : ℕ) (s : N) :
-    (Submodule.Quotient.mk (limLinearMap ha hf s)) = f n s := by
-  simpa using ((Classical.choose_spec <|
-      IsPrecomplete.function_of_eq_factorPow (I := I) (f := fun n ↦ f n) ha hf) n s).symm
-
-/--
-Let `F : N →ₗ[R] M` be the limit of `f n : N →ₗ[R] M ⧸ (I ^ a n • ⊤)`.
-Then the compositon of limit linear map `F : N →ₗ[R] M` with the canonial
-projection `M →ₗ[R] M ⧸ (I ^ a n • ⊤)` is `f n` .
--/
-@[simp]
-theorem mkQ_comp_limLinearMap {f : (n : ℕ) → N →ₗ[R] M ⧸ (I ^ (a n) • ⊤)}
-    (hf : ∀ {m s}, f m s = factorPow I M (ha.monotone m.le_succ) (f (m + 1) s)) (n : ℕ) :
-    (mkQ (I ^ (a n) • ⊤ : Submodule R M)).comp (limLinearMap ha hf) = f n := by
-  ext
-  simp [IsAdicComplete.mk_limLinearMap ha hf n]
-
-end LinearMap
-
-section RingHom
-
-variable [IsAdicComplete I R] {S : Type*} [NonAssocSemiring S]
-variable {a : ℕ → ℕ} (ha : StrictMono a)
-include ha
-
-/--
-The limit ring map `F : S →+* R` of a sequence of compatible
-ring maps `S →+* R ⧸ I ^ a n`.
--/
-noncomputable
-def limRingHom {f : (n : ℕ) → S →+* R ⧸ I ^ a n}
-    (hf : ∀ {m s}, f m s = factorPow I (ha.monotone m.le_succ) (f (m + 1) s)) :
-    S →+* R where
-      toFun := Classical.choose <|
-        IsPrecomplete.function_of_eq_factorPow' (I := I) (f := fun n ↦ f n) ha hf
-      map_one' := IsHausdorff.eq_one ha <| fun n ↦ by
-          simpa only [(f n).map_one] using ((Classical.choose_spec <|
-            IsPrecomplete.function_of_eq_factorPow' (I := I) (f := fun n ↦ f n) ha hf) n 1).symm
-      map_mul' := IsHausdorff.map_mul ha (fun n ↦ (f n).map_mul) <|
-        Classical.choose_spec <|
-          IsPrecomplete.function_of_eq_factorPow' (I := I) (f := fun n ↦ f n) ha hf
-      map_zero' := IsHausdorff.eq_zero' ha <| fun n ↦ by
-          simpa only [(f n).map_zero] using ((Classical.choose_spec <|
-            IsPrecomplete.function_of_eq_factorPow' (I := I) (f := fun n ↦ f n) ha hf) n 0).symm
-      map_add' := IsHausdorff.map_add' ha (fun n ↦ (f n).map_add) <|
-        Classical.choose_spec <|
-          IsPrecomplete.function_of_eq_factorPow' (I := I) (f := fun n ↦ f n) ha hf
-
-/--
-Let `F : S →+* R` be the limit of `f n : S →+* R ⧸ I ^ a n`.
-Then the compositon of limit ring map `F : S →+* R` with the canonial
-projection `R →+* R ⧸ I ^ a n` is `f n` .
--/
-@[simp]
-theorem mk_limRingHom {f : (n : ℕ) → S →+* R ⧸ I ^ a n}
-    (hf : ∀ {m s}, f m s = factorPow I (ha.monotone m.le_succ) (f (m + 1) s)) (n : ℕ) (s : S) :
-    Ideal.Quotient.mk (I ^ a n) (limRingHom ha hf s) = f n s :=
-  ((Classical.choose_spec <|
-      IsPrecomplete.function_of_eq_factorPow' (I := I) (f := fun n ↦ f n) ha hf) n s).symm
-
-/--
-Let `F : S →+* R` be the limit of `f n : S →+* R ⧸ I ^ a n`.
-Then the compositon of limit ring map `F : S →+* R` with the canonial
-projection `R →+* R ⧸ I ^ a n` is `f n` .
--/
-@[simp]
-theorem mk_comp_limRingHom {f : (n : ℕ) → S →+* R ⧸ I ^ a n}
-    (hf : ∀ {m a}, f m a = factorPow I (ha.monotone m.le_succ) (f (m + 1) a)) (n : ℕ) :
-    (Ideal.Quotient.mk (I ^ a n)).comp (limRingHom ha hf) = f n :=
-  RingHom.ext (IsAdicComplete.mk_limRingHom ha hf n)
-
-end RingHom
-
-end IsAdicComplete
 
 variable (I M)
 
@@ -723,7 +356,7 @@ def AdicCauchySequence : Type _ := { f : ℕ → M // IsAdicCauchy I M f }
 
 namespace AdicCauchySequence
 
-/-- The type of `I`-adic cauchy sequences is a submodule of the product `ℕ → M`. -/
+/-- The type of `I`-adic Cauchy sequences is a submodule of the product `ℕ → M`. -/
 def submodule : Submodule R (ℕ → M) where
   carrier := { f | IsAdicCauchy I M f }
   add_mem' := by
@@ -792,7 +425,7 @@ theorem smul_apply (n : ℕ) (r : R) (f : AdicCauchySequence I M) : (r • f) n 
 theorem ext {x y : AdicCauchySequence I M} (h : ∀ n, x n = y n) : x = y :=
   Subtype.eq <| funext h
 
-/-- The defining property of an adic cauchy sequence unwrapped. -/
+/-- The defining property of an adic Cauchy sequence unwrapped. -/
 theorem mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (f : AdicCauchySequence I M) :
     Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (f n) =
       Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (f m) :=
@@ -800,7 +433,7 @@ theorem mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (f : AdicCauchySequence I M) :
 
 end AdicCauchySequence
 
-/-- The `I`-adic cauchy condition can be checked on successive `n`. -/
+/-- The `I`-adic Cauchy condition can be checked on successive `n`. -/
 theorem isAdicCauchy_iff (f : ℕ → M) :
     IsAdicCauchy I M f ↔ ∀ n, f n ≡ f (n + 1) [SMOD (I ^ n • ⊤ : Submodule R M)] := by
   constructor
@@ -814,33 +447,33 @@ theorem isAdicCauchy_iff (f : ℕ → M) :
         · exact ih
         · refine SModEq.mono (smul_mono (Ideal.pow_le_pow_right hmn) (by rfl)) (h n)
 
-/-- Construct `I`-adic cauchy sequence from sequence satisfying the successive cauchy condition. -/
+/-- Construct `I`-adic Cauchy sequence from sequence satisfying the successive Cauchy condition. -/
 @[simps]
 def AdicCauchySequence.mk (f : ℕ → M)
     (h : ∀ n, f n ≡ f (n + 1) [SMOD (I ^ n • ⊤ : Submodule R M)]) : AdicCauchySequence I M where
   val := f
   property := by rwa [isAdicCauchy_iff]
 
-/-- The canonical linear map from cauchy sequences to the completion. -/
+/-- The canonical linear map from Cauchy sequences to the completion. -/
 @[simps]
 def mk : AdicCauchySequence I M →ₗ[R] AdicCompletion I M where
   toFun f := ⟨fun n ↦ Submodule.mkQ (I ^ n • ⊤ : Submodule R M) (f n), by
     intro m n hmn
-    simp only [mkQ_apply, Submodule.factor_mk]
+    simp only [mkQ_apply]
     exact (f.property hmn).symm⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-/-- Criterion for checking that an adic cauchy sequence is mapped to zero in the adic completion. -/
+/-- Criterion for checking that an adic Cauchy sequence is mapped to zero in the adic completion. -/
 theorem mk_zero_of (f : AdicCauchySequence I M)
     (h : ∃ k : ℕ, ∀ n ≥ k, ∃ m ≥ n, ∃ l ≥ n, f m ∈ (I ^ l • ⊤ : Submodule R M)) :
     AdicCompletion.mk I M f = 0 := by
   obtain ⟨k, h⟩ := h
   ext n
-  obtain ⟨m, hnm, l, hnl, hl⟩ := h (n + k) (by omega)
+  obtain ⟨m, hnm, l, hnl, hl⟩ := h (n + k) (by cutsat)
   rw [mk_apply_coe, Submodule.mkQ_apply, val_zero,
-    ← AdicCauchySequence.mk_eq_mk (show n ≤ m by omega)]
-  simpa using (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by omega))) hl
+    ← AdicCauchySequence.mk_eq_mk (show n ≤ m by cutsat)]
+  simpa using (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by cutsat))) hl
 
 /-- Every element in the adic completion is represented by a Cauchy sequence. -/
 theorem mk_surjective : Function.Surjective (mk I M) := by
@@ -888,9 +521,245 @@ lemma eval_lift_apply (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Sub
     (n : ℕ) (x : M) : (lift I f h x).val n = f n x :=
   rfl
 
+section Bijective
+
+variable {I}
+
+theorem of_injective_iff : Function.Injective (of I M) ↔ IsHausdorff I M := by
+  constructor
+  · refine fun h ↦ ⟨fun x hx ↦ h ?_⟩
+    ext n
+    simpa [of, SModEq.zero] using hx n
+  · intro h
+    rw [← LinearMap.ker_eq_bot]
+    ext x
+    simp only [LinearMap.mem_ker, Submodule.mem_bot]
+    refine ⟨fun hx ↦ h.haus x fun n ↦ ?_, fun hx ↦ by simp [hx]⟩
+    rw [Subtype.ext_iff] at hx
+    simpa [SModEq.zero] using congrFun hx n
+
+variable (I M) in
+theorem of_injective [IsHausdorff I M] : Function.Injective (of I M) :=
+  of_injective_iff.mpr ‹_›
+
+@[simp]
+theorem of_inj [IsHausdorff I M] {a b : M} : of I M a = of I M b ↔ a = b :=
+  (of_injective I M).eq_iff
+
+theorem of_surjective_iff : Function.Surjective (of I M) ↔ IsPrecomplete I M := by
+  constructor
+  · refine fun h ↦ ⟨fun f hmn ↦ ?_⟩
+    let u : AdicCompletion I M := ⟨fun n ↦ Submodule.Quotient.mk (f n), fun c ↦ (hmn c).symm⟩
+    obtain ⟨x, hx⟩ := h u
+    refine ⟨x, fun n ↦ ?_⟩
+    simp only [SModEq]
+    rw [← mkQ_apply _ x, ← eval_of, hx]
+    simp [u]
+  · intro h u
+    choose x hx using (fun n ↦ Submodule.Quotient.mk_surjective (I ^ n • ⊤ : Submodule R M) (u.1 n))
+    obtain ⟨a, ha⟩ := h.prec (f := x) (fun hmn ↦ by rw [SModEq, hx, ← u.2 hmn, ← hx]; simp)
+    use a
+    ext n
+    simpa [SModEq, ← eval_of, ha, ← hx] using (ha n).symm
+
+variable (I M) in
+theorem of_surjective [IsPrecomplete I M] : Function.Surjective (of I M) :=
+  of_surjective_iff.mpr ‹_›
+
+theorem of_bijective_iff : Function.Bijective (of I M) ↔ IsAdicComplete I M :=
+  ⟨fun h ↦
+    { toIsHausdorff := of_injective_iff.mp h.1,
+      toIsPrecomplete := of_surjective_iff.mp h.2 },
+   fun h ↦ ⟨of_injective_iff.mpr h.1, of_surjective_iff.mpr h.2⟩⟩
+
+variable (I M)
+
+variable [IsAdicComplete I M]
+
+theorem of_bijective : Function.Bijective (of I M) :=
+  of_bijective_iff.mpr ‹_›
+
+/--
+When `M` is `I`-adic complete, the canonical map from `M` to its `I`-adic completion is a linear
+equivalence.
+-/
+@[simps! apply]
+def ofLinearEquiv : M ≃ₗ[R] AdicCompletion I M :=
+  LinearEquiv.ofBijective (of I M) (of_bijective I M)
+
+variable {M}
+
+@[simp]
+theorem ofLinearEquiv_symm_of (x : M) : (ofLinearEquiv I M).symm (of I M x) = x := by
+  simp [ofLinearEquiv]
+
+@[simp]
+theorem of_ofLinearEquiv_symm (x : AdicCompletion I M) :
+    of I M ((ofLinearEquiv I M).symm x) = x := by
+  simp [ofLinearEquiv]
+
+end Bijective
+
 end AdicCompletion
 
 namespace IsAdicComplete
+
+open AdicCompletion
+
+section lift
+
+variable [IsAdicComplete I N]
+
+variable {M}
+
+/--
+Universal property of `IsAdicComplete`.
+The lift linear map `lift I f h : M →ₗ[R] N` of a sequence of compatible
+linear maps `f n : M →ₗ[R] N ⧸ (I ^ n • ⊤)`.
+-/
+def lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
+    (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) :
+    M →ₗ[R] N := (ofLinearEquiv I N).symm ∘ₗ AdicCompletion.lift I f h
+
+@[simp]
+theorem of_lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
+    (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) (x : M) :
+    of I N (lift I f h x) = AdicCompletion.lift I f h x := by
+  simp [lift]
+
+@[simp]
+theorem of_comp_lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
+    (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) :
+    (of I N) ∘ₗ (lift I f h) = AdicCompletion.lift I f h := by
+  ext1; simp
+
+/--
+The composition of lift linear map `lift I f h : M →ₗ[R] N` with the canonical
+projection `N → N ⧸ (I ^ n • ⊤)` is `f n` .
+-/
+@[simp]
+theorem mk_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
+    (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) (n : ℕ) (x : M) :
+    (Submodule.Quotient.mk (lift I f h x)) = f n x := by
+  simp only [lift, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
+  rw [← mkQ_apply, ← eval_of]
+  simp
+
+/--
+The composition of lift linear map `lift I f h : M →ₗ[R] N` with the canonical
+projection `N →ₗ[R] N ⧸ (I ^ n • ⊤)` is `f n` .
+-/
+@[simp]
+theorem mkQ_comp_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
+    (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) (n : ℕ) :
+    (mkQ (I ^ n • ⊤ : Submodule R N)) ∘ₗ (lift I f h) = f n := by
+  ext; simp
+
+/--
+Uniqueness of the lift.
+Given a compatible family of linear maps `f n : M →ₗ[R] N ⧸ (I ^ n • ⊤)`.
+If `F : M →ₗ[R] N` makes the following diagram commutes
+```
+  N
+  | \
+ F|  \ f n
+  |   \
+  v    v
+  M --> M ⧸ (I ^ n • ⊤)
+```
+Then it is the map `IsAdicComplete.lift`.
+-/
+theorem eq_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
+    (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) {F : M →ₗ[R] N}
+    (hF : ∀ {m s}, Submodule.Quotient.mk (F s) = f m s) : F = lift I f h := by
+  ext s
+  rw [IsHausdorff.eq_iff_smodEq (I := I)]
+  intro n
+  simp [SModEq, hF]
+
+end lift
+
+namespace StrictMono
+
+variable {a : ℕ → ℕ} (ha : StrictMono a)
+    (f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ (a n) • ⊤ : Submodule R N))
+
+variable {I M}
+/--
+Instead of providing all `M →ₗ[R] N ⧸ (I ^ n • ⊤)`, one can just provide
+`M →ₗ[R] N ⧸ (I ^ (a n) • ⊤)` for a strictly increasing sequence `a n` to recover all
+`M →ₗ[R] N ⧸ (I ^ n • ⊤)`.
+-/
+def extend (n : ℕ) :
+    M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N) :=
+  (factorPow I N (ha.id_le n)) ∘ₗ f n
+
+variable (hf : ∀ {m}, factorPow I N (ha.monotone m.le_succ) ∘ₗ (f (m + 1)) = f m)
+
+include hf in
+theorem factorPow_comp_eq_of_factorPow_comp_succ_eq
+    {m n : ℕ} (hle : m ≤ n) : factorPow I N (ha.monotone hle) ∘ₗ f n = f m := by
+  ext x
+  symm
+  refine Submodule.eq_factor_of_eq_factor_succ ?_ (fun n ↦ f n x) ?_ m n hle
+  · exact fun _ _ le ↦ smul_mono_left (Ideal.pow_le_pow_right (ha.monotone le))
+  · intro s
+    simp only [LinearMap.ext_iff] at hf
+    simpa using (hf x).symm
+
+include hf in
+theorem extend_eq (n : ℕ) : extend ha f (a n) = f n :=
+  factorPow_comp_eq_of_factorPow_comp_succ_eq ha f hf (ha.id_le n)
+
+include hf in
+theorem factorPow_comp_extend {m n : ℕ} (hle : m ≤ n) :
+    factorPow I N hle ∘ₗ extend ha f n = extend ha f m := by
+  ext
+  simp [extend, ← factorPow_comp_eq_of_factorPow_comp_succ_eq ha f hf hle]
+
+variable [IsAdicComplete I N]
+
+variable (I)
+
+/--
+A variant of `IsAdicComplete.lift`. Only takes `f n : M →ₗ[R] N ⧸ (I ^ (a n) • ⊤)`
+from a strictly increasing sequence `a n`.
+-/
+def lift : M →ₗ[R] N :=
+  IsAdicComplete.lift I (extend ha f) (factorPow_comp_extend ha f hf)
+
+theorem of_lift (x : M) :
+    of I N (lift I ha f hf x) =
+    AdicCompletion.lift I (extend ha f) (factorPow_comp_extend ha f hf) x :=
+  IsAdicComplete.of_lift I (extend ha f) (factorPow_comp_extend ha f hf) x
+
+theorem of_comp_lift :
+    (of I N) ∘ₗ (lift I ha f hf) =
+      AdicCompletion.lift I (extend ha f) (factorPow_comp_extend ha f hf) :=
+  IsAdicComplete.of_comp_lift I (extend ha f) (factorPow_comp_extend ha f hf)
+
+@[simp]
+theorem mk_lift {n : ℕ} (x : M) :
+    (Submodule.Quotient.mk (lift I ha f hf x)) = f n x := by
+  simp only [lift, IsAdicComplete.lift, ofLinearEquiv, LinearMap.coe_comp, LinearEquiv.coe_coe,
+    Function.comp_apply]
+  rw [← mkQ_apply, ← eval_of]
+  simp [extend_eq ha f hf]
+
+@[simp]
+theorem mkQ_comp_lift {n : ℕ} :
+    mkQ (I ^ (a n) • ⊤ : Submodule R N) ∘ₗ (lift I ha f hf) = f n := by
+  ext; simp
+
+theorem eq_lift {F : M →ₗ[R] N}
+    (hF : ∀ {m s}, Submodule.Quotient.mk (F s) = f m s) : F = lift I ha f hf := by
+  ext s
+  rw [IsHausdorff.eq_iff_smodEq (I := I)]
+  intro n
+  apply SModEq.mono (smul_mono_left (Ideal.pow_le_pow_right (ha.id_le n)))
+  simp [SModEq, hF, mk_lift I ha f hf]
+
+end StrictMono
 
 instance bot : IsAdicComplete (⊥ : Ideal R) M where
 

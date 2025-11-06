@@ -60,7 +60,7 @@ noncomputable def ShiftSequence.tautological : ShiftSequence F M where
     isoWhiskerRight (shiftFunctorAdd' C n a a' ha').symm _
   shiftIso_zero a := by
     rw [shiftFunctorAdd'_zero_add]
-    aesop_cat
+    cat_disch
   shiftIso_add n m a a' a'' ha' ha'' := by
     ext X
     dsimp

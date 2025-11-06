@@ -60,10 +60,6 @@ def isObtainWithoutProof : Syntax → Bool
   | `(tactic|obtain : $_type) | `(tactic|obtain $_pat : $_type) => true
   | _ => false
 
-/-- Deprecated alias for `Mathlib.Linter.Style.isObtainWithoutProof`. -/
-@[deprecated isObtainWithoutProof (since := "2024-12-07")]
-def is_obtain_without_proof := @isObtainWithoutProof
-
 /-- The `oldObtain` linter emits a warning upon uses of the "stream-of-consciousness" variants
 of the `obtain` tactic, i.e. with the proof postponed. -/
 register_option linter.oldObtain : Bool := {

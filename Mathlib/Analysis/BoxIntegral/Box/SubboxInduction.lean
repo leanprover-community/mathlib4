@@ -90,7 +90,7 @@ theorem iUnion_coe_splitCenterBox (I : Box ι) : ⋃ s, (I.splitCenterBox s : Se
 @[simp]
 theorem upper_sub_lower_splitCenterBox (I : Box ι) (s : Set ι) (i : ι) :
     (I.splitCenterBox s).upper i - (I.splitCenterBox s).lower i = (I.upper i - I.lower i) / 2 := by
-  by_cases i ∈ s <;> field_simp [splitCenterBox] <;> field_simp [mul_two, two_mul]
+  by_cases i ∈ s <;> simp [field, splitCenterBox, *] <;> ring
 
 /-- Let `p` be a predicate on `Box ι`, let `I` be a box. Suppose that the following two properties
 hold true.
@@ -116,7 +116,7 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
   by_contra hpI
   -- First we use `H_ind` to construct a decreasing sequence of boxes such that `∀ m, ¬p (J m)`.
   replace H_ind := fun J hJ ↦ not_imp_not.2 (H_ind J hJ)
-  simp only [exists_imp, not_forall] at H_ind
+  simp only [not_forall] at H_ind
   choose! s hs using H_ind
   set J : ℕ → Box ι := fun m ↦ (fun J ↦ splitCenterBox J (s J))^[m] I
   have J_succ : ∀ m, J (m + 1) = splitCenterBox (J m) (s <| J m) :=
@@ -124,14 +124,12 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
   -- Now we prove some properties of `J`
   have hJmono : Antitone J :=
     antitone_nat_of_succ_le fun n ↦ by simpa [J_succ] using splitCenterBox_le _ _
-  have hJle : ∀ m, J m ≤ I := fun m ↦ hJmono (zero_le m)
-  have hJp : ∀ m, ¬p (J m) :=
-    fun m ↦ Nat.recOn m hpI fun m ↦ by simpa only [J_succ] using hs (J m) (hJle m)
-  have hJsub : ∀ m i, (J m).upper i - (J m).lower i = (I.upper i - I.lower i) / 2 ^ m := by
-    intro m i
-    induction' m with m ihm
-    · simp [J]
-    simp only [pow_succ, J_succ, upper_sub_lower_splitCenterBox, ihm, div_div]
+  have hJle (m) : J m ≤ I := hJmono (zero_le m)
+  have hJp (m) : ¬p (J m) := Nat.recOn m hpI fun m ↦ by simpa only [J_succ] using hs (J m) (hJle m)
+  have hJsub (m i) : (J m).upper i - (J m).lower i = (I.upper i - I.lower i) / 2 ^ m := by
+    induction m with
+    | zero => simp [J]
+    | succ m ihm => simp only [pow_succ, J_succ, upper_sub_lower_splitCenterBox, ihm, div_div]
   have h0 : J 0 = I := rfl
   clear_value J
   clear hpI hs J_succ s

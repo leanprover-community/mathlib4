@@ -79,20 +79,18 @@ theorem Monotone.iSup_nat_add {f : ℕ → α} (hf : Monotone f) (k : ℕ) : ⨆
 theorem Antitone.iInf_nat_add {f : ℕ → α} (hf : Antitone f) (k : ℕ) : ⨅ n, f (n + k) = ⨅ n, f n :=
   hf.dual_right.iSup_nat_add k
 
--- Porting note: the linter doesn't like this being marked as `@[simp]`,
--- saying that it doesn't work when called on its LHS.
--- Mysteriously, it *does* work. Nevertheless, per
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/complete_lattice.20and.20has_sup/near/316497982
--- "the subterm ?f (i + ?k) produces an ugly higher-order unification problem."
--- @[simp]
+-- Not `@[simp]` since the subterm `?f (i + ?k)` produces an ugly higher-order unification problem.
+-- (Although the `simpNF` linter does not complain.)
+-- See: https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/complete_lattice.20and.20has_sup/near/316497982
 theorem iSup_iInf_ge_nat_add (f : ℕ → α) (k : ℕ) :
     ⨆ n, ⨅ i ≥ n, f (i + k) = ⨆ n, ⨅ i ≥ n, f i := by
   have hf : Monotone fun n => ⨅ i ≥ n, f i := fun n m h => biInf_mono fun i => h.trans
   rw [← Monotone.iSup_nat_add hf k]
   · simp_rw [iInf_ge_eq_iInf_nat_add, ← Nat.add_assoc]
 
--- Porting note: removing `@[simp]`, see discussion on `iSup_iInf_ge_nat_add`.
--- @[simp]
+-- Not `@[simp]` since the subterm `?f (i + ?k)` produces an ugly higher-order unification problem.
+-- (Although the `simpNF` linter does not complain.)
+-- See: https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/complete_lattice.20and.20has_sup/near/316497982
 theorem iInf_iSup_ge_nat_add :
     ∀ (f : ℕ → α) (k : ℕ), ⨅ n, ⨆ i ≥ n, f (i + k) = ⨅ n, ⨆ i ≥ n, f i :=
   @iSup_iInf_ge_nat_add αᵒᵈ _
@@ -156,7 +154,7 @@ theorem disjoint_sSup_right {a : Set α} {b : α} (d : Disjoint b (sSup a)) {i} 
 lemma disjoint_of_sSup_disjoint_of_le_of_le {a b : α} {c d : Set α} (hs : ∀ e ∈ c, e ≤ a)
     (ht : ∀ e ∈ d, e ≤ b) (hd : Disjoint a b) (he : ⊥ ∉ c ∨ ⊥ ∉ d) : Disjoint c d := by
   rw [disjoint_iff_forall_ne]
-  intros x hx y hy
+  intro x hx y hy
   rw [Disjoint.ne_iff]
   · aesop
   · exact Disjoint.mono (hs x hx) (ht y hy) hd

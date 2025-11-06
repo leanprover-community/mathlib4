@@ -43,7 +43,7 @@ def Ring.perfectionSubsemiring (R : Type u₁) [CommSemiring R] (p : ℕ) [hp : 
     [CharP R p] : Subsemiring (ℕ → R) :=
   { Monoid.perfection R p with
     zero_mem' := fun _ ↦ zero_pow hp.1.ne_zero
-    add_mem' := fun hf hg n => (frobenius_add R p _ _).trans <| congr_arg₂ _ (hf n) (hg n) }
+    add_mem' := fun hf hg n => (map_add (frobenius R p) _ _).trans <| congr_arg₂ _ (hf n) (hg n) }
 
 /-- The perfection of a ring `R` with characteristic `p`, as a subring,
 defined to be the projective limit of `R` using the Frobenius maps `R → R`
@@ -165,19 +165,18 @@ instance perfectRing : PerfectRing (Ring.Perfection R p) p where
 
 @[simp]
 theorem coeff_frobeniusEquiv_symm (f : Ring.Perfection R p) (n : ℕ) :
-    (Perfection.coeff R p n) ((frobeniusEquiv (Ring.Perfection R p) p).symm f) =
-    (Perfection.coeff R p (n + 1)) f := by
+    Perfection.coeff R p n ((frobeniusEquiv (Ring.Perfection R p) p).symm f) =
+    Perfection.coeff R p (n + 1) f := by
   nth_rw 2 [← frobenius_apply_frobeniusEquiv_symm _ p f]
   rw [coeff_frobenius]
 
 @[simp]
 theorem coeff_iterate_frobeniusEquiv_symm (f : Ring.Perfection R p) (n m : ℕ) :
-    (Perfection.coeff _ p n) ((frobeniusEquiv _ p).symm ^[m] f) =
-    (Perfection.coeff _ p (n + m)) f := by
-  revert f n
-  induction' m with m ih
-  · simp
-  · intro f n
+    Perfection.coeff _ p n ((frobeniusEquiv _ p).symm ^[m] f) =
+    Perfection.coeff _ p (n + m) f := by
+  induction m generalizing f n with
+  | zero => simp
+  | succ m ih =>
     simp [ih, ← add_assoc]
 
 variable (R p)
@@ -544,8 +543,9 @@ theorem valAux_eq {f : PreTilt O p} {n : ℕ} (hfn : coeff _ _ n f ≠ 0) :
   rw [valAux, dif_pos h]
   classical
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le (Nat.find_min' h hfn)
-  induction' k with k ih
-  · rfl
+  induction k with
+  | zero => rfl
+  | succ k ih => ?_
   obtain ⟨x, hx⟩ := Ideal.Quotient.mk_surjective (coeff (ModP O p) p (Nat.find h + k + 1) f)
   have h1 : (Ideal.Quotient.mk _ x : ModP O p) ≠ 0 := hx.symm ▸ hfn
   have h2 : (Ideal.Quotient.mk _ (x ^ p) : ModP O p) ≠ 0 := by
@@ -622,8 +622,10 @@ theorem map_eq_zero {f : PreTilt O p} : val K v O hv p f = 0 ↔ f = 0 := by
   by_cases hf0 : f = 0
   · rw [hf0]; exact iff_of_true (Valuation.map_zero _) rfl
   obtain ⟨n, hn⟩ : ∃ n, coeff _ _ n f ≠ 0 := not_forall.1 fun h => hf0 <| Perfection.ext h
-  show valAux K v O p f = 0 ↔ f = 0; refine iff_of_false (fun hvf => hn ?_) hf0
-  rw [valAux_eq hv hn] at hvf; replace hvf := pow_eq_zero hvf; rwa [ModP.preVal_eq_zero hv] at hvf
+  change valAux K v O p f = 0 ↔ f = 0; refine iff_of_false (fun hvf => hn ?_) hf0
+  rw [valAux_eq hv hn] at hvf
+  replace hvf := eq_zero_of_pow_eq_zero hvf
+  rwa [ModP.preVal_eq_zero hv] at hvf
 
 end Classical
 

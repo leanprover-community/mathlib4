@@ -64,7 +64,7 @@ def bicone [HasFiniteBiproducts C] {J : Type} [Finite J] (F : J → Karoubi C) :
         id_f, hom_ext_iff, comp_f, assoc, bicone_ι_π_self_assoc, idem]
     · dsimp
       simp only [biproduct.ι_map, biproduct.map_π, hom_ext_iff, comp_f,
-        assoc, biproduct.ι_π_ne_assoc _ h, zero_comp, comp_zero, zero_def]
+        assoc, biproduct.ι_π_ne_assoc _ h, zero_comp, comp_zero]
 
 end Biproducts
 

@@ -12,14 +12,14 @@ This file defines the Gauss norm for polynomials. Given a polynomial `p` in `R[X
 `v : R → ℝ` and a real number `c`, the Gauss norm is defined as the supremum of the set of all
 values of `v (p.coeff i) * c ^ i` for all `i` in the support of `p`.
 
-In the file `RingTheory/PowerSeries/GaussNorm`, the Gauss norm is defined for power series. This is
-a generalization of the Gauss norm defined in this file in case `v` is a non-negative function with
-`v 0 = 0` and `c ≥ 0`.
+In the file `Mathlib/RingTheory/PowerSeries/GaussNorm.lean`, the Gauss norm is defined for power
+series. This is a generalization of the Gauss norm defined in this file in case `v` is a
+non-negative function with `v 0 = 0` and `c ≥ 0`.
 
 ## Main Definitions and Results
 * `Polynomial.gaussNorm` is the supremum of the set of all values of `v (p.coeff i) * c ^ i`
   for all `i` in the support of `p`, where `p` is a polynomial in `R[X]`, `v : R → ℝ` is a function
-  and `c` is a  real number.
+  and `c` is a real number.
 * `Polynomial.gaussNorm_coe_powerSeries`: if `v` is a non-negative function with `v 0 = 0` and `c`
   is nonnegative, the Gauss norm of a polynomial is equal to its Gauss norm as a power series.
 * `Polynomial.gaussNorm_nonneg`: if `v` is a non-negative function, then the Gauss norm is
@@ -130,12 +130,12 @@ variable {c} (r : R)
 
 @[simp]
 theorem gaussNorm_C [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] (hc : 0 ≤ c) :
-    (C R r).gaussNorm v c = v r := by
+    (C r).gaussNorm v c = v r := by
   simp [← Polynomial.coe_C, hc]
 
 @[simp]
-theorem gaussNorm_monomial [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] (hc : 0 ≤ c) (n : ℕ):
-    (monomial R n r).gaussNorm v c = v r * c ^ n := by
+theorem gaussNorm_monomial [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] (hc : 0 ≤ c) (n : ℕ) :
+    (monomial n r).gaussNorm v c = v r * c ^ n := by
   simp [← Polynomial.coe_monomial, hc]
 
 end PowerSeries

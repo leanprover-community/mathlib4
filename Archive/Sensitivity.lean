@@ -62,7 +62,7 @@ instance (n) : Inhabited (Q n) := inferInstanceAs (Inhabited (Fin n → Bool))
 instance (n) : Fintype (Q n) := inferInstanceAs (Fintype (Fin n → Bool))
 
 /-- The projection from `Q n.succ` to `Q n` forgetting the first value
-(ie. the image of zero). -/
+(i.e. the image of zero). -/
 def π {n : ℕ} : Q n.succ → Q n := fun p => p ∘ Fin.succ
 
 namespace Q
@@ -206,7 +206,7 @@ theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
     cases hp : p 0 <;> cases hq : q 0
     all_goals
       simp only [Bool.cond_true, Bool.cond_false, LinearMap.fst_apply, LinearMap.snd_apply,
-        LinearMap.comp_apply, IH, V]
+        LinearMap.comp_apply, IH]
       congr 1; rw [Q.succ_n_eq]; simp [hp, hq]
 
 /-- Any vector in `V n` annihilated by all `ε p`'s is zero. -/
@@ -288,13 +288,13 @@ theorem f_squared (v : V n) : (f n) (f n v) = (n : ℝ) • v := by
   induction n with
   | zero =>  simp only [Nat.cast_zero, zero_smul, f_zero, zero_apply]
   | succ n IH =>
-    cases v; rw [f_succ_apply, f_succ_apply]; simp [IH, add_smul (n : ℝ) 1, add_assoc, V]; abel
+    cases v; rw [f_succ_apply, f_succ_apply]; simp [IH, add_smul (n : ℝ) 1, add_assoc]; abel
 
 /-! We now compute the matrix of `f` in the `e` basis (`p` is the line index,
 `q` the column index). -/
 
 open Classical in
-theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 1 else 0 := fun p q ↦ by
+theorem f_matrix (p q : Q n) : |ε q (f n (e p))| = if p ∈ q.adjacent then 1 else 0 := by
   induction n with
   | zero =>
     dsimp [f]
@@ -322,7 +322,7 @@ variable {m : ℕ}
 
 
 theorem g_apply : ∀ v, g m v = (f m v + √ (m + 1) • v, v) := by
-  delta g; intro v; simp [V]
+  delta g; intro v; simp
 
 theorem g_injective : Injective (g m) := by
   rw [g]
@@ -334,7 +334,7 @@ theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √ (m +
   rcases hv with ⟨v, rfl⟩
   have : √ (m + 1) * √ (m + 1) = m + 1 := Real.mul_self_sqrt (mod_cast zero_le _)
   rw [f_succ_apply, g_apply]
-  simp [this, f_squared, smul_add, add_smul, smul_smul, V]
+  simp [this, f_squared, smul_add, add_smul, smul_smul]
   abel
 
 /-!
@@ -421,7 +421,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     exact epsilon_total fun p => abs_nonpos_iff.mp (le_trans (H_max p) y_ne)
   refine ⟨q, (dualBases_e_ε _).mem_of_mem_span y_mem_H q (abs_pos.mp H_q_pos), ?_⟩
   let s := √ (m + 1)
-  suffices s * |ε q y| ≤ _ * |ε q y| from (mul_le_mul_right H_q_pos).mp ‹_›
+  suffices s * |ε q y| ≤ _ * |ε q y| from (mul_le_mul_iff_left₀ H_q_pos).mp ‹_›
   let coeffs := (dualBases_e_ε m.succ).coeffs
   calc
     s * |ε q y| = |ε q (s • y)| := by
@@ -445,7 +445,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     _ = #((coeffs y).support ∩ q.adjacent.toFinset) * |coeffs y q| := by
       congr with x; simp; rfl
     _ ≤ #(H ∩ q.adjacent).toFinset * |ε q y| := by
-      refine (mul_le_mul_right H_q_pos).2 ?_
+      refine (mul_le_mul_iff_left₀ H_q_pos).2 ?_
       norm_cast
       apply card_le_card
       rw [Set.toFinset_inter]

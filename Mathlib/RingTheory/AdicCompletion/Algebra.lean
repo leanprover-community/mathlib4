@@ -3,8 +3,8 @@ Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
-import Mathlib.Algebra.Module.Torsion
 import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.Module.Torsion.Basic
 import Mathlib.RingTheory.AdicCompletion.Basic
 
 /-!
@@ -15,8 +15,8 @@ completion of any module is a module over the adic completion of the ring.
 
 ## Implementation details
 
-We do not make a separate adic completion type in algebra case, to not duplicate all module
-theoretic results on adic completions. This choice does cause some trouble though,
+We do not make a separate adic completion type in algebra case, to not duplicate all
+module-theoretic results on adic completions. This choice does cause some trouble though,
 since `I ^ n • ⊤` is not defeq to `I ^ n`. We try to work around most of the trouble by
 providing as much API as possible.
 
@@ -121,6 +121,14 @@ def evalₐ (n : ℕ) : AdicCompletion I R →ₐ[R] R ⧸ I ^ n :=
     (Ideal.quotientEquivAlgOfEq R h)
     (AlgHom.ofLinearMap (eval I R n) rfl (fun _ _ ↦ rfl))
 
+theorem factor_evalₐ_eq_eval {n : ℕ} (x : AdicCompletion I R) (h : I ^ n ≤ I ^ n • ⊤) :
+    (Ideal.Quotient.factor h) (evalₐ I n x) = (eval I R n x) := by
+  simp [evalₐ]
+
+theorem factor_eval_eq_evalₐ {n : ℕ} (x : AdicCompletion I R) (h : I ^ n • ⊤ ≤ I ^ n) :
+    (factor h) (eval I R n x) = (evalₐ I n x) := by
+  simp [evalₐ]
+
 @[simp]
 theorem evalₐ_mk (n : ℕ) (x : AdicCauchySequence I R) :
     evalₐ I n (mk I R x) = Ideal.Quotient.mk (I ^ n) (x.val n) := by
@@ -177,7 +185,7 @@ theorem one_apply (n : ℕ) : (1 : AdicCauchySequence I R) n = 1 :=
 theorem mul_apply (n : ℕ) (f g : AdicCauchySequence I R) : (f * g) n = f n * g n :=
   rfl
 
-/-- The canonical algebra map from adic cauchy sequences to the adic completion. -/
+/-- The canonical algebra map from adic Cauchy sequences to the adic completion. -/
 @[simps!]
 def mkₐ : AdicCauchySequence I R →ₐ[R] AdicCompletion I R :=
   AlgHom.ofLinearMap (mk I R) rfl (fun _ _ ↦ rfl)
@@ -262,7 +270,7 @@ instance module : Module (AdicCompletion I R) (AdicCompletion I M) where
     simp only [smul_eval, val_mul, mul_smul]
   smul_zero r := by ext n; simp
   smul_add r x y := by ext n; simp
-  add_smul r s x := by ext n; simp [val_smul, add_smul]
+  add_smul r s x := by ext n; simp [add_smul]
   zero_smul x := by ext n; simp
 
 instance : IsScalarTower R (AdicCompletion I R) (AdicCompletion I M) where

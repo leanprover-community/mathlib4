@@ -152,6 +152,19 @@ instance [Nonempty α] [Nontrivial β] : Nontrivial C(α, β) :=
   ⟨let ⟨b₁, b₂, hb⟩ := exists_pair_ne β
   ⟨const _ b₁, const _ b₂, fun h => hb <| DFunLike.congr_fun h <| Classical.arbitrary α⟩⟩
 
+/-- The bijection `C(X₁, Y₁) ≃ C(X₂, Y₂)` induced by homeomorphisms
+`e : X₁ ≃ₜ X₂` and `e' : Y₁ ≃ₜ Y₂`. -/
+@[simps]
+def _root_.Homeomorph.continuousMapCongr {X₁ X₂ Y₁ Y₂ : Type*}
+    [TopologicalSpace X₁] [TopologicalSpace X₂]
+    [TopologicalSpace Y₁] [TopologicalSpace Y₂]
+    (e : X₁ ≃ₜ X₂) (e' : Y₁ ≃ₜ Y₂) :
+    C(X₁, Y₁) ≃ C(X₂, Y₂) where
+  toFun f := ContinuousMap.comp ⟨_, e'.continuous⟩ (f.comp ⟨_, e.symm.continuous⟩)
+  invFun g := ContinuousMap.comp ⟨_, e'.symm.continuous⟩ (g.comp ⟨_, e.continuous⟩)
+  left_inv _ := by aesop
+  right_inv _ := by aesop
+
 section Prod
 
 variable {α₁ α₂ β₁ β₂ : Type*} [TopologicalSpace α₁] [TopologicalSpace α₂] [TopologicalSpace β₁]
@@ -312,8 +325,7 @@ lemma mkD_of_not_continuous {f : α → β} {g : C(α, β)} (hf : ¬ Continuous 
 
 lemma mkD_apply_of_continuous {f : α → β} {g : C(α, β)} {x : α} (hf : Continuous f) :
     mkD f g x = f x := by
-  rw [mkD_of_continuous hf]
-  rfl
+  rw [mkD_of_continuous hf, coe_mk]
 
 lemma mkD_of_continuousOn {s : Set α} {f : α → β} {g : C(s, β)}
     (hf : ContinuousOn f s) :
@@ -329,8 +341,7 @@ lemma mkD_of_not_continuousOn {s : Set α} {f : α → β} {g : C(s, β)}
 lemma mkD_apply_of_continuousOn {s : Set α} {f : α → β} {g : C(s, β)} {x : s}
     (hf : ContinuousOn f s) :
     mkD (s.restrict f) g x = f x := by
-  rw [mkD_of_continuousOn hf]
-  rfl
+  rw [mkD_of_continuousOn hf, coe_mk, Set.restrict_apply]
 
 lemma mkD_eq_self {f g : C(α, β)} : mkD f g = f :=
   mkD_of_continuous f.continuous

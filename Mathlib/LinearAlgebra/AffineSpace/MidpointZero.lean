@@ -29,7 +29,7 @@ theorem lineMap_one_half {R : Type*} {V P : Type*} [DivisionRing R] [CharZero R]
 
 theorem homothety_invOf_two {R : Type*} {V P : Type*} [CommRing R] [Invertible (2 : R)]
     [AddCommGroup V] [Module R V] [AddTorsor V P] (a b : P) :
-    homothety a (⅟ 2 : R) b = midpoint R a b :=
+    homothety a (⅟2 : R) b = midpoint R a b :=
   rfl
 
 theorem homothety_inv_two {k : Type*} {V P : Type*} [Field k] [CharZero k] [AddCommGroup V]

@@ -14,7 +14,7 @@ We provide an alternative formulation of the sheaf condition in terms of unique 
 
 We work with sheaves valued in a concrete category `C` admitting all limits, whose forgetful
 functor `C ⥤ Type` preserves limits and reflects isomorphisms. The usual categories of algebraic
-structures, such as `MonCat`, `AddCommGrp`, `RingCat`, `CommRingCat` etc. are all examples of
+structures, such as `MonCat`, `AddCommGrpCat`, `RingCat`, `CommRingCat` etc. are all examples of
 this kind of category.
 
 A presheaf `F : Presheaf C X` satisfies the sheaf condition if and only if, for every
@@ -96,7 +96,7 @@ def IsCompatible.sectionPairwise {sf} (h : IsCompatible F U sf) :
     ((Pairwise.diagram U).op ⋙ F).sections := by
   refine ⟨objPairwiseOfFamily sf, ?_⟩
   let G := (Pairwise.diagram U).op ⋙ F
-  rintro (i|⟨i,j⟩) (i'|⟨i',j'⟩) (_|_|_|_)
+  rintro (i|⟨i,j⟩) (i'|⟨i',j'⟩) (_ | _ | _ | _)
   · exact congr_fun (G.map_id <| op <| Pairwise.single i) _
   · rfl
   · exact (h i' i).symm
