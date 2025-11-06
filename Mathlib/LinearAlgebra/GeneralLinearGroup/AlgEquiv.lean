@@ -46,14 +46,14 @@ theorem AlgEquiv.coe_eq_linearEquiv_conj [Free K V] (f : End K V ≃ₐ[K] End K
   simp_rw [funext_iff, LinearEquiv.conj_apply, LinearEquiv.eq_comp_toLinearMap_symm]
   obtain ⟨u, hu⟩ := exists_ne (0 : V)
   obtain ⟨v, huv⟩ := exists_dual_ne_zero K hu
-  obtain ⟨z, hz⟩ : ∃ z : V, ¬ f (smulRightₗ v u) z = (0 : End K V) z := by
+  obtain ⟨z, hz⟩ : ∃ z : V, ¬ f (smulRight v u) z = (0 : End K V) z := by
     rw [← not_forall, ← LinearMap.ext_iff, EmbeddingLike.map_eq_zero_iff, LinearMap.ext_iff]
     exact not_forall.mpr ⟨u, huv.isUnit.smul_eq_zero.not.mpr hu⟩
   set T := auxLinear f v z
   have this A x : T (A x) = f A (T x) := auxLinear_map_apply f.toAlgHom v z A x
   have surj : Function.Surjective T := fun w ↦ by
-    obtain ⟨d, hd⟩ := exists_dual_eq_one K (by exact hz : T u ≠ 0)
-    exact ⟨f.symm (smulRightₗ d w) u, by simp [this, hd]⟩
+    obtain ⟨d, hd⟩ := exists_dual_eq_one K hz
+    exact ⟨f.symm (smulRightₗ d w) u, by simp [T, this, hd]⟩
   have inj : Function.Injective T := fun x y hxy ↦ by
     have h_smul : smulRightₗ v x = smulRightₗ v y := by
       apply f.injective <| ext fun z ↦ ?_
