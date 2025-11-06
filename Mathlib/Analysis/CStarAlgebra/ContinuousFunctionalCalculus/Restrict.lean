@@ -36,9 +36,6 @@ def homeomorph {R S A : Type*} [Semifield R] [Semifield S] [Ring A]
   invFun := MapsTo.restrict (algebraMap R S) _ _ (image_subset_iff.mp h.algebraMap_image.subset)
   left_inv x := Subtype.ext <| h.rightInvOn x.2
   right_inv x := Subtype.ext <| h.left_inv x
-  continuous_toFun := continuous_induced_rng.mpr <| f.continuous.comp continuous_induced_dom
-  continuous_invFun := continuous_induced_rng.mpr <|
-    continuous_algebraMap R S |>.comp continuous_induced_dom
 
 lemma compactSpace {R S A : Type*} [Semifield R] [Semifield S] [Ring A]
     [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [TopologicalSpace R]
@@ -181,9 +178,6 @@ def homeomorph {R S A : Type*} [Semifield R] [Field S] [NonUnitalRing A]
   invFun := MapsTo.restrict (algebraMap R S) _ _ (image_subset_iff.mp h.algebraMap_image.subset)
   left_inv x := Subtype.ext <| h.rightInvOn x.2
   right_inv x := Subtype.ext <| h.left_inv x
-  continuous_toFun := continuous_induced_rng.mpr <| f.continuous.comp continuous_induced_dom
-  continuous_invFun := continuous_induced_rng.mpr <|
-    continuous_algebraMap R S |>.comp continuous_induced_dom
 
 universe u v w
 
