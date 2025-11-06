@@ -23,11 +23,6 @@ We only need `O` to be `p`-adically complete.
 
 ## Tags
 Fontaine's theta map, period rings, perfectoid theory, p-adic Hodge theory
-
-## TODO
-Currently, the period ring `B_{dR}^+` takes the ring of integers `O` as the input.
-After the perfectoid theory is developed, we should modify it to
-take a perfectoid field as the input.
 -/
 
 universe u
@@ -87,7 +82,7 @@ theorem ker_map_le_ker_mk_comp_ghostComponent (n : ℕ) :
 The lift ring map `gh_n : 𝕎(A/p) →+* A/p^(n+1)` of the `n`-th ghost component
 `𝕎(A) →+* A` along the surjective ring map `𝕎(A) →+* 𝕎(A/p)`.
 -/
-def ghostComponentModPPow (n : ℕ): 𝕎 (O ⧸ span {(p : O)}) →+* O ⧸ span {(p : O)}^(n + 1) :=
+def ghostComponentModPPow (n : ℕ) : 𝕎 (O ⧸ span {(p : O)}) →+* O ⧸ span {(p : O)}^(n + 1) :=
   RingHom.liftOfSurjective (WittVector.map <| Ideal.Quotient.mk <| span {(p : O)})
     (map_surjective _ Ideal.Quotient.mk_surjective)
     ⟨((Ideal.Quotient.mk <| span {(p : O)} ^ (n + 1))).comp
@@ -124,11 +119,11 @@ theorem ghostComponentModPPow_teichmuller_coeff (n : ℕ) (x : O^♭) :
 
 variable (O p) in
 /--
-The Fontaine's theta map modulo `p ^ n`.
+The Fontaine's theta map modulo `p^(n+1)`.
 It is the composition of the following ring homomorphisms.
 `𝕎(O^♭) --𝕎(Frob^-n)->  𝕎(O^♭) --𝕎(coeff 0)-> 𝕎(O/p) --gh_n-> O/p^(n+1)`
 -/
-def fontaineThetaModPPow (n : ℕ): 𝕎 (O^♭) →+* O ⧸ span {(p : O)} ^ (n + 1) :=
+def fontaineThetaModPPow (n : ℕ) : 𝕎 (O^♭) →+* O ⧸ span {(p : O)} ^ (n + 1) :=
   (ghostComponentModPPow n).comp
       (((WittVector.map (Perfection.coeff _ p 0))).comp
           (WittVector.map ((_root_.frobeniusEquiv (O^♭) p).symm ^ n : O^♭ →+* O^♭)))

@@ -20,6 +20,7 @@ of `ℂ_p`, they coincide with the classical de Rham period rings.
 ## Main definitions
 
 * `BDeRhamPlus` : The period ring \(\mathbb{B}_dR^+\).
+* `BDeRham` : The period ring \(\mathbb{B}_dR\).
 
 ## TODO
 
@@ -27,6 +28,10 @@ of `ℂ_p`, they coincide with the classical de Rham period rings.
 2. Show that \(\mathbb{B}_dR^+\) is a discrete valuation ring.
 3. Show that ker θ is principal when the base ring is
 integral perfectoid and define \(\mathbb{B}_dR\).
+
+Currently, the period ring `BDeRhamPlus` takes the ring of integers `O` as the input.
+After the perfectoid theory is developed, we should modify it to
+take a perfectoid field as the input.
 
 ## Reference
 
@@ -77,8 +82,6 @@ Mathematically, this is equivalent to inverting *a* generator of the ideal `ker 
 When \(O = \mathcal{O}_{\mathbb{C}_p}\), it coincides
 with the classical de Rham period ring.
 Note that if `p = 0` in `O`, then this definition is the zero ring.
-This definition will be refactored after we show that `ker θ` is principal
-under suitable assumptions.
 -/
 def BDeRham : Type u :=
   Localization (M := BDeRhamPlus O p) <| Submonoid.closure <|
