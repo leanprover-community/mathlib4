@@ -122,8 +122,8 @@ theorem Continuous.exists_contDiff_approx_and_eqOn (n : ℕ∞)
     {S U : Set E} (hS : IsClosed S) (hU : U ∈ 𝓝ˢ S) (hfU : ContDiffOn ℝ n f U) :
     ∃ g : E → F, ContDiff ℝ n g ∧
       (∀ x, dist (g x) (f x) < ε x) ∧ EqOn g f S ∧ support g ⊆ support f := by
-  rcases f_cont.exists_contMDiff_approx_and_eqOn 𝓘(ℝ, E) n ε_cont ε_pos hS hU hfU.contMDiffOn
-    with ⟨g, g_approx, g_eqOn, g_supp⟩
+  obtain ⟨g, g_approx, g_eqOn, g_supp⟩ := f_cont.exists_contMDiff_approx_and_eqOn 𝓘(ℝ, E) n
+    ε_cont ε_pos hS hU hfU.contMDiffOn
   exact ⟨g, g.contMDiff.contDiff, g_approx, g_eqOn, g_supp⟩
 
 theorem Continuous.exists_contDiff_approx
