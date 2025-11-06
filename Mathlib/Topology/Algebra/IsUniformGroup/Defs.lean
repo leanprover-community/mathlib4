@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Johannes Hölzl
+Authors: Patrick Massot, Johannes Hölzl, Anatole Dedecker
 -/
 import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.Algebra.Group.Basic
@@ -9,13 +9,23 @@ import Mathlib.Topology.Algebra.Group.Basic
 /-!
 # Uniform structure on topological groups
 
-This file defines uniform groups and its additive counterpart. These typeclasses should be
-preferred over using `[TopologicalSpace α] [IsTopologicalGroup α]` since every topological
-group naturally induces a uniform structure.
+Given a topological group `G`, one can naturally build two uniform structures
+(the "left" and "right" ones) on `G` inducing its topology.
+This file defines typeclasses for groups equipped with either of these uniform strucures, as well
+as a separate typeclass for the (very common) case where the given uniform structure
+coincides with **both** the left and right uniform structures.
 
 ## Main declarations
+
+* `IsRightUniformGroup` and `IsRightUniformAddGroup`: Multiplicative and additive topological groups
+  endowed with the associated right uniform structure. This means that two points `x` and `y`
+  are close precisely when `y * x⁻¹` is close to `1` / `y + (-x)` close to `0`.
+* `IsLeftUniformGroup` and `IsLeftUniformAddGroup`: Multiplicative and additive topological groups
+  endowed with the associated left uniform structure. This means that two points `x` and `y`
+  are close precisely when `x⁻¹ * y` is close to `1` / `(-x) + y` close to `0`.
 * `IsUniformGroup` and `IsUniformAddGroup`: Multiplicative and additive uniform groups,
-  i.e., groups with uniformly continuous `(*)` and `(⁻¹)` / `(+)` and `(-)`.
+  i.e., groups with uniformly continuous `(*)` and `(⁻¹)` / `(+)` and `(-)`. This corresponds
+  to the conjuction of the two conditions above, although this result is not in Mathlib yet.
 
 ## Main results
 
@@ -23,6 +33,13 @@ group naturally induces a uniform structure.
   to construct a canonical uniformity for a topological additive group.
 
 See `Mathlib/Topology/Algebra/IsUniformGroup/Basic.lean` for further results.
+
+## Implementation Notes
+
+Since the most frequent use case is `G` being a commutative additive groups, `Mathlib` originally
+did essentially all the theory under the assumption `IsUniformGroup G`.
+For this reason, you may find results stated under this assumption even though they may hold
+under either `IsRightUniformGroup G` or `IsLeftUniformGroup G`.
 -/
 
 assert_not_exists Cauchy
@@ -31,18 +48,138 @@ noncomputable section
 
 open Uniformity Topology Filter Pointwise
 
+section LeftRight
+
+open Filter Set
+
+variable {G Gₗ Gᵣ Hₗ Hᵣ X : Type*}
+
+/-- A **right-uniform additive group** is a topological additive group endowed with the associated
+right uniform structure: the uniformity filter `𝓤 G` is the inverse image of `𝓝 0` by the map
+`(x, y) ↦ y + (-x)`.
+
+In other words, we declare that two points `x` and `y` are infinitely close
+precisely when `y + (-x)` is infinitely close to `0`. -/
+class IsRightUniformAddGroup (G : Type*) [UniformSpace G] [AddGroup G] : Prop
+    extends IsTopologicalAddGroup G where
+  uniformity_eq :
+    𝓤 G = comap (fun x : G × G ↦ x.2 + (-x.1)) (𝓝 0)
+
+/-- A **right-uniform group** is a topological group endowed with the associated
+right uniform structure: the uniformity filter `𝓤 G` is the inverse image of `𝓝 1` by the map
+`(x, y) ↦ y * x⁻¹`.
+
+In other words, we declare that two points `x` and `y` are infinitely close
+precisely when `y * x⁻¹` is infinitely close to `1`. -/
+@[to_additive]
+class IsRightUniformGroup (G : Type*) [UniformSpace G] [Group G] : Prop
+    extends IsTopologicalGroup G where
+  uniformity_eq :
+    𝓤 G = comap (fun x : G × G ↦ x.2 * x.1⁻¹) (𝓝 1)
+
+/-- A **left-uniform additive group** is a topological additive group endowed with the associated
+left uniform structure: the uniformity filter `𝓤 G` is the inverse image of `𝓝 0` by the map
+`(x, y) ↦ (-x) + y`.
+
+In other words, we declare that two points `x` and `y` are infinitely close
+precisely when `(-x) + y` is infinitely close to `0`. -/
+class IsLeftUniformAddGroup (G : Type*) [UniformSpace G] [AddGroup G] : Prop
+    extends IsTopologicalAddGroup G where
+  uniformity_eq :
+    𝓤 G = comap (fun x : G × G ↦ (-x.1) + x.2) (𝓝 0)
+
+/-- A **left-uniform group** is a topological group endowed with the associated
+left uniform structure: the uniformity filter `𝓤 G` is the inverse image of `𝓝 1` by the map
+`(x, y) ↦ x⁻¹ * y`.
+
+In other words, we declare that two points `x` and `y` are infinitely close
+precisely when `x⁻¹ * y` is infinitely close to `1`. -/
+@[to_additive]
+class IsLeftUniformGroup (G : Type*) [UniformSpace G] [Group G] : Prop
+    extends IsTopologicalGroup G where
+  uniformity_eq :
+    𝓤 G = comap (fun x : G × G ↦ x.1⁻¹ * x.2) (𝓝 1)
+
+attribute [instance 10] IsRightUniformAddGroup.toIsTopologicalAddGroup
+attribute [instance 10] IsRightUniformGroup.toIsTopologicalGroup
+attribute [instance 10] IsLeftUniformAddGroup.toIsTopologicalAddGroup
+attribute [instance 10] IsLeftUniformGroup.toIsTopologicalGroup
+
+variable [UniformSpace Gₗ] [UniformSpace Gᵣ] [Group Gₗ] [Group Gᵣ]
+variable [UniformSpace Hₗ] [UniformSpace Hᵣ] [Group Hₗ] [Group Hᵣ]
+variable [IsLeftUniformGroup Gₗ] [IsRightUniformGroup Gᵣ]
+variable [IsLeftUniformGroup Hₗ] [IsRightUniformGroup Hᵣ]
+variable [UniformSpace X]
+
+variable (Gₗ Gᵣ)
+
+@[to_additive]
+lemma uniformity_eq_comap_mul_inv_nhds_one :
+    𝓤 Gᵣ = comap (fun x : Gᵣ × Gᵣ ↦ x.2 * x.1⁻¹) (𝓝 1) :=
+  IsRightUniformGroup.uniformity_eq
+
+@[to_additive]
+lemma uniformity_eq_comap_inv_mul_nhds_one :
+    𝓤 Gₗ = comap (fun x : Gₗ × Gₗ ↦ x.1⁻¹ * x.2) (𝓝 1) :=
+  IsLeftUniformGroup.uniformity_eq
+
+@[to_additive]
+lemma uniformity_eq_comap_mul_inv_nhds_one_swapped :
+    𝓤 Gᵣ = comap (fun x : Gᵣ × Gᵣ ↦ x.1 * x.2⁻¹) (𝓝 1) := by
+  rw [← comap_swap_uniformity, uniformity_eq_comap_mul_inv_nhds_one, comap_comap]
+  rfl
+
+@[to_additive]
+lemma uniformity_eq_comap_inv_mul_nhds_one_swapped :
+    𝓤 Gₗ = comap (fun x : Gₗ × Gₗ ↦ x.2⁻¹ * x.1) (𝓝 1) := by
+  rw [← comap_swap_uniformity, uniformity_eq_comap_inv_mul_nhds_one, comap_comap]
+  rfl
+
+@[to_additive]
+theorem uniformity_eq_comap_nhds_one : 𝓤 Gᵣ = comap (fun x : Gᵣ × Gᵣ => x.2 / x.1) (𝓝 1) := by
+  simp_rw [div_eq_mul_inv]
+  exact uniformity_eq_comap_mul_inv_nhds_one Gᵣ
+
+@[to_additive]
+theorem uniformity_eq_comap_nhds_one_swapped :
+    𝓤 Gᵣ = comap (fun x : Gᵣ × Gᵣ => x.1 / x.2) (𝓝 1) := by
+  rw [← comap_swap_uniformity, uniformity_eq_comap_nhds_one, comap_comap]
+  rfl
+
+variable {Gₗ Gᵣ}
+
+end LeftRight
+
 section IsUniformGroup
 
 open Filter Set
 
 variable {α : Type*} {β : Type*}
 
-/-- A uniform group is a group in which multiplication and inversion are uniformly continuous. -/
+/-- A uniform group is a group in which multiplication and inversion are uniformly continuous.
+
+`IsUniformGroup G` is equivalent to the fact that `G` is a topological group, and the uniformity
+coincides with **both** the associated left and right uniformities
+(this fact is not in Mathlib yet).
+
+Since there are topological groups where these two uniformities do **not** coincide,
+not all topological groups admit a uniform group structure in this sense. This is however the
+case for commutative groups, which are the main motivation for the existence of this
+typeclass. -/
 class IsUniformGroup (α : Type*) [UniformSpace α] [Group α] : Prop where
   uniformContinuous_div : UniformContinuous fun p : α × α => p.1 / p.2
 
-/-- A uniform additive group is an additive group in which addition
-  and negation are uniformly continuous. -/
+/-- A uniform additive group is an additive group in which addition and negation are
+uniformly continuous.
+
+`IsUniformAddGroup G` is equivalent to the fact that `G` is a topological additive group, and the
+uniformity coincides with **both** the associated left and right uniformities
+(this fact is not in Mathlib yet).
+
+Since there are topological groups where these two uniformities do **not** coincide,
+not all topological groups admit a uniform group structure in this sense. This is however the
+case for commutative groups, which are the main motivation for the existence of this
+typeclass. -/
 class IsUniformAddGroup (α : Type*) [UniformSpace α] [AddGroup α] : Prop where
   uniformContinuous_sub : UniformContinuous fun p : α × α => p.1 - p.2
 
@@ -221,25 +358,29 @@ section
 variable (α)
 
 @[to_additive]
-theorem uniformity_eq_comap_nhds_one : 𝓤 α = comap (fun x : α × α => x.2 / x.1) (𝓝 (1 : α)) := by
-  refine eq_of_forall_le_iff fun 𝓕 ↦ ?_
-  rw [nhds_eq_comap_uniformity, comap_comap, ← tendsto_iff_comap,
-    ← (tendsto_diag_uniformity Prod.fst 𝓕).uniformity_mul_iff_left, ← tendsto_id']
-  congrm Tendsto ?_ _ _
-  ext <;> simp
+instance IsUniformGroup.isRightUniformGroup : IsRightUniformGroup α where
+  uniformity_eq := by
+    refine eq_of_forall_le_iff fun 𝓕 ↦ ?_
+    rw [nhds_eq_comap_uniformity, comap_comap, ← tendsto_iff_comap,
+      ← (tendsto_diag_uniformity Prod.fst 𝓕).uniformity_mul_iff_left, ← tendsto_id']
+    congrm Tendsto ?_ _ _
+    ext <;> simp
 
 @[to_additive]
-theorem uniformity_eq_comap_nhds_one_swapped :
-    𝓤 α = comap (fun x : α × α => x.1 / x.2) (𝓝 (1 : α)) := by
-  rw [← comap_swap_uniformity, uniformity_eq_comap_nhds_one, comap_comap]
-  rfl
+instance IsUniformGroup.isLeftUniformGroup : IsLeftUniformGroup α where
+  uniformity_eq := by
+    refine eq_of_forall_le_iff fun 𝓕 ↦ ?_
+    rw [nhds_eq_comap_uniformity, comap_comap, ← tendsto_iff_comap,
+      ← (tendsto_diag_uniformity Prod.fst 𝓕).uniformity_mul_iff_right, ← tendsto_id']
+    congrm Tendsto ?_ _ _
+    ext <;> simp
 
 @[to_additive]
 theorem IsUniformGroup.ext {G : Type*} [Group G] {u v : UniformSpace G} (hu : @IsUniformGroup G u _)
     (hv : @IsUniformGroup G v _)
     (h : @nhds _ u.toTopologicalSpace 1 = @nhds _ v.toTopologicalSpace 1) : u = v :=
   UniformSpace.ext <| by
-    rw [@uniformity_eq_comap_nhds_one _ u _ hu, @uniformity_eq_comap_nhds_one _ v _ hv, h]
+    rw [(have := hu; uniformity_eq_comap_nhds_one), (have := hv; uniformity_eq_comap_nhds_one), h]
 
 @[to_additive]
 theorem IsUniformGroup.ext_iff {G : Type*} [Group G] {u v : UniformSpace G}
@@ -256,19 +397,6 @@ theorem IsUniformGroup.uniformity_countably_generated [(𝓝 (1 : α)).IsCountab
   exact Filter.comap.isCountablyGenerated _ _
 
 open MulOpposite
-
-@[to_additive]
-theorem uniformity_eq_comap_inv_mul_nhds_one :
-    𝓤 α = comap (fun x : α × α => x.1⁻¹ * x.2) (𝓝 (1 : α)) := by
-  rw [← comap_uniformity_mulOpposite, uniformity_eq_comap_nhds_one, ← op_one, ← comap_unop_nhds,
-    comap_comap, comap_comap]
-  simp [Function.comp_def]
-
-@[to_additive]
-theorem uniformity_eq_comap_inv_mul_nhds_one_swapped :
-    𝓤 α = comap (fun x : α × α => x.2⁻¹ * x.1) (𝓝 (1 : α)) := by
-  rw [← comap_swap_uniformity, uniformity_eq_comap_inv_mul_nhds_one, comap_comap]
-  rfl
 
 end
 
