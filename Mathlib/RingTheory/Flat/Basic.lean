@@ -587,7 +587,7 @@ end IsSMulRegular
 /-- Let `R` be a commutative semiring, let `C` be a commutative ``R`-algebra , and let `A` be an
   `R`-algebra. If `C ⊗[R] B` is reduced for all finitely generated subalgebras `B` of `A`, then
   `C ⊗[R] A` is also reduced. -/
-theorem IsReduced.tensor_of_flat_of_forall_fg {R C A : Type*}
+theorem IsReduced.tensorProduct_of_flat_of_forall_fg {R C A : Type*}
     [CommSemiring R] [CommSemiring C] [Semiring A] [Algebra R A] [Algebra R C] [Module.Flat R C]
     (h : ∀ B : Subalgebra R A, B.FG → IsReduced (C ⊗[R] B)) :
     IsReduced (C ⊗[R] A) := by

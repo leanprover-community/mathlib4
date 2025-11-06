@@ -3,11 +3,8 @@ Copyright (c) 2025 Dion Leijnse. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dion Leijnse
 -/
-import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-import Mathlib.RingTheory.Henselian
+import Mathlib.RingTheory.Flat.Basic
 
 /-!
 # Geometrically reduced algebras
@@ -33,6 +30,7 @@ if the tensor product `AlgebraicClosure k ⊗[k] A` is reduced.
 -/
 
 open TensorProduct
+namespace Algebra
 
 noncomputable section
 variable {k A : Type*} [Field k] [Ring A] [Algebra k A]
@@ -41,9 +39,9 @@ variable {k A : Type*} [Field k] [Ring A] [Algebra k A]
   reduced. -/
 @[mk_iff]
 class IsGeometricallyReduced (k A : Type*) [Field k] [Ring A] [Algebra k A] : Prop where
-  reduced_algebraicClosure_tensor : IsReduced ((AlgebraicClosure k) ⊗[k] A)
+  isReduced_algebraicClosure_tensorProduct : IsReduced (AlgebraicClosure k ⊗[k] A)
 
-attribute [instance] IsGeometricallyReduced.reduced_algebraicClosure_tensor
+attribute [instance] IsGeometricallyReduced.isReduced_algebraicClosure_tensorProduct
 
 instance (k A K : Type*) [Field k] [Ring A] [Algebra k A] [Field K] [Algebra k K]
     [Algebra.IsAlgebraic k K] [IsGeometricallyReduced k A] : IsReduced (K ⊗[k] A) :=
@@ -51,7 +49,7 @@ instance (k A K : Type*) [Field k] [Ring A] [Algebra k A] [Field K] [Algebra k K
     (Algebra.TensorProduct.map ((IsAlgClosed.lift : K →ₐ[k] AlgebraicClosure k)) 1)
     (Module.Flat.rTensor_preserves_injective_linearMap _ (RingHom.injective _))
 
-lemma isGeometricallyReduced_of_injective {B : Type*} [Ring B] [Algebra k B] (f : A →ₐ[k] B)
+lemma IsGeometricallyReduced.of_injective {B : Type*} [Ring B] [Algebra k B] (f : A →ₐ[k] B)
     (hf : Function.Injective f) [IsGeometricallyReduced k B] : IsGeometricallyReduced k A :=
   ⟨isReduced_of_injective (Algebra.TensorProduct.map 1 f)
     (Module.Flat.lTensor_preserves_injective_linearMap _ hf)⟩
@@ -69,4 +67,4 @@ theorem IsGeometricallyReduced.of_forall_fg
     (h : ∀ B : Subalgebra k A, B.FG → IsGeometricallyReduced k B) :
     IsGeometricallyReduced k A := by
   simp_rw [isGeometricallyReduced_iff] at h
-  exact ⟨IsReduced.tensor_of_flat_of_forall_fg h⟩
+  exact ⟨IsReduced.tensorProduct_of_flat_of_forall_fg h⟩
