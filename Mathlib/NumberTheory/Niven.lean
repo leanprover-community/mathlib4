@@ -3,10 +3,12 @@ Copyright (c) 2025 Alex Meiburg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Meiburg
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Log
-import Mathlib.RingTheory.Polynomial.RationalRoot
-import Mathlib.Tactic.Peel
-import Mathlib.Tactic.Rify
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Log
+public import Mathlib.RingTheory.Polynomial.RationalRoot
+public import Mathlib.Tactic.Peel
+public import Mathlib.Tactic.Rify
 
 /-! # Niven's Theorem
 
@@ -15,6 +17,8 @@ also have rational cosines, are 0, 30 degrees, and 90 degrees - up to reflection
 by π. Equivalently, the only rational numbers that occur as `cos(π * p / q)` are the five
 values `{-1, -1/2, 0, 1/2, 1}`.
 -/
+
+@[expose] public section
 
 namespace IsIntegral
 

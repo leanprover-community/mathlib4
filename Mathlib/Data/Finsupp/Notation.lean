@@ -3,7 +3,9 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Finsupp.Single
+module
+
+public import Mathlib.Data.Finsupp.Single
 
 /-!
 # Notation for `Finsupp`
@@ -12,6 +14,8 @@ This file provides `fun₀ | 3 => a | 7 => b` notation for `Finsupp`, which desu
 `Finsupp.update` and `Finsupp.single`, in the same way that `{a, b}` desugars to `insert` and
 `singleton`.
 -/
+
+@[expose] public section
 
 namespace Finsupp
 

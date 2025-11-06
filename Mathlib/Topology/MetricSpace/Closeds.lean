@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Topology.MetricSpace.HausdorffDistance
-import Mathlib.Topology.Sets.Compacts
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
+public import Mathlib.Topology.Sets.Compacts
 
 /-!
 # Closed subsets
@@ -21,6 +23,8 @@ In a metric space, the type of nonempty compact subsets (called `NonemptyCompact
 inherits a metric space structure from the Hausdorff distance, as the Hausdorff edistance is
 always finite in this context.
 -/
+
+@[expose] public section
 
 noncomputable section
 

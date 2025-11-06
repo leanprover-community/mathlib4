@@ -3,14 +3,16 @@ Copyright (c) 2020 Kexing Ying and Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Group.Indicator
-import Mathlib.Algebra.Group.Support
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Algebra.Notation.FiniteSupport
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Data.Set.Finite.Lattice
+module
+
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.Group.Indicator
+public import Mathlib.Algebra.Group.Support
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.Algebra.Notation.FiniteSupport
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Finite products and sums over types and sets
@@ -72,6 +74,8 @@ We did not add `IsFinite (X : Type) : Prop`, because it is simply `Nonempty (Fin
 
 finsum, finprod, finite sum, finite product
 -/
+
+@[expose] public section
 
 
 open Function Set

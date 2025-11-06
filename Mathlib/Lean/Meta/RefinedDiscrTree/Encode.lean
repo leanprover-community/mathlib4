@@ -3,8 +3,10 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
-import Lean.Meta.DiscrTree
+module
+
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+public import Lean.Meta.DiscrTree
 
 /-!
 # Encoding an `Expr` as a sequence of `Key`s
@@ -26,6 +28,8 @@ To compute all the keys at once, we have
   This will be used for expressions that are looked up in a `RefinedDiscrTree` using `getMatch`.
 
 -/
+
+@[expose] public section
 
 namespace Lean.Meta.RefinedDiscrTree
 

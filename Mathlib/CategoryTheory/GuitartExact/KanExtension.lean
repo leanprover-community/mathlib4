@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GuitartExact.Basic
-import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
+module
+
+public import Mathlib.CategoryTheory.GuitartExact.Basic
+public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 
 /-!
 # Guitart exact squares and Kan extensions
@@ -24,6 +26,8 @@ the composition `T ⋙ F'` is a pointwise left Kan extension at `X₃`
 of `B ⋙ F'`.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 

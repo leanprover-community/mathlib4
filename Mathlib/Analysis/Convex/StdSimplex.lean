@@ -3,11 +3,13 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies, Joël Riou
 -/
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.Analysis.Convex.PathConnected
-import Mathlib.Topology.Algebra.Monoid.FunOnFinite
-import Mathlib.Topology.MetricSpace.ProperSpace.Real
-import Mathlib.Topology.UnitInterval
+module
+
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Analysis.Convex.PathConnected
+public import Mathlib.Topology.Algebra.Monoid.FunOnFinite
+public import Mathlib.Topology.MetricSpace.ProperSpace.Real
+public import Mathlib.Topology.UnitInterval
 
 /-!
 # The standard simplex
@@ -20,6 +22,8 @@ When `f : X → Y` is a map between finite types, we define the map
 `stdSimplex.map f : stdSimplex 𝕜 X → stdSimplex 𝕜 Y`.
 
 -/
+
+@[expose] public section
 
 open Set Convex Bornology
 

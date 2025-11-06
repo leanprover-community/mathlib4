@@ -3,12 +3,14 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Sébastien Gouëzel
 -/
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-import Mathlib.MeasureTheory.Group.Pointwise
-import Mathlib.MeasureTheory.Measure.Doubling
-import Mathlib.MeasureTheory.Measure.Haar.Basic
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+module
+
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
+public import Mathlib.MeasureTheory.Group.Pointwise
+public import Mathlib.MeasureTheory.Measure.Doubling
+public import Mathlib.MeasureTheory.Measure.Haar.Basic
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-!
 # Relationship between the Haar and Lebesgue measures
@@ -43,6 +45,8 @@ small `r`, see `eventually_nonempty_inter_smul_of_density_one`.
 Statements on integrals of functions with respect to an additive Haar measure can be found in
 `MeasureTheory.Measure.Haar.NormedSpace`.
 -/
+
+@[expose] public section
 
 assert_not_exists MeasureTheory.integral
 

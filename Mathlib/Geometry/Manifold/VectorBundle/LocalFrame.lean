@@ -3,10 +3,12 @@ Copyright (c) 2025 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.Algebra.Monoid
-import Mathlib.Geometry.Manifold.Notation
-import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
-import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.Monoid
+public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+public import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 
 
 /-!
@@ -77,6 +79,8 @@ only meaningful on the set on which they are a local frame.
 vector bundle, local frame, smoothness
 
 -/
+
+@[expose] public section
 open Bundle Filter Function Topology Module
 
 open scoped Bundle Manifold ContDiff

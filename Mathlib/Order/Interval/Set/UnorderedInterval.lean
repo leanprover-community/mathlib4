@@ -3,11 +3,13 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
-import Mathlib.Data.Set.Order
-import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.Interval.Set.Image
-import Mathlib.Order.Interval.Set.LinearOrder
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.Set.Order
+public import Mathlib.Order.Bounds.Basic
+public import Mathlib.Order.Interval.Set.Image
+public import Mathlib.Order.Interval.Set.LinearOrder
+public import Mathlib.Tactic.Common
 
 /-!
 # Intervals without endpoints ordering
@@ -34,6 +36,8 @@ We use the localized notation `[[a, b]]` for `uIcc a b`. One can open the scope 
 make the notation available.
 
 -/
+
+@[expose] public section
 
 
 open Function

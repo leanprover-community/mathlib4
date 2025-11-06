@@ -3,8 +3,10 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
-import Mathlib.RingTheory.Binomial
+module
+
+public import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
+public import Mathlib.RingTheory.Binomial
 
 /-!
 # Binomial Series
@@ -24,6 +26,8 @@ and $x$ is an element of a normed algebra over $\mathbb{K}$.
 * `binomialSeries_radius_eq_top_of_nat`: In case `a` is natural, the series converges everywhere,
   since it is finite.
 -/
+
+@[expose] public section
 
 open scoped Nat
 

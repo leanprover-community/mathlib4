@@ -3,7 +3,9 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
+module
+
+public meta import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
 
 /-!
 # A `norm_num` extension for Jacobi and Legendre symbols
@@ -43,6 +45,8 @@ where we encode the residue classes mod 2, mod 4, or mod 8 by using hypotheses l
 `a % n = b`. In this way, the only divisions we have to compute and prove
 are the ones occurring in the use of QR above.
 -/
+
+public meta section
 
 
 section Lemmas

@@ -3,8 +3,10 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.Complex.SummableUniformlyOn
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
+module
+
+public import Mathlib.Analysis.Complex.SummableUniformlyOn
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
 
 /-!
 # Einstein series q-expansions
@@ -13,6 +15,8 @@ We give some identities for q-expansions of Eisenstein series that will be used 
 q-expansions.
 
 -/
+
+@[expose] public section
 
 open Set Metric TopologicalSpace Function Filter Complex EisensteinSeries
 

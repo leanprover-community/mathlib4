@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Mates
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Mates
 
 /-!
 # Compatibilities for left adjoints from compatibilities satisfied by right adjoints
@@ -20,6 +22,8 @@ properties to the (obvious) case of the pushforward functors. Similar results sh
 be obtained for sheaves of modules (TODO).
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton, Simon Hudon, Kenny Lau
 -/
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Logic.Small.Defs
+module
+
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Logic.Small.Defs
 
 /-!
 # Opposites
@@ -14,6 +16,8 @@ two bijections `op : α → αᵒᵖ` and `unop : αᵒᵖ → α`. If `α` is a
 opposite category, with all arrows reversed.
 
 -/
+
+@[expose] public section
 
 
 universe v u

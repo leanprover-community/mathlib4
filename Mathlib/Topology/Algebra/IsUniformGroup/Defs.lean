@@ -3,8 +3,10 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Topology.UniformSpace.Basic
-import Mathlib.Topology.Algebra.Group.Basic
+module
+
+public import Mathlib.Topology.UniformSpace.Basic
+public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Uniform structure on topological groups
@@ -24,6 +26,8 @@ group naturally induces a uniform structure.
 
 See `Mathlib/Topology/Algebra/IsUniformGroup/Basic.lean` for further results.
 -/
+
+@[expose] public section
 
 assert_not_exists Cauchy
 

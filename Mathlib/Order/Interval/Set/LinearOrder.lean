@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Order.MinMax
+module
+
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.MinMax
 
 /-!
 # Interval properties in linear orders
@@ -12,6 +14,8 @@ import Mathlib.Order.MinMax
 Since every pair of elements are comparable in a linear order, intervals over them are
 better behaved. This file collects their properties under this assumption.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 

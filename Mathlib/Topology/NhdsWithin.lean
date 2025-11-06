@@ -3,7 +3,9 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel
 -/
-import Mathlib.Topology.Constructions
+module
+
+public import Mathlib.Topology.Constructions
 
 /-!
 # Neighborhoods relative to a subset
@@ -23,6 +25,8 @@ to develop relativ versions `ContinuousOn` and `ContinuousWithinAt` of `Continuo
 * `𝓝[s] x`: the filter `nhdsWithin x s` of neighborhoods of a point `x` within a set `s`.
 
 -/
+
+@[expose] public section
 
 open Set Filter Function Topology
 

@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fin.Fin2
-import Mathlib.Util.Notation3
-import Mathlib.Tactic.TypeStar
+module
+
+public import Mathlib.Data.Fin.Fin2
+public import Mathlib.Util.Notation3
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # Alternate definition of `Vector` in terms of `Fin2`
@@ -15,6 +17,8 @@ instead of a `List`.
 
 The `::` notation is also overloaded by this file to mean `Vector3.cons`.
 -/
+
+@[expose] public section
 
 open Fin2 Nat
 

@@ -3,10 +3,12 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Star.Basic
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Pointwise star operation on sets
@@ -19,6 +21,8 @@ if `s t : Set α`, then under suitable assumption on `α`, it is shown
 * `(s * t)⋆ = t⋆ + s⋆`
 * `(s⁻¹)⋆ = (s⋆)⁻¹`
 -/
+
+@[expose] public section
 
 
 namespace Set

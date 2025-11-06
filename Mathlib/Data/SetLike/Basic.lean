@@ -3,9 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Data.Set.Basic
+module
+
+public import Mathlib.Tactic.Monotonicity.Attr
+public import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Set.Basic
 
 /-!
 # Typeclass for types with a set-like extensionality property
@@ -69,6 +71,8 @@ While this is equivalent, `SetLike` conveniently uses a carrier set projection d
 
 subobjects
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 

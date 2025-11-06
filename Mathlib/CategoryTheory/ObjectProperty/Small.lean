@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
-import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
-import Mathlib.CategoryTheory.ObjectProperty.Opposite
-import Mathlib.Logic.Small.Basic
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+public import Mathlib.CategoryTheory.ObjectProperty.Opposite
+public import Mathlib.Logic.Small.Basic
 
 /-!
 # Smallness of a property of objects
@@ -15,6 +17,8 @@ In this file, given `P : ObjectProperty C`, we define
 `ObjectProperty.Small.{w} P` as an abbreviation for `Small.{w} (Subtype P)`.
 
 -/
+
+@[expose] public section
 
 universe w v u
 

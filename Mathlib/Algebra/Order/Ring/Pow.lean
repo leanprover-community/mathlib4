@@ -3,10 +3,14 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Data.Nat.Cast.Order.Ring
+module
+
+public import Mathlib.Data.Nat.Cast.Commute
+public import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-! # Bernoulli's inequality -/
+
+@[expose] public section
 
 variable {R : Type*}
 

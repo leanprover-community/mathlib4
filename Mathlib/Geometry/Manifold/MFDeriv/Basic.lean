@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.MFDeriv.Defs
-import Mathlib.Geometry.Manifold.ContMDiff.Defs
+module
+
+public import Mathlib.Geometry.Manifold.MFDeriv.Defs
+public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
 /-!
 # Basic properties of the manifold Fréchet derivative
@@ -19,6 +21,8 @@ mimicking the API for Fréchet derivatives.
 - composition lemmas and the chain rule
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

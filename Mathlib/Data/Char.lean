@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.Basic
-import Mathlib.Order.Defs.LinearOrder
+module
+
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Order.Defs.LinearOrder
 
 /-!
 # More `Char` instances
@@ -13,6 +15,8 @@ This file provides a `LinearOrder` instance on `Char`. `Char` is the type of Uni
 Provides an additional definition to truncate a `Char` to `UInt8` and a theorem on conversion to
 `Nat`.
 -/
+
+@[expose] public section
 
 /--
 Provides a `LinearOrder` instance on `Char`. `Char` is the type of Unicode scalar values.

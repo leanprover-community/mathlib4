@@ -3,11 +3,13 @@ Copyright (c) 2022 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.BernoulliPolynomials
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Analysis.Fourier.AddCircle
-import Mathlib.Analysis.PSeries
+module
+
+public import Mathlib.NumberTheory.BernoulliPolynomials
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.Analysis.Fourier.AddCircle
+public import Mathlib.Analysis.PSeries
 
 /-!
 # Critical values of the Riemann zeta function
@@ -25,6 +27,8 @@ zeta functions, in terms of Bernoulli polynomials.
 * `hasSum_one_div_nat_pow_mul_sin`: a formula for the sum `∑ (n : ℕ), sin (2 π i n x) / n ^ k` as
   an explicit multiple of `Bₖ(x)`, for any `x ∈ [0, 1]` and `k ≥ 3` odd.
 -/
+
+@[expose] public section
 
 noncomputable section
 

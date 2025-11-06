@@ -3,7 +3,9 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
+module
+
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
 
 /-! # Conditional expectation
 
@@ -67,6 +69,8 @@ expectation. This would generalise `MeasureTheory.condExp_mul_of_stronglyMeasura
 conditional expectation, conditional expected value
 
 -/
+
+@[expose] public section
 
 open TopologicalSpace MeasureTheory.Lp Filter
 open scoped ENNReal Topology MeasureTheory

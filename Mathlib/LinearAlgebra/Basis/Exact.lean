@@ -3,8 +3,10 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Exact
-import Mathlib.LinearAlgebra.Basis.Basic
+module
+
+public import Mathlib.Algebra.Exact
+public import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 # Basis from a split exact sequence
@@ -17,6 +19,8 @@ the images of `vᵢ` for `i : κ` form a basis of `P`.
 We treat linear independence and the span condition separately. For convenience this
 is stated not for `κ ⊕ σ`, but for an arbitrary type `ι` with two maps `κ → ι` and `σ → ι`.
 -/
+
+@[expose] public section
 
 variable {R M K P : Type*} [Ring R] [AddCommGroup M] [AddCommGroup K] [AddCommGroup P]
 variable [Module R M] [Module R K] [Module R P]

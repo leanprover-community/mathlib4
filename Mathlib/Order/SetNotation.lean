@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Operations
-import Mathlib.Util.Notation3
+module
+
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Util.Notation3
 
 /-!
 # Notation classes for set supremum and infimum
@@ -30,6 +32,8 @@ In this file we introduce notation for indexed suprema, infima, unions, and inte
 - `⋃ i, s i`, `⋂ i, s i`: union and intersection of an indexed family of sets.
 
 -/
+
+@[expose] public section
 
 open Set
 

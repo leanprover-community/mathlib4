@@ -3,11 +3,13 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, David Loeffler
 -/
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.Algebra.Nonarchimedean.Basic
-import Mathlib.Topology.MetricSpace.Ultra.Basic
-import Mathlib.Topology.Algebra.InfiniteSum.Group
-import Mathlib.Topology.Order.LiminfLimsup
+module
+
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
+public import Mathlib.Topology.MetricSpace.Ultra.Basic
+public import Mathlib.Topology.Algebra.InfiniteSum.Group
+public import Mathlib.Topology.Order.LiminfLimsup
 
 /-!
 # Ultrametric norms
@@ -31,6 +33,8 @@ in `NNReal` is 0, so easier to make statements about maxima of empty sets.
 
 ultrametric, nonarchimedean
 -/
+
+@[expose] public section
 open Metric NNReal
 
 namespace IsUltrametricDist

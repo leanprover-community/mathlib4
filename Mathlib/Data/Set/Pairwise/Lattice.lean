@@ -3,14 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Set.Pairwise.Basic
+module
+
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Pairwise.Basic
 
 /-!
 # Relations holding pairwise
 
 In this file we prove many facts about `Pairwise` and the set lattice.
 -/
+
+@[expose] public section
 
 
 open Function Set Order

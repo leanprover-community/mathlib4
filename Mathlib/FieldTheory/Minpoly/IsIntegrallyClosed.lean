@@ -3,9 +3,11 @@ Copyright (c) 2019 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Paul Lezeau, Junyan Xu
 -/
-import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.RingTheory.Polynomial.GaussLemma
+module
+
+public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.FieldTheory.Minpoly.Field
+public import Mathlib.RingTheory.Polynomial.GaussLemma
 
 /-!
 # Minimal polynomials over a GCD monoid
@@ -25,6 +27,8 @@ This file specializes the theory of minpoly to the case of an algebra over a GCD
   that has `x` as a root, then this polynomial is equal to the minimal polynomial of `x`.
 
 -/
+
+@[expose] public section
 
 open Polynomial Set Function minpoly
 

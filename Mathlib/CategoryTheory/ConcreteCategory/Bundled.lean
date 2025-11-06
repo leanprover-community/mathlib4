@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather
 -/
-import Mathlib.Init
-import Batteries.Tactic.Lint.Misc
+module
+
+public import Mathlib.Init
+public import Batteries.Tactic.Lint.Misc
 
 /-!
 # Bundled types
@@ -17,6 +19,8 @@ We provide `Category` instances for these in
 and in `Mathlib/CategoryTheory/HasForget/BundledHom.lean`
 (for categories with bundled homs, e.g. monoids).
 -/
+
+@[expose] public section
 
 universe u v
 

@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Filter
-import Mathlib.Data.Finite.Defs
+module
+
+public import Mathlib.Data.Finset.Filter
+public import Mathlib.Data.Finite.Defs
 
 /-!
 # Finite types
@@ -34,6 +36,8 @@ These files also contain appropriate `Infinite` instances for these types.
 
 `Infinite` instances for `ℕ`, `ℤ`, `Multiset α`, and `List α` are in `Data.Fintype.Lattice`.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 

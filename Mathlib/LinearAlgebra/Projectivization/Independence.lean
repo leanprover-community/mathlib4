@@ -3,7 +3,9 @@ Copyright (c) 2022 Michael Blyth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Blyth
 -/
-import Mathlib.LinearAlgebra.Projectivization.Basic
+module
+
+public import Mathlib.LinearAlgebra.Projectivization.Basic
 
 /-!
 # Independence in Projective Space
@@ -27,6 +29,8 @@ ambient vector space. Similarly for the definition of dependence.
 - Prove the axioms of a projective geometry are satisfied by the dependence relation.
 - Define projective linear subspaces.
 -/
+
+@[expose] public section
 
 open scoped LinearAlgebra.Projectivization
 

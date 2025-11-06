@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Presentable.Limits
-import Mathlib.CategoryTheory.Limits.Presentation
+module
+
+public import Mathlib.CategoryTheory.Presentable.Limits
+public import Mathlib.CategoryTheory.Limits.Presentation
 
 /-!
 # Presentable generators
@@ -28,6 +30,8 @@ categories in the file `CategoryTheory.Presentable.LocallyPresentable`.
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/
+
+@[expose] public section
 
 universe w v u
 

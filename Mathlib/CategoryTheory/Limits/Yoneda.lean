@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Types.Yoneda
-import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Types.Yoneda
+public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+public import Mathlib.Util.AssertExists
 
 /-!
 # Limit properties relating to the (co)yoneda embedding.
@@ -16,6 +18,8 @@ We calculate the colimit of `Y ↦ (X ⟶ Y)`, which is just `PUnit`.
 
 We also show the (co)yoneda embeddings preserve limits and jointly reflect them.
 -/
+
+@[expose] public section
 
 assert_not_exists AddCommMonoid
 

@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.WithTop
-import Mathlib.Data.NNReal.Basic
-import Mathlib.Data.ENNReal.Inv
+module
+
+public import Mathlib.Algebra.BigOperators.WithTop
+public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Data.ENNReal.Inv
 
 /-!
 # Properties of big operators extended non-negative real numbers
@@ -13,6 +15,8 @@ import Mathlib.Data.ENNReal.Inv
 In this file we prove elementary properties of sums and products on `ℝ≥0∞`, as well as how these
 interact with the order structure on `ℝ≥0∞`.
 -/
+
+@[expose] public section
 
 open Set NNReal ENNReal
 

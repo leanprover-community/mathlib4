@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Algebra.Module.Submodule.Map
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Algebra.Module.Submodule.Map
 
 /-!
 # Kernel of a linear map
@@ -25,6 +27,8 @@ This file defines the kernel of a linear map.
 linear algebra, vector space, module
 
 -/
+
+@[expose] public section
 
 open Function
 

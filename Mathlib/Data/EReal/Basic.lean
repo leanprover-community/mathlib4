@@ -3,7 +3,9 @@ Copyright (c) 2019 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
-import Mathlib.Data.ENNReal.Operations
+module
+
+public import Mathlib.Data.ENNReal.Operations
 
 /-!
 # The extended real numbers
@@ -21,6 +23,8 @@ and their basic properties proved. The latter takes up most of the rest of this 
 
 real, ereal, complete lattice
 -/
+
+@[expose] public section
 
 open Function ENNReal NNReal Set
 

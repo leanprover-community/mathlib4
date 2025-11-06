@@ -3,13 +3,14 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Lean.Parser.Syntax
-import Batteries.Tactic.Unreachable
+public meta import Lean.Parser.Syntax
+public meta import Batteries.Tactic.Unreachable
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
-import Mathlib.Tactic.Linter.UnusedTacticExtension
+public meta import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.UnusedTacticExtension
 
 /-!
 # The unused tactic linter
@@ -53,6 +54,8 @@ before and after and see if there is some change.
 
 Yet another linter copied from the `unreachableTactic` linter!
 -/
+
+public meta section
 
 open Lean Elab Std Linter
 

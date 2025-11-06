@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.Lat
-import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+module
+
+public import Mathlib.Order.Category.Lat
+public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 
 /-!
 # The category of frames
@@ -16,6 +18,8 @@ This file defines `Frm`, the category of frames.
 
 * [nLab, *Frm*](https://ncatlab.org/nlab/show/Frm)
 -/
+
+@[expose] public section
 
 
 universe u

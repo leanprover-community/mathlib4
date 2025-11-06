@@ -3,7 +3,9 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+module
+
+public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 
 /-!
 # Convergence in distribution
@@ -28,6 +30,8 @@ on different probability spaces can be talked about using the `ProbabilityMeasur
   If `X n` tends to `Z` in distribution and `g` is continuous, then `g ∘ X n` tends to `g ∘ Z`
   in distribution.
 -/
+
+@[expose] public section
 
 open Filter
 open scoped Topology

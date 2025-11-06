@@ -3,12 +3,14 @@ Copyright (c) 2024 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Group.Indicator
-import Mathlib.Order.LiminfLimsup
-import Mathlib.SetTheory.Cardinal.Finite
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Group.Indicator
+public import Mathlib.Order.LiminfLimsup
+public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Cardinality and limit of sum of indicators
@@ -18,6 +20,8 @@ limsups of sums of indicators.
 ## Tags
 finite, indicator, limsup, tendsto
 -/
+
+@[expose] public section
 
 namespace Set
 

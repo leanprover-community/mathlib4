@@ -3,9 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.Cover
-import Mathlib.Order.Iterate
+module
+
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.Cover
+public import Mathlib.Order.Iterate
 
 /-!
 # Successor and predecessor
@@ -37,6 +39,8 @@ for all non-maximal elements (enforced by the combination of `le_succ` and the c
 The stricter condition of every element having a sensible successor can be obtained through the
 combination of `SuccOrder α` and `NoMaxOrder α`.
 -/
+
+@[expose] public section
 
 open Function OrderDual Set
 

@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Sigma.Basic
-import Mathlib.Algebra.Order.Ring.Nat
+module
+
+public import Mathlib.Data.Sigma.Basic
+public import Mathlib.Algebra.Order.Ring.Nat
 
 /-!
 # A computable model of ZFA without infinity
@@ -38,6 +40,8 @@ This calls for a two-step definition of ZFA lists:
 * `Finsets α`: ZFA sets. Defined as `Lists` quotiented by `Lists.Equiv`, the extensional
   equivalence.
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}

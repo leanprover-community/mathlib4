@@ -3,11 +3,13 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Monad.Basic
-import Mathlib.Control.Monad.Writer
-import Mathlib.Control.Lawful
-import Batteries.Tactic.Congr
-import Batteries.Lean.Except
+module
+
+public import Mathlib.Control.Monad.Basic
+public import Mathlib.Control.Monad.Writer
+public import Mathlib.Control.Lawful
+public import Batteries.Tactic.Congr
+public import Batteries.Lean.Except
 
 /-!
 # Continuation Monad
@@ -17,6 +19,8 @@ Haskell's `Cont`, `ContT` and `MonadCont`:
 <https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-Cont.html>
 <https://hackage.haskell.org/package/transformers-0.6.2.0/docs/Control-Monad-Trans-Cont.html>
 -/
+
+@[expose] public section
 
 universe u v w u₀ u₁ v₀ v₁
 

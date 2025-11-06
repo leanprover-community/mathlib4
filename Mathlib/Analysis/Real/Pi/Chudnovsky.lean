@@ -3,8 +3,10 @@ Copyright (c) 2025 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Batteries.Data.Rat.Float
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Batteries.Data.Rat.Float
 
 /-!
 # Chudnovsky's formula for π
@@ -31,6 +33,8 @@ but at present we are a long way off.
 * [Chen and Glebov, *On Chudnovsky--Ramanujan type formulae*][Chen_Glebov_2018]
 
 -/
+
+@[expose] public section
 
 open scoped Real BigOperators
 open Nat

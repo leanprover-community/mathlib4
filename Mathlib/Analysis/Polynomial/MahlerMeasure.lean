@@ -3,11 +3,12 @@ Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
+module
 
-import Mathlib.Analysis.Analytic.Polynomial
-import Mathlib.Analysis.CStarAlgebra.Classes
-import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
-import Mathlib.MeasureTheory.Integral.CircleAverage
+public import Mathlib.Analysis.Analytic.Polynomial
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
+public import Mathlib.MeasureTheory.Integral.CircleAverage
 
 /-!
 # Mahler measure of complex polynomials
@@ -27,6 +28,8 @@ properties.
 - `Polynomial.mahlerMeasure_mul`: the Mahler measure of the product of two polynomials is the
   product of their Mahler measures.
 -/
+
+@[expose] public section
 
 namespace Polynomial
 

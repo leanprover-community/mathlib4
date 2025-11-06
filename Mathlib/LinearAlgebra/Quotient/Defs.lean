@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Algebra.Module.Submodule.Defs
-import Mathlib.GroupTheory.QuotientGroup.Defs
+module
+
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.Module.Submodule.Defs
+public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # Quotients by submodules
@@ -21,6 +23,8 @@ import Mathlib.GroupTheory.QuotientGroup.Defs
 * `Submodule.quotEquivOfEq`: if `p` and `p'` are equal, their quotients are equivalent
 
 -/
+
+@[expose] public section
 
 -- For most of this file we work over a noncommutative ring
 section Ring

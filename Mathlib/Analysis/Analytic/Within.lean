@@ -3,8 +3,10 @@ Copyright (c) 2024 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
-import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Analytic.ChangeOrigin
+module
+
+public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.Analysis.Analytic.ChangeOrigin
 
 /-!
 # Properties of analyticity restricted to a set
@@ -20,6 +22,8 @@ This means there exists an extension of `f` which is analytic and agrees with `f
 Here we prove basic properties of these definitions. Where convenient we assume completeness of the
 ambient space, which allows us to relate `AnalyticWithinAt` to analyticity of a local extension.
 -/
+
+@[expose] public section
 
 noncomputable section
 

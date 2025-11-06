@@ -3,7 +3,9 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Covering.Differentiation
+module
+
+public import Mathlib.MeasureTheory.Covering.Differentiation
 
 /-!
 # Besicovitch covering theorems
@@ -88,6 +90,8 @@ finite subfamily. Then one goes on again and again, covering at each step a posi
 the remaining points, while remaining disjoint from the already chosen balls. The union of all these
 balls is the desired almost everywhere covering.
 -/
+
+@[expose] public section
 
 
 noncomputable section

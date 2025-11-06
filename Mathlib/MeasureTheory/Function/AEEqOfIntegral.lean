@@ -3,11 +3,13 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.InnerProductSpace.Continuous
-import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-import Mathlib.Order.Filter.Ring
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Continuous
+public import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+public import Mathlib.Order.Filter.Ring
 
 /-! # From equality of integrals to equality of functions
 
@@ -40,6 +42,8 @@ Generally useful lemmas which are not related to integrals:
   `fun x => c (f x) =ᵐ[μ] 0` then `f =ᵐ[μ] 0`.
 
 -/
+
+@[expose] public section
 
 
 open MeasureTheory TopologicalSpace NormedSpace Filter

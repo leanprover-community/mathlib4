@@ -3,14 +3,18 @@ Copyright (c) 2024 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Ring.WithTop
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Algebra.Order.Ring.WithTop
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Sums in `WithTop`
 
 This file proves results about finite sums over monoids extended by a bottom or top element.
 -/
+
+@[expose] public section
 
 open Finset
 

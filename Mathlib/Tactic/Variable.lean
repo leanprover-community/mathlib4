@@ -3,8 +3,10 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.TryThis
+module
+
+public meta import Mathlib.Init
+public meta import Lean.Meta.Tactic.TryThis
 
 /-!
 # The `variable?` command
@@ -18,6 +20,8 @@ An inherent limitation with this command is that variables are recorded in the s
 *syntax*. This means that `variable?` needs to pretty print the expressions we get
 from typeclass synthesis errors, and these might fail to round trip.
 -/
+
+public meta section
 
 namespace Mathlib.Command.Variable
 open Lean Elab Command Parser.Term Meta

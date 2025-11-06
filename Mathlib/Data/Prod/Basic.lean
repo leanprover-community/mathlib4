@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Function.Defs
-import Mathlib.Logic.Function.Iterate
-import Aesop
-import Mathlib.Tactic.Inhabit
+module
+
+public import Mathlib.Logic.Function.Defs
+public import Mathlib.Logic.Function.Iterate
+public import Aesop
+public import Mathlib.Tactic.Inhabit
 
 /-!
 # Extra facts about `Prod`
@@ -14,6 +16,8 @@ import Mathlib.Tactic.Inhabit
 This file proves various simple lemmas about `Prod`.
 It also defines better delaborators for product projections.
 -/
+
+@[expose] public section
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 

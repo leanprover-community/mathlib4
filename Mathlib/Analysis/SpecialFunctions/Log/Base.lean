@@ -3,9 +3,11 @@ Copyright (c) 2022 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Data.Int.Log
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Data.Int.Log
 
 /-!
 # Real logarithm base `b`
@@ -21,6 +23,8 @@ We prove some basic properties of this function and its relation to `rpow`.
 
 logarithm, continuity
 -/
+
+@[expose] public section
 
 
 open Set Filter Function

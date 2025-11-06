@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+module
+
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 
 /-!
 # Classes for probability measures
@@ -13,6 +15,8 @@ We introduce the following typeclasses for measures:
 * `IsZeroOrProbabilityMeasure μ`: `μ univ = 0 ∨ μ univ = 1`;
 * `IsProbabilityMeasure μ`: `μ univ = 1`.
 -/
+
+@[expose] public section
 
 namespace MeasureTheory
 

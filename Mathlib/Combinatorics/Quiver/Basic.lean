@@ -3,7 +3,9 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Kim Morrison
 -/
-import Mathlib.Data.Opposite
+module
+
+public import Mathlib.Data.Opposite
 
 /-!
 # Quivers
@@ -20,6 +22,8 @@ where we insist that morphisms live in some `Type`.
 There's some balance here: it's nice to allow `Prop` to ensure there are no multiple arrows,
 but it also results in error-prone universe signatures when constraints require a `Type`.
 -/
+
+@[expose] public section
 
 open Opposite
 

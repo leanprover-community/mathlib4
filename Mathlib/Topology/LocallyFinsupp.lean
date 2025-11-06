@@ -3,13 +3,15 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.Algebra.Group.Support
-import Mathlib.Algebra.Order.Group.PosPart
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Topology.DiscreteSubset
-import Mathlib.Topology.Separation.Hausdorff
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.Algebra.Group.Support
+public import Mathlib.Algebra.Order.Group.PosPart
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Topology.DiscreteSubset
+public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Type of functions with locally finite support
@@ -20,6 +22,8 @@ commutative group.
 
 Throughout the present file, `X` denotes a topologically space and `U` a subset of `X`.
 -/
+
+@[expose] public section
 
 open Filter Function Set Topology
 

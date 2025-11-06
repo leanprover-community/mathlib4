@@ -3,10 +3,12 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Extension.Cotangent.Basic
-import Mathlib.RingTheory.Smooth.Basic
-import Mathlib.Algebra.Module.Projective
-import Mathlib.Tactic.StacksAttribute
+module
+
+public import Mathlib.RingTheory.Extension.Cotangent.Basic
+public import Mathlib.RingTheory.Smooth.Basic
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Relation of smoothness and `Ω[S⁄R]`
@@ -46,6 +48,8 @@ import Mathlib.Tactic.StacksAttribute
 
 
 -/
+
+@[expose] public section
 
 universe u
 
