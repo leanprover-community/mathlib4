@@ -105,7 +105,7 @@ theorem tendsto_add_mul_div_add_mul_atTop_nhds {𝕜 : Type*} [Semifield 𝕜] [
   · refine (eventually_ne_atTop 0).mp (Eventually.of_forall ?_)
     intro h hx
     dsimp
-    field_simp (discharger := norm_cast)
+    field (discharger := norm_cast)
   · apply Filter.Tendsto.div _ _ hd
     all_goals
       apply zero_add (_ : 𝕜) ▸ Filter.Tendsto.add_const _ _
