@@ -630,6 +630,10 @@ theorem exists_contMDiffSection_forall_mem_convex_of_local
 alias exists_contMDiffOn_section_forall_mem_convex_of_local :=
   exists_contMDiffSection_forall_mem_convex_of_local
 
+@[deprecated (since := "2025-11-06")]
+alias exists_smooth_section_forall_mem_convex_of_local :=
+  exists_contMDiffSection_forall_mem_convex_of_local
+
 /-- Let `M` be a σ-compact Hausdorff finite-dimensional topological manifold. Let `t : M → Set F`
 be a family of convex sets. Suppose that for each point `x : M` there exists a neighborhood
 `U ∈ 𝓝 x` and a function `g : M → F` such that `g` is $C^n$ smooth on `U` and `g y ∈ t y` for all
