@@ -28,8 +28,6 @@ general theory of Lie algebra cohomology.
 
 -/
 
-suppress_compilation
-
 namespace LieModule.Cohomology
 
 variable (R : Type*) [CommRing R]
@@ -113,28 +111,22 @@ lemma d₁₂_apply_apply_ofTrivial [LieModule.IsTrivial L M] (f : oneCochain R 
   simp
 
 /-- The coboundary operator taking degree 2 cochains to a space containing degree 3 cochains. -/
-def d₂₃ : twoCochain R L M →ₗ[R] L →ₗ[R] L →ₗ[R] L →ₗ[R] M where
-  toFun a :=
-    { toFun x :=
-      { toFun y :=
+private def d₂₃_aux (a : twoCochain R L M) : L →ₗ[R] L →ₗ[R] L →ₗ[R] M where
+  toFun x :=
+    { toFun y :=
         { toFun z := ⁅x, a y z⁆ - ⁅y, a x z⁆ + ⁅z, a x y⁆ - a ⁅x, y⁆ z + a ⁅x, z⁆ y - a ⁅y, z⁆ x
-          map_add' _ _ := by simp only [map_add, lie_add, add_lie, LinearMap.add_apply]; abel
-          map_smul' _ _ := by abel_nf; simp only [map_smul, lie_smul, neg_smul, one_smul, smul_lie,
-            LinearMap.smul_apply, RingHom.id_apply, smul_add, smul_neg] }
-        map_add' _ _ := by ext; simp only [map_add, LinearMap.add_apply, lie_add, add_lie,
-          LinearMap.coe_mk, AddHom.coe_mk]; abel
-        map_smul' _ _ := by ext; abel_nf; simp only [map_smul, LinearMap.smul_apply, lie_smul,
-          smul_lie, neg_smul, one_smul, LinearMap.coe_mk, AddHom.coe_mk, RingHom.id_apply, smul_add,
-          smul_neg] }
-      map_add' _ _ := by ext; simp only [add_lie, map_add, LinearMap.add_apply, lie_add,
-        LinearMap.coe_mk, AddHom.coe_mk]; abel
-      map_smul' _ _ := by ext; abel_nf; simp only [smul_lie, map_smul,
-          LinearMap.smul_apply, lie_smul, neg_smul, one_smul, LinearMap.coe_mk, AddHom.coe_mk,
-          RingHom.id_apply, smul_add, smul_neg] }
-  map_add' _ _ := by ext; simp only [add_apply_apply, lie_add, LinearMap.coe_mk, AddHom.coe_mk,
-    LinearMap.add_apply]; abel
-  map_smul' _ _ := by ext; abel_nf; simp only [smul_apply_apply, lie_smul, neg_smul, one_smul,
-    LinearMap.coe_mk, AddHom.coe_mk, RingHom.id_apply, LinearMap.smul_apply, smul_add, smul_neg]
+          map_add' _ _ := by simp; abel
+          map_smul' _ _ := by abel_nf; simp }
+      map_add' _ _ := by ext; simp; abel
+      map_smul' _ _ := by ext; abel_nf; simp }
+  map_add' _ _ := by ext; simp; abel
+  map_smul' _ _ := by ext; abel_nf; simp
+
+/-- The coboundary operator taking degree 2 cochains to a space containing degree 3 cochains. -/
+def d₂₃ : twoCochain R L M →ₗ[R] L →ₗ[R] L →ₗ[R] L →ₗ[R] M where
+  toFun := d₂₃_aux R L M
+  map_add' _ _ := by ext; simp [d₂₃_aux]; abel
+  map_smul' _ _ := by ext; simp [d₂₃_aux]; abel_nf; simp
 
 @[simp]
 lemma d₂₃_apply (a : twoCochain R L M) (x y z : L) :
