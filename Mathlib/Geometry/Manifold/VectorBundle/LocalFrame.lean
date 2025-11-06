@@ -358,7 +358,6 @@ lemma localFrame_apply_of_mem_baseSet
     e.localFrame b i x = e.basisAt b hx i := by
   simp [localFrame, hx]
 
-@[simp]
 lemma localFrame_apply_of_notMem
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) {i : ι} (hx : x ∉ e.baseSet) :
