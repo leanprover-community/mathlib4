@@ -140,13 +140,10 @@ theorem fourier_coe_apply' {n : ℤ} {x : ℝ} :
 
 -- simp normal form is `fourier_zero'`
 theorem fourier_zero {x : AddCircle T} : fourier 0 x = 1 := by
-  induction x using QuotientAddGroup.induction_on
-  simp only [fourier_coe_apply]
-  norm_num
+  simp
 
-theorem fourier_zero' {x : AddCircle T} : @toCircle T 0 = (1 : ℂ) := by
-  have : fourier 0 x = @toCircle T 0 := by rw [fourier_apply, zero_smul]
-  rw [← this]; exact fourier_zero
+theorem fourier_zero' : @toCircle T 0 = (1 : ℂ) := by
+  simp
 
 -- simp normal form is *also* `fourier_zero'`
 theorem fourier_eval_zero (n : ℤ) : fourier n (0 : AddCircle T) = 1 := by
@@ -302,7 +299,6 @@ theorem fourierCoeff_eq_intervalIntegral (f : AddCircle T → E) (n : ℤ) (a : 
     fourierCoeff f n = (1 / T) • ∫ x in a..a + T, @fourier T (-n) x • f x := by
   have : ∀ x : ℝ, @fourier T (-n) x • f x = (fun z : AddCircle T => @fourier T (-n) z • f z) x := by
     intro x; rfl
-  -- After https://github.com/leanprover/lean4/pull/3124, we need to add `singlePass := true` to avoid an infinite loop.
   simp_rw +singlePass [this]
   rw [fourierCoeff, AddCircle.intervalIntegral_preimage T a (fun z => _ • _),
     volume_eq_smul_haarAddCircle, integral_smul_measure, ENNReal.toReal_ofReal hT.out.le,
@@ -435,7 +431,7 @@ theorem hasSum_sq_fourierCoeffOn
     {a b : ℝ} {f : ℝ → ℂ} (hab : a < b) (hL2 : MemLp f 2 (volume.restrict (Ioc a b))) :
     HasSum (fun i => ‖fourierCoeffOn hab f i‖ ^ 2) ((b - a)⁻¹ • ∫ x in a..b, ‖f x‖ ^ 2) := by
   haveI := Fact.mk (by linarith : 0 < b - a)
-  rw [←add_sub_cancel a b] at hL2
+  rw [← add_sub_cancel a b] at hL2
   have h := hL2.memLp_liftIoc.haarAddCircle
   convert hasSum_sq_fourierCoeff h.toLp using 1
   · simp [fourierCoeff_congr_ae h.coeFn_toLp, fourierCoeff_liftIoc_eq]

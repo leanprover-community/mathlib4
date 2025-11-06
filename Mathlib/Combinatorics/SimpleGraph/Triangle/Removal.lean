@@ -87,7 +87,7 @@ private lemma triangle_removal_aux (hε : 0 < ε) (hε₁ : ε ≤ 1) (hP₁ : P
   have dXY := P.disjoint hX hY nXY
   have dXZ := P.disjoint hX hZ nXZ
   have dYZ := P.disjoint hY hZ nYZ
-  have that : 2 * (ε/8) = ε/4 := by ring
+  have that : 2 * (ε / 8) = ε / 4 := by ring
   have : 0 ≤ 1 - 2 * (ε / 8) := by
     have : ε / 4 ≤ 1 := ‹ε / 4 ≤ _›.trans (by exact mod_cast G.edgeDensity_le_one _ _); linarith
   calc
@@ -103,11 +103,11 @@ private lemma triangle_removal_aux (hε : 0 < ε) (hε₁ : ε ≤ 1) (hP₁ : P
 
 lemma regularityReduced_edges_card_aux [Nonempty α] (hε : 0 < ε) (hP : P.IsEquipartition)
     (hPε : P.IsUniform G (ε / 8)) (hP' : 4 / ε ≤ #P.parts) :
-    2 * (#G.edgeFinset - #(G.regularityReduced P (ε/8) (ε/4)).edgeFinset : ℝ)
+    2 * (#G.edgeFinset - #(G.regularityReduced P (ε / 8) (ε / 4)).edgeFinset : ℝ)
       < 2 * ε * (card α ^ 2 : ℕ) := by
-  let A := (P.nonUniforms G (ε/8)).biUnion fun (U, V) ↦ U ×ˢ V
+  let A := (P.nonUniforms G (ε / 8)).biUnion fun (U, V) ↦ U ×ˢ V
   let B := P.parts.biUnion offDiag
-  let C := (P.sparsePairs G (ε/4)).biUnion fun (U, V) ↦ G.interedges U V
+  let C := (P.sparsePairs G (ε / 4)).biUnion fun (U, V) ↦ G.interedges U V
   calc
     _ = (#((univ ×ˢ univ).filter fun (x, y) ↦
           G.Adj x y ∧ ¬(G.regularityReduced P (ε / 8) (ε /4)).Adj x y) : ℝ) := by
@@ -137,7 +137,7 @@ lemma FarFromTriangleFree.le_card_cliqueFinset (hG : G.FarFromTriangleFree ε) :
   obtain hε | hε := le_or_gt ε 0
   · apply (mul_nonpos_of_nonpos_of_nonneg (triangleRemovalBound_nonpos hε) _).trans <;> positivity
   let l : ℕ := ⌈4 / ε⌉₊
-  have hl : 4/ε ≤ l := le_ceil (4/ε)
+  have hl : 4 / ε ≤ l := le_ceil (4 / ε)
   rcases le_total (card α) l with hl' | hl'
   · calc
       _ ≤ triangleRemovalBound ε * ↑l ^ 3 := by
@@ -145,7 +145,7 @@ lemma FarFromTriangleFree.le_card_cliqueFinset (hG : G.FarFromTriangleFree ε) :
       _ ≤ (1 : ℝ) := (triangleRemovalBound_mul_cube_lt hε).le
       _ ≤ _ := by simpa [one_le_iff_ne_zero] using (hG.cliqueFinset_nonempty hε).card_pos.ne'
   obtain ⟨P, hP₁, hP₂, hP₃, hP₄⟩ := szemeredi_regularity G (by positivity : 0 < ε / 8) hl'
-  have : 4/ε ≤ #P.parts := hl.trans (cast_le.2 hP₂)
+  have : 4 / ε ≤ #P.parts := hl.trans (cast_le.2 hP₂)
   have k := regularityReduced_edges_card_aux hε hP₁ hP₄ this
   rw [mul_assoc] at k
   replace k := lt_of_mul_lt_mul_left k zero_le_two
@@ -156,7 +156,7 @@ lemma FarFromTriangleFree.le_card_cliqueFinset (hG : G.FarFromTriangleFree ε) :
 then they can all be removed by removing a few edges (on the order of `(card α)^2`). -/
 lemma triangle_removal (hG : #(G.cliqueFinset 3) < triangleRemovalBound ε * card α ^ 3) :
     ∃ G' ≤ G, ∃ _ : DecidableRel G'.Adj,
-      (#G.edgeFinset - #G'.edgeFinset : ℝ) < ε * (card α^2 : ℕ) ∧ G'.CliqueFree 3 := by
+      (#G.edgeFinset - #G'.edgeFinset : ℝ) < ε * (card α ^ 2 : ℕ) ∧ G'.CliqueFree 3 := by
   by_contra! h
   refine hG.not_ge (farFromTriangleFree_iff.2 ?_).le_card_cliqueFinset
   intro G' _ hG hG'
