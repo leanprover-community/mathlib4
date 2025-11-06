@@ -136,7 +136,7 @@ noncomputable abbrev toStep : Z ⟶ step W Z := pushout.inr _ _
 
 /-- The index type parametrising the data of two morphisms `g₁ g₂ : Y ⟶ step W Z`, and
 a map `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
-def D₂ : Type _ :=
+def D₂ : Type (max u v) :=
   Σ (f : W.toSet),
     { pq : (f.1.right ⟶ step W Z) × (f.1.right ⟶ step W Z) // f.1.hom ≫ pq.1 = f.1.hom ≫ pq.2 }
 
