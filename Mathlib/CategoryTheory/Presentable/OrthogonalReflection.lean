@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 # The Orthogonal-reflection construction
 
 Given `W : MorphismProperty C` (which should be small) and assuming the existence
-of certain colimits in `C`, we construct a morphism `toSucc W Z : Z ⟶ succ W Z` for
+of certain colimits in `C`, we construct an object `succ W Z` and a morphism `toSucc W Z : Z ⟶ succ W Z` for
 any `Z : C`. This morphism belongs to `LeftBousfield.W W.isLocal` and
 is an isomorphism iff `Z` belongs to `W.isLocal` (see the lemma `isIso_toSucc_iff`).
 The morphism `toSucc W Z : Z ⟶ succ W Z` is defined as a composition
