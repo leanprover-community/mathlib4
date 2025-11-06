@@ -6,4 +6,4 @@ import Mathlib.Analysis.Calculus.TangentCone.Prod
 import Mathlib.Analysis.Calculus.TangentCone.ProperSpace
 import Mathlib.Analysis.Calculus.TangentCone.Real
 
-deprecated_module (since := "2025-10-26")
+deprecated_module (since := "2025-11-06")
