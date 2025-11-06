@@ -419,10 +419,7 @@ alias ⟨CovBy.le_iff_lt_right, _⟩ := covBy_iff_le_iff_lt_right
 of `Set.Ioi b'`. -/
 lemma LT.lt.exists_disjoint_Iio_Ioi (h : a < b) :
     ∃ a' > a, ∃ b' < b, ∀ x < a', ∀ y > b', x < y := by
-  by_cases h' : a ⋖ b
-  · exact ⟨b, h, a, h, fun x hx y hy => hx.trans_le <| h'.ge_of_gt hy⟩
-  · rcases h.exists_lt_lt h' with ⟨c, ha, hb⟩
-    exact ⟨c, ha, c, hb, fun _ h₁ _ => lt_trans h₁⟩
+  grind
 
 end LinearOrder
 
