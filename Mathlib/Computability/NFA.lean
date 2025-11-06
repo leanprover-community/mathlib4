@@ -414,6 +414,11 @@ section kstar
 
 open Option
 
+variable (M) in
+@[simp]
+def kstarStates (S : Set σ) : Set (Option σ) :=
+  (⋃ _ ∈ S ∩ (M.start ∪ M.accept), {.none}) ∪ ⋃ s ∈ (S \ M.start) \ M.accept, {.some s}
+
 @[simp]
 def kstarStart : Set (Option σ) := {none}
 
@@ -423,19 +428,48 @@ def kstarAccept : Set (Option σ) := {none}
 variable (M) in
 @[simp]
 def kstarStep : Option σ → α → Set (Option σ)
-| none, a => ⋃ s ∈ M.start ∪ M.accept, some '' M.step s a
-| some s, a => some '' (M.step s a \ M.accept) ∪ ⋃ _ ∈ M.step s a ∩ M.accept, {.none}
+| none, a => ⋃ s ∈ M.start ∪ M.accept, (M.kstarStates <| M.step s a)
+| some s, a => M.kstarStates <| M.step s a
 
+#print kstarStep
+
+variable (M) in
+@[simps]
 def kstar : NFA α (Option σ) where
   step := M.kstarStep
   start := kstarStart
   accept := kstarAccept
 
-theorem accepts_kstar : M.kstar.accepts = M.accepts∗ := by
+theorem test_empty : [] ∈ M.kstar.accepts := by
+  simp [accepts, eval, evalFrom]
+  rw [Set.mem_setOf]
+  simp
+
+theorem test_empty_lang : [] ∈ (0 : Language α)∗ := by
+  rw [Language.zero_def, Language.kstar_def, Set.mem_setOf]
+  exists []
+  sorry
+
+theorem acceptsFrom_kstar {S : Set σ} :
+    M.kstar.acceptsFrom (M.kstarStates S) = (M.acceptsFrom S)∗ := by
   ext x
-  simp [Language.kstar_def, kstar, accepts, eval]
-  rw [Set.mem_setOf]
-  rw [Set.mem_setOf]
+  induction x generalizing S with
+  | nil =>
+    simp_rw [Language.nil_mem_kstar]
+    apply iff_true_intro
+    simp only [mem_acceptsFrom_nil]
+    simp
+    sorry
+  | cons a x ih =>
+    sorry
+
+theorem accepts_kstar : M.kstar.accepts = M.accepts∗ := by
+  simp [accepts_acceptsFrom, ←acceptsFrom_kstar]
+  -- simp only [accepts_acceptsFrom, ←acceptsFrom_kstar, kstarStates]
+  -- simp only [Set.diff_self, Set.empty_diff, Set.biUnion_empty, Set.union_empty]
+  -- simp only [Set.inter_comm M.start, Set.union_inter_cancel_left]
+  ext x
+  rw [Set.mem_iUnion₂]
   sorry
 
 end kstar
