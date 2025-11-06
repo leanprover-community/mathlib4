@@ -38,7 +38,7 @@ variable {V : Type*} {G : SimpleGraph V}
 /- Given a partition `p` and a function `f` mapping vertices in `p` to the other partition, create
 the subgraph including only the edges between `x` and `f x` for all `x` in `p`. -/
 private
-abbrev hall_subgraph {p : Set V} [DecidablePred (· ∈ p)] (f : p → V) (h₁ : ∀ x : p, f x ∉ p)
+abbrev hallSubgraph {p : Set V} [DecidablePred (· ∈ p)] (f : p → V) (h₁ : ∀ x : p, f x ∉ p)
     (h₂ : ∀ x : p, G.Adj x (f x)) : Subgraph G where
   verts := p ∪ Set.range f
   Adj v w :=
@@ -68,7 +68,7 @@ theorem exists_isMatching_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂
     simpa [← Set.ncard_coe_finset, neighborFinset_def]
   have (x : p₁) : f x ∉ p₁ := h₁.disjoint |>.notMem_of_mem_right <|
     isBipartiteWith_neighborSet_subset h₁ x.2 <| Set.mem_toFinset.mp <| hf₂ x
-  use hall_subgraph f this (fun v ↦ G.mem_neighborFinset _ _ |>.mp <| hf₂ v)
+  use hallSubgraph f this (fun v ↦ G.mem_neighborFinset _ _ |>.mp <| hf₂ v)
   refine ⟨by simp, fun v hv ↦ ?_⟩
   simp only [Set.mem_union, Set.mem_range, Subtype.exists] at hv ⊢
   rcases hv with h' | ⟨x, hx₁, hx₂⟩
@@ -118,7 +118,7 @@ theorem exists_isPerfectMatching_of_forall_ncard_le
     ∃ M : Subgraph G, M.IsPerfectMatching := by
   classical
   obtain ⟨b, hb₁, hb₂⟩ := exists_bijective_of_forall_ncard_le h₁ h₂
-  use hall_subgraph (fun v ↦ b v) (fun v ↦ h₁.disjoint.notMem_of_mem_right (b v).property) hb₂
+  use hallSubgraph (fun v ↦ b v) (fun v ↦ h₁.disjoint.notMem_of_mem_right (b v).property) hb₂
   have : p₁ ∪ Set.range (fun v ↦ (b v).1) = Set.univ := by
     rw [Set.range_comp', hb₁.surjective.range_eq, Subtype.coe_image_univ]
     exact union_eq_univ_of_forall_ncard_le h₁ h₂
