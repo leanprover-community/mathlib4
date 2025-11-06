@@ -579,6 +579,8 @@ lemma _root_.AlgebraicGeometry.Scheme.isPullback_of_openCover
       simpa using .of_hasPullback _ _
     convert inferInstanceAs (IsIso (H'.isoPullback.inv ≫ (H i).isoPullback.hom))
     aesop (add simp [Iso.eq_inv_comp, Scheme.Cover.pullbackHom])
+  -- Note: The rest follows easily from `IsZariskiLocalAtTarget (isomorphisms Scheme)`, but
+  -- this machinery requires much more imports.
   have H₂ : IsHomeomorph (lift fWX fWY h) := by
     rw [TopologicalSpace.IsOpenCover.isHomeomorph_iff_restrictPreimage
       (openCoverOfLeft 𝒰 fXZ fYZ).iSup_opensRange (lift fWX fWY h).continuous]
