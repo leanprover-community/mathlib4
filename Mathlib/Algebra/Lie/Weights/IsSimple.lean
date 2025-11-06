@@ -211,7 +211,7 @@ private theorem invtSubmoduleToLieIdeal_aux (hm_α : m_α ∈ sl2SubmoduleOfRoot
   · have hx_χ_in_H : x_χ ∈ H.toLieSubmodule := by
       rw [← rootSpace_zero_eq K L H]
       convert hx_χ; ext h; simp only [Pi.zero_apply]
-      have h_apply : (χ.toLinear : H → K) h = 0 := by rw [w_chi]; rfl
+      have h_apply : (χ.toLinear : H → K) h = 0 := by rw [w_chi, LinearMap.zero_apply]
       exact h_apply.symm
     apply LieSubmodule.mem_iSup_of_mem ⟨α, hαq, hα₀⟩
     rw [← (by rfl : ⁅(⟨x_χ, hx_χ_in_H⟩ : H), m_α⁆ = ⁅x_χ, m_α⁆)]

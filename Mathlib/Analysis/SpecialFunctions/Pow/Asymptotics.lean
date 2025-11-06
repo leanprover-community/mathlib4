@@ -353,32 +353,20 @@ theorem isLittleO_abs_log_rpow_rpow_nhdsGT_zero {s : ℝ} (r : ℝ) (hs : s < 0)
     (eventually_mem_nhdsWithin.mono fun x hx => by
       rw [Function.comp_apply, inv_rpow hx.out.le, rpow_neg hx.out.le, inv_inv])
 
-@[deprecated (since := "2025-03-02")]
-alias isLittleO_abs_log_rpow_rpow_nhds_zero := isLittleO_abs_log_rpow_rpow_nhdsGT_zero
-
 theorem isLittleO_log_rpow_nhdsGT_zero {r : ℝ} (hr : r < 0) : log =o[𝓝[>] 0] fun x => x ^ r :=
   (isLittleO_abs_log_rpow_rpow_nhdsGT_zero 1 hr).neg_left.congr'
     (mem_of_superset (Icc_mem_nhdsGT one_pos) fun x hx => by
       simp [abs_of_nonpos (log_nonpos hx.1 hx.2)])
     .rfl
 
-@[deprecated (since := "2025-03-02")]
-alias isLittleO_log_rpow_nhds_zero := isLittleO_log_rpow_nhdsGT_zero
-
 theorem tendsto_log_div_rpow_nhdsGT_zero {r : ℝ} (hr : r < 0) :
     Tendsto (fun x => log x / x ^ r) (𝓝[>] 0) (𝓝 0) :=
   (isLittleO_log_rpow_nhdsGT_zero hr).tendsto_div_nhds_zero
-
-@[deprecated (since := "2025-03-02")]
-alias tendsto_log_div_rpow_nhds_zero := tendsto_log_div_rpow_nhdsGT_zero
 
 theorem tendsto_log_mul_rpow_nhdsGT_zero {r : ℝ} (hr : 0 < r) :
     Tendsto (fun x => log x * x ^ r) (𝓝[>] 0) (𝓝 0) :=
   (tendsto_log_div_rpow_nhdsGT_zero <| neg_lt_zero.2 hr).congr' <|
     eventually_mem_nhdsWithin.mono fun x hx => by rw [rpow_neg hx.out.le, div_inv_eq_mul]
-
-@[deprecated (since := "2025-03-02")]
-alias tendsto_log_mul_rpow_nhds_zero := tendsto_log_mul_rpow_nhdsGT_zero
 
 lemma tendsto_log_mul_self_nhdsLT_zero : Filter.Tendsto (fun x ↦ log x * x) (𝓝[<] 0) (𝓝 0) := by
   have h := tendsto_log_mul_rpow_nhdsGT_zero zero_lt_one
@@ -393,6 +381,3 @@ lemma tendsto_log_mul_self_nhdsLT_zero : Filter.Tendsto (fun x ↦ log x * x) (�
   refine nhdsWithin_mono 0 (fun x hx ↦ ?_)
   simp only [Set.mem_Iio] at hx
   simp only [Set.mem_compl_iff, Set.mem_singleton_iff, hx.ne, not_false_eq_true]
-
-@[deprecated (since := "2025-03-02")]
-alias tendsto_log_mul_self_nhds_zero_left := tendsto_log_mul_self_nhdsLT_zero
