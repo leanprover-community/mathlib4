@@ -38,9 +38,10 @@ noncomputable def free (I : Type u) : SheafOfModules.{u} R := ∐ (fun (_ : I) �
 noncomputable def ιFree {I : Type u} (i : I) : unit R ⟶ free I :=
   Sigma.ι (fun (_ : I) ↦ unit R) i
 
+
 /-- The tautological cofan with point `free I : SheafOfModules R`. -/
 noncomputable def freeCofan (I : Type u) : Cofan (fun (_ : I) ↦ unit R) :=
-  Cofan.mk (P := free I) (fun i ↦ ιFree i)
+  Cofan.mk (P := free I) ιFree
 
 @[simp]
 lemma freeCofan_inj {I : Type u} (i : I) :
@@ -57,14 +58,9 @@ noncomputable def freeHomEquiv (M : SheafOfModules.{u} R) {I : Type u} :
     (free I ⟶ M) ≃ (I → M.sections) where
   toFun f i := M.unitHomEquiv (ιFree i ≫ f)
   invFun s := Cofan.IsColimit.desc (isColimitFreeCofan I) (fun i ↦ M.unitHomEquiv.symm (s i))
-  left_inv s := Cofan.IsColimit.hom_ext (isColimitFreeCofan I) _ _ (fun i ↦ by
-    simp only [freeCofan_inj, Equiv.symm_apply_apply]
-    apply Cofan.IsColimit.fac)
-  right_inv f := by
-    ext1 i
-    apply M.unitHomEquiv.symm.injective
-    simp only [Equiv.symm_apply_apply]
-    apply Cofan.IsColimit.fac
+  left_inv s := Cofan.IsColimit.hom_ext (isColimitFreeCofan I) _ _
+    (fun i ↦ by simp [← freeCofan_inj])
+  right_inv f := by ext1 i; simp [← freeCofan_inj]
 
 lemma freeHomEquiv_comp_apply {M N : SheafOfModules.{u} R} {I : Type u}
     (f : free I ⟶ M) (p : M ⟶ N) (i : I) :
