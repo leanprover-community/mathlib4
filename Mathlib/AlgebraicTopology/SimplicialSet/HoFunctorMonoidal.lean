@@ -5,6 +5,8 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
+import Mathlib.CategoryTheory.Functor.CurryingThree
+import Mathlib.CategoryTheory.Products.Associator
 
 /-!
 # The homotopy functor is monoidal
@@ -22,7 +24,7 @@ namespace Truncated
 
 namespace Edge
 
-variable {X Y : Truncated.{u} 2}
+variable {X Y X' Y' : Truncated.{u} 2}
 
 /-- The external product of edges of `2`-truncated simplicial sets. -/
 @[simps]
@@ -42,6 +44,34 @@ lemma tensor_surjective {x x' : X _⦋0⦌₂} {y y' : Y _⦋0⦌₂}
 lemma id_tensor_id (x : X _⦋0⦌₂) (y : Y _⦋0⦌₂) :
     (id x).tensor (id y) = id (X := X ⊗ Y) (x, y):= rfl
 
+@[simp]
+lemma map_tensorHom {x x' : X _⦋0⦌₂} (e₁ : Edge x x') {y y' : Y _⦋0⦌₂}
+    (e₂ : Edge y y') (f : X ⟶ X') (g : Y ⟶ Y') :
+    (e₁.tensor e₂).map (f ⊗ₘ g) =
+      (e₁.map f).tensor (e₂.map g) := rfl
+
+@[simp]
+lemma map_whiskerRight {x x' : X _⦋0⦌₂} (e₁ : Edge x x') {y y' : Y _⦋0⦌₂}
+    (e₂ : Edge y y') (f : X ⟶ X') :
+    (e₁.tensor e₂).map (f ▷ _) =
+      (e₁.map f).tensor e₂ := rfl
+
+@[simp]
+lemma map_whiskerLeft {x x' : X _⦋0⦌₂} (e₁ : Edge x x') {y y' : Y _⦋0⦌₂}
+    (e₂ : Edge y y') (g : Y ⟶ Y') :
+    (e₁.tensor e₂).map (_ ◁ g) =
+      e₁.tensor (e₂.map g) := rfl
+
+@[simp]
+lemma map_fst {x x' : X _⦋0⦌₂} (e₁ : Edge x x') {y y' : Y _⦋0⦌₂}
+    (e₂ : Edge y y') :
+    (e₁.tensor e₂).map (fst _ _) = e₁ := rfl
+
+@[simp]
+lemma map_snd {x x' : X _⦋0⦌₂} (e₁ : Edge x x') {y y' : Y _⦋0⦌₂}
+    (e₂ : Edge y y') :
+    (e₁.tensor e₂).map (snd _ _) = e₂ := rfl
+
 /-- The external product of `CompStruct` between edges of `2`-truncated simplicial sets. -/
 @[simps simplex_fst simplex_snd]
 def CompStruct.tensor
@@ -59,6 +89,19 @@ end Edge
 
 namespace HomotopyCategory
 
+instance {n : ℕ} (d : (SimplexCategory.Truncated n)ᵒᵖ) :
+    Unique ((𝟙_ (Truncated.{u} n)).obj d) :=
+  inferInstanceAs (Unique PUnit)
+
+/-- If `X : Truncated 2` has a unique `0`-simplex and (at most) one `1`-simplex,
+this is the isomorphism `Cat.of X.HomotopyCategory ≅ Cat.chosenTerminal` in `Cat`. -/
+def isoTerminal (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)] :
+    Cat.of X.HomotopyCategory ≅ Cat.chosenTerminal :=
+  IsTerminal.uniqueUpToIso (isTerminal _) Cat.chosenTerminalIsTerminal
+
+def fromPUnit (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] :
+    PUnit.{u + 1} ⥤ X.HomotopyCategory := sorry
+
 lemma square {X Y : Truncated.{u} 2}
     {x₀ x₁ : X _⦋0⦌₂} (ex : Edge x₀ x₁) {y₀ y₁ : Y _⦋0⦌₂} (ey : Edge y₀ y₁) :
     homMk (ex.tensor (.id y₀)) ≫ homMk (Edge.tensor (.id x₁) ey) =
@@ -68,7 +111,7 @@ lemma square {X Y : Truncated.{u} 2}
 
 namespace BinaryProduct
 
-variable {X Y : Truncated.{u} 2}
+variable {X X' Y Y' Z : Truncated.{u} 2}
 
 variable (X Y) in
 /-- The functor `(X ⊗ Y).HomotopyCategory ⥤ X.HomotopyCategory × Y.HomotopyCategory`
@@ -193,29 +236,182 @@ def iso :
   hom_inv_id := functor_comp_inverse X Y
   inv_hom_id := inverse_comp_functor X Y
 
+variable {X} in
+def mapHomotopyCategoryProdIdCompInverseIso (f : X ⟶ X') :
+    (mapHomotopyCategory f).prod (𝟭 _) ⋙ inverse X' Y ≅
+      inverse X Y ⋙ mapHomotopyCategory (f ▷ Y) :=
+  Functor.fullyFaithfulCurry.preimageIso
+    (mkNatIso (fun x ↦ mkNatIso (fun y ↦ Iso.refl _) (fun y₀ y₁ e ↦ by
+      dsimp
+      simp only [CategoryTheory.Functor.map_id, mapHomotopyCategory_obj, Category.comp_id,
+        Category.id_comp]
+      rw [inverse_map_mkHom_id_homMk, inverse_map_mkHom_id_homMk,
+        mapHomotopyCategory_homMk, Edge.map_whiskerRight, Edge.map_id])) (fun x₀ x₁ e ↦ by
+      ext y
+      obtain ⟨y, rfl⟩ := y.mk_surjective
+      dsimp
+      simp only [Category.comp_id, Category.id_comp]
+      rw [inverse_map_mkHom_homMk_id, inverse_map_mkHom_homMk_id,
+        mapHomotopyCategory_homMk, Edge.map_whiskerRight]))
+
+variable {Y} in
+def idProdMapHomotopyCategoryCompInverseIso (g : Y ⟶ Y') :
+    Functor.prod (𝟭 _) (mapHomotopyCategory g) ⋙ inverse X Y' ≅
+      inverse X Y ⋙ mapHomotopyCategory (X ◁ g) :=
+  Functor.fullyFaithfulCurry.preimageIso
+    (mkNatIso (fun x ↦ mkNatIso (fun y ↦ Iso.refl _) (fun y₀ y₁ e ↦ by
+      dsimp
+      simp only [Category.comp_id, Category.id_comp]
+      rw [inverse_map_mkHom_id_homMk, inverse_map_mkHom_id_homMk,
+        mapHomotopyCategory_homMk, Edge.map_whiskerLeft])) (fun x₀ x₁ e ↦ by
+      ext y
+      obtain ⟨y, rfl⟩ := y.mk_surjective
+      dsimp
+      simp only [CategoryTheory.Functor.map_id, mapHomotopyCategory_obj, Category.comp_id,
+        Category.id_comp]
+      rw [inverse_map_mkHom_homMk_id, inverse_map_mkHom_homMk_id,
+        mapHomotopyCategory_homMk, Edge.map_whiskerLeft, Edge.map_id]))
+
+variable {X} in
+lemma mapHomotopyCategory_prod_id_comp_inverse (f : X ⟶ X') :
+    (mapHomotopyCategory f).prod (𝟭 _) ⋙ inverse X' Y =
+      inverse X Y ⋙ mapHomotopyCategory (f ▷ Y) :=
+  Functor.ext_of_iso (mapHomotopyCategoryProdIdCompInverseIso _ _) (fun _ ↦ rfl)
+
+variable {Y} in
+lemma id_prod_mapHomotopyCategory_comp_inverse (g : Y ⟶ Y') :
+    Functor.prod (𝟭 _) (mapHomotopyCategory g) ⋙ inverse X Y' =
+      inverse X Y ⋙ mapHomotopyCategory (X ◁ g) :=
+  Functor.ext_of_iso (idProdMapHomotopyCategoryCompInverseIso _ _) (fun _ ↦ rfl)
+
+def inverseCompMapHomotopyCategoryFstIso :
+    inverse X Y ⋙ mapHomotopyCategory (fst _ _) ≅ CategoryTheory.Prod.fst _ _  :=
+  Functor.fullyFaithfulCurry.preimageIso
+    (mkNatIso (fun x ↦ mkNatIso (fun y ↦ Iso.refl _) (fun y₀ y₁ e ↦ by
+      dsimp
+      rw [Category.comp_id, Category.id_comp, inverse_map_mkHom_id_homMk,
+        mapHomotopyCategory_homMk, Edge.map_fst]
+      apply homMk_id)) (fun x₀ x₁ e ↦ by
+      ext y
+      obtain ⟨y, rfl⟩ := y.mk_surjective
+      dsimp
+      rw [Category.comp_id, Category.id_comp, inverse_map_mkHom_homMk_id,
+        mapHomotopyCategory_homMk, Edge.map_fst]))
+
+def inverseCompMapHomotopyCategorySndIso :
+    inverse X Y ⋙ mapHomotopyCategory (snd _ _) ≅ CategoryTheory.Prod.snd _ _  :=
+  Functor.fullyFaithfulCurry.preimageIso
+    (mkNatIso (fun x ↦ mkNatIso (fun y ↦ Iso.refl _) (fun y₀ y₁ e ↦ by
+      dsimp
+      rw [Category.comp_id, Category.id_comp, inverse_map_mkHom_id_homMk,
+        mapHomotopyCategory_homMk, Edge.map_snd])) (fun x₀ x₁ e ↦ by
+      ext y
+      obtain ⟨y, rfl⟩ := y.mk_surjective
+      dsimp
+      rw [Category.comp_id, Category.comp_id, inverse_map_mkHom_homMk_id,
+        mapHomotopyCategory_homMk, Edge.map_snd]
+      apply homMk_id))
+
+lemma inverse_comp_mapHomotopyCategory_fst :
+    inverse X Y ⋙ mapHomotopyCategory (fst _ _) = CategoryTheory.Prod.fst _ _ :=
+  Functor.ext_of_iso (inverseCompMapHomotopyCategoryFstIso _ _) (fun _ ↦ rfl)
+
+lemma inverse_comp_mapHomotopyCategory_snd :
+    inverse X Y ⋙ mapHomotopyCategory (snd _ _) = CategoryTheory.Prod.snd _ _ :=
+  Functor.ext_of_iso (inverseCompMapHomotopyCategorySndIso _ _) (fun _ ↦ rfl)
+
+lemma left_unitality [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)] :
+    (Functor.prod (fromPUnit X) (𝟭 _)) ⋙ inverse X Y ⋙ mapHomotopyCategory (snd _ _) =
+      CategoryTheory.Prod.snd PUnit.{u + 1} Y.HomotopyCategory := by
+  rw [inverse_comp_mapHomotopyCategory_snd]
+  rfl
+
+lemma right_unitality [Unique (Y _⦋0⦌₂)] [Subsingleton (Y _⦋1⦌₂)] :
+    (Functor.prod (𝟭 _) (fromPUnit Y)) ⋙ inverse X Y ⋙ mapHomotopyCategory (fst _ _) =
+      CategoryTheory.Prod.fst X.HomotopyCategory PUnit.{u + 1} := by
+  rw [inverse_comp_mapHomotopyCategory_fst]
+  rfl
+
+variable (Z)
+
+set_option maxHeartbeats 800000 in -- this is slow
+def associativity'Iso :
+    (prod.associativity _ _ _).inverse ⋙ (inverse X Y).prod (𝟭 _) ⋙ inverse (X ⊗ Y) Z ⋙
+      mapHomotopyCategory (α_ _ _ _).hom ≅
+       Functor.prod (𝟭 _) (inverse Y Z) ⋙
+        inverse X (Y ⊗ Z) :=
+  Functor.fullyFaithfulCurry₃.preimageIso
+    (mkNatIso (fun x ↦ mkNatIso (fun y ↦ mkNatIso (fun z ↦ Iso.refl _) (fun z₀ z₁ e ↦ by
+      dsimp
+      rw [Category.comp_id, Category.id_comp, ← prod_id,
+        inverse_map_mkHom_id_homMk, inverse_map_mkHom_id_homMk,
+        CategoryTheory.Functor.map_id]
+      dsimp
+      rw [inverse_map_mkHom_id_homMk, mapHomotopyCategory_homMk]
+      rfl)) (fun y₀ y₁ e ↦ by
+      ext z
+      obtain ⟨z, rfl⟩ := z.mk_surjective
+      dsimp
+      rw [Category.comp_id, Category.id_comp,
+        inverse_map_mkHom_id_homMk, inverse_map_mkHom_homMk_id,
+        inverse_map_mkHom_homMk_id, inverse_map_mkHom_id_homMk]
+      rfl)) (fun x₀ x₁ e ↦ by
+      ext y z
+      obtain ⟨y, rfl⟩ := y.mk_surjective
+      obtain ⟨z, rfl⟩ := z.mk_surjective
+      dsimp
+      rw [Category.comp_id, Category.id_comp,
+        inverse_map_mkHom_homMk_id, inverse_map_mkHom_homMk_id,
+        ← prod_id, CategoryTheory.Functor.map_id]
+      dsimp
+      rw [inverse_map_mkHom_homMk_id]
+      rfl))
+
+variable {X Y Z} in
+lemma associativity'Iso_hom_app (xyz) :
+    (associativity'Iso X Y Z).hom.app xyz = 𝟙 _ := by
+  change 𝟙 _ ≫ _ ≫ 𝟙 _ = _
+  rw [Category.id_comp, Category.comp_id]
+  rfl
+
+def associativityIso :
+    (inverse X Y).prod (𝟭 _) ⋙ inverse (X ⊗ Y) Z ⋙ mapHomotopyCategory (α_ _ _ _).hom ≅
+      (prod.associativity _ _ _).functor ⋙ Functor.prod (𝟭 _) (inverse Y Z) ⋙
+        inverse X (Y ⊗ Z) :=
+  -- needs cleanup...
+  Functor.isoWhiskerLeft (prod.associativity _ _ _).functor (associativity'Iso X Y Z)
+
+variable {X Y Z} in
+lemma associativityIso_hom_app (xyz) :
+    (associativityIso X Y Z).hom.app xyz = 𝟙 _ :=
+  associativity'Iso_hom_app _
+
+lemma associativity :
+    (inverse X Y).prod (𝟭 _) ⋙ inverse (X ⊗ Y) Z ⋙ mapHomotopyCategory (α_ _ _ _).hom =
+    (prod.associativity _ _ _).functor ⋙ Functor.prod (𝟭 _) (inverse Y Z) ⋙
+      inverse X (Y ⊗ Z) :=
+  Functor.ext_of_iso (associativityIso _ _ _) (fun _ ↦ rfl) associativityIso_hom_app
+
 end BinaryProduct
-
-instance {n : ℕ} (d : (SimplexCategory.Truncated n)ᵒᵖ) :
-    Unique ((𝟙_ (Truncated.{u} n)).obj d) :=
-  inferInstanceAs (Unique PUnit)
-
-/-- The homotopy category of the tensor unit of `Truncated.{u} 2` is isomorphic to
-the (chosen) terminal object of `Cat`. -/
-def isoTerminal : Cat.of ((𝟙_ (Truncated.{u} 2)).HomotopyCategory) ≅ Cat.chosenTerminal :=
-  IsTerminal.uniqueUpToIso (isTerminal _) Cat.chosenTerminalIsTerminal
 
 end HomotopyCategory
 
 open HomotopyCategory.BinaryProduct in
 instance : hoFunctor₂.{u}.Monoidal :=
   Functor.CoreMonoidal.toMonoidal
-    { εIso := (HomotopyCategory.isoTerminal).symm
+    { εIso := (HomotopyCategory.isoTerminal _).symm
       μIso X Y := (iso X Y).symm
-      μIso_hom_natural_left := sorry
-      μIso_hom_natural_right := sorry
-      left_unitality := sorry
-      right_unitality := sorry
-      associativity := sorry }
+      μIso_hom_natural_left _ _ := mapHomotopyCategory_prod_id_comp_inverse _ _
+      μIso_hom_natural_right _ _ := id_prod_mapHomotopyCategory_comp_inverse _ _
+      left_unitality Y := by
+        dsimp
+        have := left_unitality (𝟙_ _) Y
+        sorry
+      right_unitality X := by
+        dsimp
+        have := right_unitality X (𝟙_ _)
+        sorry
+      associativity _ _ _ := associativity _ _ _ }
 
 instance : hoFunctor.{u}.Monoidal :=
   inferInstanceAs ((truncation 2 ⋙ hoFunctor₂).Monoidal)
