@@ -29,7 +29,7 @@ The proof consists of three steps. Let `X` be a compact metric space.
    subset of the Cantor space is the continuous image of the Cantor space.
 -/
 
-open Real
+namespace Real
 
 /-- Convert a sequence of binary digits to a real number from `unitInterval`. -/
 noncomputable def fromBinary : (ℕ → Bool) → unitInterval :=
@@ -40,32 +40,21 @@ noncomputable def fromBinary : (ℕ → Bool) → unitInterval :=
 theorem fromBinary_continuous : Continuous fromBinary :=
   Continuous.subtype_mk (continuous_ofDigits.comp' (Homeomorph.continuous _)) _
 
-theorem Subtype.coind_surjective' {α β} {f : α → β} {p : Set β} (h : ∀ a, f a ∈ p)
-    (hf : Set.SurjOn f Set.univ p) :
-    (coind f h).Surjective := fun ⟨_, hb⟩ ↦
-  let ⟨a, _, ha⟩ := hf hb
-  ⟨a, coe_injective ha⟩
-
 theorem fromBinary_surjective : fromBinary.Surjective := by
-  apply Subtype.coind_surjective'
-  apply Set.SurjOn.comp (t := Set.univ)
-  · exact ofDigits_SurjOn (by norm_num)
-  · rw [Set.surjOn_univ]
-    exact Homeomorph.surjective _
+  refine Subtype.coind_surjective' _ ((ofDigits_SurjOn (by norm_num)).comp ?_)
+  simp only [Set.surjOn_univ, Homeomorph.surjective _]
+
+end Real
+
+open Real
 
 /-- A continuous surjection from the Cantor space to the Hilbert cube. -/
 noncomputable def cantorToHilbert (x : ℕ → Bool) : ℕ → unitInterval :=
   Pi.map (fun _ b ↦ fromBinary b) (cantorSpaceHomeomorphNatToCantorSpace x)
 
-theorem cantorToHilbert_continuous : Continuous cantorToHilbert := by
-  apply continuous_pi
-  intro i
-  apply fromBinary_continuous.comp
-  fun_prop
+theorem cantorToHilbert_continuous : Continuous cantorToHilbert :=
+  continuous_pi (fun _ ↦ fromBinary_continuous.comp (by fun_prop))
 
-theorem cantorToHilbert_surjective : Function.Surjective cantorToHilbert := by
-  apply Function.Surjective.comp
-  · apply Function.Surjective.piMap
-    intro _
-    apply fromBinary_surjective
-  · exact cantorSpaceHomeomorphNatToCantorSpace.surjective
+theorem cantorToHilbert_surjective : cantorToHilbert.Surjective :=
+  (Function.Surjective.piMap (fun _ ↦ fromBinary_surjective)).comp
+    cantorSpaceHomeomorphNatToCantorSpace.surjective
