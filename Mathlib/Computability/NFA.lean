@@ -417,13 +417,13 @@ open Option
 variable (M) in
 @[simp]
 def kstarStates (S : Set σ) : Set (Option σ) :=
-  (⋃ _ ∈ S ∩ (M.start ∪ M.accept), {.none}) ∪ ⋃ s ∈ (S \ M.start) \ M.accept, {.some s}
+  some '' S ∪ (⋃ _ ∈ S ∩ (M.start ∪ M.accept), {.none})
 
 @[simp]
-def kstarStart : Set (Option σ) := {none}
+def kstarStart : Set (Option σ) := {none} ∪ some '' M.start
 
 @[simp]
-def kstarAccept : Set (Option σ) := {none}
+def kstarAccept : Set (Option σ) := {none} ∪ some '' M.accept
 
 variable (M) in
 @[simp]
@@ -437,8 +437,8 @@ variable (M) in
 @[simps]
 def kstar : NFA α (Option σ) where
   step := M.kstarStep
-  start := kstarStart
-  accept := kstarAccept
+  start := M.kstarStart
+  accept := M.kstarAccept
 
 theorem test_empty : [] ∈ M.kstar.accepts := by
   simp [accepts, eval, evalFrom]
@@ -448,7 +448,40 @@ theorem test_empty : [] ∈ M.kstar.accepts := by
 theorem test_empty_lang : [] ∈ (0 : Language α)∗ := by
   rw [Language.zero_def, Language.kstar_def, Set.mem_setOf]
   exists []
-  sorry
+  simp
+
+theorem mem_acceptsFrom_kstar_sanity {S : Set σ} {x : List α} :
+    x ∈ M.acceptsFrom S →
+    x ∈ M.kstar.acceptsFrom (M.kstarStates S) := by
+  induction x generalizing S with
+  | nil =>
+    simp only [mem_acceptsFrom_nil]
+    rintro ⟨s, hs, haccept⟩
+    exists none
+    simp
+    exists s
+    tauto
+  | cons a x ih =>
+    simp only [mem_acceptsFrom_cons, stepSet]
+    simp
+    rw [Set.mem_iUnion₂]
+    rw [Set.mem_iUnion₂]
+    rintro ⟨s, hs, hx⟩
+    exists (some s)
+    simp
+    constructor
+    { assumption }
+    have digga := ih hx; clear ih
+    simp [kstarStates] at digga
+    simp [max, SemilatticeSup.sup, Set.mem_union] at *
+    rw [Set.mem_union, Set.mem_iUnion₂] at digga
+    rcases digga with (hx' | ⟨s', hx''⟩)
+    · tauto
+    · right
+      rcases hx'' with ⟨⟨hs', hs''⟩, hx'⟩
+      constructor
+      · exists s'
+      · tauto
 
 theorem acceptsFrom_kstar {S : Set σ} :
     M.kstar.acceptsFrom (M.kstarStates S) = (M.acceptsFrom S)∗ := by
@@ -464,13 +497,14 @@ theorem acceptsFrom_kstar {S : Set σ} :
     sorry
 
 theorem accepts_kstar : M.kstar.accepts = M.accepts∗ := by
-  simp [accepts_acceptsFrom, ←acceptsFrom_kstar]
-  -- simp only [accepts_acceptsFrom, ←acceptsFrom_kstar, kstarStates]
-  -- simp only [Set.diff_self, Set.empty_diff, Set.biUnion_empty, Set.union_empty]
-  -- simp only [Set.inter_comm M.start, Set.union_inter_cancel_left]
   ext x
-  rw [Set.mem_iUnion₂]
-  sorry
+  simp [accepts, eval, Language.kstar_def]
+  simp_rw [↑Set.mem_setOf]
+  constructor
+  ·
+    sorry
+  · rintro ⟨L, rfl, h⟩
+    sorry
 
 end kstar
 
