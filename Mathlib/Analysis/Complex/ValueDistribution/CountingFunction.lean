@@ -47,14 +47,23 @@ open MeromorphicOn Metric Real Set
 
 namespace Function.locallyFinsuppWithin
 
+variable {E : Type*} [NormedAddCommGroup E]
+
 /--
 Shorthand notation for the restriction of a function with locally finite support within `Set.univ`
 to the closed unit ball of radius `r`.
 -/
-noncomputable def toClosedBall {E : Type*} [NormedAddCommGroup E] (r : ℝ) :
+noncomputable def toClosedBall (r : ℝ) :
     locallyFinsuppWithin (univ : Set E) ℤ →+ locallyFinsuppWithin (closedBall (0 : E) |r|) ℤ := by
   apply restrictMonoidHom
   tauto
+
+@[simp]
+lemma toClosedBall_eval_within {r : ℝ} {z : E} (f : locallyFinsuppWithin (univ : Set E) ℤ)
+  (ha : z ∈ closedBall 0 |r|) :
+    toClosedBall r f z = f z := by
+  unfold toClosedBall
+  simp_all [restrict_apply]
 
 /-!
 ## The Logarithmic Counting Function of a Function with Locally Finite Support
@@ -140,7 +149,7 @@ theorem logCounting_nonneg {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
   · simp_all
   by_cases h₂a : a ∈ closedBall 0 |r|
   · refine mul_nonneg ?_ <| log_nonneg ?_
-    · simpa [toClosedBall, restrict_apply, h₂a] using h a -- this should just be a lemma about `toClosedBall`
+    · simpa [h₂a] using h a
     · simpa [mul_comm r, one_le_inv_mul₀ (norm_pos_iff.mpr h₁a), abs_of_pos h₃r] using h₂a
   · simp [apply_eq_zero_of_notMem ((toClosedBall r) _) h₂a]
 
