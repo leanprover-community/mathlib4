@@ -280,7 +280,7 @@ lemma Function.update_eventuallyEq_cofinite [DecidableEq α] (f : α → β) (a 
 /--
 A filter is free iff it is smaller than the cofinite filter.
 -/
-theorem le_cofinite_iff_ker {α : Type*} (f : Filter α) : f ≤ cofinite ↔ f.ker = ∅ := by
+theorem le_cofinite_iff_ker (f : Filter α) : f ≤ cofinite ↔ f.ker = ∅ := by
   rw [le_cofinite_iff_compl_singleton_mem, ker_def, iInter₂_eq_empty_iff]
   conv =>
     enter [2, x]
@@ -290,13 +290,29 @@ theorem le_cofinite_iff_ker {α : Type*} (f : Filter α) : f ≤ cofinite ↔ f.
         fun h => ⟨{x}ᶜ, h, by simp⟩
 
 /--
-Every filter is the disjoint supremum of a principal filter and a free filter.
+Every filter is the disjoint supremum of a principal filter and a free filter in a unique way.
 -/
-theorem exists_eq_principal_sup_free {α : Type*} (f : Filter α) :
-    ∃ s g, g ≤ cofinite ∧ Disjoint (𝓟 s) g ∧ f = 𝓟 s ⊔ g := by
-  refine ⟨f.ker, f ⊓ 𝓟 f.kerᶜ, ?_, ?_, ?_⟩
+theorem existsUnique_eq_principal_sup_free (f : Filter α) :
+    ∃! p : Set α × Filter α, p.2 ≤ cofinite ∧ Disjoint (𝓟 p.1) p.2 ∧ f = 𝓟 p.1 ⊔ p.2 := by
+  refine ⟨(f.ker, f ⊓ 𝓟 f.kerᶜ), ⟨?_, ?_, ?_⟩, fun q hq => ?_⟩
   · rw [le_cofinite_iff_ker, ker_inf, ker_principal, inter_compl_self]
-  · rw [disjoint_iff_inf_le, inf_rotate', inf_principal,
-      compl_inter_self, principal_empty, inf_bot_eq]
+  · rw [disjoint_principal_left]
+    exact mem_inf_of_right (mem_principal_self f.kerᶜ)
   · rw [sup_inf_left]
     simpa using gi_principal_ker.gc.l_u_le f
+  · have hqk := congrArg Filter.ker hq.2.2
+    rw [ker_sup, ker_principal, (le_cofinite_iff_ker q.2).mp hq.1, union_empty] at hqk
+    refine congrArg₂ Prod.mk hqk.symm (le_antisymm (le_inf ?_ ?_) ?_)
+    · rw [hq.2.2]
+      exact le_sup_right
+    · rw [le_principal_iff, hqk, ← disjoint_principal_left]
+      exact hq.2.1
+    · rw [hqk, hq.2.2, inf_sup_right, inf_principal, inter_compl_self, principal_empty, bot_sup_eq]
+      exact inf_le_left
+
+/--
+Every filter is the disjoint supremum of a principal filter and a free filter.
+-/
+theorem exists_eq_principal_sup_free (f : Filter α) :
+    ∃ s g, g ≤ cofinite ∧ Disjoint (𝓟 s) g ∧ f = 𝓟 s ⊔ g :=
+  Prod.exists.mp (existsUnique_eq_principal_sup_free f).exists
