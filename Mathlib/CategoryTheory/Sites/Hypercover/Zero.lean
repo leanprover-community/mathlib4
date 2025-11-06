@@ -533,6 +533,11 @@ lemma PreZeroHypercover.presieve₀_mem_of_iso [J.RespectsIso] {S : C} {E F : Pr
     use E.X (e.inv.s₀ i), (asIso (e.inv.h₀ i)).symm
     simp
 
+lemma PreZeroHypercover.presieve₀_mem_iff_of_iso [J.RespectsIso] {S : C}
+    {E F : PreZeroHypercover.{w} S} (e : E ≅ F) :
+    E.presieve₀ ∈ J S ↔ F.presieve₀ ∈ J S :=
+  ⟨fun h ↦ E.presieve₀_mem_of_iso e h, fun h ↦ F.presieve₀_mem_of_iso e.symm h⟩
+
 end
 
 namespace Precoverage
@@ -776,9 +781,7 @@ variable [J.IsStableUnderBaseChange] {X Y Z : C}
 /-- If `{Uᵢ}` covers `X`, this is the `0`-hypercover of `X ×[Z] Y` given by `{Uᵢ ×[Z] Y}`. -/
 @[simps toPreZeroHypercover]
 noncomputable def pullbackCoverOfLeft (E : J.ZeroHypercover X) (f : X ⟶ Z) (g : Y ⟶ Z)
-    [HasPullback f g] [∀ i, HasPullback (E.f i ≫ f) g]
-    [∀ (i : E.I₀), HasPullback (pullback.fst f g) (E.f i)]
-    [∀ i, HasPullback (E.f i) (pullback.fst f g)] :
+    [HasPullback f g] [∀ i, HasPullback (E.f i) (pullback.fst f g)] :
     J.ZeroHypercover (pullback f g) where
   __ := E.toPreZeroHypercover.pullbackCoverOfLeft f g
   mem₀ := by
@@ -793,9 +796,7 @@ noncomputable def pullbackCoverOfLeft (E : J.ZeroHypercover X) (f : X ⟶ Z) (g 
 /-- If `{Uᵢ}` covers `Y`, this is the `0`-hypercover of `X ×[Z] Y` given by `{X ×[Z] Uᵢ}`. -/
 @[simps toPreZeroHypercover]
 noncomputable def pullbackCoverOfRight (E : J.ZeroHypercover Y) (f : X ⟶ Z) (g : Y ⟶ Z)
-    [HasPullback f g] [∀ i, HasPullback f (E.f i ≫ g)]
-    [∀ (i : E.I₀), HasPullback (E.f i) (pullback.snd f g)]
-    [∀ i, HasPullback (pullback.snd f g) (E.f i)] :
+    [HasPullback f g] [∀ i, HasPullback (E.f i) (pullback.snd f g)] :
     J.ZeroHypercover (pullback f g) where
   __ := E.toPreZeroHypercover.pullbackCoverOfRight f g
   mem₀ := by
