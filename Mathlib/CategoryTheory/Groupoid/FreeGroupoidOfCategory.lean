@@ -155,14 +155,14 @@ section Functoriality
 
 variable {D : Type u₁} [Category.{v₁} D] {E : Type u₂} [Category.{v₂} E]
 
-/-- The functor of free groupoid induced by a functor between the original categories. -/
+/-- The functor between free groupoids induced by a functor between categories. -/
 def map (φ : C ⥤ D) : FreeGroupoid C ⥤ FreeGroupoid D :=
   lift (φ ⋙ of D)
 
 lemma of_comp_map (F : C ⥤ D) : of C ⋙ map F = F ⋙ of D := rfl
 
 /-- The operation `of` is natural. -/
-def ofMap (F : C ⥤ D) : of C ⋙ map F ≅ F ⋙ of D := Iso.refl _
+def ofCompMapIso (F : C ⥤ D) : of C ⋙ map F ≅ F ⋙ of D := Iso.refl _
 
 variable (C) in
 /-- The functor induced by the identity is the identity. -/
