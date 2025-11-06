@@ -94,7 +94,7 @@ lemma IsQuasiAffine.of_isAffineHom [IsAffineHom f] [Y.IsQuasiAffine] : X.IsQuasi
   rw [← preimage_basicOpen_top]
   exact ⟨hr.preimage _, hxr⟩
 
-/-- The affine basic opens of a quasi-affine scheme forms an open cover. -/
+/-- The affine basic opens of a quasi-affine scheme form an open cover. -/
 @[simps] def openCoverBasicOpenTop (X : Scheme.{u}) [X.IsQuasiAffine] :
     X.OpenCover where
   I₀ := Σ' (r : Γ(X, ⊤)), IsAffineOpen (X.basicOpen r)
