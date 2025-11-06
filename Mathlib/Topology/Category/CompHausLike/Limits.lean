@@ -199,8 +199,7 @@ pairs `(x,y)` such that `f x = g y`, with the topology induced by the product.
 def pullback : CompHausLike P :=
   letI set := { xy : X × Y | f xy.fst = g xy.snd }
   haveI : CompactSpace set :=
-    isCompact_iff_compactSpace.mp (isClosed_eq (f.hom.continuous.comp continuous_fst)
-      (g.hom.continuous.comp continuous_snd)).isCompact
+    isCompact_iff_compactSpace.mp (isClosed_eq (by fun_prop) (by fun_prop)).isCompact
   CompHausLike.of P set
 
 /--

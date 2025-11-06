@@ -163,7 +163,6 @@ can only prove this for `X : TopCat.{0}`.
 noncomputable def sequentialAdjunctionHomeo (X : TopCat.{0}) [SequentialSpace X] :
     X.toLightCondSet.toTopCat ≃ₜ X where
   toEquiv := topCatAdjunctionCounitEquiv X
-  continuous_toFun := (topCatAdjunctionCounit X).hom.continuous
   continuous_invFun := by
     apply SeqContinuous.continuous
     unfold SeqContinuous

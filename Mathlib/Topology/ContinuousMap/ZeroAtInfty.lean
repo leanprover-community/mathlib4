@@ -130,7 +130,6 @@ infinity. -/
 def ContinuousMap.liftZeroAtInfty [CompactSpace α] : C(α, β) ≃ C₀(α, β) where
   toFun f :=
     { toFun := f
-      continuous_toFun := f.continuous
       zero_at_infty' := by simp }
   invFun f := f
 

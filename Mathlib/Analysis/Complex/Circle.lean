@@ -197,7 +197,7 @@ theorem fourierChar_apply' (x : ℝ) : 𝐞 x = Circle.exp (2 * π * x) := rfl
 
 theorem fourierChar_apply (x : ℝ) : 𝐞 x = Complex.exp (↑(2 * π * x) * Complex.I) := rfl
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_fourierChar : Continuous 𝐞 := Circle.exp.continuous.comp (continuous_mul_left _)
 
 theorem fourierChar_ne_one : fourierChar ≠ 1 := by
@@ -218,8 +218,8 @@ theorem probChar_apply' (x : ℝ) : probChar x = Circle.exp x := rfl
 
 theorem probChar_apply (x : ℝ) : probChar x = Complex.exp (x * Complex.I) := rfl
 
-@[continuity]
-theorem continuous_probChar : Continuous probChar := Circle.exp.continuous
+@[continuity, fun_prop]
+theorem continuous_probChar : Continuous probChar := map_continuous Circle.exp
 
 theorem probChar_ne_one : probChar ≠ 1 := by
   rw [DFunLike.ne_iff]
