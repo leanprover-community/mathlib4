@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 import Mathlib.Tactic.Order.CollectFacts
-import Batteries.Data.List.Pairwise
+import Mathlib.Data.List.Sort
 import Mathlib.Tactic.GeneralizeProofs
 
 /-!
@@ -15,8 +15,8 @@ In this file we implement the translation of a problem in any linearly ordered t
 
 While the core algorithm of the `order` tactic is complete for the theory of linear orders in the
 signature (`<`, `≤`),
-it becomes incomplete in the signature with lattices operations `⊓` and `⊔`. With this operations
-the problem becomes NP-hard, and the idea is to reuse some smart and efficient procedure, such as
+it becomes incomplete in the signature with lattice operations `⊓` and `⊔`. With these operations,
+the problem becomes NP-hard, and the idea is to reuse a smart and efficient procedure, such as
 `omega`.
 
 ## TODO
@@ -28,29 +28,28 @@ namespace Mathlib.Tactic.Order.ToInt
 
 variable {α : Type*} [LinearOrder α] {n : ℕ} (val : Fin n → α)
 
+/-- The main theorem asserting the existence of a translation.
+We use `Classical.chooose` to turn this into a value for use in the `order` tactic,
+see `toInt`.
+-/
 theorem exists_translation : ∃ tr : Fin n → ℤ, ∀ i j, val i ≤ val j ↔ tr i ≤ tr j := by
   let li := List.ofFn val
   let sli := li.mergeSort
-  have (i : Fin n) : ∃ j : Fin sli.length, sli[j] = val i := by
-    apply List.get_of_mem
-    rw [List.Perm.mem_iff (List.mergeSort_perm _ _)]
-    simp [li]
-  use fun i ↦ (this i).choose
+  have mem : ∀ i, val i ∈ sli := fun i => List.mem_mergeSort.mpr (List.mem_ofFn.mpr ⟨_, rfl⟩)
+  have lt : ∀ i, sli.idxOf (val i) < sli.length := fun i => List.idxOf_lt_length_of_mem (mem i)
+  use fun i ↦ sli.idxOf (val i)
   intro i j
-  simp only [Fin.getElem_fin, Int.ofNat_le]
+  simp only [Int.ofNat_le]
   by_cases h_eq : val i = val j
   · simp [h_eq]
-  generalize_proofs _ hi hj
-  rw [← hi.choose_spec, ← hj.choose_spec] at h_eq
-  conv => lhs; rw [← hi.choose_spec, ← hj.choose_spec]
-  have := List.sorted_mergeSort (l := li) (le := fun a b ↦ decide (a ≤ b))
-      (by simpa using Preorder.le_trans) (by simpa using LinearOrder.le_total)
-  rw [List.pairwise_iff_get] at this
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  rw (config := { occs := [1] })
+    [← sli.getElem_idxOf (a := val i) (lt i), ← sli.getElem_idxOf (a := val j) (lt j)]
+    at ⊢ h_eq
+  have := List.pairwise_iff_getElem.mp (li.sorted_mergeSort' (r := (· ≤ ·)))
+  constructor <;> intro h
   · contrapose! h
-    exact lt_of_le_of_ne (by simpa using (this hj.choose hi.choose (by simpa)))
-      (fun h ↦ h_eq (h.symm))
-  · simpa using this hi.choose hj.choose (by apply lt_of_le_of_ne h; contrapose! h_eq; simp [h_eq])
+    exact lt_of_le_of_ne (this _ _ _ _ h) (Ne.symm h_eq)
+  · exact this _ _ _ _ (lt_of_le_of_ne h (fun h => h_eq congr(sli[$h]'(lt _))))
 
 /-- Auxiliary definition used by the `order` tactic to transfer facts in a linear order to `ℤ`. -/
 noncomputable def toInt (k : Fin n) : ℤ :=

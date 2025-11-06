@@ -215,28 +215,6 @@ def updateGraphWithNltInfSup (g : Graph) (idxToAtom : Std.HashMap Nat Expr)
       break
   return g
 
-/-- Supported order types: linear, partial, and preorder. -/
-inductive OrderType
-| lin | part | pre
-deriving BEq
-
-instance : ToString OrderType where
-  toString
-  | .lin => "linear order"
-  | .part => "partial order"
-  | .pre => "preorder"
-
-/-- Find the "best" instance of an order on a given type. A linear order is preferred over a partial
-order, and a partial order is preferred over a preorder. -/
-def findBestOrderInstance (type : Expr) : MetaM <| Option OrderType := do
-  if (← synthInstance? (← mkAppM ``LinearOrder #[type])).isSome then
-    return some .lin
-  if (← synthInstance? (← mkAppM ``PartialOrder #[type])).isSome then
-    return some .part
-  if (← synthInstance? (← mkAppM ``Preorder #[type])).isSome then
-    return some .pre
-  return none
-
 /-- Necessary for tracing below. -/
 local instance : Ord (Nat × Expr) where
   compare x y := compare x.1 y.1
@@ -258,10 +236,7 @@ elab "order" : tactic => focus do
       let factsMsg := String.intercalate "\n" (facts.map toString).toList
       trace[order] "Collected facts:\n{factsMsg}"
       let facts ← replaceBotTop facts idxToAtom
-      let processedFacts : Array AtomicFact ← match orderType with
-      | .pre => preprocessFactsPreorder facts
-      | .part => preprocessFactsPartial facts idxToAtom
-      | .lin => preprocessFactsLinear facts idxToAtom
+      let processedFacts : Array AtomicFact ← preprocessFacts facts idxToAtom orderType
       let factsMsg := String.intercalate "\n" (processedFacts.map toString).toList
       trace[order] "Processed facts:\n{factsMsg}"
       let mut graph ← Graph.constructLeGraph idxToAtom.size processedFacts
@@ -275,7 +250,9 @@ elab "order" : tactic => focus do
         return
       -- if fast procedure failed and order is linear, we try `omega`
       if orderType == .lin then
-        let .succ u ← getLevel type | throwError "Unexpected Prop"
+        let .succ u ← getLevel type | {
+          trace[order] "Translation to `Int` failed: unexpected Prop instead of type.";
+          throwError "Unexpected Prop" }
         let type : Q(Type u) := type
         let instLinearOrder ← synthInstanceQ q(LinearOrder $type)
         let (_, factsNat) ← translateToInt type instLinearOrder idxToAtom facts
