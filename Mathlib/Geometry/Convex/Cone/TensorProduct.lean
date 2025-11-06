@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Solheim
 -/
 import Mathlib.Geometry.Convex.Cone.Dual
-import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
 # Tensor product of cones
@@ -41,7 +41,7 @@ We define the minimal and maximal tensor products of two pointed cones:
 
 -/
 
-open TensorProduct
+open TensorProduct Module
 
 variable {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
 variable {G : Type*} [AddCommGroup G] [Module R G]
@@ -59,16 +59,16 @@ noncomputable def minTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCone 
 of the dual cones. -/
 noncomputable def maxTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCone R H) :
     PointedCone R (G ⊗[R] H) :=
-  .dual (dualDistrib R G H) (minTensorProduct (.dual (Module.dualPairing R G).flip C₁)
-    (.dual (Module.dualPairing R H).flip C₂))
+  .dual (dualDistrib R G H) (minTensorProduct (.dual (dualPairing R G).flip C₁)
+    (.dual (dualPairing R H).flip C₂))
 
 /-- Characterization of the maximal tensor product: `z` lies in `maxTensorProduct C₁ C₂` iff
 all pairings with elementary dual tensors are nonnegative. -/
 @[simp]
 theorem mem_maxTensorProduct {C₁ : PointedCone R G} {C₂ : PointedCone R H} {z : G ⊗[R] H} :
     z ∈ maxTensorProduct (R := R) C₁ C₂ ↔
-      ∀ φ ∈ PointedCone.dual (Module.dualPairing R G).flip C₁,
-      ∀ ψ ∈ PointedCone.dual (Module.dualPairing R H).flip C₂,
+      ∀ φ ∈ PointedCone.dual (dualPairing R G).flip C₁,
+      ∀ ψ ∈ PointedCone.dual (dualPairing R H).flip C₂,
       0 ≤ dualDistrib R G H (φ ⊗ₜ[R] ψ) z := by
   simp only [maxTensorProduct, minTensorProduct, dual_span, mem_dual, Set.forall_mem_image2]
   rfl
