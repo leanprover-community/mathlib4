@@ -118,11 +118,8 @@ theorem mem_support_bind_iff (b : β) :
 
 @[simp]
 theorem pure_bind (a : α) (f : α → PMF β) : (pure a).bind f = f a := by
-  classical
-  have : ∀ b a', ite (a' = a) (f a' b) 0 = ite (a' = a) (f a b) 0 := fun b a' => by
-    split_ifs with h <;> simp [h]
-  ext b
-  simp [this]
+  ext
+  simp
 
 @[simp]
 theorem bind_pure : p.bind pure = p :=
