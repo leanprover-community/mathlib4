@@ -29,6 +29,16 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace W] [Topolog
 
 namespace Homeomorph
 
+/-- Homeomorphism between `X → Y → Z` and `X × Y → Z`. -/
+def curry {X Y Z : Type*}
+    [TopologicalSpace Z] :
+    (X × Y → Z) ≃ₜ (X → Y → Z) where
+  toFun := Function.curry
+  invFun := Function.uncurry
+  right_inv := congrFun rfl
+  left_inv := congrFun rfl
+  continuous_toFun := sorry
+
 protected theorem secondCountableTopology [SecondCountableTopology Y]
     (h : X ≃ₜ Y) : SecondCountableTopology X :=
   h.isInducing.secondCountableTopology

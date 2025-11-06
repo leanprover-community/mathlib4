@@ -3,7 +3,6 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Data.Real.OfDigits
 import Mathlib.Topology.Instances.CantorSet
 import Mathlib.Topology.UnitInterval
 
@@ -30,17 +29,13 @@ The proof consists of three steps. Let `X` be a compact metric space.
    subset of the Cantor space is the continuous image of the Cantor space.
 -/
 
+open Real
+
 /-- Convert a sequence of binary digits to a real number from `unitInterval`. -/
 noncomputable def fromBinary (b : ℕ → Bool) : unitInterval :=
   let φ : (ℕ → Bool) ≃ₜ (ℕ → Fin 2) := Homeomorph.piCongrRight
     (fun _ ↦ finTwoEquiv.toHomeomorphOfDiscrete.symm)
-  let x : ℝ := ofDigits (φ b)
-  have hx : x ∈ Set.Icc 0 1 := by
-    simp [x]
-    constructor
-    · exact ofDigits_nonneg
-    · exact ofDigits_le_one
-  ⟨x, hx⟩
+  ⟨ofDigits (φ b), ofDigits_nonneg _, ofDigits_le_one _⟩
 
 theorem fromBinary_continuous : Continuous fromBinary := by
   unfold fromBinary
@@ -51,7 +46,7 @@ theorem fromBinary_continuous : Continuous fromBinary := by
     ext
     simp
   rw [this, Homeomorph.comp_continuous_iff']
-  exact ofDigits_continuous
+  exact continuous_ofDigits
 
 theorem fromBinary_surjective : Function.Surjective fromBinary := by
   intro x
@@ -59,8 +54,7 @@ theorem fromBinary_surjective : Function.Surjective fromBinary := by
   by_cases hx_one : x = 1
   · use fun _ ↦ true
     have : fromBinary (fun _ ↦ true) = ofDigits (b := 2) (fun _ ↦ 1) := by
-      simp only [fromBinary, Equiv.toHomeomorphOfDiscrete,
-        Equiv.toHomeomorph_symm, Fin.isValue]
+      simp only [fromBinary, Equiv.toHomeomorphOfDiscrete, Equiv.symm_toHomeomorph, Fin.isValue]
       congr
     simp only [hx_one, Set.Icc.mk_one, Subtype.eq_iff, this, ofDigits, ofDigitsTerm, Fin.isValue,
       Fin.val_one, Nat.cast_one, Nat.cast_ofNat, pow_succ, mul_inv_rev, ← inv_pow, one_mul,
@@ -74,9 +68,9 @@ theorem fromBinary_surjective : Function.Surjective fromBinary := by
   replace hx : x ∈ Set.Ico 0 1 := by
     simp at hx ⊢
     exact ⟨hx.left, by apply hx.right.lt_of_ne' (by symm; simpa)⟩
-  use finTwoEquiv ∘ (toDigits x 2)
+  use finTwoEquiv ∘ (digits x 2)
   simp only [fromBinary, Subtype.mk.injEq]
-  conv => rhs; rw [← toDigits_ofDigits 2 x (by simp) hx]
+  conv => rhs; rw [← ofDigits_digits (b := 2) (by simp) hx]
   congr
   ext n
   simp only [Homeomorph.piCongrRight_apply, Function.comp_apply]
@@ -85,21 +79,17 @@ theorem fromBinary_surjective : Function.Surjective fromBinary := by
 
 /-- A continuous surjection from the Cantor space to the Hilbert cube. -/
 noncomputable def cantorToHilbert (x : ℕ → Bool) : ℕ → unitInterval :=
-  Pi.map (fun _ b ↦ fromBinary b) (cantorSpace_homeomorph_nat_cantorSpace x)
+  Pi.map (fun _ b ↦ fromBinary b) (cantorSpaceHomeomorphNatToCantorSpace x)
 
 theorem cantorToHilbert_continuous : Continuous cantorToHilbert := by
-  unfold cantorToHilbert
   apply continuous_pi
   intro i
   apply fromBinary_continuous.comp
   fun_prop
 
 theorem cantorToHilbert_surjective : Function.Surjective cantorToHilbert := by
-  unfold cantorToHilbert
-  change Function.Surjective
-    ((Pi.map (fun x b ↦ fromBinary b)) ∘ cantorSpace_homeomorph_nat_cantorSpace)
   apply Function.Surjective.comp
   · apply Function.Surjective.piMap
     intro _
     apply fromBinary_surjective
-  · exact Homeomorph.surjective cantorSpace_homeomorph_nat_cantorSpace
+  · exact cantorSpaceHomeomorphNatToCantorSpace.surjective
