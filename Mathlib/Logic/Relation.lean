@@ -246,8 +246,8 @@ lemma map_mono {r s : α → β → Prop} {f : α → γ} {g : β → δ} (h : �
     ∀ x y, Relation.Map r f g x y → Relation.Map s f g x y :=
   fun _ _ ⟨x, y, hxy, hx, hy⟩ => ⟨x, y, h _ _ hxy, hx, hy⟩
 
-lemma le_onFun_map {r : α → α → Prop} (f : α → β) :
-    ∀ x y, r x y → (Relation.Map r f f on f) x y := by
+lemma le_onFun_map {r : α → α → Prop} (f : α → β) : Subrelation r (Relation.Map r f f on f) := by
+  intro
   grind [Relation.Map]
 
 lemma onFun_map_eq_of_injective {r : α → α → Prop} {f : α → β} (hinj : f.Injective) :
@@ -255,8 +255,8 @@ lemma onFun_map_eq_of_injective {r : α → α → Prop} {f : α → β} (hinj :
   ext x y
   exact ⟨fun ⟨x', y', hr, hx, hy⟩ ↦ hinj hx ▸ hinj hy ▸ hr, fun h ↦ ⟨x, y, h, rfl, rfl⟩⟩
 
-lemma map_onFun_le {r : β → β → Prop} (f : α → β) :
-    ∀ x y, Relation.Map (r on f) f f x y → r x y := by
+lemma map_onFun_le {r : β → β → Prop} (f : α → β) : Subrelation (Relation.Map (r on f) f f) r := by
+  intro
   grind [Relation.Map]
 
 lemma map_onFun_eq_of_surjective {r : β → β → Prop} {f : α → β} (hsurj : f.Surjective) :
