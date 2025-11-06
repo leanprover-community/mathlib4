@@ -110,12 +110,18 @@ theorem MultipliableUniformlyOn.multipliable (h : MultipliableUniformlyOn f 𝔖
   match h.exists with | ⟨_, hg⟩ => (hg.hasProd hs hx).multipliable
 
 @[to_additive]
-theorem MultipliableUniformlyOn.hasProdUniformlyOn [T2Space α] (h : MultipliableUniformlyOn f 𝔖) :
+theorem MultipliableUniformlyOn.hasProdUniformlyOn (h : MultipliableUniformlyOn f 𝔖) :
     HasProdUniformlyOn f (∏' i, f i ·) 𝔖 := by
   obtain ⟨g, hg⟩ := h.exists
-  simp only [hasProdUniformlyOn_iff_tendstoUniformlyOn]
-  intro s hs
-  exact (hasProdUniformlyOn_iff_tendstoUniformlyOn.mp hg s hs).congr_right (hg.tprod_eqOn hs).symm
+  have hp := hg
+  rw [hasProdUniformlyOn_iff_tendstoUniformlyOn] at hg ⊢
+  refine forall₂_imp (fun s hs hg => ?_) hg
+  rw [tendstoUniformlyOn_iff_tendsto, uniformity_hasBasis_open.tendsto_right_iff] at hg ⊢
+  refine forall₂_imp (fun u hu hg => hg.congr ?_) hg
+  rw [eventually_prod_principal_iff]
+  refine .of_forall fun _ y hy => (Inseparable.prod ?_ .rfl).mem_open_iff hu.2
+  have hf := hp.hasProd hs hy
+  exact tendsto_nhds_unique_inseparable hf hf.multipliable.hasProd
 
 end UniformlyOn
 
