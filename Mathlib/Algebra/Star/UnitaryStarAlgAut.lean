@@ -40,6 +40,9 @@ def conjStarAlgAut : unitary R →* (R ≃⋆ₐ[S] R) where
 theorem conjStarAlgAut_symm_apply (u : unitary R) (x : R) :
     (conjStarAlgAut S R u).symm x = (star u : R) * x * u := rfl
 
+theorem conjStarAlgAut_star_apply (u : unitary R) (x : R) :
+    conjStarAlgAut S R (star u) x = (star u : R) * x * u := by simp
+
 @[simp] theorem conjStarAlgAut_symm (u : unitary R) :
     (conjStarAlgAut S R u).symm = conjStarAlgAut S R (star u) := by
   ext; simp [conjStarAlgAut_symm_apply]

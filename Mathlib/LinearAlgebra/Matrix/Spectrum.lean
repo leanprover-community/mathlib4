@@ -121,12 +121,12 @@ theorem conjStarAlgAut_star_eigenvectorUnitary :
     conjStarAlgAut 𝕜 _ (star hA.eigenvectorUnitary) A =
       diagonal (RCLike.ofReal ∘ hA.eigenvalues) := by
   apply Matrix.toEuclideanLin.injective <| (EuclideanSpace.basisFun n 𝕜).toBasis.ext fun i ↦ ?_
-  simp only [← conjStarAlgAut_symm, conjStarAlgAut_symm_apply,
-    toEuclideanLin_apply, OrthonormalBasis.coe_toBasis, EuclideanSpace.basisFun_apply,
-    EuclideanSpace.ofLp_single, ← mulVec_mulVec, eigenvectorUnitary_mulVec, ← mulVec_mulVec,
-    mulVec_eigenvectorBasis, Matrix.diagonal_mulVec_single, mulVec_smul,
-    star_eigenvectorUnitary_mulVec, RCLike.real_smul_eq_coe_smul (K := 𝕜), WithLp.toLp_smul,
-    EuclideanSpace.toLp_single, Function.comp_apply, mul_one]
+  simp only [conjStarAlgAut_star_apply, toEuclideanLin_apply, OrthonormalBasis.coe_toBasis,
+    EuclideanSpace.basisFun_apply, EuclideanSpace.ofLp_single, ← mulVec_mulVec,
+    eigenvectorUnitary_mulVec, ← mulVec_mulVec, mulVec_eigenvectorBasis,
+    Matrix.diagonal_mulVec_single, mulVec_smul, star_eigenvectorUnitary_mulVec,
+    RCLike.real_smul_eq_coe_smul (K := 𝕜), WithLp.toLp_smul, EuclideanSpace.toLp_single,
+    Function.comp_apply, mul_one]
   apply PiLp.ext fun j ↦ ?_
   simp only [PiLp.smul_apply, EuclideanSpace.single_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
 
