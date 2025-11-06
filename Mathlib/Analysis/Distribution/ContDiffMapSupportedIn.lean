@@ -194,7 +194,7 @@ instance instSMul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [Continu
     rw [← smul_zero c]
     exact f.zero_on_compl.comp_left
 
-instance : AddCommGroup 𝓓^{n}_{K}(E, F) :=
+instance : AddCommGroup 𝓓^{n}_{K}(E, F) := fast_instance%
   DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
@@ -220,7 +220,7 @@ end AddCommGroup
 section Module
 
 instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-    Module R 𝓓^{n}_{K}(E, F) :=
+    Module R 𝓓^{n}_{K}(E, F) := fast_instance%
   (coeHom_injective n K).module R (coeHom E F n K) fun _ _ ↦ rfl
 
 end Module
@@ -242,13 +242,5 @@ protected def of_support_subset {f : E → F} (hf : ContDiff ℝ n f) (hsupp : s
   toFun := f
   contDiff' := hf
   zero_on_compl' := support_subset_iff'.mp hsupp
-
-section Module
-
-instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-    Module R 𝓓^{n}_{K}(E, F) := fast_instance%
-  (coeHom_injective n K).module R (coeHom E F n K) fun _ _ ↦ rfl
-
-end Module
 
 end ContDiffMapSupportedIn
