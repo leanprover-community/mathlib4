@@ -658,6 +658,61 @@ theorem mfderiv_prod_eq_add_apply {f : M × M' → M''} {p : M × M'} {v : Tange
 
 end Prod
 
+section disjointUnion
+
+variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {p : M ⊕ M'}
+
+/-- In extended charts at `p`, `Sum.swap` looks like the identity near `p`. -/
+lemma writtenInExtChartAt_sumSwap_eventuallyEq_id :
+    writtenInExtChartAt I I p Sum.swap =ᶠ[𝓝[range I] (I <|chartAt H p p)] id := by
+  cases p with
+    | inl x =>
+      let t := I.symm ⁻¹' (chartAt H x).target ∩ range I
+      have : EqOn (writtenInExtChartAt I I (Sum.inl x) (@Sum.swap M M')) id t := by
+        intro y hy
+        simp only [writtenInExtChartAt, extChartAt, Sum.swap_inl,
+          ChartedSpace.sum_chartAt_inl, ChartedSpace.sum_chartAt_inr]
+        dsimp
+        rw [Sum.inr_injective.extend_apply, (chartAt H x).right_inv (by grind)]
+        exact I.right_inv (by grind)
+      apply Filter.eventually_of_mem ?_ this
+      rw [Filter.inter_mem_iff]
+      refine ⟨I.continuousWithinAt_symm.preimage_mem_nhdsWithin ?_, self_mem_nhdsWithin⟩
+      exact (chartAt H x).open_target.mem_nhds (by simp)
+    | inr x =>
+      let t := I.symm ⁻¹' (chartAt H x).target ∩ range I
+      have : EqOn (writtenInExtChartAt I I (Sum.inr x) (@Sum.swap M M')) id t := by
+        intro y hy
+        simp only [writtenInExtChartAt, extChartAt, Sum.swap_inr,
+          ChartedSpace.sum_chartAt_inl, ChartedSpace.sum_chartAt_inr]
+        dsimp
+        rw [Sum.inl_injective.extend_apply, (chartAt H x).right_inv (by grind)]
+        exact I.right_inv (by grind)
+      apply Filter.eventually_of_mem ?_ this
+      rw [Filter.inter_mem_iff]
+      refine ⟨I.continuousWithinAt_symm.preimage_mem_nhdsWithin ?_, self_mem_nhdsWithin⟩
+      exact (chartAt H x).open_target.mem_nhds (by simp)
+
+theorem hasMFDerivAt_sumSwap :
+    HasMFDerivAt I I (@Sum.swap M M') p (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
+  refine ⟨by fun_prop, ?_⟩
+  apply (hasFDerivWithinAt_id _ (range I)).congr_of_eventuallyEq
+  · exact writtenInExtChartAt_sumSwap_eventuallyEq_id
+  · simp only [mfld_simps]
+    cases p <;> simp
+
+@[simp]
+theorem mfderivWithin_sumSwap {s : Set (M ⊕ M')} (hs : UniqueMDiffWithinAt I s p) :
+    mfderivWithin I I (@Sum.swap M M') s p = ContinuousLinearMap.id 𝕜 (TangentSpace I p) :=
+  hasMFDerivAt_sumSwap.hasMFDerivWithinAt.mfderivWithin hs
+
+@[simp]
+theorem mfderiv_sumSwap :
+    mfderiv I I (@Sum.swap M M') p = ContinuousLinearMap.id 𝕜 (TangentSpace I p) := by
+  simpa [mfderivWithin_univ] using (mfderivWithin_sumSwap (uniqueMDiffWithinAt_univ I))
+
+end disjointUnion
+
 section Arithmetic
 
 /-! #### Arithmetic
