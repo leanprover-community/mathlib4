@@ -140,7 +140,7 @@ variable {x : S}
 theorem ToAdjoin.injective (hx : IsIntegral R x) : Function.Injective (Minpoly.toAdjoin R x) := by
   refine (injective_iff_map_eq_zero _).2 fun P₁ hP₁ => ?_
   obtain ⟨P, rfl⟩ := mk_surjective P₁
-  simp_all [← Subalgebra.coe_eq_zero, isIntegrallyClosed_dvd_iff hx]
+  simpa [← Subalgebra.coe_eq_zero, isIntegrallyClosed_dvd_iff hx, ← aeval_def] using hP₁
 
 /-- The algebra isomorphism `AdjoinRoot (minpoly R x) ≃ₐ[R] adjoin R x` -/
 def equivAdjoin (hx : IsIntegral R x) : AdjoinRoot (minpoly R x) ≃ₐ[R] adjoin R ({x} : Set S) :=
@@ -169,25 +169,44 @@ theorem _root_.Algebra.adjoin.powerBasis'_dim (hx : IsIntegral R x) :
 theorem _root_.Algebra.adjoin.powerBasis'_gen (hx : IsIntegral R x) :
     (adjoin.powerBasis' hx).gen = ⟨x, SetLike.mem_coe.1 <| subset_adjoin <| mem_singleton x⟩ := by
   rw [Algebra.adjoin.powerBasis', PowerBasis.map_gen, AdjoinRoot.powerBasis'_gen, equivAdjoin,
-    AlgEquiv.ofBijective_apply, Minpoly.toAdjoin, liftHom_root]
+    AlgEquiv.ofBijective_apply, Minpoly.toAdjoin, liftAlgHom_root]
 
-/-- The power basis given by `x` if `B.gen ∈ adjoin R {x}`. -/
-noncomputable def _root_.PowerBasis.ofGenMemAdjoin' (B : PowerBasis R S) (hint : IsIntegral R x)
-    (hx : B.gen ∈ adjoin R ({x} : Set S)) : PowerBasis R S :=
-  (Algebra.adjoin.powerBasis' hint).map <|
-    (Subalgebra.equivOfEq _ _ <| PowerBasis.adjoin_eq_top_of_gen_mem_adjoin hx).trans
-      Subalgebra.topEquiv
+/--
+If `x` generates `S` over `R` and is integral over `R`, then it defines a power basis.
+See `PowerBasis.ofAdjoinEqTop` for a version over a field.
+-/
+noncomputable def _root_.PowerBasis.ofAdjoinEqTop' {x : S} (hx : IsIntegral R x)
+    (hx' : adjoin R {x} = ⊤) :
+    PowerBasis R S :=
+  (adjoin.powerBasis' hx).map ((Subalgebra.equivOfEq _ _ hx').trans Subalgebra.topEquiv)
+
+example {x : S} (B : PowerBasis R S)
+    (hint : IsIntegral R x) (hx : B.gen ∈ Algebra.adjoin R {x}) :
+    PowerBasis R S := by
+  apply PowerBasis.ofAdjoinEqTop' hint
+  exact PowerBasis.adjoin_eq_top_of_gen_mem_adjoin hx
+
+@[deprecated "Use in combination with `PowerBasis.adjoin_eq_top_of_gen_mem_adjoin` to recover the \
+  deprecated definition" (since := "2025-09-28")] alias _root_.PowerBasis.ofGenMemAdjoin' :=
+  _root_.PowerBasis.ofAdjoinEqTop'
 
 @[simp]
-theorem _root_.PowerBasis.ofGenMemAdjoin'_dim (B : PowerBasis R S) (hint : IsIntegral R x)
-    (hx : B.gen ∈ adjoin R ({x} : Set S)) :
-    (B.ofGenMemAdjoin' hint hx).dim = (minpoly R x).natDegree := rfl
+theorem _root_.PowerBasis.ofAdjoinEqTop'_dim {x : S} (hx : IsIntegral R x)
+    (hx' : adjoin R {x} = ⊤) :
+    (PowerBasis.ofAdjoinEqTop' hx hx').dim = (minpoly R x).natDegree := rfl
 
 @[simp]
-theorem _root_.PowerBasis.ofGenMemAdjoin'_gen (B : PowerBasis R S) (hint : IsIntegral R x)
-    (hx : B.gen ∈ adjoin R ({x} : Set S)) :
-    (B.ofGenMemAdjoin' hint hx).gen = x := by
-  simp [PowerBasis.ofGenMemAdjoin']
+theorem _root_.PowerBasis.ofAdjoinEqTop'_gen {x : S} (hx : IsIntegral R x)
+    (hx' : adjoin R {x} = ⊤) : (PowerBasis.ofAdjoinEqTop' hx hx').gen = x := by
+  simp [PowerBasis.ofAdjoinEqTop']
+
+@[deprecated "Use in combination with `PowerBasis.adjoin_eq_top_of_gen_mem_adjoin` to recover the \
+  deprecated definition" (since := "2025-09-28")] alias _root_.PowerBasis.ofGenMemAdjoin'_dim :=
+   _root_.PowerBasis.ofAdjoinEqTop'_dim
+
+@[deprecated "Use in combination with `PowerBasis.adjoin_eq_top_of_gen_mem_adjoin` to recover the \
+  deprecated definition" (since := "2025-09-28")] alias _root_.PowerBasis.ofGenMemAdjoin'_gen :=
+  _root_.PowerBasis.ofAdjoinEqTop'_gen
 
 end AdjoinRoot
 

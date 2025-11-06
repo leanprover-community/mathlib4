@@ -154,12 +154,12 @@ theorem hasDerivWithinAt_taylor_coeff_within {f : ℝ → E} {x y : ℝ} {k : �
       (-((k ! : ℝ)⁻¹ * (x - y) ^ k)) t y := by
     -- Commuting the factors:
     have : -((k ! : ℝ)⁻¹ * (x - y) ^ k) = ((k + 1 : ℝ) * k !)⁻¹ * (-(k + 1) * (x - y) ^ k) := by
-      field_simp
+      field
     rw [this]
     exact (monomial_has_deriv_aux y x _).hasDerivWithinAt.const_mul _
   convert this.smul hf using 1
   field_simp
-  rw [neg_smul, sub_eq_add_neg]
+  module
 
 /-- Calculate the derivative of the Taylor polynomial with respect to `x₀`.
 
@@ -346,7 +346,7 @@ lemma taylor_mean_remainder_lagrange_iteratedDeriv {f : ℝ → ℝ} {x x₀ : �
   have hd : DifferentiableOn ℝ (iteratedDerivWithin n f (Icc x₀ x)) (Icc x₀ x) := by
     refine hf.differentiableOn_iteratedDerivWithin ?_ hu
     norm_cast
-    norm_num
+    simp
   obtain ⟨x', h1, h2⟩ := taylor_mean_remainder_lagrange hx hf.of_succ (hd.mono Ioo_subset_Icc_self)
   use x', h1
   rw [h2, iteratedDeriv_eq_iteratedFDeriv, iteratedDerivWithin_eq_iteratedFDerivWithin,

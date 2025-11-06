@@ -253,7 +253,7 @@ theorem StrictAnti.isMin_of_apply (hf : StrictAnti f) (ha : IsMax (f a)) : IsMin
     let ⟨_, hb⟩ := not_isMin_iff.1 h
     (hf hb).not_isMax ha
 
-lemma StrictMono.add_le_nat {f : ℕ → ℕ} (hf : StrictMono f) (m n : ℕ) : m + f n ≤ f (m + n)  := by
+lemma StrictMono.add_le_nat {f : ℕ → ℕ} (hf : StrictMono f) (m n : ℕ) : m + f n ≤ f (m + n) := by
   rw [Nat.add_comm m, Nat.add_comm m]
   induction m with
   | zero => rw [Nat.add_zero, Nat.add_zero]
@@ -744,4 +744,4 @@ lemma converges_of_monotone_of_bounded {f : ℕ → ℕ} (mono_f : Monotone f)
     · push_neg at h; obtain ⟨N, hN⟩ := h
       replace hN : f N = c + 1 := by specialize hc N; omega
       use c + 1, N; intro n hn
-      specialize mono_f hn; specialize hc n; omega
+      specialize mono_f hn; specialize hc n; cutsat

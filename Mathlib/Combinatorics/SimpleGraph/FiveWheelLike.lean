@@ -110,8 +110,8 @@ private lemma IsNClique.insert_insert_erase (hs : G.IsNClique r (insert a s)) (h
 An `IsFiveWheelLike r k v w₁ w₂ s t` structure in `G` consists of vertices `v w₁ w₂` and `r`-sets
 `s` and `t` such that `{v, w₁, w₂}` induces the single edge `w₁w₂` (i.e. they form an
 `IsPathGraph3Compl`), `v, w₁, w₂ ∉ s ∪ t`, `s ∪ {v}, t ∪ {v}, s ∪ {w₁}, t ∪ {w₂}` are all
-`(r + 1)`- cliques and `#(s ∩ t) = k`. (If `G` is maximally `(r + 2)`-cliquefree and not complete
-multipartite then `G` will contain such a structure : see
+`(r + 1)`-cliques and `#(s ∩ t) = k`. (If `G` is maximally `(r + 2)`-cliquefree and not complete
+multipartite then `G` will contain such a structure: see
 `exists_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite`.)
 -/
 @[grind]
@@ -151,12 +151,12 @@ include hw
   let ⟨p2, d1, d2, d3, d4, c1, c2, c3, c4, hk⟩ := hw
   ⟨p2.symm, d2, d1, d4, d3, c3, c4, c1, c2, by rwa [inter_comm]⟩
 
-@[grind]
+@[grind →]
 lemma fst_notMem_right : w₁ ∉ t :=
   fun h ↦ hw.isPathGraph3Compl.not_adj_fst <| hw.isNClique_right.1 (mem_insert_self ..)
     (mem_insert_of_mem h) hw.isPathGraph3Compl.ne_fst
 
-@[grind]
+@[grind →]
 lemma snd_notMem_left : w₂ ∉ s := hw.symm.fst_notMem_right
 
 /--
@@ -186,11 +186,11 @@ lemma not_colorable_succ : ¬ G.Colorable (r + 1) := by
     apply (C.valid _ hcx.symm).elim
     exact hw.isNClique_left.1 (by simp) (by simp [hx]) fun h ↦ hw.notMem_left (h ▸ hx)
 
-@[grind]
+@[grind →]
 lemma card_left : s.card = r := by
   simp [← Nat.succ_inj, ← hw.isNClique_left.2, hw.notMem_left]
 
-@[grind]
+@[grind →]
 lemma card_right : t.card = r := hw.symm.card_left
 
 lemma card_inter_lt_of_cliqueFree (h : G.CliqueFree (r + 2)) : k < r := by
@@ -357,7 +357,7 @@ lemma minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ [Fintype α]
     obtain ⟨_, _, hW⟩ := hw.exists_isFiveWheelLike_succ_of_not_adj_le_two hcf
       (by simpa [X] using hx) <| Nat.le_of_succ_le_succ h
     exact hm hW
-  -- Since `G` is `Kᵣ₊₂`- free and contains a `Wᵣ,ₖ` every vertex is not adjacent to at least one
+  -- Since `G` is `Kᵣ₊₂`-free and contains a `Wᵣ,ₖ`, every vertex is not adjacent to at least one
   -- wheel vertex.
   have one_le (x : α) : 1 ≤ #{z ∈ {v} ∪ ({w₁} ∪ ({w₂} ∪ (s ∪ t))) | ¬ G.Adj x z} :=
     let ⟨_, hz⟩ := hw.isNClique_fst_left.exists_not_adj_of_cliqueFree_succ hcf x
@@ -380,7 +380,7 @@ lemma minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ [Fintype α]
   rw [Nat.le_div_iff_mul_le <| Nat.add_pos_right _ zero_lt_three]
   have Wc : #W + k = 2 * r + 3 := by
     change #(insert _ <| insert _ <| insert _ _) + _ = _
-    grind [card_insert_of_notMem, card_inter_add_card_union]
+    grind [card_inter_add_card_union]
   -- The sum of the degree sum over `W` and twice the degree sum over `s ∩ t`
   -- is at least `G.minDegree * (#W + 2 * #(s ∩ t))` which implies the result
   calc
@@ -402,7 +402,7 @@ lemma minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ [Fintype α]
         have hap : #W - 1 + 2 * (k - 1) = #W - 3 + 2 * k := by omega
         rw [hap, ← add_mul, card_add_card_compl, mul_comm, two_mul, ← add_assoc]
         gcongr
-        omega
+        cutsat
 
 end IsFiveWheelLike
 

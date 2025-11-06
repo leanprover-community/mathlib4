@@ -136,23 +136,23 @@ def oppositeLeftAction [MonoidalLeftAction C D] :
         simp only [Iso.inv_hom_id_assoc] at this
         simp [← this]
   actionUnitIso_hom_naturality _ := by
-      apply Quiver.Hom.unop_inj
-      simp
+    apply Quiver.Hom.unop_inj
+    simp
   whiskerRight_actionHomLeft _ _ _ := by
-      apply Quiver.Hom.unop_inj
-      simp
+    apply Quiver.Hom.unop_inj
+    simp
   associator_actionHom _ _ _ _ := by
-      apply Quiver.Hom.unop_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.unop_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
   leftUnitor_actionHom _ _ := by
-      apply Quiver.Hom.unop_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.unop_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
   rightUnitor_actionHom _ _ := by
-      apply Quiver.Hom.unop_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.unop_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
 
 /-- Define a left action of `C` on `D` from a left action of `Cᵒᵖ` on `Dᵒᵖ` via
 the formula `c ⊙ₗ d = unop ((op c) ⊙ₗ (op d))`. -/
@@ -176,23 +176,23 @@ def leftActionOfOppositeLeftAction [MonoidalLeftAction Cᵒᵖ Dᵒᵖ] :
     simp only [Iso.inv_hom_id_assoc] at this
     simp [← this]
   actionUnitIso_hom_naturality _ := by
-      apply Quiver.Hom.op_inj
-      simp
+    apply Quiver.Hom.op_inj
+    simp
   whiskerRight_actionHomLeft _ _ _ := by
-      apply Quiver.Hom.op_inj
-      simp
+    apply Quiver.Hom.op_inj
+    simp
   associator_actionHom _ _ _ _ := by
-      apply Quiver.Hom.op_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.op_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
   leftUnitor_actionHom _ _ := by
-      apply Quiver.Hom.op_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.op_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
   rightUnitor_actionHom _ _ := by
-      apply Quiver.Hom.op_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.op_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
 
 section
 
@@ -348,23 +348,23 @@ def oppositeRightAction [MonoidalRightAction C D] :
         simp only [Iso.inv_hom_id_assoc] at this
         simp [← this]
   actionUnitIso_hom_naturality _ := by
-      apply Quiver.Hom.unop_inj
-      simp
+    apply Quiver.Hom.unop_inj
+    simp
   whiskerRight_actionHomLeft _ _ _ _ _ := by
-      apply Quiver.Hom.unop_inj
-      simp
+    apply Quiver.Hom.unop_inj
+    simp
   actionHom_associator _ _ _ _ := by
-      apply Quiver.Hom.unop_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.unop_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
   actionHom_leftUnitor _ _ := by
-      apply Quiver.Hom.unop_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.unop_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
   actionHom_rightUnitor _ _ := by
-      apply Quiver.Hom.unop_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.unop_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
 
 /-- Define a right action of `C` on `D` from a right action of `Cᵒᵖ` on `Dᵒᵖ` via
 the formula `d ⊙ᵣ c = unop ((op d) ⊙ᵣ (op c))`. -/
@@ -388,23 +388,23 @@ def rightActionOfOppositeRightAction [MonoidalRightAction Cᵒᵖ Dᵒᵖ] :
     simp only [Iso.inv_hom_id_assoc] at this
     simp [← this]
   actionUnitIso_hom_naturality _ := by
-      apply Quiver.Hom.op_inj
-      simp
+    apply Quiver.Hom.op_inj
+    simp
   whiskerRight_actionHomLeft _ _ _ _ _ := by
-      apply Quiver.Hom.op_inj
-      simp
+    apply Quiver.Hom.op_inj
+    simp
   actionHom_associator _ _ _ _ := by
-      apply Quiver.Hom.op_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.op_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
   actionHom_leftUnitor _ _ := by
-      apply Quiver.Hom.op_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.op_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
   actionHom_rightUnitor _ _ := by
-      apply Quiver.Hom.op_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
+    apply Quiver.Hom.op_inj
+    apply IsIso.inv_eq_inv.mp
+    simp
 
 section
 

@@ -198,7 +198,7 @@ lemma deriv_cgf_zero (h : 0 ∈ interior (integrableExpSet X μ)) :
 
 lemma iteratedDeriv_two_cgf (h : v ∈ interior (integrableExpSet X μ)) :
     iteratedDeriv 2 (cgf X μ) v
-      = μ[fun ω ↦ (X ω)^2 * exp (v * X ω)] / mgf X μ v - deriv (cgf X μ) v ^ 2 := by
+      = μ[fun ω ↦ (X ω) ^ 2 * exp (v * X ω)] / mgf X μ v - deriv (cgf X μ) v ^ 2 := by
   rw [iteratedDeriv_succ, iteratedDeriv_one]
   by_cases hμ : μ = 0
   · simp [hμ]
@@ -234,7 +234,7 @@ lemma iteratedDeriv_two_cgf (h : v ∈ interior (integrableExpSet X μ)) :
 
 lemma iteratedDeriv_two_cgf_eq_integral (h : v ∈ interior (integrableExpSet X μ)) :
     iteratedDeriv 2 (cgf X μ) v
-      = μ[fun ω ↦ (X ω - deriv (cgf X μ) v)^2 * exp (v * X ω)] / mgf X μ v := by
+      = μ[fun ω ↦ (X ω - deriv (cgf X μ) v) ^ 2 * exp (v * X ω)] / mgf X μ v := by
   by_cases hμ : μ = 0
   · simp [hμ, iteratedDeriv_succ]
   rw [iteratedDeriv_two_cgf h]

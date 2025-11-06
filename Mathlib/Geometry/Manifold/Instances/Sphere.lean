@@ -24,11 +24,11 @@ it to put an analytic manifold structure on the sphere.
 ## Main results
 
 For a unit vector `v` in `E`, the definition `stereographic` gives the stereographic projection
-centred at `v`, a partial homeomorphism from the sphere to `(ℝ ∙ v)ᗮ` (the orthogonal complement of
-`v`).
+centred at `v`, an open partial homeomorphism from the sphere to `(ℝ ∙ v)ᗮ` (the orthogonal
+complement of `v`).
 
 For finite-dimensional `E`, we then construct an analytic manifold instance on the sphere; the
-charts here are obtained by composing the partial homeomorphisms `stereographic` with arbitrary
+charts here are obtained by composing the open partial homeomorphisms `stereographic` with arbitrary
 isometries from `(ℝ ∙ v)ᗮ` to Euclidean space.
 
 We prove two lemmas about `C^n` maps:
@@ -240,8 +240,8 @@ theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v
   ring
 
 /-- Stereographic projection from the unit sphere in `E`, centred at a unit vector `v` in `E`;
-this is the version as a partial homeomorphism. -/
-def stereographic (hv : ‖v‖ = 1) : PartialHomeomorph (sphere (0 : E) 1) (ℝ ∙ v)ᗮ where
+this is the version as an open partial homeomorphism. -/
+def stereographic (hv : ‖v‖ = 1) : OpenPartialHomeomorph (sphere (0 : E) 1) (ℝ ∙ v)ᗮ where
   toFun := stereoToFun v ∘ (↑)
   invFun := stereoInvFun hv
   source := {⟨v, by simp [hv]⟩}ᶜ
@@ -330,10 +330,10 @@ space `E`.  This version has codomain the Euclidean space of dimension `n`, and 
 composing the original stereographic projection (`stereographic`) with an arbitrary linear isometry
 from `(ℝ ∙ v)ᗮ` to the Euclidean space. -/
 def stereographic' (n : ℕ) [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
-    PartialHomeomorph (sphere (0 : E) 1) (EuclideanSpace ℝ (Fin n)) :=
+    OpenPartialHomeomorph (sphere (0 : E) 1) (EuclideanSpace ℝ (Fin n)) :=
   stereographic (norm_eq_of_mem_sphere v) ≫ₕ
     (OrthonormalBasis.fromOrthogonalSpanSingleton n
-            (ne_zero_of_mem_unit_sphere v)).repr.toHomeomorph.toPartialHomeomorph
+            (ne_zero_of_mem_unit_sphere v)).repr.toHomeomorph.toOpenPartialHomeomorph
 
 @[simp]
 theorem stereographic'_source {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
@@ -399,12 +399,12 @@ instance EuclideanSpace.instIsManifoldSphere
         (ℝ ∙ (v : E))ᗮ.subtypeL.contDiff).comp U.symm.contDiff
       convert H₁.comp_inter (H₂.contDiffOn : ContDiffOn ℝ ω _ Set.univ) using 1
       -- -- squeezed from `ext, simp [sphere_ext_iff, stereographic'_symm_apply, real_inner_comm]`
-      simp only [PartialHomeomorph.trans_toPartialEquiv, PartialHomeomorph.symm_toPartialEquiv,
-        PartialEquiv.trans_source, PartialEquiv.symm_source, stereographic'_target,
-        stereographic'_source]
+      simp only [OpenPartialHomeomorph.trans_toPartialEquiv,
+        OpenPartialHomeomorph.symm_toPartialEquiv, PartialEquiv.trans_source,
+        PartialEquiv.symm_source, stereographic'_target, stereographic'_source]
       simp only [modelWithCornersSelf_coe, modelWithCornersSelf_coe_symm,
         Set.range_id, Set.inter_univ, Set.univ_inter, Set.compl_singleton_eq, Set.preimage_setOf_eq]
-      simp only [id, comp_apply, Submodule.subtypeL_apply, PartialHomeomorph.coe_coe_symm,
+      simp only [id, comp_apply, Submodule.subtypeL_apply, OpenPartialHomeomorph.coe_coe_symm,
         innerSL_apply, Ne, sphere_ext_iff, real_inner_comm (v' : E)]
       rfl)
 

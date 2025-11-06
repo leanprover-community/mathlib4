@@ -84,7 +84,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
   · obtain ⟨t, hts, htn⟩ := exists_subset_card_eq (hn₂.trans_eq hs)
     have ht : t.Nonempty := by rwa [← card_pos, htn]
     have hcard : ite (0 < a) (a - 1) a * m + ite (0 < a) b (b - 1) * (m + 1) = #(s \ t) := by
-      rw [card_sdiff ‹t ⊆ s›, htn, hn₃]
+      rw [card_sdiff_of_subset ‹t ⊆ s›, htn, hn₃]
     obtain ⟨R, hR₁, _, hR₃⟩ :=
       @ih (s \ t) (sdiff_ssubset hts ‹t.Nonempty›) (if 0 < a then a - 1 else a)
         (if 0 < a then b else b - 1) (P.avoid t) hcard
@@ -103,7 +103,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
   obtain ⟨t, htu, htn⟩ := exists_subset_card_eq (hn₁.trans hu₂)
   have ht : t.Nonempty := by rwa [← card_pos, htn]
   have hcard : ite (0 < a) (a - 1) a * m + ite (0 < a) b (b - 1) * (m + 1) = #(s \ t) := by
-    rw [card_sdiff (htu.trans <| P.le hu₁), htn, hn₃]
+    rw [card_sdiff_of_subset (htu.trans <| P.le hu₁), htn, hn₃]
   obtain ⟨R, hR₁, hR₂, hR₃⟩ :=
     @ih (s \ t) (sdiff_ssubset (htu.trans <| P.le hu₁) ht) (if 0 < a then a - 1 else a)
       (if 0 < a then b else b - 1) (P.avoid t) hcard

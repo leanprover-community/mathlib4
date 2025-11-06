@@ -8,23 +8,23 @@ import Mathlib.MeasureTheory.Constructions.Projective
 import Mathlib.Probability.IdentDistrib
 
 /-!
-# Finite dimensional distributions of a stochastic process
+# Finite-dimensional distributions of a stochastic process
 
 For a stochastic process `X : T → Ω → 𝓧` and a finite measure `P` on `Ω`, the law of the process is
-`P.map (fun ω ↦ (X · ω))`, and its finite dimensional distributions are
+`P.map (fun ω ↦ (X · ω))`, and its finite-dimensional distributions are
 `P.map (fun ω ↦ I.restrict (X · ω))` for `I : Finset T`.
 
 We show that two stochastic processes have the same laws if and only if they have the same
-finite dimensional distributions.
+finite-dimensional distributions.
 
 ## Main statements
 
 * `map_eq_iff_forall_finset_map_restrict_eq`: two processes have the same law if and only if
-  their finite dimensional distributions are equal.
+  their finite-dimensional distributions are equal.
 * `identDistrib_iff_forall_finset_identDistrib`: same statement, but stated in terms of
   `IdentDistrib`.
 * `map_restrict_eq_of_forall_ae_eq`: if two processes are modifications of each other, then
-  their finite dimensional distributions are equal.
+  their finite-dimensional distributions are equal.
 * `map_eq_of_forall_ae_eq`: if two processes are modifications of each other, then they have the
   same law.
 
@@ -37,7 +37,7 @@ namespace ProbabilityTheory
 variable {T Ω : Type*} {𝓧 : T → Type*} {mΩ : MeasurableSpace Ω} {mα : ∀ t, MeasurableSpace (𝓧 t)}
   {X Y : (t : T) → Ω → 𝓧 t} {P : Measure Ω}
 
-/-- The finite dimensional distributions of a stochastic process are a projective measure family. -/
+/-- The finite-dimensional distributions of a stochastic process are a projective measure family. -/
 lemma isProjectiveMeasureFamily_map_restrict (hX : ∀ t, AEMeasurable (X t) P) :
     IsProjectiveMeasureFamily (fun I ↦ P.map (fun ω ↦ I.restrict (X · ω))) := by
   intro I J hJI
@@ -45,7 +45,7 @@ lemma isProjectiveMeasureFamily_map_restrict (hX : ∀ t, AEMeasurable (X t) P) 
   · simp [Finset.restrict_def, Finset.restrict₂_def, Function.comp_def]
   · exact aemeasurable_pi_lambda _ fun _ ↦ hX _
 
-/-- The projective limit of the finite dimensional distributions of a stochastic process is the law
+/-- The projective limit of the finite-dimensional distributions of a stochastic process is the law
 of the process. -/
 lemma isProjectiveLimit_map (hX : AEMeasurable (fun ω ↦ (X · ω)) P) :
     IsProjectiveLimit (P.map (fun ω ↦ (X · ω))) (fun I ↦ P.map (fun ω ↦ I.restrict (X · ω))) := by
@@ -54,7 +54,7 @@ lemma isProjectiveLimit_map (hX : AEMeasurable (fun ω ↦ (X · ω)) P) :
     Function.comp_def]
 
 /-- Two stochastic processes have same law iff they have the same
-finite dimensional distributions. -/
+finite-dimensional distributions. -/
 lemma map_eq_iff_forall_finset_map_restrict_eq [IsFiniteMeasure P]
     (hX : AEMeasurable (fun ω ↦ (X · ω)) P) (hY : AEMeasurable (fun ω ↦ (Y · ω)) P) :
     P.map (fun ω ↦ (X · ω)) = P.map (fun ω ↦ (Y · ω))
@@ -70,7 +70,7 @@ lemma map_eq_iff_forall_finset_map_restrict_eq [IsFiniteMeasure P]
     exact hX'.unique (isProjectiveLimit_map hY)
 
 /-- Two stochastic processes are identically distributed iff they have the same
-finite dimensional distributions. -/
+finite-dimensional distributions. -/
 lemma identDistrib_iff_forall_finset_identDistrib [IsFiniteMeasure P]
     (hX : AEMeasurable (fun ω ↦ (X · ω)) P) (hY : AEMeasurable (fun ω ↦ (Y · ω)) P) :
     IdentDistrib (fun ω ↦ (X · ω)) (fun ω ↦ (Y · ω)) P P
@@ -82,7 +82,7 @@ lemma identDistrib_iff_forall_finset_identDistrib [IsFiniteMeasure P]
   · exact (map_eq_iff_forall_finset_map_restrict_eq hX hY).mp h.map_eq I
   · exact (map_eq_iff_forall_finset_map_restrict_eq hX hY).mpr (fun I ↦ (h I).map_eq)
 
-/-- If two processes are modifications of each other, then they have the same finite dimensional
+/-- If two processes are modifications of each other, then they have the same finite-dimensional
 distributions. -/
 lemma map_restrict_eq_of_forall_ae_eq (h : ∀ t, X t =ᵐ[P] Y t) (I : Finset T) :
     P.map (fun ω ↦ I.restrict (X · ω)) = P.map (fun ω ↦ I.restrict (Y · ω)) := by

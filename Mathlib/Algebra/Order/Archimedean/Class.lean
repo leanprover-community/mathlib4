@@ -265,6 +265,13 @@ theorem mk_le_mk : mk a ≤ mk b ↔ ∃ n, |b|ₘ ≤ |a|ₘ ^ n := .rfl
 @[to_additive]
 theorem mk_lt_mk : mk a < mk b ↔ ∀ n, |b|ₘ ^ n < |a|ₘ := .rfl
 
+@[to_additive]
+theorem mk_le_mk_iff_lt (ha : a ≠ 1) : mk a ≤ mk b ↔ ∃ n, |b|ₘ < |a|ₘ ^ n := by
+  refine ⟨fun ⟨n, hn⟩ ↦ ⟨n + 1, hn.trans_lt ?_⟩, fun ⟨n, hn⟩ ↦ ?_⟩
+  · rw [pow_succ]
+    exact lt_mul_of_one_lt_right' _ (one_lt_mabs.mpr ha)
+  · exact ⟨n, hn.le⟩
+
 /-- 1 is in its own class (see `MulArchimedeanClass.mk_eq_top_iff`),
 which is also the largest class. -/
 @[to_additive /-- 0 is in its own class (see `ArchimedeanClass.mk_eq_top_iff`),
@@ -323,10 +330,14 @@ theorem mk_monotoneOn : MonotoneOn mk (Set.Iic (1 : M)) := by
 theorem min_le_mk_mul (a b : M) : min (mk a) (mk b) ≤ mk (a * b) := by
   by_contra! h
   rw [lt_min_iff] at h
-  have h1 := (mk_lt_mk.mp h.1 2).trans_le (mabs_mul _ _)
-  have h2 := (mk_lt_mk.mp h.2 2).trans_le (mabs_mul _ _)
+  have h1 := (mk_lt_mk.mp h.1 2).trans_le (mabs_mul_le _ _)
+  have h2 := (mk_lt_mk.mp h.2 2).trans_le (mabs_mul_le _ _)
   simp only [mul_lt_mul_iff_left, mul_lt_mul_iff_right, pow_two] at h1 h2
   exact h1.not_gt h2
+
+@[to_additive]
+theorem min_le_mk_div (a b : M) : min (mk a) (mk b) ≤ mk (a / b) := by
+  simpa [div_eq_mul_inv] using min_le_mk_mul (a := a) (b := b⁻¹)
 
 @[to_additive]
 theorem mk_left_le_mk_mul (hab : mk a ≤ mk b) : mk a ≤ mk (a * b) := by
@@ -335,6 +346,14 @@ theorem mk_left_le_mk_mul (hab : mk a ≤ mk b) : mk a ≤ mk (a * b) := by
 @[to_additive]
 theorem mk_right_le_mk_mul (hba : mk b ≤ mk a) : mk b ≤ mk (a * b) := by
   simpa [hba] using min_le_mk_mul (a := a) (b := b)
+
+@[to_additive]
+theorem mk_left_le_mk_div (hab : mk a ≤ mk b) : mk a ≤ mk (a / b) := by
+  simpa [div_eq_mul_inv, hab] using mk_left_le_mk_mul (a := a) (b := b⁻¹)
+
+@[to_additive]
+theorem mk_right_le_mk_div (hba : mk b ≤ mk a) : mk b ≤ mk (a / b) := by
+  simpa [div_eq_mul_inv, hba] using mk_right_le_mk_mul (a := a) (b := b⁻¹)
 
 @[to_additive]
 theorem mk_mul_eq_mk_left (h : mk a < mk b) : mk (a * b) = mk a := by
@@ -349,6 +368,14 @@ theorem mk_mul_eq_mk_left (h : mk a < mk b) : mk (a * b) = mk a := by
 @[to_additive]
 theorem mk_mul_eq_mk_right (h : mk b < mk a) : mk (a * b) = mk b :=
   mul_comm a b ▸ mk_mul_eq_mk_left h
+
+@[to_additive]
+theorem mk_div_eq_mk_left (h : mk a < mk b) : mk (a / b) = mk a := by
+  simpa [h, div_eq_mul_inv] using mk_mul_eq_mk_left (a := a) (b := b⁻¹)
+
+@[to_additive]
+theorem mk_div_eq_mk_right (h : mk b < mk a) : mk (a / b) = mk b := by
+  simpa [h, div_eq_mul_inv] using mk_mul_eq_mk_right (a := a) (b := b⁻¹)
 
 /-- The product over a set of an elements in distinct classes is in the lowest class. -/
 @[to_additive /-- The sum over a set of an elements in distinct classes is in the lowest class. -/]
@@ -717,9 +744,8 @@ theorem withTopOrderIso_apply_coe (A : FiniteMulArchimedeanClass M) :
 
 @[to_additive]
 theorem withTopOrderIso_symm_apply {a : M} (h : a ≠ 1) :
-    (withTopOrderIso M).symm (MulArchimedeanClass.mk a) = mk a h := by
-  unfold mk withTopOrderIso
-  convert WithTop.subtypeOrderIso_symm_apply (MulArchimedeanClass.mk_eq_top_iff.ne.mpr h)
+    (withTopOrderIso M).symm (MulArchimedeanClass.mk a) = mk a h :=
+  WithTop.subtypeOrderIso_symm_apply (MulArchimedeanClass.mk_eq_top_iff.ne.mpr h)
 
 variable {N : Type*} [CommGroup N] [LinearOrder N] [IsOrderedMonoid N]
 

@@ -158,6 +158,9 @@ inductive Γ'
   | bit1
   deriving DecidableEq, Inhabited, Fintype
 
+-- A proof below relies on the value of that `deriving Inhabited` picks here.
+@[simp] theorem default_Γ' : (default : Γ') = .consₗ := rfl
+
 /-- The four stacks used by the program. `main` is used to store the input value in `trNormal`
 mode and the output value in `Λ'.ret` mode, while `stack` is used to keep all the data for the
 continuations. `rev` is used to store reversed lists when transferring values between stacks, and
@@ -746,7 +749,7 @@ theorem succ_ok {q s n} {c d : List Γ'} :
         Reaches₁ (TM2.step tr) ⟨some q.succ, s, K'.elim (trPosNum a ++ [Γ'.cons]) l₁ c d⟩
           ⟨some (unrev q), s', K'.elim (l₂' ++ [Γ'.cons]) l₁' c d⟩ by
     obtain ⟨l₁', l₂', s', e, h⟩ := this []
-    simp? [List.reverseAux] at e says simp only [List.reverseAux, List.reverseAux_eq] at e
+    simp only [List.reverseAux] at e
     refine h.trans ?_
     convert unrev_ok using 2
     simp [e, List.reverseAux_eq]

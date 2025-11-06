@@ -82,8 +82,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
             (vsub_orthogonalProjection_mem_direction_orthogonal s p),
           ← dist_eq_norm_vsub V p, dist_comm _ cc]
         simp only [ycc₂]
-        field_simp
-        ring
+        field
       · rw [dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _ (hps hp₁),
           orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ hcc, Subtype.coe_mk,
           dist_of_mem_subset_mk_sphere hp₁ hcr, dist_eq_norm_vsub V cc₂ cc, vadd_vsub, norm_smul, ←
@@ -132,7 +131,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
     congr
     rw [hcr₃val]
     congr 2
-    field_simp
+    field
 
 /-- Given a finite nonempty affinely independent family of points,
 there is a unique (circumcenter, circumradius) pair for those points
@@ -145,7 +144,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
   | zero =>
     exfalso
     have h := Fintype.card_pos_iff.2 hne
-    omega
+    cutsat
   | succ m hm =>
     rcases m with - | m
     · rw [Fintype.card_eq_one_iff] at hn
@@ -166,7 +165,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
       have hc : Fintype.card ι2 = m + 1 := by
         rw [Fintype.card_of_subtype {x | x ≠ i}]
         · rw [Finset.filter_not, Finset.filter_eq' _ i, if_pos (Finset.mem_univ _),
-            Finset.card_sdiff (Finset.subset_univ _), Finset.card_singleton, Finset.card_univ, hn]
+            Finset.card_sdiff, Finset.card_univ, hn]
           simp
         · simp
       haveI : Nonempty ι2 := Fintype.card_pos_iff.1 (hc.symm ▸ Nat.zero_lt_succ _)

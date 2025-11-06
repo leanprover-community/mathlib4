@@ -6,6 +6,7 @@ Authors: Robert Y. Lewis, Keeley Hoek
 import Mathlib.Data.Int.DivMod
 import Mathlib.Order.Lattice
 import Mathlib.Tactic.Common
+import Batteries.Data.Fin.Basic
 
 /-!
 # The finite type with `n` elements
@@ -18,8 +19,6 @@ This file expands on the development in the core library.
 * `finZeroElim` : Elimination principle for the empty set `Fin 0`, generalizes `Fin.elim0`.
 Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
 * `Fin.equivSubtype` : Equivalence between `Fin n` and `{ i // i < n }`.
-* `Fin.divNat i` : divides `i : Fin (m * n)` by `n`;
-* `Fin.modNat i` : takes the mod of `i : Fin (m * n)` by `n`;
 
 -/
 
@@ -260,12 +259,8 @@ section Add
 theorem val_one' (n : ℕ) [NeZero n] : ((1 : Fin n) : ℕ) = 1 % n :=
   rfl
 
-@[deprecated val_one' (since := "2025-03-10")]
-theorem val_one'' {n : ℕ} : ((1 : Fin (n + 1)) : ℕ) = 1 % (n + 1) :=
-  rfl
-
 theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
-  simp [← not_subsingleton_iff_nontrivial, subsingleton_iff_le_one]; omega
+  simp [← not_subsingleton_iff_nontrivial, subsingleton_iff_le_one]; cutsat
 
 instance instNontrivial [n.AtLeastTwo] : Nontrivial (Fin n) :=
   nontrivial_iff_two_le.2 Nat.AtLeastTwo.one_lt
@@ -273,17 +268,17 @@ instance instNontrivial [n.AtLeastTwo] : Nontrivial (Fin n) :=
 /-- If working with more than two elements, we can always pick a third distinct from two existing
 elements. -/
 theorem exists_ne_and_ne_of_two_lt (i j : Fin n) (h : 2 < n) : ∃ k, k ≠ i ∧ k ≠ j := by
-  have : NeZero n := ⟨by omega⟩
+  have : NeZero n := ⟨by cutsat⟩
   rcases i with ⟨i, hi⟩
   rcases j with ⟨j, hj⟩
   simp_rw [← Fin.val_ne_iff]
   by_cases h0 : 0 ≠ i ∧ 0 ≠ j
   · exact ⟨0, h0⟩
   · by_cases h1 : 1 ≠ i ∧ 1 ≠ j
-    · exact ⟨⟨1, by omega⟩, h1⟩
-    · refine ⟨⟨2, by omega⟩, ?_⟩
+    · exact ⟨⟨1, by cutsat⟩, h1⟩
+    · refine ⟨⟨2, by cutsat⟩, ?_⟩
       dsimp only
-      omega
+      cutsat
 
 section Monoid
 
@@ -315,10 +310,10 @@ lemma sub_val_lt_sub {n : ℕ} {i j : Fin n} (hij : i ≤ j) : (j - i).val < n -
   simp [sub_val_of_le hij, Nat.sub_lt_sub_right hij j.isLt]
 
 lemma castLT_sub_nezero {n : ℕ} {i j : Fin n} (hij : i < j) :
-    letI : NeZero (n - i.1) := neZero_iff.mpr (by omega)
+    letI : NeZero (n - i.1) := neZero_iff.mpr (by cutsat)
     (j - i).castLT (sub_val_lt_sub (Fin.le_of_lt hij)) ≠ 0 := by
   refine Ne.symm (ne_of_val_ne ?_)
-  simpa [coe_sub_iff_le.mpr (Fin.le_of_lt hij)] using by omega
+  simpa [coe_sub_iff_le.mpr (Fin.le_of_lt hij)] using by cutsat
 
 lemma one_le_of_ne_zero {n : ℕ} [NeZero n] {k : Fin n} (hk : k ≠ 0) : 1 ≤ k := by
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
@@ -405,26 +400,11 @@ end Add
 
 section DivMod
 
-/-- Compute `i / n`, where `n` is a `Nat` and inferred the type of `i`. -/
-def divNat (i : Fin (m * n)) : Fin m :=
-  ⟨i / n, Nat.div_lt_of_lt_mul <| Nat.mul_comm m n ▸ i.prop⟩
-
-@[simp]
-theorem coe_divNat (i : Fin (m * n)) : (i.divNat : ℕ) = i / n :=
-  rfl
-
-/-- Compute `i % n`, where `n` is a `Nat` and inferred the type of `i`. -/
-def modNat (i : Fin (m * n)) : Fin n := ⟨i % n, Nat.mod_lt _ <| Nat.pos_of_mul_pos_left i.pos⟩
-
-@[simp]
-theorem coe_modNat (i : Fin (m * n)) : (i.modNat : ℕ) = i % n :=
-  rfl
-
 theorem modNat_rev (i : Fin (m * n)) : i.rev.modNat = i.modNat.rev := by
   ext
   have H₁ : i % n + 1 ≤ n := i.modNat.is_lt
   have H₂ : i / n < m := i.divNat.is_lt
-  simp only [coe_modNat, val_rev]
+  simp only [val_rev]
   calc
     (m * n - (i + 1)) % n = (m * n - ((i / n) * n + i % n + 1)) % n := by rw [Nat.div_add_mod']
     _ = ((m - i / n - 1) * n + (n - (i % n + 1))) % n := by
@@ -490,7 +470,7 @@ theorem exists_eq_add_of_le {n : ℕ} {a b : Fin n} (h : a ≤ b) : ∃ k ≤ b,
 theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
     ∃ k < b, k + 1 ≤ b ∧ b = a + k + 1 := by
   cases n
-  · omega
+  · cutsat
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (b : ℕ) = a + k + 1 := Nat.exists_eq_add_of_lt h
   have hkb : k < b := by omega
   refine ⟨⟨k, hkb.trans b.is_lt⟩, hkb, by fin_omega, ?_⟩
@@ -517,7 +497,7 @@ theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :
 
 theorem val_add_one_of_lt' {n : ℕ} [NeZero n] {i : Fin n} (h : i + 1 < n) :
     (i + 1).val = i.val + 1 := by
-  simpa [add_def] using Nat.mod_eq_of_lt (by omega)
+  simpa [add_def] using Nat.mod_eq_of_lt (by cutsat)
 
 instance [NeZero n] [NeZero ofNat(m)] : NeZero (ofNat(m) : Fin (n + ofNat(m))) := by
   suffices m % (n + m) = m by simpa [neZero_iff, Fin.ext_iff, OfNat.ofNat, this] using NeZero.ne m
@@ -530,20 +510,13 @@ section Mul
 ### mul
 -/
 
-protected theorem mul_one' [NeZero n] (k : Fin n) : k * 1 = k := by
-  rcases n with - | n
-  · simp [eq_iff_true_of_subsingleton]
-  cases n
-  · simp [fin_one_eq_zero]
-  simp [mul_def, mod_eq_of_lt (is_lt k)]
+@[deprecated (since := "2025-10-06")] alias mul_one' := Fin.mul_one
 
-protected theorem one_mul' [NeZero n] (k : Fin n) : (1 : Fin n) * k = k := by
-  rw [Fin.mul_comm, Fin.mul_one']
+@[deprecated (since := "2025-10-06")] alias one_mul' := Fin.one_mul
 
-protected theorem mul_zero' [NeZero n] (k : Fin n) : k * 0 = 0 := by simp [mul_def]
+@[deprecated (since := "2025-10-06")] alias mul_zero' := Fin.mul_zero
 
-protected theorem zero_mul' [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
-  simp [mul_def]
+@[deprecated (since := "2025-10-06")] alias zero_mul' := Fin.zero_mul
 
 end Mul
 

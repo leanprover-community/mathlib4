@@ -32,7 +32,7 @@ of `sup` over `inf`, on the left or on the right.
 
 * `DistribLattice`: a type class for distributive lattices.
 
-## Notations
+## Notation
 
 * `a ⊔ b`: the supremum or join of `a` and `b`
 * `a ⊓ b`: the infimum or meet of `a` and `b`
@@ -788,6 +788,7 @@ instance [∀ i, Max (α' i)] : Max (∀ i, α' i) :=
 theorem sup_apply [∀ i, Max (α' i)] (f g : ∀ i, α' i) (i : ι) : (f ⊔ g) i = f i ⊔ g i :=
   rfl
 
+@[push ←]
 theorem sup_def [∀ i, Max (α' i)] (f g : ∀ i, α' i) : f ⊔ g = fun i => f i ⊔ g i :=
   rfl
 
@@ -798,6 +799,7 @@ instance [∀ i, Min (α' i)] : Min (∀ i, α' i) :=
 theorem inf_apply [∀ i, Min (α' i)] (f g : ∀ i, α' i) (i : ι) : (f ⊓ g) i = f i ⊓ g i :=
   rfl
 
+@[push ←]
 theorem inf_def [∀ i, Min (α' i)] (f g : ∀ i, α' i) : f ⊓ g = fun i => f i ⊓ g i :=
   rfl
 
@@ -1267,8 +1269,7 @@ instance [DistribLattice α] : DistribLattice (ULift.{v} α) :=
   ULift.down_injective.distribLattice _ down_sup down_inf
 
 instance [LinearOrder α] : LinearOrder (ULift.{v} α) :=
-  LinearOrder.liftWithOrd ULift.down ULift.down_injective down_sup down_inf
-    fun _x _y => (down_compare _ _).symm
+  ULift.down_injective.linearOrder _ down_le down_lt down_inf down_sup down_compare
 
 end ULift
 

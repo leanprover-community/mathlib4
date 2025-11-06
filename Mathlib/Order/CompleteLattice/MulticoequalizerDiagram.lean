@@ -32,7 +32,10 @@ universe u
 
 open CategoryTheory Limits
 
-attribute [local grind] inf_le_left inf_le_right le_sup_left le_sup_right
+local grind_pattern inf_le_left => a ⊓ b
+local grind_pattern inf_le_right => a ⊓ b
+local grind_pattern le_sup_left => a ⊔ b
+local grind_pattern le_sup_right => a ⊔ b
 
 namespace Lattice
 
@@ -78,7 +81,8 @@ structure MulticoequalizerDiagram : Prop where
 
 namespace MulticoequalizerDiagram
 
-attribute [local grind] MulticoequalizerDiagram MultispanShape.prod_fst MultispanShape.prod_snd
+attribute [local grind] MulticoequalizerDiagram
+attribute [local grind =] MultispanShape.prod_fst MultispanShape.prod_snd
 
 variable {x u v} (d : MulticoequalizerDiagram x u v)
 
@@ -112,4 +116,5 @@ lemma Lattice.BicartSq.multicoequalizerDiagram {T : Type u} [CompleteLattice T]
       (fun i j ↦ bif i then bif j then x₃ else x₁
         else bif j then x₁ else x₂) where
   iSup_eq := by rw [← sq.max_eq, sup_comm, sup_eq_iSup]
-  min_eq i j := by grind [inf_idem, inf_comm]
+  min_eq i j := by
+    grind [inf_idem, inf_comm]

@@ -33,7 +33,7 @@ This theory will serve as the foundation for spectral theory in Banach algebras.
 * `spectrum.scalar_eq`: in a nontrivial algebra over a field, the spectrum of a scalar is
   a singleton.
 
-## Notations
+## Notation
 
 * `σ a` : `spectrum R a` of `a : A`
 -/

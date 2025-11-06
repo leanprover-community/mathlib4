@@ -113,6 +113,10 @@ def IsExactOn (f : ℂ → E) (U : Set ℂ) : Prop :=
 
 variable {c : ℂ} {r : ℝ} {f : ℂ → E}
 
+lemma IsConservativeOn.mono {U V : Set ℂ} (h : U ⊆ V) (hf : IsConservativeOn f V) :
+    IsConservativeOn f U :=
+  fun z w hzw ↦ hf z w (hzw.trans h)
+
 theorem _root_.DifferentiableOn.isConservativeOn {U : Set ℂ} (hf : DifferentiableOn ℂ f U) :
     IsConservativeOn f U := by
   rintro z w hzw
@@ -121,11 +125,10 @@ theorem _root_.DifferentiableOn.isConservativeOn {U : Set ℂ} (hf : Differentia
 
 variable [CompleteSpace E]
 
-lemma IsExactOn.isConservativeOn_of_isOpen {U : Set ℂ} (hU : IsOpen U) (hf : IsExactOn f U) :
-    IsConservativeOn f U := by
+lemma IsExactOn.differentiableOn {U : Set ℂ} (hU : IsOpen U) (hf : IsExactOn f U) :
+    DifferentiableOn ℂ f U := by
   obtain ⟨g, hg⟩ := hf
   have hg' : DifferentiableOn ℂ g U := fun z hz ↦ (hg z hz).differentiableAt.differentiableWithinAt
-  apply DifferentiableOn.isConservativeOn
   exact (differentiableOn_congr <| fun z hz ↦ (hg z hz).deriv).mp <| hg'.deriv hU
 
 section ContinuousOnBall
@@ -263,6 +266,16 @@ theorem IsConservativeOn.isExactOn_ball (hf' : ContinuousOn f (ball c r))
     (hf : IsConservativeOn f (ball c r)) :
     IsExactOn f (ball c r) :=
   ⟨fun z ↦ wedgeIntegral c z f, fun _ ↦ hf.hasDerivAt_wedgeIntegral hf'⟩
+
+theorem isConservativeOn_and_continuousOn_iff_isDifferentiableOn
+    {U : Set ℂ} (hU : IsOpen U) :
+    IsConservativeOn f U ∧ ContinuousOn f U ↔ DifferentiableOn ℂ f U := by
+  refine ⟨fun ⟨hf, hf'⟩ z hz ↦ ?_, fun hf ↦ ⟨hf.isConservativeOn, hf.continuousOn⟩⟩
+  obtain ⟨r, h₀, h₁⟩ : ∃ r > 0, ball z r ⊆ U := Metric.isOpen_iff.mp hU z hz
+  have : DifferentiableOn ℂ f (ball z r) :=
+    (IsConservativeOn.isExactOn_ball (hf'.mono h₁) (hf.mono h₁)).differentiableOn isOpen_ball
+  apply (this z (mem_ball_self h₀)).mono_of_mem_nhdsWithin
+  exact mem_nhdsWithin.mpr ⟨ball z r, isOpen_ball, mem_ball_self h₀, inter_subset_left⟩
 
 /-- **Morera's theorem for a disk** On a disk, a holomorphic function has primitives. -/
 theorem _root_.DifferentiableOn.isExactOn_ball (hf : DifferentiableOn ℂ f (ball c r)) :
