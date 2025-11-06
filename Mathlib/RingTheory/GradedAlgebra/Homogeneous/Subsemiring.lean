@@ -71,7 +71,7 @@ theorem mem_iff {R : HomogeneousSubsemiring 𝒜} {a} :
 
 end HomogeneousSubsemiring
 
-theorem IsHomogneous.subsemiringClosure {s : Set A}
+theorem IsHomogeneous.subsemiringClosure {s : Set A}
     (h : ∀ (i : ι) ⦃x : A⦄, x ∈ s → (decompose 𝒜 x i : A) ∈ s) :
     IsHomogeneous 𝒜 (Subsemiring.closure s) := fun i x hx ↦ by
   induction hx using Subsemiring.closure_induction generalizing i with
@@ -90,10 +90,10 @@ theorem IsHomogneous.subsemiringClosure {s : Set A}
     refine sum_mem fun k _ ↦ ?_
     obtain rfl | h := eq_or_ne i (j + k) <;> simp [of_eq_of_ne, mul_mem, *]
 
-theorem IsHomogneous.subsemiringClosure_of_isHomogeneousElem {s : Set A}
+theorem IsHomogeneous.subsemiringClosure_of_isHomogeneousElem {s : Set A}
     (h : ∀ x ∈ s, IsHomogeneousElem 𝒜 x) :
     IsHomogeneous 𝒜 (Subsemiring.closure s) :=
-  Subsemiring.closure_insert_zero s ▸ IsHomogneous.subsemiringClosure fun i x hx ↦
+  Subsemiring.closure_insert_zero s ▸ IsHomogeneous.subsemiringClosure fun i x hx ↦
     hx.elim (by subst ·; simp) fun hx ↦ by
     obtain ⟨j, hj⟩ := h x hx
     obtain rfl | h := eq_or_ne i j <;> simp [decompose_of_mem _ hj, of_eq_of_ne, *]
@@ -106,7 +106,7 @@ section HomogeneousCore
 homogeneous subsemiring contained in `R`. -/
 def Subsemiring.homogeneousCore : HomogeneousSubsemiring 𝒜 where
   __ := Subsemiring.closure ((↑) '' (((↑) : Subtype (IsHomogeneousElem 𝒜) → A) ⁻¹' R))
-  is_homogeneous' := IsHomogneous.subsemiringClosure_of_isHomogeneousElem fun x ↦ by
+  is_homogeneous' := IsHomogeneous.subsemiringClosure_of_isHomogeneousElem fun x ↦ by
     rintro ⟨x, _, rfl⟩; exact x.2
 
 theorem Subsemiring.homogeneousCore_mono : Monotone (Subsemiring.homogeneousCore 𝒜) :=
