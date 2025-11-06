@@ -239,15 +239,12 @@ lemma iCondIndepSets_singleton_iff (s : ι → Set Ω) (hπ : ∀ i, MeasurableS
     iCondIndepSets m' hm' (fun i ↦ {s i}) μ ↔ ∀ S : Finset ι,
       μ⟦⋂ i ∈ S, s i | m'⟧ =ᵐ[μ] ∏ i ∈ S, (μ⟦s i | m'⟧) := by
   rw [iCondIndepSets_iff]
-  · simp only [Set.mem_singleton_iff]
-    refine ⟨fun h S ↦ h S (fun i _ ↦ rfl), fun h S f hf ↦ ?_⟩
-    filter_upwards [h S] with a ha
-    refine Eq.trans ?_ (ha.trans ?_)
+  · simp_all only [Set.mem_singleton_iff]
+    constructor
+    · intros
+      simp [*]
     · grind
-    · simp_rw [Finset.prod_apply]
-      refine Finset.prod_congr rfl (fun i hi ↦ ?_)
-      rw [hf i hi]
-  · simpa only [Set.mem_singleton_iff, forall_eq]
+  · simpa
 
 theorem condIndepSets_singleton_iff {μ : Measure Ω} [IsFiniteMeasure μ]
     {s t : Set Ω} (hs : MeasurableSet s) (ht : MeasurableSet t) :
