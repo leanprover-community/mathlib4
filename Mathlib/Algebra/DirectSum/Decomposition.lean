@@ -190,7 +190,7 @@ theorem AddSubmonoidClass.IsHomogeneous.mem_iff
   rw [← DirectSum.sum_support_decompose ℳ x]
   exact sum_mem (fun i _ ↦ hx i)
 
-theorem AddSubmonoidClass.IsHomogeneous.ext'
+theorem AddSubmonoidClass.IsHomogeneous.ext
     {ℳ : ι → σ} [Decomposition ℳ] {P : Type*} [SetLike P M] [AddSubmonoidClass P M]
     {p q : P} (hp : SetLike.IsHomogeneous ℳ p) (hq : SetLike.IsHomogeneous ℳ q)
     (hpq : ∀ i, ∀ m ∈ ℳ i, m ∈ p ↔ m ∈ q) :

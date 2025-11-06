@@ -62,7 +62,7 @@ theorem ext {R S : HomogeneousSubsemiring 𝒜}
 
 theorem ext' {R S : HomogeneousSubsemiring 𝒜}
     (h : ∀ i, ∀ a ∈ 𝒜 i, a ∈ R ↔ a ∈ S) : R = S :=
-  AddSubmonoidClass.IsHomogeneous.ext' R.2 S.2 h
+  AddSubmonoidClass.IsHomogeneous.ext R.2 S.2 h
 
 @[simp high]
 theorem mem_iff {R : HomogeneousSubsemiring 𝒜} {a} :
