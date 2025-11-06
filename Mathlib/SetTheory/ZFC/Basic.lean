@@ -336,7 +336,7 @@ theorem mem_insert_of_mem {y z : ZFSet} (x) (h : z ∈ y) : z ∈ insert x y :=
   mem_insert_iff.2 <| Or.inr h
 
 @[simp, norm_cast]
-lemma coe_insert (x y : ZFSet) : (↑(insert x y) : Set ZFSet.{u}) = insert x ↑y := by ext; simp
+lemma coe_insert (x y : ZFSet) : ↑(insert x y) = (insert x ↑y : Set ZFSet) := by ext; simp
 
 @[deprecated (since := "2025-11-05")] alias toSet_insert := coe_insert
 
@@ -582,17 +582,17 @@ instance : SDiff ZFSet :=
 @[deprecated (since := "2025-11-06")] alias mem_diff := mem_sdiff
 
 @[simp, norm_cast]
-lemma coe_union (x y : ZFSet.{u}) : (↑(x ∪ y) : Set ZFSet) = ↑x ∪ ↑y := by ext; simp
+lemma coe_union (x y : ZFSet.{u}) : ↑(x ∪ y) = (↑x ∪ ↑y : Set ZFSet) := by ext; simp
 
 @[deprecated (since := "2025-11-05")] alias toSet_union := coe_union
 
 @[simp, norm_cast]
-lemma coe_inter (x y : ZFSet.{u}) : (↑(x ∩ y) : Set ZFSet) = ↑x ∩ ↑y := by ext; simp
+lemma coe_inter (x y : ZFSet.{u}) : ↑(x ∩ y) = (↑x ∩ ↑y : Set ZFSet) := by ext; simp
 
 @[deprecated (since := "2025-11-05")] alias toSet_inter := coe_inter
 
 @[simp, norm_cast]
-lemma coe_sdiff (x y : ZFSet.{u}) : (↑(x \ y) : Set ZFSet) = ↑x \ ↑y := by ext; simp
+lemma coe_sdiff (x y : ZFSet.{u}) : ↑(x \ y) = (↑x \ ↑y : Set ZFSet) := by ext; simp
 
 @[deprecated (since := "2025-11-05")] alias toSet_sdiff := coe_sdiff
 
@@ -699,7 +699,7 @@ theorem mem_iUnion {f : α → ZFSet.{u}} {x : ZFSet.{u}} : x ∈ ⋃ i, f i ↔
   simp [iUnion]
 
 @[simp, norm_cast]
-lemma coe_iUnion (f : α → ZFSet.{u}) : (↑(⋃ i, f i) : Set ZFSet) = ⋃ i, (f i : Set ZFSet) := by
+lemma coe_iUnion (f : α → ZFSet.{u}) : ↑(⋃ i, f i) = ⋃ i, (f i : Set ZFSet) := by
   ext
   simp
 
