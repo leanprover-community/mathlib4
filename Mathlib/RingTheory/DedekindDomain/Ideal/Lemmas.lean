@@ -1049,7 +1049,9 @@ theorem primesOver_finite : (primesOver p B).Finite := by
 noncomputable instance : Fintype (p.primesOver B) := Set.Finite.fintype (primesOver_finite p B)
 
 theorem primesOver_ncard_ne_zero : (primesOver p B).ncard ≠ 0 := by
-  rcases exists_ideal_liesOver_maximal_of_isIntegral p B with ⟨P, hPm, hp⟩
+  have exists_maximal_ideal : ∃ P : Ideal B, P.IsMaximal ∧ P.LiesOver p :=
+    exists_maximal_ideal_liesOver_of_isIntegral p
+  rcases exists_maximal_ideal with ⟨P, hPm, hp⟩
   exact Set.ncard_ne_zero_of_mem ⟨hPm.isPrime, hp⟩ (primesOver_finite p B)
 
 theorem one_le_primesOver_ncard : 1 ≤ (primesOver p B).ncard :=
