@@ -67,18 +67,18 @@ structure LaxTrans (F G : LaxFunctor B C) where
   /-- Naturality of the lax naturality constraint. -/
   naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
      naturality f ≫ F.map₂ η ▷ app b = app a ◁ G.map₂ η ≫ naturality g := by
-    aesop_cat
+    cat_disch
   /-- Lax unity. -/
   naturality_id (a : B) :
       app a ◁ G.mapId a ≫ naturality (𝟙 a) =
         (ρ_ (app a)).hom ≫ (λ_ (app a)).inv ≫ F.mapId a ▷ app a := by
-    aesop_cat
+    cat_disch
   /-- Lax functoriality. -/
   naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
       app a ◁ G.mapComp f g ≫ naturality (f ≫ g) =
       (α_ _ _ _).inv ≫ naturality f ▷ G.map g ≫ (α_ _ _ _).hom ≫
         F.map f ◁ naturality g ≫ (α_ _ _ _).inv ≫ F.mapComp f g ▷ app c := by
-    aesop_cat
+    cat_disch
 
 attribute [reassoc (attr := simp)] LaxTrans.naturality_naturality LaxTrans.naturality_id
   LaxTrans.naturality_comp
@@ -194,18 +194,18 @@ structure StrongTrans (F G : LaxFunctor B C) where
   naturality {a b : B} (f : a ⟶ b) : app a ≫ G.map f ≅ F.map f ≫ app b
   naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
      (naturality f).hom ≫ F.map₂ η ▷ app b = app a ◁ G.map₂ η ≫ (naturality g).hom := by
-    aesop_cat
+    cat_disch
   /-- Lax unity. -/
   naturality_id (a : B) :
       app a ◁ G.mapId a ≫ (naturality (𝟙 a)).hom =
         (ρ_ (app a)).hom ≫ (λ_ (app a)).inv ≫ F.mapId a ▷ app a := by
-    aesop_cat
+    cat_disch
   /-- Lax functoriality. -/
   naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
       app a ◁ G.mapComp f g ≫ (naturality (f ≫ g)).hom =
       (α_ _ _ _).inv ≫ (naturality f).hom ▷ G.map g ≫ (α_ _ _ _).hom ≫
         F.map f ◁ (naturality g).hom ≫ (α_ _ _ _).inv ≫ F.mapComp f g ▷ app c := by
-    aesop_cat
+    cat_disch
 
 attribute [nolint docBlame] CategoryTheory.Lax.StrongTrans.app
   CategoryTheory.Lax.StrongTrans.naturality
@@ -220,7 +220,7 @@ structure LaxTrans.StrongCore {F G : LaxFunctor B C} (η : F ⟶ G) where
   /-- The underlying 2-isomorphisms of the naturality constraint. -/
   naturality {a b : B} (f : a ⟶ b) : η.app a ≫ G.map f ≅ F.map f ≫ η.app b
   /-- The 2-isomorphisms agree with the underlying 2-morphism of the lax transformation. -/
-  naturality_hom {a b : B} (f : a ⟶ b) : (naturality f).hom = η.naturality f := by aesop_cat
+  naturality_hom {a b : B} (f : a ⟶ b) : (naturality f).hom = η.naturality f := by cat_disch
 
 attribute [simp] LaxTrans.StrongCore.naturality_hom
 
