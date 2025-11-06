@@ -455,7 +455,7 @@ theorem exists_continuous_one_zero_of_isCompact_of_isGδ [RegularSpace X] [Local
   have S x : Summable (fun n ↦ u n * f n x) := Summable.of_nonneg_of_le
       (fun n ↦ mul_nonneg (u_pos n).le (f_range n x).1) (fun n ↦ I n x) u_sum
   refine ⟨⟨g, ?_⟩, ?_, hgmc.mono (subset_compl_comm.mp mt), ?_, fun x ↦ ⟨?_, ?_⟩⟩
-  · apply continuous_tsum (fun n ↦ continuous_const.mul (f n).continuous) u_sum (fun n x ↦ ?_)
+  · apply continuous_tsum (fun n ↦ by fun_prop) u_sum (fun n x ↦ ?_)
     simpa [abs_of_nonneg, (u_pos n).le, (f_range n x).1] using I n x
   · apply Subset.antisymm (fun x hx ↦ by simp [g, fs _ hx, hu]) ?_
     apply compl_subset_compl.1
