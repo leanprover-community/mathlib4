@@ -44,8 +44,7 @@ theorem trapezoidal_integral_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N
   norm_cast
   rw [tsub_tsub, add_comm 1, Nat.cast_add, Nat.cast_sub (mem_range.mp hk), Nat.cast_sub N_nonzero]
   apply congr_arg
-  field_simp
-  ring
+  field
 
 /-- The absolute error of the trapezoidal rule does not change when the endpoints are swapped. -/
 theorem trapezoidal_error_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N) (a b : ℝ) :

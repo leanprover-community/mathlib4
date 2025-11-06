@@ -72,7 +72,7 @@ theorem integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
       cos_pi_div_two, Complex.ofReal_zero, zero_pow (by positivity : n ≠ 0), zero_mul, zero_sub,
       ← integral_neg, ← integral_const_mul]
     refine integral_congr fun x _ => ?_
-    field
+    ring
   · apply Continuous.intervalIntegrable
     exact
       (continuous_const.mul (Complex.continuous_ofReal.comp continuous_sin)).mul
