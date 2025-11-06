@@ -180,7 +180,7 @@ instance isNoetherian_iSup :
   · intro _ _ ih _ _; rw [iSup_option]; infer_instance
 
 /-- If the first and final modules in an exact sequence are Noetherian,
-  then the middle module is also Noetherian. -/
+  then the middle module is also Noetherian. Atiyah-Macdonald 6.3 i) -/
 theorem isNoetherian_of_range_eq_ker [IsNoetherian R M] [IsNoetherian R P]
     (f : M →ₗ[R] N) (g : N →ₗ[R] P) (h : LinearMap.range f = LinearMap.ker g) :
     IsNoetherian R N :=
