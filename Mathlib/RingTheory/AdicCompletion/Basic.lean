@@ -572,7 +572,7 @@ variable (I M)
 
 variable [IsAdicComplete I M]
 
-theorem of_bijective [IsAdicComplete I M] : Function.Bijective (of I M) :=
+theorem of_bijective : Function.Bijective (of I M) :=
   of_bijective_iff.mpr ‹_›
 
 /--
@@ -580,7 +580,7 @@ When `M` is `I`-adic complete, the canonical map from `M` to its `I`-adic comple
 equivalence.
 -/
 @[simps! apply]
-def ofLinearEquiv [IsAdicComplete I M] : M ≃ₗ[R] AdicCompletion I M :=
+def ofLinearEquiv : M ≃ₗ[R] AdicCompletion I M :=
   LinearEquiv.ofBijective (of I M) (of_bijective I M)
 
 variable {M}
@@ -590,7 +590,8 @@ theorem ofLinearEquiv_symm_of (x : M) : (ofLinearEquiv I M).symm (of I M x) = x 
   simp [ofLinearEquiv]
 
 @[simp]
-theorem of_ofLinearEquiv_symm (x : AdicCompletion I M) : of I M ((ofLinearEquiv I M).symm x) = x := by
+theorem of_ofLinearEquiv_symm (x : AdicCompletion I M) :
+    of I M ((ofLinearEquiv I M).symm x) = x := by
   simp [ofLinearEquiv]
 
 end Bijective
