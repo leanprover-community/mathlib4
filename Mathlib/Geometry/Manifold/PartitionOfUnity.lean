@@ -640,9 +640,8 @@ be a family of convex sets. Suppose that for each point `x : M` there exists a n
 `y ∈ U`. Then there exists a $C^n$ smooth function `g : C^n⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x`
 for all `x`.
 
-This is a special case of `exists_contMDiffOn_section_forall_mem_convex_of_local` where `V` is the
-trivial bundle. See also `exists_smooth_forall_mem_convex_of_local` and
-`exists_smooth_forall_mem_convex_of_local_const`. -/
+This is a special case of `exists_contMDiffSection_forall_mem_convex_of_local` where `V` is the
+trivial bundle. See also `exists_smooth_forall_mem_convex_of_local_const`. -/
 theorem exists_contMDiffMap_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
     (Hloc : ∀ x : M, ∃ U ∈ 𝓝 x, ∃ g : M → F, ContMDiffOn I 𝓘(ℝ, F) n g U ∧ ∀ y ∈ U, g y ∈ t y) :
     ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
@@ -660,9 +659,9 @@ alias exists_smooth_forall_mem_convex_of_local := exists_contMDiffMap_forall_mem
 
 /-- Let `M` be a σ-compact Hausdorff finite-dimensional topological manifold. Let `t : M → Set F` be
 a family of convex sets. Suppose that for each point `x : M` there exists a vector `c : F` such that
-for all `y` in a neighborhood of `x` we have `c ∈ t y`. Then there exists a `C^n` smooth function
-`g : C^n⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x` for all `x`. See also
-`exists_contMDiffOn_forall_mem_convex_of_local` and `exists_smooth_forall_mem_convex_of_local`. -/
+for all `y` in a neighborhood of `x` we have `c ∈ t y`. Then there exists a smooth function
+`g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x` for all `x`. See also
+`exists_contMDiffMap_forall_mem_convex_of_local`. -/
 theorem exists_smooth_forall_mem_convex_of_local_const (ht : ∀ x, Convex ℝ (t x))
     (Hloc : ∀ x : M, ∃ c : F, ∀ᶠ y in 𝓝 x, c ∈ t y) : ∃ g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
   exists_contMDiffMap_forall_mem_convex_of_local I ht fun x =>
