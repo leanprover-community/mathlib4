@@ -502,11 +502,12 @@ theorem _root_.Matrix.IsUnit.posDef_star_right_conjugate_iff (hU : IsUnit U) :
 
 end conjugate
 
-open Unitary Matrix
+open Matrix in
 /-- A Hermitian matrix is positive-definite if and only if its eigenvalues are positive. -/
 lemma _root_.Matrix.IsHermitian.posDef_iff_eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : A.IsHermitian) : A.PosDef ↔ ∀ i, 0 < hA.eigenvalues i := by
-  have : IsUnit (hA.eigenvectorUnitary : Matrix n n 𝕜) := toUnits (hA.eigenvectorUnitary) |>.isUnit
+  have : IsUnit (hA.eigenvectorUnitary : Matrix n n 𝕜) :=
+    Unitary.toUnits (hA.eigenvectorUnitary) |>.isUnit
   conv_lhs => rw [hA.spectral_theorem]
   simp [this.posDef_star_right_conjugate_iff, posDef_diagonal_iff]
 
