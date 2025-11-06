@@ -33,10 +33,10 @@ More precisely, we strengthen this result in three ways :
   by a `C^n` function `g : M → E`, with precision prescribed by a continuous positive `ε : M → ℝ`,
   while ensuring that `support g ⊆ support f` and that `g` coincides with `f` on some closed set `S`
   in the neighborhood of which `f` is already `C^n`.
-* `Continuous.exists_msmooth_approx`: a simpler version of the previous result when one does not
+* `Continuous.exists_contMDiff_approx`: a simpler version of the previous result when one does not
   care about prescribing points with `g x = f x`. One still gets `support g ⊆ support f` for free,
   so we put it in the conclusion.
-* `Continuous.exists_contDiff_approx_and_eqOn`, `Continuous.exists_smooth_approx`: specializations
+* `Continuous.exists_contDiff_approx_and_eqOn`, `Continuous.exists_contDiff_approx`: specializations
   of the previous results when `M = E` is a normed space.
 
 ## Implementation notes
@@ -46,7 +46,7 @@ With minor work, we could strenghten the statements in the following ways:
 - the condition `support g ⊆ support f`, which translates to `∀ x, f x = 0 → g x = 0`,
   may be strenghtened to `∀ x, f x = h x → g x = h x` for some arbitrary smooth `h : M → F`.
 
-This file depends on the manifold library, which may be annoying is you only need the normed space
+This file depends on the manifold library, which may be annoying if you only need the normed space
 statements. **Please do not let this refrain you from using them** if they apply naturally in your
 context: if this is too much of a problem, you should complain on Zulip, so that we get more data
 about the need for a non-manifold version of `SmoothPartitionOfUnity`.
@@ -100,18 +100,11 @@ theorem Continuous.exists_contMDiff_approx_and_eqOn (n : ℕ∞)
       · simpa [hx'] using this.and (f_cont.continuousAt.eventually_ne hx')
     exact ⟨_, this, (fun _ ↦ f x), contMDiffOn_const, fun y hy ↦ ⟨hy.1.2, by simp [hy.1.1], hy.2⟩⟩
 
-theorem Continuous.exists_msmooth_approx_and_eqOn
-    (f_cont : Continuous f) (ε_cont : Continuous ε) (ε_pos : ∀ x, 0 < ε x)
-    {S U : Set M} (hS : IsClosed S) (hU : U ∈ 𝓝ˢ S) (hfU : ContMDiffOn I 𝓘(ℝ, F) ∞ f U) :
-    ∃ g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯,
-      (∀ x, dist (g x) (f x) < ε x) ∧ EqOn g f S ∧ support g ⊆ support f :=
-  f_cont.exists_contMDiff_approx_and_eqOn I ⊤ ε_cont ε_pos hS hU hfU
-
-theorem Continuous.exists_msmooth_approx
+theorem Continuous.exists_contMDiff_approx (n : ℕ∞)
     (f_cont : Continuous f) (ε_cont : Continuous ε) (ε_pos : ∀ x, 0 < ε x) :
-    ∃ g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯, (∀ x, dist (g x) (f x) < ε x) ∧ support g ⊆ support f := by
-  rcases f_cont.exists_msmooth_approx_and_eqOn I ε_cont ε_pos isClosed_empty mem_nhdsSet_empty
-    contMDiffOn_empty with ⟨g, g_approx, -, g_supp⟩
+    ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, (∀ x, dist (g x) (f x) < ε x) ∧ support g ⊆ support f := by
+  obtain ⟨g, g_approx, -, g_supp⟩ := f_cont.exists_contMDiff_approx_and_eqOn I n ε_cont ε_pos
+    isClosed_empty mem_nhdsSet_empty contMDiffOn_empty
   exact ⟨g, g_approx, g_supp⟩
 
 end Manifold
@@ -133,19 +126,12 @@ theorem Continuous.exists_contDiff_approx_and_eqOn (n : ℕ∞)
     with ⟨g, g_approx, g_eqOn, g_supp⟩
   exact ⟨g, g.contMDiff.contDiff, g_approx, g_eqOn, g_supp⟩
 
-theorem Continuous.exists_smooth_approx_and_eqOn
-    (f_cont : Continuous f) (ε_cont : Continuous ε) (ε_pos : ∀ x, 0 < ε x)
-    {S U : Set E} (hS : IsClosed S) (hU : U ∈ 𝓝ˢ S) (hfU : ContDiffOn ℝ ∞ f U) :
-    ∃ g : E → F, ContDiff ℝ ∞ g ∧
-      (∀ x, dist (g x) (f x) < ε x) ∧ EqOn g f S ∧ support g ⊆ support f :=
-  f_cont.exists_contDiff_approx_and_eqOn ⊤ ε_cont ε_pos hS hU hfU
-
-theorem Continuous.exists_smooth_approx
+theorem Continuous.exists_contDiff_approx (n : ℕ∞)
     (f_cont : Continuous f) (ε_cont : Continuous ε) (ε_pos : ∀ x, 0 < ε x) :
-    ∃ g : E → F, ContDiff ℝ ∞ g ∧
+    ∃ g : E → F, ContDiff ℝ n g ∧
       (∀ x, dist (g x) (f x) < ε x) ∧ support g ⊆ support f := by
-  rcases f_cont.exists_smooth_approx_and_eqOn ε_cont ε_pos isClosed_empty mem_nhdsSet_empty
-    contDiffOn_empty with ⟨g, g_smooth, g_approx, -, g_supp⟩
-  exact ⟨g, g_smooth, g_approx, g_supp⟩
+  obtain ⟨g, g_contDiff, g_approx, -, g_supp⟩ := f_cont.exists_contDiff_approx_and_eqOn n
+    ε_cont ε_pos isClosed_empty mem_nhdsSet_empty contDiffOn_empty
+  exact ⟨g, g_contDiff, g_approx, g_supp⟩
 
 end NormedSpace
