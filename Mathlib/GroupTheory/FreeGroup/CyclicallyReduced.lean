@@ -204,16 +204,23 @@ theorem reduce_flatten_replicate (h : IsReduced L) (n : ℕ) :
 end reduceCyclically
 
 section IsMulTorsionFree
-variable [DecidableEq α]
 open reduceCyclically
 
-@[to_additive]
+/-- Free groups are torsion-free, i.e., taking powers is injective. Our proof idea is as follows:
+if `x ^ n = y ^ n`, then also `x ^ (2 * n) = y ^ (2 * n)`. We then compare the reduced words
+representing the powers in terms of the cyclic reductions of `x.toWord` and `y.toWord` using
+`reduce_flatten_replicate`. We conclude that the cyclic reductions of `x.toWord` and `y.toWord` must
+have the same length, and in fact they have to agree. -/
+@[to_additive /-- Free additive groups are torsion free, i.e., scalar multiplication by every
+non-zero element `n : ℕ` is injective. See the instance for free groups for an overview over the
+proof. -/]
 instance : IsMulTorsionFree (FreeGroup α) where
   pow_left_injective n hn x y heq := by
     have heq₂ : x ^ (2 * n) = y ^ (2 * n) := by
       apply_fun (· ^ 2) at heq
       rwa [mul_comm, pow_mul, pow_mul]
     have hn₂ : 2 * n ≠ 0 := by omega
+    classical
     apply_fun toWord at heq heq₂
     simp only [toWord_pow, reduce_flatten_replicate, x.isReduced_toWord,
       y.isReduced_toWord, hn, ↓reduceIte, append_assoc, hn₂] at heq heq₂
