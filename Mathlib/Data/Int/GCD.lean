@@ -212,8 +212,8 @@ theorem gcd_dvd_iff {a b : ℤ} {n : ℕ} : gcd a b ∣ n ↔ ∃ x y : ℤ, ↑
     exact ⟨_, _, rfl⟩
   · rintro ⟨x, y, h⟩
     rw [← Int.natCast_dvd_natCast, h]
-    exact Int.dvd_add (dvd_mul_of_dvd_left (gcd_dvd_left ..) _)
-      (dvd_mul_of_dvd_left (gcd_dvd_right ..) y)
+    exact Int.dvd_add (dvd_mul_of_dvd_left (gcd_dvd_left ..))
+      (dvd_mul_of_dvd_left (gcd_dvd_right ..))
 
 theorem gcd_greatest {a b d : ℤ} (hd_pos : 0 ≤ d) (hda : d ∣ a) (hdb : d ∣ b)
     (hd : ∀ e : ℤ, e ∣ a → e ∣ b → e ∣ d) : d = gcd a b :=
