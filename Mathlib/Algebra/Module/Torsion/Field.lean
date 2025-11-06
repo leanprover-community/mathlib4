@@ -20,5 +20,5 @@ open Module
 variable {𝕜 M : Type*} [DivisionSemiring 𝕜] [AddCommMonoid M] [Module 𝕜 M]
 
 /-- Any (semi)vector space is torsion-free. -/
-instance Semifield.to_moduleIsTorsionFree : IsTorsionFree 𝕜 M where
+instance (priority := 100) Semifield.to_moduleIsTorsionFree : IsTorsionFree 𝕜 M where
   isSMulRegular r hr m₁ m₂ hm := by simpa [hr.ne_zero] using congr(r⁻¹ • $hm)
