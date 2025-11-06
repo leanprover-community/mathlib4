@@ -46,6 +46,12 @@ noncomputable def binomialSeries {𝕂 : Type u} [Field 𝕂] [CharZero 𝕂] (�
     FormalMultilinearSeries 𝕂 𝔸 𝔸 :=
   .ofScalars 𝔸 (Ring.choose a ·)
 
+@[simp]
+theorem binomialSeries_apply {𝕂 : Type u} [Field 𝕂] [CharZero 𝕂] (𝔸 : Type v)
+    [Ring 𝔸] [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸] [IsTopologicalRing 𝔸] (a : 𝕂) {n} (v : Fin n → 𝔸) :
+    binomialSeries 𝔸 a n v = Ring.choose a n • (List.ofFn v).prod := by
+  simp [binomialSeries, FormalMultilinearSeries.ofScalars]
+
 theorem binomialSeries_eq_ordinaryHypergeometricSeries {𝕂 : Type u} [Field 𝕂] [CharZero 𝕂]
     {𝔸 : Type v} [Ring 𝔸] [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸] [IsTopologicalRing 𝔸] {a b : 𝕂}
     (h : ∀ (k : ℕ), (k : 𝕂) ≠ -b) :
@@ -139,49 +145,17 @@ theorem one_add_cpow_hasFPowerSeriesAt_zero {a : ℂ} :
     HasFPowerSeriesAt (fun x ↦ (1 + x) ^ a) (binomialSeries ℂ a) 0 :=
   one_add_cpow_hasFPowerSeriesOnBall_zero.hasFPowerSeriesAt
 
+attribute [local simp← ] Complex.ofReal_choose in
+attribute [-simp] FormalMultilinearSeries.apply_eq_prod_smul_coeff in
 theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
     HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ a) (binomialSeries ℝ a) 0 1 := by
-  have h : HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ (a : ℂ)) (binomialSeries ℂ a) 0 1 := by
-    have : binomialSeries ℂ a = (binomialSeries ℂ (a : ℂ)).restrictScalars (𝕜 := ℝ) := by
-      ext n v
-      simp only [binomialSeries, FormalMultilinearSeries.ofScalars,
-        ContinuousMultilinearMap.smul_apply, ContinuousMultilinearMap.mkPiAlgebraFin_apply,
-        Complex.real_smul, FormalMultilinearSeries.restrictScalars,
-        ContinuousMultilinearMap.coe_restrictScalars, smul_eq_mul, mul_eq_mul_right_iff,
-        List.prod_eq_zero_iff, List.mem_ofFn]
-      left
-      norm_cast
-    rw [this]
-    exact one_add_cpow_hasFPowerSeriesOnBall_zero.restrictScalars
-  rw [show 0 = Complex.ofRealCLM 0 by simp] at h
-  apply HasFPowerSeriesOnBall.compContinuousLinearMap at h
-  simp only [Complex.ofRealCLM_enorm, div_one] at h
-  have h' : Set.EqOn ((fun x ↦ (1 + x) ^ (a : ℂ)) ∘ ⇑Complex.ofRealCLM)
-      (fun (x : ℝ) ↦ (Real.rpow (1 + x) a : ℂ)) (EMetric.ball 0 1) := by
-    intro x hx
-    simp only [Function.comp_apply, Complex.ofRealCLM_apply, Real.rpow_eq_pow]
-    rw [← Complex.ofReal_one, ← Complex.ofReal_add, ← Complex.ofReal_cpow]
-    rw [← ENNReal.ofReal_one, Metric.emetric_ball] at hx
-    simp only [Metric.mem_ball, dist_zero_right, Real.norm_eq_abs] at hx
-    apply neg_lt_of_abs_lt at hx
-    linarith
-  replace h := ContinuousLinearMap.comp_hasFPowerSeriesOnBall Complex.reCLM (h.congr h')
-  conv at h => arg 1; eta_expand; intro x; simp
-  convert h
-  ext n
-  simp only [FormalMultilinearSeries.apply_eq_prod_smul_coeff, smul_eq_mul,
-    ContinuousLinearMap.compFormalMultilinearSeries_apply,
-    ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply, Complex.real_smul,
-    Complex.ofReal_prod, Complex.reCLM_apply]
-  conv =>
-    rhs; arg 1; arg 2
-    unfold FormalMultilinearSeries.coeff
-    rw [FormalMultilinearSeries.compContinuousLinearMap_apply]
-    simp only [binomialSeries, FormalMultilinearSeries.ofScalars, Pi.comp_one,
-      Complex.ofRealCLM_apply, Complex.ofReal_one, Function.const_one,
-      ContinuousMultilinearMap.smul_apply, ContinuousMultilinearMap.mkPiAlgebraFin_apply,
-      Fin.prod_ofFn, Pi.one_apply, Finset.prod_const_one, Complex.real_smul, mul_one]
-  simp [Complex.ofReal_re, binomialSeries]
+  have : binomialSeries ℂ a = (binomialSeries ℂ (a : ℂ)).restrictScalars (𝕜 := ℝ) := by aesop
+  have : HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ (a : ℂ)) (binomialSeries ℂ a) (.ofRealCLM 0) 1 :=
+    Complex.ofRealCLM.map_zero ▸ this ▸ one_add_cpow_hasFPowerSeriesOnBall_zero.restrictScalars
+  convert (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap).congr ?_
+  · ext; simp [Function.comp_def]
+  · simp
+  · intro x hx; simp_all; norm_cast
 
 theorem one_add_rpow_hasFPowerSeriesAt_zero {a : ℝ} :
     HasFPowerSeriesAt (fun x ↦ (1 + x) ^ a) (binomialSeries ℝ a) 0 :=
