@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Data.List.FinRange
 import Mathlib.Data.List.Perm.Basic
 import Mathlib.Data.List.Lex
 import Mathlib.Data.List.Induction
+import Mathlib.Data.List.Nodup
+import Mathlib.Data.Prod.Basic
 
 /-! # sublists
 
@@ -349,7 +350,7 @@ theorem sublists'_map (f : α → β) : ∀ (l : List α),
   | a::l => by simp [map_cons, sublists'_cons, sublists'_map f l, Function.comp]
 
 theorem sublists_perm_sublists' (l : List α) : sublists l ~ sublists' l := by
-  rw [← finRange_map_get l, sublists_map, sublists'_map]
+  rw [← map_get_finRange l, sublists_map, sublists'_map]
   apply Perm.map
   apply (perm_ext_iff_of_nodup _ _).mpr
   · simp
