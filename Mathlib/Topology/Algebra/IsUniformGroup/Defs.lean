@@ -11,16 +11,16 @@ import Mathlib.Topology.Algebra.Group.Basic
 
 Given a topological group `G`, one can naturally build two uniform structures
 (the "left" and "right" ones) on `G` inducing its topology.
-This file defines typeclasses for groups equipped with either of these uniform strucure, as well
+This file defines typeclasses for groups equipped with either of these uniform strucures, as well
 as a separate typeclass for the (very common) case where the given uniform structure
 coincides with **both** the left and right uniform structures.
 
 ## Main declarations
 
-* `IsRightUniformGroup` and `IsRightUniformAddGroup`: Multiplicative and topological additive groups
+* `IsRightUniformGroup` and `IsRightUniformAddGroup`: Multiplicative and additive topological groups
   endowed with the associated right uniform structure. This means that two points `x` and `y`
   are close precisely when `y * x⁻¹` is close to `1` / `y + (-x)` close to `0`.
-* `IsLeftUniformGroup` and `IsLeftUniformAddGroup`: Multiplicative and topological additive groups
+* `IsLeftUniformGroup` and `IsLeftUniformAddGroup`: Multiplicative and additive topological groups
   endowed with the associated left uniform structure. This means that two points `x` and `y`
   are close precisely when `x⁻¹ * y` is close to `1` / `(-x) + y` close to `0`.
 * `IsUniformGroup` and `IsUniformAddGroup`: Multiplicative and additive uniform groups,
@@ -100,53 +100,16 @@ class IsLeftUniformGroup (G : Type*) [UniformSpace G] [Group G] : Prop
   uniformity_eq :
     𝓤 G = comap (fun x : G × G ↦ x.1⁻¹ * x.2) (𝓝 1)
 
-/-- `IsLeftOrRightUniformAddGroup G` means that we have either `IsRightUniformAddGroup G`
-or `IsLeftUniformAddGroup G`. This is a purely utilitary typeclass to avoid duplicating
-API for results common to the left and the right uniformity.
-
-For example, `UniformContinuous.add_const` will eventually hold in this generality. -/
-@[mk_iff]
-class inductive IsLeftOrRightUniformAddGroup (G : Type*) [UniformSpace G] [AddGroup G] : Prop
-| right [IsRightUniformAddGroup G] : IsLeftOrRightUniformAddGroup G
-| left [IsLeftUniformAddGroup G] : IsLeftOrRightUniformAddGroup G
-
-/-- `IsLeftOrRightUniformGroup G` means that we have either `IsRightUniformGroup G`
-or `IsRightUniformGroup G`. This is a purely utilitary typeclass to avoid duplicating
-API for results common to the left and the right uniformity.
-
-For example, `UniformContinuous.mul_const` will eventually hold in this generality. -/
-@[to_additive, mk_iff]
-class inductive IsLeftOrRightUniformGroup (G : Type*) [UniformSpace G] [Group G] : Prop
-| right [IsRightUniformGroup G] : IsLeftOrRightUniformGroup G
-| left [IsLeftUniformGroup G] : IsLeftOrRightUniformGroup G
-
 attribute [instance 10] IsRightUniformAddGroup.toIsTopologicalAddGroup
 attribute [instance 10] IsRightUniformGroup.toIsTopologicalGroup
 attribute [instance 10] IsLeftUniformAddGroup.toIsTopologicalAddGroup
 attribute [instance 10] IsLeftUniformGroup.toIsTopologicalGroup
 
-attribute [instance] IsLeftOrRightUniformAddGroup.left
-attribute [instance] IsLeftOrRightUniformAddGroup.right
-attribute [instance] IsLeftOrRightUniformGroup.left
-attribute [instance] IsLeftOrRightUniformGroup.right
-
-variable [UniformSpace G] [Group G] [IsLeftOrRightUniformGroup G]
 variable [UniformSpace Gₗ] [UniformSpace Gᵣ] [Group Gₗ] [Group Gᵣ]
 variable [UniformSpace Hₗ] [UniformSpace Hᵣ] [Group Hₗ] [Group Hᵣ]
 variable [IsLeftUniformGroup Gₗ] [IsRightUniformGroup Gᵣ]
 variable [IsLeftUniformGroup Hₗ] [IsRightUniformGroup Hᵣ]
 variable [UniformSpace X]
-
-/-- Note: We give this instance the lowest priority as any concrete type satisfying it will
-have an instance of either `IsLeftUniformGroup` or `IsRightUniformGroup`.
-
-In other words, this instance only appears in lemmas assuming `IsLeftOrRightUniformGroup G`. -/
-@[to_additive /-- Note: We give this instance the lowest priority as any concrete type satisfying
-it will have an instance of either `IsLeftUniformAddGroup` or `IsRightUniformAddGroup`.
-
-In other words, this instance only appears in lemmas assuming `IsLeftOrRightUniformAddGroup G`. -/]
-instance (priority := 0) : IsTopologicalGroup G := by
-  rcases ‹IsLeftOrRightUniformGroup G› <;> infer_instance
 
 variable (Gₗ Gᵣ)
 

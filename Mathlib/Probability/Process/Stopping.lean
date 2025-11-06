@@ -617,21 +617,8 @@ theorem measurableSet_inter_le [TopologicalSpace ι] [SecondCountableTopology ι
   have h_eq i : s ∩ {ω | τ ω ≤ π ω} ∩ {ω | min (τ ω) (π ω) ≤ i} =
       s ∩ {ω | τ ω ≤ i} ∩ {ω | min (τ ω) (π ω) ≤ i} ∩
         {ω | min (τ ω) i ≤ min (min (τ ω) (π ω)) i} := by
-    ext1 ω
-    simp only [min_le_iff, Set.mem_inter_iff, Set.mem_setOf_eq, le_min_iff, le_refl, true_and,
-      true_or]
-    by_cases hτi : τ ω ≤ i
-    · simp only [hτi, true_or, and_true, and_congr_right_iff]
-      intro
-      constructor <;> intro h
-      · exact Or.inl h
-      · rcases h with h | h
-        · exact h
-        · exact hτi.trans h
-    simp only [hτi, false_or, and_false, false_and, iff_false, not_and, not_le, and_imp]
-    refine fun _ hτ_le_π => lt_of_lt_of_le ?_ hτ_le_π
-    rw [← not_le]
-    exact hτi
+    ext ω
+    by_cases hτi : τ ω ≤ i <;> grind
   simp_rw [h_eq]
   refine ⟨hs.1.inter (measurableSet_le hτ.measurable' hπ.measurable'), fun i ↦ ?_⟩
   refine ((hs.2 i).inter ((hτ.min hπ) i)).inter ?_

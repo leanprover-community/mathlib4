@@ -824,6 +824,23 @@ theorem nodup_tail_support_reverse {u : V} {p : G.Walk u u} :
     ← getVert_eq_support_getElem? _ (by rw [Walk.length_support]; cutsat)]
   aesop
 
+theorem edges_eq_zipWith_support {u v : V} {p : G.Walk u v} :
+    p.edges = List.zipWith (s(·, ·)) p.support p.support.tail := by
+  induction p with
+  | nil => simp
+  | cons _ p' ih => cases p' <;> simp [edges_cons, ih]
+
+theorem darts_getElem_eq_getVert {u v : V} {p : G.Walk u v} (n : ℕ) (h : n < p.darts.length) :
+    p.darts[n] = ⟨⟨p.getVert n, p.getVert (n + 1)⟩, p.adj_getVert_succ (p.length_darts ▸ h)⟩ := by
+  rw [p.length_darts] at h
+  ext
+  · simp only [p.getVert_eq_support_getElem (le_of_lt h)]
+    by_cases h' : n = 0
+    · simp [h', List.getElem_zero]
+    · have := p.isChain_dartAdj_darts.getElem (n - 1) (by grind)
+      grind [DartAdj, =_ cons_map_snd_darts]
+  · simp [p.getVert_eq_support_getElem h, ← p.cons_map_snd_darts]
+
 theorem edges_injective {u v : V} : Function.Injective (Walk.edges : G.Walk u v → List (Sym2 V))
   | .nil, .nil, _ => rfl
   | .nil, .cons _ _, h => by simp at h
@@ -1103,6 +1120,15 @@ lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
 lemma edge_lastDart (p : G.Walk v w) (hp : ¬ p.Nil) :
     (p.lastDart hp).edge = s(p.penultimate, w) := rfl
 
+theorem firstDart_eq {p : G.Walk v w} (h₁ : ¬ p.Nil) (h₂ : 0 < p.darts.length) :
+    p.firstDart h₁ = p.darts[0] := by
+  simp [Dart.ext_iff, firstDart_toProd, darts_getElem_eq_getVert]
+
+theorem lastDart_eq {p : G.Walk v w} (h₁ : ¬ p.Nil) (h₂ : 0 < p.darts.length) :
+    p.lastDart h₁ = p.darts[p.darts.length - 1] := by
+  simp (disch := grind) [Dart.ext_iff, lastDart_toProd, darts_getElem_eq_getVert,
+    p.getVert_of_length_le]
+
 lemma cons_tail_eq (p : G.Walk u v) (hp : ¬ p.Nil) :
     cons (p.adj_snd hp) p.tail = p := by
   cases p with
@@ -1136,16 +1162,11 @@ lemma not_nil_of_tail_not_nil {p : G.Walk v w} (hp : ¬ p.tail.Nil) : ¬ p.Nil :
     (p.copy hu hv).Nil = p.Nil := by
   subst_vars; rfl
 
-@[simp] lemma support_tail (p : G.Walk u u) (hp : ¬ p.Nil) :
+lemma support_tail_of_not_nil (p : G.Walk u v) (hp : ¬ p.Nil) :
     p.tail.support = p.support.tail := by
   rw [← cons_support_tail p hp, List.tail_cons]
 
-lemma support_tail_of_not_nil (p : G.Walk u v) (hnp : ¬p.Nil) :
-    p.tail.support = p.support.tail := by
-  match p with
-  | .nil => simp only [nil_nil, not_true_eq_false] at hnp
-  | .cons h q =>
-    simp only [tail_cons, getVert_cons_succ, support_copy, support_cons, List.tail_cons]
+@[deprecated (since := "2025-08-26")] alias support_tail := support_tail_of_not_nil
 
 /-- Given a set `S` and a walk `w` from `u` to `v` such that `u ∈ S` but `v ∉ S`,
 there exists a dart in the walk whose start is in `S` but whose end is not. -/
@@ -1311,9 +1332,21 @@ theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f)
       apply ih
       simpa using h.2
 
+section mapLe
+
+variable {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} (p : G.Walk u v)
+
 /-- The specialization of `SimpleGraph.Walk.map` for mapping walks to supergraphs. -/
-abbrev mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} (p : G.Walk u v) : G'.Walk u v :=
+abbrev mapLe : G'.Walk u v :=
   p.map (.ofLE h)
+
+lemma support_mapLe_eq_support : (p.mapLe h).support = p.support := by simp
+
+lemma edges_mapLe_eq_edges : (p.mapLe h).edges = p.edges := by simp
+
+lemma edgeSet_mapLe_eq_edgeSet : (p.mapLe h).edgeSet = p.edgeSet := by simp
+
+end mapLe
 
 /-! ### Transferring between graphs -/
 
@@ -1379,7 +1412,7 @@ theorem reverse_transfer (hp) :
 
 /-! ### Inducing a walk -/
 
-variable {s : Set V}
+variable {s s' : Set V}
 
 variable (s) in
 /-- A walk in `G` which is fully contained in a set `s` of vertices lifts to a walk of `G[s]`. -/
@@ -1403,6 +1436,11 @@ protected def induce {u v : V} :
     ∀ (w : G.Walk u v) (hw), (w.induce s hw).map (Embedding.induce _).toHom = w
   | .nil, hw => rfl
   | .cons (v := u') huu' w, hw => by simp [map_induce]
+
+lemma map_induce_induceHomOfLE (hs : s ⊆ s') {u v : V} : ∀ (w : G.Walk u v) (hw),
+    (w.induce s hw).map (G.induceHomOfLE hs).toHom = w.induce s' (subset_trans hw hs)
+  | .nil, hw => rfl
+  | .cons (v := u') huu' w, hw => by simp [map_induce_induceHomOfLE]
 
 end Walk
 
@@ -1544,3 +1582,5 @@ lemma isSubwalk_antisymm {u v} {p₁ p₂ : G.Walk u v} (h₁ : p₁.IsSubwalk p
 end Walk
 
 end SimpleGraph
+
+set_option linter.style.longFile 1700
