@@ -381,7 +381,6 @@ lemma _root_.contMDiffAt_localFrame_of_mem
     CMDiffAt n (T% (b.localFrame e i)) x :=
   (b.localFrame_isLocalFrameOn_baseSet I n e).contMDiffAt e.open_baseSet hx _
 
-@[simp]
 lemma localFrame_apply_of_mem_baseSet
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) {i : ι} (hx : x ∈ e.baseSet) :
@@ -397,7 +396,8 @@ lemma localFrame_apply_of_notMem
 lemma localFrame_toBasis_at_coe
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) (i : ι) (hx : x ∈ e.baseSet) :
-    b.localFrame_toBasis_at e hx i = b.localFrame e i x := by simp [hx]
+    b.localFrame_toBasis_at e hx i = b.localFrame e i x := by
+  simp [hx, localFrame_apply_of_mem_baseSet]
 
 variable [ContMDiffVectorBundle 1 F V I]
 
@@ -417,7 +417,6 @@ variable {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V �
 
 omit [IsManifold I 0 M] in
 variable (e b) in
-@[simp]
 lemma localFrame_coeff_apply_of_notMem_baseSet (hx : x ∉ e.baseSet) (s : Π x : M, V x) (i : ι) :
     b.localFrame_coeff I e i s x = 0 := by
   simpa [localFrame_coeff] using
@@ -425,7 +424,6 @@ lemma localFrame_coeff_apply_of_notMem_baseSet (hx : x ∉ e.baseSet) (s : Π x 
 
 omit [IsManifold I 0 M] in
 variable (e b) in
-@[simp]
 lemma localFrame_coeff_apply_of_mem_baseSet (hx : x ∈ e.baseSet) (s : Π x : M, V x) (i : ι) :
     b.localFrame_coeff I e i s x = (b.localFrame_toBasis_at e hx).repr (s x) i := by
   have ilf := b.localFrame_isLocalFrameOn_baseSet I 1 e
@@ -689,7 +687,7 @@ variable (b e) in
 @[simp]
 lemma localExtensionOn_apply_self (hx : x ∈ e.baseSet) (v : V x) :
     (localExtensionOn b e v) x = v := by
-  simp [localExtensionOn, hx]
+  simp [localExtensionOn, hx, b.localFrame_apply_of_mem_baseSet e]
 
 omit [IsManifold I 0 M] in
 variable (b) in
@@ -698,7 +696,8 @@ lemma localExtensionOn_localFrame_coeff [ContMDiffVectorBundle 1 F V I]
     (hx : x ∈ e.baseSet) (hx' : x' ∈ e.baseSet) (v : V x) (i : ι) :
     b.localFrame_coeff I e i (localExtensionOn b e v) x' =
       b.localFrame_coeff I e i (localExtensionOn b e v) x := by
-  simp [localExtensionOn, hx, hx']
+  simp [localExtensionOn, b.localFrame_apply_of_mem_baseSet e,
+    b.localFrame_coeff_apply_of_mem_baseSet e, hx, hx']
 
 -- By construction, localExtensionOn is a linear map.
 
