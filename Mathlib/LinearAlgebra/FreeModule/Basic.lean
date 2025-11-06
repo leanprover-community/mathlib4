@@ -166,7 +166,7 @@ lemma of_subsingleton' [Subsingleton R] : Module.Free R N :=
 variable {M} in
 /-- This is a linear map version of `SeparatingDual.exists_ne_zero` in a vector space. -/
 theorem exists_dual_ne_zero {x : M} (hx : x ≠ 0) :
-    ∃ f : Module.Dual R M, f x ≠ 0 :=
+    ∃ f : Dual R M, f x ≠ 0 :=
   let b := chooseBasis R M
   have hb : b.repr x ≠ 0 := by simpa
   have ⟨i, hi⟩ := not_forall.mp fun h ↦ hb <| Finsupp.ext h
