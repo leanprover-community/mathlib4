@@ -449,4 +449,3 @@ instance Module.Injective.pi
     refine ⟨LinearMap.pi l, fun x ↦ ?_⟩
     ext i
     exact DFunLike.congr_fun (hl i) x⟩
-
