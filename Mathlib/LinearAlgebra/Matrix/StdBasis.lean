@@ -14,7 +14,9 @@ import Mathlib.LinearAlgebra.StdBasis
 * `Basis.matrix`: extend a basis on `M` to the standard basis on `Matrix n m M`
 -/
 
-namespace Basis
+open Module
+
+namespace Module.Basis
 variable {ι R M : Type*} (m n : Type*)
 variable [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid M] [Module R M]
 
@@ -32,7 +34,7 @@ theorem matrix_apply (b : Basis ι R M) (i : m) (j : n) (k : ι) [DecidableEq m]
     b.matrix m n (i, j, k) = Matrix.single i j (b k) := by
   simp [Basis.matrix, Matrix.single_eq_of_single_single]
 
-end Basis
+end Module.Basis
 
 namespace Matrix
 

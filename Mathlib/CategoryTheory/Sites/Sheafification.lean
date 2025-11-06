@@ -34,9 +34,9 @@ abbrev HasWeakSheafify : Prop := (sheafToPresheaf J A).IsRightAdjoint
 
 /--
 `HasSheafify` means that the inclusion functor from sheaves to presheaves admits a left exact
-left adjiont (sheafification).
+left adjoint (sheafification).
 
-Given a finite limit preserving functor `F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A` and an adjunction
+Given a functor, preserving finite limits, `F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A` and an adjunction
 `adj : F ⊣ sheafToPresheaf J A`, use `HasSheafify.mk'` to construct a `HasSheafify` instance.
 -/
 class HasSheafify : Prop where
@@ -233,6 +233,6 @@ variable (J D)
 @[simps!]
 noncomputable def sheafificationNatIso :
     𝟭 (Sheaf J D) ≅ sheafToPresheaf J D ⋙ presheafToSheaf J D :=
-  NatIso.ofComponents (fun P => sheafificationIso P) (by aesop_cat)
+  NatIso.ofComponents (fun P => sheafificationIso P) (by cat_disch)
 
 end CategoryTheory

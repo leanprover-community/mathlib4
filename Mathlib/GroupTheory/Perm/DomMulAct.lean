@@ -77,7 +77,6 @@ def stabilizerMulEquiv : (stabilizer (Perm α)ᵈᵐᵃ f)ᵐᵒᵖ ≃* (∀ i,
     ext a
     rw [smul_apply, symm_apply_apply, Perm.smul_def]
     apply comp_stabilizerEquiv_invFun⟩
-  left_inv _ := rfl
   right_inv g := by ext i a; apply stabilizerEquiv_invFun_eq
   map_mul' _ _ := rfl
 
@@ -109,14 +108,14 @@ theorem stabilizer_ncard [Finite α] [Fintype ι] :
     Set.ncard {g : Perm α | f ∘ g = f} = ∏ i, (Set.ncard {a | f a = i})! := by
   classical
   cases nonempty_fintype α
-  simp only [← Set.Nat.card_coe_set_eq, Set.coe_setOf, card_eq_fintype_card]
+  simp only [← Nat.card_coe_set_eq, Set.coe_setOf, card_eq_fintype_card]
   exact stabilizer_card f
 
 variable [DecidableEq α] [DecidableEq ι]
 
 /-- The cardinality of the type of permutations preserving a function
   (without the finiteness assumption on target) -/
-theorem stabilizer_card':
+theorem stabilizer_card' :
     Fintype.card {g : Perm α // f ∘ g = f} =
       ∏ i ∈ Finset.univ.image f, (Fintype.card ({a // f a = i}))! := by
   set φ : α → Finset.univ.image f :=
@@ -126,11 +125,7 @@ theorem stabilizer_card':
     apply Finset.prod_bij (fun g _ => g.val)
     · exact fun g _ => Finset.coe_mem g
     · exact fun g _ g' _ =>  SetCoe.ext
-    · exact fun g hg => by
-        rw [Finset.mem_image] at hg
-        obtain ⟨a, _, rfl⟩ := hg
-        use ⟨f a, by simp only [Finset.mem_image, Finset.mem_univ, true_and, exists_apply_eq_apply]⟩
-        simp only [Finset.univ_eq_attach, Finset.mem_attach, exists_const]
+    · simp
     · intro i _
       apply congr_arg
       apply Fintype.card_congr

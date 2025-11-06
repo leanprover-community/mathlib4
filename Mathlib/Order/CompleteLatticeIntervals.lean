@@ -53,7 +53,7 @@ theorem subset_sSup_def [Inhabited s] :
 
 theorem subset_sSup_of_within [Inhabited s] {t : Set s}
     (h' : t.Nonempty) (h'' : BddAbove t) (h : sSup ((↑) '' t : Set α) ∈ s) :
-    sSup ((↑) '' t : Set α) = (@sSup s _ t : α) := by simp [dif_pos, h, h', h'']
+    sSup ((↑) '' t : Set α) = (@sSup s _ t : α) := by simp [h, h', h'']
 
 theorem subset_sSup_emptyset [Inhabited s] :
     sSup (∅ : Set s) = default := by
@@ -92,7 +92,7 @@ theorem subset_sInf_def [Inhabited s] :
 
 theorem subset_sInf_of_within [Inhabited s] {t : Set s}
     (h' : t.Nonempty) (h'' : BddBelow t) (h : sInf ((↑) '' t : Set α) ∈ s) :
-    sInf ((↑) '' t : Set α) = (@sInf s _ t : α) := by simp [dif_pos, h, h', h'']
+    sInf ((↑) '' t : Set α) = (@sInf s _ t : α) := by simp [h, h', h'']
 
 theorem subset_sInf_emptyset [Inhabited s] :
     sInf (∅ : Set s) = default := by
@@ -209,7 +209,7 @@ noncomputable instance Set.Icc.completeLattice [ConditionallyCompleteLattice α]
 /-- Complete linear order structure on `Set.Icc` -/
 noncomputable instance [ConditionallyCompleteLinearOrder α] {a b : α} [Fact (a ≤ b)] :
     CompleteLinearOrder (Set.Icc a b) :=
-  { Set.Icc.completeLattice, Subtype.instLinearOrder _, LinearOrder.toBiheytingAlgebra with }
+  { Set.Icc.completeLattice, Subtype.instLinearOrder _, LinearOrder.toBiheytingAlgebra _ with }
 
 lemma Set.Icc.coe_sSup [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
     {S : Set (Set.Icc a b)} (hS : S.Nonempty) : have : Fact (a ≤ b) := ⟨h⟩

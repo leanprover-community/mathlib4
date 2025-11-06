@@ -15,7 +15,7 @@ import Mathlib.Tactic.Subsingleton
 # Units (i.e., invertible elements) of a monoid
 
 An element of a `Monoid` is a unit if it has a two-sided inverse.
-This file contains the basic lemmas on units in a monoid, especially focussing on singleton types
+This file contains the basic lemmas on units in a monoid, especially focusing on singleton types
 and unique types.
 
 ## TODO
@@ -139,23 +139,15 @@ variable [Monoid α]
 theorem divp_left_inj (u : αˣ) {a b : α} : a /ₚ u = b /ₚ u ↔ a = b :=
   Units.mul_left_inj _
 
--- to match the mathlib3 behavior,
--- this needs to have higher simp priority than eq_divp_iff_mul_eq.
-@[field_simps 1010]
 theorem divp_eq_iff_mul_eq {x : α} {u : αˣ} {y : α} : x /ₚ u = y ↔ y * u = x :=
   u.mul_left_inj.symm.trans <| by rw [divp_mul_cancel]; exact ⟨Eq.symm, Eq.symm⟩
 
-@[field_simps]
 theorem eq_divp_iff_mul_eq {x : α} {u : αˣ} {y : α} : x = y /ₚ u ↔ x * u = y := by
   rw [eq_comm, divp_eq_iff_mul_eq]
 
 theorem divp_eq_one_iff_eq {a : α} {u : αˣ} : a /ₚ u = 1 ↔ a = u :=
   (Units.mul_left_inj u).symm.trans <| by rw [divp_mul_cancel, one_mul]
 
-/-- Used for `field_simp` to deal with inverses of units. This form of the lemma
-is essential since `field_simp` likes to use `inv_eq_one_div` to rewrite
-`↑u⁻¹ = ↑(1 / u)`. -/
-@[field_simps]
 theorem inv_eq_one_divp' (u : αˣ) : ((1 / u : αˣ) : α) = 1 /ₚ u := by
   rw [one_div, one_divp]
 
@@ -231,19 +223,14 @@ section CommMonoid
 
 variable [CommMonoid α]
 
-@[field_simps]
 theorem divp_mul_eq_mul_divp (x y : α) (u : αˣ) : x /ₚ u * y = x * y /ₚ u := by
   rw [divp, divp, mul_right_comm]
 
--- Theoretically redundant as `field_simp` lemma.
-@[field_simps]
 theorem divp_eq_divp_iff {x y : α} {ux uy : αˣ} : x /ₚ ux = y /ₚ uy ↔ x * uy = y * ux := by
   rw [divp_eq_iff_mul_eq, divp_mul_eq_mul_divp, divp_eq_iff_mul_eq]
 
--- Theoretically redundant as `field_simp` lemma.
-@[field_simps]
 theorem divp_mul_divp (x y : α) (ux uy : αˣ) : x /ₚ ux * (y /ₚ uy) = x * y /ₚ (ux * uy) := by
-  rw [divp_mul_eq_mul_divp, divp_assoc', divp_divp_eq_divp_mul]
+  rw [divp_mul_eq_mul_divp, ← divp_assoc, divp_divp_eq_divp_mul]
 
 variable [Subsingleton αˣ] {a b : α}
 
@@ -283,7 +270,7 @@ instance [Monoid M] : CanLift M Mˣ Units.val IsUnit :=
   { prf := fun _ ↦ id }
 
 /-- A subsingleton `Monoid` has a unique unit. -/
-@[to_additive "A subsingleton `AddMonoid` has a unique additive unit."]
+@[to_additive /-- A subsingleton `AddMonoid` has a unique additive unit. -/]
 instance [Monoid M] [Subsingleton M] : Unique Mˣ where
   uniq _ := Units.val_eq_one.mp (by subsingleton)
 

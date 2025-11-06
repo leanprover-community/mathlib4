@@ -74,7 +74,7 @@ theorem midpoint_fixed {x y : PE} :
   have : c ≤ c / 2 := by
     apply ciSup_le
     rintro ⟨e, he⟩
-    simp only [Subtype.coe_mk, le_div_iff₀' (zero_lt_two' ℝ), ← hf_dist]
+    simp only [le_div_iff₀' (zero_lt_two' ℝ), ← hf_dist]
     exact le_ciSup h_bdd ⟨f e, hf_maps_to he⟩
   replace : c ≤ 0 := by linarith
   refine fun e hx hy => dist_le_zero.1 (le_trans ?_ this)
@@ -89,7 +89,7 @@ theorem map_midpoint (f : PE ≃ᵢ PF) (x y : PE) : f (midpoint ℝ x y) = midp
   have hy : e y = y := by simp [e]
   have hm := e.midpoint_fixed hx hy
   simp only [e, trans_apply] at hm
-  rwa [← eq_symm_apply, toIsometryEquiv_symm, pointReflection_symm, coe_toIsometryEquiv,
+  rwa [← eq_symm_apply, ← toIsometryEquiv_symm, pointReflection_symm, coe_toIsometryEquiv,
     coe_toIsometryEquiv, pointReflection_self, symm_apply_eq, @pointReflection_fixed_iff] at hm
 
 /-!

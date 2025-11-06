@@ -12,17 +12,17 @@ This file implements diffeomorphisms.
 
 ## Definitions
 
-* `Diffeomorph I I' M M' n`:  `n`-times continuously differentiable diffeomorphism between
+* `Diffeomorph I I' M M' n`: `n`-times continuously differentiable diffeomorphism between
   `M` and `M'` with respect to I and I'; we do not introduce a separate definition for the case
-  `n = ∞`; we use notation instead.
+  `n = ∞` or `n = ω`; we use notation instead.
 * `Diffeomorph.toHomeomorph`: reinterpret a diffeomorphism as a homeomorphism.
 * `ContinuousLinearEquiv.toDiffeomorph`: reinterpret a continuous equivalence as
   a diffeomorphism.
-* `ModelWithCorners.transDiffeomorph`: compose a given `ModelWithCorners` with a diffeomorphism
-  between the old and the new target spaces. Useful, e.g, to turn any finite dimensional manifold
-  into a manifold modelled on a Euclidean space.
-* `Diffeomorph.toTransDiffeomorph`: the identity diffeomorphism between `M` with model `I` and `M`
-  with model `I.trans_diffeomorph e`.
+* `ModelWithCorners.transContinuousLinearEquiv`: compose a given `ModelWithCorners` with a
+  continuous linear equiv between the old and the new target spaces. Useful, e.g, to turn any
+  finite-dimensional manifold into a manifold modelled on a Euclidean space.
+* `Diffeomorph.toTransContinuousLinearEquiv`: the identity diffeomorphism between `M` with
+  model `I` and `M` with model `I.transContinuousLinearEquiv e`.
 
 This file also provides diffeomorphisms related to products and disjoint unions.
 * `Diffeomorph.prodCongr`: the product of two diffeomorphisms
@@ -33,7 +33,7 @@ This file also provides diffeomorphisms related to products and disjoint unions.
 * `Diffeomorph.sumAssoc`: `(M ⊕ N) ⊕ P` is diffeomorphic to `M ⊕ (N ⊕ P)`
 * `Diffeomorph.sumEmpty`: `M ⊕ ∅` is diffeomorphic to `M`
 
-## Notations
+## Notation
 
 * `M ≃ₘ^n⟮I, I'⟯ M'`  := `Diffeomorph I J M N n`
 * `M ≃ₘ⟮I, I'⟯ M'`    := `Diffeomorph I J M N ∞`
@@ -86,6 +86,7 @@ scoped[Manifold] notation M " ≃ₘ^" n:1000 "⟮" I ", " J "⟯ " N => Diffeom
 /-- Infinitely differentiable diffeomorphism between `M` and `M'` with respect to `I` and `I'`. -/
 scoped[Manifold] notation M " ≃ₘ⟮" I ", " J "⟯ " N => Diffeomorph I J M N ∞
 
+-- Porting note: this notation is broken because `n[𝕜]` gets parsed as `getElem`
 /-- `n`-times continuously differentiable diffeomorphism between `E` and `E'`. -/
 scoped[Manifold] notation E " ≃ₘ^" n:1000 "[" 𝕜 "] " E' => Diffeomorph 𝓘(𝕜, E) 𝓘(𝕜, E') E E' n
 
@@ -125,11 +126,8 @@ protected theorem contMDiffAt (h : M ≃ₘ^n⟮I, I'⟯ M') {x} : ContMDiffAt I
 protected theorem contMDiffWithinAt (h : M ≃ₘ^n⟮I, I'⟯ M') {s x} : ContMDiffWithinAt I I' n h s x :=
   h.contMDiffAt.contMDiffWithinAt
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: should use `E ≃ₘ^n[𝕜] F` notation
 protected theorem contDiff (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E') : ContDiff 𝕜 n h :=
   h.contMDiff.contDiff
-
-@[deprecated (since := "2024-11-21")] alias smooth := Diffeomorph.contDiff
 
 protected theorem mdifferentiable (h : M ≃ₘ^n⟮I, I'⟯ M') (hn : 1 ≤ n) : MDifferentiable I I' h :=
   h.contMDiff.mdifferentiable hn
@@ -331,13 +329,16 @@ theorem contMDiff_diffeomorph_comp_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) {f : M' 
     ContMDiff I' J m (h ∘ f) ↔ ContMDiff I' I m f :=
   forall_congr' fun _ => h.contMDiffWithinAt_diffeomorph_comp_iff hm
 
-theorem toPartialHomeomorph_mdifferentiable (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) :
-    h.toHomeomorph.toPartialHomeomorph.MDifferentiable I J :=
+theorem toOpenPartialHomeomorph_mdifferentiable (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) :
+    h.toHomeomorph.toOpenPartialHomeomorph.MDifferentiable I J :=
   ⟨h.mdifferentiableOn _ hn, h.symm.mdifferentiableOn _ hn⟩
+
+@[deprecated (since := "2025-08-29")] alias
+  toPartialHomeomorph_mdifferentiable := toOpenPartialHomeomorph_mdifferentiable
 
 theorem uniqueMDiffOn_image_aux (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : Set M}
     (hs : UniqueMDiffOn I s) : UniqueMDiffOn J (h '' s) := by
-  convert hs.uniqueMDiffOn_preimage (h.toPartialHomeomorph_mdifferentiable hn)
+  convert hs.uniqueMDiffOn_preimage (h.toOpenPartialHomeomorph_mdifferentiable hn)
   simp [h.image_eq_preimage]
 
 @[simp]
@@ -351,14 +352,12 @@ theorem uniqueMDiffOn_preimage (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : 
     UniqueMDiffOn I (h ⁻¹' s) ↔ UniqueMDiffOn J s :=
   h.symm_image_eq_preimage s ▸ h.symm.uniqueMDiffOn_image hn
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: should use `E ≃ₘ^n[𝕜] F` notation
 @[simp]
 theorem uniqueDiffOn_image (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F) (hn : 1 ≤ n) {s : Set E} :
     UniqueDiffOn 𝕜 (h '' s) ↔ UniqueDiffOn 𝕜 s := by
   simp only [← uniqueMDiffOn_iff_uniqueDiffOn, uniqueMDiffOn_image, hn]
 
 @[simp]
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: should use `E ≃ₘ^n[𝕜] F` notation
 theorem uniqueDiffOn_preimage (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F) (hn : 1 ≤ n) {s : Set F} :
     UniqueDiffOn 𝕜 (h ⁻¹' s) ↔ UniqueDiffOn 𝕜 s :=
   h.symm_image_eq_preimage s ▸ h.symm.uniqueDiffOn_image hn
@@ -391,137 +390,196 @@ end ContinuousLinearEquiv
 
 namespace ModelWithCorners
 
-variable (I) (e : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E') [NeZero n]
+variable (I) (e : E ≃L[𝕜] E')
 
-/-- Apply a diffeomorphism (e.g., a continuous linear equivalence) to the model vector space. -/
-def transDiffeomorph : ModelWithCorners 𝕜 E' H where
+/-- Apply a continuous linear equivalence to the model vector space. -/
+def transContinuousLinearEquiv : ModelWithCorners 𝕜 E' H where
   toPartialEquiv := I.toPartialEquiv.trans e.toEquiv.toPartialEquiv
   source_eq := by simp
-  uniqueDiffOn' := by
-    have hn : 1 ≤ n := ENat.one_le_iff_ne_zero_withTop.mpr (NeZero.ne n)
-    simp [I.uniqueDiffOn, hn]
-  target_subset_closure_interior := by
-    simp only [PartialEquiv.trans_target, Equiv.toPartialEquiv_target,
-      Equiv.toPartialEquiv_symm_apply, Diffeomorph.toEquiv_coe_symm, target_eq, univ_inter]
-    change e.toHomeomorph.symm ⁻¹' _ ⊆ closure (interior (e.toHomeomorph.symm ⁻¹' (range I)))
-    rw [← e.toHomeomorph.symm.isOpenMap.preimage_interior_eq_interior_preimage
-      e.toHomeomorph.continuous_symm,
-      ← e.toHomeomorph.symm.isOpenMap.preimage_closure_eq_closure_preimage
-      e.toHomeomorph.continuous_symm]
-    exact preimage_mono I.range_subset_closure_interior
+  convex_range' := by
+    split_ifs with h
+    · simp only [PartialEquiv.coe_trans, Equiv.toPartialEquiv_apply, LinearEquiv.coe_toEquiv,
+      ContinuousLinearEquiv.coe_toLinearEquiv, toPartialEquiv_coe]
+      rw [range_comp]
+      letI := h.rclike
+      letI := NormedSpace.restrictScalars ℝ 𝕜 E
+      letI := NormedSpace.restrictScalars ℝ 𝕜 E'
+      let eR : E →L[ℝ] E' := ContinuousLinearMap.restrictScalars ℝ (e : E →L[𝕜] E')
+      change Convex ℝ (⇑eR '' range ↑I)
+      apply I.convex_range.linear_image
+    · simp [range_eq_univ_of_not_isRCLikeNormedField I h, range_comp]
+  nonempty_interior' := by
+    simp only [PartialEquiv.coe_trans, Equiv.toPartialEquiv_apply, LinearEquiv.coe_toEquiv,
+      ContinuousLinearEquiv.coe_toLinearEquiv, toPartialEquiv_coe, range_comp,
+      ContinuousLinearEquiv.image_eq_preimage]
+    apply Nonempty.mono (preimage_interior_subset_interior_preimage e.symm.continuous)
+    rw [← ContinuousLinearEquiv.image_eq_preimage]
+    simpa using I.nonempty_interior
   continuous_toFun := e.continuous.comp I.continuous
   continuous_invFun := I.continuous_symm.comp e.symm.continuous
 
-@[simp, mfld_simps]
-theorem coe_transDiffeomorph : ⇑(I.transDiffeomorph e) = e ∘ I :=
-  rfl
+@[deprecated (since := "2025-06-12")] alias transDiffeomorph := transContinuousLinearEquiv
 
 @[simp, mfld_simps]
-theorem coe_transDiffeomorph_symm : ⇑(I.transDiffeomorph e).symm = I.symm ∘ e.symm :=
+theorem coe_transContinuousLinearEquiv : ⇑(I.transContinuousLinearEquiv e) = e ∘ I :=
   rfl
 
-theorem transDiffeomorph_range : range (I.transDiffeomorph e) = e '' range I :=
+@[deprecated (since := "2025-06-12")] alias coe_transDiffeomorph := coe_transContinuousLinearEquiv
+
+@[simp, mfld_simps]
+theorem coe_transContinuousLinearEquiv_symm :
+    ⇑(I.transContinuousLinearEquiv e).symm = I.symm ∘ e.symm := rfl
+
+@[deprecated (since := "2025-06-12")]
+alias coe_transDiffeomorph_symm := coe_transContinuousLinearEquiv_symm
+
+theorem transContinuousLinearEquiv_range : range (I.transContinuousLinearEquiv e) = e '' range I :=
   range_comp e I
 
-theorem coe_extChartAt_transDiffeomorph (x : M) :
-    ⇑(extChartAt (I.transDiffeomorph e) x) = e ∘ extChartAt I x :=
+@[deprecated (since := "2025-06-12")]
+alias transDiffeomorph_range := transContinuousLinearEquiv_range
+
+theorem coe_extChartAt_transContinuousLinearEquiv (x : M) :
+    ⇑(extChartAt (I.transContinuousLinearEquiv e) x) = e ∘ extChartAt I x :=
   rfl
 
-theorem coe_extChartAt_transDiffeomorph_symm (x : M) :
-    ⇑(extChartAt (I.transDiffeomorph e) x).symm = (extChartAt I x).symm ∘ e.symm :=
+@[deprecated (since := "2025-06-12")]
+alias coe_extChartAt_transDiffeomorph := coe_extChartAt_transContinuousLinearEquiv
+
+theorem coe_extChartAt_transContinuousLinearEquiv_symm (x : M) :
+    ⇑(extChartAt (I.transContinuousLinearEquiv e) x).symm = (extChartAt I x).symm ∘ e.symm :=
   rfl
 
-theorem extChartAt_transDiffeomorph_target (x : M) :
-    (extChartAt (I.transDiffeomorph e) x).target = e.symm ⁻¹' (extChartAt I x).target := by
-  simp only [e.range_comp, preimage_preimage, mfld_simps]; rfl
+@[deprecated (since := "2025-06-12")]
+alias coe_extChartAt_transDiffeomorph_symm := coe_extChartAt_transContinuousLinearEquiv_symm
+
+theorem extChartAt_transContinuousLinearEquiv_target (x : M) :
+    (extChartAt (I.transContinuousLinearEquiv e) x).target
+      = e.symm ⁻¹' (extChartAt I x).target := by
+  simp only [range_comp, preimage_preimage, ContinuousLinearEquiv.image_eq_preimage, mfld_simps,
+    ← comp_def]
+
+@[deprecated (since := "2025-06-12")]
+alias extChartAt_transDiffeomorph_target := extChartAt_transContinuousLinearEquiv_target
 
 end ModelWithCorners
 
-namespace Diffeomorph
+namespace ContinuousLinearEquiv
 
-section
+variable (e : E ≃L[𝕜] F)
 
-variable [NeZero n] (e : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F)
-
-instance instIsManifoldTransDiffeomorph [IsManifold I n M] :
-    IsManifold (I.transDiffeomorph e) n M := by
-  refine isManifold_of_contDiffOn (I.transDiffeomorph e) n M fun e₁ e₂ h₁ h₂ => ?_
+instance instIsManifoldtransContinuousLinearEquiv [IsManifold I n M] :
+    IsManifold (I.transContinuousLinearEquiv e) n M := by
+  refine isManifold_of_contDiffOn (I.transContinuousLinearEquiv e) n M fun e₁ e₂ h₁ h₂ => ?_
   refine e.contDiff.comp_contDiffOn
       (((contDiffGroupoid n I).compatible h₁ h₂).1.comp e.symm.contDiff.contDiffOn ?_)
-  simp only [mapsTo_iff_subset_preimage]
-  mfld_set_tac
+  simp [preimage_comp, range_comp, mapsTo_iff_subset_preimage,
+    ContinuousLinearEquiv.image_eq_preimage]
 
 variable (I M)
 
 /-- The identity diffeomorphism between a manifold with model `I` and the same manifold
 with model `I.trans_diffeomorph e`. -/
-def toTransDiffeomorph (e : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F) : M ≃ₘ^n⟮I, I.transDiffeomorph e⟯ M where
+def toTransContinuousLinearEquiv (e : E ≃L[𝕜] F) : M ≃ₘ^n⟮I, I.transContinuousLinearEquiv e⟯ M where
   toEquiv := Equiv.refl M
   contMDiff_toFun x := by
     refine contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, ?_⟩
     refine e.contDiff.contDiffWithinAt.congr_of_mem (fun y hy ↦ ?_) ?_
-    · simp only [Equiv.coe_refl, id, (· ∘ ·), I.coe_extChartAt_transDiffeomorph,
+    · simp only [Equiv.coe_refl, id, (· ∘ ·), I.coe_extChartAt_transContinuousLinearEquiv,
         (extChartAt I x).right_inv hy.1]
     · exact
       ⟨(extChartAt I x).map_source (mem_extChartAt_source x), trivial, by simp only [mfld_simps]⟩
   contMDiff_invFun x := by
     refine contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, ?_⟩
     refine e.symm.contDiff.contDiffWithinAt.congr_of_mem (fun y hy => ?_) ?_
-    · simp only [mem_inter_iff, I.extChartAt_transDiffeomorph_target] at hy
+    · simp only [mem_inter_iff, I.extChartAt_transContinuousLinearEquiv_target] at hy
       simp only [Equiv.coe_refl, Equiv.refl_symm, id, (· ∘ ·),
-        I.coe_extChartAt_transDiffeomorph_symm, (extChartAt I x).right_inv hy.1]
+        I.coe_extChartAt_transContinuousLinearEquiv_symm, (extChartAt I x).right_inv hy.1]
     exact ⟨(extChartAt _ x).map_source (mem_extChartAt_source x), trivial, by
       simp only [e.symm_apply_apply, Equiv.refl_symm, Equiv.coe_refl, mfld_simps]⟩
+
+@[deprecated (since := "2025-06-12")]
+alias _root_.Diffeomorph.toTransDiffeomorph := toTransContinuousLinearEquiv
 
 variable {I M}
 
 @[simp]
-theorem contMDiffWithinAt_transDiffeomorph_right {f : M' → M} {x s} :
-    ContMDiffWithinAt I' (I.transDiffeomorph e) n f s x ↔ ContMDiffWithinAt I' I n f s x :=
-  (toTransDiffeomorph I M e).contMDiffWithinAt_diffeomorph_comp_iff le_rfl
+theorem contMDiffWithinAt_transContinuousLinearEquiv_right {f : M' → M} {x s} :
+    ContMDiffWithinAt I' (I.transContinuousLinearEquiv e) n f s x
+      ↔ ContMDiffWithinAt I' I n f s x :=
+  (toTransContinuousLinearEquiv I M e).contMDiffWithinAt_diffeomorph_comp_iff le_rfl
+
+@[deprecated (since := "2025-06-12")]
+alias _root_.Diffeomorph.contMDiffWithinAt_transDiffeomorph_right :=
+contMDiffWithinAt_transContinuousLinearEquiv_right
 
 @[simp]
-theorem contMDiffAt_transDiffeomorph_right {f : M' → M} {x} :
-    ContMDiffAt I' (I.transDiffeomorph e) n f x ↔ ContMDiffAt I' I n f x :=
-  (toTransDiffeomorph I M e).contMDiffAt_diffeomorph_comp_iff le_rfl
+theorem contMDiffAt_transContinuousLinearEquiv_right {f : M' → M} {x} :
+    ContMDiffAt I' (I.transContinuousLinearEquiv e) n f x ↔ ContMDiffAt I' I n f x :=
+  (toTransContinuousLinearEquiv I M e).contMDiffAt_diffeomorph_comp_iff le_rfl
+
+@[deprecated (since := "2025-06-12")]
+alias _root_.Diffeomorph.contMDiffAt_transDiffeomorph_right :=
+contMDiffAt_transContinuousLinearEquiv_right
 
 @[simp]
-theorem contMDiffOn_transDiffeomorph_right {f : M' → M} {s} :
-    ContMDiffOn I' (I.transDiffeomorph e) n f s ↔ ContMDiffOn I' I n f s :=
-  (toTransDiffeomorph I M e).contMDiffOn_diffeomorph_comp_iff le_rfl
+theorem contMDiffOn_transContinuousLinearEquiv_right {f : M' → M} {s} :
+    ContMDiffOn I' (I.transContinuousLinearEquiv e) n f s ↔ ContMDiffOn I' I n f s :=
+  (toTransContinuousLinearEquiv I M e).contMDiffOn_diffeomorph_comp_iff le_rfl
+
+@[deprecated (since := "2025-06-12")]
+alias _root_.Diffeomorph.contMDiffOn_transDiffeomorph_right :=
+contMDiffOn_transContinuousLinearEquiv_right
 
 @[simp]
-theorem contMDiff_transDiffeomorph_right {f : M' → M} :
-    ContMDiff I' (I.transDiffeomorph e) n f ↔ ContMDiff I' I n f :=
-  (toTransDiffeomorph I M e).contMDiff_diffeomorph_comp_iff le_rfl
+theorem contMDiff_transContinuousLinearEquiv_right {f : M' → M} :
+    ContMDiff I' (I.transContinuousLinearEquiv e) n f ↔ ContMDiff I' I n f :=
+  (toTransContinuousLinearEquiv I M e).contMDiff_diffeomorph_comp_iff le_rfl
 
-@[deprecated (since := "2024-11-21")]
-alias smooth_transDiffeomorph_right := contMDiff_transDiffeomorph_right
-
-@[simp]
-theorem contMDiffWithinAt_transDiffeomorph_left {f : M → M'} {x s} :
-    ContMDiffWithinAt (I.transDiffeomorph e) I' n f s x ↔ ContMDiffWithinAt I I' n f s x :=
-  ((toTransDiffeomorph I M e).contMDiffWithinAt_comp_diffeomorph_iff le_rfl).symm
+@[deprecated (since := "2025-06-12")]
+alias _root_.Diffeomorph.contMDiff_transDiffeomorph_right :=
+contMDiff_transContinuousLinearEquiv_right
 
 @[simp]
-theorem contMDiffAt_transDiffeomorph_left {f : M → M'} {x} :
-    ContMDiffAt (I.transDiffeomorph e) I' n f x ↔ ContMDiffAt I I' n f x :=
-  ((toTransDiffeomorph I M e).contMDiffAt_comp_diffeomorph_iff le_rfl).symm
+theorem contMDiffWithinAt_transContinuousLinearEquiv_left {f : M → M'} {x s} :
+    ContMDiffWithinAt (I.transContinuousLinearEquiv e) I' n f s x
+      ↔ ContMDiffWithinAt I I' n f s x :=
+  ((toTransContinuousLinearEquiv I M e).contMDiffWithinAt_comp_diffeomorph_iff le_rfl).symm
+
+@[deprecated (since := "2025-06-12")]
+alias _root_.Diffeomorph.contMDiffWithinAt_transDiffeomorph_left :=
+contMDiffWithinAt_transContinuousLinearEquiv_left
 
 @[simp]
-theorem contMDiffOn_transDiffeomorph_left {f : M → M'} {s} :
-    ContMDiffOn (I.transDiffeomorph e) I' n f s ↔ ContMDiffOn I I' n f s :=
-  ((toTransDiffeomorph I M e).contMDiffOn_comp_diffeomorph_iff le_rfl).symm
+theorem contMDiffAt_transContinuousLinearEquiv_left {f : M → M'} {x} :
+    ContMDiffAt (I.transContinuousLinearEquiv e) I' n f x ↔ ContMDiffAt I I' n f x :=
+  ((toTransContinuousLinearEquiv I M e).contMDiffAt_comp_diffeomorph_iff le_rfl).symm
+
+@[deprecated (since := "2025-06-12")]
+alias _root_.Diffeomorph.contMDiffAt_transDiffeomorph_left :=
+contMDiffAt_transContinuousLinearEquiv_left
 
 @[simp]
-theorem contMDiff_transDiffeomorph_left {f : M → M'} :
-    ContMDiff (I.transDiffeomorph e) I' n f ↔ ContMDiff I I' n f :=
-  ((toTransDiffeomorph I M e).contMDiff_comp_diffeomorph_iff le_rfl).symm
+theorem contMDiffOn_transContinuousLinearEquiv_left {f : M → M'} {s} :
+    ContMDiffOn (I.transContinuousLinearEquiv e) I' n f s ↔ ContMDiffOn I I' n f s :=
+  ((toTransContinuousLinearEquiv I M e).contMDiffOn_comp_diffeomorph_iff le_rfl).symm
 
-@[deprecated (since := "2024-11-21")]
-alias smooth_transDiffeomorph_left := contMDiff_transDiffeomorph_left
+@[deprecated (since := "2025-06-12")]
+alias _root_.Diffeomorph.contMDiffOn_transDiffeomorph_left :=
+contMDiffOn_transContinuousLinearEquiv_left
 
-end
+@[simp]
+theorem contMDiff_transContinuousLinearEquiv_left {f : M → M'} :
+    ContMDiff (I.transContinuousLinearEquiv e) I' n f ↔ ContMDiff I I' n f :=
+  ((toTransContinuousLinearEquiv I M e).contMDiff_comp_diffeomorph_iff le_rfl).symm
+
+@[deprecated (since := "2025-06-12")]
+alias _root_.Diffeomorph.contMDiff_transDiffeomorph_left :=
+contMDiff_transContinuousLinearEquiv_left
+
+end ContinuousLinearEquiv
+
+namespace Diffeomorph
 
 section Constructions
 

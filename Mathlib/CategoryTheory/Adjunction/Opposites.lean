@@ -22,7 +22,7 @@ open CategoryTheory
 
 universe v₁ v₂ u₁ u₂
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace CategoryTheory.Adjunction
@@ -37,11 +37,6 @@ def unop {F : Cᵒᵖ ⥤ Dᵒᵖ} {G : Dᵒᵖ ⥤ Cᵒᵖ} (h : G ⊣ F) : F.u
   left_triangle_components _ := Quiver.Hom.op_inj (h.right_triangle_components _)
   right_triangle_components _ := Quiver.Hom.op_inj (h.left_triangle_components _)
 
-@[deprecated (since := "2025-01-01")] alias adjointOfOpAdjointOp := unop
-@[deprecated (since := "2025-01-01")] alias adjointUnopOfAdjointOp := unop
-@[deprecated (since := "2025-01-01")] alias unopAdjointOfOpAdjoint := unop
-@[deprecated (since := "2025-01-01")] alias unopAdjointUnopOfAdjoint := unop
-
 /-- If `G` is adjoint to `F` then `F.op` is adjoint to `G.op`. -/
 @[simps]
 def op {F : C ⥤ D} {G : D ⥤ C} (h : G ⊣ F) : F.op ⊣ G.op where
@@ -49,11 +44,6 @@ def op {F : C ⥤ D} {G : D ⥤ C} (h : G ⊣ F) : F.op ⊣ G.op where
   counit := NatTrans.op h.unit
   left_triangle_components _ := Quiver.Hom.unop_inj (by simp)
   right_triangle_components _ := Quiver.Hom.unop_inj (by simp)
-
-@[deprecated (since := "2025-01-01")] alias opAdjointOpOfAdjoint := op
-@[deprecated (since := "2025-01-01")] alias adjointOpOfAdjointUnop := op
-@[deprecated (since := "2025-01-01")] alias opAdjointOfUnopAdjoint := op
-@[deprecated (since := "2025-01-01")] alias adjointOfUnopAdjointUnop := op
 
 /-- If `F` is adjoint to `G.leftOp` then `G` is adjoint to `F.leftOp`. -/
 @[simps]
@@ -110,4 +100,29 @@ def natIsoOfLeftAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
     (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (l : F ≅ F') : G ≅ G' :=
   NatIso.removeOp (natIsoOfRightAdjointNatIso (op adj2) (op adj1) (NatIso.op l))
 
-end CategoryTheory.Adjunction
+end Adjunction
+
+namespace Functor
+
+instance IsLeftAdjoint.op {F : C ⥤ D} [F.IsLeftAdjoint] : F.op.IsRightAdjoint :=
+  ⟨F.rightAdjoint.op, ⟨.op <| .ofIsLeftAdjoint _⟩⟩
+
+instance IsRightAdjoint.op {F : C ⥤ D} [F.IsRightAdjoint] : F.op.IsLeftAdjoint :=
+  ⟨F.leftAdjoint.op, ⟨.op <| .ofIsRightAdjoint _⟩⟩
+
+instance IsLeftAdjoint.leftOp {F : C ⥤ Dᵒᵖ} [F.IsLeftAdjoint] : F.leftOp.IsRightAdjoint :=
+  ⟨F.rightAdjoint.rightOp, ⟨.leftOp <| .ofIsLeftAdjoint _⟩⟩
+
+-- TODO: Do we need to introduce `Adjunction.leftUnop`?
+instance IsRightAdjoint.leftOp {F : C ⥤ Dᵒᵖ} [F.IsRightAdjoint] : F.leftOp.IsLeftAdjoint :=
+  inferInstanceAs (F.op ⋙ (opOpEquivalence D).functor).IsLeftAdjoint
+
+-- TODO: Do we need to introduce `Adjunction.rightUnop`?
+instance IsLeftAdjoint.rightOp {F : Cᵒᵖ ⥤ D} [F.IsLeftAdjoint] : F.rightOp.IsRightAdjoint :=
+  inferInstanceAs ((opOpEquivalence C).inverse ⋙ F.op).IsRightAdjoint
+
+instance IsRightAdjoint.rightOp {F : Cᵒᵖ ⥤ D} [F.IsRightAdjoint] : F.rightOp.IsLeftAdjoint :=
+  ⟨F.leftAdjoint.leftOp, ⟨.rightOp <| .ofIsRightAdjoint _⟩⟩
+
+end Functor
+end CategoryTheory

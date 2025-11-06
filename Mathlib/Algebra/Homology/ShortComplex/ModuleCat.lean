@@ -89,11 +89,8 @@ lemma Exact.moduleCat_of_range_eq_ker {X₁ X₂ X₃ : ModuleCat.{v} R}
   simpa only [moduleCat_exact_iff_range_eq_ker] using hfg
 
 /-- The canonical linear map `S.X₁ →ₗ[R] LinearMap.ker S.g` induced by `S.f`. -/
-@[simps]
-def moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g.hom where
-  toFun x := ⟨S.f x, S.moduleCat_zero_apply x⟩
-  map_add' x y := by aesop
-  map_smul' a x := by aesop
+abbrev moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g.hom :=
+  S.f.hom.codRestrict _ <| S.moduleCat_zero_apply
 
 /-- The explicit left homology data of a short complex of modules that is
 given by a kernel and a quotient given by the `LinearMap` API. The projections to `K` and `H` are
@@ -166,6 +163,27 @@ lemma moduleCatCyclesIso_inv_iCycles :
 lemma toCycles_moduleCatCyclesIso_hom :
     S.toCycles ≫ S.moduleCatCyclesIso.hom = S.moduleCatLeftHomologyData.f' := by
   simp [← cancel_mono S.moduleCatLeftHomologyData.i]
+
+/-- Given a short complex `S` of modules, this is the isomorphism between the abstract `S.opcycles`
+of the homology API and the more concrete description as `S.X₂ ⧸ LinearMap.range S.f.hom`. -/
+noncomputable def moduleCatOpcyclesIso :
+    S.opcycles ≅ ModuleCat.of R (S.X₂ ⧸ LinearMap.range S.f.hom) :=
+  S.opcyclesIsoCokernel ≪≫ ModuleCat.cokernelIsoRangeQuotient _
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+theorem pOpcycles_comp_moduleCatOpcyclesIso_hom :
+    S.pOpcycles ≫ S.moduleCatOpcyclesIso.hom = ModuleCat.ofHom (Submodule.mkQ _) := by
+  simp [moduleCatOpcyclesIso]
+
+theorem moduleCat_pOpcycles_eq_iff (x y : S.X₂) :
+    S.pOpcycles x = S.pOpcycles y ↔ x - y ∈ LinearMap.range S.f.hom :=
+  Iff.trans ⟨fun h => by simpa using congr(S.moduleCatOpcyclesIso.hom $h),
+    fun h => (ModuleCat.mono_iff_injective S.moduleCatOpcyclesIso.hom).1 inferInstance (by simpa)⟩
+    (Submodule.Quotient.eq _)
+
+theorem moduleCat_pOpcycles_eq_zero_iff (x : S.X₂) :
+    S.pOpcycles x = 0 ↔ x ∈ LinearMap.range S.f.hom := by
+  simpa using moduleCat_pOpcycles_eq_iff _ x 0
 
 /-- Given a short complex `S` of modules, this is the isomorphism between
 the abstract `S.homology` of the homology API and the more explicit

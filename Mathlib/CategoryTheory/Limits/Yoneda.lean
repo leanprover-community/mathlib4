@@ -5,6 +5,7 @@ Authors: Kim Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Types.Yoneda
+import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 import Mathlib.Util.AssertExists
 
 /-!
@@ -20,7 +21,7 @@ assert_not_exists AddCommMonoid
 
 open Opposite CategoryTheory Limits
 
-universe t w v u
+universe t w w' v u
 
 namespace CategoryTheory
 
@@ -33,7 +34,7 @@ variable {C : Type u} [Category.{v} C]
 @[simps]
 def colimitCocone (X : Cᵒᵖ) : Cocone (coyoneda.obj X) where
   pt := PUnit
-  ι := { app := by aesop_cat }
+  ι := { app := by cat_disch }
 
 /-- The proposed colimit cocone over `coyoneda.obj X` is a colimit cocone.
 -/
@@ -187,6 +188,13 @@ noncomputable instance yonedaFunctor_reflectsLimits :
 
 noncomputable instance coyonedaFunctor_reflectsLimits :
     ReflectsLimitsOfSize.{t, w} (@coyoneda C _) := inferInstance
+
+instance uliftYonedaFunctor_preservesLimits :
+    PreservesLimitsOfSize.{t, w} (uliftYoneda.{w'} : C ⥤ _) := by
+  apply preservesLimits_of_evaluation
+  intro K
+  change PreservesLimitsOfSize.{t, w} (coyoneda.obj K ⋙ uliftFunctor.{w'})
+  infer_instance
 
 namespace Functor
 

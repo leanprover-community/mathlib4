@@ -23,7 +23,7 @@ The duals of all the above are also given.
 
 namespace CategoryTheory
 
-open Category Limits
+open Category Limits Functor
 
 universe w' w v₁ v₂ v₃ u₁ u₂ u₃
 

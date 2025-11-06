@@ -29,7 +29,7 @@ instance [DecidableEq α] [Fintype α] : DecidableRel (IsConj : α → α → Pr
   inferInstanceAs (Decidable (∃ c : αˣ, c.1 * a = b * c.1))
 
 instance conjugatesOf.fintype [Fintype α] [DecidableRel (IsConj : α → α → Prop)] {a : α} :
-  Fintype (conjugatesOf a) :=
+    Fintype (conjugatesOf a) :=
   @Subtype.fintype _ _ (‹DecidableRel IsConj› a) _
 
 namespace ConjClasses
