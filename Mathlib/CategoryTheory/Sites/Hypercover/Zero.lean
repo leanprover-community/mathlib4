@@ -310,6 +310,14 @@ instance {E F : PreZeroHypercover.{w} S} (e : E ≅ F) (i : F.I₀) :
     IsIso (e.inv.h₀ i) :=
   .of_isIso_fac_right (inv_hom_h₀ e i)
 
+@[reassoc (attr := simp)]
+lemma inv_hom_h₀_comp_f {E F : PreZeroHypercover.{w} S} (e : E ≅ F) (i : E.I₀) :
+    inv (e.hom.h₀ i) ≫ E.f i = F.f _ := by simp
+
+@[reassoc (attr := simp)]
+lemma inv_inv_h₀_comp_f {E F : PreZeroHypercover.{w} S} (e : E ≅ F) (i : F.I₀) :
+    inv (e.inv.h₀ i) ≫ F.f i = E.f _ := by simp
+
 end Category
 
 section Functoriality
@@ -520,12 +528,10 @@ lemma PreZeroHypercover.presieve₀_mem_of_iso [J.RespectsIso] {S : C} {E F : Pr
   refine Precoverage.RespectsIso.of_forall_exists_iso ?_ ?_ hE
   · intro Z _ ⟨i⟩
     use F.X (e.hom.s₀ i), (asIso (e.hom.h₀ i)).symm
-    have : inv (e.hom.h₀ i) ≫ E.f i = F.f _ := by simp
-    simp [this]
+    simp
   · intro Z _ ⟨i⟩
     use E.X (e.inv.s₀ i), (asIso (e.inv.h₀ i)).symm
-    have : inv (e.inv.h₀ i) ≫ F.f i = E.f _ := by simp
-    simp [this]
+    simp
 
 end
 
