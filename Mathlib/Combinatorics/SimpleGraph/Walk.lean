@@ -238,8 +238,7 @@ theorem exists_cons_eq_concat {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
   | nil => exact ⟨_, nil, h, rfl⟩
   | cons h' p ih =>
     obtain ⟨y, q, h'', hc⟩ := ih h'
-    refine ⟨y, cons h q, h'', ?_⟩
-    rw [concat_cons, hc]
+    exact ⟨y, cons h q, h'', hc ▸ concat_cons _ _ _ ▸ rfl⟩
 
 /-- A non-trivial `concat` walk is representable as a `cons` walk. -/
 theorem exists_concat_eq_cons {u v w : V} :
@@ -427,17 +426,15 @@ theorem concat_inj {u v v' w : V} {p : G.Walk u v} {h : G.Adj v w} {p' : G.Walk 
   | nil =>
     cases p'
     · exact ⟨rfl, rfl⟩
-    · exfalso
-      simp only [concat_nil, concat_cons, cons.injEq] at he
+    · simp only [concat_nil, concat_cons, cons.injEq] at he
       obtain ⟨rfl, he⟩ := he
-      exact concat_ne_nil _ _ (heq_iff_eq.mp he).symm
+      exact (concat_ne_nil _ _ (heq_iff_eq.mp he).symm).elim
   | cons _ _ ih =>
     rw [concat_cons] at he
     cases p'
-    · exfalso
-      simp only [concat_nil, cons.injEq] at he
+    · simp only [concat_nil, cons.injEq] at he
       obtain ⟨rfl, he⟩ := he
-      exact concat_ne_nil _ _ (heq_iff_eq.mp he)
+      exact (concat_ne_nil _ _ (heq_iff_eq.mp he)).elim
     · rw [concat_cons, cons.injEq] at he
       obtain ⟨rfl, he⟩ := he
       obtain ⟨rfl, rfl⟩ := ih (heq_iff_eq.mp he)
@@ -578,8 +575,8 @@ theorem coe_support_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
 
 theorem coe_support_append' [DecidableEq V] {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
     ((p.append p').support : Multiset V) = p.support + p'.support - {v} := by
-  simp_rw [support_append, ← Multiset.coe_add, coe_support, add_comm ({v} : Multiset V)]
-  simp [← add_assoc, add_tsub_cancel_right]
+  simp_rw [support_append, ← Multiset.coe_add, coe_support, add_comm ({v} : Multiset V),
+    ← add_assoc, add_tsub_cancel_right]
 
 theorem isChain_adj_cons_support {u v w : V} (h : G.Adj u v) :
     ∀ (p : G.Walk v w), List.IsChain G.Adj (u :: p.support)
@@ -674,9 +671,8 @@ theorem head_darts_fst {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.da
 @[simp]
 theorem getLast_darts_snd {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
     (p.darts.getLast hp).snd = b := by
-  rw [← List.getLast_map (f := fun x : G.Dart ↦ x.snd)]
-  · simp_rw [p.map_snd_darts, List.getLast_tail, p.getLast_support]
-  · simpa
+  rw [← List.getLast_map (f := fun x : G.Dart ↦ x.snd) (by simpa)]
+  simp_rw [p.map_snd_darts, List.getLast_tail, p.getLast_support]
 
 @[simp]
 theorem edges_nil {u : V} : (nil : G.Walk u u).edges = [] := rfl
@@ -751,7 +747,7 @@ theorem edges_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.N
   induction p with
   | nil => simp
   | cons _ p' ih =>
-    simp [edges_cons, support_cons, List.nodup_cons] at h ⊢
+    simp only [support_cons, List.nodup_cons, edges_cons] at h ⊢
     exact ⟨(h.1 <| fst_mem_support_of_mem_edges p' ·), ih h.2⟩
 
 lemma getVert_eq_support_getElem {u v : V} {n : ℕ} (p : G.Walk u v) (h : n ≤ p.length) :
@@ -788,8 +784,7 @@ theorem range_getVert_eq_range_support_getElem {u v : V} (p : G.Walk u v) :
 
 theorem nodup_tail_support_reverse {u : V} {p : G.Walk u u} :
     p.reverse.support.tail.Nodup ↔ p.support.tail.Nodup := by
-  rw [Walk.support_reverse]
-  refine List.nodup_tail_reverse p.support ?_
+  refine p.support_reverse ▸ p.support.nodup_tail_reverse ?_
   rw [← getVert_eq_support_getElem? _ (by cutsat), List.getLast?_eq_getElem?,
     ← getVert_eq_support_getElem? _ (by rw [Walk.length_support]; cutsat)]
   simp
@@ -1145,9 +1140,7 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
 lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) :
     p = q := by
   induction q with
-  | nil =>
-    rw [← nil_iff_eq_nil, nil_iff_support_eq]
-    exact support_nil ▸ h
+  | nil => exact nil_iff_eq_nil.mp (nil_iff_support_eq.mpr (support_nil ▸ h))
   | cons ha q ih =>
     cases p with
     | nil => simp at h
@@ -1182,10 +1175,9 @@ lemma ext_getVert {u v} {p q : G.Walk u v} (h : ∀ k, p.getVert k = q.getVert k
     p = q := by
   wlog hpq : p.length ≤ q.length generalizing p q
   · exact (this (h · |>.symm) (le_of_not_ge hpq)).symm
-  have : q.length ≤ p.length := by
-    by_contra!
-    exact (q.adj_getVert_succ this).ne (by simp [← h, getVert_of_length_le])
-  exact ext_getVert_le_length (hpq.antisymm this) fun k _ ↦ h k
+  refine ext_getVert_le_length (hpq.antisymm ?_) fun k _ ↦ h k
+  by_contra!
+  exact (q.adj_getVert_succ this).ne (by simp [← h, getVert_of_length_le])
 
 end Walk
 
@@ -1265,9 +1257,7 @@ theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f)
     | cons _ _ =>
       simp only [map_cons, cons.injEq] at h
       cases hinj h.1
-      simp only [cons.injEq, heq_iff_eq, true_and]
-      apply ih
-      simpa using h.2
+      grind
 
 section mapLe
 
@@ -1486,13 +1476,11 @@ theorem isSubwalk_iff_support_isInfix {v w v' w' : V} {p₁ : G.Walk v w} {p₂ 
   refine ⟨fun ⟨ru, rv, h⟩ ↦ ?_, fun ⟨s, t, h⟩ ↦ ?_⟩
   · grind [support_append, support_append_eq_support_dropLast_append]
   · have : (s.length + p₁.length) ≤ p₂.length := by grind [_=_ length_support]
-    have h₁ : p₂.getVert s.length = v := by
-      simp [p₂.getVert_eq_support_getElem (by cutsat : s.length ≤ p₂.length), ← h,
+    refine ⟨p₂.take s.length |>.copy rfl ?_, p₂.drop (s.length + p₁.length) |>.copy ?_ rfl, ?_⟩
+    · simp [p₂.getVert_eq_support_getElem (by cutsat : s.length ≤ p₂.length), ← h,
         List.getElem_zero]
-    have h₂ : p₂.getVert (s.length + p₁.length) = w := by
-      simp [p₂.getVert_eq_support_getElem (by omega), ← h,
+    · simp [p₂.getVert_eq_support_getElem (by omega), ← h,
         ← p₁.getVert_eq_support_getElem (Nat.le_refl _)]
-    refine ⟨p₂.take s.length |>.copy rfl h₁, p₂.drop (s.length + p₁.length) |>.copy h₂ rfl, ?_⟩
     apply ext_support
     simp only [← h, support_append, support_copy, take_support_eq_support_take_succ,
       List.take_append, drop_support_eq_support_drop_min, List.tail_drop]
@@ -1509,5 +1497,3 @@ lemma isSubwalk_antisymm {u v} {p₁ p₂ : G.Walk u v} (h₁ : p₁.IsSubwalk p
 end Walk
 
 end SimpleGraph
-
-set_option linter.style.longFile 1700
