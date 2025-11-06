@@ -160,6 +160,9 @@ theorem _root_.LinearEquiv.transvection.baseChange
   simp [← toLinearMap_inj, coe_baseChange,
     LinearEquiv.transvection.coe_toLinearMap, LinearMap.transvection.baseChange]
 
+variable {W : Type*} [AddCommMonoid W] [Module A W] {ε : V →ₗ[R] W}
+
+
 end LinearMap.transvection
 
 end baseChange
