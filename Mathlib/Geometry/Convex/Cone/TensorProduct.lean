@@ -22,7 +22,7 @@ We define the minimal and maximal tensor products of two pointed cones:
 
 * `minTensorProduct C₁ C₂`: all conical combinations of elementary tensor products x ⊗ₜ y
   of cone elements x and y.
-* `maxTensorProduct C₁ C₂`: the dual of the minimal tensor product of the dual cones.
+* `maxTensorProduct C₁ C₂`: the dual cone of the minimal tensor product of the dual cones.
 
 ## Main results
 
@@ -73,13 +73,13 @@ theorem mem_maxTensorProduct {C₁ : PointedCone R G} {C₂ : PointedCone R H} {
   simp only [maxTensorProduct, minTensorProduct, dual_span, mem_dual, Set.forall_mem_image2]
   rfl
 
-/-- Individual elementary tensors are in the maximal tensor product. -/
+/-- Elementary tensors are members of the maximal tensor product. -/
 theorem tmul_mem_maxTensorProduct {x y} {C₁ : PointedCone R G} {C₂ : PointedCone R H} (hx : x ∈ C₁)
     (hy : y ∈ C₂) : x ⊗ₜ[R] y ∈ maxTensorProduct C₁ C₂ := by
   simp only [mem_maxTensorProduct, dualDistrib_apply]
   exact fun φ hφ ψ hψ => mul_nonneg (hφ hx) (hψ hy)
 
-/-- Individual elementary tensors are in the minimal tensor product. -/
+/-- Elementary tensors are members of the minimal tensor product. -/
 theorem tmul_mem_minTensorProduct {x y} {C₁ : PointedCone R G} {C₂ : PointedCone R H} (hx : x ∈ C₁)
     (hy : y ∈ C₂) : x ⊗ₜ[R] y ∈ minTensorProduct C₁ C₂ :=
   Submodule.subset_span (Set.mem_image2_of_mem hx hy)
@@ -88,6 +88,11 @@ theorem tmul_mem_minTensorProduct {x y} {C₁ : PointedCone R G} {C₂ : Pointed
 theorem tmul_subset_maxTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCone R H) :
     .image2 (· ⊗ₜ[R] ·) C₁ C₂ ⊆ (maxTensorProduct C₁ C₂ : Set (G ⊗[R] H)) :=
   fun _ ⟨_, hx, _, hy, hz⟩ => hz ▸ tmul_mem_maxTensorProduct hx hy
+
+/-- The minimal tensor product contains the set of all elementary tensors. -/
+theorem tmul_subset_minTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCone R H) :
+    .image2 (· ⊗ₜ[R] ·) C₁ C₂ ⊆ (minTensorProduct C₁ C₂ : Set (G ⊗[R] H)) :=
+  fun _ ⟨_, hx, _, hy, hz⟩ => hz ▸ tmul_mem_minTensorProduct hx hy
 
 /-- The minimal tensor product is less than or equal to the maximal tensor product. -/
 theorem minTensorProduct_le_maxTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCone R H) :
