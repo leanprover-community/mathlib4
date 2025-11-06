@@ -269,6 +269,12 @@ lemma mk_surjective : Function.Surjective (mk (V := V)) := by
   rintro ⟨⟨x⟩⟩
   exact ⟨x, rfl⟩
 
+lemma ext {x y : V.HomotopyCategory} (h : x.as.as = y.as.as) : x = y := by
+  obtain ⟨x, rfl⟩ := x.mk_surjective
+  obtain ⟨y, rfl⟩ := y.mk_surjective
+  obtain rfl : x = y := h
+  rfl
+
 /-- The morphism in the homotopy category of a `2`-truncated simplicial set that
 is induced by an edge. -/
 def homMk {x₀ x₁ : V _⦋0⦌₂} (e : Edge x₀ x₁) : mk x₀ ⟶ mk x₁ :=
@@ -422,6 +428,48 @@ lemma functor_ext {F G : V.HomotopyCategory ⥤ D}
       simp)
 
 end
+
+instance (X : Truncated.{u} 2) [Subsingleton (X _⦋0⦌₂)] :
+    Subsingleton X.HomotopyCategory where
+  allEq x y := by
+    obtain ⟨x, rfl⟩ := x.mk_surjective
+    obtain ⟨y, rfl⟩ := y.mk_surjective
+    obtain rfl := Subsingleton.elim x y
+    rfl
+
+instance subsingleton_hom (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)]
+    (x y : X.HomotopyCategory) :
+    Subsingleton (x ⟶ y) := by
+  let x₀ : X _⦋0⦌₂ := default
+  let P : MorphismProperty X.HomotopyCategory := .ofHoms (fun (_ : Unit) ↦ 𝟙 (mk x₀))
+  have hP₀ : P (𝟙 (mk x₀)) := ⟨⟨⟩⟩
+  have : P.IsMultiplicative :=
+    { id_mem x := by
+        obtain rfl := Subsingleton.elim (mk x₀) x
+        assumption
+      comp_mem := by rintro _ _ _ _ _ ⟨⟩ ⟨⟩; simpa }
+  have hP : P = ⊤ := morphismProperty_eq_top (fun {x y} e ↦ by
+    obtain rfl := Subsingleton.elim x x₀
+    obtain rfl := Subsingleton.elim y x₀
+    obtain rfl : e = .id _ := by ext; subsingleton
+    simpa)
+  refine ⟨fun f g ↦ ?_⟩
+  have hf : P f := by simp [hP]
+  have hg : P g := by simp [hP]
+  obtain ⟨⟩ := hf
+  obtain ⟨⟩ := hg
+  rfl
+
+/-- If `X ; Truncated 2` has a unique `0`-simplex and (at most) one `1`-simplex,
+then `X.HomotopyCategory` is a terminal object in `Cat`. -/
+def isTerminal (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)] :
+    IsTerminal (Cat.of X.HomotopyCategory) :=
+  IsTerminal.ofUniqueHom (fun _ ↦ (Functor.const ..).obj (mk default))
+    (fun C F ↦ CategoryTheory.Functor.ext
+      (fun x ↦ HomotopyCategory.ext (Subsingleton.elim (α := X _⦋0⦌₂) _ _))
+    (fun x y _ ↦ by
+      have := subsingleton_hom X
+      apply Subsingleton.elim))
 
 end HomotopyCategory
 

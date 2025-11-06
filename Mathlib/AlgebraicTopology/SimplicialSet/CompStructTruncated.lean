@@ -132,6 +132,12 @@ def compId {x y : X _⦋0⦌₂} (e : Edge x y) :
     rw [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_one_comp_σ₂_one]
     simp
 
+/-- `Edge.id x` is a composition of `Edge.id x` with `Edge.id x`. -/
+@[simps!]
+def idCompId (x : X _⦋0⦌₂) :
+    CompStruct (.id x) (.id x) (.id x) :=
+  idComp _
+
 attribute [local simp ←] FunctorToTypes.naturality in
 /-- The image of a `Edge.CompStruct` by a morphism of `2`-truncated
 simplicial sets. -/

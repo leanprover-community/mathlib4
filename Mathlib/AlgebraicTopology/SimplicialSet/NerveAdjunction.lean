@@ -30,6 +30,7 @@ reflective. Since the category of simplicial sets is cocomplete, we conclude in
 
 Finally we show that `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` preserves finite cartesian products; note
 that it fails to preserve infinite products.
+(A computable `hoFunctor.Monoidal` instance is obtained in the file `HoFunctorMonoidal`.)
 
 -/
 
@@ -468,10 +469,6 @@ instance preservesBinaryProducts :
 /-- The functor `hoFunctor : SSet ⥤ Cat` preserves finite products of simplicial sets. -/
 instance preservesFiniteProducts : PreservesFiniteProducts hoFunctor :=
   PreservesFiniteProducts.of_preserves_binary_and_terminal _
-
-/-- The homotopy category functor `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` is (cartesian) monoidal. -/
-noncomputable instance Monoidal : hoFunctor.Monoidal :=
-  .ofChosenFiniteProducts hoFunctor
 
 end hoFunctor
 

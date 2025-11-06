@@ -24,7 +24,7 @@ universe v u
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Functor
 
-open Simplicial
+open Simplicial SimplicialObject.Truncated
 
 /-- The category of simplicial sets.
 This is the category of contravariant functors from
