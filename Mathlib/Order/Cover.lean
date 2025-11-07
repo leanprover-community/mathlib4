@@ -304,9 +304,7 @@ theorem apply_covBy_apply_iff {E : Type*} [EquivLike E α β] [OrderIsoClass E �
 theorem covBy_of_eq_or_eq (hab : a < b) (h : ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b) : a ⋖ b :=
   ⟨hab, fun c ha hb => (h c ha.le hb.le).elim ha.ne' hb.ne⟩
 
-theorem OrderEmbedding.covBy_of_apply {α β : Type*} [Preorder α] [Preorder β]
-    (f : α ↪o β) {x y : α} (h : f x ⋖ f y) : x ⋖ y :=
-  CovBy.of_image f h
+@[deprecated (since := "2025-11-07")] alias OrderEmbedding.covBy_of_apply := CovBy.of_image
 
 theorem OrderIso.map_covBy {α β : Type*} [Preorder α] [Preorder β]
     (f : α ≃o β) {x y : α} : f x ⋖ f y ↔ x ⋖ y :=
