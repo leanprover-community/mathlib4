@@ -585,7 +585,7 @@ theorem _root_.Subtype.coind_surjective {α β} {f : α → β} {p : Set β} (h 
 theorem _root_.Subtype.coind_bijective {α β} {f : α → β} {p : Set β} (h : ∀ a, f a ∈ p)
     (hf_inj : f.Injective) (hf_surj : Set.SurjOn f Set.univ p) :
     (Subtype.coind f h).Bijective :=
-  ⟨Subtype.coind_injective h hf_inj, Subtype.coind_surjective' h hf_surj⟩
+  ⟨Subtype.coind_injective h hf_inj, Subtype.coind_surjective h hf_surj⟩
 
 end surjOn
 
