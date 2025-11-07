@@ -712,8 +712,8 @@ theorem mfderiv_sumSwap :
     mfderiv I I (@Sum.swap M M') p = ContinuousLinearMap.id 𝕜 (TangentSpace I p) := by
   simpa [mfderivWithin_univ] using (mfderivWithin_sumSwap (uniqueMDiffWithinAt_univ I))
 
-lemma eventually_range : (fun y => writtenInExtChartAt I I q (@Sum.inl M M') y)
-        =ᶠ[𝓝[Set.range I] (extChartAt I q) q] (fun y => y) := by
+lemma writtenInExtChartAt_sumInl_eventuallyEq_id :
+    (writtenInExtChartAt I I q (@Sum.inl M M')) =ᶠ[𝓝[Set.range I] (extChartAt I q) q] id := by
     have hmem : I.symm ⁻¹'
         (chartAt H q).target ∩ Set.range I ∈ 𝓝[Set.range I] (extChartAt I q) q := by
       rw [← I.image_eq (chartAt H q).target]
@@ -726,14 +726,13 @@ lemma eventually_range : (fun y => writtenInExtChartAt I I q (@Sum.inl M M') y)
 
 attribute [fun_prop] Continuous.continuousWithinAt
 theorem hasMFDerivWithinAt_inl :
-    HasMFDerivWithinAt I I (@Sum.inl M M') s q
-      (ContinuousLinearMap.id 𝕜 (TangentSpace I q)) := by
+    HasMFDerivWithinAt I I (@Sum.inl M M') s q (ContinuousLinearMap.id 𝕜 (TangentSpace I q)) := by
   refine ⟨by fun_prop, ?_⟩
   set U := (extChartAt I q).symm ⁻¹' s ∩ Set.range I
   set x₀ := (extChartAt I q) q
-  have h_eventually_U : (fun y => writtenInExtChartAt I I q (@Sum.inl M M') y)
-      =ᶠ[𝓝[U] x₀] (fun y => y) :=
-    eventually_range.filter_mono (nhdsWithin_mono _ (by intro y hy; exact hy.2))
+  have h_eventually_U : (writtenInExtChartAt I I q (@Sum.inl M M')) =ᶠ[𝓝[U] x₀] id :=
+    writtenInExtChartAt_sumInl_eventuallyEq_id.filter_mono
+      (nhdsWithin_mono _ (by intro y hy; exact hy.2))
   exact (hasFDerivWithinAt_id (s := U) x₀).congr_of_eventuallyEq h_eventually_U
     (by simp [writtenInExtChartAt, extChartAt, x₀])
 
@@ -748,9 +747,9 @@ theorem hasMFDerivWithinAt_inr :
   refine ⟨by fun_prop, ?_⟩
   set U := (extChartAt I q').symm ⁻¹' t ∩ Set.range I
   set x₀ := (extChartAt I q') q'
-  have h_eventually_U : (fun y => writtenInExtChartAt I I q' (@Sum.inr M M') y)
-      =ᶠ[𝓝[U] x₀] (fun y => y) :=
-    eventually_range.filter_mono (nhdsWithin_mono _ (by intro y hy; exact hy.2))
+  have h_eventually_U : (writtenInExtChartAt I I q' (@Sum.inr M M'))
+      =ᶠ[𝓝[U] x₀] id :=
+    sorry --eventually_range.filter_mono (nhdsWithin_mono _ (by intro y hy; exact hy.2))
   exact (hasFDerivWithinAt_id (s := U) x₀).congr_of_eventuallyEq h_eventually_U
     (by simp [writtenInExtChartAt, extChartAt, x₀])
 
