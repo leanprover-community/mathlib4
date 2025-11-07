@@ -487,27 +487,27 @@ end OrderedRing
 
 section LinearOrder
 
-variable [Semiring 𝕜] [LinearOrder 𝕜] [AddCommMonoid E]
-
+variable [Semiring 𝕜] [AddCommMonoid E]
 section SemilinearMap
 
+variable [PartialOrder 𝕜]
 variable {𝕜' : Type*} [Semiring 𝕜'] [PartialOrder 𝕜']
 variable {σ : 𝕜 →+* 𝕜'} [RingHomSurjective σ]
 variable {F' : Type*} [AddCommMonoid F'] [Module 𝕜' F'] [Module 𝕜 E]
 
-theorem Convex.semilinear_image {s : Set E} (hs : Convex 𝕜 s) (hσ : StrictMono σ)
+theorem Convex.semilinear_image {s : Set E} (hs : Convex 𝕜 s) (hσ : ∀ {s t}, σ s ≤ σ t ↔ s ≤ t)
     (f : E →ₛₗ[σ] F') : Convex 𝕜' (f '' s) := by
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ a b ha hb hab
   obtain ⟨r, rfl⟩ : ∃ r : 𝕜, σ r = a := RingHomSurjective.is_surjective ..
   obtain ⟨t, rfl⟩ : ∃ t : 𝕜, σ t = b := RingHomSurjective.is_surjective ..
-  refine ⟨r • x + t • y, hs hx hy (by simpa [← hσ.le_iff_le]) (by simpa [← hσ.le_iff_le])
+  refine ⟨r • x + t • y, hs hx hy (by simp_all [(@hσ 0 r).mp]) (by simp_all [(@hσ 0 t).mp])
     ?_, by simp⟩
-  apply_fun σ using StrictMono.injective hσ
+  apply_fun σ using injective_of_le_imp_le _ hσ.mp
   simpa
 
 end SemilinearMap
 
-variable [IsOrderedRing 𝕜]
+variable [LinearOrder 𝕜] [IsOrderedRing 𝕜]
 
 theorem Convex_subadditive_le [SMul 𝕜 E] {f : E → 𝕜} (hf1 : ∀ x y, f (x + y) ≤ (f x) + (f y))
     (hf2 : ∀ ⦃c⦄ x, 0 ≤ c → f (c • x) ≤ c * f x) (B : 𝕜) :
