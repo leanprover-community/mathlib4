@@ -613,7 +613,6 @@ theorem Convex.semilinear_range {𝕜' : Type*} [Semiring 𝕜'] {σ : 𝕜' →
   [RingHomSurjective σ] {F' : Type*} [AddCommMonoid F'] [Module 𝕜' F']
   (f : F' →ₛₗ[σ] E) : Convex 𝕜 (LinearMap.range f : Set E) := Submodule.convex ..
 
-
 end Submodule
 
 section CommSemiring
