@@ -33,14 +33,6 @@ In the following, `f : Equiv.Perm β`.
 * `IsCycleOn` forbids fixed points on `s` (if `s` is nontrivial), while `IsCycle` allows them.
 -/
 
-section
-variable {G : Type*} [Group G]
-
-@[to_additive] lemma mul_zpow_mul (a b : G) : ∀ n : ℤ, (a * b) ^ n * a = a * (b * a) ^ n
-  | (n : ℕ) => by simp [mul_pow_mul]
-  | .negSucc n => by simp [inv_mul_eq_iff_eq_mul, eq_mul_inv_iff_mul_eq, mul_assoc, mul_pow_mul]
-
-end
 
 open Equiv Function Finset
 
