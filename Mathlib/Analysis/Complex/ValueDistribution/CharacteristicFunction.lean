@@ -77,7 +77,7 @@ theorem characteristic_zero_mul_le {f₁ f₂ : ℂ → ℂ} {r : ℝ} (hr : 1 �
   simp only [characteristic, Pi.add_apply]
   rw [add_add_add_comm]
   apply add_le_add (proximity_zero_mul_le h₁f₁ h₁f₂ r)
-    (logCounting_zero_mul_le hr h₁f₁ (fun z _ ↦ h₂f₁ z) h₁f₂ (fun z _ ↦ h₂f₂ z))
+    (logCounting_zero_mul_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂)
 
 /--
 Asymptotically, the characteristic function of `f * g` at zero is less than or
@@ -101,7 +101,7 @@ theorem characteristic_top_mul_le {f₁ f₂ : ℂ → ℂ} {r : ℝ} (hr : 1 �
   simp only [characteristic, Pi.add_apply]
   rw [add_add_add_comm]
   apply add_le_add (proximity_top_mul_le h₁f₁ h₁f₂ r)
-    (logCounting_top_mul_le hr h₁f₁ (fun z _ ↦ h₂f₁ z) h₁f₂ (fun z _ ↦ h₂f₂ z))
+    (logCounting_top_mul_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂)
 
 /--
 Asymptotically, the characteristic function of `f * g` at `⊤` is less than or
