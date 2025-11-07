@@ -267,6 +267,10 @@ lemma isCardinalFiltered_iff_aux₂ {ι : Type w} {j : ι → J} {k : J}
   exact ⟨l, b, fun i ↦ by grind⟩
 
 variable (J κ) in
+/-- A category is `κ`-filtered iff
+1) any family of objects of cardinality `< κ` admits a map towards a common object, and
+2) any family of morphims `j ⟶ k` of cardinality `< κ` (between *fixed* objects
+`j` and `k`) can be coequalized by a suitable morphism `k ⟶ l`. -/
 lemma isCardinalFiltered_iff :
     IsCardinalFiltered J κ ↔
       (∀ ⦃ι : Type w⦄ (j : ι → J) (_ : HasCardinalLT ι κ),
@@ -284,8 +288,7 @@ lemma isCardinalFiltered_iff :
   exact ⟨{
     pt := l
     ι.app i := a i ≫ b
-    ι.naturality _ _ f := by simpa using hb (Arrow.mk f)
-  }⟩
+    ι.naturality _ _ f := by simpa using hb (Arrow.mk f) }⟩
 
 end
 
