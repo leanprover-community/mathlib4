@@ -191,14 +191,16 @@ instance functorCategorySymmetric : SymmetricCategory (C ⥤ D) where
 end SymmetricCategory
 
 @[simps]
-instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
+instance whiskeringRightLaxMonoidal
+    {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
     [MonoidalCategory E] (L : D ⥤ E) [L.LaxMonoidal] :
     ((Functor.whiskeringRight C D E).obj L).LaxMonoidal where
   ε := { app X := Functor.LaxMonoidal.ε L }
   μ F G := { app X := Functor.LaxMonoidal.μ L (F.obj X) (G.obj X) }
 
 @[simps]
-instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
+instance whiskeringRightOplaxMonoidal
+    {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
     [MonoidalCategory E] (L : D ⥤ E) [L.OplaxMonoidal] :
     ((Functor.whiskeringRight C D E).obj L).OplaxMonoidal where
   η := { app X := Functor.OplaxMonoidal.η L }
@@ -209,5 +211,14 @@ instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategor
 instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
     [MonoidalCategory E] (L : D ⥤ E) [L.Monoidal] :
     ((Functor.whiskeringRight C D E).obj L).Monoidal where
+
+@[deprecated (since := "2025-11-06")] alias instLaxMonoidalFunctorObjWhiskeringRight :=
+  whiskeringRightLaxMonoidal
+@[deprecated (since := "2025-11-06")] alias instOplaxMonoidalFunctorObjWhiskeringRight :=
+  whiskeringRightOplaxMonoidal
+@[deprecated (since := "2025-11-06")] alias ε_app := whiskeringRightLaxMonoidal_ε_app
+@[deprecated (since := "2025-11-06")] alias μ_app := whiskeringRightLaxMonoidal_μ_app
+@[deprecated (since := "2025-11-06")] alias η_app := whiskeringRightOplaxMonoidal_η_app
+@[deprecated (since := "2025-11-06")] alias δ_app := whiskeringRightOplaxMonoidal_δ_app
 
 end CategoryTheory.Monoidal
