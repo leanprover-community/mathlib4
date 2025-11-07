@@ -55,7 +55,7 @@ lemma tensorHom_mem {X₁ X₂ : C} (f : X₁ ⟶ X₂) {Y₁ Y₂ : C} (g : Y�
 
 /-- Alternative constructor for `W.IsMonoidal` given that `W` is multiplicative and stable under
 tensoring morphisms. -/
-def IsMonoidal.mk' [W.IsMultiplicative]
+lemma IsMonoidal.mk' [W.IsMultiplicative]
     (h : ∀ {X₁ X₂ Y₁ Y₂ : C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) (_ : W f) (_ : W g), W (f ⊗ₘ g)) :
     W.IsMonoidal where
   whiskerLeft X _ _ g hg := by simpa using h (𝟙 X) g (W.id_mem _) hg
