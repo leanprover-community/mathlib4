@@ -173,19 +173,22 @@ theorem ker_toAddSubgroup (f : M →ₛₗ[τ₁₂] M₂) : (ker f).toAddSubgro
 
 theorem sub_mem_ker_iff {x y} : x - y ∈ ker f ↔ f x = f y := by rw [mem_ker, map_sub, sub_eq_zero]
 
+theorem disjoint_ker_iff_injOn {p : Submodule R M} :
+    Disjoint p (LinearMap.ker f) ↔ Set.InjOn f p := by
+  rw [disjoint_ker, Set.injOn_iff_map_eq_zero]
+
+@[deprecated disjoint_ker_iff_injOn (since := "2025-11-07")]
 theorem disjoint_ker' {p : Submodule R M} :
-    Disjoint p (ker f) ↔ ∀ x ∈ p, ∀ y ∈ p, f x = f y → x = y :=
-  disjoint_ker.trans
-    ⟨fun H x hx y hy h => eq_of_sub_eq_zero <| H _ (sub_mem hx hy) (by simp [h]),
-     fun H x h₁ h₂ => H x h₁ 0 (zero_mem _) (by simpa using h₂)⟩
+    Disjoint p (ker f) ↔ ∀ x ∈ p, ∀ y ∈ p, f x = f y → x = y := by
+  simp [disjoint_ker_iff_injOn, Set.InjOn]
 
 theorem injOn_of_disjoint_ker {p : Submodule R M} {s : Set M} (h : s ⊆ p)
-    (hd : Disjoint p (ker f)) : Set.InjOn f s := fun _ hx _ hy =>
-  disjoint_ker'.1 hd _ (h hx) _ (h hy)
+    (hd : Disjoint p (ker f)) : Set.InjOn f s :=
+  disjoint_ker_iff_injOn.mp hd |>.mono h
 
 variable (F) in
 theorem _root_.LinearMapClass.ker_eq_bot : ker f = ⊥ ↔ Injective f := by
-  simpa [disjoint_iff_inf_le] using disjoint_ker' (f := f) (p := ⊤)
+  simpa [disjoint_iff_inf_le] using disjoint_ker_iff_injOn (f := f) (p := ⊤)
 
 theorem ker_eq_bot {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊥ ↔ Injective f :=
   LinearMapClass.ker_eq_bot _
