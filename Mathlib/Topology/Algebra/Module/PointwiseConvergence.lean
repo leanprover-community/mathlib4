@@ -75,7 +75,7 @@ protected theorem hasBasis_nhds_zero :
   PointwiseConvergenceCLM.hasBasis_nhds_zero_of_basis (𝓝 0).basis_sets
 
 variable (σ E F) in
-protected theorem embedding_coeFn : IsEmbedding ((↑) : (E →SLₚₜ[σ] F) → (E → F)) :=
+protected theorem isEmbedding_coeFn : IsEmbedding ((↑) : (E →SLₚₜ[σ] F) → (E → F)) :=
   let _: UniformSpace F := IsTopologicalAddGroup.toUniformSpace F
   have _ : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
   (UniformOnFun.isEmbedding_toFun_finite E F).comp (UniformConvergenceCLM.isEmbedding_coeFn σ F _)
@@ -84,22 +84,7 @@ protected theorem embedding_coeFn : IsEmbedding ((↑) : (E →SLₚₜ[σ] F) �
 `a · x` converges to `a₀ x`. -/
 theorem tendsto_iff_forall_tendsto {p : Filter ι} {a : ι → E →SLₚₜ[σ] F} {a₀ : E →SLₚₜ[σ] F} :
     Filter.Tendsto a p (𝓝 a₀) ↔ ∀ x : E, Filter.Tendsto (a · x) p (𝓝 (a₀ x)) := by
-  let _ := IsTopologicalAddGroup.toUniformSpace F
-  have _ : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
-  suffices h : Filter.Tendsto a p (𝓝 a₀) ↔ ∀ x, TendstoUniformlyOn (a · ·) a₀ p {x} by
-    rw [h, forall_congr]
-    intro
-    rw [tendstoUniformlyOn_singleton_iff_tendsto]
-  rw [UniformConvergenceCLM.tendsto_iff_tendstoUniformlyOn]
-  unfold TendstoUniformlyOn
-  simp only [Set.mem_setOf_eq, Set.mem_singleton_iff, forall_eq]
-  constructor
-  · intro h x u hu
-    simpa using h {x} (Set.finite_singleton _) u hu
-  · intro h s hs u hu
-    rw [Filter.eventually_all_finite hs]
-    intro x _hx
-    exact h x u hu
+  simp [(PointwiseConvergenceCLM.isEmbedding_coeFn σ E F).tendsto_nhds_iff, tendsto_pi_nhds]
 
 variable (σ E F) in
 /-- Coercion from `E →SLₚₜ[σ] F` to `E →ₛₗ[σ] F` as a `𝕜₂`-linear map. -/
@@ -118,26 +103,18 @@ variable (σ F) in
 def evalCLM [ContinuousConstSMul 𝕜₂ F] (a : E) : (E →SLₚₜ[σ] F) →L[𝕜₂] F where
   toLinearMap := (coeLMₛₗ σ E F).flip a
   cont := by
-    change Continuous ((coeLMₛₗ σ E F).flip a)
-    apply continuous_of_continuousAt_zero
-    unfold ContinuousAt
-    simp only [map_zero]
+    apply continuous_of_continuousAt_zero (f := (coeLMₛₗ σ E F).flip a)
+    simp only [ContinuousAt, map_zero]
     rw [PointwiseConvergenceCLM.hasBasis_nhds_zero.tendsto_left_iff]
     intro s hs
     use ({a}, s)
-    simp only [hs, and_true, Set.mem_singleton_iff, forall_eq]
-    exact ⟨Set.finite_singleton _, fun _ hy ↦ by rwa [Set.mem_setOf_eq] at hy⟩
+    simpa [hs] using ⟨Set.finite_singleton _, fun _ hy ↦ by rwa [Set.mem_setOf_eq] at hy⟩
 
 /-- A map to `E →SLₚₜ[σ] F` is continuous if for every `x : E` the evaluation `g · x` is
 continuous. -/
 theorem continuous_of_continuous_eval {g : α → E →SLₚₜ[σ] F}
     (h : ∀ x, Continuous (g · x)) : Continuous g := by
-  rw [continuous_iff_continuousAt]
-  intro f
-  unfold ContinuousAt
-  rw [tendsto_iff_forall_tendsto]
-  intro x
-  exact (h x).continuousAt
+  simp [(PointwiseConvergenceCLM.isEmbedding_coeFn σ E F).continuous_iff, continuous_pi_iff, h]
 
 /-- The topology of bounded convergence is stronger than the topology of pointwise convergence. -/
 @[simps!]
