@@ -183,20 +183,37 @@ lemma fun_sub {f g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g 
   hf.sub hg
 
 /--
-If `f₁` is meromorphic at `x`, then `f₁ + f₂` is meromorphic at `x` if and only if `f₂` is
+If `f` is meromorphic at `x`, then `f + g` is meromorphic at `x` if and only if `g` is
 meromorphic at `x`.
 -/
-lemma meromorphicAt_iff_meromorphicAt_add {f g : 𝕜 → E} (hf : MeromorphicAt f x) :
+lemma meromorphicAt_add_iff_meromorphicAt₁ {f g : 𝕜 → E} (hf : MeromorphicAt f x) :
     MeromorphicAt (f + g) x ↔ MeromorphicAt g x := by
   exact ⟨fun h ↦ by simpa using h.sub hf, fun _ ↦ by fun_prop⟩
 
 /--
-If `f₁` is meromorphic at `x`, then `f₁ - f₂` is meromorphic at `x` if and only if `f₂` is
+If `g` is meromorphic at `x`, then `f + g` is meromorphic at `x` if and only if `f` is
 meromorphic at `x`.
 -/
-lemma meromorphicAt_iff_meromorphicAt_sub {f g : 𝕜 → E} (hf : MeromorphicAt f x) :
+lemma meromorphicAt_add_iff_meromorphicAt₂ {f g : 𝕜 → E} (hg : MeromorphicAt g x) :
+    MeromorphicAt (f + g) x ↔ MeromorphicAt f x := by
+  rw [add_comm]
+  exact meromorphicAt_add_iff_meromorphicAt₁ hg
+
+/--
+If `f` is meromorphic at `x`, then `f - g` is meromorphic at `x` if and only if `g` is
+meromorphic at `x`.
+-/
+lemma meromorphicAt_sub_iff_meromorphicAt₁ {f g : 𝕜 → E} (hf : MeromorphicAt f x) :
     MeromorphicAt (f - g) x ↔ MeromorphicAt g x := by
   exact ⟨fun h ↦ by simpa using h.sub hf, fun _ ↦ by fun_prop⟩
+
+/--
+If `g` is meromorphic at `x`, then `f - g` is meromorphic at `x` if and only if `f` is
+meromorphic at `x`.
+-/
+lemma meromorphicAt_sub_iff_meromorphicAt₂ {f g : 𝕜 → E} (hg : MeromorphicAt g x) :
+    MeromorphicAt (f - g) x ↔ MeromorphicAt f x := by
+  exact ⟨fun h ↦ by simpa using h.add hg, fun _ ↦ by fun_prop⟩
 
 @[deprecated (since := "2025-05-09")] alias sub' := fun_sub
 
