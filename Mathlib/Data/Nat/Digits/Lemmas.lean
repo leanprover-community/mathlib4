@@ -320,7 +320,8 @@ theorem getD_digits (b n i : ℕ) (h : 2 ≤ b) : (Nat.digits b n).getD i 0 = n 
         rw [← List.getD_eq_getElem?_getD]
         by_cases hc: ( b + 2 ) ≤ ( n + 1 )
         · have hltone := (Nat.one_le_div_iff (a := (n + 1)) (b := (b + 2)) (by grind)).mpr hc
-          have hs := IH ((n + 1) / (b + 2)) (Nat.div_lt_self' n b) i hltone (Nat.ne_zero_of_lt hltone)
+          have hs := IH ((n + 1) / (b + 2)) (Nat.div_lt_self' n b)
+            i hltone (Nat.ne_zero_of_lt hltone)
           rw [hs]
           have ht : (n + 1) / (b + 2) / (b + 2) ^ i = (n + 1) / ((b + 2) ^ (i + 1)) := by
             rw [Nat.div_div_eq_div_mul, mul_comm]
