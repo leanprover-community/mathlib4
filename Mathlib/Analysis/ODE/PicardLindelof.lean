@@ -503,7 +503,7 @@ lemma picard_eq_of_hasDerivAt {t : ℝ}
   exact hα t' (Ioo_subset_Icc_self ht') |>.hasDerivAt <| Icc_mem_nhds ht'.1 ht'.2
 
 /-- If the time-dependent vector field `f` is $C^n$ and the curve `α` is continuous, then
-`interate f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ`. -/
+`picard f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ`. -/
 lemma contDiffOn_nat_picard_Icc
     (ht₀ : t₀ ∈ Icc tmin tmax) {n : ℕ}
     (hf : ContDiffOn ℝ n (uncurry f) ((Icc tmin tmax) ×ˢ u))
@@ -531,7 +531,7 @@ lemma contDiffOn_nat_picard_Icc
     exact contDiffWithinAt_singleton
 
 /-- If the time-dependent vector field `f` is $C^n$ and the curve `α` is continuous, then
-`interate f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ∞`.
+`picard f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ∞`.
 
 TODO: Extend to the analytic `n = ⊤` case. -/
 lemma contDiffOn_enat_picard_Icc
