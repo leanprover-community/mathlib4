@@ -106,8 +106,8 @@ theorem sum_trapezoidal_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a 
     suffices ∀ {k : ℕ}, k ≤ N → a + k * h ∈ [[a, a + N * h]] from
       IntervalIntegrable.mono h_f_int (Set.uIcc_subset_uIcc (this hk.le) (this hk)) le_rfl
     rcases le_total h 0 with h_neg | h_pos <;> intro k hk <;> rw [← Nat.cast_le (α := ℝ)] at hk
-    · exact Set.mem_uIcc_of_ge (add_le_add_left (mul_le_mul_of_nonpos_right hk h_neg) a)
-        (add_le_of_nonpos_right (mul_nonpos_of_nonneg_of_nonpos k.cast_nonneg h_neg))
+    · simpa [Set.mem_uIcc] using .inr
+        ⟨mul_le_mul_of_nonpos_right hk h_neg, mul_nonpos_of_nonneg_of_nonpos k.cast_nonneg h_neg⟩
     · exact Set.mem_uIcc_of_le (le_add_of_nonneg_right (by positivity)) (by grw [hk])
 
 /-- The most basic case possible: two ordered points, with N = 1. This lemma is used in the proof of

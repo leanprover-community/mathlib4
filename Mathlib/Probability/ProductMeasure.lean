@@ -267,7 +267,7 @@ theorem piContent_tendsto_zero {A : ℕ → Set (Π i, X i)} (A_mem : ∀ n, A n
   -- goal is to see it as a family indexed by this countable set, because on the product indexed
   -- by this countable set we can build a measure. To do so we have to pull back our cylinders
   -- along the injection from `Π i : u, X i` to `Π i, X i`.
-  let u := ⋃ n, (s n).toSet
+  let u := ⋃ n, (s n : Set ι)
   -- `tₙ` will be `sₙ` seen as a subset of `u`.
   let t n : Finset u := (s n).preimage Subtype.val Subtype.val_injective.injOn
   classical
@@ -340,12 +340,18 @@ theorem isSigmaSubadditive_piContent : (piContent μ).IsSigmaSubadditive := by
 
 namespace Measure
 
+open scoped Classical in
 /-- The product measure of an arbitrary family of probability measures. It is defined as the unique
 extension of the function which gives to cylinders the measure given by the associated product
-measure. -/
+measure.
+
+It is defined via an `if ... then ... else` so that it can be manipulated without carrying
+a proof that the measures are probability measures. -/
 noncomputable def infinitePi : Measure (Π i, X i) :=
-  (piContent μ).measure isSetSemiring_measurableCylinders
-    generateFrom_measurableCylinders.ge (isSigmaSubadditive_piContent μ)
+  if h : ∀ i, IsProbabilityMeasure (μ i) then
+    (piContent μ).measure isSetSemiring_measurableCylinders
+      generateFrom_measurableCylinders.ge (isSigmaSubadditive_piContent (hμ := h) μ)
+    else 0
 
 /-- The product measure is the projective limit of the partial product measures. This ensures
 uniqueness and expresses the value of the product measure applied to cylinders. -/
@@ -353,8 +359,8 @@ theorem isProjectiveLimit_infinitePi :
     IsProjectiveLimit (infinitePi μ) (fun I : Finset ι ↦ (Measure.pi (fun i : I ↦ μ i))) := by
   intro I
   ext s hs
-  rw [map_apply (measurable_restrict I) hs, infinitePi, AddContent.measure_eq, ← cylinder,
-    piContent_cylinder μ hs]
+  rw [map_apply (measurable_restrict I) hs, infinitePi, dif_pos hμ, AddContent.measure_eq,
+    ← cylinder, piContent_cylinder μ hs]
   · exact generateFrom_measurableCylinders.symm
   · exact cylinder_mem_measurableCylinders _ _ hs
 
@@ -408,10 +414,12 @@ lemma _root_.measurePreserving_eval_infinitePi (i : ι) :
     rw [this, ← map_map, infinitePi_map_restrict, (measurePreserving_eval _ _).map_eq]
     all_goals fun_prop
 
+lemma infinitePi_map_eval (i : ι) :
+    (infinitePi μ).map (fun x ↦ x i) = μ i :=
+  (measurePreserving_eval_infinitePi μ i).map_eq
+
 lemma infinitePi_map_pi {Y : ι → Type*} [∀ i, MeasurableSpace (Y i)] {f : (i : ι) → X i → Y i}
     (hf : ∀ i, Measurable (f i)) :
-    haveI (i : ι) : IsProbabilityMeasure ((μ i).map (f i)) :=
-      isProbabilityMeasure_map (hf i).aemeasurable
     (infinitePi μ).map (fun x i ↦ f i (x i)) = infinitePi (fun i ↦ (μ i).map (f i)) := by
   have (i : ι) : IsProbabilityMeasure ((μ i).map (f i)) :=
     isProbabilityMeasure_map (hf i).aemeasurable

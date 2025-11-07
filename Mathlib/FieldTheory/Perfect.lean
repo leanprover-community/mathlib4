@@ -154,6 +154,13 @@ theorem frobeniusEquiv_symm_comp_frobenius :
 theorem frobeniusEquiv_symm_pow_p (x : R) : ((frobeniusEquiv R p).symm x) ^ p = x :=
   frobenius_apply_frobeniusEquiv_symm R p x
 
+@[simp]
+theorem iterate_frobeniusEquiv_symm_pow_p_pow (x : R) (n : ℕ) :
+    ((frobeniusEquiv R p).symm ^[n]) x ^ (p ^ n) = x := by
+  induction n generalizing x with
+  | zero => simp
+  | succ n ih => simp [pow_succ, pow_mul, ih]
+
 theorem injective_pow_p {x y : R} (h : x ^ p = y ^ p) : x = y := (frobeniusEquiv R p).injective h
 
 lemma polynomial_expand_eq (f : R[X]) :
@@ -358,7 +365,7 @@ a bijection from the set of roots of `Polynomial.expand R p f` to the set of roo
 It's given by `x ↦ x ^ p`, see `rootsExpandEquivRoots_apply`. -/
 noncomputable def rootsExpandEquivRoots : (expand R p f).roots.toFinset ≃ f.roots.toFinset :=
   ((frobeniusEquiv R p).image _).trans <| .setCongr <| show _ '' setOf (· ∈ _) = setOf (· ∈ _) by
-    classical simp_rw [← roots_expand_image_frobenius (p := p) (f := f), Finset.mem_val,
+    classical simp_rw [← roots_expand_image_frobenius (p := p) (f := f),
       Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe, EquivLike.coe_coe,
       frobeniusEquiv_apply]
 
@@ -373,7 +380,7 @@ noncomputable def rootsExpandPowEquivRoots (n : ℕ) :
   ((iterateFrobeniusEquiv R p n).image _).trans <|
     .setCongr <| show _ '' (setOf (· ∈ _)) = setOf (· ∈ _) by
     classical simp_rw [← roots_expand_image_iterateFrobenius (p := p) (f := f) (n := n),
-      Finset.mem_val, Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe,
+      Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe,
       EquivLike.coe_coe, iterateFrobeniusEquiv_apply]
 
 @[simp]
