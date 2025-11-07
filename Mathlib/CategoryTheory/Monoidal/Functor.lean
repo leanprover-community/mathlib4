@@ -1233,4 +1233,50 @@ lemma transport_δ {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) (X Y : C) : letI :
 
 end Functor.Monoidal
 
+namespace Equivalence
+
+variable {C D}
+
+/--
+Given a functor `F` and an equivalence of categories `e` such that `e.inverse` and `e.functor ⋙ F`
+are monoidal functors, `F` is monoidal as well.
+-/
+@[simps! -isSimp]
+def monoidalOfPrecompFunctor (e : C ≌ D) (F : D ⥤ E) {F' : C ⥤ E} (i : e.functor ⋙ F ≅ F')
+    [e.inverse.Monoidal] [F'.Monoidal] : F.Monoidal :=
+  letI : (e.functor ⋙ F).Monoidal := .transport i.symm
+  .transport (e.invFunIdAssoc F)
+
+/--
+Given a functor `F` and an equivalence of categories `e` such that `e.functor` and `e.inverse ⋙ F`
+are monoidal functors, `F` is monoidal as well.
+-/
+@[simps! -isSimp]
+def monoidalOfPrecompInverse (e : C ≌ D) (F : C ⥤ E) {F' : D ⥤ E} (i : e.inverse ⋙ F ≅ F')
+    [e.functor.Monoidal] [F'.Monoidal] : F.Monoidal :=
+  e.symm.monoidalOfPrecompFunctor F i
+
+/--
+Given a functor `F` and an equivalence of categories `e` such that `e.functor` and `F ⋙ e.inverse`
+are monoidal functors, `F` is monoidal as well.
+-/
+@[simps! -isSimp]
+def monoidalOfPostcompInverse (e : C ≌ D) (F : E ⥤ D) {F' : E ⥤ C} (i : F ⋙ e.inverse ≅ F')
+    [e.functor.Monoidal] [F'.Monoidal] : F.Monoidal :=
+  letI : F ⋙ e.inverse |>.Monoidal := Monoidal.transport i.symm
+  letI : (F ⋙ e.inverse ⋙ e.functor).Monoidal :=
+    inferInstanceAs ((F ⋙ e.inverse) ⋙ e.functor).Monoidal
+  Monoidal.transport (isoWhiskerLeft F e.counitIso ≪≫ F.rightUnitor)
+
+/--
+Given a functor `F` and an equivalence of categories `e` such that `e.inverse` and `F ⋙ e.functor`
+are monoidal functors, `F` is monoidal as well.
+-/
+@[simps! -isSimp]
+def monoidalOfPostcompFunctor (e : C ≌ D) (F : E ⥤ C) {F' : E ⥤ D} (i : F ⋙ e.functor ≅ F')
+    [e.inverse.Monoidal] [F'.Monoidal] : F.Monoidal :=
+  e.symm.monoidalOfPostcompInverse _ i
+
+end Equivalence
+
 end CategoryTheory
