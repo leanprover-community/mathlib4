@@ -752,12 +752,12 @@ theorem mkQ_comp_lift {n : ℕ} :
   ext; simp
 
 theorem eq_lift {F : M →ₗ[R] N}
-    (hF : ∀ {m s}, Submodule.Quotient.mk (F s) = f m s) : F = lift I ha f hf := by
+    (hF : ∀ n, mkQ _ ∘ₗ F = f n) : F = lift I ha f hf := by
   ext s
   rw [IsHausdorff.eq_iff_smodEq (I := I)]
   intro n
   apply SModEq.mono (smul_mono_left (Ideal.pow_le_pow_right (ha.id_le n)))
-  simp [SModEq, hF, mk_lift I ha f hf]
+  simp [SModEq, ← hF n, mk_lift I ha f hf]
 
 end StrictMono
 
