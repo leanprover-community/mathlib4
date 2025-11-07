@@ -32,6 +32,8 @@ This file defines the infinite places of a number field.
   `‖·‖_w` is the normalized absolute value for `w`.
 * `NumberField.InfinitePlace.card_add_two_mul_card_eq_rank`: the degree of `K` is equal to the
   number of real places plus twice the number of complex places.
+* `NumberField.InfinitePlace.denseRange_algebraMap_pi`: the image of `K` by the diagonal embedding
+  into the product of its infinite completions is dense.
 
 ## Tags
 
@@ -516,29 +518,35 @@ namespace NumberField.InfinitePlace
 
 variable {K : Type*} [Field K] {v w : InfinitePlace K}
 
+@[simp]
+theorem map_rat (v : InfinitePlace K) (x : ℚ) : v x = ‖x‖ := by
+  rcases v with ⟨_, _⟩
+  aesop (add simp [coe_apply])
+
+@[simp]
+theorem map_nat (v : InfinitePlace K) (n : ℕ) : v n = n := by
+  rcases v with ⟨_, _⟩
+  aesop (add simp [coe_apply])
+
 /-- If `v` and `w` are infinite places of `K` and `v = w ^ t` for some `t` then `t = 1`. -/
 theorem eq_one_of_rpow_eq {t : ℝ} (h : (w ·) ^ t = v) : t = 1 := by
-  let ⟨ψ, hψ⟩ := v.2
-  let ⟨φ, hφ⟩ := w.2
-  simp only [coe_apply, ← hψ, ← hφ, funext_iff] at h
-  simpa [place_apply, map_ofNat] using congr_arg (Real.logb 2) (h 2)
+  obtain ⟨n, hn⟩ := exists_gt (1 : ℕ)
+  exact ((n : ℝ).rpow_right_inj (by grind [Nat.cast_pos]) (by aesop)).1 <|
+    by simpa using funext_iff.1 h n
 
 /-- Two infinite places `v` and `w` are equal if and only if their underlying absolute values
 are equivalent. -/
 theorem eq_iff_isEquiv : w = v ↔ w.1.IsEquiv v.1 := by
   refine ⟨fun h ↦ h ▸ .rfl, fun h ↦ ?_⟩
-  let ⟨t, _, h⟩ := w.1.isEquiv_iff_exists_rpow_eq.1 h
+  obtain ⟨t, _, h⟩ := w.1.isEquiv_iff_exists_rpow_eq.1 h
   exact ext _ _ fun k ↦ by simpa [eq_one_of_rpow_eq h, ext, coe_apply] using funext_iff.1 h k
 
 variable (v)
 
-theorem exists_apply_one_lt : ∃ x, 1 < v x :=
-  ⟨2, let ⟨ψ, hψ⟩ := v.2; by simp [coe_apply, ← hψ, map_ofNat]⟩
-
 /-- Infinite places are represented by non-trivial absolute values. -/
-theorem isNontrivial : v.1.IsNontrivial :=
-  let ⟨x, hx⟩ := v.exists_apply_one_lt
-  ⟨x, v.pos_iff.1 <| by linarith, by linarith [v.coe_apply _ ▸ hx]⟩
+theorem isNontrivial : v.1.IsNontrivial := by
+  obtain ⟨n, hn⟩ := exists_gt (1 : ℕ)
+  exact ⟨n, v.pos_iff.1 <| zero_lt_one.trans (by simpa), by simp [← coe_apply]; grind⟩
 
 variable {v}
 

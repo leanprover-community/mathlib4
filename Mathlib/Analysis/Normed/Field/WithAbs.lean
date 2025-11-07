@@ -17,7 +17,7 @@ on an absolute value. This is useful when dealing with several absolute values o
 In particular this allows us to define the completion of a field at a given absolute value.
 -/
 
-open Filter Topology
+open Topology
 
 noncomputable section
 
@@ -49,7 +49,7 @@ result if `WithAbs v` had a topology for general value rings `S`. Currently `Wit
 a topology when `S = ℝ`. -/
 theorem tendsto_one_div_one_add_pow_nhds_one {R : Type*} [Field R] {v : AbsoluteValue R ℝ}
     {a : R} (ha : v a < 1) :
-    atTop.Tendsto (fun n ↦ (WithAbs.equiv v).symm (1 / (1 + a ^ n))) (𝓝 1) := by
+    Filter.atTop.Tendsto (fun n ↦ (WithAbs.equiv v).symm (1 / (1 + a ^ n))) (𝓝 1) := by
   simpa using inv_one (G := WithAbs v) ▸ (tendsto_inv_iff₀ one_ne_zero).2
     (tendsto_iff_norm_sub_tendsto_zero.2 <| by simpa using ha)
 
