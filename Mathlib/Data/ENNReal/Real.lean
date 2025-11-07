@@ -347,10 +347,7 @@ theorem toReal_top_mul (a : ℝ≥0∞) : ENNReal.toReal (∞ * a) = 0 := by
   rw [mul_comm]
   exact toReal_mul_top _
 
-theorem toReal_eq_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal = b.toReal ↔ a = b := by
-  lift a to ℝ≥0 using ha
-  lift b to ℝ≥0 using hb
-  simp only [coe_inj, NNReal.coe_inj, coe_toReal]
+@[deprecated (since := "2025-11-07")] alias toReal_eq_toReal := toReal_eq_toReal_iff'
 
 protected theorem trichotomy (p : ℝ≥0∞) : p = 0 ∨ p = ∞ ∨ 0 < p.toReal := by
   simpa only [or_iff_not_imp_left] using toReal_pos
