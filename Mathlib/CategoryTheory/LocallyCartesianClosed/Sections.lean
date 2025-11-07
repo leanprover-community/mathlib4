@@ -50,7 +50,8 @@ lemma toOver_map {I : C} {Y Z : C} (f : Y ⟶ Z) :
     (toOver I).map f = Over.homMk (f ▷ I) := by
   simp only [toOver]
 
-variable (C) in
+variable (C)
+
 /-- The functor from `C` to `Over (𝟙_ C)` which sends `X : C` to `Over.mk <| toUnit X`. -/
 @[simps! obj_left obj_hom map_left]
 def toOverUnit : C ⥤ Over (𝟙_ C) where
@@ -65,9 +66,7 @@ def equivOverUnit : Over (𝟙_ C) ≌ C :=
 
 attribute [local instance] Over.ChosenPullback.cartesianMonoidalCategoryToUnit
 
-@[simps! obj_left obj_hom map_left]
-def toOverTerminal (X : C) (_ : IsTerminal X) : C ⥤ Over X :=
-  toOverUnit C ⋙ pullback (toUnit X)
+variable {C}
 
 /-- The isomorphism of functors `toOverUnit C ⋙ ChosenPullback.pullback (toUnit I)` and
 `toOver I`. -/
@@ -87,9 +86,8 @@ theorem forgetAdjToOver.homEquiv_symm {I : C} (X : Over I) (A : C) (f : X ⟶ (t
    simp
 
 /-- The isomorphism of functors `toOver (𝟙_ C)` and `toOverUnit C`. -/
-def toOverIsoToOverUnit :
-    toOver (𝟙_ C) ≅ toOverUnit C  :=
-  (forgetAdjToOver (𝟙_ C)).rightAdjointUniq (equivOverUnit |>.toAdjunction)
+def toOverIsoToOverUnit : toOver (𝟙_ C) ≅ toOverUnit C  :=
+  (forgetAdjToOver (𝟙_ C)).rightAdjointUniq (equivOverUnit C |>.toAdjunction)
 
 /-- A natural isomorphism between the functors `toOver I` and `toOver J ⋙ pullback f`
 for any morphism `f : X ⟶ Y`. -/
