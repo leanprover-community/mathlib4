@@ -67,8 +67,8 @@ variable [Semiring R] [TopologicalSpace F] [TopologicalSpace B]
 
 /-- A mixin class for `Pretrivialization`, stating that a pretrivialization is fiberwise linear with
 respect to given module structures on its fibers and the model fiber. -/
-protected class Bundle.Pretrivialization.IsLinear [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)]
-  [∀ x, Module R (E x)] (e : Pretrivialization F (π F E)) : Prop where
+protected class Bundle.Pretrivialization.IsLinear [AddCommMonoid F] [Module R F]
+  [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)] (e : Pretrivialization F (π F E)) : Prop where
   linear : ∀ b ∈ e.baseSet, IsLinearMap R fun x : E b => (e ⟨b, x⟩).2
 
 namespace Bundle.Pretrivialization
