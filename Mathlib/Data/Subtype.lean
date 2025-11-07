@@ -142,14 +142,14 @@ def coind {α β} (f : α → β) {p : β → Prop} (h : ∀ a, p (f a)) : α �
 theorem coind_injective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Injective f) :
     Injective (coind f h) := fun x y hxy ↦ hf <| by apply congr_arg Subtype.val hxy
 
+@[deprecated "use `Subtype.coind_surjective'` instead" (since := "2025-11-7")]
 theorem coind_surjective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Surjective f) :
-    Surjective (coind f h) := fun x ↦
-  let ⟨a, ha⟩ := hf x
-  ⟨a, coe_injective ha⟩
+    Surjective (coind f h) := fun x ↦ ⟨_, coe_injective (hf x).choose_spec⟩
 
+@[deprecated "use `Subtype.coind_bijective'` instead" (since := "2025-11-7")]
 theorem coind_bijective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Bijective f) :
     Bijective (coind f h) :=
-  ⟨coind_injective h hf.1, coind_surjective h hf.2⟩
+  ⟨coind_injective h hf.1, fun x ↦ ⟨_, coe_injective (hf.2 x).choose_spec⟩⟩
 
 /-- Restriction of a function to a function on subtypes. -/
 @[simps]
