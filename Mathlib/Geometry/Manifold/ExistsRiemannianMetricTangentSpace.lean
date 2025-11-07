@@ -264,7 +264,6 @@ lemma h_need (f : SmoothPartitionOfUnity B IB B) (b : B) (v w : TangentSpace IB 
   ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilin j b).toFun v).toFun w =
   ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilin j b).toFun w).toFun v := by
 
-
     have ha : ∑ j ∈ h_fin.toFinset, (((f j) b • g_bilin j b).toFun v).toFun w =
               ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilin j b).toFun v).toFun w := by
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe]
@@ -324,37 +323,6 @@ lemma foo' (f : SmoothPartitionOfUnity B IB B) (b : B) (v w : TangentSpace IB b)
          ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilin j b).toFun w).toFun v :=
     h_need f b v w h_fin
   exact this
-
-lemma g_global_pos (f : SmoothPartitionOfUnity B IB B)
-  (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source))
-  (p : B) (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) :
-  v ≠ 0 → 0 < g_global f p v v := by
-  intro hv
-  unfold g_global
-  have h_nonneg : ∀ i, 0 ≤ f.toFun i p := fun i => f.nonneg' i p
-  have ⟨i, hi_pos⟩ : ∃ i, 0 < f i p := by
-    by_contra hneg
-    push_neg at hneg
-    have : ∀ (x : B), f x p = 0 := fun x => le_antisymm (hneg x) (h_nonneg x)
-    have h1 : ∑ᶠ i, f i p = 0 := finsum_eq_zero_of_forall_eq_zero this
-    have h2 : ∑ᶠ i, f i p = 1 := f.sum_eq_one' p trivial
-    exact absurd (h1.symm.trans h2) one_ne_zero.symm
-  have hi_chart : p ∈ (extChartAt IB i).source := by
-    apply h_sub
-    apply subset_closure
-    exact Function.mem_support.mpr hi_pos.ne'
-  let h x := f x p * g x p v v
-  have h1 : ∀ j, 0 ≤ h j := fun j => mul_nonneg (h_nonneg j) (g_nonneg j p v)
-  have h2 : ∃ j, 0 < h j := ⟨i, mul_pos hi_pos (g_pos i p hi_chart v hv)⟩
-  have h3 : (Function.support h).Finite := by
-    apply (f.locallyFinite'.point_finite p).subset
-    intro x hx
-    simp [Function.mem_support, h] at hx
-    have : f x p ≠ 0 ∧ g x p v v ≠ 0 := hx
-    have : (f x) p * g x p v v ≠ 0 := mul_ne_zero_iff.mpr this
-    exact mul_ne_zero_iff.mp this |>.1
-  have h4 : 0 < ∑ᶠ i, h i := finsum_pos' h1 h2 h3
-  exact h4
 
 lemma g_global_bilin_eq_sum (f : SmoothPartitionOfUnity B IB B) (p : B) :
   g_global_bilin f p = ∑ᶠ (j : B), (f j) p • g_bilin j p := rfl
@@ -441,24 +409,106 @@ def g_global_smooth_section'
   { toFun := g_global_bilin f
     contMDiff_toFun := g_global_bilin_smooth f h_sub}
 
-lemma baz' (f : SmoothPartitionOfUnity B IB B) (b : B) (v : TangentSpace IB b) :
-  v ≠ 0 → 0 < ((g_global_bilin f b).toFun v).toFun v := sorry
+lemma h_need' (f : SmoothPartitionOfUnity B IB B)
+  (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source))
+  (b : B) (v : TangentSpace IB b)
+  (h_fin : (Function.support fun j ↦ ((f j) b • (g_bilin j b) : W (TangentSpace IB) b)).Finite) :
+  v ≠ 0 → 0 < ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilin j b).toFun v).toFun v := by
+
+  have ha : ∑ j ∈ h_fin.toFinset, (((f j) b • g_bilin j b).toFun v).toFun v =
+            ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilin j b).toFun v).toFun v := by
+    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe]
+    rw [ContinuousLinearMap.sum_apply, ContinuousLinearMap.sum_apply]
+
+  let h : (j : B) → W ((@TangentSpace ℝ _ _ _ _ _ _ IB B _ _)) b :=
+    fun j ↦ (f j) b • g_bilin j b
+
+  let h' x := f x b * ((g_bilin x b).toFun v).toFun v
+
+  have h_inc : (Function.support h) ⊆ h_fin.toFinset :=
+      Set.Finite.toFinset_subset.mp fun ⦃a⦄ a ↦ a
+
+  have hb : ∑ᶠ (j : B), (((f j) b • g_bilin j b).toFun v).toFun v =
+           ∑ j ∈ h_fin.toFinset, (((f j) b • g_bilin j b).toFun v).toFun v :=
+      finsum_image_eq_sum (evalAt b v v) h h_fin.toFinset h_inc
+
+  have : ∀ j, (((f j) b • g_bilin j b).toFun v).toFun v = h' j := by
+    simp
+    exact fun j ↦ rfl
+
+  intro hv
+  have h_nonneg : ∀ i, 0 ≤ f.toFun i b := fun i => f.nonneg' i b
+  have ⟨i, hi_pos⟩ : ∃ i, 0 < f i b := by
+    by_contra hneg
+    push_neg at hneg
+    have : ∀ (x : B), f x b = 0 := fun x => le_antisymm (hneg x) (h_nonneg x)
+    have h1 : ∑ᶠ i, f i b = 0 := finsum_eq_zero_of_forall_eq_zero this
+    have h2 : ∑ᶠ i, f i b = 1 := f.sum_eq_one' b trivial
+    exact absurd (h1.symm.trans h2) one_ne_zero.symm
+  have hi_chart : b ∈ (extChartAt IB i).source := by
+    apply h_sub
+    apply subset_closure
+    exact Function.mem_support.mpr hi_pos.ne'
+
+  have h1 : ∀ j, 0 ≤ h' j := fun j => mul_nonneg (h_nonneg j) (g_nonneg j b v)
+  have h2 : ∃ j, 0 < h' j := ⟨i, mul_pos hi_pos (g_pos i b hi_chart v hv)⟩
+  have h3 : (Function.support h').Finite := by
+    apply (f.locallyFinite'.point_finite b).subset
+    intro x hx
+    simp [Function.mem_support, h'] at hx
+    have : f x b ≠ 0 ∧ (((g_bilin x b)).toFun v).toFun v ≠ 0 := hx
+    have : (f x) b * ((g_bilin x b).toFun v).toFun v ≠ 0 := mul_ne_zero_iff.mpr this
+    exact mul_ne_zero_iff.mp this |>.1
+  have h4 : 0 < ∑ᶠ i, h' i := finsum_pos' h1 h2 h3
+
+  have h5 : ∑ᶠ i, h' i  = ∑ᶠ i, (((f i) b • g_bilin i b).toFun v).toFun v := rfl
+  have h6 : ∑ᶠ i, h' i  = ∑ j ∈ h_fin.toFinset, (((f j) b • g_bilin j b).toFun v).toFun v := by
+    rw [hb] at h5
+    exact h5
+  have h7 : ∑ᶠ i, h' i = ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilin j b).toFun v).toFun v := by
+    rw [ha] at h6
+    exact h6
+
+  exact lt_of_lt_of_eq h4 h7
+
+lemma baz (f : SmoothPartitionOfUnity B IB B)
+  (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source))
+  (b : B) (v : TangentSpace IB b) :
+  v ≠ 0 → 0 < ((g_global_bilin f b).toFun v).toFun v := by
+  intro hv
+  unfold g_global_bilin
+  have h_fin : (Function.support fun j ↦ ((f j) b • (g_bilin j b) :
+                W (TangentSpace IB) b)).Finite := by
+    apply (f.locallyFinite'.point_finite b).subset
+    intro i hi
+    simp only [Function.mem_support, ne_eq, smul_eq_zero, not_or] at hi
+    simp only [Set.mem_setOf_eq, Function.mem_support, ne_eq]
+    exact hi.1
+  have h6a : (∑ᶠ (j : B), (f j) b • g_bilin j b) =
+            ∑ j ∈ h_fin.toFinset, (f j) b • g_bilin j b := finsum_eq_sum _ h_fin
+  rw [h6a]
+  exact h_need' f h_sub b v h_fin hv
 
 #check Bornology.isVonNBounded_iff
 #check Bornology.IsVonNBounded
 #check Metric.isBounded_ball
 #check Bornology.IsVonNBounded.subset
 
+lemma eek (f : SmoothPartitionOfUnity B IB B) :
+  ∀ (b : B), Bornology.IsVonNBounded ℝ
+    {v  : TangentSpace IB b | ((g_global_bilin f b).toFun v).toFun v < 1} := by
+  intro b
+  exact sorry
+
 noncomputable
 def riemannian_metric_exists'
     (f : SmoothPartitionOfUnity B IB B)
-    (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source))
-    (hf : f.IsSubordinate fun x ↦ (chartAt HB x).source) :
+    (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source)) :
     ContMDiffRiemannianMetric (IB := IB) (n := ∞) (F := EB)
      (E := @TangentSpace ℝ _ _ _ _ _ _ IB B _ _) :=
   { inner := g_global_bilin f
     symm := foo' f
-    pos := baz' f
-    isVonNBounded := by exact sorry
+    pos := baz f h_sub
+    isVonNBounded := eek f
     contMDiff := (g_global_smooth_section' f h_sub).contMDiff_toFun
      }
