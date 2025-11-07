@@ -239,15 +239,12 @@ lemma iCondIndepSets_singleton_iff (s : ι → Set Ω) (hπ : ∀ i, MeasurableS
     iCondIndepSets m' hm' (fun i ↦ {s i}) μ ↔ ∀ S : Finset ι,
       μ⟦⋂ i ∈ S, s i | m'⟧ =ᵐ[μ] ∏ i ∈ S, (μ⟦s i | m'⟧) := by
   rw [iCondIndepSets_iff]
-  · simp only [Set.mem_singleton_iff]
-    refine ⟨fun h S ↦ h S (fun i _ ↦ rfl), fun h S f hf ↦ ?_⟩
-    filter_upwards [h S] with a ha
-    refine Eq.trans ?_ (ha.trans ?_)
+  · simp_all only [Set.mem_singleton_iff]
+    constructor
+    · intros
+      simp [*]
     · grind
-    · simp_rw [Finset.prod_apply]
-      refine Finset.prod_congr rfl (fun i hi ↦ ?_)
-      rw [hf i hi]
-  · simpa only [Set.mem_singleton_iff, forall_eq]
+  · simpa
 
 theorem condIndepSets_singleton_iff {μ : Measure Ω} [IsFiniteMeasure μ]
     {s t : Set Ω} (hs : MeasurableSet s) (ht : MeasurableSet t) :
@@ -399,10 +396,12 @@ theorem CondIndepSets.iUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)}
     CondIndepSets m' hm' (⋃ n, s n) s' μ :=
   Kernel.IndepSets.iUnion hyp
 
-theorem CondIndepSets.bUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)}
+theorem CondIndepSets.biUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)}
     {u : Set ι} (hyp : ∀ n ∈ u, CondIndepSets m' hm' (s n) s' μ) :
     CondIndepSets m' hm' (⋃ n ∈ u, s n) s' μ :=
-  Kernel.IndepSets.bUnion hyp
+  Kernel.IndepSets.biUnion hyp
+
+@[deprecated (since := "2025-11-02")] alias CondIndepSets.bUnion := CondIndepSets.biUnion
 
 theorem CondIndepSets.inter {s₁ s' : Set (Set Ω)} (s₂ : Set (Set Ω))
     (h₁ : CondIndepSets m' hm' s₁ s' μ) :
@@ -932,9 +931,6 @@ theorem iCondIndepFun.condIndepFun_prodMk {β : ι → Type*}
     CondIndepFun m' hm' (fun a => (f i a, f j a)) (f k) μ :=
   Kernel.iIndepFun.indepFun_prodMk hf_Indep hf_meas i j k hik hjk
 
-@[deprecated (since := "2025-03-05")]
-alias iCondIndepFun.condIndepFun_prod_mk := iCondIndepFun.condIndepFun_prodMk
-
 open Finset in
 lemma iCondIndepFun.condIndepFun_prodMk_prodMk (h_indep : iCondIndepFun m' hm' f μ)
     (hf : ∀ i, Measurable (f i))
@@ -945,9 +941,6 @@ lemma iCondIndepFun.condIndepFun_prodMk_prodMk (h_indep : iCondIndepFun m' hm' f
     ⟨v ⟨i, mem_insert_self _ _⟩, v ⟨j, mem_insert_of_mem <| mem_singleton_self _⟩⟩
   have hg (i j : ι) : Measurable (g i j) := by fun_prop
   exact (h_indep.indepFun_finset {i, j} {k, l} (by aesop) hf).comp (hg i j) (hg k l)
-
-@[deprecated (since := "2025-03-05")]
-alias iCondIndepFun.condIndepFun_prod_mk_prod_mk := iCondIndepFun.condIndepFun_prodMk_prodMk
 
 end iCondIndepFun
 
