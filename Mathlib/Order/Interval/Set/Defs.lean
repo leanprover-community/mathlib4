@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Set.Defs
 import Mathlib.Order.Defs.PartialOrder
+import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Intervals
@@ -79,7 +80,7 @@ theorem Ioi_def (a : α) : { x | a < x } = Ioi a := rfl
 interval `[[x, y]]`. If `α` is a `DenselyOrdered` `ConditionallyCompleteLinearOrder` with
 the `OrderTopology`, then this condition is equivalent to `IsPreconnected s`. If `α` is a
 `LinearOrderedField`, then this condition is also equivalent to `Convex α s`. -/
-class OrdConnected (s : Set α) : Prop where
+@[mk_iff] class OrdConnected (s : Set α) : Prop where
   /-- `s : Set α` is `OrdConnected` if for all `x y ∈ s` it includes the interval `[[x, y]]`. -/
   out' ⦃x : α⦄ (hx : x ∈ s) ⦃y : α⦄ (hy : y ∈ s) : Icc x y ⊆ s
 

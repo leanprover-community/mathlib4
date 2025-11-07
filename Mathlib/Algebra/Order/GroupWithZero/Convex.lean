@@ -9,9 +9,9 @@ import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Data.Real.Embedding
 import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.Algebra.Order.Archimedean.Class
+import Mathlib.Order.Interval.Set.OrdConnected
 
 variable {α β : Type*} [CommGroup α] [LinearOrder α] [CommGroup β] [LinearOrder β]
-
 
 @[to_additive] def IsConvexSubgroup (H : Subgroup α) : Prop :=
   ∀ ⦃a b : α⦄, (a ≤ b) → (b ≤ 1) → a ∈ H → b ∈ H
@@ -48,6 +48,16 @@ lemma IsConvexSubgroup.iff_mem_of_le_of_le {H : Subgroup α} :
     specialize h a b 1
     apply h aleb ble1 ainH (Subgroup.one_mem H)
 
+lemma IsConvexSubgroup.iff_isOrdConnected {H : Subgroup α} :
+    IsConvexSubgroup H ↔ Set.OrdConnected (H : Set α) where
+    mp convex := by
+      constructor
+      intros a ha c hc b binIcc
+      rw [Eq.symm (inv_mul_cancel_right b c)]
+      refine (H.mul_mem_cancel_right hc).mpr
+        (convex ((mul_le_mul_iff_right c⁻¹).mpr binIcc.1) (mul_inv_le_one_iff_le.mpr binIcc.2) ?_)
+      apply mul_mem ha ; exact inv_mem hc
+    mpr h a b aleb ble1 ainH := h.1 ainH H.one_mem ⟨aleb, ble1⟩
 end
 
 variable (α) in
@@ -145,27 +155,6 @@ def QuotientGroup.mkOrderedMonoidHom : α →*o α ⧸ G where
 lemma quotientMk_ismonotone : Monotone (β :=  α ⧸ G) (⟦·⟧) :=
   (QuotientGroup.mkOrderedMonoidHom _).monotone'
 
-lemma aux : MulArchimedean α ↔ Subsingleton (FiniteMulArchimedeanClass α) := by sorry
-
-lemma ht1 : LinearOrderedCommGroup.height α ≤ 1 ↔ MulArchimedean α := by sorry
-lemma ht1' : LinearOrderedCommGroup.height α ≤ 1 ↔
-    ∃ f : α →*o Multiplicative ℝ, Function.Injective f := by sorry
--- use Archimedean.exists_orderAddMonoidHom_real_injective for forward direction
-
-open NNReal
-def Units.nnrealToMultiplicativeReal : ℝ≥0ˣ ≃*o Multiplicative ℝ := sorry
-def NNReal.toWithZeroMultiplicativeReal : ℝ≥0 ≃*o WithZero (Multiplicative ℝ) := sorry
-
-lemma isHeightht1.tfae : List.TFAE [
-  LinearOrderedCommGroup.height α ≤ 1,
-  MulArchimedean α,
-  ∃ f : α →*o Multiplicative ℝ, Function.Injective f] := by
-  tfae_have 1 → 2 := by sorry
-  tfae_have 2 → 1 := by sorry
-  tfae_have 3 → 1 := by sorry
-  tfae_have 1 → 3 := by sorry
-  tfae_finish
-
 @[simp] theorem Subgroup.mabs_mem_iff {G : Subgroup α} {a : α} : |a|ₘ ∈ G ↔ a ∈ G := by
   obtain ⟨h, -⟩ | ⟨h, -⟩ := mabs_cases a <;> simp [h]
 
@@ -239,6 +228,58 @@ def orderIsoFiniteArchimedeanClass :
     (fun _G _H le _x ⟨a, ha1, haH, eq⟩ ↦ ⟨a, ha1, le haH, eq⟩)
     fun _s _t le _a hat ha1 ↦ le (hat ha1)
 
-end
+theorem FiniteMulArchimedean_of_mk_eq_mk (h : ∀ a (ha : a ≠ 1), ∀ (b : α) (hb : b ≠ 1),
+  FiniteMulArchimedeanClass.mk a ha = FiniteMulArchimedeanClass.mk b hb) : MulArchimedean α := by
+    apply MulArchimedeanClass.mulArchimedean_of_mk_eq_mk
+    intros a ha b hb
+    specialize h a ha b hb
+    exact congrArg Subtype.val h
 
-variable (H : Type) [LinearOrderedCommGroupWithZero H]
+lemma MulArchimedean_iff_SubsingletonFiniteMulArchimedean :
+  MulArchimedean α ↔ Subsingleton (FiniteMulArchimedeanClass α) := by
+    constructor
+    · exact fun a ↦ FiniteMulArchimedeanClass.instSubsingletonOfMulArchimedean
+    · intro s
+      apply FiniteMulArchimedean_of_mk_eq_mk
+      intros a ha b hb
+      apply Subsingleton.allEq
+
+lemma ht1 : LinearOrderedCommGroup.height α ≤ 1 ↔ MulArchimedean α := by
+    constructor
+    · intro ht1
+      have h : Subsingleton (FiniteMulArchimedeanClass α) := by
+        apply Cardinal.le_one_iff_subsingleton.mp
+        have h1: ENat.card (UpperSet (FiniteMulArchimedeanClass α)) ≤ 1 := by
+          rw [ENat.card_congr (equivFiniteArchimedeanClass.symm)]
+          exact ht1
+        sorry
+      exact MulArchimedean_iff_SubsingletonFiniteMulArchimedean.mpr h
+    · intro h
+      change ENat.card (ConvexSubgroup α) ≤ 1
+      rw [ENat.card_congr (equivFiniteArchimedeanClass)]
+      have h1 : Subsingleton (FiniteMulArchimedeanClass α) := by
+        apply (MulArchimedean_iff_SubsingletonFiniteMulArchimedean).mp
+        exact h
+      sorry
+
+lemma ht1' : LinearOrderedCommGroup.height α ≤ 1 ↔
+    ∃ f : α →*o Multiplicative ℝ, Function.Injective f := by sorry
+-- use Archimedean.exists_orderAddMonoidHom_real_injective for forward direction
+
+open NNReal
+def Units.nnrealToMultiplicativeReal : ℝ≥0ˣ ≃*o Multiplicative ℝ := sorry
+def NNReal.toWithZeroMultiplicativeReal : ℝ≥0 ≃*o WithZero (Multiplicative ℝ) := sorry
+
+lemma isHeightht1.tfae : List.TFAE [
+  LinearOrderedCommGroup.height α ≤ 1,
+  MulArchimedean α,
+  ∃ f : α →*o Multiplicative ℝ, Function.Injective f] := by
+  tfae_have 1 → 2 := by sorry
+  tfae_have 2 → 1 := by sorry
+  tfae_have 3 → 1 := by sorry
+  tfae_have 1 → 3 := by sorry
+  tfae_finish
+
+
+
+end
