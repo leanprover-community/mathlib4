@@ -687,7 +687,7 @@ alias ⟨IsCycleOn.of_inv, IsCycleOn.inv⟩ := isCycleOn_inv
 
 theorem IsCycleOn.conj (h : f.IsCycleOn s) : (g * f * g⁻¹).IsCycleOn ((g : Perm α) '' s) :=
   ⟨(g.bijOn_image.comp h.1).comp g.bijOn_symm_image, fun x hx y hy => by
-    rw [← Equiv.preimage_symm] at hx hy
+    rw [Equiv.image_eq_preimage_symm] at hx hy
     convert Equiv.Perm.SameCycle.conj (h.2 hx hy) (g := g) <;> simp⟩
 
 theorem isCycleOn_swap [DecidableEq α] (hab : a ≠ b) : (swap a b).IsCycleOn {a, b} :=
