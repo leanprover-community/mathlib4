@@ -11,6 +11,10 @@ import Mathlib.CategoryTheory.Products.Associator
 /-!
 # The homotopy functor is monoidal
 
+Given `2`-truncated simplicial sets `X` and `Y`, we construct an equivalence
+of categories `(X ⊗ Y).HomotopyCategory ≌ X.HomotopyCategory × Y.HomotopyCategory`.
+(see `SSet.Truncated.HomotopyCategory.BinaryProduct.equivalence`).
+
 -/
 
 universe u
@@ -98,9 +102,6 @@ this is the isomorphism `Cat.of X.HomotopyCategory ≅ Cat.chosenTerminal` in `C
 def isoTerminal (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)] :
     Cat.of X.HomotopyCategory ≅ Cat.chosenTerminal :=
   IsTerminal.uniqueUpToIso (isTerminal _) Cat.chosenTerminalIsTerminal
-
-def fromPUnit (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] :
-    PUnit.{u + 1} ⥤ X.HomotopyCategory := sorry
 
 lemma square {X Y : Truncated.{u} 2}
     {x₀ x₁ : X _⦋0⦌₂} (ex : Edge x₀ x₁) {y₀ y₁ : Y _⦋0⦌₂} (ey : Edge y₀ y₁) :
@@ -237,6 +238,8 @@ def iso :
   inv_hom_id := inverse_comp_functor X Y
 
 variable {X} in
+/-- The naturality of `HomotopyCategory.BinaryProduct.inverse`
+with respect to the first variable. -/
 def mapHomotopyCategoryProdIdCompInverseIso (f : X ⟶ X') :
     (mapHomotopyCategory f).prod (𝟭 _) ⋙ inverse X' Y ≅
       inverse X Y ⋙ mapHomotopyCategory (f ▷ Y) :=
@@ -255,6 +258,8 @@ def mapHomotopyCategoryProdIdCompInverseIso (f : X ⟶ X') :
         mapHomotopyCategory_homMk, Edge.map_whiskerRight]))
 
 variable {Y} in
+/-- The naturality of `HomotopyCategory.BinaryProduct.inverse`
+with respect to the second variable. -/
 def idProdMapHomotopyCategoryCompInverseIso (g : Y ⟶ Y') :
     Functor.prod (𝟭 _) (mapHomotopyCategory g) ⋙ inverse X Y' ≅
       inverse X Y ⋙ mapHomotopyCategory (X ◁ g) :=
@@ -284,6 +289,8 @@ lemma id_prod_mapHomotopyCategory_comp_inverse (g : Y ⟶ Y') :
       inverse X Y ⋙ mapHomotopyCategory (X ◁ g) :=
   Functor.ext_of_iso (idProdMapHomotopyCategoryCompInverseIso _ _) (fun _ ↦ rfl)
 
+/-- The compatibility of `HomotopyCategory.BinaryProduct.inverse`
+with respect to the first projection. -/
 def inverseCompMapHomotopyCategoryFstIso :
     inverse X Y ⋙ mapHomotopyCategory (fst _ _) ≅ CategoryTheory.Prod.fst _ _  :=
   Functor.fullyFaithfulCurry.preimageIso
@@ -298,6 +305,8 @@ def inverseCompMapHomotopyCategoryFstIso :
       rw [Category.comp_id, Category.id_comp, inverse_map_mkHom_homMk_id,
         mapHomotopyCategory_homMk, Edge.map_fst]))
 
+/-- The compatibility of `HomotopyCategory.BinaryProduct.inverse`
+with respect to the second projection. -/
 def inverseCompMapHomotopyCategorySndIso :
     inverse X Y ⋙ mapHomotopyCategory (snd _ _) ≅ CategoryTheory.Prod.snd _ _  :=
   Functor.fullyFaithfulCurry.preimageIso
@@ -321,20 +330,21 @@ lemma inverse_comp_mapHomotopyCategory_snd :
   Functor.ext_of_iso (inverseCompMapHomotopyCategorySndIso _ _) (fun _ ↦ rfl)
 
 lemma left_unitality [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)] :
-    (Functor.prod (fromPUnit X) (𝟭 _)) ⋙ inverse X Y ⋙ mapHomotopyCategory (snd _ _) =
-      CategoryTheory.Prod.snd PUnit.{u + 1} Y.HomotopyCategory := by
+    CategoryTheory.Prod.snd _ _ = (Functor.prod (isoTerminal X).inv (𝟭 _)) ⋙
+      inverse X Y ⋙ mapHomotopyCategory (snd _ _) := by
   rw [inverse_comp_mapHomotopyCategory_snd]
   rfl
 
 lemma right_unitality [Unique (Y _⦋0⦌₂)] [Subsingleton (Y _⦋1⦌₂)] :
-    (Functor.prod (𝟭 _) (fromPUnit Y)) ⋙ inverse X Y ⋙ mapHomotopyCategory (fst _ _) =
-      CategoryTheory.Prod.fst X.HomotopyCategory PUnit.{u + 1} := by
+    CategoryTheory.Prod.fst _ _ = (Functor.prod (𝟭 _) (isoTerminal Y).inv) ⋙
+      inverse X Y ⋙ mapHomotopyCategory (fst _ _) := by
   rw [inverse_comp_mapHomotopyCategory_fst]
   rfl
 
 variable (Z)
 
 set_option maxHeartbeats 800000 in -- this is slow
+/-- Auxiliary defininition for `associativityIso`. -/
 def associativity'Iso :
     (prod.associativity _ _ _).inverse ⋙ (inverse X Y).prod (𝟭 _) ⋙ inverse (X ⊗ Y) Z ⋙
       mapHomotopyCategory (α_ _ _ _).hom ≅
@@ -374,17 +384,26 @@ lemma associativity'Iso_hom_app (xyz) :
   rw [Category.id_comp, Category.comp_id]
   rfl
 
+open Functor in
+/-- The compatibility of `HomotopyCategory.BinaryProduct.inverse`
+with respect to associators. -/
 def associativityIso :
     (inverse X Y).prod (𝟭 _) ⋙ inverse (X ⊗ Y) Z ⋙ mapHomotopyCategory (α_ _ _ _).hom ≅
       (prod.associativity _ _ _).functor ⋙ Functor.prod (𝟭 _) (inverse Y Z) ⋙
         inverse X (Y ⊗ Z) :=
-  -- needs cleanup...
-  Functor.isoWhiskerLeft (prod.associativity _ _ _).functor (associativity'Iso X Y Z)
+  (Functor.leftUnitor _).symm ≪≫ isoWhiskerRight (Equivalence.unitIso _) _ ≪≫
+    associator _ _ _ ≪≫
+    isoWhiskerLeft (prod.associativity _ _ _).functor (associativity'Iso X Y Z)
 
 variable {X Y Z} in
 lemma associativityIso_hom_app (xyz) :
-    (associativityIso X Y Z).hom.app xyz = 𝟙 _ :=
-  associativity'Iso_hom_app _
+    (associativityIso X Y Z).hom.app xyz = 𝟙 _ := by
+  dsimp  [associativityIso]
+  rw [associativity'Iso_hom_app _]
+  dsimp
+  rw [CategoryTheory.Functor.map_id, Category.id_comp, Category.comp_id,
+    Category.comp_id, ← prod_id,  CategoryTheory.Functor.map_id,
+    CategoryTheory.Functor.map_id]
 
 lemma associativity :
     (inverse X Y).prod (𝟭 _) ⋙ inverse (X ⊗ Y) Z ⋙ mapHomotopyCategory (α_ _ _ _).hom =
@@ -403,14 +422,8 @@ instance : hoFunctor₂.{u}.Monoidal :=
       μIso X Y := (iso X Y).symm
       μIso_hom_natural_left _ _ := mapHomotopyCategory_prod_id_comp_inverse _ _
       μIso_hom_natural_right _ _ := id_prod_mapHomotopyCategory_comp_inverse _ _
-      left_unitality Y := by
-        dsimp
-        have := left_unitality (𝟙_ _) Y
-        sorry
-      right_unitality X := by
-        dsimp
-        have := right_unitality X (𝟙_ _)
-        sorry
+      left_unitality Y := left_unitality (𝟙_ _) Y
+      right_unitality X := right_unitality X (𝟙_ _)
       associativity _ _ _ := associativity _ _ _ }
 
 instance : hoFunctor.{u}.Monoidal :=
