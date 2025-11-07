@@ -469,6 +469,10 @@ instance (priority := 10) IsUniformGroup.of_left_right : IsUniformGroup β where
         exact tendsto_comap.comp tendsto_snd
     exact φ_ψ_conj ▸ ψ_tendsto.conj_nhds_one g
 
+theorem isUniformGroup_iff_left_right {γ : Type*} [Group γ] [UniformSpace γ] :
+    IsUniformGroup γ ↔ IsLeftUniformGroup γ ∧ IsRightUniformGroup γ :=
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ inferInstance⟩
+
 theorem eventually_forall_conj_nhds_one {p : α → Prop}
     (hp : ∀ᶠ x in 𝓝 1, p x) :
     ∀ᶠ x in 𝓝 1, ∀ g, p (g * x * g⁻¹) := by
