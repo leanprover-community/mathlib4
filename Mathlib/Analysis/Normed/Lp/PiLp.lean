@@ -1012,12 +1012,20 @@ lemma norm_toLp_one {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) [One β] :
 
 variable (𝕜 p)
 
+omit [Fintype ι] hp
+
 /-- `WithLp.linearEquiv` as a continuous linear equivalence. -/
-@[simps! -fullyApplied apply symm_apply]
+@[simps! apply symm_apply]
 def continuousLinearEquiv : PiLp p β ≃L[𝕜] ∀ i, β i where
   toLinearEquiv := WithLp.linearEquiv _ _ _
   continuous_toFun := continuous_ofLp _ _
   continuous_invFun := continuous_toLp p _
+
+lemma coe_continuousLinearEquiv :
+    ⇑(PiLp.continuousLinearEquiv p 𝕜 β) = ofLp := rfl
+
+lemma coe_symm_continuousLinearEquiv :
+    ⇑(PiLp.continuousLinearEquiv p 𝕜 β).symm = toLp p := rfl
 
 variable {𝕜} in
 /-- The projection on the `i`-th coordinate of `PiLp p β`, as a continuous linear map. -/
