@@ -246,7 +246,17 @@ lemma mulArchimedean_iff_subsingleton_finiteMulArchimedeanClass :
 theorem height_eq_zero_iff : LinearOrderedCommGroup.height α = 0 ↔ Subsingleton α := by
   sorry
 
-def UpperSet.finEquiv (n : ℕ) : UpperSet (Fin n) ≃o Fin (n + 1) := sorry
+def UpperSet.equivWithTopOfFinite (α) [LinearOrder α] [Finite α] :
+    UpperSet α ≃o WithTop α where
+  toFun s := s.1.toFinite.toFinset.min
+  invFun i := i.recTopCoe ⊤ .Ici
+  left_inv s := by
+    let a' := s.1.toFinite.toFinset.min
+
+    sorry
+    ext a; simp
+  right_inv i := i.recTopCoe (by simp) fun i ↦ (Finset.min_le (by simp)).antisymm (by simp)
+  map_rel_iff' := _
 
 /- instance : Nonempty (ConvexSubgroup α) :=
   ⟨⊥, fun _a _b hab hb1 ha1 ↦ hb1.antisymm (ha1.ge.trans hab)⟩ -/

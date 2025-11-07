@@ -80,7 +80,7 @@ theorem Ioi_def (a : α) : { x | a < x } = Ioi a := rfl
 interval `[[x, y]]`. If `α` is a `DenselyOrdered` `ConditionallyCompleteLinearOrder` with
 the `OrderTopology`, then this condition is equivalent to `IsPreconnected s`. If `α` is a
 `LinearOrderedField`, then this condition is also equivalent to `Convex α s`. -/
-@[mk_iff ordConnected_def] class OrdConnected (s : Set α) : Prop where
+class OrdConnected (s : Set α) : Prop where
   /-- `s : Set α` is `OrdConnected` if for all `x y ∈ s` it includes the interval `[[x, y]]`. -/
   out' ⦃x : α⦄ (hx : x ∈ s) ⦃y : α⦄ (hy : y ∈ s) : Icc x y ⊆ s
 
