@@ -15,7 +15,7 @@ We introduce these relations:
 * `f =o[l] g` : "f is little o of g along l".
 
 Here `l` is any filter on the domain of `f` and `g`, which are assumed to be the same. The codomains
-of `f` and `g` do not need to be the same; all that is needed that there is a norm associated with
+of `f` and `g` do not need to be the same; all that is needed is that there is a norm associated with
 these types, and it is the norm that is compared asymptotically.
 
 The relation `IsBigOWith c` is introduced to factor out common algebraic arguments in the proofs of
