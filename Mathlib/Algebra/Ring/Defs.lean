@@ -13,8 +13,9 @@ import Mathlib.Tactic.StacksAttribute
 /-!
 # Semirings and rings
 
-This file defines semirings, rings and domains. This is analogous to `Algebra.Group.Defs` and
-`Algebra.Group.Basic`, the difference being that the former is about `+` and `*` separately, while
+This file defines semirings, rings and domains. This is analogous to
+`Mathlib/Algebra/Group/Defs.lean` and `Mathlib/Algebra/Group/Basic.lean`, the difference being that
+those are about `+` and `*` separately, while the present file is about their interaction.
 the present file is about their interaction.
 
 ## Main definitions
@@ -311,7 +312,6 @@ section NonUnitalNonAssocRing
 variable [NonUnitalNonAssocRing α]
 
 instance (priority := 100) NonUnitalNonAssocRing.toHasDistribNeg : HasDistribNeg α where
-  neg := Neg.neg
   neg_neg := neg_neg
   neg_mul a b := eq_neg_of_add_eq_zero_left <| by rw [← right_distrib, neg_add_cancel, zero_mul]
   mul_neg a b := eq_neg_of_add_eq_zero_left <| by rw [← left_distrib, neg_add_cancel, mul_zero]

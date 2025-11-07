@@ -54,32 +54,6 @@ lemma StrictMono.isOrderedCancelMonoid [IsOrderedCancelMonoid α] [CommMonoid β
   __ := hf.isOrderedMonoid f mul
   le_of_mul_le_mul_left a b c h := by simpa [← hf.le_iff_le, mul] using h
 
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.orderedCommMonoid := Function.Injective.isOrderedMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.orderedAddCommMonoid := Function.Injective.isOrderedAddMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.orderedCancelCommMonoid := Function.Injective.isOrderedCancelMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.orderedCancelAddCommMonoid := Function.Injective.isOrderedCancelAddMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.linearOrderedCommMonoid := Function.Injective.isOrderedMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.linearOrderedAddCommMonoid := Function.Injective.isOrderedAddMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.linearOrderedCancelCommMonoid := Function.Injective.isOrderedCancelMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.linearOrderedCancelAddCommMonoid :=
-  Function.Injective.isOrderedCancelAddMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.orderedCommGroup := Function.Injective.isOrderedMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.orderedAddCommGroup := Function.Injective.isOrderedAddMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.linearOrderedCommGroup := Function.Injective.isOrderedMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.linearOrderedAddCommGroup := Function.Injective.isOrderedAddMonoid
-
 -- TODO find a better home for the next two constructions.
 /-- The order embedding sending `b` to `a * b`, for some fixed `a`.
 See also `OrderIso.mulLeft` when working in an ordered group. -/
