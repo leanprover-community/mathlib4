@@ -148,7 +148,8 @@ theorem condExp_ae_le [LE E] (hf : Supermartingale f ℱ μ) {i j : ι} (hij : i
     μ[f j|ℱ i] ≤ᵐ[μ] f i :=
   hf.2.1 i j hij
 
-theorem setIntegral_le [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → ℝ} (hf : Supermartingale f ℱ μ)
+theorem setIntegral_le [PartialOrder E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
+    [OrderClosedTopology E] [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → E} (hf : Supermartingale f ℱ μ)
     {i j : ι} (hij : i ≤ j) {s : Set Ω} (hs : MeasurableSet[ℱ i] s) :
     ∫ ω in s, f j ω ∂μ ≤ ∫ ω in s, f i ω ∂μ := by
   rw [← setIntegral_condExp (ℱ.le i) (hf.integrable j) hs]
@@ -211,7 +212,8 @@ theorem neg [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ) :
   simpa
 
 /-- The converse of this lemma is `MeasureTheory.submartingale_of_setIntegral_le`. -/
-theorem setIntegral_le [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → ℝ} (hf : Submartingale f ℱ μ)
+theorem setIntegral_le [PartialOrder E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
+    [OrderClosedTopology E] [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → E} (hf : Submartingale f ℱ μ)
     {i j : ι} (hij : i ≤ j) {s : Set Ω} (hs : MeasurableSet[ℱ i] s) :
     ∫ ω in s, f i ω ∂μ ≤ ∫ ω in s, f j ω ∂μ := by
   rw [← neg_le_neg_iff, ← integral_neg, ← integral_neg]
@@ -225,7 +227,9 @@ theorem sub_martingale [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ
     (hg : Martingale g ℱ μ) : Submartingale (f - g) ℱ μ :=
   hf.sub_supermartingale hg.supermartingale
 
-protected theorem sup {f g : ι → Ω → ℝ} (hf : Submartingale f ℱ μ) (hg : Submartingale g ℱ μ) :
+protected theorem sup [LinearOrder E] [ContinuousSup E] [HasSolidNorm E] [IsOrderedAddMonoid E]
+    [IsOrderedModule ℝ E] {f g : ι → Ω → E} (hf : Submartingale f ℱ μ)
+    (hg : Submartingale g ℱ μ) :
     Submartingale (f ⊔ g) ℱ μ := by
   refine ⟨fun i => @StronglyMeasurable.sup _ _ _ _ (ℱ i) _ _ _ (hf.adapted i) (hg.adapted i),
     fun i j hij => ?_, fun i => Integrable.sup (hf.integrable _) (hg.integrable _)⟩
@@ -237,7 +241,9 @@ protected theorem sup {f g : ι → Ω → ℝ} (hf : Submartingale f ℱ μ) (h
       (condExp_mono (hg.integrable _) (Integrable.sup (hf.integrable j) (hg.integrable j))
         (Eventually.of_forall fun x => le_max_right _ _))
 
-protected theorem pos {f : ι → Ω → ℝ} (hf : Submartingale f ℱ μ) : Submartingale (f⁺) ℱ μ :=
+protected theorem pos [LinearOrder E] [ContinuousSup E] [HasSolidNorm E] [IsOrderedAddMonoid E]
+    [IsOrderedModule ℝ E] [OrderClosedTopology E] {f : ι → Ω → E} (hf : Submartingale f ℱ μ) :
+    Submartingale (f⁺) ℱ μ :=
   hf.sup (martingale_zero _ _ _).submartingale
 
 end Submartingale
@@ -262,15 +268,18 @@ theorem submartingale_of_setIntegral_le [SigmaFiniteFiltration μ ℱ]
     integral_sub' integrable_condExp.integrableOn (hint i).integrableOn, sub_nonneg,
     setIntegral_condExp (ℱ.le i) (hint j) hs]
 
-theorem submartingale_of_condExp_sub_nonneg [SigmaFiniteFiltration μ ℱ]
-    {f : ι → Ω → ℝ} (hadp : Adapted ℱ f)
+theorem submartingale_of_condExp_sub_nonneg {E : Type*} [NormedRing E] [NormedSpace ℝ E]
+    [PartialOrder E] [IsOrderedModule ℝ E] [CompleteSpace E] [IsOrderedRing E]
+    [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → E} (hadp : Adapted ℱ f)
     (hint : ∀ i, Integrable (f i) μ) (hf : ∀ i j, i ≤ j → 0 ≤ᵐ[μ] μ[f j - f i|ℱ i]) :
     Submartingale f ℱ μ := by
   refine ⟨hadp, fun i j hij => ?_, hint⟩
   rw [← condExp_of_stronglyMeasurable (ℱ.le _) (hadp _) (hint _), ← eventually_sub_nonneg]
   exact EventuallyLE.trans (hf i j hij) (condExp_sub (hint _) (hint _) _).le
 
-theorem Submartingale.condExp_sub_nonneg {f : ι → Ω → ℝ} (hf : Submartingale f ℱ μ) {i j : ι}
+theorem Submartingale.condExp_sub_nonneg {E : Type*} [NormedRing E] [NormedSpace ℝ E]
+    [PartialOrder E] [IsOrderedModule ℝ E] [CompleteSpace E] [IsOrderedRing E]
+    {f : ι → Ω → E} (hf : Submartingale f ℱ μ) {i j : ι}
     (hij : i ≤ j) : 0 ≤ᵐ[μ] μ[f j - f i|ℱ i] := by
   by_cases h : SigmaFinite (μ.trim (ℱ.le i))
   swap; · rw [condExp_of_not_sigmaFinite (ℱ.le i) h]
@@ -279,7 +288,9 @@ theorem Submartingale.condExp_sub_nonneg {f : ι → Ω → ℝ} (hf : Submartin
     condExp_of_stronglyMeasurable (ℱ.le _) (hf.adapted _) (hf.integrable _)]
   exact hf.2.1 i j hij
 
-theorem submartingale_iff_condExp_sub_nonneg [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → ℝ} :
+theorem submartingale_iff_condExp_sub_nonneg {E : Type*} [NormedRing E] [NormedSpace ℝ E]
+    [PartialOrder E] [IsOrderedModule ℝ E] [CompleteSpace E] [IsOrderedRing E]
+    [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → E} :
     Submartingale f ℱ μ ↔
       Adapted ℱ f ∧ (∀ i, Integrable (f i) μ) ∧ ∀ i j, i ≤ j → 0 ≤ᵐ[μ] μ[f j - f i|ℱ i] :=
   ⟨fun h => ⟨h.adapted, h.integrable, fun _ _ => h.condExp_sub_nonneg⟩, fun ⟨hadp, hint, h⟩ =>
