@@ -3,7 +3,8 @@ Copyright (c) 2025 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Elab.Command
+import Mathlib.Init
+-- `import Lean.Elab.Command` would be enough
 
 /-!
 This file defines various `inspect`-like commands and tactics.
