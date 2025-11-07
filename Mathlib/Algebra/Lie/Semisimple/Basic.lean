@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Semisimple.Defs
 import Mathlib.Order.BooleanGenerators
+import Mathlib.Tactic.Order
 
 /-!
 # Semisimple Lie algebras
@@ -242,11 +243,7 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
     apply LieSubmodule.lie_le_inf
     exact LieSubmodule.lie_mem_lie j.2 hx
   -- Indeed `J ⊓ I = ⊥`, since `J` is an atom that is not contained in `I`.
-  apply ((hs hJs).le_iff.mp _).resolve_right
-  · contrapose! hJI
-    rw [← hJI]
-    exact inf_le_right
-  exact inf_le_left
+  apply ((hs hJs).le_iff.mp _).resolve_right <;> order
 termination_by s => s.card
 decreasing_by exact Finset.card_lt_card hs'
 
