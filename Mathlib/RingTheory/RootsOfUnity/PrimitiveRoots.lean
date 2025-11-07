@@ -385,21 +385,14 @@ theorem primitiveRoots_one : primitiveRoots 1 R = {(1 : R)} := by
 
 theorem neZero' {n : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n) : NeZero ((n : ℕ) : R) := by
   let p := ringChar R
-  have hfin := Nat.finiteMultiplicity_iff.2 ⟨CharP.char_ne_one R p, NeZero.pos n⟩
-  obtain ⟨m, hm⟩ := hfin.exists_eq_pow_mul_and_not_dvd
-  by_cases hp : p ∣ n
-  · obtain ⟨k, hk⟩ := Nat.exists_eq_succ_of_ne_zero (multiplicity_pos_of_dvd hp).ne'
-    have : NeZero p := NeZero.of_pos (Nat.pos_of_dvd_of_pos hp (NeZero.pos n))
-    have hpri : Fact p.Prime := CharP.char_is_prime_of_pos R p
-    have := hζ.pow_eq_one
-    rw [hm.1, hk, pow_succ', mul_assoc, pow_mul', ← frobenius_def, ← frobenius_one p] at this
-    exfalso
-    have hpos : 0 < p ^ k * m :=
-      mul_pos (pow_pos hpri.1.pos _) <| Nat.pos_of_ne_zero (fun H ↦ hm.2 <| H ▸ p.dvd_zero)
-    refine hζ.pow_ne_one_of_pos_of_lt hpos.ne' ?_ (frobenius_inj R p this)
-    rw [hm.1, hk, pow_succ', mul_assoc, mul_comm p]
-    exact lt_mul_of_one_lt_right hpos hpri.1.one_lt
-  · exact NeZero.of_not_dvd R hp
+  refine .of_not_dvd R (p := p) fun hpn ↦ ?_
+  obtain ⟨n, rfl⟩ := hpn
+  have h : p ≠ 0 ∧ n ≠ 0 := by aesop
+  have : NeZero p := .mk h.1
+  have hp : Fact p.Prime := CharP.char_is_prime_of_pos R p
+  refine (hζ.pow_ne_one_of_pos_of_lt h.2 (lt_mul_of_one_lt_left (by grind) hp.1.one_lt) <|
+    frobenius_inj R p ?_).elim
+  rw [frobenius_def, ← pow_mul', hζ.1, map_one]
 
 nonrec theorem mem_nthRootsFinset (hζ : IsPrimitiveRoot ζ k) (hk : 0 < k) :
     ζ ∈ nthRootsFinset k (1 : R) :=
