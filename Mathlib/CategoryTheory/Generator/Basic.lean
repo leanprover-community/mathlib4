@@ -318,7 +318,7 @@ lemma IsSeparating.mk_of_exists_colimitsOfShape
   exact p.isColimit.hom_ext (fun j ↦ h _ (p.prop_diag_obj _) _)
 
 lemma IsCoseparating.mk_of_exists_limitsOfShape
-    (hP : ∀ (X : C), ∃ (J : Type w) (_ : Category.{w'} J), Nonempty (P.LimitOfShape J X)) :
+    (hP : ∀ (X : C), ∃ (J : Type w) (_ : Category.{w'} J), P.limitsOfShape J X) :
     P.IsCoseparating := by
   intro X Y f g h
   obtain ⟨J, _, ⟨p⟩⟩ := hP Y
