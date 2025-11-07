@@ -15,42 +15,16 @@ import Mathlib.Tactic.FastInstance
 namespace SubsemiringClass
 variable {R S : Type*} [SetLike S R] (s : S)
 
-/-- A subsemiring of an `OrderedSemiring` is an `OrderedSemiring`. -/
-instance toOrderedSemiring [OrderedSemiring R] [SubsemiringClass S R] :
-    OrderedSemiring s := fast_instance%
-  Subtype.coe_injective.orderedSemiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+/-- A subsemiring of an ordered semiring is an ordered semiring. -/
+instance toIsOrderedRing [Semiring R] [PartialOrder R] [IsOrderedRing R] [SubsemiringClass S R] :
+    IsOrderedRing s :=
+  Function.Injective.isOrderedRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) .rfl
 
-/-- A subsemiring of a `StrictOrderedSemiring` is a `StrictOrderedSemiring`. -/
-instance toStrictOrderedSemiring [StrictOrderedSemiring R]
-    [SubsemiringClass S R] : StrictOrderedSemiring s := fast_instance%
-  Subtype.coe_injective.strictOrderedSemiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
-
-/-- A subsemiring of an `OrderedCommSemiring` is an `OrderedCommSemiring`. -/
-instance toOrderedCommSemiring [OrderedCommSemiring R] [SubsemiringClass S R] :
-    OrderedCommSemiring s := fast_instance%
-  Subtype.coe_injective.orderedCommSemiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
-
-/-- A subsemiring of a `StrictOrderedCommSemiring` is a `StrictOrderedCommSemiring`. -/
-instance toStrictOrderedCommSemiring [StrictOrderedCommSemiring R]
-    [SubsemiringClass S R] : StrictOrderedCommSemiring s := fast_instance%
-  Subtype.coe_injective.strictOrderedCommSemiring Subtype.val rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
-
-/-- A subsemiring of a `LinearOrderedSemiring` is a `LinearOrderedSemiring`. -/
-instance toLinearOrderedSemiring [LinearOrderedSemiring R]
-    [SubsemiringClass S R] : LinearOrderedSemiring s := fast_instance%
-  Subtype.coe_injective.linearOrderedSemiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-
-/-- A subsemiring of a `LinearOrderedCommSemiring` is a `LinearOrderedCommSemiring`. -/
-instance toLinearOrderedCommSemiring [LinearOrderedCommSemiring R]
-    [SubsemiringClass S R] : LinearOrderedCommSemiring s := fast_instance%
-  Subtype.coe_injective.linearOrderedCommSemiring Subtype.val rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    fun _ _ => rfl
+/-- A subsemiring of a strict ordered semiring is a strict ordered semiring. -/
+instance toIsStrictOrderedRing [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
+    [SubsemiringClass S R] : IsStrictOrderedRing s :=
+  Function.Injective.isStrictOrderedRing Subtype.val
+    rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) .rfl .rfl
 
 end SubsemiringClass
 
@@ -58,50 +32,32 @@ namespace Subsemiring
 
 variable {R : Type*}
 
-/-- A subsemiring of an `OrderedSemiring` is an `OrderedSemiring`. -/
-instance toOrderedSemiring [OrderedSemiring R] (s : Subsemiring R) :
-     OrderedSemiring s := fast_instance%
-  Subtype.coe_injective.orderedSemiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+/-- A subsemiring of an ordered semiring is an ordered semiring. -/
+instance toIsOrderedRing [Semiring R] [PartialOrder R] [IsOrderedRing R] (s : Subsemiring R) :
+    IsOrderedRing s :=
+  SubsemiringClass.toIsOrderedRing _
 
-/-- A subsemiring of a `StrictOrderedSemiring` is a `StrictOrderedSemiring`. -/
-instance toStrictOrderedSemiring [StrictOrderedSemiring R] (s : Subsemiring R) :
-    StrictOrderedSemiring s := fast_instance%
-  Subtype.coe_injective.strictOrderedSemiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+/-- A subsemiring of a strict ordered semiring is a strict ordered semiring. -/
+instance toIsStrictOrderedRing [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
+    (s : Subsemiring R) : IsStrictOrderedRing s :=
+  SubsemiringClass.toIsStrictOrderedRing _
 
-/-- A subsemiring of an `OrderedCommSemiring` is an `OrderedCommSemiring`. -/
-instance toOrderedCommSemiring [OrderedCommSemiring R] (s : Subsemiring R) :
-    OrderedCommSemiring s := fast_instance%
-  Subtype.coe_injective.orderedCommSemiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+section nonneg
 
-/-- A subsemiring of a `StrictOrderedCommSemiring` is a `StrictOrderedCommSemiring`. -/
-instance toStrictOrderedCommSemiring [StrictOrderedCommSemiring R] (s : Subsemiring R) :
-    StrictOrderedCommSemiring s := fast_instance%
-  Subtype.coe_injective.strictOrderedCommSemiring Subtype.val rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R]
 
-/-- A subsemiring of a `LinearOrderedSemiring` is a `LinearOrderedSemiring`. -/
-instance toLinearOrderedSemiring [LinearOrderedSemiring R] (s : Subsemiring R) :
-    LinearOrderedSemiring s := fast_instance%
-  Subtype.coe_injective.linearOrderedSemiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-
-/-- A subsemiring of a `LinearOrderedCommSemiring` is a `LinearOrderedCommSemiring`. -/
-instance toLinearOrderedCommSemiring [LinearOrderedCommSemiring R] (s : Subsemiring R) :
-    LinearOrderedCommSemiring s := fast_instance%
-  Subtype.coe_injective.linearOrderedCommSemiring Subtype.val rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    fun _ _ => rfl
-
+variable (R) in
 /-- The set of nonnegative elements in an ordered semiring, as a subsemiring. -/
 @[simps]
-def nonneg (R : Type*) [OrderedSemiring R] : Subsemiring R where
+def nonneg : Subsemiring R where
   carrier := Set.Ici 0
   mul_mem' := mul_nonneg
   one_mem' := zero_le_one
   add_mem' := add_nonneg
   zero_mem' := le_rfl
+
+@[simp] lemma mem_nonneg {x : R} : x ∈ nonneg R ↔ 0 ≤ x := .rfl
+
+end nonneg
 
 end Subsemiring

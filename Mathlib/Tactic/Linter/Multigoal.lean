@@ -9,7 +9,7 @@ import Lean.Elab.Command
 import Mathlib.Tactic.Linter.Header
 
 /-!
-#  The "multiGoal" linter
+# The "multiGoal" linter
 
 The "multiGoal" linter emits a warning where there is more than a single goal in scope.
 There is an exception: a tactic that closes *all* remaining goals is allowed.
@@ -37,7 +37,7 @@ TODO:
   Maybe revisit usages of `on_goal` and also nested `induction` and `cases`.
 -/
 
-open Lean Elab
+open Lean Elab Linter
 
 namespace Mathlib.Linter
 
@@ -78,6 +78,8 @@ abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofArray #[
     ``Lean.Parser.Tactic.«tacticNext_=>_»,
     ``Lean.Parser.Tactic.tacticSeq1Indented,
     ``Lean.Parser.Tactic.tacticSeq,
+    `focus,
+    ``Lean.Parser.Tactic.focus,
     -- re-ordering goals
     `Batteries.Tactic.tacticSwap,
     ``Lean.Parser.Tactic.rotateLeft,
@@ -121,7 +123,6 @@ abbrev ignoreBranch : Std.HashSet SyntaxNodeKind := .ofArray #[
     ``Lean.Parser.Tactic.tacticIterate____,
     ``Lean.Parser.Tactic.anyGoals,
     ``Lean.Parser.Tactic.allGoals,
-    ``Lean.Parser.Tactic.focus,
     ``Lean.Parser.Tactic.failIfSuccess,
     `Mathlib.Tactic.successIfFailWithMsg
   ]
@@ -132,7 +133,7 @@ which
   (with the exception of tactics that leave the sole goal unchanged);
 * are not excluded through `exclusions` or `ignoreBranch`;
 
- together with the number of goals before the tactic,
+together with the number of goals before the tactic,
 the number of goals after the tactic, and the number of unaffected goals.
 -/
 partial
@@ -156,7 +157,7 @@ def getManyGoals : InfoTree → Array (Syntax × Nat × Nat × Nat)
 
 @[inherit_doc Mathlib.Linter.linter.style.multiGoal]
 def multiGoalLinter : Linter where run := withSetOptionIn fun _stx ↦ do
-    unless Linter.getLinterValue linter.style.multiGoal (← getOptions) do
+    unless getLinterValue linter.style.multiGoal (← getLinterOptions) do
       return
     if (← get).messages.hasErrors then
       return

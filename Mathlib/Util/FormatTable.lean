@@ -29,15 +29,15 @@ def String.justify (s : String) (a : Alignment) (width : Nat) : String :=
     String.replicate pad ' ' ++ s ++ String.replicate (width - s.length - pad) ' '
 
 /--
-Render a two-dimensional array of `String`s` into a markdown-compliant table.
+Render a two-dimensional array of `String`s into a markdown-compliant table.
 `headers` is a list of column headers,
 `table` is a 2D array of cell contents,
-`alignments` describes how to align each table column (default: left-aligned) -/
+`alignments` describes how to align each table column (default: left-aligned). -/
 def formatTable (headers : Array String) (table : Array (Array String))
     (alignments : Option (Array Alignment) := none) :
     String := Id.run do
   -- If no alignments are provided, default to left alignment for all columns.
-  let alignments := alignments.getD (Array.mkArray headers.size Alignment.left)
+  let alignments := alignments.getD (Array.replicate headers.size Alignment.left)
   -- Escape all vertical bar characters inside a table cell,
   -- otherwise these could get interpreted as starting a new row or column.
   let escapedHeaders := headers.map (fun header => header.replace "|" "\\|")

@@ -3,10 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 import Mathlib.Order.Bounds.OrderIso
+import Mathlib.Order.GaloisConnection.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Upper/lower bounds in ordered monoids and groups
@@ -49,11 +50,6 @@ lemma BddBelow.mul (hs : BddBelow s) (ht : BddBelow t) : BddBelow (s * t) :=
   (Nonempty.mul hs ht).mono (subset_lowerBounds_mul s t)
 
 @[to_additive] alias Set.BddAbove.mul := BddAbove.mul
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated BddAbove.mul (since := "2024-11-13")] Set.BddAbove.mul
-attribute [deprecated BddAbove.add (since := "2024-11-13")] Set.BddAbove.add
 
 @[to_additive]
 lemma BddAbove.range_mul (hf : BddAbove (range f)) (hg : BddAbove (range g)) :

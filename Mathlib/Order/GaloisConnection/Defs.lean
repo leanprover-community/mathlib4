@@ -11,7 +11,7 @@ import Mathlib.Util.AssertExists
 /-!
 # Galois connections, insertions and coinsertions
 
-Galois connections are order theoretic adjoints, i.e. a pair of functions `u` and `l`,
+Galois connections are order-theoretic adjoints, i.e. a pair of functions `u` and `l`,
 such that `∀ a b, l a ≤ b ↔ a ≤ u b`.
 
 ## Main definitions
@@ -219,12 +219,11 @@ theorem l_comm_iff_u_comm {X : Type*} [PartialOrder X] {Y : Type*} [Preorder Y] 
 
 end GaloisConnection
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this used to have a `@[nolint has_nonempty_instance]`
 /-- A Galois insertion is a Galois connection where `l ∘ u = id`. It also contains a constructive
 choice function, to give better definitional equalities when lifting order structures. Dual
 to `GaloisCoinsertion` -/
 structure GaloisInsertion {α β : Type*} [Preorder α] [Preorder β] (l : α → β) (u : β → α) where
-  /-- A contructive choice function for images of `l`. -/
+  /-- A constructive choice function for images of `l`. -/
   choice : ∀ x : α, u (l x) ≤ x → β
   /-- The Galois connection associated to a Galois insertion. -/
   gc : GaloisConnection l u
@@ -286,12 +285,11 @@ theorem strictMono_u [Preorder α] [Preorder β] (gi : GaloisInsertion l u) : St
 
 end GaloisInsertion
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this used to have a `@[nolint has_nonempty_instance]`
 /-- A Galois coinsertion is a Galois connection where `u ∘ l = id`. It also contains a constructive
 choice function, to give better definitional equalities when lifting order structures. Dual to
 `GaloisInsertion` -/
 structure GaloisCoinsertion [Preorder α] [Preorder β] (l : α → β) (u : β → α) where
-  /-- A contructive choice function for images of `u`. -/
+  /-- A constructive choice function for images of `u`. -/
   choice : ∀ x : β, x ≤ l (u x) → α
   /-- The Galois connection associated to a Galois coinsertion. -/
   gc : GaloisConnection l u

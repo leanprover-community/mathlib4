@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Multiset.Fold
+import Mathlib.Data.Finset.Lattice.Lemmas
 
 /-!
 # The fold operation for a commutative associative operation over a finset.
@@ -47,7 +49,7 @@ theorem fold_cons (h : a ∉ s) : (cons a s h).fold op b f = f a * s.fold op b f
 theorem fold_insert [DecidableEq α] (h : a ∉ s) :
     (insert a s).fold op b f = f a * s.fold op b f := by
   unfold fold
-  rw [insert_val, ndinsert_of_not_mem h, Multiset.map_cons, fold_cons_left]
+  rw [insert_val, ndinsert_of_notMem h, Multiset.map_cons, fold_cons_left]
 
 @[simp]
 theorem fold_singleton : ({a} : Finset α).fold op b f = f a * b :=
@@ -59,7 +61,7 @@ theorem fold_map {g : γ ↪ α} {s : Finset γ} : (s.map g).fold op b f = s.fol
 
 @[simp]
 theorem fold_image [DecidableEq α] {g : γ → α} {s : Finset γ}
-    (H : ∀ x ∈ s, ∀ y ∈ s, g x = g y → x = y) : (s.image g).fold op b f = s.fold op b (f ∘ g) := by
+    (H : Set.InjOn g s) : (s.image g).fold op b f = s.fold op b (f ∘ g) := by
   simp only [fold, image_val_of_injOn H, Multiset.map_map]
 
 @[congr]
@@ -73,9 +75,10 @@ theorem fold_op_distrib {f g : α → β} {b₁ b₂ : β} :
 theorem fold_const [hd : Decidable (s = ∅)] (c : β) (h : op c (op b c) = op b c) :
     Finset.fold op b (fun _ => c) s = if s = ∅ then b else op b c := by
   classical
-    induction' s using Finset.induction_on with x s hx IH generalizing hd
-    · simp
-    · simp only [Finset.fold_insert hx, IH, if_false, Finset.insert_ne_empty]
+    induction s using Finset.induction_on generalizing hd with
+    | empty => simp
+    | insert x s hx IH =>
+      simp only [Finset.fold_insert hx, IH, if_false, Finset.insert_ne_empty]
       split_ifs
       · rw [hc.comm]
       · exact h
@@ -106,9 +109,10 @@ theorem fold_insert_idem [DecidableEq α] [hi : Std.IdempotentOp op] :
 
 theorem fold_image_idem [DecidableEq α] {g : γ → α} {s : Finset γ} [hi : Std.IdempotentOp op] :
     (image g s).fold op b f = s.fold op b (f ∘ g) := by
-  induction' s using Finset.cons_induction with x xs hx ih
-  · rw [fold_empty, image_empty, fold_empty]
-  · haveI := Classical.decEq γ
+  induction s using Finset.cons_induction with
+  | empty => rw [fold_empty, image_empty, fold_empty]
+  | cons x xs hx ih =>
+    haveI := Classical.decEq γ
     rw [fold_cons, cons_eq_insert, image_insert, fold_insert_idem, ih]
     simp only [Function.comp_apply]
 
@@ -119,9 +123,10 @@ theorem fold_ite' {g : α → β} (hb : op b b = b) (p : α → Prop) [Decidable
     Finset.fold op b (fun i => ite (p i) (f i) (g i)) s =
       op (Finset.fold op b f (s.filter p)) (Finset.fold op b g (s.filter fun i => ¬p i)) := by
   classical
-    induction' s using Finset.induction_on with x s hx IH
-    · simp [hb]
-    · simp only [Finset.fold_insert hx]
+    induction s using Finset.induction_on with
+    | empty => simp [hb]
+    | insert x s hx IH =>
+      simp only [Finset.fold_insert hx]
       split_ifs with h
       · have : x ∉ Finset.filter p s := by simp [hx]
         simp [Finset.filter_insert, h, Finset.fold_insert this, ha.assoc, IH]
@@ -140,41 +145,27 @@ theorem fold_ite [Std.IdempotentOp op] {g : α → β} (p : α → Prop) [Decida
 theorem fold_op_rel_iff_and {r : β → β → Prop} (hr : ∀ {x y z}, r x (op y z) ↔ r x y ∧ r x z)
     {c : β} : r c (s.fold op b f) ↔ r c b ∧ ∀ x ∈ s, r c (f x) := by
   classical
-    induction' s using Finset.induction_on with a s ha IH
-    · simp
-    rw [Finset.fold_insert ha, hr, IH, ← and_assoc, @and_comm (r c (f a)), and_assoc]
-    apply and_congr Iff.rfl
-    constructor
-    · rintro ⟨h₁, h₂⟩
-      intro b hb
-      rw [Finset.mem_insert] at hb
-      rcases hb with (rfl | hb) <;> solve_by_elim
-    · intro h
-      constructor
-      · exact h a (Finset.mem_insert_self _ _)
-      · exact fun b hb => h b <| Finset.mem_insert_of_mem hb
+    induction s using Finset.induction_on with
+    | empty => simp
+    | insert a s ha IH =>
+      rw [Finset.fold_insert ha, hr, IH, ← and_assoc, @and_comm (r c (f a)), and_assoc]
+      simp
 
 theorem fold_op_rel_iff_or {r : β → β → Prop} (hr : ∀ {x y z}, r x (op y z) ↔ r x y ∨ r x z)
     {c : β} : r c (s.fold op b f) ↔ r c b ∨ ∃ x ∈ s, r c (f x) := by
   classical
-    induction' s using Finset.induction_on with a s ha IH
-    · simp
-    rw [Finset.fold_insert ha, hr, IH, ← or_assoc, @or_comm (r c (f a)), or_assoc]
-    apply or_congr Iff.rfl
-    constructor
-    · rintro (h₁ | ⟨x, hx, h₂⟩)
-      · use a
-        simp [h₁]
-      · refine ⟨x, by simp [hx], h₂⟩
-    · rintro ⟨x, hx, h⟩
-      exact (mem_insert.mp hx).imp (fun hx => by rwa [hx] at h) (fun hx => ⟨x, hx, h⟩)
+    induction s using Finset.induction_on with
+    | empty => simp
+    | insert a s ha IH =>
+      rw [Finset.fold_insert ha, hr, IH, ← or_assoc, @or_comm (r c (f a)), or_assoc]
+      simp
 
 @[simp]
 theorem fold_union_empty_singleton [DecidableEq α] (s : Finset α) :
     Finset.fold (· ∪ ·) ∅ singleton s = s := by
-  induction' s using Finset.induction_on with a s has ih
-  · simp only [fold_empty]
-  · rw [fold_insert has, ih, insert_eq]
+  induction s using Finset.induction_on with
+  | empty => simp only [fold_empty]
+  | insert a s has ih => rw [fold_insert has, ih, insert_eq]
 
 theorem fold_sup_bot_singleton [DecidableEq α] (s : Finset α) :
     Finset.fold (· ⊔ ·) ⊥ singleton s = s :=
@@ -188,37 +179,37 @@ theorem le_fold_min : c ≤ s.fold min b f ↔ c ≤ b ∧ ∀ x ∈ s, c ≤ f 
   fold_op_rel_iff_and le_min_iff
 
 theorem fold_min_le : s.fold min b f ≤ c ↔ b ≤ c ∨ ∃ x ∈ s, f x ≤ c := by
-  show _ ≥ _ ↔ _
+  change _ ≥ _ ↔ _
   apply fold_op_rel_iff_or
   intro x y z
-  show _ ≤ _ ↔ _
+  change _ ≤ _ ↔ _
   exact min_le_iff
 
 theorem lt_fold_min : c < s.fold min b f ↔ c < b ∧ ∀ x ∈ s, c < f x :=
   fold_op_rel_iff_and lt_min_iff
 
 theorem fold_min_lt : s.fold min b f < c ↔ b < c ∨ ∃ x ∈ s, f x < c := by
-  show _ > _ ↔ _
+  change _ > _ ↔ _
   apply fold_op_rel_iff_or
   intro x y z
-  show _ < _ ↔ _
+  change _ < _ ↔ _
   exact min_lt_iff
 
 theorem fold_max_le : s.fold max b f ≤ c ↔ b ≤ c ∧ ∀ x ∈ s, f x ≤ c := by
-  show _ ≥ _ ↔ _
+  change _ ≥ _ ↔ _
   apply fold_op_rel_iff_and
   intro x y z
-  show _ ≤ _ ↔ _
+  change _ ≤ _ ↔ _
   exact max_le_iff
 
 theorem le_fold_max : c ≤ s.fold max b f ↔ c ≤ b ∨ ∃ x ∈ s, c ≤ f x :=
   fold_op_rel_iff_or le_max_iff
 
 theorem fold_max_lt : s.fold max b f < c ↔ b < c ∧ ∀ x ∈ s, f x < c := by
-  show _ > _ ↔ _
+  change _ > _ ↔ _
   apply fold_op_rel_iff_and
   intro x y z
-  show _ < _ ↔ _
+  change _ < _ ↔ _
   exact max_lt_iff
 
 theorem lt_fold_max : c < s.fold max b f ↔ c < b ∨ ∃ x ∈ s, c < f x :=

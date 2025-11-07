@@ -66,22 +66,11 @@ instance (priority := 50) infSet_to_nonempty (α) [InfSet α] : Nonempty α :=
 instance (priority := 50) supSet_to_nonempty (α) [SupSet α] : Nonempty α :=
   ⟨sSup ∅⟩
 
-/-
-Porting note: the code below could replace the `notation3` command
-open Batteries.ExtendedBinder in
-syntax "⨆ " extBinder ", " term:51 : term
-
-macro_rules
-  | `(⨆ $x:ident, $p) => `(iSup fun $x:ident ↦ $p)
-  | `(⨆ $x:ident : $t, $p) => `(iSup fun $x:ident : $t ↦ $p)
-  | `(⨆ $x:ident $b:binderPred, $p) =>
-    `(iSup fun $x:ident ↦ satisfies_binder_pred% $x $b ∧ $p) -/
-
 /-- Indexed supremum. -/
-notation3 "⨆ "(...)", "r:60:(scoped f => iSup f) => r
+notation3 "⨆ " (...)", " r:60:(scoped f => iSup f) => r
 
 /-- Indexed infimum. -/
-notation3 "⨅ "(...)", "r:60:(scoped f => iInf f) => r
+notation3 "⨅ " (...)", " r:60:(scoped f => iInf f) => r
 
 section delaborators
 
@@ -166,11 +155,11 @@ def sUnion (S : Set (Set α)) : Set α :=
 /-- Notation for `Set.sUnion`. Union of a set of sets. -/
 prefix:110 "⋃₀ " => sUnion
 
-@[simp]
+@[simp, grind =]
 theorem mem_sInter {x : α} {S : Set (Set α)} : x ∈ ⋂₀ S ↔ ∀ t ∈ S, x ∈ t :=
   Iff.rfl
 
-@[simp]
+@[simp, grind =]
 theorem mem_sUnion {x : α} {S : Set (Set α)} : x ∈ ⋃₀ S ↔ ∃ t ∈ S, x ∈ t :=
   Iff.rfl
 
@@ -183,10 +172,10 @@ def iInter (s : ι → Set α) : Set α :=
   iInf s
 
 /-- Notation for `Set.iUnion`. Indexed union of a family of sets -/
-notation3 "⋃ "(...)", "r:60:(scoped f => iUnion f) => r
+notation3 "⋃ " (...)", " r:60:(scoped f => iUnion f) => r
 
 /-- Notation for `Set.iInter`. Indexed intersection of a family of sets -/
-notation3 "⋂ "(...)", "r:60:(scoped f => iInter f) => r
+notation3 "⋂ " (...)", " r:60:(scoped f => iInter f) => r
 
 section delaborators
 
@@ -261,7 +250,7 @@ theorem mem_iInter {x : α} {s : ι → Set α} : (x ∈ ⋂ i, s i) ↔ ∀ i, 
     fun h _ ⟨a, (eq : s a = _)⟩ => eq ▸ h a⟩
 
 @[simp]
-theorem sSup_eq_sUnion (S : Set (Set α)) : sSup S = ⋃₀S :=
+theorem sSup_eq_sUnion (S : Set (Set α)) : sSup S = ⋃₀ S :=
   rfl
 
 @[simp]

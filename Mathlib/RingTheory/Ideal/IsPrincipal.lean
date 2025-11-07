@@ -15,13 +15,13 @@ This file deals with the set of principal ideals of a `CommRing R`.
 * `Ideal.isPrincipalSubmonoid`: the submonoid of `Ideal R` formed by the principal ideals of `R`.
 
 * `Ideal.isPrincipalNonZeroDivisorSubmonoid`: the submonoid of `(Ideal R)⁰` formed by the
-non-zero-divisors principal ideals of `R`.
+  non-zero-divisors principal ideals of `R`.
 
 * `Ideal.associatesMulEquivIsPrincipal`: the `MulEquiv` between the monoid of `Associates R` and
-the submonoid of principal ideals of `R`.
+  the submonoid of principal ideals of `R`.
 
 * `Ideal.associatesNonZeroDivisorsMulEquivIsPrincipal`: the `MulEquiv` between the monoid of
-`Associates R⁰` and the submonoid of non-zero-divisors principal ideals of `R`.
+  `Associates R⁰` and the submonoid of non-zero-divisors principal ideals of `R`.
 -/
 
 variable {R : Type*} [CommRing R]
@@ -98,10 +98,14 @@ theorem associatesEquivIsPrincipal_map_one :
 variable (R) in
 /-- The `MulEquiv` version of `Ideal.associatesEquivIsPrincipal`. -/
 noncomputable def associatesMulEquivIsPrincipal :
-    Associates R ≃* (isPrincipalSubmonoid R) where
+    Associates R ≃* isPrincipalSubmonoid R where
   __ := associatesEquivIsPrincipal R
   map_mul' _ _ := by
-    erw [Subtype.ext_iff, associatesEquivIsPrincipal_mul]
+    rw [Subtype.ext_iff]
+    -- This `erw` is needed to see through `{I // IsPrincipal I} = ↑(isPrincipalSubmonoid R)`:
+    -- we can redefine `associatesEquivIsPrincipal` to get rid of this `erw` but then we'd need
+    -- to add one in `associatesNonZeroDivisorsEquivIsPrincipal`.
+    erw [associatesEquivIsPrincipal_mul]
     rfl
 
 variable (R) in
@@ -130,7 +134,7 @@ theorem associatesNonZeroDivisorsEquivIsPrincipal_mul (x y : Associates R⁰) :
     (associatesNonZeroDivisorsEquivIsPrincipal R (x * y) : Ideal R) =
       (associatesNonZeroDivisorsEquivIsPrincipal R x) *
         (associatesNonZeroDivisorsEquivIsPrincipal R y) := by
-  simp_rw [associatesNonZeroDivisorsEquivIsPrincipal_coe, _root_.map_mul, Submonoid.coe_mul,
+  simp_rw [associatesNonZeroDivisorsEquivIsPrincipal_coe, map_mul, Submonoid.coe_mul,
     associatesEquivIsPrincipal_mul]
 
 @[simp]
@@ -145,7 +149,29 @@ noncomputable def associatesNonZeroDivisorsMulEquivIsPrincipal :
     Associates R⁰ ≃* (isPrincipalNonZeroDivisorsSubmonoid R) where
   __ := associatesNonZeroDivisorsEquivIsPrincipal R
   map_mul' _ _ := by
-    erw [Subtype.ext_iff, Subtype.ext_iff, associatesNonZeroDivisorsEquivIsPrincipal_mul]
+    rw [Subtype.ext_iff, Subtype.ext_iff, Equiv.toFun_as_coe,
+      associatesNonZeroDivisorsEquivIsPrincipal_mul]
     rfl
+
+/-- A nonzero principal ideal in an integral domain `R` is isomorphic to `R` as a module.
+The isomorphism we choose here sends `1` to the generator chosen by `Ideal.generator`. -/
+noncomputable def isoBaseOfIsPrincipal {I : Ideal R}
+    [hprinc : I.IsPrincipal] (hI : I ≠ ⊥) : R ≃ₗ[R] I :=
+  letI x := IsPrincipal.generator I
+  have hx : x ≠ 0 := by rwa [Ne, ← IsPrincipal.eq_bot_iff_generator_eq_zero]
+  (LinearEquiv.toSpanNonzeroSingleton R R x hx).trans
+    (LinearEquiv.ofEq (Submodule.span R {x}) I (IsPrincipal.span_singleton_generator I))
+
+@[simp]
+theorem isoBaseOfIsPrincipal_apply {I : Ideal R} [hprinc : I.IsPrincipal] (hI : I ≠ ⊥) (x : R) :
+    (Ideal.isoBaseOfIsPrincipal hI) x = x * IsPrincipal.generator I :=
+  rfl
+
+theorem subtype_isoBaseOfIsPrincipal_eq_mul {I : Ideal R}
+    [hprinc : I.IsPrincipal] (h : I ≠ ⊥) :
+    Submodule.subtype I ∘ₗ ↑(Ideal.isoBaseOfIsPrincipal h) =
+    LinearMap.mul R R (IsPrincipal.generator I) := by
+  ext
+  simp
 
 end Ideal

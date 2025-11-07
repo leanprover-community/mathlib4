@@ -19,14 +19,14 @@ open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain EuclideanDom
 
 variable {k : Type*} [Field k] [DecidableEq k]
 
-theorem degree_radical_le {a : k[X]} (h : a ≠ 0) :
-  (radical a).degree ≤ a.degree := degree_le_of_dvd (radical_dvd_self a) h
+theorem degree_radical_le {a : k[X]} (h : a ≠ 0) : (radical a).degree ≤ a.degree :=
+  degree_le_of_dvd radical_dvd_self h
 
 theorem natDegree_radical_le {a : k[X]} :
     (radical a).natDegree ≤ a.natDegree := by
   by_cases ha : a = 0
   · simp [ha]
-  · exact natDegree_le_of_dvd (radical_dvd_self a) ha
+  · exact natDegree_le_of_dvd radical_dvd_self ha
 
 theorem divRadical_dvd_derivative (a : k[X]) : divRadical a ∣ derivative a := by
   induction a using induction_on_coprime
@@ -40,8 +40,8 @@ theorem divRadical_dvd_derivative (a : k[X]) : divRadical a ∣ derivative a := 
     · rw [pow_zero, derivative_one]
       apply dvd_zero
     · case succ i =>
-      rw [← mul_dvd_mul_iff_left (radical_ne_zero (p ^ i.succ)), radical_mul_divRadical,
-        radical_pow_of_prime hp i.succ_pos, derivative_pow_succ, ← mul_assoc]
+      rw [← mul_dvd_mul_iff_left radical_ne_zero, radical_mul_divRadical,
+        radical_pow_of_prime hp i.succ_ne_zero, derivative_pow_succ, ← mul_assoc]
       apply dvd_mul_of_dvd_left
       rw [mul_comm, mul_assoc]
       apply dvd_mul_of_dvd_right

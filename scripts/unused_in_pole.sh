@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 
 # Run `lake exe pole $1` (defaulting to Mathlib if no argument is provided)
 # and then use `lake exe unused` to investigate unused transitive imports along the longest pole.

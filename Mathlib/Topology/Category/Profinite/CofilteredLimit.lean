@@ -45,9 +45,7 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
     change TopologicalSpace.IsTopologicalBasis {W : Set (F.obj i) | IsClopen W}
     apply isTopologicalBasis_isClopen
   · rintro i j f V (hV : IsClopen _)
-    exact ⟨hV.1.preimage ((F ⋙ toTopCat).map f).hom.continuous,
-      hV.2.preimage ((F ⋙ toTopCat).map f).hom.continuous⟩
-    -- Porting note: `<;> continuity` fails
+    refine ⟨hV.1.preimage ?_, hV.2.preimage ?_⟩ <;> continuity
   -- Using this, since `U` is open, we can write `U` as a union of clopen sets all of which
   -- are preimages of clopens from the factors in the limit.
   obtain ⟨S, hS, h⟩ := hB.open_eq_sUnion hU.2
@@ -56,7 +54,6 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
   let V : ∀ s : S, Set (F.obj (j s)) := fun s => (hS s.2).choose_spec.choose
   have hV : ∀ s : S, IsClopen (V s) ∧ s.1 = C.π.app (j s) ⁻¹' V s := fun s =>
     (hS s.2).choose_spec.choose_spec
-
   -- Since `U` is also closed, hence compact, it is covered by finitely many of the
   -- clopens constructed in the previous step.
   have hUo : ∀ (i : ↑S), IsOpen ((fun s ↦ (C.π.app (j s)) ⁻¹' V s) i) := by
@@ -70,7 +67,6 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
     dsimp only
     rwa [← (hV ⟨T, hT⟩).2]
   have := hU.1.isCompact.elim_finite_subcover (fun s : S => C.π.app (j s) ⁻¹' V s) hUo hsU
-  -- Porting note: same remark as after `hB`
   -- We thus obtain a finite set `G : Finset J` and a clopen set of `F.obj j` for each
   -- `j ∈ G` such that `U` is the union of the preimages of these clopen sets.
   obtain ⟨G, hG⟩ := this
@@ -87,8 +83,7 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
     intro s hs
     dsimp [W]
     rw [dif_pos hs]
-    exact ⟨(hV s).1.1.preimage (F.map _).hom.continuous,
-      (hV s).1.2.preimage (F.map _).hom.continuous⟩
+    refine ⟨(hV s).1.1.preimage ?_, (hV s).1.2.preimage ?_⟩ <;> fun_prop
   · ext x
     constructor
     · intro hx
@@ -114,8 +109,7 @@ theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.p
   apply LocallyConstant.locallyConstant_eq_of_fiber_zero_eq
   simp only [Fin.isValue, Functor.const_obj_obj, LocallyConstant.coe_comap, Set.preimage_comp,
     LocallyConstant.ofIsClopen_fiber_zero]
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [← h]
+  exact h
 
 open Classical in
 theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit C)
@@ -128,9 +122,7 @@ theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit
   choose j g h using hff
   let G : Finset J := Finset.univ.image j
   obtain ⟨j0, hj0⟩ := IsCofiltered.inf_objs_exists G
-  have hj : ∀ a, j a ∈ (Finset.univ.image j : Finset J) := by
-    intro a
-    simp only [Finset.mem_image, Finset.mem_univ, true_and, exists_apply_eq_apply]
+  have hj : ∀ a, j a ∈ (Finset.univ.image j : Finset J) := by grind
   let fs : ∀ a : α, j0 ⟶ j a := fun a => (hj0 (hj a)).some
   let gg : α → LocallyConstant (F.obj j0) (Fin 2) := fun a => (g a).comap (F.map (fs _)).hom
   let ggg := LocallyConstant.unflip gg
@@ -169,8 +161,9 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
     rw [h]
     rfl
   have h2 : ∃ a : α, ι a = gg (C.π.app j x) := ⟨f x, h1⟩
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [dif_pos h2]
+  rw [dif_pos]
+  swap
+  · assumption
   apply_fun ι
   · rw [h2.choose_spec]
     exact h1
@@ -192,14 +185,12 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
   · suffices ∃ j, IsEmpty (F.obj j) by
       refine this.imp fun j hj => ?_
       refine ⟨⟨hj.elim, fun A => ?_⟩, ?_⟩
-      · suffices (fun a ↦ IsEmpty.elim hj a) ⁻¹' A = ∅ by
-          rw [this]
-          exact isOpen_empty
-        exact @Set.eq_empty_of_isEmpty _ hj _
+      · convert isOpen_empty
+        ext x
+        exact hj.elim x
       · ext x
         exact hj.elim' (C.π.app j x)
-    simp only [← not_nonempty_iff, ← not_forall]
-    intro h
+    by_contra! h
     haveI : ∀ j : J, Nonempty ((F ⋙ Profinite.toTopCat).obj j) := h
     haveI : ∀ j : J, T2Space ((F ⋙ Profinite.toTopCat).obj j) := fun j =>
       (inferInstance : T2Space (F.obj j))

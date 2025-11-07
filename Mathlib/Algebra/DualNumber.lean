@@ -60,16 +60,16 @@ open TrivSqZeroExt
 
 @[simp]
 theorem fst_eps [Zero R] [One R] : fst ε = (0 : R) :=
-  fst_inr _ _
+  rfl
 
 @[simp]
 theorem snd_eps [Zero R] [One R] : snd ε = (1 : R) :=
-  snd_inr _ _
+  rfl
 
 /-- A version of `TrivSqZeroExt.snd_mul` with `*` instead of `•`. -/
 @[simp]
 theorem snd_mul [Semiring R] (x y : R[ε]) : snd (x * y) = fst x * snd y + snd x * fst y :=
-  TrivSqZeroExt.snd_mul _ _
+  rfl
 
 @[simp]
 theorem eps_mul_eps [Semiring R] : (ε * ε : R[ε]) = 0 :=
@@ -102,12 +102,12 @@ nonrec theorem algHom_ext' ⦃f g : A[ε] →ₐ[R] B⦄
       f = g :=
   algHom_ext' hinl (by
     ext a
-    show f (inr a) = g (inr a)
+    change f (inr a) = g (inr a)
     simpa only [inr_eq_smul_eps] using DFunLike.congr_fun hinr a)
 
 /-- For two `R`-algebra morphisms out of `R[ε]` to agree, it suffices for them to agree on `ε`. -/
 @[ext 1200]
-nonrec theorem algHom_ext ⦃f g : R[ε] →ₐ[R] A⦄ (hε : f ε = g ε) : f = g := by
+theorem algHom_ext ⦃f g : R[ε] →ₐ[R] A⦄ (hε : f ε = g ε) : f = g := by
   ext
   dsimp
   simp only [one_smul, hε]
@@ -149,27 +149,22 @@ theorem lift_apply_apply (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A[ε]) :
 @[simp] theorem coe_lift_symm_apply (F : A[ε] →ₐ[R] B) :
     (lift.symm F).val = (F.comp (inlAlgHom _ _ _), F ε) := rfl
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
-The new unused variable linter flags `{fe : (A →ₐ[R] B) × B // _}`. -/
-set_option linter.unusedVariables false in
 /-- When applied to `inl`, `DualNumber.lift` applies the map `f : A →ₐ[R] B`. -/
-@[simp] theorem lift_apply_inl (fe : {fe : (A →ₐ[R] B) × B // _}) (a : A) :
+@[simp] theorem lift_apply_inl (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A) :
     lift fe (inl a : A[ε]) = fe.val.1 a := by
   rw [lift_apply_apply, fst_inl, snd_inl, map_zero, zero_mul, add_zero]
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
-The new unused variable linter flags `{fe : (A →ₐ[R] B) × B // _}`. -/
-set_option linter.unusedVariables false in
+@[simp] theorem lift_comp_inlHom (fe : {_fe : (A →ₐ[R] B) × B // _}) :
+    (lift fe).comp (inlAlgHom R A A) = fe.val.1 :=
+  AlgHom.ext <| lift_apply_inl fe
+
 /-- Scaling on the left is sent by `DualNumber.lift` to multiplication on the left -/
-@[simp] theorem lift_smul (fe : {fe : (A →ₐ[R] B) × B // _}) (a : A) (ad : A[ε]) :
+@[simp] theorem lift_smul (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A) (ad : A[ε]) :
     lift fe (a • ad) = fe.val.1 a * lift fe ad := by
   rw [← inl_mul_eq_smul, map_mul, lift_apply_inl]
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
-The new unused variable linter flags `{fe : (A →ₐ[R] B) × B // _}`. -/
-set_option linter.unusedVariables false in
 /-- Scaling on the right is sent by `DualNumber.lift` to multiplication on the right -/
-@[simp] theorem lift_op_smul (fe : {fe : (A →ₐ[R] B) × B // _}) (a : A) (ad : A[ε]) :
+@[simp] theorem lift_op_smul (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A) (ad : A[ε]) :
     lift fe (MulOpposite.op a • ad) = lift fe ad * fe.val.1 a := by
   rw [← mul_inl_eq_op_smul, map_mul, lift_apply_inl]
 
@@ -184,6 +179,24 @@ set_option linter.unusedVariables false in
 theorem lift_inlAlgHom_eps :
     lift ⟨(inlAlgHom _ _ _, ε), eps_mul_eps, fun _ => commute_eps_left _⟩ = AlgHom.id R A[ε] :=
   lift.apply_symm_apply <| AlgHom.id R A[ε]
+
+@[simp]
+theorem range_inlAlgHom_sup_adjoin_eps :
+    (inlAlgHom R A A).range ⊔ Algebra.adjoin R {ε} = ⊤ := by
+  refine top_unique fun x hx => ?_; clear hx
+  rw [← x.inl_fst_add_inr_snd_eq, inr_eq_smul_eps, ← inl_mul_eq_smul]
+  refine add_mem ?_ (mul_mem ?_ ?_)
+  · exact le_sup_left (α := Subalgebra R _) <| Set.mem_range_self x.fst
+  · exact le_sup_left (α := Subalgebra R _) <| Set.mem_range_self x.snd
+  · refine le_sup_right (α := Subalgebra R _) <| Algebra.subset_adjoin <| Set.mem_singleton ε
+
+@[simp]
+theorem range_lift
+    (fe : {fe : (A →ₐ[R] B) × B // fe.2 * fe.2 = 0 ∧ ∀ a, Commute fe.2 (fe.1 a)}) :
+    (lift fe).range = fe.1.1.range ⊔ Algebra.adjoin R {fe.1.2} := by
+  simp_rw [← Algebra.map_top, ← range_inlAlgHom_sup_adjoin_eps, Algebra.map_sup,
+    AlgHom.map_adjoin, ← AlgHom.range_comp, Set.image_singleton, lift_apply_eps, lift_comp_inlHom,
+    Algebra.map_top]
 
 /-- Show DualNumber with values x and y as an "x + y*ε" string -/
 instance instRepr [Repr R] : Repr (DualNumber R) where

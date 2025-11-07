@@ -14,8 +14,8 @@ endomorphisms.
 
 ## Main definitions / results
 
- * `Module.End.IsSemisimple.genEigenspace_eq_eigenspace`: for a semisimple endomorphism,
-   a generalized eigenspace is an eigenspace.
+* `Module.End.IsSemisimple.genEigenspace_eq_eigenspace`: for a semisimple endomorphism,
+  a generalized eigenspace is an eigenspace.
 
 -/
 

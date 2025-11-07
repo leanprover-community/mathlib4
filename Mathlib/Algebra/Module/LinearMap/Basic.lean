@@ -14,7 +14,7 @@ import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 -/
 
 
-assert_not_exists Submonoid Finset Star
+assert_not_exists Submonoid Finset TrivialStar
 
 open Function
 
@@ -50,7 +50,7 @@ theorem _root_.DomMulAct.mk_smul_linearMap_apply (a : S') (f : M →ₛₗ[σ₁
     (DomMulAct.mk a • f) x = f (a • x) :=
   rfl
 
-theorem  _root_.DomMulAct.coe_smul_linearMap (a : S'ᵈᵐᵃ) (f : M →ₛₗ[σ₁₂] M') :
+theorem _root_.DomMulAct.coe_smul_linearMap (a : S'ᵈᵐᵃ) (f : M →ₛₗ[σ₁₂] M') :
     (a • f : M →ₛₗ[σ₁₂] M') = a • (f : M → M') :=
   rfl
 

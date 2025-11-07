@@ -3,9 +3,9 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Data.Set.MulAntidiagonal
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-! # Multiplication antidiagonal as a `Finset`.
 
@@ -21,11 +21,12 @@ open Pointwise
 variable {α : Type*} {s t : Set α}
 
 @[to_additive]
-theorem IsPWO.mul [OrderedCancelCommMonoid α] (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO (s * t) := by
+theorem IsPWO.mul [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]
+    (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO (s * t) := by
   rw [← image_mul_prod]
   exact (hs.prod ht).image_of_monotone (monotone_fst.mul' monotone_snd)
 
-variable [LinearOrderedCancelCommMonoid α]
+variable [CommMonoid α] [LinearOrder α] [IsOrderedCancelMonoid α]
 
 @[to_additive]
 theorem IsWF.mul (hs : s.IsWF) (ht : t.IsWF) : IsWF (s * t) :=
@@ -46,14 +47,15 @@ namespace Finset
 open Pointwise
 
 variable {α : Type*}
-variable [OrderedCancelCommMonoid α] {s t : Set α} (hs : s.IsPWO) (ht : t.IsPWO) (a : α)
+variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]
+  {s t : Set α} (hs : s.IsPWO) (ht : t.IsPWO) (a : α)
 
 /-- `Finset.mulAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
 element in `t` that multiply to `a`, but its construction requires proofs that `s` and `t` are
 well-ordered. -/
-@[to_additive "`Finset.addAntidiagonal hs ht a` is the set of all pairs of an element in
+@[to_additive /-- `Finset.addAntidiagonal hs ht a` is the set of all pairs of an element in
 `s` and an element in `t` that add to `a`, but its construction requires proofs that `s` and `t` are
-well-ordered."]
+well-ordered. -/]
 noncomputable def mulAntidiagonal : Finset (α × α) :=
   (Set.MulAntidiagonal.finite_of_isPWO hs ht a).toFinset
 
@@ -88,8 +90,8 @@ theorem isPWO_support_mulAntidiagonal : { a | (mulAntidiagonal hs ht a).Nonempty
   (hs.mul ht).mono support_mulAntidiagonal_subset_mul
 
 @[to_additive]
-theorem mulAntidiagonal_min_mul_min {α} [LinearOrderedCancelCommMonoid α] {s t : Set α}
-    (hs : s.IsWF) (ht : t.IsWF) (hns : s.Nonempty) (hnt : t.Nonempty) :
+theorem mulAntidiagonal_min_mul_min {α} [CommMonoid α] [LinearOrder α] [IsOrderedCancelMonoid α]
+    {s t : Set α} (hs : s.IsWF) (ht : t.IsWF) (hns : s.Nonempty) (hnt : t.Nonempty) :
     mulAntidiagonal hs.isPWO ht.isPWO (hs.min hns * ht.min hnt) = {(hs.min hns, ht.min hnt)} := by
   ext ⟨a, b⟩
   simp only [mem_mulAntidiagonal, mem_singleton, Prod.ext_iff]

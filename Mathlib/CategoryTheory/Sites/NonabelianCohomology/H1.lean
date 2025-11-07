@@ -10,7 +10,7 @@ import Mathlib.Algebra.Category.Grp.Basic
 In this file, we shall define the cohomology in degree 1 of a sheaf
 of groups (TODO).
 
-Currently, given a presheaf of groups `G : Cᵒᵖ ⥤ Grp` and a family
+Currently, given a presheaf of groups `G : Cᵒᵖ ⥤ GrpCat` and a family
 of objects `U : I → C`, we define 1-cochains/1-cocycles/H^1 with values
 in `G` over `U`. (This definition neither requires the assumption that `G`
 is a sheaf, nor that `U` covers the terminal object.)
@@ -21,18 +21,18 @@ case, it would be a particular case of Čech cohomology (TODO).
 ## TODO
 
 * show that if `1 ⟶ G₁ ⟶ G₂ ⟶ G₃ ⟶ 1` is a short exact sequence of sheaves
-of groups, and `x₃` is a global section of `G₃` which can be locally lifted
-to a section of `G₂`, there is an associated canonical cohomology class of `G₁`
-which is trivial iff `x₃` can be lifted to a global section of `G₂`.
-(This should hold more generally if `G₂` is a sheaf of sets on which `G₁` acts
-freely, and `G₃` is the quotient sheaf.)
+  of groups, and `x₃` is a global section of `G₃` which can be locally lifted
+  to a section of `G₂`, there is an associated canonical cohomology class of `G₁`
+  which is trivial iff `x₃` can be lifted to a global section of `G₂`.
+  (This should hold more generally if `G₂` is a sheaf of sets on which `G₁` acts
+  freely, and `G₃` is the quotient sheaf.)
 * deduce a similar result for abelian sheaves
 * when the notion of quasi-coherent sheaves on schemes is defined, show that
-if `0 ⟶ Q ⟶ M ⟶ N ⟶ 0` is an exact sequence of abelian sheaves over a scheme `X`
-and `Q` is the underlying sheaf of a quasi-coherent sheaf, then `M(U) ⟶ N(U)`
-is surjective for any affine open `U`.
+  if `0 ⟶ Q ⟶ M ⟶ N ⟶ 0` is an exact sequence of abelian sheaves over a scheme `X`
+  and `Q` is the underlying sheaf of a quasi-coherent sheaf, then `M(U) ⟶ N(U)`
+  is surjective for any affine open `U`.
 * take the colimit of `OneCohomology G U` over all covering families `U` (for
-a Grothendieck topology)
+  a Grothendieck topology)
 
 # References
 
@@ -48,7 +48,7 @@ variable {C : Type u} [Category.{v} C]
 
 namespace PresheafOfGroups
 
-variable (G : Cᵒᵖ ⥤ Grp.{w}) {I : Type w'} (U : I → C)
+variable (G : Cᵒᵖ ⥤ GrpCat.{w}) {I : Type w'} (U : I → C)
 
 /-- A zero cochain consists of a family of sections. -/
 def ZeroCochain := ∀ (i : I), G.obj (Opposite.op (U i))
@@ -57,9 +57,7 @@ instance : Group (ZeroCochain G U) := Pi.group
 
 namespace Cochain₀
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/4481
-the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`. -/
-@[simp, nolint simpNF]
+@[simp]
 lemma one_apply (i : I) : (1 : ZeroCochain G U) i = 1 := rfl
 
 @[simp]
@@ -70,7 +68,7 @@ lemma mul_apply (γ₁ γ₂ : ZeroCochain G U) (i : I) : (γ₁ * γ₂) i = γ
 
 end Cochain₀
 
-/-- A 1-cochain of a presheaf of groups `G : Cᵒᵖ ⥤ Grp` on a family `U : I → C` of objects
+/-- A 1-cochain of a presheaf of groups `G : Cᵒᵖ ⥤ GrpCat` on a family `U : I → C` of objects
 consists of the data of an element in `G.obj (Opposite.op T)` whenever we have elements
 `i` and `j` in `I` and maps `a : T ⟶ U i` and `b : T ⟶ U j`, and it must satisfy a compatibility
 with respect to precomposition. (When the binary product of `U i` and `U j` exists, this
@@ -191,7 +189,7 @@ end OneCocycle
 
 variable (G U) in
 /-- The cohomology in degree 1 of a presheaf of groups
-`G : Cᵒᵖ ⥤ Grp` on a family of objects `U : I → C`. -/
+`G : Cᵒᵖ ⥤ GrpCat` on a family of objects `U : I → C`. -/
 def H1 := Quot (OneCocycle.IsCohomologous (G := G) (U := U))
 
 /-- The cohomology class of a 1-cocycle. -/

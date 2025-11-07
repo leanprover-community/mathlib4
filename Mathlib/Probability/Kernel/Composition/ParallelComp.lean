@@ -20,7 +20,7 @@ Two kernels `κ : Kernel α β` and `η : Kernel γ δ` can be applied in parall
   of two s-finite kernels. We define a notation `κ ∥ₖ η = parallelComp κ η`.
   `∫⁻ bd, g bd ∂(κ ∥ₖ η) ac = ∫⁻ b, ∫⁻ d, g (b, d) ∂η ac.2 ∂κ ac.1`
 
-## Notations
+## Notation
 
 * `κ ∥ₖ η = ProbabilityTheory.Kernel.parallelComp κ η`
 
@@ -52,7 +52,7 @@ irreducible_def parallelComp (κ : Kernel α β) (η : Kernel γ δ) : Kernel (�
       have : (fun y ↦ prodMkLeft α η y.1 (Prod.mk y.2 ⁻¹' s))
           = fun y ↦ prodMkRight β (prodMkLeft α η) y (Prod.mk y.2 ⁻¹' s) := rfl
       rw [this]
-      exact measurable_kernel_prod_mk_left (measurable_fst.snd.prod_mk measurable_snd hs) }
+      exact measurable_kernel_prodMk_left (measurable_fst.snd.prodMk measurable_snd hs) }
   else 0
 
 @[inherit_doc]
@@ -78,6 +78,10 @@ lemma parallelComp_apply' [IsSFiniteKernel κ] [IsSFiniteKernel η]
     (κ ∥ₖ η) x s = ∫⁻ b, η x.2 (Prod.mk b ⁻¹' s) ∂κ x.1 := by
   rw [parallelComp_apply, Measure.prod_apply hs]
 
+lemma parallelComp_apply_prod [IsSFiniteKernel κ] [IsSFiniteKernel η] (s : Set β) (t : Set δ) :
+    (κ ∥ₖ η) x (s ×ˢ t) = (κ x.1 s) * (η x.2 t) := by
+  rw [parallelComp_apply, Measure.prod_prod]
+
 @[simp]
 lemma parallelComp_apply_univ [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     (κ ∥ₖ η) x Set.univ = κ x.1 Set.univ * η x.2 Set.univ := by
@@ -95,6 +99,13 @@ lemma parallelComp_zero_right (κ : Kernel α β) : κ ∥ₖ (0 : Kernel γ δ)
   by_cases h : IsSFiniteKernel κ
   · ext; simp [parallelComp_apply]
   · exact parallelComp_of_not_isSFiniteKernel_left _ h
+
+lemma deterministic_parallelComp_deterministic
+    {f : α → γ} {g : β → δ} (hf : Measurable f) (hg : Measurable g) :
+    (deterministic f hf) ∥ₖ (deterministic g hg)
+      = deterministic (Prod.map f g) (hf.prodMap hg) := by
+  ext x : 1
+  simp_rw [parallelComp_apply, deterministic_apply, Prod.map, Measure.dirac_prod_dirac]
 
 lemma lintegral_parallelComp [IsSFiniteKernel κ] [IsSFiniteKernel η]
     (ac : α × γ) {g : β × δ → ℝ≥0∞} (hg : Measurable g) :
@@ -130,12 +141,10 @@ instance [IsZeroOrMarkovKernel κ] [IsZeroOrMarkovKernel η] : IsZeroOrMarkovKer
   all_goals simpa using by infer_instance
 
 instance [IsFiniteKernel κ] [IsFiniteKernel η] : IsFiniteKernel (κ ∥ₖ η) := by
-  refine ⟨⟨IsFiniteKernel.bound κ * IsFiniteKernel.bound η,
-    ENNReal.mul_lt_top (IsFiniteKernel.bound_lt_top κ) (IsFiniteKernel.bound_lt_top η),
-    fun a ↦ ?_⟩⟩
+  refine ⟨⟨κ.bound * η.bound, ENNReal.mul_lt_top κ.bound_lt_top η.bound_lt_top, fun a ↦ ?_⟩⟩
   calc (κ ∥ₖ η) a Set.univ
   _ = κ a.1 Set.univ * η a.2 Set.univ := parallelComp_apply_univ
-  _ ≤ IsFiniteKernel.bound κ * IsFiniteKernel.bound η := by
+  _ ≤ κ.bound * η.bound := by
     gcongr
     · exact measure_le_bound κ a.1 Set.univ
     · exact measure_le_bound η a.2 Set.univ

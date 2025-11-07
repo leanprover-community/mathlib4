@@ -10,12 +10,12 @@ import Mathlib.Topology.Baire.Lemmas
 /-!
 # Barrelled spaces and the Banach-Steinhaus theorem / Uniform Boundedness Principle
 
-This files defines barrelled spaces over a `NontriviallyNormedField`, and proves the
+This file defines barrelled spaces over a `NontriviallyNormedField`, and proves the
 Banach-Steinhaus theorem for maps from a barrelled space to a space equipped with a family
-of seminorms generating the topology (i.e `WithSeminorms q` for some family of seminorms `q`).
+of seminorms generating the topology (i.e. `WithSeminorms q` for some family of seminorms `q`).
 
 The more standard Banach-Steinhaus theorem for normed spaces is then deduced from that in
-`Mathlib.Analysis.Normed.Operator.BanachSteinhaus`.
+`Mathlib/Analysis/Normed/Operator/BanachSteinhaus.lean`.
 
 ## Main definitions
 
@@ -91,7 +91,7 @@ theorem Seminorm.continuous_of_lowerSemicontinuous {𝕜 E : Type*} [AddGroup E]
   BarrelledSpace.continuous_of_lowerSemicontinuous p hp
 
 theorem Seminorm.continuous_iSup
-    {ι : Sort*} {𝕜 E : Type*} [NormedField 𝕜]  [AddCommGroup E] [Module 𝕜 E]
+    {ι : Sort*} {𝕜 E : Type*} [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [TopologicalSpace E] [BarrelledSpace 𝕜 E] (p : ι → Seminorm 𝕜 E)
     (hp : ∀ i, Continuous (p i)) (bdd : BddAbove (range p)) :
     Continuous (⨆ i, p i) := by
@@ -106,7 +106,7 @@ end defs
 
 section TVS_anyField
 
-variable {α ι κ 𝕜₁ 𝕜₂ E F : Type*} [Nonempty κ] [NontriviallyNormedField 𝕜₁]
+variable {α ι κ 𝕜₁ 𝕜₂ E F : Type*} [NontriviallyNormedField 𝕜₁]
     [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜₁ →+* 𝕜₂} [RingHomIsometric σ₁₂]
     [AddCommGroup E] [AddCommGroup F] [Module 𝕜₁ E] [Module 𝕜₂ F]
 
@@ -145,7 +145,7 @@ instance BaireSpace.instBarrelledSpace [TopologicalSpace E] [IsTopologicalAddGro
 
 namespace WithSeminorms
 
-variable [UniformSpace E] [UniformSpace F] [UniformAddGroup E] [UniformAddGroup F]
+variable [UniformSpace E] [UniformSpace F] [IsUniformAddGroup E] [IsUniformAddGroup F]
     [ContinuousSMul 𝕜₁ E] [BarrelledSpace 𝕜₁ E] {𝓕 : ι → E →SL[σ₁₂] F}
     {q : SeminormFamily 𝕜₂ F κ} (hq : WithSeminorms q)
 include hq

@@ -12,7 +12,7 @@ import Mathlib.Tactic.Nontriviality
 
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 variable {M₀ G₀ : Type*}
 variable [MonoidWithZero M₀]
@@ -38,12 +38,19 @@ lemma inverse_pow (r : M₀) : ∀ n : ℕ, Ring.inverse r ^ n = Ring.inverse (r
     rw [pow_succ', pow_succ, Ring.mul_inverse_rev' ((Commute.refl r).pow_left n),
       Ring.inverse_pow r n]
 
+lemma inverse_pow_mul_eq_iff_eq_mul {a : M₀} (b c : M₀) (ha : IsUnit a) {k : ℕ} :
+    Ring.inverse a ^ k * b = c ↔ b = a ^ k * c := by
+  rw [Ring.inverse_pow, Ring.inverse_mul_eq_iff_eq_mul _ _ _ (IsUnit.pow _ ha)]
+
 end Ring
 
-theorem Commute.ring_inverse_ring_inverse {a b : M₀} (h : Commute a b) :
+theorem Commute.ringInverse_ringInverse {a b : M₀} (h : Commute a b) :
     Commute (Ring.inverse a) (Ring.inverse b) :=
   (Ring.mul_inverse_rev' h.symm).symm.trans <| (congr_arg _ h.symm.eq).trans <|
     Ring.mul_inverse_rev' h
+
+@[deprecated (since := "2025-04-22")]
+alias Commute.ring_inverse_ring_inverse := Commute.ringInverse_ringInverse
 
 namespace Commute
 

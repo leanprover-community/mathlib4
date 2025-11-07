@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Semiquot
 import Mathlib.Data.Nat.Size
-import Batteries.Data.Rat.Basic
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Rat.Init
 import Mathlib.Algebra.Ring.Int.Defs
@@ -15,7 +14,7 @@ import Mathlib.Algebra.Order.Group.Unbundled.Basic
 # Implementation of floating-point numbers (experimental).
 -/
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO add docs and remove `@[nolint docBlame]`
+-- TODO add docs and remove `@[nolint docBlame]`
 
 @[nolint docBlame]
 def Int.shift2 (a b : ℕ) : ℤ → ℕ × ℕ
@@ -86,9 +85,9 @@ theorem Float.Zero.valid : ValidFinite emin 0 :=
       rw [← Int.ofNat_le] at this
       rw [← sub_nonneg] at *
       simp only [emin, emax] at *
-      omega
+      cutsat
     le_trans C.precMax (Nat.le_mul_of_pos_left _ Nat.zero_lt_two),
-    by (rw [max_eq_right]; simp [sub_eq_add_neg, Int.ofNat_zero_le])⟩
+    by (simp [sub_eq_add_neg, Int.ofNat_zero_le])⟩
 
 @[nolint docBlame]
 def Float.zero (s : Bool) : Float :=
@@ -139,8 +138,6 @@ unsafe def ofPosRatDn (n : ℕ+) (d : ℕ+) : Float × Bool := by
   refine (Float.finite Bool.false e₃ (Int.toNat m) ?_, r.den = 1)
   exact lcProof
 
--- Porting note: remove this line when you dropped 'lcProof'
-set_option linter.unusedVariables false in
 @[nolint docBlame]
 unsafe def nextUpPos (e m) (v : ValidFinite e m) : Float :=
   let m' := m.succ
@@ -148,16 +145,13 @@ unsafe def nextUpPos (e m) (v : ValidFinite e m) : Float :=
     Float.finite false e m' (by unfold ValidFinite at *; rw [ss]; exact v)
   else if h : e = emax then Float.inf false else Float.finite false e.succ (Nat.div2 m') lcProof
 
--- Porting note: remove this line when you dropped 'lcProof'
-set_option linter.unusedVariables false in
 @[nolint docBlame]
 unsafe def nextDnPos (e m) (v : ValidFinite e m) : Float :=
-  match m with
+  match h : m with
   | 0 => nextUpPos _ _ Float.Zero.valid
   | Nat.succ m' =>
-    -- Porting note: was `m'.size = m.size`
-    if ss : m'.size = m'.succ.size then
-      Float.finite false e m' (by unfold ValidFinite at *; rw [ss]; exact v)
+    if ss : m'.size = m.size then
+      Float.finite false e m' (by subst h; unfold ValidFinite at *; rw [ss]; exact v)
     else
       if h : e = emin then Float.finite false emin m' lcProof
       else Float.finite false e.pred (2 * m' + 1) lcProof
@@ -213,7 +207,7 @@ instance : Neg Float :=
 unsafe def add (mode : RMode) : Float → Float → Float
   | nan, _ => nan
   | _, nan => nan
-  | inf Bool.true, inf Bool.false=> nan
+  | inf Bool.true, inf Bool.false => nan
   | inf Bool.false, inf Bool.true => nan
   | inf s₁, _ => inf s₁
   | _, inf s₂ => inf s₂

@@ -29,7 +29,7 @@ variable {F : Cᵒᵖ ⥤ Type w} {X : Cᵒᵖ} (x : F.obj X)
 
 /-- The subpresheaf of `F : Cᵒᵖ ⥤ Type w` that is generated
 by a section `x : F.obj X`. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def ofSection : Subpresheaf F where
   obj U := setOf (fun u ↦ ∃ (f : X ⟶ U), F.map f x = u)
   map {U V} g := by
@@ -84,10 +84,10 @@ section
 variable {F : Cᵒᵖ ⥤ Type max v w}
 
 lemma ofSection_eq_range' {X : Cᵒᵖ} (x : F.obj X) :
-    ofSection x = range ((yonedaCompUliftFunctorEquiv F X.unop).symm x) := by
+    ofSection x = range (uliftYonedaEquiv.symm x) := by
   ext U y
-  simp only [Opposite.op_unop, range_obj, Functor.comp_obj, yoneda_obj_obj, uliftFunctor_obj,
-    Set.mem_range, ULift.exists]
+  dsimp [uliftYonedaEquiv]
+  simp only [Set.mem_range, ULift.exists]
   constructor
   · rintro ⟨f, rfl⟩
     exact ⟨f.unop, rfl⟩
@@ -95,7 +95,7 @@ lemma ofSection_eq_range' {X : Cᵒᵖ} (x : F.obj X) :
     exact ⟨f.op, rfl⟩
 
 lemma range_eq_ofSection' {X : C} (f : yoneda.obj X ⋙ uliftFunctor.{w} ⟶ F) :
-    range f = ofSection ((yonedaCompUliftFunctorEquiv F X) f) := by
+    range f = ofSection (uliftYonedaEquiv f) := by
   rw [ofSection_eq_range', Equiv.symm_apply_apply]
 
 end

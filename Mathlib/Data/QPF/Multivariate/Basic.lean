@@ -57,14 +57,14 @@ matched because they preserve the properties of QPF. The latter example,
 
 ## Related modules
 
- * constructions
-   * Fix
-   * Cofix
-   * Quot
-   * Comp
-   * Sigma / Pi
-   * Prj
-   * Const
+* constructions
+  * Fix
+  * Cofix
+  * Quot
+  * Comp
+  * Sigma / Pi
+  * Prj
+  * Const
 
 each proves that some operations on functors preserves the QPF structure
 -/
@@ -130,7 +130,7 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : F α) :
   use abs ⟨a, fun i j => ⟨f i j, h₁ i j⟩⟩
   rw [← abs_map, h₀]; rfl
 
-theorem liftR_iff {α : TypeVec n} (r : ∀ /- ⦃i⦄ -/ {i}, α i → α i → Prop) (x y : F α) :
+theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x y : F α) :
     LiftR r x y ↔ ∃ a f₀ f₁, x = abs ⟨a, f₀⟩ ∧ y = abs ⟨a, f₁⟩ ∧ ∀ i j, r (f₀ i j) (f₁ i j) := by
   constructor
   · rintro ⟨u, xeq, yeq⟩
@@ -150,8 +150,6 @@ theorem liftR_iff {α : TypeVec n} (r : ∀ /- ⦃i⦄ -/ {i}, α i → α i →
 
 open Set
 
-open MvFunctor (LiftP LiftR)
-
 theorem mem_supp {α : TypeVec n} (x : F α) (i) (u : α i) :
     u ∈ supp x i ↔ ∀ a f, abs ⟨a, f⟩ = x → u ∈ f i '' univ := by
   rw [supp]; dsimp; constructor
@@ -162,10 +160,7 @@ theorem mem_supp {α : TypeVec n} (x : F α) (i) (u : α i) :
       intro i u
       exact mem_image_of_mem _ (mem_univ _)
     exact h this
-  intro h p; rw [liftP_iff]
-  rintro ⟨a, f, xeq, h'⟩
-  rcases h a f xeq.symm with ⟨i, _, hi⟩
-  rw [← hi]; apply h'
+  grind [liftP_iff]
 
 theorem supp_eq {α : TypeVec n} {i} (x : F α) :
     supp x i = { u | ∀ a f, abs ⟨a, f⟩ = x → u ∈ f i '' univ } := by ext; apply mem_supp

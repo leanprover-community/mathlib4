@@ -14,8 +14,7 @@ The algorithm's entry point is the function `Linarith.SimplexAlgorithm.findPosit
 See the file `PositiveVector.lean` for details of how the procedure works.
 -/
 
-namespace Linarith.SimplexAlgorithm
-open Mathlib
+namespace Mathlib.Tactic.Linarith.SimplexAlgorithm
 
 /-- Preprocess the goal to pass it to `Linarith.SimplexAlgorithm.findPositiveVector`. -/
 def preprocess (matType : ℕ → ℕ → Type) [UsableInSimplexAlgorithm matType] (hyps : List Comp)
@@ -32,7 +31,7 @@ Extract the certificate from the `vec` found by `Linarith.SimplexAlgorithm.findP
 def postprocess (vec : Array ℚ) : Std.HashMap ℕ ℕ :=
   let common_den : ℕ := vec.foldl (fun acc item => acc.lcm item.den) 1
   let vecNat : Array ℕ := vec.map (fun x : ℚ => (x * common_den).floor.toNat)
-  Std.HashMap.empty.insertMany <| vecNat.zipIdx.filterMap
+  (∅ : Std.HashMap Nat Nat).insertMany <| vecNat.zipIdx.filterMap
     fun ⟨item, idx⟩ => if item != 0 then some (idx, item) else none
 
 end SimplexAlgorithm
@@ -56,4 +55,4 @@ def CertificateOracle.simplexAlgorithmDense : CertificateOracle where
     let vec ← findPositiveVector A strictIndexes
     return postprocess vec
 
-end Linarith
+end Mathlib.Tactic.Linarith

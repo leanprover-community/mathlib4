@@ -9,6 +9,12 @@ import Mathlib.LinearAlgebra.Basis.VectorSpace
 /-!
 # Extended norm
 
+**ATTENTION.** This file is deprecated. Mathlib now has classes `ENormed(Add)(Comm)Monoid` for
+(additive) (commutative) monoids with an `ENorm`: this is very similar to this definition, but
+much more general. Should the need arise, an enormed version of a normed space can be added later:
+this will be different from this file.
+
+
 In this file we define a structure `ENormedSpace 𝕜 V` representing an extended norm (i.e., a norm
 that can take the value `∞`) on a vector space `V` over a normed field `𝕜`. We do not use `class`
 for an `ENormedSpace` because the same space can have more than one extended norm.
@@ -34,13 +40,11 @@ normed space, extended norm
 
 noncomputable section
 
-attribute [local instance] Classical.propDecidable
-set_option linter.deprecated false
-
 open ENNReal
 
 /-- Extended norm on a vector space. As in the case of normed spaces, we require only
 `‖c • x‖ ≤ ‖c‖ * ‖x‖` in the definition, then prove an equality in `map_smul`. -/
+@[deprecated "Use ENormedAddCommMonoid or talk to the Carleson project" (since := "2025-05-07")]
 structure ENormedSpace (𝕜 : Type*) (V : Type*) [NormedField 𝕜] [AddCommGroup V] [Module 𝕜 V] where
   /-- the norm of an ENormedSpace, taking values into `ℝ≥0∞` -/
   toFun : V → ℝ≥0∞
@@ -48,64 +52,75 @@ structure ENormedSpace (𝕜 : Type*) (V : Type*) [NormedField 𝕜] [AddCommGro
   map_add_le' : ∀ x y : V, toFun (x + y) ≤ toFun x + toFun y
   map_smul_le' : ∀ (c : 𝕜) (x : V), toFun (c • x) ≤ ‖c‖₊ * toFun x
 
+set_option linter.deprecated false
+
 namespace ENormedSpace
 
 variable {𝕜 : Type*} {V : Type*} [NormedField 𝕜] [AddCommGroup V] [Module 𝕜 V]
   (e : ENormedSpace 𝕜 V)
 
--- Porting note: added to appease norm_cast complaints
 attribute [coe] ENormedSpace.toFun
 
 instance : CoeFun (ENormedSpace 𝕜 V) fun _ => V → ℝ≥0∞ :=
   ⟨ENormedSpace.toFun⟩
 
+@[deprecated "Use ENormedAddCommMonoid or talk to the Carleson project" (since := "2025-05-07")]
 theorem coeFn_injective : Function.Injective ((↑) : ENormedSpace 𝕜 V → V → ℝ≥0∞) := by
   intro e₁ e₂ h
   cases e₁
   cases e₂
   congr
 
-@[ext]
+@[deprecated "Use ENormedAddCommMonoid or talk to the Carleson project" (since := "2025-05-07"),
+  ext]
 theorem ext {e₁ e₂ : ENormedSpace 𝕜 V} (h : ∀ x, e₁ x = e₂ x) : e₁ = e₂ :=
   coeFn_injective <| funext h
 
-@[simp, norm_cast]
+@[deprecated "Use ENormedAddCommMonoid or talk to the Carleson project" (since := "2025-05-07"),
+  simp, norm_cast]
 theorem coe_inj {e₁ e₂ : ENormedSpace 𝕜 V} : (e₁ : V → ℝ≥0∞) = e₂ ↔ e₁ = e₂ :=
   coeFn_injective.eq_iff
 
-@[simp]
+@[deprecated "Use ENormedAddCommMonoid or talk to the Carleson project" (since := "2025-05-07"),
+  simp]
 theorem map_smul (c : 𝕜) (x : V) : e (c • x) = ‖c‖₊ * e x := by
   apply le_antisymm (e.map_smul_le' c x)
   by_cases hc : c = 0
   · simp [hc]
   calc
     (‖c‖₊ : ℝ≥0∞) * e x = ‖c‖₊ * e (c⁻¹ • c • x) := by rw [inv_smul_smul₀ hc]
-    _ ≤ ‖c‖₊ * (‖c⁻¹‖₊ * e (c • x)) := mul_le_mul_left' (e.map_smul_le' _ _) _
+    _ ≤ ‖c‖₊ * (‖c⁻¹‖₊ * e (c • x)) := by grw [e.map_smul_le']
     _ = e (c • x) := by
       rw [← mul_assoc, nnnorm_inv, ENNReal.coe_inv, ENNReal.mul_inv_cancel _ ENNReal.coe_ne_top,
         one_mul]
         <;> simp [hc]
 
-@[simp]
+@[deprecated "Use ENormedAddCommMonoid or talk to the Carleson project" (since := "2025-05-07"),
+  simp]
 theorem map_zero : e 0 = 0 := by
   rw [← zero_smul 𝕜 (0 : V), e.map_smul]
-  norm_num
+  simp
 
-@[simp]
+@[deprecated "Use ENormedAddCommMonoid or talk to the Carleson project" (since := "2025-05-07"),
+  simp]
 theorem eq_zero_iff {x : V} : e x = 0 ↔ x = 0 :=
   ⟨e.eq_zero' x, fun h => h.symm ▸ e.map_zero⟩
 
-@[simp]
+@[deprecated "Use ENormedAddCommMonoid or talk to the Carleson project" (since := "2025-05-07"),
+  simp]
 theorem map_neg (x : V) : e (-x) = e x :=
   calc
     e (-x) = ‖(-1 : 𝕜)‖₊ * e x := by rw [← map_smul, neg_one_smul]
     _ = e x := by simp
 
+@[deprecated "Use ENormedAddCommMonoid or talk to the Carleson project" (since := "2025-05-07")]
 theorem map_sub_rev (x y : V) : e (x - y) = e (y - x) := by rw [← neg_sub, e.map_neg]
 
+@[deprecated "Use ENormedAddCommMonoid or talk to the Carleson project" (since := "2025-05-07")]
 theorem map_add_le (x y : V) : e (x + y) ≤ e x + e y :=
   e.map_add_le' x y
 
+@[deprecated "Use ENormedAddCommMonoid or talk to the Carleson project" (since := "2025-05-07")]
 theorem map_sub_le (x y : V) : e (x - y) ≤ e x + e y :=
   calc
     e (x - y) = e (x + -y) := by rw [sub_eq_add_neg]
@@ -120,14 +135,12 @@ instance partialOrder : PartialOrder (ENormedSpace 𝕜 V) where
 
 /-- The `ENormedSpace` sending each non-zero vector to infinity. -/
 noncomputable instance : Top (ENormedSpace 𝕜 V) :=
-  ⟨{  toFun := fun x => if x = 0 then 0 else ⊤
-      eq_zero' := fun x => by simp only; split_ifs <;> simp [*]
+  ⟨{  toFun := fun x => open scoped Classical in if x = 0 then 0 else ⊤
+      eq_zero' := fun x => by split_ifs <;> simp [*]
       map_add_le' := fun x y => by
-        simp only
         split_ifs with hxy hx hy hy hx hy hy <;> try simp [*]
         simp [hx, hy] at hxy
       map_smul_le' := fun c x => by
-        simp only
         split_ifs with hcx hx hx <;> simp only [smul_eq_zero, not_or] at hcx
         · simp only [mul_zero, le_refl]
         · have : c = 0 := by tauto
@@ -138,12 +151,13 @@ noncomputable instance : Top (ENormedSpace 𝕜 V) :=
 noncomputable instance : Inhabited (ENormedSpace 𝕜 V) :=
   ⟨⊤⟩
 
+@[deprecated "Use ENormedAddCommMonoid or talk to the Carleson project" (since := "2025-05-07")]
 theorem top_map {x : V} (hx : x ≠ 0) : (⊤ : ENormedSpace 𝕜 V) x = ⊤ :=
   if_neg hx
 
 noncomputable instance : OrderTop (ENormedSpace 𝕜 V) where
   top := ⊤
-  le_top e x := if h : x = 0 then by simp [h] else by simp [top_map h]
+  le_top e x := by obtain h | h := eq_or_ne x 0 <;> simp [top_map, h]
 
 noncomputable instance : SemilatticeSup (ENormedSpace 𝕜 V) :=
   { ENormedSpace.partialOrder with
@@ -160,15 +174,18 @@ noncomputable instance : SemilatticeSup (ENormedSpace 𝕜 V) :=
     le_sup_right := fun _ _ _ => le_max_right _ _
     sup_le := fun _ _ _ h₁ h₂ x => max_le (h₁ x) (h₂ x) }
 
-@[simp, norm_cast]
+@[deprecated "Use ENormedAddCommMonoid or talk to the Carleson project" (since := "2025-05-07"),
+  simp, norm_cast]
 theorem coe_max (e₁ e₂ : ENormedSpace 𝕜 V) : ⇑(e₁ ⊔ e₂) = fun x => max (e₁ x) (e₂ x) :=
   rfl
 
-@[norm_cast]
+@[deprecated "Use ENormedAddCommMonoid or talk to the Carleson project" (since := "2025-05-07"),
+  norm_cast]
 theorem max_map (e₁ e₂ : ENormedSpace 𝕜 V) (x : V) : (e₁ ⊔ e₂) x = max (e₁ x) (e₂ x) :=
   rfl
 
 /-- Structure of an `EMetricSpace` defined by an extended norm. -/
+@[deprecated "Use ENormedAddCommMonoid or talk to the Carleson project" (since := "2025-05-07")]
 abbrev emetricSpace : EMetricSpace V where
   edist x y := e (x - y)
   edist_self x := by simp
@@ -180,6 +197,7 @@ abbrev emetricSpace : EMetricSpace V where
       _ ≤ e (x - y) + e (y - z) := e.map_add_le (x - y) (y - z)
 
 /-- The subspace of vectors with finite ENormedSpace. -/
+@[deprecated "Use ENormedAddCommMonoid or talk to the Carleson project" (since := "2025-05-07")]
 def finiteSubspace : Subspace 𝕜 V where
   carrier := { x | e x < ⊤ }
   zero_mem' := by simp
@@ -197,9 +215,11 @@ instance metricSpace : MetricSpace e.finiteSubspace := by
   change e (x - y) ≠ ⊤
   exact ne_top_of_le_ne_top (ENNReal.add_lt_top.2 ⟨x.2, y.2⟩).ne (e.map_sub_le x y)
 
+@[deprecated "Use ENormedAddCommMonoid or talk to the Carleson project" (since := "2025-05-07")]
 theorem finite_dist_eq (x y : e.finiteSubspace) : dist x y = (e (x - y)).toReal :=
   rfl
 
+@[deprecated "Use ENormedAddCommMonoid or talk to the Carleson project" (since := "2025-05-07")]
 theorem finite_edist_eq (x y : e.finiteSubspace) : edist x y = e (x - y) :=
   rfl
 
@@ -209,6 +229,7 @@ instance normedAddCommGroup : NormedAddCommGroup e.finiteSubspace :=
     norm := fun x => (e x).toReal
     dist_eq := fun _ _ => rfl }
 
+@[deprecated "Use ENormedAddCommMonoid or talk to the Carleson project" (since := "2025-05-07")]
 theorem finite_norm_eq (x : e.finiteSubspace) : ‖x‖ = (e x).toReal :=
   rfl
 

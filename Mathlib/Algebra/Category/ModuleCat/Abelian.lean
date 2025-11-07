@@ -30,7 +30,7 @@ variable {R : Type u} [Ring R] {M N : ModuleCat.{v} R} (f : M ⟶ N)
 /-- In the category of modules, every monomorphism is normal. -/
 def normalMono (hf : Mono f) : NormalMono f where
   Z := of R (N ⧸ LinearMap.range f.hom)
-  g := ofHom f.hom.range.mkQ
+  g := ofHom (LinearMap.range f.hom).mkQ
   w := hom_ext <| LinearMap.range_mkQ_comp _
   isLimit :=
     /- The following [invalid Lean code](https://github.com/leanprover-community/lean/issues/341)
@@ -87,13 +87,13 @@ instance forget_reflectsLimitsOfSize :
   reflectsLimits_of_reflectsIsomorphisms
 
 instance forget₂_reflectsLimitsOfSize :
-    ReflectsLimitsOfSize.{v, v} (forget₂ (ModuleCat.{max v w} R) AddCommGrp.{max v w}) :=
+    ReflectsLimitsOfSize.{v, v} (forget₂ (ModuleCat.{max v w} R) AddCommGrpCat.{max v w}) :=
   reflectsLimits_of_reflectsIsomorphisms
 
 instance forget_reflectsLimits : ReflectsLimits (forget (ModuleCat.{v} R)) :=
   ModuleCat.forget_reflectsLimitsOfSize.{v, v}
 
-instance forget₂_reflectsLimits : ReflectsLimits (forget₂ (ModuleCat.{v} R) AddCommGrp.{v}) :=
+instance forget₂_reflectsLimits : ReflectsLimits (forget₂ (ModuleCat.{v} R) AddCommGrpCat.{v}) :=
   ModuleCat.forget₂_reflectsLimitsOfSize.{v, v}
 
 end ReflectsLimits

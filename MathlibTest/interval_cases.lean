@@ -149,7 +149,7 @@ example (n : ℕ) : n % 2 = 0 ∨ n % 2 = 1 := by
 /- https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/interval_cases.20bug -/
 example {x : ℕ} (hx2 : x < 2) (h : False) : False := by
   have _this : x ≤ 1 := by
-    -- `interval_cases` deliberately not focussed,
+    -- `interval_cases` deliberately not focused,
     -- this is testing that the `interval_cases` only acts on `have` side goal, not on both
     interval_cases x
     · exact zero_le_one

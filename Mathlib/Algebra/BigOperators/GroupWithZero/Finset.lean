@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Algebra.Notation.Support
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Big operators on a finset in groups with zero
@@ -45,7 +47,7 @@ lemma prod_eq_zero_iff : ∏ x ∈ s, f x = 0 ↔ ∃ a ∈ s, f a = 0 := by
   classical
     induction s using Finset.induction_on with
     | empty => exact ⟨Not.elim one_ne_zero, fun ⟨_, H, _⟩ => by simp at H⟩
-    | insert ha ih => rw [prod_insert ha, mul_eq_zero, exists_mem_insert, ih]
+    | insert _ _ ha ih => rw [prod_insert ha, mul_eq_zero, exists_mem_insert, ih]
 
 lemma prod_ne_zero_iff : ∏ x ∈ s, f x ≠ 0 ↔ ∀ a ∈ s, f a ≠ 0 := by
   rw [Ne, prod_eq_zero_iff]
@@ -70,4 +72,4 @@ end Fintype
 lemma Units.mk0_prod [CommGroupWithZero G₀] (s : Finset ι) (f : ι → G₀) (h) :
     Units.mk0 (∏ i ∈ s, f i) h =
       ∏ i ∈ s.attach, Units.mk0 (f i) fun hh ↦ h (Finset.prod_eq_zero i.2 hh) := by
-  classical induction s using Finset.induction_on <;> simp [*]
+  induction s using Finset.cons_induction_on <;> simp [*]

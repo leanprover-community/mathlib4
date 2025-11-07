@@ -1,12 +1,12 @@
 /-
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau, Judith Ludwig, Christian Merten
+Authors: Kenny Lau, Judith Ludwig, Christian Merten, Jiedong Jiang
 -/
-import Mathlib.Algebra.GeomSum
-import Mathlib.LinearAlgebra.SModEq
-import Mathlib.RingTheory.Jacobson.Ideal
+import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.LinearAlgebra.SModEq.Basic
 import Mathlib.RingTheory.Ideal.Quotient.PowTransition
+import Mathlib.RingTheory.Jacobson.Ideal
 
 /-!
 # Completion of a module with respect to an ideal.
@@ -21,14 +21,13 @@ with respect to an ideal `I`:
 - `IsAdicComplete I M`: this says that `M` is Hausdorff and precomplete.
 - `Hausdorffification I M`: this is the universal Hausdorff module with a map from `M`.
 - `AdicCompletion I M`: if `I` is finitely generated, then this is the universal complete module
-  (TODO) with a map from `M`. This map is injective iff `M` is Hausdorff and surjective iff `M` is
-  precomplete.
-
+  with a linear map `AdicCompletion.lift` from `M`. This map is injective iff `M` is Hausdorff
+  and surjective iff `M` is precomplete.
 -/
 
 suppress_compilation
 
-open Submodule
+open Submodule Ideal Quotient
 
 variable {R S T : Type*} [CommRing R] (I : Ideal R)
 variable (M : Type*) [AddCommGroup M] [Module R M]
@@ -44,6 +43,7 @@ class IsPrecomplete : Prop where
     ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)]
 
 /-- A module `M` is `I`-adically complete if it is Hausdorff and precomplete. -/
+@[mk_iff, stacks 0317 "see also `IsAdicComplete.of_bijective_iff`"]
 class IsAdicComplete : Prop extends IsHausdorff I M, IsPrecomplete I M
 
 variable {I M}
@@ -85,8 +85,10 @@ abbrev Hausdorffification : Type _ :=
 to define `AdicCompletion`. -/
 abbrev AdicCompletion.transitionMap {m n : ℕ} (hmn : m ≤ n) := factorPow I M hmn
 
-/-- The completion of a module with respect to an ideal. This is not necessarily Hausdorff.
-In fact, this is only complete if the ideal is finitely generated. -/
+/-- The completion of a module with respect to an ideal.
+
+This is Hausdorff but not necessarily complete: a classical sufficient condition for
+completeness is that `M` be finitely generated [Stacks, 0G1Q]. -/
 def AdicCompletion : Type _ :=
   { f : ∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M) //
     ∀ {m n} (hmn : m ≤ n), AdicCompletion.transitionMap I M hmn (f n) = f m }
@@ -133,7 +135,7 @@ instance : IsHausdorff I (Hausdorffification I M) :=
     (Quotient.mk_eq_zero _).2 <| (mem_iInf _).2 fun n => by
       have := comap_map_mkQ (⨅ n : ℕ, I ^ n • ⊤ : Submodule R M) (I ^ n • ⊤)
       simp only [sup_of_le_right (iInf_le (fun n => (I ^ n • ⊤ : Submodule R M)) n)] at this
-      rw [← this, map_smul'', mem_comap, Submodule.map_top, range_mkQ, ← SModEq.zero]
+      rw [← this, map_smul'', Submodule.mem_comap, Submodule.map_top, range_mkQ, ← SModEq.zero]
       exact hx n⟩
 
 variable {M} [h : IsHausdorff I N]
@@ -350,7 +352,7 @@ def AdicCauchySequence : Type _ := { f : ℕ → M // IsAdicCauchy I M f }
 
 namespace AdicCauchySequence
 
-/-- The type of `I`-adic cauchy sequences is a submodule of the product `ℕ → M`. -/
+/-- The type of `I`-adic Cauchy sequences is a submodule of the product `ℕ → M`. -/
 def submodule : Submodule R (ℕ → M) where
   carrier := { f | IsAdicCauchy I M f }
   add_mem' := by
@@ -419,7 +421,7 @@ theorem smul_apply (n : ℕ) (r : R) (f : AdicCauchySequence I M) : (r • f) n 
 theorem ext {x y : AdicCauchySequence I M} (h : ∀ n, x n = y n) : x = y :=
   Subtype.eq <| funext h
 
-/-- The defining property of an adic cauchy sequence unwrapped. -/
+/-- The defining property of an adic Cauchy sequence unwrapped. -/
 theorem mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (f : AdicCauchySequence I M) :
     Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (f n) =
       Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (f m) :=
@@ -427,7 +429,7 @@ theorem mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (f : AdicCauchySequence I M) :
 
 end AdicCauchySequence
 
-/-- The `I`-adic cauchy condition can be checked on successive `n`. -/
+/-- The `I`-adic Cauchy condition can be checked on successive `n`. -/
 theorem isAdicCauchy_iff (f : ℕ → M) :
     IsAdicCauchy I M f ↔ ∀ n, f n ≡ f (n + 1) [SMOD (I ^ n • ⊤ : Submodule R M)] := by
   constructor
@@ -441,33 +443,33 @@ theorem isAdicCauchy_iff (f : ℕ → M) :
         · exact ih
         · refine SModEq.mono (smul_mono (Ideal.pow_le_pow_right hmn) (by rfl)) (h n)
 
-/-- Construct `I`-adic cauchy sequence from sequence satisfying the successive cauchy condition. -/
+/-- Construct `I`-adic Cauchy sequence from sequence satisfying the successive Cauchy condition. -/
 @[simps]
 def AdicCauchySequence.mk (f : ℕ → M)
     (h : ∀ n, f n ≡ f (n + 1) [SMOD (I ^ n • ⊤ : Submodule R M)]) : AdicCauchySequence I M where
   val := f
   property := by rwa [isAdicCauchy_iff]
 
-/-- The canonical linear map from cauchy sequences to the completion. -/
+/-- The canonical linear map from Cauchy sequences to the completion. -/
 @[simps]
 def mk : AdicCauchySequence I M →ₗ[R] AdicCompletion I M where
   toFun f := ⟨fun n ↦ Submodule.mkQ (I ^ n • ⊤ : Submodule R M) (f n), by
     intro m n hmn
-    simp only [mkQ_apply, factor_mk]
+    simp only [mkQ_apply]
     exact (f.property hmn).symm⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-/-- Criterion for checking that an adic cauchy sequence is mapped to zero in the adic completion. -/
+/-- Criterion for checking that an adic Cauchy sequence is mapped to zero in the adic completion. -/
 theorem mk_zero_of (f : AdicCauchySequence I M)
     (h : ∃ k : ℕ, ∀ n ≥ k, ∃ m ≥ n, ∃ l ≥ n, f m ∈ (I ^ l • ⊤ : Submodule R M)) :
     AdicCompletion.mk I M f = 0 := by
   obtain ⟨k, h⟩ := h
   ext n
-  obtain ⟨m, hnm, l, hnl, hl⟩ := h (n + k) (by omega)
+  obtain ⟨m, hnm, l, hnl, hl⟩ := h (n + k) (by cutsat)
   rw [mk_apply_coe, Submodule.mkQ_apply, val_zero,
-    ← AdicCauchySequence.mk_eq_mk (show n ≤ m by omega)]
-  simpa using (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by omega))) hl
+    ← AdicCauchySequence.mk_eq_mk (show n ≤ m by cutsat)]
+  simpa using (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by cutsat))) hl
 
 /-- Every element in the adic completion is represented by a Cauchy sequence. -/
 theorem mk_surjective : Function.Surjective (mk I M) := by
@@ -477,7 +479,7 @@ theorem mk_surjective : Function.Surjective (mk I M) := by
   · intro m n hmn
     rw [SModEq.def, ha m, ← mkQ_apply,
       ← factor_mk (Submodule.smul_mono_left (Ideal.pow_le_pow_right hmn)) (a n),
-      mkQ_apply,  ha n, x.property hmn]
+      mkQ_apply, ha n, x.property hmn]
   · ext n
     simp [ha n]
 
@@ -514,6 +516,85 @@ lemma eval_lift_apply (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Sub
     (h : ∀ {m n : ℕ} (hle : m ≤ n), transitionMap I N hle ∘ₗ f n = f m)
     (n : ℕ) (x : M) : (lift I f h x).val n = f n x :=
   rfl
+
+section Bijective
+
+variable {I}
+
+theorem of_injective_iff : Function.Injective (of I M) ↔ IsHausdorff I M := by
+  constructor
+  · refine fun h ↦ ⟨fun x hx ↦ h ?_⟩
+    ext n
+    simpa [of, SModEq.zero] using hx n
+  · intro h
+    rw [← LinearMap.ker_eq_bot]
+    ext x
+    simp only [LinearMap.mem_ker, Submodule.mem_bot]
+    refine ⟨fun hx ↦ h.haus x fun n ↦ ?_, fun hx ↦ by simp [hx]⟩
+    rw [Subtype.ext_iff] at hx
+    simpa [SModEq.zero] using congrFun hx n
+
+variable (I M) in
+theorem of_injective [IsHausdorff I M] : Function.Injective (of I M) :=
+  of_injective_iff.mpr ‹_›
+
+@[simp]
+theorem of_inj [IsHausdorff I M] {a b : M} : of I M a = of I M b ↔ a = b :=
+  (of_injective I M).eq_iff
+
+theorem of_surjective_iff : Function.Surjective (of I M) ↔ IsPrecomplete I M := by
+  constructor
+  · refine fun h ↦ ⟨fun f hmn ↦ ?_⟩
+    let u : AdicCompletion I M := ⟨fun n ↦ Submodule.Quotient.mk (f n), fun c ↦ (hmn c).symm⟩
+    obtain ⟨x, hx⟩ := h u
+    refine ⟨x, fun n ↦ ?_⟩
+    simp only [SModEq]
+    rw [← mkQ_apply _ x, ← eval_of, hx]
+    simp [u]
+  · intro h u
+    choose x hx using (fun n ↦ Submodule.Quotient.mk_surjective (I ^ n • ⊤ : Submodule R M) (u.1 n))
+    obtain ⟨a, ha⟩ := h.prec (f := x) (fun hmn ↦ by rw [SModEq, hx, ← u.2 hmn, ← hx]; simp)
+    use a
+    ext n
+    simpa [SModEq, ← eval_of, ha, ← hx] using (ha n).symm
+
+variable (I M) in
+theorem of_surjective [IsPrecomplete I M] : Function.Surjective (of I M) :=
+  of_surjective_iff.mpr ‹_›
+
+theorem of_bijective_iff : Function.Bijective (of I M) ↔ IsAdicComplete I M :=
+  ⟨fun h ↦
+    { toIsHausdorff := of_injective_iff.mp h.1,
+      toIsPrecomplete := of_surjective_iff.mp h.2 },
+   fun h ↦ ⟨of_injective_iff.mpr h.1, of_surjective_iff.mpr h.2⟩⟩
+
+variable (I M)
+
+variable [IsAdicComplete I M]
+
+theorem of_bijective : Function.Bijective (of I M) :=
+  of_bijective_iff.mpr ‹_›
+
+/--
+When `M` is `I`-adic complete, the canonical map from `M` to its `I`-adic completion is a linear
+equivalence.
+-/
+@[simps! apply]
+def ofLinearEquiv : M ≃ₗ[R] AdicCompletion I M :=
+  LinearEquiv.ofBijective (of I M) (of_bijective I M)
+
+variable {M}
+
+@[simp]
+theorem ofLinearEquiv_symm_of (x : M) : (ofLinearEquiv I M).symm (of I M x) = x := by
+  simp [ofLinearEquiv]
+
+@[simp]
+theorem of_ofLinearEquiv_symm (x : AdicCompletion I M) :
+    of I M ((ofLinearEquiv I M).symm x) = x := by
+  simp [ofLinearEquiv]
+
+end Bijective
 
 end AdicCompletion
 

@@ -38,7 +38,7 @@ namespace PSigma
 /-- The notation `Σₗ' i, α i` refers to a sigma type which is locally equipped with the
 lexicographic order. -/
 -- TODO: make `Lex` be `Sort u -> Sort u` so we can remove `.{_+1, _+1}`
-notation3 "Σₗ' "(...)", "r:(scoped p => _root_.Lex (PSigma.{_+1, _+1} p)) => r
+notation3 "Σₗ' " (...) ", " r:(scoped p => _root_.Lex (PSigma.{_ + 1, _ + 1} p)) => r
 
 namespace Lex
 
@@ -65,16 +65,16 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, �
       · right
         apply le_trans
         repeat' assumption,
-    lt_iff_le_not_le := by
+    lt_iff_le_not_ge := by
       refine fun a b => ⟨fun hab => ⟨hab.mono_right fun i a b => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨i, a, hji⟩ | ⟨i, hba⟩) <;> obtain ⟨_, _, hij⟩ | ⟨_, hab⟩ := hab
-        · exact hij.not_lt hji
+        · exact hij.not_gt hji
         · exact lt_irrefl _ hji
         · exact lt_irrefl _ hij
-        · exact hab.not_le hba
+        · exact hab.not_ge hba
       · rintro ⟨⟨j, b, hij⟩ | ⟨i, hab⟩, hba⟩
         · exact Lex.left _ _ hij
-        · exact Lex.right _ (hab.lt_of_not_le fun h => hba <| Lex.right _ h) }
+        · exact Lex.right _ (hab.lt_of_not_ge fun h => hba <| Lex.right _ h) }
 
 /-- Dictionary / lexicographic partial_order for dependent pairs. -/
 instance partialOrder [PartialOrder ι] [∀ i, PartialOrder (α i)] : PartialOrder (Σₗ' i, α i) :=
@@ -97,8 +97,8 @@ instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] : LinearOrder 
         · exact Or.inl (Lex.right _ hab)
         · exact Or.inr (Lex.right _ hba)
       · exact Or.inr (Lex.left _ _ hji),
-    decidableEq := PSigma.decidableEq, decidableLE := Lex.decidable _ _,
-    decidableLT := Lex.decidable _ _ }
+    toDecidableEq := PSigma.decidableEq, toDecidableLE := Lex.decidable _ _,
+    toDecidableLT := Lex.decidable _ _ }
 
 /-- The lexicographical linear order on a sigma type. -/
 instance orderBot [PartialOrder ι] [OrderBot ι] [∀ i, Preorder (α i)] [OrderBot (α ⊥)] :

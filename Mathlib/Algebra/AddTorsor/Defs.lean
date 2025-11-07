@@ -10,7 +10,7 @@ import Mathlib.Algebra.Group.Action.Defs
 
 This file defines torsors of additive group actions.
 
-## Notations
+## Notation
 
 The group elements are referred to as acting on points.  This file
 defines the notation `+ᵥ` for adding a group element to a point and
@@ -23,7 +23,7 @@ to refactor in terms of the general definition of group actions, via `to_additiv
 use for multiplicative torsors (currently mathlib only develops the theory of group actions for
 multiplicative group actions).
 
-## Notations
+## Notation
 
 * `v +ᵥ p` is a notation for `VAdd.vadd`, the left action of an additive monoid;
 
@@ -52,7 +52,7 @@ class AddTorsor (G : outParam Type*) (P : Type*) [AddGroup G] extends AddAction 
   /-- Torsor addition and subtraction with the same element cancels out. -/
   vadd_vsub' : ∀ (g : G) (p : P), (g +ᵥ p) -ᵥ p = g
 
- -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12096): removed `nolint instance_priority`; lint not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/12096): removed `nolint instance_priority`; lint not ported yet
 attribute [instance 100] AddTorsor.nonempty
 
 /-- An `AddGroup G` is a torsor for itself. -/

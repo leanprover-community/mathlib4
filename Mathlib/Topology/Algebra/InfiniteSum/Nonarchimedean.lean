@@ -28,14 +28,14 @@ open Filter Topology
 namespace NonarchimedeanGroup
 
 variable {α G : Type*}
-variable [CommGroup G] [UniformSpace G] [UniformGroup G] [NonarchimedeanGroup G]
+variable [CommGroup G] [UniformSpace G] [IsUniformGroup G] [NonarchimedeanGroup G]
 
 /-- Let `G` be a nonarchimedean multiplicative abelian group, and let `f : α → G` be a function that
 tends to one on the filter of cofinite sets. For each finite subset of `α`, consider the partial
 product of `f` on that subset. These partial products form a Cauchy filter. -/
-@[to_additive "Let `G` be a nonarchimedean additive abelian group, and let `f : α → G` be a function
-that tends to zero on the filter of cofinite sets. For each finite subset of `α`, consider the
-partial sum of `f` on that subset. These partial sums form a Cauchy filter."]
+@[to_additive /-- Let `G` be a nonarchimedean additive abelian group, and let `f : α → G` be a
+function that tends to zero on the filter of cofinite sets. For each finite subset of `α`, consider
+the partial sum of `f` on that subset. These partial sums form a Cauchy filter. -/]
 theorem cauchySeq_prod_of_tendsto_cofinite_one {f : α → G} (hf : Tendsto f cofinite (𝓝 1)) :
     CauchySeq (fun s ↦ ∏ i ∈ s, f i) := by
   /- Let `U` be a neighborhood of `1`. It suffices to show that there exists `s : Finset α` such
@@ -57,9 +57,9 @@ theorem cauchySeq_prod_of_tendsto_cofinite_one {f : α → G} (hf : Tendsto f co
 
 /-- Let `G` be a nonarchimedean abelian group, and let `f : ℕ → G` be a function
 such that the quotients `f (n + 1) / f n` tend to one. Then the function is a Cauchy sequence. -/
-@[to_additive "Let `G` be a nonarchimedean additive abelian group, and let `f : ℕ → G` be a
+@[to_additive /-- Let `G` be a nonarchimedean additive abelian group, and let `f : ℕ → G` be a
 function such that the differences `f (n + 1) - f n` tend to zero.
-Then the function is a Cauchy sequence."]
+Then the function is a Cauchy sequence. -/]
 lemma cauchySeq_of_tendsto_div_nhds_one {f : ℕ → G}
     (hf : Tendsto (fun n ↦ f (n + 1) / f n) atTop (𝓝 1)) :
     CauchySeq f := by
@@ -78,23 +78,24 @@ lemma cauchySeq_of_tendsto_div_nhds_one {f : ℕ → G}
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
   clear h hMN'
   induction k with
-  | zero => simpa using one_mem t
-  | succ k ih => simpa using t.mul_mem (hN _ (by omega : N ≤ M + k)) ih
+  | zero => simp
+  | succ k ih => simpa using t.mul_mem (hN _ (by cutsat : N ≤ M + k)) ih
 
 /-- Let `G` be a complete nonarchimedean multiplicative abelian group, and let `f : α → G` be a
 function that tends to one on the filter of cofinite sets. Then `f` is unconditionally
 multipliable. -/
-@[to_additive "Let `G` be a complete nonarchimedean additive abelian group, and let `f : α → G` be a
-function that tends to zero on the filter of cofinite sets. Then `f` is unconditionally summable."]
+@[to_additive /-- Let `G` be a complete nonarchimedean additive abelian group, and let `f : α → G`
+be a function that tends to zero on the filter of cofinite sets. Then `f` is unconditionally
+summable. -/]
 theorem multipliable_of_tendsto_cofinite_one [CompleteSpace G] {f : α → G}
     (hf : Tendsto f cofinite (𝓝 1)) : Multipliable f :=
   CompleteSpace.complete (cauchySeq_prod_of_tendsto_cofinite_one hf)
 
 /-- Let `G` be a complete nonarchimedean multiplicative abelian group. Then a function `f : α → G`
 is unconditionally multipliable if and only if it tends to one on the filter of cofinite sets. -/
-@[to_additive "Let `G` be a complete nonarchimedean additive abelian group. Then a function
+@[to_additive /-- Let `G` be a complete nonarchimedean additive abelian group. Then a function
 `f : α → G` is unconditionally summable if and only if it tends to zero on the filter of cofinite
-sets."]
+sets. -/]
 theorem multipliable_iff_tendsto_cofinite_one [CompleteSpace G] (f : α → G) :
     Multipliable f ↔ Tendsto f cofinite (𝓝 1) :=
   ⟨Multipliable.tendsto_cofinite_one, multipliable_of_tendsto_cofinite_one⟩
@@ -104,7 +105,7 @@ end NonarchimedeanGroup
 section NonarchimedeanRing
 
 variable {α β R : Type*}
-variable [Ring R] [UniformSpace R] [UniformAddGroup R] [NonarchimedeanRing R]
+variable [Ring R] [UniformSpace R] [IsUniformAddGroup R] [NonarchimedeanRing R]
 
 /- Let `R` be a complete nonarchimedean ring. If functions `f : α → R` and `g : β → R` are summable,
 then so is `fun i : α × β ↦ f i.1 * g i.2`. We will prove later that the assumption that `R`

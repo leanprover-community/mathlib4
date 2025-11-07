@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 
-import Mathlib.Data.Complex.ExponentialBounds
-import Mathlib.NumberTheory.Harmonic.Defs
+import Mathlib.Analysis.Complex.ExponentialBounds
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.NumberTheory.Harmonic.Defs
 
 /-!
 # The Euler-Mascheroni constant `γ`
@@ -91,8 +91,8 @@ lemma strictAnti_eulerMascheroniSeq' : StrictAnti eulerMascheroniSeq' := by
     ← log_inv]
   refine (log_lt_sub_one_of_pos ?_ ?_).trans_le (le_of_eq ?_)
   · positivity
-  · field_simp
-  · field_simp
+  · simp [field]
+  · simp [field]
 
 lemma eulerMascheroniSeq'_six_lt_two_thirds : eulerMascheroniSeq' 6 < 2 / 3 := by
   have h1 : eulerMascheroniSeq' 6 = 49 / 20 - log 6 := by
@@ -100,7 +100,7 @@ lemma eulerMascheroniSeq'_six_lt_two_thirds : eulerMascheroniSeq' 6 < 2 / 3 := b
     norm_num
   rw [h1, sub_lt_iff_lt_add, ← sub_lt_iff_lt_add', lt_log_iff_exp_lt (by positivity)]
   norm_num
-  have := rpow_lt_rpow (exp_pos _).le exp_one_lt_d9 (by norm_num : (0 : ℝ) < 107 / 60)
+  have := rpow_lt_rpow (exp_pos _).le exp_one_lt_d9 (by simp : (0 : ℝ) < 107 / 60)
   rw [exp_one_rpow] at this
   refine lt_trans this ?_
   rw [← rpow_lt_rpow_iff (z := 60), ← rpow_mul, div_mul_cancel₀, ← Nat.cast_ofNat,
@@ -142,12 +142,7 @@ lemma tendsto_eulerMascheroniSeq' :
     apply (this.comp tendsto_natCast_atTop_atTop).congr'
     filter_upwards [eventually_ne_atTop 0] with n hn
     simp [eulerMascheroniSeq, eulerMascheroniSeq', eq_false_intro hn]
-  suffices Tendsto (fun x : ℝ ↦ log (1 + 1 / x)) atTop (𝓝 0) by
-    apply this.congr'
-    filter_upwards [eventually_gt_atTop 0] with x hx
-    rw [← log_div (by positivity) (by positivity), add_div, div_self hx.ne']
-  simpa only [add_zero, log_one] using
-    ((tendsto_const_nhds.div_atTop tendsto_id).const_add 1).log (by positivity)
+  exact tendsto_log_comp_add_sub_log 1
 
 lemma tendsto_harmonic_sub_log :
     Tendsto (fun n : ℕ ↦ harmonic n - log n) atTop (𝓝 eulerMascheroniConstant) := by

@@ -3,6 +3,7 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.MonoidAlgebra.Defs
 
 /-!
@@ -41,10 +42,10 @@ namespace AddMonoidAlgebra
 
 section
 
-variable [AddCancelCommMonoid G]
+variable [AddCommMonoid G]
 
 /-- Divide by `of' k G g`, discarding terms not divisible by this. -/
-noncomputable def divOf (x : k[G]) (g : G) : k[G] :=
+noncomputable def divOf [IsCancelAdd G] (x : k[G]) (g : G) : k[G] :=
   -- note: comapping by `+ g` has the effect of subtracting `g` from every element in
   -- the support, and discarding the elements of the support from which `g` can't be subtracted.
   -- If `G` is an additive group, such as `ℤ` when used for `LaurentPolynomial`,
@@ -52,6 +53,9 @@ noncomputable def divOf (x : k[G]) (g : G) : k[G] :=
   @Finsupp.comapDomain.addMonoidHom _ _ _ _ (g + ·) (add_right_injective g) x
 
 local infixl:70 " /ᵒᶠ " => divOf
+
+section divOf
+variable [IsCancelAdd G]
 
 @[simp]
 theorem divOf_apply (g : G) (x : k[G]) (g' : G) : (x /ᵒᶠ g) g' = x (g + g') :=
@@ -108,6 +112,8 @@ theorem mul_of'_divOf (x : k[G]) (a : G) : x * of' k G a /ᵒᶠ a = x := by
 theorem of'_divOf (a : G) : of' k G a /ᵒᶠ a = 1 := by
   simpa only [one_mul] using mul_of'_divOf (1 : k[G]) a
 
+end divOf
+
 /-- The remainder upon division by `of' k G g`. -/
 noncomputable def modOf (x : k[G]) (g : G) : k[G] :=
   letI := Classical.decPred fun g₁ => ∃ g₂, g₁ = g + g₂
@@ -150,23 +156,24 @@ theorem mul_of'_modOf (x : k[G]) (g : G) : x * of' k G g %ᵒᶠ g = 0 := by
 theorem of'_modOf (g : G) : of' k G g %ᵒᶠ g = 0 := by
   simpa only [one_mul] using mul_of'_modOf (1 : k[G]) g
 
-theorem divOf_add_modOf (x : k[G]) (g : G) :
+theorem divOf_add_modOf [IsCancelAdd G] (x : k[G]) (g : G) :
     of' k G g * (x /ᵒᶠ g) + x %ᵒᶠ g = x := by
   ext g'
-  rw [Finsupp.add_apply] -- Porting note: changed from `simp_rw` which can't see through the type
+  rw [Finsupp.add_apply]
   obtain ⟨d, rfl⟩ | h := em (∃ d, g' = g + d)
   swap
   · rw [modOf_apply_of_not_exists_add x _ _ h, of'_apply, single_mul_apply_of_not_exists_add _ _ h,
       zero_add]
   · rw [modOf_apply_self_add, add_zero]
-    rw [of'_apply, single_mul_apply_aux _ _ _, one_mul, divOf_apply]
+    rw [of'_apply, single_mul_apply_aux, one_mul, divOf_apply]
     intro a ha
     exact add_right_inj _
 
-theorem modOf_add_divOf (x : k[G]) (g : G) : x %ᵒᶠ g + of' k G g * (x /ᵒᶠ g) = x := by
+theorem modOf_add_divOf [IsCancelAdd G] (x : k[G]) (g : G) :
+    x %ᵒᶠ g + of' k G g * (x /ᵒᶠ g) = x := by
   rw [add_comm, divOf_add_modOf]
 
-theorem of'_dvd_iff_modOf_eq_zero {x : k[G]} {g : G} :
+theorem of'_dvd_iff_modOf_eq_zero [IsCancelAdd G] {x : k[G]} {g : G} :
     of' k G g ∣ x ↔ x %ᵒᶠ g = 0 := by
   constructor
   · rintro ⟨x, rfl⟩

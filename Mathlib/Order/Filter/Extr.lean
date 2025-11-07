@@ -81,8 +81,6 @@ variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type x}
 
 open Set Filter Relator
 
-open Filter
-
 section Preorder
 
 variable [Preorder β] [Preorder γ]
@@ -131,6 +129,25 @@ theorem isMinOn_univ_iff : IsMinOn f univ a ↔ ∀ x, f a ≤ f x :=
 
 theorem isMaxOn_univ_iff : IsMaxOn f univ a ↔ ∀ x, f x ≤ f a :=
   univ_subset_iff.trans eq_univ_iff_forall
+
+theorem IsMinOn.bddBelow (h : IsMinOn f s a) :
+    BddBelow (f '' s) :=
+  ⟨f a, by simpa [mem_lowerBounds] using h⟩
+
+theorem IsMinOn.isGLB (ha : a ∈ s) (hfsa : IsMinOn f s a) :
+    IsGLB {f x | x ∈ s} (f a) := by
+  rw [isGLB_iff_le_iff]
+  intro b
+  simp only [mem_lowerBounds, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+  exact ⟨fun hba x hx ↦ le_trans hba (hfsa hx), fun hb ↦ hb a ha⟩
+
+theorem IsMaxOn.isLUB (ha : a ∈ s) (hfsa : IsMaxOn f s a) :
+    IsLUB {f x | x ∈ s} (f a) :=
+  IsMinOn.isGLB (α := αᵒᵈ) (β := βᵒᵈ) ha hfsa
+
+theorem IsMaxOn.bddAbove (h : IsMaxOn f s a) :
+    BddAbove (f '' s) :=
+  ⟨f a, by simpa [mem_upperBounds] using h⟩
 
 theorem IsMinFilter.tendsto_principal_Ici (h : IsMinFilter f l a) : Tendsto f l (𝓟 <| Ici (f a)) :=
   tendsto_principal.2 h
@@ -366,7 +383,8 @@ end Preorder
 
 section OrderedAddCommMonoid
 
-variable [OrderedAddCommMonoid β] {f g : α → β} {a : α} {s : Set α} {l : Filter α}
+variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
+  {f g : α → β} {a : α} {s : Set α} {l : Filter α}
 
 theorem IsMinFilter.add (hf : IsMinFilter f l a) (hg : IsMinFilter g l a) :
     IsMinFilter (fun x => f x + g x) l a :=
@@ -391,7 +409,8 @@ end OrderedAddCommMonoid
 
 section OrderedAddCommGroup
 
-variable [OrderedAddCommGroup β] {f g : α → β} {a : α} {s : Set α} {l : Filter α}
+variable [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
+  {f g : α → β} {a : α} {s : Set α} {l : Filter α}
 
 theorem IsMinFilter.neg (hf : IsMinFilter f l a) : IsMaxFilter (fun x => -f x) l a :=
   hf.comp_antitone fun _x _y hx => neg_le_neg hx

@@ -68,7 +68,7 @@ theorem concat_comp_IccInclusionRight (hb : f ⊤ = g ⊥) :
   ext ⟨x, hx⟩
   obtain rfl | hxb := eq_or_ne x b
   · simpa [concat, IccInclusionRight, IccExtendCM, projIccCM, inclusion, hb]
-  · have h : ¬ x ≤ b := lt_of_le_of_ne hx.1 (Ne.symm hxb) |>.not_le
+  · have h : ¬ x ≤ b := lt_of_le_of_ne hx.1 (Ne.symm hxb) |>.not_ge
     simp [concat, hb, IccInclusionRight, h, IccExtendCM, projIccCM, projIcc, inclusion, hx.2, hx.1]
 
 @[simp]
@@ -111,7 +111,7 @@ theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {
   · rw [concat_left hfg hxb]
     refine hf ⟨x, ⟨x, ⟨hx, hxb⟩, rfl⟩, ?_⟩
     simp [projIccCM, projIcc, hxb, x.2.1]
-  · replace hxb : b ≤ x := lt_of_not_le hxb |>.le
+  · replace hxb : b ≤ x := lt_of_not_ge hxb |>.le
     rw [concat_right hfg hxb]
     refine hg ⟨x, ⟨x, ⟨hx, hxb⟩, rfl⟩, ?_⟩
     simp [projIccCM, projIcc, hxb, x.2.2]
@@ -119,8 +119,7 @@ theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {
 /-- The concatenation of compatible pairs of continuous maps on adjacent intervals, defined as a
 `ContinuousMap` on a subtype of the product. -/
 noncomputable def concatCM :
-    C({fg : C(Icc a b, E) × C(Icc b c, E) // fg.1 ⊤ = fg.2 ⊥}, C(Icc a c, E))
-    where
+    C({fg : C(Icc a b, E) × C(Icc b c, E) // fg.1 ⊤ = fg.2 ⊥}, C(Icc a c, E)) where
   toFun fg := concat fg.val.1 fg.val.2
   continuous_toFun := by
     let S : Set (C(Icc a b, E) × C(Icc b c, E)) := {fg | fg.1 ⊤ = fg.2 ⊥}

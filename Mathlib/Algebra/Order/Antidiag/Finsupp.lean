@@ -54,7 +54,7 @@ lemma mem_finsuppAntidiag' :
 
 @[simp] lemma finsuppAntidiag_empty_of_ne_zero (hn : n ≠ 0) :
     finsuppAntidiag (∅ : Finset ι) n = ∅ :=
-  eq_empty_of_forall_not_mem (by simp [@eq_comm _ 0, hn.symm])
+  eq_empty_of_forall_notMem (by simp [hn.symm])
 
 lemma finsuppAntidiag_empty (n : μ) :
     finsuppAntidiag (∅ : Finset ι) n = if n = 0 then {0} else ∅ := by split_ifs with hn <;> simp [*]
@@ -89,13 +89,13 @@ theorem finsuppAntidiag_insert {a : ι} {s : Finset ι}
         (finsuppAntidiag s p.snd).attach.map
         ⟨fun f => Finsupp.update f.val a p.fst,
         (fun ⟨f, hf⟩ ⟨g, hg⟩ hfg => Subtype.ext <| by
-          simp only [mem_val, mem_finsuppAntidiag] at hf hg
+          simp only [mem_finsuppAntidiag] at hf hg
           simp only [DFunLike.ext_iff] at hfg ⊢
           intro x
           obtain rfl | hx := eq_or_ne x a
           · replace hf := mt (hf.2 ·) h
             replace hg := mt (hg.2 ·) h
-            rw [not_mem_support_iff.mp hf, not_mem_support_iff.mp hg]
+            rw [notMem_support_iff.mp hf, notMem_support_iff.mp hg]
           · simpa only [coe_update, Function.update, dif_neg hx] using hfg x)⟩) := by
   ext f
   rw [mem_finsuppAntidiag_insert h, mem_biUnion]
@@ -113,7 +113,7 @@ lemma mapRange_finsuppAntidiag_subset {e : μ ≃+ μ'} {s : Finset ι} {n : μ}
   simp only [AddEquiv.toEquiv_eq_coe, mapRange.addEquiv_toEquiv, Equiv.coe_toEmbedding,
     mapRange.equiv_apply, EquivLike.coe_coe]
   constructor
-  · rw [sum_mapRange_index (fun _ ↦ rfl), ← hsum, _root_.map_finsupp_sum]
+  · rw [sum_mapRange_index (fun _ ↦ rfl), ← hsum, _root_.map_finsuppSum]
   · exact subset_trans (support_mapRange) hsupp
 
 lemma mapRange_finsuppAntidiag_eq {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
@@ -135,8 +135,8 @@ lemma mapRange_finsuppAntidiag_eq {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
 end AddCommMonoid
 
 section CanonicallyOrderedAddCommMonoid
-variable [DecidableEq ι] [DecidableEq μ] [OrderedAddCommMonoid μ] [CanonicallyOrderedAdd μ]
-  [HasAntidiagonal μ]
+variable [DecidableEq ι] [DecidableEq μ] [AddCommMonoid μ] [PartialOrder μ]
+  [CanonicallyOrderedAdd μ] [HasAntidiagonal μ]
 
 @[simp] lemma finsuppAntidiag_zero (s : Finset ι) : finsuppAntidiag s (0 : μ) = {0} := by
   ext f; simp [finsuppAntidiag, ← DFunLike.coe_fn_eq (g := f), -mem_piAntidiag, eq_comm]

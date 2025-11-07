@@ -5,7 +5,8 @@ Authors: Jean Lo, Bhavik Mehta, Yaël Dillies
 -/
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Hull
-import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
+import Mathlib.Analysis.Normed.MulAction
 import Mathlib.Topology.Bornology.Absorbs
 
 /-!
@@ -42,7 +43,7 @@ open Set
 
 open Pointwise Topology
 
-variable {𝕜 𝕝 E : Type*} {ι : Sort*} {κ : ι → Sort*}
+variable {𝕜 𝕝 E F : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 section SeminormedRing
 
@@ -103,6 +104,11 @@ theorem balanced_iInter₂ {f : ∀ i, κ i → Set E} (h : ∀ i j, Balanced �
     Balanced 𝕜 (⋂ (i) (j), f i j) :=
   balanced_iInter fun _ => balanced_iInter <| h _
 
+theorem Balanced.mulActionHom_preimage [SMul 𝕜 F] {s : Set F} (hs : Balanced 𝕜 s)
+    (f : E →[𝕜] F) : Balanced 𝕜 (f ⁻¹' s) := fun a ha x ⟨y,⟨hy₁,hy₂⟩⟩ => by
+  rw [mem_preimage, ← hy₂, map_smul]
+  exact hs a ha (smul_mem_smul_set hy₁)
+
 variable [SMul 𝕝 E] [SMulCommClass 𝕜 𝕝 E]
 
 theorem Balanced.smul (a : 𝕝) (hs : Balanced 𝕜 s) : Balanced 𝕜 (a • s) := fun _b hb =>
@@ -149,25 +155,13 @@ theorem absorbs_iff_eventually_nhdsNE_zero :
     Absorbs 𝕜 s t ↔ ∀ᶠ c : 𝕜 in 𝓝[≠] 0, MapsTo (c • ·) t s := by
   rw [absorbs_iff_eventually_cobounded_mapsTo, ← Filter.inv_cobounded₀]; rfl
 
-@[deprecated (since := "2025-03-03")]
-alias absorbs_iff_eventually_nhdsWithin_zero := absorbs_iff_eventually_nhdsNE_zero
-
 alias ⟨Absorbs.eventually_nhdsNE_zero, _⟩ := absorbs_iff_eventually_nhdsNE_zero
-
-@[deprecated (since := "2025-03-03")]
-alias Absorbs.eventually_nhdsWithin_zero := Absorbs.eventually_nhdsNE_zero
 
 theorem absorbent_iff_eventually_nhdsNE_zero :
     Absorbent 𝕜 s ↔ ∀ x : E, ∀ᶠ c : 𝕜 in 𝓝[≠] 0, c • x ∈ s :=
   forall_congr' fun x ↦ by simp only [absorbs_iff_eventually_nhdsNE_zero, mapsTo_singleton]
 
-@[deprecated (since := "2025-03-03")]
-alias absorbent_iff_eventually_nhdsWithin_zero := absorbent_iff_eventually_nhdsNE_zero
-
-alias ⟨Absorbent.eventually_nhdsNE_zero, _⟩ := absorbent_iff_eventually_nhdsWithin_zero
-
-@[deprecated (since := "2025-03-03")]
-alias Absorbent.eventually_nhdsWithin_zero := Absorbent.eventually_nhdsNE_zero
+alias ⟨Absorbent.eventually_nhdsNE_zero, _⟩ := absorbent_iff_eventually_nhdsNE_zero
 
 theorem absorbs_iff_eventually_nhds_zero (h₀ : 0 ∈ s) :
     Absorbs 𝕜 s t ↔ ∀ᶠ c : 𝕜 in 𝓝 0, MapsTo (c • ·) t s := by
@@ -180,7 +174,7 @@ theorem Absorbs.eventually_nhds_zero (h : Absorbs 𝕜 s t) (h₀ : 0 ∈ s) :
     ∀ᶠ c : 𝕜 in 𝓝 0, MapsTo (c • ·) t s :=
   (absorbs_iff_eventually_nhds_zero h₀).1 h
 
-variable [NormedRing 𝕝] [Module 𝕜 𝕝] [BoundedSMul 𝕜 𝕝] [SMulWithZero 𝕝 E] [IsScalarTower 𝕜 𝕝 E]
+variable [NormedRing 𝕝] [Module 𝕜 𝕝] [NormSMulClass 𝕜 𝕝] [SMulWithZero 𝕝 E] [IsScalarTower 𝕜 𝕝 E]
   {a b : 𝕜} {x : E}
 
 /-- Scalar multiplication (by possibly different types) of a balanced set is monotone. -/
@@ -259,18 +253,16 @@ end NormedField
 
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
+variable [NontriviallyNormedField 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
 
-variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
-
-protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull ℝ s) := by
-  suffices Convex ℝ { x | ∀ a : 𝕜, ‖a‖ ≤ 1 → a • x ∈ convexHull ℝ s } by
+protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull 𝕜 s) := by
+  suffices Convex 𝕜 { x | ∀ a : 𝕜, ‖a‖ ≤ 1 → a • x ∈ convexHull 𝕜 s } by
     rw [balanced_iff_smul_mem] at hs ⊢
     refine fun a ha x hx => convexHull_min ?_ this hx a ha
-    exact fun y hy a ha => subset_convexHull ℝ s (hs ha hy)
+    exact fun y hy a ha => subset_convexHull 𝕜 s (hs ha hy)
   intro x hx y hy u v hu hv huv a ha
-  simp only [smul_add, ← smul_comm]
-  exact convex_convexHull ℝ s (hx a ha) (hy a ha) hu hv huv
+  rw [smul_add, ← smul_comm u, ← smul_comm v]
+  exact convex_convexHull 𝕜 s (hx a ha) (hy a ha) hu hv huv
 
 end NontriviallyNormedField
 

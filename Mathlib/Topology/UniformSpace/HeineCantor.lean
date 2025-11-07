@@ -35,7 +35,7 @@ theorem CompactSpace.uniformContinuous_of_continuous [CompactSpace α] {f : α �
     (h : Continuous f) : UniformContinuous f :=
   calc map (Prod.map f f) (𝓤 α)
     = map (Prod.map f f) (𝓝ˢ (diagonal α)) := by rw [nhdsSet_diagonal_eq_uniformity]
-  _ ≤ 𝓝ˢ (diagonal β) := (h.prodMap h).tendsto_nhdsSet mapsTo_prod_map_diagonal
+  _ ≤ 𝓝ˢ (diagonal β) := (h.prodMap h).tendsto_nhdsSet mapsTo_prodMap_diagonal
   _ ≤ 𝓤 β := nhdsSet_diagonal_le_uniformity
 
 /-- Heine-Cantor: a continuous function on a compact set of a uniform space is uniformly
@@ -62,7 +62,7 @@ theorem IsCompact.uniformContinuousAt_of_continuousAt {r : Set (β × β)} {s : 
   rintro ⟨a₁, a₂⟩ h h₁
   obtain ⟨a, ha, haU⟩ := Set.mem_iUnion₂.1 (hsU h₁)
   apply htr
-  refine ⟨f a, htsymm.mk_mem_comm.1 (hb _ _ _ haU ?_), hb _ _ _ haU ?_⟩
+  refine ⟨f a, SetRel.symm t <| hb _ _ _ haU ?_, hb _ _ _ haU ?_⟩
   exacts [mem_ball_self _ (hT a a.2), mem_iInter₂.1 h a ha]
 
 theorem Continuous.uniformContinuous_of_tendsto_cocompact {f : α → β} {x : β}
@@ -79,7 +79,7 @@ theorem Continuous.uniformContinuous_of_tendsto_cocompact {f : α → β} {x : �
     by_cases h₁ : b₁ ∈ s; · exact (h.1 h₁).1
     by_cases h₂ : b₂ ∈ s; · exact (h.2 h₂).2
     apply htr
-    exact ⟨x, htsymm.mk_mem_comm.1 (hst h₁), hst h₂⟩
+    exact ⟨x, SetRel.symm t <| hst h₁, hst h₂⟩
 
 @[to_additive]
 theorem HasCompactMulSupport.uniformContinuous_of_continuous {f : α → β} [One β]
@@ -89,10 +89,10 @@ theorem HasCompactMulSupport.uniformContinuous_of_continuous {f : α → β} [On
 /-- A family of functions `α → β → γ` tends uniformly to its value at `x` if `α` is locally compact,
 `β` is compact and `f` is continuous on `U × (univ : Set β)` for some neighborhood `U` of `x`. -/
 theorem ContinuousOn.tendstoUniformly [LocallyCompactSpace α] [CompactSpace β] [UniformSpace γ]
-    {f : α → β → γ} {x : α} {U : Set α} (hxU : U ∈ 𝓝 x) (h : ContinuousOn (↿f) (U ×ˢ univ)) :
+    {f : α → β → γ} {x : α} {U : Set α} (hxU : U ∈ 𝓝 x) (h : ContinuousOn ↿f (U ×ˢ univ)) :
     TendstoUniformly f (f x) (𝓝 x) := by
   rcases LocallyCompactSpace.local_compact_nhds _ _ hxU with ⟨K, hxK, hKU, hK⟩
-  have : UniformContinuousOn (↿f) (K ×ˢ univ) :=
+  have : UniformContinuousOn ↿f (K ×ˢ univ) :=
     IsCompact.uniformContinuousOn_of_continuous (hK.prod isCompact_univ)
       (h.mono <| prod_mono hKU Subset.rfl)
   exact this.tendstoUniformly hxK
@@ -102,7 +102,7 @@ if `α` is weakly locally compact and `β` is compact. -/
 theorem Continuous.tendstoUniformly [WeaklyLocallyCompactSpace α] [CompactSpace β] [UniformSpace γ]
     (f : α → β → γ) (h : Continuous ↿f) (x : α) : TendstoUniformly f (f x) (𝓝 x) :=
   let ⟨K, hK, hxK⟩ := exists_compact_mem_nhds x
-  have : UniformContinuousOn (↿f) (K ×ˢ univ) :=
+  have : UniformContinuousOn ↿f (K ×ˢ univ) :=
     IsCompact.uniformContinuousOn_of_continuous (hK.prod isCompact_univ) h.continuousOn
   this.tendstoUniformly hxK
 
@@ -131,7 +131,7 @@ lemma IsCompact.mem_uniformity_of_prod
     refine ⟨w, hw, v, hv, fun p hp y hy ↦ ?_⟩
     have A : (f q x, f p y) ∈ u' := hvw (⟨hp, hy⟩ : (p, y) ∈ v ×ˢ w)
     have B : (f q x, f q y) ∈ u' := hvw (⟨mem_of_mem_nhdsWithin hq hv, hy⟩ : (q, y) ∈ v ×ˢ w)
-    exact hu' (prod_mk_mem_compRel (u'_symm A) B)
+    exact hu' <| SetRel.prodMk_mem_comp (u'_symm A) B
 
 section UniformConvergence
 

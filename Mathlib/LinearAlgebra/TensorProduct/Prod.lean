@@ -18,13 +18,11 @@ This file shows that taking `TensorProduct`s commutes with taking `Prod`s in bot
 
 ## Notes
 
-See `Mathlib.LinearAlgebra.TensorProduct.Pi` for arbitrary products.
+See `Mathlib/LinearAlgebra/TensorProduct/Pi.lean` for arbitrary products.
 
 -/
 
 variable (R S M₁ M₂ M₃ : Type*)
-
-suppress_compilation
 
 namespace TensorProduct
 
@@ -60,7 +58,7 @@ variable [Module S M₂] [IsScalarTower R S M₂]
 def prodLeft : (M₁ × M₂) ⊗[R] M₃ ≃ₗ[S] (M₁ ⊗[R] M₃) × (M₂ ⊗[R] M₃) :=
   AddEquiv.toLinearEquiv (TensorProduct.comm _ _ _ ≪≫ₗ
       TensorProduct.prodRight R R _ _ _ ≪≫ₗ
-      (TensorProduct.comm R _ _).prod (TensorProduct.comm R _ _)).toAddEquiv
+      (TensorProduct.comm R _ _).prodCongr (TensorProduct.comm R _ _)).toAddEquiv
     fun c x ↦ x.induction_on (by simp) (by simp [TensorProduct.smul_tmul']) (by simp_all)
 
 @[simp] theorem prodLeft_tmul (m₁ : M₁) (m₂ : M₂) (m₃ : M₃) :

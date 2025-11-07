@@ -27,7 +27,7 @@ universe u v
 
 variable {α β γ : Type*}
 
-open Finset Function List Equiv Equiv.Perm
+open Finset List Equiv Equiv.Perm
 
 variable [DecidableEq α] [DecidableEq β]
 
@@ -39,13 +39,12 @@ def permsOfList : List α → List (Perm α)
 theorem length_permsOfList : ∀ l : List α, length (permsOfList l) = l.length !
   | [] => rfl
   | a :: l => by
-    simp [Nat.factorial_succ, permsOfList, length_permsOfList, comp_def, succ_mul, add_comm]
+    simp [Nat.factorial_succ, permsOfList, length_permsOfList, succ_mul, add_comm]
 
 theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x → x ∈ l) :
     f ∈ permsOfList l := by
   induction l generalizing f with
   | nil =>
-    -- Porting note: applied `not_mem_nil` because it is no longer true definitionally.
     simp only [not_mem_nil] at h
     exact List.mem_singleton.2 (Equiv.ext fun x => Decidable.byContradiction <| h x)
   | cons a l IH =>
@@ -71,21 +70,19 @@ theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x
   · rw [← mul_assoc, mul_def (swap a (f a)) (swap a (f a)), swap_swap, ← Perm.one_def, one_mul]
 
 theorem mem_of_mem_permsOfList :
-    -- Porting note: was `∀ {x}` but need to capture the `x`
-    ∀ {l : List α} {f : Perm α}, f ∈ permsOfList l → (x : α ) → f x ≠ x → x ∈ l
+    ∀ {l : List α} {f : Perm α}, f ∈ permsOfList l → {x : α} → f x ≠ x → x ∈ l
   | [], f, h, heq_iff_eq => by
     have : f = 1 := by simpa [permsOfList] using h
     rw [this]; simp
   | a :: l, f, h, x =>
-    (mem_append.1 h).elim (fun h hx => mem_cons_of_mem _ (mem_of_mem_permsOfList h x hx))
+    (mem_append.1 h).elim (fun h hx => mem_cons_of_mem _ (mem_of_mem_permsOfList h hx))
       fun h hx =>
       let ⟨y, hy, hy'⟩ := List.mem_flatMap.1 h
       let ⟨g, hg₁, hg₂⟩ := List.mem_map.1 hy'
-      -- Porting note: Seems like the implicit variable `x` of type `α` is needed.
       if hxa : x = a then by simp [hxa]
       else
         if hxy : x = y then mem_cons_of_mem _ <| by rwa [hxy]
-        else mem_cons_of_mem a <| mem_of_mem_permsOfList hg₁ _ <| by
+        else mem_cons_of_mem a <| mem_of_mem_permsOfList hg₁ <| by
               rw [eq_inv_mul_iff_mul_eq.2 hg₂, mul_apply, swap_inv, swap_apply_def]
               split_ifs <;> [exact Ne.symm hxy; exact Ne.symm hxa; exact hx]
 
@@ -99,12 +96,12 @@ theorem nodup_permsOfList : ∀ {l : List α}, l.Nodup → (permsOfList l).Nodup
     have hl' : l.Nodup := hl.of_cons
     have hln' : (permsOfList l).Nodup := nodup_permsOfList hl'
     have hmeml : ∀ {f : Perm α}, f ∈ permsOfList l → f a = a := fun {f} hf =>
-      not_not.1 (mt (mem_of_mem_permsOfList hf _) (nodup_cons.1 hl).1)
-    rw [permsOfList, List.nodup_append, List.nodup_flatMap, pairwise_iff_getElem]
+      not_not.1 (mt (mem_of_mem_permsOfList hf) (nodup_cons.1 hl).1)
+    rw [permsOfList, List.nodup_append', List.nodup_flatMap, pairwise_iff_getElem]
     refine ⟨?_, ⟨⟨?_,?_ ⟩, ?_⟩⟩
     · exact hln'
     · exact fun _ _ => hln'.map fun _ _ => mul_left_cancel
-    · intros i j hi hj hij x hx₁ hx₂
+    · intro i j hi hj hij x hx₁ hx₂
       let ⟨f, hf⟩ := List.mem_map.1 hx₁
       let ⟨g, hg⟩ := List.mem_map.1 hx₂
       have hix : x a = l[i] := by
@@ -113,13 +110,13 @@ theorem nodup_permsOfList : ∀ {l : List α}, l.Nodup → (permsOfList l).Nodup
         rw [← hg.2, mul_apply, hmeml hg.1, swap_apply_left]
       have hieqj : i = j := hl'.getElem_inj_iff.1 (hix.symm.trans hiy)
       exact absurd hieqj (_root_.ne_of_lt hij)
-    · intros f hf₁ hf₂
+    · intro f hf₁ hf₂
       let ⟨x, hx, hx'⟩ := List.mem_flatMap.1 hf₂
       let ⟨g, hg⟩ := List.mem_map.1 hx'
       have hgxa : g⁻¹ x = a := f.injective <| by rw [hmeml hf₁, ← hg.2]; simp
       have hxa : x ≠ a := fun h => (List.nodup_cons.1 hl).1 (h ▸ hx)
       exact (List.nodup_cons.1 hl).1 <|
-          hgxa ▸ mem_of_mem_permsOfList hg.1 _ (by rwa [apply_inv_self, hgxa])
+          hgxa ▸ mem_of_mem_permsOfList hg.1 (by rwa [apply_inv_self, hgxa])
 
 /-- Given a finset, produce the finset of all permutations of its elements. -/
 def permsOfFinset (s : Finset α) : Finset (Perm α) :=
@@ -147,8 +144,6 @@ instance Equiv.instFintype [Fintype α] [Fintype β] : Fintype (α ≃ β) :=
         @Fintype.ofEquiv _ (Perm α) fintypePerm
           (equivCongr (Equiv.refl α) (eα.trans (Eq.recOn h eβ.symm)) : α ≃ α ≃ (α ≃ β))
   else ⟨∅, fun x => False.elim (h (Fintype.card_eq.2 ⟨x.symm⟩))⟩
-
-@[deprecated (since := "2024-11-19")] alias equivFintype := Equiv.instFintype
 
 @[to_additive]
 instance MulEquiv.instFintype

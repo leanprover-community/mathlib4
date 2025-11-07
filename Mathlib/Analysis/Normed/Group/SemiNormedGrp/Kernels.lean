@@ -39,10 +39,6 @@ def cokernelCocone {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) : Cofork f 0 :=
       f.hom.1.range.normedMk (NormedAddGroupHom.isQuotientQuotient _).norm_le)
     (by
       ext x
-      -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026): was
-      -- simp only [ConcreteCategory.comp_apply, Limits.zero_comp, NormedAddGroupHom.zero_apply,
-      -- SemiNormedGrp₁.mkHom_apply, SemiNormedGrp₁.zero_apply,
-      -- ← NormedAddGroupHom.mem_ker, f.1.range.ker_normedMk, f.1.mem_range]
       rw [Limits.zero_comp, comp_apply, SemiNormedGrp₁.mkHom_apply,
         SemiNormedGrp₁.zero_apply, ← NormedAddGroupHom.mem_ker, f.hom.1.range.ker_normedMk,
         f.hom.1.mem_range]
@@ -115,9 +111,7 @@ instance hasLimit_parallelPair {V W : SemiNormedGrp.{u}} (f g : V ⟶ W) :
             (fun c => ofHom <|
               NormedAddGroupHom.ker.lift (Fork.ι c).hom _ <| this c)
             (fun _ => SemiNormedGrp.hom_ext <| NormedAddGroupHom.ker.incl_comp_lift _ _ (this _))
-            fun c g h => by
-        -- Porting note: the `simp_rw` was `rw [← h]` but motive is not type correct in mathlib4
-              ext x; dsimp; simp_rw [← h]; rfl}
+            fun c g h => by ext x; dsimp; simp_rw [← h]; rfl}
 
 instance : Limits.HasEqualizers.{u, u + 1} SemiNormedGrp :=
   @hasEqualizers_of_hasLimit_parallelPair SemiNormedGrp _ fun {_ _ f g} =>
@@ -222,12 +216,10 @@ theorem explicitCokernelDesc_unique {X Y Z : SemiNormedGrp.{u}} {f : X ⟶ Y} {g
   · exact he
 
 theorem explicitCokernelDesc_comp_eq_desc {X Y Z W : SemiNormedGrp.{u}} {f : X ⟶ Y} {g : Y ⟶ Z}
-    -- Porting note: renamed `cond` to `cond'` to avoid
-    -- failed to rewrite using equation theorems for 'cond'
-    {h : Z ⟶ W} {cond' : f ≫ g = 0} :
-    explicitCokernelDesc cond' ≫ h =
+    {h : Z ⟶ W} {cond : f ≫ g = 0} :
+    explicitCokernelDesc cond ≫ h =
       explicitCokernelDesc
-        (show f ≫ g ≫ h = 0 by rw [← CategoryTheory.Category.assoc, cond', Limits.zero_comp]) := by
+        (show f ≫ g ≫ h = 0 by rw [← CategoryTheory.Category.assoc, cond, Limits.zero_comp]) := by
   refine explicitCokernelDesc_unique _ _ ?_
   rw [← CategoryTheory.Category.assoc, explicitCokernelπ_desc]
 

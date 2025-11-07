@@ -219,3 +219,27 @@ example (n : ℤ) (hn : 0 < n) : True := by
   guard_hyp n : ℕ+
   guard_hyp hn : 0 < (n : ℤ)
   trivial
+
+-- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Bug.20in.20.60lift.60.20tactic.3F/near/508521400
+/--
+trace: x : WithTop ℕ
+P : WithTop ℕ → Prop
+u : ℕ
+hu : ↑u = x
+h : P ↑u
+⊢ P ↑u
+-/
+#guard_msgs in
+example {x : WithTop ℕ} (hx : x ≠ ⊤) (P : WithTop ℕ → Prop) (h : P x) : P x := by
+  lift x to ℕ using hx with u hu
+  trace_state
+  exact h
+
+/-! Test that the `h` in `using h` is not cleared if the goal depends on it. -/
+
+set_option linter.unusedVariables false in
+def foo (n : Int) (hn : 0 ≤ n) : Int := n
+
+example (n : Int) (hn : 0 ≤ n) : foo n hn = n := by
+  lift n to Nat using hn
+  rfl

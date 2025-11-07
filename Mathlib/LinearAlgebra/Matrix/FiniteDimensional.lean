@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
-import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # The finite-dimensional space of matrices
@@ -17,8 +16,8 @@ exists only to provide an entry in the instance list for `FiniteDimensional`.
 
 ## Main definitions
 
- * `Matrix.finiteDimensional`: matrices form a finite dimensional vector space over a field `K`
- * `LinearMap.finiteDimensional`
+* `Matrix.finiteDimensional`: matrices form a finite-dimensional vector space over a field `K`
+* `LinearMap.finiteDimensional`
 
 ## Tags
 

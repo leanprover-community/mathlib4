@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Brendan Murphy
 -/
 import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Logic.Function.OfArity
 
 /-!
@@ -54,8 +54,7 @@ theorem uncurry_apply_cons {n : ℕ} {α} {p : Fin n → Type u} {τ : Type u}
 @[simp low]
 theorem uncurry_apply_succ {n : ℕ} {p : Fin (n + 1) → Type u} {τ : Type u}
     (f : Function.FromTypes p τ) (args : (i : Fin (n + 1)) → p i) :
-    uncurry f args = uncurry (f (args 0)) (Fin.tail args) :=
-  @uncurry_apply_cons n (p 0) (vecTail p) τ f (args 0) (Fin.tail args)
+    uncurry f args = uncurry (f (args 0)) (Fin.tail args) := rfl
 
 @[simp]
 theorem curry_apply_cons {n : ℕ} {α} {p : Fin n → Type u} {τ : Type u}

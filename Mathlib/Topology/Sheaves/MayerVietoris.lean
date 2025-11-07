@@ -6,6 +6,7 @@ Authors: Joël Riou
 
 import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
 import Mathlib.CategoryTheory.Sites.Spaces
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
 /-!
 # Mayer-Vietoris squares
@@ -48,7 +49,7 @@ noncomputable def mayerVietorisSquare' (sq : Square (Opens T))
       all_goals intros; apply Subsingleton.elim))
     (fun x hx ↦ by
       rw [h₄] at hx
-      obtain (hx|hx) := hx
+      obtain (hx | hx) := hx
       · exact ⟨_, _, ⟨Sieve.ofArrows_mk _ _ WalkingPair.left, hx⟩⟩
       · exact ⟨_, _, ⟨Sieve.ofArrows_mk _ _ WalkingPair.right, hx⟩⟩)
 

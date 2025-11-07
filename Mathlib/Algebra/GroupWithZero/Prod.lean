@@ -6,6 +6,7 @@ Authors: Eric Wieser, Yaël Dillies
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Algebra.GroupWithZero.WithZero
 
 /-!
 # Products of monoids with zero, groups with zero
@@ -18,7 +19,7 @@ In this file we define `MonoidWithZero`, `GroupWithZero`, etc... instances for `
 * `divMonoidWithZeroHom`: Division bundled as a monoid with zero homomorphism.
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 variable {M₀ N₀ : Type*}
 
@@ -30,24 +31,32 @@ instance instMulZeroClass [MulZeroClass M₀] [MulZeroClass N₀] : MulZeroClass
 
 instance instSemigroupWithZero [SemigroupWithZero M₀] [SemigroupWithZero N₀] :
     SemigroupWithZero (M₀ × N₀) where
-  zero_mul := by simp [Prod.mul_def]
-  mul_zero := by simp [Prod.mul_def]
+  zero_mul := by simp
+  mul_zero := by simp
 
 instance instMulZeroOneClass [MulZeroOneClass M₀] [MulZeroOneClass N₀] :
     MulZeroOneClass (M₀ × N₀) where
-  zero_mul := by simp [Prod.mul_def]
-  mul_zero := by simp [Prod.mul_def]
+  zero_mul := by simp
+  mul_zero := by simp
 
 instance instMonoidWithZero [MonoidWithZero M₀] [MonoidWithZero N₀] : MonoidWithZero (M₀ × N₀) where
-  zero_mul := by simp [Prod.mul_def]
-  mul_zero := by simp [Prod.mul_def]
+  zero_mul := by simp
+  mul_zero := by simp
 
 instance instCommMonoidWithZero [CommMonoidWithZero M₀] [CommMonoidWithZero N₀] :
     CommMonoidWithZero (M₀ × N₀) where
-  zero_mul := by simp [Prod.mul_def]
-  mul_zero := by simp [Prod.mul_def]
+  zero_mul := by simp
+  mul_zero := by simp
 
 end Prod
+
+variable (M₀) in
+@[simp]
+lemma WithZero.toMonoidWithZeroHom_withZeroUnitsEquiv [GroupWithZero M₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] :
+    MonoidWithZeroHomClass.toMonoidWithZeroHom WithZero.withZeroUnitsEquiv =
+      WithZero.lift' (Units.coeHom M₀) :=
+  rfl
 
 /-! ### Multiplication and division as homomorphisms -/
 

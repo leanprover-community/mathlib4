@@ -5,6 +5,8 @@ Authors: David Loeffler
 -/
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
+import Mathlib.RingTheory.RootsOfUnity.AlgebraicallyClosed
+import Mathlib.Topology.Instances.AddCircle.Real
 
 /-!
 # Additive characters valued in the unit circle
@@ -63,6 +65,13 @@ lemma toCircle_apply (j : ZMod N) :
     toCircle j = exp (2 * π * I * j.val / N) := by
   rw [← toCircle_natCast, natCast_zmod_val]
 
+lemma toCircle_eq_circleExp (j : ZMod N) :
+    toCircle j = Circle.exp (2 * π * (j.val / N)) := by
+  ext
+  rw [toCircle_apply, Circle.coe_exp]
+  push_cast
+  congr; ring
+
 lemma injective_toCircle : Injective (toCircle : ZMod N → Circle) :=
   (AddCircle.injective_toCircle one_ne_zero).comp (toAddCircle_injective N)
 
@@ -83,4 +92,59 @@ lemma isPrimitive_stdAddChar (N : ℕ) [NeZero N] :
   refine AddChar.zmod_char_primitive_of_eq_one_only_at_zero _ _ (fun t ht ↦ ?_)
   rwa [← (stdAddChar (N := N)).map_zero_eq_one, injective_stdAddChar.eq_iff] at ht
 
+/-- `ZMod.toCircle` as an `AddChar` into `rootsOfUnity n Circle`. -/
+noncomputable def rootsOfUnityAddChar (n : ℕ) [NeZero n] :
+    AddChar (ZMod n) (rootsOfUnity n Circle) where
+  toFun x := ⟨toUnits (ZMod.toCircle x), by ext; simp [← AddChar.map_nsmul_eq_pow]⟩
+  map_zero_eq_one' := by simp
+  map_add_eq_mul' _ _:= by ext; simp [AddChar.map_add_eq_mul]
+
+@[simp] lemma rootsOfUnityAddChar_val (n : ℕ) [NeZero n] (x : ZMod n) :
+    (rootsOfUnityAddChar n x).val = toCircle x := by
+  rfl
+
 end ZMod
+
+variable (n : ℕ) [NeZero n]
+
+/-- Interpret `n`-th roots of unity in `ℂ` as elements of the circle -/
+noncomputable def rootsOfUnitytoCircle : (rootsOfUnity n ℂ) →* Circle where
+  toFun := fun z => ⟨z.val.val,
+    mem_sphere_zero_iff_norm.2 (Complex.norm_eq_one_of_mem_rootsOfUnity z.prop)⟩
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
+/-- Equivalence of the nth roots of unity of the Circle with nth roots of unity of the complex
+numbers -/
+noncomputable def rootsOfUnityCircleEquiv : rootsOfUnity n Circle ≃* rootsOfUnity n ℂ where
+  __ := (rootsOfUnityUnitsMulEquiv ℂ n).toMonoidHom.comp (restrictRootsOfUnity Circle.toUnits n)
+  invFun z := ⟨(rootsOfUnitytoCircle n).toHomUnits z, by
+    rw [mem_rootsOfUnity', MonoidHom.coe_toHomUnits, ← MonoidHom.map_pow,
+      ← (rootsOfUnitytoCircle n).map_one]
+    congr
+    aesop⟩
+  left_inv _ := by aesop
+  right_inv _ := by aesop
+
+instance : HasEnoughRootsOfUnity Circle n := (rootsOfUnityCircleEquiv n).symm.hasEnoughRootsOfUnity
+
+@[simp] lemma rootsOfUnityCircleEquiv_apply (w : rootsOfUnity n Circle) :
+    ((rootsOfUnityCircleEquiv n w).val : ℂ) = ((w.val : Circle) : ℂ) :=
+  rfl
+
+open Real in
+lemma rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar_val (j : ZMod n) :
+    (rootsOfUnityCircleEquiv n (ZMod.rootsOfUnityAddChar n j)).val
+      = Complex.exp (2 * π * I * j.val / n) := by
+  simp [← ZMod.toCircle_natCast, -ZMod.natCast_val, ZMod.natCast_zmod_val]
+
+theorem surjective_rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar (n : ℕ) [NeZero n] :
+    Surjective (rootsOfUnityCircleEquiv n ∘ ZMod.rootsOfUnityAddChar n) := fun ⟨w, hw⟩ ↦ by
+  obtain ⟨j, hj1, hj2⟩ := (Complex.mem_rootsOfUnity n w).mp hw
+  exact ⟨j, by simp [Units.ext_iff, Subtype.ext_iff, ← hj2, ZMod.toCircle_natCast, mul_div_assoc]⟩
+
+lemma bijective_rootsOfUnityAddChar :
+    Bijective (ZMod.rootsOfUnityAddChar n) where
+  left _ _ := by simp [ZMod.rootsOfUnityAddChar, ZMod.injective_toCircle.eq_iff]
+  right := (surjective_rootsOfUnityCircleEquiv_comp_rootsOfUnityAddChar n).of_comp_left
+    (rootsOfUnityCircleEquiv n).injective

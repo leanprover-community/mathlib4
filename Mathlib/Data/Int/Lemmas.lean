@@ -5,8 +5,6 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Int.Bitwise
 import Mathlib.Data.Int.Order.Lemmas
-import Mathlib.Data.Set.Function
-import Mathlib.Data.Set.Monotone
 import Mathlib.Order.Interval.Set.Defs
 
 /-!
@@ -23,9 +21,7 @@ open Nat
 namespace Int
 
 theorem le_natCast_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
-  by_cases h : m ≥ n
-  · exact le_of_eq (Int.ofNat_sub h).symm
-  · simp [le_of_not_ge h, ofNat_le]
+  cutsat
 
 /-! ### `succ` and `pred` -/
 
@@ -69,16 +65,16 @@ theorem natAbs_inj_of_nonpos_of_nonneg {a b : ℤ} (ha : a ≤ 0) (hb : 0 ≤ b)
 theorem natAbs_coe_sub_coe_le_of_le {a b n : ℕ} (a_le_n : a ≤ n) (b_le_n : b ≤ n) :
     natAbs (a - b : ℤ) ≤ n := by
   rw [← Nat.cast_le (α := ℤ), natCast_natAbs]
-  exact abs_sub_le_of_nonneg_of_le (ofNat_nonneg a) (ofNat_le.mpr a_le_n)
-    (ofNat_nonneg b) (ofNat_le.mpr b_le_n)
+  exact abs_sub_le_of_nonneg_of_le (natCast_nonneg a) (ofNat_le.mpr a_le_n)
+    (natCast_nonneg b) (ofNat_le.mpr b_le_n)
 
 /-- A specialization of `abs_sub_lt_of_nonneg_of_lt` for working with the signed subtraction
   of natural numbers. -/
 theorem natAbs_coe_sub_coe_lt_of_lt {a b n : ℕ} (a_lt_n : a < n) (b_lt_n : b < n) :
     natAbs (a - b : ℤ) < n := by
   rw [← Nat.cast_lt (α := ℤ), natCast_natAbs]
-  exact abs_sub_lt_of_nonneg_of_lt (ofNat_nonneg a) (ofNat_lt.mpr a_lt_n)
-    (ofNat_nonneg b) (ofNat_lt.mpr b_lt_n)
+  exact abs_sub_lt_of_nonneg_of_lt (natCast_nonneg a) (ofNat_lt.mpr a_lt_n)
+    (natCast_nonneg b) (ofNat_lt.mpr b_lt_n)
 
 section Intervals
 
@@ -109,20 +105,20 @@ theorem div2_bit (b n) : div2 (bit b n) = n := by
   rw [bit_val, div2_val, add_comm, Int.add_mul_ediv_left, (_ : (_ / 2 : ℤ) = 0), zero_add]
   cases b
   · decide
-  · show ofNat _ = _
+  · change ofNat _ = _
     rw [Nat.div_eq_of_lt] <;> simp
   · decide
 
 /-- Like `Int.ediv_emod_unique`, but permitting negative `b`. -/
-theorem ediv_emod_unique' {a b r q : Int} (h : b ≠ 0) :
+theorem ediv_emod_unique'' {a b r q : Int} (h : b ≠ 0) :
     a / b = q ∧ a % b = r ↔ r + b * q = a ∧ 0 ≤ r ∧ r < |b| := by
   constructor
   · intro ⟨rfl, rfl⟩
-    exact ⟨emod_add_ediv a b, emod_nonneg _ h, emod_lt _ h⟩
+    exact ⟨emod_add_mul_ediv a b, emod_nonneg _ h, emod_lt_abs _ h⟩
   · intro ⟨rfl, hz, hb⟩
     constructor
     · rw [Int.add_mul_ediv_left r q h, ediv_eq_zero_of_lt_abs hz hb]
-      simp [Int.zero_add]
+      simp
     · rw [add_mul_emod_self_left, ← emod_abs, emod_eq_of_lt hz hb]
 
 end Int

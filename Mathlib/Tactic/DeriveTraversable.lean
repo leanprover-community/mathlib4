@@ -58,8 +58,8 @@ def mapField (n : Name) (cl f α β e : Expr) : TermElabM Expr := do
 multiple declarations it will throw. -/
 def getAuxDefOfDeclName : TermElabM FVarId := do
   let some declName ← getDeclName? | throwError "no 'declName?'"
-  let auxDeclMap := (← read).auxDeclToFullName
-  let fvars := auxDeclMap.fold (init := []) fun fvars fvar fullName =>
+  let auxDeclMap := (← getLCtx).auxDeclToFullName
+  let fvars := auxDeclMap.foldl (init := []) fun fvars fvar fullName =>
     if fullName = declName then fvars.concat fvar else fvars
   match fvars with
   | [] => throwError "no auxiliary local declaration corresponding to the current declaration"
@@ -86,7 +86,7 @@ This is convenient to make a definition with equation lemmas. -/
 def mkCasesOnMatch (type : Name) (levels : List Level) (params : List Expr) (motive : Expr)
     (indices : List Expr) (val : Expr)
     (rhss : (ctor : Name) → (fields : List FVarId) → TermElabM Expr) : TermElabM Expr := do
-  let matcherName ← getDeclName? >>= (fun n? => Lean.mkAuxName (.mkStr (n?.getD type) "match") 1)
+  let matcherName ← getDeclName? >>= (fun n? => Lean.mkAuxDeclName (.mkStr (n?.getD type) "match"))
   let matchType ← generalizeTelescope (indices.concat val).toArray fun iargs =>
     mkForallFVars iargs (motive.beta iargs)
   let iinfo ← getConstInfoInduct type
@@ -103,7 +103,7 @@ def mkCasesOnMatch (type : Name) (levels : List Level) (params : List Expr) (mot
                patterns }
   let mres ← Term.mkMatcher { matcherName
                               matchType
-                              discrInfos := mkArray (indices.length + 1) {}
+                              discrInfos := .replicate (indices.length + 1) {}
                               lhss }
   mres.addMatcher
   let rhss ← lhss.mapM fun altLHS => do
@@ -152,6 +152,7 @@ def mkMap (type : Name) (m : MVarId) : TermElabM Unit := do
 
 /-- derive the `map` definition and declare `Functor` using this. -/
 def deriveFunctor (m : MVarId) : TermElabM Unit := do
+  let docCtx := (← getLCtx, ← getLocalInstances)
   let levels ← getLevelNames
   let vars ← getFVarsNotImplementationDetails
   let .app (.const ``Functor _) F ← m.getType >>= instantiateMVars | failure
@@ -167,10 +168,11 @@ def deriveFunctor (m : MVarId) : TermElabM Unit := do
     let e := e.replaceFVar ad (mkAppN (.const n' (levels.map Level.param)) vars.toArray)
     let e' ← mkLambdaFVars vars.toArray e
     let t' ← mkForallFVars vars.toArray t
-    addPreDefinitions
+    addPreDefinitions docCtx
       #[{ ref := .missing
           kind := .def
           levelParams := levels
+          binders := mkNullNode #[]
           modifiers :=
             { isUnsafe := d.isUnsafe
               attrs :=
@@ -208,6 +210,7 @@ def mkOneInstance (n cls : Name) (tac : MVarId → TermElabM Unit)
     (mkInst : Name → Expr → TermElabM Expr := fun n arg => mkAppM n #[arg]) : TermElabM Unit := do
   let .inductInfo decl ← getConstInfo n |
     throwError m!"failed to derive '{cls}', '{n}' is not an inductive type"
+  let docCtx := (← getLCtx, ← getLocalInstances)
   let clsDecl ← getConstInfo cls
   let ls := decl.levelParams.map Level.param
   -- incrementally build up target expression `(hp : p) → [cls hp] → ... cls (n.{ls} hp ...)`
@@ -233,10 +236,11 @@ def mkOneInstance (n cls : Name) (tac : MVarId → TermElabM Unit)
     let instN ← m'.withContext do
       let type ← m'.getType >>= instantiateMVars
       mkInstanceNameForTypeExpr type
-    addPreDefinitions
+    addPreDefinitions docCtx
       #[{ ref := .missing
           kind := .def
           levelParams := decl.levelParams
+          binders := mkNullNode #[]
           modifiers :=
             { isUnsafe
               attrs :=
@@ -283,7 +287,7 @@ def deriveLawfulFunctor (m : MVarId) : TermElabM Unit := do
   let (#[_, x], mim) ← mim.introN 2 | failure
   let (some mim, _) ← dsimpGoal mim (← rules [] [``Functor.map] false) | failure
   let xs ← mim.induction x (mkRecName n)
-  xs.forM fun ⟨mim, _, _⟩ =>
+  xs.forM fun { mvarId := mim, .. } =>
     mim.withContext do
       if let (some (_, mim), _) ←
           simpGoal mim (← rules [(``Functor.map_id, false)] [.mkStr n "map"] true) then
@@ -291,7 +295,7 @@ def deriveLawfulFunctor (m : MVarId) : TermElabM Unit := do
   let (#[_, _, _, _, _, x], mcm) ← mcm.introN 6 | failure
   let (some mcm, _) ← dsimpGoal mcm (← rules [] [``Functor.map] false) | failure
   let xs ← mcm.induction x (mkRecName n)
-  xs.forM fun ⟨mcm, _, _⟩ =>
+  xs.forM fun { mvarId := mcm, .. } =>
     mcm.withContext do
       if let (some (_, mcm), _) ←
           simpGoal mcm (← rules [(``Functor.map_comp_map, true)] [.mkStr n "map"] true) then
@@ -393,6 +397,7 @@ def mkTraverse (type : Name) (m : MVarId) : TermElabM Unit := do
 
 /-- derive the `traverse` definition and declare `Traversable` using this. -/
 def deriveTraversable (m : MVarId) : TermElabM Unit := do
+  let docCtx := (← getLCtx, ← getLocalInstances)
   let levels ← getLevelNames
   let vars ← getFVarsNotImplementationDetails
   let .app (.const ``Traversable _) F ← m.getType >>= instantiateMVars | failure
@@ -408,13 +413,14 @@ def deriveTraversable (m : MVarId) : TermElabM Unit := do
     let e := e.replaceFVar ad (mkAppN (.const n' (levels.map Level.param)) vars.toArray)
     let e' ← mkLambdaFVars vars.toArray e
     let t' ← mkForallFVars vars.toArray t
-    addPreDefinitions
+    addPreDefinitions docCtx
       #[{ ref := .missing
           kind := .def
           levelParams := levels
+          binders := mkNullNode #[]
           modifiers :=
             { isUnsafe := d.isUnsafe
-              visibility := .protected }
+              isProtected := true }
           declName := n'
           type := t'
           value := e'
@@ -440,7 +446,7 @@ def simpFunctorGoal (m : MVarId) (s : Simp.Context) (simprocs : Simp.SimprocsArr
 /--
 Run the following tactic:
 ```lean
-intros _ .. x
+intro _ .. x
 dsimp only [Traversable.traverse, Functor.map]
 induction x <;> (the simp tactic corresponding to s) <;> (tac)
 ```

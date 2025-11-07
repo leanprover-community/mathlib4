@@ -3,11 +3,9 @@ Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.BilinearForm.DualLattice
+import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.RingTheory.DedekindDomain.Basic
-import Mathlib.RingTheory.Localization.Module
 import Mathlib.RingTheory.Trace.Basic
 
 /-!
@@ -27,7 +25,7 @@ to add a `(h : ¬IsField A)` assumption whenever this is explicitly needed.
 ## References
 
 * [D. Marcus, *Number Fields*][marcus1977number]
-* [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 ## Tags
@@ -35,10 +33,10 @@ to add a `(h : ¬IsField A)` assumption whenever this is explicitly needed.
 dedekind domain, dedekind ring
 -/
 
+open Algebra Module
+open scoped nonZeroDivisors Polynomial
 
 variable (A K : Type*) [CommRing A] [Field K]
-
-open scoped nonZeroDivisors Polynomial
 
 section IsIntegralClosure
 
@@ -48,8 +46,6 @@ We show that an integral closure of a Dedekind domain in a finite separable
 field extension is again a Dedekind domain. This implies the ring of integers
 of a number field is a Dedekind domain. -/
 
-
-open Algebra
 
 variable [Algebra A K] [IsFractionRing A K]
 variable (L : Type*) [Field L] (C : Type*) [CommRing C]
@@ -140,7 +136,7 @@ theorem FiniteDimensional.exists_is_basis_integral :
   · intro x; simp only [inv_mul_cancel_left₀ hy']
   · intro x; simp only [mul_inv_cancel_left₀ hy']
   · rintro ⟨x', hx'⟩
-    simp only [Algebra.smul_def, Finset.mem_image, exists_prop, Finset.mem_univ,
+    simp only [Algebra.smul_def, Finset.mem_image, Finset.mem_univ,
       true_and] at his'
     simp only [Basis.map_apply, LinearEquiv.coe_mk]
     exact his' _ ⟨_, rfl⟩
@@ -245,10 +241,5 @@ the field of fractions yourself. -/
 instance integralClosure.isDedekindDomain_fractionRing [IsDedekindDomain A] :
     IsDedekindDomain (integralClosure A L) :=
   integralClosure.isDedekindDomain A (FractionRing A) L
-
-attribute [local instance] FractionRing.liftAlgebra in
-instance [NoZeroSMulDivisors A C] [Module.Finite A C] [IsIntegrallyClosed C] :
-    IsLocalization (Algebra.algebraMapSubmonoid C A⁰) (FractionRing C) :=
-  IsIntegralClosure.isLocalization _ (FractionRing A) _ _
 
 end IsIntegralClosure

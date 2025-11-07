@@ -21,10 +21,8 @@ For now, we simplify by insisting both universe levels are the same.
 
 ## Implementation notes
 
-This file essentially mirrors `Mathlib/Algebra/Category/AlgebraCat/Monoidal.lean`.
+This file essentially mirrors `Mathlib/Algebra/Category/AlgCat/Monoidal.lean`.
 -/
-
-suppress_compilation
 
 open CategoryTheory
 open scoped MonoidalCategory
@@ -41,13 +39,13 @@ namespace instMonoidalCategory
 
 /-- Auxiliary definition used to build `QuadraticModuleCat.instMonoidalCategory`. -/
 @[simps! form]
-noncomputable abbrev tensorObj (X Y : QuadraticModuleCat.{u} R) : QuadraticModuleCat.{u} R :=
+abbrev tensorObj (X Y : QuadraticModuleCat.{u} R) : QuadraticModuleCat.{u} R :=
   of (X.form.tmul Y.form)
 
 /-- Auxiliary definition used to build `QuadraticModuleCat.instMonoidalCategory`.
 
 We want this up front so that we can re-use it to define `whiskerLeft` and `whiskerRight`. -/
-noncomputable abbrev tensorHom {W X Y Z : QuadraticModuleCat.{u} R} (f : W ⟶ X) (g : Y ⟶ Z) :
+abbrev tensorHom {W X Y Z : QuadraticModuleCat.{u} R} (f : W ⟶ X) (g : Y ⟶ Z) :
     tensorObj W Y ⟶ tensorObj X Z :=
   ⟨f.toIsometry.tmul g.toIsometry⟩
 
@@ -68,6 +66,45 @@ instance : MonoidalCategoryStruct (QuadraticModuleCat.{u} R) where
   leftUnitor X := ofIso (tensorLId X.form)
   rightUnitor X := ofIso (tensorRId X.form)
 
+
+theorem toIsometry_tensorHom {K L M N : QuadraticModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) :
+    (f ⊗ₘ g).toIsometry = f.toIsometry.tmul g.toIsometry :=
+  rfl
+
+theorem toIsometry_whiskerLeft
+    (L : QuadraticModuleCat.{u} R) {M N : QuadraticModuleCat.{u} R} (f : M ⟶ N) :
+    (L ◁ f).toIsometry = .tmul (.id _) f.toIsometry :=
+  rfl
+
+theorem toIsometry_whiskerRight
+    {L M : QuadraticModuleCat.{u} R} (f : L ⟶ M) (N : QuadraticModuleCat.{u} R) :
+    (f ▷ N).toIsometry = .tmul f.toIsometry (.id _) :=
+  rfl
+
+theorem toIsometry_hom_leftUnitor {M : QuadraticModuleCat.{u} R} :
+    (λ_ M).hom.toIsometry = (tensorLId _).toIsometry :=
+  rfl
+
+theorem toIsometry_inv_leftUnitor {M : QuadraticModuleCat.{u} R} :
+    (λ_ M).inv.toIsometry = (tensorLId _).symm.toIsometry :=
+  rfl
+
+theorem toIsometry_hom_rightUnitor {M : QuadraticModuleCat.{u} R} :
+    (ρ_ M).hom.toIsometry = (tensorRId _).toIsometry :=
+  rfl
+
+theorem toIsometry_inv_rightUnitor {M : QuadraticModuleCat.{u} R} :
+    (ρ_ M).inv.toIsometry = (tensorRId _).symm.toIsometry :=
+  rfl
+
+theorem hom_hom_associator {M N K : QuadraticModuleCat.{u} R} :
+    (α_ M N K).hom.toIsometry = (tensorAssoc _ _ _).toIsometry :=
+  rfl
+
+theorem hom_inv_associator {M N K : QuadraticModuleCat.{u} R} :
+    (α_ M N K).inv.toIsometry = (tensorAssoc _ _ _).symm.toIsometry :=
+  rfl
+
 @[simp] theorem toModuleCat_tensor (X Y : QuadraticModuleCat.{u} R) :
     (X ⊗ Y).toModuleCat = X.toModuleCat ⊗ Y.toModuleCat := rfl
 
@@ -79,7 +116,7 @@ theorem forget₂_map_associator_inv (X Y Z : QuadraticModuleCat.{u} R) :
     (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (α_ X Y Z).inv =
       (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).inv := rfl
 
-noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
+instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
   Monoidal.induced
     (forget₂ (QuadraticModuleCat R) (ModuleCat R))
     { μIso := fun _ _ => Iso.refl _
@@ -100,10 +137,10 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleC
         rfl
       associator_eq := fun X Y Z => by
         dsimp only [forget₂_obj, forget₂_map_associator_hom]
-        simp only [eqToIso_refl, Iso.refl_trans, Iso.refl_symm, Iso.trans_hom,
-          MonoidalCategory.tensorIso_hom, Iso.refl_hom, MonoidalCategory.tensor_id]
+        simp only [Iso.refl_symm, Iso.trans_hom,
+          MonoidalCategory.tensorIso_hom, Iso.refl_hom, MonoidalCategory.id_tensorHom_id]
         dsimp only [toModuleCat_tensor, ModuleCat.of_coe]
-        rw [Category.id_comp, Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id,
+        rw [Category.id_comp, Category.id_comp, Category.comp_id, MonoidalCategory.id_tensorHom_id,
           Category.id_comp] }
 
 /-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` is a monoidal functor. -/

@@ -14,9 +14,9 @@ and the direct sum of quotients of modules by submodules.
 
 # Main definitions
 
- * `Submodule.piQuotientLift`: create a map out of the direct sum of quotients
- * `Submodule.quotientPiLift`: create a map out of the quotient of a direct sum
- * `Submodule.quotientPi`: the quotient of a direct sum is the direct sum of quotients.
+* `Submodule.piQuotientLift`: create a map out of the direct sum of quotients
+* `Submodule.quotientPiLift`: create a map out of the quotient of a direct sum
+* `Submodule.quotientPi`: the quotient of a direct sum is the direct sum of quotients.
 
 -/
 
@@ -50,7 +50,7 @@ theorem piQuotientLift_single [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodul
   rw [Finset.sum_eq_single i]
   · rw [Pi.single_eq_same]
   · rintro j - hj
-    rw [Pi.single_eq_of_ne hj, _root_.map_zero]
+    rw [Pi.single_eq_of_ne hj, map_zero]
   · intros
     have := Finset.mem_univ i
     contradiction

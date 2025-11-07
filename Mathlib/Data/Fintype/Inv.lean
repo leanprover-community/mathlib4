@@ -125,7 +125,6 @@ def choose (hp : ∃! a, p a) : α :=
 theorem choose_spec (hp : ∃! a, p a) : p (choose p hp) :=
   (chooseX p hp).property
 
--- @[simp] Porting note: removing simp, never applies
 theorem choose_subtype_eq {α : Type*} (p : α → Prop) [Fintype { a : α // p a }] [DecidableEq α]
     (x : { a : α // p a })
     (h : ∃! a : { a // p a }, (a : α) = x :=
@@ -136,8 +135,6 @@ theorem choose_subtype_eq {α : Type*} (p : α → Prop) [Fintype { a : α // p 
 end Choose
 
 section BijectionInverse
-
-open Function
 
 variable [Fintype α] [DecidableEq β] {f : α → β}
 

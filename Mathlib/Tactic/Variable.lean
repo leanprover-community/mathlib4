@@ -115,7 +115,7 @@ def pendingActionableSynthMVar (binder : TSyntax ``bracketedBinder) :
       if !ty.hasExprMVar then
         return mvarId
     | _ => pure ()
-  throwErrorAt binder "Can not satisfy requirements for {binder} due to metavariables."
+  throwErrorAt binder "Cannot satisfy requirements for {binder} due to metavariables."
 
 /-- Try elaborating `ty`. Returns `none` if it doesn't need any additional typeclasses,
 or it returns a new binder that needs to come first. Does not add info unless it throws
@@ -160,7 +160,7 @@ partial def completeBinders' (maxSteps : Nat) (gas : Nat)
     (toOmit : Array Bool) (i : Nat) :
     TermElabM (TSyntaxArray ``bracketedBinder × Array Bool) := do
   if h : 0 < gas ∧ i < binders.size then
-    let binder := binders[i]!
+    let binder := binders[i]
     trace[«variable?»] "\
       Have {(← getLCtx).getFVarIds.size} fvars and {(← getLocalInstances).size} local instances. \
       Looking at{indentD binder}"
@@ -213,9 +213,9 @@ partial def completeBinders' (maxSteps : Nat) (gas : Nat)
           | _ => return (binders, toOmit.push false)
         completeBinders' maxSteps gas checkRedundant binders toOmit (i + 1)
   else
-    if gas == 0 && i < binders.size then
+    if h : gas = 0 ∧ i < binders.size then
       let binders' := binders.extract 0 i
-      logErrorAt binders[i]! m!"Maximum recursion depth for variables! reached. This might be a \
+      logErrorAt binders[i] m!"Maximum recursion depth for variables! reached. This might be a \
         bug, or you can try adjusting `set_option variable?.maxSteps {maxSteps}`\n\n\
         Current variable command:{indentD (← `(command| variable $binders'*))}"
     return (binders, toOmit)

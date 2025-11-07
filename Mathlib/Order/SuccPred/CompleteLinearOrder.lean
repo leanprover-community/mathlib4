@@ -14,7 +14,7 @@ import Mathlib.Order.SuccPred.Limit
 
 open Order Set
 
-variable {ι α : Type*}
+variable {ι : Sort*} {α : Type*}
 
 section ConditionallyCompleteLinearOrder
 variable [ConditionallyCompleteLinearOrder α] [Nonempty ι] {f : ι → α} {s : Set α} {x : α}
@@ -25,59 +25,35 @@ lemma csSup_mem_of_not_isSuccPrelimit
   obtain ⟨i, his, hi⟩ := exists_lt_of_lt_csSup hne hy.lt
   exact eq_of_le_of_not_lt (le_csSup hbdd his) (hy.2 hi) ▸ his
 
-@[deprecated csSup_mem_of_not_isSuccPrelimit (since := "2024-09-05")]
-alias csSup_mem_of_not_isSuccLimit := csSup_mem_of_not_isSuccPrelimit
-
 lemma csInf_mem_of_not_isPredPrelimit
     (hne : s.Nonempty) (hbdd : BddBelow s) (hlim : ¬ IsPredPrelimit (sInf s)) : sInf s ∈ s := by
   obtain ⟨y, hy⟩ := not_forall_not.mp hlim
   obtain ⟨i, his, hi⟩ := exists_lt_of_csInf_lt hne hy.lt
   exact eq_of_le_of_not_lt (csInf_le hbdd his) (hy.2 · hi) ▸ his
 
-@[deprecated csInf_mem_of_not_isPredPrelimit (since := "2024-09-05")]
-alias csInf_mem_of_not_isPredLimit := csInf_mem_of_not_isPredPrelimit
-
 lemma exists_eq_ciSup_of_not_isSuccPrelimit
     (hf : BddAbove (range f)) (hf' : ¬ IsSuccPrelimit (⨆ i, f i)) : ∃ i, f i = ⨆ i, f i :=
   csSup_mem_of_not_isSuccPrelimit (range_nonempty f) hf hf'
-
-@[deprecated exists_eq_ciSup_of_not_isSuccPrelimit (since := "2024-09-05")]
-alias exists_eq_ciSup_of_not_isSuccLimit := exists_eq_ciSup_of_not_isSuccPrelimit
 
 lemma exists_eq_ciInf_of_not_isPredPrelimit
     (hf : BddBelow (range f)) (hf' : ¬ IsPredPrelimit (⨅ i, f i)) : ∃ i, f i = ⨅ i, f i :=
   csInf_mem_of_not_isPredPrelimit (range_nonempty f) hf hf'
 
-@[deprecated exists_eq_ciInf_of_not_isPredPrelimit (since := "2024-09-05")]
-alias exists_eq_ciInf_of_not_isPredLimit := exists_eq_ciInf_of_not_isPredPrelimit
-
 lemma IsLUB.mem_of_nonempty_of_not_isSuccPrelimit
     (hs : IsLUB s x) (hne : s.Nonempty) (hx : ¬ IsSuccPrelimit x) : x ∈ s :=
   hs.csSup_eq hne ▸ csSup_mem_of_not_isSuccPrelimit hne hs.bddAbove (hs.csSup_eq hne ▸ hx)
-
-@[deprecated IsLUB.mem_of_nonempty_of_not_isSuccPrelimit (since := "2024-09-05")]
-alias IsLUB.mem_of_nonempty_of_not_isSuccLimit := IsLUB.mem_of_nonempty_of_not_isSuccPrelimit
 
 lemma IsGLB.mem_of_nonempty_of_not_isPredPrelimit
     (hs : IsGLB s x) (hne : s.Nonempty) (hx : ¬ IsPredPrelimit x) : x ∈ s :=
   hs.csInf_eq hne ▸ csInf_mem_of_not_isPredPrelimit hne hs.bddBelow (hs.csInf_eq hne ▸ hx)
 
-@[deprecated IsGLB.mem_of_nonempty_of_not_isPredPrelimit (since := "2024-09-05")]
-alias IsGLB.mem_of_nonempty_of_not_isPredLimit := IsGLB.mem_of_nonempty_of_not_isPredPrelimit
-
 lemma IsLUB.exists_of_nonempty_of_not_isSuccPrelimit
     (hf : IsLUB (range f) x) (hx : ¬ IsSuccPrelimit x) : ∃ i, f i = x :=
   hf.mem_of_nonempty_of_not_isSuccPrelimit (range_nonempty f) hx
 
-@[deprecated IsLUB.exists_of_nonempty_of_not_isSuccPrelimit (since := "2024-09-05")]
-alias IsLUB.exists_of_nonempty_of_not_isSuccLimit := IsLUB.exists_of_nonempty_of_not_isSuccPrelimit
-
 lemma IsGLB.exists_of_nonempty_of_not_isPredPrelimit
     (hf : IsGLB (range f) x) (hx : ¬ IsPredPrelimit x) : ∃ i, f i = x :=
   hf.mem_of_nonempty_of_not_isPredPrelimit (range_nonempty f) hx
-
-@[deprecated IsGLB.exists_of_nonempty_of_not_isPredPrelimit (since := "2024-09-05")]
-alias IsGLB.exists_of_nonempty_of_not_isPredLimit := IsGLB.exists_of_nonempty_of_not_isPredPrelimit
 
 open Classical in
 /-- Every conditionally complete linear order with well-founded `<` is a successor order, by setting
@@ -95,9 +71,9 @@ noncomputable def ConditionallyCompleteLinearOrder.toSuccOrder [WellFoundedLT α
     by_contra h
     simp [h] at hs
     rw [not_isMax_iff] at h
-    exact hs.not_lt (csInf_mem h)
+    exact hs.not_gt (csInf_mem h)
   succ_le_of_lt {a b} ha := by
-    simp [ha.not_isMax]
+    simp only [ha.not_isMax, ↓reduceIte]
     exact csInf_le ⟨a, fun _ hc => hc.le⟩ ha
 
 end ConditionallyCompleteLinearOrder
@@ -112,25 +88,11 @@ lemma csSup_mem_of_not_isSuccPrelimit'
   · simp [isSuccPrelimit_bot] at hlim
   · exact csSup_mem_of_not_isSuccPrelimit hs hbdd hlim
 
-@[deprecated csSup_mem_of_not_isSuccPrelimit' (since := "2024-09-05")]
-alias csSup_mem_of_not_isSuccLimit' := csSup_mem_of_not_isSuccPrelimit'
-
 /-- See `exists_eq_ciSup_of_not_isSuccPrelimit` for the
 `ConditionallyCompleteLinearOrder` version. -/
 lemma exists_eq_ciSup_of_not_isSuccPrelimit'
     (hf : BddAbove (range f)) (hf' : ¬ IsSuccPrelimit (⨆ i, f i)) : ∃ i, f i = ⨆ i, f i :=
   csSup_mem_of_not_isSuccPrelimit' hf hf'
-
-@[deprecated exists_eq_ciSup_of_not_isSuccPrelimit' (since := "2024-09-05")]
-alias exists_eq_ciSup_of_not_isSuccLimit' := exists_eq_ciSup_of_not_isSuccPrelimit'
-
-@[deprecated IsLUB.mem_of_not_isSuccPrelimit (since := "2025-01-05")]
-lemma IsLUB.exists_of_not_isSuccPrelimit (hf : IsLUB (range f) x) (hx : ¬ IsSuccPrelimit x) :
-    ∃ i, f i = x :=
-  hf.mem_of_not_isSuccPrelimit hx
-
-@[deprecated IsLUB.exists_of_not_isSuccPrelimit (since := "2024-09-05")]
-alias IsLUB.exists_of_not_isSuccLimit := IsLUB.exists_of_not_isSuccPrelimit
 
 theorem Order.IsSuccPrelimit.sSup_Iio (h : IsSuccPrelimit x) : sSup (Iio x) = x := by
   obtain rfl | hx := eq_bot_or_bot_lt x
@@ -174,37 +136,17 @@ lemma sSup_mem_of_not_isSuccPrelimit (hlim : ¬ IsSuccPrelimit (sSup s)) : sSup 
   obtain ⟨i, his, hi⟩ := lt_sSup_iff.mp hy.lt
   exact eq_of_le_of_not_lt (le_sSup his) (hy.2 hi) ▸ his
 
-@[deprecated sSup_mem_of_not_isSuccPrelimit (since := "2024-09-05")]
-alias sSup_mem_of_not_isSuccLimit := sSup_mem_of_not_isSuccPrelimit
-
 lemma sInf_mem_of_not_isPredPrelimit (hlim : ¬ IsPredPrelimit (sInf s)) : sInf s ∈ s := by
   obtain ⟨y, hy⟩ := not_forall_not.mp hlim
   obtain ⟨i, his, hi⟩ := sInf_lt_iff.mp hy.lt
   exact eq_of_le_of_not_lt (sInf_le his) (hy.2 · hi) ▸ his
 
-@[deprecated sInf_mem_of_not_isPredPrelimit (since := "2024-09-05")]
-alias sInf_mem_of_not_isPredLimit := sInf_mem_of_not_isPredPrelimit
-
 lemma exists_eq_iSup_of_not_isSuccPrelimit (hf : ¬ IsSuccPrelimit (⨆ i, f i)) :
     ∃ i, f i = ⨆ i, f i :=
   sSup_mem_of_not_isSuccPrelimit hf
 
-@[deprecated exists_eq_iSup_of_not_isSuccPrelimit (since := "2024-09-05")]
-alias exists_eq_iSup_of_not_isSuccLimit := exists_eq_iSup_of_not_isSuccPrelimit
-
 lemma exists_eq_iInf_of_not_isPredPrelimit (hf : ¬ IsPredPrelimit (⨅ i, f i)) :
     ∃ i, f i = ⨅ i, f i :=
   sInf_mem_of_not_isPredPrelimit hf
-
-@[deprecated exists_eq_iInf_of_not_isPredPrelimit (since := "2024-09-05")]
-alias exists_eq_iInf_of_not_isPredLimit := exists_eq_iInf_of_not_isPredPrelimit
-
-@[deprecated IsGLB.mem_of_not_isPredLimit (since := "2025-01-05")]
-lemma IsGLB.exists_of_not_isPredPrelimit (hf : IsGLB (range f) x) (hx : ¬ IsPredPrelimit x) :
-    ∃ i, f i = x :=
-  hf.mem_of_not_isPredPrelimit hx
-
-@[deprecated IsGLB.exists_of_not_isPredPrelimit (since := "2024-09-05")]
-alias IsGLB.exists_of_not_isPredLimit := IsGLB.exists_of_not_isPredPrelimit
 
 end CompleteLinearOrder

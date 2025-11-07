@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Decomposition.Exhaustion
-import Mathlib.MeasureTheory.Integral.Lebesgue
+import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
+import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
+import Mathlib.MeasureTheory.Group.Convolution
+import Mathlib.Analysis.LConvolution
 
 /-!
 # Measure with a given density with respect to another measure
@@ -130,8 +132,7 @@ theorem withDensity_smul' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r ≠ �
 theorem withDensity_smul_measure (r : ℝ≥0∞) (f : α → ℝ≥0∞) :
     (r • μ).withDensity f = r • μ.withDensity f := by
   ext s hs
-  rw [withDensity_apply _ hs, Measure.coe_smul, Pi.smul_apply, withDensity_apply _ hs,
-    smul_eq_mul, setLIntegral_smul_measure]
+  simp [withDensity_apply, hs]
 
 theorem isFiniteMeasure_withDensity {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a ∂μ ≠ ∞) :
     IsFiniteMeasure (μ.withDensity f) :=
@@ -143,6 +144,19 @@ theorem withDensity_absolutelyContinuous {m : MeasurableSpace α} (μ : Measure 
   refine AbsolutelyContinuous.mk fun s hs₁ hs₂ => ?_
   rw [withDensity_apply _ hs₁]
   exact setLIntegral_measure_zero _ _ hs₂
+
+theorem withDensity_apply₀ (f : α → ℝ≥0∞) {s : Set α} (hs : NullMeasurableSet s μ) :
+    μ.withDensity f s = ∫⁻ a in s, f a ∂μ := by
+  let t := toMeasurable μ s
+  have A : ∫⁻ a in t, f a ∂μ = ∫⁻ a in s, f a ∂μ :=
+    setLIntegral_congr hs.toMeasurable_ae_eq
+  have B : μ.withDensity f t = μ.withDensity f s :=
+    measure_congr (withDensity_absolutelyContinuous μ f hs.toMeasurable_ae_eq)
+  rw [← A, ← B]
+  exact withDensity_apply _ (measurableSet_toMeasurable μ s)
+
+instance noAtoms_withDensity [NoAtoms μ] (f : α → ℝ≥0∞) : NoAtoms (μ.withDensity f) where
+  measure_singleton _ := withDensity_absolutelyContinuous μ f (measure_singleton _)
 
 @[simp]
 theorem withDensity_zero : μ.withDensity 0 = 0 := by
@@ -232,17 +246,17 @@ theorem withDensity_apply_eq_zero' {f : α → ℝ≥0∞} {s : Set α} (hf : AE
       EventuallyEq, ae_restrict_iff'₀, ae_iff] at A
     swap
     · simp only [measurableSet_toMeasurable, MeasurableSet.nullMeasurableSet]
-    simp only [Pi.zero_apply, mem_setOf_eq, Filter.mem_mk] at A
+    simp only [Pi.zero_apply] at A
     convert A using 2
     ext x
     simp only [and_comm, exists_prop, mem_inter_iff, mem_setOf_eq,
-      mem_compl_iff, not_forall]
+      not_forall]
   · intro hs
     let t := toMeasurable μ ({ x | f x ≠ 0 } ∩ s)
     have A : s ⊆ t ∪ { x | f x = 0 } := by
       intro x hx
       rcases eq_or_ne (f x) 0 with (fx | fx)
-      · simp only [fx, mem_union, mem_setOf_eq, eq_self_iff_true, or_true]
+      · simp only [fx, mem_union, mem_setOf_eq, or_true]
       · left
         apply subset_toMeasurable _ _
         exact ⟨fx, hx⟩
@@ -316,7 +330,7 @@ theorem aemeasurable_withDensity_ennreal_iff' {f : α → ℝ≥0}
       rw [ha this]
     · rw [ae_restrict_iff' A.compl]
       filter_upwards [hf'_ae] with a ha ha_null
-      have ha_null : f' a = 0 := Function.nmem_support.mp ha_null
+      have ha_null : f' a = 0 := Function.notMem_support.mp ha_null
       rw [ha_null] at ha ⊢
       rw [ha]
       simp only [ENNReal.coe_zero, zero_mul]
@@ -352,7 +366,7 @@ theorem lintegral_withDensity_eq_lintegral_mul (μ : Measure α) {f : α → ℝ
   · intro g h _ h_mea_g _ h_ind_g h_ind_h
     simp [mul_add, *, Measurable.mul]
   · intro g h_mea_g h_mono_g h_ind
-    have : Monotone fun n a => f a * g n a := fun m n hmn x => mul_le_mul_left' (h_mono_g hmn x) _
+    have : Monotone fun n a => f a * g n a := fun m n hmn x => by dsimp; grw [h_mono_g hmn x]
     simp [lintegral_iSup, ENNReal.mul_iSup, h_mf.mul (h_mea_g _), *]
 
 theorem setLIntegral_withDensity_eq_setLIntegral_mul (μ : Measure α) {f g : α → ℝ≥0∞}
@@ -419,9 +433,8 @@ theorem lintegral_withDensity_le_lintegral_mul (μ : Measure α) {f : α → ℝ
     (f_meas : Measurable f) (g : α → ℝ≥0∞) : (∫⁻ a, g a ∂μ.withDensity f) ≤ ∫⁻ a, (f * g) a ∂μ := by
   rw [← iSup_lintegral_measurable_le_eq_lintegral, ← iSup_lintegral_measurable_le_eq_lintegral]
   refine iSup₂_le fun i i_meas => iSup_le fun hi => ?_
-  have A : f * i ≤ f * g := fun x => mul_le_mul_left' (hi x) _
-  refine le_iSup₂_of_le (f * i) (f_meas.mul i_meas) ?_
-  exact le_iSup_of_le A (le_of_eq (lintegral_withDensity_eq_lintegral_mul _ f_meas i_meas))
+  rw [lintegral_withDensity_eq_lintegral_mul _ f_meas i_meas]
+  exact le_iSup₂_of_le (f * i) (f_meas.mul i_meas) <| le_iSup_of_le (by grw [hi]) le_rfl
 
 theorem lintegral_withDensity_eq_lintegral_mul_non_measurable (μ : Measure α) {f : α → ℝ≥0∞}
     (f_meas : Measurable f) (hf : ∀ᵐ x ∂μ, f x < ∞) (g : α → ℝ≥0∞) :
@@ -503,12 +516,7 @@ lemma withDensity_inv_same_le {μ : Measure α} {f : α → ℝ≥0∞} (hf : AE
     refine (withDensity_mono this).trans ?_
     rw [withDensity_one]
   filter_upwards with x
-  simp only [Pi.mul_apply, Pi.one_apply]
-  by_cases hx_top : f x = ∞
-  · simp only [hx_top, ENNReal.inv_top, mul_zero, zero_le]
-  by_cases hx_zero : f x = 0
-  · simp only [hx_zero, ENNReal.inv_zero, zero_mul, zero_le]
-  rw [ENNReal.mul_inv_cancel hx_zero hx_top]
+  simp
 
 lemma withDensity_inv_same₀ {μ : Measure α} {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hf_ne_zero : ∀ᵐ x ∂μ, f x ≠ 0) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
@@ -628,7 +636,66 @@ theorem sFinite_of_absolutelyContinuous {ν : Measure α} [SFinite ν] (hμν : 
     restrict_compl_sigmaFiniteSetWRT hμν]
   infer_instance
 
+/-- In a countable space, every measure is s-finite. -/
+instance [Countable α] : SFinite μ := by
+  obtain ⟨s, h⟩ := exists_sum_smul_dirac μ
+  rw [h]
+  infer_instance
+
 end SFinite
+
+section Prod
+
+variable {β : Type*} {mβ : MeasurableSpace β} {ν : Measure β} [SFinite ν]
+
+theorem prod_withDensity_left₀ {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
+    (μ.withDensity f).prod ν = (μ.prod ν).withDensity (fun z ↦ f z.1) := by
+  refine ext_of_lintegral _ fun φ hφ ↦ ?_
+  rw [lintegral_prod _ hφ.aemeasurable, lintegral_withDensity_eq_lintegral_mul₀ hf,
+    lintegral_withDensity_eq_lintegral_mul₀ _ hφ.aemeasurable, lintegral_prod]
+  · refine lintegral_congr (fun x ↦ ?_)
+    rw [Pi.mul_apply, ← lintegral_const_mul'' _ (by fun_prop)]
+    simp
+  all_goals fun_prop (disch := intro _ hs; simp [hs])
+
+theorem prod_withDensity_left {f : α → ℝ≥0∞} (hf : Measurable f) :
+    (μ.withDensity f).prod ν = (μ.prod ν).withDensity (fun z ↦ f z.1) :=
+  prod_withDensity_left₀ hf.aemeasurable
+
+theorem prod_withDensity_right₀ {g : β → ℝ≥0∞} (hg : AEMeasurable g ν) :
+    μ.prod (ν.withDensity g) = (μ.prod ν).withDensity (fun z ↦ g z.2) := by
+  refine ext_of_lintegral _ fun φ hφ ↦ ?_
+  rw [lintegral_prod _ hφ.aemeasurable, lintegral_withDensity_eq_lintegral_mul₀ _ hφ.aemeasurable,
+    lintegral_prod]
+  · refine lintegral_congr (fun x ↦ ?_)
+    rw [lintegral_withDensity_eq_lintegral_mul₀ hg (by fun_prop)]
+    simp
+  all_goals fun_prop (disch := intro _ hs; simp [hs])
+
+theorem prod_withDensity_right {g : β → ℝ≥0∞} (hg : Measurable g) :
+    μ.prod (ν.withDensity g) = (μ.prod ν).withDensity (fun z ↦ g z.2) :=
+  prod_withDensity_right₀ hg.aemeasurable
+
+theorem prod_withDensity₀ {f : α → ℝ≥0∞} {g : β → ℝ≥0∞}
+    (hf : AEMeasurable f μ) (hg : AEMeasurable g ν) :
+    (μ.withDensity f).prod (ν.withDensity g) = (μ.prod ν).withDensity (fun z ↦ f z.1 * g z.2) := by
+  rw [prod_withDensity_left₀ hf, prod_withDensity_right₀ hg, ← withDensity_mul₀, mul_comm]
+  · rfl
+  all_goals fun_prop (disch := intro _ hs; simp [hs])
+
+theorem prod_withDensity {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (hf : Measurable f) (hg : Measurable g) :
+    (μ.withDensity f).prod (ν.withDensity g) = (μ.prod ν).withDensity (fun z ↦ f z.1 * g z.2) :=
+  prod_withDensity₀ hf.aemeasurable hg.aemeasurable
+
+-- `prod_smul_left` is in the `Prod` file. This lemma is here because this is the file in which
+-- we prove the instance that gives `SFinite (c • ν)`.
+lemma Measure.prod_smul_right (c : ℝ≥0∞) : μ.prod (c • ν) = c • (μ.prod ν) := by
+  ext s hs
+  simp_rw [Measure.prod_apply hs, Measure.smul_apply, Measure.prod_apply hs, smul_eq_mul]
+  rw [lintegral_const_mul]
+  exact measurable_measure_prodMk_left hs
+
+end Prod
 
 variable [TopologicalSpace α] [OpensMeasurableSpace α] [IsLocallyFiniteMeasure μ]
 
@@ -644,5 +711,42 @@ lemma IsLocallyFiniteMeasure.withDensity_coe {f : α → ℝ≥0} (hf : Continuo
 lemma IsLocallyFiniteMeasure.withDensity_ofReal {f : α → ℝ} (hf : Continuous f) :
     IsLocallyFiniteMeasure (μ.withDensity fun x ↦ .ofReal (f x)) :=
   .withDensity_coe <| continuous_real_toNNReal.comp hf
+
+section Conv
+
+variable {M : Type*} [Monoid M] [MeasurableSpace M]
+
+-- `mconv_smul_left` is in the `Convolution` file. This lemma is here because this is the file in
+-- which we prove the instance that gives `SFinite (c • ν)`.
+@[to_additive conv_smul_right]
+theorem Measure.mconv_smul_right (μ : Measure M) (ν : Measure M) [SFinite ν] (s : ℝ≥0∞) :
+    μ ∗ₘ (s • ν) = s • (μ ∗ₘ ν) := by
+  unfold mconv
+  rw [Measure.prod_smul_right, Measure.map_smul]
+
+variable {G : Type*} [Group G] {mG : MeasurableSpace G} [MeasurableMul₂ G] [MeasurableInv G]
+  {μ : Measure G} [SFinite μ] [IsMulLeftInvariant μ]
+
+@[to_additive]
+theorem mconv_withDensity_eq_mlconvolution₀ {f g : G → ℝ≥0∞}
+    (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+    μ.withDensity f ∗ₘ μ.withDensity g = μ.withDensity (f ⋆ₘₗ[μ] g) := by
+  refine ext_of_lintegral _ fun φ hφ ↦ ?_
+  rw [lintegral_mconv_eq_lintegral_prod hφ, prod_withDensity₀ hf hg,
+    lintegral_withDensity_eq_lintegral_mul₀,
+    lintegral_withDensity_eq_lintegral_mul₀, lintegral_prod,
+    lintegral_congr (fun x ↦ by apply (lintegral_mul_left_eq_self _ x⁻¹).symm),
+    lintegral_lintegral_swap]
+  · simp only [Pi.mul_apply, mul_inv_cancel_left, mlconvolution_def]
+    conv in (∫⁻ _ , _ ∂μ) * φ _ => rw [(lintegral_mul_const'' _ (by fun_prop)).symm]
+  all_goals first | fun_prop | dsimp; fun_prop
+
+@[to_additive]
+theorem mconv_withDensity_eq_mlconvolution {f g : G → ℝ≥0∞}
+    (hf : Measurable f) (hg : Measurable g) :
+    μ.withDensity f ∗ₘ μ.withDensity g = μ.withDensity (f ⋆ₘₗ[μ] g) :=
+  mconv_withDensity_eq_mlconvolution₀ hf.aemeasurable hg.aemeasurable
+
+end Conv
 
 end MeasureTheory

@@ -11,7 +11,7 @@ import Mathlib.Data.Setoid.Partition
 /-! # Cardinality of parts of partitions
 
 * `Setoid.IsPartition.ncard_eq_finsum` on an ambient finite type,
-the cardinal of a set is the sum of the cardinalities of its trace on the parts of the partition
+  the cardinal of a set is the sum of the cardinalities of its trace on the parts of the partition
 
 -/
 
@@ -30,16 +30,16 @@ theorem Setoid.IsPartition.ncard_eq_finsum {α : Type*} {P : Set (Set α)}
     Nat.card_eq_card_finite_toFinset (hst t)
   suffices hs' : _ by
     rw [finsum_def, dif_pos hs']
-    simp only [← Set.Nat.card_coe_set_eq, Nat.card_eq_card_finite_toFinset hs]
+    simp only [← Nat.card_coe_set_eq, Nat.card_eq_card_finite_toFinset hs]
     rw [Finset.sum_congr rfl (fun t ht ↦ by exact hst' ↑t)]
     rw [← Finset.card_sigma, eq_comm]
     apply Finset.card_nbij' (fun ⟨t, x⟩ ↦ x)
       (fun x ↦ ⟨⟨(hP.2 x).exists.choose, (hP.2 x).exists.choose_spec.1⟩, x⟩)
     · rintro ⟨t, x⟩
-      simp only [Finset.mem_sigma, Set.Finite.mem_toFinset, Set.mem_inter_iff, and_imp]
-      exact fun _ a _ ↦ a
+      simp +contextual
     · intro x
-      simp only [Set.Finite.mem_toFinset, Finset.mem_sigma, Function.mem_support, Set.mem_inter_iff]
+      simp only [Set.Finite.mem_toFinset, Finset.mem_sigma, Function.mem_support, Set.mem_inter_iff,
+        Finset.mem_coe]
       intro hx
       refine ⟨Nat.card_ne_zero.mpr ⟨?_, hst (hP.right x).exists.choose⟩,
         hx, (hP.2 x).exists.choose_spec.2⟩
@@ -47,13 +47,13 @@ theorem Setoid.IsPartition.ncard_eq_finsum {α : Type*} {P : Set (Set α)}
       use x, hx, (hP.2 x).exists.choose_spec.2
     · rintro ⟨t, x⟩
       simp only [Finset.mem_sigma, Set.Finite.mem_toFinset, Function.mem_support, Nat.card_ne_zero,
-        Set.mem_inter_iff, Sigma.mk.inj_iff, heq_eq_eq, and_true, and_imp]
+        Set.mem_inter_iff, Sigma.mk.inj_iff, heq_eq_eq, and_true, and_imp, Finset.mem_coe]
       simp only [nonempty_subtype, Set.mem_inter_iff, forall_exists_index, and_imp]
       intro y hy hyt _ hxs hxt
       rw [← Subtype.coe_inj]
       exact (hP.2 x).unique (hP.2 x).exists.choose_spec ⟨t.prop, hxt⟩
     · intro t
-      simp only [Set.Finite.mem_toFinset, implies_true]
+      simp only [implies_true]
   let f : Function.support (fun (t : P) ↦ (s ∩ (t : Set α)).ncard) → s := fun ⟨t, ht⟩ ↦
     ⟨(Set.nonempty_of_ncard_ne_zero ht).choose, (Set.nonempty_of_ncard_ne_zero ht).choose_spec.1⟩
   have hf (t : Function.support (fun (t : P) ↦ (s ∩ (t : Set α)).ncard)) :
@@ -62,7 +62,7 @@ theorem Setoid.IsPartition.ncard_eq_finsum {α : Type*} {P : Set (Set α)}
   have : Finite ↑s := hs
   apply Finite.of_injective f
   intro t t' h
-  simp only [← Subtype.coe_inj, Subtype.coe_mk]
+  simp only [← Subtype.coe_inj]
   exact (hP.2 (f t)).unique (hf t) (h ▸ hf t')
 
 end Finite

@@ -13,18 +13,18 @@ This file defines cubic polynomials over a semiring and their discriminants over
 
 ## Main definitions
 
- * `Cubic`: the structure representing a cubic polynomial.
- * `Cubic.disc`: the discriminant of a cubic polynomial.
+* `Cubic`: the structure representing a cubic polynomial.
+* `Cubic.discr`: the discriminant of a cubic polynomial.
 
 ## Main statements
 
- * `Cubic.disc_ne_zero_iff_roots_nodup`: the cubic discriminant is not equal to zero if and only if
-    the cubic has no duplicate roots.
+* `Cubic.discr_ne_zero_iff_roots_nodup`: the cubic discriminant is not equal to zero if and only if
+  the cubic has no duplicate roots.
 
 ## References
 
- * https://en.wikipedia.org/wiki/Cubic_equation
- * https://en.wikipedia.org/wiki/Discriminant
+* https://en.wikipedia.org/wiki/Cubic_equation
+* https://en.wikipedia.org/wiki/Discriminant
 
 ## Tags
 
@@ -88,7 +88,7 @@ private theorem coeffs : (∀ n > 3, P.toPoly.coeff n = 0) ∧ P.toPoly.coeff 3 
   norm_num
   intro n hn
   repeat' rw [if_neg]
-  any_goals omega
+  any_goals cutsat
   repeat' rw [zero_add]
 
 @[simp]
@@ -174,26 +174,23 @@ theorem ne_zero_of_d_ne_zero (hd : P.d ≠ 0) : P.toPoly ≠ 0 :=
 theorem leadingCoeff_of_a_ne_zero (ha : P.a ≠ 0) : P.toPoly.leadingCoeff = P.a :=
   leadingCoeff_cubic ha
 
-@[simp]
-theorem leadingCoeff_of_a_ne_zero' (ha : a ≠ 0) : (toPoly ⟨a, b, c, d⟩).leadingCoeff = a :=
-  leadingCoeff_of_a_ne_zero ha
+theorem leadingCoeff_of_a_ne_zero' (ha : a ≠ 0) : (toPoly ⟨a, b, c, d⟩).leadingCoeff = a := by
+  simp [ha]
 
 @[simp]
 theorem leadingCoeff_of_b_ne_zero (ha : P.a = 0) (hb : P.b ≠ 0) : P.toPoly.leadingCoeff = P.b := by
   rw [of_a_eq_zero ha, leadingCoeff_quadratic hb]
 
-@[simp]
-theorem leadingCoeff_of_b_ne_zero' (hb : b ≠ 0) : (toPoly ⟨0, b, c, d⟩).leadingCoeff = b :=
-  leadingCoeff_of_b_ne_zero rfl hb
+theorem leadingCoeff_of_b_ne_zero' (hb : b ≠ 0) : (toPoly ⟨0, b, c, d⟩).leadingCoeff = b := by
+  simp [hb]
 
 @[simp]
 theorem leadingCoeff_of_c_ne_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c ≠ 0) :
     P.toPoly.leadingCoeff = P.c := by
   rw [of_b_eq_zero ha hb, leadingCoeff_linear hc]
 
-@[simp]
-theorem leadingCoeff_of_c_ne_zero' (hc : c ≠ 0) : (toPoly ⟨0, 0, c, d⟩).leadingCoeff = c :=
-  leadingCoeff_of_c_ne_zero rfl rfl hc
+theorem leadingCoeff_of_c_ne_zero' (hc : c ≠ 0) : (toPoly ⟨0, 0, c, d⟩).leadingCoeff = c := by
+  simp [hc]
 
 @[simp]
 theorem leadingCoeff_of_c_eq_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c = 0) :
@@ -243,11 +240,11 @@ section Degree
 def equiv : Cubic R ≃ { p : R[X] // p.degree ≤ 3 } where
   toFun P := ⟨P.toPoly, degree_cubic_le⟩
   invFun f := ⟨coeff f 3, coeff f 2, coeff f 1, coeff f 0⟩
-  left_inv P := by ext <;> simp only [Subtype.coe_mk, coeffs]
+  left_inv P := by ext <;> simp only [coeffs]
   right_inv f := by
     ext n
-    obtain hn | hn := le_or_lt n 3
-    · interval_cases n <;> simp only [Nat.succ_eq_add_one] <;> ring_nf <;> try simp only [coeffs]
+    obtain hn | hn := le_or_gt n 3
+    · interval_cases n <;> simp only <;> ring_nf <;> try simp only [coeffs]
     · rw [coeff_eq_zero hn, (degree_le_iff_coeff_zero (f : R[X]) 3).mp f.2]
       simpa using hn
 
@@ -255,9 +252,8 @@ def equiv : Cubic R ≃ { p : R[X] // p.degree ≤ 3 } where
 theorem degree_of_a_ne_zero (ha : P.a ≠ 0) : P.toPoly.degree = 3 :=
   degree_cubic ha
 
-@[simp]
-theorem degree_of_a_ne_zero' (ha : a ≠ 0) : (toPoly ⟨a, b, c, d⟩).degree = 3 :=
-  degree_of_a_ne_zero ha
+theorem degree_of_a_ne_zero' (ha : a ≠ 0) : (toPoly ⟨a, b, c, d⟩).degree = 3 := by
+  simp [ha]
 
 theorem degree_of_a_eq_zero (ha : P.a = 0) : P.toPoly.degree ≤ 2 := by
   simpa only [of_a_eq_zero ha] using degree_quadratic_le
@@ -269,9 +265,8 @@ theorem degree_of_a_eq_zero' : (toPoly ⟨0, b, c, d⟩).degree ≤ 2 :=
 theorem degree_of_b_ne_zero (ha : P.a = 0) (hb : P.b ≠ 0) : P.toPoly.degree = 2 := by
   rw [of_a_eq_zero ha, degree_quadratic hb]
 
-@[simp]
-theorem degree_of_b_ne_zero' (hb : b ≠ 0) : (toPoly ⟨0, b, c, d⟩).degree = 2 :=
-  degree_of_b_ne_zero rfl hb
+theorem degree_of_b_ne_zero' (hb : b ≠ 0) : (toPoly ⟨0, b, c, d⟩).degree = 2 := by
+  simp [hb]
 
 theorem degree_of_b_eq_zero (ha : P.a = 0) (hb : P.b = 0) : P.toPoly.degree ≤ 1 := by
   simpa only [of_b_eq_zero ha hb] using degree_linear_le
@@ -283,9 +278,8 @@ theorem degree_of_b_eq_zero' : (toPoly ⟨0, 0, c, d⟩).degree ≤ 1 :=
 theorem degree_of_c_ne_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c ≠ 0) : P.toPoly.degree = 1 := by
   rw [of_b_eq_zero ha hb, degree_linear hc]
 
-@[simp]
-theorem degree_of_c_ne_zero' (hc : c ≠ 0) : (toPoly ⟨0, 0, c, d⟩).degree = 1 :=
-  degree_of_c_ne_zero rfl rfl hc
+theorem degree_of_c_ne_zero' (hc : c ≠ 0) : (toPoly ⟨0, 0, c, d⟩).degree = 1 := by
+  simp [hc]
 
 theorem degree_of_c_eq_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c = 0) : P.toPoly.degree ≤ 0 := by
   simpa only [of_c_eq_zero ha hb hc] using degree_C_le
@@ -298,9 +292,8 @@ theorem degree_of_d_ne_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c = 0) (hd : P
     P.toPoly.degree = 0 := by
   rw [of_c_eq_zero ha hb hc, degree_C hd]
 
-@[simp]
-theorem degree_of_d_ne_zero' (hd : d ≠ 0) : (toPoly ⟨0, 0, 0, d⟩).degree = 0 :=
-  degree_of_d_ne_zero rfl rfl rfl hd
+theorem degree_of_d_ne_zero' (hd : d ≠ 0) : (toPoly ⟨0, 0, 0, d⟩).degree = 0 := by
+  simp [hd]
 
 @[simp]
 theorem degree_of_d_eq_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c = 0) (hd : P.d = 0) :
@@ -318,9 +311,8 @@ theorem degree_of_zero : (0 : Cubic R).toPoly.degree = ⊥ :=
 theorem natDegree_of_a_ne_zero (ha : P.a ≠ 0) : P.toPoly.natDegree = 3 :=
   natDegree_cubic ha
 
-@[simp]
-theorem natDegree_of_a_ne_zero' (ha : a ≠ 0) : (toPoly ⟨a, b, c, d⟩).natDegree = 3 :=
-  natDegree_of_a_ne_zero ha
+theorem natDegree_of_a_ne_zero' (ha : a ≠ 0) : (toPoly ⟨a, b, c, d⟩).natDegree = 3 := by
+  simp [ha]
 
 theorem natDegree_of_a_eq_zero (ha : P.a = 0) : P.toPoly.natDegree ≤ 2 := by
   simpa only [of_a_eq_zero ha] using natDegree_quadratic_le
@@ -332,9 +324,8 @@ theorem natDegree_of_a_eq_zero' : (toPoly ⟨0, b, c, d⟩).natDegree ≤ 2 :=
 theorem natDegree_of_b_ne_zero (ha : P.a = 0) (hb : P.b ≠ 0) : P.toPoly.natDegree = 2 := by
   rw [of_a_eq_zero ha, natDegree_quadratic hb]
 
-@[simp]
-theorem natDegree_of_b_ne_zero' (hb : b ≠ 0) : (toPoly ⟨0, b, c, d⟩).natDegree = 2 :=
-  natDegree_of_b_ne_zero rfl hb
+theorem natDegree_of_b_ne_zero' (hb : b ≠ 0) : (toPoly ⟨0, b, c, d⟩).natDegree = 2 := by
+  simp [hb]
 
 theorem natDegree_of_b_eq_zero (ha : P.a = 0) (hb : P.b = 0) : P.toPoly.natDegree ≤ 1 := by
   simpa only [of_b_eq_zero ha hb] using natDegree_linear_le
@@ -347,9 +338,8 @@ theorem natDegree_of_c_ne_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c ≠ 0) :
     P.toPoly.natDegree = 1 := by
   rw [of_b_eq_zero ha hb, natDegree_linear hc]
 
-@[simp]
-theorem natDegree_of_c_ne_zero' (hc : c ≠ 0) : (toPoly ⟨0, 0, c, d⟩).natDegree = 1 :=
-  natDegree_of_c_ne_zero rfl rfl hc
+theorem natDegree_of_c_ne_zero' (hc : c ≠ 0) : (toPoly ⟨0, 0, c, d⟩).natDegree = 1 := by
+  simp [hc]
 
 @[simp]
 theorem natDegree_of_c_eq_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c = 0) :
@@ -468,35 +458,43 @@ end Split
 section Discriminant
 
 /-- The discriminant of a cubic polynomial. -/
-def disc {R : Type*} [Ring R] (P : Cubic R) : R :=
+def discr {R : Type*} [Ring R] (P : Cubic R) : R :=
   P.b ^ 2 * P.c ^ 2 - 4 * P.a * P.c ^ 3 - 4 * P.b ^ 3 * P.d - 27 * P.a ^ 2 * P.d ^ 2 +
     18 * P.a * P.b * P.c * P.d
 
-theorem disc_eq_prod_three_roots (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :
-    φ P.disc = (φ P.a * φ P.a * (x - y) * (x - z) * (y - z)) ^ 2 := by
-  simp only [disc, RingHom.map_add, RingHom.map_sub, RingHom.map_mul, map_pow, map_ofNat]
+theorem discr_eq_prod_three_roots (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :
+    φ P.discr = (φ P.a * φ P.a * (x - y) * (x - z) * (y - z)) ^ 2 := by
+  simp only [discr, RingHom.map_add, RingHom.map_sub, RingHom.map_mul, map_pow, map_ofNat]
   rw [b_eq_three_roots ha h3, c_eq_three_roots ha h3, d_eq_three_roots ha h3]
   ring1
 
-theorem disc_ne_zero_iff_roots_ne (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :
-    P.disc ≠ 0 ↔ x ≠ y ∧ x ≠ z ∧ y ≠ z := by
-  rw [← _root_.map_ne_zero φ, disc_eq_prod_three_roots ha h3, pow_two]
+theorem discr_ne_zero_iff_roots_ne (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :
+    P.discr ≠ 0 ↔ x ≠ y ∧ x ≠ z ∧ y ≠ z := by
+  rw [← _root_.map_ne_zero φ, discr_eq_prod_three_roots ha h3, pow_two]
   simp_rw [mul_ne_zero_iff, sub_ne_zero, _root_.map_ne_zero, and_self_iff, and_iff_right ha,
     and_assoc]
 
-theorem disc_ne_zero_iff_roots_nodup (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :
-    P.disc ≠ 0 ↔ (map φ P).roots.Nodup := by
-  rw [disc_ne_zero_iff_roots_ne ha h3, h3]
+theorem discr_ne_zero_iff_roots_nodup (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :
+    P.discr ≠ 0 ↔ (map φ P).roots.Nodup := by
+  rw [discr_ne_zero_iff_roots_ne ha h3, h3]
   change _ ↔ (x ::ₘ y ::ₘ {z}).Nodup
   rw [nodup_cons, nodup_cons, mem_cons, mem_singleton, mem_singleton]
   simp only [nodup_singleton]
   tauto
 
-theorem card_roots_of_disc_ne_zero [DecidableEq K] (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z})
-    (hd : P.disc ≠ 0) : (map φ P).roots.toFinset.card = 3 := by
-  rw [toFinset_card_of_nodup <| (disc_ne_zero_iff_roots_nodup ha h3).mp hd,
+theorem card_roots_of_discr_ne_zero [DecidableEq K] (ha : P.a ≠ 0)
+    (h3 : (map φ P).roots = {x, y, z}) (hd : P.discr ≠ 0) : (map φ P).roots.toFinset.card = 3 := by
+  rw [toFinset_card_of_nodup <| (discr_ne_zero_iff_roots_nodup ha h3).mp hd,
     ← splits_iff_card_roots ha, splits_iff_roots_eq_three ha]
   exact ⟨x, ⟨y, ⟨z, h3⟩⟩⟩
+
+@[deprecated (since := "2025-10-20")] alias disc := discr
+@[deprecated (since := "2025-10-20")] alias disc_eq_prod_three_roots := discr_eq_prod_three_roots
+@[deprecated (since := "2025-10-20")] alias disc_ne_zero_iff_roots_ne := discr_ne_zero_iff_roots_ne
+@[deprecated (since := "2025-10-20")] alias disc_ne_zero_iff_roots_nodup :=
+  discr_ne_zero_iff_roots_nodup
+@[deprecated (since := "2025-10-20")] alias card_roots_of_disc_ne_zero :=
+  card_roots_of_discr_ne_zero
 
 end Discriminant
 

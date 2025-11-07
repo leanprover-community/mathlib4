@@ -27,7 +27,7 @@ namespace Subpresheaf
 
 /-- The equalizer of two morphisms of presheaves of types of the form
 `A.toPresheaf ⟶ F₂` with `A : Subpresheaf F₁`, as a subcomplex of `F₁`. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 protected def equalizer : Subpresheaf F₁ where
   obj U := setOf (fun x ↦ ∃ (hx : x ∈ A.obj _), f.app _ ⟨x, hx⟩ = g.app _ ⟨x, hx⟩)
   map φ x := by

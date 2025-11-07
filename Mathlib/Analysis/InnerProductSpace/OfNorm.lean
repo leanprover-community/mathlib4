@@ -92,7 +92,7 @@ namespace InnerProductSpaceable
 
 variable {𝕜} (E)
 
--- Porting note: prime added to avoid clashing with public `innerProp`
+-- This has a prime added to avoid clashing with public `innerProp`
 /-- Auxiliary definition for the `add_left` property. -/
 private def innerProp' (r : 𝕜) : Prop :=
   ∀ x y : E, inner_ 𝕜 (r • x) y = conj r * inner_ 𝕜 x y
@@ -105,7 +105,7 @@ theorem _root_.Continuous.inner_ {f g : ℝ → E} (hf : Continuous f) (hg : Con
   fun_prop
 
 theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
-  simp only [inner_, normSq_apply, ofNat_re, ofNat_im, map_sub, map_add, map_zero, map_mul,
+  simp only [inner_, normSq_apply, ofNat_re, ofNat_im, map_sub, map_add,
     ofReal_re, ofReal_im, mul_re, inv_re, mul_im, I_re, inv_im]
   have h₁ : ‖x - x‖ = 0 := by simp
   have h₂ : ‖x + x‖ = 2 • ‖x‖ := by convert norm_nsmul 𝕜 2 x using 2; module
@@ -130,59 +130,20 @@ theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y :=
 
 variable [InnerProductSpaceable E]
 
-private theorem add_left_aux1 (x y z : E) :
-    ‖2 • x + y‖ * ‖2 • x + y‖ + ‖2 • z + y‖ * ‖2 • z + y‖
-    = 2 * (‖x + y + z‖ * ‖x + y + z‖ + ‖x - z‖ * ‖x - z‖) := by
-  convert parallelogram_identity (x + y + z) (x - z) using 4 <;> abel
-
-private theorem add_left_aux2 (x y z : E) : ‖2 • x + y‖ * ‖2 • x + y‖ + ‖y - 2 • z‖ * ‖y - 2 • z‖
-    = 2 * (‖x + y - z‖ * ‖x + y - z‖ + ‖x + z‖ * ‖x + z‖) := by
-  convert parallelogram_identity (x + y - z) (x + z) using 4 <;> abel
-
-private theorem add_left_aux3 (y z : E) :
-    ‖2 • z + y‖ * ‖2 • z + y‖ + ‖y‖ * ‖y‖ = 2 * (‖y + z‖ * ‖y + z‖ + ‖z‖ * ‖z‖) := by
-  convert parallelogram_identity (y + z) z using 4 <;> abel
-
-private theorem add_left_aux4 (y z : E) :
-    ‖y‖ * ‖y‖ + ‖y - 2 • z‖ * ‖y - 2 • z‖ = 2 * (‖y - z‖ * ‖y - z‖ + ‖z‖ * ‖z‖) := by
-  convert parallelogram_identity (y - z) z using 4 <;> abel
-
-variable (𝕜)
-
-private theorem add_left_aux5 (x y z : E) :
-    ‖(I : 𝕜) • (2 • x + y)‖ * ‖(I : 𝕜) • (2 • x + y)‖
-    + ‖(I : 𝕜) • y + 2 • z‖ * ‖(I : 𝕜) • y + 2 • z‖
-    = 2 * (‖(I : 𝕜) • (x + y) + z‖ * ‖(I : 𝕜) • (x + y) + z‖
-    + ‖(I : 𝕜) • x - z‖ * ‖(I : 𝕜) • x - z‖) := by
-  convert parallelogram_identity ((I : 𝕜) • (x + y) + z) ((I : 𝕜) • x - z) using 4 <;> module
-
-private theorem add_left_aux6 (x y z : E) :
-    (‖(I : 𝕜) • (2 • x + y)‖ * ‖(I : 𝕜) • (2 • x + y)‖ +
-    ‖(I : 𝕜) • y - 2 • z‖ * ‖(I : 𝕜) • y - 2 • z‖)
-    = 2 * (‖(I : 𝕜) • (x + y) - z‖ * ‖(I : 𝕜) • (x + y) - z‖ +
-    ‖(I : 𝕜) • x + z‖ * ‖(I : 𝕜) • x + z‖) := by
-  convert parallelogram_identity ((I : 𝕜) • (x + y) - z) ((I : 𝕜) • x + z) using 4 <;> module
-
-private theorem add_left_aux7 (y z : E) :
-    ‖(I : 𝕜) • y + 2 • z‖ * ‖(I : 𝕜) • y + 2 • z‖ + ‖(I : 𝕜) • y‖ * ‖(I : 𝕜) • y‖ =
-    2 * (‖(I : 𝕜) • y + z‖ * ‖(I : 𝕜) • y + z‖ + ‖z‖ * ‖z‖) := by
-  convert parallelogram_identity ((I : 𝕜) • y + z) z using 4 <;> module
-
-private theorem add_left_aux8 (y z : E) :
-    ‖(I : 𝕜) • y‖ * ‖(I : 𝕜) • y‖ + ‖(I : 𝕜) • y - 2 • z‖ * ‖(I : 𝕜) • y - 2 • z‖ =
-    2 * (‖(I : 𝕜) • y - z‖ * ‖(I : 𝕜) • y - z‖ + ‖z‖ * ‖z‖) := by
-  convert parallelogram_identity ((I : 𝕜) • y - z) z using 4 <;> module
-
-variable {𝕜}
-
 theorem add_left (x y z : E) : inner_ 𝕜 (x + y) z = inner_ 𝕜 x z + inner_ 𝕜 y z := by
-  have H_re := congr(- $(add_left_aux1 x y z) + $(add_left_aux2 x y z)
-    + $(add_left_aux3 y z) - $(add_left_aux4 y z))
-  have H_im := congr(- $(add_left_aux5 𝕜 x y z) + $(add_left_aux6 𝕜 x y z)
-      + $(add_left_aux7 𝕜 y z) - $(add_left_aux8 𝕜 y z))
-  have H := congr(𝓚 $H_re + I * 𝓚 $H_im)
-  simp only [inner_, map_add, map_sub, map_neg, map_mul, map_ofNat] at H ⊢
-  linear_combination H / 8
+  unfold inner_
+  have h1 := parallelogram_identity (x + y + z) (x - z)
+  have h2 := parallelogram_identity (x + y - z) (x + z)
+  have h3 := parallelogram_identity (y + z) z
+  have h4 := parallelogram_identity (y - z) z
+  have h5 := parallelogram_identity ((I : 𝕜) • (x + y) + z) ((I : 𝕜) • x - z)
+  have h6 := parallelogram_identity ((I : 𝕜) • (x + y) - z) ((I : 𝕜) • x + z)
+  have h7 := parallelogram_identity ((I : 𝕜) • y + z) z
+  have h8 := parallelogram_identity ((I : 𝕜) • y - z) z
+  apply_fun 𝓚 at h1 h2 h3 h4 h5 h6 h7 h8
+  simp only [map_add, map_mul, map_ofNat, smul_add] at *
+  abel_nf at * -- TODO this should be `module_nf` (then the `smul_add` above can go)
+  linear_combination (- h1 + h2 + h3 - h4 + I * (- h5 + h6 + h7 - h8)) / 8
 
 private theorem rat_prop (r : ℚ) : innerProp' E (r : 𝕜) := by
   intro x y
@@ -229,8 +190,8 @@ noncomputable def InnerProductSpace.ofNorm
     InnerProductSpace 𝕜 E :=
   haveI : InnerProductSpaceable E := ⟨h⟩
   { inner := inner_ 𝕜
-    norm_sq_eq_inner := inner_.norm_sq
-    conj_symm := inner_.conj_symm
+    norm_sq_eq_re_inner := inner_.norm_sq
+    conj_inner_symm := inner_.conj_symm
     add_left := InnerProductSpaceable.add_left
     smul_left := fun _ _ _ => innerProp _ _ _ }
 
@@ -243,8 +204,8 @@ parallelogram identity can be given a compatible inner product. Do
 `InnerProductSpace 𝕜 E`. -/
 theorem nonempty_innerProductSpace : Nonempty (InnerProductSpace 𝕜 E) :=
   ⟨{  inner := inner_ 𝕜
-      norm_sq_eq_inner := inner_.norm_sq
-      conj_symm := inner_.conj_symm
+      norm_sq_eq_re_inner := inner_.norm_sq
+      conj_inner_symm := inner_.conj_symm
       add_left := add_left
       smul_left := fun _ _ _ => innerProp _ _ _ }⟩
 

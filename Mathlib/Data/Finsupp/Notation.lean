@@ -28,12 +28,15 @@ def fun₀.matchAlts : Parser :=
 As a result, if multiple match arms coincide, the last one takes precedence. -/
 @[term_parser]
 def fun₀ := leading_parser:maxPrec
-  ppAllowUngrouped >> unicodeSymbol "λ₀" "fun₀" >> fun₀.matchAlts
+  -- Prefer `fun₀` over `λ₀` when pretty printing.
+  ppAllowUngrouped >> unicodeSymbol "λ₀" "fun₀" (preserveForPP := true) >> fun₀.matchAlts
+
+namespace Internal
 
 /-- Implementation detail for `fun₀`, used by both `Finsupp` and `DFinsupp` -/
-local syntax:lead (name := stxSingle₀) "single₀" term:arg term:arg : term
+scoped syntax:lead (name := stxSingle₀) "single₀" term:arg term:arg : term
 /-- Implementation detail for `fun₀`, used by both `Finsupp` and `DFinsupp` -/
-local syntax:lead (name := stxUpdate₀) "update₀" term:arg term:arg term:arg : term
+scoped syntax:lead (name := stxUpdate₀) "update₀" term:arg term:arg term:arg : term
 
 /-- `Finsupp` elaborator for `single₀`. -/
 @[term_elab stxSingle₀]
@@ -52,7 +55,7 @@ macro_rules
     let mut stx : Term ← `(0)
     let mut fst : Bool := true
     for xi in x do
-      for xii in (← Elab.Term.expandMatchAlt xi) do
+      for xii in Elab.Term.expandMatchAlt xi do
         match xii with
         | `(matchAltExpr| | $pat => $val) =>
           if fst then
@@ -62,6 +65,8 @@ macro_rules
           fst := false
         | _ => Macro.throwUnsupported
     pure stx
+
+end Internal
 
 /-- Unexpander for the `fun₀ | i => x` notation. -/
 @[app_unexpander Finsupp.single]
@@ -88,11 +93,11 @@ unsafe instance instRepr {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀
           .line ++ .group (f!"| {repr a} =>" ++ .line ++ repr (f a))))
       if p ≥ leadPrec then Format.paren ret else ret
 
--- This cannot be put in `Mathlib.Data.DFinsupp.Notation` where it belongs, since doc-strings
+-- This cannot be put in `Mathlib/Data/DFinsupp/Notation.lean` where it belongs, since doc-strings
 -- can only be added/modified in the file where the corresponding declaration is defined.
 extend_docs Finsupp.fun₀ after
   "If the expected type is `Π₀ i, α i` (`DFinsupp`)
-  and `Mathlib.Data.DFinsupp.Notation` is imported,
+  and `Mathlib/Data/DFinsupp/Notation.lean` is imported,
   then this is notation for `DFinsupp.single` and  `Dfinsupp.update` instead."
 
 end Finsupp

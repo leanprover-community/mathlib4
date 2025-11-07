@@ -20,7 +20,7 @@ Functions in `Lp` for `0 < p < ∞` are finitely strongly measurable.
 ## References
 
 * [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
-  Springer, 2016.][Hytönen_VanNeerven_Veraar_Wies_2016]
+  Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
 
 -/
 
@@ -52,10 +52,6 @@ theorem MemLp.finStronglyMeasurable_of_stronglyMeasurable (hf : MemLp f p μ)
     apply subset_closure
     simp
 
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.finStronglyMeasurable_of_stronglyMeasurable :=
-  MemLp.finStronglyMeasurable_of_stronglyMeasurable
-
 theorem MemLp.aefinStronglyMeasurable (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     AEFinStronglyMeasurable f μ :=
   ⟨hf.aestronglyMeasurable.mk f,
@@ -63,9 +59,6 @@ theorem MemLp.aefinStronglyMeasurable (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0)
           hf).finStronglyMeasurable_of_stronglyMeasurable
       hf.aestronglyMeasurable.stronglyMeasurable_mk hp_ne_zero hp_ne_top,
     hf.aestronglyMeasurable.ae_eq_mk⟩
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.aefinStronglyMeasurable := MemLp.aefinStronglyMeasurable
 
 theorem Integrable.aefinStronglyMeasurable (hf : Integrable f μ) : AEFinStronglyMeasurable f μ :=
   (memLp_one_iff_integrable.mpr hf).aefinStronglyMeasurable one_ne_zero ENNReal.coe_ne_top

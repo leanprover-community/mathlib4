@@ -16,7 +16,6 @@ This file extends the theory of `ℕ+` with `gcd`, `lcm` and `Prime` functions, 
 
 namespace Nat.Primes
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- The canonical map from `Nat.Primes` to `ℕ+` -/
 @[coe] def toPNat : Nat.Primes → ℕ+ :=
   fun p => ⟨(p : ℕ), p.property.pos⟩
@@ -126,8 +125,7 @@ theorem dvd_prime {p m : ℕ+} (pp : p.Prime) : m ∣ p ↔ m = 1 ∨ m = p := b
   simp
 
 theorem Prime.ne_one {p : ℕ+} : p.Prime → p ≠ 1 := by
-  intro pp
-  intro contra
+  intro pp contra
   apply Nat.Prime.ne_one pp
   rw [PNat.coe_eq_one_iff]
   apply contra
@@ -164,7 +162,7 @@ theorem coprime_coe {m n : ℕ+} : Nat.Coprime ↑m ↑n ↔ m.Coprime n := by
 theorem Coprime.mul {k m n : ℕ+} : m.Coprime k → n.Coprime k → (m * n).Coprime k := by
   repeat rw [← coprime_coe]
   rw [mul_coe]
-  apply Nat.Coprime.mul
+  apply Nat.Coprime.mul_left
 
 theorem Coprime.mul_right {k m n : ℕ+} : k.Coprime m → k.Coprime n → k.Coprime (m * n) := by
   repeat rw [← coprime_coe]
@@ -176,13 +174,11 @@ theorem gcd_comm {m n : ℕ+} : m.gcd n = n.gcd m := by
   simp only [gcd_coe]
   apply Nat.gcd_comm
 
-theorem gcd_eq_left_iff_dvd {m n : ℕ+} : m ∣ n ↔ m.gcd n = m := by
-  rw [dvd_iff]
-  rw [Nat.gcd_eq_left_iff_dvd]
-  rw [← coe_inj]
+theorem gcd_eq_left_iff_dvd {m n : ℕ+} : m.gcd n = m ↔ m ∣ n := by
+  rw [dvd_iff, ← Nat.gcd_eq_left_iff_dvd, ← coe_inj]
   simp
 
-theorem gcd_eq_right_iff_dvd {m n : ℕ+} : m ∣ n ↔ n.gcd m = m := by
+theorem gcd_eq_right_iff_dvd {m n : ℕ+} : n.gcd m = m ↔ m ∣ n := by
   rw [gcd_comm]
   apply gcd_eq_left_iff_dvd
 
@@ -206,7 +202,7 @@ theorem Coprime.gcd_mul_right_cancel_right (m : ℕ+) {n k : ℕ+} :
 
 @[simp]
 theorem one_gcd {n : ℕ+} : gcd 1 n = 1 := by
-  rw [← gcd_eq_left_iff_dvd]
+  rw [gcd_eq_left_iff_dvd]
   apply one_dvd
 
 @[simp]
@@ -235,7 +231,7 @@ theorem Coprime.coprime_dvd_left {m k n : ℕ+} : m ∣ k → k.Coprime n → m.
 
 theorem Coprime.factor_eq_gcd_left {a b m n : ℕ+} (cop : m.Coprime n) (am : a ∣ m) (bn : b ∣ n) :
     a = (a * b).gcd m := by
-  rw [gcd_eq_left_iff_dvd] at am
+  rw [← gcd_eq_left_iff_dvd] at am
   conv_lhs => rw [← am]
   rw [eq_comm]
   apply Coprime.gcd_mul_right_cancel a

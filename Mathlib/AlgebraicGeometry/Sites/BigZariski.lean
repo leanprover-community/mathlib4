@@ -3,7 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Adam Topaz
 -/
-import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
+import Mathlib.AlgebraicGeometry.Sites.Pretopology
 import Mathlib.CategoryTheory.Sites.Canonical
 /-!
 # The big Zariski site of schemes
@@ -15,14 +15,14 @@ the Zariski topology on `Over X` can be obtained as `Scheme.zariskiTopology.over
 
 TODO:
 * If `Y : Scheme.{u}`, define a continuous functor from the category of opens of `Y`
-to `Over Y`, and show that a presheaf on `Over Y` is a sheaf for the Zariski topology
-iff its "restriction" to the topological space `Z` is a sheaf for all `Z : Over Y`.
+  to `Over Y`, and show that a presheaf on `Over Y` is a sheaf for the Zariski topology
+  iff its "restriction" to the topological space `Z` is a sheaf for all `Z : Over Y`.
 * We should have good notions of (pre)sheaves of `Type (u + 1)` (e.g. associated
-sheaf functor, pushforward, pullbacks) on `Scheme.{u}` for this topology. However,
-some constructions in the `CategoryTheory.Sites` folder currently assume that
-the site is a small category: this should be generalized. As a result,
-this big Zariski site can considered as a test case of the Grothendieck topology API
-for future applications to étale cohomology.
+  sheaf functor, pushforward, pullbacks) on `Scheme.{u}` for this topology. However,
+  some constructions in the `CategoryTheory.Sites` folder currently assume that
+  the site is a small category: this should be generalized. As a result,
+  this big Zariski site can considered as a test case of the Grothendieck topology API
+  for future applications to étale cohomology.
 
 -/
 
@@ -35,19 +35,22 @@ namespace AlgebraicGeometry
 namespace Scheme
 
 /-- The Zariski pretopology on the category of schemes. -/
-def zariskiPretopology : Pretopology (Scheme.{u}) :=
+def zariskiPretopology : Pretopology Scheme.{u} :=
   pretopology @IsOpenImmersion
 
 /-- The Zariski topology on the category of schemes. -/
-abbrev zariskiTopology : GrothendieckTopology (Scheme.{u}) :=
-  zariskiPretopology.toGrothendieck
+abbrev zariskiTopology : GrothendieckTopology Scheme.{u} :=
+  grothendieckTopology IsOpenImmersion
+
+lemma zariskiTopology_eq : zariskiTopology.{u} = zariskiPretopology.toGrothendieck := rfl
 
 instance subcanonical_zariskiTopology : zariskiTopology.Subcanonical := by
   apply GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj
   intro X
   rw [Presieve.isSheaf_pretopology]
-  rintro Y S ⟨𝓤,rfl⟩ x hx
-  let e : Y ⟶ X := 𝓤.glueMorphisms (fun j => x (𝓤.map _) (.mk _)) <| by
+  rintro Y S hS x hx
+  obtain ⟨(𝓤 : OpenCover Y), rfl⟩ := exists_cover_of_mem_pretopology hS
+  let e : Y ⟶ X := 𝓤.glueMorphisms (fun j => x (𝓤.f _) (.mk _)) <| by
     intro i j
     apply hx
     exact Limits.pullback.condition
@@ -59,7 +62,7 @@ instance subcanonical_zariskiTopology : zariskiTopology.Subcanonical := by
     apply 𝓤.hom_ext
     intro j
     rw [𝓤.ι_glueMorphisms]
-    exact h (𝓤.map j) (.mk j)
+    exact h (𝓤.f j) (.mk j)
 
 end Scheme
 

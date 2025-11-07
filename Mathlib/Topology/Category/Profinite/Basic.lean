@@ -42,6 +42,7 @@ universe v u
 open CategoryTheory Topology CompHausLike
 
 /-- The type of profinite topological spaces. -/
+@[to_additive self]
 abbrev Profinite := CompHausLike (fun X ↦ TotallyDisconnectedSpace X)
 
 namespace Profinite
@@ -68,10 +69,9 @@ end Profinite
 /-- The fully faithful embedding of `Profinite` in `CompHaus`. -/
 abbrev profiniteToCompHaus : Profinite ⥤ CompHaus :=
   compHausLikeToCompHaus _
--- Porting note: deriving fails, adding manually.
--- deriving Full, Faithful
+-- The `Full, Faithful` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: added, as it is not found otherwise.
 instance {X : Profinite} : TotallyDisconnectedSpace (profiniteToCompHaus.obj X) :=
   X.prop
 
@@ -79,8 +79,8 @@ instance {X : Profinite} : TotallyDisconnectedSpace (profiniteToCompHaus.obj X) 
 This is definitionally the same as the obvious composite. -/
 abbrev Profinite.toTopCat : Profinite ⥤ TopCat :=
   CompHausLike.compHausLikeToTop _
--- Porting note: deriving fails, adding manually.
--- deriving Full, Faithful
+-- The `Full, Faithful` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 section Profinite
 
@@ -106,7 +106,6 @@ def Profinite.toCompHausEquivalence (X : CompHaus.{u}) (Y : Profinite.{u}) :
     { toFun := Continuous.connectedComponentsLift g.hom.2
       continuous_toFun := Continuous.connectedComponentsLift_continuous g.hom.2 }
   left_inv _ := TopCat.ext <| ConnectedComponents.surjective_coe.forall.2 fun _ => rfl
-  right_inv _ := TopCat.ext fun _ => rfl
 
 /-- The connected_components functor from compact Hausdorff spaces to profinite spaces,
 left adjoint to the inclusion functor.
@@ -187,6 +186,7 @@ def toProfiniteAdjToCompHaus : CompHaus.toProfinite ⊣ profiniteToCompHaus :=
 
 /-- The category of profinite sets is reflective in the category of compact Hausdorff spaces -/
 instance toCompHaus.reflective : Reflective profiniteToCompHaus where
+  L := CompHaus.toProfinite
   adj := Profinite.toProfiniteAdjToCompHaus
 
 noncomputable instance toCompHaus.createsLimits : CreatesLimits profiniteToCompHaus :=
@@ -209,8 +209,7 @@ instance forget_preservesLimits : Limits.PreservesLimits (forget Profinite) := b
 
 theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
-  · -- Porting note: in mathlib3 `contrapose` saw through `Function.Surjective`.
-    dsimp [Function.Surjective]
+  · dsimp [Function.Surjective]
     contrapose!
     rintro ⟨y, hy⟩ hf
     let C := Set.range f

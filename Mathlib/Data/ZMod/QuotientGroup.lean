@@ -12,10 +12,10 @@ This file relates `ZMod n` to the quotient group `ℤ / AddSubgroup.zmultiples (
 
 ## Main definitions
 
- - `ZMod.quotientZMultiplesNatEquivZMod` and `ZMod.quotientZMultiplesEquivZMod`:
-   `ZMod n` is the group quotient of `ℤ` by `n ℤ := AddSubgroup.zmultiples (n)`,
-   (where `n : ℕ` and `n : ℤ` respectively)
- - `ZMod.lift n f` is the map from `ZMod n` induced by `f : ℤ →+ A` that maps `n` to `0`.
+- `ZMod.quotientZMultiplesNatEquivZMod` and `ZMod.quotientZMultiplesEquivZMod`:
+  `ZMod n` is the group quotient of `ℤ` by `n ℤ := AddSubgroup.zmultiples (n)`,
+  (where `n : ℕ` and `n : ℤ` respectively)
+- `ZMod.lift n f` is the map from `ZMod n` induced by `f : ℤ →+ A` that maps `n` to `0`.
 
 ## Tags
 
@@ -123,8 +123,8 @@ theorem _root_.AddAction.orbitZMultiplesEquiv_symm_apply' {α β : Type*} [AddGr
     (AddAction.orbitZMultiplesEquiv a b).symm k =
       k • (⟨a, mem_zmultiples a⟩ : zmultiples a) +ᵥ ⟨b, AddAction.mem_orbit_self b⟩ := by
   rw [AddAction.orbitZMultiplesEquiv_symm_apply, ZMod.coe_intCast]
-  -- Porting note: times out without `a b` explicit
-  exact Subtype.ext (zsmul_vadd_mod_minimalPeriod a b k)
+  -- Making `a` explicit turns this from ~190000 heartbeats to ~700.
+  exact Subtype.ext (zsmul_vadd_mod_minimalPeriod a _ k)
 
 attribute [to_additive existing]
   orbitZPowersEquiv_symm_apply'
@@ -132,15 +132,14 @@ attribute [to_additive existing]
 @[to_additive]
 theorem minimalPeriod_eq_card [Fintype (orbit (zpowers a) b)] :
     minimalPeriod (a • ·) b = Fintype.card (orbit (zpowers a) b) := by
-  -- Porting note: added `(_)` to find `Fintype` by unification
-  rw [← Fintype.ofEquiv_card (orbitZPowersEquiv a b), @ZMod.card _ (_)]
+  rw [← Fintype.ofEquiv_card (orbitZPowersEquiv a b), ZMod.card]
 
 @[to_additive]
 instance minimalPeriod_pos [Finite <| orbit (zpowers a) b] :
     NeZero <| minimalPeriod (a • ·) b :=
   ⟨by
     cases nonempty_fintype (orbit (zpowers a) b)
-    haveI : Nonempty (orbit (zpowers a) b) := (orbit_nonempty b).to_subtype
+    haveI : Nonempty (orbit (zpowers a) b) := (nonempty_orbit b).to_subtype
     rw [minimalPeriod_eq_card]
     exact Fintype.card_ne_zero⟩
 
@@ -153,7 +152,7 @@ open Subgroup
 variable {α : Type*} [Group α] (a : α)
 
 /-- See also `Fintype.card_zpowers`. -/
-@[to_additive (attr := simp) "See also `Fintype.card_zmultiples`."]
+@[to_additive (attr := simp) /-- See also `Fintype.card_zmultiples`. -/]
 theorem Nat.card_zpowers : Nat.card (zpowers a) = orderOf a := by
   have := Nat.card_congr (MulAction.orbitZPowersEquiv a (1 : α))
   rwa [Nat.card_zmod, orbit_subgroup_one_eq_self] at this
@@ -180,7 +179,7 @@ open Equiv Function MulAction
 
 /-- Partition `G ⧸ H` into orbits of the action of `g : G`. -/
 noncomputable def quotientEquivSigmaZMod :
-    G ⧸ H ≃ Σq : orbitRel.Quotient (zpowers g) (G ⧸ H), ZMod (minimalPeriod (g • ·) q.out) :=
+    G ⧸ H ≃ Σ q : orbitRel.Quotient (zpowers g) (G ⧸ H), ZMod (minimalPeriod (g • ·) q.out) :=
   (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)).trans
     (sigmaCongrRight fun q => orbitZPowersEquiv g q.out)
 

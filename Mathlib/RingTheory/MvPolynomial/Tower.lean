@@ -3,7 +3,7 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.Algebra.Algebra.Tower
+import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Algebra.MvPolynomial.Eval
 
 /-!
@@ -45,9 +45,7 @@ variable {R A}
 theorem aeval_algebraMap_apply (x : σ → A) (p : MvPolynomial σ R) :
     aeval (algebraMap A B ∘ x) p = algebraMap A B (MvPolynomial.aeval x p) := by
   rw [aeval_def, aeval_def, ← coe_eval₂Hom, ← coe_eval₂Hom, map_eval₂Hom, ←
-    IsScalarTower.algebraMap_eq]
-  -- Porting note: added
-  simp only [Function.comp_def]
+    IsScalarTower.algebraMap_eq, Function.comp_def]
 
 theorem aeval_algebraMap_eq_zero_iff [NoZeroSMulDivisors A B] [Nontrivial B] (x : σ → A)
     (p : MvPolynomial σ R) : aeval (algebraMap A B ∘ x) p = 0 ↔ aeval x p = 0 := by

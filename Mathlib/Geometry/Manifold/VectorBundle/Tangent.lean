@@ -15,7 +15,7 @@ abbrev of `Bundle.TotalSpace E (TangentSpace I : M → Type _)`.
 
 In this file, when `M` is `C^1`, we construct a vector bundle structure
 on `TangentBundle I M` using the `VectorBundleCore` construction indexed by the charts of `M`
-with fibers `E`. Given two charts `i, j : PartialHomeomorph M H`, the coordinate change
+with fibers `E`. Given two charts `i, j : OpenPartialHomeomorph M H`, the coordinate change
 between `i` and `j` at a point `x : M` is the derivative of the composite
 ```
   I.symm   i.symm    j     I
@@ -29,12 +29,12 @@ This defines a vector bundle `TangentBundle` with fibers `TangentSpace`.
 * `tangentBundleCore I M` is the vector bundle core for the tangent bundle over `M`.
 
 * When `M` is a `C^{n+1}` manifold, `TangentBundle I M` has a `C^n` vector bundle
-structure over `M`. In particular, it is a topological space, a vector bundle, a fiber bundle,
-and a `C^n` manifold.
+  structure over `M`. In particular, it is a topological space, a vector bundle, a fiber bundle,
+  and a `C^n` manifold.
 -/
 
 
-open Bundle Set IsManifold PartialHomeomorph ContinuousLinearMap
+open Bundle Set IsManifold OpenPartialHomeomorph ContinuousLinearMap
 
 open scoped Manifold Topology Bundle ContDiff
 
@@ -46,8 +46,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} {E :
   [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
   [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- Auxiliary lemma for tangent spaces: the derivative of a coordinate change between two charts is
   `C^n` on its source. -/
@@ -60,7 +60,7 @@ theorem contDiffOn_fderiv_coord_change [IsManifold I (n + 1) M]
   intro x hx
   refine (ContDiffWithinAt.fderivWithin_right ?_ I.uniqueDiffOn le_rfl
     <| h hx).mono h
-  refine (PartialHomeomorph.contDiffOn_extend_coord_change (subset_maximalAtlas j.2)
+  refine (OpenPartialHomeomorph.contDiffOn_extend_coord_change (subset_maximalAtlas j.2)
     (subset_maximalAtlas i.2) x hx).mono_of_mem_nhdsWithin ?_
   exact i.1.extend_coord_change_source_mem_nhdsWithin j.1 hx
 
@@ -87,20 +87,19 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
   coordChange i j x :=
     fderivWithin 𝕜 (j.1.extend I ∘ (i.1.extend I).symm) (range I) (i.1.extend I x)
   coordChange_self i x hx v := by
-    dsimp only
     rw [Filter.EventuallyEq.fderivWithin_eq, fderivWithin_id', ContinuousLinearMap.id_apply]
     · exact I.uniqueDiffWithinAt_image
     · filter_upwards [i.1.extend_target_mem_nhdsWithin hx] with y hy
       exact (i.1.extend I).right_inv hy
     · simp_rw [Function.comp_apply, i.1.extend_left_inv hx]
   continuousOn_coordChange i j := by
-    have : IsManifold I (0 + 1) M := by simp; infer_instance
+    have : IsManifold I (0 + 1) M := by simpa
     refine (contDiffOn_fderiv_coord_change (n := 0) i j).continuousOn.comp
       (i.1.continuousOn_extend.mono ?_) ?_
     · rw [i.1.extend_source]; exact inter_subset_left
     simp_rw [← i.1.extend_image_source_inter, mapsTo_image]
   coordChange_comp := by
-    have : IsManifold I (0 + 1) M := by simp; infer_instance
+    have : IsManifold I (0 + 1) M := by simpa
     rintro i j k x ⟨⟨hxi, hxj⟩, hxk⟩ v
     rw [fderivWithin_fderivWithin, Filter.EventuallyEq.fderivWithin_eq]
     · have := i.1.extend_preimage_mem_nhds (I := I) hxi (j.1.extend_source_mem_nhds (I := I) hxj)
@@ -115,9 +114,12 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
     · exact I.uniqueDiffWithinAt_image
     · rw [Function.comp_apply, i.1.extend_left_inv hxi]
 
--- Porting note: moved to a separate `simp high` lemma b/c `simp` can simplify the LHS
-@[simp high]
+/-- `simp`-normal form is `tangentBundleCore_localTriv_baseSet`. -/
 theorem tangentBundleCore_baseSet (i) : (tangentBundleCore I M).baseSet i = i.1.source := rfl
+
+@[simp]
+theorem tangentBundleCore_localTriv_baseSet (i) :
+    ((tangentBundleCore I M).localTriv i).baseSet = i.1.source := rfl
 
 theorem tangentBundleCore_coordChange_achart (x x' z : M) :
     (tangentBundleCore I M).coordChange (achart H x) (achart H x') z =
@@ -185,8 +187,9 @@ namespace TangentBundle
 
 protected theorem chartAt (p : TM) :
     chartAt (ModelProd H E) p =
-      ((tangentBundleCore I M).toFiberBundleCore.localTriv (achart H p.1)).toPartialHomeomorph ≫ₕ
-        (chartAt H p.1).prod (PartialHomeomorph.refl E) :=
+      ((tangentBundleCore I M).toFiberBundleCore.localTriv
+        (achart H p.1)).toOpenPartialHomeomorph ≫ₕ
+        (chartAt H p.1).prod (OpenPartialHomeomorph.refl E) :=
   rfl
 
 theorem chartAt_toPartialEquiv (p : TM) :
@@ -251,39 +254,50 @@ theorem coe_chartAt_symm_fst (p : H × E) (q : TM) :
     ((chartAt (ModelProd H E) q).symm p).1 = ((chartAt H q.1).symm : H → M) p.1 :=
   rfl
 
-@[simp, mfld_simps]
-theorem trivializationAt_continuousLinearMapAt {b₀ b : M}
-    (hb : b ∈ (trivializationAt E (TangentSpace I) b₀).baseSet) :
+/-- The trivialization of the tangent space can be expressed in terms of the tangent bundle core.
+To write it as the manifold derivative of `extChartAt`, see
+`TangentBundle.continuousLinearMapAt_trivializationAt`.
+
+Use with care as it abuses the defeq `TangentSpace I b = E`. -/
+theorem continuousLinearMapAt_trivializationAt_eq_core {b₀ b : M} (hb : b ∈ (chartAt H b₀).source) :
     (trivializationAt E (TangentSpace I) b₀).continuousLinearMapAt 𝕜 b =
-      (tangentBundleCore I M).coordChange (achart H b) (achart H b₀) b :=
-  (tangentBundleCore I M).localTriv_continuousLinearMapAt hb
+      (tangentBundleCore I M).coordChange (achart H b) (achart H b₀) b := by
+  simp [hb]
 
-@[simp, mfld_simps]
-theorem trivializationAt_symmL {b₀ b : M}
-    (hb : b ∈ (trivializationAt E (TangentSpace I) b₀).baseSet) :
+@[deprecated (since := "2025-07-03")]
+alias trivializationAt_continuousLinearMapAt := continuousLinearMapAt_trivializationAt_eq_core
+
+/-- The inverse trivialization of the tangent space can be expressed in terms of the tangent bundle
+core. To write it as the manifold derivative of `(extChartAt I b₀).symm`, see
+`TangentBundle.symmL_trivializationAt`.
+
+Use with care as it abuses the defeq `TangentSpace I b = E`. -/
+theorem symmL_trivializationAt_eq_core {b₀ b : M} (hb : b ∈ (chartAt H b₀).source) :
     (trivializationAt E (TangentSpace I) b₀).symmL 𝕜 b =
-      (tangentBundleCore I M).coordChange (achart H b₀) (achart H b) b :=
-  (tangentBundleCore I M).localTriv_symmL hb
+      (tangentBundleCore I M).coordChange (achart H b₀) (achart H b) b := by
+  simp [hb]
 
--- Porting note: `simp` simplifies LHS to `.id _ _`
+@[deprecated (since := "2025-07-03")]
+alias trivializationAt_symmL := symmL_trivializationAt_eq_core
+
+/-! The lemmas below have high priority because `simp` simplifies the LHS to `.id _ _`;
+we prefer `1` as the simp-normal form. -/
 @[simp high, mfld_simps]
 theorem coordChange_model_space (b b' x : F) :
     (tangentBundleCore 𝓘(𝕜, F) F).coordChange (achart F b) (achart F b') x = 1 := by
   simpa only [tangentBundleCore_coordChange, mfld_simps] using
     fderivWithin_id uniqueDiffWithinAt_univ
 
--- Porting note: `simp` simplifies LHS to `.id _ _`
 @[simp high, mfld_simps]
 theorem symmL_model_space (b b' : F) :
     (trivializationAt F (TangentSpace 𝓘(𝕜, F)) b).symmL 𝕜 b' = (1 : F →L[𝕜] F) := by
-  rw [TangentBundle.trivializationAt_symmL, coordChange_model_space]
+  rw [TangentBundle.symmL_trivializationAt_eq_core, coordChange_model_space]
   apply mem_univ
 
--- Porting note: `simp` simplifies LHS to `.id _ _`
 @[simp high, mfld_simps]
 theorem continuousLinearMapAt_model_space (b b' : F) :
     (trivializationAt F (TangentSpace 𝓘(𝕜, F)) b).continuousLinearMapAt 𝕜 b' = (1 : F →L[𝕜] F) := by
-  rw [TangentBundle.trivializationAt_continuousLinearMapAt, coordChange_model_space]
+  rw [TangentBundle.continuousLinearMapAt_trivializationAt_eq_core, coordChange_model_space]
   apply mem_univ
 
 end TangentBundle
@@ -302,9 +316,6 @@ lemma tangentBundleCore.isContMDiff [h : IsManifold I (n + 1) M] :
     · exact (i.1.extend_image_source_inter j.1).subset
   · apply inter_subset_left
 
-@[deprecated (since := "2025-01-09")]
-alias tangentBundleCore.isSmooth := tangentBundleCore.isContMDiff
-
 omit [IsManifold I 1 M] in
 lemma TangentBundle.contMDiffVectorBundle [h : IsManifold I (n + 1) M] :
     haveI : IsManifold I 1 M := .of_le (n := n + 1) le_add_self
@@ -312,9 +323,6 @@ lemma TangentBundle.contMDiffVectorBundle [h : IsManifold I (n + 1) M] :
   have : IsManifold I 1 M := .of_le (n := n + 1) le_add_self
   have : (tangentBundleCore I M).IsContMDiff I n := tangentBundleCore.isContMDiff
   exact (tangentBundleCore I M).instContMDiffVectorBundle
-
-@[deprecated (since := "2025-01-09")]
-alias TangentBundle.smoothVectorBundle := TangentBundle.contMDiffVectorBundle
 
 omit [IsManifold I 1 M] in
 instance [h : IsManifold I ∞ M] :
@@ -340,7 +348,7 @@ end TangentBundleInstances
 @[simp, mfld_simps]
 theorem trivializationAt_model_space_apply (p : TangentBundle I H) (x : H) :
     trivializationAt E (TangentSpace I) x p = (p.1, p.2) := by
-  simp [TangentBundle.trivializationAt_apply]
+  simp only [TangentBundle.trivializationAt_apply]
   have : fderivWithin 𝕜 (↑I ∘ ↑I.symm) (range I) (I p.proj) =
       fderivWithin 𝕜 id (range I) (I p.proj) :=
     fderivWithin_congr' (fun y hy ↦ by simp [hy]) (mem_range_self p.proj)
@@ -365,13 +373,13 @@ theorem tangentBundle_model_space_chartAt (p : TangentBundle I H) :
 @[simp, mfld_simps]
 theorem tangentBundle_model_space_coe_chartAt (p : TangentBundle I H) :
     ⇑(chartAt (ModelProd H E) p) = TotalSpace.toProd H E := by
-  rw [← PartialHomeomorph.coe_coe, tangentBundle_model_space_chartAt]; rfl
+  rw [← OpenPartialHomeomorph.coe_coe, tangentBundle_model_space_chartAt]; rfl
 
 @[simp, mfld_simps]
 theorem tangentBundle_model_space_coe_chartAt_symm (p : TangentBundle I H) :
     ((chartAt (ModelProd H E) p).symm : ModelProd H E → TangentBundle I H) =
       (TotalSpace.toProd H E).symm := by
-  rw [← PartialHomeomorph.coe_coe, PartialHomeomorph.symm_toPartialEquiv,
+  rw [← OpenPartialHomeomorph.coe_coe, OpenPartialHomeomorph.symm_toPartialEquiv,
     tangentBundle_model_space_chartAt]; rfl
 
 theorem tangentBundleCore_coordChange_model_space (x x' z : H) :
@@ -387,14 +395,14 @@ def tangentBundleModelSpaceHomeomorph : TangentBundle I H ≃ₜ ModelProd H E :
     continuous_toFun := by
       let p : TangentBundle I H := ⟨I.symm (0 : E), (0 : E)⟩
       have : Continuous (chartAt (ModelProd H E) p) := by
-        rw [continuous_iff_continuousOn_univ]
+        rw [← continuousOn_univ]
         convert (chartAt (ModelProd H E) p).continuousOn
         simp only [TangentSpace.fiberBundle, mfld_simps]
       simpa only [mfld_simps] using this
     continuous_invFun := by
       let p : TangentBundle I H := ⟨I.symm (0 : E), (0 : E)⟩
       have : Continuous (chartAt (ModelProd H E) p).symm := by
-        rw [continuous_iff_continuousOn_univ]
+        rw [← continuousOn_univ]
         convert (chartAt (ModelProd H E) p).symm.continuousOn
         simp only [mfld_simps]
       simpa only [mfld_simps] using this }
@@ -411,7 +419,7 @@ theorem tangentBundleModelSpaceHomeomorph_coe_symm :
       (TotalSpace.toProd H E).symm :=
   rfl
 
-theorem contMDiff_tangentBundleModelSpaceHomeomorph {n : ℕ∞} :
+theorem contMDiff_tangentBundleModelSpaceHomeomorph :
     ContMDiff I.tangent (I.prod 𝓘(𝕜, E)) n
     (tangentBundleModelSpaceHomeomorph I : TangentBundle I H → ModelProd H E) := by
   apply contMDiff_iff.2 ⟨Homeomorph.continuous _, fun x y ↦ ?_⟩
@@ -421,7 +429,7 @@ theorem contMDiff_tangentBundleModelSpaceHomeomorph {n : ℕ∞} :
   rintro a b x rfl
   simp [PartialEquiv.prod]
 
-theorem contMDiff_tangentBundleModelSpaceHomeomorph_symm {n : ℕ∞} :
+theorem contMDiff_tangentBundleModelSpaceHomeomorph_symm :
     ContMDiff (I.prod 𝓘(𝕜, E)) I.tangent n
     ((tangentBundleModelSpaceHomeomorph I).symm : ModelProd H E → TangentBundle I H) := by
   apply contMDiff_iff.2 ⟨Homeomorph.continuous _, fun x y ↦ ?_⟩
@@ -429,12 +437,11 @@ theorem contMDiff_tangentBundleModelSpaceHomeomorph_symm {n : ℕ∞} :
   simp only [mfld_simps, mem_range, TotalSpace.toProd, Equiv.coe_fn_symm_mk, forall_exists_index,
     Prod.forall, Prod.mk.injEq]
   rintro a b x rfl
-  simp [PartialEquiv.prod]
-  exact ⟨rfl, rfl⟩
+  simpa [PartialEquiv.prod] using ⟨rfl, rfl⟩
 
 variable (H I) in
 /-- In the tangent bundle to the model space, the second projection is `C^n`. -/
-lemma contMDiff_snd_tangentBundle_modelSpace {n : ℕ∞} :
+lemma contMDiff_snd_tangentBundle_modelSpace :
     ContMDiff I.tangent 𝓘(𝕜, E) n (fun (p : TangentBundle I H) ↦ p.2) := by
   change ContMDiff I.tangent 𝓘(𝕜, E) n
     ((id Prod.snd : ModelProd H E → E) ∘ (tangentBundleModelSpaceHomeomorph I))
@@ -447,13 +454,13 @@ lemma contMDiff_snd_tangentBundle_modelSpace {n : ℕ∞} :
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
 space sense. -/
 lemma contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt
-    {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} {s : Set E} {x : E} :
+    {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {s : Set E} {x : E} :
     ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent n (fun x ↦ (V x : TangentBundle 𝓘(𝕜, E) E)) s x ↔
       ContDiffWithinAt 𝕜 n V s x := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · exact ContMDiffWithinAt.contDiffWithinAt <|
       (contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.comp_contMDiffWithinAt _ h
-  · apply (Bundle.contMDiffWithinAt_totalSpace _).2
+  · apply Bundle.contMDiffWithinAt_totalSpace.2
     refine ⟨contMDiffWithinAt_id, ?_⟩
     convert h.contMDiffWithinAt with y
     simp
@@ -461,7 +468,7 @@ lemma contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
 space sense. -/
 lemma contMDiffAt_vectorSpace_iff_contDiffAt
-    {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} {x : E} :
+    {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {x : E} :
     ContMDiffAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent n (fun x ↦ (V x : TangentBundle 𝓘(𝕜, E) E)) x ↔
       ContDiffAt 𝕜 n V x := by
   simp only [← contMDiffWithinAt_univ, ← contDiffWithinAt_univ,
@@ -470,7 +477,7 @@ lemma contMDiffAt_vectorSpace_iff_contDiffAt
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
 space sense. -/
 lemma contMDiffOn_vectorSpace_iff_contDiffOn
-    {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} {s : Set E} :
+    {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {s : Set E} :
     ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, E).tangent n (fun x ↦ (V x : TangentBundle 𝓘(𝕜, E) E)) s ↔
       ContDiffOn 𝕜 n V s := by
   simp only [ContMDiffOn, ContDiffOn, contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt ]
@@ -478,7 +485,7 @@ lemma contMDiffOn_vectorSpace_iff_contDiffOn
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
 space sense. -/
 lemma contMDiff_vectorSpace_iff_contDiff
-    {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} :
+    {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} :
     ContMDiff 𝓘(𝕜, E) 𝓘(𝕜, E).tangent n (fun x ↦ (V x : TangentBundle 𝓘(𝕜, E) E)) ↔
       ContDiff 𝕜 n V := by
   simp only [← contMDiffOn_univ, ← contDiffOn_univ, contMDiffOn_vectorSpace_iff_contDiffOn]
@@ -511,7 +518,7 @@ def inTangentCoordinates (f : N → M) (g : N → M') (ϕ : N → E →L[𝕜] E
 
 theorem inTangentCoordinates_model_space (f : N → H) (g : N → H') (ϕ : N → E →L[𝕜] E') (x₀ : N) :
     inTangentCoordinates I I' f g ϕ x₀ = ϕ := by
-  simp (config := { unfoldPartialApp := true }) only [inTangentCoordinates,
+  simp +unfoldPartialApp only [inTangentCoordinates,
     inCoordinates_tangent_bundle_core_model_space]
 
 /-- To write a linear map between tangent spaces in coordinates amounts to precomposing and

@@ -5,7 +5,7 @@ Authors: Justus Springer
 -/
 import Mathlib.Topology.Sheaves.Forget
 import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
-import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Limits.Types.Shapes
 
 /-!
 # The sheaf condition in terms of unique gluings
@@ -14,7 +14,7 @@ We provide an alternative formulation of the sheaf condition in terms of unique 
 
 We work with sheaves valued in a concrete category `C` admitting all limits, whose forgetful
 functor `C ⥤ Type` preserves limits and reflects isomorphisms. The usual categories of algebraic
-structures, such as `MonCat`, `AddCommGrp`, `RingCat`, `CommRingCat` etc. are all examples of
+structures, such as `MonCat`, `AddCommGrpCat`, `RingCat`, `CommRingCat` etc. are all examples of
 this kind of category.
 
 A presheaf `F : Presheaf C X` satisfies the sheaf condition if and only if, for every
@@ -38,10 +38,10 @@ noncomputable section
 open TopCat TopCat.Presheaf CategoryTheory CategoryTheory.Limits
   TopologicalSpace TopologicalSpace.Opens Opposite
 
-universe v u x
+universe x
 
-variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type v}
-variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{v} C FC]
+variable {C : Type*} [Category C] {FC : C → C → Type*} {CC : C → Type*}
+variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
 
 namespace TopCat
 
@@ -49,7 +49,7 @@ namespace Presheaf
 
 section
 
-variable {X : TopCat.{x}} (F : Presheaf C X) {ι : Type x} (U : ι → Opens X)
+variable {X : TopCat.{x}} (F : Presheaf C X) {ι : Type*} (U : ι → Opens X)
 
 /-- A family of sections `sf` is compatible, if the restrictions of `sf i` and `sf j` to `U i ⊓ U j`
 agree, for all `i` and `j`
@@ -79,7 +79,7 @@ end
 
 section TypeValued
 
-variable {X : TopCat.{x}} {F : Presheaf (Type u) X} {ι : Type x} {U : ι → Opens X}
+variable {X : TopCat.{x}} {F : Presheaf Type* X} {ι : Type*} {U : ι → Opens X}
 
 /-- Given sections over a family of open sets, extend it to include
   sections over pairwise intersections of the open sets. -/
@@ -88,20 +88,20 @@ def objPairwiseOfFamily (sf : ∀ i, F.obj (op (U i))) :
   | ⟨Pairwise.single i⟩ => sf i
   | ⟨Pairwise.pair i j⟩ => F.map (infLELeft (U i) (U j)).op (sf i)
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
+attribute [local instance] Types.instFunLike Types.instConcreteCategory
+
 /-- Given a compatible family of sections over open sets, extend it to a
   section of the functor `(Pairwise.diagram U).op ⋙ F`. -/
 def IsCompatible.sectionPairwise {sf} (h : IsCompatible F U sf) :
     ((Pairwise.diagram U).op ⋙ F).sections := by
   refine ⟨objPairwiseOfFamily sf, ?_⟩
   let G := (Pairwise.diagram U).op ⋙ F
-  rintro (i|⟨i,j⟩) (i'|⟨i',j'⟩) (_|_|_|_)
+  rintro (i|⟨i,j⟩) (i'|⟨i',j'⟩) (_ | _ | _ | _)
   · exact congr_fun (G.map_id <| op <| Pairwise.single i) _
   · rfl
   · exact (h i' i).symm
   · exact congr_fun (G.map_id <| op <| Pairwise.pair i j) _
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 theorem isGluing_iff_pairwise {sf s} : IsGluing F U sf s ↔
     ∀ i, (F.mapCone (Pairwise.cocone U).op).π.app i s = objPairwiseOfFamily sf i := by
   refine ⟨fun h ↦ ?_, fun h i ↦ h (op <| Pairwise.single i)⟩
@@ -110,9 +110,13 @@ theorem isGluing_iff_pairwise {sf s} : IsGluing F U sf s ↔
   · rw [← (F.mapCone (Pairwise.cocone U).op).w (op <| Pairwise.Hom.left i j)]
     exact congr_arg _ (h i)
 
+theorem IsSheaf.isSheafUniqueGluing_types (h : F.IsSheaf) (sf : ∀ i : ι, F.obj (op (U i)))
+    (cpt : IsCompatible F U sf) : ∃! s : F.obj (op (iSup U)), IsGluing F U sf s := by
+  simp_rw [isGluing_iff_pairwise]
+  exact (Types.isLimit_iff _).mp (h.isSheafPairwiseIntersections U) _ cpt.sectionPairwise.prop
+
 variable (F)
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- For type-valued presheaves, the sheaf condition in terms of unique gluings is equivalent to the
 usual sheaf condition.
 -/
@@ -127,7 +131,6 @@ theorem isSheaf_iff_isSheafUniqueGluing_types : F.IsSheaf ↔ F.IsSheafUniqueGlu
     · rfl
     · exact (hs <| op <| Pairwise.Hom.left i j).symm
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- The usual sheaf condition can be obtained from the sheaf condition
 in terms of unique gluings.
 -/
@@ -138,14 +141,22 @@ end TypeValued
 
 section
 
-variable [HasLimits C] [(forget C).ReflectsIsomorphisms] [PreservesLimits (forget C)]
-variable {X : TopCat.{v}} (F : Presheaf C X)
+variable [HasLimitsOfSize.{x, x} C] [(forget C).ReflectsIsomorphisms]
+  [PreservesLimitsOfSize.{x, x} (forget C)]
+variable {X : TopCat.{x}} {F : Presheaf C X}
+
+theorem IsSheaf.isSheafUniqueGluing (h : F.IsSheaf) {ι : Type*} (U : ι → Opens X)
+    (sf : ∀ i : ι, ToType (F.obj (op (U i))))
+    (cpt : IsCompatible F U sf) : ∃! s : ToType (F.obj (op (iSup U))), IsGluing F U sf s :=
+  ((isSheaf_iff_isSheaf_comp' (forget C) F).mp h).isSheafUniqueGluing_types sf cpt
+
+variable (F)
 
 /-- For presheaves valued in a concrete category, whose forgetful functor reflects isomorphisms and
 preserves limits, the sheaf condition in terms of unique gluings is equivalent to the usual one.
 -/
 theorem isSheaf_iff_isSheafUniqueGluing : F.IsSheaf ↔ F.IsSheafUniqueGluing :=
-  Iff.trans (isSheaf_iff_isSheaf_comp (forget C) F)
+  Iff.trans (isSheaf_iff_isSheaf_comp' (forget C) F)
     (isSheaf_iff_isSheafUniqueGluing_types (F ⋙ forget C))
 
 end
@@ -154,22 +165,20 @@ end Presheaf
 
 namespace Sheaf
 
-open Presheaf
-
-open CategoryTheory
+open Presheaf CategoryTheory
 
 section
 
-variable [HasLimits C] [(HasForget.forget (C := C)).ReflectsIsomorphisms]
-variable [PreservesLimits (HasForget.forget (C := C))]
-variable {X : TopCat.{v}} (F : Sheaf C X) {ι : Type v} (U : ι → Opens X)
+variable [HasLimitsOfSize.{x, x} C] [(HasForget.forget (C := C)).ReflectsIsomorphisms]
+variable [PreservesLimitsOfSize.{x, x} (HasForget.forget (C := C))]
+variable {X : TopCat.{x}} (F : Sheaf C X) {ι : Type*} (U : ι → Opens X)
 
 /-- A more convenient way of obtaining a unique gluing of sections for a sheaf.
 -/
 theorem existsUnique_gluing (sf : ∀ i : ι, ToType (F.1.obj (op (U i))))
     (h : IsCompatible F.1 U sf) :
     ∃! s : ToType (F.1.obj (op (iSup U))), IsGluing F.1 U sf s :=
-  (isSheaf_iff_isSheafUniqueGluing F.1).mp F.cond U sf h
+  IsSheaf.isSheafUniqueGluing F.cond U sf h
 
 /-- In this version of the lemma, the inclusion homs `iUV` can be specified directly by the user,
 which can be more convenient in practice.
@@ -228,13 +237,13 @@ theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : 
     (s t : ToType (F.1.obj (op V))) (h₁ : F.1.map i₁.op s = F.1.map i₁.op t)
     (h₂ : F.1.map i₂.op s = F.1.map i₂.op t) : s = t := by
   classical
-    fapply F.eq_of_locally_eq' fun t : ULift Bool => if t.1 then U₁ else U₂
-    · exact fun i => if h : i.1 then eqToHom (if_pos h) ≫ i₁ else eqToHom (if_neg h) ≫ i₂
+    fapply F.eq_of_locally_eq' fun t : Bool => if t then U₁ else U₂
+    · exact fun i => if h : i then eqToHom (if_pos h) ≫ i₁ else eqToHom (if_neg h) ≫ i₂
     · refine le_trans hcover ?_
       rw [sup_le_iff]
       constructor
-      · exact le_iSup (fun t : ULift Bool => if t.1 then U₁ else U₂) (ULift.up true)
-      · exact le_iSup (fun t : ULift Bool => if t.1 then U₁ else U₂) (ULift.up false)
+      · exact le_iSup (fun t : Bool => if t then U₁ else U₂) true
+      · exact le_iSup (fun t : Bool => if t then U₁ else U₂) false
     · rintro ⟨_ | _⟩
       any_goals exact h₁
       any_goals exact h₂
