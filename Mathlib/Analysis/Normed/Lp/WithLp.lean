@@ -235,9 +235,7 @@ lemma toLp_sum [AddCommGroup V] {ι : Type*} (s : Finset ι) (f : ι → V) :
 /-- `WithLp.equiv` as a linear equivalence. -/
 @[simps -fullyApplied apply symm_apply]
 protected def linearEquiv [Semiring K] [AddCommGroup V] [Module K V] : WithLp p V ≃ₗ[K] V where
-  toFun := WithLp.ofLp
-  invFun := WithLp.toLp p
-  map_add' _ _ := rfl
+  __ := WithLp.addEquiv p V
   map_smul' _ _ := rfl
 
 instance instModuleFinite
