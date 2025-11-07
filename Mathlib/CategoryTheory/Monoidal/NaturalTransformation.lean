@@ -206,15 +206,4 @@ def isoOfComponents {F G : LaxMonoidalFunctor C D} (e : ∀ X, F.obj X ≅ G.obj
 
 end LaxMonoidalFunctor
 
-namespace Functor.Monoidal
-
-instance transport_iso_isMonoidal {F G : C ⥤ D} [F.Monoidal] (e : F ≅ G) :
-    letI : G.Monoidal := transport e
-    e.hom.IsMonoidal := by
-  letI G.Monoidal := transport e
-  refine ⟨rfl, fun X Y ↦ ?_⟩
-  simp [transport_μ, tensorHom_comp_tensorHom_assoc]
-
-end Functor.Monoidal
-
 end CategoryTheory
