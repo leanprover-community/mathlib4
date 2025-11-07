@@ -579,31 +579,8 @@ lemma _root_.AlgebraicGeometry.Scheme.isPullback_of_openCover
       simpa using .of_hasPullback _ _
     convert inferInstanceAs (IsIso (H'.isoPullback.inv ≫ (H i).isoPullback.hom))
     aesop (add simp [Iso.eq_inv_comp, Scheme.Cover.pullbackHom])
-  -- Note: The rest follows easily from `IsZariskiLocalAtTarget (isomorphisms Scheme)`, but
-  -- this machinery requires much more imports.
-  have H₂ : IsHomeomorph (lift fWX fWY h) := by
-    rw [TopologicalSpace.IsOpenCover.isHomeomorph_iff_restrictPreimage
-      (openCoverOfLeft 𝒰 fXZ fYZ).iSup_opensRange (lift fWX fWY h).continuous]
-    intro i
-    rw [← morphismRestrict_base, ← TopCat.isIso_iff_isHomeomorph, Arrow.iso_w'
-      (morphismRestrictOpensRange (lift fWX fWY h) ((openCoverOfLeft 𝒰 fXZ fYZ).f i)).symm]
-    dsimp [Cover.pullbackHom] at H₁ ⊢
-    infer_instance
-  rw [isIso_iff_isOpenImmersion_and_epi_base]
-  suffices ∀ x, IsIso ((lift fWX fWY h).stalkMap x) from
-    ⟨.of_isIso_stalkMap _ H₂.isOpenEmbedding, (TopCat.epi_iff_surjective _).mpr H₂.surjective⟩
-  intro x
-  obtain ⟨i, y, hx⟩ := Cover.exists_eq ((openCoverOfLeft 𝒰 fXZ fYZ).pullback₁ (lift fWX fWY h)) x
-  have := condition (f := lift fWX fWY h) (g := (openCoverOfLeft 𝒰 fXZ fYZ).f i)
-  have := Scheme.Hom.stalkMap_congr_hom _ _
-    (condition (f := lift fWX fWY h) (g := (openCoverOfLeft 𝒰 fXZ fYZ).f i)) y
-  have H₃ : IsIso ((lift fWX fWY h).stalkMap (fst (lift fWX fWY h) _ y)) := by
-    rw [Scheme.Hom.stalkMap_comp, Scheme.Hom.stalkMap_comp, ← IsIso.eq_comp_inv] at this
-    rw [this]
-    dsimp only [Cover.pullbackHom] at H₁ ⊢
-    infer_instance
-  have : x = fst (lift fWX fWY h) _ y := hx.symm
-  convert H₃ using 3
+  exact MorphismProperty.of_zeroHypercover_target (P := .isomorphisms Scheme)
+    (Scheme.Pullback.openCoverOfLeft 𝒰 fXZ fYZ) H₁
 
 variable (f : X ⟶ Y) (𝒰 : OpenCover.{u} Y) (𝒱 : ∀ i, OpenCover.{w} ((𝒰.pullback₁ f).X i))
 
