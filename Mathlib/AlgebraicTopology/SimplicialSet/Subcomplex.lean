@@ -268,7 +268,7 @@ lemma preimage_range : (range f).preimage f = ⊤ :=
 
 @[simp]
 lemma image_le_range : A.image f ≤ range f := by
-  simp only [image_le_iff, preimage_range, le_top]
+  simp [image_le_iff, preimage_range, le_top]
 
 @[simp]
 lemma image_ofSimplex {n : ℕ} (x : X _⦋n⦌) (f : X ⟶ Y) :
