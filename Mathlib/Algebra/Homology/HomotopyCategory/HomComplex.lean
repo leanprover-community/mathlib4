@@ -117,7 +117,7 @@ lemma sub_v {n : ℤ} (z₁ z₂ : Cochain F G n) (p q : ℤ) (hpq : p + n = q) 
 
 @[simp]
 lemma neg_v {n : ℤ} (z : Cochain F G n) (p q : ℤ) (hpq : p + n = q) :
-    (-z).v p q hpq = - (z.v p q hpq) := rfl
+    (-z).v p q hpq = -(z.v p q hpq) := rfl
 
 @[simp]
 lemma smul_v {n : ℤ} (k : R) (z : Cochain F G n) (p q : ℤ) (hpq : p + n = q) :
@@ -458,7 +458,7 @@ variable {F G R}
 
 @[simp] lemma δ_zero : δ n m (0 : Cochain F G n) = 0 := (δ_hom ℤ F G n m).map_zero
 
-@[simp] lemma δ_neg (z : Cochain F G n) : δ n m (-z) = - δ n m z :=
+@[simp] lemma δ_neg (z : Cochain F G n) : δ n m (-z) = -δ n m z :=
   (δ_hom ℤ F G n m).map_neg z
 
 @[simp] lemma δ_smul (k : R) (z : Cochain F G n) : δ n m (k • z) = k • δ n m z :=
@@ -475,8 +475,8 @@ lemma δ_δ (n₀ n₁ n₂ : ℤ) (z : Cochain F G n₀) : δ n₁ n₂ (δ n�
   ext p q hpq
   dsimp
   simp only [δ_v n₁ n₂ h₁₂ _ p q hpq _ _ rfl rfl,
-    δ_v n₀ n₁ h₀₁ z p (q-1) (by cutsat) (q-2) _ (by cutsat) rfl,
-    δ_v n₀ n₁ h₀₁ z (p+1) q (by cutsat) _ (p+2) rfl (by cutsat),
+    δ_v n₀ n₁ h₀₁ z p (q - 1) (by cutsat) (q - 2) _ (by cutsat) rfl,
+    δ_v n₀ n₁ h₀₁ z (p + 1) q (by cutsat) _ (p + 2) rfl (by cutsat),
     ← h₁₂, Int.negOnePow_succ, add_comp, assoc,
     HomologicalComplex.d_comp_d, comp_zero, zero_add, comp_add,
     HomologicalComplex.d_comp_d_assoc, zero_comp, smul_zero,
@@ -492,13 +492,13 @@ lemma δ_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochai
   ext p q hpq
   dsimp
   rw [z₁.comp_v _ (add_assoc n₁ n₂ 1).symm p _ q rfl (by cutsat),
-    Cochain.comp_v _ _ (show n₁ + 1 + n₂ = n₁ + n₂ + 1 by cutsat) p (p+n₁+1) q
+    Cochain.comp_v _ _ (show n₁ + 1 + n₂ = n₁ + n₂ + 1 by cutsat) p (p + n₁ + 1) q
       (by cutsat) (by cutsat),
     δ_v (n₁ + n₂) _ rfl (z₁.comp z₂ rfl) p q hpq (p + n₁ + n₂) _ (by cutsat) rfl,
     z₁.comp_v z₂ rfl p _ _ rfl rfl,
-    z₁.comp_v z₂ rfl (p+1) (p+n₁+1) q (by cutsat) (by cutsat),
-    δ_v n₂ (n₂+1) rfl z₂ (p+n₁) q (by cutsat) (p+n₁+n₂) _ (by cutsat) rfl,
-    δ_v n₁ (n₁+1) rfl z₁ p (p+n₁+1) (by cutsat) (p+n₁) _ (by cutsat) rfl]
+    z₁.comp_v z₂ rfl (p + 1) (p + n₁ + 1) q (by cutsat) (by cutsat),
+    δ_v n₂ (n₂ + 1) rfl z₂ (p + n₁) q (by cutsat) (p + n₁ + n₂) _ (by cutsat) rfl,
+    δ_v n₁ (n₁ + 1) rfl z₁ p (p + n₁ + 1) (by cutsat) (p + n₁) _ (by cutsat) rfl]
   simp only [assoc, comp_add, add_comp, Int.negOnePow_succ, Int.negOnePow_add n₁ n₂,
     Units.neg_smul, comp_neg, neg_comp, smul_neg, smul_smul, Linear.units_smul_comp,
     mul_comm n₁.negOnePow n₂.negOnePow, Linear.comp_units_smul, smul_add]
@@ -538,9 +538,9 @@ lemma δ_ofHomotopy {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :
     δ (-1) 0 (Cochain.ofHomotopy h) = Cochain.ofHom φ₁ - Cochain.ofHom φ₂ := by
   ext p
   have eq := h.comm p
-  rw [dNext_eq h.hom (show (ComplexShape.up ℤ).Rel p (p+1) by simp),
-    prevD_eq h.hom (show (ComplexShape.up ℤ).Rel (p-1) p by simp)] at eq
-  rw [Cochain.ofHomotopy, δ_v (-1) 0 (neg_add_cancel 1) _ p p (add_zero p) (p-1) (p+1) rfl rfl]
+  rw [dNext_eq h.hom (show (ComplexShape.up ℤ).Rel p (p + 1) by simp),
+    prevD_eq h.hom (show (ComplexShape.up ℤ).Rel (p - 1) p by simp)] at eq
+  rw [Cochain.ofHomotopy, δ_v (-1) 0 (neg_add_cancel 1) _ p p (add_zero p) (p - 1) (p + 1) rfl rfl]
   simp only [Cochain.mk_v, one_smul, Int.negOnePow_zero, Cochain.sub_v, Cochain.ofHom_v, eq]
   abel
 
@@ -548,10 +548,10 @@ lemma δ_neg_one_cochain (z : Cochain F G (-1)) :
     δ (-1) 0 z = Cochain.ofHom (Homotopy.nullHomotopicMap'
       (fun i j hij => z.v i j (by dsimp at hij; rw [← hij, add_neg_cancel_right]))) := by
   ext p
-  rw [δ_v (-1) 0 (neg_add_cancel 1) _ p p (add_zero p) (p-1) (p+1) rfl rfl]
+  rw [δ_v (-1) 0 (neg_add_cancel 1) _ p p (add_zero p) (p - 1) (p + 1) rfl rfl]
   simp only [one_smul, Cochain.ofHom_v, Int.negOnePow_zero]
-  rw [Homotopy.nullHomotopicMap'_f (show (ComplexShape.up ℤ).Rel (p-1) p by simp)
-    (show (ComplexShape.up ℤ).Rel p (p+1) by simp)]
+  rw [Homotopy.nullHomotopicMap'_f (show (ComplexShape.up ℤ).Rel (p - 1) p by simp)
+    (show (ComplexShape.up ℤ).Rel p (p + 1) by simp)]
   abel
 
 end HomComplex
@@ -825,7 +825,7 @@ lemma δ_map : δ n m (z.map Φ) = (δ n m z).map Φ := by
   by_cases hnm : n + 1 = m
   · ext p q hpq
     dsimp
-    simp only [δ_v n m hnm _ p q hpq (q-1) (p+1) rfl rfl,
+    simp only [δ_v n m hnm _ p q hpq (q - 1) (p + 1) rfl rfl,
       Functor.map_add, Functor.map_comp, Functor.map_units_smul,
       Cochain.map_v, Functor.mapHomologicalComplex_obj_d]
   · simp only [δ_shape _ _ hnm, Cochain.map_zero]

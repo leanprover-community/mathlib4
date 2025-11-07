@@ -341,7 +341,7 @@ of groups.)
 -/
 @[to_additive (relevant_arg := 100)
 /-- The forgetful functor from additive commutative groups to additive groups preserves all
-limits. (That is, the underlying group could have been computed instead as limits  in the
+limits. (That is, the underlying group could have been computed instead as limits in the
 category of additive groups.) -/]
 instance forget₂Group_preservesLimitsOfSize :
     PreservesLimitsOfSize.{w, v} (forget₂ CommGrpCat.{u} GrpCat.{u}) where

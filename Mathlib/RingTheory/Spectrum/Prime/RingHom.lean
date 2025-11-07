@@ -5,7 +5,7 @@ Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
 import Mathlib.RingTheory.Spectrum.Prime.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Functoriality of the prime spectrum
