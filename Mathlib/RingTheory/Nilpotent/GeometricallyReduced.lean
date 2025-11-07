@@ -32,6 +32,9 @@ if the tensor product `AlgebraicClosure k ⊗[k] A` is reduced.
 open TensorProduct
 
 noncomputable section
+
+namespace Algebra
+
 variable {k A : Type*} [Field k] [Ring A] [Algebra k A]
 
 /-- The `k`-algebra `A` is geometrically reduced iff its base change to `AlgebraicClosure k` is
@@ -67,3 +70,5 @@ theorem IsGeometricallyReduced.of_forall_fg
     IsGeometricallyReduced k A := by
   simp_rw [isGeometricallyReduced_iff] at h
   exact ⟨IsReduced.tensorProduct_of_flat_of_forall_fg h⟩
+
+end Algebra
