@@ -130,7 +130,7 @@ variable (I) in
 theorem of_preimage_eq_empty [IsEmpty I] {x : X} {U : Set X} (hUx : U ∈ 𝓝 x) (hfU : f ⁻¹' U = ∅) :
     IsEvenlyCovered f x I :=
   have ⟨V, hVU, hV, hxV⟩ := mem_nhds_iff.mp hUx
-  have hfV : f⁻¹' V = ∅ := Set.eq_empty_of_subset_empty ((Set.preimage_mono hVU).trans hfU.le)
+  have hfV : f ⁻¹' V = ∅ := Set.eq_empty_of_subset_empty ((Set.preimage_mono hVU).trans hfU.le)
   have := Set.isEmpty_coe_sort.mpr hfV
   ⟨inferInstance, _, hxV, hV, hfV ▸ isOpen_empty, .empty, isEmptyElim⟩
 
@@ -275,6 +275,7 @@ protected theorem isSeparatedMap : IsSeparatedMap f :=
 
 variable {A} [TopologicalSpace A] {s : Set A} {g g₁ g₂ : A → E}
 
+/-- Proposition 1.34 of [hatcher02]. -/
 theorem eq_of_comp_eq [PreconnectedSpace A] (h₁ : Continuous g₁) (h₂ : Continuous g₂)
     (he : f ∘ g₁ = f ∘ g₂) (a : A) (ha : g₁ a = g₂ a) : g₁ = g₂ :=
   hf.isSeparatedMap.eq_of_comp_eq hf.isLocalHomeomorph.isLocallyInjective h₁ h₂ he a ha

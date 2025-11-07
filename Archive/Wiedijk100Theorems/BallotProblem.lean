@@ -58,8 +58,7 @@ theorem staysPositive_cons_pos (x : ℤ) (hx : 0 < x) (l : List ℤ) :
     (x::l) ∈ staysPositive ↔ l ∈ staysPositive := by
   rw [staysPositive_cons, and_iff_left_iff_imp]
   intro h
-  have := sum_nonneg_of_staysPositive h
-  positivity
+  positivity [sum_nonneg_of_staysPositive h]
 
 /-- `countedSequence p q` is the set of lists of integers for which every element is `+1` or `-1`,
 there are `p` lots of `+1` and `q` lots of `-1`.
@@ -342,7 +341,7 @@ theorem ballot_problem' :
         linarith
       simp [field, h₄, h₅, h₆] at *
       ring
-    all_goals exact ENNReal.mul_ne_top (measure_ne_top _ _) (by simp [Ne, ENNReal.div_eq_top])
+    all_goals exact ENNReal.mul_ne_top (by finiteness) (by simp [Ne, ENNReal.div_eq_top])
 
 /-- The ballot problem. -/
 theorem ballot_problem :
