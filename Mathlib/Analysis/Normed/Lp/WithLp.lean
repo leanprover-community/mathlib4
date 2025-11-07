@@ -215,6 +215,7 @@ end equiv
 
 variable (K V)
 
+/-- `WithLp.equiv` as a group isomorphism. -/
 @[simps -fullyApplied apply symm_apply]
 protected def addEquiv [AddCommGroup V] : WithLp p V ≃+ V where
   toFun := ofLp
