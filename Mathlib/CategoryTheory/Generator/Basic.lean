@@ -311,7 +311,7 @@ lemma IsCoseparating.mk_of_exists_mono
     (fun i ↦ by simpa using h _ (hs i) (j ≫ c.proj i))
 
 lemma IsSeparating.mk_of_exists_colimitsOfShape
-    (hP : ∀ (X : C), ∃ (J : Type w) (_ : Category.{w'} J), Nonempty (P.ColimitOfShape J X)) :
+    (hP : ∀ (X : C), ∃ (J : Type w) (_ : Category.{w'} J), P.colimitsOfShape J X) :
     P.IsSeparating := by
   intro X Y f g h
   obtain ⟨J, _, ⟨p⟩⟩ := hP X
