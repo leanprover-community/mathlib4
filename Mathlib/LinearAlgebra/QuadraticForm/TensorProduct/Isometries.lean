@@ -55,7 +55,7 @@ theorem tmul_tensorMap_apply
 
 namespace Isometry
 
-/-- `TensorProduct.map` for `Quadraticform.Isometry`s -/
+/-- `TensorProduct.map` for `QuadraticForm.Isometry`s -/
 def _root_.QuadraticMap.Isometry.tmul
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     {Q₃ : QuadraticForm R M₃} {Q₄ : QuadraticForm R M₄}
@@ -185,11 +185,8 @@ section tensorLId
 
 theorem comp_tensorLId_eq (Q₂ : QuadraticForm R M₂) :
     Q₂.comp (TensorProduct.lid R M₂) = QuadraticForm.tmul (sq (R := R)) Q₂ := by
-  refine (QuadraticMap.associated_rightInverse R).injective ?_
-  ext m₂ m₂'
-  dsimp [-associated_apply]
-  simp only [associated_tmul, QuadraticMap.associated_comp]
-  simp [-associated_apply, mul_one]
+  ext
+  simp
 
 @[simp]
 theorem tmul_tensorLId_apply

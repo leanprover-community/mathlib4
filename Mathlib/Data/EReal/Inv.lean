@@ -5,7 +5,7 @@ Authors: Kevin Buzzard
 -/
 import Mathlib.Data.ENNReal.Inv
 import Mathlib.Data.EReal.Operations
-import Mathlib.Data.Sign
+import Mathlib.Data.Sign.Basic
 import Mathlib.Data.Nat.Cast.Order.Field
 
 /-!
@@ -255,7 +255,7 @@ lemma sign_mul_inv_abs (a : EReal) : (sign a) * (a.abs : EReal)⁻¹ = a⁻¹ :=
 
 lemma sign_mul_inv_abs' (a : EReal) : (sign a) * ((a.abs⁻¹ : ℝ≥0∞) : EReal) = a⁻¹ := by
   induction a with
-  | bot | top  => simp
+  | bot | top => simp
   | coe a =>
     rcases lt_trichotomy a 0 with (a_neg | rfl | a_pos)
     · rw [sign_coe, _root_.sign_neg a_neg, coe_neg_one, neg_one_mul, abs_def a,
@@ -449,7 +449,7 @@ lemma lt_div_iff (h : 0 < b) (h' : b ≠ ⊤) : a < c / b ↔ a * b < c := by
   rw [EReal.mul_div b a b, mul_comm a b]
   exact (strictMono_div_right_of_pos h h').lt_iff_lt
 
-lemma div_lt_iff (h : 0 < c) (h' : c ≠ ⊤) :  b / c < a ↔ b < a * c := by
+lemma div_lt_iff (h : 0 < c) (h' : c ≠ ⊤) : b / c < a ↔ b < a * c := by
   nth_rw 1 [← @mul_div_cancel a c (ne_bot_of_gt h) h' (ne_of_gt h)]
   rw [EReal.mul_div c a c, mul_comm a c]
   exact (strictMono_div_right_of_pos h h').lt_iff_lt

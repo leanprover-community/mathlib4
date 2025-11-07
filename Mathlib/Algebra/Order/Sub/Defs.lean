@@ -94,7 +94,7 @@ theorem le_add_tsub : a ≤ b + (a - b) :=
 theorem add_tsub_le_left : a + b - a ≤ b :=
   tsub_le_iff_left.mpr le_rfl
 
-@[gcongr] theorem tsub_le_tsub_right (h : a ≤ b) (c : α) : a - c ≤ b - c :=
+theorem tsub_le_tsub_right (h : a ≤ b) (c : α) : a - c ≤ b - c :=
   tsub_le_iff_left.mpr <| h.trans le_add_tsub
 
 theorem tsub_le_iff_tsub_le : a - b ≤ c ↔ a - c ≤ b := by rw [tsub_le_iff_left, tsub_le_iff_right]
@@ -107,8 +107,8 @@ section Cov
 
 variable [AddLeftMono α]
 
-@[gcongr] theorem tsub_le_tsub_left (h : a ≤ b) (c : α) : c - b ≤ c - a :=
-  tsub_le_iff_left.mpr <| le_add_tsub.trans <| add_le_add_right h _
+theorem tsub_le_tsub_left (h : a ≤ b) (c : α) : c - b ≤ c - a :=
+  tsub_le_iff_left.mpr <| le_add_tsub.trans <| by gcongr
 
 @[gcongr] theorem tsub_le_tsub (hab : a ≤ b) (hcd : c ≤ d) : a - d ≤ b - c :=
   (tsub_le_tsub_right hab _).trans <| tsub_le_tsub_left hcd _
@@ -117,35 +117,30 @@ theorem antitone_const_tsub : Antitone fun x => c - x := fun _ _ hxy => tsub_le_
 
 /-- See `add_tsub_assoc_of_le` for the equality. -/
 theorem add_tsub_le_assoc : a + b - c ≤ a + (b - c) := by
-  rw [tsub_le_iff_left, add_left_comm]
-  exact add_le_add_left le_add_tsub a
+  grw [tsub_le_iff_left, add_left_comm, ← le_add_tsub]
 
 /-- See `tsub_add_eq_add_tsub` for the equality. -/
 theorem add_tsub_le_tsub_add : a + b - c ≤ a - c + b := by
   rw [add_comm, add_comm _ b]
   exact add_tsub_le_assoc
 
-theorem add_le_add_add_tsub : a + b ≤ a + c + (b - c) := by
-  rw [add_assoc]
-  exact add_le_add_left le_add_tsub a
+theorem add_le_add_add_tsub : a + b ≤ a + c + (b - c) := by grw [add_assoc, ← le_add_tsub]
 
 theorem le_tsub_add_add : a + b ≤ a - c + (b + c) := by
   rw [add_comm a, add_comm (a - c)]
   exact add_le_add_add_tsub
 
 theorem tsub_le_tsub_add_tsub : a - c ≤ a - b + (b - c) := by
-  rw [tsub_le_iff_left, ← add_assoc, add_right_comm]
-  exact le_add_tsub.trans (add_le_add_right le_add_tsub _)
+  grw [tsub_le_iff_left, ← add_assoc, add_right_comm, ← le_add_tsub, ← le_add_tsub]
 
 theorem tsub_tsub_tsub_le_tsub : c - a - (c - b) ≤ b - a := by
-  rw [tsub_le_iff_left, tsub_le_iff_left, add_left_comm]
-  exact le_tsub_add.trans (add_le_add_left le_add_tsub _)
+  grw [tsub_le_iff_left, tsub_le_iff_left, add_left_comm, ← le_add_tsub, ← le_tsub_add]
 
 theorem tsub_tsub_le_tsub_add {a b c : α} : a - (b - c) ≤ a - b + c :=
   tsub_le_iff_right.2 <|
     calc
       a ≤ a - b + b := le_tsub_add
-      _ ≤ a - b + (c + (b - c)) := add_le_add_left le_add_tsub _
+      _ ≤ a - b + (c + (b - c)) := by grw [← le_add_tsub]
       _ = a - b + c + (b - c) := (add_assoc _ _ _).symm
 
 /-- See `tsub_add_tsub_comm` for the equality. -/
@@ -157,13 +152,11 @@ theorem add_tsub_add_le_tsub_add_tsub : a + b - (c + d) ≤ a - c + (b - d) := b
 
 /-- See `add_tsub_add_eq_tsub_left` for the equality. -/
 theorem add_tsub_add_le_tsub_left : a + b - (a + c) ≤ b - c := by
-  rw [tsub_le_iff_left, add_assoc]
-  exact add_le_add_left le_add_tsub _
+  grw [tsub_le_iff_left, add_assoc, ← le_add_tsub]
 
 /-- See `add_tsub_add_eq_tsub_right` for the equality. -/
 theorem add_tsub_add_le_tsub_right : a + c - (b + c) ≤ a - b := by
-  rw [tsub_le_iff_left, add_right_comm]
-  exact add_le_add_right le_add_tsub c
+  grw [tsub_le_iff_left, add_right_comm, ← le_add_tsub]
 
 end Cov
 

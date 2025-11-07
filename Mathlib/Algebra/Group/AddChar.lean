@@ -3,10 +3,12 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Group.Subgroup.Ker
+import Mathlib.Algebra.Group.TransferInstance
+import Mathlib.Algebra.Group.Units.Equiv
+import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Characters from additive to multiplicative monoids
@@ -91,6 +93,8 @@ instance instFunLike : FunLike (AddChar A M) A M where
   coe := AddChar.toFun
   coe_injective' φ ψ h := by cases φ; cases ψ; congr
 
+initialize_simps_projections AddChar (toFun → apply) -- needs to come after FunLike instance
+
 @[ext] lemma ext (f g : AddChar A M) (h : ∀ x : A, f x = g x) : f = g :=
   DFunLike.ext f g h
 
@@ -114,7 +118,7 @@ def toMonoidHom (φ : AddChar A M) : Multiplicative A →* M where
 -- this instance was a bad idea and conflicted with `instFunLike` above
 
 @[simp] lemma toMonoidHom_apply (ψ : AddChar A M) (a : Multiplicative A) :
-  ψ.toMonoidHom a = ψ a.toAdd :=
+    ψ.toMonoidHom a = ψ a.toAdd :=
   rfl
 
 /-- An additive character maps multiples by natural numbers to powers. -/

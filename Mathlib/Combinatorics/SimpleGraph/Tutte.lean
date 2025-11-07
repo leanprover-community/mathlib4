@@ -59,7 +59,7 @@ lemma IsTutteViolator.mono {u : Set V} (h : G ≤ G') (ht : G'.IsTutteViolator u
   simp only [IsTutteViolator, Subgraph.induce_verts, Subgraph.verts_top] at *
   have := ncard_oddComponents_mono _ (Subgraph.deleteVerts_mono' (G := G) (G' := G') u h)
   simp only [oddComponents] at *
-  omega
+  cutsat
 
 /-- Given a graph in which the universal vertices do not violate Tutte's condition,
 if the graph decomposes into cliques, there exists a matching that covers
@@ -143,7 +143,7 @@ lemma not_isTutteViolator_of_isPerfectMatching {M : Subgraph G} (hM : M.IsPerfec
     replace hcd : g c = g d := Subtype.val_injective <| hM.1.eq_of_adj_right (hgf c) (hcd ▸ hgf d)
     exact Subtype.val_injective <| ConnectedComponent.eq_of_common_vertex (hg c) (hcd ▸ hg d)
   simpa [IsTutteViolator] using
-    Finite.card_le_of_injective (fun c ↦ ⟨f c, hf c⟩) (fun c d ↦ by simp [hfinj.eq_iff])
+    Nat.card_le_card_of_injective (fun c ↦ ⟨f c, hf c⟩) (fun c d ↦ by simp [hfinj.eq_iff])
 
 open scoped symmDiff
 
@@ -165,10 +165,8 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
   -- Neither matching contains the edge that would make the other matching of G perfect
   have hM1nac : ¬M1.Adj a c := fun h ↦ by simpa [hnGac, edge_adj, hnac, hxa.ne, hnbc.symm, hab.ne]
     using h.adj_sub
-  have hM2nxb : ¬M2.Adj x b := fun h ↦ by simpa [hnGxb, edge_adj, hnxb, hxa.ne, hnxc]
-    using h.adj_sub
   have hsupG : G ⊔ edge x b ⊔ (G ⊔ edge a c) = (G ⊔ edge a c) ⊔ edge x b := by aesop
-  -- We state conditions for our cycle that hold in all cases and show that that suffices
+  -- We state conditions for our cycle that hold in all cases and show that this suffices
   suffices ∃ (G' : SimpleGraph V), G'.IsAlternating M2.spanningCoe ∧ G'.IsCycles ∧ ¬G'.Adj x b ∧
       G'.Adj a c ∧ G' ≤ G ⊔ edge a c by
     obtain ⟨G', hG', hG'cyc, hG'xb, hnG'ac, hle⟩ := this
@@ -182,7 +180,6 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
   let cycles := M1.spanningCoe ∆ M2.spanningCoe
   have hcalt : cycles.IsAlternating M2.spanningCoe := hM1.isAlternating_symmDiff_right hM2
   have hcycles := Subgraph.IsPerfectMatching.symmDiff_isCycles hM1 hM2
-  have hcxb : cycles.Adj x b := by simp [cycles, symmDiff_def, hM2nxb, hM1xb]
   have hcac : cycles.Adj a c := by simp [cycles, symmDiff_def, hM2ac, hM1nac]
   have hM1sub := Subgraph.spanningCoe_le M1
   have hM2sub := Subgraph.spanningCoe_le M2
@@ -203,7 +200,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
       Disjoint.left_le_of_le_sup_right induce_le ?_⟩
     rw [disjoint_edge]
     rw [ConnectedComponent.adj_spanningCoe_toSimpleGraph]
-    aesop
+    simp_all
   push_neg at hxc
   have hacc := ((cycles.connectedComponentMk c).mem_supp_congr_adj hcac.symm).mp rfl
   have (G : SimpleGraph V) : LocallyFinite G := fun _ ↦ Fintype.ofFinite _
@@ -280,7 +277,7 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
       Gmax.deleteUniversalVerts.coe.IsClique K.supp
   · -- Deleting universal vertices splits the graph into cliques
     rw [Fintype.card_eq_nat_card] at hc
-    simp_rw [Fintype.card_eq_nat_card, Set.Nat.card_coe_set_eq] at hc
+    simp_rw [Fintype.card_eq_nat_card, Nat.card_coe_set_eq] at hc
     push_neg at hc
     obtain ⟨M, hM⟩ := Subgraph.IsPerfectMatching.exists_of_isClique_supp hvEven
       (by simpa [IsTutteViolator] using hc) h'
@@ -289,13 +286,13 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
     push_neg at h'
     obtain ⟨K, hK⟩ := h'
     obtain ⟨x, y, hxy⟩ := (not_isClique_iff _).mp hK
-    obtain ⟨p , hp⟩ := Reachable.exists_path_of_dist (K.connected_toSimpleGraph x y)
+    obtain ⟨p, hp⟩ := Reachable.exists_path_of_dist (K.connected_toSimpleGraph x y)
     obtain ⟨x, a, b, hxa, hxb, hnadjxb, hnxb⟩ := Walk.exists_adj_adj_not_adj_ne hp.2
       (p.reachable.one_lt_dist_of_ne_of_not_adj hxy.1 hxy.2)
     simp only [ConnectedComponent.toSimpleGraph, deleteUniversalVerts, universalVerts, ne_eq,
       Subgraph.induce_verts, Subgraph.verts_top, comap_adj, Function.Embedding.coe_subtype,
-      Subgraph.coe_adj, Subgraph.induce_adj, Subtype.coe_prop, Subgraph.top_adj, true_and
-      ] at hxa hxb hnadjxb
+      Subgraph.coe_adj, Subgraph.induce_adj, Subtype.coe_prop, Subgraph.top_adj, true_and]
+      at hxa hxb hnadjxb
     obtain ⟨c, hc⟩ : ∃ (c : V), (a : V) ≠ c ∧ ¬ Gmax.Adj c a := by
       simpa [universalVerts] using a.1.2.2
     have hbnec : b.val.val ≠ c := by rintro rfl; exact hc.2 hxb.symm

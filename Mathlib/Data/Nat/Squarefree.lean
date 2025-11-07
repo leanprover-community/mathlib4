@@ -5,7 +5,8 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.Data.Nat.Factorization.PrimePow
+import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.NumberTheory.Divisors
 import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 
 /-!
@@ -51,7 +52,7 @@ theorem _root_.Squarefree.natFactorization_le_one {n : ℕ} (p : ℕ) (hn : Squa
     rw [← multiplicity_eq_factorization hp hn']
     simp only [Nat.isUnit_iff, hp.ne_one, or_false] at this
     exact multiplicity_le_of_emultiplicity_le this
-  · rw [factorization_eq_zero_of_non_prime _ hp]
+  · rw [factorization_eq_zero_of_not_prime _ hp]
     exact zero_le_one
 
 lemma factorization_eq_one_of_squarefree (hn : Squarefree n) (hp : p.Prime) (hpn : p ∣ n) :
@@ -78,8 +79,8 @@ theorem Squarefree.ext_iff {n m : ℕ} (hn : Squarefree n) (hm : Squarefree m) :
       hp.dvd_iff_one_le_factorization hm.ne_zero, not_le, lt_one_iff] at h₁
     have h₂ := hn.natFactorization_le_one p
     have h₃ := hm.natFactorization_le_one p
-    omega
-  rw [factorization_eq_zero_of_non_prime _ hp, factorization_eq_zero_of_non_prime _ hp]
+    cutsat
+  rw [factorization_eq_zero_of_not_prime _ hp, factorization_eq_zero_of_not_prime _ hp]
 
 theorem squarefree_pow_iff {n k : ℕ} (hn : n ≠ 1) (hk : k ≠ 0) :
     Squarefree (n ^ k) ↔ Squarefree n ∧ k = 1 := by
@@ -110,7 +111,7 @@ def minSqFacAux : ℕ → ℕ → Option ℕ
       if k ∣ n then
         let n' := n / k
         have : Nat.sqrt n' - k < Nat.sqrt n + 2 - k :=
-        lt_of_le_of_lt (Nat.sub_le_sub_right (Nat.sqrt_le_sqrt <| Nat.div_le_self _ _) k) this
+        lt_of_le_of_lt (by gcongr; apply div_le_self) this
         if k ∣ n' then some k else minSqFacAux n' (k + 2)
       else minSqFacAux n (k + 2)
 termination_by n k => sqrt n + 2 - k
@@ -160,7 +161,7 @@ theorem minSqFacAux_has_prop {n : ℕ} (k) (n0 : 0 < n) (i) (e : k = 2 * i + 3)
     have hn' := le_of_dvd n0 nd'
     refine
       have : Nat.sqrt n' - k < Nat.sqrt n + 2 - k :=
-        lt_of_le_of_lt (Nat.sub_le_sub_right (Nat.sqrt_le_sqrt hn') _) (Nat.minFac_lemma n k h)
+        lt_of_le_of_lt (by gcongr) (Nat.minFac_lemma n k h)
       @minSqFacAux_has_prop n' (k + 2) (pos_of_dvd_of_pos nd' n0) (i + 1)
         (by simp [e, left_distrib]) fun m m2 d => ?_
     rcases Nat.eq_or_lt_of_le (ih m m2 (dvd_trans d nd')) with me | ml
@@ -172,7 +173,7 @@ theorem minSqFacAux_has_prop {n : ℕ} (k) (n0 : 0 < n) (i) (e : k = 2 * i + 3)
     change 2 * (i + 2) ∣ n' at d
     have := ih _ prime_two (dvd_trans (dvd_of_mul_right_dvd d) nd')
     rw [e] at this
-    exact absurd this (by omega)
+    exact absurd this (by cutsat)
   have pk : k ∣ n → Prime k := by
     refine fun dk => prime_def_minFac.2 ⟨k2, le_antisymm (minFac_le k0) ?_⟩
     exact ih _ (minFac_prime (ne_of_gt k2)) (dvd_trans (minFac_dvd _) dk)
@@ -343,17 +344,14 @@ and generalizes to arbitrary commutative monoids. See `Squarefree.of_mul_left` a
 `Squarefree.of_mul_right` above for auxiliary lemmas. -/
 theorem squarefree_mul {m n : ℕ} (hmn : m.Coprime n) :
     Squarefree (m * n) ↔ Squarefree m ∧ Squarefree n := by
-  simp only [squarefree_iff_prime_squarefree, ← sq, ← forall_and]
-  refine forall₂_congr fun p hp => ?_
-  simp only [hmn.isPrimePow_dvd_mul (hp.isPrimePow.pow two_ne_zero), not_or]
+  simp [squarefree_mul_iff, Nat.coprime_iff_isRelPrime.mp hmn]
 
 theorem coprime_of_squarefree_mul {m n : ℕ} (h : Squarefree (m * n)) : m.Coprime n :=
   coprime_of_dvd fun p hp hm hn => squarefree_iff_prime_squarefree.mp h p hp (mul_dvd_mul hm hn)
 
 theorem squarefree_mul_iff {m n : ℕ} :
-    Squarefree (m * n) ↔ m.Coprime n ∧ Squarefree m ∧ Squarefree n :=
-  ⟨fun h => ⟨coprime_of_squarefree_mul h, (squarefree_mul <| coprime_of_squarefree_mul h).mp h⟩,
-    fun h => (squarefree_mul h.1).mpr h.2⟩
+    Squarefree (m * n) ↔ m.Coprime n ∧ Squarefree m ∧ Squarefree n := by
+  rw [_root_.squarefree_mul_iff, Nat.coprime_iff_isRelPrime]
 
 lemma coprime_div_gcd_of_squarefree (hm : Squarefree m) (hn : n ≠ 0) : Coprime (m / gcd m n) n := by
   have : Coprime (m / gcd m n) (gcd m n) :=

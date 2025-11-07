@@ -113,10 +113,23 @@ When you delete this deprecated lemma, please rename `Path.coe_mk'` to `Path.coe
 theorem coe_mk : ⇑(γ : C(I, X)) = γ :=
   rfl
 
+@[simp]
+theorem range_coe : range ((↑) : Path x y → C(I, X)) = {f | f 0 = x ∧ f 1 = y} :=
+  Subset.antisymm (range_subset_iff.mpr fun γ ↦ ⟨γ.source, γ.target⟩) fun f ⟨hf₀, hf₁⟩ ↦
+    ⟨⟨f, hf₀, hf₁⟩, rfl⟩
+
 /-- Any function `φ : Π (a : α), Path (x a) (y a)` can be seen as a function `α × I → X`. -/
 instance instHasUncurryPath {α : Type*} {x y : α → X} :
     HasUncurry (∀ a : α, Path (x a) (y a)) (α × I) X :=
   ⟨fun φ p => φ p.1 p.2⟩
+
+@[simp high]
+lemma source_mem_range (γ : Path x y) : x ∈ range ⇑γ :=
+  ⟨0, Path.source γ⟩
+
+@[simp high]
+lemma target_mem_range (γ : Path x y) : y ∈ range ⇑γ :=
+  ⟨1, Path.target γ⟩
 
 /-- The constant path from a point to itself -/
 @[refl, simps!]
@@ -190,7 +203,7 @@ theorem continuous_extend : Continuous γ.extend :=
 
 theorem _root_.Filter.Tendsto.pathExtend
     {l r : Y → X} {y : Y} {l₁ : Filter ℝ} {l₂ : Filter X} {γ : ∀ y, Path (l y) (r y)}
-    (hγ : Tendsto (↿γ) (𝓝 y ×ˢ l₁.map (projIcc 0 1 zero_le_one)) l₂) :
+    (hγ : Tendsto ↿γ (𝓝 y ×ˢ l₁.map (projIcc 0 1 zero_le_one)) l₂) :
     Tendsto (↿fun x => ⇑(γ x).extend) (𝓝 y ×ˢ l₁) l₂ :=
   Filter.Tendsto.IccExtend _ hγ
 
@@ -198,7 +211,7 @@ theorem _root_.Filter.Tendsto.pathExtend
 alias _root_.Filter.Tendsto.path_extend := Filter.Tendsto.pathExtend
 
 theorem _root_.ContinuousAt.pathExtend {g : Y → ℝ} {l r : Y → X} (γ : ∀ y, Path (l y) (r y))
-    {y : Y} (hγ : ContinuousAt (↿γ) (y, projIcc 0 1 zero_le_one (g y))) (hg : ContinuousAt g y) :
+    {y : Y} (hγ : ContinuousAt ↿γ (y, projIcc 0 1 zero_le_one (g y))) (hg : ContinuousAt g y) :
     ContinuousAt (fun i => (γ i).extend (g i)) y :=
   hγ.IccExtend (fun x => γ x) hg
 
@@ -270,10 +283,10 @@ def trans (γ : Path x y) (γ' : Path y z) : Path x z where
   toFun := (fun t : ℝ => if t ≤ 1 / 2 then γ.extend (2 * t) else γ'.extend (2 * t - 1)) ∘ (↑)
   continuous_toFun := by
     refine
-      (Continuous.if_le ?_ ?_ continuous_id continuous_const (by norm_num)).comp
+      (Continuous.if_le ?_ ?_ continuous_id continuous_const (by simp)).comp
         continuous_subtype_val <;>
     fun_prop
-  source' := by norm_num
+  source' := by simp
   target' := by norm_num
 
 theorem trans_apply (γ : Path x y) (γ' : Path y z) (t : I) :
@@ -373,6 +386,8 @@ def cast (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : Path x' y' where
   source' := by simp [hx]
   target' := by simp [hy]
 
+@[simp] theorem cast_rfl_rfl (γ : Path x y) : γ.cast rfl rfl = γ := rfl
+
 @[simp]
 theorem symm_cast {a₁ a₂ b₁ b₂ : X} (γ : Path a₂ b₂) (ha : a₁ = a₂) (hb : b₁ = b₂) :
     (γ.cast ha hb).symm = γ.symm.cast hb ha :=
@@ -391,6 +406,15 @@ theorem extend_cast {x' y'} (γ : Path x y) (hx : x' = x) (hy : y' = y) :
 @[simp]
 theorem cast_coe (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : (γ.cast hx hy : I → X) = γ :=
   rfl
+
+lemma bijective_cast {x' y' : X} (hx : x' = x) (hy : y' = y) : Bijective (Path.cast · hx hy) := by
+  subst_vars; exact bijective_id
+
+@[congr]
+lemma exists_congr {x₁ x₂ y₁ y₂ : X} {p : Path x₁ y₁ → Prop}
+    (hx : x₁ = x₂) (hy : y₁ = y₂) :
+    (∃ γ, p γ) ↔ (∃ (γ : Path x₂ y₂), p (γ.cast hx hy)) :=
+  bijective_cast hx hy |>.surjective.exists
 
 @[continuity, fun_prop]
 theorem symm_continuous_family {ι : Type*} [TopologicalSpace ι]
@@ -499,13 +523,13 @@ end Pi
 
 
 /-- Pointwise multiplication of paths in a topological group. -/
-@[to_additive (attr := simps!) "Pointwise addition of paths in a topological additive group."]
+@[to_additive (attr := simps!) /-- Pointwise addition of paths in a topological additive group. -/]
 protected def mul [Mul X] [ContinuousMul X] {a₁ b₁ a₂ b₂ : X} (γ₁ : Path a₁ b₁) (γ₂ : Path a₂ b₂) :
     Path (a₁ * a₂) (b₁ * b₂) :=
   (γ₁.prod γ₂).map continuous_mul
 
 /-- Pointwise inversion of paths in a topological group. -/
-@[to_additive (attr := simps!) "Pointwise negation of paths in a topological group."]
+@[to_additive (attr := simps!) /-- Pointwise negation of paths in a topological group. -/]
 def inv {a b : X} [Inv X] [ContinuousInv X] (γ : Path a b) :
     Path a⁻¹ b⁻¹ :=
   γ.map continuous_inv
@@ -617,7 +641,7 @@ theorem range_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf�
   have : range f = univ := by
     rw [range_eq_univ]
     intro t
-    have h₁ : Continuous (Set.IccExtend (zero_le_one' ℝ) f) := by continuity
+    have h₁ : Continuous (Set.IccExtend (zero_le_one' ℝ) f) := by fun_prop
     have := intermediate_value_Icc (zero_le_one' ℝ) h₁.continuousOn
     · rw [IccExtend_left, IccExtend_right, Icc.mk_zero, Icc.mk_one, hf₀, hf₁] at this
       rcases this t.2 with ⟨w, hw₁, hw₂⟩

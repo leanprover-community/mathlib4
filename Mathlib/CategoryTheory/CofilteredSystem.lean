@@ -14,7 +14,7 @@ This file deals with properties of cofiltered (and inverse) systems.
 
 Given a functor `F : J ⥤ Type v`:
 
-* For `j : J`, `F.eventualRange j` is the intersections of all ranges of morphisms `F.map f`
+* For `j : J`, `F.eventualRange j` is the intersection of all ranges of morphisms `F.map f`
   where `f` has codomain `j`.
 * `F.IsMittagLeffler` states that the functor `F` satisfies the Mittag-Leffler
   condition: the ranges of morphisms `F.map f` (with `f` having codomain `j`) stabilize.
@@ -105,11 +105,7 @@ To specialize: given a locally finite connected graph, take `Jᵒᵖ` to be `ℕ
 Elements of `F.sections` can be read off as infinite rays in the graph. -/
 theorem nonempty_sections_of_finite_inverse_system {J : Type u} [Preorder J] [IsDirected J (· ≤ ·)]
     (F : Jᵒᵖ ⥤ Type v) [∀ j : Jᵒᵖ, Finite (F.obj j)] [∀ j : Jᵒᵖ, Nonempty (F.obj j)] :
-    F.sections.Nonempty := by
-  cases isEmpty_or_nonempty J
-  · haveI : IsEmpty Jᵒᵖ := ⟨fun j => isEmptyElim j.unop⟩ -- TODO: this should be a global instance
-    exact ⟨isEmptyElim, by apply isEmptyElim⟩
-  · exact nonempty_sections_of_finite_cofiltered_system _
+    F.sections.Nonempty := nonempty_sections_of_finite_cofiltered_system F
 
 end FiniteKonig
 
@@ -193,7 +189,8 @@ theorem eventualRange_mapsTo (f : j ⟶ i) :
 
 theorem IsMittagLeffler.eq_image_eventualRange (h : F.IsMittagLeffler) (f : j ⟶ i) :
     F.eventualRange i = F.map f '' F.eventualRange j :=
-  (h.subset_image_eventualRange F f).antisymm <| mapsTo'.1 (F.eventualRange_mapsTo f)
+  (h.subset_image_eventualRange F f).antisymm <| mapsTo_iff_image_subset.1
+    (F.eventualRange_mapsTo f)
 
 theorem eventualRange_eq_iff {f : i ⟶ j} :
     F.eventualRange j = range (F.map f) ↔

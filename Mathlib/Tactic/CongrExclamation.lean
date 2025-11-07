@@ -494,8 +494,8 @@ def CongrMetaM.nextPattern : CongrMetaM (Option (TSyntax `rcasesPat)) := do
     else
       (none, s)
 
-private theorem heq_imp_of_eq_imp {α : Sort*} {x y : α} {p : HEq x y → Prop}
-    (h : (he : x = y) → p (heq_of_eq he)) (he : HEq x y) : p he := by
+private theorem heq_imp_of_eq_imp {α : Sort*} {x y : α} {p : x ≍ y → Prop}
+    (h : (he : x = y) → p (heq_of_eq he)) (he : x ≍ y) : p he := by
   cases he
   exact h rfl
 
@@ -510,9 +510,9 @@ that is trivial. If there are any patterns in the current `CongrMetaM` state the
 of `Lean.MVarId.intros` it does `Lean.Elab..Tactic.RCases.rintro`.
 
 Cleaning up includes:
-- deleting hypotheses of the form `HEq x x`, `x = x`, and `x ↔ x`.
+- deleting hypotheses of the form `x ≍ x`, `x = x`, and `x ↔ x`.
 - deleting Prop hypotheses that are already in the local context.
-- converting `HEq x y` to `x = y` if possible.
+- converting `x ≍ y` to `x = y` if possible.
 - converting `x = y` to `x ↔ y` if possible.
 -/
 partial

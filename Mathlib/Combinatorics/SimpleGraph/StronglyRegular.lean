@@ -104,9 +104,7 @@ theorem IsSRGWith.card_neighborFinset_union_of_adj {v w : V} (h : G.IsSRGWith n 
 theorem compl_neighborFinset_sdiff_inter_eq {v w : V} :
     (G.neighborFinset v)ᶜ \ {v} ∩ ((G.neighborFinset w)ᶜ \ {w}) =
       ((G.neighborFinset v)ᶜ ∩ (G.neighborFinset w)ᶜ) \ ({w} ∪ {v}) := by
-  ext
-  rw [← not_iff_not]
-  simp [imp_iff_not_or, or_assoc, or_comm, or_left_comm]
+  grind
 
 theorem sdiff_compl_neighborFinset_inter_eq {v w : V} (h : G.Adj v w) :
     ((G.neighborFinset v)ᶜ ∩ (G.neighborFinset w)ᶜ) \ ({w} ∪ {v}) =
@@ -131,7 +129,8 @@ theorem IsSRGWith.card_commonNeighbors_eq_of_adj_compl (h : G.IsSRGWith n k ℓ 
   simp_rw [compl_neighborFinset_sdiff_inter_eq]
   have hne : v ≠ w := ne_of_adj _ ha
   rw [compl_adj] at ha
-  rw [card_sdiff, ← insert_eq, card_insert_of_notMem, card_singleton, ← Finset.compl_union]
+  rw [card_sdiff_of_subset, ← insert_eq, card_insert_of_notMem, card_singleton,
+    ← Finset.compl_union]
   · rw [card_compl, h.card_neighborFinset_union_of_not_adj hne ha.2, ← h.card]
   · simp only [hne.symm, not_false_iff, mem_singleton]
   · intro u
@@ -174,8 +173,9 @@ theorem IsSRGWith.param_eq
     have s : {v} ⊆ G.neighborFinset w \ G.neighborFinset v := by
       rw [singleton_subset_iff, mem_sdiff, mem_neighborFinset]
       exact ⟨hw.symm, G.notMem_neighborFinset_self v⟩
-    rw [inter_comm, neighborFinset_compl, ← inter_sdiff_assoc, ← sdiff_eq_inter_compl, card_sdiff s,
-      card_singleton, ← sdiff_inter_self_left, card_sdiff inter_subset_left]
+    rw [inter_comm, neighborFinset_compl, ← inter_sdiff_assoc, ← sdiff_eq_inter_compl,
+      card_sdiff_of_subset s, card_singleton, ← sdiff_inter_self_left,
+      card_sdiff_of_subset inter_subset_left]
     congr
     · simp [h.regular w]
     · simp_rw [inter_comm, neighborFinset_def, ← Set.toFinset_inter, ← h.of_adj v w hw,

@@ -114,7 +114,7 @@ lemma ext {X Y : TopCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
 
 @[simp]
 lemma hom_ofHom {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : C(X, Y)) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {X Y : TopCat} (f : X ⟶ Y) :
@@ -154,11 +154,6 @@ equal function coercion for a continuous map `C(X, Y)`.
 
 instance inhabited : Inhabited TopCat :=
   ⟨TopCat.of Empty⟩
-
-@[deprecated
-  "Simply remove this from the `simp`/`rw` set: the LHS and RHS are now identical."
-  (since := "2025-01-30")]
-lemma hom_apply {X Y : TopCat} (f : X ⟶ Y) (x : X) : f x = ContinuousMap.toFun f.hom x := rfl
 
 /-- The discrete topology on any type. -/
 def discrete : Type u ⥤ TopCat.{u} where

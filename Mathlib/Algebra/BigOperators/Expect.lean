@@ -29,10 +29,10 @@ This file defines `Finset.expect`, the average (aka expectation) of a function o
 
 ## Implementation notes
 
-This definition is a special case of the general convex comnination operator in a convex space.
+This definition is a special case of the general convex combination operator in a convex space.
 However:
 1. We don't yet have general convex spaces.
-2. The uniform weights case is a overwhelmingly useful special case which should have its own API.
+2. The uniform weights case is an overwhelmingly useful special case which should have its own API.
 
 When convex spaces are finally defined, we should redefine `Finset.expect` in terms of that convex
 combination operator.
@@ -396,7 +396,7 @@ See `Function.Bijective.expect_comp` for a version without `h`. -/
 lemma expect_bijective (e : ι → κ) (he : Bijective e) (f : ι → M) (g : κ → M)
     (h : ∀ i, f i = g (e i)) : 𝔼 i, f i = 𝔼 i, g i :=
   expect_nbij e (fun _ _ ↦ mem_univ _) (fun i _ ↦ h i) he.injective.injOn <| by
-    simpa using he.surjective.surjOn _
+    simpa using he.surjective
 
 /-- `Fintype.expect_equiv` is a specialization of `Finset.expect_bij` that automatically fills in
 most arguments.

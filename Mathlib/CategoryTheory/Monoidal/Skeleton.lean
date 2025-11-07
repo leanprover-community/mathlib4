@@ -63,10 +63,9 @@ theorem toSkeleton_tensorObj (X Y : C) : toSkeleton (X ⊗ Y) = toSkeleton X * t
 
 /-- The skeleton of a braided monoidal category has a braided monoidal structure itself, induced by
 the equivalence. -/
-noncomputable instance instBraidedCategory [BraidedCategory C] : BraidedCategory (Skeleton C) := by
-  letI := braidedCategoryOfFullyFaithful
-    (Monoidal.equivalenceTransported (skeletonEquivalence C).symm).inverse
-  exact this
+noncomputable instance instBraidedCategory [BraidedCategory C] : BraidedCategory (Skeleton C) :=
+  (BraidedCategory.ofFullyFaithful
+    (Monoidal.equivalenceTransported (skeletonEquivalence C).symm).inverse:)
 
 /--
 The skeleton of a braided monoidal category can be viewed as a commutative monoid, where the

@@ -183,7 +183,7 @@ partial def linearFormOfExpr (red : TransparencyMode) (m : ExprMap) (e : Expr) :
   let e ← whnfR e
   match e.numeral? with
   | some 0 => return ⟨m, TreeMap.empty⟩
-  | some (n+1) => return ⟨m, scalar (n+1)⟩
+  | some (n + 1) => return ⟨m, scalar (n + 1)⟩
   | none =>
   match e.getAppFnArgs with
   | (``HMul.hMul, #[_, _, _, _, e1, e2]) => do

@@ -64,7 +64,7 @@ theorem exists_primitive_element_of_finite_top [Finite E] : ∃ α : E, F⟮α�
     rw [show x = α ^ n by norm_cast; rw [hn, Units.val_mk0]]
     exact zpow_mem (mem_adjoin_simple_self F (E := E) ↑α) n
 
-/-- Primitive element theorem for finite dimensional extension of a finite field. -/
+/-- Primitive element theorem for finite-dimensional extension of a finite field. -/
 theorem exists_primitive_element_of_finite_bot [Finite F] [FiniteDimensional F E] :
     ∃ α : E, F⟮α⟯ = ⊤ :=
   haveI : Finite E := Module.finite_of_finite F
@@ -389,7 +389,7 @@ theorem primitive_element_iff_algHom_eq_of_eval' (α : E) :
     (Algebra.IsSeparable.isSeparable F α) (hA _), ← toFinset_card,
     ← (Algebra.IsAlgebraic.of_finite F E).range_eval_eq_rootSet_minpoly_of_splits _ hA α,
     ← AlgHom.card_of_splits F E A hA, Fintype.card, toFinset_range, Finset.card_image_iff,
-    Finset.coe_univ, ← injective_iff_injOn_univ]
+    Finset.coe_univ, injOn_univ]
 
 theorem primitive_element_iff_algHom_eq_of_eval (α : E)
     (φ : E →ₐ[F] A) : F⟮α⟯ = ⊤ ↔ ∀ ψ : E →ₐ[F] A, φ α = ψ α → φ = ψ := by

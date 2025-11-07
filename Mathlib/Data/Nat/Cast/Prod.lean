@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Prod
+import Mathlib.Data.Nat.Cast.Defs
 
 /-!
 # The product of two `AddMonoidWithOne`s.

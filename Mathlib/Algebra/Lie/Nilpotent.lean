@@ -149,7 +149,7 @@ theorem lowerCentralSeries_map_eq_lcs : (lowerCentralSeries R L N k).map N.incl 
   rw [lowerCentralSeries_eq_lcs_comap, LieSubmodule.map_comap_incl, inf_eq_right]
   apply lcs_le_self
 
-theorem lowerCentralSeries_eq_bot_iff_lcs_eq_bot:
+theorem lowerCentralSeries_eq_bot_iff_lcs_eq_bot :
     lowerCentralSeries R L N k = ⊥ ↔ lcs k N = ⊥ := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [← N.lowerCentralSeries_map_eq_lcs, ← LieModuleHom.le_ker_iff_map]
@@ -276,11 +276,6 @@ variable {R L} in
 lemma IsNilpotent.mk {k : ℕ} (h : lowerCentralSeries R L M k = ⊥) : IsNilpotent L M :=
   (isNilpotent_iff R L M).mpr ⟨k, h⟩
 
-@[deprecated IsNilpotent.nilpotent (since := "2025-01-07")]
-theorem exists_lowerCentralSeries_eq_bot_of_isNilpotent [IsNilpotent L M] :
-    ∃ k, lowerCentralSeries R L M k = ⊥ :=
-  IsNilpotent.nilpotent R L M
-
 @[simp] lemma iInf_lowerCentralSeries_eq_bot_of_isNilpotent [IsNilpotent L M] :
     ⨅ k, lowerCentralSeries R L M k = ⊥ := by
   obtain ⟨k, hk⟩ := IsNilpotent.nilpotent R L M
@@ -337,7 +332,7 @@ theorem isNilpotent_toEnd_of_isNilpotent₂ [IsNilpotent L M] (x y : L) :
     _root_.IsNilpotent (toEnd R L M x ∘ₗ toEnd R L M y) := by
   obtain ⟨k, hM⟩ := IsNilpotent.nilpotent R L M
   replace hM : lowerCentralSeries R L M (2 * k) = ⊥ := by
-    rw [eq_bot_iff, ← hM]; exact antitone_lowerCentralSeries R L M (by omega)
+    rw [eq_bot_iff, ← hM]; exact antitone_lowerCentralSeries R L M (by cutsat)
   use k
   ext m
   rw [Module.End.pow_apply, LinearMap.zero_apply, ← LieSubmodule.mem_bot (R := R) (L := L), ← hM]
@@ -509,14 +504,7 @@ theorem coe_lcs_range_toEnd_eq (k : ℕ) :
   | succ k ih =>
     simp only [lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span', ←
       (lowerCentralSeries R (toEnd R L M).range M k).mem_toSubmodule, ih]
-    congr
-    ext m
-    constructor
-    · rintro ⟨⟨-, ⟨y, rfl⟩⟩, -, n, hn, rfl⟩
-      exact ⟨y, LieSubmodule.mem_top _, n, hn, rfl⟩
-    · rintro ⟨x, -, n, hn, rfl⟩
-      exact
-        ⟨⟨toEnd R L M x, LieHom.mem_range_self _ x⟩, LieSubmodule.mem_top _, n, hn, rfl⟩
+    simp
 
 @[simp]
 theorem isNilpotent_range_toEnd_iff :
@@ -916,13 +904,7 @@ theorem coe_lcs_eq [LieModule R L M] :
     simp_rw [lowerCentralSeries_succ, lcs_succ, LieSubmodule.lieIdeal_oper_eq_linear_span', ←
       (I.lcs M k).mem_toSubmodule, ih, LieSubmodule.mem_toSubmodule, LieSubmodule.mem_top,
       true_and, (I : LieSubalgebra R L).coe_bracket_of_module]
-    congr
-    ext m
-    constructor
-    · rintro ⟨x, hx, m, hm, rfl⟩
-      exact ⟨⟨x, hx⟩, m, hm, rfl⟩
-    · rintro ⟨⟨x, hx⟩, m, hm, rfl⟩
-      exact ⟨x, hx, m, hm, rfl⟩
+    simp
 
 instance [IsNilpotent L I] : LieRing.IsNilpotent I := by
   let f : I →ₗ⁅R⁆ L := I.incl

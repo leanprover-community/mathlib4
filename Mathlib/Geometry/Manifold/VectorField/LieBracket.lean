@@ -134,6 +134,29 @@ lemma mlieBracket_swap : mlieBracket I V W = - mlieBracket I W V :=
 @[simp] lemma mlieBracket_self : mlieBracket I V V = 0 := by
   ext x; simp_rw [mlieBracket, mlieBracketWithin_self, Pi.zero_apply]
 
+/-- We have `[0, W] = 0` for all vector fields `W`: this depends on the junk value 0
+if `W` is not differentiable. Version within a set. -/
+@[simp]
+lemma mlieBracketWithin_zero_left : mlieBracketWithin I 0 W s = 0 := by
+  ext x
+  simp [mlieBracketWithin]
+
+/-- We have `[W, 0] = 0` for all vector fields `W`: this depends on the junk value 0
+if `W` is not differentiable. Version within a set. -/
+@[simp]
+lemma mlieBracketWithin_zero_right : mlieBracketWithin I W 0 s = 0 := by
+  rw [mlieBracketWithin_swap]; simp
+
+/-- We have `[0, W] = 0` for all vector fields `W`: this depends on the junk value 0
+if `W` is not differentiable. -/
+@[simp]
+lemma mlieBracket_zero_left : mlieBracket I 0 W = 0 := by simp [← mlieBracketWithin_univ]
+
+/-- We have `[W, 0] = 0` for all vector fields `W`: this depends on the junk value 0
+if `W` is not differentiable. -/
+@[simp]
+lemma mlieBracket_zero_right : mlieBracket I W 0 = 0 := by simp [← mlieBracketWithin_univ]
+
 /-- Variant of `mlieBracketWithin_congr_set` where one requires the sets to coincide only in
 the complement of a point. -/
 theorem mlieBracketWithin_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
@@ -155,7 +178,7 @@ theorem mlieBracketWithin_inter (ht : t ∈ 𝓝 x) :
   apply mlieBracketWithin_congr_set
   filter_upwards [ht] with y hy
   change (y ∈ s ∩ t) = (y ∈ s)
-  aesop
+  simp_all
 
 theorem mlieBracketWithin_of_mem_nhds (h : s ∈ 𝓝 x) :
     mlieBracketWithin I V W s x = mlieBracket I V W x := by
@@ -282,35 +305,45 @@ lemma _root_.MDifferentiableWithinAt.differentiableWithinAt_mpullbackWithin_vect
   exact ((contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.mdifferentiableAt
     le_rfl).comp_mdifferentiableWithinAt _ this
 
-lemma mlieBracketWithin_smul_left
+lemma mlieBracketWithin_const_smul_left
     (hV : MDifferentiableWithinAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) s x)
     (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I (c • V) W s x = c • mlieBracketWithin I V W s x := by
   simp only [mlieBracketWithin_apply]
-  rw [← ContinuousLinearMap.map_smul, mpullbackWithin_smul, lieBracketWithin_smul_left]
+  rw [← ContinuousLinearMap.map_smul, mpullbackWithin_smul, lieBracketWithin_const_smul_left]
   · exact hV.differentiableWithinAt_mpullbackWithin_vectorField
   · exact uniqueMDiffWithinAt_iff_inter_range.1 hs
 
-lemma mlieBracket_smul_left
+@[deprecated (since := "2025-07-04")]
+alias mlieBracketWithin_smul_left := mlieBracketWithin_const_smul_left
+
+lemma mlieBracket_const_smul_left
     (hV : MDifferentiableAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) x) :
     mlieBracket I (c • V) W x = c • mlieBracket I V W x := by
   simp only [← mlieBracketWithin_univ] at hV ⊢
-  exact mlieBracketWithin_smul_left hV (uniqueMDiffWithinAt_univ _)
+  exact mlieBracketWithin_const_smul_left hV (uniqueMDiffWithinAt_univ _)
 
-lemma mlieBracketWithin_smul_right
+@[deprecated (since := "2025-07-04")] alias mlieBracket_smul_left := mlieBracket_const_smul_left
+
+lemma mlieBracketWithin_const_smul_right
     (hW : MDifferentiableWithinAt I I.tangent (fun x ↦ (W x : TangentBundle I M)) s x)
     (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I V (c • W) s x = c • mlieBracketWithin I V W s x := by
   simp only [mlieBracketWithin_apply]
-  rw [← ContinuousLinearMap.map_smul, mpullbackWithin_smul, lieBracketWithin_smul_right]
+  rw [← ContinuousLinearMap.map_smul, mpullbackWithin_smul, lieBracketWithin_const_smul_right]
   · exact hW.differentiableWithinAt_mpullbackWithin_vectorField
   · exact uniqueMDiffWithinAt_iff_inter_range.1 hs
 
-lemma mlieBracket_smul_right
+@[deprecated (since := "2025-07-04")]
+alias mlieBracketWithin_smul_right := mlieBracketWithin_const_smul_right
+
+lemma mlieBracket_const_smul_right
     (hW : MDifferentiableAt I I.tangent (fun x ↦ (W x : TangentBundle I M)) x) :
     mlieBracket I V (c • W) x = c • mlieBracket I V W x := by
   simp only [← mlieBracketWithin_univ] at hW ⊢
-  exact mlieBracketWithin_smul_right hW (uniqueMDiffWithinAt_univ _)
+  exact mlieBracketWithin_const_smul_right hW (uniqueMDiffWithinAt_univ _)
+
+@[deprecated (since := "2025-07-04")] alias mlieBracket_smul_right := mlieBracket_const_smul_right
 
 lemma mlieBracketWithin_add_left
     (hV : MDifferentiableWithinAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) s x)
@@ -733,12 +766,11 @@ protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField
   locally a smooth function, which coincides with the initial Lie bracket by invariance
   under diffeos. -/
   have min2 : minSmoothness 𝕜 2 ≤ n + 1 := by
-    apply le_trans _ (add_le_add_right hmn 1)
-    rw [← minSmoothness_add, add_assoc]
+    grw [← hmn, ← minSmoothness_add, add_assoc]
     exact minSmoothness_monotone le_add_self
   apply contMDiffWithinAt_iff_le_ne_infty.2 (fun m' hm' h'm' ↦ ?_)
   have hn : 1 ≤ m' + 1 := le_add_self
-  have hm'n : m' + 1 ≤ n := le_trans (add_le_add_right hm' 1) (le_minSmoothness.trans hmn)
+  have hm'n : m' + 1 ≤ n := by grw [hm', ← hmn, ← le_minSmoothness]
   have pre_mem : (extChartAt I x) ⁻¹' ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s)
       ∈ 𝓝[s] x := by
     filter_upwards [self_mem_nhdsWithin,
@@ -772,9 +804,9 @@ protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField
     eventually_eventually_nhdsWithin.2 (eventuallyEq_mpullback_mpullbackWithin_extChartAt U),
     eventually_eventually_nhdsWithin.2 (eventuallyEq_mpullback_mpullbackWithin_extChartAt V),
     eventually_contMDiffWithinAt_mpullbackWithin_extChartAt_symm (hU.of_le hm'n) hs hx
-      (add_le_add_right hm'n 1) (by simp [h'm']),
+      (by gcongr) (by simp [h'm']),
     eventually_contMDiffWithinAt_mpullbackWithin_extChartAt_symm (hV.of_le hm'n) hs hx
-      (add_le_add_right hm'n 1) (by simp [h'm']),
+      (by gcongr) (by simp [h'm']),
     nhdsWithin_le_nhds (chart_source_mem_nhds H x), self_mem_nhdsWithin]
     with y hy hyU hyV h'yU h'yV hy_chart hys
   simp only [Bundle.TotalSpace.mk_inj]

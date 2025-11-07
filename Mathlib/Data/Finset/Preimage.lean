@@ -91,7 +91,7 @@ theorem map_subset_iff_subset_preimage {f : α ↪ β} {s : Finset α} {t : Fins
 
 lemma card_preimage (s : Finset β) (f : α → β) (hf) [DecidablePred (· ∈ Set.range f)] :
     (s.preimage f hf).card = {x ∈ s | x ∈ Set.range f}.card :=
-  card_nbij f (by simp) (by simpa) (fun b hb ↦ by aesop)
+  card_nbij f (by simp [Set.MapsTo]) (by simpa) (fun b hb ↦ by aesop)
 
 theorem image_preimage [DecidableEq β] (f : α → β) (s : Finset β) [∀ x, Decidable (x ∈ Set.range f)]
     (hf : Set.InjOn f (f ⁻¹' ↑s)) : image f (preimage s f hf) = {x ∈ s | x ∈ Set.range f} :=

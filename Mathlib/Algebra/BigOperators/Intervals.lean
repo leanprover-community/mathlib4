@@ -3,13 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 import Mathlib.Algebra.Order.Interval.Finset.Basic
-import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Results about big operators over intervals
@@ -19,7 +16,7 @@ We prove results about big operators over intervals.
 
 open Nat
 
-variable {α M : Type*}
+variable {α G M : Type*}
 
 namespace Finset
 
@@ -52,12 +49,6 @@ theorem prod_Ico_succ_top {a b : ℕ} (hab : a ≤ b) (f : ℕ → M) :
   rw [← Finset.insert_Ico_right_eq_Ico_add_one hab, prod_insert right_notMem_Ico, mul_comm]
 
 @[to_additive]
-theorem prod_eq_prod_Ico_succ_bot {a b : ℕ} (hab : a < b) (f : ℕ → M) :
-    ∏ k ∈ Ico a b, f k = f a * ∏ k ∈ Ico (a + 1) b, f k := by
-  have ha : a ∉ Ico (a + 1) b := by simp
-  rw [← prod_insert ha, ← Finset.insert_Ico_add_one_left_eq_Ico  hab]
-
-@[to_additive]
 theorem prod_Ico_consecutive (f : ℕ → M) {m n k : ℕ} (hmn : m ≤ n) (hnk : n ≤ k) :
     ((∏ i ∈ Ico m n, f i) * ∏ i ∈ Ico n k, f i) = ∏ i ∈ Ico m k, f i :=
   Ico_union_Ico_eq_Ico hmn hnk ▸ Eq.symm (prod_union (Ico_disjoint_Ico_consecutive m n k))
@@ -67,7 +58,7 @@ theorem prod_Ioc_consecutive (f : ℕ → M) {m n k : ℕ} (hmn : m ≤ n) (hnk 
     ((∏ i ∈ Ioc m n, f i) * ∏ i ∈ Ioc n k, f i) = ∏ i ∈ Ioc m k, f i := by
   rw [← Ioc_union_Ioc_eq_Ioc hmn hnk, prod_union]
   apply disjoint_left.2 fun x hx h'x => _
-  intros x hx h'x
+  intro x hx h'x
   exact lt_irrefl _ ((mem_Ioc.1 h'x).1.trans_le (mem_Ioc.1 hx).2)
 
 @[to_additive]
@@ -101,7 +92,7 @@ theorem prod_Ico_eq_div {δ : Type*} [CommGroup δ] (f : ℕ → δ) {m n : ℕ}
   simpa only [div_eq_mul_inv] using prod_Ico_eq_mul_inv f h
 
 @[to_additive]
-theorem prod_range_div_prod_range {α : Type*} [CommGroup α] {f : ℕ → α} {n m : ℕ} (hnm : n ≤ m) :
+theorem prod_range_div_prod_range {G : Type*} [CommGroup G] {f : ℕ → G} {n m : ℕ} (hnm : n ≤ m) :
     ((∏ k ∈ range m, f k) / ∏ k ∈ range n, f k) = ∏ k ∈ range m with n ≤ k, f k := by
   rw [← prod_Ico_eq_div f hnm]
   congr
@@ -117,7 +108,6 @@ theorem sum_Ico_Ico_comm {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ → 
   refine sum_nbij' (fun x ↦ ⟨x.2, x.1⟩) (fun x ↦ ⟨x.2, x.1⟩) ?_ ?_ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) <;>
   simp only [Finset.mem_Ico, Sigma.forall, Finset.mem_sigma] <;>
-  rintro a b ⟨⟨h₁, h₂⟩, ⟨h₃, h₄⟩⟩ <;>
   omega
 
 /-- The two ways of summing over `(i, j)` in the range `a ≤ i < j < b` are equal. -/
@@ -128,7 +118,6 @@ theorem sum_Ico_Ico_comm' {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ →
   refine sum_nbij' (fun x ↦ ⟨x.2, x.1⟩) (fun x ↦ ⟨x.2, x.1⟩) ?_ ?_ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) <;>
   simp only [Finset.mem_Ico, Sigma.forall, Finset.mem_sigma] <;>
-  rintro a b ⟨⟨h₁, h₂⟩, ⟨h₃, h₄⟩⟩ <;>
   omega
 
 @[to_additive]
@@ -177,11 +166,6 @@ theorem prod_Ico_id_eq_factorial : ∀ n : ℕ, (∏ x ∈ Ico 1 (n + 1), x) = n
   | n + 1 => by
     rw [prod_Ico_succ_top <| Nat.succ_le_succ <| Nat.zero_le n, Nat.factorial_succ,
       prod_Ico_id_eq_factorial n, Nat.succ_eq_add_one, mul_comm]
-
-@[simp]
-theorem prod_range_add_one_eq_factorial : ∀ n : ℕ, (∏ x ∈ range n, (x + 1)) = n !
-  | 0 => rfl
-  | n + 1 => by simp [factorial, Finset.range_succ, prod_range_add_one_eq_factorial n]
 
 section GaussSum
 

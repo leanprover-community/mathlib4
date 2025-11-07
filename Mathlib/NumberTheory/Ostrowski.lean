@@ -82,18 +82,22 @@ variable {f g : AbsoluteValue ℚ ℝ}
 
 /-- Values of an absolute value on the rationals are determined by the values on the natural
 numbers. -/
-lemma eq_on_nat_iff_eq : (∀ n : ℕ , f n = g n) ↔ f = g := by
+lemma eq_on_nat_iff_eq : (∀ n : ℕ, f n = g n) ↔ f = g := by
   refine ⟨fun h ↦ ?_, fun h n ↦ congrFun (congrArg DFunLike.coe h) ↑n⟩
   ext1 z
   rw [← Rat.num_div_den z, map_div₀, map_div₀, h, eq_on_nat_iff_eq_on_int.mp h]
 
 /-- The equivalence class of an absolute value on the rationals is determined by its values on
 the natural numbers. -/
-lemma equiv_on_nat_iff_equiv : (∃ c : ℝ, 0 < c ∧ ∀ n : ℕ , f n ^ c = g n) ↔ f ≈ g := by
+lemma exists_nat_rpow_iff_isEquiv : (∃ c : ℝ, 0 < c ∧ ∀ n : ℕ, f n ^ c = g n) ↔ f.IsEquiv g := by
+  rw [isEquiv_iff_exists_rpow_eq]
   refine ⟨fun ⟨c, hc, h⟩ ↦ ⟨c, hc, ?_⟩, fun ⟨c, hc, h⟩ ↦ ⟨c, hc, (congrFun h ·)⟩⟩
   ext1 x
   rw [← Rat.num_div_den x, map_div₀, map_div₀, div_rpow (by positivity) (by positivity), h x.den,
-    ← apply_natAbs_eq,← apply_natAbs_eq, h (natAbs x.num)]
+    ← apply_natAbs_eq, ← apply_natAbs_eq, h (natAbs x.num)]
+
+@[deprecated (since := "2025-09-12")]
+alias equiv_on_nat_iff_equiv := exists_nat_rpow_iff_isEquiv
 
 section Non_archimedean
 
@@ -159,8 +163,8 @@ lemma is_prime_of_minimal_nat_zero_lt_and_lt_one : p.Prime := by
     obtain ⟨ha₀, hb₀⟩ : a ≠ 0 ∧ b ≠ 0 := by
       refine mul_ne_zero_iff.mp fun h ↦ ?_
       rwa [h, Nat.cast_zero, map_zero, lt_self_iff_false] at hp0
-    have hap : a < a * b := lt_mul_of_one_lt_right (by omega) (by omega)
-    have hbp : b < a * b := lt_mul_of_one_lt_left (by omega) (by omega)
+    have hap : a < a * b := lt_mul_of_one_lt_right (by cutsat) (by cutsat)
+    have hbp : b < a * b := lt_mul_of_one_lt_left (by cutsat) (by cutsat)
     have ha :=
       le_of_not_gt <| not_and.mp ((hmin a).mt hap.not_ge) (map_pos_of_ne_zero f (mod_cast ha₀))
     have hb :=
@@ -226,12 +230,12 @@ lemma exists_pos_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) := by
 include hf_nontriv bdd in
 /-- If `f` is bounded and not trivial, then it is equivalent to a p-adic absolute value. -/
 theorem equiv_padic_of_bounded :
-    ∃! p, ∃ (_ : Fact p.Prime), f ≈ (padic p) := by
+    ∃! p, ∃ (_ : Fact p.Prime), f.IsEquiv (padic p) := by
   obtain ⟨p, hfp, hmin⟩ := exists_minimal_nat_zero_lt_and_lt_one hf_nontriv bdd
   have hprime := is_prime_of_minimal_nat_zero_lt_and_lt_one hfp.1 hfp.2 hmin
   have hprime_fact : Fact p.Prime := ⟨hprime⟩
   obtain ⟨t, h⟩ := exists_pos_eq_pow_neg hfp.1 hfp.2 hmin
-  simp_rw [← equiv_on_nat_iff_equiv]
+  simp_rw [← exists_nat_rpow_iff_isEquiv]
   refine ⟨p, ⟨hprime_fact, t⁻¹, inv_pos_of_pos h.1, fun n ↦ ?_⟩, fun q ⟨hq_prime, h_equiv⟩ ↦ ?_⟩
   · have ht : t⁻¹ ≠ 0 := inv_ne_zero h.1.ne'
     rcases eq_or_ne n 0 with rfl | hn -- Separate cases n = 0 and n ≠ 0
@@ -267,7 +271,7 @@ Every unbounded absolute value on `ℚ` is equivalent to the standard absolute v
 unique real place of `ℚ`. -/
 def real : AbsoluteValue ℚ ℝ where
   toFun x := |x|
-  map_mul' x y := by simpa using abs_mul (x : ℝ) (y : ℝ)
+  map_mul' x y := by simp
   nonneg' x := by simp
   eq_zero' x := by simp
   add_le' x y := by simpa using abs_add_le (x : ℝ) (y : ℝ)
@@ -334,12 +338,12 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
     calc
     f n = (f ↑(n ^ k)) ^ (k : ℝ)⁻¹ := by
       rw [Nat.cast_pow, map_pow, ← rpow_natCast, rpow_rpow_inv (by positivity) (by positivity)]
-    _  ≤ (n₀ * (logb n₀ ↑(n ^ k) + 1)) ^ (k : ℝ)⁻¹ := by
+    _ ≤ (n₀ * (logb n₀ ↑(n ^ k) + 1)) ^ (k : ℝ)⁻¹ := by
       gcongr
       exact h_ineq1 <| one_le_pow₀ (one_le_iff_ne_zero.mpr h₀)
-    _  = (n₀ * (k * logb n₀ n + 1)) ^ (k : ℝ)⁻¹ := by
+    _ = (n₀ * (k * logb n₀ n + 1)) ^ (k : ℝ)⁻¹ := by
       rw [Nat.cast_pow, logb_pow]
-    _  ≤ (n₀ * (k * logb n₀ n + k)) ^ (k : ℝ)⁻¹ := by
+    _ ≤ (n₀ * (k * logb n₀ n + k)) ^ (k : ℝ)⁻¹ := by
       gcongr
       exact one_le_cast.mpr hk
     _ = (n₀ * (logb n₀ n + 1)) ^ (k : ℝ)⁻¹ * k ^ (k : ℝ)⁻¹ := by
@@ -350,7 +354,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
   · simp
   refine le_of_tendsto_of_tendsto tendsto_const_nhds ?_ (eventually_atTop.mpr ⟨1, h_ineq2⟩)
   nth_rw 2 [← mul_one 1]
-  have : 0 < logb n₀ n := logb_pos (mod_cast hn₀) (by norm_cast; omega)
+  have : 0 < logb n₀ n := logb_pos (mod_cast hn₀) (by norm_cast; cutsat)
   exact (tendsto_const_rpow_inv (by positivity)).mul tendsto_nat_rpow_inv
 
 -- ## Step 2: given m, n ≥ 2 and |m| = m^s, |n| = n^t for s, t > 0, we have t ≤ s
@@ -403,7 +407,7 @@ lemma le_pow_log : f n ≤ f m ^ logb m n := by
       atTop (𝓝 (f m ^ logb m n)) := by
     nth_rw 2 [← one_mul (f ↑m ^ logb ↑m ↑n)]
     exact (tendsto_const_rpow_inv (expr_pos hm notbdd)).mul_const _
-  exact le_of_tendsto_of_tendsto (tendsto_const_nhds (x:= f ↑n)) this <|
+  exact le_of_tendsto_of_tendsto (tendsto_const_nhds (x := f ↑n)) this <|
     eventually_atTop.mpr ⟨2, fun b hb ↦ param_upperbound hm hn notbdd (ne_zero_of_lt hb)⟩
 
 include hm hn notbdd in
@@ -423,18 +427,18 @@ private lemma eq_of_eq_pow {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t) :
 include notbdd in
 /-- If `f` is not bounded and not trivial, then it is equivalent to the standard absolute value on
 `ℚ`. -/
-theorem equiv_real_of_unbounded : f ≈ real := by
+theorem equiv_real_of_unbounded : f.IsEquiv real := by
   obtain ⟨m, hm⟩ := Classical.exists_not_of_not_forall notbdd
   have oneltm : 1 < m := by
     contrapose! hm
     rcases le_one_iff_eq_zero_or_eq_one.mp hm with rfl | rfl <;> simp
-  rw [← equiv_on_nat_iff_equiv]
+  rw [← exists_nat_rpow_iff_isEquiv]
   set s := logb m (f m) with hs
   refine ⟨s⁻¹,
     inv_pos.mpr (logb_pos (Nat.one_lt_cast.mpr oneltm) (one_lt_of_not_bounded notbdd oneltm)),
     fun n ↦ ?_⟩
   rcases lt_trichotomy n 1 with h | rfl | h
-  · obtain rfl : n = 0 := by omega
+  · obtain rfl : n = 0 := by cutsat
     have : (logb (↑m) (f ↑m))⁻¹ ≠ 0 := by
       simp only [ne_eq, inv_eq_zero, logb_eq_zero, Nat.cast_eq_zero, Nat.cast_eq_one, map_eq_zero,
         not_or]
@@ -468,10 +472,14 @@ theorem equiv_real_or_padic (f : AbsoluteValue ℚ ℝ) (hf_nontriv : f.IsNontri
   · exact .inl <| equiv_real_of_unbounded bdd
 
 /-- The standard absolute value on `ℚ` is not equivalent to any `p`-adic absolute value. -/
-lemma not_real_equiv_padic (p : ℕ) [Fact p.Prime] : ¬ real ≈ (padic p) := by
+lemma not_real_isEquiv_padic (p : ℕ) [Fact p.Prime] : ¬ real.IsEquiv (padic p) := by
+  rw [isEquiv_iff_exists_rpow_eq]
   rintro ⟨c, hc₀, hc⟩
   apply_fun (· 2) at hc
   simp only [real_eq_abs, abs_ofNat, cast_ofNat] at hc
   exact ((padic_le_one p 2).trans_lt <| one_lt_rpow one_lt_two hc₀).ne' hc
+
+@[deprecated (since := "2025-09-12")]
+alias not_real_equiv_padic := not_real_isEquiv_padic
 
 end Rat.AbsoluteValue

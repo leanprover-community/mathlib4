@@ -73,10 +73,10 @@ by defining `SeparationQuotient.lift'` and `SeparationQuotient.map` operations.
 
 ## Implementation notes
 
-This files used to contain definitions of `separationRel α` and `UniformSpace.SeparationQuotient α`.
+This file used to contain definitions of `separationRel α` and `UniformSpace.SeparationQuotient α`.
 These definitions were equal (but not definitionally equal)
 to `{x : α × α | Inseparable x.1 x.2}` and `SeparationQuotient α`, respectively,
-and were added to the library before their geneeralizations to topological spaces.
+and were added to the library before their generalizations to topological spaces.
 
 In https://github.com/leanprover-community/mathlib4/pull/10644, we migrated from these definitions
 to more general `Inseparable` and `SeparationQuotient`.
@@ -158,7 +158,7 @@ theorem eq_of_uniformity_basis {α : Type*} [UniformSpace α] [T0Space α] {ι :
   (hs.inseparable_iff_uniformity.2 @h).eq
 
 theorem eq_of_forall_symmetric {α : Type*} [UniformSpace α] [T0Space α] {x y : α}
-    (h : ∀ {V}, V ∈ 𝓤 α → IsSymmetricRel V → (x, y) ∈ V) : x = y :=
+    (h : ∀ {V}, V ∈ 𝓤 α → SetRel.IsSymm V → (x, y) ∈ V) : x = y :=
   eq_of_uniformity_basis hasBasis_symmetric (by simpa)
 
 theorem eq_of_clusterPt_uniformity [T0Space α] {x y : α} (h : ClusterPt (x, y) (𝓤 α)) : x = y :=
@@ -184,7 +184,7 @@ theorem isClosed_of_spaced_out [T0Space α] {V₀ : Set (α × α)} (V₀_in : V
   rcases hx (inter_mem V₁_in V_in) with ⟨z, hz, hz'⟩
   obtain rfl : z = y := by
     by_contra hzy
-    exact hs hz' hy' hzy (h_comp <| mem_comp_of_mem_ball V₁_symm (ball_inter_left x _ _ hz) hy)
+    exact hs hz' hy' hzy (h_comp <| mem_comp_of_mem_ball (ball_inter_left x _ _ hz) hy)
   exact ball_inter_right x _ _ hz
 
 theorem isClosed_range_of_spaced_out {ι} [T0Space α] {V₀ : Set (α × α)} (V₀_in : V₀ ∈ 𝓤 α)
@@ -212,7 +212,7 @@ instance instUniformSpace : UniformSpace (SeparationQuotient α) where
   comp := fun t ht ↦ by
     rcases comp_open_symm_mem_uniformity_sets ht with ⟨U, hU, hUo, -, hUt⟩
     refine mem_of_superset (mem_lift' <| image_mem_map hU) ?_
-    simp only [subset_def, Prod.forall, mem_compRel, mem_image, Prod.ext_iff]
+    simp only [subset_def, Prod.forall, SetRel.mem_comp, mem_image, Prod.ext_iff]
     rintro _ _ ⟨_, ⟨⟨x, y⟩, hxyU, rfl, rfl⟩, ⟨⟨y', z⟩, hyzU, hy, rfl⟩⟩
     have : y' ⤳ y := (mk_eq_mk.1 hy).specializes
     exact @hUt (x, z) ⟨y', this.mem_open (UniformSpace.isOpen_ball _ hUo) hxyU, hyzU⟩

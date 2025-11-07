@@ -91,7 +91,7 @@ theorem ext {X Y : Grothendieck F} (f g : Hom X Y) (w_base : f.base = g.base)
   cases f; cases g
   congr
   dsimp at w_base
-  aesop_cat
+  cat_disch
 
 /-- The identity morphism in the Grothendieck category.
 -/
@@ -312,7 +312,7 @@ def compAsSmallFunctorEquivalenceFunctor :
 
 /-- Taking the Grothendieck construction on `F ⋙ asSmallFunctor`, where
 `asSmallFunctor : Cat ⥤ Cat` is the functor which turns each category into a small category of a
-(potentiall) larger universe, is equivalent to the Grothendieck construction on `F` itself. -/
+(potentially) larger universe, is equivalent to the Grothendieck construction on `F` itself. -/
 @[simps]
 def compAsSmallFunctorEquivalence :
     Grothendieck (F ⋙ Cat.asSmallFunctor.{w}) ≌ Grothendieck F where
@@ -446,11 +446,11 @@ def preInv (G : D ≌ C) : Grothendieck F ⥤ Grothendieck (G.functor ⋙ F) :=
   map (whiskerRight G.counitInv F) ⋙ Grothendieck.pre (G.functor ⋙ F) G.inverse
 
 variable {F} in
-lemma pre_comp_map (G: D ⥤ C) {H : C ⥤ Cat} (α : F ⟶ H) :
+lemma pre_comp_map (G : D ⥤ C) {H : C ⥤ Cat} (α : F ⟶ H) :
     pre F G ⋙ map α = map (whiskerLeft G α) ⋙ pre H G := rfl
 
 variable {F} in
-lemma pre_comp_map_assoc (G: D ⥤ C) {H : C ⥤ Cat} (α : F ⟶ H) {E : Type*} [Category E]
+lemma pre_comp_map_assoc (G : D ⥤ C) {H : C ⥤ Cat} (α : F ⟶ H) {E : Type*} [Category E]
     (K : Grothendieck H ⥤ E) : pre F G ⋙ map α ⋙ K= map (whiskerLeft G α) ⋙ pre H G ⋙ K := rfl
 
 variable {E : Type*} [Category E] in
