@@ -127,29 +127,14 @@ end
 
 section
 
-variable {I : C}
-
 attribute [local instance] ChosenPullback.id
 
 attribute [local instance] ChosenPullback.comp
 
-/-- The chosen pullback functor of the identity morphism is naturally isomorphic to the
-identity functor. -/
-def _root_.CategoryTheory.Over.ChosenPullback.pullbackId : pullback (𝟙 I) ≅ 𝟭 (Over I) :=
-  conjugateIsoEquiv (mapPullbackAdj (𝟙 _)) (Adjunction.id (C := Over _)) (Over.mapId _).symm
-
-/-- The chosen pullback functor of a composition of morphisms is naturally isomorphic to
-the composition of the chosen pullback functors. -/
-def _root_.CategoryTheory.Over.ChosenPullback.pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [ChosenPullback f] [ChosenPullback g] :
-    pullback (f ≫ g) ≅ pullback g ⋙ pullback f :=
-  conjugateIsoEquiv (mapPullbackAdj _) ((mapPullbackAdj _).comp (mapPullbackAdj _))
-    (Over.mapComp _ _).symm
-
-/-- The identity morphisms `𝟙` are exponentiable. -/
+/-- The identity morphisms `𝟙 _` are exponentiable. -/
 @[simps]
 instance id (I : C) : ExponentiableMorphism (𝟙 I) :=
-  ⟨𝟭 _, ofNatIsoLeft (F:= 𝟭 _) Adjunction.id (pullbackId).symm⟩
+  ⟨𝟭 _, ofNatIsoLeft (F:= 𝟭 _) Adjunction.id (pullbackId I).symm⟩
 
 /-- The pushforward of the identity is naturally isomorphic to the identity functor. -/
 def pushforwardIdIso (I : C) : pushforward (𝟙 I) ≅ 𝟭 (Over I) := Iso.refl _
