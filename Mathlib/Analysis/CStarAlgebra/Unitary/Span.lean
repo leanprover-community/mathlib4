@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unitary
-import Mathlib.Analysis.NormedSpace.Normalize
+import Mathlib.Analysis.Normed.Module.Normalize
 
 /-! # Unitary elements span C⋆-algebras
 

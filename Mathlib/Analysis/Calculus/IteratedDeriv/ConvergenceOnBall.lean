@@ -5,7 +5,7 @@ Authors: Vasilii Nesterov
 -/
 import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-import Mathlib.Analysis.NormedSpace.Connected
+import Mathlib.Analysis.Normed.Module.Connected
 import Mathlib.Analysis.RCLike.Basic
 
 /-!
