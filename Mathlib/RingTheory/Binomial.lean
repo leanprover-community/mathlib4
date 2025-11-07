@@ -11,7 +11,7 @@ import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Data.NNRat.Order
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.Polynomial.Pochhammer
-import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Field
 import Mathlib.Tactic.Module
 
 /-!
@@ -162,6 +162,16 @@ theorem multichoose_two (k : ℕ) : multichoose (2 : R) k = k + 1 := by
     rw [one_add_one_eq_two.symm, multichoose_succ_succ, multichoose_one, one_add_one_eq_two, ih,
       Nat.cast_succ, add_comm]
 
+attribute [local instance] BinomialRing.toIsAddTorsionFree in
+lemma map_multichoose {R S F : Type*} [Ring R] [Ring S] [BinomialRing R] [BinomialRing S]
+    [FunLike F R S] [RingHomClass F R S] (f : F) (a : R) (n : ℕ) :
+    f (Ring.multichoose a n) = Ring.multichoose (f a) n := by
+  apply nsmul_right_injective n.factorial_ne_zero
+  simp only [← map_nsmul, Ring.factorial_nsmul_multichoose_eq_ascPochhammer,
+    ← Polynomial.eval₂_smulOneHom_eq_smeval, Polynomial.hom_eval₂, ← RingHom.coe_coe f]
+  congr
+  exact Subsingleton.elim _ _
+
 end Ring
 
 end Multichoose
@@ -264,7 +274,7 @@ noncomputable instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] [Pow R �
   multichoose r n := (n.factorial : ℚ≥0)⁻¹ • Polynomial.smeval (ascPochhammer ℕ n) r
   factorial_nsmul_multichoose r n := by
     match_scalars
-    field_simp
+    field
 
 end Basic_Instances
 
@@ -508,6 +518,11 @@ theorem add_choose_eq [Ring R] [BinomialRing R] {r s : R} (k : ℕ) (h : Commute
     ← mul_assoc (x.2.factorial : R), Nat.cast_commute x.2.factorial,
     mul_assoc _ (x.2.factorial : R), ← nsmul_eq_mul x.2.factorial]
   simp [mul_assoc, descPochhammer_eq_factorial_smul_choose]
+
+lemma map_choose {R S F : Type*} [Ring R] [Ring S] [BinomialRing R] [BinomialRing S]
+    [FunLike F R S] [RingHomClass F R S] (f : F) (a : R) (n : ℕ) :
+    f (Ring.choose a n) = Ring.choose (f a) n := by
+  simpa using Ring.map_multichoose f (a - n + 1) n
 
 end Ring
 
