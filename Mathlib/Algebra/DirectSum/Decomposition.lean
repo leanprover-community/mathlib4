@@ -190,6 +190,16 @@ theorem AddSubmonoidClass.IsHomogeneous.mem_iff
   rw [← DirectSum.sum_support_decompose ℳ x]
   exact sum_mem (fun i _ ↦ hx i)
 
+theorem AddSubmonoidClass.IsHomogeneous.ext
+    {ℳ : ι → σ} [Decomposition ℳ] {P : Type*} [SetLike P M] [AddSubmonoidClass P M]
+    {p q : P} (hp : SetLike.IsHomogeneous ℳ p) (hq : SetLike.IsHomogeneous ℳ q)
+    (hpq : ∀ i, ∀ m ∈ ℳ i, m ∈ p ↔ m ∈ q) :
+    p = q := by
+  refine SetLike.ext fun m ↦ ?_
+  rw [AddSubmonoidClass.IsHomogeneous.mem_iff ℳ p hp,
+    AddSubmonoidClass.IsHomogeneous.mem_iff ℳ q hq]
+  exact forall_congr' fun i ↦ hpq i _ (decompose ℳ _ i).2
+
 end AddCommMonoid
 
 /-- The `-` in the statements below doesn't resolve without this line.

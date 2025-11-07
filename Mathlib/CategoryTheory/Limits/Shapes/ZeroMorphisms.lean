@@ -456,6 +456,17 @@ def isIsoZeroEquivIsoZero (X Y : C) : IsIso (0 : X ⟶ Y) ≃ (X ≅ 0) × (Y �
   · cat_disch
   · cat_disch
 
+/-- A zero morphism `0 : X ⟶ Y` is an isomorphism if and only if
+`X` and `Y` are zero objects.
+-/
+lemma isIsoZero_iff_source_target_isZero (X Y : C) : IsIso (0 : X ⟶ Y) ↔ IsZero X ∧ IsZero Y := by
+  constructor
+  · intro h
+    let h' := isIsoZeroEquivIsoZero _ _ h
+    exact ⟨(isZero_zero _).of_iso h'.1, (isZero_zero _).of_iso h'.2⟩
+  · intro ⟨hX, hY⟩
+    exact (isIsoZeroEquivIsoZero _ _).symm ⟨hX.isoZero, hY.isoZero⟩
+
 theorem isIso_of_source_target_iso_zero {X Y : C} (f : X ⟶ Y) (i : X ≅ 0) (j : Y ≅ 0) :
     IsIso f := by
   rw [zero_of_source_iso_zero f i]
