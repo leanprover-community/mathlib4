@@ -18,6 +18,7 @@ assert_not_exists Field
 
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory MonObj
 
+namespace CategoryTheory
 universe w v u
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
   {M G H X Y : C} [MonObj M] [GrpObj G] [GrpObj H]
@@ -69,7 +70,7 @@ abbrev Hom.group : Group (X ⟶ G) where
     _ = (f ≫ lift ι (𝟙 G)) ≫ μ := by simp
     _ = toUnit X ≫ η := by rw [Category.assoc]; simp
 
-scoped[MonObj] attribute [instance] Hom.group
+scoped[CategoryTheory.MonObj] attribute [instance] Hom.group
 
 lemma Hom.inv_def (f : X ⟶ G) : f⁻¹ = f ≫ ι := rfl
 
@@ -197,4 +198,6 @@ instance [BraidedCategory C] [IsCommMonObj G] {f : M ⟶ G} [IsMonHom f] : IsMon
 /-- If `G` is a commutative group object, then `Hom(X, G)` has a commutative group structure. -/
 abbrev Hom.commGroup [BraidedCategory C] [IsCommMonObj G] : CommGroup (X ⟶ G) where
 
-scoped[MonObj] attribute [instance] Hom.commGroup
+scoped[CategoryTheory.MonObj] attribute [instance] Hom.commGroup
+
+end CategoryTheory

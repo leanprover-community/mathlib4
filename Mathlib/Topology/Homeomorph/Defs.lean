@@ -372,38 +372,22 @@ def toHomeomorphOfContinuousOpen (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsO
   e.toHomeomorphOfIsInducing <|
     IsOpenEmbedding.of_continuous_injective_isOpenMap h₁ e.injective h₂ |>.toIsInducing
 
-@[deprecated (since := "2025-04-16")]
-alias _root_.Homeomorph.homeomorphOfContinuousOpen := toHomeomorphOfContinuousOpen
-
 @[deprecated (since := "2025-10-09")] alias toHomeomorphOfContinuousOpen_toEquiv :=
   toEquiv_toHomeomorphOfContinuousOpen
-
-@[deprecated (since := "2025-04-16")]
-alias _root_.Homeomorph.homeomorphOfContinuousOpen_toEquiv := toEquiv_toHomeomorphOfContinuousOpen
 
 @[simp]
 theorem toHomeomorphOfContinuousOpen_apply (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) :
     ⇑(e.toHomeomorphOfContinuousOpen h₁ h₂) = e := rfl
 
-@[deprecated (since := "2025-04-16")]
-alias _root_.Homeomorph.homeomorphOfContinuousOpen_apply := toHomeomorphOfContinuousOpen_apply
-
 @[simp]
 theorem toHomeomorphOfContinuousOpen_symm_apply (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) :
     ⇑(e.toHomeomorphOfContinuousOpen h₁ h₂).symm = e.symm := rfl
-
-@[deprecated (since := "2025-04-16")]
-alias _root_.Homeomorph.homeomorphOfContinuousOpen_symm_apply :=
-  toHomeomorphOfContinuousOpen_symm_apply
 
 /-- If a bijective map `e : X ≃ Y` is continuous and open, then it is a homeomorphism. -/
 @[simps! toEquiv]
 def toHomeomorphOfContinuousClosed (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsClosedMap e) : X ≃ₜ Y :=
   e.toHomeomorphOfIsInducing <|
     IsClosedEmbedding.of_continuous_injective_isClosedMap h₁ e.injective h₂ |>.toIsInducing
-
-@[deprecated (since := "2025-04-16")]
-alias _root_.Homeomorph.homeomorphOfContinuousClosed := toHomeomorphOfContinuousClosed
 
 @[simp]
 theorem toHomeomorphOfContinuousClosed_apply (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsClosedMap e) :

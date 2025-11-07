@@ -697,7 +697,7 @@ theorem Finite.induction_on {motive : ∀ s : Set α, s.Finite → Prop} (s : Se
     (insert : ∀ {a s}, a ∉ s →
       ∀ hs : Set.Finite s, motive s hs → motive (insert a s) (hs.insert a)) :
     motive s hs := by
-  lift s to Finset α using id hs
+  lift s to Finset α using hs
   induction s using Finset.cons_induction_on with
   | empty => simpa
   | cons a s ha ih => simpa using @insert a s ha (Set.toFinite _) (ih _)
