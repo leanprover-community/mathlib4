@@ -49,7 +49,7 @@ noncomputable def curriedTensorPreIsoPost : curriedTensorPre F ≅ curriedTensor
     (Functor.curriedTensorPreIsoPost G)
 
 @[reassoc]
-noncomputable def curriedTensorPreIsoPost_hom_app_app (X₁ X₂ : C) :
+lemma curriedTensorPreIsoPost_hom_app_app (X₁ X₂ : C) :
     letI e := Lifting.iso L W G F
     ((curriedTensorPreIsoPost L W F G).hom.app (L.obj X₁)).app (L.obj X₂) =
       (e.hom.app _ ⊗ₘ e.hom.app _) ≫ LaxMonoidal.μ G X₁ X₂ ≫ e.inv.app _ ≫
