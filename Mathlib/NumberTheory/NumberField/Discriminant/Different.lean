@@ -16,7 +16,7 @@ import Mathlib.Tactic.Qify
 - `NumberField.absNorm_differentIdeal`:
   The norm of `differentIdeal ℤ 𝒪` is the absolute discriminant.
 - `NumberField.natAbs_discr_eq_absNorm_differentIdeal_mul_natAbs_discr_pow`:
-  Formula for the absolute discriminant `L` in terms of that of `K` in an extension `L/K`.
+  Formula for the absolute discriminant of `L` in terms of that of `K` in an extension `L/K`.
 
 -/
 
