@@ -515,7 +515,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
 
 theorem cons_eq_smul {i : ι} (g : G i)
     (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
-    (hgr : g ∉ (φ i).range) : cons g w hmw hgr = of (φ := φ) i g  • w := by
+    (hgr : g ∉ (φ i).range) : cons g w hmw hgr = of (φ := φ) i g • w := by
   apply ext_smul i
   simp only [cons, Word.cons_eq_smul, MonoidHom.apply_ofInjective_symm,
     equiv_fst_eq_mul_inv, mul_assoc, map_mul, map_inv, mul_smul, inv_smul_smul, summand_smul_def,

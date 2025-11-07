@@ -30,7 +30,7 @@ syntax (name := successIfFailWithMsg) "success_if_fail_with_msg " term:max tacti
 /-- Evaluates `tacs` and succeeds only if `tacs` both fails and throws an error equal (as a string)
 to `msg`. -/
 def successIfFailWithMessage {s α : Type} {m : Type → Type} [Monad m] [MonadLiftT BaseIO m]
-    [MonadLiftT MetaM m] [MonadBacktrack s m] [MonadError m] (msg : String) (tacs : m α)
+    [MonadLiftT CoreM m] [MonadBacktrack s m] [MonadError m] (msg : String) (tacs : m α)
     (msgref : Option Syntax := none) (ref : Option Syntax := none) : m Unit := do
   let s ← saveState
   let err ←

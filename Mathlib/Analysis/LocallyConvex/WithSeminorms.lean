@@ -288,7 +288,7 @@ theorem WithSeminorms.hasBasis_zero_ball (hp : WithSeminorms p) :
     (𝓝 (0 : E)).HasBasis
     (fun sr : Finset ι × ℝ => 0 < sr.2) fun sr => (sr.1.sup p).ball 0 sr.2 := by
   refine ⟨fun V => ?_⟩
-  simp only [hp.hasBasis.mem_iff, SeminormFamily.basisSets_iff, Prod.exists]
+  simp only [hp.hasBasis.mem_iff, SeminormFamily.basisSets_iff, Prod.exists, id_eq]
   grind
 
 theorem WithSeminorms.hasBasis_ball (hp : WithSeminorms p) {x : E} :

@@ -6,7 +6,7 @@ Authors: Julian Kuelshammer
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Data.Nat.Choose.Central
-import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Field
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
 
@@ -91,14 +91,13 @@ private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
   rw [show n + 1 - i = n - i + 1 by rw [Nat.add_comm (n - i) 1, ← (Nat.add_sub_assoc h 1),
     add_comm]]
   rw [h₁, h₂, h₃, h₄]
-  field_simp
-  ring
+  field
 
 private theorem gosper_catalan_sub_eq_central_binom_div (n : ℕ) : gosperCatalan (n + 1) (n + 1) -
     gosperCatalan (n + 1) 0 = Nat.centralBinom (n + 1) / (n + 2) := by
-  simp only [gosperCatalan, Nat.sub_zero, Nat.centralBinom_zero, Nat.sub_self]
-  simp [field]
-  ring
+  simp only [gosperCatalan, tsub_self, Nat.centralBinom_zero, Nat.cast_one, Nat.cast_add,
+    Nat.cast_zero, tsub_zero]
+  field
 
 theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n + 1) := by
   suffices (catalan n : ℚ) = Nat.centralBinom n / (n + 1) by

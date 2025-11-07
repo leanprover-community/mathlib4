@@ -599,31 +599,3 @@ abbrev CommGrpMax.{u1, u2} := CommGrpCat.{max u1 u2}
 /-- An alias for `AddCommGrpCat.{max u v}`, to deal around unification issues. -/
 @[nolint checkUnivs]
 abbrev AddCommGrpMax.{u1, u2} := AddCommGrpCat.{max u1 u2}
-
-/-!
-Deprecated lemmas for `MonoidHom.comp` and categorical identities.
--/
-
-@[to_additive (attr := deprecated
-  "Proven by `simp only [GrpCat.hom_id, comp_id]`"
-  (since := "2025-01-28"))]
-theorem MonoidHom.comp_id_grp {G : GrpCat.{u}} {H : Type u} [Monoid H] (f : G →* H) :
-    f.comp (GrpCat.Hom.hom (𝟙 G)) = f := by simp
-@[to_additive (attr := deprecated
-  "Proven by `simp only [GrpCat.hom_id, id_comp]`"
-  (since := "2025-01-28"))]
-theorem MonoidHom.id_grp_comp {G : Type u} [Monoid G] {H : GrpCat.{u}} (f : G →* H) :
-    MonoidHom.comp (GrpCat.Hom.hom (𝟙 H)) f = f := by simp
-
-@[to_additive (attr := deprecated
-  "Proven by `simp only [CommGrpCat.hom_id, comp_id]`"
-  (since := "2025-01-28"))]
-theorem MonoidHom.comp_id_commGrp {G : CommGrpCat.{u}} {H : Type u} [Monoid H] (f : G →* H) :
-    f.comp (CommGrpCat.Hom.hom (𝟙 G)) = f := by
-  simp
-@[to_additive (attr := deprecated
-  "Proven by `simp only [CommGrpCat.hom_id, id_comp]`"
-  (since := "2025-01-28"))]
-theorem MonoidHom.id_commGrp_comp {G : Type u} [Monoid G] {H : CommGrpCat.{u}} (f : G →* H) :
-    MonoidHom.comp (CommGrpCat.Hom.hom (𝟙 H)) f = f := by
-  simp

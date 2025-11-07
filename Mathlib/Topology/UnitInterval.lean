@@ -91,7 +91,7 @@ theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
 
 lemma image_coe_preimage_symm {s : Set I} :
     Subtype.val '' (σ ⁻¹' s) = (1 - ·) ⁻¹' (Subtype.val '' s) := by
-  simp [symm_involutive, ← Function.Involutive.image_eq_preimage, image_image]
+  simp [symm_involutive, ← Function.Involutive.image_eq_preimage_symm, image_image]
 
 @[simp]
 theorem symm_projIcc (x : ℝ) :
@@ -221,10 +221,7 @@ instance : LinearOrderedCommMonoidWithZero I where
   zero_mul i := zero_mul i
   mul_zero i := mul_zero i
   zero_le_one := nonneg'
-  mul_le_mul_left i j h_ij k := by
-    simp only [← Subtype.coe_le_coe, coe_mul]
-    apply mul_le_mul le_rfl ?_ (nonneg i) (nonneg k)
-    simp [h_ij]
+  mul_le_mul_left i j h_ij k := by simp only [← Subtype.coe_le_coe, coe_mul]; gcongr; exact nonneg k
 
 lemma subtype_Iic_eq_Icc (x : I) : Subtype.val⁻¹' (Iic ↑x) = Icc 0 x := by
   rw [preimage_subtype_val_Iic]

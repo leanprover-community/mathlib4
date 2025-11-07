@@ -35,7 +35,7 @@ instead of having `FractionalIdeal` be a structure of which `a` is a field.
 Most definitions in this file specialize operations from submodules to fractional ideals,
 proving that the result of this operation is fractional if the input is fractional.
 Exceptions to this rule are defining `(+) := (⊔)` and `⊥ := 0`,
-in order to re-use their respective proof terms.
+in order to reuse their respective proof terms.
 We can still use `simp` to show `↑I + ↑J = ↑(I + J)` and `↑⊥ = ↑0`.
 
 Many results in fact do not need that `P` is a localization, only that `P` is an

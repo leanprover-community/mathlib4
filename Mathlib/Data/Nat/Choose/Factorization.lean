@@ -181,7 +181,7 @@ variable {p n k : ℕ}
 theorem factorization_choose_le_log : (choose n k).factorization p ≤ log p n := by
   by_cases h : (choose n k).factorization p = 0
   · simp [h]
-  have hp : p.Prime := Not.imp_symm (choose n k).factorization_eq_zero_of_non_prime h
+  have hp : p.Prime := Not.imp_symm (choose n k).factorization_eq_zero_of_not_prime h
   have hkn : k ≤ n := by
     refine le_of_not_gt fun hnk => h ?_
     simp [choose_eq_zero_of_lt hnk]
@@ -202,7 +202,7 @@ theorem factorization_choose_le_one (p_large : n < p ^ 2) : (choose n k).factori
 theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk' : p ≤ n - k)
     (hn : n < 3 * p) : (choose n k).factorization p = 0 := by
   rcases em' p.Prime with hp | hp
-  · exact factorization_eq_zero_of_non_prime (choose n k) hp
+  · exact factorization_eq_zero_of_not_prime (choose n k) hp
   rcases lt_or_ge n k with hnk | hkn
   · simp [choose_eq_zero_of_lt hnk]
   simp only [factorization_choose hp hkn (Nat.lt_add_one _), card_eq_zero, filter_eq_empty_iff,
@@ -221,7 +221,7 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
       have : 3 ≤ p := lt_of_le_of_ne hp.two_le hp'.symm
       calc
         n < 3 * p := hn
-        _ ≤ p * p := mul_le_mul_right' this p
+        _ ≤ p * p := by gcongr
         _ = p ^ 2 := (sq p).symm
         _ ≤ p ^ i := pow_right_mono₀ hp.one_lt.le hi
     rwa [mod_eq_of_lt (lt_of_le_of_lt hkn hn), mod_eq_of_lt (lt_of_le_of_lt tsub_le_self hn),

@@ -23,9 +23,7 @@ also in the subset.
 - There is a Galois insertion between the subsets of points of a projective space
   and the subspaces of the projective space, which is given by taking the span of the set of points.
 - The subspaces of a projective space form a complete lattice under inclusion.
-
-# Future Work
-- Show that there is a one-to-one order-preserving correspondence between subspaces of a
+- There is a one-to-one order-preserving correspondence between subspaces of a
   projective space and the submodules of the underlying vector space.
 -/
 
@@ -204,6 +202,68 @@ theorem span_eq_span_iff {S T : Set (ℙ K V)} : span S = span T ↔ S ⊆ span 
   ⟨fun h => ⟨h ▸ subset_span S, h.symm ▸ subset_span T⟩, fun h =>
     le_antisymm (span_le_subspace_iff.2 h.1) (span_le_subspace_iff.2 h.2)⟩
 
+/-- The submodule corresponding to a projective subspace `s`, consisting of the representatives of
+points in `s` together with zero. This is the inverse of `Submodule.projectivization`. -/
+def submodule : Projectivization.Subspace K V ≃o Submodule K V where
+  toFun s :=
+  { carrier := {x | (h : x ≠ 0) → Projectivization.mk K x h ∈ s.carrier}
+    add_mem' {x y} hx₁ hy₁ := by
+      rcases eq_or_ne x 0 with rfl | hx₂
+      · rwa [zero_add]
+      rcases eq_or_ne y 0 with rfl | hy₂
+      · rwa [add_zero]
+      intro hxy
+      exact s.mem_add _ _ hx₂ hy₂ hxy (hx₁ hx₂) (hy₁ hy₂)
+    zero_mem' h := h.irrefl.elim
+    smul_mem' c x h₁ h₂ := by
+      convert h₁ (right_ne_zero_of_smul h₂) using 1
+      rw [Projectivization.mk_eq_mk_iff']
+      exact ⟨c, rfl⟩ }
+  invFun s :=
+  { carrier := setOf <| Projectivization.lift (↑· ∈ s) <| by
+      rintro ⟨-, h⟩ ⟨y, -⟩ c rfl
+      exact Iff.eq <| s.smul_mem_iff <| left_ne_zero_of_smul h
+    mem_add' _ _ _ _ _ h₁ h₂ := s.add_mem h₁ h₂ }
+  left_inv s := by
+    ext ⟨x, hx⟩
+    exact ⟨fun h => h hx, fun h _ => h⟩
+  right_inv s := by
+    ext x
+    suffices x = 0 → x ∈ s by
+      simpa [imp_iff_not_or]
+    rintro rfl
+    exact s.zero_mem
+  map_rel_iff'.mp h₁ := Projectivization.ind fun _ hx h₂ => h₁ (fun _ => h₂) hx
+  map_rel_iff'.mpr h₁ _ h₂ hx := h₁ <| h₂ hx
+
+@[simp]
+theorem mem_submodule_iff (s : Projectivization.Subspace K V) {v : V} (hv : v ≠ 0) :
+    v ∈ submodule s ↔ Projectivization.mk K v hv ∈ s :=
+  ⟨fun h => h hv, fun h _ => h⟩
+
 end Subspace
 
 end Projectivization
+
+namespace Submodule
+
+open scoped LinearAlgebra.Projectivization
+
+variable {K V}
+
+/-- The projective subspace corresponding to a submodule `s`, consisting of the one-dimensional
+subspaces of `s`. This is the inverse of `Projectivization.Subspace.submodule`. -/
+abbrev projectivization : Submodule K V ≃o Projectivization.Subspace K V :=
+  Projectivization.Subspace.submodule.symm
+
+@[simp]
+theorem mk_mem_projectivization_iff (s : Submodule K V) {v : V} (hv : v ≠ 0) :
+    Projectivization.mk K v hv ∈ s.projectivization ↔ v ∈ s := Iff.rfl
+
+theorem mem_projectivization_iff_submodule_le (s : Submodule K V) (x : ℙ K V) :
+    x ∈ s.projectivization ↔ x.submodule ≤ s := by
+  cases x
+  rw [mk_mem_projectivization_iff, Projectivization.submodule_mk,
+    Submodule.span_singleton_le_iff_mem]
+
+end Submodule

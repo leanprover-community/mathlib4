@@ -30,7 +30,7 @@ variable {I₁ I₂ I₃ I₁₂ I₂₃ J : Type*}
   (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂) (c₃ : ComplexShape I₃)
   (c₁₂ : ComplexShape I₁₂) (c₂₃ : ComplexShape I₂₃) (c : ComplexShape J)
 
-/-- A total complex shape for three complexes shapes `c₁`, `c₂`, `c₁₂` on three types
+/-- A total complex shape for three complex shapes `c₁`, `c₂`, `c₁₂` on three types
 `I₁`, `I₂` and `I₁₂` consists of the data and properties that will allow the construction
 of a total complex functor `HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex C c₁₂` which
 sends `K` to a complex which in degree `i₁₂ : I₁₂` consists of the coproduct

@@ -276,4 +276,57 @@ example {a b : ℕ} (_h1 : a ≤ 0) (h2 : 0 ≤ b) : b < a + 1 → 0 < a + 1 := 
 
 example {a b : ℕ} (h1 : a ≤ 0) (h2 : 0 ≤ b) : b ≤ a + 1 → 0 ≤ 0 + 1 := by gcongr ?_ ≤ ?_ + _
 
+/-! Test that `Monotone` and friends can be tagged with `@[gcongr]` -/
+
+def myCons (_ : Nat) : Nat := 0
+theorem myCons_monotone : Monotone myCons := fun _ _ _ => le_rfl
+theorem myCons_monotone' : Monotone (myCons ·) := fun _ _ _ => le_rfl
+theorem myCons_antitone : Antitone myCons := fun _ _ _ => le_rfl
+theorem myCons_monotoneOn : MonotoneOn myCons (Set.Ioi 0) := fun _ _ _ _ _ => le_rfl
+theorem myCons_antitoneOn : AntitoneOn myCons (Set.Ioi 0) := fun _ _ _ _ _ => le_rfl
+
+attribute [local gcongr] myCons_monotone in
+example : myCons 4 ≤ myCons 5 := by
+  gcongr; simp
+
+attribute [local gcongr] myCons_monotone' in
+example : myCons 4 ≤ myCons 5 := by
+  gcongr; simp
+
+attribute [local gcongr] myCons_antitone in
+example : myCons 6 ≤ myCons 5 := by
+  gcongr; simp
+
+attribute [local gcongr] myCons_monotoneOn in
+example : myCons 4 ≤ myCons 5 := by
+  gcongr <;> simp
+
+attribute [local gcongr] myCons_antitoneOn in
+example : myCons 6 ≤ myCons 5 := by
+  gcongr <;> simp
+
+def myMono (n : Nat) : Nat := n
+theorem myMono_strictMono : StrictMono myMono := fun _ _ => id
+theorem myMono_strictMonoOn : StrictMonoOn myMono (Set.Ioi 0) := fun _ _ _ _ => id
+
+attribute [local gcongr] myMono_strictMono in
+example : myMono 4 < myMono 5 := by
+  gcongr; simp
+
+attribute [local gcongr] myMono_strictMonoOn in
+example : myMono 4 < myMono 5 := by
+  gcongr <;> simp
+
+def myAnti (n : Int) : Int := -n
+theorem myAnti_strictAnti : StrictAnti myAnti := fun _ _ => neg_lt_neg
+theorem myAnti_strictAntiOn : StrictAntiOn myAnti (Set.Ioi 0) := fun _ _ _ _ => neg_lt_neg
+
+attribute [local gcongr] myAnti_strictAnti in
+example : myAnti 6 < myAnti 5 := by
+  gcongr; simp
+
+attribute [local gcongr] myAnti_strictAntiOn in
+example : myAnti 6 < myAnti 5 := by
+  gcongr <;> simp
+
 end GCongrTests

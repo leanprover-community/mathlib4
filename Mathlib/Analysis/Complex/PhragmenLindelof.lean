@@ -516,7 +516,7 @@ theorem quadrant_III (hd : DiffContOnCl ℂ f (Iio 0 ×ℂ Iio 0))
   · rcases hB with ⟨c, hc, B, hO⟩
     refine ⟨c, hc, B, ?_⟩
     simpa only [Function.comp_def, norm_neg]
-      using hO.comp_tendsto (tendsto_neg_cobounded.inf H.tendsto)
+      using hO.comp_tendsto (Filter.tendsto_neg_cobounded.inf H.tendsto)
   · rw [comp_apply, ← ofReal_neg]
     exact hre (-x) (neg_nonpos.2 hx)
   · rw [comp_apply, ← neg_mul, ← ofReal_neg]
@@ -580,7 +580,7 @@ theorem quadrant_IV (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Iio 0))
   · rcases hB with ⟨c, hc, B, hO⟩
     refine ⟨c, hc, B, ?_⟩
     simpa only [Function.comp_def, norm_neg]
-      using hO.comp_tendsto (tendsto_neg_cobounded.inf H.tendsto)
+      using hO.comp_tendsto (Filter.tendsto_neg_cobounded.inf H.tendsto)
   · rw [comp_apply, ← ofReal_neg]
     exact hre (-x) (neg_nonneg.2 hx)
   · rw [comp_apply, ← neg_mul, ← ofReal_neg]

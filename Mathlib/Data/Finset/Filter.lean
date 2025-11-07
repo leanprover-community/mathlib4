@@ -22,7 +22,7 @@ finite sets, finset
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
-assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice OrderedCommMonoid
+assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice IsOrderedMonoid
 
 open Multiset Subtype Function
 
@@ -189,8 +189,7 @@ theorem monotone_filter_left : Monotone (filter p) := fun _ _ => filter_subset_f
 
 @[gcongr]
 theorem monotone_filter_right (s : Finset α) ⦃p q : α → Prop⦄ [DecidablePred p] [DecidablePred q]
-    (h : p ≤ q) : s.filter p ⊆ s.filter q :=
-  Multiset.subset_of_le (Multiset.monotone_filter_right s.val h)
+    (h : ∀ a ∈ s, p a → q a) : s.filter p ⊆ s.filter q := by simp +contextual [subset_iff, h]
 
 @[simp, norm_cast]
 theorem coe_filter (s : Finset α) : ↑(s.filter p) = ({ x ∈ ↑s | p x } : Set α) :=

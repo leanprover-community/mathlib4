@@ -574,7 +574,7 @@ theorem bliminf_or_le_inf_aux_right : (bliminf u f fun x => p x ∨ q x) ≤ bli
 
 theorem _root_.OrderIso.apply_blimsup [CompleteLattice γ] (e : α ≃o γ) :
     e (blimsup u f p) = blimsup (e ∘ u) f p := by
-  simp only [blimsup_eq, map_sInf, Function.comp_apply, e.image_eq_preimage,
+  simp only [blimsup_eq, map_sInf, Function.comp_apply, e.image_eq_preimage_symm,
     Set.preimage_setOf_eq, e.le_symm_apply]
 
 theorem _root_.OrderIso.apply_bliminf [CompleteLattice γ] (e : α ≃o γ) :

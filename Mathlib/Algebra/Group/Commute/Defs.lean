@@ -174,7 +174,7 @@ protected theorem inv (hab : Commute a b) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by
 
 @[to_additive AddCommute.zsmul_add]
 protected lemma mul_zpow (h : Commute a b) : ∀ n : ℤ, (a * b) ^ n = a ^ n * b ^ n
-  | (n : ℕ)    => by simp [zpow_natCast, h.mul_pow n]
+  | (n : ℕ) => by simp [zpow_natCast, h.mul_pow n]
   | .negSucc n => by simp [h.mul_pow, (h.pow_pow _ _).eq, mul_inv_rev]
 
 end DivisionMonoid

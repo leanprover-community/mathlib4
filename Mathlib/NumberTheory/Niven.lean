@@ -47,7 +47,7 @@ theorem isIntegral_two_mul_cos_rat_mul_pi (r : ℚ) :
     rw [← Complex.exp_nat_mul, Complex.exp_eq_one_iff]
     use p
     push_cast
-    field_simp [hq_pos]
+    field [hq_pos]
   -- Since z is a root of unity, `2 cos θ = z` and `z⁻¹` are algebraic integers, and their sum.
   have h_cos_eq : 2 * cos (p / q * π) = z + z⁻¹ := by
     simpa [Complex.cos, Complex.exp_neg, z] using by ring_nf

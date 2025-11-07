@@ -583,10 +583,4 @@ def CompleteOrthogonalIdempotents.ringEquivOfComm [CommSemiring R]
     (he : CompleteOrthogonalIdempotents e) : R ≃+* Π i, (he.idem i).Corner :=
   he.ringEquivOfIsMulCentral fun _ ↦ Semigroup.mem_center_iff.mpr fun _ ↦ mul_comm ..
 
-@[deprecated (since := "2025-04-14")] alias CompleteOrthogonalIdempotents.mulEquivOfIsMulCentral :=
-  CompleteOrthogonalIdempotents.ringEquivOfIsMulCentral
-
-@[deprecated (since := "2025-04-14")] alias CompleteOrthogonalIdempotents.mulEquivOfComm :=
-  CompleteOrthogonalIdempotents.ringEquivOfComm
-
 end corner

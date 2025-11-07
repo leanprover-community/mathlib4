@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+import Mathlib.CategoryTheory.ObjectProperty.Local
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 import Mathlib.CategoryTheory.Localization.Adjunction
 
@@ -34,9 +34,9 @@ namespace CategoryTheory
 
 open Category
 
-namespace Localization
-
 variable {C D : Type*} [Category C] [Category D]
+
+namespace Localization
 
 namespace LeftBousfield
 
@@ -105,6 +105,16 @@ instance : (W P).RespectsIso where
   precomp f (_ : IsIso f) g hg := (W P).comp_mem f g (W_of_isIso _ f) hg
   postcomp f (_ : IsIso f) g hg := (W P).comp_mem g f hg (W_of_isIso _ f)
 
+lemma le_W_iff (P : ObjectProperty C) (W : MorphismProperty C) :
+    W ≤ LeftBousfield.W P ↔ P ≤ W.isLocal :=
+  ⟨fun h _ hZ _ _ _ hf ↦ h _ hf _ hZ,
+    fun h _ _ _ hf _ hZ ↦ h _ hZ _ hf⟩
+
+lemma galoisConnection :
+    GaloisConnection (OrderDual.toDual ∘ W (C := C))
+      (MorphismProperty.isLocal ∘ OrderDual.ofDual) :=
+  le_W_iff
+
 end
 
 section
@@ -148,5 +158,15 @@ end
 end LeftBousfield
 
 end Localization
+
+open Localization
+
+lemma ObjectProperty.le_isLocal_W (P : ObjectProperty C) :
+    P ≤ (LeftBousfield.W P).isLocal := by
+  rw [← LeftBousfield.le_W_iff]
+
+lemma MorphismProperty.le_leftBousfieldW_isLocal (W : MorphismProperty C) :
+    W ≤ LeftBousfield.W W.isLocal := by
+  rw [LeftBousfield.le_W_iff]
 
 end CategoryTheory

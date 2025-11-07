@@ -44,7 +44,7 @@ theorem card_filter_univ_succ (p : Fin (n + 1) → Prop) [DecidablePred p] :
   rw [Fin.univ_succ, filter_cons, apply_ite Finset.card, card_cons, filter_map, card_map]; rfl
 
 theorem card_filter_univ_succ' (p : Fin (n + 1) → Prop) [DecidablePred p] :
-    #{x | p x} = ite (p 0) 1 0 + #{x | p (.succ x)}:= by
+    #{x | p x} = ite (p 0) 1 0 + #{x | p (.succ x)} := by
   rw [card_filter_univ_succ]; split_ifs <;> simp [add_comm]
 
 theorem card_filter_univ_eq_vector_get_eq_count [DecidableEq α] (a : α) (v : List.Vector α n) :

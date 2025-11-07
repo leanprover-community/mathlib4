@@ -392,11 +392,11 @@ variable (xs : Vector α n) (ys : Vector β n)
 
 theorem map₂_flip (f : α → β → γ) :
     map₂ f xs ys = map₂ (flip f) ys xs := by
-  induction xs, ys using Vector.inductionOn₂ <;> simp_all[flip]
+  induction xs, ys using Vector.inductionOn₂ <;> simp_all [flip]
 
 theorem mapAccumr₂_flip (f : α → β → σ → σ × γ) :
     mapAccumr₂ f xs ys s = mapAccumr₂ (flip f) ys xs s := by
-  induction xs, ys using Vector.inductionOn₂ <;> simp_all[flip]
+  induction xs, ys using Vector.inductionOn₂ <;> simp_all [flip]
 
 end Flip
 

@@ -460,8 +460,7 @@ instance : IsOrderedMonoid (ValueGroupWithZero R) where
     simp only [ValueGroupWithZero.mk_mul_mk, ValueGroupWithZero.mk_le_mk, Submonoid.coe_mul]
     conv_lhs => apply mul_mul_mul_comm
     conv_rhs => apply mul_mul_mul_comm
-    apply rel_mul_left
-    exact hab
+    exact rel_mul_left _ hab
 
 instance : Inv (ValueGroupWithZero R) where
   inv := ValueGroupWithZero.lift (fun x s => by
@@ -543,7 +542,7 @@ def ofValuation
   rel_total x y := le_total (v x) (v y)
   rel_trans := le_trans
   rel_add hab hbc := (map_add_le_max v _ _).trans (sup_le hab hbc)
-  rel_mul_right _ h := by simp only [map_mul, mul_le_mul_right' h]
+  rel_mul_right _ h := by simp [map_mul]; gcongr
   rel_mul_cancel h0 h := by
     rw [map_zero, le_zero_iff] at h0
     simp only [map_mul] at h

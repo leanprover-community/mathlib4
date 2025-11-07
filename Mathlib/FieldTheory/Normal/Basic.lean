@@ -206,8 +206,8 @@ theorem AlgHom.restrict_liftNormal (ϕ : K₁ →ₐ[F] K₁) [Normal F K₁] [N
       (Eq.trans (AlgHom.restrictNormal_commutes _ K₁ x) (ϕ.liftNormal_commutes E x))
 
 /-- If `E/Kᵢ/F` are towers of fields with `E/F` normal then we can lift
-  an algebra isomorphism `ϕ : K₁ ≃ₐ[F] K₂` to `ϕ.liftNormal E : E ≃ₐ[F] E`. -/
-noncomputable def AlgEquiv.liftNormal [Normal F E] : E ≃ₐ[F] E :=
+  an algebra isomorphism `ϕ : K₁ ≃ₐ[F] K₂` to `ϕ.liftNormal E : Gal(E/F)`. -/
+noncomputable def AlgEquiv.liftNormal [Normal F E] : Gal(E/F) :=
   AlgEquiv.ofBijective (χ.toAlgHom.liftNormal E) (AlgHom.normal_bijective F E E _)
 
 @[simp]
@@ -225,12 +225,12 @@ theorem AlgEquiv.restrict_liftNormal (χ : K₁ ≃ₐ[F] K₁) [Normal F K₁] 
 /-- The group homomorphism given by restricting an algebra isomorphism to a normal subfield
 is surjective. -/
 theorem AlgEquiv.restrictNormalHom_surjective [Normal F K₁] [Normal F E] :
-    Function.Surjective (AlgEquiv.restrictNormalHom K₁ : (E ≃ₐ[F] E) → K₁ ≃ₐ[F] K₁) := fun χ =>
+    Function.Surjective (AlgEquiv.restrictNormalHom K₁ : Gal(E/F) → K₁ ≃ₐ[F] K₁) := fun χ =>
   ⟨χ.liftNormal E, χ.restrict_liftNormal E⟩
 
 open IntermediateField in
 theorem Normal.minpoly_eq_iff_mem_orbit [h : Normal F E] {x y : E} :
-    minpoly F x = minpoly F y ↔ x ∈ MulAction.orbit (E ≃ₐ[F] E) y := by
+    minpoly F x = minpoly F y ↔ x ∈ MulAction.orbit Gal(E/F) y := by
   refine ⟨fun he ↦ ?_, fun ⟨f, he⟩ ↦ he ▸ minpoly.algEquiv_eq f y⟩
   obtain ⟨φ, hφ⟩ := exists_algHom_of_splits_of_aeval (normal_iff.mp h) (he ▸ minpoly.aeval F x)
   exact ⟨AlgEquiv.ofBijective φ (φ.normal_bijective F E E), hφ⟩
@@ -238,8 +238,8 @@ theorem Normal.minpoly_eq_iff_mem_orbit [h : Normal F E] {x y : E} :
 variable (F K₁)
 
 theorem isSolvable_of_isScalarTower [Normal F K₁] [h1 : IsSolvable (K₁ ≃ₐ[F] K₁)]
-    [h2 : IsSolvable (E ≃ₐ[K₁] E)] : IsSolvable (E ≃ₐ[F] E) := by
-  let f : (E ≃ₐ[K₁] E) →* E ≃ₐ[F] E :=
+    [h2 : IsSolvable (E ≃ₐ[K₁] E)] : IsSolvable Gal(E/F) := by
+  let f : (E ≃ₐ[K₁] E) →* Gal(E/F) :=
     { toFun := fun ϕ =>
         AlgEquiv.ofAlgHom (ϕ.toAlgHom.restrictScalars F) (ϕ.symm.toAlgHom.restrictScalars F)
           (AlgHom.ext fun x => ϕ.apply_symm_apply x) (AlgHom.ext fun x => ϕ.symm_apply_apply x)
@@ -258,20 +258,20 @@ variable {K L : Type _} [Field K] [Field L] [Algebra K L]
 
 open AlgEquiv IntermediateField
 
-/-- If `x : L` is a root of `minpoly K y`, then we can find `(σ : L ≃ₐ[K] L)` with `σ x = y`.
+/-- If `x : L` is a root of `minpoly K y`, then we can find `(σ : Gal(L/K))` with `σ x = y`.
   That is, `x` and `y` are Galois conjugates. -/
 theorem exists_algEquiv_of_root [Normal K L] {x y : L} (hy : IsAlgebraic K y)
-    (h_ev : (Polynomial.aeval x) (minpoly K y) = 0) : ∃ σ : L ≃ₐ[K] L, σ x = y := by
+    (h_ev : (Polynomial.aeval x) (minpoly K y) = 0) : ∃ σ : Gal(L/K), σ x = y := by
   have hx : IsAlgebraic K x := ⟨minpoly K y, ne_zero hy.isIntegral, h_ev⟩
   set f : K⟮x⟯ ≃ₐ[K] K⟮y⟯ := algEquiv hx (eq_of_root hy h_ev)
   have hxy : (liftNormal f L) ((algebraMap (↥K⟮x⟯) L) (AdjoinSimple.gen K x)) = y := by
     rw [liftNormal_commutes f L, algEquiv_apply, AdjoinSimple.algebraMap_gen K y]
   exact ⟨(liftNormal f L), hxy⟩
 
-/-- If `x : L` is a root of `minpoly K y`, then we can find `(σ : L ≃ₐ[K] L)` with `σ y = x`.
+/-- If `x : L` is a root of `minpoly K y`, then we can find `(σ : Gal(L/K))` with `σ y = x`.
   That is, `x` and `y` are Galois conjugates. -/
 theorem exists_algEquiv_of_root' [Normal K L] {x y : L} (hy : IsAlgebraic K y)
-    (h_ev : (Polynomial.aeval x) (minpoly K y) = 0) : ∃ σ : L ≃ₐ[K] L, σ y = x := by
+    (h_ev : (Polynomial.aeval x) (minpoly K y) = 0) : ∃ σ : Gal(L/K), σ y = x := by
   obtain ⟨σ, hσ⟩ := exists_algEquiv_of_root hy h_ev
   use σ.symm
   rw [← hσ, symm_apply_apply]
@@ -289,6 +289,3 @@ instance Algebra.IsQuadraticExtension.normal (F K : Type*) [Field F] [Field K] [
     obtain h | h := le_iff_lt_or_eq.mp (finrank_eq_two F K ▸ minpoly.natDegree_le x)
     · exact splits_of_natDegree_le_one _ (by rwa [Nat.le_iff_lt_add_one])
     · exact splits_of_natDegree_eq_two _ h (minpoly.aeval F x)
-
-@[deprecated (since := "2025-04-17")] alias normal_of_finrank_eq_two :=
-  Algebra.IsQuadraticExtension.normal

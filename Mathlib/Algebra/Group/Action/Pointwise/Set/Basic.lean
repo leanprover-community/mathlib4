@@ -25,7 +25,7 @@ of `α`/`Set α` on `Set β`.
   instances reducible changes the behavior of `simp`.
 -/
 
-assert_not_exists MonoidWithZero OrderedAddCommMonoid
+assert_not_exists MonoidWithZero IsOrderedMonoid
 
 open Function MulOpposite
 open scoped Pointwise
@@ -40,9 +40,6 @@ namespace Set
 lemma smul_set_prod {M α : Type*} [SMul M α] [SMul M β] (c : M) (s : Set α) (t : Set β) :
     c • (s ×ˢ t) = (c • s) ×ˢ (c • t) :=
   prodMap_image_prod (c • ·) (c • ·) s t
-
-@[deprecated (since := "2025-03-11")]
-alias vadd_set_sum := vadd_set_prod
 
 @[to_additive]
 lemma smul_set_pi {G ι : Type*} {α : ι → Type*} [Group G] [∀ i, MulAction G (α i)]
@@ -205,7 +202,7 @@ lemma mem_smul_set_inv {s : Set α} : a ∈ b • s⁻¹ ↔ b ∈ a • s := by
 
 @[to_additive]
 theorem preimage_smul (a : α) (t : Set β) : (fun x ↦ a • x) ⁻¹' t = a⁻¹ • t :=
-  ((MulAction.toPerm a).symm.image_eq_preimage _).symm
+  ((MulAction.toPerm a).image_symm_eq_preimage _).symm
 
 @[to_additive]
 theorem preimage_smul_inv (a : α) (t : Set β) : (fun x ↦ a⁻¹ • x) ⁻¹' t = a • t :=
@@ -216,15 +213,15 @@ theorem smul_set_subset_smul_set_iff : a • A ⊆ a • B ↔ A ⊆ B :=
   image_subset_image_iff <| MulAction.injective _
 
 @[to_additive]
-theorem smul_set_subset_iff_subset_inv_smul_set : a • A ⊆ B ↔ A ⊆ a⁻¹ • B :=
-  image_subset_iff.trans <|
-    iff_of_eq <| congr_arg _ <| preimage_equiv_eq_image_symm _ <| MulAction.toPerm _
+theorem smul_set_subset_iff_subset_inv_smul_set : a • A ⊆ B ↔ A ⊆ a⁻¹ • B := by
+  refine image_subset_iff.trans ?_
+  congr! 1
+  exact ((MulAction.toPerm _).image_symm_eq_preimage _).symm
 
 @[to_additive]
-theorem subset_smul_set_iff : A ⊆ a • B ↔ a⁻¹ • A ⊆ B :=
-  Iff.symm <|
-    image_subset_iff.trans <|
-      Iff.symm <| iff_of_eq <| congr_arg _ <| image_equiv_eq_preimage_symm _ <| MulAction.toPerm _
+theorem subset_smul_set_iff : A ⊆ a • B ↔ a⁻¹ • A ⊆ B := by
+  refine (image_subset_iff.trans ?_ ).symm; congr! 1;
+  exact ((MulAction.toPerm _).image_eq_preimage_symm _).symm
 
 @[to_additive]
 theorem smul_set_inter : a • (s ∩ t) = a • s ∩ a • t :=

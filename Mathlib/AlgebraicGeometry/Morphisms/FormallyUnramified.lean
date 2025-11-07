@@ -85,7 +85,7 @@ instance (priority := 900) [IsOpenImmersion (pullback.diagonal f)] : FormallyUnr
   have hF : Function.Surjective F := fun x ↦ ⟨.mk _ _ _ x 1, by simp [F]⟩
   have : IsOpenImmersion (Spec.map (CommRingCat.ofHom F)) := by
     rwa [← MorphismProperty.cancel_right_of_respectsIso (P := @IsOpenImmersion) _
-      (pullbackSpecIso R S S).inv, ← AlgebraicGeometry.diagonal_Spec_map R S]
+      (pullbackSpecIso R S S).inv, ← AlgebraicGeometry.diagonal_SpecMap R S]
   obtain ⟨e, he, he'⟩ := (isOpenImmersion_SpecMap_iff_of_surjective _ hF).mp this
   refine ⟨subsingleton_of_forall_eq 0 fun x ↦ ?_⟩
   obtain ⟨⟨x, hx⟩, rfl⟩ := Ideal.toCotangent_surjective _ x
@@ -129,7 +129,7 @@ instance isOpenImmersion_diagonal [FormallyUnramified f] [LocallyOfFiniteType f]
   rw [HasRingHomProperty.Spec_iff (P := @FormallyUnramified),
     HasRingHomProperty.Spec_iff (P := @LocallyOfFiniteType)] at *
   algebraize [f.hom]
-  rw [show f = CommRingCat.ofHom (algebraMap R S) from rfl, diagonal_Spec_map R S,
+  rw [show f = CommRingCat.ofHom (algebraMap R S) from rfl, diagonal_SpecMap R S,
     cancel_right_of_respectsIso (P := @IsOpenImmersion)]
   infer_instance
 

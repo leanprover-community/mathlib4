@@ -326,9 +326,8 @@ theorem injective_sum_to : Function.Injective (sum_to C ho) := by
 
 theorem sum_to_range :
     Set.range (sum_to C ho) = GoodProducts (π C (ord I · < o)) ∪ MaxProducts C ho := by
-  have h : Set.range (sum_to C ho) = _ ∪ _ := Set.Sum.elim_range _ _; rw [h]; congr <;> ext l
-  · exact ⟨fun ⟨m,hm⟩ ↦ by rw [← hm]; exact m.prop, fun hl ↦ ⟨⟨l,hl⟩, rfl⟩⟩
-  · exact ⟨fun ⟨m,hm⟩ ↦ by rw [← hm]; exact m.prop, fun hl ↦ ⟨⟨l,hl⟩, rfl⟩⟩
+  have : Set.range (sum_to C ho) = _ ∪ _ := Set.Sum.elim_range _ _
+  simp_all
 
 /-- The equivalence from the sum of `GoodProducts (π C (ord I · < o))` and
 `(MaxProducts C ho)` to `GoodProducts C`. -/
@@ -560,7 +559,7 @@ theorem maxTail_isGood (l : MaxProducts C ho)
   rw [eq_sub_iff_add_eq] at hn
   have hn' := h₁ (Submodule.mem_top : n ∈ ⊤)
   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hn'
-  obtain ⟨w,hc⟩ := hn'
+  obtain ⟨w, hc⟩ := hn'
   rw [← hc, map_finsuppSum] at hn
   apply l.prop.1
   rw [← hn]

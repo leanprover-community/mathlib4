@@ -751,6 +751,22 @@ theorem writtenInExtChartAt_extChartAt_symm {x : M} {y : E} (h : y ∈ (extChart
     writtenInExtChartAt 𝓘(𝕜, E) I (extChartAt I x x) (extChartAt I x).symm y = y := by
   simp_all only [mfld_simps]
 
+section
+
+variable {G G' F F' N N' : Type*}
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  [TopologicalSpace G] [TopologicalSpace N] [TopologicalSpace G'] [TopologicalSpace N']
+  {J : ModelWithCorners 𝕜 F G} {J' : ModelWithCorners 𝕜 F' G'}
+  [ChartedSpace G N] [ChartedSpace G' N']
+
+lemma writtenInExtChart_prod {f : M → N} {g : M' → N'} {x : M} {x' : M'} :
+    (writtenInExtChartAt (I.prod I') (J.prod J') (x, x') (Prod.map f g)) =
+      Prod.map (writtenInExtChartAt I J x f) (writtenInExtChartAt I' J' x' g) := by
+  ext p <;>
+  simp [writtenInExtChartAt, I.toPartialEquiv.prod_symm, (chartAt H x).toPartialEquiv.prod_symm]
+
+end
+
 variable (𝕜)
 
 theorem extChartAt_self_eq {x : H} : ⇑(extChartAt I x) = I :=

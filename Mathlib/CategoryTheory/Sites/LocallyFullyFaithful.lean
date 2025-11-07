@@ -16,7 +16,7 @@ import Mathlib.CategoryTheory.Sites.LocallySurjective
   in the image of `G` is a coverage of the topology on `D`.
 - `CategoryTheory.Functor.IsLocallyFaithful`:
   A functor `G : C ⥤ D` is locally faithful w.r.t. a topology on `D` if for every `f₁ f₂ : U ⟶ V`
-  whose image in `D` are equal, the set of `G.map gᵢ : G.obj Wᵢ ⟶ G.obj U` such that
+  whose images in `D` are equal, the set of `G.map gᵢ : G.obj Wᵢ ⟶ G.obj U` such that
   `gᵢ ≫ f₁ = gᵢ ≫ f₂` is a coverage of the topology on `D`.
 
 ## References
@@ -85,7 +85,7 @@ class IsLocallyFull : Prop where
 
 /--
 A functor `G : C ⥤ D` is locally faithful w.r.t. a topology on `D` if for every `f₁ f₂ : U ⟶ V`
-whose image in `D` are equal, the set of `G.map gᵢ : G.obj Wᵢ ⟶ G.obj U` such that
+whose images in `D` are equal, the set of `G.map gᵢ : G.obj Wᵢ ⟶ G.obj U` such that
 `gᵢ ≫ f₁ = gᵢ ≫ f₂` is a coverage of the topology on `D`.
 -/
 class IsLocallyFaithful : Prop where

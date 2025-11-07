@@ -55,3 +55,21 @@ info: DiscrTree branch for Or:
 #push_discr_tree Or
 
 end logic
+
+section lambda
+
+example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
+  push fun x ↦ _
+  with_reducible rfl
+
+example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
+  simp only [pushFun]
+
+example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
+  pull fun _ ↦ _
+  with_reducible rfl
+
+example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
+  simp only [pullFun]
+
+end lambda

@@ -154,12 +154,12 @@ lemma IsLink.eq_and_eq_or_eq_and_eq {x' y' : α} (h : G.IsLink e x y)
 lemma IsLink.isLink_iff (h : G.IsLink e x y) {x' y' : α} :
     G.IsLink e x' y' ↔ (x = x' ∧ y = y') ∨ (x = y' ∧ y = x') := by
   refine ⟨h.eq_and_eq_or_eq_and_eq, ?_⟩
-  rintro (⟨rfl, rfl⟩ | ⟨rfl,rfl⟩)
+  rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
   · assumption
   exact h.symm
 
 lemma IsLink.isLink_iff_sym2_eq (h : G.IsLink e x y) {x' y' : α} :
-    G.IsLink e x' y' ↔ s(x,y) = s(x',y') := by
+    G.IsLink e x' y' ↔ s(x, y) = s(x', y') := by
   rw [h.isLink_iff, Sym2.eq_iff]
 
 /-! ### Edge-vertex incidence -/

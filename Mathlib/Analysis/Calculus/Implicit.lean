@@ -108,10 +108,10 @@ structure ImplicitFunctionData (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E 
   rightDeriv : E →L[𝕜] G
   /-- The point at which `leftFun` and `rightFun` are strictly differentiable -/
   pt : E
-  left_has_deriv : HasStrictFDerivAt leftFun leftDeriv pt
-  right_has_deriv : HasStrictFDerivAt rightFun rightDeriv pt
-  left_range : range leftDeriv = ⊤
-  right_range : range rightDeriv = ⊤
+  hasStrictFDerivAt_leftFun : HasStrictFDerivAt leftFun leftDeriv pt
+  hasStrictFDerivAt_rightFun : HasStrictFDerivAt rightFun rightDeriv pt
+  range_leftDeriv : range leftDeriv = ⊤
+  range_rightDeriv : range rightDeriv = ⊤
   isCompl_ker : IsCompl (ker leftDeriv) (ker rightDeriv)
 
 namespace ImplicitFunctionData
@@ -131,11 +131,11 @@ theorem prodFun_apply (x : E) : φ.prodFun x = (φ.leftFun x, φ.rightFun x) :=
 
 protected theorem hasStrictFDerivAt :
     HasStrictFDerivAt φ.prodFun
-      (φ.leftDeriv.equivProdOfSurjectiveOfIsCompl φ.rightDeriv φ.left_range φ.right_range
+      (φ.leftDeriv.equivProdOfSurjectiveOfIsCompl φ.rightDeriv φ.range_leftDeriv φ.range_rightDeriv
           φ.isCompl_ker :
         E →L[𝕜] F × G)
       φ.pt :=
-  φ.left_has_deriv.prodMk φ.right_has_deriv
+  φ.hasStrictFDerivAt_leftFun.prodMk φ.hasStrictFDerivAt_rightFun
 
 /-- Implicit function theorem. If `f : E → F` and `g : E → G` are two maps strictly differentiable
 at `a`, their derivatives `f'`, `g'` are surjective, and the kernels of these derivatives are
@@ -249,11 +249,11 @@ def implicitFunctionDataOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : ra
   rightFun x := Classical.choose hker (x - a)
   rightDeriv := Classical.choose hker
   pt := a
-  left_has_deriv := hf
-  right_has_deriv :=
+  hasStrictFDerivAt_leftFun := hf
+  hasStrictFDerivAt_rightFun :=
     (Classical.choose hker).hasStrictFDerivAt.comp a ((hasStrictFDerivAt_id a).sub_const a)
-  left_range := hf'
-  right_range := LinearMap.range_eq_of_proj (Classical.choose_spec hker)
+  range_leftDeriv := hf'
+  range_rightDeriv := LinearMap.range_eq_of_proj (Classical.choose_spec hker)
   isCompl_ker := LinearMap.isCompl_of_proj (Classical.choose_spec hker)
 
 /-- An open partial homeomorphism between `E` and `F × f'.ker` sending level surfaces of `f`

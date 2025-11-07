@@ -29,7 +29,7 @@ Lean to try harder to close the goal.
 
 See the doc-strings for more details.
 
-##  Future work
+## Future work
 
 * Currently, `compute_degree` does not deal correctly with some edge cases.  For instance,
   ```lean
@@ -44,7 +44,7 @@ See the doc-strings for more details.
 * Add support for proving goals of the from `natDegree f ≠ 0` and `degree f ≠ 0`.
 * Make sure that `degree`, `natDegree` and `coeff` are equally supported.
 
-##  Implementation details
+## Implementation details
 
 Assume that `f : R[X]` is a polynomial with coefficients in a semiring `R` and
 `d` is either in `ℕ` or in `WithBot ℕ`.
@@ -84,7 +84,7 @@ namespace Mathlib.Tactic.ComputeDegree
 
 section recursion_lemmas
 /-!
-###  Simple lemmas about `natDegree`
+### Simple lemmas about `natDegree`
 
 The lemmas in this section all have the form `natDegree <some form of cast> ≤ 0`.
 Their proofs are weakenings of the stronger lemmas `natDegree <same> = 0`.

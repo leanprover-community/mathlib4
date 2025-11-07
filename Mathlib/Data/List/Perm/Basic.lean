@@ -173,7 +173,7 @@ theorem Perm.foldr_eq {f : α → β → β} {l₁ l₂ : List α} [lcomm : Left
   intro b
   induction p using Perm.recOnSwap' generalizing b with
   | nil => rfl
-  | cons _ _ r  => simp [r b]
+  | cons _ _ r => simp [r b]
   | swap' _ _ _ r => simp only [foldr_cons]; rw [lcomm.left_comm, r b]
   | trans _ _ r₁ r₂ => exact Eq.trans (r₁ b) (r₂ b)
 

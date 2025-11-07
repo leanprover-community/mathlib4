@@ -9,7 +9,7 @@ import Mathlib.Algebra.Order.Monoid.Defs
 /-!
 # Order instances for `MulOpposite`/`AddOpposite`
 
-This files transfers order instances and ordered monoid/group instances from `α` to `αᵐᵒᵖ` and
+This file transfers order instances and ordered monoid/group instances from `α` to `αᵐᵒᵖ` and
 `αᵃᵒᵖ`.
 -/
 

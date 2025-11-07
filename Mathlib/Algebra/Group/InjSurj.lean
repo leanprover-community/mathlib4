@@ -194,7 +194,6 @@ which has an involutive inversion. See note [reducible non-instances] -/
 preserves `-` to a type which has an involutive negation. -/]
 protected abbrev involutiveInv {M₁ : Type*} [Inv M₁] [InvolutiveInv M₂] (f : M₁ → M₂)
     (hf : Injective f) (inv : ∀ x, f x⁻¹ = (f x)⁻¹) : InvolutiveInv M₁ where
-  inv := Inv.inv
   inv_inv x := hf <| by rw [inv, inv, inv_inv]
 
 variable [Inv M₁]
@@ -383,7 +382,6 @@ which has an involutive inversion. See note [reducible non-instances] -/
 preserves `-` to a type which has an involutive negation. -/]
 protected abbrev involutiveInv {M₂ : Type*} [Inv M₂] [InvolutiveInv M₁] (f : M₁ → M₂)
     (hf : Surjective f) (inv : ∀ x, f x⁻¹ = (f x)⁻¹) : InvolutiveInv M₂ where
-  inv := Inv.inv
   inv_inv := hf.forall.2 fun x => by rw [← inv, ← inv, inv_inv]
 
 variable [Inv M₂] [Div M₂] [Pow M₂ ℤ]

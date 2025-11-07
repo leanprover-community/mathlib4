@@ -70,7 +70,7 @@ protected abbrev addMonoidWithOne [Zero S] [One S] [Add S] [SMul ℕ S] [NatCast
   { hf.addMonoid f zero add (swap nsmul) with
     natCast := Nat.cast,
     natCast_zero := hf (by rw [natCast, Nat.cast_zero, zero]),
-    natCast_succ := fun n => hf (by rw [natCast, Nat.cast_succ, add, one, natCast]), one := 1 }
+    natCast_succ := fun n => hf (by rw [natCast, Nat.cast_succ, add, one, natCast]) }
 
 /-- A type endowed with `0`, `1` and `+` is an additive commutative monoid with one, if it admits an
 injective map that preserves `0`, `1` and `+` to an additive commutative monoid with one.
@@ -301,8 +301,7 @@ protected abbrev addMonoidWithOne [AddMonoidWithOne R] (zero : f 0 = 0) (one : f
   { hf.addMonoid f zero add (swap nsmul) with
     natCast := Nat.cast,
     natCast_zero := by rw [← natCast, Nat.cast_zero, zero]
-    natCast_succ := fun n => by rw [← natCast, Nat.cast_succ, add, one, natCast]
-    one := 1 }
+    natCast_succ := fun n => by rw [← natCast, Nat.cast_succ, add, one, natCast] }
 
 /-- A type endowed with `0`, `1` and `+` is an additive monoid with one,
 if it admits a surjective map that preserves `0`, `1` and `*` from an additive monoid with one.

@@ -31,7 +31,7 @@ add_decl_doc AddConstEquiv.toEquiv
 add_decl_doc AddConstEquiv.toAddConstMap
 
 @[inherit_doc]
-scoped [AddConstMap] notation:25 G " ≃+c[" a ", " b "] " H => AddConstEquiv G H a b
+scoped[AddConstMap] notation:25 G " ≃+c[" a ", " b "] " H => AddConstEquiv G H a b
 
 namespace AddConstEquiv
 

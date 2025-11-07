@@ -98,7 +98,7 @@ variable {c : 𝕜 → 𝕜} {c' : 𝕜}
 theorem HasDerivWithinAt.fun_inv (hc : HasDerivWithinAt c c' s x) (hx : c x ≠ 0) :
     HasDerivWithinAt (fun y => (c y)⁻¹) (-c' / c x ^ 2) s x := by
   convert (hasDerivAt_inv hx).comp_hasDerivWithinAt x hc using 1
-  field_simp
+  field
 
 theorem HasDerivWithinAt.inv (hc : HasDerivWithinAt c c' s x) (hx : c x ≠ 0) :
     HasDerivWithinAt (c⁻¹) (-c' / c x ^ 2) s x :=

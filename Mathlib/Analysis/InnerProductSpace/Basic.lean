@@ -14,8 +14,8 @@ This file proves many basic properties of inner product spaces (real or complex)
 
 ## Main results
 
-- `inner_mul_inner_self_le`: the Cauchy-Schwartz inequality (one of many variants).
-- `norm_inner_eq_norm_iff`: the equality criteion in the Cauchy-Schwartz inequality (also in many
+- `inner_mul_inner_self_le`: the Cauchy-Schwarz inequality (one of many variants).
+- `norm_inner_eq_norm_iff`: the equality criterion in the Cauchy-Schwarz inequality (also in many
   variants).
 - `inner_eq_sum_norm_sq_div_four`: the polarization identity.
 
@@ -302,8 +302,14 @@ variable (𝕜)
 theorem ext_inner_left {x y : E} (h : ∀ v, ⟪v, x⟫ = ⟪v, y⟫) : x = y := by
   rw [← sub_eq_zero, ← @inner_self_eq_zero 𝕜, inner_sub_right, sub_eq_zero, h (x - y)]
 
+theorem ext_iff_inner_left {x y : E} : x = y ↔ ∀ v, ⟪v, x⟫ = ⟪v, y⟫ :=
+  ⟨fun h _ ↦ h ▸ rfl, ext_inner_left 𝕜⟩
+
 theorem ext_inner_right {x y : E} (h : ∀ v, ⟪x, v⟫ = ⟪y, v⟫) : x = y := by
   rw [← sub_eq_zero, ← @inner_self_eq_zero 𝕜, inner_sub_left, sub_eq_zero, h (x - y)]
+
+theorem ext_iff_inner_right {x y : E} : x = y ↔ ∀ v, ⟪x, v⟫ = ⟪y, v⟫ :=
+  ⟨fun h _ ↦ h ▸ rfl, ext_inner_right 𝕜⟩
 
 variable {𝕜}
 
@@ -740,7 +746,7 @@ theorem inner_eq_norm_mul_iff_div {x y : E} (h₀ : x ≠ 0) :
     rw [this.resolve_left h₀, h]
     simp [norm_smul, inner_self_ofReal_norm, mul_div_cancel_right₀ _ h₀']
   · conv_lhs => rw [← h, inner_smul_right, inner_self_eq_norm_sq_to_K]
-    field_simp
+    field
 
 /-- If the inner product of two vectors is equal to the product of their norms (i.e.,
 `⟪x, y⟫ = ‖x‖ * ‖y‖`), then the two vectors are nonnegative real multiples of each other. One form

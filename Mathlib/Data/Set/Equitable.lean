@@ -35,7 +35,7 @@ theorem equitableOn_empty [LE β] [Add β] [One β] (f : α → β) : EquitableO
 
 theorem equitableOn_iff_exists_le_le_add_one {s : Set α} {f : α → ℕ} :
     s.EquitableOn f ↔ ∃ b, ∀ a ∈ s, b ≤ f a ∧ f a ≤ b + 1 := by
-  refine ⟨?_, fun ⟨b, hb⟩ x y hx hy => (hb x hx).2.trans (add_le_add_right (hb y hy).1 _)⟩
+  refine ⟨?_, fun ⟨b, hb⟩ x y hx hy => by grw [(hb x hx).2, (hb y hy).1]⟩
   obtain rfl | ⟨x, hx⟩ := s.eq_empty_or_nonempty
   · simp
   intro hs

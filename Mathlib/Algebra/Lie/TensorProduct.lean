@@ -47,7 +47,7 @@ def hasBracketAux (x : L) : Module.End R (M ⊗[R] N) :=
 instance lieRingModule : LieRingModule L (M ⊗[R] N) where
   bracket x := hasBracketAux x
   add_lie x y t := by
-    simp only [hasBracketAux, LinearMap.lTensor_add, LinearMap.rTensor_add, LieHom.map_add,
+    simp only [hasBracketAux, LinearMap.lTensor_add, LinearMap.rTensor_add, map_add,
       LinearMap.add_apply]
     abel
   lie_add _ := LinearMap.map_add _
@@ -67,7 +67,7 @@ instance lieModule : LieModule R L (M ⊗[R] N) where
   smul_lie c x t := by
     change hasBracketAux (c • x) _ = c • hasBracketAux _ _
     simp only [hasBracketAux, smul_add, LinearMap.rTensor_smul, LinearMap.smul_apply,
-      LinearMap.lTensor_smul, LieHom.map_smul, LinearMap.add_apply]
+      LinearMap.lTensor_smul, map_smul, LinearMap.add_apply]
   lie_smul c _ := LinearMap.map_smul _ c
 
 @[simp]
@@ -81,7 +81,7 @@ variable (R L M N P Q)
 /-- The universal property for tensor product of modules of a Lie algebra: the `R`-linear
 tensor-hom adjunction is equivariant with respect to the `L` action. -/
 def lift : (M →ₗ[R] N →ₗ[R] P) ≃ₗ⁅R,L⁆ M ⊗[R] N →ₗ[R] P :=
-  { TensorProduct.lift.equiv R M N P with
+  { TensorProduct.lift.equiv (.id R) M N P with
     map_lie' := fun {x f} => by
       ext m n
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,

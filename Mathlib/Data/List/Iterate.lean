@@ -27,7 +27,7 @@ theorem iterate_eq_nil {f : α → α} {a : α} {n : ℕ} : iterate f a n = [] �
 
 theorem getElem?_iterate (f : α → α) (a : α) :
     ∀ (n i : ℕ), i < n → (iterate f a n)[i]? = f^[i] a
-  | n + 1, 0    , _ => by simp
+  | n + 1, 0, _ => by simp
   | n + 1, i + 1, h => by simp [getElem?_iterate f (f a) n i (by simpa using h)]
 
 @[simp]

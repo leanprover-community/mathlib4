@@ -15,7 +15,7 @@ import Mathlib.Condensed.Basic
 
 # Condensed `R`-modules
 
-This files defines condensed modules over a ring `R`.
+This file defines condensed modules over a ring `R`.
 
 ## Main results
 

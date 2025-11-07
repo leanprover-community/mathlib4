@@ -282,10 +282,10 @@ section instances
 example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max w v) := inferInstance
 example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max v w) := inferInstance
 
-example : HasLimitsOfSize.{0, 0, v, v+1} (Type v) := inferInstance
-example : HasLimitsOfSize.{v, v, v, v+1} (Type v) := inferInstance
+example : HasLimitsOfSize.{0, 0, v, v + 1} (Type v) := inferInstance
+example : HasLimitsOfSize.{v, v, v, v + 1} (Type v) := inferInstance
 
-example [UnivLE.{v, u}] : HasLimitsOfSize.{v, v, u, u+1} (Type u) := inferInstance
+example [UnivLE.{v, u}] : HasLimitsOfSize.{v, v, u, u + 1} (Type u) := inferInstance
 
 end instances
 

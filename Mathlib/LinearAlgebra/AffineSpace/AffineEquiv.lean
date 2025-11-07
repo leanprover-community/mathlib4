@@ -231,7 +231,7 @@ theorem apply_eq_iff_eq (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂ : P₁} : e p₁ = 
 
 @[simp]
 theorem image_symm (f : P₁ ≃ᵃ[k] P₂) (s : Set P₂) : f.symm '' s = f ⁻¹' s :=
-  f.symm.toEquiv.image_eq_preimage _
+  f.symm.toEquiv.image_eq_preimage_symm _
 
 @[simp]
 theorem preimage_symm (f : P₁ ≃ᵃ[k] P₂) (s : Set P₁) : f.symm ⁻¹' s = f '' s :=

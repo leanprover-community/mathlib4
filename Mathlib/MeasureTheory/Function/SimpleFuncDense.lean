@@ -176,7 +176,7 @@ theorem edist_approxOn_y0_le {f : β → α} (hf : Measurable f) {s : Set α} {y
     edist y₀ (approxOn f hf s y₀ h₀ n x) ≤
         edist y₀ (f x) + edist (approxOn f hf s y₀ h₀ n x) (f x) :=
       edist_triangle_right _ _ _
-    _ ≤ edist y₀ (f x) + edist y₀ (f x) := add_le_add_left (edist_approxOn_le hf h₀ x n) _
+    _ ≤ edist y₀ (f x) + edist y₀ (f x) := by grw [edist_approxOn_le hf h₀ x n]
 
 end SimpleFunc
 

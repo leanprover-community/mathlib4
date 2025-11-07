@@ -159,6 +159,13 @@ instance {α : Type*} [CompleteSemilatticeSup α] : CompleteSemilatticeInf αᵒ
 class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α,
     CompleteSemilatticeInf α, BoundedOrder α
 
+-- Shortcut instance to ensure that the path
+-- `CompleteLattice α → CompletePartialOrder α → PartialOrder α` isn't taken,
+-- as it tricks `#min_imports` into believing `Order.CompletePartialOrder` is a necessary import.
+-- See note [lower instance priority]
+instance (priority := 100) CompleteLattice.toPartialOrder' [CompleteLattice α] : PartialOrder α :=
+  inferInstance
+
 /-- Create a `CompleteLattice` from a `PartialOrder` and `InfSet`
 that returns the greatest lower bound of a set. Usually this constructor provides
 poor definitional equalities.  If other fields are known explicitly, they should be

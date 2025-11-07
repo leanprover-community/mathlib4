@@ -87,8 +87,7 @@ lemma card_not_easy_le_210 (hG : ∀ i, #(G i) ≤ 6) (hB : ∀ i j, ¬Disjoint 
       exact Nat.le_of_lt_succ mp.2
     _ ≤ ∑ i : Fin 21, 5 * 2 := by
       gcongr with i
-      rw [sum_const, smul_eq_mul]
-      exact mul_le_mul_right' (card_not_easy_le_five (hG _) (hB _)) _
+      grw [sum_const, smul_eq_mul, card_not_easy_le_five (hG _) (hB _)]
     _ = _ := by norm_num
 
 theorem result (h : Condition G B) : ∃ p, Easy G p ∧ Easy B p := by

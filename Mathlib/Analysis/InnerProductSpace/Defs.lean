@@ -188,7 +188,7 @@ def InnerProductSpace.toCore [NormedAddCommGroup E] [c : InnerProductSpace 𝕜 
       rw [← InnerProductSpace.norm_sq_eq_re_inner]
       apply sq_nonneg
     definite := fun x hx =>
-      norm_eq_zero.1 <| pow_eq_zero (n := 2) <| by
+      norm_eq_zero.1 <| eq_zero_of_pow_eq_zero (n := 2) <| by
         rw [InnerProductSpace.norm_sq_eq_re_inner (𝕜 := 𝕜) x, hx, map_zero] }
 
 namespace InnerProductSpace.Core
@@ -345,7 +345,7 @@ We need this for the `PreInnerProductSpace.Core` structure to prove the triangle
 when showing the core is a normed group and to take the quotient.
 
 (This is not intended for general use; see `Analysis.InnerProductSpace.Basic` for a variety of
-versions of Cauchy-Schwartz for an inner product space, rather than a `PreInnerProductSpace.Core`).
+versions of Cauchy-Schwarz for an inner product space, rather than a `PreInnerProductSpace.Core`).
 -/
 theorem inner_mul_inner_self_le (x y : F) : ‖⟪x, y⟫‖ * ‖⟪y, x⟫‖ ≤ re ⟪x, x⟫ * re ⟪y, y⟫ := by
   suffices discrim (normSqF x) (2 * ‖⟪x, y⟫_𝕜‖) (normSqF y) ≤ 0 by
@@ -555,12 +555,13 @@ end InnerProductSpace.Core
 
 section
 
-attribute [local instance] InnerProductSpace.Core.toNormedAddCommGroup
+attribute [local instance] InnerProductSpace.Core.toSeminormedAddCommGroup
 
-/-- Given an `InnerProductSpace.Core` structure on a space, one can use it to turn
-the space into an inner product space. The `NormedAddCommGroup` structure is expected
-to already be defined with `InnerProductSpace.ofCore.toNormedAddCommGroup`. -/
-def InnerProductSpace.ofCore [AddCommGroup F] [Module 𝕜 F] (cd : InnerProductSpace.Core 𝕜 F) :
+/-- Given a `PreInnerProductSpace.Core` structure on a space, one can use it to turn
+the space into a pre-inner product space (i.e., `SeminormedAddCommGroup` and `InnerProductSpace`).
+The `SeminormedAddCommGroup` structure is expected to already be defined with
+`InnerProductSpace.ofCore.toSeminormedAddCommGroup`. -/
+def InnerProductSpace.ofCore [AddCommGroup F] [Module 𝕜 F] (cd : PreInnerProductSpace.Core 𝕜 F) :
     InnerProductSpace 𝕜 F :=
   letI : NormedSpace 𝕜 F := InnerProductSpace.Core.toNormedSpace
   { cd with

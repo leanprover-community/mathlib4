@@ -29,6 +29,6 @@ noncomputable instance : CountableAB4Star (LightCondMod.{u} R) :=
   CountableAB4Star.of_hasExactLimitsOfShape_nat _
 
 instance : IsGrothendieckAbelian.{u} (LightCondMod.{u} R) :=
-  inferInstanceAs (IsGrothendieckAbelian.{u} (Sheaf _ _))
+  Sheaf.isGrothendieckAbelian_of_essentiallySmall _ _
 
 end LightCondensed

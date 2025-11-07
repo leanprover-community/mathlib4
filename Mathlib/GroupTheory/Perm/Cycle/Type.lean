@@ -327,9 +327,7 @@ theorem cycleType_of_card_le_mem_cycleType_add_two {n : ℕ} {g : Perm α}
   suffices g'1 : g' = 1 by
     rw [hd.cycleType_mul, hc.cycleType, g'1, cycleType_one, add_zero]
   contrapose! hn2 with g'1
-  apply le_trans _ (c * g').support.card_le_univ
-  rw [hd.card_support_mul]
-  exact add_le_add_left (two_le_card_support_of_ne_one g'1) _
+  grw [← (c * g').support.card_le_univ, hd.card_support_mul, two_le_card_support_of_ne_one g'1]
 
 end CycleType
 

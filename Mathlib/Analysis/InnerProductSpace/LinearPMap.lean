@@ -5,7 +5,7 @@ Authors: Moritz Doll
 -/
 import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.Analysis.InnerProductSpace.ProdL2
-import Mathlib.Analysis.Normed.Operator.Completeness
+import Mathlib.Analysis.Normed.Operator.Extend
 import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.Topology.Algebra.Module.LinearPMap
 
@@ -53,7 +53,7 @@ Unbounded operators, closed operators
 
 noncomputable section
 
-open RCLike LinearPMap
+open RCLike LinearPMap WithLp
 
 open scoped ComplexConjugate
 
@@ -272,12 +272,12 @@ theorem mem_adjoint_iff (g : Submodule 𝕜 (E × F)) (x : F × E) :
   constructor
   · rintro ⟨y, h1, h2⟩ a b hab
     rw [← h2, WithLp.ofLp_fst, WithLp.ofLp_snd]
-    specialize h1 (b, -a) a b hab rfl
+    specialize h1 (toLp 2 (b, -a)) a b hab rfl
     dsimp at h1
     simp only [inner_neg_left, ← sub_eq_add_neg] at h1
     exact h1
   · intro h
-    refine ⟨x, ?_, rfl⟩
+    refine ⟨toLp 2 x, ?_, rfl⟩
     intro u a b hab hu
     simp [← hu, ← sub_eq_add_neg, h a b hab]
 
@@ -328,7 +328,7 @@ theorem adjoint_isClosed (hT : Dense (T.domain : Set E)) :
     T†.IsClosed := by
   rw [IsClosed, adjoint_graph_eq_graph_adjoint hT, Submodule.adjoint]
   simp only [Submodule.map_coe]
-  rw [LinearEquiv.image_eq_preimage]
+  rw [LinearEquiv.image_eq_preimage_symm]
   exact (Submodule.isClosed_orthogonal _).preimage (WithLp.prod_continuous_toLp _ _ _)
 
 /-- Every self-adjoint `LinearPMap` is closed. -/

@@ -223,15 +223,6 @@ theorem exists_isClopen_of_totally_separated {α : Type*} [TopologicalSpace α]
     [TotallySeparatedSpace α] : Pairwise (∃ U : Set α, IsClopen U ∧ · ∈ U ∧ · ∈ Uᶜ) :=
   totallySeparatedSpace_iff_exists_isClopen.mp ‹_›
 
-/-- Let `X` be a topological space, and suppose that for all distinct `x,y ∈ X`, there
-  is some clopen set `U` such that `x ∈ U` and `y ∉ U`. Then `X` is totally disconnected. -/
-@[deprecated totallySeparatedSpace_iff_exists_isClopen (since := "2025-04-03")]
-theorem isTotallyDisconnected_of_isClopen_set {X : Type*} [TopologicalSpace X]
-    (hX : Pairwise (∃ (U : Set X), IsClopen U ∧ · ∈ U ∧ · ∉ U)) :
-    IsTotallyDisconnected (Set.univ : Set X) :=
-  (totallySeparatedSpace_iff X).mp (totallySeparatedSpace_iff_exists_isClopen.mpr hX)
-    |>.isTotallyDisconnected
-
 end TotallySeparated
 
 

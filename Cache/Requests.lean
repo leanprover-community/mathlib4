@@ -31,7 +31,7 @@ def extractRepoFromUrl (url : String) : Option String := do
   let url := url.stripSuffix ".git"
   let pos ← url.revFind (· == '/')
   let pos ← url.revFindAux (fun c => c == '/'  || c == ':') pos
-  return url.extract (url.next pos) url.endPos
+  return (String.Pos.Raw.extract url) (String.Pos.Raw.next url pos) url.endPos
 
 /-- Spot check if a URL is valid for a git remote -/
 def isRemoteURL (url : String) : Bool :=
@@ -81,12 +81,12 @@ def findMathlibRemote (mathlibDepPath : FilePath) : IO String := do
       Ensure Git is installed.\n\
       Stdout:\n{remotesInfo.stdout.trim}\nStderr:\n{remotesInfo.stderr.trim}\n"
 
-  let remoteLines := remotesInfo.stdout.split (· == '\n')
+  let remoteLines := remotesInfo.stdout.splitToList (· == '\n')
   let mut mathlibRemote : Option String := none
   let mut originPointsToMathlib : Bool := false
 
   for line in remoteLines do
-    let parts := line.trim.split (· == '\t')
+    let parts := line.trim.splitToList (· == '\t')
     if parts.length >= 2 then
       let remoteName := parts[0]!
       let remoteUrl := parts[1]!.takeWhile (· != ' ') -- Remove (fetch) or (push) suffix
@@ -115,7 +115,7 @@ def findMathlibRemote (mathlibDepPath : FilePath) : IO String := do
 Extracts PR number from a git ref like "refs/remotes/upstream/pr/1234"
 -/
 def extractPRNumber (ref : String) : Option Nat := do
-  let parts := ref.split (· == '/')
+  let parts := ref.splitToList (· == '/')
   if parts.length >= 2 && parts[parts.length - 2]! == "pr" then
     let prStr := parts[parts.length - 1]!
     prStr.toNat?
@@ -176,11 +176,7 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
                                   isDetachedAtNightlyTesting
 
     if shouldUseNightlyTesting then
-      -- Try to use nightly-testing remote
-      let repo ← getRepoFromRemote mathlibDepPath "nightly-testing"
-        s!"Branch '{branchName}' should use the nightly-testing remote, but it's not configured.\n\
-          Please add the nightly-testing remote pointing to the nightly testing repository:\n\
-          git remote add nightly-testing https://github.com/leanprover-community/mathlib4-nightly-testing.git"
+      let repo := "leanprover-community/mathlib4-nightly-testing"
       let cacheService := if useFROCache then "Cloudflare" else "Azure"
       IO.println s!"Using cache ({cacheService}) from nightly-testing remote: {repo}"
       return {repo := repo, useFirst := true}

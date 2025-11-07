@@ -340,8 +340,6 @@ theorem cast_finsuppProd [CommSemiring R] (g : α → M → ℕ) :
     (↑(f.prod g) : R) = f.prod fun a b => ↑(g a b) :=
   Nat.cast_prod _ _
 
-@[deprecated (since := "2025-04-06")] alias cast_finsupp_prod := cast_finsuppProd
-
 @[simp, norm_cast]
 theorem cast_finsupp_sum [AddCommMonoidWithOne R] (g : α → M → ℕ) :
     (↑(f.sum g) : R) = f.sum fun a b => ↑(g a b) :=
@@ -355,8 +353,6 @@ namespace Int
 theorem cast_finsuppProd [CommRing R] (g : α → M → ℤ) :
     (↑(f.prod g) : R) = f.prod fun a b => ↑(g a b) :=
   Int.cast_prod _ _
-
-@[deprecated (since := "2025-04-06")] alias cast_finsupp_prod := cast_finsuppProd
 
 @[simp, norm_cast]
 theorem cast_finsupp_sum [AddCommGroupWithOne R] (g : α → M → ℤ) :
@@ -376,8 +372,6 @@ theorem cast_finsupp_sum [DivisionRing R] [CharZero R] (g : α → M → ℚ) :
 theorem cast_finsuppProd [Field R] [CharZero R] (g : α → M → ℚ) :
     (↑(f.prod g) : R) = f.prod fun a b => ↑(g a b) :=
   cast_prod _ _
-
-@[deprecated (since := "2025-04-06")] alias cast_finsupp_prod := cast_finsuppProd
 
 end Rat
 
@@ -664,6 +658,15 @@ theorem comapDomain_single (f : α → β) (a : α) (m : M)
       support_single_ne_zero _ hm, coe_singleton, coe_singleton, single_eq_same]
     rw [support_single_ne_zero _ hm, coe_singleton] at hif
     exact ⟨fun x hx => hif hx rfl hx, rfl⟩
+
+lemma comapDomain_surjective [Finite β] {f : α → β} (hf : Function.Injective f) :
+    Function.Surjective fun l : β →₀ M ↦ Finsupp.comapDomain f l hf.injOn := by
+  classical
+  intro x
+  cases isEmpty_or_nonempty α
+  · exact ⟨0, Finsupp.ext <| fun a ↦ IsEmpty.elim ‹_› a⟩
+  obtain ⟨g, hg⟩ := hf.hasLeftInverse
+  exact ⟨Finsupp.equivFunOnFinite.symm (x ∘ g), Finsupp.ext <| fun a ↦ by simp [hg a]⟩
 
 end Zero
 

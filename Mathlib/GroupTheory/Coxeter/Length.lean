@@ -57,8 +57,8 @@ variable {B : Type*}
 variable {W : Type*} [Group W]
 variable {M : CoxeterMatrix B} (cs : CoxeterSystem M W)
 
-local prefix:100 "s" => cs.simple
-local prefix:100 "π" => cs.wordProd
+local prefix:100 "s " => cs.simple
+local prefix:100 "π " => cs.wordProd
 
 /-! ### Length -/
 
@@ -71,7 +71,7 @@ open scoped Classical in
 must be multiplied to form `w`. -/
 noncomputable def length (w : W) : ℕ := Nat.find (cs.exists_word_with_prod w)
 
-local prefix:100 "ℓ" => cs.length
+local prefix:100 "ℓ " => cs.length
 
 theorem exists_reduced_word (w : W) : ∃ ω, ω.length = ℓ w ∧ w = π ω := by
   classical
@@ -219,14 +219,14 @@ theorem exists_reduced_word' (w : W) : ∃ ω : List B, cs.IsReduced ω ∧ w = 
 
 private theorem isReduced_take_and_drop {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) :
     cs.IsReduced (ω.take j) ∧ cs.IsReduced (ω.drop j) := by
-  have h₁ : ℓ (π (ω.take j)) ≤ (ω.take j).length    := cs.length_wordProd_le (ω.take j)
-  have h₂ : ℓ (π (ω.drop j)) ≤ (ω.drop j).length    := cs.length_wordProd_le (ω.drop j)
+  have h₁ : ℓ (π (ω.take j)) ≤ (ω.take j).length := cs.length_wordProd_le (ω.take j)
+  have h₂ : ℓ (π (ω.drop j)) ≤ (ω.drop j).length := cs.length_wordProd_le (ω.drop j)
   have h₃ := calc
     (ω.take j).length + (ω.drop j).length
-    _ = ω.length                             := by rw [← List.length_append, ω.take_append_drop j]
-    _ = ℓ (π ω)                              := hω.symm
-    _ = ℓ (π (ω.take j) * π (ω.drop j))      := by rw [← cs.wordProd_append, ω.take_append_drop j]
-    _ ≤ ℓ (π (ω.take j)) + ℓ (π (ω.drop j))  := cs.length_mul_le _ _
+    _ = ω.length := by rw [← List.length_append, ω.take_append_drop j]
+    _ = ℓ (π ω) := hω.symm
+    _ = ℓ (π (ω.take j) * π (ω.drop j)) := by rw [← cs.wordProd_append, ω.take_append_drop j]
+    _ ≤ ℓ (π (ω.take j)) + ℓ (π (ω.drop j)) := cs.length_mul_le _ _
   unfold IsReduced
   cutsat
 
@@ -291,8 +291,8 @@ theorem exists_leftDescent_of_ne_one {w : W} (hw : w ≠ 1) : ∃ i : B, cs.IsLe
   use i
   rw [IsLeftDescent, ← h, wordProd_cons, simple_mul_simple_cancel_left]
   calc
-    ℓ (π ω') ≤ ω'.length                := cs.length_wordProd_le ω'
-    _        < (i :: ω').length         := by simp
+    ℓ (π ω') ≤ ω'.length := cs.length_wordProd_le ω'
+    _ < (i :: ω').length := by simp
 
 theorem exists_rightDescent_of_ne_one {w : W} (hw : w ≠ 1) : ∃ i : B, cs.IsRightDescent w i := by
   simp only [← isLeftDescent_inv_iff]

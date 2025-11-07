@@ -117,19 +117,11 @@ theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff φ 
         sub_eq_add_neg, sub_eq_zero, Finset.sum_congr rfl]
       rintro ⟨i, j⟩ hij
       rw [Finset.mem_erase, mem_antidiagonal] at hij
-      obtain ⟨h₁, h₂⟩ := hij
-      subst n
+      obtain ⟨h₁, rfl⟩ := hij
       rw [if_pos]
-      suffices 0 + j < i + j by simpa
-      apply add_lt_add_right
-      constructor
-      · intro s
-        exact Nat.zero_le _
-      · intro H
-        apply h₁
-        suffices i = 0 by simp [this]
-        ext1 s
-        exact Nat.eq_zero_of_le_zero (H s)
+      refine lt_add_of_pos_left _ <| pos_iff_ne_zero.2 ?_
+      rintro rfl
+      simp at h₁
 
 -- TODO : can one prove equivalence?
 @[simp]

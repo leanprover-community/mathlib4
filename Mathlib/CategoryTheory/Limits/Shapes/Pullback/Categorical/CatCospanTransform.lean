@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.CatCommSq
 /-! # Morphisms of categorical cospans.
 
 Given `F : A ⥤ B`, `G : C ⥤ B`, `F' : A' ⥤ B'` and `G' : C' ⥤ B'`,
-this files defines `CatCospanTransform F G F' G'`, the category of
+this file defines `CatCospanTransform F G F' G'`, the category of
 "categorical transformations" from the (categorical) cospan `F G` to
 the (categorical) cospan `F' G'`. Such a transformation consists of a
 diagram

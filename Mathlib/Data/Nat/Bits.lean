@@ -88,7 +88,7 @@ lemma div2_two : div2 2 = 1 := rfl
 @[simp]
 lemma div2_succ (n : ℕ) : div2 (n + 1) = cond (bodd n) (succ (div2 n)) (div2 n) := by
   simp only [bodd, boddDiv2, div2]
-  rcases boddDiv2 n with ⟨_ |_, _⟩ <;> simp
+  rcases boddDiv2 n with ⟨_ | _, _⟩ <;> simp
 
 attribute [local simp] Nat.add_comm Nat.mul_comm
 
@@ -131,7 +131,7 @@ def shiftLeft' (b : Bool) (m : ℕ) : ℕ → ℕ
 lemma shiftLeft'_false : ∀ n, shiftLeft' false m n = m <<< n
   | 0 => rfl
   | n + 1 => by
-    have : 2 * (m * 2^n) = 2^(n+1)*m := by
+    have : 2 * (m * 2 ^ n) = 2 ^ (n + 1) * m := by
       rw [Nat.mul_comm, Nat.mul_assoc, ← Nat.pow_succ]; simp
     simp [shiftLeft_eq, shiftLeft', bit_val, shiftLeft'_false, this]
 
@@ -216,11 +216,11 @@ theorem div2_bit1 (n) : div2 (2 * n + 1) = n :=
 /-! ### `bit0` and `bit1` -/
 
 theorem bit_add : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit false n + bit b m
-  | true,  _, _ => by dsimp [bit]; cutsat
+  | true, _, _ => by dsimp [bit]; cutsat
   | false, _, _ => by dsimp [bit]; cutsat
 
 theorem bit_add' : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit b n + bit false m
-  | true,  _, _ => by dsimp [bit]; cutsat
+  | true, _, _ => by dsimp [bit]; cutsat
   | false, _, _ => by dsimp [bit]; cutsat
 
 theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
@@ -252,7 +252,7 @@ lemma bit_le : ∀ (b : Bool) {m n : ℕ}, m ≤ n → bit b m ≤ bit b n
   | false, _, _, h => by dsimp [bit]; cutsat
 
 lemma bit_lt_bit (a b) (h : m < n) : bit a m < bit b n := calc
-  bit a m < 2 * n   := by cases a <;> dsimp [bit] <;> omega
+  bit a m < 2 * n := by cases a <;> dsimp [bit] <;> omega
         _ ≤ bit b n := by cases b <;> dsimp [bit] <;> omega
 
 @[simp]

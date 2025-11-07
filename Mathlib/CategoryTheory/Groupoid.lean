@@ -95,7 +95,7 @@ variable (X Y)
 @[simps!]
 def Groupoid.isoEquivHom : (X ≅ Y) ≃ (X ⟶ Y) where
   toFun := Iso.hom
-  invFun f := ⟨f, Groupoid.inv f, (by simp), (by simp)⟩
+  invFun f := { hom := f, inv := Groupoid.inv f }
 
 variable (C)
 

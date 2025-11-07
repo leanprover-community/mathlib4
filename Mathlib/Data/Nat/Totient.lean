@@ -95,7 +95,7 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_ne_zero : a ≠ 0) :
     _ ≤ #{x ∈ Ico k (k + n % a + a * i) | a.Coprime x} + a.totient := by
       rw [filter_union, ← filter_coprime_Ico_eq_totient a (k + n % a + a * i)]
       apply card_union_le
-    _ ≤ a.totient * i + a.totient + a.totient := add_le_add_right ih (totient a)
+    _ ≤ a.totient * i + a.totient + a.totient := by grw [← mul_add_one, ih]
 
 open ZMod
 
@@ -346,8 +346,7 @@ theorem totient_super_multiplicative (a b : ℕ) : φ a * φ b ≤ φ (a * b) :=
   · simp
   have hd0 : 0 < d := Nat.gcd_pos_of_pos_left _ ha0
   apply le_of_mul_le_mul_right _ hd0
-  rw [← totient_gcd_mul_totient_mul a b, mul_comm]
-  apply mul_le_mul_left' (Nat.totient_le d)
+  grw [← totient_gcd_mul_totient_mul a b, mul_comm, d.totient_le]
 
 @[gcongr]
 theorem totient_dvd_of_dvd {a b : ℕ} (h : a ∣ b) : φ a ∣ φ b := by

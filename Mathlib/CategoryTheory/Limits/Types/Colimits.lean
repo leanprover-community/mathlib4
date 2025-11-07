@@ -123,10 +123,10 @@ section instances
 example : HasColimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max w v) := inferInstance
 example : HasColimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max v w) := inferInstance
 
-example : HasColimitsOfSize.{0, 0, v, v+1} (Type v) := inferInstance
-example : HasColimitsOfSize.{v, v, v, v+1} (Type v) := inferInstance
+example : HasColimitsOfSize.{0, 0, v, v + 1} (Type v) := inferInstance
+example : HasColimitsOfSize.{v, v, v, v + 1} (Type v) := inferInstance
 
-example [UnivLE.{v, u}] : HasColimitsOfSize.{v, v, u, u+1} (Type u) := inferInstance
+example [UnivLE.{v, u}] : HasColimitsOfSize.{v, v, u, u + 1} (Type u) := inferInstance
 
 end instances
 

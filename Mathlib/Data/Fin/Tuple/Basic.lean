@@ -1202,7 +1202,7 @@ lemma comp_contractNth {β : Sort*} (opα : α → α → α) (opβ : β → β 
     (hf : ∀ x y, f (opα x y) = opβ (f x) (f y)) (j : Fin (n + 1)) (g : Fin (n + 1) → α) :
     f ∘ contractNth j opα g = contractNth j opβ (f ∘ g) := by
   ext x
-  rcases lt_trichotomy (x : ℕ) j with (h|h|h)
+  rcases lt_trichotomy (x : ℕ) j with (h | h | h)
   · simp only [Function.comp_apply, contractNth_apply_of_lt, h]
   · simp only [Function.comp_apply, contractNth_apply_of_eq, h, hf]
   · simp only [Function.comp_apply, contractNth_apply_of_gt, h]

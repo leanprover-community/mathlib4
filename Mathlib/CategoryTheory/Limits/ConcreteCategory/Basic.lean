@@ -23,7 +23,7 @@ namespace CategoryTheory.Types
 
 open Limits
 
-/-! The forgetful fuctor on `Type u` is the identity; copy the instances on `𝟭 (Type u)`
+/-! The forgetful functor on `Type u` is the identity; copy the instances on `𝟭 (Type u)`
 over to `forget (Type u)`.
 
 We currently have two instances for `HasForget (Type u)`:

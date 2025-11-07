@@ -102,7 +102,7 @@ attribute [reassoc (attr := simp)] fac
 
 @[reassoc (attr := simp)]
 lemma fac_app {f : Arrow C} : data.i.app f ≫ data.p.app f = f.hom := by
-  rw [← NatTrans.comp_app, fac,Arrow.leftToRight_app]
+  rw [← NatTrans.comp_app, fac, Arrow.leftToRight_app]
 
 /-- If `W₁ ≤ W₁'` and `W₂ ≤ W₂'`, then a functorial factorization for `W₁` and `W₂` induces
 a functorial factorization for `W₁'` and `W₂'`. -/

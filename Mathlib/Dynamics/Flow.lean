@@ -167,14 +167,14 @@ theorem restrictAddSubmonoid_apply (S : AddSubmonoid τ) (t : S) (x : α) :
 section Orbit
 
 /-- The orbit of a point under a flow. -/
-def orbit (x : α) : Set α := ϕ.toAddAction.orbit _ x
+def orbit (x : α) : Set α := @AddAction.orbit _ _ ϕ.toAddAction.toVAdd x
 
 theorem orbit_eq_range (x : α) : orbit ϕ x = Set.range (fun t => ϕ t x) := rfl
 
-theorem mem_orbit_iff {x₁ x₂ : α} : x₂ ∈ orbit ϕ x₁ ↔ ∃ t : τ, ϕ t x₁ = x₂ :=
-  ϕ.toAddAction.mem_orbit_iff
+theorem mem_orbit_iff {x₁ x₂ : α} : x₂ ∈ orbit ϕ x₁ ↔ ∃ t : τ, ϕ t x₁ = x₂ := Iff.rfl
 
-theorem mem_orbit (x : α) (t : τ) : ϕ t x ∈ orbit ϕ x := ϕ.toAddAction.mem_orbit ..
+theorem mem_orbit (x : α) (t : τ) : ϕ t x ∈ orbit ϕ x :=
+  @AddAction.mem_orbit _ _ ϕ.toAddAction.toVAdd x t
 
 theorem mem_orbit_self (x : α) : x ∈ orbit ϕ x := ϕ.toAddAction.mem_orbit_self x
 
@@ -281,7 +281,7 @@ def toHomeomorph (t : τ) : (α ≃ₜ α) where
   continuous_toFun := by fun_prop
   continuous_invFun := by fun_prop
 
-theorem image_eq_preimage (t : τ) (s : Set α) : ϕ t '' s = ϕ (-t) ⁻¹' s :=
-  (ϕ.toHomeomorph t).toEquiv.image_eq_preimage s
+theorem image_eq_preimage_symm (t : τ) (s : Set α) : ϕ t '' s = ϕ (-t) ⁻¹' s :=
+  (ϕ.toHomeomorph t).toEquiv.image_eq_preimage_symm s
 
 end Flow

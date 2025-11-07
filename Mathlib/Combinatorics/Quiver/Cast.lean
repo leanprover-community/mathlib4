@@ -10,7 +10,7 @@ import Mathlib.Combinatorics.Quiver.Path
 
 # Rewriting arrows and paths along vertex equalities
 
-This files defines `Hom.cast` and `Path.cast` (and associated lemmas) in order to allow
+This file defines `Hom.cast` and `Path.cast` (and associated lemmas) in order to allow
 rewriting arrows and paths along equalities of their endpoints.
 
 -/

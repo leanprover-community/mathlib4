@@ -27,7 +27,7 @@ We provide natural isomorphisms `inlCompSum' : inl_ ⋙ F.sum' G ≅ F` and
 
 Furthermore, we provide `Functor.sumIsoExt`, which
 constructs a natural isomorphism of functors out of a sum out of natural isomorphism with
-their precomposition with the inclusion. This construction sholud be preferred when trying
+their precomposition with the inclusion. This construction should be preferred when trying
 to construct isomorphisms between functors out of a sum.
 
 We further define sums of functors and natural transformations, written `F.sum G` and `α.sum β`.
@@ -321,7 +321,7 @@ theorem swap_map_inr {X Y : D} {f : inr X ⟶ inr Y} : (swap C D).map f = f :=
 def swapCompInl : inl_ C D ⋙ swap C D ≅ inr_ D C :=
   Functor.inlCompSum' (inr_ _ _) (inl_ _ _)
 
-/-- Precomposing `swap` with the right inclusion gives the leftt inclusion. -/
+/-- Precomposing `swap` with the right inclusion gives the left inclusion. -/
 @[simps! hom_app inv_app]
 def swapCompInr : inr_ C D ⋙ swap C D ≅ inl_ D C :=
   Functor.inrCompSum' (inr_ _ _) (inl_ _ _)

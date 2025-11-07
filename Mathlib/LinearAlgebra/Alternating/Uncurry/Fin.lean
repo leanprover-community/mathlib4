@@ -159,28 +159,59 @@ def alternatizeUncurryFinLM : (M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) →ₗ[R] M
 @[deprecated (since := "2025-09-30")]
 alias uncurryFinLM := alternatizeUncurryFinLM
 
+/-- If `f` is a bilinear map taking values in the space of alternating maps,
+then evaluation of the twice uncurried `f` on a tuple of vectors `v`
+can be represented as a sum of
+
+$$
+f(v_i, v_j; v_0, \dots, \hat{v_i}, \dots, \hat{v_j}-) -
+f(v_j, v_i; v_0, \dots, \hat{v_i}, \dots, \hat{v_j}-)
+$$
+
+over all `(i j : Fin (n + 2))`, `i < j`, taken with appropriate signs.
+Here $$\hat{v_i}$$ and $$\hat{v_j}$$ mean that these vectors are removed from the tuple.
+
+We use pairs of `i j : Fin (n + 1)`, `i ≤ j`,
+to encode pairs `(i.castSucc : Fin (n + 1), j.succ : Fin (n + 1))`,
+so the power of `-1` is off by one compared to the informal texts.
+
+In particular, if `f` is symmetric in the first two arguments,
+then the resulting alternating map is zero,
+see `alternatizeUncurryFin_alternatizeUncurryFinLM_comp_of_symmetric` below.
+-/
+theorem alternatizeUncurryFin_alternatizeUncurryFinLM_comp_apply
+    (f : M →ₗ[R] M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) (v : Fin (n + 2) → M) :
+    alternatizeUncurryFin (alternatizeUncurryFinLM ∘ₗ f) v =
+      ∑ (i : Fin (n + 1)), ∑ j ≥ i,
+        (-1 : ℤ) ^ (i + j : ℕ) •
+          (f (v i.castSucc) (v j.succ) (j.removeNth <| i.castSucc.removeNth v) -
+            f (v j.succ) (v i.castSucc) (j.removeNth <| i.castSucc.removeNth v)) := by
+  simp? [alternatizeUncurryFin_apply, Finset.smul_sum, sum_sum_eq_sum_triangle_add] says
+    simp only [alternatizeUncurryFin_apply, Int.reduceNeg, LinearMap.coe_comp, comp_apply,
+      alternatizeUncurryFinLM_apply, Finset.smul_sum, sum_sum_eq_sum_triangle_add, coe_castSucc,
+      val_succ]
+  refine Fintype.sum_congr _ _ fun i ↦ Finset.sum_congr rfl fun j hj ↦ ?_
+  rw [Finset.mem_Ici] at hj
+  have H₁ : i.castSucc.removeNth v j = v j.succ := by
+    simp [Fin.removeNth_apply, Fin.succAbove_of_le_castSucc, hj]
+  have H₂ : j.succ.removeNth v i = v i.castSucc := by
+    simp [Fin.removeNth_apply, Fin.succAbove_of_castSucc_lt, hj]
+  simp only [pow_add, mul_smul, pow_one, neg_one_smul, smul_neg, smul_sub, ← sub_eq_add_neg,
+    smul_comm ((-1 : ℤ) ^ (j : ℕ)), H₁, H₂]
+  congr 4
+  rw [removeNth_removeNth_eq_swap]
+  simp [Fin.predAbove, hj, Fin.succAbove]
+
 /-- If `f` is a symmetric bilinear map taking values in the space of alternating maps,
-then the twice uncurried `f` is zero. -/
+then the twice uncurried `f` is zero.
+
+See also `alternatizeUncurryFin_alternatizeUncurryFinLM_comp_apply`
+for a formula that does not assume `f` to be symmetric. -/
 theorem alternatizeUncurryFin_alternatizeUncurryFinLM_comp_of_symmetric
     {f : M →ₗ[R] M →ₗ[R] M [⋀^Fin n]→ₗ[R] N} (hf : ∀ x y, f x y = f y x) :
     alternatizeUncurryFin (alternatizeUncurryFinLM ∘ₗ f) = 0 := by
   ext v
-  set a : Fin (n + 2) → Fin (n + 1) → N := fun i j ↦
-    (-1) ^ (i + j : ℕ) • f (v i) (i.removeNth v j) (j.removeNth (i.removeNth v))
-  suffices ∑ ij : Fin (n + 2) × Fin (n + 1), a ij.1 ij.2 = 0 by
-    simpa [a, alternatizeUncurryFin_apply, Finset.smul_sum, Fintype.sum_prod_type, mul_smul,
-      pow_add] using this
-  set g : Fin (n + 2) × Fin (n + 1) → Fin (n + 2) × Fin (n + 1) := fun (i, j) ↦
-    (i.succAbove j, j.predAbove i)
-  have hg_invol : g.Involutive := by
-    intro (i, j)
-    simp [g, succAbove_succAbove_predAbove, predAbove_predAbove_succAbove]
-  refine Finset.sum_ninvolution g ?_ (by simp [g, succAbove_ne]) (by simp) hg_invol
-  intro (i, j)
-  simp only [a]
-  rw [hf (v i), ← removeNth_removeNth_eq_swap, removeNth_apply (i.succAbove j),
-    succAbove_succAbove_predAbove, neg_one_pow_succAbove_add_predAbove, neg_smul, removeNth_apply,
-    add_neg_cancel]
+  simp [alternatizeUncurryFin_alternatizeUncurryFinLM_comp_apply, hf (v <| .castSucc _)]
 
 @[deprecated (since := "2025-09-30")]
 alias uncurryFin_uncurryFinLM_comp_of_symmetric :=

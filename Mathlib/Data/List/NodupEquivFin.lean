@@ -57,8 +57,7 @@ def getEquiv (l : List α) (H : Nodup l) : Fin (length l) ≃ { x // x ∈ l } w
 /-- If `l` lists all the elements of `α` without duplicates, then `List.get` defines
 an equivalence between `Fin l.length` and `α`.
 
-See `List.Nodup.getBijectionOfForallMemList` for a version without
-decidable equality. -/
+See `List.Nodup.getBijectionOfForallMemList` for a version without decidable equality. -/
 @[simps]
 def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) :
     Fin l.length ≃ α where
@@ -68,6 +67,13 @@ def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ 
   right_inv a := by simp
 
 end Nodup
+
+/-- Alternative phrasing of `List.Nodup.getEquivOfForallMemList` using `List.count`. -/
+@[simps!]
+def getEquivOfForallCountEqOne [DecidableEq α] (l : List α) (h : ∀ x, l.count x = 1) :
+    Fin l.length ≃ α :=
+  Nodup.getEquivOfForallMemList _ (List.nodup_iff_count_eq_one.mpr fun _ _ ↦ h _)
+    fun _ ↦ List.count_pos_iff.mp <| h _ ▸ Nat.one_pos
 
 namespace Sorted
 
@@ -120,7 +126,7 @@ theorem sublist_of_orderEmbedding_getElem?_eq {l l' : List α} (f : ℕ ↪o ℕ
   have : ∀ ix, tl[ix]? = (l'.drop (f 0 + 1))[f' ix]? := by
     intro ix
     rw [List.getElem?_drop, OrderEmbedding.coe_ofMapLEIff, Nat.add_sub_cancel', ← hf]
-    simp only [getElem?_cons_succ]
+    · simp only [getElem?_cons_succ]
     rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
     exact ix.succ_pos
   rw [← List.take_append_drop (f 0 + 1) l', ← List.singleton_append]

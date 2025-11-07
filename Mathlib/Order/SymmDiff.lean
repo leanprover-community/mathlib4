@@ -699,10 +699,12 @@ end Prod
 
 namespace Pi
 
+@[push ←]
 theorem symmDiff_def [∀ i, GeneralizedCoheytingAlgebra (π i)] (a b : ∀ i, π i) :
     a ∆ b = fun i => a i ∆ b i :=
   rfl
 
+@[push ←]
 theorem bihimp_def [∀ i, GeneralizedHeytingAlgebra (π i)] (a b : ∀ i, π i) :
     a ⇔ b = fun i => a i ⇔ b i :=
   rfl

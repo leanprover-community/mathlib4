@@ -213,9 +213,6 @@ lemma _root_.Continuous.ereal_toENNReal {α : Type*} [TopologicalSpace α] {f : 
     Continuous fun x => (f x).toENNReal :=
   continuous_toENNReal.comp hf
 
-@[deprecated (since := "2025-03-05")] alias _root_.Continous.ereal_toENNReal :=
-  _root_.Continuous.ereal_toENNReal
-
 @[fun_prop]
 lemma _root_.ContinuousOn.ereal_toENNReal {α : Type*} [TopologicalSpace α] {s : Set α}
     {f : α → EReal} (hf : ContinuousOn f s) :
@@ -250,10 +247,10 @@ section LimInfSup
 
 variable {α : Type*} {f : Filter α} {u v : α → EReal}
 
-lemma liminf_neg : liminf (- v) f = - limsup v f :=
+lemma liminf_neg : liminf (-v) f = -limsup v f :=
   EReal.negOrderIso.limsup_apply.symm
 
-lemma limsup_neg : limsup (- v) f = - liminf v f :=
+lemma limsup_neg : limsup (-v) f = -liminf v f :=
   EReal.negOrderIso.liminf_apply.symm
 
 lemma le_liminf_add : (liminf u f) + (liminf v f) ≤ liminf (u + v) f := by
@@ -484,7 +481,7 @@ private lemma continuousAt_mul_top_pos {a : ℝ} (h : 0 < a) :
   simp only [ContinuousAt, EReal.top_mul_coe_of_pos h, EReal.tendsto_nhds_top_iff_real]
   intro x
   rw [_root_.eventually_nhds_iff]
-  use (Set.Ioi ((2*(max (x+1) 0)/a : ℝ) : EReal)) ×ˢ (Set.Ioi ((a/2 : ℝ) : EReal))
+  use (Set.Ioi ((2 * (max (x + 1) 0) / a : ℝ) : EReal)) ×ˢ (Set.Ioi ((a / 2 : ℝ) : EReal))
   split_ands
   · intro p p_in_prod
     simp only [Set.mem_prod, Set.mem_Ioi] at p_in_prod
@@ -494,7 +491,7 @@ private lemma continuousAt_mul_top_pos {a : ℝ} (h : 0 < a) :
       rw [EReal.coe_nonneg]
       apply mul_nonneg _ (le_of_lt (inv_pos_of_pos h))
       simp only [Nat.ofNat_pos, mul_nonneg_iff_of_pos_left, le_max_iff, le_refl, or_true]
-    have a2_pos : 0 < ((a/2 : ℝ) : EReal) := by rw [EReal.coe_pos]; linarith
+    have a2_pos : 0 < ((a / 2 : ℝ) : EReal) := by rw [EReal.coe_pos]; linarith
     have lock := mul_le_mul_of_nonneg_right (le_of_lt p1_gt) (le_of_lt a2_pos)
     have key := mul_le_mul_of_nonneg_left (le_of_lt p2_gt) (le_of_lt p1_pos)
     replace lock := le_trans lock key

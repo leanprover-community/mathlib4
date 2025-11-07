@@ -199,9 +199,6 @@ lemma mgf_pos_iff [hμ : NeZero μ] :
 lemma exp_cgf [hμ : NeZero μ] (hX : Integrable (fun ω ↦ exp (t * X ω)) μ) :
     exp (cgf X μ t) = mgf X μ t := by rw [cgf, exp_log (mgf_pos' hμ.out hX)]
 
-@[deprecated (since := "2025-03-08")]
-alias exp_cgf_of_neZero := exp_cgf
-
 lemma mgf_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'} {Y : Ω' → Ω} {X : Ω → ℝ}
     (hY : AEMeasurable Y μ) {t : ℝ} (hX : AEStronglyMeasurable (fun ω ↦ exp (t * X ω)) (μ.map Y)) :
     mgf X (μ.map Y) t = mgf (X ∘ Y) μ t := by
@@ -233,7 +230,7 @@ theorem mgf_const_add (α : ℝ) : mgf (fun ω => α + X ω) μ t = exp (t * α)
   dsimp
   rw [mul_add, exp_add]
 
-theorem mgf_add_const (α : ℝ) : mgf (fun ω => X ω + α) μ t = mgf X μ t *  exp (t * α) := by
+theorem mgf_add_const (α : ℝ) : mgf (fun ω => X ω + α) μ t = mgf X μ t * exp (t * α) := by
   simp only [add_comm, mgf_const_add, mul_comm]
 
 lemma mgf_add_measure {ν : Measure Ω}
@@ -272,20 +269,20 @@ lemma mgf_anti_of_nonpos {Y : Ω → ℝ} (hXY : X ≤ᵐ[μ] Y) (ht : t ≤ 0)
 section IndepFun
 
 /-- This is a trivial application of `IndepFun.comp` but it will come up frequently. -/
-theorem IndepFun.exp_mul {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ) (s t : ℝ) :
-    IndepFun (fun ω => exp (s * X ω)) (fun ω => exp (t * Y ω)) μ := by
+theorem IndepFun.exp_mul {X Y : Ω → ℝ} (h_indep : X ⟂ᵢ[μ] Y) (s t : ℝ) :
+    (fun ω => exp (s * X ω)) ⟂ᵢ[μ] (fun ω => exp (t * Y ω)) := by
   have h_meas : ∀ t, Measurable fun x => exp (t * x) := fun t => (measurable_id'.const_mul t).exp
   change IndepFun ((fun x => exp (s * x)) ∘ X) ((fun x => exp (t * x)) ∘ Y) μ
   exact IndepFun.comp h_indep (h_meas s) (h_meas t)
 
-theorem IndepFun.mgf_add {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ)
+theorem IndepFun.mgf_add {X Y : Ω → ℝ} (h_indep : X ⟂ᵢ[μ] Y)
     (hX : AEStronglyMeasurable (fun ω => exp (t * X ω)) μ)
     (hY : AEStronglyMeasurable (fun ω => exp (t * Y ω)) μ) :
     mgf (X + Y) μ t = mgf X μ t * mgf Y μ t := by
   simp_rw [mgf, Pi.add_apply, mul_add, exp_add]
   exact (h_indep.exp_mul t t).integral_mul_eq_mul_integral hX hY
 
-theorem IndepFun.mgf_add' {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ) (hX : AEStronglyMeasurable X μ)
+theorem IndepFun.mgf_add' {X Y : Ω → ℝ} (h_indep : X ⟂ᵢ[μ] Y) (hX : AEStronglyMeasurable X μ)
     (hY : AEStronglyMeasurable Y μ) : mgf (X + Y) μ t = mgf X μ t * mgf Y μ t := by
   have A : Continuous fun x : ℝ => exp (t * x) := by fun_prop
   have h'X : AEStronglyMeasurable (fun ω => exp (t * X ω)) μ :=
@@ -294,7 +291,7 @@ theorem IndepFun.mgf_add' {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ) (hX : A
     A.aestronglyMeasurable.comp_aemeasurable hY.aemeasurable
   exact h_indep.mgf_add h'X h'Y
 
-theorem IndepFun.cgf_add {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ)
+theorem IndepFun.cgf_add {X Y : Ω → ℝ} (h_indep : X ⟂ᵢ[μ] Y)
     (h_int_X : Integrable (fun ω => exp (t * X ω)) μ)
     (h_int_Y : Integrable (fun ω => exp (t * Y ω)) μ) :
     cgf (X + Y) μ t = cgf X μ t + cgf Y μ t := by
@@ -325,7 +322,7 @@ theorem aestronglyMeasurable_exp_mul_sum {X : ι → Ω → ℝ} {s : Finset ι}
     rw [sum_insert hi_notin_s]
     apply aestronglyMeasurable_exp_mul_add (h_int i (mem_insert_self _ _)) h_rec
 
-theorem IndepFun.integrable_exp_mul_add {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ)
+theorem IndepFun.integrable_exp_mul_add {X Y : Ω → ℝ} (h_indep : X ⟂ᵢ[μ] Y)
     (h_int_X : Integrable (fun ω => exp (t * X ω)) μ)
     (h_int_Y : Integrable (fun ω => exp (t * Y ω)) μ) :
     Integrable (fun ω => exp (t * (X + Y) ω)) μ := by
@@ -372,7 +369,7 @@ theorem iIndepFun.cgf_sum {X : ι → Ω → ℝ}
     cgf (∑ i ∈ s, X i) μ t = ∑ i ∈ s, cgf (X i) μ t := by
   have : IsProbabilityMeasure μ := h_indep.isProbabilityMeasure
   simp_rw [cgf]
-  rw [← log_prod _ _ fun j hj => ?_]
+  rw [← log_prod fun j hj => ?_]
   · rw [h_indep.mgf_sum h_meas]
   · exact (mgf_pos (h_int j hj)).ne'
 
