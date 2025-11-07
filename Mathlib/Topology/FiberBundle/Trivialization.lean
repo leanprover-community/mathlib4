@@ -59,7 +59,7 @@ below as `Trivialization F proj`) if the total space has not been given a topolo
 have a topology on both the fiber and the base space. Through the construction
 `topological_fiber_prebundle F proj` it will be possible to promote a
 `Pretrivialization F proj` to a `Trivialization F proj`. -/
-structure Pretrivialization (proj : Z → B) extends PartialEquiv Z (B × F) where
+structure Bundle.Pretrivialization (proj : Z → B) extends PartialEquiv Z (B × F) where
   open_target : IsOpen target
   /-- The domain of the local trivialisation (i.e., a subset of the bundle `Z`'s base):
   outside of it, the pretrivialisation returns a junk value -/
@@ -69,7 +69,7 @@ structure Pretrivialization (proj : Z → B) extends PartialEquiv Z (B × F) whe
   target_eq : target = baseSet ×ˢ univ
   proj_toFun : ∀ p ∈ source, (toFun p).1 = proj p
 
-namespace Pretrivialization
+namespace Bundle.Pretrivialization
 
 variable {F}
 variable (e : Pretrivialization F proj) {x : Z}
@@ -818,4 +818,4 @@ theorem proj_clift : proj (T.clift (e, γ) i) = γ i := by
 
 end Lift
 
-end Trivialization
+end Bundle.Trivialization
