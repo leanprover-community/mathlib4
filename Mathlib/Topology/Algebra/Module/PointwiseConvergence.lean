@@ -40,7 +40,7 @@ variable {α ι : Type*} [TopologicalSpace α]
 variable {𝕜 𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜] [NormedField 𝕜₁] [NormedField 𝕜₂]
 variable {σ : 𝕜₁ →+* 𝕜₂}
 variable {E F : Type*} [AddCommGroup E] [TopologicalSpace E]
-  [AddCommGroup F] [TopologicalSpace F] [TopologicalAddGroup F]
+  [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
   [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜₁ E] [Module 𝕜₂ F]
 
 open Topology
@@ -51,8 +51,7 @@ sometimes also called the *strong operator topology*. We avoid this terminology 
 things share similar names, and using "pointwise convergence" in the name is more informative.
 
 This topology is also known as the weak*-topology in the case that `σ = RingHom.id 𝕜` and `F = 𝕜` -/
-@[reducible]
-def PointwiseConvergenceCLM := UniformConvergenceCLM σ F {s : Set E | Finite s}
+abbrev PointwiseConvergenceCLM := UniformConvergenceCLM σ F {s : Set E | Finite s}
 
 @[inherit_doc]
 notation:25 E " →SLₚₜ[" σ "] " F => PointwiseConvergenceCLM σ E F
@@ -69,18 +68,24 @@ protected theorem hasBasis_nhds_zero_of_basis
   UniformConvergenceCLM.hasBasis_nhds_zero_of_basis σ F { S | Finite S }
     ⟨∅, Set.finite_empty⟩ (directedOn_of_sup_mem fun _ _ => Set.Finite.union) h
 
-protected theorem hasBasis_nhds_zero [TopologicalSpace F] [TopologicalAddGroup F] :
+protected theorem hasBasis_nhds_zero :
     (𝓝 (0 : E →SLₚₜ[σ] F)).HasBasis
       (fun SV : Set E × Set F => Finite SV.1 ∧ SV.2 ∈ (𝓝 0 : Filter F))
       fun SV => { f : E →SLₚₜ[σ] F | ∀ x ∈ SV.1, f x ∈ SV.2 } :=
   PointwiseConvergenceCLM.hasBasis_nhds_zero_of_basis (𝓝 0).basis_sets
 
+variable (σ E F) in
+protected theorem embedding_coeFn : IsEmbedding ((↑) : (E →SLₚₜ[σ] F) → (E → F)) :=
+  let _: UniformSpace F := IsTopologicalAddGroup.toUniformSpace F
+  have _ : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
+  (UniformOnFun.isEmbedding_toFun_finite E F).comp (UniformConvergenceCLM.isEmbedding_coeFn σ F _)
+
 /-- In the topology of pointwise convergence, `a` converges to `a₀` iff for every `x : E` the map
 `a · x` converges to `a₀ x`. -/
 theorem tendsto_iff_forall_tendsto {p : Filter ι} {a : ι → E →SLₚₜ[σ] F} {a₀ : E →SLₚₜ[σ] F} :
     Filter.Tendsto a p (𝓝 a₀) ↔ ∀ x : E, Filter.Tendsto (a · x) p (𝓝 (a₀ x)) := by
-  let _ := TopologicalAddGroup.toUniformSpace F
-  have _ : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  let _ := IsTopologicalAddGroup.toUniformSpace F
+  have _ : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
   suffices h : Filter.Tendsto a p (𝓝 a₀) ↔ ∀ x, TendstoUniformlyOn (a · ·) a₀ p {x} by
     rw [h, forall_congr]
     intro
