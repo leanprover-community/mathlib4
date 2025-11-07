@@ -1263,10 +1263,10 @@ are monoidal functors, `F` is monoidal as well.
 @[simps! -isSimp]
 def monoidalOfPostcompInverse (e : C ≌ D) (F : E ⥤ D) {F' : E ⥤ C} (i : F ⋙ e.inverse ≅ F')
     [e.functor.Monoidal] [F'.Monoidal] : F.Monoidal :=
-  letI : F ⋙ e.inverse |>.Monoidal := Monoidal.transport i.symm
+  letI : F ⋙ e.inverse |>.Monoidal := .transport i.symm
   letI : (F ⋙ e.inverse ⋙ e.functor).Monoidal :=
     inferInstanceAs ((F ⋙ e.inverse) ⋙ e.functor).Monoidal
-  Monoidal.transport (isoWhiskerLeft F e.counitIso ≪≫ F.rightUnitor)
+  .transport (isoWhiskerLeft F e.counitIso ≪≫ F.rightUnitor)
 
 /--
 Given a functor `F` and an equivalence of categories `e` such that `e.inverse` and `F ⋙ e.functor`
