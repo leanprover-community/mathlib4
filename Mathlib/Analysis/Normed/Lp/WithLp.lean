@@ -215,6 +215,22 @@ end equiv
 
 variable (K V)
 
+@[simps -fullyApplied apply symm_apply]
+protected def addEquiv [AddCommGroup V] : WithLp p V ≃+ V where
+  toFun := ofLp
+  invFun := toLp p
+  map_add' := ofLp_add p
+
+@[simp]
+lemma ofLp_sum [AddCommGroup V] {ι : Type*} (s : Finset ι) (f : ι → WithLp p V) :
+    (∑ i ∈ s, f i).ofLp = ∑ i ∈ s, (f i).ofLp := by
+  rw [← addEquiv_apply, map_sum]
+
+@[simp]
+lemma toLp_sum [AddCommGroup V] {ι : Type*} (s : Finset ι) (f : ι → V) :
+    toLp p (∑ i ∈ s, f i) = ∑ i ∈ s, toLp p (f i) := by
+  rw [← addEquiv_symm_apply, map_sum]
+
 /-- `WithLp.equiv` as a linear equivalence. -/
 @[simps -fullyApplied apply symm_apply]
 protected def linearEquiv [Semiring K] [AddCommGroup V] [Module K V] : WithLp p V ≃ₗ[K] V where
