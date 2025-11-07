@@ -250,12 +250,6 @@ variable (I)
 def toOverSectionsAdj : toOver I ⊣ sections I :=
   .mkOfHomEquiv coreHomEquivToOverSections
 
-example {X : C} : (sections I).obj ((toOver I).obj X) ≅ (I ⟹ X) := by
-  simp [sectionsObj]
-  sorry
-
-example {X : C} : (toOverSectionsAdj I).unit.app X = sectionsCurry (𝟙 ((toOver I).obj X)) := rfl
-
 end Over
 
 end Sections
