@@ -122,8 +122,8 @@ theorem isIso_tfae : List.TFAE
     have w₁ : (coyoneda.map (L.map (adj.unit.app d ▷ d')).op).app c = (adj.homEquiv _ _).symm ∘
         (coyoneda.map (adj.unit.app d ▷ d').op).app (R.obj c) ∘ adj.homEquiv _ _ := by ext; simp
     rw [w₁, isIso_iff_bijective]
-    simp only [comp_obj, coyoneda_obj_obj, id_obj, EquivLike.comp_bijective,
-      EquivLike.bijective_comp]
+    simp only [comp_obj, flip_obj_obj, yoneda_obj_obj, id_obj, op_tensorObj, unop_tensorObj,
+      EquivLike.comp_bijective, EquivLike.bijective_comp]
     -- We commute the tensor product using the auxiliary commutative square `w₂`.
     have w₂ : ((coyoneda.map (adj.unit.app d ▷ d').op).app (R.obj c)) =
         ((yoneda.obj (R.obj c)).mapIso (β_ _ _)).hom ∘
@@ -135,12 +135,11 @@ theorem isIso_tfae : List.TFAE
         ((ihom.adjunction d').homEquiv _ _).symm ∘
           ((coyoneda.map (adj.unit.app _).op).app _) ∘ (ihom.adjunction d').homEquiv _ _ := by
       ext
-      simp only [id_obj, op_tensorObj, coyoneda_obj_obj, unop_tensorObj, comp_obj,
-        coyoneda_map_app, Quiver.Hom.unop_op, Function.comp_apply,
-        Adjunction.homEquiv_unit, Adjunction.homEquiv_counit]
+      simp only [id_obj, op_tensorObj, flip_obj_obj, yoneda_obj_obj, unop_tensorObj, comp_obj,
+        flip_map_app, Function.comp_apply, Adjunction.homEquiv_unit, Adjunction.homEquiv_counit]
       simp
     rw [w₃, isIso_iff_bijective]
-    simp only [comp_obj, op_tensorObj, coyoneda_obj_obj, unop_tensorObj, id_obj,
+    simp only [comp_obj, op_tensorObj, flip_obj_obj, yoneda_obj_obj, unop_tensorObj, id_obj,
       yoneda_obj_obj, curriedTensor_obj_obj, EquivLike.comp_bijective, EquivLike.bijective_comp]
     have w₄ : (coyoneda.map (adj.unit.app d).op).app ((ihom d').obj (R.obj c)) ≫
         (coyoneda.obj ⟨d⟩).map (adj.unit.app ((ihom d').obj (R.obj c))) =
@@ -156,9 +155,9 @@ theorem isIso_tfae : List.TFAE
     -- We give the inverse of the bottom map in the stack of commutative squares:
     refine ⟨fun f ↦ R.map ((adj.homEquiv _ _).symm f), ?_, by ext; simp⟩
     ext f
-    simp only [comp_obj, coyoneda_obj_obj, id_obj, Adjunction.homEquiv_counit,
-      map_comp, types_comp_apply, coyoneda_map_app, Quiver.Hom.unop_op, Category.assoc,
-      types_id_apply]
+    simp only [comp_obj, flip_obj_obj, yoneda_obj_obj, id_obj, flip_map_app,
+      Adjunction.homEquiv_counit, map_comp, types_comp_apply, yoneda_obj_map, Quiver.Hom.unop_op,
+      Category.assoc]
     have : f = R.map (R.preimage f) := by simp
     rw [this]
     simp [← map_comp, -map_preimage]
@@ -180,8 +179,8 @@ theorem isIso_tfae : List.TFAE
       rw [← Function.comp_assoc, ((ihom.adjunction ((L ⋙ R).obj d)).homEquiv _ _).eq_comp_symm]
       ext
       simp only [id_obj, yoneda_obj_obj, comp_obj, Function.comp_apply,
-        yoneda_map_app, op_tensorObj, coyoneda_obj_obj, unop_tensorObj, op_whiskerRight,
-        coyoneda_map_app, unop_whiskerRight, Quiver.Hom.unop_op]
+        yoneda_map_app, op_tensorObj, flip_obj_obj, yoneda_obj_obj, unop_tensorObj, op_whiskerRight,
+        flip_map_app]
       rw [Adjunction.homEquiv_unit, Adjunction.homEquiv_unit]
       simp
     rw [w₂, w₁, isIso_iff_bijective, isIso_iff_bijective]
