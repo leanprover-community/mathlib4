@@ -1080,10 +1080,10 @@ def compUliftYonedaCompWhiskeringLeft {D : Type u₂} [Category.{v₂} D] {F : C
 @[simps!, deprecated compUliftYonedaCompWhiskeringLeft (since := "2025-10-28")]
 def compYonedaCompWhiskeringLeftMaxRight {D : Type u₂} [Category.{max v₁ v₂} D] {F : C ⥤ D}
     (hF : F.FullyFaithful) : F ⋙ yoneda ⋙ (whiskeringLeft _ _ _).obj F.op ≅ uliftYoneda.{v₂} := by
-  refine isoWhiskerLeft F (isoWhiskerRight uliftYonedaIsoYoneda.symm.{v₁} _)
-    ≪≫ hF.compUliftYonedaCompWhiskeringLeft
-    ≪≫ NatIso.ofComponents (fun _ => NatIso.ofComponents
-    (fun _ => Equiv.toIso (Equiv.ulift.trans Equiv.ulift.symm)))
+  refine isoWhiskerLeft F (isoWhiskerRight uliftYonedaIsoYoneda.symm.{v₁} _) ≪≫
+    hF.compUliftYonedaCompWhiskeringLeft ≪≫
+    NatIso.ofComponents (fun _ => NatIso.ofComponents
+      (fun _ => Equiv.toIso (Equiv.ulift.trans Equiv.ulift.symm)))
 
 /-- `FullyFaithful.homEquiv` as a natural isomorphism, using coyoneda. -/
 @[simps!]
