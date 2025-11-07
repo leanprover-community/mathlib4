@@ -5,11 +5,14 @@ Authors: Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.ContMDiff.Defs
 import Mathlib.Geometry.Manifold.Diffeomorph
+import Mathlib.Geometry.Manifold.Bordism
 import Mathlib.Geometry.Manifold.HasSmoothBoundary
 import Mathlib.Algebra.Group.MinimalAxioms
 
 /-!
 ## (Unoriented) bordism theory
+
+TODO: rewrite this doc-string and merge everything with Bordism.lean
 
 This file defines the beginnings of (unoriented) bordism theory. We define singular n-manifolds,
 unoriented bordisms and the bordism groups of a topological space.
@@ -97,165 +100,8 @@ open Module Set
 
 suppress_compilation
 
-/-- A **singular `n`-manifold** on a topological space `X`, for `n ∈ ℕ`, is a pair `(M, f)`
-of a closed `n`-dimensional `C^k` manifold `M` together with a continuous map `M → X`.
-We assume that `M` is a manifold over the pair `(E, H)` with model `I`.
-
-In practice, one commonly wants to take `k=∞` (as then e.g. the intersection form is a powerful tool
-to compute bordism groups; for the definition, this makes no difference.)
-
-This is parametrised on the universe `M` lives in; take care `u` is the first universe argument. -/
-structure SingularNManifold.{u} (X : Type*) [TopologicalSpace X] (k : WithTop ℕ∞)
-  {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  [TopologicalSpace H] (I : ModelWithCorners ℝ E H) where
-  /-- The manifold `M` of a singular `n`-manifold `(M, f)` -/
-  M : Type u
-  /-- The manifold `M` is a topological space. -/
-  [topSpaceM : TopologicalSpace M]
-  /-- The manifold `M` is a charted space over `H`. -/
-  [chartedSpace : ChartedSpace H M]
-  /-- `M` is a `C^k` manifold. -/
-  [isManifold : IsManifold I k M]
-  [compactSpace : CompactSpace M]
-  [boundaryless : BoundarylessManifold I M]
-  /-- The underlying map `M → X` of a singular `n`-manifold `(M, f)` on `X` -/
-  f : M → X
-  hf : Continuous f
-
-namespace SingularNManifold
-
-variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-  {k : WithTop ℕ∞}
-  {E H M : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  [TopologicalSpace H] {I : ModelWithCorners ℝ E H} [TopologicalSpace M] [ChartedSpace H M]
-  [IsManifold I k M] [CompactSpace M] [BoundarylessManifold I M]
-
-instance {s : SingularNManifold X k I} : TopologicalSpace s.M := s.topSpaceM
-
-instance {s : SingularNManifold X k I} : ChartedSpace H s.M := s.chartedSpace
-
-instance {s : SingularNManifold X k I} : IsManifold I k s.M := s.isManifold
-
-instance {s : SingularNManifold X k I} : CompactSpace s.M := s.compactSpace
-
-instance {s : SingularNManifold X k I} : BoundarylessManifold I s.M := s.boundaryless
-
-/-- A map of topological spaces induces a corresponding map of singular n-manifolds. -/
--- This is part of proving functoriality of the bordism groups.
-def map.{u} {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {k : WithTop ℕ∞}
-    {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-    [TopologicalSpace H] {I : ModelWithCorners ℝ E H} (s : SingularNManifold.{u} X k I)
-    {φ : X → Y} (hφ : Continuous φ) : SingularNManifold.{u} Y k I where
-  f := φ ∘ s.f
-  hf := hφ.comp s.hf
-
-@[simp, mfld_simps]
-lemma map_f (s : SingularNManifold X k I) {φ : X → Y} (hφ : Continuous φ) :
-    (s.map hφ).f = φ ∘ s.f :=
-  rfl
-
-@[simp, mfld_simps]
-lemma map_M (s : SingularNManifold X k I) {φ : X → Y} (hφ : Continuous φ) :
-    (s.map hφ).M = s.M :=
-  rfl
-
-lemma map_comp (s : SingularNManifold X k I)
-    {φ : X → Y} {ψ : Y → Z} (hφ : Continuous φ) (hψ : Continuous ψ) :
-    ((s.map hφ).map hψ).f = (ψ ∘ φ) ∘ s.f := by
-  simp [Function.comp_def]
-
--- Let M' and W be real C^k manifolds.
-variable {E' E'' E''' H' H'' H''' : Type*}
-  [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedAddCommGroup E'']  [NormedSpace ℝ E'']
-  [NormedAddCommGroup E'''] [NormedSpace ℝ E''']
-  [TopologicalSpace H'] [TopologicalSpace H''] [TopologicalSpace H''']
-
-variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  {I' : ModelWithCorners ℝ E' H'} [IsManifold I' k M']
-  [BoundarylessManifold I' M'] [CompactSpace M'] [FiniteDimensional ℝ E']
-
-variable (M I) in
-/-- If `M` is `n`-dimensional and closed, it is a singular `n`-manifold over itself.-/
-noncomputable def refl : SingularNManifold M k I where
-  f := id
-  hf := continuous_id
-
-/-- If `(N, f)` is a singular `n`-manifold on `X` and `M` another `n`-dimensional manifold,
-a continuous map `φ : M → N` induces a singular `n`-manifold structure `(M, f ∘ φ)` on `X`. -/
-noncomputable def comap (s : SingularNManifold X k I)
-    {φ : M → s.M} (hφ : Continuous φ) : SingularNManifold X k I where
-  f := s.f ∘ φ
-  hf := s.hf.comp hφ
-
-@[simp, mfld_simps]
-lemma comap_M (s : SingularNManifold X k I) {φ : M → s.M} (hφ : Continuous φ) :
-    (s.comap hφ).M = M := by
-  rfl
-
-@[simp, mfld_simps]
-lemma comap_f (s : SingularNManifold X k I) {φ : M → s.M} (hφ : Continuous φ) :
-    (s.comap hφ).f = s.f ∘ φ :=
-  rfl
-
-variable (X) in
-/-- The canonical singular `n`-manifold associated to the empty set (seen as an `n`-dimensional
-manifold, i.e. modelled on an `n`-dimensional space). -/
-def empty.{u} (M : Type u) [TopologicalSpace M] [ChartedSpace H M]
-    (I : ModelWithCorners ℝ E H) [IsManifold I k M] [IsEmpty M] : SingularNManifold.{u} X k I where
-  M := M
-  f x := (IsEmpty.false x).elim
-  hf := by
-    rw [continuous_iff_continuousAt]
-    exact fun x ↦ (IsEmpty.false x).elim
-
-#check empty
-
-omit [CompactSpace M] [BoundarylessManifold I M] in
-@[simp, mfld_simps]
-lemma empty_M [IsEmpty M] : (empty X M I (k := k)).M = M := rfl
-
-instance [IsEmpty M] : IsEmpty (SingularNManifold.empty X M I (k := k)).M := by
-  unfold SingularNManifold.empty
-  infer_instance
-
-variable (M I) in
-/-- An `n`-dimensional manifold induces a singular `n`-manifold on the one-point space. -/
-def toPUnit : SingularNManifold PUnit k I where
-  M := M
-  f := fun _ ↦ PUnit.unit
-  hf := continuous_const
-
-/-- The product of a singular `n`- and a singular `m`-manifold into a one-point space
-is a singular `n+m`-manifold. -/
--- FUTURE: prove that this observation induces a commutative ring structure
--- on the unoriented bordism group `Ω_n^O = Ω_n^O(pt)`.
-def prod (s : SingularNManifold PUnit k I) (t : SingularNManifold PUnit k I') :
-    SingularNManifold PUnit k (I.prod I') where
-  M := s.M × t.M
-  f := fun _ ↦ PUnit.unit
-  hf := continuous_const
-
-variable (s t : SingularNManifold X k I)
-
-/-- The disjoint union of two singular `n`-manifolds on `X` is a singular `n`-manifold on `X`. -/
--- We need to choose a model space for the disjoint union (as a priori `s` and `t` could be
--- modelled on very different spaces: for simplicity, we choose `ℝ^n`; all real work is contained
--- in the two instances above.
-def sum (s t : SingularNManifold X k I) : SingularNManifold X k I where
-  M := s.M ⊕ t.M
-  f := Sum.elim s.f t.f
-  hf := s.hf.sumElim t.hf
-
-@[simp, mfld_simps]
-lemma sum_M (s t : SingularNManifold X k I) : (s.sum t).M = (s.M ⊕ t.M) := rfl
-
-@[simp, mfld_simps]
-lemma sum_f (s t : SingularNManifold X k I) : (s.sum t).f = Sum.elim s.f t.f := rfl
-
-end SingularNManifold
-
 variable (k) in
-/-- An **unoriented bordism** between two singular `n`-manifolds `(M,f)` and `(N,g)` on `X`
+/-- An **unoriented bordism** between two singular `n`-manifolds `(M, f)` and `(N, g)` on `X`
 is a compact smooth `n`-manifold `W` with a continuous map `F: W → X`
 whose boundary is diffeomorphic to the disjoint union `M ⊔ N` such that `F` restricts to `f`
 resp. `g` in the obvious way.
@@ -264,13 +110,13 @@ We prescribe the model with corners of the underlying manifold `W` as part of th
 as gluing arguments require matching models to work.
 
 We list all the relevant variables in this definition to ensure the universe variables `u` and `v`
-describing the singular n-manifolds at the boundary are the first ones in this definition.
+describing the singular manifolds at the boundary are the first ones in this definition.
 -/
 structure UnorientedBordism.{u, v} {X E H E' H' : Type*}
     [TopologicalSpace X] [TopologicalSpace H] [TopologicalSpace H']
     [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup E'] [NormedSpace ℝ E']
     (k : WithTop ℕ∞) {I : ModelWithCorners ℝ E H} [FiniteDimensional ℝ E]
-    (s : SingularNManifold.{u} X k I) (t : SingularNManifold.{v} X k I)
+    (s : SingularManifold.{u} X k I) (t : SingularManifold.{v} X k I)
     (J : ModelWithCorners ℝ E' H') where
   /-- The underlying compact manifold of this unoriented bordism -/
   W : Type (max u v) -- or: new parameter w
@@ -303,7 +149,7 @@ variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalS
 
 -- Let M and M' be smooth manifolds.
 variable {E E' E'' E''' H H' H'' H''' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedAddCommGroup E'']  [NormedSpace ℝ E'']
+  [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedAddCommGroup E''] [NormedSpace ℝ E'']
   [NormedAddCommGroup E'''] [NormedSpace ℝ E''']
   [TopologicalSpace H] [TopologicalSpace H'] [TopologicalSpace H''] [TopologicalSpace H''']
 
@@ -321,7 +167,7 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [CompactSpace M] [FiniteDimensional ℝ E]
   --[CompactSpace M'] [FiniteDimensional ℝ E'] [CompactSpace M''] [FiniteDimensional ℝ E'']
 
-variable {s s' t t' u : SingularNManifold X k I} {J : ModelWithCorners ℝ E' H'}
+variable {s s' t t' u : SingularManifold X k I} {J : ModelWithCorners ℝ E' H'}
 
 instance (φ : UnorientedBordism k s t J) : TopologicalSpace φ.W := φ.topologicalSpace
 
@@ -332,9 +178,9 @@ instance (φ : UnorientedBordism k s t J) : ChartedSpace H' φ.W := φ.chartedSp
 instance (φ : UnorientedBordism k s t J) : IsManifold J k φ.W := φ.isManifold
 
 /-
-/-- The bordism between two empty singular n-manifolds. -/
-def empty [IsEmpty M] [IsEmpty M''] : UnorientedBordism k (SingularNManifold.empty X M I)
-    (SingularNManifold.empty X M'' I) I where
+/-- The bordism between two empty singular manifolds. -/
+def empty [IsEmpty M] [IsEmpty M''] : UnorientedBordism k (SingularManifold.empty X M I)
+    (SingularManifold.empty X M'' I) I where
   -- XXX: generalise to any model J, by post-composing the boundary data
   bd := BoundaryManifoldData.of_boundaryless M I
   F x := (IsEmpty.false x).elim
@@ -381,24 +227,26 @@ noncomputable def sum (φ : UnorientedBordism k s t J) (ψ : UnorientedBordism k
 Then a diffeomorphism `f : M'' → M` induces a bordism between `M''` and `N`. -/
 def comap_fst (φ : UnorientedBordism k s t J) (f : Diffeomorph I I M'' s.M k) :
     UnorientedBordism k (s.comap f.continuous) t J where
+  W := φ.W
   bd := φ.bd
   F := φ.F
   φ := Diffeomorph.trans (f.sumCongr (Diffeomorph.refl _ _ _)) φ.φ
-  hFf := by dsimp; rw [← φ.hFf]; congr
-  hFg := by dsimp; rw [← φ.hFg]; congr
+  hFf := by dsimp; rw [← φ.hFf]; congr 1
+  hFg := by dsimp; rw [← φ.hFg]; congr 1
 
 /-- Suppose `W` is a bordism between `M` and `N`.
 Then a diffeomorphism `f : N'' → N` induces a bordism between `M` and `N''`. -/
 def comap_snd (φ : UnorientedBordism k s t J) (f : Diffeomorph I I M t.M k) :
     UnorientedBordism k s (t.comap f.continuous) J where
+  W := φ.W
   bd := φ.bd
   F := φ.F
   φ := Diffeomorph.trans ((Diffeomorph.refl _ _ _).sumCongr f) φ.φ
-  hFf := by dsimp; rw [← φ.hFf]; congr
-  hFg := by dsimp; rw [← φ.hFg]; congr
+  hFf := by dsimp; rw [← φ.hFf]; congr 1
+  hFg := by dsimp; rw [← φ.hFg]; congr 1
 
 variable (s) in
-/-- Each singular n-manifold is bordant to itself. -/
+/-- Each singular manifold is bordant to itself. -/
 def refl : UnorientedBordism k s s (I.prod (𝓡∂ 1)) where
   W := s.M × (Set.Icc (0 : ℝ) 1)
   -- XXX: I'm using special boundary data modelled on I, as opposed to
@@ -417,13 +265,14 @@ def refl : UnorientedBordism k s s (I.prod (𝓡∂ 1)) where
 
 /-- Being bordant is symmetric. -/
 def symm (φ : UnorientedBordism k s t J) : UnorientedBordism k t s J where
+  W := φ.W
   bd := φ.bd
   F := φ.F
   φ := (Diffeomorph.sumComm I t.M k s.M).trans φ.φ
-  hFf := by rw [← φ.hFg]; congr
-  hFg := by rw [← φ.hFf]; congr
+  hFf := by rw [← φ.hFg]; congr 1
+  hFg := by rw [← φ.hFf]; congr 1
 
-/-- Replace the first singular n-manifold in an unoriented bordism by an equivalent one:
+/-- Replace the first singular manifold in an unoriented bordism by an equivalent one:
 useful to fix definitional equalities. -/
 def copy_map_fst.{u, v} (φ : UnorientedBordism.{u, v} k s t J)
     (eq : Diffeomorph I I s'.M s.M k) (h_eq : s'.f = s.f ∘ eq) :
@@ -432,10 +281,10 @@ def copy_map_fst.{u, v} (φ : UnorientedBordism.{u, v} k s t J)
   bd := φ.bd
   F := φ.F
   φ := Diffeomorph.trans (Diffeomorph.sumCongr eq (Diffeomorph.refl I t.M k)) φ.φ
-  hFf := by dsimp; rw [h_eq, ← φ.hFf]; congr
-  hFg := by dsimp; rw [← φ.hFg]; congr
+  hFf := by dsimp; rw [h_eq, ← φ.hFf]; congr 1
+  hFg := by dsimp; rw [← φ.hFg]; congr 1
 
-/-- Replace the second singular n-manifold in an unoriented bordism by an equivalent one:
+/-- Replace the second singular manifold in an unoriented bordism by an equivalent one:
 useful to fix definitional equalities. -/
 def copy_map_snd.{u, v} (φ : UnorientedBordism.{u, v} k s t J)
     (eq : Diffeomorph I I t'.M t.M k) (h_eq : t'.f = t.f ∘ eq) :
@@ -444,36 +293,36 @@ def copy_map_snd.{u, v} (φ : UnorientedBordism.{u, v} k s t J)
   bd := φ.bd
   F := φ.F
   φ := Diffeomorph.trans (Diffeomorph.sumCongr (Diffeomorph.refl I s.M k) eq) φ.φ
-  hFf := by dsimp; rw [← φ.hFf]; congr
-  hFg := by dsimp; rw [h_eq, ← φ.hFg]; congr
+  hFf := by dsimp; rw [← φ.hFf]; congr 1
+  hFg := by dsimp; rw [h_eq, ← φ.hFg]; congr 1
 
 -- Note. The naive approach `almost` is not sufficient, as it would yield a bordism
 -- from s to `s.sum (SingularNManifold.empty X M I)`,
 -- whereas I want `s.comap (Diffeomorph.sumEmpty)`... these are not *exactly* the same.
 
-/-- Each singular n-manifold is bordant to itself plus the empty manifold. -/
+/-- Each singular manifold is bordant to itself plus the empty manifold. -/
 def sumEmpty [IsEmpty M] :
-    UnorientedBordism k (s.sum (SingularNManifold.empty X M I)) s (I.prod (𝓡∂ 1)) :=
+    UnorientedBordism k (s.sum (SingularManifold.empty X M I)) s (I.prod (𝓡∂ 1)) :=
   letI almost := (refl s).comap_fst (Diffeomorph.sumEmpty I s.M (M' := M) k)
   almost.copy_map_fst (Diffeomorph.refl I _ k) (by
     ext x
     cases x with
-    | inl x => dsimp
+    | inl x => dsimp; congr
     | inr x => exact (IsEmpty.false x).elim)
 
-/-- The direct sum of singular n-manifolds is commutative up to bordism. -/
+/-- The direct sum of singular manifolds is commutative up to bordism. -/
 def sumComm : UnorientedBordism k (t.sum s) (s.sum t) (I.prod (𝓡∂ 1)) :=
   letI almost := (refl (s.sum t)).comap_fst (Diffeomorph.sumComm I s.M k t.M).symm
   almost.copy_map_fst (Diffeomorph.refl I _ k) (by
     ext x
     dsimp
-    cases x <;> simp)
+    cases x <;> simp <;> sorry) -- TODO: proof was done before the sorry!
 
 lemma foo {α β γ X : Type*} {f : α → X} {g : β → X} {h : γ → X} :
     Sum.elim (Sum.elim f g) h = Sum.elim f (Sum.elim g h) ∘ (Equiv.sumAssoc α β γ) := by
   aesop
 
-/-- The direct sum of singular n-manifolds is associative up to bordism. -/
+/-- The direct sum of singular manifolds is associative up to bordism. -/
 def sumAssoc : UnorientedBordism k (s.sum (t.sum u)) ((s.sum t).sum u) (I.prod (𝓡∂ 1)) := by
   letI almost := (refl (s.sum (t.sum u))).comap_snd (Diffeomorph.sumAssoc I s.M k t.M u.M)
   exact almost.copy_map_snd (Diffeomorph.refl I _ k) (by
@@ -481,7 +330,7 @@ def sumAssoc : UnorientedBordism k (s.sum (t.sum u)) ((s.sum t).sum u) (I.prod (
 
 /-- The direct sum of a manifold with itself is null-bordant. -/
 def sum_self [IsEmpty M] :
-    UnorientedBordism k (s.sum s) (SingularNManifold.empty X M I) (I.prod (𝓡∂ 1)) where
+    UnorientedBordism k (s.sum s) (SingularManifold.empty X M I) (I.prod (𝓡∂ 1)) where
   -- This is the same manifold as for `refl`, but with a different map.
   W := s.M × (Set.Icc (0 : ℝ) 1)
   -- XXX: I'm using special boundary data modelled on I, as opposed to
@@ -613,31 +462,31 @@ variable {k : WithTop ℕ∞} {E E' H H' : Type*} [NormedAddCommGroup E] [Normed
   [FiniteDimensional ℝ E] [FiniteDimensional ℝ E'] (h : finrank ℝ E' = finrank ℝ E + 1)
 
 variable (X k I) in
-/-- The "unordered bordism" equivalence relation: two singular n-manifolds modelled on `I`
+/-- The "unordered bordism" equivalence relation: two singular manifolds modelled on `I`
 are equivalent iff there exists an unoriented bordism between them. -/
 -- FIXME: what is needed to remove the E' and H' arguments below?
 def unorientedBordismRelation.{u, v} (X : Type u_1) [TopologicalSpace X] (k : WithTop ℕ∞)
     {E E' H H' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup E']
     [NormedSpace ℝ E'] [TopologicalSpace H] [TopologicalSpace H']
     (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] (J : ModelWithCorners ℝ E' H') :
-    SingularNManifold.{u} X k I → SingularNManifold.{v} X k I → Prop :=
+    SingularManifold.{u} X k I → SingularManifold.{v} X k I → Prop :=
   -- XXX: shall we demand a relation between I and J here? for the equivalence, we need to!
   fun s t ↦ ∃ _φ : UnorientedBordism k s t J, True
 
 namespace unorientedBordismRelation
 
-variable {J : ModelWithCorners ℝ E' H'} {s t u : SingularNManifold X k I}
+variable {J : ModelWithCorners ℝ E' H'} {s t u : SingularManifold X k I}
 
 omit [FiniteDimensional ℝ E']
 
 @[symm]
-lemma symm (h: unorientedBordismRelation X k I J s t) : unorientedBordismRelation X k I J t s := by
+lemma symm (h : unorientedBordismRelation X k I J s t) : unorientedBordismRelation X k I J t s := by
   choose φ _ using h
   use UnorientedBordism.symm φ
 
 @[trans]
 lemma trans (h : finrank ℝ E' = finrank ℝ E + 1)
-    (hst: unorientedBordismRelation X k I J s t) (htu : unorientedBordismRelation X k I J t u) :
+    (hst : unorientedBordismRelation X k I J s t) (htu : unorientedBordismRelation X k I J t u) :
     unorientedBordismRelation X k I J s u := by
     choose φ _ using hst
     choose ψ _ using htu
@@ -657,8 +506,8 @@ lemma uBordismRelation.{u} :
     exact hst.trans (by simp) htu
 
 variable (X k I) in
-/-- The `Setoid` of singular n-manifolds, with the unoriented bordism relation. -/
-def unorientedBordismSetoid.{u} : Setoid (SingularNManifold.{u} X k I) :=
+/-- The `Setoid` of singular `I`-manifolds, with the unoriented bordism relation. -/
+def unorientedBordismSetoid.{u} : Setoid (SingularManifold.{u} X k I) :=
   Setoid.mk _ (uBordismRelation.{_, _, _, u} X k I)
 
 variable (X k I) in
@@ -675,11 +524,11 @@ variable (X k I) in
 /-- The bordism class of the empty set: the neutral element for the group operation -/
 def empty.{u} : uBordismClass X k I :=
   haveI := ChartedSpace.empty
-  Quotient.mk _ (SingularNManifold.empty.{_, _, _, u} X PEmpty I)
+  Quotient.mk _ (SingularManifold.empty.{_, _, _, u} X PEmpty I)
 
 -- TODO: better name!
 /-- The disjoint union of singular manifolds descends to bordism classes. -/
-private lemma aux.{u} {a₁ b₁ a₂ b₂ : SingularNManifold.{u} X k I}
+private lemma aux.{u} {a₁ b₁ a₂ b₂ : SingularManifold.{u} X k I}
     (h : unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) a₁ a₂)
     (h' : unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) b₁ b₂) :
     unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) (a₁.sum b₁) (a₂.sum b₂) := by
@@ -697,7 +546,7 @@ def sum.{u} :
     (f := fun s t ↦ Quotient.mk (unorientedBordismSetoid X k I) (s.sum t))
   fun s t ↦ sum (fun _ _ _ _ h h' ↦ Quotient.sound (aux h h')) s t
 
-lemma mk_sum_mk {s t : SingularNManifold X k I} :
+lemma mk_sum_mk {s t : SingularManifold X k I} :
     sum (Quotient.mk _ s) (Quotient.mk _ t) = Quotient.mk _ (s.sum t) := by
   dsimp only [sum, Quotient.lift_mk]
   rfl
@@ -734,7 +583,8 @@ private def unorientedBordismGroup_aux.{u} : AddGroup (uBordismClass.{_, _, _, u
     --trans ((φ.sum ψ).sum δ)
 
     -- have almost : unorientedBordismRelation X k I (I.prod (𝓡∂ 1))
-    --   ((⟦φ.sum ψ⟧ : uBordismClass X _ I).out.sum δ) (φ.sum (⟦ψ.sum δ⟧ : uBordismClass ..).out) := by
+    --   ((⟦φ.sum ψ⟧ : uBordismClass X _ I).out.sum δ)
+    --     (φ.sum (⟦ψ.sum δ⟧ : uBordismClass ..).out) := by
     have almost : unorientedBordismRelation X k I (I.prod (𝓡∂ 1))
          ((φ.sum ψ).sum δ) (φ.sum (ψ.sum δ)) := by
       symm
@@ -745,7 +595,8 @@ private def unorientedBordismGroup_aux.{u} : AddGroup (uBordismClass.{_, _, _, u
       sorry
     letI right := Quotient.mk (s := unorientedBordismSetoid X k I) (ψ.sum δ)
     have h₂ :
-        unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) (φ.sum (ψ.sum δ)) (φ.sum (Quotient.mk (s := unorientedBordismSetoid X k I) (ψ.sum δ)).out) := by
+        unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) (φ.sum (ψ.sum δ))
+          (φ.sum (Quotient.mk (s := unorientedBordismSetoid X k I) (ψ.sum δ)).out) := by
       let almost := UnorientedBordism.refl (φ.sum (ψ.sum δ))
       apply foo
       -- issue: this does not work yet, as the underlying *manifolds* are not defeq!
@@ -763,7 +614,7 @@ private def unorientedBordismGroup_aux.{u} : AddGroup (uBordismClass.{_, _, _, u
     rw [empty, sum_eq_out_sum_out, ← s_eq, Quotient.eq]
     dsimp
     haveI := ChartedSpace.empty
-    trans (SingularNManifold.empty X (k := k) PEmpty I).sum s
+    -- trans (SingularManifold.empty X (k := k) PEmpty I).sum s
     sorry -- use UnorientedBordism.sumEmpty: no, want emptySum instead!
   · intro S
     change sum S S = empty X k I
@@ -797,7 +648,7 @@ variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalS
   {f : X → Y} {g : Y → Z}
 
 /-- If `s` and `t` are cobordant, so are `s.map hf` and `t.map hf`. -/
-lemma map_aux (hf : Continuous f) {s t: SingularNManifold X k I}
+lemma map_aux (hf : Continuous f) {s t : SingularManifold X k I}
     (h : unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) s t) :
     unorientedBordismRelation Y k I (I.prod (𝓡∂ 1)) (s.map hf) (t.map hf) := by
   choose φ _ using h
@@ -807,7 +658,7 @@ lemma map_aux (hf : Continuous f) {s t: SingularNManifold X k I}
 def map (hf : Continuous f) : (uBordismClass X k I) → (uBordismClass Y k I) :=
   Quotient.lift (fun s ↦ Quotient.mk _ (s.map hf)) (fun _ _ h ↦ Quotient.sound (map_aux hf h))
 
-lemma mk_map (hf : Continuous f) {s : SingularNManifold X k I} :
+lemma mk_map (hf : Continuous f) {s : SingularManifold X k I} :
     uBordismClass.map hf (Quotient.mk _ s) = Quotient.mk _ (s.map hf) := by
   dsimp only [uBordismClass.map, Quotient.lift_mk]
 
