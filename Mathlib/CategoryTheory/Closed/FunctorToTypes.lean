@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
 import Mathlib.CategoryTheory.Functor.FunctorHom
-import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+import Mathlib.CategoryTheory.Closed.Monoidal
 
 /-!
 # Functors to Type are closed.

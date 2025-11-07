@@ -6,7 +6,7 @@ Authors: Dagur Asgeirsson
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 import Mathlib.CategoryTheory.Monoidal.Braided.Reflection
 import Mathlib.CategoryTheory.Monoidal.Braided.Transport
-import Mathlib.CategoryTheory.Monoidal.Closed.Transport
+import Mathlib.CategoryTheory.Closed.Transport
 import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 import Mathlib.CategoryTheory.Sites.Monoidal
 import Mathlib.Condensed.Light.Module

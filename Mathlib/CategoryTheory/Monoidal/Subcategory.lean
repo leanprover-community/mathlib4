@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Monoidal.Linear
 import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+import Mathlib.CategoryTheory.Closed.Monoidal
 
 /-!
 # Full monoidal subcategories
