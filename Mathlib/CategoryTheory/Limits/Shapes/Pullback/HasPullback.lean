@@ -394,7 +394,7 @@ theorem pullbackComparison_comp_fst (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g
 @[reassoc (attr := simp)]
 theorem pullbackComparison_comp_snd (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
     [HasPullback (G.map f) (G.map g)] :
-    pullbackComparison G f g ≫ pullback.snd _ _ = G.map (pullback.snd f g):=
+    pullbackComparison G f g ≫ pullback.snd _ _ = G.map (pullback.snd f g) :=
   pullback.lift_snd _ _ _
 
 @[reassoc (attr := simp)]
@@ -552,13 +552,13 @@ def walkingCospanOpEquiv : WalkingCospanᵒᵖ ≌ WalkingSpan :=
 -- see Note [lower instance priority]
 /-- Having wide pullback at any universe level implies having binary pullbacks. -/
 instance (priority := 100) hasPullbacks_of_hasWidePullbacks (D : Type u) [Category.{v} D]
-    [HasWidePullbacks.{w} D] : HasPullbacks.{v,u} D :=
+    [HasWidePullbacks.{w} D] : HasPullbacks.{v, u} D :=
   hasWidePullbacks_shrink WalkingPair
 
 -- see Note [lower instance priority]
 /-- Having wide pushout at any universe level implies having binary pushouts. -/
 instance (priority := 100) hasPushouts_of_hasWidePushouts (D : Type u) [Category.{v} D]
-    [HasWidePushouts.{w} D] : HasPushouts.{v,u} D :=
+    [HasWidePushouts.{w} D] : HasPushouts.{v, u} D :=
   hasWidePushouts_shrink WalkingPair
 
 end CategoryTheory.Limits

@@ -36,8 +36,6 @@ inductive filteredClosure : ObjectProperty C
   | coeq : {j j' : C} → filteredClosure j → filteredClosure j' → (f f' : j ⟶ j') →
       filteredClosure (coeq f f')
 
-@[deprecated (since := "2025-03-05")] alias FilteredClosure := filteredClosure
-
 /-- The full subcategory induced by the filtered closure of a family of objects is filtered. -/
 instance : IsFilteredOrEmpty (filteredClosure f).FullSubcategory where
   cocone_objs j j' :=
@@ -199,8 +197,6 @@ inductive cofilteredClosure : ObjectProperty C
   | min : {j j' : C} → cofilteredClosure j → cofilteredClosure j' → cofilteredClosure (min j j')
   | eq : {j j' : C} → cofilteredClosure j → cofilteredClosure j' → (f f' : j ⟶ j') →
       cofilteredClosure (eq f f')
-
-@[deprecated (since := "2025-03-05")] alias CofilteredClosure := cofilteredClosure
 
 /-- The full subcategory induced by the cofiltered closure of a family is cofiltered. -/
 instance : IsCofilteredOrEmpty (cofilteredClosure f).FullSubcategory where

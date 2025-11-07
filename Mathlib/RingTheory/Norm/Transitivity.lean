@@ -104,7 +104,7 @@ omit [Fintype m] in
 lemma polyToMatrix_cornerAddX :
     f.polyToMatrix (cornerAddX M k k k) = (-f (M k k)).charmatrix := by
   simp [cornerAddX, Matrix.add_apply, charmatrix,
-    RingHom.polyToMatrix, - AlgEquiv.symm_toRingEquiv, map_neg]
+    RingHom.polyToMatrix, -AlgEquiv.symm_toRingEquiv, map_neg]
 
 lemma eval_zero_det_det : eval 0 (f.polyToMatrix (cornerAddX M k).det).det = (f M.det).det := by
   rw [← coe_evalRingHom, RingHom.map_det, ← RingHom.comp_apply,

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
 import Mathlib.Analysis.Normed.Ring.Basic
+import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # WithAbs
@@ -131,3 +132,19 @@ def algEquiv (v : AbsoluteValue R' S) : (WithAbs v) ≃ₐ[R] R' := AlgEquiv.ref
 end algebra
 
 end WithAbs
+
+namespace AbsoluteValue
+
+variable {K L S : Type*} [CommRing K] [IsSimpleRing K] [CommRing L] [Algebra K L] [PartialOrder S]
+  [Nontrivial L] [Semiring S] (w : AbsoluteValue L S) (v : AbsoluteValue K S)
+
+/-- An absolute value `w` of `L / K` lies over the absolute value `v` of `K` if `v` is the
+restriction of `w` to `K`. -/
+class LiesOver : Prop where
+  comp_eq' : w.comp (algebraMap K L).injective = v
+
+variable [w.LiesOver v]
+
+theorem LiesOver.comp_eq : w.comp (algebraMap K L).injective = v := LiesOver.comp_eq'
+
+end AbsoluteValue

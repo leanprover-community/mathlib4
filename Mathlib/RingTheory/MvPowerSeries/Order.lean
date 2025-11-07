@@ -10,7 +10,7 @@ import Mathlib.RingTheory.MvPowerSeries.Basic
 
 /-! # Order of multivariate power series
 
-We work with `MvPowerSeries σ R`, for `Semiring R`, and `w : σ → ℕ`
+We work with `MvPowerSeries σ R`, for `Semiring R`, and `w : σ → ℕ`.
 
 ## Weighted Order
 
@@ -29,9 +29,9 @@ then there exists a nonzero coefficient of weight the weighted order.
 most the weight of that exponent.
 
 - `MvPowerSeries.coeff_eq_zero_of_lt_weightedOrder`: all coefficients of weights strictly less
-than the weighted order vanish
+than the weighted order vanish.
 
-- `MvPowerSeries.weightedOrder_eq_top_iff`: the weighted order of `f` is `⊤` if and only `f = 0`.
+- `MvPowerSeries.weightedOrder_eq_top_iff`: the weighted order of `f` is `⊤` if and only if `f = 0`.
 
 - `MvPowerSeries.nat_le_weightedOrder`: if all coefficients of weight `< n` vanish, then the
 weighted order is at least `n`.

@@ -3,7 +3,6 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
 import Mathlib.CategoryTheory.Limits.Types.Shapes
 import Mathlib.Data.Fin.VecNotation
@@ -222,7 +221,7 @@ def faceRepresentableBy {n : ℕ} (S : Finset (Fin (n + 1)))
     (m : ℕ) (e : Fin (m + 1) ≃o S) :
     (face S : SSet.{u}).RepresentableBy ⦋m⦌ where
   homEquiv {j} :=
-    { toFun f := ⟨objMk ((OrderHom.Subtype.val S.toSet).comp
+    { toFun f := ⟨objMk ((OrderHom.Subtype.val (SetLike.coe S)).comp
           (e.toOrderEmbedding.toOrderHom.comp f.toOrderHom)), fun _ ↦ by aesop⟩
       invFun := fun ⟨x, hx⟩ ↦ SimplexCategory.Hom.mk
         { toFun i := e.symm ⟨(objEquiv x).toOrderHom i, hx (by aesop)⟩
@@ -244,10 +243,8 @@ def faceRepresentableBy {n : ℕ} (S : Finset (Fin (n + 1)))
 corresponding isomorphism `Δ[m] ≅ X`. -/
 def isoOfRepresentableBy {X : SSet.{u}} {m : ℕ} (h : X.RepresentableBy ⦋m⦌) :
     Δ[m] ≅ X :=
-  NatIso.ofComponents (fun n ↦ Equiv.toIso (objEquiv.trans h.homEquiv)) (by
-    intros
-    ext
-    apply h.homEquiv_comp)
+  NatIso.ofComponents (fun n ↦ Equiv.toIso (objEquiv.trans h.homEquiv))
+    (fun _ ↦ by ext; apply h.homEquiv_comp)
 
 lemma ofSimplex_yonedaEquiv_δ {n : ℕ} (i : Fin (n + 2)) :
     Subcomplex.ofSimplex (yonedaEquiv (stdSimplex.δ i)) = face.{u} {i}ᶜ :=
