@@ -23,8 +23,8 @@ A right adjoint is
 This is Lemma 4.5.13 in Riehl's *Category Theory in Context* [riehl2017].
 See also https://stacks.math.columbia.edu/tag/07RB for the statements about fully faithful functors.
 
-In the file `Mathlib.CategoryTheory.Monad.Adjunction`, we prove that in fact, if there exists an
-isomorphism `L ⋙ R ≅ 𝟭 C`, then the unit is an isomorphism, and similarly for the counit.
+In the file `Mathlib/CategoryTheory/Monad/Adjunction.lean`, we prove that in fact, if there exists
+an isomorphism `L ⋙ R ≅ 𝟭 C`, then the unit is an isomorphism, and similarly for the counit.
 See `CategoryTheory.Adjunction.isIso_unit_of_iso` and
 `CategoryTheory.Adjunction.isIso_counit_of_iso`.
 -/
@@ -36,7 +36,7 @@ namespace CategoryTheory.Adjunction
 
 universe v₁ v₂ u₁ u₂
 
-open Category
+open Category Functor
 
 open Opposite
 
@@ -127,7 +127,7 @@ lemma full_L_of_isSplitEpi_unit_app [∀ X, IsSplitEpi (h.unit.app X)] : L.Full 
     use ((h.homEquiv X (L.obj Y)) f ≫ section_ (h.unit.app Y))
     suffices L.map (section_ (h.unit.app Y)) = h.counit.app (L.obj Y) by simp [this]
     rw [← comp_id (L.map (section_ (h.unit.app Y)))]
-    simp only [Functor.comp_obj, Functor.id_obj, comp_id, ← h.left_triangle_components Y,
+    simp only [Functor.comp_obj, Functor.id_obj, ← h.left_triangle_components Y,
       ← assoc, ← Functor.map_comp, IsSplitEpi.id, Functor.map_id, id_comp]
 
 /-- If the unit is an isomorphism, then the left adjoint is fully faithful. -/
@@ -147,7 +147,7 @@ lemma full_R_of_isSplitMono_counit_app [∀ X, IsSplitMono (h.counit.app X)] : R
     use (retraction (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f)
     suffices R.map (retraction (h.counit.app X)) = h.unit.app (R.obj X) by simp [this]
     rw [← id_comp (R.map (retraction (h.counit.app X)))]
-    simp only [Functor.id_obj, Functor.comp_obj, id_comp, ← h.right_triangle_components X,
+    simp only [Functor.id_obj, Functor.comp_obj, ← h.right_triangle_components X,
       assoc, ← Functor.map_comp, IsSplitMono.id, Functor.map_id, comp_id]
 
 /-- If the counit is an isomorphism, then the right adjoint is fully faithful. -/

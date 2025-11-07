@@ -122,7 +122,7 @@ theorem Periodic.sub_const [SubtractionCommMonoid α] (h : Periodic f c) (a : α
   simpa only [sub_eq_add_neg] using h.add_const (-a)
 
 theorem Periodic.nsmul [AddMonoid α] (h : Periodic f c) (n : ℕ) : Periodic f (n • c) := by
-  induction n <;> simp_all [add_nsmul, ← add_assoc, zero_nsmul]
+  induction n <;> simp_all [add_nsmul, ← add_assoc]
 
 theorem Periodic.nat_mul [NonAssocSemiring α] (h : Periodic f c) (n : ℕ) : Periodic f (n * c) := by
   simpa only [nsmul_eq_mul] using h.nsmul n
@@ -191,6 +191,15 @@ theorem Periodic.int_mul_eq [NonAssocRing α] (h : Periodic f c) (n : ℤ) : f (
 
 theorem periodic_with_period_zero [AddZeroClass α] (f : α → β) : Periodic f 0 := fun x => by
   rw [add_zero]
+
+/-- The iterates `a`, `f a`, `f^[2] a` etc form a periodic sequence with period `n`
+iff `a` is a periodic point for `f`. -/
+theorem periodic_iterate_iff {f : α → α} {n : ℕ} {a : α} :
+    Periodic (f^[·] a) n ↔ IsPeriodicPt f n a := by
+  refine ⟨fun h ↦ h.eq, fun h k ↦ ?_⟩
+  simp only [Function.iterate_add_apply, h.eq]
+
+alias ⟨Periodic.isPeriodicPt, IsPeriodicPt.periodic_iterate⟩ := periodic_iterate_iff
 
 theorem Periodic.map_vadd_zmultiples [AddCommGroup α] (hf : Periodic f c)
     (a : AddSubgroup.zmultiples c) (x : α) : f (a +ᵥ x) = f x := by

@@ -3,6 +3,7 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.Quaternion
 import Mathlib.Tactic.Ring
 
@@ -18,7 +19,7 @@ import Mathlib.Tactic.Ring
 * `QuaternionAlgebra.lift`: Define an `AlgHom` out of `ℍ[R,c₁,c₂,c₃]` by its action on the basis
   elements `i`, `j`, and `k`. In essence, this is a universal property. Analogous to `Complex.lift`,
   but takes a bundled `QuaternionAlgebra.Basis` instead of just a `Subtype` as the amount of
-  data / proves is non-negligible.
+  data / proofs is non-negligible.
 -/
 
 
@@ -44,6 +45,9 @@ structure Basis {R : Type*} (A : Type*) [CommRing R] [Ring A] [Algebra R A] (c�
   i_mul_j : i * j = k
   j_mul_i : j * i = c₂ • j - k
 
+initialize_simps_projections Basis
+  (as_prefix i, as_prefix j, as_prefix k)
+
 variable {R : Type*} {A B : Type*} [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
 variable {c₁ c₂ c₃ : R}
 
@@ -53,11 +57,7 @@ namespace Basis
 @[ext]
 protected theorem ext ⦃q₁ q₂ : Basis A c₁ c₂ c₃⦄ (hi : q₁.i = q₂.i)
     (hj : q₁.j = q₂.j) : q₁ = q₂ := by
-  cases q₁; rename_i q₁_i_mul_j _
-  cases q₂; rename_i q₂_i_mul_j _
-  congr
-  rw [← q₁_i_mul_j, ← q₂_i_mul_j]
-  congr
+  cases q₁; cases q₂; grind
 
 variable (R) in
 /-- There is a natural quaternionic basis for the `QuaternionAlgebra`. -/
@@ -114,19 +114,19 @@ theorem lift_zero : q.lift (0 : ℍ[R,c₁,c₂,c₃]) = 0 := by simp [lift]
 theorem lift_one : q.lift (1 : ℍ[R,c₁,c₂,c₃]) = 1 := by simp [lift]
 
 theorem lift_add (x y : ℍ[R,c₁,c₂,c₃]) : q.lift (x + y) = q.lift x + q.lift y := by
-  simp only [lift, add_re, map_add, add_imI, add_smul, add_imJ, add_imK]
+  simp only [lift, re_add, map_add, imI_add, add_smul, imJ_add, imK_add]
   abel
 
 theorem lift_mul (x y : ℍ[R,c₁,c₂,c₃]) : q.lift (x * y) = q.lift x * q.lift y := by
   simp only [lift, Algebra.algebraMap_eq_smul_one]
   simp_rw [add_mul, mul_add, smul_mul_assoc, mul_smul_comm, one_mul, mul_one, smul_smul]
   simp only [i_mul_i, j_mul_j, i_mul_j, j_mul_i, i_mul_k, k_mul_i, k_mul_j, j_mul_k, k_mul_k]
-  simp only [smul_smul, smul_neg, sub_eq_add_neg, add_smul, ← add_assoc, mul_neg, neg_smul]
+  simp only [smul_smul, smul_neg, sub_eq_add_neg, ← add_assoc, neg_smul]
   simp only [mul_right_comm _ _ (c₁ * c₃), mul_comm _ (c₁ * c₃)]
-  simp only [mul_comm _ c₁, mul_right_comm _ _ c₁]
-  simp only [mul_comm _ c₂, mul_right_comm _ _ c₃]
-  simp only [← mul_comm c₁ c₂, ← mul_assoc]
-  simp only [mul_re, sub_eq_add_neg, add_smul, neg_smul, mul_imI, ← add_assoc, mul_imJ, mul_imK]
+  simp only [mul_comm _ c₁]
+  simp only [mul_right_comm _ _ c₃]
+  simp only [← mul_assoc]
+  simp only [re_mul, sub_eq_add_neg, add_smul, neg_smul, imI_mul, ← add_assoc, imJ_mul, imK_mul]
   linear_combination (norm := module)
 
 theorem lift_smul (r : R) (x : ℍ[R,c₁,c₂,c₃]) : q.lift (r • x) = r • q.lift x := by
@@ -141,6 +141,20 @@ def liftHom : ℍ[R,c₁,c₂,c₃] →ₐ[R] A :=
       map_one' := q.lift_one
       map_add' := q.lift_add
       map_mul' := q.lift_mul } q.lift_smul
+
+@[simp]
+theorem range_liftHom (B : Basis A c₁ c₂ c₃) :
+    (liftHom B).range = Algebra.adjoin R {B.i, B.j, B.k} := by
+  apply le_antisymm
+  · rintro x ⟨y, rfl⟩
+    refine add_mem (add_mem (add_mem ?_ ?_) ?_) ?_
+    · exact algebraMap_mem _ _
+    all_goals
+      exact Subalgebra.smul_mem _ (Algebra.subset_adjoin <| by simp) _
+  · rw [Algebra.adjoin_le_iff]
+    rintro x (rfl | rfl | rfl)
+      <;> [use (Basis.self R).i; use (Basis.self R).j; use (Basis.self R).k]
+    all_goals simp [lift]
 
 /-- Transform a `QuaternionAlgebra.Basis` through an `AlgHom`. -/
 @[simps i j k]
@@ -165,8 +179,7 @@ def lift : Basis A c₁ c₂ c₃ ≃ (ℍ[R,c₁,c₂,c₃] →ₐ[R] A) where
     ext
     dsimp [Basis.lift]
     rw [← F.commutes]
-    simp only [← F.commutes, ← map_smul, ← map_add, mk_add_mk, smul_mk, smul_zero,
-      algebraMap_eq]
+    simp only [← map_smul, ← map_add, mk_add_mk, smul_mk, smul_zero, algebraMap_eq]
     congr <;> simp
 
 /-- Two `R`-algebra morphisms from a quaternion algebra are equal if they agree on `i` and `j`. -/

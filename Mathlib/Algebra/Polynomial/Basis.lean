@@ -12,6 +12,8 @@ import Mathlib.LinearAlgebra.Basis.Defs
 
 -/
 
+open Module
+
 universe u
 
 variable (R : Type u) [Semiring R]

@@ -25,6 +25,8 @@ used for both quotient and localized shifts.
 
 namespace CategoryTheory
 
+open Functor
+
 variable {C D : Type _} [Category C] [Category D]
   (F : C ⥤ D) {A : Type _} [AddMonoid A] [HasShift C A]
   (s : A → D ⥤ D) (i : ∀ a, F ⋙ s a ≅ shiftFunctor C a ⋙ F)
@@ -156,7 +158,7 @@ end HasShift
 
 lemma shiftFunctor_of_induced (a : A) :
     letI := HasShift.induced F A s i
-    shiftFunctor D a = s a := by
+    shiftFunctor D a = s a :=
   rfl
 
 variable (A)
@@ -166,7 +168,6 @@ lemma shiftFunctorZero_hom_app_obj_of_induced (X : C) :
     letI := HasShift.induced F A s i
     (shiftFunctorZero D A).hom.app (F.obj X) =
       (i 0).hom.app X ≫ F.map ((shiftFunctorZero C A).hom.app X) := by
-  letI := HasShift.induced F A s i
   simp only [ShiftMkCore.shiftFunctorZero_eq, HasShift.Induced.zero_hom_app_obj]
 
 @[simp]
@@ -174,7 +175,6 @@ lemma shiftFunctorZero_inv_app_obj_of_induced (X : C) :
     letI := HasShift.induced F A s i
     (shiftFunctorZero D A).inv.app (F.obj X) =
       F.map ((shiftFunctorZero C A).inv.app X) ≫ (i 0).inv.app X := by
-  letI := HasShift.induced F A s i
   simp only [ShiftMkCore.shiftFunctorZero_eq, HasShift.Induced.zero_inv_app_obj]
 
 variable {A}
@@ -187,7 +187,6 @@ lemma shiftFunctorAdd_hom_app_obj_of_induced (a b : A) (X : C) :
         F.map ((shiftFunctorAdd C a b).hom.app X) ≫
         (i b).inv.app ((shiftFunctor C a).obj X) ≫
         (s b).map ((i a).inv.app X) := by
-  letI := HasShift.induced F A s i
   simp only [ShiftMkCore.shiftFunctorAdd_eq, HasShift.Induced.add_hom_app_obj]
 
 @[simp]
@@ -198,7 +197,6 @@ lemma shiftFunctorAdd_inv_app_obj_of_induced (a b : A) (X : C) :
       (i b).hom.app ((shiftFunctor C a).obj X) ≫
       F.map ((shiftFunctorAdd C a b).inv.app X) ≫
       (i (a + b)).inv.app X := by
-  letI := HasShift.induced F A s i
   simp only [ShiftMkCore.shiftFunctorAdd_eq, HasShift.Induced.add_inv_app_obj]
 
 variable (A)
@@ -206,7 +204,7 @@ variable (A)
 /-- When the target category of a functor `F : C ⥤ D` is equipped with
 the induced shift, this is the compatibility of `F` with the shifts on
 the categories `C` and `D`. -/
-def Functor.CommShift.ofInduced :
+noncomputable def Functor.CommShift.ofInduced :
     letI := HasShift.induced F A s i
     F.CommShift A := by
   letI := HasShift.induced F A s i

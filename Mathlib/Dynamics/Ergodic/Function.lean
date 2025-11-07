@@ -30,7 +30,7 @@ theorem QuasiErgodic.ae_eq_const_of_ae_eq_comp_of_ae_range₀ [Nonempty X] [Meas
     (hg_eq : g ∘ f =ᵐ[μ] g) :
     ∃ c, g =ᵐ[μ] const α c := by
   refine exists_eventuallyEq_const_of_eventually_mem_of_forall_separating MeasurableSet hs ?_
-  refine fun U hU ↦ h.ae_mem_or_ae_nmem₀ (s := g ⁻¹' U) (hgm hU) ?_b
+  refine fun U hU ↦ h.ae_mem_or_ae_notMem₀ (s := g ⁻¹' U) (hgm hU) ?_b
   refine (hg_eq.mono fun x hx ↦ ?_).set_eq
   rw [← preimage_comp, mem_preimage, mem_preimage, hx]
 
@@ -46,9 +46,9 @@ If `g` is invariant under `f`, then `g` is a.e. constant. -/
 theorem PreErgodic.ae_eq_const_of_ae_eq_comp (h : PreErgodic f μ) (hgm : Measurable g)
     (hg_eq : g ∘ f = g) : ∃ c, g =ᵐ[μ] const α c :=
   exists_eventuallyEq_const_of_forall_separating MeasurableSet fun U hU ↦
-    h.ae_mem_or_ae_nmem (s := g ⁻¹' U) (hgm hU) <| by rw [← preimage_comp, hg_eq]
+    h.ae_mem_or_ae_notMem (s := g ⁻¹' U) (hgm hU) <| by rw [← preimage_comp, hg_eq]
 
-/-- Let `f : α → α` be a quasi ergodic map.
+/-- Let `f : α → α` be a quasi-ergodic map.
 Let `g : α → X` be a null-measurable function from `α` to a nonempty measurable space
 with a countable family of measurable sets separating the points of `X`.
 If `g` is a.e.-invariant under `f`, then `g` is a.e. constant. -/
@@ -70,7 +70,7 @@ variable [TopologicalSpace X] [MetrizableSpace X] [Nonempty X] {f : α → α}
 
 namespace QuasiErgodic
 
-/-- Let `f : α → α` be a quasi ergodic map.
+/-- Let `f : α → α` be a quasi-ergodic map.
 Let `g : α → X` be an a.e. strongly measurable function
 from `α` to a nonempty metrizable topological space.
 If `g` is a.e.-invariant under `f`, then `g` is a.e. constant. -/

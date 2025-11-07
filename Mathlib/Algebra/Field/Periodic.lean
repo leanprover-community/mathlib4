@@ -104,12 +104,12 @@ theorem Periodic.image_Ioc [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoi
 theorem Periodic.image_Icc [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
     [Archimedean α] (h : Periodic f c)
     (hc : 0 < c) (a : α) : f '' Icc a (a + c) = range f :=
-  (image_subset_range _ _).antisymm <| h.image_Ioc hc a ▸ image_subset _ Ioc_subset_Icc_self
+  (image_subset_range _ _).antisymm <| h.image_Ioc hc a ▸ image_mono Ioc_subset_Icc_self
 
 theorem Periodic.image_uIcc [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
     [Archimedean α] (h : Periodic f c)
     (hc : c ≠ 0) (a : α) : f '' uIcc a (a + c) = range f := by
-  cases hc.lt_or_lt with
+  cases hc.lt_or_gt with
   | inl hc =>
     rw [uIcc_of_ge (add_le_of_nonpos_right hc.le), ← h.neg.image_Icc (neg_pos.2 hc) (a + c),
       add_neg_cancel_right]

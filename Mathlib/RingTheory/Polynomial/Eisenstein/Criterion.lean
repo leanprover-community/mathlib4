@@ -26,9 +26,8 @@ import Mathlib.RingTheory.Ideal.Quotient.Operations
 We give in `Archive.Examples.Eisenstein` an explicit example
 of application of this criterion.
 
-* `Polynomial.irreducible_of_eisenstein_criterion` :
-the classic Eisenstein criterion.
-It is the particular case where `q := X`.
+* `Polynomial.irreducible_of_eisenstein_criterion` : the classic Eisenstein criterion.
+  It is the particular case where `q := X`.
 
 # TODO
 
@@ -44,12 +43,12 @@ the leading coefficients of `f` and `q` do not belong to `P`.
 There are two obstructions, though :
 
 * Usually, one will only obtain irreducibility in `F[X]`, where `F` is the field
-of fractions of `R`. (If `R` is a UFD, this will be close to what is wanted,
-but not in general.)
+  of fractions of `R`. (If `R` is a UFD, this will be close to what is wanted,
+  but not in general.)
 
 * The mod `P ^ 2` hypothesis will have to be rephrased to a condition
-in the second symbolic power of `P`. When `P` is a maximal ideal,
-that symbolic power coincides with `P ^ 2`, but not in general.
+  in the second symbolic power of `P`. When `P` is a maximal ideal,
+  that symbolic power coincides with `P ^ 2`, but not in general.
 
 -/
 
@@ -90,7 +89,7 @@ private lemma generalizedEisenstein_aux {q f g : R[X]} {p : ℕ}
     obtain ⟨a, ha, ha'⟩ := Polynomial.isUnit_iff.mp u.isUnit
     suffices C (algebraMap R K g.leadingCoeff) = u by
       simp [r, ← this, Polynomial.map_sub, ← hu, Polynomial.map_mul, map_C,
-        Polynomial.map_pow, sub_eq_zero, mul_comm]
+        Polynomial.map_pow, mul_comm]
     rw [← leadingCoeff_map_of_leadingCoeff_ne_zero _ hgP, ← hu, ← ha',
       leadingCoeff_mul, leadingCoeff_C, (hq_monic.map _).pow m, one_mul]
   use m, r, hg, hr
@@ -107,16 +106,16 @@ private lemma generalizedEisenstein_aux {q f g : R[X]} {p : ℕ}
   rw [hg, leadingCoeff, coeff_add, ← hg, coeff_C, if_neg hg', zero_add,
     mem_ker, ← coeff_map, hr, coeff_zero]
 
- /-- A generalized Eisenstein criterion
+/-- A generalized Eisenstein criterion
 
-  Let `R` be an integral domain and `K` an `R`-algebra which is a domain.
-  Let `q : R[X]` be a monic polynomial which is prime in `K[X]`.
-  Let `f : R[X]` be a primitive polynomial of strictly positive degree
-  whose leading coefficient is not zero in `K`
-  and such that the image `f` in `K[X]` is a power of `q`.
-  Assume moreover that `f.modByMonic q` is not zero in `(R ⧸ (P ^ 2))[X]`,
-  where `P` is the kernel of `algebraMap R K`.
-  Then `f` is irreducible. -/
+Let `R` be an integral domain and `K` an `R`-algebra which is a domain.
+Let `q : R[X]` be a monic polynomial which is prime in `K[X]`.
+Let `f : R[X]` be a primitive polynomial of strictly positive degree
+whose leading coefficient is not zero in `K`
+and such that the image `f` in `K[X]` is a power of `q`.
+Assume moreover that `f.modByMonic q` is not zero in `(R ⧸ (P ^ 2))[X]`,
+where `P` is the kernel of `algebraMap R K`.
+Then `f` is irreducible. -/
 theorem generalizedEisenstein {q f : R[X]} {p : ℕ}
     (hq_irr : Irreducible (q.map (algebraMap R K))) (hq_monic : q.Monic)
     (hf_prim : f.IsPrimitive)
@@ -127,7 +126,7 @@ theorem generalizedEisenstein {q f : R[X]} {p : ℕ}
     (hfmodP2 : (f.modByMonic q).map (mk ((ker (algebraMap R K)) ^ 2)) ≠ 0) :
     Irreducible f where
   not_isUnit := mt degree_eq_zero_of_isUnit fun h => by
-    simp_all [lt_irrefl, natDegree_pos_iff_degree_pos]
+    simp_all [natDegree_pos_iff_degree_pos]
   isUnit_or_isUnit g h h_eq := by
     -- We have to show that factorizations `f = g * h` are trivial
     set P : Ideal R := ker (algebraMap R K)
@@ -166,9 +165,9 @@ theorem generalizedEisenstein {q f : R[X]} {p : ℕ}
       exact (dvd_pow_self q hn).mul_left _
     · exact ((dvd_pow_self q hn).mul_left _).mul_left _
 
-/-- If `f` is a non constant polynomial with coefficients in `R`, and `P` is a prime ideal in `R`,
+/-- If `f` is a nonconstant polynomial with coefficients in `R`, and `P` is a prime ideal in `R`,
 then if every coefficient in `R` except the leading coefficient is in `P`, and
-the trailing coefficient is not in `P^2` and no non units in `R` divide `f`, then `f` is
+the trailing coefficient is not in `P^2` and no nonunits in `R` divide `f`, then `f` is
 irreducible. -/
 theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsPrime)
     (hfl : f.leadingCoeff ∉ P)
@@ -184,7 +183,7 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
     exact hfl
   · rw [← map_C, ← Polynomial.map_pow, ← Polynomial.map_mul]
     simp only [IsScalarTower.algebraMap_eq R (R ⧸ P) (FractionRing (R ⧸ P)),
-      Quotient.algebraMap_eq, coe_comp, Function.comp_apply, ← map_map]
+      Quotient.algebraMap_eq, ← map_map]
     congr 1
     ext n
     simp only [coeff_map, Ideal.Quotient.mk_eq_mk_iff_sub_mem]

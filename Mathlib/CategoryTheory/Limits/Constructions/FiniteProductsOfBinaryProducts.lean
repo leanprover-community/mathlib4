@@ -153,10 +153,6 @@ lemma Limits.PreservesFiniteProducts.of_preserves_binary_and_terminal :
     haveI := preservesFinOfPreservesBinaryAndTerminal F n fun n => K.obj ⟨n⟩
     apply preservesLimit_of_iso_diagram F that
 
-@[deprecated (since := "2025-04-20")]
-alias preservesFiniteProducts_of_preserves_binary_and_terminal :=
-  PreservesFiniteProducts.of_preserves_binary_and_terminal
-
 @[deprecated PreservesFiniteProducts.of_preserves_binary_and_terminal (since := "2025-04-22")]
 lemma preservesShape_fin_of_preserves_binary_and_terminal (n : ℕ) :
     PreservesLimitsOfShape (Discrete (Fin n)) F :=
@@ -170,7 +166,6 @@ and a binary cofan on `c₁.X` and `f 0`, we can build a cofan for all `n+1`.
 In `extendCofanIsColimit` we show that if the two given cofans are colimits,
 then this cofan is also a colimit.
 -/
-
 @[simps!]
 def extendCofan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Cofan fun i : Fin n => f i.succ)
     (c₂ : BinaryCofan (f 0) c₁.pt) : Cofan f :=

@@ -69,8 +69,8 @@ variable [Finite α]
 
 @[simp] lemma infIrred_iff_of_finite : InfIrred s ↔ ∃ a, Ici a = s := by
   refine ⟨fun hs ↦ ?_, ?_⟩
-  · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_minimal_wrt id _ (coe_nonempty.2 hs.ne_top)
-    exact ⟨a, (hs.2 <| erase_inf_Ici ha <| by simpa [eq_comm] using has).resolve_left
+  · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_minimal (coe_nonempty.2 hs.ne_top)
+    exact ⟨a, (hs.2 <| erase_inf_Ici ha fun b hb ↦ le_imp_eq_iff_le_imp_ge.2 <| has hb).resolve_left
       (lt_erase.2 ha).ne'⟩
   · rintro ⟨a, rfl⟩
     exact infIrred_Ici _
@@ -91,9 +91,9 @@ variable [Finite α]
 
 @[simp] lemma supIrred_iff_of_finite : SupIrred s ↔ ∃ a, Iic a = s := by
   refine ⟨fun hs ↦ ?_, ?_⟩
-  · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_maximal_wrt id _ (coe_nonempty.2 hs.ne_bot)
-    exact ⟨a, (hs.2 <| erase_sup_Iic ha <| by simpa [eq_comm] using has).resolve_left
-      (erase_lt.2 ha).ne⟩
+  · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_maximal (coe_nonempty.2 hs.ne_bot)
+    exact ⟨a, (hs.2 <| erase_sup_Iic ha fun b hb ↦
+      le_imp_eq_iff_le_imp_ge'.2 <| has hb).resolve_left (erase_lt.2 ha).ne⟩
   · rintro ⟨a, rfl⟩
     exact supIrred_Iic _
 
@@ -209,7 +209,7 @@ powerset lattice. -/
 noncomputable def birkhoffSet : α ↪o Set {a : α // SupIrred a} := by
   by_cases h : IsEmpty α
   · exact OrderEmbedding.ofIsEmpty
-  rw [not_isEmpty_iff] at h
+  push_neg at h
   have := Fintype.toOrderBot α
   exact OrderIso.lowerSetSupIrred.toOrderEmbedding.trans ⟨⟨_, SetLike.coe_injective⟩, Iff.rfl⟩
 
@@ -222,9 +222,7 @@ noncomputable def birkhoffFinset : α ↪o Finset {a : α // SupIrred a} := by
   classical
   -- TODO: This should be a single `simp` call but `simp` refuses to use
   -- `OrderIso.coe_toOrderEmbedding` and `Fintype.coe_finsetOrderIsoSet_symm`
-  simp [birkhoffFinset]
-  rw [OrderIso.coe_toOrderEmbedding, Fintype.coe_finsetOrderIsoSet_symm]
-  simp
+  simp [birkhoffFinset, (OrderIso.coe_toOrderEmbedding)]
 
 @[simp] lemma birkhoffSet_sup (a b : α) : birkhoffSet (a ⊔ b) = birkhoffSet a ∪ birkhoffSet b := by
   unfold OrderEmbedding.birkhoffSet; split <;> simp [eq_iff_true_of_subsingleton]
@@ -234,7 +232,8 @@ noncomputable def birkhoffFinset : α ↪o Finset {a : α // SupIrred a} := by
 
 @[simp] lemma birkhoffSet_apply [OrderBot α] (a : α) :
     birkhoffSet a = OrderIso.lowerSetSupIrred a := by
-  simp [birkhoffSet]; have : Subsingleton (OrderBot α) := inferInstance; convert rfl
+  have : Subsingleton (OrderBot α) := inferInstance
+  simp [birkhoffSet, this.allEq]
 
 variable [DecidableEq α]
 

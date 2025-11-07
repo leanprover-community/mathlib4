@@ -75,34 +75,24 @@ theorem lt_def : a < b ↔ a.1 < b.1 := by
   rw [k] at h
   exact Nat.lt_asymm h h
 
-theorem add_left_cancel : ∀ a b c : ℕ × ZMod 2, a + b = a + c → b = c := fun a _ _ h =>
-  (add_right_inj a).mp h
-
-theorem add_le_add_left : ∀ a b : ℕ × ZMod 2, a ≤ b → ∀ c : ℕ × ZMod 2, c + a ≤ c + b := by
-  rintro a b (rfl | ab) c
-  · rfl
-  · exact Or.inr (by simpa)
-
-theorem le_of_add_le_add_left : ∀ a b c : ℕ × ZMod 2, a + b ≤ a + c → b ≤ c := by
-  rintro a b c (bc | bc)
-  · exact le_of_eq ((add_right_inj a).mp bc)
-  · exact Or.inr (by simpa using bc)
-
 instance : ZeroLEOneClass (ℕ × ZMod 2) :=
   ⟨by dsimp only [LE.le]; decide⟩
 
-theorem mul_lt_mul_of_pos_left : ∀ a b c : ℕ × ZMod 2, a < b → 0 < c → c * a < c * b :=
-  fun _ _ _ ab c0 => lt_def.mpr ((mul_lt_mul_left (lt_def.mp c0)).mpr (lt_def.mp ab))
+instance : PosMulStrictMono (ℕ × ZMod 2) where
+  mul_lt_mul_of_pos_left a ha b c hbc := by rw [lt_def] at *; exact mul_lt_mul_of_pos_left hbc ha
 
-theorem mul_lt_mul_of_pos_right : ∀ a b c : ℕ × ZMod 2, a < b → 0 < c → a * c < b * c :=
-  fun _ _ _ ab c0 => lt_def.mpr ((mul_lt_mul_right (lt_def.mp c0)).mpr (lt_def.mp ab))
+instance : MulPosStrictMono (ℕ × ZMod 2) where
+  mul_lt_mul_of_pos_right a ha b c hbc := by rw [lt_def] at *; exact mul_lt_mul_of_pos_right hbc ha
 
-instance isorN2 : IsStrictOrderedRing (ℕ × ZMod 2) :=
-  { add_le_add_left := add_le_add_left
-    le_of_add_le_add_left := le_of_add_le_add_left
-    zero_le_one := zero_le_one
-    mul_lt_mul_of_pos_left := mul_lt_mul_of_pos_left
-    mul_lt_mul_of_pos_right := mul_lt_mul_of_pos_right }
+instance isStrictOrderedRing_N2 : IsStrictOrderedRing (ℕ × ZMod 2) where
+  add_le_add_left := by
+    rintro a b (rfl | ab) c
+    · rfl
+    · exact .inr (by simpa)
+  le_of_add_le_add_left := by
+    rintro a b c (hbc | hbc)
+    · exact (add_right_injective _ hbc).le
+    · exact .inr (by simpa using hbc)
 
 end Nxzmod2
 
@@ -123,7 +113,7 @@ theorem add_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a 
     · simp [ha, -Prod.mk.injEq]
     · cases hb rfl
   | b + 1 =>
-    simp [(a + b).succ_ne_zero]
+    simp
 
 theorem mul_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a * b ≠ (0, 1) := by
   rcases a with ⟨a, a2⟩
@@ -210,7 +200,8 @@ instance : PartialOrder L := inferInstance
 instance : IsOrderedRing L := inferInstance
 
 instance : CanonicallyOrderedAdd L where
-  exists_add_of_le := @(exists_add_of_le)
+  exists_add_of_le := exists_add_of_le _ _
+  le_add_self a b := by rw [add_comm]; exact le_self_add a b
   le_self_add := le_self_add
 
 instance : NoZeroDivisors L where

@@ -144,15 +144,12 @@ theorem AlgHom.algebraicIndependent_iff (f : A →ₐ[R] A') (hf : Injective f) 
 theorem AlgebraicIndependent.of_subsingleton [Subsingleton R] : AlgebraicIndependent R x :=
   algebraicIndependent_iff.2 fun _ _ => Subsingleton.elim _ _
 
-@[deprecated (since := "2025-02-07")] alias algebraicIndependent_of_subsingleton :=
-  AlgebraicIndependent.of_subsingleton
-
 theorem isTranscendenceBasis_iff_of_subsingleton [Subsingleton R] (x : ι → A) :
     IsTranscendenceBasis R x ↔ Nonempty ι := by
   have := Module.subsingleton R A
   refine ⟨fun h ↦ ?_, fun h ↦ ⟨.of_subsingleton, fun s hs hx ↦
     hx.antisymm fun a _ ↦ ⟨Classical.arbitrary _, Subsingleton.elim ..⟩⟩⟩
-  by_contra hι; rw [not_nonempty_iff] at hι
+  by_contra! hι
   have := h.2 {0} .of_subsingleton
   simp [range_eq_empty, eq_comm (a := ∅)] at this
 
@@ -178,7 +175,7 @@ theorem AlgebraicIndependent.restrictScalars {K : Type*} [CommRing K] [Algebra R
   have : (aeval x : MvPolynomial ι K →ₐ[K] A).toRingHom.comp (MvPolynomial.map (algebraMap R K)) =
       (aeval x : MvPolynomial ι R →ₐ[R] A).toRingHom := by
     ext <;> simp [algebraMap_eq_smul_one]
-  show Injective (aeval x).toRingHom
+  change Injective (aeval x).toRingHom
   rw [← this, RingHom.coe_comp]
   exact Injective.comp ai (MvPolynomial.map_injective _ hinj)
 
@@ -291,14 +288,26 @@ theorem IsTranscendenceBasis.to_subtype_range' (hx : IsTranscendenceBasis R x) {
     (ht : range x = t) : IsTranscendenceBasis R ((↑) : t → A) :=
   ht ▸ hx.to_subtype_range
 
+lemma IsTranscendenceBasis.of_comp {x : ι → A} (f : A →ₐ[R] A') (h : Function.Injective f)
+    (H : IsTranscendenceBasis R (f ∘ x)) :
+    IsTranscendenceBasis R x := by
+  refine ⟨(AlgHom.algebraicIndependent_iff f h).mp H.1, ?_⟩
+  intro s hs hs'
+  have := H.2 (f '' s)
+    ((algebraicIndependent_image h.injOn).mp ((AlgHom.algebraicIndependent_iff f h).mpr hs))
+    (by rw [Set.range_comp]; exact Set.image_mono hs')
+  rwa [Set.range_comp, (Set.image_injective.mpr h).eq_iff] at this
+
+lemma IsTranscendenceBasis.of_comp_algebraMap [Algebra A A'] [IsScalarTower R A A']
+    [FaithfulSMul A A'] {x : ι → A} (H : IsTranscendenceBasis R (algebraMap A A' ∘ x)) :
+    IsTranscendenceBasis R x :=
+  .of_comp (IsScalarTower.toAlgHom R A A') (FaithfulSMul.algebraMap_injective A A') H
+
+/-- Also see `IsTranscendenceBasis.algebraMap_comp`
+for the composition with a algebraic extension. -/
 theorem AlgEquiv.isTranscendenceBasis (e : A ≃ₐ[R] A') (hx : IsTranscendenceBasis R x) :
-    IsTranscendenceBasis R (e ∘ x) := by
-  refine ⟨by apply hx.1.map' (id e.injective : Injective e.toAlgHom), fun s hs hxs ↦ ?_⟩
-  rw [AlgebraicIndepOn, ← e.symm.toAlgHom.algebraicIndependent_iff e.symm.injective] at hs
-  rw [range_comp, hx.2 _ hs.to_subtype_range, ← range_comp, ← comp_assoc, range_comp]
-  · convert s.image_id <;> (ext; simp)
-  rintro _ ⟨i, rfl⟩
-  exact ⟨⟨_, hxs ⟨i, rfl⟩⟩, by simp⟩
+    IsTranscendenceBasis R (e ∘ x) :=
+  .of_comp e.symm.toAlgHom e.symm.injective (by convert hx; ext; simp)
 
 theorem AlgEquiv.isTranscendenceBasis_iff (e : A ≃ₐ[R] A') :
     IsTranscendenceBasis R (e ∘ x) ↔ IsTranscendenceBasis R x :=
@@ -481,8 +490,6 @@ section Field
 
 variable {K : Type*} [Field K] [Algebra K A]
 
-/- Porting note: removing `simp`, not in simp normal form. Could make `Function.Injective f` a
-simp lemma when `f` is a field hom, and then simp would prove this -/
 theorem algebraicIndependent_empty_type [IsEmpty ι] [Nontrivial A] : AlgebraicIndependent K x := by
   rw [algebraicIndependent_empty_type_iff]
   exact RingHom.injective _

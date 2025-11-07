@@ -13,7 +13,7 @@ import Mathlib.Tactic.Module
 /-!
 # Star-convex sets
 
-This files defines star-convex sets (aka star domains, star-shaped set, radially convex set).
+This file defines star-convex sets (aka star domains, star-shaped set, radially convex set).
 
 A set is star-convex at `x` if every segment from `x` to a point in the set is contained in the set.
 
@@ -55,7 +55,7 @@ variable {𝕜 E F : Type*}
 
 section OrderedSemiring
 
-variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜]
 
 section AddCommMonoid
 
@@ -65,11 +65,9 @@ section SMul
 
 variable (𝕜) [SMul 𝕜 E] [SMul 𝕜 F] (x : E) (s : Set E)
 
--- TODO: remove `[IsOrderedRing 𝕜]` and `@[nolint unusedArguments]`.
 /-- Star-convexity of sets. `s` is star-convex at `x` if every segment from `x` to a point in `s` is
 contained in `s`. -/
-@[nolint unusedArguments]
-def StarConvex (𝕜 : Type*) {E : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+def StarConvex (𝕜 : Type*) {E : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
     [AddCommMonoid E] [SMul 𝕜 E] (x : E) (s : Set E) : Prop :=
   ∀ ⦃y : E⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 → a • x + b • y ∈ s
 
@@ -152,7 +150,7 @@ section Module
 
 variable [Module 𝕜 E] [Module 𝕜 F] {x y z : E} {s : Set E}
 
-theorem StarConvex.mem (hs : StarConvex 𝕜 x s) (h : s.Nonempty) : x ∈ s := by
+theorem StarConvex.mem [ZeroLEOneClass 𝕜] (hs : StarConvex 𝕜 x s) (h : s.Nonempty) : x ∈ s := by
   obtain ⟨y, hy⟩ := h
   convert hs hy zero_le_one le_rfl (add_zero 1)
   rw [one_smul, zero_smul, add_zero]
@@ -184,7 +182,7 @@ theorem starConvex_iff_forall_ne_pos (hx : x ∈ s) :
   · rwa [Convex.combo_self hab]
   exact h hy hxy ha' hb' hab
 
-theorem starConvex_iff_openSegment_subset (hx : x ∈ s) :
+theorem starConvex_iff_openSegment_subset [ZeroLEOneClass 𝕜] (hx : x ∈ s) :
     StarConvex 𝕜 x s ↔ ∀ ⦃y⦄, y ∈ s → openSegment 𝕜 x y ⊆ s :=
   starConvex_iff_segment_subset.trans <|
     forall₂_congr fun _ hy => (openSegment_subset_iff_segment_subset hx hy).symm
@@ -262,7 +260,7 @@ end OrderedSemiring
 
 section OrderedCommSemiring
 
-variable [CommSemiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+variable [CommSemiring 𝕜] [PartialOrder 𝕜]
 
 section AddCommMonoid
 
@@ -289,11 +287,11 @@ end OrderedCommSemiring
 
 section OrderedRing
 
-variable [Ring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+variable [Ring 𝕜] [PartialOrder 𝕜]
 
 section AddCommMonoid
 
-variable [AddCommMonoid E] [SMulWithZero 𝕜 E] {s : Set E}
+variable [AddRightMono 𝕜] [AddCommMonoid E] [SMulWithZero 𝕜 E] {s : Set E}
 
 theorem starConvex_zero_iff :
     StarConvex 𝕜 0 s ↔ ∀ ⦃x : E⦄, x ∈ s → ∀ ⦃a : 𝕜⦄, 0 ≤ a → a ≤ 1 → a • x ∈ s := by
@@ -308,7 +306,10 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F] {x y : E} {s t : Set E}
+section AddRightMono
+
+variable [AddRightMono 𝕜] [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F]
+  {x y : E} {s t : Set E}
 
 theorem StarConvex.add_smul_mem (hs : StarConvex 𝕜 x s) (hy : x + y ∈ s) {t : 𝕜} (ht₀ : 0 ≤ t)
     (ht₁ : t ≤ 1) : x + t • y ∈ s := by
@@ -325,6 +326,10 @@ theorem StarConvex.add_smul_sub_mem (hs : StarConvex 𝕜 x s) (hy : y ∈ s) {t
   apply hs.segment_subset hy
   rw [segment_eq_image']
   exact mem_image_of_mem _ ⟨ht₀, ht₁⟩
+
+end AddRightMono
+
+variable [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F] {x y : E} {s t : Set E}
 
 /-- The preimage of a star-convex set under an affine map is star-convex. -/
 theorem StarConvex.affine_preimage (f : E →ᵃ[𝕜] F) {s : Set F} (hs : StarConvex 𝕜 (f x) s) :
@@ -353,12 +358,12 @@ end AddCommGroup
 
 section OrderedAddCommGroup
 
-variable [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
-  {x y : E}
+variable [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E]
+  [IsStrictOrderedModule 𝕜 E] [PosSMulReflectLT 𝕜 E] {x y : E}
 
 /-- If `x < y`, then `(Set.Iic x)ᶜ` is star convex at `y`. -/
 lemma starConvex_compl_Iic (h : x < y) : StarConvex 𝕜 y (Iic x)ᶜ := by
-  refine (starConvex_iff_forall_pos <| by simp [h.not_le]).mpr fun z hz a b ha hb hab ↦ ?_
+  refine (starConvex_iff_forall_pos <| by simp [h.not_ge]).mpr fun z hz a b ha hb hab ↦ ?_
   rw [mem_compl_iff, mem_Iic] at hz ⊢
   contrapose! hz
   refine (lt_of_smul_lt_smul_of_nonneg_left ?_ hb.le).le
@@ -417,10 +422,9 @@ section OrdConnected
 
 /-- If `s` is an order-connected set in an ordered module over an ordered semiring
 and all elements of `s` are comparable with `x ∈ s`, then `s` is `StarConvex` at `x`. -/
-theorem Set.OrdConnected.starConvex [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
-    [AddCommMonoid E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E]
-    [OrderedSMul 𝕜 E] {x : E} {s : Set E} (hs : s.OrdConnected) (hx : x ∈ s)
-    (h : ∀ y ∈ s, x ≤ y ∨ y ≤ x) : StarConvex 𝕜 x s := by
+theorem Set.OrdConnected.starConvex [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [PartialOrder E]
+    [IsOrderedAddMonoid E] [Module 𝕜 E] [PosSMulMono 𝕜 E] {x : E} {s : Set E} (hs : s.OrdConnected)
+    (hx : x ∈ s) (h : ∀ y ∈ s, x ≤ y ∨ y ≤ x) : StarConvex 𝕜 x s := by
   intro y hy a b ha hb hab
   obtain hxy | hyx := h _ hy
   · refine hs.out hx hy (mem_Icc.2 ⟨?_, ?_⟩)

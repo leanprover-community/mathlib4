@@ -34,13 +34,13 @@ theorem X_pow_sub_X_sub_one_irreducible_aux (z : ℂ) : ¬(z ^ n = z + 1 ∧ z ^
     rw [← Nat.mod_add_div n 3, pow_add, pow_mul, h3, one_pow, mul_one]
     have : n % 3 < 3 := Nat.mod_lt n zero_lt_three
     interval_cases n % 3 <;>
-    simp only [this, pow_zero, pow_one, eq_self_iff_true, or_true, true_or]
+    simp only [pow_zero, pow_one, or_true, true_or]
   have z_ne_zero : z ≠ 0 := fun h =>
     zero_ne_one ((zero_pow three_ne_zero).symm.trans (show (0 : ℂ) ^ 3 = 1 from h ▸ h3))
   rcases key with (key | key | key)
   · exact z_ne_zero (by rwa [key, right_eq_add] at h1)
   · exact one_ne_zero (by rwa [key, left_eq_add] at h1)
-  · exact z_ne_zero (pow_eq_zero (by rwa [key, add_self_eq_zero] at h2))
+  · exact z_ne_zero (eq_zero_of_pow_eq_zero (by rwa [key, add_self_eq_zero] at h2))
 
 theorem X_pow_sub_X_sub_one_irreducible (hn1 : n ≠ 1) : Irreducible (X ^ n - X - 1 : ℤ[X]) := by
   by_cases hn0 : n = 0

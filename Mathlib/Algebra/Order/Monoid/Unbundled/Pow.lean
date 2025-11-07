@@ -113,16 +113,16 @@ theorem Right.pow_lt_one_of_lt {n : ℕ} {x : M} (hn : 0 < n) (h : x < 1) : x ^ 
 
 /-- This lemma is useful in non-cancellative monoids, like sets under pointwise operations. -/
 @[to_additive
-"This lemma is useful in non-cancellative monoids, like sets under pointwise operations."]
+/-- This lemma is useful in non-cancellative monoids, like sets under pointwise operations. -/]
 lemma pow_le_pow_mul_of_sq_le_mul [MulLeftMono M] {a b : M} (hab : a ^ 2 ≤ b * a) :
     ∀ {n}, n ≠ 0 → a ^ n ≤ b ^ (n - 1) * a
   | 1, _ => by simp
   | n + 2, _ => by
     calc
       a ^ (n + 2) = a ^ (n + 1) * a := by rw [pow_succ]
-      _ ≤ b ^ n * a * a := mul_le_mul_right' (pow_le_pow_mul_of_sq_le_mul hab (by omega)) _
+      _ ≤ b ^ n * a * a := by grw [pow_le_pow_mul_of_sq_le_mul hab (by cutsat)]; simp
       _ = b ^ n * a ^ 2 := by rw [mul_assoc, sq]
-      _ ≤ b ^ n * (b * a) := mul_le_mul_left' hab _
+      _ ≤ b ^ n * (b * a) := by grw [hab]
       _ = b ^ (n + 1) * a := by rw [← mul_assoc, ← pow_succ]
 
 end Right
@@ -261,9 +261,12 @@ section CovariantLTSwap
 
 variable [MulLeftStrictMono M] [MulRightStrictMono M]
 
+@[to_additive nsmul_le_nsmul_iff_right]
+theorem pow_le_pow_iff_left {a b : M} {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ b ^ n ↔ a ≤ b :=
+  (pow_left_strictMono hn).le_iff_le
+
 @[to_additive le_of_nsmul_le_nsmul_right]
-theorem le_of_pow_le_pow_left' {a b : M} {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ b ^ n → a ≤ b :=
-  (pow_left_strictMono hn).le_iff_le.1
+alias ⟨le_of_pow_le_pow_left', _⟩ := pow_le_pow_iff_left
 
 @[to_additive min_le_of_add_le_two_nsmul]
 theorem min_le_of_mul_le_sq {a b c : M} (h : a * b ≤ c ^ 2) : min a b ≤ c := by
@@ -288,7 +291,11 @@ theorem Left.pow_lt_one_iff [MulLeftStrictMono M] {n : ℕ} {x : M} (hn : 0 < n)
 theorem Right.pow_lt_one_iff [MulRightStrictMono M] {n : ℕ} {x : M}
     (hn : 0 < n) : x ^ n < 1 ↔ x < 1 :=
   haveI := mulRightMono_of_mulRightStrictMono M
-  ⟨fun H => not_le.mp fun k => H.not_le <| Right.one_le_pow_of_le k, Right.pow_lt_one_of_lt hn⟩
+  ⟨fun H => not_le.mp fun k => H.not_ge <| Right.one_le_pow_of_le k, Right.pow_lt_one_of_lt hn⟩
+
+@[to_additive]
+instance [MulLeftStrictMono M] [MulRightStrictMono M] : IsMulTorsionFree M where
+  pow_left_injective _ hn := (pow_left_strictMono hn).injective
 
 end LinearOrder
 
@@ -303,5 +310,11 @@ theorem one_le_zpow {x : G} (H : 1 ≤ x) {n : ℤ} (hn : 0 ≤ n) : 1 ≤ x ^ n
   lift n to ℕ using hn
   rw [zpow_natCast]
   apply one_le_pow_of_one_le' H
+
+@[to_additive zsmul_pos]
+lemma one_lt_zpow {x : G} (hx : 1 < x) {n : ℤ} (hn : 0 < n) : 1 < x ^ n := by
+  lift n to ℕ using Int.le_of_lt hn
+  rw [zpow_natCast]
+  exact one_lt_pow' hx (Int.natCast_pos.mp hn).ne'
 
 end DivInvMonoid

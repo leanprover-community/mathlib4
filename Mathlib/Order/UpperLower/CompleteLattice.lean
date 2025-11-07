@@ -167,8 +167,10 @@ theorem coe_iInf₂ (f : ∀ i, κ i → UpperSet α) :
     (↑(⨅ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j := by simp
 
 @[simp]
-theorem not_mem_top : a ∉ (⊤ : UpperSet α) :=
+theorem notMem_top : a ∉ (⊤ : UpperSet α) :=
   id
+
+@[deprecated (since := "2025-05-23")] alias not_mem_top := notMem_top
 
 @[simp]
 theorem mem_bot : a ∈ (⊥ : UpperSet α) :=
@@ -303,8 +305,10 @@ theorem mem_top : a ∈ (⊤ : LowerSet α) :=
   trivial
 
 @[simp]
-theorem not_mem_bot : a ∉ (⊥ : LowerSet α) :=
+theorem notMem_bot : a ∉ (⊥ : LowerSet α) :=
   id
+
+@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 @[simp]
 theorem mem_sup_iff : a ∈ s ⊔ t ↔ a ∈ s ∨ a ∈ t :=

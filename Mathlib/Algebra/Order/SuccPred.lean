@@ -180,16 +180,18 @@ theorem IsPredLimit.lt_sub_natCast [AddCommGroupWithOne α] [PredSubOrder α]
     (hx : IsPredLimit x) (hy : x < y) : ∀ n : ℕ, x < y - n :=
   hx.isPredPrelimit.lt_sub_natCast hy
 
-theorem IsSuccLimit.natCast_lt [AddMonoidWithOne α] [SuccAddOrder α] [CanonicallyOrderedAdd α]
+theorem IsSuccLimit.natCast_lt [AddMonoidWithOne α] [SuccAddOrder α]
+    [OrderBot α] [CanonicallyOrderedAdd α]
     (hx : IsSuccLimit x) : ∀ n : ℕ, n < x := by
   simpa [bot_eq_zero] using hx.add_natCast_lt hx.bot_lt
 
-theorem not_isSuccLimit_natCast [AddMonoidWithOne α] [SuccAddOrder α] [CanonicallyOrderedAdd α]
+theorem not_isSuccLimit_natCast [AddMonoidWithOne α] [SuccAddOrder α]
+    [OrderBot α] [CanonicallyOrderedAdd α]
     (n : ℕ) : ¬ IsSuccLimit (n : α) :=
   fun h ↦ (h.natCast_lt n).false
 
 @[simp]
-theorem succ_eq_zero [AddZeroClass α] [CanonicallyOrderedAdd α] [One α] [NoMaxOrder α]
+theorem succ_eq_zero [AddZeroClass α] [OrderBot α] [CanonicallyOrderedAdd α] [One α] [NoMaxOrder α]
     [SuccAddOrder α] {a : WithBot α} : WithBot.succ a = 0 ↔ a = ⊥ := by
   cases a
   · simp [bot_eq_zero]

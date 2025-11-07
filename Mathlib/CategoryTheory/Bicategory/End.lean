@@ -10,13 +10,14 @@ import Mathlib.CategoryTheory.Monoidal.Category
 # Endomorphisms of an object in a bicategory, as a monoidal category.
 -/
 
+universe w v u
 
 namespace CategoryTheory
 
-variable {C : Type*} [Bicategory C]
+variable {C : Type u} [Bicategory.{w, v} C]
 
 /-- The endomorphisms of an object in a bicategory can be considered as a monoidal category. -/
-def EndMonoidal (X : C) :=
+abbrev EndMonoidal (X : C) :=
   X ⟶ X
 -- The `Category` instance should be constructed by a deriving handler.
 -- https://github.com/leanprover-community/mathlib4/issues/380
@@ -31,10 +32,8 @@ open Bicategory
 
 open MonoidalCategory
 
-open Bicategory
-
-attribute [local simp] EndMonoidal in
-instance (X : C) : MonoidalCategory (EndMonoidal X) where
+@[simps]
+instance (X : C) : MonoidalCategory (X ⟶ X) where
   tensorObj f g := f ≫ g
   whiskerLeft {f _ _} η := f ◁ η
   whiskerRight {_ _} η h := η ▷ h
@@ -42,9 +41,9 @@ instance (X : C) : MonoidalCategory (EndMonoidal X) where
   associator f g h := α_ f g h
   leftUnitor f := λ_ f
   rightUnitor f := ρ_ f
-  tensor_comp := by
+  tensorHom_comp_tensorHom := by
     intros
-    dsimp
+    dsimp only
     rw [Bicategory.whiskerLeft_comp, Bicategory.comp_whiskerRight, Category.assoc, Category.assoc,
       Bicategory.whisker_exchange_assoc]
 

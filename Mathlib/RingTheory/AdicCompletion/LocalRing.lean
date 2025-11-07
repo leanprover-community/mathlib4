@@ -19,7 +19,7 @@ variable {R : Type*} [CommRing R] (m : Ideal R) [hmax : m.IsMaximal]
 
 open Ideal Quotient
 
-lemma isUnit_iff_nmem_of_isAdicComplete_maximal [IsAdicComplete m R] (r : R) :
+lemma isUnit_iff_notMem_of_isAdicComplete_maximal [IsAdicComplete m R] (r : R) :
     IsUnit r ↔ r ∉ m := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · by_contra mem
@@ -27,10 +27,12 @@ lemma isUnit_iff_nmem_of_isAdicComplete_maximal [IsAdicComplete m R] (r : R) :
     absurd m.ne_top_iff_one.mp (Ideal.IsMaximal.ne_top hmax)
     simp [← hs, Ideal.mul_mem_left m s mem]
   · have mapu {n : ℕ} (npos : 0 < n) : IsUnit (Ideal.Quotient.mk (m ^ n) r) := by
-      induction' n with n ih
-      · absurd npos
+      induction n with
+      | zero =>
+        absurd npos
         exact Nat.not_lt_zero 0
-      · by_cases neq0 : n = 0
+      | succ n ih =>
+        by_cases neq0 : n = 0
         · let max' : (m ^ (n + 1)).IsMaximal := by simpa only [neq0, zero_add, pow_one] using hmax
           let hField : Field (R ⧸ m ^ (n + 1)) := Ideal.Quotient.field (m ^ (n + 1))
           simpa [isUnit_iff_ne_zero, ne_eq, Ideal.Quotient.eq_zero_iff_mem.not, neq0] using h
@@ -40,7 +42,7 @@ lemma isUnit_iff_nmem_of_isAdicComplete_maximal [IsAdicComplete m R] (r : R) :
       (IsUnit.exists_left_inv (mapu n.2))
     let invSeries : ℕ → R := fun n ↦ if h : n = 0 then 0 else Classical.choose <|
       Ideal.Quotient.mk_surjective <| invSeries' ⟨n, (Nat.zero_lt_of_ne_zero h)⟩
-    have invSeries_spec {n : ℕ} (npos : 0 < n): (Ideal.Quotient.mk (m ^ n)) (invSeries n) =
+    have invSeries_spec {n : ℕ} (npos : 0 < n) : (Ideal.Quotient.mk (m ^ n)) (invSeries n) =
       invSeries' ⟨n, npos⟩ := by
       simpa only [Nat.ne_zero_of_lt npos, invSeries]
       using Classical.choose_spec (Ideal.Quotient.mk_surjective (invSeries' ⟨n, npos⟩))
@@ -69,11 +71,14 @@ lemma isUnit_iff_nmem_of_isAdicComplete_maximal [IsAdicComplete m R] (r : R) :
     use inv
     exact sub_eq_zero.mp <| IsHausdorff.haus IsAdicComplete.toIsHausdorff (inv * r - 1) eq
 
+@[deprecated (since := "2025-05-24")]
+alias isUnit_iff_nmem_of_isAdicComplete_maximal := isUnit_iff_notMem_of_isAdicComplete_maximal
+
 theorem isLocalRing_of_isAdicComplete_maximal [IsAdicComplete m R] : IsLocalRing R where
   exists_pair_ne := ⟨0, 1, ne_of_mem_of_not_mem m.zero_mem
     (m.ne_top_iff_one.mp (Ideal.IsMaximal.ne_top hmax))⟩
   isUnit_or_isUnit_of_add_one {a b} hab := by
-    simp only [isUnit_iff_nmem_of_isAdicComplete_maximal m]
+    simp only [isUnit_iff_notMem_of_isAdicComplete_maximal m]
     by_contra! h
     absurd m.add_mem h.1 h.2
     simpa [hab] using m.ne_top_iff_one.mp (Ideal.IsMaximal.ne_top hmax)

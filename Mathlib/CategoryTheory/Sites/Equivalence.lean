@@ -53,8 +53,7 @@ instance (priority := 900) [G.IsEquivalence] : IsCoverDense G J where
     let e := (asEquivalence G).symm
     convert J.top_mem U
     ext Y f
-    simp only [Sieve.functorPushforward_apply, Presieve.functorPushforward, exists_and_left,
-      Sieve.top_apply, iff_true]
+    simp only [Sieve.top_apply, iff_true]
     let g : e.inverse.obj _ ⟶ U := (e.unitInv.app Y) ≫ f
     have : (Sieve.coverByImage e.inverse U).arrows g := Presieve.in_coverByImage _ g
     replace := Sieve.downward_closed _ this (e.unit.app Y)
@@ -117,10 +116,10 @@ def sheafCongr : Sheaf J A ≌ Sheaf K A where
   functor_unitIso_comp X := by
     ext
     simp only [id_obj, sheafCongr.functor_obj_val_obj, comp_obj,
-      Sheaf.instCategorySheaf_comp_val, NatTrans.comp_app, sheafCongr.inverse_obj_val_obj,
+      Sheaf.comp_val, NatTrans.comp_app, sheafCongr.inverse_obj_val_obj,
       Opposite.unop_op, sheafCongr.functor_map_val_app,
       sheafCongr.unitIso_hom_app_val_app, sheafCongr.counitIso_hom_app_val_app,
-      sheafCongr.functor_obj_val_map, Quiver.Hom.unop_op, Sheaf.instCategorySheaf_id_val,
+      sheafCongr.functor_obj_val_map, Quiver.Hom.unop_op, Sheaf.id_val,
       NatTrans.id_app]
     simp [← Functor.map_comp, ← op_comp]
 
@@ -189,13 +188,14 @@ noncomputable
 def smallSheafificationAdjunction : smallSheafify J A ⊣ sheafToPresheaf J A :=
   (equivSmallModel C).transportSheafificationAdjunction J _ A
 
-noncomputable instance hasSheafifyEssentiallySmallSite : HasSheafify J A :=
+lemma hasSheafifyEssentiallySmallSite : HasSheafify J A :=
   (equivSmallModel C).hasSheafify J ((equivSmallModel C).inverse.inducedTopology J) A
 
 instance hasSheafComposeEssentiallySmallSite : HasSheafCompose J F :=
   (equivSmallModel C).hasSheafCompose J ((equivSmallModel C).inverse.inducedTopology J) F
 
-instance hasLimitsEssentiallySmallSite
+omit [HasSheafify ((equivSmallModel C).inverse.inducedTopology J) A] in
+lemma hasLimitsEssentiallySmallSite
     [HasLimits <| Sheaf ((equivSmallModel C).inverse.inducedTopology J) A] :
     HasLimitsOfSize.{max v₃ w, max v₃ w} <| Sheaf J A :=
   Adjunction.has_limits_of_equivalence ((equivSmallModel C).sheafCongr J
@@ -284,7 +284,8 @@ lemma WEqualsLocallyBijective.transport (hG : CoverPreserving K J G) :
 variable [EssentiallySmall.{w} C]
   [∀ (X : Cᵒᵖ), HasLimitsOfShape (StructuredArrow X (equivSmallModel C).inverse.op) A]
 
-instance [((equivSmallModel C).inverse.inducedTopology J).WEqualsLocallyBijective A] :
+lemma WEqualsLocallyBijective.ofEssentiallySmall
+    [((equivSmallModel C).inverse.inducedTopology J).WEqualsLocallyBijective A] :
     J.WEqualsLocallyBijective A :=
   WEqualsLocallyBijective.transport J ((equivSmallModel C).inverse.inducedTopology J)
     (equivSmallModel C).inverse (IsDenseSubsite.coverPreserving _ _ _)

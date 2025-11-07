@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jason Yuen
 -/
 import Mathlib.Data.Real.ConjExponents
-import Mathlib.Data.Real.Irrational
+import Mathlib.NumberTheory.Real.Irrational
 
 /-!
 # Rayleigh's theorem on Beatty sequences
@@ -71,7 +71,7 @@ private theorem no_collision (hrs : r.HolderConjugate s) :
   simp_rw [div_eq_inv_mul, ← right_distrib, hrs.inv_add_inv_eq_one, one_mul] at h₃ h₄
   rw [← Int.cast_one] at h₄
   simp_rw [← Int.cast_add, Int.cast_lt, Int.lt_add_one_iff] at h₃ h₄
-  exact h₄.not_lt h₃
+  exact h₄.not_gt h₃
 
 /-- Let `r > 1` and `1/r + 1/s = 1`. Suppose there is an integer `j` where `B_r` and `B'_s` both
 jump over `j` (i.e. an anti-collision). Then this leads to a contradiction. -/
@@ -83,7 +83,7 @@ private theorem no_anticollision (hrs : r.HolderConjugate s) :
   simp_rw [div_eq_inv_mul, ← right_distrib, hrs.inv_add_inv_eq_one, one_mul] at h₃ h₄
   rw [← Int.cast_one, ← add_assoc, add_lt_add_iff_right, add_right_comm] at h₄
   simp_rw [← Int.cast_add, Int.cast_lt, Int.lt_add_one_iff] at h₃ h₄
-  exact h₄.not_lt h₃
+  exact h₄.not_gt h₃
 
 /-- Let `0 < r ∈ ℝ` and `j ∈ ℤ`. Then either `j ∈ B_r` or `B_r` jumps over `j`. -/
 private theorem hit_or_miss (h : r > 0) :
@@ -152,7 +152,7 @@ theorem beattySeq_symmDiff_beattySeq'_pos {r s : ℝ} (hrs : r.HolderConjugate s
     rw [← hk, beattySeq', sub_pos, Int.lt_ceil, Int.cast_one] at hj
     exact_mod_cast pos_of_mul_pos_left (zero_lt_one.trans hj) hs
   rw [Set.mem_symmDiff, hb₁ _ hrs.nonneg, hb₂ _ hrs.symm.nonneg, ← compl_beattySeq hrs,
-    Set.not_mem_compl_iff, Set.mem_compl_iff, and_self, and_self]
+    Set.notMem_compl_iff, Set.mem_compl_iff, and_self, and_self]
   exact or_not
 
 theorem beattySeq'_symmDiff_beattySeq_pos {r s : ℝ} (hrs : r.HolderConjugate s) :

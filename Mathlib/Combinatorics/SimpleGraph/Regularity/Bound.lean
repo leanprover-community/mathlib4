@@ -39,10 +39,9 @@ def stepBound (n : ℕ) : ℕ :=
   n * 4 ^ n
 
 theorem le_stepBound : id ≤ stepBound := fun n =>
-  Nat.le_mul_of_pos_right _ <| pow_pos (by norm_num) n
+  Nat.le_mul_of_pos_right _ <| pow_pos (by simp) n
 
-theorem stepBound_mono : Monotone stepBound := fun _ _ h =>
-  Nat.mul_le_mul h <| Nat.pow_le_pow_right (by norm_num) h
+theorem stepBound_mono : Monotone stepBound := fun _ _ h => by unfold stepBound; gcongr; decide
 
 theorem stepBound_pos_iff {n : ℕ} : 0 < stepBound n ↔ 0 < n :=
   mul_pos_iff_of_pos_right <| by positivity
@@ -67,10 +66,10 @@ namespace SzemerediRegularity.Positivity
 
 private theorem eps_pos {ε : ℝ} {n : ℕ} (h : 100 ≤ (4 : ℝ) ^ n * ε ^ 5) : 0 < ε :=
   (Odd.pow_pos_iff (by decide)).mp
-    (pos_of_mul_pos_right ((show 0 < (100 : ℝ) by norm_num).trans_le h) (by positivity))
+    (pos_of_mul_pos_right ((show 0 < (100 : ℝ) by simp).trans_le h) (by positivity))
 
 private theorem m_pos [Nonempty α] (hPα : #P.parts * 16 ^ #P.parts ≤ card α) : 0 < m :=
-  Nat.div_pos (hPα.trans' <| by unfold stepBound; gcongr; norm_num) <|
+  Nat.div_pos (hPα.trans' <| by unfold stepBound; gcongr; simp) <|
     stepBound_pos (P.parts_nonempty <| univ_nonempty.ne_empty).card_pos
 
 /-- Local extension for the `positivity` tactic: A few facts that are needed many times for the
@@ -109,7 +108,7 @@ theorem one_le_m_coe [Nonempty α] (hPα : #P.parts * 16 ^ #P.parts ≤ card α)
   Nat.one_le_cast.2 <| m_pos hPα
 
 theorem eps_pow_five_pos (hPε : 100 ≤ (4 : ℝ) ^ #P.parts * ε ^ 5) : ↑0 < ε ^ 5 :=
-  pos_of_mul_pos_right ((by norm_num : (0 : ℝ) < 100).trans_le hPε) <| pow_nonneg (by norm_num) _
+  pos_of_mul_pos_right ((by simp : (0 : ℝ) < 100).trans_le hPε) <| by positivity
 
 theorem eps_pos (hPε : 100 ≤ (4 : ℝ) ^ #P.parts * ε ^ 5) : 0 < ε :=
   (Odd.pow_pos_iff (by decide)).mp (eps_pow_five_pos hPε)
@@ -125,10 +124,10 @@ theorem hundred_le_m [Nonempty α] (hPα : #P.parts * 16 ^ #P.parts ≤ card α)
     (hPε : 100 ≤ (4 : ℝ) ^ #P.parts * ε ^ 5) (hε : ε ≤ 1) : 100 ≤ m :=
   mod_cast
     (hundred_div_ε_pow_five_le_m hPα hPε).trans'
-      (le_div_self (by norm_num) (by sz_positivity) <| pow_le_one₀ (by sz_positivity) hε)
+      (le_div_self (by simp) (by sz_positivity) <| pow_le_one₀ (by sz_positivity) hε)
 
 theorem a_add_one_le_four_pow_parts_card : a + 1 ≤ 4 ^ #P.parts := by
-  have h : 1 ≤ 4 ^ #P.parts := one_le_pow₀ (by norm_num)
+  have h : 1 ≤ 4 ^ #P.parts := one_le_pow₀ (by simp)
   rw [stepBound, ← Nat.div_div_eq_div_mul]
   conv_rhs => rw [← Nat.sub_add_cancel h]
   rw [add_le_add_iff_right, tsub_le_iff_left, ← Nat.add_sub_assoc h]
@@ -177,8 +176,8 @@ theorem hundred_lt_pow_initialBound_mul {ε : ℝ} (hε : 0 < ε) (l : ℕ) :
     div_lt_iff₀, initialBound, Nat.cast_max, Nat.cast_max]
   · push_cast
     exact lt_max_of_lt_right (lt_max_of_lt_right <| Nat.lt_floor_add_one _)
-  · exact log_pos (by norm_num)
-  · exact div_pos (by norm_num) (pow_pos hε 5)
+  · exact log_pos (by simp)
+  · exact div_pos (by simp) (pow_pos hε 5)
 
 /-- An explicit bound on the size of the equipartition whose existence is given by Szemerédi's
 regularity lemma. -/
@@ -198,10 +197,12 @@ theorem bound_pos : 0 < bound ε l :=
 variable {ι 𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {s t : Finset ι} {x : 𝕜}
 
 theorem mul_sq_le_sum_sq (hst : s ⊆ t) (f : ι → 𝕜) (hs : x ^ 2 ≤ ((∑ i ∈ s, f i) / #s) ^ 2)
-    (hs' : (#s : 𝕜) ≠ 0) : (#s : 𝕜) * x ^ 2 ≤ ∑ i ∈ t, f i ^ 2 :=
-  (mul_le_mul_of_nonneg_left (hs.trans sum_div_card_sq_le_sum_sq_div_card) <|
-    Nat.cast_nonneg _).trans <| (mul_div_cancel₀ _ hs').le.trans <|
-      sum_le_sum_of_subset_of_nonneg hst fun _ _ _ => sq_nonneg _
+    (hs' : (#s : 𝕜) ≠ 0) : (#s : 𝕜) * x ^ 2 ≤ ∑ i ∈ t, f i ^ 2 := calc
+  _ ≤ (#s : 𝕜) * ((∑ i ∈ s, f i ^ 2) / #s) := by
+    gcongr
+    exact hs.trans sum_div_card_sq_le_sum_sq_div_card
+  _ = ∑ i ∈ s, f i ^ 2 := mul_div_cancel₀ _ hs'
+  _ ≤ ∑ i ∈ t, f i ^ 2 := by gcongr
 
 theorem add_div_le_sum_sq_div_card (hst : s ⊆ t) (f : ι → 𝕜) (d : 𝕜) (hx : 0 ≤ x)
     (hs : x ≤ |(∑ i ∈ s, f i) / #s - (∑ i ∈ t, f i) / #t|) (ht : d ≤ ((∑ i ∈ t, f i) / #t) ^ 2) :
@@ -214,21 +215,15 @@ theorem add_div_le_sum_sq_div_card (hst : s ⊆ t) (f : ι → 𝕜) (d : 𝕜) 
   have h₂ : x ^ 2 ≤ ((∑ i ∈ s, (f i - (∑ j ∈ t, f j) / #t)) / #s) ^ 2 := by
     apply h₁.trans
     rw [sum_sub_distrib, sum_const, nsmul_eq_mul, sub_div, mul_div_cancel_left₀ _ hscard.ne']
-  apply (add_le_add_right ht _).trans
+  grw [ht]
   rw [← mul_div_right_comm, le_div_iff₀ htcard, add_mul, div_mul_cancel₀ _ htcard.ne']
   have h₃ := mul_sq_le_sum_sq hst (fun i => (f i - (∑ j ∈ t, f j) / #t)) h₂ hscard.ne'
-  apply (add_le_add_left h₃ _).trans
-  -- Porting note: was
-  -- simp [← mul_div_right_comm _ (#t : 𝕜), sub_div' _ _ _ htcard.ne', ← sum_div, ← add_div,
-  --   mul_pow, div_le_iff₀ (sq_pos_of_ne_zero htcard.ne'), sub_sq, sum_add_distrib, ← sum_mul,
-  --   ← mul_sum]
-  simp_rw [sub_div' htcard.ne']
-  conv_lhs => enter [2, 2, x]; rw [div_pow]
-  rw [div_pow, ← sum_div, ← mul_div_right_comm _ (#t : 𝕜), ← add_div,
-    div_le_iff₀ (sq_pos_of_ne_zero htcard.ne')]
-  simp_rw [sub_sq, sum_add_distrib, sum_const, nsmul_eq_mul, sum_sub_distrib, mul_pow, ← sum_mul,
-    ← mul_sum, ← sum_mul]
-  ring_nf; rfl
+  grw [h₃]
+  simp only [sub_div' htcard.ne', div_pow, ← sum_div, ← mul_div_right_comm _ (#t : 𝕜), ← add_div,
+    div_le_iff₀ (sq_pos_of_ne_zero htcard.ne'), sub_sq, sum_add_distrib, sum_const,
+    sum_sub_distrib, mul_pow, ← sum_mul, nsmul_eq_mul, two_mul]
+  ring_nf
+  rfl
 
 end SzemerediRegularity
 

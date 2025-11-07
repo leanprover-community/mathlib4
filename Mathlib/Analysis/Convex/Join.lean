@@ -86,6 +86,7 @@ theorem convexJoin_iUnion_right (s : Set E) (t : ι → Set E) :
 theorem segment_subset_convexJoin (hx : x ∈ s) (hy : y ∈ t) : segment 𝕜 x y ⊆ convexJoin 𝕜 s t :=
   subset_iUnion₂_of_subset x hx <| subset_iUnion₂ (s := fun y _ ↦ segment 𝕜 x y) y hy
 
+section
 variable [IsOrderedRing 𝕜]
 
 theorem subset_convexJoin_left (h : t.Nonempty) : s ⊆ convexJoin 𝕜 s t := fun _x hx =>
@@ -94,6 +95,8 @@ theorem subset_convexJoin_left (h : t.Nonempty) : s ⊆ convexJoin 𝕜 s t := f
 
 theorem subset_convexJoin_right (h : s.Nonempty) : t ⊆ convexJoin 𝕜 s t :=
   convexJoin_comm (𝕜 := 𝕜) t s ▸ subset_convexJoin_left h
+
+end
 
 theorem convexJoin_subset (hs : s ⊆ u) (ht : t ⊆ u) (hu : Convex 𝕜 u) : convexJoin 𝕜 s t ⊆ u :=
   iUnion₂_subset fun _x hx => iUnion₂_subset fun _y hy => hu.segment_subset (hs hx) (ht hy)
@@ -119,10 +122,10 @@ theorem convexJoin_assoc_aux (s t u : Set E) :
     linear_combination (norm := module) -hab₂ • (a₁ • x + b₁ • y)
   refine
     ⟨x, hx, (a₂ * b₁ / (a₂ * b₁ + b₂)) • y + (b₂ / (a₂ * b₁ + b₂)) • z,
-      ⟨y, hy, z, hz, _, _, by positivity, by positivity, by field_simp, rfl⟩,
+      ⟨y, hy, z, hz, _, _, by positivity, by positivity, by field, rfl⟩,
       a₂ * a₁, a₂ * b₁ + b₂, by positivity, by positivity, ?_, ?_⟩
   · linear_combination a₂ * hab₁ + hab₂
-  · match_scalars <;> field_simp
+  · match_scalars <;> field
 
 theorem convexJoin_assoc (s t u : Set E) :
     convexJoin 𝕜 (convexJoin 𝕜 s t) u = convexJoin 𝕜 s (convexJoin 𝕜 t u) := by

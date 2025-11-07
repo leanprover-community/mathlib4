@@ -93,7 +93,7 @@ theorem coprime_of_minimal {a b c : ℤ} (h : Minimal a b c) : IsCoprime a b := 
   have hf : Fermat42 a1 b1 c1 :=
     (Fermat42.mul (Int.natCast_ne_zero.mpr (Nat.Prime.ne_zero hp))).mpr h.1
   apply Nat.le_lt_asymm (h.2 _ _ _ hf)
-  rw [Int.natAbs_mul, lt_mul_iff_one_lt_left, Int.natAbs_pow, Int.natAbs_ofNat]
+  rw [Int.natAbs_mul, lt_mul_iff_one_lt_left, Int.natAbs_pow, Int.natAbs_natCast]
   · exact Nat.one_lt_pow two_ne_zero (Nat.Prime.one_lt hp)
   · exact Nat.pos_of_ne_zero (Int.natAbs_ne_zero.2 (ne_zero hf))
 
@@ -118,7 +118,7 @@ theorem exists_odd_minimal {a b c : ℤ} (h : Fermat42 a b c) :
   · rcases Int.emod_two_eq_zero_or_one b0 with hbp | hbp
     · exfalso
       have h1 : 2 ∣ (Int.gcd a0 b0 : ℤ) :=
-        Int.dvd_gcd (Int.dvd_of_emod_eq_zero hap) (Int.dvd_of_emod_eq_zero hbp)
+        Int.dvd_coe_gcd (Int.dvd_of_emod_eq_zero hap) (Int.dvd_of_emod_eq_zero hbp)
       rw [Int.isCoprime_iff_gcd_eq_one.mp (coprime_of_minimal hf)] at h1
       revert h1
       decide
@@ -143,14 +143,10 @@ theorem Int.isCoprime_of_sq_sum {r s : ℤ} (h2 : IsCoprime s r) : IsCoprime (r 
   rw [sq, sq]
   exact (IsCoprime.mul_left h2 h2).mul_add_left_left r
 
-@[deprecated (since := "2025-01-23")] alias Int.coprime_of_sq_sum := Int.isCoprime_of_sq_sum
-
 theorem Int.isCoprime_of_sq_sum' {r s : ℤ} (h : IsCoprime r s) :
     IsCoprime (r ^ 2 + s ^ 2) (r * s) := by
   apply IsCoprime.mul_right (Int.isCoprime_of_sq_sum (isCoprime_comm.mp h))
   rw [add_comm]; apply Int.isCoprime_of_sq_sum h
-
-@[deprecated (since := "2025-01-23")] alias Int.coprime_of_sq_sum' := Int.isCoprime_of_sq_sum'
 
 namespace Fermat42
 
@@ -185,13 +181,11 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
     rw [← sq, ht1, (by ring : m ^ 2 - n ^ 2 = m ^ 2 + -n * n)]
     exact (Int.isCoprime_iff_gcd_eq_one.mpr ht4).pow_left.add_mul_right_left (-n)
   -- m is positive because b is non-zero and b ^ 2 = 2 * m * n and we already have 0 ≤ m.
-  have hb20 : b ^ 2 ≠ 0 := mt pow_eq_zero h.1.2.1
+  have hb20 : b ^ 2 ≠ 0 := pow_ne_zero _ h.1.2.1
   have h4 : 0 < m := by
     apply lt_of_le_of_ne ht6
     rintro rfl
-    revert hb20
-    rw [ht2]
-    simp
+    omega
   obtain ⟨r, s, _, htt2, htt3, htt4, htt5, htt6⟩ := htt.coprime_classification' h3 ha2 h4
   -- Now use the fact that (b / 2) ^ 2 = m * r * s, and m, r and s are pairwise coprime to obtain
   -- i, j and k such that m = i ^ 2, r = j ^ 2 and s = k ^ 2.
@@ -207,20 +201,10 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
     exact dvd_mul_right 2 (m * n)
   obtain ⟨b', hb2'⟩ := hb2
   have hs : b' ^ 2 = m * (r * s) := by
-    apply (mul_right_inj' (by norm_num : (4 : ℤ) ≠ 0)).mp
+    apply (mul_right_inj' (by simp : (4 : ℤ) ≠ 0)).mp
     linear_combination (-b - 2 * b') * hb2' + ht2 + 2 * m * htt2
-  have hrsz : r * s ≠ 0 := by
-    -- because b ^ 2 is not zero and (b / 2) ^ 2 = m * (r * s)
-    by_contra hrsz
-    revert hb20
-    rw [ht2, htt2, mul_assoc, @mul_assoc _ _ _ r s, hrsz]
-    simp
-  have h2b0 : b' ≠ 0 := by
-    apply ne_zero_pow two_ne_zero
-    rw [hs]
-    apply mul_ne_zero
-    · exact ne_of_gt h4
-    · exact hrsz
+  have hrsz : r * s ≠ 0 := by grind
+  have h2b0 : b' ≠ 0 := by grind
   obtain ⟨i, hi⟩ := Int.sq_of_gcd_eq_one hcp hs.symm
   -- use m is positive to exclude m = - i ^ 2
   have hi' : ¬m = -i ^ 2 := by
@@ -245,43 +229,29 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   replace hd : r * s = d ^ 2 := Or.resolve_right hd hd'
   -- r = +/- j ^ 2
   obtain ⟨j, hj⟩ := Int.sq_of_gcd_eq_one htt4 hd
-  have hj0 : j ≠ 0 := by
-    intro h0
-    rw [h0, zero_pow two_ne_zero, neg_zero, or_self_iff] at hj
-    apply left_ne_zero_of_mul hrsz hj
+  have hj0 : j ≠ 0 := by grind
   rw [mul_comm] at hd
   rw [Int.gcd_comm] at htt4
   -- s = +/- k ^ 2
   obtain ⟨k, hk⟩ := Int.sq_of_gcd_eq_one htt4 hd
-  have hk0 : k ≠ 0 := by
-    intro h0
-    rw [h0, zero_pow two_ne_zero, neg_zero, or_self_iff] at hk
-    apply right_ne_zero_of_mul hrsz hk
-  have hj2 : r ^ 2 = j ^ 4 := by
-    rcases hj with hjp | hjp <;>
-      · rw [hjp]
-        ring
-  have hk2 : s ^ 2 = k ^ 4 := by
-    rcases hk with hkp | hkp <;>
-      · rw [hkp]
-        ring
+  have hk0 : k ≠ 0 := by grind
+  have hj2 : r ^ 2 = j ^ 4 := by grind
+  have hk2 : s ^ 2 = k ^ 4 := by grind
   -- from m = r ^ 2 + s ^ 2 we now get a new solution to a ^ 4 + b ^ 4 = c ^ 2:
-  have hh : i ^ 2 = j ^ 4 + k ^ 4 := by rw [← hi, htt3, hj2, hk2]
-  have hn : n ≠ 0 := by
-    rw [ht2] at hb20
-    apply right_ne_zero_of_mul hb20
+  have hh : i ^ 2 = j ^ 4 + k ^ 4 := by grind
+  have hn : n ≠ 0 := by grind
   -- and it has a smaller c: from c = m ^ 2 + n ^ 2 we see that m is smaller than c, and i ^ 2 = m.
   have hic : Int.natAbs i < Int.natAbs c := by
     apply Int.ofNat_lt.mp
     rw [← Int.eq_natAbs_of_nonneg (le_of_lt hc)]
-    apply gt_of_gt_of_ge _ (Int.natAbs_le_self_sq i)
+    apply lt_of_le_of_lt (Int.natAbs_le_self_sq i)
     rw [← hi, ht3]
-    apply gt_of_gt_of_ge _ (Int.le_self_sq m)
+    apply lt_of_le_of_lt (Int.le_self_sq m)
     exact lt_add_of_pos_right (m ^ 2) (sq_pos_of_ne_zero hn)
   have hic' : Int.natAbs c ≤ Int.natAbs i := by
     apply h.2 j k i
     exact ⟨hj0, hk0, hh.symm⟩
-  apply absurd (not_le_of_lt hic) (not_not.mpr hic')
+  apply absurd (not_le_of_gt hic) (not_not.mpr hic')
 
 end Fermat42
 
@@ -307,7 +277,7 @@ To prove Fermat's Last Theorem, it suffices to prove it for odd prime exponents.
 theorem FermatLastTheorem.of_odd_primes
     (hprimes : ∀ p : ℕ, Nat.Prime p → Odd p → FermatLastTheoremFor p) : FermatLastTheorem := by
   intro n h
-  obtain hdvd|⟨p, hpprime, hdvd, hpodd⟩ := Nat.four_dvd_or_exists_odd_prime_and_dvd_of_two_lt h <;>
-    apply FermatLastTheoremWith.mono hdvd
+  obtain hdvd | ⟨p, hpprime, hdvd, hpodd⟩ := Nat.four_dvd_or_exists_odd_prime_and_dvd_of_two_lt h
+    <;> apply FermatLastTheoremWith.mono hdvd
   · exact fermatLastTheoremFour
   · exact hprimes p hpprime hpodd

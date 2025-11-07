@@ -20,10 +20,14 @@ universe u v
 
 variable {α β : Type*}
 
-open Finset Function
+open Finset
 
 instance {α : Type*} [Fintype α] : Fintype (Option α) :=
   ⟨Finset.insertNone univ, fun a => by simp⟩
+
+instance {α : Type*} [Finite α] : Finite (Option α) :=
+  have := Fintype.ofFinite α
+  Finite.of_fintype _
 
 theorem univ_option (α : Type*) [Fintype α] : (univ : Finset (Option α)) = insertNone univ :=
   rfl

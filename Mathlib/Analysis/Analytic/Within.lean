@@ -9,7 +9,7 @@ import Mathlib.Analysis.Analytic.ChangeOrigin
 /-!
 # Properties of analyticity restricted to a set
 
-From `Mathlib.Analysis.Analytic.Basic`, we have the definitions
+From `Mathlib/Analysis/Analytic/Basic.lean`, we have the definitions
 
 1. `AnalyticWithinAt 𝕜 f s x` means a power series at `x` converges to `f` on `𝓝[insert x s] x`.
 2. `AnalyticOn 𝕜 f s t` means `∀ x ∈ t, AnalyticWithinAt 𝕜 f s x`.

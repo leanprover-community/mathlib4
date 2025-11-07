@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Multiset.Bind
 
 /-!
-# The cartesian product of multisets
+# The Cartesian product of multisets
 
 ## Main definitions
 
@@ -47,8 +47,8 @@ theorem cons_ne {a a' : α} {b : δ a} {f : ∀ a ∈ m, δ a} (h' : a' ∈ a ::
   dif_neg h
 
 theorem cons_swap {a a' : α} {b : δ a} {b' : δ a'} {m : Multiset α} {f : ∀ a ∈ m, δ a}
-    (h : a ≠ a') : HEq (Pi.cons (a' ::ₘ m) a b (Pi.cons m a' b' f))
-      (Pi.cons (a ::ₘ m) a' b' (Pi.cons m a b f)) := by
+    (h : a ≠ a') : Pi.cons (a' ::ₘ m) a b (Pi.cons m a' b' f) ≍
+      Pi.cons (a ::ₘ m) a' b' (Pi.cons m a b f) := by
   apply hfunext rfl
   simp only [heq_iff_eq]
   rintro a'' _ rfl
@@ -131,7 +131,7 @@ theorem pi_cons (m : Multiset α) (t : ∀ a, Multiset (β a)) (a : α) :
 
 theorem card_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
     card (pi m t) = prod (m.map fun a => card (t a)) :=
-  Multiset.induction_on m (by simp) (by simp +contextual [mul_comm])
+  Multiset.induction_on m (by simp) (by simp +contextual)
 
 protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (β a)} :
     Nodup s → (∀ a ∈ s, Nodup (t a)) → Nodup (pi s t) :=
@@ -151,13 +151,14 @@ protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (β a)} :
             by rw [eq]
           neb <| show b₁ = b₂ by rwa [Pi.cons_same, Pi.cons_same] at this)
 
-theorem mem_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
-    ∀ f : ∀ a ∈ m, β a, f ∈ pi m t ↔ ∀ (a) (h : a ∈ m), f a h ∈ t a := by
-  intro f
-  induction' m using Multiset.induction_on with a m ih
-  · have : f = Pi.empty β := funext (fun _ => funext fun h => (not_mem_zero _ h).elim)
+theorem mem_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) (f : ∀ a ∈ m, β a) :
+    f ∈ pi m t ↔ ∀ (a) (h : a ∈ m), f a h ∈ t a := by
+  induction m using Multiset.induction_on with
+  | empty =>
+    have : f = Pi.empty β := funext (fun _ => funext fun h => (notMem_zero _ h).elim)
     simp only [this, pi_zero, mem_singleton, true_iff]
-    intro _ h; exact (not_mem_zero _ h).elim
+    intro _ h; exact (notMem_zero _ h).elim
+  | cons a m ih => ?_
   simp_rw [pi_cons, mem_bind, mem_map, ih]
   constructor
   · rintro ⟨b, hb, f', hf', rfl⟩ a' ha'

@@ -33,7 +33,7 @@ considered as a submodule of `M`.
 
 This is the first submodule appearing in Goursat's lemma. See `Subgroup.goursat`. -/
 def goursatFst : Submodule R M :=
-  ((LinearMap.snd R M N).comp L.subtype).ker.map ((LinearMap.fst R M N).comp L.subtype)
+  (LinearMap.ker <| (LinearMap.snd R M N).comp L.subtype).map ((LinearMap.fst R M N).comp L.subtype)
 
 
 variable (L) in
@@ -42,7 +42,7 @@ considered as a subgroup of `N`.
 
 This is the second subgroup appearing in Goursat's lemma. See `Subgroup.goursat`. -/
 def goursatSnd : Submodule R N :=
-  ((LinearMap.fst R M N).comp L.subtype).ker.map ((LinearMap.snd R M N).comp L.subtype)
+  (LinearMap.ker <| (LinearMap.fst R M N).comp L.subtype).map ((LinearMap.snd R M N).comp L.subtype)
 
 lemma goursatFst_toAddSubgroup :
     (goursatFst L).toAddSubgroup = L.toAddSubgroup.goursatFst := by
@@ -74,7 +74,7 @@ lemma goursat_surjective : ∃ e : (M ⧸ L.goursatFst) ≃ₗ[R] N ⧸ L.goursa
     L.toAddSubgroup.goursat_surjective hL₁ hL₂
   -- check R-linearity of the map
   have (r : R) (x : M ⧸ L.goursatFst) : e (r • x) = r • e x := by
-    show (r • x, r • e x) ∈ e.toAddMonoidHom.graph
+    change (r • x, r • e x) ∈ e.toAddMonoidHom.graph
     rw [← he, ← Prod.smul_mk]
     have : (x, e x) ∈ e.toAddMonoidHom.graph := rfl
     rw [← he, AddMonoidHom.mem_range] at this

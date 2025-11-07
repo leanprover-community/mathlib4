@@ -142,8 +142,8 @@ instance graph.instDecidableRelAdj : DecidableRel (graph t).Adj
 
 /-- This lemma reorders the elements of a triangle in the tripartite graph. It turns a triangle
 `{x, y, z}` into a triangle `{a, b, c}` where `a : α `, `b : β`, `c : γ`. -/
- lemma graph_triple ⦃x y z⦄ :
-  (graph t).Adj x y → (graph t).Adj x z → (graph t).Adj y z → ∃ a b c,
+lemma graph_triple ⦃x y z⦄ :
+    (graph t).Adj x y → (graph t).Adj x z → (graph t).Adj y z → ∃ a b c,
     ({in₀ a, in₁ b, in₂ c} : Finset (α ⊕ β ⊕ γ)) = {x, y, z} ∧ (graph t).Adj (in₀ a) (in₁ b) ∧
       (graph t).Adj (in₀ a) (in₂ c) ∧ (graph t).Adj (in₁ b) (in₂ c) := by
   rintro (_ | _ | _) (_ | _ | _) (_ | _ | _) <;>
@@ -193,8 +193,8 @@ lemma map_toTriangle_disjoint [ExplicitDisjoint t] :
   have := ne_of_apply_ne _ h'
   simp only [Ne, Prod.mk_inj, not_and] at this
   simp only [toTriangle_apply, in₀, in₁, in₂, Set.mem_inter_iff, mem_insert, mem_singleton,
-    mem_coe, and_imp, Sum.forall, or_false, forall_eq, false_or, eq_self_iff_true, imp_true_iff,
-    true_and, and_true, Set.Subsingleton]
+    mem_coe, and_imp, Sum.forall,
+    Set.Subsingleton]
   suffices ¬ (a = x ∧ b = y) ∧ ¬ (a = x ∧ c = z) ∧ ¬ (b = y ∧ c = z) by aesop
   refine ⟨?_, ?_, ?_⟩
   · rintro ⟨rfl, rfl⟩
