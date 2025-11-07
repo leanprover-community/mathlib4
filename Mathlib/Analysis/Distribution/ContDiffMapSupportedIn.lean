@@ -299,7 +299,7 @@ lemma iteratedFDerivWithOrder_add (i : ℕ) {f g : 𝓓^{n}_{K}(E, F)} :
     (f + g).iteratedFDerivWithOrder i = f.iteratedFDerivWithOrder i + g.iteratedFDerivWithOrder i
   := by
   ext : 1
-  simp only [iteratedFDerivWithOrder_apply, add_apply]
+  simp only [iteratedFDerivWithOrder_apply, coe_add, Pi.add_apply]
   split_ifs with hin
   · refine iteratedFDeriv_add_apply (ContDiff.contDiffAt ?_) (ContDiff.contDiffAt ?_)
     · exact f.contDiff.of_le (by exact_mod_cast hin)
@@ -309,7 +309,7 @@ lemma iteratedFDerivWithOrder_add (i : ℕ) {f g : 𝓓^{n}_{K}(E, F)} :
 lemma iteratedFDerivWithOrder_smul (i : ℕ) {c : 𝕜} {f : 𝓓^{n}_{K}(E, F)} :
     (c • f).iteratedFDerivWithOrder i = c • f.iteratedFDerivWithOrder i := by
   ext : 1
-  simp only [iteratedFDerivWithOrder_apply, smul_apply]
+  simp only [iteratedFDerivWithOrder_apply, coe_smul, Pi.smul_apply]
   split_ifs with hin
   · apply iteratedFDeriv_const_smul_apply
     refine ContDiff.contDiffAt <| f.contDiff.of_le (by exact_mod_cast hin)
