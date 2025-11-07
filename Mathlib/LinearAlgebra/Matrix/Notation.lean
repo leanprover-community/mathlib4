@@ -373,7 +373,7 @@ variable [NonUnitalNonAssocSemiring α]
 theorem smul_mat_empty {m' : Type*} (x : α) (A : Fin 0 → m' → α) : x • A = ![] :=
   empty_eq _
 
-@[deprecated (since := "2025-10-06")] alias smul_mat_cons := smul_cons
+@[deprecated (since := "2025-11-07")] alias smul_mat_cons := smul_cons
 
 end SMul
 
