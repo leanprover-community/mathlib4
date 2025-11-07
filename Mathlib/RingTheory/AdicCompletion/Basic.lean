@@ -630,7 +630,7 @@ theorem of_lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule
 @[simp]
 theorem of_comp_lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
     (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) :
-    (of I N) ∘ₗ (lift I f h) = AdicCompletion.lift I f h := by
+    of I N ∘ₗ lift I f h = AdicCompletion.lift I f h := by
   ext1; simp
 
 /--
@@ -640,7 +640,7 @@ projection `N → N ⧸ (I ^ n • ⊤)` is `f n` .
 @[simp]
 theorem mk_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
     (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) (n : ℕ) (x : M) :
-    (Submodule.Quotient.mk (lift I f h x)) = f n x := by
+    Submodule.Quotient.mk (lift I f h x) = f n x := by
   simp only [lift, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
   rw [← mkQ_apply, ← eval_of]
   simp
@@ -652,7 +652,7 @@ projection `N →ₗ[R] N ⧸ (I ^ n • ⊤)` is `f n` .
 @[simp]
 theorem mkQ_comp_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
     (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) (n : ℕ) :
-    (mkQ (I ^ n • ⊤ : Submodule R N)) ∘ₗ (lift I f h) = f n := by
+    mkQ (I ^ n • ⊤ : Submodule R N) ∘ₗ lift I f h = f n := by
   ext; simp
 
 /--
@@ -671,11 +671,11 @@ Then it is the map `IsAdicComplete.lift`.
 -/
 theorem eq_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
     (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) {F : M →ₗ[R] N}
-    (hF : ∀ {m s}, Submodule.Quotient.mk (F s) = f m s) : F = lift I f h := by
+    (hF : ∀ n, mkQ _ ∘ₗ F = f n) : F = lift I f h := by
   ext s
   rw [IsHausdorff.eq_iff_smodEq (I := I)]
   intro n
-  simp [SModEq, hF]
+  simp [SModEq, ← hF n]
 
 end lift
 
@@ -752,12 +752,12 @@ theorem mkQ_comp_lift {n : ℕ} :
   ext; simp
 
 theorem eq_lift {F : M →ₗ[R] N}
-    (hF : ∀ {m s}, Submodule.Quotient.mk (F s) = f m s) : F = lift I ha f hf := by
+    (hF : ∀ n, mkQ _ ∘ₗ F = f n) : F = lift I ha f hf := by
   ext s
   rw [IsHausdorff.eq_iff_smodEq (I := I)]
   intro n
   apply SModEq.mono (smul_mono_left (Ideal.pow_le_pow_right (ha.id_le n)))
-  simp [SModEq, hF, mk_lift I ha f hf]
+  simp [SModEq, ← hF n, mk_lift I ha f hf]
 
 end StrictMono
 
