@@ -85,6 +85,7 @@ def iso {Y X : C} (f : Y ≅ X) : ChosenPullback f.hom where
   mapPullbackAdj.unit.app T := Over.homMk (𝟙 T.left)
   mapPullbackAdj.counit.app U := Over.homMk (𝟙 _)
 
+/-- The chosen pullback functor for the inverse of an isomorphism. -/
 @[simps!]
 def isoInv {Y X : C} (f : Y ≅ X) : ChosenPullback f.inv := iso f.symm
 
