@@ -33,28 +33,30 @@ open CategoryTheory Monoidal Sheaf MonoidalCategory MonoidalClosed MonoidalClose
 
 namespace LightCondensed
 
-attribute [local instance] monoidalCategory symmetricCategory
-
-variable (R : Type (u + 1)) [CommRing R]
-
 variable (R : Type u) [CommRing R]
 
+instance : (coherentTopology LightProfinite.{u}).W (A := ModuleCat.{u} R) |>.IsMonoidal :=
+  isMonoidal_transport _ _
+    ((equivSmallModel.{u} LightProfinite.{u}).inverse.inducedTopology
+      (coherentTopology LightProfinite.{u}))
+    (equivSmallModel.{u} LightProfinite.{u}).inverse
+
 instance : MonoidalCategory (LightCondMod.{u} R) :=
-  inferInstanceAs (MonoidalCategory (Transported (equivSmall (ModuleCat R)).symm))
+  monoidalCategory _ _
+
+instance : MonoidalCategory (Sheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R)) :=
+  inferInstanceAs (MonoidalCategory (LightCondMod _))
 
 instance : SymmetricCategory (LightCondMod.{u} R) :=
-  inferInstanceAs (SymmetricCategory (Transported (equivSmall (ModuleCat R)).symm))
+  symmetricCategory _ _
 
-/--
-The category of sheaves on a small site that is equivalent to light condensed modules is monoidal
-closed.
--/
-local instance : MonoidalClosed
-    (Sheaf ((equivSmallModel.{u} LightProfinite.{u}).inverse.inducedTopology
-      (coherentTopology LightProfinite.{u})) (ModuleCat R)) :=
+instance : MonoidalClosed (LightProfinite.{u}ᵒᵖ ⥤ ModuleCat.{u} R) :=
+  .ofEquiv _ (equivSmallModel LightProfinite).op.congrLeft.toAdjunction
+
+instance : MonoidalClosed (Sheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R)) :=
   Reflective.monoidalClosed (sheafificationAdjunction _ _)
 
 instance : MonoidalClosed (LightCondMod.{u} R) :=
-  inferInstanceAs (MonoidalClosed (Transported (equivSmall (ModuleCat R)).symm))
+  inferInstanceAs (MonoidalClosed (Sheaf _ _))
 
 end LightCondensed

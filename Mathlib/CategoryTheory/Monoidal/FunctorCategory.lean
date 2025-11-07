@@ -215,4 +215,27 @@ instance (E : Type*) [Category E] [MonoidalCategory E] (F : C ⥤ D) :
   εIso := Iso.refl _
   μIso _ _ := Iso.refl _ }
 
+instance (E : Type*) [Category E] [MonoidalCategory E] (e : C ≌ D) :
+    (e.congrLeft (E := E)).functor.Monoidal :=
+  inferInstanceAs ((Functor.whiskeringLeft _ _ E).obj e.inverse).Monoidal
+
+instance (E : Type*) [Category E] [MonoidalCategory E] (e : C ≌ D) :
+    (e.congrLeft (E := E)).inverse.Monoidal :=
+  inferInstanceAs ((Functor.whiskeringLeft _ _ E).obj e.functor).Monoidal
+
+-- TODO: improve automation here by adding `@[simps!]` to the instance
+-- making whiskeringLeft monoidal, after the renaming PR #31346 is merged
+instance (E : Type*) [Category E] [MonoidalCategory E] (e : C ≌ D) :
+    (e.congrLeft (E := E)).IsMonoidal where
+  leftAdjoint_ε := by
+    ext
+    rw [Adjunction.homEquiv_apply]
+    simp [Equivalence.congrLeft]
+    rfl
+  leftAdjoint_μ X Y := by
+    ext
+    rw [Adjunction.homEquiv_apply]
+    change 𝟙 _ = _ ≫ (𝟙 _) ≫ _
+    simp [Equivalence.congrLeft, ← Functor.map_comp]
+
 end CategoryTheory.Monoidal
