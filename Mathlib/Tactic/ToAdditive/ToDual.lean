@@ -9,7 +9,7 @@ import Mathlib.Tactic.ToAdditive.Frontend
 # The `@[to_dual]` attribute.
 
 The implementation of the `to_dual` attribute is in `Tactic.ToAdditive.Frontend`.
-See the docstring of `ToAdditive.to_additive` for more information.
+See the docstring of `ToDual.to_dual` for more information.
 
 -/
 
@@ -17,13 +17,13 @@ open Lean Meta Elab Command Std ToAdditive
 
 namespace ToDual
 
-/-- See the docstring of `to_addditive_ignore_args` for details about `to_dual_ignore_args`. -/
+@[inherit_doc to_additive_ignore_args]
 syntax (name := to_dual_ignore_args) "to_dual_ignore_args" (ppSpace num)* : attr
 
-/-- See the docstring of `to_additive_relevant_arg` for details about `to_dual_relevant_arg`. -/
+@[inherit_doc to_additive_relevant_arg]
 syntax (name := to_dual_relevant_arg) "to_dual_relevant_arg " num : attr
 
-/-- See the docstring of `to_additive_dont_translate` for details about `to_dual_dont_translate`. -/
+@[inherit_doc to_additive_dont_translate]
 syntax (name := to_dual_dont_translate) "to_dual_dont_translate" : attr
 
 /-- The attribute `to_dual` can be used to automatically transport theorems

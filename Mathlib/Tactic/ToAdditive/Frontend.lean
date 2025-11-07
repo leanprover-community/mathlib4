@@ -108,7 +108,7 @@ we can choose to only additivize `α` by writing `to_additive (dont_translate :=
 syntax toAdditiveDontTranslateOption := &"dont_translate" " := " ident+
 syntax toAdditiveOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption <|>
   toAdditiveRelevantOption <|> toAdditiveDontTranslateOption ")"
-/-- A hint for where to find the tranlated declaration (`existing` or `self`) -/
+/-- A hint for where to find the translated declaration (`existing` or `self`) -/
 syntax toAdditiveNameHint := (ppSpace (&"existing" <|> &"self"))?
 syntax toAdditiveRest :=
   toAdditiveNameHint (ppSpace toAdditiveOption)* (ppSpace ident)? (ppSpace (str <|> docComment))?
@@ -380,8 +380,8 @@ initialize changeNumeralAttr : NameMapExtension (List Nat) ←
 attributes, such as `to_dual`. -/
 structure BundledExts : Type where
   ignoreArgsAttr : NameMapExtension (List Nat)
-  /-- `reorderAttr` stores the declarations that need their arguments reordered when tranlating.
-  This is speicified using the `(reorder := ...)` syntax. -/
+  /-- `reorderAttr` stores the declarations that need their arguments reordered when translating.
+  This is specified using the `(reorder := ...)` syntax. -/
   reorderAttr : NameMapExtension (List <| List Nat)
   relevantArgAttr : NameMapExtension Nat
   dontTranslateAttr : NameMapExtension Unit
