@@ -61,10 +61,10 @@ def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.sy
   map_one_left x := by
     simp only [reflTransSymmAux, Path.trans]
     cases le_or_gt (x : ℝ) 2⁻¹ with
-    | inl hx => simp [hx, ← extend_extends]
+    | inl hx => simp [hx, ← extend_apply]
     | inr hx =>
       have : p.extend (2 - 2 * ↑x) = p.extend (1 - (2 * ↑x - 1)) := by ring_nf
-      simpa [hx.not_ge, ← extend_extends]
+      simpa [hx.not_ge, ← extend_apply]
   prop' t := by norm_num [reflTransSymmAux]
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₁` to

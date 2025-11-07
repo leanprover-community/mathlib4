@@ -164,7 +164,7 @@ theorem hcomp_apply (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (x : I × 
       else
         G.eval x.1
           ⟨2 * x.2 - 1, unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, x.2.2.2⟩⟩ :=
-  show ite _ _ _ = _ by split_ifs <;> exact Path.extend_extends _ _
+  show ite _ _ _ = _ by split_ifs <;> exact Path.extend_apply _ _
 
 theorem hcomp_half (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (t : I) :
     F.hcomp G (t, ⟨1 / 2, by norm_num, by norm_num⟩) = x₁ :=
