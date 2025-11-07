@@ -68,15 +68,15 @@ noncomputable def colimitHomIsoLimitYoneda
 @[reassoc (attr := simp)]
 lemma colimitHomIsoLimitYoneda_hom_comp_π [HasLimitsOfShape Iᵒᵖ (Type u₂)] (A : C) (i : I) :
     (colimitHomIsoLimitYoneda F A).hom ≫ limit.π (F.op ⋙ yoneda.obj A) ⟨i⟩ =
-      (coyoneda.map (colimit.ι F i).op).app A := by
+      (yoneda.obj A).map (colimit.ι F i).op := by
   simp only [colimitHomIsoLimitYoneda, Iso.trans_hom, Iso.app_hom, Category.assoc]
   erw [limitObjIsoLimitCompEvaluation_hom_π]
   change ((coyonedaOpColimitIsoLimitCoyoneda F).hom ≫ _).app A = _
-  rw [coyonedaOpColimitIsoLimitCoyoneda_hom_comp_π]
+  rw [coyonedaOpColimitIsoLimitCoyoneda_hom_comp_π, Functor.flip_map_app]
 
 @[reassoc (attr := simp)]
 lemma colimitHomIsoLimitYoneda_inv_comp_π [HasLimitsOfShape Iᵒᵖ (Type u₂)] (A : C) (i : I) :
-    (colimitHomIsoLimitYoneda F A).inv ≫ (coyoneda.map (colimit.ι F i).op).app A =
+    (colimitHomIsoLimitYoneda F A).inv ≫ (yoneda.obj A).map (colimit.ι F i).op =
       limit.π (F.op ⋙ yoneda.obj A) ⟨i⟩ := by
   rw [← colimitHomIsoLimitYoneda_hom_comp_π, ← Category.assoc,
     Iso.inv_hom_id, Category.id_comp]
@@ -115,16 +115,16 @@ noncomputable def colimitHomIsoLimitYoneda' [HasLimitsOfShape I (Type u₂)] (A 
 @[reassoc (attr := simp)]
 lemma colimitHomIsoLimitYoneda'_hom_comp_π [HasLimitsOfShape I (Type u₂)] (A : C) (i : I) :
     (colimitHomIsoLimitYoneda' F A).hom ≫ limit.π (F.rightOp ⋙ yoneda.obj A) i =
-      (coyoneda.map (colimit.ι F ⟨i⟩).op).app A := by
+      (yoneda.obj A).map (colimit.ι F ⟨i⟩).op := by
   simp only [colimitHomIsoLimitYoneda', Iso.trans_hom,
     Iso.app_hom, Category.assoc]
   erw [limitObjIsoLimitCompEvaluation_hom_π]
   change ((coyonedaOpColimitIsoLimitCoyoneda' F).hom ≫ _).app A = _
-  rw [coyonedaOpColimitIsoLimitCoyoneda'_hom_comp_π]
+  rw [coyonedaOpColimitIsoLimitCoyoneda'_hom_comp_π, Functor.flip_map_app]
 
 @[reassoc (attr := simp)]
 lemma colimitHomIsoLimitYoneda'_inv_comp_π [HasLimitsOfShape I (Type u₂)] (A : C) (i : I) :
-    (colimitHomIsoLimitYoneda' F A).inv ≫ (coyoneda.map (colimit.ι F ⟨i⟩).op).app A =
+    (colimitHomIsoLimitYoneda' F A).inv ≫ (yoneda.obj A).map (colimit.ι F ⟨i⟩).op =
       limit.π (F.rightOp ⋙ yoneda.obj A) i := by
   rw [← colimitHomIsoLimitYoneda'_hom_comp_π, ← Category.assoc,
     Iso.inv_hom_id, Category.id_comp]

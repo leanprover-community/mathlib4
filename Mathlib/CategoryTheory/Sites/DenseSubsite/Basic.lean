@@ -389,7 +389,7 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
   · exact (pushforwardFamily_compatible _ _)
   intro Y f hf
   conv_lhs => rw [← hf.some.fac]
-  simp only [pushforwardFamily, Functor.comp_map, yoneda_map_app, coyoneda_obj_map, op_comp,
+  simp only [pushforwardFamily, Functor.comp_map, yoneda_map_app, flip_obj_map, op_comp,
     FunctorToTypes.map_comp_apply, homOver_app]
   congr 1
   simp only [Category.assoc]
