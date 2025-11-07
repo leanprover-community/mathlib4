@@ -180,6 +180,12 @@ theorem mem_acceptsFrom {S : Set σ} {x : List α} :
   rfl
 
 variable (M) in
+theorem mem_acceptsFrom_iff_exists {S : Set σ} {x : List α} :
+    x ∈ M.acceptsFrom S ↔ ∃ s ∈ S, x ∈ M.acceptsFrom {s} := by
+  simp [mem_acceptsFrom, mem_evalFrom_iff_exists (S:=S) (x:=x)]
+  tauto
+
+variable (M) in
 @[simp]
 theorem nil_mem_acceptsFrom {S : Set σ} : [] ∈ M.acceptsFrom S ↔ ∃ s ∈ S, s ∈ M.accept := by
   simp only [mem_acceptsFrom, evalFrom_nil]; tauto
@@ -526,52 +532,75 @@ theorem stepSet_kstar {S : Set σ} {a : α} :
   --   · rintro
   --     sorry
 
-#loogle _ :: _, List.flatten
+#check Function.Injective.mem_set_image
+
+theorem flatten_mem_acceptsFrom {S : Set σ} {L : List (List α)} :
+    S.Nonempty →
+    S ⊆ M.accept →
+    List.Forall (· ∈ M.accepts) L →
+    L.flatten ∈ M.kstar.acceptsFrom (some '' S) := by
+  intro hnon hS hL
+  induction L generalizing S with
+  | nil =>
+    obtain ⟨s, h⟩ := Set.nonempty_def.mp hnon
+    simp
+    tauto
+  | cons z L ih =>
+    simp at hL
+    obtain ⟨hz, hL⟩ := hL
+    simp
+    rw [accepts_acceptsFrom, mem_acceptsFrom] at hz
+    rw [mem_acceptsFrom_iff_exists]
+    sorry
 
 -- Proof idea from Mathlib#15651 by Tom Kranz
 theorem barf_kstar {S : Set σ} {x : List α} :
     x ∈ M.kstar.acceptsFrom (some '' S) ↔
     ∃ (y : List α) (L : List (List α)),
     x = y ++ L.flatten ∧ y ∈ M.acceptsFrom S ∧ ∀ z ∈ L, z ∈ M.accepts := by
-  induction x generalizing S with
-  | nil =>
-    simp
-    constructor
-    · rintro ⟨s, hs⟩
+  constructor
+  · induction x generalizing S with
+    | nil =>
+      simp
+      rintro s hs haccept
       exists []
       tauto
-    · tauto
-  | cons a x ih =>
-    simp [stepSet, kstarStates, Set.image_union, max, SemilatticeSup.sup, Set.image_iUnion₂]
-    rw [Set.mem_iUnion₂]
-    simp [Set.mem_union, ih]; clear ih
-    constructor
-    · rintro ⟨s, hs, ⟨y, L, rfl, hy, hL⟩ | ⟨⟨s', hs', hacc'⟩, ⟨y, L, rfl, hy, hL⟩⟩⟩
+    | cons a x ih =>
+      simp [stepSet, kstarStates, Set.image_union, max, SemilatticeSup.sup, Set.image_iUnion₂]
+      rw [Set.mem_iUnion₂]
+      simp [Set.mem_union]
+      rintro s hs (hx | ⟨⟨s', hs', haccept'⟩, hx⟩) <;>
+      obtain ⟨y, L, rfl, hy, hL⟩ := ih hx <;> clear ih
       · exists (a :: y), L
-        simp [stepSet]
-        rw [Set.mem_iUnion₂]
+        simp [stepSet] at *
+        simp_rw [↑Set.mem_iUnion₂]
         tauto
       · exists [a], y :: L
         simp [stepSet]
         simp_rw [↑Set.mem_iUnion₂, ↑mem_acceptsFrom_nil]
         tauto
-    · rintro ⟨y, L, heq, hy, hL⟩
-      rw [List.cons_eq_append_iff] at heq
-      rcases heq with (⟨rfl, heq⟩ | ⟨w, rfl, rfl⟩)
-      · simp at hy
-        rcases hy with ⟨s, hs, haccept⟩
-        exists s
-        constructor
-        { assumption }
-        sorry
-      · simp [stepSet] at hy
-        rw [Set.mem_iUnion₂] at hy
-        rcases hy with ⟨s, hs, hw⟩
-        exists s
-        constructor
-        { assumption }
-        left
-        tauto
+  · rintro ⟨y, L, rfl, hy, hL⟩
+    simp
+    induction y generalizing S L with
+    | nil =>
+      simp at *
+      rcases hy with ⟨s, hs, haccept⟩
+      rw [mem_acceptsFrom_iff_exists]
+      exists (some s)
+      rw [Function.Injective.mem_set_image (Option.some_injective _)]
+      constructor
+      { assumption }
+      sorry
+    | cons a y ih =>
+      simp [stepSet, kstarStates, Set.image_union, max, SemilatticeSup.sup, Set.image_iUnion₂] at *
+      rw [Set.mem_iUnion₂] at *
+      simp [Set.mem_union] at *
+      rcases hy with ⟨s, hs, hy⟩
+      exists s
+      constructor
+      { assumption }
+      left
+      tauto
 
 -- trash
 theorem zam_kstar_rev {S : Set σ} {x : List α} :
