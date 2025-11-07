@@ -235,21 +235,17 @@ lemma colimitsOfShape_eq_unop_limitsOfShape :
 lemma limitsOfShape_eq_unop_colimitsOfShape :
     P.limitsOfShape J = (P.op.colimitsOfShape Jᵒᵖ).unop := by
   ext X
-  constructor
-  · rintro ⟨h⟩
-    exact ⟨{
-      diag := h.diag.op
-      ι := NatTrans.op h.π
-      isColimit := isColimitOfUnop h.isLimit
-      prop_diag_obj _ := h.prop_diag_obj _
-    }⟩
-  · rintro ⟨h⟩
-    exact ⟨{
-      diag := h.diag.unop
-      π := NatTrans.unop h.ι
-      isLimit := isLimitOfOp h.isColimit
-      prop_diag_obj _ := h.prop_diag_obj _
-    }⟩
+  refine ⟨fun ⟨h⟩ => ⟨?_⟩, fun ⟨h⟩ => ⟨?_⟩⟩
+  · exact
+      { diag := h.diag.op
+        ι := NatTrans.op h.π
+        isColimit := isColimitOfUnop h.isLimit
+        prop_diag_obj _ := h.prop_diag_obj _ }
+  · exact
+      { diag := h.diag.unop
+        π := NatTrans.unop h.ι
+        isLimit := isLimitOfOp h.isColimit
+        prop_diag_obj _ := h.prop_diag_obj _ }
 
 lemma limitsOfShape_op :
     P.op.limitsOfShape J = (P.colimitsOfShape Jᵒᵖ).op := by
