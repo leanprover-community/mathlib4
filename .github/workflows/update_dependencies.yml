@@ -72,11 +72,18 @@ jobs:
             echo "toolchain_modified=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Check if lake-manifest.json was modified
-        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') && steps.check_toolchain.outputs.toolchain_modified != 'true' }}
+      - name: Check if lake-manifest.json was modified or if no mergeable PR exists
+        # only run if check_toolchain ran and returned "false"
+        if: ${{ steps.check_toolchain.outputs.toolchain_modified == 'false' }}
         id: check_manifest
         run: |
-          if [ -n "${{ steps.get-branch-sha.outputs.sha }}" ]; then
+          if [ "${{ steps.PR.outputs.pr_found }}" != "true" ]; then
+            echo "has_diff=true" >> "${GITHUB_OUTPUT}"
+            echo "PR does not exist, let create-pull-request run"
+          elif [ "${{ contains(steps.PR.outputs.pr_labels, 'merge-conflict') }}" == "true" ]; then
+            echo "has_diff=true" >> "${GITHUB_OUTPUT}"
+            echo "merge-conflict on PR, let create-pull-request run"
+          elif [ -n "${{ steps.get-branch-sha.outputs.sha }}" ]; then
             # Branch exists, compare the file
             if git diff --quiet "origin/$BRANCH_NAME" -- lake-manifest.json; then
               echo "has_diff=false" >> "${GITHUB_OUTPUT}"
@@ -92,13 +99,14 @@ jobs:
           fi
 
       - name: Generate PR title
-        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') && steps.check_manifest.outputs.has_diff == 'true' }}
+        id: pr-title
+        if: ${{ steps.check_manifest.outputs.has_diff == 'true' }}
         run: |
           echo "timestamp=$(date -u +"%Y-%m-%d-%H-%M")" >> "$GITHUB_ENV"
           echo "pr_title=chore: update Mathlib dependencies $(date -u +"%Y-%m-%d")" >> "$GITHUB_ENV"
 
       - name: Create Pull Request
-        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') && steps.check_manifest.outputs.has_diff == 'true' }}
+        if: ${{ steps.pr-title.outcome == 'success' }}
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
           token: "${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}"
@@ -110,6 +118,8 @@ jobs:
           title: "${{ env.pr_title }}"
           body: |
             This PR updates the Mathlib dependencies.
+
+            ---
 
             [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
           labels: "auto-merge-after-CI"
