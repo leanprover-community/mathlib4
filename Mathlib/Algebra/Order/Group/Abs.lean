@@ -185,16 +185,13 @@ theorem mabs_div_le_max_div {a b c : G} (hac : a ≤ b) (hcd : b ≤ c) (d : G) 
     exact le_max_of_le_right <| div_le_div_left' hac _
 
 @[to_additive]
-theorem mabs_mul_three (a b c : G) : |a * b * c|ₘ ≤ |a|ₘ * |b|ₘ * |c|ₘ :=
-  (mabs_mul_le _ _).trans (mul_le_mul_right' (mabs_mul_le _ _) _)
+theorem mabs_mul_three (a b c : G) : |a * b * c|ₘ ≤ |a|ₘ * |b|ₘ * |c|ₘ := by
+  grw [mabs_mul_le, mabs_mul_le]
 
 @[to_additive]
 theorem mabs_div_le_of_le_of_le {a b lb ub : G} (hal : lb ≤ a) (hau : a ≤ ub) (hbl : lb ≤ b)
     (hbu : b ≤ ub) : |a / b|ₘ ≤ ub / lb :=
   mabs_div_le_iff.2 ⟨div_le_div'' hau hbl, div_le_div'' hbu hal⟩
-
-@[deprecated (since := "2025-03-02")]
-alias dist_bdd_within_interval := abs_sub_le_of_le_of_le
 
 @[to_additive]
 theorem eq_of_mabs_div_le_one (h : |a / b|ₘ ≤ 1) : a = b :=
