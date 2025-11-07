@@ -209,7 +209,7 @@ variable {J} in
 lemma isClosedUnderColimitsOfShape_iff_of_equivalence (e : J ≌ J') :
     P.IsClosedUnderColimitsOfShape J ↔
       P.IsClosedUnderColimitsOfShape J' := by
-  simp only [isClosedUnderColimitsOfShape_iff, P.colimitsOfShape_congr e]
+  simp [isClosedUnderColimitsOfShape_iff, P.colimitsOfShape_congr e]
 
 variable {P J} in
 lemma IsClosedUnderColimitsOfShape.of_equivalence (e : J ≌ J')
