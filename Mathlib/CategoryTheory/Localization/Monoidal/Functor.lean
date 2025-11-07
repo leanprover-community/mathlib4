@@ -104,7 +104,7 @@ noncomputable def functorCoreMonoidalOfComp : F.CoreMonoidal := by
       associator_inv_naturality_right_assoc, reassoc_of% e₁, reassoc_of% e₂]
     congr 1
     simp [← comp_whiskerRight_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc,
-      - MonoidalCategory.whiskerLeft_comp, ← whisker_exchange_assoc,
+      -MonoidalCategory.whiskerLeft_comp, ← whisker_exchange_assoc,
       tensor_whiskerLeft_symm, -tensor_whiskerLeft,
       ← LaxMonoidal.associativity_assoc G, ← Functor.map_comp]
   · refine natTrans_ext L W (fun X₂ ↦ ?_)
