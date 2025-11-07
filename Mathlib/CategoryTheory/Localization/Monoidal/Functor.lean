@@ -90,22 +90,15 @@ noncomputable def functorCoreMonoidalOfComp : F.CoreMonoidal := by
     simp only [comp_whiskerRight, map_comp, Category.assoc,
       MonoidalCategory.whiskerLeft_comp]
     rw [tensorHom_def', tensorHom_def (e.hom.app X₂)]
-    have e₁ :
-        F.map (δ L X₁ X₂) ▷ F.obj (L.obj X₃) ≫ F.map (μ L X₁ X₂) ▷ F.obj (L.obj X₃) = 𝟙 _ := by
-      grind [_=_ MonoidalCategory.comp_whiskerRight, MonoidalCategory.id_whiskerRight, Monoidal.δ_μ]
-    have e₂ : G.obj X₁ ◁ F.map (δ L X₂ X₃) ≫ G.obj X₁ ◁ F.map (μ L X₂ X₃) = 𝟙 _ := by
-      grind [_=_ MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_id, Monoidal.δ_μ]
     monoidal_simps
     congr 2
     dsimp [e]
     simp only [comp_whiskerRight, map_id, Category.id_comp, Category.assoc,
-      ← whisker_exchange_assoc, tensor_whiskerLeft, MonoidalCategory.whiskerLeft_comp]
-    simp only [← associator_inv_naturality_left_assoc, Iso.inv_hom_id_assoc, whisker_exchange_assoc,
-      associator_inv_naturality_right_assoc, reassoc_of% e₁, reassoc_of% e₂]
-    congr 1
-    simp [← comp_whiskerRight_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc,
-      -MonoidalCategory.whiskerLeft_comp, ← whisker_exchange_assoc,
-      tensor_whiskerLeft_symm, -tensor_whiskerLeft,
+      MonoidalCategory.whiskerLeft_id, Category.comp_id, MonoidalCategory.whiskerLeft_comp,
+      id_whiskerRight]
+    simp only [← comp_whiskerRight_assoc, map_δ_μ_assoc, Iso.inv_hom_id_app, id_whiskerRight,
+      whisker_exchange_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc]
+    simp [← whisker_exchange_assoc, tensor_whiskerLeft_symm, -tensor_whiskerLeft,
       ← LaxMonoidal.associativity_assoc G, ← Functor.map_comp]
   · refine natTrans_ext L W (fun X₂ ↦ ?_)
     have := NatTrans.congr_app ((curriedTensorPreIsoPost L W F G).hom.naturality (εIso L).inv)
