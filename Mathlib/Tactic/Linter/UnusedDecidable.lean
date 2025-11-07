@@ -239,7 +239,7 @@ def Lean.Syntax.findSome? {α} (stx : Syntax) (p : Syntax → Option α) : Optio
 #check Parser.Command.declBody
 
 
-
+#check Parser.darrow
 
 open Parser Command Term in
 def getTheoremSyntaxView (decl : Name) (idRef : Syntax) (cmd : Syntax) :
@@ -250,6 +250,7 @@ def getTheoremSyntaxView (decl : Name) (idRef : Syntax) (cmd : Syntax) :
     exhaustive. -/
     | `(Parser.Command.theorem|
         theorem%$tk $id:ident$[.{$_,*}]? $binders* : $type:term $val:declVal) => do
+      -- Note: the infotree gives us the range of the identifier without universes.
       guard <| id.raw.hasRange idRange
       let instanceBinders := binders.filterMap fun
         | ref@`(instBinder| [$[$id:ident :]? $type:term]) => some { ref, id, type }
@@ -261,7 +262,7 @@ def getTheoremSyntaxView (decl : Name) (idRef : Syntax) (cmd : Syntax) :
         -- Note: this match still works despite complications in `declBody`.
         | `(declValSimple| := $body:term $_ $[where $[$whereDecls?:letRecDecl];*]?) =>
           (#[body], whereDecls?)
-        | `(declValEqns| $[ | $_:term,* => $bodies:term ]*
+        | `(declValEqns| $[ | $[$_:term,*]|* => $bodies:term ]*
               $_ $[where $[$whereDecls?:letRecDecl];*]?) =>
           (bodies, whereDecls?)
         | `(whereStructInst| where $[$lval:structInstLVal $[$[$binders]* $[: $ty?]?
@@ -269,7 +270,7 @@ def getTheoremSyntaxView (decl : Name) (idRef : Syntax) (cmd : Syntax) :
           let bodies := fields.flatMap fun
             | some field => match field with
               | `(structInstFieldDef| := $body) => #[body]
-              | `(structInstFieldEqns| $[ | $_:term,* => $body:term ]*) => body
+              | `(structInstFieldEqns| $[ | $[$_:term,*]|* => $body:term ]*) => body
               -- currently unreachable (may change if recursive `where` notation is added)
               | _ => #[⟨.missing⟩]
             -- field is given by an abbreviation, e.g. `x` where `x` is in the local context
