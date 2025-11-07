@@ -5,10 +5,6 @@ Authors: Ashton Jenson
 -/
 import Mathlib.Analysis.SpecialFunctions.Stirling
 
-open scoped BigOperators Nat
-
-namespace Stirling
-
 /-!
 # Robbins' Sharp Stepwise Bound for Stirling Sequence
 
@@ -35,6 +31,10 @@ Mathlib documentation notes as "not yet formalized."
 
 stirling, factorial, robbins, bounds
 -/
+
+open scoped BigOperators Nat
+
+namespace Stirling
 
 /-! ### Helper lemmas -/
 
