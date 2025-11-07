@@ -87,7 +87,7 @@ variable {M : Type*} [One M]
 /-- On non-dependent functions, `Pi.mulSingle` can be expressed as an `ite` -/
 @[to_additive /-- On non-dependent functions, `Pi.single` can be expressed as an `ite` -/]
 lemma mulSingle_apply (i : ι) (x : M) (i' : ι) :
-    (mulSingle i x : ι → M) i' = if i' = i then x else 1 :=
+    (mulSingle i x : ι → M) i' = if i = i' then x else 1 :=
   Function.update_apply (1 : ι → M) i x i'
 
 -- Porting note: added type ascription (_ : ι → M)

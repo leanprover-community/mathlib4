@@ -493,9 +493,13 @@ theorem update_self (a : α) (v : β a) (f : ∀ a, β a) : update f a v a = v :
 theorem update_of_ne {a a' : α} (h : a ≠ a') (v : β a') (f : ∀ a, β a) : update f a' v a = f a :=
   dif_neg h
 
+@[simp]
+theorem update_of_ne' {a a' : α} (h : a' ≠ a) (v : β a') (f : ∀ a, β a) : update f a' v a = f a :=
+  dif_neg h.symm
+
 /-- On non-dependent functions, `Function.update` can be expressed as an `ite` -/
-theorem update_apply {β : Sort*} (f : α → β) (a' : α) (b : β) (a : α) :
-    update f a' b a = if a = a' then b else f a := by
+theorem update_apply {β : Sort*} (f : α → β) (a : α) (b : β) (a' : α) :
+    update f a b a' = if a = a' then b else f a' := by
   rcases Decidable.eq_or_ne a a' with rfl | hne <;> simp [*]
 
 @[nontriviality]
@@ -621,7 +625,7 @@ theorem apply_update₂ {ι : Sort*} [DecidableEq ι] {α β γ : ι → Sort*} 
 
 theorem pred_update (P : ∀ ⦃a⦄, β a → Prop) (f : ∀ a, β a) (a' : α) (v : β a') (a : α) :
     P (update f a' v a) ↔ a = a' ∧ P v ∨ a ≠ a' ∧ P (f a) := by
-  rw [apply_update P, update_apply, ite_prop_iff_or]
+  rw [apply_update P, update_apply, ite_prop_iff_or, eq_comm]
 
 theorem comp_update {α' : Sort*} {β : Sort*} (f : α' → β) (g : α → α') (i : α) (v : α') :
     f ∘ update g i v = update (f ∘ g) i (f v) :=
