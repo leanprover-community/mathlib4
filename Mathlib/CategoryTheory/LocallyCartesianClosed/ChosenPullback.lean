@@ -85,7 +85,8 @@ def iso {Y X : C} (f : Y ≅ X) : ChosenPullback f.hom where
   mapPullbackAdj.unit.app T := Over.homMk (𝟙 T.left)
   mapPullbackAdj.counit.app U := Over.homMk (𝟙 _)
 
-instance {Y X : C} (f : Y ≅ X) : ChosenPullback f.inv := iso f.symm
+@[simps!]
+def isoInv {Y X : C} (f : Y ≅ X) : ChosenPullback f.inv := iso f.symm
 
 /-- The composition of morphisms with chosen pullbacks has a chosen pullback. -/
 @[simps]
