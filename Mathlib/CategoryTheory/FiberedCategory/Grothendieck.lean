@@ -26,7 +26,7 @@ namespace CategoryTheory.Pseudofunctor.CoGrothendieck
 
 open Functor Opposite Bicategory Fiber
 
-variable {𝒮 : Type*} [Category 𝒮] {F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat}
+variable {𝒮 : Type*} [Category 𝒮] {F : LocallyDiscrete 𝒮ᵒᵖ ⥤ᵖ Cat}
 
 section
 
