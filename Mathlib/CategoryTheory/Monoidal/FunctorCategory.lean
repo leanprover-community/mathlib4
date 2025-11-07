@@ -191,7 +191,7 @@ instance functorCategorySymmetric : SymmetricCategory (C ⥤ D) where
 end SymmetricCategory
 
 @[simps]
-instance foo {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
+instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
     [MonoidalCategory E] (L : D ⥤ E) [L.LaxMonoidal] :
     ((Functor.whiskeringRight C D E).obj L).LaxMonoidal where
   ε := { app X := Functor.LaxMonoidal.ε L }
