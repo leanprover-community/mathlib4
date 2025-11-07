@@ -555,15 +555,6 @@ def sum.{u} :
     (f := fun s t ↦ Quotient.mk (unorientedBordismSetoid X k I) (s.sum t))
   fun s t ↦ sum (fun _ _ _ _ h h' ↦ Quotient.sound (aux h h')) s t
 
-lemma mk_sum_mk {s t : SingularManifold X k I} :
-    sum (Quotient.mk _ s) (Quotient.mk _ t) = Quotient.mk _ (s.sum t) := by
-  dsimp only [sum, Quotient.lift_mk]
-  rfl
-
-lemma sum_eq_out_sum_out.{u} {Φ Ψ : uBordismClass.{_, _, _, u} X k I} :
-    Φ.sum Ψ = Quotient.mk _ (Φ.out.sum Ψ.out) := by
-  nth_rw 1 [← Φ.out_eq, ← Ψ.out_eq, mk_sum_mk]
-
 instance : Zero (uBordismClass X k I) where
   zero := empty X k I
 
@@ -631,12 +622,11 @@ def map (hf : Continuous f) : (uBordismClass X k I) → (uBordismClass Y k I) :=
 
 lemma mk_map (hf : Continuous f) {s : SingularManifold X k I} :
     uBordismClass.map hf (Quotient.mk _ s) = Quotient.mk _ (s.map hf) := by
-  dsimp only [uBordismClass.map, Quotient.lift_mk]
+  dsimp [uBordismClass.map]
 
 theorem map_id (Φ : uBordismClass X k I) : Φ.map continuous_id = Φ := by
   set φ := Φ.out with φ_eq
   rw [← Φ.out_eq, mk_map, Quotient.eq, ← φ_eq]
-  dsimp only
   use (UnorientedBordism.refl φ).copy_map_fst (Diffeomorph.refl I _ k) (by dsimp)
 
 theorem map_id' : uBordismClass.map (k := k) (I := I) (@continuous_id X _) = id := by
