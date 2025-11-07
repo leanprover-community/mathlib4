@@ -185,13 +185,13 @@ If `F : R →+* S` makes the following diagram commutes
 Then it is the map `IsAdicComplete.lift`.
 -/
 theorem eq_liftRingHom (F : R →+* S)
-    (hF : ∀ {n x}, Ideal.Quotient.mk (I ^ n) (F x) = f n x) :
+    (hF : ∀ n, (Ideal.Quotient.mk (I ^ n)).comp F = f n) :
     F = liftRingHom I f hf := by
   ext x
   rw [IsHausdorff.eq_iff_smodEq (I := I)]
   intro n
   simp only [smul_eq_mul, mul_top]
-  simp [SModEq, liftRingHom, hF]
+  simp [SModEq, liftRingHom, ← hF n]
 
 end
 
@@ -269,13 +269,13 @@ theorem mk_comp_liftRingHom {n : ℕ} :
   ext; simp
 
 theorem eq_liftRingHom {F : R →+* S}
-    (hF : ∀ {m s}, Ideal.Quotient.mk _ (F s) = f m s) : F = liftRingHom I ha f hf := by
+    (hF : ∀ n, (Ideal.Quotient.mk _).comp F = f n) : F = liftRingHom I ha f hf := by
   ext s
   rw [IsHausdorff.eq_iff_smodEq (I := I)]
   intro n
   simp only [smul_eq_mul, mul_top]
   apply SModEq.mono (Ideal.pow_le_pow_right (ha.id_le n))
-  simp [SModEq, hF, mk_liftRingHom I ha f hf]
+  simp [SModEq, ← hF n, mk_liftRingHom I ha f hf]
 
 end StrictMono
 
