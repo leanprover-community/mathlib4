@@ -202,7 +202,7 @@ lemma mem_smul_set_inv {s : Set α} : a ∈ b • s⁻¹ ↔ b ∈ a • s := by
 
 @[to_additive]
 theorem preimage_smul (a : α) (t : Set β) : (fun x ↦ a • x) ⁻¹' t = a⁻¹ • t :=
-  ((MulAction.toPerm a).symm.image_eq_preimage _).symm
+  ((MulAction.toPerm a).image_symm_eq_preimage _).symm
 
 @[to_additive]
 theorem preimage_smul_inv (a : α) (t : Set β) : (fun x ↦ a⁻¹ • x) ⁻¹' t = a • t :=
@@ -213,15 +213,15 @@ theorem smul_set_subset_smul_set_iff : a • A ⊆ a • B ↔ A ⊆ B :=
   image_subset_image_iff <| MulAction.injective _
 
 @[to_additive]
-theorem smul_set_subset_iff_subset_inv_smul_set : a • A ⊆ B ↔ A ⊆ a⁻¹ • B :=
-  image_subset_iff.trans <|
-    iff_of_eq <| congr_arg _ <| preimage_equiv_eq_image_symm _ <| MulAction.toPerm _
+theorem smul_set_subset_iff_subset_inv_smul_set : a • A ⊆ B ↔ A ⊆ a⁻¹ • B := by
+  refine image_subset_iff.trans ?_
+  congr! 1
+  exact ((MulAction.toPerm _).image_symm_eq_preimage _).symm
 
 @[to_additive]
-theorem subset_smul_set_iff : A ⊆ a • B ↔ a⁻¹ • A ⊆ B :=
-  Iff.symm <|
-    image_subset_iff.trans <|
-      Iff.symm <| iff_of_eq <| congr_arg _ <| image_equiv_eq_preimage_symm _ <| MulAction.toPerm _
+theorem subset_smul_set_iff : A ⊆ a • B ↔ a⁻¹ • A ⊆ B := by
+  refine (image_subset_iff.trans ?_ ).symm; congr! 1;
+  exact ((MulAction.toPerm _).image_eq_preimage_symm _).symm
 
 @[to_additive]
 theorem smul_set_inter : a • (s ∩ t) = a • s ∩ a • t :=

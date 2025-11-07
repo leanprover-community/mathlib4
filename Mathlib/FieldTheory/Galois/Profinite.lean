@@ -295,7 +295,7 @@ lemma isOpen_mulEquivToLimit_image_fixingSubgroup [IsGalois k K]
 lemma mulEquivToLimit_symm_continuous [IsGalois k K] : Continuous (mulEquivToLimit k K).symm := by
   apply continuous_of_continuousAt_one _ (continuousAt_def.mpr _ )
   simp only [map_one, krullTopology_mem_nhds_one_iff_of_isGalois, ← MulEquiv.coe_toEquiv_symm,
-    ← MulEquiv.toEquiv_eq_coe, ← (mulEquivToLimit k K).image_eq_preimage]
+    ← MulEquiv.toEquiv_eq_coe, ← (mulEquivToLimit k K).image_eq_preimage_symm]
   intro H ⟨L, le⟩
   rw [mem_nhds_iff]
   use mulEquivToLimit k K '' L.1.fixingSubgroup

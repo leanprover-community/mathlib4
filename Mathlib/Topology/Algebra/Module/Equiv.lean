@@ -582,11 +582,11 @@ theorem symm_apply_eq (e : M₁ ≃SL[σ₁₂] M₂) {x y} : e.symm x = y ↔ x
 theorem eq_symm_apply (e : M₁ ≃SL[σ₁₂] M₂) {x y} : y = e.symm x ↔ e y = x :=
   e.toLinearEquiv.eq_symm_apply
 
-protected theorem image_eq_preimage (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₁) : e '' s = e.symm ⁻¹' s :=
-  e.toLinearEquiv.toEquiv.image_eq_preimage s
+protected lemma image_eq_preimage_symm (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₁) : e '' s = e.symm ⁻¹' s :=
+  e.toLinearEquiv.toEquiv.image_eq_preimage_symm s
 
 protected theorem image_symm_eq_preimage (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₂) :
-    e.symm '' s = e ⁻¹' s := by rw [e.symm.image_eq_preimage, e.symm_symm]
+    e.symm '' s = e ⁻¹' s := by rw [e.symm.image_eq_preimage_symm, e.symm_symm]
 
 @[simp]
 protected theorem symm_preimage_preimage (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₂) :

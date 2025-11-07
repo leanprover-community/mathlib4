@@ -224,7 +224,7 @@ theorem isIso_of_bijective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) (bij : Funct
   have hE : Continuous E.symm := by
     rw [continuous_iff_isClosed]
     intro S hS
-    rw [← E.image_eq_preimage]
+    rw [← E.image_eq_preimage_symm]
     exact isClosedMap f S hS
   refine ⟨⟨ofHom _ ⟨E.symm, hE⟩, ?_, ?_⟩⟩
   · ext x

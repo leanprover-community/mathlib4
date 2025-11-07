@@ -322,7 +322,7 @@ lemma reverse_mem_reverse : a.reverse ∈ l.reverse ↔ a ∈ l := by
   rw [mem_reverse, List.reverse_reverse]
 
 lemma reverse_eq_image (l : Language α) : l.reverse = List.reverse '' l :=
-  ((List.reverse_involutive.toPerm _).image_eq_preimage _).symm
+  ((List.reverse_involutive.toPerm _).image_eq_preimage_symm _).symm
 
 @[simp]
 lemma reverse_zero : (0 : Language α).reverse = 0 := rfl

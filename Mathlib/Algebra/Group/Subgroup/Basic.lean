@@ -767,7 +767,7 @@ theorem map_normalClosure (s : Set G) (f : G →* N) (hf : Surjective f) :
 
 theorem comap_normalClosure (s : Set N) (f : G ≃* N) :
     normalClosure (f ⁻¹' s) = (normalClosure s).comap f := by
-  have := Set.preimage_equiv_eq_image_symm s f.toEquiv
+  have := f.toEquiv.image_symm_eq_preimage s
   simp_all [comap_equiv_eq_map_symm, map_normalClosure s (f.symm : N →* G) f.symm.surjective]
 
 lemma Normal.of_map_injective {G H : Type*} [Group G] [Group H] {φ : G →* H}

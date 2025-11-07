@@ -194,7 +194,7 @@ def Homeomorph.toCocompactMap {α β : Type*} [TopologicalSpace α] [Topological
   continuous_toFun := f.continuous
   cocompact_tendsto' := by
     refine CocompactMap.tendsto_of_forall_preimage fun K hK => ?_
-    have := K.preimage_equiv_eq_image_symm f.toEquiv
+    have := f.toEquiv.image_symm_eq_preimage K
     simp only [coe_toEquiv] at this
-    rw [this]
+    rw [← this]
     exact hK.image f.symm.continuous

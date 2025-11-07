@@ -166,7 +166,7 @@ theorem mem_map_iff_mem {f : G →* N} (hf : Function.Injective f) {K : Subgroup
 @[to_additive]
 theorem map_equiv_eq_comap_symm' (f : G ≃* N) (K : Subgroup G) :
     K.map f.toMonoidHom = K.comap f.symm.toMonoidHom :=
-  SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
+  SetLike.coe_injective (f.toEquiv.image_eq_preimage_symm K)
 
 @[to_additive]
 theorem map_equiv_eq_comap_symm (f : G ≃* N) (K : Subgroup G) :

@@ -973,7 +973,7 @@ variable (s) in
 /-- `negAt s A` is also equal to the preimage of `A` by `negAt s`. This fact is used to simplify
 some proofs. -/
 theorem negAt_preimage : negAt s ⁻¹' A = negAt s '' A := by
-  rw [ContinuousLinearEquiv.image_eq_preimage, negAt_symm]
+  rw [ContinuousLinearEquiv.image_eq_preimage_symm, negAt_symm]
 
 /-- The `plusPart` of a subset `A` of the `mixedSpace` is the set of points in `A` that are
 positive at all real places. -/

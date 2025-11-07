@@ -131,7 +131,7 @@ theorem RelEmbedding.codRestrict_apply (p) (f : r ↪r s) (H a) :
 section image
 
 theorem RelIso.image_eq_preimage_symm (e : r ≃r s) (t : Set α) : e '' t = e.symm ⁻¹' t :=
-  e.toEquiv.image_eq_preimage t
+  e.toEquiv.image_eq_preimage_symm t
 
 theorem RelIso.preimage_eq_image_symm (e : r ≃r s) (t : Set β) : e ⁻¹' t = e.symm '' t := by
   rw [e.symm.image_eq_preimage_symm]; rfl

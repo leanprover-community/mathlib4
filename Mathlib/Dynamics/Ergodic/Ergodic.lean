@@ -180,7 +180,7 @@ theorem ae_empty_or_univ_of_image_ae_le' (hf : Ergodic f μ) (hs : NullMeasurabl
 theorem symm {e : α ≃ᵐ α} (he : Ergodic e μ) : Ergodic e.symm μ where
   toMeasurePreserving := he.toMeasurePreserving.symm
   aeconst_set s hsm hs := he.aeconst_set hsm <| by
-    conv_lhs => rw [← hs, ← e.image_eq_preimage, e.preimage_image]
+    conv_lhs => rw [← hs, ← e.image_eq_preimage_symm, e.preimage_image]
 
 @[simp] theorem symm_iff {e : α ≃ᵐ α} : Ergodic e.symm μ ↔ Ergodic e μ := ⟨.symm, .symm⟩
 

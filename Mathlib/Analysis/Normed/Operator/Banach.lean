@@ -309,7 +309,7 @@ variable [CompleteSpace E] [RingHomInvPair σ' σ]
 theorem continuous_symm (e : E ≃ₛₗ[σ] F) (h : Continuous e) : Continuous e.symm := by
   rw [continuous_def]
   intro s hs
-  rw [← e.image_eq_preimage]
+  rw [← e.image_eq_preimage_symm]
   rw [← e.coe_coe] at h ⊢
   exact ContinuousLinearMap.isOpenMap (σ := σ) ⟨_, h⟩ e.surjective s hs
 

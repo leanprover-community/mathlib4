@@ -162,7 +162,7 @@ lemma id_image {X : Scheme} (U : X.Opens) : 𝟙 X ''ᵁ U = U :=
 
 @[simp]
 lemma inv_image {X Y : Scheme} (e : X ≅ Y) (U : Y.Opens) : e.inv ''ᵁ U = e.hom ⁻¹ᵁ U :=
-  TopologicalSpace.Opens.ext (Set.image_equiv_eq_preimage_symm _ (Scheme.homeoOfIso e.symm).toEquiv)
+  TopologicalSpace.Opens.ext <| (Scheme.homeoOfIso e.symm).toEquiv.image_eq_preimage_symm _
 
 @[simp]
 lemma apply_mem_image_iff {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f]

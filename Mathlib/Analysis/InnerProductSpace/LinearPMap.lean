@@ -328,7 +328,7 @@ theorem adjoint_isClosed (hT : Dense (T.domain : Set E)) :
     T†.IsClosed := by
   rw [IsClosed, adjoint_graph_eq_graph_adjoint hT, Submodule.adjoint]
   simp only [Submodule.map_coe]
-  rw [LinearEquiv.image_eq_preimage]
+  rw [LinearEquiv.image_eq_preimage_symm]
   exact (Submodule.isClosed_orthogonal _).preimage (WithLp.prod_continuous_toLp _ _ _)
 
 /-- Every self-adjoint `LinearPMap` is closed. -/

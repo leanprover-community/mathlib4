@@ -153,11 +153,11 @@ protected def comm : PartialIso α β → PartialIso β α :=
     Eq.symm <|
       hf ((Equiv.prodComm α β).symm p)
         (by
-          rw [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage] at hp
+          rw [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage_symm] at hp
           rwa [← Finset.mem_coe])
         ((Equiv.prodComm α β).symm q)
         (by
-          rw [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage] at hq
+          rw [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage_symm] at hq
           rwa [← Finset.mem_coe])
 
 variable (β)
@@ -191,7 +191,7 @@ def definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty
     rcases (definedAtLeft α b).isCofinal f.comm with ⟨f', ⟨a, ha⟩, hl⟩
     refine ⟨f'.comm, ⟨a, ?_⟩, ?_⟩
     · change (a, b) ∈ f'.val.image _
-      rwa [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage]
+      rwa [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage_symm]
     · change _ ⊆ f'.val.image _
       rwa [← Finset.coe_subset, Finset.coe_image, ← Equiv.symm_image_subset, ← Finset.coe_image,
         Finset.coe_subset]
