@@ -482,6 +482,7 @@ variable {α : Sort u} {β : α → Sort v} {α' : Sort w} [DecidableEq α]
 
 
 /-- Replacing the value of a function at a given point by a given value. -/
+@[grind]
 def update (f : ∀ a, β a) (a' : α) (v : β a') (a : α) : β a :=
   if h : a = a' then Eq.ndrec v h.symm else f a
 
