@@ -134,8 +134,7 @@ def chooseX : ∀ _hp : ∃! a, a ∈ l ∧ p a, { a // a ∈ l ∧ p a } :=
       congr
       calc
         x = z := z_unique x px
-        _ = y := (z_unique y py).symm
-        )
+        _ = y := (z_unique y py).symm)
 
 /-- Given a proof `hp` that there exists a unique `a ∈ l` such that `p a`, `choose p l hp` returns
 that `a`. -/
