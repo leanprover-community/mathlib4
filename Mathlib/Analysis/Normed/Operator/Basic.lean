@@ -55,7 +55,6 @@ section
 
 variable [SemilinearMapClass 𝓕 σ₁₂ E F]
 
-
 theorem ball_zero_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {r : ℝ}
     (hr : 0 < r) : ball 0 r ⊆ Set.range f ↔ (⇑f).Surjective :=
   absorbent_ball (by simpa)|>.subset_range_iff_surjective
