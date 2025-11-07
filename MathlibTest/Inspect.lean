@@ -132,6 +132,7 @@ info: inspect expr: 'a ≠ 0'
 '_uniq.3124' -- mvar
 -/
 #guard_msgs in
+set_option linter.unusedTactic false in
 example {a : Nat} (h : a ≠ 0) : (a + a ≠ 0 + 0) ≠ False := by
   revert a
   inspect
