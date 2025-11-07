@@ -7,6 +7,7 @@ import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 import Mathlib.CategoryTheory.Monoidal.Braided.Reflection
 import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 import Mathlib.CategoryTheory.Sites.Monoidal
+import Mathlib.Condensed.Light.CartesianClosed
 import Mathlib.Condensed.Light.Module
 
 /-!
@@ -55,5 +56,14 @@ instance : MonoidalClosed (Sheaf (coherentTopology LightProfinite.{u}) (ModuleCa
 
 instance : MonoidalClosed (LightCondMod.{u} R) :=
   inferInstanceAs (MonoidalClosed (Sheaf _ _))
+
+instance : (presheafToSheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R)).Monoidal :=
+  inferInstance
+
+instance : (free R).Monoidal :=
+  letI : (presheafToSheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R)).Monoidal :=
+    inferInstance
+  letI : (sheafToPresheaf (coherentTopology LightProfinite.{u}) (Type u)).Monoidal := inferInstance
+  inferInstanceAs (composeAndSheafify _ _).Monoidal
 
 end LightCondensed
