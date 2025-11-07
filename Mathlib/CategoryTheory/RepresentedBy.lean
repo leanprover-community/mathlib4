@@ -44,7 +44,7 @@ induced map `(Y ⟶ X) → F.obj Y` is bijective.
 -/
 @[mk_iff]
 structure IsRepresentedBy {F : Cᵒᵖ ⥤ Type w} {X : C} (x : F.obj (op X)) : Prop where
-  bijective_map {Y : C} : Function.Bijective (fun f : Y ⟶ X ↦ F.map f.op x)
+  map_bijective {Y : C} : Function.Bijective (fun f : Y ⟶ X ↦ F.map f.op x)
 
 variable {F : Cᵒᵖ ⥤ Type w} {X : C} {x : F.obj (op X)}
 
