@@ -5,6 +5,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
+import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Topology.Algebra.Module.StrongTopology
 import Mathlib.Analysis.Normed.Operator.LinearIsometry
 import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
@@ -24,11 +25,15 @@ file `NormedSpace.lean`.
 Note that most of statements that apply to semilinear maps only hold when the ring homomorphism
 is isometric, as expressed by the typeclass `[RingHomIsometric σ]`.
 
+## Main Results
+* `ball_subset_range_iff_surjective` (and its variants) shows that a semi-linear map between normed
+  spaces is surjective if and only if it contains a ball.
+
 -/
 
 suppress_compilation
 
-open Bornology
+open Bornology Metric
 open Filter hiding map_smul
 open scoped NNReal Topology Uniformity
 
@@ -36,8 +41,6 @@ open scoped NNReal Topology Uniformity
 variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G 𝓕 : Type*}
 
 section SemiNormed
-
-open Metric ContinuousLinearMap
 
 variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup Fₗ]
   [SeminormedAddCommGroup G]
@@ -47,6 +50,41 @@ variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [Nontr
   {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
 variable [FunLike 𝓕 E F]
+
+section
+
+variable [SemilinearMapClass 𝓕 σ₁₂ E F]
+
+theorem ball_zero_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {r : ℝ}
+    (hr : 0 < r) : ball 0 r ⊆ Set.range f ↔ (⇑f).Surjective :=
+  absorbent_ball (by simpa)|>.subset_range_iff_surjective
+
+theorem ball_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {x : F} {r : ℝ}
+    (hr : 0 < r) : ball x r ⊆ Set.range f ↔ (⇑f).Surjective := by
+  refine ⟨fun h ↦ ?_, by simp_all⟩
+  suffices ball 0 r ⊆ Set.range f from (ball_zero_subset_range_iff_surjective hr).mp this
+  intro _ _
+  change _ ∈ LinearMap.range f --this can be avoided by replacing `rw` with `erw` in the next line
+  rw [← Submodule.add_mem_iff_left (p := LinearMap.range f) (h <| mem_ball_self hr)]
+  apply h
+  simp_all
+
+theorem closedBall_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} (x : F) {r : ℝ}
+    (hr : 0 < r) : closedBall (x : F) r ⊆ Set.range f ↔ (⇑f).Surjective :=
+  ⟨fun h ↦ (ball_subset_range_iff_surjective hr).mp <| subset_trans ball_subset_closedBall h,
+    by simp_all⟩
+
+variable {F' 𝓕' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [Nontrivial F']
+{τ : 𝕜 →+* ℝ} [FunLike 𝓕' E F'] [SemilinearMapClass 𝓕' τ E F']
+
+theorem sphere_subset_range_iff_surjective [RingHomSurjective τ] {f : 𝓕'} {x : F'} {r : ℝ}
+    (hr : 0 < r) : sphere x r ⊆ Set.range f ↔ (⇑f).Surjective := by
+  refine ⟨fun h ↦ ?_, by simp_all⟩
+  grw [← (closedBall_subset_range_iff_surjective x hr), ← convexHull_sphere_eq_closedBall x
+    (le_of_lt hr), convexHull_mono h, (convexHull_eq_self (𝕜 := ℝ) (s := Set.range ↑f)).mpr]
+  exact Submodule.Convex.semilinear_range (E := F') (F' := E) (σ := τ) f
+
+end
 
 /-- If `‖x‖ = 0` and `f` is continuous then `‖f x‖ = 0`. -/
 theorem norm_image_of_norm_zero [SemilinearMapClass 𝓕 σ₁₂ E F] (f : 𝓕) (hf : Continuous f) {x : E}
@@ -234,7 +272,6 @@ theorem unit_le_opNorm : ‖x‖ ≤ 1 → ‖f x‖ ≤ ‖f‖ :=
 theorem opNorm_le_of_shell {f : E →SL[σ₁₂] F} {ε C : ℝ} (ε_pos : 0 < ε) (hC : 0 ≤ C) {c : 𝕜}
     (hc : 1 < ‖c‖) (hf : ∀ x, ε / ‖c‖ ≤ ‖x‖ → ‖x‖ < ε → ‖f x‖ ≤ C * ‖x‖) : ‖f‖ ≤ C :=
   f.opNorm_le_bound' hC fun _ hx => SemilinearMapClass.bound_of_shell_semi_normed f ε_pos hc hf hx
-
 
 theorem opNorm_le_of_ball {f : E →SL[σ₁₂] F} {ε : ℝ} {C : ℝ} (ε_pos : 0 < ε) (hC : 0 ≤ C)
     (hf : ∀ x ∈ ball (0 : E) ε, ‖f x‖ ≤ C * ‖x‖) : ‖f‖ ≤ C := by
