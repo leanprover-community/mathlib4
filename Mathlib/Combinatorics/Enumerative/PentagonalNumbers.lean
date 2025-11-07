@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Beibei Xiong.
+Copyright (c) 2025 Beibei Xiong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Beibei Xiong
 -/
@@ -149,15 +149,10 @@ theorem exists_j_iff_exists_j_in_range (n : ℕ) :
         have h_nezero : (2 : ℤ) ≠ 0 := by norm_num
         refine Int.add_nonneg_iff_neg_le.mp ?_
         · by_cases hj : j > 0
-          · refine Int.add_nonneg ?_ ?_
-            linarith
-            refine Int.add_nonneg ?_ ?_
-            refine (ediv_nonneg_iff_of_pos ?_).mpr ?_
-            linarith
-            refine Int.mul_nonneg ?_ ?_
-            linarith
-            linarith
-            linarith
+          · refine Int.add_nonneg (by linarith) ?_
+            · refine Int.add_nonneg ?_ (by linarith)
+              · refine (ediv_nonneg_iff_of_pos (by linarith)).mpr  ?_
+                refine Int.mul_nonneg (by linarith) (by linarith)
           · have hle : j ≤ 0 := by linarith
             by_cases hj1 : j = 0
             · rw [hj1]
@@ -176,14 +171,13 @@ theorem exists_j_iff_exists_j_in_range (n : ℕ) :
                 ring
 
               rw [← add_assoc, h_bound1]
-              refine Int.add_nonneg ?_ ?_
-              refine (ediv_nonneg_iff_of_pos ?_).mpr ?_
-              omega
+              refine Int.add_nonneg (?_) (by linarith)
+              refine (ediv_nonneg_iff_of_pos (by omega)).mpr ?_
               have  h:  0 < j * (3 * j + 1) := by
                 refine Int.mul_pos_of_neg_of_neg hj2 ?_
                 linarith
               linarith
-              omega
+
 
       have h_bound2 : j ≤ j * (3 * j - 1) / 2 + 1 := by
         have h_nezero : (2 : ℤ) ≠ 0 := by norm_num
@@ -203,9 +197,8 @@ theorem exists_j_iff_exists_j_in_range (n : ℕ) :
           ring
 
         rw [h_aux]
-        refine Int.add_nonneg ?_ ?_
-        refine (ediv_nonneg_iff_of_pos ?_).mpr ?_
-        omega
+        refine Int.add_nonneg ?_ (by omega)
+        refine (ediv_nonneg_iff_of_pos (by omega)).mpr ?_
         by_cases hj : j < 0
         · have hj1 : j - 1 < 0 := by linarith
           have h_mul_neg : j * (j - 1) > 0 := by
@@ -217,11 +210,8 @@ theorem exists_j_iff_exists_j_in_range (n : ℕ) :
             norm_num
           · have hj2 : j > 0 := by omega
             have h_mul_pos : 3 * j * (j - 1) ≥ 0 := by
-              refine Int.mul_nonneg ?_ ?_
-              linarith
-              linarith
+              refine Int.mul_nonneg (by omega) (by linarith)
             linarith
-        linarith
       exact ⟨h_bound1, h_bound2⟩
 
     · exact hn
