@@ -893,8 +893,8 @@ protected theorem lipschitz : LipschitzWith 1 e :=
 protected theorem antilipschitz : AntilipschitzWith 1 e :=
   e.isometry.antilipschitz
 
-theorem image_eq_preimage (s : Set E) : e '' s = e.symm ⁻¹' s :=
-  e.toLinearEquiv.image_eq_preimage s
+theorem image_eq_preimage_symm (s : Set E) : e '' s = e.symm ⁻¹' s :=
+  e.toLinearEquiv.image_eq_preimage_symm s
 
 @[simp]
 theorem ediam_image (s : Set E) : EMetric.diam (e '' s) = EMetric.diam s :=

@@ -287,7 +287,7 @@ theorem measurableEquiv_nat_bool_of_countablyGenerated [MeasurableSpace α]
   simp_rw [← generateFrom_natGeneratingSequence α]
   apply measurable_generateFrom
   rintro _ ⟨n, rfl⟩
-  rw [← Equiv.image_eq_preimage _ _]
+  rw [← Equiv.image_eq_preimage_symm _ _]
   refine ⟨{y | y n}, by measurability, ?_⟩
   rw [← Equiv.preimage_eq_iff_eq_image]
   simp [mapNatBool]

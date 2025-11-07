@@ -173,7 +173,7 @@ theorem equiv_symm (f : α ≃ₜ β) : Compacts.equiv f.symm = (Compacts.equiv 
 /-- The image of a compact set under a homeomorphism can also be expressed as a preimage. -/
 theorem coe_equiv_apply_eq_preimage (f : α ≃ₜ β) (K : Compacts α) :
     (Compacts.equiv f K : Set β) = f.symm ⁻¹' (K : Set α) :=
-  f.toEquiv.image_eq_preimage K
+  f.toEquiv.image_eq_preimage_symm K
 
 /-- The product of two `TopologicalSpace.Compacts`, as a `TopologicalSpace.Compacts` in the product
 space. -/

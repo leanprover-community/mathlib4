@@ -556,7 +556,7 @@ def fromSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
       let e : _ ≃ _ :=
         ⟨FromSpec.toFun f_deg hm, ToSpec.toFun f, toSpec_fromSpec _ _ _, fromSpec_toSpec _ _ _⟩
       change IsOpen <| e ⁻¹' _
-      rw [Set.preimage_equiv_eq_image_symm, h₁, Set.image_iUnion]
+      rw [← Equiv.image_symm_eq_preimage, h₁, Set.image_iUnion]
       exact isOpen_iUnion fun i ↦ toSpec.image_basicOpen_eq_basicOpen f_deg hm a i ▸
         PrimeSpectrum.isOpen_basicOpen }
 

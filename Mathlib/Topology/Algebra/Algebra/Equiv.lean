@@ -270,11 +270,11 @@ theorem symm_apply_eq (e : A ≃A[R] B) {a : A} {b : B} : e.symm b = a ↔ b = e
 theorem eq_symm_apply (e : A ≃A[R] B) {a : A} {b : B} : a = e.symm b ↔ e a = b :=
   e.toEquiv.eq_symm_apply
 
-theorem image_eq_preimage (e : A ≃A[R] B) (S : Set A) : e '' S = e.symm ⁻¹' S :=
-  e.toEquiv.image_eq_preimage S
+theorem image_eq_preimage_symm (e : A ≃A[R] B) (S : Set A) : e '' S = e.symm ⁻¹' S :=
+  e.toEquiv.image_eq_preimage_symm S
 
 theorem image_symm_eq_preimage (e : A ≃A[R] B) (S : Set B) : e.symm '' S = e ⁻¹' S := by
-  rw [e.symm.image_eq_preimage, e.symm_symm]
+  rw [e.symm.image_eq_preimage_symm, e.symm_symm]
 
 @[simp]
 theorem symm_preimage_preimage (e : A ≃A[R] B) (S : Set B) : e.symm ⁻¹' (e ⁻¹' S) = S :=

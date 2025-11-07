@@ -324,7 +324,8 @@ theorem integral_comp_polarSpaceCoord_symm [NumberField K] {E : Type*} [NormedAd
   rw [← (volume_preserving_homeoRealMixedSpacePolarSpace K).setIntegral_preimage_emb
     (homeoRealMixedSpacePolarSpace K).measurableEmbedding,
     ← mixedEmbedding.integral_comp_polarCoord_symm, polarSpaceCoord_target,
-    ← Homeomorph.image_eq_preimage, Homeomorph.preimage_image, mixedEmbedding.polarCoord_target]
+    ← Homeomorph.image_eq_preimage_symm, Homeomorph.preimage_image,
+    mixedEmbedding.polarCoord_target]
   simp_rw [polarSpaceCoord_symm_apply, mixedEmbedding.polarCoord_symm_apply,
     homeoRealMixedSpacePolarSpace_apply_fst_ofIsReal,
     homeoRealMixedSpacePolarSpace_apply_fst_ofIsComplex, homeoRealMixedSpacePolarSpace_apply_snd]
@@ -337,7 +338,8 @@ theorem lintegral_comp_polarSpaceCoord_symm [NumberField K] (f : mixedSpace K �
   rw [← (volume_preserving_homeoRealMixedSpacePolarSpace K).setLIntegral_comp_preimage_emb
     (homeoRealMixedSpacePolarSpace K).measurableEmbedding,
     ← mixedEmbedding.lintegral_comp_polarCoord_symm, polarSpaceCoord_target,
-    ← Homeomorph.image_eq_preimage, Homeomorph.preimage_image, mixedEmbedding.polarCoord_target]
+    ← Homeomorph.image_eq_preimage_symm, Homeomorph.preimage_image,
+    mixedEmbedding.polarCoord_target]
   simp_rw [polarSpaceCoord_symm_apply, mixedEmbedding.polarCoord_symm_apply,
     homeoRealMixedSpacePolarSpace_apply_fst_ofIsReal,
     homeoRealMixedSpacePolarSpace_apply_fst_ofIsComplex, homeoRealMixedSpacePolarSpace_apply_snd]

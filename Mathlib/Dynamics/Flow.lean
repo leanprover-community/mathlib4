@@ -281,7 +281,7 @@ def toHomeomorph (t : τ) : (α ≃ₜ α) where
   continuous_toFun := by fun_prop
   continuous_invFun := by fun_prop
 
-theorem image_eq_preimage (t : τ) (s : Set α) : ϕ t '' s = ϕ (-t) ⁻¹' s :=
-  (ϕ.toHomeomorph t).toEquiv.image_eq_preimage s
+theorem image_eq_preimage_symm (t : τ) (s : Set α) : ϕ t '' s = ϕ (-t) ⁻¹' s :=
+  (ϕ.toHomeomorph t).toEquiv.image_eq_preimage_symm s
 
 end Flow

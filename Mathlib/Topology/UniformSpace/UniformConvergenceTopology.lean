@@ -925,7 +925,7 @@ protected def congrLeft {𝔗 : Set (Set γ)} (e : γ ≃ α) (he : 𝔗 ⊆ ima
   { Equiv.arrowCongr e (Equiv.refl _) with
     uniformContinuous_toFun := UniformOnFun.precomp_uniformContinuous fun s hs ↦ by
       change e.symm '' s ∈ 𝔗
-      rw [← preimage_equiv_eq_image_symm]
+      rw [Equiv.image_symm_eq_preimage]
       exact he' hs
     uniformContinuous_invFun := UniformOnFun.precomp_uniformContinuous he }
 

@@ -363,7 +363,7 @@ protected theorem image {s : β → β → Prop} (e : r ≃r s) {c : Set α} (hc
     IsMaxAntichain s (e '' c) where
   left := hc.isAntichain.image _ fun _ _ ↦ e.map_rel_iff'.mp
   right t ht hf := by
-    rw [← e.coe_fn_toEquiv, ← e.toEquiv.eq_preimage_iff_image_eq, preimage_equiv_eq_image_symm]
+    rw [← e.coe_fn_toEquiv, ← e.toEquiv.eq_preimage_iff_image_eq, ← Equiv.image_symm_eq_preimage]
     exact hc.2 (ht.image _ fun _ _ ↦ e.symm.map_rel_iff.mp)
       ((e.toEquiv.subset_symm_image _ _).2 hf)
 

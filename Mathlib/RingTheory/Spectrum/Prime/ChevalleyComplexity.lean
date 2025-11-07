@@ -670,7 +670,7 @@ lemma chevalley_mvPolynomialC
     refine ⟨(S.map (isEmptyRingEquiv _ _).toRingHom), ?_, ?_⟩
     · rw [ConstructibleSetData.toSet_map]
       change _ = (comapEquiv (isEmptyRingEquiv _ _)).symm ⁻¹' _
-      rw [← OrderIso.image_eq_preimage]
+      rw [← OrderIso.image_eq_preimage_symm]
       rfl
     · simp only [ConstructibleSetData.map, RingEquiv.toRingHom_eq_coe, Finset.mem_image, comp_apply,
         BasicConstructibleSetData.map, RingHom.coe_coe, isEmptyRingEquiv_eq_coeff_zero, pow_one,
@@ -754,7 +754,7 @@ lemma chevalley_mvPolynomialC
     rw [← hU₁, ← hT₁, ← Set.image_comp, ← ContinuousMap.coe_comp, ← comap_comp,
       ConstructibleSetData.toSet_map]
     change _ = _ '' ((comapEquiv e.toRingEquiv).symm ⁻¹' _)
-    rw [← OrderIso.image_eq_preimage, Set.image_image]
+    rw [← OrderIso.image_eq_preimage_symm, Set.image_image]
     simp only [comapEquiv_apply, ← comap_apply, ← comap_comp_apply]
     congr!
     exact e.symm.toAlgHom.comp_algebraMap.symm

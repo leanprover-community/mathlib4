@@ -898,7 +898,7 @@ theorem Countable.exists_cycleOn (hs : s.Countable) :
     refine ⟨(Equiv.addRight 1).extendDomain f, ?_, fun x hx =>
       of_not_not fun h => hx <| Perm.extendDomain_apply_not_subtype _ _ h⟩
     convert Int.addRight_one_isCycle.isCycleOn.extendDomain f
-    rw [Set.image_comp, Equiv.image_eq_preimage]
+    rw [Set.image_comp, Equiv.image_eq_preimage_symm]
     ext
     simp
 

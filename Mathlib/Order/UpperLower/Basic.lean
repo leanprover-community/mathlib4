@@ -201,12 +201,12 @@ theorem IsLowerSet.preimage (hs : IsLowerSet s) {f : β → α} (hf : Monotone f
 
 theorem IsUpperSet.image (hs : IsUpperSet s) (f : α ≃o β) : IsUpperSet (f '' s : Set β) := by
   change IsUpperSet ((f : α ≃ β) '' s)
-  rw [Set.image_equiv_eq_preimage_symm]
+  rw [Equiv.image_eq_preimage_symm]
   exact hs.preimage f.symm.monotone
 
 theorem IsLowerSet.image (hs : IsLowerSet s) (f : α ≃o β) : IsLowerSet (f '' s : Set β) := by
   change IsLowerSet ((f : α ≃ β) '' s)
-  rw [Set.image_equiv_eq_preimage_symm]
+  rw [Equiv.image_eq_preimage_symm]
   exact hs.preimage f.symm.monotone
 
 theorem OrderEmbedding.image_Ici (e : α ↪o β) (he : IsUpperSet (range e)) (a : α) :

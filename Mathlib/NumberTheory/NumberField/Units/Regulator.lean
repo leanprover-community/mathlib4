@@ -113,8 +113,8 @@ theorem isMaxRank_iff_closure_finiteIndex {u : Fin (rank K) → (𝓞 K)ˣ} :
       _ (logEmbeddingEquiv K).toAddEquiv, Set.range_comp, ← map_span (logEmbeddingEquiv K),
       ← map_coe_toLinearMap, map_toAddSubgroup, span_int_eq_addSubgroupClosure,
       MonoidHom.map_closure, toAddSubgroup_closure, Set.range_comp, Set.range_comp,
-      QuotientGroup.coe_mk', Set.preimage_equiv_eq_image_symm]
-    exact Iff.rfl
+      QuotientGroup.coe_mk', ← Equiv.image_symm_eq_preimage]
+    rfl
   have h₂ : DiscreteTopology
       (span ℤ (Set.range fun i ↦ (logEmbedding K) (Additive.ofMul (u i)))) := by
     refine DiscreteTopology.of_subset (inferInstance : DiscreteTopology (unitLattice K)) ?_
