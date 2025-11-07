@@ -468,7 +468,7 @@ instance subsingleton_hom (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] [Subsin
   obtain ⟨⟩ := hg
   rfl
 
-/-- If `X ; Truncated 2` has a unique `0`-simplex and (at most) one `1`-simplex,
+/-- If `X : Truncated 2` has a unique `0`-simplex and (at most) one `1`-simplex,
 then `X.HomotopyCategory` is a terminal object in `Cat`. -/
 def isTerminal (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)] :
     IsTerminal (Cat.of X.HomotopyCategory) :=
