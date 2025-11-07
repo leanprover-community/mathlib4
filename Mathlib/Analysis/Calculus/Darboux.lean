@@ -123,7 +123,7 @@ theorem exists_hasDerivWithinAt_eq_of_ge_of_le (hab : a ≤ b)
   (ordConnected_Icc.image_hasDerivWithinAt hf).out (mem_image_of_mem _ (left_mem_Icc.2 hab))
     (mem_image_of_mem _ (right_mem_Icc.2 hab)) ⟨hma, hmb⟩
 
-/-- **Darboux's theorem**: if `a ≤ b` and `f' b ≤ m ≤ f' a`, then `f' c = m` for some
+/-- **Darboux's theorem**: if `a ≤ b` and `f' a ≤ m ≤ f' b`, then `f' c = m` for some
 `c ∈ [a, b]`. -/
 theorem exists_hasDerivWithinAt_eq_of_le_of_ge (hab : a ≤ b)
     (hf : ∀ x ∈ Icc a b, HasDerivWithinAt f (f' x) (Icc a b) x) {m : ℝ} (hma : f' a ≤ m)
