@@ -188,7 +188,7 @@ theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
   simp [det_eq_prod_roots_charpoly_of_splits hA.splits_charpoly, hA.roots_charpoly_eq_eigenvalues]
 
 /-- rank of a Hermitian matrix is the rank of after diagonalization by the eigenvector unitary -/
-lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
+lemma rank_eq_rank_diagonal : A.rank = (diagonal hA.eigenvalues).rank := by
   conv_lhs => rw [hA.spectral_theorem, conjStarAlgAut_apply, ← coe_star]
   simp [-isUnit_iff_ne_zero, -coe_star, rank_diagonal]
 
