@@ -210,4 +210,9 @@ instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategor
     [MonoidalCategory E] (L : D ⥤ E) [L.Monoidal] :
     ((Functor.whiskeringRight C D E).obj L).Monoidal where
 
+instance (E : Type*) [Category E] [MonoidalCategory E] (F : C ⥤ D) :
+    ((Functor.whiskeringLeft _ _ E).obj F).Monoidal := Functor.CoreMonoidal.toMonoidal {
+  εIso := Iso.refl _
+  μIso _ _ := Iso.refl _ }
+
 end CategoryTheory.Monoidal

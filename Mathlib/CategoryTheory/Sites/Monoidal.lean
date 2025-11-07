@@ -6,7 +6,7 @@ Authors: Joël Riou
 
 import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Localization.Monoidal.Braided
-import Mathlib.CategoryTheory.Sites.Localization
+import Mathlib.CategoryTheory.Sites.Equivalence
 import Mathlib.CategoryTheory.Sites.SheafHom
 
 /-!
@@ -29,12 +29,12 @@ chosen finite products.
 
 -/
 
-universe v v' u u'
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C}
-  {A : Type u} [Category.{v} A] [MonoidalCategory A]
+variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C}
+  {A : Type u₃} [Category.{v₃} A] [MonoidalCategory A]
 
 open Opposite Limits MonoidalCategory MonoidalClosed Enriched.FunctorCategory
 
@@ -143,6 +143,13 @@ end GrothendieckTopology
 namespace Sheaf
 
 variable (J A)
+
+lemma isMonoidal_transport {D : Type u₂} [Category.{v₂} D] (K : GrothendieckTopology D)
+    (G : D ⥤ C) [G.IsCoverDense J] [G.Full] [G.IsContinuous K J]
+    [(G.sheafPushforwardContinuous A K J).EssSurj] [(K.W (A := A)).IsMonoidal] :
+    (J.W (A := A)).IsMonoidal := by
+  rw [← J.W_inverseImage_whiskeringLeft K G]
+  infer_instance
 
 /-- The monoidal category structure on `Sheaf J A` that is obtained
 by localization of the monoidal category structure on the category
