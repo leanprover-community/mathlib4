@@ -120,13 +120,9 @@ alias ⟨_, WCovBy.toDual⟩ := toDual_wcovBy_toDual_iff
 
 alias ⟨_, WCovBy.ofDual⟩ := ofDual_wcovBy_ofDual_iff
 
-theorem OrderEmbedding.wcovBy_of_apply {α β : Type*} [Preorder α] [Preorder β]
-    (f : α ↪o β) {x y : α} (h : f x ⩿ f y) : x ⩿ y :=
-  WCovBy.of_image f h
+@[deprecated (since := "2025-11-07")] alias OrderEmbedding.wcovBy_of_apply := WCovBy.of_image
 
-theorem OrderIso.map_wcovBy {α β : Type*} [Preorder α] [Preorder β]
-    (f : α ≃o β) {x y : α} : f x ⩿ f y ↔ x ⩿ y :=
-  apply_wcovBy_apply_iff f
+@[deprecated (since := "2025-11-07")] alias OrderIso.map_wcovBy := apply_wcovBy_apply_iff
 
 end Preorder
 
@@ -306,9 +302,7 @@ theorem covBy_of_eq_or_eq (hab : a < b) (h : ∀ c, a ≤ c → c ≤ b → c = 
 
 @[deprecated (since := "2025-11-07")] alias OrderEmbedding.covBy_of_apply := CovBy.of_image
 
-theorem OrderIso.map_covBy {α β : Type*} [Preorder α] [Preorder β]
-    (f : α ≃o β) {x y : α} : f x ⋖ f y ↔ x ⋖ y :=
-  apply_covBy_apply_iff f
+@[deprecated (since := "2025-11-07")] alias OrderIso.map_covBy := apply_covBy_apply_iff
 
 end Preorder
 
