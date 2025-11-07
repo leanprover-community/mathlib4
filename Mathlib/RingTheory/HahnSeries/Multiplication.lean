@@ -611,8 +611,7 @@ theorem orderTop_nsmul_le_orderTop_pow {Γ}
   | succ n ih =>
     rw [add_nsmul, pow_add]
     calc
-      n • x.orderTop + 1 • x.orderTop ≤ (x ^ n).orderTop + 1 • x.orderTop :=
-        add_le_add_right ih (1 • x.orderTop)
+      n • x.orderTop + 1 • x.orderTop ≤ (x ^ n).orderTop + 1 • x.orderTop := by gcongr
       (x ^ n).orderTop + 1 • x.orderTop = (x ^ n).orderTop + x.orderTop := by rw [one_nsmul]
       (x ^ n).orderTop + x.orderTop ≤ (x ^ n * x).orderTop := orderTop_add_le_mul
       (x ^ n * x).orderTop ≤ (x ^ n * x ^ 1).orderTop := by rw [pow_one]

@@ -206,8 +206,7 @@ instance : AddMonoidWithOne (MvPowerSeries σ R) :=
   { show AddMonoid (MvPowerSeries σ R) by infer_instance with
     natCast := fun n => monomial 0 n
     natCast_zero := by simp [Nat.cast]
-    natCast_succ := by simp [Nat.cast, monomial_zero_one]
-    one := 1 }
+    natCast_succ := by simp [Nat.cast, monomial_zero_one] }
 
 instance : Mul (MvPowerSeries σ R) :=
   letI := Classical.decEq σ
@@ -822,6 +821,10 @@ theorem coe_mul : ((φ * ψ : MvPolynomial σ R) : MvPowerSeries σ R) = φ * ψ
   MvPowerSeries.ext fun n => by
     classical
     simp only [coeff_coe, MvPowerSeries.coeff_mul, coeff_mul]
+
+@[simp, norm_cast]
+lemma coe_smul (φ : MvPolynomial σ R) (r : R) :
+    (r • φ : MvPolynomial σ R) = r • (φ : MvPowerSeries σ R) := rfl
 
 @[simp, norm_cast]
 theorem coe_C (a : R) : ((C a : MvPolynomial σ R) : MvPowerSeries σ R) = MvPowerSeries.C a :=
