@@ -220,21 +220,17 @@ lemma IsClosedUnderColimitsOfShape.of_equivalence (e : J ≌ J')
 lemma colimitsOfShape_eq_unop_limitsOfShape :
     P.colimitsOfShape J = (P.op.limitsOfShape Jᵒᵖ).unop := by
   ext X
-  constructor
-  · rintro ⟨h⟩
-    exact ⟨{
-      diag := h.diag.op
-      π := NatTrans.op h.ι
-      isLimit := isLimitOfUnop h.isColimit
-      prop_diag_obj _ := h.prop_diag_obj _
-    }⟩
-  · rintro ⟨h⟩
-    exact ⟨{
-      diag := h.diag.unop
-      ι := NatTrans.unop h.π
-      isColimit := isColimitOfOp h.isLimit
-      prop_diag_obj _ := h.prop_diag_obj _
-    }⟩
+  refine ⟨fun ⟨h⟩ => ⟨?_⟩, fun ⟨h⟩ => ⟨?_⟩⟩
+  · exact
+      { diag := h.diag.op
+        π := NatTrans.op h.ι
+        isLimit := isLimitOfUnop h.isColimit
+        prop_diag_obj _ := h.prop_diag_obj _ }
+  · exact
+      { diag := h.diag.unop
+        ι := NatTrans.unop h.π
+        isColimit := isColimitOfOp h.isLimit
+        prop_diag_obj _ := h.prop_diag_obj _ }
 
 lemma limitsOfShape_eq_unop_colimitsOfShape :
     P.limitsOfShape J = (P.op.colimitsOfShape Jᵒᵖ).unop := by
