@@ -402,7 +402,7 @@ theorem affineCombination_vsub (w₁ w₂ : ι → k) (p : ι → P) :
 theorem attach_affineCombination_of_injective [DecidableEq P] (s : Finset P) (w : P → k) (f : s → P)
     (hf : Function.Injective f) :
     s.attach.affineCombination k f (w ∘ f) = (image f univ).affineCombination k id w := by
-  simp_all [affineCombination]
+  simp [affineCombination, hf]
 
 theorem attach_affineCombination_coe (s : Finset P) (w : P → k) :
     s.attach.affineCombination k ((↑) : s → P) (w ∘ (↑)) = s.affineCombination k id w := by
