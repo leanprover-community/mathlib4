@@ -193,8 +193,8 @@ lemma meromorphicTrailingCoeffAt_congr_nhdsNE {f₁ f₂ : 𝕜 → E} (h : f₁
 -/
 
 /--
-If `f₁` and `f₂` have unequal order at `x`, then the trailing coefficient of `f₁
-+ f₂` at `x` is the trailing coefficient of the function with the lowest order.
+If `f₁` and `f₂` have unequal order at `x`, then the trailing coefficient of `f₁ + f₂` at `x` is the
+trailing coefficient of the function with the lowest order.
 -/
 theorem MeromorphicAt.meromorphicTrailingCoeffAt_add_eq_left_of_lt {f₁ f₂ : 𝕜 → E}
   (hf₂ : MeromorphicAt f₂ x) (h : meromorphicOrderAt f₁ x < meromorphicOrderAt f₂ x) :
