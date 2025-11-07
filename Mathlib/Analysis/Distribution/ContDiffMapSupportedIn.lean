@@ -66,7 +66,7 @@ open scoped BoundedContinuousFunction Topology NNReal
 variable (𝕜 E F : Type*) [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
-  {n : ℕ∞} {K : Compacts E}
+  {n k : ℕ∞} {K : Compacts E}
 
 /-- The type of bundled `n`-times continuously differentiable maps which vanish outside of a fixed
 compact set `K`. -/
@@ -249,107 +249,76 @@ protected theorem bounded_iteratedFDeriv (f : 𝓓^{n}_{K}(E, F)) {i : ℕ} (hi 
     (f.contDiff.continuous_iteratedFDeriv <| (WithTop.le_coe rfl).mpr hi)
     (f.hasCompactSupport.iteratedFDeriv i)
 
-
 /-- Inclusion of `𝓓^{n}_{K}(E, F)` into the space `E →ᵇ F` of bounded continuous maps
 as a `𝕜`-linear map. -/
 @[simps]
-noncomputable def toBoundedContinuousFunctionₗ : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ F  where
+noncomputable def toBoundedContinuousFunctionₗ : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ F where
   toFun f := f
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
+section iteratedFDerivWithOrder
+
+variable (n k) in
 /-- Wrapper for `iteratedFDeriv i` on `𝓓^{n}_{K}(E, F)`,
 as a map into `𝓓^{n-i}_{K}(E, E [×i]→L[ℝ] F)`. -/
-noncomputable def iteratedFDerivWithOrder (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
-    𝓓^{n-i}_{K}(E, E [×i]→L[ℝ] F) :=
-  if hi : i ≤ n then
-    .of_support_subset
-    (f.contDiff.iteratedFDeriv_right <| (WithTop.coe_le_coe.mpr ((tsub_add_cancel_of_le hi).le)))
-    ((support_iteratedFDeriv_subset i).trans f.tsupport_subset)
-  else 0
+noncomputable def iteratedFDerivWithOrderₗ (i : ℕ) :
+    𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{k}_{K}(E, E [×i]→L[ℝ] F) where
+  toFun f :=
+    if hi : k + i ≤ n then
+      .of_support_subset
+      (f.contDiff.iteratedFDeriv_right <| by exact_mod_cast hi)
+      ((support_iteratedFDeriv_subset i).trans f.tsupport_subset)
+    else 0
+  map_add' f g := by
+    split_ifs with hi
+    · have hi' : (i : WithTop ℕ∞) ≤ n := by exact_mod_cast le_of_add_le_right hi
+      ext
+      simp [iteratedFDeriv_add (f.contDiff.of_le hi') (g.contDiff.of_le hi')]
+    · simp
+  map_smul' c f := by
+    split_ifs with hi
+    · have hi' : (i : WithTop ℕ∞) ≤ n := by exact_mod_cast le_of_add_le_right hi
+      ext
+      simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi').contDiffAt]
+    · simp
 
 @[simp]
-lemma iteratedFDerivWithOrder_apply (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) (x : E) :
-    f.iteratedFDerivWithOrder i x = if i ≤ n then iteratedFDeriv ℝ i f x else 0 := by
-  rw [ContDiffMapSupportedIn.iteratedFDerivWithOrder]
+lemma coe_iteratedFDerivWithOrderₗ {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
+    iteratedFDerivWithOrderₗ 𝕜 n k i f = if k + i ≤ n then iteratedFDeriv ℝ i f else 0 := by
+  rw [ContDiffMapSupportedIn.iteratedFDerivWithOrderₗ]
   split_ifs <;> rfl
 
-@[simp]
-lemma coe_iteratedFDerivWithOrder_of_le {i : ℕ} (hin : i ≤ n) (f : 𝓓^{n}_{K}(E, F)) :
-    f.iteratedFDerivWithOrder i = iteratedFDeriv ℝ i f := by
+lemma coe_iteratedFDerivWithOrder_of_le {i : ℕ} (hin : k + i ≤ n) (f : 𝓓^{n}_{K}(E, F)) :
+    iteratedFDerivWithOrderₗ 𝕜 n k i f = iteratedFDeriv ℝ i f := by
+  simp [hin]
+
+lemma coe_iteratedFDerivWithOrder_of_gt {i : ℕ} (hin : ¬ (k + i ≤ n)) (f : 𝓓^{n}_{K}(E, F)) :
+    iteratedFDerivWithOrderₗ 𝕜 n k i f = 0 := by
   ext : 1
-  rw [iteratedFDerivWithOrder_apply]
-  exact dif_pos hin
+  simp [hin]
 
-@[simp]
-lemma coe_iteratedFDerivWithOrder_of_gt {i : ℕ} (hin : i > n) (f : 𝓓^{n}_{K}(E, F)) :
-    f.iteratedFDerivWithOrder i = 0 := by
-  ext : 1
-  rw [iteratedFDerivWithOrder_apply]
-  exact dif_neg (not_le_of_gt hin)
-
-@[simp]
-lemma coe_iteratedFDerivWithOrder_of_gt' {i : ℕ} (hin : i > n) :
-    (iteratedFDerivWithOrder i : 𝓓^{n}_{K}(E, F) → _) = 0 := by
-  ext : 2
-  rw [iteratedFDerivWithOrder_apply]
-  exact dif_neg (not_le_of_gt hin)
-
-lemma iteratedFDerivWithOrder_add (i : ℕ) {f g : 𝓓^{n}_{K}(E, F)} :
-    (f + g).iteratedFDerivWithOrder i = f.iteratedFDerivWithOrder i + g.iteratedFDerivWithOrder i
-  := by
-  ext : 1
-  simp only [iteratedFDerivWithOrder_apply, coe_add, Pi.add_apply]
-  split_ifs with hin
-  · refine iteratedFDeriv_add_apply (ContDiff.contDiffAt ?_) (ContDiff.contDiffAt ?_)
-    · exact f.contDiff.of_le (by exact_mod_cast hin)
-    · exact g.contDiff.of_le (by exact_mod_cast hin)
-  · rw [add_zero]
-
-lemma iteratedFDerivWithOrder_smul (i : ℕ) {c : 𝕜} {f : 𝓓^{n}_{K}(E, F)} :
-    (c • f).iteratedFDerivWithOrder i = c • f.iteratedFDerivWithOrder i := by
-  ext : 1
-  simp only [iteratedFDerivWithOrder_apply, coe_smul, Pi.smul_apply]
-  split_ifs with hin
-  · apply iteratedFDeriv_const_smul_apply
-    refine ContDiff.contDiffAt <| f.contDiff.of_le (by exact_mod_cast hin)
-  · rw [smul_zero]
-
-/-- Wrapper for iteratedFDerivWithOrder as a `𝕜`-linear map. -/
-@[simps]
-noncomputable def iteratedFDerivWithOrderₗ (i : ℕ) :
-    𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n-i}_{K}(E, E [×i]→L[ℝ] F) where
-  toFun f := f.iteratedFDerivWithOrder i
-  map_add' _ _ := iteratedFDerivWithOrder_add i
-  map_smul' _ _ := iteratedFDerivWithOrder_smul 𝕜 i
-
-lemma iteratedFDerivWithOrderₗ_eq_iteratedFDerivWithOrder (i : ℕ) :
-  (iteratedFDerivWithOrderₗ 𝕜 i : 𝓓^{n}_{K}(E, F) → _) = (iteratedFDerivWithOrder i : _) := by
-  congr
-
-lemma iteratedFDerivWithOrder_zero (i : ℕ) :
-    (0 : 𝓓^{n}_{K}(E, F)).iteratedFDerivWithOrder i = 0 :=
-  map_zero (iteratedFDerivWithOrderₗ ℝ i)
-
+variable (n) in
 /-- The composition of `ContDiffMapSupportedIn.toBoundedContinuousFunctionₗ` and
 `ContDiffMapSupportedIn.iteratedFDerivₗ`. We define this as a separate `abbrev` because this family
 of maps is used a lot for defining and using the topology on `ContDiffMapSupportedIn`, and Lean
 takes a long time to infer the type of `toBoundedContinuousFunctionₗ 𝕜 ∘ₗ iteratedFDerivₗ 𝕜 i`. -/
-noncomputable def iteratedFDeriv_toBoundedContinuousFunctionₗ (i : ℕ) :
+noncomputable def structureMapₗ (i : ℕ) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F) :=
-  toBoundedContinuousFunctionₗ 𝕜 ∘ₗ iteratedFDerivWithOrderₗ 𝕜 i
+  toBoundedContinuousFunctionₗ 𝕜 ∘ₗ iteratedFDerivWithOrderₗ 𝕜 n 0 i
 
+end iteratedFDerivWithOrder
 section Topology
 
 noncomputable instance topologicalSpace : TopologicalSpace 𝓓^{n}_{K}(E, F) :=
-  ⨅ (i : ℕ), induced (iteratedFDeriv_toBoundedContinuousFunctionₗ ℝ i) inferInstance
+  ⨅ (i : ℕ), induced (structureMapₗ ℝ n i) inferInstance
 
 noncomputable instance uniformSpace : UniformSpace 𝓓^{n}_{K}(E, F) := .replaceTopology
-  (⨅ (i : ℕ), UniformSpace.comap (iteratedFDeriv_toBoundedContinuousFunctionₗ ℝ i) inferInstance)
+  (⨅ (i : ℕ), UniformSpace.comap (structureMapₗ ℝ n i) inferInstance)
   toTopologicalSpace_iInf.symm
 
 protected theorem uniformSpace_eq_iInf : (uniformSpace : UniformSpace 𝓓^{n}_{K}(E, F)) =
-    ⨅ (i : ℕ), UniformSpace.comap (iteratedFDeriv_toBoundedContinuousFunctionₗ ℝ i)
+    ⨅ (i : ℕ), UniformSpace.comap (structureMapₗ ℝ n i)
       inferInstance :=
   UniformSpace.replaceTopology_eq _ toTopologicalSpace_iInf.symm
 
@@ -360,14 +329,25 @@ instance : IsUniformAddGroup 𝓓^{n}_{K}(E, F) := by
 
 instance : ContinuousSMul 𝕜 𝓓^{n}_{K}(E, F) := by
   refine continuousSMul_iInf
-    (fun i ↦ continuousSMul_induced (iteratedFDeriv_toBoundedContinuousFunctionₗ 𝕜 i))
+    (fun i ↦ continuousSMul_induced (structureMapₗ 𝕜 n i))
 
 instance : LocallyConvexSpace ℝ 𝓓^{n}_{K}(E, F) :=
   LocallyConvexSpace.iInf fun _ ↦ LocallyConvexSpace.induced _
 
+variable (n) in
+/-- The composition of `ContDiffMapSupportedIn.toBoundedContinuousFunctionₗ` and
+`ContDiffMapSupportedIn.iteratedFDerivₗ`. We define this as a separate `abbrev` because this family
+of maps is used a lot for defining and using the topology on `ContDiffMapSupportedIn`, and Lean
+takes a long time to infer the type of `toBoundedContinuousFunctionₗ 𝕜 ∘ₗ iteratedFDerivₗ 𝕜 i`. -/
+noncomputable def structureMapL (i : ℕ) :
+    𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ (E [×i]→L[ℝ] F) where
+  toLinearMap := structureMapₗ 𝕜 n i
+  cont := continuous_iInf_dom continuous_induced_dom
+
 lemma continuous_iff_comp {X} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
-    Continuous φ ↔ ∀ i, Continuous (iteratedFDeriv_toBoundedContinuousFunctionₗ ℝ i ∘ φ) := by
+    Continuous φ ↔ ∀ i, Continuous (structureMapL ℝ n i ∘ φ) := by
   simp_rw [continuous_iInf_rng, continuous_induced_rng]
+  rfl
 
 end Topology
 
