@@ -306,47 +306,35 @@ theorem getD_digits (b n i : ℕ) (h : 2 ≤ b) : (Nat.digits b n).getD i 0 = n 
   simp only [List.getD_eq_getElem?_getD]
   obtain (n0l | n0r) := Nat.eq_zero_or_pos n
   · simp [n0l]
-    have ne0 : n ≠ 0 := Nat.ne_zero_of_lt n0r
-    have split : n < b ^ i ∨ b ^ i ≤ n := Nat.lt_or_ge n (b ^ i)
-    cases split with
-    | inl hl =>
-        have h₁ : (b.digits n).length ≤ i := by
-          have dl := Nat.digits_len b n h ne0
-          rw [dl]
-          have log_lt_i := (@Nat.log_lt_of_lt_pow b i n ne0) hl
-          exact Nat.add_one_le_iff.mp log_lt_i
-        simp only [not_lt, h₁, getElem?_neg, Option.getD_none]
-        have eq0 : 0 = n / b ^ i := Eq.symm (Nat.div_eq_of_lt hl)
-        rw [← eq0]
-        rfl
-    | inr hr =>
-      have iLtDig : i < (b.digits n).length := by
-        have lenEq := Nat.digits_len b n h ne0
-        rw [lenEq, add_comm]
-        apply Nat.lt_one_add_iff.mpr
-        exact (Nat.pow_le_iff_le_log h ne0 ).mp hr
-      have h₁ := Nat.self_div_pow_eq_ofDigits_drop i n h
-      have bne1 : b ≠ 1 := Ne.symm (Nat.ne_of_lt h)
-      have h₂ := Nat.head!_digits (n := n / b ^ i) bne1
-      rw [← h₂]
-      have h₃ := congrArg (Nat.digits b) h₁
-      have mne0 : n ≠ 0 := Nat.ne_zero_of_lt n0r
-      have h₄ : ∀ l ∈ List.drop i (b.digits n), l < b := by
-        have hi : ∀ x ∈ b.digits n, x < b := by
-          intro y hy
-          exact Nat.digits_lt_base h hy
-        intro y hy
-        exact hi y (List.mem_of_mem_drop hy)
-      have h₅ (hi : List.drop i (b.digits n) ≠ []) : (List.drop i (b.digits n)).getLast h ≠ 0 := by
-        have hi₁ := List.getLast_drop hi
-        rw [hi₁]
-        exact Nat.getLast_digit_ne_zero b mne0
-      have h₆ : b.digits (Nat.ofDigits b (List.drop i (b.digits n))) = (List.drop i (b.digits n)) :=
-       Nat.digits_ofDigits b h (List.drop i (b.digits n)) h₄ h₅
-      rw [h₆] at h₃
-      have h₇ := List.cons_getElem_drop_succ (l:=(b.digits n)) (n := i) (h := iLtDig)
-      have h₈ := List.getElem?_eq_getElem (l := (b.digits n)) iLtDig
-      rw [h₃, ← h₇,List.head!_cons, h₈]
-      simp
+  · have ne0 : n ≠ 0 := Nat.ne_zero_of_lt n0r
+    obtain ⟨b, rfl⟩ := Nat.exists_eq_add_of_le' h
+    clear h
+    rw [← List.getD_eq_getElem?_getD]
+    induction n using Nat.strongRecOn generalizing i with | ind n IH
+    rcases n with (_ | n)
+    · simp
+    · rcases i with _ | i
+      · simp
+      · simp only [le_add_iff_nonneg_left, zero_le, lt_add_iff_pos_left, add_pos_iff, zero_lt_one,
+        or_true, Nat.digits_of_two_le_of_pos, List.getD_eq_getElem?_getD, List.getElem?_cons_succ]
+        rw [← List.getD_eq_getElem?_getD]
+        by_cases hc: ( b + 2 ) ≤ ( n + 1 )
+        · have hltone := (Nat.one_le_div_iff (a := (n + 1)) (b := (b + 2)) (by grind)).mpr hc
+          have hs := IH ((n + 1) / (b + 2)) (Nat.div_lt_self' n b) i hltone (Nat.ne_zero_of_lt hltone)
+          rw [hs]
+          have ht : (n + 1) / (b + 2) / (b + 2) ^ i = (n + 1) / ((b + 2) ^ (i + 1)) := by
+            rw [Nat.div_div_eq_div_mul, mul_comm]
+            congr
+          rw [ht]
+        · have hlt : n + 1 < b + 2 := by grind
+          have hn : (n + 1) / (b + 2) = 0 := Nat.div_eq_of_lt hlt
+          have hn2 : (n + 1) / ((b + 2) ^ (i + 1)) = 0 := by
+            refine Nat.div_eq_of_lt ?_
+            calc
+              _ < _ := hlt
+              _ ≤ _ := Nat.le_pow (by grind)
+          simp only [hn, hn2, Nat.digits_zero, List.getD_eq_getElem?_getD,
+            List.length_nil, not_lt_zero', not_false_eq_true, getElem?_neg, Option.getD_none]
+          rfl
 
 end Nat
