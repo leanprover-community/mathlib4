@@ -88,6 +88,11 @@ jobs:
             create_pr=true
             echo "PR does not exist, need to run create-pull-request to check whether one should be created"
           fi
+          if [ "${{ steps.PR.outputs.pr_found }}" == "true" ] && \
+             git diff --quiet "origin/master" -- lake-manifest.json; then
+            create_pr=true
+            echo "No differences found with lake-manifest.json on master, need to run create-pull-request to close the PR"
+          fi
           if [ "${{ contains(steps.PR.outputs.pr_labels, 'merge-conflict') }}" == "true" ]; then
             create_pr=true
             echo "merge-conflict on PR, need to run create-pull-request to update $BRANCH_NAME"
@@ -96,11 +101,6 @@ jobs:
              ! git diff --quiet "origin/$BRANCH_NAME" -- lake-manifest.json; then
             create_pr=true
             echo "Differences found with lake-manifest.json on $BRANCH_NAME, need to run create-pull-request to update $BRANCH_NAME"
-          fi
-          if [ "${{ steps.PR.outputs.pr_found }}" == "true" ] && \
-             git diff --quiet "origin/master" -- lake-manifest.json; then
-            create_pr=true
-            echo "No differences in lake-manifest.json on master, need to run create-pull-request to close the PR"
           fi
           # Otherwise, there's no reason to run create-pull-request
           echo "create_pr=$create_pr" >> "${GITHUB_OUTPUT}"
