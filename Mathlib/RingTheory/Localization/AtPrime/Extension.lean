@@ -21,8 +21,8 @@ bijection.
 - `IsLocalization.AtPrime.mem_primesOver_of_isPrime`: The nonzero prime ideals of `Sₚ` are
   primes over the maximal ideal of `Rₚ`.
 
-- `IsLocalization.AtPrime.primesOverEquivPrimesOver`: the bijection between the primes over
-  `p` in `S` and the primes over the maximal ideal of `Rₚ` in `Sₚ`.
+- `IsDedekindDomain.primesOverEquivPrimesOver`: the order-preserving bijection between the primes
+  over `p` in `S` and the primes over the maximal ideal of `Rₚ` in `Sₚ`.
 
 -/
 
@@ -34,19 +34,6 @@ variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.
   [Algebra Rₚ Sₚ] (P : Ideal S) [hPp : P.LiesOver p]
 
 namespace IsLocalization.AtPrime
-
-include p in
-theorem isPrime_map_of_liesOver [P.IsPrime] : (P.map (algebraMap S Sₚ)).IsPrime :=
-  isPrime_of_isPrime_disjoint _ _ _ inferInstance (Ideal.disjoint_primeCompl_of_liesOver P p)
-
-theorem map_eq_maximalIdeal : p.map (algebraMap R Rₚ) = maximalIdeal Rₚ := by
-  convert congr_arg (Ideal.map (algebraMap R Rₚ)) (comap_maximalIdeal Rₚ p).symm
-  rw [map_comap p.primeCompl]
-
-include p in
-theorem comap_map_of_isMaximal [P.IsMaximal] :
-    Ideal.comap (algebraMap S Sₚ) (Ideal.map (algebraMap S Sₚ) P) = P :=
-  comap_map_eq_self_of_isMaximal _ (isPrime_map_of_liesOver p Sₚ P).ne_top
 
 /--
 The nonzero prime ideals of `Sₚ` are prime ideals over the maximal ideal of `Rₚ`.
@@ -63,7 +50,7 @@ theorem liesOver_comap_of_liesOver {T : Type*} [CommRing T] [Algebra R T] [Algeb
     [Algebra S T] [IsScalarTower R S T] [IsScalarTower R Rₚ T] (Q : Ideal T)
     [Q.LiesOver (maximalIdeal Rₚ)] : (comap (algebraMap S T) Q).LiesOver p := by
   have : Q.LiesOver p := by
-    have : (maximalIdeal Rₚ).LiesOver p := (liesOver_iff _ _).mpr (comap_maximalIdeal _ _).symm
+    have : (maximalIdeal Rₚ).LiesOver p := liesOver_maximalIdeal Rₚ p _
     exact LiesOver.trans Q (IsLocalRing.maximalIdeal Rₚ) p
   exact comap_liesOver Q p <| IsScalarTower.toAlgHom R S T
 
@@ -72,12 +59,13 @@ variable [Algebra R Sₚ] [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ]
 include p in
 theorem liesOver_map_of_liesOver [P.IsPrime] :
     (P.map (algebraMap S Sₚ)).LiesOver (IsLocalRing.maximalIdeal Rₚ) := by
-  rw [liesOver_iff, eq_comm, ← map_eq_maximalIdeal p]
-  exact under_map_eq_map P p ((liesOver_iff P p).mp hPp)
-    (map_eq_maximalIdeal p Rₚ ▸ maximalIdeal.isMaximal Rₚ) (isPrime_map_of_liesOver p Sₚ _).ne_top
+  rw [liesOver_iff, eq_comm, ← map_eq_maximalIdeal p, over_def P p]
+  exact under_map_eq_map_under _
+    (over_def P p ▸ map_eq_maximalIdeal p Rₚ ▸ maximalIdeal.isMaximal Rₚ)
+    (isPrime_map_of_liesOver S p Sₚ P).ne_top
 
 end IsLocalization.AtPrime
-section IsDedekindDomain
+namespace IsDedekindDomain
 
 open IsLocalization AtPrime
 
@@ -90,22 +78,21 @@ between the primes of `S` over `p` and the primes over the maximal ideal of `R�
 `Rₚ` and `Sₚ` are resp. the localizations of `R` and `S` at the complement of `p`.
 -/
 noncomputable def primesOverEquivPrimesOver (hp : p ≠ ⊥) :
-    p.primesOver S ≃o (maximalIdeal Rₚ).primesOver Sₚ := {
-  toFun := fun P ↦ ⟨map (algebraMap S Sₚ) P.1, isPrime_map_of_liesOver p Sₚ P.1,
+    p.primesOver S ≃o (maximalIdeal Rₚ).primesOver Sₚ where
+  toFun P := ⟨map (algebraMap S Sₚ) P.1, isPrime_map_of_liesOver S p Sₚ P.1,
     liesOver_map_of_liesOver p Rₚ Sₚ P.1⟩
-  map_rel_iff' := by
-    intro Q Q'
+  map_rel_iff' {Q Q'} := by
     refine ⟨fun h ↦ ?_, fun h ↦ map_mono h⟩
     have : Q'.1.IsMaximal :=
       (primesOver.isPrime p Q').isMaximal (ne_bot_of_mem_primesOver hp Q'.prop)
-    simpa [comap_map_of_isMaximal p] using le_comap_of_map_le h
-  invFun := fun Q ↦ ⟨comap (algebraMap S Sₚ) Q.1, IsPrime.under S Q.1,
+    simpa [comap_map_of_isMaximal S p] using le_comap_of_map_le h
+  invFun Q := ⟨comap (algebraMap S Sₚ) Q.1, IsPrime.under S Q.1,
     liesOver_comap_of_liesOver p Rₚ Q.1⟩
   left_inv P := by
     have : P.val.IsMaximal := Ring.DimensionLEOne.maximalOfPrime
         (ne_bot_of_mem_primesOver hp P.prop) (primesOver.isPrime p P)
-    exact SetCoe.ext <| IsLocalization.AtPrime.comap_map_of_isMaximal p Sₚ P.1
-  right_inv Q := SetCoe.ext <| map_comap (algebraMapSubmonoid S p.primeCompl) Sₚ Q }
+    exact SetCoe.ext <| IsLocalization.AtPrime.comap_map_of_isMaximal S p Sₚ P.1
+  right_inv Q := SetCoe.ext <| map_comap (algebraMapSubmonoid S p.primeCompl) Sₚ Q
 
 @[simp]
 theorem primesOverEquivPrimesOver_apply (hp : p ≠ ⊥) (P : p.primesOver S) :
