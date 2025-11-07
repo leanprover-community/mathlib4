@@ -36,12 +36,8 @@ lemma LocalizedModule.subsingleton_iff_disjoint {f : R} :
   rw [subsingleton_iff_support_subset, PrimeSpectrum.basicOpen_eq_zeroLocus_compl,
     disjoint_compl_left_iff, Set.le_iff_subset]
 
-lemma Module.stableUnderSpecialization_support :
-    StableUnderSpecialization (Module.support R M) := by
-  intro x y e H
-  rw [mem_support_iff_exists_annihilator] at H ⊢
-  obtain ⟨m, hm⟩ := H
-  exact ⟨m, hm.trans ((PrimeSpectrum.le_iff_specializes _ _).mpr e)⟩
+lemma Module.stableUnderSpecialization_support : StableUnderSpecialization (Module.support R M) :=
+  fun x y e ↦ mem_support_mono <| (PrimeSpectrum.le_iff_specializes x y).mpr e
 
 lemma Module.isClosed_support [Module.Finite R M] :
     IsClosed (Module.support R M) := by
