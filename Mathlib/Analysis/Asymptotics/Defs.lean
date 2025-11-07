@@ -222,7 +222,7 @@ theorem IsBigO.exists_nonneg (h : f =O[l] g') : ∃ c ≥ 0, IsBigOWith c l f g'
   let ⟨_c, hc⟩ := h.isBigOWith
   hc.exists_nonneg
 
-/-- `f = O(g)` if and only if `IsBigOWith c f g` for all sufficiently large `c`. -/
+/-- `f = O(g)` if and only if `IsBigOWith c l f g` for all sufficiently large `c`. -/
 theorem isBigO_iff_eventually_isBigOWith : f =O[l] g' ↔ ∀ᶠ c in atTop, IsBigOWith c l f g' :=
   isBigO_iff_isBigOWith.trans
     ⟨fun ⟨c, hc⟩ => mem_atTop_sets.2 ⟨c, fun _c' hc' => hc.weaken hc'⟩, fun h => h.exists⟩
@@ -623,7 +623,7 @@ protected theorem IsLittleO.insert [TopologicalSpace α] {x : α} {s : Set α} {
     {g' : α → F'} (h1 : g =o[𝓝[s] x] g') (h2 : g x = 0) : g =o[𝓝[insert x s] x] g' :=
   (isLittleO_insert h2).mpr h1
 
-/-! ### Simplification : norm, abs -/
+/-! ### Simplification: norm, abs -/
 
 
 section NormAbs

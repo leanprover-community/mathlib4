@@ -19,7 +19,7 @@ intersection of convex sets. Let `X₁, ⋯, Xₙ` be a finite family of convex 
 `n ≥ d + 1`. The theorem states that if any `d + 1` sets from this family intersect nontrivially,
 then the whole family intersects nontrivially. For the infinite family of sets it is not true, as
 the example of `Set.Ioo 0 (1 / n)` for `n : ℕ` shows. But the statement is true if we assume
-compactness of sets (see `helly_theorem_compact`)
+compactness of sets (see `helly_theorem_compact`).
 
 ## Tags
 

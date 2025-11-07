@@ -135,7 +135,7 @@ theorem summable_sum_mul_range_of_summable_norm' {f g : ℕ → R}
 /-- The Cauchy product formula for the product of two infinite sums indexed by `ℕ`,
 expressed by summing on `Finset.range`.
 See also `tsum_mul_tsum_eq_tsum_sum_range` if `f` and `g` are
-not* absolutely summable, and `tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm'` when the
+not absolutely summable, and `tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm'` when the
 space is not complete. -/
 theorem tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm [CompleteSpace R] {f g : ℕ → R}
     (hf : Summable fun x => ‖f x‖) (hg : Summable fun x => ‖g x‖) :
