@@ -233,17 +233,20 @@ lemma toLp_sum [AddCommGroup V] {ι : Type*} (s : Finset ι) (f : ι → V) :
   map_sum (WithLp.addEquiv _ _).symm _ _
 
 /-- `WithLp.equiv` as a linear equivalence. -/
+@[simps -fullyApplied apply symm_apply]
 protected def linearEquiv [Semiring K] [AddCommGroup V] [Module K V] : WithLp p V ≃ₗ[K] V where
   __ := WithLp.addEquiv p V
   map_smul' _ _ := rfl
 
-@[simp]
-lemma linearEquiv_apply [Semiring K] [AddCommGroup V] [Module K V] :
+lemma coe_linearEquiv [Semiring K] [AddCommGroup V] [Module K V] :
     ⇑(WithLp.linearEquiv p K V) = ofLp := rfl
 
-@[simp]
-lemma linearEquiv_symm_apply [Semiring K] [AddCommGroup V] [Module K V] :
+lemma coe_symm_linearEquiv [Semiring K] [AddCommGroup V] [Module K V] :
     ⇑(WithLp.linearEquiv p K V).symm = toLp p := rfl
+
+@[simp]
+lemma toAddEquiv_linearEquiv [Semiring K] [AddCommGroup V] [Module K V] :
+    (WithLp.linearEquiv p K V).toAddEquiv = WithLp.addEquiv p V := rfl
 
 instance instModuleFinite
     [Semiring K] [AddCommGroup V] [Module K V] [Module.Finite K V] :
