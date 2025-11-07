@@ -105,8 +105,8 @@ TODO consider relocating these lemmas.
     congrArg One.mk h_one
   have h_natCast : inst₁.toNatCast.natCast = inst₂.toNatCast.natCast := by
     funext n; induction n with
-    | zero     => rewrite [inst₁.natCast_zero, inst₂.natCast_zero]
-                  exact congrArg (@Zero.zero R) h_zero'
+    | zero => rewrite [inst₁.natCast_zero, inst₂.natCast_zero]
+              exact congrArg (@Zero.zero R) h_zero'
     | succ n h => rw [inst₁.natCast_succ, inst₂.natCast_succ, h_add]
                   exact congrArg₂ _ h h_one
   rcases inst₁ with @⟨⟨⟩⟩; rcases inst₂ with @⟨⟨⟩⟩
@@ -222,7 +222,7 @@ TODO consider relocating these lemmas. -/
   injection h_group with h_group; injection h_group
   have : inst₁.toIntCast.intCast = inst₂.toIntCast.intCast := by
     funext n; cases n with
-    | ofNat n   => rewrite [Int.ofNat_eq_coe, inst₁.intCast_ofNat, inst₂.intCast_ofNat]; congr
+    | ofNat n => rewrite [Int.ofNat_eq_coe, inst₁.intCast_ofNat, inst₂.intCast_ofNat]; congr
     | negSucc n => rewrite [inst₁.intCast_negSucc, inst₂.intCast_negSucc]; congr
   rcases inst₁ with @⟨⟨⟩⟩; rcases inst₂ with @⟨⟨⟩⟩
   congr
