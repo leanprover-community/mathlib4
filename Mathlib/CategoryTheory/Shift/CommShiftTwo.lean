@@ -29,118 +29,110 @@ variable {C₁ C₂ D : Type*} [Category C₁] [Category C₂] [Category D]
 
 section
 
-variable (D) (M : Type*) [AddCommMonoid M] [HasShift D M]
+variable (D) (M : Type*)
+  [AddCommMonoid M] [HasShift C₁ M] [HasShift C₂ M] [HasShift D M]
 
-class Shift₂Data (D : Type*) [Category D] (M : Type*) [AddCommMonoid M] [HasShift D M] where
-  z (D) (m₁ m₂ : M) : (CatCenter D)ˣ
-  -- TODO: add axioms...
-
-variable [Shift₂Data D M]
-
-/-def twistShiftData : TwistShiftData (PullbackShift D (.sum M)) (M × M) := sorry
-
-abbrev TwistShift₂ : Type _ := TwistShift (twistShiftData D M)
-
-noncomputable def twistShift₂Iso (m₁ m₂ m : M) (hm : m₁ + m₂ = m) :
-    shiftFunctor (TwistShift₂ D M) (m₁, m₂) ≅
-      shiftFunctor D m :=
-  eqToIso (by aesop)-/
+structure CommShift₂Setup where
+  twistShiftData : TwistShiftData (PullbackShift D (.sum M)) (M × M)
+  ε (m n : M) : (CatCenter D)ˣ
 
 end
 
-/-namespace Functor
+namespace Functor
 
-variable (F : C₁ ⥤ C₂ ⥤ D) (M : Type*) [AddCommMonoid M]
-  [HasShift C₁ M] [HasShift C₂ M] [HasShift D M] [Shift₂Data D M]
+variable (G : C₁ ⥤ C₂ ⥤ D) {M : Type*}
+  [AddCommMonoid M] [HasShift C₁ M] [HasShift C₂ M] [HasShift D M]
 
-abbrev uncurryToTwistShift : C₁ × C₂ ⥤ TwistShift₂ D M := uncurry.obj F
-
-abbrev CommShift₂' := (F.uncurryToTwistShift M).CommShift (M × M)
-
-class CommShift₂ where
-  commShiftObj (X₁ : C₁) : (F.obj X₁).CommShift M := by infer_instance
-  commShiftFlipObj (X₂ : C₂) : (F.flip.obj X₂).CommShift M := by infer_instance
-  commShift_map {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) : NatTrans.CommShift (F.map f) M := by infer_instance
-  commShift_flip_map {X₂ Y₂ : C₂} (f : X₂ ⟶ Y₂) : NatTrans.CommShift (F.flip.map f) M
-    := by infer_instance
-  compatibility (X₁ : C₁) (X₂ : C₂) (m₁ m₂ : M) :
-    ((F.flip.obj (X₂⟦m₂⟧)).commShiftIso m₁).hom.app X₁ ≫
-      (((F.obj X₁).commShiftIso m₂).hom.app X₂)⟦m₁⟧' =
-        Shift₂Data.z D m₁ m₂ •
-          (((F.obj (X₁⟦m₁⟧)).commShiftIso m₂).hom.app X₂) ≫
-            (((F.flip.obj X₂).commShiftIso m₁).hom.app (X₁))⟦m₂⟧' ≫
-            (shiftFunctorComm D m₁ m₂).hom.app ((F.obj X₁).obj X₂)
+class CommShift₂ (h : CommShift₂Setup D M) where
+  commShiftObj (X₁ : C₁) : (G.obj X₁).CommShift M
+  commShift_map {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) : NatTrans.CommShift (G.map f) M
+  commShiftFlipObj (X₂ : C₂) : (G.flip.obj X₂).CommShift M
+  commShift_flip_map {X₂ Y₂ : C₂} (g : X₂ ⟶ Y₂) : NatTrans.CommShift (G.flip.map g) M
+  comm (X₁ : C₁) (X₂ : C₂) (m n : M) :
+      ((G.obj (X₁⟦m⟧)).commShiftIso n).hom.app X₂ ≫
+          (((G.flip.obj X₂).commShiftIso m).hom.app X₁)⟦n⟧' =
+        ((G.flip.obj (X₂⟦n⟧)).commShiftIso m).hom.app X₁ ≫
+          (((G.obj X₁).commShiftIso n).hom.app X₂)⟦m⟧' ≫
+          (shiftComm ((G.obj X₁).obj X₂) m n).inv ≫ (h.ε m n).val.app _
 
 namespace CommShift₂
 
-attribute [instance] commShiftObj commShiftFlipObj commShift_map commShift_flip_map
+attribute [instance] commShiftObj commShiftFlipObj
+  commShift_map commShift_flip_map
 
 end CommShift₂
 
-section
+end Functor
 
-variable [F.CommShift₂ M] {M}
+variable {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C₂ M] [HasShift D M]
+variable (h : CommShift₂Setup D M)
 
-@[simps!]
-def commShift₂Iso' (m₁ m₂ m : M) (h : m₁ + m₂ = m) :
-    (((whiskeringLeft₂ _).obj (shiftFunctor C₁ m₁)).obj (shiftFunctor C₂ m₂)).obj F ≅
-      ((postcompose₂).obj (shiftFunctor D m)).obj F :=
-  NatIso.ofComponents
-    (fun X₁ ↦ NatIso.ofComponents
-      (fun X₂ ↦
-        ((F.obj (X₁⟦m₁⟧)).commShiftIso m₂).app X₂ ≪≫
-          (shiftFunctor D m₂).mapIso (((F.flip.obj X₂).commShiftIso m₁).app X₁) ≪≫
-          (shiftFunctorAdd' D m₁ m₂ m h).symm.app _) (fun {X₂ Y₂} f ↦ by
-            have h₁ := (shiftFunctorAdd' D m₁ m₂ m h).inv.naturality ((F.obj X₁).map f)
-            have h₂ := NatTrans.shift_app_comm (F.flip.map f) m₁ X₁
-            dsimp at h₁ h₂ ⊢
-            simp only [commShiftIso_hom_naturality_assoc, Category.assoc,
-              comp_obj, ← h₁, ← Functor.map_comp_assoc, h₂])) (by
-      rintro X₁ Y₁ f
-      ext X₂
-      have h₁ := (shiftFunctorAdd' D m₁ m₂ m h).inv.naturality ((F.map f).app X₂)
-      have h₂ := NatTrans.shift_app_comm (F.map (f⟦m₁⟧')) m₂ X₂
-      have h₃ := (F.flip.obj X₂).commShiftIso_hom_naturality f m₁
-      dsimp at h₁ h₂ h₃ ⊢
-      simp only [Category.assoc, ← h₁, ← reassoc_of% h₂, ← Functor.map_comp_assoc, h₃])
+namespace CommShift₂Setup
 
-end
+protected abbrev Category (h : CommShift₂Setup D M) := TwistShift h.twistShiftData
 
-namespace commshift₂'OfCommShift₂
+-- variable (G : C₁ × C₂ ⥤ h.Category) [G.CommShift (M × M)]
+-- should be essentially equivalent to
+-- variable (F : C₁ ⥤ C₂ ⥤ D) [F.CommShift₂ h]
 
-variable {M} [F.CommShift₂ M]
+variable (F : C₁ ⥤ C₂ ⥤ D) [F.CommShift₂ h]
 
-noncomputable def iso (m₁ m₂ : M) :
-    shiftFunctor (C₁ × C₂) (m₁, m₂) ⋙ uncurry.obj F ≅
-      uncurry.obj F ⋙ shiftFunctor D (m₁ + m₂) :=
-  currying.functor.mapIso (F.commShift₂Iso' m₁ m₂ _ rfl) ≪≫
-    NatIso.ofComponents (fun _ ↦ Iso.refl _)
+def uncurry : C₁ × C₂ ⥤ h.Category := CategoryTheory.uncurry.obj F
 
-lemma iso_hom_app (m₁ m₂ : M) (X₁ : C₁) (X₂ : C₂) :
-    (iso F m₁ m₂).hom.app (X₁, X₂) =
-    ((F.obj (X₁⟦m₁⟧)).commShiftIso m₂).hom.app X₂ ≫
-      (((F.flip.obj X₂).commShiftIso m₁).hom.app X₁)⟦m₂⟧' ≫
-    (shiftFunctorAdd D m₁ m₂).inv.app _:= by
-  simp [iso, shiftFunctorAdd'_eq_shiftFunctorAdd]
+noncomputable def uncurryCommShiftIso (m n : M) :
+    shiftFunctor (C₁ × C₂) (m, n) ⋙ h.uncurry F ≅
+      h.uncurry F ⋙ shiftFunctor h.Category (m, n) :=
+  fullyFaithfulCurry.preimageIso
+    (NatIso.ofComponents
+      (fun X₁ ↦ (NatIso.ofComponents (fun X₂ ↦
+        (((F.obj (X₁⟦m⟧)).commShiftIso n).app X₂ ≪≫
+        (shiftFunctor D n).mapIso (((F.flip.obj X₂).commShiftIso m).app X₁) ≪≫
+        (shiftFunctorAdd D m n).symm.app _)) (fun {X₂ Y₂} f ↦ by
+        dsimp [uncurry]
+        simp only [Functor.map_id, NatTrans.id_app, Category.id_comp,
+          Functor.commShiftIso_hom_naturality_assoc, Category.assoc, NatIso.cancel_natIso_hom_left,
+          Functor.comp_obj]
+        have := NatTrans.shift_app_comm (F.flip.map f) m X₁
+        dsimp at this
+        erw [← Functor.map_comp_assoc]
+        rw [← this, Functor.map_comp_assoc]
+        congr 1
+        erw [← NatTrans.naturality]
+        rfl))) (fun {X₁ Y₁} f ↦ by
+        ext X₂
+        dsimp [uncurry]
+        simp only [Functor.map_id, Category.comp_id, Category.assoc]
+        erw [← NatTrans.naturality]
+        dsimp
+        rw [← Functor.map_comp_assoc]
+        have := ((F.flip.obj X₂).commShiftIso m).hom.naturality f
+        dsimp at this
+        rw [← this, Functor.map_comp_assoc, NatTrans.shift_app_comm_assoc (F.map (f⟦m⟧'))]))
 
-end commshift₂'OfCommShift₂
+lemma uncurryCommShiftIso_hom_app (X₁ : C₁) (X₂ : C₂) (m n : M) :
+    (h.uncurryCommShiftIso F m n).hom.app (X₁, X₂) =
+      ((F.obj (X₁⟦m⟧)).commShiftIso n).hom.app X₂ ≫
+        ((((F.flip.obj X₂).commShiftIso m).hom.app X₁)⟦n⟧':) ≫
+        (shiftFunctorAdd D m n).inv.app _ := by
+  change 𝟙 _ ≫ (_ ≫ _ ≫ _) ≫ 𝟙 _ = _
+  dsimp
+  rw [Category.id_comp, Category.comp_id]
 
-open commshift₂'OfCommShift₂ in
-noncomputable def commshift₂'OfCommShift₂ [F.CommShift₂ M] :
-    F.CommShift₂' M where
-  iso m := iso F m.1 m.2 ≪≫ isoWhiskerLeft _ ((twistShift₂Iso D M m.1 m.2 _ rfl).symm)
+noncomputable instance : (h.uncurry F).CommShift (M × M) where
+  iso mn := h.uncurryCommShiftIso F mn.1 mn.2
   zero := by
     ext ⟨X₁, X₂⟩
-    rw [CommShift.isoZero_hom_app]
     dsimp
-    simp [iso_hom_app (D := D)]
-    sorry
-  add m n := by
-    ext ⟨X₁, X₂⟩
+    rw [uncurryCommShiftIso_hom_app, Functor.commShiftIso_zero,
+      Functor.commShiftIso_zero]
+    simp [NatTrans.prod, uncurry]
+    rw [pullbackShiftFunctorZero_inv_app, ← NatTrans.naturality_assoc,
+      ← NatTrans.naturality_assoc, ← NatTrans.naturality_assoc]
     dsimp
-    simp [iso_hom_app (D := D)]
+    congr 3
     sorry
+  add := sorry
 
-end Functor-/
+end CommShift₂Setup
 
 end CategoryTheory
