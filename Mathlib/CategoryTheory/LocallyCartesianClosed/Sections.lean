@@ -24,7 +24,11 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Category Limits MonoidalCategory CartesianClosed CartesianMonoidalCategory Over
+open Category Limits MonoidalCategory CartesianClosed CartesianMonoidalCategory
+
+open Over hiding pullback mapPullbackAdj
+
+open ChosenPullback
 
 variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory C]
 
@@ -63,12 +67,12 @@ attribute [local instance] Over.ChosenPullback.cartesianMonoidalCategoryToUnit
 
 @[simps! obj_left obj_hom map_left]
 def toOverTerminal (X : C) (_ : IsTerminal X) : C ⥤ Over X :=
-  toOverUnit C ⋙ ChosenPullback.pullback (toUnit X)
+  toOverUnit C ⋙ pullback (toUnit X)
 
 /-- The isomorphism of functors `toOverUnit C ⋙ ChosenPullback.pullback (toUnit I)` and
 `toOver I`. -/
 def toOverCompPullback (I : C) :
-    toOverUnit C ⋙ ChosenPullback.pullback (toUnit I) ≅ toOver I :=
+    toOverUnit C ⋙ pullback (toUnit I) ≅ toOver I :=
   NatIso.ofComponents fun X => Iso.refl _
 
 /-- The functor `toOver I` is the right adjoint to the functor `Over.forget I`. -/
@@ -85,7 +89,7 @@ theorem forgetAdjToOver.homEquiv_symm {I : C} (X : Over I) (A : C) (f : X ⟶ (t
 /-- The isomorphism of functors `toOver (𝟙_ C)` and `toOverUnit C`. -/
 def toOverIsoToOverUnit :
     toOver (𝟙_ C) ≅ toOverUnit C  :=
-  Adjunction.rightAdjointUniq (forgetAdjToOver (𝟙_ C)) (equivOverUnit |>.toAdjunction)
+  (forgetAdjToOver (𝟙_ C)).rightAdjointUniq (equivOverUnit |>.toAdjunction)
 
 /-- A natural isomorphism between the functors `toOver I` and `toOver J ⋙ pullback f`
 for any morphism `f : X ⟶ Y`. -/
@@ -95,15 +99,15 @@ def toOverPullbackIsoToOver {I J : C} (f : I ⟶ J)
   conjugateIsoEquiv ((ChosenPullback.mapPullbackAdj f).comp (forgetAdjToOver J))
     (forgetAdjToOver I) (mapForget f)
 
-attribute [local instance] Over.cartesianMonoidalCategory
-
 /-- The functor `Over.pullback f : Over Y ⥤ Over X` is naturally isomorphic to
 `Over.star : Over Y ⥤ Over (Over.mk f)` post-composed with the
 iterated slice equivlanece `Over (Over.mk f) ⥤ Over X`. -/
-noncomputable def starIteratedSliceForwardIsoPullback [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
+def toOverIteratedSliceForwardIsoPullback [ChosenPullbacks C] {X Y : C} (f : X ⟶ Y) :
     toOver (Over.mk f) ⋙ (Over.mk f).iteratedSliceForward ≅ pullback f :=
   conjugateIsoEquiv ((Over.mk f).iteratedSliceEquiv.symm.toAdjunction.comp (forgetAdjToOver _))
   (mapPullbackAdj f) (eqToIso (iteratedSliceBackward_forget (Over.mk f)))
+
+section
 
 variable {I : C} (X : C)
 
@@ -114,6 +118,8 @@ example : ChosenPullback.snd (toUnit X) (toUnit I) = CartesianMonoidalCategory.s
 example : (toOver I).obj X = Over.mk (ChosenPullback.snd (toUnit X) (toUnit I)) := by rfl
 
 example : ((toOver I).obj X).hom = CartesianMonoidalCategory.snd X I := by rfl
+
+end
 
 end CartesianMonoidalCategory
 
