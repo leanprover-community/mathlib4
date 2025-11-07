@@ -21,13 +21,17 @@ provides the data of a pullback functor `Over X ⥤ Over Y` as a right adjoint t
 - We prove that `ChosenPullback` has good closure properties, e.g., isos have chosen pullbacks, and
   composition of morphisms with chosen pullbacks have chosen pullbacks.
 
--  `Over.ChosenPullback.isPullback` proves that for morphisms `f` and `g` with the same codomain,
-  the object `Over.ChosenPullback.pullbackObj f g` together with morphisms
-  `Over.ChosenPullback.fst f g` and `Over.ChosenPullback.snd f g` form a pullback square
-  over `f` and `g`.
+-  We prove that chosen pullbacks yields usual pullbacks: `Over.ChosenPullback.isPullback` proves
+  that for morphisms `f` and `g` with the same codomain, the object
+  `Over.ChosenPullback.pullbackObj f g` together with morphisms `Over.ChosenPullback.fst f g` and
+  `Over.ChosenPullback.snd f g` form a pullback square over `f` and `g`.
 
 - We prove that in cartesian monoidal categories, morphisms to the terminal tensor unit and
   the product projections have chosen pullbacks.
+
+- We prove that the slices of a category with chosen pullbacks is cartesian monoidal: In fact,
+  `cartesianMonoidalCategoryOver` provides a computable instance of
+  `CartesianMonoidalCategory (Over X)` for any object `X : C` when `C` has chosen pullbacks.
 
 -/
 
@@ -68,6 +72,11 @@ def id (X : C) : ChosenPullback (𝟙 X) where
   pullback := 𝟭 _
   mapPullbackAdj := (Adjunction.id).ofNatIsoLeft (Over.mapId _).symm
 
+attribute [local instance] ChosenPullback.id in
+/-- The chosen pullback functor of the identity morphism is naturally isomorphic to the
+identity functor. -/
+def pullbackId (X : C) : pullback (𝟙 X) ≅ 𝟭 (Over X) := Iso.refl _
+
 /-- Every isomorphism has a chosen pullback. -/
 @[simps]
 def iso {Y X : C} (f : Y ≅ X) : ChosenPullback f.hom where
@@ -76,6 +85,8 @@ def iso {Y X : C} (f : Y ≅ X) : ChosenPullback f.hom where
   mapPullbackAdj.unit.app T := Over.homMk (𝟙 T.left)
   mapPullbackAdj.counit.app U := Over.homMk (𝟙 _)
 
+instance {Y X : C} (f : Y ≅ X) : ChosenPullback f.inv := iso f.symm
+
 /-- The composition of morphisms with chosen pullbacks has a chosen pullback. -/
 @[simps]
 def comp {Z Y X : C} (f : Y ⟶ X) (g : Z ⟶ Y)
@@ -83,6 +94,14 @@ def comp {Z Y X : C} (f : Y ⟶ X) (g : Z ⟶ Y)
   pullback := pullback f ⋙ pullback g
   mapPullbackAdj := ((mapPullbackAdj g).comp (mapPullbackAdj f)).ofNatIsoLeft
     (Over.mapComp g f).symm
+
+attribute [local instance] ChosenPullback.comp in
+/-- The chosen pullback functor of a composition of morphisms is naturally isomorphic to
+the composition of the chosen pullback functors. -/
+def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [ChosenPullback f] [ChosenPullback g] :
+    pullback (f ≫ g) ≅ pullback g ⋙ pullback f :=
+  Iso.refl _
 
 /-- In cartesian monoidal categories, any morphism to the terminal tensor unit has a chosen
 pullback. -/
@@ -288,6 +307,59 @@ theorem pullbackIsoOverPullback_inv_app_comp_snd (T : Over X) :
   Over.w ((pullbackIsoOverPullback g).inv.app T)
 
 end PullbackFromChosenPullbacks
+
+section
+
+variable {X : C} (Y Z : Over X)
+
+/-- The canonical pullback cone constructed from `ChosenPullback.isPullback.`
+Note: The source of noncomputability is the non-constructive implementation of `IsPullback.isLimit`.
+Otherwise, `ChosenPullback.isPullback` is constructive.
+-/
+def isLimitPullbackCone [ChosenPullback Z.hom] :
+    IsLimit (isPullback Y.hom Z.hom |>.cone) :=
+  PullbackCone.IsLimit.mk condition (fun s ↦ lift s.fst s.snd s.condition)
+    (by cat_disch) (by cat_disch) (by cat_disch)
+
+/-- The binary fan provided by `fst'` and `snd'`. -/
+def binaryFan [ChosenPullback Z.hom] : BinaryFan Y Z :=
+  BinaryFan.mk (P:= Over.mk (Y := pullbackObj Y.hom Z.hom) (snd Y.hom Z.hom ≫ Z.hom))
+    (fst' Y.hom Z.hom) (snd' Y.hom Z.hom)
+
+@[simp]
+theorem binaryFan_pt [ChosenPullback Z.hom] :
+    (binaryFan Y Z).pt = Over.mk (Y:= pullbackObj Y.hom Z.hom) (snd Y.hom Z.hom ≫ Z.hom) := by
+  rfl
+
+@[simp]
+theorem binaryFan_pt_hom [ChosenPullback Z.hom] :
+    (binaryFan Y Z).pt.hom = snd Y.hom Z.hom ≫ Z.hom := by
+  rfl
+
+/-- The binary fan provided by `fst'` and `snd'` is a binary product in `Over X`. -/
+def binaryFanIsBinaryProduct [ChosenPullback Z.hom] :
+    IsLimit (binaryFan Y Z) :=
+  BinaryFan.IsLimit.mk (binaryFan Y Z)
+    (fun u v => Over.homMk (lift (u.left) (v.left) (by rw [w u, w v])) (by simp))
+    (fun a b => by simp [binaryFan]; aesop)
+    (fun a b => by simp [binaryFan]; aesop)
+    (fun a b m h₁ h₂ => by
+      apply Over.OverMorphism.ext
+      simp only [homMk_left]
+      apply hom_ext (f:= Y.hom) (g:= Z.hom) <;> aesop)
+
+/-- A computable instance of `CartesianMonoidalCategory` for `Over X` when `C` has
+chosen pullbacks. Contrast this with the noncomputable instance provided by
+`CategoryTheory.Over.cartesianMonoidalCategory`.
+-/
+instance cartesianMonoidalCategoryOver [ChosenPullbacks C] (X : C) :
+    CartesianMonoidalCategory (Over X) :=
+  ofChosenFiniteProducts (C:= Over X)
+    ⟨asEmptyCone (Over.mk (𝟙 X)) , IsTerminal.ofUniqueHom (fun Y ↦ Over.homMk Y.hom)
+      fun Y m ↦ Over.OverMorphism.ext (by simpa using m.w)⟩
+    (fun Y Z ↦ ⟨ _ , binaryFanIsBinaryProduct Y Z⟩)
+
+end
 
 end ChosenPullback
 
