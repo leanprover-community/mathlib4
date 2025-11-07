@@ -329,12 +329,14 @@ lemma foo {α β γ X : Type*} {f : α → X} {g : β → X} {h : γ → X} :
     Sum.elim (Sum.elim f g) h = Sum.elim f (Sum.elim g h) ∘ (Equiv.sumAssoc α β γ) := by
   aesop
 
+variable (s t u) in
 /-- The direct sum of singular manifolds is associative up to bordism. -/
 def sumAssoc : UnorientedBordism k (s.sum (t.sum u)) ((s.sum t).sum u) (I.prod (𝓡∂ 1)) := by
   letI almost := (refl (s.sum (t.sum u))).comap_snd (Diffeomorph.sumAssoc I s.M k t.M u.M)
   exact almost.copy_map_snd (Diffeomorph.refl I _ k) (by
     simpa only [mfld_simps, CompTriple.comp_eq] using foo)
 
+variable (s) in
 /-- The direct sum of a manifold with itself is null-bordant. -/
 def sum_self [IsEmpty M] :
     UnorientedBordism k (s.sum s) (SingularManifold.empty X M I) (I.prod (𝓡∂ 1)) where
@@ -577,72 +579,34 @@ lemma foo {α : Type*} (a : α) : ∃ _ : α, True := by use a
 variable (X k I J) in
 private def unorientedBordismGroup_aux.{u} : AddGroup (uBordismClass.{_, _, _, u} X k I) := by
   apply AddGroup.ofLeftAxioms
-  -- XXX: better name for the variables?
-  · intro Φ Ψ Δ
-    change sum (sum Φ Ψ) Δ = sum Φ (sum Ψ Δ)
-    set φ := Φ.out with φ_eq
-    set ψ := Ψ.out with ψ_eq
-    set δ := Δ.out with δ_eq
-    simp only [sum_eq_out_sum_out]
-    rw [← φ_eq, ← ψ_eq, ← δ_eq, Quotient.eq]
-    dsimp
-    -- why does this do nothing?
-    --trans ((φ.sum ψ).sum δ)
-
-    -- have almost : unorientedBordismRelation X k I (I.prod (𝓡∂ 1))
-    --   ((⟦φ.sum ψ⟧ : uBordismClass X _ I).out.sum δ)
-    --     (φ.sum (⟦ψ.sum δ⟧ : uBordismClass ..).out) := by
-    have almost : unorientedBordismRelation X k I (I.prod (𝓡∂ 1))
-         ((φ.sum ψ).sum δ) (φ.sum (ψ.sum δ)) := by
-      symm
-      use UnorientedBordism.sumAssoc (X := X) (s := φ) (t := ψ) (u := δ)
-    letI left := Quotient.mk (s := unorientedBordismSetoid X k I) (φ.sum ψ)
-    have h₁ :
-        unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) (left.out.sum δ) ((φ.sum ψ).sum δ) := by
-      sorry
-    letI right := Quotient.mk (s := unorientedBordismSetoid X k I) (ψ.sum δ)
-    have h₂ :
-        unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) (φ.sum (ψ.sum δ))
-          (φ.sum (Quotient.mk (s := unorientedBordismSetoid X k I) (ψ.sum δ)).out) := by
-      let almost := UnorientedBordism.refl (φ.sum (ψ.sum δ))
-      apply foo
-      -- issue: this does not work yet, as the underlying *manifolds* are not defeq!
-      -- both inferring it and putting (φ.M ⊕ (ψ.M ⊕ δ.M)) fails,
-      -- as φ.sum (ψ.sum δ) and ⟦ψ.sum δ⟧.out have different domains
-      -- need to think harder!
-      -- apply almost.copy_map_snd (eq := Diffeomorph.refl I _ k)
-      sorry
-    -- now, chain h₁, almost and h₂ together: want some trans instances
-    sorry
-  · intro S
-    change sum (empty X k I) S = S
-    set s := S.out with s_eq
-    nth_rw 2 [← S.out_eq]
-    rw [empty, sum_eq_out_sum_out, ← s_eq, Quotient.eq]
-    dsimp
-    haveI := ChartedSpace.empty
-    -- trans (SingularManifold.empty X (k := k) PEmpty I).sum s
-    sorry -- use UnorientedBordism.sumEmpty: no, want emptySum instead!
-  · intro S
-    change sum S S = empty X k I
-    -- Choose a representative s for S; then Φ.sum Φ = [s.sum s].
-    set s := S.out with s_eq
-    rw [sum_eq_out_sum_out, ← s_eq, empty, Quotient.eq]
-    -- But sum_self is precisely a bordism between those.
-    dsimp
+  · apply Quotient.ind; intro Φ
+    apply Quotient.ind; intro Ψ
+    apply Quotient.ind; intro Δ
+    apply Quotient.sound
+    symm
+    -- TODO: which direction do I want?
+    use UnorientedBordism.sumAssoc Φ Ψ Δ
+  · apply Quotient.ind; intro S
+    apply Quotient.sound
+    -- TODO: want UnorientedBordism.emptySum also, because I need this here
+    sorry -- use UnorientedBordism.emptySum s
+  · apply Quotient.ind; intro S
+    apply Quotient.sound
     -- TODO: this fails to find the charted space instance I need, not sure why
     -- different universes, somehow?
+    have : IsEmpty PEmpty := by exact J
+    haveI : ChartedSpace H PEmpty.{u + 1} := ChartedSpace.empty _ _
+    have aux := UnorientedBordism.sum_self S (M := PEmpty)
     apply foo
-    --haveI : ChartedSpace H PEmpty.{u + 1} := by sorry
-    sorry -- apply UnorientedBordism.sum_self --(M := PEmpty.{u + 1})
+    -- apply aux does not quite work...
+    sorry
 
 instance instAddCommGroup : AddCommGroup (uBordismClass X k I) where
-  __ := unorientedBordismGroup_aux X k I
-  add_comm Φ Ψ := by
-    change Φ.sum Ψ = Ψ.sum Φ
-    set φ := Φ.out with φ_eq
-    set ψ := Ψ.out with ψ_eq
-    rw [sum_eq_out_sum_out, sum_eq_out_sum_out, ← φ_eq, ← ψ_eq, Quotient.eq]
+  toAddGroup := unorientedBordismGroup_aux X k I sorry
+  add_comm := by
+    apply Quotient.ind; intro Φ
+    apply Quotient.ind; intro Ψ
+    apply Quotient.sound
     use UnorientedBordism.sumComm
 
 section functor
