@@ -251,7 +251,7 @@ lemma isCardinalFiltered_iff_aux₁ {ι : Type w} {j : J} {k : ι → J}
   obtain ⟨l, hl⟩ := h₁ k hι
   let a (i : ι) := (hl i).some
   obtain ⟨m, b, c, hm⟩ := h₂ (fun i ↦ f i ≫ a i) hι
-  exact ⟨m, fun i ↦ a i ≫ b, c, by simpa using hm⟩
+  exact ⟨m, fun i ↦ a i ≫ b, c, by grind⟩
 
 include h₁ h₂ in
 lemma isCardinalFiltered_iff_aux₂ {ι : Type w} {j : ι → J} {k : J}
