@@ -264,7 +264,7 @@ lemma isCardinalFiltered_iff_aux₂ {ι : Type w} {j : ι → J} {k : J}
     exact ⟨l, a, (hl (Sum.inl .unit)).trans (hl (Sum.inr .unit)).symm⟩
   choose l p hp using this
   obtain ⟨l, a, b, h⟩ := isCardinalFiltered_iff_aux₁ h₁ h₂ p hι
-  exact ⟨l, b, fun i ↦ by simp only [← h i, reassoc_of% hp]⟩
+  exact ⟨l, b, fun i ↦ by grind⟩
 
 variable (J κ) in
 lemma isCardinalFiltered_iff :
