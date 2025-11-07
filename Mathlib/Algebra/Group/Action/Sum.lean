@@ -30,7 +30,7 @@ variable [SMul M α] [SMul M β] [SMul N α] [SMul N β] (a : M) (b : α) (c : �
   (x : α ⊕ β)
 
 @[to_additive Sum.instVAdd]
-instance Sum.instSMul : SMul M (α ⊕ β) :=
+instance instSMul : SMul M (α ⊕ β) :=
   ⟨fun a => Sum.map (a • ·) (a • ·)⟩
 
 @[to_additive]
