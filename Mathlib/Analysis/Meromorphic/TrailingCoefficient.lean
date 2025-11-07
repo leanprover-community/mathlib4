@@ -202,7 +202,7 @@ theorem MeromorphicAt.meromorphicTrailingCoeffAt_add_eq_left_of_lt {f₁ f₂ : 
   -- Trivial case: f₁ not meromorphic at x
   by_cases hf₁ : ¬MeromorphicAt f₁ x
   · have : ¬MeromorphicAt (f₁ + f₂) x := by
-      rwa [add_comm, ← hf₂.meromorphicAt_iff_meromorphicAt_add]
+      rwa [add_comm, hf₂.meromorphicAt_iff_meromorphicAt_add]
     simp_all
   rw [not_not] at hf₁
   -- Trivial case: f₂ vanishes locally around x
