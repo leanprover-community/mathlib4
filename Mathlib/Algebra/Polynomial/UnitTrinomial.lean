@@ -215,10 +215,10 @@ theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Unit
     simp only [ofFinsupp_single]
     rw [C_mul_monomial, C_mul_monomial, mul_comm (v : ℤ) w, add_comm (n - m + k) n]
   · exact fun h => h.2.ne rfl
-  · refine ⟨?_, add_lt_add_left key n⟩
+  · refine ⟨?_, by gcongr⟩
     rwa [add_comm, add_lt_add_iff_left, lt_add_iff_pos_left, tsub_pos_iff_lt]
   · exact fun h => h.1.ne (add_comm k n)
-  · exact ⟨add_lt_add_right hkm n, add_lt_add_right hmn n⟩
+  · constructor <;> gcongr
   · rw [← add_assoc, add_tsub_cancel_of_le hmn.le, add_comm]
     exact fun h => h.1.ne rfl
   · grind
