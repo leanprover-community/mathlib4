@@ -5,6 +5,8 @@ Authors: Gabriel Ebner, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Const
 import Mathlib.Analysis.Normed.Operator.NormedSpace
+import Mathlib.Analysis.Calculus.TangentCone.DimOne
+import Mathlib.Analysis.Calculus.TangentCone.Real
 
 /-!
 
@@ -236,11 +238,6 @@ theorem derivWithin_zero_of_not_accPt (h : ¬AccPt x (𝓟 s)) : derivWithin f s
 theorem derivWithin_zero_of_not_uniqueDiffWithinAt (h : ¬UniqueDiffWithinAt 𝕜 s x) :
     derivWithin f s x = 0 :=
   derivWithin_zero_of_not_accPt <| mt AccPt.uniqueDiffWithinAt h
-
-set_option linter.deprecated false in
-@[deprecated derivWithin_zero_of_not_accPt (since := "2025-04-20")]
-theorem derivWithin_zero_of_isolated (h : 𝓝[s \ {x}] x = ⊥) : derivWithin f s x = 0 := by
-  rw [derivWithin, fderivWithin_zero_of_isolated h, ContinuousLinearMap.zero_apply]
 
 theorem derivWithin_zero_of_notMem_closure (h : x ∉ closure s) : derivWithin f s x = 0 := by
   rw [derivWithin, fderivWithin_zero_of_notMem_closure h, ContinuousLinearMap.zero_apply]

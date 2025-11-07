@@ -96,14 +96,7 @@ theorem Nodup.getElem_inj_iff {l : List α} (h : Nodup l)
 
 theorem nodup_iff_getElem?_ne_getElem? {l : List α} :
     l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l[i]? ≠ l[j]? := by
-  rw [Nodup, pairwise_iff_getElem]
-  constructor
-  · intro h i j hij hj
-    rw [getElem?_eq_getElem (lt_trans hij hj), getElem?_eq_getElem hj, Ne, Option.some_inj]
-    exact h _ _ (by cutsat) hj hij
-  · intro h i j hi hj hij
-    rw [Ne, ← Option.some_inj, ← getElem?_eq_getElem, ← getElem?_eq_getElem]
-    exact h i j hij hj
+  grind [List.pairwise_iff_getElem]
 
 theorem Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
     l ≠ [x] ↔ l = [] ∨ ∃ y ∈ l, y ≠ x := by
@@ -162,11 +155,7 @@ theorem count_eq_one_of_mem [DecidableEq α] {a : α} {l : List α} (d : Nodup l
     count a l = 1 :=
   _root_.le_antisymm (nodup_iff_count_le_one.1 d a) (Nat.succ_le_of_lt (count_pos_iff.2 h))
 
-theorem count_eq_of_nodup [DecidableEq α] {a : α} {l : List α} (d : Nodup l) :
-    count a l = if a ∈ l then 1 else 0 := by
-  split_ifs with h
-  · exact count_eq_one_of_mem d h
-  · exact count_eq_zero_of_not_mem h
+@[deprecated (since := "2025-11-07")] alias count_eq_of_nodup := Nodup.count
 
 theorem Nodup.of_append_left : Nodup (l₁ ++ l₂) → Nodup l₁ :=
   Nodup.sublist (sublist_append_left l₁ l₂)
@@ -233,8 +222,7 @@ protected alias ⟨Nodup.of_attach, Nodup.attach⟩ := nodup_attach
 
 theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
     (hf : ∀ a ha b hb, f a ha = f b hb → a = b) (h : Nodup l) : Nodup (pmap f l H) := by
-  rw [pmap_eq_map_attach]
-  exact h.attach.map fun ⟨a, ha⟩ ⟨b, hb⟩ h => by congr; exact hf a (H _ ha) b (H _ hb) h
+  grind
 
 theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) := by
   simpa using Pairwise.filter p
