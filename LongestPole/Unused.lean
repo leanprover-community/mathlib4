@@ -62,7 +62,7 @@ def unusedImportsCLI (args : Cli.Parsed) : IO UInt32 := do
   -- Should we sort the modules?
   -- The code below assumes that it is "deeper files first", as reported by `lake exe pole`.
 
-  searchPathRef.set compile_time_search_path%
+  searchPathRef.set (← addSearchPathFromEnv (← getBuiltinSearchPath (← findSysroot)))
   -- It may be reasonable to remove this again after https://github.com/leanprover/lean4/pull/6325
   unsafe enableInitializersExecution
   let (unused, _) ← unsafe withImportModules #[{module := `Mathlib}] {} (trustLevel := 1024)
@@ -110,11 +110,11 @@ def unusedImportsCLI (args : Cli.Parsed) : IO UInt32 := do
 def unused : Cmd := `[Cli|
   unused VIA unusedImportsCLI; ["0.0.1"]
   "Determine unused imports amongst a given set of modules.\n\
-   Produces a table with rows and columns indexed by the specified modules,\n\
-   with an 'x' in row A, column B if module A imports module B,\n\
-   but does not make any transitive use of constants defined in B.
-   This table is written to `unused.md`, and a number of `lake exe graph` commands are printed
-   to visualize the largest rectangles of unused imports."
+  Produces a table with rows and columns indexed by the specified modules,\n\
+  with an 'x' in row A, column B if module A imports module B,\n\
+  but does not make any transitive use of constants defined in B.
+  This table is written to `unused.md`, and a number of `lake exe graph` commands are printed
+  to visualize the largest rectangles of unused imports."
 
   FLAGS:
     output : String; "Write the table to a given file instead of `unused.md`."

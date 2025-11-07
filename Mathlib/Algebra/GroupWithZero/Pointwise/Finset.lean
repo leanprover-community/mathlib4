@@ -17,7 +17,27 @@ assert_not_exists MulAction Ring
 open scoped Pointwise
 
 namespace Finset
-variable {α β : Type*} [DecidableEq β]
+variable {α : Type*}
+
+section Mul
+
+variable [Mul α] [Zero α] [DecidableEq α] {s t : Finset α} {a : α}
+
+lemma card_le_card_mul_left₀ [IsLeftCancelMulZero α] (has : a ∈ s) (ha : a ≠ 0) : #t ≤ #(s * t) :=
+  card_le_card_mul_left_of_injective has (mul_right_injective₀ ha)
+
+lemma card_le_card_mul_right₀ [IsRightCancelMulZero α] (hat : a ∈ t) (ha : a ≠ 0) : #s ≤ #(s * t) :=
+  card_le_card_mul_right_of_injective hat (mul_left_injective₀ ha)
+
+lemma card_le_card_mul_self₀ [IsLeftCancelMulZero α] : #s ≤ #(s * s) := by
+  obtain hs | hs := (s.erase 0).eq_empty_or_nonempty
+  · rw [erase_eq_empty_iff] at hs
+    obtain rfl | rfl := hs <;> simp
+  obtain ⟨a, ha⟩ := hs
+  simp only [mem_erase, ne_eq] at ha
+  exact card_le_card_mul_left₀ ha.2 ha.1
+
+end Mul
 
 section MulZeroClass
 variable [DecidableEq α] [MulZeroClass α] {s : Finset α}

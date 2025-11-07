@@ -3,7 +3,7 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Floris van Doorn
 -/
-import Mathlib.Algebra.Group.Indicator
+import Mathlib.Algebra.Notation.Indicator
 import Mathlib.Order.Filter.AtTopBot.Basic
 import Mathlib.Order.Filter.Subsingleton
 /-!
@@ -123,9 +123,6 @@ lemma comp₂ {g : α → γ} (hf : EventuallyConst f l) (op : β → γ → δ)
 lemma prodMk {g : α → γ} (hf : EventuallyConst f l) (hg : EventuallyConst g l) :
     EventuallyConst (fun x ↦ (f x, g x)) l :=
   hf.comp₂ Prod.mk hg
-
-@[deprecated (since := "2025-03-10")]
-alias Filter.EventuallyConst.prod_mk := prodMk
 
 @[to_additive]
 lemma mul [Mul β] {g : α → β} (hf : EventuallyConst f l) (hg : EventuallyConst g l) :

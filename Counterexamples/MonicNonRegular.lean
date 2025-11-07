@@ -88,8 +88,7 @@ theorem monic_X_add_two : Monic (X + C 2 : N₃[X]) := by
   unfold Monic leadingCoeff
   nontriviality
   rw [natDegree_X_add_C 2]
-  simp only [natDegree_X_add_C 2, coeff_C, coeff_add, coeff_X_one, ite_false, add_zero,
-    reduceCtorEq]
+  simp only [coeff_C, coeff_add, coeff_X_one, ite_false, add_zero, reduceCtorEq]
 
 theorem not_isLeftRegular_X_add_two : ¬ IsLeftRegular (X + C 2 : N₃[X]) := by
   intro h

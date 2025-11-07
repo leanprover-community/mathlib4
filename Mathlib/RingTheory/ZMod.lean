@@ -10,7 +10,7 @@ import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
-# Ring theoretic facts about `ZMod n`
+# Ring-theoretic facts about `ZMod n`
 
 We collect a few facts about `ZMod n` that need some ring theory to be proved/stated.
 

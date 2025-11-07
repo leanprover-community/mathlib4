@@ -40,7 +40,7 @@ namespace CategoryTheory.IsGrothendieckAbelian
 variable {C : Type u} [Category.{v} C] [Abelian C] [IsGrothendieckAbelian.{v} C]
 
 instance {G : C} : (preadditiveCoyonedaObj G).IsRightAdjoint :=
-  isRightAdjoint_of_preservesLimits_of_isCoseparating (isCoseparator_coseparator _) _
+  isRightAdjoint_of_preservesLimits_of_isCoseparating.{v} (isCoseparator_coseparator _) _
 
 /-- The left adjoint of the functor `Hom(G, ·)`, which can be thought of as `· ⊗ G`. -/
 noncomputable def tensorObj (G : C) : ModuleCat (End G)ᵐᵒᵖ ⥤ C :=
@@ -124,14 +124,14 @@ theorem GabrielPopescu.preservesInjectiveObjects (G : C) (hG : IsSeparator G) :
       preadditiveCoyonedaObj_obj_isModule]
     refine Module.Baer.injective (fun M g => ?_)
     have h := exists_d_comp_eq_d hG B (ModuleCat.ofHom
-      ⟨⟨fun i => i.1.unop, by aesop_cat⟩, by aesop_cat⟩) ?_ (ModuleCat.ofHom g)
+      ⟨⟨fun i => i.1.unop, by cat_disch⟩, by cat_disch⟩) ?_ (ModuleCat.ofHom g)
     · obtain ⟨l, hl⟩ := h
       refine ⟨((preadditiveCoyonedaObj G).map l).hom ∘ₗ
         (Preadditive.homSelfLinearEquivEndMulOpposite G).symm.toLinearMap, ?_⟩
       intro f hf
       simpa [d] using Sigma.ι _ ⟨f, hf⟩ ≫= hl
     · rw [ModuleCat.mono_iff_injective]
-      aesop_cat
+      cat_disch
 
 /-- Right exactness follows because `tensorObj G` is a left adjoint. -/
 theorem GabrielPopescu.preservesFiniteLimits (G : C) (hG : IsSeparator G) :

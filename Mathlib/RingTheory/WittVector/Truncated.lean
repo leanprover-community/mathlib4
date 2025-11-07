@@ -185,7 +185,7 @@ instance hasNatPow : Pow (TruncatedWittVector p n R) ℕ :=
 
 @[simp]
 theorem coeff_zero (i : Fin n) : (0 : TruncatedWittVector p n R).coeff i = 0 := by
-  show coeff i (truncateFun _ 0 : TruncatedWittVector p n R) = 0
+  change coeff i (truncateFun _ 0 : TruncatedWittVector p n R) = 0
   rw [coeff_truncateFun, WittVector.zero_coeff]
 
 end TruncatedWittVector
@@ -303,8 +303,8 @@ variable (n)
 
 theorem mem_ker_truncate (x : 𝕎 R) :
     x ∈ RingHom.ker (truncate (p := p) n) ↔ ∀ i < n, x.coeff i = 0 := by
-  simp only [RingHom.mem_ker, truncate, truncateFun, RingHom.coe_mk, TruncatedWittVector.ext_iff,
-    TruncatedWittVector.coeff_mk, coeff_zero]
+  simp only [RingHom.mem_ker, truncate, RingHom.coe_mk, TruncatedWittVector.ext_iff,
+    coeff_zero]
   exact Fin.forall_iff
 
 variable (p)

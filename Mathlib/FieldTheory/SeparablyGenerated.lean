@@ -271,4 +271,28 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_fg
   · obtain rfl | ne := eq_or_ne n i
     exacts [hi₂, le_restrictScalars_separableClosure _ (subset_adjoin _ _ ⟨.inl rfl, ne⟩)]
 
+/-- Any finitely generated extension over perfect fields are separably generated. -/
+lemma exists_isTranscendenceBasis_and_isSeparable_of_perfectField
+    [PerfectField k] (Hfg : IntermediateField.FG (F := k) (E := K) ⊤) :
+    ∃ s : Finset K, IsTranscendenceBasis k ((↑) : s → K) ∧
+      Algebra.IsSeparable (IntermediateField.adjoin k (s : Set K)) K := by
+  obtain _ | ⟨p, hp, hpk⟩ := CharP.exists' k
+  · obtain ⟨s, hs⟩ := Hfg
+    have : Algebra.IsAlgebraic (adjoin k (s : Set K)) K := by
+      rw [← isAlgebraic_adjoin_iff_top, hs, Algebra.isAlgebraic_iff_isIntegral]
+      refine Algebra.isIntegral_of_surjective topEquiv.surjective
+    obtain ⟨t, hts, ht⟩ := exists_isTranscendenceBasis_subset (R := k) (s : Set K)
+    lift t to Finset K using s.finite_toSet.subset hts
+    have : Algebra.IsAlgebraic (IntermediateField.adjoin k (t : Set K)) K := by
+      convert ht.isAlgebraic_field <;> simp
+    exact ⟨t, ht, inferInstance⟩
+  have : ExpChar k p := .prime hp.out
+  have : CharP K p := .of_ringHom_of_ne_zero (algebraMap k K) p hp.out.ne_zero
+  have : ExpChar K p := .prime hp.out
+  refine exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow p hp.out ?_ Hfg
+  intro s hs
+  exact LinearIndependent.map_of_injective_injective hs
+    (frobeniusEquiv k p).symm (frobenius K p).toAddMonoidHom (by simp) (by simp)
+      (by simp [frobenius, Algebra.smul_def, mul_pow, ← map_pow, frobeniusEquiv_symm_pow])
+
 end

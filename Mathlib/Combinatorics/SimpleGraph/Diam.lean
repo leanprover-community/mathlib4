@@ -67,7 +67,6 @@ lemma eccent_ne_zero [Nontrivial α] (u : α) : G.eccent u ≠ 0 := by
 lemma eccent_eq_zero_iff (u : α) : G.eccent u = 0 ↔ Subsingleton α := by
   refine ⟨fun h ↦ ?_, fun _ ↦ eccent_eq_zero_of_subsingleton u⟩
   contrapose! h
-  rw [not_subsingleton_iff_nontrivial] at h
   exact eccent_ne_zero u
 
 lemma eccent_pos_iff (u : α) : 0 < G.eccent u ↔ Nontrivial α := by
@@ -75,7 +74,7 @@ lemma eccent_pos_iff (u : α) : 0 < G.eccent u ↔ Nontrivial α := by
 
 @[simp]
 lemma eccent_bot [Nontrivial α] (u : α) : (⊥ : SimpleGraph α).eccent u = ⊤ :=
-  eccent_eq_top_of_not_connected bot_not_connected u
+  eccent_eq_top_of_not_connected not_connected_bot u
 
 @[simp]
 lemma eccent_top [Nontrivial α] (u : α) : (⊤ : SimpleGraph α).eccent u = 1 := by
@@ -132,18 +131,16 @@ lemma ediam_eq_zero_of_subsingleton [Subsingleton α] : G.ediam = 0 := by
 
 lemma nontrivial_of_ediam_ne_zero (h : G.ediam ≠ 0) : Nontrivial α := by
   contrapose! h
-  rw [not_nontrivial_iff_subsingleton] at h
   exact ediam_eq_zero_of_subsingleton
 
 lemma ediam_ne_zero [Nontrivial α] : G.ediam ≠ 0 := by
   obtain ⟨u, v, huv⟩ := exists_pair_ne ‹_›
   contrapose! huv
-  simp only [ediam, eccent, nonpos_iff_eq_zero, ENat.iSup_eq_zero, edist_eq_zero_iff] at huv
+  simp only [ediam, eccent, ENat.iSup_eq_zero, edist_eq_zero_iff] at huv
   exact huv u v
 
 lemma subsingleton_of_ediam_eq_zero (h : G.ediam = 0) : Subsingleton α := by
   contrapose! h
-  apply not_subsingleton_iff_nontrivial.mp at h
   exact ediam_ne_zero
 
 lemma ediam_ne_zero_iff_nontrivial :
@@ -209,7 +206,7 @@ lemma ediam_anti (h : G ≤ G') : G'.ediam ≤ G.ediam :=
 
 @[simp]
 lemma ediam_bot [Nontrivial α] : (⊥ : SimpleGraph α).ediam = ⊤ :=
-  ediam_eq_top_of_not_connected bot_not_connected
+  ediam_eq_top_of_not_connected not_connected_bot
 
 @[simp]
 lemma ediam_top [Nontrivial α] : (⊤ : SimpleGraph α).ediam = 1 := by
@@ -346,9 +343,9 @@ lemma radius_ne_zero_of_nontrivial [Nontrivial α] : G.radius ≠ 0 := by
 lemma radius_eq_zero_iff : G.radius = 0 ↔ Nonempty α ∧ Subsingleton α := by
   refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨_, _⟩ ↦ ?_⟩
   · contrapose! h
-    simp [radius, not_nonempty_iff.mp h]
+    simp [radius]
   · contrapose! h
-    simp [not_subsingleton_iff_nontrivial.mp h, radius_ne_zero_of_nontrivial]
+    simp [radius_ne_zero_of_nontrivial]
   · rw [radius, ENat.iInf_eq_zero]
     use Classical.ofNonempty
     simpa [eccent] using Subsingleton.elim _
@@ -383,7 +380,7 @@ lemma radius_eq_ediam_iff [Nonempty α] :
 
 @[simp]
 lemma radius_bot [Nontrivial α] : (⊥ : SimpleGraph α).radius = ⊤ :=
-  radius_eq_top_of_not_connected bot_not_connected
+  radius_eq_top_of_not_connected not_connected_bot
 
 @[simp]
 lemma radius_top [Nontrivial α] : (⊤ : SimpleGraph α).radius = 1 := by

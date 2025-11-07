@@ -17,31 +17,26 @@ This file provides lemmas about the interaction of infinite sums and products an
 
 open Finset Filter Function
 
-variable {ι κ α : Type*}
+variable {ι κ α : Type*} {L : SummationFilter ι}
 
 section Preorder
 
 variable [Preorder α] [CommMonoid α] [TopologicalSpace α] {a c : α} {f : ι → α}
 
 @[to_additive]
-lemma hasProd_le_of_prod_le [ClosedIicTopology α]
-    (hf : HasProd f a) (h : ∀ s, ∏ i ∈ s, f i ≤ c) : a ≤ c :=
+lemma hasProd_le_of_prod_le [ClosedIicTopology α] [L.NeBot]
+    (hf : HasProd f a L) (h : ∀ s, ∏ i ∈ s, f i ≤ c) : a ≤ c :=
   le_of_tendsto' hf h
 
 @[to_additive]
-theorem le_hasProd_of_le_prod [ClosedIciTopology α]
-    (hf : HasProd f a) (h : ∀ s, c ≤ ∏ i ∈ s, f i) : c ≤ a :=
+theorem le_hasProd_of_le_prod [ClosedIciTopology α] [L.NeBot]
+    (hf : HasProd f a L) (h : ∀ s, c ≤ ∏ i ∈ s, f i) : c ≤ a :=
   ge_of_tendsto' hf h
 
 @[to_additive]
 protected theorem Multipliable.tprod_le_of_prod_range_le [ClosedIicTopology α] {f : ℕ → α}
     (hf : Multipliable f) (h : ∀ n, ∏ i ∈ range n, f i ≤ c) : ∏' n, f n ≤ c :=
   le_of_tendsto' hf.hasProd.tendsto_prod_nat h
-
-@[deprecated (since := "2025-04-12")] alias tsum_le_of_sum_range_le :=
-  Summable.tsum_le_of_sum_range_le
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_le_of_prod_range_le :=
-  Multipliable.tprod_le_of_prod_range_le
 
 end Preorder
 
@@ -52,11 +47,12 @@ variable [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α]
   {a a₁ a₂ : α}
 
 @[to_additive]
-theorem hasProd_le (h : ∀ i, f i ≤ g i) (hf : HasProd f a₁) (hg : HasProd g a₂) : a₁ ≤ a₂ :=
+theorem hasProd_le (h : ∀ i, f i ≤ g i) (hf : HasProd f a₁ L) (hg : HasProd g a₂ L) [L.NeBot] :
+    a₁ ≤ a₂ :=
   le_of_tendsto_of_tendsto' hf hg fun _ ↦ prod_le_prod' fun i _ ↦ h i
 
 @[to_additive]
-theorem hasProd_mono (hf : HasProd f a₁) (hg : HasProd g a₂) (h : f ≤ g) : a₁ ≤ a₂ :=
+theorem hasProd_mono (hf : HasProd f a₁ L) (hg : HasProd g a₂ L) (h : f ≤ g) [L.NeBot] : a₁ ≤ a₂ :=
   hasProd_le h hf hg
 
 @[to_additive]
@@ -77,10 +73,6 @@ protected theorem Multipliable.tprod_le_tprod_of_inj {g : κ → α} (e : ι →
     (hg : Multipliable g) : tprod f ≤ tprod g :=
   hasProd_le_inj _ he hs h hf.hasProd hg.hasProd
 
-@[deprecated (since := "2025-04-12")] alias tsum_le_tsum_of_inj := Summable.tsum_le_tsum_of_inj
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_le_tprod_of_inj :=
-  Multipliable.tprod_le_tprod_of_inj
-
 @[to_additive]
 protected lemma Multipliable.tprod_subtype_le {κ γ : Type*} [CommGroup γ] [PartialOrder γ]
     [IsOrderedMonoid γ] [UniformSpace γ] [IsUniformGroup γ] [OrderClosedTopology γ]
@@ -89,19 +81,15 @@ protected lemma Multipliable.tprod_subtype_le {κ γ : Type*} [CommGroup γ] [Pa
   apply Multipliable.tprod_le_tprod_of_inj _
     (Subtype.coe_injective)
     (by simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq, h, implies_true])
-    (by simp only [le_refl, Subtype.forall, implies_true])
+    (by simp only [le_refl, implies_true])
     (by apply hf.subtype)
   apply hf
 
-@[deprecated (since := "2025-04-12")] alias tsum_subtype_le := Summable.tsum_subtype_le
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_subtype_le :=
-  Multipliable.tprod_subtype_le
-
 @[to_additive]
-theorem prod_le_hasProd (s : Finset ι) (hs : ∀ i, i ∉ s → 1 ≤ f i) (hf : HasProd f a) :
-    ∏ i ∈ s, f i ≤ a :=
-  ge_of_tendsto hf (eventually_atTop.2
-    ⟨s, fun _t hst ↦ prod_le_prod_of_subset_of_one_le' hst fun i _ hbs ↦ hs i hbs⟩)
+theorem prod_le_hasProd [L.NeBot] [L.LeAtTop] (s : Finset ι) (hs : ∀ i, i ∉ s → 1 ≤ f i)
+    (hf : HasProd f a L) : ∏ i ∈ s, f i ≤ a := by
+  refine ge_of_tendsto hf <| .filter_mono L.le_atTop <| eventually_atTop.2 ?_
+  exact ⟨s, fun _t hst ↦ prod_le_prod_of_subset_of_one_le' hst fun i _ hbs ↦ hs i hbs⟩
 
 @[to_additive]
 theorem isLUB_hasProd (h : ∀ i, 1 ≤ f i) (hf : HasProd f a) :
@@ -110,13 +98,14 @@ theorem isLUB_hasProd (h : ∀ i, 1 ≤ f i) (hf : HasProd f a) :
   exact isLUB_of_tendsto_atTop (Finset.prod_mono_set_of_one_le' h) hf
 
 @[to_additive]
-theorem le_hasProd (hf : HasProd f a) (i : ι) (hb : ∀ j, j ≠ i → 1 ≤ f j) : f i ≤ a :=
+theorem le_hasProd [L.NeBot] [L.LeAtTop] (hf : HasProd f a L) (i : ι) (hb : ∀ j, j ≠ i → 1 ≤ f j) :
+    f i ≤ a :=
   calc
     f i = ∏ i ∈ {i}, f i := by rw [prod_singleton]
     _ ≤ a := prod_le_hasProd _ (by simpa) hf
 
 @[to_additive]
-theorem lt_hasProd [MulRightStrictMono α] (hf : HasProd f a) (i : ι)
+theorem lt_hasProd [L.NeBot] [L.LeAtTop] [MulRightStrictMono α] (hf : HasProd f a L) (i : ι)
     (hi : ∀ (j : ι), j ≠ i → 1 ≤ f j) (j : ι) (hij : j ≠ i) (hj : 1 < f j) :
     f i < a := by
   classical
@@ -126,80 +115,72 @@ theorem lt_hasProd [MulRightStrictMono α] (hf : HasProd f a) (i : ι)
     _ ≤ a := prod_le_hasProd _ (fun k hk ↦ hi k (hk ∘ mem_insert_of_mem ∘ mem_singleton.mpr)) hf
 
 @[to_additive]
-protected theorem Multipliable.prod_le_tprod {f : ι → α} (s : Finset ι) (hs : ∀ i, i ∉ s → 1 ≤ f i)
-    (hf : Multipliable f) : ∏ i ∈ s, f i ≤ ∏' i, f i :=
+protected theorem Multipliable.prod_le_tprod [L.NeBot] [L.LeAtTop] {f : ι → α} (s : Finset ι)
+    (hs : ∀ i, i ∉ s → 1 ≤ f i) (hf : Multipliable f L) :
+    ∏ i ∈ s, f i ≤ ∏'[L] i, f i :=
   prod_le_hasProd s hs hf.hasProd
 
-@[deprecated (since := "2025-04-12")] alias sum_le_tsum := Summable.sum_le_tsum
-@[to_additive existing, deprecated (since := "2025-04-12")] alias prod_le_tprod :=
-  Multipliable.prod_le_tprod
-
 @[to_additive]
-protected theorem Multipliable.le_tprod (hf : Multipliable f) (i : ι) (hb : ∀ j, j ≠ i → 1 ≤ f j) :
-    f i ≤ ∏' i, f i :=
+protected theorem Multipliable.le_tprod [L.NeBot] [L.LeAtTop] (hf : Multipliable f L) (i : ι)
+    (hb : ∀ j ≠ i, 1 ≤ f j) : f i ≤ ∏'[L] i, f i :=
   le_hasProd hf.hasProd i hb
 
-@[deprecated (since := "2025-04-12")] alias le_tsum := Summable.le_tsum
-@[to_additive existing, deprecated (since := "2025-04-12")] alias le_tprod := Multipliable.le_tprod
-
 @[to_additive (attr := gcongr)]
-protected theorem Multipliable.tprod_le_tprod (h : ∀ i, f i ≤ g i) (hf : Multipliable f)
-    (hg : Multipliable g) : ∏' i, f i ≤ ∏' i, g i :=
+protected theorem Multipliable.tprod_le_tprod [L.NeBot] (h : ∀ i, f i ≤ g i) (hf : Multipliable f L)
+    (hg : Multipliable g L) : ∏'[L] i, f i ≤ ∏'[L] i, g i :=
   hasProd_le h hf.hasProd hg.hasProd
 
-@[deprecated (since := "2025-04-12")] alias tsum_le_tsum := Summable.tsum_le_tsum
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_le_tprod :=
-  Multipliable.tprod_le_tprod
-
 @[to_additive (attr := mono)]
-protected theorem Multipliable.tprod_mono (hf : Multipliable f) (hg : Multipliable g) (h : f ≤ g) :
-    ∏' n, f n ≤ ∏' n, g n :=
+protected theorem Multipliable.tprod_mono [L.NeBot] (hf : Multipliable f L) (hg : Multipliable g L)
+    (h : f ≤ g) : ∏'[L] n, f n ≤ ∏'[L] n, g n :=
   hf.tprod_le_tprod h hg
 
-@[deprecated (since := "2025-04-12")] alias tsum_mono := Summable.tsum_mono
-@[to_additive existing (attr := mono), deprecated (since := "2025-04-12")] alias tprod_mono :=
-  Multipliable.tprod_mono
-
 omit [IsOrderedMonoid α] in
 @[to_additive]
-protected theorem Multipliable.tprod_le_of_prod_le (hf : Multipliable f)
-    (h : ∀ s, ∏ i ∈ s, f i ≤ a₂) : ∏' i, f i ≤ a₂ :=
+protected theorem Multipliable.tprod_le_of_prod_le [L.NeBot] (hf : Multipliable f L)
+    (h : ∀ s, ∏ i ∈ s, f i ≤ a₂) : ∏'[L] i, f i ≤ a₂ :=
   hasProd_le_of_prod_le hf.hasProd h
 
-@[deprecated (since := "2025-04-12")] alias tsum_le_of_sum_le := Summable.tsum_le_of_sum_le
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_le_of_prod_le :=
-  Multipliable.tprod_le_of_prod_le
-
 omit [IsOrderedMonoid α] in
 @[to_additive]
-theorem tprod_le_of_prod_le' (ha₂ : 1 ≤ a₂) (h : ∀ s, ∏ i ∈ s, f i ≤ a₂) : ∏' i, f i ≤ a₂ := by
-  by_cases hf : Multipliable f
-  · exact hf.tprod_le_of_prod_le h
-  · rw [tprod_eq_one_of_not_multipliable hf]
-    exact ha₂
+theorem tprod_le_of_prod_le' (ha₂ : 1 ≤ a₂) (h : ∀ s, ∏ i ∈ s, f i ≤ a₂) :
+    ∏'[L] i, f i ≤ a₂ := by
+  by_cases hL : L.NeBot
+  · by_cases hf : Multipliable f L
+    · exact hf.tprod_le_of_prod_le h
+    · rwa [tprod_eq_one_of_not_multipliable hf]
+  · by_cases hf : f.mulSupport.Finite
+    · simpa [tprod_bot hL, finprod_eq_prod _ hf] using h _
+    · rwa [tprod_bot hL, finprod_of_infinite_mulSupport hf]
 
 @[to_additive]
-theorem HasProd.one_le (h : ∀ i, 1 ≤ g i) (ha : HasProd g a) : 1 ≤ a :=
+theorem HasProd.one_le [L.NeBot] (h : ∀ i, 1 ≤ g i) (ha : HasProd g a L) : 1 ≤ a :=
   hasProd_le h hasProd_one ha
 
 @[to_additive]
-theorem HasProd.le_one (h : ∀ i, g i ≤ 1) (ha : HasProd g a) : a ≤ 1 :=
+theorem HasProd.le_one [L.NeBot] (h : ∀ i, g i ≤ 1) (ha : HasProd g a L) : a ≤ 1 :=
   hasProd_le h ha hasProd_one
 
 @[to_additive tsum_nonneg]
-theorem one_le_tprod (h : ∀ i, 1 ≤ g i) : 1 ≤ ∏' i, g i := by
-  by_cases hg : Multipliable g
-  · exact hg.hasProd.one_le h
+theorem one_le_tprod (h : ∀ i, 1 ≤ g i) : 1 ≤ ∏'[L] i, g i := by
+  by_cases hg : Multipliable g L
+  · by_cases hL : L.NeBot
+    · exact hg.hasProd.one_le h
+    · simpa [tprod_bot hL] using one_le_finprod' h
   · rw [tprod_eq_one_of_not_multipliable hg]
 
 @[to_additive]
-theorem tprod_le_one (h : ∀ i, f i ≤ 1) : ∏' i, f i ≤ 1 := by
-  by_cases hf : Multipliable f
-  · exact hf.hasProd.le_one h
+theorem tprod_le_one (h : ∀ i, f i ≤ 1) : ∏'[L] i, f i ≤ 1 := by
+  by_cases hf : Multipliable f L
+  · by_cases hL : L.NeBot
+    · exact hf.hasProd.le_one h
+    · simp only [tprod_bot hL]
+      exact finprod_induction (· ≤ 1) le_rfl (fun _ _ ↦ mul_le_one') h
   · rw [tprod_eq_one_of_not_multipliable hf]
 
 @[to_additive]
-theorem hasProd_one_iff_of_one_le (hf : ∀ i, 1 ≤ f i) : HasProd f 1 ↔ f = 1 := by
+theorem hasProd_one_iff_of_one_le [L.LeAtTop] [L.NeBot] (hf : ∀ i, 1 ≤ f i) :
+    HasProd f 1 L ↔ f = 1 := by
   refine ⟨fun hf' ↦ ?_, ?_⟩
   · ext i
     exact (hf i).antisymm' (le_hasProd hf' _ fun j _ ↦ hf j)
@@ -215,8 +196,8 @@ variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
   [OrderClosedTopology α] {f g : ι → α} {a₁ a₂ : α} {i : ι}
 
 @[to_additive]
-theorem hasProd_lt (h : f ≤ g) (hi : f i < g i) (hf : HasProd f a₁) (hg : HasProd g a₂) :
-    a₁ < a₂ := by
+theorem hasProd_lt [L.NeBot] [L.LeAtTop] (h : f ≤ g) (hi : f i < g i) (hf : HasProd f a₁ L)
+    (hg : HasProd g a₂ L) : a₁ < a₂ := by
   classical
   have : update f i 1 ≤ update g i 1 := update_le_update_iff.mpr ⟨rfl.le, fun i _ ↦ h i⟩
   have : 1 / f i * a₁ ≤ 1 / g i * a₂ := hasProd_le this (hf.update i 1) (hg.update i 1)
@@ -228,33 +209,23 @@ theorem hasProd_strict_mono (hf : HasProd f a₁) (hg : HasProd g a₂) (h : f <
   hasProd_lt hle hi hf hg
 
 @[to_additive]
-protected theorem Multipliable.tprod_lt_tprod (h : f ≤ g) (hi : f i < g i) (hf : Multipliable f)
-    (hg : Multipliable g) : ∏' n, f n < ∏' n, g n :=
+protected theorem Multipliable.tprod_lt_tprod [L.NeBot] [L.LeAtTop]
+    (h : f ≤ g) (hi : f i < g i) (hf : Multipliable f L) (hg : Multipliable g L) :
+    ∏'[L] n, f n < ∏'[L] n, g n :=
   hasProd_lt h hi hf.hasProd hg.hasProd
 
-@[deprecated (since := "2025-04-12")] alias tsum_lt_tsum := Summable.tsum_lt_tsum
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_lt_tprod :=
-  Multipliable.tprod_lt_tprod
-
 @[to_additive (attr := mono)]
-protected theorem Multipliable.tprod_strict_mono (hf : Multipliable f) (hg : Multipliable g)
-    (h : f < g) : ∏' n, f n < ∏' n, g n :=
+protected theorem Multipliable.tprod_strict_mono [L.NeBot] [L.LeAtTop]
+    (hf : Multipliable f L) (hg : Multipliable g L)
+    (h : f < g) : ∏'[L] n, f n < ∏'[L] n, g n :=
   let ⟨hle, _i, hi⟩ := Pi.lt_def.mp h
   hf.tprod_lt_tprod hle hi hg
 
-@[deprecated (since := "2025-04-12")] alias tsum_strict_mono := Summable.tsum_strict_mono
-@[to_additive existing (attr := mono), deprecated (since := "2025-04-12")] alias
-  tprod_strict_mono := Multipliable.tprod_strict_mono
-
 @[to_additive Summable.tsum_pos]
-protected theorem Multipliable.one_lt_tprod (hsum : Multipliable g) (hg : ∀ i, 1 ≤ g i) (i : ι)
-    (hi : 1 < g i) : 1 < ∏' i, g i := by
-  rw [← tprod_one]
+protected theorem Multipliable.one_lt_tprod [L.LeAtTop] [L.NeBot] (hsum : Multipliable g L)
+    (hg : ∀ i, 1 ≤ g i) (i : ι) (hi : 1 < g i) : 1 < ∏'[L] i, g i := by
+  rw [← tprod_one (L := L)]
   exact multipliable_one.tprod_lt_tprod hg hi hsum
-
-@[deprecated (since := "2025-04-12")] alias tsum_pos := Summable.tsum_pos
-@[to_additive existing tsum_pos, deprecated (since := "2025-04-12")] alias one_lt_tprod :=
-  Multipliable.one_lt_tprod
 
 end OrderedCommGroup
 
@@ -272,10 +243,6 @@ theorem le_hasProd' (hf : HasProd f a) (i : ι) : f i ≤ a :=
 protected theorem Multipliable.le_tprod' (hf : Multipliable f) (i : ι) : f i ≤ ∏' i, f i :=
   hf.le_tprod i fun _ _ ↦ one_le _
 
-@[deprecated (since := "2025-04-12")] alias le_tsum' := Summable.le_tsum'
-@[to_additive existing, deprecated (since := "2025-04-12")] alias le_tprod' :=
-  Multipliable.le_tprod'
-
 @[to_additive]
 theorem hasProd_one_iff : HasProd f 1 ↔ ∀ x, f x = 1 :=
   (hasProd_one_iff_of_one_le fun _ ↦ one_le _).trans funext_iff
@@ -285,19 +252,12 @@ protected theorem Multipliable.tprod_eq_one_iff (hf : Multipliable f) :
     ∏' i, f i = 1 ↔ ∀ x, f x = 1 := by
   rw [← hasProd_one_iff, hf.hasProd_iff]
 
-@[deprecated (since := "2025-04-12")] alias tsum_eq_zero_iff := Summable.tsum_eq_zero_iff
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_eq_one_iff :=
-  Multipliable.tprod_eq_one_iff
-
 @[to_additive]
 protected theorem Multipliable.tprod_ne_one_iff (hf : Multipliable f) :
     ∏' i, f i ≠ 1 ↔ ∃ x, f x ≠ 1 := by
   rw [Ne, hf.tprod_eq_one_iff, not_forall]
 
-@[deprecated (since := "2025-04-12")] alias tsum_ne_zero_iff := Summable.tsum_ne_zero_iff
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_ne_one_iff :=
-  Multipliable.tprod_ne_one_iff
-
+omit [IsOrderedMonoid α] in
 @[to_additive]
 theorem isLUB_hasProd' (hf : HasProd f a) : IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) a := by
   classical
@@ -324,7 +284,7 @@ theorem hasProd_of_isLUB_of_one_le [CommMonoid α] [LinearOrder α] [IsOrderedMo
   tendsto_atTop_isLUB (Finset.prod_mono_set_of_one_le' h) hf
 
 @[to_additive]
-theorem hasProd_of_isLUB [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α]
+theorem hasProd_of_isLUB [CommMonoid α] [LinearOrder α]
     [CanonicallyOrderedMul α] [TopologicalSpace α]
     [OrderTopology α] {f : ι → α} (b : α) (hf : IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) b) :
     HasProd f b :=
@@ -379,8 +339,6 @@ theorem Multipliable.abs (hf : Multipliable f) : Multipliable (|f ·|) :=
 protected theorem Multipliable.abs_tprod (hf : Multipliable f) : |∏' i, f i| = ∏' i, |f i| :=
   hf.hasProd.abs.tprod_eq.symm
 
-@[deprecated (since := "2025-04-12")] alias abs_tprod := Multipliable.abs_tprod
-
 end LinearOrderedCommRing
 
 theorem Summable.tendsto_atTop_of_pos [Field α] [LinearOrder α] [IsStrictOrderedRing α]
@@ -402,7 +360,7 @@ requires more assumptions. -/
 @[positivity tsum _]
 def evalTsum : PositivityExt where eval {u α} zα pα e := do
   match e with
-  | ~q(@tsum _ $instCommMonoid $instTopSpace $ι $f) =>
+  | ~q(@tsum _ $ι $instCommMonoid $instTopSpace $f $L) =>
     lambdaBoundedTelescope f 1 fun args (body : Q($α)) => do
       let #[(i : Q($ι))] := args | failure
       let rbody ← core zα pα body
@@ -413,7 +371,8 @@ def evalTsum : PositivityExt where eval {u α} zα pα e := do
       let pα' ← synthInstanceQ q(IsOrderedAddMonoid $α)
       let instOrderClosed ← synthInstanceQ q(OrderClosedTopology $α)
       assertInstancesCommute
-      return .nonnegative q(@tsum_nonneg $ι $α $mα' $oα' $pα' $instTopSpace $instOrderClosed $f $pr)
+      return .nonnegative
+        q(@tsum_nonneg $ι $α $L $mα' $oα' $pα' $instTopSpace $instOrderClosed $f $pr)
   | _ => throwError "not tsum"
 
 end Mathlib.Meta.Positivity

@@ -42,7 +42,7 @@ theorem lucas_primality (p : ℕ) (a : ZMod p) (ha : a ^ (p - 1) = 1)
   apply (Nat.card_units_zmod_lt_sub_one hp1).antisymm
   let a' : (ZMod p)ˣ := Units.mkOfMulEqOne a _ (by rwa [← pow_succ', tsub_add_eq_add_tsub hp1])
   calc p - 1 = orderOf a := (orderOf_eq_of_pow_and_pow_div_prime (tsub_pos_of_lt hp1) ha hd).symm
-    _ = orderOf a' := orderOf_injective (Units.coeHom _) Units.ext a'
+    _ = orderOf a' := orderOf_injective (Units.coeHom _) Units.val_injective a'
     _ ≤ Fintype.card (ZMod p)ˣ := orderOf_le_card_univ
 
 /-- If `p` is prime, then there exists an `a` such that `a^(p-1) = 1 mod p`
@@ -58,7 +58,7 @@ theorem reverse_lucas_primality (p : ℕ) (hP : p.Prime) :
     rwa [orderOf_eq_card_of_forall_mem_zpowers hg, Nat.card_eq_fintype_card,
       ← Nat.prime_iff_card_units]
   have h2 := tsub_pos_iff_lt.2 hP.one_lt
-  rw [← orderOf_injective (Units.coeHom _) Units.ext _, orderOf_eq_iff h2] at h1
+  rw [← orderOf_injective (Units.coeHom _) Units.val_injective _, orderOf_eq_iff h2] at h1
   refine ⟨g, h1.1, fun q hq hqd ↦ ?_⟩
   replace hq := hq.one_lt
   exact h1.2 _ (Nat.div_lt_self h2 hq) (Nat.div_pos (Nat.le_of_dvd h2 hqd) (zero_lt_one.trans hq))

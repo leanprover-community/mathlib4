@@ -38,20 +38,21 @@ open Function OrderDual Set
 variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
 
 @[simp] lemma iSup_ulift {ι : Type*} [SupSet α] (f : ULift ι → α) :
-    ⨆ i : ULift ι, f i = ⨆ i, f (.up i) := by simp [iSup]; congr with x; simp
+    ⨆ i : ULift ι, f i = ⨆ i, f (.up i) := by simp only [iSup]; congr with x; simp
 
 @[simp] lemma iInf_ulift {ι : Type*} [InfSet α] (f : ULift ι → α) :
-    ⨅ i : ULift ι, f i = ⨅ i, f (.up i) := by simp [iInf]; congr with x; simp
+    ⨅ i : ULift ι, f i = ⨅ i, f (.up i) := by simp only [iInf]; congr with x; simp
 
 section
 
 variable [CompleteSemilatticeSup α] {s t : Set α} {a b : α}
 
+theorem sSup_le_sSup_of_isCofinalFor (h : IsCofinalFor s t) : sSup s ≤ sSup t :=
+  IsLeast.mono (isLUB_sSup t) (isLUB_sSup s) <| upperBounds_mono_of_isCofinalFor h
+
+@[deprecated "use `sSup_le_sSup_of_isCofinalFor` instead" (since := "2025-07-14")]
 theorem sSup_le_sSup_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, x ≤ y) : sSup s ≤ sSup t :=
-  le_sSup_iff.2 fun _ hb =>
-    sSup_le fun a ha =>
-      let ⟨_, hct, hac⟩ := h a ha
-      hac.trans (hb hct)
+  sSup_le_sSup_of_isCofinalFor h
 
 -- We will generalize this to conditionally complete lattices in `csSup_singleton`.
 @[simp]
@@ -64,8 +65,12 @@ section
 
 variable [CompleteSemilatticeInf α] {s t : Set α} {a b : α}
 
+theorem sInf_le_sInf_of_isCoinitialFor (h : IsCoinitialFor s t) : sInf t ≤ sInf s :=
+  IsGreatest.mono (isGLB_sInf t) (isGLB_sInf s) <| lowerBounds_mono_of_isCoinitialFor h
+
+@[deprecated "use `sInf_le_sInf_of_isCoinitialFor` instead" (since := "2025-07-14")]
 theorem sInf_le_sInf_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y ≤ x) : sInf t ≤ sInf s :=
-  le_sInf fun x hx ↦ let ⟨_y, hyt, hyx⟩ := h x hx; sInf_le_of_le hyt hyx
+  sInf_le_sInf_of_isCoinitialFor h
 
 -- We will generalize this to conditionally complete lattices in `csInf_singleton`.
 @[simp]
@@ -204,7 +209,7 @@ theorem biSup_congr {p : ι → Prop} (h : ∀ i, p i → f i = g i) :
 theorem biSup_congr' {p : ι → Prop} {f g : (i : ι) → p i → α}
     (h : ∀ i (hi : p i), f i hi = g i hi) :
     ⨆ i, ⨆ (hi : p i), f i hi = ⨆ i, ⨆ (hi : p i), g i hi := by
-  congr; ext i; congr; ext hi; exact h i hi
+  grind
 
 theorem Function.Surjective.iSup_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     ⨆ x, g (f x) = ⨆ y, g y := by
@@ -265,7 +270,7 @@ theorem biInf_congr {p : ι → Prop} (h : ∀ i, p i → f i = g i) :
 theorem biInf_congr' {p : ι → Prop} {f g : (i : ι) → p i → α}
     (h : ∀ i (hi : p i), f i hi = g i hi) :
     ⨅ i, ⨅ (hi : p i), f i hi = ⨅ i, ⨅ (hi : p i), g i hi := by
-  congr; ext i; congr; ext hi; exact h i hi
+  grind
 
 theorem Function.Surjective.iInf_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     ⨅ x, g (f x) = ⨅ y, g y :=
@@ -313,12 +318,6 @@ theorem iInf_le (f : ι → α) (i : ι) : iInf f ≤ f i :=
 
 lemma iInf_le_iSup [Nonempty ι] : ⨅ i, f i ≤ ⨆ i, f i :=
   (iInf_le _ (Classical.arbitrary _)).trans <| le_iSup _ (Classical.arbitrary _)
-
-@[deprecated le_iSup (since := "2024-12-13")]
-theorem le_iSup' (f : ι → α) (i : ι) : f i ≤ iSup f := le_iSup f i
-
-@[deprecated iInf_le (since := "2024-12-13")]
-theorem iInf_le' (f : ι → α) (i : ι) : iInf f ≤ f i := iInf_le f i
 
 theorem isLUB_iSup : IsLUB (range f) (⨆ j, f j) :=
   isLUB_sSup _
@@ -481,9 +480,18 @@ theorem OrderIso.map_iSup [CompleteLattice β] (f : α ≃o β) (x : ι → α) 
   eq_of_forall_ge_iff <| f.surjective.forall.2
   fun x => by simp only [f.le_iff_le, iSup_le_iff]
 
+lemma OrderIso.map_iSup₂ [CompleteLattice β] (f : α ≃o β) (x : ∀ i, κ i → α) :
+    f (⨆ i, ⨆ j, x i j) = ⨆ i, ⨆ j, f (x i j) :=
+  eq_of_forall_ge_iff <| f.surjective.forall.2
+  fun x => by simp only [f.le_iff_le, iSup_le_iff]
+
 theorem OrderIso.map_iInf [CompleteLattice β] (f : α ≃o β) (x : ι → α) :
     f (⨅ i, x i) = ⨅ i, f (x i) :=
   OrderIso.map_iSup f.dual _
+
+theorem OrderIso.map_iInf₂ [CompleteLattice β] (f : α ≃o β) (x : ∀ i, κ i → α) :
+    f (⨅ i, ⨅ j, x i j) = ⨅ i, ⨅ j, f (x i j) :=
+  OrderIso.map_iSup₂ f.dual _
 
 theorem OrderIso.map_sSup [CompleteLattice β] (f : α ≃o β) (s : Set α) :
     f (sSup s) = ⨆ a ∈ s, f a := by
@@ -638,8 +646,8 @@ theorem iInf₂_comm {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι
     ⨅ (i₁) (j₁) (i₂) (j₂), f i₁ j₁ i₂ j₂ = ⨅ (i₂) (j₂) (i₁) (j₁), f i₁ j₁ i₂ j₂ := by
   simp only [@iInf_comm _ (κ₁ _), @iInf_comm _ ι₁]
 
-/- TODO: this is strange. In the proof below, we get exactly the desired
-   among the equalities, but close does not get it.
+/- TODO: this is strange. In the proof below, we get exactly the desired among the equalities,
+but close does not get it.
 begin
   apply @le_antisymm,
     simp, intros,
@@ -725,8 +733,7 @@ lemma biInf_le_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty) {f : ι → α}
     ⨅ i ∈ s, f i ≤ ⨆ i ∈ s, f i :=
   (biInf_le _ hs.choose_spec).trans <| le_biSup _ hs.choose_spec
 
-/- TODO: here is another example where more flexible pattern matching
-   might help.
+/- TODO: here is another example where more flexible pattern matching might help.
 
 begin
   apply @le_antisymm,
@@ -1077,9 +1084,17 @@ theorem biSup_prod {f : β × γ → α} {s : Set β} {t : Set γ} :
   simp_rw [iSup_prod, mem_prod, iSup_and]
   exact iSup_congr fun _ => iSup_comm
 
+theorem biSup_prod' {f : β → γ → α} {s : Set β} {t : Set γ} :
+    ⨆ x ∈ s ×ˢ t, f x.1 x.2 = ⨆ (a ∈ s) (b ∈ t), f a b :=
+  biSup_prod
+
 theorem biInf_prod {f : β × γ → α} {s : Set β} {t : Set γ} :
     ⨅ x ∈ s ×ˢ t, f x = ⨅ (a ∈ s) (b ∈ t), f (a, b) :=
   @biSup_prod αᵒᵈ _ _ _ _ _ _
+
+theorem biInf_prod' {f : β → γ → α} {s : Set β} {t : Set γ} :
+    ⨅ x ∈ s ×ˢ t, f x.1 x.2 = ⨅ (a ∈ s) (b ∈ t), f a b :=
+  biInf_prod
 
 theorem iSup_image2 {γ δ} (f : β → γ → δ) (s : Set β) (t : Set γ) (g : δ → α) :
     ⨆ d ∈ image2 f s t, g d = ⨆ b ∈ s, ⨆ c ∈ t, g (f b c) := by
@@ -1227,23 +1242,19 @@ theorem iInf_apply {α : Type*} {β : α → Type*} {ι : Sort*} [∀ i, InfSet 
 
 theorem unary_relation_sSup_iff {α : Type*} (s : Set (α → Prop)) {a : α} :
     sSup s a ↔ ∃ r : α → Prop, r ∈ s ∧ r a := by
-  rw [sSup_apply]
-  simp [← eq_iff_iff]
+  simp
 
 theorem unary_relation_sInf_iff {α : Type*} (s : Set (α → Prop)) {a : α} :
     sInf s a ↔ ∀ r : α → Prop, r ∈ s → r a := by
-  rw [sInf_apply]
-  simp [← eq_iff_iff]
+  simp
 
 theorem binary_relation_sSup_iff {α β : Type*} (s : Set (α → β → Prop)) {a : α} {b : β} :
     sSup s a b ↔ ∃ r : α → β → Prop, r ∈ s ∧ r a b := by
-  rw [sSup_apply]
-  simp [← eq_iff_iff]
+  simp
 
 theorem binary_relation_sInf_iff {α β : Type*} (s : Set (α → β → Prop)) {a : α} {b : β} :
     sInf s a b ↔ ∀ r : α → β → Prop, r ∈ s → r a b := by
-  rw [sInf_apply]
-  simp [← eq_iff_iff]
+  simp
 
 section CompleteLattice
 

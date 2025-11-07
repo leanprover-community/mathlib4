@@ -13,8 +13,6 @@ The main result is `TensorAlgebra.gradedAlgebra`, which says that the tensor alg
 ℕ-graded algebra.
 -/
 
-suppress_compilation
-
 namespace TensorAlgebra
 
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
