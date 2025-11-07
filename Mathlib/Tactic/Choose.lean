@@ -60,7 +60,7 @@ def ElimStatus.merge : ElimStatus → ElimStatus → ElimStatus
   | _, success => success
   | failure ts₁, failure ts₂ => failure (ts₁ ++ ts₂)
 
-/-- `mkFreshNameFrom orig base` returns `mkFreshUserName base` if ``orig = `_``
+/-- `mkFreshNameFrom orig base` returns `mkFreshUserName base` if `orig` equals the symbol `_`,
 and `orig` otherwise. -/
 def mkFreshNameFrom (orig base : Name) : CoreM Name :=
   if orig = `_ then mkFreshUserName base else pure orig

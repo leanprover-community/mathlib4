@@ -24,7 +24,7 @@ integral) extension of `F`.
 
 - `normalizedTrace_intermediateField`: for a tower `K / E / F` of algebraic extensions,
   `normalizedTrace F E` agrees with `normalizedTrace F K` on `E`.
-- `normalizedTrace_trans`: for a tower `K / E / F` of algebraic extensions, the normalized trace
+-- `normalizedTrace_trans`: for a tower `K / E / F` of algebraic extensions, the normalized trace
   from `K` to `E` composed with the normalized trace from `E` to `F` equals the normalized trace
   from `K` to `F`.
 - `normalizedTrace_self`: `normalizedTrace F F` is the identity map.

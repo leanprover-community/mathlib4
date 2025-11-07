@@ -21,8 +21,9 @@ We develop further preliminaries required for the theorem, up to the sum transfo
   and positivity of `T`.
 * `AkraBazziRecurrence.smoothingFn`: the smoothing function $\varepsilon(x) = 1 / \log x$ used in
   the inductive estimates, along with monotonicity, differentiability, and asymptotic properties.
-* `AkraBazziRecurrence.p`: the unique Akra–Bazzi exponent characterized by $\sum_i a_i\,(b_i)^p = 1`
-  and supporting analytical lemmas such as continuity and injectivity of the defining sum.
+* `AkraBazziRecurrence.p`: the unique Akra–Bazzi exponent characterized by
+  ``∑ i, a i * (b i)^p = 1`` and supporting analytical lemmas such as continuity and injectivity
+  of the defining sum.
 * `AkraBazziRecurrence.sumTransform`: the transformation that turns a function `g` into
   `n^p * ∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)` and its eventual comparison with multiples of `g n`.
 * `AkraBazziRecurrence.asympBound`: the asymptotic bound satisfied by an Akra-Bazzi recurrence,
