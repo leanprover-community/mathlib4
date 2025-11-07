@@ -249,7 +249,6 @@ protected theorem bounded_iteratedFDeriv (f : 𝓓^{n}_{K}(E, F)) {i : ℕ} (hi 
     (f.contDiff.continuous_iteratedFDeriv <| (WithTop.le_coe rfl).mpr hi)
     (f.hasCompactSupport.iteratedFDeriv i)
 
-
 /-- Inclusion of `𝓓^{n}_{K}(E, F)` into the space `E →ᵇ F` of bounded continuous maps
 as a `𝕜`-linear map. -/
 @[simps]
@@ -315,7 +314,7 @@ lemma iteratedFDerivWithOrder_smul (i : ℕ) {c : 𝕜} {f : 𝓓^{n}_{K}(E, F)}
     refine ContDiff.contDiffAt <| f.contDiff.of_le (by exact_mod_cast hin)
   · rw [smul_zero]
 
-/-- Wrapper for iteratedFDerivWithOrder as a `𝕜`-linear map. -/
+/-- Wrapper for `iteratedFDerivWithOrder` as a `𝕜`-linear map. -/
 @[simps]
 noncomputable def iteratedFDerivₗ' (i : ℕ) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n-i}_{K}(E, E [×i]→L[ℝ] F) where
