@@ -316,7 +316,14 @@ def sumComm : UnorientedBordism k (t.sum s) (s.sum t) (I.prod (𝓡∂ 1)) :=
   almost.copy_map_fst (Diffeomorph.refl I _ k) (by
     ext x
     dsimp
-    cases x <;> simp <;> sorry) -- TODO: proof was done before the sorry!
+    -- This uses to be just `cases x <;> simp`.
+    cases x with
+    | inl x' =>-- <;> simp
+      simp
+      erw [Diffeomorph.coe_refl] -- TODO: why is the erw necessary? fix this!
+      simp
+    | inr x' =>
+      simp; erw [Diffeomorph.coe_refl]; simp)
 
 lemma foo {α β γ X : Type*} {f : α → X} {g : β → X} {h : γ → X} :
     Sum.elim (Sum.elim f g) h = Sum.elim f (Sum.elim g h) ∘ (Equiv.sumAssoc α β γ) := by
