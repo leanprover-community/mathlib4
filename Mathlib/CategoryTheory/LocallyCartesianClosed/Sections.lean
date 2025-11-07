@@ -243,8 +243,7 @@ def coreHomEquivToOverSections : CoreHomEquiv (toOver I) (sections I) where
       ChosenPullback.lift_fst_assoc, ← curry_natural_right, assoc]
     · aesop
 
-variable (I)
-
+variable (I) in
 /-- The adjunction between the star functor and the sections functor. -/
 @[simps! unit_app counit_app]
 def toOverSectionsAdj : toOver I ⊣ sections I :=
