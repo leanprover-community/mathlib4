@@ -16,17 +16,17 @@ import Mathlib.Topology.Order.Basic
 
 ### Basic definitions
 
-* `Trivialization F p` : structure extending open partial homeomorphisms, defining a local
+* `Bundle.Trivialization F p` : structure extending open partial homeomorphisms, defining a local
   trivialization of a topological space `Z` with projection `p` and fiber `F`.
 
-* `Pretrivialization F proj` : trivialization as a partial equivalence, mainly used when the
+* `Bundle.Pretrivialization F proj` : trivialization as a partial equivalence, mainly used when the
   topology on the total space has not yet been defined.
 
 ### Operations on bundles
 
 We provide the following operations on `Trivialization`s.
 
-* `Trivialization.compHomeomorph`: given a local trivialization `e` of a fiber bundle
+* `Bundle.Trivialization.compHomeomorph`: given a local trivialization `e` of a fiber bundle
   `p : Z → B` and a homeomorphism `h : Z' ≃ₜ Z`, returns a local trivialization of the fiber bundle
   `p ∘ h`.
 
@@ -34,8 +34,8 @@ We provide the following operations on `Trivialization`s.
 
 Previously, in mathlib, there was a structure `topological_vector_bundle.trivialization` which
 extended another structure `topological_fiber_bundle.trivialization` by a linearity hypothesis. As
-of PR https://github.com/leanprover-community/mathlib3/pull/17359, we have changed this to a single structure
-`Trivialization` (no namespace), together with a mixin class `Trivialization.IsLinear`.
+of PR https://github.com/leanprover-community/mathlib3/pull/17359, we have changed this to a single
+structure `Bundle.Trivialization`, together with a mixin class `Bundle.Trivialization.IsLinear`.
 
 This permits all the *data* of a vector bundle to be held at the level of fiber bundles, so that the
 same trivializations can underlie an object's structure as (say) a vector bundle over `ℂ` and as a
