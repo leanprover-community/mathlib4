@@ -119,7 +119,6 @@ lemma presentable [LocallySmall.{w} C] (X : C) : IsPresentable.{w} X := by
 -- TODO: Move `AreCardinalFilteredGenerators` to the `ObjectProperty` namespace
 include h in
 lemma isStrongGenerator :
-lemma isStrongGenerator :
     ObjectProperty.IsStrongGenerator (.ofObj G) :=
   .mk_of_exists_colimitsOfShape (fun X ↦ ⟨h.J X, inferInstance, by
     rw [← ObjectProperty.colimitsOfShape_isoClosure]
