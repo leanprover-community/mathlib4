@@ -160,7 +160,8 @@ variable {α : Type*} {β : Type*}
 
 `IsUniformGroup G` is equivalent to the fact that `G` is a topological group, and the uniformity
 coincides with **both** the associated left and right uniformities
-(this fact is not in Mathlib yet).
+(see `IsUniformGroup.isRightUniformGroup`, `IsUniformGroup.isLeftUniformGroup` and
+`IsUniformGroup.of_left_right`).
 
 Since there are topological groups where these two uniformities do **not** coincide,
 not all topological groups admit a uniform group structure in this sense. This is however the
@@ -174,7 +175,8 @@ uniformly continuous.
 
 `IsUniformAddGroup G` is equivalent to the fact that `G` is a topological additive group, and the
 uniformity coincides with **both** the associated left and right uniformities
-(this fact is not in Mathlib yet).
+(see `IsUniformAddGroup.isRightUniformAddGroup`, `IsUniformAddGroup.isLeftUniformAddGroup` and
+`IsUniformAddGroup.of_left_right`).
 
 Since there are topological groups where these two uniformities do **not** coincide,
 not all topological groups admit a uniform group structure in this sense. This is however the
@@ -399,6 +401,84 @@ theorem IsUniformGroup.uniformity_countably_generated [(𝓝 (1 : α)).IsCountab
 open MulOpposite
 
 end
+
+section OfLeftAndRight
+
+variable [UniformSpace β] [Group β] [IsLeftUniformGroup β] [IsRightUniformGroup β]
+
+open Prod (snd) in
+/-- Note: this assumes `[IsLeftUniformGroup β] [IsRightUniformGroup β]` instead of the more typical
+(and equivalent) `[IsUniformGroup β]` because this is used in the proof of said equivalence. -/
+@[to_additive /-- Note: this assumes `[IsLeftUniformAddGroup β] [IsRightUniformAddGroup β]`
+instead of the more typical (and equivalent) `[IsUniformAddGroup β]` because this is used
+in the proof of said equivalence. -/]
+theorem comap_conj_nhds_one :
+    comap (fun gx : β × β ↦ gx.1 * gx.2 * gx.1⁻¹) (𝓝 1) = comap snd (𝓝 1) := by
+  let dr : β × β → β := fun xy ↦ xy.2 * xy.1⁻¹
+  let dl : β × β → β := fun xy ↦ xy.1⁻¹ * xy.2
+  let conj : β × β → β := fun gx ↦ gx.1 * gx.2 * gx.1⁻¹
+  let φ : β × β ≃ β × β := (Equiv.refl β).prodShear (fun b ↦ (Equiv.mulLeft b).symm)
+  have conj_φ : conj ∘ φ = dr := by
+    ext; simp [conj, φ, dr]
+  have snd_φ : snd ∘ φ = dl := by
+    ext; simp [φ, dl]
+  rw [← (comap_injective φ.surjective).eq_iff, comap_comap, comap_comap, conj_φ, snd_φ,
+      ← uniformity_eq_comap_inv_mul_nhds_one, ← uniformity_eq_comap_mul_inv_nhds_one]
+
+open Prod (snd) in
+/-- Note: this assumes `[IsLeftUniformGroup β] [IsRightUniformGroup β]` instead of the more typical
+(and equivalent) `[IsUniformGroup β]` because this is used in the proof of said equivalence. -/
+@[to_additive /-- Note: this assumes `[IsLeftUniformAddGroup β] [IsRightUniformAddGroup β]`
+instead of the more typical (and equivalent) `[IsUniformAddGroup β]` because this is used
+in the proof of said equivalence. -/]
+theorem tendsto_conj_nhds_one :
+    Tendsto (fun gx : β × β ↦ gx.1 * gx.2 * gx.1⁻¹) (comap snd (𝓝 1)) (𝓝 1) := by
+  rw [tendsto_iff_comap, comap_conj_nhds_one]
+
+/-- Note: this assumes `[IsLeftUniformGroup β] [IsRightUniformGroup β]` instead of the more typical
+(and equivalent) `[IsUniformGroup β]` because this is used in the proof of said equivalence. -/
+@[to_additive /-- Note: this assumes `[IsLeftUniformAddGroup β] [IsRightUniformAddGroup β]`
+instead of the more typical (and equivalent) `[IsUniformAddGroup β]` because this is used
+in the proof of said equivalence. -/]
+theorem Filter.Tendsto.conj_nhds_one {ι : Type*} {l : Filter ι} {x : ι → β}
+    (hx : Tendsto x l (𝓝 1)) (g : ι → β) :
+    Tendsto (g * x * g⁻¹) l (𝓝 1) := by
+  have : Tendsto (fun i ↦ (g i, x i)) l (comap Prod.snd (𝓝 1)) := by
+    rwa [tendsto_comap_iff]
+  -- `exact` works but is quite slow...
+  convert tendsto_conj_nhds_one.comp this
+
+theorem IsUniformGroup.of_left_right : IsUniformGroup β where
+  uniformContinuous_div := by
+    let φ : (β × β) × (β × β) → β := fun ⟨⟨x₁, x₂⟩, ⟨y₁, y₂⟩⟩ ↦ x₂ * y₂⁻¹ * y₁ * x₁⁻¹
+    let ψ : (β × β) × (β × β) → β := fun ⟨⟨x₁, x₂⟩, ⟨y₁, y₂⟩⟩ ↦ (x₁⁻¹ * x₂) * (y₂⁻¹ * y₁)
+    let g : (β × β) × (β × β) → β := fun ⟨⟨x₁, x₂⟩, ⟨y₁, y₂⟩⟩ ↦ x₁
+    suffices Tendsto φ (𝓤 β ×ˢ 𝓤 β) (𝓝 1) by
+      rw [UniformContinuous, uniformity_eq_comap_mul_inv_nhds_one β, tendsto_comap_iff,
+        uniformity_prod_eq_prod, tendsto_map'_iff]
+      simpa [Function.comp_def, div_eq_mul_inv, ← mul_assoc]
+    have φ_ψ_conj : φ = g * ψ * g⁻¹ := by
+      ext
+      simp [φ, ψ, g, mul_assoc]
+    have ψ_tendsto : Tendsto ψ (𝓤 β ×ˢ 𝓤 β) (𝓝 1) := by
+      rw [← one_mul 1]
+      refine .mul ?_ ?_
+      · rw [uniformity_eq_comap_inv_mul_nhds_one]
+        exact tendsto_comap.comp tendsto_fst
+      · rw [uniformity_eq_comap_inv_mul_nhds_one_swapped]
+        exact tendsto_comap.comp tendsto_snd
+    exact φ_ψ_conj ▸ ψ_tendsto.conj_nhds_one g
+
+theorem isUniformGroup_iff_left_right {γ : Type*} [Group γ] [UniformSpace γ] :
+    IsUniformGroup γ ↔ IsLeftUniformGroup γ ∧ IsRightUniformGroup γ :=
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ .of_left_right⟩
+
+theorem eventually_forall_conj_nhds_one {p : α → Prop}
+    (hp : ∀ᶠ x in 𝓝 1, p x) :
+    ∀ᶠ x in 𝓝 1, ∀ g, p (g * x * g⁻¹) := by
+  simpa using tendsto_conj_nhds_one.eventually hp
+
+end OfLeftAndRight
 
 @[to_additive]
 theorem Filter.HasBasis.uniformity_of_nhds_one {ι} {p : ι → Prop} {U : ι → Set α}
