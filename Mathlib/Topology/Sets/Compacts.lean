@@ -148,6 +148,10 @@ theorem map_comp (f : β → γ) (g : α → β) (hf : Continuous f) (hg : Conti
     K.map (f ∘ g) (hf.comp hg) = (K.map g hg).map f hf :=
   Compacts.ext <| Set.image_comp _ _ _
 
+theorem map_injective {f : α → β} (hf : Continuous f) (hf' : Function.Injective f) :
+    Function.Injective (Compacts.map f hf) :=
+  .of_comp (f := SetLike.coe) <| hf'.image_injective.comp SetLike.coe_injective
+
 @[simp]
 theorem map_singleton {f : α → β} (hf : Continuous f) (x : α) : Compacts.map f hf {x} = {f x} :=
   Compacts.ext Set.image_singleton
