@@ -298,8 +298,7 @@ namespace Simplex
 variable {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
 /-- The interior of a simplex is the set of points that can be expressed as an affine combination
-of the vertices with weights strictly between 0 and 1. This is equivalent to the intrinsic
-interior of the convex hull of the vertices. -/
+of the vertices with weights in a set `I`. -/
 protected def setInterior (I : Set k) {n : ℕ} (s : Simplex k P n) : Set P :=
   {p | ∃ w : Fin (n + 1) → k,
     (∑ i, w i = 1) ∧ (∀ i, w i ∈ I) ∧ Finset.univ.affineCombination k s.points w = p}

@@ -357,18 +357,15 @@ theorem stalkSpecializes_comp {C : Type*} [Category C] [Limits.HasColimits C] {X
 theorem stalkSpecializes_stalkFunctor_map {F G : X.Presheaf C} (f : F ⟶ G) {x y : X} (h : x ⤳ y) :
     F.stalkSpecializes h ≫ (stalkFunctor C x).map f =
       (stalkFunctor C y).map f ≫ G.stalkSpecializes h := by
-  change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
-  ext; delta stalkFunctor; simpa [stalkSpecializes] using by rfl
+  ext
+  simp
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem stalkSpecializes_stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
     (f _* F).stalkSpecializes (f.hom.map_specializes h) ≫ F.stalkPushforward _ f x =
       F.stalkPushforward _ f y ≫ F.stalkSpecializes h := by
-  change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
-  ext; delta stalkPushforward
-  simp only [stalkSpecializes, colimit.ι_desc_assoc, colimit.ι_map_assoc, colimit.ι_pre,
-    Category.assoc, colimit.pre_desc, colimit.ι_desc]
-  rfl
+  ext
+  simp
 
 /-- The stalks are isomorphic on inseparable points -/
 @[simps]
