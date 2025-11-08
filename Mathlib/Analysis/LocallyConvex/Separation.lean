@@ -325,12 +325,9 @@ open TopologicalSpace Metric
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
 
-/-! In particular, in a separable space, a closed convex set is the intersection of countably many
-half-spaces. -/
-
-/-- A closed convex set is the intersection of countably many half spaces in a separable Banach
-space.
-This is Lemma 1.2.9 in [Hytonen_VanNeerven_Veraar_Wies_2016]. -/
+/-- A closed convex set `s` is the intersection of countably many half spaces in a separable Banach
+space. Moreover, these halfspaces are all nontrivial if `s` is nonempty. This is Lemma 1.2.9 in
+[Hytonen_VanNeerven_Veraar_Wies_2016]. -/
 theorem iInter_nat_halfSpaces_eq
     (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) (hsep : IsSeparable sᶜ) :
     ∃ (L : ℕ → E →L[𝕜] 𝕜) (c : ℕ → ℝ),
