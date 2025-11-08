@@ -615,7 +615,7 @@ Q620602:
 
 Q631561:
   title: Closed range theorem
-  decl:
+  decls:
     - ContinuousLinearMap.closed_complemented_range_of_isCompl_of_ker_eq_bot
     - ContinuousLinearMap.orthogonal_ker
     - ContinuousLinearMap.orthogonal_range
