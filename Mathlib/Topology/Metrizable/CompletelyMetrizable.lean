@@ -19,10 +19,15 @@ hypothesis is not needed and the right assumption is then `IsCompletelyMetrizabl
 
 ## Main definition
 
-* `IsCompletely(Pseudo)MetrizableSpace X`: A topological space is completely (pseudo)metrizable if
-  there exists a (pseudo)metric space structure compatible with the topology which makes the space
+* `IsCompletelyPseudoMetrizableSpace X`: A topological space is completely pseudometrizable if
+  there exists a pseudometric space structure compatible with the topology which makes the space
   complete. To endow such a space with a compatible distance, use
-  `letI := upgradeIsCompletely(Pseudo)Metrizable X`.
+  `letI := upgradeIsCompletelyPseudoMetrizable X`.
+
+* `IsCompletelyMetrizableSpace X`: A topological space is completely metrizable if
+  there exists a metric space structure compatible with the topology which makes the space
+  complete. To endow such a space with a compatible distance, use
+  `letI := upgradeIsCompletelyMetrizable X`.
 
 ## Implementation note
 
@@ -83,6 +88,70 @@ def upgradeIsCompletelyPseudoMetrizable (X : Type*) [TopologicalSpace X]
     UpgradedIsCompletelyPseudoMetrizableSpace X :=
   letI := completelyPseudoMetrizableMetric X
   { complete_completelyPseudoMetrizableMetric X with }
+
+namespace IsCompletelyPseudoMetrizableSpace
+
+/-- Note: the priority is set to 90 to ensure that this instance is only applied after
+`PseudoEMetricSpace.pseudoMetrizableSpace`. This prevents unnecessary attempts to infer
+completeness. -/
+instance (priority := 90) PseudoMetrizableSpace [TopologicalSpace X]
+    [IsCompletelyPseudoMetrizableSpace X] : PseudoMetrizableSpace X := by
+  letI := upgradeIsCompletelyPseudoMetrizable X
+  infer_instance
+
+/-- A countable product of completely pseudometrizable spaces is completely pseudometrizable. -/
+instance pi_countable {ι : Type*} [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+    [∀ i, IsCompletelyPseudoMetrizableSpace (X i)] :
+    IsCompletelyPseudoMetrizableSpace (Π i, X i) := by
+  letI := fun i ↦ upgradeIsCompletelyPseudoMetrizable (X i)
+  infer_instance
+
+/-- A disjoint union of completely pseudometrizable spaces is completely pseudometrizable. -/
+instance sigma {ι : Type*} {X : ι → Type*} [∀ n, TopologicalSpace (X n)]
+    [∀ n, IsCompletelyPseudoMetrizableSpace (X n)] : IsCompletelyPseudoMetrizableSpace (Σ n, X n) :=
+  letI := fun n ↦ upgradeIsCompletelyPseudoMetrizable (X n)
+  letI : PseudoMetricSpace (Σ n, X n) := PseudoMetric.Sigma.PseudoMetricSpace
+  haveI : CompleteSpace (Σ n, X n) := PseudoMetric.Sigma.completeSpace
+  inferInstance
+
+/-- The product of two completely pseudometrizable spaces is completely pseudometrizable. -/
+instance prod [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X] [TopologicalSpace Y]
+    [IsCompletelyPseudoMetrizableSpace Y] : IsCompletelyPseudoMetrizableSpace (X × Y) :=
+  letI := upgradeIsCompletelyPseudoMetrizable X
+  letI := upgradeIsCompletelyPseudoMetrizable Y
+  inferInstance
+
+/-- The disjoint union of two completely pseudometrizable spaces is completely pseudometrizable. -/
+instance sum [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X] [TopologicalSpace Y]
+    [IsCompletelyPseudoMetrizableSpace Y] : IsCompletelyPseudoMetrizableSpace (X ⊕ Y) :=
+  letI := upgradeIsCompletelyPseudoMetrizable X
+  letI := upgradeIsCompletelyPseudoMetrizable Y
+  inferInstance
+
+/-- Given a closed embedding into a completely pseudometrizable space,
+the source space is also completely pseudometrizable. -/
+theorem _root_.Topology.IsClosedEmbedding.IsCompletelyPseudoMetrizableSpace [TopologicalSpace X]
+    [TopologicalSpace Y] [IsCompletelyPseudoMetrizableSpace Y] {f : X → Y}
+    (hf : IsClosedEmbedding f) :
+    IsCompletelyPseudoMetrizableSpace X := by
+  letI := upgradeIsCompletelyPseudoMetrizable Y
+  letI : PseudoMetricSpace X := hf.isEmbedding.comapPseudoMetricSpace
+  have : CompleteSpace X := by
+    rw [completeSpace_iff_isComplete_range hf.isEmbedding.to_isometry.isUniformInducing]
+    exact hf.isClosed_range.isComplete
+  infer_instance
+
+/-- A closed subset of a completely pseudometrizable space is also completely pseudometrizable. -/
+theorem _root_.IsClosed.isCompletelyPseudoMetrizableSpace
+    [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X]
+    {s : Set X} (hs : IsClosed s) : IsCompletelyPseudoMetrizableSpace s :=
+  hs.isClosedEmbedding_subtypeVal.IsCompletelyPseudoMetrizableSpace
+
+instance univ [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X] :
+    IsCompletelyPseudoMetrizableSpace (univ : Set X) :=
+  isClosed_univ.isCompletelyPseudoMetrizableSpace
+
+end IsCompletelyPseudoMetrizableSpace
 
 /-- A topological space is completely metrizable if there exists a metric space structure
 compatible with the topology which makes the space complete.
