@@ -82,6 +82,8 @@ to learn about it as well!
 **CI workflow**
 - `lake-build-with-retry.sh`
   Runs `lake build` on a target until `lake build --no-build` succeeds. Used in the main build workflows.
+- `lake-build-wrapper.py`
+  A wrapper script for `lake build` which collapses normal build into log groups and saves a build summary JSON file. See file for usage.
 - `mk_all.lean`
   run via `lake exe mk_all`, regenerates the import-only files
   `Mathlib.lean`, `Mathlib/Tactic.lean`, `Archive.lean` and `Counterexamples.lean`
@@ -95,8 +97,6 @@ to learn about it as well!
 - `lean-pr-testing-comments.sh`
   Generate comments and labels on a Lean or Batteries PR after CI has finished on a
   `*-pr-testing-NNNN` branch.
-- `update_nolints_CI.sh`
-  Update the `nolints.json` file to remove unneeded entries. Automatically run once a week.
 - `assign_reviewers.py` is used to automatically assign a reviewer to each stale github PR on the review queue.
   This script downloads a .json file with proposed assignments and makes the
   corresponding github API calls.
@@ -125,11 +125,15 @@ to learn about it as well!
   and attempts to merge the branch `lean-pr-testing-NNNN` into `master`.
   It will resolve conflicts in `lean-toolchain`, `lakefile.lean`, and `lake-manifest.json`.
   If there are more conflicts, it will bail.
+- `zulip_build_report.sh` is used to analyse the output from building the nightly-testing-green
+  branch with additional linting enabled, and posts a summary of its findings on zulip.
 
 **Managing downstream repos**
 - `downstream_repos.yml` contains basic information about significant downstream repositories.
 - `downstream-tags.py` is a script to check whether a given tag exists on the downstream
   repositories listed in `downstream_repos.yml`.
+- `downstream_dashboard.py` inspects the CI infrastructure of each repository in
+  `downstream_repos.yml` and makes actionable suggestions for improvement or automation.
 
 **Managing and tracking technical debt**
 - `technical-debt-metrics.sh`
@@ -138,10 +142,6 @@ to learn about it as well!
 - `long_file_report.sh`
   Prints the list of the 10 longest Lean files in `Mathlib`.
   This output is automatically posted to zulip once a week.
-
-**Mathlib tactics**
-- `polyrith_sage.py`, `polyrith_sage_helper.py` are required for `polyrith`
-  to communication with the Sage server.
 
 **Data files with linter exceptions**
 - `nolints.json` contains exceptions for all `env_linter`s in mathlib.

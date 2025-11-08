@@ -122,7 +122,7 @@ variable {s : Finset ι} {n : μ} {f : ι → μ}
 
 @[simp] lemma mem_piAntidiag : f ∈ piAntidiag s n ↔ s.sum f = n ∧ ∀ i, f i ≠ 0 → i ∈ s := by
   rw [piAntidiag]
-  induction' Fintype.truncEquivFinOfCardEq (Fintype.card_coe s) using Trunc.ind with e
+  induction Fintype.truncEquivFinOfCardEq (Fintype.card_coe s) using Trunc.ind with | _ e
   simp only [Trunc.lift_mk, mem_map, mem_finAntidiagonal, Embedding.coeFn_mk]
   constructor
   · rintro ⟨f, ⟨hf, rfl⟩, rfl⟩
@@ -201,7 +201,7 @@ variable [DecidableEq ι]
 
 /-- Local notation for the pointwise operation `n • s := {n • a | a ∈ s}` to avoid conflict with the
 pointwise operation `n • s := s + ... + s` (`n` times). -/
-local infixr:73 "•ℕ" => @SMul.smul _ _ Finset.smulFinset
+local infixr:73 " •ℕ " => @SMul.smul _ _ Finset.smulFinset
 
 lemma piAntidiag_univ_fin_eq_antidiagonalTuple (n k : ℕ) :
     piAntidiag univ n = Nat.antidiagonalTuple k n := by

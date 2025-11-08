@@ -421,7 +421,7 @@ theorem rnDeriv_sub (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDe
     (s - t).rnDeriv μ =ᵐ[μ] s.rnDeriv μ - t.rnDeriv μ := by
   rw [sub_eq_add_neg] at hst
   rw [sub_eq_add_neg, sub_eq_add_neg]
-  exact ae_eq_trans (rnDeriv_add _ _ _) (Filter.EventuallyEq.add (ae_eq_refl _) (rnDeriv_neg _ _))
+  grw [rnDeriv_add, rnDeriv_neg]
 
 end SignedMeasure
 

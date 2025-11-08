@@ -50,9 +50,10 @@ theorem ofReal_prod_of_nonneg {α : Type*} {s : Finset α} {f : α → ℝ} (hf 
 theorem iInf_sum {ι α : Type*} {f : ι → α → ℝ≥0∞} {s : Finset α} [Nonempty ι]
     (h : ∀ (t : Finset α) (i j : ι), ∃ k, ∀ a ∈ t, f k a ≤ f i a ∧ f k a ≤ f j a) :
     ⨅ i, ∑ a ∈ s, f i a = ∑ a ∈ s, ⨅ i, f i a := by
-  induction' s using Finset.cons_induction_on with a s ha ih
-  · simp only [Finset.sum_empty, ciInf_const]
-  · simp only [Finset.sum_cons, ← ih]
+  induction s using Finset.cons_induction_on with
+  | empty => simp only [Finset.sum_empty, ciInf_const]
+  | cons a s ha ih =>
+    simp only [Finset.sum_cons, ← ih]
     refine (iInf_add_iInf fun i j => ?_).symm
     refine (h (Finset.cons a s ha) i j).imp fun k hk => ?_
     rw [Finset.forall_mem_cons] at hk
@@ -123,10 +124,12 @@ end Sum
 section Inv
 
 lemma prod_inv_distrib {ι : Type*} {f : ι → ℝ≥0∞} {s : Finset ι}
-    (hf : s.toSet.Pairwise fun i j ↦ f i ≠ 0 ∨ f j ≠ ∞) : (∏ i ∈ s, f i)⁻¹ = ∏ i ∈ s, (f i)⁻¹ := by
-  induction' s using Finset.cons_induction with i s hi ih
-  · simp
-  simp [← ih (hf.mono <| by simp)]
+    (hf : (s : Set ι).Pairwise fun i j ↦ f i ≠ 0 ∨ f j ≠ ∞) :
+    (∏ i ∈ s, f i)⁻¹ = ∏ i ∈ s, (f i)⁻¹ := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons i s hi ih => ?_
+  simp only [Finset.prod_cons, ← ih (hf.mono <| by simp)]
   refine ENNReal.mul_inv (not_or_of_imp fun hi₀ ↦ prod_ne_top fun j hj ↦ ?_)
     (not_or_of_imp fun hi₀ ↦ Finset.prod_ne_zero_iff.2 fun j hj ↦ ?_)
   · exact imp_iff_not_or.2 (hf (by simp) (by simp [hj]) <| .symm <| ne_of_mem_of_not_mem hj hi) hi₀
@@ -135,12 +138,13 @@ lemma prod_inv_distrib {ι : Type*} {f : ι → ℝ≥0∞} {s : Finset ι}
 lemma finsetSum_iSup {α ι : Type*} {s : Finset α} {f : α → ι → ℝ≥0∞}
     (hf : ∀ i j, ∃ k, ∀ a, f a i ≤ f a k ∧ f a j ≤ f a k) :
     ∑ a ∈ s, ⨆ i, f a i = ⨆ i, ∑ a ∈ s, f a i := by
-  induction' s using Finset.cons_induction with a s ha ihs
-  · simp
-  simp_rw [Finset.sum_cons, ihs]
-  refine iSup_add_iSup fun i j ↦ (hf i j).imp fun k hk ↦ ?_
-  gcongr
-  exacts [(hk a).1, (hk _).2]
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha ihs =>
+    simp_rw [Finset.sum_cons, ihs]
+    refine iSup_add_iSup fun i j ↦ (hf i j).imp fun k hk ↦ ?_
+    gcongr
+    exacts [(hk a).1, (hk _).2]
 
 lemma finsetSum_iSup_of_monotone {α ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {s : Finset α}
     {f : α → ι → ℝ≥0∞} (hf : ∀ a, Monotone (f a)) : (∑ a ∈ s, iSup (f a)) = ⨆ n, ∑ a ∈ s, f a n :=

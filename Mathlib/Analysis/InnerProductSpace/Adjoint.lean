@@ -17,7 +17,7 @@ We then use this to put a C⋆-algebra structure on `E →L[𝕜] E` with the ad
 operation.
 
 This construction is used to define an adjoint for linear maps (i.e. not continuous) between
-finite dimensional spaces.
+finite-dimensional spaces.
 
 ## Main definitions
 
@@ -344,8 +344,26 @@ theorem isStarNormal_iff_norm_eq_adjoint :
     sub_eq_zero, ← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)]
   norm_cast
 
+lemma IsStarNormal.adjoint_apply_eq_zero_iff (hT : IsStarNormal T) (x : E) :
+    adjoint T x = 0 ↔ T x = 0 := by
+  simp_rw [← norm_eq_zero (E := E), ← isStarNormal_iff_norm_eq_adjoint.mp hT]
+
+open ContinuousLinearMap
+
+theorem IsStarNormal.ker_adjoint_eq_ker (hT : IsStarNormal T) :
+    LinearMap.ker (adjoint T) = LinearMap.ker T :=
+  Submodule.ext hT.adjoint_apply_eq_zero_iff
+
+/-- The range of a normal operator is pairwise orthogonal to its kernel.
+
+This is a weaker version of `LinearMap.IsSymmetric.orthogonal_range`
+but with stronger type class assumptions (i.e., `CompleteSpace`). -/
+theorem IsStarNormal.orthogonal_range (hT : IsStarNormal T) :
+    (LinearMap.range T)ᗮ = LinearMap.ker T :=
+  T.orthogonal_range ▸ hT.ker_adjoint_eq_ker
+
 /- TODO: As we have a more general result of this for elements in non-unital C⋆-algebras
-see (Analysis/CStarAlgebra/Projection), we will want to simplify the proof
+(see `Mathlib/Analysis/CStarAlgebra/Projection.lean`), we will want to simplify the proof
 by using the complexification of an inner product space over `𝕜`. -/
 /-- An idempotent operator is self-adjoint iff it is normal. -/
 theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal (hT : IsIdempotentElem T) :
@@ -376,7 +394,6 @@ theorem isStarProjection_iff_isSymmetricProjection :
   simp [isStarProjection_iff, LinearMap.isSymmetricProjection_iff,
     isSelfAdjoint_iff_isSymmetric, IsIdempotentElem, End.mul_eq_comp, ← coe_comp, mul_def]
 
-open ContinuousLinearMap in
 /-- Star projection operators are equal iff their range are. -/
 theorem IsStarProjection.ext_iff {S : E →L[𝕜] E}
     (hS : IsStarProjection S) (hT : IsStarProjection T) :
@@ -659,18 +676,18 @@ lemma _root_.LinearIsometryEquiv.star_eq_symm (e : H ≃ₗᵢ[𝕜] H) :
 theorem norm_map_of_mem_unitary {u : H →L[𝕜] H} (hu : u ∈ unitary (H →L[𝕜] H)) (x : H) :
     ‖u x‖ = ‖x‖ :=
   -- Elaborates faster with this broken out https://github.com/leanprover-community/mathlib4/issues/11299
-  have := unitary.star_mul_self_of_mem hu
+  have := Unitary.star_mul_self_of_mem hu
   u.norm_map_iff_adjoint_comp_self.mpr this x
 
 theorem inner_map_map_of_mem_unitary {u : H →L[𝕜] H} (hu : u ∈ unitary (H →L[𝕜] H)) (x y : H) :
     ⟪u x, u y⟫_𝕜 = ⟪x, y⟫_𝕜 :=
   -- Elaborates faster with this broken out https://github.com/leanprover-community/mathlib4/issues/11299
-  have := unitary.star_mul_self_of_mem hu
+  have := Unitary.star_mul_self_of_mem hu
   u.inner_map_map_iff_adjoint_comp_self.mpr this x y
 
 end ContinuousLinearMap
 
-namespace unitary
+namespace Unitary
 
 theorem norm_map (u : unitary (H →L[𝕜] H)) (x : H) : ‖(u : H →L[𝕜] H) x‖ = ‖x‖ :=
   u.val.norm_map_of_mem_unitary u.property x
@@ -709,6 +726,18 @@ lemma linearIsometryEquiv_coe_apply (u : unitary (H →L[𝕜] H)) :
 lemma linearIsometryEquiv_coe_symm_apply (e : H ≃ₗᵢ[𝕜] H) :
     linearIsometryEquiv.symm e = (e : H →L[𝕜] H) :=
   rfl
+
+end Unitary
+
+namespace unitary
+
+@[deprecated (since := "2025-10-29")] alias norm_map := Unitary.norm_map
+@[deprecated (since := "2025-10-29")] alias inner_map_map := Unitary.inner_map_map
+@[deprecated (since := "2025-10-29")] alias linearIsometryEquiv := Unitary.linearIsometryEquiv
+@[deprecated (since := "2025-10-29")] alias linearIsometryEquiv_coe_apply :=
+  Unitary.linearIsometryEquiv_coe_apply
+@[deprecated (since := "2025-10-29")] alias linearIsometryEquiv_coe_symm_apply :=
+  Unitary.linearIsometryEquiv_coe_symm_apply
 
 end unitary
 

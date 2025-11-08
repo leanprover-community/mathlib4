@@ -16,7 +16,7 @@ import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 We prove that the Haar measure and Lebesgue measure are equal on `ℝ` and on `ℝ^ι`, in
 `MeasureTheory.addHaarMeasure_eq_volume` and `MeasureTheory.addHaarMeasure_eq_volume_pi`.
 
-We deduce basic properties of any Haar measure on a finite dimensional real vector space:
+We deduce basic properties of any Haar measure on a finite-dimensional real vector space:
 * `map_linearMap_addHaar_eq_smul_addHaar`: a linear map rescales the Haar measure by the
   absolute value of its determinant.
 * `addHaar_preimage_linearMap` : when `f` is a linear map with nonzero determinant, the measure
@@ -298,7 +298,7 @@ theorem addHaar_image_linearMap (f : E →ₗ[ℝ] E) (s : Set E) :
   rcases ne_or_eq (LinearMap.det f) 0 with (hf | hf)
   · let g := (f.equivOfDetNeZero hf).toContinuousLinearEquiv
     change μ (g '' s) = _
-    rw [ContinuousLinearEquiv.image_eq_preimage g s, addHaar_preimage_continuousLinearEquiv]
+    rw [ContinuousLinearEquiv.image_eq_preimage_symm g s, addHaar_preimage_continuousLinearEquiv]
     congr
   · simp only [hf, zero_mul, ENNReal.ofReal_zero, abs_zero]
     have : μ (LinearMap.range f) = 0 :=
@@ -340,8 +340,7 @@ theorem map_addHaar_smul {r : ℝ} (hr : r ≠ 0) :
   change Measure.map f μ = _
   have hf : LinearMap.det f ≠ 0 := by
     simp only [f, mul_one, LinearMap.det_smul, Ne, MonoidHom.map_one]
-    intro h
-    exact hr (pow_eq_zero h)
+    exact pow_ne_zero _ hr
   simp only [f, map_linearMap_addHaar_eq_smul_addHaar μ hf, mul_one, LinearMap.det_smul, map_one]
 
 theorem quasiMeasurePreserving_smul {r : ℝ} (hr : r ≠ 0) :

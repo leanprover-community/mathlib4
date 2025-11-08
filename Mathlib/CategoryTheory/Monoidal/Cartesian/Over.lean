@@ -33,7 +33,7 @@ noncomputable abbrev cartesianMonoidalCategory (X : C) : CartesianMonoidalCatego
 
 attribute [local instance] cartesianMonoidalCategory
 
-/-- `Over X` is braided w.r.t. the cartesian monoidal structure given by `Limits.pullback`. -/
+/-- `Over X` is braided w.r.t. the Cartesian monoidal structure given by `Limits.pullback`. -/
 noncomputable abbrev braidedCategory (X : C) : BraidedCategory (Over X) :=
   .ofCartesianMonoidalCategory
 

@@ -7,7 +7,7 @@ import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Data.Nat.Choose.Cast
 import Mathlib.Data.Nat.Choose.Vandermonde
-import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Field
 import Mathlib.Tactic.Positivity
 
 /-!
@@ -123,8 +123,9 @@ theorem hasseDeriv_X (hk : 1 < k) : hasseDeriv k (X : R[X]) = 0 := by
     zero_mul, monomial_zero_right]
 
 theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivative R _)^[k] := by
-  induction' k with k ih
-  · rw [hasseDeriv_zero, factorial_zero, iterate_zero, one_smul, LinearMap.id_coe]
+  induction k with
+  | zero => rw [hasseDeriv_zero, factorial_zero, iterate_zero, one_smul, LinearMap.id_coe]
+  | succ k ih => ?_
   ext f n : 2
   rw [iterate_succ_apply', ← ih]
   simp only [LinearMap.smul_apply, coeff_smul, LinearMap.map_smul_of_tower, coeff_derivative,
@@ -167,7 +168,7 @@ theorem hasseDeriv_comp (k l : ℕ) :
   rw [cast_choose ℚ h1, cast_choose ℚ h2, cast_choose ℚ h3, cast_choose ℚ hikl]
   rw [show i - (k + l) = i - l - k by rw [add_comm]; apply tsub_add_eq_tsub_tsub]
   simp only [add_tsub_cancel_left]
-  field_simp
+  field
 
 theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
     natDegree (hasseDeriv n p) ≤ natDegree p - n := by
@@ -188,18 +189,12 @@ theorem hasseDeriv_natDegree_eq_C : f.hasseDeriv f.natDegree = C f.leadingCoeff 
   rw [eq_C_of_natDegree_le_zero this, hasseDeriv_coeff, zero_add, Nat.choose_self,
     Nat.cast_one, one_mul, leadingCoeff]
 
-theorem natDegree_hasseDeriv [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
+theorem natDegree_hasseDeriv [IsAddTorsionFree R] (p : R[X]) (n : ℕ) :
     natDegree (hasseDeriv n p) = natDegree p - n := by
-  rcases lt_or_ge p.natDegree n with hn | hn
-  · simpa [hasseDeriv_eq_zero_of_lt_natDegree, hn] using (tsub_eq_zero_of_le hn.le).symm
-  · refine map_natDegree_eq_sub ?_ ?_
-    · exact fun h => hasseDeriv_eq_zero_of_lt_natDegree _ _
-    · classical
-        simp only [ite_eq_right_iff, Ne, natDegree_monomial, hasseDeriv_monomial]
-        intro k c c0 hh
-        -- this is where we use the `smul_eq_zero` from `NoZeroSMulDivisors`
-        rw [← nsmul_eq_mul, smul_eq_zero, Nat.choose_eq_zero_iff] at hh
-        exact (tsub_eq_zero_of_le (Or.resolve_right hh c0).le).symm
+  classical
+  refine map_natDegree_eq_sub (fun h => hasseDeriv_eq_zero_of_lt_natDegree _ _) ?_
+  simp only [Ne, hasseDeriv_monomial, natDegree_monomial, ite_eq_right_iff]
+  simp +contextual [← nsmul_eq_mul, Nat.choose_eq_zero_iff, le_of_lt]
 
 section
 
