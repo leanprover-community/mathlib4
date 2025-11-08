@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Category.Grp.Limits
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
 import Mathlib.CategoryTheory.Monoidal.Grp_
 
 /-!
@@ -18,6 +19,7 @@ assert_not_exists Field
 
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory MonObj
 
+namespace CategoryTheory
 universe w v u
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
   {M G H X Y : C} [MonObj M] [GrpObj G] [GrpObj H]
@@ -69,7 +71,7 @@ abbrev Hom.group : Group (X ⟶ G) where
     _ = (f ≫ lift ι (𝟙 G)) ≫ μ := by simp
     _ = toUnit X ≫ η := by rw [Category.assoc]; simp
 
-scoped[MonObj] attribute [instance] Hom.group
+scoped[CategoryTheory.MonObj] attribute [instance] Hom.group
 
 lemma Hom.inv_def (f : X ⟶ G) : f⁻¹ = f ≫ ι := rfl
 
@@ -187,14 +189,61 @@ lemma GrpObj.one_inv : η[G] ≫ ι = η := by simp [GrpObj.inv_eq_inv, GrpObj.c
 
 @[deprecated (since := "2025-09-13")] alias Grp_Class.inv_eq_inv := GrpObj.inv_eq_inv
 
-instance [BraidedCategory C] [IsCommMonObj G] : IsMonHom ι[G] where
+variable [BraidedCategory C]
+
+instance [IsCommMonObj G] : IsMonHom ι[G] where
   one_hom := by simp [one_eq_one, ← Hom.inv_def]
   mul_hom := by simp [GrpObj.mul_inv_rev]
 
 attribute [local simp] Hom.inv_def in
-instance [BraidedCategory C] [IsCommMonObj G] {f : M ⟶ G} [IsMonHom f] : IsMonHom f⁻¹ where
+instance [IsCommMonObj G] {f : M ⟶ G} [IsMonHom f] : IsMonHom f⁻¹ where
+
+namespace Grp
+variable {G H : Grp C} [IsCommMonObj H.X]
+
+instance : MonObj H where
+  one := η[H.toMon]
+  mul := μ[H.toMon]
+  one_mul := MonObj.one_mul H.toMon
+  mul_one := MonObj.mul_one H.toMon
+  mul_assoc := MonObj.mul_assoc H.toMon
+
+@[simp] lemma hom_one (H : Grp C) [IsCommMonObj H.X] : η[H].hom = η[H.X] := rfl
+@[simp] lemma hom_mul (H : Grp C) [IsCommMonObj H.X] : μ[H].hom = μ[H.X] := rfl
+
+namespace Hom
+
+@[simp] lemma hom_one : (1 : G ⟶ H).hom = 1 := rfl
+@[simp] lemma hom_mul (f g : G ⟶ H) : (f * g).hom = f.hom * g.hom := rfl
+@[simp] lemma hom_pow (f : G ⟶ H) (n : ℕ) : (f ^ n).hom = f.hom ^ n := Mon.Hom.hom_pow ..
+
+end Hom
+
+attribute [local simp] mul_eq_mul GrpObj.inv_eq_inv comp_mul in
+/-- A commutative group object is a group object in the category of group objects. -/
+instance : GrpObj H where inv := .mk ι[H.X]
+
+namespace Hom
+
+@[simp] lemma hom_inv (f : G ⟶ H) : f⁻¹.hom = f.hom⁻¹ := rfl
+@[simp] lemma hom_div (f g : G ⟶ H) : (f / g).hom = f.hom / g.hom := rfl
+@[simp] lemma hom_zpow (f : G ⟶ H) (n : ℤ) : (f ^ n).hom = f.hom ^ n := by cases n <;> simp
+
+end Hom
+
+attribute [local simp] mul_eq_mul comp_mul mul_comm mul_div_mul_comm in
+/-- A commutative group object is a commutative group object in the category of group objects. -/
+instance : IsCommMonObj H where
+
+instance [IsCommMonObj G.X] (f : G ⟶ H) : IsMonHom f where
+  one_hom := by ext; simp [Grp.instMonObj]
+  mul_hom := by ext; simp [Grp.instMonObj]
+
+end Grp
 
 /-- If `G` is a commutative group object, then `Hom(X, G)` has a commutative group structure. -/
-abbrev Hom.commGroup [BraidedCategory C] [IsCommMonObj G] : CommGroup (X ⟶ G) where
+abbrev Hom.commGroup [IsCommMonObj G] : CommGroup (X ⟶ G) where
 
-scoped[MonObj] attribute [instance] Hom.commGroup
+scoped[CategoryTheory.MonObj] attribute [instance] Hom.commGroup
+
+end CategoryTheory
