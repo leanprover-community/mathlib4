@@ -213,7 +213,7 @@ theorem MeromorphicAt.meromorphicTrailingCoeffAt_add_eq_left_of_lt {f₁ f₂ : 
   -- General case
   lift meromorphicOrderAt f₂ x to ℤ using h₁f₂ with n₂ hn₂
   obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := (meromorphicOrderAt_eq_int_iff hf₂).1 hn₂.symm
-  lift meromorphicOrderAt f₁ x to ℤ using (by aesop) with n₁ hn₁
+  lift meromorphicOrderAt f₁ x to ℤ using LT.lt.ne_top h with n₁ hn₁
   obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := (meromorphicOrderAt_eq_int_iff hf₁).1 hn₁.symm
   rw [WithTop.coe_lt_coe] at h
   have τ₀ : ∀ᶠ z in 𝓝[≠] x, (f₁ + f₂) z = (z - x) ^ n₁ • (g₁ + (z - x) ^ (n₂ - n₁) • g₂) z := by
@@ -249,9 +249,9 @@ theorem MeromorphicAt.meromorphicTrailingCoeffAt_add_eq_add {f₁ f₂ : 𝕜 �
     filter_upwards [meromorphicOrderAt_eq_top_iff.1 h₁f₁]
     simp
   -- General case
-  lift meromorphicOrderAt f₁ x to ℤ using (by aesop) with n₁ hn₁
+  lift meromorphicOrderAt f₂ x to ℤ using (ne_of_ne_of_eq (fun x ↦ h₁f₁ x.symm) h₁).symm with n₂ hn₂
+  lift meromorphicOrderAt f₁ x to ℤ using (h₁f₁) with n₁ hn₁
   obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := (meromorphicOrderAt_eq_int_iff hf₁).1 hn₁.symm
-  lift meromorphicOrderAt f₂ x to ℤ using (by aesop) with n₂ hn₂
   obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := (meromorphicOrderAt_eq_int_iff hf₂).1 hn₂.symm
   rw [WithTop.coe_eq_coe, h₁g₁.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g₁ h₃g₁,
     h₁g₂.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g₂ h₃g₂] at *

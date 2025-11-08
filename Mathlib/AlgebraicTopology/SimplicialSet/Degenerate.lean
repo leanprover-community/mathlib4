@@ -339,8 +339,8 @@ of simplicial sets. -/
 @[simps]
 def nonDegenerateEquivOfIso (e : X ≅ Y) {n : ℕ} :
     X.nonDegenerate n ≃ Y.nonDegenerate n where
-  toFun := fun ⟨x, hx⟩ ↦ ⟨e.hom.app _ x, by aesop⟩
-  invFun := fun ⟨y, hy⟩ ↦ ⟨e.inv.app _ y, by aesop⟩
+  toFun := fun ⟨x, hx⟩ ↦ ⟨e.hom.app _ x, (nonDegenerate_iff_of_isIso e.hom x).mpr hx⟩
+  invFun := fun ⟨y, hy⟩ ↦ ⟨e.inv.app _ y, (nonDegenerate_iff_of_isIso e.inv y).mpr hy⟩
   left_inv _ := by aesop
   right_inv _ := by aesop
 

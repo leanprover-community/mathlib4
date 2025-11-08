@@ -179,5 +179,5 @@ theorem isOrdering_iff :
     have := h (-x) (-y)
     have := h x y
     have := h x (-y)
-    cases (by aesop : x ∈ P ∨ -x ∈ P) <;> simp_all [mem_support]
+    cases mem_or_neg_mem P x <;> simp_all [mem_support]
 end RingPreordering

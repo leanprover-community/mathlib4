@@ -131,7 +131,7 @@ lemma targetAffineLocally_affineAnd_iff' (hQi : RingHom.RespectsIso Q)
     targetAffineLocally (affineAnd Q) f ↔
       IsAffineHom f ∧ ∀ U : Y.Opens, IsAffineOpen U → Q (f.app U).hom := by
   rw [targetAffineLocally_affineAnd_iff hQi, isAffineHom_iff]
-  aesop
+  exact forall₂_and
 
 lemma targetAffineLocally_affineAnd_iff_affineLocally (hQ : RingHom.PropertyIsLocal Q)
     {X Y : Scheme.{u}} (f : X ⟶ Y) :
@@ -231,10 +231,10 @@ lemma HasAffineProperty.affineAnd_iff (P : MorphismProperty Scheme.{u})
   simp_rw [isAffineHom_iff]
   refine ⟨fun h X Y f ↦ ?_, fun h ↦ ⟨affineAnd_isLocal hQi hQl hQs, ?_⟩⟩
   · rw [eq_targetAffineLocally P, targetAffineLocally_affineAnd_iff hQi]
-    aesop
+    exact forall₂_and
   · ext X Y f
     rw [targetAffineLocally_affineAnd_iff hQi, h f]
-    aesop
+    exact forall₂_and.symm
 
 lemma HasAffineProperty.affineAnd_le_isAffineHom (P : MorphismProperty Scheme.{u})
     (hA : HasAffineProperty P (affineAnd Q)) : P ≤ @IsAffineHom := by

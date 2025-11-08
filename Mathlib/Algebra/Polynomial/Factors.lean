@@ -224,7 +224,8 @@ theorem factors_mul_iff (hf₀ : f ≠ 0) (hg₀ : g ≠ 0) :
     rw [← hp, natDegree_mul hf₀ hg₀, Nat.add_eq_zero] at hn
     exact ⟨factors_of_natDegree_eq_zero hn.1, factors_of_natDegree_eq_zero hn.2⟩
   | succ n ih =>
-    obtain ⟨a, ha⟩ := Factors.exists_eval_eq_zero h (degree_ne_of_natDegree_ne <| hn ▸ by aesop)
+    obtain ⟨a, ha⟩ := Factors.exists_eval_eq_zero h (degree_ne_of_natDegree_ne <| hn ▸
+      (Nat.ne_of_beq_eq_false rfl))
     have := dvd_iff_isRoot.mpr ha
     rw [← hp, (prime_X_sub_C a).dvd_mul] at this
     wlog hf : X - C a ∣ f with hf2
@@ -232,13 +233,14 @@ theorem factors_mul_iff (hf₀ : f ≠ 0) (hg₀ : g ≠ 0) :
         this.resolve_left hf
     obtain ⟨f, rfl⟩ := hf
     rw [mul_assoc] at hp; subst hp
-    rw [natDegree_mul (by aesop) (by aesop), natDegree_X_sub_C, add_comm, Nat.succ_inj] at hn
-    have := ih (by aesop) hg₀ (f * g) rfl  (factors_X_sub_C_mul_iff.mp h) hn
+    rw [natDegree_mul (X_sub_C_ne_zero a) (by aesop), natDegree_X_sub_C, add_comm, Nat.succ_inj]
+      at hn
+    have := ih (right_ne_zero_of_mul hf₀) hg₀ (f * g) rfl  (factors_X_sub_C_mul_iff.mp h) hn
     aesop
 
 theorem Factors.of_dvd (hg : Factors g) (hg₀ : g ≠ 0) (hfg : f ∣ g) : Factors f := by
   obtain ⟨g, rfl⟩ := hfg
-  exact ((factors_mul_iff (by aesop) (by aesop)).mp hg).1
+  exact ((factors_mul_iff (left_ne_zero_of_mul hg₀) (right_ne_zero_of_mul hg₀)).mp hg).1
 
 -- Todo: Remove or fix name once `Splits` is gone.
 theorem Factors.splits (hf : Factors f) :
@@ -281,7 +283,7 @@ theorem factors_iff_splits {f : R[X]} :
   refine ⟨fun hf ↦ hf.splits.imp_right (forall₃_imp fun g hg hgf ↦
     (le_antisymm · (Nat.WithBot.one_le_iff_zero_lt.mpr hg.degree_pos))), ?_⟩
   rintro (rfl | hf)
-  · aesop
+  · exact Factors.zero
   classical
   by_cases hf0 : f = 0
   · simp [hf0]

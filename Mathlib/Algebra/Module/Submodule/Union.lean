@@ -56,7 +56,7 @@ lemma Submodule.iUnion_ssubset_of_forall_ne_top_of_card_lt (s : Finset ι) (p : 
         t₁ ≠ t₂ ∧ x + t₁ • y ∈ p k ∧ x + t₂ • y ∈ p k := by
       suffices ∃ᵉ (k ∈ s) (z₁ ∈ sxy) (z₂ ∈ sxy), z₁ ≠ z₂ ∧ z₁ ∈ p k ∧ z₂ ∈ p k by
         obtain ⟨k, hk, -, ⟨t₁, -, rfl⟩, -, ⟨t₂, -, rfl⟩, htne, ht₁, ht₂⟩ := this
-        exact ⟨k, hk, t₁, t₂, by aesop, ht₁, ht₂⟩
+        exact ⟨k, hk, t₁, t₂, ne_of_apply_ne (fun t₁ ↦ x + t₁ • y) htne, ht₁, ht₂⟩
       choose f hf using fun z : sxy ↦ mem_iUnion.mp (hsxy z.property)
       have hf' : MapsTo f univ s := fun z _ ↦ by specialize hf z; aesop
       suffices ∃ z₁ z₂, z₁ ≠ z₂ ∧ f z₁ = f z₂ by

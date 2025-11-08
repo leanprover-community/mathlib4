@@ -669,7 +669,7 @@ theorem isIso_of_bijective {x y : SimplexCategory} {f : x ⟶ y}
 lemma isIso_iff_of_mono {n m : SimplexCategory} (f : n ⟶ m) [hf : Mono f] :
     IsIso f ↔ n.len = m.len := by
   refine ⟨fun _ ↦ len_eq_of_isIso f, fun h ↦ ?_⟩
-  obtain rfl : n = m := by aesop
+  obtain rfl : n = m := SimplexCategory.ext_iff.mpr h
   rw [mono_iff_injective] at hf
   exact isIso_of_bijective ⟨hf, by rwa [← Finite.injective_iff_surjective]⟩
 
@@ -680,7 +680,7 @@ instance {n : ℕ} {i : Fin (n + 2)} : Mono (δ i) := by
 lemma isIso_iff_of_epi {n m : SimplexCategory} (f : n ⟶ m) [hf : Epi f] :
     IsIso f ↔ n.len = m.len := by
   refine ⟨fun _ ↦ len_eq_of_isIso f, fun h ↦ ?_⟩
-  obtain rfl : n = m := by aesop
+  obtain rfl : n = m := SimplexCategory.ext_iff.mpr h
   rw [epi_iff_surjective] at hf
   exact isIso_of_bijective ⟨by rwa [Finite.injective_iff_surjective], hf⟩
 

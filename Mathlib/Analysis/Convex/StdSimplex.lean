@@ -230,7 +230,7 @@ variable {S : Type*} [Semiring S] [PartialOrder S]
 
 instance : FunLike (stdSimplex S X) X S where
   coe s := s.val
-  coe_injective' := by aesop
+  coe_injective' := Subtype.val_injective
 
 @[ext high]
 lemma ext {s t : stdSimplex S X} (h : (s : X → S) = t) : s = t := by
