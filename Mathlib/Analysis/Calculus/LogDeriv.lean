@@ -9,7 +9,7 @@ import Mathlib.Analysis.Calculus.MeanValue
 /-!
 # Logarithmic Derivatives
 
-We define the logarithmic derivative of a function f as `deriv f / f`. We then prove some basic
+We define the logarithmic derivative of a function `f` as `deriv f / f`. We then prove some basic
 facts about this, including how it changes under multiplication and composition.
 
 -/
