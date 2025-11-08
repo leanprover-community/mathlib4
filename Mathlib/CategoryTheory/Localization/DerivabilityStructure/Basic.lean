@@ -39,7 +39,6 @@ not depend of the choice of the localization functors.
 
 ## TODO
 
-* Construct derived functors using derivability structures
 * Construct the injective derivability structure in order to derive functor from
   the bounded below homotopy category in an abelian category with enough injectives
 * Construct the projective derivability structure in order to derive functor from
@@ -48,7 +47,6 @@ not depend of the choice of the localization functors.
   of categories of modules (and categories of sheaves of modules)
 * Define the product derivability structure and formalize derived functors of
   functors in several variables
-
 
 ## References
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
@@ -112,11 +110,11 @@ lemma isRightDerivabilityStructure_iff [Φ.HasRightResolutions] (e : Φ.functor 
     simp
   rw [← TwoSquare.GuitartExact.vComp'_iff_of_equivalences e'.hom E₁ E₂ e''' e₁ e₂, this]
 
-lemma guitartExact_of_isRightDerivabilityStructure' [h : Φ.IsRightDerivabilityStructure]
+instance guitartExact_of_isRightDerivabilityStructure' [h : Φ.IsRightDerivabilityStructure]
     (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ F) : TwoSquare.GuitartExact e.hom := by
   simpa only [Φ.isRightDerivabilityStructure_iff L₁ L₂ F e] using h
 
-lemma guitartExact_of_isRightDerivabilityStructure [Φ.IsRightDerivabilityStructure] :
+instance guitartExact_of_isRightDerivabilityStructure [Φ.IsRightDerivabilityStructure] :
     TwoSquare.GuitartExact ((Φ.catCommSq L₁ L₂).iso).hom :=
   guitartExact_of_isRightDerivabilityStructure' _ _ _ _ _
 
@@ -168,11 +166,11 @@ lemma isLeftDerivabilityStructure_iff [Φ.HasLeftResolutions] (e : Φ.functor �
     ← TwoSquare.guitartExact_op_iff e.inv]
   rfl
 
-lemma guitartExact_of_isLeftDerivabilityStructure' [h : Φ.IsLeftDerivabilityStructure]
+instance guitartExact_of_isLeftDerivabilityStructure' [h : Φ.IsLeftDerivabilityStructure]
     (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ F) : TwoSquare.GuitartExact e.inv := by
   simpa only [Φ.isLeftDerivabilityStructure_iff L₁ L₂ F e] using h
 
-lemma guitartExact_of_isLeftDerivabilityStructure [Φ.IsLeftDerivabilityStructure] :
+instance guitartExact_of_isLeftDerivabilityStructure [Φ.IsLeftDerivabilityStructure] :
     TwoSquare.GuitartExact ((Φ.catCommSq L₁ L₂).iso).inv :=
   guitartExact_of_isLeftDerivabilityStructure' _ _ _ _ _
 

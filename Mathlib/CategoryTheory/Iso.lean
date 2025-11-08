@@ -409,6 +409,18 @@ theorem of_isIso_fac_right {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z}
 
 end IsIso
 
+@[simp]
+theorem isIso_comp_left_iff {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
+    IsIso (f ≫ g) ↔ IsIso g :=
+  ⟨fun _ ↦ IsIso.of_isIso_comp_left f g, fun _ ↦ inferInstance⟩
+
+@[simp]
+theorem isIso_comp_right_iff {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
+    IsIso (f ≫ g) ↔ IsIso f :=
+  ⟨fun _ ↦ IsIso.of_isIso_comp_right f g, fun _ ↦ inferInstance⟩
+
+open IsIso
+
 theorem eq_of_inv_eq_inv {f g : X ⟶ Y} [IsIso f] [IsIso g] (p : inv f = inv g) : f = g := by
   apply (cancel_epi (inv f)).1
   rw [inv_hom_id, p, inv_hom_id]
