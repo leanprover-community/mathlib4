@@ -114,11 +114,13 @@ section Addition
 
 variable {f g : E → F}
 
+@[fun_prop]
 theorem HasTemperateGrowth.neg (hf : f.HasTemperateGrowth) : (-f).HasTemperateGrowth := by
   refine ⟨hf.1.neg, fun n ↦ ?_⟩
   obtain ⟨k, C, h⟩ := hf.2 n
   exact ⟨k, C, fun x ↦ by simpa [iteratedFDeriv_neg_apply] using h x⟩
 
+@[fun_prop]
 theorem HasTemperateGrowth.add (hf : f.HasTemperateGrowth) (hg : g.HasTemperateGrowth) :
     (f + g).HasTemperateGrowth := by
   rw [hasTemperateGrowth_iff_isBigO] at *
@@ -133,6 +135,7 @@ theorem HasTemperateGrowth.add (hf : f.HasTemperateGrowth) (hg : g.HasTemperateG
   exact (h₁.trans (IsBigO.pow_of_le_right this (k₁.le_max_left k₂))).add
     (h₂.trans (IsBigO.pow_of_le_right this (k₁.le_max_right k₂)))
 
+@[fun_prop]
 theorem HasTemperateGrowth.sub (hf : f.HasTemperateGrowth) (hg : g.HasTemperateGrowth) :
     (f - g).HasTemperateGrowth := by
   convert hf.add hg.neg using 1
