@@ -203,8 +203,8 @@ instance [EssentiallySmall.{w} C] :
     ⟨ofObj (equivSmallModel.{w} C).inverse.obj, inferInstance,
       fun X _ ↦ ⟨_, ⟨_⟩, ⟨(equivSmallModel.{w} C).unitIso.app X⟩⟩⟩
 
-instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P]
-    (F : C ⥤ D) : ObjectProperty.Small.{w} (P.strictMap F) :=
+instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] (F : C ⥤ D) :
+    ObjectProperty.Small.{w} (P.strictMap F) :=
   small_of_surjective (f := fun (X : Subtype P) ↦ ⟨F.obj X.1, ⟨_, X.2⟩⟩) (by
     rintro ⟨_, ⟨X, hX⟩⟩
     exact ⟨⟨X, hX⟩, rfl⟩)

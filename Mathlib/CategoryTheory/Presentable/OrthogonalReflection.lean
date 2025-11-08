@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Presentable.Adjunction
+import Mathlib.CategoryTheory.Presentable.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 import Mathlib.CategoryTheory.Localization.BousfieldTransfiniteComposition
@@ -40,11 +41,13 @@ in two steps outlined above.
 
 ## Main results
 
-We do a transfinite iteration of the construction `toSucc` described above
-in order to obtain the following results under the assumption that
-`W : MorphismProperty C` is a `w`-small property of morphisms in a
-locally `κ`-presentable category `C` (with `κ : Cardinal.{w}` a regular cardinal)
-such that the domains and domains of the morphisms satisfying `W` are `κ`-presentable :
+The morphisms described above `toSucc W Z : Z ⟶ succ W Z` for all `Z : C` allow to
+define `succStruct W Z₀ : SuccStruct C` for any `Z₀ : C`. By applying
+a transfinite iteration to this `SuccStruct`, we obtain the following results
+under the assumption that `W : MorphismProperty C` is a `w`-small property
+of morphisms in a locally `κ`-presentable category `C` (with `κ : Cardinal.{w}`
+a regular cardinal) such that the domains and domains of the morphisms
+satisfying `W` are `κ`-presentable :
 * `MorphismProperty.isRightAdjoint_ι_isLocal`: existence of the left adjoint
 of the inclusion `W.isLocal ⥤ C`;
 * `MorphismProperty.isLocallyPresentable_isLocal`: the fullsubcategory
@@ -66,10 +69,6 @@ namespace CategoryTheory
 open Limits Localization Opposite
 
 variable {C : Type u} [Category.{v} C] (W : MorphismProperty C)
-
--- why is it not synthetized automatically???
-instance (D : Type w) [SmallCategory.{w} D] : EssentiallySmall.{w} D :=
-  essentiallySmallSelf D
 
 lemma MorphismProperty.isClosedUnderColimitsOfShape_isLocal
     (J : Type u') [Category.{v'} J] [EssentiallySmall.{w} J]
@@ -235,7 +234,6 @@ noncomputable def D₂.multispanIndex : MultispanIndex (multispanShape W Z) C wh
   right _ := step W Z
   fst d := d.2.1.1
   snd d := d.2.1.2
-
 
 variable [HasMulticoequalizer (D₂.multispanIndex W Z)]
 
