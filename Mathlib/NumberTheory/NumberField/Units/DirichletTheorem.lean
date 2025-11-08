@@ -276,7 +276,7 @@ theorem seq_norm_le (n : ℕ) :
         simp only [Nat.lt_one_iff.mp hB, CharP.cast_eq_zero, mul_zero, zero_le]
       simp only [ne_eq, seq, map_one, Int.natAbs_one, this]
   | succ n =>
-      rw [← Nat.cast_le (α := ℚ), Int.cast_natAbs, Int.cast_abs, Algebra.coe_norm_int]
+      rw [← Nat.cast_le (α := ℚ), Nat.cast_natAbs, Int.cast_abs, Algebra.coe_norm_int]
       exact (seq_next K w₁ hB (seq K w₁ hB n).prop).choose_spec.2.2
 
 /-- Construct a unit associated to the place `w₁`. The family, for `w₁ ≠ w₀`, formed by the
