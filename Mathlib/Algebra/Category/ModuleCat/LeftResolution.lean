@@ -5,15 +5,15 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
-import Mathlib.Algebra.Homology.LeftResolutions.Basic
+import Mathlib.Algebra.Homology.LeftResolution.Basic
 
 /-!
 # Functorial projective resolutions of modules
 
 The fact that a `R`-module `M` can be functorially written as a quotient of a
-projective `R`-module is expressed as the definition `ModuleCat.projectiveResolutions`.
-Using the construction in the file `Algebra.Homology.LeftResolutions.Basic`,
-we may obtain a functor `(projectiveResolutions R).chainComplexFunctor` which
+projective `R`-module is expressed as the definition `ModuleCat.projectiveResolution`.
+Using the construction in the file `Algebra.Homology.LeftResolution.Basic`,
+we may obtain a functor `(projectiveResolution R).chainComplexFunctor` which
 sends `M : ModuleCat R` to a projective resolution.
 
 -/
@@ -34,8 +34,8 @@ instance (X : Type u) : Projective ((free R).obj X) where
 
 /-- A `R`-module `M` can be functorially written as a quotient of a
 projective `R`-module. -/
-noncomputable def projectiveResolutions :
-    LeftResolutions
+noncomputable def projectiveResolution :
+    LeftResolution
       (ObjectProperty.ι (isProjective (ModuleCat.{u} R))) where
   F := ObjectProperty.lift _ (forget _ ⋙ free R) (by dsimp; infer_instance)
   π := (adj R).counit

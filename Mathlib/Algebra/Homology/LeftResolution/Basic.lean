@@ -11,11 +11,11 @@ import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 # Left resolutions
 
 Given a fully faithful functor `ι : C ⥤ A` to an abelian category,
-we introduce a structure `Abelian.LeftResolutions ι` which gives
+we introduce a structure `Abelian.LeftResolution ι` which gives
 a functor `F : A ⥤ C` and a natural epimorphism
 `π.app X : ι.obj (F.obj X) ⟶ X` for all `X : A`.
 This is used in order to construct a resolution functor
-`LeftResolutions.chainComplexFunctor : A ⥤ ChainComplex C ℕ`.
+`LeftResolution.chainComplexFunctor : A ⥤ ChainComplex C ℕ`.
 
 This shall be used in order to construct functorial flat resolutions.
 
@@ -30,7 +30,7 @@ variable {A C : Type*} [Category C] [Category A] (ι : C ⥤ A)
 /-- Given a fully faithful functor `ι : C ⥤ A`, this structure contains the data
 of a functor `F : A ⥤ C` and a functorial epimorphism
 `π.app X : ι.obj (F.obj X) ⟶ X` for all `X : A`. -/
-structure LeftResolutions where
+structure LeftResolution where
   /-- a functor which sends `X : A` to an object `F.obj X` with an epimorphism
     `π.app X : ι.obj (F.obj X) ⟶ X` -/
   F : A ⥤ C
@@ -38,11 +38,11 @@ structure LeftResolutions where
   π : F ⋙ ι ⟶ 𝟭 A
   epi_π_app (X : A) : Epi (π.app X) := by infer_instance
 
-namespace LeftResolutions
+namespace LeftResolution
 
 attribute [instance] epi_π_app
 
-variable {ι} (Λ : LeftResolutions ι) (X Y Z : A) (f : X ⟶ Y) (g : Y ⟶ Z)
+variable {ι} (Λ : LeftResolution ι) (X Y Z : A) (f : X ⟶ Y) (g : Y ⟶ Z)
 
 @[reassoc (attr := simp)]
 lemma π_naturality : ι.map (Λ.F.map f) ≫ Λ.π.app Y = Λ.π.app X ≫ f :=
@@ -50,7 +50,7 @@ lemma π_naturality : ι.map (Λ.F.map f) ≫ Λ.π.app Y = Λ.π.app X ≫ f :=
 
 variable [ι.Full] [ι.Faithful] [HasZeroMorphisms C] [Abelian A]
 
-/-- Given `ι : C ⥤ A`, `Λ : LeftResolutions ι`, `X : A`, this is a chain complex
+/-- Given `ι : C ⥤ A`, `Λ : LeftResolution ι`, `X : A`, this is a chain complex
 which is a (functorial) resolution of `A` that is obtained inductively by using
 the epimorphisms given by `Λ`. -/
 noncomputable def chainComplex : ChainComplex C ℕ :=
@@ -58,12 +58,12 @@ noncomputable def chainComplex : ChainComplex C ℕ :=
     (fun f => ⟨_, ι.preimage (Λ.π.app (kernel (ι.map f)) ≫ kernel.ι _),
       ι.map_injective (by simp)⟩)
 
-/-- Given `Λ : LeftResolutions ι`, the chain complex `Λ.chainComplex X`
+/-- Given `Λ : LeftResolution ι`, the chain complex `Λ.chainComplex X`
 identifies in degree `0` to `Λ.F.obj X`. -/
 noncomputable def chainComplexXZeroIso :
     (Λ.chainComplex X).X 0 ≅ Λ.F.obj X := Iso.refl _
 
-/-- Given `Λ : LeftResolutions ι`, the chain complex `Λ.chainComplex X`
+/-- Given `Λ : LeftResolution ι`, the chain complex `Λ.chainComplex X`
 identifies in degree `1` to `Λ.F.obj (kernel (Λ.π.app X))`. -/
 noncomputable def chainComplexXOneIso :
     (Λ.chainComplex X).X 1 ≅ Λ.F.obj (kernel (Λ.π.app X)) := Iso.refl _
@@ -177,13 +177,13 @@ lemma chainComplexMap_comp :
       congr 1
       cat_disch
 
-/-- Given `ι : C ⥤ A`, `Λ : LeftResolutions ι`, this is a
+/-- Given `ι : C ⥤ A`, `Λ : LeftResolution ι`, this is a
 functor `A ⥤ ChainComplex C ℕ` which sends `X : A` to a resolution consisting
 of objects in `C`. -/
 noncomputable def chainComplexFunctor : A ⥤ ChainComplex C ℕ where
   obj X := Λ.chainComplex X
   map f := Λ.chainComplexMap f
 
-end LeftResolutions
+end LeftResolution
 
 end CategoryTheory.Abelian

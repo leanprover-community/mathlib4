@@ -20,6 +20,8 @@ the spectral theorem for linear maps (`LinearMap.IsSymmetric.eigenvectorBasis_ap
 
 spectral theorem, diagonalization theorem -/
 
+open WithLp
+
 namespace Matrix
 
 variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
@@ -109,7 +111,7 @@ theorem eigenvectorUnitary_mulVec (j : n) :
 
 theorem star_eigenvectorUnitary_mulVec (j : n) :
     (star (eigenvectorUnitary hA : Matrix n n 𝕜)) *ᵥ ⇑(hA.eigenvectorBasis j) = Pi.single j 1 := by
-  rw [← eigenvectorUnitary_mulVec, mulVec_mulVec, unitary.coe_star_mul_self, one_mulVec]
+  rw [← eigenvectorUnitary_mulVec, mulVec_mulVec, Unitary.coe_star_mul_self, one_mulVec]
 
 /-- Unitary diagonalization of a Hermitian matrix. -/
 theorem star_mul_self_mul_eq_diagonal :
@@ -185,8 +187,8 @@ theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
 
 /-- rank of a Hermitian matrix is the rank of after diagonalization by the eigenvector unitary -/
 lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
-  conv_lhs => rw [hA.spectral_theorem, ← unitary.coe_star]
-  simp [-isUnit_iff_ne_zero, -unitary.coe_star, rank_diagonal]
+  conv_lhs => rw [hA.spectral_theorem, ← Unitary.coe_star]
+  simp [-isUnit_iff_ne_zero, -Unitary.coe_star, rank_diagonal]
 
 /-- rank of a Hermitian matrix is the number of nonzero eigenvalues of the Hermitian matrix -/
 lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
@@ -227,7 +229,8 @@ lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
     rwa [h_ne, Pi.comp_zero, RCLike.ofReal_zero, (by rfl : Function.const n (0 : 𝕜) = fun _ ↦ 0),
       diagonal_zero, mul_zero, zero_mul] at this
   obtain ⟨i, hi⟩ := Function.ne_iff.mp this
-  exact ⟨_, _, hi, hA.eigenvectorBasis.orthonormal.ne_zero i, hA.mulVec_eigenvectorBasis i⟩
+  exact ⟨_, _, hi, (ofLp_eq_zero 2).ne.2 <| hA.eigenvectorBasis.orthonormal.ne_zero i,
+    hA.mulVec_eigenvectorBasis i⟩
 
 theorem trace_eq_sum_eigenvalues [DecidableEq n] (hA : A.IsHermitian) :
     A.trace = ∑ i, (hA.eigenvalues i : 𝕜) := by

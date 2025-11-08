@@ -476,14 +476,6 @@ theorem eq_empty_of_forall_notMem (h : ∀ x, x ∉ s) : s = ∅ :=
 theorem eq_empty_of_subset_empty {s : Set α} : s ⊆ ∅ → s = ∅ :=
   subset_empty_iff.1
 
-theorem eq_empty_of_isEmpty [IsEmpty α] (s : Set α) : s = ∅ :=
-  eq_empty_of_subset_empty fun x _ => isEmptyElim x
-
-/-- There is exactly one set of a type that is empty. -/
-instance uniqueEmpty [IsEmpty α] : Unique (Set α) where
-  default := ∅
-  uniq := eq_empty_of_isEmpty
-
 /-- See also `Set.nonempty_iff_ne_empty`. -/
 @[push]
 theorem not_nonempty_iff_eq_empty : ¬s.Nonempty ↔ s = ∅ := by
@@ -515,6 +507,13 @@ theorem not_nonempty_empty : ¬(∅ : Set α).Nonempty := fun ⟨_, hx⟩ => hx
 @[simp]
 theorem isEmpty_coe_sort {s : Set α} : IsEmpty (↥s) ↔ s = ∅ :=
   not_iff_not.1 <| by simpa using nonempty_iff_ne_empty
+
+lemma eq_empty_of_isEmpty (s : Set α) [IsEmpty s] : s = ∅ := by
+  simpa using ‹IsEmpty s›
+
+/-- There is exactly one set of a type that is empty. -/
+instance uniqueEmpty [IsEmpty α] : Unique (Set α) where
+  uniq _ := eq_empty_of_isEmpty _
 
 theorem eq_empty_or_nonempty (s : Set α) : s = ∅ ∨ s.Nonempty :=
   or_iff_not_imp_left.2 nonempty_iff_ne_empty.2
@@ -965,7 +964,7 @@ theorem subset_of_mem_powerset {x s : Set α} (h : x ∈ 𝒫 s) : x ⊆ s := @h
 theorem mem_powerset_iff (x s : Set α) : x ∈ 𝒫 s ↔ x ⊆ s :=
   Iff.rfl
 
-theorem powerset_inter (s t : Set α) : 𝒫(s ∩ t) = 𝒫 s ∩ 𝒫 t :=
+theorem powerset_inter (s t : Set α) : 𝒫 (s ∩ t) = 𝒫 s ∩ 𝒫 t :=
   ext fun _ => subset_inter_iff
 
 @[simp]
@@ -979,11 +978,11 @@ theorem powerset_nonempty : (𝒫 s).Nonempty :=
   ⟨∅, fun _ h => empty_subset s h⟩
 
 @[simp]
-theorem powerset_empty : 𝒫(∅ : Set α) = {∅} :=
+theorem powerset_empty : 𝒫 (∅ : Set α) = {∅} :=
   ext fun _ => subset_empty_iff
 
 @[simp]
-theorem powerset_univ : 𝒫(univ : Set α) = univ :=
+theorem powerset_univ : 𝒫 (univ : Set α) = univ :=
   eq_univ_of_forall subset_univ
 
 /-! ### Sets defined as an if-then-else -/
