@@ -117,6 +117,16 @@ theorem MultipliableUniformlyOn.hasProdUniformlyOn [T2Space α] (h : Multipliabl
   intro s hs
   exact (hasProdUniformlyOn_iff_tendstoUniformlyOn.mp hg s hs).congr_right (hg.tprod_eqOn hs).symm
 
+@[to_additive]
+lemma MultipliableUniformlyOn_congr [T2Space α]
+    {f f' : ι → β → α} (h : ∀ s ∈ 𝔖, ∀ i, s.EqOn (f i) (f' i))
+    (h2 : MultipliableUniformlyOn f 𝔖) : MultipliableUniformlyOn f' 𝔖 := by
+  apply HasProdUniformlyOn.multipliableUniformlyOn
+  refine (h2.hasProdUniformlyOn).congr ?_
+  intro s hs
+  filter_upwards with n
+  exact eqOn_fun_finsetProd (h s hs) n
+
 end UniformlyOn
 
 section LocallyUniformlyOn
