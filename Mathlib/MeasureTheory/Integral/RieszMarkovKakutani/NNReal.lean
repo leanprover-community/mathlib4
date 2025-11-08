@@ -129,7 +129,8 @@ open MeasureTheory NormedSpace WeakDual CompactlySupported CompactlySupportedCon
   Filter
 
 instance : PseudoMetricSpace (LevyProkhorov (ProbabilityMeasure X)) :=
-  levyProkhorovDist_pseudoMetricSpace_probabilityMeasure
+  LevyProkhorov.instPseudoMetricSpaceProbabilityMeasure
+
 
 open WeakDual TopologicalSpace
 
@@ -145,7 +146,7 @@ lemma fin_integral_prob_meas {μprob : ProbabilityMeasure X} {f : C(X, ℝ)} :
 
 /- ### This depends on PRs #30845, #28061 and the sequential Banach-Alaoglu theorem,
    ### which is to be PRed. -/
-attribute [local irreducible] LevyProkhorov
+-- attribute [local irreducible] LevyProkhorov
 instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   let Φ := { φ : WeakDual ℝ C(X, ℝ) | ‖toStrongDual φ‖ ≤ 1
     ∧ φ ⟨fun x ↦ 1, continuous_const⟩ = 1 ∧ ∀ f : C_c(X, ℝ), 0 ≤ f → 0 ≤ φ f }
@@ -204,10 +205,10 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
       _ = 1 := φ.2.2.1
   have hΛ (φ : Φ) : ∀ (f : CompactlySupportedContinuousMap X ℝ), 0 ≤ f → 0 ≤ Λ φ f := φ.2.2.2
   let T (φ : Φ) : LevyProkhorov (ProbabilityMeasure X) :=
-    (LevyProkhorov.equiv _).symm ⟨RealRMK.rieszMeasure (Λ φ), IsPMeas φ⟩
+    LevyProkhorov.toMeasureEquiv.invFun ⟨RealRMK.rieszMeasure (Λ φ), IsPMeas φ⟩
   have : Set.univ = Set.range T := by
     ext μ; simp only [T, Set.mem_univ, Set.mem_range, true_iff, Φ]
-    let μprob : ProbabilityMeasure X := (LevyProkhorov.equiv (ProbabilityMeasure X)) μ
+    let μprob : ProbabilityMeasure X := LevyProkhorov.toMeasureEquiv.toFun μ
     let L : C_c(X, ℝ) →ₚ[ℝ] ℝ := integralPositiveLinearMap (μprob : Measure X)
     let liftL : C(X, ℝ) →ₚ[ℝ] ℝ :=
       { toFun := L ∘ continuousMapEquiv
@@ -247,7 +248,8 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
         exact integral_nonneg hgpos
     let φ_fin : ↑Φ := by use φ_weak
     use φ_fin
-    refine (Equiv.symm_apply_eq (LevyProkhorov.equiv (ProbabilityMeasure X))).mpr ?_
+    simp
+    refine (Equiv.symm_apply_eq (LevyProkhorov.toMeasureEquiv)).mpr ?_
     apply Subtype.ext
     simp [φ_fin, φ_weak, Λ]
     apply RealRMK.rieszMeasure_integralPositiveLinearMap
@@ -269,12 +271,30 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   --rw [← @Equiv.invFun_as_coe]
   let tspac : TopologicalSpace { μ : Measure X // IsProbabilityMeasure μ } := Preorder.topology { μ // IsProbabilityMeasure μ}
   refine Continuous.comp ?_ ?_
-  letI sep : SeparableSpace X := SecondCountableTopology.to_separableSpace
-  · refine LevyProkhorov.continuous_equiv_symm_probabilityMeasure (Ω := X) ..
+  letI sep : SeparableSpace X := SecondCountableTopology.to_separableSpace--SecondCountableTopology.to_separableSpace
+  · simp [LevyProkhorov.toMeasureEquiv]
+    grind [LevyProkhorov.continuous_ofMeasure_probabilityMeasure]
+    apply LevyProkhorov.continuous_ofMeasure_probabilityMeasure (Ω := X)
+    refine continuous_iff_le_induced.mpr ?_
+
+
+  · letI (φ : Φ) : IsProbabilityMeasure <| RealRMK.rieszMeasure (Λ φ) := by sorry
+    refine Continuous.subtype_mk (X := { μ : Measure X // IsProbabilityMeasure μ}) (Y := ↑Φ) (f := fun φ ↦ RealRMK.rieszMeasure (Λ φ)) ?_ ?_
+
+    simp [RealRMK.rieszMeasure]
+
+  -- · rw [@continuous_iff_le_induced]
+
+    -- rw [@continuous_iff_coinduced_le]
+
+    --apply LevyProkhorov.continuous_ofMeasure_probabilityMeasure
+
+
+    --refine LevyProkhorov.continuous_ofMeasure_probabilityMeasure (Ω := X) ..
 
 
   rw [(ProbabilityMeasure.toFiniteMeasure_isEmbedding _).continuous_iff (f := fun φ ↦ (LevyProkhorov.equiv (ProbabilityMeasure X)).symm ⟨RealRMK.rieszMeasure (Λ φ), ⋯⟩)]
-  refine Continuous.subtype_mk (X := Measure X) (Y := ↑Φ) (f := fun φ ↦ (RealRMK.rieszMeasure (Λ φ))) ?_ ?_
+
   --refine Continuous.subtype_map (X := {p : Measure X // IsProbabilityMeasure p}) (Y := ↑Φ) (f := fun φ ↦ RealRMK.rieszMeasure (Λ φ)) ?_ ?_ ?_
 
 
