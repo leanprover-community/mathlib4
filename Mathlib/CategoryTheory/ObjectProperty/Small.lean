@@ -20,6 +20,8 @@ universe w v u
 
 namespace CategoryTheory.ObjectProperty
 
+open Opposite
+
 variable {C : Type u} [Category.{v} C]
 
 /-- A property of objects is small relative to a universe `w`
@@ -71,6 +73,26 @@ instance {α : Type*} (P : α → ObjectProperty C)
     ObjectProperty.Small.{w} (⨆ a, P a) :=
   small_of_surjective (f := fun (x : Σ a, Subtype (P a)) ↦ ⟨x.2.1, by aesop⟩)
     (fun ⟨x, hx⟩ ↦ by aesop)
+
+@[simp]
+lemma small_op_iff (P : ObjectProperty C) :
+    ObjectProperty.Small.{w} P.op ↔ ObjectProperty.Small.{w} P :=
+  small_congr
+    { toFun x := ⟨x.1.unop, x.2⟩
+      invFun x := ⟨op x.1, x.2⟩}
+
+@[simp]
+lemma small_unop_iff (P : ObjectProperty Cᵒᵖ) :
+    ObjectProperty.Small.{w} P.unop ↔ ObjectProperty.Small.{w} P := by
+  rw [← small_op_iff, op_unop]
+
+instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] :
+    ObjectProperty.Small.{w} P.op := by
+  simpa
+
+instance (P : ObjectProperty Cᵒᵖ) [ObjectProperty.Small.{w} P] :
+    ObjectProperty.Small.{w} P.unop := by
+  simpa
 
 /-- A property of objects is essentially small relative to a universe `w`
 if it is contained in the closure by isomorphisms of a small property. -/
@@ -143,5 +165,29 @@ instance {α : Type*} (P : α → ObjectProperty C)
     simp only [iSup_le_iff]
     intro a
     exact (hQ a).trans (monotone_isoClosure (le_iSup Q a))
+
+@[simp]
+lemma essentiallySmall_op_iff (P : ObjectProperty C) :
+    ObjectProperty.EssentiallySmall.{w} P.op ↔
+      ObjectProperty.EssentiallySmall.{w} P := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ ?_⟩
+  · obtain ⟨Q, h₁, _, h₂⟩ := EssentiallySmall.exists_small_le P.op
+    exact ⟨Q.unop, inferInstance, by rwa [← unop_isoClosure, ← op_monotone_iff, op_unop]⟩
+  · obtain ⟨Q, h₁, _, h₂⟩ := EssentiallySmall.exists_small_le P
+    exact ⟨Q.op, inferInstance, by rwa [← op_isoClosure, op_monotone_iff]⟩
+
+@[simp]
+lemma essentiallySmall_unop_iff (P : ObjectProperty Cᵒᵖ) :
+    ObjectProperty.EssentiallySmall.{w} P.unop ↔
+      ObjectProperty.EssentiallySmall.{w} P := by
+  rw [← essentiallySmall_op_iff, op_unop]
+
+instance (P : ObjectProperty C) [ObjectProperty.EssentiallySmall.{w} P] :
+    ObjectProperty.EssentiallySmall.{w} P.op := by
+  simpa
+
+instance (P : ObjectProperty Cᵒᵖ) [ObjectProperty.EssentiallySmall.{w} P] :
+    ObjectProperty.EssentiallySmall.{w} P.unop := by
+  simpa
 
 end CategoryTheory.ObjectProperty
