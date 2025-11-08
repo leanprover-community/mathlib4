@@ -521,8 +521,8 @@ def map (f : α ≃o β) : UpperSet α ≃o UpperSet β where
   map_rel_iff' := image_subset_image_iff f.injective
 
 @[simp]
-theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm :=
-  DFunLike.ext _ _ fun s => ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
+theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm := by
+ ext; simp [map, OrderIso.symm_apply_eq]
 
 @[simp]
 theorem mem_map : b ∈ map f s ↔ f.symm b ∈ s := by
@@ -560,8 +560,8 @@ def map (f : α ≃o β) : LowerSet α ≃o LowerSet β where
   map_rel_iff' := image_subset_image_iff f.injective
 
 @[simp]
-theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm :=
-  DFunLike.ext _ _ fun s => ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
+theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm := by
+  ext; simp [map, OrderIso.symm_apply_eq]
 
 @[simp]
 theorem mem_map {f : α ≃o β} {b : β} : b ∈ map f s ↔ f.symm b ∈ s := by

@@ -251,7 +251,7 @@ lemma isCardinalFiltered_iff_aux₁ {ι : Type w} {j : J} {k : ι → J}
   obtain ⟨l, hl⟩ := h₁ k hι
   let a (i : ι) := (hl i).some
   obtain ⟨m, b, c, hm⟩ := h₂ (fun i ↦ f i ≫ a i) hι
-  exact ⟨m, fun i ↦ a i ≫ b, c, by simpa using hm⟩
+  exact ⟨m, fun i ↦ a i ≫ b, c, by grind⟩
 
 include h₁ h₂ in
 lemma isCardinalFiltered_iff_aux₂ {ι : Type w} {j : ι → J} {k : J}
@@ -264,9 +264,13 @@ lemma isCardinalFiltered_iff_aux₂ {ι : Type w} {j : ι → J} {k : J}
     exact ⟨l, a, (hl (Sum.inl .unit)).trans (hl (Sum.inr .unit)).symm⟩
   choose l p hp using this
   obtain ⟨l, a, b, h⟩ := isCardinalFiltered_iff_aux₁ h₁ h₂ p hι
-  exact ⟨l, b, fun i ↦ by simp only [← h i, reassoc_of% hp]⟩
+  exact ⟨l, b, fun i ↦ by grind⟩
 
 variable (J κ) in
+/-- A category is `κ`-filtered iff
+1) any family of objects of cardinality `< κ` admits a map towards a common object, and
+2) any family of morphisms `j ⟶ k` of cardinality `< κ` (between *fixed* objects
+`j` and `k`) can be coequalized by a suitable morphism `k ⟶ l`. -/
 lemma isCardinalFiltered_iff :
     IsCardinalFiltered J κ ↔
       (∀ ⦃ι : Type w⦄ (j : ι → J) (_ : HasCardinalLT ι κ),
@@ -284,8 +288,7 @@ lemma isCardinalFiltered_iff :
   exact ⟨{
     pt := l
     ι.app i := a i ≫ b
-    ι.naturality _ _ f := by simpa using hb (Arrow.mk f)
-  }⟩
+    ι.naturality _ _ f := by simpa using hb (Arrow.mk f) }⟩
 
 end
 

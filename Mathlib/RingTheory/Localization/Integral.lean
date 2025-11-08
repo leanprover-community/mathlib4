@@ -403,9 +403,6 @@ theorem ideal_span_singleton_map_subset {L : Type*} [IsDomain R] [IsDomain S] [F
 
 end IsFractionRing
 
-@[deprecated (since := "2025-03-23")]
-alias isAlgebraic_of_isLocalization := IsLocalization.isAlgebraic
-
 open nonZeroDivisors in
 lemma isAlgebraic_of_isFractionRing {R S} (K L) [CommRing R] [CommRing S] [Field K] [CommRing L]
     [Algebra R S] [Algebra R K] [Algebra R L] [Algebra S L] [Algebra K L] [IsScalarTower R S L]
