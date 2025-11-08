@@ -154,10 +154,17 @@ class IsCompletelyMetrizableSpace (X : Type*) [t : TopologicalSpace X] : Prop wh
     @CompleteSpace X m.toUniformSpace
 
 /-- A completely metrizable space is completely pseudometrizable. -/
-instance IsCompletelyPseudoMetrizableSpace.IsCompletelyMetrizableSpace [TopologicalSpace X]
+instance IsCompletelyMetrizableSpace.toIsCompletelyPseudoMetrizableSpace [TopologicalSpace X]
     [IsCompletelyMetrizableSpace X] : IsCompletelyPseudoMetrizableSpace X := by
-  obtain ⟨m, _, _⟩ := ‹_›
+  obtain ⟨m, _⟩ := ‹_›
   use m.toPseudoMetricSpace
+
+/-- A completely pseudometrizable T0 space is completely metrizable. -/
+instance [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X] [T0Space X] :
+    IsCompletelyMetrizableSpace X := by
+  letI := upgradeIsCompletelyPseudoMetrizable X
+  use MetricSpace.ofT0PseudoMetricSpace X
+  exact ⟨rfl, by infer_instance⟩
 
 instance (priority := 100) _root_.MetricSpace.toIsCompletelyMetrizableSpace
     [MetricSpace X] [CompleteSpace X] : IsCompletelyMetrizableSpace X :=
