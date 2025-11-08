@@ -240,7 +240,7 @@ technical lemmas. -/
 theorem HD_below_aux1 {f : Cb X Y} (C : ℝ) {x : X} :
     BddBelow (range fun y : Y => f (inl x, inr y) + C) :=
   let ⟨cf, hcf⟩ := f.isBounded_range.bddBelow
-  ⟨cf + C, forall_mem_range.2 fun _ => add_le_add_right ((fun x => hcf (mem_range_self x)) _) _⟩
+  ⟨cf + C, forall_mem_range.2 fun _ => by grw [hcf (mem_range_self _)]⟩
 
 private theorem HD_bound_aux1 [Nonempty Y] (f : Cb X Y) (C : ℝ) :
     BddAbove (range fun x : X => ⨅ y, f (inl x, inr y) + C) := by
@@ -253,7 +253,7 @@ private theorem HD_bound_aux1 [Nonempty Y] (f : Cb X Y) (C : ℝ) :
 theorem HD_below_aux2 {f : Cb X Y} (C : ℝ) {y : Y} :
     BddBelow (range fun x : X => f (inl x, inr y) + C) :=
   let ⟨cf, hcf⟩ := f.isBounded_range.bddBelow
-  ⟨cf + C, forall_mem_range.2 fun _ => add_le_add_right ((fun x => hcf (mem_range_self x)) _) _⟩
+  ⟨cf + C, forall_mem_range.2 fun _ => by grw [hcf (mem_range_self _)]⟩
 
 private theorem HD_bound_aux2 [Nonempty X] (f : Cb X Y) (C : ℝ) :
     BddAbove (range fun y : Y => ⨅ x, f (inl x, inr y) + C) := by
@@ -326,8 +326,8 @@ private theorem HD_lipschitz_aux2 (f g : Cb X Y) :
 
 private theorem HD_lipschitz_aux3 (f g : Cb X Y) :
     HD f ≤ HD g + dist f g :=
-  max_le (le_trans (HD_lipschitz_aux1 f g) (add_le_add_right (le_max_left _ _) _))
-    (le_trans (HD_lipschitz_aux2 f g) (add_le_add_right (le_max_right _ _) _))
+  max_le (by grw [HD_lipschitz_aux1 f g, HD, ← le_max_left])
+    (by grw [HD_lipschitz_aux2 f g, HD, ← le_max_right])
 
 /-- Conclude that `HD`, being Lipschitz, is continuous -/
 private theorem HD_continuous : Continuous (HD : Cb X Y → ℝ) :=
