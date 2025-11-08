@@ -663,7 +663,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
           calc 0 < ⌊b' * n₀⌋₊ := by exact h_b_floor
                 _ ≤ m := by rw [Finset.mem_Ico] at hm_mem; exact hm_mem.1
         positivity
-      _ = base_min := by rw [base_min_def, hm]
+      _ = base_min := by order
   refine ⟨C, hC_pos, fun n hn => ?_⟩
   -- Base case: statement is true for `b' * n₀ ≤ n < n₀`
   have h_base : ∀ n ∈ Finset.Ico (⌊b' * n₀⌋₊) n₀, C * ((1 + ε n) * asympBound g a b n) ≤ T n := by

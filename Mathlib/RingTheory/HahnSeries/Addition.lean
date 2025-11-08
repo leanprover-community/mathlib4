@@ -11,6 +11,7 @@ import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Data.Finsupp.SMul
 import Mathlib.RingTheory.HahnSeries.Basic
 import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Order
 
 /-!
 # Additive properties of Hahn series
@@ -233,7 +234,7 @@ theorem leadingCoeff_add_eq_left {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
   have ho : (x + y).orderTop = x.orderTop := orderTop_add_eq_left hxy
   by_cases h : x + y = 0
   · rw [h, orderTop_zero] at ho
-    rw [h, orderTop_eq_top.mp ho.symm]
+    order
   · simp_rw [leadingCoeff_of_ne_zero h, leadingCoeff_of_ne_zero hx, ho, coeff_add]
     rw [coeff_eq_zero_of_lt_orderTop (x := y) (by simpa using hxy), add_zero]
 
