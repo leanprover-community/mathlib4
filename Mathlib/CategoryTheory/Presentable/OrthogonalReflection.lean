@@ -35,9 +35,11 @@ The author of this file was unable to not understand the attempt of the authors
 to fix this mistake in the errata to this book. This led to the definition
 in two steps outlined above.
 
-In future PRs, we will apply a transfinite induction to this construction in
-order to obtain a left adjoint to the inclusion of the full subcategory
-of `W`-local objects under suitable assumptions (TODO).
+These morphisms `toSucc W Z : Z ⟶ succ W Z` for all `Z : C` allow to
+define `succStruct W Z₀ : SuccStruct C` for any `Z₀ : C`. We will apply
+a transfinite induction to this construction in order to obtain a left adjoint
+to the inclusion of the full subcategory of `W`-local objects under
+suitable assumptions (TODO).
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
