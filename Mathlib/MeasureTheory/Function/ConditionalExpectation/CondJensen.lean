@@ -61,8 +61,7 @@ theorem ConvexOn.convex_re_epigraph [Module ℝ E] [IsScalarTower ℝ ℝ E] (h�
 variable [NormedSpace ℝ E]
 
 /-- A convex lower-semicontinuous function is the supremum of a sequence of affine functions
-in a separable space.
-Lemma 1.2.10 in [Hytonen_VanNeerven_Veraar_Wies_2016]. -/
+in a separable space. This is Lemma 1.2.10 in [Hytonen_VanNeerven_Veraar_Wies_2016]. -/
 theorem ConvexOn.iSup_affine_eq_of_separableSpace (hφ_cont : LowerSemicontinuous φ) [Module 𝕜 E]
     [SecondCountableTopology E] [ContinuousSMul 𝕜 E] (hφ_cvx : ConvexOn ℝ Set.univ φ) :
     ∃ (L : ℕ → E →L[𝕜] 𝕜) (c : ℕ → ℝ),
@@ -74,71 +73,54 @@ theorem ConvexOn.iSup_affine_eq_of_separableSpace (hφ_cont : LowerSemicontinuou
   have hC₃ : C.Nonempty := by refine (nonempty_of_mem (x := (0, ↑ (φ 0))) ?_); simp [C]
   rcases iInter_nat_halfSpaces_eq_of_prod (𝕜 := 𝕜) hC₁ hC₂ (.of_separableSpace _)
     with ⟨L, T, c, hLTc1, hLTc2⟩
-  have lem1 : ∀ i, ∀ y, T i y = (T i 1) * y := by
-    intro i y
-    rw [mul_comm, ← smul_eq_mul, ← map_smul (T i) y 1]
-    simp
-  have lem2 : ∀ (x : E) (y : 𝕜), re y ≥ φ x →
-    ∀ i, c i ≤ re (L i x) + re (T i 1) * (re y) - im (T i 1) * im (y) := by
-    intro x y
-    intro hy i
-    have hy2 : (x, y) ∈ C := by simp [C]; exact hy
+  have lem1 (i : ℕ) (y : 𝕜) : T i y = (T i 1) * y := by
+    rw [mul_comm, ← smul_eq_mul, ← map_smul (T i) y 1, smul_eq_mul, mul_one]
+  have lem2 (x : E) (y : 𝕜) (hy : φ x ≤ re y) (i : ℕ) :
+    c i ≤ re (L i x) + re (T i 1) * (re y) - im (T i 1) * im (y) := by
+    have hy2 : (x, y) ∈ C := by simpa [C] using hy
     rw [add_sub_assoc, ← mul_re, ← lem1 i]
     simp only [← hLTc1, mem_iInter, mem_setOf_eq, C] at hy2
     exact (hy2 i)
-  have lem3 : ∀ i, 0 = im (T i 1) := by
+  have lem3 (i : ℕ) : 0 = im (T i 1) := by
     cases @I_eq_zero_or_im_I_eq_one 𝕜 (by infer_instance) with
-    | inl hI0 =>
-      intro i; rw [← I_im', hI0]; simp [map_zero, zero_mul]
+    | inl hI0 => rw [← I_im', hI0]; simp [map_zero, zero_mul]
     | inr hI1 =>
-      intro i
       by_contra ht
-      let z : 𝕜 := ↑(φ 0) + I * ↑((c i - re (T i 1) * (φ 0) - 1) / -im (T i 1))
+      let z : 𝕜 := (φ 0) + I * ↑((c i - re (T i 1) * (φ 0) - 1) / -im (T i 1))
       have rez : re z = φ 0 := by
         rw [map_add, ofReal_re, mul_re, I_re, zero_mul, ofReal_im, mul_zero, sub_self, add_zero]
       have imz : im z = (c i - re ((T i) 1) * (φ 0) - 1) / -im ((T i) 1) := by
-        simp only [z]
-        rw [map_add, ofReal_im, mul_im, I_re, ofReal_re, zero_add]
-        simp [hI1]
+        rw [map_add, ofReal_im, mul_im, I_re, ofReal_re, zero_add]; simp [hI1]
       have lem31 : c i ≤ c i - 1 :=
         calc
-          c i ≤ re (L i 0) + re (T i 1) * (re z) - im (T i 1) * im (z) := by
-              apply (lem2 0 z); rw [rez]
+          c i ≤ re (L i 0) + re (T i 1) * (re z) - im (T i 1) * im (z) := by grind
             _ = re (T i 1) * (φ 0) - im (T i 1) * ((c i -
-                  re (T i 1) * (φ 0) - 1) / -im (T i 1)) := by
-              rw [map_zero, map_zero, zero_add, rez, imz]
-            _ = re (T i 1) * (φ 0) + im (T i 1) * ((c i -
-                  re (T i 1) * (φ 0) - 1) / im (T i 1)) := by linarith
-            _ = re (T i 1) * (φ 0) + im (T i 1) / im (T i 1) * (c i -
-                  re (T i 1) * (φ 0) - 1) := by rw [mul_comm_div]
-            _ = re (T i 1) * (φ 0) + 1 * (c i - re (T i 1) * (φ 0) - 1) := by
-              rw [div_self]; rw [ne_comm, ne_eq]; exact ht
-            _ = c i - 1 := by linarith
+                  re (T i 1) * (φ 0) - 1) / -im (T i 1)) := by simp [rez, imz]
+            _ = c i - 1 := by grind
       exact not_lt_of_ge lem31 (by linarith)
-  have lem4 : ∀ i, 0 < re ((T i) 1) := by
-    intro i
+  have lem4 (i : ℕ) : 0 < re ((T i) 1) := by
     by_contra! h
     rw [le_iff_eq_or_lt] at h
     cases h with
     | inl h1 =>
-      have lem411 : ∀ x, c i ≤ re (L i x) := by
-        intro x
-        have : re (@ofReal 𝕜 _ (φ x)) ≥ φ x := by simp [ofReal_re]
-        have := (lem2 x ↑(φ x)) this i
+      -- Our goal is to show that in this case, the half spaces in hLTc1 are trivial. That is,
+      -- re ((L i) x) + re ((T i) y) = 0, which contradicts with hLTc2.
+      have lem411 (x : E) : c i ≤ re (L i x) := by
+        have := lem2 x (φ x) (by simp [ofReal_re]) i
         simp only [h1, ← lem3 i, zero_mul, add_zero, sub_zero] at this; exact this
-      have lem412: ∀ (y : 𝕜), re (T i y) = 0 := by
-        intro y; rw [lem1 i, mul_re, h1, ← lem3 i, zero_mul, zero_mul, sub_zero]
-      have hC₄ : C ≠ univ := by
-        rw [ne_univ_iff_exists_notMem]; use (0, @ofReal 𝕜 _ (φ 0 - 1)); simp [C]
+      have lem412 (y : 𝕜) : re (T i y) = 0 := by
+        rw [lem1 i, mul_re, h1, ← lem3 i, zero_mul, zero_mul, sub_zero]
+      have hC₄ : C ≠ univ := by rw [ne_univ_iff_exists_notMem]; use (0, (φ 0 - 1)); simp [C]
       have P1 := hLTc2 hC₃ hC₄ i
       simp only [← not_forall] at P1
-      have P2 : ∀ (x : E) (y : 𝕜), (re ∘ L i) x + (re ∘ T i) y = 0 := by
-        have P21: ∀ (x : E), re ((L i) x) = 0 := by
+      have P2 (x : E) (y : 𝕜) : (re ∘ L i) x + (re ∘ T i) y = 0 := by
+        -- (re ∘ T i) y = 0 follows from lem412. We now prove (re ∘ L i) x = 0 by using lem411.
+        have P21 (x : E) : re ((L i) x) = 0 := by
           have ge1 : {n | 1 ≤ n} ∈ Filter.atTop := by
-            simp only [Filter.mem_atTop_sets]; use 1; intro b hb; exact hb
-          intro x
+            simp only [Filter.mem_atTop_sets]; use 1; exact fun _ hb => hb
           apply le_antisymm
-          · have : ∀ᶠ (n : ℕ) in Filter.atTop, re (L i x) ≤ - c i / n := by
+          · -- We first prove that (re ∘ L i) x ≤ 0.
+            have : ∀ᶠ (n : ℕ) in Filter.atTop, re (L i x) ≤ - c i / n := by
               filter_upwards [ge1] with n hn
               calc
                 re (L i x)
@@ -153,24 +135,27 @@ theorem ConvexOn.iSup_affine_eq_of_separableSpace (hφ_cont : LowerSemicontinuou
                   rw [re_ofReal_mul, ofReal_natCast]
                 _ ≤ c i / -n := by
                   rw [inv_mul_eq_div, div_le_div_right_of_neg]
-                  exact lem411 ((-(n : 𝕜) • x)); simp; linarith
+                  · exact lem411 ((-(n : 𝕜) • x))
+                  · simp; linarith
                 _ = - c i / n := by rw [div_neg, neg_div]
             apply ge_of_tendsto (tendsto_const_div_atTop_nhds_zero_nat (- c i)) this
-          · have : ∀ᶠ (n : ℕ) in Filter.atTop, c i / n ≤ re (L i x) := by
+          · -- Notice that lem411 holds for (n • x) for any n. Thus, we can prove 0 ≤ (re ∘ L i) x
+            -- by using a scaling argument.
+            have : ∀ᶠ (n : ℕ) in Filter.atTop, c i / n ≤ re (L i x) := by
               filter_upwards [ge1] with n hn
               calc
                 c i / n
                   ≤ re ((L i) ((n : 𝕜) • x)) / n := by
-                  rw [div_le_div_iff_of_pos_right]; exact lem411 ((n : 𝕜) • x); simp; linarith
+                  rw [div_le_div_iff_of_pos_right]
+                  · exact lem411 ((n : 𝕜) • x)
+                  · simp; linarith
                 _ = re ((n : ℝ) * (L i x)) / n := by
                   rw [map_smul, smul_eq_mul, ← ofReal_natCast]
                 _ = n * re (L i x) / n := by rw [re_ofReal_mul]
-                _ = re (L i x) := by
-                  rw [mul_div_right_comm, div_self, one_mul]
-                  apply ne_of_gt; simp; linarith
+                _ = re (L i x) := by field
             apply le_of_tendsto (tendsto_const_div_atTop_nhds_zero_nat (c i)) this
         simp [P21, lem412]
-      apply P1 P2
+      exact P1 P2
     | inr h2 =>
       let m := max ((c i) / re (T i 1) + 1) (φ 0)
       have lem421 : re (@ofReal 𝕜 (by infer_instance) m) ≥ φ 0 := by simp [m]
@@ -186,8 +171,8 @@ theorem ConvexOn.iSup_affine_eq_of_separableSpace (hφ_cont : LowerSemicontinuou
         apply lt_of_lt_of_le this
         simp [m]
       exact lt_irrefl (c i) lem423
-  have lem5 : ∀ i, T i 1 = re (T i 1) := by
-    intro i; apply Eq.trans (re_add_im ((T i) 1)).symm; rw [← lem3 i]; simp
+  have lem5 (i) : T i 1 = re (T i 1) := by
+    apply Eq.trans (re_add_im ((T i) 1)).symm; rw [← lem3 i]; simp
   exists (fun i ↦ -(T i 1)⁻¹ • (L i))
   exists (fun i ↦ c i / re (T i 1))
   let f := fun (y : E) ↦ (fun i ↦ re (( -(T i 1)⁻¹ • L i) y) + c i / re (T i 1))
