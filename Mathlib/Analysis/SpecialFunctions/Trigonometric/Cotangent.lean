@@ -36,14 +36,13 @@ lemma Complex.cot_eq_exp_ratio (z : ℂ) :
   rw [Complex.cot, Complex.sin, Complex.cos]
   have h1 : exp (z * I) + exp (-z * I) = exp (-(z * I)) * (exp (2 * I * z) + 1) := by
     rw [mul_add, ← Complex.exp_add]
-    simp only [mul_one]
     ring_nf
   have h2 : (exp (-z * I) - exp (z * I)) = exp (-(z * I)) * ((1 - exp (2 * I * z))) := by
     ring_nf
     rw [mul_assoc, ← Complex.exp_add]
     ring_nf
   rw [h1, h2]
-  field_simp
+  field
 
 /- The version one probably wants to use more. -/
 lemma Complex.cot_pi_eq_exp_ratio (z : ℂ) :
@@ -161,7 +160,7 @@ lemma logDeriv_sin_div_eq_cot (hz : x ∈ ℂ_ℤ) :
     (DifferentiableAt.comp _ (Complex.differentiableAt_sin) (by fun_prop)) (by fun_prop),
     logDeriv_comp (Complex.differentiableAt_sin) (by fun_prop), Complex.logDeriv_sin,
     deriv_const_mul _ (by fun_prop), deriv_id'', logDeriv_const_mul, logDeriv_id']
-  · field_simp
+  · field
   · simp
   · simp only [ne_eq, mul_eq_zero, ofReal_eq_zero, not_or]
     exact ⟨Real.pi_ne_zero, integerComplement.ne_zero hz⟩
@@ -180,9 +179,8 @@ lemma logDeriv_sineTerm_eq_cotTerm (hx : x ∈ ℂ_ℤ) (i : ℕ) :
       aesop
   simp only [Int.cast_add, Int.cast_natCast, Int.cast_one, ne_eq, sineTerm, logDeriv_apply,
     deriv_const_add', deriv_div_const, deriv.fun_neg', differentiableAt_fun_id, deriv_fun_pow,
-    Nat.cast_ofNat, Nat.add_one_sub_one, pow_one, deriv_id'', mul_one, cotTerm, one_div] at *
-  field_simp
-  ring
+    Nat.cast_ofNat, deriv_id'', cotTerm] at *
+  field
 
 lemma logDeriv_prod_sineTerm_eq_sum_cotTerm (hx : x ∈ ℂ_ℤ) (n : ℕ) :
     logDeriv (fun (z : ℂ) ↦ ∏ j ∈ Finset.range n, (1 + sineTerm z j)) x =
