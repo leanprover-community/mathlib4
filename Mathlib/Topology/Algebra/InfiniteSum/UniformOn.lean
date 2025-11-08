@@ -216,10 +216,11 @@ theorem MultipliableLocallyUniformlyOn.multipliable
   match h with | ⟨_, hg⟩ => (hg.hasProd hx).multipliable
 
 @[to_additive]
-theorem MultipliableLocallyUniformlyOn.hasProdLocallyUniformlyOn [T2Space α]
+theorem MultipliableLocallyUniformlyOn.hasProdLocallyUniformlyOn
     (h : MultipliableLocallyUniformlyOn f s) :
     HasProdLocallyUniformlyOn f (∏' i, f i ·) s :=
-  match h with | ⟨_, hg⟩ => hg.congr_right fun _ hb ↦ (hg.hasProd hb).tprod_eq.symm
+  h.elim fun _ hg => hg.congr_inseparable_right fun _ hx =>
+    tendsto_nhds_unique_inseparable (hg.hasProd hx) (hg.hasProd hx).multipliable.hasProd
 
 @[to_additive]
 theorem HasProdLocallyUniformlyOn.tprod_eqOn [T2Space α]
