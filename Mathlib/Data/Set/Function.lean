@@ -454,13 +454,6 @@ theorem surjOn_iff_exists_map_subtype :
     let ⟨x, hx⟩ := hg ⟨y, htt' hy⟩
     ⟨x, x.2, by rw [hfg, hx, Subtype.coe_mk]⟩⟩
 
-/-- `SurjOn` version of `Subtype.coind_surjective`. -/
-theorem _root_.Subtype.coind_surjective' {α β} {f : α → β} {p : Set β} (h : ∀ a, f a ∈ p)
-    (hf : Set.SurjOn f Set.univ p) :
-    (Subtype.coind f h).Surjective := fun ⟨_, hb⟩ ↦
-  let ⟨a, _, ha⟩ := hf hb
-  ⟨a, Subtype.coe_injective ha⟩
-
 theorem surjOn_empty (f : α → β) (s : Set α) : SurjOn f s ∅ :=
   empty_subset _
 

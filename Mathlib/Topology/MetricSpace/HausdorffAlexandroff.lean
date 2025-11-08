@@ -41,7 +41,7 @@ theorem fromBinary_continuous : Continuous fromBinary :=
   Continuous.subtype_mk (continuous_ofDigits.comp' (Homeomorph.continuous _)) _
 
 theorem fromBinary_surjective : fromBinary.Surjective := by
-  refine Subtype.coind_surjective' _ ((ofDigits_SurjOn (by norm_num)).comp ?_)
+  refine Subtype.coind_surjective _ ((ofDigits_SurjOn (by norm_num)).comp ?_)
   simp only [Set.surjOn_univ, Homeomorph.surjective _]
 
 end Real
