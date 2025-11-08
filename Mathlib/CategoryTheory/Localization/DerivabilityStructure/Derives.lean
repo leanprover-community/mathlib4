@@ -14,14 +14,14 @@ When `Φ` is a left or right derivability structure, it allows to derive
 the functor `F` (with respect to `W₂`) when `Φ.functor ⋙ F : C₁ ⥤ H`
 inverts `W₁` (this is the most favorable case when we can apply the lemma
 `hasPointwiseRightDerivedFunctor_iff_of_isRightDerivabilityStructure`).
-We derive `Φ.Derives F` as an abbreviation for `W₁.IsInvertedBy (Φ.functor ⋙ F)`.
+We define `Φ.Derives F` as an abbreviation for `W₁.IsInvertedBy (Φ.functor ⋙ F)`.
 
 When `h : Φ.Derives F` holds and `Φ` is a right derivability structure,
-we show that `F` has a right derived functor with respect to `W₂` and
-then when `L₂ : C₂ ⥤ D₂` is a localization functor for `W₂`, then
-a functor `RF : D₂ ⥤ H` equipped with a natural transformation
-`α : F ⟶ L₂ ⋙ RF` is the right derived functor iff for any `X₁ : C₁`,
-the map `α.app (Φ.functor.obj X₁)` is an isomorphism.
+we show that `F` has a right derived functor with respect to `W₂`.
+Under this assumption, if `L₂ : C₂ ⥤ D₂` is a localization functor
+for `W₂`, then a functor `RF : D₂ ⥤ H` equipped with a natural
+transformation `α : F ⟶ L₂ ⋙ RF` is the right derived functor of `F` iff
+for any `X₁ : C₁`, the map `α.app (Φ.functor.obj X₁)` is an isomorphism.
 
 -/
 
