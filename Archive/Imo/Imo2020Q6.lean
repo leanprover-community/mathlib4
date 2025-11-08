@@ -21,7 +21,7 @@ theorem exists_between_and_separated {ι : Type*} (S : Finset ι) (f : ι → �
   let rel (p : ι) (k : Fin n) : Prop :=
     f p ∈ interval k
 
-  by_cases h : ∀ k ∈ Finset.univ, ∃ p ∈ ({p ∈ S | f p ∈ Set.Ioo a b} : Finset _), rel p k
+  by_cases! h : ∀ k ∈ Finset.univ, ∃ p ∈ ({p ∈ S | f p ∈ Set.Ioo a b} : Finset _), rel p k
   · -- show that the `n` intervals are disjoint
     have disjoint : Pairwise fun i j => Disjoint (interval i) (interval j) := by
       rw [pairwise_disjoint_on]
@@ -43,7 +43,7 @@ theorem exists_between_and_separated {ι : Type*} (S : Finset ι) (f : ι → �
       exact disjoint hi hj
     rw [card_univ, Fintype.card_fin] at this
     omega
-  push_neg at h; simp at h
+  simp only [mem_univ, Set.mem_Ioo, mem_filter, true_and] at h
   -- the `i`th interval in disjoint with `(f '' S) ∩ (a, b)`
   obtain ⟨i, h⟩ := h; unfold rel at h
   -- use the midpoint of the `i`th interval
@@ -61,14 +61,13 @@ theorem exists_between_and_separated {ι : Type*} (S : Finset ι) (f : ι → �
   intro p hp
   -- the `i`th interval is disjoint with `f '' S`
   have : f p ∉ interval i := by
-    by_cases ha : a < f p; by_cases hb : f p < b
-    · exact h p hp ha hb
-    · apply Set.notMem_Ioo_of_ge
-      push_neg at hb
-      rw [AffineMap.lineMap_apply_ring']
-      linear_combination ineq₁ * (b - a) + hb
+    by_cases! ha : a < f p
+    · by_cases! hb : f p < b
+      · exact h p ⟨hp, ha, hb⟩
+      · apply Set.notMem_Ioo_of_ge
+        rw [AffineMap.lineMap_apply_ring']
+        linear_combination ineq₁ * (b - a) + hb
     · apply Set.notMem_Ioo_of_le
-      push_neg at ha
       grw [ha]
       rw [AffineMap.lineMap_apply_ring', le_add_iff_nonneg_left]
       positivity
@@ -191,7 +190,7 @@ theorem card_le_of_separated_in_strip (eqv : P ≃ᵃⁱ[ℝ] EuclideanSpace ℝ
   specialize h_sep hx hy h_ne
   dsimp only
   have := EuclideanSpace.dist_eq (eqv x) (eqv y)
-  simp at this
+  simp only [AffineIsometryEquiv.dist_map, Fin.sum_univ_two] at this
   rw [this] at h_sep
   rw [Real.one_le_sqrt] at h_sep
   rw [← sq_le_sq₀ (by positivity) (by positivity)]
@@ -218,13 +217,12 @@ theorem imo2020q6 : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ}, 1 < n → ∀ {S : Fin
       (∃ p₁ p₂, p₁ ∈ S ∧ p₂ ∈ S ∧ l.SOppSide p₁ p₂) ∧
       ∀ p ∈ S, c * (n : ℝ) ^ (-1 / 3 : ℝ) ≤ Metric.infDist p l := by
   let c : ℝ := 1/100
-  use c, by norm_num
+  refine ⟨c, by norm_num, ?_⟩
   intro n hn S hS one_le_dist
   -- There are two main cases: either there is or there isn't a large distance between two points.
-  by_cases h_dist : ∃ᵉ (a ∈ S) (b ∈ S), (n : ℝ) ^ (2 / 3 : ℝ) ≤ dist a b
+  by_cases! h_dist : ∃ᵉ (a ∈ S) (b ∈ S), (n : ℝ) ^ (2 / 3 : ℝ) ≤ dist a b
   · -- If there are points with distance at least `n^(2/3)`, then we can solve the problem by
     -- choosing the best perpendicular line though this segment.
-    -- sorry
     obtain ⟨a, ha, b, hb, hab⟩ := h_dist
     have : 0 < dist a b := lt_of_lt_of_le (by positivity) hab
     rw [dist_pos] at this
@@ -232,7 +230,7 @@ theorem imo2020q6 : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ}, 1 < n → ∀ {S : Fin
       le_rfl (dist_pos.mpr this) le_rfl (by
       rw [le_sub_iff_add_le]; norm_cast
       exact lt_of_le_of_lt (card_filter_le S _) (by omega)) this
-    norm_num at h
+    rw [sub_zero] at h
     use l, rank
     constructor; · use a, b, ha, hb
     intro p hp
@@ -243,7 +241,6 @@ theorem imo2020q6 : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ}, 1 < n → ∀ {S : Fin
     rw [← Real.rpow_add (by positivity)]
     norm_num; linarith only
 
-  push_neg at h_dist
   -- If the points are closer than `n^(2/3)` together, then we can solve the problem by
   -- picking the furthest such points `a` and `b`, and choosing the best perpendiculer line
   -- through the segment of width `1/2` at the edge.
@@ -260,7 +257,7 @@ theorem imo2020q6 : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ}, 1 < n → ∀ {S : Fin
     constructor <;> linarith only [hab]
   have h_ne : a ≠ b := by
     rintro rfl
-    simp [← Finset.card_le_one] at h_max
+    simp_rw [dist_self, dist_le_zero, ← card_le_one] at h_max
     omega
   have : 0 < ‖b -ᵥ a‖ := by
     simp [h_ne.symm]
@@ -270,21 +267,22 @@ theorem imo2020q6 : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ}, 1 < n → ∀ {S : Fin
       ∀ i ∈ {i | i = 0}, basis i = ‖b -ᵥ a‖⁻¹ • (b -ᵥ a) := by
     refine Orthonormal.exists_orthonormalBasis_extension_of_card_eq ?_ ?_
     · simp [‹Fact (finrank ℝ V = 2)›.1]
-    simp [Set.restrict_def]
     rw [orthonormal_iff_ite]
-    simp
-    rw [real_inner_smul_left, real_inner_smul_right, real_inner_self_eq_norm_mul_norm]
+    simp only [Set.restrict, Subtype.forall, Set.mem_setOf, Fin.forall_fin_two, forall_true_left,
+      one_ne_zero, forall_false, and_true, Subtype.mk.injEq, forall_eq, ↓reduceIte]
+    rw [real_inner_smul_left, real_inner_smul_right, real_inner_self_eq_norm_sq]
     field_simp
-  simp at hbasis₀
+  simp only [Set.mem_setOf, forall_eq] at hbasis₀
   let eqv := (AffineIsometryEquiv.vaddConst ℝ a).symm.trans basis.repr.toAffineIsometryEquiv
   have h_iso_b : eqv b = EuclideanSpace.single 0 (dist a b) := by
-    simp [eqv]
+    simp only [AffineIsometryEquiv.coe_trans, LinearIsometryEquiv.coe_toAffineIsometryEquiv,
+      AffineIsometryEquiv.coe_vaddConst_symm, Function.comp_apply, eqv]
     ext i
     rw [OrthonormalBasis.repr_apply_apply]
     match i with
     | 0 =>
-      simp [hbasis₀]
-      rw [dist_eq_norm_vsub', real_inner_smul_left, real_inner_self_eq_norm_mul_norm]
+      simp only [EuclideanSpace.single_apply, ↓reduceIte]
+      rw [hbasis₀, dist_eq_norm_vsub', real_inner_smul_left, real_inner_self_eq_norm_mul_norm]
       field_simp
     | 1 =>
       rw [eq_inv_smul_iff₀ (by positivity)] at hbasis₀
@@ -301,7 +299,10 @@ theorem imo2020q6 : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ}, 1 < n → ∀ {S : Fin
     obtain ⟨hx, h₁, h₂⟩ := hx
     specialize h_max x hx b hb
     have := EuclideanSpace.dist_eq (eqv x) (eqv b)
-    simp at this; simp [h_iso_b] at this
+    simp only [AffineIsometryEquiv.dist_map, Fin.sum_univ_two] at this
+    rw [h_iso_b] at this
+    simp only [EuclideanSpace.single_apply, ↓reduceIte, one_ne_zero, dist_zero_right,
+      Real.norm_eq_abs, sq_abs] at this
     rw [this, Real.sqrt_le_left (by positivity), Real.dist_eq] at h_max
     have : 1 ≤ dist a b := one_le_dist ha hb h_ne
     rw [abs_eq_neg_self.mpr (by linarith only [this, h₂]), ← sub_nonneg] at h_max
@@ -323,14 +324,11 @@ theorem imo2020q6 : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ}, 1 < n → ∀ {S : Fin
   intro p hp
   specialize h p hp
   grw [← h]
-  field_simp
   rw [le_div_iff₀ (by simp [h_ne])]
 
   specialize h_dist a ha b hb
-  grw [Real.sqrt_le_sqrt h_dist.le]
-  rw [Real.sqrt_eq_rpow, ← Real.rpow_mul (by positivity)]
-  rw [Real.rpow_neg (by positivity)]
-  norm_num
+  grw [h_dist.le]
+  rw [Real.sqrt_eq_rpow, ← Real.rpow_mul (by positivity), neg_div, Real.rpow_neg (by positivity)]
   ring_nf
   field_simp
   norm_num
