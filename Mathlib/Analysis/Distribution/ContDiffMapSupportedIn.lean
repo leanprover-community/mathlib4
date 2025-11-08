@@ -257,8 +257,6 @@ noncomputable def toBoundedContinuousFunctionₗ : 𝓓^{n}_{K}(E, F) →ₗ[�
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-section iteratedFDerivWithOrder
-
 variable (n k) in
 /-- Wrapper for `iteratedFDeriv i` on `𝓓^{n}_{K}(E, F)`,
 as a map into `𝓓^{n-i}_{K}(E, E [×i]→L[ℝ] F)`. -/
@@ -300,14 +298,12 @@ lemma coe_iteratedFDerivWithOrder_of_gt {i : ℕ} (hin : ¬ (k + i ≤ n)) (f : 
 
 variable (n) in
 /-- The composition of `ContDiffMapSupportedIn.toBoundedContinuousFunctionₗ` and
-`ContDiffMapSupportedIn.iteratedFDerivₗ`. We define this as a separate `abbrev` because this family
-of maps is used a lot for defining and using the topology on `ContDiffMapSupportedIn`, and Lean
-takes a long time to infer the type of `toBoundedContinuousFunctionₗ 𝕜 ∘ₗ iteratedFDerivₗ 𝕜 i`. -/
+  `ContDiffMapSupportedIn.iteratedFDerivWithOrderₗ`. We call these the "structure maps"
+for `𝓓^{n}_{K}(E, F)` because the topology is initial for these maps. -/
 noncomputable def structureMapₗ (i : ℕ) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F) :=
   toBoundedContinuousFunctionₗ 𝕜 ∘ₗ iteratedFDerivWithOrderₗ 𝕜 n 0 i
 
-end iteratedFDerivWithOrder
 section Topology
 
 noncomputable instance topologicalSpace : TopologicalSpace 𝓓^{n}_{K}(E, F) :=
