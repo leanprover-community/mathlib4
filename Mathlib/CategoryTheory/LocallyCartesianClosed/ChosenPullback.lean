@@ -310,59 +310,6 @@ theorem pullbackIsoOverPullback_inv_app_comp_snd (T : Over X) :
 
 end PullbackFromChosenPullbacks
 
-section
-
-variable {X : C} (Y Z : Over X)
-
-/-- The canonical pullback cone constructed from `ChosenPullback.isPullback.`
-Note: The source of noncomputability is the non-constructive implementation of `IsPullback.isLimit`.
-Otherwise, `ChosenPullback.isPullback` is constructive.
--/
-def isLimitPullbackCone [ChosenPullback Z.hom] :
-    IsLimit (isPullback Y.hom Z.hom |>.cone) :=
-  PullbackCone.IsLimit.mk condition (fun s ↦ lift s.fst s.snd s.condition)
-    (by cat_disch) (by cat_disch) (by cat_disch)
-
-/-- The binary fan provided by `fst'` and `snd'`. -/
-def binaryFan [ChosenPullback Z.hom] : BinaryFan Y Z :=
-  BinaryFan.mk (P:= Over.mk (Y := pullbackObj Y.hom Z.hom) (snd Y.hom Z.hom ≫ Z.hom))
-    (fst' Y.hom Z.hom) (snd' Y.hom Z.hom)
-
-@[simp]
-theorem binaryFan_pt [ChosenPullback Z.hom] :
-    (binaryFan Y Z).pt = Over.mk (Y:= pullbackObj Y.hom Z.hom) (snd Y.hom Z.hom ≫ Z.hom) := by
-  rfl
-
-@[simp]
-theorem binaryFan_pt_hom [ChosenPullback Z.hom] :
-    (binaryFan Y Z).pt.hom = snd Y.hom Z.hom ≫ Z.hom := by
-  rfl
-
-/-- The binary fan provided by `fst'` and `snd'` is a binary product in `Over X`. -/
-def binaryFanIsBinaryProduct [ChosenPullback Z.hom] :
-    IsLimit (binaryFan Y Z) :=
-  BinaryFan.IsLimit.mk (binaryFan Y Z)
-    (fun u v => Over.homMk (lift (u.left) (v.left) (by rw [w u, w v])) (by simp))
-    (fun a b => by simp [binaryFan]; aesop)
-    (fun a b => by simp [binaryFan]; aesop)
-    (fun a b m h₁ h₂ => by
-      apply Over.OverMorphism.ext
-      simp only [homMk_left]
-      apply hom_ext (f:= Y.hom) (g:= Z.hom) <;> aesop)
-
-/-- A computable instance of `CartesianMonoidalCategory` for `Over X` when `C` has
-chosen pullbacks. Contrast this with the noncomputable instance provided by
-`CategoryTheory.Over.cartesianMonoidalCategory`.
--/
-instance cartesianMonoidalCategoryOver [ChosenPullbacks C] (X : C) :
-    CartesianMonoidalCategory (Over X) :=
-  ofChosenFiniteProducts (C:= Over X)
-    ⟨asEmptyCone (Over.mk (𝟙 X)) , IsTerminal.ofUniqueHom (fun Y ↦ Over.homMk Y.hom)
-      fun Y m ↦ Over.OverMorphism.ext (by simpa using m.w)⟩
-    (fun Y Z ↦ ⟨ _ , binaryFanIsBinaryProduct Y Z⟩)
-
-end
-
 end ChosenPullback
 
 end Over
