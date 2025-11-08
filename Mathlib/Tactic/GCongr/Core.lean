@@ -288,8 +288,8 @@ pair `f₁`/`f₂`. (Other antecedents are considered to generate "side goals".)
 "varying argument" pair corresponding to each "main" antecedent is recorded.
 
 If a lemma such as `add_le_add : a ≤ b → c ≤ d → a + c ≤ b + d` has been tagged with `gcongr`,
-then a direct consequence like `a ≤ b → a + c ≤ b + d` does *not* need to be tagged.
-However, if a more specific lemma has fewer side conditions, is should also be tagged with `gcongr`.
+then a direct consequence like `a ≤ b → a + c ≤ b + c` does *not* need to be tagged.
+However, if a more specific lemma has fewer side conditions, it should also be tagged with `gcongr`.
 For example, `mul_le_mul_of_nonneg_right` and `mul_le_mul_of_nonneg_left` are both tagged.
 
 Lemmas involving `<` or `≤` can also be marked `@[bound]` for use in the related `bound` tactic. -/
