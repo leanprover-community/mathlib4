@@ -708,19 +708,6 @@ theorem injective_codRestrict {f : R →+* S} {s : σS} {h : ∀ x, f x ∈ s} :
     Function.Injective (f.codRestrict s h) ↔ Function.Injective f :=
   Set.injective_codRestrict h
 
-section
-variable {α : Type*} {ι : Sort*} {f : ι → α} {s : Set α} (h : ∀ x, f x ∈ s)
-
-@[simp] theorem _root_.Set.range_codRestrict :
-    Set.range (s.codRestrict f h) = ((↑) : s → α) ⁻¹' Set.range f := by
-  ext; simp [Subtype.ext_iff]
-
-theorem _root_.Set.surjective_codRestrict :
-    (s.codRestrict f h).Surjective ↔ Set.range f = s := by
-  simp [← Set.range_eq_univ, Set.Subset.antisymm_iff (a := Set.range f), Set.range_subset_iff, h]
-
-end
-
 theorem rangeS_codRestrict {f : R →+* S} {s : σS} {h : ∀ x, f x ∈ s} :
     rangeS (codRestrict f s h) = Subsemiring.comap (SubsemiringClass.subtype s) f.rangeS :=
   SetLike.coe_injective <| Set.range_codRestrict h
