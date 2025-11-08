@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Presentable.Adjunction
+import Mathlib.CategoryTheory.Presentable.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 import Mathlib.CategoryTheory.Localization.BousfieldTransfiniteComposition
@@ -68,13 +69,6 @@ namespace CategoryTheory
 open Limits Localization Opposite
 
 variable {C : Type u} [Category.{v} C] (W : MorphismProperty C)
-
-example (D : Type w) [SmallCategory.{w} D] : EssentiallySmall.{w} D :=
-  inferInstance
-
--- why is it not synthetized automatically???
-instance (D : Type w) [SmallCategory.{w} D] : EssentiallySmall.{w} D :=
-  essentiallySmallSelf D
 
 lemma MorphismProperty.isClosedUnderColimitsOfShape_isLocal
     (J : Type u') [Category.{v'} J] [EssentiallySmall.{w} J]
