@@ -446,7 +446,7 @@ lemma isEquivalent_smoothingFn_sub_self (i : α) :
       filter_upwards [eventually_gt_atTop 1, R.eventually_log_b_mul_pos] with n hn hn'
       have h_log_pos : 0 < log n := Real.log_pos <| by simp_all
       simp only [one_div]
-      rw [inv_sub_inv (by have := hn' i; positivity) (by aesop)]
+      rw [inv_sub_inv (by have := hn' i; positivity) (by order)]
     _ =ᶠ[atTop] (fun (n : ℕ) ↦ (log n - log (b i) - log n) / ((log (b i) + log n) * log n)) := by
       filter_upwards [eventually_ne_atTop 0] with n hn
       have : 0 < b i := R.b_pos i
