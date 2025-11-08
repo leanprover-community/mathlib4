@@ -1284,9 +1284,6 @@ theorem Ideal.mem_span_range_iff_exists_fun [Fintype α] {x : R} {v : α → R} 
     x ∈ Ideal.span (Set.range v) ↔ ∃ c : α → R, ∑ i, c i * v i = x :=
   Submodule.mem_span_range_iff_exists_fun _
 
-@[deprecated (since := "2025-04-02")] alias mem_ideal_span_range_iff_exists_fun :=
-  Ideal.mem_span_range_iff_exists_fun
-
 end span_range
 
 theorem Associates.mk_ne_zero' {R : Type*} [CommSemiring R] {r : R} :
