@@ -558,10 +558,10 @@ theorem eval₂_T_neg_n (n : ℕ) : eval₂ f x (T (-n)) = x⁻¹ ^ n := by
 
 @[simp]
 theorem eval₂_T (n : ℤ) : eval₂ f x (T n) = (x ^ n).val := by
-  by_cases hn : 0 ≤ n
+  by_cases! hn : 0 ≤ n
   · lift n to ℕ using hn
     apply eval₂_T_n
-  · obtain ⟨m, rfl⟩ := Int.exists_eq_neg_ofNat (Int.le_of_not_le hn)
+  · obtain ⟨m, rfl⟩ := Int.exists_eq_neg_ofNat hn.le
     rw [eval₂_T_neg_n, zpow_neg, zpow_natCast, ← inv_pow, Units.val_pow_eq_pow_val]
 
 @[simp]

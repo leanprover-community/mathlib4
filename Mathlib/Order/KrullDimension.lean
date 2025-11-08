@@ -517,14 +517,14 @@ lemma coheight_eq_coe_iff {x : α} {n : ℕ} :
 /-- The elements of finite height `n` are the minimal elements among those of height `≥ n`. -/
 lemma height_eq_coe_iff_minimal_le_height {a : α} {n : ℕ} :
     height a = n ↔ Minimal (fun y => n ≤ height y) a := by
-  by_cases hfin : height a < ⊤
+  by_cases! hfin : height a < ⊤
   · cases hn : n with
     | zero => simp
     | succ => simp [minimal_iff_forall_lt, height_eq_coe_add_one_iff, ENat.add_one_le_iff,
         coe_lt_height_iff, *]
   · suffices ∃ x < a, ↑n ≤ height x by
       simp_all [minimal_iff_forall_lt]
-    simp only [not_lt, top_le_iff, height_eq_top_iff] at hfin
+    simp only [top_le_iff, height_eq_top_iff] at hfin
     obtain ⟨p, rfl, hp⟩ := hfin (n + 1)
     use p.eraseLast.last, p.eraseLast_last_rel_last (by cutsat)
     simpa [hp] using length_le_height_last (p := p.eraseLast)

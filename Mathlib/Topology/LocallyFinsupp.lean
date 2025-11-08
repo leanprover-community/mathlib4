@@ -193,8 +193,7 @@ protected def addSubgroup [AddCommGroup Y] : AddSubgroup (X → Y) where
       intro a ha
       simp_all only [support_subset_iff, ne_eq, mem_setOf_eq,
         mem_inter_iff, mem_support, Pi.add_apply, mem_union, true_and]
-      by_contra hCon
-      push_neg at hCon
+      by_contra! hCon
       simp_all
   neg_mem' {f} hf := by
     simp_all
@@ -274,8 +273,7 @@ instance [SemilatticeSup Y] [Zero Y] : Max (locallyFinsuppWithin U Y) where
       apply Set.Finite.subset (s := (t₁ ∩ D₁.support) ∪ (t₂ ∩ D₂.support)) (ht₁.2.union ht₂.2)
       intro a ha
       simp_all only [mem_inter_iff, mem_support, ne_eq, mem_union, true_and]
-      by_contra hCon
-      push_neg at hCon
+      by_contra! hCon
       simp_all }
 
 @[simp]
@@ -299,8 +297,7 @@ instance [SemilatticeInf Y] [Zero Y] : Min (locallyFinsuppWithin U Y) where
       apply Set.Finite.subset (s := (t₁ ∩ D₁.support) ∪ (t₂ ∩ D₂.support)) (ht₁.2.union ht₂.2)
       intro a ha
       simp_all only [mem_inter_iff, mem_support, ne_eq, mem_union, true_and]
-      by_contra hCon
-      push_neg at hCon
+      by_contra! hCon
       simp_all }
 
 @[simp]

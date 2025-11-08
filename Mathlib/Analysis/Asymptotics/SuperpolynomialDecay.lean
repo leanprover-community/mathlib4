@@ -213,12 +213,12 @@ theorem superpolynomialDecay_iff_abs_isBoundedUnder (hk : Tendsto k l atTop) :
 theorem superpolynomialDecay_iff_zpow_tendsto_zero (hk : Tendsto k l atTop) :
     SuperpolynomialDecay l k f ↔ ∀ z : ℤ, Tendsto (fun a : α => k a ^ z * f a) l (𝓝 0) := by
   refine ⟨fun h z => ?_, fun h n => by simpa only [zpow_natCast] using h (n : ℤ)⟩
-  by_cases hz : 0 ≤ z
+  by_cases! hz : 0 ≤ z
   · unfold Tendsto
     lift z to ℕ using hz
     simpa using h z
   · have : Tendsto (fun a => k a ^ z) l (𝓝 0) :=
-      Tendsto.comp (tendsto_zpow_atTop_zero (not_le.1 hz)) hk
+      Tendsto.comp (tendsto_zpow_atTop_zero hz) hk
     have h : Tendsto f l (𝓝 0) := by simpa using h 0
     exact zero_mul (0 : β) ▸ this.mul h
 

@@ -135,10 +135,9 @@ lemma Aquaesulian.u_eq_zero_or_v_eq_zero {x y u v : G} (huv : u ≠ v) (hx : f x
 
 lemma Aquaesulian.card_le_two : #(Set.range (fun x ↦ f x + f (-x))) ≤ 2 := by
   classical
-  by_cases hf : ∀ x, f x + f (-x) = 0
+  by_cases! hf : ∀ x, f x + f (-x) = 0
   · simp [hf]
-  · rw [not_forall] at hf
-    rcases hf with ⟨x, hx⟩
+  · rcases hf with ⟨x, hx⟩
     suffices #(Set.range (fun x ↦ f x + f (-x))) ≤ (2 : ℕ) from mod_cast this
     rw [Cardinal.mk_le_iff_forall_finset_subset_card_le]
     intro s hs

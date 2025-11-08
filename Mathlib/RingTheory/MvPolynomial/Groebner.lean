@@ -127,7 +127,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
       f = Finsupp.linearCombination _ b g + r ∧
         (∀ i, m.degree (b i * (g i)) ≼[m] m.degree f) ∧
         (∀ c ∈ r.support, ∀ i, ¬ (m.degree (b i) ≤ c)) := by
-  by_cases hb' : ∃ i, m.degree (b i) = 0
+  by_cases! hb' : ∃ i, m.degree (b i) = 0
   · obtain ⟨i, hb0⟩ := hb'
     use Finsupp.single i ((hb i).unit⁻¹ • f), 0
     constructor
@@ -146,13 +146,12 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
       · simp only [Finsupp.single_eq_of_ne hj, mul_zero, degree_zero, map_zero]
         apply bot_le
     · simp
-  push_neg at hb'
   by_cases hf0 : f = 0
   · refine ⟨0, 0, by simp [hf0], ?_, by simp⟩
     intro b
     simp only [Finsupp.coe_zero, Pi.zero_apply, mul_zero, degree_zero, map_zero]
     exact bot_le
-  by_cases hf : ∃ i, m.degree (b i) ≤ m.degree f
+  by_cases! hf : ∃ i, m.degree (b i) ≤ m.degree f
   · obtain ⟨i, hf⟩ := hf
     have deg_reduce : m.degree (m.reduce (hb i) f) ≺[m] m.degree f := by
       apply degree_reduce_lt (hb i) hf
@@ -182,8 +181,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
         · simp only [mul_zero, degree_zero, map_zero]
           exact bot_le
     · exact H'.2.2
-  · push_neg at hf
-    suffices ∃ (g' : ι →₀ MvPolynomial σ R), ∃ r',
+  · suffices ∃ (g' : ι →₀ MvPolynomial σ R), ∃ r',
         (m.subLTerm f = Finsupp.linearCombination (MvPolynomial σ R) b g' + r') ∧
         (∀ i, m.degree ((b  i) * (g' i)) ≼[m] m.degree (m.subLTerm f)) ∧
         (∀ c ∈ r'.support, ∀ i, ¬ m.degree (b i) ≤ c) by

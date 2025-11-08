@@ -151,12 +151,11 @@ variable [PartialOrder A] [StarOrderedRing A]
 
 lemma IsSelfAdjoint.le_algebraMap_norm_self {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
     a ≤ algebraMap ℝ A ‖a‖ := by
-  by_cases nontriv : Nontrivial A
+  by_cases! nontriv : Nontrivial A
   · refine le_algebraMap_of_spectrum_le fun r hr => ?_
     calc r ≤ ‖r‖ := Real.le_norm_self r
       _ ≤ ‖a‖ := spectrum.norm_le_norm_of_mem hr
-  · push_neg at nontriv
-    simp
+  · simp
 
 lemma IsSelfAdjoint.neg_algebraMap_norm_le_self {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
     - (algebraMap ℝ A ‖a‖) ≤ a := by

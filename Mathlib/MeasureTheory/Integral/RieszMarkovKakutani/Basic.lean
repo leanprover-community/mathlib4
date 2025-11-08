@@ -253,8 +253,7 @@ lemma rieszContentAux_union {K₁ K₂ : TopologicalSpace.Compacts X}
     by_cases h : f x = 0
     · rw [h]
       simp only [NNReal.coe_zero, mul_zero]
-    · push_neg at h
-      simp only [CompactlySupportedContinuousMap.coe_add, ContinuousMap.toFun_eq_coe,
+    · simp only [CompactlySupportedContinuousMap.coe_add, ContinuousMap.toFun_eq_coe,
         CompactlySupportedContinuousMap.coe_toContinuousMap] at sum_g
       rw [sum_g (mem_of_subset_of_mem subset_closure (mem_support.mpr h))]
       simp only [Pi.one_apply, NNReal.coe_one, one_mul]

@@ -513,12 +513,12 @@ theorem isPrimitiveClassified_of_coprime_of_pos (hc : Int.gcd x y = 1) (hzpos : 
   use m, n; tauto
 
 theorem isPrimitiveClassified_of_coprime (hc : Int.gcd x y = 1) : h.IsPrimitiveClassified := by
-  by_cases hz : 0 < z
+  by_cases! hz : 0 < z
   · exact h.isPrimitiveClassified_of_coprime_of_pos hc hz
   have h' : PythagoreanTriple x y (-z) := by simpa [PythagoreanTriple, neg_mul_neg] using h.eq
   apply h'.isPrimitiveClassified_of_coprime_of_pos hc
   apply lt_of_le_of_ne _ (h'.ne_zero_of_coprime hc).symm
-  exact le_neg.mp (not_lt.mp hz)
+  exact le_neg.mp hz
 
 theorem classified : h.IsClassified := by
   by_cases h0 : Int.gcd x y = 0

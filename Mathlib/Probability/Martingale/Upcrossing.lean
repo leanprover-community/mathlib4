@@ -267,7 +267,7 @@ theorem upperCrossingTime_stabilize' (hnm : n ≤ m) (hn : N ≤ upperCrossingTi
 -- `upperCrossingTime_bound_eq` provides an explicit bound
 theorem exists_upperCrossingTime_eq (f : ℕ → Ω → ℝ) (N : ℕ) (ω : Ω) (hab : a < b) :
     ∃ n, upperCrossingTime a b f N n ω = N := by
-  by_contra h; push_neg at h
+  by_contra! h
   have : StrictMono fun n => upperCrossingTime a b f N n ω :=
     strictMono_nat_of_lt_succ fun n => upperCrossingTime_lt_succ hab (h _)
   obtain ⟨_, ⟨k, rfl⟩, hk⟩ :
@@ -518,13 +518,13 @@ theorem upcrossingsBefore_lt_of_exists_upcrossing (hab : a < b) {N₁ N₂ : ℕ
   refine ⟨N₂, ⟨?_, Nat.lt_succ_self _⟩, hN₂'.le⟩
   rw [lowerCrossingTime, hittingBtwn_le_iff_of_lt _ (Nat.lt_succ_self _)]
   refine ⟨N₁, ⟨le_trans ?_ hN₁, hN₂⟩, hN₁'.le⟩
-  by_cases hN : 0 < N
+  by_cases! hN : 0 < N
   · have : upperCrossingTime a b f N (upcrossingsBefore a b f N ω) ω < N :=
       Nat.sSup_mem (upperCrossingTime_lt_nonempty hN) (upperCrossingTime_lt_bddAbove hab)
     rw [upperCrossingTime_eq_upperCrossingTime_of_lt (hN₁.trans (hN₂.trans <| Nat.le_succ _))
       this]
     exact this.le
-  · rw [not_lt, Nat.le_zero] at hN
+  · rw [Nat.le_zero] at hN
     rw [hN, upcrossingsBefore_zero, upperCrossingTime_zero, Pi.bot_apply, bot_eq_zero']
 
 theorem lowerCrossingTime_lt_of_lt_upcrossingsBefore (hN : 0 < N) (hab : a < b)
@@ -682,9 +682,9 @@ values `a` and `b`, we have `(b - a) * 𝔼[upcrossingsBefore a b f N] ≤ 𝔼[
 theorem Submartingale.mul_integral_upcrossingsBefore_le_integral_pos_part [IsFiniteMeasure μ]
     (a b : ℝ) (hf : Submartingale f ℱ μ) (N : ℕ) :
     (b - a) * μ[upcrossingsBefore a b f N] ≤ μ[fun ω => (f N ω - a)⁺] := by
-  by_cases hab : a < b
+  by_cases! hab : a < b
   · exact mul_integral_upcrossingsBefore_le_integral_pos_part_aux hf hab
-  · rw [not_lt, ← sub_nonpos] at hab
+  · rw [← sub_nonpos] at hab
     exact le_trans (mul_nonpos_of_nonpos_of_nonneg hab (by positivity))
       (integral_nonneg fun ω => posPart_nonneg _)
 
@@ -791,7 +791,7 @@ theorem upcrossings_lt_top_iff :
 theorem Submartingale.mul_lintegral_upcrossings_le_lintegral_pos_part [IsFiniteMeasure μ] (a b : ℝ)
     (hf : Submartingale f ℱ μ) : ENNReal.ofReal (b - a) * ∫⁻ ω, upcrossings a b f ω ∂μ ≤
       ⨆ N, ∫⁻ ω, ENNReal.ofReal ((f N ω - a)⁺) ∂μ := by
-  by_cases hab : a < b
+  by_cases! hab : a < b
   · simp_rw [upcrossings]
     have : ∀ N, ∫⁻ ω, ENNReal.ofReal ((f N ω - a)⁺) ∂μ = ENNReal.ofReal (∫ ω, (f N ω - a)⁺ ∂μ) := by
       intro N
@@ -814,7 +814,7 @@ theorem Submartingale.mul_lintegral_upcrossings_le_lintegral_pos_part [IsFiniteM
     · filter_upwards with ω N M hNM
       rw [Nat.cast_le]
       exact upcrossingsBefore_mono hab hNM ω
-  · rw [not_lt, ← sub_nonpos] at hab
+  · rw [← sub_nonpos] at hab
     rw [ENNReal.ofReal_of_nonpos hab, zero_mul]
     exact zero_le _
 

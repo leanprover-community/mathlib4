@@ -342,10 +342,9 @@ lemma mem_commonExtTangents_iff {as : AffineSubspace ℝ P} {s₁ s₂ : Sphere 
   rw [Set.mem_union, mem_commonIntTangents_iff, mem_commonExtTangents_iff, ← and_or_left,
     and_iff_left_iff_imp]
   rintro -
-  by_cases h : ∃ p ∈ as, Wbtw ℝ s₁.center p s₂.center
+  by_cases! h : ∃ p ∈ as, Wbtw ℝ s₁.center p s₂.center
   · exact .inl h
   · refine .inr ?_
-    simp_rw [not_exists, not_and] at h
     rintro p hp
     exact mt Sbtw.wbtw (h p hp)
 

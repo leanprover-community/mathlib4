@@ -591,7 +591,7 @@ equal, then the oriented angles are equal (even in degenerate cases). -/
 theorem oangle_eq_of_angle_eq_of_sign_eq {w x y z : V}
     (h : InnerProductGeometry.angle w x = InnerProductGeometry.angle y z)
     (hs : (o.oangle w x).sign = (o.oangle y z).sign) : o.oangle w x = o.oangle y z := by
-  by_cases h0 : (w = 0 ∨ x = 0) ∨ y = 0 ∨ z = 0
+  by_cases! h0 : (w = 0 ∨ x = 0) ∨ y = 0 ∨ z = 0
   · have hs' : (o.oangle w x).sign = 0 ∧ (o.oangle y z).sign = 0 := by
       rcases h0 with ((rfl | rfl) | rfl | rfl)
       · simpa using hs.symm
@@ -618,8 +618,7 @@ theorem oangle_eq_of_angle_eq_of_sign_eq {w x y z : V}
       have h0' := o.eq_zero_or_angle_eq_zero_or_pi_of_sign_oangle_eq_zero hsyz
       simpa [hyz, Real.pi_pos.ne.symm, hpi] using h0'
     rcases h0wx with (h0wx | h0wx) <;> rcases h0yz with (h0yz | h0yz) <;> simp [h0wx, h0yz]
-  · push_neg at h0
-    rw [Real.Angle.eq_iff_abs_toReal_eq_of_sign_eq hs]
+  · rw [Real.Angle.eq_iff_abs_toReal_eq_of_sign_eq hs]
     rwa [o.angle_eq_abs_oangle_toReal h0.1.1 h0.1.2,
       o.angle_eq_abs_oangle_toReal h0.2.1 h0.2.2] at h
 

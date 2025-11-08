@@ -318,9 +318,8 @@ theorem lt_sizeUpTo_index_succ (j : Fin n) : (j : ℕ) < c.sizeUpTo (c.index j).
   (Nat.find_spec (c.index_exists j.2)).1
 
 theorem sizeUpTo_index_le (j : Fin n) : c.sizeUpTo (c.index j) ≤ j := by
-  by_contra H
+  by_contra! H
   set i := c.index j
-  push_neg at H
   have i_pos : (0 : ℕ) < i := by
     by_contra! i_pos
     revert H

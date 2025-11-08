@@ -107,10 +107,10 @@ lemma NNReal.ball_zero_eq_Ico' (c : ℝ≥0) :
 
 lemma NNReal.ball_zero_eq_Ico (c : ℝ) :
     Metric.ball (0 : ℝ≥0) c = Set.Ico 0 c.toNNReal := by
-  by_cases c_pos : 0 < c
+  by_cases! c_pos : 0 < c
   · convert NNReal.ball_zero_eq_Ico' ⟨c, c_pos.le⟩
     simp [Real.toNNReal, c_pos.le]
-  simp [not_lt.mp c_pos]
+  simp [c_pos]
 
 lemma NNReal.closedBall_zero_eq_Icc' (c : ℝ≥0) :
     Metric.closedBall (0 : ℝ≥0) c.toReal = Set.Icc 0 c := by ext x; simp

@@ -39,9 +39,8 @@ theorem equitableOn_iff_exists_le_le_add_one {s : Set α} {f : α → ℕ} :
   obtain rfl | ⟨x, hx⟩ := s.eq_empty_or_nonempty
   · simp
   intro hs
-  by_cases h : ∀ y ∈ s, f x ≤ f y
+  by_cases! h : ∀ y ∈ s, f x ≤ f y
   · exact ⟨f x, fun y hy => ⟨h _ hy, hs hy hx⟩⟩
-  push_neg at h
   obtain ⟨w, hw, hwx⟩ := h
   refine ⟨f w, fun y hy => ⟨Nat.le_of_succ_le_succ ?_, hs hy hw⟩⟩
   rw [(Nat.succ_le_of_lt hwx).antisymm (hs hx hw)]
@@ -92,11 +91,10 @@ theorem equitableOn_iff_le_le_add_one :
   rw [Set.equitableOn_iff_exists_le_le_add_one]
   refine ⟨?_, fun h => ⟨_, h⟩⟩
   rintro ⟨b, hb⟩
-  by_cases h : ∀ a ∈ s, f a = b + 1
+  by_cases! h : ∀ a ∈ s, f a = b + 1
   · intro a ha
     rw [h _ ha, sum_const_nat h, Nat.mul_div_cancel_left _ (card_pos.2 ⟨a, ha⟩)]
     exact ⟨le_rfl, Nat.le_succ _⟩
-  push_neg at h
   obtain ⟨x, hx₁, hx₂⟩ := h
   suffices h : b = (∑ i ∈ s, f i) / s.card by
     simp_rw [← h]

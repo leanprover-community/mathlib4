@@ -81,9 +81,9 @@ theorem abs_eq_normalize (z : ℤ) : |z| = normalize z := by
   simp [abs_of_nonneg, abs_of_nonpos, normalize_of_nonneg, normalize_of_nonpos, *]
 
 theorem nonneg_of_normalize_eq_self {z : ℤ} (hz : normalize z = z) : 0 ≤ z := by
-  by_cases h : 0 ≤ z
+  by_cases! h : 0 ≤ z
   · exact h
-  · rw [normalize_of_nonpos (le_of_not_ge h)] at hz
+  · rw [normalize_of_nonpos h.le] at hz
     cutsat
 
 theorem nonneg_iff_normalize_eq_self (z : ℤ) : normalize z = z ↔ 0 ≤ z :=

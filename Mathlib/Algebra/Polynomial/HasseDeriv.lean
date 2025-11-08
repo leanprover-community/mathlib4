@@ -105,11 +105,10 @@ theorem hasseDeriv_monomial (n : ℕ) (r : R) :
   by_cases hnik : n = i + k
   · grind
   · rw [if_neg hnik, mul_zero]
-    by_cases hkn : k ≤ n
+    by_cases! hkn : k ≤ n
     · rw [← tsub_eq_iff_eq_add_of_le hkn] at hnik
       rw [if_neg hnik]
-    · push_neg at hkn
-      rw [Nat.choose_eq_zero_of_lt hkn, Nat.cast_zero, zero_mul, ite_self]
+    · rw [Nat.choose_eq_zero_of_lt hkn, Nat.cast_zero, zero_mul, ite_self]
 
 theorem hasseDeriv_C (r : R) (hk : 0 < k) : hasseDeriv k (C r) = 0 := by
   rw [← monomial_zero_left, hasseDeriv_monomial, Nat.choose_eq_zero_of_lt hk, Nat.cast_zero,
@@ -152,14 +151,12 @@ theorem hasseDeriv_comp (k l : ℕ) :
   rw_mod_cast [nsmul_eq_mul]
   rw [← Nat.cast_mul]
   congr 2
-  by_cases hikl : i < k + l
+  by_cases! hikl : i < k + l
   · rw [choose_eq_zero_of_lt hikl, mul_zero]
-    by_cases hil : i < l
+    by_cases! hil : i < l
     · rw [choose_eq_zero_of_lt hil, mul_zero]
-    · push_neg at hil
-      rw [← tsub_lt_iff_right hil] at hikl
+    · rw [← tsub_lt_iff_right hil] at hikl
       rw [choose_eq_zero_of_lt hikl, zero_mul]
-  push_neg at hikl
   apply @cast_injective ℚ
   have h1 : l ≤ i := le_of_add_le_right hikl
   have h2 : k ≤ i - l := le_tsub_of_add_le_right hikl
@@ -224,13 +221,12 @@ theorem hasseDeriv_mul (f g : R[X]) :
     intro x hx
     rw [mem_antidiagonal] at hx
     subst hx
-    by_cases hm : m < x.1
+    by_cases! hm : m < x.1
     · simp only [Nat.choose_eq_zero_of_lt hm, Nat.cast_zero, zero_mul,
                  monomial_zero_right]
-    by_cases hn : n < x.2
+    by_cases! hn : n < x.2
     · simp only [Nat.choose_eq_zero_of_lt hn, Nat.cast_zero, zero_mul,
                  mul_zero, monomial_zero_right]
-    push_neg at hm hn
     rw [tsub_add_eq_add_tsub hm, ← add_tsub_assoc_of_le hn, ← tsub_add_eq_tsub_tsub,
       add_comm x.2 x.1, mul_assoc, ← mul_assoc r, ← (Nat.cast_commute _ r).eq, mul_assoc, mul_assoc]
   rw [Finset.sum_congr rfl aux]

@@ -504,9 +504,8 @@ theorem addHaar_real_closedBall (x : E) {r : ℝ} (hr : 0 ≤ r) :
 
 theorem addHaar_closedBall_eq_addHaar_ball [Nontrivial E] (x : E) (r : ℝ) :
     μ (closedBall x r) = μ (ball x r) := by
-  by_cases h : r < 0
+  by_cases! h : r < 0
   · rw [Metric.closedBall_eq_empty.mpr h, Metric.ball_eq_empty.mpr h.le]
-  push_neg at h
   rw [addHaar_closedBall μ x h, addHaar_ball μ x h]
 
 theorem addHaar_real_closedBall_eq_addHaar_real_ball [Nontrivial E] (x : E) (r : ℝ) :

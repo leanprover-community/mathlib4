@@ -53,7 +53,7 @@ namespace SlashInvariantFormClass
 theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ(n) k] :
     Periodic (f ∘ ofComplex) n := by
   intro w
-  by_cases hw : 0 < im w
+  by_cases! hw : 0 < im w
   · have : 0 < im (w + n) := by simp only [add_im, natCast_im, add_zero, hw]
     simp only [comp_apply, ofComplex_apply_of_im_pos this, ofComplex_apply_of_im_pos hw]
     convert SlashInvariantForm.vAdd_width_periodic n k 1 f ⟨w, hw⟩ using 2
@@ -61,7 +61,7 @@ theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ(n) k] :
       ofReal_natCast, add_comm]
   · have : im (w + n) ≤ 0 := by simpa only [add_im, natCast_im, add_zero, not_lt] using hw
     simp only [comp_apply, ofComplex_apply_of_im_nonpos this,
-      ofComplex_apply_of_im_nonpos (not_lt.mp hw)]
+      ofComplex_apply_of_im_nonpos hw]
 
 /--
 The analytic function `F` such that `f τ = F (exp (2 * π * I * τ / n))`, extended by a choice of

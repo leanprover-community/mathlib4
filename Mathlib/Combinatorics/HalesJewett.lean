@@ -433,7 +433,7 @@ private theorem exists_mono_in_high_dimension' :
       · simp only [prod_apply, s.is_focused q hq]
     -- Our `r+1` lines have distinct colors (this is why we needed to split into cases above).
     · rw [Multiset.map_cons, Multiset.map_map, Multiset.nodup_cons, Multiset.mem_map]
-      exact ⟨fun ⟨q, hq, he⟩ => h ⟨q, hq, he⟩, s.distinct_colors⟩
+      exact ⟨h, s.distinct_colors⟩
     -- Finally, we really do have `r+1` lines!
     · rw [Multiset.card_cons, Multiset.card_map, sr])
 
