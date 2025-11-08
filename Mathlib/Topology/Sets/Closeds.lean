@@ -193,6 +193,10 @@ def singleton [T1Space α] (x : α) : Closeds α :=
 theorem singleton_injective [T1Space α] : Function.Injective (singleton (α := α)) :=
   .of_comp (f := SetLike.coe) Set.singleton_injective
 
+@[simp]
+theorem singleton_inj [T1Space α] {x y : α} : singleton x = singleton y ↔ x = y :=
+  singleton_injective.eq_iff
+
 /-- The preimage of a closed set under a continuous map. -/
 @[simps]
 def preimage (s : Closeds β) {f : α → β} (hf : Continuous f) : Closeds α :=
@@ -406,6 +410,10 @@ def singleton [T1Space α] (x : α) : IrreducibleCloseds α :=
 
 theorem singleton_injective [T1Space α] : Function.Injective (singleton (α := α)) :=
   .of_comp (f := SetLike.coe) Set.singleton_injective
+
+@[simp]
+theorem singleton_inj [T1Space α] {x y : α} : singleton x = singleton y ↔ x = y :=
+  singleton_injective.eq_iff
 
 /--
 The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsIrreducible x ∧ IsClosed x }`.
