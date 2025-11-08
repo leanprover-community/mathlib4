@@ -136,7 +136,7 @@ theorem toSetoid_inj {c d : RingCon R} (H : c.toSetoid = d.toSetoid) : c = d :=
 
 /-- Two ring congruence relations are equal iff their underlying binary
 relations are equal. -/
-theorem coe_inj {c d : RingCon R} : ⇑c = ⇑d ↔ c = d := DFunLike.coe_injective.eq_iff
+theorem coe_inj {c d : RingCon R} : ⇑c = ⇑d ↔ c = d := DFunLike.coe_fn_eq
 
 /--
 Pulling back a `RingCon` across a ring homomorphism.

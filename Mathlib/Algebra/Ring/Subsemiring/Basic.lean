@@ -705,21 +705,29 @@ theorem codRestrict_apply (f : R →+* S) (s : σS) (h : ∀ x, f x ∈ s) (x : 
   rfl
 
 theorem injective_codRestrict {f : R →+* S} {s : σS} {h : ∀ x, f x ∈ s} :
-    Function.Injective (codRestrict f s h) ↔ Function.Injective f := by
-  rw [← Set.injective_codRestrict h]; rfl
+    Function.Injective (f.codRestrict s h) ↔ Function.Injective f :=
+  Set.injective_codRestrict h
+
+section
+variable {α : Type*} {ι : Sort*} {f : ι → α} {s : Set α} (h : ∀ x, f x ∈ s)
+
+@[simp] theorem _root_.Set.range_codRestrict :
+    Set.range (s.codRestrict f h) = ((↑) : s → α) ⁻¹' Set.range f := by
+  ext; simp [Subtype.ext_iff]
+
+theorem _root_.Set.surjective_codRestrict :
+    (s.codRestrict f h).Surjective ↔ Set.range f = s := by
+  simp [← Set.range_eq_univ, Set.Subset.antisymm_iff (a := Set.range f), Set.range_subset_iff, h]
+
+end
 
 theorem rangeS_codRestrict {f : R →+* S} {s : σS} {h : ∀ x, f x ∈ s} :
-    rangeS (codRestrict f s h) = Subsemiring.comap (SubsemiringClass.subtype s) f.rangeS := by
-  ext; simp [← Subtype.coe_inj]
+    rangeS (codRestrict f s h) = Subsemiring.comap (SubsemiringClass.subtype s) f.rangeS :=
+  SetLike.coe_injective <| Set.range_codRestrict h
 
 theorem surjective_codRestrict {f : R →+* S} {s : σS} {h : ∀ x, f x ∈ s} :
-    Function.Surjective (codRestrict f s h) ↔ f.rangeS = ofClass s := by
-  -- this is `Subsemiring.rangeS_subtype` which is defined below in a lesser generality
-  have : (SubsemiringClass.subtype s).rangeS = ofClass s :=
-    SetLike.coe_injective <| (coe_rangeS _).trans Subtype.range_coe
-  rw [← RingHom.rangeS_eq_top, RingHom.rangeS_codRestrict, eq_top_iff,
-    ← Subsemiring.map_le_iff_le_comap, ← RingHom.rangeS_eq_map, this]
-  exact LE.le.ge_iff_eq (fun y ⟨x, hx⟩ ↦ hx.symm ▸ (h x))
+    Function.Surjective (codRestrict f s h) ↔ f.rangeS = ofClass s :=
+  (Set.surjective_codRestrict h).trans <| .symm <| SetLike.coe_set_eq.symm
 
 /-- The ring homomorphism from the preimage of `s` to `s`. -/
 def restrict (f : R →+* S) (s' : σR) (s : σS) (h : ∀ x ∈ s', f x ∈ s) : s' →+* s :=

@@ -86,7 +86,7 @@ protected def congr {c d : RingCon M} (h : c = d) :
     map_add' x y := by rcases x with ⟨⟩; rcases y with ⟨⟩; rfl
     map_mul' x y := by rcases x with ⟨⟩; rcases y with ⟨⟩; rfl }
 
-theorem congr_mk {c d : RingCon M} (h : c = d) (a : M) :
+@[simp] theorem congr_mk {c d : RingCon M} (h : c = d) (a : M) :
     RingCon.congr h (a : c.Quotient) = (a : d.Quotient) := rfl
 
 theorem comap_eq {c : RingCon M} {f : N →+* M} :
@@ -126,32 +126,32 @@ theorem mapOfSurjective_eq_mapGen {c : RingCon M} {f : F} (h : ker f ≤ c) (hf 
     c.mapGen f = c.mapOfSurjective f h hf := by
   rw [← ringConGen_of_ringCon (c.mapOfSurjective f h hf)]; rfl
 
+theorem comap_bot (f : F) : comap ⊥ f = ker f := rfl
+
+theorem comap_mono {f : F} {r s : RingCon N} (h : r ≤ s) : r.comap f ≤ s.comap f :=
+  fun _ _ h₁ ↦ h h₁
+
 /-- Given a ring congruence relation `c` on a semiring `M`, the order-preserving
 bijection between the set of ring congruence relations containing `c` and the
 ring congruence relations on the quotient of `M` by `c`. -/
-def correspondence {c : RingCon M} : { d // c ≤ d } ≃o RingCon c.Quotient where
-  toFun d :=
-    d.1.mapOfSurjective (mk' c) (by rw [RingCon.ker_mk'_eq]; exact d.2) <|
-      Quotient.mk_surjective
-  invFun d := ⟨RingCon.comap d (mk' c), fun x y h ↦
-    show d x y by rw [c.eq.mpr h]; exact d.refl _⟩
-  left_inv d :=
-    Subtype.ext_iff_val.2 <|
-      ext fun x y =>
-        ⟨fun ⟨a, b, H, hx, hy⟩ =>
-          d.1.trans (d.1.symm <| d.2 <| c.eq.1 hx) <| d.1.trans H <| d.2 <| c.eq.1 hy,
-          fun h => ⟨_, _, h, rfl, rfl⟩⟩
-  right_inv d :=
-    ext fun x y =>
-      ⟨fun ⟨_, _, H, hx, hy⟩ =>
-        hx ▸ hy ▸ H,
-        Con.induction_on₂ x y fun w z h => ⟨w, z, h, rfl, rfl⟩⟩
+def correspondence {c : RingCon M} : Set.Ici c ≃o RingCon c.Quotient where
+  toFun d := d.1.mapGen c.mk'
+  invFun d := ⟨d.comap (mk' c), c.ker_mk'_eq.symm.trans_le <| comap_bot c.mk' ▸ comap_mono bot_le⟩
+  left_inv d := by
+    ext
+    simp only [comap_rel]
+    rw [mapGen_apply_apply_of_surjective c.mk' (c.ker_mk'_eq.trans_le d.2) c.mk'_surjective]
+  right_inv d := by
+    ext x y
+    simp only
+    obtain ⟨x, rfl⟩ := c.mk'_surjective x
+    obtain ⟨y, rfl⟩ := c.mk'_surjective y
+    rw [mapGen_apply_apply_of_surjective _ (comap_bot c.mk' ▸ comap_mono bot_le) c.mk'_surjective,
+      comap_rel]
   map_rel_iff' {s t} := by
-    constructor
-    · intros h x y hs
-      rcases h ⟨x, y, hs, rfl, rfl⟩ with ⟨a, b, ht, hx, hy⟩
-      exact t.1.trans (t.1.symm <| t.2 <| c.eq.1 hx) (t.1.trans ht (t.2 <| c.eq.1 hy))
-    · exact Relation.map_mono
+    simp only [Equiv.coe_fn_mk, le_def, c.mk'_surjective.forall, ← Subtype.coe_le_coe]
+    simp_rw [mapGen_apply_apply_of_surjective c.mk' (c.ker_mk'_eq.trans_le s.2) c.mk'_surjective,
+      mapGen_apply_apply_of_surjective c.mk' (c.ker_mk'_eq.trans_le t.2) c.mk'_surjective]
 
 variable (c : RingCon M)
 
@@ -168,14 +168,10 @@ variable (f : M →+* P)
 induced by a homomorphism constant on the equivalence classes of `c`. -/
 def lift (H : c ≤ ker f) : c.Quotient →+* P where
   toFun x := (Con.liftOn x f) fun _ _ h => H h
-  map_zero' := by rw [← f.map_zero]; rfl
-  map_one' := by rw [← f.map_one]; rfl
-  map_add' x y := Con.induction_on₂ x y fun m n => by
-    simp only [Con.liftOn_coe, ← map_add]
-    exact Con.liftOn_coe ..
-  map_mul' x y := Con.induction_on₂ x y fun m n => by
-    simp only [Con.liftOn_coe, ← map_mul]
-    exact Con.liftOn_coe ..
+  map_zero' := f.map_zero
+  map_one' := f.map_one
+  map_add' x y := Con.induction_on₂ x y fun m n => f.map_add m n
+  map_mul' x y := Con.induction_on₂ x y fun m n => f.map_mul m n
 
 variable {c f}
 
@@ -184,7 +180,7 @@ theorem lift_mk' (H : c ≤ ker f) (x) : c.lift f H (c.mk' x) = f x :=
   rfl
 
 /-- The diagram describing the universal property for quotients of rings commutes. -/
-theorem lift_coe (H : c ≤ ker f) (x : M) : c.lift f H x = f x :=
+@[simp] theorem lift_coe (H : c ≤ ker f) (x : M) : c.lift f H x = f x :=
   rfl
 
 /-- The diagram describing the universal property for quotients of rings commutes. -/
