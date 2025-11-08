@@ -3,6 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 import Mathlib.CategoryTheory.Equivalence
 
@@ -34,6 +35,15 @@ lemma isEquivalence_ιOfLE_iff : (ιOfLE h).IsEquivalence ↔ Q ≤ P.isoClosure
 
 instance : (ιOfLE P.le_isoClosure).IsEquivalence := by rw [isEquivalence_ιOfLE_iff]
 
+variable (C) in
+/-- The equivalence between the fullsubcategory `⊤` of a category `C` and `C` itself. -/
+@[simps]
+def topEquivalence : ObjectProperty.FullSubcategory (C := C) ⊤ ≌ C where
+  functor := ObjectProperty.ι _
+  inverse := ObjectProperty.lift _ (𝟭 _) (by simp)
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+
 end CategoryTheory.ObjectProperty
 
 namespace CategoryTheory.Equivalence
@@ -41,6 +51,9 @@ namespace CategoryTheory.Equivalence
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
   {P : ObjectProperty C} {Q : ObjectProperty D} (e : C ≌ D)
 
+/-- The equivalence of categories between two fullsubcategories `P` and `Q`
+of categories `C` and `D` that is induced by an equivalence `e : C ≌ D`
+when `Q.inverseImage e.functor = P` and `Q` respects isomorphisms. -/
 @[simps]
 def congrFullSubcategory [Q.IsClosedUnderIsomorphisms] (h : Q.inverseImage e.functor = P) :
     P.FullSubcategory ≌ Q.FullSubcategory where

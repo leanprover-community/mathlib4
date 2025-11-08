@@ -2813,6 +2813,7 @@ import Mathlib.CategoryTheory.Presentable.CardinalFilteredPresentation
 import Mathlib.CategoryTheory.Presentable.ColimitPresentation
 import Mathlib.CategoryTheory.Presentable.Continuous
 import Mathlib.CategoryTheory.Presentable.Dense
+import Mathlib.CategoryTheory.Presentable.EssentiallyLarge
 import Mathlib.CategoryTheory.Presentable.Finite
 import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 import Mathlib.CategoryTheory.Presentable.Limits
