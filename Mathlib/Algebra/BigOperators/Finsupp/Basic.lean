@@ -582,11 +582,9 @@ theorem Finsupp.sum_apply'' {A F : Type*} [AddZeroClass A] [AddCommMonoid F] [Fu
     · simp [hg0, h0]
     · simp [hgadd, hadd]
 
+@[deprecated "use instead `sum_finset_sum_index` (with equality reversed)" (since := "2025-11-07")]
 theorem Finsupp.sum_sum_index' (h0 : ∀ i, t i 0 = 0) (h1 : ∀ i x y, t i (x + y) = t i x + t i y) :
-    (∑ x ∈ s, f x).sum t = ∑ x ∈ s, (f x).sum t := by
-  classical
-  exact Finset.induction_on s rfl fun a s has ih => by
-    simp_rw [Finset.sum_insert has, Finsupp.sum_add_index' h0 h1, ih]
+    (∑ x ∈ s, f x).sum t = ∑ x ∈ s, (f x).sum t := (sum_finset_sum_index h0 h1).symm
 
 section
 
