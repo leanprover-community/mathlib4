@@ -128,7 +128,7 @@ lemma compl_support_eq_sUnion : μ.supportᶜ = ⋃₀ {t : Set X | IsOpen t ∧
 
 lemma support_eq_sInter : μ.support = ⋂₀ {t : Set X | IsClosed t ∧ μ tᶜ = 0} := by
   convert congr($(compl_support_eq_sUnion (μ := μ))ᶜ)
-  all_goals simp [Set.compl_sUnion, compl_involutive.image_eq_preimage]
+  all_goals simp [Set.compl_sUnion, compl_involutive.image_eq_preimage_symm]
 
 section Lindelof
 
