@@ -3,6 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Module.Submodule.Map
 import Mathlib.Algebra.Polynomial.Eval.Defs
 import Mathlib.RingTheory.Ideal.Quotient.Defs
@@ -92,6 +93,15 @@ theorem sum {ι} {s : Finset ι} {x y : ι → M}
 theorem smul (hxy : x ≡ y [SMOD U]) (c : R) : c • x ≡ c • y [SMOD U] := by
   rw [SModEq.def] at hxy ⊢
   simp_rw [Quotient.mk_smul, hxy]
+
+/--
+A variant of `SModEq.smul`, where the scalar belongs to an ideal.
+-/
+theorem smul' {I : Ideal R} (hxy : x ≡ y [SMOD U])
+    {c : R} (hc : c ∈ I) : c • x ≡ c • y [SMOD (I • U)] := by
+  rw [SModEq.sub_mem] at hxy ⊢
+  rw [← smul_sub]
+  exact smul_mem_smul hc hxy
 
 @[gcongr]
 lemma nsmul (hxy : x ≡ y [SMOD U]) (n : ℕ) : n • x ≡ n • y [SMOD U] := by
