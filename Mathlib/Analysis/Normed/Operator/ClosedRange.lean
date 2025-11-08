@@ -104,7 +104,7 @@ lemma p41 {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [Inner
     obtain ⟨c, cin, ceq⟩ := hδ this
     exact ⟨c, by simpa [← eq, cin, ceq, beq] using Or.inl (Std.le_of_lt δpos)⟩
 
-lemma closedrange {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β]
+lemma closedRange {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β]
     [InnerProductSpace ℝ α] [InnerProductSpace ℝ β] [CompleteSpace β] [CompleteSpace α]
     (T : α →L[ℝ] β) : List.TFAE [
     ∃ δ > 0, ∀ f : β →L[ℝ] ℝ , δ * ‖f‖ ≤ ‖f.comp T‖,
