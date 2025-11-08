@@ -335,7 +335,7 @@ def intNorm (a : integerSet K) : ℕ := (Algebra.norm ℤ (preimageOfMemIntegerS
 @[simp]
 theorem intNorm_coe (a : integerSet K) :
     (intNorm a : ℝ) = mixedEmbedding.norm (a : mixedSpace K) := by
-  rw [intNorm, Int.cast_natAbs, ← Rat.cast_intCast, Int.cast_abs, Algebra.coe_norm_int,
+  rw [intNorm, Nat.cast_natAbs, ← Rat.cast_intCast, Int.cast_abs, Algebra.coe_norm_int,
     ← norm_eq_norm, mixedEmbedding_preimageOfMemIntegerSet]
 
 /-- The norm `intNorm` lifts to a function on `integerSet K` modulo `torsion K`. -/
