@@ -160,8 +160,6 @@ theorem IsLocalRing.primesOver_eq [IsLocalRing A] [IsDedekindDomain A] [Algebra 
     [FaithfulSMul R A] [Module.Finite R A] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
     Ideal.primesOver p A = {IsLocalRing.maximalIdeal A} := by
   refine Set.eq_singleton_iff_nonempty_unique_mem.mpr ⟨?_, fun P hP ↦ ?_⟩
-  · have exists_maximal_ideal : ∃ P : Ideal A, P.IsMaximal ∧ P.LiesOver p :=
-      exists_maximal_ideal_liesOver_of_isIntegral p
-    obtain ⟨w', hmax, hover⟩ := exists_maximal_ideal
+  · obtain ⟨w', hmax, hover⟩ := exists_maximal_ideal_liesOver_of_isIntegral (S := A) p
     exact ⟨w', hmax.isPrime, hover⟩
   · exact IsLocalRing.eq_maximalIdeal <| hP.1.isMaximal (Ideal.ne_bot_of_mem_primesOver hp0 hP)
