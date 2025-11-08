@@ -62,7 +62,7 @@ namespace SlashInvariantFormClass
 theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ k] (hΓ : h ∈ Γ.strictPeriods) :
     Periodic (f ∘ ofComplex) h := by
   intro w
-  by_cases hw : 0 < im w
+  by_cases! hw : 0 < im w
   · have : 0 < im (w + h) := by simp [hw]
     simp only [comp_apply, ofComplex_apply_of_im_pos this, ofComplex_apply_of_im_pos hw]
     convert SlashInvariantForm.vAdd_apply_of_mem_strictPeriods f ⟨w, hw⟩ hΓ using 2
@@ -70,7 +70,7 @@ theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ k] (hΓ : h ∈ Γ
     simp [add_comm]
   · have : im (w + h) ≤ 0 := by simpa using hw
     simp only [comp_apply, ofComplex_apply_of_im_nonpos this,
-      ofComplex_apply_of_im_nonpos (not_lt.mp hw)]
+      ofComplex_apply_of_im_nonpos hw]
 
 variable (h) in
 /--
