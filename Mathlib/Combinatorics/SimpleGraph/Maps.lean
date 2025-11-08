@@ -219,6 +219,13 @@ theorem induce_spanningCoe {s : Set V} {G : SimpleGraph s} : G.spanningCoe.induc
 theorem spanningCoe_induce_le (s : Set V) : (G.induce s).spanningCoe ≤ G :=
   map_comap_le _ _
 
+open Set.Notation in
+theorem IsCompleteBetween.induce {s t : Set V} (h : G.IsCompleteBetween s t) (u : Set V) :
+    (G.induce u).IsCompleteBetween (u ↓∩ s) (u ↓∩ t) := by
+  intro _ hs _ ht
+  rw [comap_adj, Embedding.coe_subtype]
+  exact h hs ht
+
 /-! ## Homomorphisms, embeddings and isomorphisms -/
 
 
