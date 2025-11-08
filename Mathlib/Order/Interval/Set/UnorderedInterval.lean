@@ -350,7 +350,10 @@ lemma uIoo_of_lt (h : a < b) : uIoo a b = Ioo a b := uIoo_of_le h.le
 
 lemma uIoo_of_gt (h : b < a) : uIoo a b = Ioo b a := uIoo_of_ge h.le
 
-lemma uIoo_self : uIoo a a = ∅ := by simp [uIoo]
+@[simp] lemma uIoo_self : uIoo a a = ∅ := by simp [uIoo]
+
+@[simp] lemma left_notMem_uIoo : a ∉ uIoo a b := by simp +contextual [uIoo, le_of_lt]
+@[simp] lemma right_notMem_uIoo : b ∉ uIoo a b := by simp +contextual [uIoo, le_of_lt]
 
 lemma Ioo_subset_uIoo : Ioo a b ⊆ uIoo a b := Ioo_subset_Ioo inf_le_left le_sup_right
 
@@ -373,6 +376,9 @@ lemma uIoo_of_not_ge (h : ¬b ≤ a) : uIoo a b = Ioo a b := uIoo_of_lt <| lt_of
 
 theorem uIoo_subset_uIcc {α : Type*} [LinearOrder α] (a : α) (b : α) : uIoo a b ⊆ uIcc a b := by
   simp [uIoo, uIcc, Ioo_subset_Icc_self]
+
+@[simp] lemma nonempty_uIoo [DenselyOrdered α] : (uIoo a b).Nonempty ↔ a ≠ b := by
+  simp [uIoo, eq_comm]
 
 end uIoo
 
