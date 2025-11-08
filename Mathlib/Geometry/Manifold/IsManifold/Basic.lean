@@ -892,7 +892,8 @@ instance empty [IsEmpty M] : IsManifold I n M := by
     _ = (e.symm.source) ∩ ∅ := by rw [preimage_empty]
     _ = ∅ := inter_empty e.symm.source
   have : t = ∅ := calc t
-    _ = I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I := by order
+    _ = I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I := by
+      rw [← Subtype.preimage_val_eq_preimage_val_iff]
     _ = ∅ ∩ range I := by rw [this, preimage_empty]
     _ = ∅ := empty_inter (range I)
   apply (this ▸ hx).elim
