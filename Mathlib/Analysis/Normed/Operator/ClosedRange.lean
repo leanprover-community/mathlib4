@@ -96,8 +96,7 @@ lemma p41 {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [Inner
     intro a ha
     calc
     _ ≤ ‖f‖ * ‖T‖ * ‖a‖ := T.comp_le_opNorm f a
-    _ ≤ ‖f‖ * ‖T‖ * 1 := mul_le_mul_of_nonneg_left (Std.le_of_lt ha) (by positivity)
-    _ = _ := MulOneClass.mul_one (‖f‖ * ‖T‖)
+    _ ≤ _ := mul_le_of_le_one_right (by positivity) (Std.le_of_lt ha)
   · intro _ ⟨_, ⟨b, bin, beq⟩, eq⟩
     have : δ • b ∈ ball 0 δ := by
       simp [norm_smul, abs_of_pos δpos] at ⊢ bin
