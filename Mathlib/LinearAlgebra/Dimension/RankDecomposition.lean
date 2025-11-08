@@ -130,26 +130,38 @@ lemma finrank_ker_eq [FiniteDimensional K V] {r n : ℕ} (hr : rank f = r) (hn :
 
 instance : DecidableEq (ofVectorSpaceIndex K C) := Classical.typeDecidableEq _
 
-instance : DecidableEq (ofVectorSpaceIndex K (ker f)) := Classical.typeDecidableEq _
+-- instance [FiniteDimensional K W] {h : IsCompl C (ker f)} :
+--     Fintype ((ofVectorSpaceIndex K C) ⊕
+--   (sumExtendIndex (f.linear_independent_ker_complement_basis_image h))) :=
+--   (FiniteDimensional.fintypeBasisIndex (f.range_decomposition_basis h))
 
 
 lemma card_cokernel_basis_index_eq {m r : ℕ} [FiniteDimensional K V] [FiniteDimensional K W]
     (hm : finrank K W = m) (hr : f.rank = r) (h : IsCompl C (ker f)) :
     @Fintype.card (sumExtendIndex (f.linear_independent_ker_complement_basis_image h)) = m - r := by
-  sorry-- have := @finrank_eq_card_basis --(f.range_decomposition_basis h)
-  -- rw [Fintype.card_sum, hm] at this
-  -- simp [this, ← finrank_eq_card_basis (ofVectorSpace K f.C),
-  --   f.finrank_C_eq_rank hr]
+  have := @finrank_eq_card_basis _ _ _ _ _ _ _
+    (FiniteDimensional.fintypeBasisIndex (f.range_decomposition_basis h))
+    (f.range_decomposition_basis h)
+  have t2 : Fintype (sumExtendIndex (f.linear_independent_ker_complement_basis_image h)) :=
+    @Fintype.sumRight _ _ (FiniteDimensional.fintypeBasisIndex (f.range_decomposition_basis h))
+  have : finrank K W = Fintype.card (ofVectorSpaceIndex K ↥C) +
+    Fintype.card (sumExtendIndex (f.linear_independent_ker_complement_basis_image h)) := by
+    rw [this]
+    have := @Fintype.card_sum (ofVectorSpaceIndex K ↥C)
+      (sumExtendIndex (f.linear_independent_ker_complement_basis_image h)) _ t2
+    rw [← this]
+    congr
+
+
+    sorry
+  rw [hm] at this
+  simp [this, ← finrank_eq_card_basis (ofVectorSpace K C), f.finrank_C_eq_rank hr h]
+  sorry
 
 lemma apply_C_basis_eq_range_basis (j) :
     f (f.decomposition_basis h (Sum.inl j)) = (f.range_decomposition_basis h (Sum.inl j)) := by
   simp [decomposition_basis, prodEquivOfC, range_decomposition_basis, sumExtend,
     Equiv.sumCongr, ker_complement_basis_image, ker_complement_restriction]
-
-instance [FiniteDimensional K W] {h : IsCompl C (ker f)} :
-    Finite ((ofVectorSpaceIndex K C) ⊕
-    (sumExtendIndex (f.linear_independent_ker_complement_basis_image h))) :=
-  sorry
 
 end LinearMap
 
