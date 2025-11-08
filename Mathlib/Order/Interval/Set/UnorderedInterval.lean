@@ -350,7 +350,7 @@ lemma uIoo_of_lt (h : a < b) : uIoo a b = Ioo a b := uIoo_of_le h.le
 
 lemma uIoo_of_gt (h : b < a) : uIoo a b = Ioo b a := uIoo_of_ge h.le
 
-@[simp] lemma uIoo_self : uIoo a a = ∅ := by simp [uIoo]
+lemma uIoo_self : uIoo a a = ∅ := by simp [uIoo]
 
 @[simp] lemma left_notMem_uIoo : a ∉ uIoo a b := by simp +contextual [uIoo, le_of_lt]
 @[simp] lemma right_notMem_uIoo : b ∉ uIoo a b := by simp +contextual [uIoo, le_of_lt]
