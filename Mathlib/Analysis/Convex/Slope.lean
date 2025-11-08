@@ -7,6 +7,7 @@ import Mathlib.Analysis.Convex.Function
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Order
 
 /-!
 # Slopes of convex functions
@@ -214,7 +215,7 @@ theorem StrictConvexOn.secant_strict_mono_aux1 (hf : StrictConvexOn 𝕜 s f) {x
   have hxz' : 0 < z - x := by linarith
   have ha : 0 < (z - y) / (z - x) := by positivity
   have hb : 0 < (y - x) / (z - x) := by positivity
-  have key := hf.2 hx hz (by linarith) ha hb ?_
+  have key := hf.2 hx hz (by order) ha hb ?_
   · simp only [smul_eq_mul] at key
     ring_nf at key
     field_simp at key

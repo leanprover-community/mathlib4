@@ -189,7 +189,7 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
         intro x ⟨hxlb, hxub⟩
         have h₁ := calc n₀ ≤ 1 * max n₀ 2 := by simp
                         _ ≤ 2 * max n₀ 2 := by gcongr; norm_num
-        have h₂ := hn₀ (2 * max n₀ 2) h₁ (max n₀ 2) ⟨by simp, by linarith⟩
+        have h₂ := hn₀ (2 * max n₀ 2) h₁ (max n₀ 2) ⟨by simp, by order⟩
         rw [h₂]
         exact hn₀ (2 * max n₀ 2) h₁ x ⟨by simp [hxlb], le_of_lt hxub⟩
       case step =>
@@ -608,7 +608,7 @@ protected lemma GrowsPolynomially.rpow (p : ℝ) (hf : GrowsPolynomially f)
           _ = _ := by rw [← mul_rpow (le_of_lt hc₁_mem) (le_of_lt hf_pos)]
     | .inr (.inr hneg) => -- eventually negative (which is impossible)
       have : ∀ᶠ (_ : ℝ) in atTop, False := by
-        filter_upwards [hf_nonneg, hneg] with x hx hx'; linarith
+        filter_upwards [hf_nonneg, hneg] with x hx hx'; order
       rw [Filter.eventually_false_iff_eq_bot] at this
       exact False.elim <| (atTop_neBot).ne this
 

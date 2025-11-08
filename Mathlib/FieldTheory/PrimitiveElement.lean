@@ -8,6 +8,7 @@ import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.RingTheory.Polynomial.UniqueFactorization
+import Mathlib.Tactic.Order
 
 /-!
 # Primitive Element Theorem
@@ -253,7 +254,7 @@ theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hneq : m ≠ n)
   let f : F[X] := X ^ m * expand F n s - expand F n r
   refine ⟨f, ?_, ?_⟩
   · have : f.coeff (n * s.natDegree + m) ≠ 0 := by
-      have hn : 0 < n := by linarith only [hm, hmn]
+      have hn : 0 < n := by order
       have hndvd : ¬ n ∣ n * s.natDegree + m := by
         rw [← Nat.dvd_add_iff_right (n.dvd_mul_right s.natDegree)]
         exact Nat.not_dvd_of_pos_of_lt hm hmn

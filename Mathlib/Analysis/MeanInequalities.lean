@@ -156,7 +156,7 @@ theorem geom_mean_le_arith_mean {ι : Type*} (s : Finset ι) (w : ι → ℝ) (z
   · simp_rw [div_eq_mul_inv, mul_assoc, mul_comm, ← mul_assoc, ← Finset.sum_mul, mul_comm]
   · exact fun _ hi => div_nonneg (hw _ hi) (le_of_lt hw')
   · simp_rw [div_eq_mul_inv, ← Finset.sum_mul]
-    exact mul_inv_cancel₀ (by linarith)
+    exact mul_inv_cancel₀ (by order)
 
 theorem geom_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) (hx : ∀ i ∈ s, w i ≠ 0 → z i = x) :

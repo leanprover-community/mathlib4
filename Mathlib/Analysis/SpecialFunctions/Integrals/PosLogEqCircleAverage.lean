@@ -161,7 +161,7 @@ theorem circleAverage_log_norm_sub_const₂ (h : 1 < ‖a‖) :
   rw [sub_ne_zero]
   by_contra!
   simp_all only [abs_one, Metric.mem_closedBall, dist_zero_right]
-  linarith
+  order
 
 /-!
 ## Presentation of `log⁺` in Terms of Circle Averages

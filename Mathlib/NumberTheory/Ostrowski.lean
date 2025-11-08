@@ -448,7 +448,7 @@ theorem equiv_real_of_unbounded : f.IsEquiv real := by
   · simp only [real_eq_abs, abs_cast, Rat.cast_natCast]
     rw [rpow_inv_eq (apply_nonneg f ↑n) (Nat.cast_nonneg n)
       (logb_ne_zero_of_pos_of_ne_one (one_lt_cast.mpr oneltm) (by linarith only [hm])
-      (by linarith only [hm]))]
+      (by order))]
     have hfm : f m = m ^ s := by
       rw [rpow_logb (mod_cast zero_lt_of_lt oneltm) (mod_cast oneltm.ne') (by linarith only [hm])]
     have hfn : f n = n ^ logb n (f n) := by

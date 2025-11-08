@@ -8,6 +8,7 @@ import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Real.Archimedean
 import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Tactic.Order
 
 /-!
 # Schnirelmann density
@@ -183,7 +184,7 @@ lemma exists_of_schnirelmannDensity_eq_zero {ε : ℝ} (hε : 0 < ε) (hA : schn
     ∃ n, 0 < n ∧ #{a ∈ Ioc 0 n | a ∈ A} / n < ε := by
   by_contra! h
   rw [← le_schnirelmannDensity_iff] at h
-  linarith
+  order
 
 end
 

@@ -322,7 +322,7 @@ theorem exists_normalized_aux1 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
       _ ≤ 1 := by linarith only [sq_nonneg δ]
   have J : 1 - δ ≤ 1 - δ / 4 := by linarith only [δnonneg]
   have K : 1 - δ / 4 ≤ τ⁻¹ := by rw [inv_eq_one_div, le_div_iff₀ τpos]; exact I
-  suffices L : τ⁻¹ ≤ ‖a.c i - a.c j‖ by linarith only [J, K, L]
+  suffices L : τ⁻¹ ≤ ‖a.c i - a.c j‖ by order
   have hτ' : ∀ k, τ⁻¹ ≤ a.r k := by
     intro k
     rw [inv_eq_one_div, div_le_iff₀ τpos, ← lastr, mul_comm]

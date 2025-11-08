@@ -160,7 +160,7 @@ theorem moment_truncation_eq_intervalIntegral_of_nonneg (hf : AEStronglyMeasurab
       filter_upwards [this] with x hx
       simp only [indicator, Set.mem_Ioc, Pi.zero_apply, ite_eq_right_iff, and_imp]
       intro _ h''x
-      have : x = 0 := by linarith
+      have : x = 0 := by order
       simp [this, zero_pow hn]
     · exact ((measurable_id.indicator M).pow_const n).aestronglyMeasurable
 

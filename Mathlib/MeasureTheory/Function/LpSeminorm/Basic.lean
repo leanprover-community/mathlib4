@@ -1090,7 +1090,7 @@ theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul' {f : α → ε} {g : α �
     ← ENNReal.coe_rpow_of_nonneg _ hp.le, ← lintegral_const_mul' _ _ ENNReal.coe_ne_top]
   apply lintegral_mono_ae
   have aux (x) : (↑c) ^ p * ‖g x‖ₑ ^ p = (↑c * ‖g x‖ₑ) ^ p := by
-    have : ¬(p < 0) := by linarith
+    have : ¬(p < 0) := by order
     simp [ENNReal.mul_rpow_eq_ite, this]
   simpa [ENNReal.coe_rpow_of_nonneg _ hp.le, aux, ENNReal.rpow_le_rpow_iff hp]
 
@@ -1102,7 +1102,7 @@ variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
 theorem eLpNorm'_le_mul_eLpNorm'_of_ae_le_mul {f : α → ε} {c : ℝ≥0∞} {g : α → ε'} {p : ℝ}
     (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) (hp : 0 < p) :
     eLpNorm' f p μ ≤ c * eLpNorm' g p μ := by
-  have hp' : ¬(p < 0) := by linarith
+  have hp' : ¬(p < 0) := by order
   by_cases hc : c = ⊤
   · by_cases hg' : eLpNorm' g p μ = 0
     · have : ∀ᵐ (x : α) ∂μ, ‖g x‖ₑ = 0 := by

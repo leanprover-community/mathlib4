@@ -139,7 +139,7 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
   case neg =>
     simp only [exponentialPDF_eq]
     rw [setLIntegral_congr_fun measurableSet_Iic, lintegral_zero, ENNReal.ofReal_zero]
-    exact fun a (_ : a ≤ _) ↦ by rw [if_neg (by linarith), ENNReal.ofReal_eq_zero]
+    exact fun a (_ : a ≤ _) ↦ by rw [if_neg (by order), ENNReal.ofReal_eq_zero]
   case pos =>
     rw [lintegral_Iic_eq_lintegral_Iio_add_Icc _ h, lintegral_exponentialPDF_of_nonpos (le_refl 0),
       zero_add]

@@ -102,7 +102,7 @@ lemma binEntropy_neg_of_neg (hp : p < 0) : binEntropy p < 0 := by
     nlinarith [log_pos_of_lt_neg_one hp']
   · have : -p * log p ≤ 0 := by
       wlog h : -1 < p
-      · simp only [show p = -1 by linarith, log_neg_eq_log, log_one, le_refl, mul_zero]
+      · simp only [show p = -1 by order, log_neg_eq_log, log_one, le_refl, mul_zero]
       · nlinarith [log_neg_of_lt_zero hp h]
     nlinarith [(log_pos (by linarith) : 0 < log (1 - p))]
 
@@ -136,7 +136,7 @@ lemma binEntropy_lt_log_two : binEntropy p < log 2 ↔ p ≠ 2⁻¹ := by
     simp at h
   wlog hp : p < 2⁻¹
   · have hp : 1 - p < 2⁻¹ := by
-      rw [sub_lt_comm]; norm_num at *; linarith +splitNe
+      rw [sub_lt_comm]; norm_num at *; order
     rw [← binEntropy_one_sub]
     exact this hp.ne hp
   obtain hp₀ | hp₀ := le_or_gt p 0
@@ -302,7 +302,7 @@ lemma not_continuousAt_deriv_qaryEntropy_one :
   · simp_all only [mem_Ioo, ne_eq]
     linarith [show (1 : ℝ) = 2⁻¹ + 2⁻¹ by norm_num]
   · simp_all only [mem_Ioo, ne_eq]
-    linarith [two_inv_lt_one (α := ℝ)]
+    order
 
 lemma not_continuousAt_deriv_qaryEntropy_zero :
     ¬ContinuousAt (deriv (qaryEntropy q)) 0 := by
@@ -315,11 +315,9 @@ lemma not_continuousAt_deriv_qaryEntropy_zero :
   · simp only [disjoint_nhds_atTop_iff, not_isTop, not_false_eq_true]
   filter_upwards [Ioo_mem_nhdsGT (show (0 : ℝ) < 2⁻¹ by norm_num)]
   intros
-  apply (deriv_qaryEntropy _ _).symm
-  · simp_all only [mem_Ioo, ne_eq]
-    linarith
-  · simp_all only [mem_Ioo, ne_eq]
-    linarith [two_inv_lt_one (α := ℝ)]
+  apply (deriv_qaryEntropy _ _).symm <;>
+    simp_all only [mem_Ioo, ne_eq] <;>
+    order [two_inv_lt_one (α := ℝ)]
 
 /-- Second derivative of q-ary entropy. -/
 lemma deriv2_qaryEntropy :
@@ -374,9 +372,9 @@ lemma qaryEntropy_strictMonoOn (qLe2 : 2 ≤ q) :
         simp_all only [inv_pos, interior_Icc, mem_Ioo, one_div]
       linarith
     simp only [one_div, interior_Icc, mem_Ioo] at hp
-    rw [deriv_qaryEntropy (by linarith)]
+    rw [deriv_qaryEntropy (by order)]
     · simp only [sub_pos, gt_iff_lt]
-      rw [← log_mul (by linarith) (by linarith)]
+      rw [← log_mul (by linarith) (by order)]
       apply Real.strictMonoOn_log (mem_Ioi.mpr hp.1)
       · simp_all only [mem_Ioi, mul_pos_iff_of_pos_left, show 0 < (q : ℝ) - 1 by linarith]
       · have qpos : 0 < (q : ℝ) := by positivity
@@ -400,7 +398,7 @@ lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
     simp only [one_div, interior_Icc, mem_Ioo] at hp
     rw [deriv_qaryEntropy (by linarith)]
     · simp only [sub_neg, gt_iff_lt]
-      rw [← log_mul (by linarith) (by linarith)]
+      rw [← log_mul (by linarith) (by order)]
       apply Real.strictMonoOn_log (mem_Ioi.mpr (show 0 < (↑q - 1) * (1 - p) by nlinarith))
       · simp_all only [mem_Ioi]
         linarith

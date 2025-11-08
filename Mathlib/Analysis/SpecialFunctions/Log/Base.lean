@@ -179,7 +179,7 @@ include hb
 private theorem b_pos : 0 < b := by linarith
 
 -- Name has a prime added to avoid clashing with `b_ne_one` further down the file
-private theorem b_ne_one' : b ≠ 1 := by linarith
+private theorem b_ne_one' : b ≠ 1 := by order
 
 @[simp]
 theorem logb_le_logb (h : 0 < x) (h₁ : 0 < y) : logb b x ≤ logb b y ↔ x ≤ y := by
@@ -187,7 +187,7 @@ theorem logb_le_logb (h : 0 < x) (h₁ : 0 < y) : logb b x ≤ logb b y ↔ x �
 
 @[gcongr]
 theorem logb_le_logb_of_le (h : 0 < x) (hxy : x ≤ y) : logb b x ≤ logb b y :=
-  (logb_le_logb hb h (by linarith)).mpr hxy
+  (logb_le_logb hb h (by order)).mpr hxy
 
 @[gcongr]
 theorem logb_lt_logb (hx : 0 < x) (hxy : x < y) : logb b x < logb b y := by
@@ -271,7 +271,7 @@ section BPosAndBLtOne
 variable (b_pos : 0 < b) (b_lt_one : b < 1)
 include b_lt_one
 
-private theorem b_ne_one : b ≠ 1 := by linarith
+private theorem b_ne_one : b ≠ 1 := by order
 
 include b_pos
 
@@ -451,7 +451,7 @@ lemma tendsto_abs_logb_atTop (hb : b ≠ -1 ∧ b ≠ 0 ∧ b ≠ 1) :
   · exact (this (b := -b) (by simp [hb, neg_eq_iff_eq_neg]) (by linarith +splitNe)).congr (by simp)
   wlog hb₁ : 1 < b generalizing b
   · exact (this (b := b⁻¹) (by simp [hb, inv_eq_iff_eq_inv, inv_neg]) (by simpa)
-      ((one_lt_inv₀ hb₀).2 (by linarith +splitNe))).congr (by simp)
+      ((one_lt_inv₀ hb₀).2 (by order))).congr (by simp)
   refine (tendsto_logb_atTop hb₁).congr' ?_
   filter_upwards [eventually_ge_atTop 1] with x hx₁
   rw [abs_of_nonneg]

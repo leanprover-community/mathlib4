@@ -98,7 +98,7 @@ theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
   · right
     have := log_le_log (lt_trans Real.zero_lt_one ((log_pos_iff hx).1 h)) hxy
     simp only [this, and_true, ge_iff_le]
-    linarith
+    order
 
 @[gcongr]
 lemma posLog_le_posLog (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=

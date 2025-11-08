@@ -11,6 +11,7 @@ import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
 import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 import Mathlib.RingTheory.Polynomial.SeparableDegree
 import Mathlib.RingTheory.Polynomial.UniqueFactorization
+import Mathlib.Tactic.Order
 
 /-!
 
@@ -777,7 +778,7 @@ theorem finSepDegree_eq_finrank_iff [FiniteDimensional F E] :
     have := Nat.mul_lt_mul_of_lt_of_le' h (finSepDegree_le_finrank F⟮x⟯ E) Fin.pos'
     rw [finSepDegree_mul_finSepDegree_of_isAlgebraic F F⟮x⟯ E,
       Module.finrank_mul_finrank F F⟮x⟯ E] at this
-    linarith only [heq, this]⟩, fun _ ↦ finSepDegree_eq_finrank_of_isSeparable F E⟩
+    order⟩, fun _ ↦ finSepDegree_eq_finrank_of_isSeparable F E⟩
 
 end Field
 

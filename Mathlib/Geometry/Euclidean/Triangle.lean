@@ -360,19 +360,19 @@ theorem dist_lt_of_angle_lt {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P)
     by_contra! w
     have h4 : Real.sin (∠ a c b) * dist a c < Real.sin (∠ a b c) * dist a b := by
       exact mul_lt_mul h3 w hac hsinabc
-    linarith
+    order
   · by_contra! w
     have h3 : Real.sin (∠ a b c) ≤ Real.sin (∠ a c b) := by
       by_contra! w1
       have h4 : Real.sin (∠ a c b) * dist a c < Real.sin (∠ a b c) * dist a b := by
         exact mul_lt_mul w1 w hac hsinabc
-      linarith
+      order
     rw [← Real.sin_pi_sub (∠ a b c)] at h3
     have h5 : π - ∠ a b c < π / 2 := by linarith
     have h6 : π - ∠ a b c ≤ ∠ a c b := by
       by_contra! w1
       have := Real.sin_lt_sin_of_lt_of_le_pi_div_two (by linarith [angle_nonneg a c b]) h5.le w1
-      linarith
+      order
     have h7 := angle_add_angle_add_angle_eq_pi c (ne₁₂_of_not_collinear h).symm
     rw [angle_comm b c a] at h7
     have h8 : ∠ c a b > 0 := by
@@ -394,10 +394,10 @@ theorem angle_lt_iff_dist_lt {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P
         apply dist_eq_of_angle_eq_angle_of_angle_ne_pi h2
         rw [show ({a, b, c} : Set P) = {b, a, c} by exact Set.insert_comm a b {c}] at h
         linarith [angle_lt_pi_of_not_collinear h]
-      linarith
+      order
     · rw [show ({a, b, c} : Set P) = {a, c, b} by grind] at h
       have h5 := dist_lt_of_angle_lt h h3
-      linarith
+      order
 
 theorem angle_le_iff_dist_le {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P)) :
     ∠ a c b ≤ ∠ a b c ↔ dist a b ≤ dist a c := by

@@ -210,7 +210,7 @@ theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : �
           abs_of_nonneg (norm_nonneg _)]
         exact H s₁ hs₁ s₂ hs₂
       have hη := sq_sqrt (le_of_lt hε)
-      linarith
+      order
     · intro hf ε hε
       have hε' : 0 < ε ^ 2 / 2 := half_pos (sq_pos_of_pos hε)
       obtain ⟨a, H⟩ := hf _ hε'

@@ -60,7 +60,7 @@ theorem IntervalIntegrable.ae_hasDerivAt_integral {f : ℝ → ℝ} {a b : ℝ}
     (hf : IntervalIntegrable f volume a b) :
     ∀ᵐ x, x ∈ uIcc a b → ∀ c ∈ uIcc a b, HasDerivAt (fun x => ∫ (t : ℝ) in c..x, f t) (f x) x := by
   wlog hab : a ≤ b
-  · exact uIcc_comm b a ▸ @this f b a hf.symm (by linarith)
+  · exact uIcc_comm b a ▸ @this f b a hf.symm (by order)
   rw [uIcc_of_le hab]
   have h₁ : ∀ᵐ x, x ≠ a := by simp [ae_iff, measure_singleton]
   have h₂ : ∀ᵐ x, x ≠ b := by simp [ae_iff, measure_singleton]
