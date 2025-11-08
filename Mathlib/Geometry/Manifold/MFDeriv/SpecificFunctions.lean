@@ -661,7 +661,6 @@ end Prod
 section disjointUnion
 
 variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {p : M ⊕ M'}
-  {f : M → N} (g : M' → N') {s : Set M} {t : Set M'} {q : M} {q' : M'}
 
 /-- In extended charts at `p`, `Sum.swap` looks like the identity near `p`. -/
 lemma writtenInExtChartAt_sumSwap_eventuallyEq_id :
@@ -712,6 +711,8 @@ theorem mfderiv_sumSwap :
     mfderiv I I (@Sum.swap M M') p = ContinuousLinearMap.id 𝕜 (TangentSpace I p) := by
   simpa [mfderivWithin_univ] using (mfderivWithin_sumSwap (uniqueMDiffWithinAt_univ I))
 
+variable {f : M → N} (g : M' → N') {q : M} {q' : M'}
+
 lemma writtenInExtChartAt_sumInl_eventuallyEq_id :
     (writtenInExtChartAt I I q (@Sum.inl M M')) =ᶠ[𝓝[Set.range I] (extChartAt I q) q] id := by
     have hmem : I.symm ⁻¹'
@@ -750,7 +751,7 @@ theorem hasMFDerivAt_inl :
     HasMFDerivAt I I (@Sum.inl M M') q (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
   simpa [HasMFDerivAt, hasMFDerivWithinAt_univ] using hasMFDerivWithinAt_inl (s := Set.univ)
 
-theorem hasMFDerivWithinAt_inr :
+theorem hasMFDerivWithinAt_inr {t : Set M'} :
     HasMFDerivWithinAt I I (@Sum.inr M M') t q' (ContinuousLinearMap.id 𝕜 (TangentSpace I q')) := by
   refine ⟨by fun_prop, ?_⟩
   set U := (extChartAt I q').symm ⁻¹' t ∩ Set.range I
@@ -773,7 +774,7 @@ theorem mfderiv_sumInl :
       = ContinuousLinearMap.id 𝕜 (TangentSpace I p) := by
   simpa [mfderivWithin_univ] using (mfderivWithin_sumInl (uniqueMDiffWithinAt_univ I))
 
-theorem mfderivWithin_sumInr (hU : UniqueMDiffWithinAt I t q') :
+theorem mfderivWithin_sumInr {t : Set M'} (hU : UniqueMDiffWithinAt I t q') :
     mfderivWithin I I (@Sum.inr M M') t q' = ContinuousLinearMap.id 𝕜 (TangentSpace I q') :=
   (hasMFDerivWithinAt_inr).mfderivWithin hU
 
