@@ -346,7 +346,7 @@ theorem _root_.OrderIso.map_succ [PartialOrder β] [SuccOrder β] (f : α ≃o �
     f (succ a) = succ (f a) := by
   by_cases h : IsMax a
   · rw [h.succ_eq, (f.isMax_apply.2 h).succ_eq]
-  · exact (f.map_covBy.2 <| covBy_succ_of_not_isMax h).succ_eq.symm
+  · exact ((apply_covBy_apply_iff f).2 <| covBy_succ_of_not_isMax h).succ_eq.symm
 
 section NoMaxOrder
 
