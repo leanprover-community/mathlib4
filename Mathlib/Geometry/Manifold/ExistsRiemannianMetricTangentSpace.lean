@@ -193,6 +193,83 @@ def g_bilin (i p : B) :
   let inner := innerSL ℝ (E := EB)
   exact inner.comp dψ |>.flip.comp dψ
 
+#check LinearMap.BilinForm.apply_mul_apply_le_of_forall_zero_le
+
+noncomputable def mynorm {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+  (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) :
+    Seminorm ℝ (TangentSpace IB x) where
+  toFun v := Real.sqrt (φ v v)
+  map_zero' := by simp
+  add_le' r s := by
+    rw [@Real.sqrt_le_iff]
+    · have : ((φ r) s) * ((φ s) r) ≤ ((φ r) r) * ((φ s) s) :=
+        LinearMap.BilinForm.apply_mul_apply_le_of_forall_zero_le φ.toLinearMap₁₂ hpos r s
+      have h1 : φ (r + s) (r + s) ≤ (Real.sqrt ((φ r) r) + Real.sqrt ((φ s) s)) ^ 2 :=
+        calc φ (r + s) (r + s)
+          = (φ r) r + (φ r) s + (φ s) r + (φ s) s := by
+              simp
+              exact Eq.symm (add_assoc ((φ r) r + (φ r) s) ((φ s) r) ((φ s) s))
+        _ = (φ r) r + 2 * (φ r) s + (φ s) s := by
+              rw [hsymm r s]
+              ring
+        _ ≤ (φ r) r + 2 * √((φ r) r * (φ s) s) + (φ s) s := by
+              gcongr
+              have h1 :  (φ r) s * (φ s) r ≤ (φ r) r * (φ s) s :=
+                LinearMap.BilinForm.apply_mul_apply_le_of_forall_zero_le φ.toLinearMap₁₂ hpos r s
+              have h2 :  ((φ r) s) ^ 2 ≤ ((φ r) r * (φ s) s) := by
+                rw [sq, hsymm r s]
+                exact le_of_eq_of_le (congrFun (congrArg HMul.hMul (hsymm s r)) ((φ s) r)) this
+              exact Real.le_sqrt_of_sq_le h2
+        _ = (√((φ r) r) + √((φ s) s)) ^ 2 := by
+                rw [add_sq]
+                rw [Real.sq_sqrt (hpos r), Real.sq_sqrt (hpos s)]
+                rw [Real.sqrt_mul (hpos r) ((φ s) s)]
+                ring
+      have h2 : 0 ≤ √((φ r) r) + √((φ s) s) :=
+        add_nonneg (Real.sqrt_nonneg ((φ r) r)) (Real.sqrt_nonneg ((φ s) s))
+      exact And.symm ⟨h1, h2⟩
+  neg' r := by simp
+  smul' a v := by simp [← mul_assoc, ← Real.sqrt_mul_self_eq_abs, Real.sqrt_mul (mul_self_nonneg a)]
+
+noncomputable def aux {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) :
+  SeminormFamily ℝ (TangentSpace IB x) (Fin 1) := fun _ ↦ mynorm φ sorry sorry
+
+#print WithSeminorms
+
+lemma bbr {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+  (hpos : ∀ v : TangentSpace IB x , v ≠ 0 → 0 < φ v v) : WithSeminorms (aux φ) := by
+  -- In finite dimension there is a single topological vector space structure...
+  -- and mynorm defines a norm, hence a TVS structure.
+  exact sorry
+
+lemma qux {α : Type*} [Unique α] (s : Finset α) : s = ∅ ∨ s = {default} := by
+  by_cases h : s = ∅
+  · simp [h]
+  · rw [Finset.eq_singleton_iff_nonempty_unique_mem]
+    refine Or.inr ⟨Finset.nonempty_iff_ne_empty.mpr h, fun x hx ↦ Unique.uniq _ _⟩
+
+lemma aux_tvs {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+   (hpos : ∀ v : TangentSpace IB x, v ≠ 0 → 0 < φ v v) :
+    Bornology.IsVonNBounded ℝ {v | (φ v) v < 1} := by
+  -- Proof sketch (courtesy of Sébastien  Gouezel):
+  -- Phi gives you a norm, which defines the same topology as the initial one
+  -- (as in finite dimension there is a single topological vector space structure).
+  -- The unit ball for the norm is von Neumann bounded wrt the topology defined by the norm
+  -- (we have this in mathlib), so also for the initial topology.
+  rw [WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded (p := aux φ) (bbr φ hpos)]
+  intro I
+  letI J : Finset (Fin 1) := {1}
+  suffices ∃ r > 0, ∀ x ∈ {v | (φ v) v < 1}, (J.sup (aux φ)) x < r by
+    obtain (rfl | h) := qux I
+    · use 1; simp
+    · convert this
+  simp only [Set.mem_setOf_eq, Finset.sup_singleton, J]
+  refine ⟨1, by norm_num, fun x h ↦ ?_⟩
+  simp only [aux, mynorm]
+  change Real.sqrt (φ x x) < 1
+  rw [Real.sqrt_lt' (by norm_num)]
+  simp [h]
+
 @[simp]
 theorem linear_flip_apply
   {𝕜 E F G : Type*}
@@ -226,11 +303,6 @@ noncomputable instance :
     infer_instance
 
 variable [FiniteDimensional ℝ EB] [IsManifold IB ω B] [SigmaCompactSpace B] [T2Space B]
-
-noncomputable
-def g_global (f : SmoothPartitionOfUnity B IB B) :
-    ∀ (p : B), TangentSpace IB p → TangentSpace IB p → ℝ :=
-  fun p v w ↦ ∑ᶠ i : B, (f i p) * g i p v w
 
 noncomputable
 def g_global_bilin (f : SmoothPartitionOfUnity B IB B) (p : B) :
@@ -489,16 +561,12 @@ lemma baz (f : SmoothPartitionOfUnity B IB B)
   rw [h6a]
   exact h_need' f h_sub b v h_fin hv
 
-#check Bornology.isVonNBounded_iff
-#check Bornology.IsVonNBounded
-#check Metric.isBounded_ball
-#check Bornology.IsVonNBounded.subset
-
-lemma eek (f : SmoothPartitionOfUnity B IB B) :
+lemma eek (f : SmoothPartitionOfUnity B IB B)
+  (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source)) :
   ∀ (b : B), Bornology.IsVonNBounded ℝ
     {v  : TangentSpace IB b | ((g_global_bilin f b).toFun v).toFun v < 1} := by
   intro b
-  exact sorry
+  exact aux_tvs (g_global_bilin f b) (baz f h_sub b)
 
 noncomputable
 def riemannian_metric_exists'
@@ -509,6 +577,6 @@ def riemannian_metric_exists'
   { inner := g_global_bilin f
     symm := foo' f
     pos := baz f h_sub
-    isVonNBounded := eek f
+    isVonNBounded := eek f h_sub
     contMDiff := (g_global_smooth_section' f h_sub).contMDiff_toFun
      }
