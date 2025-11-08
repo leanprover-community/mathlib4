@@ -615,7 +615,10 @@ Q620602:
 
 Q631561:
   title: Closed range theorem
-  # TODO: this surely exists in mathlib, add decl!
+  decl:
+    - ContinuousLinearMap.closed_complemented_range_of_isCompl_of_ker_eq_bot
+    - ContinuousLinearMap.orthogonal_ker
+    - ContinuousLinearMap.orthogonal_range
 
 Q632546X:
   title: Sylvester's theorem
