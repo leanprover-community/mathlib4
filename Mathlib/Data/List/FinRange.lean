@@ -51,7 +51,7 @@ theorem pairwise_le_finRange (n : ℕ) : Pairwise (· ≤ ·) (finRange n) := by
 
 @[simp]
 lemma count_finRange {n : ℕ} (a : Fin n) : count a (finRange n) = 1 := by
-  simp [count_eq_of_nodup (nodup_finRange n)]
+  simp [List.Nodup.count (nodup_finRange n)]
 
 theorem get_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange (n := n) ▸ h⟩ := by
