@@ -629,3 +629,18 @@ def snd (x : α×β) := x.2
 example (f : α → β → γ) (hf : Con ↿f) : Con (fun x : α×β => f (fst x) (snd x)) := by
   fail_if_success fun_prop
   apply silentSorry
+
+-- In the following example, `fun_prop` used to panic with a "loose bvar in expression" error.
+
+@[fun_prop]
+axiom AEMeas {α β : Type*} (f : α → β) (μ : Bool) : Prop
+
+axiom foo4 : Bool → Bool
+
+@[fun_prop]
+axiom aemeas_foo4 (μ : Bool) : AEMeas foo4 μ
+
+@[fun_prop]
+axiom con_foo4 : (∀ μ : Bool, AEMeas foo4 μ) → Con foo4
+
+example : Con foo4 := by fun_prop
