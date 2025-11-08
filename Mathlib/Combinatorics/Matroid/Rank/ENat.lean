@@ -32,14 +32,14 @@ the rank function is often the preferred perspective on matroids in the literatu
 (The above doesn't work as well for infinite matroids,
 which is why mathlib defines matroids using bases/independence. )
 
-# Main Declarations
+## Main Declarations
 
 * `Matroid.eRank M` is the `ℕ∞`-valued cardinality of each base of `M`.
 * `Matroid.eRk M X` is the `ℕ∞`-valued cardinality of each `M`-basis of `X`.
 * `Matroid.eRk_inter_add_eRk_union_le` : the function `M.eRk` is submodular.
 * `Matroid.dual_eRk_add_eRank` : a subtraction-free formula for the dual rank of a set.
 
-# Notes
+## Notes
 
 It is natural to ask if equicardinality of bases holds if 'cardinality' refers to
 a term in `Cardinal` instead of `ℕ∞`, but the answer is that it doesn't.
@@ -47,7 +47,7 @@ The cardinal-valued rank functions `Matroid.cRank` and `Matroid.cRk` are defined
 `Mathlib/Data/Matroid/Rank/Cardinal.lean`, but have less desirable properties in general.
 See the module docstring of that file for a discussion.
 
-# Implementation Details
+## Implementation Details
 
 It would be equivalent to define `Matroid.eRank (M : Matroid α) := (Matroid.cRank M).toENat`
 and similar for `Matroid.eRk`, and some of the API for `cRank`/`cRk` would carry over
