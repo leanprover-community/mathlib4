@@ -10,7 +10,7 @@ import Mathlib.Analysis.Normed.Ring.Lemmas
 /-! # Multiplying two infinite sums in a normed ring
 
 In this file, we prove various results about `(∑' x : ι, f x) * (∑' y : ι', g y)` in a normed
-ring. There are similar results proven in `Mathlib/Topology/Algebra/InfiniteSum.lean` (e.g
+ring. There are similar results proven in `Mathlib/Topology/Algebra/InfiniteSum.lean` (e.g.
 `tsum_mul_tsum`), but in a normed ring we get summability results which aren't true in general.
 
 We first establish results about arbitrary index types, `ι` and `ι'`, and then we specialize to
@@ -135,7 +135,7 @@ theorem summable_sum_mul_range_of_summable_norm' {f g : ℕ → R}
 /-- The Cauchy product formula for the product of two infinite sums indexed by `ℕ`,
 expressed by summing on `Finset.range`.
 See also `tsum_mul_tsum_eq_tsum_sum_range` if `f` and `g` are
-not* absolutely summable, and `tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm'` when the
+not absolutely summable, and `tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm'` when the
 space is not complete. -/
 theorem tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm [CompleteSpace R] {f g : ℕ → R}
     (hf : Summable fun x => ‖f x‖) (hg : Summable fun x => ‖g x‖) :

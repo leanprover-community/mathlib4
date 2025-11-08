@@ -160,7 +160,7 @@ theorem zero_mem_tangentCone {s : Set E} {x : E} (hx : x ∈ closure s) :
   refine squeeze_zero_norm Hle ?_
   simpa using tendsto_const_nhds.mul u_lim
 
-/-- If `x` is not an accumulation point of `s, then the tangent cone of `s` at `x`
+/-- If `x` is not an accumulation point of `s`, then the tangent cone of `s` at `x`
 is a subset of `{0}`. -/
 theorem tangentConeAt_subset_zero (hx : ¬AccPt x (𝓟 s)) : tangentConeAt 𝕜 s x ⊆ 0 := by
   rintro y ⟨c, d, hds, hc, hcd⟩

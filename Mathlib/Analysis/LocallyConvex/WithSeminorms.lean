@@ -25,7 +25,7 @@ import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 * `WithSeminorms.toLocallyConvexSpace`: A space equipped with a family of seminorms is locally
   convex.
-* `WithSeminorms.firstCountable`: A space is first countable if it's topology is induced by a
+* `WithSeminorms.firstCountable`: A space is first countable if its topology is induced by a
   countable family of seminorms.
 
 ## Continuity of semilinear maps

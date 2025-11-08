@@ -10,7 +10,7 @@ import Mathlib.Analysis.Asymptotics.Lemmas
 # Super-Polynomial Function Decay
 
 This file defines a predicate `Asymptotics.SuperpolynomialDecay f` for a function satisfying
-  one of following equivalent definitions (The definition is in terms of the first condition):
+one of the following equivalent definitions (the definition is in terms of the first condition):
 
 * `x ^ n * f` tends to `𝓝 0` for all (or sufficiently large) naturals `n`
 * `|x ^ n * f|` tends to `𝓝 0` for all naturals `n` (`superpolynomialDecay_iff_abs_tendsto_zero`)
@@ -34,7 +34,7 @@ When the map `k` is given by `(r₁,...,rₙ) ↦ r₁*...*rₙ : ℝⁿ → ℝ
   to the definition of rapidly decreasing functions given here:
 https://ncatlab.org/nlab/show/rapidly+decreasing+function
 
-# Main Theorems
+## Main statements
 
 * `SuperpolynomialDecay.polynomial_mul` says that if `f(x)` is negligible,
     then so is `p(x) * f(x)` for any polynomial `p`.
