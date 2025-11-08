@@ -87,9 +87,9 @@ lemma IndepFun.process_indepFun_process {T : Type*} {𝓧 : S → Type*} {𝓨 :
   exact IndepFun.indepFun_process (measurable_pi_lambda _ fun _ ↦ hX _) hY fun J ↦ h I J
 
 /-- Stochastic processes $((X^s_t)_{t \in T_s})_{s \in S}$ are mutually independent if
-for all $s_1, ..., s_n$ and all $t^{s_i}_1, ..., t^{s_i}_{p_i}^ the families
-$(X^{s_1}_{t^{s_1}_1}, ..., X^{s_1}_{t^{s_1}_{p_1}}), ...,
-(X^{s_n}_{t^{s_n}_1}, ..., X^{s_n}_{t^{s_n}_{p_n}})$ are mutually independent. -/
+for all $s_1, ..., s_n$ and all ${t^{s_i}}_1, ..., {t^{s_i}}_{p_i}$ the families
+$({X^{s_1}}_{{t^{s_1}}_1}, ..., {X^{s_1}}_{{t^{s_1}}_{p_1}}), ...,
+({X^{s_n}}_{{t^{s_n}}_1}, ..., {X^{s_n}}_{{t^{s_n}}_{p_n}})$ are mutually independent. -/
 lemma iIndepFun.iIndepFun_process {T : S → Type*} {𝓧 : (i : S) → (j : T i) → Type*}
     [∀ i j, MeasurableSpace (𝓧 i j)] {X : (i : S) → (j : T i) → Ω → 𝓧 i j}
     (hX : ∀ i j, Measurable (X i j))
@@ -169,9 +169,9 @@ lemma IndepFun.process_indepFun_process {T : Type*} {𝓧 : S → Type*} {𝓨 :
   Kernel.IndepFun.process_indepFun_process hX hY h
 
 /-- Stochastic processes $((X^s_t)_{t \in T_s})_{s \in S}$ are mutually independent if
-for all $s_1, ..., s_n$ and all $t^{s_i}_1, ..., t^{s_i}_{p_i}^ the families
-$(X^{s_1}_{t^{s_1}_1}, ..., X^{s_1}_{t^{s_1}_{p_1}}), ...,
-(X^{s_n}_{t^{s_n}_1}, ..., X^{s_n}_{t^{s_n}_{p_n}})$ are mutually independent. -/
+for all $s_1, ..., s_n$ and all ${t^{s_i}}_1, ..., {t^{s_i}}_{p_i}$ the families
+$({X^{s_1}}_{{t^{s_1}}_1}, ..., {X^{s_1}}_{{t^{s_1}}_{p_1}}), ...,
+({X^{s_n}}_{{t^{s_n}}_1}, ..., {X^{s_n}}_{{t^{s_n}}_{p_n}})$ are mutually independent. -/
 lemma iIndepFun.iIndepFun_process {T : S → Type*} {𝓧 : (i : S) → (j : T i) → Type*}
     [∀ i j, MeasurableSpace (𝓧 i j)] {X : (i : S) → (j : T i) → Ω → 𝓧 i j}
     (hX : ∀ i j, Measurable (X i j))
