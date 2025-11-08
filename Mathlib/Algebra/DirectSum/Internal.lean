@@ -166,9 +166,6 @@ theorem coe_mul_apply_eq_dfinsuppSum [AddMonoid ι] [SetLike.GradedMonoid A]
   · rw [of_eq_of_ne _ _ _ (Ne.symm h)]
     rfl
 
-@[deprecated (since := "2025-04-06")]
-alias coe_mul_apply_eq_dfinsupp_sum := coe_mul_apply_eq_dfinsuppSum
-
 open Finset in
 theorem coe_mul_apply_eq_sum_antidiagonal [AddMonoid ι] [HasAntidiagonal ι]
     [SetLike.GradedMonoid A] (r r' : ⨁ i, A i) (n : ι) :
