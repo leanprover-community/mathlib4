@@ -642,6 +642,14 @@ def ofInvolutive (f : α → α) (hf : Involutive f) (hf' : Measurable f) : α �
 @[simp] theorem ofInvolutive_symm (f : α → α) (hf : Involutive f) (hf' : Measurable f) :
     (ofInvolutive f hf hf').symm = ofInvolutive f hf hf' := rfl
 
+/-- `Set.setOf` as a `MeasurableEquiv`. -/
+@[simps]
+def setOf {α : Type*} : (α → Prop) ≃ᵐ Set α where
+  toFun p := {a | p a}
+  invFun s a := a ∈ s
+  measurable_toFun := measurable_id
+  measurable_invFun := measurable_id
+
 end MeasurableEquiv
 
 namespace MeasurableEmbedding
