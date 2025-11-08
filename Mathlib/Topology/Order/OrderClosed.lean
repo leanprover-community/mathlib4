@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Topology.Order.LeftRight
 import Mathlib.Topology.Separation.Hausdorff
-import Mathlib.Order.Interval.Set.UnorderedInterval
 
 /-!
 # Order-closed topologies
