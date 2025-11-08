@@ -44,7 +44,8 @@ variable (f : ∀ i j, i ≤ j → G i → G j)
 
 open FreeCommRing
 
-/-- The direct limit of a directed system is the rings glued together along the maps. -/
+/-- The direct limit of a directed system is the ring obtained by gluing the components along the
+maps. -/
 def DirectLimit : Type _ :=
   FreeCommRing (Σ i, G i) ⧸
     Ideal.span

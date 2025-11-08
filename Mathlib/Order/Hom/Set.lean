@@ -48,8 +48,8 @@ theorem symm_image_image (e : α ≃o β) (s : Set α) : e.symm '' (e '' s) = s 
 theorem image_symm_image (e : α ≃o β) (s : Set β) : e '' (e.symm '' s) = s :=
   e.toEquiv.image_symm_image s
 
-theorem image_eq_preimage (e : α ≃o β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
-  e.toEquiv.image_eq_preimage s
+theorem image_eq_preimage_symm (e : α ≃o β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
+  e.toEquiv.image_eq_preimage_symm s
 
 @[simp]
 theorem preimage_symm_preimage (e : α ≃o β) (s : Set α) : e ⁻¹' (e.symm ⁻¹' s) = s :=

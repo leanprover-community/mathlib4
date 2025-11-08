@@ -242,8 +242,7 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ {s T 
         Real.rpow_nonneg (zero_le_one.trans ht.le) _
     _ = ε := by
       rw [integral_Ioi_rpow_of_lt (by rwa [neg_lt_neg_iff]) zero_lt_one, Real.one_rpow]
-      field_simp [show -s + 1 ≠ 0 by linarith]
-      ring
+      field [show -s + 1 ≠ 0 by linarith]
 
 private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
     (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f k) / n) atTop (𝓝 l))

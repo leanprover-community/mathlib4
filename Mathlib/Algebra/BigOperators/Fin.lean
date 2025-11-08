@@ -85,22 +85,10 @@ theorem prod_univ_castSucc (f : Fin (n + 1) → M) :
 theorem prod_univ_getElem (l : List M) : ∏ i : Fin l.length, l[i.1] = l.prod := by
   simp [Finset.prod_eq_multiset_prod]
 
-@[deprecated (since := "2025-04-19")]
-alias sum_univ_get := sum_univ_getElem
-
-@[to_additive existing, deprecated (since := "2025-04-19")]
-alias prod_univ_get := prod_univ_getElem
-
 @[to_additive (attr := simp)]
 theorem prod_univ_fun_getElem (l : List ι) (f : ι → M) :
     ∏ i : Fin l.length, f l[i.1] = (l.map f).prod := by
   simp [Finset.prod_eq_multiset_prod]
-
-@[deprecated (since := "2025-04-19")]
-alias sum_univ_get' := sum_univ_fun_getElem
-
-@[to_additive existing, deprecated (since := "2025-04-19")]
-alias prod_univ_get' := prod_univ_fun_getElem
 
 @[to_additive (attr := simp)]
 theorem prod_cons (x : M) (f : Fin n → M) :

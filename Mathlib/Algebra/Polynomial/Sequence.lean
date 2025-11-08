@@ -124,15 +124,7 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
       ← degree_eq_natDegree p_ne_zero, hp] at head_degree_eq
     -- and that this degree is also their `natDegree`
     have head_degree_eq_natDegree : head.degree = head.natDegree := degree_eq_natDegree <| by
-      by_cases n_eq_zero : n = 0
-      · dsimp [head]
-        rw [n_eq_zero, ← coeff_natDegree, natDegree_eq] at rightinv
-        rwa [n_eq_zero, eq_C_of_natDegree_eq_zero <| S.natDegree_eq 0,
-          smul_C, smul_eq_mul, map_mul, ← C_mul, rightinv, smul_C, smul_eq_mul,
-          mul_one, C_eq_zero, leadingCoeff_eq_zero]
-      · apply head.ne_zero_of_degree_gt (n := 0)
-        rw [← head_degree_eq]
-        exact natDegree_pos_iff_degree_pos.mp (by cutsat)
+      grind [degree_eq_bot]
     -- and that they have matching leading coefficients
     have hPhead : P.leadingCoeff = head.leadingCoeff := by
       rw [degree_eq_natDegree p_ne_zero, head_degree_eq_natDegree] at head_degree_eq

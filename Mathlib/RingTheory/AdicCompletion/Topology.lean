@@ -13,8 +13,22 @@ import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 ## Main results
 - `IsAdic.isPrecomplete_iff`:
   `IsPrecomplete I R` is equivalent to `CompleteSpace R` in the adic topology.
+- `IsAdic.isAdicComplete_iff`:
+  `IsAdicComplete I R` is equivalent to `CompleteSpace R` and `T2Space R` in the adic topology.
 
 -/
+
+section TopologicalSpace
+
+variable {R : Type*} [CommRing R] [TopologicalSpace R] {I : Ideal R} (hI : IsAdic I)
+
+include hI in
+/-- `IsHausdorff I R` is equivalent to being Hausdorff in the adic topology. -/
+protected lemma IsAdic.isHausdorff_iff : IsHausdorff I R ↔ T2Space R := by
+  rw [I.ringFilterBasis.t2Space_iff_sInter_subset hI.symm, isHausdorff_iff]
+  simp [SModEq.zero, Ideal.ringFilterBasis, RingSubgroupsBasis.toRingFilterBasis]
+
+end TopologicalSpace
 
 section UniformSpace
 
@@ -52,5 +66,10 @@ protected lemma IsAdic.isPrecomplete_iff : IsPrecomplete I R ↔ CompleteSpace R
     obtain ⟨N, hN⟩ : ∃ N, ∀ n, N ≤ n → f n - L ∈ I ^ i := by
       simpa [sub_eq_neg_add] using (hI.hasBasis_nhds L).tendsto_right_iff.mp hL i
     simpa using Ideal.add_mem _ (hN (max i N) le_sup_right) (hf (le_max_left i N))
+
+include hI in
+/-- `IsAdicComplete I R` is equivalent to being complete and hausdorff in the adic topology. -/
+protected lemma IsAdic.isAdicComplete_iff : IsAdicComplete I R ↔ CompleteSpace R ∧ T2Space R := by
+  rw [isAdicComplete_iff, hI.isHausdorff_iff, hI.isPrecomplete_iff, and_comm]
 
 end UniformSpace

@@ -15,8 +15,8 @@ We introduce these relations:
 * `f =o[l] g` : "f is little o of g along l".
 
 Here `l` is any filter on the domain of `f` and `g`, which are assumed to be the same. The codomains
-of `f` and `g` do not need to be the same; all that is needed that there is a norm associated with
-these types, and it is the norm that is compared asymptotically.
+of `f` and `g` do not need to be the same; all that is needed is that there is a norm associated
+with these types, and it is the norm that is compared asymptotically.
 
 The relation `IsBigOWith c` is introduced to factor out common algebraic arguments in the proofs of
 similar properties of `IsBigO` and `IsLittleO`. Usually proofs outside of this file should use
@@ -623,7 +623,7 @@ protected theorem IsLittleO.insert [TopologicalSpace α] {x : α} {s : Set α} {
     {g' : α → F'} (h1 : g =o[𝓝[s] x] g') (h2 : g x = 0) : g =o[𝓝[insert x s] x] g' :=
   (isLittleO_insert h2).mpr h1
 
-/-! ### Simplification : norm, abs -/
+/-! ### Simplification: norm, abs -/
 
 
 section NormAbs

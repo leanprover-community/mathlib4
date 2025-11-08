@@ -125,12 +125,12 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
     classical
     refine ⟨Nat.find h_exist, ⟨(Nat.find_spec h_exist).1, ?_, (Nat.find_spec h_exist).2⟩⟩
     set t := (Nat.find h_exist - 1 : ℕ) with ht
-    by_cases h_pos : 0 < t
+    by_cases! h_pos : 0 < t
     · convert (ne_eq _ _) ▸ not_and.mp (Nat.find_min h_exist (m := t) (by cutsat)) h_pos
       cutsat
     · suffices h_find: Nat.find h_exist = 1 by
         rwa [h_find]
-      rw [not_lt, Nat.le_zero, ht, Nat.sub_eq_zero_iff_le] at h_pos
+      rw [Nat.le_zero, ht, Nat.sub_eq_zero_iff_le] at h_pos
       linarith [(Nat.find_spec h_exist).1]
   -- We define `c` to be the value that we proved above to be non-zero.
   set c := (ad k D a)^[n] b with hc_def

@@ -320,7 +320,7 @@ theorem liftHom₂_congr {a b : FreeBicategory B} {f g : a ⟶ b} {η θ : Hom�
 `free_bicategory B` to `C`.
 -/
 @[simps]
-def lift : Pseudofunctor (FreeBicategory B) C where
+def lift : FreeBicategory B ⥤ᵖ C where
   obj := F.obj
   map := liftHom F
   mapId _ := Iso.refl _

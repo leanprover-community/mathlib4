@@ -10,6 +10,7 @@ import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.MeasureTheory.Integral.Bochner.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.Bochner.VitaliCaratheodory
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
+import Mathlib.Analysis.Calculus.TangentCone.Prod
 
 /-!
 # Fundamental Theorem of Calculus

@@ -459,6 +459,9 @@ theorem C_0 : C (0 : R) = 0 := by simp
 theorem C_1 : C (1 : R) = 1 :=
   rfl
 
+theorem C_ofNat (n : ℕ) [n.AtLeastTwo] : C ofNat(n) = (ofNat(n) : R[X]) :=
+  rfl
+
 theorem C_mul : C (a * b) = C a * C b :=
   C.map_mul a b
 

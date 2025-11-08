@@ -114,7 +114,7 @@ def totalInstructions (instructions : NameMap Float) (graph : NameMap (Array Nam
 
 /-- Convert a float to a string with a fixed number of decimal places. -/
 def Float.toStringDecimals (r : Float) (digits : Nat) : String :=
-  match r.toString.split (· = '.') with
+  match r.toString.splitToList (· = '.') with
   | [a, b] => a ++ "." ++ b.take digits
   | _ => r.toString
 

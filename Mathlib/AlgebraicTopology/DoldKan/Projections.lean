@@ -103,9 +103,9 @@ theorem comp_P_eq_self {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : High
   | succ q hq =>
     simp only [P_succ, comp_add, HomologicalComplex.comp_f, HomologicalComplex.add_f_apply,
       comp_id, ← assoc, hq v.of_succ, add_eq_left]
-    by_cases hqn : n < q
+    by_cases! hqn : n < q
     · exact v.of_succ.comp_Hσ_eq_zero hqn
-    · obtain ⟨a, ha⟩ := Nat.le.dest (not_lt.mp hqn)
+    · obtain ⟨a, ha⟩ := Nat.le.dest hqn
       have hnaq : n = a + q := by omega
       simp only [v.of_succ.comp_Hσ_eq hnaq, neg_eq_zero, ← assoc]
       have eq := v ⟨a, by cutsat⟩ (by

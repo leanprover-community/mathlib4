@@ -329,7 +329,7 @@ theorem image_eq_preimage_of_inverse {f : α → β} {g : β → α} (h₁ : Lef
   funext fun s =>
     Subset.antisymm (image_subset_preimage_of_inverse h₁ s) (preimage_subset_image_of_inverse h₂ s)
 
-theorem _root_.Function.Involutive.image_eq_preimage {f : α → α} (hf : f.Involutive) :
+theorem _root_.Function.Involutive.image_eq_preimage_symm {f : α → α} (hf : f.Involutive) :
     image f = preimage f :=
   image_eq_preimage_of_inverse hf.leftInverse hf.rightInverse
 

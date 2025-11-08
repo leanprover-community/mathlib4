@@ -203,8 +203,8 @@ nonrec theorem dist_of_re_eq (h : z.re = w.re) : dist z w = dist (log z.im) (log
   nth_rw 4 [← abs_of_pos w.im_pos]
   simp only [← _root_.abs_mul, Real.dist_eq]
   congr 1
-  field_simp
-  ring
+  field
+
 /-- Hyperbolic distance between two points is greater than or equal to the distance between the
 logarithms of their imaginary parts. -/
 theorem dist_log_im_le (z w : ℍ) : dist (log z.im) (log w.im) ≤ dist z w :=

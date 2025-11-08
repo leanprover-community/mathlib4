@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 -/
 import Mathlib.Data.Set.Image
 import Mathlib.Data.SProd
+import Mathlib.Data.Sum.Basic
 
 /-!
 # Sets in product and pi types
@@ -223,8 +224,6 @@ theorem prod_range_range_eq {m₁ : α → γ} {m₂ : β → δ} :
 @[simp, mfld_simps]
 theorem range_prodMap {m₁ : α → γ} {m₂ : β → δ} : range (Prod.map m₁ m₂) = range m₁ ×ˢ range m₂ :=
   prod_range_range_eq.symm
-
-@[deprecated (since := "2025-04-10")] alias range_prod_map := range_prodMap
 
 theorem prod_range_univ_eq {m₁ : α → γ} :
     range m₁ ×ˢ (univ : Set β) = range fun p : α × β => (m₁ p.1, p.2) :=

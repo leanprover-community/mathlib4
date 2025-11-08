@@ -1032,7 +1032,7 @@ theorem restrictScalars_closedBall (p : Seminorm 𝕜' E) :
 
 end RestrictScalars
 
-/-! ### Continuity criterions for seminorms -/
+/-! ### Continuity criteria for seminorms -/
 
 
 section Continuity

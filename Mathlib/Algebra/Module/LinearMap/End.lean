@@ -281,9 +281,6 @@ def RingEquiv.moduleEndSelfOp : R ≃+* Module.End Rᵐᵒᵖ R :=
     left_inv := mul_one
     right_inv := fun _ ↦ LinearMap.ext_ring_op <| mul_one _ }
 
-@[deprecated (since := "2025-04-13")] alias Module.moduleEndSelf := RingEquiv.moduleEndSelf
-@[deprecated (since := "2025-04-13")] alias Module.moduleEndSelfOp := RingEquiv.moduleEndSelfOp
-
 theorem Module.End.natCast_def (n : ℕ) [AddCommMonoid N₁] [Module R N₁] :
     (↑n : Module.End R N₁) = Module.toModuleEnd R N₁ n :=
   rfl

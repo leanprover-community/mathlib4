@@ -47,9 +47,6 @@ theorem ae_eq_trim_iff_of_aestronglyMeasurable {α β} [TopologicalSpace β] [Me
     ⟨fun h => hfm.ae_eq_mk.trans (h.trans hgm.ae_eq_mk.symm), fun h =>
       hfm.ae_eq_mk.symm.trans (h.trans hgm.ae_eq_mk)⟩
 
-@[deprecated (since := "2025-04-09")]
-alias ae_eq_trim_iff_of_aeStronglyMeasurable' := ae_eq_trim_iff_of_aestronglyMeasurable
-
 theorem AEStronglyMeasurable.comp_ae_measurable' {α β γ : Type*} [TopologicalSpace β]
     {mα : MeasurableSpace α} {_ : MeasurableSpace γ} {f : α → β} {μ : Measure γ} {g : γ → α}
     (hf : AEStronglyMeasurable f (μ.map g)) (hg : AEMeasurable g μ) :
@@ -97,22 +94,13 @@ theorem mem_lpMeasSubgroup_iff_aestronglyMeasurable {m m0 : MeasurableSpace α} 
     {f : Lp F p μ} : f ∈ lpMeasSubgroup F m p μ ↔ AEStronglyMeasurable[m] f μ := by
   rw [← AddSubgroup.mem_carrier, lpMeasSubgroup, Set.mem_setOf_eq]
 
-@[deprecated (since := "2025-04-09")]
-alias mem_lpMeasSubgroup_iff_aeStronglyMeasurable := mem_lpMeasSubgroup_iff_aestronglyMeasurable
-
 theorem mem_lpMeas_iff_aestronglyMeasurable {m m0 : MeasurableSpace α} {μ : Measure α}
     {f : Lp F p μ} : f ∈ lpMeas F 𝕜 m p μ ↔ AEStronglyMeasurable[m] f μ := by
   rw [← SetLike.mem_coe, ← Submodule.mem_carrier, lpMeas, Set.mem_setOf_eq]
 
-@[deprecated (since := "2025-04-09")]
-alias mem_lpMeas_iff_aeStronglyMeasurable := mem_lpMeas_iff_aestronglyMeasurable
-
 theorem lpMeas.aestronglyMeasurable {m _ : MeasurableSpace α} {μ : Measure α}
     (f : lpMeas F 𝕜 m p μ) : AEStronglyMeasurable[m] (f : α → F) μ :=
   mem_lpMeas_iff_aestronglyMeasurable.mp f.mem
-
-@[deprecated (since := "2025-04-09")]
-alias lpMeas.aeStronglyMeasurable := lpMeas.aestronglyMeasurable
 
 theorem mem_lpMeas_self {m0 : MeasurableSpace α} (μ : Measure α) (f : Lp F p μ) :
     f ∈ lpMeas F 𝕜 m0 p μ :=
@@ -318,15 +306,9 @@ theorem isComplete_aestronglyMeasurable [hp : Fact (1 ≤ p)] [CompleteSpace F] 
   change CompleteSpace (lpMeasSubgroup F m p μ)
   infer_instance
 
-@[deprecated (since := "2025-04-09")]
-alias isComplete_aeStronglyMeasurable' := isComplete_aestronglyMeasurable
-
 theorem isClosed_aestronglyMeasurable [Fact (1 ≤ p)] [CompleteSpace F] (hm : m ≤ m0) :
     IsClosed {f : Lp F p μ | AEStronglyMeasurable[m] f μ} :=
   IsComplete.isClosed (isComplete_aestronglyMeasurable hm)
-
-@[deprecated (since := "2025-04-09")]
-alias isClosed_aeStronglyMeasurable' := isClosed_aestronglyMeasurable
 
 end CompleteSubspace
 

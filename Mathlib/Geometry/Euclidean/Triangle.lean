@@ -321,10 +321,10 @@ theorem dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq (a b c 
     calc
       dist a b ^ 2 + dist a c ^ 2 = 2 / dist b c * (dist a b ^ 2 *
         ((2 : ℝ)⁻¹ * dist b c) + dist a c ^ 2 * (2⁻¹ * dist b c)) := by
-        field_simp
+        field
       _ = 2 * (dist a (midpoint ℝ b c) ^ 2 + (dist b c / 2) ^ 2) := by
         rw [hm]
-        field_simp
+        field
 
 theorem dist_mul_of_eq_angle_of_dist_mul (a b c a' b' c' : P) (r : ℝ) (h : ∠ a' b' c' = ∠ a b c)
     (hab : dist a' b' = r * dist a b) (hcb : dist c' b' = r * dist c b) :
@@ -354,15 +354,14 @@ theorem dist_lt_of_angle_lt {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P)
     apply Real.sin_nonneg_of_mem_Icc
     simp [angle_nonneg, angle_le_pi]
   intro h1
-  by_cases h2 : ∠ a b c ≤ π / 2
+  by_cases! h2 : ∠ a b c ≤ π / 2
   · have h3 : Real.sin (∠ a c b) < Real.sin (∠ a b c) := by
       exact Real.sin_lt_sin_of_lt_of_le_pi_div_two (by linarith [angle_nonneg a c b]) h2 h1
     by_contra! w
     have h4 : Real.sin (∠ a c b) * dist a c < Real.sin (∠ a b c) * dist a b := by
       exact mul_lt_mul h3 w hac hsinabc
     linarith
-  · push_neg at h2
-    by_contra! w
+  · by_contra! w
     have h3 : Real.sin (∠ a b c) ≤ Real.sin (∠ a c b) := by
       by_contra! w1
       have h4 : Real.sin (∠ a c b) * dist a c < Real.sin (∠ a b c) * dist a b := by

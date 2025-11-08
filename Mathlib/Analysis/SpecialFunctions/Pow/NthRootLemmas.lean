@@ -83,7 +83,7 @@ theorem nthRoot.lt_pow_go_succ_aux (hb : b ≠ 0) :
       simp [field, add_comm]
     _ = ((a + b ^ n * (n * b)) / (b ^ n * (n + 1))) ^ (n + 1) := by
       congr 1
-      field_simp
+      field
     _ < _ := by
       gcongr ?_ ^ _
       convert lt_floor_add_one (R := ℝ) _ using 1

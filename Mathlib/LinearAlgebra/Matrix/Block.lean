@@ -183,9 +183,9 @@ theorem BlockTriangular.mul [Fintype m] [NonUnitalNonAssocSemiring R]
   intro i j hij
   apply Finset.sum_eq_zero
   intro k _
-  by_cases hki : b k < b i
+  by_cases! hki : b k < b i
   · simp_rw [hM hki, zero_mul]
-  · simp_rw [hN (lt_of_lt_of_le hij (le_of_not_gt hki)), mul_zero]
+  · simp_rw [hN (lt_of_lt_of_le hij hki), mul_zero]
 
 end LinearOrder
 

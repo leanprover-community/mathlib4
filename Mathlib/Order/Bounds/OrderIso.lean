@@ -42,7 +42,7 @@ theorem isGLB_image' {s : Set α} {x : α} : IsGLB (f '' s) (f x) ↔ IsGLB s x 
 
 @[simp]
 theorem isLUB_preimage {s : Set β} {x : α} : IsLUB (f ⁻¹' s) x ↔ IsLUB s (f x) := by
-  rw [← f.symm_symm, ← image_eq_preimage, isLUB_image]
+  rw [← f.symm_symm, ← image_eq_preimage_symm, isLUB_image]
 
 theorem isLUB_preimage' {s : Set β} {x : β} : IsLUB (f ⁻¹' s) (f.symm x) ↔ IsLUB s x := by
   rw [isLUB_preimage, f.apply_symm_apply]

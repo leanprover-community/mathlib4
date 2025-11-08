@@ -2,7 +2,7 @@ name: Remove outdated deprecated declarations
 
 on:
   schedule:
-  - cron: "5 4 * * 1" # At 04:05, on Monday
+  - cron: "5 4 15 * *" # At 04:05, on the 15th of every month
   workflow_dispatch:
     inputs:
       raw_from_date:
@@ -26,6 +26,8 @@ jobs:
     name: Remove outdated deprecated declarations
     runs-on: ubuntu-latest
     if: github.repository == 'leanprover-community/mathlib4'
+    env:
+      BRANCH_NAME: "deprecated-decls"
     steps:
     - name: Process dates
       id: process_dates
@@ -106,10 +108,10 @@ jobs:
         echo "from_date=$from_date" >> "$GITHUB_OUTPUT"
         echo "to_date=$to_date" >> "$GITHUB_OUTPUT"
 
-    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
     - name: Configure Lean
-      uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
+      uses: leanprover/lean-action@434f25c2f80ded67bba02502ad3a86f25db50709 # v1.3.0
       with:
         auto-config: false
         use-github-cache: false
@@ -162,20 +164,62 @@ jobs:
         echo "Deleting ${tmplean}"
         rm "${tmplean}"
 
+    - name: Get branch SHA if it exists
+      id: get-branch-sha
+      run: |
+        # Check if the branch exists remotely
+        if git fetch origin "$BRANCH_NAME"; then
+          SHA=$(git rev-parse "origin/$BRANCH_NAME")
+          echo "Branch '$BRANCH_NAME' exists with SHA: $SHA"
+          echo "sha=$SHA" >> "${GITHUB_OUTPUT}"
+        else
+          echo "Branch '$BRANCH_NAME' does not exist"
+          echo "sha=" >>" ${GITHUB_OUTPUT}"
+        fi
+
+    - name: Get PR
+      if: ${{ steps.get-branch-sha.outputs.sha != '' }}
+      id: find-pr
+      uses: 8BitJonny/gh-get-current-pr@4056877062a1f3b624d5d4c2bedefa9cf51435c9 # 4.0.0
+      # TODO: this may not work properly if the same commit is pushed to multiple branches:
+      # https://github.com/8BitJonny/gh-get-current-pr/issues/8
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        sha: ${{ steps.get-branch-sha.outputs.sha }}
+        # Only return if PR is still open
+        filterOutClosed: true
+
+    - name: Send Zulip message (blocked by open PR)
+      if: steps.find-pr.outputs.pr_found == 'true'
+      uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+      with:
+        api-key: ${{ secrets.ZULIP_API_KEY }}
+        email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+        organization-url: 'https://leanprover.zulipchat.com'
+        to: 'nightly-testing'
+        type: 'stream'
+        topic: 'Mathlib `remove outdated deprecated declarations`'
+        content: |
+          Reminder: #${{ steps.find-pr.outputs.pr }} is still open; this has prevented [the automatic
+          deprecation workflow](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          from creating a new PR.
+
     - name: Create Pull Request
       id: pr
-      if: ${{ steps.process_dates.outputs.from_date && toJson(inputs.dry_run) != 'true' }}
+      if: ${{ steps.process_dates.outputs.from_date && toJson(inputs.dry_run) != 'true' && steps.find-pr.outputs.pr_found != 'true' }}
       uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
       with:
         token: "${{ secrets.UPDATE_NOLINTS_TOKEN }}"
         author: "leanprover-community-mathlib4-bot <leanprover-community-mathlib4-bot@users.noreply.github.com>"
         commit-message: "chore: remove declarations deprecated between ${{ steps.process_dates.outputs.from_date }} and ${{ steps.process_dates.outputs.to_date }}"
-        branch: "deprecated-decls"
+        branch: ${{ env.BRANCH_NAME }}
         base: master
         title: "chore: remove declarations deprecated between ${{ steps.process_dates.outputs.from_date }} and ${{ steps.process_dates.outputs.to_date }}"
         body: |
           I am happy to remove some deprecated declarations for you!
           Please check if there are any remaining stray comments or other issues before merging.
+
+          ---
 
           [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 

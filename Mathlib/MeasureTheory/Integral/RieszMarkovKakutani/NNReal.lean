@@ -55,6 +55,7 @@ variable (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)
 /-- The **Riesz-Markov-Kakutani representation theorem**: given a positive linear functional `Λ`,
 the (Bochner) integral of `f` (as a `ℝ`-valued function) with respect to the `rieszMeasure`
 associated to `Λ` is equal to `Λ f`. -/
+@[simp]
 theorem integral_rieszMeasure (f : C_c(X, ℝ≥0)) : ∫ (x : X), (f x : ℝ) ∂(rieszMeasure Λ) = Λ f := by
   rw [← eq_toRealPositiveLinear_toReal Λ f,
       ← RealRMK.integral_rieszMeasure (toRealPositiveLinear Λ) f.toReal]
@@ -63,6 +64,7 @@ theorem integral_rieszMeasure (f : C_c(X, ℝ≥0)) : ∫ (x : X), (f x : ℝ) �
 /-- The **Riesz-Markov-Kakutani representation theorem**: given a positive linear functional `Λ`,
 the (lower) Lebesgue integral of `f` with respect to the `rieszMeasure` associated to `Λ` is equal
 to `Λ f`. -/
+@[simp]
 theorem lintegral_rieszMeasure (f : C_c(X, ℝ≥0)) : ∫⁻ (x : X), f x ∂(rieszMeasure Λ) = Λ f := by
   rw [lintegral_coe_eq_integral, ← ENNReal.ofNNReal_toNNReal]
   · rw [ENNReal.coe_inj, Real.toNNReal_of_nonneg (MeasureTheory.integral_nonneg (by intro a; simp)),
@@ -112,6 +114,7 @@ theorem integralLinearMap_rieszMeasure :
     integralLinearMap (rieszMeasure Λ) = Λ := by ext; simp
 
 end integralLinearMap
+
 end NNRealRMK
 /-!
 S ⊆ P(X) is relatively compact iff tight.

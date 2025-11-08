@@ -65,8 +65,6 @@ for commutative rings.
 
 ## TODO
 
-* API for homology in low degree: $\mathrm{H}_0, \mathrm{H}_1$ and $\mathrm{H}_2.$ For example,
-  the corestriction-coinflation exact sequence.
 * Upgrading `groupHomologyIsoTor` to an isomorphism of derived functors.
 
 -/
@@ -149,8 +147,7 @@ theorem d_eq [DecidableEq G] :
       ((barComplex k G).coinvariantsTensorObj A).d (n + 1) n ≫
       (coinvariantsTensorFreeLEquiv A (Fin n → G)).toModuleIso.hom := by
   ext : 3
-  simp [d_single (k := k), ModuleCat.MonoidalCategory.tensorObj,
-    ModuleCat.MonoidalCategory.whiskerLeft, tensorObj_def, whiskerLeft_def, TensorProduct.tmul_add,
+  simp [d_single (k := k), tensorObj_carrier, whiskerLeft_def, TensorProduct.tmul_add,
     TensorProduct.tmul_sum, barComplex.d_single (k := k)]
 
 end inhomogeneousChains

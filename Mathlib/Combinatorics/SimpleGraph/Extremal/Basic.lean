@@ -13,8 +13,8 @@ This file introduces basic definitions for extremal graph theory, including extr
 
 ## Main definitions
 
-* `SimpleGraph.IsExtremal` is the predicate that `G` satisfies `p` and any `H` satisfying `p` has
-  at most as many edges as `G`.
+* `SimpleGraph.IsExtremal` is the predicate that `G` has the maximum number of edges of any simple
+  graph, with fixed vertices, satisfying `p`.
 
 * `SimpleGraph.extremalNumber` is the maximum number of edges in a `H`-free simple graph on `n`
   vertices.
@@ -33,7 +33,7 @@ section IsExtremal
 variable {V : Type*} [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj]
 
 /-- `G` is an extremal graph satisfying `p` if `G` has the maximum number of edges of any simple
-graph satisfying `p`. -/
+graph, with fixed vertices, satisfying `p`. -/
 def IsExtremal (G : SimpleGraph V) [DecidableRel G.Adj] (p : SimpleGraph V → Prop) :=
   p G ∧ ∀ ⦃G' : SimpleGraph V⦄ [DecidableRel G'.Adj], p G' → #G'.edgeFinset ≤ #G.edgeFinset
 

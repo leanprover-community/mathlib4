@@ -70,7 +70,7 @@ namespace ProbabilityTheory.Kernel
 
 variable {α β γ Ω : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
   {mγ : MeasurableSpace γ} [MeasurableSpace.CountablyGenerated γ]
-  [MeasurableSpace Ω] [StandardBorelSpace Ω] [Nonempty Ω]
+  {mΩ : MeasurableSpace Ω} [StandardBorelSpace Ω] [Nonempty Ω]
 
 section Real
 
