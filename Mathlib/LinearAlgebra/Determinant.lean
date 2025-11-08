@@ -9,6 +9,7 @@ import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.Tactic.FieldSimp
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.Basis
+import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 
 /-!
 # Determinant of families of vectors
@@ -307,28 +308,49 @@ lemma isUnit_iff_isUnit_det [Module.Finite R M] [Module.Free R M] (f : M →ₗ[
   rw [← isUnit_toMatrix_iff b, ← det_toMatrix b, Matrix.isUnit_iff_isUnit_det (toMatrix b b f)]
 
 /-- If a linear map has determinant different from `1`, then the space is finite-dimensional. -/
-theorem finiteDimensional_of_det_ne_one {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] (f : M →ₗ[𝕜] M)
-    (hf : LinearMap.det f ≠ 1) : FiniteDimensional 𝕜 M := by
-  by_cases H : ∃ s : Finset M, Nonempty (Basis s 𝕜 M)
+theorem finite_of_det_ne_one {f : M →ₗ[R] M} (hf : f.det ≠ 1) : Module.Finite R M := by
+  by_cases H : ∃ s : Finset M, Nonempty (Basis s R M)
   · rcases H with ⟨s, ⟨hs⟩⟩
-    exact FiniteDimensional.of_fintype_basis hs
+    exact Module.Finite.of_basis hs
   · classical simp [LinearMap.coe_det, H] at hf
 
-/-- If the determinant of a map vanishes, then the map is not onto. -/
-theorem range_lt_top_of_det_eq_zero {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] {f : M →ₗ[𝕜] M}
-    (hf : LinearMap.det f = 0) : LinearMap.range f < ⊤ := by
-  have : FiniteDimensional 𝕜 M := by simp [f.finiteDimensional_of_det_ne_one, hf]
-  contrapose hf
-  simp only [lt_top_iff_ne_top, Classical.not_not, ← isUnit_iff_range_eq_top] at hf
-  exact isUnit_iff_ne_zero.1 (f.isUnit_det hf)
+@[deprecated "use `finite_of_det_ne_one` instead" (since := "2025-09-15")]
+theorem finiteDimensional_of_det_ne_one {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] (f : M →ₗ[𝕜] M)
+    (hf : LinearMap.det f ≠ 1) : FiniteDimensional 𝕜 M :=
+  finite_of_det_ne_one hf
 
 /-- If the determinant of a map vanishes, then the map is not injective. -/
-theorem bot_lt_ker_of_det_eq_zero {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] {f : M →ₗ[𝕜] M}
-    (hf : LinearMap.det f = 0) : ⊥ < LinearMap.ker f := by
-  have : FiniteDimensional 𝕜 M := by simp [f.finiteDimensional_of_det_ne_one, hf]
-  contrapose hf
-  simp only [bot_lt_iff_ne_bot, Classical.not_not, ← isUnit_iff_ker_eq_bot] at hf
-  exact isUnit_iff_ne_zero.1 (f.isUnit_det hf)
+theorem bot_lt_ker_of_det_eq_zero [IsDomain R] [Free R M] {f : M →ₗ[R] M} (hf : f.det = 0) :
+    ⊥ < ker f := by
+  have : Module.Finite R M := by simp [finite_of_det_ne_one (f := f), hf]
+  let b := Module.finBasis R M
+  suffices ∃ x, f x = 0 ∧ x ≠ 0 by simpa [bot_lt_iff_ne_bot, ker_eq_bot']
+  obtain ⟨v, hv_ne_zero, hv_zero⟩ := Matrix.exists_mulVec_eq_zero_iff.mpr (det_toMatrix b f ▸ hf)
+  refine ⟨b.equivFun.symm v, ?_, b.equivFun.symm.map_ne_zero_iff.mpr hv_ne_zero⟩
+  rw [← b.equivFun.injective.eq_iff]
+  simp_all [funext_iff, Matrix.mulVec, dotProduct, toMatrix_apply, mul_comm]
+
+/-- The determinant of a map vanishes iff the map is not injective. -/
+theorem det_eq_zero_iff_ker_ne_bot [IsDomain R] [Free R M] [Module.Finite R M] {f : M →ₗ[R] M} :
+    f.det = 0 ↔ ker f ≠ ⊥ := by
+  constructor <;> intro h
+  · exact bot_lt_iff_ne_bot.mp (bot_lt_ker_of_det_eq_zero h)
+  · let b := Module.finBasis R M
+    obtain ⟨v, ⟨_, hv_ne_zero⟩⟩ := (ker f).ne_bot_iff.mp h
+    rw [← det_toMatrix b, ← Matrix.exists_mulVec_eq_zero_iff]
+    refine ⟨fun i => b.repr v i, by simpa, by simpa [toMatrix_mulVec_repr]⟩
+
+/--
+If the determinant of a map vanishes, then the map is not onto.
+TODO: This should only require `[IsDomain R] [Free R M]`, which we get if we generalize
+`Mathlib/LinearAlgebra/FiniteDimensional/Basic.lean`, which includes
+`LinearMap.ker_eq_bot_iff_range_eq_top`.
+-/
+theorem range_lt_top_of_det_eq_zero {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] {f : M →ₗ[𝕜] M}
+    (hf : f.det = 0) : range f < ⊤ := by
+  have : Module.Finite 𝕜 M := by simp [finite_of_det_ne_one (f := f), hf]
+  rw [lt_top_iff_ne_top, ne_eq, ← ker_eq_bot_iff_range_eq_top, ← ne_eq, ← bot_lt_iff_ne_bot]
+  exact bot_lt_ker_of_det_eq_zero hf
 
 /-- When the function is over the base ring, the determinant is the evaluation at `1`. -/
 @[simp] lemma det_ring (f : R →ₗ[R] R) : f.det = f 1 := by

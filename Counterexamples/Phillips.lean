@@ -3,7 +3,7 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
+import Mathlib.Analysis.Normed.Module.HahnBanach
 import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.Topology.ContinuousMap.Bounded.Star
@@ -360,7 +360,7 @@ theorem discretePart_apply (f : BoundedAdditiveMeasure α) (s : Set α) :
 
 theorem continuousPart_apply_eq_zero_of_countable (f : BoundedAdditiveMeasure α) (s : Set α)
     (hs : s.Countable) : f.continuousPart s = 0 := by
-  simp [continuousPart]
+  simp only [continuousPart, restrict_apply]
   convert f.apply_countable s hs using 2
   ext x
   simp [and_comm]

@@ -142,7 +142,7 @@ noncomputable def realContinuousMapOfNNReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥
 @[fun_prop]
 lemma continuous_realContinuousMapOfNNReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥0] A)
     (hφ : Continuous φ) : Continuous φ.realContinuousMapOfNNReal := by
-  simp [realContinuousMapOfNNReal]
+  dsimp [realContinuousMapOfNNReal]
   fun_prop
 
 end IsTopologicalRing
@@ -328,7 +328,7 @@ noncomputable def realContinuousMapZeroOfNNReal (φ : C(X, ℝ≥0)₀ →⋆ₙ
 @[fun_prop]
 lemma continuous_realContinuousMapZeroOfNNReal (φ : C(X, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] A)
     (hφ : Continuous φ) : Continuous φ.realContinuousMapZeroOfNNReal := by
-  simp [realContinuousMapZeroOfNNReal]
+  dsimp [realContinuousMapZeroOfNNReal]
   fun_prop
 
 end IsTopologicalRing
@@ -444,7 +444,7 @@ lemma NonUnitalStarAlgHomClass.map_cfcₙ (φ : F) (f : R → R) (a : A)
     · simp [cfcₙHom_id]
     · congr
   all_goals
-    simp [ContinuousMapZero.nonUnitalStarAlgHom_precomp]
+    dsimp [ContinuousMapZero.nonUnitalStarAlgHom_precomp]
     fun_prop
 
 /-- Non-unital star algebra homomorphisms commute with the non-unital continuous functional
@@ -492,7 +492,7 @@ lemma StarAlgHomClass.map_cfc (φ : F) (f : R → R) (a : A)
     · simp [cfcHom_id]
     · congr
   all_goals
-    simp [ContinuousMap.compStarAlgHom']
+    dsimp [ContinuousMap.compStarAlgHom']
     fun_prop
 
 /-- Star algebra homomorphisms commute with the continuous functional calculus.

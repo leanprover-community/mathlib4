@@ -262,29 +262,17 @@ theorem ofNNReal_toNNReal (x : ℝ) : (Real.toNNReal x : ℝ≥0∞) = ENNReal.o
 
 @[simp] theorem toNNReal_top : ∞.toNNReal = 0 := rfl
 
-@[deprecated (since := "2025-03-20")] alias top_toNNReal := toNNReal_top
-
 @[simp] theorem toReal_top : ∞.toReal = 0 := rfl
-
-@[deprecated (since := "2025-03-20")] alias top_toReal := toReal_top
 
 @[simp] theorem toReal_one : (1 : ℝ≥0∞).toReal = 1 := rfl
 
-@[deprecated (since := "2025-03-20")] alias one_toReal := toReal_one
-
 @[simp] theorem toNNReal_one : (1 : ℝ≥0∞).toNNReal = 1 := rfl
-
-@[deprecated (since := "2025-03-20")] alias one_toNNReal := toNNReal_one
 
 @[simp] theorem coe_toReal (r : ℝ≥0) : (r : ℝ≥0∞).toReal = r := rfl
 
 @[simp] theorem toNNReal_zero : (0 : ℝ≥0∞).toNNReal = 0 := rfl
 
-@[deprecated (since := "2025-03-20")] alias zero_toNNReal := toNNReal_zero
-
 @[simp] theorem toReal_zero : (0 : ℝ≥0∞).toReal = 0 := rfl
-
-@[deprecated (since := "2025-03-20")] alias zero_toReal := toReal_zero
 
 @[simp] theorem ofReal_zero : ENNReal.ofReal (0 : ℝ) = 0 := by simp [ENNReal.ofReal]
 
@@ -296,11 +284,11 @@ theorem ofReal_toReal_le {a : ℝ≥0∞} : ENNReal.ofReal a.toReal ≤ a :=
 theorem forall_ennreal {p : ℝ≥0∞ → Prop} : (∀ a, p a) ↔ (∀ r : ℝ≥0, p r) ∧ p ∞ :=
   WithTop.forall.trans and_comm
 
-theorem forall_ne_top {p : ℝ≥0∞ → Prop} : (∀ a, a ≠ ∞ → p a) ↔ ∀ r : ℝ≥0, p r :=
-  Option.forall_ne_none
+theorem forall_ne_top {p : ℝ≥0∞ → Prop} : (∀ x ≠ ∞, p x) ↔ ∀ x : ℝ≥0, p x :=
+  WithTop.forall_ne_top
 
-theorem exists_ne_top {p : ℝ≥0∞ → Prop} : (∃ a ≠ ∞, p a) ↔ ∃ r : ℝ≥0, p r :=
-  Option.exists_ne_none
+theorem exists_ne_top {p : ℝ≥0∞ → Prop} : (∃ x ≠ ∞, p x) ↔ ∃ x : ℝ≥0, p x :=
+  WithTop.exists_ne_top
 
 theorem toNNReal_eq_zero_iff (x : ℝ≥0∞) : x.toNNReal = 0 ↔ x = 0 ∨ x = ∞ :=
   WithTop.untopD_eq_self_iff
