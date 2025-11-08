@@ -130,34 +130,6 @@ lemma finrank_ker_eq [FiniteDimensional K V] {r n : ℕ} (hr : rank f = r) (hn :
 
 instance : DecidableEq (ofVectorSpaceIndex K C) := Classical.typeDecidableEq _
 
--- instance [FiniteDimensional K W] {h : IsCompl C (ker f)} :
---     Fintype ((ofVectorSpaceIndex K C) ⊕
---   (sumExtendIndex (f.linear_independent_ker_complement_basis_image h))) :=
---   (FiniteDimensional.fintypeBasisIndex (f.range_decomposition_basis h))
-
-
-lemma card_cokernel_basis_index_eq {m r : ℕ} [FiniteDimensional K V] [FiniteDimensional K W]
-    (hm : finrank K W = m) (hr : f.rank = r) (h : IsCompl C (ker f)) :
-    @Fintype.card (sumExtendIndex (f.linear_independent_ker_complement_basis_image h)) = m - r := by
-  have := @finrank_eq_card_basis _ _ _ _ _ _ _
-    (FiniteDimensional.fintypeBasisIndex (f.range_decomposition_basis h))
-    (f.range_decomposition_basis h)
-  have t2 : Fintype (sumExtendIndex (f.linear_independent_ker_complement_basis_image h)) :=
-    @Fintype.sumRight _ _ (FiniteDimensional.fintypeBasisIndex (f.range_decomposition_basis h))
-  have : finrank K W = Fintype.card (ofVectorSpaceIndex K ↥C) +
-    Fintype.card (sumExtendIndex (f.linear_independent_ker_complement_basis_image h)) := by
-    rw [this]
-    have := @Fintype.card_sum (ofVectorSpaceIndex K ↥C)
-      (sumExtendIndex (f.linear_independent_ker_complement_basis_image h)) _ t2
-    rw [← this]
-    congr
-
-
-    sorry
-  rw [hm] at this
-  simp [this, ← finrank_eq_card_basis (ofVectorSpace K C), f.finrank_C_eq_rank hr h]
-  sorry
-
 lemma apply_C_basis_eq_range_basis (j) :
     f (f.decomposition_basis h (Sum.inl j)) = (f.range_decomposition_basis h (Sum.inl j)) := by
   simp [decomposition_basis, prodEquivOfC, range_decomposition_basis, sumExtend,
@@ -169,7 +141,7 @@ end
 
 
 
-section
+noncomputable section
 
 variable {R : Type} [Field R] {m n r : ℕ} {M₁ M₂ : Type*}
 variable [AddCommGroup M₁] [Module R M₁] [FiniteDimensional R M₁]
@@ -178,13 +150,11 @@ variable {C : Submodule R M₁} (h : IsCompl C (LinearMap.ker f))
 open Matrix LinearMap
 
 
-omit [FiniteDimensional R M₂] in
+theorem exists_basis_for_normal_form_abstract :
 
-
-theorem exists_basis_for_normal_form_abstract
-
-  [Finite ((ofVectorSpaceIndex R C) ⊕
-    (sumExtendIndex (f.linear_independent_ker_complement_basis_image h)))] :
+  haveI : Finite ((ofVectorSpaceIndex R C) ⊕
+      (sumExtendIndex (f.linear_independent_ker_complement_basis_image h))) :=
+    Fintype.finite (FiniteDimensional.fintypeBasisIndex (f.range_decomposition_basis h))
 
   ∃ (v₁ : Basis ((ofVectorSpaceIndex R C) ⊕ (ofVectorSpaceIndex R (ker f))) R M₁)
     (v₂ : Basis ((ofVectorSpaceIndex R C) ⊕
@@ -199,44 +169,5 @@ theorem exists_basis_for_normal_form_abstract
   | Sum.inr i', Sum.inr j' => simp [toMatrix_apply, decomposition_basis, prodEquivOfC]
   | Sum.inl i', Sum.inr j' => simp [toMatrix_apply, decomposition_basis, prodEquivOfC]
   | Sum.inr i', Sum.inl j' => simp [toMatrix_apply, f.apply_C_basis_eq_range_basis h j']
-
-theorem exists_basis_for_normal_form
-
-  (hn : finrank R M₁ = n) (hm : finrank R M₂ = m)
-    (hr : rank f = r) :
-    ∃ (v₁ : Basis (Fin r ⊕ Fin (n - r)) R M₁) (v₂ : Basis (Fin r ⊕ Fin (m - r)) R M₂),
-    f.toMatrix v₁ v₂ = fromBlocks 1 0 0 0 := by
-  set C : Submodule R M₁ := (ker f).exists_isCompl.choose
-  have h : IsCompl C (ker f)  := (ker f).exists_isCompl.choose_spec.symm
-  have inst : Finite ((ofVectorSpaceIndex R C) ⊕
-    (sumExtendIndex (f.linear_independent_ker_complement_basis_image h))) := sorry
-  have ⟨v₁, v₂, hvf⟩ := exists_basis_for_normal_form_abstract f h
-  let hu₁ : (ofVectorSpaceIndex R C) ⊕ (ofVectorSpaceIndex R (ker f)) ≃
-      Fin r ⊕ Fin (n - r) := by
-    refine Equiv.sumCongr (Fintype.equivFinOfCardEq ?_) (Fintype.equivFinOfCardEq ?_)
-    · rw [← finrank_C_eq_rank f hr h, ← finrank_eq_card_basis (ofVectorSpace _ _)]
-    · rw [← f.finrank_ker_eq hr hn, ← finrank_eq_card_basis (ofVectorSpace _ _)]
-  let u₁ : Basis (Fin r ⊕ Fin (n - r)) R M₁ := v₁.reindex hu₁
-  let hu₂ : (ofVectorSpaceIndex R C) ⊕ (sumExtendIndex
-      (f.linear_independent_ker_complement_basis_image h)) ≃ Fin r ⊕ Fin (m - r) := by
-    have : Fintype ↑(sumExtendIndex (linear_independent_ker_complement_basis_image f h)) := sorry
-    refine Equiv.sumCongr (Fintype.equivFinOfCardEq ?_) (Fintype.equivFinOfCardEq ?_)
-    · rw [← finrank_C_eq_rank f hr h, ← finrank_eq_card_basis (ofVectorSpace _ _)]
-    · rw [card_cokernel_basis_index_eq f hm hr h]
-      sorry
-  let u₂ : Basis (Fin r ⊕ Fin (m - r)) R M₂ := v₂.reindex hu₂
-  use u₁, u₂
-  calc
-    f.toMatrix u₁ u₂ = (f.toMatrix v₁ v₂).reindex hu₂ hu₁ := by
-      funext i j
-      simp [u₁, u₂, toMatrix_apply]
-    _ = (fromBlocks 1 0 0 0).reindex hu₂ hu₁ := by rw [hvf]
-    _ = _ := by
-      funext i j
-      match i, j with
-      | Sum.inl i', Sum.inl j' => simp [hu₂, hu₁, Matrix.one_apply]
-      | Sum.inr i', Sum.inr j' => simp [hu₂, hu₁]
-      | Sum.inl i', Sum.inr j' => simp [hu₂, hu₁]
-      | Sum.inr i', Sum.inl j' => simp [hu₂, hu₁]
 
 end
