@@ -369,8 +369,7 @@ theorem isCycle_swap_mul_aux₁ {α : Type*} [DecidableEq α] :
     · exact ⟨0, hfbx⟩
     have : f b ≠ b ∧ b ≠ x := ne_and_ne_of_swap_mul_apply_ne_self hb
     have hb' : (swap x (f x) * f) (f.symm b) ≠ f.symm b := by
-      simpa [swap_apply_of_ne_of_ne this.2 hfbx.symm, eq_symm_apply, f.injective.eq_iff]
-        using this.1
+      simpa [swap_apply_of_ne_of_ne this.2 hfbx.symm, eq_symm_apply] using this.1
     obtain ⟨i, hi⟩ := hn hb' <| f.injective <| by simpa [pow_succ'] using h
     refine ⟨i + 1, ?_⟩
     rw [add_comm, zpow_add, mul_apply, hi, zpow_one, mul_apply, apply_symm_apply,
@@ -381,16 +380,15 @@ theorem isCycle_swap_mul_aux₂ {α : Type*} [DecidableEq α] :
       ∃ i : ℤ, ((swap x (f x) * f) ^ i) (f x) = b
   | (n : ℕ), _, _, _, hb, h => isCycle_swap_mul_aux₁ n hb h
   | .negSucc n, b, x, f, hb, h => by
-    obtain rfl | hfxb := eq_or_ne (f x) b
-    · exact ⟨0, rfl⟩
+    obtain hfxb | hfxb := eq_or_ne (f x) b
+    · exact ⟨0, hfxb⟩
     obtain ⟨hfb, hbx⟩ : f b ≠ b ∧ b ≠ x := ne_and_ne_of_swap_mul_apply_ne_self hb
     replace hb : (swap x (f.symm x) * f⁻¹) (f.symm b) ≠ f.symm b := by
       rw [mul_apply, swap_apply_def]
       split_ifs <;> simp [symm_apply_eq, eq_symm_apply] at * <;> tauto
     obtain ⟨i, hi⟩ := isCycle_swap_mul_aux₁ n hb <| by
       rw [← mul_apply, ← pow_succ]; simpa [pow_succ', eq_symm_apply] using h
-    refine ⟨-i, ?_⟩
-    rw [← EmbeddingLike.apply_eq_iff_eq (swap x (f⁻¹ x) * f⁻¹)]
+    refine ⟨-i, (swap x (f⁻¹ x) * f⁻¹).injective ?_⟩
     convert hi using 1
     · rw [zpow_neg, ← inv_zpow, ← mul_apply, mul_inv_rev, swap_inv, mul_swap_eq_swap_mul]
       simp [swap_comm _ x, ← mul_apply, -coe_mul, ← inv_def, ← inv_def, mul_assoc _ f⁻¹,

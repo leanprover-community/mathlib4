@@ -49,39 +49,39 @@ theorem isConj_of_support_equiv
 
 end Conjugation
 
-theorem perm_symm_on_of_perm_on_finset {s : Finset α} {f : Perm α} (h : ∀ x ∈ s, f x ∈ s) {y : α}
-    (hy : y ∈ s) : f.symm y ∈ s := by
+theorem perm_inv_on_of_perm_on_finset {s : Finset α} {f : Perm α} (h : ∀ x ∈ s, f x ∈ s) {y : α}
+    (hy : y ∈ s) : f⁻¹ y ∈ s := by
   have h0 : ∀ y ∈ s, ∃ (x : _) (hx : x ∈ s), y = (fun i (_ : i ∈ s) => f i) x hx :=
     Finset.surj_on_of_inj_on_of_card_le (fun x hx => (fun i _ => f i) x hx) (fun a ha => h a ha)
       (fun a₁ a₂ ha₁ ha₂ heq => (Equiv.apply_eq_iff_eq f).mp heq) rfl.ge
   obtain ⟨y2, hy2, rfl⟩ := h0 y hy
   simpa using hy2
 
-theorem perm_symm_mapsTo_of_mapsTo (f : Perm α) {s : Set α} [Finite s] (h : Set.MapsTo f s s) :
-    Set.MapsTo f.symm s s := by
+theorem perm_inv_mapsTo_of_mapsTo (f : Perm α) {s : Set α} [Finite s] (h : Set.MapsTo f s s) :
+    Set.MapsTo (f⁻¹ :) s s := by
   cases nonempty_fintype s
   exact fun x hx =>
     Set.mem_toFinset.mp <|
-      perm_symm_on_of_perm_on_finset
+      perm_inv_on_of_perm_on_finset
         (fun a ha => Set.mem_toFinset.mpr (h (Set.mem_toFinset.mp ha)))
         (Set.mem_toFinset.mpr hx)
 
 @[simp]
-theorem perm_symm_mapsTo_iff_mapsTo {f : Perm α} {s : Set α} [Finite s] :
-    Set.MapsTo f.symm s s ↔ Set.MapsTo f s s :=
-  ⟨perm_symm_mapsTo_of_mapsTo f⁻¹, perm_symm_mapsTo_of_mapsTo f⟩
+theorem perm_inv_mapsTo_iff_mapsTo {f : Perm α} {s : Set α} [Finite s] :
+    Set.MapsTo (f⁻¹ :) s s ↔ Set.MapsTo f s s :=
+  ⟨perm_inv_mapsTo_of_mapsTo f⁻¹, perm_inv_mapsTo_of_mapsTo f⟩
 
-theorem perm_symm_on_of_perm_on_finite {f : Perm α} {p : α → Prop} [Finite { x // p x }]
-    (h : ∀ x, p x → p (f x)) {x : α} (hx : p x) : p (f.symm x) := by
+theorem perm_inv_on_of_perm_on_finite {f : Perm α} {p : α → Prop} [Finite { x // p x }]
+    (h : ∀ x, p x → p (f x)) {x : α} (hx : p x) : p (f⁻¹ x) := by
   have : Finite { x | p x } := by simpa
-  simpa using perm_symm_mapsTo_of_mapsTo (s := {x | p x}) f h hx
+  simpa using perm_inv_mapsTo_of_mapsTo (s := {x | p x}) f h hx
 
 /-- If the permutation `f` maps `{x // p x}` into itself, then this returns the permutation
   on `{x // p x}` induced by `f`. Note that the `h` hypothesis is weaker than for
   `Equiv.Perm.subtypePerm`. -/
 abbrev subtypePermOfFintype (f : Perm α) {p : α → Prop} [Finite { x // p x }]
     (h : ∀ x, p x → p (f x)) : Perm { x // p x } :=
-  f.subtypePerm fun x => ⟨fun h₂ => f.symm_apply_apply x ▸ perm_symm_on_of_perm_on_finite h h₂, h x⟩
+  f.subtypePerm fun x => ⟨fun h₂ => f.inv_apply_self x ▸ perm_inv_on_of_perm_on_finite h h₂, h x⟩
 
 @[simp]
 theorem subtypePermOfFintype_apply (f : Perm α) {p : α → Prop} [Finite { x // p x }]
@@ -98,50 +98,45 @@ theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type*} [Finite m] [Finite n] (σ :
   constructor <;>
     ( intro h
       classical
-        rw [← perm_symm_mapsTo_iff_mapsTo] at h
+        rw [← perm_inv_mapsTo_iff_mapsTo] at h
         intro x
         rcases hx : σ x with l | r)
   · rintro ⟨a, rfl⟩
     obtain ⟨y, hy⟩ := h ⟨l, rfl⟩
-    grind
+    rw [← hx, σ.inv_apply_self] at hy
+    exact absurd hy Sum.inl_ne_inr
   · rintro _; exact ⟨r, rfl⟩
   · rintro _; exact ⟨l, rfl⟩
   · rintro ⟨a, rfl⟩
     obtain ⟨y, hy⟩ := h ⟨r, rfl⟩
-    grind
+    rw [← hx, σ.inv_apply_self] at hy
+    exact absurd hy Sum.inr_ne_inl
 
 theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finite n]
     {σ : Perm (m ⊕ n)} (h : Set.MapsTo σ (Set.range Sum.inl) (Set.range Sum.inl)) :
     σ ∈ (sumCongrHom m n).range := by
   classical
-    have h1 : ∀ x : m ⊕ n, (∃ a : m, Sum.inl a = x) → ∃ a : m, Sum.inl a = σ x := by
-      rintro x ⟨a, ha⟩
-      apply h
-      rw [← ha]
-      exact ⟨a, rfl⟩
-    have h3 : ∀ x : m ⊕ n, (∃ b : n, Sum.inr b = x) → ∃ b : n, Sum.inr b = σ x := by
-      rintro x ⟨b, hb⟩
-      apply (perm_mapsTo_inl_iff_mapsTo_inr σ).mp h
-      rw [← hb]
-      exact ⟨b, rfl⟩
-    let σ₁' := subtypePermOfFintype σ h1
-    let σ₂' := subtypePermOfFintype σ h3
-    let σ₁ := permCongr (Equiv.ofInjective _ Sum.inl_injective).symm σ₁'
-    let σ₂ := permCongr (Equiv.ofInjective _ Sum.inr_injective).symm σ₂'
-    rw [MonoidHom.mem_range, Prod.exists]
-    use σ₁, σ₂
-    rw [Perm.sumCongrHom_apply]
-    ext x
-    rcases x with a | b
-    · rw [Equiv.sumCongr_apply, Sum.map_inl, permCongr_apply, Equiv.symm_symm,
-        apply_ofInjective_symm Sum.inl_injective]
-      rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk]
-      dsimp [Set.range]
-      rw [subtypePerm_apply]
-    · rw [Equiv.sumCongr_apply, Sum.map_inr, permCongr_apply, Equiv.symm_symm,
-        apply_ofInjective_symm Sum.inr_injective, ofInjective_apply]
-      dsimp [Set.range]
-      rw [subtypePerm_apply]
+  have h1 : ∀ x : m ⊕ n, (∃ a : m, Sum.inl a = x) → ∃ a : m, Sum.inl a = σ x := by
+    rintro _ ⟨a, rfl⟩; exact h ⟨a, rfl⟩
+  have h3 : ∀ x : m ⊕ n, (∃ b : n, Sum.inr b = x) → ∃ b : n, Sum.inr b = σ x := by
+    rintro _ ⟨b, rfl⟩; exact (perm_mapsTo_inl_iff_mapsTo_inr σ).mp h ⟨b, rfl⟩
+  let σ₁' := subtypePermOfFintype σ h1
+  let σ₂' := subtypePermOfFintype σ h3
+  let σ₁ := permCongr (Equiv.ofInjective _ Sum.inl_injective).symm σ₁'
+  let σ₂ := permCongr (Equiv.ofInjective _ Sum.inr_injective).symm σ₂'
+  rw [MonoidHom.mem_range, Prod.exists]
+  use σ₁, σ₂
+  rw [Perm.sumCongrHom_apply]
+  ext (a | b)
+  · rw [Equiv.sumCongr_apply, Sum.map_inl, permCongr_apply, Equiv.symm_symm,
+      apply_ofInjective_symm Sum.inl_injective]
+    rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk]
+    dsimp [Set.range]
+    rw [subtypePerm_apply]
+  · rw [Equiv.sumCongr_apply, Sum.map_inr, permCongr_apply, Equiv.symm_symm,
+      apply_ofInjective_symm Sum.inr_injective, ofInjective_apply]
+    dsimp [Set.range]
+    rw [subtypePerm_apply]
 
 nonrec theorem Disjoint.orderOf {σ τ : Perm α} (hστ : Disjoint σ τ) :
     orderOf (σ * τ) = Nat.lcm (orderOf σ) (orderOf τ) :=

@@ -681,7 +681,6 @@ theorem disjoint_mul_inv_of_mem_cycleFactorsFinset {f g : Perm α} (h : f ∈ cy
   intro x
   by_cases hx : f x = x
   · exact Or.inr hx
-  left
   rw [mul_apply, ← h.right _ (by simpa [Perm.eq_inv_iff_eq])]
   simp
 
