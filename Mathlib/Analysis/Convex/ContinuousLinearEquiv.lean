@@ -30,6 +30,6 @@ lemma strictConvex_preimage {s : Set F} (e : E ≃L[𝕜] F) :
 @[simp]
 lemma strictConvex_image {s : Set E} (e : E ≃L[𝕜] F) :
     StrictConvex 𝕜 (e '' s) ↔ StrictConvex 𝕜 s := by
-  rw [e.image_eq_preimage, e.symm.strictConvex_preimage]
+  rw [e.image_eq_preimage_symm, e.symm.strictConvex_preimage]
 
 end ContinuousLinearEquiv

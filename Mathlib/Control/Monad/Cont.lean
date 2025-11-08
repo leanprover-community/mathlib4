@@ -177,10 +177,9 @@ instance [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (OptionT m) where
       bind_congr fun | some _ => rfl | none => by simp [@callCC_dummy m _]
   callCC_bind_left := by
     intros
-    simp only [callCC, OptionT.callCC, OptionT.goto_mkLabel, bind_pure_comp, OptionT.run_bind,
-      OptionT.run_mk, Option.elimM_map, Option.elim_some, @callCC_bind_left m _]
-    ext; rfl
-  callCC_dummy := by intros; simp only [callCC, OptionT.callCC, @callCC_dummy m _]; ext; rfl
+    ext
+    simp [callCC, OptionT.goto_mkLabel, @callCC_bind_left m _]
+  callCC_dummy := by intros; ext; simp [callCC, OptionT.callCC, @callCC_dummy m _]
 
 def WriterT.mkLabel {α β ω} [EmptyCollection ω] : Label (α × ω) m β → Label α (WriterT ω m) β
   | ⟨f⟩ => ⟨fun a => monadLift <| f (a, ∅)⟩
