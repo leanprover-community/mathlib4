@@ -586,15 +586,20 @@ variable [Ring k] [AddCommGroup V] [Module k V] [AddTorsor V P]
 
 /-- Construct an affine equivalence from a linear equivalence and two base points.
 
-Given a linear equivalence `A : V ≃ₗ[k] V` and base points `f₀ g₀ : P`, this constructs
-the affine equivalence `T x = A (x -ᵥ f₀) +ᵥ g₀`. This is the standard way to convert
+Given a linear equivalence `A : V ≃ₗ[k] V` and base points `p₀ p₁ : P`, this constructs
+the affine equivalence `T x = A (x -ᵥ p₀) +ᵥ p₁`. This is the standard way to convert
 a linear automorphism into an affine automorphism with specified base point mapping. -/
-def ofLinearEquiv (A : V ≃ₗ[k] V) (f₀ g₀ : P) : P ≃ᵃ[k] P :=
-  (vaddConst k f₀).symm.trans (A.toAffineEquiv.trans (vaddConst k g₀))
+def ofLinearEquiv (A : V ≃ₗ[k] V) (p₀ p₁ : P) : P ≃ᵃ[k] P :=
+  (vaddConst k p₀).symm.trans (A.toAffineEquiv.trans (vaddConst k p₁))
 
 @[simp]
-theorem ofLinearEquiv_apply (A : V ≃ₗ[k] V) (f₀ g₀ : P) (x : P) :
-    ofLinearEquiv A f₀ g₀ x = A (x -ᵥ f₀) +ᵥ g₀ :=
+theorem ofLinearEquiv_apply (A : V ≃ₗ[k] V) (p₀ p₁ : P) (x : P) :
+    ofLinearEquiv A p₀ p₁ x = A (x -ᵥ p₀) +ᵥ p₁ :=
+  rfl
+
+@[simp]
+theorem ofLinearEquiv_linear (A : V ≃ₗ[k] V) (p₀ p₁ : P) :
+    (ofLinearEquiv A p₀ p₁).linear = A :=
   rfl
 
 @[simp]
@@ -608,8 +613,7 @@ theorem ofLinearEquiv_trans_ofLinearEquiv (A B : V ≃ₗ[k] V) (p₀ p₁ p₂ 
     (ofLinearEquiv A p₀ p₁).trans (ofLinearEquiv B p₁ p₂) =
       ofLinearEquiv (A.trans B) p₀ p₂ := by
   ext x
-  simp [ofLinearEquiv_apply, LinearEquiv.trans_apply]
-  rfl
+  simp
 
 end ofLinearEquiv
 
