@@ -602,7 +602,7 @@ theorem stdBasis_repr_eq_matrixToStdBasis_mul (x : (K →+* ℂ) → ℂ)
         submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply, cons_val', cons_val_zero,
         empty_val', cons_val_fin_one, ite_mul, cons_val_one, sum_add_distrib, sum_ite_eq,
         mem_univ, ↓reduceIte, ← hx (embedding w), zero_add]
-      field_simp
+      field
     · simp only [Fin.mk_one, Fin.isValue, stdBasis_apply_isComplex_snd, im_eq_sub_conj,
         mul_neg, fromBlocks_apply₂₁, zero_apply, zero_mul, sum_const_zero, fromBlocks_apply₂₂,
         submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply, cons_val', cons_val_zero,
@@ -805,20 +805,17 @@ protected abbrev mixedSpace :=
       (EuclideanSpace ℂ {w : InfinitePlace K // IsComplex w})))
 
 instance : Ring (euclidean.mixedSpace K) :=
-  have : Ring (EuclideanSpace ℝ {w : InfinitePlace K // IsReal w}) := Pi.ring
-  have : Ring (EuclideanSpace ℂ {w : InfinitePlace K // IsComplex w}) := Pi.ring
-  inferInstanceAs (Ring (_ × _))
-
-instance : MeasurableSpace (euclidean.mixedSpace K) := borel _
-
-instance : BorelSpace (euclidean.mixedSpace K) := ⟨rfl⟩
+  have : Ring (EuclideanSpace ℝ {w : InfinitePlace K // IsReal w}) := (WithLp.equiv 2 _).ring
+  have : Ring (EuclideanSpace ℂ {w : InfinitePlace K // IsComplex w}) := (WithLp.equiv 2 _).ring
+  (WithLp.equiv 2 _).ring
 
 variable [NumberField K]
 
 open Classical in
 /-- The continuous linear equivalence between the Euclidean mixed space and the mixed space. -/
 def toMixed : (euclidean.mixedSpace K) ≃L[ℝ] (mixedSpace K) :=
-  (WithLp.linearEquiv _ _ _).toContinuousLinearEquiv
+  (WithLp.linearEquiv _ _ _).trans
+    ((WithLp.linearEquiv _ _ _).prodCongr (WithLp.linearEquiv _ _ _)) |>.toContinuousLinearEquiv
 
 instance : Nontrivial (euclidean.mixedSpace K) := (toMixed K).toEquiv.nontrivial
 
@@ -916,8 +913,6 @@ theorem negAt_apply_norm_isReal (x : mixedSpace K) (w : {w // IsReal w}) :
     ‖(negAt s x).1 w‖ = ‖x.1 w‖ := by
   by_cases hw : w ∈ s <;> simp [hw]
 
-@[deprecated (since := "2025-03-01")] alias negAt_apply_abs_isReal := negAt_apply_norm_isReal
-
 open MeasureTheory Classical in
 /-- `negAt` preserves the volume . -/
 theorem volume_preserving_negAt [NumberField K] :
@@ -978,7 +973,7 @@ variable (s) in
 /-- `negAt s A` is also equal to the preimage of `A` by `negAt s`. This fact is used to simplify
 some proofs. -/
 theorem negAt_preimage : negAt s ⁻¹' A = negAt s '' A := by
-  rw [ContinuousLinearEquiv.image_eq_preimage, negAt_symm]
+  rw [ContinuousLinearEquiv.image_eq_preimage_symm, negAt_symm]
 
 /-- The `plusPart` of a subset `A` of the `mixedSpace` is the set of points in `A` that are
 positive at all real places. -/

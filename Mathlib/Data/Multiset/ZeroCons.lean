@@ -184,7 +184,7 @@ theorem exists_cons_of_mem {s : Multiset α} {a : α} : a ∈ s → ∃ t, s = a
     let ⟨l₁, l₂, e⟩ := append_of_mem h
     e.symm ▸ ⟨(l₁ ++ l₂ : List α), Quot.sound perm_middle⟩
 
-@[simp, grind]
+@[simp, grind ←]
 theorem notMem_zero (a : α) : a ∉ (0 : Multiset α) :=
   List.not_mem_nil
 

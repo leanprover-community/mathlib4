@@ -64,7 +64,7 @@ theorem Function.Injective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Typ
       calc
         f ⁅x, y⁆ = ⁅f x, f y⁆ := LieHom.map_lie f x y
         _ = 0 := trivial_lie_zero _ _ _ _
-        _ = f 0 := f.map_zero.symm}
+        _ = f 0 := (map_zero _).symm}
 
 theorem Function.Surjective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Type w} [CommRing R]
     [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂] {f : L₁ →ₗ⁅R⁆ L₂}
@@ -72,7 +72,7 @@ theorem Function.Surjective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Ty
   { trivial := fun x y => by
       obtain ⟨u, rfl⟩ := h₁ x
       obtain ⟨v, rfl⟩ := h₁ y
-      rw [← LieHom.map_lie, trivial_lie_zero, LieHom.map_zero] }
+      rw [← LieHom.map_lie, trivial_lie_zero, map_zero] }
 
 theorem lie_abelian_iff_equiv_lie_abelian {R : Type u} {L₁ : Type v} {L₂ : Type w} [CommRing R]
     [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂] (e : L₁ ≃ₗ⁅R⁆ L₂) :
@@ -194,7 +194,7 @@ variable {R L M N}
 def maxTrivHom (f : M →ₗ⁅R,L⁆ N) : maxTrivSubmodule R L M →ₗ⁅R,L⁆ maxTrivSubmodule R L N where
   toFun m := ⟨f m, fun x =>
     (LieModuleHom.map_lie _ _ _).symm.trans <|
-      (congr_arg f (m.property x)).trans (LieModuleHom.map_zero _)⟩
+      (congr_arg f (m.property x)).trans (map_zero _)⟩
   map_add' m n := by ext; simp
   map_smul' t m := by ext; simp
   map_lie' {x m} := by simp
@@ -307,7 +307,7 @@ include hx
 
 lemma commute_toEnd_of_mem_center_left :
     Commute (toEnd R L M x) (toEnd R L M y) := by
-  rw [Commute.symm_iff, commute_iff_lie_eq, ← LieHom.map_lie, hx y, LieHom.map_zero]
+  rw [Commute.symm_iff, commute_iff_lie_eq, ← LieHom.map_lie, hx y, map_zero]
 
 lemma commute_toEnd_of_mem_center_right :
     Commute (toEnd R L M y) (toEnd R L M x) :=
@@ -352,3 +352,38 @@ lemma lie_eq_self_of_isAtom_of_nonabelian {R L : Type*} [CommRing R] [LieRing L]
   lie_eq_self_of_isAtom_of_ne_bot hI <| not_imp_not.mpr (lie_abelian_iff_lie_self_eq_bot I).mpr h
 
 end IdealOperations
+
+section TrivialLieModule
+
+set_option linter.unusedVariables false in
+/-- A type synonym for an `R`-module to have a trivial Lie module structure. -/
+@[nolint unusedArguments]
+def TrivialLieModule (R L M : Type*) := M
+
+namespace TrivialLieModule
+
+variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
+
+instance : AddCommGroup (TrivialLieModule R L M) := inferInstanceAs (AddCommGroup M)
+
+instance : Module R (TrivialLieModule R L M) := inferInstanceAs (Module R M)
+
+/-- The linear equivalence between a trivial Lie module and its underlying `R`-module. -/
+def equiv : (TrivialLieModule R L M) ≃ₗ[R] M := LinearEquiv.refl R M
+
+instance : LieRingModule L (TrivialLieModule R L M) where
+  bracket x m := 0
+  add_lie := by simp
+  lie_add := by simp
+  leibniz_lie := by simp
+
+instance : LieModule.IsTrivial L (TrivialLieModule R L M) where
+  trivial _ _ := rfl
+
+instance : LieModule R L (TrivialLieModule R L M) where
+  smul_lie := by simp
+  lie_smul := by simp
+
+end TrivialLieModule
+
+end TrivialLieModule
