@@ -21,7 +21,7 @@ functions `f : E → F` (where `F` is a normed vector space) such that:
 - `f` vanishes outside of a compact set: `EqOn f 0 Kᶜ`.
 
 The main reason this exists as a bundled type is to be endowed with its natural locally convex
-topology (namely, uniform convergence of `f` and its derivative up to order `n`).
+topology (namely, uniform convergence of `f` and its derivatives up to order `n`).
 Taking the locally convex inductive limit of these as `K` varies yields the natural topology on test
 functions, used to define distributions. While most of distribution theory cares only about `C^∞`
 functions, we also want to endow the space of `C^n` test functions with its natural topology.
@@ -32,9 +32,11 @@ larger space of test functions.
 
 - `ContDiffMapSupportedIn E F n K`: the type of bundled `n`-times continuously differentiable
   functions `E → F` which vanish outside of `K`.
-- `ContDiffMapSupportedIn.iteratedFDerivWithOrderₗ`: wrapper as a `𝕜`-linear maps for
-  `iteratedFDeriv` on `ContDiffMapSupportedIn E F n K`, as a map into
-  `ContDiffMapSupportedIn E (E [×i]→L[ℝ] F) (n-i) K`.
+- `ContDiffMapSupportedIn.iteratedFDerivWithOrderₗ`: wrapper, as a `𝕜`-linear map, for
+  `iteratedFDeriv` from `ContDiffMapSupportedIn E F n K` to
+  `ContDiffMapSupportedIn E (E [×i]→L[ℝ] F) k K`.
+- `ContDiffMapSupportedIn.iteratedFDerivₗ`: specialization of the above, giving a `𝕜`-linear map
+  from `ContDiffMapSupportedIn E F ⊤ K` to `ContDiffMapSupportedIn E (E [×i]→L[ℝ] F) ⊤ K`.
 
 ## Main statements
 
@@ -52,8 +54,15 @@ TODO:
 
 ## Implementation details
 
-The technical choice of spelling `EqOn f 0 Kᶜ` in the definition, as opposed to `tsupport f ⊆ K`
-is to make rewriting `f x` to `0` easier when `x ∉ K`.
+* The technical choice of spelling `EqOn f 0 Kᶜ` in the definition, as opposed to `tsupport f ⊆ K`
+  is to make rewriting `f x` to `0` easier when `x ∉ K`.
+* Since the most common case is by far the smooth case, we often reserve the "expected" name
+  of a result/definition to this case, and add `WithOrder` to the declaration taking care of
+  all regularities.
+* In `iteratedFDerivWithOrderₗ`, we define the `i`-th iterated differentiation operator as
+  a map from `𝓓^{n}_{K}` to `𝓓^{k}_{K}` without imposing relations on `n`, `k` and `i`. Of course
+  this is defined as `0` if `k + i > n`. This creates some verbosity as all of these variables are
+  explicit, but it allows the most flexibility while avoiding DTT hell.
 
 ## Tags
 
@@ -61,12 +70,12 @@ distributions
 -/
 
 open TopologicalSpace SeminormFamily Set Function Seminorm UniformSpace
-open scoped BoundedContinuousFunction Topology NNReal
+open scoped BoundedContinuousFunction Topology NNReal ContDiff
 
 variable (𝕜 E F : Type*) [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
-  {n : ℕ∞} {K : Compacts E}
+  {n k : ℕ∞} {K : Compacts E}
 
 /-- The type of bundled `n`-times continuously differentiable maps which vanish outside of a fixed
 compact set `K`. -/
@@ -81,7 +90,7 @@ functions with support in a compact set `K`. -/
 scoped[Distributions] notation "𝓓^{" n "}_{"K"}(" E ", " F ")" =>
   ContDiffMapSupportedIn E F n K
 
-/-- Notation for the space of bundled smooth (inifinitely differentiable)
+/-- Notation for the space of bundled smooth (infinitely differentiable)
 functions with support in a compact set `K`. -/
 scoped[Distributions] notation "𝓓_{"K"}(" E ", " F ")" =>
   ContDiffMapSupportedIn E F ⊤ K
@@ -89,7 +98,7 @@ scoped[Distributions] notation "𝓓_{"K"}(" E ", " F ")" =>
 open Distributions
 
 /-- `ContDiffMapSupportedInClass B E F n K` states that `B` is a type of bundled `n`-times
-continously differentiable functions with support in the compact set `K`. -/
+continuously differentiable functions with support in the compact set `K`. -/
 class ContDiffMapSupportedInClass (B : Type*) (E F : outParam <| Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E)
@@ -137,9 +146,9 @@ theorem toFun_eq_coe {f : 𝓓^{n}_{K}(E, F)} : f.toFun = (f : E → F) :=
   rfl
 
 /-- See note [custom simps projection]. -/
-def Simps.apply (f : 𝓓^{n}_{K}(E, F)) : E → F := f
+def Simps.coe (f : 𝓓^{n}_{K}(E, F)) : E → F := f
 
-initialize_simps_projections ContDiffMapSupportedIn (toFun → apply)
+initialize_simps_projections ContDiffMapSupportedIn (toFun → coe, as_prefix coe)
 
 @[ext]
 theorem ext {f g : 𝓓^{n}_{K}(E, F)} (h : ∀ a, f a = g a) : f = g :=
@@ -161,63 +170,42 @@ theorem copy_eq (f : 𝓓^{n}_{K}(E, F)) (f' : E → F) (h : f' = f) : f.copy f'
 
 @[simp]
 theorem toBoundedContinuousFunction_apply (f : 𝓓^{n}_{K}(E, F)) (x : E) :
-   (f : BoundedContinuousFunction E F) x  = (f x) := rfl
+   (f : BoundedContinuousFunction E F) x = (f x) := rfl
 
 section AddCommGroup
 
+@[simps -fullyApplied]
 instance : Zero 𝓓^{n}_{K}(E, F) where
-  zero := ContDiffMapSupportedIn.mk 0 contDiff_zero_fun fun _ _ ↦ rfl
+  zero := .mk 0 contDiff_zero_fun fun _ _ ↦ rfl
 
-@[simp]
-lemma coe_zero : (0 : 𝓓^{n}_{K}(E, F)) = (0 : E → F) :=
-  rfl
-
-@[simp]
-lemma zero_apply (x : E) : (0 : 𝓓^{n}_{K}(E, F)) x = 0 :=
-  rfl
-
+@[simps -fullyApplied]
 instance : Add 𝓓^{n}_{K}(E, F) where
-  add f g := ContDiffMapSupportedIn.mk (f + g) (f.contDiff.add g.contDiff) <| by
+  add f g := .mk (f + g) (f.contDiff.add g.contDiff) <| by
     rw [← add_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
-@[simp]
-lemma coe_add (f g : 𝓓^{n}_{K}(E, F)) : (f + g : 𝓓^{n}_{K}(E, F)) = (f : E → F) + g :=
-  rfl
-
-@[simp]
-lemma add_apply (f g : 𝓓^{n}_{K}(E, F)) (x : E) : (f + g) x = f x + g x :=
-  rfl
-
+@[simps -fullyApplied]
 instance : Neg 𝓓^{n}_{K}(E, F) where
-  neg f := ContDiffMapSupportedIn.mk (-f) (f.contDiff.neg) <| by
+  neg f := .mk (-f) (f.contDiff.neg) <| by
     rw [← neg_zero]
     exact f.zero_on_compl.comp_left
 
+@[simps -fullyApplied]
 instance instSub : Sub 𝓓^{n}_{K}(E, F) where
-  sub f g := ContDiffMapSupportedIn.mk (f - g) (f.contDiff.sub g.contDiff) <| by
+  sub f g := .mk (f - g) (f.contDiff.sub g.contDiff) <| by
     rw [← sub_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
+@[simps -fullyApplied]
 instance instSMul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
    SMul R 𝓓^{n}_{K}(E, F) where
-  smul c f := ContDiffMapSupportedIn.mk (c • (f : E → F)) (f.contDiff.const_smul c) <| by
+  smul c f := .mk (c • (f : E → F)) (f.contDiff.const_smul c) <| by
     rw [← smul_zero c]
     exact f.zero_on_compl.comp_left
 
-@[simp]
-lemma coe_smul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
-    (c : R) (f : 𝓓^{n}_{K}(E, F)) : (c • f : 𝓓^{n}_{K}(E, F)) = c • (f : E → F) :=
-  rfl
-
-@[simp]
-lemma smul_apply {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
-    (c : R) (f : 𝓓^{n}_{K}(E, F)) (x : E) : (c • f) x = c • (f x) :=
-  rfl
-
-instance : AddCommGroup 𝓓^{n}_{K}(E, F) :=
-  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+instance : AddCommGroup 𝓓^{n}_{K}(E, F) := fast_instance%
+  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 variable (E F K n)
 
@@ -241,8 +229,8 @@ end AddCommGroup
 section Module
 
 instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-    Module R 𝓓^{n}_{K}(E, F) :=
-  (coeHom_injective n K).module R (coeHom E F n K) fun _ _ => rfl
+    Module R 𝓓^{n}_{K}(E, F) := fast_instance%
+  (coeHom_injective n K).module R (coeHom E F n K) fun _ _ ↦ rfl
 
 end Module
 
@@ -257,6 +245,7 @@ protected theorem hasCompactSupport (f : 𝓓^{n}_{K}(E, F)) : HasCompactSupport
 
 /-- Inclusion of unbundled `n`-times continuously differentiable function with support included
 in a compact `K` into the space `𝓓^{n}_{K}`. -/
+@[simps]
 protected def of_support_subset {f : E → F} (hf : ContDiff ℝ n f) (hsupp : support f ⊆ K) :
     𝓓^{n}_{K}(E, F) where
   toFun := f
@@ -269,107 +258,113 @@ protected theorem bounded_iteratedFDeriv (f : 𝓓^{n}_{K}(E, F)) {i : ℕ} (hi 
     (f.contDiff.continuous_iteratedFDeriv <| (WithTop.le_coe rfl).mpr hi)
     (f.hasCompactSupport.iteratedFDeriv i)
 
-
 /-- Inclusion of `𝓓^{n}_{K}(E, F)` into the space `E →ᵇ F` of bounded continuous maps
 as a `𝕜`-linear map. -/
 @[simps]
-noncomputable def toBoundedContinuousFunctionₗ : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ F  where
+noncomputable def toBoundedContinuousFunctionₗ : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ F where
   toFun f := f
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-/-- Wrapper for `iteratedFDeriv i` on `𝓓^{n}_{K}(E, F)`,
-as a map into `𝓓^{n-i}_{K}(E, E [×i]→L[ℝ] F)`. -/
-noncomputable def iteratedFDerivWithOrder (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
-    𝓓^{n-i}_{K}(E, E [×i]→L[ℝ] F) :=
-  if hi : i ≤ n then
-    .of_support_subset
-    (f.contDiff.iteratedFDeriv_right <| (WithTop.coe_le_coe.mpr ((tsub_add_cancel_of_le hi).le)))
-    ((support_iteratedFDeriv_subset i).trans f.tsupport_subset)
-  else 0
+variable (n k) in
+/-- `iteratedFDerivWithOrderₗ 𝕜 n k i` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
+its `i`-th iterated derivative as an element of `𝓓^{k}_{K}(E, E [×i]→L[ℝ] F)`.
+This only makes mathematical sense if `k + i ≤ n`, otherwise we define it as the zero map.
+
+See `iteratedFDerivₗ` for the very common case where everything is infinitely differentiable. -/
+noncomputable def iteratedFDerivWithOrderₗ (i : ℕ) :
+    𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{k}_{K}(E, E [×i]→L[ℝ] F) where
+  /-
+  Note: it is tempting to define this as some linear map if `k + i ≤ n`,
+  and the zero map otherwise. However, we would lose the definitional equality between
+  `iteratedFDerivWithOrderₗ 𝕜 n k i f` and `iteratedFDerivWithOrderₗ ℝ n k i f`.
+
+  This is caused by the fact that the equality `f (if p then x else y) = if p then f x else f y`
+  is not definitional.
+  -/
+  toFun f :=
+    if hi : k + i ≤ n then
+      .of_support_subset
+      (f.contDiff.iteratedFDeriv_right <| by exact_mod_cast hi)
+      ((support_iteratedFDeriv_subset i).trans f.tsupport_subset)
+    else 0
+  map_add' f g := by
+    split_ifs with hi
+    · have hi' : (i : WithTop ℕ∞) ≤ n := by exact_mod_cast le_of_add_le_right hi
+      ext
+      simp [iteratedFDeriv_add (f.contDiff.of_le hi') (g.contDiff.of_le hi')]
+    · simp
+  map_smul' c f := by
+    split_ifs with hi
+    · have hi' : (i : WithTop ℕ∞) ≤ n := by exact_mod_cast le_of_add_le_right hi
+      ext
+      simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi').contDiffAt]
+    · simp
 
 @[simp]
-lemma iteratedFDerivWithOrder_apply (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) (x : E) :
-    f.iteratedFDerivWithOrder i x = if i ≤ n then iteratedFDeriv ℝ i f x else 0 := by
-  rw [ContDiffMapSupportedIn.iteratedFDerivWithOrder]
+lemma coe_iteratedFDerivWithOrderₗ {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
+    iteratedFDerivWithOrderₗ 𝕜 n k i f = if k + i ≤ n then iteratedFDeriv ℝ i f else 0 := by
+  rw [ContDiffMapSupportedIn.iteratedFDerivWithOrderₗ]
   split_ifs <;> rfl
 
+lemma coe_iteratedFDerivWithOrderₗ_of_le {i : ℕ} (hin : k + i ≤ n) (f : 𝓓^{n}_{K}(E, F)) :
+    iteratedFDerivWithOrderₗ 𝕜 n k i f = iteratedFDeriv ℝ i f := by
+  simp [hin]
+
+lemma coe_iteratedFDerivWithOrderₗ_of_gt {i : ℕ} (hin : ¬ (k + i ≤ n)) (f : 𝓓^{n}_{K}(E, F)) :
+    iteratedFDerivWithOrderₗ 𝕜 n k i f = 0 := by
+  ext : 1
+  simp [hin]
+
+/-- `iteratedFDerivₗ 𝕜 i` is the `𝕜`-linear-map sending `f : 𝓓_{K}(E, F)` to
+its `i`-th iterated derivative as an element of `𝓓_{K}(E, E [×i]→L[ℝ] F)`.
+
+See also `iteratedFDerivWithOrderₗ` if you need more control on the regularities. -/
+noncomputable def iteratedFDerivₗ (i : ℕ) :
+    𝓓_{K}(E, F) →ₗ[𝕜] 𝓓_{K}(E, E [×i]→L[ℝ] F) where
+  toFun f := .of_support_subset
+    (f.contDiff.iteratedFDeriv_right le_rfl)
+    ((support_iteratedFDeriv_subset i).trans f.tsupport_subset)
+  map_add' f g := by
+    have hi : (i : WithTop ℕ∞) ≤ ∞ := by exact_mod_cast le_top
+    ext
+    simp [iteratedFDeriv_add (f.contDiff.of_le hi) (g.contDiff.of_le hi)]
+  map_smul' c f := by
+    have hi : (i : WithTop ℕ∞) ≤ ∞ := by exact_mod_cast le_top
+    ext
+    simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi).contDiffAt]
+
 @[simp]
-lemma coe_iteratedFDerivWithOrder_of_le {i : ℕ} (hin : i ≤ n) (f : 𝓓^{n}_{K}(E, F)) :
-    f.iteratedFDerivWithOrder i = iteratedFDeriv ℝ i f := by
-  ext : 1
-  rw [iteratedFDerivWithOrder_apply]
-  exact dif_pos hin
+lemma coe_iteratedFDerivₗ {i : ℕ} (f : 𝓓_{K}(E, F)) :
+    iteratedFDerivₗ 𝕜 i f = iteratedFDeriv ℝ i f :=
+  rfl
 
-@[simp]
-lemma coe_iteratedFDerivWithOrder_of_gt {i : ℕ} (hin : i > n) (f : 𝓓^{n}_{K}(E, F)) :
-    f.iteratedFDerivWithOrder i = 0 := by
-  ext : 1
-  rw [iteratedFDerivWithOrder_apply]
-  exact dif_neg (not_le_of_gt hin)
+lemma iteratedFDerivₗ_eq_withOrder (i : ℕ) :
+    (iteratedFDerivₗ 𝕜 i : 𝓓_{K}(E, F) → _) = iteratedFDerivWithOrderₗ 𝕜 ⊤ ⊤ i :=
+  rfl
 
-@[simp]
-lemma coe_iteratedFDerivWithOrder_of_gt' {i : ℕ} (hin : i > n) :
-    (iteratedFDerivWithOrder i : 𝓓^{n}_{K}(E, F) → _) = 0 := by
-  ext : 2
-  rw [iteratedFDerivWithOrder_apply]
-  exact dif_neg (not_le_of_gt hin)
+variable (n) in
+/-- `structureMapₗ 𝕜 n i` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to its
+`i`-th iterated derivative as an element of `E →ᵇ (E [×i]→L[ℝ] F)`. In other words, it
+is the composition of `toBoundedContinuousFunctionₗ 𝕜` and `iteratedFDerivWithOrderₗ 𝕜 n 0 i`.
+This only makes mathematical sense if `i ≤ n`, otherwise we define it as the zero map.
 
-lemma iteratedFDerivWithOrder_add (i : ℕ) {f g : 𝓓^{n}_{K}(E, F)} :
-    (f + g).iteratedFDerivWithOrder i = f.iteratedFDerivWithOrder i + g.iteratedFDerivWithOrder i
-  := by
-  ext : 1
-  simp only [iteratedFDerivWithOrder_apply, add_apply]
-  split_ifs with hin
-  · refine iteratedFDeriv_add_apply (ContDiff.contDiffAt ?_) (ContDiff.contDiffAt ?_)
-    · exact f.contDiff.of_le (by exact_mod_cast hin)
-    · exact g.contDiff.of_le (by exact_mod_cast hin)
-  · rw [add_zero]
-
-lemma iteratedFDerivWithOrder_smul (i : ℕ) {c : 𝕜} {f : 𝓓^{n}_{K}(E, F)} :
-    (c • f).iteratedFDerivWithOrder i = c • f.iteratedFDerivWithOrder i := by
-  ext : 1
-  simp only [iteratedFDerivWithOrder_apply, smul_apply]
-  split_ifs with hin
-  · apply iteratedFDeriv_const_smul_apply
-    refine ContDiff.contDiffAt <| f.contDiff.of_le (by exact_mod_cast hin)
-  · rw [smul_zero]
-
-/-- Wrapper for iteratedFDerivWithOrder as a `𝕜`-linear map. -/
-@[simps]
-noncomputable def iteratedFDerivWithOrderₗ (i : ℕ) :
-    𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n-i}_{K}(E, E [×i]→L[ℝ] F) where
-  toFun f := f.iteratedFDerivWithOrder i
-  map_add' _ _ := iteratedFDerivWithOrder_add i
-  map_smul' _ _ := iteratedFDerivWithOrder_smul 𝕜 i
-
-lemma iteratedFDerivWithOrderₗ_eq_iteratedFDerivWithOrder (i : ℕ) :
-  (iteratedFDerivWithOrderₗ 𝕜 i : 𝓓^{n}_{K}(E, F) → _) = (iteratedFDerivWithOrder i : _) := by
-  congr
-
-lemma iteratedFDerivWithOrder_zero (i : ℕ) :
-    (0 : 𝓓^{n}_{K}(E, F)).iteratedFDerivWithOrder i = 0 :=
-  map_zero (iteratedFDerivWithOrderₗ ℝ i)
-
-/-- The composition of `ContDiffMapSupportedIn.toBoundedContinuousFunctionₗ` and
-`ContDiffMapSupportedIn.iteratedFDerivₗ`. We define this as a separate `abbrev` because this family
-of maps is used a lot for defining and using the topology on `ContDiffMapSupportedIn`, and Lean
-takes a long time to infer the type of `toBoundedContinuousFunctionₗ 𝕜 ∘ₗ iteratedFDerivₗ 𝕜 i`. -/
-noncomputable def iteratedFDeriv_toBoundedContinuousFunctionₗ (i : ℕ) :
+We call these "structure maps" because they define the topology on `𝓓^{n}_{K}(E, F)`. -/
+noncomputable def structureMapₗ (i : ℕ) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F) :=
-  toBoundedContinuousFunctionₗ 𝕜 ∘ₗ iteratedFDerivWithOrderₗ 𝕜 i
+  toBoundedContinuousFunctionₗ 𝕜 ∘ₗ iteratedFDerivWithOrderₗ 𝕜 n 0 i
 
 section Topology
 
 noncomputable instance topologicalSpace : TopologicalSpace 𝓓^{n}_{K}(E, F) :=
-  ⨅ (i : ℕ), induced (iteratedFDeriv_toBoundedContinuousFunctionₗ ℝ i) inferInstance
+  ⨅ (i : ℕ), induced (structureMapₗ ℝ n i) inferInstance
 
 noncomputable instance uniformSpace : UniformSpace 𝓓^{n}_{K}(E, F) := .replaceTopology
-  (⨅ (i : ℕ), UniformSpace.comap (iteratedFDeriv_toBoundedContinuousFunctionₗ ℝ i) inferInstance)
+  (⨅ (i : ℕ), UniformSpace.comap (structureMapₗ ℝ n i) inferInstance)
   toTopologicalSpace_iInf.symm
 
 protected theorem uniformSpace_eq_iInf : (uniformSpace : UniformSpace 𝓓^{n}_{K}(E, F)) =
-    ⨅ (i : ℕ), UniformSpace.comap (iteratedFDeriv_toBoundedContinuousFunctionₗ ℝ i)
+    ⨅ (i : ℕ), UniformSpace.comap (structureMapₗ ℝ n i)
       inferInstance :=
   UniformSpace.replaceTopology_eq _ toTopologicalSpace_iInf.symm
 
@@ -380,14 +375,26 @@ instance : IsUniformAddGroup 𝓓^{n}_{K}(E, F) := by
 
 instance : ContinuousSMul 𝕜 𝓓^{n}_{K}(E, F) := by
   refine continuousSMul_iInf
-    (fun i ↦ continuousSMul_induced (iteratedFDeriv_toBoundedContinuousFunctionₗ 𝕜 i))
+    (fun i ↦ continuousSMul_induced (structureMapₗ 𝕜 n i))
 
 instance : LocallyConvexSpace ℝ 𝓓^{n}_{K}(E, F) :=
   LocallyConvexSpace.iInf fun _ ↦ LocallyConvexSpace.induced _
 
+variable (n) in
+/-- `structureMap 𝕜 n i` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to its
+`i`-th iterated derivative as an element of `E →ᵇ (E [×i]→L[ℝ] F)`.
+This only makes mathematical sense if `i ≤ n`, otherwise we define it as the zero map.
+
+We call these "structure maps" because they define the topology on `𝓓^{n}_{K}(E, F)`. -/
+noncomputable def structureMap (i : ℕ) :
+    𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ (E [×i]→L[ℝ] F) where
+  toLinearMap := structureMapₗ 𝕜 n i
+  cont := continuous_iInf_dom continuous_induced_dom
+
 lemma continuous_iff_comp {X} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
-    Continuous φ ↔ ∀ i, Continuous (iteratedFDeriv_toBoundedContinuousFunctionₗ ℝ i ∘ φ) := by
+    Continuous φ ↔ ∀ i, Continuous (structureMap ℝ n i ∘ φ) := by
   simp_rw [continuous_iInf_rng, continuous_induced_rng]
+  rfl
 
 
 variable (E F n K)

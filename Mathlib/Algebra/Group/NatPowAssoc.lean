@@ -52,7 +52,7 @@ section MulOneClass
 
 variable [MulOneClass M] [Pow M ℕ] [NatPowAssoc M]
 
-theorem npow_add (k n : ℕ) (x : M) : x ^ (k + n) = x ^ k * x ^ n  :=
+theorem npow_add (k n : ℕ) (x : M) : x ^ (k + n) = x ^ k * x ^ n :=
   NatPowAssoc.npow_add k n x
 
 @[simp]
@@ -84,7 +84,7 @@ end MulOneClass
 section Neg
 
 theorem neg_npow_assoc {R : Type*} [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] (a b : R) (k : ℕ) :
-    (-1)^k * a * b = (-1)^k * (a * b) := by
+    (-1) ^ k * a * b = (-1) ^ k * (a * b) := by
   induction k with
   | zero => simp only [npow_zero, one_mul]
   | succ k ih =>

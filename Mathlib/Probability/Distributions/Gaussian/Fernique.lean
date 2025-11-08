@@ -152,17 +152,7 @@ lemma integrable_exp_sq_of_conv_neg (μ : Measure E) [IsGaussian μ] {C C' : ℝ
     _ = (1 + ε) * ‖x - y‖ ^ 2 + (1 + 1 / ε) * ‖y‖ ^ 2 := by ring
   calc C' * ‖x‖ ^ 2
   _ ≤ C' * ((1 + ε) * ‖x - y‖ ^ 2 + (1 + 1 / ε) * ‖y‖ ^ 2) := by gcongr
-  _ = (C' * (1 + 1 / ε)) * ‖y‖ ^ 2 + (C' * (1 + ε)) * ‖x - y‖ ^ 2 := by ring
-  _ = C / ε * ‖y‖ ^ 2 + C * ‖x - y‖ ^ 2 := by
-    unfold ε
-    congr 2
-    · simp only [one_div, inv_div]
-      rw [one_add_div (by rw [sub_ne_zero]; exact hC'_lt.ne'), div_div_eq_mul_div]
-      simp only [sub_add_cancel]
-      ring
-    · rw [one_add_div (by positivity)]
-      simp only [add_sub_cancel]
-      rw [mul_div_cancel₀ _ (by positivity)]
+  _ = C / ε * ‖y‖ ^ 2 + C * ‖x - y‖ ^ 2 := by grind
 
 /-- **Fernique's theorem**: for a Gaussian measure, there exists `C > 0` such that the function
 `x ↦ exp (C * ‖x‖ ^ 2)` is integrable. -/

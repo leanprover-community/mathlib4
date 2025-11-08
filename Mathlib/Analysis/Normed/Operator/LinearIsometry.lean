@@ -893,8 +893,8 @@ protected theorem lipschitz : LipschitzWith 1 e :=
 protected theorem antilipschitz : AntilipschitzWith 1 e :=
   e.isometry.antilipschitz
 
-theorem image_eq_preimage (s : Set E) : e '' s = e.symm ⁻¹' s :=
-  e.toLinearEquiv.image_eq_preimage s
+theorem image_eq_preimage_symm (s : Set E) : e '' s = e.symm ⁻¹' s :=
+  e.toLinearEquiv.image_eq_preimage_symm s
 
 @[simp]
 theorem ediam_image (s : Set E) : EMetric.diam (e '' s) = EMetric.diam s :=
@@ -1070,3 +1070,25 @@ noncomputable def LinearIsometry.equivRange {R S : Type*} [Semiring R] [Ring S] 
     [Module R F] {σ₁₂ : R →+* S} {σ₂₁ : S →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
     (f : F →ₛₗᵢ[σ₁₂] E) : F ≃ₛₗᵢ[σ₁₂] (LinearMap.range f.toLinearMap) :=
   { f with toLinearEquiv := LinearEquiv.ofInjective f.toLinearMap f.injective }
+
+namespace MulOpposite
+variable {R H : Type*} [Semiring R] [SeminormedAddCommGroup H] [Module R H]
+
+theorem isometry_opLinearEquiv : Isometry (opLinearEquiv R (M := H)) := fun _ _ => rfl
+
+variable (R H) in
+/-- The linear isometry equivalence version of the function `op`. -/
+@[simps!]
+def opLinearIsometryEquiv : H ≃ₗᵢ[R] Hᵐᵒᵖ where
+  toLinearEquiv := opLinearEquiv R
+  norm_map' _ := rfl
+
+@[simp]
+theorem toLinearEquiv_opLinearIsometryEquiv :
+    (opLinearIsometryEquiv R H).toLinearEquiv = opLinearEquiv R := rfl
+
+@[simp]
+theorem toContinuousLinearEquiv_opLinearIsometryEquiv :
+    (opLinearIsometryEquiv R H).toContinuousLinearEquiv = opContinuousLinearEquiv R := rfl
+
+end MulOpposite
