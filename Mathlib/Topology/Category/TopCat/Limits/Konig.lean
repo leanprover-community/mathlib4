@@ -24,7 +24,7 @@ This also applies to inverse limits, where `{J : Type u} [Preorder J] [IsDirecte
 
 The theorem is specialized to nonempty finite types (which are compact Hausdorff with the
 discrete topology) in lemmas `nonempty_sections_of_finite_cofiltered_system` and
-`nonempty_sections_of_finite_inverse_system` in the file `Mathlib.CategoryTheory.CofilteredSystem`.
+`nonempty_sections_of_finite_inverse_system` in `Mathlib/CategoryTheory/CofilteredSystem.lean`.
 
 (See <https://stacks.math.columbia.edu/tag/086J> for the Set version.)
 -/
@@ -120,10 +120,7 @@ theorem nonempty_limitCone_of_compact_t2_cofiltered_system (F : J ⥤ TopCat.{ma
       partialSections.closed F _
   use u
   intro X Y f
-  let G : FiniteDiagram J :=
-    ⟨{X, Y},
-      {⟨X, Y, by simp only [true_or, eq_self_iff_true, Finset.mem_insert], by
-          simp only [eq_self_iff_true, or_true, Finset.mem_insert, Finset.mem_singleton], f⟩}⟩
+  let G : FiniteDiagram J := ⟨{X, Y}, {⟨X, Y, by grind, by grind, f⟩}⟩
   exact hu _ ⟨G, rfl⟩ (Finset.mem_singleton_self _)
 
 end TopologicalKonig

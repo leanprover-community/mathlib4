@@ -3,7 +3,6 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes
 -/
-import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Data.Fintype.Inv
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
@@ -22,7 +21,7 @@ Assorted theorems about integral domains.
 ## Notes
 
 Wedderburn's little theorem, which shows that all finite division rings are actually fields,
-is in `Mathlib.RingTheory.LittleWedderburn`.
+is in `Mathlib/RingTheory/LittleWedderburn.lean`.
 
 ## Tags
 
@@ -31,7 +30,7 @@ integral domain, finite integral domain, finite field
 
 section
 
-open Finset Polynomial Function Nat
+open Finset Polynomial Function
 
 section CancelMonoidWithZero
 
@@ -51,9 +50,9 @@ def Fintype.groupWithZeroOfCancel (M : Type*) [CancelMonoidWithZero M] [Decidabl
     ‹CancelMonoidWithZero M› with
     inv := fun a => if h : a = 0 then 0 else Fintype.bijInv (mul_right_bijective_of_finite₀ h) 1
     mul_inv_cancel := fun a ha => by
-      simp only [Inv.inv, dif_neg ha]
+      simp only [dif_neg ha]
       exact Fintype.rightInverse_bijInv _ _
-    inv_zero := by simp [Inv.inv, dif_pos rfl] }
+    inv_zero := by simp }
 
 theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R] [IsDomain R]
     [GCDMonoid R] [Subsingleton Rˣ] {a b c : R} {n : ℕ} (cp : IsCoprime a b) (h : a * b = c ^ n) :
@@ -61,9 +60,8 @@ theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R] [IsD
   refine exists_eq_pow_of_mul_eq_pow (isUnit_of_dvd_one ?_) h
   obtain ⟨x, y, hxy⟩ := cp
   rw [← hxy]
-  exact  -- Porting note: added `GCDMonoid.` twice
-    dvd_add (dvd_mul_of_dvd_right (GCDMonoid.gcd_dvd_left _ _) _)
-      (dvd_mul_of_dvd_right (GCDMonoid.gcd_dvd_right _ _) _)
+  exact dvd_add (dvd_mul_of_dvd_right (gcd_dvd_left _ _) _)
+    (dvd_mul_of_dvd_right (gcd_dvd_right _ _) _)
 
 nonrec
 theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type*} [CommSemiring R] [IsDomain R]
@@ -72,12 +70,12 @@ theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type*} [CommSemiri
     (hprod : ∏ i ∈ s, f i = c ^ n) : ∀ i ∈ s, ∃ d : R, f i = d ^ n := by
   classical
     intro i hi
-    rw [← insert_erase hi, prod_insert (not_mem_erase i s)] at hprod
+    rw [← insert_erase hi, prod_insert (notMem_erase i s)] at hprod
     refine
       exists_eq_pow_of_mul_eq_pow_of_coprime
         (IsCoprime.prod_right fun j hj => h i hi j (erase_subset i s hj) fun hij => ?_) hprod
     rw [hij] at hj
-    exact (s.not_mem_erase _) hj
+    exact (s.notMem_erase _) hj
 
 end CancelMonoidWithZero
 
@@ -88,7 +86,7 @@ section Ring
 variable [Ring R] [IsDomain R] [Fintype R]
 
 /-- Every finite domain is a division ring. More generally, they are fields; this can be found in
-`Mathlib.RingTheory.LittleWedderburn`. -/
+`Mathlib/RingTheory/LittleWedderburn.lean`. -/
 def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
     DivisionRing R where
   __ := (‹Ring R›:) -- this also works without the `( :)`, but it's slightly slow
@@ -99,7 +97,7 @@ def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableE
   qsmul_def := fun _ _ => rfl
 
 /-- Every finite commutative domain is a field. More generally, commutativity is not required: this
-can be found in `Mathlib.RingTheory.LittleWedderburn`. -/
+can be found in `Mathlib/RingTheory/LittleWedderburn.lean`. -/
 def Fintype.fieldOfDomain (R) [CommRing R] [IsDomain R] [DecidableEq R] [Fintype R] : Field R :=
   { Fintype.divisionRingOfIsDomain R, ‹CommRing R› with }
 
@@ -116,7 +114,8 @@ theorem card_nthRoots_subgroup_units [Fintype G] [DecidableEq G] (f : G →* R) 
     #{g | g ^ n = g₀} ≤ Multiset.card (nthRoots n (f g₀)) := by
   haveI : DecidableEq R := Classical.decEq _
   calc
-    _ ≤ #(nthRoots n (f g₀)).toFinset := card_le_card_of_injOn f (by aesop) hf.injOn
+    _ ≤ #(nthRoots n (f g₀)).toFinset :=
+      card_le_card_of_injOn f (by aesop (add safe unfold Set.MapsTo)) hf.injOn
     _ ≤ _ := (nthRoots n (f g₀)).toFinset_card_le
 
 /-- A finite subgroup of the unit group of an integral domain is cyclic. -/
@@ -132,18 +131,16 @@ theorem isCyclic_of_subgroup_isDomain [Finite G] (f : G →* R) (hf : Injective 
 To support `ℤˣ` and other infinite monoids with finite groups of units, this requires only
 `Finite Rˣ` rather than deducing it from `Finite R`. -/
 instance [Finite Rˣ] : IsCyclic Rˣ :=
-  isCyclic_of_subgroup_isDomain (Units.coeHom R) <| Units.ext
+  isCyclic_of_subgroup_isDomain (Units.coeHom R) Units.val_injective
 
 section
 
 variable (S : Subgroup Rˣ) [Finite S]
 
 /-- A finite subgroup of the units of an integral domain is cyclic. -/
-instance subgroup_units_cyclic : IsCyclic S := by
-  -- Porting note: the original proof used a `coe`, but I was not able to get it to work.
-  apply isCyclic_of_subgroup_isDomain (R := R) (G := S) _ _
-  · exact MonoidHom.mk (OneHom.mk (fun s => ↑s.val) rfl) (by simp)
-  · exact Units.ext.comp Subtype.val_injective
+instance subgroup_units_cyclic : IsCyclic S :=
+  isCyclic_of_subgroup_isDomain { toFun s := (s.val : R), map_one' := rfl, map_mul' := by simp }
+    (Units.val_injective.comp Subtype.val_injective)
 
 end
 
@@ -151,7 +148,7 @@ section EuclideanDivision
 
 namespace Polynomial
 
-variable (K : Type) [Field K] [Algebra R[X] K] [IsFractionRing R[X] K]
+variable (K : Type*) [Field K] [Algebra R[X] K] [IsFractionRing R[X] K]
 
 theorem div_eq_quo_add_rem_div (f : R[X]) {g : R[X]} (hg : g.Monic) :
     ∃ q r : R[X], r.degree < g.degree ∧
@@ -160,11 +157,9 @@ theorem div_eq_quo_add_rem_div (f : R[X]) {g : R[X]} (hg : g.Monic) :
   refine ⟨f /ₘ g, f %ₘ g, ?_, ?_⟩
   · exact degree_modByMonic_lt _ hg
   · have hg' : algebraMap R[X] K g ≠ 0 :=
-      -- Porting note: the proof was `by exact_mod_cast Monic.ne_zero hg`
       (map_ne_zero_iff _ (IsFractionRing.injective R[X] K)).mpr (Monic.ne_zero hg)
-    field_simp [hg']
-    -- Porting note: `norm_cast` was here, but does nothing.
-    rw [add_comm, mul_comm, ← map_mul, ← map_add, modByMonic_add_div f hg]
+    field_simp
+    rw [add_comm, ← map_mul, ← map_add, modByMonic_add_div f hg]
 
 end Polynomial
 
@@ -219,12 +214,11 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
             (by simpa using pow_injOn_Iio_orderOf)
             (fun b _ => let ⟨n, hn⟩ := hx b
               ⟨n % orderOf x, mem_range.2 (Nat.mod_lt _ (orderOf_pos _)),
-               -- Porting note: have to use `dsimp` to apply the function
-               by dsimp at hn ⊢; rw [pow_mod_orderOf, hn]⟩)
-            (by simp only [imp_true_iff, eq_self_iff_true, Subgroup.coe_pow,
+               -- Porting note: have to `beta_reduce` to apply the function
+               by beta_reduce at hn ⊢; rw [pow_mod_orderOf, hn]⟩)
+            (by simp only [imp_true_iff, Subgroup.coe_pow,
                 Units.val_pow_eq_pow_val])
       _ = 0 := ?_
-
     rw [← mul_left_inj' hx1, zero_mul, geom_sum_mul]
     norm_cast
     simp [pow_orderOf_eq_one]
@@ -235,8 +229,8 @@ unless the homomorphism is trivial, in which case the sum is equal to the cardin
 theorem sum_hom_units (f : G →* R) [Decidable (f = 1)] :
     ∑ g : G, f g = if f = 1 then Fintype.card G else 0 := by
   split_ifs with h
-  · simp [h, card_univ]
-  · rw [cast_zero] -- Porting note: added
+  · simp [h]
+  · rw [Nat.cast_zero]
     exact sum_hom_units_eq_zero f h
 
 end

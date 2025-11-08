@@ -1,16 +1,17 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 import Mathlib.CategoryTheory.Functor.Derived.PointwiseRightDerived
+import Mathlib.CategoryTheory.GuitartExact.KanExtension
 import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # Existence of pointwise right derived functors via derivability structures
 
-In this file, we show how right derivability structure can be used in
+In this file, we show how a right derivability structure can be used in
 order to construct (pointwise) right derived functors.
 Let `Φ` be a right derivability structure from `W₁ : MorphismProperty C₁`
 to `W₂ : MorphismProperty C₂`. Let `F : C₂ ⥤ H` be a functor.
@@ -33,7 +34,7 @@ universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
 namespace CategoryTheory
 
-open Limits Category
+open Limits Category Functor
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} {H : Type u₃}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} H]
@@ -83,13 +84,9 @@ lemma hasPointwiseRightDerivedFunctorAt_iff_of_isRightDerivabilityStructure (X :
       F.HasPointwiseRightDerivedFunctorAt W₂ (Φ.functor.obj X) := by
   let e : W₂.Q.obj _ ≅ (Φ.localizedFunctor W₁.Q W₂.Q).obj _  := ((Φ.catCommSq W₁.Q W₂.Q).iso).app X
   rw [F.hasPointwiseRightDerivedFunctorAt_iff W₂.Q W₂ (Φ.functor.obj X),
-    (Φ.functor ⋙ F).hasPointwiseRightDerivedFunctorAt_iff W₁.Q W₁ X]
-  rw [Functor.hasPointwiseLeftKanExtensionAt_iff_of_iso W₂.Q F e]
-  dsimp [Functor.HasPointwiseLeftKanExtensionAt]
-  let w : TwoSquare _ _ _ _ := ((Φ.catCommSq W₁.Q W₂.Q).iso).hom
-  rw [← Functor.Final.hasColimit_comp_iff (w.costructuredArrowRightwards (W₁.Q.obj X))]
-  apply hasColimit_iff_of_iso
-  apply Iso.refl
+    (Φ.functor ⋙ F).hasPointwiseRightDerivedFunctorAt_iff W₁.Q W₁ X,
+    TwoSquare.hasPointwiseLeftKanExtensionAt_iff ((Φ.catCommSq W₁.Q W₂.Q).iso).hom,
+    Functor.hasPointwiseLeftKanExtensionAt_iff_of_iso W₂.Q F e]
 
 lemma hasPointwiseRightDerivedFunctor_iff_of_isRightDerivabilityStructure :
     F.HasPointwiseRightDerivedFunctor W₂ ↔
@@ -101,35 +98,22 @@ lemma hasPointwiseRightDerivedFunctor_iff_of_isRightDerivabilityStructure :
   · intro hF X₂
     have R : Φ.RightResolution X₂ := Classical.arbitrary _
     simpa only [hasPointwiseRightDerivedFunctorAt_iff_of_isRightDerivabilityStructure,
-      ← F.hasPointwiseRightDerivedFunctorAt_iff_of_mem W₂ R.w R.hw ] using hF R.X₁
+      ← F.hasPointwiseRightDerivedFunctorAt_iff_of_mem W₂ R.w R.hw] using hF R.X₁
 
 section
 
 variable [(Φ.functor ⋙ F).HasPointwiseRightDerivedFunctor W₁]
   [F₂.IsRightDerivedFunctor α₂ W₂]
 
-instance  :
-    IsIso (Φ.rightDerivedFunctorComparison L₁ L₂ F F₁ α₁ F₂ α₂) := by
-  suffices ∀ Y, IsIso ((rightDerivedFunctorComparison Φ L₁ L₂ F F₁ α₁ F₂ α₂).app Y) from
-    NatIso.isIso_of_isIso_app _
-  intro Y
-  have : (F.HasPointwiseRightDerivedFunctor W₂) := by
+instance : IsIso (Φ.rightDerivedFunctorComparison L₁ L₂ F F₁ α₁ F₂ α₂) := by
+  have : F.HasPointwiseRightDerivedFunctor W₂ := by
     rw [Φ.hasPointwiseRightDerivedFunctor_iff_of_isRightDerivabilityStructure]
     infer_instance
-  let w : TwoSquare _ _ _ _ := ((Φ.catCommSq L₁ L₂).iso).hom
-  have : w.GuitartExact := Φ.guitartExact_of_isRightDerivabilityStructure L₁ L₂
-  have hF₁ := (F₁.isPointwiseLeftKanExtensionOfHasPointwiseRightDerivedFunctor α₁ W₁) Y
-  have hF₂ := (F₂.isPointwiseLeftKanExtensionOfHasPointwiseRightDerivedFunctor α₂ W₂)
-      ((Φ.localizedFunctor L₁ L₂).obj Y)
-  have hF₂' := (Functor.Final.isColimitWhiskerEquiv (w.costructuredArrowRightwards Y) _).symm hF₂
-  have : (Φ.rightDerivedFunctorComparison L₁ L₂ F F₁ α₁ F₂ α₂).app Y =
-      (IsColimit.coconePointUniqueUpToIso hF₁ hF₂').hom := hF₁.hom_ext (fun φ => by
-    rw [IsColimit.comp_coconePointUniqueUpToIso_hom]
-    dsimp
-    simp only [w, assoc, NatTrans.naturality, Functor.comp_obj, Functor.comp_map,
-      rightDerivedFunctorComparison_fac_app_assoc, Functor.map_comp])
-  rw [this]
-  infer_instance
+  dsimp only [rightDerivedFunctorComparison]
+  rw [← isRightDerivedFunctor_iff_isIso_rightDerivedDesc,
+    isRightDerivedFunctor_iff_isLeftKanExtension]
+  exact ((F₂.isPointwiseLeftKanExtensionOfHasPointwiseRightDerivedFunctor α₂ W₂).compTwoSquare
+    ((Φ.catCommSq L₁ L₂).iso).hom).isLeftKanExtension
 
 lemma isIso_α_iff_of_isRightDerivabilityStructure (X : C₁) :
     IsIso (α₁.app X) ↔ IsIso (α₂.app (Φ.functor.obj X)) := by

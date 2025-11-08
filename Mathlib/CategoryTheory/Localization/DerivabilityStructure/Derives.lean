@@ -76,14 +76,14 @@ lemma isRightDerivedFunctor_of_isIso_α (hα : ∀ (X₁ : C₁), IsIso (α.app 
   have := h.isIso_α _ _ (F.totalRightDerivedUnit L₂ W₂)
   have := Φ.essSurj_of_hasRightResolutions L₂
   let φ := (F.totalRightDerived L₂ W₂).rightDerivedDesc (F.totalRightDerivedUnit L₂ W₂) W₂ RF α
-  have hφ : F.totalRightDerivedUnit L₂ W₂ ≫ whiskerLeft L₂ φ = α :=
+  have hφ : F.totalRightDerivedUnit L₂ W₂ ≫ Functor.whiskerLeft L₂ φ = α :=
     (F.totalRightDerived L₂ W₂).rightDerived_fac (F.totalRightDerivedUnit L₂ W₂) W₂ RF α
   have : IsIso φ := by
     rw [NatTrans.isIso_iff_isIso_app]
     intro Y₂
     rw [NatTrans.isIso_app_iff_of_iso φ ((Φ.functor ⋙ L₂).objObjPreimageIso Y₂).symm]
     dsimp
-    simp only [← hφ, NatTrans.comp_app, whiskerLeft_app, isIso_comp_left_iff] at hα
+    simp only [← hφ, NatTrans.comp_app, Functor.whiskerLeft_app, isIso_comp_left_iff] at hα
     infer_instance
   rw [← Functor.isRightDerivedFunctor_iff_of_iso (F.totalRightDerivedUnit L₂ W₂) α W₂
     (asIso φ) (by aesop)]

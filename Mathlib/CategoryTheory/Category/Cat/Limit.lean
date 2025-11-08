@@ -131,9 +131,8 @@ def limitConeIsLimit (F : J ⥤ Cat.{v, v}) : IsLimit (limitCone F) where
     · intro X
       apply Types.limit_ext.{v, v}
       intro j
-      simp [Types.Limit.lift_π_apply', ← w j]
+      simp [← w j]
     · intro X Y f
-      dsimp
       simp [fun j => Functor.congr_hom (w j).symm f]
 
 end HasLimits
@@ -148,7 +147,7 @@ instance : PreservesLimits Cat.objects.{v, v} where
     { preservesLimit := fun {F} =>
         preservesLimit_of_preserves_limit_cone (HasLimits.limitConeIsLimit F)
           (Limits.IsLimit.ofIsoLimit (limit.isLimit (F ⋙ Cat.objects))
-            (Cones.ext (by rfl) (by aesop_cat))) }
+            (Cones.ext (by rfl) (by cat_disch))) }
 
 end Cat
 

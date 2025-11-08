@@ -71,7 +71,7 @@ variable (A)
 /-- Each element of the group defines an additive monoid isomorphism.
 
 This is a stronger version of `MulAction.toPerm`. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def DistribMulAction.toAddEquiv [DistribMulAction G A] (x : G) : A ≃+ A where
   __ := toAddMonoidHom A x
   __ := MulAction.toPermHom G A x
@@ -113,3 +113,7 @@ lemma IsUnit.smul_sub_iff_sub_inv_smul [Group G] [Monoid R] [AddGroup R] [Distri
     [IsScalarTower G R R] [SMulCommClass G R R] (r : G) (a : R) :
     IsUnit (r • (1 : R) - a) ↔ IsUnit (1 - r⁻¹ • a) := by
   rw [← isUnit_smul_iff r (1 - r⁻¹ • a), smul_sub, smul_inv_smul]
+
+@[simp] theorem smul_zpow₀' [Group G] [GroupWithZero G₀] [MulDistribMulAction G G₀]
+    (g : G) (x : G₀) (n : ℤ) : g • (x ^ n) = (g • x) ^ n := by
+  cases n <;> simp

@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Subpresheaf.Equalizer
 /-!
 # Horns
 
-This file introduce horns `Λ[n, i]`.
+This file introduces horns `Λ[n, i]`.
 
 -/
 
@@ -61,17 +61,13 @@ lemma horn_obj_zero (n : ℕ) (i : Fin (n + 3)) :
     have := Finset.card_le_card hS.symm.le
     simp only [Finset.card_univ, Fintype.card_fin, S] at this
     have := this.trans Finset.card_le_two
-    omega
+    cutsat
   rw [Finset.eq_univ_iff_forall, not_forall] at hS
   obtain ⟨k, hk⟩ := hS
   simp only [Finset.mem_insert, Finset.mem_singleton, not_or, S] at hk
   refine ⟨k, hk.1, fun a ↦ ?_⟩
   fin_cases a
   exact Ne.symm hk.2
-
-/-- The inclusion of the boundary of the `n`-th standard simplex into that standard simplex. -/
-@[deprecated horn (since := "2025-01-26")]
-abbrev hornInclusion (n : ℕ) (i : Fin (n + 1)) : (Λ[n, i] : SSet.{u}) ⟶ Δ[n] := Λ[n, i].ι
 
 namespace horn
 
@@ -97,13 +93,13 @@ end
 
 This edge only exists if `{i, a, b}` has cardinality less than `n`. -/
 @[simps]
-def edge (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) :
+def edge (n : ℕ) (i a b : Fin (n + 1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) :
     (Λ[n, i] : SSet.{u}) _⦋1⦌ :=
   ⟨stdSimplex.edge n a b hab, by
     have hS : ¬ ({i, a, b} = Finset.univ) := fun hS ↦ by
       have := Finset.card_le_card hS.symm.le
       simp only [card_univ, Fintype.card_fin] at this
-      omega
+      cutsat
     rw [Finset.eq_univ_iff_forall, not_forall] at hS
     obtain ⟨k, hk⟩ := hS
     simp only [mem_insert, mem_singleton, not_or] at hk
@@ -119,7 +115,7 @@ def edge (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) :
 /-- Alternative constructor for the edge of `Λ[n, i]` with endpoints `a` and `b`,
 assuming `3 ≤ n`. -/
 @[simps!]
-def edge₃ (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : 3 ≤ n) :
+def edge₃ (n : ℕ) (i a b : Fin (n + 1)) (hab : a ≤ b) (H : 3 ≤ n) :
     (Λ[n, i] : SSet.{u}) _⦋1⦌ :=
   edge n i a b hab <| Finset.card_le_three.trans H
 
@@ -128,14 +124,14 @@ def edge₃ (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : 3 ≤ n) :
 This constructor assumes `0 < i < n`,
 which is the type of horn that occurs in the horn-filling condition of quasicategories. -/
 @[simps!]
-def primitiveEdge {n : ℕ} {i : Fin (n+1)}
+def primitiveEdge {n : ℕ} {i : Fin (n + 1)}
     (h₀ : 0 < i) (hₙ : i < Fin.last n) (j : Fin n) :
     (Λ[n, i] : SSet.{u}) _⦋1⦌ := by
   refine edge n i j.castSucc j.succ ?_ ?_
   · simp only [← Fin.val_fin_le, Fin.coe_castSucc, Fin.val_succ, le_add_iff_nonneg_right, zero_le]
   simp only [← Fin.val_fin_lt, Fin.val_zero, Fin.val_last] at h₀ hₙ
-  obtain rfl|hn : n = 2 ∨ 2 < n := by
-    rw [eq_comm, or_comm, ← le_iff_lt_or_eq]; omega
+  obtain rfl | hn : n = 2 ∨ 2 < n := by
+    rw [eq_comm, or_comm, ← le_iff_lt_or_eq]; cutsat
   · revert i j; decide
   · exact Finset.card_le_three.trans hn
 
@@ -144,19 +140,19 @@ def primitiveEdge {n : ℕ} {i : Fin (n+1)}
 This constructor assumes `0 < i < n`,
 which is the type of horn that occurs in the horn-filling condition of quasicategories. -/
 @[simps]
-def primitiveTriangle {n : ℕ} (i : Fin (n+4))
-    (h₀ : 0 < i) (hₙ : i < Fin.last (n+3))
-    (k : ℕ) (h : k < n+2) : (Λ[n+3, i] : SSet.{u}) _⦋2⦌ := by
+def primitiveTriangle {n : ℕ} (i : Fin (n + 4))
+    (h₀ : 0 < i) (hₙ : i < Fin.last (n + 3))
+    (k : ℕ) (h : k < n + 2) : (Λ[n+3, i] : SSet.{u}) _⦋2⦌ := by
   refine ⟨stdSimplex.triangle
-    (n := n+3) ⟨k, by omega⟩ ⟨k+1, by omega⟩ ⟨k+2, by omega⟩ ?_ ?_, ?_⟩
+    (n := n+3) ⟨k, by cutsat⟩ ⟨k+1, by cutsat⟩ ⟨k+2, by cutsat⟩ ?_ ?_, ?_⟩
   · simp only [Fin.mk_le_mk, le_add_iff_nonneg_right, zero_le]
   · simp only [Fin.mk_le_mk, add_le_add_iff_left, one_le_two]
   -- this was produced using `simp? [horn_eq_iSup]`
   simp only [horn_eq_iSup, Subpresheaf.iSup_obj, Set.iUnion_coe_set,
     Set.mem_compl_iff, Set.mem_singleton_iff, Set.mem_iUnion, stdSimplex.mem_face_iff,
     Nat.reduceAdd, mem_compl, mem_singleton, exists_prop]
-  have hS : ¬ ({i, (⟨k, by omega⟩ : Fin (n + 4)), (⟨k + 1, by omega⟩ : Fin (n + 4)),
-      (⟨k + 2, by omega⟩ : Fin (n + 4))} = Finset.univ) := fun hS ↦ by
+  have hS : ¬ ({i, (⟨k, by cutsat⟩ : Fin (n + 4)), (⟨k + 1, by cutsat⟩ : Fin (n + 4)),
+      (⟨k + 2, by cutsat⟩ : Fin (n + 4))} = Finset.univ) := fun hS ↦ by
     obtain ⟨i, hi⟩ := i
     by_cases hk : k = 0
     · subst hk
@@ -167,7 +163,7 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
         Fin.val_zero, AddLeftCancelMonoid.add_eq_zero, OfNat.ofNat_ne_zero, and_false,
         Fin.val_one, Nat.reduceEqDiff, mem_singleton, or_self, or_false] at this
       simp only [Fin.lt_iff_val_lt_val, Fin.val_last] at hₙ
-      omega
+      cutsat
     · have := Finset.mem_univ (0 : Fin (n + 4))
       rw [← hS] at this
       -- this was produced using `simp? [Fin.ext_iff] at this`
@@ -185,13 +181,13 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
   · exact Ne.symm hl.2.2.2
 
 /-- The `j`th face of codimension `1` of the `i`-th horn. -/
-def face {n : ℕ} (i j : Fin (n+2)) (h : j ≠ i) : (Λ[n+1, i] : SSet.{u}) _⦋n⦌ :=
+def face {n : ℕ} (i j : Fin (n + 2)) (h : j ≠ i) : (Λ[n + 1, i] : SSet.{u}) _⦋n⦌ :=
   yonedaEquiv (Subpresheaf.lift (stdSimplex.δ j) (by
     simpa using face_le_horn _ _ h))
 
 /-- Two morphisms from a horn are equal if they are equal on all suitable faces. -/
 protected
-lemma hom_ext {n : ℕ} {i : Fin (n+2)} {S : SSet} (σ₁ σ₂ : (Λ[n+1, i] : SSet.{u}) ⟶ S)
+lemma hom_ext {n : ℕ} {i : Fin (n + 2)} {S : SSet} (σ₁ σ₂ : (Λ[n + 1, i] : SSet.{u}) ⟶ S)
     (h : ∀ (j) (h : j ≠ i), σ₁.app _ (face i j h) = σ₂.app _ (face i j h)) :
     σ₁ = σ₂ := by
   rw [← Subpresheaf.equalizer_eq_iff]

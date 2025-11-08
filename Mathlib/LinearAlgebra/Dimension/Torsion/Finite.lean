@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
 -/
-import Mathlib.Algebra.Module.Torsion
+import Mathlib.Algebra.Module.Torsion.Basic
 import Mathlib.LinearAlgebra.Dimension.Finite
 
 /-!
@@ -13,7 +13,7 @@ import Mathlib.LinearAlgebra.Dimension.Finite
 
 variable {R M : Type*} [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
 
-lemma rank_eq_zero_iff_isTorsion: Module.rank R M = 0 ↔ Module.IsTorsion R M := by
+lemma rank_eq_zero_iff_isTorsion : Module.rank R M = 0 ↔ Module.IsTorsion R M := by
   rw [Module.IsTorsion, rank_eq_zero_iff]
   simp [mem_nonZeroDivisors_iff_ne_zero]
 

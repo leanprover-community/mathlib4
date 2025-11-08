@@ -1,8 +1,9 @@
 /-
 Copyright (c) 2021 David Wärn,. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Wärn, Kim Morrison
+Authors: David Wärn, Kim Morrison, Matteo Cipollina
 -/
+
 import Mathlib.Combinatorics.Quiver.Prefunctor
 import Mathlib.Logic.Lemmas
 import Batteries.Data.List.Basic
@@ -46,10 +47,10 @@ lemma obj_eq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
     {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : b = c := by injection h
 
 lemma heq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
-    {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : HEq p p' := by injection h
+    {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : p ≍ p' := by injection h
 
 lemma hom_heq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
-    {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : HEq e e' := by injection h
+    {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : e ≍ e' := by injection h
 
 /-- The length of a path is the number of arrows it uses. -/
 def length {a : V} : ∀ {b : V}, Path a b → ℕ
@@ -76,6 +77,9 @@ theorem eq_nil_of_length_zero (p : Path a a) (hzero : p.length = 0) : p = nil :=
   cases p
   · rfl
   · simp at hzero
+
+@[simp]
+lemma length_toPath {a b : V} (e : a ⟶ b) : e.toPath.length = 1 := rfl
 
 /-- Composition of paths. -/
 def comp {a b : V} : ∀ {c}, Path a b → Path b c → Path a c
@@ -152,13 +156,43 @@ lemma eq_toPath_comp_of_length_eq_succ (p : Path a b) {n : ℕ}
   | nil => simp at hp
   | @cons c d p q h =>
     cases n
-    · rw [length_cons, Nat.zero_add, Nat.add_left_eq_self] at hp
+    · rw [length_cons, Nat.zero_add, Nat.add_eq_right] at hp
       obtain rfl := eq_of_length_zero p hp
       obtain rfl := eq_nil_of_length_zero p hp
       exact ⟨d, q, nil, rfl, rfl⟩
     · rw [length_cons, Nat.add_right_cancel_iff] at hp
       obtain ⟨x, q'', p'', hl, rfl⟩ := h hp
       exact ⟨x, q'', p''.cons q, by simpa, rfl⟩
+
+section Decomposition
+
+variable {V R : Type*} [Quiver V] {a b : V} (p : Path a b)
+
+lemma length_ne_zero_iff_eq_comp (p : Path a b) :
+    p.length ≠ 0 ↔ ∃ (c : V) (e : a ⟶ c) (p' : Path c b),
+      p = e.toPath.comp p' ∧ p.length = p'.length + 1 := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · have h_len : p.length = (p.length - 1) + 1 := by omega
+    obtain ⟨c, e, p', hp', rfl⟩ := Path.eq_toPath_comp_of_length_eq_succ p h_len
+    exact ⟨c, e, p', rfl, by cutsat⟩
+  · rintro ⟨c, p', e, rfl, h⟩
+    simp [h]
+
+/-- Every non-empty path can be decomposed as an initial path plus a final edge. -/
+lemma length_ne_zero_iff_eq_cons :
+    p.length ≠ 0 ↔ ∃ (c : V) (p' : Path a c) (e : c ⟶ b), p = p'.cons e := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · cases p with
+    | nil => simp at h
+    | cons p' e => exact ⟨_, p', e, rfl⟩
+  · rintro ⟨c, p', e, rfl⟩
+    simp
+
+@[simp] lemma comp_toPath_eq_cons {a b c : V} (p : Path a b) (e : b ⟶ c) :
+    p.comp e.toPath = p.cons e :=
+  rfl
+
+end Decomposition
 
 /-- Turn a path into a list. The list contains `a` at its head, but not `b` a priori. -/
 @[simp]
@@ -173,10 +207,19 @@ theorem toList_comp (p : Path a b) : ∀ {c} (q : Path b c), (p.comp q).toList =
   | _, nil => by simp
   | _, @cons _ _ _ d _ q _ => by simp [toList_comp]
 
-theorem toList_chain_nonempty :
-    ∀ {b} (p : Path a b), p.toList.Chain (fun x y => Nonempty (y ⟶ x)) b
-  | _, nil => List.Chain.nil
-  | _, cons p f => p.toList_chain_nonempty.cons ⟨f⟩
+theorem isChain_toList_nonempty :
+    ∀ {b} (p : Path a b), (p.toList).IsChain (fun x y => Nonempty (y ⟶ x))
+  | _, nil => .nil
+  | _, cons nil _ => .singleton _
+  | _, cons (cons p g) _ => List.IsChain.cons_cons ⟨g⟩ (isChain_toList_nonempty (cons p g))
+
+theorem isChain_cons_toList_nonempty :
+    ∀ {b} (p : Path a b), (b :: p.toList).IsChain (fun x y => Nonempty (y ⟶ x))
+  | _, nil => .singleton _
+  | _, cons p f => p.isChain_cons_toList_nonempty.cons_cons ⟨f⟩
+
+@[deprecated (since := "2025-09-19")]
+alias toList_chain_nonempty := isChain_cons_toList_nonempty
 
 variable [∀ a b : V, Subsingleton (a ⟶ b)]
 
@@ -192,6 +235,75 @@ theorem toList_injective (a : V) : ∀ b, Injective (toList : Path a b → List 
 @[simp]
 theorem toList_inj {p q : Path a b} : p.toList = q.toList ↔ p = q :=
   (toList_injective _ _).eq_iff
+
+
+section BoundedPath
+
+variable {V : Type*} [Quiver V]
+
+/-- A bounded path is a path with a uniform bound on its length. -/
+def BoundedPaths (v w : V) (n : ℕ) : Sort _ :=
+  { p : Path v w // p.length ≤ n }
+
+/-- Bounded paths of length zero between two vertices form a subsingleton. -/
+instance instSubsingletonBddPaths (v w : V) : Subsingleton (BoundedPaths v w 0) where
+  allEq := fun ⟨p, hp⟩ ⟨q, hq⟩ =>
+    match v, w, p, q with
+    | _, _, .nil, .nil => rfl
+    | _, _, .cons _ _, _ => by simp [Quiver.Path.length] at hp
+    | _, _, _, .cons _ _ => by simp [Quiver.Path.length] at hq
+
+/-- Bounded paths of length zero between two vertices have decidable equality. -/
+def decidableEqBddPathsZero (v w : V) : DecidableEq (BoundedPaths v w 0) :=
+  fun _ _ => isTrue <| Subsingleton.elim _ _
+
+/-- Given decidable equality on paths of length up to `n`, we can construct
+decidable equality on paths of length up to `n + 1`. -/
+def decidableEqBddPathsOfDecidableEq (n : ℕ) (h₁ : DecidableEq V)
+    (h₂ : ∀ (v w : V), DecidableEq (v ⟶ w)) (h₃ : ∀ (v w : V), DecidableEq (BoundedPaths v w n))
+    (v w : V) : DecidableEq (BoundedPaths v w (n + 1)) :=
+  fun ⟨p, hp⟩ ⟨q, hq⟩ =>
+    match v, w, p, q with
+    | _, _, .nil, .nil => isTrue rfl
+    | _, _, .nil, .cons _ _ => isFalse fun h => Quiver.Path.noConfusion <| Subtype.mk.inj h
+    | _, _, .cons _ _, .nil => isFalse fun h => Quiver.Path.noConfusion <| Subtype.mk.inj h
+    | _, _, .cons (b := v') p' α, .cons (b := v'') q' β =>
+      match v', v'', h₁ v' v'' with
+      | _, _, isTrue (Eq.refl _) =>
+        if h : α = β then
+          have hp' : p'.length ≤ n := by simp [Quiver.Path.length] at hp; cutsat
+          have hq' : q'.length ≤ n := by simp [Quiver.Path.length] at hq; cutsat
+          if h'' : (⟨p', hp'⟩ : BoundedPaths _ _ n) = ⟨q', hq'⟩ then
+            isTrue <| by
+              apply Subtype.ext
+              dsimp
+              rw [h, show p' = q' from Subtype.mk.inj h'']
+          else
+            isFalse fun h =>
+              h'' <| Subtype.ext <| eq_of_heq <| (Quiver.Path.cons.inj <| Subtype.mk.inj h).2.1
+        else
+          isFalse fun h' =>
+            h <| eq_of_heq (Quiver.Path.cons.inj <| Subtype.mk.inj h').2.2
+      | _, _, isFalse h => isFalse fun h' =>
+        h (Quiver.Path.cons.inj <| Subtype.mk.inj h').1
+
+/-- Equality is decidable on all uniformly bounded paths given decidable
+equality on the vertices and the arrows. -/
+instance decidableEqBoundedPaths [DecidableEq V] [∀ (v w : V), DecidableEq (v ⟶ w)]
+    (n : ℕ) : (v w : V) → DecidableEq (BoundedPaths v w n) :=
+  n.rec decidableEqBddPathsZero
+    fun n decEq => decidableEqBddPathsOfDecidableEq n inferInstance inferInstance decEq
+
+/-- Equality is decidable on paths in a quiver given decidable equality on the vertices and
+arrows. -/
+instance instDecidableEq [DecidableEq V] [∀ (v w : V), DecidableEq (v ⟶ w)] :
+    (v w : V) → DecidableEq (Path v w) := fun v w p q =>
+  let m := max p.length q.length
+  let p' : BoundedPaths v w m := ⟨p, Nat.le_max_left ..⟩
+  let q' : BoundedPaths v w m := ⟨q, Nat.le_max_right ..⟩
+  decidable_of_iff (p' = q') Subtype.ext_iff
+
+end BoundedPath
 
 end Path
 

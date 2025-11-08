@@ -3,7 +3,6 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Batteries.Data.List.Pairwise
 import Batteries.Data.List.Perm
 import Mathlib.Data.List.Basic
 
@@ -52,11 +51,6 @@ lemma subperm_iff : l₁ <+~ l₂ ↔ ∃ l, l ~ l₂ ∧ l₁ <+ l := by
 lemma subperm_cons_self : l <+~ a :: l := ⟨l, Perm.refl _, sublist_cons_self _ _⟩
 
 protected alias ⟨subperm.of_cons, subperm.cons⟩ := subperm_cons
-
-@[deprecated List.cons_subperm_of_not_mem_of_mem (since := "2024-12-11"), nolint unusedArguments]
-theorem cons_subperm_of_mem {a : α} {l₁ l₂ : List α} (_ : Nodup l₁) (h₁ : a ∉ l₁) (h₂ : a ∈ l₂)
-    (s : l₁ <+~ l₂) : a :: l₁ <+~ l₂ :=
-  cons_subperm_of_not_mem_of_mem h₁ h₂ s
 
 protected theorem Nodup.subperm (d : Nodup l₁) (H : l₁ ⊆ l₂) : l₁ <+~ l₂ :=
   subperm_of_subset d H

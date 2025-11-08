@@ -39,15 +39,9 @@ theorem FiniteMultiplicity.of_not_isUnit [CancelCommMonoidWithZero α] [WfDvdMon
   obtain ⟨n, c, ndvd, rfl⟩ := WfDvdMonoid.max_power_factor' hb ha
   exact ⟨n, by rwa [pow_succ, mul_dvd_mul_iff_left (left_ne_zero_of_mul hb)]⟩
 
-@[deprecated (since := "2024-11-30")]
-alias multiplicity.finite_of_not_isUnit := FiniteMultiplicity.of_not_isUnit
-
 theorem FiniteMultiplicity.of_prime_left [CancelCommMonoidWithZero α] [WfDvdMonoid α]
     {a b : α} (ha : Prime a) (hb : b ≠ 0) : FiniteMultiplicity a b :=
   .of_not_isUnit ha.not_unit hb
-
-@[deprecated (since := "2024-11-30")]
-alias multiplicity.finite_prime_left := FiniteMultiplicity.of_prime_left
 
 namespace UniqueFactorizationMonoid
 
@@ -66,7 +60,9 @@ theorem le_emultiplicity_iff_replicate_le_normalizedFactors {a b : R} {n : ℕ} 
     ↑n ≤ emultiplicity a b ↔ replicate n (normalize a) ≤ normalizedFactors b := by
   rw [← pow_dvd_iff_le_emultiplicity]
   revert b
-  induction' n with n ih; · simp
+  induction n with
+  | zero => simp
+  | succ n ih => ?_
   intro b hb
   constructor
   · rintro ⟨c, rfl⟩
@@ -89,7 +85,7 @@ theorem emultiplicity_eq_count_normalizedFactors [DecidableEq R] {a b : R} (ha :
     (hb : b ≠ 0) : emultiplicity a b = (normalizedFactors b).count (normalize a) := by
   apply le_antisymm
   · apply Order.le_of_lt_add_one
-    rw [← Nat.cast_one, ← Nat.cast_add, lt_iff_not_ge, ge_iff_le,
+    rw [← Nat.cast_one, ← Nat.cast_add, lt_iff_not_ge,
       le_emultiplicity_iff_replicate_le_normalizedFactors ha hb, ← le_count_iff_replicate_le]
     simp
   rw [le_emultiplicity_iff_replicate_le_normalizedFactors ha hb, ← le_count_iff_replicate_le]
@@ -122,7 +118,7 @@ theorem count_normalizedFactors_eq' [DecidableEq R] {p x : R} (hp : p = 0 ∨ Ir
     (normalizedFactors x).count p = n := by
   rcases hp with (rfl | hp)
   · cases n
-    · exact count_eq_zero.2 (zero_not_mem_normalizedFactors _)
+    · exact count_eq_zero.2 (zero_notMem_normalizedFactors _)
     · rw [zero_pow (Nat.succ_ne_zero _)] at hle hlt
       exact absurd hle hlt
   · exact count_normalizedFactors_eq hp hnorm hle hlt

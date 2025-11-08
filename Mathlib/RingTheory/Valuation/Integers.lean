@@ -67,9 +67,8 @@ theorem one_of_isUnit' {x : O} (hx : IsUnit x) (H : ∀ x, v (algebraMap O R x) 
     v (algebraMap O R x) = 1 :=
   let ⟨u, hu⟩ := hx
   le_antisymm (H _) <| by
-    rw [← v.map_one, ← (algebraMap O R).map_one, ← u.mul_inv, ← mul_one (v (algebraMap O R x)), hu,
-      (algebraMap O R).map_mul, v.map_mul]
-    exact mul_le_mul_left' (H (u⁻¹ : Units O)) _
+    grw [← v.map_one, ← (algebraMap O R).map_one, ← u.mul_inv, ← mul_one (v (algebraMap O R x)), hu,
+      (algebraMap O R).map_mul, v.map_mul, H (u⁻¹ : Units O)]
 
 theorem one_of_isUnit (hv : Integers v O) {x : O} (hx : IsUnit x) : v (algebraMap O R x) = 1 :=
   one_of_isUnit' hx hv.map_le_one
@@ -92,11 +91,23 @@ theorem isUnit_of_one (hv : Integers v O) {x : O} (hx : IsUnit (algebraMap O R x
 
 theorem le_of_dvd (hv : Integers v O) {x y : O} (h : x ∣ y) :
     v (algebraMap O R y) ≤ v (algebraMap O R x) := by
-  let ⟨z, hz⟩ := h
-  rw [← mul_one (v (algebraMap O R x)), hz, RingHom.map_mul, v.map_mul]
-  exact mul_le_mul_left' (hv.2 z) _
+  obtain ⟨z, rfl⟩ := h
+  grw [← mul_one (v (algebraMap O R x)), RingHom.map_mul, v.map_mul, hv.2 z]
+
+lemma nontrivial_iff (hv : v.Integers O) : Nontrivial O ↔ Nontrivial R := by
+  constructor <;> intro h
+  · exact hv.hom_inj.nontrivial
+  · obtain ⟨o0, ho0⟩ := hv.exists_of_le_one (r := 0) (by simp)
+    obtain ⟨o1, ho1⟩ := hv.exists_of_le_one (r := 1) (by simp)
+    refine ⟨o0, o1, ?_⟩
+    rintro rfl
+    simp [ho1] at ho0
 
 end Integers
+
+lemma integers_nontrivial (v : Valuation R Γ₀) :
+    Nontrivial v.integer ↔ Nontrivial R :=
+  (Valuation.integer.integers v).nontrivial_iff
 
 end CommRing
 
@@ -117,8 +128,7 @@ theorem dvd_of_le (hv : Integers v O) {x y : O}
       hx.symm ▸ dvd_zero y)
     fun hy : algebraMap O F y ≠ 0 =>
     have : v ((algebraMap O F y)⁻¹ * algebraMap O F x) ≤ 1 := by
-      rw [← v.map_one, ← inv_mul_cancel₀ hy, v.map_mul, v.map_mul]
-      exact mul_le_mul_left' h _
+      grw [← v.map_one, ← inv_mul_cancel₀ hy, v.map_mul, v.map_mul, h]
     let ⟨z, hz⟩ := hv.3 this
     ⟨z, hv.1 <| ((algebraMap O F).map_mul y z).symm ▸ hz.symm ▸ (mul_inv_cancel_left₀ hy _).symm⟩
 
@@ -143,6 +153,10 @@ lemma isUnit_iff_valuation_eq_one (hv : Integers v O) {x : O} :
     IsUnit x ↔ v (algebraMap O F x) = 1 :=
   ⟨hv.one_of_isUnit, hv.isUnit_of_one'⟩
 
+lemma valuation_irreducible_lt_one (hv : Integers v O) {ϖ : O} (h : Irreducible ϖ) :
+    v (algebraMap O F ϖ) < 1 :=
+  lt_of_le_of_ne (hv.map_le_one ϖ) (mt hv.isUnit_iff_valuation_eq_one.mpr h.not_isUnit)
+
 lemma valuation_unit (hv : Integers v O) (x : Oˣ) :
     v (algebraMap O F x) = 1 := by
   simp [← hv.isUnit_iff_valuation_eq_one]
@@ -153,9 +167,13 @@ lemma valuation_pos_iff_ne_zero (hv : Integers v O) {x : O} :
   refine not_congr ?_
   simp [map_eq_zero_iff _ hv.hom_inj]
 
+lemma valuation_irreducible_pos (hv : Integers v O) {ϖ : O} (h : Irreducible ϖ) :
+    0 < v (algebraMap O F ϖ) :=
+  hv.valuation_pos_iff_ne_zero.mpr h.ne_zero
+
 theorem dvdNotUnit_iff_lt (hv : Integers v O) {x y : O} :
     DvdNotUnit x y ↔ v (algebraMap O F y) < v (algebraMap O F x) := by
-  rw [lt_iff_le_not_le, hv.le_iff_dvd, hv.le_iff_dvd]
+  rw [lt_iff_le_not_ge, hv.le_iff_dvd, hv.le_iff_dvd]
   refine ⟨?_, And.elim dvdNotUnit_of_dvd_of_not_dvd⟩
   rintro ⟨hx0, d, hdu, rfl⟩
   refine ⟨⟨d, rfl⟩, ?_⟩
@@ -172,11 +190,18 @@ theorem eq_algebraMap_or_inv_eq_algebraMap (hv : Integers v O) (x : F) :
   obtain ⟨a, ha⟩ := exists_of_le_one hv h
   exacts [⟨a, Or.inl ha.symm⟩, ⟨a, Or.inr ha.symm⟩]
 
+lemma coe_span_singleton_eq_setOf_le_v_algebraMap (hv : Integers v O) (x : O) :
+    (Ideal.span {x} : Set O) = {y : O | v (algebraMap O F y) ≤ v (algebraMap O F x)} := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp [Set.singleton_zero, Ideal.span_zero, map_eq_zero_iff _ hv.hom_inj]
+  ext
+  simp [SetLike.mem_coe, Ideal.mem_span_singleton, hv.dvd_iff_le]
+
 lemma bijective_algebraMap_of_subsingleton_units_mrange (hv : Integers v O)
     [Subsingleton (MonoidHom.mrange v)ˣ] :
     Function.Bijective (algebraMap O F) := by
   refine ⟨hv.hom_inj, fun x ↦ hv.exists_of_le_one ?_⟩
-  rcases eq_or_ne x 0 with rfl|hx
+  rcases eq_or_ne x 0 with rfl | hx
   · simp
   · exact (congr_arg Units.val (Subsingleton.elim (α := (MonoidHom.mrange v)ˣ)
       ((isUnit_iff_ne_zero.mpr hx).unit.map v.toMonoidHom.mrangeRestrict) 1)).le
@@ -237,7 +262,7 @@ lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : 
     simpa only [Subtype.exists, Subtype.mk_lt_mk, exists_range_iff, exists_prop]
       using H.dense ⟨v (algebraMap O F x), mem_range_self _⟩ ⟨1, 1, v.map_one⟩ hx₁
   obtain ⟨z, rfl⟩ := hv.exists_of_le_one hy₁.le
-  exact hy.not_le <| hx ⟨hy₁, mem_range_self _⟩
+  exact hy.not_ge <| hx ⟨hy₁, mem_range_self _⟩
 
 end Integers
 
@@ -247,7 +272,167 @@ theorem Integer.not_isUnit_iff_valuation_lt_one {x : v.integer} : ¬IsUnit x ↔
     le_antisymm_iff]
   exacts [and_iff_right x.2, integer.integers v]
 
+namespace integer
+
+lemma v_irreducible_lt_one {ϖ : v.integer} (h : Irreducible ϖ) :
+    v ϖ < 1 :=
+  (Valuation.integer.integers v).valuation_irreducible_lt_one h
+
+lemma v_irreducible_pos {ϖ : v.integer} (h : Irreducible ϖ) : 0 < v ϖ :=
+  (Valuation.integer.integers v).valuation_irreducible_pos h
+
+lemma coe_span_singleton_eq_setOf_le_v_coe (x : v.integer) :
+    (Ideal.span {x} : Set v.integer) = {y : v.integer | v y ≤ v x} :=
+  (Valuation.integer.integers v).coe_span_singleton_eq_setOf_le_v_algebraMap x
+
+end integer
 
 end Field
+
+section Ideal
+
+variable {R : Type u} {Γ₀ : Type v} [Ring R] [LinearOrderedCommGroupWithZero Γ₀]
+variable (v : Valuation R Γ₀)
+local notation "𝓞" => v.integer
+
+/-- The `v.integer`-submodule of `R` of elements whose valuation is less than or equal to a
+certain value. -/
+def leSubmodule (γ : Γ₀) : Submodule 𝓞 R where
+  __ := leAddSubgroup v γ
+  smul_mem' r x h := by
+    simpa [Subring.smul_def] using mul_le_of_le_one_of_le r.prop h
+
+/-- The `v.integer`-submodule of `R` of elements whose valuation is less than a certain unit. -/
+def ltSubmodule (γ : Γ₀ˣ) : Submodule 𝓞 R where
+  __ := ltAddSubgroup v γ
+  smul_mem' r x h := by
+    simpa [Subring.smul_def] using mul_lt_of_le_one_of_lt r.prop h
+
+lemma leSubmodule_monotone : Monotone (leSubmodule v) :=
+  leAddSubgroup_monotone v
+
+lemma ltSubmodule_monotone : Monotone (ltSubmodule v) :=
+  ltAddSubgroup_monotone v
+
+lemma ltSubmodule_le_leSubmodule (γ : Γ₀ˣ) :
+    ltSubmodule v γ ≤ leSubmodule v (γ : Γ₀) :=
+  ltAddSubgroup_le_leAddSubgroup v γ
+
+variable {v} in
+@[simp]
+lemma mem_leSubmodule_iff {γ : Γ₀} {x : R} :
+    x ∈ leSubmodule v γ ↔ v x ≤ γ :=
+  Iff.rfl
+
+variable {v} in
+@[simp]
+lemma mem_ltSubmodule_iff {γ : Γ₀ˣ} {x : R} :
+    x ∈ ltSubmodule v γ ↔ v x < γ :=
+  Iff.rfl
+
+@[simp]
+lemma leSubmodule_zero (K : Type*) [Field K] (v : Valuation K Γ₀) :
+    leSubmodule v (0 : Γ₀) = ⊥ := by
+  ext; simp
+
+lemma leSubmodule_v_le_of_mem {K : Type*} [Field K] (v : Valuation K Γ₀)
+    {S : Submodule v.integer K} {x : K} (hx : x ∈ S) :
+    leSubmodule v (v x) ≤ S := by
+  rcases eq_or_ne x 0 with rfl | hx0
+  · simp
+  intro y hy
+  have : v ((y : K) / x) ≤ 1 := by simp [div_le_one_of_le₀ hy]
+  simpa [Subring.smul_def, div_mul_cancel₀ _ hx0] using S.smul_mem ⟨_, this⟩ hx
+
+lemma ltSubmodule_v_le_of_mem {K : Type*} [Field K] {v : Valuation K Γ₀}
+    {S : Submodule v.integer K} {x : K} (hx : x ∈ S) (hxv : v x ≠ 0) :
+    ltSubmodule v (Units.mk0 _ hxv) ≤ S :=
+  (leSubmodule_v_le_of_mem v hx).trans' (ltSubmodule_le_leSubmodule _ _)
+
+-- the ideals do not use the submodules due to `Submodule.comap _ (Algebra.linearMap _ _)`
+-- requiring commutativity
+
+/-- The ideal of elements of the valuation subring whose valuation is less than or equal to a
+certain value. -/
+def leIdeal (γ : Γ₀) : Ideal 𝓞 where
+  __ := AddSubgroup.addSubgroupOf (leAddSubgroup v γ) v.integer.toAddSubgroup
+  smul_mem' r x h :=
+    -- need to specify the subgroup, it is not inferred otherwise
+    (AddSubgroup.mem_addSubgroupOf (K := v.integer.toAddSubgroup)).mpr <| by
+      simpa using mul_le_of_le_one_of_le r.prop h
+
+/-- The ideal of elements of the valuation subring whose valuation is less than a certain unit. -/
+def ltIdeal (γ : Γ₀ˣ) : Ideal 𝓞 where
+  __ := AddSubgroup.addSubgroupOf (ltAddSubgroup v γ) v.integer.toAddSubgroup
+  smul_mem' r x h := by
+    change v ((r : R) * x) < γ -- not sure why simp can't get us to here
+    simpa [Subring.smul_def] using mul_lt_of_le_one_of_lt r.prop h
+
+-- Can't use `leAddSubgroup` because `addSubgroupOf` is a dependent function
+lemma leIdeal_mono : Monotone (leIdeal v) :=
+  fun _ _ h _ ↦ h.trans'
+
+lemma ltIdeal_mono : Monotone (ltIdeal v) :=
+  fun _ _ h _ ↦ (Units.val_le_val.mpr h).trans_lt'
+
+lemma ltIdeal_le_leIdeal (γ : Γ₀ˣ) :
+    ltIdeal v γ ≤ leIdeal v (γ : Γ₀) :=
+  fun _ h ↦ h.le
+
+variable {v} in
+@[simp]
+lemma mem_leIdeal_iff {γ : Γ₀} {x : 𝓞} :
+    x ∈ leIdeal v γ ↔ v (x : R) ≤ γ :=
+  Iff.rfl
+
+variable {v} in
+@[simp]
+lemma mem_ltIdeal_iff {γ : Γ₀ˣ} {x : 𝓞} :
+    x ∈ ltIdeal v γ ↔ v (x : R) < γ :=
+  Iff.rfl
+
+@[simp]
+lemma leIdeal_zero (K : Type*) [Field K] (v : Valuation K Γ₀) :
+    leIdeal v (0 : Γ₀) = ⊥ := by
+  ext; simp
+
+lemma leSubmodule_comap_algebraMap_eq_leIdeal {K : Type*} [Field K] (v : Valuation K Γ₀) (γ : Γ₀) :
+    (leSubmodule v γ).comap (Algebra.linearMap _ _) = leIdeal v γ :=
+  Submodule.ext fun _ ↦ Iff.rfl
+
+lemma leIdeal_map_algebraMap_eq_leSubmodule_min {K : Type*} [Field K] (v : Valuation K Γ₀)
+    (γ : Γ₀) :
+    Submodule.map (Algebra.linearMap _ _) (leIdeal v γ) = leSubmodule v (min 1 γ) := by
+  ext x
+  simp only [Submodule.mem_map, mem_leIdeal_iff, Algebra.linearMap_apply, mem_leSubmodule_iff]
+  constructor
+  · rintro ⟨y, hy, rfl⟩
+    rcases min_cases 1 γ with ⟨h, _⟩ | ⟨h, _⟩
+    · rw [h]
+      exact y.prop
+    · rw [h]
+      exact hy
+  · intro hx
+    rcases min_cases 1 γ with ⟨h, h'⟩ | ⟨h, h'⟩ <;> rw [h] at hx
+    · exact ⟨⟨x, hx⟩, hx.trans h', rfl⟩
+    · exact ⟨⟨x, hx.trans h'.le⟩, hx, rfl⟩
+
+-- Ideally, this would follow from `leSubmodule_v_le_of_mem`
+lemma leIdeal_v_le_of_mem {K : Type*} [Field K] (v : Valuation K Γ₀)
+    {I : Ideal v.integer} {x : v.integer} (hx : x ∈ I) :
+    leIdeal v (v (x : K)) ≤ I := by
+  rcases eq_or_ne x 0 with rfl | hx0
+  · simp
+  intro y hy
+  have : v ((y : K) / x) ≤ 1 := by simpa using div_le_one_of_le₀ hy zero_le'
+  convert I.smul_mem ⟨_, this⟩ hx using 1
+  simp [Subtype.ext_iff, div_mul_cancel₀ _ (ZeroMemClass.coe_eq_zero.not.mpr hx0)]
+
+lemma ltIdeal_v_le_of_mem {K : Type*} [Field K] {v : Valuation K Γ₀}
+    {I : Ideal v.integer} {x : v.integer} (hx : x ∈ I) (hxv : v (x : K) ≠ 0) :
+    ltIdeal v (Units.mk0 _ hxv) ≤ I :=
+  (leIdeal_v_le_of_mem v hx).trans' (ltIdeal_le_leIdeal _ _)
+
+end Ideal
 
 end Valuation

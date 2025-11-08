@@ -3,7 +3,6 @@ Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
-import Mathlib.Data.Fin.VecNotation
 import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
@@ -69,8 +68,7 @@ abbrev IsRelational : Prop := ∀ n, IsEmpty (L.Functions n)
 abbrev IsAlgebraic : Prop := ∀ n, IsEmpty (L.Relations n)
 
 /-- The empty language has no symbols. -/
-protected def empty : Language :=
-  ⟨fun _ => Empty, fun _ => Empty⟩
+protected def empty : Language := ⟨fun _ => Empty, fun _ => Empty⟩
   deriving IsAlgebraic, IsRelational
 
 instance : Inhabited Language :=
@@ -110,13 +108,11 @@ instance isAlgebraic_sum [L.IsAlgebraic] [L'.IsAlgebraic] : IsAlgebraic (L.sum L
 theorem card_empty : Language.empty.card = 0 := by simp only [card, mk_sum, mk_sigma, mk_eq_zero,
   sum_const, mk_eq_aleph0, lift_id', mul_zero, add_zero]
 
-@[deprecated (since := "2025-02-05")] alias empty_card := card_empty
-
 instance isEmpty_empty : IsEmpty Language.empty.Symbols := by
   simp only [Language.Symbols, isEmpty_sum, isEmpty_sigma]
   exact ⟨fun _ => inferInstance, fun _ => inferInstance⟩
 
-instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σl, L.Functions l) :=
+instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σ l, L.Functions l) :=
   @Function.Injective.countable _ _ h _ Sum.inl_injective
 
 @[simp]
@@ -761,11 +757,6 @@ theorem relMap_sumInr {n : ℕ} (R : L₂.Relations n) :
     @RelMap (L₁.sum L₂) S _ n (Sum.inr R) = RelMap R :=
   rfl
 
-@[deprecated (since := "2025-02-21")] alias funMap_sum_inl := funMap_sumInl
-@[deprecated (since := "2025-02-21")] alias funMap_sum_inr := funMap_sumInr
-@[deprecated (since := "2025-02-21")] alias relMap_sum_inl := relMap_sumInl
-@[deprecated (since := "2025-02-21")] alias relMap_sum_inr := relMap_sumInr
-
 
 end SumStructure
 
@@ -811,8 +802,6 @@ end FirstOrder
 namespace Equiv
 
 open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
-
-open FirstOrder
 
 variable {L : Language} {M : Type*} {N : Type*} [L.Structure M]
 

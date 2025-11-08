@@ -26,7 +26,8 @@ namespace Finset
 variable {α β : Type*}
 
 /-- `Finset α` has distributive negation if `α` has. -/
-protected def distribNeg [DecidableEq α] [Mul α] [HasDistribNeg α] : HasDistribNeg (Finset α) :=
+protected noncomputable def distribNeg [DecidableEq α] [Mul α] [HasDistribNeg α] :
+    HasDistribNeg (Finset α) :=
   coe_injective.hasDistribNeg _ coe_neg coe_mul
 
 scoped[Pointwise] attribute [instance] Finset.distribNeg

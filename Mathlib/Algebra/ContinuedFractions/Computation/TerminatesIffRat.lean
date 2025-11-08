@@ -12,7 +12,7 @@ import Mathlib.Data.Rat.Floor
 
 ## Summary
 We show that the continued fraction for a value `v`, as defined in
-`Mathlib.Algebra.ContinuedFractions.Basic`, terminates if and only if `v` corresponds to a
+`Mathlib/Algebra/ContinuedFractions/Basic.lean`, terminates if and only if `v` corresponds to a
 rational number, that is `↑v = q` for some `q : ℚ`.
 
 ## Main Theorems
@@ -136,7 +136,7 @@ some technical translation lemmas. More precisely, in this section, we show that
 number `q : ℚ` and value `v : K` with `v = ↑q`, the continued fraction of `q` and `v` coincide.
 In particular, we show that
 ```lean
-    (↑(GenContFract.of q : GenContFract ℚ) : GenContFract K) = GenContFract.of v`
+    (↑(GenContFract.of q : GenContFract ℚ) : GenContFract K) = GenContFract.of v
 ```
 in `GenContFract.coe_of_rat_eq`.
 
@@ -163,7 +163,7 @@ theorem coe_stream_nth_rat_eq (v_eq_q : v = (↑q : K)) (n : ℕ) :
       IntFractPair.stream v n := by
   induction n with
   | zero =>
-    simp only [IntFractPair.stream, Option.map_some', coe_of_rat_eq v_eq_q]
+    simp only [IntFractPair.stream, Option.map_some, coe_of_rat_eq v_eq_q]
   | succ n IH =>
     rw [v_eq_q] at IH
     cases stream_q_nth_eq : IntFractPair.stream q n with
@@ -189,9 +189,7 @@ end IntFractPair
 
 
 theorem coe_of_h_rat_eq (v_eq_q : v = (↑q : K)) : (↑((of q).h : ℚ) : K) = (of v).h := by
-  unfold of IntFractPair.seq1
-  rw [← IntFractPair.coe_of_rat_eq v_eq_q]
-  simp
+  simp_all
 
 theorem coe_of_s_get?_rat_eq (v_eq_q : v = (↑q : K)) (n : ℕ) :
     (((of q).s.get? n).map (Pair.map (↑)) : Option <| Pair K) = (of v).s.get? n := by
@@ -210,7 +208,7 @@ theorem coe_of_rat_eq (v_eq_q : v = (↑q : K)) :
     (⟨(of q).h, (of q).s.map (Pair.map (↑))⟩ : GenContFract K) = of v := by
   rcases gcf_v_eq : of v with ⟨h, s⟩; subst v
   obtain rfl : ↑⌊(q : K)⌋ = h := by injection gcf_v_eq
-  simp [coe_of_h_rat_eq rfl, coe_of_s_rat_eq rfl, gcf_v_eq]
+  simp [coe_of_s_rat_eq rfl, gcf_v_eq]
 
 theorem of_terminates_iff_of_rat_terminates {v : K} {q : ℚ} (v_eq_q : v = (q : K)) :
     (of v).Terminates ↔ (of q).Terminates := by
@@ -276,12 +274,11 @@ theorem stream_nth_fr_num_le_fr_num_sub_n_rat :
   | succ n IH =>
     intro ifp_succ_n stream_succ_nth_eq
     suffices ifp_succ_n.fr.num + 1 ≤ (IntFractPair.of q).fr.num - n by
-      rw [Int.ofNat_succ, sub_add_eq_sub_sub]
+      rw [Int.natCast_succ, sub_add_eq_sub_sub]
       solve_by_elim [le_sub_right_of_add_le]
     rcases succ_nth_stream_eq_some_iff.mp stream_succ_nth_eq with ⟨ifp_n, stream_nth_eq, -⟩
     have : ifp_succ_n.fr.num < ifp_n.fr.num :=
       stream_succ_nth_fr_num_lt_nth_fr_num_rat stream_nth_eq stream_succ_nth_eq
-    have : ifp_succ_n.fr.num + 1 ≤ ifp_n.fr.num := Int.add_one_le_of_lt this
     exact le_trans this (IH stream_nth_eq)
 
 theorem exists_nth_stream_eq_none_of_rat (q : ℚ) : ∃ n : ℕ, IntFractPair.stream q n = none := by
@@ -298,7 +295,7 @@ theorem exists_nth_stream_eq_none_of_rat (q : ℚ) : ∃ n : ℕ, IntFractPair.s
         sub_add_eq_sub_sub_swap, sub_right_comm, sub_self, zero_sub]
     have : 0 ≤ ifp.fr := (nth_stream_fr_nonneg_lt_one stream_nth_eq).left
     have : 0 ≤ ifp.fr.num := Rat.num_nonneg.mpr this
-    omega
+    cutsat
 
 end IntFractPair
 

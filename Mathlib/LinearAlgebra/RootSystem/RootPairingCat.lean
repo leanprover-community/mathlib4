@@ -12,12 +12,12 @@ This file defines the category of root pairings, following the definition of cat
 given in SGA III Exp. 21 Section 6.
 
 ## Main definitions:
- * `RootPairingCat`: Objects are root pairings.
+* `RootPairingCat`: Objects are root pairings.
 
 ## TODO
 
- * Forgetful functors
- * Functions passing between module maps and root pairing homs
+* Forgetful functors
+* Functions passing between module maps and root pairing homs
 
 ## Implementation details
 
@@ -53,7 +53,7 @@ attribute [instance] RootPairingCat.coweightIsAddCommGroup RootPairingCat.coweig
 
 namespace RootPairingCat
 
-instance category : Category.{v, max (v+1) u} (RootPairingCat.{v} R) where
+instance category : Category.{v, max (v + 1) u} (RootPairingCat.{v} R) where
   Hom P Q := RootPairing.Hom P.pairing Q.pairing
   id P := RootPairing.Hom.id P.pairing
   comp f g := RootPairing.Hom.comp g f

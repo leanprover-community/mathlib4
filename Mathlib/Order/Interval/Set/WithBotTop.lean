@@ -29,8 +29,7 @@ theorem preimage_coe_top : (some : α → WithTop α) ⁻¹' {⊤} = (∅ : Set 
 variable [Preorder α] {a b : α}
 
 theorem range_coe : range (some : α → WithTop α) = Iio ⊤ := by
-  ext x
-  rw [mem_Iio, WithTop.lt_top_iff_ne_top, mem_range, ne_top_iff_exists]
+  ext; simp [mem_range, WithTop.lt_top_iff_ne_top, ne_top_iff_exists]
 
 @[simp]
 theorem preimage_coe_Ioi : (some : α → WithTop α) ⁻¹' Ioi a = Ioi a :=
@@ -104,6 +103,24 @@ theorem image_coe_Ioo : (some : α → WithTop α) '' Ioo a b = Ioo (a : WithTop
   rw [← preimage_coe_Ioo, image_preimage_eq_inter_range, range_coe,
     inter_eq_self_of_subset_left (Subset.trans Ioo_subset_Iio_self <| Iio_subset_Iio le_top)]
 
+theorem Ioi_coe : Ioi (a : WithTop α) = (↑) '' (Ioi a) ∪ {⊤} := by
+  ext x; induction x <;> simp
+
+theorem Ici_coe : Ici (a : WithTop α) = (↑) '' (Ici a) ∪ {⊤} := by
+  ext x; induction x <;> simp
+
+theorem Iio_coe : Iio (a : WithTop α) = (↑) '' (Iio a) := image_coe_Iio.symm
+
+theorem Iic_coe : Iic (a : WithTop α) = (↑) '' (Iic a) := image_coe_Iic.symm
+
+theorem Icc_coe : Icc (a : WithTop α) b = (↑) '' (Icc a b) := image_coe_Icc.symm
+
+theorem Ico_coe : Ico (a : WithTop α) b = (↑) '' (Ico a b) := image_coe_Ico.symm
+
+theorem Ioc_coe : Ioc (a : WithTop α) b = (↑) '' (Ioc a b) := image_coe_Ioc.symm
+
+theorem Ioo_coe : Ioo (a : WithTop α) b = (↑) '' (Ioo a b) := image_coe_Ioo.symm
+
 end WithTop
 
 /-! ### `WithBot` -/
@@ -116,8 +133,8 @@ theorem preimage_coe_bot : (some : α → WithBot α) ⁻¹' {⊥} = (∅ : Set 
 
 variable [Preorder α] {a b : α}
 
-theorem range_coe : range (some : α → WithBot α) = Ioi ⊥ :=
-  @WithTop.range_coe αᵒᵈ _
+theorem range_coe : range (some : α → WithBot α) = Ioi ⊥ := by
+  ext; simp [mem_range, WithBot.bot_lt_iff_ne_bot, ne_bot_iff_exists]
 
 @[simp]
 theorem preimage_coe_Ioi : (some : α → WithBot α) ⁻¹' Ioi a = Ioi a :=
@@ -190,5 +207,23 @@ theorem image_coe_Ico : (some : α → WithBot α) '' Ico a b = Ico (a : WithBot
 theorem image_coe_Ioo : (some : α → WithBot α) '' Ioo a b = Ioo (a : WithBot α) b := by
   rw [← preimage_coe_Ioo, image_preimage_eq_inter_range, range_coe,
     inter_eq_self_of_subset_left (Subset.trans Ioo_subset_Ioi_self <| Ioi_subset_Ioi bot_le)]
+
+theorem Ioi_coe : Ioi (a : WithBot α) = (↑) '' (Ioi a) := image_coe_Ioi.symm
+
+theorem Ici_coe : Ici (a : WithBot α) = (↑) '' (Ici a) := image_coe_Ici.symm
+
+theorem Iio_coe : Iio (a : WithBot α) = (↑) '' (Iio a) ∪ {⊥} := by
+  ext x; induction x <;> simp
+
+theorem Iic_coe : Iic (a : WithBot α) = (↑) '' (Iic a) ∪ {⊥} := by
+  ext x; induction x <;> simp
+
+theorem Icc_coe : Icc (a : WithBot α) b = (↑) '' (Icc a b) := image_coe_Icc.symm
+
+theorem Ico_coe : Ico (a : WithBot α) b = (↑) '' (Ico a b) := image_coe_Ico.symm
+
+theorem Ioc_coe : Ioc (a : WithBot α) b = (↑) '' (Ioc a b) := image_coe_Ioc.symm
+
+theorem Ioo_coe : Ioo (a : WithBot α) b = (↑) '' (Ioo a b) := image_coe_Ioo.symm
 
 end WithBot

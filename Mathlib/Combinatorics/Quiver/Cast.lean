@@ -10,7 +10,7 @@ import Mathlib.Combinatorics.Quiver.Path
 
 # Rewriting arrows and paths along vertex equalities
 
-This files defines `Hom.cast` and `Path.cast` (and associated lemmas) in order to allow
+This file defines `Hom.cast` and `Path.cast` (and associated lemmas) in order to allow
 rewriting arrows and paths along equalities of their endpoints.
 
 -/
@@ -49,17 +49,17 @@ theorem Hom.cast_cast {u v u' v' u'' v'' : U} (e : u ⟶ v) (hu : u = u') (hv : 
   rfl
 
 theorem Hom.cast_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (e : u ⟶ v) :
-    HEq (e.cast hu hv) e := by
+    e.cast hu hv ≍ e := by
   subst_vars
   rfl
 
 theorem Hom.cast_eq_iff_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (e : u ⟶ v) (e' : u' ⟶ v') :
-    e.cast hu hv = e' ↔ HEq e e' := by
+    e.cast hu hv = e' ↔ e ≍ e' := by
   rw [Hom.cast_eq_cast]
   exact _root_.cast_eq_iff_heq
 
 theorem Hom.eq_cast_iff_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (e : u ⟶ v) (e' : u' ⟶ v') :
-    e' = e.cast hu hv ↔ HEq e' e := by
+    e' = e.cast hu hv ↔ e' ≍ e := by
   rw [eq_comm, Hom.cast_eq_iff_heq]
   exact ⟨HEq.symm, HEq.symm⟩
 
@@ -96,17 +96,17 @@ theorem Path.cast_nil {u u' : U} (hu : u = u') : (Path.nil : Path u u).cast hu h
   rfl
 
 theorem Path.cast_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (p : Path u v) :
-    HEq (p.cast hu hv) p := by
+    p.cast hu hv ≍ p := by
   rw [Path.cast_eq_cast]
   exact _root_.cast_heq _ _
 
 theorem Path.cast_eq_iff_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (p : Path u v)
-    (p' : Path u' v') : p.cast hu hv = p' ↔ HEq p p' := by
+    (p' : Path u' v') : p.cast hu hv = p' ↔ p ≍ p' := by
   rw [Path.cast_eq_cast]
   exact _root_.cast_eq_iff_heq
 
 theorem Path.eq_cast_iff_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (p : Path u v)
-    (p' : Path u' v') : p' = p.cast hu hv ↔ HEq p' p :=
+    (p' : Path u' v') : p' = p.cast hu hv ↔ p' ≍ p :=
   ⟨fun h => ((p.cast_eq_iff_heq hu hv p').1 h.symm).symm, fun h =>
     ((p.cast_eq_iff_heq hu hv p').2 h.symm).symm⟩
 

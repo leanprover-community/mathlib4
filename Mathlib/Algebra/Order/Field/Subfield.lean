@@ -17,7 +17,7 @@ variable {K : Type*}
 /-- A subfield of an ordered field is a ordered field. -/
 instance toIsStrictOrderedRing [Field K] [LinearOrder K] [IsStrictOrderedRing K] (s : Subfield K) :
     IsStrictOrderedRing s :=
-  Subtype.coe_injective.isStrictOrderedRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+  Function.Injective.isStrictOrderedRing
+    Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) .rfl .rfl
 
 end Subfield

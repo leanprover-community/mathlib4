@@ -31,12 +31,12 @@ section DotProduct
 
 /-- Orthogonality on the projective plane. -/
 def orthogonal : ℙ F (m → F) → ℙ F (m → F) → Prop :=
-  Quotient.lift₂ (fun v w ↦ dotProduct v.1 w.1 = 0) (fun _ _ _ _ ⟨_, h1⟩ ⟨_, h2⟩ ↦ by
+  Quotient.lift₂ (fun v w ↦ v.1 ⬝ᵥ w.1 = 0) (fun _ _ _ _ ⟨_, h1⟩ ⟨_, h2⟩ ↦ by
     simp_rw [← h1, ← h2, dotProduct_smul, smul_dotProduct, smul_smul,
       smul_eq_zero_iff_eq])
 
 lemma orthogonal_mk {v w : m → F} (hv : v ≠ 0) (hw : w ≠ 0) :
-    orthogonal (mk F v hv) (mk F w hw) ↔ dotProduct v w = 0 :=
+    orthogonal (mk F v hv) (mk F w hw) ↔ v ⬝ᵥ w = 0 :=
   Iff.rfl
 
 lemma orthogonal_comm {v w : ℙ F (m → F)} : orthogonal v w ↔ orthogonal w v := by

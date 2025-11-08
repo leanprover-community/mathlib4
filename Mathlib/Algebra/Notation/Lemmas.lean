@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yael Dillies
 -/
 import Batteries.Tactic.Init
-import Mathlib.Algebra.Notation.Defs
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
@@ -17,7 +16,7 @@ assert_not_exists Monoid
 variable {α : Type*}
 
 section dite
-variable [One α] {p : Prop} [Decidable p] {a : p → α} {b : ¬ p → α}
+variable [One α] {p : Prop} [Decidable p] {a : p → α} {b : ¬p → α}
 
 @[to_additive dite_nonneg]
 lemma one_le_dite [LE α] (ha : ∀ h, 1 ≤ a h) (hb : ∀ h, 1 ≤ b h) : 1 ≤ dite p a b := by

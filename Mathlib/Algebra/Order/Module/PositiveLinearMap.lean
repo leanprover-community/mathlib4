@@ -50,6 +50,17 @@ def toPositiveLinearMap (f : F) : E₁ →ₚ[R] E₂ :=
 instance instCoeToLinearMap : CoeHead F (E₁ →ₚ[R] E₂) where
   coe f := toPositiveLinearMap f
 
+/-- An additive group homomorphism that maps nonnegative elements to nonnegative elements
+is an order homomorphism. -/
+lemma _root_.OrderHomClass.of_addMonoidHom {F' E₁' E₂' : Type*} [FunLike F' E₁' E₂'] [AddGroup E₁']
+    [LE E₁'] [AddRightMono E₁'] [AddGroup E₂'] [LE E₂'] [AddRightMono E₂']
+    [AddMonoidHomClass F' E₁' E₂']
+    (h : ∀ f : F', ∀ x, 0 ≤ x → 0 ≤ f x) : OrderHomClass F' E₁' E₂' where
+  map_rel f a b hab := by simpa using h f (b - a) (sub_nonneg.mpr hab)
+
+@[deprecated (since := "2025-09-13")] alias _root_.OrderHomClass.ofLinear :=
+  OrderHomClass.of_addMonoidHom
+
 end PositiveLinearMapClass
 
 namespace PositiveLinearMap
@@ -68,6 +79,10 @@ instance : FunLike (E₁ →ₚ[R] E₂) E₁ E₂ where
     congr
     apply DFunLike.coe_injective'
     exact h
+
+@[ext]
+lemma ext {f g : E₁ →ₚ[R] E₂} (h : ∀ x, f x = g x) : f = g :=
+  DFunLike.ext f g h
 
 instance : LinearMapClass (E₁ →ₚ[R] E₂) R E₁ E₂ where
   map_add f := map_add f.toLinearMap

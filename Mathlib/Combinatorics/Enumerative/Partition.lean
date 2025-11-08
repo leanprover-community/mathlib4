@@ -60,10 +60,6 @@ deriving DecidableEq
 
 namespace Partition
 
-@[deprecated "Partition now derives an instance of DecidableEq." (since := "2024-12-28")]
-instance decidableEqPartition {n : ℕ} : DecidableEq (Partition n) :=
-  fun _ _ => decidable_of_iff' _ Partition.ext_iff
-
 /-- A composition induces a partition (just convert the list to a multiset). -/
 @[simps]
 def ofComposition (n : ℕ) (c : Composition n) : Partition n where
@@ -98,7 +94,7 @@ def ofSym {n : ℕ} {σ : Type*} (s : Sym σ n) [DecidableEq σ] : n.Partition w
   parts := s.1.dedup.map s.1.count
   parts_pos := by simp [Multiset.count_pos]
   parts_sum := by
-    show ∑ a ∈ s.1.toFinset, count a s.1 = n
+    change ∑ a ∈ s.1.toFinset, count a s.1 = n
     rw [toFinset_sum_count_eq]
     exact s.2
 
@@ -106,7 +102,7 @@ variable {n : ℕ} {σ τ : Type*} [DecidableEq σ] [DecidableEq τ]
 
 @[simp] lemma ofSym_map (e : σ ≃ τ) (s : Sym σ n) :
     ofSym (s.map e) = ofSym s := by
-  simp only [ofSym, Sym.val_eq_coe, Sym.coe_map, toFinset_val, mk.injEq]
+  simp only [ofSym, Sym.val_eq_coe, Sym.coe_map, mk.injEq]
   rw [Multiset.dedup_map_of_injective e.injective]
   simp only [map_map, Function.comp_apply]
   congr; funext i
@@ -130,7 +126,7 @@ instance {n : ℕ} : Inhabited (Partition n) := ⟨indiscrete n⟩
   simp [indiscrete, filter_eq_self, hn]
 
 @[simp] lemma partition_zero_parts (p : Partition 0) : p.parts = 0 :=
-  eq_zero_of_forall_not_mem fun _ h => (p.parts_pos h).ne' <| sum_eq_zero_iff.1 p.parts_sum _ h
+  eq_zero_of_forall_notMem fun _ h => (p.parts_pos h).ne' <| sum_eq_zero_iff.1 p.parts_sum _ h
 
 instance UniquePartitionZero : Unique (Partition 0) where
   uniq _ := Partition.ext <| by simp
@@ -149,7 +145,7 @@ instance UniquePartitionOne : Unique (Partition 1) where
 
 /-- The number of times a positive integer `i` appears in the partition `ofSums n l hl` is the same
 as the number of times it appears in the multiset `l`.
-(For `i = 0`, `Partition.non_zero` combined with `Multiset.count_eq_zero_of_not_mem` gives that
+(For `i = 0`, `Partition.non_zero` combined with `Multiset.count_eq_zero_of_notMem` gives that
 this is `0` instead.)
 -/
 theorem count_ofSums_of_ne_zero {n : ℕ} {l : Multiset ℕ} (hl : l.sum = n) {i : ℕ} (hi : i ≠ 0) :

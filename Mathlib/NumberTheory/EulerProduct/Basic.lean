@@ -85,9 +85,9 @@ lemma summable_and_hasSum_factoredNumbers_prod_filter_prime_tsum
   induction s using Finset.induction with
   | empty =>
     rw [factoredNumbers_empty]
-    simp only [not_mem_empty, IsEmpty.forall_iff, forall_const, filter_true_of_mem, prod_empty]
+    simp only [notMem_empty, IsEmpty.forall_iff, forall_const, filter_true_of_mem, prod_empty]
     exact ⟨(Set.finite_singleton 1).summable (‖f ·‖), hf₁ ▸ hasSum_singleton 1 f⟩
-  | @insert p s hp ih =>
+  | insert p s hp ih =>
     rw [filter_insert]
     split_ifs with hpp
     · constructor
@@ -170,10 +170,9 @@ multiplicative on coprime arguments, and `‖f ·‖` is summable, then
 theorem eulerProduct_hasProd (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
     HasProd (fun p : Primes ↦ ∑' e, f (p ^ e)) (∑' n, f n) := by
   let F : ℕ → R := fun n ↦ ∑' e, f (n ^ e)
-  change HasProd (F ∘ Subtype.val) _
-  rw [hasProd_subtype_iff_mulIndicator,
-    show Set.mulIndicator (fun p : ℕ ↦ Irreducible p) =  {p | Nat.Prime p}.mulIndicator from rfl,
-    HasProd, Metric.tendsto_atTop]
+  change HasProd (F ∘ Subtype.val (p := (· ∈ {x | Nat.Prime x}))) _
+  rw [hasProd_subtype_iff_mulIndicator, HasProd, SummationFilter.unconditional,
+    Metric.tendsto_atTop]
   intro ε hε
   obtain ⟨N₀, hN₀⟩ := norm_tsum_factoredNumbers_sub_tsum_lt hsum.of_norm hf₀ hε
   refine ⟨range N₀, fun s hs ↦ ?_⟩
@@ -191,7 +190,7 @@ multiplicative on coprime arguments, and `‖f ·‖` is summable, then
 `∏' p : ℕ, if p.Prime then ∑' e, f (p ^ e) else 1 = ∑' n, f n`.
 This version is stated using `HasProd` and `Set.mulIndicator`. -/
 theorem eulerProduct_hasProd_mulIndicator (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
-    HasProd (Set.mulIndicator {p | Nat.Prime p} fun p ↦  ∑' e, f (p ^ e)) (∑' n, f n) := by
+    HasProd (Set.mulIndicator {p | Nat.Prime p} fun p ↦ ∑' e, f (p ^ e)) (∑' n, f n) := by
   rw [← hasProd_subtype_iff_mulIndicator]
   exact eulerProduct_hasProd hf₁ hmul hsum hf₀
 

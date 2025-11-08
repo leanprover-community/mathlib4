@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Data.DFinsupp.Module
 
 /-!
@@ -198,7 +199,7 @@ variable [∀ (i) (x : α i), Decidable (x ≠ 0)] {f g : Π₀ i, α i} {s : Fi
 
 theorem le_iff' (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
   ⟨fun h s _ ↦ h s, fun h s ↦
-    if H : s ∈ f.support then h s (hf H) else (not_mem_support_iff.1 H).symm ▸ zero_le (g s)⟩
+    if H : s ∈ f.support then h s (hf H) else (notMem_support_iff.1 H).symm ▸ zero_le (g s)⟩
 
 theorem le_iff : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
   le_iff' <| Subset.refl _
@@ -243,12 +244,13 @@ variable (α)
 instance : OrderedSub (Π₀ i, α i) :=
   ⟨fun _ _ _ ↦ forall_congr' fun _ ↦ tsub_le_iff_right⟩
 
-instance [∀ i, CovariantClass (α i) (α i) (· + ·) (· ≤ ·)] : CanonicallyOrderedAdd (Π₀ i, α i) where
+instance [∀ i, AddLeftMono (α i)] : CanonicallyOrderedAdd (Π₀ i, α i) where
   exists_add_of_le := by
     intro f g h
     exists g - f
     ext i
     exact (add_tsub_cancel_of_le <| h i).symm
+  le_add_self := fun _ _ _ ↦ le_add_self
   le_self_add := fun _ _ _ ↦ le_self_add
 
 variable {α} [DecidableEq ι]
@@ -256,7 +258,7 @@ variable {α} [DecidableEq ι]
 @[simp]
 theorem single_tsub : single i (a - b) = single i a - single i b := by
   ext j
-  obtain rfl | h := eq_or_ne i j
+  obtain rfl | h := eq_or_ne j i
   · rw [tsub_apply, single_eq_same, single_eq_same, single_eq_same]
   · rw [tsub_apply, single_eq_of_ne h, single_eq_of_ne h, single_eq_of_ne h, tsub_self]
 
@@ -284,8 +286,8 @@ theorem support_inf : (f ⊓ g).support = f.support ∩ g.support := by
 @[simp]
 theorem support_sup : (f ⊔ g).support = f.support ∪ g.support := by
   ext
-  simp only [Finset.mem_union, mem_support_iff, sup_apply, Ne, ← bot_eq_zero]
-  rw [_root_.sup_eq_bot_iff, not_and_or]
+  simp only [Finset.mem_union, mem_support_iff, sup_apply, Ne, ← nonpos_iff_eq_zero, sup_le_iff,
+    Classical.not_and_iff_not_or_not]
 
 nonrec theorem disjoint_iff : Disjoint f g ↔ Disjoint f.support g.support := by
   rw [disjoint_iff, disjoint_iff, DFinsupp.bot_eq_zero, ← DFinsupp.support_eq_empty,

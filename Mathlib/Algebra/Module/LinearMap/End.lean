@@ -171,7 +171,7 @@ theorem iterate_bijective (h : Bijective f') : ∀ n : ℕ, Bijective (f' ^ n)
 
 theorem injective_of_iterate_injective {n : ℕ} (hn : n ≠ 0) (h : Injective (f' ^ n)) :
     Injective f' := by
-  rw [← Nat.succ_pred_eq_of_pos (show 0 < n by omega), iterate_succ, coe_comp] at h
+  rw [← Nat.succ_pred_eq_of_pos (show 0 < n by cutsat), iterate_succ, coe_comp] at h
   exact h.of_comp
 
 theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjective (f' ^ n)) :
@@ -246,7 +246,7 @@ def toModuleEnd : S →* Module.End R M where
 
 end DistribMulAction
 
-namespace Module
+section Module
 
 variable (R M) [Semiring R] [AddCommMonoid M] [Module R M]
 variable [Semiring S] [Module S M] [SMulCommClass S R M]
@@ -255,7 +255,7 @@ variable [Semiring S] [Module S M] [SMulCommClass S R M]
 
 This is a stronger version of `DistribMulAction.toModuleEnd`. -/
 @[simps]
-def toModuleEnd : S →+* Module.End R M :=
+def Module.toModuleEnd : S →+* Module.End R M :=
   { DistribMulAction.toModuleEnd R M with
     toFun := DistribMulAction.toLinearMap R M
     map_zero' := LinearMap.ext <| zero_smul S
@@ -264,7 +264,7 @@ def toModuleEnd : S →+* Module.End R M :=
 /-- The canonical (semi)ring isomorphism from `Rᵐᵒᵖ` to `Module.End R R` induced by the right
 multiplication. -/
 @[simps]
-def moduleEndSelf : Rᵐᵒᵖ ≃+* Module.End R R :=
+def RingEquiv.moduleEndSelf : Rᵐᵒᵖ ≃+* Module.End R R :=
   { Module.toModuleEnd R R with
     toFun := DistribMulAction.toLinearMap R R
     invFun := fun f ↦ MulOpposite.op (f 1)
@@ -274,18 +274,18 @@ def moduleEndSelf : Rᵐᵒᵖ ≃+* Module.End R R :=
 /-- The canonical (semi)ring isomorphism from `R` to `Module.End Rᵐᵒᵖ R` induced by the left
 multiplication. -/
 @[simps]
-def moduleEndSelfOp : R ≃+* Module.End Rᵐᵒᵖ R :=
+def RingEquiv.moduleEndSelfOp : R ≃+* Module.End Rᵐᵒᵖ R :=
   { Module.toModuleEnd _ _ with
     toFun := DistribMulAction.toLinearMap _ _
     invFun := fun f ↦ f 1
     left_inv := mul_one
     right_inv := fun _ ↦ LinearMap.ext_ring_op <| mul_one _ }
 
-theorem End.natCast_def (n : ℕ) [AddCommMonoid N₁] [Module R N₁] :
+theorem Module.End.natCast_def (n : ℕ) [AddCommMonoid N₁] [Module R N₁] :
     (↑n : Module.End R N₁) = Module.toModuleEnd R N₁ n :=
   rfl
 
-theorem End.intCast_def (z : ℤ) [AddCommGroup N₁] [Module R N₁] :
+theorem Module.End.intCast_def (z : ℤ) [AddCommGroup N₁] [Module R N₁] :
     (z : Module.End R N₁) = Module.toModuleEnd R N₁ z :=
   rfl
 
@@ -337,13 +337,14 @@ end AddCommMonoid
 
 section Module
 
-variable [Semiring R] [Semiring S] [AddCommMonoid M] [AddCommMonoid M₂]
-variable [Module R M] [Module R M₂] [Module S M₂] [SMulCommClass R S M₂]
+variable [Semiring R] [Semiring S] [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
+variable [Module R M] [Module R M₁] [Module R M₂] [Module S M₁] [Module S M₂]
+variable [SMulCommClass R S M₁] [SMulCommClass R S M₂]
 variable (S)
 
 /-- Applying a linear map at `v : M`, seen as `S`-linear map from `M →ₗ[R] M₂` to `M₂`.
 
- See `LinearMap.applyₗ` for a version where `S = R`. -/
+See `LinearMap.applyₗ` for a version where `S = R`. -/
 @[simps]
 def applyₗ' : M →+ (M →ₗ[R] M₂) →ₗ[S] M₂ where
   toFun v :=
@@ -353,6 +354,19 @@ def applyₗ' : M →+ (M →ₗ[R] M₂) →ₗ[S] M₂ where
   map_zero' := LinearMap.ext fun f => f.map_zero
   map_add' _ _ := LinearMap.ext fun f => f.map_add _ _
 
+variable [CompatibleSMul M₁ M₂ S R]
+
+/-- Composition by `f : M₂ → M₃` is a linear map from the space of linear maps `M → M₂`
+to the space of linear maps `M → M₃`. -/
+def compRight (f : M₁ →ₗ[R] M₂) : (M →ₗ[R] M₁) →ₗ[S] M →ₗ[R] M₂ where
+  toFun g := f.comp g
+  map_add' _ _ := LinearMap.ext fun _ ↦ map_add f _ _
+  map_smul' _ _ := LinearMap.ext fun _ ↦ map_smul_of_tower ..
+
+@[simp]
+theorem compRight_apply (f : M₁ →ₗ[R] M₂) (g : M →ₗ[R] M₁) : compRight S f g = f.comp g :=
+  rfl
+
 end Module
 
 section CommSemiring
@@ -360,17 +374,6 @@ section CommSemiring
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
 variable [Module R M] [Module R M₂] [Module R M₃]
 variable (f : M →ₗ[R] M₂)
-
-/-- Composition by `f : M₂ → M₃` is a linear map from the space of linear maps `M → M₂`
-to the space of linear maps `M → M₃`. -/
-def compRight (f : M₂ →ₗ[R] M₃) : (M →ₗ[R] M₂) →ₗ[R] M →ₗ[R] M₃ where
-  toFun g := f.comp g
-  map_add' _ _ := LinearMap.ext fun _ => map_add f _ _
-  map_smul' _ _ := LinearMap.ext fun _ => map_smul f _ _
-
-@[simp]
-theorem compRight_apply (f : M₂ →ₗ[R] M₃) (g : M →ₗ[R] M₂) : compRight f g = f.comp g :=
-  rfl
 
 /-- Applying a linear map at `v : M`, seen as a linear map from `M →ₗ[R] M₂` to `M₂`.
 See also `LinearMap.applyₗ'` for a version that works with two different semirings.

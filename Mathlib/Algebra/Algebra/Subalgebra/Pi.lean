@@ -14,7 +14,7 @@ In this file we define the product of subalgebras as a subalgebra of the product
 
 ## Main definitions
 
- * `Subalgebra.pi`: the product of subalgebras.
+* `Subalgebra.pi`: the product of subalgebras.
 -/
 
 open Algebra

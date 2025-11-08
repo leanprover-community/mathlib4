@@ -13,7 +13,7 @@ In this file we define the product of two subalgebras as a subalgebra of the pro
 
 ## Main definitions
 
- * `Subalgebra.prod`: the product of two subalgebras.
+* `Subalgebra.prod`: the product of two subalgebras.
 -/
 
 
@@ -30,7 +30,7 @@ def prod : Subalgebra R (A × B) :=
     carrier := S ×ˢ S₁
     algebraMap_mem' := fun _ => ⟨algebraMap_mem _ _, algebraMap_mem _ _⟩ }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_prod : (prod S S₁ : Set (A × B)) = (S : Set A) ×ˢ (S₁ : Set B) :=
   rfl
 

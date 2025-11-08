@@ -27,7 +27,7 @@ Any injective function `Fin m → Fin n` gives rise to a `PEquiv`, whose matrix 
 map from R^m → R^n represented by the same function. The transpose of this matrix is the right
 inverse of this map, sending anything not in the image to zero.
 
-## notations
+## Notation
 
 This file uses `ᵀ` for `Matrix.transpose`.
 -/
@@ -60,10 +60,8 @@ theorem toMatrix_mul_apply [Fintype m] [DecidableEq m] [NonAssocSemiring α] (f 
     (M : Matrix m n α) : (f.toMatrix * M :) i j = Option.casesOn (f i) 0 fun fi => M fi j := by
   dsimp [toMatrix, Matrix.mul_apply]
   rcases h : f i with - | fi
-  · simp [h]
-  · rw [Finset.sum_eq_single fi] <;> simp +contextual [h, eq_comm]
-
-@[deprecated (since := "2025-01-27")] alias mul_matrix_apply := toMatrix_mul_apply
+  · simp
+  · rw [Finset.sum_eq_single fi] <;> simp +contextual [eq_comm]
 
 theorem mul_toMatrix_apply [Fintype m] [NonAssocSemiring α] [DecidableEq n] (M : Matrix l m α)
     (f : m ≃. n) (i j) : (M * f.toMatrix :) i j = Option.casesOn (f.symm j) 0 (M i) := by
@@ -75,8 +73,6 @@ theorem mul_toMatrix_apply [Fintype m] [NonAssocSemiring α] [DecidableEq n] (M 
     · rintro b - n
       simp [h, ← f.eq_some_iff, n.symm]
     · simp
-
-@[deprecated (since := "2025-01-27")] alias matrix_mul_apply := mul_toMatrix_apply
 
 theorem toMatrix_symm [DecidableEq m] [DecidableEq n] [Zero α] [One α] (f : m ≃. n) :
     (f.symm.toMatrix : Matrix n m α) = f.toMatrixᵀ := by
@@ -109,16 +105,12 @@ theorem toMatrix_toPEquiv_mul [Fintype m] [DecidableEq m]
   ext i j
   rw [toMatrix_mul_apply, Equiv.toPEquiv_apply, submatrix_apply, id]
 
-@[deprecated (since := "2025-01-27")] alias toPEquiv_mul_matrix := toMatrix_toPEquiv_mul
-
 theorem mul_toMatrix_toPEquiv [Fintype m] [DecidableEq n]
     [NonAssocSemiring α] (M : Matrix l m α) (f : m ≃ n) :
     (M * f.toPEquiv.toMatrix) = M.submatrix id f.symm :=
   Matrix.ext fun i j => by
     rw [PEquiv.mul_toMatrix_apply, ← Equiv.toPEquiv_symm, Equiv.toPEquiv_apply,
       Matrix.submatrix_apply, id]
-
-@[deprecated (since := "2025-01-27")] alias mul_toPEquiv_toMatrix := mul_toMatrix_toPEquiv
 
 lemma toMatrix_toPEquiv_mulVec [DecidableEq n] [Fintype n]
     [NonAssocSemiring α] (σ : m ≃ n) (a : n → α) :
@@ -191,8 +183,6 @@ theorem single_mul_single_right [Fintype n] [Fintype k] [DecidableEq n] [Decidab
 theorem toMatrix_toPEquiv_eq [DecidableEq n] [Zero α] [One α] (σ : Equiv.Perm n) :
     σ.toPEquiv.toMatrix = (1 : Matrix n n α).submatrix σ id :=
   Matrix.ext fun _ _ => if_congr Option.some_inj rfl rfl
-
-@[deprecated (since := "2025-01-27")] alias equiv_toPEquiv_toMatrix := toMatrix_toPEquiv_eq
 
 @[simp]
 lemma map_toMatrix [DecidableEq n] [NonAssocSemiring α] [NonAssocSemiring β]

@@ -18,13 +18,13 @@ Currently `Quiver` is defined with `Hom : V → V → Sort v`.
 This is different from the category theory setup,
 where we insist that morphisms live in some `Type`.
 There's some balance here: it's nice to allow `Prop` to ensure there are no multiple arrows,
-but it is also results in error-prone universe signatures when constraints require a `Type`.
+but it also results in error-prone universe signatures when constraints require a `Type`.
 -/
 
 open Opposite
 
 -- We use the same universe order as in category theory.
--- See note [CategoryTheory universes]
+-- See note [category theory universes]
 universe v v₁ v₂ u u₁ u₂
 
 /-- A quiver `G` on a type `V` of vertices assigns to every pair `a b : V` of vertices
@@ -65,8 +65,6 @@ def Hom.opEquiv {V} [Quiver V] {X Y : V} :
     (X ⟶ Y) ≃ (Opposite.op Y ⟶ Opposite.op X) where
   toFun := Opposite.op
   invFun := Opposite.unop
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- A type synonym for a quiver with no arrows. -/
 def Empty (V : Type u) : Type u := V
@@ -106,10 +104,34 @@ lemma homOfEq_injective {X X' Y Y' : V} (hX : X = X') (hY : Y = Y')
 lemma homOfEq_rfl {X Y : V} (f : X ⟶ Y) : Quiver.homOfEq f rfl rfl = f := rfl
 
 lemma heq_of_homOfEq_ext {X Y X' Y' : V} (hX : X = X') (hY : Y = Y') {f : X ⟶ Y} {f' : X' ⟶ Y'}
-    (e : Quiver.homOfEq f hX hY = f') : HEq f f' := by
+    (e : Quiver.homOfEq f hX hY = f') : f ≍ f' := by
   subst hX hY
   rw [Quiver.homOfEq_rfl] at e
   rw [e]
+
+lemma homOfEq_eq_iff {X X' Y Y' : V} (f : X ⟶ Y) (g : X' ⟶ Y')
+    (hX : X = X') (hY : Y = Y') :
+    Quiver.homOfEq f hX hY = g ↔ f = Quiver.homOfEq g hX.symm hY.symm := by
+  subst hX hY; simp
+
+lemma eq_homOfEq_iff {X X' Y Y' : V} (f : X ⟶ Y) (g : X' ⟶ Y')
+    (hX : X' = X) (hY : Y' = Y) :
+    f = Quiver.homOfEq g hX hY ↔ Quiver.homOfEq f hX.symm hY.symm = g := by
+  subst hX hY; simp
+
+lemma homOfEq_heq {X Y X' Y' : V} (hX : X = X') (hY : Y = Y') (f : X ⟶ Y) :
+    homOfEq f hX hY ≍ f := (heq_of_homOfEq_ext hX hY rfl).symm
+
+lemma homOfEq_heq_left_iff {X Y X' Y' : V} (f : X ⟶ Y) (g : X' ⟶ Y')
+    (hX : X = X') (hY : Y = Y') :
+    homOfEq f hX hY ≍ g ↔ f ≍ g := by
+  cases hX; cases hY; rfl
+
+lemma homOfEq_heq_right_iff {X Y X' Y' : V} (f : X ⟶ Y) (g : X' ⟶ Y')
+    (hX : X' = X) (hY : Y' = Y) :
+    f ≍ homOfEq g hX hY ↔ f ≍ g := by
+  cases hX; cases hY; rfl
+
 
 end
 

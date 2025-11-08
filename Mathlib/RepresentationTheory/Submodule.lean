@@ -44,7 +44,6 @@ instance : BoundedOrder ρ.invtSubmodule where
 protected lemma nontrivial_iff : Nontrivial ρ.invtSubmodule ↔ Nontrivial V := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · contrapose! h
-    rw [not_nontrivial_iff_subsingleton] at h ⊢
     infer_instance
   · refine ⟨⊥, ⊤, ?_⟩
     rw [← Subtype.coe_ne_coe, invtSubmodule.coe_top, invtSubmodule.coe_bot]
@@ -61,7 +60,7 @@ lemma asAlgebraHom_mem_of_forall_mem (p : Submodule k V) (hp : ∀ g, ∀ v ∈ 
   apply x.induction_on <;> aesop
 
 /-- The natural order isomorphism between the two ways to represent invariant submodules. -/
-def mapSubmodule :
+noncomputable def mapSubmodule :
     ρ.invtSubmodule ≃o Submodule (MonoidAlgebra k G) ρ.asModule where
   toFun p :=
     { toAddSubmonoid := (p : Submodule k V).toAddSubmonoid.map ρ.asModuleEquiv.symm

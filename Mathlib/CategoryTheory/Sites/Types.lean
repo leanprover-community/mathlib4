@@ -60,8 +60,6 @@ theorem Presheaf.isSheaf_yoneda' {α : Type u} :
   rw [isSheaf_iff_isSheaf_of_type]
   exact Presieve.isSheaf_yoneda'
 
-@[deprecated (since := "2024-11-26")] alias isSheaf_yoneda' := Presieve.isSheaf_yoneda'
-
 /-- The yoneda functor that sends a type to a sheaf over the category of types. -/
 @[simps]
 def yoneda' : Type u ⥤ Sheaf typesGrothendieckTopology (Type u) where
