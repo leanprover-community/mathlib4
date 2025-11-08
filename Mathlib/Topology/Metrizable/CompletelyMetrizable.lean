@@ -106,14 +106,6 @@ instance pi_countable {ι : Type*} [Countable ι] {X : ι → Type*} [∀ i, Top
   letI := fun i ↦ upgradeIsCompletelyPseudoMetrizable (X i)
   infer_instance
 
-/-- A disjoint union of completely pseudometrizable spaces is completely pseudometrizable. -/
-instance sigma {ι : Type*} {X : ι → Type*} [∀ n, TopologicalSpace (X n)]
-    [∀ n, IsCompletelyPseudoMetrizableSpace (X n)] : IsCompletelyPseudoMetrizableSpace (Σ n, X n) :=
-  letI := fun n ↦ upgradeIsCompletelyPseudoMetrizable (X n)
-  letI : PseudoMetricSpace (Σ n, X n) := PseudoMetric.Sigma.PseudoMetricSpace
-  haveI : CompleteSpace (Σ n, X n) := PseudoMetric.Sigma.completeSpace
-  inferInstance
-
 /-- The product of two completely pseudometrizable spaces is completely pseudometrizable. -/
 instance prod [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X] [TopologicalSpace Y]
     [IsCompletelyPseudoMetrizableSpace Y] : IsCompletelyPseudoMetrizableSpace (X × Y) :=
