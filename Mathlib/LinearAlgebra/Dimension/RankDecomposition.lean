@@ -121,13 +121,6 @@ def CEquivRange : C ≃ₗ[K] (range f) := by
   use ((f.prodEquivOfC h).2 y).1
   simp [g, codRestrict, ← hyx, ker_complement_restriction, apply_ker_component_eq_zero]
 
-lemma finrank_C_eq_rank {r : ℕ} (hr : rank f = r) (h : IsCompl C (ker f)) : finrank K C = r := by
-  simp [finrank_eq_of_rank_eq hr, LinearEquiv.finrank_eq (f.CEquivRange h)]
-
-lemma finrank_ker_eq [FiniteDimensional K V] {r n : ℕ} (hr : rank f = r) (hn : finrank K V = n) :
-    finrank K (ker f) = n - r := by
-  rw [← hn, ← finrank_range_add_finrank_ker f, ← finrank_eq_of_rank_eq hr, add_tsub_cancel_left]
-
 instance : DecidableEq (ofVectorSpaceIndex K C) := Classical.typeDecidableEq _
 
 lemma apply_C_basis_eq_range_basis (j) :
