@@ -190,6 +190,9 @@ def singleton [T1Space α] (x : α) : Closeds α :=
 
 @[simp] lemma mem_singleton [T1Space α] {a b : α} : a ∈ singleton b ↔ a = b := Iff.rfl
 
+theorem singleton_injective [T1Space α] : Function.Injective (singleton (α := α)) :=
+  .of_comp (f := SetLike.coe) Set.singleton_injective
+
 /-- The preimage of a closed set under a continuous map. -/
 @[simps]
 def preimage (s : Closeds β) {f : α → β} (hf : Continuous f) : Closeds α :=
@@ -400,6 +403,9 @@ def singleton [T1Space α] (x : α) : IrreducibleCloseds α :=
   ⟨{x}, isIrreducible_singleton, isClosed_singleton⟩
 
 @[simp] lemma mem_singleton [T1Space α] {a b : α} : a ∈ singleton b ↔ a = b := Iff.rfl
+
+theorem singleton_injective [T1Space α] : Function.Injective (singleton (α := α)) :=
+  .of_comp (f := SetLike.coe) Set.singleton_injective
 
 /--
 The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsIrreducible x ∧ IsClosed x }`.
