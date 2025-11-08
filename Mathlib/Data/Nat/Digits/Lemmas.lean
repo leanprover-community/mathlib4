@@ -306,14 +306,14 @@ theorem digits_getD (b n i : ℕ) (h : 2 ≤ b) : (Nat.digits b n).getD i 0 = n 
   obtain ⟨b, rfl⟩ := Nat.exists_eq_add_of_le' h
   clear h
   rw [List.getD_eq_getElem?_getD]
-  induction n using Nat.strongRecOn generalizing i with | ind n IH
-  rcases n with (_ | n)
-  · simp
-  · rcases i with _ | i
+  induction n using Nat.caseStrongRecOn generalizing i with
+  | zero => simp
+  | ind n IH =>
+    rcases i with _ | i
     · have h0 : 0 = default := rfl
       rw [← List.head?_eq_getElem?, h0, Option.getD_default_eq_iget,
         ← List.head!_eq_head?, head!_digits (by grind)]
       simp
-    · simp [IH _ (div_lt_self' n b), pow_succ', Nat.div_div_eq_div_mul]
+    · simp [IH _ (le_of_lt_succ (div_lt_self' n b)), pow_succ', Nat.div_div_eq_div_mul]
 
 end Nat
