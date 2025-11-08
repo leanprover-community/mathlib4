@@ -350,7 +350,7 @@ private lemma aux_iteratedDeriv_tsum_cotTerm {k : ℕ} (hk : 1 ≤ k) (hz : z �
     (-1) ^ k * (k !) * z ^ (-1 - k : ℤ) +
       iteratedDerivWithin k (fun z ↦ ∑' n : ℕ, cotTerm z n) ℍₒ z =
     (-1) ^ k * k ! * ∑' n : ℤ, (z + n) ^ (-1 - k : ℤ) := by
-  rw [iteratedDerivWithin_tsum k isOpen_upperHalfPlaneSet hz
+  rw [SummableLocallyUniformlyOn.iteratedDerivWithin_tsum k isOpen_upperHalfPlaneSet hz
     (fun t ht ↦ Summable_cotTerm (coe_mem_integerComplement ⟨t, ht⟩))
     (fun l hl hl2 ↦ summableLocallyUniformlyOn_iteratedDerivWithin_cotTerm  hl)
     (fun n l z hl hz ↦ (differentiableOn_iteratedDerivWithin_cotTerm n l).differentiableAt

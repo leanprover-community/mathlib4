@@ -101,7 +101,8 @@ lemma differentiableAt_iteratedDerivWithin_cexp (n a : ℕ) {s : Set ℂ} (hs : 
 lemma iteratedDerivWithin_tsum_cexp_eq (k : ℕ) (z : ℍ) :
     iteratedDerivWithin k (fun z ↦ ∑' n : ℕ, cexp (2 * π * I * z) ^ n) ℍₒ z =
     ∑' n : ℕ, iteratedDerivWithin k (fun s : ℂ ↦ cexp (2 * π * I * s) ^ n) ℍₒ z := by
-  rw [iteratedDerivWithin_tsum k isOpen_upperHalfPlaneSet (by simpa using z.2)]
+  rw [SummableLocallyUniformlyOn.iteratedDerivWithin_tsum k isOpen_upperHalfPlaneSet
+    (by simpa using z.2)]
   · exact fun x hx ↦ summable_geometric_iff_norm_lt_one.mpr
       (UpperHalfPlane.norm_exp_two_pi_I_lt_one ⟨x, hx⟩)
   · exact fun n _ _ ↦ summableLocallyUniformlyOn_iteratedDerivWithin_cexp n
