@@ -49,13 +49,13 @@ open scoped Manifold
 
 -- Let M, M' and M'' be smooth manifolds *over the same space* `H`, with *the same* `model `I`.
 variable {E E' E'' E''' H H' H'' H''' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedAddCommGroup E'']  [NormedSpace ℝ E'']
+  [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedAddCommGroup E''] [NormedSpace ℝ E'']
   [NormedAddCommGroup E'''] [NormedSpace ℝ E''']
   [TopologicalSpace H] [TopologicalSpace H'] [TopologicalSpace H''] [TopologicalSpace H''']
 
 variable {M : Type*} [TopologicalSpace M] [cm : ChartedSpace H M]
   {I : ModelWithCorners ℝ E H} [IsManifold I ⊤ M]
-  {M' : Type*} [TopologicalSpace M'] [cm': ChartedSpace H M'] [IsManifold I ⊤ M']
+  {M' : Type*} [TopologicalSpace M'] [cm' : ChartedSpace H M'] [IsManifold I ⊤ M']
   {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M'']
   {I'' : ModelWithCorners ℝ E H} [IsManifold I ⊤ M'']
 
@@ -88,11 +88,11 @@ Is a pair `(M₀, f)` of a smooth manifold `M₀` modelled over `(E₀, H₀)` a
 -/
 structure BoundaryManifoldData.{u} (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners ℝ E H) (k : ℕ∞) [IsManifold I k M]
-    {E₀ H₀: Type*} [NormedAddCommGroup E₀] [NormedSpace ℝ E₀]
+    {E₀ H₀ : Type*} [NormedAddCommGroup E₀] [NormedSpace ℝ E₀]
     [TopologicalSpace H₀] (I₀ : ModelWithCorners ℝ E₀ H₀) where
   /-- A `C^k` manifold `M₀` which describes the boundary of `M` -/
-  M₀: Type u
-  /-- `M₀` is a topological space-/
+  M₀ : Type u
+  /-- `M₀` is a topological space -/
   [topologicalSpace: TopologicalSpace M₀]
   /-- A chosen charted space structure on `M₀` on `H₀` -/
   [chartedSpace : ChartedSpace H₀ M₀]
@@ -110,7 +110,7 @@ structure BoundaryManifoldData.{u} (M : Type*) [TopologicalSpace M] [ChartedSpac
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {k : ℕ∞}
   {I : ModelWithCorners ℝ E H} [IsManifold I k M]
-  {E₀ H₀: Type*} [NormedAddCommGroup E₀] [NormedSpace ℝ E₀]
+  {E₀ H₀ : Type*} [NormedAddCommGroup E₀] [NormedSpace ℝ E₀]
   [TopologicalSpace H₀] (I₀ : ModelWithCorners ℝ E₀ H₀)
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] [IsManifold I k M']
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
@@ -148,34 +148,34 @@ noncomputable def BoundaryManifoldData.euclideanHalfSpace_self (n : ℕ) (k : �
     BoundaryManifoldData (EuclideanHalfSpace (n+1)) (𝓡∂ (n + 1)) k (𝓡 n) where
   M₀ := EuclideanSpace ℝ (Fin n)
   isManifold := by infer_instance
-  f x := ⟨fun i ↦ if h: i = 0 then 0 else x (Fin.pred i (by omega)), by simp⟩
+  f x := sorry -- was: ⟨fun i ↦ if h: i = 0 then 0 else x (Fin.pred i (by omega)), by simp⟩
   isEmbedding := sorry
   contMDiff x := by
-    rw [contMDiffAt_iff]
-    constructor
-    · sorry -- necessary to prove the embedding property
-    -- This is the local coordinates expression of the map f above.
-    let F : (EuclideanSpace ℝ (Fin n)) → (EuclideanSpace ℝ (Fin (n + 1))) :=
-      fun x i ↦ if h : i = 0 then 0 else x (i.pred (by assumption))
-    have : ContDiffWithinAt ℝ k F (Set.range ↑(𝓡 n)) ((extChartAt (𝓡 n) x) x) := by
-      apply ContDiff.contDiffWithinAt
-      unfold F
-      sorry -- why is the map in charts differentiable? "should be easy"
-    apply this.congr
-    exacts [fun y hy ↦ by simp [F, modelWithCornersEuclideanHalfSpace],
-      by simp [F, modelWithCornersEuclideanHalfSpace]]
+    sorry -- TODO: fix proof, was:
+    -- rw [contMDiffAt_iff]
+    -- constructor
+    -- · sorry -- necessary to prove the embedding property
+    -- -- This is the local coordinates expression of the map f above.
+    -- let F : (EuclideanSpace ℝ (Fin n)) → (EuclideanSpace ℝ (Fin (n + 1))) :=
+    --   fun x i ↦ if h : i = 0 then 0 else x (i.pred (by assumption))
+    -- have : ContDiffWithinAt ℝ k F (Set.range ↑(𝓡 n)) ((extChartAt (𝓡 n) x) x) := by
+    --   apply ContDiff.contDiffWithinAt
+    --   unfold F
+    --   sorry -- why is the map in charts differentiable? "should be easy"
+    -- apply this.congr
+    -- exacts [fun y hy ↦ by simp [F, modelWithCornersEuclideanHalfSpace],
+    --   by simp [F, modelWithCornersEuclideanHalfSpace]]
   isImmersion hk x := by
-    let F : (EuclideanSpace ℝ (Fin n)) → (EuclideanSpace ℝ (Fin (n + 1))) :=
-      fun x i ↦ if h : i = 0 then 0 else x (i.pred (by assumption))
-    suffices hyp: Function.Injective (fderiv ℝ F x) by
-      -- missing: translate the mfderiv to something about fderiv_within
-      -- then use hyp
-      unfold mfderiv
-      sorry
-    sorry -- "should be easy"/missing API
+    sorry -- TODO: fix proof, was:
+    --let F : (EuclideanSpace ℝ (Fin n)) → (EuclideanSpace ℝ (Fin (n + 1))) :=
+    --  fun x i ↦ if h : i = 0 then 0 else x (i.pred (by assumption))
+    --suffices hyp: Function.Injective (fderiv ℝ F x) by
+    --  -- missing: translate the mfderiv to something about fderiv_within
+    --  -- then use hyp
+    --  unfold mfderiv
+    --  sorry
+    --sorry -- "should be easy"/missing API
   range_eq_boundary := sorry
-
-#exit
 
 variable {X Y Z W : Type*} [TopologicalSpace X] [TopologicalSpace Y]
   [TopologicalSpace Z] [TopologicalSpace W]
@@ -235,32 +235,7 @@ noncomputable def BoundaryManifoldData.Icc (k : ℕ∞) :
 -- mathlib has versions for Prod.mk, also with left and right constant
 section PrereqsDiffGeo
 
-variable  {𝕜 : Type u_1} [NontriviallyNormedField 𝕜]
-
-section
-
-variable {E E' F F' : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
-variable {H H' H'' H''' : Type*} [TopologicalSpace H] [TopologicalSpace H']
-  [TopologicalSpace H''] [TopologicalSpace H''']
-  {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
-  {J : ModelWithCorners 𝕜 F H''} {J' : ModelWithCorners 𝕜 F' H'''}
-variable {M M' N N' : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  [TopologicalSpace M'] [ChartedSpace H' M']
-  [TopologicalSpace N] [ChartedSpace H'' N] [TopologicalSpace N'] [ChartedSpace H''' N']
-  {f : M → N} {g : M' → N'} {x : M} {x' : M'}
-
--- #check MDifferentiable.prod_map
-
-lemma mfderiv_prod_map
-    (hf : MDifferentiableAt I J f x) (hg : MDifferentiableAt I' J' g x') :
-    mfderiv (I.prod I') (J.prod J') (Prod.map f g) (x, x')
-    = (mfderiv I J f x).prodMap (mfderiv I' J' g x') := sorry
-
--- and variations for within, etc
-
-end
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 variable {N' : Type*} [TopologicalSpace N'] [ChartedSpace H' N']
 
@@ -286,16 +261,15 @@ def BoundaryManifoldData.prod_of_boundaryless_left [BoundarylessManifold I M]
   M₀ := M × bd.M₀
   f := Prod.map id bd.f
   isEmbedding := IsEmbedding.prodMap IsEmbedding.id bd.isEmbedding
-  -- XXX: mathlib naming is inconsistent, prodMap vs prod_map; check if zulip consensus
-  contMDiff := ContMDiff.prod_map contMDiff_id bd.contMDiff
+  contMDiff := contMDiff_id.prodMap bd.contMDiff
   isImmersion hk x := by
-    rw [mfderiv_prod_map mdifferentiableAt_id ((bd.contMDiff x.2).mdifferentiableAt hk)]
+    rw [mfderiv_prodMap mdifferentiableAt_id ((bd.contMDiff x.2).mdifferentiableAt hk)]
     apply Function.Injective.prodMap
     · rw [mfderiv_id]
       exact fun ⦃a₁ a₂⦄ a ↦ a
     · exact bd.isImmersion hk _
   range_eq_boundary := by
-    rw [range_prod_map, ModelWithCorners.boundary_of_boundaryless_left, range_id]
+    rw [range_prodMap, ModelWithCorners.boundary_of_boundaryless_left, range_id]
     congr
     exact bd.range_eq_boundary
 
@@ -305,16 +279,16 @@ def BoundaryManifoldData.prod_of_boundaryless_right (bd : BoundaryManifoldData M
     [BoundarylessManifold J N] : BoundaryManifoldData (M × N) (I.prod J) k (I₀.prod J) where
   M₀ := bd.M₀ × N
   f := Prod.map bd.f id
-  isEmbedding := IsEmbedding.prodMap bd.isEmbedding IsEmbedding.id
-  contMDiff := ContMDiff.prod_map bd.contMDiff contMDiff_id
+  isEmbedding := bd.isEmbedding.prodMap IsEmbedding.id
+  contMDiff := bd.contMDiff.prodMap contMDiff_id
   isImmersion hk x := by
-    rw [mfderiv_prod_map ((bd.contMDiff x.1).mdifferentiableAt hk) mdifferentiableAt_id]
+    rw [mfderiv_prodMap ((bd.contMDiff x.1).mdifferentiableAt hk) mdifferentiableAt_id]
     apply Function.Injective.prodMap
     · exact bd.isImmersion hk _
     · rw [mfderiv_id]
       exact fun ⦃a₁ a₂⦄ a ↦ a
   range_eq_boundary := by
-    rw [range_prod_map, ModelWithCorners.boundary_of_boundaryless_right, range_id]
+    rw [range_prodMap, ModelWithCorners.boundary_of_boundaryless_right, range_id]
     congr
     exact bd.range_eq_boundary
 
@@ -371,7 +345,7 @@ noncomputable def BoundaryManifoldData.sum
     · sorry -- exact? inl and inr have disjoint range
     · rw [range_comp]; exact image_subset_range _ _
     · rw [range_comp]; exact image_subset_range _ _
-  contMDiff := bd.contMDiff.sum_map bd'.contMDiff
+  contMDiff := bd.contMDiff.sumMap bd'.contMDiff
   isImmersion hk p := by
     cases p with
     | inl x =>
@@ -414,9 +388,8 @@ noncomputable def BoundaryManifoldData.prod_Icc [BoundarylessManifold I M] :
         cases y with
         | inl y' => simp_all
         | inr y' => simp_all
-    · apply IsClosedMap.sum_elim <;> apply isClosedMap_prodMk_right
-  contMDiff := (contMDiff_id.prod_mk contMDiff_const).sum_elim
-    (contMDiff_id.prod_mk contMDiff_const)
+    · apply IsClosedMap.sumElim <;> apply isClosedMap_prodMk_right
+  contMDiff := (contMDiff_id.prodMk contMDiff_const).sumElim (contMDiff_id.prodMk contMDiff_const)
   isImmersion hk p := by
     cases p with
     | inl x =>
@@ -424,7 +397,7 @@ noncomputable def BoundaryManifoldData.prod_Icc [BoundarylessManifold I M] :
       · sorry -- injectivity
       · -- argue: f coincides with the function which always does the same, then use prod
         have : MDifferentiableAt I (I.prod (𝓡∂ 1)) ((·, ⊥): M → M × (Set.Icc (0 :ℝ) 1)) x :=
-          mdifferentiableAt_id.prod_mk mdifferentiableAt_const
+          mdifferentiableAt_id.prodMk mdifferentiableAt_const
         -- actually, want a more general lemma: Sum.elim should be MDifferentiableAt each point
         -- if the individual branches are
         sorry --apply MDifferentiableAt.congr_of_eventuallyEq this
