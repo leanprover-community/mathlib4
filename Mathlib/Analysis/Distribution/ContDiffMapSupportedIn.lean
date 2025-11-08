@@ -21,7 +21,7 @@ functions `f : E → F` (where `F` is a normed vector space) such that:
 - `f` vanishes outside of a compact set: `EqOn f 0 Kᶜ`.
 
 The main reason this exists as a bundled type is to be endowed with its natural locally convex
-topology (namely, uniform convergence of `f` and its derivative up to order `n`).
+topology (namely, uniform convergence of `f` and its derivatives up to order `n`).
 Taking the locally convex inductive limit of these as `K` varies yields the natural topology on test
 functions, used to define distributions. While most of distribution theory cares only about `C^∞`
 functions, we also want to endow the space of `C^n` test functions with its natural topology.
@@ -32,9 +32,11 @@ larger space of test functions.
 
 - `ContDiffMapSupportedIn E F n K`: the type of bundled `n`-times continuously differentiable
   functions `E → F` which vanish outside of `K`.
-- `ContDiffMapSupportedIn.iteratedFDerivWithOrderₗ`: wrapper as a `𝕜`-linear maps for `iteratedFDeriv` on
-  `ContDiffMapSupportedIn E F n K`, as a map into
-  `ContDiffMapSupportedIn E (E [×i]→L[ℝ] F) (n-i) K`.
+- `ContDiffMapSupportedIn.iteratedFDerivWithOrderₗ`: wrapper, as a `𝕜`-linear map, for
+  `iteratedFDeriv` from `ContDiffMapSupportedIn E F n K` to
+  `ContDiffMapSupportedIn E (E [×i]→L[ℝ] F) k K`.
+- `ContDiffMapSupportedIn.iteratedFDerivₗ`: specialization of the above, giving a `𝕜`-linear map
+  from `ContDiffMapSupportedIn E F ⊤ K` to `ContDiffMapSupportedIn E (E [×i]→L[ℝ] F) ⊤ K`.
 
 ## Main statements
 
@@ -52,8 +54,15 @@ TODO:
 
 ## Implementation details
 
-The technical choice of spelling `EqOn f 0 Kᶜ` in the definition, as opposed to `tsupport f ⊆ K`
-is to make rewriting `f x` to `0` easier when `x ∉ K`.
+* The technical choice of spelling `EqOn f 0 Kᶜ` in the definition, as opposed to `tsupport f ⊆ K`
+  is to make rewriting `f x` to `0` easier when `x ∉ K`.
+* Since the most common case is by far the smooth case, we often reserve the "expected" name
+  of a result/definition to this case, and add `WithOrder` to the declaration taking care of
+  all regularities.
+* In `iteratedFDerivWithOrderₗ`, we define the `i`-th iterated differentiation operator as
+  a map from `𝓓^{n}_{K}` to `𝓓^{k}_{K}` without imposing relations on `n`, `k` and `i`. Of course
+  this is defined as `0` if `k + i > n`. This creates some verbosity as all of these variables are
+  explicit, but it allows the most flexibility while avoiding DTT hell.
 
 ## Tags
 
@@ -61,7 +70,7 @@ distributions
 -/
 
 open TopologicalSpace SeminormFamily Set Function Seminorm UniformSpace
-open scoped BoundedContinuousFunction Topology NNReal
+open scoped BoundedContinuousFunction Topology NNReal ContDiff
 
 variable (𝕜 E F : Type*) [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -258,10 +267,21 @@ noncomputable def toBoundedContinuousFunctionₗ : 𝓓^{n}_{K}(E, F) →ₗ[�
   map_smul' _ _ := rfl
 
 variable (n k) in
-/-- Wrapper for `iteratedFDeriv i` on `𝓓^{n}_{K}(E, F)`,
-as a map into `𝓓^{n-i}_{K}(E, E [×i]→L[ℝ] F)`. -/
+/-- `iteratedFDerivWithOrderₗ 𝕜 n k i` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
+its `i`-th iterated derivative as an element of `𝓓^{k}_{K}(E, E [×i]→L[ℝ] F)`.
+This only makes mathematical sense if `k + i ≤ n`, otherwise we define it as the zero map.
+
+See `iteratedFDerivₗ` for the very common case where everything is infinitely differentiable. -/
 noncomputable def iteratedFDerivWithOrderₗ (i : ℕ) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{k}_{K}(E, E [×i]→L[ℝ] F) where
+  /-
+  Note: it is tempting to define this as some linear map if `k + i ≤ n`,
+  and the zero map otherwise. However, we would lose the definitional equality between
+  `iteratedFDerivWithOrderₗ 𝕜 n k i f` and `iteratedFDerivWithOrderₗ ℝ n k i f`.
+
+  This is caused by the fact that the equality `f (if p then x else y) = if p then f x else f y`
+  is not definitional.
+  -/
   toFun f :=
     if hi : k + i ≤ n then
       .of_support_subset
@@ -287,19 +307,49 @@ lemma coe_iteratedFDerivWithOrderₗ {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
   rw [ContDiffMapSupportedIn.iteratedFDerivWithOrderₗ]
   split_ifs <;> rfl
 
-lemma coe_iteratedFDerivWithOrder_of_le {i : ℕ} (hin : k + i ≤ n) (f : 𝓓^{n}_{K}(E, F)) :
+lemma coe_iteratedFDerivWithOrderₗ_of_le {i : ℕ} (hin : k + i ≤ n) (f : 𝓓^{n}_{K}(E, F)) :
     iteratedFDerivWithOrderₗ 𝕜 n k i f = iteratedFDeriv ℝ i f := by
   simp [hin]
 
-lemma coe_iteratedFDerivWithOrder_of_gt {i : ℕ} (hin : ¬ (k + i ≤ n)) (f : 𝓓^{n}_{K}(E, F)) :
+lemma coe_iteratedFDerivWithOrderₗ_of_gt {i : ℕ} (hin : ¬ (k + i ≤ n)) (f : 𝓓^{n}_{K}(E, F)) :
     iteratedFDerivWithOrderₗ 𝕜 n k i f = 0 := by
   ext : 1
   simp [hin]
 
+/-- `iteratedFDerivₗ 𝕜 i` is the `𝕜`-linear-map sending `f : 𝓓_{K}(E, F)` to
+its `i`-th iterated derivative as an element of `𝓓_{K}(E, E [×i]→L[ℝ] F)`.
+
+See also `iteratedFDerivWithOrderₗ` if you need more control on the regularities. -/
+noncomputable def iteratedFDerivₗ (i : ℕ) :
+    𝓓_{K}(E, F) →ₗ[𝕜] 𝓓_{K}(E, E [×i]→L[ℝ] F) where
+  toFun f := .of_support_subset
+    (f.contDiff.iteratedFDeriv_right le_rfl)
+    ((support_iteratedFDeriv_subset i).trans f.tsupport_subset)
+  map_add' f g := by
+    have hi : (i : WithTop ℕ∞) ≤ ∞ := by exact_mod_cast le_top
+    ext
+    simp [iteratedFDeriv_add (f.contDiff.of_le hi) (g.contDiff.of_le hi)]
+  map_smul' c f := by
+    have hi : (i : WithTop ℕ∞) ≤ ∞ := by exact_mod_cast le_top
+    ext
+    simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi).contDiffAt]
+
+@[simp]
+lemma coe_iteratedFDerivₗ {i : ℕ} (f : 𝓓_{K}(E, F)) :
+    iteratedFDerivₗ 𝕜 i f = iteratedFDeriv ℝ i f :=
+  rfl
+
+lemma iteratedFDerivₗ_eq_withOrder (i : ℕ) :
+    (iteratedFDerivₗ 𝕜 i : 𝓓_{K}(E, F) → _) = iteratedFDerivWithOrderₗ 𝕜 ⊤ ⊤ i :=
+  rfl
+
 variable (n) in
-/-- The composition of `ContDiffMapSupportedIn.toBoundedContinuousFunctionₗ` and
-  `ContDiffMapSupportedIn.iteratedFDerivWithOrderₗ`. We call these the "structure maps"
-for `𝓓^{n}_{K}(E, F)` because the topology is initial for these maps. -/
+/-- `structureMapₗ 𝕜 n i` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to its
+`i`-th iterated derivative as an element of `E →ᵇ (E [×i]→L[ℝ] F)`. In other words, it
+is the composition of `toBoundedContinuousFunctionₗ 𝕜` and `iteratedFDerivWithOrderₗ 𝕜 n 0 i`.
+This only makes mathematical sense if `i ≤ n`, otherwise we define it as the zero map.
+
+We call these "structure maps" because they define the topology on `𝓓^{n}_{K}(E, F)`. -/
 noncomputable def structureMapₗ (i : ℕ) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F) :=
   toBoundedContinuousFunctionₗ 𝕜 ∘ₗ iteratedFDerivWithOrderₗ 𝕜 n 0 i
