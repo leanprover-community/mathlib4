@@ -116,7 +116,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
   innermost integral. This is done in a single step with `MeasureTheory.lmarginal_insert'`,
   but in fact hides a repeated application of Fubini's theorem.
   The integrand is a product of `|s|+2` factors, in `|s|+1` of them we integrate over one
-  additional variable. We split of the factor that integrates over `xᵢ`,
+  additional variable. We split off the factor that integrates over `xᵢ`,
   and apply Hölder's inequality to the remaining factors (whose powers sum exactly to 1).
   After reordering factors, and combining two factors into one we obtain the right-hand side. -/
   calc T μ p f (insert i s)

@@ -14,7 +14,7 @@ import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 ## Main statements
 
-- `totallyBounded_convexHull` The convex hull of a totally bounded set is totally bounded.
+- `totallyBounded_convexHull`: The convex hull of a totally bounded set is totally bounded.
 
 ## References
 

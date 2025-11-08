@@ -17,9 +17,9 @@ hulls intersect nontrivially.
 As a corollary, we prove Helly's theorem, which is a basic result in discrete geometry on the
 intersection of convex sets. Let `X₁, ⋯, Xₙ` be a finite family of convex sets in `ℝᵈ` with
 `n ≥ d + 1`. The theorem states that if any `d + 1` sets from this family intersect nontrivially,
-then the whole family intersect nontrivially. For the infinite family of sets it is not true, as
-example of `Set.Ioo 0 (1 / n)` for `n : ℕ` shows. But the statement is true, if we assume
-compactness of sets (see `helly_theorem_compact`)
+then the whole family intersects nontrivially. For the infinite family of sets it is not true, as
+the example of `Set.Ioo 0 (1 / n)` for `n : ℕ` shows. But the statement is true if we assume
+compactness of sets (see `helly_theorem_compact`).
 
 ## Tags
 
