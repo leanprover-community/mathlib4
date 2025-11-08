@@ -441,11 +441,6 @@ theorem hasLimit_of_equivalence_comp (e : K ≌ J) [HasLimit (e.functor ⋙ F)] 
   haveI : HasLimit (e.inverse ⋙ e.functor ⋙ F) := Limits.hasLimit_equivalence_comp e.symm
   apply hasLimit_of_iso (e.invFunIdAssoc F)
 
-@[deprecated (since := "2025-03-02")] alias hasLimitEquivalenceComp :=
-  hasLimit_equivalence_comp
-@[deprecated (since := "2025-03-02")] alias hasLimitOfEquivalenceComp :=
-  hasLimit_of_equivalence_comp
-
 -- `hasLimitCompEquivalence` and `hasLimitOfCompEquivalence`
 -- are proved in `CategoryTheory/Adjunction/Limits.lean`.
 section LimFunctor
