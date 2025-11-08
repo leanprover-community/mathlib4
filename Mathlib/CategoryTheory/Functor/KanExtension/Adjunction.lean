@@ -175,6 +175,11 @@ lemma isIso_lanAdjunction_counit_app_iff (G : D ⥤ H) :
     IsIso ((L.lanAdjunction H).counit.app G) ↔ G.IsLeftKanExtension (𝟙 (L ⋙ G)) :=
   (isLeftKanExtension_iff_isIso _ (L.lanUnit.app (L ⋙ G)) _ (by simp)).symm
 
+lemma isIso_lanAdjunction_homEquiv_symm_iff {F : C ⥤ H} {G : D ⥤ H} (α : F ⟶ L ⋙ G) :
+    IsIso (((L.lanAdjunction H).homEquiv _ _).symm α) ↔ G.IsLeftKanExtension α :=
+  (isLeftKanExtension_iff_isIso ((((L.lanAdjunction H).homEquiv _ _).symm α))
+    (L.lanUnit.app F) α (by simp [lanAdjunction])).symm
+
 /-- Composing the left Kan extension of `L : C ⥤ D` with `colim` on shapes `D` is isomorphic
 to `colim` on shapes `C`. -/
 @[simps!]
@@ -358,6 +363,11 @@ lemma ranCounit_app_app_ranAdjunction_unit_app_app (G : D ⥤ H) (X : C) :
 lemma isIso_ranAdjunction_unit_app_iff (G : D ⥤ H) :
     IsIso ((L.ranAdjunction H).unit.app G) ↔ G.IsRightKanExtension (𝟙 (L ⋙ G)) :=
   (isRightKanExtension_iff_isIso _ (L.ranCounit.app (L ⋙ G)) _ (by simp)).symm
+
+lemma isIso_ranAdjunction_homEquiv_iff {F : C ⥤ H} {G : D ⥤ H} (α : L ⋙ G ⟶ F) :
+    IsIso (((L.ranAdjunction H).homEquiv _ _) α) ↔ G.IsRightKanExtension α :=
+  (isRightKanExtension_iff_isIso ((((L.ranAdjunction H).homEquiv _ _) α))
+    (L.ranCounit.app F) α (by simp [ranAdjunction])).symm
 
 /-- Composing the right Kan extension of `L : C ⥤ D` with `lim` on shapes `D` is isomorphic
 to `lim` on shapes `C`. -/
