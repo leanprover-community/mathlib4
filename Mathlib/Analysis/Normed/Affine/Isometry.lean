@@ -4,13 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Analysis.Normed.Operator.LinearIsometry
 import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
-import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+import Mathlib.Analysis.Normed.Operator.LinearIsometry
 import Mathlib.LinearAlgebra.AffineSpace.Restrict
-import Mathlib.Tactic.FailIfNoProgress
+import Mathlib.Topology.Algebra.ContinuousAffineEquiv
 
 /-!
 # Affine isometries
@@ -430,7 +428,7 @@ protected theorem continuousOn {s} : ContinuousOn e s :=
 protected theorem continuousWithinAt {s x} : ContinuousWithinAt e s x :=
   e.continuous.continuousWithinAt
 
-/-- Interpret a `LinearIsometryEquiv` as a `ContinuousLinearEquiv`. -/
+/-- Interpret a `AffineIsometryEquiv` as a `ContinuousAffineEquiv`. -/
 def toContinuousAffineEquiv : P ≃ᴬ[𝕜] P₂ :=
   { e.toAffineEquiv, e.toHomeomorph with }
 
@@ -447,11 +445,11 @@ theorem toContinuousAffineEquiv_inj {f g : P ≃ᵃⁱ[𝕜] P₂} :
 theorem coe_toContinuousAffineEquiv : ⇑e.toContinuousAffineEquiv = e :=
   rfl
 
-/-- Reinterpret a `LinearIsometryEquiv` as a `ContinuousLinearEquiv`. -/
-instance instCoeTCContinuousAffineEquiv : CoeTC (P ≃ᵃⁱ[𝕜] P₂) (P ≃ᴬ[𝕜] P₂) :=
+/-- Reinterpret a `AffineIsometryEquiv` as a `ContinuousLinearEquiv`. -/
+instance : CoeTC (P ≃ᵃⁱ[𝕜] P₂) (P ≃ᴬ[𝕜] P₂) :=
   ⟨fun e => e.toContinuousAffineEquiv⟩
 
-instance instCoeTCContinuousAffineMap : CoeTC (P ≃ᵃⁱ[𝕜] P₂) (P →ᴬ[𝕜] P₂) :=
+instance : CoeTC (P ≃ᵃⁱ[𝕜] P₂) (P →ᴬ[𝕜] P₂) :=
   ⟨fun e => e.toContinuousAffineEquiv.toContinuousAffineMap⟩
 
 @[simp]

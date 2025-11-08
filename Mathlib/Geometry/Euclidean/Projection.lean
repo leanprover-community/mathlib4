@@ -4,12 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
 
-import Mathlib.Analysis.InnerProductSpace.Projection
-import Mathlib.Analysis.Normed.Affine.ContinuousAffineMap
-import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
+import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 /-!
 # Orthogonal projection in affine spaces
@@ -204,7 +201,7 @@ theorem orthogonalProjection_vsub_orthogonalProjection (s : AffineSubspace 𝕜 
 /-- The characteristic property of the orthogonal projection, for a point given in the underlying
 space. This form is typically more convenient to use than
 `inter_eq_singleton_orthogonalProjection`. -/
-lemma coe_orthogonalProjection_eq_iff_mem {s : AffineSubspace ℝ P} [Nonempty s]
+lemma coe_orthogonalProjection_eq_iff_mem {s : AffineSubspace 𝕜 P} [Nonempty s]
     [s.direction.HasOrthogonalProjection] {p q : P} :
     orthogonalProjection s p = q ↔ q ∈ s ∧ p -ᵥ q ∈ s.directionᗮ := by
   constructor
@@ -222,13 +219,13 @@ lemma coe_orthogonalProjection_eq_iff_mem {s : AffineSubspace ℝ P} [Nonempty s
 /-- The characteristic property of the orthogonal projection, for a point given in the relevant
 subspace. This form is typically more convenient to use than
 `inter_eq_singleton_orthogonalProjection`. -/
-lemma orthogonalProjection_eq_iff_mem {s : AffineSubspace ℝ P} [Nonempty s]
+lemma orthogonalProjection_eq_iff_mem {s : AffineSubspace 𝕜 P} [Nonempty s]
     [s.direction.HasOrthogonalProjection] {p : P} {q : s} :
     orthogonalProjection s p = q ↔ p -ᵥ q ∈ s.directionᗮ := by
   simpa using coe_orthogonalProjection_eq_iff_mem (s := s) (p := p) (q := (q : P))
 
 /-- A condition for two points to have the same orthogonal projection onto a given subspace. -/
-lemma orthogonalProjection_eq_orthogonalProjection_iff_vsub_mem {s : AffineSubspace ℝ P}
+lemma orthogonalProjection_eq_orthogonalProjection_iff_vsub_mem {s : AffineSubspace 𝕜 P}
     [Nonempty s] [s.direction.HasOrthogonalProjection] {p q : P} :
     orthogonalProjection s p = orthogonalProjection s q ↔ p -ᵥ q ∈ s.directionᗮ := by
   rw [orthogonalProjection_eq_iff_mem, ← s.directionᗮ.add_mem_iff_left (x := p -ᵥ q)
@@ -237,7 +234,7 @@ lemma orthogonalProjection_eq_orthogonalProjection_iff_vsub_mem {s : AffineSubsp
 
 /-- If the orthogonal projections of a point onto two subspaces are equal, so is the projection
 onto their supremum. -/
-lemma orthogonalProjection_sup_of_orthogonalProjection_eq {s₁ s₂ : AffineSubspace ℝ P} [Nonempty s₁]
+lemma orthogonalProjection_sup_of_orthogonalProjection_eq {s₁ s₂ : AffineSubspace 𝕜 P} [Nonempty s₁]
     [Nonempty s₂] [s₁.direction.HasOrthogonalProjection] [s₂.direction.HasOrthogonalProjection]
     {p : P} (h : (orthogonalProjection s₁ p : P) = orthogonalProjection s₂ p)
     [(s₁ ⊔ s₂).direction.HasOrthogonalProjection] :
