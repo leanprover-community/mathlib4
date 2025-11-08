@@ -54,8 +54,15 @@ TODO:
 
 ## Implementation details
 
-The technical choice of spelling `EqOn f 0 Kᶜ` in the definition, as opposed to `tsupport f ⊆ K`
-is to make rewriting `f x` to `0` easier when `x ∉ K`.
+* The technical choice of spelling `EqOn f 0 Kᶜ` in the definition, as opposed to `tsupport f ⊆ K`
+  is to make rewriting `f x` to `0` easier when `x ∉ K`.
+* Since the most common case is by far the smooth case, we often reserve the "expected" name
+  of a result/definition to this case, and add `WithOrder` to the declaration taking care of
+  all regularities.
+* In `iteratedFDerivWithOrderₗ`, we define the `i`-th iterated differentiation operator as
+  a map from `𝓓^{n}_{K}` to `𝓓^{k}_{K}` without imposing relations on `n`, `k` and `i`. Of course
+  this is defined as `0` if `k + i > n`. This creates some verbosity as all of these variables are
+  explicit, but it allows the most flexibility while avoiding DTT hell.
 
 ## Tags
 
@@ -267,6 +274,14 @@ This only makes mathematical sense if `k + i ≤ n`, otherwise we define it as t
 See `iteratedFDerivₗ` for the very common case where everything is infinitely differentiable. -/
 noncomputable def iteratedFDerivWithOrderₗ (i : ℕ) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{k}_{K}(E, E [×i]→L[ℝ] F) where
+  /-
+  Note: it is tempting to define this as some linear map if `k + i ≤ n`,
+  and the zero map otherwise. However, we would lose the definitional equality between
+  `iteratedFDerivWithOrderₗ 𝕜 n k i f` and `iteratedFDerivWithOrderₗ ℝ n k i f`.
+
+  This is caused by the fact that the equality `f (if p then x else y) = if p then f x else f y`
+  is not definitional.
+  -/
   toFun f :=
     if hi : k + i ≤ n then
       .of_support_subset
