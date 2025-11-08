@@ -152,10 +152,9 @@ lemma ramificationIdx_map_eq [Algebra R S] {E : Type*} [EquivLike E S S₁] [Alg
 lemma ramificationIdx_ne_one_iff (hp : map f p ≤ P) :
     ramificationIdx f p P ≠ 1 ↔ p.map f ≤ P ^ 2 := by
   classical
-  by_cases H : ∀ n : ℕ, ∃ k, p.map f ≤ P ^ k ∧ n < k
+  by_cases! H : ∀ n : ℕ, ∃ k, p.map f ≤ P ^ k ∧ n < k
   · obtain ⟨k, hk, h2k⟩ := H 2
     simp [Ideal.ramificationIdx_eq_zero H, hk.trans (Ideal.pow_le_pow_right h2k.le)]
-  push_neg at H
   rw [Ideal.ramificationIdx_eq_find H]
   constructor
   · intro he
@@ -242,8 +241,7 @@ lemma ramificationIdx_eq_one_iff
     (hp : P ≠ ⊥) (hpP : p.map (algebraMap R S) ≤ P) :
     ramificationIdx (algebraMap R S) p P = 1 ↔
       p.map (algebraMap R (Localization.AtPrime P)) = maximalIdeal (Localization.AtPrime P) := by
-  refine ⟨?_, ramificationIdx_eq_one_of_map_localization hpP hp
-    (primeCompl_le_nonZeroDivisors _)⟩
+  refine ⟨?_, ramificationIdx_eq_one_of_map_localization hpP hp (primeCompl_le_nonZeroDivisors _)⟩
   let Sₚ := Localization.AtPrime P
   rw [← not_ne_iff (b := 1), ramificationIdx_ne_one_iff hpP, pow_two]
   intro H₁
@@ -252,6 +250,7 @@ lemma ramificationIdx_eq_one_iff
   rw [IsScalarTower.algebraMap_eq _ S, ← Ideal.map_map, ha, Ideal.map_mul,
     Localization.AtPrime.map_eq_maximalIdeal]
   convert Ideal.mul_top _
+  on_goal 2 => infer_instance
   rw [← not_ne_iff, IsLocalization.map_algebraMap_ne_top_iff_disjoint P.primeCompl]
   simpa [primeCompl, Set.disjoint_compl_left_iff_subset]
 

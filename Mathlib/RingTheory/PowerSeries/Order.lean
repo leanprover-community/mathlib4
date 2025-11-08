@@ -172,11 +172,11 @@ theorem le_order_mul (φ ψ : R⟦X⟧) : order φ + order ψ ≤ order (φ * ψ
   apply le_order
   intro n hn; rw [coeff_mul, Finset.sum_eq_zero]
   rintro ⟨i, j⟩ hij
-  by_cases hi : ↑i < order φ
+  by_cases! hi : ↑i < order φ
   · rw [coeff_of_lt_order i hi, zero_mul]
-  by_cases hj : ↑j < order ψ
+  by_cases! hj : ↑j < order ψ
   · rw [coeff_of_lt_order j hj, mul_zero]
-  rw [not_lt] at hi hj; rw [mem_antidiagonal] at hij
+  rw [mem_antidiagonal] at hij
   exfalso
   apply ne_of_lt (lt_of_lt_of_le hn <| add_le_add hi hj)
   rw [← Nat.cast_add, hij]
@@ -184,10 +184,7 @@ theorem le_order_mul (φ ψ : R⟦X⟧) : order φ + order ψ ≤ order (φ * ψ
 theorem le_order_pow (φ : R⟦X⟧) (n : ℕ) : n • order φ ≤ order (φ ^ n) := by
   induction n with
   | zero => simp
-  | succ n hn =>
-    simp only [add_smul, one_smul, pow_succ]
-    apply le_trans _ (le_order_mul _ _)
-    exact add_le_add_right hn φ.order
+  | succ n ih => grw [add_smul, one_smul, pow_succ, ih, le_order_mul]
 
 theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*} (φ : ι → R⟦X⟧) (s : Finset ι) :
     ∑ i ∈ s, (φ i).order ≤ (∏ i ∈ s, φ i).order := by
@@ -255,9 +252,6 @@ dividing out the largest power of X that divides `f`, that is its order -/
 def divXPowOrder (f : R⟦X⟧) : R⟦X⟧ :=
   .mk fun n ↦ coeff (n + f.order.toNat) f
 
-@[deprecated (since := "2025-04-15")]
-noncomputable alias divided_by_X_pow_order := divXPowOrder
-
 @[simp]
 lemma coeff_divXPowOrder {f : R⟦X⟧} {n : ℕ} :
     coeff n (divXPowOrder f) = coeff (n + f.order.toNat) f :=
@@ -287,9 +281,6 @@ theorem X_pow_order_mul_divXPowOrder {f : R⟦X⟧} :
   · simp [h]
   · push_neg at h
     rw [coeff_of_lt_order_toNat _ h]
-
-@[deprecated (since := "2025-04-15")]
-alias self_eq_X_pow_order_mul_divided_by_X_pow_order := X_pow_order_mul_divXPowOrder
 
 theorem X_pow_order_dvd : X ^ φ.order.toNat ∣ φ := by
   simpa only [X_pow_dvd_iff] using coeff_of_lt_order_toNat
@@ -355,7 +346,9 @@ theorem divXPowOrder_X :
   ext n
   simp [coeff_X]
 
-@[deprecated (since := "2025-04-15")] alias divided_by_X_pow_order_of_X_eq_one := divXPowOrder_X
+theorem divXPowOrder_one : divXPowOrder 1 = (1 : R⟦X⟧) := by
+  ext k
+  simp
 
 end OrderZeroNeOne
 
@@ -367,10 +360,9 @@ variable [Semiring R] [NoZeroDivisors R]
 is the sum of their orders. -/
 theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := by
   apply le_antisymm _ (le_order_mul _ _)
-  by_cases h : φ = 0 ∨ ψ = 0
+  by_cases! h : φ = 0 ∨ ψ = 0
   · rcases h with h | h <;> simp [h]
-  · push_neg at h
-    rw [← coe_toNat_order h.1, ← coe_toNat_order h.2, ← ENat.coe_add]
+  · rw [← coe_toNat_order h.1, ← coe_toNat_order h.2, ← ENat.coe_add]
     apply order_le
     rw [coeff_mul, Finset.sum_eq_single_of_mem ⟨φ.order.toNat, ψ.order.toNat⟩ (by simp)]
     · exact mul_ne_zero (coeff_order h.1) (coeff_order h.2)
@@ -380,47 +372,63 @@ theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := 
       · rw [coeff_of_lt_order_toNat ij.1 h', zero_mul]
       · rw [coeff_of_lt_order_toNat ij.2 h', mul_zero]
 
-theorem order_pow [Nontrivial R] (φ : R⟦X⟧) (n : ℕ) :
-    order (φ ^ n) = n • order φ := by
-  rcases subsingleton_or_nontrivial R with hR | hR
-  · simp only [Subsingleton.eq_zero φ, order_zero, nsmul_eq_mul]
-    by_cases hn : n = 0
-    · simp [hn, pow_zero]
-    · simp [zero_pow hn, ENat.mul_top', if_neg hn]
-  induction n with
-  | zero => simp
-  | succ n hn =>
-    simp only [add_smul, one_smul, pow_succ, order_mul, hn]
-
-theorem order_prod {R : Type*} [CommSemiring R] [NoZeroDivisors R] [Nontrivial R] {ι : Type*}
-    (φ : ι → R⟦X⟧) (s : Finset ι) : (∏ i ∈ s, φ i).order = ∑ i ∈ s, (φ i).order := by
-  induction s using Finset.cons_induction with
-  | empty => simp
-  | cons a s ha ih => rw [Finset.sum_cons ha, Finset.prod_cons ha, order_mul, ih]
-
 /-- The operation of dividing a power series by the largest possible power of `X`
 preserves multiplication. -/
-theorem divXPowOrder_mul_divXPowOrder {f g : R⟦X⟧} :
-    divXPowOrder f * divXPowOrder g = divXPowOrder (f * g) := by
-  by_cases h : f = 0 ∨ g = 0
+theorem divXPowOrder_mul {f g : R⟦X⟧} :
+    divXPowOrder (f * g) = divXPowOrder f * divXPowOrder g := by
+  by_cases! h : f = 0 ∨ g = 0
   · rcases h with (h | h) <;> simp [h]
-  push_neg at h
   apply X_pow_mul_cancel (k := f.order.toNat + g.order.toNat)
   calc
-    X ^ (f.order.toNat + g.order.toNat) * (f.divXPowOrder * g.divXPowOrder)
-    _ = (X ^ f.order.toNat * f.divXPowOrder) * (X ^ g.order.toNat * g.divXPowOrder) := by
-        conv_rhs =>
-          rw [mul_assoc, X_pow_mul, X_pow_mul, ← mul_assoc, mul_assoc, ← pow_add]
-        rw [X_pow_mul, add_comm]
+    _ = X ^ ((f * g).order.toNat) * (f * g).divXPowOrder := by
+        rw [order_mul, ENat.toNat_add (order_eq_top.not.mpr h.1) (order_eq_top.not.mpr h.2)]
     _ = f * g := by
         simp [X_pow_order_mul_divXPowOrder]
-    _ = X ^ ((f * g).order.toNat) * (f * g).divXPowOrder := by
+    _ = (X ^ f.order.toNat * f.divXPowOrder) * (X ^ g.order.toNat * g.divXPowOrder) := by
         simp [X_pow_order_mul_divXPowOrder]
-    _ = X ^ (f.order.toNat + g.order.toNat) * (f * g).divXPowOrder := by
-        rw [order_mul, ENat.toNat_add (order_eq_top.not.mpr h.1) (order_eq_top.not.mpr h.2)]
+    _ = f.divXPowOrder * g.divXPowOrder * X ^ (g.order.toNat + f.order.toNat) := by
+        rw [mul_assoc, X_pow_mul, X_pow_mul, ← mul_assoc, mul_assoc, ← pow_add]
+    _ = X ^ (f.order.toNat + g.order.toNat) * (f.divXPowOrder * g.divXPowOrder) := by
+        rw [X_pow_mul, add_comm]
 
-@[deprecated (since := "2025-04-15")] alias divided_by_X_pow_orderMul :=
-  divXPowOrder_mul_divXPowOrder
+@[deprecated divXPowOrder_mul "use `divXPowOrder_mul.symm` instead" (since := "2025-11-06")]
+theorem divXPowOrder_mul_divXPowOrder {f g : R⟦X⟧} :
+    divXPowOrder f * divXPowOrder g = divXPowOrder (f * g) :=
+  divXPowOrder_mul.symm
+
+variable [Nontrivial R]
+
+/-- `PowerSeries.order` as a `MonoidHom`. -/
+def orderHom : R⟦X⟧ →* Multiplicative ℕ∞ where
+  toFun g := .ofAdd g.order
+  map_one' := order_one
+  map_mul' := order_mul
+
+@[simp, norm_cast]
+lemma coe_orderHom : (orderHom : R⟦X⟧ → ℕ∞) = order := rfl
+
+theorem order_pow (φ : R⟦X⟧) (n : ℕ) : order (φ ^ n) = n • order φ :=
+  map_pow orderHom φ n
+
+theorem order_prod {R : Type*} [CommSemiring R] [NoZeroDivisors R] [Nontrivial R] {ι : Type*}
+    (φ : ι → R⟦X⟧) (s : Finset ι) : (∏ i ∈ s, φ i).order = ∑ i ∈ s, (φ i).order :=
+  map_prod orderHom φ s
+
+/-- `PowerSeries.divXPowOrder` as a `MonoidHom`. -/
+def divXPowOrderHom : R⟦X⟧ →* R⟦X⟧ where
+  toFun g := g.divXPowOrder
+  map_one' := divXPowOrder_one
+  map_mul' f g := divXPowOrder_mul (f := f) (g := g)
+
+@[simp, norm_cast]
+lemma coe_divXPowOrderHom : (divXPowOrderHom : R⟦X⟧ → R⟦X⟧) = divXPowOrder := rfl
+
+theorem divXPowOrder_pow (φ : R⟦X⟧) (n : ℕ) : divXPowOrder (φ ^ n) = (divXPowOrder φ) ^ n :=
+  map_pow divXPowOrderHom φ n
+
+theorem divXPowOrder_prod {R : Type*} [CommSemiring R] [NoZeroDivisors R] [Nontrivial R] {ι : Type*}
+    (φ : ι → R⟦X⟧) (s : Finset ι) : (∏ i ∈ s, φ i).divXPowOrder = ∏ i ∈ s, (φ i).divXPowOrder :=
+  map_prod divXPowOrderHom φ s
 
 end NoZeroDivisors
 
