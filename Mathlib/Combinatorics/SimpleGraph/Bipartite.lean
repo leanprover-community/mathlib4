@@ -326,7 +326,7 @@ lemma neighborSet_subset_between_union (hv : v ∈ s) :
 
 /-- The neighbor set of `w ∈ sᶜ` in `G.between s sᶜ` excludes the vertices in `sᶜ` adjacent to `w`
 in `G`. -/
-lemma neighborSet_subset_between_union' (hw : w ∈ sᶜ) :
+lemma neighborSet_subset_between_union_compl (hw : w ∈ sᶜ) :
     G.neighborSet w ⊆ (G.between s sᶜ).neighborSet w ∪ sᶜ := by
   intro v hadj
   rw [neighborSet, Set.mem_union, Set.mem_setOf, between_adj]
@@ -344,7 +344,7 @@ lemma neighborFinset_subset_between_union (hv : v ∈ s) :
 
 /-- The degree of `v ∈ s` in `G` is at most the degree in `G.between s sᶜ` plus the excluded
 vertices from `s`. -/
-theorem degree_le_between_plus (hv : v ∈ s) :
+theorem degree_le_between_add (hv : v ∈ s) :
     G.degree v ≤ (G.between s sᶜ).degree v + s.card := by
   have h_bipartite : (G.between s sᶜ).IsBipartiteWith s ↑(sᶜ) := by
     simpa using between_isBipartiteWith disjoint_compl_right
@@ -354,19 +354,19 @@ theorem degree_le_between_plus (hv : v ∈ s) :
 
 /-- The neighbor finset of `w ∈ sᶜ` in `G.between s sᶜ` excludes the vertices in `sᶜ` adjacent to
 `w` in `G`. -/
-lemma neighborFinset_subset_between_union' (hw : w ∈ sᶜ) :
+lemma neighborFinset_subset_between_union_compl (hw : w ∈ sᶜ) :
     G.neighborFinset w ⊆ (G.between s sᶜ).neighborFinset w ∪ sᶜ := by
-  simpa [neighborFinset_def] using G.neighborSet_subset_between_union' (by simpa using hw)
+  simpa [neighborFinset_def] using G.neighborSet_subset_between_union_compl (by simpa using hw)
 
 /-- The degree of `w ∈ sᶜ` in `G` is at most the degree in `G.between s sᶜ` plus the excluded
 vertices from `sᶜ`. -/
-theorem degree_le_between_plus' (hw : w ∈ sᶜ) :
+theorem degree_le_between_add_compl (hw : w ∈ sᶜ) :
     G.degree w ≤ (G.between s sᶜ).degree w + sᶜ.card := by
   have h_bipartite : (G.between s sᶜ).IsBipartiteWith s ↑(sᶜ) := by
     simpa using between_isBipartiteWith disjoint_compl_right
   simp_rw [← card_neighborFinset_eq_degree,
     ← card_union_of_disjoint (isBipartiteWith_neighborFinset_disjoint' h_bipartite hw)]
-  exact card_le_card (neighborFinset_subset_between_union' hw)
+  exact card_le_card (neighborFinset_subset_between_union_compl hw)
 
 end Between
 
