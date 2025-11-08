@@ -315,7 +315,8 @@ In this case `to_additive` adds all structure fields to its mapping.
 
 * You can add a namespace translation using the following command:
   ```
-  run_meta ToAdditive.insertTranslation `QuotientGroup `QuotientAddGroup
+  open ToAdditive in
+  run_meta insertTranslation toAdditiveBundle `QuotientGroup `QuotientAddGroup
   ```
   Later uses of `@[to_additive]` on declarations in the `QuotientGroup`
   namespace will be created in the `QuotientAddGroup` namespace.

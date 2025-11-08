@@ -59,7 +59,8 @@ but we still use the namespaces.
 
 TODO: everything in these namespaces should be renamed; even if these typeclasses still existed,
 it's unconventional to put theorems in namespaces named after them. -/
-run_meta ToAdditive.insertTranslation `LinearOrderedCommGroup `LinearOrderedAddCommGroup
+open ToAdditive in
+run_meta insertTranslation toAdditiveBundle `LinearOrderedCommGroup `LinearOrderedAddCommGroup
 
 section LinearOrderedCommGroup
 
