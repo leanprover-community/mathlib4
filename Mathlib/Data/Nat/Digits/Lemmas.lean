@@ -302,40 +302,18 @@ theorem ofDigits_neg_one :
     ring
 
 /-- Explicit computation of the `i`-th digit of `n` in base `b`. -/
-theorem getD_digits (b n i : ℕ) (h : 2 ≤ b) : (Nat.digits b n).getD i 0 = n / b ^ i % b := by
-  simp only [List.getD_eq_getElem?_getD]
-  obtain (n0l | n0r) := Nat.eq_zero_or_pos n
-  · simp [n0l]
-  · have ne0 : n ≠ 0 := Nat.ne_zero_of_lt n0r
-    obtain ⟨b, rfl⟩ := Nat.exists_eq_add_of_le' h
-    clear h
-    rw [← List.getD_eq_getElem?_getD]
-    induction n using Nat.strongRecOn generalizing i with | ind n IH
-    rcases n with (_ | n)
-    · simp
-    · rcases i with _ | i
-      · simp
-      · simp only [le_add_iff_nonneg_left, zero_le, lt_add_iff_pos_left, add_pos_iff, zero_lt_one,
-        or_true, Nat.digits_of_two_le_of_pos, List.getD_eq_getElem?_getD, List.getElem?_cons_succ]
-        rw [← List.getD_eq_getElem?_getD]
-        by_cases hc: ( b + 2 ) ≤ ( n + 1 )
-        · have hltone := (Nat.one_le_div_iff (a := (n + 1)) (b := (b + 2)) (by grind)).mpr hc
-          have hs := IH ((n + 1) / (b + 2)) (Nat.div_lt_self' n b)
-            i hltone (Nat.ne_zero_of_lt hltone)
-          rw [hs]
-          have ht : (n + 1) / (b + 2) / (b + 2) ^ i = (n + 1) / ((b + 2) ^ (i + 1)) := by
-            rw [Nat.div_div_eq_div_mul, mul_comm]
-            congr
-          rw [ht]
-        · have hlt : n + 1 < b + 2 := by grind
-          have hn : (n + 1) / (b + 2) = 0 := Nat.div_eq_of_lt hlt
-          have hn2 : (n + 1) / ((b + 2) ^ (i + 1)) = 0 := by
-            refine Nat.div_eq_of_lt ?_
-            calc
-              _ < _ := hlt
-              _ ≤ _ := Nat.le_pow (by grind)
-          simp only [hn, hn2, Nat.digits_zero, List.getD_eq_getElem?_getD,
-            List.length_nil, not_lt_zero', not_false_eq_true, getElem?_neg, Option.getD_none]
-          rfl
+theorem digits_getD (b n i : ℕ) (h : 2 ≤ b) : (Nat.digits b n).getD i 0 = n / b ^ i % b := by
+  obtain ⟨b, rfl⟩ := Nat.exists_eq_add_of_le' h
+  clear h
+  rw [List.getD_eq_getElem?_getD]
+  induction n using Nat.strongRecOn generalizing i with | ind n IH
+  rcases n with (_ | n)
+  · simp
+  · rcases i with _ | i
+    · have h0 : 0 = default := rfl
+      rw [← List.head?_eq_getElem?, h0, Option.getD_default_eq_iget,
+        ← List.head!_eq_head?, head!_digits (by grind)]
+      simp
+    · simp [IH _ (div_lt_self' n b), pow_succ', Nat.div_div_eq_div_mul]
 
 end Nat
