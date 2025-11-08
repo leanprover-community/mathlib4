@@ -210,7 +210,7 @@ variable {J} in
 lemma isClosedUnderColimitsOfShape_iff_of_equivalence (e : J ≌ J') :
     P.IsClosedUnderColimitsOfShape J ↔
       P.IsClosedUnderColimitsOfShape J' := by
-  simp only [isClosedUnderColimitsOfShape_iff, P.colimitsOfShape_congr e]
+  simp [isClosedUnderColimitsOfShape_iff, P.colimitsOfShape_congr e]
 
 variable {P J} in
 lemma IsClosedUnderColimitsOfShape.of_equivalence (e : J ≌ J')
@@ -221,40 +221,32 @@ lemma IsClosedUnderColimitsOfShape.of_equivalence (e : J ≌ J')
 lemma colimitsOfShape_eq_unop_limitsOfShape :
     P.colimitsOfShape J = (P.op.limitsOfShape Jᵒᵖ).unop := by
   ext X
-  constructor
-  · rintro ⟨h⟩
-    exact ⟨{
-      diag := h.diag.op
-      π := NatTrans.op h.ι
-      isLimit := isLimitOfUnop h.isColimit
-      prop_diag_obj _ := h.prop_diag_obj _
-    }⟩
-  · rintro ⟨h⟩
-    exact ⟨{
-      diag := h.diag.unop
-      ι := NatTrans.unop h.π
-      isColimit := isColimitOfOp h.isLimit
-      prop_diag_obj _ := h.prop_diag_obj _
-    }⟩
+  refine ⟨fun ⟨h⟩ => ⟨?_⟩, fun ⟨h⟩ => ⟨?_⟩⟩
+  · exact
+      { diag := h.diag.op
+        π := NatTrans.op h.ι
+        isLimit := isLimitOfUnop h.isColimit
+        prop_diag_obj _ := h.prop_diag_obj _ }
+  · exact
+      { diag := h.diag.unop
+        ι := NatTrans.unop h.π
+        isColimit := isColimitOfOp h.isLimit
+        prop_diag_obj _ := h.prop_diag_obj _ }
 
 lemma limitsOfShape_eq_unop_colimitsOfShape :
     P.limitsOfShape J = (P.op.colimitsOfShape Jᵒᵖ).unop := by
   ext X
-  constructor
-  · rintro ⟨h⟩
-    exact ⟨{
-      diag := h.diag.op
-      ι := NatTrans.op h.π
-      isColimit := isColimitOfUnop h.isLimit
-      prop_diag_obj _ := h.prop_diag_obj _
-    }⟩
-  · rintro ⟨h⟩
-    exact ⟨{
-      diag := h.diag.unop
-      π := NatTrans.unop h.ι
-      isLimit := isLimitOfOp h.isColimit
-      prop_diag_obj _ := h.prop_diag_obj _
-    }⟩
+  refine ⟨fun ⟨h⟩ => ⟨?_⟩, fun ⟨h⟩ => ⟨?_⟩⟩
+  · exact
+      { diag := h.diag.op
+        ι := NatTrans.op h.π
+        isColimit := isColimitOfUnop h.isLimit
+        prop_diag_obj _ := h.prop_diag_obj _ }
+  · exact
+      { diag := h.diag.unop
+        π := NatTrans.unop h.ι
+        isLimit := isLimitOfOp h.isColimit
+        prop_diag_obj _ := h.prop_diag_obj _ }
 
 lemma limitsOfShape_op :
     P.op.limitsOfShape J = (P.colimitsOfShape Jᵒᵖ).op := by
@@ -356,7 +348,6 @@ instance [P.IsClosedUnderColimitsOfShape WalkingParallelPair] :
       Cofork.IsColimit.mk _ (fun s ↦ h.i ≫ s.π)
         (fun s ↦ by simpa using s.condition)
         (fun s m hm ↦ by dsimp [c] at hm; simp [← hm])
-
     exact P.prop_of_isColimit hc (by rintro (_ | _) <;> exact hY)
 
 end ObjectProperty
