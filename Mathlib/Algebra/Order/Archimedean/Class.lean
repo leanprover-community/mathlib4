@@ -442,11 +442,10 @@ theorem one_lt_of_one_lt_of_mk_lt (ha : 1 < a) (hab : mk a < mk (b / a)) :
 theorem mulArchimedean_of_mk_eq_mk (h : ∀ a ≠ (1 : M), ∀ b ≠ 1, mk a = mk b) :
     MulArchimedean M where
   arch x y hy := by
-    by_cases hx : x ≤ 1
+    by_cases! hx : x ≤ 1
     · use 0
       simpa using hx
-    · have hx : 1 < x := lt_of_not_ge hx
-      have hxy : mk x = mk y := h x hx.ne.symm y hy.ne.symm
+    · have hxy : mk x = mk y := h x hx.ne.symm y hy.ne.symm
       obtain ⟨_, ⟨m, hm⟩⟩ := (mk_eq_mk).mp hxy
       rw [mabs_eq_self.mpr hx.le, mabs_eq_self.mpr hy.le] at hm
       exact ⟨m, hm⟩

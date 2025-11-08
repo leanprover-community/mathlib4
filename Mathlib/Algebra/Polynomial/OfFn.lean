@@ -106,10 +106,10 @@ theorem surjective_toFn (n : ℕ) : Function.Surjective (toFn (R := R) n) :=
 theorem ofFn_comp_toFn_eq_id_of_natDegree_lt {n : ℕ} {p : R[X]} (h_deg : p.natDegree < n) :
     ofFn n (toFn n p) = p := by
   ext i
-  by_cases h : i < n
+  by_cases! h : i < n
   · simp [h, toFn]
   · have : p.coeff i = 0 := coeff_eq_zero_of_natDegree_lt <| by cutsat
-    simp_all
+    simp [*]
 
 end ofFn
 

@@ -320,7 +320,7 @@ theorem idealOfLE_le_of_le (R S : ValuationSubring K) (hR : A ≤ R) (hS : A ≤
     idealOfLE A S hS ≤ idealOfLE A R hR := fun x hx =>
   (valuation_lt_one_iff R _).2
     (by
-      by_contra c; push_neg at c; replace c := monotone_mapOfLE R S h c
+      by_contra! c; replace c := monotone_mapOfLE R S h c
       rw [(mapOfLE _ _ _).map_one, mapOfLE_valuation_apply] at c
       apply not_le_of_gt ((valuation_lt_one_iff S _).1 hx) c)
 

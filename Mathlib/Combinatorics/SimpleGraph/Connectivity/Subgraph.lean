@@ -375,11 +375,10 @@ lemma ncard_neighborSet_toSubgraph_eq_two {u v} {p : G.Walk u u} (hpc : p.IsCycl
     (h : v ∈ p.support) : (p.toSubgraph.neighborSet v).ncard = 2 := by
   simp only [SimpleGraph.Walk.mem_support_iff_exists_getVert] at h ⊢
   obtain ⟨i, hi⟩ := h
-  by_cases he : i = 0 ∨ i = p.length
+  by_cases! he : i = 0 ∨ i = p.length
   · have huv : u = v := by aesop
     rw [← huv, hpc.neighborSet_toSubgraph_endpoint]
     exact Set.ncard_pair hpc.snd_ne_penultimate
-  push_neg at he
   rw [← hi.1, hpc.neighborSet_toSubgraph_internal he.1 (by cutsat)]
   exact Set.ncard_pair (hpc.getVert_sub_one_ne_getVert_add_one (by cutsat))
 

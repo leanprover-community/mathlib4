@@ -634,7 +634,7 @@ end SummableLeGeometric
 theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGroup α]
     [CompleteSpace α] {f : ℕ → α} {r : ℝ} (hr₁ : r < 1)
     (h : ∀ᶠ n in atTop, ‖f (n + 1)‖ ≤ r * ‖f n‖) : Summable f := by
-  by_cases hr₀ : 0 ≤ r
+  by_cases! hr₀ : 0 ≤ r
   · rw [eventually_atTop] at h
     rcases h with ⟨N, hN⟩
     rw [← @summable_nat_add_iff α _ _ _ _ N]
@@ -645,8 +645,7 @@ theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGrou
     refine le_geom (u := fun n ↦ ‖f (n + N)‖) hr₀ n fun i _ ↦ ?_
     convert hN (i + N) (N.le_add_left i) using 3
     ac_rfl
-  · push_neg at hr₀
-    refine .of_norm_bounded_eventually_nat summable_zero ?_
+  · refine .of_norm_bounded_eventually_nat summable_zero ?_
     filter_upwards [h] with _ hn
     by_contra! h
     exact not_lt.mpr (norm_nonneg _) (lt_of_le_of_lt hn <| mul_neg_of_neg_of_pos hr₀ h)

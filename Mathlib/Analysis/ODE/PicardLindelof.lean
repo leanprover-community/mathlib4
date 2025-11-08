@@ -482,10 +482,10 @@ lemma hasDerivWithinAt_picard_Icc
     (continuousOn_comp hf hα hmem _ ht)
   apply ContinuousOn.intervalIntegrable
   apply continuousOn_comp hf hα hmem |>.mono
-  by_cases h : t < t₀
+  by_cases! h : t < t₀
   · rw [uIcc_of_gt h]
     exact Icc_subset_Icc ht.1 ht₀.2
-  · rw [uIcc_of_le (not_lt.mp h)]
+  · rw [uIcc_of_le h]
     exact Icc_subset_Icc ht₀.1 ht.2
 
 /-- Converse of `hasDerivWithinAt_picard_Icc`: if `f` is the derivative along `α`, then `α`

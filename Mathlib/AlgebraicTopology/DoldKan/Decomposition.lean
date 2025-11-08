@@ -55,18 +55,17 @@ theorem decomposition_Q (n q : ℕ) :
     simp only [Q_zero, HomologicalComplex.zero_f_apply, Nat.not_lt_zero,
       Finset.filter_false, Finset.sum_empty]
   | succ q hq =>
-    by_cases hqn : q + 1 ≤ n + 1
-    swap
+    by_cases! hqn : n < q
     · rw [Q_is_eventually_constant (show n + 1 ≤ q by cutsat), hq]
       congr 1
       ext ⟨x, hx⟩
       simp_rw [Finset.mem_filter_univ]
       cutsat
-    · obtain ⟨a, ha⟩ := Nat.le.dest (Nat.succ_le_succ_iff.mp hqn)
+    · obtain ⟨a, ha⟩ := Nat.le.dest hqn
       rw [Q_succ, HomologicalComplex.sub_f_apply, HomologicalComplex.comp_f, hq]
       symm
       conv_rhs => rw [sub_eq_add_neg, add_comm]
-      let q' : Fin (n + 1) := ⟨q, Nat.succ_le_iff.mp hqn⟩
+      let q' : Fin (n + 1) := ⟨q, Nat.lt_succ_of_le hqn⟩
       rw [← @Finset.add_sum_erase _ _ _ _ _ _ q' (by simp [q'])]
       congr
       · have hnaq' : n = a + q := by omega

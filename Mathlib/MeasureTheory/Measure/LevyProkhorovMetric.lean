@@ -524,11 +524,10 @@ variable [MeasurableSpace Ω] [OpensMeasurableSpace Ω]
 lemma ProbabilityMeasure.toMeasure_add_pos_gt_mem_nhds (P : ProbabilityMeasure Ω)
     {G : Set Ω} (G_open : IsOpen G) {ε : ℝ≥0∞} (ε_pos : 0 < ε) :
     {Q | P.toMeasure G < Q.toMeasure G + ε} ∈ 𝓝 P := by
-  by_cases easy : P.toMeasure G < ε
+  by_cases! easy : P.toMeasure G < ε
   · exact Eventually.of_forall (fun _ ↦ lt_of_lt_of_le easy le_add_self)
   by_cases ε_top : ε = ∞
   · simp [ε_top, measure_lt_top]
-  simp only [not_lt] at easy
   have aux : P.toMeasure G - ε < liminf (fun Q ↦ Q.toMeasure G) (𝓝 P) := by
     apply lt_of_lt_of_le (ENNReal.sub_lt_self (by finiteness) _ _)
         <| ProbabilityMeasure.le_liminf_measure_open_of_tendsto tendsto_id G_open

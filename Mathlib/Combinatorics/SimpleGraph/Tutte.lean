@@ -190,7 +190,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     simp only [← hsupG, cycles]
     exact le_trans (by apply symmDiff_le_sup) (sup_le_sup hM1sub hM2sub)
   -- If that cycle does not contain the vertex `x`, we use it as an alternating cycle
-  by_cases hxc : x ∉ (cycles.connectedComponentMk c).supp
+  by_cases! hxc : x ∉ (cycles.connectedComponentMk c).supp
   · use (cycles.connectedComponentMk c).toSimpleGraph.spanningCoe
     refine ⟨hcalt.mono (spanningCoe_induce_le cycles (cycles.connectedComponentMk c).supp), ?_⟩
     simp only [ConnectedComponent.adj_spanningCoe_toSimpleGraph, hxc, hcac, false_and,
@@ -201,7 +201,6 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     rw [disjoint_edge]
     rw [ConnectedComponent.adj_spanningCoe_toSimpleGraph]
     simp_all
-  push_neg at hxc
   have hacc := ((cycles.connectedComponentMk c).mem_supp_congr_adj hcac.symm).mp rfl
   have (G : SimpleGraph V) : LocallyFinite G := fun _ ↦ Fintype.ofFinite _
   have hnM2 (x' : V) (h : x' ≠ c) : ¬ M2.Adj x' a := by
@@ -273,7 +272,7 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
   refine ⟨Gmax.universalVerts, .mono hSubgraph ?_⟩
   by_contra! hc
   simp only [IsTutteViolator, Set.ncard_eq_toFinset_card', Set.toFinset_card] at hc
-  by_cases h' : ∀ (K : ConnectedComponent Gmax.deleteUniversalVerts.coe),
+  by_cases! h' : ∀ (K : ConnectedComponent Gmax.deleteUniversalVerts.coe),
       Gmax.deleteUniversalVerts.coe.IsClique K.supp
   · -- Deleting universal vertices splits the graph into cliques
     rw [Fintype.card_eq_nat_card] at hc
@@ -283,7 +282,6 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
       (by simpa [IsTutteViolator] using hc) h'
     exact hMatchingFree M hM
   · -- Deleting universal vertices does not result in only cliques
-    push_neg at h'
     obtain ⟨K, hK⟩ := h'
     obtain ⟨x, y, hxy⟩ := (not_isClique_iff _).mp hK
     obtain ⟨p, hp⟩ := Reachable.exists_path_of_dist (K.connected_toSimpleGraph x y)

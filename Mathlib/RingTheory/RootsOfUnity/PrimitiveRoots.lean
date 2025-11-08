@@ -647,14 +647,13 @@ theorem card_nthRoots_one {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
 theorem nthRoots_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) {a : R} (ha : a ≠ 0) :
     (nthRoots n a).Nodup := by
   obtain (rfl | hn) := n.eq_zero_or_pos; · simp
-  by_cases h : ∃ α, α ^ n = a
+  by_cases! h : ∃ α, α ^ n = a
   · obtain ⟨α, hα⟩ := h
     by_cases hα' : α = 0
     · exact (ha (by rwa [hα', zero_pow hn.ne', eq_comm] at hα)).elim
     rw [nthRoots_eq h hα, Multiset.nodup_map_iff_inj_on (Multiset.nodup_range n)]
     exact h.injOn_pow_mul hα'
   · suffices nthRoots n a = 0 by simp [this]
-    push_neg at h
     simpa only [Multiset.card_eq_zero, Multiset.eq_zero_iff_forall_notMem, mem_nthRoots hn]
 
 /-- The multiset `nthRoots ↑n (1 : R)` has no repeated elements

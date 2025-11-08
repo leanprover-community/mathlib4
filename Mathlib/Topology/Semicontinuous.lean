@@ -456,15 +456,14 @@ theorem ContinuousAt.comp_lowerSemicontinuousWithinAt {g : γ → δ} {f : α �
     (hg : ContinuousAt g (f x)) (hf : LowerSemicontinuousWithinAt f s x) (gmon : Monotone g) :
     LowerSemicontinuousWithinAt (g ∘ f) s x := by
   intro y hy
-  by_cases h : ∃ l, l < f x
+  by_cases! h : ∃ l, l < f x
   · obtain ⟨z, zlt, hz⟩ : ∃ z < f x, Ioc z (f x) ⊆ g ⁻¹' Ioi y :=
       exists_Ioc_subset_of_mem_nhds (hg (Ioi_mem_nhds hy)) h
     filter_upwards [hf z zlt] with a ha
     calc
       y < g (min (f x) (f a)) := hz (by simp [zlt, ha])
       _ ≤ g (f a) := gmon (min_le_right _ _)
-  · simp only [not_exists, not_lt] at h
-    exact Filter.Eventually.of_forall fun a => hy.trans_le (gmon (h (f a)))
+  · exact Filter.Eventually.of_forall fun a => hy.trans_le (gmon (h (f a)))
 
 theorem ContinuousAt.comp_lowerSemicontinuousAt {g : γ → δ} {f : α → γ} (hg : ContinuousAt g (f x))
     (hf : LowerSemicontinuousAt f x) (gmon : Monotone g) : LowerSemicontinuousAt (g ∘ f) x := by
@@ -542,13 +541,13 @@ theorem LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontin
         exists_Ioc_subset_of_mem_nhds (v_open.mem_nhds xv) hx₂
       filter_upwards [hf z₁ z₁lt, hg z₂ z₂lt] with z h₁z h₂z
       have A1 : min (f z) (f x) ∈ u := by
-        by_cases H : f z ≤ f x
+        by_cases! H : f z ≤ f x
         · simpa [H] using h₁ ⟨h₁z, H⟩
-        · simpa [le_of_not_ge H]
+        · simpa [H.le]
       have A2 : min (g z) (g x) ∈ v := by
-        by_cases H : g z ≤ g x
+        by_cases! H : g z ≤ g x
         · simpa [H] using h₂ ⟨h₂z, H⟩
-        · simpa [le_of_not_ge H]
+        · simpa [H.le]
       have : (min (f z) (f x), min (g z) (g x)) ∈ u ×ˢ v := ⟨A1, A2⟩
       calc
         y < min (f z) (f x) + min (g z) (g x) := h this
@@ -556,9 +555,9 @@ theorem LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontin
     · simp only [not_exists, not_lt] at hx₂
       filter_upwards [hf z₁ z₁lt] with z h₁z
       have A1 : min (f z) (f x) ∈ u := by
-        by_cases H : f z ≤ f x
+        by_cases! H : f z ≤ f x
         · simpa [H] using h₁ ⟨h₁z, H⟩
-        · simpa [le_of_not_ge H]
+        · simpa [H.le]
       have : (min (f z) (f x), g x) ∈ u ×ˢ v := ⟨A1, xv⟩
       calc
         y < min (f z) (f x) + g x := h this
@@ -569,9 +568,9 @@ theorem LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontin
         exists_Ioc_subset_of_mem_nhds (v_open.mem_nhds xv) hx₂
       filter_upwards [hg z₂ z₂lt] with z h₂z
       have A2 : min (g z) (g x) ∈ v := by
-        by_cases H : g z ≤ g x
+        by_cases! H : g z ≤ g x
         · simpa [H] using h₂ ⟨h₂z, H⟩
-        · simpa [le_of_not_ge H] using h₂ ⟨z₂lt, le_rfl⟩
+        · simpa [H.le] using h₂ ⟨z₂lt, le_rfl⟩
       have : (f x, min (g z) (g x)) ∈ u ×ˢ v := ⟨xu, A2⟩
       calc
         y < f x + min (g z) (g x) := h this
@@ -1357,24 +1356,21 @@ theorem continuousWithinAt_iff_lower_upperSemicontinuousWithinAt {f : α → γ}
   rintro ⟨h₁, h₂⟩
   intro v hv
   simp only [Filter.mem_map]
-  by_cases Hl : ∃ l, l < f x
+  by_cases! Hl : ∃ l, l < f x
   · rcases exists_Ioc_subset_of_mem_nhds hv Hl with ⟨l, lfx, hl⟩
-    by_cases Hu : ∃ u, f x < u
+    by_cases! Hu : ∃ u, f x < u
     · rcases exists_Ico_subset_of_mem_nhds hv Hu with ⟨u, fxu, hu⟩
       filter_upwards [h₁ l lfx, h₂ u fxu] with a lfa fau
       rcases le_or_gt (f a) (f x) with h | h
       · exact hl ⟨lfa, h⟩
       · exact hu ⟨le_of_lt h, fau⟩
-    · simp only [not_exists, not_lt] at Hu
-      filter_upwards [h₁ l lfx] with a lfa using hl ⟨lfa, Hu (f a)⟩
-  · simp only [not_exists, not_lt] at Hl
-    by_cases Hu : ∃ u, f x < u
+    · filter_upwards [h₁ l lfx] with a lfa using hl ⟨lfa, Hu (f a)⟩
+  · by_cases! Hu : ∃ u, f x < u
     · rcases exists_Ico_subset_of_mem_nhds hv Hu with ⟨u, fxu, hu⟩
       filter_upwards [h₂ u fxu] with a lfa
       apply hu
       exact ⟨Hl (f a), lfa⟩
-    · simp only [not_exists, not_lt] at Hu
-      apply Filter.Eventually.of_forall
+    · apply Filter.Eventually.of_forall
       intro a
       have : f a = f x := le_antisymm (Hu _) (Hl _)
       rw [this]

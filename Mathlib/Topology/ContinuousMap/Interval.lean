@@ -107,11 +107,11 @@ theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {
     rintro x ⟨y, ⟨⟨z, hz⟩, ⟨h1, (h2 : b ≤ z)⟩, rfl⟩, rfl⟩
     simpa [projIccCM, projIcc, h2, hz.2] using h1
   filter_upwards [hf K₁ hK₁ U hU hfU, hg K₂ hK₂ U hU hgU, hfg] with i hf hg hfg x hx
-  by_cases hxb : x ≤ b
+  by_cases! hxb : x ≤ b
   · rw [concat_left hfg hxb]
     refine hf ⟨x, ⟨x, ⟨hx, hxb⟩, rfl⟩, ?_⟩
     simp [projIccCM, projIcc, hxb, x.2.1]
-  · replace hxb : b ≤ x := lt_of_not_ge hxb |>.le
+  · replace hxb : b ≤ x := hxb.le
     rw [concat_right hfg hxb]
     refine hg ⟨x, ⟨x, ⟨hx, hxb⟩, rfl⟩, ?_⟩
     simp [projIccCM, projIcc, hxb, x.2.2]

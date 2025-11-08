@@ -254,10 +254,9 @@ lemma toContinuousMapHom_toNNReal (f : C(X, ℝ)₀) :
 @[simp]
 lemma toNNReal_smul (r : ℝ≥0) (f : C(X, ℝ)₀) : (r • f).toNNReal = r • f.toNNReal := by
   ext x
-  by_cases h : 0 ≤ f x
+  by_cases! h : 0 ≤ f x
   · simpa [max_eq_left h, NNReal.smul_def] using mul_nonneg r.coe_nonneg h
-  · push_neg at h
-    simpa [max_eq_right h.le, NNReal.smul_def]
+  · simpa [max_eq_right h.le, NNReal.smul_def]
       using mul_nonpos_of_nonneg_of_nonpos r.coe_nonneg h.le
 
 @[simp]
@@ -312,10 +311,10 @@ noncomputable def realContinuousMapZeroOfNNReal (φ : C(X, ℝ≥0)₀ →⋆ₙ
     abel
   map_smul' r f := by
     simp only [MonoidHom.id_apply]
-    by_cases hr : 0 ≤ r
+    by_cases! hr : 0 ≤ r
     · lift r to ℝ≥0 using hr
       simp only [← smul_def, toNNReal_smul, map_smul, toNNReal_neg_smul, smul_sub]
-    · rw [not_le, ← neg_pos] at hr
+    · rw [← neg_pos] at hr
       rw [← neg_smul]
       nth_rw 1 [← neg_neg r]
       nth_rw 3 [← neg_neg r]

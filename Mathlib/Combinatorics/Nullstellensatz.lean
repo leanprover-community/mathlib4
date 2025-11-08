@@ -253,9 +253,8 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
     ∃ s : σ → R, (∀ i, s i ∈ S i) ∧ eval s f ≠ 0 := by
   let _ : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   classical
-  by_contra Heval
+  by_contra! Heval
   apply ht
-  push_neg at Heval
   obtain ⟨h, hh, hf⟩ := combinatorial_nullstellensatz_exists_linearCombination S
     (fun i ↦ by rw [← Finset.card_pos]; exact Nat.zero_lt_of_lt (htS i)) f Heval
   rw [hf]

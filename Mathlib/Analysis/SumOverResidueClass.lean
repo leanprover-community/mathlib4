@@ -72,15 +72,14 @@ lemma summable_indicator_mod_iff_summable_indicator_mod {m : ℕ} [NeZero m] {f 
     (hf : Antitone f) {k : ZMod m} (l : ZMod m)
     (hs : Summable ({n : ℕ | (n : ZMod m) = k}.indicator f)) :
     Summable ({n : ℕ | (n : ZMod m) = l}.indicator f) := by
-  by_cases hf₀ : ∀ n, 0 ≤ f n -- the interesting case
+  by_cases! hf₀ : ∀ n, 0 ≤ f n -- the interesting case
   · rw [← ZMod.natCast_zmod_val k, summable_indicator_mod_iff_summable] at hs
     have hl : (l.val + m : ZMod m) = l := by
       simp only [ZMod.natCast_val, ZMod.cast_id', id_eq, CharP.cast_eq_zero, add_zero]
     rw [← hl, ← Nat.cast_add, summable_indicator_mod_iff_summable]
     exact hs.of_nonneg_of_le (fun _ ↦ hf₀ _)
       fun _ ↦ hf <| Nat.add_le_add Nat.le.refl (k.val_lt.trans_le <| m.le_add_left l.val).le
-  · push_neg at hf₀
-    obtain ⟨n, hn⟩ := hf₀
+  · obtain ⟨n, hn⟩ := hf₀
     exact (not_summable_indicator_mod_of_antitone_of_neg hf hn k hs).elim
 
 /-- A decreasing sequence of real numbers is summable on a residue class

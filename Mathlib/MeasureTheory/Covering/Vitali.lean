@@ -132,14 +132,13 @@ theorem exists_disjoint_subfamily_covering_enlargement (B : ι → Set α) (t : 
     intro c ct b ba'u hcb
     -- if `c` already intersects an element of `u`, then it intersects an element of `u` with
     -- large `δ` by the assumption on `u`, and there is nothing left to do.
-    by_cases H : ∃ d ∈ u, (B c ∩ B d).Nonempty
+    by_cases! H : ∃ d ∈ u, (B c ∩ B d).Nonempty
     · rcases H with ⟨d, du, hd⟩
       rcases hu.prop.2.2 c ct d du hd with ⟨d', d'u, hd'⟩
       exact ⟨d', mem_insert_of_mem _ d'u, hd'⟩
     · -- Otherwise, `c` belongs to `A`. The element of `u ∪ {a'}` that it intersects has to be `a'`.
       -- Moreover, `δ c` is smaller than the maximum `m` of `δ` over `A`, which is `≤ δ a' / τ`
       -- thanks to the good choice of `a'`. This is the desired inequality.
-      push_neg at H
       simp only [← disjoint_iff_inter_eq_empty] at H
       rcases mem_insert_iff.1 ba'u with (rfl | H')
       · refine ⟨b, mem_insert _ _, hcb, ?_⟩
@@ -161,11 +160,10 @@ theorem exists_disjoint_subfamily_covering_enlargement_closedBall
         ∀ a ∈ t, ∃ b ∈ u, closedBall (x a) (r a) ⊆ closedBall (x b) (τ * r b) := by
   rcases eq_empty_or_nonempty t with (rfl | _)
   · exact ⟨∅, Subset.refl _, pairwiseDisjoint_empty, by simp⟩
-  by_cases ht : ∀ a ∈ t, r a < 0
+  by_cases! ht : ∀ a ∈ t, r a < 0
   · exact ⟨t, Subset.rfl, fun a ha b _ _ => by
       simp only [closedBall_eq_empty.2 (ht a ha), empty_disjoint, Function.onFun],
       fun a ha => ⟨a, ha, by simp only [closedBall_eq_empty.2 (ht a ha), empty_subset]⟩⟩
-  push_neg at ht
   let t' := { a ∈ t | 0 ≤ r a }
   rcases exists_disjoint_subfamily_covering_enlargement (fun a => closedBall (x a) (r a)) t' r
       ((τ - 1) / 2) (by linarith) (fun a ha => ha.2) R (fun a ha => hr a ha.1) fun a ha =>

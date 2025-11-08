@@ -155,9 +155,9 @@ theorem bound_of_shell_of_norm_map_coord_zero (f : MultilinearMap 𝕜 E G)
     {ε : ι → ℝ} {C : ℝ} (hε : ∀ i, 0 < ε i) {c : ι → 𝕜} (hc : ∀ i, 1 < ‖c i‖)
     (hf : ∀ m : ∀ i, E i, (∀ i, ε i / ‖c i‖ ≤ ‖m i‖) → (∀ i, ‖m i‖ < ε i) → ‖f m‖ ≤ C * ∏ i, ‖m i‖)
     (m : ∀ i, E i) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ := by
-  rcases em (∃ i, ‖m i‖ = 0) with (⟨i, hi⟩ | hm)
-  · rw [hf₀ hi, prod_eq_zero (mem_univ i) hi, mul_zero]
-  push_neg at hm
+  by_cases! hm : ∃ i, ‖m i‖ = 0
+  · rcases hm with ⟨i, hi⟩
+    rw [hf₀ hi, prod_eq_zero (mem_univ i) hi, mul_zero]
   choose δ hδ0 hδm_lt hle_δm _ using fun i => rescale_to_shell_semi_normed (hc i) (hε i) (hm i)
   have hδ0 : 0 < ∏ i, ‖δ i‖ := prod_pos fun i _ => norm_pos_iff.2 (hδ0 i)
   simpa [map_smul_univ, norm_smul, prod_mul_distrib, mul_left_comm C, hδ0] using

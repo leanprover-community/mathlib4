@@ -152,10 +152,9 @@ lemma ramificationIdx_map_eq [Algebra R S] {E : Type*} [EquivLike E S S₁] [Alg
 lemma ramificationIdx_ne_one_iff (hp : map f p ≤ P) :
     ramificationIdx f p P ≠ 1 ↔ p.map f ≤ P ^ 2 := by
   classical
-  by_cases H : ∀ n : ℕ, ∃ k, p.map f ≤ P ^ k ∧ n < k
+  by_cases! H : ∀ n : ℕ, ∃ k, p.map f ≤ P ^ k ∧ n < k
   · obtain ⟨k, hk, h2k⟩ := H 2
     simp [Ideal.ramificationIdx_eq_zero H, hk.trans (Ideal.pow_le_pow_right h2k.le)]
-  push_neg at H
   rw [Ideal.ramificationIdx_eq_find H]
   constructor
   · intro he

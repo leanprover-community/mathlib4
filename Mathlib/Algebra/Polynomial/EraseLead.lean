@@ -202,12 +202,12 @@ theorem natDegree_pos_of_eraseLead_ne_zero (h : f.eraseLead ≠ 0) : 0 < f.natDe
 
 theorem eraseLead_natDegree_lt_or_eraseLead_eq_zero (f : R[X]) :
     (eraseLead f).natDegree < f.natDegree ∨ f.eraseLead = 0 := by
-  by_cases h : #f.support ≤ 1
+  by_cases! h : #f.support ≤ 1
   · right
     rw [← C_mul_X_pow_eq_self h]
     simp
   · left
-    apply eraseLead_natDegree_lt (lt_of_not_ge h)
+    apply eraseLead_natDegree_lt h
 
 theorem eraseLead_natDegree_le (f : R[X]) : (eraseLead f).natDegree ≤ f.natDegree - 1 := by
   rcases f.eraseLead_natDegree_lt_or_eraseLead_eq_zero with (h | h)
@@ -360,13 +360,13 @@ theorem mono_map_natDegree_eq {S F : Type*} [Semiring S]
     rw [natDegree_C_mul_X_pow _ _ r0, C_mul_X_pow_eq_monomial, φ_mon_nat _ _ r0]
   · intro f g fg _ fk gk
     rw [natDegree_add_eq_right_of_natDegree_lt fg, map_add]
-    by_cases FG : k ≤ f.natDegree
+    by_cases! FG : k ≤ f.natDegree
     · rw [natDegree_add_eq_right_of_natDegree_lt, gk]
       rw [fk, gk]
       exact fc FG fg
     · cases k
-      · exact (FG (Nat.zero_le _)).elim
-      · rwa [φ_k (not_le.mp FG), zero_add]
+      · nomatch FG
+      · rwa [φ_k FG, zero_add]
 
 theorem map_natDegree_eq_sub {S F : Type*} [Semiring S]
     [FunLike F R[X] S[X]] [AddMonoidHomClass F R[X] S[X]] {φ : F}

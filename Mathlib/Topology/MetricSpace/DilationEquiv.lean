@@ -121,11 +121,10 @@ protected theorem injective (e : X ≃ᵈ Y) : Injective e := e.1.injective
 @[simp]
 theorem ratio_trans (e : X ≃ᵈ Y) (e' : Y ≃ᵈ Z) : ratio (e.trans e') = ratio e * ratio e' := by
   -- If `X` is trivial, then so is `Y`, otherwise we apply `Dilation.ratio_comp'`
-  by_cases hX : ∀ x y : X, edist x y = 0 ∨ edist x y = ∞
+  by_cases! hX : ∀ x y : X, edist x y = 0 ∨ edist x y = ∞
   · have hY : ∀ x y : Y, edist x y = 0 ∨ edist x y = ∞ := e.surjective.forall₂.2 fun x y ↦ by
       refine (hX x y).imp (fun h ↦ ?_) fun h ↦ ?_ <;> simp [*, Dilation.ratio_ne_zero]
     simp [Dilation.ratio_of_trivial, *]
-  push_neg at hX
   exact (Dilation.ratio_comp' (g := e'.toDilation) (f := e.toDilation) hX).trans (mul_comm _ _)
 
 @[simp]
