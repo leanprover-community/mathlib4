@@ -502,7 +502,7 @@ theorem mem_map_equiv {f : M ≃* N} {K : Subsemigroup M} {x : N} :
 @[to_additive]
 theorem map_equiv_eq_comap_symm (f : M ≃* N) (K : Subsemigroup M) :
     K.map (f : M →ₙ* N) = K.comap (f.symm : N →ₙ* M) :=
-  SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
+  SetLike.coe_injective (f.toEquiv.image_eq_preimage_symm K)
 
 @[to_additive]
 theorem comap_equiv_eq_map_symm (f : N ≃* M) (K : Subsemigroup M) :

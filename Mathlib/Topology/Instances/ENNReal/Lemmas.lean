@@ -92,7 +92,7 @@ theorem eventuallyEq_of_toReal_eventuallyEq {l : Filter α} {f g : α → ℝ≥
     (hfi : ∀ᶠ x in l, f x ≠ ∞) (hgi : ∀ᶠ x in l, g x ≠ ∞)
     (hfg : (fun x => (f x).toReal) =ᶠ[l] fun x => (g x).toReal) : f =ᶠ[l] g := by
   filter_upwards [hfi, hgi, hfg] with _ hfx hgx _
-  rwa [← ENNReal.toReal_eq_toReal hfx hgx]
+  rwa [← ENNReal.toReal_eq_toReal_iff' hfx hgx]
 
 theorem continuousOn_toNNReal : ContinuousOn ENNReal.toNNReal { a | a ≠ ∞ } := fun _a ha =>
   ContinuousAt.continuousWithinAt (tendsto_toNNReal ha)
@@ -1296,7 +1296,7 @@ lemma truncateToReal_eq_toReal {t x : ℝ≥0∞} (t_ne_top : t ≠ ∞) (x_le :
   have x_lt_top : x < ∞ := lt_of_le_of_lt x_le t_ne_top.lt_top
   have obs : min t x ≠ ∞ := by
     simp_all only [ne_eq, min_eq_top, false_and, not_false_eq_true]
-  exact (ENNReal.toReal_eq_toReal obs x_lt_top.ne).mpr (min_eq_right x_le)
+  exact (ENNReal.toReal_eq_toReal_iff' obs x_lt_top.ne).mpr (min_eq_right x_le)
 
 lemma truncateToReal_le {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) {x : ℝ≥0∞} :
     truncateToReal t x ≤ t.toReal := by
