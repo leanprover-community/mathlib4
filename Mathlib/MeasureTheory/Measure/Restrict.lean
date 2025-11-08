@@ -891,6 +891,10 @@ theorem _root_.MeasurableEquiv.restrict_map (e : α ≃ᵐ β) (μ : Measure α)
     (μ.map e).restrict s = (μ.restrict <| e ⁻¹' s).map e :=
   e.measurableEmbedding.restrict_map _ _
 
+lemma _root_.MeasurableEquiv.comap_apply (e : α ≃ᵐ β) (μ : Measure β) (s : Set α) :
+    comap e μ s = μ (e.symm ⁻¹' s) := by
+  rw [e.measurableEmbedding.comap_apply, e.image_eq_preimage_symm]
+
 end MeasurableEmbedding
 
 section Subtype
