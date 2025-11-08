@@ -633,14 +633,14 @@ example (f : α → β → γ) (hf : Con ↿f) : Con (fun x : α×β => f (fst x
 -- In the following example, `fun_prop` used to panic with a "loose bvar in expression" error.
 
 @[fun_prop]
-axiom AEMeas {α β : Type*} (f : α → β) (μ : Bool) : Prop
+opaque AEMeas {α β : Type*} (f : α → β) (μ : Bool) : Prop
 
-axiom foo4 : Bool → Bool
-
-@[fun_prop]
-axiom aemeas_foo4 (μ : Bool) : AEMeas foo4 μ
+opaque foo4 : Bool → Bool
 
 @[fun_prop]
-axiom con_foo4 : (∀ μ : Bool, AEMeas foo4 μ) → Con foo4
+theorem aemeas_foo4 (μ : Bool) : AEMeas foo4 μ := silentSorry
+
+@[fun_prop]
+theorem con_foo4 : (∀ μ : Bool, AEMeas foo4 μ) → Con foo4 := silentSorry
 
 example : Con foo4 := by fun_prop
