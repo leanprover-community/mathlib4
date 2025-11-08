@@ -294,6 +294,14 @@ end Ring
 section CommRing
 variable [CommRing R]
 
+theorem pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum {x : R} {m n : ℕ} :
+    (x ^ m - 1) * ∑ k ∈ range n, x ^ k = (x ^ n - 1) * ∑ k ∈ range m, x ^ k := by
+  grind [geom_sum_mul]
+
+@[deprecated (since := "2025-10-31")]
+protected alias IsPrimitiveRoot.pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum :=
+  pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum
+
 lemma geom_sum₂_mul (x y : R) (n : ℕ) :
     (∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) * (x - y) = x ^ n - y ^ n :=
   (Commute.all x y).geom_sum₂_mul n
