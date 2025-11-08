@@ -156,6 +156,12 @@ theorem map_injective {f : α → β} (hf : Continuous f) (hf' : Function.Inject
 theorem map_singleton {f : α → β} (hf : Continuous f) (x : α) : Compacts.map f hf {x} = {f x} :=
   Compacts.ext Set.image_singleton
 
+theorem map_injective_iff {f : α → β} (hf : Continuous f) :
+    Function.Injective (Compacts.map f hf) ↔ Function.Injective f := by
+  refine ⟨fun h => .of_comp (f := ({·} : β → Compacts β)) ?_, map_injective hf⟩
+  simp_rw [Function.comp_def, ← map_singleton hf]
+  exact h.comp singleton_injective
+
 /-- A homeomorphism induces an equivalence on compact sets, by taking the image. -/
 @[simps]
 protected def equiv (f : α ≃ₜ β) : Compacts α ≃ Compacts β where
