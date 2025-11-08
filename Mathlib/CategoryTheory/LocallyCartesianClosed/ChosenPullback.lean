@@ -39,11 +39,9 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Category Limits CartesianMonoidalCategory MonoidalCategory
+open Category Limits CartesianMonoidalCategory MonoidalCategory Over
 
 variable {C : Type u₁} [Category.{v₁} C]
-
-namespace Over
 
 /-- A choice of pullback functor `Over X ⥤ Over Y` along a morphism `f : Y ⟶ X` in `C`
 as a right adjoint to the functor `Over.map f`. -/
@@ -174,7 +172,7 @@ theorem hom_ext {W : C} {φ₁ φ₂ : W ⟶ pullbackObj f g} (h₁ : φ₁ ≫ 
   let φ₂' : U ⟶ (pullback g).obj (Over.mk f) := Over.homMk φ₂ (by simpa using h₂.symm)
   have : φ₁' = φ₂' := by
     apply (adj.homEquiv U _).symm.injective
-    apply (forget X).map_injective
+    apply (Over.forget X).map_injective
     simpa using h₁
   exact congr_arg CommaMorphism.left this
 
@@ -311,7 +309,5 @@ theorem pullbackIsoOverPullback_inv_app_comp_snd (T : Over X) :
 end PullbackFromChosenPullbacks
 
 end ChosenPullback
-
-end Over
 
 end CategoryTheory
