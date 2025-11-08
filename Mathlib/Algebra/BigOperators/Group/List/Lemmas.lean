@@ -51,8 +51,8 @@ theorem prod_isUnit_iff {M : Type*} [CommMonoid M] {L : List M} :
 
 /-- If elements of a list commute with each other, then their product does not
 depend on the order of elements. -/
-@[to_additive "If elements of a list additively commute with each other, then their sum does not
-depend on the order of elements."]
+@[to_additive /-- If elements of a list additively commute with each other, then their sum does not
+depend on the order of elements. -/]
 lemma Perm.prod_eq' (h : l₁ ~ l₂) (hc : l₁.Pairwise Commute) : l₁.prod = l₂.prod := by
   refine h.foldr_eq' ?_ _
   apply Pairwise.forall_of_forall
@@ -101,12 +101,7 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
       by_cases hp : p a
       · refine _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h.symm]) ?_
         simp [hp, count_dedup]
-      · refine _root_.trans (List.sum_eq_zero fun n hn => ?_) (by simp [hp])
-        obtain ⟨a', ha'⟩ := List.mem_map.1 hn
-        split_ifs at ha' with ha
-        · simp only [ha.symm, mem_filter, mem_dedup, mem_cons, true_or, hp,
-            and_false, false_and, reduceCtorEq] at ha'
-        · exact ha'.2.symm
+      · exact _root_.trans (List.sum_eq_zero fun n hn => by grind) (by simp [hp])
 
 theorem sum_map_count_dedup_eq_length (l : List α) :
     (l.dedup.map fun x => l.count x).sum = l.length := by
@@ -118,9 +113,9 @@ namespace List
 
 lemma length_sigma {σ : α → Type*} (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
     length (l₁.sigma l₂) = (l₁.map fun a ↦ length (l₂ a)).sum := by
-  induction' l₁ with x l₁ IH
-  · rfl
-  · simp only [sigma_cons, length_append, length_map, IH, map, sum_cons]
+  induction l₁ with
+  | nil => rfl
+  | cons x l₁ IH => simp only [sigma_cons, length_append, length_map, IH, map, sum_cons]
 
 lemma ranges_flatten : ∀ (l : List ℕ), l.ranges.flatten = range l.sum
   | [] => rfl
@@ -135,9 +130,6 @@ lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
     (∃ s ∈ l.ranges, n ∈ s) ↔ n < l.sum := by
   rw [← mem_range, ← ranges_flatten, mem_flatten]
 
-@[deprecated (since := "2024-11-18")]
-alias mem_mem_ranges_iff_lt_natSum := mem_mem_ranges_iff_lt_sum
-
 /-- In a flatten of sublists, taking the slice between the indices `A` and `B - 1` gives back the
 original sublist of index `i` if `A` is the sum of the lengths of sublists of index `< i`, and
 `B` is the sum of the lengths of sublists of index `≤ i`. -/
@@ -146,7 +138,7 @@ lemma drop_take_succ_flatten_eq_getElem (L : List (List α)) (i : Nat) (h : i < 
   have : (L.map length).take i = ((L.take (i + 1)).map length).take i := by
     simp [map_take, take_take, Nat.min_eq_left]
   simp only [this, take_sum_flatten, drop_sum_flatten,
-    drop_take_succ_eq_cons_getElem, h, flatten, append_nil]
+    drop_take_succ_eq_cons_getElem, h, flatten_nil, flatten_cons, append_nil]
 
 end List
 

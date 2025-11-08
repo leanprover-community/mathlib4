@@ -281,8 +281,7 @@ theorem exp_add_of_commute_of_mem_ball [CharZero 𝕂] {x y : 𝔸} (hxy : Commu
   rw [← Nat.cast_smul_eq_nsmul 𝕂, smul_smul, smul_mul_smul_comm, ← Finset.mem_antidiagonal.mp hkl,
     Nat.cast_add_choose, Finset.mem_antidiagonal.mp hkl]
   congr 1
-  have : (n ! : 𝕂) ≠ 0 := Nat.cast_ne_zero.mpr n.factorial_ne_zero
-  field_simp [this]
+  field_simp [n.factorial_ne_zero]
 
 /-- `NormedSpace.exp 𝕂 x` has explicit two-sided inverse `NormedSpace.exp 𝕂 (-x)`. -/
 noncomputable def invertibleExpOfMemBall [CharZero 𝕂] {x : 𝔸}
@@ -469,7 +468,7 @@ theorem _root_.Ring.inverse_exp (x : 𝔸) : Ring.inverse (exp 𝕂 x) = exp �
 
 theorem exp_mem_unitary_of_mem_skewAdjoint [StarRing 𝔸] [ContinuousStar 𝔸] {x : 𝔸}
     (h : x ∈ skewAdjoint 𝔸) : exp 𝕂 x ∈ unitary 𝔸 := by
-  rw [unitary.mem_iff, star_exp, skewAdjoint.mem_iff.mp h, ←
+  rw [Unitary.mem_iff, star_exp, skewAdjoint.mem_iff.mp h, ←
     exp_add_of_commute (Commute.refl x).neg_left, ← exp_add_of_commute (Commute.refl x).neg_right,
     neg_add_cancel, add_neg_cancel, exp_zero, and_self_iff]
 
@@ -483,8 +482,9 @@ theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
     exp 𝕂 (∑ i ∈ s, f i) =
       s.noncommProd (fun i => exp 𝕂 (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp 𝕂 := by
   classical
-    induction' s using Finset.induction_on with a s ha ih
-    · simp
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert a s ha ih =>
     rw [Finset.noncommProd_insert_of_notMem _ _ _ _ ha, Finset.sum_insert ha, exp_add_of_commute,
       ih (h.mono <| Finset.subset_insert _ _)]
     refine Commute.sum_right _ _ _ fun i hi => ?_

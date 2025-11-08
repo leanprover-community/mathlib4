@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.Data.Finsupp.Antidiagonal
+import Mathlib.Data.Finsupp.Order
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-! # weights of Finsupp functions
@@ -11,8 +12,8 @@ import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 The theory of multivariate polynomials and power series is built
 on the type `σ →₀ ℕ` which gives the exponents of the monomials.
 Many aspects of the theory (degree, order, graded ring structure)
-require to classify these exponents according to their total sum
-`∑  i, f i`, or variants, and this files provides some API for that.
+require classifying these exponents according to their total sum
+`∑ i, f i`, or variants, and this file provides some API for that.
 
 ## Weight
 
@@ -30,7 +31,7 @@ as well as a function `w : σ → M`. (The important case is `R = ℕ`.)
 
 - `Finsupp.le_weight_of_ne_zero'` is the same statement for `CanonicallyOrderedAddCommMonoid M`.
 
-- `NonTorsionWeight`: all values `w s` are non torsion in `M`.
+- `NonTorsionWeight`: all values `w s` are nontorsion in `M`.
 
 - `Finsupp.weight_eq_zero_iff_eq_zero` says that `f.weight w = 0` iff
   `f = 0` for `NonTorsionWeight w` and `CanonicallyOrderedAddCommMonoid M`.
@@ -136,11 +137,6 @@ variable [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M] (w : σ → M
   {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R]
   [CanonicallyOrderedAdd R] [NoZeroDivisors R] [Module R M]
 
-instance : SMulPosMono ℕ M :=
-  ⟨fun b hb m m' h ↦ by
-    rw [← Nat.add_sub_of_le h, add_smul]
-    exact le_add_of_nonneg_right (nsmul_nonneg hb (m' - m))⟩
-
 variable {w} in
 theorem le_weight_of_ne_zero (hw : ∀ s, 0 ≤ w s) {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
     w s ≤ weight w f := by
@@ -233,7 +229,7 @@ theorem le_degree {R : Type*}
     (s : σ) (f : σ →₀ R) :
     f s ≤ degree f := by
   by_cases h : s ∈ f.support
-  · exact CanonicallyOrderedAddCommMonoid.single_le_sum h
+  · exact Finset.single_le_sum_of_canonicallyOrdered h
   · simp only [notMem_support_iff] at h
     simp only [h, zero_le]
 

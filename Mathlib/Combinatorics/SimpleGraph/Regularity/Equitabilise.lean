@@ -54,11 +54,13 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
   induction s using Finset.strongInduction generalizing a b with | H s ih => _
   -- If `a = b = 0`, then `s = ∅` and we can partition into zero parts
   by_cases hab : a = 0 ∧ b = 0
-  · simp only [hab.1, hab.2, add_zero, zero_mul, eq_comm, card_eq_zero] at hs
+  · -- Rewrite using `← bot_eq_empty` because we have theorems about `Finpartition ⊥`,
+    -- and nothing about `Finpartition ∅`, even though they are defeq in this case.
+    -- TODO: specialize the `Finpartition ⊥` lemmas to `Finpartition ∅`?
+    simp only [hab.1, hab.2, add_zero, zero_mul, eq_comm, card_eq_zero, ← bot_eq_empty] at hs
     subst hs
-    -- Porting note: to synthesize `Finpartition ∅`, `have` is required
-    have : P = Finpartition.empty _ := Unique.eq_default (α := Finpartition ⊥) P
-    exact ⟨Finpartition.empty _, by simp, by simp [this], by simp [hab.2]⟩
+    exact ⟨Finpartition.empty _, by simp, by simp [Unique.eq_default P, -bot_eq_empty],
+      by simp [hab.2]⟩
   simp_rw [not_and_or, ← Ne.eq_def, ← pos_iff_ne_zero] at hab
   -- `n` will be the size of the smallest part
   set n := if 0 < a then m else m + 1 with hn
@@ -82,7 +84,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
   · obtain ⟨t, hts, htn⟩ := exists_subset_card_eq (hn₂.trans_eq hs)
     have ht : t.Nonempty := by rwa [← card_pos, htn]
     have hcard : ite (0 < a) (a - 1) a * m + ite (0 < a) b (b - 1) * (m + 1) = #(s \ t) := by
-      rw [card_sdiff ‹t ⊆ s›, htn, hn₃]
+      rw [card_sdiff_of_subset ‹t ⊆ s›, htn, hn₃]
     obtain ⟨R, hR₁, _, hR₃⟩ :=
       @ih (s \ t) (sdiff_ssubset hts ‹t.Nonempty›) (if 0 < a then a - 1 else a)
         (if 0 < a then b else b - 1) (P.avoid t) hcard
@@ -101,7 +103,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
   obtain ⟨t, htu, htn⟩ := exists_subset_card_eq (hn₁.trans hu₂)
   have ht : t.Nonempty := by rwa [← card_pos, htn]
   have hcard : ite (0 < a) (a - 1) a * m + ite (0 < a) b (b - 1) * (m + 1) = #(s \ t) := by
-    rw [card_sdiff (htu.trans <| P.le hu₁), htn, hn₃]
+    rw [card_sdiff_of_subset (htu.trans <| P.le hu₁), htn, hn₃]
   obtain ⟨R, hR₁, hR₂, hR₃⟩ :=
     @ih (s \ t) (sdiff_ssubset (htu.trans <| P.le hu₁) ht) (if 0 < a then a - 1 else a)
       (if 0 < a then b else b - 1) (P.avoid t) hcard
@@ -178,8 +180,7 @@ theorem card_filter_equitabilise_small (hm : m ≠ 0) :
 theorem card_parts_equitabilise (hm : m ≠ 0) : #(P.equitabilise h).parts = a + b := by
   rw [← filter_true_of_mem fun x => card_eq_of_mem_parts_equitabilise, filter_or,
     card_union_of_disjoint, P.card_filter_equitabilise_small _ hm, P.card_filter_equitabilise_big]
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11187): was `infer_instance`
-  exact disjoint_filter.2 fun x _ h₀ h₁ => Nat.succ_ne_self m <| h₁.symm.trans h₀
+  aesop (add norm disjoint_filter)
 
 theorem card_parts_equitabilise_subset_le :
     t ∈ P.parts → #(t \ {u ∈ (P.equitabilise h).parts | u ⊆ t}.biUnion id) ≤ m :=

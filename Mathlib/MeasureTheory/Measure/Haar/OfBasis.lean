@@ -83,7 +83,7 @@ theorem parallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
     · simpa only [Equiv.symm_apply_apply] using h.1 (e i)
     · simpa only [Equiv.symm_apply_apply] using h.2 (e i)
   rw [this, ← image_comp]
-  congr 1 with x
+  ext x
   have := fun z : ι' → ℝ => e.symm.sum_comp fun i => z i • v (e i)
   simp_rw [Equiv.apply_symm_apply] at this
   simp_rw [Function.comp_apply, mem_image, mem_Icc, K, Equiv.piCongrLeft'_apply, this]
@@ -287,7 +287,7 @@ end NormedSpace
 
 end Fintype
 
-/-- A finite dimensional inner product space has a canonical measure, the Lebesgue measure giving
+/-- A finite-dimensional inner product space has a canonical measure, the Lebesgue measure giving
 volume `1` to the parallelepiped spanned by any orthonormal basis. We define the measure using
 some arbitrary choice of orthonormal basis. The fact that it works with any orthonormal basis
 is proved in `orthonormalBasis.volume_parallelepiped`.
@@ -313,32 +313,3 @@ instance [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ
 /- This instance should not be necessary, but Lean has difficulties to find it in product
 situations if we do not declare it explicitly. -/
 instance Real.measureSpace : MeasureSpace ℝ := by infer_instance
-
-/-! # Miscellaneous instances for `EuclideanSpace`
-
-In combination with `measureSpaceOfInnerProductSpace`, these put a `MeasureSpace` structure
-on `EuclideanSpace`. -/
-
-
-namespace EuclideanSpace
-
-variable (ι)
-
--- TODO: do we want these instances for `PiLp` too?
-instance : MeasurableSpace (EuclideanSpace ℝ ι) := MeasurableSpace.pi
-
-instance [Finite ι] : BorelSpace (EuclideanSpace ℝ ι) := Pi.borelSpace
-
-/-- `WithLp.equiv` as a `MeasurableEquiv`. -/
-@[simps toEquiv]
-protected def measurableEquiv : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) where
-  toEquiv := WithLp.equiv _ _
-  measurable_toFun := measurable_id
-  measurable_invFun := measurable_id
-
-theorem coe_measurableEquiv : ⇑(EuclideanSpace.measurableEquiv ι) = WithLp.ofLp := rfl
-
-theorem coe_measurableEquiv_symm :
-    ⇑(EuclideanSpace.measurableEquiv ι).symm = WithLp.toLp _ := rfl
-
-end EuclideanSpace

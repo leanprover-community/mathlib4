@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Opposite
+import Mathlib.Algebra.Notation.Pi.Basic
 
 /-!
 # Definitions of group actions
@@ -66,7 +66,6 @@ See note [reducible non-instances]. -/
 protected abbrev Function.Injective.smulZeroClass [Zero B] [SMul M B] (f : ZeroHom B A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     SMulZeroClass M B where
-  smul := (· • ·)
   smul_zero c := hf <| by simp only [smul, map_zero, smul_zero]
 
 /-- Pushforward a zero-preserving scalar multiplication along a zero-preserving map.
@@ -74,7 +73,6 @@ See note [reducible non-instances]. -/
 protected abbrev ZeroHom.smulZeroClass [Zero B] [SMul M B] (f : ZeroHom A B)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     SMulZeroClass M B where
-  -- Porting note: `simp` no longer works here.
   smul_zero c := by rw [← map_zero f, ← smul, smul_zero]
 
 /-- Push forward the multiplication of `R` on `M` along a compatible surjective map `f : R → S`.
@@ -85,7 +83,6 @@ abbrev Function.Surjective.smulZeroClassLeft {R S M : Type*} [Zero M] [SMulZeroC
     [SMul S M] (f : R → S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) :
     SMulZeroClass S M where
-  smul := (· • ·)
   smul_zero := hf.forall.mpr fun c => by rw [hsmul, smul_zero]
 
 variable (A)
@@ -123,7 +120,6 @@ instance MulZeroClass.toSMulWithZero [MulZeroClass M₀] : SMulWithZero M₀ M�
 
 /-- Like `MulZeroClass.toSMulWithZero`, but multiplies on the right. -/
 instance MulZeroClass.toOppositeSMulWithZero [MulZeroClass M₀] : SMulWithZero M₀ᵐᵒᵖ M₀ where
-  smul := (· • ·)
   smul_zero _ := zero_mul _
   zero_smul := mul_zero
 
@@ -144,7 +140,6 @@ variable [Zero M₀'] [Zero A'] [SMul M₀ A']
 -- See note [reducible non-instances]
 protected abbrev Function.Injective.smulWithZero (f : ZeroHom A' A) (hf : Injective f)
     (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) : SMulWithZero M₀ A' where
-  smul := (· • ·)
   zero_smul a := hf <| by simp [smul]
   smul_zero a := hf <| by simp [smul]
 
@@ -152,7 +147,6 @@ protected abbrev Function.Injective.smulWithZero (f : ZeroHom A' A) (hf : Inject
 -- See note [reducible non-instances]
 protected abbrev Function.Surjective.smulWithZero (f : ZeroHom A A') (hf : Surjective f)
     (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) : SMulWithZero M₀ A' where
-  smul := (· • ·)
   zero_smul m := by
     rcases hf m with ⟨x, rfl⟩
     simp [← smul]
@@ -334,7 +328,7 @@ end DistribSMul
 For example, if `G` is a group (with group law written as multiplication) and `A` is an
 abelian group (with group law written as addition), then to give `A` a `G`-module
 structure (for example, to use the theory of group cohomology) is to say `[DistribMulAction G A]`.
-Note in that we do not use the `Module` typeclass for `G`-modules, as the `Module` typclass
+Note in that we do not use the `Module` typeclass for `G`-modules, as the `Module` typeclass
 is for modules over a ring rather than a group.
 
 Mathematically, `DistribMulAction G A` is equivalent to giving `A` the structure of
@@ -355,9 +349,7 @@ variable [Monoid M] [AddMonoid A] [DistribMulAction M A]
 instance (priority := 100) DistribMulAction.toDistribSMul : DistribSMul M A :=
   { ‹DistribMulAction M A› with }
 
--- Porting note: this probably is no longer relevant.
-/-! Since Lean 3 does not have definitional eta for structures, we have to make sure
-that the definition of `DistribMulAction.toDistribSMul` was done correctly,
+/-! We make sure that the definition of `DistribMulAction.toDistribSMul` was done correctly,
 and the two paths from `DistribMulAction` to `SMul` are indeed definitionally equal. -/
 example :
     (DistribMulAction.toMulAction.toSMul : SMul M A) =
@@ -417,7 +409,7 @@ theorem smul_sub (r : M) (x y : A) : r • (x - y) = r • x - r • y := by
 
 end
 
-section Group
+section DistribMulAction
 variable [Group α] [AddMonoid β] [DistribMulAction α β]
 
 lemma smul_eq_zero_iff_eq (a : α) {x : β} : a • x = 0 ↔ x = 0 :=
@@ -426,4 +418,24 @@ lemma smul_eq_zero_iff_eq (a : α) {x : β} : a • x = 0 ↔ x = 0 :=
 lemma smul_ne_zero_iff_ne (a : α) {x : β} : a • x ≠ 0 ↔ x ≠ 0 :=
   not_congr <| smul_eq_zero_iff_eq a
 
-end Group
+end DistribMulAction
+
+section MulDistribMulAction
+variable [Group α] [GroupWithZero β] [MulDistribMulAction α β]
+
+instance : SMulZeroClass α β where
+  smul_zero g := not_imp_comm.mp mul_inv_cancel₀ <| by
+    rw [← smul_one g, ← inv_smul_eq_iff, smul_mul', inv_smul_smul, zero_mul]
+    exact zero_ne_one
+
+/-- A version of `smul_inv'` for groups with zero. -/
+@[simp] theorem smul_inv₀' (g : α) (x : β) : g • x⁻¹ = (g • x)⁻¹ := by
+  by_cases hx : x = 0
+  · rw [hx, inv_zero, smul_zero, inv_zero]
+  · apply eq_inv_of_mul_eq_one_right
+    rw [← smul_mul', mul_inv_cancel₀ hx, smul_one]
+
+theorem smul_div₀' (g : α) (x y : β) : g • (x / y) = (g • x) / (g • y) := by
+  rw [div_eq_mul_inv, div_eq_mul_inv, smul_mul', smul_inv₀']
+
+end MulDistribMulAction

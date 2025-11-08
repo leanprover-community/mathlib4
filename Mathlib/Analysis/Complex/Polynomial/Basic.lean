@@ -3,10 +3,10 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Junyan Xu, Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Data.Complex.FiniteDimensional
+import Mathlib.Analysis.Complex.Liouville
 import Mathlib.FieldTheory.PolynomialGaloisGroup
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 import Mathlib.Topology.Algebra.Polynomial
 
 /-!
@@ -28,8 +28,8 @@ open scoped ComplexConjugate
 
 namespace Complex
 
-/-- **Fundamental theorem of algebra**: every non constant complex polynomial
-  has a root -/
+/-- **Fundamental theorem of algebra**: every nonconstant complex polynomial
+  has a root. -/
 theorem exists_root {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z := by
   by_contra! hf'
   /- Since `f` has no roots, `f⁻¹` is differentiable. And since `f` is a polynomial, it tends to
@@ -64,7 +64,7 @@ attribute [local instance] splits_ℚ_ℂ
 attribute [local ext] Complex.ext
 
 /-- The number of complex roots equals the number of real roots plus
-    the number of roots not fixed by complex conjugation (i.e. with some imaginary component). -/
+the number of roots not fixed by complex conjugation (i.e. with some imaginary component). -/
 theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
     (p.rootSet ℂ).toFinset.card =
       (p.rootSet ℝ).toFinset.card +

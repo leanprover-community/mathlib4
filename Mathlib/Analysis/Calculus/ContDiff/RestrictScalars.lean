@@ -23,7 +23,7 @@ variable
 
 open ContinuousMultilinearMap Topology
 
-/-- Derviation rule for compositions of scalar restriction with continuous multilinear maps. -/
+/-- Derivation rule for compositions of scalar restriction with continuous multilinear maps. -/
 lemma fderivWithin_restrictScalars_comp
     {φ : E → (ContinuousMultilinearMap 𝕜' (fun _ : Fin n ↦ E) F)}
     (h : DifferentiableWithinAt 𝕜' φ s x) (hs : UniqueDiffWithinAt 𝕜 s x) :

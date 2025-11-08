@@ -76,7 +76,7 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
       ext; simp_rw [mem_univ_pi]; apply forall_congr'; intro i'
       by_cases h : i' = i
       · subst h; simp
-      · rw [← Ne] at h; simp [h]
+      · simp [h]
     rw [this, ← iUnion_univ_pi]
     apply MeasurableSet.iUnion
     intro n; apply measurableSet_generateFrom

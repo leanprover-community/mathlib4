@@ -162,8 +162,6 @@ theorem cardinalMk_le_finrank [Module.Finite R M]
   rw [← lift_le.{max v w}]
   simpa only [← finrank_eq_rank, lift_natCast, lift_le_nat_iff] using h.cardinal_lift_le_rank
 
-@[deprecated (since := "2024-11-10")] alias cardinal_mk_le_finrank := cardinalMk_le_finrank
-
 theorem fintype_card_le_finrank [Module.Finite R M]
     {ι : Type*} [Fintype ι] {b : ι → M} (h : LinearIndependent R b) :
     Fintype.card ι ≤ finrank R M := by
@@ -259,9 +257,6 @@ theorem iSupIndep.subtype_ne_bot_le_rank [Nontrivial R]
   have : LinearIndependent R v := (hV.comp Subtype.coe_injective).linearIndependent _ hvV hv
   exact this.cardinal_lift_le_rank
 
-@[deprecated (since := "2024-11-24")]
-alias CompleteLattice.Independent.subtype_ne_bot_le_rank := iSupIndep.subtype_ne_bot_le_rank
-
 variable [Module.Finite R M] [StrongRankCondition R]
 
 theorem iSupIndep.subtype_ne_bot_le_finrank_aux
@@ -356,7 +351,7 @@ section FinrankZero
 section
 variable [Nontrivial R]
 
-/-- A (finite dimensional) space that is a subsingleton has zero `finrank`. -/
+/-- A (finite-dimensional) space that is a subsingleton has zero `finrank`. -/
 @[nontriviality]
 theorem Module.finrank_zero_of_subsingleton [Subsingleton M] :
     finrank R M = 0 := by
@@ -368,11 +363,11 @@ lemma LinearIndependent.finrank_eq_zero_of_infinite {ι} [Infinite ι] {v : ι �
 section
 variable [NoZeroSMulDivisors R M]
 
-/-- A finite dimensional space is nontrivial if it has positive `finrank`. -/
+/-- A finite-dimensional space is nontrivial if it has positive `finrank`. -/
 theorem Module.nontrivial_of_finrank_pos (h : 0 < finrank R M) : Nontrivial M :=
   rank_pos_iff_nontrivial.mp (lt_rank_of_lt_finrank h)
 
-/-- A finite dimensional space is nontrivial if it has `finrank` equal to the successor of a
+/-- A finite-dimensional space is nontrivial if it has `finrank` equal to the successor of a
 natural number. -/
 theorem Module.nontrivial_of_finrank_eq_succ {n : ℕ}
     (hn : finrank R M = n.succ) : Nontrivial M :=
@@ -404,7 +399,7 @@ theorem Module.finrank_pos_iff [NoZeroSMulDivisors R M] :
   rw [← rank_pos_iff_nontrivial (R := R), ← finrank_eq_rank]
   norm_cast
 
-/-- A nontrivial finite dimensional space has positive `finrank`. -/
+/-- A nontrivial finite-dimensional space has positive `finrank`. -/
 theorem Module.finrank_pos [NoZeroSMulDivisors R M] [h : Nontrivial M] :
     0 < finrank R M :=
   finrank_pos_iff.mpr h
@@ -416,7 +411,7 @@ theorem Module.finrank_eq_zero_iff :
   rw [← rank_eq_zero_iff (R := R), ← finrank_eq_rank]
   norm_cast
 
-/-- A finite dimensional space has zero `finrank` iff it is a subsingleton.
+/-- A finite-dimensional space has zero `finrank` iff it is a subsingleton.
 This is the `finrank` version of `rank_zero_iff`. -/
 theorem Module.finrank_zero_iff [NoZeroSMulDivisors R M] :
     finrank R M = 0 ↔ Subsingleton M := by

@@ -21,7 +21,7 @@ and we show that it has both calculus of left and right fractions.
 ## TODO
 
 * show that the fullsubcategory attached to `P` (such that `P.IsTriangulated`)
-is a pretriangulated category.
+  is a pretriangulated category.
 
 ## Implementation notes
 

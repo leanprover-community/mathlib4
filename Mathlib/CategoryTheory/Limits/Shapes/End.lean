@@ -80,7 +80,7 @@ variable {F}
 isomorphisms of wedges. -/
 @[simps!]
 def ext {W₁ W₂ : Wedge F} (e : W₁.pt ≅ W₂.pt)
-    (he : ∀ j : J, W₁.ι j = e.hom ≫ W₂.ι j := by aesop_cat) : W₁ ≅ W₂ :=
+    (he : ∀ j : J, W₁.ι j = e.hom ≫ W₂.ι j := by cat_disch) : W₁ ≅ W₂ :=
   Cones.ext e (fun j =>
     match j with
     | .left _ => he _
@@ -144,7 +144,7 @@ variable {F}
 isomorphisms of cowedges. -/
 @[simps!]
 def ext {W₁ W₂ : Cowedge F} (e : W₁.pt ≅ W₂.pt)
-    (he : ∀ j : J, W₁.π j ≫ e.hom  = W₂.π j := by aesop_cat) : W₁ ≅ W₂ :=
+    (he : ∀ j : J, W₁.π j ≫ e.hom  = W₂.π j := by cat_disch) : W₁ ≅ W₂ :=
   Cocones.ext e (fun j =>
     match j with
     | .right _ => he _
@@ -254,10 +254,10 @@ lemma end_.map_π (j : J) :
 @[reassoc (attr := simp)]
 lemma end_.map_comp {F'' : Jᵒᵖ ⥤ J ⥤ C} [HasEnd F''] (g : F' ⟶ F'') :
     end_.map f ≫ end_.map g = end_.map (f ≫ g) := by
-  aesop_cat
+  cat_disch
 
 @[simp]
-lemma end_.map_id : end_.map (𝟙 F) = 𝟙 _ := by aesop_cat
+lemma end_.map_id : end_.map (𝟙 F) = 𝟙 _ := by cat_disch
 
 end
 
@@ -327,10 +327,10 @@ lemma coend.ι_map (j : J) :
 @[reassoc (attr := simp)]
 lemma coend.map_comp {F'' : Jᵒᵖ ⥤ J ⥤ C} [HasCoend F''] (g : F' ⟶ F'') :
     coend.map f ≫ coend.map g = coend.map (f ≫ g) := by
-  aesop_cat
+  cat_disch
 
 @[simp]
-lemma coend.map_id : coend.map (𝟙 F) = 𝟙 _ := by aesop_cat
+lemma coend.map_id : coend.map (𝟙 F) = 𝟙 _ := by cat_disch
 
 end
 

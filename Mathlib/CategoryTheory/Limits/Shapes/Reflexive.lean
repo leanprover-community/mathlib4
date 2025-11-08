@@ -43,7 +43,7 @@ reflexive.
 * If `C` has binary coproducts and reflexive coequalizers, then it has all coequalizers.
 * If `T` is a monad on cocomplete category `C`, then `Algebra T` is cocomplete iff it has reflexive
   coequalizers.
-* If `C` is locally cartesian closed and has reflexive coequalizers, then it has images: in fact
+* If `C` is locally Cartesian closed and has reflexive coequalizers, then it has images: in fact
   regular epi (and hence strong epi) images.
 * Bundle the reflexive pairs of kernel pairs and of adjunction as functors out of the walking
   reflexive pair.
@@ -327,7 +327,7 @@ variable {A B : C}
 /-- Bundle the data of a parallel pair along with a common section as a functor out of the walking
 reflexive pair -/
 def reflexivePair (f g : A ⟶ B) (s : B ⟶ A)
-    (sl : s ≫ f = 𝟙 B := by aesop_cat) (sr : s ≫ g = 𝟙 B := by aesop_cat) :
+    (sl : s ≫ f = 𝟙 B := by cat_disch) (sr : s ≫ g = 𝟙 B := by cat_disch) :
     (WalkingReflexivePair ⥤ C) where
   obj x :=
     match x with
@@ -399,9 +399,9 @@ section NatTrans
 
 variable {F G : WalkingReflexivePair ⥤ C}
   (e₀ : F.obj zero ⟶ G.obj zero) (e₁ : F.obj one ⟶ G.obj one)
-  (h₁ : F.map left ≫ e₀ = e₁ ≫ G.map left := by aesop_cat)
-  (h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right := by aesop_cat)
-  (h₃ : F.map reflexion ≫ e₁ = e₀ ≫ G.map reflexion := by aesop_cat)
+  (h₁ : F.map left ≫ e₀ = e₁ ≫ G.map left := by cat_disch)
+  (h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right := by cat_disch)
+  (h₃ : F.map reflexion ≫ e₁ = e₀ ≫ G.map reflexion := by cat_disch)
 
 /-- A constructor for natural transformations between functors from `WalkingReflexivePair`. -/
 def mkNatTrans : F ⟶ G where
@@ -428,9 +428,9 @@ variable {F G : WalkingReflexivePair ⥤ C}
 /-- Constructor for natural isomorphisms between functors out of `WalkingReflexivePair`. -/
 @[simps!]
 def mkNatIso (e₀ : F.obj zero ≅ G.obj zero) (e₁ : F.obj one ≅ G.obj one)
-    (h₁ : F.map left ≫ e₀.hom = e₁.hom ≫ G.map left := by aesop_cat)
-    (h₂ : F.map right ≫ e₀.hom = e₁.hom ≫ G.map right := by aesop_cat)
-    (h₃ : F.map reflexion ≫ e₁.hom = e₀.hom ≫ G.map reflexion := by aesop_cat) :
+    (h₁ : F.map left ≫ e₀.hom = e₁.hom ≫ G.map left := by cat_disch)
+    (h₂ : F.map right ≫ e₀.hom = e₁.hom ≫ G.map right := by cat_disch)
+    (h₃ : F.map reflexion ≫ e₁.hom = e₀.hom ≫ G.map reflexion := by cat_disch) :
     F ≅ G where
   hom := mkNatTrans e₀.hom e₁.hom
   inv := mkNatTrans e₀.inv e₁.inv

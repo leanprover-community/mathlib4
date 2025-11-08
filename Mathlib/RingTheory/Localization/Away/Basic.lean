@@ -78,6 +78,11 @@ lemma algebraMap_pow_isUnit (n : ℕ) : IsUnit (algebraMap R S x ^ n) :=
 lemma algebraMap_isUnit : IsUnit (algebraMap R S x) :=
   IsLocalization.map_units _ (⟨x, 1, by simp⟩ : Submonoid.powers x)
 
+theorem associated_sec_fst (s : S) :
+    Associated (algebraMap R S (IsLocalization.Away.sec x s).1) s := by
+  rw [← IsLocalization.Away.sec_spec, map_pow]
+  exact associated_mul_unit_left _ _ <| .pow _ <| IsLocalization.Away.algebraMap_isUnit _
+
 lemma algebraMap_isUnit_iff {y : R} : IsUnit (algebraMap R S y) ↔ ∃ n, y ∣ x ^ n :=
   (IsLocalization.algebraMap_isUnit_iff <| .powers x).trans <| by simp [Submonoid.mem_powers_iff]
 
@@ -96,11 +101,11 @@ lemma mk (r : R) (map_unit : IsUnit (algebraMap R S r))
     (surj : ∀ s, ∃ (n : ℕ) (a : R), s * algebraMap R S r ^ n = algebraMap R S a)
     (exists_of_eq : ∀ a b, algebraMap R S a = algebraMap R S b → ∃ (n : ℕ), r ^ n * a = r ^ n * b) :
     IsLocalization.Away r S where
-  map_units' := by
+  map_units := by
     rintro ⟨-, n, rfl⟩
     simp only [map_pow]
     exact IsUnit.pow _ map_unit
-  surj' z := by
+  surj z := by
     obtain ⟨n, a, hn⟩ := surj z
     use ⟨a, ⟨r ^ n, n, rfl⟩⟩
     simpa using hn
@@ -121,7 +126,7 @@ lemma of_associated {r r' : R} (h : Associated r r') [IsLocalization.Away r S] :
     rw [mul_pow, mul_comm (r ^ n), mul_assoc, mul_assoc, hn]
 
 /-- If `r` and `r'` are associated elements of `R`, an `R`-algebra `S`
-is the localization of `R` away from `r` if and only of it is the localization of `R` away from
+is the localization of `R` away from `r` if and only if it is the localization of `R` away from
 `r'`. -/
 lemma iff_of_associated {r r' : R} (h : Associated r r') :
     IsLocalization.Away r S ↔ IsLocalization.Away r' S :=
@@ -149,9 +154,6 @@ theorem lift_eq (hg : IsUnit (g x)) (a : R) : lift x hg (algebraMap R S a) = g a
 @[simp]
 theorem lift_comp (hg : IsUnit (g x)) : (lift x hg).comp (algebraMap R S) = g :=
   IsLocalization.lift_comp _
-
-@[deprecated (since := "2024-11-25")] alias AwayMap.lift_eq := lift_eq
-@[deprecated (since := "2024-11-25")] alias AwayMap.lift_comp := lift_comp
 
 /-- Given `x y : R` and localizations `S`, `P` away from `x` and `y * x`
 respectively, the homomorphism induced from `S` to `P`. -/
@@ -190,6 +192,10 @@ variable (Aₚ : Type*) [CommSemiring Aₚ] [Algebra A Aₚ] [Algebra R Aₚ] [I
 variable (Bₚ : Type*) [CommSemiring Bₚ] [Algebra B Bₚ] [Algebra R Bₚ] [IsScalarTower R B Bₚ]
 
 instance {f : A →+* B} (a : A) [Away (f a) Bₚ] : IsLocalization (.map f (.powers a)) Bₚ := by
+  simpa
+
+instance (x : R) [IsLocalization.Away (algebraMap R A x) Aₚ] :
+    IsLocalization (Algebra.algebraMapSubmonoid A (.powers x)) Aₚ := by
   simpa
 
 /-- Given a algebra map `f : A →ₐ[R] B` and an element `a : A`, we may construct a map
@@ -272,12 +278,9 @@ lemma commutes {R : Type*} [CommSemiring R] (S₁ S₂ T : Type*) [CommSemiring 
     [IsLocalization.Away x S₁] [IsLocalization.Away y S₂]
     [IsLocalization.Away (algebraMap R S₂ x) T] :
     IsLocalization.Away (algebraMap R S₁ y) T := by
-  haveI : IsLocalization (Algebra.algebraMapSubmonoid S₂ (Submonoid.powers x)) T := by
-    simp only [Algebra.algebraMapSubmonoid, Submonoid.map_powers]
-    infer_instance
   convert IsLocalization.commutes S₁ S₂ T (Submonoid.powers x) (Submonoid.powers y)
   ext x
-  simp [Algebra.algebraMapSubmonoid]
+  simp
 
 end Away
 
@@ -301,10 +304,10 @@ noncomputable def atOne [IsLocalization.Away (1 : R) S] : R ≃ₐ[R] S :=
 theorem away_of_isUnit_of_bijective {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S]
     [Algebra R S] {r : R} (hr : IsUnit r) (H : Function.Bijective (algebraMap R S)) :
     IsLocalization.Away r S :=
-  { map_units' := by
+  { map_units := by
       rintro ⟨_, n, rfl⟩
       exact (algebraMap R S).isUnit_map (hr.pow _)
-    surj' := fun z => by
+    surj := fun z => by
       obtain ⟨z', rfl⟩ := H.2 z
       exact ⟨⟨z', 1⟩, by simp⟩
     exists_of_eq := fun {x y} => by
@@ -321,10 +324,10 @@ lemma away_of_isIdempotentElem_of_mul {R S} [CommSemiring R] [CommSemiring S] [A
     (H : ∀ x y, algebraMap R S x = algebraMap R S y ↔ e * x = e * y)
     (H' : Function.Surjective (algebraMap R S)) :
     IsLocalization.Away e S where
-  map_units' r := by
+  map_units r := by
     obtain ⟨r, n, rfl⟩ := r
     simp [show algebraMap R S e = 1 by rw [← (algebraMap R S).map_one, H, mul_one, he]]
-  surj' z := by
+  surj z := by
     obtain ⟨z, rfl⟩ := H' z
     exact ⟨⟨z, 1⟩, by simp⟩
   exists_of_eq {x y} h := ⟨⟨e, Submonoid.mem_powers e⟩, (H x y).mp h⟩
@@ -558,9 +561,8 @@ theorem exists_reduced_fraction' {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
   obtain ⟨⟨a₀, y⟩, H⟩ := surj (Submonoid.powers x) b
   obtain ⟨d, hy⟩ := (Submonoid.mem_powers_iff y.1 x).mp y.2
   have ha₀ : a₀ ≠ 0 := by
-    haveI :=
-      @isDomain_of_le_nonZeroDivisors B _ R _ _ _ (Submonoid.powers x) _
-        (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
+    haveI := isDomain_of_le_nonZeroDivisors B
+      (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
     simp only [← hy, map_pow] at H
     apply ((injective_iff_map_eq_zero' (algebraMap R B)).mp _ a₀).mpr.mt
     · rw [← H]

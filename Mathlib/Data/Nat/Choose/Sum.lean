@@ -80,7 +80,7 @@ theorem sub_pow [CommRing R] (x y : R) (n : ℕ) :
   congr! 1 with m hm
   have : (-1 : R) ^ (n - m) = (-1) ^ (n + m) := by
     rw [mem_range] at hm
-    simp [show n + m = n - m + 2 * m by omega, pow_add]
+    simp [show n + m = n - m + 2 * m by cutsat, pow_add]
   rw [neg_pow, this]
   ring
 
@@ -102,22 +102,22 @@ theorem sum_range_choose_halfway (m : ℕ) : (∑ i ∈ range (m + 1), (2 * m + 
             ∑ i ∈ range (m + 1), (2 * m + 1).choose (2 * m + 1 - i) := by rw [two_mul, this]
       _ = (∑ i ∈ range (m + 1), (2 * m + 1).choose i) +
             ∑ i ∈ Ico (m + 1) (2 * m + 2), (2 * m + 1).choose i := by
-        rw [range_eq_Ico, sum_Ico_reflect _ _ (by omega)]
+        rw [range_eq_Ico, sum_Ico_reflect _ _ (by cutsat)]
         congr
-        omega
-      _ = ∑ i ∈ range (2 * m + 2), (2 * m + 1).choose i := sum_range_add_sum_Ico _ (by omega)
+        cutsat
+      _ = ∑ i ∈ range (2 * m + 2), (2 * m + 1).choose i := sum_range_add_sum_Ico _ (by cutsat)
       _ = 2 ^ (2 * m + 1) := sum_range_choose (2 * m + 1)
       _ = 2 * 4 ^ m := by rw [pow_succ, pow_mul, mul_comm]; rfl
 
 theorem choose_middle_le_pow (n : ℕ) : (2 * n + 1).choose n ≤ 4 ^ n := by
   have t : (2 * n + 1).choose n ≤ ∑ i ∈ range (n + 1), (2 * n + 1).choose i :=
-    single_le_sum (fun x _ ↦ by omega) (self_mem_range_succ n)
+    single_le_sum (fun x _ ↦ by cutsat) (self_mem_range_succ n)
   simpa [sum_range_choose_halfway n] using t
 
 theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
     4 ^ n ≤ (2 * n + 1) * (2 * n).choose n :=
   calc
-    4 ^ n = (1 + 1) ^ (2 * n) := by norm_num [pow_mul]
+    4 ^ n = (1 + 1) ^ (2 * n) := by simp [pow_mul]
     _ = ∑ m ∈ range (2 * n + 1), (2 * n).choose m := by simp [-Nat.reduceAdd, add_pow]
     _ ≤ ∑ _ ∈ range (2 * n + 1), (2 * n).choose (2 * n / 2) := by gcongr; apply choose_le_middle
     _ = (2 * n + 1) * choose (2 * n) n := by simp
@@ -125,11 +125,11 @@ theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
 /-- **Zhu Shijie's identity** aka hockey-stick identity, version with `Icc`. -/
 theorem sum_Icc_choose (n k : ℕ) : ∑ m ∈ Icc k n, m.choose k = (n + 1).choose (k + 1) := by
   rcases lt_or_ge n k with h | h
-  · rw [choose_eq_zero_of_lt (by omega), Icc_eq_empty_of_lt h, sum_empty]
+  · rw [choose_eq_zero_of_lt (by cutsat), Icc_eq_empty_of_lt h, sum_empty]
   · induction n, h using le_induction with
     | base => simp
     | succ n _ ih =>
-      rw [← Ico_insert_right (by omega), sum_insert (by simp), Ico_add_one_right_eq_Icc, ih,
+      rw [← Ico_insert_right (by cutsat), sum_insert (by simp), Ico_add_one_right_eq_Icc, ih,
         choose_succ_succ' (n + 1)]
 
 /-- **Zhu Shijie's identity** aka hockey-stick identity, version with `range`.

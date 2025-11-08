@@ -23,7 +23,7 @@ In this file we define the following property of rings:
 
 It's proved in the above papers that
 
-- a left Noetherian ring (not necessarily commutative) satisfies the `OrzechProperty`,
+- a left-Noetherian ring (not necessarily commutative) satisfies the `OrzechProperty`,
   which in particular includes the division ring case
   (see `Mathlib/RingTheory/Noetherian.lean`);
 - a commutative ring satisfies the `OrzechProperty`

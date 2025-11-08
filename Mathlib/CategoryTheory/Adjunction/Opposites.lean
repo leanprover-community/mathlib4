@@ -22,7 +22,7 @@ open CategoryTheory
 
 universe v₁ v₂ u₁ u₂
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace CategoryTheory.Adjunction
@@ -37,11 +37,6 @@ def unop {F : Cᵒᵖ ⥤ Dᵒᵖ} {G : Dᵒᵖ ⥤ Cᵒᵖ} (h : G ⊣ F) : F.u
   left_triangle_components _ := Quiver.Hom.op_inj (h.right_triangle_components _)
   right_triangle_components _ := Quiver.Hom.op_inj (h.left_triangle_components _)
 
-@[deprecated (since := "2025-01-01")] alias adjointOfOpAdjointOp := unop
-@[deprecated (since := "2025-01-01")] alias adjointUnopOfAdjointOp := unop
-@[deprecated (since := "2025-01-01")] alias unopAdjointOfOpAdjoint := unop
-@[deprecated (since := "2025-01-01")] alias unopAdjointUnopOfAdjoint := unop
-
 /-- If `G` is adjoint to `F` then `F.op` is adjoint to `G.op`. -/
 @[simps]
 def op {F : C ⥤ D} {G : D ⥤ C} (h : G ⊣ F) : F.op ⊣ G.op where
@@ -49,11 +44,6 @@ def op {F : C ⥤ D} {G : D ⥤ C} (h : G ⊣ F) : F.op ⊣ G.op where
   counit := NatTrans.op h.unit
   left_triangle_components _ := Quiver.Hom.unop_inj (by simp)
   right_triangle_components _ := Quiver.Hom.unop_inj (by simp)
-
-@[deprecated (since := "2025-01-01")] alias opAdjointOpOfAdjoint := op
-@[deprecated (since := "2025-01-01")] alias adjointOpOfAdjointUnop := op
-@[deprecated (since := "2025-01-01")] alias opAdjointOfUnopAdjoint := op
-@[deprecated (since := "2025-01-01")] alias adjointOfUnopAdjointUnop := op
 
 /-- If `F` is adjoint to `G.leftOp` then `G` is adjoint to `F.leftOp`. -/
 @[simps]

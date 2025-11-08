@@ -8,6 +8,7 @@ import Batteries.Tactic.Trans
 import Mathlib.Data.Ordering.Basic
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.Push.Attr
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.TypeStar
 import Mathlib.Order.Defs.PartialOrder
@@ -44,7 +45,7 @@ implicit arguments, requires us to unfold the defs and split the `if`s in the de
 3. seeing if we can split by cases on the arguments, then see if the defs work themselves out
   (useful when `compare` is defined via a `match` statement, as it is for `Bool`) -/
 macro "compareOfLessAndEq_rfl" : tactic =>
-  `(tactic| (intros a b; first | rfl |
+  `(tactic| (intro a b; first | rfl |
     (simp only [compare, compareOfLessAndEq]; split_ifs <;> rfl) |
     (induction a <;> induction b <;> simp +decide only)))
 
@@ -76,6 +77,9 @@ attribute [instance 900] LinearOrder.toDecidableLT
 attribute [instance 900] LinearOrder.toDecidableLE
 attribute [instance 900] LinearOrder.toDecidableEq
 
+instance : Std.IsLinearOrder α where
+  le_total := LinearOrder.le_total
+
 lemma le_total : ∀ a b : α, a ≤ b ∨ b ≤ a := LinearOrder.le_total
 
 lemma le_of_not_ge : ¬a ≤ b → b ≤ a := (le_total a b).resolve_left
@@ -83,14 +87,8 @@ lemma lt_of_not_ge (h : ¬b ≤ a) : a < b := lt_of_le_not_ge (le_of_not_ge h) h
 
 @[deprecated (since := "2025-05-11")] alias le_of_not_le := le_of_not_ge
 
-lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a :=
-  Or.elim (le_total a b)
-    (fun h : a ≤ b =>
-      Or.elim (Decidable.lt_or_eq_of_le h) (fun h : a < b => Or.inl h) fun h : a = b =>
-        Or.inr (Or.inl h))
-    fun h : b ≤ a =>
-    Or.elim (Decidable.lt_or_eq_of_le h) (fun h : b < a => Or.inr (Or.inr h)) fun h : b = a =>
-      Or.inr (Or.inl h.symm)
+lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a := by
+  grind [le_total, Decidable.lt_or_eq_of_le]
 
 lemma le_of_not_gt (h : ¬b < a) : a ≤ b :=
   match lt_trichotomy a b with
@@ -115,8 +113,8 @@ lemma ne_iff_lt_or_gt : a ≠ b ↔ a < b ∨ b < a := ⟨lt_or_gt_of_ne, (Or.el
 
 lemma lt_iff_not_ge : a < b ↔ ¬b ≤ a := ⟨not_le_of_gt, lt_of_not_ge⟩
 
-@[simp] lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
-@[simp] lemma not_le : ¬a ≤ b ↔ b < a := lt_iff_not_ge.symm
+@[simp, push] lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
+@[simp, push] lemma not_le : ¬a ≤ b ↔ b < a := lt_iff_not_ge.symm
 
 lemma eq_or_gt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
   if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
@@ -124,18 +122,14 @@ lemma eq_or_gt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
 @[deprecated (since := "2025-07-27")] alias eq_or_lt_of_not_gt := eq_or_gt_of_not_lt
 @[deprecated (since := "2025-05-11")] alias eq_or_lt_of_not_lt := eq_or_gt_of_not_lt
 
-/-- Perform a case-split on the ordering of `x` and `y` in a decidable linear order. -/
-@[deprecated lt_trichotomy (since := "2025-04-21")]
-def ltByCases (x y : α) {P : Sort*} (h₁ : x < y → P) (h₂ : x = y → P) (h₃ : y < x → P) : P :=
-  if h : x < y then h₁ h
-  else if h' : y < x then h₃ h' else h₂ (le_antisymm (le_of_not_gt h') (le_of_not_gt h))
-
 theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α} {c d : β}
     (H : d < c → b < a) (h : a ≤ b) : c ≤ d :=
   le_of_not_gt fun h' => not_le_of_gt (H h') h
 
-lemma min_def (a b : α) : min a b = if a ≤ b then a else b := by rw [LinearOrder.min_def a]
-lemma max_def (a b : α) : max a b = if a ≤ b then b else a := by rw [LinearOrder.max_def a]
+@[grind =]
+lemma min_def (a b : α) : min a b = if a ≤ b then a else b := LinearOrder.min_def a b
+@[grind =]
+lemma max_def (a b : α) : max a b = if a ≤ b then b else a := LinearOrder.max_def a b
 
 lemma min_le_left (a b : α) : min a b ≤ a := by
   if h : a ≤ b
@@ -148,9 +142,7 @@ lemma min_le_right (a b : α) : min a b ≤ b := by
   else simp [min_def, if_neg h, le_refl]
 
 lemma le_min (h₁ : c ≤ a) (h₂ : c ≤ b) : c ≤ min a b := by
-  if h : a ≤ b
-  then simpa [min_def, if_pos h] using h₁
-  else simpa [min_def, if_neg h] using h₂
+  grind
 
 lemma le_max_left (a b : α) : a ≤ max a b := by
   if h : a ≤ b
@@ -163,9 +155,7 @@ lemma le_max_right (a b : α) : b ≤ max a b := by
   else simpa [max_def, if_neg h] using le_of_not_ge h
 
 lemma max_le (h₁ : a ≤ c) (h₂ : b ≤ c) : max a b ≤ c := by
-  if h : a ≤ b
-  then simpa [max_def, if_pos h] using h₂
-  else simpa [max_def, if_neg h] using h₁
+  grind
 
 lemma eq_min (h₁ : c ≤ a) (h₂ : c ≤ b) (h₃ : ∀ {d}, d ≤ a → d ≤ b → d ≤ c) : c = min a b :=
   le_antisymm (le_min h₁ h₂) (h₃ (min_le_left a b) (min_le_right a b))
@@ -189,7 +179,7 @@ lemma min_left_comm (a b c : α) : min a (min b c) = min b (min a c) := by
 @[simp] lemma min_self (a : α) : min a a = a := by simp [min_def]
 
 lemma min_eq_left (h : a ≤ b) : min a b = a := by
-  apply Eq.symm; apply eq_min (le_refl _) h; intros; assumption
+  grind
 
 lemma min_eq_right (h : b ≤ a) : min a b = b := min_comm b a ▸ min_eq_left h
 
@@ -252,16 +242,16 @@ lemma compare_eq_iff_eq : compare a b = .eq ↔ a = b := by
   case _ _ h => rwa [false_iff]
 
 lemma compare_le_iff_le : compare a b ≠ .gt ↔ a ≤ b := by
-  cases h : compare a b <;> simp
-  · exact le_of_lt <| compare_lt_iff_lt.1 h
-  · exact le_of_eq <| compare_eq_iff_eq.1 h
-  · exact compare_gt_iff_gt.1 h
+  cases h : compare a b
+  · simpa using le_of_lt <| compare_lt_iff_lt.1 h
+  · simpa using le_of_eq <| compare_eq_iff_eq.1 h
+  · simpa using compare_gt_iff_gt.1 h
 
 lemma compare_ge_iff_ge : compare a b ≠ .lt ↔ b ≤ a := by
-  cases h : compare a b <;> simp
-  · exact compare_lt_iff_lt.1 h
-  · exact le_of_eq <| (·.symm) <| compare_eq_iff_eq.1 h
-  · exact le_of_lt <| compare_gt_iff_gt.1 h
+  cases h : compare a b
+  · simpa using compare_lt_iff_lt.1 h
+  · simpa using le_of_eq <| (·.symm) <| compare_eq_iff_eq.1 h
+  · simpa using le_of_lt <| compare_gt_iff_gt.1 h
 
 lemma compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.Compares a b := by
   cases o <;> simp only [Ordering.Compares]
@@ -279,18 +269,16 @@ theorem cmp_eq_compare (a b : α) : cmp a b = compare a b := by
 theorem cmp_eq_compareOfLessAndEq (a b : α) : cmp a b = compareOfLessAndEq a b :=
   (cmp_eq_compare ..).trans (LinearOrder.compare_eq_compareOfLessAndEq ..)
 
-instance : Batteries.LawfulCmp (compare (α := α)) where
-  symm a b := by
-    cases h : compare a b <;>
-    simp only [Ordering.swap] <;> symm
-    · exact compare_gt_iff_gt.2 <| compare_lt_iff_lt.1 h
-    · exact compare_eq_iff_eq.2 <| compare_eq_iff_eq.1 h |>.symm
-    · exact compare_lt_iff_lt.2 <| compare_gt_iff_gt.1 h
-  le_trans := fun h₁ h₂ ↦
-    compare_le_iff_le.2 <| le_trans (compare_le_iff_le.1 h₁) (compare_le_iff_le.1 h₂)
-  cmp_iff_beq := by simp [compare_eq_iff_eq]
-  cmp_iff_lt := by simp [compare_lt_iff_lt]
-  cmp_iff_le := by simp [compare_le_iff_le]
+instance : Std.LawfulBCmp (compare (α := α)) where
+  eq_swap {a b} := by
+    cases _ : compare b a <;>
+      simp_all [Ordering.swap, compare_eq_iff_eq, compare_lt_iff_lt, compare_gt_iff_gt]
+  isLE_trans h₁ h₂ := by
+    simp only [← Ordering.ne_gt_iff_isLE, compare_le_iff_le] at *
+    exact le_trans h₁ h₂
+  compare_eq_iff_beq := by simp [compare_eq_iff_eq]
+  eq_lt_iff_lt := by simp [compare_lt_iff_lt]
+  isLE_iff_le := by simp [← Ordering.ne_gt_iff_isLE, compare_le_iff_le]
 
 end Ord
 

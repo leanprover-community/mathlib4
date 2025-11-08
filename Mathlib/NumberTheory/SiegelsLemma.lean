@@ -3,7 +3,7 @@ Copyright (c) 2024 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero, Laura Capuano, Amos Turchet
 -/
-import Mathlib.Analysis.Matrix
+import Mathlib.Analysis.Matrix.Normed
 import Mathlib.Data.Pi.Interval
 import Mathlib.Tactic.Rify
 
@@ -11,7 +11,7 @@ import Mathlib.Tactic.Rify
 # Siegel's Lemma
 
 In this file we introduce and prove Siegel's Lemma in its most basic version. This is a fundamental
-tool in diophantine approximation and transcendency and says that there exists a "small" integral
+tool in diophantine approximation and transcendence and says that there exists a "small" integral
 non-zero solution of a non-trivial underdetermined system of linear equations with integer
 coefficients.
 

@@ -51,9 +51,9 @@ structure DiagramOfCones where
   obj : ∀ j : J, Cone (F.obj j)
   /-- For each map, a map of cones. -/
   map : ∀ {j j' : J} (f : j ⟶ j'), (Cones.postcompose (F.map f)).obj (obj j) ⟶ obj j'
-  id : ∀ j : J, (map (𝟙 j)).hom = 𝟙 _ := by aesop_cat
+  id : ∀ j : J, (map (𝟙 j)).hom = 𝟙 _ := by cat_disch
   comp : ∀ {j₁ j₂ j₃ : J} (f : j₁ ⟶ j₂) (g : j₂ ⟶ j₃),
-    (map (f ≫ g)).hom = (map f).hom ≫ (map g).hom := by aesop_cat
+    (map (f ≫ g)).hom = (map f).hom ≫ (map g).hom := by cat_disch
 
 /-- A structure carrying a diagram of cocones over the functors `F.obj j`.
 -/
@@ -62,9 +62,9 @@ structure DiagramOfCocones where
   obj : ∀ j : J, Cocone (F.obj j)
   /-- For each map, a map of cocones. -/
   map : ∀ {j j' : J} (f : j ⟶ j'), (obj j) ⟶ (Cocones.precompose (F.map f)).obj (obj j')
-  id : ∀ j : J, (map (𝟙 j)).hom = 𝟙 _ := by aesop_cat
+  id : ∀ j : J, (map (𝟙 j)).hom = 𝟙 _ := by cat_disch
   comp : ∀ {j₁ j₂ j₃ : J} (f : j₁ ⟶ j₂) (g : j₂ ⟶ j₃),
-    (map (f ≫ g)).hom = (map f).hom ≫ (map g).hom := by aesop_cat
+    (map (f ≫ g)).hom = (map f).hom ≫ (map g).hom := by cat_disch
 
 variable {F}
 
@@ -102,24 +102,10 @@ def coneOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
             π :=
               { app := fun k => c.π.app (j, k)
                 naturality := fun k k' f => by
-                  dsimp; simp only [Category.id_comp]
-                  have := @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j, k') (𝟙 j, f)
-                  dsimp at this
-                  simp? at this says
-                    simp only [Category.id_comp, Functor.map_id, NatTrans.id_app] at this
-                  exact this } }
+                  simpa using @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j, k') (𝟙 j, f) } }
       naturality := fun j j' f =>
         (Q j').hom_ext
-          (by
-            dsimp
-            intro k
-            simp only [Limits.ConeMorphism.w, Limits.Cones.postcompose_obj_π,
-              Limits.IsLimit.fac_assoc, Limits.IsLimit.fac, NatTrans.comp_app, Category.id_comp,
-              Category.assoc]
-            have := @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j', k) (f, 𝟙 k)
-            dsimp at this
-            simp only [Category.id_comp, Category.comp_id, CategoryTheory.Functor.map_id] at this
-            exact this) }
+          (fun k => by simpa using @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j', k) (f, 𝟙 k)) }
 
 /-- Given a diagram `D` of limit cones over the `curry.obj G j`, and a cone over `G`,
 we can construct a cone over the diagram consisting of the cone points from `D`.

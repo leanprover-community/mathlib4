@@ -433,7 +433,7 @@ lemma hasDerivWithinAt_sInf_slope_of_mem_interior (hfc : ConvexOn ℝ S f) (hxs 
   have h : Ioo x b ⊆ {y | y ∈ S ∧ x < y} := fun z hz ↦ ⟨habs ⟨hxab.1.trans hz.1, hz.2⟩, hz.1⟩
   have h_Ioo : Tendsto (slope f x) (𝓝[>] x) (𝓝 (sInf (slope f x '' Ioo x b))) :=
     ((monotoneOn_slope_gt hfc (habs hxab)).mono h).tendsto_nhdsWithin_Ioo_right
-      (by simpa using hxab.2) ((bddBelow_slope_lt_of_mem_interior hfc hxs).mono (image_subset _ h))
+      (by simpa using hxab.2) ((bddBelow_slope_lt_of_mem_interior hfc hxs).mono (image_mono h))
   suffices sInf (slope f x '' Ioo x b) = sInf (slope f x '' {y ∈ S | x < y}) by rwa [← this]
   apply (monotoneOn_slope_gt hfc (habs hxab)).csInf_eq_of_subset_of_forall_exists_le
     (bddBelow_slope_lt_of_mem_interior hfc hxs) h ?_
@@ -451,7 +451,7 @@ lemma hasDerivWithinAt_sSup_slope_of_mem_interior (hfc : ConvexOn ℝ S f) (hxs 
   have h : Ioo a x ⊆ {y | y ∈ S ∧ y < x} := fun z hz ↦ ⟨habs ⟨hz.1, hz.2.trans hxab.2⟩, hz.2⟩
   have h_Ioo : Tendsto (slope f x) (𝓝[<] x) (𝓝 (sSup (slope f x '' Ioo a x))) :=
     ((monotoneOn_slope_lt hfc (habs hxab)).mono h).tendsto_nhdsWithin_Ioo_left
-      (by simpa using hxab.1) ((bddAbove_slope_gt_of_mem_interior hfc hxs).mono (image_subset _ h))
+      (by simpa using hxab.1) ((bddAbove_slope_gt_of_mem_interior hfc hxs).mono (image_mono h))
   suffices sSup (slope f x '' Ioo a x) = sSup (slope f x '' {y ∈ S | y < x}) by rwa [← this]
   apply (monotoneOn_slope_lt hfc (habs hxab)).csSup_eq_of_subset_of_forall_exists_le
     (bddAbove_slope_gt_of_mem_interior hfc hxs) h ?_
@@ -565,9 +565,6 @@ lemma rightDeriv_le_slope (hfc : ConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S)
     derivWithin f (Ioi x) x ≤ slope f x y :=
   le_slope_of_hasDerivWithinAt_Ioi hfc hx hy hxy hfd.hasDerivWithinAt
 
-@[deprecated (since := "2025-01-26")]
-alias right_deriv_le_slope := rightDeriv_le_slope
-
 lemma rightDeriv_le_slope_of_mem_interior (hfc : ConvexOn ℝ S f)
     {y : ℝ} (hxs : x ∈ interior S) (hys : y ∈ S) (hxy : x < y) :
     derivWithin f (Ioi x) x ≤ slope f x y :=
@@ -627,9 +624,6 @@ lemma slope_le_leftDeriv (hfc : ConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) 
     (hfd : DifferentiableWithinAt ℝ f (Iio y) y) :
     slope f x y ≤ derivWithin f (Iio y) y :=
   hfc.slope_le_of_hasDerivWithinAt_Iio hx hy hxy hfd.hasDerivWithinAt
-
-@[deprecated (since := "2025-01-26")]
-alias slope_le_left_deriv := slope_le_leftDeriv
 
 lemma slope_le_leftDeriv_of_mem_interior (hfc : ConvexOn ℝ S f)
     (hys : x ∈ S) (hxs : y ∈ interior S) (hxy : x < y) :
@@ -749,9 +743,6 @@ lemma rightDeriv_lt_slope (hfc : StrictConvexOn ℝ S f) (hx : x ∈ S) (hy : y 
     derivWithin f (Ioi x) x < slope f x y :=
   hfc.lt_slope_of_hasDerivWithinAt_Ioi hx hy hxy hfd.hasDerivWithinAt
 
-@[deprecated (since := "2025-01-26")]
-alias right_deriv_lt_slope := rightDeriv_lt_slope
-
 /-- If `f : ℝ → ℝ` is strictly convex on `S` and differentiable within `S` at `x ∈ S`, then the
 slope of any secant line with left endpoint at `x` is strictly greater than the derivative of `f`
 within `S` at `x`.
@@ -803,9 +794,6 @@ lemma slope_lt_leftDeriv (hfc : StrictConvexOn ℝ S f) (hx : x ∈ S) (hy : y �
     (hfd : DifferentiableWithinAt ℝ f (Iio y) y) :
     slope f x y < derivWithin f (Iio y) y :=
   hfc.slope_lt_of_hasDerivWithinAt_Iio hx hy hxy hfd.hasDerivWithinAt
-
-@[deprecated (since := "2025-01-26")]
-alias slope_lt_left_deriv := slope_lt_leftDeriv
 
 /-- If `f : ℝ → ℝ` is strictly convex on `S` and differentiable within `S` at `y ∈ S`, then the
 slope of any secant line with right endpoint at `y` is strictly less than the derivative of `f`
@@ -881,9 +869,6 @@ lemma slope_le_rightDeriv (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S
     slope f x y ≤ derivWithin f (Ioi x) x :=
   hfc.slope_le_of_hasDerivWithinAt_Ioi hx hy hxy hfd.hasDerivWithinAt
 
-@[deprecated (since := "2025-01-26")]
-alias slope_le_right_deriv := slope_le_rightDeriv
-
 lemma slope_le_of_hasDerivWithinAt (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
     (hfd : HasDerivWithinAt f f' S x) :
     slope f x y ≤ f' :=
@@ -922,9 +907,6 @@ lemma leftDeriv_le_slope (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S)
     (hfd : DifferentiableWithinAt ℝ f (Iio y) y) :
     derivWithin f (Iio y) y ≤ slope f x y :=
   hfc.le_slope_of_hasDerivWithinAt_Iio hx hy hxy hfd.hasDerivWithinAt
-
-@[deprecated (since := "2025-01-26")]
-alias left_deriv_le_slope := leftDeriv_le_slope
 
 lemma le_slope_of_hasDerivWithinAt (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
     (hf' : HasDerivWithinAt f f' S y) :
@@ -986,9 +968,6 @@ lemma slope_lt_rightDeriv (hfc : StrictConcaveOn ℝ S f) (hx : x ∈ S) (hy : y
     slope f x y < derivWithin f (Ioi x) x :=
   hfc.slope_lt_of_hasDerivWithinAt_Ioi hx hy hxy hfd.hasDerivWithinAt
 
-@[deprecated (since := "2025-01-26")]
-alias slope_lt_right_deriv := slope_lt_rightDeriv
-
 lemma slope_lt_of_hasDerivWithinAt (hfc : StrictConcaveOn ℝ S f)
     (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hfd : HasDerivWithinAt f f' S x) :
     slope f x y < f' := by
@@ -1028,9 +1007,6 @@ lemma leftDeriv_lt_slope (hfc : StrictConcaveOn ℝ S f) (hx : x ∈ S) (hy : y 
     (hfd : DifferentiableWithinAt ℝ f (Iio y) y) :
     derivWithin f (Iio y) y < slope f x y :=
   hfc.lt_slope_of_hasDerivWithinAt_Iio hx hy hxy hfd.hasDerivWithinAt
-
-@[deprecated (since := "2025-01-26")]
-alias left_deriv_lt_slope := leftDeriv_lt_slope
 
 lemma lt_slope_of_hasDerivWithinAt (hfc : StrictConcaveOn ℝ S f)
     (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hf' : HasDerivWithinAt f f' S y) :

@@ -140,7 +140,7 @@ protected def copy (S : StarSubalgebra R A) (s : Set A) (hs : s = ↑S) : StarSu
   toSubalgebra := Subalgebra.copy S.toSubalgebra s hs
   star_mem' {a} ha := hs ▸ S.star_mem' (by simpa [hs] using ha)
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_copy (S : StarSubalgebra R A) (s : Set A) (hs : s = ↑S) : (S.copy s hs : Set A) = s :=
   rfl
 
@@ -214,7 +214,7 @@ def map (f : A →⋆ₐ[R] B) (S : StarSubalgebra R A) : StarSubalgebra R B :=
       exact map_star f a ▸ Set.mem_image_of_mem _ (S.star_mem' ha) }
 
 theorem map_mono {S₁ S₂ : StarSubalgebra R A} {f : A →⋆ₐ[R] B} : S₁ ≤ S₂ → S₁.map f ≤ S₂.map f :=
-  Set.image_subset f
+  Set.image_mono
 
 theorem map_injective {f : A →⋆ₐ[R] B} (hf : Function.Injective f) : Function.Injective (map f) :=
   fun _S₁ _S₂ ih =>
@@ -237,7 +237,7 @@ theorem map_toSubalgebra {S : StarSubalgebra R A} {f : A →⋆ₐ[R] B} :
     (S.map f).toSubalgebra = S.toSubalgebra.map f.toAlgHom :=
   SetLike.coe_injective rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_map (S : StarSubalgebra R A) (f : A →⋆ₐ[R] B) : (S.map f : Set B) = f '' S :=
   rfl
 
@@ -630,7 +630,7 @@ instance completeLattice : CompleteLattice (StarSubalgebra R A) where
 instance inhabited : Inhabited (StarSubalgebra R A) :=
   ⟨⊤⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_top : (↑(⊤ : StarSubalgebra R A) : Set A) = Set.univ :=
   rfl
 
@@ -709,7 +709,7 @@ theorem bot_toSubalgebra : (⊥ : StarSubalgebra R A).toSubalgebra = ⊥ := rfl
 
 theorem mem_bot {x : A} : x ∈ (⊥ : StarSubalgebra R A) ↔ x ∈ Set.range (algebraMap R A) := Iff.rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_bot : ((⊥ : StarSubalgebra R A) : Set A) = Set.range (algebraMap R A) := rfl
 
 theorem eq_top_iff {S : StarSubalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=

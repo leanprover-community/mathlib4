@@ -37,7 +37,7 @@ def dualProd : LinearMap.BilinForm R (Module.Dual R M × M) :=
     (applyₗ.comp (snd R (Module.Dual R M) M)).compl₂ (fst R (Module.Dual R M) M) +
       ((applyₗ.comp (snd R (Module.Dual R M) M)).compl₂ (fst R (Module.Dual R M) M)).flip
 
-theorem isSymm_dualProd : (dualProd R M).IsSymm := fun _x _y => add_comm _ _
+theorem isSymm_dualProd : (dualProd R M).IsSymm := ⟨fun _x _y => add_comm _ _⟩
 
 end Semiring
 

@@ -55,7 +55,7 @@ theorem mem_rightCoset {s : Set α} {x : α} (a : α) (hxS : x ∈ s) : x * a �
   mem_image_of_mem (fun b : α => b * a) hxS
 
 /-- Equality of two left cosets `a * s` and `b * s`. -/
-@[to_additive LeftAddCosetEquivalence "Equality of two left cosets `a + s` and `b + s`."]
+@[to_additive LeftAddCosetEquivalence /-- Equality of two left cosets `a + s` and `b + s`. -/]
 def LeftCosetEquivalence (s : Set α) (a b : α) :=
   a • s = b • s
 
@@ -64,7 +64,7 @@ theorem leftCosetEquivalence_rel (s : Set α) : Equivalence (LeftCosetEquivalenc
   @Equivalence.mk _ (LeftCosetEquivalence s) (fun _ => rfl) Eq.symm Eq.trans
 
 /-- Equality of two right cosets `s * a` and `s * b`. -/
-@[to_additive RightAddCosetEquivalence "Equality of two right cosets `s + a` and `s + b`."]
+@[to_additive RightAddCosetEquivalence /-- Equality of two right cosets `s + a` and `s + b`. -/]
 def RightCosetEquivalence (s : Set α) (a b : α) :=
   op a • s = op b • s
 
@@ -233,9 +233,6 @@ lemma leftRel_prod {β : Type*} [Group β] (s' : Subgroup β) :
   simp_rw [leftRel_apply]
   rfl
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.QuotientAddGroup.leftRel_sum := QuotientAddGroup.leftRel_prod
-
 @[to_additive]
 lemma leftRel_pi {ι : Type*} {β : ι → Type*} [∀ i, Group (β i)] (s' : ∀ i, Subgroup (β i)) :
     leftRel (Subgroup.pi Set.univ s') = @piSetoid _ _ fun i ↦ leftRel (s' i) := by
@@ -256,9 +253,6 @@ lemma rightRel_prod {β : Type*} [Group β] (s' : Subgroup β) :
   simp_rw [rightRel_apply]
   rfl
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.QuotientAddGroup.rightRel_sum := QuotientAddGroup.rightRel_prod
-
 @[to_additive]
 lemma rightRel_pi {ι : Type*} {β : ι → Type*} [∀ i, Group (β i)] (s' : ∀ i, Subgroup (β i)) :
     rightRel (Subgroup.pi Set.univ s') = @piSetoid _ _ fun i ↦ rightRel (s' i) := by
@@ -276,10 +270,10 @@ variable (s)
 /-- Given a subgroup `s`, the function that sends a subgroup `t` to the pair consisting of
 its intersection with `s` and its image in the quotient `α ⧸ s` is strictly monotone, even though
 it is not injective in general. -/
-@[to_additive QuotientAddGroup.strictMono_comap_prod_image "Given an additive subgroup `s`,
+@[to_additive QuotientAddGroup.strictMono_comap_prod_image /-- Given an additive subgroup `s`,
 the function that sends an additive subgroup `t` to the pair consisting of
 its intersection with `s` and its image in the quotient `α ⧸ s`
-is strictly monotone, even though it is not injective in general."]
+is strictly monotone, even though it is not injective in general. -/]
 theorem strictMono_comap_prod_image :
     StrictMono fun t : Subgroup α ↦ (t.comap s.subtype, mk (s := s) '' t) := by
   refine fun t₁ t₂ h ↦ ⟨⟨Subgroup.comap_mono h.1, Set.image_mono h.1⟩,
@@ -317,20 +311,20 @@ open QuotientGroup
 variable [Group α] {s : Subgroup α}
 
 /-- The natural bijection between a left coset `g * s` and `s`. -/
-@[to_additive "The natural bijection between the cosets `g + s` and `s`."]
+@[to_additive /-- The natural bijection between the cosets `g + s` and `s`. -/]
 def leftCosetEquivSubgroup (g : α) : (g • s : Set α) ≃ s :=
   ⟨fun x => ⟨g⁻¹ * x.1, (mem_leftCoset_iff _).1 x.2⟩, fun x => ⟨g * x.1, x.1, x.2, rfl⟩,
     fun ⟨x, _⟩ => Subtype.eq <| by simp, fun ⟨g, _⟩ => Subtype.eq <| by simp⟩
 
 /-- The natural bijection between a right coset `s * g` and `s`. -/
-@[to_additive "The natural bijection between the cosets `s + g` and `s`."]
+@[to_additive /-- The natural bijection between the cosets `s + g` and `s`. -/]
 def rightCosetEquivSubgroup (g : α) : (op g • s : Set α) ≃ s :=
   ⟨fun x => ⟨x.1 * g⁻¹, (mem_rightCoset_iff _).1 x.2⟩, fun x => ⟨x.1 * g, x.1, x.2, rfl⟩,
     fun ⟨x, _⟩ => Subtype.eq <| by simp, fun ⟨g, _⟩ => Subtype.eq <| by simp⟩
 
 /-- A (non-canonical) bijection between a group `α` and the product `(α/s) × s` -/
 @[to_additive addGroupEquivQuotientProdAddSubgroup
-  "A (non-canonical) bijection between an add_group `α` and the product `(α/s) × s`"]
+  /-- A (non-canonical) bijection between an add_group `α` and the product `(α/s) × s` -/]
 noncomputable def groupEquivQuotientProdSubgroup : α ≃ (α ⧸ s) × s :=
   calc
     α ≃ Σ L : α ⧸ s, { x : α // (x : α ⧸ s) = L } := (Equiv.sigmaFiberEquiv QuotientGroup.mk).symm
@@ -350,8 +344,8 @@ variable {t : Subgroup α}
 /-- If `H ≤ K`, then `G/H ≃ G/K × K/H` constructively, using the provided right inverse
 of the quotient map `G → G/K`. The classical version is `Subgroup.quotientEquivProdOfLE`. -/
 @[to_additive (attr := simps) quotientEquivProdOfLE'
-  "If `H ≤ K`, then `G/H ≃ G/K × K/H` constructively, using the provided right inverse
-  of the quotient map `G → G/K`. The classical version is `AddSubgroup.quotientEquivProdOfLE`."]
+  /-- If `H ≤ K`, then `G/H ≃ G/K × K/H` constructively, using the provided right inverse
+  of the quotient map `G → G/K`. The classical version is `AddSubgroup.quotientEquivProdOfLE`. -/]
 def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
     (hf : Function.RightInverse f QuotientGroup.mk) : α ⧸ s ≃ (α ⧸ t) × t ⧸ s.subgroupOf t where
   toFun a :=
@@ -379,34 +373,17 @@ def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
       (QuotientGroup.mk_mul_of_mem (f a) b.2).trans (hf a)
     simp_rw [Quotient.map'_mk'', id, key, inv_mul_cancel_left]
 
-@[deprecated (since := "2025-03-11")]
-alias AddSubgroup.quotientEquivSumOfLE' := AddSubgroup.quotientEquivProdOfLE'
-
-@[deprecated (since := "2025-03-11")]
-alias AddSubgroup.quotientEquivSumOfLE'_apply := AddSubgroup.quotientEquivProdOfLE'_apply
-
-@[deprecated (since := "2025-03-11")]
-alias AddSubgroup.quotientEquivSumOfLE'_symm_apply := AddSubgroup.quotientEquivProdOfLE'_symm_apply
-
 /-- If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively.
 The constructive version is `quotientEquivProdOfLE'`. -/
 @[to_additive (attr := simps!) quotientEquivProdOfLE
-  "If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively. The
-constructive version is `quotientEquivProdOfLE'`."]
+  /-- If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively. The
+constructive version is `quotientEquivProdOfLE'`. -/]
 noncomputable def quotientEquivProdOfLE (h_le : s ≤ t) : α ⧸ s ≃ (α ⧸ t) × t ⧸ s.subgroupOf t :=
   quotientEquivProdOfLE' h_le Quotient.out Quotient.out_eq'
 
-@[deprecated (since := "2025-03-11")]
-alias AddSubgroup.quotientEquivSumOfLE := AddSubgroup.quotientEquivProdOfLE
-
-@[deprecated (since := "2025-03-11")]
-alias AddSubgroup.quotientEquivSumOfLE_apply := AddSubgroup.quotientEquivProdOfLE_apply
-
-@[deprecated (since := "2025-03-11")]
-alias AddSubgroup.quotientEquivSumOfLE_symm_apply := AddSubgroup.quotientEquivProdOfLE_symm_apply
-
 /-- If `s ≤ t`, then there is an embedding `s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t`. -/
-@[to_additive "If `s ≤ t`, there is an embedding `s ⧸ H.addSubgroupOf s ↪ t ⧸ H.addSubgroupOf t`."]
+@[to_additive
+/-- If `s ≤ t`, there is an embedding `s ⧸ H.addSubgroupOf s ↪ t ⧸ H.addSubgroupOf t`. -/]
 def quotientSubgroupOfEmbeddingOfLE (H : Subgroup α) (h : s ≤ t) :
     s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t where
   toFun :=
@@ -424,7 +401,8 @@ theorem quotientSubgroupOfEmbeddingOfLE_apply_mk (H : Subgroup α) (h : s ≤ t)
   rfl
 
 /-- If `s ≤ t`, then there is a map `H ⧸ s.subgroupOf H → H ⧸ t.subgroupOf H`. -/
-@[to_additive "If `s ≤ t`, then there is a map `H ⧸ s.addSubgroupOf H → H ⧸ t.addSubgroupOf H`."]
+@[to_additive
+/-- If `s ≤ t`, then there is a map `H ⧸ s.addSubgroupOf H → H ⧸ t.addSubgroupOf H`. -/]
 def quotientSubgroupOfMapOfLE (H : Subgroup α) (h : s ≤ t) :
     H ⧸ s.subgroupOf H → H ⧸ t.subgroupOf H :=
   Quotient.map' id fun a b => by
@@ -437,7 +415,7 @@ theorem quotientSubgroupOfMapOfLE_apply_mk (H : Subgroup α) (h : s ≤ t) (g : 
   rfl
 
 /-- If `s ≤ t`, then there is a map `α ⧸ s → α ⧸ t`. -/
-@[to_additive "If `s ≤ t`, then there is a map `α ⧸ s → α ⧸ t`."]
+@[to_additive /-- If `s ≤ t`, then there is a map `α ⧸ s → α ⧸ t`. -/]
 def quotientMapOfLE (h : s ≤ t) : α ⧸ s → α ⧸ t :=
   Quotient.map' id fun a b => by
     simp_rw [leftRel_eq]
@@ -449,8 +427,8 @@ theorem quotientMapOfLE_apply_mk (h : s ≤ t) (g : α) :
   rfl
 
 /-- The natural embedding `H ⧸ (⨅ i, f i).subgroupOf H ↪ Π i, H ⧸ (f i).subgroupOf H`. -/
-@[to_additive (attr := simps) "The natural embedding
-`H ⧸ (⨅ i, f i).addSubgroupOf H) ↪ Π i, H ⧸ (f i).addSubgroupOf H`."]
+@[to_additive (attr := simps) /-- The natural embedding
+`H ⧸ (⨅ i, f i).addSubgroupOf H) ↪ Π i, H ⧸ (f i).addSubgroupOf H`. -/]
 def quotientiInfSubgroupOfEmbedding {ι : Type*} (f : ι → Subgroup α) (H : Subgroup α) :
     H ⧸ (⨅ i, f i).subgroupOf H ↪ ∀ i, H ⧸ (f i).subgroupOf H where
   toFun q i := quotientSubgroupOfMapOfLE H (iInf_le f i) q
@@ -466,7 +444,7 @@ theorem quotientiInfSubgroupOfEmbedding_apply_mk {ι : Type*} (f : ι → Subgro
   rfl
 
 /-- The natural embedding `α ⧸ (⨅ i, f i) ↪ Π i, α ⧸ f i`. -/
-@[to_additive (attr := simps) "The natural embedding `α ⧸ (⨅ i, f i) ↪ Π i, α ⧸ f i`."]
+@[to_additive (attr := simps) /-- The natural embedding `α ⧸ (⨅ i, f i) ↪ Π i, α ⧸ f i`. -/]
 def quotientiInfEmbedding {ι : Type*} (f : ι → Subgroup α) : (α ⧸ ⨅ i, f i) ↪ ∀ i, α ⧸ f i where
   toFun q i := quotientMapOfLE (iInf_le f i) q
   inj' :=
@@ -486,7 +464,8 @@ namespace MonoidHom
 variable [Group α] {H : Type*} [Group H]
 
 /-- An equivalence between any non-empty fiber of a `MonoidHom` and its kernel. -/
-@[to_additive "An equivalence between any non-empty fiber of an `AddMonoidHom` and its kernel."]
+@[to_additive
+/-- An equivalence between any non-empty fiber of an `AddMonoidHom` and its kernel. -/]
 def fiberEquivKer (f : α →* H) (a : α) : f ⁻¹' {f a} ≃ f.ker :=
   .trans
     (Equiv.setCongr <| Set.ext fun _ => by
@@ -504,13 +483,14 @@ lemma fiberEquivKer_symm_apply (f : α →* H) (a : α) (g : f.ker) :
   rfl
 
 /-- An equivalence between any fiber of a surjective `MonoidHom` and its kernel. -/
-@[to_additive "An equivalence between any fiber of a surjective `AddMonoidHom` and its kernel."]
+@[to_additive
+/-- An equivalence between any fiber of a surjective `AddMonoidHom` and its kernel. -/]
 noncomputable def fiberEquivKerOfSurjective {f : α →* H} (hf : Function.Surjective f) (h : H) :
     f ⁻¹' {h} ≃ f.ker :=
   (hf h).choose_spec ▸ f.fiberEquivKer (hf h).choose
 
 /-- An equivalence between any two non-empty fibers of a `MonoidHom`. -/
-@[to_additive "An equivalence between any two non-empty fibers of an `AddMonoidHom`."]
+@[to_additive /-- An equivalence between any two non-empty fibers of an `AddMonoidHom`. -/]
 def fiberEquiv (f : α →* H) (a b : α) : f ⁻¹' {f a} ≃ f ⁻¹' {f b} :=
   (f.fiberEquivKer a).trans (f.fiberEquivKer b).symm
 
@@ -525,7 +505,7 @@ lemma fiberEquiv_symm_apply (f : α →* H) (a b : α) (g : f ⁻¹' {f b}) :
   rfl
 
 /-- An equivalence between any two fibers of a surjective `MonoidHom`. -/
-@[to_additive "An equivalence between any two fibers of a surjective `AddMonoidHom`."]
+@[to_additive /-- An equivalence between any two fibers of a surjective `AddMonoidHom`. -/]
 noncomputable def fiberEquivOfSurjective {f : α →* H} (hf : Function.Surjective f) (h h' : H) :
     f ⁻¹' {h} ≃ f ⁻¹' {h'} :=
   (fiberEquivKerOfSurjective hf h).trans (fiberEquivKerOfSurjective hf h').symm
@@ -539,9 +519,9 @@ variable [Group α]
 /-- If `s` is a subgroup of the group `α`, and `t` is a subset of `α ⧸ s`, then there is a
 (typically non-canonical) bijection between the preimage of `t` in `α` and the product `s × t`. -/
 @[to_additive preimageMkEquivAddSubgroupProdSet
-"If `s` is a subgroup of the additive group `α`, and `t` is a subset of `α ⧸ s`, then
+/-- If `s` is a subgroup of the additive group `α`, and `t` is a subset of `α ⧸ s`, then
 there is a (typically non-canonical) bijection between the preimage of `t` in `α` and the product
-`s × t`."]
+`s × t`. -/]
 noncomputable def preimageMkEquivSubgroupProdSet (s : Subgroup α) (t : Set (α ⧸ s)) :
     QuotientGroup.mk ⁻¹' t ≃ s × t where
   toFun a :=
@@ -558,8 +538,8 @@ noncomputable def preimageMkEquivSubgroupProdSet (s : Subgroup α) (t : Set (α 
 
 open MulAction in
 /-- A group is made up of a disjoint union of cosets of a subgroup. -/
-@[to_additive "An additive group is made up of a disjoint union of cosets of an additive
-subgroup."]
+@[to_additive /-- An additive group is made up of a disjoint union of cosets of an additive
+subgroup. -/]
 lemma univ_eq_iUnion_smul (H : Subgroup α) :
     (Set.univ (α := α)) = ⋃ x : α ⧸ H, x.out • (H : Set _) := by
   simp_rw [univ_eq_iUnion_orbit H.op, orbit_eq_out_smul]
@@ -568,8 +548,8 @@ lemma univ_eq_iUnion_smul (H : Subgroup α) :
 variable (α) in
 /-- `α ⧸ ⊥` is in bijection with `α`. See `QuotientGroup.quotientBot` for a multiplicative
 version. -/
-@[to_additive "`α ⧸ ⊥` is in bijection with `α`. See `QuotientAddGroup.quotientBot` for an additive
-version."]
+@[to_additive /-- `α ⧸ ⊥` is in bijection with `α`. See `QuotientAddGroup.quotientBot` for an
+additive version. -/]
 def quotientEquivSelf : α ⧸ (⊥ : Subgroup α) ≃ α where
   toFun := Quotient.lift id <| fun x y (h : leftRel ⊥ x y) ↦
     eq_of_inv_mul_eq_one <| by rwa [leftRel_apply, Subgroup.mem_bot] at h

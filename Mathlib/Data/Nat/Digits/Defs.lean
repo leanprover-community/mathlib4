@@ -41,20 +41,58 @@ def digitsAux1 (n : ℕ) : List ℕ :=
   List.replicate n 1
 
 /-- (Impl.) An auxiliary definition for `digits`, to help get the desired definitional unfolding. -/
-def digitsAux (b : ℕ) (h : 2 ≤ b) : ℕ → List ℕ
-  | 0 => []
-  | n + 1 =>
-    ((n + 1) % b) :: digitsAux b h ((n + 1) / b)
-decreasing_by exact Nat.div_lt_self (Nat.succ_pos _) h
+def digitsAux (b : ℕ) (h : 2 ≤ b) (n : ℕ) : List ℕ :=
+  go n (n + 2) init
+where
+  init : (if n = 0 then 0 else n + 1) < n + 2 := by
+    split_ifs <;> simp
+  decreasing (n f : ℕ) (hf : (if n + 1 = 0 then 0 else n + 2) < f + 1) :
+      (if (n + 1) / b = 0 then 0 else ((n + 1) / b) + 1) < f := by
+    rw [if_neg n.add_one_ne_zero] at hf
+    split_ifs with hn
+    · exact zero_lt_of_lt (lt_of_succ_lt_succ hf)
+    · rw [Nat.div_eq_zero_iff, or_iff_right (by omega), not_lt] at hn
+      refine Nat.lt_of_le_of_lt (succ_le_succ ?_) (succ_lt_succ_iff.1 hf)
+      refine Nat.div_le_of_le_mul (Nat.le_trans ?_ (Nat.mul_le_mul_right n h))
+      omega
+  /-- Auxiliary function performing recursion for `Nat.digitsAux`. -/
+  go (n fuel : ℕ) (hfuel : (if n = 0 then 0 else n + 1) < fuel) : List ℕ :=
+    match n, fuel, hfuel with
+    | 0, _, _ => []
+    | n + 1, f + 1, hf =>
+      ((n + 1) % b) :: go ((n + 1) / b) f (decreasing n f hf)
+
+theorem digitsAux.go_zero (b : ℕ) (h : 2 ≤ b) (fuel : ℕ)
+    (hfuel : (if 0 = 0 then 0 else n + 1) < fuel) :
+    digitsAux.go b h 0 fuel hfuel = [] := by
+  rw [digitsAux.go]
+
+theorem digitsAux.go_succ (b : ℕ) (h : 2 ≤ b) (n fuel : ℕ)
+    (hfuel : (if n + 1 = 0 then 0 else n + 2) < fuel + 1) :
+    digitsAux.go b h (n + 1) (fuel + 1) hfuel = ((n + 1) % b) ::
+      digitsAux.go b h ((n + 1) / b) fuel (decreasing b h n fuel hfuel) :=
+  rfl
+
+theorem digitsAux.go_fuel_irrel (b : ℕ) (h : 2 ≤ b) (n fuel fuel' : ℕ)
+    (hfuel : (if n = 0 then 0 else n + 1) < fuel)
+    (hfuel' : (if n = 0 then 0 else n + 1) < fuel') :
+    digitsAux.go b h n fuel hfuel = digitsAux.go b h n fuel' hfuel' := by
+  fun_induction go b h n fuel hfuel generalizing fuel'
+  · rw [go_zero]
+  · cases fuel'
+    · simp at hfuel'
+    · rw [go_succ]
+      solve_by_elim
 
 @[simp]
-theorem digitsAux_zero (b : ℕ) (h : 2 ≤ b) : digitsAux b h 0 = [] := by rw [digitsAux]
+theorem digitsAux_zero (b : ℕ) (h : 2 ≤ b) :
+    digitsAux b h 0 = [] := by rw [digitsAux, digitsAux.go]
 
 theorem digitsAux_def (b : ℕ) (h : 2 ≤ b) (n : ℕ) (w : 0 < n) :
     digitsAux b h n = (n % b) :: digitsAux b h (n / b) := by
   cases n
   · cases w
-  · rw [digitsAux]
+  · rw [digitsAux, digitsAux.go, digitsAux, digitsAux.go_fuel_irrel]
 
 /-- `digits b n` gives the digits, in little-endian order,
 of a natural number `n` in a specified base `b`.
@@ -72,7 +110,7 @@ In particular, `Nat.toDigits b 0 = ['0']`, while `digits b 0 = []`.
 def digits : ℕ → ℕ → List ℕ
   | 0 => digitsAux0
   | 1 => digitsAux1
-  | b + 2 => digitsAux (b + 2) (by norm_num)
+  | b + 2 => digitsAux (b + 2) (by simp)
 
 @[simp]
 theorem digits_zero (b : ℕ) : digits b 0 = [] := by
@@ -142,11 +180,9 @@ def ofDigits {α : Type*} [Semiring α] (b : α) : List ℕ → α
 
 theorem ofDigits_eq_foldr {α : Type*} [Semiring α] (b : α) (L : List ℕ) :
     ofDigits b L = List.foldr (fun x y => ↑x + b * y) 0 L := by
-  induction' L with d L ih
-  · rfl
-  · dsimp [ofDigits]
-    rw [ih]
-
+  induction L with
+  | nil => rfl
+  | cons d L ih => dsimp [ofDigits]; rw [ih]
 
 @[simp]
 theorem ofDigits_nil {b : ℕ} : ofDigits b [] = 0 := rfl
@@ -163,9 +199,10 @@ theorem ofDigits_cons {b hd} {tl : List ℕ} :
 
 theorem ofDigits_append {b : ℕ} {l1 l2 : List ℕ} :
     ofDigits b (l1 ++ l2) = ofDigits b l1 + b ^ l1.length * ofDigits b l2 := by
-  induction' l1 with hd tl IH
-  · simp [ofDigits]
-  · rw [ofDigits, List.cons_append, ofDigits, IH, List.length_cons, pow_succ']
+  induction l1 with
+  | nil => simp [ofDigits]
+  | cons hd tl IH =>
+    rw [ofDigits, List.cons_append, ofDigits, IH, List.length_cons, pow_succ']
     ring
 
 @[simp]
@@ -198,15 +235,11 @@ theorem ofDigits_reverse_zero_cons {b : ℕ} (l : List ℕ) :
 @[norm_cast]
 theorem coe_ofDigits (α : Type*) [Semiring α] (b : ℕ) (L : List ℕ) :
     ((ofDigits b L : ℕ) : α) = ofDigits (b : α) L := by
-  induction' L with d L ih
-  · simp [ofDigits]
-  · dsimp [ofDigits]; push_cast; rw [ih]
+  induction L with
+  | nil => simp [ofDigits]
+  | cons d L ih => dsimp [ofDigits]; push_cast; rw [ih]
 
-@[norm_cast]
-theorem coe_int_ofDigits (b : ℕ) (L : List ℕ) : ((ofDigits b L : ℕ) : ℤ) = ofDigits (b : ℤ) L := by
-  induction' L with d L _
-  · rfl
-  · dsimp [ofDigits]; push_cast; simp only
+@[deprecated (since := "2025-08-14")] alias coe_int_ofDigits := coe_ofDigits
 
 theorem digits_zero_of_eq_zero {b : ℕ} (h : b ≠ 0) :
     ∀ {L : List ℕ} (_ : ofDigits b L = 0), ∀ l ∈ L, l = 0
@@ -216,10 +249,10 @@ theorem digits_zero_of_eq_zero {b : ℕ} (h : b ≠ 0) :
 
 theorem digits_ofDigits (b : ℕ) (h : 1 < b) (L : List ℕ) (w₁ : ∀ l ∈ L, l < b)
     (w₂ : ∀ h : L ≠ [], L.getLast h ≠ 0) : digits b (ofDigits b L) = L := by
-  induction' L with d L ih
-  · dsimp [ofDigits]
-    simp
-  · dsimp [ofDigits]
+  induction L with
+  | nil => simp
+  | cons d L ih =>
+    dsimp [ofDigits]
     replace w₂ := w₂ (by simp)
     rw [digits_add b h]
     · rw [ih]
@@ -246,9 +279,10 @@ theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
     · rfl
     · simp
   · rcases b with - | b
-    · induction' n with n ih
-      · rfl
-      · rw [Nat.zero_add] at ih ⊢
+    · induction n with
+      | zero => rfl
+      | succ n ih =>
+        rw [Nat.zero_add] at ih ⊢
         simp only [ih, add_comm 1, ofDigits_one_cons, Nat.cast_id, digits_one_succ]
     · induction n using Nat.strongRecOn with | ind n h => ?_
       cases n
@@ -284,13 +318,8 @@ theorem digits_ne_nil_iff_ne_zero {b n : ℕ} : digits b n ≠ [] ↔ n ≠ 0 :=
   not_congr digits_eq_nil_iff_eq_zero
 
 theorem digits_eq_cons_digits_div {b n : ℕ} (h : 1 < b) (w : n ≠ 0) :
-    digits b n = (n % b) :: digits b (n / b) := by
-  rcases b with (_ | _ | b)
-  · rw [digits_zero_succ' w, Nat.mod_zero, Nat.div_zero, Nat.digits_zero_zero]
-  · norm_num at h
-  rcases n with (_ | n)
-  · norm_num at w
-  · simp only [digits_add_two_add_one]
+    digits b n = (n % b) :: digits b (n / b) :=
+  digits_def' h (Nat.pos_of_ne_zero w)
 
 theorem digits_getLast {b : ℕ} (m : ℕ) (h : 1 < b) (p q) :
     (digits b m).getLast p = (digits b (m / b)).getLast q := by
@@ -317,9 +346,11 @@ theorem mul_ofDigits (n : ℕ) {b : ℕ} {l : List ℕ} :
 lemma ofDigits_inj_of_len_eq {b : ℕ} (hb : 1 < b) {L1 L2 : List ℕ}
     (len : L1.length = L2.length) (w1 : ∀ l ∈ L1, l < b) (w2 : ∀ l ∈ L2, l < b)
     (h : ofDigits b L1 = ofDigits b L2) : L1 = L2 := by
-  induction' L1 with D L ih generalizing L2
-  · simp only [List.length_nil] at len
+  induction L1 generalizing L2 with
+  | nil =>
+    simp only [List.length_nil] at len
     exact (List.length_eq_zero_iff.mp len.symm).symm
+  | cons D L ih => ?_
   obtain ⟨d, l, rfl⟩ := List.exists_cons_of_length_eq_add_one len.symm
   simp only [List.length_cons, add_left_inj] at len
   simp only [ofDigits_cons] at h
@@ -370,9 +401,10 @@ theorem digits_lt_base {b m d : ℕ} (hb : 1 < b) (hd : d ∈ digits b m) : d < 
 /-- an n-digit number in base b + 2 is less than (b + 2)^n -/
 theorem ofDigits_lt_base_pow_length' {b : ℕ} {l : List ℕ} (hl : ∀ x ∈ l, x < b + 2) :
     ofDigits (b + 2) l < (b + 2) ^ l.length := by
-  induction' l with hd tl IH
-  · simp [ofDigits]
-  · rw [ofDigits, List.length_cons, pow_succ]
+  induction l with
+  | nil => simp [ofDigits]
+  | cons hd tl IH =>
+    rw [ofDigits, List.length_cons, pow_succ]
     have : (ofDigits (b + 2) tl + 1) * (b + 2) ≤ (b + 2) ^ tl.length * (b + 2) :=
       mul_le_mul (IH fun x hx => hl _ (List.mem_cons_of_mem _ hx)) (by rfl) (by simp only [zero_le])
         (Nat.zero_le _)
@@ -424,11 +456,13 @@ theorem sum_le_ofDigits {p : ℕ} (L : List ℕ) (h : 1 ≤ p) : L.sum ≤ ofDig
   (ofDigits_one L).symm ▸ ofDigits_monotone L h
 
 theorem digit_sum_le (p n : ℕ) : List.sum (digits p n) ≤ n := by
-  induction' n with n
-  · exact digits_zero _ ▸ Nat.le_refl (List.sum [])
-  · induction' p with p
-    · rw [digits_zero_succ, List.sum_cons, List.sum_nil, add_zero]
-    · nth_rw 2 [← ofDigits_digits p.succ (n + 1)]
+  induction n with
+  | zero => exact digits_zero _ ▸ Nat.le_refl (List.sum [])
+  | succ n =>
+    induction p with
+    | zero => rw [digits_zero_succ, List.sum_cons, List.sum_nil, add_zero]
+    | succ p =>
+      nth_rw 2 [← ofDigits_digits p.succ (n + 1)]
       rw [← ofDigits_one <| digits p.succ n.succ]
       exact ofDigits_monotone (digits p.succ n.succ) <| Nat.succ_pos p
 
@@ -436,20 +470,21 @@ theorem digit_sum_le (p n : ℕ) : List.sum (digits p n) ≤ n := by
 -/
 lemma ofDigits_div_eq_ofDigits_tail {p : ℕ} (hpos : 0 < p) (digits : List ℕ)
     (w₁ : ∀ l ∈ digits, l < p) : ofDigits p digits / p = ofDigits p digits.tail := by
-  induction' digits with hd tl
-  · simp [ofDigits]
-  · refine Eq.trans (add_mul_div_left hd _ hpos) ?_
-    rw [Nat.div_eq_of_lt <| w₁ _ List.mem_cons_self, zero_add]
-    rfl
+  induction digits with
+  | nil => simp [ofDigits]
+  | cons hd tl =>
+    refine Eq.trans (add_mul_div_left hd _ hpos) ?_
+    rw [Nat.div_eq_of_lt <| w₁ _ List.mem_cons_self, zero_add, List.tail_cons]
 
 /-- Interpreting as a base `p` number and dividing by `p^i` is the same as dropping `i`.
 -/
 lemma ofDigits_div_pow_eq_ofDigits_drop
     {p : ℕ} (i : ℕ) (hpos : 0 < p) (digits : List ℕ) (w₁ : ∀ l ∈ digits, l < p) :
     ofDigits p digits / p ^ i = ofDigits p (digits.drop i) := by
-  induction' i with i hi
-  · simp
-  · rw [Nat.pow_succ, ← Nat.div_div_eq_div_mul, hi, ofDigits_div_eq_ofDigits_tail hpos
+  induction i with
+  | zero => simp
+  | succ i hi =>
+    rw [Nat.pow_succ, ← Nat.div_div_eq_div_mul, hi, ofDigits_div_eq_ofDigits_tail hpos
       (List.drop i digits) fun x hx ↦ w₁ x <| List.mem_of_mem_drop hx, ← List.drop_one,
       List.drop_drop, add_comm]
 
@@ -548,8 +583,8 @@ lemma toDigits_length (b n e : Nat) : 0 < e → n < b ^ e → (Nat.toDigits b n)
 /-- The core implementation of `Nat.repr` returns a String with length less than or equal to the
 number of digits in the decimal number (represented by `e`). For example, the decimal string
 representation of any number less than 1000 (10 ^ 3) has a length less than or equal to 3. -/
-lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length ≤ e :=
-  toDigits_length _ _ _
+lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length ≤ e := by
+  simpa [Nat.repr] using toDigits_length _ _ _
 
 /-! ### `norm_digits` tactic -/
 
@@ -566,8 +601,7 @@ theorem digits_succ (b n m r l) (e : r + b * m = n) (hr : r < b)
   subst h; exact Nat.digits_def' b2 n0
 
 theorem digits_one (b n) (n0 : 0 < n) (nb : n < b) : Nat.digits b n = [n] ∧ 1 < b ∧ 0 < n := by
-  have b2 : 1 < b :=
-    lt_iff_add_one_le.mpr (le_trans (add_le_add_right (lt_iff_add_one_le.mp n0) 1) nb)
+  have b2 : 1 < b := by cutsat
   refine ⟨?_, b2, n0⟩
   rw [Nat.digits_def' b2 n0, Nat.mod_eq_of_lt nb, Nat.div_eq_zero_iff.2 <| .inr nb, Nat.digits_zero]
 

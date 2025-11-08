@@ -14,7 +14,7 @@ import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 This file contains some results on the ranks of subalgebras,
 which are corollaries of `rank_mul_rank`.
 Since their proof essentially depends on the fact that a non-trivial commutative ring
-satisfies strong rank condition, we put them into a separate file.
+satisfies the strong rank condition, we put them into a separate file.
 
 -/
 

@@ -140,11 +140,6 @@ namespace Subfield
 def toAddSubgroup (s : Subfield K) : AddSubgroup K :=
   { s.toSubring.toAddSubgroup with }
 
--- Porting note: toSubmonoid already exists
--- /-- The underlying submonoid of a subfield. -/
--- def toSubmonoid (s : Subfield K) : Submonoid K :=
---   { s.toSubring.toSubmonoid with }
-
 instance : SetLike (Subfield K) K where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
@@ -160,7 +155,6 @@ instance : SubfieldClass (Subfield K) K where
 theorem mem_carrier {s : Subfield K} {x : K} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
--- Porting note: in lean 3, `S` was type `Set K`
 @[simp]
 theorem mem_mk {S : Subring K} {x : K} (h) : x ∈ (⟨S, h⟩ : Subfield K) ↔ x ∈ S :=
   Iff.rfl
@@ -186,7 +180,7 @@ protected def copy (S : Subfield K) (s : Set K) (hs : s = ↑S) : Subfield K :=
     carrier := s
     inv_mem' := hs.symm ▸ S.inv_mem' }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_copy (S : Subfield K) (s : Set K) (hs : s = ↑S) : (S.copy s hs : Set K) = s :=
   rfl
 
@@ -253,10 +247,7 @@ protected theorem zsmul_mem {x : K} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
 
 protected theorem intCast_mem (n : ℤ) : (n : K) ∈ s := intCast_mem s n
 
-theorem zpow_mem {x : K} (hx : x ∈ s) (n : ℤ) : x ^ n ∈ s := by
-  cases n
-  · simpa using s.pow_mem hx _
-  · simpa [pow_succ'] using s.inv_mem (s.mul_mem hx (s.pow_mem hx _))
+protected theorem zpow_mem {x : K} (hx : x ∈ s) (n : ℤ) : x ^ n ∈ s := zpow_mem hx n
 
 instance : Ring s :=
   s.toSubring.toRing

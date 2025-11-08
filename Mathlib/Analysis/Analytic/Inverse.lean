@@ -13,7 +13,7 @@ import Mathlib.Tactic.Positivity
 
 We construct the left and right inverse of a formal multilinear series with invertible linear term,
 we prove that they coincide and study their properties (notably convergence). We deduce that the
-inverse of an analytic partial homeomorphism is analytic.
+inverse of an analytic open partial homeomorphism is analytic.
 
 ## Main statements
 
@@ -27,9 +27,9 @@ inverse of an analytic partial homeomorphism is analytic.
 * `p.radius_rightInv_pos_of_radius_pos`: if a power series has a positive radius of convergence,
   then so does its inverse.
 
-* `PartialHomeomorph.hasFPowerSeriesAt_symm` shows that, if a partial homeomorph has a power series
-  `p` at a point, with invertible linear part, then the inverse also has a power series at the
-  image point, given by `p.leftInv`.
+* `OpenPartialHomeomorph.hasFPowerSeriesAt_symm` shows that, if an open partial homeomorph has a
+  power series `p` at a point, with invertible linear part, then the inverse also has a power series
+  at the image point, given by `p.leftInv`.
 -/
 
 open scoped Topology ENNReal
@@ -81,7 +81,7 @@ series. -/
 theorem leftInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E) :
     p.removeZero.leftInv i x = p.leftInv i x := by
   ext1 n
-  induction' n using Nat.strongRec' with n IH
+  induction n using Nat.strongRec' with | _ n IH
   match n with
   | 0 => simp -- if one replaces `simp` with `refl`, the proof times out in the kernel.
   | 1 => simp -- TODO: why?
@@ -145,9 +145,9 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
       ext c
       congr
       ext k
-      simp [h, Function.comp_def]
+      simp [h]
     simp [FormalMultilinearSeries.comp, A, Finset.sum_union B,
-      applyComposition_ones, C, D, -Set.toFinset_setOf]
+      applyComposition_ones, C, D, -Set.toFinset_setOf, -Finset.union_singleton]
 
 /-! ### The right inverse of a formal multilinear series -/
 
@@ -186,7 +186,7 @@ series. -/
 theorem rightInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E) :
     p.removeZero.rightInv i x = p.rightInv i x := by
   ext1 n
-  induction' n using Nat.strongRec' with n IH
+  induction n using Nat.strongRec' with | _ n IH
   match n with
   | 0 => simp only [rightInv_coeff_zero]
   | 1 => simp only [rightInv_coeff_one]
@@ -222,7 +222,7 @@ theorem comp_rightInv_aux1 {n : ℕ} (hn : 0 < n) (p : FormalMultilinearSeries �
     apply p.congr (Composition.single_length hn) fun j hj1 _ => ?_
     simp [applyComposition_single]
   simp [FormalMultilinearSeries.comp, A, Finset.sum_union B, C, -Set.toFinset_setOf,
-    -add_right_inj, -Composition.single_length]
+    -add_right_inj, -Composition.single_length, -Finset.union_singleton]
 
 theorem comp_rightInv_aux2 (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E) (n : ℕ)
     (v : Fin (n + 2) → F) :
@@ -230,7 +230,7 @@ theorem comp_rightInv_aux2 (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
         p c.length (applyComposition (fun k : ℕ => ite (k < n + 2) (p.rightInv i x k) 0) c v) =
       ∑ c ∈ {c : Composition (n + 2) | 1 < c.length}.toFinset,
         p c.length ((p.rightInv i x).applyComposition c v) := by
-  have N : 0 < n + 2 := by norm_num
+  have N : 0 < n + 2 := by simp
   refine sum_congr rfl fun c hc => p.congr rfl fun j hj1 hj2 => ?_
   have : ∀ k, c.blocksFun k < n + 2 := by
     simp only [Set.mem_toFinset (s := {c : Composition (n + 2) | 1 < c.length}),
@@ -254,7 +254,7 @@ theorem comp_rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F
     simp only [comp_coeff_one, h, rightInv_coeff_one, ContinuousLinearEquiv.apply_symm_apply,
       id_apply_one, ContinuousLinearEquiv.coe_apply, continuousMultilinearCurryFin1_symm_apply]
   | n + 2 =>
-    have N : 0 < n + 2 := by norm_num
+    have N : 0 < n + 2 := by simp
     simp [comp_rightInv_aux1 N, h, rightInv, comp_rightInv_aux2, -Set.toFinset_setOf]
 
 theorem rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E)
@@ -270,7 +270,7 @@ theorem rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] 
     simp only [rightInv, neg_inj]
     congr (config := { closePost := false }) 1
     ext v
-    have N : 0 < n + 2 := by norm_num
+    have N : 0 < n + 2 := by simp
     have : ((p 1) fun _ : Fin 1 => 0) = 0 := ContinuousMultilinearMap.map_zero _
     simp [comp_rightInv_aux1 N, this, comp_rightInv_aux2, -Set.toFinset_setOf]
 
@@ -543,7 +543,7 @@ theorem radius_rightInv_pos_of_radius_pos
     _ ≤ ∑ k ∈ Ico 1 (n + 1), a ^ k * ‖p.rightInv i x k‖ :=
       (haveI : ∀ k ∈ Ico 1 (n + 1), 0 ≤ a ^ k * ‖p.rightInv i x k‖ := fun k _ => by positivity
       single_le_sum this (by simp [hn]))
-    _ ≤ (I + 1) * a := IRec (n + 1) (by norm_num)
+    _ ≤ (I + 1) * a := IRec (n + 1) (by simp)
 
 /-- If a a formal multilinear series has a positive radius of convergence, then its left inverse
 also has a positive radius of convergence. -/
@@ -557,7 +557,7 @@ theorem radius_leftInv_pos_of_radius_pos
 end FormalMultilinearSeries
 
 /-!
-### The inverse of an analytic partial homeomorphism is analytic
+### The inverse of an analytic open partial homeomorphism is analytic
 -/
 
 open FormalMultilinearSeries List
@@ -647,10 +647,10 @@ lemma HasFPowerSeriesAt.eventually_hasSum_of_comp {f : E → F} {g : F → G}
     exact cauchySeq_finset_of_norm_bounded Z (fun i ↦ le_rfl)
   exact tendsto_nhds_of_cauchySeq_of_subseq C tendsto_finset_range L
 
-/-- If a partial homeomorphism `f` is defined at `a` and has a power series expansion there with
-invertible linear term, then `f.symm` has a power series expansion at `f a`, given by the inverse
-of the initial power series. -/
-theorem PartialHomeomorph.hasFPowerSeriesAt_symm (f : PartialHomeomorph E F) {a : E}
+/-- If an open partial homeomorphism `f` is defined at `a` and has a power series expansion there
+with invertible linear term, then `f.symm` has a power series expansion at `f a`, given by the
+inverse of the initial power series. -/
+theorem OpenPartialHomeomorph.hasFPowerSeriesAt_symm (f : OpenPartialHomeomorph E F) {a : E}
     {i : E ≃L[𝕜] F} (h0 : a ∈ f.source) {p : FormalMultilinearSeries 𝕜 E F}
     (h : HasFPowerSeriesAt f p a) (hp : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i) :
     HasFPowerSeriesAt f.symm (p.leftInv i a) (f a) := by
@@ -670,7 +670,7 @@ theorem PartialHomeomorph.hasFPowerSeriesAt_symm (f : PartialHomeomorph E F) {a 
     simpa using this.preimage_mem_nhds B
   have D : ∀ᶠ (y : E) in 𝓝 (f.symm (f a)),
       HasSum (fun n ↦ (p.leftInv i a n) fun _ ↦ f y - f a) y := by
-    simp only [h0, PartialHomeomorph.left_inv]
+    simp only [h0, OpenPartialHomeomorph.left_inv]
     filter_upwards [C, f.open_source.mem_nhds h0] with x hx h'x
     simpa [h'x] using hx
   have E : ∀ᶠ z in 𝓝 (f a), HasSum (fun n ↦ (p.leftInv i a n) fun _ ↦ f (f.symm z) - f a)

@@ -22,7 +22,11 @@ assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Limits
 
-variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
+-- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
+
+universe v v'
+
+variable {C D : Type*} [Category.{v} C] [Category.{v'} D] [Preadditive C] [Preadditive D]
 
 namespace CochainComplex
 
@@ -53,16 +57,16 @@ open HomComplex
 
 /-- The left inclusion in the mapping cone, as a cochain of degree `-1`. -/
 noncomputable def inl : Cochain F (mappingCone φ) (-1) :=
-  Cochain.mk (fun p q hpq => homotopyCofiber.inlX φ p q (by dsimp; omega))
+  Cochain.mk (fun p q hpq => homotopyCofiber.inlX φ p q (by dsimp; cutsat))
 
 /-- The right inclusion in the mapping cone. -/
 noncomputable def inr : G ⟶ mappingCone φ := homotopyCofiber.inr φ
 
 /-- The first projection from the mapping cone, as a cocyle of degree `1`. -/
 noncomputable def fst : Cocycle (mappingCone φ) F 1 :=
-  Cocycle.mk (Cochain.mk (fun p q hpq => homotopyCofiber.fstX φ p q hpq)) 2 (by omega) (by
+  Cocycle.mk (Cochain.mk (fun p q hpq => homotopyCofiber.fstX φ p q hpq)) 2 (by cutsat) (by
     ext p _ rfl
-    simp [δ_v 1 2 (by omega) _ p (p + 2) (by omega) (p + 1) (p + 1) (by omega) rfl,
+    simp [δ_v 1 2 (by cutsat) _ p (p + 2) (by cutsat) (p + 1) (p + 1) (by cutsat) rfl,
       homotopyCofiber.d_fstX φ p (p + 1) (p + 2) rfl, mappingCone,
       show Int.negOnePow 2 = 1 by rfl])
 
@@ -95,7 +99,7 @@ lemma inr_f_snd_v (p : ℤ) :
 lemma inl_fst :
     (inl φ).comp (fst φ).1 (neg_add_cancel 1) = Cochain.ofHom (𝟙 F) := by
   ext p
-  simp [Cochain.comp_v _ _ (neg_add_cancel 1) p (p-1) p rfl (by omega)]
+  simp [Cochain.comp_v _ _ (neg_add_cancel 1) p (p-1) p rfl (by cutsat)]
 
 @[simp]
 lemma inl_snd :
@@ -111,7 +115,7 @@ lemma inr_fst :
 
 @[simp]
 lemma inr_snd :
-    (Cochain.ofHom (inr φ)).comp (snd φ) (zero_add 0) = Cochain.ofHom (𝟙 G) := by aesop_cat
+    (Cochain.ofHom (inr φ)).comp (snd φ) (zero_add 0) = Cochain.ofHom (𝟙 G) := by cat_disch
 
 /-! In order to obtain identities of cochains involving `inl`, `inr`, `fst` and `snd`,
 it is often convenient to use an `ext` lemma, and use simp lemmas like `inl_v_f_fst_v`,
@@ -123,27 +127,27 @@ it is also interesting to have `reassoc` variants of lemmas, like `inl_fst_assoc
 @[simp]
 lemma inl_fst_assoc {K : CochainComplex C ℤ} {d e : ℤ} (γ : Cochain F K d) (he : 1 + d = e) :
     (inl φ).comp ((fst φ).1.comp γ he) (by rw [← he, neg_add_cancel_left]) = γ := by
-  rw [← Cochain.comp_assoc _ _ _ (neg_add_cancel 1) (by omega) (by omega), inl_fst,
+  rw [← Cochain.comp_assoc _ _ _ (neg_add_cancel 1) (by cutsat) (by cutsat), inl_fst,
     Cochain.id_comp]
 
 @[simp]
 lemma inl_snd_assoc {K : CochainComplex C ℤ} {d e f : ℤ} (γ : Cochain G K d)
     (he : 0 + d = e) (hf : -1 + e = f) :
     (inl φ).comp ((snd φ).comp γ he) hf = 0 := by
-  obtain rfl : e = d := by omega
+  obtain rfl : e = d := by cutsat
   rw [← Cochain.comp_assoc_of_second_is_zero_cochain, inl_snd, Cochain.zero_comp]
 
 @[simp]
 lemma inr_fst_assoc {K : CochainComplex C ℤ} {d e f : ℤ} (γ : Cochain F K d)
     (he : 1 + d = e) (hf : 0 + e = f) :
     (Cochain.ofHom (inr φ)).comp ((fst φ).1.comp γ he) hf = 0 := by
-  obtain rfl : e = f := by omega
+  obtain rfl : e = f := by cutsat
   rw [← Cochain.comp_assoc_of_first_is_zero_cochain, inr_fst, Cochain.zero_comp]
 
 @[simp]
 lemma inr_snd_assoc {K : CochainComplex C ℤ} {d e : ℤ} (γ : Cochain G K d) (he : 0 + d = e) :
     (Cochain.ofHom (inr φ)).comp ((snd φ).comp γ he) (by simp only [← he, zero_add]) = γ := by
-  obtain rfl : d = e := by omega
+  obtain rfl : d = e := by cutsat
   rw [← Cochain.comp_assoc_of_first_is_zero_cochain, inr_snd, Cochain.id_comp]
 
 lemma ext_to (i j : ℤ) (hij : i + 1 = j) {A : C} {f g : A ⟶ (mappingCone φ).X i}
@@ -162,13 +166,13 @@ lemma ext_to_iff (i j : ℤ) (hij : i + 1 = j) {A : C} (f g : A ⟶ (mappingCone
     exact ext_to φ i j hij h₁ h₂
 
 lemma ext_from (i j : ℤ) (hij : j + 1 = i) {A : C} {f g : (mappingCone φ).X j ⟶ A}
-    (h₁ : (inl φ).v i j (by omega) ≫ f = (inl φ).v i j (by omega) ≫ g)
+    (h₁ : (inl φ).v i j (by cutsat) ≫ f = (inl φ).v i j (by cutsat) ≫ g)
     (h₂ : (inr φ).f j ≫ f = (inr φ).f j ≫ g) :
     f = g :=
   homotopyCofiber.ext_from_X φ i j hij h₁ h₂
 
 lemma ext_from_iff (i j : ℤ) (hij : j + 1 = i) {A : C} (f g : (mappingCone φ).X j ⟶ A) :
-    f = g ↔ (inl φ).v i j (by omega) ≫ f = (inl φ).v i j (by omega) ≫ g ∧
+    f = g ↔ (inl φ).v i j (by cutsat) ≫ f = (inl φ).v i j (by cutsat) ≫ g ∧
       (inr φ).f j ≫ f = (inr φ).f j ≫ g := by
   constructor
   · rintro rfl
@@ -177,14 +181,14 @@ lemma ext_from_iff (i j : ℤ) (hij : j + 1 = i) {A : C} (f g : (mappingCone φ)
     exact ext_from φ i j hij h₁ h₂
 
 lemma decomp_to {i : ℤ} {A : C} (f : A ⟶ (mappingCone φ).X i) (j : ℤ) (hij : i + 1 = j) :
-    ∃ (a : A ⟶ F.X j) (b : A ⟶ G.X i), f = a ≫ (inl φ).v j i (by omega) + b ≫ (inr φ).f i :=
+    ∃ (a : A ⟶ F.X j) (b : A ⟶ G.X i), f = a ≫ (inl φ).v j i (by cutsat) + b ≫ (inr φ).f i :=
   ⟨f ≫ (fst φ).1.v i j hij, f ≫ (snd φ).v i i (add_zero i),
     by apply ext_to φ i j hij <;> simp⟩
 
 lemma decomp_from {j : ℤ} {A : C} (f : (mappingCone φ).X j ⟶ A) (i : ℤ) (hij : j + 1 = i) :
     ∃ (a : F.X i ⟶ A) (b : G.X j ⟶ A),
       f = (fst φ).1.v j i hij ≫ a + (snd φ).v j j (add_zero j) ≫ b :=
-  ⟨(inl φ).v i j (by omega) ≫ f, (inr φ).f j ≫ f,
+  ⟨(inl φ).v i j (by cutsat) ≫ f, (inr φ).f j ≫ f,
     by apply ext_from φ i j hij <;> simp⟩
 
 lemma ext_cochain_to_iff (i j : ℤ) (hij : i + 1 = j)
@@ -197,7 +201,7 @@ lemma ext_cochain_to_iff (i j : ℤ) (hij : i + 1 = j)
   · rintro ⟨h₁, h₂⟩
     ext p q hpq
     rw [ext_to_iff φ q (q + 1) rfl]
-    replace h₁ := Cochain.congr_v h₁ p (q + 1) (by omega)
+    replace h₁ := Cochain.congr_v h₁ p (q + 1) (by cutsat)
     replace h₂ := Cochain.congr_v h₂ p q hpq
     simp only [Cochain.comp_v _ _ _ p q (q + 1) hpq rfl] at h₁
     simp only [Cochain.comp_zero_cochain_v] at h₂
@@ -206,7 +210,7 @@ lemma ext_cochain_to_iff (i j : ℤ) (hij : i + 1 = j)
 lemma ext_cochain_from_iff (i j : ℤ) (hij : i + 1 = j)
     {K : CochainComplex C ℤ} {γ₁ γ₂ : Cochain (mappingCone φ) K j} :
     γ₁ = γ₂ ↔
-      (inl φ).comp γ₁ (show _ = i by omega) = (inl φ).comp γ₂ (by omega) ∧
+      (inl φ).comp γ₁ (show _ = i by cutsat) = (inl φ).comp γ₂ (by cutsat) ∧
         (Cochain.ofHom (inr φ)).comp γ₁ (zero_add j) =
           (Cochain.ofHom (inr φ)).comp γ₂ (zero_add j) := by
   constructor
@@ -215,9 +219,9 @@ lemma ext_cochain_from_iff (i j : ℤ) (hij : i + 1 = j)
   · rintro ⟨h₁, h₂⟩
     ext p q hpq
     rw [ext_from_iff φ (p + 1) p rfl]
-    replace h₁ := Cochain.congr_v h₁ (p + 1) q (by omega)
-    replace h₂ := Cochain.congr_v h₂ p q (by omega)
-    simp only [Cochain.comp_v (inl φ) _ _ (p + 1) p q (by omega) hpq] at h₁
+    replace h₁ := Cochain.congr_v h₁ (p + 1) q (by cutsat)
+    replace h₂ := Cochain.congr_v h₂ p q (by cutsat)
+    simp only [Cochain.comp_v (inl φ) _ _ (p + 1) p q (by cutsat) hpq] at h₁
     simp only [Cochain.zero_cochain_comp_v, Cochain.ofHom_v] at h₂
     exact ⟨h₁, h₂⟩
 
@@ -227,10 +231,10 @@ lemma id :
   simp [ext_cochain_from_iff φ (-1) 0 (neg_add_cancel 1)]
 
 lemma id_X (p q : ℤ) (hpq : p + 1 = q) :
-    (fst φ).1.v p q hpq ≫ (inl φ).v q p (by omega) +
+    (fst φ).1.v p q hpq ≫ (inl φ).v q p (by cutsat) +
       (snd φ).v p p (add_zero p) ≫ (inr φ).f p = 𝟙 ((mappingCone φ).X p) := by
   simpa only [Cochain.add_v, Cochain.comp_zero_cochain_v, Cochain.ofHom_v, id_f,
-    Cochain.comp_v _ _ (add_neg_cancel 1) p q p hpq (by omega)]
+    Cochain.comp_v _ _ (add_neg_cancel 1) p q p hpq (by cutsat)]
     using Cochain.congr_v (id φ) p p (add_zero p)
 
 @[reassoc]
@@ -238,7 +242,7 @@ lemma inl_v_d (i j k : ℤ) (hij : i + (-1) = j) (hik : k + (-1) = i) :
     (inl φ).v i j hij ≫ (mappingCone φ).d j i =
       φ.f i ≫ (inr φ).f i - F.d i k ≫ (inl φ).v _ _ hik := by
   dsimp [mappingCone, inl, inr]
-  rw [homotopyCofiber.inlX_d φ j i k (by dsimp; omega) (by dsimp; omega)]
+  rw [homotopyCofiber.inlX_d φ j i k (by dsimp; cutsat) (by dsimp; cutsat)]
   abel
 
 @[reassoc]
@@ -255,8 +259,8 @@ lemma d_fst_v (i j k : ℤ) (hij : i + 1 = j) (hjk : j + 1 = k) :
 @[reassoc (attr := simp)]
 lemma d_fst_v' (i j : ℤ) (hij : i + 1 = j) :
     (mappingCone φ).d (i - 1) i ≫ (fst φ).1.v i j hij =
-      -(fst φ).1.v (i - 1) i (by omega) ≫ F.d i j :=
-  d_fst_v φ (i - 1) i j (by omega) hij
+      -(fst φ).1.v (i - 1) i (by cutsat) ≫ F.d i j :=
+  d_fst_v φ (i - 1) i j (by cutsat) hij
 
 @[reassoc]
 lemma d_snd_v (i j : ℤ) (hij : i + 1 = j) :
@@ -269,7 +273,7 @@ lemma d_snd_v (i j : ℤ) (hij : i + 1 = j) :
 @[reassoc (attr := simp)]
 lemma d_snd_v' (n : ℤ) :
     (mappingCone φ).d (n - 1) n ≫ (snd φ).v n n (add_zero n) =
-    (fst φ : Cochain (mappingCone φ) F 1).v (n - 1) n (by omega) ≫ φ.f n +
+    (fst φ : Cochain (mappingCone φ) F 1).v (n - 1) n (by cutsat) ≫ φ.f n +
       (snd φ).v (n - 1) (n - 1) (add_zero _) ≫ G.d (n - 1) n := by
   apply d_snd_v
 
@@ -278,7 +282,7 @@ lemma δ_inl :
     δ (-1) 0 (inl φ) = Cochain.ofHom (φ ≫ inr φ) := by
   ext p
   simp [δ_v (-1) 0 (neg_add_cancel 1) (inl φ) p p (add_zero p) _ _ rfl rfl,
-    inl_v_d φ p (p - 1) (p + 1) (by omega) (by omega)]
+    inl_v_d φ p (p - 1) (p + 1) (by cutsat) (by cutsat)]
 
 @[simp]
 lemma δ_snd :
@@ -300,7 +304,7 @@ variable (α : Cochain F K m) (β : Cochain G K n) (h : m + 1 = n)
 
 @[simp]
 lemma inl_descCochain :
-    (inl φ).comp (descCochain φ α β h) (by omega) = α := by
+    (inl φ).comp (descCochain φ α β h) (by cutsat) = α := by
   simp [descCochain]
 
 @[simp]
@@ -312,23 +316,23 @@ lemma inr_descCochain :
 lemma inl_v_descCochain_v (p₁ p₂ p₃ : ℤ) (h₁₂ : p₁ + (-1) = p₂) (h₂₃ : p₂ + n = p₃) :
     (inl φ).v p₁ p₂ h₁₂ ≫ (descCochain φ α β h).v p₂ p₃ h₂₃ =
         α.v p₁ p₃ (by rw [← h₂₃, ← h₁₂, ← h, add_comm m, add_assoc, neg_add_cancel_left]) := by
-  simpa only [Cochain.comp_v _ _ (show -1 + n = m by omega) p₁ p₂ p₃
-    (by omega) (by omega)] using
-      Cochain.congr_v (inl_descCochain φ α β h) p₁ p₃ (by omega)
+  simpa only [Cochain.comp_v _ _ (show -1 + n = m by cutsat) p₁ p₂ p₃
+    (by cutsat) (by cutsat)] using
+      Cochain.congr_v (inl_descCochain φ α β h) p₁ p₃ (by cutsat)
 
 @[reassoc (attr := simp)]
 lemma inr_f_descCochain_v (p₁ p₂ : ℤ) (h₁₂ : p₁ + n = p₂) :
     (inr φ).f p₁ ≫ (descCochain φ α β h).v p₁ p₂ h₁₂ = β.v p₁ p₂ h₁₂ := by
   simpa only [Cochain.comp_v _ _ (zero_add n) p₁ p₁ p₂ (add_zero p₁) h₁₂, Cochain.ofHom_v]
-    using Cochain.congr_v (inr_descCochain φ α β h) p₁ p₂ (by omega)
+    using Cochain.congr_v (inr_descCochain φ α β h) p₁ p₂ (by cutsat)
 
 lemma δ_descCochain (n' : ℤ) (hn' : n + 1 = n') :
     δ n n' (descCochain φ α β h) =
       (fst φ).1.comp (δ m n α +
-          n'.negOnePow • (Cochain.ofHom φ).comp β (zero_add n)) (by omega) +
+          n'.negOnePow • (Cochain.ofHom φ).comp β (zero_add n)) (by cutsat) +
       (snd φ).comp (δ n n' β) (zero_add n') := by
   dsimp only [descCochain]
-  simp only [δ_add, Cochain.comp_add, δ_comp (fst φ).1 α _ 2 n n' hn' (by omega) (by omega),
+  simp only [δ_add, Cochain.comp_add, δ_comp (fst φ).1 α _ 2 n n' hn' (by cutsat) (by cutsat),
     Cocycle.δ_eq_zero, Cochain.zero_comp, smul_zero, add_zero,
     δ_comp (snd φ) β (zero_add n) 1 n' n' hn' (zero_add 1) hn', δ_snd, Cochain.neg_comp,
     smul_neg, Cochain.comp_assoc_of_second_is_zero_cochain, Cochain.comp_units_smul, ← hn',
@@ -381,10 +385,10 @@ lemma inr_f_desc_f (p : ℤ) :
   simp [desc]
 
 @[reassoc (attr := simp)]
-lemma inr_desc : inr φ ≫ desc φ α β eq = β := by aesop_cat
+lemma inr_desc : inr φ ≫ desc φ α β eq = β := by cat_disch
 
 lemma desc_f (p q : ℤ) (hpq : p + 1 = q) :
-    (desc φ α β eq).f p = (fst φ).1.v p q hpq ≫ α.v q p (by omega) +
+    (desc φ α β eq).f p = (fst φ).1.v p q hpq ≫ α.v q p (by cutsat) +
       (snd φ).v p p (add_zero p) ≫ β.f p := by
   simp [ext_from_iff _ _ _ hpq]
 
@@ -398,7 +402,7 @@ noncomputable def descHomotopy {K : CochainComplex C ℤ} (f₁ f₂ : mappingCo
       (inl φ).comp (Cochain.ofHom f₂) (add_zero (-1)))
     (h₂ : Cochain.ofHom (inr φ ≫ f₁) = δ (-1) 0 γ₂ + Cochain.ofHom (inr φ ≫ f₂)) :
     Homotopy f₁ f₂ :=
-  (Cochain.equivHomotopy f₁ f₂).symm ⟨descCochain φ γ₁ γ₂ (by norm_num), by
+  (Cochain.equivHomotopy f₁ f₂).symm ⟨descCochain φ γ₁ γ₂ (by simp), by
     simp only [Cochain.ofHom_comp] at h₂
     simp [ext_cochain_from_iff _ _ _ (neg_add_cancel 1),
       δ_descCochain _ _ _ _ _ (neg_add_cancel 1), h₁, h₂]⟩
@@ -411,7 +415,7 @@ variable {K : CochainComplex C ℤ} {n m : ℤ}
 constructed from two cochains `α : Cochain F K m` (with `m + 1 = n`) and `β : Cochain F K n`. -/
 noncomputable def liftCochain (α : Cochain K F m) (β : Cochain K G n) (h : n + 1 = m) :
     Cochain K (mappingCone φ) n :=
-  α.comp (inl φ) (by omega) + β.comp (Cochain.ofHom (inr φ)) (add_zero n)
+  α.comp (inl φ) (by cutsat) + β.comp (Cochain.ofHom (inr φ)) (add_zero n)
 
 variable (α : Cochain K F m) (β : Cochain K G n) (h : n + 1 = m)
 
@@ -427,18 +431,18 @@ lemma liftCochain_snd :
 
 @[reassoc (attr := simp)]
 lemma liftCochain_v_fst_v (p₁ p₂ p₃ : ℤ) (h₁₂ : p₁ + n = p₂) (h₂₃ : p₂ + 1 = p₃) :
-    (liftCochain φ α β h).v p₁ p₂ h₁₂ ≫ (fst φ).1.v p₂ p₃ h₂₃ = α.v p₁ p₃ (by omega) := by
+    (liftCochain φ α β h).v p₁ p₂ h₁₂ ≫ (fst φ).1.v p₂ p₃ h₂₃ = α.v p₁ p₃ (by cutsat) := by
   simpa only [Cochain.comp_v _ _ h p₁ p₂ p₃ h₁₂ h₂₃]
-    using Cochain.congr_v (liftCochain_fst φ α β h) p₁ p₃ (by omega)
+    using Cochain.congr_v (liftCochain_fst φ α β h) p₁ p₃ (by cutsat)
 
 @[reassoc (attr := simp)]
 lemma liftCochain_v_snd_v (p₁ p₂ : ℤ) (h₁₂ : p₁ + n = p₂) :
     (liftCochain φ α β h).v p₁ p₂ h₁₂ ≫ (snd φ).v p₂ p₂ (add_zero p₂) = β.v p₁ p₂ h₁₂ := by
   simpa only [Cochain.comp_v _ _ (add_zero n) p₁ p₂ p₂ h₁₂ (add_zero p₂)]
-    using Cochain.congr_v (liftCochain_snd φ α β h) p₁ p₂ (by omega)
+    using Cochain.congr_v (liftCochain_snd φ α β h) p₁ p₂ (by cutsat)
 
 lemma δ_liftCochain (m' : ℤ) (hm' : m + 1 = m') :
-    δ n m (liftCochain φ α β h) = -(δ m m' α).comp (inl φ) (by omega) +
+    δ n m (liftCochain φ α β h) = -(δ m m' α).comp (inl φ) (by cutsat) +
       (δ n m β + α.comp (Cochain.ofHom φ) (add_zero m)).comp
         (Cochain.ofHom (inr φ)) (add_zero m) := by
   dsimp only [liftCochain]
@@ -491,7 +495,7 @@ lemma lift_fst :
 @[reassoc (attr := simp)]
 lemma lift_f_snd_v (p q : ℤ) (hpq : p + 0 = q) :
     (lift φ α β eq).f p ≫ (snd φ).v p q hpq = β.v p q hpq := by
-  obtain rfl : q = p := by omega
+  obtain rfl : q = p := by cutsat
   simp [lift]
 
 lemma lift_snd :
@@ -525,17 +529,17 @@ variable {K L : CochainComplex C ℤ} {n m : ℤ}
 @[simp]
 lemma liftCochain_descCochain :
     (liftCochain φ α β h).comp (descCochain φ α' β' h') hp =
-      α.comp α' (by omega) + β.comp β' (by omega) := by
+      α.comp α' (by cutsat) + β.comp β' (by cutsat) := by
   simp [liftCochain, descCochain,
-    Cochain.comp_assoc α (inl φ) _ _ (show -1 + n' = m' by omega) (by linarith)]
+    Cochain.comp_assoc α (inl φ) _ _ (show -1 + n' = m' by cutsat) (by linarith)]
 
 lemma liftCochain_v_descCochain_v (p₁ p₂ p₃ : ℤ) (h₁₂ : p₁ + n = p₂) (h₂₃ : p₂ + n' = p₃)
     (q : ℤ) (hq : p₁ + m = q) :
     (liftCochain φ α β h).v p₁ p₂ h₁₂ ≫ (descCochain φ α' β' h').v p₂ p₃ h₂₃ =
-      α.v p₁ q hq ≫ α'.v q p₃ (by omega) + β.v p₁ p₂ h₁₂ ≫ β'.v p₂ p₃ h₂₃ := by
-  have eq := Cochain.congr_v (liftCochain_descCochain φ α β α' β' h h' p hp) p₁ p₃ (by omega)
+      α.v p₁ q hq ≫ α'.v q p₃ (by cutsat) + β.v p₁ p₂ h₁₂ ≫ β'.v p₂ p₃ h₂₃ := by
+  have eq := Cochain.congr_v (liftCochain_descCochain φ α β α' β' h h' p hp) p₁ p₃ (by cutsat)
   simpa only [Cochain.comp_v _ _ hp p₁ p₂ p₃ h₁₂ h₂₃, Cochain.add_v,
-    Cochain.comp_v _ _ _ _ _ _ hq (show q + m' = p₃ by omega)] using eq
+    Cochain.comp_v _ _ _ _ _ _ hq (show q + m' = p₃ by cutsat)] using eq
 
 end
 
@@ -610,16 +614,16 @@ noncomputable def mapHomologicalComplexIso :
       mappingCone ((H.mapHomologicalComplex _).map φ) :=
   HomologicalComplex.Hom.isoOfComponents (mapHomologicalComplexXIso φ H) (by
     rintro n _ rfl
-    rw [ext_to_iff _ _ (n + 2) (by omega), assoc, assoc, d_fst_v _ _ _ _ rfl,
+    rw [ext_to_iff _ _ (n + 2) (by cutsat), assoc, assoc, d_fst_v _ _ _ _ rfl,
       assoc, assoc, d_snd_v _ _ _ rfl]
     simp only [mapHomologicalComplexXIso_eq φ H n (n + 1) rfl,
-      mapHomologicalComplexXIso_eq φ H (n + 1) (n + 2) (by omega),
+      mapHomologicalComplexXIso_eq φ H (n + 1) (n + 2) (by cutsat),
       mapHomologicalComplexXIso'_hom, mapHomologicalComplexXIso'_hom]
     constructor
     · dsimp
       simp only [Functor.mapHomologicalComplex_obj_X, comp_neg, add_comp, assoc, inl_v_fst_v_assoc,
         inr_f_fst_v_assoc, zero_comp, comp_zero, add_zero, inl_v_fst_v, comp_id, inr_f_fst_v,
-        ← H.map_comp, d_fst_v φ n (n + 1) (n + 2) rfl (by omega), Functor.map_neg]
+        ← H.map_comp, d_fst_v φ n (n + 1) (n + 2) rfl (by cutsat), Functor.map_neg]
     · dsimp
       simp only [comp_add, add_comp, assoc, inl_v_fst_v_assoc, inr_f_fst_v_assoc,
         Functor.mapHomologicalComplex_obj_X, zero_comp, comp_zero, add_zero, inl_v_snd_v_assoc,

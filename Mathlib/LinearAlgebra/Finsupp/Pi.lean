@@ -10,6 +10,10 @@ import Mathlib.LinearAlgebra.Pi
 # Properties of the module `α →₀ M`
 
 * `Finsupp.linearEquivFunOnFinite`: `α →₀ β` and `a → β` are equivalent if `α` is finite
+* `FunOnFinite.map`: the map `(X → M) → (Y → M)` induced by a map `f : X ⟶ Y` when
+`X` and `Y` are finite.
+* `FunOnFinite.linearMmap`: the linear map `(X → M) →ₗ[R] (Y → M)` induced
+by a map `f : X ⟶ Y` when `X` and `Y` are finite.
 
 ## Tags
 
@@ -145,3 +149,78 @@ theorem range_mapRange_linearMap (f : M →ₗ[R] N) (hf : LinearMap.ker f = ⊥
     <;> simp_all (config := {contextual := true}) [← hy, map_zero, LinearMap.ker_eq_bot'.1 hf]
 
 end Finsupp
+
+namespace FunOnFinite
+
+section
+
+variable {M : Type*} [AddCommMonoid M] {X Y Z : Type*}
+
+/-- The map `(X → M) → (Y → M)` induced by a map `X → Y` between finite types. -/
+noncomputable def map [Finite X] [Finite Y] (f : X → Y) (s : X → M) : Y → M :=
+  Finsupp.equivFunOnFinite (Finsupp.mapDomain f (Finsupp.equivFunOnFinite.symm s))
+
+lemma map_apply_apply [Fintype X] [Finite Y] [DecidableEq Y] (f : X → Y) (s : X → M) (y : Y) :
+    map f s y = ∑ x with f x = y, s x := by
+  obtain ⟨s, rfl⟩ := Finsupp.equivFunOnFinite.surjective s
+  dsimp [map]
+  simp only [Equiv.symm_apply_apply]
+  nth_rw 1 [← Finsupp.univ_sum_single s]
+  rw [Finsupp.mapDomain_finset_sum]
+  simp [Finset.sum_filter]
+  congr
+  aesop
+
+@[simp]
+lemma map_piSingle [Finite X] [Finite Y] [DecidableEq X] [DecidableEq Y]
+    (f : X → Y) (x : X) (m : M) :
+    map f (Pi.single x m) = Pi.single (f x) m := by
+  simp [map]
+
+variable (M) in
+lemma map_id [Finite X] : map (_root_.id : X → X) (M := M) = _root_.id := by
+  ext s
+  simp [map]
+
+lemma map_comp [Finite X] [Finite Y] [Finite Z] (g : Y → Z) (f : X → Y) :
+    map (g.comp f) (M := M) = (map g).comp (map f) := by
+  ext s
+  simp [map, Finsupp.mapDomain_comp]
+
+end
+
+section
+
+variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] {X Y Z : Type*}
+
+/-- The linear map `(X → M) →ₗ[R] (Y → M)` induced by a map `X → Y` between finite types. -/
+noncomputable def linearMap [Finite X] [Finite Y] (f : X → Y) :
+    (X → M) →ₗ[R] (Y → M) :=
+  (((Finsupp.linearEquivFunOnFinite R M Y)).comp (Finsupp.lmapDomain M R f)).comp
+    (Finsupp.linearEquivFunOnFinite R M X).symm.toLinearMap
+
+lemma linearMap_apply_apply
+    [Fintype X] [Finite Y] [DecidableEq Y] (f : X → Y) (s : X → M) (y : Y) :
+    linearMap R M f s y = (Finset.univ.filter (fun (x : X) ↦ f x = y)).sum s := by
+  apply map_apply_apply
+
+@[simp]
+lemma linearMap_piSingle [Finite X] [Finite Y] [DecidableEq X] [DecidableEq Y]
+    (f : X → Y) (x : X) (m : M) :
+    linearMap R M f (Pi.single x m) = Pi.single (f x) m := by
+  apply map_piSingle
+
+variable (X) in
+@[simp]
+lemma linearMap_id [Finite X] : linearMap R M (_root_.id : X → X) = .id := by
+  classical
+  aesop
+
+lemma linearMap_comp [Finite X] [Finite Y] [Finite Z] (f : X → Y) (g : Y → Z) :
+    linearMap R M (g.comp f) = (linearMap R M g).comp (linearMap R M f) := by
+  classical
+  aesop
+
+end
+
+end FunOnFinite

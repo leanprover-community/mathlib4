@@ -43,6 +43,22 @@ to register the ring structure on `ZMod n` as type class instance.
 
 open Nat.ModEq Int
 
+open scoped Fin.IntCast Fin.NatCast
+
+@[simp] theorem val_intCast {n : Nat} [NeZero n] (x : Int) :
+    (x : Fin n).val = (x % n).toNat := by
+  rw [Fin.intCast_def']
+  split <;> rename_i h
+  · simp [Int.emod_natAbs_of_nonneg h]
+  · simp only [Fin.val_neg, Fin.natCast_eq_zero, Fin.val_natCast]
+    split <;> rename_i h
+    · rw [← Int.natCast_dvd] at h
+      rw [Int.emod_eq_zero_of_dvd h, Int.toNat_zero]
+    · rw [Int.emod_natAbs_of_neg (by cutsat) (NeZero.ne n),
+        if_neg (by rwa [← Int.natCast_dvd] at h)]
+      have : x % n < n := Int.emod_lt_of_pos x (by have := NeZero.ne n; cutsat)
+      cutsat
+
 /-- Multiplicative commutative semigroup structure on `Fin n`. -/
 instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) :=
   { inferInstanceAs (Mul (Fin n)) with
@@ -73,12 +89,12 @@ instance instNonUnitalCommRing (n : ℕ) [NeZero n] : NonUnitalCommRing (Fin n) 
   __ := Fin.addCommGroup n
   __ := Fin.instCommSemigroup n
   __ := Fin.instDistrib n
-  zero_mul := Fin.zero_mul'
-  mul_zero := Fin.mul_zero'
+  zero_mul := Fin.zero_mul
+  mul_zero := Fin.mul_zero
 
 instance instCommMonoid (n : ℕ) [NeZero n] : CommMonoid (Fin n) where
-  one_mul := Fin.one_mul'
-  mul_one := Fin.mul_one'
+  one_mul := Fin.one_mul
+  mul_one := Fin.mul_one
 
 /-- Note this is more general than `Fin.instCommRing` as it applies (vacuously) to `Fin 0` too. -/
 instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) where
@@ -93,7 +109,7 @@ This is not a global instance, but can introduced locally using `open Fin.CommRi
 
 This is not an instance because the `binop%` elaborator assumes that
 there are no non-trivial coercion loops,
-but this instance  would introduce a coercion from `Nat` to `Fin n` and back.
+but this instance would introduce a coercion from `Nat` to `Fin n` and back.
 Non-trivial loops lead to undesirable and counterintuitive elaboration behavior.
 
 For example, for `x : Fin k` and `n : Nat`,

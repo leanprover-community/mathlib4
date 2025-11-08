@@ -13,7 +13,6 @@ import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.Perm.Support
-import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Logic.Equiv.Fintype
 import Mathlib.Tactic.NormNum.Ineq
 import Mathlib.Data.Finset.Sigma
@@ -79,11 +78,11 @@ def swapFactorsAux :
         fun {_} hg => ((List.mem_cons).1 hg).elim (fun h => ⟨x, f x, hfx, h⟩) (m.2.2 _)⟩
 
 /-- `swapFactors` represents a permutation as a product of a list of transpositions.
-The representation is non unique and depends on the linear order structure.
+The representation is nonunique and depends on the linear order structure.
 For types without linear order `truncSwapFactors` can be used. -/
 def swapFactors [Fintype α] [LinearOrder α] (f : Perm α) :
     { l : List (Perm α) // l.prod = f ∧ ∀ g ∈ l, IsSwap g } :=
-  swapFactorsAux ((@univ α _).sort (· ≤ ·)) f fun {_ _} => (mem_sort _).2 (mem_univ _)
+  swapFactorsAux ((@univ α _).sort) f fun {_ _} => (mem_sort _).2 (mem_univ _)
 
 /-- This computably represents the fact that any permutation can be represented as the product of
   a list of transpositions. -/

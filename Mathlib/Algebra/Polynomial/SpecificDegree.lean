@@ -61,7 +61,7 @@ lemma irreducible_of_degree_le_three_of_not_isRoot
     apply Multiset.eq_zero_of_forall_notMem
     simp_all
   · apply Polynomial.irreducible_of_degree_eq_one
-    rw [← Nat.cast_one, Polynomial.degree_eq_iff_natDegree_eq_of_pos (by norm_num)]
+    rw [← Nat.cast_one, Polynomial.degree_eq_iff_natDegree_eq_of_pos (by simp)]
     exact le_antisymm (by rwa [not_le, Nat.lt_succ_iff] at hdeg2) hdeg.1
 
 end Field

@@ -52,7 +52,7 @@ structure Presieve.CoverByImageStructure (G : C ⥤ D) {V U : D} (f : V ⟶ U) w
   obj : C
   lift : V ⟶ G.obj obj
   map : G.obj obj ⟶ U
-  fac : lift ≫ map = f := by aesop_cat
+  fac : lift ≫ map = f := by cat_disch
 attribute [nolint docBlame] Presieve.CoverByImageStructure.obj Presieve.CoverByImageStructure.lift
   Presieve.CoverByImageStructure.map Presieve.CoverByImageStructure.fac
 
@@ -109,7 +109,7 @@ namespace IsCoverDense
 variable {K}
 variable {A : Type*} [Category A] (G : C ⥤ D)
 
--- this is not marked with `@[ext]` because `H` can not be inferred from the type
+-- this is not marked with `@[ext]` because `H` cannot be inferred from the type
 theorem ext [G.IsCoverDense K] (ℱ : Sheaf K (Type _)) (X : D) {s t : ℱ.val.obj (op X)}
     (h : ∀ ⦃Y : C⦄ (f : G.obj Y ⟶ X), ℱ.val.map f.op s = ℱ.val.map f.op t) : s = t := by
   apply ((isSheaf_iff_isSheaf_of_type _ _ ).1 ℱ.cond
@@ -389,7 +389,7 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
   · exact (pushforwardFamily_compatible _ _)
   intro Y f hf
   conv_lhs => rw [← hf.some.fac]
-  simp only [pushforwardFamily, Functor.comp_map, yoneda_map_app, coyoneda_obj_map, op_comp,
+  simp only [pushforwardFamily, Functor.comp_map, yoneda_map_app, flip_obj_map, op_comp,
     FunctorToTypes.map_comp_apply, homOver_app]
   congr 1
   simp only [Category.assoc]

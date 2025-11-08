@@ -44,9 +44,6 @@ lemma subtype_injective :
 theorem coe_subtype : (subtype s : s → A) = ((↑) : s → A) :=
   rfl
 
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
-
 end NonUnitalSubalgebraClass
 
 end NonUnitalSubalgebraClass
@@ -153,12 +150,9 @@ Useful to fix definitional equalities. -/
 protected def copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
     NonUnitalSubalgebra R A :=
   { S.toNonUnitalSubsemiring.copy s hs with
-    smul_mem' := fun r a (ha : a ∈ s) => by
-      change r • a ∈ s
-      rw [hs] at ha ⊢
-      exact S.smul_mem' r ha }
+    smul_mem' r a := by simpa [hs] using S.smul_mem r }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
     (S.copy s hs : Set A) = s :=
   rfl
@@ -351,7 +345,7 @@ def map (f : F) (S : NonUnitalSubalgebra R A) : NonUnitalSubalgebra R B :=
 
 theorem map_mono {S₁ S₂ : NonUnitalSubalgebra R A} {f : F} :
     S₁ ≤ S₂ → (map f S₁ : NonUnitalSubalgebra R B) ≤ map f S₂ :=
-  Set.image_subset f
+  Set.image_mono
 
 theorem map_injective {f : F} (hf : Function.Injective f) :
     Function.Injective (map f : NonUnitalSubalgebra R A → NonUnitalSubalgebra R B) :=
@@ -705,7 +699,7 @@ lemma _root_.NonUnitalAlgHom.map_adjoin_singleton [IsScalarTower R B B] [SMulCom
 
 variable {R A}
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_top : (↑(⊤ : NonUnitalSubalgebra R A) : Set A) = Set.univ :=
   rfl
 
@@ -829,7 +823,7 @@ theorem toSubmodule_bot : (⊥ : NonUnitalSubalgebra R A).toSubmodule = ⊥ := b
   ext
   simp only [mem_bot, NonUnitalSubalgebra.mem_toSubmodule, Submodule.mem_bot]
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_bot : ((⊥ : NonUnitalSubalgebra R A) : Set A) = {0} := by
   simp [Set.ext_iff, NonUnitalAlgebra.mem_bot]
 
@@ -864,8 +858,6 @@ theorem range_eq_top [IsScalarTower R B B] [SMulCommClass R B B] (f : A →ₙ�
     NonUnitalAlgHom.range f = (⊤ : NonUnitalSubalgebra R B) ↔ Function.Surjective f :=
   NonUnitalAlgebra.eq_top_iff
 
-@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := range_eq_top
-
 end NonUnitalAlgebra
 
 namespace NonUnitalSubalgebra
@@ -898,7 +890,7 @@ def prod : NonUnitalSubalgebra R (A × B) :=
     carrier := S ×ˢ S₁
     smul_mem' := fun r _x hx => ⟨SMulMemClass.smul_mem r hx.1, SMulMemClass.smul_mem r hx.2⟩ }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_prod : (prod S S₁ : Set (A × B)) = (S : Set A) ×ˢ S₁ :=
   rfl
 
@@ -976,7 +968,7 @@ theorem coe_inclusion {S T : NonUnitalSubalgebra R A} (h : S ≤ T) (s : S) :
 
 section SuprLift
 
-variable {ι : Type*}
+variable {ι : Sort*}
 
 theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
     (dir : Directed (· ≤ ·) S) : ↑(iSup S) = ⋃ i, (S i : Set A) :=
@@ -1077,6 +1069,7 @@ They form a non-unital subalgebra. -/
 def center : NonUnitalSubalgebra R A :=
   { NonUnitalSubsemiring.center A with smul_mem' := Set.smul_mem_center }
 
+@[norm_cast]
 theorem coe_center : (center R A : Set A) = Set.center A :=
   rfl
 

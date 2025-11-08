@@ -32,7 +32,7 @@ class NaiveSuccOrder (α : Type*) [Preorder α] where
 can't apply to an `OrderTop` because plugging in `a = b = ⊤` into either of `succ_le_iff` and
 `lt_succ_iff` yields `⊤ < ⊤` (or more generally `m < m` for a maximal element `m`).
 The solution taken here is to remove the implications `≤ → <` and instead require that `a < succ a`
-for all non maximal elements (enforced by the combination of `le_succ` and the contrapositive of
+for all non-maximal elements (enforced by the combination of `le_succ` and the contrapositive of
 `max_of_succ_le`).
 The stricter condition of every element having a sensible successor can be obtained through the
 combination of `SuccOrder α` and `NoMaxOrder α`.
@@ -1007,8 +1007,8 @@ element to an order:
 * Adding a `⊤` to a `NoMaxOrder`: Preserves `succ`. Never preserves `pred`.
 * Adding a `⊥` to an `OrderBot`: Preserves `succ` and `pred`.
 * Adding a `⊥` to a `NoMinOrder`: Preserves `pred`. Never preserves `succ`.
-where "preserves `(succ/pred)`" means
-`(Succ/Pred)Order α → (Succ/Pred)Order ((WithTop/WithBot) α)`.
+  where "preserves `(succ/pred)`" means
+  `(Succ/Pred)Order α → (Succ/Pred)Order ((WithTop/WithBot) α)`.
 -/
 
 namespace WithTop
@@ -1237,7 +1237,7 @@ section OrderIso
 
 variable {X Y : Type*} [Preorder X] [Preorder Y]
 
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 /-- `SuccOrder` transfers across equivalences between orders. -/
 protected abbrev SuccOrder.ofOrderIso [SuccOrder X] (f : X ≃o Y) : SuccOrder Y where
   succ y := f (succ (f.symm y))
@@ -1248,7 +1248,7 @@ protected abbrev SuccOrder.ofOrderIso [SuccOrder X] (f : X ≃o Y) : SuccOrder Y
     simp [f.le_symm_apply, h]
   succ_le_of_lt h := by rw [← le_map_inv_iff]; exact succ_le_of_lt (by simp [h])
 
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 /-- `PredOrder` transfers across equivalences between orders. -/
 protected abbrev PredOrder.ofOrderIso [PredOrder X] (f : X ≃o Y) :
     PredOrder Y where

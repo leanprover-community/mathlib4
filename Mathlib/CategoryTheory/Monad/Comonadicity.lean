@@ -22,7 +22,7 @@ comonadicity theorem:
 * `F` creates `F`-split coequalizers, see
   `CategoryTheory.Monad.comonadicOfCreatesFSplitEqualizers`
   (The converse of this is also shown, see
-   `CategoryTheory.Monad.createsFSplitEqualizersOfComonadic`)
+  `CategoryTheory.Monad.createsFSplitEqualizersOfComonadic`)
 * `C` has and `F` preserves `F`-split equalizers, and `F` reflects isomorphisms, see
   `CategoryTheory.Monad.comonadicOfHasPreservesFSplitEqualizersOfReflectsIsomorphisms`
 * `C` has and `F` preserves coreflexive equalizers, and `F` reflects isomorphisms, see
@@ -286,7 +286,7 @@ def comonadicOfHasPreservesReflectsFSplitEqualizers [HasEqualizerOfIsCosplitPair
       intro Y
       rw [comparisonAdjunction_unit_app]
       change IsIso (IsLimit.conePointUniqueUpToIso _ ?_).inv
-      infer_instance
+      · infer_instance
       apply @unitEqualizerOfCoreflectsEqualizer _ _ _ _ _ _ _ _ ?_
       letI _ :
         F.IsCosplitPair (G.map (F.map (adj.unit.app Y)))
@@ -375,7 +375,7 @@ def comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms :
       intro Y
       rw [comparisonAdjunction_unit_app]
       change IsIso (IsLimit.conePointUniqueUpToIso _ ?_).inv
-      infer_instance
+      · infer_instance
       have : IsCoreflexivePair (G.map (F.map (adj.unit.app Y)))
           (adj.unit.app (G.obj (F.obj Y))) := by
         apply IsCoreflexivePair.mk' (G.map (adj.counit.app _)) _ _

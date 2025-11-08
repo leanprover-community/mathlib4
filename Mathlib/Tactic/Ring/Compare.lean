@@ -121,9 +121,9 @@ def evalLE {v : Level} {α : Q(Type v)}
     MetaM (Except ExceptType Q($a ≤ $b)) := do
   let lα : Q(LE $α) := q(le_of_po $α)
   assumeInstancesCommute
-  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(amwo_of_cs $α) (mkRawNatLit 0)
+  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(amwo_of_cs $α) q(nat_lit 0)
   let rz : NormNum.Result q((0:$α)) :=
-    NormNum.Result.isNat q(amwo_of_cs $α) (mkRawNatLit 0) (q(NormNum.isNat_ofNat $α $pz):)
+    NormNum.Result.isNat q(amwo_of_cs $α) q(nat_lit 0) (q(NormNum.isNat_ofNat $α $pz):)
   match va, vb with
   /- `0 ≤ 0` -/
   | .zero, .zero => pure <| .ok (q(le_refl (0:$α)):)
@@ -159,9 +159,9 @@ def evalLT {v : Level} {α : Q(Type v)}
     MetaM (Except ExceptType Q($a < $b)) := do
   let lα : Q(LT $α) := q(lt_of_po $α)
   assumeInstancesCommute
-  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(amwo_of_cs $α) (mkRawNatLit 0)
+  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(amwo_of_cs $α) q(nat_lit 0)
   let rz : NormNum.Result q((0:$α)) :=
-    NormNum.Result.isNat q(amwo_of_cs $α) (mkRawNatLit 0) (q(NormNum.isNat_ofNat $α $pz):)
+    NormNum.Result.isNat q(amwo_of_cs $α) q(nat_lit 0) (q(NormNum.isNat_ofNat $α $pz):)
   match va, vb with
   /- `0 < 0` -/
   | .zero, .zero => return .error tooSmall

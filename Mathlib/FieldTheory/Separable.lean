@@ -405,8 +405,7 @@ theorem unique_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : 0 
   wlog hn : n₁ ≤ n₂
   · intro g₁ hg₁ Hg₁ g₂ hg₂ Hg₂
     simpa only [eq_comm] using this p hf hp n₂ n₁ (le_of_not_ge hn) g₂ hg₂ Hg₂ g₁ hg₁ Hg₁
-  have hf0 : f ≠ 0 := hf.ne_zero
-  intros g₁ hg₁ hgf₁ g₂ hg₂ hgf₂
+  intro g₁ hg₁ hgf₁ g₂ hg₂ hgf₂
   rw [le_iff_exists_add] at hn
   rcases hn with ⟨k, rfl⟩
   rw [← hgf₁, pow_add, expand_mul, expand_inj (pow_pos hp n₁)] at hgf₂

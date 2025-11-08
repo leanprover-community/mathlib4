@@ -34,6 +34,16 @@ instance Pi.canLift (ι : Sort*) (α β : ι → Sort*) (coe : ∀ i, β i → �
   prf f hf := ⟨fun i => Classical.choose (CanLift.prf (f i) (hf i)),
     funext fun i => Classical.choose_spec (CanLift.prf (f i) (hf i))⟩
 
+/-- Enable automatic handling of product types in `CanLift`. -/
+instance Prod.instCanLift {α β γ δ : Type*} {coeβα condβα coeδγ condδγ} [CanLift α β coeβα condβα]
+    [CanLift γ δ coeδγ condδγ] :
+    CanLift (α × γ) (β × δ) (Prod.map coeβα coeδγ) (fun x ↦ condβα x.1 ∧ condδγ x.2) where
+  prf := by
+    rintro ⟨x, y⟩ ⟨hx, hy⟩
+    rcases CanLift.prf (β := β) x hx with ⟨x, rfl⟩
+    rcases CanLift.prf (β := δ) y hy with ⟨y, rfl⟩
+    exact ⟨(x, y), by simp⟩
+
 theorem Subtype.exists_pi_extension {ι : Sort*} {α : ι → Sort*} [ne : ∀ i, Nonempty (α i)]
     {p : ι → Prop} (f : ∀ i : Subtype p, α i) :
     ∃ g : ∀ i : ι, α i, (fun i : Subtype p => g i) = f := by
@@ -62,7 +72,8 @@ open Lean Parser Elab Tactic Meta
 * Usage: `'lift' expr 'to' expr ('using' expr)? ('with' id (id id?)?)?`.
 * If `n : ℤ` and `hn : n ≥ 0` then the tactic `lift n to ℕ using hn` creates a new
   constant of type `ℕ`, also named `n` and replaces all occurrences of the old variable `(n : ℤ)`
-  with `↑n` (where `n` in the new variable). It will remove `n` and `hn` from the context.
+  with `↑n` (where `n` in the new variable). It will clear `n` from the context and
+  try to clear `hn` from the context.
   + So for example the tactic `lift n to ℕ using hn` transforms the goal
     `n : ℤ, hn : n ≥ 0, h : P n ⊢ n = 3` to `n : ℕ, h : P ↑n ⊢ ↑n = 3`
     (here `P` is some term of type `ℤ → Prop`).
@@ -155,7 +166,6 @@ def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
   -- Clear the "using" hypothesis if it's a variable in the context
   if prf.isFVar && !keepUsing then
     let some hUsingStx := hUsing | throwError "lift tactic failed: unreachable code was reached"
-    evalTactic (← `(tactic| clear $hUsingStx))
     evalTactic (← `(tactic| try clear $hUsingStx))
   if hUsing.isNone then withMainContext <| setGoals (prf.mvarId! :: (← getGoals))
 

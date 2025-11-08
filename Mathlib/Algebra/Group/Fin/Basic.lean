@@ -16,7 +16,7 @@ This file contains the additive and multiplicative monoid instances on `Fin n`.
 See note [foundational algebra order theory].
 -/
 
-assert_not_exists OrderedCommMonoid MonoidWithZero
+assert_not_exists IsOrderedMonoid MonoidWithZero
 
 open Nat
 
@@ -29,10 +29,6 @@ instance addCommSemigroup (n : ℕ) : AddCommSemigroup (Fin n) where
   add_assoc := by simp [add_def, Nat.add_assoc]
   add_comm := by simp [add_def, Nat.add_comm]
 
-instance (n) : AddCommSemigroup (Fin n) where
-  add_assoc := by simp [add_def, Nat.add_assoc]
-  add_comm := by simp [add_def, add_comm]
-
 instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
   zero_add := Fin.zero_add
   add_zero := Fin.add_zero
@@ -44,7 +40,7 @@ This is not a global instance, but can introduced locally using `open Fin.NatCas
 
 This is not an instance because the `binop%` elaborator assumes that
 there are no non-trivial coercion loops,
-but this instance  would introduce a coercion from `Nat` to `Fin n` and back.
+but this instance would introduce a coercion from `Nat` to `Fin n` and back.
 Non-trivial loops lead to undesirable and counterintuitive elaboration behavior.
 
 For example, for `x : Fin k` and `n : Nat`,
@@ -93,6 +89,12 @@ instance instAddRightCancelSemigroup (n : ℕ) : AddRightCancelSemigroup (Fin n)
   { Fin.addCommSemigroup n, Fin.instIsCancelAdd n with }
 
 /-! ### Miscellaneous lemmas -/
+
+open scoped Fin.NatCast Fin.IntCast in
+/-- Variant of `Fin.intCast_def` with `Nat.cast` on the RHS. -/
+theorem intCast_def' {n : Nat} [NeZero n] (x : Int) :
+    (x : Fin n) = if 0 ≤ x then ↑x.natAbs else -↑x.natAbs :=
+  Fin.intCast_def _
 
 lemma coe_sub_one (a : Fin (n + 1)) : ↑(a - 1) = if a = 0 then n else a - 1 := by
   cases n
@@ -160,6 +162,10 @@ lemma rev_add (a b : Fin n) : rev (a + b) = rev a - b := by
 
 lemma rev_sub (a b : Fin n) : rev (a - b) = rev a + b := by
   rw [rev_eq_iff, rev_add, rev_rev]
+
+lemma lt_add_one_of_succ_lt {n : ℕ} [NeZero n] {a : Fin n} (ha : a + 1 < n) : a < a + 1 := by
+  rw [lt_def, val_add, coe_ofNat_eq_mod, Nat.add_mod_mod, Nat.mod_eq_of_lt ha]
+  cutsat
 
 lemma add_lt_left_iff {n : ℕ} {a b : Fin n} : a + b < a ↔ rev b < a := by
   rw [← rev_lt_rev, Iff.comm, ← rev_lt_rev, rev_add, lt_sub_iff, rev_rev]

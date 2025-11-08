@@ -44,12 +44,12 @@ if it is full, faithful and essentially surjective.
 
 * `Equivalence.mk`: upgrade an equivalence to a (half-)adjoint equivalence
 * `isEquivalence_iff_of_iso`: when `F` and `G` are isomorphic functors,
-`F` is an equivalence iff `G` is.
+  `F` is an equivalence iff `G` is.
 * `Functor.asEquivalenceFunctor`: construction of an equivalence of categories from
   a functor `F` which satisfies the property `F.IsEquivalence` (i.e. `F` is full, faithful
   and essentially surjective).
 
-## Notations
+## Notation
 
 We write `C ≌ D` (`\backcong`, not to be confused with `≅`/`\cong`) for a bundled equivalence.
 
@@ -93,7 +93,7 @@ structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Categ
   transformations to avoid abusing defeq or inserting natural transformations like `F ⟶ F𝟭`. -/
   functor_unitIso_comp :
     ∀ X : C, functor.map (unitIso.hom.app X) ≫ counitIso.hom.app (functor.obj X) =
-      𝟙 (functor.obj X) := by aesop_cat
+      𝟙 (functor.obj X) := by cat_disch
 
 @[inherit_doc Equivalence]
 infixr:10 " ≌ " => Equivalence
@@ -323,7 +323,7 @@ def adjointifyη : 𝟭 C ≅ F ⋙ G := by
 @[reassoc]
 theorem adjointify_η_ε (X : C) :
     F.map ((adjointifyη η ε).hom.app X) ≫ ε.hom.app (F.obj X) = 𝟙 (F.obj X) := by
-  dsimp [adjointifyη,Trans.trans]
+  dsimp [adjointifyη, Trans.trans]
   simp only [comp_id, assoc, map_comp]
   have := ε.hom.naturality (F.map (η.inv.app X)); dsimp at this; rw [this]; clear this
   rw [← assoc _ _ (F.map _)]
@@ -567,11 +567,11 @@ def changeFunctor (e : C ≌ D) {G : C ⥤ D} (iso : e.functor ≅ G) : C ≌ D 
   counitIso := isoWhiskerLeft _ iso.symm ≪≫ e.counitIso
 
 /-- Compatibility of `changeFunctor` with identity isomorphisms of functors -/
-theorem changeFunctor_refl (e : C ≌ D) : e.changeFunctor (Iso.refl _) = e := by aesop_cat
+theorem changeFunctor_refl (e : C ≌ D) : e.changeFunctor (Iso.refl _) = e := by cat_disch
 
 /-- Compatibility of `changeFunctor` with the composition of isomorphisms of functors -/
 theorem changeFunctor_trans (e : C ≌ D) {G G' : C ⥤ D} (iso₁ : e.functor ≅ G) (iso₂ : G ≅ G') :
-    (e.changeFunctor iso₁).changeFunctor iso₂ = e.changeFunctor (iso₁ ≪≫ iso₂) := by aesop_cat
+    (e.changeFunctor iso₁).changeFunctor iso₂ = e.changeFunctor (iso₁ ≪≫ iso₂) := by cat_disch
 
 /-- If `e : C ≌ D` is an equivalence of categories, and `iso : e.functor ≅ G` is
 an isomorphism, then there is an equivalence of categories whose inverse is `G`. -/
@@ -707,9 +707,6 @@ def ObjectProperty.fullSubcategoryCongr {P P' : ObjectProperty C} (h : P = P') :
   inverse := ObjectProperty.ιOfLE h.symm.le
   unitIso := Iso.refl _
   counitIso := Iso.refl _
-
-@[deprecated (since := "2025-03-04")]
-alias Equivalence.ofFullSubcategory := ObjectProperty.fullSubcategoryCongr
 
 namespace Iso
 

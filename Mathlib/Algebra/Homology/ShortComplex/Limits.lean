@@ -64,7 +64,7 @@ variable [HasLimit (F ⋙ π₁)] [HasLimit (F ⋙ π₂)] [HasLimit (F ⋙ π�
 of the three components `J ⥤ C`. -/
 noncomputable def limitCone : Cone F :=
   Cone.mk (ShortComplex.mk (limMap (whiskerLeft F π₁Toπ₂)) (limMap (whiskerLeft F π₂Toπ₃))
-      (by aesop_cat))
+      (by cat_disch))
     { app := fun j => Hom.mk (limit.π _ _) (limit.π _ _) (limit.π _ _)
         (by simp) (by simp)
       naturality := fun _ _ f => by
@@ -72,15 +72,15 @@ noncomputable def limitCone : Cone F :=
 
 /-- `limitCone F` becomes limit after the application of `π₁ : ShortComplex C ⥤ C`. -/
 noncomputable def isLimitπ₁MapConeLimitCone : IsLimit (π₁.mapCone (limitCone F)) :=
-  (IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (by aesop_cat)))
+  (IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (by cat_disch)))
 
 /-- `limitCone F` becomes limit after the application of `π₂ : ShortComplex C ⥤ C`. -/
 noncomputable def isLimitπ₂MapConeLimitCone : IsLimit (π₂.mapCone (limitCone F)) :=
-  (IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (by aesop_cat)))
+  (IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (by cat_disch)))
 
 /-- `limitCone F` becomes limit after the application of `π₃ : ShortComplex C ⥤ C`. -/
 noncomputable def isLimitπ₃MapConeLimitCone : IsLimit (π₃.mapCone (limitCone F)) :=
-  (IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (by aesop_cat)))
+  (IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (by cat_disch)))
 
 /-- `limitCone F` is limit. -/
 noncomputable def isLimitLimitCone : IsLimit (limitCone F) :=
@@ -194,7 +194,7 @@ variable [HasColimit (F ⋙ π₁)] [HasColimit (F ⋙ π₂)] [HasColimit (F �
 of the three components `J ⥤ C`. -/
 noncomputable def colimitCocone : Cocone F :=
   Cocone.mk (ShortComplex.mk (colimMap (whiskerLeft F π₁Toπ₂)) (colimMap (whiskerLeft F π₂Toπ₃))
-      (by aesop_cat))
+      (by cat_disch))
     { app := fun j => Hom.mk (colimit.ι (F ⋙ π₁) _) (colimit.ι (F ⋙ π₂) _)
         (colimit.ι (F ⋙ π₃) _) (by simp) (by simp)
       naturality := fun _ _ f => by
@@ -206,17 +206,17 @@ noncomputable def colimitCocone : Cocone F :=
 /-- `colimitCocone F` becomes colimit after the application of `π₁ : ShortComplex C ⥤ C`. -/
 noncomputable def isColimitπ₁MapCoconeColimitCocone :
     IsColimit (π₁.mapCocone (colimitCocone F)) :=
-  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (by aesop_cat)))
+  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (by cat_disch)))
 
 /-- `colimitCocone F` becomes colimit after the application of `π₂ : ShortComplex C ⥤ C`. -/
 noncomputable def isColimitπ₂MapCoconeColimitCocone :
     IsColimit (π₂.mapCocone (colimitCocone F)) :=
-  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (by aesop_cat)))
+  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (by cat_disch)))
 
 /-- `colimitCocone F` becomes colimit after the application of `π₃ : ShortComplex C ⥤ C`. -/
 noncomputable def isColimitπ₃MapCoconeColimitCocone :
     IsColimit (π₃.mapCocone (colimitCocone F)) :=
-  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (by aesop_cat)))
+  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (by cat_disch)))
 
 /-- `colimitCocone F` is colimit. -/
 noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) :=

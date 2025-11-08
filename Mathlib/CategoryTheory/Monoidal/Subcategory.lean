@@ -63,7 +63,7 @@ class IsMonoidal (P : ObjectProperty C) : Prop extends
 /-- A property of objects is a monoidal closed if it is closed under taking internal homs
 -/
 class IsMonoidalClosed (P : ObjectProperty C) [MonoidalClosed C] : Prop where
-  prop_ihom (X Y : C) : P X → P Y → P ((ihom X).obj Y) := by aesop_cat
+  prop_ihom (X Y : C) : P X → P Y → P ((ihom X).obj Y) := by cat_disch
 
 lemma prop_ihom (P : ObjectProperty C) [MonoidalClosed C] [P.IsMonoidalClosed]
     {X Y : C} (hX : P X) (hY : P Y) : P ((ihom X).obj Y) :=
@@ -116,7 +116,7 @@ instance [MonoidalPreadditive C] : MonoidalPreadditive P.FullSubcategory :=
 variable (R : Type*) [Ring R] [Linear R C]
 
 instance [MonoidalPreadditive C] [MonoidalLinear R C] : MonoidalLinear R P.FullSubcategory :=
-  monoidalLinearOfFaithful R P.ι
+  .ofFaithful R P.ι
 
 end
 
@@ -166,7 +166,7 @@ section Symmetric
 variable [SymmetricCategory C]
 
 instance fullSymmetricSubcategory : SymmetricCategory P.FullSubcategory :=
-  symmetricCategoryOfFaithful P.ι
+  .ofFaithful P.ι
 
 end Symmetric
 
@@ -203,8 +203,5 @@ theorem ihom_map (X : P.FullSubcategory) {Y Z : P.FullSubcategory}
 end Closed
 
 end ObjectProperty
-
-@[deprecated (since := "2025-03-05")]
-alias MonoidalCategory.MonoidalPredicate := ObjectProperty.IsMonoidal
 
 end CategoryTheory

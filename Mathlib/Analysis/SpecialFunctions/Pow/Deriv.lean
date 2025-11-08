@@ -66,7 +66,7 @@ section fderiv
 
 open Complex
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f g : E → ℂ} {f' g' : E →L[ℂ] ℂ}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f g : E → ℂ} {f' g' : StrongDual ℂ E}
   {x : E} {s : Set E} {c : ℂ}
 
 theorem HasStrictFDerivAt.cpow (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x)
@@ -270,8 +270,6 @@ theorem hasDerivAt_ofReal_cpow_const' {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r
     · exact hasDerivAt_id ((-x : ℝ) : ℂ)
     · simp [hx]
 
-@[deprecated (since := "2024-12-15")] alias hasDerivAt_ofReal_cpow := hasDerivAt_ofReal_cpow_const'
-
 /-- An alternate formulation of `hasDerivAt_ofReal_cpow_const'`. -/
 theorem hasDerivAt_ofReal_cpow_const {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ 0) :
     HasDerivAt (fun y : ℝ => (y : ℂ) ^ r) (r * x ^ (r - 1)) x := by
@@ -431,9 +429,10 @@ theorem contDiffAt_rpow_const_of_ne {x p : ℝ} {n : WithTop ℕ∞} (h : x ≠ 
 
 theorem contDiff_rpow_const_of_le {p : ℝ} {n : ℕ} (h : ↑n ≤ p) :
     ContDiff ℝ n fun x : ℝ => x ^ p := by
-  induction' n with n ihn generalizing p
-  · exact contDiff_zero.2 (continuous_id.rpow_const fun x => Or.inr <| by simpa using h)
-  · have h1 : 1 ≤ p := le_trans (by simp) h
+  induction n generalizing p with
+  | zero => exact contDiff_zero.2 (continuous_id.rpow_const fun x => Or.inr <| by simpa using h)
+  | succ n ihn =>
+    have h1 : 1 ≤ p := le_trans (by simp) h
     rw [Nat.cast_succ, ← le_sub_iff_add_le] at h
     rw [show ((n + 1 : ℕ) : WithTop ℕ∞) = n + 1 from rfl,
       contDiff_succ_iff_deriv, deriv_rpow_const' h1]
@@ -461,7 +460,7 @@ open Real
 
 section fderiv
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f g : E → ℝ} {f' g' : E →L[ℝ] ℝ}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f g : E → ℝ} {f' g' : StrongDual ℝ E}
   {x : E} {s : Set E} {c p : ℝ} {n : WithTop ℕ∞}
 
 theorem HasFDerivWithinAt.rpow (hf : HasFDerivWithinAt f f' s x) (hg : HasFDerivWithinAt g g' s x)
@@ -668,6 +667,29 @@ lemma isBigO_deriv_rpow_const_atTop (p : ℝ) :
     simp [zero_sub, Real.rpow_neg_one, Real.rpow_zero, deriv_const', Asymptotics.isBigO_zero]
   case inr =>
     exact (isTheta_deriv_rpow_const_atTop hp).1
+
+variable {a : ℝ}
+
+theorem HasDerivWithinAt.const_rpow (ha : 0 < a) (hf : HasDerivWithinAt f f' s x) :
+    HasDerivWithinAt (a ^ f ·) (Real.log a * f' * a ^ f x) s x := by
+  convert (hasDerivWithinAt_const x s a).rpow hf ha using 1
+  ring
+
+theorem HasDerivAt.const_rpow (ha : 0 < a) (hf : HasDerivAt f f' x) :
+    HasDerivAt (a ^ f ·) (Real.log a * f' * a ^ f x) x := by
+  rw [← hasDerivWithinAt_univ] at *
+  exact hf.const_rpow ha
+
+theorem derivWithin_const_rpow (ha : 0 < a) (hf : DifferentiableWithinAt ℝ f s x)
+    (hxs : UniqueDiffWithinAt ℝ s x) :
+    derivWithin (a ^ f ·) s x = Real.log a * derivWithin f s x * a ^ f x :=
+  (hf.hasDerivWithinAt.const_rpow ha).derivWithin hxs
+
+@[simp]
+theorem deriv_const_rpow (ha : 0 < a) (hf : DifferentiableAt ℝ f x) :
+    deriv (a ^ f ·) x = Real.log a * deriv f x * a ^ f x :=
+  (hf.hasDerivAt.const_rpow ha).deriv
+
 
 end deriv
 

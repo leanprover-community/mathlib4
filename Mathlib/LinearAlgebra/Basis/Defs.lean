@@ -257,6 +257,7 @@ theorem Basis.sum_equivFun [Fintype ι] (b : Basis ι R M) (u : M) :
     ∑ i, b.equivFun u i • b i = u := by
   rw [← b.equivFun_symm_apply, b.equivFun.symm_apply_apply]
 
+@[simp]
 theorem Basis.sum_repr [Fintype ι] (b : Basis ι R M) (u : M) : ∑ i, b.repr u i • b i = u :=
   b.sum_equivFun u
 
@@ -409,19 +410,16 @@ section ReindexRange
 def reindexRange : Basis (range b) R M :=
   haveI := Classical.dec (Nontrivial R)
   if h : Nontrivial R then
-    letI := h
     b.reindex (Equiv.ofInjective b (Basis.injective b))
   else
     letI : Subsingleton R := not_nontrivial_iff_subsingleton.mp h
     .ofRepr (Module.subsingletonEquiv R M (range b))
 
 theorem reindexRange_self (i : ι) (h := Set.mem_range_self i) : b.reindexRange ⟨b i, h⟩ = b i := by
-  by_cases htr : Nontrivial R
-  · letI := htr
-    simp [htr, reindexRange, reindex_apply]
-  · letI : Subsingleton R := not_nontrivial_iff_subsingleton.mp htr
-    letI := Module.subsingleton R M
+  cases subsingleton_or_nontrivial R
+  · let := Module.subsingleton R M
     simp [reindexRange, eq_iff_true_of_subsingleton]
+  · simp [*, reindexRange, reindex_apply]
 
 theorem reindexRange_repr_self (i : ι) :
     b.reindexRange.repr (b i) = Finsupp.single ⟨b i, mem_range_self i⟩ 1 :=
@@ -655,7 +653,7 @@ section Coord
 
 variable (i : ι)
 
-/-- `b.coord i` is the linear function giving the `i`'th coordinate of a vector
+/-- `b.coord i` is the linear function giving the `i`-th coordinate of a vector
 with respect to the basis `b`.
 
 `b.coord i` is an element of the dual space. In particular, for

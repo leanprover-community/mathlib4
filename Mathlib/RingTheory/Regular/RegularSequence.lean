@@ -573,7 +573,7 @@ lemma map_first_exact_on_four_term_right_exact_of_isSMulRegular_last
 
 section Perm
 
-open LinearMap in
+open _root_.LinearMap in
 private lemma IsWeaklyRegular.swap {a b : R} (h1 : IsWeaklyRegular M [a, b])
     (h2 : torsionBy R M b = a • torsionBy R M b → torsionBy R M b = ⊥) :
     IsWeaklyRegular M [b, a] := by
@@ -668,8 +668,5 @@ lemma _root_.IsLocalRing.isRegular_of_perm [IsLocalRing R] [IsNoetherian R M]
     exact h4 ∘ Eq.trans (top_smul _).symm ∘ Eq.symm ∘ congrArg (· • ⊤)
   · refine ne_of_ne_of_eq h4 (congrArg (Ideal.span · • ⊤) ?_)
     exact Set.ext fun _ => h2.mem_iff
-
-@[deprecated (since := "2024-11-09")]
-alias _root_.LocalRing.isRegular_of_perm := _root_.IsLocalRing.isRegular_of_perm
 
 end RingTheory.Sequence

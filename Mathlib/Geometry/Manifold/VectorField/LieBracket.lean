@@ -178,7 +178,7 @@ theorem mlieBracketWithin_inter (ht : t ∈ 𝓝 x) :
   apply mlieBracketWithin_congr_set
   filter_upwards [ht] with y hy
   change (y ∈ s ∩ t) = (y ∈ s)
-  aesop
+  simp_all
 
 theorem mlieBracketWithin_of_mem_nhds (h : s ∈ 𝓝 x) :
     mlieBracketWithin I V W s x = mlieBracket I V W x := by
@@ -766,12 +766,11 @@ protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField
   locally a smooth function, which coincides with the initial Lie bracket by invariance
   under diffeos. -/
   have min2 : minSmoothness 𝕜 2 ≤ n + 1 := by
-    apply le_trans _ (add_le_add_right hmn 1)
-    rw [← minSmoothness_add, add_assoc]
+    grw [← hmn, ← minSmoothness_add, add_assoc]
     exact minSmoothness_monotone le_add_self
   apply contMDiffWithinAt_iff_le_ne_infty.2 (fun m' hm' h'm' ↦ ?_)
   have hn : 1 ≤ m' + 1 := le_add_self
-  have hm'n : m' + 1 ≤ n := le_trans (add_le_add_right hm' 1) (le_minSmoothness.trans hmn)
+  have hm'n : m' + 1 ≤ n := by grw [hm', ← hmn, ← le_minSmoothness]
   have pre_mem : (extChartAt I x) ⁻¹' ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s)
       ∈ 𝓝[s] x := by
     filter_upwards [self_mem_nhdsWithin,
@@ -805,9 +804,9 @@ protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField
     eventually_eventually_nhdsWithin.2 (eventuallyEq_mpullback_mpullbackWithin_extChartAt U),
     eventually_eventually_nhdsWithin.2 (eventuallyEq_mpullback_mpullbackWithin_extChartAt V),
     eventually_contMDiffWithinAt_mpullbackWithin_extChartAt_symm (hU.of_le hm'n) hs hx
-      (add_le_add_right hm'n 1) (by simp [h'm']),
+      (by gcongr) (by simp [h'm']),
     eventually_contMDiffWithinAt_mpullbackWithin_extChartAt_symm (hV.of_le hm'n) hs hx
-      (add_le_add_right hm'n 1) (by simp [h'm']),
+      (by gcongr) (by simp [h'm']),
     nhdsWithin_le_nhds (chart_source_mem_nhds H x), self_mem_nhdsWithin]
     with y hy hyU hyV h'yU h'yV hy_chart hys
   simp only [Bundle.TotalSpace.mk_inj]

@@ -15,7 +15,7 @@ Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
 -/
 
-assert_not_exists OrderedCommMonoid Multiset Ring
+assert_not_exists IsOrderedMonoid Multiset Ring
 
 variable {M : Type*}
 
@@ -71,6 +71,9 @@ theorem map {M N : Type*} [Monoid M] [Monoid N] {F : Type*} [FunLike F M N] [Mon
 end Associated
 
 attribute [local instance] Associated.setoid
+
+theorem Associated.of_eq [Monoid M] {a b : M} (h : a = b) : a ~ᵤ b :=
+  ⟨1, by rwa [Units.val_one, mul_one]⟩
 
 theorem unit_associated_one [Monoid M] {u : Mˣ} : (u : M) ~ᵤ 1 :=
   ⟨u⁻¹, Units.mul_inv u⟩
@@ -252,11 +255,11 @@ theorem Irreducible.dvd_iff [Monoid M] {x y : M} (hx : Irreducible x) :
     y ∣ x ↔ IsUnit y ∨ Associated x y := by
   constructor
   · rintro ⟨z, hz⟩
-    obtain (h|h) := hx.isUnit_or_isUnit hz
+    obtain (h | h) := hx.isUnit_or_isUnit hz
     · exact Or.inl h
     · rw [hz]
       exact Or.inr (associated_mul_unit_left _ _ h)
-  · rintro (hy|h)
+  · rintro (hy | h)
     · exact hy.dvd
     · exact h.symm.dvd
 
@@ -461,8 +464,6 @@ theorem mk_mul_mk {x y : M} : Associates.mk x * Associates.mk y = Associates.mk 
   rfl
 
 instance instCommMonoid : CommMonoid (Associates M) where
-  one := 1
-  mul := (· * ·)
   mul_one a' := Quotient.inductionOn a' fun a => show ⟦a * 1⟧ = ⟦a⟧ by simp
   one_mul a' := Quotient.inductionOn a' fun a => show ⟦1 * a⟧ = ⟦a⟧ by simp
   mul_assoc a' b' c' :=
@@ -693,7 +694,7 @@ instance instPartialOrder : PartialOrder (Associates M) where
 instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero (Associates M) :=
   { (by infer_instance : CommMonoidWithZero (Associates M)) with
     mul_left_cancel_of_ne_zero := by
-      rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ha h
+      rintro ⟨a⟩ ha ⟨b⟩ ⟨c⟩ h
       rcases Quotient.exact' h with ⟨u, hu⟩
       have hu : a * (b * ↑u) = a * c := by rwa [← mul_assoc]
       exact Quotient.sound' ⟨u, mul_left_cancel₀ (mk_ne_zero.1 ha) hu⟩ }

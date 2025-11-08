@@ -3,10 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
+import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Algebra.Regular.Basic
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Algebra.CharP.Defs
 
 /-!
 # Theory of univariate polynomials
@@ -15,7 +16,6 @@ The theorems include formulas for computing coefficients, such as
 `coeff_add`, `coeff_sum`, `coeff_mul`
 
 -/
-
 
 
 noncomputable section
@@ -43,24 +43,22 @@ theorem coeff_add (p q : R[X]) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q
 @[simp]
 theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :
     coeff (r • p) n = r • coeff p n := by
-  rcases p with ⟨⟩
-  simp_rw [← ofFinsupp_smul, coeff]
-  exact Finsupp.smul_apply _ _ _
+  rfl
 
 theorem support_smul [SMulZeroClass S R] (r : S) (p : R[X]) :
     support (r • p) ⊆ support p := by
   intro i hi
-  simp? [mem_support_iff] at hi ⊢ says simp only [mem_support_iff, coeff_smul, ne_eq] at hi ⊢
+  rw [mem_support_iff] at hi ⊢
   contrapose! hi
   simp [hi]
 
 open scoped Pointwise in
 theorem card_support_mul_le : #(p * q).support ≤ #p.support * #q.support := by
   calc #(p * q).support
-   _ = #(p.toFinsupp * q.toFinsupp).support := by rw [← support_toFinsupp, toFinsupp_mul]
-   _ ≤ #(p.toFinsupp.support + q.toFinsupp.support) :=
-    Finset.card_le_card (AddMonoidAlgebra.support_mul p.toFinsupp q.toFinsupp)
-   _ ≤ #p.support * #q.support := Finset.card_image₂_le ..
+    _ = #(p.toFinsupp * q.toFinsupp).support := by rw [← support_toFinsupp, toFinsupp_mul]
+    _ ≤ #(p.toFinsupp.support + q.toFinsupp.support) :=
+      Finset.card_le_card (AddMonoidAlgebra.support_mul p.toFinsupp q.toFinsupp)
+    _ ≤ #p.support * #q.support := Finset.card_image₂_le ..
 
 /-- `Polynomial.sum` as a linear map. -/
 @[simps]
@@ -99,8 +97,7 @@ lemma coeff_list_sum_map {ι : Type*} (l : List ι) (f : ι → R[X]) (n : ℕ) 
 @[simp]
 theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
     coeff (p.sum f) n = p.sum fun a b => coeff (f a b) n := by
-  rcases p with ⟨⟩
-  simp [Polynomial.sum, support_ofFinsupp, coeff_ofFinsupp]
+  simp [Polynomial.sum]
 
 /-- Decomposes the coefficient of the product `p * q` as a sum
 over `antidiagonal`. A version which sums over `range (n + 1)` can be obtained
@@ -129,6 +126,9 @@ def constantCoeff : R[X] →+* R where
   map_zero' := coeff_zero 0
   map_add' p q := coeff_add p q 0
 
+lemma constantCoeff_surjective : Function.Surjective (constantCoeff (R := R)) :=
+  fun x ↦ ⟨C x, by simp⟩
+
 theorem isUnit_C {x : R} : IsUnit (C x) ↔ IsUnit x :=
   ⟨fun h => (congr_arg IsUnit coeff_C_zero).mp (h.map <| @constantCoeff R _), fun h => h.map C⟩
 
@@ -139,7 +139,6 @@ theorem coeff_X_mul_zero (p : R[X]) : coeff (X * p) 0 = 0 := by simp
 theorem coeff_C_mul_X_pow (x : R) (k n : ℕ) :
     coeff (C x * X ^ k : R[X]) n = if n = k then x else 0 := by
   rw [C_mul_X_pow_eq_monomial, coeff_monomial]
-  congr 1
   simp [eq_comm]
 
 theorem coeff_C_mul_X (x : R) (n : ℕ) : coeff (C x * X : R[X]) n = if n = 1 then x else 0 := by
@@ -222,14 +221,7 @@ end Fewnomials
 theorem coeff_mul_X_pow (p : R[X]) (n d : ℕ) :
     coeff (p * Polynomial.X ^ n) (d + n) = coeff p d := by
   rw [coeff_mul, Finset.sum_eq_single (d, n), coeff_X_pow, if_pos rfl, mul_one]
-  · rintro ⟨i, j⟩ h1 h2
-    rw [coeff_X_pow, if_neg, mul_zero]
-    rintro rfl
-    apply h2
-    rw [mem_antidiagonal, add_right_cancel_iff] at h1
-    subst h1
-    rfl
-  · exact fun h1 => (h1 (mem_antidiagonal.2 rfl)).elim
+  all_goals grind [mem_antidiagonal, coeff_X_pow, mul_zero]
 
 @[simp]
 theorem coeff_X_pow_mul (p : R[X]) (n d : ℕ) :

@@ -129,7 +129,7 @@ def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
         erw [kernelSubobject_arrow_comp_assoc]
         rw [zero_comp, comp_zero]))
     fun n => by
-    cases n <;> dsimp [objD, objX] <;> aesop_cat
+    cases n <;> dsimp [objD, objX] <;> cat_disch
 
 end NormalizedMooreComplex
 
@@ -149,7 +149,7 @@ def normalizedMooreComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
   obj := obj
   map f := map f
 
--- Porting note: removed @[simp] as it is not in normal form
+-- Not `@[simp]` as `simp` can prove this.
 theorem normalizedMooreComplex_objD (X : SimplicialObject C) (n : ℕ) :
     ((normalizedMooreComplex C).obj X).d (n + 1) n = NormalizedMooreComplex.objD X n :=
   ChainComplex.of_d _ _ (d_squared X) n

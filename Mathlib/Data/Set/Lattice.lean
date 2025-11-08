@@ -9,7 +9,7 @@ import Mathlib.Data.Set.BooleanAlgebra
 /-!
 # The set lattice
 
-This file is a collection of results on the complete atomic boolean algebra structure of `Set α`.
+This file is a collection of results on the complete atomic Boolean algebra structure of `Set α`.
 Notation for the complete lattice operations can be found in `Mathlib/Order/SetNotation.lean`.
 
 ## Main declarations
@@ -527,12 +527,12 @@ theorem iInter_sigma' {γ : α → Type*} (s : ∀ i, γ i → Set β) :
     ⋂ i, ⋂ a, s i a = ⋂ ia : Sigma γ, s ia.1 ia.2 :=
   iInf_sigma' _
 
-theorem iUnion₂_comm (s : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Set α) :
-    ⋃ (i₁) (j₁) (i₂) (j₂), s i₁ j₁ i₂ j₂ = ⋃ (i₂) (j₂) (i₁) (j₁), s i₁ j₁ i₂ j₂ :=
+theorem iUnion₂_comm (s : ∀ i, κ i → ∀ i', κ' i' → Set α) :
+    ⋃ (i) (j) (i') (j'), s i j i' j' = ⋃ (i') (j') (i) (j), s i j i' j' :=
   iSup₂_comm _
 
-theorem iInter₂_comm (s : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Set α) :
-    ⋂ (i₁) (j₁) (i₂) (j₂), s i₁ j₁ i₂ j₂ = ⋂ (i₂) (j₂) (i₁) (j₁), s i₁ j₁ i₂ j₂ :=
+theorem iInter₂_comm (s : ∀ i, κ i → ∀ i', κ' i' → Set α) :
+    ⋂ (i) (j) (i') (j'), s i j i' j' = ⋂ (i') (j') (i) (j), s i j i' j' :=
   iInf₂_comm _
 
 @[simp]
@@ -825,15 +825,10 @@ def sUnionPowersetGI :
     GaloisInsertion (⋃₀ · : Set (Set α) → Set α) (𝒫 · : Set α → Set (Set α)) :=
   gi_sSup_Iic
 
-@[deprecated (since := "2024-12-07")] alias sUnion_powerset_gi := sUnionPowersetGI
-
 /-- If all sets in a collection are either `∅` or `Set.univ`, then so is their union. -/
 theorem sUnion_mem_empty_univ {S : Set (Set α)} (h : S ⊆ {∅, univ}) :
     ⋃₀ S ∈ ({∅, univ} : Set (Set α)) := by
-  simp only [mem_insert_iff, mem_singleton_iff, or_iff_not_imp_left, sUnion_eq_empty, not_forall]
-  rintro ⟨s, hs, hne⟩
-  obtain rfl : s = univ := (h hs).resolve_left hne
-  exact univ_subset_iff.1 <| subset_sUnion_of_mem hs
+  grind
 
 @[simp]
 theorem nonempty_sUnion {S : Set (Set α)} : (⋃₀ S).Nonempty ↔ ∃ s ∈ S, Set.Nonempty s := by
@@ -971,12 +966,7 @@ theorem iUnion_image_preimage_sigma_mk_eq_self {ι : Type*} {σ : ι → Type*} 
     ⋃ i, Sigma.mk i '' (Sigma.mk i ⁻¹' s) = s := by
   ext x
   simp only [mem_iUnion, mem_image, mem_preimage]
-  constructor
-  · rintro ⟨i, a, h, rfl⟩
-    exact h
-  · intro h
-    obtain ⟨i, a⟩ := x
-    exact ⟨i, a, h, rfl⟩
+  grind
 
 theorem Sigma.univ (X : α → Type*) : (Set.univ : Set (Σ a, X a)) = ⋃ a, range (Sigma.mk a) :=
   Set.ext fun x =>
@@ -1144,6 +1134,11 @@ theorem iUnion_univ_pi {ι : α → Type*} (t : (a : α) → ι a → Set (π a)
   ext
   simp [Classical.skolem]
 
+theorem biUnion_univ_pi {ι : α → Type*} (s : (a : α) → Set (ι a)) (t : (a : α) → ι a → Set (π a)) :
+    ⋃ x ∈ univ.pi s, pi univ (fun a => t a (x a)) = pi univ fun a => ⋃ j ∈ s a, t a j := by
+  ext
+  simp [Classical.skolem, forall_and]
+
 end Pi
 
 section Directed
@@ -1160,14 +1155,6 @@ theorem directedOn_sUnion {r} {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S)
     (h : ∀ x ∈ S, DirectedOn r x) : DirectedOn r (⋃₀ S) := by
   rw [sUnion_eq_iUnion]
   exact directedOn_iUnion (directedOn_iff_directed.mp hd) (fun i ↦ h i.1 i.2)
-
-theorem pairwise_iUnion₂ {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S)
-    (r : α → α → Prop) (h : ∀ s ∈ S, s.Pairwise r) : (⋃ s ∈ S, s).Pairwise r := by
-  simp only [Set.Pairwise, Set.mem_iUnion, exists_prop, forall_exists_index, and_imp]
-  intro x S hS hx y T hT hy hne
-  obtain ⟨U, hU, hSU, hTU⟩ := hd S hS T hT
-  exact h U hU (hSU hx) (hTU hy) hne
-
 end Directed
 
 end Set

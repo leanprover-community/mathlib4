@@ -21,14 +21,14 @@ universe u' w u v
 
 open CategoryTheory Limits
 
-namespace AddCommGrp
+namespace AddCommGrpCat
 
-variable {J : Type u} [Category.{v} J] (F : J ⥤ AddCommGrp.{w})
+variable {J : Type u} [Category.{v} J] (F : J ⥤ AddCommGrpCat.{w})
 
 namespace Colimits
 
 /-!
-We build the colimit of a diagram in `AddCommGrp` by constructing the
+We build the colimit of a diagram in `AddCommGrpCat` by constructing the
 free group on the disjoint union of all the abelian groups in the diagram,
 then taking the quotient by the abelian group laws within each abelian group,
 and the identifications given by the morphisms in the diagram.
@@ -65,7 +65,7 @@ lemma Quot.addMonoidHom_ext [DecidableEq J] {α : Type*} [AddMonoid α] {f g : Q
 variable (c : Cocone F)
 
 /-- (implementation detail) Part of the universal property of the colimit cocone, but without
-    assuming that `Quot F` lives in the correct universe. -/
+assuming that `Quot F` lives in the correct universe. -/
 def Quot.desc [DecidableEq J] : Quot.{w} F →+ c.pt := by
   refine QuotientAddGroup.lift _ (DFinsupp.sumAddHom fun x => (c.ι.app x).hom) ?_
   dsimp
@@ -175,7 +175,7 @@ induces a cocone on `F` as long as the universes work out.
 -/
 @[simps]
 def toCocone [DecidableEq J] {A : Type w} [AddCommGroup A] (f : Quot F →+ A) : Cocone F where
-  pt := AddCommGrp.of A
+  pt := AddCommGrpCat.of A
   ι.app j := ofHom <| f.comp (Quot.ι F j)
 
 lemma Quot.desc_toCocone_desc [DecidableEq J] {A : Type w} [AddCommGroup A] (f : Quot F →+ A)
@@ -197,7 +197,7 @@ cocone of `F`.
 -/
 noncomputable def isColimit_of_bijective_desc [DecidableEq J]
      (h : Function.Bijective (Quot.desc F c)) : IsColimit c where
-  desc s := AddCommGrp.ofHom ((Quot.desc F s).comp (AddEquiv.ofBijective
+  desc s := AddCommGrpCat.ofHom ((Quot.desc F s).comp (AddEquiv.ofBijective
     (Quot.desc F c) h).symm.toAddMonoidHom)
   fac s j := by
     ext x
@@ -219,10 +219,10 @@ noncomputable def isColimit_of_bijective_desc [DecidableEq J]
 -/
 @[simps pt ι_app]
 noncomputable def colimitCocone [DecidableEq J] [Small.{w} (Quot.{w} F)] : Cocone F where
-  pt := AddCommGrp.of (Shrink (Quot F))
+  pt := AddCommGrpCat.of (Shrink (Quot F))
   ι :=
     { app j :=
-        AddCommGrp.ofHom (Shrink.addEquiv.symm.toAddMonoidHom.comp (Quot.ι F j))
+        AddCommGrpCat.ofHom (Shrink.addEquiv.symm.toAddMonoidHom.comp (Quot.ι F j))
       naturality _ _ _ := by
         ext
         dsimp
@@ -230,7 +230,7 @@ noncomputable def colimitCocone [DecidableEq J] [Small.{w} (Quot.{w} F)] : Cocon
         rw [Quot.map_ι] }
 
 @[simp]
-theorem Quot.desc_colimitCocone [DecidableEq J] (F : J ⥤ AddCommGrp.{w}) [Small.{w} (Quot F)] :
+theorem Quot.desc_colimitCocone [DecidableEq J] (F : J ⥤ AddCommGrpCat.{w}) [Small.{w} (Quot F)] :
     Quot.desc F (colimitCocone F) = (Shrink.addEquiv (α := Quot F)).symm.toAddMonoidHom := by
   refine Quot.addMonoidHom_ext F (fun j x ↦ ?_)
   simpa only [colimitCocone_pt, AddEquiv.toAddMonoidHom_eq_coe, AddMonoidHom.coe_coe]
@@ -255,32 +255,32 @@ lemma hasColimit_of_small_quot [DecidableEq J] (h : Small.{w} (Quot F)) : HasCol
 instance [DecidableEq J] [Small.{w} J] : Small.{w} (Quot F) :=
   small_of_surjective (QuotientAddGroup.mk'_surjective _)
 
-instance hasColimit [Small.{w} J] (F : J ⥤ AddCommGrp.{w}) : HasColimit F := by
+instance hasColimit [Small.{w} J] (F : J ⥤ AddCommGrpCat.{w}) : HasColimit F := by
   classical
   exact hasColimit_of_small_quot F inferInstance
 
 
 /--
-If `J` is `w`-small, then any functor `J ⥤ AddCommGrp.{w}` has a colimit.
+If `J` is `w`-small, then any functor `J ⥤ AddCommGrpCat.{w}` has a colimit.
 -/
-instance hasColimitsOfShape [Small.{w} J] : HasColimitsOfShape J (AddCommGrp.{w}) where
+instance hasColimitsOfShape [Small.{w} J] : HasColimitsOfShape J (AddCommGrpCat.{w}) where
 
 /-- The category of additive commutative groups has all small colimits.
 -/
 instance (priority := 1300) hasColimitsOfSize [UnivLE.{u, w}] :
-    HasColimitsOfSize.{v, u} (AddCommGrp.{w}) where
+    HasColimitsOfSize.{v, u} (AddCommGrpCat.{w}) where
 
-end AddCommGrp
+end AddCommGrpCat
 
-namespace AddCommGrp
+namespace AddCommGrpCat
 
 open QuotientAddGroup
 
-/-- The categorical cokernel of a morphism in `AddCommGrp`
+/-- The categorical cokernel of a morphism in `AddCommGrpCat`
 agrees with the usual group-theoretical quotient.
 -/
-noncomputable def cokernelIsoQuotient {G H : AddCommGrp.{u}} (f : G ⟶ H) :
-    cokernel f ≅ AddCommGrp.of (H ⧸ AddMonoidHom.range f.hom) where
+noncomputable def cokernelIsoQuotient {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
+    cokernel f ≅ AddCommGrpCat.of (H ⧸ AddMonoidHom.range f.hom) where
   hom := cokernel.desc f (ofHom (mk' _)) <| by
         ext x
         simp
@@ -298,4 +298,4 @@ noncomputable def cokernelIsoQuotient {G H : AddCommGrp.{u}} (f : G ⟶ H) :
       Function.comp_apply, AddMonoidHom.zero_apply, id_eq, lift_mk, hom_id, AddMonoidHom.coe_id]
     exact QuotientAddGroup.induction_on (α := H) x <| cokernel.π_desc_apply f _ _
 
-end AddCommGrp
+end AddCommGrpCat
