@@ -138,8 +138,7 @@ section Support
 
 /-- For `f : SkewMonoidAlgebra k G`, `f.support` is the set of all `a ∈ G` such that
 `f.coeff a ≠ 0`. -/
-def support : SkewMonoidAlgebra k G → Finset G
-  | ⟨p⟩ => p.support
+def support (p : SkewMonoidAlgebra k G) : Finset G := p.toFinsupp.support
 
 @[simp]
 theorem support_ofFinsupp (p) : support (⟨p⟩ : SkewMonoidAlgebra k G) = p.support := by
@@ -155,6 +154,11 @@ theorem support_zero : (0 : SkewMonoidAlgebra k G).support = ∅ := rfl
 theorem support_eq_empty {p} : p.support = ∅ ↔ (p : SkewMonoidAlgebra k G) = 0 := by
   rcases p
   simp only [support, Finsupp.support_eq_empty, ofFinsupp_eq_zero]
+
+lemma support_add [DecidableEq G] {p q : SkewMonoidAlgebra k G} :
+    (p + q).support ⊆ p.support ∪ q.support := by
+  simp [support]
+  exact Finsupp.support_add
 
 end Support
 
