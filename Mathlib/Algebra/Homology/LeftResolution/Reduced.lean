@@ -61,6 +61,7 @@ instance : (karoubi.F Λ).PreservesZeroMorphisms where
 def karoubi.π' : toKaroubi A ⋙ F Λ ⋙ (functorExtension₂ C A).obj ι ⟶ toKaroubi A where
   app X := ⟨Λ.π.app X, by simp⟩
 
+/-- The morphism `(karoubi.π' Λ).app X` is a retract of `(toKaroubi _).map (Λ.π.app X)`. -/
 def karoubi.retractArrow (X : A) :
     RetractArrow ((karoubi.π' Λ).app X) ((toKaroubi _).map (Λ.π.app X)) where
   i := Arrow.homMk ⟨ι.map ((karoubi.F' Λ).obj X).p, by simp [← Functor.map_comp]⟩ (𝟙 _)
