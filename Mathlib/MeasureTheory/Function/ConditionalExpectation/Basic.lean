@@ -335,9 +335,7 @@ theorem condExp_condExp_of_le {m₁ m₂ m₀ : MeasurableSpace α} {μ : Measur
   rw [setIntegral_condExp (hm₁₂.trans hm₂) integrable_condExp hs]
   rw [setIntegral_condExp (hm₁₂.trans hm₂) hf hs, setIntegral_condExp hm₂ hf (hm₁₂ s hs)]
 
-@[deprecated (since := "2025-01-21")] alias condexp_condexp_of_le := condExp_condExp_of_le
-
-/-- Conditional expectation commutes with bounded linear functional. -/
+/-- Conditional expectation commutes with continuous linear functional. -/
 theorem condExp_comm_continuousLinearMap (hm : m ≤ m₀) [SigmaFinite (μ.trim hm)]
     {F : Type*} [NormedAddCommGroup F] [CompleteSpace F] [NormedSpace ℝ F]
     (hf_int : Integrable f μ) (T : E →L[ℝ] F) :
