@@ -285,8 +285,8 @@ def BoundaryManifoldData.prod_of_boundaryless_right (bd : BoundaryManifoldData M
     rw [mfderiv_prodMap ((bd.contMDiff x.1).mdifferentiableAt hk) mdifferentiableAt_id]
     apply Function.Injective.prodMap
     · exact bd.isImmersion hk _
-    · rw [mfderiv_id]
-      exact fun ⦃a₁ a₂⦄ a ↦ a
+    · simp [mfderiv_id]
+      tauto
   range_eq_boundary := by
     rw [range_prodMap, ModelWithCorners.boundary_of_boundaryless_right, range_id]
     congr
@@ -321,30 +321,22 @@ noncomputable def BoundaryManifoldData.sum
   f := Sum.map bd.f bd'.f
   isEmbedding := by
     -- The boundaries are contained in disjoint open sets, namely M and M' (as subsets of M ⊕ M').
-    apply IsEmbedding.sum_elim_of_foo
-      (U := Set.range (@Sum.inl M M')) (V := Set.range (@Sum.inr M M'))
+    apply IsEmbedding.sumElim
+    --apply IsEmbedding.sum_elim_of_foo
+      --(U := Set.range (@Sum.inl M M')) (V := Set.range (@Sum.inr M M'))
     · exact IsEmbedding.inl.comp bd.isEmbedding
     · exact IsEmbedding.inr.comp bd'.isEmbedding
-    · -- The overall function is injective: can this be simplified further?
-      intro x y hxy
-      cases x with
-      | inl x' =>
-        cases y with
-        | inl y' =>
-          simp_all
-          exact bd.isEmbedding.injective hxy
-        | inr y' => simp_all
-      | inr x' =>
-        cases y with
-        | inl y' => simp_all
-        | inr y' =>
-          simp_all
-          exact bd'.isEmbedding.injective hxy
-    · exact isOpen_range_inl
-    · exact isOpen_range_inr
-    · sorry -- exact? inl and inr have disjoint range
-    · rw [range_comp]; exact image_subset_range _ _
-    · rw [range_comp]; exact image_subset_range _ _
+    · grw [range_comp_subset_range, range_comp_subset_range, IsClosed.closure_eq]
+      swap
+      · rw [← image_univ]
+        exact isClosedMap_inl _ isClosed_univ
+      rw [range_inl, range_inr]
+      --intro x h h'
+      --have : Sum.isLeft x = true := by simp_all
+      --rw [mem_setOf_eq] at h h'
+      --simp_all [mem_setOf]
+      sorry -- exact? inl and inr have disjoint range
+    · sorry -- similar
   contMDiff := bd.contMDiff.sumMap bd'.contMDiff
   isImmersion hk p := by
     cases p with
