@@ -10,7 +10,7 @@ import Mathlib.Algebra.GroupWithZero.Action.Defs
 # Actions by nonnegative rational numbers
 -/
 
-assert_not_exists OrderedAddCommMonoid
+assert_not_exists IsOrderedMonoid
 
 variable {R : Type*}
 
