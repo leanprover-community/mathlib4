@@ -742,9 +742,9 @@ theorem hasMFDerivWithinAt_inl :
   refine ⟨by fun_prop, ?_⟩
   set U := (extChartAt I q).symm ⁻¹' s ∩ Set.range I
   set x₀ := (extChartAt I q) q
-  have h_eventually_U : (writtenInExtChartAt I I q (@Sum.inl M M')) =ᶠ[𝓝[U] x₀] id :=
+  have : (writtenInExtChartAt I I q (@Sum.inl M M')) =ᶠ[𝓝[U] x₀] id :=
     writtenInExtChartAt_sumInl_eventuallyEq_id.filter_mono (nhdsWithin_mono _ (fun _y hy ↦ hy.2))
-  exact (hasFDerivWithinAt_id (s := U) x₀).congr_of_eventuallyEq h_eventually_U
+  exact (hasFDerivWithinAt_id x₀ _).congr_of_eventuallyEq this
     (by simp [writtenInExtChartAt, extChartAt, x₀])
 
 theorem hasMFDerivAt_inl :
@@ -756,9 +756,9 @@ theorem hasMFDerivWithinAt_inr {t : Set M'} :
   refine ⟨by fun_prop, ?_⟩
   set U := (extChartAt I q').symm ⁻¹' t ∩ Set.range I
   set x₀ := (extChartAt I q') q'
-  have h_eventually_U : (writtenInExtChartAt I I q' (@Sum.inr M M')) =ᶠ[𝓝[U] x₀] id :=
+  have : (writtenInExtChartAt I I q' (@Sum.inr M M')) =ᶠ[𝓝[U] x₀] id :=
     writtenInExtChartAt_sumInr_eventuallyEq_id.filter_mono (nhdsWithin_mono _ (fun _y hy ↦ hy.2))
-  exact (hasFDerivWithinAt_id (s := U) x₀).congr_of_eventuallyEq h_eventually_U
+  exact (hasFDerivWithinAt_id x₀ _).congr_of_eventuallyEq this
     (by simp [writtenInExtChartAt, extChartAt, x₀])
 
 theorem hasMFDerivAt_inr :
@@ -770,8 +770,7 @@ theorem mfderivWithin_sumInl (hU : UniqueMDiffWithinAt I s q) :
   (hasMFDerivWithinAt_inl).mfderivWithin hU
 
 theorem mfderiv_sumInl :
-    mfderiv I I (@Sum.inl M M') q
-      = ContinuousLinearMap.id 𝕜 (TangentSpace I p) := by
+    mfderiv I I (@Sum.inl M M') q = ContinuousLinearMap.id 𝕜 (TangentSpace I p) := by
   simpa [mfderivWithin_univ] using (mfderivWithin_sumInl (uniqueMDiffWithinAt_univ I))
 
 theorem mfderivWithin_sumInr {t : Set M'} (hU : UniqueMDiffWithinAt I t q') :
