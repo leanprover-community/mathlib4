@@ -62,6 +62,13 @@ lemma smul_left_cancel_iff (g : α) {x y : β} : g • x = g • y ↔ x = y :=
 lemma smul_eq_iff_eq_inv_smul (g : α) {x y : β} : g • x = y ↔ x = g⁻¹ • y :=
   (MulAction.toPerm g).apply_eq_iff_eq_symm_apply
 
+@[to_additive]
+lemma isCancelSMul_iff_eq_one_of_smul_eq :
+    IsCancelSMul α β ↔ (∀ (g : α) (x : β), g • x = x → g = 1) := by
+  refine ⟨fun H _ _ ↦ IsCancelSMul.eq_one_of_smul, fun H ↦ ⟨fun g h x ↦ ?_⟩⟩
+  rw [smul_eq_iff_eq_inv_smul, eq_comm, ← mul_smul, ← inv_mul_eq_one (G := α)]
+  exact H (g⁻¹ * h) x
+
 end Group
 
 section Monoid
@@ -114,12 +121,6 @@ theorem smul_bijective {m : α} (hm : IsUnit m) :
     Function.Bijective (fun (a : β) ↦ m • a) := by
   lift m to αˣ using hm
   exact MulAction.bijective m
-
-@[deprecated (since := "2025-03-03")]
-alias _root_.AddAction.vadd_bijective_of_is_addUnit := IsAddUnit.vadd_bijective
-
-@[to_additive existing, deprecated (since := "2025-03-03")]
-alias _root_.MulAction.smul_bijective_of_is_unit := IsUnit.smul_bijective
 
 @[to_additive]
 lemma smul_left_cancel {a : α} (ha : IsUnit a) {x y : β} : a • x = a • y ↔ x = y :=
