@@ -11,44 +11,8 @@ import Mathlib.LinearAlgebra.Matrix.ToLin
 # Rank decomposition and bases adapted to a linear map
 
 This file develops a small API around a linear map `f : V →ₗ[K] W` that chooses a complement
-of `ker f`, builds bases compatible with the direct-sum decomposition
-`V = ker f ⊕ C f`, and produces a rank-normal form for the matrix of `f`:
-after choosing suitable bases on domain and codomain, the matrix of `f` is a block matrix
-`fromBlocks 1 0 0 0` (an identity of size `rank f` in the top-left block and zeros elsewhere).
-
-## Main definitions
-
-* `LinearMap.prodEquivOfC` :
-  a linear equivalence `(C f × ker f) ≃ₗ[K] V`
-  induced by the complementary decomposition.
-
-* `LinearMap.decomposition_basis` :
-  a basis of `V` obtained by transporting the product of the canonical bases on
-  `C f` and `ker f` along `prodEquivOfC`.
-
-* `LinearMap.ker_complement_restriction` :
-  the restriction of `f` to `C f` (include, then apply `f`).
-
-* `LinearMap.ker_complement_basis_image` :
-  the image in `W` of the canonical basis of `C f` under the restriction map.
-
-* `LinearMap.range_decomposition_basis` :
-  a basis of `W` built by extending the previous image (which spans `range f`)
-  via `Basis.sumExtend`.
-
-* `LinearMap.CEquivRange` :
-  a linear equivalence `C f ≃ₗ[K] range f`.
-
-## Main results
-
-* `LinearMap.exists_basis_for_normal_form_abstract` :
-  there exist bases `v₁` of `V` and `v₂` of `W` such that `toMatrix v₁ v₂ f = fromBlocks 1 0 0 0`.
-
-* `LinearMap.exists_basis_for_normal_form` :
-  in the finite-dimensional case, after reindexing by `Fin r ⊕ Fin (n - r)` and
-  `Fin r ⊕ Fin (m - r)` (with `r = rank f`, `n = finrank K V`, `m = finrank K W`),
-  one gets the same block form `fromBlocks 1 0 0 0`.
-
+of `ker f`, builds bases compatible with the direct-sum decomposition `V = ker f ⊕ C` for ker
+complement `C`, and produces a rank-normal form for the matrix of `f`
 -/
 
 open Submodule Module Basis
@@ -72,8 +36,8 @@ lemma apply_ker_component_eq_zero (y : V) : f ((f.prodEquivOfC h).symm y).1 = f 
   rw [map_add, h.symm.projection_apply_mem y, add_zero]
   rfl
 
-/-- When `V` decomposes as `ker f ⊕ C f`, the basis is obtained by transporting the
-product of bases on the kernel and on its complement along `f.prodEquivOfC`. -/
+/-- When `V` decomposes as `ker f ⊕ C`, the basis is obtained by transporting the product of bases
+on the kernel and on its complement along `f.prodEquivOfC`. -/
 def decomposition_basis : Basis ((ofVectorSpaceIndex K C) ⊕
     (ofVectorSpaceIndex K (ker f))) K V :=
   .map (.prod (ofVectorSpace K _) (ofVectorSpace K _)) (f.prodEquivOfC h)
@@ -109,10 +73,9 @@ def range_decomposition_basis (h : IsCompl C (ker f)) :
     (sumExtendIndex (f.linear_independent_ker_complement_basis_image h))) K W :=
   Basis.sumExtend (f.linear_independent_ker_complement_basis_image h)
 
-/-- `f.C` is isomorphic to `range f` -/
+/-- `C` is isomorphic to `range f` -/
 def CEquivRange : C ≃ₗ[K] (range f) := by
-  let g : C →ₗ[K] range f :=
-    codRestrict (range f) (f.ker_complement_restriction C)
+  let g : C →ₗ[K] range f := codRestrict (range f) (f.ker_complement_restriction C)
     (fun x ↦ ⟨C.subtype x, rfl⟩)
   apply LinearEquiv.ofBijective g
   constructor
@@ -139,12 +102,12 @@ noncomputable section
 variable {R : Type} [Field R] {m n r : ℕ} {M₁ M₂ : Type*}
 variable [AddCommGroup M₁] [Module R M₁] [FiniteDimensional R M₁]
 variable [AddCommGroup M₂] [Module R M₂] [FiniteDimensional R M₂] (f : M₁ →ₗ[R] M₂)
-variable {C : Submodule R M₁} (h : IsCompl C (LinearMap.ker f))
+
 open Matrix LinearMap
 
 
-theorem exists_basis_for_normal_form_abstract :
-
+theorem exists_basis_for_normal_form_abstract {C : Submodule R M₁}
+    (h : IsCompl C (LinearMap.ker f)) :
   haveI : Finite ((ofVectorSpaceIndex R C) ⊕
       (sumExtendIndex (f.linear_independent_ker_complement_basis_image h))) :=
     Fintype.finite (FiniteDimensional.fintypeBasisIndex (f.range_decomposition_basis h))
@@ -156,8 +119,7 @@ theorem exists_basis_for_normal_form_abstract :
   use (f.decomposition_basis h), (f.range_decomposition_basis h)
   funext i j
   match i, j with
-  | Sum.inl i', Sum.inl j' =>
-    simp [toMatrix_apply, f.apply_C_basis_eq_range_basis h j',
+  | Sum.inl i', Sum.inl j' => simp [toMatrix_apply, f.apply_C_basis_eq_range_basis h j',
       Finsupp.single, Pi.single, Function.update, Matrix.one_apply]
   | Sum.inr i', Sum.inr j' => simp [toMatrix_apply, decomposition_basis, prodEquivOfC]
   | Sum.inl i', Sum.inr j' => simp [toMatrix_apply, decomposition_basis, prodEquivOfC]
