@@ -29,7 +29,7 @@ In order to simplify the construction of the `CommShift` structure on `G`, we fi
 the compatibility condition on `adj.unit` for a fixed `a` in `A` and for isomorphisms
 `e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a` and
 `e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a`. We then prove that:
-- If `e₁` and `e₂` satusfy this condition, then `e₁` uniquely determines `e₂` and vice versa.
+- If `e₁` and `e₂` satisfy this condition, then `e₁` uniquely determines `e₂` and vice versa.
 - If `a = 0`, the isomorphisms `Functor.CommShift.isoZero F` and `Functor.CommShift.isoZero G`
 satisfy the condition.
 - The condition is stable by addition on `A`, if we use `Functor.CommShift.isoAdd` to deduce

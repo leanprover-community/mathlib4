@@ -166,7 +166,7 @@ theorem preimage_of_equiv {ν : Measure β} (h : IsFundamentalDomain G s μ) {f 
 theorem image_of_equiv {ν : Measure β} (h : IsFundamentalDomain G s μ) (f : α ≃ β)
     (hf : QuasiMeasurePreserving f.symm ν μ) (e : H ≃ G)
     (hef : ∀ g, Semiconj f (e g • ·) (g • ·)) : IsFundamentalDomain H (f '' s) ν := by
-  rw [f.image_eq_preimage]
+  rw [f.image_eq_preimage_symm]
   refine h.preimage_of_equiv hf e.symm.bijective fun g x => ?_
   rcases f.surjective x with ⟨x, rfl⟩
   rw [← hef _ _, f.symm_apply_apply, f.symm_apply_apply, e.apply_symm_apply]
@@ -342,12 +342,6 @@ protected theorem aestronglyMeasurable_on_iff {β : Type*} [TopologicalSpace β]
     _ ↔ AEStronglyMeasurable f (μ.restrict t) := by
       simp only [← aestronglyMeasurable_sum_measure_iff, ← hs.restrict_restrict,
         hs.sum_restrict_of_ac restrict_le_self.absolutelyContinuous]
-
-@[deprecated (since := "2025-04-09")]
-alias aEStronglyMeasurable_on_iff := MeasureTheory.IsFundamentalDomain.aestronglyMeasurable_on_iff
-@[deprecated (since := "2025-04-09")]
-alias _root_.MeasureTheory.IsAddFundamentalDomain.aEStronglyMeasurable_on_iff :=
-  MeasureTheory.IsAddFundamentalDomain.aestronglyMeasurable_on_iff
 
 @[to_additive]
 protected theorem hasFiniteIntegral_on_iff (hs : IsFundamentalDomain G s μ)

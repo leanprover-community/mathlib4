@@ -453,10 +453,10 @@ Multivariable calculus:
   Differential calculus:
     differentiable functions on an open subset of $\R^n$: 'DifferentiableOn'
     differentials (linear tangent functions): 'fderiv'
-    directional derivative: ''
+    directional derivative: 'lineDeriv'
     partial derivatives: ''
     Jacobian matrix: ''
-    gradient vector: ''
+    gradient vector: 'gradient'
     Hessian matrix: ''
     chain rule: 'fderiv_comp'
     mean value theorem: 'exists_ratio_deriv_eq_ratio_slope'
@@ -536,7 +536,7 @@ Measures and integral calculus:
     Parseval theorem: 'tsum_sq_fourierCoeff'
     Fourier transform on $\mathrm{L}^1(\R^d)$: 'Real.fourierIntegral'
     Fourier transform on $\mathrm{L}^2(\R^d)$: ''
-    Plancherel’s theorem: ''
+    Plancherel’s theorem: 'SchwartzMap.integral_inner_fourier_fourier'
     Fourier inversion formula: 'Continuous.fourier_inversion'
 
 # 11.
@@ -605,9 +605,9 @@ Distribution calculus:
   Spaces $\mathcal{S}(\R^d)$:
     Schwartz space of rapidly decreasing functions: 'SchwartzMap'
     stability by derivation: 'SchwartzMap.fderivCLM'
-    stability by multiplication by a slowly growing smooth function: ''
+    stability by multiplication by a slowly growing smooth function: 'SchwartzMap.bilinLeftCLM'
     Gaussian functions: ''
-    Fourier transforms on $\mathcal{S}(\R^d)$: ''
+    Fourier transforms on $\mathcal{S}(\R^d)$: 'SchwartzMap.fourierTransformCLM'
     convolution of two functions of $\mathcal{S}(\R^d)$: ''
   Tempered distributions:
     definition: ''
@@ -622,7 +622,7 @@ Distribution calculus:
     Fourier transform and derivation: ''
     Fourier transform and convolution product: ''
   Applications:
-    Poisson’s formula: ''
+    Poisson’s formula: 'SchwartzMap.tsum_eq_tsum_fourierIntegral'
     using convolution and Fourier-Laplace transform to solve one-dimensional linear differential equations: ''
     weak solution of partial derivative equation: ''
     fundamental solution of the Laplacian: ''

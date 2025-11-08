@@ -10,7 +10,7 @@ import Mathlib.RingTheory.MvPowerSeries.Basic
 
 /-! # Order of multivariate power series
 
-We work with `MvPowerSeries σ R`, for `Semiring R`, and `w : σ → ℕ`
+We work with `MvPowerSeries σ R`, for `Semiring R`, and `w : σ → ℕ`.
 
 ## Weighted Order
 
@@ -29,9 +29,9 @@ then there exists a nonzero coefficient of weight the weighted order.
 most the weight of that exponent.
 
 - `MvPowerSeries.coeff_eq_zero_of_lt_weightedOrder`: all coefficients of weights strictly less
-than the weighted order vanish
+than the weighted order vanish.
 
-- `MvPowerSeries.weightedOrder_eq_top_iff`: the weighted order of `f` is `⊤` if and only `f = 0`.
+- `MvPowerSeries.weightedOrder_eq_top_iff`: the weighted order of `f` is `⊤` if and only if `f = 0`.
 
 - `MvPowerSeries.nat_le_weightedOrder`: if all coefficients of weight `< n` vanish, then the
 weighted order is at least `n`.
@@ -73,7 +73,7 @@ nonzero coefficient of degree equal to the order.
 is at least that degree.
 
 - `MvPowerSeries.nat_le_order`: if all coefficients of degree strictly smaller than some integer
-vanish, then the order is at at least that integer.
+vanish, then the order is at least that integer.
 
 - `MvPowerSeries.order_eq_nat_iff`:  the order of a power series is an integer `n` iff there exists
 a nonzero coefficient in that degree, and all coefficients below that degree vanish.
@@ -282,12 +282,11 @@ theorem le_weightedOrder_mul :
   intro d hd
   rw [coeff_mul, Finset.sum_eq_zero]
   rintro ⟨i, j⟩ hij
-  by_cases hi : weight w i < f.weightedOrder w
+  by_cases! hi : weight w i < f.weightedOrder w
   · rw [coeff_eq_zero_of_lt_weightedOrder w hi, zero_mul]
-  · by_cases hj : weight w j < g.weightedOrder w
+  · by_cases! hj : weight w j < g.weightedOrder w
     · rw [coeff_eq_zero_of_lt_weightedOrder w hj, mul_zero]
-    · rw [not_lt] at hi hj
-      simp only [Finset.mem_antidiagonal] at hij
+    · simp only [Finset.mem_antidiagonal] at hij
       exfalso
       apply ne_of_lt (lt_of_lt_of_le hd <| add_le_add hi hj)
       rw [← hij, map_add, Nat.cast_add]
@@ -297,9 +296,7 @@ theorem le_weightedOrder_prod {R : Type*} [CommSemiring R] {ι : Type*} (w : σ 
     ∑ i ∈ s, (f i).weightedOrder w ≤ (∏ i ∈ s, f i).weightedOrder w := by
   induction s using Finset.cons_induction with
   | empty => simp
-  | cons a s ha ih =>
-    rw [Finset.sum_cons ha, Finset.prod_cons ha]
-    exact le_trans (add_le_add_left ih _) (le_weightedOrder_mul _)
+  | cons a s ha ih => grw [Finset.sum_cons ha, Finset.prod_cons ha, ih, le_weightedOrder_mul]
 
 alias weightedOrder_mul_ge := le_weightedOrder_mul
 

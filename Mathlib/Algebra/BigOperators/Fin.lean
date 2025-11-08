@@ -85,22 +85,10 @@ theorem prod_univ_castSucc (f : Fin (n + 1) → M) :
 theorem prod_univ_getElem (l : List M) : ∏ i : Fin l.length, l[i.1] = l.prod := by
   simp [Finset.prod_eq_multiset_prod]
 
-@[deprecated (since := "2025-04-19")]
-alias sum_univ_get := sum_univ_getElem
-
-@[to_additive existing, deprecated (since := "2025-04-19")]
-alias prod_univ_get := prod_univ_getElem
-
 @[to_additive (attr := simp)]
 theorem prod_univ_fun_getElem (l : List ι) (f : ι → M) :
     ∏ i : Fin l.length, f l[i.1] = (l.map f).prod := by
   simp [Finset.prod_eq_multiset_prod]
-
-@[deprecated (since := "2025-04-19")]
-alias sum_univ_get' := sum_univ_fun_getElem
-
-@[to_additive existing, deprecated (since := "2025-04-19")]
-alias prod_univ_get' := prod_univ_fun_getElem
 
 @[to_additive (attr := simp)]
 theorem prod_cons (x : M) (f : Fin n → M) :
@@ -409,6 +397,40 @@ theorem prod_Ioi_zero (f : Fin (n + 1) → M) :
   simp [Ioi_zero_eq_map]
 
 end succ
+
+/-- The product of `g i j` over `i j : Fin (n + 1)`, `i ≠ j`,
+is equal to the product of `g i j * g j i` over `i < j`.
+
+The additive version of this lemma is useful for some proofs about differential forms.
+In this application, the function has the signature `f : Fin (n + 1) → Fin n → M`,
+where `f i j` means `g i (Fin.succAbove i j)` in the informal statements.
+
+Similarly, the product of `g i j * g j i` over `i < j`
+is written as `f (Fin.castSucc i) j * f (Fin.succ j) i` over `i j : Fin n`, `j ≥ i`.
+-/
+@[to_additive /-- The sum of `g i j` over `i j : Fin (n + 1)`, `i ≠ j`,
+is equal to the sum of `g i j + g j i` over `i < j`.
+
+This lemma is useful for some proofs about differential forms.
+In this application, the function has the signature `f : Fin (n + 1) → Fin n → M`,
+where `f i j` means `g i (Fin.succAbove i j)` in the informal statements.
+
+Similarly, the sum of `g i j + g j i` over `i < j`
+is written as `f (Fin.castSucc i) j + f (Fin.succ j) i` over `i j : Fin n`, `j ≥ i`.
+-/]
+theorem prod_prod_eq_prod_triangle_mul (f : Fin (n + 1) → Fin n → M) :
+    ∏ i, ∏ j, f i j = ∏ i : Fin n, ∏ j ≥ i, (f i.castSucc j * f j.succ i) := calc
+  _ = (∏ i, ∏ j with i ≤ j.castSucc, f i j) * ∏ i, ∏ j with j.castSucc < i, f i j := by
+    simp only [← Finset.prod_mul_distrib, ← not_le, Finset.prod_filter_mul_prod_filter_not]
+  _ = (∏ i, ∏ j ≥ i, f i.castSucc j) * ∏ i, ∏ j ≤ i, f i.succ j := by
+    rw [Fin.prod_univ_castSucc, Fin.prod_univ_succ]
+    simp [Finset.filter_le_eq_Ici, Finset.filter_ge_eq_Iic]
+  _ = (∏ i, ∏ j ≥ i, f i.castSucc j) * ∏ i, ∏ j ≥ i, f j.succ i := by
+    congr 1
+    apply Finset.prod_comm'
+    simp
+  _ = ∏ i : Fin n, ∏ j ≥ i, (f i.castSucc j * f j.succ i) := by
+    simp only [Finset.prod_mul_distrib]
 
 end CommMonoid
 
