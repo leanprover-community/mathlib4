@@ -351,7 +351,7 @@ theorem iInter_nat_halfSpaces_eq
   refine ⟨L, c, ?_, fun _ _ j ↦ ?_⟩
   · ext x
     simp only [mem_iInter, mem_setOf_eq]
-    constructor
+    refine ⟨fun hx ↦ ?_, fun hx i ↦ (hLc i).2 x hx⟩
     · intro hx
       contrapose! hx
       have pos : 0 < infDist x s / 2 := by
