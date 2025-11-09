@@ -238,7 +238,7 @@ For instance, a hypothesis `h : ¬ ∀ x, ∃ y, x ≤ y` will be transformed by
 The `push` tactic can be extended using the `@[push]` attribute. `push` has special-casing
 built in for `push Not`, so that it can preserve binder names, and so that `¬ (p ∧ q)` can be
 transformed to either `p → ¬ q` (the default) or `¬ p ∨ ¬ q`. To get `¬ p ∨ ¬ q`, use
-`set_option push_neg.use_distrib true` or `push +distrib`.
+`set_option push_neg.use_distrib true` or `push_neg +distrib`.
 
 Another example: given a hypothesis
 ```lean
