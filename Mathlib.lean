@@ -6326,6 +6326,7 @@ import Mathlib.Tactic.GRewrite
 import Mathlib.Tactic.GRewrite.Core
 import Mathlib.Tactic.GRewrite.Elab
 import Mathlib.Tactic.Generalize
+import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
