@@ -168,7 +168,7 @@ end X_notMem
 variable {P : Ideal R⟦X⟧} [P.IsPrime]
 
 open Submodule in
-theorem spanFinrank_le_spanFinrank_map_constantCoeff_add_one_of_prime :
+theorem spanFinrank_le_spanFinrank_map_constantCoeff_add_one_of_isPrime :
     spanFinrank P ≤ spanFinrank (P.map constantCoeff) + 1 := by
   by_cases hfg : P.FG
   swap; · exact spanFinrank_of_not_fg hfg ▸ Nat.zero_le _
