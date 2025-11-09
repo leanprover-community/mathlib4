@@ -206,6 +206,6 @@ lemma IsPrime.fg_iff {P : Ideal R⟦X⟧} [P.IsPrime] : P.FG ↔ (P.map constant
 /-- If `R` is noetherian then so is `R⟦X⟧`. -/
 instance [IsNoetherianRing R] : IsNoetherianRing R⟦X⟧ :=
   IsNoetherianRing.of_prime fun P _ ↦
-    IsPrime.FG_iff.2 <| (isNoetherianRing_iff_ideal_fg R).1 inferInstance (P.map constantCoeff)
+    IsPrime.fg_iff.2 <| (isNoetherianRing_iff_ideal_fg R).1 inferInstance (P.map constantCoeff)
 
 end PowerSeries.Ideal
