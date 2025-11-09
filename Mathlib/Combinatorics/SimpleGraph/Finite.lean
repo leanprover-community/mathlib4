@@ -500,10 +500,10 @@ theorem degree_eq (f : G ≃g G') (x : V) [Fintype ↑(G.neighborSet x)]
 variable [Fintype V] [DecidableRel G.Adj] [Fintype W] [DecidableRel G'.Adj]
 
 theorem minDegree_eq (f : G ≃g G') : G.minDegree = G'.minDegree := by
-  rcases isEmpty_or_nonempty V with h | h
-  · have h' : IsEmpty W := f.symm.isEmpty
+  rcases isEmpty_or_nonempty V
+  · have : IsEmpty W := f.symm.isEmpty
     simp [minDegree]
-  · have h' : Nonempty W := f.symm.nonempty
+  · have : Nonempty W := f.symm.nonempty
     rcases lt_trichotomy G.minDegree G'.minDegree with h | h | h
     · obtain ⟨x, hx⟩ := exists_minimal_degree_vertex G
       rw [hx, Iso.degree_eq f x] at h
@@ -516,10 +516,10 @@ theorem minDegree_eq (f : G ≃g G') : G.minDegree = G'.minDegree := by
       exact minDegree_le_degree G (f.symm x')
 
 theorem maxDegree_eq (f : G ≃g G') : G.maxDegree = G'.maxDegree := by
-  rcases isEmpty_or_nonempty V with h | h
-  · have h' : IsEmpty W := f.symm.isEmpty
+  rcases isEmpty_or_nonempty V
+  · have : IsEmpty W := f.symm.isEmpty
     simp [maxDegree]
-  · have h' : Nonempty W := f.symm.nonempty
+  · have : Nonempty W := f.symm.nonempty
     rcases lt_trichotomy G.maxDegree G'.maxDegree with h | h | h
     · obtain ⟨x', hx'⟩ := exists_maximal_degree_vertex G'
       rw [hx', Iso.degree_eq f.symm x'] at h
