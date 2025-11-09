@@ -291,6 +291,13 @@ theorem le_weightedOrder_mul :
       apply ne_of_lt (lt_of_lt_of_le hd <| add_le_add hi hj)
       rw [← hij, map_add, Nat.cast_add]
 
+theorem le_weightedOrder_pow (n : ℕ) : n • f.weightedOrder w ≤ (f ^ n).weightedOrder w := by
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    simpa [add_smul] using
+      le_trans (add_le_add_right hn (f.weightedOrder w)) (le_weightedOrder_mul w)
+
 theorem le_weightedOrder_prod {R : Type*} [CommSemiring R] {ι : Type*} (w : σ → ℕ)
     (f : ι → MvPowerSeries σ R) (s : Finset ι) :
     ∑ i ∈ s, (f i).weightedOrder w ≤ (∏ i ∈ s, f i).weightedOrder w := by
@@ -440,9 +447,23 @@ theorem le_order_mul : f.order + g.order ≤ order (f * g) :=
 
 alias order_mul_ge := le_order_mul
 
+theorem le_order_pow (n : ℕ) : n • f.order ≤ (f ^ n).order :=
+  le_weightedOrder_pow _ n
+
 theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*}
     (f : ι → MvPowerSeries σ R) (s : Finset ι) : ∑ i ∈ s, (f i).order ≤ (∏ i ∈ s, f i).order :=
   le_weightedOrder_prod _ _ _
+
+theorem order_ne_zero_iff_constCoeff_eq_zero :
+    f.order ≠ 0 ↔ f.constantCoeff = 0 := by
+  constructor
+  · intro h
+    apply coeff_of_lt_order
+    simpa using pos_of_ne_zero h
+  · intro h
+    refine ENat.one_le_iff_ne_zero.mp <| MvPowerSeries.le_order fun d hd ↦ ?_
+    rw [Nat.cast_lt_one] at hd
+    simp [(degree_eq_zero_iff d).mp hd, h]
 
 section Ring
 
