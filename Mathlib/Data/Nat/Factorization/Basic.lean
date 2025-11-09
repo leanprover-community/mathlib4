@@ -505,7 +505,6 @@ theorem exists_eq_pow_of_exponent_coprime_of_pow_eq_pow
   have mul_factorization_p_eq_and_n_dvd_a_factorization_p p :
       m * a.factorization p = n * b.factorization p ∧ n ∣ a.factorization p := by
     have := congr($factorization_pow_eq p)
-    simp at this
     exact ⟨this, hmn.symm.dvd_of_dvd_mul_left (Dvd.intro (b.factorization p) this.symm)⟩
   constructor
   · apply factorization_eq_n_smul_c_factorization_of_eq_c_pow_n a ha n
