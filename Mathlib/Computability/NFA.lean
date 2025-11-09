@@ -729,6 +729,65 @@ theorem plz_work_rev {s : σ} {S : Set σ} {L : List (List α)} :
     rw [kstartStates_start] at hsanez
     sorry
 
+theorem plz_work'_wah' {s : σ} {L : List (List α)} :
+    s ∈ M.accept →
+    List.Forall (· ∈ M.accepts) L →
+    L.flatten ∈ M.kstar.acceptsFrom (some '' (insert s M.start)) := by
+  intro haccept hL
+  rw [mem_acceptsFrom]
+  simp
+  right
+  simp_rw [Set.insert_eq, Set.image_union, evalFrom_union, Set.mem_union]
+  simp
+  induction L generalizing s haccept with
+  | nil =>
+    simp
+    tauto
+  | cons z L ih =>
+    simp at *
+    rcases hL with ⟨hz, hL⟩
+    rw [mem_accepts] at hz
+    rcases hz with ⟨q, hq, hz⟩
+    specialize ih hq hL
+    rcases ih with ⟨t, ht, hflatten⟩
+    exists t
+    constructor
+    { assumption }
+    rcases hflatten with (hflatten | hflatten)
+    · right
+      rw [mem_evalFrom_iff_exists]
+      exists some q
+      constructor
+      · sorry
+      · assumption
+    · right
+      rw [mem_evalFrom_iff_exists]
+      rw [mem_evalFrom_iff_exists] at hflatten
+      simp_rw [Set.mem_image] at hflatten
+      obtain ⟨so', ⟨s', hs', rfl⟩, hflatten⟩ := hflatten
+      exists some s'
+      constructor
+      · sorry
+      · assumption
+
+theorem plz_work'_wah {s : σ} {S : Set σ} {L : List (List α)} :
+    s ∈ S →
+    s ∈ M.accept →
+    List.Forall (· ∈ M.accepts) L →
+    L.flatten ∈ M.kstar.acceptsFrom (M.kstarStates S) := by
+  intro hs haccept hL
+  rw [mem_acceptsFrom]
+  simp
+  right
+  induction L generalizing s S hs haccept with
+  | nil =>
+    simp [kstarStates]
+    tauto
+  | cons z L ih =>
+    simp at *
+    rcases hL with ⟨hz, hL⟩
+    sorry
+
 theorem plz_work {s : σ} {S : Set σ} {L : List (List α)} :
     s ∈ S →
     s ∈ M.accept →
@@ -788,10 +847,13 @@ theorem barf_kstar_impl {S : Set σ} {x : List α} :
   | nil =>
     simp at *
     rcases hy with ⟨s, hs, haccept⟩
-    simp [kstarStates, Set.image_union, max, SemilatticeSup.sup, Set.image_iUnion₂]
-    rw [Set.mem_union, Set.mem_iUnion₂]
+    rw [mem_acceptsFrom]
+    simp
     right
-    exists s, ⟨hs, haccept⟩
+    -- simp [kstarStates, Set.image_union, max, SemilatticeSup.sup, Set.image_iUnion₂]
+    -- rw [Set.mem_union, Set.mem_iUnion₂]
+    -- right
+    -- exists s, ⟨hs, haccept⟩
     sorry
   | cons a y ih =>
     simp [stepSet, kstarStates, Set.image_union, max, SemilatticeSup.sup, Set.image_iUnion₂] at *
