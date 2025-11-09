@@ -137,7 +137,8 @@ lemma smul_fin3_ext (P : Fin 3 → R) (u : R) :
   ⟨rfl, rfl, rfl⟩
 
 lemma comp_smul (f : R →+* S) (P : Fin 3 → R) (u : R) : f ∘ (u • P) = f u • f ∘ P := by
-  ext n; fin_cases n <;> simp only [smul_fin3, comp_fin3] <;> map_simp
+  ext
+  simp
 
 /-- The equivalence setoid for a projective point representative on a Weierstrass curve. -/
 @[reducible]
@@ -280,7 +281,7 @@ lemma equation_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
 
 lemma X_eq_zero_of_Z_eq_zero [NoZeroDivisors R] {P : Fin 3 → R} (hP : W'.Equation P)
     (hPz : P z = 0) : P x = 0 :=
-  pow_eq_zero <| (equation_of_Z_eq_zero hPz).mp hP
+  eq_zero_of_pow_eq_zero <| (equation_of_Z_eq_zero hPz).mp hP
 
 /-! ## The nonsingular condition in projective coordinates -/
 

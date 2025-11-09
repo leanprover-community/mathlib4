@@ -3,6 +3,7 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yaël Dillies
 -/
+import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Order.Interval.Set.Defs
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Tactic.Bound.Attribute
@@ -199,7 +200,7 @@ theorem log_eq_log_succ_iff {b n : ℕ} (hb : 1 < b) (hn : n ≠ 0) :
     log b n = log b (n + 1) ↔ b ^ log b (n + 1) ≠ n + 1 := by
   rw [ne_eq, ← log_lt_log_succ_iff hb hn, not_lt]
   simp only [le_antisymm_iff, and_iff_right_iff_imp]
-  exact fun  _ ↦ log_monotone (le_add_right n 1)
+  exact fun _ ↦ log_monotone (le_add_right n 1)
 
 theorem log_anti_left {b c n : ℕ} (hc : 1 < c) (hb : c ≤ b) : log b n ≤ log c n := by
   rcases eq_or_ne n 0 with (rfl | hn); · rw [log_zero_right, log_zero_right]
@@ -224,6 +225,11 @@ theorem log_div_base (b n : ℕ) : log b (n / b) = log b n - 1 := by
   · rw [div_eq_of_lt h, log_of_lt h, log_zero_right]
   rw [log_of_one_lt_of_le hb h, Nat.add_sub_cancel_right]
 
+lemma log_div_base_pow (b n k : ℕ) : log b (n / b ^ k) = log b n - k := by
+  induction k with
+  | zero => grind
+  | succ k hk => rw [Nat.pow_succ, ← Nat.div_div_eq_div_mul, log_div_base, hk, sub_add_eq]
+
 @[simp]
 theorem log_div_mul_self (b n : ℕ) : log b (n / b * b) = log b n := by
   rcases le_or_gt b 1 with hb | hb
@@ -237,6 +243,9 @@ theorem add_pred_div_lt {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : (n + b - 1) / 
   rw [div_lt_iff_lt_mul (by cutsat), ← succ_le_iff, ← pred_eq_sub_one,
     succ_pred_eq_of_pos (by cutsat)]
   exact Nat.add_le_mul hn hb
+
+lemma log_two_bit {b n} (hn : n ≠ 0) : Nat.log 2 (n.bit b) = Nat.log 2 n + 1 := by
+  rw [← log_div_mul_self, bit_div_two, log_mul_base Nat.one_lt_two hn]
 
 lemma log2_eq_log_two {n : ℕ} : Nat.log2 n = Nat.log 2 n := by
   rcases eq_or_ne n 0 with rfl | hn

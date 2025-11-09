@@ -18,38 +18,38 @@ injective presentation for `A`, hence category of abelian groups has enough inje
 
 ## Main results
 
-- `AddCommGrp.enoughInjectives` : the category of abelian groups (written additively) has
+- `AddCommGrpCat.enoughInjectives` : the category of abelian groups (written additively) has
   enough injectives.
-- `CommGrp.enoughInjectives` : the category of abelian groups (written multiplicatively) has
+- `CommGrpCat.enoughInjectives` : the category of abelian groups (written multiplicatively) has
   enough injectives.
 
 ## Implementation notes
 
-This file is split from `Mathlib/Algebra/Category/Grp/Injective.lean` to prevent import loops.
+This file is split from `Mathlib/Algebra/Category/GrpCat/Injective.lean` to prevent import loops.
 -/
 
 open CategoryTheory
 
 universe u
 
-namespace AddCommGrp
+namespace AddCommGrpCat
 
 open CharacterModule
 
-instance enoughInjectives : EnoughInjectives AddCommGrp.{u} where
+instance enoughInjectives : EnoughInjectives AddCommGrpCat.{u} where
   presentation A_ := Nonempty.intro
     { J := of <| (CharacterModule A_) → ULift.{u} (AddCircle (1 : ℚ))
       injective := injective_of_divisible _
       f := ofHom ⟨⟨fun a i ↦ ULift.up (i a), by aesop⟩, by aesop⟩
-      mono := (AddCommGrp.mono_iff_injective _).mpr <| (injective_iff_map_eq_zero _).mpr
+      mono := (AddCommGrpCat.mono_iff_injective _).mpr <| (injective_iff_map_eq_zero _).mpr
         fun _ h0 ↦ eq_zero_of_character_apply (congr_arg ULift.down <| congr_fun h0 ·) }
 
-end AddCommGrp
+end AddCommGrpCat
 
 
-namespace CommGrp
+namespace CommGrpCat
 
-instance enoughInjectives : EnoughInjectives CommGrp.{u} :=
+instance enoughInjectives : EnoughInjectives CommGrpCat.{u} :=
   EnoughInjectives.of_equivalence commGroupAddCommGroupEquivalence.functor
 
-end CommGrp
+end CommGrpCat
