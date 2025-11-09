@@ -131,18 +131,6 @@ theorem card_edgeFinset_le_card_choose_two : #G.edgeFinset ≤ (Fintype.card V).
 
 end EdgeFinset
 
-namespace Iso
-
-variable {G} {W : Type*} {G' : SimpleGraph W}
-
-theorem card_edgeFinset_eq (f : G ≃g G') [Fintype G.edgeSet] [Fintype G'.edgeSet] :
-    #G.edgeFinset = #G'.edgeFinset := by
-  apply Finset.card_eq_of_equiv
-  simp only [Set.mem_toFinset]
-  exact f.mapEdgeSet
-
-end Iso
-
 section FiniteAt
 
 /-!
@@ -493,6 +481,41 @@ theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
   simp [Finset.card_sdiff, h]
 
 end Finite
+
+namespace Iso
+
+variable {G} {W : Type*} {G' : SimpleGraph W}
+
+theorem card_edgeFinset_eq (f : G ≃g G') [Fintype G.edgeSet] [Fintype G'.edgeSet] :
+    #G.edgeFinset = #G'.edgeFinset := by
+  apply Finset.card_eq_of_equiv
+  simp only [Set.mem_toFinset]
+  exact f.mapEdgeSet
+
+theorem degree_eq (f : G ≃g G') (x : V) [Fintype ↑(G.neighborSet x)]
+    [Fintype ↑(G'.neighborSet (f x))] : G.degree x = G'.degree (f x) := by
+  simp_rw [← card_neighborSet_eq_degree]
+  convert Fintype.ofEquiv_card (Iso.mapNeighborSet f x).symm
+
+variable [Fintype V] [DecidableRel G.Adj] [Fintype W] [DecidableRel G'.Adj]
+
+theorem minDegree_eq (f : G ≃g G') : G.minDegree = G'.minDegree := by
+  rcases isEmpty_or_nonempty V with h | h
+  · have h' : IsEmpty W := f.symm.isEmpty
+    simp [minDegree]
+  · have h' : Nonempty W := f.symm.nonempty
+    rcases lt_trichotomy G.minDegree G'.minDegree with h | h | h
+    · obtain ⟨x, hx⟩ := exists_minimal_degree_vertex G
+      rw [hx, Iso.degree_eq f x] at h
+      contrapose! h
+      exact minDegree_le_degree G' (f x)
+    · exact h
+    · obtain ⟨x', hx'⟩ := exists_minimal_degree_vertex G'
+      rw [hx', Iso.degree_eq f.symm x'] at h
+      contrapose! h
+      exact minDegree_le_degree G (f.symm x')
+
+end Iso
 
 section Support
 
