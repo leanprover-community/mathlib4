@@ -59,15 +59,18 @@ lemma finite_iff_of_finite [Finite k] : Finite (ℙ k V) ↔ Finite V := by
 See `Projectivization.card'` and `Projectivization.card''` for other spellings of the formula. -/
 lemma card : Nat.card V - 1 = Nat.card (ℙ k V) * (Nat.card k - 1) := by
   nontriviality V
-  wlog h : Finite k
-  · push_neg at h
+  cases finite_or_infinite k with
+  | inr h =>
     have : Infinite V := Module.Free.infinite k V
     simp
-  wlog h : Finite V
-  · have := not_iff_not.mpr (finite_iff_of_finite k V)
-    push_neg at h this
+  | inl h =>
+  cases finite_or_infinite V with
+  | inr h =>
+    have := not_iff_not.mpr (finite_iff_of_finite k V)
+    push_neg at this
     have : Infinite (ℙ k V) := by rwa [this]
     simp
+  | inl h =>
   classical
   haveI : Fintype V := Fintype.ofFinite V
   haveI : Fintype (ℙ k V) := Fintype.ofFinite (ℙ k V)

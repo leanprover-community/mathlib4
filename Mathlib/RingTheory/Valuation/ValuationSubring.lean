@@ -320,7 +320,7 @@ theorem idealOfLE_le_of_le (R S : ValuationSubring K) (hR : A ≤ R) (hS : A ≤
     idealOfLE A S hS ≤ idealOfLE A R hR := fun x hx =>
   (valuation_lt_one_iff R _).2
     (by
-      by_contra c; push_neg at c; replace c := monotone_mapOfLE R S h c
+      by_contra! c; replace c := monotone_mapOfLE R S h c
       rw [(mapOfLE _ _ _).map_one, mapOfLE_valuation_apply] at c
       apply not_le_of_gt ((valuation_lt_one_iff S _).1 hx) c)
 
@@ -390,8 +390,7 @@ theorem isEquiv_iff_valuationSubring :
 theorem isEquiv_valuation_valuationSubring : v.IsEquiv v.valuationSubring.valuation := by
   rw [isEquiv_iff_val_le_one]
   intro x
-  rw [ValuationSubring.valuation_le_one_iff]
-  rfl
+  rw [ValuationSubring.valuation_le_one_iff, mem_valuationSubring_iff]
 
 lemma valuationSubring.integers : v.Integers v.valuationSubring :=
   Valuation.integer.integers _
@@ -643,9 +642,8 @@ theorem ker_unitGroupToResidueFieldUnits :
 
 theorem surjective_unitGroupToResidueFieldUnits :
     Function.Surjective A.unitGroupToResidueFieldUnits :=
-  (IsLocalRing.surjective_units_map_of_local_ringHom _ Ideal.Quotient.mk_surjective
-        IsLocalRing.isLocalHom_residue).comp
-    (MulEquiv.surjective _)
+  IsLocalRing.surjective_units_map_of_local_ringHom _ Ideal.Quotient.mk_surjective
+    (inferInstanceAs (IsLocalHom (IsLocalRing.residue A))) |>.comp (MulEquiv.surjective _)
 
 /-- The quotient of the unit group of `A` by the principal unit group of `A` agrees with
 the units of the residue field of `A`. -/

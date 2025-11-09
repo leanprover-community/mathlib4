@@ -212,30 +212,89 @@ section Limits
 
 variable {J : Type u₃} [Category.{v₃} J] (X : C)
 
-lemma closedUnderLimitsOfShape_isMono :
-    ClosedUnderLimitsOfShape J (Over.isMono X) := by
-  refine fun F _ hc p ↦ ⟨fun g h e ↦ ?_⟩
-  apply IsLimit.hom_ext <| WithTerminal.isLimitEquiv.invFun hc
-  intro j; cases j with
-  | of j => have := p j; rw [← cancel_mono ((F.obj j).hom)]; simpa
-  | star => exact e
+instance : (Over.isMono X).IsClosedUnderLimitsOfShape J where
+  limitsOfShape_le := fun F ⟨p, hp⟩ ↦ ⟨fun g h e ↦ by
+    refine (WithTerminal.isLimitEquiv.invFun p.isLimit).hom_ext (fun j ↦ ?_)
+    cases j with
+    | of j => have := hp j; rw [← cancel_mono ((p.diag.obj j).hom)]; simpa
+    | star => exact e⟩
 
 instance hasLimit (F : J ⥤ MonoOver X) [HasLimit (F ⋙ (Over.isMono X).ι)] :
-    HasLimit F := by
-  apply hasLimit_of_closedUnderLimits (closedUnderLimitsOfShape_isMono X)
+    HasLimit F :=
+  hasLimit_of_closedUnderLimits _ _ _
 
 instance hasLimitsOfShape [HasLimitsOfShape J (Over X)] :
-    HasLimitsOfShape J (MonoOver X) := by
-  apply hasLimitsOfShape_of_closedUnderLimits (closedUnderLimitsOfShape_isMono X)
+    HasLimitsOfShape J (MonoOver X) where
 
 instance hasFiniteLimits [HasFiniteLimits (Over X)] : HasFiniteLimits (MonoOver X) where
-  out _ _ _ := by apply hasLimitsOfShape X
+  out _ _ _ := inferInstance
 
 instance hasLimitsOfSize [HasLimitsOfSize.{w, w'} (Over X)] :
     HasLimitsOfSize.{w, w'} (MonoOver X) where
-  has_limits_of_shape _ _ := by apply hasLimitsOfShape X
 
 end Limits
+
+section Colimits
+
+variable [HasCoproducts C] [HasStrongEpiMonoFactorisations C] {J : Type u₂} [Category.{v₂} J]
+
+/-- A helper function, providing the strong epi-mono factorization used construct to colimits. -/
+def strongEpiMonoFactorisationSigmaDesc (F : J ⥤ MonoOver Y) :
+    StrongEpiMonoFactorisation (Sigma.desc fun i ↦ (F.obj i).arrow) :=
+  Classical.choice <| HasStrongEpiMonoFactorisations.has_fac (Sigma.desc fun i ↦ (F.obj i).arrow)
+
+/-- If a category `C` has strong epi-mono factorization, for any `Y : C` and functor
+`F : J ⥤ MonoOver Y`, there is a cocone under F. -/
+def coconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
+    Cocone F where
+  pt := {
+    obj := .mk <| (strongEpiMonoFactorisationSigmaDesc F).m
+    property := (strongEpiMonoFactorisationSigmaDesc F).m_mono
+  }
+  ι := {
+    app j := {
+      left := Sigma.ι (fun i ↦ (F.obj i : C)) j ≫ (strongEpiMonoFactorisationSigmaDesc F).e
+      right := 𝟙 _
+    }
+  }
+
+lemma commSqOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone F) :
+    CommSq (Sigma.desc fun i ↦ (c.ι.app i).left) (strongEpiMonoFactorisationSigmaDesc F).e
+      c.pt.arrow (strongEpiMonoFactorisationSigmaDesc F).m where
+  w := by
+    apply Sigma.hom_ext
+    intro j
+    simp only [colimit.ι_desc_assoc, Discrete.functor_obj_eq_as, Cofan.mk_pt, Cofan.mk_ι_app,
+      MonoFactorisation.fac, colimit.ι_desc]
+    convert (c.ι.app j).w
+    simp only [const_obj_obj, CostructuredArrow.right_eq_id, const_obj_map, comp_id]
+    exact rfl
+
+/-- A helper function, providing the lift structure used to construct colimits. -/
+def liftStructOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone F) :
+    (commSqOfHasStrongEpiMonoFactorisation F c).LiftStruct :=
+  Classical.choice
+    (((strongEpiMonoFactorisationSigmaDesc F).e_strong_epi.llp _).sq_hasLift
+      (commSqOfHasStrongEpiMonoFactorisation F c)).exists_lift
+
+/-- The cocone `coconeOfHasStrongEpiMonoFactorisation F` is a colimit -/
+def isColimitCoconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
+    IsColimit (coconeOfHasStrongEpiMonoFactorisation F) where
+  desc c := {
+    left := (liftStructOfHasStrongEpiMonoFactorisation F c).l
+    right := 𝟙 _
+    w := by
+      simp only [id_obj, const_obj_obj, Functor.id_map, Discrete.functor_map_id, comp_id];
+      exact (liftStructOfHasStrongEpiMonoFactorisation F c).fac_right
+  }
+
+instance hasColimitsOfSize_of_hasStrongEpiMonoFactorisations :
+    HasColimitsOfSize.{w, w'} (MonoOver Y) where
+  has_colimits_of_shape _ _ :=
+    ⟨fun F ↦
+      ⟨coconeOfHasStrongEpiMonoFactorisation F, isColimitCoconeOfHasStrongEpiMonoFactorisation F⟩⟩
+
+end Colimits
 
 section Pullback
 

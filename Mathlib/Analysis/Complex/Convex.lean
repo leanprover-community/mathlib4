@@ -79,7 +79,7 @@ lemma rectangle_eq_convexHull (z w : ℂ) :
     Rectangle z w = convexHull ℝ {z, z.re + w.im * I, w.re + z.im * I, w} := by
   simp_rw [Rectangle, ← segment_eq_uIcc, ← convexHull_pair, ← convexHull_reProdIm,
     ← preimage_equivRealProd_prod, insert_prod, singleton_prod, image_pair, insert_union,
-    ← insert_eq, preimage_equiv_eq_image_symm, image_insert_eq, image_singleton,
+    ← insert_eq, ← Equiv.image_symm_eq_preimage, image_insert_eq, image_singleton,
     equivRealProd_symm_apply, re_add_im]
 
 /-- If opposite corners of a rectangle are contained in a convex set, the whole rectangle is. -/
@@ -87,5 +87,22 @@ lemma Convex.rectangle_subset {U : Set ℂ} (U_convex : Convex ℝ U) {z w : ℂ
     (hw : w ∈ U) (hzw : (z.re + w.im * I) ∈ U) (hwz : (w.re + z.im * I) ∈ U) :
     Rectangle z w ⊆ U := by
   simpa only [rectangle_eq_convexHull] using convexHull_min (by grind) U_convex
+
+-- This also follows easily from `isPathConnected_compl_singleton_of_one_lt_rank`,
+-- or that `Complex.range_exp` and `Complex.continuous_exp`,
+-- but both of them requires a lot more import.
+instance : PathConnectedSpace ℂˣ :=
+  have : PathConnectedSpace { z : ℂ // z ≠ 0 } :=
+    (isPathConnected_iff_pathConnectedSpace (F := {0}ᶜ)).mp (by
+      convert (((convex_halfSpace_im_gt 0).isPathConnected ⟨.I, by simp⟩).union
+        ((convex_halfSpace_re_gt 0).isPathConnected ⟨1, by simp⟩) ⟨1 + .I, by simp⟩).union
+        (((convex_halfSpace_im_lt 0).isPathConnected ⟨-.I, by simp⟩).union
+        ((convex_halfSpace_re_lt 0).isPathConnected ⟨-1, by simp⟩) ⟨-1 - .I, by simp⟩)
+        ⟨1 - .I, by simp⟩ using 1
+      ext x
+      refine ⟨?_, by aesop⟩
+      simp +contextual [Complex.ext_iff, -not_and, not_and_or, or_imp, ← ne_eq, ← lt_or_lt_iff_ne])
+  let e := unitsHomeomorphNeZero (G₀ := ℂ)
+  e.symm.surjective.pathConnectedSpace e.symm.continuous
 
 end Complex
