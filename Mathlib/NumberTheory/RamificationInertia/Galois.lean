@@ -256,7 +256,6 @@ lemma ncard_primesOver_mul_card_inertia_mul_finrank (p : Ideal R) [p.IsMaximal]
   convert P.add_mem_iff_right (inv_mem hσ x) (b := x) using 2
   simp
 
--- TODO : get rid of `K` and `L` in the statement (and replace with `[IsGaloisGroup G R S]`)
 /-- The cardinality of the inertia group is equal to the ramification index. -/
 lemma card_inertia_eq_ramificationIdxIn
     [IsDedekindDomain R] [IsDedekindDomain S] [Module.Finite R S]
