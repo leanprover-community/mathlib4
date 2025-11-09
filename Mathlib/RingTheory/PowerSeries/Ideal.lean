@@ -47,13 +47,6 @@ variable {R : Type*}
 open Ideal Set Finset
 
 namespace PowerSeries
-
-section Semiring
-
-variable [Semiring R]
-
-end Semiring
-
 variable [CommRing R] {I : Ideal R⟦X⟧} {S : Set R}
 
 section Xmem
