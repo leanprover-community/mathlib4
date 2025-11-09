@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yongxi Lin, Thomas Zhu
 -/
 import Mathlib.Algebra.Order.Ring.Star
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.LocallyConvex.Separation
+import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.Data.Int.Star
 import Mathlib.Data.Real.StarOrdered
 import Mathlib.Topology.Compactness.PseudometrizableLindelof
@@ -25,7 +28,7 @@ This file contains the conditional Jensen's inequality.
   Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
 -/
 
-open MeasureTheory ProbabilityTheory TopologicalSpace Set Metric ContinuousLinearMap RCLike
+open TopologicalSpace Set Metric ContinuousLinearMap RCLike
 open scoped ENNReal
 
 variable {K E : Type*} [RCLike K] {s : Set E} {φ : E → ℝ}
