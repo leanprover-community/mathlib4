@@ -194,6 +194,18 @@ theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*} (φ : ι → R�
 
 alias order_mul_ge := le_order_mul
 
+theorem order_ne_zero_iff_constCoeff_eq_zero {φ : R⟦X⟧} :
+    φ.order ≠ 0 ↔ φ.constantCoeff = 0 := by
+  constructor
+  · intro h
+    rw [← PowerSeries.coeff_zero_eq_constantCoeff]
+    apply coeff_of_lt_order
+    simpa using pos_of_ne_zero h
+  · intro h
+    refine ENat.one_le_iff_ne_zero.mp <| PowerSeries.le_order _ _ fun d hd ↦ ?_
+    rw [Nat.cast_lt_one] at hd
+    simp [hd, h]
+
 /-- The order of the monomial `a*X^n` is infinite if `a = 0` and `n` otherwise. -/
 theorem order_monomial (n : ℕ) (a : R) [Decidable (a = 0)] :
     order (monomial n a) = if a = 0 then (⊤ : ℕ∞) else n := by
