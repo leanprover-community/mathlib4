@@ -172,7 +172,7 @@ theorem spanFinrank_le_spanFinrank_map_constantCoeff_add_one_of_isPrime :
 
 /-- A prime ideal `P` of `R⟦X⟧` is finitely generated if and only if `P.map constantCoeff` is
 finitely generated. -/
-lemma IsPrime.fg_iff : P.FG ↔ (P.map constantCoeff).FG := by
+lemma fg_iff_of_isPrime : P.FG ↔ (P.map constantCoeff).FG := by
   constructor
   · exact (FG.map · _)
   · intro ⟨S, hS⟩
