@@ -349,7 +349,7 @@ theorem val_div_eq_divp (u₁ u₂ : αˣ) : ↑(u₁ / u₂) = ↑u₁ /ₚ u�
 end Monoid
 
 /-!
-# `IsUnit` predicate
+### `IsUnit` predicate
 -/
 
 section IsUnit
