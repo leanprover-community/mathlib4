@@ -339,7 +339,7 @@ theorem iInter_nat_halfSpaces_eq
   obtain rfl | hs_univ := eq_or_ne s univ
   · use 0, 0
     simp [nonempty_iff_ne_empty]
-  have ⟨f, hfmem, hf⟩ : ∃ f : ℕ → E, (∀ i, f i ∈ sᶜ) ∧ sᶜ ⊆ closure (range f) := by
+  obtain ⟨f, hfmem, hf⟩ : ∃ f : ℕ → E, (∀ i, f i ∈ sᶜ) ∧ sᶜ ⊆ closure (range f) := by
     have : Nonempty ↑sᶜ := (nonempty_compl.mpr hs_univ).to_subtype
     have : SeparableSpace ↑sᶜ := hsep.separableSpace
     use fun i ↦ (denseSeq ↑sᶜ i : E), by simp
