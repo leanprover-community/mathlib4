@@ -161,12 +161,13 @@ def radical (a : M) : M :=
 @[simp] theorem radical_one : radical (1 : M) = 1 := by simp [radical]
 @[deprecated (since := "2025-05-31")] alias radical_one_eq := radical_one
 
-lemma radical_eq_of_primeFactors_eq (h : primeFactors a = primeFactors b) :
-    radical a = radical b := by
-  simp only [radical, h]
+lemma radical_eq_iff_primeFactors_eq :
+    radical a = radical b ↔ primeFactors a = primeFactors b :=
+  ⟨fun h => by rw [← primeFactors_radical, h]; exact primeFactors_radical,
+    fun h => by simp [radical, h]⟩
 
 theorem radical_eq_of_associated (h : Associated a b) : radical a = radical b :=
-  radical_eq_of_primeFactors_eq h.primeFactors_eq
+  radical_eq_iff_primeFactors_eq.2 h.primeFactors_eq
 
 lemma radical_associated (ha : IsRadical a) (ha' : a ≠ 0) :
     Associated (radical a) a := by
@@ -266,7 +267,7 @@ theorem radical_eq_one_iff : radical a = 1 ↔ a = 0 ∨ IsUnit a := by
 
 @[simp]
 lemma radical_radical : radical (radical a) = radical a :=
-  radical_eq_of_primeFactors_eq primeFactors_radical
+  radical_eq_iff_primeFactors_eq.2 primeFactors_radical
 
 lemma radical_dvd_radical_iff_normalizedFactors_subset_normalizedFactors :
     radical a ∣ radical b ↔ normalizedFactors a ⊆ normalizedFactors b := by
