@@ -47,18 +47,10 @@ namespace SemilocallySimplyConnected
 variable {X : Type*} [TopologicalSpace X]
 
 /-- Simply connected spaces are semilocally simply connected. -/
-theorem of_simplyConnected [SimplyConnectedSpace X] : SemilocallySimplyConnected X := by
-  intro x
-  use Set.univ
-  refine ⟨isOpen_univ, Set.mem_univ x, ?_⟩
-  intro base
-  rw [MonoidHom.range_eq_bot_iff]
-  ext p
-  -- Both sides are in FundamentalGroup X base.val, which is a subsingleton
-  haveI : Subsingleton (FundamentalGroup X base.val) := by
-    change Subsingleton (Path.Homotopic.Quotient base.val base.val)
-    infer_instance
-  apply Subsingleton.elim
+theorem of_simplyConnected [SimplyConnectedSpace X] : SemilocallySimplyConnected X := fun x =>
+  ⟨Set.univ, isOpen_univ, Set.mem_univ x, fun base => by
+    simp only [MonoidHom.range_eq_bot_iff]; ext
+    exact @Subsingleton.elim (Path.Homotopic.Quotient base.val base.val) inferInstance _ _⟩
 
 theorem semilocallySimplyConnected_iff_small_loops_null
     [LocPathConnectedSpace X] :
@@ -83,56 +75,31 @@ theorem semilocallySimplyConnected_iff_small_loops_null
     -- The map from π₁(U, u) to π₁(X, u.val) has trivial range
     have h_range := hU_loops u
     rw [MonoidHom.range_eq_bot_iff] at h_range
-    -- So it sends ⟦γ_U⟧ to the identity ⟦refl⟧
+    -- The map sends ⟦γ_U⟧ to ⟦γ_U.map⟧ = ⟦γ⟧ by rfl, and h_range makes this ⟦refl⟧
+    have γ_U_eq : γ_U.map continuous_subtype_val = γ := rfl
     have h_map : FundamentalGroup.map ⟨Subtype.val, continuous_subtype_val⟩ u
-          (FundamentalGroup.fromPath ⟦γ_U⟧) =
-        FundamentalGroup.fromPath ⟦Path.refl u.val⟧ := by
-      rw [h_range]
-      rfl
-    -- The map sends γ_U to γ.map Subtype.val
-    -- Since Subtype.val ∘ γ_U = γ pointwise, we have γ_U.map = γ
-    have γ_U_eq : γ_U.map continuous_subtype_val = γ := by
-      ext t
-      rfl
-    -- The key is that FundamentalGroup.map sends ⟦γ_U⟧ to ⟦γ_U.map f.continuous⟧
-    -- By definition, FundamentalGroup.map is (FundamentalGroupoid.map f).map
-    -- which by map_eq and map_lift gives us ⟦γ_U.map⟧
-    have : FundamentalGroup.map ⟨Subtype.val, continuous_subtype_val⟩ u
             (FundamentalGroup.fromPath ⟦γ_U⟧) =
-           FundamentalGroup.fromPath ⟦γ_U.map continuous_subtype_val⟧ := by
-      rfl
-    rw [this, γ_U_eq] at h_map
+           FundamentalGroup.fromPath ⟦Path.refl u.val⟧ := by
+      rw [h_range]; rfl
+    rw [show FundamentalGroup.map ⟨Subtype.val, continuous_subtype_val⟩ u
+            (FundamentalGroup.fromPath ⟦γ_U⟧) =
+           FundamentalGroup.fromPath ⟦γ_U.map continuous_subtype_val⟧ from rfl,
+        γ_U_eq] at h_map
     exact Quotient.eq.mp h_map
   · -- Backward direction: small loops null implies SemilocallySimplyConnected
     intro h x
     obtain ⟨U, hU_open, hx_in_U, hU_loops_null⟩ := h x
-    use U, hU_open, hx_in_U
-    intro base
-    rw [MonoidHom.range_eq_bot_iff]
-    ext p
-    -- p is a loop in the subspace U at base
-    -- Extract a representative path from the homotopy class
+    use U, hU_open, hx_in_U; intro base
+    simp only [MonoidHom.range_eq_bot_iff]; ext p
     obtain ⟨γ', rfl⟩ := Quotient.exists_rep (FundamentalGroup.toPath p)
-    -- The map sends γ' to γ'.map Subtype.val
-    -- The range of γ'.map Subtype.val is in U
     have hrange : Set.range (γ'.map continuous_subtype_val) ⊆ U := by
-      intro y hy
-      obtain ⟨t, rfl⟩ := hy
-      simp [Path.map]
+      rintro _ ⟨t, rfl⟩
       exact (γ' t).property
-    -- Apply the hypothesis to get that γ'.map is homotopic to refl
-    have hhom : Path.Homotopic (γ'.map continuous_subtype_val) (Path.refl base.val) :=
-      hU_loops_null (γ'.map continuous_subtype_val) hrange
-    -- FundamentalGroup.map sends ⟦γ'⟧ to ⟦γ'.map⟧
-    have h_map_eq : FundamentalGroup.map ⟨Subtype.val, continuous_subtype_val⟩ base
+    have hhom := hU_loops_null (γ'.map continuous_subtype_val) hrange
+    rw [show FundamentalGroup.map ⟨Subtype.val, continuous_subtype_val⟩ base
             (FundamentalGroup.fromPath ⟦γ'⟧) =
-           FundamentalGroup.fromPath ⟦γ'.map continuous_subtype_val⟧ := by
-      rfl
-    -- Since γ'.map is homotopic to refl, the quotients are equal
-    have h_quot : (⟦γ'.map continuous_subtype_val⟧ : Path.Homotopic.Quotient base.val base.val) =
-           ⟦Path.refl base.val⟧ :=
-      Quotient.sound hhom
-    rw [h_map_eq, h_quot]
+           FundamentalGroup.fromPath ⟦γ'.map continuous_subtype_val⟧ from rfl,
+        Quotient.sound hhom]
     rfl
 
 end SemilocallySimplyConnected
