@@ -39,7 +39,7 @@ assert_not_exists ContinuousLinearMap.hasOpNorm
 
 open Set
 
-open Pointwise
+open Pointwise TopologicalSpace Metric
 
 variable {E : Type*} {s t : Set E} {x y : E}
 
@@ -321,8 +321,6 @@ end
 
 section Countable
 
-open TopologicalSpace Metric
-
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
 
 /-- A closed convex set `s` is the intersection of countably many half spaces in a separable Banach
@@ -352,24 +350,20 @@ theorem iInter_nat_halfSpaces_eq
   · ext x
     simp only [mem_iInter, mem_setOf_eq]
     refine ⟨fun hx ↦ ?_, fun hx i ↦ (hLc i).2 x hx⟩
-    · intro hx
-      contrapose! hx
-      have pos : 0 < infDist x s / 2 := by
-        refine div_pos ?_ (by positivity)
-        exact (IsClosed.notMem_iff_infDist_pos hs₂ hs₃).mp hx
-      obtain ⟨_, ⟨i, rfl⟩, hi⟩ := Metric.mem_closure_iff.mp (hf hx) _ pos
-      refine ⟨i, (hLc i).1 _ ?_⟩
-      have hfix : infDist (f i) s ≥ infDist x s / 2 := by
-        by_contra! hp
-        obtain ⟨y, hy1, hy2⟩ := (infDist_lt_iff hs₃).mp hp
-        have hxy : dist x y < infDist x s := by linarith [dist_triangle x (f i) y]
-        exact notMem_of_dist_lt_infDist hxy hy1
-      rw [mem_ball]
-      linarith
-    · intro hx i
-      exact (hLc i).2 x hx
-  · intro _ _ j
-    obtain hl | hr := le_or_gt (c j) 0
+    contrapose! hx
+    have pos : 0 < infDist x s / 2 := by
+      refine div_pos ?_ (by positivity)
+      exact (IsClosed.notMem_iff_infDist_pos hs₂ hs₃).mp hx
+    obtain ⟨_, ⟨i, rfl⟩, hi⟩ := Metric.mem_closure_iff.mp (hf hx) _ pos
+    refine ⟨i, (hLc i).1 _ ?_⟩
+    have hfix : infDist (f i) s ≥ infDist x s / 2 := by
+      by_contra! hp
+      obtain ⟨y, hy1, hy2⟩ := (infDist_lt_iff hs₃).mp hp
+      have hxy : dist x y < infDist x s := by linarith [dist_triangle x (f i) y]
+      exact notMem_of_dist_lt_infDist hxy hy1
+    rw [mem_ball]
+    linarith
+  · obtain hl | hr := le_or_gt (c j) 0
     · use f j
       have : re (L j (f j)) < c j := (hLc j).1 _ <| mem_ball_self <|
         (IsClosed.notMem_iff_infDist_pos hs₂ hs₃).mp (hfmem j)
@@ -394,8 +388,7 @@ theorem iInter_nat_halfSpaces_eq_of_prod {F : Type*} {s : Set (E × F)}
     refine iInter_congr fun i ↦ ?_
     ext
     simp [← map_add]
-  · intro hs₃ hsne i
-    obtain ⟨z, hz⟩ := eq2 hs₃ hsne i
+  · obtain ⟨z, hz⟩ := eq2 hs₃ hsne i
     exact ⟨z.1, z.2, by simpa [← map_add] using hz⟩
 
 end Countable
