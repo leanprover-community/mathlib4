@@ -377,6 +377,9 @@ lemma uIoo_of_not_ge (h : ¬b ≤ a) : uIoo a b = Ioo a b := uIoo_of_lt <| lt_of
 theorem uIoo_subset_uIcc {α : Type*} [LinearOrder α] (a : α) (b : α) : uIoo a b ⊆ uIcc a b := by
   simp [uIoo, uIcc, Ioo_subset_Icc_self]
 
+lemma uIoo_subset_Ioo (ha : a₁ ∈ Icc a₂ b₂) (hb : b₁ ∈ Icc a₂ b₂) : uIoo a₁ b₁ ⊆ Ioo a₂ b₂ :=
+  Ioo_subset_Ioo (le_inf ha.1 hb.1) (sup_le ha.2 hb.2)
+
 @[simp] lemma nonempty_uIoo [DenselyOrdered α] : (uIoo a b).Nonempty ↔ a ≠ b := by
   simp [uIoo, eq_comm]
 
