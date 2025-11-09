@@ -201,6 +201,7 @@ structure Config where
   This is equivalent to using `set_option push_neg.use_distrib true`. -/
   distrib : Bool := false
 
+/-- Function elaborating `Push.Config`. -/
 declare_config_elab elabPushConfig Config
 
 /--
