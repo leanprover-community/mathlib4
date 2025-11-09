@@ -344,9 +344,9 @@ theorem iInter_nat_halfSpaces_eq
     change ↑(Subtype.mk x hx) ∈ closure (range (((↑) : ↑sᶜ → E) ∘ _))
     rw [range_comp, ← closure_subtype, (denseRange_denseSeq ↑sᶜ).closure_range]
     trivial
-  have φc : ∀ (i : ℕ), ∃ (φ : E →L[𝕜] 𝕜) (c : ℝ),
+  have φc i : ∃ (φ : E →L[𝕜] 𝕜) (c : ℝ),
       (∀ a ∈ ball (f i) (infDist (f i) s), re (φ a) < c) ∧ ∀ b ∈ s, c ≤ re (φ b) :=
-    fun i ↦ geometric_hahn_banach_open (convex_ball _ _) isOpen_ball hs₁ disjoint_ball_infDist
+    geometric_hahn_banach_open (convex_ball _ _) isOpen_ball hs₁ disjoint_ball_infDist
   choose L c hLc using φc
   use L, c
   constructor
