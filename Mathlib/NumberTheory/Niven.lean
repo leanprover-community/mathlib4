@@ -1,8 +1,9 @@
 /-
 Copyright (c) 2025 Alex Meiburg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alex Meiburg
+Authors: Alex Meiburg, Snir Broshi
 -/
+import Mathlib.Analysis.Complex.IsIntegral
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
 import Mathlib.RingTheory.Polynomial.RationalRoot
 import Mathlib.Tactic.Peel
@@ -35,26 +36,78 @@ end IsIntegral
 
 variable {θ : ℝ}
 
-open Real
+open Real Polynomial
 
-theorem isIntegral_two_mul_cos_rat_mul_pi (r : ℚ) :
-    IsIntegral ℤ (2 * cos (r * π)) := by
-  let z : ℂ := .exp (.I * r * π)
-  obtain ⟨p, q, hq_pos, rfl⟩ : ∃ (p : ℤ) (q : ℕ), q ≠ 0 ∧ r = p / q :=
-    ⟨r.num, r.den, r.den_ne_zero, r.num_div_den.symm⟩
-  -- Let `z = e ^ (i * π * p / q)`, which is a root of unity.
-  have hz_root : z ^ (2 * q) = 1 := by
-    rw [← Complex.exp_nat_mul, Complex.exp_eq_one_iff]
-    use p
-    push_cast
-    field [hq_pos]
-  -- Since z is a root of unity, `2 cos θ = z` and `z⁻¹` are algebraic integers, and their sum.
-  have h_cos_eq : 2 * cos (p / q * π) = z + z⁻¹ := by
-    simpa [Complex.cos, Complex.exp_neg, z] using by ring_nf
-  obtain ⟨f, hf₁, hf₂⟩ : IsIntegral ℤ (z + z⁻¹) := by apply IsIntegral.add <;>
-      exact ⟨.X ^ (2 * q) - 1, Polynomial.monic_X_pow_sub_C _ (by positivity), by simp [hz_root]⟩
-  use f, hf₁
-  simp_all [Polynomial.eval₂_eq_sum_range, ← Complex.ofReal_inj]
+section IsIntegral
+
+/-- `exp(q * πi)` for `q : ℚ` is integral over `ℤ`. -/
+theorem Complex.isIntegral_exp_rat_mul_pi_mul_I (q : ℚ) : IsIntegral ℤ <| exp <| q * π * I := by
+  refine ⟨X ^ (2 * q.den) - 1, Polynomial.monic_X_pow_sub <| by simp [q.den_pos], ?_⟩
+  nth_rw 1 [← q.num_div_den]
+  simp [← Complex.exp_nat_mul,
+    show 2 * q.den * (q.num / q.den * π * I) = q.den / q.den * q.num * (2 * π * I) by ring_nf]
+
+/-- `2 sin(q * π)` for `q : ℚ` is integral over `ℤ`, using the complex `sin` function. -/
+theorem Complex.isIntegral_two_mul_sin_rat_mul_pi (q : ℚ) : IsIntegral ℤ <| 2 * sin (q * π) := by
+  convert integralClosure ℤ ℂ |>.mul_mem (integralClosure ℤ ℂ |>.sub_mem
+      (isIntegral_exp_rat_mul_pi_mul_I (-q)) (isIntegral_exp_rat_mul_pi_mul_I q))
+    Complex.isIntegral_int_I using 1
+  unfold sin
+  push_cast
+  ring_nf
+
+/-- `2 cos(q * π)` for `q : ℚ` is integral over `ℤ`, using the complex `cos` function. -/
+theorem Complex.isIntegral_two_mul_cos_rat_mul_pi (q : ℚ) : IsIntegral ℤ <| 2 * cos (q * π) := by
+  convert integralClosure ℤ ℂ |>.add_mem (isIntegral_exp_rat_mul_pi_mul_I q)
+    (isIntegral_exp_rat_mul_pi_mul_I (-q)) using 1
+  unfold cos
+  push_cast
+  ring_nf
+
+/-- `2 sin(q * π)` for `q : ℚ` is integral over `ℤ`, using the real `sin` function. -/
+theorem Real.isIntegral_two_mul_sin_rat_mul_pi (q : ℚ) : IsIntegral ℤ <| 2 * sin (q * π) :=
+  isIntegral_algebraMap_iff (B := ℂ) RCLike.ofReal_injective |>.mp <| by
+    simp [Complex.isIntegral_two_mul_sin_rat_mul_pi]
+
+/-- `2 cos(q * π)` for `q : ℚ` is integral over `ℤ`, using the real `cos` function. -/
+theorem Real.isIntegral_two_mul_cos_rat_mul_pi (q : ℚ) : IsIntegral ℤ <| 2 * cos (q * π) :=
+  isIntegral_algebraMap_iff (B := ℂ) RCLike.ofReal_injective |>.mp <| by
+    simp [Complex.isIntegral_two_mul_cos_rat_mul_pi]
+
+@[deprecated (since := "2025-11-09")]
+alias isIntegral_two_mul_cos_rat_mul_pi := Real.isIntegral_two_mul_cos_rat_mul_pi
+
+/-- `sin(q * π)` for `q : ℚ` is algebraic over `ℤ`, using the complex `sin` function. -/
+theorem Complex.isAlgebraic_sin_rat_mul_pi (q : ℚ) : IsAlgebraic ℤ <| sin <| q * π :=
+  IsAlgebraic.of_mul (by simp) (IsAlgebraic.algebraMap <| Algebra.IsAlgebraic.isAlgebraic (2 : ℤ))
+    (Complex.isIntegral_two_mul_sin_rat_mul_pi q |>.isAlgebraic)
+
+/-- `cos(q * π)` for `q : ℚ` is algebraic over `ℤ`, using the complex `cos` function. -/
+theorem Complex.isAlgebraic_cos_rat_mul_pi (q : ℚ) : IsAlgebraic ℤ <| cos <| q * π :=
+  IsAlgebraic.of_mul (by simp) (IsAlgebraic.algebraMap <| Algebra.IsAlgebraic.isAlgebraic (2 : ℤ))
+    (Complex.isIntegral_two_mul_cos_rat_mul_pi q |>.isAlgebraic)
+
+/-- `sin(q * π)` for `q : ℚ` is algebraic over `ℤ`, using the real `sin` function. -/
+theorem Real.isAlgebraic_sin_rat_mul_pi (q : ℚ) : IsAlgebraic ℤ <| sin <| q * π :=
+  IsAlgebraic.of_mul (by simp) (IsAlgebraic.algebraMap <| Algebra.IsAlgebraic.isAlgebraic (2 : ℤ))
+    (Real.isIntegral_two_mul_sin_rat_mul_pi q |>.isAlgebraic)
+
+/-- `cos(q * π)` for `q : ℚ` is algebraic over `ℤ`, using the real `cos` function. -/
+theorem Real.isAlgebraic_cos_rat_mul_pi (q : ℚ) : IsAlgebraic ℤ <| cos <| q * π :=
+  IsAlgebraic.of_mul (by simp) (IsAlgebraic.algebraMap <| Algebra.IsAlgebraic.isAlgebraic (2 : ℤ))
+    (Real.isIntegral_two_mul_cos_rat_mul_pi q |>.isAlgebraic)
+
+/-- `tan(q * π)` for `q : ℚ` is algebraic over `ℤ`, using the complex `tan` function. -/
+theorem Complex.tan_rat_mul_pi_isAlgebraic (q : ℚ) : IsAlgebraic ℤ <| tan <| q * π :=
+  IsAlgebraic.mul (Complex.isAlgebraic_sin_rat_mul_pi q)
+    (IsAlgebraic.inv <| Complex.isAlgebraic_cos_rat_mul_pi q)
+
+/-- `tan(q * π)` for `q : ℚ` is algebraic over `ℤ`, using the real `tan` function. -/
+theorem Real.tan_rat_mul_pi_isAlgebraic (q : ℚ) : IsAlgebraic ℤ <| tan <| q * π :=
+  isAlgebraic_algebraMap_iff (A := ℂ) RCLike.ofReal_injective |>.mp <| by
+    simp [Complex.tan_rat_mul_pi_isAlgebraic]
+
+end IsIntegral
 
 /-- **Niven's theorem**: The only rational values of `cos` that occur at rational multiples of π
 are `{-1, -1/2, 0, 1/2, 1}`. -/
@@ -64,7 +117,7 @@ theorem niven (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos θ = q) 
   -- Hence, `2 cos θ ∈ {-2, -1, 0, 1, 2}`.
   obtain ⟨r, rfl⟩ := hθ
   obtain ⟨k, hk⟩ : ∃ k : ℤ, 2 * cos (r * π) = k := by
-    rw [← (isIntegral_two_mul_cos_rat_mul_pi r).exists_int_iff_exists_rat]
+    rw [← (Real.isIntegral_two_mul_cos_rat_mul_pi r).exists_int_iff_exists_rat]
     exact ⟨2 * hcos.choose, by push_cast; linarith [hcos.choose_spec]⟩
   -- Since k is an integer and `2 * cos (w * pi) = k`, we have $k ∈ {-2, -1, 0, 1, 2}$.
   have hk_values : k ∈ Finset.Icc (-2 : ℤ) 2 := by
