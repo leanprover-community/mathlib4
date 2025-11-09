@@ -105,7 +105,7 @@ lemma WeakFEPair.h_feq' (P : WeakFEPair E) (x : ℝ) (hx : 0 < x) :
   rw [(div_div_cancel₀ (one_ne_zero' ℝ) ▸ P.h_feq (1 / x) (one_div_pos.mpr hx) :), ← mul_smul]
   convert (one_smul ℂ (P.g (1 / x))).symm using 2
   rw [one_div, inv_rpow hx.le, ofReal_inv]
-  field_simp [P.hε, (rpow_pos_of_pos hx _).ne']
+  field [P.hε, (rpow_pos_of_pos hx _).ne']
 
 /-- The hypotheses are symmetric in `f` and `g`, with the constant `ε` replaced by `ε⁻¹`. -/
 def WeakFEPair.symm (P : WeakFEPair E) : WeakFEPair E where
@@ -161,7 +161,7 @@ lemma hf_zero (P : WeakFEPair E) (r : ℝ) :
     simp [field]
   · simp_rw [norm_mul, norm_real, one_div, inv_rpow hx.le, rpow_neg hx.le, inv_inv, norm_inv,
       norm_of_nonneg (rpow_pos_of_pos hx _).le, rpow_add hx]
-    field_simp
+    field
 
 /-- Power asymptotic for `f - f₀` as `x → 0`. -/
 lemma hf_zero' (P : WeakFEPair E) :
@@ -292,7 +292,7 @@ lemma hf_modif_FE (x : ℝ) (hx : 0 < x) :
       indicator_of_notMem (notMem_Ioi.mpr hx'.le),
       indicator_of_mem (mem_Ioo.mpr ⟨hx, hx'⟩), P.h_feq _ hx]
     simp_rw [rpow_neg hx.le]
-    match_scalars <;> field_simp [(rpow_pos_of_pos hx P.k).ne', P.hε]
+    match_scalars <;> field [(rpow_pos_of_pos hx P.k).ne', P.hε]
 
 /-- Given a weak FE-pair `(f, g)`, modify it into a strong FE-pair by subtracting suitable
 correction terms from `f` and `g`. -/
@@ -449,8 +449,7 @@ theorem Λ_residue_k :
   · refine (tendsto_const_nhds.mono_left nhdsWithin_le_nhds).congr' ?_
     refine eventually_nhdsWithin_of_forall (fun s (hs : s ≠ P.k) ↦ ?_)
     match_scalars
-    field_simp [sub_ne_zero.mpr hs.symm]
-    ring
+    field [sub_ne_zero.mpr hs.symm]
 
 /-- The residue of `Λ` at `s = 0` is equal to `-f₀`. -/
 theorem Λ_residue_zero :
@@ -461,7 +460,7 @@ theorem Λ_residue_zero :
   · refine (tendsto_const_nhds.mono_left nhdsWithin_le_nhds).congr' ?_
     refine eventually_nhdsWithin_of_forall (fun s (hs : s ≠ 0) ↦ ?_)
     match_scalars
-    field_simp [sub_ne_zero.mpr hs.symm]
+    field [sub_ne_zero.mpr hs.symm]
   · rw [show 𝓝 0 = 𝓝 ((0 : ℂ) • (P.ε / (P.k - 0 : ℂ)) • P.g₀) by rw [zero_smul]]
     exact (continuousAt_id.smul ((continuousAt_const.div ((continuous_sub_left _).continuousAt)
       (by simpa using P.hk.ne')).smul continuousAt_const)).mono_left nhdsWithin_le_nhds

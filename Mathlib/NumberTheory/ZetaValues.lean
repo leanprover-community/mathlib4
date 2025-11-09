@@ -129,9 +129,8 @@ theorem bernoulliFourierCoeff_eq {k : ℕ} (hk : k ≠ 0) (n : ℤ) :
   · rw [bernoulliFourierCoeff_recurrence (k + 1) hn, Nat.add_sub_cancel k 1]
     split_ifs with h
     · exfalso; exact (ne_of_gt (Nat.lt_succ_iff.mpr hk)) h
-    · rw [h'k, Nat.factorial_succ, zero_sub, Nat.cast_mul, pow_add, pow_one, neg_div, mul_neg,
-        mul_neg, mul_neg, neg_neg, neg_mul, neg_mul, neg_mul, div_neg]
-      field_simp
+    · rw [h'k, Nat.factorial_succ, zero_sub, Nat.cast_mul, pow_add]
+      field [Int.cast_ne_zero.mpr hn, I_ne_zero]
 
 end BernoulliFourierCoeffs
 
@@ -329,12 +328,12 @@ section Examples
 theorem hasSum_zeta_two : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 2) (π ^ 2 / 6) := by
   convert hasSum_zeta_nat one_ne_zero using 1; rw [mul_one]
   rw [bernoulli_eq_bernoulli'_of_ne_one (by decide : 2 ≠ 1), bernoulli'_two]
-  norm_num [Nat.factorial]; field_simp
+  simp [Nat.factorial]; ring
 
 theorem hasSum_zeta_four : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 4) (π ^ 4 / 90) := by
   convert hasSum_zeta_nat two_ne_zero using 1; norm_num
   rw [bernoulli_eq_bernoulli'_of_ne_one, bernoulli'_four]
-  · norm_num [Nat.factorial]; field_simp; ring
+  · simp [Nat.factorial]; ring
   · decide
 
 theorem Polynomial.bernoulli_three_eval_one_quarter :
@@ -354,14 +353,11 @@ theorem hasSum_L_function_mod_four_eval_three :
   apply (congr_arg₂ HasSum ?_ ?_).to_iff.mp <|
     hasSum_one_div_nat_pow_mul_sin one_ne_zero (?_ : 1 / 4 ∈ Icc (0 : ℝ) 1)
   · ext1 n
-    norm_num
-    left
-    congr 1
-    ring
+    ring_nf
   · have : (1 / 4 : ℝ) = (algebraMap ℚ ℝ) (1 / 4 : ℚ) := by simp
     rw [this, mul_pow, Polynomial.eval_map, Polynomial.eval₂_at_apply, (by decide : 2 * 1 + 1 = 3),
       Polynomial.bernoulli_three_eval_one_quarter]
-    norm_num [Nat.factorial]; field_simp; ring
+    simp [Nat.factorial]; ring
   · rw [mem_Icc]; constructor
     · linarith
     · linarith

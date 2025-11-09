@@ -52,15 +52,9 @@ theorem Monic.as_sum (hp : p.Monic) :
 @[deprecated (since := "2025-08-14")] alias ne_zero_of_ne_zero_of_monic :=
   Monic.ne_zero_of_polynomial_ne
 
-theorem Monic.map [Semiring S] (f : R →+* S) (hp : Monic p) : Monic (p.map f) := by
-  unfold Monic
-  nontriviality
-  have : f p.leadingCoeff ≠ 0 := by
-    rw [show _ = _ from hp, f.map_one]
-    exact one_ne_zero
-  rw [Polynomial.leadingCoeff, coeff_map]
-  suffices p.coeff (p.map f).natDegree = 1 by simp [this]
-  rwa [natDegree_eq_of_degree_eq (degree_map_eq_of_leadingCoeff_ne_zero f this)]
+theorem Monic.map [Semiring S] (f : R →+* S) (hp : Monic p) : Monic (p.map f) :=
+  subsingleton_or_nontrivial S |>.elim (·.elim ..) fun _ ↦
+    f.map_one ▸ hp ▸ leadingCoeff_map_eq_of_isUnit_leadingCoeff _ <| hp ▸ isUnit_one
 
 theorem monic_C_mul_of_mul_leadingCoeff_eq_one {b : R} (hp : b * p.leadingCoeff = 1) :
     Monic (C b * p) := by
@@ -366,31 +360,10 @@ open Function
 
 variable [Semiring S] {f : R →+* S}
 
-theorem degree_map_eq_of_injective (hf : Injective f) (p : R[X]) : degree (p.map f) = degree p :=
-  letI := Classical.decEq R
-  if h : p = 0 then by simp [h]
-  else
-    degree_map_eq_of_leadingCoeff_ne_zero _
-      (by rw [← f.map_zero]; exact mt hf.eq_iff.1 (mt leadingCoeff_eq_zero.1 h))
-
-theorem natDegree_map_eq_of_injective (hf : Injective f) (p : R[X]) :
-    natDegree (p.map f) = natDegree p :=
-  natDegree_eq_of_degree_eq (degree_map_eq_of_injective hf p)
-
-theorem leadingCoeff_map_of_injective (hf : Injective f) (p : R[X]) :
-    leadingCoeff (p.map f) = f (leadingCoeff p) := by
-  unfold leadingCoeff
-  rw [coeff_map, natDegree_map_eq_of_injective hf p]
-
 @[deprecated (since := "2025-10-26")]
 alias leadingCoeff_map' := leadingCoeff_map_of_injective
 @[deprecated (since := "2025-10-26")]
 alias leadingCoeff_of_injective := leadingCoeff_map_of_injective
-
-theorem nextCoeff_map (hf : Injective f) (p : R[X]) : (p.map f).nextCoeff = f p.nextCoeff := by
-  unfold nextCoeff
-  rw [natDegree_map_eq_of_injective hf]
-  split_ifs <;> simp [*]
 
 theorem monic_of_injective (hf : Injective f) {p : R[X]} (hp : (p.map f).Monic) : p.Monic := by
   apply hf

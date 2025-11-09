@@ -362,6 +362,13 @@ theorem indepSets_singleton_iff {s t : Set Ω} :
   simp only [IndepSets, Kernel.indepSets_singleton_iff, ae_dirac_eq, Filter.eventually_pure,
     Kernel.const_apply]
 
+lemma indepSets_iff_singleton_indepSets {𝒜 ℬ : Set (Set Ω)} :
+    IndepSets 𝒜 ℬ μ ↔ ∀ A ∈ 𝒜, IndepSets {A} ℬ μ where
+  mp h A hA := indepSets_of_indepSets_of_le_left h (Set.singleton_subset_iff.2 hA)
+  mpr h := by
+    rw [← 𝒜.biUnion_of_singleton]
+    exact IndepSets.biUnion h
+
 end Indep
 
 /-! ### Deducing `Indep` from `iIndep` -/

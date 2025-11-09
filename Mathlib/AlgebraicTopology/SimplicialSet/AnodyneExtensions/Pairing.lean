@@ -47,7 +47,8 @@ variable {X : SSet.{u}} (A : X.Subcomplex)
 /-- A pairing for a subcomplex `A` of a simplicial set `X` consists of a partition
 of the nondegenerate simplices of `X` not in `A` in two types (I) and (II) of simplices,
 and a bijection between the type (II) simplices and the type (I) simplices.
-See the introduction of the file `AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing`. -/
+See the introduction of the file
+`Mathlib/AlgebraicTopology/SimplicialSet/AnodyneExtensions/Pairing.lean`. -/
 structure Pairing where
   /-- the set of type (I) simplices -/
   I : Set A.N

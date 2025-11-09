@@ -39,33 +39,36 @@ theorem range_eq_univ {α : Type*} {β : Type*} {E : Type*} [EquivLike E α β] 
 end EquivLike
 
 namespace Equiv
+variable {α β : Type*}
 
-theorem range_eq_univ {α : Type*} {β : Type*} (e : α ≃ β) :
-    range e = univ :=
-  EquivLike.range_eq_univ e
+theorem range_eq_univ (e : α ≃ β) : range e = univ := EquivLike.range_eq_univ e
 
-protected theorem image_eq_preimage {α β} (e : α ≃ β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
-  Set.ext fun _ => mem_image_iff_of_inverse e.left_inv e.right_inv
+lemma image_symm_eq_preimage (e : α ≃ β) (s : Set β) : e.symm '' s = e ⁻¹' s := by
+  ext; exact mem_image_iff_of_inverse e.right_inv e.left_inv
+
+lemma image_eq_preimage_symm (e : α ≃ β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
+  e.symm.image_symm_eq_preimage _
+
+@[deprecated (since := "2025-11-05")]
+protected alias image_eq_preimage := image_eq_preimage_symm
 
 @[simp 1001]
 theorem _root_.Set.mem_image_equiv {α β} {S : Set α} {f : α ≃ β} {x : β} :
     x ∈ f '' S ↔ f.symm x ∈ S :=
-  Set.ext_iff.mp (f.image_eq_preimage S) x
+  Set.ext_iff.mp (image_eq_preimage_symm ..) x
 
-/-- Alias for `Equiv.image_eq_preimage` -/
+@[deprecated image_eq_preimage_symm (since := "2025-10-31")]
 theorem _root_.Set.image_equiv_eq_preimage_symm {α β} (S : Set α) (f : α ≃ β) :
-    f '' S = f.symm ⁻¹' S :=
-  f.image_eq_preimage S
+    f '' S = f.symm ⁻¹' S := image_eq_preimage_symm ..
 
-/-- Alias for `Equiv.image_eq_preimage` -/
+@[deprecated Equiv.image_symm_eq_preimage (since := "2025-10-31")]
 theorem _root_.Set.preimage_equiv_eq_image_symm {α β} (S : Set α) (f : β ≃ α) :
-    f ⁻¹' S = f.symm '' S :=
-  (f.symm.image_eq_preimage S).symm
+    f ⁻¹' S = f.symm '' S := (f.image_symm_eq_preimage S).symm
 
 -- Increased priority so this fires before `image_subset_iff`
 @[simp high]
 protected theorem symm_image_subset {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
-    e.symm '' t ⊆ s ↔ t ⊆ e '' s := by rw [image_subset_iff, e.image_eq_preimage]
+    e.symm '' t ⊆ s ↔ t ⊆ e '' s := by rw [image_subset_iff, image_eq_preimage_symm]
 
 -- Increased priority so this fires before `image_subset_iff`
 @[simp high]
@@ -124,7 +127,7 @@ theorem eq_preimage_iff_image_eq {α β} (e : α ≃ β) (s t) : s = e ⁻¹' t 
 
 lemma setOf_apply_symm_eq_image_setOf {α β} (e : α ≃ β) (p : α → Prop) :
     {b | p (e.symm b)} = e '' {a | p a} := by
-  rw [Equiv.image_eq_preimage, preimage_setOf_eq]
+  rw [Equiv.image_eq_preimage_symm, preimage_setOf_eq]
 
 @[simp]
 theorem prod_assoc_preimage {α β γ} {s : Set α} {t : Set β} {u : Set γ} :
@@ -142,11 +145,11 @@ theorem prod_assoc_symm_preimage {α β γ} {s : Set α} {t : Set β} {u : Set �
 -- into a lambda expression and then unfold it.
 theorem prod_assoc_image {α β γ} {s : Set α} {t : Set β} {u : Set γ} :
     Equiv.prodAssoc α β γ '' (s ×ˢ t) ×ˢ u = s ×ˢ t ×ˢ u := by
-  simpa only [Equiv.image_eq_preimage] using prod_assoc_symm_preimage
+  simpa only [Equiv.image_eq_preimage_symm] using prod_assoc_symm_preimage
 
 theorem prod_assoc_symm_image {α β γ} {s : Set α} {t : Set β} {u : Set γ} :
     (Equiv.prodAssoc α β γ).symm '' s ×ˢ t ×ˢ u = (s ×ˢ t) ×ˢ u := by
-  simpa only [Equiv.image_eq_preimage] using prod_assoc_preimage
+  simpa only [Equiv.image_eq_preimage_symm] using prod_assoc_preimage
 
 /-- A set `s` in `α × β` is equivalent to the sigma-type `Σ x, {y | (x, y) ∈ s}`. -/
 def setProdEquivSigma {α β : Type*} (s : Set (α × β)) :

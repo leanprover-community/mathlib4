@@ -431,7 +431,7 @@ theorem hasSum_sq_fourierCoeffOn
     {a b : ℝ} {f : ℝ → ℂ} (hab : a < b) (hL2 : MemLp f 2 (volume.restrict (Ioc a b))) :
     HasSum (fun i => ‖fourierCoeffOn hab f i‖ ^ 2) ((b - a)⁻¹ • ∫ x in a..b, ‖f x‖ ^ 2) := by
   haveI := Fact.mk (by linarith : 0 < b - a)
-  rw [←add_sub_cancel a b] at hL2
+  rw [← add_sub_cancel a b] at hL2
   have h := hL2.memLp_liftIoc.haarAddCircle
   convert hasSum_sq_fourierCoeff h.toLp using 1
   · simp [fourierCoeff_congr_ae h.coeFn_toLp, fourierCoeff_liftIoc_eq]

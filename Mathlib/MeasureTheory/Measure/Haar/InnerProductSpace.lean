@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.InnerProductSpace.Orientation
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 
 /-!
 # Volume forms and measures on inner product spaces
@@ -16,7 +17,7 @@ measure `1` to the parallelepiped spanned by any orthonormal basis, and that it 
 the canonical `volume` from the `MeasureSpace` instance.
 -/
 
-open Module MeasureTheory MeasureTheory.Measure Set
+open Module MeasureTheory MeasureTheory.Measure Set WithLp
 
 variable {ι E F : Type*}
 
@@ -113,32 +114,56 @@ theorem OrthonormalBasis.measurePreserving_repr_symm (b : OrthonormalBasis ι �
 
 section PiLp
 
-variable (ι : Type*) [Fintype ι]
+variable (ι : Type*)
+
+/-- `WithLp.equiv` as a `MeasurableEquiv`. -/
+@[deprecated MeasurableEquiv.toLp (since := "2025-11-02")]
+protected def EuclideanSpace.measurableEquiv : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) :=
+  (MeasurableEquiv.toLp 2 (ι → ℝ)).symm
+
+set_option linter.deprecated false in
+@[deprecated MeasurableEquiv.coe_toLp (since := "2025-11-02")]
+theorem EuclideanSpace.measurableEquiv_toEquiv :
+    (EuclideanSpace.measurableEquiv ι).toEquiv = WithLp.equiv 2 (ι → ℝ) := rfl
+
+set_option linter.deprecated false in
+@[deprecated MeasurableEquiv.coe_toLp (since := "2025-11-02")]
+theorem EuclideanSpace.coe_measurableEquiv :
+    ⇑(EuclideanSpace.measurableEquiv ι) = ofLp := rfl
+
+set_option linter.deprecated false in
+@[deprecated MeasurableEquiv.coe_toLp_symm (since := "2025-11-02")]
+theorem EuclideanSpace.coe_measurableEquiv_symm :
+    ⇑(EuclideanSpace.measurableEquiv ι).symm = toLp 2 := rfl
+
+variable [Fintype ι]
 
 /-- The measure equivalence between `EuclideanSpace ℝ ι` and `ι → ℝ` is volume preserving. -/
-theorem EuclideanSpace.volume_preserving_measurableEquiv :
-    MeasurePreserving (EuclideanSpace.measurableEquiv ι) := by
-  suffices volume = map (EuclideanSpace.measurableEquiv ι).symm volume by
-    convert ((EuclideanSpace.measurableEquiv ι).symm.measurable.measurePreserving _).symm
+theorem EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp :
+    MeasurePreserving (MeasurableEquiv.toLp 2 (ι → ℝ)).symm := by
+  suffices volume = map (MeasurableEquiv.toLp 2 (ι → ℝ)) volume by
+    convert ((MeasurableEquiv.toLp 2 (ι → ℝ)).measurable.measurePreserving _).symm
   rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar_def,
-    coe_measurableEquiv_symm, ← PiLp.continuousLinearEquiv_symm_apply 2 ℝ, Basis.map_addHaar]
+    MeasurableEquiv.coe_toLp, ← PiLp.continuousLinearEquiv_symm_apply 2 ℝ, Basis.map_addHaar]
   exact (EuclideanSpace.basisFun _ _).addHaar_eq_volume.symm
 
-/-- A copy of `EuclideanSpace.volume_preserving_measurableEquiv` for the canonical spelling of the
-equivalence. -/
-theorem PiLp.volume_preserving_ofLp : MeasurePreserving (@WithLp.ofLp 2 (ι → ℝ)) :=
-  EuclideanSpace.volume_preserving_measurableEquiv ι
+@[deprecated (since := "2025-07-26")] alias EuclideanSpace.volume_preserving_measurableEquiv :=
+  EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp
 
-/-- The reverse direction of `PiLp.volume_preserving_measurableEquiv`, since
+/-- A copy of `EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp`
+for the canonical spelling of the equivalence. -/
+theorem PiLp.volume_preserving_ofLp : MeasurePreserving (@ofLp 2 (ι → ℝ)) :=
+  EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp ι
+
+/-- The reverse direction of `EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp`, since
 `MeasurePreserving.symm` only works for `MeasurableEquiv`s. -/
-theorem PiLp.volume_preserving_toLp : MeasurePreserving (@WithLp.toLp 2 (ι → ℝ)) :=
-  (EuclideanSpace.volume_preserving_measurableEquiv ι).symm
+theorem PiLp.volume_preserving_toLp : MeasurePreserving (@toLp 2 (ι → ℝ)) :=
+  (EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp ι).symm
 
 lemma volume_euclideanSpace_eq_dirac [IsEmpty ι] :
     (volume : Measure (EuclideanSpace ℝ ι)) = Measure.dirac 0 := by
-  rw [← ((EuclideanSpace.volume_preserving_measurableEquiv ι).symm).map_eq,
-    volume_pi_eq_dirac 0, map_dirac (MeasurableEquiv.measurable _),
-    EuclideanSpace.coe_measurableEquiv_symm, WithLp.toLp_zero]
+  rw [← (PiLp.volume_preserving_toLp ι).map_eq, volume_pi_eq_dirac 0,
+    map_dirac (measurable_toLp 2 _), toLp_zero]
 
 end PiLp
 

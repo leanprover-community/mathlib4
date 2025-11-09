@@ -126,9 +126,9 @@ theorem isFiltered [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
   -- faithful, `lim_j Hom_{Over (colimit F)}(yGj, yHk) ≅`
   --   `lim_j Hom_{CostructuredArrow yoneda (colimit F)}(Gj, Hk)` and so `Hk` is the object we're
   -- looking for.
-  let q := htO.homNatIsoMaxRight
+  let q := fun X => isoWhiskerLeft _ (uliftYonedaIsoYoneda.symm.app _) ≪≫ htO.homNatIso X
   obtain ⟨t'⟩ := Nonempty.map (limMap (isoWhiskerLeft G.op (q _)).hom) hk
-  exact ⟨_, ⟨((preservesLimitIso uliftFunctor.{u, v} _).inv t').down⟩⟩
+  exact ⟨_, ⟨((preservesLimitIso uliftFunctor.{max u v, v} _).inv t').down⟩⟩
 
 end IndizationClosedUnderFilteredColimitsAux
 

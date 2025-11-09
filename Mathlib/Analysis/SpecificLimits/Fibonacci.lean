@@ -20,7 +20,7 @@ theorem tendsto_fib_succ_div_fib_atTop :
     Tendsto (fun n ↦ (fib (n + 1) / fib n : ℝ)) atTop (𝓝 φ) := by
   have h₁ n : (fib (n + 1) / fib n : ℝ) = (φ - ψ * (ψ / φ) ^ n) / (1 - (ψ / φ) ^ n) := by
     simp only [coe_fib_eq, pow_succ, div_pow]
-    field_simp
+    field
   have h₂ := tendsto_pow_atTop_nhds_zero_of_abs_lt_one (r := ψ / φ) <| by
     rw [abs_div, div_lt_one <| by positivity, abs_of_pos goldenRatio_pos, abs_lt]
     ring_nf

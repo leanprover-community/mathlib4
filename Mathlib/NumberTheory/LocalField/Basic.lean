@@ -84,7 +84,7 @@ lemma isCompact_closedBall (γ : ValueGroupWithZero K) : IsCompact { x | valuati
       exact hx.trans_lt (hr.trans_le hr1)
   convert (hs'.of_isClosed_subset (Valued.isClosed_closedBall K _) H).image
     (Homeomorph.mulLeft₀ (γ / r) (by simp [hr, div_eq_zero_iff, hγ])).continuous using 1
-  refine .trans ?_ (Equiv.image_eq_preimage _ _).symm
+  refine .trans ?_ (Equiv.image_eq_preimage_symm _ _).symm
   ext x
   simp [div_mul_eq_mul_div, div_le_iff₀, IsValuativeTopology.v_eq_valuation, hγ, hr]
 

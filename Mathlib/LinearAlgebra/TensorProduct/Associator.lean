@@ -256,6 +256,11 @@ theorem tensorTensorTensorComm_symm :
     (tensorTensorTensorComm R M N P Q).symm = tensorTensorTensorComm R M P N Q :=
   rfl
 
+@[simp] theorem tensorTensorTensorComm_trans_tensorTensorTensorComm :
+    tensorTensorTensorComm R M N P Q ≪≫ₗ tensorTensorTensorComm R M P N Q = .refl R _ := by
+  rw [← tensorTensorTensorComm_symm]
+  exact LinearEquiv.symm_trans_self _
+
 theorem tensorTensorTensorComm_comp_map {V W : Type*}
     [AddCommMonoid V] [AddCommMonoid W] [Module R V] [Module R W]
     (f : M →ₗ[R] S) (g : N →ₗ[R] T) (h : P →ₗ[R] V) (j : Q →ₗ[R] W) :

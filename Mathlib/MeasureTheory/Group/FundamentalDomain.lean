@@ -166,7 +166,7 @@ theorem preimage_of_equiv {ν : Measure β} (h : IsFundamentalDomain G s μ) {f 
 theorem image_of_equiv {ν : Measure β} (h : IsFundamentalDomain G s μ) (f : α ≃ β)
     (hf : QuasiMeasurePreserving f.symm ν μ) (e : H ≃ G)
     (hef : ∀ g, Semiconj f (e g • ·) (g • ·)) : IsFundamentalDomain H (f '' s) ν := by
-  rw [f.image_eq_preimage]
+  rw [f.image_eq_preimage_symm]
   refine h.preimage_of_equiv hf e.symm.bijective fun g x => ?_
   rcases f.surjective x with ⟨x, rfl⟩
   rw [← hef _ _, f.symm_apply_apply, f.symm_apply_apply, e.apply_symm_apply]

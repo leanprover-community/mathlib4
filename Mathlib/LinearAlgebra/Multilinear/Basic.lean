@@ -459,14 +459,13 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
   letI := fun i => Classical.decEq (α i)
   induction n using Nat.strong_induction_on generalizing A with | h n IH =>
   -- If one of the sets is empty, then all the sums are zero
-  by_cases Ai_empty : ∃ i, A i = ∅
+  by_cases! Ai_empty : ∃ i, A i = ∅
   · obtain ⟨i, hi⟩ : ∃ i, ∑ j ∈ A i, g i j = 0 := Ai_empty.imp fun i hi ↦ by simp [hi]
     have hpi : piFinset A = ∅ := by simpa
     rw [f.map_coord_zero i hi, hpi, Finset.sum_empty]
-  push_neg at Ai_empty
   -- Otherwise, if all sets are at most singletons, then they are exactly singletons and the result
   -- is again straightforward
-  by_cases Ai_singleton : ∀ i, #(A i) ≤ 1
+  by_cases! Ai_singleton : ∀ i, #(A i) ≤ 1
   · have Ai_card : ∀ i, #(A i) = 1 := by
       intro i
       have pos : #(A i) ≠ 0 := by simp [Finset.card_eq_zero, Ai_empty i]
@@ -488,7 +487,6 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
   -- We will split into two parts `B i₀` and `C i₀` of smaller cardinality, let `B i = C i = A i`
   -- for `i ≠ i₀`, apply the inductive assumption to `B` and `C`, and add up the corresponding
   -- parts to get the sum for `A`.
-  push_neg at Ai_singleton
   obtain ⟨i₀, hi₀⟩ : ∃ i, 1 < #(A i) := Ai_singleton
   obtain ⟨j₁, j₂, _, hj₂, _⟩ : ∃ j₁ j₂, j₁ ∈ A i₀ ∧ j₂ ∈ A i₀ ∧ j₁ ≠ j₂ :=
     Finset.one_lt_card_iff.1 hi₀

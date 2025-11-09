@@ -541,13 +541,12 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
     ContinuousOn (fun q : P × G => (f ⋆[L, μ] g q.1) q.2) (s ×ˢ univ) := by
   /- First get rid of the case where the space is not locally compact. Then `g` vanishes everywhere
   and the conclusion is trivial. -/
-  by_cases H : ∀ p ∈ s, ∀ x, g p x = 0
+  by_cases! H : ∀ p ∈ s, ∀ x, g p x = 0
   · apply (continuousOn_const (c := 0)).congr
     rintro ⟨p, x⟩ ⟨hp, -⟩
     apply integral_eq_zero_of_ae (Eventually.of_forall (fun y ↦ ?_))
     simp [H p hp _]
   have : LocallyCompactSpace G := by
-    push_neg at H
     rcases H with ⟨p, hp, x, hx⟩
     have A : support (g p) ⊆ k := support_subset_iff'.2 (fun y hy ↦ hgs p y hp hy)
     have B : Continuous (g p) := by
@@ -810,7 +809,7 @@ theorem convolution_tendsto_right {ι} {g : ι → G → E'} {l : Filter ι} {x�
     exact ((dist_triangle _ _ _).trans_lt (add_lt_add hx'.out hki)).trans_eq (add_halves δ)
   have := dist_convolution_le (add_pos h2ε h2ε).le hφi hnφi hiφi hmgi h1
   refine ((dist_triangle _ _ _).trans_lt (add_lt_add_of_le_of_lt this hgi)).trans_eq ?_
-  field_simp; ring_nf
+  ring
 
 end NormedAddCommGroup
 

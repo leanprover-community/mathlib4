@@ -3,7 +3,6 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.Data.Finsupp.Multiset
 import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 import Mathlib.Tactic.Ring
 
@@ -286,15 +285,9 @@ theorem eq_factors_of_eq_counts {a b : Associates α} (ha : a ≠ 0) (hb : b ≠
     a.factors = b.factors := by
   obtain ⟨sa, h_sa⟩ := factors_eq_some_iff_ne_zero.mpr ha
   obtain ⟨sb, h_sb⟩ := factors_eq_some_iff_ne_zero.mpr hb
-  rw [h_sa, h_sb] at h ⊢
-  rw [WithTop.coe_eq_coe]
-  have h_count : ∀ (p : Associates α) (hp : Irreducible p),
-      sa.count ⟨p, hp⟩ = sb.count ⟨p, hp⟩ := by
-    intro p hp
-    rw [← count_some, ← count_some, h p hp]
-  apply Multiset.toFinsupp.injective
-  ext ⟨p, hp⟩
-  rw [Multiset.toFinsupp_apply, Multiset.toFinsupp_apply, h_count p hp]
+  simp_all only [count_some, WithTop.coe_eq_coe]
+  ext
+  grind
 
 theorem eq_of_eq_counts {a b : Associates α} (ha : a ≠ 0) (hb : b ≠ 0)
     (h : ∀ p : Associates α, Irreducible p → p.count a.factors = p.count b.factors) : a = b :=

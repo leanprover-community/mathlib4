@@ -32,7 +32,7 @@ env:
 concurrency:
   # label each workflow run; only the latest with each label will run
   # workflows on master get more expressive labels
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ (contains(fromJSON('["refs/heads/master", "refs/heads/staging"]'), github.ref) && github.run_id) || '' }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ (github.event_name == 'push' && contains(fromJSON('["refs/heads/master", "refs/heads/staging"]'), github.ref) && github.run_id) || '' }}
   # cancel any running workflow with the same label
   cancel-in-progress: true
 
@@ -58,9 +58,20 @@ jobs:
       shake-outcome: ${{ steps.shake.outcome }}
       test-outcome: ${{ steps.test.outcome }}
     defaults: # On Hoskinson runners, landrun is already installed.
-      run:
+      run: # note that .pr-branch/.lake must be created in a step below before we use this
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
     steps:
+      - name: job info
+        env:
+          WORKFLOW: ${{ github.workflow }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REF: ${{ github.ref }}
+          EVENT_NAME: ${{ github.event_name }}
+          RUN_ID: ${{ github.run_id }}
+          CONCURRENCY_GROUP: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ (github.event_name == 'push' && contains(fromJSON('["refs/heads/master", "refs/heads/staging"]'), github.ref) && github.run_id) || '' }}
+        shell: bash # there is no script body, so this is safe to "run" outside landrun.
+        run: |
+          # We just populate the env vars for this step to make them viewable in the logs
       - name: cleanup
         shell: bash    # This *just* deletes old files, so is safe to run outside landrun.
         run: |
@@ -312,7 +323,7 @@ jobs:
           echo "::endgroup::"
 
           ../master-branch/scripts/lake-build-with-retry.sh Mathlib
-          # results of build at pr-branch/.lake/build_summary_Mathlib*.json
+          # results of build at pr-branch/.lake/build_summary_Mathlib.json
       - name: end gh-problem-match-wrap for build step
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
@@ -381,7 +392,7 @@ jobs:
         run: |
           cd pr-branch
           ../master-branch/scripts/lake-build-with-retry.sh Archive
-          # results of build at pr-branch/.lake/build_summary_Archive*.json
+          # results of build at pr-branch/.lake/build_summary_Archive.json
 
       - name: build counterexamples
         id: counterexamples
@@ -389,7 +400,7 @@ jobs:
         run: |
           cd pr-branch
           ../master-branch/scripts/lake-build-with-retry.sh Counterexamples
-          # results of build at pr-branch/.lake/build_summary_Counterexamples*.json
+          # results of build at pr-branch/.lake/build_summary_Counterexamples.json
 
       - name: Check if building Archive or Counterexamples failed
         if: steps.archive.outcome == 'failure' || steps.counterexamples.outcome == 'failure'
@@ -436,7 +447,7 @@ jobs:
         id: test
         run: |
           cd pr-branch
-          lake --iofail test
+          ../master-branch/scripts/lake-build-wrapper.py .lake/build_summary_MathlibTest.json lake --iofail test
       - name: end gh-problem-match-wrap for test step
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
@@ -460,7 +471,7 @@ jobs:
         id: lint
         run: |
           cd pr-branch
-          env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
+          env LEAN_ABORT_ON_PANIC=1 ../master-branch/scripts/lake-build-wrapper.py .lake/build_summary_lint.json lake exe runLinter Mathlib
 
       - name: end gh-problem-match-wrap for shake and lint steps
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23

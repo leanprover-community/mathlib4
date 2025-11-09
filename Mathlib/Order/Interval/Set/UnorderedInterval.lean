@@ -8,6 +8,7 @@ import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Interval.Set.Image
 import Mathlib.Order.Interval.Set.LinearOrder
 import Mathlib.Tactic.Common
+import Mathlib.Order.MinMax
 
 /-!
 # Intervals without endpoints ordering

@@ -523,24 +523,21 @@ theorem comap_sup_eq (H K : Subgroup N) (hf : Function.Surjective f) :
   comap_sup_eq_of_le_range f (range_eq_top.2 hf ▸ le_top) (range_eq_top.2 hf ▸ le_top)
 
 @[to_additive]
-theorem sup_subgroupOf_eq {H K L : Subgroup G} (hH : H ≤ L) (hK : K ≤ L) :
-    H.subgroupOf L ⊔ K.subgroupOf L = (H ⊔ K).subgroupOf L :=
-  comap_sup_eq_of_le_range L.subtype (hH.trans_eq L.range_subtype.symm)
-     (hK.trans_eq L.range_subtype.symm)
-
-@[to_additive]
-theorem codisjoint_subgroupOf_sup (H K : Subgroup G) :
-    Codisjoint (H.subgroupOf (H ⊔ K)) (K.subgroupOf (H ⊔ K)) := by
-  rw [codisjoint_iff, sup_subgroupOf_eq, subgroupOf_self]
-  exacts [le_sup_left, le_sup_right]
-
-@[to_additive]
-theorem subgroupOf_sup (A A' B : Subgroup G) (hA : A ≤ B) (hA' : A' ≤ B) :
+theorem subgroupOf_sup {A A' B : Subgroup G} (hA : A ≤ B) (hA' : A' ≤ B) :
     (A ⊔ A').subgroupOf B = A.subgroupOf B ⊔ A'.subgroupOf B := by
   refine
     map_injective_of_ker_le B.subtype (ker_le_comap _ _)
       (le_trans (ker_le_comap B.subtype _) le_sup_left) ?_
   simp only [subgroupOf, map_comap_eq, map_sup, range_subtype]
   rw [inf_of_le_right (sup_le hA hA'), inf_of_le_right hA', inf_of_le_right hA]
+
+@[deprecated "Use in reverse direction." (since := "2025-11-03")] alias sup_subgroupOf_eq :=
+  subgroupOf_sup
+
+@[to_additive]
+theorem codisjoint_subgroupOf_sup (H K : Subgroup G) :
+    Codisjoint (H.subgroupOf (H ⊔ K)) (K.subgroupOf (H ⊔ K)) := by
+  rw [codisjoint_iff, ← subgroupOf_sup, subgroupOf_self]
+  exacts [le_sup_left, le_sup_right]
 
 end Subgroup

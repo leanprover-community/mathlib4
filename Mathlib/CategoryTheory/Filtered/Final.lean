@@ -236,7 +236,7 @@ theorem Functor.Final.exists_coeq_of_locally_small [IsFilteredOrEmpty C] [Final 
   obtain ⟨c', t₁, t₂, h⟩ := (Types.FilteredColimit.colimit_eq_iff.{v₁, v₁, v₁} _).mp this
   refine ⟨IsFiltered.coeq t₁ t₂, t₁ ≫ IsFiltered.coeqHom t₁ t₂, ?_⟩
   conv_rhs => rw [IsFiltered.coeq_condition t₁ t₂]
-  dsimp only [comp_obj, coyoneda_obj_obj, unop_op, Functor.comp_map, coyoneda_obj_map] at h
+  dsimp only [comp_obj, flip_obj_obj, yoneda_obj_obj, comp_map, flip_obj_map, yoneda_map_app] at h
   simp [reassoc_of% h]
 
 end LocallySmall

@@ -204,8 +204,7 @@ theorem circleAverage_log_norm_sub_const_eq_log_radius_add_posLog (hR : R ≠ 0)
     ext z
     congr
     rw [Complex.ofReal_inv R]
-    field_simp [Complex.ofReal_ne_zero.mpr hR]
-    ring
+    field [Complex.ofReal_ne_zero.mpr hR]
   _ = circleAverage (fun z ↦ log ‖R‖ + log ‖z + R⁻¹ * (c - a)‖) 0 1 := by
     apply circleAverage_congr_codiscreteWithin _ (zero_ne_one' ℝ).symm
     have : {z | ‖z + ↑R⁻¹ * (c - a)‖ ≠ 0} ∈ codiscreteWithin (Metric.sphere (0 : ℂ) |1|) := by

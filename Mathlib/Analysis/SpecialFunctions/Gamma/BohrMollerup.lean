@@ -68,7 +68,7 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
     intro c x hc u hx
     dsimp only [f]
     rw [mul_rpow (exp_pos _).le ((rpow_nonneg hx.le) _), ← exp_mul, ← rpow_mul hx.le]
-    congr 2 <;> field_simp
+    congr 2 <;> field
   -- show `f c u` is in `ℒp` for `p = 1/c`:
   have f_mem_Lp :
     ∀ {c u : ℝ} (hc : 0 < c) (hu : 0 < u),
@@ -431,7 +431,7 @@ theorem Gamma_mul_Gamma_add_half_of_pos {s : ℝ} (hs : 0 < s) :
   rw [← doublingGamma_eq_Gamma (mul_pos two_pos hs), doublingGamma,
     mul_div_cancel_left₀ _ (two_ne_zero' ℝ), (by abel : 1 - 2 * s = -(2 * s - 1)),
     rpow_neg zero_le_two]
-  field_simp
+  field
 
 end Doubling
 

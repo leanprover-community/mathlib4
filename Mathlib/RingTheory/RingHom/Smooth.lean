@@ -15,7 +15,7 @@ In this file we define smooth ring homomorphisms and show their meta properties.
 
 universe u
 
-variable {R S : Type u} [CommRing R] [CommRing S]
+variable {R S : Type*} [CommRing R] [CommRing S]
 
 open TensorProduct
 
@@ -30,7 +30,7 @@ def FormallySmooth (f : R →+* S) : Prop :=
 
 /-- Helper lemma for the `algebraize` tactic -/
 lemma FormallySmooth.toAlgebra {f : R →+* S} (hf : FormallySmooth f) :
-    @Algebra.FormallySmooth R _ S _ f.toAlgebra := hf
+    @Algebra.FormallySmooth R S _ _ f.toAlgebra := hf
 
 lemma formallySmooth_algebraMap [Algebra R S] :
     (algebraMap R S).FormallySmooth ↔ Algebra.FormallySmooth R S := by
@@ -76,12 +76,15 @@ lemma smooth_def {f : R →+* S} : f.Smooth ↔ f.FormallySmooth ∧ f.FinitePre
 
 namespace Smooth
 
-variable {R S T : Type u} [CommRing R] [CommRing S] [CommRing T]
+variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 
-lemma stableUnderComposition : StableUnderComposition Smooth := by
-  convert RingHom.FormallySmooth.stableUnderComposition.and
-    RingHom.finitePresentation_stableUnderComposition
-  rw [smooth_def]
+/-- Composition of smooth ring homomorphisms is smooth. -/
+lemma comp {f : R →+* S} {g : S →+* T} (hf : f.Smooth) (hg : g.Smooth) : (g.comp f).Smooth := by
+  algebraize [f, g, g.comp f]
+  exact Algebra.Smooth.comp R S T
+
+lemma stableUnderComposition : StableUnderComposition Smooth :=
+  fun _ _ _ _ _ _ _ _ ↦ RingHom.Smooth.comp
 
 lemma isStableUnderBaseChange : IsStableUnderBaseChange Smooth := by
   convert RingHom.FormallySmooth.isStableUnderBaseChange.and
@@ -98,10 +101,6 @@ variable (R) in
 /-- The identity of a ring is smooth. -/
 lemma id : RingHom.Smooth (RingHom.id R) :=
   holdsForLocalizationAway.containsIdentities R
-
-/-- Composition of smooth ring homomorphisms is smooth. -/
-lemma comp {f : R →+* S} {g : S →+* T} (hf : f.Smooth) (hg : g.Smooth) : (g.comp f).Smooth :=
-  stableUnderComposition f g hf hg
 
 lemma ofLocalizationSpanTarget : OfLocalizationSpanTarget Smooth := by
   introv R hs hf

@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.ExtremalEpi
 import Mathlib.CategoryTheory.Generator.Basic
+import Mathlib.CategoryTheory.Limits.Presentation
 
 /-!
 # Strong generators
@@ -20,12 +21,15 @@ has coproducts of size `w`, then `P` is a strong generator iff any
 object of `C` is the target of an extremal epimorphism from a coproduct of
 objects satisfying `P`.
 
+We also show that if any object in `C` is a colimit of objects in `S`,
+then `S` is a strong generator.
+
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/
 
-universe w v u
+universe w' w v u
 
 namespace CategoryTheory
 
@@ -129,6 +133,23 @@ lemma isStrongGenerator_iff_exists_extremalEpi
     fun j ↦ ((equivShrink.{w} _).symm j).1.2, _,
     (coproductIsCoproduct (P.coproductFromFamily X)).whiskerEquivalence
     (Discrete.equivalence (equivShrink.{w} _)).symm, _, hP.extremalEpi_coproductFrom X⟩
+
+lemma IsStrongGenerator.mk_of_exists_colimitsOfShape
+    (hP : ∀ (X : C), ∃ (J : Type w) (_ : Category.{w'} J), P.colimitsOfShape J X) :
+    P.IsStrongGenerator := by
+  rw [isStrongGenerator_iff]
+  refine ⟨IsSeparating.mk_of_exists_colimitsOfShape hP, fun X Y i _ hi ↦ ?_⟩
+  suffices IsSplitEpi i by
+    obtain ⟨r, fac⟩ := this
+    exact ⟨r, by simp [← cancel_mono i, fac]⟩
+  obtain ⟨J, _, ⟨p⟩⟩ := hP Y
+  choose φ hφ using fun j ↦ hi _ (p.prop_diag_obj j) (p.ι.app j)
+  let c : Cocone p.diag := Cocone.mk _
+    { app := φ
+      naturality j₁ j₂ f := by simp [← cancel_mono i, hφ] }
+  refine ⟨p.isColimit.desc c, p.isColimit.hom_ext (fun j ↦ ?_)⟩
+  dsimp at hφ ⊢
+  rw [p.isColimit.fac_assoc, hφ, Category.comp_id]
 
 end ObjectProperty
 

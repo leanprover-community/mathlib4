@@ -552,6 +552,9 @@ protected theorem map_pow (n : ℕ) : (p ^ n).map f = p.map f ^ n :=
 theorem eval_map (x : S) : (p.map f).eval x = p.eval₂ f x :=
   (eval₂_eq_eval_map f).symm
 
+@[simp] lemma eval_map_apply (x : R) : (p.map f).eval (f x) = f (p.eval x) :=
+  eval_map f _ ▸ eval₂_at_apply ..
+
 protected theorem map_sum {ι : Type*} (g : ι → R[X]) (s : Finset ι) :
     (∑ i ∈ s, g i).map f = ∑ i ∈ s, (g i).map f :=
   map_sum (mapRingHom f) _ _

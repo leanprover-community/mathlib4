@@ -215,7 +215,6 @@ variable {R : Type u₁} [CommSemiring R] [CharP R p]
 variable {P : Type u₃} [CommSemiring P] [CharP P p] [PerfectRing P p]
 
 /-- Create a `PerfectionMap` from an isomorphism to the perfection. -/
-@[simps]
 theorem mk' {f : P →+* R} (g : P ≃+* Ring.Perfection R p) (hfg : Perfection.lift p P R f = g) :
     PerfectionMap p f :=
   { injective := fun x y hxy =>

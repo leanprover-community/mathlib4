@@ -549,18 +549,17 @@ lemma mfderivWithin_prodMap {p : M × M'} {t : Set M'} {f : M → N} {g : M' →
     (hs : UniqueMDiffWithinAt I s p.1) (ht : UniqueMDiffWithinAt I' t p.2) :
     mfderivWithin (I.prod I') (J.prod J') (Prod.map f g) (s ×ˢ t) p
       = (mfderivWithin I J f s p.1).prodMap (mfderivWithin I' J' g t p.2) := by
-  have hf' : HasMFDerivWithinAt I J f (Prod.fst '' s ×ˢ t) p.1 (mfderivWithin I J f s p.1) := by
-    apply hf.hasMFDerivWithinAt.mono (by grind)
-  have hg' : HasMFDerivWithinAt I' J' g (Prod.snd '' s ×ˢ t) p.2 (mfderivWithin I' J' g t p.2) := by
-    apply hg.hasMFDerivWithinAt.mono (by grind)
-  apply (hf'.prodMap hg').mfderivWithin (hs.prod ht)
+  have hf' : HasMFDerivWithinAt I J f (Prod.fst '' s ×ˢ t) p.1 (mfderivWithin I J f s p.1) :=
+    hf.hasMFDerivWithinAt.mono (by grind)
+  have hg' : HasMFDerivWithinAt I' J' g (Prod.snd '' s ×ˢ t) p.2 (mfderivWithin I' J' g t p.2) :=
+    hg.hasMFDerivWithinAt.mono (by grind)
+  exact (hf'.prodMap hg').mfderivWithin (hs.prod ht)
 
 lemma mfderiv_prodMap {p : M × M'} {f : M → N} {g : M' → N'}
     (hf : MDifferentiableAt I J f p.1) (hg : MDifferentiableAt I' J' g p.2) :
     mfderiv (I.prod I') (J.prod J') (Prod.map f g) p
       = (mfderiv I J f p.1).prodMap (mfderiv I' J' g p.2) := by
-  simp_rw [← mfderivWithin_univ]
-  rw [← univ_prod_univ]
+  simp_rw [← mfderivWithin_univ, ← univ_prod_univ]
   exact mfderivWithin_prodMap hf.mdifferentiableWithinAt hg.mdifferentiableWithinAt
     (uniqueMDiffWithinAt_univ I) (uniqueMDiffWithinAt_univ I')
 
@@ -575,9 +574,8 @@ theorem tangentMapWithin_prodSnd {s : Set (M × M')} {p : TangentBundle (I.prod 
     (hs : UniqueMDiffWithinAt (I.prod I') s p.proj) :
     tangentMapWithin (I.prod I') I' Prod.snd s p = ⟨p.proj.2, p.2.2⟩ := by
   simp only [tangentMapWithin]
-  rw [mfderivWithin_snd]
-  · rcases p with ⟨⟩; rfl
-  · exact hs
+  rw [mfderivWithin_snd hs]
+  rcases p with ⟨⟩; rfl
 
 -- Kept as an alias for discoverability.
 alias MDifferentiableAt.mfderiv_prod := mfderiv_prodMk
@@ -659,6 +657,61 @@ theorem mfderiv_prod_eq_add_apply {f : M × M' → M''} {p : M × M'} {v : Tange
   rfl
 
 end Prod
+
+section disjointUnion
+
+variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {p : M ⊕ M'}
+
+/-- In extended charts at `p`, `Sum.swap` looks like the identity near `p`. -/
+lemma writtenInExtChartAt_sumSwap_eventuallyEq_id :
+    writtenInExtChartAt I I p Sum.swap =ᶠ[𝓝[range I] (I <|chartAt H p p)] id := by
+  cases p with
+    | inl x =>
+      let t := I.symm ⁻¹' (chartAt H x).target ∩ range I
+      have : EqOn (writtenInExtChartAt I I (Sum.inl x) (@Sum.swap M M')) id t := by
+        intro y hy
+        simp only [writtenInExtChartAt, extChartAt, Sum.swap_inl,
+          ChartedSpace.sum_chartAt_inl, ChartedSpace.sum_chartAt_inr]
+        dsimp
+        rw [Sum.inr_injective.extend_apply, (chartAt H x).right_inv (by grind)]
+        exact I.right_inv (by grind)
+      apply Filter.eventually_of_mem ?_ this
+      rw [Filter.inter_mem_iff]
+      refine ⟨I.continuousWithinAt_symm.preimage_mem_nhdsWithin ?_, self_mem_nhdsWithin⟩
+      exact (chartAt H x).open_target.mem_nhds (by simp)
+    | inr x =>
+      let t := I.symm ⁻¹' (chartAt H x).target ∩ range I
+      have : EqOn (writtenInExtChartAt I I (Sum.inr x) (@Sum.swap M M')) id t := by
+        intro y hy
+        simp only [writtenInExtChartAt, extChartAt, Sum.swap_inr,
+          ChartedSpace.sum_chartAt_inl, ChartedSpace.sum_chartAt_inr]
+        dsimp
+        rw [Sum.inl_injective.extend_apply, (chartAt H x).right_inv (by grind)]
+        exact I.right_inv (by grind)
+      apply Filter.eventually_of_mem ?_ this
+      rw [Filter.inter_mem_iff]
+      refine ⟨I.continuousWithinAt_symm.preimage_mem_nhdsWithin ?_, self_mem_nhdsWithin⟩
+      exact (chartAt H x).open_target.mem_nhds (by simp)
+
+theorem hasMFDerivAt_sumSwap :
+    HasMFDerivAt I I (@Sum.swap M M') p (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
+  refine ⟨by fun_prop, ?_⟩
+  apply (hasFDerivWithinAt_id _ (range I)).congr_of_eventuallyEq
+  · exact writtenInExtChartAt_sumSwap_eventuallyEq_id
+  · simp only [mfld_simps]
+    cases p <;> simp
+
+@[simp]
+theorem mfderivWithin_sumSwap {s : Set (M ⊕ M')} (hs : UniqueMDiffWithinAt I s p) :
+    mfderivWithin I I (@Sum.swap M M') s p = ContinuousLinearMap.id 𝕜 (TangentSpace I p) :=
+  hasMFDerivAt_sumSwap.hasMFDerivWithinAt.mfderivWithin hs
+
+@[simp]
+theorem mfderiv_sumSwap :
+    mfderiv I I (@Sum.swap M M') p = ContinuousLinearMap.id 𝕜 (TangentSpace I p) := by
+  simpa [mfderivWithin_univ] using (mfderivWithin_sumSwap (uniqueMDiffWithinAt_univ I))
+
+end disjointUnion
 
 section Arithmetic
 

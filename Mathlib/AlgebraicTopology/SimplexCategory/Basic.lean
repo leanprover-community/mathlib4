@@ -26,7 +26,7 @@ open Simplicial CategoryTheory Limits
 
 namespace SimplexCategory
 
-instance {n m : ℕ} : DecidableEq (⦋n⦌ ⟶ ⦋m⦌) := fun a b =>
+instance {n m : SimplexCategory} : DecidableEq (n ⟶ m) := fun a b =>
   decidable_of_iff (a.toOrderHom = b.toOrderHom) SimplexCategory.Hom.ext_iff.symm
 
 section Init
@@ -145,6 +145,8 @@ lemma mkOfSucc_homToOrderHom_zero {n} (i : Fin n) :
 lemma mkOfSucc_homToOrderHom_one {n} (i : Fin n) :
     DFunLike.coe (F := Fin 2 →o Fin (n + 1)) (Hom.toOrderHom (mkOfSucc i)) 1 = i.succ := rfl
 
+@[simp]
+lemma mkOfSucc_eq_id : mkOfSucc (0 : Fin 1) = 𝟙 _ := by decide
 
 /-- The morphism `⦋2⦌ ⟶ ⦋n⦌` that picks out a specified composite of morphisms in `Fin (n+1)`. -/
 def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
@@ -382,6 +384,10 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
         (Fin.succ_le_castSucc_iff.mpr (H.trans_lt' h)), Fin.predAbove_of_le_castSucc _ k.succ
         (Fin.succ_le_castSucc_iff.mpr h)]
 
+lemma δ_zero_eq_const : δ (0 : Fin 2) = const _ _ 1 := by decide
+
+lemma δ_one_eq_const : δ (1 : Fin 2) = const _ _ 0 := by decide
+
 /--
 If `f : ⦋m⦌ ⟶ ⦋n+1⦌` is a morphism and `j` is not in the range of `f`,
 then `factor_δ f j` is a morphism `⦋m⦌ ⟶ ⦋n⦌` such that
@@ -453,6 +459,10 @@ lemma mkOfSucc_δ_eq {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
     subst h
     rw [Fin.succAbove_castSucc_self]
     rfl
+
+lemma mkOfSucc_one_eq_δ : mkOfSucc (1 : Fin 2) = δ 0 := by decide
+
+lemma mkOfSucc_zero_eq_δ : mkOfSucc (0 : Fin 2) = δ 2 := by decide
 
 theorem eq_of_one_to_two (f : ⦋1⦌ ⟶ ⦋2⦌) :
     (∃ i, f = (δ (n := 1) i)) ∨ ∃ a, f = SimplexCategory.const _ _ a := by
