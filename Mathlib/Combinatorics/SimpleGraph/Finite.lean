@@ -515,6 +515,22 @@ theorem minDegree_eq (f : G ≃g G') : G.minDegree = G'.minDegree := by
       contrapose! h
       exact minDegree_le_degree G (f.symm x')
 
+theorem maxDegree_eq (f : G ≃g G') : G.maxDegree = G'.maxDegree := by
+  rcases isEmpty_or_nonempty V with h | h
+  · have h' : IsEmpty W := f.symm.isEmpty
+    simp [maxDegree]
+  · have h' : Nonempty W := f.symm.nonempty
+    rcases lt_trichotomy G.maxDegree G'.maxDegree with h | h | h
+    · obtain ⟨x', hx'⟩ := exists_maximal_degree_vertex G'
+      rw [hx', Iso.degree_eq f.symm x'] at h
+      contrapose! h
+      exact degree_le_maxDegree G (f.symm x')
+    · exact h
+    · obtain ⟨x, hx⟩ := exists_maximal_degree_vertex G
+      rw [hx, Iso.degree_eq f x] at h
+      contrapose! h
+      exact degree_le_maxDegree G' (f x)
+
 end Iso
 
 section Support
