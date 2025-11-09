@@ -598,7 +598,7 @@ theorem ofLinearEquiv_apply (A : V ≃ₗ[k] V) (p₀ p₁ : P) (x : P) :
   rfl
 
 @[simp]
-theorem ofLinearEquiv_linear (A : V ≃ₗ[k] V) (p₀ p₁ : P) :
+theorem linear_ofLinearEquiv (A : V ≃ₗ[k] V) (p₀ p₁ : P) :
     (ofLinearEquiv A p₀ p₁).linear = A :=
   rfl
 
