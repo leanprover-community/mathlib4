@@ -269,7 +269,7 @@ lemma IndepFun.meas_inter {β γ : Type*} [mβ : MeasurableSpace β] [mγ : Meas
     {s t : Set Ω} (hs : MeasurableSet[mβ.comap f] s) (ht : MeasurableSet[mγ.comap g] t) :
     ∀ᵐ a ∂μ, κ a (s ∩ t) = κ a s * κ a t := hfg _ _ hs ht
 
-lemma iIndepSets.comp_of_injective (hg : Function.Injective g) (h : iIndepSets π κ μ) :
+lemma iIndepSets.precomp (hg : Function.Injective g) (h : iIndepSets π κ μ) :
     iIndepSets (π ∘ g) κ μ := by
   intro s f hf
   let f' := Function.extend g f fun _ => ∅
@@ -282,51 +282,51 @@ lemma iIndepSets.comp_of_injective (hg : Function.Injective g) (h : iIndepSets �
   simp_rw [Finset.set_biInter_finset_image, Finset.prod_image hg.injOn, f'_apply] at ha
   exact ha
 
-lemma iIndepSets.of_comp_of_surjective (hg : Function.Surjective g) (h : iIndepSets (π ∘ g) κ μ) :
+lemma iIndepSets.of_precomp (hg : Function.Surjective g) (h : iIndepSets (π ∘ g) κ μ) :
     iIndepSets π κ μ := by
   obtain ⟨g', hg'⟩ := hg.hasRightInverse
-  convert h.comp_of_injective hg'.injective
+  convert h.precomp hg'.injective
   rw [Function.comp_assoc, hg'.comp_eq_id, Function.comp_id]
 
-lemma iIndepSets.comp_iff (hg : Function.Bijective g) :
+lemma iIndepSets_precomp_of_bijective (hg : Function.Bijective g) :
     iIndepSets (π ∘ g) κ μ ↔ iIndepSets π κ μ :=
-  ⟨.of_comp_of_surjective hg.surjective, .comp_of_injective hg.injective⟩
+  ⟨.of_precomp hg.surjective, .precomp hg.injective⟩
 
-lemma iIndep.comp_of_injective (hg : Function.Injective g) (h : iIndep m κ μ) :
+lemma iIndep.precomp (hg : Function.Injective g) (h : iIndep m κ μ) :
     iIndep (m ∘ g) κ μ :=
-  (iIndepSets.comp_of_injective hg h :)
+  (iIndepSets.precomp hg h :)
 
-lemma iIndep.of_comp_of_surjective (hg : Function.Surjective g) (h : iIndep (m ∘ g) κ μ) :
+lemma iIndep.of_precomp (hg : Function.Surjective g) (h : iIndep (m ∘ g) κ μ) :
     iIndep m κ μ :=
-  iIndepSets.of_comp_of_surjective hg h
+  iIndepSets.of_precomp hg h
 
-lemma iIndep.comp_iff (hg : Function.Bijective g) :
+lemma iIndep_precomp_of_bijective (hg : Function.Bijective g) :
     iIndep (m ∘ g) κ μ ↔ iIndep m κ μ :=
-  ⟨.of_comp_of_surjective hg.surjective, .comp_of_injective hg.injective⟩
+  ⟨.of_precomp hg.surjective, .precomp hg.injective⟩
 
-lemma iIndepSet.comp_of_injective (hg : Function.Injective g) (h : iIndepSet s κ μ) :
+lemma iIndepSet.precomp (hg : Function.Injective g) (h : iIndepSet s κ μ) :
     iIndepSet (s ∘ g) κ μ :=
-  iIndep.comp_of_injective hg h
+  iIndep.precomp hg h
 
-lemma iIndepSet.of_comp_of_surjective (hg : Function.Surjective g) (h : iIndepSet (s ∘ g) κ μ) :
+lemma iIndepSet.of_precomp (hg : Function.Surjective g) (h : iIndepSet (s ∘ g) κ μ) :
     iIndepSet s κ μ :=
-  iIndep.of_comp_of_surjective hg h
+  iIndep.of_precomp hg h
 
-lemma iIndepSet.comp_iff (hg : Function.Bijective g) :
+lemma iIndepSet_precomp_of_bijective (hg : Function.Bijective g) :
     iIndepSet (s ∘ g) κ μ ↔ iIndepSet s κ μ :=
-  ⟨.of_comp_of_surjective hg.surjective, .comp_of_injective hg.injective⟩
+  ⟨.of_precomp hg.surjective, .precomp hg.injective⟩
 
-lemma iIndepFun.comp_of_injective (hg : Function.Injective g) (h : iIndepFun f κ μ) :
-    iIndepFun (f ∘' g) κ μ :=
-  iIndep.comp_of_injective hg h
+lemma iIndepFun.precomp (hg : Function.Injective g) (h : iIndepFun f κ μ) :
+    iIndepFun (fun i ↦ f (g i)) κ μ :=
+  iIndep.precomp hg h
 
-lemma iIndepFun.of_comp_of_surjective (hg : Function.Surjective g) (h : iIndepFun (f ∘' g) κ μ) :
+lemma iIndepFun.of_precomp (hg : Function.Surjective g) (h : iIndepFun (fun i ↦ f (g i)) κ μ) :
     iIndepFun f κ μ :=
-  iIndep.of_comp_of_surjective hg h
+  iIndep.of_precomp hg h
 
-lemma iIndepFun.comp_iff (hg : Function.Bijective g) :
-    iIndepFun (f ∘' g) κ μ ↔ iIndepFun f κ μ :=
-  ⟨.of_comp_of_surjective hg.surjective, .comp_of_injective hg.injective⟩
+lemma iIndepFun_precomp_of_bijective (hg : Function.Bijective g) :
+    iIndepFun (fun i ↦ f (g i)) κ μ ↔ iIndepFun f κ μ :=
+  ⟨.of_precomp hg.surjective, .precomp hg.injective⟩
 
 end ByDefinition
 
