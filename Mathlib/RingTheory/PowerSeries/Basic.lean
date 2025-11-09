@@ -673,7 +673,7 @@ lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) :
   rcases Nat.eq_zero_or_pos n with (rfl | hn)
   · simp
   induction n with
-  | zero => omega
+  | zero => cutsat
   | succ n' ih =>
       have h₁ (m : ℕ) : φ ^ (m + 1) = φ ^ m * φ := by exact rfl
       have h₂ : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := by exact rfl
@@ -807,6 +807,10 @@ theorem coe_add : ((φ + ψ : R[X]) : PowerSeries R) = φ + ψ := by
 @[simp, norm_cast]
 theorem coe_mul : ((φ * ψ : R[X]) : PowerSeries R) = φ * ψ :=
   PowerSeries.ext fun n => by simp only [coeff_coe, PowerSeries.coeff_mul, coeff_mul]
+
+@[simp, norm_cast]
+lemma coe_smul (φ : R[X]) (r : R) :
+    (r • φ : Polynomial R) = r • (φ : PowerSeries R) := rfl
 
 @[simp, norm_cast]
 theorem coe_C (a : R) : ((C a : R[X]) : PowerSeries R) = PowerSeries.C a := by

@@ -274,7 +274,7 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
   filter_upwards [nhdsWithin_le_nhds (this.preimage_mem_nhds hC),
     extChartAt_target_mem_nhdsWithin x] with y hy h'y
   have : y = (extChartAt I x) ((extChartAt I x).symm y) := by simp [-extChartAt, h'y]
-  simp [-extChartAt] at hy
+  simp only [preimage_setOf_eq, mem_setOf_eq] at hy
   convert hy
 
 lemma eventually_enorm_mfderivWithin_symm_extChartAt_lt (x : M) :
@@ -386,9 +386,6 @@ lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   and finally `r` small enough that the ball of radius `r` in the extended chart is contained in
   the image of `v`.
 
-@[deprecated (since := "2025-09-18")]
-alias setOf_riemmanianEDist_lt_subset_nhds := setOf_riemannianEDist_lt_subset_nhds
-
   We claim that points at Riemannian distance at most `r / C` of `x` are inside `u` (and therefore
   inside `s`). To prove this, consider a path of length at most `r / C` starting from `x`. While
   it stays inside `u`, then by the derivative control its image in the extended chart has length
@@ -492,6 +489,9 @@ alias setOf_riemmanianEDist_lt_subset_nhds := setOf_riemannianEDist_lt_subset_nh
   convert mem_preimage.1 this
   simp only [Function.comp_apply, γ', (extChartAt I x).left_inv <| uc <| t₁_mem
     (right_mem_Icc.mpr ht₁0)]
+
+@[deprecated (since := "2025-09-18")]
+alias setOf_riemmanianEDist_lt_subset_nhds := setOf_riemannianEDist_lt_subset_nhds
 
 /-- Any neighborhood of `x` contains all the points which are close enough to `x` for the
 Riemannian distance, `ℝ≥0∞` version. -/

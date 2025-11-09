@@ -3,18 +3,27 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
+import Mathlib.CategoryTheory.Quotient
 import Mathlib.CategoryTheory.Sites.Hypercover.One
+import Mathlib.CategoryTheory.Filtered.Basic
 
 /-!
 # The category of `1`-hypercovers up to homotopy
 
 In this file we define the category of `1`-hypercovers up to homotopy. This is the category of
-`1`-hypercovers, but where morphisms are considered up to existence of a homotopy (TODO, Christian).
+`1`-hypercovers, but where morphisms are considered up to existence of a homotopy.
 
 ## Main definitions
 
 - `CategoryTheory.PreOneHypercover.Homotopy`: A homotopy of refinements `E ⟶ F` is a family of
   morphisms `Xᵢ ⟶ Yₐ` where `Yₐ` is a component of the cover of `X_{f(i)} ×[S] X_{g(i)}`.
+- `CategoryTheory.GrothendieckTopology.HOneHypercover`: The category of `1`-hypercovers
+  with respect to a Grothendieck topology and morphisms up to homotopy.
+
+## Main results
+
+- `CategoryTheory.GrothendieckTopology.HOneHypercover.isCofiltered_of_hasPullbacks`: The
+  category of `1`-hypercovers up to homotopy is cofiltered if `C` has pullbacks.
 -/
 
 universe w'' w' w v u
@@ -203,6 +212,49 @@ lemma exists_nonempty_homotopy (f g : E.Hom F) :
   ⟨cylinder f g, PreOneHypercover.cylinderHom f g, ⟨PreOneHypercover.cylinderHomotopy f g⟩⟩
 
 end OneHypercover
+
+variable (J S)
+
+/--
+Two refinement morphisms of `1`-hypercovers are homotopic if there exists a homotopy between
+them.
+Note: This is not an equivalence relation, it is not even reflexive!
+-/
+def OneHypercover.homotopicRel : HomRel (J.OneHypercover S) :=
+  fun _ _ f g ↦ Nonempty (PreOneHypercover.Homotopy f g)
+
+/-- The category of `1`-hypercovers with refinement morphisms up to homotopy. -/
+abbrev HOneHypercover (S : C) := Quotient (OneHypercover.homotopicRel J S)
+
+/-- The canonical projection from `1`-hypercovers to `1`-hypercovers up to homotopy. -/
+abbrev OneHypercover.toHOneHypercover (S : C) : J.OneHypercover S ⥤ J.HOneHypercover S :=
+  Quotient.functor _
+
+lemma _root_.CategoryTheory.PreOneHypercover.Homotopy.map_eq_map {S : C} {E F : J.OneHypercover S}
+    {f g : E ⟶ F} (H : Homotopy f g) :
+    (toHOneHypercover J S).map f = (toHOneHypercover J S).map g :=
+  Quotient.sound _ ⟨H⟩
+
+namespace HOneHypercover
+
+variable {S : C}
+
+instance : Nonempty (J.HOneHypercover S) := ⟨⟨Nonempty.some inferInstance⟩⟩
+
+/-- If `C` has pullbacks, the category of `1`-hypercovers up to homotopy is cofiltered. -/
+instance isCofiltered_of_hasPullbacks [HasPullbacks C] : IsCofiltered (J.HOneHypercover S) where
+  cone_objs {E F} :=
+    ⟨⟨E.1.inter F.1⟩, Quot.mk _ (PreOneHypercover.interFst _ _),
+      Quot.mk _ (PreOneHypercover.interSnd _ _), ⟨⟩⟩
+  cone_maps {X Y} f g := by
+    obtain ⟨(f : X.1 ⟶ Y.1), rfl⟩ := (toHOneHypercover J S).map_surjective f
+    obtain ⟨(g : X.1 ⟶ Y.1), rfl⟩ := (toHOneHypercover J S).map_surjective g
+    obtain ⟨W, h, ⟨H⟩⟩ := OneHypercover.exists_nonempty_homotopy f g
+    use (toHOneHypercover J S).obj W, (toHOneHypercover J S).map h
+    rw [← Functor.map_comp, ← Functor.map_comp]
+    exact H.map_eq_map
+
+end HOneHypercover
 
 end GrothendieckTopology
 

@@ -99,7 +99,7 @@ theorem not_isCyclic_of_denselyOrdered [DenselyOrdered α] [Nontrivial α] : ¬I
   rcases lt_trichotomy a 1 with hlt | rfl | hlt
   · rcases exists_between hlt with ⟨b, hab, hb⟩
     rcases ha b with ⟨k, rfl⟩
-    suffices 0 < k ∧ k < 1 by omega
+    suffices 0 < k ∧ k < 1 by cutsat
     rw [← one_lt_inv'] at hlt
     simp_rw [← zpow_lt_zpow_iff_right hlt]
     simp_all
@@ -107,7 +107,7 @@ theorem not_isCyclic_of_denselyOrdered [DenselyOrdered α] [Nontrivial α] : ¬I
     simpa [hb.symm] using ha b
   · rcases exists_between hlt with ⟨b, hb, hba⟩
     rcases ha b with ⟨k, rfl⟩
-    suffices 0 < k ∧ k < 1 by omega
+    suffices 0 < k ∧ k < 1 by cutsat
     simp_rw [← zpow_lt_zpow_iff_right hlt]
     simp_all
 

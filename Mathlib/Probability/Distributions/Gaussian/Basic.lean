@@ -178,8 +178,26 @@ instance : IsGaussian (μ.map (fun x ↦ -x)) := by
 instance (c : E) : IsGaussian (μ.map (fun x ↦ c - x)) := by
   simp_rw [sub_eq_add_neg]
   suffices IsGaussian ((μ.map (fun x ↦ -x)).map (fun x ↦ c + x)) by
-    rw [Measure.map_map (by fun_prop) (by fun_prop)] at this
-    convert this using 1
+    rwa [Measure.map_map (by fun_prop) (by fun_prop), Function.comp_def] at this
   infer_instance
+
+/-- A product of Gaussian distributions is Gaussian. -/
+instance [SecondCountableTopologyEither E F] {ν : Measure F} [IsGaussian ν] :
+    IsGaussian (μ.prod ν) := by
+  refine isGaussian_of_charFunDual_eq fun L ↦ ?_
+  rw [charFunDual_prod, IsGaussian.charFunDual_eq, IsGaussian.charFunDual_eq, ← Complex.exp_add]
+  congr
+  let (eq := hL₁) L₁ := L.comp (.inl ℝ E F)
+  let (eq := hL₂) L₂ := L.comp (.inr ℝ E F)
+  rw [← hL₁, ← hL₂, sub_add_sub_comm, ← add_mul]
+  congr
+  · simp_rw [integral_complex_ofReal]
+    rw [integral_continuousLinearMap_prod' (IsGaussian.integrable_dual μ (L.comp (.inl ℝ E F)))
+      (IsGaussian.integrable_dual ν (L.comp (.inr ℝ E F)))]
+    norm_cast
+  · field_simp
+    rw [variance_dual_prod' (IsGaussian.memLp_dual μ (L.comp (.inl ℝ E F)) 2 (by simp))
+      (IsGaussian.memLp_dual ν (L.comp (.inr ℝ E F)) 2 (by simp))]
+    norm_cast
 
 end ProbabilityTheory

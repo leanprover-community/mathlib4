@@ -29,6 +29,7 @@ universe v₁ v₂ u₁ u₂ u
 
 open CategoryTheory MonoidalCategory
 
+namespace CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
 /-- A comonoid object internal to a monoidal category.
@@ -53,8 +54,10 @@ namespace ComonObj
 
 attribute [reassoc (attr := simp)] counit_comul comul_counit comul_assoc
 
+/-- The canonical comonoid structure on the monoidal unit.
+This is not a global instance to avoid conflicts with other comonoid structures. -/
 @[simps]
-instance (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] : ComonObj (𝟙_ C) where
+def instTensorUnit (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] : ComonObj (𝟙_ C) where
   counit := 𝟙 _
   comul := (λ_ _).inv
   counit_comul := by simp
@@ -102,6 +105,7 @@ attribute [instance] Comon.comon
 
 namespace Comon
 
+attribute [local instance] ComonObj.instTensorUnit in
 variable (C) in
 /-- The trivial comonoid object. We later show this is terminal in `Comon C`.
 -/
@@ -384,7 +388,7 @@ open Functor.LaxMonoidal Functor.OplaxMonoidal
 
 end Comon
 
-namespace CategoryTheory.Functor
+namespace Functor
 
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
@@ -441,4 +445,16 @@ def mapComon (F : C ⥤ D) [F.OplaxMonoidal] : Comon C ⥤ Comon D where
 -- TODO We haven't yet set up the category structure on `OplaxMonoidalFunctor C D`
 -- and so can't state `mapComonFunctor : OplaxMonoidalFunctor C D ⥤ Comon C ⥤ Comon D`.
 
-end CategoryTheory.Functor
+end Functor
+
+variable [BraidedCategory.{v₁} C]
+
+/-- Predicate for a comonoid object to be commutative. -/
+class IsCommComonObj (X : C) [ComonObj X] where
+  comul_comm (X) : Δ ≫ (β_ X X).hom = Δ := by cat_disch
+
+open scoped ComonObj
+
+attribute [reassoc (attr := simp)] IsCommComonObj.comul_comm
+
+end CategoryTheory

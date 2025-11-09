@@ -8,7 +8,7 @@ import Mathlib.Analysis.Normed.Affine.Convex
 /-!
 # Convex functions are continuous
 
-This file proves that a convex function from a finite dimensional real normed space to `ℝ` is
+This file proves that a convex function from a finite-dimensional real normed space to `ℝ` is
 continuous.
 -/
 
@@ -49,11 +49,10 @@ lemma ConvexOn.lipschitzOnWith_of_abs_le (hf : ConvexOn ℝ (ball x₀ r) f) (h�
     rw [hK, mul_comm, ← mul_div_assoc, le_div_iff₀' hε]
     calc
       ε * (f x - f y) ≤ ‖x - y‖ * (f z - f x) := by
-        rw [mul_sub, mul_sub, sub_le_sub_iff, ← add_mul]
         have h := hf.2 hy' hz (by positivity) (by positivity) hab
         simp only [← hxyz, smul_eq_mul, a, b] at h
         field_simp at h
-        rwa [← le_div_iff₀' (by positivity), add_comm (_ * _)]
+        linear_combination h
       _ ≤ _ := by
         rw [sub_eq_add_neg (f _), two_mul]
         gcongr

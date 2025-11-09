@@ -146,7 +146,7 @@ lemma find?_ofFn_eq_some {n} {f : Fin n → α} {p : α → Bool} {b : α} :
       ⟨hpb, ⟨⟨i, length_ofFn (f := f) ▸ hi⟩, by simpa using hfb, fun j hj ↦ by simpa using h j hj⟩⟩,
     fun ⟨hpb, i, hfb, h⟩ ↦
       ⟨hpb, ⟨i, (length_ofFn (f := f)).symm ▸ i.isLt, by simpa using hfb,
-        fun j hj ↦ by simpa using h ⟨j, by omega⟩ (by simpa using hj)⟩⟩⟩
+        fun j hj ↦ by simpa using h ⟨j, by cutsat⟩ (by simpa using hj)⟩⟩⟩
 
 lemma find?_ofFn_eq_some_of_injective {n} {f : Fin n → α} {p : α → Bool} {i : Fin n}
     (h : Function.Injective f) :

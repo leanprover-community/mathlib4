@@ -123,6 +123,14 @@ instance instHasUncurryPath {α : Type*} {x y : α → X} :
     HasUncurry (∀ a : α, Path (x a) (y a)) (α × I) X :=
   ⟨fun φ p => φ p.1 p.2⟩
 
+@[simp high]
+lemma source_mem_range (γ : Path x y) : x ∈ range ⇑γ :=
+  ⟨0, Path.source γ⟩
+
+@[simp high]
+lemma target_mem_range (γ : Path x y) : y ∈ range ⇑γ :=
+  ⟨1, Path.target γ⟩
+
 /-- The constant path from a point to itself -/
 @[refl, simps!]
 def refl (x : X) : Path x x where
@@ -398,6 +406,15 @@ theorem extend_cast {x' y'} (γ : Path x y) (hx : x' = x) (hy : y' = y) :
 @[simp]
 theorem cast_coe (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : (γ.cast hx hy : I → X) = γ :=
   rfl
+
+lemma bijective_cast {x' y' : X} (hx : x' = x) (hy : y' = y) : Bijective (Path.cast · hx hy) := by
+  subst_vars; exact bijective_id
+
+@[congr]
+lemma exists_congr {x₁ x₂ y₁ y₂ : X} {p : Path x₁ y₁ → Prop}
+    (hx : x₁ = x₂) (hy : y₁ = y₂) :
+    (∃ γ, p γ) ↔ (∃ (γ : Path x₂ y₂), p (γ.cast hx hy)) :=
+  bijective_cast hx hy |>.surjective.exists
 
 @[continuity, fun_prop]
 theorem symm_continuous_family {ι : Type*} [TopologicalSpace ι]

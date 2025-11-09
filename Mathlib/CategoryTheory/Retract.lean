@@ -34,6 +34,15 @@ attribute [reassoc (attr := simp)] retract
 
 variable {X Y : C} (h : Retract X Y)
 
+open Opposite
+
+/-- Retracts are preserved when passing to the opposite category. -/
+@[simps]
+def op : Retract (op X) (op Y) where
+  i := h.r.op
+  r := h.i.op
+  retract := by simp [← op_comp, h.retract]
+
 /-- If `X` is a retract of `Y`, then `F.obj X` is a retract of `F.obj Y`. -/
 @[simps]
 def map (F : C ⥤ D) : Retract (F.obj X) (F.obj Y) where
@@ -118,6 +127,30 @@ instance : IsSplitEpi h.r.right := ⟨⟨h.right.splitEpi⟩⟩
 instance : IsSplitMono h.i.left := ⟨⟨h.left.splitMono⟩⟩
 
 instance : IsSplitMono h.i.right := ⟨⟨h.right.splitMono⟩⟩
+
+/-- If a morphism `f` is a retract of `g`, then `f.op` is a retract of `g.op`. -/
+@[simps]
+def op : RetractArrow f.op g.op where
+  i.left := h.r.right.op
+  i.right := h.r.left.op
+  i.w := by simp [← op_comp]
+  r.left := h.i.right.op
+  r.right := h.i.left.op
+  r.w := by simp [← op_comp]
+  retract := by ext <;> simp [← op_comp]
+
+/-- If a morphism `f` in the opposite category is a retract of `g`,
+then `f.unop` is a retract of `g.unop`. -/
+@[simps]
+def unop {X Y Z W : Cᵒᵖ} {f : X ⟶ Y} {g : Z ⟶ W} (h : RetractArrow f g)
+ : RetractArrow f.unop g.unop where
+  i.left := h.r.right.unop
+  i.right := h.r.left.unop
+  i.w := by simp [← unop_comp]
+  r.left := h.i.right.unop
+  r.right := h.i.left.unop
+  r.w := by simp [← unop_comp]
+  retract := by ext <;> simp [← unop_comp]
 
 end RetractArrow
 

@@ -61,14 +61,13 @@ lemma CFC.monotoneOn_one_sub_one_add_inv :
   rw [h_cfc_one_sub (a : A⁺¹), h_cfc_one_sub (b : A⁺¹)]
   gcongr
   rw [← CFC.rpow_neg_one_eq_cfc_inv, ← CFC.rpow_neg_one_eq_cfc_inv]
-  exact rpow_neg_one_le_rpow_neg_one (add_nonneg zero_le_one ha) (by gcongr) <|
-    isUnit_of_le isUnit_one zero_le_one <| le_add_of_nonneg_right ha
+  exact rpow_neg_one_le_rpow_neg_one (by gcongr)
 
 lemma CFC.monotoneOn_one_sub_one_add_inv_real :
     MonotoneOn (cfcₙ (fun x : ℝ => 1 - (1 + x)⁻¹)) (Set.Ici (0 : A)) := by
   intro a (ha : 0 ≤ a) b (hb : 0 ≤ b) hab
   calc _ = cfcₙ (fun x : ℝ≥0 => 1 - (1 + x)⁻¹) a := by
-          rw [cfcₙ_nnreal_eq_real _ ha]
+          rw [cfcₙ_nnreal_eq_real _ _ ha]
           refine cfcₙ_congr ?_
           intro x hx
           have hx' : 0 ≤ x := by grind
@@ -76,7 +75,7 @@ lemma CFC.monotoneOn_one_sub_one_add_inv_real :
     _ ≤ cfcₙ (fun x : ℝ≥0 => 1 - (1 + x)⁻¹) b :=
           CFC.monotoneOn_one_sub_one_add_inv ha hb hab
     _ = cfcₙ (fun x : ℝ => 1 - (1 + x)⁻¹) b := by
-          rw [cfcₙ_nnreal_eq_real _ hb]
+          rw [cfcₙ_nnreal_eq_real _ _ hb]
           refine cfcₙ_congr ?_
           intro x hx
           have hx' : 0 ≤ x := by grind
@@ -220,8 +219,9 @@ lemma nnnorm_sub_mul_self_le {A : Type*} [CStarAlgebra A] [PartialOrder A] [Star
   have hy₀ : y ∈ Set.Icc 0 1 := ⟨hx₀.trans hy.1, hy.2⟩
   have hy' : 1 - y ∈ Set.Icc 0 1 := Set.sub_mem_Icc_zero_iff_right.mpr hy₀
   rw [hy₀.1.star_eq, ← mul_assoc, mul_assoc (star _), ← sq]
-  refine nnnorm_le_nnnorm_of_nonneg_of_le (conjugate_nonneg (pow_nonneg hy'.1 2) _) ?_ |>.trans h
-  refine conjugate_le_conjugate ?_ _
+  refine nnnorm_le_nnnorm_of_nonneg_of_le (star_left_conjugate_nonneg (pow_nonneg hy'.1 2) _) ?_
+    |>.trans h
+  refine star_left_conjugate_le_conjugate ?_ _
   trans (1 - y)
   · simpa using pow_antitone hy'.1 hy'.2 one_le_two
   · gcongr
