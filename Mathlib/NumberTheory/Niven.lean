@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Meiburg, Snir Broshi
 -/
 import Mathlib.Analysis.Complex.IsIntegral
-import Mathlib.Analysis.SpecialFunctions.Complex.Log
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.RingTheory.Polynomial.RationalRoot
 import Mathlib.Tactic.Peel
 import Mathlib.Tactic.Rify
