@@ -283,55 +283,41 @@ lemma IndepFun.meas_inter [mβ : MeasurableSpace β] [mγ : MeasurableSpace γ] 
     μ (s ∩ t) = μ s * μ t :=
   (IndepFun_iff _ _ _).1 hfg _ _ hs ht
 
-lemma iIndepSets.comp_of_injective (hg : Function.Injective g) (h : iIndepSets π μ) :
+lemma iIndepSets.precomp (hg : Function.Injective g) (h : iIndepSets π μ) :
     iIndepSets (π ∘ g) μ :=
-  Kernel.iIndepSets.comp_of_injective hg h
+  Kernel.iIndepSets.precomp hg h
 
-lemma iIndepSets.of_comp_of_surjective (hg : Function.Surjective g) (h : iIndepSets (π ∘ g) μ) :
+lemma iIndepSets.of_precomp (hg : Function.Surjective g) (h : iIndepSets (π ∘ g) μ) :
     iIndepSets π μ :=
-  Kernel.iIndepSets.of_comp_of_surjective hg h
+  Kernel.iIndepSets.of_precomp hg h
 
-lemma iIndepSets.comp_iff (hg : Function.Bijective g) :
+lemma iIndepSets_precomp_of_bijective (hg : Function.Bijective g) :
     iIndepSets (π ∘ g) μ ↔ iIndepSets π μ :=
-  Kernel.iIndepSets.comp_iff hg
+  Kernel.iIndepSets_precomp_of_bijective hg
 
-lemma iIndep.comp_of_injective (hg : Function.Injective g) (h : iIndep m μ) :
+lemma iIndep.precomp (hg : Function.Injective g) (h : iIndep m μ) :
     iIndep (m ∘ g) μ :=
-  Kernel.iIndep.comp_of_injective hg h
+  Kernel.iIndep.precomp hg h
 
-lemma iIndep.of_comp_of_surjective (hg : Function.Surjective g) (h : iIndep (m ∘ g) μ) :
+lemma iIndep.of_precomp (hg : Function.Surjective g) (h : iIndep (m ∘ g) μ) :
     iIndep m μ :=
-  Kernel.iIndep.of_comp_of_surjective hg h
+  Kernel.iIndep.of_precomp hg h
 
-lemma iIndep.comp_iff (hg : Function.Bijective g) :
+lemma iIndep_precomp_of_bijective (hg : Function.Bijective g) :
     iIndep (m ∘ g) μ ↔ iIndep m μ :=
-  Kernel.iIndep.comp_iff hg
+  Kernel.iIndep_precomp_of_bijective hg
 
-lemma iIndepSet.comp_of_injective (hg : Function.Injective g) (h : iIndepSet s μ) :
+lemma iIndepSet.precomp (hg : Function.Injective g) (h : iIndepSet s μ) :
     iIndepSet (s ∘ g) μ :=
-  Kernel.iIndepSet.comp_of_injective hg h
+  Kernel.iIndepSet.precomp hg h
 
-lemma iIndepSet.of_comp_of_surjective (hg : Function.Surjective g) (h : iIndepSet (s ∘ g) μ) :
+lemma iIndepSet.of_precomp (hg : Function.Surjective g) (h : iIndepSet (s ∘ g) μ) :
     iIndepSet s μ :=
-  Kernel.iIndepSet.of_comp_of_surjective hg h
+  Kernel.iIndepSet.of_precomp hg h
 
-lemma iIndepSet.comp_iff (hg : Function.Bijective g) :
+lemma iIndepSet_precomp_of_bijective (hg : Function.Bijective g) :
     iIndepSet (s ∘ g) μ ↔ iIndepSet s μ :=
-  Kernel.iIndepSet.comp_iff hg
-
-variable {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)} {f : ∀ x : ι, Ω → β x}
-
-lemma iIndepFun.comp_of_injective (hg : Function.Injective g) (h : iIndepFun f μ) :
-    iIndepFun (f ∘' g) μ :=
-  Kernel.iIndepFun.comp_of_injective hg h
-
-lemma iIndepFun.of_comp_of_surjective (hg : Function.Surjective g) (h : iIndepFun (f ∘' g) μ) :
-    iIndepFun f μ :=
-  Kernel.iIndepFun.of_comp_of_surjective hg h
-
-lemma iIndepFun.comp_iff (hg : Function.Bijective g) :
-    iIndepFun (f ∘' g) μ ↔ iIndepFun f μ :=
-  Kernel.iIndepFun.comp_iff hg
+  Kernel.iIndepSet_precomp_of_bijective hg
 
 end Definition_lemmas
 
@@ -870,15 +856,9 @@ lemma iIndepFun.indepFun_prodMk_prodMk₀ (h_indep : iIndepFun f μ) (hf : ∀ i
 
 variable {ι' : Type*} {α : ι → Type*} [∀ i, MeasurableSpace (α i)]
 
-open Function in
 lemma iIndepFun.precomp {g : ι' → ι} (hg : g.Injective) (h : iIndepFun f μ) :
-    iIndepFun (m := fun i ↦ m (g i)) (fun i ↦ f (g i)) μ := by
-  have : IsProbabilityMeasure μ := h.isProbabilityMeasure
-  nontriviality ι'
-  have A (x) : Function.invFun g (g x) = x := Function.leftInverse_invFun hg x
-  rw [iIndepFun_iff] at h ⊢
-  intro t s' hs'
-  simpa [A] using h (t.map ⟨g, hg⟩) (f' := fun i ↦ s' (invFun g i)) (by simpa [A] using hs')
+    iIndepFun (m := fun i ↦ m (g i)) (fun i ↦ f (g i)) μ :=
+  Kernel.iIndepFun.precomp hg h
 
 lemma iIndepFun_iff_finset : iIndepFun f μ ↔ ∀ s : Finset ι, iIndepFun (s.restrict f) μ where
   mp h s := h.precomp (g := ((↑) : s → ι)) Subtype.val_injective
@@ -890,28 +870,12 @@ lemma iIndepFun_iff_finset : iIndepFun f μ ↔ ∀ s : Finset ι, iIndepFun (s.
     exact (h s).meas_iInter fun i ↦ hs i i.2
 
 lemma iIndepFun.of_precomp {g : ι' → ι} (hg : g.Surjective)
-    (h : iIndepFun (m := fun i ↦ m (g i)) (fun i ↦ f (g i)) μ) : iIndepFun f μ := by
-  have : IsProbabilityMeasure μ := h.isProbabilityMeasure
-  nontriviality ι
-  have := hg.nontrivial
-  classical
-  rw [iIndepFun_iff] at h ⊢
-  intro t s hs
-  have A (x) : g (Function.invFun g x) = x := Function.rightInverse_invFun hg x
-  have : ∀ i ∈ Finset.image (Function.invFun g) t,
-    @MeasurableSet _ (MeasurableSpace.comap (f <| g i) (m <| g i)) (s <| g i) := by
-    intro i hi
-    obtain ⟨j, hj, rfl⟩ := Finset.mem_image.mp hi
-    simpa [A] using (A j).symm ▸ hs j hj
-  have eq : ∏ i ∈ Finset.image (Function.invFun g) t, μ (s (g i)) = ∏ i ∈ t, μ (s i) := by
-    rw [Finset.prod_image (fun x hx y hy h => ?_), Finset.prod_congr rfl (fun x _ => by rw [A])]
-    rw [← A x, ← A y, h]
-  simpa [A, eq] using h (t.image (Function.invFun g)) (f' := fun i ↦ s (g i)) this
+    (h : iIndepFun (m := fun i ↦ m (g i)) (fun i ↦ f (g i)) μ) : iIndepFun f μ :=
+  Kernel.iIndepFun.of_precomp hg h
 
 lemma iIndepFun_precomp_of_bijective {g : ι' → ι} (hg : g.Bijective) :
-    iIndepFun (m := fun i ↦ m (g i)) (fun i ↦ f (g i)) μ ↔ iIndepFun f μ where
-  mp := .of_precomp hg.surjective
-  mpr := .precomp hg.injective
+    iIndepFun (m := fun i ↦ m (g i)) (fun i ↦ f (g i)) μ ↔ iIndepFun f μ :=
+  Kernel.iIndepFun_precomp_of_bijective hg
 
 end iIndepFun
 
