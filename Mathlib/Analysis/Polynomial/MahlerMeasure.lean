@@ -4,12 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
 
-import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Analysis.Analytic.Polynomial
 import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.Complex.JensenFormula
 import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.RingTheory.SimpleRing.Principal
 
 /-!
 # Mahler measure of complex polynomials
@@ -147,16 +145,14 @@ theorem logMahlerMeasure_C_mul {a : ℂ} (ha : a ≠ 0) {p : ℂ[X]} (hp : p ≠
     (C a * p).logMahlerMeasure = log ‖a‖ + p.logMahlerMeasure := by
   rw [logMahlerMeasure_mul_eq_add_logMahlerMeasure (by simp [ha, hp]), logMahlerMeasure_const]
 
-open MeromorphicOn Metric in
+open MeromorphicOn MeromorphicAt Metric in
 /-- The logarithmic Mahler measure of `X - C z` is the `log⁺` of the absolute value of `z`. -/
 @[simp]
 theorem logMahlerMeasure_X_sub_C (z : ℂ) : (X - C z).logMahlerMeasure = log⁺ ‖z‖ := by
   by_cases hz₀ : z = 0
   · simp [hz₀, posLog_def]
-  have hmeroOn (U : Set ℂ) : MeromorphicOn (fun x ↦ x - z) U := MeromorphicOn.id.sub <| const z
-  have hmeroAt (u : ℂ) : MeromorphicAt (fun x ↦ x - z) u := hmeroOn (Eq u) u rfl
-  have hmeroBall : MeromorphicOn (fun x ↦ x - z) (closedBall 0 |1|) := hmeroOn (closedBall 0 |1|)
-  have : MeromorphicOn (fun x ↦ (X - C z).eval x) (closedBall 0 |1|) :=
+  let B := closedBall (0 : ℂ) |1|
+  have : MeromorphicOn (fun x ↦ (X - C z).eval x) B :=
     (analyticOnNhd_id.aeval_polynomial (X - C z)).meromorphicOn
   rw [logMahlerMeasure_def, circleAverage_log_norm zero_ne_one.symm this]
   --get rid of the `meromorphicTrailingCoeffAt`
@@ -167,11 +163,12 @@ theorem logMahlerMeasure_X_sub_C (z : ℂ) : (X - C z).logMahlerMeasure = log⁺
   rw [this]
   simp only [eval_sub, eval_X, eval_C, zero_sub, norm_neg, one_mul, log_inv, mul_neg, log_one,
     mul_zero, add_zero]
+  have hmeroAt (u : ℂ) : MeromorphicAt (fun x ↦ x - z) u := (MeromorphicAt.id u).sub (const z u)
   -- divisor computations
-  let B := closedBall (0 : ℂ) |1|
   have hdiv0 {u : ℂ} (hu : u ≠ z) : divisor (fun x ↦ x - z) B u = 0 := by
     by_cases hu' : u ∈ B
-    · rw [divisor_apply (hmeroOn B) hu', ← WithTop.untop₀_coe 0]
+    · have hmeroBall : MeromorphicOn (fun x ↦ x - z) B := id.sub <| MeromorphicOn.const z
+      rw [divisor_apply hmeroBall hu', ← WithTop.untop₀_coe 0]
       congr
       rw [meromorphicOrderAt_eq_int_iff (hmeroAt u)]
       use fun x ↦ x - z
@@ -230,7 +227,7 @@ theorem logMahlerMeasure_C_mul_X_add_C {a : ℂ} (ha : a ≠ 0) (b : ℂ) :
 theorem logMahlerMeasure_degree_eq_one {p : ℂ[X]} (h : p.degree = 1) : p.logMahlerMeasure =
     log ‖p.coeff 1‖ + log⁺ ‖(p.coeff 1)⁻¹ * p.coeff 0‖ := by
   rw [eq_X_add_C_of_degree_le_one (le_of_eq h)]
-  simp [logMahlerMeasure_C_mul_X_add_C _ (show p.coeff 1 ≠ 0 by exact coeff_ne_zero_of_eq_degree h)]
+  simp [logMahlerMeasure_C_mul_X_add_C (show p.coeff 1 ≠ 0 by exact coeff_ne_zero_of_eq_degree h)]
 
 /-- The Mahler measure of `X - C z` equals `max 1 ‖z‖`. -/
 @[simp]
@@ -254,7 +251,7 @@ theorem mahlerMeasure_C_mul_X_add_C {a : ℂ} (ha : a ≠ 0) (b : ℂ) :
 theorem mahlerMeasure_degree_eq_one {p : ℂ[X]} (h : p.degree = 1) : p.mahlerMeasure =
     ‖p.coeff 1‖ * max 1 ‖(p.coeff 1)⁻¹ * p.coeff 0‖ := by
   rw [eq_X_add_C_of_degree_le_one (le_of_eq h)]
-  simp [mahlerMeasure_C_mul_X_add_C _ (show p.coeff 1 ≠ 0 by exact coeff_ne_zero_of_eq_degree h)]
+  simp [mahlerMeasure_C_mul_X_add_C (show p.coeff 1 ≠ 0 by exact coeff_ne_zero_of_eq_degree h)]
 
 /-- The logarithmic Mahler measure of a polynomial is the `log` of the absolute value of its leading
   coefficient plus the sum of the `log`s of the absolute values of its roots lying outside the unit
