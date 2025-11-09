@@ -194,7 +194,7 @@ lemma IsPrime.fg_iff {P : Ideal R⟦X⟧} [P.IsPrime] : P.FG ↔ (P.map constant
   · exact (FG.map · _)
   · intro ⟨S, hS⟩
     by_cases hX : X ∈ P
-    · have H := eq_span_insert_X_of_Xmem_of_span_eq hX hS
+    · have H := eq_span_insert_X_of_X_mem_of_span_eq hX hS
       have : (insert X <| (C (R := R))'' S).Finite :=
         Finite.insert X <| Finite.image _ S.finite_toSet
       lift insert X <| (C (R := R))'' S to Finset R⟦X⟧ using this with T hT
