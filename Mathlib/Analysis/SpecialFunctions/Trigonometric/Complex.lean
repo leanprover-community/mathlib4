@@ -197,20 +197,12 @@ lemma tan_eq_zero_of_cos_eq_zero {x} (h : cos x = 0) : tan x = 0 := by
 
 -- tangent half-angle substitution formulas
 
-theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq'' (x : ℂ) (h : cos (x / 2) ≠ 0) :
-    cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) := by
-  conv_lhs => rw [show x = 2 * (x / 2) by group, cos_two_mul']
-  rw [div_one_add_tan_sq_eq_mul_cos_sq h, ← tan_mul_cos h]
-  ring
-
-theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq'
-    (x : ℂ) (h : ∀ k : ℤ, x ≠ (2 * k + 1) * π) :
-    cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) :=
-  cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq'' x (by grind [cos_ne_zero_iff])
-
 theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq (x : ℂ) (h : cos x ≠ -1) :
     cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) := by
-  exact cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq' x (by grind [cos_eq_neg_one_iff])
+  conv_lhs => rw [show x = 2 * (x / 2) by group, cos_two_mul']
+  have : cos (x / 2) ≠ 0 := by grind [cos_ne_zero_iff, cos_eq_neg_one_iff]
+  rw [div_one_add_tan_sq_eq_mul_cos_sq this, ← tan_mul_cos this]
+  ring
 
 /-- `tan (x / 2)` takes the junk value `0` when `sin x = 0` so this always holds. -/
 theorem sin_eq_two_mul_tan_half_div_one_add_tan_half_sq (x : ℂ) :
@@ -317,15 +309,6 @@ lemma tan_eq_zero_of_cos_eq_zero {x} (h : cos x = 0) : tan x = 0 :=
   mod_cast @Complex.tan_eq_zero_of_cos_eq_zero x (mod_cast h)
 
 -- tangent half-angle substitution formulas
-
-theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq'' (x : ℝ) (h : cos (x / 2) ≠ 0) :
-    cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) :=
-  mod_cast @Complex.cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq'' x (mod_cast h)
-
-theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq'
-    (x : ℝ) (h : ∀ k : ℤ, x ≠ (2 * k + 1) * π) :
-    cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) :=
-  mod_cast @Complex.cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq' x (mod_cast h)
 
 theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq (x : ℝ) (h : cos x ≠ -1) :
     cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) :=
