@@ -231,7 +231,7 @@ transformed to either `p → ¬ q` (the default) or `¬ p ∨ ¬ q`. To get `¬ 
 `set_option push_neg.use_distrib true`.
 
 Tactics that introduce a negation usually have a version that automatically calls `push_neg` on
-that negation. For example, `by_cases!`, `contrapose!` and `by_contra!`.
+that negation. These include `by_cases!`, `contrapose!` and `by_contra!`.
 
 Another example: given a hypothesis
 ```lean
