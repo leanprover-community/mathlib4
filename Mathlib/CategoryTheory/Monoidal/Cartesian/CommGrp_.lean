@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.CategoryTheory.Monoidal.Cartesian.CommMon_
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp_
+import Mathlib.CategoryTheory.Monoidal.CommGrp_
 
 /-!
 # Yoneda embedding of `CommGrp C`
@@ -25,8 +26,6 @@ class abbrev CommGrpObj := GrpObj X, IsCommMonObj X
 
 @[deprecated (since := "2025-09-13")] alias CommGrp_Class := CommGrpObj
 
-section CommGrp
-
 variable (X) in
 /-- If `X` represents a presheaf of commutative groups, then `X` is a commutative group object. -/
 def CommGrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ CommGrpCat.{w})
@@ -37,5 +36,27 @@ def CommGrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ CommGrpCat.{w})
 @[deprecated (since := "2025-09-13")]
 alias CommGrp_Class.ofRepresentableBy := CommGrpObj.ofRepresentableBy
 
-end CommGrp
+/-- The yoneda embedding of `CommGrp C` into presheaves of groups. -/
+@[simps]
+def yonedaCommGrpGrpObj (G : CommGrp C) : (Grp C)ᵒᵖ ⥤ CommGrpCat where
+  obj H := .of (unop H ⟶ G.toGrp)
+  map {H I} f := CommGrpCat.ofHom {
+    toFun := (f.unop ≫ ·)
+    map_one' := by ext; simp [Mon.Hom.hom_one]
+    map_mul' g h := by ext; simpa using ((yonedaGrpObj G.X).map f.unop.1.op).hom.map_mul g.hom h.hom
+  }
+
+/-- The yoneda embedding of `CommGrp C` into presheaves of groups. -/
+@[simps]
+def yonedaCommGrpGrp : CommGrp C ⥤ (Grp C)ᵒᵖ ⥤ CommGrpCat where
+  obj := yonedaCommGrpGrpObj
+  map {X₁ X₂} ψ := {
+    app Y := CommGrpCat.ofHom {
+      toFun := (· ≫ ψ)
+      map_one' := by ext; simp
+      map_mul' f g := by
+        ext; simpa using ((yonedaGrp.map ψ).app (op (unop Y).X)).hom.map_mul f.hom g.hom
+    }
+  }
+
 end CategoryTheory
