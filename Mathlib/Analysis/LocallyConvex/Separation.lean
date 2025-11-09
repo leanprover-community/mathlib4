@@ -388,8 +388,8 @@ theorem iInter_nat_halfSpaces_eq_of_prod {F : Type*} {s : Set (E × F)}
     ⋂ (i : ℕ), {(x, y) | c i ≤ re (L i x) + re (T i y)} = s
     ∧ (s.Nonempty → s ≠ univ → ∀ i, ∃ (x : E) (y : F), re (L i x) + re (T i y) ≠ 0) := by
   obtain ⟨LT, c, eq1, eq2⟩ := iInter_nat_halfSpaces_eq (𝕜 := 𝕜) hs₁ hs₂ hsep
-  use fun i ↦ (LT i).comp (.inl 𝕜 E F), fun i ↦ (LT i).comp (.inr 𝕜 E F), c
-  constructor
+  refine ⟨fun i ↦ (LT i).comp (.inl 𝕜 E F), fun i ↦ (LT i).comp (.inr 𝕜 E F), c, ?_,
+    fun hs₃ hsne i ↦ ?_⟩
   · rw [← eq1]
     apply iInter_congr
     intro i
