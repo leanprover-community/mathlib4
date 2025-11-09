@@ -57,11 +57,14 @@ variable [CommRing R] {I : Ideal R⟦X⟧} {g : R⟦X⟧} (hg : g ∈ I)
 section Xmem
 
 theorem map_constantCoeff_le_self_of_Xmem (hXI : X ∈ I) :
-  I.map (C.comp constantCoeff) ≤ I := by
+    I.map (C.comp constantCoeff) ≤ I := by
+  suffices (C (R := R))'' I.map constantCoeff ≤ I by
+    rw [map_le_iff_le_comap, ← comap_comap, ← map_le_iff_le_comap]
+    simpa
   intro f ⟨r, hr, hf⟩
   obtain ⟨g, hg, hgr⟩ := (I.mem_map_iff_of_surjective _ constantCoeff_surj).1 hr
   rw [← hf, ← hgr, eq_sub_of_add_eq' g.eq_X_mul_shift_add_const.symm]
-  refine I.sub_mem hg (I.mul_mem_right _ hXI)
+  exact I.sub_mem hg (I.mul_mem_right _ hXI)
 
 variable {S : Set R}
 
