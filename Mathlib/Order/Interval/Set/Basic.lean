@@ -67,7 +67,7 @@ instance decidableMemIoi [Decidable (a < x)] : Decidable (x ∈ Ioi a) := by ass
 
 theorem left_not_mem_Ioo : a ∉ Ioo a b := by simp
 
-@[deprecated left_not_mem_Ioo (since := "2025-02-10")]
+@[deprecated left_not_mem_Ioo (since := "2025-11-08")]
 theorem left_mem_Ioo : a ∈ Ioo a b ↔ False := by simp
 
 theorem left_mem_Ico : a ∈ Ico a b ↔ a < b := by simp [le_refl]
@@ -76,19 +76,19 @@ theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp [le_refl]
 
 theorem left_not_mem_Ioc : a ∉ Ioc a b := by simp
 
-@[deprecated left_not_mem_Ioc (since := "2025-02-10")]
+@[deprecated left_not_mem_Ioc (since := "2025-11-08")]
 theorem left_mem_Ioc : a ∈ Ioc a b ↔ False := by simp
 
 theorem left_mem_Ici : a ∈ Ici a := by simp
 
 theorem right_not_mem_Ioo : b ∉ Ioo a b := by simp
 
-@[deprecated right_not_mem_Ioo (since := "2025-02-10")]
+@[deprecated right_not_mem_Ioo (since := "2025-11-08")]
 theorem right_mem_Ioo : b ∈ Ioo a b ↔ False := by simp
 
 theorem right_not_mem_Ico : b ∉ Ico a b := by simp
 
-@[deprecated right_not_mem_Ico (since := "2025-02-10")]
+@[deprecated right_not_mem_Ico (since := "2025-11-08")]
 theorem right_mem_Ico : b ∈ Ico a b ↔ False := by simp
 
 theorem right_mem_Icc : b ∈ Icc a b ↔ a ≤ b := by simp [le_refl]
