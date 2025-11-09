@@ -6,6 +6,7 @@ Authors: Tomáš Skřivan
 import Qq
 
 import Mathlib.Tactic.FunProp.Mor
+import Mathlib.Tactic.FunProp.ToBatteries
 
 /-!
 ## `funProp` data structure holding information about a function
@@ -61,8 +62,8 @@ def FunctionData.getFnConstName? (f : FunctionData) : MetaM (Option Name) := do
   match f.fn with
   | .const n _ => return n
   | .proj typeName idx _ =>
-    let .some info := getStructureInfo? (← getEnv) typeName | return none
-    let .some projName := info.getProjFn? idx | return none
+    let some info := getStructureInfo? (← getEnv) typeName | return none
+    let some projName := info.getProjFn? idx | return none
     return projName
   | _ => return none
 
@@ -80,8 +81,8 @@ def getFunctionData (f : Expr) : MetaM FunctionData := do
 
       -- revert projection in fn
       if let .proj n i x := fn then
-        let .some info := getStructureInfo? (← getEnv) n | unreachable!
-        let .some projName := info.getProjFn? i | unreachable!
+        let some info := getStructureInfo? (← getEnv) n | unreachable!
+        let some projName := info.getProjFn? i | unreachable!
         let p ← mkAppM projName #[x]
         fn := p.getAppFn
         args := p.getAppArgs.map (fun a => {expr:=a}) ++ args
@@ -122,7 +123,7 @@ def getFunctionData? (f : Expr)
   withConfig (fun cfg => { cfg with zeta := false, zetaDelta := false }) do
 
   let unfold := fun e : Expr => do
-    if let .some n := e.getAppFn'.constName? then
+    if let some n := e.getAppFn'.constName? then
       pure ((unfoldPred n) || (← isReducible n))
     else
       pure false
@@ -142,7 +143,7 @@ def getFunctionData? (f : Expr)
 Return `none` otherwise. -/
 def FunctionData.unfoldHeadFVar? (fData : FunctionData) : MetaM (Option Expr) := do
   let .fvar id := fData.fn | return none
-  let .some val ← id.getValue? | return none
+  let some val ← id.getValue? | return none
   let f ← withLCtx fData.lctx fData.insts do
     mkLambdaFVars #[fData.mainVar] (headBetaThroughLet (Mor.mkAppN val fData.args))
   return f
@@ -161,7 +162,7 @@ inductive MorApplication where
 
 /-- Is function body of `f` a morphism application? What kind? -/
 def FunctionData.isMorApplication (f : FunctionData) : MetaM MorApplication := do
-  if let .some name := f.fn.constName? then
+  if let some name := f.fn.constName? then
     if ← Mor.isCoeFunName name then
       let info ← getConstInfo name
       let arity := info.type.getNumHeadForalls
@@ -201,7 +202,7 @@ def FunctionData.peeloffArgDecomposition (fData : FunctionData) : MetaM (Option 
       return none
 
     let gBody' := Mor.mkAppN fData.fn fData.args[:n-1]
-    let gBody' := if let .some coe := yₙ.coe then coe.app gBody' else gBody'
+    let gBody' := if let some coe := yₙ.coe then coe.app gBody' else gBody'
     let g' ← mkLambdaFVars #[x] gBody'
     let f' := Expr.lam `f (← inferType gBody') (.app (.bvar 0) (yₙ.expr)) default
     return (f',g')
@@ -251,7 +252,7 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
 
     -- check if is non-triviality
     let f' ← fData.toExpr
-    if (← isDefEq f' f) || (← isDefEq f' g) then
+    if (← withReducibleAndInstances <| isDefEq f' f <||> isDefEq f' g) then
       return none
 
     return (f, g)

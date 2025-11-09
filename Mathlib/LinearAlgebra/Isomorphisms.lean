@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
 import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.LinearAlgebra.Quotient.Card
 
 /-!
 # Isomorphism theorems for modules.
@@ -47,6 +48,11 @@ theorem quotKerEquivRange_apply_mk (x : M) :
   rfl
 
 @[simp]
+theorem quotKerEquivOfSurjective_apply_mk (hf : Function.Surjective f) (x : M) :
+    (f.quotKerEquivOfSurjective hf (Submodule.Quotient.mk x) : M₂) = f x :=
+  rfl
+
+@[simp]
 theorem quotKerEquivRange_symm_apply_image (x : M) (h : f x ∈ LinearMap.range f) :
     f.quotKerEquivRange.symm ⟨f x, h⟩ = (LinearMap.ker f).mkQ x :=
   f.quotKerEquivRange.symm_apply_apply ((LinearMap.ker f).mkQ x)
@@ -72,7 +78,7 @@ because the former is the simp normal form (see also `Submodule.comap_inf`). -/
 def quotientInfToSupQuotient (p p' : Submodule R M) :
     (↥p) ⧸ (comap p.subtype p ⊓ comap p.subtype p') →ₗ[R]
       (↥(p ⊔ p')) ⧸ (comap (p ⊔ p').subtype p') :=
-   (comap p.subtype (p ⊓ p')).liftQ (subToSupQuotient p p') (comap_leq_ker_subToSupQuotient p p')
+  (comap p.subtype (p ⊓ p')).liftQ (subToSupQuotient p p') (comap_leq_ker_subToSupQuotient p p')
 
 theorem quotientInfEquivSupQuotient_injective (p p' : Submodule R M) :
     Function.Injective (quotientInfToSupQuotient p p') := by
@@ -151,9 +157,9 @@ theorem quotientQuotientEquivQuotientAux_mk (x : M ⧸ S) :
     quotientQuotientEquivQuotientAux S T h (Quotient.mk x) = mapQ S T LinearMap.id h x :=
   liftQ_apply _ _ _
 
-@[simp]
+-- @[simp] /- adaption note for https://github.com/leanprover/lean4/pull/8419: the simpNF complained -/
 theorem quotientQuotientEquivQuotientAux_mk_mk (x : M) :
-    quotientQuotientEquivQuotientAux S T h (Quotient.mk (Quotient.mk x)) = Quotient.mk x := by simp
+    quotientQuotientEquivQuotientAux S T h (Quotient.mk (Quotient.mk x)) = Quotient.mk x := rfl
 
 /-- **Noether's third isomorphism theorem** for modules: `(M / S) / (T / S) ≃ M / T`. -/
 def quotientQuotientEquivQuotient : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ T :=

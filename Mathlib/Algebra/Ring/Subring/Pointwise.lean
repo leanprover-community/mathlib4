@@ -49,7 +49,7 @@ theorem pointwise_smul_def {a : M} (S : Subring R) :
     a • S = S.map (MulSemiringAction.toRingHom _ _ a) :=
   rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_pointwise_smul (m : M) (S : Subring R) : ↑(m • S) = m • (S : Set R) :=
   rfl
 
@@ -67,7 +67,7 @@ theorem smul_mem_pointwise_smul (m : M) (r : R) (S : Subring R) : r ∈ S → m 
   (Set.smul_mem_smul_set : _ → _ ∈ m • (S : Set R))
 
 instance : CovariantClass M (Subring R) HSMul.hSMul LE.le :=
-  ⟨fun _ _ => image_subset _⟩
+  ⟨fun _ _ => image_mono⟩
 
 theorem mem_smul_pointwise_iff_exists (m : M) (r : R) (S : Subring R) :
     r ∈ m • S ↔ ∃ s : R, s ∈ S ∧ m • s = r :=

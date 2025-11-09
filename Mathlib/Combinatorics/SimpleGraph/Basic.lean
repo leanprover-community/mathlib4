@@ -8,6 +8,7 @@ import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Data.Sym.Sym2
+import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
 # Simple graphs
@@ -92,7 +93,7 @@ structure SimpleGraph (V : Type u) where
 
 initialize_simps_projections SimpleGraph (Adj → adj)
 
-/-- Constructor for simple graphs using a symmetric irreflexive boolean function. -/
+/-- Constructor for simple graphs using a symmetric irreflexive Boolean function. -/
 @[simps]
 def SimpleGraph.mk' {V : Type u} :
     {adj : V → V → Bool // (∀ x y, adj x y = adj y x) ∧ (∀ x, ¬ adj x x)} ↪ SimpleGraph V where
@@ -199,6 +200,8 @@ def IsSubgraph (x y : SimpleGraph V) : Prop :=
 
 instance : LE (SimpleGraph V) :=
   ⟨IsSubgraph⟩
+
+lemma le_iff_adj {G H : SimpleGraph V} : G ≤ H ↔ ∀ v w, G.Adj v w → H.Adj v w := .rfl
 
 @[simp]
 theorem isSubgraph_eq_le : (IsSubgraph : SimpleGraph V → SimpleGraph V → Prop) = (· ≤ ·) :=
@@ -388,13 +391,13 @@ end Order
 
 /-- `G.support` is the set of vertices that form edges in `G`. -/
 def support : Set V :=
-  Rel.dom G.Adj
+  SetRel.dom {(u, v) : V × V | G.Adj u v}
 
 theorem mem_support {v : V} : v ∈ G.support ↔ ∃ w, G.Adj v w :=
   Iff.rfl
 
 theorem support_mono {G G' : SimpleGraph V} (h : G ≤ G') : G.support ⊆ G'.support :=
-  Rel.dom_mono h
+  SetRel.dom_mono fun _uv huv ↦ h huv
 
 /-- `G.neighborSet v` is the set of vertices adjacent to `v` in `G`. -/
 def neighborSet (v : V) : Set V := {w | G.Adj v w}
@@ -432,6 +435,11 @@ theorem mem_edgeSet : s(v, w) ∈ G.edgeSet ↔ G.Adj v w :=
 
 theorem not_isDiag_of_mem_edgeSet : e ∈ edgeSet G → ¬e.IsDiag :=
   Sym2.ind (fun _ _ => Adj.ne) e
+
+@[simp] lemma not_mem_edgeSet_of_isDiag : e.IsDiag → e ∉ edgeSet G :=
+  imp_not_comm.1 G.not_isDiag_of_mem_edgeSet
+
+alias _root_.Sym2.IsDiag.not_mem_edgeSet := not_mem_edgeSet_of_isDiag
 
 theorem edgeSet_inj : G₁.edgeSet = G₂.edgeSet ↔ G₁ = G₂ := (edgeSetEmbedding V).eq_iff_eq
 
@@ -515,7 +523,13 @@ theorem adj_iff_exists_edge {v w : V} : G.Adj v w ↔ v ≠ w ∧ ∃ e ∈ G.ed
   rwa [mem_edgeSet] at he
 
 theorem adj_iff_exists_edge_coe : G.Adj a b ↔ ∃ e : G.edgeSet, e.val = s(a, b) := by
-  simp only [mem_edgeSet, exists_prop, SetCoe.exists, exists_eq_right, Subtype.coe_mk]
+  simp only [mem_edgeSet, exists_prop, SetCoe.exists, exists_eq_right]
+
+theorem ne_bot_iff_exists_adj : G ≠ ⊥ ↔ ∃ a b : V, G.Adj a b := by
+  simp [← le_bot_iff, le_iff_adj]
+
+theorem ne_top_iff_exists_not_adj : G ≠ ⊤ ↔ ∃ a b : V, a ≠ b ∧ ¬G.Adj a b := by
+  simp [← top_le_iff, le_iff_adj]
 
 variable (G G₁ G₂)
 
@@ -578,6 +592,10 @@ theorem edgeSet_fromEdgeSet : (fromEdgeSet s).edgeSet = s \ { e | e.IsDiag } := 
 theorem fromEdgeSet_edgeSet : fromEdgeSet G.edgeSet = G := by
   ext v w
   exact ⟨fun h => h.1, fun h => ⟨h, G.ne_of_adj h⟩⟩
+
+lemma edgeSet_eq_iff : G.edgeSet = s ↔ G = fromEdgeSet s ∧ Disjoint s {e | e.IsDiag} where
+  mp := by rintro rfl; simp +contextual [Set.disjoint_right]
+  mpr := by rintro ⟨rfl, hs⟩; simp [hs]
 
 @[simp]
 theorem fromEdgeSet_empty : fromEdgeSet (∅ : Set (Sym2 V)) = ⊥ := by
@@ -787,7 +805,7 @@ theorem incidence_other_prop {v : V} {e : Sym2 V} (h : e ∈ G.incidenceSet v) :
   obtain ⟨he, hv⟩ := h
   rwa [← Sym2.other_spec' hv, mem_edgeSet] at he
 
--- Porting note: as a simp lemma this does not apply even to itself
+@[simp]
 theorem incidence_other_neighbor_edge {v w : V} (h : w ∈ G.neighborSet v) :
     G.otherVertexOfIncident (G.mem_incidence_iff_neighbor.mpr h) = w :=
   Sym2.congr_right.mp (Sym2.other_spec' (G.mem_incidence_iff_neighbor.mpr h).right)
@@ -800,9 +818,43 @@ def incidenceSetEquivNeighborSet (v : V) : G.incidenceSet v ≃ G.neighborSet v 
   invFun w := ⟨s(v, w.1), G.mem_incidence_iff_neighbor.mpr w.2⟩
   left_inv x := by simp [otherVertexOfIncident]
   right_inv := fun ⟨w, hw⟩ => by
-    simp only [mem_neighborSet, Subtype.mk.injEq]
+    simp only [Subtype.mk.injEq]
     exact incidence_other_neighbor_edge _ hw
 
 end Incidence
+
+section IsCompleteBetween
+
+variable {s t : Set V}
+
+/-- The condition that the portion of the simple graph `G` _between_ `s` and `t` is complete, that
+is, every vertex in `s` is adjacent to every vertex in `t`, and vice versa. -/
+def IsCompleteBetween (G : SimpleGraph V) (s t : Set V) :=
+  ∀ ⦃v₁⦄, v₁ ∈ s → ∀ ⦃v₂⦄, v₂ ∈ t → G.Adj v₁ v₂
+
+theorem IsCompleteBetween.disjoint (h : G.IsCompleteBetween s t) : Disjoint s t :=
+  Set.disjoint_left.mpr fun v hv₁ hv₂ ↦ (G.loopless v) (h hv₁ hv₂)
+
+theorem isCompleteBetween_comm : G.IsCompleteBetween s t ↔ G.IsCompleteBetween t s where
+  mp h _ h₁ _ h₂ := (h h₂ h₁).symm
+  mpr h _ h₁ _ h₂ := (h h₂ h₁).symm
+
+alias ⟨IsCompleteBetween.symm, _⟩ := isCompleteBetween_comm
+
+end IsCompleteBetween
+
+section Subsingleton
+
+protected theorem subsingleton_iff : Subsingleton (SimpleGraph V) ↔ Subsingleton V := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ Unique.instSubsingleton⟩
+  contrapose! h
+  exact instNontrivial
+
+protected theorem nontrivial_iff : Nontrivial (SimpleGraph V) ↔ Nontrivial V := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ instNontrivial⟩
+  contrapose! h
+  exact Unique.instSubsingleton
+
+end Subsingleton
 
 end SimpleGraph

@@ -27,7 +27,7 @@ variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} (f : α →+* β)
 
 /-- `f : α →+* β` has a trivial codomain iff its range is `{0}`. -/
 @[deprecated "Use range_eq_singleton_iff and codomain_trivial_iff_range_trivial"
-    (since := "2025-06-09") ]
+    (since := "2025-06-09")]
 theorem codomain_trivial_iff_range_eq_singleton_zero : (0 : β) = 1 ↔ Set.range f = {0} :=
   f.codomain_trivial_iff_range_trivial.trans
     ⟨fun h =>
@@ -39,7 +39,7 @@ end
 section Semiring
 
 variable [Semiring α] [Semiring β]
-@[deprecated map_dvd (since := "2025-06-09") ]
+@[deprecated map_dvd (since := "2025-06-09")]
 protected theorem map_dvd (f : α →+* β) {a b : α} : a ∣ b → f a ∣ f b :=
   map_dvd f
 

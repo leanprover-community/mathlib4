@@ -29,7 +29,7 @@ This file proves convex and concave theorems for piecewise functions.
 
 variable {𝕜 E β : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
   [AddCommMonoid E] [LinearOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E]
-  [OrderedSMul 𝕜 E] [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
+  [PosSMulMono 𝕜 E] [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
   [Module 𝕜 β] [PosSMulMono 𝕜 β] {e : E} {f g : E → β}
 
 /-- The piecewise function `(Set.Iic e).piecewise f g` of a function `f` decreasing and convex on
@@ -40,14 +40,14 @@ theorem convexOn_univ_piecewise_Iic_of_antitoneOn_Iic_monotoneOn_Ici
     (h_anti : AntitoneOn f (Set.Iic e)) (h_mono : MonotoneOn g (Set.Ici e)) (h_eq : f e = g e) :
     ConvexOn 𝕜 Set.univ ((Set.Iic e).piecewise f g) := by
   refine ⟨convex_univ, fun x _ y _ a b ha hb hab ↦ ?_⟩
-  by_cases hx : x ≤ e <;> by_cases hy : y ≤ e <;> push_neg at hx hy
+  obtain hx | hx := le_or_gt x e <;> obtain hy | hy := le_or_gt y e
   · have hc : a • x + b • y ≤ e := (Convex.combo_le_max x y ha hb hab).trans (max_le hx hy)
     rw [Set.piecewise_eq_of_mem (Set.Iic e) f g hx, Set.piecewise_eq_of_mem (Set.Iic e) f g hy,
       Set.piecewise_eq_of_mem (Set.Iic e) f g hc]
     exact hf.2 hx hy ha hb hab
   · rw [Set.piecewise_eq_of_mem (Set.Iic e) f g hx,
       Set.piecewise_eq_of_notMem (Set.Iic e) f g (Set.notMem_Iic.mpr hy)]
-    by_cases hc : a • x + b • y ≤ e <;> push_neg at hc
+    obtain hc | hc := le_or_gt (a • x + b • y) e
     · rw [Set.piecewise_eq_of_mem (Set.Iic e) f g hc]
       have hc' : a • x + b • e ≤ a • x + b • y := by gcongr
       trans a • f x + b • f e
@@ -64,7 +64,7 @@ theorem convexOn_univ_piecewise_Iic_of_antitoneOn_Iic_monotoneOn_Ici
         exact h_anti hx Set.right_mem_Iic hx
   · rw [Set.piecewise_eq_of_notMem (Set.Iic e) f g (Set.notMem_Iic.mpr hx),
       Set.piecewise_eq_of_mem (Set.Iic e) f g hy]
-    by_cases hc : a • x + b • y ≤ e <;> push_neg at hc
+    obtain hc | hc := le_or_gt (a • x + b • y) e
     · rw [Set.piecewise_eq_of_mem (Set.Iic e) f g hc]
       have hc' : a • e + b • y ≤ a • x + b • y := by gcongr
       trans a • f e + b • f y

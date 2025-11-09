@@ -49,7 +49,7 @@ theorem mem_range_mapToFractionRing_iff (B : Type*) [CommRing B] [Algebra A B] [
       ∃ (a s : A) (hs : s ∈ S), x = IsLocalization.mk' K a ⟨s, hS hs⟩ :=
   ⟨by
     rintro ⟨x, rfl⟩
-    obtain ⟨a, s, rfl⟩ := IsLocalization.mk'_surjective S x
+    obtain ⟨a, s, rfl⟩ := IsLocalization.exists_mk'_eq S x
     use a, s, s.2
     apply IsLocalization.lift_mk', by
     rintro ⟨a, s, hs, rfl⟩
@@ -60,7 +60,7 @@ instance isLocalization_range_mapToFractionRing (B : Type*) [CommRing B] [Algebr
     [IsLocalization S B] (hS : S ≤ A⁰) : IsLocalization S (mapToFractionRing K S B hS).range :=
   IsLocalization.isLocalization_of_algEquiv S <|
     show B ≃ₐ[A] _ from AlgEquiv.ofBijective (mapToFractionRing K S B hS).rangeRestrict (by
-      refine ⟨fun a b h => ?_, Set.surjective_onto_range⟩
+      refine ⟨fun a b h => ?_, Set.rangeFactorization_surjective⟩
       refine (IsLocalization.lift_injective_iff _).2 (fun a b => ?_) (Subtype.ext_iff.1 h)
       exact ⟨fun h => congr_arg _ (IsLocalization.injective _ hS h),
         fun h => congr_arg _ (IsFractionRing.injective A K h)⟩)

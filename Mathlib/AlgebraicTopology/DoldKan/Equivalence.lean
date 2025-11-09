@@ -149,11 +149,11 @@ def comparisonN : (N : SimplicialObject A ⥤ _) ≅ Idempotents.DoldKan.N :=
   calc
     N ≅ N ⋙ 𝟭 _ := Functor.leftUnitor N
     _ ≅ N ⋙ (toKaroubiEquivalence _).functor ⋙ (toKaroubiEquivalence _).inverse :=
-          isoWhiskerLeft _ (toKaroubiEquivalence _).unitIso
+          Functor.isoWhiskerLeft _ (toKaroubiEquivalence _).unitIso
     _ ≅ (N ⋙ (toKaroubiEquivalence _).functor) ⋙ (toKaroubiEquivalence _).inverse :=
           Iso.refl _
     _ ≅ N₁ ⋙ (toKaroubiEquivalence _).inverse :=
-          isoWhiskerRight (N₁_iso_normalizedMooreComplex_comp_toKaroubi A).symm _
+          Functor.isoWhiskerRight (N₁_iso_normalizedMooreComplex_comp_toKaroubi A).symm _
     _ ≅ Idempotents.DoldKan.N := Iso.refl _
 
 /-- The Dold-Kan equivalence for abelian categories -/

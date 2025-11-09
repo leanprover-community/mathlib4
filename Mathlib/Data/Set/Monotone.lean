@@ -126,25 +126,59 @@ end Monotone
 
 section strictMono
 
+variable [Preorder α] [Preorder β] {f : α → β} {s : Set α}
+
 @[simp]
-theorem strictMono_restrict [Preorder α] [Preorder β] {f : α → β} {s : Set α} :
+theorem strictMono_restrict :
     StrictMono (s.restrict f) ↔ StrictMonoOn f s := by simp [Set.restrict, StrictMono, StrictMonoOn]
 
 alias ⟨_root_.StrictMono.of_restrict, _root_.StrictMonoOn.restrict⟩ := strictMono_restrict
 
-theorem StrictMono.codRestrict [Preorder α] [Preorder β] {f : α → β} (hf : StrictMono f)
+theorem StrictMono.codRestrict (hf : StrictMono f)
     {s : Set β} (hs : ∀ x, f x ∈ s) : StrictMono (Set.codRestrict f s hs) :=
   hf
 
-lemma strictMonoOn_insert_iff [Preorder α] [Preorder β] {f : α → β} {s : Set α} {a : α} :
+lemma strictMonoOn_insert_iff {a : α} :
     StrictMonoOn f (insert a s) ↔
        (∀ b ∈ s, b < a → f b < f a) ∧ (∀ b ∈ s, a < b → f a < f b) ∧ StrictMonoOn f s := by
   simp [StrictMonoOn, forall_and]
 
-lemma strictAntiOn_insert_iff [Preorder α] [Preorder β] {f : α → β} {s : Set α} {a : α} :
+lemma strictAntiOn_insert_iff {a : α} :
     StrictAntiOn f (insert a s) ↔
        (∀ b ∈ s, b < a → f a < f b) ∧ (∀ b ∈ s, a < b → f b < f a) ∧ StrictAntiOn f s :=
   @strictMonoOn_insert_iff α βᵒᵈ _ _ _ _ _
+
+lemma strictMonoOn_insert_iff_of_forall_le {a : α} (ha : ∀ x ∈ s, x ≤ a) :
+    StrictMonoOn f (insert a s) ↔ (∀ b ∈ s, b < a → f b < f a) ∧ StrictMonoOn f s := by
+  rw [strictMonoOn_insert_iff]
+  have : ∀ b ∈ s, a < b → f a < f b := by
+    intro b hb hab
+    cases (ha _ hb).not_gt hab
+  tauto
+
+lemma strictMonoOn_insert_iff_of_forall_ge {a : α} (ha : ∀ x ∈ s, a ≤ x) :
+    StrictMonoOn f (insert a s) ↔ (∀ b ∈ s, a < b → f a < f b) ∧ StrictMonoOn f s := by
+  rw [strictMonoOn_insert_iff]
+  have : ∀ b ∈ s, b < a → f b < f a := by
+    intro b hb hab
+    cases (ha _ hb).not_gt hab
+  tauto
+
+lemma strictAntiOn_insert_iff_of_forall_le {a : α} (ha : ∀ x ∈ s, x ≤ a) :
+    StrictAntiOn f (insert a s) ↔ (∀ b ∈ s, b < a → f a < f b) ∧ StrictAntiOn f s := by
+  rw [strictAntiOn_insert_iff]
+  have : ∀ b ∈ s, a < b → f b < f a := by
+    intro b hb hab
+    cases (ha _ hb).not_gt hab
+  tauto
+
+lemma strictAntiOn_insert_iff_of_forall_ge {a : α} (ha : ∀ x ∈ s, a ≤ x) :
+    StrictAntiOn f (insert a s) ↔ (∀ b ∈ s, a < b → f b < f a) ∧ StrictAntiOn f s := by
+  rw [strictAntiOn_insert_iff]
+  have : ∀ b ∈ s, b < a → f a < f b := by
+    intro b hb hab
+    cases (ha _ hb).not_gt hab
+  tauto
 
 end strictMono
 
@@ -156,7 +190,7 @@ theorem monotoneOn_of_rightInvOn_of_mapsTo {α β : Type*} [PartialOrder α] [Li
     {φ : β → α} {ψ : α → β} {t : Set β} {s : Set α} (hφ : MonotoneOn φ t)
     (φψs : Set.RightInvOn ψ φ s) (ψts : Set.MapsTo ψ s t) : MonotoneOn ψ s := by
   rintro x xs y ys l
-  rcases le_total (ψ x) (ψ y) with (ψxy|ψyx)
+  rcases le_total (ψ x) (ψ y) with (ψxy | ψyx)
   · exact ψxy
   · have := hφ (ψts ys) (ψts xs) ψyx
     rw [φψs.eq ys, φψs.eq xs] at this

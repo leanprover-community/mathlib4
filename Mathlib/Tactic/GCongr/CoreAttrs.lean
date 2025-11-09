@@ -12,14 +12,16 @@ In this file we add `gcongr` attribute to lemmas in `Lean.Init`.
 We may add lemmas from other files imported by `Mathlib/Tactic/GCongr/Core` later.
 -/
 
+namespace Mathlib.Tactic.GCongr
+
 variable {a b c : Prop}
 
-lemma GCongr.imp_trans (h : a → b) : (b → c) → a → c := fun g ha => g (h ha)
+lemma imp_trans (h : a → b) : (b → c) → a → c := fun g ha => g (h ha)
 
-lemma GCongr.imp_right_mono (h : a → b → c) : (a → b) → a → c :=
+lemma imp_right_mono (h : a → b → c) : (a → b) → a → c :=
   fun h' ha => h ha (h' ha)
 
-lemma GCongr.and_right_mono (h : a → b → c) : (a ∧ b) → a ∧ c :=
+lemma and_right_mono (h : a → b → c) : (a ∧ b) → a ∧ c :=
   fun ⟨ha, hb⟩ => ⟨ha, h ha hb⟩
 
 attribute [gcongr] mt
@@ -30,3 +32,6 @@ attribute [gcongr] mt
   List.Sublist.append List.Sublist.append_left List.Sublist.append_right
   List.Sublist.reverse List.drop_sublist_drop_left List.Sublist.drop
   List.Perm.append_left List.Perm.append_right List.Perm.append List.Perm.map
+  Nat.sub_le_sub_left Nat.sub_le_sub_right Nat.sub_lt_sub_left Nat.sub_lt_sub_right
+
+end Mathlib.Tactic.GCongr

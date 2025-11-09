@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Lean.Expr.Rat
+import Mathlib.Tactic.Hint
 import Mathlib.Tactic.NormNum.Result
+import Mathlib.Util.AtLocation
 import Mathlib.Util.Qq
 import Lean.Elab.Tactic.Location
 
@@ -215,73 +217,19 @@ mutual
     (·.1) <$> Simp.main e ctx (methods := methods)
 end
 
--- FIXME: had to inline a bunch of stuff from `simpGoal` here
-/--
-The core of `norm_num` as a tactic in `MetaM`.
-
-* `g`: The goal to simplify
-* `ctx`: The simp context, constructed by `mkSimpContext` and
-  containing any additional simp rules we want to use
-* `fvarIdsToSimp`: The selected set of hypotheses used in the location argument
-* `simplifyTarget`: true if the target is selected in the location argument
-* `useSimp`: true if we used `norm_num` instead of `norm_num1`
--/
-def normNumAt (g : MVarId) (ctx : Simp.Context) (fvarIdsToSimp : Array FVarId)
-    (simplifyTarget := true) (useSimp := true) :
-    MetaM (Option (Array FVarId × MVarId)) := g.withContext do
-  g.checkNotAssigned `norm_num
-  let mut g := g
-  let mut toAssert := #[]
-  let mut replaced := #[]
-  for fvarId in fvarIdsToSimp do
-    let localDecl ← fvarId.getDecl
-    let type ← instantiateMVars localDecl.type
-    let ctx := ctx.setSimpTheorems (ctx.simpTheorems.eraseTheorem (.fvar localDecl.fvarId))
-    let r ← deriveSimp ctx useSimp type
-    match r.proof? with
-    | some _ =>
-      let some (value, type) ← applySimpResult g (mkFVar fvarId) type r
-        | return none
-      toAssert := toAssert.push { userName := localDecl.userName, type, value }
-    | none =>
-      if r.expr.isConstOf ``False then
-        g.assign (← mkFalseElim (← g.getType) (mkFVar fvarId))
-        return none
-      g ← g.replaceLocalDeclDefEq fvarId r.expr
-      replaced := replaced.push fvarId
-  if simplifyTarget then
-    let res ← g.withContext do
-      let target ← instantiateMVars (← g.getType)
-      let r ← deriveSimp ctx useSimp target
-      let some proof ← r.ofTrue
-        | some <$> applySimpResultToTarget g target r
-      g.assign proof
-      pure none
-    let some gNew := res | return none
-    g := gNew
-  let (fvarIdsNew, gNew) ← g.assertHypotheses toAssert
-  let toClear := fvarIdsToSimp.filter fun fvarId ↦ !replaced.contains fvarId
-  let gNew ← gNew.tryClearMany toClear
-  return some (fvarIdsNew, gNew)
-
 open Tactic in
 /-- Constructs a simp context from the simp argument syntax. -/
 def getSimpContext (cfg args : Syntax) (simpOnly := false) : TacticM Simp.Context := do
   let config ← elabSimpConfigCore cfg
   let simpTheorems ←
     if simpOnly then simpOnlyBuiltins.foldlM (·.addConst ·) {} else getSimpTheorems
-  let mut { ctx, simprocs := _, starArg } ←
+  let { ctx, .. } ←
     elabSimpArgs args[0] (eraseLocal := false) (kind := .simp) (simprocs := {})
       (← Simp.mkContext config (simpTheorems := #[simpTheorems])
         (congrTheorems := ← getSimpCongrTheorems))
-  unless starArg do return ctx
-  let mut simpTheorems := ctx.simpTheorems
-  for h in ← getPropHyps do
-    unless simpTheorems.isErased (.fvar h) do
-      simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
-  return ctx.setSimpTheorems simpTheorems
+  return ctx
 
-open Elab.Tactic in
+open Elab Tactic in
 /--
 Elaborates a call to `norm_num only? [args]` or `norm_num1`.
 * `args`: the `(simpArgs)?` syntax for simp arguments
@@ -290,17 +238,12 @@ Elaborates a call to `norm_num only? [args]` or `norm_num1`.
 * `useSimp`: false if `norm_num1` was used, in which case only the structural parts
   of `simp` will be used, not any of the post-processing that `simp only` does without lemmas
 -/
--- FIXME: had to inline a bunch of stuff from `mkSimpContext` and `simpLocation` here
-def elabNormNum (cfg args loc : Syntax) (simpOnly := false) (useSimp := true) : TacticM Unit := do
-  let g ← getMainGoal
-  g.withContext do
+def elabNormNum (cfg args loc : Syntax) (simpOnly := false) (useSimp := true) :
+    TacticM Unit := withMainContext do
   let ctx ← getSimpContext cfg args (!useSimp || simpOnly)
-  let res ← match expandOptLocation loc with
-  | .targets hyps simplifyTarget => normNumAt g ctx (← getFVarIds hyps) simplifyTarget useSimp
-  | .wildcard => normNumAt g ctx (← g.getNondepPropHyps) (simplifyTarget := true) useSimp
-  match res with
-  | none => replaceMainGoal []
-  | some (_, g) => replaceMainGoal [g]
+  let loc := expandOptLocation loc
+  transformAtNondepPropLocation (fun e ctx ↦ deriveSimp ctx useSimp e) "norm_num" loc
+    (failIfUnchanged := false) (mayCloseGoalFromHyp := true) ctx
 
 end Meta.NormNum
 
@@ -359,3 +302,9 @@ macro (name := normNumCmd) "#norm_num" cfg:optConfig o:(&" only")?
   `(command| #conv norm_num $cfg:optConfig $[only%$o]? $(args)? => $e)
 
 end Mathlib.Tactic
+
+/-!
+We register `norm_num` with the `hint` tactic.
+-/
+
+register_hint norm_num

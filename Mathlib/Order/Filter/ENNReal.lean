@@ -3,7 +3,7 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
+import Mathlib.Topology.Order.LiminfLimsup
 import Mathlib.Topology.Metrizable.Real
 
 /-!
@@ -132,7 +132,7 @@ lemma toReal_liminf : liminf (fun i ↦ (u i : ℝ)) f = liminf u f := by
 @[simp, norm_cast]
 lemma toReal_limsup : limsup (fun i ↦ (u i : ℝ)) f = limsup u f := by
   obtain rfl | hf := f.eq_or_neBot
-  · simp [limsup, limsSup, Real.sInf_of_not_bddBelow]
+  · simp [limsup, limsSup]
   by_cases hf : f.IsBoundedUnder (· ≤ ·) u; swap
   · simp [*]
   have : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault
@@ -175,9 +175,8 @@ theorem limsup_const_mul_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_
 
 theorem limsup_const_mul [CountableInterFilter f] {u : α → ℝ≥0∞} {a : ℝ≥0∞} :
     f.limsup (a * u ·) = a * f.limsup u := by
-  by_cases ha_top : a ≠ ⊤
+  by_cases! ha_top : a ≠ ⊤
   · exact limsup_const_mul_of_ne_top ha_top
-  push_neg at ha_top
   by_cases hu : u =ᶠ[f] 0
   · have hau : (a * u ·) =ᶠ[f] 0 := hu.mono fun x hx => by simp [hx]
     simp only [limsup_congr hu, limsup_congr hau, Pi.zero_def, ← ENNReal.bot_eq_zero,

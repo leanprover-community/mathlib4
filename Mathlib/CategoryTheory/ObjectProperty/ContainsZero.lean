@@ -67,6 +67,16 @@ instance [P.ContainsZero] [P.IsClosedUnderIsomorphisms]
   exists_zero :=
     ⟨0, isZero_zero D, P.prop_of_isZero (F.map_isZero (isZero_zero D))⟩
 
+instance [P.ContainsZero] : P.isoClosure.ContainsZero where
+  exists_zero := by
+    obtain ⟨Z, hZ, hP⟩ := P.exists_prop_of_containsZero
+    exact ⟨Z, hZ, P.le_isoClosure _ hP⟩
+
 end ObjectProperty
+
+/-- Given a functor `F : C ⥤ D`, this is the property of objects of `C`
+satisfies by those `X : C` such that `IsZero (F.obj X)`. -/
+abbrev Functor.kernel (F : C ⥤ D) : ObjectProperty C :=
+  ObjectProperty.inverseImage IsZero F
 
 end CategoryTheory

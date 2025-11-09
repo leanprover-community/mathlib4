@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2022. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
@@ -90,8 +90,8 @@ instance liftHom_WhiskerRight {X Y : C} (f : X ⟶ Y) [LiftObj X] [LiftObj Y] [L
   lift := LiftHom.lift f ▷ LiftObj.lift Z
 
 instance LiftHom_tensor {W X Y Z : C} [LiftObj W] [LiftObj X] [LiftObj Y] [LiftObj Z]
-    (f : W ⟶ X) (g : Y ⟶ Z) [LiftHom f] [LiftHom g] : LiftHom (f ⊗ g) where
-  lift := LiftHom.lift f ⊗ LiftHom.lift g
+    (f : W ⟶ X) (g : Y ⟶ Z) [LiftHom f] [LiftHom g] : LiftHom (f ⊗ₘ g) where
+  lift := LiftHom.lift f ⊗ₘ LiftHom.lift g
 
 end lifting
 
@@ -250,7 +250,7 @@ def coherence_loop (maxSteps := 37) : TacticM Unit :=
 open Lean.Parser.Tactic
 
 /--
-Simp lemmas for rewriting a hom in monoical categories into a normal form.
+Simp lemmas for rewriting a hom in monoidal categories into a normal form.
 -/
 syntax (name := monoidal_simps) "monoidal_simps" optConfig : tactic
 

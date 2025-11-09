@@ -35,7 +35,7 @@ example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x : ℝ => 1/x) y := by fun
 **Basic debugging:**
 The most common issue is that a function is missing the appropriate theorem. For example:
 ```lean
-import Mathlib.Data.Complex.Trigonometric
+import Mathlib.Analysis.Complex.Trigonometric
 example : Continuous (fun x : ℝ => x * Real.sin x) := by fun_prop
 ```
 Fails with the error:
@@ -277,7 +277,7 @@ There are four types of theorems that are used a bit differently.
 
     In fact, not only `DFunLike.coe` but any function coercion is treated this way. Such function
     coercion has to be registered with `Lean.Meta.registerCoercion` with coercion type `.coeFun`.
-    Here is an example of custom structure `MyFunLike` that that should be considered as bundled
+    Here is an example of custom structure `MyFunLike` that should be considered as bundled
     morphism by `fun_prop`:
     ```lean
     structure MyFunLike (α β : Type) where
@@ -323,7 +323,7 @@ There are four types of theorems that are used a bit differently.
     By default, `fun_prop` will not apply more then one transitions theorems consecutivelly. For
     example, it won't prove `AEMeasurable f` from `Continuous f` by using transition theorems
     `Measurable.aemeasurable` and `Continuous.measurable`. You can enable this by running
-    `fun_prop (config:={maxTransitionDepth:=2})`.
+    `fun_prop (maxTransitionDepth :=2)`.
     Ideally `fun_prop` theorems should be transitivelly closed i.e. if `Measurable.aemeasurable` and
     `Continuous.measurable` are `fun_prop` theorems then `Continuous.aemeasurable` should be too.
 

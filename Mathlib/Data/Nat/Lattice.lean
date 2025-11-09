@@ -48,7 +48,7 @@ theorem _root_.Set.Infinite.Nat.sSup_eq_zero {s : Set ℕ} (h : s.Infinite) : sS
 theorem sInf_eq_zero {s : Set ℕ} : sInf s = 0 ↔ 0 ∈ s ∨ s = ∅ := by
   cases eq_empty_or_nonempty s with
   | inl h => subst h
-             simp only [or_true, eq_self_iff_true, iInf, InfSet.sInf,
+             simp only [or_true, InfSet.sInf,
                         mem_empty_iff_false, exists_false, dif_neg, not_false_iff]
   | inr h => simp only [h.ne_empty, or_false, Nat.sInf_def, h, Nat.find_eq_zero]
 
@@ -135,7 +135,7 @@ noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
       trivial
     csSup_of_not_bddAbove := by
       intro s hs
-      simp only [mem_univ, forall_true_left, sSup,
+      simp only [sSup,
         mem_empty_iff_false, IsEmpty.forall_iff, forall_const, exists_const, dite_true]
       rw [dif_neg]
       · exact le_antisymm (zero_le _) (find_le trivial)

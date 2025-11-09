@@ -58,12 +58,12 @@ theorem formPerm_disjoint_iff (hl : Nodup l) (hl' : Nodup l') (hn : 2 ≤ l.leng
   · rintro h x hx hx'
     specialize h x
     rw [formPerm_apply_mem_eq_self_iff _ hl _ hx, formPerm_apply_mem_eq_self_iff _ hl' _ hx'] at h
-    omega
+    cutsat
   · intro h x
     by_cases hx : x ∈ l
     on_goal 1 => by_cases hx' : x ∈ l'
     · exact (h hx hx').elim
-    all_goals have := formPerm_eq_self_of_notMem _ _ ‹_›; tauto
+    all_goals have := List.formPerm_apply_of_notMem ‹_›; tauto
 
 theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPerm l) := by
   rcases l with - | ⟨x, l⟩
@@ -75,7 +75,7 @@ theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPer
     constructor
     · rwa [formPerm_apply_mem_ne_self_iff _ hl _ mem_cons_self]
     · intro w hw
-      have : w ∈ x::y::l := mem_of_formPerm_ne_self _ _ hw
+      have : w ∈ x::y::l := mem_of_formPerm_apply_ne hw
       obtain ⟨k, hk, rfl⟩ := getElem_of_mem this
       use k
       simp only [zpow_natCast, formPerm_pow_apply_head _ _ hl k, Nat.mod_eq_of_lt hk]
@@ -103,7 +103,7 @@ theorem cycleType_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) :
     rw [support_formPerm_of_nodup _ hl, card_toFinset, dedup_eq_self.mpr hl]
     · simp
     · intro x h
-      simp [h, Nat.succ_le_succ_iff] at hn
+      simp [h] at hn
   · simp
   · simpa using isCycle_formPerm hl hn
   · simp
@@ -158,7 +158,7 @@ theorem support_formPerm [Fintype α] (s : Cycle α) (h : Nodup s) (hn : Nontriv
 theorem formPerm_eq_self_of_notMem (s : Cycle α) (h : Nodup s) (x : α) (hx : x ∉ s) :
     formPerm s h x = x := by
   induction s using Quot.inductionOn
-  simpa using List.formPerm_eq_self_of_notMem _ _ hx
+  simpa using List.formPerm_apply_of_notMem hx
 
 @[deprecated (since := "2025-05-23")]
 alias formPerm_eq_self_of_not_mem := formPerm_eq_self_of_notMem
@@ -219,16 +219,8 @@ theorem length_toList_pos_of_mem_support (h : x ∈ p.support) : 0 < length (toL
 theorem getElem_toList (n : ℕ) (hn : n < length (toList p x)) :
     (toList p x)[n] = (p ^ n) x := by simp [toList]
 
-@[deprecated getElem_toList (since := "2025-02-17")]
-theorem get_toList (n : ℕ) (hn : n < length (toList p x)) :
-    (toList p x).get ⟨n, hn⟩ = (p ^ n) x := by simp [toList]
-
 theorem toList_getElem_zero (h : x ∈ p.support) :
     (toList p x)[0]'(length_toList_pos_of_mem_support _ _ h) = x := by simp [toList]
-
-@[deprecated toList_getElem_zero (since := "2025-02-17")]
-theorem toList_get_zero (h : x ∈ p.support) :
-    (toList p x).get ⟨0, (length_toList_pos_of_mem_support _ _ h)⟩ = x := by simp [toList]
 
 variable {p} {x}
 
@@ -322,7 +314,7 @@ theorem toList_formPerm_nontrivial (l : List α) (hl : 2 ≤ l.length) (hn : Nod
   have hs : l.formPerm.support = l.toFinset := by
     refine support_formPerm_of_nodup _ hn ?_
     rintro _ rfl
-    simp [Nat.succ_le_succ_iff] at hl
+    simp at hl
   rw [toList, hc.cycleOf_eq (mem_support.mp _), hs, card_toFinset, dedup_eq_self.mpr hn]
   · refine ext_getElem (by simp) fun k hk hk' => ?_
     simp only [get_eq_getElem, getElem_iterate, iterate_eq_pow, formPerm_pow_apply_getElem _ hn,
@@ -400,7 +392,7 @@ def isoCycle : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s.
     rcases s with ⟨⟨s⟩, hn, ht⟩
     obtain ⟨x, -, -, hx, -⟩ := id ht
     have hl : 2 ≤ s.length := by simpa using Cycle.length_nontrivial ht
-    simp only [Cycle.mk_eq_coe, Cycle.nodup_coe_iff, Cycle.mem_coe_iff, Subtype.coe_mk,
+    simp only [Cycle.mk_eq_coe, Cycle.nodup_coe_iff, Cycle.mem_coe_iff,
       Cycle.formPerm_coe] at hn hx ⊢
     apply Subtype.ext
     dsimp
@@ -410,7 +402,7 @@ def isoCycle : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s.
     · rw [← mem_support, support_formPerm_of_nodup _ hn]
       · simpa using hx
       · rintro _ rfl
-        simp [Nat.succ_le_succ_iff] at hl
+        simp at hl
 
 end Fintype
 
@@ -425,7 +417,7 @@ theorem IsCycle.existsUnique_cycle {f : Perm α} (hf : IsCycle f) :
   refine ⟨f.toList x, ⟨nodup_toList f x, ?_⟩, ?_⟩
   · simp [formPerm_toList, hf.cycleOf_eq hx]
   · rintro ⟨l⟩ ⟨hn, rfl⟩
-    simp only [Cycle.mk_eq_coe, Cycle.coe_eq_coe, Subtype.coe_mk, Cycle.formPerm_coe]
+    simp only [Cycle.mk_eq_coe, Cycle.coe_eq_coe, Cycle.formPerm_coe]
     refine (toList_formPerm_isRotated_self _ ?_ hn _ ?_).symm
     · contrapose! hx
       suffices formPerm l = 1 by simp [this]
@@ -477,7 +469,8 @@ def isoCycle' : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s
 
 -- mutes `'decide' tactic does nothing [linter.unusedTactic]`
 set_option linter.unusedTactic false in
-notation3 (prettyPrint := false) "c["(l", "* => foldr (h t => List.cons h t) List.nil)"]" =>
+@[inherit_doc Cycle.formPerm]
+notation3 (prettyPrint := false) "c[" (l", "* => foldr (h t => List.cons h t) List.nil) "]" =>
   Cycle.formPerm (Cycle.ofList l) (Iff.mpr Cycle.nodup_coe_iff (by decide))
 
 /-- Represents a permutation as product of disjoint cycles:

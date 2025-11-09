@@ -199,7 +199,7 @@ theorem egauge_prod_mk {F : Type*} [AddCommGroup F] [Module 𝕜 F] {U : Set E} 
     (hU : Balanced 𝕜 U) (hV : Balanced 𝕜 V) (a : E) (b : F) :
     egauge 𝕜 (U ×ˢ V) (a, b) = max (egauge 𝕜 U a) (egauge 𝕜 V b) := by
   refine le_antisymm (le_of_forall_gt fun r hr ↦ ?_) (le_egauge_prod _ _ _ _)
-  simp only [max_lt_iff, egauge_lt_iff, smul_set_prod, mk_mem_prod] at hr ⊢
+  simp only [max_lt_iff, egauge_lt_iff, smul_set_prod] at hr ⊢
   rcases hr with ⟨⟨x, hx, hxr⟩, ⟨y, hy, hyr⟩⟩
   cases le_total ‖x‖ ‖y‖ with
   | inl hle => exact ⟨y, ⟨hU.smul_mono hle hx, hy⟩, hyr⟩
@@ -248,10 +248,9 @@ theorem egauge_pi' {I : Set ι} (hI : I.Finite)
         exact ⟨c₀, .inl hc₀, by simp, hc₀r⟩
     · obtain ⟨i₀, hi₀I, hc_max⟩ : ∃ i₀ ∈ I, IsMaxOn (‖c ·‖ₑ) I i₀ :=
         exists_max_image _ (‖c ·‖ₑ) hI hIne
-      by_cases H : c i₀ ≠ 0 ∨ I = univ
+      by_cases! H : c i₀ ≠ 0 ∨ I = univ
       · exact ⟨c i₀, H, fun i hi ↦ by simpa [enorm] using hc_max hi, hcr _ hi₀I⟩
-      · push_neg at H
-        have hc0 (i : ι) (hi : i ∈ I) : c i = 0 := by simpa [H] using hc_max hi
+      · have hc0 (i : ι) (hi : i ∈ I) : c i = 0 := by simpa [H] using hc_max hi
         have heg0 (i : ι) (hi : i ∈ I) : x i = 0 :=
           zero_smul_set_subset (α := 𝕜) (U i) (hc0 i hi ▸ hc i hi)
         have : (𝓝[≠] (0 : 𝕜)).NeBot := (hI₀.resolve_left H.2).resolve_left (by simpa)

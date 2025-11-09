@@ -156,7 +156,7 @@ instance [NeZero n] : Fintype (QuaternionGroup n) :=
   Fintype.ofEquiv _ fintypeHelper
 
 instance : Nontrivial (QuaternionGroup n) :=
-  ⟨⟨a 0, xa 0, by simp [← a_zero]⟩⟩
+  ⟨⟨a 0, xa 0, by simp [- a_zero]⟩⟩
 
 /-- If `0 < n`, then `QuaternionGroup n` has `4n` elements.
 -/
@@ -182,9 +182,9 @@ theorem xa_sq (i : ZMod (2 * n)) : xa i ^ 2 = a n := by simp [sq]
 @[simp]
 theorem xa_pow_four (i : ZMod (2 * n)) : xa i ^ 4 = 1 := by
   calc xa i ^ 4
-      = a (n + n)  := by simp [pow_succ, add_sub_assoc, sub_sub_cancel]
+      = a (n + n) := by simp [pow_succ, add_sub_assoc, sub_sub_cancel]
     _ = a ↑(2 * n) := by simp [Nat.cast_add, two_mul]
-    _ = 1          := by simp
+    _ = 1 := by simp
 
 /-- If `0 < n`, then `xa i` has order 4.
 -/
@@ -200,7 +200,7 @@ theorem orderOf_xa [NeZero n] (i : ZMod (2 * n)) : orderOf (xa i) = 4 := by
     apply_fun (· / n) at h'
     simp only [ZMod.val_natCast, ZMod.val_zero, Nat.zero_div, Nat.mod_mul_left_div_self,
       Nat.div_self (NeZero.pos n), reduceCtorEq] at h'
-  · norm_num
+  · simp
 
 /-- In the special case `n = 1`, `Quaternion 1` is a cyclic group (of order `4`). -/
 theorem quaternionGroup_one_isCyclic : IsCyclic (QuaternionGroup 1) := by

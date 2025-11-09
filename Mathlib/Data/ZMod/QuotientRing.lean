@@ -6,6 +6,7 @@ Authors: Anne Baanen
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.ZMod
+import Mathlib.Data.Nat.Factorization.Basic
 
 /-!
 # `ZMod n` and quotient groups / rings
@@ -39,6 +40,26 @@ def quotientSpanNatEquivZMod : ℤ ⧸ Ideal.span {(n : ℤ)} ≃+* ZMod n :=
 def quotientSpanEquivZMod (a : ℤ) : ℤ ⧸ Ideal.span ({a} : Set ℤ) ≃+* ZMod a.natAbs :=
   (Ideal.quotEquivOfEq (span_natAbs a)).symm.trans (quotientSpanNatEquivZMod a.natAbs)
 
+@[simp]
+theorem quotientSpanNatEquivZMod_comp_Quotient_mk (n : ℕ) :
+    (Int.quotientSpanNatEquivZMod n : _ →+* _).comp (Ideal.Quotient.mk (Ideal.span {(n : ℤ)})) =
+      Int.castRingHom (ZMod n) := rfl
+
+@[simp]
+theorem quotientSpanNatEquivZMod_comp_castRingHom (n : ℕ) :
+    ((Int.quotientSpanNatEquivZMod n).symm : _ →+* _).comp (Int.castRingHom (ZMod n)) =
+      Ideal.Quotient.mk (Ideal.span {(n : ℤ)}) := by ext; simp
+
+@[simp]
+theorem quotientSpanEquivZMod_comp_Quotient_mk (n : ℤ) :
+    (Int.quotientSpanEquivZMod n : _ →+* _).comp (Ideal.Quotient.mk (Ideal.span {(n : ℤ)})) =
+      Int.castRingHom (ZMod n.natAbs) := rfl
+
+@[simp]
+theorem quotientSpanEquivZMod_comp_castRingHom (n : ℤ) :
+    ((Int.quotientSpanEquivZMod n).symm : _ →+* _).comp (Int.castRingHom (ZMod n.natAbs)) =
+      Ideal.Quotient.mk (Ideal.span {(n : ℤ)}) := by ext; simp
+
 end Int
 
 noncomputable section ChineseRemainder
@@ -55,5 +76,12 @@ def ZMod.prodEquivPi {ι : Type*} [Fintype ι] (a : ι → ℕ)
   quotEquivOfEq (iInf_span_singleton_natCast (R := ℤ) coprime) |>.symm.trans <|
   quotientInfRingEquivPiQuotient _ this |>.trans <|
   RingEquiv.piCongrRight fun i ↦ Int.quotientSpanNatEquivZMod (a i)
+
+/-- The **Chinese remainder theorem**, version for `ZMod n`. -/
+def ZMod.equivPi (hn : n ≠ 0) :
+    ZMod n ≃+* Π (p : n.primeFactors), ZMod (p ^ (n.factorization p)) :=
+  (ringEquivCongr <| Nat.prod_pow_primeFactors_factorization hn).trans
+    <| prodEquivPi (fun (p : n.primeFactors) ↦ (p : ℕ) ^ (n.factorization p))
+      n.pairwise_coprime_pow_primeFactors_factorization
 
 end ChineseRemainder
