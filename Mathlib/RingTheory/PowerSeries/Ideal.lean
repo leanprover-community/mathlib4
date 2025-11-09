@@ -8,6 +8,7 @@ import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.RingTheory.Noetherian.OfPrime
+import Mathlib.Algebra.Module.SpanRank
 
 /-!
 # Ideals in power series.
@@ -76,6 +77,21 @@ theorem eq_span_insert_X_of_X_mem_of_span_eq (hXI : X ∈ I) (hSI : span S = I.m
   refine le_antisymm ?_ (by simp [Ideal.span_le, hXI, map_constantCoeff_le_self_of_Xmem])
   exact fun f hf ↦ mem_span_singleton_sup.mpr
     ⟨_, _, mem_map_of_mem _ hf, f.eq_shift_mul_X_add_const.symm⟩
+
+open Submodule in
+theorem spanFinrank_le_spanFinrank_map_constantCoeff_add_one_of_X_mem (hI : X ∈ I) :
+    spanFinrank I ≤ spanFinrank (I.map constantCoeff) + 1 := by
+  by_cases hfg : I.FG
+  swap; · exact spanFinrank_of_not_fg hfg ▸ Nat.zero_le _
+  replace hfg : (Ideal.map constantCoeff I).FG := by
+    have : RingHomSurjective (constantCoeff (R := R)) := ⟨constantCoeff_surj⟩
+    exact map_eq_submodule_map constantCoeff I ▸ Submodule.FG.map _ hfg
+  nth_rw 1 [eq_span_insert_X_of_X_mem_of_span_eq hI (I.map constantCoeff).span_generators]
+  refine le_trans (spanFinrank_span_le_ncard_of_finite ?_) (le_trans (Set.ncard_insert_le _ _) ?_)
+  · simpa using Set.Finite.map _ (FG.finite_generators hfg)
+  · simp only [add_le_add_iff_right]
+    refine le_trans (Set.ncard_image_le (FG.finite_generators hfg)) ?_
+    rw [FG.generators_ncard hfg]
 
 end Xmem
 
@@ -186,11 +202,34 @@ theorem exist_eq_span_eq_ncard_of_X_not_mem (hI : X ∉ I) {S : Set R}
     exact a_injective this
   · exact a_injective
 
+open Submodule in
+theorem spanFinrank_le_spanFinrank_map_constantCoeff_of_X_not_mem_of_prime (hI : X ∉ I) :
+    spanFinrank I ≤ spanFinrank (I.map constantCoeff) := by
+  by_cases hfg : I.FG
+  swap; · exact spanFinrank_of_not_fg hfg ▸ Nat.zero_le _
+  have : RingHomSurjective (constantCoeff (R := R)) := ⟨constantCoeff_surj⟩
+  obtain ⟨S, rfl, hS, hScard⟩ := exist_eq_span_eq_ncard_of_X_not_mem hI
+    (I.map constantCoeff).span_generators
+    (FG.finite_generators <| map_eq_submodule_map constantCoeff I ▸ Submodule.FG.map _ hfg)
+  refine le_trans (spanFinrank_span_le_ncard_of_finite hS) ?_
+  rw [hScard, FG.generators_ncard]
+  exact map_eq_submodule_map constantCoeff (Ideal.span S) ▸ Submodule.FG.map _ hfg
+
 end X_notMem
+
+variable {P : Ideal R⟦X⟧} [P.IsPrime]
+
+open Submodule in
+theorem spanFinrank_le_spanFinrank_map_constantCoeff_add_one_of_prime :
+    spanFinrank P ≤ spanFinrank (P.map constantCoeff) + 1 := by
+  by_cases hP : X ∈ P
+  · exact spanFinrank_le_spanFinrank_map_constantCoeff_add_one_of_X_mem hP
+  · exact le_trans (spanFinrank_le_spanFinrank_map_constantCoeff_of_X_not_mem_of_prime hP)
+      (Nat.le_succ _)
 
 /-- A prime ideal `P` of `R⟦X⟧` is finitely generated if and only if `P.map constantCoeff` is
 finitely generated. -/
-lemma IsPrime.fg_iff {P : Ideal R⟦X⟧} [P.IsPrime] : P.FG ↔ (P.map constantCoeff).FG := by
+lemma IsPrime.fg_iff : P.FG ↔ (P.map constantCoeff).FG := by
   constructor
   · exact (FG.map · _)
   · intro ⟨S, hS⟩
