@@ -3,6 +3,7 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yongle Hu
 -/
+import Mathlib.RingTheory.Flat.TorsionFree
 import Mathlib.RingTheory.KrullDimension.Module
 import Mathlib.RingTheory.Regular.RegularSequence
 import Mathlib.RingTheory.Spectrum.Prime.LTSeries
@@ -114,8 +115,8 @@ lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim_of_mem_ja
 
 variable [IsLocalRing R]
 
-/-- If $M$ is a finite module over a Noetherian local ring $R$, then $\dim M \le \dim M/xM + 1$
-  for every $x$ in the maximal ideal of the local ring $R$. -/
+/-- If `M` is a finite module over a Noetherian local ring `R`, then `dim M ≤ dim M/xM + 1`
+  for every `x` in the maximal ideal of the local ring `R`. -/
 @[stacks 0B52 "the second inequality"]
 theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIdeal R) :
     supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 :=
@@ -132,11 +133,13 @@ theorem supportDim_quotSMulTop_succ_eq_supportDim {x : R} (reg : IsSMulRegular M
     (hx : x ∈ maximalIdeal R) : supportDim R (QuotSMulTop x M) + 1 = supportDim R M :=
   supportDim_quotSMulTop_succ_eq_supportDim_mem_jacobson reg ((maximalIdeal_le_jacobson _) hx)
 
+open nonZeroDivisors in
 @[stacks 00KW]
 lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim {x : R}
     (reg : x ∈ R⁰) (hx : x ∈ maximalIdeal R) :
     ringKrullDim (R ⧸ span {x}) + 1 = ringKrullDim R :=
-  ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim_of_mem_jacobson reg <| by
+  ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim_of_mem_jacobson
+    (Module.Flat.isSMulRegular_of_nonZeroDivisors reg) <| by
     rwa [ringJacobson_eq_maximalIdeal R]
 
 /-- If $M$ is a finite module over a Noetherian local ring $R$, $r_1, \dots, r_n$ is an
