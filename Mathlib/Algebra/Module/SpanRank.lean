@@ -249,15 +249,32 @@ lemma spanFinrank_singleton {m : M} (hm : m ≠ 0) : (span R {m}).spanFinrank = 
     simp [Submodule.spanFinrank_eq_zero_iff_eq_bot (fg_span_singleton m), hm] at this
 
 end Defs
+
 end Submodule
+
+section map
+
+universe u v
+
+variable {R : Type u} {M N : Type v} [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N]
+  [Module R N] (f : M →ₗ[R] N) (p : Submodule R M)
+
+lemma Submodule.spanRank_map_le : (p.map f).spanRank ≤ p.spanRank := by
+  rw [← generators_card p, FG.spanRank_le_iff_exists_span_set_card_le]
+  exact ⟨f '' p.generators, Cardinal.mk_image_le, le_antisymm (span_le.2 (fun n ⟨m, hm, h⟩ ↦
+    ⟨m, span_generators p ▸ subset_span hm, h⟩)) (by simp [span_generators])⟩
+
+lemma Submodule.spanFinrank_map_le_of_fg (hp : p.FG) : (p.map f).spanFinrank ≤ p.spanFinrank :=
+  (Cardinal.toNat_le_iff_le_of_lt_aleph0 (spanRank_finite_iff_fg.mpr (FG.map f hp))
+    (spanRank_finite_iff_fg.mpr hp)).2 (p.spanRank_map_le f)
+
+end map
 
 section rank
 
 open Cardinal Module Submodule
 
-universe u v w
-
-variable {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 lemma Module.Basis.mk_eq_spanRank [RankCondition R] {ι : Type*} (v : Basis ι R M) :
     #(Set.range v) = (⊤ : Submodule R M).spanRank := by
