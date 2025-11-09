@@ -8,7 +8,6 @@ import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.MorphismProperty.Basic
 import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.CategoryTheory.Products.Unitor
-import Mathlib.Data.Finite.Sigma
 
 /-!
 # `κ`-filtered categories and `κ`-directed poset
