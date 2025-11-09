@@ -198,7 +198,8 @@ scoped[Topology] notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "
 namespace TopologicalSpace
 open Topology Lean Meta PrettyPrinter.Delaborator SubExpr
 
-/-- Fails iff argument #`space` has a `TopologicalSpace` instance registered and that instance is defeq to argument #`inst`. -/
+/-- Fails iff argument #`space` has a `TopologicalSpace` instance registered and
+that instance is defeq to argument #`inst`. -/
 def assertNonCanonical (space inst : ℕ) : DelabM Unit := do
   let α ← withNaryArg space getExpr
   let .some synthInst ← Meta.trySynthInstance (← Meta.mkAppM ``TopologicalSpace #[α]) | return ()
