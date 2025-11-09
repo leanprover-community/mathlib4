@@ -267,7 +267,7 @@ theorem radical_eq_one_iff : radical a = 1 ↔ a = 0 ∨ IsUnit a := by
 
 @[simp]
 lemma radical_radical : radical (radical a) = radical a :=
-  radical_eq_iff_primeFactors_eq.2 primeFactors_radical
+  radical_eq_iff_primeFactors_eq.mpr primeFactors_radical
 
 lemma radical_dvd_radical_iff_normalizedFactors_subset_normalizedFactors :
     radical a ∣ radical b ↔ normalizedFactors a ⊆ normalizedFactors b := by
