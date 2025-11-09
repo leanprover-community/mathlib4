@@ -41,7 +41,7 @@ For efficiency purposes, the sequence is defined using `Stream.iterate`.
 
 ## Tags
 
-fib, fibonacci, fibonacci numbers, fibonacci sequence, fibonacci series
+Fibonacci numbers, Fibonacci sequence
 -/
 
 namespace Nat
