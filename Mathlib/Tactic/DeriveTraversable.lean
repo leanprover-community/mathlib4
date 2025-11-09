@@ -287,7 +287,7 @@ def deriveLawfulFunctor (m : MVarId) : TermElabM Unit := do
   let (#[_, x], mim) ← mim.introN 2 | failure
   let (some mim, _) ← dsimpGoal mim (← rules [] [``Functor.map] false) | failure
   let xs ← mim.induction x (mkRecName n)
-  xs.forM fun ⟨mim, _, _⟩ =>
+  xs.forM fun { mvarId := mim, .. } =>
     mim.withContext do
       if let (some (_, mim), _) ←
           simpGoal mim (← rules [(``Functor.map_id, false)] [.mkStr n "map"] true) then
@@ -295,7 +295,7 @@ def deriveLawfulFunctor (m : MVarId) : TermElabM Unit := do
   let (#[_, _, _, _, _, x], mcm) ← mcm.introN 6 | failure
   let (some mcm, _) ← dsimpGoal mcm (← rules [] [``Functor.map] false) | failure
   let xs ← mcm.induction x (mkRecName n)
-  xs.forM fun ⟨mcm, _, _⟩ =>
+  xs.forM fun { mvarId := mcm, .. } =>
     mcm.withContext do
       if let (some (_, mcm), _) ←
           simpGoal mcm (← rules [(``Functor.map_comp_map, true)] [.mkStr n "map"] true) then

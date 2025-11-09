@@ -168,9 +168,8 @@ theorem map_frobeniusPoly (n : ℕ) :
   rw [Rat.natCast_div _ _ (map_frobeniusPoly.key₁ p (n - i) j hj)]
   push_cast
   linear_combination (norm := skip) -p / p ^ n / p ^ (n - i - v p (j + 1))
-    * (p ^ (n - i)).choose (j + 1) * congr((p:ℚ) ^ $(map_frobeniusPoly.key₂ p hi.le hj))
-  field_simp [hp.1.ne_zero]
-  ring
+    * (p ^ (n - i)).choose (j + 1) * congr((p : ℚ) ^ $(map_frobeniusPoly.key₂ p hi.le hj))
+  field [hp.1.ne_zero]
 
 theorem frobeniusPoly_zmod (n : ℕ) :
     MvPolynomial.map (Int.castRingHom (ZMod p)) (frobeniusPoly p n) = X n ^ p := by
