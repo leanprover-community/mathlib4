@@ -35,6 +35,7 @@ variable (D) (M : Type*)
 
 structure CommShift₂Setup where
   twistShiftData : TwistShiftData (PullbackShift D (.sum M)) (M × M)
+  z_zero₁ (m₁ m₂ : M) : twistShiftData.z (0, m₁) (0, m₂) = 1
   z_zero₂ (m₁ m₂ : M) : twistShiftData.z (m₁, 0) (m₂, 0) = 1
   ε (m n : M) : (CatCenter D)ˣ
 
@@ -207,7 +208,23 @@ lemma iso₂_zero : iso₂ h F 0 = Functor.CommShift.isoZero _ _ := by
 lemma iso₂_add (m m' : M) :
     iso₂ h F (m + m') =
       Functor.CommShift.isoAdd' (by aesop) (iso₂ h F m) (iso₂ h F m') := by
-  sorry
+  ext ⟨X₁, X₂⟩
+  have this := NatTrans.shift_app_comm (F.map ((shiftFunctorZero C₁ M).hom.app X₁)) m' (X₂⟦m⟧)
+  dsimp at this
+  simp only [shiftFunctor_prod, Functor.comp_obj, Functor.prod_obj, uncurry_obj_obj,
+    iso₂_hom_app, Functor.id_obj, Functor.CommShift.isoAdd'_hom_app, shiftFunctorAdd'_prod,
+    NatIso.prod_hom, uncurry_obj_map, NatTrans.prod_app_fst, NatTrans.prod_app_snd,
+    Functor.map_comp, Category.assoc, NatTrans.naturality_assoc]
+  rw [h.shiftFunctor_map_assoc _ _ _ (zero_add m'), Iso.inv_hom_id_app_assoc,
+    NatTrans.naturality_assoc, ← Functor.map_comp_assoc,
+    h.shiftFunctorAdd'_inv_app _ _ _ (add_zero 0) _ _ _ rfl _ _ _
+    (zero_add m) (zero_add m') (zero_add (m + m')), h.z_zero₁,
+    inv_one, Units.val_one, End.one_def, NatTrans.id_app,
+    Functor.commShiftIso_add' _ rfl, Functor.CommShift.isoAdd'_hom_app,
+    shiftFunctorAdd'_add_zero_hom_app, ← NatTrans.comp_app_assoc, ← Functor.map_comp,
+    Iso.inv_hom_id_app, NatTrans.naturality_assoc, NatTrans.naturality_assoc]
+  nth_rw 2 [← Functor.map_comp_assoc]
+  simp [reassoc_of% this]
 
 end commShiftUncurry
 
