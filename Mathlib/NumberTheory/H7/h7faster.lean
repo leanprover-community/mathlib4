@@ -834,7 +834,7 @@ lemma c_coeffspow' :
       (h7.c₁ : ℤ) ^ (h7.m * q - (a q t * h7.l q u) ) *
       (h7.c₁ : ℤ) ^ (h7.m * q - ((b q t * h7.l q u)))) •
   ((h7.c₁) ^ (h7.k q u ) * (h7.c₁ ) ^ (a q t * h7.l q u) *
-    (h7.c₁) ^ (b q t * h7.l q u )) := by stop
+    (h7.c₁) ^ (b q t * h7.l q u )) := by
   have := triple_comm_int
   rw [this]
   congr
@@ -870,7 +870,7 @@ lemma c_coeffspow' :
 include hq0 h2mq in
 lemma hAkl : --∀ (k : Fin (h7.m * h7.n q)) (l : Fin (q * q)),
   house ((algebraMap (𝓞 h7.K) h7.K) ((A h7 q) hq0 h2mq u t)) ≤
-      (h7.c₃ ^ (h7.n q : ℝ) * (h7.n q : ℝ) ^ (((h7.n q : ℝ) - 1) / 2))  := by { stop
+      (h7.c₃ ^ (h7.n q : ℝ) * (h7.n q : ℝ) ^ (((h7.n q : ℝ) - 1) / 2))  := by {
     unfold A sys_coe
     simp only [RingOfIntegers.restrict, RingOfIntegers.map_mk]
     --have:= Real.rpow_natCast (x:=↑(h7.n q : ℝ)) (n:= (((h7.n q) - 1) / 2))
@@ -2944,6 +2944,11 @@ lemma crho_abs_eq : |h7.c₁ ^ h7.r q hq0 h2mq * h7.c₁ ^ (2 * h7.m * q)| =
 
 def c₆ : ℝ := (|↑h7.c₁| * (1 + house h7.β'))
 
+lemma c₆_nonneg : 0 ≤ h7.c₆  := by {
+  unfold c₆ house
+  positivity
+}
+
 def c₇ : ℝ := ((((|↑h7.c₁| * |↑h7.c₁| *
   (|↑h7.c₁| * (house h7.α' * (|↑h7.c₁| * house h7.γ'))))) ^ h7.m))
 
@@ -3414,6 +3419,31 @@ lemma sqt_etc : Real.sqrt (2*h7.m*(h7.r q hq0 h2mq)) =
 
 def c₈ : ℝ := (h7.c₆ * √(2 * ↑h7.m) * h7.c₇ ^ (2 * h7.m) * h7.c₄ * (2 * ↑h7.m))
 
+lemma c7_nonneg : 0 ≤ h7.c₇ := by {
+  unfold c₇ house
+  positivity
+}
+
+lemma c8_nonneg : 0 ≤ h7.c₈ := by {
+  unfold c₈
+  apply mul_nonneg
+  · apply mul_nonneg
+    · apply mul_nonneg
+      · apply mul_nonneg
+        · exact c₆_nonneg h7
+        · simp only [Nat.ofNat_nonneg, Real.sqrt_mul,
+          Real.sqrt_pos, Nat.ofNat_pos,
+          mul_nonneg_iff_of_pos_left, Real.sqrt_nonneg]
+      · apply pow_nonneg
+        · exact c7_nonneg h7
+    · exact zero_leq_c₄ h7
+  · positivity
+}
+
+lemma zero_lt_r : 0 < h7.r q hq0 h2mq := by {
+  exact r_qt_0 h7 q hq0 h2mq
+}
+
 theorem q_sq2_neq_1 (m q : ℕ) (hq0 : 0 < q)
     (h2mq : 2 * m ∣ q ^ 2) : q ^ 2 ≠ 1 := by
   intro hq2eq1
@@ -3434,7 +3464,6 @@ theorem q_sq2_neq_1 (m q : ℕ) (hq0 : 0 < q)
     have absurd_le : 1 ≥ 2 := by rwa [h_two_eq_one] at h_ge_two
     have gt21 : 2 > 1 := by decide
     exact (Nat.not_le_of_gt gt21) absurd_le
-
 
 lemma eq6b : (q*q) * ((((h7.c₄ ^ (h7.n q : ℝ) *
   ((h7.n q : ℝ) ^ (((h7.n q : ℝ)+ 1)/2)))) *
@@ -3508,9 +3537,11 @@ lemma eq6b : (q*q) * ((((h7.c₄ ^ (h7.n q : ℝ) *
                   · rw [le_iff_lt_or_eq]
                     right
                     exact Real.sqrt_eq_rpow ↑(h7.n q)
-                  · simp only [Nat.ofNat_nonneg, Real.sqrt_mul, Real.sqrt_pos, Nat.ofNat_pos,
-                    mul_nonneg_iff_of_pos_left, Real.sqrt_nonneg]
-                  · simp only [Nat.ofNat_pos, mul_nonneg_iff_of_pos_left, Nat.cast_nonneg]
+                  · simp only [Nat.ofNat_nonneg, Real.sqrt_mul,
+                      Real.sqrt_pos, Nat.ofNat_pos,
+                      mul_nonneg_iff_of_pos_left, Real.sqrt_nonneg]
+                  · simp only [Nat.ofNat_pos, mul_nonneg_iff_of_pos_left,
+                      Nat.cast_nonneg]
                 · refine mul_le_mul_of_nonneg_left ?_ ?_
                   · apply Real.rpow_le_rpow
                     · simp only [Nat.cast_nonneg]
@@ -3544,7 +3575,8 @@ lemma eq6b : (q*q) * ((((h7.c₄ ^ (h7.n q : ℝ) *
         · simp only [Real.rpow_natCast]
           unfold c₄
           apply pow_nonneg
-          simp only [lt_sup_iff, zero_lt_one, true_or, mul_nonneg_iff_of_pos_left]
+          simp only [lt_sup_iff, zero_lt_one, true_or,
+            mul_nonneg_iff_of_pos_left]
           exact zero_leq_c₃ h7
       · unfold c₆ c₇ house
         · apply mul_nonneg
@@ -3586,35 +3618,57 @@ lemma eq6b : (q*q) * ((((h7.c₄ ^ (h7.n q : ℝ) *
       nth_rw 1 [← Real.mul_rpow]
       apply mul_le_mul
       · unfold c₈
-        simp only [Nat.ofNat_nonneg, Real.sqrt_mul, Real.rpow_natCast, le_refl]
+        simp only [Nat.ofNat_nonneg, Real.sqrt_mul,
+          Real.rpow_natCast, le_refl]
       · ring_nf
         simp only [le_refl]
       · positivity
-      · unfold c₈ c₆ c₇ house;
-        simp only [Nat.ofNat_nonneg, Real.sqrt_mul, abs_mul_abs_self, Real.rpow_natCast]
-        sorry
-      · sorry
-      · sorry
-      · sorry
-      · sorry
-      · sorry
-      · sorry
-      · sorry
-      · sorry
+      · simp only [Real.rpow_natCast]
+        apply pow_nonneg
+        · apply h7.c8_nonneg
+      · apply mul_nonneg
+        · apply mul_nonneg
+          · apply mul_nonneg
+            · apply h7.c₆_nonneg
+            · simp only [Nat.ofNat_nonneg,
+              Real.sqrt_mul, Real.sqrt_pos, Nat.ofNat_pos,
+              mul_nonneg_iff_of_pos_left, Real.sqrt_nonneg]
+          · apply pow_nonneg
+            · apply h7.c7_nonneg
+        · exact zero_leq_c₄ h7
+      · positivity
+      · simp only [Nat.cast_pos]
+        apply h7.zero_lt_r
+      · simp only [Nat.cast_nonneg]
+      · apply mul_nonneg
+        · exact c₆_nonneg h7
+        · simp only [Nat.ofNat_nonneg, Real.sqrt_mul,
+          Real.sqrt_pos, Nat.ofNat_pos,
+          mul_nonneg_iff_of_pos_left, Real.sqrt_nonneg]
+      · apply mul_nonneg
+        · apply pow_nonneg
+          · exact c7_nonneg h7
+        · exact zero_leq_c₄ h7
+      · apply pow_nonneg
+        · exact c7_nonneg h7
+      · exact zero_leq_c₄ h7
       · simp only [Nat.cast_pos]
         exact r_qt_0 h7 q hq0 h2mq
-      · sorry
+      · apply mul_nonneg
+        · exact c₆_nonneg h7
+        · simp only [Nat.ofNat_nonneg, Real.sqrt_mul,
+          Real.sqrt_pos, Nat.ofNat_pos,
+          mul_nonneg_iff_of_pos_left, Real.sqrt_nonneg]
       · positivity
   }
 
-lemma eq6 : house (rho h7 q hq0 h2mq) ≤ h7.c₈^(h7.r q hq0 h2mq) *
-(h7.r q hq0 h2mq)^((h7.r q hq0 h2mq) + 3/2) := by
+lemma eq6 : house (rho h7 q hq0 h2mq) ≤ h7.c₈^(h7.r q hq0 h2mq : ℝ) *
+(h7.r q hq0 h2mq : ℝ)^((h7.r q hq0 h2mq : ℝ) + 3/2) := by
   trans
   apply h7.eq6a q hq0 h2mq
   exact h7.eq6b q hq0 h2mq
 
 
-#exit
 
 
 
@@ -4532,7 +4586,6 @@ lemma holS :
   by_cases H : ∃ (k' : Fin (h7.m)), z = (k' : ℂ) + 1
   by_cases Hzl0 : z = h7.l₀' q hq0 h2mq + 1
   ·
-
     clear H
    -- obtain ⟨l', hl'⟩ := H
     apply AnalyticAtEq (f := h7.SRl0 q hq0 h2mq)
@@ -5564,10 +5617,11 @@ lemma use6and8 :
   · nth_rw 2 [mul_comm]
     apply mul_le_mul
     · apply eq8 h7 q hq0 h2mq
-    · apply Real.rpow_le_rpow ?_ (h7.eq6 q hq0 h2mq)
-      · simp only [sub_nonneg, Nat.one_le_cast]
-        sorry
-      · sorry
+    · sorry
+      -- apply Real.rpow_le_rpow ?_ (h7.eq6 q hq0 h2mq)
+      -- · simp only [sub_nonneg, Nat.one_le_cast]
+      --   sorry
+      -- · sorry
       --refine pow_le_pow_left₀ ?_ (h7.eq6 q hq0 h2mq) (h7.h - 1)
       --exact house_nonneg (h7.rho q hq0 h2mq)
     · sorry
