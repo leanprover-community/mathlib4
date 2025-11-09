@@ -51,7 +51,7 @@ variable [CommRing R] {I : Ideal R⟦X⟧} {S : Set R}
 
 section X_mem
 
-theorem map_constantCoeff_le_self_of_Xmem (hXI : X ∈ I) :
+theorem map_constantCoeff_le_self_of_X_mem (hXI : X ∈ I) :
     I.map (C.comp constantCoeff) ≤ I := by
   suffices ∀ x ∈ I, C (constantCoeff x) ∈ I by simpa [Ideal.map_le_iff_le_comap]
   intro f hf
