@@ -51,7 +51,7 @@ theorem supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson {x : R}
   · have hb : supportDim R (QuotSMulTop x M) ≠ ⊥ :=
       (supportDim_ne_bot_iff_nontrivial R (QuotSMulTop x M)).mpr <|
         Submodule.Quotient.nontrivial_of_ne_top _ <|
-          (Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator h.symm)
+          (Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator h).symm
     rw [hp0, ← WithBot.coe_unbot (supportDim R (QuotSMulTop x M)) hb]
     exact WithBot.coe_le_coe.mpr (zero_le ((supportDim R (QuotSMulTop x M)).unbot hb + 1))
   -- Let `q' i := q (i + 1)`, then `q'` is a chain of prime ideals in `Supp(M/xM)`.
@@ -77,8 +77,8 @@ theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
     supportDim R (QuotSMulTop x M) + 1 ≤ supportDim R M := by
   nontriviality M
   nontriviality (QuotSMulTop x M)
-  have : Nonempty (Module.support R M) := nonempty_support_of_nontrivial
-  have : Nonempty (Module.support R (QuotSMulTop x M)) := nonempty_support_of_nontrivial
+  have : Nonempty (Module.support R M) := nonempty_support_of_nontrivial.to_subtype
+  have : Nonempty (Module.support R (QuotSMulTop x M)) := nonempty_support_of_nontrivial.to_subtype
   simp only [supportDim, Order.krullDim_eq_iSup_length]
   apply WithBot.coe_le_coe.mpr
   simp only [ENat.iSup_add, iSup_le_iff]
