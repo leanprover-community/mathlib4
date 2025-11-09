@@ -30,7 +30,7 @@ noncomputable section
 
 open CategoryTheory FundamentalGroupoid
 
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+variable {X : Type*} [TopologicalSpace X]
 
 /-- A topological space is semilocally simply connected if every point has a neighborhood `U`
 such that the inclusion map from `π₁(U, base)` to `π₁(X, base)` is trivial for all basepoints
@@ -47,8 +47,9 @@ variable {X : Type*} [TopologicalSpace X]
 /-- Simply connected spaces are semilocally simply connected. -/
 theorem of_simplyConnected [SimplyConnectedSpace X] : SemilocallySimplyConnected X := fun x =>
   ⟨Set.univ, isOpen_univ, Set.mem_univ x, fun base => by
-    simp only [MonoidHom.range_eq_bot_iff]; ext
-    exact @Subsingleton.elim (Path.Homotopic.Quotient base.val base.val) inferInstance _ _⟩
+    simp only [MonoidHom.range_eq_bot_iff]
+    ext
+    exact Subsingleton.elim (α := Path.Homotopic.Quotient base.val base.val) _ _⟩
 
 theorem semilocallySimplyConnected_iff :
     SemilocallySimplyConnected X ↔
