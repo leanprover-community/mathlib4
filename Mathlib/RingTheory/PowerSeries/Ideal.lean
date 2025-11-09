@@ -175,7 +175,7 @@ theorem spanFinrank_le_spanFinrank_map_constantCoeff_add_one_of_prime :
     spanFinrank P ≤ spanFinrank (P.map constantCoeff) + 1 := by
   by_cases hP : X ∈ P
   · exact spanFinrank_le_spanFinrank_map_constantCoeff_add_one_of_X_mem hP
-  · exact le_trans (spanFinrank_le_spanFinrank_map_constantCoeff_of_X_not_mem_of_prime hP)
+  · exact le_trans (spanFinrank_le_spanFinrank_map_constantCoeff_of_X_notMem_of_isPrime hP)
       (Nat.le_succ _)
 
 /-- A prime ideal `P` of `R⟦X⟧` is finitely generated if and only if `P.map constantCoeff` is
