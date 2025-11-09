@@ -15,12 +15,8 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 /-!
 # Fibonacci Numbers
 
-This file defines the fibonacci series, proves results about it and introduces
+This file defines the Fibonacci series, proves results about it and introduces
 methods to compute it quickly.
--/
-
-/-!
-# The Fibonacci Sequence
 
 ## Summary
 
@@ -32,7 +28,7 @@ Definition of the Fibonacci sequence `F₀ = 0, F₁ = 1, Fₙ₊₂ = Fₙ + F�
 
 ## Main Statements
 
-- `Nat.fib_add_two`: shows that `fib` indeed satisfies the Fibonacci recurrence `Fₙ₊₂ = Fₙ + Fₙ₊₁.`.
+- `Nat.fib_add_two`: shows that `fib` indeed satisfies the Fibonacci recurrence `Fₙ₊₂ = Fₙ + Fₙ₊₁`.
 - `Nat.fib_gcd`: `fib n` is a strong divisibility sequence.
 - `Nat.fib_succ_eq_sum_choose`: `fib` is given by the sum of `Nat.choose` along an antidiagonal.
 - `Nat.fib_succ_eq_succ_sum`: shows that `F₀ + F₁ + ⋯ + Fₙ = Fₙ₊₂ - 1`.
@@ -45,14 +41,14 @@ For efficiency purposes, the sequence is defined using `Stream.iterate`.
 
 ## Tags
 
-fib, fibonacci
+fib, fibonacci, fibonacci numbers, fibonacci sequence, fibonacci series
 -/
 
 namespace Nat
 
 
 
-/-- Implementation of the fibonacci sequence satisfying
+/-- Implementation of the Fibonacci sequence satisfying
 `fib 0 = 0, fib 1 = 1, fib (n + 2) = fib n + fib (n + 1)`.
 
 *Note:* We use a stream iterator for better performance when compared to the naive recursive
@@ -74,7 +70,7 @@ theorem fib_one : fib 1 = 1 :=
 theorem fib_two : fib 2 = 1 :=
   rfl
 
-/-- Shows that `fib` indeed satisfies the Fibonacci recurrence `Fₙ₊₂ = Fₙ + Fₙ₊₁.` -/
+/-- Shows that `fib` indeed satisfies the Fibonacci recurrence `Fₙ₊₂ = Fₙ + Fₙ₊₁`. -/
 theorem fib_add_two {n : ℕ} : fib (n + 2) = fib n + fib (n + 1) := by
   simp [fib, Function.iterate_succ_apply']
 
