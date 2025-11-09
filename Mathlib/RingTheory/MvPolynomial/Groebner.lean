@@ -740,7 +740,7 @@ lemma exists_degree_le_degree_of_isRemainder_zero
     exact hB b (Set.mem_of_mem_of_subset hb₁ h₁)
 
 variable {m} in
-lemma exists_degree_le_degree_of_isRemainder_zero₀ {R : Type*} [CommSemiring R]
+lemma exists_degree_le_degree_of_isRemainder_zero₀
     (p : MvPolynomial σ R) (hp : p ≠ 0) (B : Set (MvPolynomial σ R))
     (hB : ∀ b ∈ B, IsRegular (m.leadingCoeff b) ∨ b = 0)
     (h : m.IsRemainder p B 0) :
@@ -1018,7 +1018,6 @@ lemma sub_mem_ideal_of_isRemainder_of_subset_ideal
     exact Ideal.mul_mem_left I _ (Set.mem_of_mem_of_subset (by simp) hBI)
 
 lemma sub_monomial_notMem_span_leadingTerm_of_isRemainder
-    {R : Type*} [CommRing R]
     {B : Set (MvPolynomial σ R)} {p r₁ r₂ : MvPolynomial σ R}
     (hB : ∀ p ∈ B, IsUnit (m.leadingCoeff p))
     (hr₁ : m.IsRemainder p B r₁) (hr₂ : m.IsRemainder p B r₂) :
