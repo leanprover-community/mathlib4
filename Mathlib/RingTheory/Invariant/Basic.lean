@@ -50,6 +50,13 @@ noncomputable def IsIntegralClosure.MulSemiringAction [Algebra.IsAlgebraic K L] 
     MulSemiringAction Gal(L/K) B :=
   MulSemiringAction.compHom B (galRestrict A K L B).toMonoidHom
 
+instance [Algebra.IsAlgebraic K L] : let := IsIntegralClosure.MulSemiringAction A K L B
+    SMulDistribClass Gal(L/K) B L :=
+  let := IsIntegralClosure.MulSemiringAction A K L B
+  ⟨fun g b l ↦ by
+    simp only [Algebra.smul_def, smul_mul', mul_eq_mul_right_iff]
+    exact Or.inl (algebraMap_galRestrictHom_apply A K L B g b).symm⟩
+
 /-- In the AKLB setup, every fixed point of `B` lies in the image of `A`. -/
 theorem Algebra.isInvariant_of_isGalois [FiniteDimensional K L] [h : IsGalois K L] :
     letI := IsIntegralClosure.MulSemiringAction A K L B
