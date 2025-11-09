@@ -386,7 +386,7 @@ theorem iInter_nat_halfSpaces_eq_of_prod {F : Type*} {s : Set (E × F)}
     (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) (hsep : IsSeparable sᶜ) :
     ∃ (L : ℕ → E →L[𝕜] 𝕜) (T : ℕ → F →L[𝕜] 𝕜) (c : ℕ → ℝ),
     ⋂ (i : ℕ), {(x, y) | c i ≤ re (L i x) + re (T i y)} = s
-    ∧ (s.Nonempty → s ≠ univ → ∀ i, ∃ (x : E), ∃ (y : F), re (L i x) + re (T i y) ≠ 0) := by
+    ∧ (s.Nonempty → s ≠ univ → ∀ i, ∃ (x : E) (y : F), re (L i x) + re (T i y) ≠ 0) := by
   have ⟨LT, c, eq1, eq2⟩ := iInter_nat_halfSpaces_eq (𝕜 := 𝕜) hs₁ hs₂ hsep
   use fun i ↦ (LT i).comp (.inl 𝕜 E F), fun i ↦ (LT i).comp (.inr 𝕜 E F), c
   constructor
