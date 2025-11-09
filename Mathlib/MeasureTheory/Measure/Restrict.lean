@@ -897,6 +897,11 @@ lemma _root_.MeasurableEquiv.comap_apply (e : α ≃ᵐ β) (μ : Measure β) (s
 
 end MeasurableEmbedding
 
+lemma MeasureTheory.Measure.map_eq_comap [MeasurableSpace α] [MeasurableSpace β] {f : α → β}
+    {g : β → α} {μ : Measure α} (hf : Measurable f) (hg : MeasurableEmbedding g)
+    (hμg : ∀ᵐ a ∂μ, a ∈ Set.range g) (hfg : ∀ a, f (g a) = a) : μ.map f = μ.comap g := by
+  ext s hs; rw [map_apply hf hs, hg.comap_apply, ← measure_diff_null hμg]; congr; simp; grind
+
 section Subtype
 
 theorem comap_subtype_coe_apply {_m0 : MeasurableSpace α} {s : Set α} (hs : MeasurableSet s)
