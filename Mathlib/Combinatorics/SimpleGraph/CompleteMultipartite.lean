@@ -350,7 +350,7 @@ theorem pairwise_disjoint_on_parts : Pairwise (Disjoint on K.parts) :=
 
 /-- The finset of vertices in a complete equipartite subgraph. -/
 abbrev verts : Finset V :=
-  univ.disjiUnion K.parts (K.pairwise_disjoint_on_parts.set_pairwise univ.toSet)
+  univ.disjiUnion K.parts (K.pairwise_disjoint_on_parts.set_pairwise (SetLike.coe univ))
 
 /-- There are `r * t` vertices in a complete equipartite subgraph with `r` parts of size `t`. -/
 theorem card_verts : #K.verts = r * t := by simp [verts, card_parts]
