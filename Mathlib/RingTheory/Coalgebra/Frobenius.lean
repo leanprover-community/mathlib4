@@ -23,48 +23,49 @@ Frobenius equations. So we call this one the Frobenius equation too.
 -/
 
 open TensorProduct LinearMap Coalgebra
+open scoped RingTheory.LinearMap
 
 variable {R A : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A] [Coalgebra R A]
   [SMulCommClass R A A] [IsScalarTower R A A]
 
-local notation "ϰ" => TensorProduct.assoc R
+local notation "α" => TensorProduct.assoc R
 local notation "τ" => TensorProduct.lid R
 
 /-- If `(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`,
 then `(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = comul ∘ mul`. -/
 theorem LinearMap.lTensor_mul'_comp_assoc_comp_rTensor_comul_of
-    (h : lTensor A (mul' R A) ∘ₗ ϰ A A A ∘ₗ rTensor A comul =
-      rTensor A (mul' R A) ∘ₗ (ϰ A A A).symm ∘ₗ lTensor A comul) :
-    lTensor A (mul' R A) ∘ₗ ϰ A A A ∘ₗ rTensor A comul = comul ∘ₗ mul' R A :=
-  calc _ = rTensor A (mul' R A) ∘ₗ (ϰ A A A).symm ∘ₗ lTensor A comul := h
-    _ = rTensor _ (mul' R A) ∘ₗ (ϰ _ _ _).symm.toLinearMap ∘ₗ
-      map ((τ _).toLinearMap ∘ₗ rTensor _ counit ∘ₗ comul) comul := by ext; simp
-    _ = rTensor _ (mul' R A) ∘ₗ (ϰ _ _ _).symm.toLinearMap ∘ₗ rTensor _ (τ _).toLinearMap ∘ₗ
-      rTensor _ (rTensor _ counit) ∘ₗ map comul comul := by simp only [rTensor_comp_map]
-    _ = rTensor _ (mul' R _ ∘ₗ (τ _).toLinearMap ∘ₗ rTensor _ counit ∘ₗ (ϰ A A A).toLinearMap) ∘ₗ
-      (ϰ _ _ _).symm.toLinearMap ∘ₗ map comul comul := by
+    (h : lTensor A μ ∘ₗ α A A A ∘ₗ rTensor A δ =
+      rTensor A μ[R] ∘ₗ (α A A A).symm ∘ₗ lTensor A δ) :
+    lTensor A μ ∘ₗ α A A A ∘ₗ rTensor A δ = δ ∘ₗ μ[R] :=
+  calc _ = rTensor A μ ∘ₗ (α A A A).symm ∘ₗ lTensor A δ := h
+    _ = rTensor _ μ ∘ₗ (α _ _ _).symm.toLinearMap ∘ₗ
+      (((τ _).toLinearMap ∘ₗ rTensor _ ε ∘ₗ δ) ⊗ₘ δ) := by ext; simp
+    _ = rTensor _ μ ∘ₗ (α _ _ _).symm.toLinearMap ∘ₗ rTensor _ (τ _).toLinearMap ∘ₗ
+      rTensor _ (rTensor _ ε) ∘ₗ (δ ⊗ₘ δ) := by simp only [rTensor_comp_map]
+    _ = rTensor _ (μ[R] ∘ₗ (τ _).toLinearMap ∘ₗ rTensor _ ε ∘ₗ (α A A A).toLinearMap) ∘ₗ
+      (α _ _ _).symm.toLinearMap ∘ₗ (δ ⊗ₘ δ) := by
         simp_rw [← LinearMap.comp_assoc]
         congr 1; ext; simp [smul_mul_assoc]
-    _ = rTensor _ ((τ _).toLinearMap ∘ₗ (lTensor _ (mul' R A) ∘ₗ rTensor _ counit) ∘ₗ
-      (ϰ _ _ _).toLinearMap) ∘ₗ (ϰ _ _ _).symm.toLinearMap ∘ₗ map comul comul := by
+    _ = rTensor _ ((τ _).toLinearMap ∘ₗ (lTensor _ μ[R] ∘ₗ rTensor _ ε) ∘ₗ
+      (α _ _ _).toLinearMap) ∘ₗ (α _ _ _).symm.toLinearMap ∘ₗ (δ ⊗ₘ δ) := by
         simp_rw [← LinearMap.comp_assoc]
         congr 5; ext; simp
-    _ = rTensor _ ((τ _).toLinearMap ∘ₗ (rTensor _ counit ∘ₗ lTensor _ (mul' R A)) ∘ₗ
-      (ϰ _ _ _).toLinearMap) ∘ₗ (ϰ _ _ _).symm.toLinearMap ∘ₗ map comul comul := by
+    _ = rTensor _ ((τ _).toLinearMap ∘ₗ (rTensor _ ε ∘ₗ lTensor _ μ[R]) ∘ₗ
+      (α _ _ _).toLinearMap) ∘ₗ (α _ _ _).symm.toLinearMap ∘ₗ (δ ⊗ₘ δ) := by
         congr; ext; simp
-    _ = rTensor _ ((τ _).toLinearMap ∘ₗ (rTensor _ counit ∘ₗ lTensor _ (mul' R A)) ∘ₗ
-        (ϰ _ _ _).toLinearMap) ∘ₗ
-      ((ϰ _ _ _).symm.toLinearMap ∘ₗ rTensor _ comul) ∘ₗ lTensor _ comul := by
+    _ = rTensor _ ((τ _).toLinearMap ∘ₗ (rTensor _ ε ∘ₗ lTensor _ μ[R]) ∘ₗ
+        (α _ _ _).toLinearMap) ∘ₗ
+      ((α _ _ _).symm.toLinearMap ∘ₗ rTensor _ δ) ∘ₗ lTensor _ δ := by
         simp only [comp_assoc]
         congr; ext; simp
-    _ = rTensor _ ((τ _).toLinearMap ∘ₗ (rTensor _ counit ∘ₗ lTensor _ (mul' R A)) ∘ₗ
-      (ϰ _ _ _).toLinearMap) ∘ₗ rTensor _ (rTensor _ comul) ∘ₗ
-      (ϰ _ _ _).symm.toLinearMap ∘ₗ lTensor _ comul := by
+    _ = rTensor _ ((τ _).toLinearMap ∘ₗ (rTensor _ ε ∘ₗ lTensor _ μ[R]) ∘ₗ
+      (α _ _ _).toLinearMap) ∘ₗ rTensor _ (rTensor _ δ) ∘ₗ
+      (α _ _ _).symm.toLinearMap ∘ₗ lTensor _ δ := by
         simp only [rTensor_tensor, comp_assoc]
-        simp only [← comp_assoc _ _ (ϰ _ _ _).symm.toLinearMap, LinearEquiv.symm_comp, id_comp]
-    _ = ((τ _).toLinearMap ∘ₗ rTensor _ counit) ∘ₗ (ϰ _ _ _).toLinearMap ∘ₗ
-      (rTensor _ (rTensor _ (mul' R A) ∘ₗ (ϰ _ _ _).symm.toLinearMap ∘ₗ
-      lTensor _ comul) ∘ₗ (ϰ _ _ _).symm.toLinearMap) ∘ₗ lTensor A comul := by
+        simp only [← comp_assoc _ _ (α _ _ _).symm.toLinearMap, LinearEquiv.symm_comp, id_comp]
+    _ = ((τ _).toLinearMap ∘ₗ rTensor _ ε) ∘ₗ (α _ _ _).toLinearMap ∘ₗ
+      (rTensor _ (rTensor _ μ[R] ∘ₗ (α _ _ _).symm.toLinearMap ∘ₗ
+      lTensor _ δ) ∘ₗ (α _ _ _).symm.toLinearMap) ∘ₗ lTensor A δ := by
         rw [← h]
         simp_rw [← comp_assoc]
         congr 2
@@ -72,15 +73,15 @@ theorem LinearMap.lTensor_mul'_comp_assoc_comp_rTensor_comul_of
           LinearEquiv.coe_rTensor]
         symm
         nth_rw 3 [comp_assoc]
-        simp only [rTensor_tensor, ← comp_assoc _ _ (ϰ _ _ _).symm.toLinearMap,
+        simp only [rTensor_tensor, ← comp_assoc _ _ (α _ _ _).symm.toLinearMap,
           LinearEquiv.symm_comp, id_comp]
         simp_rw [← comp_assoc, ← rTensor_comp]
         nth_rw 2 [comp_assoc]
         simp only [LinearEquiv.symm_comp, comp_id]
         simp_rw [← rTensor_comp, comp_assoc]
-    _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ rTensor _ counit ∘ₗ (ϰ _ _ _).toLinearMap ∘ₗ
-      rTensor _ (rTensor _ (mul' R A)) ∘ₗ rTensor A (ϰ A A A).symm.toLinearMap ∘ₗ
-      (ϰ _ _ _).symm.toLinearMap ∘ₗ lTensor _ (rTensor A comul ∘ₗ comul) := by
+    _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ rTensor _ ε ∘ₗ (α _ _ _).toLinearMap ∘ₗ
+      rTensor _ (rTensor _ μ[R]) ∘ₗ rTensor A (α A A A).symm.toLinearMap ∘ₗ
+      (α _ _ _).symm.toLinearMap ∘ₗ lTensor _ (rTensor A δ ∘ₗ δ) := by
         simp_rw [comp_assoc]
         congr 3
         simp_rw [← comp_assoc]
@@ -89,52 +90,52 @@ theorem LinearMap.lTensor_mul'_comp_assoc_comp_rTensor_comul_of
         simp_rw [comp_assoc]
         congr 1
         rw [← comp_assoc, rTensor_lTensor_comp_assoc_symm, comp_assoc, ← lTensor_comp]
-    _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ rTensor _ counit ∘ₗ (ϰ _ _ _).toLinearMap ∘ₗ
-      rTensor _ (rTensor _ (mul' R A)) ∘ₗ rTensor A (ϰ A A A).symm.toLinearMap ∘ₗ
-      (ϰ _ _ _).symm.toLinearMap ∘ₗ lTensor _ ((ϰ _ _ _).symm.toLinearMap ∘ₗ
-      lTensor A comul ∘ₗ comul) := by
+    _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ rTensor _ ε ∘ₗ (α _ _ _).toLinearMap ∘ₗ
+      rTensor _ (rTensor _ μ[R]) ∘ₗ rTensor A (α A A A).symm.toLinearMap ∘ₗ
+      (α _ _ _).symm.toLinearMap ∘ₗ lTensor _ ((α _ _ _).symm.toLinearMap ∘ₗ
+      lTensor A δ ∘ₗ δ) := by
         rw [Coalgebra.coassoc_symm]
-    _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ rTensor _ counit ∘ₗ (ϰ _ _ _).toLinearMap ∘ₗ
-      rTensor _ (rTensor _ (mul' R A)) ∘ₗ rTensor A (ϰ A A A).symm.toLinearMap ∘ₗ
-      (ϰ _ _ _).symm.toLinearMap ∘ₗ lTensor _ (ϰ _ _ _).symm.toLinearMap ∘ₗ
-      lTensor _ (lTensor A comul) ∘ₗ lTensor _ comul := by
+    _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ rTensor _ ε ∘ₗ (α _ _ _).toLinearMap ∘ₗ
+      rTensor _ (rTensor _ μ[R]) ∘ₗ rTensor A (α A A A).symm.toLinearMap ∘ₗ
+      (α _ _ _).symm.toLinearMap ∘ₗ lTensor _ (α _ _ _).symm.toLinearMap ∘ₗ
+      lTensor _ (lTensor A δ) ∘ₗ lTensor _ δ := by
         simp_rw [← lTensor_comp]
-    _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ rTensor _ counit ∘ₗ (rTensor _ (mul' R A) ∘ₗ
-      (ϰ _ _ _).toLinearMap) ∘ₗ rTensor A (ϰ A A A).symm.toLinearMap ∘ₗ
-      (ϰ _ _ _).symm.toLinearMap ∘ₗ lTensor _ (ϰ _ _ _).symm.toLinearMap ∘ₗ
-      lTensor _ (lTensor A comul) ∘ₗ lTensor _ comul := by
+    _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ rTensor _ ε ∘ₗ (rTensor _ μ[R] ∘ₗ
+      (α _ _ _).toLinearMap) ∘ₗ rTensor A (α A A A).symm.toLinearMap ∘ₗ
+      (α _ _ _).symm.toLinearMap ∘ₗ lTensor _ (α _ _ _).symm.toLinearMap ∘ₗ
+      lTensor _ (lTensor A δ) ∘ₗ lTensor _ δ := by
         simp_rw [rTensor_tensor, comp_assoc]
-        simp only [← comp_assoc _ _ (ϰ _ _ _).symm.toLinearMap, LinearEquiv.symm_comp, id_comp]
-    _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ rTensor _ counit ∘ₗ rTensor _ (mul' R A) ∘ₗ
-      ((ϰ _ _ _).symm.toLinearMap ∘ₗ lTensor _ (lTensor A comul)) ∘ₗ lTensor _ comul := by
+        simp only [← comp_assoc _ _ (α _ _ _).symm.toLinearMap, LinearEquiv.symm_comp, id_comp]
+    _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ rTensor _ ε ∘ₗ rTensor _ μ[R] ∘ₗ
+      ((α _ _ _).symm.toLinearMap ∘ₗ lTensor _ (lTensor A δ)) ∘ₗ lTensor _ δ := by
         rw [assoc_tensor'']
         simp_rw [LinearEquiv.trans_symm, ← LinearEquiv.comp_coe, LinearEquiv.symm_symm, comp_assoc]
         rfl
-    _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ rTensor _ counit ∘ₗ (rTensor _ (mul' R A) ∘ₗ
-      lTensor _ comul) ∘ₗ (ϰ _ _ _).symm.toLinearMap ∘ₗ lTensor _ comul := by
+    _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ rTensor _ ε ∘ₗ (rTensor _ μ[R] ∘ₗ
+      lTensor _ δ) ∘ₗ (α _ _ _).symm.toLinearMap ∘ₗ lTensor _ δ := by
         simp_rw [lTensor_tensor, comp_assoc]
-        simp only [← comp_assoc _ _ (ϰ _ _ _).toLinearMap, LinearEquiv.comp_symm, id_comp]
-    _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ rTensor _ counit ∘ₗ lTensor _ comul ∘ₗ
-      (lTensor _ (mul' R A) ∘ₗ (ϰ _ _ _).toLinearMap ∘ₗ rTensor _ comul) := by
+        simp only [← comp_assoc _ _ (α _ _ _).toLinearMap, LinearEquiv.comp_symm, id_comp]
+    _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ rTensor _ ε ∘ₗ lTensor _ δ ∘ₗ
+      (lTensor _ μ[R] ∘ₗ (α _ _ _).toLinearMap ∘ₗ rTensor _ δ) := by
         rw [rTensor_comp_lTensor, ← lTensor_comp_rTensor, h]
         simp_rw [comp_assoc]
-    _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ (lTensor _ (comul ∘ₗ (mul' R A)) ∘ₗ rTensor _ counit) ∘ₗ
-      (ϰ _ _ _).toLinearMap ∘ₗ rTensor _ comul := by
+    _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ (lTensor _ (δ ∘ₗ μ[R]) ∘ₗ rTensor _ ε) ∘ₗ
+      (α _ _ _).toLinearMap ∘ₗ rTensor _ δ := by
         rw [lTensor_comp_rTensor, ← rTensor_comp_lTensor, lTensor_comp]
         simp_rw [comp_assoc]
-    _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ lTensor _ (comul ∘ₗ (mul' R A)) ∘ₗ (rTensor _ counit ∘ₗ
-      (ϰ _ _ _).toLinearMap) ∘ₗ rTensor _ comul := by
+    _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ lTensor _ (δ ∘ₗ μ[R]) ∘ₗ (rTensor _ ε ∘ₗ
+      (α _ _ _).toLinearMap) ∘ₗ rTensor _ δ := by
         simp_rw [comp_assoc]
-    _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ lTensor _ (comul ∘ₗ (mul' R A)) ∘ₗ ((ϰ _ _ _).toLinearMap ∘ₗ
-      rTensor _ (rTensor _ counit)) ∘ₗ rTensor _ comul := by
+    _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ lTensor _ (δ ∘ₗ μ[R]) ∘ₗ ((α _ _ _).toLinearMap ∘ₗ
+      rTensor _ (rTensor _ ε)) ∘ₗ rTensor _ δ := by
         simp_rw [rTensor_tensor, comp_assoc]
-        simp only [← comp_assoc _ _ (ϰ _ _ _).symm.toLinearMap, LinearEquiv.symm_comp, id_comp]
-    _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ lTensor _ (comul ∘ₗ (mul' R A)) ∘ₗ (ϰ _ _ _).toLinearMap ∘ₗ
+        simp only [← comp_assoc _ _ (α _ _ _).symm.toLinearMap, LinearEquiv.symm_comp, id_comp]
+    _ = (τ (A ⊗[R] A)).toLinearMap ∘ₗ lTensor _ (δ ∘ₗ μ[R]) ∘ₗ (α _ _ _).toLinearMap ∘ₗ
       rTensor _ (τ A).symm.toLinearMap := by
         rw [(by rfl : (τ A).symm.toLinearMap = (TensorProduct.mk R R A) 1),
           ← rTensor_counit_comp_comul, rTensor_comp]
         simp_rw [comp_assoc]
-    _ = comul ∘ₗ mul' R A := ext' fun _ _ => by
+    _ = δ ∘ₗ μ[R] := ext' fun _ _ => by
         simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, rTensor_tmul,
           TensorProduct.lid_symm_apply, TensorProduct.assoc_tmul, lTensor_tmul, mul'_apply,
           TensorProduct.lid_tmul, one_smul]
@@ -147,19 +148,19 @@ class FrobeniusAlgebra (R A : Type*) [CommSemiring R] [NonUnitalNonAssocSemiring
     [SMulCommClass R A A] [IsScalarTower R A A] [Coalgebra R A] : Prop where
   /-- The Frobenius equation. -/
   lTensor_mul'_comp_assoc_comp_rTensor_comul :
-    lTensor A (mul' R A) ∘ₗ (TensorProduct.assoc R A A A) ∘ₗ rTensor A comul =
-      rTensor A (mul' R A) ∘ₗ (TensorProduct.assoc R A A A).symm ∘ₗ lTensor A comul
+    lTensor A μ[R] ∘ₗ (TensorProduct.assoc R A A A) ∘ₗ rTensor A δ =
+      rTensor A μ[R] ∘ₗ (TensorProduct.assoc R A A A).symm ∘ₗ lTensor A δ
 
 namespace FrobeniusAlgebra
 variable [FrobeniusAlgebra R A]
 
 theorem lTensor_mul'_comp_assoc_comp_rTensor_comul_eq_comul_comp_mul' :
-    lTensor A (mul' R A) ∘ₗ ϰ A A A ∘ₗ rTensor A comul = comul ∘ₗ mul' R A :=
+    lTensor A μ[R] ∘ₗ α A A A ∘ₗ rTensor A δ = δ ∘ₗ μ[R] :=
   lTensor_mul'_comp_assoc_comp_rTensor_comul_of
     FrobeniusAlgebra.lTensor_mul'_comp_assoc_comp_rTensor_comul
 
 theorem rTensor_mul'_comp_assoc_symm_comp_lTensor_comul_eq_comul_comp_mul :
-    rTensor A (mul' R A) ∘ₗ (ϰ A A A).symm ∘ₗ lTensor A comul = comul ∘ₗ mul' R A :=
+    rTensor A μ[R] ∘ₗ (α A A A).symm ∘ₗ lTensor A δ = δ ∘ₗ μ[R] :=
   lTensor_mul'_comp_assoc_comp_rTensor_comul (R := R) (A := A)
     ▸ lTensor_mul'_comp_assoc_comp_rTensor_comul_eq_comul_comp_mul'
 
@@ -168,8 +169,7 @@ variable {A : Type*} [Semiring A] [Algebra R A] [Coalgebra R A] [FrobeniusAlgebr
 
 /-- Composing the Frobenius equations with `Coalgebra.counit` and `Algebra.linearMap`. -/
 theorem rTensor_counit_comp_mul'_assoc_symm_comp_lTensor_comul_comp_algebraLinearMap :
-    rTensor A (counit ∘ₗ mul' R A) ∘ₗ (ϰ _ _ _).symm.toLinearMap ∘ₗ
-      lTensor A (comul ∘ₗ Algebra.linearMap R A) =
+    rTensor A (ε ∘ₗ μ[R]) ∘ₗ (α _ _ _).symm.toLinearMap ∘ₗ lTensor A (δ ∘ₗ η[R]) =
       (TensorProduct.comm _ _ _).toLinearMap := by
   simp_rw [lTensor_comp, ← comp_assoc (lTensor A (Algebra.linearMap R A)),
     rTensor_comp, LinearMap.comp_assoc _ (rTensor _ _),
@@ -180,8 +180,8 @@ theorem rTensor_counit_comp_mul'_assoc_symm_comp_lTensor_comul_comp_algebraLinea
 
 /-- Composing the Frobenius equations with `Coalgebra.counit` and `Algebra.linearMap`. -/
 theorem lTensor_counit_comp_mul_comp_assoc_comp_rTensor_comul_comp_algebraLinearMap :
-    lTensor A (counit ∘ₗ mul' R A) ∘ₗ (ϰ _ _ _).toLinearMap ∘ₗ
-      rTensor A (comul ∘ₗ Algebra.linearMap R A) = (TensorProduct.comm _ _ _).toLinearMap := by
+    lTensor A (ε ∘ₗ μ[R]) ∘ₗ (α _ _ _).toLinearMap ∘ₗ
+      rTensor A (δ ∘ₗ η[R]) = (TensorProduct.comm _ _ _).toLinearMap := by
   simp_rw [rTensor_comp, ← comp_assoc (rTensor A (Algebra.linearMap R A)),
     lTensor_comp, comp_assoc _ (lTensor _ _),
     lTensor_mul'_comp_assoc_comp_rTensor_comul_eq_comul_comp_mul',
