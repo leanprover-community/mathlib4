@@ -226,4 +226,18 @@ def ofBifunctor : BraidedCategory C where
   hexagon_reverse X Y Z :=
     (NatTrans.congr_app (NatTrans.congr_app (NatTrans.congr_app hexagon_reverse X) Y) Z)
 
-end CategoryTheory.BraidedCategory
+end BraidedCategory
+
+open BraidedCategory
+
+/--
+Alternative constructor for symmetric categories, where the symmetry of the braiding is phrased
+as an equality of natural transformation of bifunctors.
+-/
+def SymmetricCategory.ofCurried [BraidedCategory C]
+    (h : (curriedBraidingNatIso C).hom ≫ (flipFunctor _ _ _).map (curriedBraidingNatIso C).hom =
+      𝟙 _) :
+    SymmetricCategory C where
+  symmetry X Y := NatTrans.congr_app (NatTrans.congr_app h X) Y
+
+end CategoryTheory

@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Order.Max
 import Mathlib.Order.ULift
-import Mathlib.Tactic.Push
+import Mathlib.Tactic.ByCases
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Util.AssertExists
 
@@ -43,10 +43,9 @@ section OrderTop
 /-- An order is (noncomputably) either an `OrderTop` or a `NoTopOrder`. Use as
 `casesI topOrderOrNoTopOrder α`. -/
 noncomputable def topOrderOrNoTopOrder (α : Type*) [LE α] : OrderTop α ⊕' NoTopOrder α := by
-  by_cases H : ∀ a : α, ∃ b, ¬b ≤ a
+  by_cases! H : ∀ a : α, ∃ b, ¬b ≤ a
   · exact PSum.inr ⟨H⟩
-  · push_neg at H
-    letI : Top α := ⟨Classical.choose H⟩
+  · letI : Top α := ⟨Classical.choose H⟩
     exact PSum.inl ⟨Classical.choose_spec H⟩
 
 section LE
@@ -183,10 +182,9 @@ section OrderBot
 /-- An order is (noncomputably) either an `OrderBot` or a `NoBotOrder`. Use as
 `casesI botOrderOrNoBotOrder α`. -/
 noncomputable def botOrderOrNoBotOrder (α : Type*) [LE α] : OrderBot α ⊕' NoBotOrder α := by
-  by_cases H : ∀ a : α, ∃ b, ¬a ≤ b
+  by_cases! H : ∀ a : α, ∃ b, ¬a ≤ b
   · exact PSum.inr ⟨H⟩
-  · push_neg at H
-    letI : Bot α := ⟨Classical.choose H⟩
+  · letI : Bot α := ⟨Classical.choose H⟩
     exact PSum.inl ⟨Classical.choose_spec H⟩
 
 section LE
@@ -383,6 +381,7 @@ instance [∀ i, Bot (α' i)] : Bot (∀ i, α' i) :=
 theorem bot_apply [∀ i, Bot (α' i)] (i : ι) : (⊥ : ∀ i, α' i) i = ⊥ :=
   rfl
 
+@[push ←]
 theorem bot_def [∀ i, Bot (α' i)] : (⊥ : ∀ i, α' i) = fun _ => ⊥ :=
   rfl
 
@@ -397,6 +396,7 @@ instance [∀ i, Top (α' i)] : Top (∀ i, α' i) :=
 theorem top_apply [∀ i, Top (α' i)] (i : ι) : (⊤ : ∀ i, α' i) i = ⊤ :=
   rfl
 
+@[push ←]
 theorem top_def [∀ i, Top (α' i)] : (⊤ : ∀ i, α' i) = fun _ => ⊤ :=
   rfl
 

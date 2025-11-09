@@ -60,7 +60,7 @@ topological nilpotency by proving that, if the base ring is equipped with a *lin
 a power series is topologically nilpotent if and only if its constant coefficient is.
 This is lemma `MvPowerSeries.LinearTopology.isTopologicallyNilpotent_iff_constantCoeff`.
 
-Mathematically, everything proven in this files follows from that general statement. However,
+Mathematically, everything proven in this file follows from that general statement. However,
 formalizing this yields a few (minor) annoyances:
 
 - we would need to push the results in this file slightly lower in the import tree
@@ -73,7 +73,7 @@ formalizing this yields a few (minor) annoyances:
 
 Since the code duplication is rather minor (the interesting part of the proof is already extracted
 as `MvPowerSeries.coeff_eq_zero_of_constantCoeff_nilpotent`), we just leave this as is for now.
-But future contributors wishing to clean this up should feel free to give it a try !
+But future contributors wishing to clean this up should feel free to give it a try!
 
 -/
 
@@ -200,12 +200,12 @@ theorem variables_tendsto_zero [Semiring R] :
   classical
   simp only [tendsto_iff_coeff_tendsto, ← coeff_apply, coeff_X, coeff_zero]
   refine fun d ↦ tendsto_nhds_of_eventually_eq ?_
-  by_cases h : ∃ i, d = Finsupp.single i 1
+  by_cases! h : ∃ i, d = Finsupp.single i 1
   · obtain ⟨i, hi⟩ := h
     filter_upwards [eventually_cofinite_ne i] with j hj
     simp [hi, Finsupp.single_eq_single_iff, hj.symm]
   · simpa only [ite_eq_right_iff] using
-      Eventually.of_forall fun x h' ↦ (not_exists.mp h x h').elim
+      Eventually.of_forall fun x h' ↦ (h x h').elim
 
 theorem isTopologicallyNilpotent_of_constantCoeff_isNilpotent [CommSemiring R]
     {f : MvPowerSeries σ R} (hf : IsNilpotent (constantCoeff f)) :
@@ -359,8 +359,6 @@ theorem instCompleteSpace [CompleteSpace R] :
 @[scoped instance]
 theorem instIsUniformAddGroup [AddGroup R] [IsUniformAddGroup R] :
     IsUniformAddGroup (MvPowerSeries σ R) := Pi.instIsUniformAddGroup
-
-@[deprecated (since := "2025-03-27")] alias instUniformAddGroup := instIsUniformAddGroup
 
 end Uniformity
 

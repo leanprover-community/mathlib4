@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Filtered.Connected
+import Mathlib.CategoryTheory.Limits.Final.Connected
 import Mathlib.CategoryTheory.Limits.Types.Filtered
 import Mathlib.CategoryTheory.Limits.Sifted
 
@@ -235,7 +236,7 @@ theorem Functor.Final.exists_coeq_of_locally_small [IsFilteredOrEmpty C] [Final 
   obtain ⟨c', t₁, t₂, h⟩ := (Types.FilteredColimit.colimit_eq_iff.{v₁, v₁, v₁} _).mp this
   refine ⟨IsFiltered.coeq t₁ t₂, t₁ ≫ IsFiltered.coeqHom t₁ t₂, ?_⟩
   conv_rhs => rw [IsFiltered.coeq_condition t₁ t₂]
-  dsimp only [comp_obj, coyoneda_obj_obj, unop_op, Functor.comp_map, coyoneda_obj_map] at h
+  dsimp only [comp_obj, flip_obj_obj, yoneda_obj_obj, comp_map, flip_obj_map, yoneda_map_app] at h
   simp [reassoc_of% h]
 
 end LocallySmall
@@ -436,23 +437,19 @@ end Pi
 
 section Prod
 
-instance final_fst [IsFiltered D] : (Prod.fst C D).Final := by
-  let F : D ⥤ Discrete PUnit.{1} := (Functor.const _).obj (Discrete.mk .unit)
-  have hF : F.Final := Functor.final_of_isFiltered_of_pUnit _
-  change (Functor.prod (𝟭 C) F ⋙ (prod.rightUnitorEquivalence.{0} C).functor).Final
-  infer_instance
+namespace IsFiltered
 
-instance final_snd [IsFiltered C] : (Prod.snd C D).Final :=
-  inferInstanceAs ((Prod.braiding C D).functor ⋙ Prod.fst D C).Final
+attribute [local instance] IsFiltered.isConnected IsCofiltered.isConnected
 
-instance initial_fst [IsCofiltered D] : (Prod.fst C D).Initial := by
-  let F : D ⥤ Discrete PUnit.{1} := (Functor.const _).obj (Discrete.mk .unit)
-  have hF : F.Initial := Functor.initial_of_isCofiltered_pUnit _
-  change (Functor.prod (𝟭 C) F ⋙ (prod.rightUnitorEquivalence.{0} C).functor).Initial
-  infer_instance
+instance final_fst [IsFiltered D] : (Prod.fst C D).Final := inferInstance
 
-instance initial_snd [IsCofiltered C] : (Prod.snd C D).Initial :=
-  inferInstanceAs ((Prod.braiding C D).functor ⋙ Prod.fst D C).Initial
+instance final_snd [IsFiltered C] : (Prod.snd C D).Final := inferInstance
+
+instance initial_fst [IsCofiltered D] : (Prod.fst C D).Initial := inferInstance
+
+instance initial_snd [IsCofiltered C] : (Prod.snd C D).Initial := inferInstance
+
+end IsFiltered
 
 end Prod
 
