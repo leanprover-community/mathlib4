@@ -68,8 +68,8 @@ theorem supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson {x : R}
     _ ≤ _ := by simpa using add_le_add_right (by exact le_iSup_iff.mpr fun _ h ↦ h q') 1
 
 omit [IsNoetherianRing R] in
-/-- If $M$ is a finite module over a commutative ring $R$, $x \in M$ is not in any minimal prime of
-  $M$, then $\dim M/xM + 1 \le \dim M$. -/
+/-- If `M` is a finite module over a commutative ring `R`, `x ∈ M` is not in any minimal prime of
+  `M`, then `dim M/xM + 1 ≤ dim M`. -/
 theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
     (hn : ∀ p ∈ (annihilator R M).minimalPrimes, x ∉ p) :
     supportDim R (QuotSMulTop x M) + 1 ≤ supportDim R M := by
