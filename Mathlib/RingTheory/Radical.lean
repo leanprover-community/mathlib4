@@ -165,6 +165,7 @@ lemma radical_eq_iff_primeFactors_eq :
     radical a = radical b ↔ primeFactors a = primeFactors b :=
   ⟨fun h => by rw [← primeFactors_radical, h]; exact primeFactors_radical,
     fun h => by simp [radical, h]⟩
+@[deprecated (since := "2025-11-09")] alias radical_eq_of_primeFactors_eq := radical_eq_iff_primeFactors_eq.mpr
 
 theorem radical_eq_of_associated (h : Associated a b) : radical a = radical b :=
   radical_eq_iff_primeFactors_eq.mpr h.primeFactors_eq
