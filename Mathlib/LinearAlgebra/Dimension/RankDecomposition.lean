@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2025 Zichen Wang. All rights reserved.
+Copyright (c) 2025 Zichen Wang, Yi Yuan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Zichen Wang
+Authors: Zichen Wang, Yi Yuan
 -/
 import Mathlib.LinearAlgebra.Dimension.LinearMap
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
@@ -27,44 +27,22 @@ namespace LinearMap
 
 variable {C : Submodule K V} (h : IsCompl C (ker f))
 
-/-- `C × (ker f)` is isomorphic to the whole space -/
-def prodEquivOfC : (C × (ker f)) ≃ₗ[K] V :=
-  prodEquivOfIsCompl _ _ h
-
-lemma apply_ker_component_eq_zero (y : V) : f ((f.prodEquivOfC h).symm y).1 = f y := by
-  nth_rw 2 [← Submodule.IsCompl.projection_add_projection_eq_self h y]
-  rw [map_add, h.symm.projection_apply_mem y, add_zero]
-  rfl
-
 /-- When `V` decomposes as `ker f ⊕ C`, the basis is obtained by transporting the product of bases
 on the kernel and on its complement along `f.prodEquivOfC`. -/
 def decomposition_basis : Basis ((ofVectorSpaceIndex K C) ⊕
     (ofVectorSpaceIndex K (ker f))) K V :=
-  .map (.prod (ofVectorSpace K _) (ofVectorSpace K _)) (f.prodEquivOfC h)
-
-/-- The restriction of `f` to the kernel complement -/
-def ker_complement_restriction (C : Submodule K V) : C →ₗ[K] W :=
-  f.comp C.subtype
-
-lemma ker_complement_restriction_ker_eq_bot (h : IsCompl C (ker f)) :
-    ker (f.ker_complement_restriction C) = ⊥ := by
-  simpa [ker_complement_restriction, ker_comp, ← disjoint_iff_comap_eq_bot] using h.disjoint
-
-lemma ker_complement_restriction_injective (h : IsCompl C (ker f)) :
-    Function.Injective (f.ker_complement_restriction C) := by
-  simpa [← ker_eq_bot] using (ker_complement_restriction_ker_eq_bot f h)
+  .map (.prod (ofVectorSpace K _) (ofVectorSpace K _)) (prodEquivOfIsCompl _ _ h)
 
 /-- Given the basis of `C f` and the restriction map
 `f ∘ Submodule.subtype (C f)`, define the function that sends the
 basis indices to vectors of `W`. -/
-def ker_complement_basis_image (C : Submodule K V) :
-    ofVectorSpaceIndex K C → W :=
-  (f.ker_complement_restriction C) ∘ (ofVectorSpace K C)
+def ker_complement_basis_image (C : Submodule K V) : ofVectorSpaceIndex K C → W :=
+  (f.comp C.subtype) ∘ (ofVectorSpace K C)
 
 lemma linear_independent_ker_complement_basis_image (h : IsCompl C (ker f)) :
     LinearIndependent K (f.ker_complement_basis_image C) :=
   (ofVectorSpace K C).linearIndependent.map' _
-    (f.ker_complement_restriction_ker_eq_bot h)
+    (by simpa [ker_comp, ← disjoint_iff_comap_eq_bot] using h.disjoint)
 
 /-- A basis of `W` obtained by extending the image of the `C f` basis (which corresponds
 to `range f`) to a full basis via `Basis.sumExtend`. -/
@@ -75,21 +53,22 @@ def range_decomposition_basis (h : IsCompl C (ker f)) :
 
 /-- `C` is isomorphic to `range f` -/
 def CEquivRange : C ≃ₗ[K] (range f) := by
-  let g : C →ₗ[K] range f := codRestrict (range f) (f.ker_complement_restriction C)
+  let g : C →ₗ[K] range f := codRestrict (range f) (f.comp C.subtype)
     (fun x ↦ ⟨C.subtype x, rfl⟩)
   apply LinearEquiv.ofBijective g
   constructor
-  · simpa [← ker_eq_bot, g, ker_codRestrict] using (f.ker_complement_restriction_injective h)
+  · simpa [← ker_eq_bot, g, ker_codRestrict, ker_comp, ← disjoint_iff_comap_eq_bot] using h.disjoint
   intro ⟨_, y, hyx⟩
-  use ((f.prodEquivOfC h).2 y).1
-  simp [g, codRestrict, ← hyx, ker_complement_restriction, apply_ker_component_eq_zero]
-
-instance : DecidableEq (ofVectorSpaceIndex K C) := Classical.typeDecidableEq _
+  use ((prodEquivOfIsCompl _ _ h).2 y).1
+  simp [g, codRestrict, ← hyx]
+  nth_rw 2 [← Submodule.IsCompl.projection_add_projection_eq_self h y]
+  rw [map_add, h.symm.projection_apply_mem y, add_zero]
+  rfl
 
 lemma apply_C_basis_eq_range_basis (j) :
     f (f.decomposition_basis h (Sum.inl j)) = (f.range_decomposition_basis h (Sum.inl j)) := by
-  simp [decomposition_basis, prodEquivOfC, range_decomposition_basis, sumExtend,
-    Equiv.sumCongr, ker_complement_basis_image, ker_complement_restriction]
+  simp [decomposition_basis, range_decomposition_basis, sumExtend,
+    Equiv.sumCongr, ker_complement_basis_image]
 
 end LinearMap
 
@@ -105,9 +84,9 @@ variable [AddCommGroup M₂] [Module R M₂] [FiniteDimensional R M₂] (f : M�
 
 open Matrix LinearMap
 
+instance {C : Submodule R M₁} : DecidableEq (ofVectorSpaceIndex R C) := Classical.typeDecidableEq _
 
-theorem exists_basis_for_normal_form_abstract {C : Submodule R M₁}
-    (h : IsCompl C (LinearMap.ker f)) :
+theorem exists_basis_for_normal_form_abstract {C : Submodule R M₁} (h : IsCompl C (ker f)) :
   haveI : Finite ((ofVectorSpaceIndex R C) ⊕
       (sumExtendIndex (f.linear_independent_ker_complement_basis_image h))) :=
     Fintype.finite (FiniteDimensional.fintypeBasisIndex (f.range_decomposition_basis h))
@@ -121,8 +100,8 @@ theorem exists_basis_for_normal_form_abstract {C : Submodule R M₁}
   match i, j with
   | Sum.inl i', Sum.inl j' => simp [toMatrix_apply, f.apply_C_basis_eq_range_basis h j',
       Finsupp.single, Pi.single, Function.update, Matrix.one_apply]
-  | Sum.inr i', Sum.inr j' => simp [toMatrix_apply, decomposition_basis, prodEquivOfC]
-  | Sum.inl i', Sum.inr j' => simp [toMatrix_apply, decomposition_basis, prodEquivOfC]
+  | Sum.inr i', Sum.inr j' => simp [toMatrix_apply, decomposition_basis]
+  | Sum.inl i', Sum.inr j' => simp [toMatrix_apply, decomposition_basis]
   | Sum.inr i', Sum.inl j' => simp [toMatrix_apply, f.apply_C_basis_eq_range_basis h j']
 
 end
