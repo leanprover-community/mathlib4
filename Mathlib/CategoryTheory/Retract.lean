@@ -134,6 +134,30 @@ then `F.map f` is a retract of `F.map g` for any functor `F`. -/
 def map (F : C ⥤ D) : RetractArrow (F.map f) (F.map g) :=
   Retract.map h F.mapArrow
 
+/-- If a morphism `f` is a retract of `g`, then `f.op` is a retract of `g.op`. -/
+@[simps]
+def op : RetractArrow f.op g.op where
+  i.left := h.r.right.op
+  i.right := h.r.left.op
+  i.w := by simp [← op_comp]
+  r.left := h.i.right.op
+  r.right := h.i.left.op
+  r.w := by simp [← op_comp]
+  retract := by ext <;> simp [← op_comp]
+
+/-- If a morphism `f` in the opposite category is a retract of `g`,
+then `f.unop` is a retract of `g.unop`. -/
+@[simps]
+def unop {X Y Z W : Cᵒᵖ} {f : X ⟶ Y} {g : Z ⟶ W} (h : RetractArrow f g)
+ : RetractArrow f.unop g.unop where
+  i.left := h.r.right.unop
+  i.right := h.r.left.unop
+  i.w := by simp [← unop_comp]
+  r.left := h.i.right.unop
+  r.right := h.i.left.unop
+  r.w := by simp [← unop_comp]
+  retract := by ext <;> simp [← unop_comp]
+
 end RetractArrow
 
 namespace Iso

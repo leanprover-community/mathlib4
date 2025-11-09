@@ -401,28 +401,16 @@ theorem Measurable.prodMk {β γ} {_ : MeasurableSpace β} {_ : MeasurableSpace 
     {g : α → γ} (hf : Measurable f) (hg : Measurable g) : Measurable fun a : α => (f a, g a) :=
   Measurable.prod hf hg
 
-@[deprecated (since := "2025-03-05")]
-alias Measurable.prod_mk := Measurable.prodMk
-
 @[fun_prop]
 theorem Measurable.prodMap [MeasurableSpace δ] {f : α → β} {g : γ → δ} (hf : Measurable f)
     (hg : Measurable g) : Measurable (Prod.map f g) :=
   (hf.comp measurable_fst).prodMk (hg.comp measurable_snd)
 
-@[deprecated (since := "2025-03-05")]
-alias Measurable.prod_map := Measurable.prodMap
-
 theorem measurable_prodMk_left {x : α} : Measurable (@Prod.mk _ β x) :=
   measurable_const.prodMk measurable_id
 
-@[deprecated (since := "2025-03-05")]
-alias measurable_prod_mk_left := measurable_prodMk_left
-
 theorem measurable_prodMk_right {y : β} : Measurable fun x : α => (x, y) :=
   measurable_id.prodMk measurable_const
-
-@[deprecated (since := "2025-03-05")]
-alias measurable_prod_mk_right := measurable_prodMk_right
 
 theorem Measurable.of_uncurry_left {f : α → β → γ} (hf : Measurable (uncurry f)) {x : α} :
     Measurable (f x) :=
@@ -863,18 +851,22 @@ alias ⟨_, Measurable.setOf⟩ := measurableSet_setOf
 
 alias ⟨_, MeasurableSet.mem⟩ := measurable_mem
 
+@[fun_prop]
 lemma Measurable.not (hp : Measurable p) : Measurable (¬ p ·) :=
   measurableSet_setOf.1 hp.setOf.compl
 
+@[fun_prop]
 lemma Measurable.and (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a ∧ q a :=
   measurableSet_setOf.1 <| hp.setOf.inter hq.setOf
 
+@[fun_prop]
 lemma Measurable.or (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a ∨ q a :=
   measurableSet_setOf.1 <| hp.setOf.union hq.setOf
 
 lemma Measurable.imp (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a → q a :=
   measurableSet_setOf.1 <| hp.setOf.himp hq.setOf
 
+@[fun_prop]
 lemma Measurable.iff (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a ↔ q a :=
   measurableSet_setOf.1 <| by simp_rw [iff_iff_implies_and_implies]; exact hq.setOf.bihimp hp.setOf
 
@@ -882,6 +874,7 @@ lemma Measurable.forall [Countable ι] {p : ι → α → Prop} (hp : ∀ i, Mea
     Measurable fun a ↦ ∀ i, p i a :=
   measurableSet_setOf.1 <| by rw [setOf_forall]; exact MeasurableSet.iInter fun i ↦ (hp i).setOf
 
+@[fun_prop]
 lemma Measurable.exists [Countable ι] {p : ι → α → Prop} (hp : ∀ i, Measurable (p i)) :
     Measurable fun a ↦ ∃ i, p i a :=
   measurableSet_setOf.1 <| by rw [setOf_exists]; exact MeasurableSet.iUnion fun i ↦ (hp i).setOf
@@ -900,10 +893,10 @@ instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonCl
 
 lemma measurable_set_iff : Measurable g ↔ ∀ a, Measurable fun x ↦ a ∈ g x := measurable_pi_iff
 
-@[aesop safe 100 apply (rule_sets := [Measurable])]
+@[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
 lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s := measurable_pi_apply _
 
-@[aesop safe 100 apply (rule_sets := [Measurable])]
+@[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
 lemma measurable_set_notMem (a : α) : Measurable fun s : Set α ↦ a ∉ s :=
   (Measurable.of_discrete (f := Not)).comp <| measurable_set_mem a
 
