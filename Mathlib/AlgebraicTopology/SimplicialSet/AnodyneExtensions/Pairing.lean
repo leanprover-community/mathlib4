@@ -63,7 +63,7 @@ namespace Pairing
 
 variable {A} (P : A.Pairing)
 
-/-- A pairing is regular when each type (II) simplex
+/-- A pairing is proper when each type (II) simplex
 is uniquely a `1`-codimensional face of the corresponding (I)
 simplex. -/
 class IsProper where
@@ -100,6 +100,23 @@ instance : IsWellFounded _ P.AncestralRel where
   wf := P.wf
 
 end
+
+lemma exists_or (x : A.N) :
+    ∃ (y : P.II), x = y ∨ x = P.p y := by
+  have := Set.mem_univ x
+  rw [← P.union, Set.mem_union] at this
+  obtain h | h := this
+  · obtain ⟨y, hy⟩ := P.p.surjective ⟨x, h⟩
+    exact ⟨y, Or.inr (by rw [hy])⟩
+  · exact ⟨⟨_, h⟩, Or.inl rfl⟩
+
+lemma ne (x : P.I) (y : P.II) :
+    x.1 ≠ y.1 := by
+  obtain ⟨x, hx⟩ := x
+  obtain ⟨y, hy⟩ := y
+  rintro rfl
+  have : x ∈ P.I ∩ P.II := ⟨hx, hy⟩
+  simp [P.inter] at this
 
 end Pairing
 
