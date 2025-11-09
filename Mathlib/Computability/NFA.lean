@@ -443,6 +443,9 @@ def kstarStart : Set (Option σ) := {none} ∪ some '' M.start
 @[simp]
 def kstarAccept : Set (Option σ) := {none} ∪ some '' M.accept
 
+theorem kstartStates_start : M.kstarStates M.start = some '' M.start := by
+  simp [kstarStates, Set.image_union, Set.subset_preimage_image]
+
 theorem kstarStart_eq_kstarStates : M.kstarStart = {none} ∪ M.kstarStates M.start := by
   ext s
   cases s <;> simp [kstarStates]
@@ -514,6 +517,23 @@ theorem flatten_mem_acceptsFrom' {S : Set σ} {L : List (List α)} :
     rw [mem_acceptsFrom_iff_exists]
     sorry
 
+theorem flatten_mem_acceptsFrom'' {S : Set σ} {L : List (List α)} :
+    List.Forall (· ∈ M.accepts) L →
+    L.flatten ∈ M.kstar.acceptsFrom (M.kstarStates S) := by
+  simp [kstarStates, Set.image_union, max, SemilatticeSup.sup, Set.image_iUnion₂]
+  rw [mem_union, Set.mem_iUnion₂]
+  sorry
+
+theorem flatten_mem_acceptsFrom_start {L : List (List α)} :
+    List.Forall (fun z ↦ z ∈ M.accepts ∧ z ≠ []) L →
+    L.flatten ∈ M.kstar.acceptsFrom (some '' M.start) := by
+  induction L with
+  | nil =>
+    simp
+    sorry
+  | cons z L ih =>
+    sorry
+
 theorem flatten_mem_acceptsFrom {S : Set σ} {L : List (List α)} :
     List.Forall (· ∈ M.accepts) L →
     L.flatten ∈ M.kstar.acceptsFrom (M.kstarStates S) := by
@@ -547,6 +567,42 @@ theorem flatten_mem_evalFrom_loop {s : σ} {L : List (List α)} :
     rw [mem_evalFrom_iff_exists]
     sorry
 
+theorem mem_kstarStates_not_none {S : Set σ} : none ∉ M.kstarStates S := by
+  simp [kstarStates]
+
+theorem mem_stepSet_kstar_not_none {S : Set (Option σ)} {a : α} :
+    none ∉ M.kstar.stepSet S a := by
+  simp [stepSet]
+  intro so
+  cases so with
+  | none =>
+    simp
+  | some s =>
+    simp [mem_kstarStates_not_none]
+
+theorem mem_evalFrom_kstar_not_none {S : Set (Option σ)} {x : List α} :
+    x ≠ [] →
+    none ∉ M.kstar.evalFrom S x := by
+  induction x using List.twoStepInduction generalizing S with
+  | nil =>
+    simp
+  | singleton a =>
+    simp [mem_stepSet_kstar_not_none]
+  | cons_cons a b x _ ih =>
+    intro _
+    rw [evalFrom_cons]
+    apply ih
+    tauto
+
+theorem evalFrom_kstar_none {S : Set (Option σ)} {x : List α} :
+    none ∈ M.kstar.evalFrom S x → x = [] ∧ none ∈ S := by
+  cases x with
+  | nil =>
+    simp
+  | cons a x =>
+    intro h
+    obtain ⟨⟩ := mem_evalFrom_kstar_not_none (by tauto) h
+
 theorem acceptsFrom_kstar_none : M.kstar.acceptsFrom {none} = {[]} := by
   ext x
   constructor
@@ -559,6 +615,167 @@ theorem acceptsFrom_kstar_none : M.kstar.acceptsFrom {none} = {[]} := by
   · rw [acceptsFrom, Set.mem_setOf, Set.mem_singleton_iff]
     rintro rfl
     simp
+
+#check mem_evalFrom_iff_exists
+
+theorem mem_kstarStates_some {q : σ} {S : Set σ} :
+    some q ∈ M.kstarStates S → (q ∈ S ∨ q ∈ M.start) := by
+  simp [kstarStates]
+  tauto
+
+theorem mem_evalFrom_kstar_some {q : σ} {S : Set σ} {x : List α} :
+    some q ∈ M.kstar.evalFrom (M.kstarStates S) x →
+    (q ∈ M.evalFrom S x ∨ q ∈ M.evalFrom M.start x) := by
+  induction x generalizing q S with
+  | nil =>
+    simp
+    apply mem_kstarStates_some
+  | cons a x ih =>
+    simp [stepSet]
+    intro so hso hq
+    cases so with
+    | none =>
+      obtain ⟨⟩ := mem_kstarStates_not_none hso
+    | some s =>
+      simp at hq
+      specialize ih hq
+      rcases ih with (hq' | hq')
+      · rcases mem_kstarStates_some hso with (hs | hs)
+        · left
+          tauto
+        · right
+          tauto
+      · rcases mem_kstarStates_some hso with (hs | hs)
+        ·
+          sorry
+        · sorry
+
+theorem mem_evalFromFrom_kstar_state_wah_wah_wah {x : List α} {s t : σ} :
+    s ∈ M.accept →
+    t ∈ M.evalFrom M.start x →
+    some t ∈ M.kstar.evalFrom {some s} x := by
+  induction x using List.reverseRecOn generalizing s t with
+  | nil =>
+    simp
+    sorry
+  | append_singleton x a ih =>
+    simp
+    sorry
+
+theorem mem_evalFromFrom_kstar_state_wah_wah_wah_not_nil {x : List α} {s t : σ} :
+    x ≠ [] →
+    s ∈ M.accept →
+    t ∈ M.evalFrom M.start x →
+    some t ∈ M.kstar.evalFrom {some s} x := by
+  induction x using List.reverseRecOn generalizing s t with
+  | nil =>
+    simp
+  | append_singleton x a ih =>
+    simp [stepSet]
+    intro haccepts q hxq hstept
+    by_cases hnil : x = []
+    · subst x; clear ih
+      simp at *
+      simp [kstarStates]
+      sorry
+    · specialize ih hnil haccepts hxq
+      exists (some q)
+      constructor
+      { assumption }
+      simp [kstarStates]
+      tauto
+
+theorem mem_acceptsFrom_kstar_state_wah_wah_wah {x : List α} {q : σ} :
+    q ∈ M.accept →
+    x ∈ M.acceptsFrom M.start →
+    x ∈ M.kstar.acceptsFrom {some q} := by
+  induction x using List.reverseRecOn generalizing q with
+  | nil =>
+    simp
+    tauto
+  | append_singleton x a ih =>
+    simp [stepSet]
+    simp_rw [↑Set.mem_iUnion₂]
+    simp_rw [↑mem_acceptsFrom_nil]
+    rintro hq ⟨i, hi, s, h, hs⟩
+    exists (some i)
+    simp
+    sorry
+
+theorem plz_work_rev {s : σ} {S : Set σ} {L : List (List α)} :
+    s ∈ S →
+    s ∈ M.accept →
+    -- should I add (z ≠ [])?
+    List.Forall (· ∈ M.accepts) L →
+    L.flatten ∈ M.kstar.acceptsFrom (M.kstarStates S) := by
+  intro hs haccept
+  induction L using List.reverseRecOn generalizing s S hs haccept with
+  | nil =>
+    simp [kstarStates]
+    exists s
+    tauto
+  | append_singleton L z ih =>
+    simp
+    intros hL hz
+    specialize ih hs haccept hL
+    rw [mem_acceptsFrom] at ih
+    rw [mem_acceptsFrom_iff_exists]
+    rcases ih with ⟨q, hq, hflatten⟩
+    exists q
+    constructor
+    { assumption }
+    simp at hq
+    have hsanez := mem_acceptsFrom_kstar_sanity hz
+    rw [kstartStates_start] at hsanez
+    sorry
+
+theorem plz_work {s : σ} {S : Set σ} {L : List (List α)} :
+    s ∈ S →
+    s ∈ M.accept →
+    List.Forall (· ∈ M.accepts) L →
+    L.flatten ∈ M.kstar.acceptsFrom (M.kstarStates S) := by
+  intro hs haccept
+  induction L generalizing s S hs haccept with
+  | nil =>
+    simp [kstarStates]
+    exists s
+    tauto
+  | cons z L ih =>
+    simp
+    intro hz' hL
+    rw [accepts_acceptsFrom] at hz'
+    have hz := mem_acceptsFrom_kstar_sanity hz'
+    rw [mem_acceptsFrom] at hz
+    rcases hz with ⟨s', hs', hz⟩
+    simp at hs'
+    rcases hs' with (rfl | ⟨q, hq, rfl⟩)
+    · obtain ⟨rfl, hnone⟩ := evalFrom_kstar_none hz
+      simp
+      apply ih hs haccept hL
+    · rw [mem_acceptsFrom_iff_exists]
+      specialize ih hz hq hL
+      sorry
+    rw [mem_acceptsFrom_iff_exists] at *
+    simp [kstarStates, Set.image_union, Set.image_iUnion₂] at *
+    rcases ih with ⟨t, (⟨t', hz', rfl⟩ | ⟨⟨t', hz', ht'⟩, ⟨q, hq, rfl⟩⟩), hflatten⟩
+    · exists some t'
+      constructor
+      ·
+        sorry
+      · assumption
+    · sorry
+
+theorem flatten_mem_acceptsFrom_start_anger {L : List (List α)} :
+    List.Forall (· ∈ M.accepts) L →
+    L.flatten ∈ M.kstar.acceptsFrom (some '' M.start) := by
+  induction L with
+  | nil =>
+    simp
+    sorry
+  | cons z L ih =>
+    simp
+    intro hz hL
+    sorry
 
 -- Proof idea from Mathlib#15651 by Tom Kranz
 -- maybe need `kstarStates` in thm statement?
