@@ -195,6 +195,47 @@ scoped[Topology] notation (name := closure_of) "closure[" t "]" => @closure _ t
 scoped[Topology] notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "]" =>
   @Continuous _ _ t₁ t₂
 
+namespace TopologicalSpace
+open Topology Lean Meta PrettyPrinter.Delaborator SubExpr
+
+/-- Delaborate unary notation referring to non-standard topologies. -/
+def delabUnary (mkStx : Term → DelabM Term) : Delab :=
+  withOverApp 2 <| whenPPOption Lean.getPPNotation do
+    let α ← withNaryArg 0 getExpr
+    let .some synthInst ← Meta.trySynthInstance (← Meta.mkAppM ``TopologicalSpace #[α]) | failure
+    let inst ← withNaryArg 1 getExpr
+    if ← Meta.isDefEq inst synthInst then failure
+    let instD ← withNaryArg 1 delab
+    mkStx instD
+
+/-- Delaborate binary notation referring to non-standard topologies. -/
+def delabBinary (mkStx : Term → Term → DelabM Term) : Delab :=
+  withOverApp 4 <| whenPPOption Lean.getPPNotation do
+    let α ← withNaryArg 0 getExpr
+    let β ← withNaryArg 1 getExpr
+    let .some synthInstα ← Meta.trySynthInstance (← Meta.mkAppM ``TopologicalSpace #[α]) | failure
+    let .some synthInstβ ← Meta.trySynthInstance (← Meta.mkAppM ``TopologicalSpace #[β]) | failure
+    let instα ← withNaryArg 2 getExpr
+    let instβ ← withNaryArg 3 getExpr
+    if (← Meta.isDefEq instα synthInstα) ∧ (← Meta.isDefEq instβ synthInstβ) then failure
+    let instDα ← withNaryArg 2 delab
+    let instDβ ← withNaryArg 3 delab
+    mkStx instDα instDβ
+
+/-- Delaborator for `IsOpen[_]`. -/
+@[app_delab IsOpen] def delabIsOpen : Delab := delabUnary fun x ↦ `(IsOpen[$x])
+
+/-- Delaborator for `IsClosed[_]`. -/
+@[app_delab IsClosed] def delabIsClosed : Delab := delabUnary fun x ↦ `(IsClosed[$x])
+
+/-- Delaborator for `closure[_]`. -/
+@[app_delab closure] def delabClosure : Delab := delabUnary fun x ↦ `(closure[$x])
+
+/-- Delaborator for `Continuous[_, _]`. -/
+@[app_delab Continuous] def delabContinuous : Delab := delabBinary fun x y ↦ `(Continuous[$x, $y])
+
+end TopologicalSpace
+
 /-- The property `BaireSpace α` means that the topological space `α` has the Baire property:
 any countable intersection of open dense subsets is dense.
 Formulated here when the source space is ℕ.
