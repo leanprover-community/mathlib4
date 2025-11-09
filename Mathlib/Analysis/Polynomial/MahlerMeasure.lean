@@ -26,6 +26,9 @@ properties.
 
 - `Polynomial.mahlerMeasure_mul`: the Mahler measure of the product of two polynomials is the
   product of their Mahler measures.
+- `mahlerMeasure_eq_leadingCoeff_mul_prod_roots`: the Mahler measure of a polynomial is the absolute
+  value of its leading coefficient times the product of the absolute values of its roots lying
+  outside the unit disk.
 -/
 
 namespace Polynomial
