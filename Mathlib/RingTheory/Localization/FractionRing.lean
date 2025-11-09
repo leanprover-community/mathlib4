@@ -496,7 +496,8 @@ end fieldEquivOfAlgEquiv
 
 section fieldEquivOfAlgEquivHom
 
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+variable (G : Type*) [Group G] {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+  [MulSemiringAction G B] [SMulCommClass G A B]
   (K L : Type*) [Field K] [Field L]
   [Algebra A K] [Algebra B L] [IsFractionRing A K] [IsFractionRing B L]
   [Algebra A L] [IsScalarTower A B L] [Algebra K L] [IsScalarTower A K L]

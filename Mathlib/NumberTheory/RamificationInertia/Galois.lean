@@ -125,7 +125,7 @@ theorem exists_smul_eq_of_isGaloisGroup : ∃ σ : G, σ • P = Q := by
   exact ⟨σ, hs.symm⟩
 
 @[deprecated (since := "2025-10-26")]
-alias exists_map_eq_of_isGaloisGroup := exists_smul_eq_of_isGaloisGroup
+alias exists_map_eq_of_isGalois := exists_smul_eq_of_isGaloisGroup
 
 instance isPretransitive_of_isGaloisGroup : MulAction.IsPretransitive G (primesOver p B) where
   exists_smul_eq := by
