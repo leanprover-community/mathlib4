@@ -73,7 +73,7 @@ variable {J κ}
 
 /-- Given a `κ`-bounded diagram `D` in a category `J`, an object `e : J`
 is terminal if for any object `j` of `D`, there is a unique morphism `j ⟶ e` in `D`,
-that these unique morphisms are compatible with precomposition with morphims in `D`,
+that these unique morphisms are compatible with precomposition with morphisms in `D`,
 and that `𝟙 e` belongs to `D`. -/
 structure IsTerminal (D : Diagram J κ) (e : J) where
   prop_id : D.W (𝟙 e)
