@@ -18,7 +18,7 @@ where `stdSimplex ℝ (Fin (n + 1))` is the standard topological `n`-simplex,
 defined as the subtype of `Fin (n + 1) → ℝ` consisting of functions `f`
 such that `0 ≤ f i` for all `i` and `∑ i, f i = 1`.
 
-The *geometric realization* functor `SSet.toTop.obj` is left adjoint to `TopCat.toSSet`.
+The *geometric realization* functor `SSet.toTop` is left adjoint to `TopCat.toSSet`.
 It is the left Kan extension of `SimplexCategory.toTop` along the Yoneda embedding.
 
 ## Main definitions
