@@ -510,7 +510,6 @@ theorem exists_eq_pow_of_exponent_coprime_of_pow_eq_pow
   constructor
   · apply factorization_eq_n_smul_c_factorization_of_eq_c_pow_n a ha n
     ext p
-    --simp [c_factorization] -- TODO This can be removed if necessary.
     exact (Nat.mul_div_cancel' (mul_factorization_p_eq_and_n_dvd_a_factorization_p p).2).symm
   · apply factorization_eq_n_smul_c_factorization_of_eq_c_pow_n b hb m
     ext p
