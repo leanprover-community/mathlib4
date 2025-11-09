@@ -217,7 +217,7 @@ theorem stmts₁_trans {q₁ q₂ : Stmt Γ Λ σ} : q₁ ∈ stmts₁ q₂ → 
     · exact Finset.mem_insert_of_mem (Finset.mem_union_right _ (IH₂ h₁₂))
   | goto l => subst h₁₂; exact h₀₁
   | halt => subst h₁₂; exact h₀₁
-  | load  _ q IH | _ _ _ q IH =>
+  | load _ q IH | _ _ _ q IH =>
     rcases h₁₂ with (rfl | h₁₂)
     · unfold stmts₁ at h₀₁
       exact h₀₁

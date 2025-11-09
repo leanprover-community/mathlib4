@@ -399,12 +399,6 @@ theorem aemeasurable_inv_iff {G : Type*} [InvolutiveInv G] [MeasurableSpace G] [
     {f : α → G} : AEMeasurable (fun x => (f x)⁻¹) μ ↔ AEMeasurable f μ :=
   ⟨fun h => by simpa only [inv_inv] using h.inv, fun h => h.inv⟩
 
-@[deprecated (since := "2025-04-09")]
-alias measurable_inv_iff₀ := measurable_inv_iff
-
-@[deprecated (since := "2025-04-09")]
-alias aemeasurable_inv_iff₀ := aemeasurable_inv_iff
-
 @[to_additive]
 instance Pi.measurableInv {ι : Type*} {α : ι → Type*} [∀ i, Inv (α i)]
     [∀ i, MeasurableSpace (α i)] [∀ i, MeasurableInv (α i)] : MeasurableInv (∀ i, α i) :=

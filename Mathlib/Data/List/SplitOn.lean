@@ -51,7 +51,8 @@ theorem splitOnP_spec (as : List α) :
   | cons a as' ih =>
     rw [splitOnP_cons, filter]
     by_cases h : p a
-    · rw [if_pos h, h, map, cons_append, zipWith, nil_append, flatten, cons_append, cons_inj_right]
+    · rw [if_pos h, h, map, cons_append, zipWith, nil_append, flatten_cons, cons_append,
+        cons_inj_right]
       exact ih
     · rw [if_neg h, eq_false_of_ne_true h, flatten_zipWith (splitOnP_ne_nil _ _)
         (append_ne_nil_of_right_ne_nil _ (cons_ne_nil [] [])), cons_inj_right]
@@ -101,7 +102,7 @@ theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ 
   cases tl
   · suffices hd.splitOn x = [hd] by simpa [flatten]
     exact splitOnP_eq_single _ _ (by grind)
-  · simp only [intersperse_cons₂, singleton_append, flatten]
+  · simp only [intersperse_cons₂, singleton_append, flatten_cons]
     specialize ih _ _
     · grind
     · grind

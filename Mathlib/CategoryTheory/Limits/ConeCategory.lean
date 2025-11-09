@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 /-!
 # Limits and the category of (co)cones
 
-This files contains results that stem from the limit API. For the definition and the category
+This file contains results that stem from the limit API. For the definition and the category
 instance of `Cone`, please refer to `CategoryTheory/Limits/Cones.lean`.
 
 ## Main results

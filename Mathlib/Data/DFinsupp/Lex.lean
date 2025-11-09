@@ -36,10 +36,14 @@ theorem _root_.Pi.lex_eq_dfinsupp_lex {r : ι → ι → Prop} {s : ∀ i, α i 
 
 theorem lex_def {r : ι → ι → Prop} {s : ∀ i, α i → α i → Prop} {a b : Π₀ i, α i} :
     DFinsupp.Lex r s a b ↔ ∃ j, (∀ d, r d j → a d = b d) ∧ s j (a j) (b j) :=
-  Iff.rfl
+  .rfl
 
 instance [LT ι] [∀ i, LT (α i)] : LT (Lex (Π₀ i, α i)) :=
   ⟨fun f g ↦ DFinsupp.Lex (· < ·) (fun _ ↦ (· < ·)) (ofLex f) (ofLex g)⟩
+
+theorem lex_lt_iff [LT ι] [∀ i, LT (α i)] {a b : Lex (Π₀ i, α i)} :
+    a < b ↔ ∃ i, (∀ j, j < i → a j = b j) ∧ a i < b i :=
+  .rfl
 
 theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (α i)] (r) [IsStrictOrder ι r] {x y : Π₀ i, α i}
     (hlt : x < y) : ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i := by
@@ -117,6 +121,7 @@ theorem toLex_monotone : Monotone (@toLex (Π₀ i, α i)) := by
     fun j hj ↦ notMem_neLocus.1 fun h ↦ (Finset.min'_le _ _ h).not_gt hj,
     (h _).lt_of_ne (mem_neLocus.1 <| Finset.min'_mem _ _)⟩
 
+@[deprecated lex_lt_iff (since := "2025-10-12")]
 theorem lt_of_forall_lt_of_lt (a b : Lex (Π₀ i, α i)) (i : ι) :
     (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b :=
   fun h1 h2 ↦ ⟨i, h1, h2⟩

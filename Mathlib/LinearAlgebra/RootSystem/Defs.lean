@@ -123,9 +123,6 @@ variable (P : RootPairing ι R M N) (i j : ι)
 lemma toLinearMap_eq_toPerfectPairing (x : M) (y : N) :
     P.toLinearMap x y = P.toLinearMap x y := rfl
 
-@[deprecated (since := "2025-04-20"), nolint synTaut]
-alias toLin_toPerfectPairing := toLinearMap_eq_toPerfectPairing
-
 /-- If we interchange the roles of `M` and `N`, we still have a root pairing. -/
 @[simps!, simps toLinearMap]
 protected def flip : RootPairing ι R N M where
@@ -495,7 +492,7 @@ lemma neg_coroot_mem :
   P.flip.neg_root_mem i
 
 variable {P} in
-lemma smul_coroot_eq_of_root_eq_smul [Finite ι] [NoZeroSMulDivisors ℤ N] (i j : ι) (t : R)
+lemma smul_coroot_eq_of_root_eq_smul [Finite ι] [IsAddTorsionFree N] (i j : ι) (t : R)
     (h : P.root j = t • P.root i) :
     t • P.coroot j = P.coroot i := by
   have hij : t * P.pairing i j = 2 := by simpa using ((P.coroot' j).congr_arg h).symm
@@ -508,7 +505,7 @@ lemma smul_coroot_eq_of_root_eq_smul [Finite ι] [NoZeroSMulDivisors ℤ N] (i j
   simp [Module.preReflection_apply, coreflection_apply, h, smul_comm _ t, mul_smul]
 
 variable {P} in
-@[simp] lemma coroot_eq_smul_coroot_iff [Finite ι] [NoZeroSMulDivisors ℤ M] [NoZeroSMulDivisors ℤ N]
+@[simp] lemma coroot_eq_smul_coroot_iff [Finite ι] [IsAddTorsionFree M] [IsAddTorsionFree N]
     {i j : ι} {t : R} :
     P.coroot i = t • P.coroot j ↔ P.root j = t • P.root i :=
   ⟨fun h ↦ (P.flip.smul_coroot_eq_of_root_eq_smul j i t h).symm,

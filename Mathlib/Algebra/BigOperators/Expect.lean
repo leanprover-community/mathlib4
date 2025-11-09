@@ -396,7 +396,7 @@ See `Function.Bijective.expect_comp` for a version without `h`. -/
 lemma expect_bijective (e : ι → κ) (he : Bijective e) (f : ι → M) (g : κ → M)
     (h : ∀ i, f i = g (e i)) : 𝔼 i, f i = 𝔼 i, g i :=
   expect_nbij e (fun _ _ ↦ mem_univ _) (fun i _ ↦ h i) he.injective.injOn <| by
-    simpa using he.surjective.surjOn _
+    simpa using he.surjective
 
 /-- `Fintype.expect_equiv` is a specialization of `Finset.expect_bij` that automatically fills in
 most arguments.

@@ -70,7 +70,7 @@ def equivQuotMaximalIdealOfIsLocalization : R ⧸ p ≃+* Rₚ ⧸ maximalIdeal 
       Ideal.Quotient.algebraMap_eq, Ideal.mk_ker, IsLocalization.AtPrime.comap_maximalIdeal Rₚ p]
   · intro x
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective p.primeCompl x
+    obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq p.primeCompl x
     obtain ⟨s', hs⟩ := Ideal.Quotient.mk_surjective (I := p) (Ideal.Quotient.mk p s)⁻¹
     simp only [IsScalarTower.algebraMap_eq R Rₚ (Rₚ ⧸ _),
       Ideal.Quotient.algebraMap_eq, RingHom.comp_apply]
@@ -140,7 +140,7 @@ def quotMapEquivQuotMapMaximalIdealOfIsLocalization : S ⧸ pS ≃+* Sₚ ⧸ pS
       comap_map_eq_map_of_isLocalization_algebraMapSubmonoid]
   · intro x
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective
+    obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq
       (Algebra.algebraMapSubmonoid S p.primeCompl) x
     obtain ⟨α, hα : α ∉ p, e⟩ := s.prop
     obtain ⟨β, γ, hγ, hβ⟩ : ∃ β γ, γ ∈ p ∧ α * β = 1 + γ := by

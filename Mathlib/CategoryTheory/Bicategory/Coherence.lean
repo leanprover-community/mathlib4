@@ -18,7 +18,7 @@ The proof is almost the same as the proof of the coherence theorem for monoidal 
 has been previously formalized in mathlib, which is based on the proof described by Ilya Beylin
 and Peter Dybjer. The idea is to view a path on a quiver as a normal form of a 1-morphism in the
 free bicategory on the same quiver. A normalization procedure is then described by
-`normalize : Pseudofunctor (FreeBicategory B) (LocallyDiscrete (Paths B))`, which is a
+`normalize : FreeBicategory B ⥤ᵖ (LocallyDiscrete (Paths B))`, which is a
 pseudofunctor from the free bicategory to the locally discrete bicategory on the path category.
 It turns out that this pseudofunctor is locally an equivalence of categories, and the coherence
 theorem follows immediately from this fact.
@@ -178,7 +178,7 @@ theorem normalizeAux_nil_comp {a b c : B} (f : Hom a b) (g : Hom b c) :
 
 /-- The normalization pseudofunctor for the free bicategory on a quiver `B`. -/
 def normalize (B : Type u) [Quiver.{v + 1} B] :
-    Pseudofunctor (FreeBicategory B) (LocallyDiscrete (Paths B)) where
+    FreeBicategory B ⥤ᵖ (LocallyDiscrete (Paths B)) where
   obj a := ⟨a⟩
   map f := ⟨normalizeAux nil f⟩
   map₂ η := eqToHom <| Discrete.ext <| normalizeAux_congr nil η
@@ -224,7 +224,7 @@ def inclusionMapCompAux {a b : B} :
 free bicategory.
 -/
 def inclusion (B : Type u) [Quiver.{v + 1} B] :
-    Pseudofunctor (LocallyDiscrete (Paths B)) (FreeBicategory B) :=
+    LocallyDiscrete (Paths B) ⥤ᵖ (FreeBicategory B) :=
   { -- All the conditions for 2-morphisms are trivial thanks to the coherence theorem!
     preinclusion B with
     mapId := fun _ => Iso.refl _

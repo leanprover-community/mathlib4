@@ -104,7 +104,7 @@ variable [∀ i, Div (G i)]
 instance instDiv : Div (∀ i, G i) where div f g i := f i / g i
 
 @[to_additive (attr := simp)]
-lemma div_apply (f g : ∀ i, G i) (i : ι) : (f / g) i = f i / g i :=rfl
+lemma div_apply (f g : ∀ i, G i) (i : ι) : (f / g) i = f i / g i := rfl
 
 @[to_additive (attr := push ←)]
 lemma div_def (f g : ∀ i, G i) : f / g = fun i ↦ f i / g i := rfl

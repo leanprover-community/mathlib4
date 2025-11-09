@@ -425,17 +425,11 @@ noncomputable def toHomeomorph {f : X → Y} (hf : IsEmbedding f) :
   Equiv.ofInjective f hf.injective |>.toHomeomorphOfIsInducing <|
     IsInducing.subtypeVal.of_comp_iff.mp hf.toIsInducing
 
-@[deprecated (since := "2025-04-16")]
-alias _root_.Homeomorph.ofIsEmbedding := toHomeomorph
-
 /-- A surjective embedding is a homeomorphism. -/
 @[simps! apply]
 noncomputable def toHomeomorphOfSurjective {f : X → Y}
     (hf : IsEmbedding f) (hsurj : Function.Surjective f) : X ≃ₜ Y :=
   Equiv.ofBijective f ⟨hf.injective, hsurj⟩ |>.toHomeomorphOfIsInducing hf.toIsInducing
-
-@[deprecated (since := "2025-04-16")]
-alias toHomeomorph_of_surjective := toHomeomorphOfSurjective
 
 /-- A set is homeomorphic to its image under any embedding. -/
 noncomputable def homeomorphImage {f : X → Y} (hf : IsEmbedding f) (s : Set X) : s ≃ₜ f '' s :=
@@ -454,7 +448,7 @@ theorem continuous_symm_of_equiv_compact_to_t2 [CompactSpace X] [T2Space Y] {f :
   rw [continuous_iff_isClosed]
   intro C hC
   have hC' : IsClosed (f '' C) := (hC.isCompact.image hf).isClosed
-  rwa [Equiv.image_eq_preimage] at hC'
+  rwa [Equiv.image_eq_preimage_symm] at hC'
 
 /-- Continuous equivalences from a compact space to a T2 space are homeomorphisms.
 

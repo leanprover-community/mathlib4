@@ -58,10 +58,7 @@ lemma toIsOrderedMonoid : IsOrderedMonoid R where
 
 -- TODO: make it an instance
 lemma toIsOrderedRing : IsOrderedRing R where
-  zero_le_one := zero_le _
   add_le_add_left _ _ := add_le_add_left
-  mul_le_mul_of_nonneg_left _ _ _ h _ := mul_le_mul_left' h _
-  mul_le_mul_of_nonneg_right _ _ _ h _ := mul_le_mul_right' h _
 
 @[simp]
 protected theorem mul_pos [NoZeroDivisors R] {a b : R} :

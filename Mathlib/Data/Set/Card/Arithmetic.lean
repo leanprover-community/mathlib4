@@ -82,7 +82,7 @@ theorem exists_union_disjoint_cardinal_eq_of_even (he : Even s.ncard) :
   classical
   rw [ncard_eq_toFinset_card s hs] at he
   obtain ⟨t, u, hutu, hdtu, hctu⟩ := Finset.exists_disjoint_union_of_even_card he
-  use t.toSet, u.toSet
+  use t, u
   simp [← Finset.coe_union, *]
 
 theorem exists_union_disjoint_ncard_eq_of_even (he : Even s.ncard) :
@@ -115,12 +115,11 @@ lemma ncard_iUnion_of_finite [Finite ι] {s : ι → Set α} (hs : ∀ i, (s i).
 lemma Finite.encard_biUnion {t : Set ι} (ht : t.Finite) {s : ι → Set α}
     (hs : t.PairwiseDisjoint s) : (⋃ i ∈ t, s i).encard = ∑ᶠ i ∈ t, (s i).encard := by
   classical
-  by_cases h : ∀ i ∈ t, (s i).Finite
+  by_cases! h : ∀ i ∈ t, (s i).Finite
   · have : (⋃ i ∈ t, s i).Finite := ht.biUnion (fun i hi ↦ h i hi)
     rw [← this.cast_ncard_eq, ncard_biUnion ht h hs,
       ← finsum_mem_congr rfl fun i hi ↦ (h i hi).cast_ncard_eq, Nat.cast_finsum_mem ht]
-  · simp only [not_forall] at h
-    obtain ⟨i, hi, (hn : (s i).Infinite)⟩ := h
+  · obtain ⟨i, hi, (hn : (s i).Infinite)⟩ := h
     rw [← Set.insert_diff_self_of_mem hi,
       finsum_mem_insert _ (notMem_diff_of_mem <| mem_singleton i) ht.diff]
     simp [hn]

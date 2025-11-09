@@ -48,7 +48,7 @@ This is consistent with the convention for the Grothendieck construction on 1-fu
 ## Future work / TODO
 
 1. Once the bicategory of pseudofunctors has been defined, show that this construction forms a
-pseudofunctor from `Pseudofunctor (LocallyDiscrete 𝒮) Catᵒᵖ` to `Cat`.
+pseudofunctor from `LocallyDiscrete 𝒮 ⥤ᵖ Catᵒᵖ` to `Cat`.
 2. Deduce the results in `CategoryTheory.Grothendieck` as a specialization of
    `Pseudofunctor.Grothendieck`.
 3. Dualize all `CoGrothendieck` results to `Grothendieck`.
@@ -70,7 +70,7 @@ variable {𝒮 : Type u₁} [Category.{v₁} 𝒮]
 /-- The type of objects in the fibered category associated to a pseudofunctor from a
 1-category to Cat. -/
 @[ext]
-structure Grothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮) Cat.{v₂, u₂}) where
+structure Grothendieck (F : LocallyDiscrete 𝒮 ⥤ᵖ Cat.{v₂, u₂}) where
   /-- The underlying object in the base category. -/
   base : 𝒮
   /-- The object in the fiber of the base object. -/
@@ -78,7 +78,7 @@ structure Grothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮) Cat.{v₂, u₂
 
 namespace Grothendieck
 
-variable {F : Pseudofunctor (LocallyDiscrete 𝒮) Cat.{v₂, u₂}}
+variable {F : LocallyDiscrete 𝒮 ⥤ᵖ Cat.{v₂, u₂}}
 
 /-- Notation for the Grothendieck category associated to a pseudofunctor `F`. -/
 scoped prefix:75 "∫ " => Grothendieck
@@ -111,7 +111,7 @@ end Grothendieck
 /-- The type of objects in the fibered category associated to a contravariant
 pseudofunctor from a 1-category to Cat. -/
 @[ext]
-structure CoGrothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) where
+structure CoGrothendieck (F : LocallyDiscrete 𝒮ᵒᵖ ⥤ᵖ Cat.{v₂, u₂}) where
   /-- The underlying object in the base category. -/
   base : 𝒮
   /-- The object in the fiber of the base object. -/
@@ -119,7 +119,7 @@ structure CoGrothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v�
 
 namespace CoGrothendieck
 
-variable {F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
+variable {F : LocallyDiscrete 𝒮ᵒᵖ ⥤ᵖ Cat.{v₂, u₂}}
 
 /-- Notation for the CoGrothendieck category associated to a pseudofunctor `F`. -/
 scoped prefix:75 "∫ᶜ " => CoGrothendieck
@@ -190,7 +190,7 @@ variable (F)
 /-- The projection `∫ᶜ F ⥤ 𝒮` given by projecting both objects and homs to the first
 factor. -/
 @[simps]
-def forget (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) : ∫ᶜ F ⥤ 𝒮 where
+def forget (F : LocallyDiscrete 𝒮ᵒᵖ ⥤ᵖ Cat.{v₂, u₂}) : ∫ᶜ F ⥤ 𝒮 where
   obj X := X.base
   map f := f.base
 
@@ -199,8 +199,8 @@ section
 attribute [local simp]
   Strict.leftUnitor_eqToIso Strict.rightUnitor_eqToIso Strict.associator_eqToIso
 
-variable {F} {G : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
-  {H : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
+variable {F} {G : LocallyDiscrete 𝒮ᵒᵖ ⥤ᵖ Cat.{v₂, u₂}}
+  {H : LocallyDiscrete 𝒮ᵒᵖ ⥤ᵖ Cat.{v₂, u₂}}
 
 /-- The CoGrothendieck construction is functorial: a strong natural transformation `α : F ⟶ G`
 induces a functor `CoGrothendieck.map : ∫ᶜ F ⥤ ∫ᶜ G`. -/

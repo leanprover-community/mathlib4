@@ -9,19 +9,19 @@ import Mathlib.Data.List.Basic
 /-!
 # Lattice structure of lists
 
-This files prove basic properties about `List.disjoint`, `List.union`, `List.inter` and
+This file proves basic properties about `List.disjoint`, `List.union`, `List.inter` and
 `List.bagInter`, which are defined in core Lean and `Data.List.Defs`.
 
 `l₁ ∪ l₂` is the list where all elements of `l₁` have been inserted in `l₂` in order. For example,
-`[0, 0, 1, 2, 2, 3] ∪ [4, 3, 3, 0] = [1, 2, 4, 3, 3, 0]`
+`[0, 0, 1, 2, 2, 3] ∪ [4, 3, 3, 0] = [1, 2, 4, 3, 3, 0]`.
 
 `l₁ ∩ l₂` is the list of elements of `l₁` in order which are in `l₂`. For example,
-`[0, 0, 1, 2, 2, 3] ∪ [4, 3, 3, 0] = [0, 0, 3]`
+`[0, 0, 1, 2, 2, 3] ∩ [4, 3, 3, 0] = [0, 0, 3]`.
 
 `List.bagInter l₁ l₂` is the list of elements that are in both `l₁` and `l₂`,
 counted with multiplicity and in the order they appear in `l₁`.
 As opposed to `List.inter`, `List.bagInter` copes well with multiplicity. For example,
-`bagInter [0, 1, 2, 3, 2, 1, 0] [1, 0, 1, 4, 3] = [0, 1, 3, 1]`
+`bagInter [0, 1, 2, 3, 2, 1, 0] [1, 0, 1, 4, 3] = [0, 1, 3, 1]`.
 -/
 
 

@@ -71,7 +71,7 @@ theorem HasFiniteFPowerSeriesOnBall.mk' {f : E → F} {p : FormalMultilinearSeri
 
 /-- Given a function `f : E → F`, a formal multilinear series `p` and `n : ℕ`, we say that
 `f` has `p` as a finite power series around `x` if `f (x + y) = ∑' pₙ yⁿ` for all `y` in a
-neighborhood of `0`and `pₙ = 0` for `n ≤ m`. -/
+neighborhood of `0` and `pₙ = 0` for `n ≤ m`. -/
 def HasFiniteFPowerSeriesAt (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) (x : E) (n : ℕ) :=
   ∃ r, HasFiniteFPowerSeriesOnBall f p x n r
 

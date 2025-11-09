@@ -263,7 +263,6 @@ instance {M : Type*} [AddCommMonoid M] [Module ℝ M] : Module ℝ≥0 M :=
 
 /-- An `Algebra` over `ℝ` restricts to an `Algebra` over `ℝ≥0`. -/
 instance {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
-  smul := (· • ·)
   commutes' r x := by simp [Algebra.commutes]
   smul_def' r x := by simp [← Algebra.smul_def (r : ℝ) x, smul_def]
   algebraMap := (algebraMap ℝ A).comp (toRealHom : ℝ≥0 →+* ℝ)
@@ -349,9 +348,6 @@ theorem mk_natCast (n : ℕ) : @Eq ℝ≥0 (⟨(n : ℝ), n.cast_nonneg⟩ : ℝ
 @[simp]
 theorem _root_.Real.toNNReal_coe_nat (n : ℕ) : Real.toNNReal n = n :=
   NNReal.eq <| by simp [Real.coe_toNNReal]
-
-@[deprecated Real.toNNReal_coe_nat (since := "2025-03-12")]
-alias toNNReal_coe_nat := Real.toNNReal_coe_nat
 
 @[simp]
 theorem _root_.Real.toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
@@ -906,7 +902,7 @@ theorem coe_toNNReal_le (x : ℝ) : (toNNReal x : ℝ) ≤ |x| :=
 
 theorem cast_natAbs_eq_nnabs_cast (n : ℤ) : (n.natAbs : ℝ≥0) = nnabs n := by
   ext
-  rw [NNReal.coe_natCast, Int.cast_natAbs, Real.coe_nnabs, Int.cast_abs]
+  rw [NNReal.coe_natCast, Nat.cast_natAbs, Real.coe_nnabs, Int.cast_abs]
 
 /-- Every real number nonnegative or nonpositive, phrased using `ℝ≥0`. -/
 lemma nnreal_dichotomy (r : ℝ) : ∃ x : ℝ≥0, r = x ∨ r = -x := by

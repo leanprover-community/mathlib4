@@ -22,19 +22,11 @@ theorem isUniformGroup_sInf {us : Set (UniformSpace G)} (h : ∀ u ∈ us, @IsUn
     uniformContinuous_sInf_rng.mpr fun u hu =>
       uniformContinuous_sInf_dom₂ hu hu (@IsUniformGroup.uniformContinuous_div G u _ (h u hu))
 
-@[deprecated (since := "2025-03-31")] alias uniformAddGroup_sInf := isUniformAddGroup_sInf
-@[to_additive existing, deprecated
-  (since := "2025-03-31")] alias uniformGroup_sInf := isUniformGroup_sInf
-
 @[to_additive]
 theorem isUniformGroup_iInf {ι : Sort*} {us' : ι → UniformSpace G}
     (h' : ∀ i, @IsUniformGroup G (us' i) _) : @IsUniformGroup G (⨅ i, us' i) _ := by
   rw [← sInf_range]
   exact isUniformGroup_sInf (Set.forall_mem_range.mpr h')
-
-@[deprecated (since := "2025-03-31")] alias uniformAddGroup_iInf := isUniformAddGroup_iInf
-@[to_additive existing, deprecated
-  (since := "2025-03-31")] alias uniformGroup_iInf := isUniformGroup_iInf
 
 @[to_additive]
 theorem isUniformGroup_inf {u₁ u₂ : UniformSpace G} (h₁ : @IsUniformGroup G u₁ _)
@@ -42,10 +34,6 @@ theorem isUniformGroup_inf {u₁ u₂ : UniformSpace G} (h₁ : @IsUniformGroup 
   rw [inf_eq_iInf]
   refine isUniformGroup_iInf fun b => ?_
   cases b <;> assumption
-
-@[deprecated (since := "2025-03-31")] alias uniformAddGroup_inf := isUniformAddGroup_inf
-@[to_additive existing, deprecated
-  (since := "2025-03-31")] alias uniformGroup_inf := isUniformGroup_inf
 
 end LatticeOps
 
@@ -59,11 +47,6 @@ lemma IsUniformInducing.isUniformGroup [UniformSpace G] [UniformSpace H]
   uniformContinuous_div := by
     simp_rw [hf.uniformContinuous_iff, Function.comp_def, map_div]
     exact uniformContinuous_div.comp (hf.uniformContinuous.prodMap hf.uniformContinuous)
-
-@[deprecated (since := "2025-03-30")]
-alias IsUniformInducing.uniformAddGroup := IsUniformInducing.isUniformAddGroup
-@[to_additive existing, deprecated (since := "2025-03-30")]
-alias IsUniformInducing.uniformGroup := IsUniformInducing.isUniformGroup
 
 @[to_additive]
 protected theorem IsUniformGroup.comap {u : UniformSpace H} [IsUniformGroup H]
@@ -81,11 +64,6 @@ instance Prod.instIsUniformGroup [UniformSpace G] [hG : IsUniformGroup G]
     IsUniformGroup (G × H) := by
   rw [instUniformSpaceProd]
   exact isUniformGroup_inf (.comap <| MonoidHom.fst G H) (.comap <| MonoidHom.snd G H)
-
-@[deprecated (since := "2025-03-31")] alias Prod.instUniformAddGroup :=
-  Prod.instIsUniformAddGroup
-@[to_additive existing, deprecated
-  (since := "2025-03-31")] alias Prod.instUniformGroup := Prod.instIsUniformGroup
 
 @[to_additive]
 instance Pi.instIsUniformGroup {ι : Type*} {G : ι → Type*} [∀ i, UniformSpace (G i)]

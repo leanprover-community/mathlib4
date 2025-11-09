@@ -67,7 +67,7 @@ theorem card_iSup_Iio_le_sum_card {o : Ordinal.{u}} (f : Iio o → Ordinal.{max 
 theorem card_iSup_Iio_le_card_mul_iSup {o : Ordinal.{u}} (f : Iio o → Ordinal.{max u v}) :
     (⨆ a : Iio o, f a).card ≤ Cardinal.lift.{v} o.card * ⨆ a : Iio o, (f a).card := by
   apply (card_iSup_Iio_le_sum_card f).trans
-  convert ← sum_le_iSup_lift _
+  convert ← sum_le_lift_mk_mul_iSup _
   · exact mk_toType o
   · exact (enumIsoToType o).symm.iSup_comp (g := fun x ↦ (f x).card)
 

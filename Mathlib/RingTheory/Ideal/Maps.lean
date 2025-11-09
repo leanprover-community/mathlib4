@@ -608,11 +608,9 @@ protected theorem map_mul {R} [Semiring R] [FunLike F R S] [RingHomClass F R S]
       mul_le.2 fun r hri s hsj =>
         show (f (r * s)) ∈ map f I * map f J by
           rw [map_mul]; exact mul_mem_mul (mem_map_of_mem f hri) (mem_map_of_mem f hsj))
-    (span_mul_span (↑f '' ↑I) (↑f '' ↑J) ▸ (span_le.2 <|
-      Set.iUnion₂_subset fun _ ⟨r, hri, hfri⟩ =>
-        Set.iUnion₂_subset fun _ ⟨s, hsj, hfsj⟩ =>
-          Set.singleton_subset_iff.2 <|
-            hfri ▸ hfsj ▸ by rw [← map_mul]; exact mem_map_of_mem f (mul_mem_mul hri hsj)))
+    (span_mul_span (↑f '' ↑I) (↑f '' ↑J) ▸ (span_le.2 <| by
+      rintro _ ⟨_, ⟨r, hri, rfl⟩, _, ⟨s, hsj, rfl⟩, rfl⟩
+      simp_rw [← map_mul]; exact mem_map_of_mem f (mul_mem_mul hri hsj)))
 
 /-- The pushforward `Ideal.map` as a (semi)ring homomorphism. -/
 @[simps]
@@ -717,6 +715,9 @@ theorem one_notMem_ker [Nontrivial S] (f : F) : (1 : R) ∉ ker f := by
 
 theorem ker_ne_top [Nontrivial S] (f : F) : ker f ≠ ⊤ :=
   (Ideal.ne_top_iff_one _).mpr <| one_notMem_ker f
+
+lemma ker_eq_top_of_subsingleton [Subsingleton S] (f : F) : ker f = ⊤ :=
+  eq_top_iff.mpr fun _ _ ↦ Subsingleton.elim _ _
 
 lemma _root_.Pi.ker_ringHom {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R i)]
     (φ : ∀ i, S →+* R i) : ker (Pi.ringHom φ) = ⨅ i, ker (φ i) := by

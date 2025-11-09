@@ -943,10 +943,10 @@ variable (n₁ n₂ : ℕ) (C₁ C₂ : Subalgebra A B) [h₁ : IsCyclotomicExte
   [h₂ : IsCyclotomicExtension {n₂} A C₂]
 
 theorem IsCyclotomicExtension.le_of_dvd [NeZero n₂] (h : n₁ ∣ n₂) : C₁ ≤ C₂ := by
-  by_cases hn₁ : n₁ = 0
-  · rw [hn₁, zero_dvd_iff] at h
-    exact False.elim <| NeZero.ne n₂ h
-  have : NeZero n₁ := ⟨hn₁⟩
+  have : NeZero n₁ := by
+    constructor
+    rintro rfl
+    exact NeZero.ne n₂ <| eq_zero_of_zero_dvd h
   obtain ⟨ζ₂, hζ₂⟩ := h₂.1 rfl (NeZero.ne n₂)
   replace hζ₂ := hζ₂.map_of_injective (FaithfulSMul.algebraMap_injective C₂ B)
   obtain ⟨d, hd⟩ := h

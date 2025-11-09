@@ -342,10 +342,6 @@ def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrLeftEquiv (e : M �
   left_inv f := by ext; simp [Function.comp_def]
   right_inv f := by ext; simp [Function.comp_def]
 
-@[deprecated (since := "2025-04-16")]
-alias _root_.ContinuousLinearEquiv.continuousAlternatingMapComp :=
-  ContinuousLinearEquiv.continuousAlternatingMapCongrLeftEquiv
-
 /-- A continuous linear equivalence of codomains
 defines an equivalence between continuous alternating maps. -/
 @[simps -fullyApplied apply]
@@ -356,14 +352,10 @@ def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrRightEquiv (e : N 
   left_inv f := by ext; simp [(· ∘ ·)]
   right_inv f := by ext; simp [(· ∘ ·)]
 
-@[deprecated (since := "2025-04-16")]
-alias _root_.ContinuousLinearEquiv.compContinuousAlternatingMap :=
-  ContinuousLinearEquiv.continuousAlternatingMapCongrRightEquiv
-
-set_option linter.deprecated false in
 @[simp]
 theorem _root_.ContinuousLinearEquiv.compContinuousAlternatingMap_coe
-    (e : N ≃L[R] N') (f : M [⋀^ι]→L[R] N) : ⇑(e.compContinuousAlternatingMap f) = e ∘ f :=
+    (e : N ≃L[R] N') (f : M [⋀^ι]→L[R] N) :
+    ⇑(e.continuousAlternatingMapCongrRightEquiv f) = e ∘ f :=
   rfl
 
 /-- Continuous linear equivalences between domains and codomains

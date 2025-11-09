@@ -30,8 +30,8 @@ theorem infinite_pigeonhole {β α : Type u} (f : β → α) (h₁ : ℵ₀ ≤ 
     apply mk_univ.not_lt
     rw [← preimage_univ, ← iUnion_of_singleton, preimage_iUnion]
     exact
-      mk_iUnion_le_sum_mk.trans_lt
-        ((sum_le_iSup _).trans_lt <| mul_lt_of_lt h₁ (h₂.trans_le <| cof_ord_le _) (iSup_lt h₂ h))
+      mk_iUnion_le_sum_mk.trans_lt <| (sum_le_mk_mul_iSup _).trans_lt <|
+        mul_lt_of_lt h₁ (h₂.trans_le <| cof_ord_le _) (iSup_lt h₂ h)
   obtain ⟨x, h⟩ := this
   refine ⟨x, h.antisymm' ?_⟩
   rw [le_mk_iff_exists_set]

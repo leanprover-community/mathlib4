@@ -42,7 +42,7 @@ variable [Group G] {a x y : G}
 
 @[to_additive (attr := simp)] lemma zpow_right (h : SemiconjBy a x y) :
     ∀ m : ℤ, SemiconjBy a (x ^ m) (y ^ m)
-  | (n : ℕ)    => by simp [zpow_natCast, h.pow_right n]
+  | (n : ℕ) => by simp [zpow_natCast, h.pow_right n]
   | .negSucc n => by
     simp only [zpow_negSucc, inv_right_iff]
     apply pow_right h

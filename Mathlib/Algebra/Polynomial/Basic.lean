@@ -459,6 +459,9 @@ theorem C_0 : C (0 : R) = 0 := by simp
 theorem C_1 : C (1 : R) = 1 :=
   rfl
 
+theorem C_ofNat (n : ℕ) [n.AtLeastTwo] : C ofNat(n) = (ofNat(n) : R[X]) :=
+  rfl
+
 theorem C_mul : C (a * b) = C a * C b :=
   C.map_mul a b
 
@@ -1214,7 +1217,7 @@ protected instance repr [Repr R] [DecidableEq R] : Repr R[X] :=
           if coeff p n = 1
           then (80, "X ^ " ++ Nat.repr n)
           else (70, "C " ++ reprArg (coeff p n) ++ " * X ^ " ++ Nat.repr n))
-      (p.support.sort (· ≤ ·))
+      p.support.sort
     match termPrecAndReprs with
     | [] => "0"
     | [(tprec, t)] => if prec ≥ tprec then Lean.Format.paren t else t

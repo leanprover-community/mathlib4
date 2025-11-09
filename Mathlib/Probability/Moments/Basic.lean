@@ -199,9 +199,6 @@ lemma mgf_pos_iff [hμ : NeZero μ] :
 lemma exp_cgf [hμ : NeZero μ] (hX : Integrable (fun ω ↦ exp (t * X ω)) μ) :
     exp (cgf X μ t) = mgf X μ t := by rw [cgf, exp_log (mgf_pos' hμ.out hX)]
 
-@[deprecated (since := "2025-03-08")]
-alias exp_cgf_of_neZero := exp_cgf
-
 lemma mgf_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'} {Y : Ω' → Ω} {X : Ω → ℝ}
     (hY : AEMeasurable Y μ) {t : ℝ} (hX : AEStronglyMeasurable (fun ω ↦ exp (t * X ω)) (μ.map Y)) :
     mgf X (μ.map Y) t = mgf (X ∘ Y) μ t := by
@@ -233,7 +230,7 @@ theorem mgf_const_add (α : ℝ) : mgf (fun ω => α + X ω) μ t = exp (t * α)
   dsimp
   rw [mul_add, exp_add]
 
-theorem mgf_add_const (α : ℝ) : mgf (fun ω => X ω + α) μ t = mgf X μ t *  exp (t * α) := by
+theorem mgf_add_const (α : ℝ) : mgf (fun ω => X ω + α) μ t = mgf X μ t * exp (t * α) := by
   simp only [add_comm, mgf_const_add, mul_comm]
 
 lemma mgf_add_measure {ν : Measure Ω}
@@ -372,7 +369,7 @@ theorem iIndepFun.cgf_sum {X : ι → Ω → ℝ}
     cgf (∑ i ∈ s, X i) μ t = ∑ i ∈ s, cgf (X i) μ t := by
   have : IsProbabilityMeasure μ := h_indep.isProbabilityMeasure
   simp_rw [cgf]
-  rw [← log_prod _ _ fun j hj => ?_]
+  rw [← log_prod fun j hj => ?_]
   · rw [h_indep.mgf_sum h_meas]
   · exact (mgf_pos (h_int j hj)).ne'
 

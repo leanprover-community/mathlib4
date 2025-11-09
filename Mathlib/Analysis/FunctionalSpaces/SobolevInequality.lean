@@ -116,7 +116,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
   innermost integral. This is done in a single step with `MeasureTheory.lmarginal_insert'`,
   but in fact hides a repeated application of Fubini's theorem.
   The integrand is a product of `|s|+2` factors, in `|s|+1` of them we integrate over one
-  additional variable. We split of the factor that integrates over `xᵢ`,
+  additional variable. We split off the factor that integrates over `xᵢ`,
   and apply Hölder's inequality to the remaining factors (whose powers sum exactly to 1).
   After reordering factors, and combining two factors into one we obtain the right-hand side. -/
   calc T μ p f (insert i s)
@@ -542,9 +542,9 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
     _ = C * ∫⁻ x, ‖fderiv ℝ v x‖ₑ ∂μ := by rw [eLpNorm_one_eq_lintegral_enorm]
     _ ≤ C * γ * ∫⁻ x, ‖u x‖ₑ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖ₑ ∂μ := by
       rw [mul_assoc, ← lintegral_const_mul γ]
-      gcongr
-      simp_rw [← mul_assoc]
-      exact enorm_fderiv_norm_rpow_le (hu.differentiable le_rfl) h1γ
+      · gcongr
+        simp_rw [← mul_assoc]
+        exact enorm_fderiv_norm_rpow_le (hu.differentiable le_rfl) h1γ
       dsimp [enorm]
       fun_prop
     _ ≤ C * γ * ((∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) *

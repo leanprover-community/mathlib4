@@ -101,7 +101,7 @@ instance (H : Subgroup G) [H.Normal] :
   inferInstanceAs (MulSemiringAction (G ⧸ H) (FixedPoints.subring B H))
 
 instance (H : Subgroup G) [H.Normal] :
-    SMulCommClass (G ⧸ H) A (FixedPoints.subalgebra A B H)  where
+    SMulCommClass (G ⧸ H) A (FixedPoints.subalgebra A B H) where
   smul_comm := Quotient.ind fun g r h ↦ Subtype.ext (smul_comm g r h.1)
 
 instance (H : Subgroup G) [H.Normal] [Algebra.IsInvariant A B G] :
@@ -256,7 +256,7 @@ private theorem fixed_of_fixed1_aux1 [DecidableEq (Ideal B)] :
     have hr : r = ∑ i ∈ Finset.range (k + 1), Polynomial.monomial i (f.coeff (i + j)) := rfl
     rw [← Ideal.neg_mem_iff, neg_sub, hr, Finset.sum_range_succ', Polynomial.eval_add,
         Polynomial.eval_monomial, zero_add, pow_zero, mul_one, add_sub_cancel_right]
-    simp only [ ← Polynomial.monomial_mul_X]
+    simp only [← Polynomial.monomial_mul_X]
     rw [← Finset.sum_mul, Polynomial.eval_mul_X]
     exact Ideal.mul_mem_left (g • Q) _ (hbP g hg)
   refine ⟨a, a - r.eval b, ha, ?_, fun h ↦ ?_⟩

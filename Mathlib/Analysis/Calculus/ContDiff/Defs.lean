@@ -86,7 +86,7 @@ We use the notation `E [×n]→L[𝕜] F` for the space of continuous multilinea
 values in `F`. This is the space in which the `n`-th derivative of a function from `E` to `F` lives.
 
 In this file, we denote `(⊤ : ℕ∞) : WithTop ℕ∞` with `∞`, and `⊤ : WithTop ℕ∞` with `ω`. To
-avoid ambiguities with the two tops, the theorems name use either `infty` or `omega`.
+avoid ambiguities with the two tops, the theorem names use either `infty` or `omega`.
 These notations are scoped in `ContDiff`.
 
 ## Tags

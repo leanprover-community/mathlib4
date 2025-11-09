@@ -120,18 +120,9 @@ alias ⟨_, WCovBy.toDual⟩ := toDual_wcovBy_toDual_iff
 
 alias ⟨_, WCovBy.ofDual⟩ := ofDual_wcovBy_ofDual_iff
 
-theorem OrderEmbedding.wcovBy_of_apply {α β : Type*} [Preorder α] [Preorder β]
-    (f : α ↪o β) {x y : α} (h : f x ⩿ f y) : x ⩿ y := by
-  use f.le_iff_le.1 h.1
-  intro a
-  rw [← f.lt_iff_lt, ← f.lt_iff_lt]
-  apply h.2
+@[deprecated (since := "2025-11-07")] alias OrderEmbedding.wcovBy_of_apply := WCovBy.of_image
 
-theorem OrderIso.map_wcovBy {α β : Type*} [Preorder α] [Preorder β]
-    (f : α ≃o β) {x y : α} : f x ⩿ f y ↔ x ⩿ y := by
-  use f.toOrderEmbedding.wcovBy_of_apply
-  conv_lhs => rw [← f.symm_apply_apply x, ← f.symm_apply_apply y]
-  exact f.symm.toOrderEmbedding.wcovBy_of_apply
+@[deprecated (since := "2025-11-07")] alias OrderIso.map_wcovBy := apply_wcovBy_apply_iff
 
 end Preorder
 
@@ -309,18 +300,9 @@ theorem apply_covBy_apply_iff {E : Type*} [EquivLike E α β] [OrderIsoClass E �
 theorem covBy_of_eq_or_eq (hab : a < b) (h : ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b) : a ⋖ b :=
   ⟨hab, fun c ha hb => (h c ha.le hb.le).elim ha.ne' hb.ne⟩
 
-theorem OrderEmbedding.covBy_of_apply {α β : Type*} [Preorder α] [Preorder β]
-    (f : α ↪o β) {x y : α} (h : f x ⋖ f y) : x ⋖ y := by
-  use f.lt_iff_lt.1 h.1
-  intro a
-  rw [← f.lt_iff_lt, ← f.lt_iff_lt]
-  apply h.2
+@[deprecated (since := "2025-11-07")] alias OrderEmbedding.covBy_of_apply := CovBy.of_image
 
-theorem OrderIso.map_covBy {α β : Type*} [Preorder α] [Preorder β]
-    (f : α ≃o β) {x y : α} : f x ⋖ f y ↔ x ⋖ y := by
-  use f.toOrderEmbedding.covBy_of_apply
-  conv_lhs => rw [← f.symm_apply_apply x, ← f.symm_apply_apply y]
-  exact f.symm.toOrderEmbedding.covBy_of_apply
+@[deprecated (since := "2025-11-07")] alias OrderIso.map_covBy := apply_covBy_apply_iff
 
 end Preorder
 
@@ -419,10 +401,7 @@ alias ⟨CovBy.le_iff_lt_right, _⟩ := covBy_iff_le_iff_lt_right
 of `Set.Ioi b'`. -/
 lemma LT.lt.exists_disjoint_Iio_Ioi (h : a < b) :
     ∃ a' > a, ∃ b' < b, ∀ x < a', ∀ y > b', x < y := by
-  by_cases h' : a ⋖ b
-  · exact ⟨b, h, a, h, fun x hx y hy => hx.trans_le <| h'.ge_of_gt hy⟩
-  · rcases h.exists_lt_lt h' with ⟨c, ha, hb⟩
-    exact ⟨c, ha, c, hb, fun _ h₁ _ => lt_trans h₁⟩
+  grind
 
 end LinearOrder
 
@@ -458,6 +437,9 @@ variable {s t : Set α} {a : α}
 
 @[simp] lemma covBy_insert (ha : a ∉ s) : s ⋖ insert a s :=
   (wcovBy_insert _ _).covBy_of_lt <| ssubset_insert ha
+
+@[simp] lemma empty_covBy_singleton (a : α) : ∅ ⋖ ({a} : Set α) :=
+  insert_empty_eq (β := Set α) a ▸ covBy_insert <| notMem_empty a
 
 @[simp] lemma sdiff_singleton_covBy (ha : a ∈ s) : s \ {a} ⋖ s :=
   ⟨sdiff_lt (singleton_subset_iff.2 ha) <| singleton_ne_empty _, (sdiff_singleton_wcovBy _ _).2⟩

@@ -92,7 +92,7 @@ namespace Forward
 
 /-!
 
-# The forward hexagon identity
+### The forward hexagon identity
 
 Given a braiding in the form of a natural isomorphism of bifunctors
 `β : curriedTensor C ≅ (curriedTensor C).flip` (i.e. `(β.app X₁).app X₂ : X₁ ⊗ X₂ ≅ X₂ ⊗ X₁`),
@@ -148,7 +148,7 @@ namespace Reverse
 
 /-!
 
-# The reverse hexagon identity
+### The reverse hexagon identity
 
 Given a braiding in the form of a natural isomorphism of bifunctors
 `β : curriedTensor C ≅ (curriedTensor C).flip` (i.e. `(β.app X₁).app X₂ : X₁ ⊗ X₂ ≅ X₂ ⊗ X₁`),

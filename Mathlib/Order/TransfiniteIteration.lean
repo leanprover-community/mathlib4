@@ -104,15 +104,7 @@ lemma top_mem_range_transfiniteIterate
     · exact (hφ' i hi).le
   obtain ⟨j₁, j₂, hj, eq⟩ : ∃ (j₁ j₂ : J) (hj : j₁ < j₂),
       transfiniteIterate φ j₁ i₀ = transfiniteIterate φ j₂ i₀ := by
-    dsimp [Function.Injective] at H
-    simp only [not_forall] at H
-    obtain ⟨j₁, j₂, eq, hj⟩ := H
-    by_cases hj' : j₁ < j₂
-    · exact ⟨j₁, j₂, hj', eq⟩
-    · simp only [not_lt] at hj'
-      obtain hj' | rfl := hj'.lt_or_eq
-      · exact ⟨j₂, j₁, hj', eq.symm⟩
-      · simp at hj
+    grind [Function.Injective]
   by_contra!
   suffices transfiniteIterate φ j₁ i₀ < transfiniteIterate φ j₂ i₀ by
     simp only [eq, lt_self_iff_false] at this

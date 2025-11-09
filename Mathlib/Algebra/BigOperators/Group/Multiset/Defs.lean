@@ -58,6 +58,10 @@ theorem prod_toList (s : Multiset M) : s.toList.prod = s.prod := by
   rw [prod_coe]
 
 @[to_additive (attr := simp, grind =)]
+theorem prod_map_toList (s : Multiset ι) (f : ι → M) : (s.toList.map f).prod = (s.map f).prod := by
+  rw [← Multiset.prod_coe, ← Multiset.map_coe, coe_toList]
+
+@[to_additive (attr := simp, grind =)]
 theorem prod_zero : @prod M _ 0 = 1 :=
   rfl
 

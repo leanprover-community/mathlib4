@@ -30,14 +30,13 @@ section OrderedAddCommGroupWithOne
 variable [AddCommGroupWithOne R] [PartialOrder R] [AddLeftMono R]
 variable [ZeroLEOneClass R]
 
+@[gcongr]
 lemma cast_mono : Monotone (Int.cast : ℤ → R) := by
   intro m n h
   rw [← sub_nonneg] at h
   lift n - m to ℕ using h with k hk
   rw [← sub_nonneg, ← cast_sub, ← hk, cast_natCast]
   exact k.cast_nonneg'
-
-@[gcongr] protected lemma GCongr.intCast_mono {m n : ℤ} (hmn : m ≤ n) : (m : R) ≤ n := cast_mono hmn
 
 variable [NeZero (1 : R)] {m n : ℤ}
 
@@ -100,12 +99,7 @@ lemma nneg_mul_add_sq_of_abs_le_one (n : ℤ) (hx : |x| ≤ 1) : (0 : R) ≤ n *
   · simp [le_total 0 x]
   · exact Or.inl ⟨mod_cast h.le, hnx h⟩
 
--- TODO: move to a better place
-omit [LinearOrder R] [IsStrictOrderedRing R] in
-lemma cast_natAbs : (n.natAbs : R) = |n| := by
-  cases n
-  · simp
-  · rw [abs_eq_natAbs, natAbs_negSucc, cast_succ, cast_natCast, cast_succ]
+@[deprecated (since := "2025-11-07")] alias cast_natAbs := Nat.cast_natAbs
 
 end LinearOrderedRing
 end Int

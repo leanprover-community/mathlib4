@@ -114,14 +114,6 @@ section LinearOrderedCommGroupWithZero
 variable [LinearOrderedCommGroupWithZero α] {a b c d : α} {m n : ℕ}
 
 -- See note [lower instance priority]
-instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosMono : MulPosMono α where
-  elim _a _b _c hbc := mul_le_mul_right' hbc _
-
--- See note [lower instance priority]
-instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulMono : PosMulMono α where
-  elim _a _b _c hbc := mul_le_mul_left' hbc _
-
--- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulReflectLE :
     PosMulReflectLE α where
   elim a b c hbc := by simpa [a.2.ne'] using mul_le_mul_left' hbc a⁻¹
@@ -135,17 +127,13 @@ instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosReflectLE :
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulReflectLT :
     PosMulReflectLT α where elim _a _b _c := lt_of_mul_lt_mul_left'
 
-#adaptation_note /-- 2025-03-29 https://github.com/leanprover/lean4/issues/7717 Needed to add `dsimp only` -/
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulStrictMono :
-    PosMulStrictMono α where
-  elim a b c hbc := by dsimp only; by_contra! h; exact hbc.not_ge <| (mul_le_mul_iff_right₀ a.2).1 h
+    PosMulStrictMono α := PosMulReflectLE.toPosMulStrictMono
 
-#adaptation_note /-- 2025-03-29 https://github.com/leanprover/lean4/issues/7717 Needed to add `dsimp only` -/
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosStrictMono :
-    MulPosStrictMono α where
-  elim a b c hbc := by dsimp only; by_contra! h; exact hbc.not_ge <| (mul_le_mul_iff_left₀ a.2).1 h
+    MulPosStrictMono α := MulPosReflectLE.toMulPosStrictMono
 
 @[simp]
 theorem Units.zero_lt (u : αˣ) : (0 : α) < u :=
@@ -296,7 +284,10 @@ variable [LT α] {x y : WithZero α} {a b : α}
 /-- The order on `WithZero α`, defined by `⊥ < ↑a` and `a < b → ↑a < ↑b`. -/
 instance (priority := 10) instLT : LT (WithZero α) := WithBot.instLT
 
-lemma lt_def : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b := WithBot.lt_def
+lemma lt_def : x < y ↔ x = 0 ∧ (∃ b : α, y = b) ∨ ∃ a b : α, a < b ∧ x = ↑a ∧ y = ↑b :=
+  WithBot.lt_def
+
+lemma lt_iff_exists : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b := WithBot.lt_iff_exists
 
 @[simp, norm_cast] lemma coe_lt_coe : (a : WithZero α) < b ↔ a < b := by simp [lt_def]
 @[simp] lemma zero_lt_coe (a : α) : 0 < (a : WithZero α) := by simp [lt_def]
@@ -304,7 +295,7 @@ lemma lt_def : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b
 
 lemma lt_iff_exists_coe : x < y ↔ ∃ b : α, y = b ∧ x < b := WithBot.lt_iff_exists_coe
 
-lemma lt_coe_iff : x < b ↔ ∀ a : α, x = a → a < b := by simp [lt_def]
+lemma lt_coe_iff : x < b ↔ ∀ a : α, x = a → a < b := WithBot.lt_coe_iff
 
 /-- A version of `pos_iff_ne_zero` for `WithZero` that only requires `LT α`,
 not `PartialOrder α`. -/

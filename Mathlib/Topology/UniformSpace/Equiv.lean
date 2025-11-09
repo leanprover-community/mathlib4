@@ -179,10 +179,10 @@ theorem self_comp_symm (h : α ≃ᵤ β) : (h : α → β) ∘ h.symm = id :=
 theorem range_coe (h : α ≃ᵤ β) : range h = univ := by simp
 
 theorem image_symm (h : α ≃ᵤ β) : image h.symm = preimage h :=
-  funext h.symm.toEquiv.image_eq_preimage
+  funext h.symm.toEquiv.image_eq_preimage_symm
 
 theorem preimage_symm (h : α ≃ᵤ β) : preimage h.symm = image h :=
-  (funext h.toEquiv.image_eq_preimage).symm
+  (funext h.toEquiv.image_eq_preimage_symm).symm
 
 @[simp]
 theorem image_preimage (h : α ≃ᵤ β) (s : Set β) : h '' (h ⁻¹' s) = s :=

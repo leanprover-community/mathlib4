@@ -259,10 +259,6 @@ section Add
 theorem val_one' (n : ℕ) [NeZero n] : ((1 : Fin n) : ℕ) = 1 % n :=
   rfl
 
-@[deprecated val_one' (since := "2025-03-10")]
-theorem val_one'' {n : ℕ} : ((1 : Fin (n + 1)) : ℕ) = 1 % (n + 1) :=
-  rfl
-
 theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
   simp [← not_subsingleton_iff_nontrivial, subsingleton_iff_le_one]; cutsat
 

@@ -120,7 +120,7 @@ theorem _root_.TensorPower.list_prod_gradedMonoid_mk_single (n : ℕ) (x : Fin n
   · rw [List.finRange_zero, List.map_nil, List.prod_nil]
     rfl
   · intro n x₀ x ih
-    rw [List.finRange_succ_eq_map, List.map_cons, List.prod_cons, List.map_map]
+    rw [List.finRange_succ, List.map_cons, List.prod_cons, List.map_map]
     simp_rw [Function.comp_def, Fin.cons_zero, Fin.cons_succ]
     rw [ih, GradedMonoid.mk_mul_mk, TensorPower.tprod_mul_tprod]
     refine TensorPower.gradedMonoid_eq_of_cast (add_comm _ _) ?_

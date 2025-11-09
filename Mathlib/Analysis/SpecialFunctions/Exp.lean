@@ -133,30 +133,23 @@ lemma UniformContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.
   have h3 := hδ.2 (y := x - y) (by simpa only [dist_zero_right] using hxy)
   rw [dist_eq_norm, exp_zero] at *
   have : cexp x - cexp y = cexp y * (cexp (x - y) - 1) := by
-      rw [mul_sub_one, ← exp_add]
-      ring_nf
+    rw [mul_sub_one, ← exp_add]
+    ring_nf
   rw [this, mul_comm]
-  have hya : ‖cexp y‖ ≤ Real.exp a := by
-    simp only [norm_exp, Real.exp_le_exp]
-    exact hy
+  have hya : ‖cexp y‖ ≤ Real.exp a := by simpa only [norm_exp, Real.exp_le_exp]
   simp only [gt_iff_lt, dist_zero_right, Set.mem_setOf_eq, norm_mul, Complex.norm_exp] at *
-  apply lt_of_le_of_lt (mul_le_mul h3.le hya (Real.exp_nonneg y.re) (le_of_lt ha))
-  have hrr : ε / (2 * a.exp) * a.exp = ε / 2 := by
-    nth_rw 2 [mul_comm]
-    field_simp
-  rw [hrr]
-  exact div_two_lt_of_pos hε
+  apply lt_of_le_of_lt (mul_le_mul h3.le hya (Real.exp_nonneg y.re) ha.le)
+  simp [field]
 
 end ComplexContinuousExpComp
 
 namespace Real
 
-@[continuity]
-theorem continuous_exp : Continuous exp :=
-  Complex.continuous_re.comp Complex.continuous_ofReal.cexp
+@[continuity, fun_prop]
+theorem continuous_exp : Continuous exp := by
+  unfold Real.exp; fun_prop
 
-theorem continuousOn_exp {s : Set ℝ} : ContinuousOn exp s :=
-  continuous_exp.continuousOn
+theorem continuousOn_exp {s : Set ℝ} : ContinuousOn exp s := by fun_prop
 
 lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
     (fun x ↦ exp x - ∑ i ∈ Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
@@ -187,6 +180,7 @@ nonrec
 theorem ContinuousWithinAt.rexp (h : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun y ↦ exp (f y)) s x :=
   h.rexp
+
 @[fun_prop]
 nonrec
 theorem ContinuousAt.rexp (h : ContinuousAt f x) : ContinuousAt (fun y ↦ exp (f y)) x :=
@@ -354,6 +348,7 @@ theorem tendsto_exp_comp_nhds_zero {f : α → ℝ} :
     Tendsto (fun x => exp (f x)) l (𝓝 0) ↔ Tendsto f l atBot := by
   simp_rw [← comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero]
 
+@[fun_prop]
 theorem isOpenEmbedding_exp : IsOpenEmbedding exp :=
   isOpen_Ioi.isOpenEmbedding_subtypeVal.comp expOrderIso.toHomeomorph.isOpenEmbedding
 

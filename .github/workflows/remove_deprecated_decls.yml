@@ -1,0 +1,253 @@
+name: Remove outdated deprecated declarations
+
+on:
+  schedule:
+  - cron: "5 4 15 * *" # At 04:05, on the 15th of every month
+  workflow_dispatch:
+    inputs:
+      raw_from_date:
+        description: 'starting date for deprecations to remove: YYYY-MM-DD or valid input for date -d, like "5 years ago"'
+        required: false
+        default: '5 years ago'
+        type: string
+      raw_to_date:
+        description: 'ending date for deprecations to remove: YYYY-MM-DD or valid input for date -d, like "6 months ago"'
+        required: false
+        default: '6 months ago'
+        type: string
+      dry_run:
+        description: 'if true, only log the outdated declarations, do not remove them and open a PR'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  build:
+    name: Remove outdated deprecated declarations
+    runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
+    env:
+      BRANCH_NAME: "deprecated-decls"
+    steps:
+    - name: Process dates
+      id: process_dates
+      shell: bash
+      env:
+        RAW_FROM_DATE: ${{ inputs.raw_from_date }}
+        RAW_TO_DATE: ${{ inputs.raw_to_date }}
+      run: |
+        set -euo pipefail
+
+        # Function to validate YYYY-MM-DD format
+        validate_iso_date() {
+          local date_str="$1"
+          if [[ "$date_str" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+            # Validate it's a real date by parsing it
+            if date -d "$date_str" >/dev/null 2>&1; then
+              echo "$date_str"
+              return 0
+            fi
+          fi
+          return 1
+        }
+
+        # Function to safely parse date using `date -d`
+        parse_date_safely() {
+          local input="$1"
+
+          # Try to parse with date -d and extract YYYY-MM-DD format
+          local parsed_date
+          if parsed_date=$(date -d "$input" +%Y-%m-%d 2>/dev/null); then
+            echo "$parsed_date"
+            return 0
+          else
+            echo "Error: Unable to parse date: $input" >&2
+            return 1
+          fi
+        }
+
+        # Process from_date
+        if [[ -n "${RAW_FROM_DATE:-}" ]]; then
+          echo "Processing raw_from_date: '${RAW_FROM_DATE}'"
+
+          if from_date=$(validate_iso_date "${RAW_FROM_DATE}"); then
+            echo "Valid ISO date format detected"
+          else
+            echo "Not a valid ISO date, trying date parser..."
+            from_date=$(parse_date_safely "${RAW_FROM_DATE}")
+          fi
+        else
+          echo "No raw_from_date provided, using 5 years ago"
+          from_date=$(date -d '5 years ago' +%Y-%m-%d)
+        fi
+
+        # Process to_date
+        if [[ -n "${RAW_TO_DATE:-}" ]]; then
+          echo "Processing raw_to_date: '${RAW_TO_DATE}'"
+
+          if to_date=$(validate_iso_date "${RAW_TO_DATE}"); then
+            echo "Valid ISO date format detected"
+          else
+            echo "Not a valid ISO date, trying date parser..."
+            to_date=$(parse_date_safely "${RAW_TO_DATE}")
+          fi
+        else
+          echo "No raw_to_date provided, using 6 months ago"
+          to_date=$(date -d '6 months ago' +%Y-%m-%d)
+        fi
+
+        echo "Parsed dates - from: $from_date, to: $to_date"
+
+        # Validate date range - from_date should not be after to_date
+        if [[ "$from_date" > "$to_date" ]]; then
+          echo "Error: from_date ($from_date) cannot be after to_date ($to_date)" >&2
+          exit 1
+        fi
+
+        # Set outputs
+        echo "from_date=$from_date" >> "$GITHUB_OUTPUT"
+        echo "to_date=$to_date" >> "$GITHUB_OUTPUT"
+
+    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+    - name: Configure Lean
+      uses: leanprover/lean-action@434f25c2f80ded67bba02502ad3a86f25db50709 # v1.3.0
+      with:
+        auto-config: false
+        use-github-cache: false
+        use-mathlib-cache: false
+
+    - name: Retrieve caches for unmodified repositories
+      run: |
+        # Retrieve the cache for the unmodified repository
+        # show the current pwd:
+        printf $'Current directory is: %s\n' "$(pwd)"
+        printf $'::group::Running lake env\n'
+        lake env | tr ':' '\n'
+        echo "::endgroup::"
+        for repo in Mathlib Archive Counterexamples; do
+          echo "::group::Retrieving the cache for ${repo}"
+          lake exe cache get "$repo" || true
+          echo "::endgroup::"
+        done
+
+    - name: set up deprecated doubles
+      env:
+        OLD_DATE: "${{ steps.process_dates.outputs.from_date }}"
+        NEW_DATE: "${{ steps.process_dates.outputs.to_date }}"
+        DRY_RUN: "${{ toJson(inputs.dry_run) }}"
+      run: |
+        # We create a temporary file importing `Mathlib`, `Archive` and `Counterexamples`
+        # and running `#clear_deprecations` with the expected date-range.
+        tmplean="$(mktemp -p Mathlib --suffix=.lean RMDXXX)"
+        echo "::group::Creating ${tmplean} file"
+        {
+          for repo in Mathlib Archive Counterexamples; do
+            printf $'import %s\n' "$repo"
+          done
+          REALLY=$([ "$DRY_RUN" = "true" ] && echo "" || echo "really")
+          printf $'#clear_deprecations "%s" "%s" %s\n' "$OLD_DATE" "$NEW_DATE" "$REALLY"
+        } | tee -a "${tmplean}"
+        echo "::endgroup::"
+
+        # This will add the new files, whose names end in `_with_option.lean` and with the
+        # `commandRanges` linter on.  Building these files gives access to the ranges of all
+        # the commands in the files with deprecations to be removed.
+        # These files ending in `_with_option.lean` get erased after they have been built.
+        # If the `really` flag is passed, then the deprecations are removed from the appropriate
+        # files.  Otherwise, they are only logged as an output, but the original files are left
+        # untouched.
+        echo "::group::Building ${tmplean} file -- this may take a while"
+        lake build "${tmplean}"
+        echo "::endgroup::"
+
+        echo "Deleting ${tmplean}"
+        rm "${tmplean}"
+
+    - name: Get branch SHA if it exists
+      id: get-branch-sha
+      run: |
+        # Check if the branch exists remotely
+        if git fetch origin "$BRANCH_NAME"; then
+          SHA=$(git rev-parse "origin/$BRANCH_NAME")
+          echo "Branch '$BRANCH_NAME' exists with SHA: $SHA"
+          echo "sha=$SHA" >> "${GITHUB_OUTPUT}"
+        else
+          echo "Branch '$BRANCH_NAME' does not exist"
+          echo "sha=" >>" ${GITHUB_OUTPUT}"
+        fi
+
+    - name: Get PR
+      if: ${{ steps.get-branch-sha.outputs.sha != '' }}
+      id: find-pr
+      uses: 8BitJonny/gh-get-current-pr@4056877062a1f3b624d5d4c2bedefa9cf51435c9 # 4.0.0
+      # TODO: this may not work properly if the same commit is pushed to multiple branches:
+      # https://github.com/8BitJonny/gh-get-current-pr/issues/8
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        sha: ${{ steps.get-branch-sha.outputs.sha }}
+        # Only return if PR is still open
+        filterOutClosed: true
+
+    - name: Send Zulip message (blocked by open PR)
+      if: steps.find-pr.outputs.pr_found == 'true'
+      uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+      with:
+        api-key: ${{ secrets.ZULIP_API_KEY }}
+        email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+        organization-url: 'https://leanprover.zulipchat.com'
+        to: 'nightly-testing'
+        type: 'stream'
+        topic: 'Mathlib `remove outdated deprecated declarations`'
+        content: |
+          Reminder: #${{ steps.find-pr.outputs.pr }} is still open; this has prevented [the automatic
+          deprecation workflow](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          from creating a new PR.
+
+    - name: Create Pull Request
+      id: pr
+      if: ${{ steps.process_dates.outputs.from_date && toJson(inputs.dry_run) != 'true' && steps.find-pr.outputs.pr_found != 'true' }}
+      uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+      with:
+        token: "${{ secrets.UPDATE_NOLINTS_TOKEN }}"
+        author: "leanprover-community-mathlib4-bot <leanprover-community-mathlib4-bot@users.noreply.github.com>"
+        commit-message: "chore: remove declarations deprecated between ${{ steps.process_dates.outputs.from_date }} and ${{ steps.process_dates.outputs.to_date }}"
+        branch: ${{ env.BRANCH_NAME }}
+        base: master
+        title: "chore: remove declarations deprecated between ${{ steps.process_dates.outputs.from_date }} and ${{ steps.process_dates.outputs.to_date }}"
+        body: |
+          I am happy to remove some deprecated declarations for you!
+          Please check if there are any remaining stray comments or other issues before merging.
+
+          ---
+
+          [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+    - name: Send Zulip message (success)
+      if: steps.pr.outcome == 'success'
+      uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+      with:
+        api-key: ${{ secrets.ZULIP_API_KEY }}
+        email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+        organization-url: 'https://leanprover.zulipchat.com'
+        to: 'nightly-testing'
+        type: 'stream'
+        topic: 'Mathlib `remove outdated deprecated declarations`'
+        content: |
+          Please review #${{ steps.pr.outputs.pull-request-number }}, which removes deprecated declarations between ${{ steps.process_dates.outputs.from_date }} and ${{ steps.process_dates.outputs.to_date }}.
+          Pay special attention to whether there are stray comments that can also be deleted.
+
+    - name: Send Zulip message (failure)
+      if: ${{ toJson(inputs.dry_run) != 'true' && failure() }}
+      uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+      with:
+        api-key: ${{ secrets.ZULIP_API_KEY }}
+        email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+        organization-url: 'https://leanprover.zulipchat.com'
+        to: 'nightly-testing'
+        type: 'stream'
+        topic: 'Mathlib `remove outdated deprecated declarations`'
+        content: |
+          [`remove outdated deprecated declarations` workflow run failed](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+          triggered by: `${{ github.event_name }}`

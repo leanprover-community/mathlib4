@@ -240,9 +240,6 @@ theorem TendstoUniformlyOnFilter.prodMap {ι' α' β' : Type*} [UniformSpace β'
   rw [uniformity_prod_eq_comap_prod, tendsto_comap_iff, ← map_swap4_prod, tendsto_map'_iff]
   simpa using h.prodMap h'
 
-@[deprecated (since := "2025-03-10")]
-alias TendstoUniformlyOnFilter.prod_map := TendstoUniformlyOnFilter.prodMap
-
 theorem TendstoUniformlyOn.prodMap {ι' α' β' : Type*} [UniformSpace β'] {F' : ι' → α' → β'}
     {f' : α' → β'} {p' : Filter ι'} {s' : Set α'} (h : TendstoUniformlyOn F f p s)
     (h' : TendstoUniformlyOn F' f' p' s') :
@@ -251,17 +248,11 @@ theorem TendstoUniformlyOn.prodMap {ι' α' β' : Type*} [UniformSpace β'] {F' 
   rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter] at h h' ⊢
   simpa only [prod_principal_principal] using h.prodMap h'
 
-@[deprecated (since := "2025-03-10")]
-alias TendstoUniformlyOn.prod_map := TendstoUniformlyOn.prodMap
-
 theorem TendstoUniformly.prodMap {ι' α' β' : Type*} [UniformSpace β'] {F' : ι' → α' → β'}
     {f' : α' → β'} {p' : Filter ι'} (h : TendstoUniformly F f p) (h' : TendstoUniformly F' f' p') :
     TendstoUniformly (fun i : ι × ι' => Prod.map (F i.1) (F' i.2)) (Prod.map f f') (p ×ˢ p') := by
   rw [← tendstoUniformlyOn_univ, ← univ_prod_univ] at *
   exact h.prodMap h'
-
-@[deprecated (since := "2025-03-10")]
-alias TendstoUniformly.prod_map := TendstoUniformly.prodMap
 
 theorem TendstoUniformlyOnFilter.prodMk {ι' β' : Type*} [UniformSpace β'] {F' : ι' → α → β'}
     {f' : α → β'} {q : Filter ι'} (h : TendstoUniformlyOnFilter F f p p')
@@ -270,9 +261,6 @@ theorem TendstoUniformlyOnFilter.prodMk {ι' β' : Type*} [UniformSpace β'] {F'
       (p ×ˢ q) p' :=
   fun u hu => ((h.prodMap h') u hu).diag_of_prod_right
 
-@[deprecated (since := "2025-03-10")]
-alias TendstoUniformlyOnFilter.prod := TendstoUniformlyOnFilter.prodMk
-
 protected theorem TendstoUniformlyOn.prodMk {ι' β' : Type*} [UniformSpace β'] {F' : ι' → α → β'}
     {f' : α → β'} {p' : Filter ι'} (h : TendstoUniformlyOn F f p s)
     (h' : TendstoUniformlyOn F' f' p' s) :
@@ -280,16 +268,10 @@ protected theorem TendstoUniformlyOn.prodMk {ι' β' : Type*} [UniformSpace β']
       s :=
   (congr_arg _ s.inter_self).mp ((h.prodMap h').comp fun a => (a, a))
 
-@[deprecated (since := "2025-03-10")]
-alias TendstoUniformlyOn.prod := TendstoUniformlyOn.prodMk
-
 theorem TendstoUniformly.prodMk {ι' β' : Type*} [UniformSpace β'] {F' : ι' → α → β'} {f' : α → β'}
     {p' : Filter ι'} (h : TendstoUniformly F f p) (h' : TendstoUniformly F' f' p') :
     TendstoUniformly (fun (i : ι × ι') a => (F i.1 a, F' i.2 a)) (fun a => (f a, f' a)) (p ×ˢ p') :=
   (h.prodMap h').comp fun a => (a, a)
-
-@[deprecated (since := "2025-03-10")]
-alias TendstoUniformly.prod := TendstoUniformly.prodMk
 
 /-- Uniform convergence on a filter `p'` to a constant function is equivalent to convergence in
 `p ×ˢ p'`. -/
@@ -441,7 +423,7 @@ theorem TendstoUniformlyOnFilter.uniformCauchySeqOnFilter (hF : TendstoUniformly
   apply this.diag_of_prod_right.mono
   simp only [and_imp, Prod.forall]
   intro n1 n2 x hl hr
-  exact Set.mem_of_mem_of_subset (prodMk_mem_compRel (htsymm hl) hr) htmem
+  exact htmem <| SetRel.prodMk_mem_comp (htsymm hl) hr
 
 /-- A sequence that converges uniformly is also uniformly Cauchy -/
 theorem TendstoUniformlyOn.uniformCauchySeqOn (hF : TendstoUniformlyOn F f p s) :
@@ -474,7 +456,7 @@ theorem UniformCauchySeqOnFilter.tendstoUniformlyOnFilter_of_tendsto
     and_imp, Prod.forall]
   -- Complete the proof
   intro x n hx hm'
-  refine Set.mem_of_mem_of_subset (mem_compRel.mpr ?_) htmem
+  refine Set.mem_of_mem_of_subset ?_ htmem
   rw [Uniform.tendsto_nhds_right] at hm'
   have := hx.and (hm' ht)
   obtain ⟨m, hm⟩ := this.exists
@@ -532,9 +514,6 @@ theorem UniformCauchySeqOn.prodMap {ι' α' β' : Type*} [UniformSpace β'] {F' 
   apply (tendsto_swap4_prod.eventually ((h v hv).prod_mk (h' w hw))).mono
   intro x hx a b ha hb
   exact hvw ⟨_, mk_mem_prod (hx.1 a ha) (hx.2 b hb), rfl⟩
-
-@[deprecated (since := "2025-03-10")]
-alias UniformCauchySeqOn.prod_map := UniformCauchySeqOn.prodMap
 
 theorem UniformCauchySeqOn.prod {ι' β' : Type*} [UniformSpace β'] {F' : ι' → α → β'}
     {p' : Filter ι'} (h : UniformCauchySeqOn F p s) (h' : UniformCauchySeqOn F' p' s) :

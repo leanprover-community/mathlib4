@@ -364,6 +364,10 @@ theorem aeval_X_left : aeval (X : R[X]) = AlgHom.id R R[X] :=
 theorem aeval_X_left_apply (p : R[X]) : aeval X p = p :=
   AlgHom.congr_fun (@aeval_X_left R _) p
 
+lemma aeval_X_left_eq_map [CommSemiring S] [Algebra R S] (p : R[X]) :
+    aeval X p = map (algebraMap R S) p :=
+  rfl
+
 theorem eval_unique (φ : R[X] →ₐ[R] A) (p) : φ p = eval₂ (algebraMap R A) (φ X) p := by
   rw [← aeval_def, aeval_algHom, aeval_X_left, AlgHom.comp_id]
 
@@ -475,10 +479,9 @@ theorem isRoot_of_eval₂_map_eq_zero (hf : Function.Injective f) {r : R} :
   apply hf
   rw [← eval₂_hom, h, f.map_zero]
 
-theorem isRoot_of_aeval_algebraMap_eq_zero [Algebra R S] {p : R[X]}
-    (inj : Function.Injective (algebraMap R S)) {r : R} (hr : aeval (algebraMap R S r) p = 0) :
-    p.IsRoot r :=
-  isRoot_of_eval₂_map_eq_zero inj hr
+theorem isRoot_of_aeval_algebraMap_eq_zero [Algebra R S] [FaithfulSMul R S] {p : R[X]} {r : R}
+    (hr : p.aeval (algebraMap R S r) = 0) : p.IsRoot r :=
+  isRoot_of_eval₂_map_eq_zero (FaithfulSMul.algebraMap_injective _ _) hr
 
 end Semiring
 

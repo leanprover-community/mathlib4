@@ -38,15 +38,15 @@ theorem cos_arg {x : ℂ} (hx : x ≠ 0) : Real.cos (arg x) = x.re / ‖x‖ := 
   · rw [Real.cos_arcsin]
     field_simp
     simp [Real.sqrt_sq, (norm_pos_iff.mpr hx).le, *]
-    field_simp
+    field
   · rw [Real.cos_add_pi, Real.cos_arcsin]
     field_simp
     simp [Real.sqrt_div (sq_nonneg _), Real.sqrt_sq_eq_abs, _root_.abs_of_neg (not_le.1 h₁), *]
-    field_simp
+    field
   · rw [Real.cos_sub_pi, Real.cos_arcsin]
     field_simp
     simp [Real.sqrt_div (sq_nonneg _), Real.sqrt_sq_eq_abs, _root_.abs_of_neg (not_le.1 h₁), *]
-    field_simp
+    field
 
 @[simp]
 theorem norm_mul_exp_arg_mul_I (x : ℂ) : ‖x‖ * exp (arg x * I) = x := by

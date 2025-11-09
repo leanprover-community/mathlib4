@@ -49,6 +49,10 @@ lemma mk_surjective (x : X.N) :
     ∃ (n : ℕ) (y : X.nonDegenerate n), x = N.mk _ y.prop :=
   ⟨x.dim, ⟨_, x.nonDegenerate⟩, rfl⟩
 
+lemma ext_iff (x y : X.N) :
+    x = y ↔ x.toS = y.toS := by
+  grind [cases SSet.N]
+
 instance : Preorder X.N := Preorder.lift toS
 
 lemma le_iff {x y : X.N} : x ≤ y ↔ x.subcomplex ≤ y.subcomplex :=
@@ -98,10 +102,7 @@ lemma subcomplex_injective_iff {x y : X.N} :
 
 lemma eq_iff {x y : X.N} :
     x = y ↔ x.subcomplex = y.subcomplex :=
-  ⟨by rintro rfl; rfl, fun h ↦ by
-    apply le_antisymm
-    all_goals
-    · rw [le_iff, h]⟩
+  ⟨by rintro rfl; rfl, fun h ↦ by simp [le_antisymm_iff, le_iff, h]⟩
 
 section
 

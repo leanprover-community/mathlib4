@@ -22,7 +22,7 @@ for bundled maps satisfying `f (x + a) = f x + b`.
 We use parameters `a` and `b` instead of `1` to accommodate for two use cases:
 
 - maps between circles of different lengths;
-- self-maps $f\colon S^1\to  S^1$ of degree other than one,
+- self-maps $f\colon S^1\to S^1$ of degree other than one,
   including orientation-reversing maps.
 -/
 

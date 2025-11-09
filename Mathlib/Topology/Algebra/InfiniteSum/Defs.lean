@@ -128,7 +128,7 @@ satisfying `HasProd f a`. Similar remarks apply to more general summation filter
 @[to_additive /-- `∑' i, f i` is the unconditional sum of `f` if it exists, or 0 otherwise.
 
 More generally, if `L` is a `SummationFilter`, `∑'[L] i, f i` is the sum of `f` with respect to
-`L` if it exists, and `1` otherwise.
+`L` if it exists, and `0` otherwise.
 
 (Note that even if the unconditional sum exists, it might not be unique if the topology is not
 separated. When the support of `f` is finite, we make the most reasonable choice, to use the sum
@@ -333,5 +333,15 @@ theorem HasProd.tprod_eq (ha : HasProd f a L) : ∏'[L] b, f b = a :=
 theorem Multipliable.hasProd_iff (h : Multipliable f L) :
     HasProd f a L ↔ ∏'[L] b, f b = a :=
   Iff.intro HasProd.tprod_eq fun eq ↦ eq ▸ h.hasProd
+
+@[to_additive]
+theorem tprod_eq_of_filter_le {L₁ L₂ : SummationFilter β} [L₁.NeBot]
+    (h : L₁.filter ≤ L₂.filter) (hf : Multipliable f L₂) : ∏'[L₁] b, f b = ∏'[L₂] b, f b :=
+  (hf.mono_filter h).hasProd_iff.mp (hf.hasProd.mono_left h)
+
+@[to_additive]
+theorem tprod_eq_of_multipliable_unconditional [L.LeAtTop] (hf : Multipliable f) :
+     ∏'[L] b, f b = ∏' b, f b :=
+  tprod_eq_of_filter_le L.le_atTop hf
 
 end HasProd

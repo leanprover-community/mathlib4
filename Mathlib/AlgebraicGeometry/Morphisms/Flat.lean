@@ -3,8 +3,6 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
-import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 import Mathlib.AlgebraicGeometry.Morphisms.Affine
 import Mathlib.AlgebraicGeometry.PullbackCarrier
 import Mathlib.RingTheory.RingHom.FaithfullyFlat
@@ -28,7 +26,7 @@ universe v u
 
 namespace AlgebraicGeometry
 
-variable {X Y : Scheme.{u}} (f : X ⟶ Y)
+variable {X Y Z : Scheme.{u}} (f : X ⟶ Y)
 
 /-- A morphism of schemes `f : X ⟶ Y` is flat if for each affine `U ⊆ Y` and
 `V ⊆ f ⁻¹' U`, the induced map `Γ(Y, U) ⟶ Γ(X, V)` is flat. This is equivalent to
@@ -64,11 +62,17 @@ instance : MorphismProperty.IsMultiplicative @Flat where
 instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @Flat :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.Flat.isStableUnderBaseChange
 
-instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [Flat g] : Flat (pullback.fst f g) :=
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [Flat g] : Flat (pullback.fst f g) :=
   MorphismProperty.pullback_fst _ _ inferInstance
 
-instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [Flat f] : Flat (pullback.snd f g) :=
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [Flat f] : Flat (pullback.snd f g) :=
   MorphismProperty.pullback_snd _ _ inferInstance
+
+instance (f : X ⟶ Y) (V : Y.Opens) [Flat f] : Flat (f ∣_ V) :=
+  IsZariskiLocalAtTarget.restrict ‹_› V
+
+instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [Flat f] : Flat (f.resLE V U e) := by
+  delta Scheme.Hom.resLE; infer_instance
 
 lemma of_stalkMap (H : ∀ x, (f.stalkMap x).hom.Flat) : Flat f :=
   HasRingHomProperty.of_stalkMap RingHom.Flat.ofLocalizationPrime H
@@ -87,7 +91,7 @@ instance {X : Scheme.{u}} {ι : Type v} [Small.{u} ι] {Y : ι → Scheme.{u}} {
 /-- A surjective, quasi-compact, flat morphism is a quotient map. -/
 @[stacks 02JY]
 lemma isQuotientMap_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [QuasiCompact f]
-    [Surjective f] : Topology.IsQuotientMap f.base := by
+    [Surjective f] : Topology.IsQuotientMap f := by
   rw [Topology.isQuotientMap_iff]
   refine ⟨f.surjective, fun s ↦ ⟨fun hs ↦ hs.preimage f.continuous, fun hs ↦ ?_⟩⟩
   wlog hY : ∃ R, Y = Spec R
@@ -117,17 +121,25 @@ lemma isQuotientMap_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [Qua
 
 /-- A flat surjective morphism of schemes is an epimorphism in the category of schemes. -/
 @[stacks 02VW]
-lemma epi_of_flat_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [Surjective f] : Epi f := by
+lemma epi_of_flat_of_surjective (f : X ⟶ Y) [Flat f] [Surjective f] : Epi f := by
   apply CategoryTheory.Functor.epi_of_epi_map (Scheme.forgetToLocallyRingedSpace)
   apply CategoryTheory.Functor.epi_of_epi_map (LocallyRingedSpace.forgetToSheafedSpace)
   apply SheafedSpace.epi_of_base_surjective_of_stalk_mono _ ‹Surjective f›.surj
   intro x
   apply ConcreteCategory.mono_of_injective
   algebraize [(f.stalkMap x).hom]
-  have : Module.FaithfullyFlat (Y.presheaf.stalk (f.base.hom x)) (X.presheaf.stalk x) :=
+  have : Module.FaithfullyFlat (Y.presheaf.stalk (f x)) (X.presheaf.stalk x) :=
     @Module.FaithfullyFlat.of_flat_of_isLocalHom _ _ _ _ _ _ _
       (Flat.stalkMap f x) (f.toLRSHom.prop x)
   exact ‹RingHom.FaithfullyFlat _›.injective
+
+lemma flat_and_surjective_iff_faithfullyFlat_of_isAffine [IsAffine X] [IsAffine Y] :
+    Flat f ∧ Surjective f ↔ f.appTop.hom.FaithfullyFlat := by
+  rw [RingHom.FaithfullyFlat.iff_flat_and_comap_surjective,
+    MorphismProperty.arrow_mk_iso_iff @Surjective (arrowIsoSpecΓOfIsAffine f),
+    MorphismProperty.arrow_mk_iso_iff @Flat (arrowIsoSpecΓOfIsAffine f),
+    ← HasRingHomProperty.Spec_iff (P := @Flat), surjective_iff]
+  rfl
 
 end Flat
 
