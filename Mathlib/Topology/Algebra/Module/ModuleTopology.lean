@@ -199,32 +199,41 @@ end basics
 
 section iso
 
-variable {R : Type*} [τR : TopologicalSpace R] [Semiring R]
+variable {R S : Type*} [τR : TopologicalSpace R] [τS : TopologicalSpace S] [Semiring R] [Semiring S]
+variable {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 variable {A : Type*} [AddCommMonoid A] [Module R A] [τA : TopologicalSpace A] [IsModuleTopology R A]
 variable {B : Type*} [AddCommMonoid B] [Module R B] [τB : TopologicalSpace B]
+variable {B' : Type*} [AddCommMonoid B'] [Module S B'] [τB' : TopologicalSpace B']
 
-/-- If `A` and `B` are `R`-modules, homeomorphic via an `R`-linear homeomorphism, and if
+/-- If `A` and `B` are modules, homeomorphic via a semi-linear homeomorphism, and if
 `A` has the module topology, then so does `B`. -/
-theorem iso (e : A ≃L[R] B) : IsModuleTopology R B where
+protected theorem isoₛₗ (hσ : Continuous σ) (hσ' : Continuous σ') (e : A ≃SL[σ] B') :
+    IsModuleTopology S B' where
   eq_moduleTopology' := by
     -- get these in before I start putting new topologies on A and B and have to use `@`
-    let g : A →ₗ[R] B := e
-    let g' : B →ₗ[R] A := e.symm
-    let h : A →+ B := e
-    let h' : B →+ A := e.symm
+    let g : A →ₛₗ[σ] B' := e
+    let g' : B' →ₛₗ[σ'] A := e.symm
+    let h : A →+ B' := e
+    let h' : B' →+ A := e.symm
     simp_rw [e.toHomeomorph.symm.isInducing.1, eq_moduleTopology R A, moduleTopology, induced_sInf]
     apply congr_arg
     ext τ -- from this point on the definitions of `g`, `g'` etc. above don't work without `@`.
     rw [Set.mem_image]
     constructor
     · rintro ⟨σ, ⟨hσ1, hσ2⟩, rfl⟩
-      exact ⟨continuousSMul_induced g'.toMulActionHom, continuousAdd_induced h'⟩
+      exact ⟨continuousSMul_inducedₛₗ g' hσ', continuousAdd_induced h'⟩
     · rintro ⟨h1, h2⟩
       use τ.induced e
       rw [induced_compose]
-      refine ⟨⟨continuousSMul_induced g.toMulActionHom, continuousAdd_induced h⟩, ?_⟩
+      refine ⟨⟨continuousSMul_inducedₛₗ g hσ, continuousAdd_induced h⟩, ?_⟩
       nth_rw 2 [← induced_id (t := τ)]
       simp
+
+/-- If `A` and `B` are `R`-modules, homeomorphic via an `R`-linear homeomorphism, and if
+`A` has the module topology, then so does `B`.
+See `IsModuleTopology.isoₛₗ` for the generalization to a semi-linear homeomorphism. -/
+protected theorem iso (e : A ≃L[R] B) : IsModuleTopology R B :=
+  IsModuleTopology.isoₛₗ continuous_id continuous_id e
 
 end iso
 
@@ -507,7 +516,7 @@ instance instPi : IsModuleTopology R (∀ i, A i) := by
   induction ι using Finite.induction_empty_option
   · -- invariance under equivalence of the finite type we're taking the product over
     case of_equiv X Y e _ _ _ _ _ =>
-    exact iso (ContinuousLinearEquiv.piCongrLeft R A e)
+    exact .iso (ContinuousLinearEquiv.piCongrLeft R A e)
   · -- empty case
     infer_instance
   · -- "inductive step" is to check for product over `Option ι` case when known for product over `ι`
@@ -515,15 +524,17 @@ instance instPi : IsModuleTopology R (∀ i, A i) := by
     -- `Option ι` is a `Sum` of `ι` and `Unit`
     let e : Option ι ≃ ι ⊕ Unit := Equiv.optionEquivSumPUnit ι
     -- so suffices to check for a product of modules over `ι ⊕ Unit`
-    suffices IsModuleTopology R ((i' : ι ⊕ Unit) → A (e.symm i')) from iso (.piCongrLeft R A e.symm)
+    suffices IsModuleTopology R ((i' : ι ⊕ Unit) → A (e.symm i')) from
+      .iso (.piCongrLeft R A e.symm)
     -- but such a product is isomorphic to a binary product
     -- of (product over `ι`) and (product over `Unit`)
     suffices IsModuleTopology R
       (((s : ι) → A (e.symm (Sum.inl s))) × ((t : Unit) → A (e.symm (Sum.inr t)))) from
-      iso (ContinuousLinearEquiv.sumPiEquivProdPi R ι Unit _).symm
+      .iso (ContinuousLinearEquiv.sumPiEquivProdPi R ι Unit _).symm
     -- The product over `ι` has the module topology by the inductive hypothesis,
     -- and the product over `Unit` is just a module which is assumed to have the module topology
-    have := iso (ContinuousLinearEquiv.piUnique R (fun t ↦ A (e.symm (Sum.inr t)))).symm
+    have :=
+      IsModuleTopology.iso (ContinuousLinearEquiv.piUnique R (fun t ↦ A (e.symm (Sum.inr t)))).symm
     -- so the result follows from the previous lemma (binary products).
     infer_instance
 
