@@ -134,7 +134,7 @@ theorem supportDim_quotSMulTop_succ_eq_supportDim {x : R} (reg : IsSMulRegular M
 
 @[stacks 00KW]
 lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim {x : R}
-    (reg : IsSMulRegular R x) (hx : x ∈ maximalIdeal R) :
+    (reg : x ∈ R⁰) (hx : x ∈ maximalIdeal R) :
     ringKrullDim (R ⧸ span {x}) + 1 = ringKrullDim R :=
   ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim_of_mem_jacobson reg <| by
     rwa [ringJacobson_eq_maximalIdeal R]
