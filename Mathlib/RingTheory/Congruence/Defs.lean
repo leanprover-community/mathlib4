@@ -131,7 +131,7 @@ theorem ext {c d : RingCon R} (H : ∀ x y, c x y ↔ d x y) : c = d :=
 
 /-- The map sending a ring congruence relation to its underlying equivalence
 relation is injective. -/
-theorem toSetoid_ext'' {c d : RingCon R} (H : c.toSetoid = d.toSetoid) : c = d :=
+theorem ext'' {c d : RingCon R} (H : c.toSetoid = d.toSetoid) : c = d :=
   ext <| Setoid.ext_iff.1 H
 
 /-- Two ring congruence relations are equal iff their underlying binary
