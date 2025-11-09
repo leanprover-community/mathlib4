@@ -167,7 +167,7 @@ lemma radical_eq_iff_primeFactors_eq :
     fun h => by simp [radical, h]⟩
 
 theorem radical_eq_of_associated (h : Associated a b) : radical a = radical b :=
-  radical_eq_iff_primeFactors_eq.2 h.primeFactors_eq
+  radical_eq_iff_primeFactors_eq.mpr h.primeFactors_eq
 
 lemma radical_associated (ha : IsRadical a) (ha' : a ≠ 0) :
     Associated (radical a) a := by
