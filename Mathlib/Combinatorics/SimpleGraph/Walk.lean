@@ -874,6 +874,12 @@ lemma not_nil_of_ne {p : G.Walk v w} : v ≠ w → ¬ p.Nil := mt Nil.eq
 lemma nil_iff_support_eq {p : G.Walk v w} : p.Nil ↔ p.support = [v] := by
   cases p <;> simp
 
+lemma isEmpty_darts_iff_nil {p : G.Walk v w} : p.darts.isEmpty ↔ p.Nil := by
+  cases p <;> simp
+
+lemma isEmpty_edges_iff_nil {p : G.Walk v w} : p.edges.isEmpty ↔ p.Nil := by
+  cases p <;> simp
+
 lemma nil_iff_length_eq {p : G.Walk v w} : p.Nil ↔ p.length = 0 := by
   cases p <;> simp
 
@@ -1076,6 +1082,41 @@ theorem lastDart_eq {p : G.Walk v w} (h₁ : ¬ p.Nil) (h₂ : 0 < p.darts.lengt
     p.lastDart h₁ = p.darts[p.darts.length - 1] := by
   simp (disch := grind) [Dart.ext_iff, lastDart_toProd, darts_getElem_eq_getVert,
     p.getVert_of_length_le]
+
+theorem firstDart_eq_head_darts {p : G.Walk v w} (hnil : ¬p.Nil) : p.firstDart hnil = p.darts.head
+    (p.darts.ne_nil_of_length_pos <|
+      p.not_nil_iff_lt_length.mp hnil |>.trans_eq p.length_darts.symm) :=
+  have darts_pos := p.not_nil_iff_lt_length.mp hnil |>.trans_eq p.length_darts.symm
+  p.firstDart_eq hnil darts_pos |>.trans <| List.getElem_zero_eq_head darts_pos
+
+theorem firstDart_mem_darts {p : G.Walk v w} (hnil : ¬p.Nil) : p.firstDart hnil ∈ p.darts :=
+  p.firstDart_eq_head_darts _ ▸ List.head_mem _
+
+theorem lastDart_eq_getLast_darts {p : G.Walk v w} (hnil : ¬p.Nil) :
+    p.lastDart hnil = p.darts.getLast (p.darts.ne_nil_of_length_pos <|
+      p.not_nil_iff_lt_length.mp hnil |>.trans_eq p.length_darts.symm) :=
+  have darts_pos := p.not_nil_iff_lt_length.mp hnil |>.trans_eq p.length_darts.symm
+  p.lastDart_eq hnil darts_pos |>.trans <|
+    List.getElem_length_sub_one_eq_getLast <| Nat.sub_one_lt_of_lt darts_pos
+
+theorem lastDart_mem_darts {p : G.Walk v w} (hnil : ¬p.Nil) : p.lastDart hnil ∈ p.darts :=
+  p.lastDart_eq_getLast_darts _ ▸ List.getLast_mem _
+
+theorem snd_eq_head_edges {p : G.Walk v w} (hnil : ¬p.Nil) : s(v, p.snd) = p.edges.head
+    (p.edges.ne_nil_of_length_pos <|
+      p.not_nil_iff_lt_length.mp hnil |>.trans_eq p.length_edges.symm) := by
+  simp [← p.edge_firstDart hnil, firstDart_eq_head_darts, Walk.edges]
+
+theorem snd_mem_edges {p : G.Walk v w} (hnil : ¬p.Nil) : s(v, p.snd) ∈ p.edges :=
+  p.snd_eq_head_edges hnil ▸ List.head_mem _
+
+theorem penultimate_eq_getLast_edges {p : G.Walk v w} (hnil : ¬p.Nil) :
+    s(p.penultimate, w) = p.edges.getLast (p.edges.ne_nil_of_length_pos <|
+      p.not_nil_iff_lt_length.mp hnil |>.trans_eq p.length_edges.symm) := by
+  simp [← p.edge_lastDart hnil, lastDart_eq_getLast_darts, Walk.edges]
+
+theorem penultimate_mem_edges {p : G.Walk v w} (hnil : ¬p.Nil) : s(p.penultimate, w) ∈ p.edges :=
+  p.penultimate_eq_getLast_edges hnil ▸ List.getLast_mem _
 
 lemma cons_tail_eq (p : G.Walk u v) (hp : ¬ p.Nil) :
     cons (p.adj_snd hp) p.tail = p := by
@@ -1496,3 +1537,5 @@ lemma isSubwalk_antisymm {u v} {p₁ p₂ : G.Walk u v} (h₁ : p₁.IsSubwalk p
 end Walk
 
 end SimpleGraph
+
+set_option linter.style.longFile 1700
