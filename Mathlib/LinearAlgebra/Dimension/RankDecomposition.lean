@@ -27,48 +27,35 @@ namespace LinearMap
 
 variable {C : Submodule K V} (h : IsCompl C (ker f))
 
-/-- When `V` decomposes as `ker f ⊕ C`, the basis is obtained by transporting the product of bases
-on the kernel and on its complement along `f.prodEquivOfC`. -/
-def decomposition_basis : Basis ((ofVectorSpaceIndex K C) ⊕
-    (ofVectorSpaceIndex K (ker f))) K V :=
+/-- When `V` decomposes as `x ⊕ y`, the basis is obtained by transporting the product of bases
+on the `x` and on `y`. -/
+def decomposition_basis {x y : Submodule K V} (h : IsCompl x y) :
+    Basis ((ofVectorSpaceIndex K x) ⊕ (ofVectorSpaceIndex K y)) K V :=
   .map (.prod (ofVectorSpace K _) (ofVectorSpace K _)) (prodEquivOfIsCompl _ _ h)
 
-/-- Given the basis of `C f` and the restriction map
-`f ∘ Submodule.subtype (C f)`, define the function that sends the
-basis indices to vectors of `W`. -/
-def ker_complement_basis_image (C : Submodule K V) : ofVectorSpaceIndex K C → W :=
-  (f.comp C.subtype) ∘ (ofVectorSpace K C)
-
 lemma linear_independent_ker_complement_basis_image (h : IsCompl C (ker f)) :
-    LinearIndependent K (f.ker_complement_basis_image C) :=
+    LinearIndependent K ((f.comp C.subtype) ∘ (ofVectorSpace K C)) :=
   (ofVectorSpace K C).linearIndependent.map' _
     (by simpa [ker_comp, ← disjoint_iff_comap_eq_bot] using h.disjoint)
 
 /-- A basis of `W` obtained by extending the image of the `C f` basis (which corresponds
 to `range f`) to a full basis via `Basis.sumExtend`. -/
-def range_decomposition_basis (h : IsCompl C (ker f)) :
-    Basis ((ofVectorSpaceIndex K C) ⊕
+def range_decomposition_basis (h : IsCompl C (ker f)) : Basis ((ofVectorSpaceIndex K C) ⊕
     (sumExtendIndex (f.linear_independent_ker_complement_basis_image h))) K W :=
   Basis.sumExtend (f.linear_independent_ker_complement_basis_image h)
 
 /-- `C` is isomorphic to `range f` -/
-def CEquivRange : C ≃ₗ[K] (range f) := by
-  let g : C →ₗ[K] range f := codRestrict (range f) (f.comp C.subtype)
-    (fun x ↦ ⟨C.subtype x, rfl⟩)
+def kerComplementEquivRange : C ≃ₗ[K] (range f) := by
+  let g : C →ₗ[K] range f := codRestrict (range f) (f.comp C.subtype) (fun x ↦ ⟨C.subtype x, rfl⟩)
   apply LinearEquiv.ofBijective g
   constructor
   · simpa [← ker_eq_bot, g, ker_codRestrict, ker_comp, ← disjoint_iff_comap_eq_bot] using h.disjoint
-  intro ⟨_, y, hyx⟩
-  use ((prodEquivOfIsCompl _ _ h).2 y).1
-  simp [g, codRestrict, ← hyx]
-  nth_rw 2 [← Submodule.IsCompl.projection_add_projection_eq_self h y]
-  rw [map_add, h.symm.projection_apply_mem y, add_zero]
-  rfl
-
-lemma apply_C_basis_eq_range_basis (j) :
-    f (f.decomposition_basis h (Sum.inl j)) = (f.range_decomposition_basis h (Sum.inl j)) := by
-  simp [decomposition_basis, range_decomposition_basis, sumExtend,
-    Equiv.sumCongr, ker_complement_basis_image]
+  · intro ⟨_, y, hyx⟩
+    use ((prodEquivOfIsCompl _ _ h).2 y).1
+    simp [g, codRestrict, ← hyx]
+    nth_rw 2 [← Submodule.IsCompl.projection_add_projection_eq_self h y]
+    rw [map_add, h.symm.projection_apply_mem y, add_zero]
+    rfl
 
 end LinearMap
 
@@ -95,13 +82,16 @@ theorem exists_basis_for_normal_form_abstract {C : Submodule R M₁} (h : IsComp
     (v₂ : Basis ((ofVectorSpaceIndex R C) ⊕
       (sumExtendIndex (f.linear_independent_ker_complement_basis_image h))) R M₂),
     LinearMap.toMatrix v₁ v₂ f = fromBlocks 1 0 0 0 := by
-  use (f.decomposition_basis h), (f.range_decomposition_basis h)
+  have (j : ofVectorSpaceIndex R C) : f (decomposition_basis h (Sum.inl j))
+      = (f.range_decomposition_basis h (Sum.inl j)) := by
+    simp [decomposition_basis, range_decomposition_basis, sumExtend, Equiv.sumCongr]
+  use (decomposition_basis h), (f.range_decomposition_basis h)
   funext i j
   match i, j with
-  | Sum.inl i', Sum.inl j' => simp [toMatrix_apply, f.apply_C_basis_eq_range_basis h j',
-      Finsupp.single, Pi.single, Function.update, Matrix.one_apply]
+  | Sum.inl i', Sum.inl j' => simp [toMatrix_apply, this j', Finsupp.single, Pi.single,
+      Function.update, Matrix.one_apply]
   | Sum.inr i', Sum.inr j' => simp [toMatrix_apply, decomposition_basis]
   | Sum.inl i', Sum.inr j' => simp [toMatrix_apply, decomposition_basis]
-  | Sum.inr i', Sum.inl j' => simp [toMatrix_apply, f.apply_C_basis_eq_range_basis h j']
+  | Sum.inr i', Sum.inl j' => simp [toMatrix_apply, this j']
 
 end
