@@ -184,9 +184,7 @@ theorem m_eq_n_mul_a_factorization_p_of_prime_p_of_p_pow_m_eq_a_pow_n :
     m = n * a.factorization p := by
   have := congrArg Nat.factorization h
   rw [Nat.Prime.factorization_pow hp, Nat.factorization_pow] at this
-  have := congrFun (congrArg DFunLike.coe this) p
-  simp at this
-  exact this
+  simpa using congr($this p)
 
 theorem exponent_dvd_of_prime_pow_eq_pow : n ∣ m :=
   Dvd.intro (a.factorization p)
