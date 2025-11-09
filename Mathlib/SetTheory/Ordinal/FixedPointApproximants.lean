@@ -155,12 +155,12 @@ theorem lfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} (h_init : x ≤ f x) (h_
       forall_eq_or_imp, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     apply And.intro (le_lfpApprox f x)
     intro a' ha'b
-    by_cases haa : a' < a
+    by_cases! haa : a' < a
     · rw [← lfpApprox_add_one f x h_init]
       apply lfpApprox_monotone
       simp only [Ordinal.add_one_eq_succ, succ_le_iff]
       exact haa
-    · rw [IH a' ha'b (le_of_not_gt haa), h]
+    · rw [IH a' ha'b haa, h]
   · exact lfpApprox_monotone f x h_ab
 
 /-- There are distinct indices smaller than the successor of the domain's cardinality
