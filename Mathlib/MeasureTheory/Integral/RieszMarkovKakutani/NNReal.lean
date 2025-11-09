@@ -185,7 +185,7 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
     map_add' := by simp
     map_smul' := by simp
     monotone' := by
-      intro f g hfb; simp;
+      intro f g hfb; simp
       have hφ_nonneg : 0 ≤ φ.1 ↑(g - f) := φ.2.2.2 (g - f) <| sub_nonneg.2 hfb
       have cont_map_dist : φ.1 ↑(g - f) = φ.1 (g.toContinuousMap - f.toContinuousMap) := rfl
       have : 0 ≤ φ.1 g.toContinuousMap - φ.1 f.toContinuousMap := by
@@ -205,7 +205,7 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
       _ = 1 := φ.2.2.1
   have hΛ (φ : Φ) : ∀ (f : CompactlySupportedContinuousMap X ℝ), 0 ≤ f → 0 ≤ Λ φ f := φ.2.2.2
   let T (φ : Φ) : LevyProkhorov (ProbabilityMeasure X) :=
-    LevyProkhorov.toMeasureEquiv.invFun ⟨RealRMK.rieszMeasure (Λ φ), IsPMeas φ⟩
+    .ofMeasure ⟨RealRMK.rieszMeasure (Λ φ), IsPMeas φ⟩
   have : Set.univ = Set.range T := by
     ext μ; simp only [T, Set.mem_univ, Set.mem_range, true_iff, Φ]
     let μprob : ProbabilityMeasure X := LevyProkhorov.toMeasureEquiv.toFun μ
@@ -248,10 +248,8 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
         exact integral_nonneg hgpos
     let φ_fin : ↑Φ := by use φ_weak
     use φ_fin
-    simp
     refine (Equiv.symm_apply_eq (LevyProkhorov.toMeasureEquiv)).mpr ?_
     apply Subtype.ext
-    simp [φ_fin, φ_weak, Λ]
     apply RealRMK.rieszMeasure_integralPositiveLinearMap
   simp only [this]
   have hΦ2 : SeqCompactSpace Φ := by --Jannette's Project (Seq. banach alaoglu thm)
@@ -262,41 +260,16 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   refine Continuous.seqContinuous ?_
   simp_rw [T]
   let f : ↑Φ → Measure X := fun φ => RealRMK.rieszMeasure (Λ φ)
-  have hf (φ : ↑Φ) : IsProbabilityMeasure (f φ) := IsPMeas φ
-  --refine Continuous.subtype_mk (f := fun φ => (RealRMK.rieszMeasure (Λ φ) : Measure X)) (hp := fun φ => IsPMeas φ) ..
-  --refine Continuous.subtype_coind (X := {p : Measure X // IsProbabilityMeasure p}) (Y := ↑Φ) (f := fun φ ↦ RealRMK.rieszMeasure (Λ φ)) ..
- -- refine Continuous.subtype_mk (X := {p : Measure X // IsProbabilityMeasure p}) (Y := ↑Φ) (f := f) ?_ ?_
-  --simp [Continuous.subtype_mk,Continuous.subtype_val,Continuous.subtype_coind,Continuous.subtype_map]
-  --have : TopologicalSpace (Measure X) := by sorry
-  --rw [← @Equiv.invFun_as_coe]
-  let tspac : TopologicalSpace { μ : Measure X // IsProbabilityMeasure μ } := Preorder.topology { μ // IsProbabilityMeasure μ}
+  letI top1 : TopologicalSpace (Measure X) := Preorder.topology (Measure X)
+  letI top2 : TopologicalSpace {μ : Measure X // IsProbabilityMeasure μ} := instTopologicalSpaceSubtype
   refine Continuous.comp ?_ ?_
   letI sep : SeparableSpace X := SecondCountableTopology.to_separableSpace--SecondCountableTopology.to_separableSpace
-  · simp [LevyProkhorov.toMeasureEquiv]
-    grind [LevyProkhorov.continuous_ofMeasure_probabilityMeasure]
-    apply LevyProkhorov.continuous_ofMeasure_probabilityMeasure (Ω := X)
-    refine continuous_iff_le_induced.mpr ?_
+  · --apply LevyProkhorov.continuous_ofMeasure_probabilityMeasure (Ω := X)
+    sorry
 
 
-  · letI (φ : Φ) : IsProbabilityMeasure <| RealRMK.rieszMeasure (Λ φ) := by sorry
-    refine Continuous.subtype_mk (X := { μ : Measure X // IsProbabilityMeasure μ}) (Y := ↑Φ) (f := fun φ ↦ RealRMK.rieszMeasure (Λ φ)) ?_ ?_
-
-    simp [RealRMK.rieszMeasure]
-
-  -- · rw [@continuous_iff_le_induced]
-
-    -- rw [@continuous_iff_coinduced_le]
-
-    --apply LevyProkhorov.continuous_ofMeasure_probabilityMeasure
-
-
-    --refine LevyProkhorov.continuous_ofMeasure_probabilityMeasure (Ω := X) ..
-
-
-  rw [(ProbabilityMeasure.toFiniteMeasure_isEmbedding _).continuous_iff (f := fun φ ↦ (LevyProkhorov.equiv (ProbabilityMeasure X)).symm ⟨RealRMK.rieszMeasure (Λ φ), ⋯⟩)]
-
-  --refine Continuous.subtype_map (X := {p : Measure X // IsProbabilityMeasure p}) (Y := ↑Φ) (f := fun φ ↦ RealRMK.rieszMeasure (Λ φ)) ?_ ?_ ?_
-
+  · refine Continuous.subtype_mk (f := fun φ => (RealRMK.rieszMeasure (Λ φ))) (hp := fun φ => IsPMeas φ) ?_
+    sorry
 
 
 end Arav
