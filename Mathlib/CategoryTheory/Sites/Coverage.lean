@@ -39,7 +39,7 @@ All definitions are in the `CategoryTheory` namespace.
   Grothendieck topology `J`, a `Type*`-valued presheaf on `C` is a sheaf for `K` if and only if
   it is a sheaf for `J`.
 
-# References
+## References
 We don't follow any particular reference, but the arguments can probably be distilled from
 the following sources:
 - [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.1.

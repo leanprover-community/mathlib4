@@ -35,7 +35,7 @@ We also provide API for going between oplax transformations and strong transform
 * `Oplax.mkOfOplax η η'`: given an oplax transformation `η` such that each component
   2-morphism is an isomorphism, `mkOfOplax` gives the corresponding strong transformation.
 
-# TODO
+## TODO
 This file could also include lax transformations between oplax functors.
 
 ## References
