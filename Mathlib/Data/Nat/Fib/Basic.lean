@@ -13,20 +13,16 @@ import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
-# Fibonacci Numbers
+# Fibonacci numbers
 
-This file defines the Fibonacci series, proves results about it and introduces
-methods to compute it quickly.
+This file defines the Fibonacci sequence as `F₀ = 0, F₁ = 1, Fₙ₊₂ = Fₙ + Fₙ₊₁`. Furthermore, it
+proves results about the sequence and introduces methods to compute it quickly.
 
-## Summary
-
-Definition of the Fibonacci sequence `F₀ = 0, F₁ = 1, Fₙ₊₂ = Fₙ + Fₙ₊₁`.
-
-## Main Definitions
+## Main definitions
 
 - `Nat.fib` returns the stream of Fibonacci numbers.
 
-## Main Statements
+## Main statements
 
 - `Nat.fib_add_two`: shows that `fib` indeed satisfies the Fibonacci recurrence `Fₙ₊₂ = Fₙ + Fₙ₊₁`.
 - `Nat.fib_gcd`: `fib n` is a strong divisibility sequence.
@@ -35,7 +31,7 @@ Definition of the Fibonacci sequence `F₀ = 0, F₁ = 1, Fₙ₊₂ = Fₙ + F�
 - `Nat.fib_two_mul` and `Nat.fib_two_mul_add_one` are the basis for an efficient algorithm to
   compute `fib` (see `Nat.fastFib`).
 
-## Implementation Notes
+## Implementation notes
 
 For efficiency purposes, the sequence is defined using `Stream.iterate`.
 
