@@ -1282,7 +1282,7 @@ end Seminorm
 
 section normSeminorm
 
-variable (𝕜) (E) [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
+variable (𝕜) (E) [NormedRing 𝕜] [SeminormedAddCommGroup E] [SMul 𝕜 E] [NormSMulClass 𝕜 E] {r : ℝ}
 
 /-- The norm of a seminormed group as a seminorm. -/
 def normSeminorm : Seminorm 𝕜 E :=
@@ -1302,7 +1302,7 @@ theorem closedBall_normSeminorm : (normSeminorm 𝕜 E).closedBall = Metric.clos
   ext x r y
   simp only [Seminorm.mem_closedBall, Metric.mem_closedBall, coe_normSeminorm, dist_eq_norm]
 
-variable {𝕜 E} {x : E}
+variable {𝕜 E : Type*} {x : E} [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- Balls at the origin are absorbent. -/
 theorem absorbent_ball_zero (hr : 0 < r) : Absorbent 𝕜 (Metric.ball (0 : E) r) := by

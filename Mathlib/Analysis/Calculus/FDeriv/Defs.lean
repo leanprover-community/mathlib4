@@ -185,8 +185,8 @@ section Normed
 ## Reformulations for normed spaces
 -/
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {f : E → F} {f' : E →L[𝕜] F} {x : E}
 
 theorem hasFDerivAtFilter_iff_isLittleO {L : Filter E} :

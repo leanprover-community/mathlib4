@@ -291,7 +291,8 @@ end Pi
 
 section SeminormedAddCommGroup
 
-variable (𝕜 : Type*) [NormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable (𝕜 : Type*) [NormedRing 𝕜] {E : Type*} [SeminormedAddCommGroup E] [SMul 𝕜 E]
+  [ENormSMulClass 𝕜 E]
 
 lemma div_le_egauge_closedBall (r : ℝ≥0) (x : E) : ‖x‖ₑ / r ≤ egauge 𝕜 (closedBall 0 r) x := by
   rw [le_egauge_iff]
@@ -311,7 +312,7 @@ lemma div_le_egauge_ball (r : ℝ≥0) (x : E) : ‖x‖ₑ / r ≤ egauge 𝕜 
 lemma le_egauge_ball_one (x : E) : ‖x‖ₑ ≤ egauge 𝕜 (ball 0 1) x := by
   simpa using div_le_egauge_ball 𝕜 1 x
 
-variable {𝕜}
+variable {𝕜 E : Type*} [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {c : 𝕜} {x : E} {r : ℝ≥0}
 
 lemma egauge_ball_le_of_one_lt_norm (hc : 1 < ‖c‖) (h₀ : r ≠ 0 ∨ ‖x‖ ≠ 0) :
