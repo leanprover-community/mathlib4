@@ -248,10 +248,9 @@ theorem egauge_pi' {I : Set ι} (hI : I.Finite)
         exact ⟨c₀, .inl hc₀, by simp, hc₀r⟩
     · obtain ⟨i₀, hi₀I, hc_max⟩ : ∃ i₀ ∈ I, IsMaxOn (‖c ·‖ₑ) I i₀ :=
         exists_max_image _ (‖c ·‖ₑ) hI hIne
-      by_cases H : c i₀ ≠ 0 ∨ I = univ
+      by_cases! H : c i₀ ≠ 0 ∨ I = univ
       · exact ⟨c i₀, H, fun i hi ↦ by simpa [enorm] using hc_max hi, hcr _ hi₀I⟩
-      · push_neg at H
-        have hc0 (i : ι) (hi : i ∈ I) : c i = 0 := by simpa [H] using hc_max hi
+      · have hc0 (i : ι) (hi : i ∈ I) : c i = 0 := by simpa [H] using hc_max hi
         have heg0 (i : ι) (hi : i ∈ I) : x i = 0 :=
           zero_smul_set_subset (α := 𝕜) (U i) (hc0 i hi ▸ hc i hi)
         have : (𝓝[≠] (0 : 𝕜)).NeBot := (hI₀.resolve_left H.2).resolve_left (by simpa)
@@ -291,8 +290,7 @@ end Pi
 
 section SeminormedAddCommGroup
 
-variable (𝕜 : Type*) [NormedRing 𝕜] {E : Type*} [SeminormedAddCommGroup E] [SMul 𝕜 E]
-  [ENormSMulClass 𝕜 E]
+variable (𝕜 : Type*) [NormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 lemma div_le_egauge_closedBall (r : ℝ≥0) (x : E) : ‖x‖ₑ / r ≤ egauge 𝕜 (closedBall 0 r) x := by
   rw [le_egauge_iff]
@@ -312,7 +310,7 @@ lemma div_le_egauge_ball (r : ℝ≥0) (x : E) : ‖x‖ₑ / r ≤ egauge 𝕜 
 lemma le_egauge_ball_one (x : E) : ‖x‖ₑ ≤ egauge 𝕜 (ball 0 1) x := by
   simpa using div_le_egauge_ball 𝕜 1 x
 
-variable {𝕜 E : Type*} [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {𝕜}
 variable {c : 𝕜} {x : E} {r : ℝ≥0}
 
 lemma egauge_ball_le_of_one_lt_norm (hc : 1 < ‖c‖) (h₀ : r ≠ 0 ∨ ‖x‖ ≠ 0) :
