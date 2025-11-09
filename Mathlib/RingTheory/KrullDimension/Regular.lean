@@ -76,6 +76,8 @@ theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
     supportDim R (QuotSMulTop x M) + 1 ≤ supportDim R M := by
   nontriviality M
   nontriviality (QuotSMulTop x M)
+  have : Nonempty (Module.support R M) := nonempty_support_of_nontrivial
+  have : Nonempty (Module.support R (QuotSMulTop x M)) := nonempty_support_of_nontrivial
   simp only [supportDim, Order.krullDim_eq_iSup_length]
   apply WithBot.coe_le_coe.mpr
   simp only [ENat.iSup_add, iSup_le_iff]
@@ -136,8 +138,7 @@ theorem supportDim_quotSMulTop_succ_eq_supportDim {x : R} (reg : IsSMulRegular M
 open nonZeroDivisors in
 @[stacks 00KW]
 lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim {x : R}
-    (reg : x ∈ R⁰) (hx : x ∈ maximalIdeal R) :
-    ringKrullDim (R ⧸ span {x}) + 1 = ringKrullDim R :=
+    (reg : x ∈ R⁰) (hx : x ∈ maximalIdeal R) : ringKrullDim (R ⧸ span {x}) + 1 = ringKrullDim R :=
   ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim_of_mem_jacobson
     (Module.Flat.isSMulRegular_of_nonZeroDivisors reg) <| by
     rwa [ringJacobson_eq_maximalIdeal R]
