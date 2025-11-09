@@ -46,7 +46,7 @@ variable {R : Type*}
 
 open Ideal Set Finset
 
-namespace PowerSeries.Ideal
+namespace PowerSeries
 
 section Semiring
 
@@ -198,4 +198,4 @@ instance [IsNoetherianRing R] : IsNoetherianRing R⟦X⟧ :=
   IsNoetherianRing.of_prime fun P _ ↦
     IsPrime.fg_iff.2 <| (isNoetherianRing_iff_ideal_fg R).1 inferInstance (P.map constantCoeff)
 
-end PowerSeries.Ideal
+end PowerSeries
