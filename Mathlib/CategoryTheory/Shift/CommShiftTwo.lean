@@ -226,19 +226,23 @@ lemma iso₂_add (m m' : M) :
   nth_rw 2 [← Functor.map_comp_assoc]
   simp [reassoc_of% this]
 
+lemma isoAdd'_iso₁_iso₂ (m₁ m₂ : M) :
+    Functor.CommShift.isoAdd' (show _ = (m₁, m₂) by aesop)
+        (iso₁ h F m₁) (iso₂ h F m₂) =
+      Functor.CommShift.isoAdd' (by aesop) (iso₂ h F m₂) (iso₁ h F m₁) := by
+  ext ⟨X₁, X₂⟩
+  simp [shiftFunctorAdd'_add_zero_hom_app, shiftFunctorAdd'_zero_add_hom_app,
+    iso₁_hom_app, iso₂_hom_app]
+  have := Functor.CommShift₂.comm F h X₁ X₂ m₁ m₂
+  dsimp at this
+  sorry
+
 end commShiftUncurry
 
 open commShiftUncurry in
 noncomputable instance commShiftUncurry : (h.uncurry F).CommShift (M × M) :=
   Functor.CommShift.mkProd (iso₁ h F) (iso₂ h F) (iso₁_zero h F) (iso₂_zero h F)
-    (iso₁_add h F) (iso₂_add h F)
-    (fun m₁ m₂ ↦ by
-      ext ⟨X₁, X₂⟩
-      simp [shiftFunctorAdd'_add_zero_hom_app, shiftFunctorAdd'_zero_add_hom_app,
-        iso₁_hom_app, iso₂_hom_app]
-      have := Functor.CommShift₂.comm F h X₁ X₂ m₁ m₂
-      dsimp at this
-      sorry)
+    (iso₁_add h F) (iso₂_add h F) (isoAdd'_iso₁_iso₂ h F)
 
 end CommShift₂Setup
 
