@@ -365,10 +365,7 @@ variable [NonUnitalNonAssocSemiring α]
 theorem smul_mat_empty {m' : Type*} (x : α) (A : Fin 0 → m' → α) : x • A = ![] :=
   empty_eq _
 
-theorem smul_mat_cons (x : α) (v : n' → α) (A : Fin m → n' → α) :
-    x • vecCons v A = vecCons (x • v) (x • A) := by
-  ext i
-  refine Fin.cases ?_ ?_ i <;> simp
+@[deprecated (since := "2025-11-07")] alias smul_mat_cons := smul_cons
 
 end SMul
 

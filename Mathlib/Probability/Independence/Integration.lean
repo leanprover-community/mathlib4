@@ -279,7 +279,7 @@ theorem indepFun_iff_integral_comp_mul [IsFiniteMeasure μ] {β β' : Type*} {m�
     h (measurable_one.indicator hA) (measurable_one.indicator hB)
       ((integrable_const 1).indicator (hfm.comp measurable_id hA))
       ((integrable_const 1).indicator (hgm.comp measurable_id hB))
-  rwa [← ENNReal.toReal_eq_toReal (measure_ne_top μ _), ENNReal.toReal_mul, ← measureReal_def,
+  rwa [← ENNReal.toReal_eq_toReal_iff' (measure_ne_top μ _), ENNReal.toReal_mul, ← measureReal_def,
     ← measureReal_def, ← measureReal_def, ← integral_indicator_one ((hfm hA).inter (hgm hB)),
     ← integral_indicator_one (hfm hA), ← integral_indicator_one (hgm hB), Set.inter_indicator_one]
   exact ENNReal.mul_ne_top (measure_ne_top μ _) (measure_ne_top μ _)
