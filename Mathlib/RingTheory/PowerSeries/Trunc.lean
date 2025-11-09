@@ -151,6 +151,18 @@ lemma eq_X_pow_mul_shift_add_trunc (n : ℕ) (f : R⟦X⟧) :
     f = X ^ n * (mk fun i ↦ coeff (i + n) f) + (f.trunc n : R⟦X⟧) := by
   rw [← (commute_X_pow _ n).eq, ← eq_shift_mul_X_pow_add_trunc]
 
+@[simp]
+lemma trunc_sum {ι : Type*} (s : Finset ι) (v : ι → R⟦X⟧) (n : ℕ) :
+    (∑ i ∈ s, v i).trunc n = ∑ i ∈ s, (v i).trunc n := by
+  ext i; simp [coeff_trunc]
+
+lemma monomial_eq_C_mul_X_pow (r : R) (n : ℕ) : monomial n r = C r * X ^ n := by
+  ext; simp [coeff_X_pow, coeff_monomial]
+
+@[simp]
+lemma trunc_X_pow_self_mul (n : ℕ) (p : R⟦X⟧) : (X ^ n * p).trunc n = 0 := by
+  ext; simp +contextual [coeff_trunc, coeff_X_pow_mul']
+
 end Trunc
 
 section Trunc
@@ -232,6 +244,18 @@ theorem coeff_mul_eq_coeff_trunc_mul_trunc {d n} (f g) (h : d < n) :
   coeff_mul_eq_coeff_trunc_mul_trunc₂ f g h h
 
 end Trunc
+
+section Ring
+
+variable [Ring R]
+
+@[simp]
+lemma trunc_sub (n : ℕ) (φ ψ : R⟦X⟧) : trunc n (φ - ψ) = trunc n φ - trunc n ψ := by
+  ext i
+  simp only [coeff_trunc, map_sub, Polynomial.coeff_sub]
+  split_ifs <;> simp
+
+end Ring
 
 section Map
 variable {S : Type*} [Semiring R] [Semiring S] (f : R →+* S)
