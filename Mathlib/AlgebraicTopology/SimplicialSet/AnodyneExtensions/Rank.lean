@@ -14,7 +14,7 @@ of a subcomplex `A` of a simplicial set `X`. These are
 functions `f : P.II → α` such that `P.AncestralRel x y` implies `f x < f y`
 (in the weak case, we require this only under the additional condition
 that `x` and `y` are of the same dimension). Such rank functions
-are used in order to show that the ancestral relation on `P.II` is well founded,
+are used in order to show that the ancestrality relation on `P.II` is well founded,
 i.e. that `P` is regular (when we already know `P` is proper).
 Conversely, we shall show that if `P` is regular,
 then `P.RankFunction ℕ` is non empty (TODO @joelriou).
@@ -109,7 +109,7 @@ namespace PairingCore
 variable {X : SSet.{u}} {A : X.Subcomplex} (h : A.PairingCore)
   (α : Type v) [PartialOrder α]
 
-/-- A rank function for `h : A.PairincgCore` is a function from the index type `h.ι`
+/-- A rank function for `h : A.PairingCore` is a function from the index type `h.ι`
 to a partially ordered type which maps the ancestrality relations to strict inequalities. -/
 structure RankFunction where
   /-- the rank function -/
@@ -122,7 +122,7 @@ indices of the same dimension to a strict inequality. -/
 structure WeakRankFunction where
   /-- the (weak) rank function -/
   rank : h.ι → α
-  lt {x y : h.ι} : h.AncestralRel x y → h.d x = h.d y → rank x < rank y
+  lt {x y : h.ι} : h.AncestralRel x y → h.dim x = h.dim y → rank x < rank y
 
 /-- Rank functions for `h : A.PairingCore` correspond to
 rank functions for `h.pairing : A.Pairing`. -/

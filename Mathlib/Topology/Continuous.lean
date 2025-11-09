@@ -38,7 +38,7 @@ theorem IsOpen.preimage (hf : Continuous f) {t : Set Y} (h : IsOpen t) :
   hf.isOpen_preimage t h
 
 lemma Equiv.continuous_symm_iff (e : X ≃ Y) : Continuous e.symm ↔ IsOpenMap e := by
-  simp_rw [continuous_def, ← Set.image_equiv_eq_preimage_symm, IsOpenMap]
+  simp_rw [continuous_def, ← Equiv.image_eq_preimage_symm, IsOpenMap]
 
 lemma Equiv.isOpenMap_symm_iff (e : X ≃ Y) : IsOpenMap e.symm ↔ Continuous e := by
   simp_rw [← Equiv.continuous_symm_iff, Equiv.symm_symm]
