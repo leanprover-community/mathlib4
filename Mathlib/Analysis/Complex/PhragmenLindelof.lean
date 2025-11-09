@@ -664,9 +664,8 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
     have hfc : ContinuousOn (fun x : ℝ => f x) (Ici 0) := by
       refine hd.continuousOn.comp continuous_ofReal.continuousOn fun x hx => ?_
       rwa [closure_setOf_lt_re]
-    by_cases h₀ : ∀ x : ℝ, 0 ≤ x → f x = 0
+    by_cases! h₀ : ∀ x : ℝ, 0 ≤ x → f x = 0
     · refine ⟨0, le_rfl, fun y hy => ?_⟩; rw [h₀ y hy, h₀ 0 le_rfl]
-    push_neg at h₀
     rcases h₀ with ⟨x₀, hx₀, hne⟩
     have hlt : ‖(0 : E)‖ < ‖f x₀‖ := by rwa [norm_zero, norm_pos_iff]
     suffices ∀ᶠ x : ℝ in cocompact ℝ ⊓ 𝓟 (Ici 0), ‖f x‖ ≤ ‖f x₀‖ by
