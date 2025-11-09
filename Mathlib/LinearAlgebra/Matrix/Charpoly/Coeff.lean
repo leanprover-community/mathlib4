@@ -8,6 +8,7 @@ import Mathlib.Algebra.Polynomial.Laurent
 import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 import Mathlib.LinearAlgebra.Matrix.Reindex
+import Mathlib.LinearAlgebra.Matrix.SchurComplement
 import Mathlib.RingTheory.Polynomial.Nilpotent
 
 /-!
@@ -303,6 +304,19 @@ lemma reverse_charpoly (M : Matrix n n R) :
     diagonal_one, invert.map_det]
   simp [t_inv, map_sub, map_one, map_mul, t, smul_eq_diagonal_mul]
 
+theorem charpoly_inv (A : Matrix n n R) (h : IsUnit A) :
+    A⁻¹.charpoly = (-1) ^ Fintype.card n * C (Ring.inverse A.det) * A.charpolyRev := by
+  have : Invertible A := h.invertible
+  calc
+  _ = (scalar n X - C.mapMatrix A⁻¹).det := rfl
+  _ = C (A⁻¹ * A).det * (scalar n X - C.mapMatrix A⁻¹).det := by simp
+  _ = C A⁻¹.det * C A.det * (scalar n X - C.mapMatrix A⁻¹).det := by rw [det_mul]; simp
+  _ = C A⁻¹.det * (C A.det * (scalar n X - C.mapMatrix A⁻¹).det) := by ac_rfl
+  _ = C A⁻¹.det * (C.mapMatrix A * (scalar n X - C.mapMatrix A⁻¹)).det := by simp [RingHom.map_det]
+  _ = C A⁻¹.det * (C.mapMatrix A * scalar n X - 1).det := by rw [mul_sub, ← RingHom.map_mul]; simp
+  _ = C A⁻¹.det * ((-1) ^ Fintype.card n * (1 - scalar n X * C.mapMatrix A).det) := by
+    rw [← neg_sub, det_neg, det_one_sub_mul_comm]
+  _ = _ := by simp [charpolyRev, smul_eq_diagonal_mul]; ac_rfl
 
 @[simp] lemma eval_charpolyRev :
     eval 0 M.charpolyRev = 1 := by
