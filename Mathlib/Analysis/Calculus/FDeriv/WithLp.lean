@@ -59,7 +59,7 @@ theorem hasStrictFDerivAt_ofLp (f : PiLp p E) :
   .of_isLittleO <| (Asymptotics.isLittleO_zero _ _).congr_left fun _ => (sub_self _).symm
 
 @[deprecated hasStrictFDerivAt_ofLp (since := "2025-05-07")]
-theorem hasStrictFDerivAt_equiv (f : ∀ i, E i) :
+theorem hasStrictFDerivAt_equiv (f : PiLp p E) :
     HasStrictFDerivAt (WithLp.equiv p _)
       (continuousLinearEquiv p 𝕜 _).toContinuousLinearMap f :=
   hasStrictFDerivAt_ofLp _ f

@@ -30,6 +30,9 @@ We ensure that the topology, bornology and uniform structure on `PiLp p α` are 
 product topology, product bornology and product uniformity, to be able to use freely continuity
 statements for the coordinate functions, for instance.
 
+If you wish to endow a type synonym of `Π i, α i` with the `L^p` distance, you can use
+`pseudoMetricSpaceToPi` and the declarations below that one.
+
 ## Implementation notes
 
 We only deal with the `L^p` distance on a product of finitely many metric spaces, which may be
@@ -58,6 +61,12 @@ are equivalent on `ℝ^n` for abstract (norm equivalence) reasons. Instead, we g
 (easy) proof which provides a comparison between these two norms with explicit constants.
 
 We also set up the theory for `PseudoEMetricSpace` and `PseudoMetricSpace`.
+
+## TODO
+
+TODO: the results about uniformity and bornology in the `Aux` section should be using the tools in
+`Mathlib.Topology.MetricSpace.Bilipschitz`, so that they can be inlined in the next section and
+the only remaining results are about `Lipschitz` and `Antilipschitz`.
 -/
 
 open Module Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal WithLp
@@ -77,11 +86,11 @@ instance (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) : CoeFun (PiLp p α) 
   coe := ofLp
 
 instance (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) [∀ i, Inhabited (α i)] : Inhabited (PiLp p α) :=
-  ⟨fun _ => default⟩
+  ⟨toLp p fun _ => default⟩
 
 @[ext]
 protected theorem PiLp.ext {p : ℝ≥0∞} {ι : Type*} {α : ι → Type*} {x y : PiLp p α}
-    (h : ∀ i, x i = y i) : x = y := funext h
+    (h : ∀ i, x i = y i) : x = y := ofLp_injective p <| funext h
 
 namespace PiLp
 
@@ -122,11 +131,7 @@ def projₗ (i : ι) : PiLp p β →ₗ[𝕜] β i :=
 
 end
 
-/-! Note that the unapplied versions of these lemmas are deliberately omitted, as they break
-the use of the type synonym. -/
-
-@[simp] lemma ofLp_apply (x : PiLp p α) (i : ι) : ofLp x i = x i := rfl
-@[simp] lemma toLp_apply (x : ∀ i, α i) (i : ι) : toLp p x i = x i := rfl
+lemma toLp_apply (x : ∀ i, α i) (i : ι) : toLp p x i = x i := rfl
 
 section DistNorm
 
@@ -273,6 +278,10 @@ We only register this emetric space structure as a temporary instance, as the tr
 registered later) will have as uniformity exactly the product uniformity, instead of the one coming
 from the edistance (which is equal to it, but not defeq). See Note [forgetful inheritance]
 explaining why having definitionally the right uniformity is often important.
+
+TODO: the results about uniformity and bornology should be using the tools in
+`Mathlib.Topology.MetricSpace.Bilipschitz`, so that they can be inlined in the next section and
+the only remaining results are about `Lipschitz` and `Antilipschitz`.
 -/
 
 
@@ -371,8 +380,7 @@ private theorem edist_apply_le_edist_aux (x y : PiLp p β) (i : ι) :
 
 private lemma lipschitzWith_ofLp_aux : LipschitzWith 1 (@ofLp p (∀ i, β i)) :=
   .of_edist_le fun x y => by
-    simp_rw [edist_pi_def, Finset.sup_le_iff, Finset.mem_univ,
-      forall_true_left, ofLp_apply]
+    simp_rw [edist_pi_def, Finset.sup_le_iff, Finset.mem_univ, forall_true_left]
     exact edist_apply_le_edist_aux _ _
 
 private lemma antilipschitzWith_ofLp_aux :
@@ -406,27 +414,27 @@ private lemma isUniformInducing_ofLp_aux : IsUniformInducing (@ofLp p (∀ i, β
     (antilipschitzWith_ofLp_aux p β).isUniformInducing
       (lipschitzWith_ofLp_aux p β).uniformContinuous
 
-private lemma uniformity_aux : 𝓤 (PiLp p β) = 𝓤[Pi.uniformSpace _] := by
-  have : (fun x : PiLp p β × PiLp p β => (ofLp x.fst, ofLp x.snd)) = id := rfl
-  rw [← (isUniformInducing_ofLp_aux p β).comap_uniformity, this, comap_id]
+private lemma uniformity_aux : 𝓤 (PiLp p β) = 𝓤[UniformSpace.comap ofLp inferInstance] := by
+  rw [← (isUniformInducing_ofLp_aux p β).comap_uniformity]
+  rfl
 
-private lemma cobounded_aux : cobounded (PiLp p α) = @cobounded _ Pi.instBornology :=
-  calc
-    cobounded (PiLp p α) = comap ofLp (cobounded _) :=
-      le_antisymm (antilipschitzWith_ofLp_aux p α).tendsto_cobounded.le_comap
-        (lipschitzWith_ofLp_aux p α).comap_cobounded_le
-    _ = _ := comap_id
+instance bornology (p : ℝ≥0∞) (β : ι → Type*) [∀ i, Bornology (β i)] :
+    Bornology (PiLp p β) := Bornology.induced ofLp
+
+private lemma cobounded_aux : @cobounded _ PseudoMetricSpace.toBornology = cobounded (PiLp p α) :=
+  le_antisymm (antilipschitzWith_ofLp_aux p α).tendsto_cobounded.le_comap
+    (lipschitzWith_ofLp_aux p α).comap_cobounded_le
 
 end Aux
 
 /-! ### Instances on finite `L^p` products -/
 
 instance topologicalSpace [∀ i, TopologicalSpace (β i)] : TopologicalSpace (PiLp p β) :=
-  inferInstanceAs <| TopologicalSpace (Π i, β i)
+  Pi.topologicalSpace.induced ofLp
 
 @[fun_prop, continuity]
 theorem continuous_ofLp [∀ i, TopologicalSpace (β i)] : Continuous (@ofLp p (∀ i, β i)) :=
-  continuous_id
+  continuous_induced_dom
 
 @[fun_prop, continuity]
 protected lemma continuous_apply [∀ i, TopologicalSpace (β i)] (i : ι) :
@@ -434,7 +442,7 @@ protected lemma continuous_apply [∀ i, TopologicalSpace (β i)] (i : ι) :
 
 @[fun_prop, continuity]
 theorem continuous_toLp [∀ i, TopologicalSpace (β i)] : Continuous (@toLp p (∀ i, β i)) :=
-  continuous_id
+  continuous_induced_rng.2 continuous_id
 
 /-- `WithLp.equiv` as a homeomorphism. -/
 def homeomorph [∀ i, TopologicalSpace (β i)] : PiLp p β ≃ₜ (Π i, β i) where
@@ -447,7 +455,7 @@ lemma toEquiv_homeomorph [∀ i, TopologicalSpace (β i)] :
     (homeomorph p β).toEquiv = WithLp.equiv p (Π i, β i) := rfl
 
 lemma isOpenMap_apply [∀ i, TopologicalSpace (β i)] (i : ι) :
-    IsOpenMap (fun f : PiLp p β ↦ f i) := (isOpenMap_eval i).comp (homeomorph p β).symm.isOpenMap
+    IsOpenMap (fun f : PiLp p β ↦ f i) := (isOpenMap_eval i).comp (homeomorph p β).isOpenMap
 
 instance instProdT0Space [∀ i, TopologicalSpace (β i)] [∀ i, T0Space (β i)] :
     T0Space (PiLp p β) :=
@@ -455,18 +463,18 @@ instance instProdT0Space [∀ i, TopologicalSpace (β i)] [∀ i, T0Space (β i)
 
 instance secondCountableTopology [Countable ι] [∀ i, TopologicalSpace (β i)]
     [∀ i, SecondCountableTopology (β i)] : SecondCountableTopology (PiLp p β) :=
-  inferInstanceAs <| SecondCountableTopology (Π i, β i)
+  (homeomorph p β).secondCountableTopology
 
 instance uniformSpace [∀ i, UniformSpace (β i)] : UniformSpace (PiLp p β) :=
-  Pi.uniformSpace _
+  (Pi.uniformSpace β).comap ofLp
 
 lemma uniformContinuous_ofLp [∀ i, UniformSpace (β i)] :
     UniformContinuous (@ofLp p (∀ i, β i)) :=
-  uniformContinuous_id
+  uniformContinuous_comap
 
 lemma uniformContinuous_toLp [∀ i, UniformSpace (β i)] :
     UniformContinuous (@toLp p (∀ i, β i)) :=
-  uniformContinuous_id
+  uniformContinuous_comap' uniformContinuous_id
 
 /-- `WithLp.equiv` as a uniform isomorphism. -/
 def uniformEquiv [∀ i, UniformSpace (β i)] : PiLp p β ≃ᵤ (Π i, β i) where
@@ -484,11 +492,7 @@ lemma toEquiv_uniformEquiv [∀ i, UniformSpace (β i)] :
 
 instance completeSpace [∀ i, UniformSpace (β i)] [∀ i, CompleteSpace (β i)] :
     CompleteSpace (PiLp p β) :=
-  inferInstanceAs <| CompleteSpace (Π i, β i)
-
-instance bornology [∀ i, Bornology (β i)] : Bornology (PiLp p β) :=
-  Pi.instBornology
-
+  (uniformEquiv p β).completeSpace_iff.2 inferInstance
 
 section Fintype
 variable [hp : Fact (1 ≤ p)]
@@ -502,7 +506,7 @@ instance [∀ i, PseudoEMetricSpace (β i)] : PseudoEMetricSpace (PiLp p β) :=
 /-- emetric space instance on the product of finitely many emetric spaces, using the `L^p`
 edistance, and having as uniformity the product uniformity. -/
 instance [∀ i, EMetricSpace (α i)] : EMetricSpace (PiLp p α) :=
-  @EMetricSpace.ofT0PseudoEMetricSpace (PiLp p α) _ Pi.instT0Space
+  EMetricSpace.ofT0PseudoEMetricSpace (PiLp p α)
 
 /-- pseudometric space instance on the product of finitely many pseudometric spaces, using the
 `L^p` distance, and having as uniformity the product uniformity. -/
@@ -571,17 +575,16 @@ lemma isometry_ofLp_infty [∀ i, PseudoEMetricSpace (β i)] :
 /-- seminormed group instance on the product of finitely many normed groups, using the `L^p`
 norm. -/
 instance seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
-    SeminormedAddCommGroup (PiLp p β) :=
-  { Pi.addCommGroup with
-    dist_eq := fun x y => by
-      rcases p.dichotomy with (rfl | h)
-      · simp only [dist_eq_iSup, norm_eq_ciSup, dist_eq_norm, sub_apply]
-      · have : p ≠ ∞ := by
-          intro hp
-          rw [hp, ENNReal.toReal_top] at h
-          linarith
-        simp only [dist_eq_sum (zero_lt_one.trans_le h), norm_eq_sum (zero_lt_one.trans_le h),
-          dist_eq_norm, sub_apply] }
+    SeminormedAddCommGroup (PiLp p β) where
+  dist_eq := fun x y => by
+    rcases p.dichotomy with (rfl | h)
+    · simp only [dist_eq_iSup, norm_eq_ciSup, dist_eq_norm, sub_apply]
+    · have : p ≠ ∞ := by
+        intro hp
+        rw [hp, ENNReal.toReal_top] at h
+        linarith
+      simp only [dist_eq_sum (zero_lt_one.trans_le h), norm_eq_sum (zero_lt_one.trans_le h),
+        dist_eq_norm, sub_apply]
 
 lemma isUniformInducing_toLp [∀ i, PseudoEMetricSpace (β i)] :
     IsUniformInducing (@toLp p (Π i, β i)) :=
@@ -626,7 +629,6 @@ theorem nnnorm_eq_ciSup (f : PiLp ∞ β) : ‖f‖₊ = ⨆ i, ‖f i‖₊ := 
 
 @[simp] lemma nnnorm_ofLp (f : PiLp ∞ β) : ‖ofLp f‖₊ = ‖f‖₊ := by
   rw [nnnorm_eq_ciSup, Pi.nnnorm_def, Finset.sup_univ_eq_ciSup]
-  dsimp only [ofLp_apply]
 
 @[simp] lemma nnnorm_toLp (f : ∀ i, β i) : ‖toLp ∞ f‖₊ = ‖f‖₊ := (nnnorm_ofLp _).symm
 
@@ -753,10 +755,11 @@ variable (p 𝕜)
 variable (E : Type*) [SeminormedAddCommGroup E] [Module 𝕜 E]
 
 /-- An equivalence of finite domains induces a linearly isometric equivalence of finitely supported
-functions -/
+functions. -/
 def _root_.LinearIsometryEquiv.piLpCongrLeft (e : ι ≃ ι') :
     (PiLp p fun _ : ι => E) ≃ₗᵢ[𝕜] PiLp p fun _ : ι' => E where
-  toLinearEquiv := LinearEquiv.piCongrLeft' 𝕜 (fun _ : ι => E) e
+  toLinearEquiv := (WithLp.linearEquiv p 𝕜 (ι → E)).trans
+    ((LinearEquiv.piCongrLeft' 𝕜 (fun _ : ι => E) e).trans (WithLp.linearEquiv p 𝕜 (ι' → E)).symm)
   norm_map' x' := by
     rcases p.dichotomy with (rfl | h)
     · simp_rw [norm_eq_ciSup]
@@ -775,16 +778,16 @@ theorem _root_.LinearIsometryEquiv.piLpCongrLeft_apply (e : ι ≃ ι') (v : PiL
 @[simp]
 theorem _root_.LinearIsometryEquiv.piLpCongrLeft_symm (e : ι ≃ ι') :
     (LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e).symm =
-      LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e.symm :=
-  LinearIsometryEquiv.ext fun z ↦
-    congr_arg (Equiv.toFun · z) (Equiv.piCongrLeft'_symm _ _)
+      LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e.symm := by
+  ext
+  simp [LinearIsometryEquiv.piLpCongrLeft, LinearIsometryEquiv.symm]
 
 @[simp high]
 theorem _root_.LinearIsometryEquiv.piLpCongrLeft_single [DecidableEq ι] [DecidableEq ι']
     (e : ι ≃ ι') (i : ι) (v : E) :
     LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e (toLp p <| Pi.single i v) =
       toLp p (Pi.single (e i) v) := by
-  funext x
+  ext x
   simp [LinearIsometryEquiv.piLpCongrLeft_apply, Equiv.piCongrLeft',
     Pi.single, Function.update, Equiv.symm_apply_eq]
 
@@ -808,12 +811,10 @@ protected def _root_.LinearIsometryEquiv.piLpCongrRight (e : ∀ i, α i ≃ₗ�
     simp only [LinearEquiv.trans_apply, WithLp.linearEquiv_symm_apply, WithLp.linearEquiv_apply]
     obtain rfl | hp := p.dichotomy
     · simp_rw [PiLp.norm_toLp, Pi.norm_def, LinearEquiv.piCongrRight_apply,
-        LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.nnnorm_map,
-        ofLp_apply, toLp_apply]
+        LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.nnnorm_map]
     · have : 0 < p.toReal := zero_lt_one.trans_le <| by norm_cast
-      simp only [PiLp.norm_eq_sum this, toLp_apply, LinearEquiv.piCongrRight_apply,
-        LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.norm_map,
-        ofLp_apply, toLp_apply]
+      simp only [PiLp.norm_eq_sum this, LinearEquiv.piCongrRight_apply,
+        LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.norm_map, one_div]
 
 @[simp]
 theorem _root_.LinearIsometryEquiv.piLpCongrRight_apply (e : ∀ i, α i ≃ₗᵢ[𝕜] β i) (x : PiLp p α) :
@@ -835,7 +836,7 @@ theorem _root_.LinearIsometryEquiv.piLpCongrRight_single (e : ∀ i, α i ≃ₗ
     (i : ι) (v : α i) :
     LinearIsometryEquiv.piLpCongrRight p e (toLp p <| Pi.single i v) =
       toLp p (Pi.single i (e _ v)) :=
-  funext <| Pi.apply_single (e ·) (fun _ => map_zero _) _ _
+  PiLp.ext <| Pi.apply_single (e ·) (fun _ => map_zero _) _ _
 
 end piLpCongrRight
 
@@ -862,7 +863,7 @@ def _root_.LinearIsometryEquiv.piLpCurry :
       dsimp [Sigma.curry]
       rw [← Finset.univ_sigma_univ, Finset.sup_sigma]
     · have : 0 < p.toReal := (toReal_pos_iff_ne_top _).mpr hp
-      simp_rw [PiLp.nnnorm_eq_sum hp, toLp_apply]
+      simp_rw [PiLp.nnnorm_eq_sum hp]
       dsimp [Sigma.curry]
       simp_rw [one_div, NNReal.rpow_inv_rpow this.ne', ← Finset.univ_sigma_univ, Finset.sum_sigma]
 
@@ -917,7 +918,7 @@ theorem nnnorm_toLp_single (i : ι) (b : β i) :
   haveI : Nonempty ι := ⟨i⟩
   induction p generalizing hp with
   | top =>
-    simp_rw [nnnorm_eq_ciSup, toLp_apply]
+    simp_rw [nnnorm_eq_ciSup]
     refine
       ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun j => ?_) fun n hn => ⟨i, hn.trans_eq ?_⟩
     · obtain rfl | hij := Decidable.eq_or_ne i j
@@ -965,7 +966,7 @@ lemma nnnorm_toLp_const {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) (b : �
   rcases p.dichotomy with (h | h)
   · exact False.elim (hp h)
   · have ne_zero : p.toReal ≠ 0 := (zero_lt_one.trans_le h).ne'
-    simp_rw [nnnorm_eq_sum hp, toLp_apply, Function.const_apply, Finset.sum_const,
+    simp_rw [nnnorm_eq_sum hp, Function.const_apply, Finset.sum_const,
       Finset.card_univ, nsmul_eq_mul, NNReal.mul_rpow, ← NNReal.rpow_mul,
       mul_one_div_cancel ne_zero, NNReal.rpow_one, ENNReal.toReal_div, ENNReal.toReal_one]
 
@@ -977,7 +978,7 @@ lemma nnnorm_toLp_const' {β} [SeminormedAddCommGroup β] [Nonempty ι] (b : β)
     ‖toLp p (Function.const ι b)‖₊ =
       (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖₊ := by
   rcases em <| p = ∞ with (rfl | hp)
-  · simp only [toLp_apply, ENNReal.div_top, ENNReal.toReal_zero, NNReal.rpow_zero,
+  · simp only [ENNReal.div_top, ENNReal.toReal_zero, NNReal.rpow_zero,
       one_mul, nnnorm_eq_ciSup, Function.const_apply, ciSup_const]
   · exact nnnorm_toLp_const hp b
 
@@ -1021,7 +1022,7 @@ variable {𝕜} in
 @[simps!]
 def proj (i : ι) : PiLp p β →L[𝕜] β i where
   __ := projₗ p β i
-  cont := continuous_apply ..
+  cont := PiLp.continuous_apply ..
 
 end Fintype
 
@@ -1069,5 +1070,91 @@ nonrec theorem basis_toMatrix_basisFun_mul [Fintype ι]
     WithLp.linearEquiv_symm_apply, Basis.toMatrix_map, Function.comp_def, Basis.map_apply,
     LinearEquiv.symm_apply_apply] at this
   exact this
+
+section toPi
+
+/-!
+### `L^p` distance on a product space
+
+In this section we define a pseudometric space structure on `Π i, α i`, as well as a seminormed
+group structure. These are meant to be used to put the desired instances on type synonyms
+of `Π i, α i`. See for instance `Matrix.frobeniusSeminormedAddCommGroup`.
+-/
+
+variable [Fact (1 ≤ p)] [Fintype ι]
+
+/-- This definition allows to endow `Π i, α i` with the Lp distance with the uniformity and
+bornology being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with
+the Lp distance. -/
+abbrev pseudoMetricSpaceToPi [∀ i, PseudoMetricSpace (α i)] :
+    PseudoMetricSpace (Π i, α i) :=
+  (isUniformInducing_toLp p α).comapPseudoMetricSpace.replaceBornology
+    fun s => Filter.ext_iff.1
+      (le_antisymm (antilipschitzWith_toLp p α).tendsto_cobounded.le_comap
+        (lipschitzWith_toLp p α).comap_cobounded_le) sᶜ
+
+lemma dist_pseudoMetricSpaceToPi [∀ i, PseudoMetricSpace (α i)] (x y : Π i, α i) :
+    @dist _ (pseudoMetricSpaceToPi p α).toDist x y = dist (toLp p x) (toLp p y) := rfl
+
+/-- This definition allows to endow `Π i, α i` with the Lp norm with the uniformity and bornology
+being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with the
+Lp norm. -/
+abbrev seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] :
+    SeminormedAddCommGroup (Π i, α i) where
+  norm x := ‖toLp p x‖
+  toPseudoMetricSpace := pseudoMetricSpaceToPi p α
+  dist_eq x y := by
+    rw [dist_pseudoMetricSpaceToPi, SeminormedAddCommGroup.dist_eq, toLp_sub]
+
+lemma norm_seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] (x : Π i, α i) :
+    @Norm.norm _ (seminormedAddCommGroupToPi p α).toNorm x = ‖toLp p x‖ := rfl
+
+lemma nnnorm_seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] (x : Π i, α i) :
+    @NNNorm.nnnorm _ (seminormedAddCommGroupToPi p α).toSeminormedAddGroup.toNNNorm x =
+    ‖toLp p x‖₊ := rfl
+
+instance isBoundedSMulSeminormedAddCommGroupToPi
+    [∀ i, SeminormedAddCommGroup (α i)] {R : Type*} [SeminormedRing R]
+    [∀ i, Module R (α i)] [∀ i, IsBoundedSMul R (α i)] :
+    letI := pseudoMetricSpaceToPi p α
+    IsBoundedSMul R (Π i, α i) := by
+  letI := pseudoMetricSpaceToPi p α
+  refine ⟨fun x y z ↦ ?_, fun x y z ↦ ?_⟩
+  · simpa [dist_pseudoMetricSpaceToPi] using dist_smul_pair x (toLp p y) (toLp p z)
+  · simpa [dist_pseudoMetricSpaceToPi] using dist_pair_smul x y (toLp p z)
+
+instance normSMulClassSeminormedAddCommGroupToPi
+    [∀ i, SeminormedAddCommGroup (α i)] {R : Type*} [SeminormedRing R]
+    [∀ i, Module R (α i)] [∀ i, NormSMulClass R (α i)] :
+    letI := seminormedAddCommGroupToPi p α
+    NormSMulClass R (Π i, α i) := by
+  letI := seminormedAddCommGroupToPi p α
+  refine ⟨fun x y ↦ ?_⟩
+  simp [norm_seminormedAddCommGroupToPi, norm_smul]
+
+instance normedSpaceSeminormedAddCommGroupToPi
+    [∀ i, SeminormedAddCommGroup (α i)] {R : Type*} [NormedField R]
+    [∀ i, NormedSpace R (α i)] :
+    letI := seminormedAddCommGroupToPi p α
+    NormedSpace R (Π i, α i) := by
+  letI := seminormedAddCommGroupToPi p α
+  refine ⟨fun x y ↦ ?_⟩
+  simp [norm_seminormedAddCommGroupToPi, norm_smul]
+
+/-- This definition allows to endow `Π i, α i` with the Lp norm with the uniformity and bornology
+being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with the
+Lp norm. -/
+abbrev normedAddCommGroupToPi [∀ i, NormedAddCommGroup (α i)] :
+    NormedAddCommGroup (Π i, α i) where
+  norm x := ‖toLp p x‖
+  toPseudoMetricSpace := pseudoMetricSpaceToPi p α
+  dist_eq x y := by
+    rw [dist_pseudoMetricSpaceToPi, SeminormedAddCommGroup.dist_eq, toLp_sub]
+  eq_of_dist_eq_zero {x y} h := by
+    rw [dist_pseudoMetricSpaceToPi] at h
+    apply eq_of_dist_eq_zero at h
+    exact WithLp.toLp_injective p h
+
+end toPi
 
 end PiLp
