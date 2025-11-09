@@ -153,9 +153,6 @@ theorem exist_eq_span_eq_ncard_of_X_not_mem (hI : X ∉ I) {S : Set R}
   · intro r₁ r₂ hr₁ ⟨f, hfmem, hf⟩
     exact ⟨r₁ • f, Submodule.smul_of_tower_mem _ _ hfmem, by simp [hf]⟩
 
-example (f : R⟦X⟧) : constantCoeff f = coeff 0 f := by
-  exact Eq.symm (coeff_zero_eq_constantCoeff_apply f)
-
 open Submodule in
 theorem spanFinrank_eq_spanFinrank_map_constantCoeff_of_X_notMem_of_fg_of_isPrime (hI : X ∉ I)
     (hfg : I.FG) : spanFinrank I = spanFinrank (I.map constantCoeff) := by
