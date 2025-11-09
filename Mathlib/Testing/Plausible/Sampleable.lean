@@ -32,18 +32,22 @@ section Samplers
 
 open SampleableExt
 
-instance Rat.sampleableExt : SampleableExt Rat :=
-  mkSelfContained (do
+instance Rat.Arbitrary : Arbitrary Rat where
+  arbitrary := do
     let d ← choose Int (-(← getSize)) (← getSize)
       (le_trans (Int.neg_nonpos_of_nonneg (Int.ofNat_zero_le _)) (Int.ofNat_zero_le _))
     let n ← choose Nat 0 (← getSize) (Nat.zero_le _)
-    return Rat.divInt d n)
+    return Rat.divInt d n
+
+instance Rat.sampleableExt : SampleableExt Rat := by infer_instance
 
 
-instance PNat.sampleableExt : SampleableExt PNat :=
-  mkSelfContained (do
+instance PNat.Arbitrary : Arbitrary PNat where
+  arbitrary := do
     let n ← chooseNat
-    return Nat.succPNat n)
+    return Nat.succPNat n
+
+instance PNat.sampleableExt : SampleableExt PNat := by infer_instance
 
 end Samplers
 
