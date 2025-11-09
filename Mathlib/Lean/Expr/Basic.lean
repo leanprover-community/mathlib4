@@ -366,16 +366,6 @@ def mapForallBinderNames : Expr → (Name → Name) → Expr
   | .forallE n d b bi, f => .forallE (f n) d (mapForallBinderNames b f) bi
   | e, _ => e
 
-open Lean.Elab.Term
-/-- Annotates a `binderIdent` with the binder information from an `fvar`. -/
-def addLocalVarInfoForBinderIdent (fvar : Expr) (tk : TSyntax ``binderIdent) : MetaM Unit :=
-  -- the only TermElabM thing we do in `addLocalVarInfo` is check inPattern,
-  -- which we assume is always false for this function
-  discard <| TermElabM.run do
-    match tk with
-    | `(binderIdent| $n:ident) => Elab.Term.addLocalVarInfo n fvar
-    | tk => Elab.Term.addLocalVarInfo (Unhygienic.run `(_%$tk)) fvar
-
 /-- If `e` has a structure as type with field `fieldName`, `mkDirectProjection e fieldName` creates
 the projection expression `e.fieldName` -/
 def mkDirectProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
