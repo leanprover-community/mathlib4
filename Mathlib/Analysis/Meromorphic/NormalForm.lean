@@ -59,14 +59,14 @@ theorem meromorphicNFAt_iff_analyticAt_or :
         rw [meromorphicOrderAt_eq_int_iff hf]
         use g, h₁g, h₂g
         exact eventually_nhdsWithin_of_eventually_nhds h₃g
-      by_cases hn : 0 ≤ n
+      by_cases! hn : 0 ≤ n
       · left
         rw [analyticAt_congr h₃g]
         apply (AnalyticAt.zpow_nonneg (by fun_prop) hn).smul h₁g
       · right
         use hf
-        simp [this, WithTop.coe_lt_zero.2 (not_le.1 hn), h₃g.eq_of_nhds,
-          zero_zpow n (ne_of_not_le hn).symm]
+        simp [this, WithTop.coe_lt_zero.2 hn, h₃g.eq_of_nhds,
+          zero_zpow n hn.ne]
   · rintro (h | ⟨h₁, h₂, h₃⟩)
     · by_cases h₂f : analyticOrderAt f x = ⊤
       · rw [analyticOrderAt_eq_top] at h₂f
