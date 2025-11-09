@@ -260,7 +260,7 @@ theorem ofAlgEquiv_comp_liftRingHom :
 
 @[simp]
 theorem mk_liftRingHom {n : ℕ} (x : R) :
-    (Ideal.Quotient.mk _ (liftRingHom I ha f hf x)) = f n x := by
+    Ideal.Quotient.mk _ (liftRingHom I ha f hf x) = f n x := by
   simp [liftRingHom, IsAdicComplete.liftRingHom, extendRingHom_eq ha f hf]
 
 @[simp]
