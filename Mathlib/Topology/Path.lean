@@ -379,6 +379,21 @@ theorem map_map (γ : Path x y) {Z : Type*} [TopologicalSpace Z]
   ext
   rfl
 
+/-- Restrict a path to a subspace when its range is contained in that subspace. -/
+def codRestrict {s : Set X} {x y : s} (γ : Path x.val y.val) (hmem : ∀ t, γ t ∈ s) :
+    Path x y where
+  toFun := s.codRestrict γ hmem
+  continuous_toFun := γ.continuous.codRestrict hmem
+  source' := Subtype.ext γ.source
+  target' := Subtype.ext γ.target
+
+@[simp]
+theorem codRestrict_coe {s : Set X} {x y : s} (γ : Path x.val y.val) (hmem : ∀ t, γ t ∈ s) (t : I) :
+    (γ.codRestrict hmem t : X) = γ t := rfl
+
+theorem map_codRestrict {s : Set X} {x y : s} (γ : Path x.val y.val) (hmem : ∀ t, γ t ∈ s) :
+    (γ.codRestrict hmem).map continuous_subtype_val = γ := rfl
+
 /-- Casting a path from `x` to `y` to a path from `x'` to `y'` when `x' = x` and `y' = y` -/
 def cast (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : Path x' y' where
   toFun := γ

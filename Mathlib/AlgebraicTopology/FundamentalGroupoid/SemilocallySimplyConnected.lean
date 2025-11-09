@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
-import Mathlib.Topology.Connected.LocPathConnected
 import Mathlib.Topology.Homotopy.Path
 
 /-!
@@ -21,7 +20,7 @@ such that loops in that neighborhood are nullhomotopic in the whole space.
 
 ## Main theorems
 
-* `semilocallySimplyConnected_iff_small_loops_null` - Characterization in terms of loops
+* `semilocallySimplyConnected_iff` - Characterization in terms of loops
   being nullhomotopic.
 * `SemilocallySimplyConnected.of_simplyConnected` - Simply connected spaces are semilocally
   simply connected.
@@ -33,14 +32,13 @@ open CategoryTheory FundamentalGroupoid
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
-
-
 /-- A topological space is semilocally simply connected if every point has a neighborhood `U`
 such that the inclusion map from `π₁(U, base)` to `π₁(X, base)` is trivial for all basepoints
 in `U`. Equivalently, every loop in `U` is nullhomotopic in `X`. -/
 def SemilocallySimplyConnected (X : Type*) [TopologicalSpace X] : Prop :=
   ∀ x : X, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧
-    ∀ (base : U), (FundamentalGroup.map ⟨Subtype.val, continuous_subtype_val⟩ base).range = ⊥
+    ∀ (base : U),
+      (FundamentalGroup.map (⟨Subtype.val, continuous_subtype_val⟩ : C(U, X)) base).range = ⊥
 
 namespace SemilocallySimplyConnected
 
@@ -52,8 +50,7 @@ theorem of_simplyConnected [SimplyConnectedSpace X] : SemilocallySimplyConnected
     simp only [MonoidHom.range_eq_bot_iff]; ext
     exact @Subsingleton.elim (Path.Homotopic.Quotient base.val base.val) inferInstance _ _⟩
 
-theorem semilocallySimplyConnected_iff_small_loops_null
-    [LocPathConnectedSpace X] :
+theorem semilocallySimplyConnected_iff :
     SemilocallySimplyConnected X ↔
     ∀ x : X, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧
       ∀ {u : U} (γ : Path u.val u.val) (_ : Set.range γ ⊆ U),
@@ -66,17 +63,10 @@ theorem semilocallySimplyConnected_iff_small_loops_null
     intro u γ hγ_range
     -- Restrict γ to a path in the subspace U
     have hγ_mem : ∀ t, γ t ∈ U := fun t => hγ_range ⟨t, rfl⟩
-    let γ_U : Path u u := {
-      toFun := U.codRestrict γ hγ_mem
-      continuous_toFun := γ.continuous.codRestrict hγ_mem
-      source' := Subtype.ext γ.source
-      target' := Subtype.ext γ.target
-    }
+    let γ_U := γ.codRestrict hγ_mem
     -- The map from π₁(U, u) to π₁(X, u.val) has trivial range
     have h_range := hU_loops u
     rw [MonoidHom.range_eq_bot_iff] at h_range
-    -- The map sends ⟦γ_U⟧ to ⟦γ_U.map⟧ = ⟦γ⟧ by rfl, and h_range makes this ⟦refl⟧
-    have γ_U_eq : γ_U.map continuous_subtype_val = γ := rfl
     have h_map : FundamentalGroup.map ⟨Subtype.val, continuous_subtype_val⟩ u
             (FundamentalGroup.fromPath ⟦γ_U⟧) =
            FundamentalGroup.fromPath ⟦Path.refl u.val⟧ := by
@@ -84,7 +74,7 @@ theorem semilocallySimplyConnected_iff_small_loops_null
     rw [show FundamentalGroup.map ⟨Subtype.val, continuous_subtype_val⟩ u
             (FundamentalGroup.fromPath ⟦γ_U⟧) =
            FundamentalGroup.fromPath ⟦γ_U.map continuous_subtype_val⟧ from rfl,
-        γ_U_eq] at h_map
+        Path.map_codRestrict] at h_map
     exact Quotient.eq.mp h_map
   · -- Backward direction: small loops null implies SemilocallySimplyConnected
     intro h x
