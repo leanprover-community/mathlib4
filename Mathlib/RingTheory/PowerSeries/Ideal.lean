@@ -153,11 +153,14 @@ theorem exist_eq_span_eq_ncard_of_X_not_mem (hI : X ∉ I) {S : Set R}
   · intro r₁ r₂ hr₁ ⟨f, hfmem, hf⟩
     exact ⟨r₁ • f, Submodule.smul_of_tower_mem _ _ hfmem, by simp [hf]⟩
 
+example (f : R⟦X⟧) : constantCoeff f = coeff 0 f := by
+  exact Eq.symm (coeff_zero_eq_constantCoeff_apply f)
+
 open Submodule in
-theorem spanFinrank_le_spanFinrank_map_constantCoeff_of_X_notMem_of_isPrime (hI : X ∉ I) :
-    spanFinrank I ≤ spanFinrank (I.map constantCoeff) := by
-  by_cases hfg : I.FG
-  swap; · exact spanFinrank_of_not_fg hfg ▸ Nat.zero_le _
+theorem spanFinrank_eq_spanFinrank_map_constantCoeff_of_X_notMem_of_fg_of_isPrime (hI : X ∉ I)
+    (hfg : I.FG) : spanFinrank I = spanFinrank (I.map constantCoeff) := by
+  refine le_antisymm ?_ ?_
+  swap; · exact Ideal.spanFinrank_map_le_of_fg constantCoeff hfg
   have : RingHomSurjective (constantCoeff (R := R)) := ⟨constantCoeff_surj⟩
   obtain ⟨S, rfl, hS, hScard⟩ := exist_eq_span_eq_ncard_of_X_not_mem hI
     (I.map constantCoeff).span_generators
@@ -173,10 +176,12 @@ variable {P : Ideal R⟦X⟧} [P.IsPrime]
 open Submodule in
 theorem spanFinrank_le_spanFinrank_map_constantCoeff_add_one_of_prime :
     spanFinrank P ≤ spanFinrank (P.map constantCoeff) + 1 := by
+  by_cases hfg : P.FG
+  swap; · exact spanFinrank_of_not_fg hfg ▸ Nat.zero_le _
   by_cases hP : X ∈ P
   · exact spanFinrank_le_spanFinrank_map_constantCoeff_add_one_of_X_mem hP
-  · exact le_trans (spanFinrank_le_spanFinrank_map_constantCoeff_of_X_notMem_of_isPrime hP)
-      (Nat.le_succ _)
+  · exact le_trans (spanFinrank_eq_spanFinrank_map_constantCoeff_of_X_notMem_of_fg_of_isPrime
+      hP hfg).le (Nat.le_succ _)
 
 /-- A prime ideal `P` of `R⟦X⟧` is finitely generated if and only if `P.map constantCoeff` is
 finitely generated. -/
