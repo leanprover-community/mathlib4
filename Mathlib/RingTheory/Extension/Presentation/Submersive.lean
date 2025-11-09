@@ -541,6 +541,19 @@ noncomputable def reindex (P : SubmersivePresentation R S ι σ)
   __ := P.toPreSubmersivePresentation.reindex e f
   jacobian_isUnit := by simp [P.jacobian_isUnit]
 
+/-- If `S = 0`, this is the submersive presentation on one generator and one relation. -/
+@[simps]
+noncomputable def ofSubsingleton [Subsingleton S] : SubmersivePresentation R S PUnit PUnit where
+  val _ := 1
+  σ' _ := 1
+  aeval_val_σ' _ := Subsingleton.elim _ _
+  relation _ := 1
+  span_range_relation_eq_ker := by
+    simp [Generators.ker, Extension.ker, RingHom.ker_eq_top_of_subsingleton]
+  map _ := ⟨⟩
+  map_inj _ _ _ := rfl
+  jacobian_isUnit := isUnit_of_subsingleton _
+
 end Constructions
 
 variable {R S ι σ}

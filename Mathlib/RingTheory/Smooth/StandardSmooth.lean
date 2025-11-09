@@ -164,4 +164,10 @@ instance IsStandardSmoothOfRelativeDimension.baseChange
 
 end BaseChange
 
+instance (priority := 100) [Subsingleton S] : IsStandardSmooth R S :=
+  ⟨Unit, Unit, inferInstance, inferInstance, ⟨.ofSubsingleton R S⟩⟩
+
+instance (priority := 100) [Subsingleton S] : IsStandardSmoothOfRelativeDimension 0 R S :=
+  ⟨Unit, Unit, inferInstance, inferInstance, .ofSubsingleton R S, by simp [Presentation.dimension]⟩
+
 end Algebra
