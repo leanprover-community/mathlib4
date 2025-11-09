@@ -348,8 +348,7 @@ theorem iInter_nat_halfSpaces_eq
       (∀ a ∈ ball (f i) (infDist (f i) s), re (φ a) < c) ∧ ∀ b ∈ s, c ≤ re (φ b) :=
     geometric_hahn_banach_open (convex_ball _ _) isOpen_ball hs₁ disjoint_ball_infDist
   choose L c hLc using φc
-  use L, c
-  constructor
+  refine ⟨L, c, ?_, fun _ _ j ↦ ?_⟩
   · ext x
     simp only [mem_iInter, mem_setOf_eq]
     constructor
