@@ -31,7 +31,7 @@ In applications requiring a finite-product-preserving functor to be
 oplax-monoidal/monoidal/braided, avoid `attribute [local instance] ofChosenFiniteProducts` but
 instead turn on the corresponding `ofChosenFiniteProducts` declaration for that functor only.
 
-# Projects
+## Projects
 
 - Construct an instance of chosen finite products in the category of affine scheme, using
   the tensor product.

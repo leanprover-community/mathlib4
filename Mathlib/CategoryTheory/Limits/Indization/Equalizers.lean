@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 
 We show that if a category `C` has equalizers, then ind-objects are closed under equalizers.
 
-# References
+## References
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Section 6.1
 -/
 

@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Cospan
 This file provides API for interacting with cones (resp. cocones) in the case of pullbacks
 (resp. pushouts).
 
-# Main definitions
+## Main definitions
 
 * `PullbackCone f g`: Given morphisms `f : X ⟶ Z` and `g : Y ⟶ Z`, a term `t : PullbackCone f g`
   provides the data of a cone pictured as follows
