@@ -334,8 +334,7 @@ theorem iInter_nat_halfSpaces_eq
     ⋂ (i : ℕ), {x | c i ≤ re (L i x)} = s ∧
     (s.Nonempty → s ≠ univ → ∀ i, ∃ x, re (L i x) ≠ 0) := by
   obtain rfl | hs₃ := s.eq_empty_or_nonempty
-  · use 0, 1
-    simp [iInter_eq_empty_iff]
+  · exact ⟨0, 1, by simp [iInter_eq_empty_iff]⟩
   obtain rfl | hs_univ := eq_or_ne s univ
   · use 0, 0
     simp [nonempty_iff_ne_empty]
