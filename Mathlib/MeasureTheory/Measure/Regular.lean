@@ -20,7 +20,7 @@ A measure is `WeaklyRegular` if it satisfies the following properties:
 A measure is `Regular` if it satisfies the following properties:
 * it is finite on compact sets;
 * it is outer regular;
-* it is inner regular for open sets with respect to compacts closed sets: the measure of any open
+* it is inner regular for open sets with respect to compact sets: the measure of any open
   set `U` is the supremum of `μ K` over all compact sets `K` contained in `U`.
 
 A measure is `InnerRegular` if it is inner regular for measurable sets with respect to compact
@@ -28,8 +28,8 @@ sets: the measure of any measurable set `s` is the supremum of `μ K` over all c
 sets contained in `s`.
 
 A measure is `InnerRegularCompactLTTop` if it is inner regular for measurable sets of finite
-measure with respect to compact sets: the measure of any measurable set `s` is the supremum
-of `μ K` over all compact sets contained in `s`.
+measure with respect to compact sets: the measure of any measurable set `s` of finite measure is the
+supremum of `μ K` over all compact sets contained in `s`.
 
 There is a reason for this zoo of regularity classes:
 * A finite measure on a metric space is always weakly regular. Therefore, in probability theory,
@@ -37,8 +37,8 @@ There is a reason for this zoo of regularity classes:
 * In locally compact topological spaces, there are two competing notions of Radon measures: the
   ones that are regular, and the ones that are inner regular. For any of these two notions, there is
   a Riesz representation theorem, and an existence and uniqueness statement for the Haar measure in
-  locally compact topological groups. The two notions coincide in sigma-compact spaces, but they
-  differ in general, so it is worth having the two of them.
+  locally compact topological groups. The two notions coincide in σ-compact spaces, but they differ
+  in general, so it is worth having the two of them.
 * Both notions of Haar measure satisfy the weaker notion `InnerRegularCompactLTTop`, so it is worth
   trying to express theorems using this weaker notion whenever possible, to make sure that it
   applies to both Haar measures simultaneously.
@@ -72,7 +72,7 @@ spaces. Consider the group `ℝ × ℝ` where the first factor has the discrete 
 one the usual topology. It is a locally compact Hausdorff topological group, with Haar measure equal
 to Lebesgue measure on each vertical fiber. Let us consider the regular version of Haar measure.
 Then the set `ℝ × {0}` has infinite measure (by outer regularity), but any compact set it contains
-has zero measure (as it is finite). In fact, this set only contains subset with measure zero or
+has zero measure (as it is finite). In fact, this set only contains subsets with measure zero or
 infinity. The inner regular version of Haar measure, on the other hand, gives zero mass to the
 set `ℝ × {0}`.
 
@@ -82,7 +82,7 @@ outer regularity, one needs additional locally finite assumptions. On the other 
 inner regular.
 
 Several authors require both regularity and inner regularity for their measures. We have opted
-for the more fine grained definitions above as they apply more generally.
+for the more fine-grained definitions above as they apply more generally.
 
 ## Main definitions
 
@@ -119,15 +119,15 @@ for the more fine grained definitions above as they apply more generally.
   of measure greater than `r`;
 * `MeasurableSet.measure_eq_iSup_isClosed_of_ne_top` asserts that the measure of a measurable set
   of finite measure is the supremum of the measure of closed sets it contains.
-*  `MeasurableSet.exists_lt_isClosed_of_ne_top` and `MeasurableSet.exists_isClosed_lt_add`:
+* `MeasurableSet.exists_lt_isClosed_of_ne_top` and `MeasurableSet.exists_isClosed_lt_add`:
   a measurable set of finite measure can be approximated by a closed subset (stated as
   `r < μ F` and `μ s < μ F + ε`, respectively).
 * `MeasureTheory.Measure.WeaklyRegular.of_pseudoMetrizableSpace_of_isFiniteMeasure` is an
-  instance registering that a finite measure on a metric space is weakly regular (in fact, a pseudo
-  metrizable space is enough);
+  instance registering that a finite measure on a metric space is weakly regular (in fact, a
+  pseudometrizable space is enough);
 * `MeasureTheory.Measure.WeaklyRegular.of_pseudoMetrizableSpace_secondCountable_of_locallyFinite`
   is an instance registering that a locally finite measure on a second countable metric space (or
-  even a pseudo metrizable space) is weakly regular.
+  even a pseudometrizable space) is weakly regular.
 
 ### Regular measures
 
@@ -136,7 +136,7 @@ for the more fine grained definitions above as they apply more generally.
 * `IsOpen.exists_lt_isCompact`: for an open set `U` and `r < μ U`, there exists a compact `K ⊆ U`
   of measure greater than `r`;
 * `MeasureTheory.Measure.Regular.of_sigmaCompactSpace_of_isLocallyFiniteMeasure` is an
-  instance registering that a locally finite measure on a `σ`-compact metric space is regular (in
+  instance registering that a locally finite measure on a σ-compact metric space is regular (in
   fact, an emetric space is enough).
 
 ### Inner regular measures
@@ -164,7 +164,7 @@ proved by measurable induction, starting from open sets and checking that it is 
 complements (this is the point of this condition, being symmetrical between inside and outside) and
 countable disjoint unions.
 
-Once this statement is proved, one deduces results for `σ`-finite measures from this statement, by
+Once this statement is proved, one deduces results for σ-finite measures from this statement, by
 restricting them to finite measure sets (and proving that this restriction is weakly regular, using
 again the same statement).
 
@@ -181,7 +181,7 @@ closure of `k` is a compact closed set still contained in `u`, see
 ## References
 
 [Halmos, Measure Theory, §52][halmos1950measure]. Note that Halmos uses an unusual definition of
-Borel sets (for him, they are elements of the `σ`-algebra generated by compact sets!), so his
+Borel sets (for him, they are elements of the σ-algebra generated by compact sets!), so his
 proofs or statements do not apply directly.
 
 [Billingsley, Convergence of Probability Measures][billingsley1999]
@@ -318,13 +318,13 @@ class Regular (μ : Measure α) : Prop extends IsFiniteMeasureOnCompacts μ, Out
 class WeaklyRegular (μ : Measure α) : Prop extends OuterRegular μ where
   protected innerRegular : InnerRegularWRT μ IsClosed IsOpen
 
-/-- A measure `μ` is inner regular if, for any measurable set `s`, then
+/-- A measure `μ` is inner regular if, for any measurable set `s`,
 `μ(s) = sup {μ(K) | K ⊆ s compact}`. -/
 class InnerRegular (μ : Measure α) : Prop where
   protected innerRegular : InnerRegularWRT μ IsCompact MeasurableSet
 
 /-- A measure `μ` is inner regular for finite measure sets with respect to compact sets:
-for any measurable set `s` with finite measure, then `μ(s) = sup {μ(K) | K ⊆ s compact}`.
+for any measurable set `s` with finite measure, `μ(s) = sup {μ(K) | K ⊆ s compact}`.
 The main interest of this class is that it is satisfied for both natural Haar measures (the
 regular one and the inner regular one). -/
 class InnerRegularCompactLTTop (μ : Measure α) : Prop where
@@ -460,7 +460,7 @@ lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {s : ℕ → Set �
     _ < r := hδε
 
 /-- See also `IsCompact.measure_closure` for a version
-that assumes the `σ`-algebra to be the Borel `σ`-algebra but makes no assumptions on `μ`. -/
+that assumes the σ-algebra to be the Borel σ-algebra but makes no assumptions on `μ`. -/
 lemma measure_closure_eq_of_isCompact [R1Space α] [OuterRegular μ]
     {k : Set α} (hk : IsCompact k) : μ (closure k) = μ k := by
   apply le_antisymm ?_ (measure_mono subset_closure)
@@ -651,7 +651,7 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
         _ = μ (⋃ n, s n) + ∑' n, δ n := by rw [measure_iUnion hsd hsm, ENNReal.tsum_add]
         _ ≤ μ (⋃ n, s n) + ε := by grw [hδε, ENNReal.half_le_self]
 
-/-- In a metrizable space (or even a pseudo metrizable space), an open set can be approximated from
+/-- In a metrizable space (or even a pseudometrizable space), an open set can be approximated from
 inside by closed sets. -/
 theorem of_pseudoMetrizableSpace {X : Type*} [TopologicalSpace X] [PseudoMetrizableSpace X]
     [MeasurableSpace X] (μ : Measure X) : InnerRegularWRT μ IsClosed IsOpen := by
@@ -662,7 +662,7 @@ theorem of_pseudoMetrizableSpace {X : Type*} [TopologicalSpace X] [PseudoMetriza
   rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
   exact ⟨F n, subset_iUnion _ _, F_closed n, hn⟩
 
-/-- In a `σ`-compact space, any closed set can be approximated by a compact subset. -/
+/-- In a σ-compact space, any closed set can be approximated by a compact subset. -/
 theorem isCompact_isClosed {X : Type*} [TopologicalSpace X] [SigmaCompactSpace X]
     [MeasurableSpace X] (μ : Measure X) : InnerRegularWRT μ IsCompact IsClosed := by
   intro F hF r hr
@@ -815,8 +815,8 @@ theorem _root_.MeasurableSet.measure_eq_iSup_isCompact_of_ne_top [InnerRegularCo
     μ A = ⨆ (K) (_ : K ⊆ A) (_ : IsCompact K), μ K :=
   InnerRegularCompactLTTop.innerRegular.measure_eq_iSup ⟨hA, h'A⟩
 
-/-- If `μ` is inner regular for finite measure sets with respect to compact sets, then its
-restriction to any set also is. -/
+/-- If `μ` is inner regular for finite measure sets with respect to compact sets, then so is its
+restriction to any set. -/
 instance restrict [h : InnerRegularCompactLTTop μ] (A : Set α) :
     InnerRegularCompactLTTop (μ.restrict A) :=
   ⟨InnerRegularWRT.restrict h.innerRegular A⟩
@@ -949,7 +949,8 @@ theorem _root_.IsOpen.exists_lt_isClosed [WeaklyRegular μ] ⦃U : Set α⦄ (hU
     (hr : r < μ U) : ∃ F, F ⊆ U ∧ IsClosed F ∧ r < μ F :=
   WeaklyRegular.innerRegular hU r hr
 
-/-- If `μ` is a weakly regular measure, then any open set can be approximated by a closed subset. -/
+/-- For a weakly regular measure, the measure of an open set is the supremum of the measures of
+closed sets it contains, i.e. any open set can be approximated from inside by closed subsets. -/
 theorem _root_.IsOpen.measure_eq_iSup_isClosed ⦃U : Set α⦄ (hU : IsOpen U) (μ : Measure α)
     [WeaklyRegular μ] : μ U = ⨆ (F) (_ : F ⊆ U) (_ : IsClosed F), μ F :=
   WeaklyRegular.innerRegular.measure_eq_iSup hU
@@ -959,7 +960,7 @@ theorem innerRegular_measurable [WeaklyRegular μ] :
   WeaklyRegular.innerRegular.measurableSet_of_isOpen (fun _ _ h₁ h₂ ↦ h₁.inter h₂.isClosed_compl)
 
 /-- If `s` is a measurable set, a weakly regular measure `μ` is finite on `s`, and `ε` is a positive
-number, then there exist a closed set `K ⊆ s` such that `μ s < μ K + ε`. -/
+number, then there exists a closed set `K ⊆ s` such that `μ s < μ K + ε`. -/
 theorem _root_.MeasurableSet.exists_isClosed_lt_add [WeaklyRegular μ] {s : Set α}
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ K, K ⊆ s ∧ IsClosed K ∧ μ s < μ K + ε :=
@@ -996,7 +997,7 @@ theorem restrict_of_measure_ne_top [BorelSpace α] [WeaklyRegular μ] {A : Set �
   exact this V_open.measurableSet r hr
 
 -- see Note [lower instance priority]
-/-- Any finite measure on a metrizable space (or even a pseudo metrizable space)
+/-- Any finite measure on a metrizable space (or even a pseudometrizable space)
 is weakly regular. -/
 instance (priority := 100) of_pseudoMetrizableSpace_of_isFiniteMeasure {X : Type*}
     [TopologicalSpace X] [PseudoMetrizableSpace X] [MeasurableSpace X] [BorelSpace X]
@@ -1006,7 +1007,7 @@ instance (priority := 100) of_pseudoMetrizableSpace_of_isFiniteMeasure {X : Type
 
 -- see Note [lower instance priority]
 /-- Any locally finite measure on a second countable metrizable space
-(or even a pseudo metrizable space) is weakly regular. -/
+(or even a pseudometrizable space) is weakly regular. -/
 instance (priority := 100) of_pseudoMetrizableSpace_secondCountable_of_locallyFinite {X : Type*}
     [TopologicalSpace X] [PseudoMetrizableSpace X] [SecondCountableTopology X] [MeasurableSpace X]
     [BorelSpace X] (μ : Measure X) [IsLocallyFiniteMeasure μ] : WeaklyRegular μ :=
@@ -1108,14 +1109,14 @@ instance Regular.domSMul {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAct
   .map <| .smul ((DomMulAct.mk.symm g : G)⁻¹)
 
 -- see Note [lower instance priority]
-/-- Any locally finite measure on a `σ`-compact pseudometrizable space is regular. -/
+/-- Any locally finite measure on a σ-compact pseudometrizable space is regular. -/
 instance (priority := 100) Regular.of_sigmaCompactSpace_of_isLocallyFiniteMeasure {X : Type*}
     [TopologicalSpace X] [PseudoMetrizableSpace X] [SigmaCompactSpace X] [MeasurableSpace X]
     [BorelSpace X] (μ : Measure X) [IsLocallyFiniteMeasure μ] : Regular μ := by
   let A : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
   exact ⟨(InnerRegularWRT.isCompact_isClosed μ).trans (InnerRegularWRT.of_pseudoMetrizableSpace μ)⟩
 
-/-- Any sigma finite measure on a `σ`-compact pseudometrizable space is inner regular. -/
+/-- Any σ-finite measure on a σ-compact pseudometrizable space is inner regular. -/
 instance (priority := 100) {X : Type*}
     [TopologicalSpace X] [PseudoMetrizableSpace X] [SigmaCompactSpace X] [MeasurableSpace X]
     [BorelSpace X] (μ : Measure X) [SigmaFinite μ] : InnerRegular μ := by
