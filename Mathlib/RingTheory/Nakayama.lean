@@ -195,17 +195,3 @@ theorem le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot
   simp only [le_sup_right]
 
 end Submodule
-
-namespace Module
-
-open Pointwise
-
-variable [Module.Finite R M]
-
-theorem nontrivial_quotSMulTop_of_mem_annihilator_jacobson [h : Nontrivial M] {x : R}
-    (hx : x ∈ (annihilator R M).jacobson) : Nontrivial (M ⧸ x • (⊤ : Submodule R M)) :=
-  not_subsingleton_iff_nontrivial.mp <|
-    Submodule.subsingleton_quotient_iff_eq_top.not.mpr <|
-      Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator hx |>.symm
-
-end Module
