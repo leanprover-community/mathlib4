@@ -338,12 +338,12 @@ noncomputable def toCopy : Copy (completeBipartiteGraph (Fin a) (Fin b)) G := by
   let f : Fin a ⊕ Fin b ↪ V := by
     refine ⟨Sum.elim (Subtype.val ∘ fs) (Subtype.val ∘ ft), fun s₁ s₂ ↦ ?_⟩
     match s₁, s₂ with
-    | Sum.inl p₁, Sum.inl p₂ => simp [← Subtype.ext_iff]
+    | Sum.inl p₁, Sum.inl p₂ => simp
     | Sum.inr p₁, Sum.inl p₂ =>
       simpa using (K.isCompleteBetween (fs p₂).prop (ft p₁).prop).ne'
     | Sum.inl p₁, Sum.inr p₂ =>
       simpa using (K.isCompleteBetween (fs p₁).prop (ft p₂).prop).symm.ne'
-    | Sum.inr p₁, Sum.inr p₂ => simp [← Subtype.ext_iff]
+    | Sum.inr p₁, Sum.inr p₂ => simp
   refine ⟨⟨f.toFun, fun {s₁ s₂} hadj ↦ ?_⟩, f.injective⟩
   rcases hadj with ⟨hs₁, hs₂⟩ | ⟨hs₁, hs₂⟩
   all_goals dsimp [f]
