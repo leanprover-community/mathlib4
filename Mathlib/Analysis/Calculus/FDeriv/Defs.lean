@@ -182,7 +182,7 @@ end TVS
 
 section Normed
 /-!
-## Reformulations for normed spaces
+## Reformulations for semi normed spaces
 -/
 
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
