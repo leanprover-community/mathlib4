@@ -91,7 +91,7 @@ theorem circleAverage_eq_circleIntegral {F : Type*} [NormedAddCommGroup F] [Norm
   _ = (2 * π * I)⁻¹ • ∫ θ in 0..2 * π, I • f (circleMap c R θ) := by
     rw [intervalIntegral.integral_smul, mul_inv_rev, smul_smul]
     match_scalars
-    field_simp
+    field
   _ = (2 * π * I)⁻¹ • (∮ z in C(c, R), (z - c)⁻¹ • f z) := by
     unfold circleIntegral
     congr with θ
@@ -123,9 +123,9 @@ lemma circleAverage_eq_integral_add (η : ℝ) :
 /-- Circle averages do not change when replacing the radius by its absolute value. -/
 @[simp] theorem circleAverage_abs_radius :
     circleAverage f c |R| = circleAverage f c R := by
-  by_cases hR : 0 ≤ R
+  by_cases! hR : 0 ≤ R
   · rw [abs_of_nonneg hR]
-  · rw [abs_of_neg (not_le.1 hR), circleAverage_neg_radius]
+  · rw [abs_of_neg hR, circleAverage_neg_radius]
 
 /-- If two functions agree outside of a discrete set in the circle, then their averages agree. -/
 theorem circleAverage_congr_codiscreteWithin
