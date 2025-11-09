@@ -87,7 +87,7 @@ theorem mem_fixedPoints_iff_card_orbit_eq_one {a : α} [Fintype (orbit M a)] :
     a ∈ fixedPoints M α ↔ Fintype.card (orbit M a) = 1 := by
   simp only [← subsingleton_orbit_iff_mem_fixedPoints, le_antisymm_iff,
     Fintype.card_le_one_iff_subsingleton, Nat.add_one_le_iff, Fintype.card_pos_iff,
-    Set.subsingleton_coe, iff_self_and, Set.nonempty_coe_sort, orbit_nonempty, implies_true]
+    Set.subsingleton_coe, iff_self_and, Set.nonempty_coe_sort, nonempty_orbit, implies_true]
 
 @[to_additive instDecidablePredMemSetFixedByAddOfDecidableEq]
 instance (m : M) [DecidableEq β] :
@@ -233,9 +233,16 @@ lemma orbitRel_le_snd :
 end Orbit
 
 section Stabilizer
-variable (G)
 
-variable {G}
+@[to_additive (attr := simp)]
+lemma _root_.IsCancelSMul.stabilizer_eq_bot [IsCancelSMul G α] (a : α) :
+    stabilizer G a = ⊥ :=
+  Subgroup.eq_bot_iff_forall _ |>.mpr fun _ hg ↦ IsCancelSMul.eq_one_of_smul hg
+
+@[to_additive]
+lemma _root_.isCancelSMul_iff_stabilizer_eq_bot :
+    IsCancelSMul G α ↔ (∀ a : α, stabilizer G a = ⊥) := by
+  simp [isCancelSMul_iff_eq_one_of_smul_eq, Subgroup.eq_bot_iff_forall, forall_swap (α := G)]
 
 /-- If the stabilizer of `a` is `S`, then the stabilizer of `g • a` is `gSg⁻¹`. -/
 theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :

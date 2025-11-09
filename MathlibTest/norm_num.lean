@@ -751,3 +751,9 @@ example : (1 : R PUnit.{u+1} PUnit.{v+1}) <= 2 := by
 -- asymptotically slower than the GMP implementation.
 -- It would be great to fix that, and restore this test.
 example : 10^400000 = 10^400000 := by norm_num
+
+theorem large1 {α} [Ring α] : 2^(2^2000) + (2*2) - 2^(2^2000) = (4 : α) := by
+  -- large powers ignored rather than hanging
+  set_option exponentiation.threshold 20 in
+    norm_num1 -- TODO: this should warn, but the warning is discarded
+  simp only [add_sub_cancel_left]

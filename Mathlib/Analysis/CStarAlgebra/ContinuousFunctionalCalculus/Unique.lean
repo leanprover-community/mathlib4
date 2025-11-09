@@ -142,7 +142,7 @@ noncomputable def realContinuousMapOfNNReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥
 @[fun_prop]
 lemma continuous_realContinuousMapOfNNReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥0] A)
     (hφ : Continuous φ) : Continuous φ.realContinuousMapOfNNReal := by
-  simp [realContinuousMapOfNNReal]
+  dsimp [realContinuousMapOfNNReal]
   fun_prop
 
 end IsTopologicalRing
@@ -254,10 +254,9 @@ lemma toContinuousMapHom_toNNReal (f : C(X, ℝ)₀) :
 @[simp]
 lemma toNNReal_smul (r : ℝ≥0) (f : C(X, ℝ)₀) : (r • f).toNNReal = r • f.toNNReal := by
   ext x
-  by_cases h : 0 ≤ f x
+  by_cases! h : 0 ≤ f x
   · simpa [max_eq_left h, NNReal.smul_def] using mul_nonneg r.coe_nonneg h
-  · push_neg at h
-    simpa [max_eq_right h.le, NNReal.smul_def]
+  · simpa [max_eq_right h.le, NNReal.smul_def]
       using mul_nonpos_of_nonneg_of_nonpos r.coe_nonneg h.le
 
 @[simp]
@@ -312,10 +311,10 @@ noncomputable def realContinuousMapZeroOfNNReal (φ : C(X, ℝ≥0)₀ →⋆ₙ
     abel
   map_smul' r f := by
     simp only [MonoidHom.id_apply]
-    by_cases hr : 0 ≤ r
+    by_cases! hr : 0 ≤ r
     · lift r to ℝ≥0 using hr
       simp only [← smul_def, toNNReal_smul, map_smul, toNNReal_neg_smul, smul_sub]
-    · rw [not_le, ← neg_pos] at hr
+    · rw [← neg_pos] at hr
       rw [← neg_smul]
       nth_rw 1 [← neg_neg r]
       nth_rw 3 [← neg_neg r]
@@ -328,7 +327,7 @@ noncomputable def realContinuousMapZeroOfNNReal (φ : C(X, ℝ≥0)₀ →⋆ₙ
 @[fun_prop]
 lemma continuous_realContinuousMapZeroOfNNReal (φ : C(X, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] A)
     (hφ : Continuous φ) : Continuous φ.realContinuousMapZeroOfNNReal := by
-  simp [realContinuousMapZeroOfNNReal]
+  dsimp [realContinuousMapZeroOfNNReal]
   fun_prop
 
 end IsTopologicalRing
@@ -444,7 +443,7 @@ lemma NonUnitalStarAlgHomClass.map_cfcₙ (φ : F) (f : R → R) (a : A)
     · simp [cfcₙHom_id]
     · congr
   all_goals
-    simp [ContinuousMapZero.nonUnitalStarAlgHom_precomp]
+    dsimp [ContinuousMapZero.nonUnitalStarAlgHom_precomp]
     fun_prop
 
 /-- Non-unital star algebra homomorphisms commute with the non-unital continuous functional
@@ -492,7 +491,7 @@ lemma StarAlgHomClass.map_cfc (φ : F) (f : R → R) (a : A)
     · simp [cfcHom_id]
     · congr
   all_goals
-    simp [ContinuousMap.compStarAlgHom']
+    dsimp [ContinuousMap.compStarAlgHom']
     fun_prop
 
 /-- Star algebra homomorphisms commute with the continuous functional calculus.

@@ -13,8 +13,8 @@ This file introduces basic definitions for extremal graph theory, including extr
 
 ## Main definitions
 
-* `SimpleGraph.IsExtremal` is the predicate that `G` satisfies `p` and any `H` satisfying `p` has
-  at most as many edges as `G`.
+* `SimpleGraph.IsExtremal` is the predicate that `G` has the maximum number of edges of any simple
+  graph, with fixed vertices, satisfying `p`.
 
 * `SimpleGraph.extremalNumber` is the maximum number of edges in a `H`-free simple graph on `n`
   vertices.
@@ -33,7 +33,7 @@ section IsExtremal
 variable {V : Type*} [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj]
 
 /-- `G` is an extremal graph satisfying `p` if `G` has the maximum number of edges of any simple
-graph satisfying `p`. -/
+graph, with fixed vertices, satisfying `p`. -/
 def IsExtremal (G : SimpleGraph V) [DecidableRel G.Adj] (p : SimpleGraph V → Prop) :=
   p G ∧ ∀ ⦃G' : SimpleGraph V⦄ [DecidableRel G'.Adj], p G' → #G'.edgeFinset ≤ #G.edgeFinset
 
@@ -60,7 +60,7 @@ end IsExtremal
 section ExtremalNumber
 
 open Classical in
-/-- The extremal number of a natural number `n` and a simple graph `H` is the the maximum number of
+/-- The extremal number of a natural number `n` and a simple graph `H` is the maximum number of
 edges in a `H`-free simple graph on `n` vertices.
 
 If `H` is contained in all simple graphs on `n` vertices, then this is `0`. -/
@@ -98,7 +98,7 @@ theorem card_edgeFinset_le_extremalNumber (h : H.Free G) :
 /-- If `G` has more than `extremalNumber (card V) H` edges, then `G` contains a copy of `H`. -/
 theorem IsContained.of_extremalNumber_lt_card_edgeFinset
     (h : extremalNumber (card V) H < #G.edgeFinset) : H ⊑ G := by
-  contrapose! h
+  contrapose h; push_neg
   exact card_edgeFinset_le_extremalNumber h
 
 /-- `extremalNumber (card V) H` is at most `x` if and only if every `H`-free simple graph `G` has
