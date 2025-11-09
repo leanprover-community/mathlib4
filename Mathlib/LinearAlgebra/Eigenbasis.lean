@@ -43,6 +43,7 @@ eigenbasis, common eigenbasis, diagonalization, simultaneous diagonalization, di
 ## TODO
 
 * a linear map is diagonalizable iff the minimal polynomial is a product of distinct linear factors.
+  Ugly Lean 4.20 version here: https://gist.github.com/llllvvuu/a3943b675b74d427368b02a3f6619764
 * all diagonalizable linear maps are semisimple.
 * a family of linear maps is simultaneously diagonalizable iff they commute and are
   individually diagonalizable.
