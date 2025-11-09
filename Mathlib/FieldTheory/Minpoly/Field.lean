@@ -58,6 +58,10 @@ theorem unique {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0)
   · rw [(monic hx).leadingCoeff, pmonic.leadingCoeff]
   · exact le_antisymm (min A x pmonic hp) (pmin (minpoly A x) (monic hx) (aeval A x))
 
+theorem unique_of_degree_le_degree_minpoly {p : A[X]} (pmonic : p.Monic) (hp : p.aeval x = 0)
+    (pmin : p.degree ≤ (minpoly A x).degree) : p = minpoly A x :=
+  unique _ _ pmonic hp fun _ qm hq ↦ pmin.trans <| min _ _ qm hq
+
 /-- If an element `x` is a root of a polynomial `p`, then the minimal polynomial of `x` divides `p`.
 See also `minpoly.isIntegrallyClosed_dvd` which relaxes the assumptions on `A` in exchange for
 stronger assumptions on `B`. -/
