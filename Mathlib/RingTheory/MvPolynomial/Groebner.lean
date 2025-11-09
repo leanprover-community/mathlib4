@@ -88,8 +88,8 @@ Buchberger criterion is proved with the following sequence of theorems, where ea
   polynomial is in the ideal.
 
 * `MonomialOrder.isRemainder_zero_iff_mem_ideal_of_isGroebnerBasis`: Given a Gröbner basis of an
-ideal, 0 is a remainder of a polynomial on division by the Gröbner basis if and only if the
-polynomial is in the ideal `I`.
+  ideal, 0 is a remainder of a polynomial on division by the Gröbner basis if and only if the
+  polynomial is in the ideal `I`.
 
 * `MonomialOrder.ideal_eq_span_of_isGroebnerBasis`: Gröbner basis of any ideal spans the ideal.
 
