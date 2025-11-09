@@ -154,7 +154,7 @@ theorem exist_eq_span_eq_ncard_of_X_not_mem (hI : X ∉ I) {S : Set R}
     exact ⟨r₁ • f, Submodule.smul_of_tower_mem _ _ hfmem, by simp [hf]⟩
 
 open Submodule in
-theorem spanFinrank_le_spanFinrank_map_constantCoeff_of_X_not_mem_of_prime (hI : X ∉ I) :
+theorem spanFinrank_le_spanFinrank_map_constantCoeff_of_X_notMem_of_isPrime (hI : X ∉ I) :
     spanFinrank I ≤ spanFinrank (I.map constantCoeff) := by
   by_cases hfg : I.FG
   swap; · exact spanFinrank_of_not_fg hfg ▸ Nat.zero_le _
