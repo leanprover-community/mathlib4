@@ -198,26 +198,25 @@ scoped[Topology] notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "
 namespace TopologicalSpace
 open Topology Lean Meta PrettyPrinter.Delaborator SubExpr
 
+/-- Fails iff argument #`space` has a `TopologicalSpace` instance registered and that instance is defeq to argument #`inst`. -/
+def assertNonCanonical (space inst : ℕ) : DelabM Unit := do
+  let α ← withNaryArg space getExpr
+  let .some synthInst ← Meta.trySynthInstance (← Meta.mkAppM ``TopologicalSpace #[α]) | return ()
+  let inst ← withNaryArg inst getExpr
+  if ← Meta.isDefEq inst synthInst then failure
+
 /-- Delaborate unary notation referring to non-standard topologies. -/
 def delabUnary (mkStx : Term → DelabM Term) : Delab :=
   withOverApp 2 <| whenPPOption Lean.getPPNotation do
-    let α ← withNaryArg 0 getExpr
-    let .some synthInst ← Meta.trySynthInstance (← Meta.mkAppM ``TopologicalSpace #[α]) | failure
-    let inst ← withNaryArg 1 getExpr
-    if ← Meta.isDefEq inst synthInst then failure
+    assertNonCanonical 0 1 -- fall through to normal delab if canonical
     let instD ← withNaryArg 1 delab
     mkStx instD
 
 /-- Delaborate binary notation referring to non-standard topologies. -/
 def delabBinary (mkStx : Term → Term → DelabM Term) : Delab :=
   withOverApp 4 <| whenPPOption Lean.getPPNotation do
-    let α ← withNaryArg 0 getExpr
-    let β ← withNaryArg 1 getExpr
-    let .some synthInstα ← Meta.trySynthInstance (← Meta.mkAppM ``TopologicalSpace #[α]) | failure
-    let .some synthInstβ ← Meta.trySynthInstance (← Meta.mkAppM ``TopologicalSpace #[β]) | failure
-    let instα ← withNaryArg 2 getExpr
-    let instβ ← withNaryArg 3 getExpr
-    if (← Meta.isDefEq instα synthInstα) ∧ (← Meta.isDefEq instβ synthInstβ) then failure
+    -- fall through to normal delab if both canonical
+    assertNonCanonical 0 2 <|> assertNonCanonical 1 3
     let instDα ← withNaryArg 2 delab
     let instDβ ← withNaryArg 3 delab
     mkStx instDα instDβ
