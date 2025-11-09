@@ -6,7 +6,6 @@ Authors: Yongxi Lin, Thomas Zhu
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Data.Int.Star
 import Mathlib.Data.Real.StarOrdered
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 import Mathlib.Topology.Compactness.PseudometrizableLindelof
 
 /-!
