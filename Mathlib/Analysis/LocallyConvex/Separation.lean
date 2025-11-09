@@ -336,8 +336,7 @@ theorem iInter_nat_halfSpaces_eq
   obtain rfl | hs₃ := s.eq_empty_or_nonempty
   · exact ⟨0, 1, by simp [iInter_eq_empty_iff]⟩
   obtain rfl | hs_univ := eq_or_ne s univ
-  · use 0, 0
-    simp [nonempty_iff_ne_empty]
+  · exact ⟨0, 0, by simp [nonempty_iff_ne_empty]⟩
   obtain ⟨f, hfmem, hf⟩ : ∃ f : ℕ → E, (∀ i, f i ∈ sᶜ) ∧ sᶜ ⊆ closure (range f) := by
     have : Nonempty ↑sᶜ := (nonempty_compl.mpr hs_univ).to_subtype
     have : SeparableSpace ↑sᶜ := hsep.separableSpace
