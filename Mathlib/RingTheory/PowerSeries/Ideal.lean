@@ -49,7 +49,7 @@ open Ideal Set Finset
 namespace PowerSeries
 variable [CommRing R] {I : Ideal R⟦X⟧} {S : Set R}
 
-section Xmem
+section X_mem
 
 theorem map_constantCoeff_le_self_of_Xmem (hXI : X ∈ I) :
     I.map (C.comp constantCoeff) ≤ I := by
