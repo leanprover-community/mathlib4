@@ -189,7 +189,7 @@ end X_notMem
 
 /-- A prime ideal `P` of `R⟦X⟧` is finitely generated if and only if `P.map constantCoeff` is
 finitely generated. -/
-lemma IsPrime.FG_iff {P : Ideal R⟦X⟧} [P.IsPrime] : P.FG ↔ (P.map constantCoeff).FG := by
+lemma IsPrime.fg_iff {P : Ideal R⟦X⟧} [P.IsPrime] : P.FG ↔ (P.map constantCoeff).FG := by
   constructor
   · exact (FG.map · _)
   · intro ⟨S, hS⟩
