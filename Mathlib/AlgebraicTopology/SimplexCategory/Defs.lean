@@ -195,6 +195,7 @@ scoped macro_rules
     `((⟨SimplexCategory.mk $m, $p⟩ : SimplexCategory.Truncated $n))
 
 /-- A recursor for the truncated simplex category. -/
+@[elab_as_elim, induction_eliminator, cases_eliminator]
 protected def rec {n : ℕ} {F : SimplexCategory.Truncated n → Sort*}
     (h : ∀ m : Fin (n + 1), F ⦋m⦌ₙ) : ∀ X, F X :=
   fun n => h ⟨n.obj.len, Nat.le_iff_lt_add_one.mp n.property⟩
