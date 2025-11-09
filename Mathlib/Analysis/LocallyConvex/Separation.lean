@@ -369,14 +369,12 @@ theorem iInter_nat_halfSpaces_eq
     · intro hx i
       exact (hLc i).2 x hx
   · intro _ _ j
-    cases le_or_gt (c j) 0 with
-    | inl hl =>
-      use f j
+    obtain hl | hr := le_or_gt (c j) 0
+    · use f j
       have : re (L j (f j)) < c j := (hLc j).1 _ <| mem_ball_self <|
         (IsClosed.notMem_iff_infDist_pos hs₂ hs₃).mp (hfmem j)
       linarith
-    | inr hr =>
-      obtain ⟨x, hxs⟩ := hs₃
+    · obtain ⟨x, hxs⟩ := hs₃
       use x
       have : c j ≤ re (L j x) := (hLc j).2 _ hxs
       linarith
