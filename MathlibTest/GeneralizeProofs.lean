@@ -1,5 +1,5 @@
 import Mathlib.Algebra.Ring.Nat
-import Mathlib.Tactic.GeneralizeProofs
+import Batteries.Tactic.GeneralizeProofs
 
 private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
