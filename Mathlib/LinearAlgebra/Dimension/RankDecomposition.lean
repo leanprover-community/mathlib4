@@ -3,8 +3,7 @@ Copyright (c) 2025 Zichen Wang, Yi Yuan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zichen Wang, Yi Yuan
 -/
-import Mathlib.LinearAlgebra.Dimension.LinearMap
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
