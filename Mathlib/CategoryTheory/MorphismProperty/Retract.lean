@@ -48,6 +48,14 @@ instance IsStableUnderRetracts.isomorphisms : (isomorphisms C).IsStableUnderRetr
     · rw [← h.i_w_assoc, IsIso.hom_inv_id_assoc, h.retract_left]
     · rw [Category.assoc, Category.assoc, h.r_w, IsIso.inv_hom_id_assoc, h.retract_right]
 
+instance (P : MorphismProperty C) [P.IsStableUnderRetracts] :
+    P.op.IsStableUnderRetracts where
+  of_retract h₁ h₂ := P.of_retract h₁.unop h₂
+
+instance (P : MorphismProperty Cᵒᵖ) [P.IsStableUnderRetracts] :
+    P.unop.IsStableUnderRetracts where
+  of_retract h₁ h₂ := P.of_retract h₁.op h₂
+
 instance (P₁ P₂ : MorphismProperty C)
     [P₁.IsStableUnderRetracts] [P₂.IsStableUnderRetracts] :
     (P₁ ⊓ P₂).IsStableUnderRetracts where
