@@ -340,8 +340,7 @@ theorem iInter_nat_halfSpaces_eq
   obtain ⟨f, hfmem, hf⟩ : ∃ f : ℕ → E, (∀ i, f i ∈ sᶜ) ∧ sᶜ ⊆ closure (range f) := by
     have : Nonempty ↑sᶜ := (nonempty_compl.mpr hs_univ).to_subtype
     have : SeparableSpace ↑sᶜ := hsep.separableSpace
-    use fun i ↦ (denseSeq ↑sᶜ i : E), by simp
-    intro x hx
+    refine ⟨fun i ↦ (denseSeq ↑sᶜ i : E), by simp, fun x hx ↦ ?_⟩
     change ↑(Subtype.mk x hx) ∈ closure (range (((↑) : ↑sᶜ → E) ∘ _))
     rw [range_comp, ← closure_subtype, (denseRange_denseSeq ↑sᶜ).closure_range]
     trivial
