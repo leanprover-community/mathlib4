@@ -9,7 +9,6 @@ import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Bool.Basic
 import Mathlib.Data.List.GetD
 import Mathlib.Data.Nat.Bits
-import Mathlib.Data.ZMod.Basic
 import Mathlib.Order.Basic
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Common
@@ -354,34 +353,42 @@ theorem xor_one_of_even {n : ℕ} (h : Even n) : n ^^^ 1 = n + 1 := by
     simp [HXor.hXor, instXorOp, xor, bitwise, even_iff.mp h, ← mul_two, div_two_mul_two_of_even h]
 
 @[simp]
-theorem xor_one_of_odd {n : ℕ} (h : Odd n) : n ^^^ 1 = n - 1 := by
+theorem xor_one_of_odd {n : ℕ} (h : ¬Even n) : n ^^^ 1 = n - 1 := by
   cases n with
   | zero =>
-    exact not_odd_zero h |>.elim
+    exact (h <| even_iff.mpr rfl).elim
   | succ n =>
-    apply succ_injective
-    simp [HXor.hXor, instXorOp, xor, bitwise, odd_iff.mp h, ← mul_two,
-      div_two_mul_two_add_one_of_odd h]
+    simp only [HXor.hXor, instXorOp, xor, bitwise, reduceDiv, bitwise_zero_right]
+    grind
 
 /-- The xor of the numbers from 0 to n can be easily calculated using `n mod 4`. -/
-theorem xor_range (n : ℕ) : Finset.fold (· ^^^ ·) 0 id (.range (n + 1)) =
-    match (n : ZMod 4) with | 0 => n | 1 => 1 | 2 => n + 1 | 3 => 0 := by
+theorem xor_range (n : ℕ) : List.foldl (· ^^^ ·) 0 (.range (n + 1)) =
+    match Fin.ofNat 4 n with | 0 => n | 1 => 1 | 2 => n + 1 | 3 => 0 := by
   induction n with
   | zero => simp
   | succ n h =>
-    rw [Finset.range_add_one, Finset.fold_insert Finset.notMem_range_self, h, id_eq, cast_add,
-      cast_one]
-    match h : (n : ZMod 4) with
+    rw [List.range_succ, List.foldl_append, h]
+    match h : Fin.ofNat 4 n with
     | 0 =>
-      rw [zero_add, ← xor_one_of_even <| even_iff.mpr ?_, ← Nat.xor_comm, xor_xor_cancel_left]
-      rw [← @mod_mod_of_dvd _ 4 _ <| by simp, ZMod.natCast_eq_natCast_iff' n .. |>.mp h]
+      nth_rw 4 [← show Fin.ofNat 4 1 = (1 : ℕ) from Fin.val_ofNat ..]
+      rw [← Fin.ofNat_add, h, List.foldl_cons, List.foldl_nil, Fin.zero_add,
+        ← xor_one_of_even <| even_iff.mpr ?_, xor_xor_cancel_left]
+      rw [← @mod_mod_of_dvd _ 4 _ <| by simp, ← Fin.val_ofNat 4, h]
+      rfl
     | 1 =>
+      nth_rw 4 [← show Fin.ofNat 4 1 = (1 : ℕ) from Fin.val_ofNat ..]
+      rw [← Fin.ofNat_add, h, List.foldl_cons, List.foldl_nil, Nat.xor_comm]
       refine xor_one_of_even <| even_iff.mpr ?_
-      rw [add_mod, ← @mod_mod_of_dvd _ 4 n <| by simp, ZMod.natCast_eq_natCast_iff' .. |>.mp h]
+      rw [add_mod, ← @mod_mod_of_dvd _ 4 n <| by simp, ← Fin.val_ofNat 4, h]
+      rfl
     | 2 =>
+      nth_rw 4 [← show Fin.ofNat 4 1 = (1 : ℕ) from Fin.val_ofNat ..]
+      rw [← Fin.ofNat_add, h, List.foldl_cons, List.foldl_nil]
       apply Nat.xor_self
     | 3 =>
-      apply xor_zero
+      nth_rw 4 [← show Fin.ofNat 4 1 = (1 : ℕ) from Fin.val_ofNat ..]
+      rw [← Fin.ofNat_add, h, List.foldl_cons, List.foldl_nil]
+      apply zero_xor
 
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
   cases b <;> simp <;> omega
