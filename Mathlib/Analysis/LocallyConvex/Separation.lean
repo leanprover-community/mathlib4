@@ -396,8 +396,7 @@ theorem iInter_nat_halfSpaces_eq_of_prod {F : Type*} {s : Set (E × F)}
     simp [← map_add]
   · intro hs₃ hsne i
     obtain ⟨z, hz⟩ := eq2 hs₃ hsne i
-    use z.1, z.2
-    simpa [← map_add] using hz
+    exact ⟨z.1, z.2, by simpa [← map_add] using hz⟩
 
 end Countable
 
