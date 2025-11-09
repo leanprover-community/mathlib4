@@ -733,7 +733,7 @@ theorem isBridge_iff {u v : V} :
 
 theorem isBridge_iff_mem_edgeSet_and_notMem_reachabilitySet_deleteEdges {e : Sym2 V} :
     G.IsBridge e ↔ e ∈ G.edgeSet ∧ e ∉ (G.deleteEdges {e}).reachabilitySet :=
-  Sym2.inductionOn e fun _ _ ↦ isBridge_iff
+  e.ind fun _ _ ↦ isBridge_iff
 
 theorem reachable_delete_edges_iff_exists_walk {v w v' w' : V} :
     (G \ fromEdgeSet {s(v, w)}).Reachable v' w' ↔ ∃ p : G.Walk v' w', s(v, w) ∉ p.edges := by
@@ -806,7 +806,7 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
 theorem mem_edgeSet_and_mem_reachabilitySet_deleteEdges_iff_exists_isCycle_and_mem_edges
     {e : Sym2 V} : e ∈ G.edgeSet ∧ e ∈ (G.deleteEdges {e}).reachabilitySet ↔
       ∃ (u : V) (p : G.Walk u u), p.IsCycle ∧ e ∈ p.edges :=
-  Sym2.inductionOn e fun _ _ ↦ adj_and_reachable_delete_edges_iff_exists_cycle
+  e.ind fun _ _ ↦ adj_and_reachable_delete_edges_iff_exists_cycle
 
 theorem isBridge_iff_adj_and_forall_cycle_notMem {v w : V} : G.IsBridge s(v, w) ↔
     G.Adj v w ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → s(v, w) ∉ p.edges := by
