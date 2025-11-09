@@ -50,14 +50,6 @@ section Semiring
 
 variable [Semiring R]
 
-lemma mem_map_constantCoeff_iff {I : Ideal R⟦X⟧} {r : R} :
-    r ∈ I.map constantCoeff ↔ ∃ f ∈ I, f.constantCoeff = r :=
-  I.mem_map_iff_of_surjective _ constantCoeff_surj
-
-lemma constantCoeff_mem_map_of_mem {I : Ideal R⟦X⟧} {f : R⟦X⟧} (hf : f ∈ I) :
-    f.constantCoeff ∈ I.map constantCoeff :=
-  mem_map_constantCoeff_iff.2 ⟨_, hf, rfl⟩
-
 end Semiring
 
 variable [CommRing R] {I : Ideal R⟦X⟧} {g : R⟦X⟧} (hg : g ∈ I)
@@ -67,7 +59,7 @@ section Xmem
 theorem map_constantCoeff_le_self_of_Xmem (hXI : X ∈ I) :
   (C (R := R))'' I.map constantCoeff ≤ I := by
   intro f ⟨r, hr, hf⟩
-  obtain ⟨g, hg, hgr⟩ := mem_map_constantCoeff_iff.1 hr
+  obtain ⟨g, hg, hgr⟩ := (I.mem_map_iff_of_surjective _ constantCoeff_surj).1 hr
   rw [← hf, ← hgr, eq_sub_of_add_eq' g.eq_X_mul_shift_add_const.symm]
   refine I.sub_mem hg (I.mul_mem_right _ hXI)
 
@@ -80,7 +72,7 @@ theorem eq_span_insert_X_of_Xmem_of_span_eq (hXI : X ∈ I) (hSI : span S = I.ma
   ext f
   rw [mem_span_insert, ← map_span, hSI]
   refine ⟨fun hf ↦ ⟨mk fun p ↦ coeff (p + 1) f, C f.constantCoeff, mem_map_of_mem _
-    (constantCoeff_mem_map_of_mem hf), f.eq_shift_mul_X_add_const⟩, fun ⟨F, G, hG, hf⟩ ↦ ?_⟩
+    (Ideal.mem_map_of_mem _ hf), f.eq_shift_mul_X_add_const⟩, fun ⟨F, G, hG, hf⟩ ↦ ?_⟩
   rw [hf]
   exact I.add_mem (I.mul_mem_left _ hXI) (span_le.2 (map_constantCoeff_le_self_of_Xmem hXI) hG)
 
@@ -94,7 +86,8 @@ section F
 
 include haI in
 private lemma exists_F : ∀ i, ∃ F ∈ I, F.constantCoeff = a i :=
-  fun i ↦ mem_map_constantCoeff_iff.1 <| haI ▸ subset_span (mem_range_self i)
+  fun i ↦ (I.mem_map_iff_of_surjective _ constantCoeff_surj).1 <|
+    haI ▸ subset_span (mem_range_self i)
 
 /-- Given `a : Fin k → R` such that `(haI : span (range a) = I.map constantCoeff)`, we construct
 `F : Fin k → R⟦X⟧` such that `F i ∈ I` and `(F i).constantCoeff = a i` for all `i`. -/
@@ -113,7 +106,7 @@ section T
 
 include haI hg in
 private lemma exists_T : ∃ T : Fin k → R, ∑ i, T i * a i = g.constantCoeff :=
-  mem_span_range_iff_exists_fun.1 (haI ▸ constantCoeff_mem_map_of_mem hg)
+  mem_span_range_iff_exists_fun.1 (haI ▸ Ideal.mem_map_of_mem _ hg)
 
 /-- Given `a : Fin k → R` such that `(haP : span (range a) = I.map constantCoeff)` and `g : R⟦X⟧`
 such `(hg : g ∈ I)`, we construct `T : Fin k → R⟦X⟧` such that `∑ i, T i * a i = g.constantCoeff`
