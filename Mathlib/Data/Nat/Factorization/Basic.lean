@@ -516,7 +516,7 @@ theorem exists_eq_pow_of_exponent_coprime_of_pow_eq_pow
     simp [c_factorization]
     obtain ⟨mul_factorization_p_eq, n_dvd_afp⟩ :=
       mul_factorization_p_eq_and_n_dvd_a_factorization_p p
-    obtain ⟨k, afp_eq⟩ :=  n_dvd_afp
+    obtain ⟨k, afp_eq⟩ := n_dvd_afp
     have n_pos := zero_lt_of_ne_zero hn
     have := Nat.div_eq_of_eq_mul_right n_pos afp_eq
     rw [this]
