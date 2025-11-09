@@ -82,7 +82,7 @@ theorem spanFinrank_le_spanFinrank_map_constantCoeff_add_one_of_X_mem (hI : X âˆ
     refine le_trans (Set.ncard_image_le (FG.finite_generators hfg)) ?_
     rw [FG.generators_ncard hfg]
 
-end Xmem
+end X_mem
 
 section X_notMem
 
