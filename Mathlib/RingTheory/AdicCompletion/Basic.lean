@@ -692,7 +692,7 @@ Instead of providing all `M →ₗ[R] N ⧸ (I ^ n • ⊤)`, one can just provi
 -/
 def extend (n : ℕ) :
     M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N) :=
-  (factorPow I N (ha.id_le n)) ∘ₗ f n
+  factorPow I N (ha.id_le n) ∘ₗ f n
 
 variable (hf : ∀ {m}, factorPow I N (ha.monotone m.le_succ) ∘ₗ (f (m + 1)) = f m)
 
@@ -734,7 +734,7 @@ theorem of_lift (x : M) :
   IsAdicComplete.of_lift I (extend ha f) (factorPow_comp_extend ha f hf) x
 
 theorem of_comp_lift :
-    (of I N) ∘ₗ (lift I ha f hf) =
+    of I N ∘ₗ lift I ha f hf =
       AdicCompletion.lift I (extend ha f) (factorPow_comp_extend ha f hf) :=
   IsAdicComplete.of_comp_lift I (extend ha f) (factorPow_comp_extend ha f hf)
 
