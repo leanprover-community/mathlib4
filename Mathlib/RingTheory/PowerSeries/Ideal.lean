@@ -88,7 +88,7 @@ section X_notMem
 
 variable (hXI : X ∉ I) [I.IsPrime]
 
-theorem eq_of_le_of_X_notmem_of_fg_of_prime {J : Ideal R⟦X⟧} (hJI : J ≤ I) (hXI : X ∉ I) (hJ : J.FG)
+theorem eq_of_le_of_X_notMem_of_fg_of_isPrime {J : Ideal R⟦X⟧} (hJI : J ≤ I) (hXI : X ∉ I) (hJ : J.FG)
     (h' : I.map constantCoeff ≤ J.map constantCoeff) : I = J := by
   refine hJI.antisymm' ?_
   replace h' := h'.antisymm (Ideal.map_mono hJI)
