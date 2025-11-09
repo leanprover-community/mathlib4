@@ -200,12 +200,12 @@ theorem variables_tendsto_zero [Semiring R] :
   classical
   simp only [tendsto_iff_coeff_tendsto, ← coeff_apply, coeff_X, coeff_zero]
   refine fun d ↦ tendsto_nhds_of_eventually_eq ?_
-  by_cases h : ∃ i, d = Finsupp.single i 1
+  by_cases! h : ∃ i, d = Finsupp.single i 1
   · obtain ⟨i, hi⟩ := h
     filter_upwards [eventually_cofinite_ne i] with j hj
     simp [hi, Finsupp.single_eq_single_iff, hj.symm]
   · simpa only [ite_eq_right_iff] using
-      Eventually.of_forall fun x h' ↦ (not_exists.mp h x h').elim
+      Eventually.of_forall fun x h' ↦ (h x h').elim
 
 theorem isTopologicallyNilpotent_of_constantCoeff_isNilpotent [CommSemiring R]
     {f : MvPowerSeries σ R} (hf : IsNilpotent (constantCoeff f)) :

@@ -838,7 +838,7 @@ theorem subsetProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
   obtain ⟨g, hg⟩ : ∃ (g : (ℕ ↪o ℕ)), Monotone fun n => (ofLex f (g n)).1 :=
     hα (fun n => (ofLex f n).1) (fun k => mem_image_of_mem (fun x => (ofLex x).1) (hf k))
   have hhg : ∀ n, (ofLex f (g 0)).1 ≤ (ofLex f (g n)).1 := fun n => hg n.zero_le
-  by_cases hc : ∃ n, (ofLex f (g 0)).1 < (ofLex f (g n)).1
+  by_cases! hc : ∃ n, (ofLex f (g 0)).1 < (ofLex f (g n)).1
   · obtain ⟨n, hn⟩ := hc
     use (g 0), (g n)
     constructor
@@ -847,7 +847,6 @@ theorem subsetProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
     · exact Prod.Lex.toLex_le_toLex.mpr <| .inl hn
   · have hhc : ∀ n, (ofLex f (g 0)).1 = (ofLex f (g n)).1 := by
       intro n
-      rw [not_exists] at hc
       exact (hhg n).eq_of_not_lt (hc n)
     obtain ⟨g', hg'⟩ : ∃ g' : ℕ ↪o ℕ, Monotone ((fun n ↦ (ofLex f (g (g' n))).2)) := by
       simp_rw [isPWO_iff_exists_monotone_subseq] at hβ
