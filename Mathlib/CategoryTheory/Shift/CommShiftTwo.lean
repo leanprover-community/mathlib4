@@ -41,15 +41,13 @@ end
 
 namespace Functor
 
-variable (G : C₁ ⥤ C₂ ⥤ D) {M : Type*}
-  [AddCommMonoid M] [HasShift C₁ M] [HasShift C₂ M] [HasShift D M]
-
-class CommShift₂ (h : CommShift₂Setup D M) where
+class CommShift₂ (G : C₁ ⥤ C₂ ⥤ D) {M : Type*}
+    [AddCommMonoid M] [HasShift C₁ M] [HasShift C₂ M] [HasShift D M] (h : CommShift₂Setup D M) where
   commShiftObj (X₁ : C₁) : (G.obj X₁).CommShift M
   commShift_map {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) : NatTrans.CommShift (G.map f) M
   commShiftFlipObj (X₂ : C₂) : (G.flip.obj X₂).CommShift M
   commShift_flip_map {X₂ Y₂ : C₂} (g : X₂ ⟶ Y₂) : NatTrans.CommShift (G.flip.map g) M
-  comm (X₁ : C₁) (X₂ : C₂) (m n : M) :
+  comm (G h) (X₁ : C₁) (X₂ : C₂) (m n : M) :
       ((G.obj (X₁⟦m⟧)).commShiftIso n).hom.app X₂ ≫
           (((G.flip.obj X₂).commShiftIso m).hom.app X₁)⟦n⟧' =
         ((G.flip.obj (X₂⟦n⟧)).commShiftIso m).hom.app X₁ ≫
@@ -139,10 +137,14 @@ noncomputable def iso₂ (m₂ : M) :
       (F.mapIso ((shiftFunctorZero C₁ M).app X₁)).app (X₂⟦m₂⟧) ≪≫
         ((F.obj X₁).commShiftIso m₂).app X₂ ≪≫
         (h.shiftIso 0 m₂ m₂ (zero_add m₂)).symm.app ((F.obj X₁).obj X₂))
-      (fun {X₂ Y₂} f ↦ by
-        sorry))
+      (fun {X₂ Y₂} f ↦ by simp))
     (fun {X₁ Y₁} f ↦ by
-      sorry))
+      ext X₂
+      have := congr_app (F.congr_map ((shiftFunctorZero C₁ M).hom.naturality f)) (X₂⟦m₂⟧)
+      simp only [Functor.map_comp] at this
+      dsimp at this ⊢
+      simp only [Functor.map_id, Category.comp_id, Category.assoc, ← NatTrans.naturality]
+      rw [NatTrans.shift_app_comm_assoc (F.map f) m₂ X₂, reassoc_of% this]))
 
 @[reassoc]
 lemma iso₂_hom_app (X₁ : C₁) (X₂ : C₂) (m₂ : M) :
@@ -162,7 +164,14 @@ end commShiftUncurry
 
 open commShiftUncurry in
 noncomputable instance commShiftUncurry : (h.uncurry F).CommShift (M × M) :=
-  Functor.CommShift.mkProd (iso₁ h F) (iso₂ h F) (by simp) (by simp) sorry sorry sorry
+  Functor.CommShift.mkProd (iso₁ h F) (iso₂ h F) (by simp) (by simp) sorry sorry
+    (fun m₁ m₂ ↦ by
+      ext ⟨X₁, X₂⟩
+      simp [shiftFunctorAdd'_add_zero_hom_app, shiftFunctorAdd'_zero_add_hom_app,
+        iso₁_hom_app, iso₂_hom_app]
+      have := Functor.CommShift₂.comm F h X₁ X₂ m₁ m₂
+      dsimp at this
+      sorry)
 
 end CommShift₂Setup
 
