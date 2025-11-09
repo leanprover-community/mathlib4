@@ -143,7 +143,6 @@ theorem logMahlerMeasure_mul_eq_add_logMahlerMeasure {p q : ℂ[X]} (hpq : p * q
     (p * q).logMahlerMeasure = p.logMahlerMeasure + q.logMahlerMeasure := by
   simp_all [logMahlerMeasure_eq_log_MahlerMeasure, mahlerMeasure_mul, log_mul]
 
-
 theorem logMahlerMeasure_C_mul {a : ℂ} (ha : a ≠ 0) {p : ℂ[X]} (hp : p ≠ 0) :
     (C a * p).logMahlerMeasure = log ‖a‖ + p.logMahlerMeasure := by
   rw [logMahlerMeasure_mul_eq_add_logMahlerMeasure (by simp [ha, hp]), logMahlerMeasure_const]
@@ -223,7 +222,7 @@ theorem logMahlerMeasure_X_sub_C (z : ℂ) : (X - C z).logMahlerMeasure = log⁺
 theorem logMahlerMeasure_X_add_C (z : ℂ) : (X + C z).logMahlerMeasure = log⁺ ‖z‖ := by
   simp [← sub_neg_eq_add, ← map_neg]
 
-theorem logMahlerMeasure_C_mul_X_add_C {a : ℂ} (b : ℂ) (ha : a ≠ 0) :
+theorem logMahlerMeasure_C_mul_X_add_C {a : ℂ} (ha : a ≠ 0) (b : ℂ) :
     (C a * X + C b).logMahlerMeasure = log ‖a‖ + log⁺ ‖a⁻¹ * b‖ := by
   rw [show C a * X + C b = C a * (X + C (a⁻¹ * b)) by simp [mul_add, ← map_mul, ha],
     logMahlerMeasure_C_mul ha (X_add_C_ne_zero (a⁻¹ * b)), logMahlerMeasure_X_add_C]
@@ -247,7 +246,7 @@ theorem mahlerMeasure_X_sub_C (z : ℂ) : (X - C z).mahlerMeasure = max 1 ‖z�
 theorem mahlerMeasure_X_add_C (z : ℂ) : (X + C z).mahlerMeasure = max 1 ‖z‖ := by
   simp [← sub_neg_eq_add, ← map_neg]
 
-theorem mahlerMeasure_C_mul_X_add_C {a : ℂ} (b : ℂ) (ha : a ≠ 0) :
+theorem mahlerMeasure_C_mul_X_add_C {a : ℂ} (ha : a ≠ 0) (b : ℂ) :
     (C a * X + C b).mahlerMeasure = ‖a‖ * max 1 ‖a⁻¹ * b‖ := by
   simp [show C a * X + C b = C a * (X + C (a⁻¹ * b)) by simp [mul_add, ← map_mul, ha],
     mahlerMeasure_mul, -map_mul]
