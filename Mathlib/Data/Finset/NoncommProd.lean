@@ -111,9 +111,10 @@ def noncommProd (s : Multiset α) (comm : { x | x ∈ s }.Pairwise Commute) : α
 theorem noncommProd_coe (l : List α) (comm) : noncommProd (l : Multiset α) comm = l.prod := by
   rw [noncommProd]
   simp only [noncommFold_coe]
-  induction' l with hd tl hl
-  · simp
-  · rw [List.prod_cons, List.foldr, hl]
+  induction l with
+  | nil => simp
+  | cons hd tl hl =>
+    rw [List.prod_cons, List.foldr, hl]
     intro x hx y hy
     exact comm (List.mem_cons_of_mem _ hx) (List.mem_cons_of_mem _ hy)
 
@@ -130,11 +131,12 @@ theorem noncommProd_cons (s : Multiset α) (a : α) (comm) :
 @[to_additive]
 theorem noncommProd_cons' (s : Multiset α) (a : α) (comm) :
     noncommProd (a ::ₘ s) comm = noncommProd s (comm.mono fun _ => mem_cons_of_mem) * a := by
-  induction' s using Quotient.inductionOn with s
+  induction s using Quotient.inductionOn with | _ s
   simp only [quot_mk_to_coe, cons_coe, noncommProd_coe, List.prod_cons]
-  induction' s with hd tl IH
-  · simp
-  · rw [List.prod_cons, mul_assoc, ← IH, ← mul_assoc, ← mul_assoc]
+  induction s with
+  | nil => simp
+  | cons hd tl IH =>
+    rw [List.prod_cons, mul_assoc, ← IH, ← mul_assoc, ← mul_assoc]
     · congr 1
       apply comm.of_refl <;> simp
     · intro x hx y hy
@@ -156,7 +158,7 @@ theorem noncommProd_add (s t : Multiset α) (comm) :
 lemma noncommProd_induction (s : Multiset α) (comm)
     (p : α → Prop) (hom : ∀ a b, p a → p b → p (a * b)) (unit : p 1) (base : ∀ x ∈ s, p x) :
     p (s.noncommProd comm) := by
-  induction' s using Quotient.inductionOn with l
+  induction s using Quotient.inductionOn with | _ l
   simp only [quot_mk_to_coe, noncommProd_coe, mem_coe] at base ⊢
   exact l.prod_induction p hom unit base
 
@@ -198,7 +200,7 @@ theorem noncommProd_commute (s : Multiset α) (comm) (y : α) (h : ∀ x ∈ s, 
 theorem mul_noncommProd_erase [DecidableEq α] (s : Multiset α) {a : α} (h : a ∈ s) (comm)
     (comm' := fun _ hx _ hy hxy ↦ comm (s.mem_of_mem_erase hx) (s.mem_of_mem_erase hy) hxy) :
     a * (s.erase a).noncommProd comm' = s.noncommProd comm := by
-  induction' s using Quotient.inductionOn with l
+  induction s using Quotient.inductionOn with | _ l
   simp only [quot_mk_to_coe, mem_coe, coe_erase, noncommProd_coe] at comm h ⊢
   suffices ∀ x ∈ l, ∀ y ∈ l, x * y = y * x by rw [List.prod_erase_of_comm h this]
   intro x hx y hy
@@ -360,9 +362,9 @@ theorem noncommProd_erase_mul [DecidableEq α] (s : Finset α) {a : α} (h : a �
 @[to_additive]
 theorem noncommProd_eq_prod {β : Type*} [CommMonoid β] (s : Finset α) (f : α → β) :
     (noncommProd s f fun _ _ _ _ _ => Commute.all _ _) = s.prod f := by
-  induction' s using Finset.cons_induction_on with a s ha IH
-  · simp
-  · simp [IH]
+  induction s using Finset.cons_induction_on with
+  | empty => simp
+  | cons a s ha IH => simp [IH]
 
 /-- The non-commutative version of `Finset.prod_union` -/
 @[to_additive /-- The non-commutative version of `Finset.sum_union` -/]
@@ -400,13 +402,14 @@ theorem noncommProd_mul_distrib_aux {s : Finset α} {f : α → β} {g : α → 
 theorem noncommProd_mul_distrib {s : Finset α} (f : α → β) (g : α → β) (comm_ff comm_gg comm_gf) :
     noncommProd s (f * g) (noncommProd_mul_distrib_aux comm_ff comm_gg comm_gf) =
       noncommProd s f comm_ff * noncommProd s g comm_gg := by
-  induction' s using Finset.cons_induction_on with x s hnotMem ih
-  · simp
-  rw [Finset.noncommProd_cons, Finset.noncommProd_cons, Finset.noncommProd_cons, Pi.mul_apply,
-    ih (comm_ff.mono fun _ => mem_cons_of_mem) (comm_gg.mono fun _ => mem_cons_of_mem)
-      (comm_gf.mono fun _ => mem_cons_of_mem),
-    (noncommProd_commute _ _ _ _ fun y hy => ?_).mul_mul_mul_comm]
-  exact comm_gf (mem_cons_self x s) (mem_cons_of_mem hy) (ne_of_mem_of_not_mem hy hnotMem).symm
+  induction s using Finset.cons_induction_on with
+  | empty => simp
+  | cons x s hnotMem ih =>
+    rw [Finset.noncommProd_cons, Finset.noncommProd_cons, Finset.noncommProd_cons, Pi.mul_apply,
+      ih (comm_ff.mono fun _ => mem_cons_of_mem) (comm_gg.mono fun _ => mem_cons_of_mem)
+        (comm_gf.mono fun _ => mem_cons_of_mem),
+      (noncommProd_commute _ _ _ _ fun y hy => ?_).mul_mul_mul_comm]
+    exact comm_gf (mem_cons_self x s) (mem_cons_of_mem hy) (ne_of_mem_of_not_mem hy hnotMem).symm
 
 section FinitePi
 

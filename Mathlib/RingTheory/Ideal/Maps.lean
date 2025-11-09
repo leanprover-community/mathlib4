@@ -608,11 +608,9 @@ protected theorem map_mul {R} [Semiring R] [FunLike F R S] [RingHomClass F R S]
       mul_le.2 fun r hri s hsj =>
         show (f (r * s)) ∈ map f I * map f J by
           rw [map_mul]; exact mul_mem_mul (mem_map_of_mem f hri) (mem_map_of_mem f hsj))
-    (span_mul_span (↑f '' ↑I) (↑f '' ↑J) ▸ (span_le.2 <|
-      Set.iUnion₂_subset fun _ ⟨r, hri, hfri⟩ =>
-        Set.iUnion₂_subset fun _ ⟨s, hsj, hfsj⟩ =>
-          Set.singleton_subset_iff.2 <|
-            hfri ▸ hfsj ▸ by rw [← map_mul]; exact mem_map_of_mem f (mul_mem_mul hri hsj)))
+    (span_mul_span (↑f '' ↑I) (↑f '' ↑J) ▸ (span_le.2 <| by
+      rintro _ ⟨_, ⟨r, hri, rfl⟩, _, ⟨s, hsj, rfl⟩, rfl⟩
+      simp_rw [← map_mul]; exact mem_map_of_mem f (mul_mem_mul hri hsj)))
 
 /-- The pushforward `Ideal.map` as a (semi)ring homomorphism. -/
 @[simps]
@@ -647,10 +645,12 @@ theorem le_comap_mul : comap f K * comap f L ≤ comap f (K * L) :=
       mul_mono (map_le_iff_le_comap.2 <| le_rfl) (map_le_iff_le_comap.2 <| le_rfl)
 
 theorem le_comap_pow (n : ℕ) : K.comap f ^ n ≤ (K ^ n).comap f := by
-  induction' n with n n_ih
-  · rw [pow_zero, pow_zero, Ideal.one_eq_top, Ideal.one_eq_top]
+  induction n with
+  | zero =>
+    rw [pow_zero, pow_zero, Ideal.one_eq_top, Ideal.one_eq_top]
     exact rfl.le
-  · rw [pow_succ, pow_succ]
+  | succ n n_ih =>
+    rw [pow_succ, pow_succ]
     exact (Ideal.mul_mono_left n_ih).trans (Ideal.le_comap_mul f)
 
 lemma disjoint_map_primeCompl_iff_comap_le {S : Type*} [Semiring S] {f : R →+* S}
@@ -784,7 +784,7 @@ theorem ker_isPrime {F : Type*} [Semiring R] [Semiring S] [IsDomain S]
   have := Ideal.bot_prime (α := S)
   inferInstanceAs (Ideal.comap f ⊥).IsPrime
 
-/-- The kernel of a homomorphism to a field is a maximal ideal. -/
+/-- The kernel of a homomorphism to a division ring is a maximal ideal. -/
 theorem ker_isMaximal_of_surjective {R K F : Type*} [Ring R] [DivisionRing K]
     [FunLike F R K] [RingHomClass F R K] (f : F)
     (hf : Function.Surjective f) : (ker f).IsMaximal :=
@@ -1183,8 +1183,6 @@ variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] (f : A →ₐ[R] B)
 
 lemma ker_coe : RingHom.ker f = RingHom.ker (f : A →+* B) := rfl
-
-@[deprecated (since := "2025-02-24")] alias coe_ker := ker_coe
 
 lemma coe_ideal_map (I : Ideal A) :
     Ideal.map f I = Ideal.map (f : A →+* B) I := rfl

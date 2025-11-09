@@ -105,9 +105,6 @@ theorem subtype_injective (s : AffineSubspace k P) [Nonempty s] : Function.Injec
 theorem coe_subtype (s : AffineSubspace k P) [Nonempty s] : (s.subtype : s → P) = ((↑) : s → P) :=
   rfl
 
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
-
 end AffineSubspace
 
 theorem AffineMap.lineMap_mem {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V]
@@ -597,9 +594,39 @@ theorem span_eq_top_of_surjective {s : Set P₁} (hf : Function.Surjective f)
     (h : affineSpan k s = ⊤) : affineSpan k (f '' s) = ⊤ := by
   rw [← AffineSubspace.map_span, h, map_top_of_surjective f hf]
 
+/-- If two affine maps agree on a set, their linear parts agree on the vector span of that set. -/
+theorem linear_eqOn_vectorSpan {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
+    {s : Set P₁} {f g : P₁ →ᵃ[k] P₂}
+    (h_agree : s.EqOn f g) : Set.EqOn f.linear g.linear (vectorSpan k s) := by
+  simp only [vectorSpan_def]
+  apply LinearMap.eqOn_span
+  rintro - ⟨x, hx, y, hy, rfl⟩
+  simp [h_agree hx, h_agree hy]
+
+/-- Two affine maps which agree on a set, agree on its affine span. -/
+theorem eqOn_affineSpan {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
+    {s : Set P₁} {f g : P₁ →ᵃ[k] P₂}
+    (h_agree : s.EqOn f g) : Set.EqOn f g (affineSpan k s) := by
+  rcases s.eq_empty_or_nonempty with rfl | ⟨q, hq⟩; · simp
+  rintro - ⟨x, hx, y, hy, rfl⟩
+  simp [h_agree hx, linear_eqOn_vectorSpan h_agree hy]
+
+/-- If two affine maps agree on a set that spans the entire space, then they are equal. -/
+theorem ext_on {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
+    {s : Set P₁} {f g : P₁ →ᵃ[k] P₂}
+    (h_span : affineSpan k s = ⊤)
+    (h_agree : s.EqOn f g) : f = g := by
+  simpa [h_span]  using eqOn_affineSpan h_agree
+
 end AffineMap
 
 namespace AffineEquiv
+
+/-- If two affine equivalences agree on a set that spans the entire space, then they are equal. -/
+theorem ext_on {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
+    {s : Set P₁} (h_span : affineSpan k s = ⊤)
+    (T₁ T₂ : P₁ ≃ᵃ[k] P₂) (h_agree : s.EqOn T₁ T₂) : T₁ = T₂ :=
+  (AffineEquiv.toAffineMap_inj).mp <| AffineMap.ext_on h_span h_agree
 
 section ofEq
 variable (S₁ S₂ : AffineSubspace k P₁) [Nonempty S₁] [Nonempty S₂]
@@ -675,7 +702,7 @@ theorem comap_comap (s : AffineSubspace k P₃) (f : P₁ →ᵃ[k] P₂) (g : P
     (s.comap g).comap f = s.comap (g.comp f) :=
   rfl
 
--- lemmas about map and comap derived from the galois connection
+-- lemmas about map and comap derived from the Galois connection
 theorem map_le_iff_le_comap {f : P₁ →ᵃ[k] P₂} {s : AffineSubspace k P₁} {t : AffineSubspace k P₂} :
     s.map f ≤ t ↔ s ≤ t.comap f :=
   image_subset_iff

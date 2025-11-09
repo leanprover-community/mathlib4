@@ -12,6 +12,7 @@ import Mathlib.Data.Nat.Bits
 import Mathlib.Order.Basic
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Common
+import Batteries.Data.Nat.Bitwise
 
 /-!
 # Bitwise operations on natural numbers
@@ -68,7 +69,7 @@ lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
 
 theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n → C (bit b n)) {n}
     (h : n ≠ 0) :
-    binaryRec z f n = bit_decomp n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
+    binaryRec z f n = bit_bodd_div2 n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
   cases n using bitCasesOn with
   | bit b n =>
     rw [binaryRec_eq _ _ (by right; simpa [bit_eq_zero_iff] using h)]
@@ -189,7 +190,7 @@ theorem testBit_eq_inth (n i : ℕ) : n.testBit i = n.bits.getI i := by
       bodd_eq_bits_head, List.getI_zero_eq_headI]
     cases List.headI (bits n) <;> rfl
   | succ i ih =>
-    conv_lhs => rw [← bit_decomp n]
+    conv_lhs => rw [← bit_bodd_div2 n]
     rw [testBit_bit_succ, ih n.div2, div2_bits_eq_tail]
     cases n.bits <;> simp
 
@@ -242,7 +243,7 @@ theorem bitwise_swap {f : Bool → Bool → Bool} :
   rcases m with - | m
   <;> rcases n with - | n
   <;> try rw [bitwise_zero_left, bitwise_zero_right]
-  · specialize ih ((m+1) / 2) (div_lt_self' ..)
+  · specialize ih ((m + 1) / 2) (div_lt_self' ..)
     simp [bitwise_of_ne_zero, ih]
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
@@ -283,45 +284,28 @@ theorem land_assoc (n m k : ℕ) : (n &&& m) &&& k = n &&& (m &&& k) := by bitwi
 
 theorem lor_assoc (n m k : ℕ) : (n ||| m) ||| k = n ||| (m ||| k) := by bitwise_assoc_tac
 
--- These lemmas match `mul_inv_cancel_right` and `mul_inv_cancel_left`.
-theorem xor_cancel_right (n m : ℕ) : (m ^^^ n) ^^^ n = m := by
-  rw [Nat.xor_assoc, Nat.xor_self, xor_zero]
+@[deprecated Nat.xor_xor_cancel_right (since := "2025-10-02")]
+theorem xor_cancel_right (n m : ℕ) : (m ^^^ n) ^^^ n = m := Nat.xor_xor_cancel_right ..
 
-theorem xor_cancel_left (n m : ℕ) : n ^^^ (n ^^^ m) = m := by
-  rw [← Nat.xor_assoc, Nat.xor_self, zero_xor]
+@[deprecated Nat.xor_xor_cancel_left (since := "2025-10-02")]
+theorem xor_cancel_left (n m : ℕ) : n ^^^ (n ^^^ m) = m := Nat.xor_xor_cancel_left ..
 
-theorem xor_right_injective {n : ℕ} : Function.Injective (HXor.hXor n : ℕ → ℕ) := fun m m' h => by
-  rw [← xor_cancel_left n m, ← xor_cancel_left n m', h]
+@[deprecated Nat.xor_eq_zero_iff (since := "2025-10-02")]
+theorem xor_eq_zero {n m : ℕ} : n ^^^ m = 0 ↔ n = m := Nat.xor_eq_zero_iff
 
-theorem xor_left_injective {n : ℕ} : Function.Injective fun m => m ^^^ n :=
-  fun m m' (h : m ^^^ n = m' ^^^ n) => by
-  rw [← xor_cancel_right n m, ← xor_cancel_right n m', h]
-
-@[simp]
-theorem xor_right_inj {n m m' : ℕ} : n ^^^ m = n ^^^ m' ↔ m = m' :=
-  xor_right_injective.eq_iff
-
-@[simp]
-theorem xor_left_inj {n m m' : ℕ} : m ^^^ n = m' ^^^ n ↔ m = m' :=
-  xor_left_injective.eq_iff
-
-@[simp]
-theorem xor_eq_zero {n m : ℕ} : n ^^^ m = 0 ↔ n = m := by
-  rw [← Nat.xor_self n, xor_right_inj, eq_comm]
-
-theorem xor_ne_zero {n m : ℕ} : n ^^^ m ≠ 0 ↔ n ≠ m :=
-  xor_eq_zero.not
+@[deprecated Nat.xor_ne_zero_iff (since := "2025-10-02")]
+theorem xor_ne_zero {n m : ℕ} : n ^^^ m ≠ 0 ↔ n ≠ m := Nat.xor_ne_zero_iff
 
 theorem xor_trichotomy {a b c : ℕ} (h : a ^^^ b ^^^ c ≠ 0) :
     b ^^^ c < a ∨ c ^^^ a < b ∨ a ^^^ b < c := by
   set v := a ^^^ b ^^^ c with hv
   -- The xor of any two of `a`, `b`, `c` is the xor of `v` and the third.
   have hab : a ^^^ b = c ^^^ v := by
-    rw [Nat.xor_comm c, xor_cancel_right]
+    rw [Nat.xor_comm c, Nat.xor_xor_cancel_right]
   have hbc : b ^^^ c = a ^^^ v := by
-    rw [← Nat.xor_assoc, xor_cancel_left]
+    rw [← Nat.xor_assoc, Nat.xor_xor_cancel_left]
   have hca : c ^^^ a = b ^^^ v := by
-    rw [hv, Nat.xor_assoc, Nat.xor_comm a, ← Nat.xor_assoc, xor_cancel_left]
+    rw [hv, Nat.xor_assoc, Nat.xor_comm a, ← Nat.xor_assoc, Nat.xor_xor_cancel_left]
   -- If `i` is the position of the most significant bit of `v`, then at least one of `a`, `b`, `c`
   -- has a one bit at position `i`.
   obtain ⟨i, ⟨hi, hi'⟩⟩ := exists_most_significant_bit h
@@ -343,7 +327,7 @@ theorem xor_trichotomy {a b c : ℕ} (h : a ^^^ b ^^^ c ≠ 0) :
     · simp only [testBit_xor, hi' _ hj, Bool.bne_false]
 
 theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b < c := by
-  obtain ha | hb | hc := xor_trichotomy <| Nat.xor_assoc _ _ _ ▸ xor_ne_zero.2 h.ne
+  obtain ha | hb | hc := xor_trichotomy <| Nat.xor_assoc _ _ _ ▸ xor_ne_zero_iff.2 h.ne
   exacts [(h.asymm ha).elim, Or.inl <| Nat.xor_comm _ _ ▸ hb, Or.inr hc]
 
 @[simp]
@@ -351,15 +335,15 @@ theorem xor_mod_two_eq {m n : ℕ} : (m ^^^ n) % 2 = (m + n) % 2 := by
   by_cases h : (m + n) % 2 = 0
   · simp only [h, mod_two_eq_zero_iff_testBit_zero, testBit_zero, xor_mod_two_eq_one, decide_not,
       Bool.decide_iff_dist, Bool.not_eq_false', beq_iff_eq, decide_eq_decide]
-    omega
+    cutsat
   · simp only [mod_two_ne_zero] at h
     simp only [h, xor_mod_two_eq_one]
-    omega
+    cutsat
 
 @[simp]
 theorem even_xor {m n : ℕ} : Even (m ^^^ n) ↔ (Even m ↔ Even n) := by
   simp only [even_iff, xor_mod_two_eq]
-  omega
+  cutsat
 
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
   cases b <;> simp <;> omega

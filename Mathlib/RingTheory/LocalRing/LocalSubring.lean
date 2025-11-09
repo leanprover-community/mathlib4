@@ -104,8 +104,8 @@ def ofPrimeEquiv : Localization.AtPrime P ≃ₐ[A] (ofPrime A P).toSubring := b
   refine AlgEquiv.ofInjective (IsLocalization.liftAlgHom (M := P.primeCompl)
     (S := Localization.AtPrime P) (f := Algebra.ofId A K) _) ?_
   intro x y e
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective P.primeCompl x
-  obtain ⟨y, t, rfl⟩ := IsLocalization.mk'_surjective P.primeCompl y
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq P.primeCompl x
+  obtain ⟨y, t, rfl⟩ := IsLocalization.exists_mk'_eq P.primeCompl y
   have H (x : P.primeCompl) : x.1 ≠ 0 := by aesop
   have : x.1 = y.1 * t.1.1⁻¹ * s.1.1 := by
     simpa [IsLocalization.lift_mk', Algebra.ofId_apply, H,

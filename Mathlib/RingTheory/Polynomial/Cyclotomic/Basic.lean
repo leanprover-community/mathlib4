@@ -413,7 +413,8 @@ section ArithmeticFunction
 
 open ArithmeticFunction
 
-open scoped ArithmeticFunction
+-- access notation `μ`
+open scoped ArithmeticFunction.Moebius
 
 /-- `cyclotomic n R` can be expressed as a product in a fraction field of `R[X]`
   using Möbius inversion. -/
@@ -515,7 +516,7 @@ theorem cyclotomic_prime_pow_eq_geom_sum {R : Type*} [CommRing R] {p n : ℕ} (h
   induction n with
   | zero => haveI := Fact.mk hp; simp [cyclotomic_prime]
   | succ n_n n_ih =>
-    rw [((eq_cyclotomic_iff (pow_pos hp.pos (n_n + 1 + 1)) _).mpr _).symm]
+    rw [← (eq_cyclotomic_iff (pow_pos hp.pos (n_n + 1 + 1)) _).mpr ?_]
     rw [Nat.prod_properDivisors_prime_pow hp, Finset.prod_range_succ, n_ih]
     rw [this] at n_ih
     rw [mul_comm _ (∑ i ∈ _, _), n_ih, geom_sum_mul, sub_left_inj, ← pow_mul]
@@ -645,6 +646,14 @@ theorem _root_.IsPrimitiveRoot.pow_sub_pow_eq_prod_sub_mul (hpos : 0 < n)
 theorem _root_.IsPrimitiveRoot.pow_add_pow_eq_prod_add_mul (hodd : Odd n)
     (h : IsPrimitiveRoot ζ n) : x ^ n + y ^ n = ∏ ζ ∈ nthRootsFinset n (1 : R), (x + ζ * y) := by
   simpa [hodd.neg_pow] using h.pow_sub_pow_eq_prod_sub_mul x (-y) hodd.pos
+
+theorem separable_cyclotomic (n : ℕ) (K : Type*) [Field K] [NeZero (n : K)] :
+    (cyclotomic n K).Separable :=
+  .of_dvd (separable_X_pow_sub_C 1 NeZero.out one_ne_zero) (cyclotomic.dvd_X_pow_sub_one n K)
+
+theorem squarefree_cyclotomic (n : ℕ) (K : Type*) [Field K] [NeZero (n : K)] :
+    Squarefree (cyclotomic n K) :=
+ (separable_cyclotomic n K).squarefree
 
 end miscellaneous
 

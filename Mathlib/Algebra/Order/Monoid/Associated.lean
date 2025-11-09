@@ -21,6 +21,7 @@ instance instIsOrderedMonoid : IsOrderedMonoid (Associates M) where
 
 instance : CanonicallyOrderedMul (Associates M) where
   exists_mul_of_le h := h
+  le_mul_self _ b := ⟨b, mul_comm ..⟩
   le_self_mul _ b := ⟨b, rfl⟩
 
 end Associates

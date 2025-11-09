@@ -434,8 +434,8 @@ theorem BinaryCofan.isColimit_iff_isIso_inl {X Y : C} (h : IsInitial Y) (c : Bin
     obtain ⟨l, hl, -⟩ := BinaryCofan.IsColimit.desc' H (𝟙 X) (h.to X)
     refine ⟨⟨l, hl, BinaryCofan.IsColimit.hom_ext H (?_) (h.hom_ext _ _)⟩⟩
     rw [Category.comp_id]
-    have e : (inl c ≫ l) ≫ inl c = 𝟙 X ≫ inl c := congrArg (·≫inl c) hl
-    rwa [Category.assoc,Category.id_comp] at e
+    have e : (inl c ≫ l) ≫ inl c = 𝟙 X ≫ inl c := congrArg (· ≫ inl c) hl
+    rwa [Category.assoc, Category.id_comp] at e
   · intro
     exact
       ⟨BinaryCofan.IsColimit.mk _ (fun f _ => inv c.inl ≫ f)
@@ -821,12 +821,14 @@ end CoprodLemmas
 
 variable (C)
 
-/-- `HasBinaryProducts` represents a choice of product for every pair of objects. -/
+/-- A category `HasBinaryProducts` if it has all limits of shape `Discrete WalkingPair`,
+i.e. if it has a product for every pair of objects. -/
 @[stacks 001T]
 abbrev HasBinaryProducts :=
   HasLimitsOfShape (Discrete WalkingPair) C
 
-/-- `HasBinaryCoproducts` represents a choice of coproduct for every pair of objects. -/
+/-- A category `HasBinaryCoproducts` if it has all colimit of shape `Discrete WalkingPair`,
+i.e. if it has a coproduct for every pair of objects. -/
 @[stacks 04AP]
 abbrev HasBinaryCoproducts :=
   HasColimitsOfShape (Discrete WalkingPair) C
@@ -1073,6 +1075,18 @@ theorem prodComparison_natural (f : A ⟶ A') (g : B ⟶ B') :
       prodComparison F A B ≫ prod.map (F.map f) (F.map g) := by
   rw [prodComparison, prodComparison, prod.lift_map, ← F.map_comp, ← F.map_comp, prod.comp_lift, ←
     F.map_comp, prod.map_fst, ← F.map_comp, prod.map_snd]
+
+variable {F}
+
+/-- Naturality of the `prodComparison` morphism in a natural transformation. -/
+@[reassoc]
+theorem prodComparison_natural_of_natTrans {H : C ⥤ D} [HasBinaryProduct (H.obj A) (H.obj B)]
+    (α : F ⟶ H) :
+    α.app (prod A B) ≫ prodComparison H A B =
+      prodComparison F A B ≫ prod.map (α.app A) (α.app B) := by
+  rw [prodComparison, prodComparison, prod.lift_map, prod.comp_lift, α.naturality, α.naturality]
+
+variable (F)
 
 /-- The product comparison morphism from `F(A ⨯ -)` to `FA ⨯ F-`, whose components are given by
 `prodComparison`.
@@ -1352,7 +1366,7 @@ variable {sXY : BinaryFan X Y} {sYZ : BinaryFan Y Z}
 /-- Given binary fans `sXY` over `X Y`, and `sYZ` over `Y Z`, and `s` over `sXY.X Z`,
 if `sYZ` is a limit cone we can construct a binary fan over `X sYZ.X`.
 
-This is an ingredient of building the associator for a cartesian category. -/
+This is an ingredient of building the associator for a Cartesian category. -/
 def BinaryFan.assoc (Q : IsLimit sYZ) (s : BinaryFan sXY.pt Z) : BinaryFan X sYZ.pt :=
   mk (s.fst ≫ sXY.fst) (Q.lift (mk (s.fst ≫ sXY.snd) s.snd))
 
@@ -1367,7 +1381,7 @@ lemma BinaryFan.assoc_snd (Q : IsLimit sYZ) (s : BinaryFan sXY.pt Z) :
 /-- Given binary fans `sXY` over `X Y`, and `sYZ` over `Y Z`, and `s` over `X sYZ.X`,
 if `sYZ` is a limit cone we can construct a binary fan over `sXY.X Z`.
 
-This is an ingredient of building the associator for a cartesian category. -/
+This is an ingredient of building the associator for a Cartesian category. -/
 def BinaryFan.assocInv (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) : BinaryFan sXY.pt Z :=
   BinaryFan.mk (P.lift (BinaryFan.mk s.fst (s.snd ≫ sYZ.fst))) (s.snd ≫ sYZ.snd)
 
@@ -1392,15 +1406,11 @@ protected def IsLimit.assoc (P : IsLimit sXY) (Q : IsLimit sYZ) {s : BinaryFan s
     · apply P.hom_ext
       rintro ⟨⟨⟩⟩ <;> simp
       · exact w ⟨.left⟩
-      · specialize w ⟨.right⟩
-        simp? at w says
-          simp only [pair_obj_right, BinaryFan.assoc_snd,
-            Functor.const_obj_obj, pair_obj_left] at w
+      · replace w : m ≫ Q.lift (BinaryFan.mk (s.fst ≫ sXY.snd) s.snd) = t.π.app ⟨.right⟩ := by
+          simpa using w ⟨.right⟩
         simp [← w]
-    · specialize w ⟨.right⟩
-      simp? at w says
-        simp only [pair_obj_right, BinaryFan.assoc_snd,
-          Functor.const_obj_obj, pair_obj_left] at w
+    · replace w : m ≫ Q.lift (BinaryFan.mk (s.fst ≫ sXY.snd) s.snd) = t.π.app ⟨.right⟩ := by
+        simpa using w ⟨.right⟩
       simp [← w]
 
 /-- Given two pairs of limit cones corresponding to the parenthesisations of `X × Y × Z`,

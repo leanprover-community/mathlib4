@@ -8,7 +8,7 @@ import Mathlib.RingTheory.FractionalIdeal.Basic
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Field
 
 /-!
 # More operations on fractional ideals
@@ -478,7 +478,7 @@ theorem eq_zero_or_one (I : FractionalIdeal K⁰ L) : I = 0 ∨ I = 1 := by
   intro x
   constructor
   · intro x_mem
-    obtain ⟨n, d, rfl⟩ := IsLocalization.mk'_surjective K⁰ x
+    obtain ⟨n, d, rfl⟩ := IsLocalization.exists_mk'_eq K⁰ x
     refine ⟨n / d, ?_⟩
     rw [map_div₀, IsFractionRing.mk'_eq_div]
   · rintro ⟨x, rfl⟩
@@ -623,9 +623,9 @@ theorem spanSingleton_mul_spanSingleton (x y : P) :
 
 @[simp]
 theorem spanSingleton_pow (x : P) (n : ℕ) : spanSingleton S x ^ n = spanSingleton S (x ^ n) := by
-  induction' n with n hn
-  · rw [pow_zero, pow_zero, spanSingleton_one]
-  · rw [pow_succ, hn, spanSingleton_mul_spanSingleton, pow_succ]
+  induction n with
+  | zero => rw [pow_zero, pow_zero, spanSingleton_one]
+  | succ n hn => rw [pow_succ, hn, spanSingleton_mul_spanSingleton, pow_succ]
 
 @[simp]
 theorem coeIdeal_span_singleton (x : R) :
@@ -719,7 +719,7 @@ theorem div_spanSingleton (J : FractionalIdeal R₁⁰ K) (d : K) :
     dsimp only [val_eq_coe] at hx ⊢ -- Porting note: get rid of the partially applied `coe`s
     rw [coe_div h_spand, Submodule.mem_div_iff_forall_mul_mem] at hx
     specialize hx d (mem_spanSingleton_self R₁⁰ d)
-    have h_xd : x = d⁻¹ * (x * d) := by field_simp
+    have h_xd : x = d⁻¹ * (x * d) := by field
     rw [coe_mul, one_div_spanSingleton, h_xd]
     exact Submodule.mul_mem_mul (mem_spanSingleton_self R₁⁰ _) hx
   · rw [le_div_iff_mul_le h_spand, mul_assoc, mul_left_comm, one_div_spanSingleton,
@@ -753,7 +753,7 @@ theorem exists_eq_spanSingleton_mul (I : FractionalIdeal R₁⁰ K) :
 theorem ideal_factor_ne_zero {R} [CommRing R] {K : Type*} [Field K] [Algebra R K]
     [IsFractionRing R K] {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R} {J : Ideal R}
     (haJ : I = spanSingleton R⁰ ((algebraMap R K) a)⁻¹ * ↑J) : J ≠ 0 := fun h ↦ by
-  rw [h, Ideal.zero_eq_bot, coeIdeal_bot, MulZeroClass.mul_zero] at haJ
+  rw [h, Ideal.zero_eq_bot, coeIdeal_bot, mul_zero] at haJ
   exact hI haJ
 
 /-- If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of `R` such that
@@ -763,7 +763,7 @@ theorem constant_factor_ne_zero {R} [CommRing R] {K : Type*} [Field K] [Algebra 
     (haJ : I = spanSingleton R⁰ ((algebraMap R K) a)⁻¹ * ↑J) :
     (Ideal.span {a} : Ideal R) ≠ 0 := fun h ↦ by
   rw [Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot] at h
-  rw [h, RingHom.map_zero, inv_zero, spanSingleton_zero, MulZeroClass.zero_mul] at haJ
+  rw [h, RingHom.map_zero, inv_zero, spanSingleton_zero, zero_mul] at haJ
   exact hI haJ
 
 instance isPrincipal {R} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [Algebra R K]

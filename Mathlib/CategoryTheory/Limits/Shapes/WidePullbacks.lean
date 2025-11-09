@@ -56,9 +56,8 @@ inductive Hom : WidePullbackShape J → WidePullbackShape J → Type w
   | term : ∀ j : J, Hom (some j) none
   deriving DecidableEq
 
--- This is relying on an automatically generated instance name, generated in a `deriving` handler.
--- See https://github.com/leanprover/lean4/issues/2343
-attribute [nolint unusedArguments] instDecidableEqHom
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] instDecidableEqHom.decEq
 
 instance struct : CategoryStruct (WidePullbackShape J) where
   Hom := Hom
@@ -79,7 +78,7 @@ aesop rule directing on `WidePushoutOut` and it didn't take for some reason -/
 def evalCasesBash : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePullbackShape _,
-      (_ : WidePullbackShape _) ⟶ (_ : WidePullbackShape _) ))
+      (_ : WidePullbackShape _) ⟶ (_ : WidePullbackShape _)))
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] evalCasesBash
 
@@ -158,9 +157,8 @@ inductive Hom : WidePushoutShape J → WidePushoutShape J → Type w
   | init : ∀ j : J, Hom none (some j)
   deriving DecidableEq
 
--- This is relying on an automatically generated instance name, generated in a `deriving` handler.
--- See https://github.com/leanprover/lean4/issues/2343
-attribute [nolint unusedArguments] instDecidableEqHom
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] instDecidableEqHom.decEq
 
 instance struct : CategoryStruct (WidePushoutShape J) where
   Hom := Hom
@@ -180,7 +178,7 @@ open Lean Elab Tactic
 def evalCasesBash' : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePushoutShape _,
-      (_ : WidePushoutShape _) ⟶ (_ : WidePushoutShape _) ))
+      (_ : WidePushoutShape _) ⟶ (_ : WidePushoutShape _)))
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] evalCasesBash'
 
@@ -251,11 +249,13 @@ end WidePushoutShape
 
 variable (C : Type u) [Category.{v} C]
 
-/-- `HasWidePullbacks` represents a choice of wide pullback for every collection of morphisms -/
+/-- A category `HasWidePullbacks` if it has all limits of shape `WidePullbackShape J`, i.e. if it
+has a wide pullback for every collection of morphisms with the same codomain. -/
 abbrev HasWidePullbacks : Prop :=
   ∀ J : Type w, HasLimitsOfShape (WidePullbackShape J) C
 
-/-- `HasWidePushouts` represents a choice of wide pushout for every collection of morphisms -/
+/-- A category `HasWidePushouts` if it has all colimits of shape `WidePushoutShape J`, i.e. if it
+has a wide pushout for every collection of morphisms with the same domain. -/
 abbrev HasWidePushouts : Prop :=
   ∀ J : Type w, HasColimitsOfShape (WidePushoutShape J) C
 

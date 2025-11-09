@@ -16,7 +16,7 @@ import Mathlib.Algebra.Notation.Prod
 In this file we define an extension of `Equiv` called `RingEquiv`, which is a datatype representing
 an isomorphism of `Semiring`s, `Ring`s, `DivisionRing`s, or `Field`s.
 
-## Notations
+## Notation
 
 * ``infixl ` ≃+* `:25 := RingEquiv``
 
@@ -300,8 +300,13 @@ theorem apply_symm_apply (e : R ≃+* S) : ∀ x, e (e.symm x) = x :=
 theorem symm_apply_apply (e : R ≃+* S) : ∀ x, e.symm (e x) = x :=
   e.toEquiv.symm_apply_apply
 
-theorem image_eq_preimage (e : R ≃+* S) (s : Set R) : e '' s = e.symm ⁻¹' s :=
-  e.toEquiv.image_eq_preimage s
+lemma image_symm_eq_preimage (e : R ≃+* S) (s : Set S) : e.symm '' s = e ⁻¹' s :=
+  e.toEquiv.image_symm_eq_preimage _
+
+lemma image_eq_preimage_symm (e : R ≃+* S) (s : Set R) : e '' s = e.symm ⁻¹' s :=
+  e.toEquiv.image_eq_preimage_symm _
+
+@[deprecated (since := "2025-11-05")] alias image_eq_preimage := image_eq_preimage_symm
 
 theorem symm_apply_eq (e : R ≃+* S) {x : S} {y : R} :
     e.symm x = y ↔ x = e y := Equiv.symm_apply_eq _
@@ -468,6 +473,17 @@ def piUnique {ι : Type*} (R : ι → Type*) [Unique ι] [∀ i, NonUnitalNonAss
   __ := Equiv.piUnique R
   map_add' _ _ := rfl
   map_mul' _ _ := rfl
+
+/-- `Equiv.cast (congrArg _ h)` as a ring equiv.
+
+Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
+to avoid having to deal with an equality of the algebraic structure itself. -/
+@[simps!]
+protected def cast
+    {ι : Type*} {R : ι → Type*} [∀ i, Mul (R i)] [∀ i, Add (R i)] {i j : ι} (h : i = j) :
+    R i ≃+* R j where
+  __ := AddEquiv.cast h
+  __ := MulEquiv.cast h
 
 /-- A family of ring isomorphisms `∀ j, (R j ≃+* S j)` generates a
 ring isomorphisms between `∀ j, R j` and `∀ j, S j`.

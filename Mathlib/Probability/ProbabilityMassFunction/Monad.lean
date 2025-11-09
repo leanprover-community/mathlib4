@@ -118,11 +118,8 @@ theorem mem_support_bind_iff (b : β) :
 
 @[simp]
 theorem pure_bind (a : α) (f : α → PMF β) : (pure a).bind f = f a := by
-  classical
-  have : ∀ b a', ite (a' = a) (f a' b) 0 = ite (a' = a) (f a b) 0 := fun b a' => by
-    split_ifs with h <;> simp [h]
-  ext b
-  simp [this]
+  ext
+  simp
 
 @[simp]
 theorem bind_pure : p.bind pure = p :=
@@ -241,7 +238,7 @@ theorem pure_bindOnSupport (a : α) (f : ∀ (a' : α) (_ : a' ∈ (pure a).supp
   refine PMF.ext fun b => ?_
   simp only [bindOnSupport_apply, pure_apply]
   classical
-  refine _root_.trans (tsum_congr fun a' => ?_) (tsum_ite_eq a _)
+  refine _root_.trans (tsum_congr fun a' => ?_) (tsum_ite_eq a (fun _ ↦ _))
   by_cases h : a' = a <;> simp [h]
 
 theorem bindOnSupport_pure (p : PMF α) : (p.bindOnSupport fun a _ => pure a) = p := by
@@ -260,11 +257,10 @@ theorem bindOnSupport_bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF �
   classical
   simp only [ENNReal.tsum_eq_zero]
   refine ENNReal.tsum_comm.trans (tsum_congr fun a' => tsum_congr fun b => ?_)
-  split_ifs with h _ h_1 _ h_2
+  split_ifs with h _ h_1 H h_2
   any_goals ring1
-  · have := h_1 a'
-    simp? [h] at this says simp only [h, ↓reduceDIte, mul_eq_zero, false_or] at this
-    contradiction
+  · absurd H
+    simpa [h] using h_1 a'
   · simp [h_2]
 
 theorem bindOnSupport_comm (p : PMF α) (q : PMF β) (f : ∀ a ∈ p.support, ∀ b ∈ q.support, PMF γ) :

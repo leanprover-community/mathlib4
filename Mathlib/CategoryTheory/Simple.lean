@@ -16,7 +16,7 @@ We define simple objects in any category with zero morphisms.
 A simple object is an object `Y` such that any monomorphism `f : X ⟶ Y`
 is either an isomorphism or zero (but not both).
 
-This is formalized as a `Prop` valued typeclass `Simple X`.
+This is formalized as a `Prop`-valued typeclass `Simple X`.
 
 In some contexts, especially representation theory, simple objects are called "irreducibles".
 

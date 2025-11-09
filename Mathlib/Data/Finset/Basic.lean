@@ -57,16 +57,6 @@ namespace Finset
 -- TODO: these should be global attributes, but this will require fixing other files
 attribute [local trans] Subset.trans Superset.trans
 
-set_option linter.deprecated false in
-@[deprecated "Deprecated without replacement." (since := "2025-02-07")]
-theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {s : Finset α} (hx : x ∈ s) :
-    SizeOf.sizeOf x < SizeOf.sizeOf s := by
-  cases s
-  dsimp [SizeOf.sizeOf, SizeOf.sizeOf, Multiset.sizeOf]
-  rw [Nat.add_comm]
-  refine lt_trans ?_ (Nat.lt_succ_self _)
-  exact Multiset.sizeOf_lt_sizeOf_of_mem hx
-
 /-! ### Lattice structure -/
 
 section Lattice
@@ -592,7 +582,7 @@ def piFinsetUnion {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι} (h
   sumPiEquivProdPi (fun b ↦ α (e b)) |>.symm.trans (.piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e)
 
 /-- A finset is equivalent to its coercion as a set. -/
-def _root_.Finset.equivToSet (s : Finset α) : s ≃ s.toSet where
+def _root_.Finset.equivToSet (s : Finset α) : s ≃ (s : Set α) where
   toFun a := ⟨a.1, mem_coe.2 a.2⟩
   invFun a := ⟨a.1, mem_coe.1 a.2⟩
 

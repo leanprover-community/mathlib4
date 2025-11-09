@@ -287,7 +287,7 @@ theorem prehaar_self {K₀ : PositiveCompacts G} {U : Set G} (hU : (interior U).
 theorem prehaar_sup_le {K₀ : PositiveCompacts G} {U : Set G} (K₁ K₂ : Compacts G)
     (hU : (interior U).Nonempty) :
     prehaar (K₀ : Set G) U (K₁ ⊔ K₂) ≤ prehaar (K₀ : Set G) U K₁ + prehaar (K₀ : Set G) U K₂ := by
-  simp only [prehaar]; rw [div_add_div_same, div_le_div_iff_of_pos_right]
+  simp only [prehaar]; rw [← add_div, div_le_div_iff_of_pos_right]
   · exact mod_cast index_union_le K₁ K₂ hU
   · exact mod_cast index_pos K₀ hU
 
@@ -295,7 +295,7 @@ theorem prehaar_sup_le {K₀ : PositiveCompacts G} {U : Set G} (K₁ K₂ : Comp
 theorem prehaar_sup_eq {K₀ : PositiveCompacts G} {U : Set G} {K₁ K₂ : Compacts G}
     (hU : (interior U).Nonempty) (h : Disjoint (K₁.1 * U⁻¹) (K₂.1 * U⁻¹)) :
     prehaar (K₀ : Set G) U (K₁ ⊔ K₂) = prehaar (K₀ : Set G) U K₁ + prehaar (K₀ : Set G) U K₂ := by
-  simp only [prehaar]; rw [div_add_div_same]
+  simp only [prehaar]; rw [← add_div]
   -- Porting note: Here was `congr`, but `to_additive` failed to generate a theorem.
   refine congr_arg (fun x : ℝ => x / index K₀ U) ?_
   exact mod_cast index_union_eq K₁ K₂ hU h

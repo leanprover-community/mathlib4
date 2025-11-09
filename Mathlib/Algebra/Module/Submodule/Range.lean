@@ -18,7 +18,7 @@ ring homomorphism.
 
 Note that this also means that dot notation (i.e. `f.range` for a linear map `f`) does not work.
 
-## Notations
+## Notation
 
 * We continue to use the notations `M →ₛₗ[σ] M₂` and `M →ₗ[R] M₂` for the type of semilinear
   (resp. linear) maps from `M` to `M₂` over the ring homomorphism `σ` (resp. over the ring `R`).
@@ -334,7 +334,7 @@ def MapSubtype.orderIso : Submodule R p ≃o { p' : Submodule R M // p' ≤ p } 
   toFun p' := ⟨map p.subtype p', map_subtype_le p _⟩
   invFun q := comap p.subtype q
   left_inv p' := comap_map_eq_of_injective (by exact Subtype.val_injective) p'
-  right_inv := fun ⟨q, hq⟩ => Subtype.ext_val <| by simp [map_comap_subtype p, inf_of_le_right hq]
+  right_inv := fun ⟨q, hq⟩ => Subtype.ext <| by simp [map_comap_subtype p, inf_of_le_right hq]
   map_rel_iff' {p₁ p₂} := Subtype.coe_le_coe.symm.trans <| by
     dsimp
     rw [map_le_iff_le_comap,

@@ -168,9 +168,9 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
         fun n => le_trans ?_ (hR' n)⟩)
       refine lintegral_mono fun ω => ?_
       rw [ENNReal.ofReal_le_iff_le_toReal, ENNReal.coe_toReal, coe_nnnorm]
-      · by_cases hnonneg : 0 ≤ f n ω - a
+      · by_cases! hnonneg : 0 ≤ f n ω - a
         · rw [posPart_eq_self.2 hnonneg, Real.norm_eq_abs, abs_of_nonneg hnonneg]
-        · rw [posPart_eq_zero.2 (not_le.1 hnonneg).le]
+        · rw [posPart_eq_zero.2 hnonneg.le]
           exact norm_nonneg _
       · finiteness
     · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
@@ -231,9 +231,6 @@ theorem Submartingale.memLp_limitProcess {p : ℝ≥0∞} (hf : Submartingale f 
     (hbdd : ∀ n, eLpNorm (f n) p μ ≤ R) : MemLp (ℱ.limitProcess f μ) p μ :=
   memLp_limitProcess_of_eLpNorm_bdd
     (fun n => ((hf.stronglyMeasurable n).mono (ℱ.le n)).aestronglyMeasurable) hbdd
-
-@[deprecated (since := "2025-02-21")]
-alias Submartingale.memℒp_limitProcess := Submartingale.memLp_limitProcess
 
 end AeConvergence
 
