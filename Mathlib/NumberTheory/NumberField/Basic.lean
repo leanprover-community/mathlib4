@@ -44,11 +44,6 @@ open Function Module
 
 open scoped nonZeroDivisors
 
-/-- `ℤ` with its usual ring structure is not a field. -/
-theorem Int.not_isField : ¬IsField ℤ := fun h =>
-  Int.not_even_one <|
-    (h.mul_inv_cancel two_ne_zero).imp fun a => by rw [← two_mul]; exact Eq.symm
-
 namespace NumberField
 
 variable (K L : Type*) [Field K] [Field L]

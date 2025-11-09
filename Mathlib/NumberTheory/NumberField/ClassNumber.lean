@@ -155,7 +155,7 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_pow_le_of_mem_primesOver_of_mem_I
     rcases abs_choice p with h | h <;> simp [h]
   have hple : p.natAbs ^ (span {(p.natAbs : ℤ)}).inertiaDeg P ≤ ⌊(M K)⌋₊ := by
     refine le_floor ?_
-    simpa only [hspan, ← cast_pow, ← absNorm_eq_pow_inertiaDeg P (hpprime (hP.under _))] using hPN
+    simpa only [hspan, ← cast_pow, pow_inertiaDeg_eq_absNorm P (hpprime (hP.under _))] using hPN
   have hpabsprime := Int.prime_iff_natAbs_prime.mp (hpprime (hP.under _))
   refine h _ ?_ hpabsprime _ ⟨hP, ?_⟩ hple
   · suffices 0 < (span {(p.natAbs : ℤ)}).inertiaDeg P by
