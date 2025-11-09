@@ -106,7 +106,8 @@ nonrec lemma Scheme.Hom.isLocallyConstructible_image (f : X ⟶ Y)
     convert (this (Y.affineCover.pullbackHom f i) (hs.preimage_of_isOpenEmbedding
       ((Y.affineCover.pullback₁ f).f i).isOpenEmbedding)
       ⟨_, rfl⟩).preimage_of_isOpenEmbedding (Y.affineCover.f i).isoOpensRange.inv.isOpenEmbedding
-    refine .trans ?_ ((Scheme.homeoOfIso (Y.affineCover.f i).isoOpensRange).image_eq_preimage _)
+    refine .trans ?_
+      ((Scheme.homeoOfIso (Y.affineCover.f i).isoOpensRange).image_eq_preimage_symm _)
     apply Set.image_injective.mpr Subtype.val_injective
     rw [Set.image_preimage_eq_inter_range, ← Set.image_comp, ← Set.image_comp,
       Subtype.range_coe_subtype, Set.setOf_mem_eq]
