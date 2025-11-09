@@ -6,7 +6,6 @@ Floris van Doorn, Edward Ayers, Arthur Paulino
 -/
 import Mathlib.Init
 import Lean.Expr
-import Batteries.Lean.Expr
 
 /-!
 # Additional operations on Expr and related types
