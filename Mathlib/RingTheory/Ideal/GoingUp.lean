@@ -393,11 +393,8 @@ theorem under_ne_bot [Nontrivial A] [IsDomain B] (hP : P ≠ ⊥) : under A P �
 instance Quotient.algebra_isIntegral_of_liesOver : Algebra.IsIntegral (A ⧸ p) (B ⧸ P) :=
   Algebra.IsIntegral.tower_top A
 
-theorem exists_ideal_liesOver_maximal_of_isIntegral [p.IsMaximal] (B : Type*) [CommRing B]
-    [Nontrivial B] [Algebra A B] [NoZeroSMulDivisors A B] [Algebra.IsIntegral A B] :
-    ∃ P : Ideal B, P.IsMaximal ∧ P.LiesOver p := by
-  obtain ⟨P, hm, hP⟩ := exists_ideal_over_maximal_of_isIntegral (S := B) p <| by simp
-  exact ⟨P, hm, ⟨hP.symm⟩⟩
+@[deprecated (since := "2025-11-06")] alias exists_ideal_liesOver_maximal_of_isIntegral :=
+  exists_maximal_ideal_liesOver_of_isIntegral
 
 end IsIntegral
 
