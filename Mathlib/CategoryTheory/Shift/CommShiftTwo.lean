@@ -35,6 +35,7 @@ variable (D) (M : Type*)
 
 structure CommShift₂Setup where
   twistShiftData : TwistShiftData (PullbackShift D (.sum M)) (M × M)
+  z_zero₂ (m₁ m₂ : M) : twistShiftData.z (m₁, 0) (m₂, 0) = 1
   ε (m n : M) : (CatCenter D)ˣ
 
 end
@@ -83,10 +84,34 @@ noncomputable def shiftIso (m n p : M) (hp : m + n = p) :
     shiftFunctor h.Category (m, n) ≅ shiftFunctor D p :=
   pullbackShiftIso _ _ _ _ hp.symm
 
+@[reassoc]
+lemma shiftFunctor_map (m n p : M) (hp : m + n = p) {X Y : D} (f : X ⟶ Y) :
+    (shiftFunctor h.Category (m, n)).map f =
+    (h.shiftIso m n p hp).hom.app X ≫ (shiftFunctor D p).map f ≫
+      (h.shiftIso m n p hp).inv.app Y := by
+  simp
+
 lemma shiftFunctorZero_inv_app (X : h.Category) :
     (shiftFunctorZero _ (M × M)).inv.app X =
       (shiftFunctorZero D M).inv.app X ≫ (h.shiftIso 0 0 0 (add_zero 0)).inv.app X :=
   pullbackShiftFunctorZero_inv_app ..
+
+lemma shiftFunctorAdd'_inv_app (m₁ m₂ m₃ : M) (hm : m₁ + m₂ = m₃)
+    (n₁ n₂ n₃ : M) (hn : n₁ + n₂ = n₃)
+    (p₁ p₂ p₃ : M) (hp₁ : m₁ + n₁ = p₁) (hp₂ : m₂ + n₂ = p₂) (hp₃ : m₃ + n₃ = p₃)
+    (X : h.Category) :
+    (shiftFunctorAdd' h.Category (m₁, n₁) (m₂, n₂) (m₃, n₃) (by aesop)).inv.app X =
+      (h.shiftIso m₂ n₂ p₂ hp₂).hom.app _ ≫
+        (shiftFunctor D p₂).map ((h.shiftIso m₁ n₁ p₁ hp₁).hom.app X) ≫
+        (shiftFunctorAdd' D p₁ p₂ p₃ (by rw [← hp₃, ← hp₂, ← hp₁, ← hm, ← hn]; abel)).inv.app X ≫
+        (h.shiftIso m₃ n₃ p₃ hp₃).inv.app X ≫
+          (((h.twistShiftData.z (m₁, n₁) (m₂, n₂))⁻¹).1).app _
+          := by
+  refine (TwistShift.shiftFunctorAdd'_inv_app ..).trans ?_
+  dsimp [shiftIso]
+  rw [pullbackShiftFunctorAdd'_inv_app _ _ _ _ _ _ p₁ p₂ p₃
+    (by aesop) (by aesop) (by aesop)]
+  aesop
 
 variable (F : C₁ ⥤ C₂ ⥤ D) [F.CommShift₂ h]
 
@@ -123,11 +148,32 @@ lemma iso₁_hom_app (X₁ : C₁) (X₂ : C₂) (m₁ : M) :
       (h.shiftIso m₁ 0 m₁ (add_zero m₁)).inv.app ((F.obj X₁).obj X₂) := by
   simp [iso₁, fullyFaithfulCurry, Equivalence.fullyFaithfulInverse]
 
-variable (M) in
-@[simp]
 lemma iso₁_zero : iso₁ h F 0 = Functor.CommShift.isoZero _ _ := by
   ext ⟨X₁, X₂⟩
   simp [iso₁_hom_app, shiftFunctorZero_inv_app, Functor.commShiftIso_zero]
+
+lemma iso₁_add (m m' : M) :
+    iso₁ h F (m + m') =
+      Functor.CommShift.isoAdd' (by aesop) (iso₁ h F m) (iso₁ h F m') := by
+  ext ⟨X₁, X₂⟩
+  have := NatTrans.shift_app_comm (F.flip.map ((shiftFunctorZero C₂ M).hom.app X₂)) m' (X₁⟦m⟧)
+  dsimp at this
+  simp only [shiftFunctor_prod, Functor.comp_obj, Functor.prod_obj, uncurry_obj_obj, iso₁_hom_app,
+    Functor.id_obj, Functor.flip_obj_obj, Functor.CommShift.isoAdd'_hom_app, shiftFunctorAdd'_prod,
+    NatIso.prod_hom, uncurry_obj_map, NatTrans.prod_app_fst, NatTrans.prod_app_snd,
+    Functor.map_comp, Category.assoc]
+  rw [← Functor.map_comp_assoc, ← Functor.map_comp_assoc, ← Functor.map_comp_assoc,
+    h.shiftFunctor_map_assoc _ _ _ (add_zero m'), Category.assoc, Iso.inv_hom_id_app_assoc,
+    h.shiftFunctorAdd'_inv_app _ _ _ rfl _ _ _ (add_zero 0) _ _ (m + m')
+    (add_zero m) (add_zero m') (by simp), Iso.inv_hom_id_app_assoc, h.z_zero₂,
+    inv_one, Units.val_one, End.one_def, NatTrans.id_app,
+    Functor.commShiftIso_add' _ rfl, Functor.CommShift.isoAdd'_hom_app]
+  simp only [Functor.flip_obj_obj, Functor.flip_obj_map, Functor.id_obj,
+    Category.assoc, Category.comp_id, NatTrans.naturality_assoc, Functor.map_comp_assoc,
+    shiftFunctorAdd'_add_zero_hom_app]
+  nth_rw 1 [← Functor.map_comp_assoc]
+  nth_rw 3 [← Functor.map_comp_assoc]
+  simp [← reassoc_of% this]
 
 noncomputable def iso₂ (m₂ : M) :
     shiftFunctor (C₁ × C₂) ((0 : M), m₂) ⋙ h.uncurry F ≅
@@ -154,17 +200,21 @@ lemma iso₂_hom_app (X₁ : C₁) (X₂ : C₂) (m₂ : M) :
         (h.shiftIso 0 m₂ m₂ (zero_add m₂)).inv.app ((F.obj X₁).obj X₂) := by
   simp [iso₂, fullyFaithfulCurry, Equivalence.fullyFaithfulInverse]
 
-variable (M) in
-@[simp]
 lemma iso₂_zero : iso₂ h F 0 = Functor.CommShift.isoZero _ _ := by
   ext ⟨X₁, X₂⟩
   simp [iso₂_hom_app, shiftFunctorZero_inv_app, Functor.commShiftIso_zero]
+
+lemma iso₂_add (m m' : M) :
+    iso₂ h F (m + m') =
+      Functor.CommShift.isoAdd' (by aesop) (iso₂ h F m) (iso₂ h F m') := by
+  sorry
 
 end commShiftUncurry
 
 open commShiftUncurry in
 noncomputable instance commShiftUncurry : (h.uncurry F).CommShift (M × M) :=
-  Functor.CommShift.mkProd (iso₁ h F) (iso₂ h F) (by simp) (by simp) sorry sorry
+  Functor.CommShift.mkProd (iso₁ h F) (iso₂ h F) (iso₁_zero h F) (iso₂_zero h F)
+    (iso₁_add h F) (iso₂_add h F)
     (fun m₁ m₂ ↦ by
       ext ⟨X₁, X₂⟩
       simp [shiftFunctorAdd'_add_zero_hom_app, shiftFunctorAdd'_zero_add_hom_app,
