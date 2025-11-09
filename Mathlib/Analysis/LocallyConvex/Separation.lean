@@ -391,9 +391,8 @@ theorem iInter_nat_halfSpaces_eq_of_prod {F : Type*} {s : Set (E × F)}
   refine ⟨fun i ↦ (LT i).comp (.inl 𝕜 E F), fun i ↦ (LT i).comp (.inr 𝕜 E F), c, ?_,
     fun hs₃ hsne i ↦ ?_⟩
   · rw [← eq1]
-    apply iInter_congr
-    intro i
-    ext ⟨x, y⟩
+    refine iInter_congr fun i ↦ ?_
+    ext
     simp [← map_add]
   · intro hs₃ hsne i
     obtain ⟨z, hz⟩ := eq2 hs₃ hsne i
