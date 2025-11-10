@@ -401,7 +401,7 @@ def unifyMovements (data : Array (Expr × Bool × Syntax)) (tgt : Expr) :
 section parsing
 open Elab Parser Tactic
 
-/-- 
+/--
 `parseArrows` parses an input of the form `[a, ← b, _ * (1 : ℤ)]`, consisting of a list of
 terms, each optionally preceded by the arrow `←`.
 It returns an array of triples consisting of
