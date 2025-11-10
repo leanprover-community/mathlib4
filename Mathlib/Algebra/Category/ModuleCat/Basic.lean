@@ -274,10 +274,15 @@ def LinearEquiv.toModuleIso {g₁ : AddCommGroup X₁} {g₂ : AddCommGroup X₂
   inv_hom_id := by ext; apply e.right_inv
 
 namespace CategoryTheory.Iso
+variable {X Y : ModuleCat R}
 
 /-- Build a `LinearEquiv` from an isomorphism in the category `ModuleCat R`. -/
-def toLinearEquiv {X Y : ModuleCat R} (i : X ≅ Y) : X ≃ₗ[R] Y :=
-  LinearEquiv.ofLinear i.hom.hom i.inv.hom (by aesop) (by aesop)
+def toLinearEquiv (i : X ≅ Y) : X ≃ₗ[R] Y :=
+  .ofLinear i.hom.hom i.inv.hom (by aesop) (by aesop)
+
+@[simp] lemma toLinearEquiv_apply (i : X ≅ Y) (x : X) : i.toLinearEquiv x = i.hom x := rfl
+@[simp] lemma toLinearEquiv_symm (i : X ≅ Y) : i.toLinearEquiv.symm = i.symm.toLinearEquiv := rfl
+@[simp] lemma toLinearMap_toLinearEquiv (i : X ≅ Y) : i.toLinearEquiv = i.hom.hom := rfl
 
 end CategoryTheory.Iso
 
