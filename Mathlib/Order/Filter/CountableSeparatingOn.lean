@@ -167,7 +167,7 @@ theorem exists_subset_subsingleton_mem_of_forall_separating (p : Set α → Prop
     | inr hsl => simp only [hx.2 s hsS hsl, hy.2 s hsS hsl]
   · exact inter_mem
       (inter_mem hs ((countable_sInter_mem (hSc.mono inter_subset_left)).2 fun _ h ↦ h.2))
-      ((countable_bInter_mem hSc).2 fun U hU ↦ iInter_mem.2 id)
+      ((countable_bInter_mem hSc).2 fun U hU ↦ iInter_mem'.2 id)
 
 theorem exists_mem_singleton_mem_of_mem_of_nonempty_of_forall_separating (p : Set α → Prop)
     {s : Set α} [HasCountableSeparatingOn α p s] (hs : s ∈ l) (hne : s.Nonempty)

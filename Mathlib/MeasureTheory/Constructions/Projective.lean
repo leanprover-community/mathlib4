@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 import Mathlib.MeasureTheory.Constructions.Cylinders
-import Mathlib.MeasureTheory.Measure.Typeclasses
+import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 
 /-!
 # Projective measure families and projective limits
@@ -45,6 +45,16 @@ def IsProjectiveMeasureFamily (P : ∀ J : Finset ι, Measure (∀ j : J, α j))
 namespace IsProjectiveMeasureFamily
 
 variable {I J : Finset ι}
+
+lemma eq_zero_of_isEmpty [h : IsEmpty (Π i, α i)]
+    (hP : IsProjectiveMeasureFamily P) (I : Finset ι) :
+    P I = 0 := by
+  classical
+  obtain ⟨i, hi⟩ := isEmpty_pi.mp h
+  rw [hP (insert i I) I (I.subset_insert i)]
+  have : IsEmpty (Π j : ↑(insert i I), α j) := by simp [hi]
+  rw [(P (insert i I)).eq_zero_of_isEmpty]
+  simp
 
 /-- Auxiliary lemma for `measure_univ_eq`. -/
 lemma measure_univ_eq_of_subset (hP : IsProjectiveMeasureFamily P) (hJI : J ⊆ I) :

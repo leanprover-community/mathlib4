@@ -30,7 +30,7 @@ variable {α β γ : Type*}
 section OptionCongr
 
 /-- A universe-polymorphic version of `EquivFunctor.mapEquiv Option e`. -/
-@[simps apply]
+@[simps (attr := grind =) apply]
 def optionCongr (e : α ≃ β) : Option α ≃ Option β where
   toFun := Option.map e
   invFun := Option.map e.symm
@@ -41,14 +41,16 @@ def optionCongr (e : α ≃ β) : Option α ≃ Option β where
 theorem optionCongr_refl : optionCongr (Equiv.refl α) = Equiv.refl _ :=
   ext <| congr_fun Option.map_id
 
-@[simp]
-theorem optionCongr_symm (e : α ≃ β) : (optionCongr e).symm = optionCongr e.symm :=
+@[simp, grind =]
+theorem optionCongr_symm (e : α ≃ β) : optionCongr e.symm = (optionCongr e).symm :=
   rfl
 
 @[simp]
 theorem optionCongr_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
-    (optionCongr e₁).trans (optionCongr e₂) = optionCongr (e₁.trans e₂) :=
-  ext <| Option.map_map _ _
+    optionCongr (e₁.trans e₂) = (optionCongr e₁).trans (optionCongr e₂) := by
+  ext x : 1
+  symm
+  apply Option.map_map
 
 /-- When `α` and `β` are in the same universe, this is the same as the result of
 `EquivFunctor.mapEquiv`. -/
@@ -63,7 +65,7 @@ section RemoveNone
 variable (e : Option α ≃ Option β)
 
 /-- If we have a value on one side of an `Equiv` of `Option`
-    we also have a value on the other side of the equivalence
+we also have a value on the other side of the equivalence
 -/
 def removeNone_aux (x : α) : β :=
   if h : (e (some x)).isSome then Option.get _ h
@@ -89,13 +91,10 @@ theorem removeNone_aux_inv (x : α) : removeNone_aux e.symm (removeNone_aux e x)
       cases h1 : e.symm (some (removeNone_aux e x)) <;> cases h2 : e (some x)
       · rw [removeNone_aux_none _ h1]
         exact (e.eq_symm_apply.mpr h2).symm
-
       · rw [removeNone_aux_some _ ⟨_, h2⟩] at h1
         simp at h1
-
       · rw [removeNone_aux_none _ h2] at h1
         simp at h1
-
       · rw [removeNone_aux_some _ ⟨_, h1⟩]
         rw [removeNone_aux_some _ ⟨_, h2⟩]
         simp)
@@ -131,11 +130,11 @@ theorem some_removeNone_iff {x : α} : some (removeNone e x) = e none ↔ e.symm
     have h1 := congr_arg e.symm h
     rw [symm_apply_apply] at h1
     simp only [apply_eq_iff_eq, reduceCtorEq]
-    simp [h1, apply_eq_iff_eq]
+    simp [h1]
 
 @[simp]
 theorem removeNone_optionCongr (e : α ≃ β) : removeNone e.optionCongr = e :=
-  Equiv.ext fun x => Option.some_injective _ <| removeNone_some _ ⟨e x, by simp [EquivFunctor.map]⟩
+  Equiv.ext fun x => Option.some_injective _ <| removeNone_some _ ⟨e x, by simp⟩
 
 end RemoveNone
 
@@ -177,10 +176,7 @@ def optionSubtype [DecidableEq β] (x : β) :
     ext a
     cases a
     · simpa using e.property.symm
-    -- Porting note: this cases had been by `simpa`,
-    -- but `simp` here is mysteriously slow, even after squeezing.
-    -- `rfl` closes the goal quickly, so we use that.
-    · rfl
+    · simp
   right_inv e := by
     ext a
     rfl
@@ -246,5 +242,41 @@ lemma optionSubtypeNe_symm_of_ne (hba : b ≠ a) : (optionSubtypeNe a).symm b = 
 
 @[simp] lemma optionSubtypeNe_none (a : α) : optionSubtypeNe a none = a := rfl
 @[simp] lemma optionSubtypeNe_some (a : α) (b) : optionSubtypeNe a (some b) = b := rfl
+
+open Sum
+
+/-- `Option α` is equivalent to `α ⊕ PUnit` -/
+def optionEquivSumPUnit.{v, w} (α : Type w) : Option α ≃ α ⊕ PUnit.{v + 1} :=
+  ⟨fun o => o.elim (inr PUnit.unit) inl, fun s => s.elim some fun _ => none,
+    fun o => by cases o <;> rfl,
+    fun s => by rcases s with (_ | ⟨⟨⟩⟩) <;> rfl⟩
+
+@[simp]
+theorem optionEquivSumPUnit_none {α} : optionEquivSumPUnit α none = Sum.inr PUnit.unit :=
+  rfl
+
+@[simp]
+theorem optionEquivSumPUnit_some {α} (a) : optionEquivSumPUnit α (some a) = Sum.inl a :=
+  rfl
+
+@[simp]
+theorem optionEquivSumPUnit_coe {α} (a : α) : optionEquivSumPUnit α a = Sum.inl a :=
+  rfl
+
+@[simp]
+theorem optionEquivSumPUnit_symm_inl {α} (a) : (optionEquivSumPUnit α).symm (Sum.inl a) = a :=
+  rfl
+
+@[simp]
+theorem optionEquivSumPUnit_symm_inr {α} (a) : (optionEquivSumPUnit α).symm (Sum.inr a) = none :=
+  rfl
+
+/-- The set of `x : Option α` such that `isSome x` is equivalent to `α`. -/
+@[simps]
+def optionIsSomeEquiv (α) : { x : Option α // x.isSome } ≃ α where
+  toFun o := Option.get _ o.2
+  invFun x := ⟨some x, rfl⟩
+  left_inv _ := Subtype.eq <| Option.some_get _
+  right_inv _ := Option.get_some _ _
 
 end Equiv

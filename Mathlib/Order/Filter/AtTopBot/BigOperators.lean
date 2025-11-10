@@ -3,8 +3,8 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
+import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # Two lemmas about limit of `Π b ∈ s, f b` along
@@ -22,10 +22,10 @@ variable {α β M : Type*} [CommMonoid M]
 condition for comparison of the filter `atTop.map (fun s ↦ ∏ b ∈ s, f b)` with
 `atTop.map (fun s ↦ ∏ b ∈ s, g b)`. This is useful to compare the set of limit points of
 `Π b in s, f b` as `s → atTop` with the similar set for `g`. -/
-@[to_additive "Let `f` and `g` be two maps to the same commutative additive monoid. This lemma gives
-a sufficient condition for comparison of the filter `atTop.map (fun s ↦ ∑ b ∈ s, f b)` with
+@[to_additive /-- Let `f` and `g` be two maps to the same commutative additive monoid. This lemma
+gives a sufficient condition for comparison of the filter `atTop.map (fun s ↦ ∑ b ∈ s, f b)` with
 `atTop.map (fun s ↦ ∑ b ∈ s, g b)`. This is useful to compare the set of limit points of
-`∑ b ∈ s, f b` as `s → atTop` with the similar set for `g`."]
+`∑ b ∈ s, f b` as `s → atTop` with the similar set for `g`. -/]
 theorem Filter.map_atTop_finset_prod_le_of_prod_eq {f : α → M} {g : β → M}
     (h_eq : ∀ u : Finset β,
       ∃ v : Finset α, ∀ v', v ⊆ v' → ∃ u', u ⊆ u' ∧ ∏ x ∈ u', g x = ∏ b ∈ v', f b) :

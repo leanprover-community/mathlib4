@@ -22,15 +22,15 @@ The proof given here uses Newton's method and is taken from Chambert-Loir's note
 
 ## Main definitions / results:
 
- * `Module.End.exists_isNilpotent_isSemisimple`: an endomorphism of a finite-dimensional vector
-   space over a perfect field may be written as a sum of nilpotent and semisimple endomorphisms.
-   Moreover these nilpotent and semisimple components are polynomial expressions in the original
-   endomorphism.
+* `Module.End.exists_isNilpotent_isSemisimple`: an endomorphism of a finite-dimensional vector
+  space over a perfect field may be written as a sum of nilpotent and semisimple endomorphisms.
+  Moreover these nilpotent and semisimple components are polynomial expressions in the original
+  endomorphism.
 
 ## TODO
 
- * Uniqueness of decomposition (once we prove that the sum of commuting semisimple endomorphims is
-   semisimple, this will follow from `Module.End.eq_zero_of_isNilpotent_isSemisimple`).
+* Uniqueness of decomposition (once we prove that the sum of commuting semisimple endomorphisms is
+  semisimple, this will follow from `Module.End.eq_zero_of_isNilpotent_isSemisimple`).
 
 -/
 
@@ -57,7 +57,7 @@ theorem exists_isNilpotent_isSemisimple_of_separable_of_dvd_pow {P : K[X]} {k : 
         using (aeval f).congr_arg h
     refine isUnit_of_mul_eq_one_right (aeval ff b) _ (Subtype.ext_iff.mpr ?_)
     simpa [ff, coe_aeval_mk_apply] using h
-  obtain ⟨⟨s, mem⟩, ⟨⟨k, hk⟩, hss⟩, -⟩ := exists_unique_nilpotent_sub_and_aeval_eq_zero nil' sep'
+  obtain ⟨⟨s, mem⟩, ⟨⟨k, hk⟩, hss⟩, -⟩ := existsUnique_nilpotent_sub_and_aeval_eq_zero nil' sep'
   refine ⟨f - s, ?_, s, mem, ⟨k, ?_⟩, ?_, (sub_add_cancel f s).symm⟩
   · exact sub_mem (self_mem_adjoin_singleton K f) mem
   · rw [Subtype.ext_iff] at hk

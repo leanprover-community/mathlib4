@@ -3,7 +3,7 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Data.Real.Cardinality
+import Mathlib.Analysis.Real.Cardinality
 import Mathlib.MeasureTheory.Constructions.Polish.Basic
 
 /-!
@@ -24,7 +24,7 @@ theorem exists_nat_measurableEquiv_range_coe_fin_of_finite [Finite α] :
 theorem measurableEquiv_range_coe_nat_of_infinite_of_countable [Infinite α] [Countable α] :
     Nonempty (α ≃ᵐ range ((↑) : ℕ → ℝ)) := by
   have : PolishSpace (range ((↑) : ℕ → ℝ)) :=
-    Nat.closedEmbedding_coe_real.isClosedMap.isClosed_range.polishSpace
+    Nat.isClosedEmbedding_coe_real.isClosedMap.isClosed_range.polishSpace
   refine ⟨PolishSpace.Equiv.measurableEquiv ?_⟩
   refine (nonempty_equiv_of_countable.some : α ≃ ℕ).trans ?_
   exact Equiv.ofInjective ((↑) : ℕ → ℝ) Nat.cast_injective

@@ -30,8 +30,6 @@ open CategoryTheory Option
 
 universe u
 
-variable {α β : Type*}
-
 /-- The category of types equipped with partial functions. -/
 def PartialFun : Type _ :=
   Type*
@@ -41,7 +39,6 @@ namespace PartialFun
 instance : CoeSort PartialFun Type* :=
   ⟨id⟩
 
--- Porting note(#5171): removed `@[nolint has_nonempty_instance]`; linter not ported yet
 /-- Turns a type into a `PartialFun`. -/
 def of : Type* → PartialFun :=
   id
@@ -87,18 +84,16 @@ This is the computable part of the equivalence `PartialFunEquivPointed`. -/
 def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
   obj X := { x : X // x ≠ X.point }
   map f := PFun.toSubtype _ f.toFun ∘ Subtype.val
-  map_id X :=
-    PFun.ext fun a b =>
+  map_id _ :=
+    PFun.ext fun _ b =>
       PFun.mem_toSubtype_iff (b := b).trans (Subtype.coe_inj.trans Part.mem_some_iff.symm)
-  map_comp f g := by
-    -- Porting note: the proof was changed because the original mathlib3 proof no longer works
-    apply PFun.ext _
-    rintro ⟨a, ha⟩ ⟨c, hc⟩
-    constructor
-    · rintro ⟨h₁, h₂⟩
-      exact ⟨⟨fun h₀ => h₁ ((congr_arg g.toFun h₀).trans g.map_point), h₁⟩, h₂⟩
-    · rintro ⟨_, _, _⟩
-      exact ⟨_, rfl⟩
+  map_comp {X Y Z} f g := by
+    refine PFun.ext fun ⟨a, ha⟩ ⟨c, hc⟩ =>
+      (PFun.mem_toSubtype_iff.trans ?_).trans Part.mem_bind_iff.symm
+    suffices c = g.toFun (f.toFun a) → ¬Y.point = f.toFun a ∧ ¬Z.point = g.toFun (f.toFun a) by
+      aesop
+    rintro rfl
+    refine ⟨fun h => hc.symm <| g.map_point ▸ congr_arg g.toFun h, hc.symm⟩
 
 /-- The functor which maps undefined values to a new point. This makes the maps total and creates
 pointed types. This is the noncomputable part of the equivalence `PartialFunEquivPointed`. It can't
@@ -125,28 +120,20 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
   unitIso := NatIso.ofComponents (fun X => PartialFun.Iso.mk
       { toFun := fun a => ⟨some a, some_ne_none a⟩
         invFun := fun a => Option.get _ (Option.ne_none_iff_isSome.1 a.2)
-        left_inv := fun a => Option.get_some _ _
+        left_inv := fun _ => Option.get_some _ _
         right_inv := fun a => by simp only [some_get, Subtype.coe_eta] })
       fun f =>
         PFun.ext fun a b => by
           dsimp [PartialFun.Iso.mk, CategoryStruct.comp, pointedToPartialFun]
           rw [Part.bind_some]
-          -- Porting note: the proof below has changed a lot because
-          -- `Part.mem_bind_iff` means that `b ∈ Part.bind f g` is equivalent
-          -- to `∃ (a : α), a ∈ f ∧ b ∈ g a`, while in mathlib3 it was equivalent
-          -- to `∃ (a : α) (H : a ∈ f), b ∈ g a`
           refine (Part.mem_bind_iff.trans ?_).trans PFun.mem_toSubtype_iff.symm
           obtain ⟨b | b, hb⟩ := b
           · exact (hb rfl).elim
-          · dsimp [Part.toOption]
-            simp_rw [Part.mem_some_iff, Subtype.mk_eq_mk]
-            constructor
-            · rintro ⟨_, ⟨h₁, h₂⟩, h₃⟩
-              rw [h₃, ← h₂, dif_pos h₁]
-            · intro h
-              split_ifs at h with ha
-              rw [some_inj] at h
-              exact ⟨b, ⟨ha, h.symm⟩, rfl⟩
+          · simp only [partialFunToPointed_obj, ne_eq, Part.mem_some_iff, Subtype.mk.injEq,
+              some.injEq, exists_eq_right', elim'_some]
+            classical
+            refine Part.mem_toOption.symm.trans ?_
+            exact eq_comm
   counitIso :=
     NatIso.ofComponents
       (fun X ↦ Pointed.Iso.mk (by classical exact Equiv.optionSubtypeNe X.point) (by rfl))
@@ -166,7 +153,7 @@ adding a point. -/
 noncomputable def typeToPartialFunIsoPartialFunToPointed :
     typeToPartialFun ⋙ partialFunToPointed ≅ typeToPointed :=
   NatIso.ofComponents
-    (fun X =>
+    (fun _ =>
       { hom := ⟨id, rfl⟩
         inv := ⟨id, rfl⟩
         hom_inv_id := rfl

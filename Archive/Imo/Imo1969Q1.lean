@@ -5,8 +5,8 @@ Authors: Kevin Lacker
 -/
 import Mathlib.Algebra.Ring.Identities
 import Mathlib.Data.Int.NatPrime
+import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Tactic.Linarith
-import Mathlib.Data.Set.Finite
 
 /-!
 # IMO 1969 Q1

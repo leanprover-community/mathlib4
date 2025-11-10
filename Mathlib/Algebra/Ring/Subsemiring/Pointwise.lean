@@ -3,8 +3,7 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Submonoid.Pointwise
-import Mathlib.Algebra.Ring.Action.Basic
+import Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise
 import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 /-! # Pointwise instances on `Subsemiring`s
@@ -16,8 +15,8 @@ This actions is available in the `Pointwise` locale.
 
 ## Implementation notes
 
-This file is almost identical to the file `Mathlib.Algebra.Group.Submonoid.Pointwise`. Where
-possible, try to keep them in sync.
+This file is almost identical to the files `Mathlib/Algebra/GroupWithZero/Submonoid/Pointwise.lean`
+and `Mathlib/Algebra/Ring/Submonoid/Pointwise.lean`. Where possible, try to keep them in sync.
 -/
 
 
@@ -48,7 +47,7 @@ theorem pointwise_smul_def {a : M} (S : Subsemiring R) :
     a • S = S.map (MulSemiringAction.toRingHom _ _ a) :=
   rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_pointwise_smul (m : M) (S : Subsemiring R) : ↑(m • S) = m • (S : Set R) :=
   rfl
 
@@ -61,7 +60,7 @@ theorem smul_mem_pointwise_smul (m : M) (r : R) (S : Subsemiring R) : r ∈ S �
   (Set.smul_mem_smul_set : _ → _ ∈ m • (S : Set R))
 
 instance : CovariantClass M (Subsemiring R) HSMul.hSMul LE.le :=
-  ⟨fun _ _ => image_subset _⟩
+  ⟨fun _ _ => image_mono⟩
 
 theorem mem_smul_pointwise_iff_exists (m : M) (r : R) (S : Subsemiring R) :
     r ∈ m • S ↔ ∃ s : R, s ∈ S ∧ m • s = r :=
@@ -103,13 +102,13 @@ theorem mem_inv_pointwise_smul_iff {a : M} {S : Subsemiring R} {x : R} : x ∈ a
 @[simp]
 theorem pointwise_smul_le_pointwise_smul_iff {a : M} {S T : Subsemiring R} :
     a • S ≤ a • T ↔ S ≤ T :=
-  set_smul_subset_set_smul_iff
+  smul_set_subset_smul_set_iff
 
 theorem pointwise_smul_subset_iff {a : M} {S T : Subsemiring R} : a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  set_smul_subset_iff
+  smul_set_subset_iff_subset_inv_smul_set
 
 theorem subset_pointwise_smul_iff {a : M} {S T : Subsemiring R} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
-  subset_set_smul_iff
+  subset_smul_set_iff
 
 /-! TODO: add `equiv_smul` like we have for subgroup. -/
 
@@ -138,15 +137,15 @@ theorem mem_inv_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) (S : Subsemiring R)
 @[simp]
 theorem pointwise_smul_le_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) {S T : Subsemiring R} :
     a • S ≤ a • T ↔ S ≤ T :=
-  set_smul_subset_set_smul_iff₀ ha
+  smul_set_subset_smul_set_iff₀ ha
 
 theorem pointwise_smul_le_iff₀ {a : M} (ha : a ≠ 0) {S T : Subsemiring R} :
     a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  set_smul_subset_iff₀ ha
+  smul_set_subset_iff₀ ha
 
 theorem le_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) {S T : Subsemiring R} :
     S ≤ a • T ↔ a⁻¹ • S ≤ T :=
-  subset_set_smul_iff₀ ha
+  subset_smul_set_iff₀ ha
 
 end GroupWithZero
 

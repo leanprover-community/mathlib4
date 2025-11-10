@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
 -/
 import Mathlib.Data.Nat.Cast.Defs
-import Mathlib.Algebra.NeZero
 
 /-!
 # Lemmas about nonzero elements of an `AddMonoidWithOne`
@@ -14,7 +13,7 @@ open Nat
 
 namespace NeZero
 
-theorem one_le {n : ℕ} [NeZero n] : 1 ≤ n := by have := NeZero.ne n; omega
+theorem one_le {n : ℕ} [NeZero n] : 1 ≤ n := by have := NeZero.ne n; cutsat
 
 lemma natCast_ne (n : ℕ) (R) [AddMonoidWithOne R] [h : NeZero (n : R)] : (n : R) ≠ 0 := h.out
 

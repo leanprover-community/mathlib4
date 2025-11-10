@@ -43,7 +43,7 @@ open CategoryTheory TopologicalSpace CategoryTheory.Limits
 /-- The Grothendieck topology associated to a topological space. -/
 def grothendieckTopology : GrothendieckTopology (Opens T) where
   sieves X S := ∀ x ∈ X, ∃ (U : _) (f : U ⟶ X), S f ∧ x ∈ U
-  top_mem' X x hx := ⟨_, 𝟙 _, trivial, hx⟩
+  top_mem' _ _ hx := ⟨_, 𝟙 _, trivial, hx⟩
   pullback_stable' X Y S f hf y hy := by
     rcases hf y (f.le hy) with ⟨U, g, hg, hU⟩
     refine ⟨U ⊓ Y, homOfLE inf_le_right, ?_, hU, hy⟩
@@ -56,7 +56,7 @@ def grothendieckTopology : GrothendieckTopology (Opens T) where
 /-- The Grothendieck pretopology associated to a topological space. -/
 def pretopology : Pretopology (Opens T) where
   coverings X R := ∀ x ∈ X, ∃ (U : _) (f : U ⟶ X), R f ∧ x ∈ U
-  has_isos X Y f i x hx := ⟨_, _, Presieve.singleton_self _, (inv f).le hx⟩
+  has_isos _ _ f _ _ hx := ⟨_, _, Presieve.singleton_self _, (inv f).le hx⟩
   pullbacks X Y f S hS x hx := by
     rcases hS _ (f.le hx) with ⟨U, g, hg, hU⟩
     refine ⟨_, _, Presieve.pullbackArrows.mk _ _ hg, ?_⟩
@@ -69,10 +69,10 @@ def pretopology : Pretopology (Opens T) where
     exact ⟨_, _, ⟨_, g, f, hf, hg, rfl⟩, hV⟩
 
 /-- The pretopology associated to a space is the largest pretopology that
-    generates the Grothendieck topology associated to the space. -/
+generates the Grothendieck topology associated to the space. -/
 @[simp]
-theorem pretopology_ofGrothendieck :
-    Pretopology.ofGrothendieck _ (Opens.grothendieckTopology T) = Opens.pretopology T := by
+theorem toPretopology_grothendieckTopology :
+    (Opens.grothendieckTopology T).toPretopology = Opens.pretopology T := by
   apply le_antisymm
   · intro X R hR x hx
     rcases hR x hx with ⟨U, f, ⟨V, g₁, g₂, hg₂, _⟩, hU⟩
@@ -81,12 +81,15 @@ theorem pretopology_ofGrothendieck :
     rcases hR x hx with ⟨U, f, hf, hU⟩
     exact ⟨U, f, Sieve.le_generate R U hf, hU⟩
 
+@[deprecated (since := "2025-09-19")]
+alias pretopology_ofGrothendieck := toPretopology_grothendieckTopology
+
 /-- The pretopology associated to a space induces the Grothendieck topology associated to the space.
 -/
 @[simp]
 theorem pretopology_toGrothendieck :
-    Pretopology.toGrothendieck _ (Opens.pretopology T) = Opens.grothendieckTopology T := by
-  rw [← pretopology_ofGrothendieck]
+    (Opens.pretopology T).toGrothendieck = Opens.grothendieckTopology T := by
+  rw [← toPretopology_grothendieckTopology]
   apply (Pretopology.gi (Opens T)).l_u_eq
 
 end Opens

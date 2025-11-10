@@ -40,7 +40,7 @@ theorem isRoot_of_unity_of_root_cyclotomic {ζ : R} {i : ℕ} (hi : i ∈ n.divi
   rcases n.eq_zero_or_pos with (rfl | hn)
   · exact pow_zero _
   have := congr_arg (eval ζ) (prod_cyclotomic_eq_X_pow_sub_one hn R).symm
-  rw [eval_sub, eval_pow, eval_X, eval_one] at this
+  rw [eval_sub, eval_X_pow, eval_one] at this
   convert eq_add_of_sub_eq' this
   convert (add_zero (M := R) _).symm
   apply eval_eq_zero_of_dvd_of_eval_eq_zero _ h
@@ -109,12 +109,8 @@ theorem roots_cyclotomic_nodup [NeZero (n : R)] : (cyclotomic n R).roots.Nodup :
 theorem cyclotomic.roots_to_finset_eq_primitiveRoots [NeZero (n : R)] :
     (⟨(cyclotomic n R).roots, roots_cyclotomic_nodup⟩ : Finset _) = primitiveRoots n R := by
   ext a
-  -- Porting note: was
-  -- `simp [cyclotomic_ne_zero n R, isRoot_cyclotomic_iff, mem_primitiveRoots,`
-  -- `  NeZero.pos_of_neZero_natCast R]`
-  simp only [mem_primitiveRoots, NeZero.pos_of_neZero_natCast R]
-  convert isRoot_cyclotomic_iff (n := n) (μ := a) using 0
-  simp [cyclotomic_ne_zero n R]
+  simp [cyclotomic_ne_zero n R, ← isRoot_cyclotomic_iff, mem_primitiveRoots,
+    NeZero.pos_of_neZero_natCast R]
 
 theorem cyclotomic.roots_eq_primitiveRoots_val [NeZero (n : R)] :
     (cyclotomic n R).roots = (primitiveRoots n R).val := by
@@ -163,7 +159,7 @@ open IsPrimitiveRoot Complex
 theorem _root_.IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible {K : Type*} [Field K]
     {R : Type*} [CommRing R] [IsDomain R] {μ : R} {n : ℕ} [Algebra K R] (hμ : IsPrimitiveRoot μ n)
     (h : Irreducible <| cyclotomic n K) [NeZero (n : K)] : cyclotomic n K = minpoly K μ := by
-  haveI := NeZero.of_noZeroSMulDivisors K R n
+  haveI := NeZero.of_faithfulSMul K R n
   refine minpoly.eq_of_irreducible_of_monic h ?_ (cyclotomic.monic n K)
   rwa [aeval_def, eval₂_eq_eval_map, map_cyclotomic, ← IsRoot.def, isRoot_cyclotomic_iff]
 

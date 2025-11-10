@@ -24,22 +24,22 @@ variable [SemilatticeSup α] [SemilatticeSup β]
 -- The linter significantly hinders readability here.
 set_option linter.unusedVariables false in
 instance instSemilatticeSup : SemilatticeSup (α ⊕ₗ β) where
-  sup x y := match x, y with
+  sup
     | inlₗ a₁, inlₗ a₂ => inl (a₁ ⊔ a₂)
     | inlₗ a₁, inrₗ b₂ => inr b₂
     | inrₗ b₁, inlₗ a₂ => inr b₁
     | inrₗ b₁, inrₗ b₂ => inr (b₁ ⊔ b₂)
-  le_sup_left x y := match x, y with
+  le_sup_left
     | inlₗ a₁, inlₗ a₂ => inl_le_inl_iff.2 le_sup_left
     | inlₗ a₁, inrₗ b₂ => inl_le_inr _ _
     | inrₗ b₁, inlₗ a₂ => le_rfl
     | inrₗ b₁, inrₗ b₂ => inr_le_inr_iff.2 le_sup_left
-  le_sup_right x y := match x, y with
+  le_sup_right
     | inlₗ a₁, inlₗ a₂ => inl_le_inl_iff.2 le_sup_right
     | inlₗ a₁, inrₗ b₂ => le_rfl
     | inrₗ b₁, inlₗ a₂ => inl_le_inr _ _
     | inrₗ b₁, inrₗ b₂ => inr_le_inr_iff.2 le_sup_right
-  sup_le x y z hxz hyz := match x, y, z, hxz, hyz with
+  sup_le
     | inlₗ a₁, inlₗ a₂, inlₗ a₃, Lex.inl h₁₃, Lex.inl h₂₃ => inl_le_inl_iff.2 <| sup_le h₁₃ h₂₃
     | inlₗ a₁, inlₗ a₂, inrₗ b₃, Lex.sep _ _, Lex.sep _ _ => Lex.sep _ _
     | inlₗ a₁, inrₗ b₂, inrₗ b₃, Lex.sep _ _, Lex.inr h₂₃ => inr_le_inr_iff.2 h₂₃
@@ -57,22 +57,22 @@ variable [SemilatticeInf α] [SemilatticeInf β]
 -- The linter significantly hinders readability here.
 set_option linter.unusedVariables false in
 instance instSemilatticeInf : SemilatticeInf (α ⊕ₗ β) where
-  inf x y := match x, y with
+  inf
     | inlₗ a₁, inlₗ a₂ => inl (a₁ ⊓ a₂)
     | inlₗ a₁, inrₗ b₂ => inl a₁
     | inrₗ b₁, inlₗ a₂ => inl a₂
     | inrₗ b₁, inrₗ b₂ => inr (b₁ ⊓ b₂)
-  inf_le_left x y := match x, y with
+  inf_le_left
     | inlₗ a₁, inlₗ a₂ => inl_le_inl_iff.2 inf_le_left
     | inlₗ a₁, inrₗ b₂ => le_rfl
     | inrₗ b₁, inlₗ a₂ => inl_le_inr _ _
     | inrₗ b₁, inrₗ b₂ => inr_le_inr_iff.2 inf_le_left
-  inf_le_right x y := match x, y with
+  inf_le_right
     | inlₗ a₁, inlₗ a₂ => inl_le_inl_iff.2 inf_le_right
     | inlₗ a₁, inrₗ b₂ => inl_le_inr _ _
     | inrₗ b₁, inlₗ a₂ => le_rfl
     | inrₗ b₁, inrₗ b₂ => inr_le_inr_iff.2 inf_le_right
-  le_inf x y z hzx hzy := match x, y, z, hzx, hzy with
+  le_inf
     | inlₗ a₁, inlₗ a₂, inlₗ a₃, Lex.inl h₁₃, Lex.inl h₂₃ => inl_le_inl_iff.2 <| le_inf h₁₃ h₂₃
     | inlₗ a₁, inlₗ a₂, inrₗ b₃, Lex.inl h₁₃, Lex.sep _ _ => inl_le_inl_iff.2 h₁₃
     | inlₗ a₁, inrₗ b₂, inlₗ a₃, Lex.sep _ _, Lex.inl h₂₃ => inl_le_inl_iff.2 h₂₃
@@ -105,9 +105,9 @@ end Lattice
 
 instance instDistribLattice [DistribLattice α] [DistribLattice β] : DistribLattice (α ⊕ₗ β) where
   le_sup_inf := by
-    simp only [Lex.forall, Sum.forall, inl_le_inl_iff, inr_le_inr_iff, sup_le_iff,
-      le_sup_left, true_and, inl_le_inr, not_inr_le_inl, le_inf_iff, sup_of_le_right, and_self,
-      inf_of_le_left, le_refl, implies_true, and_true, inf_of_le_right, sup_of_le_left, ← inl_sup,
+    simp only [Lex.forall, Sum.forall, inr_le_inr_iff,
+      le_sup_left, inl_le_inr, sup_of_le_right, and_self,
+      inf_of_le_left, implies_true, inf_of_le_right, sup_of_le_left, ← inl_sup,
       ← inr_sup, ← inl_inf, ← inr_inf, sup_inf_left, le_rfl]
 
 end Sum.Lex

@@ -20,12 +20,12 @@ variable {R A : Type*} [CommRing R] [IsDomain R] [CommRing A] [Algebra R A]
 
 theorem IsLocalization.surj_of_gcd_domain [GCDMonoid R] (M : Submonoid R) [IsLocalization M A]
     (z : A) : ∃ a b : R, IsUnit (gcd a b) ∧ z * algebraMap R A b = algebraMap R A a := by
-  obtain ⟨x, ⟨y, hy⟩, rfl⟩ := IsLocalization.mk'_surjective M z
+  obtain ⟨x, ⟨y, hy⟩, rfl⟩ := IsLocalization.exists_mk'_eq M z
   obtain ⟨x', y', hx', hy', hu⟩ := extract_gcd x y
   use x', y', hu
   rw [mul_comm, IsLocalization.mul_mk'_eq_mk'_of_mul]
   convert IsLocalization.mk'_mul_cancel_left (M := M) (S := A) _ _ using 2
-  rw [Subtype.coe_mk, hy', ← mul_comm y', mul_assoc]; conv_lhs => rw [hx']
+  grind
 
 instance (priority := 100) GCDMonoid.toIsIntegrallyClosed
     [h : Nonempty (GCDMonoid R)] : IsIntegrallyClosed R :=
@@ -40,6 +40,10 @@ instance (priority := 100) GCDMonoid.toIsIntegrallyClosed
       exact
         (dvd_gcd this <| dvd_refl y).trans
           (gcd_pow_left_dvd_pow_gcd.trans <| pow_dvd_pow_of_dvd (isUnit_iff_dvd_one.1 hg) _)
-    use x * (this.unit⁻¹ : _)
-    erw [map_mul, ← Units.coe_map_inv, eq_comm, Units.eq_mul_inv_iff_mul_eq]
+    use x * (this.unit⁻¹ :)
+    rw [map_mul]
+    have coe_map_inv :=
+      Units.coe_map_inv ((algebraMap R (FractionRing R) : R →* FractionRing R)) this.unit
+    simp only [MonoidHom.coe_coe] at coe_map_inv
+    rw [← coe_map_inv, eq_comm, Units.eq_mul_inv_iff_mul_eq]
     exact he

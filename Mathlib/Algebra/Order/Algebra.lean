@@ -1,10 +1,10 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Order.Module.OrderedSMul
+import Mathlib.Algebra.Order.Module.Defs
 
 /-!
 # Ordered algebras
@@ -20,8 +20,8 @@ i.e. `A ≤ B` iff `B - A = star R * R` for some `R`.
 ## Implementation
 
 Because the axioms for an ordered algebra are exactly the same as those for the underlying
-module being ordered, we don't actually introduce a new class, but just use the `OrderedSMul`
-mixin.
+module being ordered, we don't actually introduce a new class, but just use the `IsOrderedModule`
+and `IsStrictOrderedModule` mixins.
 
 ## Tags
 
@@ -30,14 +30,8 @@ ordered algebra
 
 section OrderedAlgebra
 
-variable {R A : Type*} {a b : A} {r : R}
-
-
-
-variable [OrderedCommRing R] [OrderedRing A] [Algebra R A]
-
-
-variable [OrderedSMul R A]
+variable {R A : Type*} [CommRing R] [PartialOrder R] [IsOrderedRing R]
+  [Ring A] [PartialOrder A] [IsOrderedRing A] [Algebra R A] [IsOrderedModule R A]
 
 theorem algebraMap_monotone : Monotone (algebraMap R A) := fun a b h => by
   rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, ← sub_nonneg, ← sub_smul]

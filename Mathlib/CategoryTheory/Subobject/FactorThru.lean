@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, Scott Morrison
+Authors: Bhavik Mehta, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Subobject.Basic
 import Mathlib.CategoryTheory.Preadditive.Basic
@@ -84,7 +84,7 @@ theorem factors_comp_arrow {X Y : C} {P : Subobject Y} (f : X ⟶ P) : P.Factors
 
 theorem factors_of_factors_right {X Y Z : C} {P : Subobject Z} (f : X ⟶ Y) {g : Y ⟶ Z}
     (h : P.Factors g) : P.Factors (f ≫ g) := by
-  induction' P using Quotient.ind' with P
+  induction P using Quotient.ind'
   obtain ⟨g, rfl⟩ := h
   exact ⟨f ≫ g, by simp⟩
 

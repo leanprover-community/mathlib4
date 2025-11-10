@@ -10,6 +10,8 @@
 import json
 import sys
 
+high_import_threshold = 2
+
 def compare_counts(base_file, head_file, changed_files_txt):
     # Load the counts
     with open(head_file, 'r') as f:
@@ -29,6 +31,7 @@ def compare_counts(base_file, head_file, changed_files_txt):
 
     # Compare the counts
     changes = []
+    high_pct = []
     for file in changed_files:
         base_count = base_counts.get(file, 0)
         head_count = head_counts.get(file, 0)
@@ -36,6 +39,8 @@ def compare_counts(base_file, head_file, changed_files_txt):
             continue
         diff = head_count - base_count
         percent = (diff / base_count) * 100
+        if high_import_threshold < percent:
+            high_pct.append(f'| +{percent:.2f}% | `{file}` |')
         if diff < 0:  # Dependencies went down
             changes.append((file, base_count, head_count, diff, percent))
         elif diff > new_files:  # Dependencies went up by more than the number of new files
@@ -59,11 +64,19 @@ def compare_counts(base_file, head_file, changed_files_txt):
         message += '\n'.join(messages)
     else:
         message += 'No significant changes to the import graph'
-    return message
+
+    high_pct_report = ''
+    if high_pct:
+        high_pct_report += f'Import changes exceeding {high_import_threshold}%\n\n'
+        high_pct_report += '| %      | File |\n'
+        high_pct_report += '| -      | -    |\n'
+        high_pct_report += '\n'.join(high_pct)
+    return (message, high_pct_report)
 
 if __name__ == '__main__':
     base_file = sys.argv[1]
     head_file = sys.argv[2]
     changed_files_txt = sys.argv[3]
-    message = compare_counts(base_file, head_file, changed_files_txt)
+    (message, high_pct) = compare_counts(base_file, head_file, changed_files_txt)
     print(message)
+    print(high_pct)

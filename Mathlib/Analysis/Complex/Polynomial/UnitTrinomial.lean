@@ -32,12 +32,12 @@ theorem irreducible_of_coprime' (hp : IsUnitTrinomial p)
   intro hq''
   rw [natDegree_pos_iff_degree_pos] at hq''
   rw [← degree_map_eq_of_injective (algebraMap ℤ ℂ).injective_int] at hq''
-  cases' Complex.exists_root hq'' with z hz
+  obtain ⟨z, hz⟩ := Complex.exists_root hq''
   rw [IsRoot, eval_map, ← aeval_def] at hz
   refine h z ⟨?_, ?_⟩
-  · cases' hq with g' hg'
+  · obtain ⟨g', hg'⟩ := hq
     rw [hg', aeval_mul, hz, zero_mul]
-  · cases' hq' with g' hg'
+  · obtain ⟨g', hg'⟩ := hq'
     rw [hg', aeval_mul, hz, zero_mul]
 
 end Polynomial.IsUnitTrinomial

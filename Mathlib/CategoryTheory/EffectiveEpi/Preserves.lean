@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.EffectiveEpi.Comp
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.EquivFin
 /-!
 
 # Functors preserving effective epimorphisms
@@ -50,7 +50,7 @@ def effectiveEpiFamilyStructOfEquivalence : EffectiveEpiFamilyStruct (fun a ↦ 
       (EffectiveEpiFamily.desc X π (fun a ↦ e.unit.app _ ≫ e.inverse.map (ε a))
       (effectiveEpiFamilyStructOfEquivalence_aux e X π ε h))
   fac ε h a := by
-    simp only [Functor.comp_obj, Adjunction.homEquiv_counit, Functor.id_obj,
+    simp only [Functor.comp_obj, Adjunction.homEquiv_counit,
       Equivalence.toAdjunction_counit]
     have := congrArg ((fun f ↦ f ≫ e.counit.app _) ∘ e.functor.map)
       (EffectiveEpiFamily.fac X π (fun a ↦ e.unit.app _ ≫ e.inverse.map (ε a))
@@ -59,7 +59,7 @@ def effectiveEpiFamilyStructOfEquivalence : EffectiveEpiFamilyStruct (fun a ↦ 
         Category.assoc, Equivalence.fun_inv_map, Iso.inv_hom_id_app, Category.comp_id] at this
     simp [this]
   uniq ε h m hm := by
-    simp only [Functor.comp_obj, Adjunction.homEquiv_counit, Functor.id_obj,
+    simp only [Functor.comp_obj, Adjunction.homEquiv_counit,
       Equivalence.toAdjunction_counit]
     have := EffectiveEpiFamily.uniq X π (fun a ↦ e.unit.app _ ≫ e.inverse.map (ε a))
       (effectiveEpiFamilyStructOfEquivalence_aux e X π ε h)
@@ -172,7 +172,7 @@ class ReflectsEffectiveEpiFamilies (F : C ⥤ D) : Prop where
 
 lemma effectiveEpiFamily_of_map (F : C ⥤ D) [ReflectsEffectiveEpiFamilies.{u} F]
     {α : Type u} {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B))
-    (h : EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a))) :
+    (h : EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a ↦ F.map (π a))) :
     EffectiveEpiFamily X π :=
   ReflectsEffectiveEpiFamilies.reflects X π h
 
@@ -190,7 +190,7 @@ class ReflectsFiniteEffectiveEpiFamilies (F : C ⥤ D) : Prop where
 
 lemma finite_effectiveEpiFamily_of_map (F : C ⥤ D) [ReflectsFiniteEffectiveEpiFamilies F]
     {α : Type} [Finite α] {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B))
-    (h : EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a))) :
+    (h : EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a ↦ F.map (π a))) :
     EffectiveEpiFamily X π :=
   ReflectsFiniteEffectiveEpiFamilies.reflects X π h
 
@@ -205,9 +205,6 @@ instance (F : C ⥤ D) [ReflectsFiniteEffectiveEpiFamilies F] : ReflectsEffectiv
     rw [effectiveEpi_iff_effectiveEpiFamily] at h
     have := F.finite_effectiveEpiFamily_of_map _ _ h
     infer_instance
-
-instance (F : C ⥤ D) [IsEquivalence F] : F.PreservesEffectiveEpiFamilies where
-  preserves _ _ := inferInstance
 
 instance (F : C ⥤ D) [IsEquivalence F] : F.ReflectsEffectiveEpiFamilies where
   reflects {α B} X π _ := by

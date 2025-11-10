@@ -1,11 +1,10 @@
 /-
-Copyright (c) 2023 Scott Morrison. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Floris van Doorn
+Authors: Kim Morrison, Floris van Doorn
 -/
 import Mathlib.Init
 import Lean.Elab.DeclarationRange
-import Lean.Elab.Term
 
 /-!
 # `addRelatedDecl`
@@ -23,7 +22,7 @@ and has been factored out to avoid code duplication.
 Feel free to add features as needed for other applications.
 
 This helper:
-* calls `addDeclarationRanges`, so jump-to-definition works,
+* calls `addDeclarationRangesFromSyntax`, so jump-to-definition works,
 * copies the `protected` status of the existing declaration, and
 * supports copying attributes.
 
@@ -48,9 +47,7 @@ def addRelatedDecl (src : Name) (suffix : String) (ref : Syntax)
   let tgt := match src with
     | Name.str n s => Name.mkStr n <| s ++ suffix
     | x => x
-  addDeclarationRanges tgt {
-    range := ← getDeclarationRange (← getRef)
-    selectionRange := ← getDeclarationRange ref }
+  addDeclarationRangesFromSyntax tgt (← getRef) ref
   let info ← getConstInfo src
   let (newValue, newLevels) ← construct info.type info.value! info.levelParams
   let newValue ← instantiateMVars newValue
@@ -61,7 +58,7 @@ def addRelatedDecl (src : Name) (suffix : String) (ref : Syntax)
       { info with levelParams := newLevels, type := newType, name := tgt, value := newValue }
   | ConstantInfo.defnInfo info =>
     -- Structure fields are created using `def`, even when they are propositional,
-    -- so we don't rely on this to decided whether we should be constructing a `theorem` or a `def`.
+    -- so we don't rely on this to decide whether we should be constructing a `theorem` or a `def`.
     addAndCompile <| if ← isProp newType then .thmDecl
       { info with levelParams := newLevels, type := newType, name := tgt, value := newValue }
       else .defnDecl
@@ -69,6 +66,7 @@ def addRelatedDecl (src : Name) (suffix : String) (ref : Syntax)
   | _ => throwError "Constant {src} is not a theorem or definition."
   if isProtected (← getEnv) src then
     setEnv <| addProtected (← getEnv) tgt
+  inferDefEqAttr tgt
   let attrs := match attrs? with | some attrs => attrs | none => #[]
   _ ← Term.TermElabM.run' <| do
     let attrs ← elabAttrs attrs

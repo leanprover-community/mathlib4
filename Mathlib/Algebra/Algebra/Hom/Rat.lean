@@ -26,6 +26,11 @@ theorem toRatAlgHom_toRingHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] 
     ↑f.toRatAlgHom = f :=
   RingHom.ext fun _x => rfl
 
+@[simp]
+theorem toRatAlgHom_apply [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) (x : R) :
+    f.toRatAlgHom x = f x :=
+  rfl
+
 end RingHom
 
 section
@@ -47,5 +52,3 @@ def RingHom.equivRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] :
   right_inv f := AlgHom.toRingHom_toRatAlgHom f
 
 end
-
-

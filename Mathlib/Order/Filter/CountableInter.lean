@@ -12,7 +12,7 @@ import Mathlib.Data.Set.Countable
 In this file we define `CountableInterFilter` to be the class of filters with the following
 property: for any countable collection of sets `s ∈ l` their intersection belongs to `l` as well.
 
-Two main examples are the `residual` filter defined in `Mathlib.Topology.GDelta` and
+Two main examples are the `residual` filter defined in `Mathlib/Topology/GDelta.lean` and
 the `MeasureTheory.ae` filter defined in `Mathlib/MeasureTheory.OuterMeasure/AE`.
 
 We reformulate the definition in terms of indexed intersection and in terms of `Filter.Eventually`
@@ -21,8 +21,8 @@ and provide instances for some basic constructions (`⊥`, `⊤`, `Filter.princi
 that deduces two axioms of a `Filter` from the countable intersection property.
 
 Note that there also exists a typeclass `CardinalInterFilter`, and thus an alternative spelling of
-`CountableInterFilter` as `CardinalInterFilter l (aleph 1)`. The former (defined here) is the
-preferred spelling; it has the advantage of not requiring the user to import the theory ordinals.
+`CountableInterFilter` as `CardinalInterFilter l ℵ₁`. The former (defined here) is the
+preferred spelling; it has the advantage of not requiring the user to import the theory of ordinals.
 
 ## Tags
 filter, countable
@@ -30,8 +30,6 @@ filter, countable
 
 
 open Set Filter
-
-open Filter
 
 variable {ι : Sort*} {α β : Type*}
 
@@ -208,7 +206,7 @@ instance countableInterFilter_sup (l₁ l₂ : Filter α) [CountableInterFilter 
 instance CountableInterFilter.curry {α β : Type*} {l : Filter α} {m : Filter β}
     [CountableInterFilter l] [CountableInterFilter m] : CountableInterFilter (l.curry m) := ⟨by
   intro S Sct hS
-  simp_rw [mem_curry_iff, mem_sInter, eventually_countable_ball (p := fun _ _ _ => (_ ,_) ∈ _) Sct,
+  simp_rw [mem_curry_iff, mem_sInter, eventually_countable_ball (p := fun _ _ _ => (_, _) ∈ _) Sct,
     eventually_countable_ball (p := fun _ _ _ => ∀ᶠ (_ : β) in m, _)  Sct, ← mem_curry_iff]
   exact hS⟩
 
@@ -229,11 +227,7 @@ inductive CountableGenerateSets : Set α → Prop
 def countableGenerate : Filter α :=
   ofCountableInter (CountableGenerateSets g) (fun _ => CountableGenerateSets.sInter) fun _ _ =>
     CountableGenerateSets.superset
-  --deriving CountableInterFilter
-
--- Porting note: could not de derived
-instance : CountableInterFilter (countableGenerate g) := by
-  delta countableGenerate; infer_instance
+deriving CountableInterFilter
 
 variable {g}
 

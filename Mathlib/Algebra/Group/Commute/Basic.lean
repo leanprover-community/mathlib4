@@ -11,10 +11,32 @@ import Mathlib.Algebra.Group.Semiconj.Basic
 
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 variable {G : Type*}
+
+section Semigroup
+variable [Semigroup G] {a b c : G}
+
+open Function
+
+@[to_additive]
+lemma SemiconjBy.function_semiconj_mul_left (h : SemiconjBy a b c) :
+    Semiconj (a * ·) (b * ·) (c * ·) := fun j ↦ by simp only [← mul_assoc, h.eq]
+
+@[to_additive]
+lemma Commute.function_commute_mul_left (h : Commute a b) : Function.Commute (a * ·) (b * ·) :=
+  SemiconjBy.function_semiconj_mul_left h
+
+@[to_additive]
+lemma SemiconjBy.function_semiconj_mul_right_swap (h : SemiconjBy a b c) :
+    Function.Semiconj (· * a) (· * c) (· * b) := fun j ↦ by simp only [mul_assoc, ← h.eq]
+
+@[to_additive]
+lemma Commute.function_commute_mul_right (h : Commute a b) : Function.Commute (· * a) (· * b) :=
+  SemiconjBy.function_semiconj_mul_right_swap h
+
+end Semigroup
 
 namespace Commute
 

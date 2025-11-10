@@ -15,7 +15,7 @@ import Mathlib.Condensed.Basic
 
 # Condensed `R`-modules
 
-This files defines condensed modules over a ring `R`.
+This file defines condensed modules over a ring `R`.
 
 ## Main results
 
@@ -29,13 +29,13 @@ universe u
 
 open CategoryTheory
 
-variable (R : Type (u+1)) [Ring R]
+variable (R : Type (u + 1)) [Ring R]
 
 /--
 The category of condensed `R`-modules, defined as sheaves of `R`-modules over
 `CompHaus` with respect to the coherent Grothendieck topology.
 -/
-abbrev CondensedMod := Condensed.{u} (ModuleCat.{u+1} R)
+abbrev CondensedMod := Condensed.{u} (ModuleCat.{u + 1} R)
 
 noncomputable instance : Abelian (CondensedMod.{u} R) := sheafIsAbelian
 
@@ -71,9 +71,6 @@ noncomputable abbrev Condensed.setAbAdjunction : freeAb ⊣ abForget := freeForg
 
 namespace CondensedMod
 
--- Note: `simp` can prove this when stated for `Condensed C` for a concrete category `C`.
--- However, it doesn't seem to see through the abbreviation `CondensedMod`
-@[simp]
 lemma hom_naturality_apply {X Y : CondensedMod.{u} R} (f : X ⟶ Y) {S T : CompHausᵒᵖ} (g : S ⟶ T)
     (x : X.val.obj S) : f.val.app T (X.val.map g x) = Y.val.map g (f.val.app S x) :=
   NatTrans.naturality_apply f.val g x

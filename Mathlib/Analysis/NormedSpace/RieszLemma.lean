@@ -3,7 +3,7 @@ Copyright (c) 2019 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo, Yury Kudryashov
 -/
-import Mathlib.Analysis.NormedSpace.Real
+import Mathlib.Analysis.Normed.Module.RCLike.Real
 import Mathlib.Analysis.Seminorm
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 
@@ -49,8 +49,8 @@ theorem riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃
     have hr' : r' < 1 := by
       simp only [r', max_lt_iff, hr, true_and]
       norm_num
-    have hlt : 0 < r' := lt_of_lt_of_le (by norm_num) (le_max_right r 2⁻¹)
-    have hdlt : d < d / r' := (lt_div_iff hlt).mpr ((mul_lt_iff_lt_one_right hdp).2 hr')
+    have hlt : 0 < r' := lt_of_lt_of_le (by simp) (le_max_right r 2⁻¹)
+    have hdlt : d < d / r' := (lt_div_iff₀ hlt).mpr ((mul_lt_iff_lt_one_right hdp).2 hr')
     obtain ⟨y₀, hy₀F, hxy₀⟩ : ∃ y ∈ F, dist x y < d / r' := (Metric.infDist_lt_iff hFn).mp hdlt
     have x_ne_y₀ : x - y₀ ∉ F := by
       by_contra h
@@ -63,7 +63,7 @@ theorem riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃
       r * ‖x - y₀‖ ≤ r' * ‖x - y₀‖ := by gcongr; apply le_max_left
       _ < d := by
         rw [← dist_eq_norm]
-        exact (lt_div_iff' hlt).1 hxy₀
+        exact (lt_div_iff₀' hlt).1 hxy₀
       _ ≤ dist x (y₀ + y) := Metric.infDist_le_dist_of_mem hy₀y
       _ = ‖x - y₀ - y‖ := by rw [sub_sub, dist_eq_norm]
 
@@ -74,7 +74,7 @@ strictly larger than the norm of an element of norm `> 1`. For a version without
 `riesz_lemma`.
 
 Since we are considering a general nontrivially normed field, there may be a gap in possible norms
-(for instance no element of norm in `(1,2)`). Hence, we can not allow `R` arbitrarily close to `1`,
+(for instance no element of norm in `(1,2)`). Hence, we cannot allow `R` arbitrarily close to `1`,
 and require `R > ‖c‖` for some `c : 𝕜` with norm `> 1`.
 -/
 theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖c‖ < R) {F : Subspace 𝕜 E}
@@ -82,7 +82,7 @@ theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖
     ∃ x₀ : E, ‖x₀‖ ≤ R ∧ ∀ y ∈ F, 1 ≤ ‖x₀ - y‖ := by
   have Rpos : 0 < R := (norm_nonneg _).trans_lt hR
   have : ‖c‖ / R < 1 := by
-    rw [div_lt_iff Rpos]
+    rw [div_lt_iff₀ Rpos]
     simpa using hR
   rcases riesz_lemma hFc hF this with ⟨x, xF, hx⟩
   have x0 : x ≠ 0 := fun H => by simp [H] at xF
@@ -93,12 +93,12 @@ theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖
   set y' := d⁻¹ • y
   have yy' : y = d • y' := by simp [y', smul_smul, mul_inv_cancel₀ d0]
   calc
-    1 = ‖c‖ / R * (R / ‖c‖) := by field_simp [Rpos.ne', (zero_lt_one.trans hc).ne']
+    1 = ‖c‖ / R * (R / ‖c‖) := by field
     _ ≤ ‖c‖ / R * ‖d • x‖ := by gcongr
     _ = ‖d‖ * (‖c‖ / R * ‖x‖) := by
       simp only [norm_smul]
       ring
-    _ ≤ ‖d‖ * ‖x - y'‖ := by gcongr; exact hx y' (by simp [Submodule.smul_mem _ _ hy])
+    _ ≤ ‖d‖ * ‖x - y'‖ := by gcongr; exact hx y' (by simp [y', Submodule.smul_mem _ _ hy])
     _ = ‖d • x - y‖ := by rw [yy', ← smul_sub, norm_smul]
 
 theorem Metric.closedBall_infDist_compl_subset_closure {x : F} {s : Set F} (hx : x ∈ s) :

@@ -11,8 +11,7 @@ import Mathlib.Algebra.Group.Basic
 
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 namespace SemiconjBy
 variable {G : Type*}
@@ -43,13 +42,13 @@ variable [Group G] {a x y : G}
 
 @[to_additive (attr := simp)] lemma zpow_right (h : SemiconjBy a x y) :
     ∀ m : ℤ, SemiconjBy a (x ^ m) (y ^ m)
-  | (n : ℕ)    => by simp [zpow_natCast, h.pow_right n]
+  | (n : ℕ) => by simp [zpow_natCast, h.pow_right n]
   | .negSucc n => by
     simp only [zpow_negSucc, inv_right_iff]
     apply pow_right h
 
 variable (a) in
-@[to_additive] lemma eq_one_iff (h : SemiconjBy a x y): x = 1 ↔ y = 1 := by
+@[to_additive] lemma eq_one_iff (h : SemiconjBy a x y) : x = 1 ↔ y = 1 := by
   rw [← conj_eq_one_iff (a := a) (b := x), h.eq, mul_inv_cancel_right]
 
 end Group

@@ -10,11 +10,11 @@ import Mathlib.CategoryTheory.Idempotents.KaroubiKaroubi
 
 /-!
 
-# N₁ and N₂ reflects isomorphisms
+# N₁ and N₂ reflect isomorphisms
 
 In this file, it is shown that the functors
 `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)` and
-`N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ))`
+`N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)`
 reflect isomorphisms for any preadditive category `C`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
@@ -36,14 +36,14 @@ instance : (N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)).Reflects
   ⟨fun {X Y} f => by
     intro
     -- restating the result in a way that allows induction on the degree n
-    suffices ∀ n : ℕ, IsIso (f.app (op [n])) by
+    suffices ∀ n : ℕ, IsIso (f.app (op ⦋n⦌)) by
       haveI : ∀ Δ : SimplexCategoryᵒᵖ, IsIso (f.app Δ) := fun Δ => this Δ.unop.len
       apply NatIso.isIso_of_isIso_app
     -- restating the assumption in a more practical form
     have h₁ := HomologicalComplex.congr_hom (Karoubi.hom_ext_iff.mp (IsIso.hom_inv_id (N₁.map f)))
     have h₂ := HomologicalComplex.congr_hom (Karoubi.hom_ext_iff.mp (IsIso.inv_hom_id (N₁.map f)))
     have h₃ := fun n =>
-      Karoubi.HomologicalComplex.p_comm_f_assoc (inv (N₁.map f)) n (f.app (op [n]))
+      Karoubi.HomologicalComplex.p_comm_f_assoc (inv (N₁.map f)) n (f.app (op ⦋n⦌))
     simp only [N₁_map_f, Karoubi.comp_f, HomologicalComplex.comp_f,
       AlternatingFaceMapComplex.map_f, N₁_obj_p, Karoubi.id_f, assoc] at h₁ h₂ h₃
     -- we have to construct an inverse to f in degree n, by induction on n
@@ -55,12 +55,11 @@ instance : (N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)).Reflects
       have h₁₀ := h₁ 0
       have h₂₀ := h₂ 0
       dsimp at h₁₀ h₂₀
-      simp only [id_comp, comp_id] at h₁₀ h₂₀
+      simp only [id_comp] at h₁₀ h₂₀
       tauto
     | succ n hn =>
-      haveI := hn
       use φ { a := PInfty.f (n + 1) ≫ (inv (N₁.map f)).f.f (n + 1)
-              b := fun i => inv (f.app (op [n])) ≫ X.σ i }
+              b := fun i => inv (f.app (op ⦋n⦌)) ≫ X.σ i }
       simp only [MorphComponents.id, ← id_φ, ← preComp_φ, preComp, ← postComp_φ, postComp,
         PInfty_f_naturality_assoc, IsIso.hom_inv_id_assoc, assoc, IsIso.inv_hom_id_assoc,
         SimplicialObject.σ_naturality, h₁, h₂, h₃, and_self]⟩
@@ -75,7 +74,7 @@ theorem compatibility_N₂_N₁_karoubi :
     · ext n
       · rfl
       · dsimp
-        simp only [karoubi_PInfty_f, comp_id, PInfty_f_naturality, id_comp, eqToHom_refl]
+        simp only [karoubi_PInfty_f, comp_id, PInfty_f_naturality, id_comp]
     · rintro _ n (rfl : n + 1 = _)
       ext
       have h := (AlternatingFaceMapComplex.map P.p).comm (n + 1) n
@@ -91,14 +90,14 @@ theorem compatibility_N₂_N₁_karoubi :
       karoubiChainComplexEquivalence_functor_obj_X_p, N₂_obj_p_f, eqToHom_refl,
       PInfty_f_naturality_assoc, app_comp_p, PInfty_f_idem_assoc]
 
-/-- We deduce that `N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ))`
+/-- We deduce that `N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)`
 reflects isomorphisms from the fact that
 `N₁ : SimplicialObject (Karoubi C) ⥤ Karoubi (ChainComplex (Karoubi C) ℕ)` does. -/
 instance : (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)).ReflectsIsomorphisms :=
   ⟨fun f => by
     intro
-    -- The following functor `F` reflects isomorphism because it is
-    -- a composition of four functors which reflects isomorphisms.
+    -- The following functor `F` reflects isomorphisms because it is
+    -- a composition of four functors which reflect isomorphisms.
     -- Then, it suffices to show that `F.map f` is an isomorphism.
     let F₁ := karoubiFunctorCategoryEmbedding SimplexCategoryᵒᵖ C
     let F₂ : SimplicialObject (Karoubi C) ⥤ _ := N₁
@@ -110,11 +109,8 @@ instance : (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)
     -- could this be fixed by setting better instance priorities?
     haveI : F₁.ReflectsIsomorphisms := reflectsIsomorphisms_of_full_and_faithful _
     haveI : F₂.ReflectsIsomorphisms := by infer_instance
-    haveI : F₃.ReflectsIsomorphisms := reflectsIsomorphisms_of_full_and_faithful _
-    haveI : ((KaroubiKaroubi.equivalence C).inverse).ReflectsIsomorphisms :=
-      reflectsIsomorphisms_of_full_and_faithful _
     have : IsIso (F.map f) := by
-      simp only [F]
+      simp only [F, F₁]
       rw [← compatibility_N₂_N₁_karoubi, Functor.comp_map]
       apply Functor.map_isIso
     exact isIso_of_reflects_iso f F⟩

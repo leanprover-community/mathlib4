@@ -25,14 +25,11 @@ variable {I : Type u}
 -- The indexing type
 variable {f : I → Type v}
 
--- The family of types already equipped with instances
-variable (x y : ∀ i, f i) (i : I)
+variable (i : I)
 
-instance distrib [∀ i, Distrib <| f i] : Distrib (∀ i : I, f i) :=
-  { add := (· + ·)
-    mul := (· * ·)
-    left_distrib := by intros; ext; exact mul_add _ _ _
-    right_distrib := by intros; ext; exact add_mul _ _ _}
+instance distrib [∀ i, Distrib <| f i] : Distrib (∀ i : I, f i) where
+  left_distrib := by intros; ext; exact mul_add _ _ _
+  right_distrib := by intros; ext; exact add_mul _ _ _
 
 instance hasDistribNeg [∀ i, Mul (f i)] [∀ i, HasDistribNeg (f i)] : HasDistribNeg (∀ i, f i) where
   neg_mul _ _ := funext fun _ ↦ neg_mul _ _

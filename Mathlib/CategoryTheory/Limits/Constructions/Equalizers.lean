@@ -59,9 +59,7 @@ abbrev equalizerCone (F : WalkingParallelPair ⥤ C) : Cone F :=
 
 /-- Show the equalizing cone is a limit -/
 def equalizerConeIsLimit (F : WalkingParallelPair ⥤ C) : IsLimit (equalizerCone F) where
-  lift := by
-    intro c; apply pullback.lift (c.π.app _) (c.π.app _)
-    ext <;> simp
+  lift c := pullback.lift (c.π.app _) (c.π.app _)
   fac := by rintro c (_ | _) <;> simp
   uniq := by
     intro c _ J
@@ -86,11 +84,12 @@ theorem hasEqualizers_of_hasPullbacks_and_binary_products [HasBinaryProducts C] 
 attribute [local instance] hasPullback_of_preservesPullback
 
 /-- A functor that preserves pullbacks and binary products also presrves equalizers. -/
-def preservesEqualizersOfPreservesPullbacksAndBinaryProducts [HasBinaryProducts C] [HasPullbacks C]
+lemma preservesEqualizers_of_preservesPullbacks_and_binaryProducts
+    [HasBinaryProducts C] [HasPullbacks C]
     [PreservesLimitsOfShape (Discrete WalkingPair) G] [PreservesLimitsOfShape WalkingCospan G] :
     PreservesLimitsOfShape WalkingParallelPair G :=
   ⟨fun {K} =>
-    preservesLimitOfPreservesLimitCone (equalizerConeIsLimit K) <|
+    preservesLimit_of_preserves_limit_cone (equalizerConeIsLimit K) <|
       { lift := fun c => by
           refine pullback.lift ?_ ?_ ?_ ≫ (PreservesPullback.iso _ _ _ ).inv
           · exact c.π.app WalkingParallelPair.zero
@@ -149,9 +148,7 @@ abbrev coequalizerCocone (F : WalkingParallelPair ⥤ C) : Cocone F :=
 
 /-- Show the equalizing cocone is a colimit -/
 def coequalizerCoconeIsColimit (F : WalkingParallelPair ⥤ C) : IsColimit (coequalizerCocone F) where
-  desc := by
-    intro c; apply pushout.desc (c.ι.app _) (c.ι.app _)
-    ext <;> simp
+  desc c := pushout.desc (c.ι.app _) (c.ι.app _)
   fac := by rintro c (_ | _) <;> simp
   uniq := by
     intro c m J
@@ -180,20 +177,20 @@ theorem hasCoequalizers_of_hasPushouts_and_binary_coproducts [HasBinaryCoproduct
 attribute [local instance] hasPushout_of_preservesPushout
 
 /-- A functor that preserves pushouts and binary coproducts also presrves coequalizers. -/
-def preservesCoequalizersOfPreservesPushoutsAndBinaryCoproducts [HasBinaryCoproducts C]
+lemma preservesCoequalizers_of_preservesPushouts_and_binaryCoproducts [HasBinaryCoproducts C]
     [HasPushouts C] [PreservesColimitsOfShape (Discrete WalkingPair) G]
     [PreservesColimitsOfShape WalkingSpan G] : PreservesColimitsOfShape WalkingParallelPair G :=
   ⟨fun {K} =>
-    preservesColimitOfPreservesColimitCocone (coequalizerCoconeIsColimit K) <|
+    preservesColimit_of_preserves_colimit_cocone (coequalizerCoconeIsColimit K) <|
       { desc := fun c => by
           refine (PreservesPushout.iso _ _ _).inv ≫ pushout.desc ?_ ?_ ?_
           · exact c.ι.app WalkingParallelPair.one
           · exact c.ι.app WalkingParallelPair.one
           apply (mapIsColimitOfPreservesOfIsColimit G _ _ (coprodIsCoprod _ _)).hom_ext
           rintro (_ | _)
-          · simp only [BinaryCofan.ι_app_left, BinaryCofan.mk_inl, Category.assoc, ←
+          · simp only [BinaryCofan.ι_app_left, BinaryCofan.mk_inl, ←
               G.map_comp_assoc, coprod.inl_desc]
-          · simp only [BinaryCofan.ι_app_right, BinaryCofan.mk_inr, Category.assoc, ←
+          · simp only [BinaryCofan.ι_app_right, BinaryCofan.mk_inr, ←
               G.map_comp_assoc, coprod.inr_desc]
             exact
               (c.ι.naturality WalkingParallelPairHom.left).trans

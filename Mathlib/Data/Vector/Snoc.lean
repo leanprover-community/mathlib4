@@ -16,15 +16,15 @@ import Mathlib.Data.Vector.Basic
   `snoc xs x` for its inductive case. Effectively doing induction from right-to-left
 -/
 
-namespace Mathlib
+namespace List
 
 namespace Vector
 
 variable {α β σ φ : Type*} {n : ℕ} {x : α} {s : σ} (xs : Vector α n)
 
 /-- Append a single element to the end of a vector -/
-def snoc : Vector α n → α → Vector α (n+1) :=
-  fun xs x => append xs (x ::ᵥ Vector.nil)
+def snoc : Vector α n → α → Vector α (n + 1) :=
+  fun xs x => xs ++ x ::ᵥ Vector.nil
 
 /-! ## Simplification lemmas -/
 
@@ -51,10 +51,10 @@ theorem reverse_snoc : reverse (xs.snoc x) = x ::ᵥ (reverse xs) := by
   cases xs
   simp only [reverse, snoc, cons, toList_mk]
   congr
-  simp [toList, Vector.append, Append.append]
+  simp [toList, append_def]
 
 theorem replicate_succ_to_snoc (val : α) :
-    replicate (n+1) val = (replicate n val).snoc val := by
+    replicate (n + 1) val = (replicate n val).snoc val := by
   induction n with
   | zero => rfl
   | succ n ih =>
@@ -68,13 +68,14 @@ end Simp
 
 section Induction
 
-/-- Define `C v` by *reverse* induction on `v : Vector α n`.
-    That is, break the vector down starting from the right-most element, using `snoc`
+/--
+Define `C v` by *reverse* induction on `v : Vector α n`.
+That is, break the vector down starting from the right-most element, using `snoc`
 
-    This function has two arguments: `nil` handles the base case on `C nil`,
-    and `snoc` defines the inductive step using `∀ x : α, C xs → C (xs.snoc x)`.
+This function has two arguments: `nil` handles the base case on `C nil`,
+and `snoc` defines the inductive step using `∀ x : α, C xs → C (xs.snoc x)`.
 
-    This can be used as `induction v using Vector.revInductionOn`. -/
+This can be used as `induction v using Vector.revInductionOn`. -/
 @[elab_as_elim]
 def revInductionOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector α n)
     (nil : C nil)
@@ -87,7 +88,7 @@ def revInductionOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vec
     (@fun n x xs (r : C xs.reverse) => cast (by simp) <| snoc xs.reverse x r)
 
 /-- Define `C v w` by *reverse* induction on a pair of vectors `v : Vector α n` and
-    `w : Vector β n`. -/
+`w : Vector β n`. -/
 @[elab_as_elim]
 def revInductionOn₂ {C : ∀ {n : ℕ}, Vector α n → Vector β n → Sort*} {n : ℕ}
     (v : Vector α n) (w : Vector β n)
@@ -104,7 +105,7 @@ def revInductionOn₂ {C : ∀ {n : ℕ}, Vector α n → Vector β n → Sort*}
       cast (by simp) <| snoc xs.reverse ys.reverse x y r)
 
 /-- Define `C v` by *reverse* case analysis, i.e. by handling the cases `nil` and `xs.snoc x`
-    separately -/
+separately -/
 @[elab_as_elim]
 def revCasesOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector α n)
     (nil : C nil)
@@ -159,4 +160,4 @@ theorem mapAccumr₂_snoc (f : α → β → σ → σ × φ) (x : α) (y : β) 
 end Simp
 end Vector
 
-end Mathlib
+end List

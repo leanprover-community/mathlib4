@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.BooleanAlgebra
+import Mathlib.Order.BooleanAlgebra.Basic
 import Mathlib.Tactic.Common
 
 /-!
@@ -19,9 +19,10 @@ boundary.
 
 ## Notation
 
-`∂ a` is notation for `Coheyting.boundary a` in locale `Heyting`.
+`∂ a` is notation for `Coheyting.boundary a` in scope `Heyting`.
 -/
 
+assert_not_exists RelIso
 
 variable {α : Type*}
 
@@ -30,16 +31,16 @@ namespace Coheyting
 variable [CoheytingAlgebra α] {a b : α}
 
 /-- The boundary of an element of a co-Heyting algebra is the intersection of its Heyting negation
-with itself. Note that this is always `⊥` for a boolean algebra. -/
+with itself. Note that this is always `⊥` for a Boolean algebra. -/
 def boundary (a : α) : α :=
   a ⊓ ￢a
 
 /-- The boundary of an element of a co-Heyting algebra. -/
 scoped[Heyting] prefix:120 "∂ " => Coheyting.boundary
--- Porting note: Should the notation be automatically included in the current scope?
+
 open Heyting
 
--- Porting note: Should hnot be named hNot?
+-- TODO: Should hnot be named hNot?
 theorem inf_hnot_self (a : α) : a ⊓ ￢a = ∂ a :=
   rfl
 
@@ -89,9 +90,6 @@ example (a b : Prop) : (a ∧ b ∨ ¬(a ∧ b)) ∧ ((a ∨ b) ∨ ¬(a ∨ b))
   · exact Or.inr fun ha => hnab <| Or.inl ha
 
 theorem boundary_le_boundary_sup_sup_boundary_inf_left : ∂ a ≤ ∂ (a ⊔ b) ⊔ ∂ (a ⊓ b) := by
-  -- Porting note: the following simp generates the same term as mathlib3 if you remove
-  -- sup_inf_right from both. With sup_inf_right included, mathlib4 and mathlib3 generate
-  -- different terms
   simp only [boundary, sup_inf_left, sup_inf_right, sup_right_idem, le_inf_iff, sup_assoc,
     sup_comm _ a]
   refine ⟨⟨⟨?_, ?_⟩, ⟨?_, ?_⟩⟩, ?_, ?_⟩ <;> try { exact le_sup_of_le_left inf_le_left } <;>

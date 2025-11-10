@@ -14,7 +14,8 @@ for all sets `t` we have `m t = m (t ∩ s) + m (t \ s)`. This forms a measurabl
 
 ## Main definitions and statements
 
-* `caratheodory` is the Carathéodory-measurable space of an outer measure.
+* `MeasureTheory.OuterMeasure.caratheodory` is the Carathéodory-measurable space
+  of an outer measure.
 
 ## References
 
@@ -55,7 +56,7 @@ theorem isCaratheodory_iff_le' {s : Set α} :
   forall_congr' fun _ => le_antisymm_iff.trans <| and_iff_right <| measure_le_inter_add_diff _ _ _
 
 @[simp]
-theorem isCaratheodory_empty : IsCaratheodory m ∅ := by simp [IsCaratheodory, m.empty, diff_empty]
+theorem isCaratheodory_empty : IsCaratheodory m ∅ := by simp [IsCaratheodory, diff_empty]
 
 theorem isCaratheodory_compl : IsCaratheodory m s₁ → IsCaratheodory m s₁ᶜ := by
   simp [IsCaratheodory, diff_eq, add_comm]
@@ -71,13 +72,25 @@ theorem isCaratheodory_union (h₁ : IsCaratheodory m s₁) (h₂ : IsCaratheodo
     union_diff_left, h₂ (t ∩ s₁)]
   simp [diff_eq, add_assoc]
 
+variable {m} in
+lemma IsCaratheodory.biUnion_of_finite {ι : Type*} {s : ι → Set α} {t : Set ι} (ht : t.Finite)
+    (h : ∀ i ∈ t, m.IsCaratheodory (s i)) :
+    m.IsCaratheodory (⋃ i ∈ t, s i) := by
+  classical
+  lift t to Finset ι using ht
+  induction t using Finset.induction_on with
+  | empty => simp
+  | insert i t hi IH =>
+    simp only [Finset.mem_coe, Finset.mem_insert, iUnion_iUnion_eq_or_left] at h ⊢
+    exact m.isCaratheodory_union (h _ <| Or.inl rfl) (IH fun _ hj ↦ h _ <| Or.inr hj)
+
 theorem measure_inter_union (h : s₁ ∩ s₂ ⊆ ∅) (h₁ : IsCaratheodory m s₁) {t : Set α} :
     m (t ∩ (s₁ ∪ s₂)) = m (t ∩ s₁) + m (t ∩ s₂) := by
   rw [h₁, Set.inter_assoc, Set.union_inter_cancel_left, inter_diff_assoc, union_diff_cancel_left h]
 
 theorem isCaratheodory_iUnion_lt {s : ℕ → Set α} :
     ∀ {n : ℕ}, (∀ i < n, IsCaratheodory m (s i)) → IsCaratheodory m (⋃ i < n, s i)
-  | 0, _ => by simp [Nat.not_lt_zero]
+  | 0, _ => by simp
   | n + 1, h => by
     rw [biUnion_lt_succ]
     exact isCaratheodory_union m
@@ -92,22 +105,21 @@ theorem isCaratheodory_inter (h₁ : IsCaratheodory m s₁) (h₂ : IsCaratheodo
 lemma isCaratheodory_diff (h₁ : IsCaratheodory m s₁) (h₂ : IsCaratheodory m s₂) :
     IsCaratheodory m (s₁ \ s₂) := m.isCaratheodory_inter h₁ (m.isCaratheodory_compl h₂)
 
-lemma isCaratheodory_partialSups {s : ℕ → Set α} (h : ∀ i, m.IsCaratheodory (s i)) (i : ℕ) :
+lemma isCaratheodory_partialSups {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
+    {s : ι → Set α} (h : ∀ i, m.IsCaratheodory (s i)) (i : ι) :
     m.IsCaratheodory (partialSups s i) := by
-  induction i with
-  | zero => exact h 0
-  | succ i hi => exact m.isCaratheodory_union hi (h (i + 1))
+  simpa only [partialSups_apply, Finset.sup'_eq_sup, Finset.sup_set_eq_biUnion, ← Finset.mem_coe,
+    Finset.coe_Iic] using .biUnion_of_finite (finite_Iic _) (fun j _ ↦ h j)
 
-lemma isCaratheodory_disjointed {s : ℕ → Set α} (h : ∀ i, m.IsCaratheodory (s i)) (i : ℕ) :
-    m.IsCaratheodory (disjointed s i) := by
-  induction i with
-  | zero => exact h 0
-  | succ i _ => exact m.isCaratheodory_diff (h (i + 1)) (m.isCaratheodory_partialSups h i)
+lemma isCaratheodory_disjointed {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
+    {s : ι → Set α} (h : ∀ i, m.IsCaratheodory (s i)) (i : ι) :
+    m.IsCaratheodory (disjointed s i) :=
+  disjointedRec (fun _ j ht ↦ m.isCaratheodory_diff ht <| h j) (h i)
 
 theorem isCaratheodory_sum {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i))
     (hd : Pairwise (Disjoint on s)) {t : Set α} :
     ∀ {n}, (∑ i ∈ Finset.range n, m (t ∩ s i)) = m (t ∩ ⋃ i < n, s i)
-  | 0 => by simp [Nat.not_lt_zero, m.empty]
+  | 0 => by simp
   | Nat.succ n => by
     rw [biUnion_lt_succ, Finset.sum_range_succ, Set.union_comm, isCaratheodory_sum h hd,
       m.measure_inter_union _ (h n), add_comm]
@@ -117,21 +129,17 @@ theorem isCaratheodory_sum {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s 
 /-- Use `isCaratheodory_iUnion` instead, which does not require the disjoint assumption. -/
 theorem isCaratheodory_iUnion_of_disjoint {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i))
     (hd : Pairwise (Disjoint on s)) : IsCaratheodory m (⋃ i, s i) := by
-      apply (isCaratheodory_iff_le' m).mpr
-      intro t
-      have hp : m (t ∩ ⋃ i, s i) ≤ ⨆ n, m (t ∩ ⋃ i < n, s i) := by
-        convert measure_iUnion_le (μ := m) fun i => t ∩ s i using 1
-        · simp [inter_iUnion]
-        · simp [ENNReal.tsum_eq_iSup_nat, isCaratheodory_sum m h hd]
-      refine le_trans (add_le_add_right hp _) ?_
-      rw [ENNReal.iSup_add]
-      refine iSup_le fun n => le_trans (add_le_add_left ?_ _)
-        (ge_of_eq (isCaratheodory_iUnion_lt m (fun i _ => h i) _))
-      refine m.mono (diff_subset_diff_right ?_)
-      exact iUnion₂_subset fun i _ => subset_iUnion _ i
-
-@[deprecated (since := "2024-07-29")]
-alias isCaratheodory_iUnion_nat := isCaratheodory_iUnion_of_disjoint
+  apply (isCaratheodory_iff_le' m).mpr
+  intro t
+  have hp : m (t ∩ ⋃ i, s i) ≤ ⨆ n, m (t ∩ ⋃ i < n, s i) := by
+    convert measure_iUnion_le (μ := m) fun i => t ∩ s i using 1
+    · simp [inter_iUnion]
+    · simp [ENNReal.tsum_eq_iSup_nat, isCaratheodory_sum m h hd]
+  grw [hp, ENNReal.iSup_add]
+  refine iSup_le fun n => ?_
+  rw [isCaratheodory_iUnion_lt _ (fun i _ => h i) t (n := n)]
+  gcongr with i
+  exact iUnion_subset fun _ => .rfl
 
 lemma isCaratheodory_iUnion {s : ℕ → Set α} (h : ∀ i, m.IsCaratheodory (s i)) :
     m.IsCaratheodory (⋃ i, s i) := by
@@ -156,7 +164,7 @@ def caratheodoryDynkin : MeasurableSpace.DynkinSystem α where
   has_iUnion_nat _ hf hn := by apply isCaratheodory_iUnion m hf
 
 /-- Given an outer measure `μ`, the Carathéodory-measurable space is
-  defined such that `s` is measurable if `∀t, μ t = μ (t ∩ s) + μ (t \ s)`. -/
+  defined such that `s` is measurable if `∀ t, μ t = μ (t ∩ s) + μ (t \ s)`. -/
 protected def caratheodory : MeasurableSpace α := by
   apply MeasurableSpace.DynkinSystem.toMeasurableSpace (caratheodoryDynkin m)
   intro s₁ s₂

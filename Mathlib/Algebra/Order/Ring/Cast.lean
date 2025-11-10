@@ -13,7 +13,7 @@ import Mathlib.Data.Nat.Cast.Order.Ring
 This file proves additional properties about the *canonical* homomorphism from
 the integers into an additive group with a one (`Int.cast`),
 particularly results involving algebraic homomorphisms or the order structure on `ℤ`
-which were not available in the import dependencies of `Mathlib.Data.Int.Cast.Basic`.
+which were not available in the import dependencies of `Mathlib/Data/Int/Cast/Basic.lean`.
 
 ## TODO
 
@@ -27,9 +27,10 @@ variable {R : Type*}
 namespace Int
 section OrderedAddCommGroupWithOne
 
-variable [AddCommGroupWithOne R] [PartialOrder R] [CovariantClass R R (· + ·) (· ≤ ·)]
+variable [AddCommGroupWithOne R] [PartialOrder R] [AddLeftMono R]
 variable [ZeroLEOneClass R]
 
+@[gcongr]
 lemma cast_mono : Monotone (Int.cast : ℤ → R) := by
   intro m n h
   rw [← sub_nonneg] at h
@@ -43,7 +44,7 @@ variable [NeZero (1 : R)] {m n : ℤ}
   | (n : ℕ) => by simp
   | -[n+1] => by
     have : -(n : R) < 1 := lt_of_le_of_lt (by simp) zero_lt_one
-    simpa [(negSucc_lt_zero n).not_le, ← sub_eq_add_neg, le_neg] using this.not_le
+    simpa [(negSucc_lt_zero n).not_ge, ← sub_eq_add_neg, le_neg] using this.not_ge
 
 @[simp, norm_cast] lemma cast_le : (m : R) ≤ n ↔ m ≤ n := by
   rw [← sub_nonneg, ← cast_sub, cast_nonneg, sub_nonneg]
@@ -52,6 +53,8 @@ lemma cast_strictMono : StrictMono (fun x : ℤ => (x : R)) :=
   strictMono_of_le_iff_le fun _ _ => cast_le.symm
 
 @[simp, norm_cast] lemma cast_lt : (m : R) < n ↔ m < n := cast_strictMono.lt_iff_lt
+
+@[gcongr] protected alias ⟨_, GCongr.intCast_strictMono⟩ := Int.cast_lt
 
 @[simp] lemma cast_nonpos : (n : R) ≤ 0 ↔ n ≤ 0 := by rw [← cast_zero, cast_le]
 
@@ -62,7 +65,7 @@ lemma cast_strictMono : StrictMono (fun x : ℤ => (x : R)) :=
 end OrderedAddCommGroupWithOne
 
 section LinearOrderedRing
-variable [LinearOrderedRing R] {a b n : ℤ} {x : R}
+variable [Ring R] [LinearOrder R] [IsStrictOrderedRing R] {a b n : ℤ} {x : R}
 
 @[simp, norm_cast]
 lemma cast_min : ↑(min a b) = (min a b : R) := Monotone.map_min cast_mono
@@ -81,7 +84,7 @@ lemma cast_le_neg_one_of_neg (h : a < 0) : (a : R) ≤ -1 := by
 
 variable (R) in
 lemma cast_le_neg_one_or_one_le_cast_of_ne_zero (hn : n ≠ 0) : (n : R) ≤ -1 ∨ 1 ≤ (n : R) :=
-  hn.lt_or_lt.imp cast_le_neg_one_of_neg cast_one_le_of_pos
+  hn.lt_or_gt.imp cast_le_neg_one_of_neg cast_one_le_of_pos
 
 lemma nneg_mul_add_sq_of_abs_le_one (n : ℤ) (hx : |x| ≤ 1) : (0 : R) ≤ n * x + n * n := by
   have hnx : 0 < n → 0 ≤ x + n := fun hn => by
@@ -96,10 +99,7 @@ lemma nneg_mul_add_sq_of_abs_le_one (n : ℤ) (hx : |x| ≤ 1) : (0 : R) ≤ n *
   · simp [le_total 0 x]
   · exact Or.inl ⟨mod_cast h.le, hnx h⟩
 
-lemma cast_natAbs : (n.natAbs : R) = |n| := by
-  cases n
-  · simp
-  · rw [abs_eq_natAbs, natAbs_negSucc, cast_succ, cast_natCast, cast_succ]
+@[deprecated (since := "2025-11-07")] alias cast_natAbs := Nat.cast_natAbs
 
 end LinearOrderedRing
 end Int
@@ -110,8 +110,8 @@ open OrderDual
 
 namespace OrderDual
 
-instance instIntCast             [IntCast R]             : IntCast Rᵒᵈ             := ‹_›
-instance instAddGroupWithOne     [AddGroupWithOne R]     : AddGroupWithOne Rᵒᵈ     := ‹_›
+instance instIntCast [IntCast R] : IntCast Rᵒᵈ := ‹_›
+instance instAddGroupWithOne [AddGroupWithOne R] : AddGroupWithOne Rᵒᵈ := ‹_›
 instance instAddCommGroupWithOne [AddCommGroupWithOne R] : AddCommGroupWithOne Rᵒᵈ := ‹_›
 
 end OrderDual
@@ -124,8 +124,8 @@ end OrderDual
 
 namespace Lex
 
-instance instIntCast             [IntCast R]             : IntCast (Lex R)             := ‹_›
-instance instAddGroupWithOne     [AddGroupWithOne R]     : AddGroupWithOne (Lex R)     := ‹_›
+instance instIntCast [IntCast R] : IntCast (Lex R) := ‹_›
+instance instAddGroupWithOne [AddGroupWithOne R] : AddGroupWithOne (Lex R) := ‹_›
 instance instAddCommGroupWithOne [AddCommGroupWithOne R] : AddCommGroupWithOne (Lex R) := ‹_›
 
 end Lex

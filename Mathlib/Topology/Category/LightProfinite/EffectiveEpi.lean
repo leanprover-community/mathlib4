@@ -11,15 +11,13 @@ import Mathlib.Topology.Category.LightProfinite.Limits
 
 This file proves that `EffectiveEpi` and `Surjective` are equivalent in `LightProfinite`.
 As a consequence we deduce from the material in
-`Mathlib.Topology.Category.CompHausLike.EffectiveEpi` that `LightProfinite` is `Preregular`
+`Mathlib/Topology/Category/CompHausLike/EffectiveEpi.lean` that `LightProfinite` is `Preregular`
 and `Precoherent`.
 -/
 
 universe u
 
 open CategoryTheory Limits CompHausLike
-
-attribute [local instance] ConcreteCategory.instFunLike
 
 namespace LightProfinite
 

@@ -21,8 +21,7 @@ equalities.
 
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 universe u
 
@@ -31,10 +30,10 @@ universe u
 Note that this uses the default definitions for `npow`, `zpow` and `div`.
 See note [reducible non-instances]. -/
 @[to_additive
-"Define an `AddGroup` structure on a Type by proving `∀ a, 0 + a = a` and
+/-- Define an `AddGroup` structure on a Type by proving `∀ a, 0 + a = a` and
 `∀ a, -a + a = 0`.
 Note that this uses the default definitions for `nsmul`, `zsmul` and `sub`.
-See note [reducible non-instances]."]
+See note [reducible non-instances]. -/]
 abbrev Group.ofLeftAxioms {G : Type u} [Mul G] [Inv G] [One G]
     (assoc : ∀ a b c : G, (a * b) * c = a * (b * c))
     (one_mul : ∀ a : G, 1 * a = a)
@@ -58,10 +57,10 @@ abbrev Group.ofLeftAxioms {G : Type u} [Mul G] [Inv G] [One G]
 Note that this uses the default definitions for `npow`, `zpow` and `div`.
 See note [reducible non-instances]. -/
 @[to_additive
-"Define an `AddGroup` structure on a Type by proving `∀ a, a + 0 = a` and
+/-- Define an `AddGroup` structure on a Type by proving `∀ a, a + 0 = a` and
 `∀ a, a + -a = 0`.
 Note that this uses the default definitions for `nsmul`, `zsmul` and `sub`.
-See note [reducible non-instances]."]
+See note [reducible non-instances]. -/]
 abbrev Group.ofRightAxioms {G : Type u} [Mul G] [Inv G] [One G]
     (assoc : ∀ a b c : G, (a * b) * c = a * (b * c))
     (mul_one : ∀ a : G, a * 1 = a)

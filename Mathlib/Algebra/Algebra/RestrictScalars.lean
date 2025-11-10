@@ -23,7 +23,7 @@ typeclass instead.
   between the restricted and original space (in fact, they are definitionally equal,
   but sometimes it is helpful to avoid using this fact, to keep instances from leaking).
 * `RestrictScalars.ringEquiv : RestrictScalars R S A ≃+* A`: the ring equivalence
-   between the restricted and original space when the module is an algebra.
+  between the restricted and original space when the module is an algebra.
 
 ## See also
 
@@ -124,7 +124,7 @@ instance RestrictScalars.opModule [Module Sᵐᵒᵖ M] : Module Rᵐᵒᵖ (Res
 
 instance RestrictScalars.isCentralScalar [Module S M] [Module Sᵐᵒᵖ M] [IsCentralScalar S M] :
     IsCentralScalar R (RestrictScalars R S M) where
-  op_smul_eq_smul r _x := (op_smul_eq_smul (algebraMap R S r) (_ : M) : _)
+  op_smul_eq_smul r _x := (op_smul_eq_smul (algebraMap R S r) (_ : M) :)
 
 /-- The `R`-algebra homomorphism from the original coefficient algebra `S` to endomorphisms
 of `RestrictScalars R S M`.
@@ -198,11 +198,10 @@ theorem RestrictScalars.ringEquiv_map_smul (r : R) (x : RestrictScalars R S A) :
   rfl
 
 /-- `R ⟶ S` induces `S-Alg ⥤ R-Alg` -/
-instance RestrictScalars.algebra : Algebra R (RestrictScalars R S A) :=
-  { (algebraMap S A).comp (algebraMap R S) with
-    smul := (· • ·)
-    commutes' := fun _ _ ↦ Algebra.commutes' (A := A) _ _
-    smul_def' := fun _ _ ↦ Algebra.smul_def' (A := A) _ _ }
+instance RestrictScalars.algebra : Algebra R (RestrictScalars R S A) where
+  algebraMap := (algebraMap S A).comp (algebraMap R S)
+  commutes' := fun _ _ ↦ Algebra.commutes' (A := A) _ _
+  smul_def' := fun _ _ ↦ Algebra.smul_def' (A := A) _ _
 
 @[simp]
 theorem RestrictScalars.ringEquiv_algebraMap (r : R) :

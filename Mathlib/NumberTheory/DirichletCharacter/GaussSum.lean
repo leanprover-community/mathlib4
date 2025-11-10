@@ -17,7 +17,7 @@ lemma gaussSum_aux_of_mulShift (χ : DirichletCharacter R N) {d : ℕ}
     (hd : d ∣ N) (he : e.mulShift d = 1) {u : (ZMod N)ˣ} (hu : ZMod.unitsMap hd u = 1) :
     χ u * gaussSum χ e = gaussSum χ e := by
   suffices e.mulShift u = e by conv_lhs => rw [← this, gaussSum_mulShift]
-  rw [(by ring : u.val = (u - 1) + 1), ← mulShift_mul, mulShift_one, mul_left_eq_self]
+  rw [(by ring : u.val = (u - 1) + 1), ← mulShift_mul, mulShift_one, mul_eq_right]
   rsuffices ⟨a, ha⟩ : (d : ℤ) ∣ (u.val.val - 1 : ℤ)
   · have : u.val - 1 = ↑(u.val.val - 1 : ℤ) := by simp only [ZMod.natCast_val, Int.cast_sub,
       ZMod.intCast_cast, ZMod.cast_id', id_eq, Int.cast_one]
@@ -25,7 +25,7 @@ lemma gaussSum_aux_of_mulShift (χ : DirichletCharacter R N) {d : ℕ}
     ext1 y
     simpa only [Int.cast_mul, Int.cast_natCast, mulShift_apply, mul_assoc, one_apply]
       using DFunLike.ext_iff.mp he (a * y)
-  rw [← Units.eq_iff, Units.val_one, ZMod.unitsMap_def, Units.coe_map] at hu
+  rw [← Units.val_inj, Units.val_one, ZMod.unitsMap_def, Units.coe_map] at hu
   have : ZMod.castHom hd (ZMod d) u.val = ((u.val.val : ℤ) : ZMod d) := by simp
   rwa [MonoidHom.coe_coe, this, ← Int.cast_one, eq_comm,
     ZMod.intCast_eq_intCast_iff_dvd_sub] at hu
@@ -37,7 +37,7 @@ lemma factorsThrough_of_gaussSum_ne_zero [IsDomain R] {χ : DirichletCharacter R
     χ.FactorsThrough d := by
   rw [DirichletCharacter.factorsThrough_iff_ker_unitsMap hd]
   intro u hu
-  rw [MonoidHom.mem_ker, ← Units.eq_iff, MulChar.coe_toUnitHom]
+  rw [MonoidHom.mem_ker, ← Units.val_inj, MulChar.coe_toUnitHom]
   simpa only [Units.val_one, ne_eq, h_ne, not_false_eq_true, mul_eq_right₀] using
     gaussSum_aux_of_mulShift e χ hd he hu
 

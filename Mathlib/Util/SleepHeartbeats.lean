@@ -30,11 +30,12 @@ def sleepAtLeastHeartbeats (n : Nat) : IO Unit := do
 elab "sleep_heartbeats " n:num : tactic => do
   match Syntax.isNatLit? n with
   | none    => throwIllFormedSyntax
-  /- as this is a user facing command we multiply the user input by 1000 to match the maxHeartbeats
-     option -/
+  /-
+  We multiply by `1000` to convert the user-facing heartbeat count to the
+  internal heartbeat counter used by `IO.getNumHeartbeats`.
+  -/
   | some m => sleepAtLeastHeartbeats (m * 1000)
 
-set_option linter.unusedTactic false in
 example : 1 = 1 := by
   sleep_heartbeats 1000
   rfl

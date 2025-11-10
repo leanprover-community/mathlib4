@@ -208,15 +208,9 @@ variable (F : C ⥤ FintypeCat.{u₂})
 /-- The diagram sending each pointed Galois object to its automorphism group
 as an object of `C`. -/
 @[simps]
-noncomputable def autGaloisSystem : PointedGaloisObject F ⥤ Grp.{u₂} where
-  obj := fun A ↦ Grp.of <| Aut (A : C)
-  map := fun {A B} f ↦ (autMapHom f : Aut (A : C) →* Aut (B : C))
-  map_id := fun A ↦ by
-    ext (σ : Aut A.obj)
-    simp
-  map_comp {A B C} f g := by
-    ext (σ : Aut A.obj)
-    simp
+noncomputable def autGaloisSystem : PointedGaloisObject F ⥤ GrpCat.{u₂} where
+  obj := fun A ↦ GrpCat.of <| Aut (A : C)
+  map := fun {A B} f ↦ GrpCat.ofHom (autMapHom f)
 
 /-- The limit of `autGaloisSystem`. -/
 noncomputable def AutGalois : Type (max u₁ u₂) :=
@@ -228,7 +222,7 @@ noncomputable instance : Group (AutGalois F) :=
 /-- The canonical projection from `AutGalois F` to the `C`-automorphism group of each
 pointed Galois object. -/
 noncomputable def AutGalois.π (A : PointedGaloisObject F) : AutGalois F →* Aut (A : C) :=
-  Grp.sectionsπMonoidHom (autGaloisSystem F) A
+  GrpCat.sectionsπMonoidHom (autGaloisSystem F) A
 
 /- Not a `simp` lemma, because we usually don't want to expose the internals here. -/
 lemma AutGalois.π_apply (A : PointedGaloisObject F) (x : AutGalois F) :
@@ -285,7 +279,7 @@ We first establish the isomorphism between `End F` and `AutGalois F`, from which
 - `endEquivAutGalois : End F ≅ AutGalois F`: this is the composition of `endEquivSectionsFibers`
   with:
 
-  `(incl F ⋙ F).sections ≅ (autGaloisSystem F ⋙ forget Grp).sections`
+  `(incl F ⋙ F).sections ≅ (autGaloisSystem F ⋙ forget GrpCat).sections`
 
   which is induced from the level-wise equivalence `Aut A ≃ F.obj A` for a Galois object `A`.
 
@@ -325,7 +319,7 @@ lemma endEquivSectionsFibers_π (f : End F) (A : PointedGaloisObject F) :
 
 /-- Functorial isomorphism `Aut A ≅ F.obj A` for Galois objects `A`. -/
 noncomputable def autIsoFibers :
-    autGaloisSystem F ⋙ forget Grp ≅ incl F ⋙ F' :=
+    autGaloisSystem F ⋙ forget GrpCat ≅ incl F ⋙ F' :=
   NatIso.ofComponents (fun A ↦ ((evaluationEquivOfIsGalois F A A.pt).toIso))
     (fun {A B} f ↦ by
       ext (φ : Aut A.obj)
@@ -373,7 +367,7 @@ lemma endMulEquivAutGalois_pi (f : End F) (A : PointedGaloisObject F) :
 
 /-- Any endomorphism of a fiber functor is a unit. -/
 theorem FibreFunctor.end_isUnit (f : End F) : IsUnit f :=
-  (MulEquiv.map_isUnit_iff (endMulEquivAutGalois F)).mp
+  (isUnit_map_iff (endMulEquivAutGalois F) _).mp
     (Group.isUnit ((endMulEquivAutGalois F) f))
 
 /-- Any endomorphism of a fiber functor is an isomorphism. -/
@@ -435,7 +429,7 @@ private instance FiberFunctor.isPretransitive_of_isConnected' (X : C) [IsConnect
   obtain ⟨σ, (hσ : σ.hom.app A a = b)⟩ := MulAction.exists_smul_eq (Aut F) a b
   use σ
   rw [← ha, ← hb]
-  show (F.map f ≫ σ.hom.app X) a = F.map f b
+  change (F.map f ≫ σ.hom.app X) a = F.map f b
   rw [σ.hom.naturality, FintypeCat.comp_apply, hσ]
 
 end Specialized
@@ -449,7 +443,7 @@ instance FiberFunctor.isPretransitive_of_isConnected (X : C) [IsConnected X] :
     MulAction.IsPretransitive (Aut F) (F.obj X) where
   exists_smul_eq x y := by
     let F' : C ⥤ FintypeCat.{u₂} := F ⋙ FintypeCat.uSwitch.{w, u₂}
-    letI : FiberFunctor F' := FiberFunctor.compRight _
+    letI : FiberFunctor F' := FiberFunctor.comp_right _
     let e (Y : C) : F'.obj Y ≃ F.obj Y := (F.obj Y).uSwitchEquiv
     set x' : F'.obj X := (e X).symm x with hx'
     set y' : F'.obj X := (e X).symm y with hy'

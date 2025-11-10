@@ -3,8 +3,7 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Localization.AtPrime
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
@@ -43,7 +42,7 @@ lemma surjective_localRingHom_iff (P : Ideal S) [P.IsPrime] :
   constructor
   · intro H y
     obtain ⟨a, ha⟩ := H (IsLocalization.mk' _ y (1 : P.primeCompl))
-    obtain ⟨a, t, rfl⟩ := IsLocalization.mk'_surjective (P.comap f).primeCompl a
+    obtain ⟨a, t, rfl⟩ := IsLocalization.exists_mk'_eq (P.comap f).primeCompl a
     rw [Localization.localRingHom_mk', IsLocalization.mk'_eq_iff_eq,
       Submonoid.coe_one, one_mul, IsLocalization.eq_iff_exists P.primeCompl] at ha
     obtain ⟨c, hc⟩ := ha
@@ -99,13 +98,13 @@ lemma surjectiveOnStalks_of_surjective (h : Function.Surjective f) :
 
 lemma SurjectiveOnStalks.comp (hg : SurjectiveOnStalks g) (hf : SurjectiveOnStalks f) :
     SurjectiveOnStalks (g.comp f) := by
-  intros I hI
+  intro I hI
   have := (hg I hI).comp (hf _ (hI.comap g))
   rwa [← RingHom.coe_comp, ← Localization.localRingHom_comp] at this
 
 lemma SurjectiveOnStalks.of_comp (hg : SurjectiveOnStalks (g.comp f)) :
     SurjectiveOnStalks g := by
-  intros I hI
+  intro I hI
   have := hg I hI
   rw [Localization.localRingHom_comp (I.comap (g.comp f)) (I.comap g) _ _ rfl _ rfl,
     RingHom.coe_comp] at this
@@ -152,7 +151,7 @@ lemma surjectiveOnStalks_of_isLocalization
     [Algebra R S] [IsLocalization M S] :
     SurjectiveOnStalks (algebraMap R S) := by
   refine surjectiveOnStalks_of_exists_div fun s ↦ ?_
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M s
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq M s
   exact ⟨x, s, IsLocalization.map_units S s, IsLocalization.mk'_spec' S x s⟩
 
 lemma SurjectiveOnStalks.baseChange
@@ -160,30 +159,30 @@ lemma SurjectiveOnStalks.baseChange
     (hf : (algebraMap R T).SurjectiveOnStalks) :
     (algebraMap S (S ⊗[R] T)).SurjectiveOnStalks := by
   let g : T →+* S ⊗[R] T := Algebra.TensorProduct.includeRight.toRingHom
-  intros J hJ
+  intro J hJ
   rw [surjective_localRingHom_iff]
   intro x
   obtain ⟨t, r, a, ht, e⟩ := hf.exists_mul_eq_tmul x (J.comap g) inferInstance
   refine ⟨a, algebraMap _ _ r, 1 ⊗ₜ (r • t), ht, ?_, ?_⟩
   · intro H
     simp only [Algebra.algebraMap_eq_smul_one (A := S), Algebra.TensorProduct.algebraMap_apply,
-      Algebra.id.map_eq_id, id_apply, smul_tmul, ← Algebra.algebraMap_eq_smul_one (A := T)] at H
+      Algebra.algebraMap_self, id_apply, smul_tmul, ← Algebra.algebraMap_eq_smul_one (A := T)] at H
     rw [Ideal.mem_comap, Algebra.smul_def, g.map_mul] at ht
     exact ht (J.mul_mem_right _ H)
-  · simp only [tmul_smul, Algebra.TensorProduct.algebraMap_apply, Algebra.id.map_eq_id,
+  · simp only [tmul_smul, Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self,
       RingHomCompTriple.comp_apply, Algebra.smul_mul_assoc, Algebra.TensorProduct.tmul_mul_tmul,
       one_mul, mul_one, id_apply, ← e]
     rw [Algebra.algebraMap_eq_smul_one, ← smul_tmul', smul_mul_assoc]
 
-lemma surjectiveOnStalks_iff_of_isLocalRingHom [LocalRing S] [IsLocalRingHom f] :
+lemma surjectiveOnStalks_iff_of_isLocalHom [IsLocalRing S] [IsLocalHom f] :
     f.SurjectiveOnStalks ↔ Function.Surjective f := by
   refine ⟨fun H x ↦ ?_, fun h ↦ surjectiveOnStalks_of_surjective h⟩
   obtain ⟨y, r, c, hc, hr, e⟩ :=
-    (surjective_localRingHom_iff _).mp (H (LocalRing.maximalIdeal _) inferInstance) x
-  simp only [LocalRing.mem_maximalIdeal, mem_nonunits_iff, not_not] at hc hr
+    (surjective_localRingHom_iff _).mp (H (IsLocalRing.maximalIdeal _) inferInstance) x
+  simp only [IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, not_not] at hc hr
   refine ⟨(isUnit_of_map_unit f r hr).unit⁻¹ * y, ?_⟩
   apply hr.mul_right_injective
   apply hc.mul_right_injective
-  simp only [← _root_.map_mul, ← mul_assoc, IsUnit.mul_val_inv, one_mul, e]
+  simp only [← map_mul, ← mul_assoc, IsUnit.mul_val_inv, one_mul, e]
 
 end RingHom

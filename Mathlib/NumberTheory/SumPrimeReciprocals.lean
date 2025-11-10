@@ -3,8 +3,9 @@ Copyright (c) 2023 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.SmoothNumbers
+import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Analysis.PSeries
+import Mathlib.NumberTheory.SmoothNumbers
 
 /-!
 # The sum of the reciprocals of the primes diverges
@@ -27,14 +28,14 @@ open scoped Topology
 
 /-- The cardinality of the set of `k`-rough numbers `≤ N` is bounded by `N` times the sum
 of `1/p` over the primes `k ≤ p ≤ N`. -/
--- This needs `Mathlib.Analysis.RCLike.Basic`, so we put it here
--- instead of in `Mathlib.NumberTheory.SmoothNumbers`.
+-- This needs `Mathlib/Analysis/RCLike/Basic.lean`, so we put it here
+-- instead of in `Mathlib/NumberTheory/SmoothNumbers.lean`.
 lemma Nat.roughNumbersUpTo_card_le' (N k : ℕ) :
     (roughNumbersUpTo N k).card ≤
       N * (N.succ.primesBelow \ k.primesBelow).sum (fun p ↦ (1 : ℝ) / p) := by
   simp_rw [Finset.mul_sum, mul_one_div]
   exact (Nat.cast_le.mpr <| roughNumbersUpTo_card_le N k).trans <|
-    (cast_sum (β := ℝ) ..) ▸ Finset.sum_le_sum fun n _ ↦ cast_div_le
+    cast_sum (R := ℝ) .. ▸ Finset.sum_le_sum fun n _ ↦ cast_div_le
 
 /-- The sum over primes `k ≤ p ≤ 4^(π(k-1)+1)` over `1/p` (as a real number) is at least `1/2`. -/
 lemma one_half_le_sum_primes_ge_one_div (k : ℕ) :
@@ -45,20 +46,19 @@ lemma one_half_le_sum_primes_ge_one_div (k : ℕ) :
   let S : ℝ := ((2 * N₀).succ.primesBelow \ k.primesBelow).sum (fun p ↦ (1 / p : ℝ))
   suffices 1 / 2 ≤ S by
     convert this using 5
-    rw [show 4 = 2 ^ 2 by norm_num, pow_right_comm]
+    rw [show 4 = 2 ^ 2 by simp, pow_right_comm]
     ring
   suffices 2 * N₀ ≤ m * (2 * N₀).sqrt + 2 * N₀ * S by
     rwa [hN₀, ← mul_assoc, ← pow_two 2, ← mul_pow, sqrt_eq', ← sub_le_iff_le_add',
       cast_mul, cast_mul, cast_pow, cast_two,
       show (2 * (2 * m ^ 2) - m * (2 * m) : ℝ) = 2 * (2 * m ^ 2) * (1 / 2) by ring,
-      _root_.mul_le_mul_left <| by positivity] at this
+      mul_le_mul_iff_right₀ <| by positivity] at this
   calc (2 * N₀ : ℝ)
     _ = ((2 * N₀).smoothNumbersUpTo k).card + ((2 * N₀).roughNumbersUpTo k).card := by
         exact_mod_cast ((2 * N₀).smoothNumbersUpTo_card_add_roughNumbersUpTo_card k).symm
     _ ≤ m * (2 * N₀).sqrt + ((2 * N₀).roughNumbersUpTo k).card := by
         exact_mod_cast Nat.add_le_add_right ((2 * N₀).smoothNumbersUpTo_card_le k) _
-    _ ≤ m * (2 * N₀).sqrt + 2 * N₀ * S := add_le_add_left ?_ _
-  exact_mod_cast roughNumbersUpTo_card_le' (2 * N₀) k
+    _ ≤ m * (2 * N₀).sqrt + 2 * N₀ * S := by grw [roughNumbersUpTo_card_le']; norm_cast
 
 /-- The sum over the reciprocals of the primes diverges. -/
 theorem not_summable_one_div_on_primes :
@@ -71,12 +71,12 @@ theorem not_summable_one_div_on_primes :
     convert h.indicator {n : ℕ | k ≤ n} using 1
     simp only [indicator_indicator, inter_comm]
   refine ((one_half_le_sum_primes_ge_one_div k).trans_lt <| LE.le.trans_lt ?_ hk).false
-  convert sum_le_tsum (primesBelow ((4 ^ (k.primesBelow.card + 1)).succ) \ primesBelow k)
+  convert Summable.sum_le_tsum (primesBelow ((4 ^ (k.primesBelow.card + 1)).succ) \ primesBelow k)
     (fun n _ ↦ indicator_nonneg (fun p _ ↦ by positivity) _) h' using 2 with p hp
   obtain ⟨hp₁, hp₂⟩ := mem_setOf_eq ▸ Finset.mem_sdiff.mp hp
   have hpp := prime_of_mem_primesBelow hp₁
-  refine (indicator_of_mem (mem_def.mpr ⟨hpp, ?_⟩) fun n : ℕ ↦ (1 / n : ℝ)).symm
-  exact not_lt.mp <| (not_and_or.mp <| (not_congr mem_primesBelow).mp hp₂).neg_resolve_right hpp
+  refine (indicator_of_mem ?_ fun n : ℕ ↦ (1 / n : ℝ)).symm
+  exact ⟨hpp, by simpa [primesBelow, hpp] using hp₂⟩
 
 /-- The sum over the reciprocals of the primes diverges. -/
 theorem Nat.Primes.not_summable_one_div : ¬ Summable (fun p : Nat.Primes ↦ (1 / p : ℝ)) := by

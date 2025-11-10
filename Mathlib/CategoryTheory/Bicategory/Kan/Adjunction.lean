@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
 import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
-import Mathlib.CategoryTheory.Bicategory.Adjunction
+import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
 import Mathlib.Tactic.TFAE
 
 /-!
@@ -39,7 +39,7 @@ section LeftExtension
 
 open LeftExtension
 
-/-- For an adjuntion `f ⊣ u`, `u` is an absolute left Kan extension of the identity along `f`.
+/-- For an adjunction `f ⊣ u`, `u` is an absolute left Kan extension of the identity along `f`.
 The unit of this Kan extension is given by the unit of the adjunction. -/
 def Adjunction.isAbsoluteLeftKan {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u) :
     IsAbsKan (.mk u adj.unit) := fun {x} h ↦
@@ -94,7 +94,7 @@ def LeftExtension.IsKan.adjunction {f : a ⟶ b} {t : LeftExtension f (𝟙 a)}
         _ = _ := by
           rw [← leftZigzag, Hε]; bicategory }
 
-/-- For an adjuntion `f ⊣ u`, `u` is a left Kan extension of the identity along `f`.
+/-- For an adjunction `f ⊣ u`, `u` is a left Kan extension of the identity along `f`.
 The unit of this Kan extension is given by the unit of the adjunction. -/
 def LeftExtension.IsAbsKan.adjunction {f : a ⟶ b} (t : LeftExtension f (𝟙 a)) (H : IsAbsKan t) :
     f ⊣ t.extension :=
@@ -106,14 +106,11 @@ theorem isLeftAdjoint_TFAE (f : a ⟶ b) :
       HasAbsLeftKanExtension f (𝟙 a),
       ∃ _ : HasLeftKanExtension f (𝟙 a), Lan.CommuteWith f (𝟙 a) f] := by
   tfae_have 1 → 2
-  · intro h
-    exact IsAbsKan.hasAbsLeftKanExtension (Adjunction.ofIsLeftAdjoint f).isAbsoluteLeftKan
+  | h => IsAbsKan.hasAbsLeftKanExtension (Adjunction.ofIsLeftAdjoint f).isAbsoluteLeftKan
   tfae_have 2 → 3
-  · intro h
-    exact ⟨inferInstance, inferInstance⟩
+  | h => ⟨inferInstance, inferInstance⟩
   tfae_have 3 → 1
-  · intro ⟨h, h'⟩
-    exact .mk <| (lanIsKan f (𝟙 a)).adjunction <| Lan.CommuteWith.isKan f (𝟙 a) f
+  | ⟨h, h'⟩ => .mk <| (lanIsKan f (𝟙 a)).adjunction <| Lan.CommuteWith.isKan f (𝟙 a) f
   tfae_finish
 
 end LeftExtension
@@ -122,7 +119,7 @@ section LeftLift
 
 open LeftLift
 
-/-- For an adjuntion `f ⊣ u`, `f` is an absolute left Kan lift of the identity along `u`.
+/-- For an adjunction `f ⊣ u`, `f` is an absolute left Kan lift of the identity along `u`.
 The unit of this Kan lift is given by the unit of the adjunction. -/
 def Adjunction.isAbsoluteLeftKanLift {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u) :
     IsAbsKan (.mk f adj.unit) := fun {x} h ↦
@@ -176,7 +173,7 @@ def LeftLift.IsKan.adjunction {u : b ⟶ a} {t : LeftLift u (𝟙 a)}
           rw [← rightZigzag, Hε]; bicategory
     right_triangle := Hε }
 
-/-- For an adjuntion `f ⊣ u`, `f` is a left Kan lift of the identity along `u`.
+/-- For an adjunction `f ⊣ u`, `f` is a left Kan lift of the identity along `u`.
 The unit of this Kan lift is given by the unit of the adjunction. -/
 def LeftLift.IsAbsKan.adjunction {u : b ⟶ a} (t : LeftLift u (𝟙 a)) (H : IsAbsKan t) :
     t.lift ⊣ u :=
@@ -188,14 +185,11 @@ theorem isRightAdjoint_TFAE (u : b ⟶ a) :
       HasAbsLeftKanLift u (𝟙 a),
       ∃ _ : HasLeftKanLift u (𝟙 a), LanLift.CommuteWith u (𝟙 a) u] := by
   tfae_have 1 → 2
-  · intro h
-    exact IsAbsKan.hasAbsLeftKanLift (Adjunction.ofIsRightAdjoint u).isAbsoluteLeftKanLift
+  | h => IsAbsKan.hasAbsLeftKanLift (Adjunction.ofIsRightAdjoint u).isAbsoluteLeftKanLift
   tfae_have 2 → 3
-  · intro h
-    exact ⟨inferInstance, inferInstance⟩
+  | h => ⟨inferInstance, inferInstance⟩
   tfae_have 3 → 1
-  · intro ⟨h, h'⟩
-    exact .mk <| (lanLiftIsKan u (𝟙 a)).adjunction <| LanLift.CommuteWith.isKan u (𝟙 a) u
+  | ⟨h, h'⟩ => .mk <| (lanLiftIsKan u (𝟙 a)).adjunction <| LanLift.CommuteWith.isKan u (𝟙 a) u
   tfae_finish
 
 end LeftLift

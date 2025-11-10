@@ -15,7 +15,7 @@ in a bicategory which are built out of associators and unitors
 are equal.
 
 This file mainly deals with the type class setup for the coherence tactic. The actual front end
-tactic is given in `Mathlib.Tactic.CategoryTheory.Coherence` at the same time as the coherence
+tactic is given in `Mathlib/Tactic/CategoryTheory/Coherence.lean` at the same time as the coherence
 tactic for monoidal categories.
 -/
 
@@ -27,7 +27,7 @@ open CategoryTheory CategoryTheory.FreeBicategory
 
 open scoped Bicategory
 
-variable {B : Type u} [Bicategory.{w, v} B] {a b c d e : B}
+variable {B : Type u} [Bicategory.{w, v} B] {a b c d : B}
 
 namespace Mathlib.Tactic.BicategoryCoherence
 
@@ -115,7 +115,7 @@ def bicategory_coherence (g : MVarId) : TermElabM Unit := g.withContext do
   let thms := [``BicategoricalCoherence.iso, ``Iso.trans, ``Iso.symm, ``Iso.refl,
     ``Bicategory.whiskerRightIso, ``Bicategory.whiskerLeftIso].foldl
     (·.addDeclToUnfoldCore ·) {}
-  let (ty, _) ← dsimp (← g.getType) { simpTheorems := #[thms] }
+  let (ty, _) ← dsimp (← g.getType) (← Simp.mkContext (simpTheorems := #[thms]))
   let some (_, lhs, rhs) := (← whnfR ty).eq? | exception g "Not an equation of morphisms."
   let lift_lhs ← mkLiftMap₂LiftExpr lhs
   let lift_rhs ← mkLiftMap₂LiftExpr rhs
@@ -136,13 +136,13 @@ open Lean.Parser.Tactic
 /--
 Simp lemmas for rewriting a 2-morphism into a normal form.
 -/
-syntax (name := whisker_simps) "whisker_simps" (config)? : tactic
+syntax (name := whisker_simps) "whisker_simps" optConfig : tactic
 
 @[inherit_doc whisker_simps]
 elab_rules : tactic
-| `(tactic| whisker_simps $[$cfg]?) => do
+| `(tactic| whisker_simps $cfg) => do
   evalTactic (← `(tactic|
-    simp $[$cfg]? only [Category.assoc,
+    simp $cfg only [Category.assoc,
       Bicategory.comp_whiskerLeft, Bicategory.id_whiskerLeft,
       Bicategory.whiskerRight_comp, Bicategory.whiskerRight_id,
       Bicategory.whiskerLeft_comp, Bicategory.whiskerLeft_id,
