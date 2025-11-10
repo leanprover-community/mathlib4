@@ -123,14 +123,10 @@ theorem Continuous.matrix_replicateCol {ι : Type*} {A : X → n → R} (hA : Co
     Continuous fun x => replicateCol ι (A x) :=
   continuous_matrix fun i _ => (continuous_apply i).comp hA
 
-@[deprecated (since := "2025-03-15")] alias Continuous.matrix_col := Continuous.matrix_replicateCol
-
 @[continuity, fun_prop]
 theorem Continuous.matrix_replicateRow {ι : Type*} {A : X → n → R} (hA : Continuous A) :
     Continuous fun x => replicateRow ι (A x) :=
   continuous_matrix fun _ _ => (continuous_apply _).comp hA
-
-@[deprecated (since := "2025-03-15")] alias Continuous.matrix_row := Continuous.matrix_replicateRow
 
 @[continuity, fun_prop]
 theorem Continuous.matrix_diagonal [Zero R] [DecidableEq n] {A : X → n → R} (hA : Continuous A) :
