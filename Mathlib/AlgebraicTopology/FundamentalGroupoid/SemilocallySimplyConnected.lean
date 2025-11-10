@@ -562,7 +562,19 @@ not just equivalence classes, but also open sets in the path space. -/
 theorem Path.isOpen_setOf_homotopic (hX : SemilocallySimplyConnected X)
     [LocPathConnectedSpace X] {x y : X} (p : Path x y) :
     IsOpen {p' : Path x y | Path.Homotopic p' p} := by
-  sorry
+  -- Strategy: show every point in the homotopy class has an open neighborhood in the class
+  apply isOpen_iff_mem_nhds.mpr
+  intro q hq
+  -- q is homotopic to p, so get a tubular neighborhood around q
+  obtain ⟨T_q, hT_open, hq_in_T, hT_subset⟩ :=
+    exists_open_tubular_neighborhood_in_homotopy_class hX q
+  -- T_q is an open neighborhood of q, so we just need to show T_q ⊆ {p' | Homotopic p' p}
+  rw [mem_nhds_iff]
+  refine ⟨T_q, ?_, hT_open, hq_in_T⟩
+  -- Use transitivity: p' ∈ T_q → p' ~ q, and q ~ p, so p' ~ p
+  intro p' hp'
+  have hp'q : Path.Homotopic p' q := hT_subset hp'
+  exact hp'q.trans hq
 
 /-- In a semilocally simply connected, locally path-connected space, the quotient of paths by
 homotopy has discrete topology. This is a key step in proving that semilocally simply connected
@@ -575,6 +587,17 @@ in the quotient is open, giving the discrete topology. -/
 theorem Path.Homotopic.Quotient.discreteTopology
     (hX : SemilocallySimplyConnected X) [LocPathConnectedSpace X] (x y : X) :
     DiscreteTopology (Path.Homotopic.Quotient x y) := by
-  sorry
+  -- Show every singleton is open in the quotient
+  rw [discreteTopology_iff_isOpen_singleton]
+  intro a
+  -- Use quotient induction to get a representative path
+  induction a using Quotient.inductionOn with
+  | h p =>
+    -- The preimage of {⟦p⟧} is the homotopy class {p' | Homotopic p' p}, which is open
+    rw [isOpen_coinduced]
+    convert isOpen_setOf_homotopic hX p
+    ext p'
+    simp only [Set.mem_preimage, Set.mem_singleton_iff, Set.mem_setOf_eq]
+    exact Quotient.eq (r := Path.Homotopic.setoid x y)
 
 end SemilocallySimplyConnected
