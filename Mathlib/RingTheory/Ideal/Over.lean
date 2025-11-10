@@ -183,7 +183,7 @@ A → B
 ↓   ↓
 C → D
 ```
-and let `P` be a prime ideal of `B`. The image in `C` of the ideal of `A` under `P` is included
+and let `P` be an ideal of `B`. The image in `C` of the ideal of `A` under `P` is included
 in the ideal of `C` under the image of `P` in `D`.
 -/
 theorem map_under_le_under_map {C D : Type*} [CommSemiring C] [Semiring D] [Algebra A C]
@@ -201,7 +201,7 @@ A → B
 ↓   ↓
 C → D
 ```
-and let `P` be a prime ideal of `B`. Assume that the image in `C` of the ideal of `A` under `P`
+and let `P` be an ideal of `B`. Assume that the image in `C` of the ideal of `A` under `P`
 is maximal and that the image of `P` in `D` is not equal to `D`, then the image in `C` of the
 ideal of `A` under `P` is equal to the ideal of `C` under the image of `P` in `D`.
 -/
