@@ -604,6 +604,29 @@ theorem mem_sup' : x ∈ s ⊔ t ↔ ∃ (y : s) (z : t), (y : C) * z = x :=
   mem_sup.trans <| by simp only [SetLike.exists, exists_prop]
 
 @[to_additive]
+theorem mem_sup_of_normal {G : Type*} [Group G] {s t : Subgroup G} [ht : t.Normal] {x : G} :
+    x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x := by
+  constructor
+  · let st : Subgroup G :=
+      { carrier := {x : G | ∃ y ∈ s, ∃ z ∈ t, y * z = x}
+        one_mem' := ⟨1, s.one_mem, 1, t.one_mem, by simp⟩
+        mul_mem' x₁ x₂ := by
+          rcases x₁ with ⟨y₁, hy₁, z₁, hz₁, rfl⟩
+          rcases x₂ with ⟨y₂, hy₂, z₂, hz₂, rfl⟩
+          exact ⟨y₁ * y₂, s.mul_mem hy₁ hy₂,
+            (y₂⁻¹ * z₁ * y₂) * z₂, t.mul_mem (ht.conj_mem' z₁ hz₁ y₂) hz₂, by simp [mul_assoc]⟩
+        inv_mem' x := by
+          rcases x with ⟨y, hy, z, hz, rfl⟩
+          exact ⟨y⁻¹, s.inv_mem hy,
+            y * z⁻¹ * y⁻¹, ht.conj_mem z⁻¹ (t.inv_mem hz) y, by simp [mul_assoc]⟩
+      }
+    have hs_le : s ≤ st := fun y hy ↦ ⟨y, hy, 1, t.one_mem, by simp⟩
+    have ht_le : t ≤ st := fun z hz ↦ ⟨1, s.one_mem, z, hz, by simp⟩
+    exact fun hx ↦ sup_le hs_le ht_le hx
+  · rintro ⟨y, hy, z, hz, rfl⟩
+    simpa using Subgroup.mul_mem_sup hy hz
+
+@[to_additive]
 theorem mem_closure_pair {x y z : C} :
     z ∈ closure ({x, y} : Set C) ↔ ∃ m n : ℤ, x ^ m * y ^ n = z := by
   rw [← Set.singleton_union, Subgroup.closure_union, mem_sup]
