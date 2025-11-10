@@ -157,7 +157,7 @@ theorem digitsFin_bijOn (hb : 1 < b) :
 Formula for the sum of the sum of digits in base `b` of all natural integers `< b ^ l`.
 -/
 theorem sum_digits_sum_eq (hb : 1 < b) :
-    ∑ x ∈ Finset.range (b ^ l), (b.digits x).sum = l * b ^ (l - 1) * (b * (b - 1) / 2) := by
+    ∑ x ∈ Finset.range (b ^ l), (b.digits x).sum = l * b ^ (l - 1) * b.choose 2 := by
   rw [Finset.sum_nbij (b.digitsFin l) (by exact b.digitsFin_mapsTo l hb)
     (Nat.digitsFin_injOn l hb) (Nat.digitsFin_surjOn l hb)
     (fun x hx ↦ (Nat.digitsFin_sum l x hb (List.mem_range.mp hx)).symm)]
@@ -166,7 +166,7 @@ theorem sum_digits_sum_eq (hb : 1 < b) :
     (s := Fintype.piFinset fun x : Fin l ↦ Finset.range b) (f := fun x ↦ x) (g := fun x ↦ x i),
     Fintype.eval_image_piFinset_const, Fintype.card_filter_piFinset_const_eq_of_mem,
     Finset.card_range, Finset.sum_const, Finset.card_univ, smul_eq_mul]
-  rw [← Finset.mul_sum, Finset.sum_range_id, Fintype.card_fin]
+  rw [← Finset.mul_sum, Finset.sum_range_id, Fintype.card_fin, Nat.choose_two_right]
   ring
 
 end Nat
