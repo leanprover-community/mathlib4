@@ -57,3 +57,7 @@ lemma zero_lt_one' : (0 : α) < 1 := zero_lt_one
 end
 
 alias one_pos := zero_lt_one
+
+instance Nat.instZeroLEOneClass : ZeroLEOneClass Nat := ⟨Nat.le_of_lt Nat.zero_lt_one⟩
+instance Int.instZeroLEOneClass : ZeroLEOneClass Int := ⟨Int.le_of_lt Int.zero_lt_one⟩
+instance Rat.instZeroLEOneClass : ZeroLEOneClass Rat := ⟨by decide⟩

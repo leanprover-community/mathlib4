@@ -35,7 +35,6 @@ open Function Nat
 
 namespace Int
 
-instance instZeroLEOneClass : ZeroLEOneClass ℤ := ⟨Int.zero_lt_one.le⟩
 instance instIsStrictOrderedRing : IsStrictOrderedRing ℤ := .of_mul_pos @Int.mul_pos
 
 /-! ### Miscellaneous lemmas -/
