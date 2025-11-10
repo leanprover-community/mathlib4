@@ -1259,7 +1259,7 @@ theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f)
       cases hinj h.1
       grind
 
-@[simp] lemma getVert_map (i : ℕ) : (p.map f).getVert i = f (p.getVert i) := by
+lemma getVert_map (i : ℕ) : (p.map f).getVert i = f (p.getVert i) := by
 revert u; induction i with
 | zero => simp
 | succ => intro _ p; cases p <;> simp [*]
