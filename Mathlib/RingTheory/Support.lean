@@ -3,10 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Exact
 import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Localization.Finiteness
 import Mathlib.RingTheory.Nakayama
+import Mathlib.RingTheory.QuotSMulTop
 import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
@@ -126,6 +126,9 @@ lemma Module.nonempty_support_iff :
     (Module.support R M).Nonempty ↔ Nontrivial M := by
   rw [Set.nonempty_iff_ne_empty, ne_eq,
     Module.support_eq_empty_iff, ← not_subsingleton_iff_nontrivial]
+
+lemma Module.nonempty_support_of_nontrivial [Nontrivial M] : (Module.support R M).Nonempty :=
+  Module.nonempty_support_iff.mpr ‹_›
 
 lemma Module.support_eq_empty [Subsingleton M] :
     Module.support R M = ∅ :=
@@ -254,5 +257,13 @@ theorem Module.support_quotient (I : Ideal R) :
       rw [← Localization.AtPrime.map_eq_maximalIdeal]
       exact Ideal.map_mono hp₂
     exact e.nontrivial
+
+open Pointwise in
+@[simp]
+theorem Module.support_quotSMulTop (x : R) :
+    support R (QuotSMulTop x M) = support R M ∩ zeroLocus {x} :=
+  (x • (⊤ : Submodule R M)).quotEquivOfEq (Ideal.span {x} • ⊤)
+    ((⊤ : Submodule R M).ideal_span_singleton_smul x).symm |>.support_eq.trans <|
+      (support_quotient _).trans <| by rw [zeroLocus_span]
 
 end Finite

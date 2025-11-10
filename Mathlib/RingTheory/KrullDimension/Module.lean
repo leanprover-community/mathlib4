@@ -28,11 +28,13 @@ open Order
 noncomputable def supportDim : WithBot ℕ∞ :=
   krullDim (Module.support R M)
 
+@[nontriviality]
 lemma supportDim_eq_bot_of_subsingleton [Subsingleton M] : supportDim R M = ⊥ := by
   simpa [supportDim, support_eq_empty_iff]
 
 lemma supportDim_ne_bot_of_nontrivial [Nontrivial M] : supportDim R M ≠ ⊥ := by
-  simpa [supportDim, support_eq_empty_iff, not_subsingleton_iff_nontrivial]
+  have : Nonempty (Module.support R M) := nonempty_support_of_nontrivial.to_subtype
+  simp [supportDim]
 
 lemma supportDim_eq_bot_iff_subsingleton : supportDim R M = ⊥ ↔ Subsingleton M := by
   simp [supportDim, krullDim_eq_bot_iff, support_eq_empty_iff]
