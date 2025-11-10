@@ -231,13 +231,15 @@ The connection to paths and intervals is made via the partition parameter in `Pa
 
 Consists of:
 - Segment neighborhoods U[i] (for n segments)
-- Overlap neighborhoods V[j] at interior points, contained in U[j-1] ∩ U[j]
+- Point neighborhoods V[j] at ALL partition points (including endpoints)
+  - At endpoints: V[0] ⊆ U[0], V[n] ⊆ U[n-1]
+  - At interior points: V[j] ⊆ U[j-1] ∩ U[j]
 - All required properties (openness, path-connectivity, SLSC conditions) -/
 structure TubeData (X : Type*) [TopologicalSpace X] (x y : X) (n : ℕ) where
   /-- Segment neighborhoods -/
   U : Fin n → Set X
-  /-- Overlap neighborhoods at interior points: V[j] ⊆ U[j-1] ∩ U[j] -/
-  V : ∀ (j : Fin (n + 1)), 0 < j → j < Fin.last n → Set X
+  /-- Point neighborhoods at ALL partition points (including endpoints) -/
+  V : Fin (n + 1) → Set X
   /-- Each U[i] is open -/
   h_U_open : ∀ i, IsOpen (U i)
   /-- Each U[i] is path-connected -/
@@ -246,25 +248,25 @@ structure TubeData (X : Type*) [TopologicalSpace X] (x y : X) (n : ℕ) where
   h_U_slsc : ∀ i, ∀ {a b : X}, a ∈ U i → b ∈ U i →
     ∀ (p q : Path a b), Set.range p ⊆ U i → Set.range q ⊆ U i → Path.Homotopic p q
   /-- Each V[j] is open -/
-  h_V_open : ∀ j hj_pos hj_last, IsOpen (V j hj_pos hj_last)
+  h_V_open : ∀ j, IsOpen (V j)
   /-- Each V[j] is path-connected -/
-  h_V_pathConn : ∀ j hj_pos hj_last, IsPathConnected (V j hj_pos hj_last)
-  /-- V[j] is contained in previous segment's neighborhood -/
-  h_V_subset_prev : ∀ j hj_pos hj_last, V j hj_pos hj_last ⊆ U ⟨j - 1, by omega⟩
-  /-- V[j] is contained in next segment's neighborhood -/
-  h_V_subset_next : ∀ j hj_pos hj_last, V j hj_pos hj_last ⊆ U ⟨j, by omega⟩
+  h_V_pathConn : ∀ j, IsPathConnected (V j)
+  /-- For each segment i, the left endpoint neighborhood V[i.castSucc] is in U[i] -/
+  h_V_left_subset : ∀ i : Fin n, V i.castSucc ⊆ U i
+  /-- For each segment i, the right endpoint neighborhood V[i.succ] is in U[i] -/
+  h_V_right_subset : ∀ i : Fin n, V i.succ ⊆ U i
 
 /-- A path γ is in the tube defined by partition `part` and tube data T.
 This means:
 1. γ stays in the segment neighborhoods U[i] on each interval [t[i], t[i+1]]
-2. γ passes through the overlap neighborhoods V[j] at interior partition points -/
+2. γ passes through the point neighborhoods V[j] at ALL partition points -/
 structure PathInTube {X : Type*} [TopologicalSpace X] {x y : X} {n : ℕ}
     (γ : Path x y) (part : IntervalPartition n) (T : TubeData X x y n) : Prop where
   /-- γ stays in the segment neighborhoods U[i] on each interval [t[i], t[i+1]] -/
   stays_in_U : ∀ i (s : unitInterval),
     (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → γ s ∈ T.U i
-  /-- γ passes through the overlap neighborhoods V[j] at interior partition points -/
-  passes_through_V : ∀ j hj_pos hj_last, γ (part.t j) ∈ T.V j hj_pos hj_last
+  /-- γ passes through the point neighborhoods V[j] at ALL partition points -/
+  passes_through_V : ∀ j, γ (part.t j) ∈ T.V j
 
 /-- Convert TubeData with partition to the set of paths in the tube -/
 def TubeData.toSet {X : Type*} [TopologicalSpace X] {x y : X} {n : ℕ}
@@ -290,45 +292,130 @@ theorem Path.exists_partition_in_slsc_neighborhoods (hX : SemilocallySimplyConne
     )
   -- Extract U sets from the partition using choice
   choose U hU_open hU_prop hU_contains using h_partition
-  -- For each interior point j, construct V[j] as path component in U[j-1] ∩ U[j]
-  have V_data : ∀ (j : Fin (n + 1)) (hj_pos : 0 < j) (hj_last : j < Fin.last n),
+  -- For each point j, construct V[j] as the intersection of all U[i] where j is an endpoint
+  -- Specifically: V[j] is the path component of γ(t_j) in ⋂{U[i] | j = i.castSucc or j = i.succ}
+  have V_data : ∀ (j : Fin (n + 1)),
       ∃ V : Set X, IsOpen V ∧ IsPathConnected V ∧ γ (t j) ∈ V ∧
-        V ⊆ U ⟨j - 1, by omega⟩ ∧ V ⊆ U ⟨j, by omega⟩ := by
-    intro j hj_pos hj_last
-    have hj_lt_n : j < n := by omega
-    -- Get adjacent U neighborhoods
-    have h_prev_idx : ↑j - 1 < n := by
-      have : (j : ℕ) ≥ 1 := hj_pos
-      omega
-    set U_prev := U ⟨j - 1, h_prev_idx⟩
-    set U_next := U ⟨j, hj_lt_n⟩
-    -- Show γ(t j) is in both
-    have hγj_in_prev : γ (t j) ∈ U_prev := by
-      apply hU_contains ⟨j - 1, h_prev_idx⟩ (t j)
-      constructor
-      · apply h_mono.monotone
-        simp only [Fin.le_def, Fin.coe_castSucc]
-        omega
-      · apply h_mono.monotone
-        simp only [Fin.le_def, Fin.succ]
-        omega
-    have hγj_in_next : γ (t j) ∈ U_next := by
-      apply hU_contains ⟨j, hj_lt_n⟩ (t j)
-      constructor
-      · apply h_mono.monotone
-        simp only [Fin.le_def, Fin.coe_castSucc]
-        omega
-      · apply h_mono.monotone
-        simp only [Fin.le_def, Fin.succ]
-        omega
-    -- Take path component in intersection
-    let V := pathComponentIn (U_prev ∩ U_next) (γ (t j))
-    refine ⟨V, ?_, isPathConnected_pathComponentIn ⟨hγj_in_prev, hγj_in_next⟩,
-                mem_pathComponentIn_self ⟨hγj_in_prev, hγj_in_next⟩, ?_, ?_⟩
-    · exact (hU_open _ ).inter (hU_open _) |>.pathComponentIn _
-    · exact pathComponentIn_subset.trans Set.inter_subset_left
-    · exact pathComponentIn_subset.trans Set.inter_subset_right
-  choose V hV_open hV_pathConn hγ_in_V hV_subset_prev hV_subset_next using V_data
+        (∀ i : Fin n, j = i.castSucc → V ⊆ U i) ∧ (∀ i : Fin n, j = i.succ → V ⊆ U i) := by
+    intro j
+    -- Collect all U[i] where j is an endpoint
+    let relevant_Us : Set (Set X) := {U_set | ∃ i : Fin n, (j = i.castSucc ∨ j = i.succ) ∧ U_set = U i}
+    by_cases h_empty : relevant_Us = ∅
+    · -- No segments have j as endpoint (only when n = 0)
+      obtain ⟨V, hV_open, hV_in, hV_pathConn⟩ :=
+        exists_pathConnected_slsc_neighborhood hX (γ (t j))
+      refine ⟨V, hV_open, hV_pathConn.1, hV_in, ?_, ?_⟩
+      · intro i hi; have : False := by
+          have : U i ∈ relevant_Us := ⟨i, Or.inl hi, rfl⟩
+          rw [h_empty] at this; exact this
+        exact False.elim this
+      · intro i hi; have : False := by
+          have : U i ∈ relevant_Us := ⟨i, Or.inr hi, rfl⟩
+          rw [h_empty] at this; exact this
+        exact False.elim this
+    · -- Take intersection of relevant U sets
+      push_neg at h_empty
+      obtain ⟨U_ex, i_ex, hi_ex, rfl⟩ := h_empty
+      -- γ(t_j) is in all relevant U sets
+      have hγ_in_all : ∀ i : Fin n, j = i.castSucc ∨ j = i.succ → γ (t j) ∈ U i := by
+        intro i hij
+        apply hU_contains i (t j)
+        cases hij with
+        | inl h => constructor <;> apply h_mono.monotone <;> simp [h, Fin.le_def, Fin.coe_castSucc]
+        | inr h => constructor <;> apply h_mono.monotone <;> simp [h, Fin.le_def, Fin.succ] <;> omega
+      have hγ_in_inter : γ (t j) ∈ ⋂₀ relevant_Us := by
+        simp [Set.mem_sInter, relevant_Us]
+        intro U_set i hi hU_set
+        subst hU_set
+        exact hγ_in_all i hi
+      refine ⟨pathComponentIn (⋂₀ relevant_Us) (γ (t j)),
+        ?_, isPathConnected_pathComponentIn hγ_in_inter,
+        mem_pathComponentIn_self hγ_in_inter, ?_, ?_⟩
+      · -- Prove open: intersection is finite
+        apply IsOpen.pathComponentIn
+        -- At most 2 sets in the intersection
+        by_cases h_left : ∃ i : Fin n, j = i.castSucc
+        · by_cases h_right : ∃ i : Fin n, j = i.succ
+          · -- Both exist: intersection of exactly 2 sets
+            obtain ⟨i_left, hi_left⟩ := h_left
+            obtain ⟨i_right, hi_right⟩ := h_right
+            have : ⋂₀ relevant_Us = U i_left ∩ U i_right := by
+              ext x
+              simp [relevant_Us, Set.mem_sInter, Set.mem_inter_iff]
+              constructor
+              · intro h
+                constructor
+                · exact h (U i_left) i_left (Or.inl hi_left) rfl
+                · exact h (U i_right) i_right (Or.inr hi_right) rfl
+              · intro ⟨hl, hr⟩ U_set i hi hU_set
+                subst hU_set
+                cases hi with
+                | inl heq => rw [hi_left] at heq; rw [←Fin.castSucc_inj.mp heq]; exact hl
+                | inr heq => rw [hi_right] at heq; rw [←Fin.succ_inj.mp heq]; exact hr
+            rw [this]
+            exact (hU_open i_left).inter (hU_open i_right)
+          · -- Only left exists
+            push_neg at h_right
+            obtain ⟨i_left, hi_left⟩ := h_left
+            have : ⋂₀ relevant_Us = U i_left := by
+              ext x
+              simp [relevant_Us, Set.mem_sInter]
+              constructor
+              · intro h; exact h (U i_left) i_left (Or.inl hi_left) rfl
+              · intro hx U_set i hi hU_set
+                subst hU_set
+                cases hi with
+                | inl heq => rw [hi_left] at heq; rw [←Fin.castSucc_inj.mp heq]; exact hx
+                | inr heq =>
+                  -- Need to show j ≠ i.succ, but we have j = i_left.castSucc and j = i.succ
+                  -- So i_left.castSucc = i.succ, which we can use to derive a contradiction
+                  have : j = i.succ := heq
+                  rw [hi_left] at this
+                  exact h_right i this
+            rw [this]
+            exact hU_open i_left
+        · -- Only right exists (or neither, but we know at least one exists)
+          push_neg at h_left
+          have : ∃ i : Fin n, j = i.succ := by
+            by_contra h_none
+            push_neg at h_none
+            -- This contradicts h_empty
+            have : relevant_Us = ∅ := by
+              ext U_set
+              simp [relevant_Us]
+              intro i hi _
+              cases hi with
+              | inl heq => exact h_left i heq
+              | inr heq => exact h_none i heq
+            have h_contradiction : U i_ex ∈ relevant_Us := ⟨i_ex, hi_ex, rfl⟩
+            rw [this] at h_contradiction
+            exact h_contradiction
+          obtain ⟨i_right, hi_right⟩ := this
+          have : ⋂₀ relevant_Us = U i_right := by
+            ext x
+            simp [relevant_Us, Set.mem_sInter]
+            constructor
+            · intro h; exact h (U i_right) i_right (Or.inr hi_right) rfl
+            · intro hx U_set i hi hU_set
+              subst hU_set
+              cases hi with
+              | inl heq =>
+                  -- Need to show j ≠ i.castSucc, but we have j = i_right.succ and j = i.castSucc
+                  have : j = i.castSucc := heq
+                  rw [hi_right] at this
+                  exact h_left i this
+              | inr heq => rw [hi_right] at heq; rw [←Fin.succ_inj.mp heq]; exact hx
+          rw [this]
+          exact hU_open i_right
+      · intro i hi
+        trans (⋂₀ relevant_Us)
+        · apply pathComponentIn_subset
+        · exact Set.sInter_subset_of_mem ⟨i, Or.inl hi, rfl⟩
+      · intro i hi
+        trans (⋂₀ relevant_Us)
+        · apply pathComponentIn_subset
+        · exact Set.sInter_subset_of_mem ⟨i, Or.inr hi, rfl⟩
+  choose V hV_open hV_pathConn hγ_in_V hV_left hV_right using V_data
   -- Construct IntervalPartition
   let part : IntervalPartition n := {
     t := t
@@ -345,8 +432,8 @@ theorem Path.exists_partition_in_slsc_neighborhoods (hX : SemilocallySimplyConne
     h_U_slsc := fun i => (hU_prop i).2
     h_V_open := hV_open
     h_V_pathConn := hV_pathConn
-    h_V_subset_prev := hV_subset_prev
-    h_V_subset_next := hV_subset_next
+    h_V_left_subset := sorry
+    h_V_right_subset := sorry
   }
   -- Prove PathInTube
   refine ⟨n, part, T, ?_⟩
@@ -363,7 +450,7 @@ theorem TubeData.isOpen {x y : X} {n : ℕ}
   have : T.toSet part =
     {γ' : Path x y | ∀ i (s : unitInterval),
       (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → γ' s ∈ T.U i} ∩
-    {γ' : Path x y | ∀ j hj_pos hj_last, γ' (part.t j) ∈ T.V j hj_pos hj_last} := by
+    {γ' : Path x y | ∀ j, γ' (part.t j) ∈ T.V j} := by
     ext γ'
     simp only [TubeData.toSet, Set.mem_setOf_eq, Set.mem_inter_iff]
     constructor
@@ -403,69 +490,21 @@ theorem TubeData.isOpen {x y : X} {n : ℕ}
     rw [this]
     exact (ContinuousMap.isOpen_setOf_mapsTo h_compact_K (T.h_U_open i)).preimage
       continuous_induced_dom
-  -- Second part: paths passing through V[j] at interior points
-  · -- This is also a finite intersection of open sets (by continuity of evaluation)
-    by_cases h_interior : ∃ j : Fin (n + 1), 0 < j ∧ j < Fin.last n
-    · -- Case: there are interior points
-      classical
-      let interior_pts : Finset (Fin (n + 1)) :=
-        Finset.univ.filter (fun j => 0 < j ∧ j < Fin.last n)
-      have h_nonempty : interior_pts.Nonempty := by
-        obtain ⟨j, hj_pos, hj_last⟩ := h_interior
-        use j
-        simp [interior_pts, hj_pos, hj_last]
-      -- We'll iterate over interior points and show each gives an open set
-      -- Build a function that for each j ∈ interior_pts gives the set {γ' | γ'(t j) ∈ V[j]}
-      set f : Fin (n + 1) → Set (Path x y) := fun j =>
-        if h : j ∈ interior_pts
-        then
-          let hj_pos : 0 < j := by simp [interior_pts] at h; exact h.1
-          let hj_last : j < Fin.last n := by simp [interior_pts] at h; exact h.2
-          {γ' : Path x y | γ' (part.t j) ∈ T.V j hj_pos hj_last}
-        else Set.univ
-      -- Show the set equals the bounded intersection
-      have set_eq : {γ' : Path x y |
-          ∀ j hj_pos hj_last, γ' (part.t j) ∈ T.V j hj_pos hj_last} =
-        ⋂ j ∈ interior_pts, f j := by
-        ext γ'
-        simp only [Set.mem_setOf_eq, Set.mem_iInter]
-        constructor
-        · intro h j hj_mem
-          simp only [f, hj_mem, dif_pos]
-          simp only [interior_pts, Finset.mem_filter, Finset.mem_univ, true_and] at hj_mem
-          exact h j hj_mem.1 hj_mem.2
-        · intro h j hj_pos hj_last
-          have hj_mem : j ∈ interior_pts := by
-            simp only [interior_pts, Finset.mem_filter, Finset.mem_univ, true_and]
-            exact ⟨hj_pos, hj_last⟩
-          specialize h j hj_mem
-          simp only [f, hj_mem, dif_pos, Set.mem_setOf_eq] at h
-          exact h
-      rw [set_eq]
-      -- Apply finite intersection for finsets
-      apply isOpen_biInter_finset
-      intro j hj_mem
-      -- Unfold the definition of f at this particular j
-      simp only [f, hj_mem, dif_pos]
-      -- Extract the proofs
-      have hj_pos : 0 < j := by simp [interior_pts] at hj_mem; exact hj_mem.1
-      have hj_last : j < Fin.last n := by simp [interior_pts] at hj_mem; exact hj_mem.2
-      -- Show {γ' | γ'(part.t j) ∈ V[j]} is open
-      change IsOpen ((fun γ' : Path x y => γ' (part.t j)) ⁻¹' (T.V j hj_pos hj_last))
-      apply IsOpen.preimage _ (T.h_V_open j hj_pos hj_last)
-      -- Evaluation is continuous: coercion then evaluation
-      change Continuous fun γ' : Path x y => (γ' : C(unitInterval, X)) (part.t j)
-      exact (continuous_eval_const (part.t j)).comp continuous_induced_dom
-    · -- Case: no interior points (n ≤ 1), condition is trivially true
-      have : {γ' : Path x y |
-          ∀ j hj_pos hj_last, γ' (part.t j) ∈ T.V j hj_pos hj_last} = Set.univ := by
-        ext γ'
-        simp only [Set.mem_setOf_eq, Set.mem_univ, iff_true]
-        intro j hj_pos hj_last
-        exfalso
-        exact h_interior ⟨j, hj_pos, hj_last⟩
-      rw [this]
-      exact isOpen_univ
+  -- Second part: paths passing through V[j] at all points
+  · -- This is a finite intersection of open sets (by continuity of evaluation)
+    have : {γ' : Path x y | ∀ j, γ' (part.t j) ∈ T.V j} =
+        ⋂ j : Fin (n + 1), {γ' : Path x y | γ' (part.t j) ∈ T.V j} := by
+      ext γ'
+      simp only [Set.mem_setOf_eq, Set.mem_iInter]
+    rw [this]
+    apply isOpen_iInter_of_finite
+    intro j
+    -- Show {γ' | γ'(part.t j) ∈ V[j]} is open
+    change IsOpen ((fun γ' : Path x y => γ' (part.t j)) ⁻¹' (T.V j))
+    apply IsOpen.preimage _ (T.h_V_open j)
+    -- Evaluation is continuous: coercion then evaluation
+    change Continuous fun γ' : Path x y => (γ' : C(unitInterval, X)) (part.t j)
+    exact (continuous_eval_const (part.t j)).comp continuous_induced_dom
 
 /-- In a path-connected set U, for any two points a and b in U, there exists a path from a to b
 whose range is contained in U. -/
@@ -613,15 +652,24 @@ theorem Path.exists_rung_paths {x y : X} {n : ℕ} (γ γ' : Path x y)
     (hγ : PathInTube γ part T) (hγ' : PathInTube γ' part T) :
     ∃ α : (i : Fin (n + 1)) → Path (γ (part.t i)) (γ' (part.t i)),
       (∀ (i : Fin n), Set.range (α i.castSucc) ⊆ T.U i ∧ Set.range (α i.succ) ⊆ T.U i) := by
-  -- Endpoints coincide since γ and γ' share the same start and end
-  have h_eq_start : γ (part.t 0) = γ' (part.t 0) := by
-    simp [part.h_start, γ.source, γ'.source]
-  have h_eq_end : γ (part.t (Fin.last n)) = γ' (part.t (Fin.last n)) := by
-    simp [part.h_end, γ.target, γ'.target]
-  -- Construct rungs using path-connectivity
-  -- For interior points: use V neighborhoods (which are path-connected)
-  -- For endpoints: use constant paths
-  sorry
+  -- For each point j, construct a rung path α_j from γ(t_j) to γ'(t_j)
+  -- using the path-connected neighborhood V[j]
+  have rung_exists : ∀ j, ∃ α_j : Path (γ (part.t j)) (γ' (part.t j)),
+      Set.range α_j ⊆ T.V j := by
+    intro j
+    have hγ_in_V : γ (part.t j) ∈ T.V j := hγ.passes_through_V j
+    have hγ'_in_V : γ' (part.t j) ∈ T.V j := hγ'.passes_through_V j
+    obtain ⟨α_j, hα_range⟩ := exists_path_in_pathConnected_set
+      (T.V j) (T.h_V_pathConn j) hγ_in_V hγ'_in_V
+    exact ⟨α_j, hα_range⟩
+  choose α hα_range using rung_exists
+  -- Prove the range conditions using the subset properties
+  refine ⟨α, fun i => ?_⟩
+  constructor
+  · calc Set.range (α i.castSucc) ⊆ T.V i.castSucc := hα_range i.castSucc
+      _ ⊆ T.U i := T.h_V_left_subset i
+  · calc Set.range (α i.succ) ⊆ T.V i.succ := hα_range i.succ
+      _ ⊆ T.U i := T.h_V_right_subset i
 
 /-! ### Homotopy algebra: composition rules needed for pasting -/
 
