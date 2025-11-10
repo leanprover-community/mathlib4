@@ -119,35 +119,6 @@ open IsGaloisGroup
 
 open NumberField
 
--- PRed
-instance (R K : Type*) [CommRing R] [CommRing K] [Algebra R K]
-    (G : Type*) [Group G] [MulSemiringAction G K] [SMulCommClass G R K] :
-    MulSemiringAction G (integralClosure R K) where
-  smul := fun g x ↦ ⟨g • (x : K), x.2.map (MulSemiringAction.toAlgHom R K g)⟩
-  one_smul x := by ext; exact one_smul G (x : K)
-  mul_smul g h x := by ext; exact mul_smul g h (x : K)
-  smul_zero g := by ext; exact smul_zero g
-  smul_add g x y := by ext; exact smul_add g (x : K) (y : K)
-  smul_one g := by ext; exact smul_one g
-  smul_mul g x y := by ext; exact smul_mul' g (x : K) (y : K)
-
--- PRed
-instance {G K : Type*} [Group G] [Field K] [MulSemiringAction G K] :
-    MulSemiringAction G (𝓞 K) :=
-  inferInstanceAs (MulSemiringAction G (integralClosure _ _))
-
--- PRed
-instance (K L : Type*) [Field K] [Field L] [NumberField K] [NumberField L] [Algebra K L]
-    (G : Type*) [Group G] [MulSemiringAction G L] [IsGaloisGroup G K L] :
-    IsGaloisGroup G (𝓞 K) (𝓞 L) :=
-  IsGaloisGroup.of_isFractionRing G (𝓞 K) (𝓞 L) K L (fun _ _ ↦ rfl)
-
--- PRed
-instance (L : Type*) [Field L] [NumberField L]
-    (G : Type*) [Group G] [MulSemiringAction G L] [IsGaloisGroup G ℚ L] :
-    IsGaloisGroup G ℤ (𝓞 L) :=
-  IsGaloisGroup.of_isFractionRing G ℤ (𝓞 L) ℚ L (fun _ _ ↦ rfl)
-
 instance tada1 {K : Type*} [Field K] [NumberField K] (m : Ideal (𝓞 K)) [m.IsMaximal] :
     Finite (𝓞 K ⧸ m) :=
   m.finiteQuotientOfFreeOfNeBot (m.bot_lt_of_maximal (RingOfIntegers.not_isField K)).ne'
@@ -175,7 +146,7 @@ theorem genthm₀ (K : Type*) [Field K] [NumberField K]
   intro m _
   have hm2 := Ideal.IsMaximal.ne_bot_of_isIntegral_int m
   rw [Algebra.isUnramifiedAt_iff_of_isDedekindDomain hm2]
-  obtain ⟨m, hm, ⟨rfl⟩⟩ := Ideal.exists_ideal_liesOver_maximal_of_isIntegral m (𝓞 K)
+  obtain ⟨m, hm, ⟨rfl⟩⟩ := Ideal.exists_maximal_ideal_liesOver_of_isIntegral (S := 𝓞 K) m
   rw [Ideal.under_under]
   have hm1 := Ideal.IsMaximal.ne_bot_of_isIntegral_int (m.under ℤ)
   have h : m.toAddSubgroup.inertia G ≤ H :=
@@ -187,11 +158,10 @@ theorem genthm₀ (K : Type*) [Field K] [NumberField K]
   let := Ideal.Quotient.field (m.under (𝓞 F))
   let := Ideal.Quotient.field (m.under ℤ)
   -- todo: clean up once #30934 is merged
-  have : IsGalois ℚ K := IsGaloisGroup.isGalois G ℚ K
-  rw [Ideal.card_inertia_eq_ramificationIdxIn F K (m.under (𝓞 F)) hm2 m,
-    Ideal.card_inertia_eq_ramificationIdxIn ℚ K (m.under ℤ) hm1 m,
-    Ideal.ramificationIdxIn_eq_ramificationIdx (m.under (𝓞 F)) m F K,
-    Ideal.ramificationIdxIn_eq_ramificationIdx (m.under ℤ) m ℚ K] at h
+  rw [Ideal.card_inertia_eq_ramificationIdxIn (G := H) (m.under (𝓞 F)) hm2 m,
+    Ideal.card_inertia_eq_ramificationIdxIn (G := G) (m.under ℤ) hm1 m,
+    Ideal.ramificationIdxIn_eq_ramificationIdx (m.under (𝓞 F)) m H,
+    Ideal.ramificationIdxIn_eq_ramificationIdx (m.under ℤ) m G] at h
   have key := Ideal.ramificationIdx_algebra_tower (Ideal.map_ne_bot_of_ne_bot hm2)
     (Ideal.map_ne_bot_of_ne_bot hm1) Ideal.map_comap_le
   rwa [h, right_eq_mul₀ (Ideal.IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver m hm1)] at key
