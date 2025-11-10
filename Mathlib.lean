@@ -3595,6 +3595,7 @@ import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Choose.Vandermonde
 import Mathlib.Data.Nat.Count
 import Mathlib.Data.Nat.Digits.Defs
+import Mathlib.Data.Nat.Digits.DigitsFin
 import Mathlib.Data.Nat.Digits.Div
 import Mathlib.Data.Nat.Digits.Lemmas
 import Mathlib.Data.Nat.Dist
