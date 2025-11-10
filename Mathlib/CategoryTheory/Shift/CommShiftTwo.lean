@@ -34,13 +34,11 @@ section
 variable (D) (M : Type*)
   [AddCommMonoid M] [HasShift C₁ M] [HasShift C₂ M] [HasShift D M]
 
-structure CommShift₂Setup where
-  twistShiftData : TwistShiftData (PullbackShift D (.sum M)) (M × M)
-  z_zero₁ (m₁ m₂ : M) : twistShiftData.z (0, m₁) (0, m₂) = 1 := by aesop
-  z_zero₂ (m₁ m₂ : M) : twistShiftData.z (m₁, 0) (m₂, 0) = 1 := by aesop
+structure CommShift₂Setup extends TwistShiftData (PullbackShift D (.sum M)) (M × M) where
+  z_zero₁ (m₁ m₂ : M) : z (0, m₁) (0, m₂) = 1 := by aesop
+  z_zero₂ (m₁ m₂ : M) : z (m₁, 0) (m₂, 0) = 1 := by aesop
   ε (m n : M) : (CatCenter D)ˣ
-  hε (m n : M) : ε m n = (twistShiftData.z (0, n) (m, 0))⁻¹ * twistShiftData.z (m, 0) (0, n) :=
-    by aesop
+  hε (m n : M) : ε m n = (z (0, n) (m, 0))⁻¹ * z (m, 0) (0, n) := by aesop
 
 end
 
@@ -74,12 +72,12 @@ variable (h : CommShift₂Setup D M)
 
 namespace CommShift₂Setup
 
-protected def Category (h : CommShift₂Setup D M) := TwistShift h.twistShiftData
+protected def Category (h : CommShift₂Setup D M) := TwistShift h.toTwistShiftData
 
-instance : Category h.Category := inferInstanceAs (Category (TwistShift h.twistShiftData))
+instance : Category h.Category := inferInstanceAs (Category (TwistShift h.toTwistShiftData))
 
 noncomputable instance : HasShift h.Category (M × M) :=
-  inferInstanceAs (HasShift (TwistShift h.twistShiftData) (M × M))
+  inferInstanceAs (HasShift (TwistShift h.toTwistShiftData) (M × M))
 
 -- variable (G : C₁ × C₂ ⥤ h.Category) [G.CommShift (M × M)]
 -- should be essentially equivalent to
@@ -110,7 +108,7 @@ lemma shiftFunctorAdd'_inv_app (m₁ m₂ m₃ : M) (hm : m₁ + m₂ = m₃)
         (shiftFunctor D p₂).map ((h.shiftIso m₁ n₁ p₁ hp₁).hom.app X) ≫
         (shiftFunctorAdd' D p₁ p₂ p₃ (by rw [← hp₃, ← hp₂, ← hp₁, ← hm, ← hn]; abel)).inv.app X ≫
         (h.shiftIso m₃ n₃ p₃ hp₃).inv.app X ≫
-          (((h.twistShiftData.z (m₁, n₁) (m₂, n₂))⁻¹).1).app _
+          (((h.z (m₁, n₁) (m₂, n₂))⁻¹).1).app _
           := by
   refine (TwistShift.shiftFunctorAdd'_inv_app ..).trans ?_
   dsimp [shiftIso]
@@ -331,8 +329,13 @@ noncomputable instance (X₁ : C₁) :
     · simp [shiftFunctorAdd'_zero_add_hom_app, ← Functor.map_comp]
     · simp
 
+end commShift₂Curry
+
+open commShift₂Curry in
 lemma commShift_curry_obj_hom_app (X₁ : C₁) (X₂ : C₂) (m : M) :
     (((h.curry G).obj X₁).commShiftIso m).hom.app X₂ = ((iso₁ h G m).app X₁).hom.app X₂ := rfl
+
+namespace commShift₂Curry
 
 attribute [local simp] commShift_curry_obj_hom_app
 
@@ -381,11 +384,29 @@ noncomputable instance (X₂ : C₂) : ((h.curry G).flip.obj X₂).CommShift M w
     congr 2
     aesop
   add m n := by
-    sorry
+    ext X₁
+    simp [iso₂_hom_app_app,
+      G.commShiftIso_add' (show (m, (0 : M)) + (n, 0) = (m + n, 0) by aesop),
+      shiftFunctorAdd'_inv_app _ _ _ _ rfl _ _ _ (zero_add 0) _ _ _
+      (add_zero m) (add_zero n) (add_zero (m + n)),
+      ← shiftFunctorAdd'_eq_shiftFunctorAdd, h.z_zero₂]
+    rw [← NatTrans.naturality_1_assoc (G.commShiftIso (n, (0 : M))).hom
+      (Iso.prod (Iso.refl (X₁⟦m⟧)) ((shiftFunctorZero C₂ M).symm.app X₂))]
+    dsimp
+    simp only [← G.map_comp_assoc, NatTrans.naturality_assoc]
+    congr 2
+    ext
+    · simp
+    · simp [shiftFunctorAdd'_zero_add_hom_app, ← Functor.map_comp]
 
+end commShift₂Curry
+
+open commShift₂Curry in
 lemma commShift_curry_flip_obj_hom_app (X₁ : C₁) (X₂ : C₂) (m : M) :
     (((h.curry G).flip.obj X₂).commShiftIso m).hom.app X₁ =
       ((iso₂ h G m).hom.app X₁).app X₂ := rfl
+
+namespace commShift₂Curry
 
 attribute [local simp] commShift_curry_flip_obj_hom_app
 
@@ -406,8 +427,19 @@ instance {X₂ Y₂ : C₂} (f : X₂ ⟶ Y₂) :
 
 end commShift₂Curry
 
+open commShift₂Curry in
 noncomputable instance commShift₂Curry : (h.curry G).CommShift₂ h where
-  comm := sorry
+  comm X₁ X₂ m n := by
+    dsimp
+    simp [commShift_curry_flip_obj_hom_app, commShift_curry_obj_hom_app, iso₁_hom_app_app,
+      iso₂_hom_app_app]
+    trans (G.commShiftIso (m, n)).hom.app (X₁, X₂) ≫
+      (h.shiftIso m n _ rfl).hom.app _ ≫ (shiftFunctorAdd' D m n (m + n) rfl).hom.app _
+    · rw [G.commShiftIso_add' (show (m, 0) + (0, n) = (m, n) by aesop)]
+      simp
+      sorry
+    · rw [G.commShiftIso_add' (show (0, n) + (m, 0) = (m, n) by aesop)]
+      sorry
 
 end
 
@@ -415,27 +447,26 @@ noncomputable def int
     {D : Type*} [Category D] [Preadditive D] [HasShift D ℤ]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] :
     CommShift₂Setup D ℤ where
-  twistShiftData :=
-    { z m n := (-1) ^ (m.1 * n.2)
-      z_zero_left := by simp
-      z_zero_right := by simp
-      assoc := by
-        rintro ⟨a, b⟩ ⟨c, d⟩ ⟨e, f⟩
-        rw [← zpow_add, ← zpow_add]
-        congr 1
-        dsimp
-        rw [add_mul, mul_add]
-        abel
-      shift_z_app := by
-        rintro ⟨a, b⟩ ⟨c, d⟩ ⟨e, f⟩ X
-        dsimp
-        generalize hn : a * d = n
-        obtain ⟨n, rfl⟩ | ⟨n, rfl⟩ := Int.even_or_odd n
-        · simp [zpow_add, ← mul_zpow]
-        · rw [zpow_add, two_mul, zpow_add, ← mul_zpow, mul_neg, mul_one, neg_neg, one_zpow,
-            one_mul, zpow_one, Units.val_neg, Units.val_one, End.one_def, NatTrans.app_neg,
-            NatTrans.app_neg]
-          simp }
+  z m n := (-1) ^ (m.1 * n.2)
+  z_zero_left := by simp
+  z_zero_right := by simp
+  assoc := by
+    rintro ⟨a, b⟩ ⟨c, d⟩ ⟨e, f⟩
+    rw [← zpow_add, ← zpow_add]
+    congr 1
+    dsimp
+    rw [add_mul, mul_add]
+    abel
+  shift_z_app := by
+    rintro ⟨a, b⟩ ⟨c, d⟩ ⟨e, f⟩ X
+    dsimp
+    generalize hn : a * d = n
+    obtain ⟨n, rfl⟩ | ⟨n, rfl⟩ := Int.even_or_odd n
+    · simp [zpow_add, ← mul_zpow]
+    · rw [zpow_add, two_mul, zpow_add, ← mul_zpow, mul_neg, mul_one, neg_neg, one_zpow,
+        one_mul, zpow_one, Units.val_neg, Units.val_one, End.one_def, NatTrans.app_neg,
+        NatTrans.app_neg]
+      simp
   ε p q := (-1) ^ (p * q)
 
 end CommShift₂Setup
