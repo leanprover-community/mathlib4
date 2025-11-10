@@ -269,6 +269,9 @@ protected def Quotient (x₀ x₁ : X) :=
 
 attribute [local instance] Homotopic.setoid
 
+instance (x₀ x₁ : X) : TopologicalSpace (Path.Homotopic.Quotient x₀ x₁) :=
+  inferInstanceAs (TopologicalSpace (Quotient (Homotopic.setoid x₀ x₁)))
+
 instance : Inhabited (Homotopic.Quotient () ()) :=
   ⟨Quotient.mk' <| Path.refl ()⟩
 
