@@ -106,4 +106,11 @@ instance (priority := 100) [ContractibleSpace X] : PathConnectedSpace X := by
   have : ∀ x, Joined p x := fun x => ⟨(h.evalAt x).symm⟩
   rw [pathConnectedSpace_iff_eq]; use p; ext; tauto
 
+/-- The product of two contractible spaces is contractible. -/
+instance [ContractibleSpace X] [ContractibleSpace Y] : ContractibleSpace (X × Y) := by
+  obtain ⟨hX⟩ := hequiv_unit' (X := X)
+  obtain ⟨hY⟩ := hequiv_unit' (X := Y)
+  refine ⟨⟨(hX.prodCongr hY).trans ?_⟩⟩
+  exact (Homeomorph.prodUnique Unit Unit).toHomotopyEquiv
+
 end ContractibleSpace
