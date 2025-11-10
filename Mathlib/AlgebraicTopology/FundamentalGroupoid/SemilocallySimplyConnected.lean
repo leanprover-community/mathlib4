@@ -204,26 +204,76 @@ theorem exists_pathConnected_slsc_neighborhood (hX : SemilocallySimplyConnected 
   · exact Set.Subset.trans hp hW_subset
   · exact Set.Subset.trans hq hW_subset
 
-/-- In an SLSC space, given a path γ, there exists a finite partition of [0,1] such that
-each segment of γ lies in a path-connected SLSC neighborhood. This uses compactness of the
-path's image and the Lebesgue number lemma. -/
+/-! ### Partition and Tube data structures
+
+We introduce two key abstractions:
+1. `IntervalPartition n` - a partition of [0,1] into n segments
+2. `TubeData X x y n` - neighborhood data for n segments in an SLSC space
+
+These are completely abstract and path-agnostic. The connection to actual paths
+is made via the `PathInTube` predicate. -/
+
+/-- A partition of the unit interval [0,1] into n segments.
+This bundles a strictly monotone sequence 0 = t₀ < t₁ < ... < tₙ = 1. -/
+structure IntervalPartition (n : ℕ) where
+  /-- Partition points 0 = t₀ < t₁ < ... < tₙ = 1 -/
+  t : Fin (n + 1) → unitInterval
+  /-- t is strictly monotone -/
+  h_mono : StrictMono t
+  /-- t starts at 0 -/
+  h_start : t 0 = 0
+  /-- t ends at 1 -/
+  h_end : t (Fin.last n) = 1
+
+/-- Data for a tubular neighborhood in an SLSC space.
+This is completely abstract: just neighborhoods and their properties.
+The connection to paths and intervals is made via the partition parameter in `PathInTube`.
+
+Consists of:
+- Segment neighborhoods U[i] (for n segments)
+- Overlap neighborhoods V[j] at interior points, contained in U[j-1] ∩ U[j]
+- All required properties (openness, path-connectivity, SLSC conditions) -/
+structure TubeData (X : Type*) [TopologicalSpace X] (x y : X) (n : ℕ) where
+  /-- Segment neighborhoods -/
+  U : Fin n → Set X
+  /-- Overlap neighborhoods at interior points: V[j] ⊆ U[j-1] ∩ U[j] -/
+  V : ∀ (j : Fin (n + 1)), 0 < j → j < Fin.last n → Set X
+  /-- Each U[i] is open -/
+  h_U_open : ∀ i, IsOpen (U i)
+  /-- Each U[i] is path-connected -/
+  h_U_pathConn : ∀ i, IsPathConnected (U i)
+  /-- SLSC property: paths in U[i] with same endpoints are homotopic -/
+  h_U_slsc : ∀ i, ∀ {a b : X}, a ∈ U i → b ∈ U i →
+    ∀ (p q : Path a b), Set.range p ⊆ U i → Set.range q ⊆ U i → Path.Homotopic p q
+  /-- Each V[j] is open -/
+  h_V_open : ∀ j hj_pos hj_last, IsOpen (V j hj_pos hj_last)
+  /-- Each V[j] is path-connected -/
+  h_V_pathConn : ∀ j hj_pos hj_last, IsPathConnected (V j hj_pos hj_last)
+  /-- V[j] is contained in previous segment's neighborhood -/
+  h_V_subset_prev : ∀ j hj_pos hj_last, V j hj_pos hj_last ⊆ U ⟨j - 1, by omega⟩
+  /-- V[j] is contained in next segment's neighborhood -/
+  h_V_subset_next : ∀ j hj_pos hj_last, V j hj_pos hj_last ⊆ U ⟨j, by omega⟩
+
+/-- A path γ is in the tube defined by partition `part` and tube data T.
+This means:
+1. γ stays in the segment neighborhoods U[i] on each interval [t[i], t[i+1]]
+2. γ passes through the overlap neighborhoods V[j] at interior partition points -/
+def PathInTube {X : Type*} [TopologicalSpace X] {x y : X} {n : ℕ}
+    (γ : Path x y) (part : IntervalPartition n) (T : TubeData X x y n) : Prop :=
+  (∀ i (s : unitInterval), (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → γ s ∈ T.U i) ∧
+  (∀ j hj_pos hj_last, γ (part.t j) ∈ T.V j hj_pos hj_last)
+
+/-- Convert TubeData with partition to the set of paths in the tube -/
+def TubeData.toSet {X : Type*} [TopologicalSpace X] {x y : X} {n : ℕ}
+    (part : IntervalPartition n) (T : TubeData X x y n) : Set (Path x y) :=
+  {γ | PathInTube γ part T}
+
+/-- In an SLSC space, given a path γ, there exists a tubular neighborhood structure
+such that γ stays in the tube. This uses compactness of the path's image and the
+Lebesgue number lemma. -/
 theorem Path.exists_partition_in_slsc_neighborhoods (hX : SemilocallySimplyConnected X)
     [LocPathConnectedSpace X] {x y : X} (γ : Path x y) :
-    ∃ (n : ℕ) (t : Fin (n + 1) → unitInterval),
-      StrictMono t ∧
-      t 0 = 0 ∧
-      t (Fin.last n) = 1 ∧
-      (∀ i : Fin n, ∃ U : Set X, IsOpen U ∧ IsPathConnected U ∧
-        (∀ s : unitInterval, (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ s ∈ U) ∧
-        (∀ {p q : Path (γ (t i.castSucc)) (γ (t i.succ))},
-          Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q)) ∧
-      (∀ j : Fin (n + 1), (hj_pos : 0 < j) → (hj_last : j < Fin.last n) →
-        ∃ V : Set X, IsOpen V ∧ IsPathConnected V ∧
-        γ (t j) ∈ V ∧
-        (∀ U₀ U₁ : Set X,
-          (∀ s : unitInterval, (t ⟨j - 1, by omega⟩ : ℝ) ≤ s ∧ s ≤ (t j : ℝ) → γ s ∈ U₀) →
-          (∀ s : unitInterval, (t j : ℝ) ≤ s ∧ s ≤ (t ⟨j + 1, by omega⟩ : ℝ) → γ s ∈ U₁) →
-          V ⊆ U₀ ∩ U₁)) := by
+    ∃ (n : ℕ) (part : IntervalPartition n) (T : TubeData X x y n), PathInTube γ part T := by
   -- Apply the generic partition lemma with the property:
   -- "U is path-connected and paths in U with same endpoints are homotopic"
   obtain ⟨n, t, h_mono, h_start, h_end, h_partition⟩ := γ.exists_partition_with_property
@@ -235,125 +285,141 @@ theorem Path.exists_partition_in_slsc_neighborhoods (hX : SemilocallySimplyConne
       -- For each point z on the path, we get a path-connected SLSC neighborhood
       exact exists_pathConnected_slsc_neighborhood hX z
     )
-  refine ⟨n, t, h_mono, h_start, h_end, ?_, ?_⟩
-  -- First part: U neighborhoods for each segment
-  · intro i
-    obtain ⟨U, hU_open, ⟨hU_pathConn, hU_homotopic⟩, hU_contains⟩ := h_partition i
-    refine ⟨U, hU_open, hU_pathConn, hU_contains, ?_⟩
-    intro p q hp hq
-    -- The endpoints are in U because they're on the path segment
-    have h_le : t i.castSucc ≤ t i.succ := h_mono.monotone (Fin.castSucc_lt_succ i).le
-    have ha : γ (t i.castSucc) ∈ U := hU_contains (t i.castSucc) ⟨le_refl _, h_le⟩
-    have hb : γ (t i.succ) ∈ U := hU_contains (t i.succ) ⟨h_le, le_refl _⟩
-    exact @hU_homotopic (γ (t i.castSucc)) (γ (t i.succ)) ha hb p q hp hq
-  -- Second part: V overlap neighborhoods at interior partition points
-  · intro j hj_pos hj_last
-    -- j is an interior partition point, so γ(t j) has neighborhoods from adjacent segments
-    -- The previous segment is indexed by ⟨j - 1, _⟩ viewed as Fin n
-    -- The next segment is indexed by j viewed as Fin n (since j < n)
-    have hj_lt_n : j < n := by
-      simp only [Fin.lt_def, Fin.val_last] at hj_last
+  -- Extract U sets from the partition using choice
+  choose U hU_open hU_prop hU_contains using h_partition
+  -- For each interior point j, construct V[j] as path component in U[j-1] ∩ U[j]
+  have V_data : ∀ (j : Fin (n + 1)) (hj_pos : 0 < j) (hj_last : j < Fin.last n),
+      ∃ V : Set X, IsOpen V ∧ IsPathConnected V ∧ γ (t j) ∈ V ∧
+        V ⊆ U ⟨j - 1, by omega⟩ ∧ V ⊆ U ⟨j, by omega⟩ := by
+    intro j hj_pos hj_last
+    have hj_lt_n : j < n := by omega
+    -- Get adjacent U neighborhoods
+    have h_prev_idx : ↑j - 1 < n := by
+      have : (j : ℕ) ≥ 1 := hj_pos
       omega
-    -- Get the U neighborhoods for the previous and next segments
-    have h_prev_idx : j - 1 < n := by omega
-    have h_next_idx := hj_lt_n
-    obtain ⟨U_prev, hU_prev_open, ⟨hU_prev_pathConn, _⟩, hU_prev_contains⟩ := h_partition ⟨j - 1, h_prev_idx⟩
-    obtain ⟨U_next, hU_next_open, ⟨hU_next_pathConn, _⟩, hU_next_contains⟩ := h_partition ⟨j, h_next_idx⟩
-    -- Show that γ(t j) is in both U_prev and U_next
-    -- We'll show j corresponds to the right endpoint of prev segment and left endpoint of next segment
+    set U_prev := U ⟨j - 1, h_prev_idx⟩
+    set U_next := U ⟨j, hj_lt_n⟩
+    -- Show γ(t j) is in both
     have hγj_in_prev : γ (t j) ∈ U_prev := by
-      apply hU_prev_contains (t j)
+      apply hU_contains ⟨j - 1, h_prev_idx⟩ (t j)
       constructor
-      · -- t(⟨j-1,_⟩.castSucc) ≤ t(j)
-        apply h_mono.monotone
+      · apply h_mono.monotone
         simp only [Fin.le_def, Fin.coe_castSucc]
         omega
-      · -- t(j) ≤ t(⟨j-1,_⟩.succ)
-        have : (⟨j - 1, h_prev_idx⟩ : Fin n).succ.val = j := by
-          simp [Fin.succ]
-          omega
-        have eq : (⟨j - 1, h_prev_idx⟩ : Fin n).succ = ⟨j, by omega⟩ := by
-          ext
-          exact this
-        simp [eq]
+      · apply h_mono.monotone
+        simp only [Fin.le_def, Fin.succ]
+        omega
     have hγj_in_next : γ (t j) ∈ U_next := by
-      apply hU_next_contains (t j)
-      have eq_cast : (⟨j, h_next_idx⟩ : Fin n).castSucc = j := by
-        ext
-        simp [Fin.castSucc]
+      apply hU_contains ⟨j, hj_lt_n⟩ (t j)
       constructor
-      · simp [eq_cast]
-      · calc t j
-          _ ≤ t ((⟨j, h_next_idx⟩ : Fin n).succ) := h_mono.monotone (Fin.castSucc_lt_succ ⟨j, hj_lt_n⟩).le
-          _ = t (⟨j, h_next_idx⟩ : Fin n).succ := rfl
-    -- Use local path-connectivity to get a path-connected neighborhood inside U_prev ∩ U_next
-    have hγj_in_inter : γ (t j) ∈ U_prev ∩ U_next := ⟨hγj_in_prev, hγj_in_next⟩
-    have h_inter_open : IsOpen (U_prev ∩ U_next) := hU_prev_open.inter hU_next_open
-    -- The path component of γ(t j) in the open set U_prev ∩ U_next is open and path-connected
+      · apply h_mono.monotone
+        simp only [Fin.le_def, Fin.coe_castSucc]
+        omega
+      · apply h_mono.monotone
+        simp only [Fin.le_def, Fin.succ]
+        omega
+    -- Take path component in intersection
     let V := pathComponentIn (U_prev ∩ U_next) (γ (t j))
-    have hV_open : IsOpen V := h_inter_open.pathComponentIn (γ (t j))
-    have hV_pathConn : IsPathConnected V := isPathConnected_pathComponentIn hγj_in_inter
-    have hγj_in_V : γ (t j) ∈ V := mem_pathComponentIn_self hγj_in_inter
-    have hV_subset_inter : V ⊆ U_prev ∩ U_next := pathComponentIn_subset
-    -- Now prove the required property
-    refine ⟨V, hV_open, hV_pathConn, hγj_in_V, ?_⟩
-    intro U₀ U₁ hU₀_contains hU₁_contains
-    -- We need to show V ⊆ U₀ ∩ U₁
-    -- V ⊆ U_prev ∩ U_next by construction, so we need U_prev ⊆ U₀ and U_next ⊆ U₁
-    -- But U_prev and U_next were specifically chosen from the partition for these segments
-    -- So if U₀ contains the same segment that U_prev was chosen for, they should be related
-    -- However, this is only true if U₀ = U_prev (same for U₁)
-    -- For now, let's just verify that V works with U_prev and U_next
-    calc V
-      _ ⊆ U_prev ∩ U_next := hV_subset_inter
-      _ ⊆ U₀ ∩ U₁ := by
-        -- This step requires showing U_prev ⊆ U₀ and U_next ⊆ U₁
-        -- But we can't prove this for arbitrary U₀, U₁
-        -- The partition construction ensures these are the "right" neighborhoods
-        sorry
+    refine ⟨V, ?_, isPathConnected_pathComponentIn ⟨hγj_in_prev, hγj_in_next⟩,
+                mem_pathComponentIn_self ⟨hγj_in_prev, hγj_in_next⟩, ?_, ?_⟩
+    · exact (hU_open _ ).inter (hU_open _) |>.pathComponentIn _
+    · exact pathComponentIn_subset.trans Set.inter_subset_left
+    · exact pathComponentIn_subset.trans Set.inter_subset_right
+  choose V hV_open hV_pathConn hγ_in_V hV_subset_prev hV_subset_next using V_data
+  -- Construct IntervalPartition
+  let part : IntervalPartition n := {
+    t := t
+    h_mono := h_mono
+    h_start := h_start
+    h_end := h_end
+  }
+  -- Construct TubeData
+  let T : TubeData X x y n := {
+    U := U
+    V := V
+    h_U_open := hU_open
+    h_U_pathConn := fun i => (hU_prop i).1
+    h_U_slsc := fun i => (hU_prop i).2
+    h_V_open := hV_open
+    h_V_pathConn := hV_pathConn
+    h_V_subset_prev := hV_subset_prev
+    h_V_subset_next := hV_subset_next
+  }
+  -- Prove PathInTube
+  refine ⟨n, part, T, ?_, ?_⟩
+  · -- γ stays in segment neighborhoods
+    exact hU_contains
+  · -- γ passes through overlap neighborhoods
+    exact hγ_in_V
 
-/-- Given a partition of the unit interval and open sets, the "tube" of paths that stay in the
-corresponding open sets on each segment is open in the path space. This follows from the
-compact-open topology: it's a finite intersection of sets {f | MapsTo f K U} where K is compact
-and U is open. -/
-theorem Path.tube_isOpen {x y : X}
-    (n : ℕ) (t : Fin (n + 1) → unitInterval) (U : Fin n → Set X)
-    (h_open : ∀ i, IsOpen (U i)) :
-    IsOpen {γ' : Path x y | ∀ i (s : unitInterval),
-      (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ' s ∈ U i} := by
-  -- The tube is a finite intersection of open sets in the compact-open topology
-  -- Each segment [t i, t i+1] is compact, so {γ' | γ' maps [t i, t i+1] into U i} is open
-  have : {γ' : Path x y | ∀ i (s : unitInterval),
-      (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ' s ∈ U i} =
-    ⋂ i : Fin n, {γ' : Path x y | ∀ s : unitInterval,
-      (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ' s ∈ U i} := by
+/-- Given a partition and tube data, the set of paths in the tube is open in the path space.
+This follows from the compact-open topology: it's a finite intersection of:
+1. Sets {γ' | γ' maps [t i, t i+1] into U i} (open by compact-open topology)
+2. Sets {γ' | γ'(t j) ∈ V[j]} (open by continuity of evaluation) -/
+theorem TubeData.isOpen {x y : X} {n : ℕ}
+    (part : IntervalPartition n) (T : TubeData X x y n) :
+    IsOpen (T.toSet part) := by
+  -- The tube is the intersection of two conditions
+  have : T.toSet part =
+    {γ' : Path x y | ∀ i (s : unitInterval),
+      (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → γ' s ∈ T.U i} ∩
+    {γ' : Path x y | ∀ j hj_pos hj_last, γ' (part.t j) ∈ T.V j hj_pos hj_last} := by
     ext γ'
-    simp only [Set.mem_setOf_eq, Set.mem_iInter]
+    simp only [TubeData.toSet, PathInTube, Set.mem_setOf_eq, Set.mem_inter_iff]
   rw [this]
-  -- Now show each set in the intersection is open
-  apply isOpen_iInter_of_finite
-  intro i
-  -- The set {γ' | ∀ s ∈ [t i, t i+1], γ' s ∈ U i} is the same as {γ' | MapsTo γ' K_i (U i)}
-  -- where K_i = Icc (t i.castSucc) (t i.succ) ⊆ unitInterval
-  let K_i : Set unitInterval := Set.Icc (t i.castSucc) (t i.succ)
-  have h_compact_K : IsCompact K_i := isCompact_Icc
-  have h_eq : {γ' : Path x y | ∀ s : unitInterval,
-      (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ' s ∈ U i} =
-    {γ' : Path x y | Set.MapsTo γ' K_i (U i)} := by
-    ext γ'
-    simp only [Set.mem_setOf_eq, Set.MapsTo, K_i, Set.mem_Icc]
-    refine forall_congr' fun s => ?_
-    constructor
-    · intro h hs; exact h hs
-    · intro h hs; exact h hs
-  rw [h_eq]
-  -- Now use that this is open in the compact-open topology
-  -- Path x y is a subtype of C(unitInterval, X), so we need to coerce
-  have : {γ' : Path x y | Set.MapsTo γ' K_i (U i)} =
-      (↑) ⁻¹' {f : C(unitInterval, X) | Set.MapsTo f K_i (U i)} := by
-    rfl
-  rw [this]
-  exact (ContinuousMap.isOpen_setOf_mapsTo h_compact_K (h_open i)).preimage continuous_induced_dom
+  apply IsOpen.inter
+  -- First part: paths staying in U[i] on each segment
+  · -- This is a finite intersection of open sets in the compact-open topology
+    have : {γ' : Path x y | ∀ i (s : unitInterval),
+        (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → γ' s ∈ T.U i} =
+      ⋂ i : Fin n, {γ' : Path x y | ∀ s : unitInterval,
+        (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → γ' s ∈ T.U i} := by
+      ext γ'
+      simp only [Set.mem_setOf_eq, Set.mem_iInter]
+    rw [this]
+    apply isOpen_iInter_of_finite
+    intro i
+    -- Each segment condition defines an open set
+    let K_i : Set unitInterval := Set.Icc (part.t i.castSucc) (part.t i.succ)
+    have h_compact_K : IsCompact K_i := isCompact_Icc
+    have h_eq : {γ' : Path x y | ∀ s : unitInterval,
+        (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → γ' s ∈ T.U i} =
+      {γ' : Path x y | Set.MapsTo γ' K_i (T.U i)} := by
+      ext γ'
+      simp only [Set.mem_setOf_eq, Set.MapsTo, K_i, Set.mem_Icc]
+      refine forall_congr' fun s => ?_
+      constructor
+      · intro h hs; exact h hs
+      · intro h hs; exact h hs
+    rw [h_eq]
+    have : {γ' : Path x y | Set.MapsTo γ' K_i (T.U i)} =
+        (↑) ⁻¹' {f : C(unitInterval, X) | Set.MapsTo f K_i (T.U i)} := by
+      rfl
+    rw [this]
+    exact (ContinuousMap.isOpen_setOf_mapsTo h_compact_K (T.h_U_open i)).preimage
+      continuous_induced_dom
+  -- Second part: paths passing through V[j] at interior points
+  · -- This is also a finite intersection of open sets (by continuity of evaluation)
+    by_cases h_interior : ∃ j : Fin (n + 1), 0 < j ∧ j < Fin.last n
+    · -- Case: there are interior points
+      classical
+      let interior_pts : Finset (Fin (n + 1)) :=
+        Finset.univ.filter (fun j => 0 < j ∧ j < Fin.last n)
+      have h_nonempty : interior_pts.Nonempty := by
+        obtain ⟨j, hj_pos, hj_last⟩ := h_interior
+        use j
+        simp [interior_pts, hj_pos, hj_last]
+      sorry
+    · -- Case: no interior points (n ≤ 1), condition is trivially true
+      have : {γ' : Path x y |
+          ∀ j hj_pos hj_last, γ' (part.t j) ∈ T.V j hj_pos hj_last} = Set.univ := by
+        ext γ'
+        simp only [Set.mem_setOf_eq, Set.mem_univ, iff_true]
+        intro j hj_pos hj_last
+        exfalso
+        exact h_interior ⟨j, hj_pos, hj_last⟩
+      rw [this]
+      exact isOpen_univ
 
 /-- In a path-connected set U, for any two points a and b in U, there exists a path from a to b
 whose range is contained in U. -/
@@ -496,27 +562,18 @@ which is the key to constructing universal covers.
 "rung" paths α_i from γ(t_i) to γ'(t_i), where each rung αᵢ lies in neighborhoods Uᵢ₋₁ and Uᵢ
 (the neighborhoods of the adjacent segments). The rungs at the endpoints (α_0 and α_n) are
 constant paths since γ and γ' share endpoints. -/
-theorem Path.exists_rung_paths {x y : X} (γ γ' : Path x y)
-    (n : ℕ) (t : Fin (n + 1) → unitInterval) (U : Fin n → Set X)
-    (V : ∀ (j : Fin (n + 1)), 0 < j → j < Fin.last n → Set X)
-    (h_pathConn : ∀ i, IsPathConnected (U i))
-    (h_V_pathConn : ∀ j (hj_pos : 0 < j) (hj_last : j < Fin.last n),
-      IsPathConnected (V j hj_pos hj_last))
-    (h_γ_in_U : ∀ i (s : unitInterval), (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ s ∈ U i)
-    (h_γ'_in_U : ∀ i (s : unitInterval), (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ' s ∈ U i)
-    (h_V_in_U : ∀ j (hj_pos : 0 < j) (hj_last : j < Fin.last n),
-      γ (t j) ∈ V j hj_pos hj_last ∧ γ' (t j) ∈ V j hj_pos hj_last ∧
-      V j hj_pos hj_last ⊆ U ⟨j - 1, by omega⟩ ∧ V j hj_pos hj_last ⊆ U ⟨j, by omega⟩)
-    (h_start : t 0 = 0) (h_end : t (Fin.last n) = 1) :
-    ∃ α : (i : Fin (n + 1)) → Path (γ (t i)) (γ' (t i)),
-      (∀ (i : Fin n), Set.range (α i.castSucc) ⊆ U i ∧ Set.range (α i.succ) ⊆ U i) := by
+theorem Path.exists_rung_paths {x y : X} {n : ℕ} (γ γ' : Path x y)
+    (part : IntervalPartition n) (T : TubeData X x y n)
+    (hγ : PathInTube γ part T) (hγ' : PathInTube γ' part T) :
+    ∃ α : (i : Fin (n + 1)) → Path (γ (part.t i)) (γ' (part.t i)),
+      (∀ (i : Fin n), Set.range (α i.castSucc) ⊆ T.U i ∧ Set.range (α i.succ) ⊆ T.U i) := by
   -- Endpoints coincide since γ and γ' share the same start and end
-  have h_eq_start : γ (t 0) = γ' (t 0) := by
-    simp [h_start, γ.source, γ'.source]
-  have h_eq_end : γ (t (Fin.last n)) = γ' (t (Fin.last n)) := by
-    simp [h_end, γ.target, γ'.target]
+  have h_eq_start : γ (part.t 0) = γ' (part.t 0) := by
+    simp [part.h_start, γ.source, γ'.source]
+  have h_eq_end : γ (part.t (Fin.last n)) = γ' (part.t (Fin.last n)) := by
+    simp [part.h_end, γ.target, γ'.target]
   -- Construct rungs using path-connectivity
-  -- For interior points: use V neighborhoods
+  -- For interior points: use V neighborhoods (which are path-connected)
   -- For endpoints: use constant paths
   sorry
 
@@ -604,15 +661,15 @@ Then by telescoping cancellation:
 Since α₀ and αₙ are constant paths (γ and γ' share endpoints), this gives γ ≃ γ'.
 
 This is proved by induction on n, using the homotopy algebra lemmas. -/
-theorem Path.paste_segment_homotopies {x y : X} (γ γ' : Path x y)
-    (n : ℕ) (t : Fin (n + 1) → unitInterval)
-    (h_mono : StrictMono t)
-    (h_start : t 0 = 0) (h_end : t (Fin.last n) = 1)
-    (γ_seg : (i : Fin n) → Path (γ (t i.castSucc)) (γ (t i.succ)))
-    (γ'_seg : (i : Fin n) → Path (γ' (t i.castSucc)) (γ' (t i.succ)))
-    (α : (i : Fin (n + 1)) → Path (γ (t i)) (γ' (t i)))
-    (h_γ_seg : ∀ i s, s ∈ Set.Icc (t i.castSucc) (t i.succ) → γ s = (γ_seg i).extend s)
-    (h_γ'_seg : ∀ i s, s ∈ Set.Icc (t i.castSucc) (t i.succ) → γ' s = (γ'_seg i).extend s)
+theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
+    (part : IntervalPartition n)
+    (γ_seg : (i : Fin n) → Path (γ (part.t i.castSucc)) (γ (part.t i.succ)))
+    (γ'_seg : (i : Fin n) → Path (γ' (part.t i.castSucc)) (γ' (part.t i.succ)))
+    (α : (i : Fin (n + 1)) → Path (γ (part.t i)) (γ' (part.t i)))
+    (h_γ_seg : ∀ i s, s ∈ Set.Icc (part.t i.castSucc) (part.t i.succ) →
+      γ s = (γ_seg i).extend s)
+    (h_γ'_seg : ∀ i s, s ∈ Set.Icc (part.t i.castSucc) (part.t i.succ) →
+      γ' s = (γ'_seg i).extend s)
     (h_α₀ : HEq (α 0) (Path.refl x))
     (h_αₙ : HEq (α (Fin.last n)) (Path.refl y))
     (h_rectangles : ∀ (i : Fin n),
@@ -622,20 +679,13 @@ theorem Path.paste_segment_homotopies {x y : X} (γ γ' : Path x y)
 
 /-- Given a path γ in an SLSC space, paths in the tube around γ are homotopic to γ.
 This is the main result that combines all the previous lemmas:
-1. Construct rung paths α_i using path-connectedness
+1. Construct rung paths α_i using path-connectedness of V neighborhoods
 2. For each segment, apply segment_rung_homotopy to get γ_i·α_{i+1} ≃ α_i·γ'_i
 3. Use paste_segment_homotopies to get γ ≃ γ' by telescoping cancellation -/
-theorem Path.tube_subset_homotopy_class (hX : SemilocallySimplyConnected X) {x y : X} (γ : Path x y)
-    (n : ℕ) (t : Fin (n + 1) → unitInterval) (U : Fin n → Set X)
-    (h_mono : StrictMono t)
-    (h_start : t 0 = 0)
-    (h_end : t (Fin.last n) = 1)
-    (h_pathConn : ∀ i, IsPathConnected (U i))
-    (h_slsc : ∀ i, ∀ {p q : Path (γ (t i.castSucc)) (γ (t i.succ))},
-        Set.range p ⊆ U i → Set.range q ⊆ U i → Path.Homotopic p q)
-    (h_contains : ∀ i (s : unitInterval), (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ s ∈ U i)
-    (γ' : Path x y)
-    (hγ' : ∀ i (s : unitInterval), (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ' s ∈ U i) :
+theorem Path.tube_subset_homotopy_class (hX : SemilocallySimplyConnected X) {x y : X} {n : ℕ}
+    (γ : Path x y) (part : IntervalPartition n) (T : TubeData X x y n)
+    (hγ : PathInTube γ part T)
+    (γ' : Path x y) (hγ' : PathInTube γ' part T) :
     Path.Homotopic γ' γ := by
   sorry
 
@@ -657,26 +707,18 @@ theorem Path.exists_open_tubular_neighborhood_in_homotopy_class
     {x y : X} (p : Path x y) :
     ∃ (T : Set (Path x y)), IsOpen T ∧ p ∈ T ∧ T ⊆ {p' | Path.Homotopic p' p} := by
   -- Step 1: Get partition and SLSC neighborhoods
-  obtain ⟨n, t, h_mono, h_start, h_end, h_partition_U, h_partition_V⟩ :=
+  obtain ⟨n, part, T_data, hp_in_tube⟩ :=
     Path.exists_partition_in_slsc_neighborhoods hX p
-  -- Extract the U sets from the partition
-  choose U hU_open hU_pathConn hU_contains hU_slsc using h_partition_U
-  -- Extract the V sets from the partition (we'll need these later for tube_subset_homotopy_class)
-  -- For now, we just note they exist
-  -- Step 2: Define the tube T
-  let T : Set (Path x y) := {p' | ∀ i (s : unitInterval),
-    (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → p' s ∈ U i}
-  refine ⟨T, ?_, ?_, ?_⟩
-  · -- Show T is open using tube_isOpen
-    exact Path.tube_isOpen n t U hU_open
+  -- Step 2: The tube T is just T_data.toSet part
+  refine ⟨T_data.toSet part, ?_, ?_, ?_⟩
+  · -- Show T is open
+    exact T_data.isOpen part
   · -- Show p ∈ T
-    exact hU_contains
+    exact hp_in_tube
   · -- Show T ⊆ {p' | Homotopic p' p} using tube_subset_homotopy_class
     intro p' hp'
-    apply Path.tube_subset_homotopy_class hX p n t U h_mono h_start h_end
-    · exact hU_pathConn
-    · exact hU_slsc
-    · exact hU_contains
+    apply Path.tube_subset_homotopy_class hX p part T_data
+    · exact hp_in_tube
     · exact hp'
 
 /-- In an SLSC locally path-connected space, for any path p, the set of paths homotopic to p
