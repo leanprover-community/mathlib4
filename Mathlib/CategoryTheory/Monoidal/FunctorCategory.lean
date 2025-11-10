@@ -23,10 +23,12 @@ open CategoryTheory
 
 open CategoryTheory.MonoidalCategory
 
-namespace CategoryTheory.Monoidal
+namespace CategoryTheory
 
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
+
+namespace Monoidal
 
 namespace FunctorCategory
 
@@ -210,9 +212,12 @@ instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategor
     [MonoidalCategory E] (L : D ⥤ E) [L.Monoidal] :
     ((Functor.whiskeringRight C D E).obj L).Monoidal where
 
-instance (E : Type*) [Category E] [MonoidalCategory E] (F : C ⥤ D) :
+end Monoidal
+
+@[simps!]
+instance Functor.Monoidal.whiskeringLeft (E : Type*) [Category E] [MonoidalCategory E] (F : C ⥤ D) :
     ((Functor.whiskeringLeft _ _ E).obj F).Monoidal := Functor.CoreMonoidal.toMonoidal {
   εIso := Iso.refl _
   μIso _ _ := Iso.refl _ }
 
-end CategoryTheory.Monoidal
+end CategoryTheory
