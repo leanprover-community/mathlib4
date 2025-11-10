@@ -12,6 +12,7 @@ import Mathlib.Analysis.Calculus.Deriv.Shift
 import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Analysis.Calculus.Deriv.Prod
 import Mathlib.Analysis.Normed.Affine.AddTorsor
+import Mathlib.Analysis.Calculus.TangentCone.Prod
 
 /-!
 # Poincaré lemma for 1-forms
@@ -21,7 +22,7 @@ Namely, we show that a closed 1-form on a convex subset of a normed space is exa
 
 We also prove that the integrals of a closed 1-form
 along 2 curves that are joined by a `C²`-smooth homotopy are equal.
-In the future, this will allow us to prove Poincaré lemma for simply connected open sets
+ In the future, this will allow us to prove Poincaré lemma for simply connected open sets
 and, more generally, for simply connected locally convex sets.
 
 ## Main statements
@@ -45,15 +46,210 @@ variable {𝕜 E F : Type*} [RCLike 𝕜]
 
 namespace ContinuousMap.Homotopy
 
+private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_countable_real
+    [NormedSpace ℝ E] [NormedSpace ℝ F]
+    {ω : E → E →L[ℝ] F} {dω : E → E →L[ℝ] E →L[ℝ] F} {γ₁ : Path a b} {γ₂ : Path c d}
+    {φ : (γ₁ : C(I, E)).Homotopy γ₂} {s : Set (I × I)} {t : Set E} (hs : s.Countable)
+    (hts : ∀ a ∈ Ioo 0 1, ∀ b ∈ Ioo 0 1, φ (a, b) ∈ t)
+    (hω : ∀ a ∈ Ioo (0 : I) 1, ∀ b ∈ Ioo (0 : I) 1, (a, b) ∉ s →
+      HasFDerivWithinAt ω (dω <| φ (a, b)) t (φ (a, b))) (hωc : ContinuousOn ω (closure t))
+    (hdω_symm : ∀ a ∈ Ioo (0 : I) 1, ∀ b ∈ Ioo (0 : I) 1, (a, b) ∉ s →
+      ∀ u ∈ tangentConeAt ℝ t (φ (a, b)), ∀ v ∈ tangentConeAt ℝ t (φ (a, b)),
+        dω (φ (a, b)) u v = dω (φ (a, b)) v u)
+    (hcontdiff : ContDiffOn ℝ 2
+      (fun xy : ℝ × ℝ ↦ Set.IccExtend zero_le_one (φ.extend xy.1) xy.2) (Icc 0 1)) :
+    ∫ᶜ x in γ₁, ω x + ∫ᶜ x in φ.evalAt 1, ω x = ∫ᶜ x in γ₂, ω x + ∫ᶜ x in φ.evalAt 0, ω x := by
+  -- Let `U` be the interior of the unit square
+  set U : Set (ℝ × ℝ) := Ioo 0 1 ×ˢ Ioo 0 1 with hU
+  have hinterior : interior (Icc 0 1) = U := by
+    rw [hU, ← interior_Icc, ← interior_prod_eq]
+    simp [Prod.mk_zero_zero, Prod.mk_one_one]
+  have hunique : UniqueDiffOn ℝ (Icc 0 1 : Set (ℝ × ℝ)) := by
+    rw [Icc_prod_eq]
+    exact uniqueDiffOn_Icc_zero_one.prod uniqueDiffOn_Icc_zero_one
+  have hUopen : IsOpen U := isOpen_Ioo.prod isOpen_Ioo
+  have hU_subset : U ⊆ Icc 0 1 := hinterior ▸ interior_subset
+  have hclosure : closure U = Icc 0 1 := by
+    simp [hU, closure_prod_eq, Prod.mk_zero_zero, Prod.mk_one_one]
+  -- Extend the homotopy `φ` to a continuous map  `ℝ × ℝ → E`
+  set ψ : ℝ × ℝ → E := fun xy : ℝ × ℝ ↦ Set.IccExtend zero_le_one (φ.extend xy.1) xy.2 with hψ
+  have hψφ : ∀ a b : I, ψ (a, b) = φ (a, b) := by simp [ψ]
+  have hψ_cont : Continuous ψ := by fun_prop
+  have hψUt : MapsTo ψ U t := by
+    rintro ⟨a, b⟩ ⟨ha, hb⟩
+    lift a to I using Ioo_subset_Icc_self ha
+    lift b to I using Ioo_subset_Icc_self hb
+    simpa [hψφ] using hts a ha b hb
+  -- Let `dψ` be its derivative.
+  set dψ : ℝ × ℝ → ℝ × ℝ →L[ℝ] E := fderivWithin ℝ ψ (Icc 0 1)
+  -- Let `s'` be the set `s` interpreted as a set in `ℝ × ℝ`
+  set s' : Set (ℝ × ℝ) := Prod.map (↑) (↑) '' s with hs'
+  have hmem_s' (x y : I) : (↑x, ↑y) ∈ s' ↔ (x, y) ∈ s := by
+    rw [hs', ← Prod.map_apply, Injective.mem_set_image]
+    apply Injective.prodMap <;> apply Subtype.val_injective
+  have hs'c : s'.Countable := hs.image _
+  have hdψ : ∀ a ∈ U, HasFDerivAt ψ (dψ a) a := by
+    rintro a haU
+    refine hcontdiff.differentiableOn (by decide) a (hU_subset haU)
+      |>.hasFDerivWithinAt |>.hasFDerivAt ?_
+    rwa [← mem_interior_iff_mem_nhds, hinterior]
+  -- Let `d2ψ` be its second derivative
+  set d2ψ : ℝ × ℝ → ℝ × ℝ →L[ℝ] ℝ × ℝ →L[ℝ] E := fderivWithin ℝ dψ (Icc 0 1)
+  have hd2ψ : ∀ a ∈ U, HasFDerivAt dψ (d2ψ a) a := by
+    rintro a haU
+    refine hcontdiff.fderivWithin hunique (by decide) |>.differentiableOn_one a (hU_subset haU)
+      |>.hasFDerivWithinAt |>.hasFDerivAt ?_
+    rwa [← mem_interior_iff_mem_nhds, hinterior]
+  -- Note that `d2ψ` is symmetric
+  have hd2ψ_symm : ∀ a ∈ Icc 0 1, ∀ x y, d2ψ a x y = d2ψ a y x := by
+    intro a ha
+    exact (hcontdiff a ha).isSymmSndFDerivWithinAt (by simp) hunique
+      (by simp [hinterior, hclosure, ha]) ha
+  -- Consider `η a = ω (ψ a) ∘L dψ a`.
+  set η : ℝ × ℝ → ℝ × ℝ →L[ℝ] F := fun a ↦ ω (ψ a) ∘L dψ a
+  -- Put `f a = η a (0, 1)`, `g a = -η a (1, 0)`.
+  set f : ℝ × ℝ → F := fun a ↦ η a (0, 1)
+  have hf : ∀ a ∈ Icc 0 1, f a = ω (ψ a) (derivWithin (ψ ∘ (a.1, ·)) I a.2) := by
+    intro a ha
+    simp only [f, η, dψ, ContinuousLinearMap.comp_apply]
+    congr 1
+    have : HasDerivWithinAt (a.1, ·) (0, 1) I a.2 :=
+      .prodMk (hasDerivWithinAt_const ..) (hasDerivWithinAt_id ..)
+    refine DifferentiableWithinAt.hasFDerivWithinAt ?_ |>.comp_hasDerivWithinAt _ this ?_
+      |>.derivWithin ?_ |>.symm
+    · exact hcontdiff.differentiableOn (by decide) _ ha
+    · exact fun t ht ↦ ⟨⟨ha.1.1, ht.1⟩, ⟨ha.2.1, ht.2⟩⟩
+    · exact uniqueDiffOn_Icc_zero_one _ ⟨ha.1.2, ha.2.2⟩
+  set g : ℝ × ℝ → F := fun a ↦ -η a (1, 0)
+  have hg : ∀ a ∈ Icc 0 1, g a = ω (ψ a) (-derivWithin (ψ ∘ (·, a.2)) I a.1) := by
+    intro a ha
+    simp only [g, η, dψ, ContinuousLinearMap.comp_apply, map_neg]
+    congr 2
+    have : HasDerivWithinAt (·, a.2) (1, 0) I a.1 :=
+      .prodMk (hasDerivWithinAt_id ..) (hasDerivWithinAt_const ..)
+    refine DifferentiableWithinAt.hasFDerivWithinAt ?_ |>.comp_hasDerivWithinAt _ this ?_
+      |>.derivWithin ?_ |>.symm
+    · exact hcontdiff.differentiableOn (by decide) _ ha
+    · exact fun t ht ↦ ⟨⟨ht.1, ha.1.2⟩, ⟨ht.2, ha.2.2⟩⟩
+    · exact uniqueDiffOn_Icc_zero_one _ ⟨ha.1.1, ha.2.1⟩
+  -- Then our goal is to prove that the integral of `η`
+  -- along the boundary of the unit square is zero.
+  suffices (((∫ x in 0..1, g (x, 1)) - ∫ x in 0..1, g (x, 0)) +
+      ∫ y in 0..1, f (1, y)) - ∫ y in 0..1, f (0, y) = 0 by
+    have hfi (s : I) :
+        ∫ t in 0..1, f (s, t) = ∫ᶜ x in ⟨φ.curry s, rfl, rfl⟩, ω x := by
+      simp only [curveIntegral_def, curveIntegralFun_def]
+      apply intervalIntegral.integral_congr
+      rw [uIcc_of_le zero_le_one]
+      intro t ht
+      simp [Path.extend, hf (s, t), Prod.le_def, s.2.1, s.2.2, ht.1, ht.2, Function.comp_def, hψ]
+    have hf₀ : ∫ t in 0..1, f (0, t) = ∫ᶜ x in γ₁, ω x := by
+      simpa [curveIntegral_def, curveIntegralFun_def, Path.extend] using hfi 0
+    have hf₁ : ∫ t in 0..1, f (1, t) = curveIntegral ω γ₂ := by
+      simpa [curveIntegral_def, curveIntegralFun_def, Path.extend] using hfi 1
+    have hgi (t : I) : ∫ᶜ x in φ.evalAt t, ω x = -∫ s in 0..1, g (s, t) := by
+      simp only [curveIntegral_def, curveIntegralFun_def, ← intervalIntegral.integral_neg]
+      apply intervalIntegral.integral_congr
+      rw [uIcc_of_le zero_le_one]
+      intro s hs
+      simp only [hs, Path.extend_extends, φ.evalAt_apply]
+      simp [hg (s, t), Prod.le_def, hs.1, hs.2, t.2.1, t.2.2, Function.comp_def, hψ]
+    rw [← hf₀, ← hf₁, hgi, hgi]
+    linear_combination (norm := {dsimp; abel}) -this
+  -- Write a formula for the derivative of `η`.
+  set dη : ℝ × ℝ → ℝ × ℝ →L[ℝ] ℝ × ℝ →L[ℝ] F := fun a ↦
+    .compL ℝ (ℝ × ℝ) E F (ω (ψ a)) ∘L d2ψ a + (dω (ψ a)).bilinearComp (dψ a) (dψ a)
+  have hdη : ∀ a ∈ U \ s', HasFDerivAt η (dη a) a := by
+    rintro a ⟨haU, has⟩
+    refine HasFDerivWithinAt.comp_hasFDerivAt (t := t) a ?_ ?_ ?_ |>.clm_comp (hd2ψ a haU)
+    · rcases a with ⟨x, y⟩
+      lift x to I using Ioo_subset_Icc_self haU.1
+      lift y to I using Ioo_subset_Icc_self haU.2
+      apply hω
+      · simpa using haU.1
+      · simpa using haU.2
+      · simpa [hmem_s'] using has
+    · exact hdψ a haU
+    · filter_upwards [hUopen.mem_nhds haU] using hψUt
+  have hdη_symm : ∀ a ∈ U \ s', ∀ u v, dη a u v = dη a v u := by
+    rintro ⟨a, b⟩ ⟨hU, hs'⟩ u v
+    lift a to I using Ioo_subset_Icc_self hU.1
+    lift b to I using Ioo_subset_Icc_self hU.2
+    have hdψ_mem (u) : dψ (a, b) u ∈ tangentConeAt ℝ t (φ (a, b)) := by
+      refine tangentConeAt_mono hψUt.image_subset ?_
+      rw [← hψφ]
+      refine (hdψ _ hU).hasFDerivWithinAt.mapsTo_tangent_cone ?_
+      simp [tangentConeAt_of_mem_nhds (hUopen.mem_nhds hU)]
+    have := hdω_symm a hU.1 b hU.2 (by simpa [hmem_s'] using hs') _ (hdψ_mem u) _ (hdψ_mem v)
+    simp [dη]
+  -- It gives formulas for the derivatives of `f` and `g`
+  set f' : ℝ × ℝ → ℝ × ℝ →L[ℝ] F := fun a ↦ ContinuousLinearMap.apply ℝ F (0, 1) ∘L dη a
+  have hf' : ∀ a ∈ U \ s', HasFDerivAt f (f' a) a := by
+    intro a ha
+    exact (ContinuousLinearMap.apply ℝ F (0, 1)).hasFDerivAt.comp a (hdη a ha)
+  set g' : ℝ × ℝ → ℝ × ℝ →L[ℝ] F := fun a ↦ -(ContinuousLinearMap.apply ℝ F (1, 0) ∘L dη a)
+  have hg' : ∀ a ∈ U \ s', HasFDerivAt g (g' a) a := by
+    intro a ha
+    exact (ContinuousLinearMap.apply ℝ F (1, 0)).hasFDerivAt.comp a (hdη a ha) |>.neg
+  -- Note that the divergence of `(f, g)` is a.e. zero.
+  have hf'g' : (fun a ↦ f' a (1, 0) + g' a (0, 1)) =ᵐ[volume.restrict (Icc 0 1)] 0 := by
+    rw [Icc_prod_eq, Measure.volume_eq_prod,
+      Measure.restrict_congr_set (Measure.set_prod_ae_eq Ioo_ae_eq_Icc Ioo_ae_eq_Icc).symm]
+    filter_upwards [ae_restrict_mem (measurableSet_Ioo.prod measurableSet_Ioo), hs'c.ae_notMem _]
+      with ⟨a, b⟩ hU habs
+    lift a to I using Ioo_subset_Icc_self hU.1
+    lift b to I using Ioo_subset_Icc_self hU.2
+    have hdψ_mem (u) : dψ (a, b) u ∈ tangentConeAt ℝ t (φ (a, b)) := by
+      refine tangentConeAt_mono hψUt.image_subset ?_
+      rw [← hψφ]
+      refine (hdψ _ hU).hasFDerivWithinAt.mapsTo_tangent_cone ?_
+      simp [tangentConeAt_of_mem_nhds (hUopen.mem_nhds hU)]
+    simp [f', g', dη, hψφ, hdω_symm a hU.1 b hU.2 (by simpa [hmem_s'] using habs)
+      _ (hdψ_mem _) _ (hdψ_mem _)]
+  suffices ∫ a : ℝ × ℝ in Icc 0 1, f' a (1, 0) + g' a (0, 1) = 0 by
+    have hηc : ContinuousOn η (Icc 0 1) := by
+      refine .clm_comp (hωc.comp hψ_cont.continuousOn ?_) ?_
+      · rw [← hclosure]
+        refine MapsTo.closure (fun a ha ↦ ?_) hψ_cont
+        lift a to I × I using ⟨Ioo_subset_Icc_self ha.1, Ioo_subset_Icc_self ha.2⟩
+        simpa [ψ] using hts a.1 ha.1 a.2 ha.2
+      · exact hcontdiff.continuousOn_fderivWithin hunique (by decide)
+    
+    rwa [integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le] at this
+    · exact zero_le_one
+    · exact s'
+    · exact hs'c
+    · exact hηc.clm_apply continuousOn_const
+    · exact hηc.clm_apply continuousOn_const |>.neg
+    · exact hf'
+    · exact hg'
+    
+    
+  rw [← integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le]
+/-
+  have hdη : ∀ a ∈ U \ (Prod.map (↑) (↑) '' s), HasFDerivAt η (dη a) a := by
+    rintro ⟨a, b⟩ ⟨⟨haU, hbU⟩, habs⟩
+    lift a to I using Ioo_subset_Icc_self haU
+    lift b to I using Ioo_subset_Icc_self hbU
+    refine hω (a, b) (by simpa [a.2.1, a.2.2, b.2.1, b.2.2] using habs)
+      |>.comp_hasFDerivAt_of_eq ((a : ℝ), (b : ℝ)) (hcontdiff.hasFDerivAt) _ _
+  set f' : ℝ × ℝ → ℝ × ℝ →L[ℝ] F := fun a ↦ ContinuousLinearMap.apply ℝ F (0, 1) ∘L dη a
+  set g' : ℝ × ℝ → ℝ × ℝ →L[ℝ] F := fun a ↦ -(ContinuousLinearMap.apply ℝ F (1, 0) ∘L dη a)
+  
+  sorry
+-/
+
 theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_countable
     [NormedSpace ℝ E] [NormedSpace ℝ F]
     {ω : E → E →L[𝕜] F} {dω : E → E →L[ℝ] E →L[𝕜] F} {γ₁ : Path a b} {γ₂ : Path c d}
-    {φ : (γ₁ : C(I, E)).Homotopy γ₂} {s : Set (I × I)} {t : Set E}
-    (hω : ∀ x ∈ s, HasFDerivWithinAt ω (dω x) s x) (hωc : ContinuousOn ω (closure s))
-    (hdω : ∀ x ∈ s, ∀ a ∈ tangentConeAt ℝ s x, ∀ b ∈ tangentConeAt ℝ s x, dω x a b = dω x b a)
-    (hφs : ∀ a ∈ Ioo 0 1, ∀ b ∈ Ioo 0 1, φ (a, b) ∈ s)
-    (hcontdiff : C
-    True := by
+    {φ : (γ₁ : C(I, E)).Homotopy γ₂} {s : Set (I × I)} {t : Set E} (hs : s.Countable)
+    (hts : ∀ a ∈ Ioo 0 1, ∀ b ∈ Ioo 0 1, φ (a, b) ∈ t)
+    (hω : ∀ x ∉ s, HasFDerivWithinAt ω (dω <| φ x) t (φ x)) (hωc : ContinuousOn ω (closure t))
+    (hdω : ∀ x ∉ s, ∀ a ∈ tangentConeAt ℝ t (φ x), ∀ b ∈ tangentConeAt ℝ t (φ x),
+      dω (φ x) a b = dω (φ x) b a)
+    (hcontdiff : ContDiffOn ℝ 2
+      (fun xy : ℝ × ℝ ↦ Set.IccExtend zero_le_one (φ.extend xy.1) xy.2) (I ×ˢ I)) :
+    ∫ᶜ x in γ₁, ω x + ∫ᶜ x in φ.evalAt 1, ω x = ∫ᶜ x in γ₂, ω x + ∫ᶜ x in φ.evalAt 0, ω x := by
   sorry
 
 #exit
@@ -148,7 +344,7 @@ theorem ContinuousMap.Homotopy.curveIntegral_add_curveIntegral_eq_of_hasFDerivWi
       ext
       apply φ.extend_apply_of_le_zero le_rfl
     have hfi (s : ℝ) (hs : s ∈ I) :
-        ∫ t in (0)..1, f (s, t) = curveIntegral ω ⟨φ.extend s, rfl, rfl⟩ := by
+        ∫ t in 0..1, f (s, t) = curveIntegral ω ⟨φ.extend s, rfl, rfl⟩ := by
       rw [curveIntegral]
       apply intervalIntegral.integral_congr
       intro t ht
@@ -166,13 +362,13 @@ theorem ContinuousMap.Homotopy.curveIntegral_add_curveIntegral_eq_of_hasFDerivWi
       · intro u hu
         rw [← Icc_prod_Icc]
         exact ⟨hs, hu⟩
-    have hf₀ : ∫ t in (0)..1, f (0, t) = curveIntegral ω γ₁ := by
+    have hf₀ : ∫ t in 0..1, f (0, t) = curveIntegral ω γ₁ := by
       rw [hfi 0 (by simp)]
       simp [curveIntegral, curveIntegralFun, Path.extend]
-    have hf₁ : ∫ t in (0)..1, f (1, t) = curveIntegral ω γ₂ := by
+    have hf₁ : ∫ t in 0..1, f (1, t) = curveIntegral ω γ₂ := by
       rw [hfi 1 (by simp)]
       simp [curveIntegral, curveIntegralFun, Path.extend]
-    have hgt (s : I) : curveIntegral ω (φ.evalAt s) = -∫ t in (0)..1, g (t, s) := by
+    have hgt (s : I) : curveIntegral ω (φ.evalAt s) = -∫ t in 0..1, g (t, s) := by
       rw [← intervalIntegral.integral_neg, curveIntegral]
       apply intervalIntegral.integral_congr
       intro t ht
@@ -208,7 +404,7 @@ theorem hasFDerivWithinAt_curveIntegral_segment_target_source {𝕜 : Type*} [RC
   rcases Metric.continuousWithinAt_iff.mp (hω a ha) ε hε with ⟨δ, hδ₀, hδ⟩
   rw [eventually_nhdsWithin_iff]
   filter_upwards [Metric.ball_mem_nhds _ hδ₀] with b hb hbs
-  have : ∫ t in (0)..1, ω a (b - a) = ω a (b - a) := by simp
+  have : ∫ t in 0..1, ω a (b - a) = ω a (b - a) := by simp
   rw [curveIntegral_segment, ← this, ← intervalIntegral.integral_sub]
   · suffices ∀ t ∈ Ι (0 : ℝ) 1, ‖ω (lineMap a b t) (b - a) - ω a (b - a)‖ ≤ ε * ‖b - a‖ by
       refine (intervalIntegral.norm_integral_le_of_norm_le_const this).trans_eq ?_
