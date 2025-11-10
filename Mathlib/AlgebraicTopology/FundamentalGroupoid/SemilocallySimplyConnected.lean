@@ -31,7 +31,7 @@ such that loops in that neighborhood are nullhomotopic in the whole space.
 
 noncomputable section
 
-open CategoryTheory FundamentalGroupoid
+open CategoryTheory FundamentalGroupoid Topology
 
 variable {X : Type*} [TopologicalSpace X]
 
@@ -98,6 +98,48 @@ theorem semilocallySimplyConnected_iff :
 
 /-! ### Helper lemmas for discreteness of path homotopy quotients -/
 
+/-- In an SLSC neighborhood where loops are nullhomotopic, any two paths with the same
+endpoints are homotopic. This is derived by composing one path with the reverse of the other
+to form a loop. -/
+theorem Path.homotopic_of_loops_nullhomotopic_in_neighborhood {x y : X} (U : Set X)
+    (h_loops : ∀ {z : X} (γ : Path z z), z ∈ U → Set.range γ ⊆ U → Path.Homotopic γ (Path.refl z))
+    {p q : Path x y} (hp : Set.range p ⊆ U) (hq : Set.range q ⊆ U) :
+    Path.Homotopic p q := by
+  -- Need to show: p ≃ q where p, q : x → y
+  -- We'll need x ∈ U and y ∈ U from the ranges
+  have hx : x ∈ U := by simpa using hp (Set.mem_range_self (0 : unitInterval))
+  have hy : y ∈ U := by simpa using hq (Set.mem_range_self (1 : unitInterval))
+  -- Form the loop p · q.symm : x → x
+  let loop := p.trans q.symm
+  have h_loop_range : Set.range loop ⊆ U := by
+    intro z hz
+    obtain ⟨t, rfl⟩ := hz
+    simp only [loop, Path.trans_apply]
+    split_ifs <;> [exact hp (Set.mem_range_self _); exact hq (Set.mem_range_self _)]
+  -- This loop is nullhomotopic
+  have h_null : Path.Homotopic loop (Path.refl x) := h_loops loop hx h_loop_range
+  -- Now: loop ≃ refl x means p · q.symm ≃ refl x
+  -- Composing with q on the right: (p · q.symm) · q ≃ (refl x) · q
+  have : Path.Homotopic ((p.trans q.symm).trans q) ((Path.refl x).trans q) :=
+    Path.Homotopic.hcomp h_null (Path.Homotopic.refl q)
+  -- Simplify using associativity and identity laws
+  have h1 : Path.Homotopic (p.trans (q.symm.trans q)) ((p.trans q.symm).trans q) :=
+    ⟨(Path.Homotopy.transAssoc p q.symm q).symm⟩
+  have h2 : Path.Homotopic (q.symm.trans q) (Path.refl y) :=
+    ⟨(Path.Homotopy.reflSymmTrans q).symm⟩
+  have h3 : Path.Homotopic (p.trans (Path.refl y)) p :=
+    ⟨Path.Homotopy.transRefl p⟩
+  have h4 : Path.Homotopic ((Path.refl x).trans q) q :=
+    ⟨Path.Homotopy.reflTrans q⟩
+  -- p ≃ q via a chain of homotopies
+  have step1 : Path.Homotopic p (p.trans (Path.refl y)) := h3.symm
+  have step2 : Path.Homotopic (p.trans (Path.refl y)) (p.trans (q.symm.trans q)) :=
+    Path.Homotopic.hcomp (Path.Homotopic.refl p) h2.symm
+  have step3 : Path.Homotopic (p.trans (q.symm.trans q)) ((p.trans q.symm).trans q) := h1
+  have step4 : Path.Homotopic ((p.trans q.symm).trans q) ((Path.refl x).trans q) := this
+  have step5 : Path.Homotopic ((Path.refl x).trans q) q := h4
+  exact step1.trans (step2.trans (step3.trans (step4.trans step5)))
+
 /-- In an SLSC space, every point has an open neighborhood U such that for any two points
 in U, there is a unique (up to homotopy) path between them.
 
@@ -111,7 +153,15 @@ theorem exists_uniquePath_neighborhood (hX : SemilocallySimplyConnected X) (x : 
     ∃ U : Set X, IsOpen U ∧ x ∈ U ∧
       (∀ {a b : X}, a ∈ U → b ∈ U → ∀ (p q : Path a b),
         Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q) := by
-  sorry
+  rw [semilocallySimplyConnected_iff] at hX
+  obtain ⟨U, hU_open, hx_in_U, hU_loops⟩ := hX x
+  refine ⟨U, hU_open, hx_in_U, ?_⟩
+  intro a b ha hb p q hp_range hq_range
+  apply Path.homotopic_of_loops_nullhomotopic_in_neighborhood U
+  · intro z γ hz hγ_range
+    exact @hU_loops ⟨z, hz⟩ γ hγ_range
+  · exact hp_range
+  · exact hq_range
 
 /-- The preimage of a singleton homotopy class under the quotient map is the set of all paths
 homotopic to a representative. -/
@@ -119,20 +169,80 @@ theorem Path.Homotopic.fiber_eq (x y : X) (p : Path x y) :
     letI : Setoid (Path x y) := Path.Homotopic.setoid x y
     (Quotient.mk' : Path x y → Path.Homotopic.Quotient x y) ⁻¹' {⟦p⟧} =
       {p' : Path x y | Path.Homotopic p' p} := by
-  sorry
+  ext p'
+  simp [Set.mem_preimage, Set.mem_singleton_iff]
+  exact Quotient.eq
 
 /-- A singleton in the quotient topology is open if and only if its preimage is open. -/
 theorem Path.Homotopic.singleton_isOpen_iff (x y : X) (p : Path x y) :
     letI : Setoid (Path x y) := Path.Homotopic.setoid x y
     IsOpen ({⟦p⟧} : Set (Path.Homotopic.Quotient x y)) ↔
       IsOpen ((Quotient.mk' : Path x y → Path.Homotopic.Quotient x y) ⁻¹' {⟦p⟧}) := by
+  -- The quotient topology is coinduced, so a set is open iff its preimage is open
+  rfl
+
+/-- Generic Lebesgue partition lemma for paths: Given an open cover of a path's range,
+there exists a finite partition of [0,1] such that each segment lies entirely in one set
+from the cover. -/
+theorem Path.exists_partition_in_cover
+    {ι : Type*} (U : ι → Set X) (hU_open : ∀ i, IsOpen (U i))
+    {x y : X} (γ : Path x y) (hU_cover : Set.range γ ⊆ ⋃ i, U i) :
+    ∃ (n : ℕ) (t : Fin (n + 1) → unitInterval),
+      StrictMono t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
+      (∀ i : Fin n, ∃ j : ι,
+        ∀ s : unitInterval, (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ s ∈ U j) := by
   sorry
+
+/-- Generic Lebesgue partition lemma for paths, neighborhood version: If every point on a path
+has a neighborhood with property P, then there exists a partition such that each segment lies
+in an open set with property P. This follows immediately from the cover version. -/
+theorem Path.exists_partition_with_property {x y : X} (γ : Path x y) (P : Set X → Prop)
+    (h : ∀ z ∈ Set.range γ, ∃ U : Set X, IsOpen U ∧ z ∈ U ∧ P U) :
+    ∃ (n : ℕ) (t : Fin (n + 1) → unitInterval),
+      StrictMono t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
+      (∀ i : Fin n, ∃ U : Set X, IsOpen U ∧ P U ∧
+        ∀ s : unitInterval, (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ s ∈ U) := by
+  -- For each z, choose a neighborhood U z with property P
+  choose U hU_open hU_mem hU_P using h
+  -- These form an open cover of the path's range
+  have h_cover : Set.range γ ⊆ ⋃ z : Set.range γ, U z.val z.property := by
+    intro w hw
+    exact Set.mem_iUnion.mpr ⟨⟨w, hw⟩, hU_mem w hw⟩
+  -- Apply the cover version
+  obtain ⟨n, t, h_mono, h_start, h_end, h_segments⟩ :=
+    exists_partition_in_cover (fun z : Set.range γ => U z.val z.property)
+      (fun z => hU_open z.val z.property) γ h_cover
+  refine ⟨n, t, h_mono, h_start, h_end, ?_⟩
+  intro i
+  obtain ⟨⟨z, hz⟩, h_seg⟩ := h_segments i
+  exact ⟨U z hz, hU_open z hz, hU_P z hz, h_seg⟩
+
+/-- An SLSC neighborhood can be chosen to be path-connected. In a locally path-connected space,
+we can use the path component of x in an SLSC neighborhood V to get a neighborhood that is both
+open, path-connected, and has the SLSC property (paths with same endpoints in U are homotopic). -/
+theorem exists_pathConnected_slsc_neighborhood (hX : SemilocallySimplyConnected X)
+    [LocPathConnectedSpace X] (x : X) :
+    ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ IsPathConnected U ∧
+      (∀ {a b : X}, a ∈ U → b ∈ U → ∀ (p q : Path a b),
+        Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q) := by
+  -- Get an SLSC neighborhood from the SLSC property
+  obtain ⟨V, hV_open, hx_in_V, hV_slsc⟩ := exists_uniquePath_neighborhood hX x
+  -- The path component of x in V is open (since V is open and X is locally path-connected)
+  let W := pathComponentIn V x
+  refine ⟨W, hV_open.pathComponentIn x, mem_pathComponentIn_self hx_in_V,
+    isPathConnected_pathComponentIn hx_in_V, ?_⟩
+  intro a b ha hb p q hp hq
+  -- W ⊆ V, so a, b ∈ V and p, q have ranges in V, hence are homotopic by SLSC property of V
+  have hW_subset : W ⊆ V := pathComponentIn_subset
+  apply @hV_slsc a b (hW_subset ha) (hW_subset hb) p q
+  · exact Set.Subset.trans hp hW_subset
+  · exact Set.Subset.trans hq hW_subset
 
 /-- In an SLSC space, given a path γ, there exists a finite partition of [0,1] such that
 each segment of γ lies in a path-connected SLSC neighborhood. This uses compactness of the
 path's image and the Lebesgue number lemma. -/
 theorem Path.exists_partition_in_slsc_neighborhoods (hX : SemilocallySimplyConnected X)
-    {x y : X} (γ : Path x y) :
+    [LocPathConnectedSpace X] {x y : X} (γ : Path x y) :
     ∃ (n : ℕ) (t : Fin (n + 1) → unitInterval),
       StrictMono t ∧
       t 0 = 0 ∧
@@ -141,47 +251,82 @@ theorem Path.exists_partition_in_slsc_neighborhoods (hX : SemilocallySimplyConne
         (∀ s : unitInterval, (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ s ∈ U) ∧
         (∀ {p q : Path (γ (t i.castSucc)) (γ (t i.succ))},
           Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q)) := by
-  sorry
+  -- Apply the generic partition lemma with the property:
+  -- "U is path-connected and paths in U with same endpoints are homotopic"
+  obtain ⟨n, t, h_mono, h_start, h_end, h_partition⟩ := exists_partition_with_property γ
+    (fun U => IsPathConnected U ∧
+      ∀ {a b : X}, a ∈ U → b ∈ U → ∀ (p q : Path a b),
+        Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q)
+    (by
+      intro z hz
+      -- For each point z on the path, we get a path-connected SLSC neighborhood
+      exact exists_pathConnected_slsc_neighborhood hX z
+    )
+  refine ⟨n, t, h_mono, h_start, h_end, ?_⟩
+  intro i
+  obtain ⟨U, hU_open, ⟨hU_pathConn, hU_homotopic⟩, hU_contains⟩ := h_partition i
+  refine ⟨U, hU_open, hU_pathConn, hU_contains, ?_⟩
+  intro p q hp hq
+  -- The endpoints are in U because they're on the path segment
+  have h_le : t i.castSucc ≤ t i.succ := h_mono.monotone (Fin.castSucc_lt_succ i).le
+  have ha : γ (t i.castSucc) ∈ U := hU_contains (t i.castSucc) ⟨le_refl _, h_le⟩
+  have hb : γ (t i.succ) ∈ U := hU_contains (t i.succ) ⟨h_le, le_refl _⟩
+  exact @hU_homotopic (γ (t i.castSucc)) (γ (t i.succ)) ha hb p q hp hq
 
-/-- Given a path γ with a partition into SLSC segments, the "tube" of paths that stay in the
-same neighborhoods as γ on each segment is an open set in the path space. This follows from
-the definition of the compact-open topology on the path space. -/
-theorem Path.tube_isOpen (hX : SemilocallySimplyConnected X) {x y : X} (γ : Path x y)
+/-- Given a partition of the unit interval and open sets, the "tube" of paths that stay in the
+corresponding open sets on each segment is open in the path space. This follows from the
+compact-open topology: it's a finite intersection of sets {f | MapsTo f K U} where K is compact
+and U is open. -/
+theorem Path.tube_isOpen {x y : X}
     (n : ℕ) (t : Fin (n + 1) → unitInterval) (U : Fin n → Set X)
-    (h_mono : StrictMono t)
-    (h_start : t 0 = 0)
-    (h_end : t (Fin.last n) = 1)
-    (h_open : ∀ i, IsOpen (U i))
-    (h_pathConn : ∀ i, IsPathConnected (U i))
-    (h_contains : ∀ i (s : unitInterval),
-      (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ s ∈ U i) :
+    (h_open : ∀ i, IsOpen (U i)) :
     IsOpen {γ' : Path x y | ∀ i (s : unitInterval),
       (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ' s ∈ U i} := by
-  sorry
-
-/-- In an SLSC neighborhood where loops are nullhomotopic, any two paths with the same
-endpoints are homotopic. This is derived by composing one path with the reverse of the other
-to form a loop. -/
-theorem Path.homotopic_of_loops_nullhomotopic_in_neighborhood {x y : X} (U : Set X)
-    (h_loops : ∀ {z : X} (γ : Path z z), z ∈ U → Set.range γ ⊆ U → Path.Homotopic γ (Path.refl z))
-    {p q : Path x y} (hp : Set.range p ⊆ U) (hq : Set.range q ⊆ U) :
-    Path.Homotopic p q := by
-  sorry
-
-/-- An SLSC neighborhood can be chosen to be path-connected (since we can intersect it with
-a path-connected neighborhood). -/
-theorem exists_pathConnected_slsc_neighborhood (hX : SemilocallySimplyConnected X)
-    [LocPathConnectedSpace X] (x : X) :
-    ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ IsPathConnected U ∧
-      (∀ {p q : Path x x}, Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q) := by
-  sorry
+  -- The tube is a finite intersection of open sets in the compact-open topology
+  -- Each segment [t i, t i+1] is compact, so {γ' | γ' maps [t i, t i+1] into U i} is open
+  have : {γ' : Path x y | ∀ i (s : unitInterval),
+      (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ' s ∈ U i} =
+    ⋂ i : Fin n, {γ' : Path x y | ∀ s : unitInterval,
+      (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ' s ∈ U i} := by
+    ext γ'
+    simp only [Set.mem_setOf_eq, Set.mem_iInter]
+  rw [this]
+  -- Now show each set in the intersection is open
+  apply isOpen_iInter_of_finite
+  intro i
+  -- The set {γ' | ∀ s ∈ [t i, t i+1], γ' s ∈ U i} is the same as {γ' | MapsTo γ' K_i (U i)}
+  -- where K_i = Icc (t i.castSucc) (t i.succ) ⊆ unitInterval
+  let K_i : Set unitInterval := Set.Icc (t i.castSucc) (t i.succ)
+  have h_compact_K : IsCompact K_i := isCompact_Icc
+  have h_eq : {γ' : Path x y | ∀ s : unitInterval,
+      (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ' s ∈ U i} =
+    {γ' : Path x y | Set.MapsTo γ' K_i (U i)} := by
+    ext γ'
+    simp only [Set.mem_setOf_eq, Set.MapsTo, K_i, Set.mem_Icc]
+    refine forall_congr' fun s => ?_
+    constructor
+    · intro h hs; exact h hs
+    · intro h hs; exact h hs
+  rw [h_eq]
+  -- Now use that this is open in the compact-open topology
+  -- Path x y is a subtype of C(unitInterval, X), so we need to coerce
+  have : {γ' : Path x y | Set.MapsTo γ' K_i (U i)} =
+      (↑) ⁻¹' {f : C(unitInterval, X) | Set.MapsTo f K_i (U i)} := by
+    rfl
+  rw [this]
+  exact (ContinuousMap.isOpen_setOf_mapsTo h_compact_K (h_open i)).preimage continuous_induced_dom
 
 /-- In a path-connected set U, for any two points a and b in U, there exists a path from a to b
 whose range is contained in U. -/
 theorem exists_path_in_pathConnected_set {a b : X} (U : Set X) (hU : IsPathConnected U)
     (ha : a ∈ U) (hb : b ∈ U) :
     ∃ p : Path a b, Set.range p ⊆ U := by
-  sorry
+  obtain ⟨x₀, hx₀, h_joined⟩ := hU
+  have hab : JoinedIn U a b := (h_joined ha).symm.trans (h_joined hb)
+  refine ⟨hab.somePath, ?_⟩
+  intro y hy
+  obtain ⟨t, rfl⟩ := hy
+  exact hab.somePath_mem t
 
 /-- For paths in the same SLSC neighborhood with the same endpoints, we can show they are
 homotopic using the SLSC property applied to paths with same endpoints in U. -/
@@ -191,8 +336,8 @@ theorem Path.homotopic_in_slsc_neighborhood {a b : X} (U : Set X)
     (γ γ' : Path a b)
     (hγ : Set.range γ ⊆ U) (hγ' : Set.range γ' ⊆ U)
     (ha : a ∈ U) (hb : b ∈ U) :
-    Path.Homotopic γ γ' := by
-  sorry
+    Path.Homotopic γ γ' :=
+  h_slsc γ γ' ha hb hγ hγ'
 
 /-- Composing a path with a connecting path and then another path, all in an SLSC neighborhood,
 gives a homotopy relationship useful for pasting segments together. This captures the idea that
@@ -205,7 +350,71 @@ theorem Path.trans_homotopy_in_slsc {a b c : X} (U : Set X)
     (hγ : Set.range γ ⊆ U) (hγ' : Set.range γ' ⊆ U)
     (ha : a ∈ U) (hb : b ∈ U) (hc : c ∈ U) :
     ∃ (α : Path b c), Set.range α ⊆ U ∧ Path.Homotopic (γ.trans α) γ' := by
-  sorry
+  obtain ⟨α, hα_range⟩ := exists_path_in_pathConnected_set U h_pathConn hb hc
+  refine ⟨α, hα_range, ?_⟩
+  apply h_slsc
+  · exact ha
+  · exact hc
+  · exact Set.range_subset_iff.mpr fun t => by
+      simp only [Path.trans_apply]
+      split_ifs <;> [exact hγ (Set.mem_range_self _); exact hα_range (Set.mem_range_self _)]
+  · exact hγ'
+
+/-! ### Proof strategy for discrete topology on Path.Homotopic.Quotient
+
+The main theorem `Path.Homotopic.Quotient.discreteTopology` states that in a semilocally
+simply connected space, the quotient `Path.Homotopic.Quotient x y` carries the discrete topology.
+This is proved by showing that every homotopy class (singleton in the quotient) is open.
+
+**Overall proof strategy:**
+
+Given a path `p : Path x y`, we show that its homotopy class `{p' | Path.Homotopic p' p}` is open.
+
+1. **Partition construction** (`exists_partition_in_slsc_neighborhoods`):
+   Use compactness of `p`'s image and the Lebesgue number lemma to find a finite partition
+   `0 = t₀ < t₁ < ... < tₙ = 1` such that each segment `p([tᵢ, tᵢ₊₁])` lies in an open,
+   path-connected neighborhood `Uᵢ` where all paths with the same endpoints are homotopic.
+
+2. **The tube is open** (`tube_isOpen`):
+   The set of paths `p'` such that `p'([tᵢ, tᵢ₊₁]) ⊆ Uᵢ` for all `i` is open in the
+   compact-open topology on `Path x y`. This follows because each segment `[tᵢ, tᵢ₊₁]` is
+   compact and each `Uᵢ` is open, so the tube is a finite intersection of sets of the form
+   `{f | MapsTo f K U}` which are open by definition of the compact-open topology.
+
+3. **Ladder homotopy construction** (`tube_subset_homotopy_class`):
+   Any path `p'` in the tube is homotopic to `p` via a "ladder homotopy":
+   - **Rungs** (`exists_rung_paths`): For each partition point `tᵢ`, construct a path `αᵢ`
+     from `p(tᵢ)` to `p'(tᵢ)` using path-connectedness of the neighborhoods.
+     The rungs at endpoints are constant paths since `p` and `p'` share endpoints.
+
+   - **Rectangle homotopies** (`segment_rung_homotopy`): For each segment `i`, we have
+     a rectangle with:
+     * Bottom edge: segment `pᵢ` of `p` from `p(tᵢ)` to `p(tᵢ₊₁)`
+     * Top edge: segment `p'ᵢ` of `p'` from `p'(tᵢ)` to `p'(tᵢ₊₁)`
+     * Left edge: rung `αᵢ` from `p(tᵢ)` to `p'(tᵢ)`
+     * Right edge: rung `αᵢ₊₁` from `p(tᵢ₊₁)` to `p'(tᵢ₊₁)`
+
+     Both `pᵢ` and `p'ᵢ` lie in the SLSC neighborhood `Uᵢ`, as do the rungs (by construction).
+     By the SLSC property, `pᵢ · αᵢ₊₁ ≃ αᵢ · p'ᵢ` (both are paths from `p(tᵢ)` to `p'(tᵢ₊₁)`
+     with ranges in `Uᵢ`).
+
+   - **Pasting via telescoping** (`paste_segment_homotopies`): Compose the segment homotopies:
+     ```
+     p = p₀ · p₁ · ... · pₙ₋₁
+       ≃ (α₀ · p'₀ · α₁⁻¹) · (α₁ · p'₁ · α₂⁻¹) · ... · (αₙ₋₁ · p'ₙ₋₁ · αₙ⁻¹)
+       ≃ α₀ · (p'₀ · p'₁ · ... · p'ₙ₋₁) · αₙ⁻¹  (telescoping cancellation)
+       ≃ α₀ · p' · αₙ⁻¹
+       ≃ p'  (since α₀ and αₙ are constant paths)
+     ```
+
+4. **Conclusion** (`isOpen_setOf_homotopic`, `discreteTopology`):
+   The tube is an open neighborhood of `p` contained in the homotopy class of `p`.
+   Therefore every homotopy class is open. Since the quotient topology makes singletons
+   (which are homotopy classes pushed to the quotient) open, the quotient has discrete topology.
+
+This proof strategy shows that SLSC spaces have "locally unique" path homotopy classes,
+which is the key to constructing universal covers.
+-/
 
 /-! ### Construction of "rung" paths for the ladder homotopy -/
 
@@ -231,39 +440,39 @@ theorem Path.exists_rung_paths {x y : X} (γ γ' : Path x y)
 /-- Congruence for path composition: if p₁ ≃ p₂ and q₁ ≃ q₂, then p₁·q₁ ≃ p₂·q₂. -/
 theorem Path.Homotopic.comp_congr {x y z : X} {p₁ p₂ : Path x y} {q₁ q₂ : Path y z}
     (hp : Path.Homotopic p₁ p₂) (hq : Path.Homotopic q₁ q₂) :
-    Path.Homotopic (p₁.trans q₁) (p₂.trans q₂) := by
-  sorry
+    Path.Homotopic (p₁.trans q₁) (p₂.trans q₂) :=
+  Path.Homotopic.hcomp hp hq
 
 /-- Homotopy respects path reversal: if p ≃ q then p.symm ≃ q.symm. -/
 theorem Path.Homotopic.symm_congr {x y : X} {p q : Path x y}
     (h : Path.Homotopic p q) :
-    Path.Homotopic p.symm q.symm := by
-  sorry
+    Path.Homotopic p.symm q.symm :=
+  Nonempty.map Path.Homotopy.symm₂ h
 
 /-- A path composed with its reverse is homotopic to the constant path. -/
 theorem Path.Homotopic.trans_symm_self {x y : X} (p : Path x y) :
-    Path.Homotopic (p.trans p.symm) (Path.refl x) := by
-  sorry
+    Path.Homotopic (p.trans p.symm) (Path.refl x) :=
+  ⟨(Path.Homotopy.reflTransSymm p).symm⟩
 
 /-- The reverse of a path composed with the path is homotopic to the constant path. -/
 theorem Path.Homotopic.symm_trans_self {x y : X} (p : Path x y) :
-    Path.Homotopic (p.symm.trans p) (Path.refl y) := by
-  sorry
+    Path.Homotopic (p.symm.trans p) (Path.refl y) :=
+  ⟨(Path.Homotopy.reflSymmTrans p).symm⟩
 
 /-- Path composition is associative up to homotopy. -/
 theorem Path.Homotopic.trans_assoc {w x y z : X} (p : Path w x) (q : Path x y) (r : Path y z) :
-    Path.Homotopic ((p.trans q).trans r) (p.trans (q.trans r)) := by
-  sorry
+    Path.Homotopic ((p.trans q).trans r) (p.trans (q.trans r)) :=
+  ⟨Path.Homotopy.transAssoc p q r⟩
 
 /-- The constant path is a left identity for composition up to homotopy. -/
 theorem Path.Homotopic.refl_trans {x y : X} (p : Path x y) :
-    Path.Homotopic ((Path.refl x).trans p) p := by
-  sorry
+    Path.Homotopic ((Path.refl x).trans p) p :=
+  ⟨Path.Homotopy.reflTrans p⟩
 
 /-- The constant path is a right identity for composition up to homotopy. -/
 theorem Path.Homotopic.trans_refl {x y : X} (p : Path x y) :
-    Path.Homotopic (p.trans (Path.refl y)) p := by
-  sorry
+    Path.Homotopic (p.trans (Path.refl y)) p :=
+  ⟨Path.Homotopy.transRefl p⟩
 
 /-! ### Single segment homotopy: the key step in the ladder construction -/
 
