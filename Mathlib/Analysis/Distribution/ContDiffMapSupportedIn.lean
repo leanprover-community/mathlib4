@@ -405,15 +405,33 @@ variable (n) in
 This only makes mathematical sense if `i ≤ n`, otherwise we define it as the zero map.
 
 We call these "structure maps" because they define the topology on `𝓓^{n}_{K}(E, F)`. -/
-noncomputable def structureMap (i : ℕ) :
+noncomputable def structureMapCLM (i : ℕ) :
     𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ (E [×i]→L[ℝ] F) where
   toLinearMap := structureMapₗ 𝕜 n i
   cont := continuous_iInf_dom continuous_induced_dom
 
 lemma continuous_iff_comp {X} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
-    Continuous φ ↔ ∀ i, Continuous (structureMap ℝ n i ∘ φ) := by
+    Continuous φ ↔ ∀ i, Continuous (structureMapCLM ℝ n i ∘ φ) := by
   simp_rw [continuous_iInf_rng, continuous_induced_rng]
   rfl
+
+protected theorem continuous_iff_comp_of_le {X : Type*} [TopologicalSpace X]
+    (φ : X → 𝓓^{n}_{K}(E, F)) :
+    Continuous φ ↔ ∀ (i : ℕ) (_ : ↑i ≤ n), Continuous (structureMapCLM ℝ n i ∘ φ) := by
+  rw [continuous_iff_comp]
+  congrm (∀ i, ?_)
+  by_cases hin : i ≤ n <;> simp only [hin, true_imp_iff, false_imp_iff, iff_true]
+  refine continuous_zero.congr fun x ↦ ?_
+  ext t : 1
+  simp [hin, structureMapCLM, structureMapₗ_apply_withOrder]
+
+lemma structureMapCLM_apply_withOrder {i : ℕ} {f : 𝓓^{n}_{K}(E, F)} :
+    structureMapCLM 𝕜 n i f = if i ≤ n then iteratedFDeriv ℝ i f else 0 := by
+  simp [structureMapCLM, structureMapₗ_apply_withOrder]
+
+lemma structureMapCLM_apply {i : ℕ} {f : 𝓓_{K}(E, F)} :
+    structureMapCLM 𝕜 ⊤ i f = iteratedFDeriv ℝ i f := by
+  simp [structureMapCLM, structureMapₗ_apply]
 
 variable (E F n K)
 
@@ -451,38 +469,21 @@ protected theorem seminorm_eq_bot {i : ℕ} (hin : n < i) :
     ContDiffMapSupportedIn.seminorm 𝕜 E F n K i = ⊥ := by
   ext f
   rw [ContDiffMapSupportedIn.seminorm_apply,
-      coe_iteratedFDerivWithOrderₗ_of_gt 𝕜 (by simpa)]
+      iteratedFDerivWithOrderₗ_apply_of_gt 𝕜 (by simpa)]
   exact norm_zero
 
-theorem norm_toBoundedContinuousFunctionₗ (f : 𝓓^{n}_{K}(E, F)) :
-    ‖toBoundedContinuousFunctionₗ 𝕜 f‖ = ContDiffMapSupportedIn.seminorm 𝕜 E F n K 0 f := by
-  simp only [BoundedContinuousFunction.norm_eq_iSup_norm, toBoundedContinuousFunctionₗ_apply_apply,
-    ContDiffMapSupportedIn.seminorm_apply]
-  simp only [coe_toBoundedContinuousFunction, coe_iteratedFDerivWithOrderₗ, CharP.cast_eq_zero,
-  zero_le, ↓reduceIte, norm_iteratedFDeriv_zero]
+theorem norm_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
+    ‖(f : E →ᵇ F)‖ = ContDiffMapSupportedIn.seminorm 𝕜 E F n K 0 f := by
+  simp [BoundedContinuousFunction.norm_eq_iSup_norm]
 
 /-- The inclusion of the space  `𝓓^{n}_{K}(E, F)` into the space `E →ᵇ F` of bounded continuous
 functions as a continuous `𝕜`-linear map. -/
-@[simps!]
 noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ F :=
   { toLinearMap := toBoundedContinuousFunctionₗ 𝕜
     cont := show Continuous (toBoundedContinuousFunctionₗ 𝕜) by
       refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
         (norm_withSeminorms 𝕜 _) _ (fun _ ↦ ⟨{0}, 1, fun f ↦ ?_⟩)
-      simp [Seminorm.comp_apply, coe_normSeminorm, norm_toBoundedContinuousFunctionₗ,
-        one_smul, Finset.sup_singleton] }
-
-protected theorem continuous_iff_comp_of_le {X : Type*} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
-    Continuous φ ↔ ∀ (i : ℕ) (_ : ↑i ≤ n), Continuous
-      (toBoundedContinuousFunctionₗ 𝕜 ∘ ContDiffMapSupportedIn.iteratedFDerivWithOrder i ∘ φ) := by
-  simp_rw [continuous_iInf_rng, continuous_induced_rng]
-  constructor <;> intro H i
-  · exact fun _ ↦ H i
-  · by_cases hin : i ≤ n
-    · exact H i hin
-    · simp [iteratedFDeriv_toBoundedContinuousFunctionₗ,
-        iteratedFDerivWithOrderₗ_eq_iteratedFDerivWithOrder,
-        coe_iteratedFDerivWithOrder_of_gt' (lt_of_not_ge hin), continuous_zero]
+      simp [norm_toBoundedContinuousFunction ℝ f] }
 
 end Topology
 
