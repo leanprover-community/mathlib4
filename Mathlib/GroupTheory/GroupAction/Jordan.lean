@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025. Antoine Chambert-Loir. All rights reserved.
+Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
@@ -427,6 +427,9 @@ theorem subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
   convert Nat.prime_two
   rw [Nat.card_eq_fintype_card, Fintype.card_subtype, ← card_support_eq_two.mpr h2g]
   simp [SubMulAction.mem_ofFixingSubgroup_iff, support]
+
+@[deprecated (since := "2025-11-04")]
+alias eq_top_of_isPreprimitive_of_isSwap_mem := subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
 
 /-- A primitive subgroup of `Equiv.Perm α` that contains a 3-cycle
 contains the alternating group (Jordan). -/
