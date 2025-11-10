@@ -849,14 +849,14 @@ theorem submonoidMap_surjective (f : M →* N) (M' : Submonoid M) :
   rintro ⟨_, x, hx, rfl⟩
   exact ⟨⟨x, hx⟩, rfl⟩
 
+end MonoidHom
+
+namespace Submonoid
+
 @[to_additive]
 lemma surjOn_iff_le_map {f : M →* N} {H : Submonoid M} {K : Submonoid N} :
     Set.SurjOn f H K ↔ K ≤ H.map f :=
   Iff.rfl
-
-end MonoidHom
-
-namespace Submonoid
 
 open MonoidHom
 

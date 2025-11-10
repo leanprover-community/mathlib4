@@ -579,14 +579,14 @@ theorem map_closure (f : G →* N) (s : Set G) : (closure s).map f = closure (f 
   Set.image_preimage.l_comm_of_u_comm (gc_map_comap f) (Subgroup.gi N).gc (Subgroup.gi G).gc
     fun _ ↦ rfl
 
+end MonoidHom
+
+namespace Subgroup
+
 @[to_additive]
 lemma surjOn_iff_le_map {f : G →* N} {H : Subgroup G} {K : Subgroup N} :
     Set.SurjOn f H K ↔ K ≤ H.map f :=
   Iff.rfl
-
-end MonoidHom
-
-namespace Subgroup
 
 @[to_additive (attr := simp)]
 theorem equivMapOfInjective_coe_mulEquiv (H : Subgroup G) (e : G ≃* G') :

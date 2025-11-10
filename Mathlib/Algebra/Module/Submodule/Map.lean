@@ -597,6 +597,10 @@ theorem inf_comap_le_comap_add (f₁ f₂ : M →ₛₗ[τ₁₂] M₂) :
   change f₁ m ∈ q ∧ f₂ m ∈ q at h
   apply q.add_mem h.1 h.2
 
+lemma surjOn_iff_le_map [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂] M₂} {p : Submodule R M}
+    {q : Submodule R₂ M₂} : Set.SurjOn f p q ↔ q ≤ p.map f :=
+  Iff.rfl
+
 end Submodule
 
 namespace Submodule
@@ -676,10 +680,6 @@ theorem map_codRestrict [RingHomSurjective σ₂₁] (p : Submodule R M) (f : M�
 theorem comap_codRestrict (p : Submodule R M) (f : M₂ →ₛₗ[σ₂₁] M) (hf p') :
     Submodule.comap (codRestrict p f hf) p' = Submodule.comap f (map p.subtype p') :=
   Submodule.ext fun x => ⟨fun h => ⟨⟨_, hf x⟩, h, rfl⟩, by rintro ⟨⟨_, _⟩, h, ⟨⟩⟩; exact h⟩
-
-lemma surjOn_iff_le_map [RingHomSurjective σ₂₁] {f : M₂ →ₛₗ[σ₂₁] M} {p : Submodule R₂ M₂}
-    {q : Submodule R M} : Set.SurjOn f p q ↔ q ≤ p.map f :=
-  Iff.rfl
 
 end LinearMap
 
