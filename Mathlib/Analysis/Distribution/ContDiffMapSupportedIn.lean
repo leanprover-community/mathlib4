@@ -169,8 +169,8 @@ theorem copy_eq (f : 𝓓^{n}_{K}(E, F)) (f' : E → F) (h : f' = f) : f.copy f'
   DFunLike.ext' h
 
 @[simp]
-theorem toBoundedContinuousFunction_apply (f : 𝓓^{n}_{K}(E, F)) (x : E) :
-   (f : BoundedContinuousFunction E F) x = (f x) := rfl
+theorem coe_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
+   (f : BoundedContinuousFunction E F) = (f : E → F) := rfl
 
 section AddCommGroup
 
@@ -357,5 +357,20 @@ We call these "structure maps" because they define the topology on `𝓓^{n}_{K}
 noncomputable def structureMapₗ (i : ℕ) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F) :=
   toBoundedContinuousFunctionₗ 𝕜 ∘ₗ iteratedFDerivWithOrderₗ 𝕜 n 0 i
+
+lemma structureMapₗ_eq {i : ℕ} :
+    (structureMapₗ 𝕜 ⊤ i : 𝓓_{K}(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F)) =
+      (toBoundedContinuousFunctionₗ 𝕜 : 𝓓_{K}(E, E [×i]→L[ℝ] F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F)) ∘ₗ
+      (iteratedFDerivₗ 𝕜 i : 𝓓_{K}(E, F) →ₗ[𝕜] 𝓓_{K}(E, E [×i]→L[ℝ] F)) :=
+  rfl
+
+lemma structureMapₗ_apply_withOrder {i : ℕ} {f : 𝓓^{n}_{K}(E, F)} :
+    structureMapₗ 𝕜 n i f = if i ≤ n then iteratedFDeriv ℝ i f else 0 := by
+  split_ifs with hi <;> simp [structureMapₗ, hi]
+
+lemma structureMapₗ_apply {i : ℕ} {f : 𝓓_{K}(E, F)} :
+    structureMapₗ 𝕜 ⊤ i f = iteratedFDeriv ℝ i f := by
+  rw [structureMapₗ_eq]
+  rfl
 
 end ContDiffMapSupportedIn
