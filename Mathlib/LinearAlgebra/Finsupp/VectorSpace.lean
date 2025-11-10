@@ -9,6 +9,8 @@ import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.Finsupp.Span
+import Mathlib.LinearAlgebra.Projection
 
 /-!
 # Linear structures on function with finite support `ι →₀ M`
@@ -123,6 +125,14 @@ variable (ι R) in
 lemma linearIndependent_single_one : LinearIndependent R fun i : ι ↦ single i (1 : R) :=
   Finsupp.basisSingleOne.linearIndependent
 
+lemma isCompl_range_lmapDomain_span {α β : Type*}
+    {u : α → ι} {v : β → ι} (huv : IsCompl (Set.range u) (Set.range v)) :
+    IsCompl (LinearMap.range (lmapDomain R R u)) (.span R (.range fun x ↦ single (v x) 1)) := by
+  rw [range_lmapDomain]
+  have := (Finsupp.basisSingleOne (R := R)).linearIndependent.isCompl_span_image
+     (Module.Basis.span_eq _) huv
+  rwa [← Set.range_comp, ← Set.range_comp, Function.comp_def] at this
+
 end Semiring
 
 section Ring
@@ -135,6 +145,25 @@ lemma linearIndependent_single_of_ne_zero [NoZeroSMulDivisors R M] {v : ι → M
   rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
   exact linearIndependent_single (f := fun i (_ : Unit) ↦ v i) <| by
     simp +contextual [Fintype.linearIndependent_iff, hv]
+
+lemma lcomapDomain_eq_linearProjOfIsCompl {α β : Type*}
+    {u : α → ι} {v : β → ι} (hu : u.Injective) (h : IsCompl (Set.range u) (Set.range v)) :
+    lcomapDomain u hu =
+      LinearMap.linearProjOfIsCompl (.span R (Set.range fun x : β ↦ single (v x) (1 : R)))
+        (lmapDomain _ _ u) (mapDomain_injective hu) (isCompl_range_lmapDomain_span h) := by
+  classical
+  refine Finsupp.basisSingleOne.ext fun i ↦ ?_
+  obtain ⟨i, rfl⟩ | ⟨i, rfl⟩ : i ∈ Set.range u ⊔ .range v := by rw [codisjoint_iff.mp h.2]; trivial
+  · have : single (u i) 1 = lmapDomain R R u (.single i 1) := by simp
+    simp only [coe_basisSingleOne, lcomapDomain_apply, comapDomain_single]
+    rw [this, LinearMap.linearProjOfIsCompl_apply_left]
+  · rw [LinearMap.linearProjOfIsCompl_apply_right']
+    · ext j
+      simp only [coe_basisSingleOne, lcomapDomain_apply, comapDomain_apply, single_apply,
+        coe_zero, Pi.zero_apply, ite_eq_right_iff]
+      intro hij
+      exact (Set.disjoint_range_iff.mp h.1 j i hij.symm).elim
+    · exact Submodule.subset_span ⟨i, rfl⟩
 
 end Ring
 
