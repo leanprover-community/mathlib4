@@ -168,11 +168,11 @@ theorem colimitEquivColimitType_apply (j : J) (x : F.obj j) :
   simp
 
 variable (J) in
-/-- `Quot` is functorial, so long as the universe levels work out. -/
+/-- `ColimitType` is functorial, so long as the universe levels work out. -/
 @[simps]
-noncomputable def _root_.CategoryTheory.Functor.quotFunctor [Small.{u} J] :
+noncomputable def _root_.CategoryTheory.Functor.colimitTypeFunctor [Small.{u} J] :
     (J ⥤ Type u) ⥤ Type max u v where
-  obj F := Quot F
+  obj := Functor.ColimitType
   map {F G} η x := by
     refine Quot.map (Sigma.map id η.app)
       (fun ⟨j, x⟩ ⟨j', y⟩ ⟨(f : j ⟶ j'), (hf : y = F.map f x)⟩ ↦ ?h) x
@@ -180,7 +180,6 @@ noncomputable def _root_.CategoryTheory.Functor.quotFunctor [Small.{u} J] :
     simp only [Sigma.map, id_eq]
     simp_rw [← types_comp_apply, η.naturality, types_comp_apply]
     exact ⟨f, rfl⟩
-
   map_id F := by
     ext ⟨j, x⟩
     simp [Sigma.map, Quot.map]
@@ -189,11 +188,11 @@ noncomputable def _root_.CategoryTheory.Functor.quotFunctor [Small.{u} J] :
     simp [Sigma.map, Quot.map]
 
 
-/-- `colimitEquivQuot` is natural in `F`. -/
+/-- `colimitEquivColimitType` is natural in diagrams. -/
 @[simps!]
-noncomputable def colimIsoQuotFunctor :
-    colim (J := J) (C := Type max v u) ≅ Functor.quotFunctor J :=
-  NatIso.ofComponents (Types.colimitEquivQuot · |>.toIso) fun {F G} η ↦ by
+noncomputable def colimNatIsoColimitTypeFunctor :
+    colim (J := J) (C := Type max v u) ≅ Functor.colimitTypeFunctor J :=
+  NatIso.ofComponents (Types.colimitEquivColimitType · |>.toIso) fun {F G} η ↦ by
     apply colimit.hom_ext
     intro j
     ext x

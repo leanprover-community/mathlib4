@@ -11,14 +11,8 @@ import Mathlib.CategoryTheory.Functor.Functorial
 import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Logic.Small.Set
 
-import Mathlib.CategoryTheory.Category.Quiv.Shapes
+-- import Mathlib.CategoryTheory.Category.Quiv.Shapes
 import Mathlib.CategoryTheory.Category.Quiv.WalkingQuiver
-
-set_option structureDiamondWarning true
-
-open CategoryTheory Limits Bicategory Strict UnivLE ObjectProperty
-
-attribute [pp_with_univ] Quiv Quiver
 
 /-!
   # Quivers as (co-)presheaves on the walking quiver
@@ -46,6 +40,12 @@ attribute [pp_with_univ] Quiv Quiver
 -/
 
 
+set_option structureDiamondWarning true
+
+open CategoryTheory Limits Bicategory Strict UnivLE ObjectProperty
+
+attribute [pp_with_univ] Quiv Quiver
+
 namespace CategoryTheory.Quiv
 universe w₂ w₁ w v₂ v₁ v u₂ u₁ u
 
@@ -60,26 +60,27 @@ def asFunctor (Q : Quiv.{v, u}) : WalkingQuiver ⥤ Type max w v u where
   | .source => ↾(·.1)
   | .target => ↾(·.2.1)
   map_id m := by cases m <;> {unfold_projs; simp}
-  map_comp {X Y Z} f g := by
-    cases Z; swap
-    · cases g; cases f; rfl
-    · cases Y; swap
-      · cases f; cases g <;> rfl
-      · cases g; cases f <;> rfl
+  map_comp := by rintro _ _ ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
+    -- cases Z; swap
+    -- · cases g; cases f; rfl
+    -- · cases Y; swap
+    --   · cases f; cases g <;> rfl
+    --   · cases g; cases f <;> rfl
 
 
 /-- `asFunctor` is itself functorial. -/
-@[simps] instance asFunctor.functorial: Functorial asFunctor where
-  map' {U V : Quiv.{v, u}} (f : U ⟶ V) :=
+@[simps] instance asFunctor.functorial : Functorial asFunctor where
+  map {U V : Quiv.{v, u}} (f : U ⟶ V) :=
   { app
     | 0 => ULift.map f.obj
     | 1 => ↾(fun ⟨s, t, hom⟩ ↦ ⟨ULift.map f.obj s, ULift.map f.obj t, f.map hom⟩)
-    naturality m m' f' := by
-      cases m'; swap
-      · cases f'; simp
-      · cases m
-        · cases f'; rfl
-        · cases f' <;> { ext ⟨s, t, hom⟩; simp }}
+    naturality := by rintro _ ⟨⟩ ⟨⟩ <;> rfl }
+    -- m m' f' := by
+    --   cases m'; swap
+    --   · cases f'; simp
+    --   · cases m
+    --     · cases f'; rfl
+    --     · cases f' <;> { ext ⟨s, t, hom⟩; simp }}
 
 namespace PresheafWalkingQuiver
 
@@ -93,9 +94,9 @@ abbrev tgt {F : WalkingQuiver ⥤ Type w} (e : F.obj 1) := F.map .target e
 unif_hint hom_eq_asFunctor1 (X : Quiv.{v, u}) where
   ⊢ (s t : ULift.{max w v} X) × (s.1 ⟶ t.1) ≟ (asFunctor.{w} X).obj 1
 
-@[simp] lemma asFunctor_src {X : Quiv} (e : (s t :  ULift X) × (s.1 ⟶ t.1)) :
+@[simp] lemma asFunctor_src {X : Quiv} (e : (s t : ULift X) × (s.1 ⟶ t.1)) :
   src e = e.1 := rfl
-@[simp] lemma asFunctor_tgt {X : Quiv} (e : (s t :  ULift X) × (s.1 ⟶ t.1)) :
+@[simp] lemma asFunctor_tgt {X : Quiv} (e : (s t : ULift X) × (s.1 ⟶ t.1)) :
   tgt e = e.2.1 := rfl
 
 @[simp] lemma src_asFunctor {X : Quiv} {s t : ULift X} (e : (s.1 ⟶ t.1)) :
@@ -108,7 +109,7 @@ lemma asFunctor.hom_ext {X : Quiv.{v, u}} (f g : (s t : ULift.{max w v} X) × (s
     (hs : src f = src g) (ht : tgt f = tgt g) (he : HEq f.2.2 g.2.2) : f = g := by
   rcases f with ⟨fs, ft, fe⟩
   rcases g with ⟨gs, gt, ge⟩
-  simp_all only [src, tgt, asFunctor_map, asHom, ULift.up_inj]
+  simp_all only [src, tgt, asFunctor_map, asHom]
   cases hs; cases ht
   congr
   exact heq_iff_eq.mp he
@@ -238,7 +239,7 @@ lemma hom_edge {F : WalkingQuiver ⥤ Type w} {s t : Vertex F} (e : Edge F s t) 
     hom e.1 = edgeOfEq e (src_edge _).symm (tgt_edge _).symm := by
   simp [edgeOfEq]
 
-instance {Q : Quiv.{v,u}} : Small.{u} (Vertex Q.asFunctor) where
+instance {Q : Quiv.{v, u}} : Small.{u} (Vertex Q.asFunctor) where
   equiv_small := ⟨Q, ⟨Equiv.ulift⟩⟩
 
 instance {Q : Quiv.{v, u}} {s t : Vertex Q.asFunctor} :
@@ -280,7 +281,7 @@ def natTransEdge (f : Edge F s t) : Edge G (μ.app 0 s) (μ.app 0 t) :=
 lemma naturality_src_limit {J : Type w} [SmallCategory J]
     {F : J ⥤ WalkingQuiver ⥤ Type max w u} (j : J) e :
     src (limit.π (F.flip.obj 1) j e) = limit.π (F.flip.obj 0) j (@src (F := F.flip ⋙ lim) e) := by
-  let ε := Types.limIsoSectionsFunctor.app (F.flip.obj 1) |>.toEquiv
+  let ε := Types.limNatIsoSectionsFunctor.app (F.flip.obj 1) |>.toEquiv
   set e' := ε e with e'_def
   symm at e'_def; rw [Equiv.apply_eq_iff_eq_symm_apply] at e'_def
   rcases e' with ⟨e', he'⟩
@@ -289,32 +290,30 @@ lemma naturality_src_limit {J : Type w} [SmallCategory J]
     Iso.toEquiv_symm_fun, Iso.app_inv, ε]
   conv_rhs =>
     simp only [src, one_eq, zero_eq, Functor.comp_map, ε]
-    rw [← types_comp_apply _ (lim.map _), ← Types.limIsoSectionsFunctor.inv.naturality,
+    rw [← types_comp_apply _ (lim.map _), ← Types.limNatIsoSectionsFunctor.inv.naturality,
     ← types_comp_apply _ (limit.π _ _), Category.assoc]
-  simp [ε, Types.limIsoSectionsFunctor]
-
-#check Types.colimitEquivQuot
+  simp [Types.limNatIsoSectionsFunctor]
 
 @[simp]
 lemma naturality_src_colimit {J : Type w} [SmallCategory J]
     {F : J ⥤ WalkingQuiver ⥤ Type max w u} (j : J) e :
     @src (F := F.flip ⋙ colim) (colimit.ι (F.flip.obj 1) j e) =
       colimit.ι (F.flip.obj 0) j (src e) := by
-  let ε := Types.colimIsoQuotFunctor.app (F.flip.obj 1) |>.toEquiv
+  let ε := Types.colimNatIsoColimitTypeFunctor.app (F.flip.obj 1) |>.toEquiv
   set e' := ε (colimit.ι (F.flip.obj 1) j e) with ← e'_def
   rw [Equiv.apply_eq_iff_eq_symm_apply] at e'_def
   rw [e'_def]
   simp_rw [ε, Iso.toEquiv_symm_fun, Iso.app_inv]
-  simp only [zero_eq, Functor.comp_obj, colim_obj, src, one_eq, Functor.comp_map, ε]
-  rw [← types_comp_apply _ (colim.map _), ← Types.colimIsoQuotFunctor.inv.naturality]
+  simp only [zero_eq, Functor.comp_obj, colim_obj, src, one_eq, Functor.comp_map]
+  rw [← types_comp_apply _ (colim.map _), ← Types.colimNatIsoColimitTypeFunctor.inv.naturality]
   unfold e' ε
-  simpa [Sigma.map, Quot.map] using Types.colimitEquivQuot_symm_apply _ _ _
+  simpa [Sigma.map, Quot.map] using Types.colimitEquivColimitType_symm_apply _ _ _
 
 @[simp]
 lemma naturality_tgt_limit {J : Type w} [SmallCategory J]
     {F : J ⥤ WalkingQuiver ⥤ Type max w u} (j : J) e :
     tgt (limit.π (F.flip.obj 1) j e) = limit.π (F.flip.obj 0) j (@tgt (F := F.flip ⋙ lim) e) := by
-  let ε := Types.limIsoSectionsFunctor.app (F.flip.obj 1) |>.toEquiv
+  let ε := Types.limNatIsoSectionsFunctor.app (F.flip.obj 1) |>.toEquiv
   set e' := ε e with e'_def
   symm at e'_def; rw [Equiv.apply_eq_iff_eq_symm_apply] at e'_def
   rcases e' with ⟨e', he'⟩
@@ -323,24 +322,24 @@ lemma naturality_tgt_limit {J : Type w} [SmallCategory J]
     Iso.toEquiv_symm_fun, Iso.app_inv, ε]
   conv_rhs =>
     simp only [tgt, one_eq, zero_eq, Functor.comp_map, ε]
-    rw [← types_comp_apply _ (lim.map _), ← Types.limIsoSectionsFunctor.inv.naturality,
+    rw [← types_comp_apply _ (lim.map _), ← Types.limNatIsoSectionsFunctor.inv.naturality,
     ← types_comp_apply _ (limit.π _ _), Category.assoc]
-  simp [ε, Types.limIsoSectionsFunctor]
+  simp [Types.limNatIsoSectionsFunctor]
 
 @[simp]
 lemma naturality_tgt_colimit {J : Type w} [SmallCategory J]
     {F : J ⥤ WalkingQuiver ⥤ Type max w u} (j : J) e :
     @tgt (F := F.flip ⋙ colim) (colimit.ι (F.flip.obj 1) j e) =
       colimit.ι (F.flip.obj 0) j (tgt e) := by
-  let ε := Types.colimIsoQuotFunctor.app (F.flip.obj 1) |>.toEquiv
+  let ε := Types.colimNatIsoColimitTypeFunctor.app (F.flip.obj 1) |>.toEquiv
   set e' := ε (colimit.ι (F.flip.obj 1) j e) with ← e'_def
   rw [Equiv.apply_eq_iff_eq_symm_apply] at e'_def
   rw [e'_def]
   simp_rw [ε, Iso.toEquiv_symm_fun, Iso.app_inv]
-  simp only [zero_eq, Functor.comp_obj, colim_obj, tgt, one_eq, Functor.comp_map, ε]
-  rw [← types_comp_apply _ (colim.map _), ← Types.colimIsoQuotFunctor.inv.naturality]
+  simp only [zero_eq, Functor.comp_obj, colim_obj, tgt, one_eq, Functor.comp_map]
+  rw [← types_comp_apply _ (colim.map _), ← Types.colimNatIsoColimitTypeFunctor.inv.naturality]
   unfold e' ε
-  simpa [Sigma.map, Quot.map] using Types.colimitEquivQuot_symm_apply _ _ _
+  simpa [Sigma.map, Quot.map] using Types.colimitEquivColimitType_symm_apply _ _ _
 
 
 --Special cases for `ULift` and postcomposition by `uliftFunctor`, which
@@ -412,7 +411,7 @@ def edgeEquiv.{w', w} {F : WalkingQuiver ⥤ Type w} (s t : Vertex (F ⋙ uliftF
       constructor
       all_goals
         apply ULift.ext
-        simp [src, tgt, ULift.ext_iff] at h₁ h₂
+        simp [src, tgt] at h₁ h₂
         simp [h₁, h₂, vertexEquiv, src, tgt]
 
 end uliftFunctor
@@ -479,8 +478,13 @@ instance : (Functor.of (asFunctor.{w, v, u})).Faithful := ⟨fun {X Y} μ ν h =
     simpa [Functor.of] using congrFun (h 0) ⟨x⟩⟩
 
 end
+end Quiv
 
-open PresheafWalkingQuiver in
+structure SmallAsQuivStruct.{v, u, w} (F : WalkingQuiver ⥤ Type w) : Prop where
+  small_vertex : Small.{u} (Quiv.PresheafWalkingQuiver.Vertex F)
+  small_edge : ∀ s t, Small.{v} (Quiv.PresheafWalkingQuiver.Edge F s t)
+
+-- open Quiv.PresheafWalkingQuiver in
 /-- A functor `WalkingQuiver ⥤ Type w` is `v, u`-small "as a quiver" if it corresponds to a
 `Quiv.{v, u}` -- that is, its indicated vertex type is `u`-small and the
 subtype restricting its indicated edge type to a given source and target is
@@ -495,45 +499,84 @@ parameters first `v, u` first. -/
 --can't use the generalized projection notation on a local together with explicit
 --universe levels, so there's not much point. If that ever changes, we should
 --move this to `CategoryTheory.Functor`.
-@[pp_with_univ, mk_iff]
-class SmallAsQuiv.{v, u, w} (F : WalkingQuiver ⥤ Type w) where
-  [small_vertex : Small.{u} (Vertex F)]
-  [small_edge : ∀ (s t : Vertex F), Small.{v} (Edge F s t)]
-
-@[pp_with_univ]
-def SmallAsQuivSubcategory.{v, u, w} := FullSubcategory SmallAsQuiv.{v, u, w}
-
-instance : Category SmallAsQuivSubcategory := inferInstanceAs <| Category <| FullSubcategory _
-
-section universe v' u' v u w' w
-open PresheafWalkingQuiver
+def SmallAsQuiv.{v, u, w} : ObjectProperty (WalkingQuiver ⥤ Type w) :=
+  SmallAsQuivStruct.{v, u, w}
 
 
-instance (F : WalkingQuiver ⥤ Type w) [inst : SmallAsQuiv.{v, u, w} F] :
-  Small.{u} (Vertex F) := inst.small_vertex
-instance (F : WalkingQuiver ⥤ Type w) [inst : SmallAsQuiv.{v, u, w} F] (s t : Vertex F) :
-  Small.{v} (Edge F s t) := inst.small_edge s t
+
+-- @[pp_with_univ, mk_iff]
+-- class SmallAsQuiv.{v, u, w} (F : WalkingQuiver ⥤ Type w) where
+--   [small_vertex : Small.{u} (Vertex F)]
+--   [small_edge : ∀ (s t : Vertex F), Small.{v} (Edge F s t)]
+
+-- abbrev SmallAsQuiv.objProp.{v, u, w} : ObjectProperty (WalkingQuiver ⥤ Type w) :=
+--   SmallAsQuiv.{v, u}
+
+-- @[pp_with_univ]
+-- def SmallAsQuivSubcategory.{v, u, w} :=  SmallAsQuivSubcategory.{v, u, w}
+--   -- SmallAsQuiv.objProp.FullSubcategory.{v, u, w}
+
+-- instance : Category SmallAsQuivSubcategory :=
+--   inferInstanceAs <| Category <| ObjectProperty.FullSubcategory _
+
+/-- An abbrev for `SmallAsQuiv.Is` that we can hang `pp_with_univ` on. -/
+@[pp_with_univ] abbrev IsSmallAsQuiv.{v, u, w} := SmallAsQuiv.{v, u, w}.Is
+
+/-- An abbrev for `SmallAsQuiv.FullSubcategory` that we can hang `pp_with_univ` on. -/
+@[pp_with_univ] abbrev SmallAsQuivSubcategory.{v, u, w} := SmallAsQuiv.{v, u, w}.FullSubcategory
+
+namespace SmallAsQuiv
+universe v' u' v u w' w
+--TODO consolidate `open`s
+open Quiv PresheafWalkingQuiver uliftFunctor
+variable (F : WalkingQuiver ⥤ Type w) (V : Quiv.{v, u})
+
+/-- Make an instance of `SmallOfQuivIs.{v, u, w}` via typeclass synthesis. Not an instance as it
+would cause a loop with `Small.{u} (Vertex F)` and `Small.{v} (Edge F _ _)` -/
+def mk [Small.{u} (Vertex F)] [∀ s t, Small.{v} (Edge F s t)] : IsSmallAsQuiv.{v, u, w} F :=
+  ⟨inferInstance, inferInstance⟩
+
+variable [IsSmallAsQuiv.{v, u, w} F]
+
+/-- Make an object of `SmallOfQuiv.{v, u, w}.FullSubcategory`, satisfying proof obligations by
+typeclass synthesis. -/
+@[simps!]
+abbrev mkObj : SmallAsQuivSubcategory.{v, u, w} := ObjectProperty.FullSubcategory.mk' _ F
+-- lemma small_vertex
+
+variable {F}
+
+instance : Small.{u} (Vertex F) := SmallAsQuiv.prop_of_is F |>.small_vertex
+instance (s t : Vertex F) : Small.{v} (Edge F s t) := SmallAsQuiv.prop_of_is F |>.small_edge s t
+
+-- instance _root_.CategoryTheory.ObjectProperty.Is.small_vertex {F : WalkingQuiver ⥤ Type w}
+--     [inst : SmallAsQuiv.{v, u, w}.Is F] : Small.{u} (Vertex F) :=
+--   inst.prop.1
+
+-- instance _root_.CategoryTheory.ObjectProperty.Is.small_edge {F : WalkingQuiver ⥤ Type w}
+--     [inst : SmallAsQuiv.{v, u, w}.Is F] (s t : Vertex F) :
+--   Small.{v} (Edge F s t) := inst.prop.2 s t
 
 instance (F : SmallAsQuivSubcategory.{v, u, w}) : SmallAsQuiv.{v, u, w} F.1 := F.2
 instance (F : SmallAsQuivSubcategory.{v, u, w}) :
-  SmallAsQuiv.{v, u, w} (fullSubcategoryInclusion _ |>.obj F) := F.2
+  SmallAsQuiv.{v, u, w} (ObjectProperty.ι _ |>.obj F) := F.2
 
 /-- Producing a functor from a `Quiv.{v, u}` is always `SmallAsQuiv.{v, u}`, regardless of the
 third universe level to `asFunctor`. -/
-instance smallAsQuiv_asFunctor (V : Quiv.{v, u}) : SmallAsQuiv.{v, u} V.asFunctor where
+instance smallAsQuiv_asFunctor : SmallAsQuiv.{v, u}.Is V.asFunctor := SmallAsQuiv.mk _
 
 /-- `smallAsQuiv_asFunctor` written in terms of `Functor.of asFunctor`. -/
-instance smallAsQuiv_asFunctor' (V : Quiv.{v, u}) :
-    SmallAsQuiv.{v, u} (Functor.of asFunctor.{w, v, u} |>.obj V) :=
+instance smallAsQuiv_asFunctor' :
+    SmallAsQuiv.{v, u}.Is (Functor.of asFunctor.{w, v, u} |>.obj V) :=
   smallAsQuiv_asFunctor V
 
-instance smallAsQuiv_trans {F : WalkingQuiver ⥤ Type w} [SmallAsQuiv.{v, u, w} F] :
-    SmallAsQuiv.{max v' v, max u' u, w} F where
-  small_vertex := small_lift _
-  small_edge _ _ := small_lift _
+instance smallAsQuiv_trans {F : WalkingQuiver ⥤ Type w} [IsSmallAsQuiv.{v, u, w} F] :
+    SmallAsQuiv.{max v' v, max u' u, w}.Is F :=
+  ⟨small_lift _, fun _ _ ↦ small_lift _⟩
 
 instance smallAsQuiv_closedUnderIso : IsClosedUnderIsomorphisms SmallAsQuiv.{v, u, w} where
-  of_iso {F G} μ [_] :=
+  of_iso {F G} μ h :=
+  have := SmallAsQuiv.is_of_prop h
   { small_vertex := small_map ((μ.app 0).toEquiv.symm),
     small_edge s t :=
       let εᵥ := (μ.app 0).toEquiv.symm
@@ -546,82 +589,105 @@ instance smallAsQuiv_closedUnderIso : IsClosedUnderIsomorphisms SmallAsQuiv.{v, 
           simp [src, tgt, εᵥ, this]
       small_map εₑ }
 
-namespace SmallAsQuivSubcategory
+-- namespace SmallAsQuivSubcategory
+
+/-- An abbreviation of
+`ObjectProperty.FullSubcategory.obj (P := SmallAsQuivSubcategory.{v, u, w})`, provided
+for convenience. -/
+abbrev obj (F : SmallAsQuivSubcategory.{v, u, w}) := ObjectProperty.FullSubcategory.obj F
+
+instance {F : SmallAsQuivSubcategory.{v, u, w}} : IsSmallAsQuiv.{v, u, w} (obj F) :=
+  is_of_prop _ F.property
+
+/-- Typecheck a hom in `SmallAsQuiv.FullSubcategory` as a natural transformation between
+its `obj`s. These are definitionally the same, but treating them as such confuses `simp`. -/
+@[reducible] def hom {F G : SmallAsQuivSubcategory.{v, u, w}} (η : F ⟶ G) : obj F ⟶ obj G :=
+  η
 
 @[ext]
 lemma hom_ext {F G : SmallAsQuivSubcategory.{v, u, w}} {μ ν : F ⟶ G}
-    (h : ∀ X, μ.app X = ν.app X) : μ = ν := by
+    (h : ∀ X, (hom μ).app X = (hom ν).app X) : μ = ν := by
   apply NatTrans.ext
   ext1 X
   simpa using h X
 
-abbrev obj (F : SmallAsQuivSubcategory.{v, u, w}) := F.1
+-- def obj (F : SmallAsQuiv.)
 
 @[simp]
 lemma id_app {F : SmallAsQuivSubcategory.{v, u, w}} X :
-    NatTrans.app (𝟙 F) X = 𝟙 (F.1.obj X) := rfl
+     (hom <| 𝟙 F).app X = 𝟙 (obj F |>.obj X) := rfl
+
+-- @[simp]
+-- lemma comp_comp_left
+--     {F : WalkingQuiver ⥤ Type w} {G H I : SmallAsQuivSubcategory.{v, u, w}}
+--     (μ : F ⟶ G.1) (η : G ⟶ H) (ϑ : H ⟶ I) :
+--     (μ ≫ (η ≫ ϑ : G ⟶ I)) = (μ ≫ η ≫ ϑ) := by
+--   rfl
+
+-- @[simp]
+-- lemma comp_comp_right
+--     {F G H : SmallAsQuivSubcategory.{v, u, w}} {I : WalkingQuiver ⥤ Type w}
+--     (μ : F ⟶ G) (η : G ⟶ H) (ϑ : H.1 ⟶ I) :
+--     ((μ ≫ η : F ⟶ H) ≫ ϑ : F.1 ⟶ I) = ((μ ≫ η : F.1 ⟶ H.1) ≫ ϑ) := by
+--   rfl
+
+lemma comp_eq_comp {F G H : SmallAsQuivSubcategory.{v, u, w}} (μ : F ⟶ G) (η : G ⟶ H) :
+    μ ≫ η = (hom μ ≫ hom η : obj F ⟶ obj H) := rfl
 
 @[simp]
-lemma comp_comp_left
-    {F : WalkingQuiver ⥤ Type w} {G H I : SmallAsQuivSubcategory.{v, u, w}}
-    (μ : F ⟶ G.1) (η : G ⟶ H) (ϑ : H ⟶ I) :
-    (μ ≫ (η ≫ ϑ : G ⟶ I)) = (μ ≫ η ≫ ϑ) := by
-  rfl
+lemma comp_app {F G H : SmallAsQuivSubcategory.{v, u, w}} (μ : F ⟶ G) (η : G ⟶ H) X :
+    (hom (μ ≫ η)).app X = (hom μ).app X ≫ (hom η).app X := rfl
 
-@[simp]
-lemma comp_comp_right
-    {F G H : SmallAsQuivSubcategory.{v, u, w}} {I : WalkingQuiver ⥤ Type w}
-    (μ : F ⟶ G) (η : G ⟶ H) (ϑ : H.1 ⟶ I) :
-    ((μ ≫ η : F ⟶ H) ≫ ϑ : F.1 ⟶ I) = ((μ ≫ η : F.1 ⟶ H.1) ≫ ϑ) := by
-  rfl
-
-lemma comp_eq_comp
-    {F G H : SmallAsQuivSubcategory.{v, u, w}} (μ : F ⟶ G) (η : G ⟶ H) :
-    μ ≫ η = (μ ≫ η : F.1 ⟶ H.1) := by rfl
+#discr_tree_simp_key comp_app
 
 /-- Create an isomorphism in `SmallAsQuivSubcategory.{v, u, w}` from a natural
 isomorphism between functors `F G : WalkingQuiver ⥤ Type w`. -/
 @[simp]
-def isoMk {F G : WalkingQuiver ⥤ Type w}
-    [SmallAsQuiv.{v, u, w} F] [SmallAsQuiv.{v, u, w} G] (μ : F ≅ G) :
-    (⟨F, ‹_›⟩ : SmallAsQuivSubcategory) ≅ ⟨G, ‹_›⟩ :=
-  InducedCategory.isoMk μ
+def isoMk {F G : WalkingQuiver ⥤ Type w} [IsSmallAsQuiv.{v, u, w} F] [IsSmallAsQuiv.{v, u, w} G]
+    (μ : F ≅ G) : mkObj F ≅ mkObj G := InducedCategory.isoMk μ
 
-end SmallAsQuivSubcategory
+end SmallAsQuiv
 
+open Quiv PresheafWalkingQuiver in
+/-- Construct a bundled quiver from a small functor out of the `WalkingQuiver`. -/
 @[simps -isSimp]
-def ofFunctor F [SmallAsQuiv.{v, u, w} F] : Quiv.{v, u} where
+def ofFunctor.{v, u, w} F [IsSmallAsQuiv.{v, u, w} F] : Quiv.{v, u} where
   α := Shrink (Vertex F)
   str := { Hom x y := Shrink (Edge F (equivShrink _ |>.symm x) (equivShrink _ |>.symm y)) }
 
+open uliftFunctor in
 /-- If `F` is `SmallAsQuiv.{v, u}`, then so is `F ⋙ uliftFunctor.{w}` for any `w`. -/
-instance uliftFunctor_smallAsQuiv {F : WalkingQuiver ⥤ Type w} [inst : SmallAsQuiv.{v, u, w} F] :
-    SmallAsQuiv.{v, u} (F ⋙ uliftFunctor.{w'}) where
-  small_vertex := ⟨⟨ inst.small_vertex.1.choose,
-    ⟨vertexEquiv.trans inst.small_vertex.1.choose_spec.some⟩⟩⟩
-  small_edge s t :=
-    let τ := inst.small_edge (vertexEquiv s) (vertexEquiv t) |>.1
-    ⟨⟨τ.choose, ⟨edgeEquiv s t |>.trans τ.choose_spec.some⟩⟩⟩
+instance uliftFunctor_smallAsQuiv.{v, u, w', w} {F : WalkingQuiver ⥤ Type w}
+    [IsSmallAsQuiv.{v, u, w} F] :
+    SmallAsQuiv.{v, u}.Is (F ⋙ uliftFunctor.{w'}) where
+  prop :=
+  { small_vertex := ⟨⟨ SmallAsQuiv.prop_of_is F |>.small_vertex.1.choose,
+      ⟨vertexEquiv.trans <| SmallAsQuiv.prop_of_is F |>.small_vertex.1.choose_spec.some⟩⟩⟩
+    small_edge s t :=
+      let τ := SmallAsQuiv.prop_of_is F |>.small_edge (vertexEquiv s) (vertexEquiv t) |>.1
+      ⟨⟨τ.choose, ⟨edgeEquiv s t |>.trans τ.choose_spec.some⟩⟩⟩ }
+
 
 namespace ofFunctor
-variable {F : WalkingQuiver ⥤ Type w} [SmallAsQuiv.{v, u, w} F]
+universe v' u' v u w' w
+open Quiv PresheafWalkingQuiver uliftFunctor
+
+variable {F : WalkingQuiver ⥤ Type w} [IsSmallAsQuiv.{v, u, w} F]
 
 instance : Quiver (Shrink <| Vertex F) := ofFunctor F |>.str
 
 -- @[simp]
-noncomputable def mk  :
-    Vertex F → (ofFunctor F) := equivShrink (Vertex F)
+noncomputable def mk (X : Vertex F) : ofFunctor F := equivShrink (Vertex F) X
 
 noncomputable abbrev out (x : ofFunctor F) : Vertex F := equivShrink (Vertex F) |>.symm x
 
 @[simp]
-lemma out_mk  (X : Vertex F) : out (mk X) = X := by simp [mk, out]
+lemma out_mk (X : Vertex F) : out (mk X) = X := by simp [mk, out]
 
 @[simp]
-lemma mk_out  (x : ofFunctor F) : mk (out x) = x := by simp [mk, out]
+lemma mk_out (x : ofFunctor F) : mk (out x) = x := by simp [mk, out]
 
-/-- Help the type-checker recognize edges of `ofFunctor`s. Hides a cast, so
-use with caution. -/
+/-- Help the type-checker recognize edges of `ofFunctor`s. Hides a cast, so use with caution. -/
 -- @[simp]
 noncomputable def mkHom {S T : Vertex F} : (Edge F S T) → (mk S ⟶ mk T) :=
   Edge.equivOfEq (out_mk _) (out_mk _) |>.symm.trans <| equivShrink (Edge F _ _)
@@ -631,24 +697,21 @@ noncomputable def outHom {s t : ofFunctor F} : (s ⟶ t) → (Edge F (out s) (ou
   equivShrink (Edge F (out s) (out t)) |>.symm
 
 @[simp]
-lemma outHom_mkHom  {S T : Vertex F} (e : Edge F S T) :
+lemma outHom_mkHom {S T : Vertex F} (e : Edge F S T) :
     outHom (mkHom e) = edgeOfEq e (out_mk S).symm (out_mk T).symm := by
   unfold outHom mkHom
   dsimp
   simp_rw [equivShrink _ |>.symm_apply_apply]
 
-lemma mk_injective : Function.Injective (@mk F _) :=
-  Equiv.injective (equivShrink _)
+lemma mk_injective : Function.Injective (@mk F _) := Equiv.injective (equivShrink _)
 
 @[simp]
-lemma mk_inj {X Y : Vertex F} : mk X = mk Y ↔ X = Y :=
-  ⟨@mk_injective F _ _ _, by rintro rfl; rfl⟩
+lemma mk_inj {X Y : Vertex F} : mk X = mk Y ↔ X = Y := ⟨@mk_injective F _ _ _, by rintro rfl; rfl⟩
 
-lemma out_injective : Function.Injective (@out F _) :=
-  Equiv.injective (equivShrink _ |>.symm)
+lemma out_injective : Function.Injective (@out F _) := Equiv.injective (equivShrink _ |>.symm)
 
 @[simp]
-lemma mkHom_edgeOfEq  {S S' T T' : Vertex F}
+lemma mkHom_edgeOfEq {S S' T T' : Vertex F}
     (e : Edge F S T) {hs : S = S'} {ht : T = T'} :
     mkHom (edgeOfEq e hs ht) = Quiver.homOfEq (mkHom e) (congrArg mk hs) (congrArg mk ht) := by
   cases hs; cases ht; simp
@@ -661,7 +724,7 @@ lemma homOfEq_mkHom {S S' T T' : Vertex F} (e : Edge F S T)
 
 /-- Remove `out (mk ...)` pairs from the front of a chain of compositions. -/
 @[simps]
-def edge_unit {S T : Vertex F}: Edge F (out (mk S)) (out (mk T)) ≃ Edge F S T where
+noncomputable def edge_unit {S T : Vertex F} : Edge F (out (mk S)) (out (mk T)) ≃ Edge F S T where
   toFun e := edgeOfEq e (out_mk S) (out_mk T)
   invFun e := edgeOfEq e (out_mk S).symm (out_mk T).symm
   left_inv e := by simp
@@ -669,7 +732,7 @@ def edge_unit {S T : Vertex F}: Edge F (out (mk S)) (out (mk T)) ≃ Edge F S T 
 
 /-- Remove `out (mk ...)` pairs from the back of a chain of compositions. -/
 @[simps]
-def edge_unit_whisker {G : WalkingQuiver ⥤ Type w} [SmallAsQuiv.{v', u'} G]
+noncomputable def edge_unit_whisker {G : WalkingQuiver ⥤ Type w} [IsSmallAsQuiv.{v', u'} G]
     {S T : Vertex F} (f : Vertex F → Vertex G) :
     Edge G (f <| out (mk S)) (f <| out (mk T)) ≃ Edge G (f S) (f T) where
   toFun e := edgeOfEq e (congrArg f (out_mk S)) (congrArg f (out_mk T))
@@ -702,7 +765,7 @@ noncomputable def recOn_mkHom
 
 @[simp]
 lemma recOn_mk_mk {motive : ofFunctor F → Sort*}
-    (x : Vertex F) (h : (X : Vertex F) → motive (mk X)):
+    (x : Vertex F) (h : (X : Vertex F) → motive (mk X)) :
     Shrink.rec h (mk x) = h x := by
   simp only [mk, Shrink.rec, eqRec_eq_cast, cast_eq_iff_heq]
   rw [Equiv.symm_apply_apply]
@@ -718,9 +781,9 @@ lemma recOn_mkHom_mkHom {motive : (x y : ofFunctor F) → (x ⟶ y) → Sort*}
   congr
 
 @[simp]
-lemma mkHom_outHom {F : WalkingQuiver ⥤ Type w} [SmallAsQuiv.{v, u, w} F] {s t : ofFunctor F}
+lemma mkHom_outHom {F : WalkingQuiver ⥤ Type w} [IsSmallAsQuiv.{v, u, w} F] {s t : ofFunctor F}
     (f : s ⟶ t) : mkHom (outHom f) = Quiver.homOfEq f (mk_out s).symm (mk_out t).symm := by
-  cases' f using recOn_mkHom with s t f
+  cases f using recOn_mkHom with | @h s t f =>
   rw [outHom_mkHom, mkHom_edgeOfEq]
 
 @[simps]
@@ -733,210 +796,226 @@ noncomputable def mkHomEquiv {S T : Vertex F} : (Edge F S T) ≃ (mk S ⟶ mk T)
   left_inv e := by simp
   right_inv e := by simp
 
+open SmallAsQuiv in
 /-- `ofFunctor` is functorial. -/
 @[simps]
 noncomputable instance functorial :
-    Functorial (ofFunctor <| SmallAsQuivSubcategory.obj.{v, u, w} ·) where
-  map' {F G} η := {
-    obj := mk ∘ (η.app 0) ∘ out
-    map := mkHom ∘ (⟨η.app 1 ·.1, by simp, by simp⟩) ∘ outHom
-  }
-  map_id' F := by
+    Functorial (ofFunctor <| obj.{v, u, w} ·) where
+  map {F G} η :=
+  { obj := mk ∘ ((hom η).app 0) ∘ out
+    map := mkHom ∘ (⟨(hom η).app 1 ·.1, by simp, by simp⟩) ∘ outHom }
+  map_id {F} := by
     fapply Prefunctor.ext'
     · intro X; cases X using recOn_mk; simp
     · intro X Y f; cases f using recOn_mkHom; simp
-  map_comp' {F G H} η ϑ := by
+  map_comp {F G H} η ϑ := by
     fapply Prefunctor.ext'
-    · intro X; simp [SmallAsQuivSubcategory.comp_eq_comp, Quiv.comp_eq_comp]
+    · intro X; simp [SmallAsQuiv.comp_eq_comp, Quiv.comp_eq_comp]
     · intro X Y f; cases f using recOn_mkHom
-      simp only [Function.comp_apply, SmallAsQuivSubcategory.comp_eq_comp,
-        NatTrans.comp_app, FunctorToTypes.comp, types_comp_apply, outHom_mkHom, comp_eq_comp,
-        Prefunctor.comp_obj, Prefunctor.comp_map]
+      simp only [Function.comp_apply, SmallAsQuiv.comp_eq_comp, FunctorToTypes.comp,
+      outHom_mkHom, SmallAsQuiv.comp_eq_comp]
       apply eq_of_heq
       rw [Quiver.homOfEq_heq_right_iff]
       congr <;> simp
 
+open SmallAsQuiv in
 @[simp]
-lemma mk_nat {F G : WalkingQuiver ⥤ Type w} [SmallAsQuiv.{v, u, w} F] [SmallAsQuiv.{v, u, w} G]
-    (μ : F ⟶ G) (X : Vertex F) :
-    let μ : ((⟨F, ‹_›⟩ : SmallAsQuivSubcategory.{v, u, w}) ⟶ ⟨G, ‹_›⟩) := μ
-    (map (ofFunctor <| SmallAsQuivSubcategory.obj.{v, u, w} ·) μ).obj (mk X)
-      = mk (μ.app 0 X) := by
+lemma mk_nat {F G : WalkingQuiver ⥤ Type w}
+    [IsSmallAsQuiv.{v, u, w} F] [IsSmallAsQuiv.{v, u, w} G] (μ : F ⟶ G) (X : Vertex F) :
+    let μ : mkObj F ⟶ mkObj G := μ
+    (map (ofFunctor <| obj.{v, u, w} ·) μ).obj (mk X) = mk ((hom μ).app 0 X) := by
   simp
 
 @[simp]
-lemma mkHom_nat {F G : WalkingQuiver ⥤ Type w} [SmallAsQuiv.{v, u, w} F] [SmallAsQuiv.{v, u, w} G]
+lemma mkHom_nat {F G : WalkingQuiver ⥤ Type w}
+    [IsSmallAsQuiv.{v, u, w} F] [IsSmallAsQuiv.{v, u, w} G]
     (μ : F ⟶ G) {S T : Vertex F} (e : Edge F S T) :
-    let μ : ((⟨F, ‹_›⟩ : SmallAsQuivSubcategory.{v, u, w}) ⟶ ⟨G, ‹_›⟩) := μ
-    (map (ofFunctor <| SmallAsQuivSubcategory.obj.{v, u, w} ·) μ).map (mkHom e)
-      = Quiver.homOfEq (mkHom (hom <| μ.app 1 e)) (by simp) (by simp) := by
+    let μ : SmallAsQuiv.mkObj F ⟶ SmallAsQuiv.mkObj G := μ
+    (map (ofFunctor <| SmallAsQuiv.obj.{v, u, w} ·) μ).map (mkHom e)
+      = Quiver.homOfEq (mkHom (hom <| (SmallAsQuiv.hom μ).app 1 e.1)) (by simp) (by simp) := by
   simp_rw [homOfEq_mkHom, functorial_map_map, Function.comp_apply, outHom_mkHom]
   congr
 
 /-- `ofFunctor` respects isomorphisms: it maps isomorphic functors to isomorphic quivers. -/
 @[simps!]
 noncomputable def mapIso {F G : WalkingQuiver ⥤ Type w}
-    [SmallAsQuiv.{v, u} F] [SmallAsQuiv.{v, u} G] (η : F ≅ G) : (ofFunctor F) ≅ (ofFunctor G) :=
-  Functor.of (ofFunctor <| SmallAsQuivSubcategory.obj.{v, u, w} ·) |>.mapIso <|
-     SmallAsQuivSubcategory.isoMk η
+    [SmallAsQuiv.{v, u}.Is F] [SmallAsQuiv.{v, u}.Is G] (η : F ≅ G) :
+    ofFunctor F ≅ ofFunctor G :=
+  Functor.of (ofFunctor <| SmallAsQuiv.obj.{v, u, w} ·) |>.mapIso <| SmallAsQuiv.isoMk η
 
 @[simp]
 lemma mapIso_hom {F G : WalkingQuiver ⥤ Type w}
-    [SmallAsQuiv.{v, u, w} F] [SmallAsQuiv.{v, u, w} G] (η : F ≅ G) :
-    -- let η' := SmallAsQuivSubcategory.isoMk η
+    [IsSmallAsQuiv.{v, u, w} F] [IsSmallAsQuiv.{v, u, w} G] (η : F ≅ G) :
     (mapIso η).hom = { obj := mk ∘ (η.hom.app 0) ∘ out,
                        map := mkHom ∘ (⟨η.hom.app 1 ·.1, by simp, by simp⟩) ∘ outHom } := rfl
 
 @[simp]
 lemma mapIso_inv {F G : WalkingQuiver ⥤ Type w}
-    [SmallAsQuiv.{v, u, w} F] [SmallAsQuiv.{v, u, w} G] (η : F ≅ G) :
-    -- let η' := SmallAsQuivSubcategory.isoMk η
+    [IsSmallAsQuiv.{v, u, w} F] [IsSmallAsQuiv.{v, u, w} G] (η : F ≅ G) :
     (mapIso η).inv = { obj := mk ∘ (η.inv.app 0) ∘ out,
                        map := mkHom ∘ (⟨η.inv.app 1 ·.1, by simp, by simp⟩) ∘ outHom } := rfl
 
 end ofFunctor
-    -- _
-    -- simp [FullSubcategory.l]
-end
-section universe w' w v u v' u'
+-- end
 
-variable (F) [SmallAsQuiv.{v, u, max w v u} F]
-open ofFunctor SmallAsQuivSubcategory
+section
+universe w' w v u v' u'
+
+variable (F) [SmallAsQuiv.{v, u, max w v u}.Is F]
+open ofFunctor SmallAsQuiv Quiv PresheafWalkingQuiver
+open scoped SmallAsQuiv
 -- attribute [-simp] Shrink.out
 
 
 /-- `asFunctor` and `ofFunctor` at the same universe level compose to the identity
 (up to isomorphism). -/
-@[simps!]
-noncomputable def asFunctor_ofFunctor_iso : asFunctor.{w} (ofFunctor F) ≅ F :=
+@[simps!?]
+noncomputable def asFunctorOfFunctorNatIso : asFunctor.{w} (ofFunctor F) ≅ F :=
   NatIso.ofComponents
     (fun
-      | 0 =>  { hom X := out X.1, inv X := .up <| ofFunctor.mk X }
-      | 1 =>  { hom f := (ofFunctor.outHom f.2.2).1,
-                inv e := ⟨⟨ofFunctor.mk (src e)⟩, ⟨ofFunctor.mk (tgt e)⟩, ofFunctor.mkHom (hom e)⟩,
-                hom_inv_id := by
-                  ext ⟨s, t, e⟩
-                  apply asFunctor.hom_ext
-                  all_goals simp [src, tgt, asHom, types_comp_apply, Quiver.homOfEq]
-                inv_hom_id := by ext; simp [asHom, types_comp_apply, edgeOfEq] })
+      | 0 => { hom X := out X.1, inv X := .up <| ofFunctor.mk X }
+      | 1 => { hom f := (ofFunctor.outHom f.2.2).1,
+               inv e := ⟨⟨ofFunctor.mk (src e)⟩, ⟨ofFunctor.mk (tgt e)⟩, ofFunctor.mkHom (hom e)⟩,
+               hom_inv_id := by
+                 ext ⟨s, t, e⟩
+                 apply asFunctor.hom_ext
+                 all_goals simp [src, tgt, types_comp_apply, Quiver.homOfEq]
+               inv_hom_id := by ext; simp [types_comp_apply, edgeOfEq] })
 
-
-open Functor.essImage in
 /-- The essential image of `asFunctor.{w, v, u}` is equivalent to the subcategory of functors
 `WalkingQuiver ⥤ Type max w v u` that are `SmallAsQuiv.{v, u}`. -/
 @[simps! +simpRhs]
 noncomputable def asFunctor.essImageEquiv :
-    (Functor.of asFunctor.{w, v, u}).EssImageSubcategory ≌ SmallAsQuivSubcategory.{v, u} :=
-  Equivalence.ofFullSubcategory fun Q ↦
-    ⟨fun h ↦ prop_of_iso SmallAsQuiv.{v, u} (getIso h) inferInstance,
-      fun _ ↦ ⟨ofFunctor Q, ⟨asFunctor_ofFunctor_iso Q⟩⟩⟩
-
-
+    (Functor.of asFunctor.{w, v, u}).EssImageSubcategory ≌ SmallAsQuiv.{v, u}.FullSubcategory :=
+  .symm <| ObjectProperty.fullSubcategoryCongr <| by
+    ext Q; constructor <;> intro h
+    · replace h := is_of_prop _ h; use ofFunctor Q; exact ⟨asFunctorOfFunctorNatIso _⟩
+    · exact prop_of_iso SmallAsQuiv.{v, u} (Functor.essImage.getIso h) <| prop_of_is _ _
 
 /-- The category of quivers `Quiv.{v, u}` is equivalent to the subcategory of functors
 `WalkingQuiver ⥤ Type max w v u` that are `SmallAsQuiv.{v, u}`. -/
--- @[simps!?]
-noncomputable def quivEquiv : Quiv.{v, u} ≌ SmallAsQuivSubcategory.{v, u, max w v u} :=
+noncomputable def quivEquiv : Quiv.{v, u} ≌ SmallAsQuiv.{v, u, max w v u}.FullSubcategory :=
   have : (Functor.of asFunctor.{w, v, u}).toEssImage.IsEquivalence := inferInstance
   let ε := (Functor.of asFunctor.{w, v, u}).toEssImage.asEquivalence.trans asFunctor.essImageEquiv
   let ι : ε.inverse ≅ (Functor.of (ofFunctor.{v, u} <| obj ·)) :=
     let ι' := ε.counitIso ≪≫
-      NatIso.ofComponents (isoMk <| asFunctor_ofFunctor_iso ·.1 |>.symm)
-      @fun {F G} (η : F.1 ⟶ G.1) ↦ by
-        rcases F with ⟨F, hF⟩; rcases G with ⟨G, hG⟩
-        change F ⟶ G at η
+      NatIso.ofComponents (isoMk <| asFunctorOfFunctorNatIso ·.1 |>.symm) fun {F G} η ↦ by
         simp only [Functor.of, ε]
         ext (z | o) x
-        · simp [ULift.map, SmallAsQuivSubcategory.comp_eq_comp]
+        · simp
         · apply asFunctor.hom_ext; rotate_right
-          · simp [ULift.map, SmallAsQuivSubcategory.comp_eq_comp, hom]
+          · simp [SmallAsQuiv.hom]
             congr! 1; rotate_right
             · simp_all [Subtype.heq_iff_coe_eq]
             all_goals simp
-          all_goals simp [ULift.map, SmallAsQuivSubcategory.comp_eq_comp]
+          all_goals simp [ULift.map, SmallAsQuiv.comp_eq_comp]
     (Functor.FullyFaithful.whiskeringRight (ε.fullyFaithfulFunctor) _).preimageIso ι'
   ε.changeInverse ι
 
 @[simp]
 lemma quivEquiv_functor :
-    quivEquiv.{w, v, u}.functor =
-      FullSubcategory.lift SmallAsQuiv.{v, u} (Functor.of asFunctor.{w, v, u}) inferInstance := rfl
+    quivEquiv.{w, v, u}.functor = lift _ (Functor.of asFunctor.{w, v, u}) fun _ ↦ prop_of_is _ _ :=
+  rfl
 
 @[simp]
 lemma quivEquiv_inverse :
     quivEquiv.{w, v, u}.inverse = Functor.of (ofFunctor.{v, u} <| obj ·) := rfl
 
 
-open SmallAsQuivSubcategory in
+-- open SmallAsQuiv in
 @[simps!]
 noncomputable def ofFunctor_lift_asFunctor_iso :
-    (FullSubcategory.lift SmallAsQuiv.{v, u} (Functor.of asFunctor.{w}) inferInstance) ⋙
+    (SmallAsQuiv.{v, u}.lift (Functor.of asFunctor.{w}) fun _ ↦ prop_of_is SmallAsQuiv _) ⋙
       (Functor.of (ofFunctor.{v, u} <| obj ·) (I := ofFunctor.functorial)) ≅ 𝟭 _ :=
   quivEquiv.unitIso.symm
 
 
-/-- `ofFunctor` and `asFunctor` compose to the identity (up to isomorphism), regardless of
+/-- `ofFunctor` and `asFunctor` compose to the identity (up to natural isomorphism), regardless of
 `asFunctor`'s extra universe level. -/
-@[simps!?]
-noncomputable def ofFunctor_asFunctor_iso (V : Quiv.{v, u}) :
+-- @[simps!? +simpRhs]
+noncomputable def ofFunctorAsFunctorNatIso (V : Quiv.{v, u}) :
     ofFunctor (asFunctor.{w} V) ≅ V :=
   ofFunctor_lift_asFunctor_iso.{w, v, u}.app V
 
 /-- The category `SmallAsQuivSubcategory.{v, u, max w v u}` is equivalent to the category
 `SmallAsQuivSubcategory.{v, u, max w' v u}` for any `w', w`. -/
-@[simps!, pp_with_univ] noncomputable def smallAsQuivSubcategoryEquiv :
-    SmallAsQuivSubcategory.{v, u, max w v u} ≌ SmallAsQuivSubcategory.{v, u, max w' v u} :=
+@[pp_with_univ] noncomputable def SmallAsQuiv.fullSubcategoryEquiv :
+    SmallAsQuivSubcategory.{v, u, max w v u} ≌
+      SmallAsQuivSubcategory.{v, u, max w' v u} :=
   quivEquiv.{w, v, u}.symm.trans quivEquiv.{w', v, u}
+
+-- lemma SmallAsQuiv.fullSubcategoryEquiv_functor_obj_vertex
+--   (X : SmallAsQuivSubcategory.{v, u, max w v u}) :
+--   (obj <| fullSubcategoryEquiv.functor.obj X).obj 0 =
+--     ULift.{max w' v, u} ↑((Functor.of fun x ↦ ofFunctor (obj x)).obj X) := rfl
+
+-- lemma SmallAsQuiv.fullSubcategoryEquiv_functor_obj_obj_one
+--   (X : SmallAsQuivSubcategory.{v, u, max w v u}) :
+--   (obj <| fullSubcategoryEquiv.functor.obj X).obj 0 =
+--     ULift.{max w' v, u} ↑((Functor.of fun x ↦ ofFunctor (obj x)).obj X) := rfl
+
+-- lemma SmallAsQuiv.fullSubcategoryEquiv_functor_obj_obj_obj
+--   (X : SmallAsQuiv.FullSubcategory) (x : WalkingQuiver) :
+--   (fullSubcategoryEquiv.functor.obj X).obj.obj x =
+--     match x with
+--     | 0 => ULift.{max w' v, u} ↑((Functor.of fun x ↦ ofFunctor (obj x)).obj X)
+--     | 1 =>
+--       (s : ULift.{max w' v, u} ↑((Functor.of fun x ↦ ofFunctor (obj x)).obj X)) ×
+--         (t : ULift.{max w' v, u} ↑((Functor.of fun x ↦ ofFunctor (obj x)).obj X)) × (s.down ⟶ t.down)
 
 namespace quivEquiv
 
 /-- `quivEquiv.{w}.functor` as a functor into `WalkingQuiver ⥤ Type w`. -/
 @[simp]
 noncomputable def inclusion :=
-  quivEquiv.{w, v, u}.functor ⋙ fullSubcategoryInclusion SmallAsQuiv.{v, u}
-
+  quivEquiv.{w, v, u}.functor ⋙ SmallAsQuiv.{v, u}.ι
 
 -- In this section, we explicitly define `whiskerOf` and `whiskerAs` ourselves, because
 -- `Equivalence.congrFoo` would create functors to and from `SmallAsQuivSubcategory`, not
 -- just to `WalkingQuiver ⥤ Type w`.
 variable {C : Type v'} [Category.{u'} C]
+
 /-- Lift a functor `F : C ⥤ WalkingQuiver ⥤ Type max w v u` that satisfies
 `∀ (X : C), SmallAsQuiv.{v, u} (F.obj X)` to a functor `F' : C ⥤ Quiv.{v, u}`. -/
 @[simp]
 noncomputable def whiskerOf (F : C ⥤ WalkingQuiver ⥤ Type max w v u)
-    [hF : ∀ X, SmallAsQuiv.{v, u} (F.obj X)] : C ⥤ Quiv.{v, u} :=
-  FullSubcategory.lift _ F hF ⋙ quivEquiv.{w, v, u}.inverse
+    [hF : ∀ X, IsSmallAsQuiv.{v, u} (F.obj X)] : C ⥤ Quiv.{v, u} :=
+  lift _ F (fun _ ↦ prop_of_is _ _) ⋙ quivEquiv.{w, v, u}.inverse
 
 /-- Lift a functor `F : C ⥤ Quiv.{v, u}` to a functor `F : C ⥤ WalkingQuiver ⥤ Type max w v u`. -/
 @[simp]
 noncomputable def whiskerAs
     (F : C ⥤ Quiv.{v, u}) : C ⥤ WalkingQuiver ⥤ Type max w v u :=
-  F ⋙ quivEquiv.{w}.functor ⋙ fullSubcategoryInclusion _
+  F ⋙ quivEquiv.{w}.functor ⋙ SmallAsQuiv.ι
 
 /-- `whiskerAs.obj X` is `SmallAsQuiv.{v, u}` for all `X` -/
-instance (F : C ⥤ Quiv.{v, u}) (X : C) : SmallAsQuiv.{v, u} (whiskerAs.{w} F |>.obj X) :=
-  inferInstanceAs (SmallAsQuiv.{v, u} (quivEquiv.{w}.functor.obj (F.obj X)).obj)
+instance (F : C ⥤ Quiv.{v, u}) (X : C) : IsSmallAsQuiv.{v, u} (whiskerAs.{w} F |>.obj X) :=
+  inferInstanceAs (IsSmallAsQuiv.{v, u} (quivEquiv.{w}.functor.obj (F.obj X)).obj)
 
+open Functor in
+/-- `whiskerAs` and `whiskerOf` compose to the identity, up to natural isomorphism. -/
 @[simps!]
 noncomputable def whiskerAs_whiskerOf
-    (F : C ⥤ WalkingQuiver ⥤ Type max w v u) [hF : ∀ X, SmallAsQuiv.{v, u} (F.obj X)] :
+    (F : C ⥤ WalkingQuiver ⥤ Type max w v u) [hF : ∀ X, IsSmallAsQuiv.{v, u} (F.obj X)] :
     whiskerAs (whiskerOf F) ≅ F :=
   calc
-  _ ≅ _ := (isoWhiskerRight (Functor.associator _ quivEquiv.{w}.inverse quivEquiv.{w}.functor).symm
-    (fullSubcategoryInclusion _)).symm
-  _ ≅ _ := isoWhiskerRight (isoWhiskerLeft (FullSubcategory.lift _ F hF) quivEquiv.{w}.counitIso) _
+  _ ≅ _ := (isoWhiskerRight
+    (Functor.associator _ quivEquiv.{w}.inverse quivEquiv.{w}.functor).symm SmallAsQuiv.ι).symm
+  _ ≅ _ := isoWhiskerRight
+    (isoWhiskerLeft (lift _ F fun _ ↦ prop_of_is _ _) quivEquiv.{w}.counitIso) _
   _ ≅ _ := isoWhiskerRight (Functor.rightUnitor _) _
-  _ ≅ _ := FullSubcategory.lift_comp_inclusion _ F hF
+  _ ≅ _ := SmallAsQuiv.liftCompιIso F fun _ ↦ prop_of_is _ _
 
+open Functor in
+/- `whiskerOf` and `whiskerAs` compose to the identity, up to natural isomorphism. -/
 @[simps!]
 noncomputable def whiskerOf_whiskerAs (F : C ⥤ Quiv.{v, u}) :
     whiskerOf (whiskerAs F) ≅ F :=
   calc
-  _ ≅ _ := isoWhiskerRight (FullSubcategory.lift_inclusion _ (F ⋙ quivEquiv.{w}.functor))
-              quivEquiv.{w}.inverse
+  _ ≅ _ := isoWhiskerRight
+    (SmallAsQuiv.liftOfCompιIso (F ⋙ quivEquiv.{w}.functor)) quivEquiv.{w}.inverse
   _ ≅ _ := Functor.associator _ _ _
   _ ≅ _ := isoWhiskerLeft F quivEquiv.{w}.unitIso.symm
-
 
 section as
 variable {U V : Quiv.{v, u}} (F G : SmallAsQuivSubcategory.{v, u, max w v u})
@@ -947,37 +1026,33 @@ lemma functor_obj : (quivEquiv.{w}.functor.obj V).obj = V.asFunctor := rfl
 @[simp]
 lemma functor_map (f : U ⟶ V) : quivEquiv.{w}.functor.map f = map asFunctor f := rfl
 
-@[simp]
-lemma functor_vertex : Vertex (quivEquiv.{w}.functor.obj V).1 = ULift.{max w v} V.α := rfl
+-- @[simp]
+-- lemma functor_vertex : Vertex (quivEquiv.{w}.functor.obj V).1 = ULift.{max w v} V.α := rfl
 
-@[simp]
-lemma functor_edge : Edges (quivEquiv.{w}.functor.obj V).1 =
-  ((s t : ULift.{max w v} V) × (s.1 ⟶ t.1)) := rfl
+-- @[simp]
+-- lemma functor_edge : Edges (quivEquiv.{w}.functor.obj V).1 =
+--   ((s t : ULift.{max w v} V) × (s.1 ⟶ t.1)) := rfl
 
-#check asFunctor_ofFunctor_iso
+#check asFunctorOfFunctorNatIso
 
 @[simps!]
-noncomputable def inverse_obj_spec :
-    asFunctor (ofFunctor F.1) ≅ F.obj :=
-  asFunctor_ofFunctor_iso F.1
+noncomputable def inverse_obj_spec : asFunctor (ofFunctor (obj F)) ≅ F.obj :=
+  asFunctorOfFunctorNatIso F.1
 
 variable {F G}
 
 @[simp]
 lemma inverse_map_spec (η : F ⟶ G) :
     quivEquiv.{w}.functor.map (quivEquiv.{w}.inverse.map η) =
-      (asFunctor_ofFunctor_iso F.1).hom ≫ η ≫ (asFunctor_ofFunctor_iso G.1).inv := by
+      (asFunctorOfFunctorNatIso (obj F)).hom ≫ η ≫ (asFunctorOfFunctorNatIso (obj G)).inv := by
   ext (z | o) x
-  · simp [asFunctor_ofFunctor_iso, Functor.asEquivalence, Functor.of,
-      SmallAsQuivSubcategory.comp_eq_comp]; rfl
+  · rfl
   · rcases x with ⟨s, t, e⟩
     apply asFunctor.hom_ext
     rotate_right
-    · simp [Functor.of, hom]
+    · simp [Functor.of, SmallAsQuiv.hom]
       congr! <;> simp
-    all_goals
-      simp [asFunctor_ofFunctor_iso, Functor.asEquivalence, Functor.of,
-        SmallAsQuivSubcategory.comp_eq_comp]; rfl
+    all_goals simp; rfl
 
 -- @[reassoc]
 -- lemma asOfFunctor.unit_naturality_preimage
@@ -1008,7 +1083,7 @@ lemma inverse_map_spec (η : F ⟶ G) :
 
 end quivEquiv.as
 
-def smallAsQuiv_ofMono {F G : WalkingQuiver ⥤ Type w} [SmallAsQuiv.{v, u, w} G]
+def smallAsQuiv_ofMono {F G : WalkingQuiver ⥤ Type w} [IsSmallAsQuiv.{v, u, w} G]
     (μ : F ⟶ G) [hμ : Mono μ] : SmallAsQuiv.{v, u, w} F where
   small_vertex := small_of_injective (f := μ.app 0) (hμ' 0)
   small_edge s t :=
@@ -1032,7 +1107,7 @@ lemma filteredColimit_inj [UnivLE.{w, v}] {J : Type w} [Category.{w} J] [IsFilte
   let iso := (Functor.const J).mapIso (hc.coconePointUniqueUpToIso (pointwiseIsColimit F))
   have i_nat := iso.inv.naturality
   simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id,
-    Cocones.forget_obj, pointwiseCocone_pt, Category.id_comp] at c_nat i_nat
+    pointwiseCocone_pt, Category.id_comp] at c_nat i_nat
   constructor <;> intro h
   case mpr =>
     obtain ⟨k, f, g, hfg⟩ := h
@@ -1046,7 +1121,8 @@ lemma filteredColimit_inj [UnivLE.{w, v}] {J : Type w} [Category.{w} J] [IsFilte
     simpa [h_iso, ← i_nat f, ← i_nat g, h_inj.eq_iff, Types.FilteredColimit.colimit_eq_iff] using h
 
 
-section variable {F G : WalkingQuiver ⥤ Type w} [SmallAsQuiv.{v, u, w} F]
+section
+variable {F G : WalkingQuiver ⥤ Type w} [IsSmallAsQuiv.{v, u, w} F]
 
 /-- For an arrow `ε : F ⟶ G` between presheafs `F G : WalkingQuiver ⥤ Type w`,
 `Epi ε` is sufficient only to prove that the vertex types of `G` are small, because

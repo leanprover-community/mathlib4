@@ -48,6 +48,10 @@ lemma FullSubcategory.id_def (X : P.FullSubcategory) : 𝟙 X = 𝟙 X.obj := rf
 lemma FullSubcategory.comp_def {X Y Z : P.FullSubcategory} (f : X ⟶ Y) (g : Y ⟶ Z) :
     f ≫ g = (f ≫ g : X.obj ⟶ Z.obj) := rfl
 
+/-- Create an object of `P.FullSubcategory`, inferring the proof of `P` by typeclass instance
+synthesis. -/
+@[simps] abbrev FullSubcategory.mk' (X : C) [P.Is X] : P.FullSubcategory := ⟨X, prop_of_is P X⟩
+
 /-- The forgetful functor from a full subcategory into the original category
 ("forgetting" the condition).
 -/
@@ -140,6 +144,19 @@ instance [F.Faithful] : (P.lift F hF).Faithful :=
 
 instance [F.Full] : (P.lift F hF).Full :=
   Functor.Full.of_comp_faithful_iso (P.liftCompιIso F hF)
+
+/-- Lifting the composition of a functor into a full subcategory with the canonical inclusion
+    yields the original functor. This is actually true definitionally. -/
+def liftOfCompιIso (F : C ⥤ P.FullSubcategory) :
+    P.lift (F ⋙ P.ι) (fun _ ↦ FullSubcategory.property _) ≅ F := Iso.refl _
+
+@[simp]
+lemma lift_comp_ι_obj {F : C ⥤ P.FullSubcategory} (X : C) :
+    (P.lift (F ⋙ P.ι) (fun _ ↦ FullSubcategory.property _)).obj X = F.obj X := rfl
+
+@[simp]
+lemma lift_comp_ι_map {F : C ⥤ P.FullSubcategory} {X Y : C} (f : X ⟶ Y) :
+    (P.lift (F ⋙ P.ι) (fun _ ↦ FullSubcategory.property _)).map f = F.map f := rfl
 
 variable {Q}
 

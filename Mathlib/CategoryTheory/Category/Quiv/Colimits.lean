@@ -8,10 +8,8 @@ import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.Types.Shapes
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
-import Mathlib.CategoryTheory.Filtered.Level.Presheaves
+-- import Mathlib.CategoryTheory.Filtered.Level.Presheaves
 import Mathlib.CategoryTheory.Limits.Shapes.FunctorToTypes
-
-import Mathlib.Tactic.LiftLets
 
 /-!
   # Colimits in `Quiv.{v, u}`
@@ -209,12 +207,13 @@ lemma smallAsQuivClosedUnderCoproducts :
         eqToIso (colim_obj _)
     let ε q₀ : (∐ (F.obj ⟨·⟩)).obj q₀ ≅ (j : J) × (F.obj { as := j }).obj q₀ :=
       sigmaObjIso _ q₀ ≪≫ Types.coproductIso _
-    prop_of_iso _ ι {
-      small_vertex := by
+    prop_of_iso _ ι
+    { small_vertex := by
         rw [small_congr (ε 0).toEquiv]
         have h j := hF ⟨j⟩ |>.small_vertex
         infer_instance
       small_edge := by
+        have instF j := is_of_prop _ (hF j)
         unfold Vertex Edge
         rw [Equiv.forall₂_congr (ε 0).toEquiv (ε 0).toEquiv
           (q := fun s t ↦
@@ -222,32 +221,28 @@ lemma smallAsQuivClosedUnderCoproducts :
           fun {s t} ↦ by simp]
         rintro ⟨j, s⟩ ⟨j', t⟩
         rw [small_congr (Equiv.subtypeEquivOfSubtype' (ε 1).toEquiv)]
-        simp [ε]
+        simp only [zero_eq, Iso.toEquiv_comp, Equiv.symm_trans_apply, Iso.toEquiv_symm_fun,
+          Types.coproductIso_mk_comp_inv_apply', ε]
         simp_rw [← types_comp_apply _ (sigmaObjIso (F.obj ⟨·⟩) _).inv, ι_comp_sigmaObjIso_inv,
         Sigma.ι, naturality_src, naturality_tgt, ← Sigma.ι.eq_def,  ← ι_comp_sigmaObjIso_inv,
         types_comp_apply, ← Types.coproductIso_mk_comp_inv_apply (F.obj ⟨·⟩ |>.obj 0),
         Function.Injective.eq_iff (mono_iff_injective (Iso.inv _) |>.mp inferInstance)]
-        by_cases h : j = j'
-        · cases h
-          have {p q r s} : ((p ∧ q) ∧ (r ∧ s)) = ((p ∧ r) ∧ q ∧ s) := by ac_rfl
+        rcases em (j = j') with rfl | h
+        · have {p q r s} : ((p ∧ q) ∧ (r ∧ s)) = ((p ∧ r) ∧ q ∧ s) := by ac_rfl
           simp_rw [Sigma.ext_iff, this, and_self]
-          -- let ε : {e : Σ j, (F.obj j).obj 1 // e.1 = j ∧ HEq (src e.2) s ∧ HEq (tgt e.2) t} ≃
-          --   (j : J)
           rw [small_congr (Equiv.subtypeSubtypeEquivSubtypeInter _ _).symm,
           small_congr (Equiv.subtypeEquivOfSubtype' <| Equiv.sigmaSubtype j)]
-          simp
-          infer_instance
+          simpa using by infer_instance
         · rw [small_congr (Equiv.subtypeEquivRight (q := fun _ ↦ False) ?h)]
           · infer_instance
           · rintro ⟨j, x⟩
-            simp only [Sigma.mk.injEq, iff_false, not_and, and_imp, ε]
-            rintro rfl h₂ rfl
+            simp only [Sigma.mk.injEq, iff_false, not_and, and_imp]
+            rintro rfl ⟨⟩ rfl
             contradiction }
 
-instance (F : J → WalkingQuiver ⥤ Type max w v u) [∀ j, SmallAsQuiv.{v, u} (F j)] :
-    SmallAsQuiv.{v, u} (∐ F) :=
-  smallAsQuivClosedUnderCoproducts.{w, v, u}.colimit
-    fun ⟨j⟩ ↦ inferInstanceAs <| SmallAsQuiv.{v, u} (F j)
+instance (F : J → WalkingQuiver ⥤ Type max w v u) [hF : ∀ j, IsSmallAsQuiv.{v, u} (F j)] :
+    IsSmallAsQuiv.{v, u} (∐ F) :=
+  is_of_prop _ <| smallAsQuivClosedUnderCoproducts.{w, v, u}.colimit (hF ·.as |>.prop)
 
 section
 variable (J : Type w) [Category.{w} J] (C : Type u) [Category.{v} C]
@@ -261,13 +256,11 @@ identify vertices without identifying their edges and thus may produce hom-types
 of size `max v u`. -/
 lemma smallAsQuivClosedUnderColimits_ofSmall [UnivLE.{u, v}] :
     ClosedUnderColimitsOfShape J SmallAsQuiv.{v, u, max w v u} := fun F ι hι hF ↦ by
+  have instF j := is_of_prop _ <| hF j
   suffices ∃ (π : ∐ F.obj ⟶ colimit F), Epi π by
     obtain ⟨π, hπ⟩ := this
     let π' := π ≫ (hι.coconePointUniqueUpToIso (colimit.isColimit F)).inv
     convert smallAsQuiv_ofEpi_ofSmall.{max w v u} π'
-    -- apply smallAsQuivClosedUnderCoproducts.{w}.colimit
-    -- rintro ⟨j⟩
-    -- simpa using hF j
   use Limits.colimitQuotientCoproduct F
   infer_instance
 
