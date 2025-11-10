@@ -3,12 +3,14 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.BilinearForm.Basic
-import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
-import Mathlib.LinearAlgebra.Dimension.Localization
-import Mathlib.LinearAlgebra.QuadraticForm.Basic
-import Mathlib.LinearAlgebra.RootSystem.BaseChange
-import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
+module
+
+public import Mathlib.LinearAlgebra.BilinearForm.Basic
+public import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
+public import Mathlib.LinearAlgebra.Dimension.Localization
+public import Mathlib.LinearAlgebra.QuadraticForm.Basic
+public import Mathlib.LinearAlgebra.RootSystem.BaseChange
+public import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 
 /-!
 # Nondegeneracy of the polarization on a finite root pairing
@@ -44,6 +46,8 @@ Weyl group.
 * Faithfulness of Weyl group perm action, and finiteness of Weyl group, over ordered rings.
 * Relation to Coxeter weight.
 -/
+
+@[expose] public section
 
 noncomputable section
 

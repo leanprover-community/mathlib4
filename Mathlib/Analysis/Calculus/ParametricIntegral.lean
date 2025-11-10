@@ -3,10 +3,12 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Analysis.Calculus.MeanValue
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.Analysis.LocallyConvex.SeparatingDual
+module
+
+public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 
 /-!
 # Derivatives of integrals depending on parameters
@@ -52,6 +54,8 @@ We also provide versions of these theorems for set integrals.
 ## Tags
 integral, derivative
 -/
+
+@[expose] public section
 
 
 noncomputable section

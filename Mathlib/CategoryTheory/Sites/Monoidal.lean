@@ -3,11 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Closed.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Localization.Monoidal.Braided
-import Mathlib.CategoryTheory.Sites.Localization
-import Mathlib.CategoryTheory.Sites.SheafHom
+public import Mathlib.CategoryTheory.Closed.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Localization.Monoidal.Braided
+public import Mathlib.CategoryTheory.Sites.Localization
+public import Mathlib.CategoryTheory.Sites.SheafHom
 
 /-!
 # Monoidal category structure on categories of sheaves
@@ -28,6 +29,8 @@ chosen finite products.
   abstractly using the material in `CategoryTheory.Monoidal.Braided.Reflection`.
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 

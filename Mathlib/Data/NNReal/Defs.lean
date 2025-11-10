@@ -3,9 +3,11 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Order.Nonneg.Module
-import Mathlib.Data.Real.Archimedean
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Order.Nonneg.Module
+public import Mathlib.Data.Real.Archimedean
 
 /-!
 # Nonnegative real numbers
@@ -44,6 +46,8 @@ of `x` with `↑x`. This tactic also works for a function `f : α → ℝ` with 
 
 This file defines `ℝ≥0` as a localized notation for `NNReal`.
 -/
+
+@[expose] public section
 
 assert_not_exists TrivialStar
 

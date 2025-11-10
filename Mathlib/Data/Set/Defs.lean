@@ -3,8 +3,10 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Init
-import Batteries.Util.ExtendedBinder
+module
+
+public import Mathlib.Init
+public import Batteries.Util.ExtendedBinder
 
 /-!
 # Sets
@@ -28,6 +30,8 @@ As in Lean 3, `Set X := X → Prop`
 This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean`.
 
 -/
+
+@[expose] public section
 
 open Lean Elab Term Meta Batteries.ExtendedBinder
 

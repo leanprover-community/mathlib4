@@ -3,11 +3,15 @@ Copyright (c) 2024 Miyahara Kō. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miyahara Kō
 -/
-import Mathlib.Tactic.ToAdditive.Frontend
+module
+
+public meta import Mathlib.Tactic.ToAdditive.Frontend
 
 /-!
 ## `@[to_additive]` attributes for basic types
 -/
+
+public meta section
 
 attribute [to_additive self] Empty PEmpty Unit PUnit
 

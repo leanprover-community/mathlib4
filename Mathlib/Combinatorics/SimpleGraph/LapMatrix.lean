@@ -3,9 +3,11 @@ Copyright (c) 2023 Adrian Wüthrich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adrian Wüthrich
 -/
-import Mathlib.Analysis.Matrix.Order
-import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
-import Mathlib.LinearAlgebra.Matrix.PosDef
+module
+
+public import Mathlib.Analysis.Matrix.Order
+public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
+public import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-!
 # Laplacian Matrix
@@ -23,6 +25,8 @@ This module defines the Laplacian matrix of a graph, and proves some of its elem
   is the dimension of the nullspace of its Laplacian matrix.
 
 -/
+
+@[expose] public section
 
 open Finset Matrix Module
 

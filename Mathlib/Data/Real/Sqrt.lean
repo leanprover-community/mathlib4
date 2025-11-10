@@ -3,8 +3,10 @@ Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
 -/
-import Mathlib.Topology.Instances.NNReal.Lemmas
-import Mathlib.Topology.Order.MonotoneContinuity
+module
+
+public import Mathlib.Topology.Instances.NNReal.Lemmas
+public import Mathlib.Topology.Order.MonotoneContinuity
 
 /-!
 # Square root of a real number
@@ -29,6 +31,8 @@ Then we define `Real.sqrt x` to be `NNReal.sqrt (Real.toNNReal x)`.
 
 square root
 -/
+
+@[expose] public section
 
 open Set Filter
 open scoped Filter NNReal Topology

@@ -3,10 +3,12 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Preimage
-import Mathlib.Data.Finset.Prod
-import Mathlib.Order.Hom.WithTopBot
-import Mathlib.Order.Interval.Set.UnorderedInterval
+module
+
+public import Mathlib.Data.Finset.Preimage
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Order.Hom.WithTopBot
+public import Mathlib.Order.Interval.Set.UnorderedInterval
 
 /-!
 # Locally finite orders
@@ -93,6 +95,8 @@ Note that the converse is not true. Consider `{-2^z | z : ℤ} ∪ {2^z | z : �
 successor (and actually a predecessor as well), so it is a `SuccOrder`, but it's not locally finite
 as `Icc (-1) 1` is infinite.
 -/
+
+@[expose] public section
 
 open Finset Function
 

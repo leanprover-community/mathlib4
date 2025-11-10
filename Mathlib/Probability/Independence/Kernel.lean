@@ -3,11 +3,13 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.ConditionalProbability
-import Mathlib.Probability.Kernel.Basic
-import Mathlib.Probability.Kernel.Composition.MeasureComp
-import Mathlib.Tactic.Peel
-import Mathlib.MeasureTheory.MeasurableSpace.Pi
+module
+
+public import Mathlib.Probability.ConditionalProbability
+public import Mathlib.Probability.Kernel.Basic
+public import Mathlib.Probability.Kernel.Composition.MeasureComp
+public import Mathlib.Tactic.Peel
+public import Mathlib.MeasureTheory.MeasurableSpace.Pi
 
 /-!
 # Independence with respect to a kernel and a measure
@@ -45,6 +47,8 @@ definitions in the particular case of the usual independence notion.
   then the measurable space structures they generate are independent.
 * `ProbabilityTheory.Kernel.IndepSets.Indep`: variant with two π-systems.
 -/
+
+@[expose] public section
 
 open Set MeasureTheory MeasurableSpace
 

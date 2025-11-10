@@ -3,9 +3,11 @@ Copyright (c) 2023 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Expect
-import Mathlib.Algebra.Group.AddChar
-import Mathlib.Analysis.RCLike.Inner
+module
+
+public import Mathlib.Algebra.BigOperators.Expect
+public import Mathlib.Algebra.Group.AddChar
+public import Mathlib.Analysis.RCLike.Inner
 
 /-!
 # Orthogonality of characters of a finite abelian group
@@ -13,6 +15,8 @@ import Mathlib.Analysis.RCLike.Inner
 This file proves that characters of a finite abelian group are orthogonal, and in particular that
 there are at most as many characters as there are elements of the group.
 -/
+
+@[expose] public section
 
 open Finset hiding card
 open Fintype (card)

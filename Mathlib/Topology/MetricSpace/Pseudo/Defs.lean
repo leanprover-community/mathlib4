@@ -3,11 +3,13 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Topology.Bornology.Basic
-import Mathlib.Topology.EMetricSpace.Defs
-import Mathlib.Topology.UniformSpace.Basic
+module
+
+public import Mathlib.Data.ENNReal.Real
+public import Mathlib.Tactic.Bound.Attribute
+public import Mathlib.Topology.Bornology.Basic
+public import Mathlib.Topology.EMetricSpace.Defs
+public import Mathlib.Topology.UniformSpace.Basic
 
 /-!
 ## Pseudo-metric spaces
@@ -39,6 +41,8 @@ TODO (anyone): Add "Main results" section.
 
 pseudo_metric, dist
 -/
+
+@[expose] public section
 
 assert_not_exists compactSpace_uniformity
 

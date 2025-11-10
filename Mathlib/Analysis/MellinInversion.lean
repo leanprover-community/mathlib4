@@ -3,8 +3,10 @@ Copyright (c) 2024 Lawrence Wu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
-import Mathlib.Analysis.Fourier.Inversion
-import Mathlib.Analysis.MellinTransform
+module
+
+public import Mathlib.Analysis.Fourier.Inversion
+public import Mathlib.Analysis.MellinTransform
 
 /-!
 # Mellin inversion formula
@@ -14,6 +16,8 @@ We derive the Mellin inversion formula as a consequence of the Fourier inversion
 ## Main results
 - `mellin_inversion`: The inverse Mellin transform of the Mellin transform applied to `x > 0` is x.
 -/
+
+@[expose] public section
 
 open Real Complex Set MeasureTheory
 

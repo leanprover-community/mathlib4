@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Algebra.BigOperators.Fin
+module
+
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Lemmas for tuples `Fin m → α`
@@ -26,6 +28,8 @@ corresponding `*_eq` lemmas to be used in a place where they are definitionally 
 * `FinVec.sum`
 * `FinVec.etaExpand`
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

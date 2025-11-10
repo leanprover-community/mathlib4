@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang, Yaël Dillies, Javier López-Contreras. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Yaël Dillies, Javier López-Contreras
 -/
-import Mathlib.Tactic.FieldSimp
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.RingTheory.Localization.AtPrime.Basic
+module
+
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 
 /-!
@@ -15,6 +17,8 @@ import Mathlib.RingTheory.Localization.AtPrime.Basic
 - `LocalSubring` : The class of local subrings of a commutative ring.
 - `LocalSubring.ofPrime`: The localization of a subring as a `LocalSubring`.
 -/
+
+@[expose] public section
 
 open IsLocalRing Set
 

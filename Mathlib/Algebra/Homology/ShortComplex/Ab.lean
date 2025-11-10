@@ -3,10 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.Algebra.Category.Grp.Abelian
-import Mathlib.Algebra.Category.Grp.Kernels
-import Mathlib.Algebra.Exact
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.Algebra.Category.Grp.Abelian
+public import Mathlib.Algebra.Category.Grp.Kernels
+public import Mathlib.Algebra.Exact
 
 /-!
 # Homology and exactness of short complexes of abelian groups
@@ -26,6 +28,8 @@ groups to an explicit quotient.
 is exact iff any element in the kernel of `S.g` belongs to the image of `S.f`.
 
 -/
+
+@[expose] public section
 
 universe u
 

@@ -3,11 +3,13 @@ Copyright (c) 2022 Hans Parshall. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hans Parshall
 -/
-import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Analysis.Matrix.Normed
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.LinearAlgebra.UnitaryGroup
-import Mathlib.Topology.UniformSpace.Matrix
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
+public import Mathlib.Analysis.Matrix.Normed
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.LinearAlgebra.UnitaryGroup
+public import Mathlib.Topology.UniformSpace.Matrix
 
 /-!
 # Analytic properties of the `star` operation on matrices
@@ -35,6 +37,8 @@ coincide with the existing topology and uniformity on matrices.
 * Show that `‖diagonal (v : n → 𝕜)‖ = ‖v‖`.
 
 -/
+
+@[expose] public section
 
 open WithLp
 open scoped Matrix

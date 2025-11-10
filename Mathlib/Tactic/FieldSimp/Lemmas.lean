@@ -3,14 +3,18 @@ Copyright (c) 2025 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Arend Mellendijk, Michael Rothgang
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Basic
-import Mathlib.Algebra.Field.Power
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-import Mathlib.Util.Qq
+module
+
+public meta import Mathlib.Algebra.BigOperators.Group.List.Basic
+public meta import Mathlib.Algebra.Field.Power
+public meta import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public meta import Mathlib.Util.Qq
 
 /-! # Lemmas for the field_simp tactic
 
 -/
+
+public meta section
 
 open List
 

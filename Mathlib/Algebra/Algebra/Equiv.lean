@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Hom
-import Mathlib.Algebra.Ring.Action.Group
+module
+
+public import Mathlib.Algebra.Algebra.Hom
+public import Mathlib.Algebra.Ring.Action.Group
 
 /-!
 # Isomorphisms of `R`-algebras
@@ -19,6 +21,8 @@ This file defines bundled isomorphisms of `R`-algebras.
 
 * `A ≃ₐ[R] B` : `R`-algebra equivalence from `A` to `B`.
 -/
+
+@[expose] public section
 
 universe u v w u₁ v₁
 

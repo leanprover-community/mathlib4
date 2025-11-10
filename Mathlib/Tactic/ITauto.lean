@@ -3,11 +3,13 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Batteries.Tactic.Exact
-import Batteries.Tactic.Init
-import Mathlib.Logic.Basic
-import Mathlib.Util.AtomM
-import Qq
+module
+
+public meta import Batteries.Tactic.Exact
+public meta import Batteries.Tactic.Init
+public meta import Mathlib.Logic.Basic
+public meta import Mathlib.Util.AtomM
+public meta import Qq
 
 /-!
 
@@ -78,6 +80,8 @@ grammar if it matters.)
 
 propositional logic, intuitionistic logic, decision procedure
 -/
+
+public meta section
 
 
 open Std (TreeMap TreeSet)

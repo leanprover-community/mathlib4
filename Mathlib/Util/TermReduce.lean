@@ -3,12 +3,16 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Gabriel Ebner, Yuyang Zhao
 -/
-import Lean.Meta.Tactic.Delta
-import Mathlib.Lean.Expr.Basic
+module
+
+public meta import Lean.Meta.Tactic.Delta
+public meta import Mathlib.Lean.Expr.Basic
 
 /-!
 # Term elaborators for reduction
 -/
+
+public meta section
 
 namespace Mathlib.Util.TermReduce
 

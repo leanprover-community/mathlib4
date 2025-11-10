@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Johan Commelin, Reid Barton, Thomas Murrills
 -/
-import Mathlib.Tactic.Core
-import Lean.Meta.Tactic.Cases
+module
+
+public meta import Mathlib.Tactic.Core
+public meta import Lean.Meta.Tactic.Cases
 
 /-!
 
@@ -17,6 +19,8 @@ where `P` holds (typically by symmetry).
 The new goal will be placed at the top of the goal stack.
 
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 

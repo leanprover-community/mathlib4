@@ -3,7 +3,9 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Data.PNat.Basic
+module
+
+public meta import Mathlib.Data.PNat.Basic
 
 /-!
 # `pnat_to_nat`
@@ -16,6 +18,8 @@ The implementation follows these steps:
 2. Translate arithmetic on `PNat` to `Nat` using the `pnat_to_nat_coe` simp set.
 
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.PNatToNat
 

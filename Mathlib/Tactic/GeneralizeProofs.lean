@@ -3,10 +3,12 @@ Copyright (c) 2022 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Kyle Miller
 -/
-import Lean.Elab.Tactic.Config
-import Lean.Elab.Tactic.Location
-import Mathlib.Lean.Expr.Basic
-import Batteries.Lean.Expr
+module
+
+public meta import Lean.Elab.Tactic.Config
+public meta import Lean.Elab.Tactic.Location
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Batteries.Lean.Expr
 
 /-!
 # The `generalize_proofs` tactic
@@ -31,6 +33,8 @@ The tactic is similar in spirit to `Lean.Meta.AbstractNestedProofs` in core.
 One difference is that it the tactic tries to propagate expected types so that
 we get `1 < [1, 2].length` in the above example rather than `1 < Nat.succ 1`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean Meta Elab Parser.Tactic Elab.Tactic

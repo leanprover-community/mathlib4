@@ -3,14 +3,16 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
-import Mathlib.Algebra.NoZeroSMulDivisors.Pi
-import Mathlib.Data.Finset.Sort
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.Logic.Equiv.Fintype
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+public import Mathlib.Algebra.NoZeroSMulDivisors.Pi
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.Logic.Equiv.Fintype
+public import Mathlib.Tactic.Abel
 
 /-!
 # Multilinear maps
@@ -66,6 +68,8 @@ Option 3 of course does something similar, but of the form `Fin.decidableEq n = 
 which is much easier to clean up since `_inst` is a free variable
 and so the equality can just be substituted.
 -/
+
+@[expose] public section
 
 open Fin Function Finset Set
 

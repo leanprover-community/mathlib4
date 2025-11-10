@@ -3,11 +3,13 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Group.Seminorm
-import Mathlib.Data.NNReal.Basic
-import Mathlib.Topology.Algebra.Support
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.Order.Real
+module
+
+public import Mathlib.Analysis.Normed.Group.Seminorm
+public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Topology.Algebra.Support
+public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.Order.Real
 
 /-!
 # Normed (semi)groups
@@ -38,6 +40,8 @@ to for performance concerns.
 
 normed group
 -/
+
+@[expose] public section
 
 
 variable {𝓕 α ι κ E F G : Type*}

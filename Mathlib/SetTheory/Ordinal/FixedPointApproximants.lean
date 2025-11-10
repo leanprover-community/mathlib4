@@ -3,7 +3,9 @@ Copyright (c) 2024 Ira Fesefeldt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ira Fesefeldt
 -/
-import Mathlib.SetTheory.Ordinal.Arithmetic
+module
+
+public import Mathlib.SetTheory.Ordinal.Arithmetic
 
 /-!
 # Ordinal Approximants for the Fixed points on complete lattices
@@ -36,6 +38,8 @@ ordinals from mathlib. It still allows an approximation scheme indexed over the 
 
 fixed point, complete lattice, monotone function, ordinals, approximation
 -/
+
+@[expose] public section
 
 namespace Cardinal
 

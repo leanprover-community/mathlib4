@@ -3,8 +3,10 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Tactic.ByContra
+module
+
+public meta import Mathlib.Algebra.Group.Nat.Defs
+public meta import Mathlib.Tactic.ByContra
 
 /-!
 # `lrat_proof` command
@@ -39,6 +41,8 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
 * You can use the `include_str` macro in place of the two strings
   to load CNF / LRAT files from disk.
 -/
+
+public meta section
 
 open Lean hiding Literal
 open Std (HashMap)

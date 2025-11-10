@@ -3,9 +3,11 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 -/
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.Lean.Expr.ExtraRecognizers
+module
+
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+public import Mathlib.Lean.Expr.ExtraRecognizers
 
 /-!
 
@@ -71,6 +73,8 @@ Rework proofs to hold in semirings, by avoiding the path through
 linearly dependent, linear dependence, linearly independent, linear independence
 
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 

@@ -3,13 +3,15 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison
 -/
-import Mathlib.Algebra.Category.Ring.Colimits
-import Mathlib.Algebra.Category.Ring.Instances
-import Mathlib.Algebra.Category.Ring.Limits
-import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.RingTheory.Localization.AtPrime.Basic
-import Mathlib.RingTheory.Spectrum.Prime.Topology
-import Mathlib.Topology.Sheaves.LocalPredicate
+module
+
+public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.Algebra.Category.Ring.Instances
+public import Mathlib.Algebra.Category.Ring.Limits
+public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
+public import Mathlib.Topology.Sheaves.LocalPredicate
 
 /-!
 # The structure sheaf on `PrimeSpectrum R`.
@@ -44,6 +46,8 @@ and the localization of `R` at the submonoid of powers of `f`.
 
 
 -/
+
+@[expose] public section
 
 
 universe u

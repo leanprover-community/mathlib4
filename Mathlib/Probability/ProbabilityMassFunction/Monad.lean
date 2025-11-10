@@ -3,7 +3,9 @@ Copyright (c) 2020 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Devon Tuma
 -/
-import Mathlib.Probability.ProbabilityMassFunction.Basic
+module
+
+public import Mathlib.Probability.ProbabilityMassFunction.Basic
 
 /-!
 # Monad Operations for Probability Mass Functions
@@ -17,6 +19,8 @@ and then sampling from `pb a : PMF β` to get a final result `b : β`.
 so that the second argument only needs to be defined on the support of the first argument.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

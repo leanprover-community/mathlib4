@@ -3,8 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Alastair Irving, Kim Morrison, Ainsley Pahljina
 -/
-import Mathlib.NumberTheory.Fermat
-import Mathlib.RingTheory.Fintype
+module
+
+public import Mathlib.NumberTheory.Fermat
+public import Mathlib.RingTheory.Fintype
 
 /-!
 # The Lucas-Lehmer test for Mersenne primes
@@ -29,6 +31,8 @@ The tactic for certified computation of Lucas-Lehmer residues was provided by Ma
 This tactic was ported by Thomas Murrills to Lean 4, and then it was converted to a `norm_num`
 extension and made to use kernel reductions by Kyle Miller.
 -/
+
+@[expose] public section
 
 /-- The Mersenne numbers, 2^p - 1. -/
 def mersenne (p : ℕ) : ℕ :=

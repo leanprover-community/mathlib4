@@ -3,9 +3,11 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Rel.Cover
-import Mathlib.Topology.MetricSpace.MetricSeparated
-import Mathlib.Topology.MetricSpace.Thickening
+module
+
+public import Mathlib.Data.Rel.Cover
+public import Mathlib.Topology.MetricSpace.MetricSeparated
+public import Mathlib.Topology.MetricSpace.Thickening
 
 /-!
 # Covers in a metric space
@@ -22,6 +24,8 @@ In a proper metric space, sets admitting a finite cover are precisely the relati
 
 [R. Vershynin, *High Dimensional Probability*][vershynin2018high], Section 4.2.
 -/
+
+@[expose] public section
 
 open Set
 open scoped NNReal

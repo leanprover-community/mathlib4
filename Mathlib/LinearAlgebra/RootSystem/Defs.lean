@@ -3,8 +3,10 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury, Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.PerfectPairing.Basic
-import Mathlib.LinearAlgebra.Reflection
+module
+
+public import Mathlib.LinearAlgebra.PerfectPairing.Basic
+public import Mathlib.LinearAlgebra.Reflection
 
 /-!
 # Root data and root systems
@@ -56,6 +58,8 @@ coroots may not correspond. For this purpose, we define a map from `ι` to permu
 require that it is compatible with reflections and coreflections.
 
 -/
+
+@[expose] public section
 
 open Set Function
 open Module hiding reflection

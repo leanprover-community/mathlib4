@@ -3,15 +3,19 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Ring.Cast
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.Num.Lemmas
+module
+
+public import Mathlib.Algebra.Order.Ring.Cast
+public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.Data.Num.Lemmas
 
 /-!
 # Properties of the `ZNum` representation of integers
 
 This file was split from `Mathlib/Data/Num/Lemmas.lean` to keep the former under 1500 lines.
 -/
+
+@[expose] public section
 
 open Int
 

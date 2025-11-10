@@ -3,7 +3,9 @@ Copyright (c) 2023 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
+module
+
+public import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
 
 /-!
 # Adjunctions in bicategories
@@ -24,6 +26,8 @@ identities. The 2-morphism `η` is called the unit and `ε` is called the counit
 * `Bicategory.mkOfAdjointifyUnit`: construct an adjoint equivalence from 2-isomorphisms
   `η : 𝟙 a ≅ f ≫ g` and `ε : g ≫ f ≅ 𝟙 b`, by upgrading `η` to a unit.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

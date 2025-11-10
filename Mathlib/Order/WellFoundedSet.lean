@@ -3,11 +3,13 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Prod.Lex
-import Mathlib.Data.Sigma.Lex
-import Mathlib.Order.RelIso.Set
-import Mathlib.Order.WellQuasiOrder
-import Mathlib.Tactic.TFAE
+module
+
+public import Mathlib.Data.Prod.Lex
+public import Mathlib.Data.Sigma.Lex
+public import Mathlib.Order.RelIso.Set
+public import Mathlib.Order.WellQuasiOrder
+public import Mathlib.Tactic.TFAE
 
 /-!
 # Well-founded sets
@@ -45,6 +47,8 @@ This file introduces versions of `WellFounded` and `WellQuasiOrdered` for sets.
 * [Higman, *Ordering by Divisibility in Abstract Algebras*][Higman52]
 * [Nash-Williams, *On Well-Quasi-Ordering Finite Trees*][Nash-Williams63]
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedRing
 

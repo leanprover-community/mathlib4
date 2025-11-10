@@ -3,10 +3,12 @@ Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Logic.IsEmpty
-import Mathlib.Order.Basic
-import Mathlib.Tactic.MkIffOfInductiveProp
-import Batteries.WF
+module
+
+public import Mathlib.Logic.IsEmpty
+public import Mathlib.Order.Basic
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Batteries.WF
 
 /-!
 # Unbundled relation classes
@@ -16,6 +18,8 @@ In this file we prove some properties of `Is*` classes defined in
 The main difference between these classes and the usual order classes (`Preorder` etc) is that
 usual classes extend `LE` and/or `LT` while these classes take a relation as an explicit argument.
 -/
+
+@[expose] public section
 
 universe u v
 

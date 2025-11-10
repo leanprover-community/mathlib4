@@ -3,11 +3,13 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.Finsupp.ToDFinsupp
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Int.Range
-import Mathlib.Data.List.Sigma
-import Plausible.Functions
+module
+
+public import Mathlib.Data.Finsupp.ToDFinsupp
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.Int.Range
+public import Mathlib.Data.List.Sigma
+public import Plausible.Functions
 
 /-!
 ## `Plausible`: generators for functions
@@ -39,6 +41,8 @@ Some care must be taken for shrinking such functions to make sure
 their defining property is invariant through shrinking. Injective
 functions are an example of how complicated it can get.
 -/
+
+@[expose] public section
 
 universe u v
 

@@ -3,9 +3,11 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
-import Mathlib.AlgebraicGeometry.Morphisms.LocalIso
-import Mathlib.CategoryTheory.MorphismProperty.Descent
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
+public import Mathlib.AlgebraicGeometry.Morphisms.LocalIso
+public import Mathlib.CategoryTheory.MorphismProperty.Descent
 
 /-!
 # Descent of morphism properties
@@ -27,6 +29,8 @@ that `P` descends along `P'` from a codescent property of ring homomorphisms.
   `HasAffineProperty.descendsAlong_of_affineAnd` useful.
 
 -/
+
+@[expose] public section
 
 universe u v
 

@@ -3,9 +3,11 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.LinearAlgebra.Matrix.Gershgorin
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
-import Mathlib.NumberTheory.NumberField.Units.Basic
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Gershgorin
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
+public import Mathlib.NumberTheory.NumberField.Units.Basic
 
 /-!
 # Dirichlet theorem on the group of units of a number field
@@ -34,6 +36,8 @@ subgroup is a free `ℤ`-module of rank `card (InfinitePlace K) - 1`.
 ## Tags
 number field, units, Dirichlet unit theorem
 -/
+
+@[expose] public section
 
 noncomputable section
 

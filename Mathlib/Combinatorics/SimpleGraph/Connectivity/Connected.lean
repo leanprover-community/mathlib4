@@ -3,8 +3,10 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Paths
-import Mathlib.Combinatorics.SimpleGraph.Subgraph
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Paths
+public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
 ## Main definitions
@@ -29,6 +31,8 @@ import Mathlib.Combinatorics.SimpleGraph.Subgraph
 ## Tags
 trails, paths, cycles, bridge edges
 -/
+
+@[expose] public section
 
 open Function
 

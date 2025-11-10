@@ -3,9 +3,11 @@ Copyright (c) 2024 Edward van de Meent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edward van de Meent
 -/
-import Mathlib.Data.Real.ENatENNReal
-import Mathlib.Data.Set.Card
-import Mathlib.Topology.Instances.ENNReal.Lemmas
+module
+
+public import Mathlib.Data.Real.ENatENNReal
+public import Mathlib.Data.Set.Card
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Infinite sums of ENNReal and Set.encard
@@ -18,6 +20,8 @@ This file provides lemmas relating sums of constants to the cardinality of the d
 + Once we replace `PartENat` entirely with `ENat` (and replace `PartENat.card` with a `ENat.card`),
   provide versions which sum over the whole type.
 -/
+
+@[expose] public section
 
 open Set Function
 

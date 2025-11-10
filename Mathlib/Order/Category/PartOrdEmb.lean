@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Johan Commelin
 -/
-import Mathlib.Order.Category.PartOrd
+module
+
+public import Mathlib.Order.Category.PartOrd
 
 /-!
 # Category of partial orders, with order embeddings as morphisms
@@ -12,6 +14,8 @@ This defines `PartOrdEmb`, the category of partial orders with order embeddings
 as morphisms.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory
 

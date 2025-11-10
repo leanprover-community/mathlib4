@@ -3,7 +3,9 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.RingTheory.Derivation.Basic
+module
+
+public import Mathlib.RingTheory.Derivation.Basic
 
 /-!
 # Differential and Algebras
@@ -11,6 +13,8 @@ import Mathlib.RingTheory.Derivation.Basic
 This file defines derivations from a commutative ring to itself as a typeclass, which lets us
 use the x′ notation for the derivative of x.
 -/
+
+@[expose] public section
 
 /-- A derivation from a ring to itself, as a typeclass. -/
 @[ext]

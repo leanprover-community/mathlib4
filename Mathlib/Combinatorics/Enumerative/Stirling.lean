@@ -3,9 +3,11 @@ Copyright (c) 2025 Beibei Xiong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Beibei Xiong, Yu Shao, Weijie Jiang, Zhengfeng Yang
 -/
-import Mathlib.Tactic.Ring
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.Nat.Choose.Basic
+module
+
+public import Mathlib.Tactic.Ring
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Data.Nat.Choose.Basic
 
 /-!
 # Stirling Numbers
@@ -13,6 +15,8 @@ import Mathlib.Data.Nat.Choose.Basic
 This file defines Stirling numbers of the first and second kinds, proves their fundamental
 recurrence relations, and establishes some of their key properties and identities.
 -/
+
+@[expose] public section
 
 /-!
 # The Stirling numbers of the first kind

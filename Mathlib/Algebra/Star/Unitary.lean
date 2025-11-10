@@ -3,12 +3,14 @@ Copyright (c) 2022 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam, Frédéric Dupuis
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.Algebra.Algebra.Spectrum.Basic
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Algebra.Star.MonoidHom
-import Mathlib.Algebra.Star.StarProjection
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Algebra.Star.SelfAdjoint
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Algebra.Star.MonoidHom
+public import Mathlib.Algebra.Star.StarProjection
 
 /-!
 # Unitary elements of a star monoid
@@ -23,6 +25,8 @@ See also `Matrix.UnitaryGroup` for specializations to `unitary (Matrix n n R)`.
 
 unitary
 -/
+
+@[expose] public section
 
 
 /-- In a *-monoid, `unitary R` is the submonoid consisting of all the elements `U` of

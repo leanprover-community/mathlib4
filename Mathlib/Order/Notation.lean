@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Yaël Dillies
 -/
-import Qq
-import Mathlib.Lean.PrettyPrinter.Delaborator
-import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.Simps.NotationClass
+module
+
+public import Qq
+public import Mathlib.Lean.PrettyPrinter.Delaborator
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.Simps.NotationClass
 
 /-!
 # Notation classes for lattice operations
@@ -33,6 +35,8 @@ as in linear orders, while using the more idiomatic notation `x ⊔ y`/`x ⊓ y`
 Lemmas about the operators `⊔` and `⊓` should use the names `sup` and `inf` respectively.
 
 -/
+
+@[expose] public section
 
 /-- Set / lattice complement -/
 @[notation_class]

@@ -3,7 +3,9 @@ Copyright (c) 2019 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
-import Mathlib.Data.EReal.Basic
+module
+
+public import Mathlib.Data.EReal.Basic
 
 /-!
 # Addition, negation, subtraction and multiplication on extended real numbers
@@ -29,6 +31,8 @@ Distributivity `x * (y + z) = x * y + x * z` is recovered in the case where eith
 see `EReal.left_distrib_of_nonneg_of_ne_top`, or `0 ≤ y, z`. See `EReal.left_distrib_of_nonneg`
 (similarly for right distributivity).
 -/
+
+@[expose] public section
 
 open ENNReal NNReal
 

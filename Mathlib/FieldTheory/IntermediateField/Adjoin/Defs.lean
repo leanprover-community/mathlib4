@@ -3,7 +3,9 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
-import Mathlib.FieldTheory.IntermediateField.Basic
+module
+
+public import Mathlib.FieldTheory.IntermediateField.Basic
 
 /-!
 # Adjoining Elements to Fields
@@ -16,6 +18,8 @@ For example, `Algebra.adjoin K {x}` might not include `x⁻¹`.
 
 - `F⟮α⟯`: adjoin a single element `α` to `F` (in scope `IntermediateField`).
 -/
+
+@[expose] public section
 
 open Module Polynomial
 

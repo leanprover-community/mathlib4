@@ -3,7 +3,9 @@ Copyright (c) 2023 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
-import Mathlib.Analysis.Analytic.ChangeOrigin
+module
+
+public import Mathlib.Analysis.Analytic.ChangeOrigin
 
 /-! We specialize the theory of analytic functions to the case of functions that admit a
 development given by a *finite* formal multilinear series. We call them "continuously polynomial",
@@ -41,6 +43,8 @@ In this file, we develop the basic properties of these notions, notably:
 More API is available in the file `Mathlib/Analysis/Analytic/CPolynomial.lean`, with heavier
 imports.
 -/
+
+@[expose] public section
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]

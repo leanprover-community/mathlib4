@@ -3,8 +3,10 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
 -/
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.Dual.Defs
+module
+
+public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.Dual.Defs
 
 /-!
 # Bases of dual vector spaces
@@ -29,6 +31,8 @@ This file concerns bases on dual vector spaces.
   * `Module.DualBases.coe_dualBasis`: if `e` and `ε` form a dual pair,
     then `ε` is a basis.
 -/
+
+@[expose] public section
 
 open Module Dual Submodule LinearMap Function
 

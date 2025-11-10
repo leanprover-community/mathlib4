@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Combinatorics.Enumerative.Composition
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Combinatorics.Enumerative.Composition
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Partitions
@@ -40,6 +42,8 @@ Partition
 
 <https://en.wikipedia.org/wiki/Partition_(number_theory)>
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

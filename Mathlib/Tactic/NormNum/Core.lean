@@ -3,12 +3,14 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Lean.Expr.Rat
-import Mathlib.Tactic.Hint
-import Mathlib.Tactic.NormNum.Result
-import Mathlib.Util.AtLocation
-import Mathlib.Util.Qq
-import Lean.Elab.Tactic.Location
+module
+
+public meta import Mathlib.Lean.Expr.Rat
+public meta import Mathlib.Tactic.Hint
+public meta import Mathlib.Tactic.NormNum.Result
+public meta import Mathlib.Util.AtLocation
+public meta import Mathlib.Util.Qq
+public meta import Lean.Elab.Tactic.Location
 
 /-!
 ## `norm_num` core functionality
@@ -18,6 +20,8 @@ which allow for plugging in new normalization functionality around a simp-based 
 The actual behavior is in `@[norm_num]`-tagged definitions in `Tactic.NormNum.Basic`
 and elsewhere.
 -/
+
+public meta section
 
 open Lean
 open Lean.Meta Qq Lean.Elab Term

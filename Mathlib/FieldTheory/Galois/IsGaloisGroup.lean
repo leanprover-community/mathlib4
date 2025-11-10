@@ -3,8 +3,10 @@ Copyright (c) 2025 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.RingTheory.Invariant.Basic
+module
+
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.RingTheory.Invariant.Basic
 
 /-!
 # Predicate for Galois Groups
@@ -32,6 +34,8 @@ being integral and the fields of fractions `Frac(B)/Frac(A)` being Galois with G
 But in the absence of a more suitable name, the utility of the predicate `IsGaloisGroup G A B` for
 extensions of rings `B/A` seems to outweigh these terminological issues.
 -/
+
+@[expose] public section
 
 section CommRing
 

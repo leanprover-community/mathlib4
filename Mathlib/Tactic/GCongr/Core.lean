@@ -3,12 +3,14 @@ Copyright (c) 2023 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
-import Lean
-import Batteries.Lean.Except
-import Batteries.Tactic.Exact
-import Mathlib.Lean.Elab.Term
-import Mathlib.Tactic.GCongr.ForwardAttr
-import Mathlib.Order.Defs.Unbundled
+module
+
+public meta import Lean
+public meta import Batteries.Lean.Except
+public meta import Batteries.Tactic.Exact
+public meta import Mathlib.Lean.Elab.Term
+public meta import Mathlib.Tactic.GCongr.ForwardAttr
+public meta import Mathlib.Order.Defs.Unbundled
 
 /-!
 # The `gcongr` ("generalized congruence") tactic
@@ -122,6 +124,8 @@ example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) :
 ```
 The `rel` tactic is finishing-only: it fails if any main or side goals are not resolved.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.GCongr
 open Lean Meta

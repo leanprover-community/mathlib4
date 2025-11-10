@@ -3,10 +3,12 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Algebra.Order.Chebyshev
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Order.Partition.Equipartition
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Algebra.Order.Chebyshev
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Order.Partition.Equipartition
 
 /-!
 # Numerical bounds for Szemerédi Regularity Lemma
@@ -27,6 +29,8 @@ This entire file is internal to the proof of Szemerédi Regularity Lemma.
 
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
+
+@[expose] public section
 
 
 open Finset Fintype Function Real

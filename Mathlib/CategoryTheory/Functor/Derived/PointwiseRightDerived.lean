@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.Derived.RightDerived
-import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
-import Mathlib.CategoryTheory.Localization.StructuredArrow
+module
+
+public import Mathlib.CategoryTheory.Functor.Derived.RightDerived
+public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
+public import Mathlib.CategoryTheory.Localization.StructuredArrow
 
 /-!
 # Pointwise right derived functors
@@ -17,6 +19,8 @@ We show that if `F : C ⥤ H` inverts `W : MorphismProperty C`,
 then it has a pointwise right derived functor.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 

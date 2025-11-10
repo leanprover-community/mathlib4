@@ -3,21 +3,25 @@ Copyright (c) 2022 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Group.PosPart
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Order.Hom.Basic
-import Mathlib.Data.Int.CharZero
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.NNRat.Defs
-import Mathlib.Data.PNat.Defs
-import Mathlib.Tactic.Positivity.Core
-import Qq
+module
+
+public meta import Mathlib.Algebra.Order.Group.PosPart
+public meta import Mathlib.Algebra.Order.Ring.Basic
+public meta import Mathlib.Algebra.Order.Hom.Basic
+public meta import Mathlib.Data.Int.CharZero
+public meta import Mathlib.Data.Nat.Factorial.Basic
+public meta import Mathlib.Data.NNRat.Defs
+public meta import Mathlib.Data.PNat.Defs
+public meta import Mathlib.Tactic.Positivity.Core
+public meta import Qq
 
 /-!
 ## `positivity` core extensions
 
 This file sets up the basic `positivity` extensions tagged with the `@[positivity]` attribute.
 -/
+
+public meta section
 
 variable {α : Type*}
 

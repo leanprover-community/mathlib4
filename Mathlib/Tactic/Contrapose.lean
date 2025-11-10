@@ -3,8 +3,9 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+module
 
-import Mathlib.Tactic.Push
+public meta import Mathlib.Tactic.Push
 
 /-! # Contrapose
 
@@ -19,6 +20,8 @@ implication.
 * `contrapose h with new_h` uses the name `new_h` for the introduced hypothesis
 
 -/
+
+public meta section
 namespace Mathlib.Tactic.Contrapose
 
 lemma mtr {p q : Prop} : (¬ q → ¬ p) → (p → q) := fun h hp ↦ by_contra (fun h' ↦ h h' hp)

@@ -3,10 +3,12 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
 -/
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.RingTheory.IsTensorProduct
-import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.Localization.Module
+module
+
+public import Mathlib.LinearAlgebra.DirectSum.Finsupp
+public import Mathlib.RingTheory.IsTensorProduct
+public import Mathlib.RingTheory.Localization.Away.Basic
+public import Mathlib.RingTheory.Localization.Module
 
 /-!
 # Localized Module
@@ -18,6 +20,8 @@ localize `M` by `S`. This gives us a `Localization S`-module.
 
 * `isLocalizedModule_iff_isBaseChange` : A localization of modules corresponds to a base change.
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommSemiring R] (S : Submonoid R)
   (A : Type*) [CommSemiring A] [Algebra R A] [IsLocalization S A]

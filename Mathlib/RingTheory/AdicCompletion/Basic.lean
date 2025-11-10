@@ -3,10 +3,12 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Judith Ludwig, Christian Merten, Jiedong Jiang
 -/
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.LinearAlgebra.SModEq.Basic
-import Mathlib.RingTheory.Ideal.Quotient.PowTransition
-import Mathlib.RingTheory.Jacobson.Ideal
+module
+
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.LinearAlgebra.SModEq.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.PowTransition
+public import Mathlib.RingTheory.Jacobson.Ideal
 
 /-!
 # Completion of a module with respect to an ideal.
@@ -24,6 +26,8 @@ with respect to an ideal `I`:
   with a linear map `AdicCompletion.lift` from `M`. This map is injective iff `M` is Hausdorff
   and surjective iff `M` is precomplete.
 -/
+
+@[expose] public section
 
 suppress_compilation
 

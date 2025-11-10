@@ -3,8 +3,10 @@ Copyright (c) 2025 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Joël Riou
 -/
-import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
-import Mathlib.CategoryTheory.HomCongr
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
+public import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Mates in bicategories
@@ -41,6 +43,8 @@ To be precise, the definitions in `Mathlib/CategoryTheory/Adjunction/Mates.lean`
 polymorphic, so they are not simple specializations of the definitions in this file.
 
 -/
+
+@[expose] public section
 
 universe w v u
 

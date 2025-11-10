@@ -3,11 +3,13 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.EssentiallySmall
-import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
-import Mathlib.CategoryTheory.Subobject.Lattice
-import Mathlib.CategoryTheory.ObjectProperty.Small
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
+module
+
+public import Mathlib.CategoryTheory.Limits.EssentiallySmall
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
+public import Mathlib.CategoryTheory.Subobject.Lattice
+public import Mathlib.CategoryTheory.ObjectProperty.Small
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 
 /-!
 # Separating and detecting sets
@@ -53,6 +55,8 @@ We
 See the files `CategoryTheory.Generator.Presheaf` and `CategoryTheory.Generator.Sheaf`.
 
 -/
+
+@[expose] public section
 
 
 universe w v₁ v₂ u₁ u₂
