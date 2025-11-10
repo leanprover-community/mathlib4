@@ -23,10 +23,12 @@ open CategoryTheory
 
 open CategoryTheory.MonoidalCategory
 
-namespace CategoryTheory.Monoidal
+namespace CategoryTheory
 
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
+
+namespace Monoidal
 
 namespace FunctorCategory
 
@@ -190,8 +192,10 @@ instance functorCategorySymmetric : SymmetricCategory (C ⥤ D) where
 
 end SymmetricCategory
 
+end Monoidal
+
 @[simps]
-instance whiskeringRightLaxMonoidal
+instance Functor.LaxMonoidal.whiskeringRight
     {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
     [MonoidalCategory E] (L : D ⥤ E) [L.LaxMonoidal] :
     ((Functor.whiskeringRight C D E).obj L).LaxMonoidal where
@@ -199,7 +203,7 @@ instance whiskeringRightLaxMonoidal
   μ F G := { app X := Functor.LaxMonoidal.μ L (F.obj X) (G.obj X) }
 
 @[simps]
-instance whiskeringRightOplaxMonoidal
+instance Functor.OplaxMonoidal.whiskeringRight
     {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
     [MonoidalCategory E] (L : D ⥤ E) [L.OplaxMonoidal] :
     ((Functor.whiskeringRight C D E).obj L).OplaxMonoidal where
@@ -213,12 +217,12 @@ instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategor
     ((Functor.whiskeringRight C D E).obj L).Monoidal where
 
 @[deprecated (since := "2025-11-06")] alias instLaxMonoidalFunctorObjWhiskeringRight :=
-  whiskeringRightLaxMonoidal
+  Functor.LaxMonoidal.whiskeringRight
 @[deprecated (since := "2025-11-06")] alias instOplaxMonoidalFunctorObjWhiskeringRight :=
-  whiskeringRightOplaxMonoidal
-@[deprecated (since := "2025-11-06")] alias ε_app := whiskeringRightLaxMonoidal_ε_app
-@[deprecated (since := "2025-11-06")] alias μ_app := whiskeringRightLaxMonoidal_μ_app
-@[deprecated (since := "2025-11-06")] alias η_app := whiskeringRightOplaxMonoidal_η_app
-@[deprecated (since := "2025-11-06")] alias δ_app := whiskeringRightOplaxMonoidal_δ_app
+  Functor.OplaxMonoidal.whiskeringRight
+@[deprecated (since := "2025-11-06")] alias ε_app := Functor.LaxMonoidal.whiskeringRight_ε_app
+@[deprecated (since := "2025-11-06")] alias μ_app := Functor.LaxMonoidal.whiskeringRight_μ_app
+@[deprecated (since := "2025-11-06")] alias η_app := Functor.OplaxMonoidal.whiskeringRight_η_app
+@[deprecated (since := "2025-11-06")] alias δ_app := Functor.OplaxMonoidal.whiskeringRight_δ_app
 
-end CategoryTheory.Monoidal
+end CategoryTheory
