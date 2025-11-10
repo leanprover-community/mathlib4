@@ -235,7 +235,7 @@ lemma hom_ext_uliftYoneda {P Q : Sheaf J (Type (max v v'))} {f g : P ⟶ Q}
 
 @[deprecated (since := "2025-11-10")] alias hom_ext_yonedaULift := hom_ext_uliftYoneda
 
-/-- A variant of the Yoneda lemma with a raise in the universe level. -/
+/-- A variant of the Yoneda lemma for sheaves with a raise in the universe level. -/
 def uliftYonedaOpCompCoyoneda :
     J.uliftYoneda.op ⋙ coyoneda ≅
       evaluation Cᵒᵖ (Type max v v') ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} ⋙
