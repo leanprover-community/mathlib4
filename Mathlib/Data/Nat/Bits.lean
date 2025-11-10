@@ -3,12 +3,12 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.Data.Nat.Basic
+import Batteries.Tactic.GeneralizeProofs
 import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Data.List.Defs
 import Mathlib.Tactic.Convert
-import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Says
+import Mathlib.Util.AssertExists
 
 /-!
 # Additional properties of binary recursion on `Nat`
@@ -88,7 +88,7 @@ lemma div2_two : div2 2 = 1 := rfl
 @[simp]
 lemma div2_succ (n : ℕ) : div2 (n + 1) = cond (bodd n) (succ (div2 n)) (div2 n) := by
   simp only [bodd, boddDiv2, div2]
-  rcases boddDiv2 n with ⟨_ |_, _⟩ <;> simp
+  rcases boddDiv2 n with ⟨_ | _, _⟩ <;> simp
 
 attribute [local simp] Nat.add_comm Nat.mul_comm
 
@@ -101,6 +101,7 @@ lemma bodd_add_div2 : ∀ n, (bodd n).toNat + 2 * div2 n = n
     · simp
     · simp; cutsat
 
+@[grind =]
 lemma div2_val (n) : div2 n = n / 2 := by
   refine Nat.eq_of_mul_eq_mul_left (by decide)
     (Nat.add_left_cancel (Eq.trans ?_ (Nat.mod_add_div n 2).symm))
@@ -130,7 +131,7 @@ def shiftLeft' (b : Bool) (m : ℕ) : ℕ → ℕ
 lemma shiftLeft'_false : ∀ n, shiftLeft' false m n = m <<< n
   | 0 => rfl
   | n + 1 => by
-    have : 2 * (m * 2^n) = 2^(n+1)*m := by
+    have : 2 * (m * 2 ^ n) = 2 ^ (n + 1) * m := by
       rw [Nat.mul_comm, Nat.mul_assoc, ← Nat.pow_succ]; simp
     simp [shiftLeft_eq, shiftLeft', bit_val, shiftLeft'_false, this]
 
@@ -138,12 +139,7 @@ lemma shiftLeft'_false : ∀ n, shiftLeft' false m n = m <<< n
 @[simp] lemma shiftLeft_eq' (m n : Nat) : shiftLeft m n = m <<< n := rfl
 @[simp] lemma shiftRight_eq (m n : Nat) : shiftRight m n = m >>> n := rfl
 
-lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by
-  rw [div2_val]
-  apply (div_lt_iff_lt_mul <| succ_pos 1).2
-  have := Nat.mul_lt_mul_of_pos_left (lt_succ_self 1)
-    (lt_of_le_of_ne n.zero_le h.symm)
-  rwa [Nat.mul_one] at this
+lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by grind
 
 /-- `size n` : Returns the size of a natural number in
 bits i.e. the length of its binary representation -/
@@ -220,11 +216,11 @@ theorem div2_bit1 (n) : div2 (2 * n + 1) = n :=
 /-! ### `bit0` and `bit1` -/
 
 theorem bit_add : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit false n + bit b m
-  | true,  _, _ => by dsimp [bit]; cutsat
+  | true, _, _ => by dsimp [bit]; cutsat
   | false, _, _ => by dsimp [bit]; cutsat
 
 theorem bit_add' : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit b n + bit false m
-  | true,  _, _ => by dsimp [bit]; cutsat
+  | true, _, _ => by dsimp [bit]; cutsat
   | false, _, _ => by dsimp [bit]; cutsat
 
 theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
@@ -256,7 +252,7 @@ lemma bit_le : ∀ (b : Bool) {m n : ℕ}, m ≤ n → bit b m ≤ bit b n
   | false, _, _, h => by dsimp [bit]; cutsat
 
 lemma bit_lt_bit (a b) (h : m < n) : bit a m < bit b n := calc
-  bit a m < 2 * n   := by cases a <;> dsimp [bit] <;> omega
+  bit a m < 2 * n := by cases a <;> dsimp [bit] <;> omega
         _ ≤ bit b n := by cases b <;> dsimp [bit] <;> omega
 
 @[simp]

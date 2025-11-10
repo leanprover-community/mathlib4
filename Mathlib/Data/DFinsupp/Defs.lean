@@ -534,10 +534,7 @@ theorem single_eq_of_sigma_eq {i j} {xi : β i} {xj : β j} (h : (⟨i, xi⟩ : 
 
 @[simp]
 theorem equivFunOnFintype_single [Fintype ι] (i : ι) (m : β i) :
-    (@DFinsupp.equivFunOnFintype ι β _ _) (DFinsupp.single i m) = Pi.single i m := by
-  ext x
-  dsimp [Pi.single, Function.update]
-  simp [@eq_comm _ i]
+    (@DFinsupp.equivFunOnFintype ι β _ _) (DFinsupp.single i m) = Pi.single i m := rfl
 
 @[simp]
 theorem equivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : β i) :
@@ -866,7 +863,7 @@ def subtypeSupportEqEquiv (s : Finset ι) :
     simpa using Eq.symm
   right_inv f := by
     ext1
-    simp; rfl
+    simp
 
 /-- Equivalence between all dependent finitely supported functions `f : Π₀ i, β i` and type
 of pairs `⟨s : Finset ι, f : ∀ i : s, {x : β i // x ≠ 0}⟩`. -/
@@ -1285,10 +1282,8 @@ theorem mapRange.addEquiv_refl :
 theorem mapRange.addEquiv_trans (f : ∀ i, β i ≃+ β₁ i) (f₂ : ∀ i, β₁ i ≃+ β₂ i) :
     (mapRange.addEquiv fun i => (f i).trans (f₂ i)) =
       (mapRange.addEquiv f).trans (mapRange.addEquiv f₂) := by
-  refine AddEquiv.ext <| mapRange_comp (fun i x => f₂ i x) (fun i x => f i x) ?_ ?_ ?_
-  · intros; apply map_zero
-  · intros; apply map_zero
-  · intros; dsimp; simp only [map_zero]
+  ext
+  simp
 
 @[simp]
 theorem mapRange.addEquiv_symm (e : ∀ i, β₁ i ≃+ β₂ i) :

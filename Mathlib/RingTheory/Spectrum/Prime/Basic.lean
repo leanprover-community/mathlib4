@@ -298,8 +298,6 @@ theorem zeroLocus_eq_univ_iff (s : Set R) :
     zeroLocus s = Set.univ ↔ s ⊆ nilradical R := by
   rw [← Set.univ_subset_iff, subset_zeroLocus_iff_subset_vanishingIdeal, vanishingIdeal_univ]
 
-@[deprecated (since := "2025-04-05")] alias zeroLocus_eq_top_iff := zeroLocus_eq_univ_iff
-
 theorem zeroLocus_sup (I J : Ideal R) :
     zeroLocus ((I ⊔ J : Ideal R) : Set R) = zeroLocus I ∩ zeroLocus J :=
   (gc R).l_sup
@@ -429,8 +427,7 @@ variable {A : Type u} [CommRing A] [IsDomain A] [IsNoetherianRing A]
 ([samuel1967, § 3.3, Lemma 3]). -/
 theorem exists_primeSpectrum_prod_le (I : Ideal R) :
     ∃ Z : Multiset (PrimeSpectrum R), Multiset.prod (Z.map asIdeal) ≤ I := by
-  induction I using IsNoetherian.induction
-  case hgt M hgt =>
+  induction I using IsNoetherian.induction with | hgt M hgt =>
   change Ideal R at M
   by_cases h_prM : M.IsPrime
   · use {⟨M, h_prM⟩}
@@ -462,8 +459,7 @@ theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {
     (h_nzI : I ≠ ⊥) :
     ∃ Z : Multiset (PrimeSpectrum A),
       Multiset.prod (Z.map asIdeal) ≤ I ∧ Multiset.prod (Z.map asIdeal) ≠ ⊥ := by
-  induction I using IsNoetherian.induction
-  case hgt M hgt =>
+  induction I using IsNoetherian.induction with | hgt M hgt =>
   change Ideal A at M
   have hA_nont : Nontrivial A := IsDomain.toNontrivial
   by_cases h_topM : M = ⊤

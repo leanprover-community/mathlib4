@@ -28,7 +28,7 @@ theorem ofDigits_eq_sum_mapIdx_aux (b : ℕ) (l : List ℕ) :
     l.zipWith (fun a i : ℕ => a * b ^ (i + 1)) (List.range l.length) =
       l.zipWith (fun a i=> b * (a * b ^ i)) (List.range l.length)
     by simp [this]
-  congr; ext; simp [pow_succ]; ring
+  congr; ext; ring
 
 theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
     ofDigits b L = (L.mapIdx fun i a => a * b ^ i).sum := by
@@ -61,9 +61,9 @@ theorem digits_len (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) : (b.digits n).length
 theorem digits_length_le_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
     (b.digits n).length ≤ k ↔ n < b ^ k  := by
   by_cases h : n = 0
-  · simp [h]
-    positivity
-  rw [digits_len b n hb h, lt_pow_iff_log_lt hb h]
+  · have : 0 < b ^ k := by positivity
+    simpa [h]
+  rw [digits_len b n hb h, ← log_lt_iff_lt_pow hb h]
   exact add_one_le_iff
 
 theorem lt_digits_length_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
@@ -85,12 +85,12 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
   revert hm
   induction m using Nat.strongRecOn with | ind n IH => ?_
   intro hn
-  by_cases hnb : n < b + 2
+  by_cases! hnb : n < b + 2
   · simpa only [digits_of_lt (b + 2) n hn hnb]
   · rw [digits_getLast n (le_add_left 2 b)]
     refine IH _ (Nat.div_lt_self hn.bot_lt (one_lt_succ_succ b)) ?_
     rw [← pos_iff_ne_zero]
-    exact Nat.div_pos (le_of_not_gt hnb) (zero_lt_succ (succ b))
+    exact Nat.div_pos hnb (zero_lt_succ (succ b))
 
 theorem digits_append_digits {b m n : ℕ} (hb : 0 < b) :
     digits b n ++ digits b m = digits b (n + b ^ (digits b n).length * m) := by

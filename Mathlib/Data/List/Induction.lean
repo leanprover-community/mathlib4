@@ -40,14 +40,7 @@ theorem reverseRecOn_concat {motive : List α → Sort*} (x : α) (xs : List α)
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
     reverseRecOn (motive := motive) (xs ++ [x]) nil append_singleton =
       append_singleton _ _ (reverseRecOn (motive := motive) xs nil append_singleton) := by
-  suffices ∀ ys (h : reverse (reverse xs) = ys),
-      reverseRecOn (motive := motive) (xs ++ [x]) nil append_singleton =
-        cast (by simp [(reverse_reverse _).symm.trans h])
-          (append_singleton _ x (reverseRecOn (motive := motive) ys nil append_singleton)) by
-    exact this _ (reverse_reverse xs)
-  intro ys hy
-  conv_lhs => unfold reverseRecOn
-  grind
+  grind [reverseRecOn]
 
 /-- Bidirectional induction principle for lists: if a property holds for the empty list, the
 singleton list, and `a :: (l ++ [b])` from `l`, then it holds for all lists. This can be used to
@@ -135,5 +128,41 @@ abbrev recOnNeNil {motive : (l : List α) → l ≠ [] → Sort*} (l : List α) 
     (singleton : ∀ x, motive [x] (cons_ne_nil x []))
     (cons : ∀ x xs h, motive xs h → motive (x :: xs) (cons_ne_nil x xs)) :
     motive l h := recNeNil singleton cons l h
+
+/--
+A recursion principle for lists which separates the singleton case.
+-/
+@[elab_as_elim]
+def twoStepInduction {motive : (l : List α) → Sort*} (nil : motive [])
+    (singleton : ∀ x, motive [x])
+    (cons_cons : ∀ x y xs, motive xs → (∀ y, motive (y :: xs)) → motive (x :: y :: xs))
+    (l : List α) : motive l := match l with
+  | [] => nil
+  | [x] => singleton x
+  | x :: y :: xs =>
+    cons_cons x y xs
+    (twoStepInduction nil singleton cons_cons xs)
+    (fun y => twoStepInduction nil singleton cons_cons (y :: xs))
+
+@[simp]
+theorem twoStepInduction_nil {motive : (l : List α) → Sort*} (nil : motive [])
+    (singleton : ∀ x, motive [x])
+    (cons_cons : ∀ x y xs, motive xs → (∀ y, motive (y :: xs)) → motive (x :: y :: xs)) :
+    twoStepInduction nil singleton cons_cons [] = nil := twoStepInduction.eq_1 ..
+
+@[simp]
+theorem twoStepInduction_singleton {motive : (l : List α) → Sort*} (x : α) (nil : motive [])
+    (singleton : ∀ x, motive [x])
+    (cons_cons : ∀ x y xs, motive xs → (∀ y, motive (y :: xs)) → motive (x :: y :: xs)) :
+    twoStepInduction nil singleton cons_cons [x] = singleton x := twoStepInduction.eq_2 ..
+
+@[simp]
+theorem twoStepInduction_cons_cons {motive : (l : List α) → Sort*} (x y : α) (xs : List α)
+    (nil : motive []) (singleton : ∀ x, motive [x])
+    (cons_cons : ∀ x y xs, motive xs → (∀ y, motive (y :: xs)) → motive (x :: y :: xs)) :
+    twoStepInduction nil singleton cons_cons (x :: y :: xs) =
+    cons_cons x y xs
+    (twoStepInduction nil singleton cons_cons xs)
+    (fun y => twoStepInduction nil singleton cons_cons (y :: xs)) := twoStepInduction.eq_3 ..
 
 end List

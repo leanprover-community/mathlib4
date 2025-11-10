@@ -465,7 +465,7 @@ def prod (s : Submonoid M) (t : Submonoid N) :
   one_mem' := ⟨s.one_mem, t.one_mem⟩
   mul_mem' hp hq := ⟨s.mul_mem hp.1 hq.1, t.mul_mem hp.2 hq.2⟩
 
-@[to_additive coe_prod]
+@[to_additive (attr := norm_cast) coe_prod]
 theorem coe_prod (s : Submonoid M) (t : Submonoid N) :
     (s.prod t : Set (M × N)) = (s : Set M) ×ˢ (t : Set N) :=
   rfl
@@ -533,7 +533,7 @@ theorem mem_map_equiv {f : M ≃* N} {K : Submonoid M} {x : N} :
 @[to_additive]
 theorem map_equiv_eq_comap_symm (f : M ≃* N) (K : Submonoid M) :
     K.map f = K.comap f.symm :=
-  SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
+  SetLike.coe_injective (f.toEquiv.image_eq_preimage_symm K)
 
 @[to_additive]
 theorem comap_equiv_eq_map_symm (f : N ≃* M) (K : Submonoid M) :
@@ -610,7 +610,7 @@ variable {F : Type*} [FunLike F M N] [mc : MonoidHomClass F M N]
 
 open Submonoid
 
-library_note "range copy pattern"/--
+library_note2 «range copy pattern» /--
 For many categories (monoids, modules, rings, ...) the set-theoretic image of a morphism `f` is
 a subobject of the codomain. When this is the case, it is useful to define the range of a morphism
 in such a way that the underlying carrier set of the range subobject is definitionally

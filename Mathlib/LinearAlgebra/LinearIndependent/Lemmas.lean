@@ -320,10 +320,6 @@ private lemma LinearIndependent.pair_add_smul_add_smul_iff_aux (h : a * d ≠ b 
   convert pair_add_smul_add_smul_iff_aux d (-b) (-c) a (by simpa [mul_comm d a]) h' using 1
   ext i; fin_cases i <;> simp <;> module
 
-@[deprecated (since := "2025-04-15")]
-alias LinearIndependent.linear_combination_pair_of_det_ne_zero :=
-  LinearIndependent.pair_add_smul_add_smul_iff
-
 @[simp] lemma LinearIndependent.pair_add_smul_right_iff :
     LinearIndependent R ![x, c • x + y] ↔ LinearIndependent R ![x, y] := by
   rcases subsingleton_or_nontrivial S with hS | hS; · simp [hS.elim c 0]
@@ -458,7 +454,7 @@ lemma LinearMap.injective_of_linearIndependent {N : Type*} [AddCommGroup N] [Mod
     (hv : Submodule.span R (.range v) = ⊤) (hli : LinearIndependent R (f ∘ v)) :
     Function.Injective f := by
   refine (injective_iff_map_eq_zero _).mpr fun x hx ↦ ?_
-  have : x ∈ Submodule.span R (.range v) := by rw [hv]; trivial
+  have : x ∈ Submodule.span R (.range v) := by rw [hv]; exact mem_top
   obtain ⟨c, rfl⟩ := Finsupp.mem_span_range_iff_exists_finsupp.mp this
   simp only [map_finsuppSum, map_smul] at hx
   obtain rfl := linearIndependent_iff.mp hli c hx

@@ -435,9 +435,9 @@ private theorem of_inf_eq_bot_aux [IsGalois F A] [FiniteDimensional F E] (h₁ :
   apply LinearDisjoint.of_finrank_sup
   rw [h₁, finrank_top', ← Module.finrank_mul_finrank F B E, mul_comm, mul_left_inj'
     Module.finrank_pos.ne']
-  have : IsGalois B E := IsGalois.sup A B h₁
+  have : IsGalois B E := IsGalois.sup_right A B h₁
   rw [← IsGalois.card_aut_eq_finrank, ← IsGalois.card_aut_eq_finrank]
-  exact Nat.card_congr <| Equiv.ofBijective (restrictRestrictAlgEquivMapHom A B)
+  exact Nat.card_congr <| Equiv.ofBijective (restrictRestrictAlgEquivMapHom _ _ _ _)
     ⟨restrictRestrictAlgEquivMapHom_injective _ _ h₁,
       restrictRestrictAlgEquivMapHom_surjective _ _ h₂⟩
 
@@ -454,11 +454,9 @@ theorem of_inf_eq_bot [IsGalois F A] [FiniteDimensional F A] [FiniteDimensional 
   have hB : IntermediateField.map C.val B' = B := lift_restrict le_sup_right
   suffices A'.LinearDisjoint B' from hA ▸ hB ▸ LinearDisjoint.map this C.val
   have h₁ : A' ⊔ B' = ⊤ := by
-    apply lift_injective
-    simp_rw [lift_top, lift, IntermediateField.map_sup, hA, hB, C]
+    rw [← lift_inj, lift_top, lift_sup, lift_restrict le_sup_left, lift_restrict le_sup_right]
   have h₂ : A' ⊓ B' = ⊥ := by
-    apply lift_injective
-    simp [lift, map_inf, hA, hB, h]
+    rw [← lift_inj, lift_bot, lift_inf, lift_restrict le_sup_left, lift_restrict le_sup_right, h]
   have : IsGalois F A' := IsGalois.of_algEquiv <| restrict_algEquiv ..
   exact of_inf_eq_bot_aux h₁ h₂
 

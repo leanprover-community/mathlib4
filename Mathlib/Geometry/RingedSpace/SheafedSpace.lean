@@ -244,6 +244,22 @@ lemma mono_of_base_injective_of_stalk_epi {X Y : SheafedSpace C} (f : X ⟶ Y)
     ← PresheafedSpace.stalkMap.comp ⟨g, gc⟩ f, ← PresheafedSpace.stalkMap.comp ⟨g, hc⟩ f]
   congr 1
 
+attribute [local ext] DFunLike.ext in
+include instCC in
+lemma epi_of_base_surjective_of_stalk_mono {X Y : SheafedSpace C} (f : X ⟶ Y)
+    (h₁ : Function.Surjective f.base)
+    (h₂ : ∀ x, Mono (f.stalkMap x)) : Epi f := by
+  constructor
+  intro Z ⟨g, gc⟩ ⟨h, hc⟩ e
+  obtain rfl : g = h := ConcreteCategory.hom_ext _ _ fun y ↦ by
+    rw [← (h₁ y).choose_spec]
+    simpa using congr(($e).base.hom (h₁ y).choose)
+  refine SheafedSpace.hom_stalk_ext ⟨g, gc⟩ ⟨g, hc⟩ rfl fun y ↦ ?_
+  rw [← (h₁ y).choose_spec, ← cancel_mono (f.stalkMap (h₁ y).choose), stalkCongr_hom,
+    stalkSpecializes_refl, Category.id_comp, ← PresheafedSpace.stalkMap.comp f ⟨g, gc⟩,
+    ← PresheafedSpace.stalkMap.comp f ⟨g, hc⟩]
+  congr 1
+
 end ConcreteCategory
 
 end SheafedSpace

@@ -374,7 +374,6 @@ instance instIsScalarTower [SMul M N] [IsScalarTower M N F] : IsScalarTower M N 
   ⟨fun a b f => ext' <| smul_assoc a b f.toFun⟩
 
 instance instMulAction : MulAction M (E →ₗ.[R] F) where
-  smul := (· • ·)
   one_smul := fun ⟨_s, f⟩ => ext' <| one_smul M f
   mul_smul a b f := ext' <| mul_smul a b f.toFun
 
@@ -415,15 +414,15 @@ instance instAddSemigroup : AddSemigroup (E →ₗ.[R] F) :=
     · simp only [add_domain, inf_assoc]
     · simp only [add_apply, add_assoc]⟩
 
-instance instAddZeroClass : AddZeroClass (E →ₗ.[R] F) :=
-  ⟨fun f => by
+instance instAddZeroClass : AddZeroClass (E →ₗ.[R] F) where
+  zero_add := fun f => by
     ext x y hxy
     · simp [add_domain]
-    · simp only [add_apply, zero_apply, zero_add],
-  fun f => by
+    · simp [add_apply]
+  add_zero := fun f => by
     ext x y hxy
     · simp [add_domain]
-    · simp only [add_apply, zero_apply, add_zero]⟩
+    · simp [add_apply]
 
 instance instAddMonoid : AddMonoid (E →ₗ.[R] F) where
   zero_add f := by
