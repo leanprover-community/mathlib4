@@ -13,8 +13,6 @@ import Mathlib.LinearAlgebra.Dimension.Finrank
 /-!
 # Euler characteristic of homological complexes
 
-This file defines the Euler characteristic of a homological complex.
-
 The Euler characteristic is defined using the `ComplexShape.EulerCharSigns` typeclass,
 which provides the alternating signs for each index. This allows the definition to work
 uniformly for chain complexes, cochain complexes, and complexes with other index types.
@@ -33,12 +31,8 @@ uniformly for chain complexes, cochain complexes, and complexes with other index
 
 * `HomologicalComplex.eulerCharTsum_eq_eulerChar`: The infinite sum equals the finite sum
   when the complex vanishes outside the finite set
-
-## Implementation notes
-
-The sign at index `i` is given by `c.χ i` where `c : ComplexShape ι` has an instance of
-`c.EulerCharSigns`. This provides a uniform treatment of both homological (down) and
-cohomological (up) indexing conventions.
+* `HomologicalComplex.homologyEulerCharTsum_eq_homologyEulerChar`: The infinite homological
+  Euler characteristic equals the finite one when homology vanishes outside the finite set
 
 -/
 
@@ -46,9 +40,7 @@ namespace ComplexShape
 
 variable {ι : Type*} (c : ComplexShape ι)
 
-/-- Signs for Euler characteristic computations on complexes.
-This typeclass provides the alternating signs that appear in the definition
-of the Euler characteristic of a homological complex. -/
+/-- Signs for terms of Euler characteristic on complexes. -/
 class EulerCharSigns where
   /-- The sign for each index -/
   χ : ι → ℤˣ
@@ -60,8 +52,10 @@ variable [c.EulerCharSigns]
 /-- The sign at index `i` for Euler characteristic computations. -/
 abbrev χ : ι → ℤˣ := EulerCharSigns.χ c
 
+/-- Signs alternate in the forward direction of the complex shape. -/
 lemma χ_next {i j : ι} (h : c.Rel i j) : c.χ j = - c.χ i := EulerCharSigns.χ_next h
 
+/-- Signs alternate in the backward direction of the complex shape. -/
 lemma χ_prev {i j : ι} (h : c.Rel i j) : c.χ i = - c.χ j := by simp [c.χ_next h]
 
 @[simps]
