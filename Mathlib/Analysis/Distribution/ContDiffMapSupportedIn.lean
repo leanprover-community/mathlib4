@@ -260,11 +260,15 @@ protected theorem bounded_iteratedFDeriv (f : 𝓓^{n}_{K}(E, F)) {i : ℕ} (hi 
 
 /-- Inclusion of `𝓓^{n}_{K}(E, F)` into the space `E →ᵇ F` of bounded continuous maps
 as a `𝕜`-linear map. -/
-@[simps]
 noncomputable def toBoundedContinuousFunctionₗ : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ F where
   toFun f := f
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
+
+@[simp]
+lemma toBoundedContinuousFunctionₗ_apply (f : 𝓓^{n}_{K}(E, F)) :
+    toBoundedContinuousFunctionₗ 𝕜 f = f :=
+  rfl
 
 variable (n k) in
 /-- `iteratedFDerivWithOrderₗ 𝕜 n k i` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
@@ -302,16 +306,16 @@ noncomputable def iteratedFDerivWithOrderₗ (i : ℕ) :
     · simp
 
 @[simp]
-lemma coe_iteratedFDerivWithOrderₗ {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
+lemma iteratedFDerivWithOrderₗ_apply {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
     iteratedFDerivWithOrderₗ 𝕜 n k i f = if k + i ≤ n then iteratedFDeriv ℝ i f else 0 := by
   rw [ContDiffMapSupportedIn.iteratedFDerivWithOrderₗ]
   split_ifs <;> rfl
 
-lemma coe_iteratedFDerivWithOrderₗ_of_le {i : ℕ} (hin : k + i ≤ n) (f : 𝓓^{n}_{K}(E, F)) :
+lemma iteratedFDerivWithOrderₗ_apply_of_le {i : ℕ} (hin : k + i ≤ n) (f : 𝓓^{n}_{K}(E, F)) :
     iteratedFDerivWithOrderₗ 𝕜 n k i f = iteratedFDeriv ℝ i f := by
   simp [hin]
 
-lemma coe_iteratedFDerivWithOrderₗ_of_gt {i : ℕ} (hin : ¬ (k + i ≤ n)) (f : 𝓓^{n}_{K}(E, F)) :
+lemma iteratedFDerivWithOrderₗ_apply_of_gt {i : ℕ} (hin : ¬ (k + i ≤ n)) (f : 𝓓^{n}_{K}(E, F)) :
     iteratedFDerivWithOrderₗ 𝕜 n k i f = 0 := by
   ext : 1
   simp [hin]
@@ -335,7 +339,7 @@ noncomputable def iteratedFDerivₗ (i : ℕ) :
     simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi).contDiffAt]
 
 @[simp]
-lemma coe_iteratedFDerivₗ {i : ℕ} (f : 𝓓_{K}(E, F)) :
+lemma iteratedFDerivₗ_apply {i : ℕ} (f : 𝓓_{K}(E, F)) :
     iteratedFDerivₗ 𝕜 i f = iteratedFDeriv ℝ i f :=
   rfl
 
@@ -353,6 +357,21 @@ We call these "structure maps" because they define the topology on `𝓓^{n}_{K}
 noncomputable def structureMapₗ (i : ℕ) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F) :=
   toBoundedContinuousFunctionₗ 𝕜 ∘ₗ iteratedFDerivWithOrderₗ 𝕜 n 0 i
+
+lemma structureMapₗ_eq {i : ℕ} :
+    (structureMapₗ 𝕜 ⊤ i : 𝓓_{K}(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F)) =
+      (toBoundedContinuousFunctionₗ 𝕜 : 𝓓_{K}(E, E [×i]→L[ℝ] F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F)) ∘ₗ
+      (iteratedFDerivₗ 𝕜 i : 𝓓_{K}(E, F) →ₗ[𝕜] 𝓓_{K}(E, E [×i]→L[ℝ] F)) :=
+  rfl
+
+lemma structureMapₗ_apply_withOrder {i : ℕ} {f : 𝓓^{n}_{K}(E, F)} :
+    structureMapₗ 𝕜 n i f = if i ≤ n then iteratedFDeriv ℝ i f else 0 := by
+  split_ifs with hi <;> simp [structureMapₗ, hi]
+
+lemma structureMapₗ_apply {i : ℕ} {f : 𝓓_{K}(E, F)} :
+    structureMapₗ 𝕜 ⊤ i f = iteratedFDeriv ℝ i f := by
+  rw [structureMapₗ_eq]
+  rfl
 
 section Topology
 
