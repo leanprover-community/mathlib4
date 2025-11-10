@@ -31,7 +31,7 @@ universe u v w
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits AlgebraicGeometry
+open CategoryTheory Functor CategoryTheory.Limits AlgebraicGeometry
 
 namespace AlgebraicGeometry.Scheme
 
