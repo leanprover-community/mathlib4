@@ -293,128 +293,47 @@ theorem Path.exists_partition_in_slsc_neighborhoods (hX : SemilocallySimplyConne
   -- Extract U sets from the partition using choice
   choose U hU_open hU_prop hU_contains using h_partition
   -- For each point j, construct V[j] as the intersection of all U[i] where j is an endpoint
-  -- Specifically: V[j] is the path component of γ(t_j) in ⋂{U[i] | j = i.castSucc or j = i.succ}
+  -- Using iterated intersection: ⋂ i, ⋂ (_ : j is endpoint of i), U i
+  -- This makes finiteness manifest (exactly n iterations) and openness automatic
   have V_data : ∀ (j : Fin (n + 1)),
       ∃ V : Set X, IsOpen V ∧ IsPathConnected V ∧ γ (t j) ∈ V ∧
         (∀ i : Fin n, j = i.castSucc → V ⊆ U i) ∧ (∀ i : Fin n, j = i.succ → V ⊆ U i) := by
     intro j
-    -- Collect all U[i] where j is an endpoint
-    let relevant_Us : Set (Set X) := {U_set | ∃ i : Fin n, (j = i.castSucc ∨ j = i.succ) ∧ U_set = U i}
-    by_cases h_empty : relevant_Us = ∅
-    · -- No segments have j as endpoint (only when n = 0)
-      obtain ⟨V, hV_open, hV_in, hV_pathConn⟩ :=
-        exists_pathConnected_slsc_neighborhood hX (γ (t j))
-      refine ⟨V, hV_open, hV_pathConn.1, hV_in, ?_, ?_⟩
-      · intro i hi; have : False := by
-          have : U i ∈ relevant_Us := ⟨i, Or.inl hi, rfl⟩
-          rw [h_empty] at this; exact this
-        exact False.elim this
-      · intro i hi; have : False := by
-          have : U i ∈ relevant_Us := ⟨i, Or.inr hi, rfl⟩
-          rw [h_empty] at this; exact this
-        exact False.elim this
-    · -- Take intersection of relevant U sets
-      push_neg at h_empty
-      obtain ⟨U_ex, i_ex, hi_ex, rfl⟩ := h_empty
-      -- γ(t_j) is in all relevant U sets
-      have hγ_in_all : ∀ i : Fin n, j = i.castSucc ∨ j = i.succ → γ (t j) ∈ U i := by
-        intro i hij
-        apply hU_contains i (t j)
-        cases hij with
-        | inl h => constructor <;> apply h_mono.monotone <;> simp [h, Fin.le_def, Fin.coe_castSucc]
-        | inr h => constructor <;> apply h_mono.monotone <;> simp [h, Fin.le_def, Fin.succ] <;> omega
-      have hγ_in_inter : γ (t j) ∈ ⋂₀ relevant_Us := by
-        simp [Set.mem_sInter, relevant_Us]
-        intro U_set i hi hU_set
-        subst hU_set
-        exact hγ_in_all i hi
-      refine ⟨pathComponentIn (⋂₀ relevant_Us) (γ (t j)),
-        ?_, isPathConnected_pathComponentIn hγ_in_inter,
-        mem_pathComponentIn_self hγ_in_inter, ?_, ?_⟩
-      · -- Prove open: intersection is finite
-        apply IsOpen.pathComponentIn
-        -- At most 2 sets in the intersection
-        by_cases h_left : ∃ i : Fin n, j = i.castSucc
-        · by_cases h_right : ∃ i : Fin n, j = i.succ
-          · -- Both exist: intersection of exactly 2 sets
-            obtain ⟨i_left, hi_left⟩ := h_left
-            obtain ⟨i_right, hi_right⟩ := h_right
-            have : ⋂₀ relevant_Us = U i_left ∩ U i_right := by
-              ext x
-              simp [relevant_Us, Set.mem_sInter, Set.mem_inter_iff]
-              constructor
-              · intro h
-                constructor
-                · exact h (U i_left) i_left (Or.inl hi_left) rfl
-                · exact h (U i_right) i_right (Or.inr hi_right) rfl
-              · intro ⟨hl, hr⟩ U_set i hi hU_set
-                subst hU_set
-                cases hi with
-                | inl heq => rw [hi_left] at heq; rw [←Fin.castSucc_inj.mp heq]; exact hl
-                | inr heq => rw [hi_right] at heq; rw [←Fin.succ_inj.mp heq]; exact hr
-            rw [this]
-            exact (hU_open i_left).inter (hU_open i_right)
-          · -- Only left exists
-            push_neg at h_right
-            obtain ⟨i_left, hi_left⟩ := h_left
-            have : ⋂₀ relevant_Us = U i_left := by
-              ext x
-              simp [relevant_Us, Set.mem_sInter]
-              constructor
-              · intro h; exact h (U i_left) i_left (Or.inl hi_left) rfl
-              · intro hx U_set i hi hU_set
-                subst hU_set
-                cases hi with
-                | inl heq => rw [hi_left] at heq; rw [←Fin.castSucc_inj.mp heq]; exact hx
-                | inr heq =>
-                  -- Need to show j ≠ i.succ, but we have j = i_left.castSucc and j = i.succ
-                  -- So i_left.castSucc = i.succ, which we can use to derive a contradiction
-                  have : j = i.succ := heq
-                  rw [hi_left] at this
-                  exact h_right i this
-            rw [this]
-            exact hU_open i_left
-        · -- Only right exists (or neither, but we know at least one exists)
-          push_neg at h_left
-          have : ∃ i : Fin n, j = i.succ := by
-            by_contra h_none
-            push_neg at h_none
-            -- This contradicts h_empty
-            have : relevant_Us = ∅ := by
-              ext U_set
-              simp [relevant_Us]
-              intro i hi _
-              cases hi with
-              | inl heq => exact h_left i heq
-              | inr heq => exact h_none i heq
-            have h_contradiction : U i_ex ∈ relevant_Us := ⟨i_ex, hi_ex, rfl⟩
-            rw [this] at h_contradiction
-            exact h_contradiction
-          obtain ⟨i_right, hi_right⟩ := this
-          have : ⋂₀ relevant_Us = U i_right := by
-            ext x
-            simp [relevant_Us, Set.mem_sInter]
-            constructor
-            · intro h; exact h (U i_right) i_right (Or.inr hi_right) rfl
-            · intro hx U_set i hi hU_set
-              subst hU_set
-              cases hi with
-              | inl heq =>
-                  -- Need to show j ≠ i.castSucc, but we have j = i_right.succ and j = i.castSucc
-                  have : j = i.castSucc := heq
-                  rw [hi_right] at this
-                  exact h_left i this
-              | inr heq => rw [hi_right] at heq; rw [←Fin.succ_inj.mp heq]; exact hx
-          rw [this]
-          exact hU_open i_right
-      · intro i hi
-        trans (⋂₀ relevant_Us)
-        · apply pathComponentIn_subset
-        · exact Set.sInter_subset_of_mem ⟨i, Or.inl hi, rfl⟩
-      · intro i hi
-        trans (⋂₀ relevant_Us)
-        · apply pathComponentIn_subset
-        · exact Set.sInter_subset_of_mem ⟨i, Or.inr hi, rfl⟩
+    -- Define intersection as: ⋂ i : Fin n, ⋂ (_ : j = i.castSucc ∨ j = i.succ), U i
+    let U_inter := ⋂ i : Fin n, ⋂ (_ : j = i.castSucc ∨ j = i.succ), U i
+    -- γ(t_j) is in all relevant U sets
+    have hγ_in_inter : γ (t j) ∈ U_inter := by
+      simp only [U_inter, Set.mem_iInter]
+      intro i hi
+      apply hU_contains i (t j)
+      cases hi with
+      | inl h => constructor <;> apply h_mono.monotone <;> simp [h, Fin.le_def, Fin.coe_castSucc]
+      | inr h => constructor <;> apply h_mono.monotone <;> simp [h, Fin.le_def, Fin.succ]
+    -- Take the path component of γ(t_j) in the intersection
+    refine ⟨pathComponentIn U_inter (γ (t j)),
+      ?_, isPathConnected_pathComponentIn hγ_in_inter,
+      mem_pathComponentIn_self hγ_in_inter, ?_, ?_⟩
+    · -- Prove open: finite intersection of open sets, then path component
+      apply IsOpen.pathComponentIn
+      apply isOpen_iInter_of_finite
+      intro i
+      apply isOpen_iInter_of_finite
+      intro _
+      exact hU_open i
+    · -- Prove V ⊆ U i when j = i.castSucc
+      intro i hi
+      trans U_inter
+      · apply pathComponentIn_subset
+      · apply Set.iInter_subset_of_subset i
+        apply Set.iInter_subset_of_subset (Or.inl hi)
+        rfl
+    · -- Prove V ⊆ U i when j = i.succ
+      intro i hi
+      trans U_inter
+      · apply pathComponentIn_subset
+      · apply Set.iInter_subset_of_subset i
+        apply Set.iInter_subset_of_subset (Or.inr hi)
+        rfl
   choose V hV_open hV_pathConn hγ_in_V hV_left hV_right using V_data
   -- Construct IntervalPartition
   let part : IntervalPartition n := {
@@ -432,8 +351,8 @@ theorem Path.exists_partition_in_slsc_neighborhoods (hX : SemilocallySimplyConne
     h_U_slsc := fun i => (hU_prop i).2
     h_V_open := hV_open
     h_V_pathConn := hV_pathConn
-    h_V_left_subset := sorry
-    h_V_right_subset := sorry
+    h_V_left_subset := fun i => hV_left i.castSucc i rfl
+    h_V_right_subset := fun i => hV_right i.succ i rfl
   }
   -- Prove PathInTube
   refine ⟨n, part, T, ?_⟩
