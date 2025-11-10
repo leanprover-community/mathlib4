@@ -271,7 +271,7 @@ theorem curveIntegral_add_curveIntegral_eq_of_diffContOnCl
     hdω_symm hcontdiff
 
 end ContinuousMap.Homotopy
-  
+
 namespace Convex
 
 variable [NormedSpace ℝ E] [NormedSpace ℝ F]
