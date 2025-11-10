@@ -354,6 +354,24 @@ variable {J A} in
 abbrev Sheaf.homEquiv {X Y : Sheaf J A} : (X ⟶ Y) ≃ (X.val ⟶ Y.val) :=
   (fullyFaithfulSheafToPresheaf J A).homEquiv
 
+variable {J A} in
+/-- `Sheaf.homEquiv` as a natural isomorphism. -/
+def sheafToPresheafCompYonedaCompWhiskeringLeftSheafToPresheaf :
+    sheafToPresheaf J A ⋙ yoneda ⋙ (Functor.whiskeringLeft _ _ _).obj (sheafToPresheaf J A).op
+      ≅ yoneda :=
+  Functor.isoWhiskerLeft _ (Functor.isoWhiskerRight uliftYonedaIsoYoneda.symm _) ≪≫
+    (fullyFaithfulSheafToPresheaf J A).compYonedaCompWhiskeringLeft ≪≫
+    uliftYonedaIsoYoneda
+
+variable {J A} in
+/-- `Sheaf.homEquiv` as a natural isomorphism, using coyoneda. -/
+def sheafToPresheafCompCoyonedaCompWhiskeringLeftSheafToPresheaf :
+    (sheafToPresheaf J A).op ⋙ coyoneda ⋙ (Functor.whiskeringLeft _ _ _).obj (sheafToPresheaf J A)
+      ≅ coyoneda :=
+  Functor.isoWhiskerLeft _ (Functor.isoWhiskerRight uliftCoyonedaIsoCoyoneda.symm _) ≪≫
+    (fullyFaithfulSheafToPresheaf J A).compCoyonedaCompWhiskeringLeft ≪≫
+    uliftCoyonedaIsoCoyoneda
+
 instance : (sheafToPresheaf J A).Full :=
   (fullyFaithfulSheafToPresheaf J A).full
 
