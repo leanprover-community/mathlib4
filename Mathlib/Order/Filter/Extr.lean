@@ -17,7 +17,7 @@ public import Mathlib.Data.Finset.Lattice.Fold
 
 This file defines six predicates of the form `isAB`, where `A` is `Min`, `Max`, or `Extr`,
 and `B` is `Filter` or `On`.
-
+TODO fix names
 * `isMinFilter f l a` means that `f a ≤ f x` in some `l`-neighborhood of `a`;
 * `isMaxFilter f l a` means that `f x ≤ f a` in some `l`-neighborhood of `a`;
 * `isExtrFilter f l a` means `isMinFilter f l a` or `isMaxFilter f l a`.
