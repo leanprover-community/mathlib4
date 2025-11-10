@@ -125,7 +125,9 @@ theorem Path.subpathOn_trans {X : Type*} [TopologicalSpace X] {x y : X} (γ : Pa
       (γ.subpathOn a c (hab.trans hbc)) := by
   -- Both paths trace the same image, just with different parametrizations
   -- This is a standard reparametrization homotopy
-  sorry
+  -- Try to use existing lemmas about path composition and subpaths
+  convert Path.Homotopic.refl _
+  done
 
 /-- A subpath from a point to itself is homotopic to the constant path. -/
 theorem Path.subpathOn_self {X : Type*} [TopologicalSpace X] {x y : X} (γ : Path x y)
