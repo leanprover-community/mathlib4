@@ -701,7 +701,7 @@ theorem factorPow_comp_eq_of_factorPow_comp_succ_eq
     {m n : ℕ} (hle : m ≤ n) : factorPow I N (ha.monotone hle) ∘ₗ f n = f m := by
   ext x
   symm
-  refine Submodule.eq_factor_of_eq_factor_succ ?_ (fun n ↦ f n x) ?_ m n hle
+  refine Submodule.eq_factor_of_eq_factor_succ ?_ (fun n ↦ f n x) ?_ hle
   · exact fun _ _ le ↦ smul_mono_left (Ideal.pow_le_pow_right (ha.monotone le))
   · intro s
     simp only [LinearMap.ext_iff] at hf

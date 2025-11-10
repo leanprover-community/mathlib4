@@ -49,7 +49,7 @@ lemma Ideal.Quotient.factor_ker (H : I ≤ J) [I.IsTwoSided] [J.IsTwoSided] :
 
 lemma Submodule.eq_factor_of_eq_factor_succ {p : ℕ → Submodule R M}
     (hp : Antitone p) (x : (n : ℕ) → M ⧸ (p n)) (h : ∀ m, x m = factor (hp m.le_succ) (x (m + 1)))
-    (m n : ℕ) (g : m ≤ n) : x m = factor (hp g) (x n) := by
+    {m n : ℕ} (g : m ≤ n) : x m = factor (hp g) (x n) := by
   have : n = m + (n - m) := (Nat.add_sub_of_le g).symm
   induction hmn : n - m generalizing m n with
   | zero =>
@@ -59,14 +59,14 @@ lemma Submodule.eq_factor_of_eq_factor_succ {p : ℕ → Submodule R M}
   | succ k ih =>
     rw [hmn, ← add_assoc] at this
     subst this
-    rw [ih m (m + k) (m.le_add_right k) (by simp), h]
+    rw [ih (m.le_add_right k) (by simp), h]
     · simp
-    · omega
+    · cutsat
 
 lemma Ideal.Quotient.eq_factor_of_eq_factor_succ {I : ℕ → Ideal R} [∀ n, (I n).IsTwoSided]
     (hI : Antitone I) (x : (n : ℕ) → R ⧸ (I n)) (h : ∀ m, x m = factor (hI m.le_succ) (x (m + 1)))
-    (m n : ℕ) (g : m ≤ n) : x m = factor (hI g) (x n) :=
-  Submodule.eq_factor_of_eq_factor_succ hI x h m n g
+    {m n : ℕ} (g : m ≤ n) : x m = factor (hI g) (x n) :=
+  Submodule.eq_factor_of_eq_factor_succ hI x h g
 
 lemma Ideal.map_mk_comap_factor [J.IsTwoSided] [K.IsTwoSided] (hIJ : J ≤ I) (hJK : K ≤ J) :
     (I.map (mk J)).comap (factor hJK) = I.map (mk K) := by
