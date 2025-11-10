@@ -189,8 +189,8 @@ theorem _root_.Matrix.IsUnit.posSemidef_star_left_conjugate_iff (hU : IsUnit U) 
     PosSemidef (star U * x * U) ↔ x.PosSemidef := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.conjTranspose_mul_mul_same _⟩
   lift U to (Matrix n n R)ˣ using hU
-  have := h.mul_mul_conjTranspose_same (star (U⁻¹ : (Matrix n n R)ˣ) : Matrix n n R)
-  rwa [← star_eq_conjTranspose, ← mul_assoc, ← mul_assoc, ← star_mul, mul_assoc, star_star,
+  have := h.conjTranspose_mul_mul_same ((U⁻¹ : (Matrix n n R)ˣ) : Matrix n n R)
+  rwa [← star_eq_conjTranspose, ← mul_assoc, ← mul_assoc, ← star_mul, mul_assoc,
     Units.mul_inv, mul_one, star_one, one_mul] at this
 
 /-- For an invertible matrix `U`, `U * x * star U` is positive semi-definite iff `x` is.
@@ -480,8 +480,8 @@ theorem _root_.Matrix.IsUnit.posDef_star_left_conjugate_iff (hU : IsUnit U) :
     PosDef (star U * x * U) ↔ x.PosDef := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.conjTranspose_mul_mul_same <| mulVec_injective_of_isUnit hU⟩
   lift U to (Matrix n n R)ˣ using hU
-  have := h.mul_mul_conjTranspose_same (vecMul_injective_of_isUnit (Units.isUnit U⁻¹).star)
-  rwa [← star_eq_conjTranspose, ← mul_assoc, ← mul_assoc, ← star_mul, mul_assoc, star_star,
+  have := h.conjTranspose_mul_mul_same (mulVec_injective_of_isUnit (Units.isUnit U⁻¹))
+  rwa [← star_eq_conjTranspose, ← mul_assoc, ← mul_assoc, ← star_mul, mul_assoc,
     Units.mul_inv, mul_one, star_one, one_mul] at this
 
 /-- For an invertible matrix `U`, `U * x * star U` is positive definite iff `x` is.
