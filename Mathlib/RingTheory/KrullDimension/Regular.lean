@@ -14,9 +14,9 @@ import Mathlib.RingTheory.Spectrum.Prime.LTSeries
 
 ## Main results
 
-- `Module.supportDim_add_length_eq_supportDim_of_isRegular`: If $M$ is a finite module over a
-  Noetherian local ring $R$, $r_1, \dots, r_n$ is an $M$-sequence, then
-  $\dim M/(r_1, \dots, r_n)M + n = \dim M$.
+- `Module.supportDim_add_length_eq_supportDim_of_isRegular`: If `M` is a finite module over a
+  Noetherian local ring `R`, `r₁, …, rₙ` is an `M`-sequence, then
+  `dim M/(r₁, …, rₙ)M + n = dim M`.
 -/
 
 namespace Module
@@ -144,8 +144,8 @@ lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim {x : R}
     (Module.Flat.isSMulRegular_of_nonZeroDivisors reg) <| by
     rwa [ringJacobson_eq_maximalIdeal R]
 
-/-- If $M$ is a finite module over a Noetherian local ring $R$, $r_1, \dots, r_n$ is an
-  $M$-sequence, then $\dim M/(r_1, \dots, r_n)M + n = \dim M$. -/
+/-- If `M` is a finite module over a Noetherian local ring `R`, `r₁, …, rₙ` is an
+  `M`-sequence, then `dim M/(r₁, …, rₙ)M + n = dim M`. -/
 theorem supportDim_add_length_eq_supportDim_of_isRegular (rs : List R) (reg : IsRegular M rs) :
     supportDim R (M ⧸ ofList rs • (⊤ : Submodule R M)) + rs.length = supportDim R M := by
   induction rs generalizing M with
