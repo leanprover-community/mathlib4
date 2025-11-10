@@ -14,53 +14,41 @@ namespace LightCondensed
 noncomputable def ihomPoints (A B : LightCondMod.{u} R) (S : LightProfinite) :
     ((ihom A).obj B).val.obj ⟨S⟩ ≃ ((A ⊗ ((free R).obj S.toCondensed)) ⟶ B) :=
   (((freeForgetAdjunction R).homEquiv _ _).trans
-    ((fullyFaithfulSheafToPresheaf _ _).homEquiv.trans yonedaEquiv)).symm.trans
+    (coherentTopology _).yonedaEquiv).symm.trans
       ((ihom.adjunction A).homEquiv _ _).symm
 
-lemma ihom_map_val_app (A B P : LightCondMod.{u} R) (S : LightProfinite) (e : A ⟶ B) :
-    ∀ x, (((ihom P).map e).val.app ⟨S⟩) x =
-        (ihomPoints R P B S).symm (ihomPoints R P A S x ≫ e) := by
-  intro x
-  apply (ihomPoints R P B S).injective
-  simp? [ihomPoints, -sheafToPresheaf_obj] says
-    simp only [ihomPoints, curriedTensor_obj_obj, Equiv.trans_apply, Equiv.symm_trans_apply,
-      Functor.FullyFaithful.homEquiv_symm_apply, Equiv.symm_symm,
-      Functor.FullyFaithful.homEquiv_apply, sheafToPresheaf_map, Equiv.symm_apply_apply,
-      EmbeddingLike.apply_eq_iff_eq]
-  dsimp
-  erw [← (ihom.adjunction P).homEquiv_naturality_right_symm (g := e)]
-  rw [← ((freeForgetAdjunction R)).homEquiv_naturality_right_symm]
-  ext
-  simp [yonedaEquiv]
+lemma ihomPoints_apply (A B : LightCondMod.{u} R) (S : LightProfinite)
+    (x : ihom A |>.obj B |>.val.obj ⟨S⟩) :
+    ihomPoints R A B S x = (MonoidalClosed.uncurry (((freeForgetAdjunction R).homEquiv _ _).symm
+      ((coherentTopology LightProfinite.{u}).yonedaEquiv.symm x))) :=
   rfl
 
-attribute [local instance] Types.instConcreteCategory Types.instFunLike
+lemma ihomPoints_symm_apply (A B : LightCondMod.{u} R) (S : LightProfinite)
+    (x : (A ⊗ ((free R).obj S.toCondensed)) ⟶ B) :
+    (ihomPoints R A B S).symm x = (coherentTopology LightProfinite.{u}).yonedaEquiv
+      ((freeForgetAdjunction R).homEquiv _ _ (MonoidalClosed.curry x)) := by
+  rfl
+
+lemma ihom_map_val_app (A B P : LightCondMod.{u} R) (S : LightProfinite) (e : A ⟶ B)
+    (x : ihom P |>.obj A |>.val.obj ⟨S⟩) :
+    (((ihom P).map e).val.app ⟨S⟩) x =
+        (ihomPoints R P B S).symm (ihomPoints R P A S x ≫ e) := by
+  apply (ihomPoints R P B S).injective
+  simp only [ihomPoints_apply, Equiv.apply_symm_apply]
+  rw [← MonoidalClosed.uncurry_natural_right, ← Adjunction.homEquiv_naturality_right_symm]
+  congr
+  ext
+  simp
+  rfl
 
 lemma ihomPoints_symm_comp (B P : LightCondMod.{u} R) (S S' : LightProfinite) (π : S ⟶ S')
-    (f : _ ⟶ _) :
+    (f : P ⊗ (free R).obj S'.toCondensed ⟶ B) :
     (ihomPoints R P B S).symm (P ◁ (free R).map (lightProfiniteToLightCondSet.map π) ≫ f) =
       ConcreteCategory.hom (((ihom P).obj B).val.map π.op) ((ihomPoints R P B S').symm f) := by
-  simp only [ihomPoints, curriedTensor_obj_obj, Equiv.symm_trans_apply, Equiv.symm_symm,
-    Equiv.trans_apply, Functor.FullyFaithful.homEquiv_apply, sheafToPresheaf_map]
-  dsimp
-  rw [Adjunction.homEquiv_apply, Adjunction.homEquiv_apply]
-  erw [Adjunction.homEquiv_apply, Adjunction.homEquiv_apply]
-  simp only [Functor.comp_obj, ihom.ihom_adjunction_unit, Functor.map_comp]
-  simp only [← Functor.map_comp]
-  rw [(ihom P).map_comp, ← ihom.coev_naturality_assoc]
-  simp only [Functor.map_comp]
-  rw [Adjunction.unit_naturality_assoc]
-  erw [yonedaEquiv_comp, yonedaEquiv_comp]
-  simp only [comp_val, yonedaEquiv, yoneda_obj_obj, Opposite.op_unop, Equiv.coe_fn_mk,
-    FunctorToTypes.comp]
-  erw [← (((LightCondensed.forget R).map ((ihom P).map f)).val.naturality_apply π.op)]
-  simp only [ConcreteCategory.hom]
-  apply congrArg
-  simp only [← FunctorToTypes.comp]
-  erw [← ((LightCondensed.forget R).map ((ihom.coev P).app ((free R).obj
-    S'.toCondensed))).val.naturality_apply]
-  simp only [ConcreteCategory.hom, FunctorToTypes.comp]
-  apply congrArg
+  simp only [ihomPoints_symm_apply, MonoidalClosed.curry_natural_left, Adjunction.homEquiv_apply,
+    Functor.comp_obj, Functor.map_comp, Adjunction.unit_naturality_assoc]
+  rw [GrothendieckTopology.yonedaEquiv_comp, GrothendieckTopology.yonedaEquiv_comp,
+    GrothendieckTopology.yonedaEquiv_apply, GrothendieckTopology.yonedaEquiv_apply]
   have : (lightProfiniteToLightCondSet.map π).val.app (Opposite.op S) (𝟙 S) =
       S'.toCondensed.val.map π.op (𝟙 S') := rfl
   rw [this]
