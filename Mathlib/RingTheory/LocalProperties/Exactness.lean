@@ -27,6 +27,8 @@ open IsLocalizedModule
 variable {R M N L : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
   [AddCommMonoid N] [Module R N] [AddCommMonoid L] [Module R L]
 
+-- For every maximal ideal `p` of `R`, let `Mₚ` (resp. `Nₚ`, resp. `Lₚ`) the localizations
+-- of `M` (resp. `N`, resp. `L`) at `p`.
 variable
   (Mₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
   [∀ (P : Ideal R) [P.IsMaximal], AddCommMonoid (Mₚ P)]
@@ -115,6 +117,8 @@ variable {R M N L : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
   [AddCommMonoid N] [Module R N] [AddCommMonoid L] [Module R L] (s : Set R) (spn : Ideal.span s = ⊤)
 include spn
 
+-- For every element `r ∈ s`, let `Mᵣ` (resp. `Nᵣ`, resp. `Lᵣ`) the localizations
+-- of `M` (resp. `N`, resp. `L`) away from `r`.
 variable
   (Mₚ : ∀ _ : s, Type*)
   [∀ r : s, AddCommMonoid (Mₚ r)]
@@ -200,6 +204,8 @@ section Algebra
 
 variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
 
+-- For every maximal ideal `p` of `R`, let `Rₚ` be the localization of `R` at `p`
+-- and `Sₚ` the localization of `S` at `p`.
 variable
   (Rₚ : ∀ (p : Ideal R) [p.IsMaximal], Type*)
   [∀ (p : Ideal R) [p.IsMaximal], CommSemiring (Rₚ p)]
@@ -265,9 +271,10 @@ end Algebra
 
 section IsLocalization
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S]
-variable {s : Set R} (hs : span s = ⊤)
-  (Rᵣ : s → Type*) [∀ r, CommSemiring (Rᵣ r)] [∀ r, Algebra R (Rᵣ r)]
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] {s : Set R} (hs : span s = ⊤)
+-- For every element `r ∈ s`, let `Rᵣ` be the localization of `R` away from `r`
+-- and `Sᵣ` the localization of `S` away from `f r`.
+variable (Rᵣ : s → Type*) [∀ r, CommSemiring (Rᵣ r)] [∀ r, Algebra R (Rᵣ r)]
   (Sᵣ : s → Type*) [∀ r, CommSemiring (Sᵣ r)] [∀ r, Algebra S (Sᵣ r)]
 variable (f : R →+* S) [∀ r, IsLocalization.Away r.val (Rᵣ r)]
     [∀ r, IsLocalization.Away (f r.val) (Sᵣ r)]
