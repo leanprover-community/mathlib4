@@ -191,11 +191,6 @@ lemma FractionalIdeal.inv_le_comm {I J : FractionalIdeal A⁰ K} (hI : I ≠ 0) 
     I⁻¹ ≤ J ↔ J⁻¹ ≤ I := by
   simpa using le_inv_comm (A := A) (K := K) (inv_ne_zero hI) (inv_ne_zero hJ)
 
-@[simp]
-theorem FractionalIdeal.inv_le_inv_iff {I J : FractionalIdeal A⁰ K} (hI : I ≠ 0) (hJ : J ≠ 0) :
-    I⁻¹ ≤ J⁻¹ ↔ J ≤ I := by
-  rw [le_inv_comm (inv_ne_zero hI) hJ, inv_inv]
-
 open FractionalIdeal
 
 
