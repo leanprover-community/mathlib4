@@ -172,11 +172,11 @@ theorem le_order_mul (φ ψ : R⟦X⟧) : order φ + order ψ ≤ order (φ * ψ
   apply le_order
   intro n hn; rw [coeff_mul, Finset.sum_eq_zero]
   rintro ⟨i, j⟩ hij
-  by_cases hi : ↑i < order φ
+  by_cases! hi : ↑i < order φ
   · rw [coeff_of_lt_order i hi, zero_mul]
-  by_cases hj : ↑j < order ψ
+  by_cases! hj : ↑j < order ψ
   · rw [coeff_of_lt_order j hj, mul_zero]
-  rw [not_lt] at hi hj; rw [mem_antidiagonal] at hij
+  rw [mem_antidiagonal] at hij
   exfalso
   apply ne_of_lt (lt_of_lt_of_le hn <| add_le_add hi hj)
   rw [← Nat.cast_add, hij]
@@ -193,6 +193,18 @@ theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*} (φ : ι → R�
   | cons a s ha ih => grw [Finset.sum_cons ha, Finset.prod_cons ha, ih, le_order_mul]
 
 alias order_mul_ge := le_order_mul
+
+theorem order_ne_zero_iff_constCoeff_eq_zero {φ : R⟦X⟧} :
+    φ.order ≠ 0 ↔ φ.constantCoeff = 0 := by
+  constructor
+  · intro h
+    rw [← PowerSeries.coeff_zero_eq_constantCoeff]
+    apply coeff_of_lt_order
+    simpa using pos_of_ne_zero h
+  · intro h
+    refine ENat.one_le_iff_ne_zero.mp <| PowerSeries.le_order _ _ fun d hd ↦ ?_
+    rw [Nat.cast_lt_one] at hd
+    simp [hd, h]
 
 /-- The order of the monomial `a*X^n` is infinite if `a = 0` and `n` otherwise. -/
 theorem order_monomial (n : ℕ) (a : R) [Decidable (a = 0)] :
@@ -360,10 +372,9 @@ variable [Semiring R] [NoZeroDivisors R]
 is the sum of their orders. -/
 theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := by
   apply le_antisymm _ (le_order_mul _ _)
-  by_cases h : φ = 0 ∨ ψ = 0
+  by_cases! h : φ = 0 ∨ ψ = 0
   · rcases h with h | h <;> simp [h]
-  · push_neg at h
-    rw [← coe_toNat_order h.1, ← coe_toNat_order h.2, ← ENat.coe_add]
+  · rw [← coe_toNat_order h.1, ← coe_toNat_order h.2, ← ENat.coe_add]
     apply order_le
     rw [coeff_mul, Finset.sum_eq_single_of_mem ⟨φ.order.toNat, ψ.order.toNat⟩ (by simp)]
     · exact mul_ne_zero (coeff_order h.1) (coeff_order h.2)
@@ -377,9 +388,8 @@ theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := 
 preserves multiplication. -/
 theorem divXPowOrder_mul {f g : R⟦X⟧} :
     divXPowOrder (f * g) = divXPowOrder f * divXPowOrder g := by
-  by_cases h : f = 0 ∨ g = 0
+  by_cases! h : f = 0 ∨ g = 0
   · rcases h with (h | h) <;> simp [h]
-  push_neg at h
   apply X_pow_mul_cancel (k := f.order.toNat + g.order.toNat)
   calc
     _ = X ^ ((f * g).order.toNat) * (f * g).divXPowOrder := by
