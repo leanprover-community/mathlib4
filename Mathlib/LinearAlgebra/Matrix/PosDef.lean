@@ -178,10 +178,43 @@ protected theorem smul {α : Type*} [CommSemiring α] [PartialOrder α] [StarRin
   simp only [smul_mulVec, dotProduct_smul]
   exact smul_nonneg ha (hx.2 _)
 
+section conjugate
+variable [DecidableEq n] {U x : Matrix n n R}
+
+/-- For an invertible matrix `U`, `star U * x * U` is positive semi-definite iff `x` is.
+This works on any ⋆-ring with a partial order.
+
+See `IsUnit.star_left_conjugate_nonneg_iff` for a similar statement for star-ordered rings. -/
+theorem _root_.Matrix.IsUnit.posSemidef_star_left_conjugate_iff (hU : IsUnit U) :
+    PosSemidef (star U * x * U) ↔ x.PosSemidef := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.conjTranspose_mul_mul_same _⟩
+  lift U to (Matrix n n R)ˣ using hU
+  have := h.mul_mul_conjTranspose_same (star (U⁻¹ : (Matrix n n R)ˣ) : Matrix n n R)
+  rwa [← star_eq_conjTranspose, ← mul_assoc, ← mul_assoc, ← star_mul, mul_assoc, star_star,
+    Units.mul_inv, mul_one, star_one, one_mul] at this
+
+open Matrix in
+/-- For an invertible matrix `U`, `U * x * star U` is positive semi-definite iff `x` is.
+This works on any ⋆-ring with a partial order.
+
+See `IsUnit.star_right_conjugate_nonneg_iff` for a similar statement for star-ordered rings. -/
+theorem _root_.Matrix.IsUnit.posSemidef_star_right_conjugate_iff (hU : IsUnit U) :
+    PosSemidef (U * x * star U) ↔ x.PosSemidef := by
+  simpa using hU.star.posSemidef_star_left_conjugate_iff
+
+end conjugate
+
+/-- A Hermitian matrix is positive semi-definite if and only if its eigenvalues are non-negative. -/
+lemma _root_.Matrix.IsHermitian.posSemidef_iff_eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
+    (hA : IsHermitian A) : PosSemidef A ↔ 0 ≤ hA.eigenvalues := by
+  conv_lhs => rw [hA.spectral_theorem]
+  simp [IsUnit.posSemidef_star_right_conjugate_iff (U := (hA.eigenvectorUnitary : Matrix n n 𝕜))
+      (Unitary.toUnits hA.eigenvectorUnitary).isUnit, posSemidef_diagonal_iff, Pi.le_def]
+
 /-- The eigenvalues of a positive semi-definite matrix are non-negative -/
 lemma eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : Matrix.PosSemidef A) (i : n) : 0 ≤ hA.1.eigenvalues i :=
-  (hA.re_dotProduct_nonneg _).trans_eq (hA.1.eigenvalues_eq _).symm
+  hA.isHermitian.posSemidef_iff_eigenvalues_nonneg.mp hA _
 
 theorem trace_nonneg {A : Matrix n n 𝕜} (hA : A.PosSemidef) : 0 ≤ A.trace := by
   classical
@@ -242,14 +275,6 @@ lemma eigenvalues_self_mul_conjTranspose_nonneg (A : Matrix m n 𝕜) [Decidable
     0 ≤ (isHermitian_mul_conjTranspose_self A).eigenvalues i :=
   (posSemidef_self_mul_conjTranspose _).eigenvalues_nonneg _
 
-/-- A Hermitian matrix is positive semi-definite if and only if its eigenvalues are non-negative. -/
-lemma IsHermitian.posSemidef_iff_eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
-    (hA : IsHermitian A) : PosSemidef A ↔ 0 ≤ hA.eigenvalues := by
-  refine ⟨fun h => h.eigenvalues_nonneg, fun h => ?_⟩
-  rw [hA.spectral_theorem]
-  refine (posSemidef_diagonal_iff.mpr ?_).mul_mul_conjTranspose_same _
-  simpa using h
-
 @[deprecated (since := "2025-08-17")] alias ⟨_, IsHermitian.posSemidef_of_eigenvalues_nonneg⟩ :=
   IsHermitian.posSemidef_iff_eigenvalues_nonneg
 
@@ -261,32 +286,6 @@ theorem PosSemidef.trace_eq_zero_iff {A : Matrix n n 𝕜} (hA : A.PosSemidef) :
     RCLike.ofReal_eq_zero, Finset.sum_eq_zero_iff_of_nonneg (s := Finset.univ)
       (by simpa using hA.eigenvalues_nonneg), Finset.mem_univ, true_imp_iff] at h
   exact funext_iff.eq ▸ hA.isHermitian.eigenvalues_eq_zero_iff.mp <| h
-
-section conjugate
-variable [DecidableEq n] {U x : Matrix n n R}
-
-/-- For an invertible matrix `U`, `star U * x * U` is positive semi-definite iff `x` is.
-This works on any ⋆-ring with a partial order.
-
-See `IsUnit.star_left_conjugate_nonneg_iff` for a similar statement for star-ordered rings. -/
-theorem IsUnit.posSemidef_star_left_conjugate_iff (hU : IsUnit U) :
-    PosSemidef (star U * x * U) ↔ x.PosSemidef := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h.conjTranspose_mul_mul_same _⟩
-  lift U to (Matrix n n R)ˣ using hU
-  have := h.mul_mul_conjTranspose_same (star (U⁻¹ : (Matrix n n R)ˣ) : Matrix n n R)
-  rwa [← star_eq_conjTranspose, ← mul_assoc, ← mul_assoc, ← star_mul, mul_assoc, star_star,
-    Units.mul_inv, mul_one, star_one, one_mul] at this
-
-open Matrix in
-/-- For an invertible matrix `U`, `U * x * star U` is positive semi-definite iff `x` is.
-This works on any ⋆-ring with a partial order.
-
-See `IsUnit.star_right_conjugate_nonneg_iff` for a similar statement for star-ordered rings. -/
-theorem IsUnit.posSemidef_star_right_conjugate_iff (hU : IsUnit U) :
-    PosSemidef (U * x * star U) ↔ x.PosSemidef := by
-  simpa using hU.star.posSemidef_star_left_conjugate_iff
-
-end conjugate
 
 /-- The matrix `vecMulVec a (star a)` is always positive semi-definite. -/
 theorem posSemidef_vecMulVec_self_star [StarOrderedRing R] (a : n → R) :
