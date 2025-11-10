@@ -51,11 +51,11 @@ def terminalReplacement (oldTacticName newTacticName : String) (oldTacticKind : 
   test ctxI i stx goal := do
     let tac ← newTactic ctxI i stx
     try
-      let goalsWithTypes ← ctxI.runTacticCodeWithTypes i goal tac
-      match goalsWithTypes with
+      let goalTypes ← ctxI.runTacticCode i goal tac ⟨Expr, MVarId.getType'⟩
+      match goalTypes with
       | [] => return .success tac
       | _ => do
-        let goalsMessages := goalsWithTypes.map fun (_, e) => m!"⊢ {MessageData.ofExpr e}\n"
+        let goalsMessages := goalTypes.map fun e => m!"⊢ {MessageData.ofExpr e}\n"
         return .remainingGoals tac goalsMessages
     catch _e =>
       let name ← mkAuxDeclName `extracted
