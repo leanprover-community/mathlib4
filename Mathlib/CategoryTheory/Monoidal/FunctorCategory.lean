@@ -214,8 +214,10 @@ instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategor
 
 end Monoidal
 
+namespace Functor.Monoidal
+
 @[simps!]
-instance Functor.Monoidal.whiskeringLeft (E : Type*) [Category E] [MonoidalCategory E] (F : C ⥤ D) :
+instance whiskeringLeft (E : Type*) [Category E] [MonoidalCategory E] (F : C ⥤ D) :
     ((whiskeringLeft _ _ E).obj F).Monoidal :=
   CoreMonoidal.toMonoidal { εIso := Iso.refl _, μIso _ _ := Iso.refl _ }
 
@@ -227,19 +229,11 @@ instance (E : Type*) [Category E] [MonoidalCategory E] (e : C ≌ D) :
     (e.congrLeft (E := E)).inverse.Monoidal :=
   inferInstanceAs ((Functor.whiskeringLeft _ _ E).obj e.functor).Monoidal
 
--- TODO: improve automation here by adding `@[simps!]` to the instance
--- making whiskeringLeft monoidal, after the renaming PR #31346 is merged
+attribute [local simp] Adjunction.homEquiv in
 instance (E : Type*) [Category E] [MonoidalCategory E] (e : C ≌ D) :
     (e.congrLeft (E := E)).IsMonoidal where
-  leftAdjoint_ε := by
-    ext
-    rw [Adjunction.homEquiv_apply]
-    simp [Equivalence.congrLeft]
-    rfl
   leftAdjoint_μ X Y := by
     ext
-    rw [Adjunction.homEquiv_apply]
-    change 𝟙 _ = _ ≫ (𝟙 _) ≫ _
-    simp [Equivalence.congrLeft, ← Functor.map_comp]
+    simp [← Functor.map_comp]
 
-end CategoryTheory
+end CategoryTheory.Functor.Monoidal
