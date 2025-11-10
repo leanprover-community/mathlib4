@@ -116,9 +116,10 @@ theorem continuous_of_continuous_eval {g : α → E →SLₚₜ[σ] F}
     (h : ∀ x, Continuous (g · x)) : Continuous g := by
   simp [(PointwiseConvergenceCLM.isEmbedding_coeFn σ E F).continuous_iff, continuous_pi_iff, h]
 
+variable (𝕜₂ σ E F) in
 /-- The topology of bounded convergence is stronger than the topology of pointwise convergence. -/
 @[simps!]
-def _root_.ContinousLinearMap.toPointwiseConvergenceCLM [ContinuousSMul 𝕜₁ E]
+def _root_.ContinuousLinearMap.toPointwiseConvergenceCLM [ContinuousSMul 𝕜₁ E]
     [ContinuousConstSMul 𝕜₂ F] : (E →SL[σ] F) →L[𝕜₂] (E →SLₚₜ[σ] F) where
   toLinearMap := LinearMap.id
   cont := continuous_id_of_le
