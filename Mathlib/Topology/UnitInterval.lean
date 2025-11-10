@@ -422,6 +422,114 @@ lemma exists_strictMono_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b)
       obtain ⟨j, hj⟩ := hδ m trivial
       exact ⟨j, Subset.trans h_subset hj⟩
 
+  -- Alternative proof:
+  -- obtain ⟨δ, δ_pos, ball_subset⟩ := lebesgue_number_lemma_of_metric isCompact_univ hc₁ hc₂
+  -- refine (lt_or_eq_of_le h).elim ?_ ?_
+  -- · intro hlt
+  --   have hab_pos : 0 < b - a := sub_pos.mpr hlt
+  --   obtain ⟨n, hn_gt⟩ := exists_nat_gt ((b - a) / δ)
+  --   have h0_le : (0 : ℝ) ≤ (b - a) / δ := div_nonneg (sub_nonneg.mpr h) δ_pos.le
+  --   have hn_pos' : (0 : ℝ) < (n : ℝ) := lt_of_le_of_lt h0_le hn_gt
+  --   have hn_pos : 0 < n := by exact_mod_cast hn_pos'
+  --   have hδ_ne : δ ≠ 0 := ne_of_gt δ_pos
+  --   have hmul_lt : b - a < (n : ℝ) * δ := by
+  --     have := mul_lt_mul_of_pos_right hn_gt δ_pos
+  --     simpa [div_eq_mul_inv, hδ_ne, mul_comm, mul_left_comm, mul_assoc] using this
+  --   let Δ : ℝ := (b - a) / (n : ℝ)
+  --   have hΔ_pos : 0 < Δ := div_pos hab_pos hn_pos'
+  --   have hΔ_nonneg : 0 ≤ Δ := hΔ_pos.le
+  --   have hn_ne_zero : (n : ℝ) ≠ 0 :=
+  --     by exact_mod_cast (Nat.cast_ne_zero.mpr <| ne_of_gt hn_pos)
+  --   have hΔ_lt : Δ < δ := by
+  --     have := mul_lt_mul_of_pos_left hmul_lt (inv_pos.mpr hn_pos')
+  --     simpa [Δ, div_eq_mul_inv, hn_ne_zero, mul_comm, mul_left_comm, mul_assoc] using this
+  --   let t : Fin (n + 1) → Icc a b := fun k =>
+  --     ⟨a + (k : ℝ) * Δ, by
+  --       have hk : (k : ℝ) ≤ n := by exact_mod_cast Fin.le_last k
+  --       refine ⟨?_, ?_⟩
+  --       · exact le_add_of_nonneg_right (mul_nonneg (Nat.cast_nonneg _) hΔ_nonneg)
+  --       · have hk' : (k : ℝ) * Δ ≤ (n : ℝ) * Δ :=
+  --           mul_le_mul_of_nonneg_right hk hΔ_nonneg
+  --         have hN : (n : ℝ) * Δ = b - a := by
+  --           have hn_ne : (n : ℝ) ≠ 0 := hn_ne_zero
+  --           have : ((b - a) / (n : ℝ)) * (n : ℝ) = b - a := by
+  --             field_simp [hn_ne]
+  --           simpa [Δ, mul_comm] using this
+  --         have hk'' := hk'
+  --         simp [hN] at hk''
+  --         simpa [add_comm, add_left_comm, add_assoc, sub_eq_add_neg] using
+  --           add_le_add_left hk'' a⟩
+  --   have ht_strict : StrictMono t := by
+  --     intro i j hij
+  --     change a + (i : ℝ) * Δ < a + (j : ℝ) * Δ
+  --     have hij' : (i : ℝ) < (j : ℝ) := by exact_mod_cast Fin.lt_iff_val_lt_val.mp hij
+  --     exact add_lt_add_left (mul_lt_mul_of_pos_right hij' hΔ_pos) _
+  --   have ht0 : (t 0 : ℝ) = a := by
+  --     simp [t]
+  --   have ht_last : (t (Fin.last n) : ℝ) = b := by
+  --     have hmul : (n : ℝ) * Δ = b - a := by
+  --       have hn_ne : (n : ℝ) ≠ 0 := hn_ne_zero
+  --       have : ((b - a) / (n : ℝ)) * (n : ℝ) = b - a := by
+  --         field_simp [hn_ne]
+  --       simpa [Δ, mul_comm] using this
+  --     have hval : (t (Fin.last n) : ℝ) = a + (n : ℝ) * Δ := by simp [t]
+  --     calc
+  --       (t (Fin.last n) : ℝ)
+  --           = a + (n : ℝ) * Δ := hval
+  --       _ = a + (b - a) := by simp [hmul]
+  --       _ = b := by simp [sub_eq_add_neg]
+  --   have hsucc_diff :
+  --       ∀ i : Fin n, (t i.succ : ℝ) - (t i.castSucc : ℝ) = Δ := by
+  --     intro i
+  --     have hsucc' : (t i.succ : ℝ) = a + (i.succ : ℝ) * Δ := by simp [t]
+  --     have hcast' : (t i.castSucc : ℝ) = a + (i.castSucc : ℝ) * Δ := by simp [t]
+  --     have hcast : (i.castSucc : ℝ) = (i : ℝ) := by simp
+  --     have hisucc : (i.succ : ℝ) = (i : ℝ) + 1 := by simp
+  --     have hcast'' : (t i.castSucc : ℝ) = a + (i : ℝ) * Δ := by simpa [hcast] using hcast'
+  --     have hsucc'' : (t i.succ : ℝ) = a + ((i : ℝ) + 1) * Δ := by simpa [hisucc] using hsucc'
+  --     have histep₁ : (↑↑i + 1) * Δ = (↑↑i : ℝ) * Δ + Δ := by
+  --       simp [add_mul, add_comm]
+  --     have histep : (↑↑i + 1) * Δ = Δ + (↑↑i : ℝ) * Δ := by
+  --       simpa [add_comm] using histep₁
+  --     have hstep :
+  --         (t i.succ : ℝ) = (t i.castSucc : ℝ) + Δ := by
+  --       calc
+  --         (t i.succ : ℝ)
+  --             = a + ((i : ℝ) + 1) * Δ := hsucc''
+  --         _ = a + ((i : ℝ) * Δ + Δ) := by simp [histep₁]
+  --         _ = (a + (i : ℝ) * Δ) + Δ := by ac_rfl
+  --         _ = (t i.castSucc : ℝ) + Δ := by simp [hcast'']
+  --     simp [hstep]
+  --   have hinterval_subset :
+  --       ∀ i : Fin n, Icc (t i.castSucc) (t i.succ) ⊆ Metric.ball (t i.castSucc) δ := by
+  --     intro i x hx
+  --     rw [Metric.mem_ball]
+  --     have hx_left : (t i.castSucc : ℝ) ≤ (x : ℝ) := hx.1
+  --     have hx_right : (x : ℝ) ≤ (t i.succ : ℝ) := hx.2
+  --     have hx_nonneg : 0 ≤ (x : ℝ) - (t i.castSucc : ℝ) := sub_nonneg.mpr hx_left
+  --     have hx_leΔ : (x : ℝ) - (t i.castSucc : ℝ) ≤ Δ := by
+  --       have := sub_le_sub_right hx_right (t i.castSucc : ℝ)
+  --       simpa [hsucc_diff i] using this
+  --     have hx_dist_le : dist x (t i.castSucc) ≤ Δ := by
+  --       change dist (x : ℝ) (t i.castSucc : ℝ) ≤ Δ
+  --       simpa [Real.dist_eq, abs_of_nonneg hx_nonneg] using hx_leΔ
+  --     exact (lt_of_le_of_lt hx_dist_le hΔ_lt)
+  --   have hcover :
+  --       ∀ i : Fin n, ∃ j : ι, Icc (t i.castSucc) (t i.succ) ⊆ c j := by
+  --     intro i
+  --     obtain ⟨j, hj⟩ := ball_subset (t i.castSucc) trivial
+  --     exact ⟨j, (hinterval_subset i).trans hj⟩
+  --   exact ⟨n, t, ht_strict, ht0, ht_last, hcover⟩
+  -- · intro h_eq
+  --   subst h_eq
+  --   refine ⟨0, fun _ : Fin 1 => ⟨a, by simp⟩, ?_, ?_, ?_, ?_⟩
+  --   · intro i j hij
+  --     grind
+  --   · simp
+  --   · simp
+  --   · intro i
+  --     exact i.elim0
+
 /-- Finite partition variant: Any open cover of the unit interval can be refined to a finite
 partition with strictly monotone partition points indexed by `Fin (n + 1)`. -/
 lemma exists_strictMono_Icc_subset_open_cover_unitInterval {ι} {c : ι → Set I}
