@@ -6,7 +6,7 @@ Authors: Damiano Testa
 module
 
 public meta import Lean.Elab.Command
-public meta import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # The `#find_syntax` command

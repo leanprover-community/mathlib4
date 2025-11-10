@@ -5,7 +5,7 @@ Authors: Alex J. Best
 -/
 module
 
-public meta import Mathlib.Init
+public import Mathlib.Init
 public meta import Lean.Elab.Tactic.Basic
 public meta import Lean.Meta.Tactic.Simp.Rewrite
 public meta import Batteries.Tactic.Exact

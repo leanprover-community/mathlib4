@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 module
 
 public meta import Lean.Elab.Tactic.Simp
-public meta import Mathlib.Init
+public import Mathlib.Init
 
 /-! # `simp_intro` tactic -/
 

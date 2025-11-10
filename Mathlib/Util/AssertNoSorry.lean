@@ -5,7 +5,7 @@ Authors: David Renshaw
 -/
 module
 
-public meta import Mathlib.Init
+public import Mathlib.Init
 public meta import Lean.Util.CollectAxioms
 public meta import Lean.Elab.Command
 

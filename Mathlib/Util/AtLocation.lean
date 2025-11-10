@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Heather Macbeth
 -/
 module
 
-public meta import Mathlib.Init
+public import Mathlib.Init
 public meta import Lean.Elab.Tactic.Location
 public meta import Lean.Meta.Tactic.Simp.Main
 

@@ -5,7 +5,7 @@ Authors: Parth Shastri, Gabriel Ebner, Mario Carneiro
 -/
 module
 
-public meta import Mathlib.Init
+public import Mathlib.Init
 public meta import Lean.Elab.Command
 public meta import Lean.Compiler.CSimpAttr
 public meta import Lean.Util.FoldConsts

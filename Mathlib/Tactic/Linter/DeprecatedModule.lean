@@ -6,7 +6,7 @@ Authors: Damiano Testa
 module
 
 public meta import Std.Time.Format
-public meta import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # The `deprecated.module` linter

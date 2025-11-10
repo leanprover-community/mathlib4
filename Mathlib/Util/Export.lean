@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public meta import Mathlib.Init
+public import Mathlib.Init
 public meta import Lean.CoreM
 public meta import Lean.Util.FoldConsts
 

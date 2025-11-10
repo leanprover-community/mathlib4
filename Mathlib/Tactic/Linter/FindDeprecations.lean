@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 module
 
-public meta import Mathlib.Init -- `import ImportGraph.Imports` is enough
+public import Mathlib.Init -- `import ImportGraph.Imports` is enough
 
 /-!
 # The `#clear_deprecations` command

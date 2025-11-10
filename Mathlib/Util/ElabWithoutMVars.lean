@@ -5,7 +5,7 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public meta import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # `elabTermWithoutNewMVars`

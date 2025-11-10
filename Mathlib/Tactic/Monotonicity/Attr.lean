@@ -5,7 +5,7 @@ Authors: Heather Macbeth
 -/
 module
 
-public meta import Mathlib.Init
+public import Mathlib.Init
 public meta import Lean.LabelAttribute
 
 /-! # The @[mono] attribute -/

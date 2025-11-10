@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Kim Morrison, Damiano Testa
 -/
 module
 
-public meta import Mathlib.Init
+public import Mathlib.Init
 public meta import Lean.Util.Path
 
 /-!

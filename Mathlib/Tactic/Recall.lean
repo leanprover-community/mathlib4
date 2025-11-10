@@ -5,7 +5,7 @@ Authors: Mac Malone, Kyle Miller
 -/
 module
 
-public meta import Mathlib.Init
+public import Mathlib.Init
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.DeclUtil
 

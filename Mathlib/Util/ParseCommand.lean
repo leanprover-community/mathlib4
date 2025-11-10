@@ -6,7 +6,7 @@ Authors: Matthew Robert Ballard, Damiano Testa
 module
 
 public meta import Lean.Elab.Command
-public meta import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # `#parse` -- a command to parse text and log outputs

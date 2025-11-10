@@ -5,7 +5,7 @@ Authors: Kim Morrison, Alex J. Best, Yaël Dillies
 -/
 module
 
-public meta import Mathlib.Init
+public import Mathlib.Init
 public meta import Qq
 public meta import Lean.Expr
 

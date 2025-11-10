@@ -5,7 +5,7 @@ Authors: Gabriel Ebner
 -/
 module
 
-public meta import Mathlib.Init
+public import Mathlib.Init
 public meta import Lean.Elab.Tactic.Conv.Basic
 public meta import Lean.Elab.Command
 

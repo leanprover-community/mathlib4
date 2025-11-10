@@ -7,7 +7,7 @@ module
 
 public meta import Lean.Elab.Eval
 public meta import Lean.Elab.Tactic.BuiltinTactic
-public meta import Mathlib.Init
+public import Mathlib.Init
 public meta import Lean.Meta.Tactic.TryThis
 
 /-!

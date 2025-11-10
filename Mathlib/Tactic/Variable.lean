@@ -5,7 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public meta import Mathlib.Init
+public import Mathlib.Init
 public meta import Lean.Meta.Tactic.TryThis
 public meta import Lean.Linter.UnusedVariables
 

@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public meta import Mathlib.Init
+public import Mathlib.Init
 public meta import Lean.Util.Heartbeats
 public meta import Lean.Meta.Tactic.TryThis
 

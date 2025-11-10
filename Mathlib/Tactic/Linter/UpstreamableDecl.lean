@@ -6,7 +6,7 @@ Authors: Damiano Testa, Anne Baanen
 module
 
 public meta import ImportGraph.Meta
-public meta import Mathlib.Init
+public import Mathlib.Init
 
 /-! # The `upstreamableDecl` linter
 
