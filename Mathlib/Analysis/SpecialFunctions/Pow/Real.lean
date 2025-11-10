@@ -309,10 +309,9 @@ theorem norm_cpow_of_imp {z w : ℂ} (h : z = 0 → w.re = 0 → w = 0) :
     exact ne_of_apply_ne re hw
 
 theorem norm_cpow_le (z w : ℂ) : ‖z ^ w‖ ≤ ‖z‖ ^ w.re / Real.exp (arg z * im w) := by
-  by_cases h : z = 0 → w.re = 0 → w = 0
+  by_cases! h : z = 0 → w.re = 0 → w = 0
   · exact (norm_cpow_of_imp h).le
-  · push_neg at h
-    simp [h]
+  · simp [h]
 
 @[simp]
 theorem norm_cpow_real (x : ℂ) (y : ℝ) : ‖x ^ (y : ℂ)‖ = ‖x‖ ^ y := by
