@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Notation.Support
+import Mathlib.Algebra.Notation.Indicator
 import Mathlib.Data.Set.Lattice
 
 /-!
@@ -17,7 +17,7 @@ zero.
 
 open Function
 
-variable {ι κ G₀ M₀ : Type*}
+variable {ι κ G₀ M₀ : Type*} {α : ι → Type*}
 
 namespace Finset
 variable [CommMonoidWithZero M₀] {p : ι → Prop} [DecidablePred p] {f : ι → M₀} {s : Finset ι}
@@ -40,6 +40,10 @@ lemma prod_boole : ∏ i ∈ s, (ite (p i) 1 0 : M₀) = ite (∀ i ∈ s, p i) 
 lemma support_prod_subset (s : Finset ι) (f : ι → κ → M₀) :
     support (fun x ↦ ∏ i ∈ s, f i x) ⊆ ⋂ i ∈ s, support (f i) :=
   fun _ hx ↦ Set.mem_iInter₂.2 fun _ hi H ↦ hx <| prod_eq_zero hi H
+
+@[simp] lemma _root_.Set.indicator_pi_one_apply (s : Finset ι) (t : ∀ i, Set (α i)) (f : ∀ i, α i) :
+    ((s : Set ι).pi t).indicator 1 f = ∏ i ∈ s, (t i).indicator (M := M₀) 1 (f i) := by
+  classical simp [Set.indicator, prod_boole]
 
 variable [Nontrivial M₀] [NoZeroDivisors M₀]
 
