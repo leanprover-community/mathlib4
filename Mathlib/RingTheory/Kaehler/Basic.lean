@@ -368,7 +368,7 @@ into `(KaehlerDifferential.ideal R S).cotangentIdeal`. -/
 noncomputable def KaehlerDifferential.endEquivDerivation' :
     Derivation R S Ω[S⁄R] ≃ₗ[R] Derivation R S (ideal R S).cotangentIdeal :=
     (LinearEquiv.compDer ((KaehlerDifferential.ideal R S).cotangentEquivIdeal.restrictScalars
-    S)).restrictScalars (R:=R)
+    S)).restrictScalars (R := R)
 
 /-- (Implementation) An `Equiv` version of `KaehlerDifferential.End_equiv_aux`.
 Used in `KaehlerDifferential.endEquiv`. -/
