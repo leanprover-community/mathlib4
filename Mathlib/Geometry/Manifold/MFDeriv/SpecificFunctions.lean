@@ -714,7 +714,7 @@ theorem mfderiv_sumSwap :
 variable {f : M → N} (g : M' → N') {q : M} {q' : M'}
 
 lemma writtenInExtChartAt_sumInl_eventuallyEq_id :
-    (writtenInExtChartAt I I q (@Sum.inl M M')) =ᶠ[𝓝[Set.range I] (extChartAt I q) q] id := by
+    (writtenInExtChartAt I I q (@Sum.inl M M')) =ᶠ[𝓝[Set.range I] (extChartAt I q q)] id := by
     have hmem : I.symm ⁻¹'
         (chartAt H q).target ∩ Set.range I ∈ 𝓝[Set.range I] (extChartAt I q) q := by
       rw [← I.image_eq (chartAt H q).target]
@@ -726,7 +726,7 @@ lemma writtenInExtChartAt_sumInl_eventuallyEq_id :
       (chartAt H q).right_inv (by simpa [Set.mem_preimage, I.left_inv] using hyT)]
 
 lemma writtenInExtChartAt_sumInr_eventuallyEq_id :
-    (writtenInExtChartAt I I q' (@Sum.inr M M')) =ᶠ[𝓝[Set.range I] (extChartAt I q') q'] id := by
+    (writtenInExtChartAt I I q' (@Sum.inr M M')) =ᶠ[𝓝[Set.range I] (extChartAt I q' q')] id := by
     have hmem : I.symm ⁻¹'
         (chartAt H q').target ∩ Set.range I ∈ 𝓝[Set.range I] (extChartAt I q') q' := by
       rw [← I.image_eq (chartAt H q').target]
