@@ -36,7 +36,7 @@ Letting `T` be a self-adjoint operator on a finite-dimensional inner product spa
 * `LinearMap.IsSymmetric.eigenvalues` gives the eigenvalues in decreasing order.  This is
   done for several reasons: (i) This agrees with the standard convention of listing singular
   values in decreasing order, with the operator norm as the first singular value
-  (ii) For positive compact operators on an infinite dimensional space, one can list the nonzero
+  (ii) For positive compact operators on an infinite-dimensional space, one can list the nonzero
   eigenvalues in decreasing (but not increasing) order since they converge to zero. (iii) This
   simplifies several theorem statements. For example the Schur-Horn theorem states that the diagonal
   of the matrix representation of a selfadjoint linear map is majorized by the eigenvalue sequence
@@ -292,7 +292,7 @@ end LinearMap
 
 section Nonneg
 
-@[simp]
+-- Cannot be @[simp] because the LHS is not in simp normal form
 theorem inner_product_apply_eigenvector {μ : 𝕜} {v : E} {T : E →ₗ[𝕜] E}
     (h : T v = μ • v) : ⟪v, T v⟫ = μ * (‖v‖ : 𝕜) ^ 2 := by
   simp only [h, inner_smul_right, inner_self_eq_norm_sq_to_K]

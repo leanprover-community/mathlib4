@@ -21,7 +21,7 @@ namespace Mathlib.Linter
 If `pos` is a `String.Pos`, then `getNamesFrom pos` returns the array of identifiers
 for the names of the declarations whose syntax begins in position at least `pos`.
 -/
-def getNamesFrom {m} [Monad m] [MonadEnv m] [MonadFileMap m] (pos : String.Pos) :
+def getNamesFrom {m} [Monad m] [MonadEnv m] [MonadFileMap m] (pos : String.Pos.Raw) :
     m (Array Syntax) := do
   -- declarations from parallelism branches should not be interesting here, so use `local`
   let drs := declRangeExt.toPersistentEnvExtension.getState (asyncMode := .local) (← getEnv)
@@ -51,5 +51,5 @@ def getAliasSyntax {m} [Monad m] [MonadResolveName m] (stx : Syntax) : m (Array 
 /-- Used for linters which use `0` instead of `false` for disabling. -/
 def logLint0Disable {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
     (linterOption : Lean.Option Nat) (stx : Syntax) (msg : MessageData) : m Unit :=
-  let disable := m!"note: this linter can be disabled with `set_option {linterOption.name} 0`"
-  logWarningAt stx (.tagged linterOption.name m!"{msg}\n{disable}")
+  let disable := .note m!"This linter can be disabled with `set_option {linterOption.name} 0`"
+  logWarningAt stx (.tagged linterOption.name m!"{msg}{disable}")

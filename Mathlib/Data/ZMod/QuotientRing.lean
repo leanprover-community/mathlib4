@@ -39,6 +39,26 @@ def quotientSpanNatEquivZMod : ℤ ⧸ Ideal.span {(n : ℤ)} ≃+* ZMod n :=
 def quotientSpanEquivZMod (a : ℤ) : ℤ ⧸ Ideal.span ({a} : Set ℤ) ≃+* ZMod a.natAbs :=
   (Ideal.quotEquivOfEq (span_natAbs a)).symm.trans (quotientSpanNatEquivZMod a.natAbs)
 
+@[simp]
+theorem quotientSpanNatEquivZMod_comp_Quotient_mk (n : ℕ) :
+    (Int.quotientSpanNatEquivZMod n : _ →+* _).comp (Ideal.Quotient.mk (Ideal.span {(n : ℤ)})) =
+      Int.castRingHom (ZMod n) := rfl
+
+@[simp]
+theorem quotientSpanNatEquivZMod_comp_castRingHom (n : ℕ) :
+    ((Int.quotientSpanNatEquivZMod n).symm : _ →+* _).comp (Int.castRingHom (ZMod n)) =
+      Ideal.Quotient.mk (Ideal.span {(n : ℤ)}) := by ext; simp
+
+@[simp]
+theorem quotientSpanEquivZMod_comp_Quotient_mk (n : ℤ) :
+    (Int.quotientSpanEquivZMod n : _ →+* _).comp (Ideal.Quotient.mk (Ideal.span {(n : ℤ)})) =
+      Int.castRingHom (ZMod n.natAbs) := rfl
+
+@[simp]
+theorem quotientSpanEquivZMod_comp_castRingHom (n : ℤ) :
+    ((Int.quotientSpanEquivZMod n).symm : _ →+* _).comp (Int.castRingHom (ZMod n.natAbs)) =
+      Ideal.Quotient.mk (Ideal.span {(n : ℤ)}) := by ext; simp
+
 end Int
 
 noncomputable section ChineseRemainder

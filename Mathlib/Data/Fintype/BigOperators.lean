@@ -78,8 +78,8 @@ theorem prod_eq_mul {f : α → M} (a b : α) (h₁ : a ≠ b) (h₂ : ∀ x, x 
 
 /-- If a product of a `Finset` of a subsingleton type has a given
 value, so do the terms in that product. -/
-@[to_additive "If a sum of a `Finset` of a subsingleton type has a given
-  value, so do the terms in that sum."]
+@[to_additive /-- If a sum of a `Finset` of a subsingleton type has a given
+  value, so do the terms in that sum. -/]
 theorem eq_of_subsingleton_of_prod_eq {ι : Type*} [Subsingleton ι] {s : Finset ι} {f : ι → M}
     {b : M} (h : ∏ i ∈ s, f i = b) : ∀ i ∈ s, f i = b :=
   Finset.eq_of_card_le_one_of_prod_eq (Finset.card_le_one_of_subsingleton s) h
@@ -138,17 +138,17 @@ lemma card_pi_const (α : Type*) [Fintype α] (n : ℕ) : card (Fin n → α) = 
 
 This is a version of `Finset.prod_sigma` specialized to the case
 of multiplication over `Finset.univ`. -/
-@[to_additive "Sum over a sigma type equals the repeated sum.
+@[to_additive /-- Sum over a sigma type equals the repeated sum.
 
-This is a version of `Finset.sum_sigma` specialized to the case of summation over `Finset.univ`."]
+This is a version of `Finset.sum_sigma` specialized to the case of summation over `Finset.univ`. -/]
 theorem prod_sigma {ι} {α : ι → Type*} {M : Type*} [Fintype ι] [∀ i, Fintype (α i)] [CommMonoid M]
     (f : Sigma α → M) : ∏ x, f x = ∏ x, ∏ y, f ⟨x, y⟩ :=
   Finset.prod_sigma ..
 
 /-- Product over a sigma type equals the repeated product, curried version.
 This version is useful to rewrite from right to left. -/
-@[to_additive "Sum over a sigma type equals the repeated sum, curried version.
-This version is useful to rewrite from right to left."]
+@[to_additive /-- Sum over a sigma type equals the repeated sum, curried version.
+This version is useful to rewrite from right to left. -/]
 theorem prod_sigma' {ι} {α : ι → Type*} {M : Type*} [Fintype ι] [∀ i, Fintype (α i)] [CommMonoid M]
     (f : (i : ι) → α i → M) : ∏ x : Sigma α, f x.1 x.2 = ∏ x, ∏ y, f x y :=
   prod_sigma ..
@@ -202,7 +202,7 @@ theorem card_vector [Fintype α] (n : ℕ) :
   rw [Fintype.ofEquiv_card]; simp
 
 /-- It is equivalent to compute the product of a function over `Fin n` or `Finset.range n`. -/
-@[to_additive "It is equivalent to sum a function over `fin n` or `finset.range n`."]
+@[to_additive /-- It is equivalent to sum a function over `fin n` or `finset.range n`. -/]
 theorem Fin.prod_univ_eq_prod_range [CommMonoid α] (f : ℕ → α) (n : ℕ) :
     ∏ i : Fin n, f i = ∏ i ∈ range n, f i :=
   calc
@@ -227,7 +227,7 @@ nonrec theorem Fintype.prod_dite [Fintype α] {p : α → Prop} [DecidablePred p
     (f : ∀ a, p a → β) (g : ∀ a, ¬p a → β) :
     (∏ a, dite (p a) (f a) (g a)) =
     (∏ a : { a // p a }, f a a.2) * ∏ a : { a // ¬p a }, g a a.2 := by
-  simp only [prod_dite, attach_eq_univ]
+  simp only [prod_dite]
   congr 1
   · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // p x } => f x x.2
   · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // ¬p x } => g x x.2
@@ -239,28 +239,25 @@ variable {α₁ : Type*} {α₂ : Type*} {M : Type*} [Fintype α₁] [Fintype α
 @[to_additive]
 theorem Fintype.prod_sumElim (f : α₁ → M) (g : α₂ → M) :
     ∏ x, Sum.elim f g x = (∏ a₁, f a₁) * ∏ a₂, g a₂ :=
-  prod_disj_sum _ _ _
-
-@[deprecated (since := "2025-02-20")] alias prod_sum_elim := prod_sumElim
-@[deprecated (since := "2025-02-20")] alias sum_sum_elim := sum_sumElim
+  prod_disjSum _ _ _
 
 @[to_additive (attr := simp)]
 theorem Fintype.prod_sum_type (f : α₁ ⊕ α₂ → M) :
     ∏ x, f x = (∏ a₁, f (Sum.inl a₁)) * ∏ a₂, f (Sum.inr a₂) :=
-  prod_disj_sum _ _ _
+  prod_disjSum _ _ _
 
 /-- The product over a product type equals the product of the fiberwise products. For rewriting
 in the reverse direction, use `Fintype.prod_prod_type'`. -/
-@[to_additive Fintype.sum_prod_type "The sum over a product type equals the sum of fiberwise sums.
-For rewriting in the reverse direction, use `Fintype.sum_prod_type'`."]
+@[to_additive Fintype.sum_prod_type /-- The sum over a product type equals the sum of fiberwise
+sums. For rewriting in the reverse direction, use `Fintype.sum_prod_type'`. -/]
 theorem Fintype.prod_prod_type [CommMonoid γ] (f : α₁ × α₂ → γ) :
     ∏ x, f x = ∏ x, ∏ y, f (x, y) :=
   Finset.prod_product ..
 
 /-- The product over a product type equals the product of the fiberwise products. For rewriting
 in the reverse direction, use `Fintype.prod_prod_type`. -/
-@[to_additive Fintype.sum_prod_type' "The sum over a product type equals the sum of fiberwise sums.
-For rewriting in the reverse direction, use `Fintype.sum_prod_type`."]
+@[to_additive Fintype.sum_prod_type' /-- The sum over a product type equals the sum of fiberwise
+sums. For rewriting in the reverse direction, use `Fintype.sum_prod_type`. -/]
 theorem Fintype.prod_prod_type' [CommMonoid γ] (f : α₁ → α₂ → γ) :
     ∏ x : α₁ × α₂, f x.1 x.2 = ∏ x, ∏ y, f x y :=
   Finset.prod_product' ..
@@ -271,7 +268,8 @@ theorem Fintype.prod_prod_type_right [CommMonoid γ] (f : α₁ × α₂ → γ)
   Finset.prod_product_right ..
 
 /-- An uncurried version of `Finset.prod_prod_type_right`. -/
-@[to_additive Fintype.sum_prod_type_right' "An uncurried version of `Finset.sum_prod_type_right`"]
+@[to_additive Fintype.sum_prod_type_right'
+/-- An uncurried version of `Finset.sum_prod_type_right` -/]
 theorem Fintype.prod_prod_type_right' [CommMonoid γ] (f : α₁ → α₂ → γ) :
     ∏ x : α₁ × α₂, f x.1 x.2 = ∏ y, ∏ x, f x y :=
   Finset.prod_product_right' ..

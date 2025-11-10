@@ -3,10 +3,10 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.GroupTheory.Abelianization
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.GroupTheory.Abelianization.Defs
 import Mathlib.GroupTheory.Commutator.Finite
 import Mathlib.GroupTheory.Transfer
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Schreier's Lemma
@@ -57,8 +57,6 @@ theorem card_dvd_exponent_pow_rank' {n : ℕ} (hG : ∀ g : G, g ^ n = 1) :
 end CommGroup
 
 namespace Subgroup
-
-open MemRightTransversals
 
 variable {G : Type*} [Group G] {H : Subgroup G} {R S : Set G}
 
@@ -177,7 +175,7 @@ theorem card_commutator_dvd_index_center_pow [Finite (commutatorSet G)] :
   -- Rewrite as `|Z(G) ∩ G'| * [G' : Z(G) ∩ G'] ∣ [G : Z(G)] ^ ([G : Z(G)] * n) * [G : Z(G)]`
   rw [← ((center G).subgroupOf (_root_.commutator G)).card_mul_index, pow_succ]
   -- We have `h1 : [G' : Z(G) ∩ G'] ∣ [G : Z(G)]`
-  have h1 := relindex_dvd_index_of_normal (center G) (_root_.commutator G)
+  have h1 := relIndex_dvd_index_of_normal (center G) (_root_.commutator G)
   -- So we can reduce to proving `|Z(G) ∩ G'| ∣ [G : Z(G)] ^ ([G : Z(G)] * n)`
   refine mul_dvd_mul ?_ h1
   -- We know that `[G' : Z(G) ∩ G'] < ∞` by `h1` and `hG`
@@ -222,6 +220,6 @@ instance [Finite (commutatorSet G)] : Finite (_root_.commutator G) := by
   have h2 := card_commutator_dvd_index_center_pow (closureCommutatorRepresentatives G)
   refine Nat.finite_of_card_ne_zero fun h => ?_
   rw [card_commutator_closureCommutatorRepresentatives, h, zero_dvd_iff] at h2
-  exact FiniteIndex.index_ne_zero (pow_eq_zero h2)
+  exact FiniteIndex.index_ne_zero (eq_zero_of_pow_eq_zero h2)
 
 end Subgroup

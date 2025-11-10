@@ -12,7 +12,7 @@ We extend `reassoc` and `reassoc_of%` for equality of isomorphisms.
 Adding `@[reassoc]` to a lemma named `F` of shape `∀ .., f = g`,
 where `f g : X ≅ Y` in some category will create a new lemma named `F_assoc` of shape
 `∀ .. {Z : C} (h : Y ≅ Z), f ≪≫ h = g ≪≫ h`
-but with the conclusions simplified using basic propertions in isomorphisms in a category
+but with the conclusions simplified using basic proportions in isomorphisms in a category
 (`Iso.trans_refl`, `Iso.refl_trans`, `Iso.trans_assoc`, `Iso.trans_symm`,
 `Iso.symm_self_id` and `Iso.self_symm_id`).
 
@@ -25,9 +25,8 @@ open Mathlib.Tactic
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C]
-
-theorem Iso.eq_whisker {X Y : C} {f g : X ≅ Y} (w : f = g) {Z : C} (h : Y ≅ Z) :
+theorem Iso.eq_whisker {C : Type*} [Category C]
+    {X Y : C} {f g : X ≅ Y} (w : f = g) {Z : C} (h : Y ≅ Z) :
     f ≪≫ h = g ≪≫ h := by rw [w]
 
 /-- Simplify an expression using only the axioms of a groupoid. -/
@@ -42,8 +41,15 @@ Given an equation `f = g` between isomorphisms `X ≅ Y` in a category,
 produce the equation `∀ {Z} (h : Y ≅ Z), f ≪≫ h = g ≪≫ h`,
 but with compositions fully right associated, identities removed, and functors applied.
 -/
-def reassocExprIso (e : Expr) : MetaM Expr := do
-  simpType categoryIsoSimp (← mkAppM ``Iso.eq_whisker #[e])
+def reassocExprIso (e : Expr) : MetaM (Expr × Array MVarId) := do
+  let lem₀ ← mkConstWithFreshMVarLevels ``Iso.eq_whisker
+  let (args, _, _) ← forallMetaBoundedTelescope (← inferType lem₀) 7
+  let inst := args[1]!
+  inst.mvarId!.setKind .synthetic
+  let w := args[6]!
+  w.mvarId!.assignIfDefEq e
+  withEnsuringLocalInstance inst.mvarId! do
+    return (← simpType categoryIsoSimp (mkAppN lem₀ args), #[inst.mvarId!])
 
 initialize registerReassocExpr reassocExprIso
 

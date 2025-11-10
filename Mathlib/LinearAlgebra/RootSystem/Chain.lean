@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
-import Mathlib.LinearAlgebra.RootSystem.Finite.G2
 import Mathlib.Order.Interval.Set.OrdConnectedLinear
 
 /-!
@@ -48,9 +47,10 @@ lemma setOf_root_add_zsmul_eq_Icc_of_linearIndependent
   have h_fin : S.Finite := by
     suffices Injective (fun z : S ↦ z.property.choose) from Finite.of_injective _ this
     intro ⟨z, hz⟩ ⟨z', hz'⟩ hzz
+    have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
+    have : NoZeroSMulDivisors ℤ M := .int_of_charZero R M
     have : z • P.root i = z' • P.root i := by
       rwa [← add_right_inj (P.root j), ← hz.choose_spec, ← hz'.choose_spec, P.root.injective.eq_iff]
-    have _i : NoZeroSMulDivisors ℤ M := have := P.reflexive_left; .int_of_charZero R M
     exact Subtype.ext <| smul_left_injective ℤ (P.ne_zero i) this
   have h_ne : S.Nonempty := ⟨0, by simp [S_def]⟩
   refine ⟨sInf S, csInf_le h_fin.bddBelow hS₀, sSup S, le_csSup h_fin.bddAbove hS₀,
@@ -64,7 +64,7 @@ lemma setOf_root_add_zsmul_eq_Icc_of_linearIndependent
     rw [hk]
     contrapose! h
     replace h : r • P.root i = - P.root j - P.root i := by rw [← sub_eq_of_eq_add h.symm]; module
-    exact ⟨r + 1, 1, by simp [add_smul, h], by omega⟩
+    exact ⟨r + 1, 1, by simp [add_smul, h], by cutsat⟩
   have hli_notMem : P.root l - P.root i ∉ range P.root := by
     replace hl : P.root l - P.root i = P.root j + (s - 1) • P.root i := by rw [hl]; module
     replace contra : s - 1 ∉ S := hrs.notMem_of_mem_left <| by simp [lt_sub_right_of_add_lt contra]
@@ -73,7 +73,7 @@ lemma setOf_root_add_zsmul_eq_Icc_of_linearIndependent
     rw [hl]
     contrapose! h
     replace h : s • P.root i = P.root i - P.root j := by rw [← sub_eq_of_eq_add h.symm]; module
-    exact ⟨s - 1, 1, by simp [sub_smul, h], by omega⟩
+    exact ⟨s - 1, 1, by simp [sub_smul, h], by cutsat⟩
   have h₁ : 0 ≤ P.pairingIn ℤ k i := by
     have := P.root_add_root_mem_of_pairingIn_neg (i := k) (j := i)
     contrapose! this
@@ -90,7 +90,7 @@ lemma setOf_root_add_zsmul_eq_Icc_of_linearIndependent
     apply algebraMap_injective ℤ R
     rw [algebraMap_pairingIn, map_add, map_mul, algebraMap_pairingIn, ← root_coroot'_eq_pairing, hl]
     simp
-  omega
+  cutsat
 
 variable (i j)
 
@@ -139,7 +139,7 @@ lemma root_add_nsmul_mem_range_iff_le_chainTopCoeff {n : ℕ} :
     (P.setOf_root_add_zsmul_eq_Icc_of_linearIndependent h).choose_spec.2.choose_spec
   rw [aux, h₂, mem_Icc]
   have := (P.setOf_root_add_zsmul_eq_Icc_of_linearIndependent h).choose_spec.1
-  omega
+  cutsat
 
 lemma root_sub_nsmul_mem_range_iff_le_chainBotCoeff {n : ℕ} :
     P.root j - n • P.root i ∈ range P.root ↔ n ≤ P.chainBotCoeff i j := by
@@ -152,7 +152,7 @@ lemma root_sub_nsmul_mem_range_iff_le_chainBotCoeff {n : ℕ} :
   obtain ⟨hq, p, hp, h₂ : S = _⟩ :=
     (P.setOf_root_add_zsmul_eq_Icc_of_linearIndependent h).choose_spec
   rw [aux, h₂, mem_Icc]
-  omega
+  cutsat
 
 lemma Iic_chainTopCoeff_eq :
     Iic (P.chainTopCoeff i j) = {k | P.root j + k • P.root i ∈ range P.root} := by
@@ -177,7 +177,7 @@ lemma one_le_chainBotCoeff_of_root_add_mem [P.IsReduced] (h : P.root i - P.root 
 
 lemma root_add_zsmul_mem_range_iff {z : ℤ} :
     P.root j + z • P.root i ∈ range P.root ↔
-      z ∈ Icc (- P.chainBotCoeff i j : ℤ) (P.chainTopCoeff i j) := by
+      z ∈ Icc (-P.chainBotCoeff i j : ℤ) (P.chainTopCoeff i j) := by
   rcases z.eq_nat_or_neg with ⟨n, rfl | rfl⟩
   · simp [P.root_add_nsmul_mem_range_iff_le_chainTopCoeff h]
   · simp [P.root_sub_nsmul_mem_range_iff_le_chainBotCoeff h, ← sub_eq_add_neg]
@@ -320,7 +320,7 @@ lemma chainBotCoeff_eq_zero_iff :
   replace h' : 1 ∉ {k | P.root j - k • P.root i ∈ range P.root} := by simpa using h'
   rw [← Iic_chainBotCoeff_eq h, mem_Iic, not_le, Nat.lt_one_iff] at h'
   rw [root_sub_nsmul_mem_range_iff_le_chainBotCoeff h] at h''
-  omega
+  cutsat
 
 lemma chainTopCoeff_eq_zero_iff :
     P.chainTopCoeff i j = 0 ↔
@@ -349,6 +349,12 @@ lemma chainTopCoeff_of_sub {k : ι} (hk : P.root k = P.root j - P.root i) :
   letI := P.indexNeg
   replace hk : P.root k = P.root j + P.root (-i) := by simpa [sub_eq_add_neg] using hk
   simpa using chainBotCoeff_of_add (by simpa) hk
+
+lemma chainTopCoeff_of_add {k : ι} (hk : P.root k = P.root j + P.root i) :
+    P.chainTopCoeff i j = P.chainTopCoeff i k + 1 := by
+  replace h : LinearIndependent R ![P.root i, P.root k] := by rw [hk, add_comm]; simpa
+  replace hk : P.root j = P.root k - P.root i := by rw [hk]; abel
+  exact chainTopCoeff_of_sub h hk
 
 omit h
 @[deprecated (since := "2025-05-28")]
@@ -408,7 +414,7 @@ lemma chainBotCoeff_sub_chainTopCoeff :
     specialize this (P.reflectionPerm i i) j (by simpa)
     simp only [chainBotCoeff_reflectionPerm_left, chainTopCoeff_reflectionPerm_left,
       pairingIn_reflectionPerm_self_right] at this
-    omega
+    cutsat
   intro i j h
   have h₁ : P.reflection i (P.root <| P.chainBotIdx i j) =
       P.root j + (P.chainBotCoeff i j - P.pairingIn ℤ j i) • P.root i := by
@@ -421,7 +427,7 @@ lemma chainBotCoeff_sub_chainTopCoeff :
   omega
 
 lemma chainTopCoeff_sub_chainBotCoeff :
-    P.chainTopCoeff i j - P.chainBotCoeff i j = - P.pairingIn ℤ j i := by
+    P.chainTopCoeff i j - P.chainBotCoeff i j = -P.pairingIn ℤ j i := by
   rw [← chainBotCoeff_sub_chainTopCoeff h, neg_sub]
 
 omit h
@@ -440,9 +446,9 @@ lemma chainCoeff_chainTopIdx_aux :
   set S₂ : Set ℤ := {z | P.root (P.chainTopIdx i j) + z • P.root i ∈ range P.root} with S₂_def
   have hS₁₂ : S₂ = (fun z ↦ (-P.chainTopCoeff i j : ℤ) + z) '' S₁ := by
     ext; simp [S₁_def, S₂_def, root_chainTopIdx, add_smul, add_assoc, natCast_zsmul]
-  have hS₁ : S₁ = Icc (- P.chainBotCoeff i j : ℤ) (P.chainTopCoeff i j) := by
+  have hS₁ : S₁ = Icc (-P.chainBotCoeff i j : ℤ) (P.chainTopCoeff i j) := by
     ext; rw [S₁_def, mem_setOf_eq, root_add_zsmul_mem_range_iff h]
-  have hS₂ : S₂ = Icc (- P.chainBotCoeff i (P.chainTopIdx i j) : ℤ)
+  have hS₂ : S₂ = Icc (-P.chainBotCoeff i (P.chainTopIdx i j) : ℤ)
       (P.chainTopCoeff i (P.chainTopIdx i j)) := by
     ext; rw [S₂_def, mem_setOf_eq, root_add_zsmul_mem_range_iff h']
   rw [hS₁, hS₂, image_const_add_Icc, neg_add_cancel, Icc_eq_Icc_iff (by simp), neg_eq_iff_eq_neg,
@@ -478,264 +484,5 @@ lemma chainBotCoeff_add_chainTopCoeff_le_three [P.IsReduced] :
     chainBotCoeff_add_chainTopCoeff_eq_pairingIn_chainTopIdx h]
   have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed i (P.chainTopIdx i j)
   aesop
-
-variable (i j) in
-lemma chainBotCoeff_add_chainTopCoeff_le_two [P.IsNotG2] :
-    P.chainBotCoeff i j + P.chainTopCoeff i j ≤ 2 := by
-  by_cases h : LinearIndependent R ![P.root i, P.root j]
-  swap; · simp [chainTopCoeff_of_not_linearIndependent, chainBotCoeff_of_not_linearIndependent, h]
-  rw [← Int.ofNat_le, Nat.cast_add, Nat.cast_ofNat,
-    chainBotCoeff_add_chainTopCoeff_eq_pairingIn_chainTopIdx h]
-  have := IsNotG2.pairingIn_mem_zero_one_two (P := P) (P.chainTopIdx i j) i
-  aesop
-
-/-- For a reduced, crystallographic, irreducible root pairing other than `𝔤₂`, if the sum of two
-roots is a root, they cannot make an acute angle.
-
-To see that this lemma fails for `𝔤₂`, let `α` (short) and `β` (long) be a base. Then the roots
-`α + β` and `2α + β` make an angle `π / 3` even though `3α + 2β` is a root. We can even witness as:
-```lean
-example (P : RootPairing ι R M N) [P.EmbeddedG2] :
-    P.pairingIn ℤ (EmbeddedG2.shortAddLong P) (EmbeddedG2.twoShortAddLong P) = 1 := by
-  simp
-```
--/
-lemma pairingIn_le_zero_of_root_add_mem [P.IsNotG2] (h : P.root i + P.root j ∈ range P.root) :
-    P.pairingIn ℤ i j ≤ 0 := by
-  have aux₁ := P.linearIndependent_of_add_mem_range_root' <| add_comm (P.root i) (P.root j) ▸ h
-  have aux₂ := P.chainBotCoeff_add_chainTopCoeff_le_two j i
-  have aux₃ : 1 ≤ P.chainTopCoeff j i := by
-    rwa [← root_add_nsmul_mem_range_iff_le_chainTopCoeff aux₁, one_smul]
-  rw [← P.chainBotCoeff_sub_chainTopCoeff aux₁]
-  omega
-
-lemma zero_le_pairingIn_of_root_sub_mem [P.IsNotG2] (h : P.root i - P.root j ∈ range P.root) :
-    0 ≤ P.pairingIn ℤ i j := by
-  replace h : P.root i + P.root (P.reflectionPerm j j) ∈ range P.root := by
-    simpa [-mem_range, ← sub_eq_add_neg]
-  simpa using P.pairingIn_le_zero_of_root_add_mem h
-
-/-- For a reduced, crystallographic, irreducible root pairing other than `𝔤₂`, if the sum of two
-roots is a root, the bottom chain coefficient is either one or zero according to whether they are
-perpendicular.
-
-To see that this lemma fails for `𝔤₂`, let `α` (short) and `β` (long) be a base. Then the roots
-`α` and `α + β` provide a counterexample. -/
-lemma chainBotCoeff_if_one_zero [P.IsNotG2] (h : P.root i + P.root j ∈ range P.root) :
-    P.chainBotCoeff i j = if P.pairingIn ℤ i j = 0 then 1 else 0 := by
-  have _i := P.reflexive_left
-  have aux₁ := P.linearIndependent_of_add_mem_range_root' h
-  have aux₂ := P.chainBotCoeff_add_chainTopCoeff_le_two i j
-  have aux₃ : 1 ≤ P.chainTopCoeff i j := P.one_le_chainTopCoeff_of_root_add_mem h
-  rcases eq_or_ne (P.chainBotCoeff i j) (P.chainTopCoeff i j) with aux₄ | aux₄ <;>
-  simp_rw [P.pairingIn_eq_zero_iff (i := i) (j := j), ← P.chainBotCoeff_sub_chainTopCoeff aux₁,
-    sub_eq_zero, Nat.cast_inj, aux₄, reduceIte] <;>
-  omega
-
-lemma chainTopCoeff_if_one_zero [P.IsNotG2] (h : P.root i - P.root j ∈ range P.root) :
-    P.chainTopCoeff i j = if P.pairingIn ℤ i j = 0 then 1 else 0 := by
-  letI := P.indexNeg
-  replace h : P.root i + P.root (-j) ∈ range P.root := by simpa [← sub_eq_add_neg] using h
-  simpa using P.chainBotCoeff_if_one_zero h
-
-section chainBotCoeff_mul_chainTopCoeff
-
-/-! The proof of lemma 2.6 from [Geck](Geck2017). -/
-
-variable {b : P.Base} {i j k l m : ι}
-  (hi : i ∈ b.support) (hj : j ∈ b.support) (hij : i ≠ j)
-  (h₁ : P.root k + P.root i = P.root l)
-  (h₂ : P.root k - P.root j = P.root m)
-  (h₃ : P.root k + P.root i - P.root j ∈ range P.root)
-
--- TODO Turn this `variable` into a lemma: it is implied by the assumptions above.
-variable [P.IsNotG2]
-
-lemma chainBotCoeff_mul_chainTopCoeff.aux_0 (hik_mem : P.root k + P.root i ∈ range P.root) :
-    P.pairingIn ℤ k i = 0 ∨ (P.pairingIn ℤ k i < 0 ∧ P.chainBotCoeff i k = 0) := by
-  have _i := P.reflexive_left
-  have := pairingIn_le_zero_of_root_add_mem hik_mem
-  rw [add_comm] at hik_mem
-  rw [P.chainBotCoeff_if_one_zero hik_mem, ite_eq_right_iff, P.pairingIn_eq_zero_iff (i := i)]
-  omega
-
-include hi hj hij h₁ h₂ h₃
-
-/- An auxiliary result en route to `RootPairing.chainBotCoeff_mul_chainTopCoeff`. -/
-private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
-    (hki : P.pairingIn ℤ k i = 0) :
-    have _i := P.reflexive_left; letI := P.indexNeg
-    P.root i + P.root m ∈ range P.root → P.root j + P.root (-l) ∈ range P.root →
-      P.root j + P.root (-k) ∈ range P.root →
-    (P.chainBotCoeff i m + 1) * (P.chainBotCoeff j (-k) + 1) =
-      (P.chainBotCoeff j (-l) + 1) * (P.chainBotCoeff i k + 1) := by
-  intro _ him_mem hjl_mem hjk_mem
-  /- Setup some typeclasses and name the 6th root `n`. -/
-  letI := P.indexNeg
-  have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
-  obtain ⟨n, hn⟩ := h₃
-  /- Establish basic relationships about roots and their sums / differences. -/
-  have hnk_ne : n ≠ k := by rintro rfl; simp [sub_eq_zero, hij, add_sub_assoc] at hn
-  have hkj_ne : k ≠ j ∧ P.root k ≠ -P.root j := (IsReduced.linearIndependent_iff _).mp <|
-    P.linearIndependent_of_sub_mem_range_root <| h₂ ▸ mem_range_self m
-  have hnk_notMem : P.root n - P.root k ∉ range P.root := by
-    convert b.sub_notMem_range_root hi hj using 2; rw [hn]; module
-  /- Calculate some auxiliary relationships between root pairings. -/
-  have aux₀ : P.pairingIn ℤ j i = - P.pairingIn ℤ m i := by
-    suffices P.pairing j i = - P.pairing m i from
-      algebraMap_injective ℤ R <| by simpa only [algebraMap_pairingIn, map_neg]
-    replace hki : P.pairing k i = 0 := by rw [← P.algebraMap_pairingIn ℤ, hki, map_zero]
-    simp only [← root_coroot_eq_pairing, ← h₂]
-    simp [hki]
-  have aux₁ : P.pairingIn ℤ j i = 0 := by
-    refine le_antisymm (b.pairingIn_le_zero_of_ne hij.symm hj hi) ?_
-    rw [aux₀, neg_nonneg]
-    refine P.pairingIn_le_zero_of_root_add_mem ⟨n, ?_⟩
-    rw [hn, ← h₂]
-    abel
-  /- Calculate the pairings between four key root pairs. -/
-  have key₁ : P.pairingIn ℤ i k = 0 := by rwa [pairingIn_eq_zero_iff]
-  have key₂ : P.pairingIn ℤ i m = 0 := P.pairingIn_eq_zero_iff.mp <| by simpa [aux₁] using aux₀
-  have key₃ : P.pairingIn ℤ j k = 2 := by
-    suffices 2 ≤ P.pairingIn ℤ j k by have := IsNotG2.pairingIn_mem_zero_one_two (P := P) j k; aesop
-    have hn₁ : P.pairingIn ℤ n k = 2 + P.pairingIn ℤ i k - P.pairingIn ℤ j k := by
-      apply algebraMap_injective ℤ R
-      simp only [map_add, map_sub, algebraMap_pairingIn, ← root_coroot_eq_pairing, hn]
-      simp
-    have hn₂ : P.pairingIn ℤ n k ≤ 0 := by
-      by_contra! contra; exact hnk_notMem <| P.root_sub_root_mem_of_pairingIn_pos contra hnk_ne
-    omega
-  have key₄ : P.pairingIn ℤ l j = 1 := by
-    have hij : P.pairing i j = 0 := by
-      rw [pairing_eq_zero_iff, ← P.algebraMap_pairingIn ℤ, aux₁, map_zero]
-    have hkj : P.pairing k j = 1 := by
-      rw [← P.algebraMap_pairingIn ℤ]
-      have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' j k (by aesop) (by aesop)
-      aesop
-    apply algebraMap_injective ℤ R
-    rw [algebraMap_pairingIn, ← root_coroot_eq_pairing, ← h₁]
-    simp [hkj, hij]
-  replace key₄ : P.pairingIn ℤ j l ≠ 0 := by rw [ne_eq, P.pairingIn_eq_zero_iff]; omega
-  /- Calculate the value of each of the four terms in the goal. -/
-  have hik_mem : P.root i + P.root k ∈ range P.root := ⟨l, by rw [← h₁, add_comm]⟩
-  simp only [P.chainBotCoeff_if_one_zero, hik_mem, him_mem, hjl_mem, hjk_mem]
-  simp [key₁, key₂, key₃, key₄]
-
-/- An auxiliary result en route to `RootPairing.chainBotCoeff_mul_chainTopCoeff`. -/
-open RootPositiveForm in
-private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
-    (hki' : P.pairingIn ℤ k i < 0) (hkj' : 0 < P.pairingIn ℤ k j) :
-    have _i := P.reflexive_left; letI := P.indexNeg
-    P.root i + P.root m ∈ range P.root → P.root j + P.root (-l) ∈ range P.root →
-      P.root j + P.root (-k) ∈ range P.root →
-    ¬ (P.chainBotCoeff i m = 1 ∧ P.chainBotCoeff j (-l) = 0) := by
-  intro _ him_mem hjl_mem hjk_mem
-  letI := P.indexNeg
-  /- Setup some typeclasses. -/
-  have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
-  /- Establish basic relationships about roots and their sums / differences. -/
-  have hkj_ne : k ≠ j ∧ P.root k ≠ -P.root j := (IsReduced.linearIndependent_iff _).mp <|
-    P.linearIndependent_of_sub_mem_range_root <| h₂ ▸ mem_range_self m
-  have hlj_mem : P.root l - P.root j ∈ range P.root := by rwa [← h₁]
-  /- It is sufficient to prove that two key pairings vanish. -/
-  suffices ¬ (P.pairingIn ℤ m i = 0 ∧ P.pairingIn ℤ l j ≠ 0) by
-    contrapose! this
-    rcases ne_or_eq (P.pairingIn ℤ m i) 0 with hmi | hmi
-    · simpa [hmi, this.1, P.pairingIn_eq_zero_iff (i := i)] using chainBotCoeff_if_one_zero him_mem
-    refine ⟨hmi, fun hlj ↦ ?_⟩
-    rw [chainBotCoeff_if_one_zero hjl_mem] at this
-    simp [P.pairingIn_eq_zero_iff (i := j), hlj] at this
-  /- Assume for contradiction that the two pairings do not vanish. -/
-  rintro ⟨hmi, hlj⟩
-  /- Use the assumptions to calculate various relationships between root pairings. -/
-  have aux₀ : P.pairingIn ℤ j i = P.pairingIn ℤ k i := by
-    suffices P.pairing j i = P.pairing k i from
-      algebraMap_injective ℤ R <| by simpa only [algebraMap_pairingIn]
-    replace h₂ : P.root k = P.root j + P.root m := (add_eq_of_eq_sub' h₂.symm).symm
-    simpa [← P.root_coroot_eq_pairing k, h₂, ← P.algebraMap_pairingIn ℤ]
-  obtain ⟨aux₁, aux₂⟩ : P.pairingIn ℤ i j = -1 ∧ P.pairingIn ℤ k j = 2 := by
-    suffices 0 < - P.pairingIn ℤ i j ∧ - P.pairingIn ℤ i j < P.pairingIn ℤ k j ∧
-      P.pairingIn ℤ k j ≤ 2 by omega
-    refine ⟨?_, ?_, ?_⟩
-    · rwa [neg_pos, P.pairingIn_lt_zero_iff, aux₀]
-    · suffices P.pairingIn ℤ l j = P.pairingIn ℤ i j + P.pairingIn ℤ k j by
-        have := zero_le_pairingIn_of_root_sub_mem hlj_mem; omega
-      suffices P.pairing l j = P.pairing i j + P.pairing k j from
-        algebraMap_injective ℤ R <| by simpa only [algebraMap_pairingIn, map_add]
-      simp [← P.root_coroot_eq_pairing l, ← h₁, add_comm]
-    · have := IsNotG2.pairingIn_mem_zero_one_two (P := P) k j
-      aesop
-  /- Choose a positive invariant form. -/
-  obtain B : RootPositiveForm ℤ P := have : Fintype ι := Fintype.ofFinite ι; P.posRootForm ℤ
-  /- Calculate root length relationships implied by the pairings calculated above. -/
-  have ⟨aux₃, aux₄⟩ : B.rootLength i = B.rootLength j ∧ B.rootLength j < B.rootLength k := by
-    have hij_le : B.rootLength i ≤ B.rootLength j := B.rootLength_le_of_pairingIn_eq <| Or.inl aux₁
-    have hjk_lt : B.rootLength j < B.rootLength k :=
-      B.rootLength_lt_of_pairingIn_notMem (by aesop) hkj_ne.2 <| by aesop
-    refine ⟨?_, hjk_lt⟩
-    simpa [posForm, rootLength] using (B.toInvariantForm.apply_eq_or_of_apply_ne (i := j) (j := k)
-      (by simpa [posForm, rootLength] using hjk_lt.ne) i).resolve_right
-      (by simpa [posForm, rootLength] using (lt_of_le_of_lt hij_le hjk_lt).ne)
-  /- Use the root length results to calculate a final root pairing. -/
-  have aux₅ : P.pairingIn ℤ k i = -1 := by
-    suffices P.pairingIn ℤ j i = -1 by omega
-    have aux : B.toInvariantForm.form (P.root i) (P.root i) =
-        B.toInvariantForm.form (P.root j) (P.root j) := by simpa [posForm, rootLength] using aux₃
-    have := P.pairingIn_pairingIn_mem_set_of_length_eq_of_ne aux hij (b.root_ne_neg_of_ne hi hj hij)
-    aesop
-  /- Use the newly calculated pairing result to obtain further information about root lengths. -/
-  have aux₆ : B.rootLength k ≤ B.rootLength i := B.rootLength_le_of_pairingIn_eq <| Or.inl aux₅
-  /- We now have contradictory information about root lengths. -/
-  omega
-
-open chainBotCoeff_mul_chainTopCoeff in
-/-- This is Lemma 2.6 from [Geck](Geck2017). -/
-lemma chainBotCoeff_mul_chainTopCoeff :
-    (P.chainBotCoeff i m + 1) * (P.chainTopCoeff j k + 1) =
-      (P.chainTopCoeff j l + 1) * (P.chainBotCoeff i k + 1) := by
-  /- Setup some typeclasses. -/
-  have _i := P.reflexive_left
-  letI := P.indexNeg
-  suffices (P.chainBotCoeff i m + 1) * (P.chainBotCoeff j (-k) + 1) =
-      (P.chainBotCoeff j (-l) + 1) * (P.chainBotCoeff i k + 1) by simpa
-  /- Establish basic relationships about roots and their sums / differences. -/
-  have him_mem : P.root i + P.root m ∈ range P.root := by rw [← h₂]; convert h₃ using 1; abel
-  have hik_mem : P.root k + P.root i ∈ range P.root := h₁ ▸ mem_range_self l
-  have hjk_mem : P.root j + P.root (-k) ∈ range P.root := by
-    convert mem_range_self (-m) using 1; simpa [sub_eq_add_neg] using congr(-$h₂)
-  have hjl_mem : P.root j + P.root (-l) ∈ range P.root := by
-    rw [h₁, ← neg_mem_range_root_iff] at h₃; convert h₃ using 1; simp [sub_eq_add_neg]
-  have h₁' : P.root (-k) - P.root i = P.root (-l) := by
-    simp only [root_reflectionPerm, reflection_apply_self, indexNeg_neg]; rw [← h₁]; abel
-  have h₂' : P.root (-k) + P.root j = P.root (-m) := by
-    simp only [root_reflectionPerm, reflection_apply_self, indexNeg_neg]; rw [← h₂]; abel
-  have h₃' : P.root (-k) + P.root j - P.root i ∈ range P.root := by
-    simp only [root_reflectionPerm, reflection_apply_self, indexNeg_neg]
-    rw [← neg_mem_range_root_iff]; convert h₃ using 1; abel
-  /- Proceed to the main argument, following Geck's case splits. It's all just bookkeeping. -/
-  rcases aux_0 hik_mem with hki | ⟨hki, hik⟩
-  · /- Geck "Case 1" -/
-    exact aux_1 hi hj hij h₁ h₂ h₃ hki him_mem hjl_mem hjk_mem
-  rw [add_comm] at hik_mem hjk_mem
-  rcases aux_0 hjk_mem with hkj | ⟨hkj, hjk⟩
-  · /- Geck "Case 2" -/
-    simpa only [neg_neg] using (aux_1 hj hi hij.symm h₂' h₁' h₃' hkj hjl_mem
-      (by simpa only [neg_neg]) (by simpa only [neg_neg])).symm
-  /- Geck "Case 3" -/
-  suffices P.chainBotCoeff i m = P.chainBotCoeff j (-l) by rw [hik, hjk, this]
-  have aux₁ : ¬ (P.chainBotCoeff i m = 1 ∧ P.chainBotCoeff j (-l) = 0) :=
-    aux_2 hi hj hij h₁ h₂ h₃ hki (by simpa using hkj) him_mem hjl_mem <| by rwa [add_comm]
-  have aux₂ : ¬(P.chainBotCoeff j (-l) = 1 ∧ P.chainBotCoeff i m = 0) := by
-    simpa using aux_2 hj hi hij.symm h₂' h₁' h₃' hkj (by simpa)
-      hjl_mem (by simpa only [neg_neg]) (by simpa only [neg_neg])
-  have aux₃ : P.chainBotCoeff i m = 0 ∨ P.chainBotCoeff i m = 1 := by
-    have := P.chainBotCoeff_if_one_zero him_mem
-    split at this <;> simp [this]
-  have aux₄ : P.chainBotCoeff j (-l) = 0 ∨ P.chainBotCoeff j (-l) = 1 := by
-    have := P.chainBotCoeff_if_one_zero hjl_mem
-    split at this <;> simp only [this, true_or, or_true]
-  omega
-
-end chainBotCoeff_mul_chainTopCoeff
 
 end RootPairing

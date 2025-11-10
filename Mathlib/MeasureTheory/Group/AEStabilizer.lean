@@ -9,12 +9,12 @@ import Mathlib.Order.Filter.EventuallyConst
 /-!
 # A.e. stabilizer of a set
 
-In this file we define the a.e. stabilizer of a set under a measure preserving group action.
+In this file we define the a.e. stabilizer of a set under a measure-preserving group action.
 
 The a.e. stabilizer `MulAction.aestabilizer G μ s` of a set `s`
 is the set of the elements `g : G` such that `s` is a.e.-invariant under `(g • ·)`.
 
-For a measure preserving group action, this set is a subgroup of `G`.
+For a measure-preserving group action, this set is a subgroup of `G`.
 If the set is null or conull, then this subgroup is the whole group.
 The converse is true for an ergodic action and a null-measurable set.
 
@@ -23,7 +23,7 @@ The converse is true for an ergodic action and a null-measurable set.
 We define the a.e. stabilizer as a bundled `Subgroup`,
 thus we do not deal with monoid actions.
 
-Also, many lemmas in this file are true for a *quasi measure-preserving* action,
+Also, many lemmas in this file are true for a *quasi-measure-preserving* action,
 but we don't have the corresponding typeclass.
 -/
 
@@ -36,7 +36,7 @@ variable (G : Type*) {α : Type*} [Group G] [MulAction G α]
 namespace MulAction
 
 /-- A.e. stabilizer of a set under a group action. -/
-@[to_additive (attr := simps) "A.e. stabilizer of a set under an additive group action."]
+@[to_additive (attr := simps) /-- A.e. stabilizer of a set under an additive group action. -/]
 def aestabilizer (s : Set α) : Subgroup G where
   carrier := {g | g • s =ᵐ[μ] s}
   one_mem' := by simp

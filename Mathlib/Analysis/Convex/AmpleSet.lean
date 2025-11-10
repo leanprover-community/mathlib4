@@ -6,7 +6,7 @@ Authors: Anatole Dedecker, Floris van Doorn
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Analysis.NormedSpace.Connected
-import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
+import Mathlib.Topology.Algebra.ContinuousAffineEquiv
 
 /-!
 # Ample subsets of real vector spaces
@@ -29,7 +29,7 @@ differential relations.
 
 A priori, the definition of ample subset asks for a vector space structure and a topology on the
 ambient type without any link between those structures. In practice, we care most about using these
-for finite dimensional vector spaces with their natural topology.
+for finite-dimensional vector spaces with their natural topology.
 
 All vector spaces in the file are real vector spaces. While the definition generalises to other
 connected fields, that is not useful in practice.
@@ -127,7 +127,7 @@ theorem of_one_lt_codim [IsTopologicalAddGroup F] [ContinuousSMul ℝ F] {E : Su
   · obtain ⟨z, hz⟩ : ∃ z, z ∉ E := by
       rw [← not_forall, ← Submodule.eq_top_iff']
       rintro rfl
-      simp [rank_zero_iff.2 inferInstance] at hcodim
+      simp at hcodim
     refine segment_subset_convexHull ?_ ?_ (mem_segment_sub_add y z) <;>
       simpa [sub_eq_add_neg, Submodule.add_mem_iff_right _ h]
   · exact subset_convexHull ℝ (Eᶜ : Set F) h

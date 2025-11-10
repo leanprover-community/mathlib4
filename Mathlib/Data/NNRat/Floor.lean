@@ -45,7 +45,7 @@ theorem coe_floor (q : ℚ≥0) : ↑⌊q⌋₊ = ⌊(q : ℚ)⌋ := Int.natCast
 theorem coe_ceil (q : ℚ≥0) : ↑⌈q⌉₊ = ⌈(q : ℚ)⌉ := Int.natCast_ceil_eq_ceil q.coe_nonneg
 
 protected theorem floor_def (q : ℚ≥0) : ⌊q⌋₊ = q.num / q.den := by
-  rw [← Int.natCast_inj, NNRat.coe_floor, Rat.floor_def, Int.natCast_ediv, den_coe, num_coe]
+  rw [← Int.natCast_inj, NNRat.coe_floor, Rat.floor_def', Int.natCast_ediv, den_coe, num_coe]
 
 section Semifield
 

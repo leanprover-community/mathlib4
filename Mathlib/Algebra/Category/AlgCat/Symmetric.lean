@@ -25,13 +25,12 @@ variable {R : Type u} [CommRing R]
 namespace AlgCat
 
 instance : BraidedCategory (AlgCat.{u} R) :=
-  braidedCategoryOfFaithful (forget₂ (AlgCat R) (ModuleCat R))
-    (fun X Y => (Algebra.TensorProduct.comm R X Y).toAlgebraIso)
-    (by aesop_cat)
+  .ofFaithful (forget₂ (AlgCat R) (ModuleCat R))
+    fun X Y ↦ (Algebra.TensorProduct.comm R X Y).toAlgebraIso
 
 instance : (forget₂ (AlgCat R) (ModuleCat R)).Braided where
 
 instance instSymmetricCategory : SymmetricCategory (AlgCat.{u} R) :=
-  symmetricCategoryOfFaithful (forget₂ (AlgCat R) (ModuleCat R))
+  .ofFaithful (forget₂ (AlgCat R) (ModuleCat R))
 
 end AlgCat

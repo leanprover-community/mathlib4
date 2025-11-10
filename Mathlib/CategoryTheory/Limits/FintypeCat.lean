@@ -88,13 +88,25 @@ instance nonempty_pi_of_nonempty {ι : Type*} [Finite ι] (X : ι → FintypeCat
     [∀ i, Nonempty (X i)] : Nonempty (∏ᶜ X : FintypeCat.{u}) :=
   (Equiv.nonempty_congr <| productEquiv X).mpr inferInstance
 
+/-- The colimit type of a functor from a finite category to Types that only
+involves finite objects is finite. -/
+instance finite_colimitType {J : Type} [SmallCategory J] [FinCategory J]
+    (K : J ⥤ Type*) [∀ j, Finite (K.obj j)] : Finite K.ColimitType :=
+  Quot.finite _
+
+/-- Any functor from a finite category to Types that only involves finite objects,
+has a finite colimit. -/
+lemma finite_of_isColimit {J : Type} [SmallCategory J] [FinCategory J]
+    {K : J ⥤ Type*} [∀ j, Finite (K.obj j)] {c : Cocone K} (hc : IsColimit c) :
+    Finite c.pt :=
+  Finite.of_equiv _ ((Types.isColimit_iff_coconeTypesIsColimit c).1 ⟨hc⟩).equiv
+
 /-- Any functor from a finite category to Types that only involves finite objects,
 has a finite colimit. -/
 noncomputable instance finiteColimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J]
     (K : J ⥤ Type*) [∀ j, Finite (K.obj j)] : Fintype (colimit K) := by
-  have : Finite (Types.Quot K) := Quot.finite (Types.Quot.Rel K)
-  have : Fintype (Types.Quot K) := Fintype.ofFinite (Types.Quot K)
-  exact Fintype.ofEquiv (Types.Quot K) (Types.colimitEquivQuot K).symm
+  have : Finite (colimit K) := finite_of_isColimit (colimit.isColimit K)
+  apply Fintype.ofFinite
 
 noncomputable instance inclusionCreatesFiniteColimits {J : Type} [SmallCategory J] [FinCategory J] :
     CreatesColimitsOfShape J FintypeCat.incl.{u} where

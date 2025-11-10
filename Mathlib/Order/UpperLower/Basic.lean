@@ -6,6 +6,7 @@ Authors: Yaël Dillies, Sara Rousta
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.Interval.Set.OrderEmbedding
 import Mathlib.Order.SetNotation
+import Mathlib.Order.WellFounded
 
 /-!
 # Properties of unbundled upper/lower sets
@@ -291,7 +292,7 @@ variable [NoMaxOrder α]
 theorem IsUpperSet.not_bddAbove (hs : IsUpperSet s) : s.Nonempty → ¬BddAbove s := by
   rintro ⟨a, ha⟩ ⟨b, hb⟩
   obtain ⟨c, hc⟩ := exists_gt b
-  exact hc.not_le (hb <| hs ((hb ha).trans hc.le) ha)
+  exact hc.not_ge (hb <| hs ((hb ha).trans hc.le) ha)
 
 theorem not_bddAbove_Ici : ¬BddAbove (Ici a) :=
   (isUpperSet_Ici _).not_bddAbove nonempty_Ici
@@ -308,7 +309,7 @@ variable [NoMinOrder α]
 theorem IsLowerSet.not_bddBelow (hs : IsLowerSet s) : s.Nonempty → ¬BddBelow s := by
   rintro ⟨a, ha⟩ ⟨b, hb⟩
   obtain ⟨c, hc⟩ := exists_lt b
-  exact hc.not_le (hb <| hs (hc.le.trans <| hb ha) ha)
+  exact hc.not_ge (hb <| hs (hc.le.trans <| hb ha) ha)
 
 theorem not_bddBelow_Iic : ¬BddBelow (Iic a) :=
   (isLowerSet_Iic _).not_bddBelow nonempty_Iic
@@ -352,5 +353,24 @@ theorem IsUpperSet.total (hs : IsUpperSet s) (ht : IsUpperSet t) : s ⊆ t ∨ t
 
 theorem IsLowerSet.total (hs : IsLowerSet s) (ht : IsLowerSet t) : s ⊆ t ∨ t ⊆ s :=
   hs.toDual.total ht.toDual
+
+theorem IsUpperSet.eq_empty_or_Ici [WellFoundedLT α] (h : IsUpperSet s) :
+    s = ∅ ∨ (∃ a, s = Set.Ici a) := by
+  refine or_iff_not_imp_left.2 fun ha ↦ ?_
+  obtain ⟨a, ha⟩ := Set.nonempty_iff_ne_empty.2 ha
+  exact ⟨_, Set.ext fun b ↦ ⟨wellFounded_lt.min_le, (h · <| wellFounded_lt.min_mem _ ⟨a, ha⟩)⟩⟩
+
+theorem IsLowerSet.eq_empty_or_Iic [WellFoundedGT α] (h : IsLowerSet s) :
+    s = ∅ ∨ (∃ a, s = Set.Iic a) :=
+  IsUpperSet.eq_empty_or_Ici (α := αᵒᵈ) h
+
+theorem IsLowerSet.eq_univ_or_Iio [WellFoundedLT α] (h : IsLowerSet s) :
+    s = .univ ∨ (∃ a, s = Set.Iio a) := by
+  simp_rw [← @compl_inj_iff _ s]
+  simpa using h.compl.eq_empty_or_Ici
+
+theorem IsUpperSet.eq_univ_or_Ioi [WellFoundedGT α] (h : IsUpperSet s) :
+    s = .univ ∨ (∃ a, s = Set.Ioi a) :=
+  IsLowerSet.eq_univ_or_Iio (α := αᵒᵈ) h
 
 end LinearOrder

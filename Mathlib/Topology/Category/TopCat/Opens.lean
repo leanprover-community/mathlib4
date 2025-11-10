@@ -141,7 +141,7 @@ def inclusionTopIso (X : TopCat.{u}) : (toTopCat X).obj ⊤ ≅ X where
   inv := TopCat.ofHom ⟨fun x => ⟨x, trivial⟩, continuous_def.2 fun _ ⟨_, hS, hSU⟩ => hSU ▸ hS⟩
 
 /-- `Opens.map f` gives the functor from open sets in Y to open set in X,
-    given by taking preimages under f. -/
+given by taking preimages under f. -/
 def map (f : X ⟶ Y) : Opens Y ⥤ Opens X where
   obj U := ⟨f ⁻¹' (U : Set Y), U.isOpen.preimage f.hom.continuous⟩
   map i := ⟨⟨fun _ h => i.le h⟩⟩
@@ -284,7 +284,7 @@ end TopologicalSpace.Opens
 @[simps obj_coe]
 def IsOpenMap.functor {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) : Opens X ⥤ Opens Y where
   obj U := ⟨f '' (U : Set X), hf (U : Set X) U.2⟩
-  map h := ⟨⟨Set.image_subset _ h.down.down⟩⟩
+  map h := ⟨⟨Set.image_mono h.down.down⟩⟩
 
 /-- An open map `f : X ⟶ Y` induces an adjunction between `Opens X` and `Opens Y`.
 -/
@@ -320,7 +320,7 @@ lemma map_functorObj {X Y : TopCat} {f : X ⟶ Y} (hf : IsInducing f)
     (Opens.map f).obj (hf.functorObj U) = U := by
   apply le_antisymm
   · rintro x ⟨_, ⟨s, rfl⟩, _, ⟨rfl : _ = U, rfl⟩, hx : f x ∈ s⟩; exact hx
-  · intros x hx
+  · intro x hx
     obtain ⟨U, hU⟩ := U
     obtain ⟨t, ht, rfl⟩ := hf.isOpen_iff.mp hU
     exact Opens.mem_sSup.mpr ⟨⟨_, ht⟩, rfl, hx⟩
@@ -336,7 +336,7 @@ lemma le_functorObj_iff {X Y : TopCat} {f : X ⟶ Y} (hf : IsInducing f) {U : Op
   obtain ⟨t, ht, rfl⟩ := hf.isOpen_iff.mp hU
   constructor
   · exact fun i x hx ↦ (hf.mem_functorObj_iff ((Opens.map f).obj ⟨t, ht⟩)).mp (i hx)
-  · intros h x hx
+  · intro h x hx
     refine Opens.mem_sSup.mpr ⟨⟨_, V.2.union ht⟩, Opens.ext ?_, Set.mem_union_left t hx⟩
     dsimp
     rwa [Set.union_eq_right]

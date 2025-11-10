@@ -13,7 +13,7 @@ import Mathlib.LinearAlgebra.QuadraticForm.Basic
 In this file we prove that a quadratic form is line differentiable,
 with the line derivative given by the polar bilinear form.
 Note that this statement does not need topology on the domain.
-In particular, it applies to discontinuous quadratic forms on infinite dimensional spaces.
+In particular, it applies to discontinuous quadratic forms on infinite-dimensional spaces.
 -/
 
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]

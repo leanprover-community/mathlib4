@@ -39,6 +39,7 @@ show these are equivalent in `Sym.symEquivSym'`.
 -/
 def Sym (α : Type*) (n : ℕ) :=
   { s : Multiset α // Multiset.card s = n }
+deriving [DecidableEq α] → DecidableEq _
 
 /-- The canonical map to `Multiset α` that forgets that `s` has length `n` -/
 @[coe] def Sym.toMultiset {α : Type*} {n : ℕ} (s : Sym α n) : Multiset α :=
@@ -46,11 +47,6 @@ def Sym (α : Type*) (n : ℕ) :=
 
 instance Sym.hasCoe (α : Type*) (n : ℕ) : CoeOut (Sym α n) (Multiset α) :=
   ⟨Sym.toMultiset⟩
-
--- The following instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-instance {α : Type*} {n : ℕ} [DecidableEq α] : DecidableEq (Sym α n) :=
-  inferInstanceAs <| DecidableEq <| Subtype _
 
 /-- This is the `List.Perm` setoid lifted to `Vector`.
 
@@ -206,7 +202,7 @@ def erase [DecidableEq α] (s : Sym α (n + 1)) (a : α) (h : a ∈ s) : Sym α 
 @[simp]
 theorem erase_mk [DecidableEq α] (m : Multiset α)
     (hc : Multiset.card m = n + 1) (a : α) (h : a ∈ m) :
-    (mk m hc).erase a h =mk (m.erase a)
+    (mk m hc).erase a h = mk (m.erase a)
         (by rw [Multiset.card_erase_of_mem h, hc, Nat.add_one, Nat.pred_succ]) :=
   rfl
 
@@ -431,8 +427,6 @@ The simp-normal form is for the `cast` to be pushed outward. -/
 protected def cast {n m : ℕ} (h : n = m) : Sym α n ≃ Sym α m where
   toFun s := ⟨s.val, s.2.trans h⟩
   invFun s := ⟨s.val, s.2.trans h.symm⟩
-  left_inv _ := Subtype.ext rfl
-  right_inv _ := Subtype.ext rfl
 
 @[simp]
 theorem cast_rfl : Sym.cast rfl s = s :=
@@ -465,7 +459,6 @@ theorem append_inj_left {s s' : Sym α n} (t : Sym α n') : s.append t = s'.appe
 
 theorem append_comm (s : Sym α n') (s' : Sym α n') :
     s.append s' = Sym.cast (add_comm _ _) (s'.append s) := by
-  ext
   simp [append, add_comm]
 
 @[simp, norm_cast]
@@ -485,7 +478,6 @@ def oneEquiv : α ≃ Sym α 1 where
     fun ⟨_, _⟩ ⟨_, h⟩ ↦ fun perm ↦ by
       obtain ⟨a, rfl⟩ := List.length_eq_one_iff.mp h
       exact List.eq_of_mem_singleton (perm.mem_iff.mp <| List.head_mem _)
-  left_inv a := by rfl
   right_inv := by rintro ⟨⟨l⟩, h⟩; obtain ⟨a, rfl⟩ := List.length_eq_one_iff.mp h; rfl
 
 /-- Fill a term `m : Sym α (n - i)` with `i` copies of `a` to obtain a term of `Sym α n`.

@@ -49,8 +49,7 @@ theorem natDegree_comp_le : natDegree (p.comp q) ≤ natDegree p * natDegree q :
                 degree_mul_le _ _
               _ ≤ natDegree (C (coeff p n)) + n • degree q :=
                 (add_le_add degree_le_natDegree (degree_pow_le _ _))
-              _ ≤ natDegree (C (coeff p n)) + n • ↑(natDegree q) :=
-                (add_le_add_left (nsmul_le_nsmul_right (@degree_le_natDegree _ _ q) n) _)
+              _ ≤ natDegree (C (coeff p n)) + n • ↑(natDegree q) := by grw [degree_le_natDegree]
               _ = (n * natDegree q : ℕ) := by
                 rw [natDegree_C, Nat.cast_zero, zero_add, nsmul_eq_mul]
                 simp
@@ -134,9 +133,6 @@ theorem natDegree_C_mul_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) :
   refine mem_support_iff.mpr ?_
   rwa [coeff_C_mul]
 
-@[deprecated (since := "2025-01-03")]
-alias natDegree_C_mul_eq_of_mul_ne_zero := natDegree_C_mul_of_mul_ne_zero
-
 lemma degree_C_mul_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) : (C a * p).degree = p.degree := by
   rw [degree_mul' (by simpa)]; simp [left_ne_zero_of_mul h]
 
@@ -148,19 +144,15 @@ theorem natDegree_lt_coeff_mul (h : p.natDegree + q.natDegree < m + n) :
     (p * q).coeff (m + n) = 0 :=
   coeff_eq_zero_of_natDegree_lt (natDegree_mul_le.trans_lt h)
 
-theorem coeff_mul_of_natDegree_le (pm : p.natDegree ≤ m) (qn : q.natDegree ≤ n) :
-    (p * q).coeff (m + n) = p.coeff m * q.coeff n := by
-  simp_rw [← Polynomial.toFinsupp_apply, toFinsupp_mul]
-  refine AddMonoidAlgebra.apply_add_of_supDegree_le ?_ Function.injective_id ?_ ?_
-  · simp
-  · rwa [supDegree_eq_natDegree, id_eq]
-  · rwa [supDegree_eq_natDegree, id_eq]
+@[deprecated (since := "2025-08-14")] alias coeff_mul_of_natDegree_le :=
+  coeff_mul_add_eq_of_natDegree_le
 
 theorem coeff_pow_of_natDegree_le (pn : p.natDegree ≤ n) :
     (p ^ m).coeff (m * n) = p.coeff n ^ m := by
-  induction' m with m hm
-  · simp
-  · rw [pow_succ, pow_succ, ← hm, Nat.succ_mul, coeff_mul_of_natDegree_le _ pn]
+  induction m with
+  | zero => simp
+  | succ m hm =>
+    rw [pow_succ, pow_succ, ← hm, Nat.succ_mul, coeff_mul_add_eq_of_natDegree_le _ pn]
     refine natDegree_pow_le.trans (le_trans ?_ (le_refl _))
     exact mul_le_mul_of_nonneg_left pn m.zero_le
 
@@ -186,9 +178,10 @@ theorem degree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
     (h : Set.Pairwise { i | i ∈ s ∧ f i ≠ 0 } (Ne on degree ∘ f)) :
     degree (s.sum f) = s.sup fun i => degree (f i) := by
   classical
-  induction' s using Finset.induction_on with x s hx IH
-  · simp
-  · simp only [hx, Finset.sum_insert, not_false_iff, Finset.sup_insert]
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert x s hx IH =>
+    simp only [hx, Finset.sum_insert, not_false_iff, Finset.sup_insert]
     specialize IH (h.mono fun _ => by simp +contextual)
     rcases lt_trichotomy (degree (f x)) (degree (s.sum f)) with (H | H | H)
     · rw [← IH, sup_eq_right.mpr H.le, degree_add_eq_right_of_degree_lt H]
@@ -227,7 +220,7 @@ theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
         exact Finset.le_sup' (fun i : S => (natDegree (f i) : WithBot ℕ)) hb
       · rw [Finset.sup'_le_iff]
         intro b hb
-        simp only [Finset.le_sup'_iff, exists_prop, Function.comp_apply]
+        simp only [Finset.le_sup'_iff, Function.comp_apply]
         by_cases hb' : f b = 0
         · refine ⟨x, hx, ?_⟩
           contrapose! hx'
@@ -276,14 +269,10 @@ theorem natDegree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
     natDegree (map f p) = natDegree p ↔ f (p.leadingCoeff) ≠ 0 ∨ natDegree p = 0 := by
   rcases eq_or_ne (natDegree p) 0 with h|h
   · simp_rw [h, ne_eq, or_true, iff_true, ← Nat.le_zero, ← h, natDegree_map_le]
-  have h2 : p ≠ 0 := by rintro rfl; simp at h
   simp_all [natDegree, WithBot.unbotD_eq_unbotD_iff]
 
 theorem natDegree_pos_of_nextCoeff_ne_zero (h : p.nextCoeff ≠ 0) : 0 < p.natDegree := by
-  rw [nextCoeff] at h
-  by_cases hpz : p.natDegree = 0
-  · simp_all only [ne_eq, zero_le, ite_true, not_true_eq_false]
-  · apply Nat.zero_lt_of_ne_zero hpz
+  grind [nextCoeff]
 
 end Degree
 
@@ -323,7 +312,7 @@ lemma nextCoeff_C_mul_X_add_C (ha : a ≠ 0) (c : R) : nextCoeff (C a * X + C c)
 lemma natDegree_eq_one : p.natDegree = 1 ↔ ∃ a ≠ 0, ∃ b, C a * X + C b = p := by
   refine ⟨fun hp ↦ ⟨p.coeff 1, fun h ↦ ?_, p.coeff 0, ?_⟩, ?_⟩
   · rw [← hp, coeff_natDegree, leadingCoeff_eq_zero] at h
-    aesop
+    simp_all
   · ext n
     obtain _ | _ | n := n
     · simp

@@ -139,22 +139,21 @@ lemma eHolderNorm_eq_zero {r : ℝ≥0} {f : X → Y} :
     · rw [hx]
     · rw [eHolderNorm, ← ENNReal.bot_eq_zero, iInf₂_eq_bot] at h
       rw [← edist_eq_zero, ← le_zero_iff]
-      refine le_of_forall_lt' fun b hb => ?_
+      refine le_of_forall_gt fun b hb => ?_
       obtain ⟨C, hC, hC'⟩ := h (b / edist x₁ x₂ ^ (r : ℝ))
         (ENNReal.div_pos hb.ne.symm (ENNReal.rpow_lt_top_of_nonneg zero_le_coe
           (edist_lt_top x₁ x₂).ne).ne)
       exact lt_of_le_of_lt (hC x₁ x₂) <| ENNReal.mul_lt_of_lt_div hC'
   · intro h
     rcases isEmpty_or_nonempty X with hX | hX
-    · haveI := hX
-      exact eHolderNorm_of_isEmpty
+    · exact eHolderNorm_of_isEmpty
     · rw [← eHolderNorm_const X r (f hX.some)]
       congr
       simp [funext_iff, h _ hX.some]
 
 lemma MemHolder.holderWith {r : ℝ≥0} {f : X → Y} (hf : MemHolder r f) :
     HolderWith (nnHolderNorm r f) r f := by
-  intros x₁ x₂
+  intro x₁ x₂
   by_cases hx : x₁ = x₂
   · simp only [hx, edist_self, zero_le]
   rw [nnHolderNorm, eHolderNorm, coe_toNNReal]
@@ -217,12 +216,11 @@ lemma MemHolder.nsmul [NormedSpace ℝ Y] (n : ℕ) (hf : MemHolder r f) :
 
 lemma MemHolder.nnHolderNorm_add_le (hf : MemHolder r f) (hg : MemHolder r g) :
     nnHolderNorm r (f + g) ≤ nnHolderNorm r f + nnHolderNorm r g :=
-  (hf.add hg).holderWith.nnholderNorm_le.trans <|
-    coe_le_coe.2 (hf.holderWith.add hg.holderWith).nnholderNorm_le
+  (hf.add hg).holderWith.nnholderNorm_le.trans (hf.holderWith.add hg.holderWith).nnholderNorm_le
 
 lemma eHolderNorm_add_le :
     eHolderNorm r (f + g) ≤ eHolderNorm r f + eHolderNorm r g := by
-  by_cases hfg : MemHolder r f  ∧ MemHolder r g
+  by_cases hfg : MemHolder r f ∧ MemHolder r g
   · obtain ⟨hf, hg⟩ := hfg
     rw [← hf.coe_nnHolderNorm_eq_eHolderNorm, ← hg.coe_nnHolderNorm_eq_eHolderNorm,
       ← (hf.add hg).coe_nnHolderNorm_eq_eHolderNorm, ← coe_add, ENNReal.coe_le_coe]

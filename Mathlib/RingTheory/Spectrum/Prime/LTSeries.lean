@@ -1,9 +1,8 @@
 /-
-Copyright (c) 2025 Yonele Hu. All rights reserved.
+Copyright (c) 2025 Yongle Hu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yonele Hu
+Authors: Yongle Hu
 -/
-import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 
 /-!
@@ -37,16 +36,15 @@ theorem exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p₀ : PrimeSpe
   let q : PrimeSpectrum R := ⟨q, hq.1.1⟩
   have : q.1.IsPrime := q.2
   have hxq : x ∈ q.1 := le_sup_right.trans hq.1.2 (mem_span_singleton_self x)
-  refine ⟨q, hxq, lt_of_le_not_le (le_sup_left.trans hq.1.2) fun h ↦ hn (h hxq), ?_⟩
+  refine ⟨q, hxq, lt_of_le_not_ge (le_sup_left.trans hq.1.2) fun h ↦ hn (h hxq), ?_⟩
   refine lt_of_le_of_ne (IsLocalRing.le_maximalIdeal_of_isPrime q.1) fun hqm ↦ ?_
   have h : (e ⟨q, le_sup_left.trans hq.1.2⟩).1.height ≤ 1 :=
     map_height_le_one_of_mem_minimalPrimes hq
   simp_rw [show q = closedPoint R from PrimeSpectrum.ext hqm] at h
-  have hph : (e ⟨p₁, h₀.le⟩).1.height ≤ 0 := by
-    refine Order.lt_one_iff_nonpos.mp (height_le_iff.mp h _ inferInstance ?_)
-    simpa only [asIdeal_lt_asIdeal, OrderIso.lt_iff_lt, Subtype.mk_lt_mk] using h₁
+  have hph : (e ⟨p₁, h₀.le⟩).1.height ≤ 0 :=
+    Order.lt_one_iff_nonpos.mp (height_le_iff.mp h _ inferInstance (by simpa using h₁))
   refine ENat.not_lt_zero (e ⟨p₀, le_refl p₀⟩).1.height (height_le_iff.mp hph _ inferInstance ?_)
-  simp only [asIdeal_lt_asIdeal, OrderIso.lt_iff_lt, Subtype.mk_lt_mk, h₀]
+  simpa using h₀
 
 theorem exist_mem_one_of_mem_two {p₁ p₀ p₂ : PrimeSpectrum R}
     (h₀ : p₀ < p₁) (h₁ : p₁ < p₂) {x : R} (hx : x ∈ p₂.asIdeal) :
@@ -76,38 +74,26 @@ theorem exist_ltSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
     {x : R} (hx : x ∈ p.last.asIdeal) : ∃ q : LTSeries (PrimeSpectrum R),
     x ∈ (q 1).asIdeal ∧ p.length = q.length ∧ p.head = q.head ∧ p.last = q.last := by
   generalize hp : p.length = n
-  induction' n with n hn generalizing p
-  · use RelSeries.singleton (· < ·) p.last
+  induction n generalizing p with
+  | zero =>
+    use RelSeries.singleton _ p.last
     simp only [RelSeries.singleton_toFun, hx, RelSeries.singleton_length, RelSeries.head,
       RelSeries.last_singleton, and_true, true_and]
     rw [show 0 = Fin.last p.length from Fin.zero_eq_mk.mpr hp, RelSeries.last]
+  | succ n hn => ?_
   by_cases h0 : n = 0
   · use p
     have h1 : 1 = Fin.last p.length := by
       rw [Fin.last, hp, h0, zero_add]
       exact Fin.natCast_eq_mk (Nat.one_lt_succ_succ 0)
     simpa [h1, hp] using hx
-  obtain ⟨q, hxq, hq2, hq⟩ : ∃ q : (PrimeSpectrum R), x ∈ q.1 ∧
-      p ⟨p.length - 2, p.length.sub_lt_succ 2⟩ < q ∧ q < p.last := by
-    refine (p ⟨p.length - 1, p.length.sub_lt_succ 1⟩).exist_mem_one_of_mem_two ?_ ?_ hx
-    · refine p.strictMono (Fin.mk_lt_mk.mpr (Nat.pred_lt ?_))
-      simp only [hp, Nat.sub_eq, add_tsub_cancel_right, ne_eq, h0, not_false_eq_true]
-    · refine p.strictMono (Fin.mk_lt_mk.mpr (Nat.pred_lt ?_))
-      simp only [Nat.sub_eq, tsub_zero, ne_eq, hp, n.add_one_ne_zero, not_false_eq_true]
-  obtain ⟨Q, hxQ, hQ, hh, hl⟩ :=
-    hn (p.eraseLast.eraseLast.snoc q hq2) (by simp only [RelSeries.last_snoc, hxq]) <| by
-      simp only [RelSeries.snoc_length, RelSeries.eraseLast_length, hp]
-      exact Nat.succ_pred_eq_of_ne_zero h0
-  refine ⟨Q.snoc p.last ?_, ?_, ?_, ?_, ?_⟩
-  · simp only [← hl, RelSeries.last_snoc, hq]
-  · have h1 : 1 = (1 : Fin (Q.length + 1)).castSucc := by
-      have h : 1 < Q.length + 1 := by
-        rw [← hQ]
-        exact Nat.sub_ne_zero_iff_lt.mp h0
-      simp only [Fin.one_eq_mk_of_lt h, Fin.castSucc_mk, Fin.mk_one]
-    simp only [h1, RelSeries.snoc_castSucc, hxQ]
-  · simp only [hQ, RelSeries.snoc_length, Nat.add_left_cancel_iff]
-  · simp only [RelSeries.head_snoc, ← hh, RelSeries.head_eraseLast]
-  · simp only [RelSeries.last_snoc]
+  obtain ⟨q, hxq, h2, hq⟩ : ∃ q : PrimeSpectrum R, x ∈ q.1 ∧ p ⟨p.length - 2, _⟩ < q ∧ q < p.last :=
+    (p ⟨p.length - 1, p.length.sub_lt_succ 1⟩).exist_mem_one_of_mem_two
+      (p.strictMono (Nat.pred_lt (by simpa [hp]))) (p.strictMono (Nat.pred_lt (by simp [hp]))) hx
+  obtain ⟨Q, hx, hQ, hh, hl⟩ := hn (p.eraseLast.eraseLast.snoc q h2) (by simpa using hxq) <| by
+    simpa [hp] using Nat.succ_pred_eq_of_ne_zero h0
+  have h1 : 1 < Q.length + 1 := Nat.lt_of_sub_ne_zero (hQ.symm.trans_ne h0)
+  have h : 1 = (1 : Fin (Q.length + 1)).castSucc := by simp [Fin.one_eq_mk_of_lt h1]
+  exact ⟨Q.snoc p.last (by simpa [← hl] using hq), by simpa [h], by simpa, by simp [← hh], by simp⟩
 
 end PrimeSpectrum

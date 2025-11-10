@@ -53,13 +53,13 @@ protected inductive LE [∀ i, LE (α i)] : ∀ _a _b : Σ i, α i, Prop
   | fiber (i : ι) (a b : α i) : a ≤ b → Sigma.LE ⟨i, a⟩ ⟨i, b⟩
 
 /-- Disjoint sum of orders. `⟨i, a⟩ < ⟨j, b⟩` iff `i = j` and `a < b`. -/
-protected inductive LT [∀ i, LT (α i)] : ∀ _a _b : Σi, α i, Prop
+protected inductive LT [∀ i, LT (α i)] : ∀ _a _b : Σ i, α i, Prop
   | fiber (i : ι) (a b : α i) : a < b → Sigma.LT ⟨i, a⟩ ⟨i, b⟩
 
-protected instance [∀ i, LE (α i)] : LE (Σi, α i) where
+protected instance [∀ i, LE (α i)] : LE (Σ i, α i) where
   le := Sigma.LE
 
-protected instance [∀ i, LT (α i)] : LT (Σi, α i) where
+protected instance [∀ i, LT (α i)] : LT (Σ i, α i) where
   lt := Sigma.LT
 
 @[simp]
@@ -70,7 +70,7 @@ theorem mk_le_mk_iff [∀ i, LE (α i)] {i : ι} {a b : α i} : (⟨i, a⟩ : Si
 theorem mk_lt_mk_iff [∀ i, LT (α i)] {i : ι} {a b : α i} : (⟨i, a⟩ : Sigma α) < ⟨i, b⟩ ↔ a < b :=
   ⟨fun ⟨_, _, _, h⟩ => h, Sigma.LT.fiber _ _ _⟩
 
-theorem le_def [∀ i, LE (α i)] {a b : Σi, α i} : a ≤ b ↔ ∃ h : a.1 = b.1, h.rec a.2 ≤ b.2 := by
+theorem le_def [∀ i, LE (α i)] {a b : Σ i, α i} : a ≤ b ↔ ∃ h : a.1 = b.1, h.rec a.2 ≤ b.2 := by
   constructor
   · rintro ⟨i, a, b, h⟩
     exact ⟨rfl, h⟩
@@ -79,7 +79,7 @@ theorem le_def [∀ i, LE (α i)] {a b : Σi, α i} : a ≤ b ↔ ∃ h : a.1 = 
     rintro ⟨rfl : i = j, h⟩
     exact LE.fiber _ _ _ h
 
-theorem lt_def [∀ i, LT (α i)] {a b : Σi, α i} : a < b ↔ ∃ h : a.1 = b.1, h.rec a.2 < b.2 := by
+theorem lt_def [∀ i, LT (α i)] {a b : Σ i, α i} : a < b ↔ ∃ h : a.1 = b.1, h.rec a.2 < b.2 := by
   constructor
   · rintro ⟨i, a, b, h⟩
     exact ⟨rfl, h⟩
@@ -88,26 +88,26 @@ theorem lt_def [∀ i, LT (α i)] {a b : Σi, α i} : a < b ↔ ∃ h : a.1 = b.
     rintro ⟨rfl : i = j, h⟩
     exact LT.fiber _ _ _ h
 
-protected instance preorder [∀ i, Preorder (α i)] : Preorder (Σi, α i) :=
+protected instance preorder [∀ i, Preorder (α i)] : Preorder (Σ i, α i) :=
   { le_refl := fun ⟨i, a⟩ => Sigma.LE.fiber i a a le_rfl,
     le_trans := by
       rintro _ _ _ ⟨i, a, b, hab⟩ ⟨_, _, c, hbc⟩
       exact LE.fiber i a c (hab.trans hbc),
-    lt_iff_le_not_le := fun _ _ => by
+    lt_iff_le_not_ge := fun _ _ => by
       constructor
       · rintro ⟨i, a, b, hab⟩
-        rwa [mk_le_mk_iff, mk_le_mk_iff, ← lt_iff_le_not_le]
+        rwa [mk_le_mk_iff, mk_le_mk_iff, ← lt_iff_le_not_ge]
       · rintro ⟨⟨i, a, b, hab⟩, h⟩
         rw [mk_le_mk_iff] at h
-        exact mk_lt_mk_iff.2 (hab.lt_of_not_le h) }
+        exact mk_lt_mk_iff.2 (hab.lt_of_not_ge h) }
 
-instance [∀ i, PartialOrder (α i)] : PartialOrder (Σi, α i) :=
+instance [∀ i, PartialOrder (α i)] : PartialOrder (Σ i, α i) :=
   { Sigma.preorder with
     le_antisymm := by
       rintro _ _ ⟨i, a, b, hab⟩ ⟨_, _, _, hba⟩
       exact congr_arg (Sigma.mk _ ·) <| hab.antisymm hba }
 
-instance [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] : DenselyOrdered (Σi, α i) where
+instance [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] : DenselyOrdered (Σ i, α i) where
   dense := by
     rintro ⟨i, a⟩ ⟨_, _⟩ ⟨_, _, b, h⟩
     obtain ⟨c, ha, hb⟩ := exists_between h
@@ -118,7 +118,7 @@ instance [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] : DenselyOrdere
 
 namespace Lex
 /-- The notation `Σₗ i, α i` refers to a sigma type equipped with the lexicographic order. -/
-notation3 "Σₗ "(...)", "r:(scoped p => _root_.Lex (Sigma p)) => r
+notation3 "Σₗ " (...) ", " r:(scoped p => _root_.Lex (Sigma p)) => r
 
 /-- The lexicographical `≤` on a sigma type. -/
 protected instance LE [LT ι] [∀ i, LE (α i)] : LE (Σₗ i, α i) where
@@ -141,16 +141,16 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α
   { Sigma.Lex.LE, Sigma.Lex.LT with
     le_refl := fun ⟨_, a⟩ => Lex.right a a le_rfl,
     le_trans := fun _ _ _ => trans_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
-    lt_iff_le_not_le := by
+    lt_iff_le_not_ge := by
       refine fun a b => ⟨fun hab => ⟨hab.mono_right fun i a b => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨b, a, hji⟩ | ⟨b, a, hba⟩) <;> obtain ⟨_, _, hij⟩ | ⟨_, _, hab⟩ := hab
-        · exact hij.not_lt hji
+        · exact hij.not_gt hji
         · exact lt_irrefl _ hji
         · exact lt_irrefl _ hij
-        · exact hab.not_le hba
+        · exact hab.not_ge hba
       · rintro ⟨⟨a, b, hij⟩ | ⟨a, b, hab⟩, hba⟩
         · exact Sigma.Lex.left _ _ hij
-        · exact Sigma.Lex.right _ _ (hab.lt_of_not_le fun h => hba <| Sigma.Lex.right _ _ h) }
+        · exact Sigma.Lex.right _ _ (hab.lt_of_not_ge fun h => hba <| Sigma.Lex.right _ _ h) }
 
 /-- The lexicographical partial order on a sigma type. -/
 instance partialOrder [Preorder ι] [∀ i, PartialOrder (α i)] :

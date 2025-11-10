@@ -141,7 +141,7 @@ theorem tendstoLocallyUniformly_iff [TopologicalSpace β] {F : ι → β → α}
     TendstoLocallyUniformly F f p ↔
       ∀ ε > 0, ∀ x : β, ∃ t ∈ 𝓝 x, ∀ᶠ n in p, ∀ y ∈ t, dist (f y) (F n y) < ε := by
   simp only [← tendstoLocallyUniformlyOn_univ, tendstoLocallyUniformlyOn_iff, nhdsWithin_univ,
-    mem_univ, forall_const, exists_prop]
+    mem_univ, forall_const]
 
 /-- Expressing uniform convergence using `dist`. -/
 theorem tendstoUniformly_iff {F : ι → β → α} {f : β → α} {p : Filter ι} :
@@ -208,15 +208,9 @@ protected lemma IsInducing.isSeparable_preimage {f : β → α} [TopologicalSpac
   have := this.secondCountableTopology
   exact .of_subtype _
 
-@[deprecated (since := "2024-10-28")]
-alias _root_.Inducing.isSeparable_preimage := IsInducing.isSeparable_preimage
-
 protected theorem IsEmbedding.isSeparable_preimage {f : β → α} [TopologicalSpace β]
     (hf : IsEmbedding f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) :=
   hf.isInducing.isSeparable_preimage hs
-
-@[deprecated (since := "2024-10-26")]
-alias _root_.Embedding.isSeparable_preimage := IsEmbedding.isSeparable_preimage
 
 end Topology
 

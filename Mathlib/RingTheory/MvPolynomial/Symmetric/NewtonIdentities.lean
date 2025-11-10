@@ -21,7 +21,7 @@ from an identity implemented in mathlib as `Finset.sum_involution`. Namely, we u
 `Finset.sum_involution` to show that `∑ t ∈ pairs σ k, weight σ R k t = 0`. We then identify
 `(-1) ^ k * k * esymm σ R k` with the terms of the weight sum for which `t.fst` has
 cardinality `k`, and `(-1) ^ i * esymm σ R i * psum σ R (k - i)` with the terms of the weight sum
-for which `t.fst` has cardinality `i` for `i < k` , and we thereby derive the main result
+for which `t.fst` has cardinality `i` for `i < k`, and we thereby derive the main result
 `(-1) ^ k * k * esymm σ R k + ∑ i ∈ range k, (-1) ^ i * esymm σ R i * psum σ R (k - i) = 0` (or
 rather, two equivalent forms which provide direct definitions for `esymm` and `psum` in lower-degree
 terms).
@@ -73,8 +73,6 @@ private lemma pairMap_of_snd_notMem_fst {t : Finset σ × σ} (h : t.snd ∉ t.f
     pairMap σ t = (t.fst.cons t.snd h, t.snd) := by
   simp [pairMap, h]
 
-@[deprecated (since := "2025-05-24")] alias pairMap_of_snd_nmem_fst := pairMap_of_snd_notMem_fst
-
 @[simp]
 private theorem pairMap_involutive : (pairMap σ).Involutive := by
   intro t
@@ -109,7 +107,7 @@ private theorem pairMap_mem_pairs {k : ℕ} (t : Finset σ × σ) (h : t ∈ pai
     by_contra h2
     simp only [not_true_eq_false, and_true, not_forall, not_false_eq_true, exists_prop] at h2
     rw [← h2] at h
-    exact not_le_of_lt (sub_lt (card_pos.mpr ⟨t.snd, h1⟩) zero_lt_one) h
+    exact not_le_of_gt (sub_lt (card_pos.mpr ⟨t.snd, h1⟩) zero_lt_one) h
   · rw [pairMap_of_snd_notMem_fst σ h1]
     simp only [h1] at h
     simp only [card_cons, mem_cons, true_or, implies_true, and_true]
@@ -156,7 +154,7 @@ private theorem sum_filter_pairs_eq_sum_powersetCard_mem_filter_antidiagonal_sum
   apply sum_finset_product
   simp only [mem_filter, mem_powersetCard_univ, mem_univ, and_true, and_iff_right_iff_imp]
   rintro p hp
-  have : #p.fst ≤ k := by apply le_of_lt; aesop
+  have : #p.fst ≤ k := by apply le_of_lt; simp_all
   aesop
 
 private lemma filter_pairs_lt (k : ℕ) :
@@ -170,7 +168,7 @@ private theorem sum_filter_pairs_eq_sum_filter_antidiagonal_powersetCard_sum (k 
       ∑ a ∈ antidiagonal k with a.fst < k, ∑ A ∈ powersetCard a.fst univ, ∑ j, f (A, j) := by
   rw [filter_pairs_lt, sum_product, sum_disjiUnion]
   refine sum_nbij' (fun n ↦ (n, k - n)) Prod.fst ?_ ?_ ?_ ?_ ?_ <;>
-    simp +contextual [@eq_comm _ _ k, Nat.add_sub_cancel', le_of_lt]
+    simp +contextual [@eq_comm _ _ k, le_of_lt]
 
 private theorem disjoint_filter_pairs_lt_filter_pairs_eq (k : ℕ) :
     Disjoint {t ∈ pairs σ k | #t.1 < k} {t ∈ pairs σ k | #t.1 = k} := by
@@ -180,12 +178,7 @@ private theorem disjoint_filter_pairs_lt_filter_pairs_eq (k : ℕ) :
 private theorem disjUnion_filter_pairs_eq_pairs (k : ℕ) :
     disjUnion {t ∈ pairs σ k | #t.1 < k} {t ∈ pairs σ k | #t.1 = k}
       (disjoint_filter_pairs_lt_filter_pairs_eq σ k) = pairs σ k := by
-  simp only [disjUnion_eq_union, Finset.ext_iff, pairs, filter_filter, mem_filter]
-  intro a
-  rw [← filter_or, mem_filter]
-  refine ⟨fun ha ↦ by tauto, fun ha ↦ ?_⟩
-  have hacard := le_iff_lt_or_eq.mp ha.2.1
-  tauto
+  grind [MvPolynomial.NewtonIdentities.pairs]
 
 end DecidableEq
 
@@ -260,12 +253,12 @@ theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) :
   simp only [left_distrib, add_sub_cancel_left] at sub_both_sides
   have sub_both_sides := congrArg ((-1 : MvPolynomial σ R) ^ (k + 1) * ·) sub_both_sides
   simp only [mul_sub_left_distrib, ← mul_assoc, ← pow_add, Even.neg_one_pow ⟨k + 1, rfl⟩, one_mul,
-    not_le, lt_one_iff, filter_filter (fun a : ℕ × ℕ ↦ a.fst < k) (fun a ↦ ¬0 < a.fst)]
+    filter_filter (fun a : ℕ × ℕ ↦ a.fst < k) (fun a ↦ ¬0 < a.fst)]
     at sub_both_sides
   have : {a ∈ antidiagonal k | a.fst < k ∧ ¬0 < a.fst} = {(0, k)} := by
     ext a
     rw [mem_filter, mem_antidiagonal, mem_singleton]
-    refine ⟨?_, by rintro rfl; omega⟩
+    refine ⟨?_, by rintro rfl; cutsat⟩
     rintro ⟨ha, ⟨_, ha0⟩⟩
     rw [← ha, Nat.eq_zero_of_not_pos ha0, zero_add, ← Nat.eq_zero_of_not_pos ha0]
   rw [this, sum_singleton] at sub_both_sides

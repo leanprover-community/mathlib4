@@ -79,21 +79,21 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     replace := nonneg _ this
     rwa [f.map_sub, sub_nonneg] at this
   refine ⟨f.supSpanSingleton y (-c) hy, ?_, ?_⟩
-  · refine lt_iff_le_not_le.2 ⟨f.left_le_sup _ _, fun H => ?_⟩
+  · refine lt_iff_le_not_ge.2 ⟨f.left_le_sup _ _, fun H => ?_⟩
     replace H := LinearPMap.domain_mono.monotone H
     rw [LinearPMap.domain_supSpanSingleton, sup_le_iff, span_le, singleton_subset_iff] at H
     exact hy H.2
   · rintro ⟨z, hz⟩ hzs
     rcases mem_sup.1 hz with ⟨x, hx, y', hy', rfl⟩
     rcases mem_span_singleton.1 hy' with ⟨r, rfl⟩
-    simp only [Subtype.coe_mk] at hzs
+    simp only at hzs
     rw [LinearPMap.supSpanSingleton_apply_mk _ _ _ _ _ hx, smul_neg, ← sub_eq_add_neg, sub_nonneg]
     rcases lt_trichotomy r 0 with (hr | hr | hr)
     · have : -(r⁻¹ • x) - y ∈ s := by
         rwa [← s.smul_mem_iff (neg_pos.2 hr), smul_sub, smul_neg, neg_smul, neg_neg, smul_smul,
           mul_inv_cancel₀ hr.ne, one_smul, sub_eq_add_neg, neg_smul, neg_neg]
       replace := le_c (r⁻¹ • ⟨x, hx⟩) this
-      rwa [← mul_le_mul_left (neg_pos.2 hr), neg_mul, neg_mul, neg_le_neg_iff, f.map_smul,
+      rwa [← mul_le_mul_iff_right₀ (neg_pos.2 hr), neg_mul, neg_mul, neg_le_neg_iff, f.map_smul,
         smul_eq_mul, ← mul_assoc, mul_inv_cancel₀ hr.ne, one_mul] at this
     · subst r
       simp only [zero_smul, add_zero] at hzs ⊢
@@ -102,7 +102,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     · have : r⁻¹ • x + y ∈ s := by
         rwa [← s.smul_mem_iff hr, smul_add, smul_smul, mul_inv_cancel₀ hr.ne', one_smul]
       replace := c_le (r⁻¹ • ⟨x, hx⟩) this
-      rwa [← mul_le_mul_left hr, f.map_smul, smul_eq_mul, ← mul_assoc, mul_inv_cancel₀ hr.ne',
+      rwa [← mul_le_mul_iff_right₀ hr, f.map_smul, smul_eq_mul, ← mul_assoc, mul_inv_cancel₀ hr.ne',
         one_mul] at this
 
 theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : E) ∈ s → 0 ≤ p x)

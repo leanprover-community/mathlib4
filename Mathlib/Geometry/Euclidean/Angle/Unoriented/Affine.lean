@@ -64,6 +64,14 @@ theorem _root_.AffineSubspace.angle_coe {s : AffineSubspace ℝ P} (p₁ p₂ p�
   haveI : Nonempty s := ⟨p₁⟩
   s.subtypeₐᵢ.angle_map p₁ p₂ p₃
 
+/-- A homothety with a nonzero scale factor preserves angles. -/
+@[simp] lemma angle_homothety (p p₁ p₂ p₃ : P) {r : ℝ} (h : r ≠ 0) :
+    ∠ (AffineMap.homothety p r p₁) (AffineMap.homothety p r p₂) (AffineMap.homothety p r p₃) =
+      ∠ p₁ p₂ p₃ := by
+  simp_rw [angle, ← AffineMap.linearMap_vsub, AffineMap.homothety_linear, LinearMap.smul_apply,
+    LinearMap.id_coe, id_eq]
+  rcases h.lt_or_gt with hlt | hlt <;> simp [hlt, -neg_vsub_eq_vsub_rev]
+
 /-- Angles are translation invariant -/
 @[simp]
 theorem angle_const_vadd (v : V) (p₁ p₂ p₃ : P) : ∠ (v +ᵥ p₁) (v +ᵥ p₂) (v +ᵥ p₃) = ∠ p₁ p₂ p₃ :=
@@ -344,7 +352,7 @@ theorem angle_eq_zero_iff_ne_and_wbtw {p₁ p₂ p₃ : P} :
   constructor
   · rw [angle, angle_eq_zero_iff]
     rintro ⟨hp₁p₂, r, hr0, hp₃p₂⟩
-    rcases le_or_lt 1 r with (hr1 | hr1)
+    rcases le_or_gt 1 r with (hr1 | hr1)
     · refine Or.inl ⟨vsub_ne_zero.1 hp₁p₂, r⁻¹, ⟨(inv_pos.2 hr0).le, inv_le_one_of_one_le₀ hr1⟩, ?_⟩
       rw [AffineMap.lineMap_apply, hp₃p₂, smul_smul, inv_mul_cancel₀ hr0.ne.symm, one_smul,
         vsub_vadd]

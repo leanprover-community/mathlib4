@@ -51,8 +51,12 @@ lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = 
   SimplicialObject.hom_ext _ _ w
 
 @[simp]
+lemma id_app (X : SSet) (n : SimplexCategoryᵒᵖ) :
+    NatTrans.app (𝟙 X) n = 𝟙 _ := rfl
+
+@[simp, reassoc]
 lemma comp_app {X Y Z : SSet} (f : X ⟶ Y) (g : Y ⟶ Z) (n : SimplexCategoryᵒᵖ) :
-    (f ≫ g).app n = f.app n ≫ g.app n := NatTrans.comp_app _ _ _
+    (f ≫ g).app n = f.app n ≫ g.app n := rfl
 
 /-- The constant map of simplicial sets `X ⟶ Y` induced by a simplex `y : Y _[0]`. -/
 @[simps]
@@ -253,12 +257,12 @@ open Opposite
 
 lemma δ_naturality_apply {n : ℕ} (i : Fin (n + 2)) (x : S _⦋n + 1⦌) :
     f.app (op ⦋n⦌) (S.δ i x) = T.δ i (f.app (op ⦋n + 1⦌) x) := by
-  show (S.δ i ≫ f.app (op ⦋n⦌)) x = (f.app (op ⦋n + 1⦌) ≫ T.δ i) x
+  change (S.δ i ≫ f.app (op ⦋n⦌)) x = (f.app (op ⦋n + 1⦌) ≫ T.δ i) x
   exact congr_fun (SimplicialObject.δ_naturality f i) x
 
 lemma σ_naturality_apply {n : ℕ} (i : Fin (n + 1)) (x : S _⦋n⦌) :
     f.app (op ⦋n + 1⦌) (S.σ i x) = T.σ i (f.app (op ⦋n⦌) x) := by
-  show (S.σ i ≫ f.app (op ⦋n + 1⦌)) x = (f.app (op ⦋n⦌) ≫ T.σ i) x
+  change (S.σ i ≫ f.app (op ⦋n + 1⦌)) x = (f.app (op ⦋n⦌) ≫ T.σ i) x
   exact congr_fun (SimplicialObject.σ_naturality f i) x
 
 end applications

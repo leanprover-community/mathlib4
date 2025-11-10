@@ -21,7 +21,6 @@ under `∈`.
 
 ## TODO
 
-- Define the von Neumann hierarchy.
 - Build correspondences between these set notions and those of the standard `Ordinal` type.
 -/
 
@@ -179,7 +178,7 @@ theorem notMem_iff_subset (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ∉ y ↔ y 
   refine ⟨?_, fun hxy hyx ↦ mem_irrefl _ (hxy hyx)⟩
   revert hx hy
   apply Sym2.GameAdd.induction mem_wf _ x y
-  intros x y IH hx hy hyx z hzy
+  intro x y IH hx hy hyx z hzy
   by_contra hzx
   exact hyx (mem_of_subset_of_mem hx hy (IH z x (Sym2.GameAdd.fst_snd hzy) (hy.mem hzy) hx hzx) hzy)
 

@@ -54,7 +54,7 @@ def formatPercent (reldiff : Float) : String :=
   let reldiff := reldiff * 10 ^ 4
   let sgn : Int := if reldiff < 0 then -1 else 1
   let reldiff := (.ofInt sgn) * reldiff
-  let (sgn, intDigs, decDigs) := intDecs (sgn * reldiff.toUInt32.val) 0 2
+  let (sgn, intDigs, decDigs) := intDecs (sgn * reldiff.toUInt32.toFin) 0 2
   -- the `if ... then ... else ...` makes sure that the output includes leading `0`s
   s!"({sgn}{intDigs}.{if decDigs < 10 then "0" else ""}{decDigs}%)"
 
@@ -168,7 +168,6 @@ Here is a summary of the steps:
 def addBenchSummaryComment (PR : Nat) (repo : String) (jobID : Nat := 0)
     (author : String := "leanprover-bot") (tempFile : String := "benchOutput.json") :
     CommandElabM Unit := do
-  let job_msg := s!"\n[CI run](https://github.com/{repo}/actions/runs/{jobID})"
   let PR := s!"{PR}"
   let jq := s!".comments | last | select(.author.login==\"{author}\") | .body"
 
@@ -190,6 +189,8 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (jobID : Nat := 0)
     logInfo m!"Found\nsource: '{source}'\ntarget: '{target}'\ninstead of two commit hashes."
     return
   dbg_trace s!"Using commits\nsource: '{source}'\ntarget: '{target}'\n"
+
+  let job_msg := s!"\n[CI run](https://github.com/{repo}/actions/runs/{jobID}) [Lakeprof report](https://speed.lean-lang.org/mathlib4-out/{target}/)"
 
   -- retrieve the data from the speed-center
   let curlSpeedCenter : IO.Process.SpawnArgs :=

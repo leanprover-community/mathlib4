@@ -18,6 +18,7 @@ mkMDtable () {
       longTotal=0
       foundShort=0
       n=split(heads, headers, ",")
+      printf("### The 10 longest files in `mathlib`\n\n")
       # mkRow, with the header entries
       printf("|")
       for(i=1; i<=n; i++) {printf(" %s |", headers[i])}
