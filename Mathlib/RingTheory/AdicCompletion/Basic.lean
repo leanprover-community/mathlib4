@@ -67,6 +67,13 @@ theorem IsHausdorff.eq_iff_smodEq [IsHausdorff I M] {x y : M} :
   apply IsHausdorff.haus' (I := I) (x - y)
   simpa [SModEq.sub_mem] using h
 
+theorem IsHausdorff.map_algebraMap_iff [CommRing S] [Algebra R S] :
+    IsHausdorff (I.map (algebraMap R S)) S ↔ IsHausdorff I S := by
+  simp only [isHausdorff_iff, smul_eq_mul, Ideal.mul_top, Ideal.smul_top_eq_map]
+  congr!
+  simp only [← Ideal.map_pow]
+  rfl
+
 theorem IsPrecomplete.prec (_ : IsPrecomplete I M) {f : ℕ → M} :
     (∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)]) →
       ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)] :=

@@ -407,8 +407,8 @@ theorem exists_smodEq_pow_smul_top_and_mkQ_eq {f : M →ₗ[R] N}
   use x', hxx'
   rwa [mkQ_apply, hx'y0]
 
-theorem map_surjective {f : M →ₗ[R] N} (h : Function.Surjective (mkQ (I • ⊤) ∘ₗ f)) :
-    Function.Surjective (map I f) := by
+theorem map_surjective_of_mkQ_comp_surjective {f : M →ₗ[R] N}
+    (h : Function.Surjective (mkQ (I • ⊤) ∘ₗ f)) : Function.Surjective (map I f) := by
   intro y
   suffices h : ∃ x : ℕ → M, ∀ n, x n ≡ x (n + 1) [SMOD (I ^ n • ⊤ : Submodule R M)] ∧
       Submodule.Quotient.mk (f (x n)) = eval I _ n y by
@@ -430,14 +430,36 @@ theorem map_surjective {f : M →ₗ[R] N} (h : Function.Surjective (mkQ (I • 
   exact ⟨fun n ↦ (x n).val, fun n ↦ ⟨(Classical.choose_spec (exists_smodEq_pow_smul_top_and_mkQ_eq
       h (y' := eval I _ (n + 1) y) (by simp) (x n).2)).1, (x n).property⟩⟩
 
+theorem map_surjective {f : M →ₗ[R] N} (h : Function.Surjective f) :
+    Function.Surjective (map I f) := by
+  apply map_surjective_of_mkQ_comp_surjective
+  simpa using (Function.Surjective.comp (mkQ_surjective _) h)
+
 end AdicCompletion
 
 open AdicCompletion Submodule
 
+variable {I}
+
 theorem surjective_of_mkQ_comp_surjective [IsPrecomplete I M] [IsHausdorff I N]
     {f : M →ₗ[R] N} (h : Function.Surjective (mkQ (I • ⊤) ∘ₗ f)) : Function.Surjective f := by
   intro y
-  obtain ⟨x', hx'⟩ := AdicCompletion.map_surjective h (of I N y)
+  obtain ⟨x', hx'⟩ := AdicCompletion.map_surjective_of_mkQ_comp_surjective h (of I N y)
   obtain ⟨x, hx⟩ := of_surjective I M x'
   use x
   rwa [← of_inj (I := I), ← map_of, hx]
+
+variable {S : Type*} [CommRing S] (f : R →+* S)
+
+theorem surjective_of_mk_map_comp_surjective [IsPrecomplete I R] [haus : IsHausdorff (I.map f) S]
+    (h : Function.Surjective ((Ideal.Quotient.mk (I.map f)).comp f)) :
+    Function.Surjective f := by
+  let _ := f.toAlgebra
+  let fₗ := (Algebra.ofId R S).toLinearMap
+  change Function.Surjective ((restrictScalars R (I.map f)).mkQ ∘ₗ fₗ) at h
+  have : I • ⊤ = restrictScalars R (Ideal.map f I) := by
+    simp only [Ideal.smul_top_eq_map, restrictScalars_inj]
+    rfl
+  have _ := IsHausdorff.map_algebraMap_iff.mp haus
+  apply surjective_of_mkQ_comp_surjective (I := I) (f := fₗ)
+  convert h

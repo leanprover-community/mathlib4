@@ -3,6 +3,7 @@ Copyright (c) 2025 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang
 -/
+import Mathlib.RingTheory.AdicCompletion.Functoriality
 import Mathlib.RingTheory.AdicCompletion.RingHom
 import Mathlib.RingTheory.Perfectoid.Untilt
 import Mathlib.RingTheory.WittVector.TeichmullerSeries
@@ -195,16 +196,6 @@ theorem fontaineTheta_teichmuller (x : O^♭) : fontaineTheta (teichmuller p x) 
 
 end WittVector
 
-
--- theorem fontaineTheta_p : fontaineTheta (p : 𝕎 (O^♭)) = p := by simp
-
--- AdicComplete
-theorem IsAdicComplete.surjective_of_surjective_mkQ_comp {R M N: Type*} [CommRing R]
-    [AddCommGroup M] [AddCommGroup N] [Module R M]
-    [Module R N] (I : Ideal R) [IsAdicComplete I M] [IsHausdorff I N] (f : M →ₗ[R] N)
-    (hf : Function.Surjective ((Submodule.mkQ (I • ⊤ : Submodule R N)).comp f)) :
-    Function.Surjective f := sorry
-
 -- this is a lemma from #20431 by Andrew Yang
 section
 
@@ -219,12 +210,10 @@ lemma SModEq.of_toAddSubgroup_le {U : Submodule R M} {V : Submodule S M}
 
 -- `Mathlib.Algebra.Module.Submodule.Basic` after `Submodule.toAddSubgroup_mono`
 @[simp]
-theorem Submodule.toAddSubgroup_toAddSubmonoid {R : Type*}  {M : Type*}  [Ring R]
+theorem Submodule.toAddSubgroup_toAddSubmonoid {R : Type*} {M : Type*} [Ring R]
     [AddCommGroup M] {module_M : Module R M}
-    (p : Submodule R M) : p.toAddSubgroup.toAddSubmonoid = p.toAddSubmonoid := by
-  ext
-  simp
-
+    (p : Submodule R M) : p.toAddSubgroup.toAddSubmonoid = p.toAddSubmonoid :=
+  rfl
 -- -- `Mathlib.Algebra.Group.Submonoid.Pointwise` after `AddSubmonoid.smul_iSup`
 -- theorem foo {R S A: Type} [AddMonoid A] [CommSemiring R] [Semiring S] [DistribSMul R A]
 -- [DistribSMul S A] [Algebra R S] [IsScalarTower R S A] (hIJ : I.map f ≤ J)
@@ -233,7 +222,7 @@ theorem Submodule.toAddSubgroup_toAddSubmonoid {R : Type*}  {M : Type*}  [Ring R
 
 -- Note: after #20431 this lemma should be moved to the file `RingTheory.AdicCompletion.Mono`,
 -- after `IsHausdorff.mono`
-variable [Algebra R S]  [IsScalarTower R S M] (hIJ : I.map (algebraMap R S) ≤ J)
+variable [Algebra R S] [IsScalarTower R S M] (hIJ : I.map (algebraMap R S) ≤ J)
 
 include hIJ in
 lemma IsHausdorff.map [IsHausdorff J M] : IsHausdorff I M := by
@@ -250,30 +239,38 @@ lemma IsHausdorff.map [IsHausdorff J M] : IsHausdorff I M := by
     apply AddSubmonoid.smul_mem_smul
     · have := Ideal.mem_map_of_mem (algebraMap R S) hr
       simp only [Ideal.map_pow] at this
-      apply Ideal.pow_right_mono (I :=  I.map (algebraMap R S)) hIJ n this
+      apply Ideal.pow_right_mono (I := I.map (algebraMap R S)) hIJ n this
     · trivial
   · exact h n
 end
 
 variable [Fact ¬IsUnit (p : O)] [IsAdicComplete (span {(p : O)}) O]
+    [PerfectRing (O ⧸ span {(p : O)}) p]
 
 theorem surjective_fontaineTheta : Function.Surjective (fontaineTheta : 𝕎 (O^♭) → O) := by
-  let I := span {(p : 𝕎 (O^♭))}
-  haveI : IsAdicComplete I (𝕎 (O^♭)) := inferInstance
-  letI : Algebra (𝕎 (O^♭)) O := RingHom.toAlgebra fontaineTheta
-  haveI : IsHausdorff I O := sorry
-  let f : 𝕎 (O^♭) →ₐ[𝕎 (O^♭)] O := Algebra.ofId _ _
-  have : ⇑f.toLinearMap = ⇑fontaineTheta := rfl
-  -- have : (I • ⊤).mkQ ∘ₗ f.toLinearMap = (I • ⊤).mkQ
-  rw [← this]
-  apply IsAdicComplete.surjective_of_surjective_mkQ_comp I f.toLinearMap
-  intro x
-  simp [f, Algebra.ofId_apply, RingHom.algebraMap_toAlgebra]
-  sorry
-
-
-
-
--- lemmas about frobenius and untilt another PR
--- Fontaine's theta and Bdr PR
--- surjective to another PR
+  have : Ideal.map fontaineTheta (span {(p : 𝕎 (O^♭))}) = span {(p : O)} := by
+    simp [map_span]
+  have _ : IsHausdorff ((span {(p : 𝕎 (O^♭))}).map fontaineTheta) O := by
+    rw [this]
+    infer_instance
+  apply surjective_of_mk_map_comp_surjective fontaineTheta (I := span {(p : 𝕎 (O^♭))})
+  simp only [RingHom.coe_comp]
+  suffices h : Function.Surjective (Ideal.Quotient.mk (span {(p : O)}) ∘
+      (fontaineTheta : 𝕎 (O^♭) → O)) by
+    convert h
+  have : ((Ideal.Quotient.mk (span {(p : O)})) ∘ (fontaineTheta : 𝕎 (O^♭) → O)) = (fun x ↦
+      Perfection.coeff (ModP O p) _ 0 x) ∘ fun (x : 𝕎 (O^♭)) ↦ (x.coeff 0) := by
+    ext
+    simp [mk_fontaineTheta]
+  rw [this]
+  apply Function.Surjective.comp
+  · -- show Function.Surjective (fun x ↦ Perfection.coeff (ModP O p) _ 0 x)
+    -- O/p perfect -> Pretilt coeff 0 surjective
+    sorry
+  · -- all Witt.coeff 0 surj
+    intro x
+    use WittVector.mk p (fun n ↦
+      match n with
+        | 0 => x
+        | _ => 0)
+    simp
