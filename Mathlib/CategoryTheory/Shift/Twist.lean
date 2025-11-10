@@ -17,10 +17,10 @@ variable (C : Type*) [Category C] (A : Type*) [AddMonoid A] [HasShift C A]
 
 structure TwistShiftData where
   z (a b : A) : (CatCenter C)ˣ
-  z_zero_right (a : A) : z a 0 = 1
-  z_zero_left (b : A) : z 0 b = 1
-  assoc (a b c : A) : z (a + b) c * z a b = z a (b + c) * z b c
-  shift_z_app (a b c : A) (X : C) : ((z a b).1.app X)⟦c⟧' = (z a b).1.app (X⟦c⟧)
+  z_zero_right (a : A) : z a 0 = 1 := by aesop
+  z_zero_left (b : A) : z 0 b = 1 := by aesop
+  assoc (a b c : A) : z (a + b) c * z a b = z a (b + c) * z b c := by aesop
+  shift_z_app (a b c : A) (X : C) : ((z a b).1.app X)⟦c⟧' = (z a b).1.app (X⟦c⟧) := by aesop
 
 namespace TwistShiftData
 

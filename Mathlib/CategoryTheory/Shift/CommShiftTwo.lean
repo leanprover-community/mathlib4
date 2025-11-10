@@ -430,16 +430,47 @@ end commShift₂Curry
 open commShift₂Curry in
 noncomputable instance commShift₂Curry : (h.curry G).CommShift₂ h where
   comm X₁ X₂ m n := by
-    dsimp
-    simp [commShift_curry_flip_obj_hom_app, commShift_curry_obj_hom_app, iso₁_hom_app_app,
-      iso₂_hom_app_app]
+    simp only [Functor.comp_obj, curry_obj_obj_obj, Functor.flip_obj_obj,
+      commShift_curry_obj_hom_app, Iso.app_hom, iso₁_hom_app_app, Functor.id_obj,
+      shiftFunctor_prod, commShift_curry_flip_obj_hom_app, iso₂_hom_app_app,
+      Functor.map_comp, Category.assoc, Iso.app_inv]
     trans (G.commShiftIso (m, n)).hom.app (X₁, X₂) ≫
-      (h.shiftIso m n _ rfl).hom.app _ ≫ (shiftFunctorAdd' D m n (m + n) rfl).hom.app _
-    · rw [G.commShiftIso_add' (show (m, 0) + (0, n) = (m, n) by aesop)]
-      simp
-      sorry
+      (h.shiftIso m n _ rfl).hom.app _ ≫ (shiftFunctorAdd' D m n (m + n) rfl).hom.app _ ≫
+        (h.z (m, 0) (0, n)).1.app _
+    · simp only [G.commShiftIso_add' (show (m, 0) + (0, n) = (m, n) by aesop),
+        shiftFunctorAdd'_inv_app _ _ _ _ (add_zero m) _ _ _ (zero_add n) _ _ _ (add_zero m)
+          (zero_add n) rfl,
+        Functor.comp_obj, shiftFunctor_prod, Functor.CommShift.isoAdd'_hom_app,
+        Functor.prod_obj, shiftFunctorAdd'_prod, NatIso.prod_hom,
+        Functor.id_obj, NatTrans.naturality_assoc, Category.assoc]
+      have := NatTrans.naturality_1 (G.commShiftIso ((0 : M), n)).hom
+        (Iso.prod (Iso.refl (X₁⟦m⟧)) ((shiftFunctorZero C₂ M).symm.app X₂) )
+      dsimp at this
+      rw [← reassoc_of% this, ← G.map_comp_assoc,
+        ← CatCenter.naturality_assoc, ← CatCenter.naturality, Category.assoc,
+        ← CatCenter.mul_app, Units.mul_inv, End.one_def, NatTrans.id_app,
+        Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app_assoc,
+        NatTrans.naturality_assoc]
+      dsimp
+      rw [Category.comp_id]
+      congr 2
+      · ext
+        · simp [shiftFunctorAdd'_add_zero_hom_app]
+        · simp [shiftFunctorAdd'_zero_add_hom_app, ← Functor.map_comp]
     · rw [G.commShiftIso_add' (show (0, n) + (m, 0) = (m, n) by aesop)]
-      sorry
+      simp [shiftFunctorAdd'_inv_app _ _ _ _ (zero_add m) _ _ _ (add_zero n) _ _ _
+        (zero_add n) (add_zero m) rfl, shiftFunctorComm_eq _ _ _ _ rfl]
+      have := NatTrans.naturality_1 (G.commShiftIso (m, (0 : M))).hom
+        (Iso.prod ((shiftFunctorZero C₁ M).symm.app X₁) (Iso.refl (X₂⟦n⟧)))
+      dsimp at this
+      rw [← reassoc_of% this, ← G.map_comp_assoc,
+        ← CatCenter.naturality_assoc, ← CatCenter.naturality_assoc, ← CatCenter.mul_app,
+        ← Units.val_mul, ← h.hε, Iso.inv_hom_id_app_assoc,
+        NatTrans.naturality_assoc]
+      congr 2
+      · ext
+        · simp [shiftFunctorAdd'_zero_add_hom_app, ← Functor.map_comp]
+        · simp [shiftFunctorAdd'_add_zero_hom_app]
 
 end
 
@@ -448,8 +479,6 @@ noncomputable def int
     [∀ (n : ℤ), (shiftFunctor D n).Additive] :
     CommShift₂Setup D ℤ where
   z m n := (-1) ^ (m.1 * n.2)
-  z_zero_left := by simp
-  z_zero_right := by simp
   assoc := by
     rintro ⟨a, b⟩ ⟨c, d⟩ ⟨e, f⟩
     rw [← zpow_add, ← zpow_add]
