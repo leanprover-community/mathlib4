@@ -534,7 +534,8 @@ theorem tensorProductComm_eq_refl : TensorProduct.comm R M M = .refl .. := by
   conv_lhs => rw [← mul_one (e y), ← smul_eq_mul, smul_tmul, smul_eq_mul,
     mul_comm, ← smul_eq_mul, ← smul_tmul, smul_eq_mul, mul_one]
 
-theorem tmul_comm (m₁ m₂ : M) : m₁ ⊗ₜ[R] m₂ = m₂ ⊗ₜ m₁ :=
+variable {R M} in
+theorem tmul_comm {m₁ m₂ : M} : m₁ ⊗ₜ[R] m₂ = m₂ ⊗ₜ m₁ :=
   DFunLike.congr_fun (tensorProductComm_eq_refl ..) (m₂ ⊗ₜ m₁)
 
 end Module.Invertible
