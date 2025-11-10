@@ -162,7 +162,6 @@ theorem Path.composeSegmentsAux_homotopic {X : Type*} [TopologicalSpace X] {x y 
     let k'_fin : Fin (n + 1) := ⟨k', Nat.lt_of_succ_lt hk⟩
     -- IH: γ.subpathOn (part.t 0) (part.t k'_fin) ≃ composeSegmentsAux γ part k'_fin
     have ih := composeSegmentsAux_homotopic γ part k'_fin
-    -- RHS unfolds to: (composeSegmentsAux γ part k'_fin).trans (γ.subpathOn (part.t k'_fin) (part.t ⟨k'+1, hk⟩))
     unfold composeSegmentsAux
     -- Define the segment from k' to k'+1
     let seg := γ.subpathOn (part.t k'_fin) (part.t ⟨k' + 1, hk⟩)
@@ -197,11 +196,24 @@ theorem Path.homotopic_composeSegments {X : Type*} [TopologicalSpace X] {x y : X
       have h_aux' : Path.Homotopic
         ((γ.subpathOn 0 1 zero_le_one).cast (by simp [γ.source, h0]) (by simp [γ.target, h1]))
         (composeSegmentsAux γ part (Fin.last (n' + 1))) := by
-        sorry
+        -- Rewrite h_aux by substituting h0 and h1
+        have : γ.subpathOn (part.t 0) (part.t (Fin.last (n' + 1)))
+          (part.h_mono.monotone (Fin.zero_le (Fin.last (n' + 1)))) =
+            (γ.subpathOn 0 1 zero_le_one).cast
+              (by simp [γ.source, h0]) (by simp [γ.target, h1]) := by
+          ext t
+          simp [Path.cast, Path.subpathOn, h0, h1]
+        rw [this] at h_aux
+        exact h_aux
       -- subpathOn_zero_one gives: γ.subpathOn 0 1 (with casting) ≃ γ
       have h_sub := subpathOn_zero_one γ
-      -- Now chain: γ ≃ (γ.subpathOn 0 1).cast ≃ composeSegmentsAux
-      sorry
+      -- Chain: γ ≃ (γ.subpathOn 0 1).cast ≃ composeSegmentsAux (with cast)
+      have h_chain : Path.Homotopic γ
+        ((composeSegmentsAux γ part (Fin.last (n' + 1))).cast
+          (by rw [h0, γ.source]) (by rw [h1, γ.target])) :=
+        Path.Homotopic.trans h_sub.symm h_aux'
+      -- This matches composeSegments by definition
+      exact h_chain
 
 namespace SemilocallySimplyConnected
 
@@ -876,18 +888,9 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
     exact IntervalPartition.not_zero part
   | succ n ih =>
     -- For n+1, we have n+2 partition points and n+1 rectangles
-    -- Strategy:
-    -- 1. Decompose γ ≃ γ₀ · ... · γₙ and γ' ≃ γ'₀ · ... · γ'ₙ (using homotopic_composeSegments)
-    -- 2. From h_rectangles, we have for each i: γᵢ · αᵢ₊₁ ≃ αᵢ · γ'ᵢ
-    -- 3. Use these to "telescope" the compositions:
-    --    (γ₀ · ... · γₙ) · αₙ₊₁ ≃ α₀ · (γ'₀ · ... · γ'ₙ)
-    -- 4. This gives the desired conclusion after associativity and casting
-    --
-    -- We have all the homotopy lemmas we need:
-    -- - Path.Homotopic.trans_assoc (line 706)
-    -- - Path.Homotopic.trans_congr (line 721)
-    -- - Path.Homotopic.refl_trans, trans_refl
-    -- Just need Path.homotopic_composeSegments (sorry'd above)
+    -- Step 1: Decompose γ and γ' into their segments
+    have h_γ := Path.homotopic_composeSegments γ part
+    have h_γ' := Path.homotopic_composeSegments γ' part
     sorry
 
 /-- Stronger version of paste_segment_homotopies that directly gives γ ≃ γ' when the endpoint
