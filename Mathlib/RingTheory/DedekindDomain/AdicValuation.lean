@@ -673,6 +673,6 @@ theorem valuation_le_one_iff_den (𝔭 : HeightOneSpectrum R) (x : ℚ) :
   have : CharZero R := ⟨.of_comp (f := algebraMap R ℚ) (by simpa using Nat.cast_injective)⟩
   have : (x.den : R) ≠ 0 := by simp
   simp [x.num_div_den, ← 𝔭.valuation_div_le_one_iff ℚ x.num this
-    (Ideal.IsPrime.notMem_of_isCoprime_of_mem (mod_cast x.isCoprime_num_den.symm.intCast))]
+    (Ideal.IsPrime.notMem_of_isCoprime_of_mem' (mod_cast x.isCoprime_num_den.symm.intCast))]
 
 end Rat
