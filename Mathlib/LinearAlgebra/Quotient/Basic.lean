@@ -85,8 +85,8 @@ theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
   refine ⟨⟨mk x, 0, ?_⟩⟩
   simpa using notMem_s
 
-theorem nontrivial_of_ne_top (h : p ≠ ⊤) : Nontrivial (M ⧸ p) :=
-  nontrivial_of_lt_top p h.lt_top
+@[deprecated nontrivial_iff (since := "2025-11-02")]
+theorem nontrivial_of_ne_top (h : p ≠ ⊤) : Nontrivial (M ⧸ p) := nontrivial_iff.2 h
 
 end Quotient
 
