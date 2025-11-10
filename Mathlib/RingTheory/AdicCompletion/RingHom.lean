@@ -220,7 +220,7 @@ theorem factorPow_comp_eq_of_factorPow_comp_succ_eq'
     {m n : ℕ} (hle : m ≤ n) : (factorPow I (ha.monotone hle)).comp (f n) = f m := by
   ext x
   symm
-  refine Submodule.eq_factor_of_eq_factor_succ ?_ (fun n ↦ f n x) ?_ m n hle
+  refine Submodule.eq_factor_of_eq_factor_succ ?_ (fun n ↦ f n x) ?_ hle
   · exact fun _ _ le ↦ Ideal.pow_le_pow_right (ha.monotone le)
   · intro s
     simp only [RingHom.ext_iff] at hf
