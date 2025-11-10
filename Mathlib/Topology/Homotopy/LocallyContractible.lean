@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Topology.Homotopy.Contractible
+import Mathlib.Topology.Homotopy.Basic
 import Mathlib.Topology.Connected.LocPathConnected
 import Mathlib.Topology.Homeomorph.Lemmas
 
@@ -16,11 +17,13 @@ consisting of contractible sets.
 
 ## Main definitions
 
+* `LocallyContractible X`: classical local contractibility (null-homotopic inclusions)
 * `StronglyLocallyContractibleSpace X`: a space where each point has a neighborhood basis
-  consisting of contractible subspaces.
+  consisting of contractible subspaces
 
 ## Main results
 
+* `StronglyLocallyContractibleSpace.locallyContractible`: SLC implies classical LC
 * `instLocPathConnectedSpace`: strongly locally contractible spaces are locally path-connected
 * `StronglyLocallyContractibleSpace.of_bases`: a helper to construct strongly locally contractible
   spaces from a neighborhood basis
@@ -32,7 +35,6 @@ consisting of contractible sets.
 
 ## TODO
 
-* Define classical local contractibility (null-homotopic inclusions) and prove SLC implies LC
 * Define contractible components and prove they are open in strongly locally contractible spaces
 * Add examples: convex sets, real vector spaces, star-shaped sets
 * Quotients and products of strongly locally contractible spaces
@@ -50,16 +52,29 @@ contractible** (SLC).
 * "Basis of contractible neighborhoods" (this file, SLC)
 * "Null-homotopic inclusions" (classical LC, weakest)
 
-The Borsuk-Mazurkiewicz counterexample (1934) shows that classical LC does not imply SLC. Moreover,
-from a contractible neighborhood S one generally cannot shrink to an open V ⊆ S that remains
-contractible, so requiring neighborhoods to be open is potentially strictly stronger than SLC.
+The Borsuk-Mazurkiewicz counterexample [borsuk_mazurkiewicz1934] shows that classical LC does not
+imply SLC. Moreover, from a contractible neighborhood S one generally cannot shrink to an open
+V ⊆ S that remains contractible, so requiring neighborhoods to be open is potentially strictly
+stronger than SLC.
 -/
 
 noncomputable section
 
-open Topology Filter Set Function
+open Topology Filter Set Function ContinuousMap
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y : X} {ι : Type*}
+
+section LocallyContractible
+
+/-- Classical **local contractibility**: for every point and every neighborhood U,
+there exists a neighborhood V ⊆ U such that the inclusion V ↪ U is null-homotopic.
+
+This is weaker than `StronglyLocallyContractibleSpace`. -/
+def LocallyContractible (X : Type*) [TopologicalSpace X] : Prop :=
+  ∀ (x : X) (U : Set X), U ∈ 𝓝 x →
+    ∃ (V : Set X) (hVU : V ⊆ U), V ∈ 𝓝 x ∧ Nullhomotopic (inclusion hVU)
+
+end LocallyContractible
 
 section StronglyLocallyContractibleSpace
 
@@ -124,3 +139,26 @@ theorem IsOpen.stronglyLocallyContractibleSpace {U : Set X} (h : IsOpen U) :
   h.isOpenEmbedding_subtypeVal.stronglyLocallyContractibleSpace
 
 end StronglyLocallyContractibleSpace
+
+section Implications
+
+/-- The strong notion (contractible neighborhood basis)
+implies the classical notion (null-homotopic inclusions).
+The converse is false by the Borsuk-Mazurkiewicz counterexample [borsuk_mazurkiewicz1934];
+see also [MO88628] for discussion and the Whitehead manifold example. -/
+theorem StronglyLocallyContractibleSpace.locallyContractible [StronglyLocallyContractibleSpace X] :
+    LocallyContractible X := by
+  intro x U hU
+  obtain ⟨V, ⟨hVmem, hVcontractible⟩, hVU⟩ := (contractible_basis x).mem_iff.mp hU
+  refine ⟨V, hVU, hVmem, ?_⟩
+  -- V is contractible, so the identity on V is nullhomotopic
+  haveI : ContractibleSpace V := hVcontractible
+  obtain ⟨v₀, hid⟩ := id_nullhomotopic V
+  -- The inclusion V ↪ U is homotopic to the constant map at (inclusion v₀)
+  refine ⟨⟨(ContinuousMap.inclusion hVU v₀).val, (ContinuousMap.inclusion hVU v₀).property⟩, ?_⟩
+  have : ContinuousMap.inclusion hVU = (ContinuousMap.inclusion hVU).comp (ContinuousMap.id V) := by
+    ext; simp
+  rw [this]
+  exact Homotopic.comp (.refl _) hid
+
+end Implications
