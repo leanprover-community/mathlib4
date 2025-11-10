@@ -214,7 +214,7 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
         lift a to I × I using ⟨Ioo_subset_Icc_self ha.1, Ioo_subset_Icc_self ha.2⟩
         simpa [ψ] using hts a.1 ha.1 a.2 ha.2
       · exact hcontdiff.continuousOn_fderivWithin hunique (by decide)
-    
+
     rwa [integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le] at this
     · exact zero_le_one
     · exact s'
@@ -223,8 +223,8 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
     · exact hηc.clm_apply continuousOn_const |>.neg
     · exact hf'
     · exact hg'
-    
-    
+
+
   rw [← integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le]
 /-
   have hdη : ∀ a ∈ U \ (Prod.map (↑) (↑) '' s), HasFDerivAt η (dη a) a := by
@@ -235,7 +235,7 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
       |>.comp_hasFDerivAt_of_eq ((a : ℝ), (b : ℝ)) (hcontdiff.hasFDerivAt) _ _
   set f' : ℝ × ℝ → ℝ × ℝ →L[ℝ] F := fun a ↦ ContinuousLinearMap.apply ℝ F (0, 1) ∘L dη a
   set g' : ℝ × ℝ → ℝ × ℝ →L[ℝ] F := fun a ↦ -(ContinuousLinearMap.apply ℝ F (1, 0) ∘L dη a)
-  
+
   sorry
 -/
 
