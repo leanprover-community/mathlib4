@@ -72,7 +72,7 @@ info: Try this:
   ⏎
    'algebra_nf' without specifying the base ring is unstable. Use `algebra_nf with` instead.
 -/
--- #guard_msgs in
+#guard_msgs in
 example (x y : ℚ) : x + (y)*(x+y) = 0 := by
   algebra_nf
   guard_target = x + x * y + y ^ 2 = 0
