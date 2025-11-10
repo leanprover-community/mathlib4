@@ -101,10 +101,15 @@ register_option linter.tacticAnalysis.fieldSimpToField : Bool := {
   inherit_doc linter.tacticAnalysis.fieldSimpToField]
 def fieldSimpToField : TacticAnalysis.Config :=
   terminalReplacement "field_simp" "field" ``Mathlib.Tactic.FieldSimp.fieldSimp
-    (fun _ _ stx =>
+    (fun _ _ stx => do
     match stx with
-    | `(tactic| field_simp $(disch)? $(args)?) => `(tactic| field $(disch)? $(args)?)
-    | `(tactic| field_simp $(_)? $(_)? $_) => pure ⟨Syntax.missing⟩
+    | `(tactic| field_simp $(disch)? $(args)? $(loc)?) =>
+      match loc with
+      | some loc =>
+        match Elab.Tactic.expandLocation loc with
+        | .targets #[] true => `(tactic| field $(disch)? $(args)?)
+        | _ => pure ⟨Syntax.missing⟩
+      | none => `(tactic| field $(disch)? $(args)?)
     | _ => throwError "could not parse the field_simp")
     (reportFailure := false) (reportSuccess := true) (reportSlowdown := true)
     (maxSlowdown := 1000)

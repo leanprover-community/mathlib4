@@ -18,13 +18,11 @@ in the context of an infotree node.
 open Lean Elab Term Command Linter
 
 def Lean.Meta.withWarningAsError {α : Type} (m : MetaM α) : MetaM α := do
-  let s ← saveState
   let a ← m
   let msgs := (← getThe Core.State).messages.unreported
   if msgs.isEmpty then
     return a
   else
-    s.restore
     throwError "{msgs.size} unreported messages"
 namespace Lean.Elab.ContextInfo
 
@@ -85,7 +83,7 @@ def runTactic (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (x : MVarId �
     -- Make a fresh metavariable because the original goal is already assigned.
     let type ← goal.getType
     let goal ← Meta.mkFreshExprSyntheticOpaqueMVar type
-    x goal.mvarId!
+    Meta.withWarningAsError <| x goal.mvarId!
 
 /-- Run tactic code, given by a piece of syntax, in the context of an infotree node. -/
 def runTacticCode (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (code : Syntax) :
@@ -93,7 +91,7 @@ def runTacticCode (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (code : S
   let termCtx ← liftTermElabM read
   let termState ← liftTermElabM get
   ctx.runTactic i goal fun goal =>
-    Meta.withWarningAsError <| Lean.Elab.runTactic' (ctx := termCtx) (s := termState) goal code
+    Lean.Elab.runTactic' (ctx := termCtx) (s := termState) goal code
 
 /-- Run tactic code, given by a piece of syntax, in the context of an infotree node. -/
 def runTacticCodeWithTypes (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (code : Syntax) :
