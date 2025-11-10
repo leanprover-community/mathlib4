@@ -254,11 +254,21 @@ theorem map_bot (f : G →* N) : (⊥ : Subgroup G).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
 @[to_additive]
+lemma disjoint_map {f : G →* N} (hf : Function.Injective f) {H K : Subgroup G} (h : Disjoint H K) :
+    Disjoint (H.map f) (K.map f) := by
+  rw [disjoint_iff, ← map_inf _ _ f hf, disjoint_iff.mp h, map_bot]
+
+@[to_additive]
 theorem map_top_of_surjective (f : G →* N) (h : Function.Surjective f) : Subgroup.map f ⊤ = ⊤ := by
   rw [eq_top_iff]
   intro x _
   obtain ⟨y, hy⟩ := h x
   exact ⟨y, trivial, hy⟩
+
+@[to_additive]
+lemma codisjoint_map {f : G →* N} (hf : Function.Surjective f)
+    {H K : Subgroup G} (h : Codisjoint H K) : Codisjoint (H.map f) (K.map f) := by
+  rw [codisjoint_iff, ← map_sup, codisjoint_iff.mp h, map_top_of_surjective _ hf]
 
 @[to_additive (attr := simp)]
 lemma map_equiv_top {F : Type*} [EquivLike F G N] [MulEquivClass F G N] (f : F) :
@@ -559,6 +569,11 @@ theorem map_closure (f : G →* N) (s : Set G) : (closure s).map f = closure (f 
 end MonoidHom
 
 namespace Subgroup
+
+@[to_additive]
+lemma surjOn_iff_le_map {f : G →* N} {H : Subgroup G} {K : Subgroup N} :
+    Set.SurjOn f H K ↔ K ≤ H.map f :=
+  Iff.rfl
 
 @[to_additive (attr := simp)]
 theorem equivMapOfInjective_coe_mulEquiv (H : Subgroup G) (e : G ≃* G') :
