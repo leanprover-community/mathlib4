@@ -184,8 +184,12 @@ theorem isHermitian_mul_conjTranspose_self [Fintype n] (A : Matrix m n α) :
     (A * Aᴴ).IsHermitian := by rw [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose]
 
 /-- Note this is more general than `IsSelfAdjoint.star_mul_self` as `B` can be rectangular. -/
-theorem isHermitian_transpose_mul_self [Fintype m] (A : Matrix m n α) : (Aᴴ * A).IsHermitian := by
+theorem isHermitian_conjTranspose_mul_self [Fintype m] (A : Matrix m n α) :
+    (Aᴴ * A).IsHermitian := by
   rw [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose]
+
+@[deprecated (since := "2025-11-10")] alias isHermitian_transpose_mul_self :=
+  isHermitian_conjTranspose_mul_self
 
 /-- Note this is more general than `IsSelfAdjoint.conjugate'` as `B` can be rectangular. -/
 theorem isHermitian_conjTranspose_mul_mul [Fintype m] {A : Matrix m m α} (B : Matrix m n α)
