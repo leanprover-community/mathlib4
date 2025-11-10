@@ -608,7 +608,7 @@ theorem mem_sup_of_normal {G : Type*} [Group G] {s t : Subgroup G} [ht : t.Norma
     x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x := by
   constructor
   · intro hx; rw [sup_eq_closure] at hx
-    refine Subgroup.closure_induction ?_ ?_ ?_ ?_ hx
+    refine closure_induction ?_ ?_ ?_ ?_ hx
     · rintro x (hx | hx)
       · exact ⟨x, hx, 1, t.one_mem, by simp⟩
       · exact ⟨1, s.one_mem, x, hx, by simp⟩
