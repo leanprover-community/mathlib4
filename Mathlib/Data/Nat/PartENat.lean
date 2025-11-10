@@ -229,22 +229,7 @@ instance partialOrder : PartialOrder PartENat where
     Part.ext' ⟨hyx₁, hxy₁⟩ fun _ _ => le_antisymm (hxy₂ _) (hyx₂ _)
 
 theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.get hx < y.get hy := by
-  rw [lt_iff_le_not_ge, le_def, le_def, not_exists]
-  constructor
-  · rintro ⟨⟨hyx, H⟩, h⟩
-    by_cases hx : x.Dom
-    · use hx
-      intro hy
-      specialize H hy
-      specialize h fun _ => hy
-      rw [not_forall] at h
-      cutsat
-    · specialize h fun hx' => (hx hx').elim
-      rw [not_forall] at h
-      obtain ⟨hx', h⟩ := h
-      exact (hx hx').elim
-  · rintro ⟨hx, H⟩
-    exact ⟨⟨fun _ => hx, fun hy => (H hy).le⟩, fun hxy h => not_lt_of_ge (h _) (H _)⟩
+  grind +splitImp [lt_iff_le_not_ge, le_def]
 
 noncomputable instance isOrderedAddMonoid : IsOrderedAddMonoid PartENat :=
   { add_le_add_left := fun a b ⟨h₁, h₂⟩ c =>
