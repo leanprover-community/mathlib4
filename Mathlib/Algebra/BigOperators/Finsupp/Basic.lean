@@ -238,14 +238,6 @@ theorem finset_sum_apply [AddCommMonoid N] (S : Finset ι) (f : ι → α →₀
     (∑ i ∈ S, f i) a = ∑ i ∈ S, f i a :=
   map_sum (applyAddHom a) _ _
 
-
-
-
-
-
-
-
-
 @[simp]
 theorem sum_apply [Zero M] [AddCommMonoid N] {f : α →₀ M} {g : α → M → β →₀ N} {a₂ : β} :
     (f.sum g) a₂ = f.sum fun a₁ b => g a₁ b a₂ :=
