@@ -620,7 +620,7 @@ theorem mul_def [Mul α] (a b : Part α) : a * b = bind a fun y ↦ map (y * ·)
 theorem one_def [One α] : (1 : Part α) = some 1 := rfl
 
 @[to_additive]
-theorem inv_def [Inv α] (a : Part α) : a⁻¹ = Part.map (· ⁻¹) a := rfl
+theorem inv_def [Inv α] (a : Part α) : a⁻¹ = Part.map (·⁻¹) a := rfl
 
 @[to_additive]
 theorem div_def [Div α] (a b : Part α) : a / b = bind a fun y => map (y / ·) b := rfl

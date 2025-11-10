@@ -5,7 +5,8 @@ Authors: Frédéric Dupuis
 -/
 
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
+import Mathlib.Analysis.LocallyConvex.SeparatingDual
+import Mathlib.Topology.Algebra.Module.StrongTopology
 
 /-!
 # The weak operator topology
@@ -239,9 +240,6 @@ instance instIsTopologicalAddGroup : IsTopologicalAddGroup (E →SWOT[σ] F) whe
 instance instUniformSpace : UniformSpace (E →SWOT[σ] F) := .comap (inducingFn σ E F) inferInstance
 
 instance instIsUniformAddGroup : IsUniformAddGroup (E →SWOT[σ] F) := .comap (inducingFn σ E F)
-
-@[deprecated (since := "2025-03-31")] alias instUniformAddGroup :=
-  ContinuousLinearMapWOT.instIsUniformAddGroup
 
 end Topology
 

@@ -453,9 +453,12 @@ theorem not_isStrongLimit_zero : ¬ IsStrongLimit (0 : Cardinal) :=
 
 /-! ### Indexed cardinal `sum` -/
 
-theorem le_sum {ι} (f : ι → Cardinal) (i) : f i ≤ sum f := by
+theorem lift_le_sum {ι : Type u} (f : ι → Cardinal.{v}) (i) : lift.{u, v} (f i) ≤ sum f := by
   rw [← Quotient.out_eq (f i)]
-  exact ⟨⟨fun a => ⟨i, a⟩, fun a b h => by injection h⟩⟩
+  exact ⟨⟨fun a => ⟨i, a.down⟩, fun a b h => by simpa using h⟩⟩
+
+theorem le_sum {ι : Type u} (f : ι → Cardinal.{max u v}) (i) : f i ≤ sum f := by
+  simpa [← lift_umax] using lift_le_sum f i
 
 theorem iSup_le_sum {ι} (f : ι → Cardinal) : iSup f ≤ sum f :=
   ciSup_le' <| le_sum _
@@ -489,7 +492,7 @@ theorem lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le {α : Type u} {β : Type v
             (Equiv.ulift.image _).trans
               (Equiv.trans
                 (by
-                  rw [Equiv.image_eq_preimage]
+                  rw [Equiv.image_eq_preimage_symm]
                   simp only [preimage, mem_singleton_iff, ULift.up_inj, mem_setOf_eq, coe_setOf]
                   exact Equiv.refl _)
                 Equiv.ulift.symm)).trans_le

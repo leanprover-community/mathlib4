@@ -185,10 +185,6 @@ protected theorem Multipliable.prod_mul_tprod_nat_mul'
     ((∏ i ∈ range k, f i) * ∏' i, f (i + k)) = ∏' i, f i :=
   h.hasProd.prod_range_mul.tprod_eq.symm
 
-@[deprecated (since := "2025-04-12")] alias sum_add_tsum_nat_add' := Summable.sum_add_tsum_nat_add'
-@[to_additive existing, deprecated (since := "2025-04-12")] alias prod_mul_tprod_nat_mul' :=
-  Multipliable.prod_mul_tprod_nat_mul'
-
 @[to_additive]
 theorem tprod_eq_zero_mul'
     {f : ℕ → M} (hf : Multipliable (fun n ↦ f (n + 1))) :
@@ -234,19 +230,10 @@ protected theorem Multipliable.prod_mul_tprod_nat_add [T2Space G] {f : ℕ → G
     (h : Multipliable f) : ((∏ i ∈ range k, f i) * ∏' i, f (i + k)) = ∏' i, f i :=
   Multipliable.prod_mul_tprod_nat_mul' <| (multipliable_nat_add_iff k).2 h
 
-@[deprecated (since := "2025-04-12")] alias sum_add_tsum_nat_add :=
-  Summable.sum_add_tsum_nat_add
-@[to_additive existing, deprecated (since := "2025-04-12")] alias prod_mul_tprod_nat_add :=
-  Multipliable.prod_mul_tprod_nat_add
-
 @[to_additive]
 protected theorem Multipliable.tprod_eq_zero_mul [T2Space G] {f : ℕ → G} (hf : Multipliable f) :
     ∏' b, f b = f 0 * ∏' b, f (b + 1) :=
   tprod_eq_zero_mul' <| (multipliable_nat_add_iff 1).2 hf
-
-@[deprecated (since := "2025-04-12")] alias tsum_eq_zero_add := Summable.tsum_eq_zero_add
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_eq_zero_mul :=
-  Multipliable.tprod_eq_zero_mul
 
 /-- For `f : ℕ → G`, the product `∏' k, f (k + i)` tends to one. This does not require a
 multipliability assumption on `f`, as otherwise all such products are one. -/
@@ -498,11 +485,6 @@ protected lemma Multipliable.tprod_of_nat_of_neg [T2Space G] {f : ℤ → G}
     (hf₁ : Multipliable fun n : ℕ ↦ f n) (hf₂ : Multipliable fun n : ℕ ↦ f (-n)) :
     ∏' n : ℤ, f n = (∏' n : ℕ, f n) * (∏' n : ℕ, f (-n)) / f 0 :=
   (hf₁.hasProd.of_nat_of_neg hf₂.hasProd).tprod_eq
-
-@[deprecated (since := "2025-04-12")] alias tsum_of_nat_of_neg :=
-  Summable.tsum_of_nat_of_neg
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_of_nat_of_neg :=
-  Multipliable.tprod_of_nat_of_neg
 
 end IsTopologicalGroup
 
