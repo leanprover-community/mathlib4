@@ -205,7 +205,7 @@ lemma rpowIntegrand₀₁_eqOn_mul_rpowIntegrand₀₁_one (ht : 0 < t) :
   calc _ = t ^ p * (t⁻¹ - t⁻¹ * (1 + x * t⁻¹)⁻¹) := by simp [field, rpowIntegrand₀₁]
     _ = t ^ (p - 1) * (1 - (1 + x * t⁻¹)⁻¹) := by
           rw [Real.rpow_sub_one ht.ne']
-          field
+          ring
     _ = _ := by simp [mul_comm, smul_eq_mul, rpowIntegrand₀₁]
 
 /- This lemma is private because it is strictly weaker than `integrableOn_rpowIntegrand₀₁_Ioi` -/

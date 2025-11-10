@@ -130,7 +130,7 @@ theorem bernoulliFourierCoeff_eq {k : ℕ} (hk : k ≠ 0) (n : ℤ) :
     split_ifs with h
     · exfalso; exact (ne_of_gt (Nat.lt_succ_iff.mpr hk)) h
     · rw [h'k, Nat.factorial_succ, zero_sub, Nat.cast_mul, pow_add]
-      field [Int.cast_ne_zero.mpr hn, I_ne_zero]
+      ring
 
 end BernoulliFourierCoeffs
 
