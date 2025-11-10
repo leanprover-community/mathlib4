@@ -35,7 +35,7 @@ set_option mathlib.tactic.category.grind true
 
 universe v u
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 namespace CategoryTheory
 
 open Category
@@ -66,6 +66,7 @@ variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
 namespace Iso
 
+set_option linter.style.commandStart false in -- false positive, calc blocks
 @[ext, grind ext]
 theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
   suffices α.inv = β.inv by grind [Iso]
@@ -222,7 +223,10 @@ def homFromEquiv (α : X ≅ Y) {Z : C} : (X ⟶ Z) ≃ (Y ⟶ Z) where
 
 end Iso
 
-/-- `IsIso` typeclass expressing that a morphism is invertible. -/
+/-- The `IsIso` typeclass expresses that a morphism is invertible.
+
+Given a morphism `f` with `IsIso f`, one can view `f` as an isomorphism via `asIso f` and get
+the inverse using `inv f`. -/
 class IsIso (f : X ⟶ Y) : Prop where
   /-- The existence of an inverse morphism. -/
   out : ∃ inv : Y ⟶ X, f ≫ inv = 𝟙 X ∧ inv ≫ f = 𝟙 Y
@@ -404,6 +408,18 @@ theorem of_isIso_fac_right {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z}
   exact of_isIso_comp_right f g
 
 end IsIso
+
+@[simp]
+theorem isIso_comp_left_iff {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
+    IsIso (f ≫ g) ↔ IsIso g :=
+  ⟨fun _ ↦ IsIso.of_isIso_comp_left f g, fun _ ↦ inferInstance⟩
+
+@[simp]
+theorem isIso_comp_right_iff {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
+    IsIso (f ≫ g) ↔ IsIso f :=
+  ⟨fun _ ↦ IsIso.of_isIso_comp_right f g, fun _ ↦ inferInstance⟩
+
+open IsIso
 
 theorem eq_of_inv_eq_inv {f g : X ⟶ Y} [IsIso f] [IsIso g] (p : inv f = inv g) : f = g := by
   apply (cancel_epi (inv f)).1

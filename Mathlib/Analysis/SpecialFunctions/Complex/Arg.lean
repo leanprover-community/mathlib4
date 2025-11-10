@@ -38,15 +38,15 @@ theorem cos_arg {x : ℂ} (hx : x ≠ 0) : Real.cos (arg x) = x.re / ‖x‖ := 
   · rw [Real.cos_arcsin]
     field_simp
     simp [Real.sqrt_sq, (norm_pos_iff.mpr hx).le, *]
-    field_simp
+    field
   · rw [Real.cos_add_pi, Real.cos_arcsin]
     field_simp
     simp [Real.sqrt_div (sq_nonneg _), Real.sqrt_sq_eq_abs, _root_.abs_of_neg (not_le.1 h₁), *]
-    field_simp
+    field
   · rw [Real.cos_sub_pi, Real.cos_arcsin]
     field_simp
     simp [Real.sqrt_div (sq_nonneg _), Real.sqrt_sq_eq_abs, _root_.abs_of_neg (not_le.1 h₁), *]
-    field_simp
+    field
 
 @[simp]
 theorem norm_mul_exp_arg_mul_I (x : ℂ) : ‖x‖ * exp (arg x * I) = x := by
@@ -573,6 +573,10 @@ theorem continuousAt_arg (h : x ∈ slitPlane) : ContinuousAt arg x := by
     (Real.continuous_arccos.continuousAt.comp
           (continuous_re.continuousAt.div continuous_norm.continuousAt h₀)).congr
       (arg_eq_nhds_of_im_pos hx_im).symm]
+
+@[fun_prop]
+theorem continuousOn_arg : ContinuousOn arg slitPlane :=
+  fun _ h ↦ continuousAt_arg h |>.continuousWithinAt
 
 theorem tendsto_arg_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0)
     (him : z.im = 0) : Tendsto arg (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 (-π)) := by

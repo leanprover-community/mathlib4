@@ -159,7 +159,7 @@ theorem exists_index_pow_le (hna : IsNonarchimedean p) (x y : R) (n : ℕ) :
     ∃ (m : ℕ), m < n + 1 ∧ p ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤
       (p (x ^ m) * p (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)) := by
   obtain ⟨m, hm_lt, hm⟩ := IsNonarchimedean.add_pow_le hna n x y
-  exact ⟨m, hm_lt, Real.rpow_le_rpow (apply_nonneg p _) hm (one_div_nonneg.mpr n.cast_nonneg')⟩
+  exact ⟨m, hm_lt, by gcongr⟩
 
 end CommRing
 
@@ -180,10 +180,7 @@ theorem map_pow_le_pow {F α : Type*} [Ring α] [FunLike F α ℝ] [RingSeminorm
 theorem map_pow_le_pow' {F α : Type*} [Ring α] [FunLike F α ℝ] [RingSeminormClass F α ℝ] {f : F}
     (hf1 : f 1 ≤ 1) (a : α) : ∀ n : ℕ, f (a ^ n) ≤ f a ^ n
   | 0 => by simp only [pow_zero, hf1]
-  | n + 1 => by
-    simp only [pow_succ _ n]
-    exact le_trans (map_mul_le_mul f _ a)
-      (mul_le_mul_of_nonneg_right (map_pow_le_pow' hf1 _ n) (apply_nonneg f a))
+  | n + 1 => map_pow_le_pow _ _ n.succ_ne_zero
 
 /-- The norm of a `NonUnitalSeminormedRing` as a `RingSeminorm`. -/
 def normRingSeminorm (R : Type*) [NonUnitalSeminormedRing R] : RingSeminorm R :=
@@ -207,14 +204,14 @@ theorem isBoundedUnder (hp : p 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, 
     exact rpow_le_rpow (apply_nonneg _ _) (map_pow_le_pow' hp x _)
       (one_div_nonneg.mpr (cast_nonneg _))
   apply isBoundedUnder_of
-  by_cases hfx : p x ≤ 1
+  by_cases! hfx : p x ≤ 1
   · use 1, fun m => le_trans (h_le m)
       (rpow_le_one (apply_nonneg _ _) hfx (div_nonneg (cast_nonneg _) (cast_nonneg _)))
   · use p x
     intro m
     apply le_trans (h_le m)
     conv_rhs => rw [← rpow_one (p x)]
-    exact rpow_le_rpow_of_exponent_le (le_of_lt (not_le.mp hfx))
+    exact rpow_le_rpow_of_exponent_le hfx.le
       (div_le_one_of_le₀ (cast_le.mpr (hs_le _)) (cast_nonneg _))
 
 end RingSeminorm

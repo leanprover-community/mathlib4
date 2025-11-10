@@ -59,7 +59,7 @@ section Involutive
 
 theorem coe_eq_inv_of_involutive (hφ : FixedPointFree φ) (h2 : Function.Involutive φ) :
     ⇑φ = (·⁻¹) :=
-  coe_eq_inv_of_sq_eq_one hφ  (funext h2)
+  coe_eq_inv_of_sq_eq_one hφ (funext h2)
 
 theorem commute_all_of_involutive (hφ : FixedPointFree φ) (h2 : Function.Involutive φ) (g h : G) :
     Commute g h := by

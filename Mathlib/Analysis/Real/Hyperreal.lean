@@ -254,24 +254,20 @@ theorem not_infinite_of_exists_st {x : ℝ*} : (∃ r : ℝ, IsSt x r) → ¬Inf
 theorem Infinite.st_eq {x : ℝ*} (hi : Infinite x) : st x = 0 :=
   dif_neg fun ⟨_r, hr⟩ ↦ hr.not_infinite hi
 
-theorem isSt_sSup {x : ℝ*} (hni : ¬Infinite x) : IsSt x (sSup { y : ℝ | (y : ℝ*) < x }) :=
-  let S : Set ℝ := { y : ℝ | (y : ℝ*) < x }
-  let R : ℝ := sSup S
-  let ⟨r₁, hr₁⟩ := not_forall.mp (not_or.mp hni).2
-  let ⟨r₂, hr₂⟩ := not_forall.mp (not_or.mp hni).1
-  have HR₁ : S.Nonempty :=
-    ⟨r₁ - 1, lt_of_lt_of_le (coe_lt_coe.2 <| sub_one_lt _) (not_lt.mp hr₁)⟩
-  have HR₂ : BddAbove S :=
-    ⟨r₂, fun _y hy => le_of_lt (coe_lt_coe.1 (lt_of_lt_of_le hy (not_lt.mp hr₂)))⟩
-  fun δ hδ =>
-  ⟨lt_of_not_ge fun c =>
-      have hc : ∀ y ∈ S, y ≤ R - δ := fun _y hy =>
-        coe_le_coe.1 <| le_of_lt <| lt_of_lt_of_le hy c
-      not_lt_of_ge (csSup_le HR₁ hc) <| sub_lt_self R hδ,
-    lt_of_not_ge fun c =>
-      have hc : ↑(R + δ / 2) < x :=
-        lt_of_lt_of_le (add_lt_add_left (coe_lt_coe.2 (half_lt_self hδ)) R) c
-      not_lt_of_ge (le_csSup HR₂ hc) <| (lt_add_iff_pos_right _).mpr <| half_pos hδ⟩
+theorem isSt_sSup {x : ℝ*} (hni : ¬Infinite x) : IsSt x (sSup { y : ℝ | (y : ℝ*) < x }) := by
+  set S : Set ℝ := { y : ℝ | (y : ℝ*) < x }
+  set R : ℝ := sSup S
+  have hS₀ : S.Nonempty := by
+    obtain ⟨r₁, hr₁⟩ := not_forall.mp (not_or.mp hni).2
+    exact ⟨r₁ - 1, (coe_lt_coe.2 <| sub_one_lt _).trans_le (not_lt.mp hr₁)⟩
+  have hS : BddAbove S := by
+    obtain ⟨r₂, hr₂⟩ := not_forall.mp (not_or.mp hni).1
+    exact ⟨r₂, fun _y hy => coe_le_coe.1 <| hy.le.trans <| not_lt.mp hr₂⟩
+  intro δ hδ
+  constructor <;> refine lt_of_not_ge fun hx => ?_
+  · exact (sub_lt_self R hδ).not_ge <| csSup_le hS₀ fun _y hy => coe_le_coe.1 <| hy.le.trans hx
+  · replace hx : ↑(R + δ / 2) < x := by grw [← hx]; norm_cast; linarith
+    exact (le_csSup hS hx).not_gt <| by simpa [R]
 
 theorem exists_st_of_not_infinite {x : ℝ*} (hni : ¬Infinite x) : ∃ r : ℝ, IsSt x r :=
   ⟨sSup { y : ℝ | (y : ℝ*) < x }, isSt_sSup hni⟩

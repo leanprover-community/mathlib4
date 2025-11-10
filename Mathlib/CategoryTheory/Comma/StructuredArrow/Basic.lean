@@ -22,7 +22,7 @@ We prove that `𝟙 (T.obj Y)` is the initial object in `T`-structured objects w
 
 namespace CategoryTheory
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
