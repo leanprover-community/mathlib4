@@ -66,6 +66,143 @@ def Path.subpathOn {X : Type*} [TopologicalSpace X] {x y : X} (γ : Path x y)
   source' := by simp
   target' := by simp
 
+/-- A partition of the unit interval [0,1] into n segments.
+This bundles a strictly monotone sequence 0 = t₀ < t₁ < ... < tₙ = 1. -/
+structure IntervalPartition (n : ℕ) where
+  /-- Partition points 0 = t₀ < t₁ < ... < tₙ = 1 -/
+  t : Fin (n + 1) → unitInterval
+  /-- t is strictly monotone -/
+  h_mono : StrictMono t
+  /-- t starts at 0 -/
+  h_start : t 0 = 0
+  /-- t ends at 1 -/
+  h_end : t (Fin.last n) = 1
+
+/-- IntervalPartition 0 is impossible because it requires a single point
+to be both 0 and 1. -/
+lemma IntervalPartition.not_zero (part : IntervalPartition 0) : False := by
+  have h0 : part.t 0 = 0 := part.h_start
+  have h1 : part.t (Fin.last 0) = 1 := part.h_end
+  have : Fin.last 0 = 0 := rfl
+  rw [this] at h1
+  rw [h0] at h1
+  exact zero_ne_one h1
+
+/-- Helper to compose segments indexed by Fin n.
+For k, this returns the composition γ₀ · γ₁ · ... · γₖ₋₁ where
+γᵢ = γ.subpathOn (part.t i) (part.t (i+1)).
+The base case k=0 returns Path.refl, and we build inductively
+by composing on the right. -/
+noncomputable def Path.composeSegmentsAux {X : Type*} [TopologicalSpace X] {x y : X}
+    (γ : Path x y) {n : ℕ} (part : IntervalPartition n) :
+    (k : Fin (n + 1)) → Path (γ (part.t 0)) (γ (part.t k))
+  | ⟨0, _⟩ => Path.refl (γ (part.t 0))
+  | ⟨k' + 1, hk⟩ =>
+      let prev := composeSegmentsAux γ part ⟨k', Nat.lt_of_succ_lt hk⟩
+      let seg := γ.subpathOn (part.t ⟨k', Nat.lt_of_succ_lt hk⟩) (part.t ⟨k' + 1, hk⟩)
+        (part.h_mono.monotone (Nat.le_succ k'))
+      prev.trans seg
+
+/-- Build the iterated composition of subpaths γ₀ · γ₁ · ... · γₙ₋₁ where each
+γᵢ = γ.subpathOn (part.t i) (part.t (i+1)).
+We use composeSegmentsAux at k=n to get the full composition, then cast endpoints.
+The composition associates to the left: ((γ₀ · γ₁) · γ₂) · ... -/
+noncomputable def Path.composeSegments {X : Type*} [TopologicalSpace X] {x y : X}
+    (γ : Path x y) {n : ℕ} (part : IntervalPartition n) : Path x y :=
+  match hn : n with
+  | 0 => (IntervalPartition.not_zero part).elim
+  | n' + 1 =>
+      (composeSegmentsAux γ part (Fin.last (n' + 1))).cast
+        (by rw [part.h_start, γ.source])
+        (by rw [part.h_end, γ.target])
+
+/-- A subpath from a to b composed with a subpath from b to c is homotopic to
+the subpath from a to c. -/
+theorem Path.subpathOn_trans {X : Type*} [TopologicalSpace X] {x y : X} (γ : Path x y)
+    (a b c : unitInterval) (hab : a ≤ b) (hbc : b ≤ c) :
+    Path.Homotopic
+      ((γ.subpathOn a b hab).trans (γ.subpathOn b c hbc))
+      (γ.subpathOn a c (hab.trans hbc)) := by
+  -- Both paths trace the same image, just with different parametrizations
+  -- This is a standard reparametrization homotopy
+  sorry
+
+/-- A subpath from a point to itself is homotopic to the constant path. -/
+theorem Path.subpathOn_self {X : Type*} [TopologicalSpace X] {x y : X} (γ : Path x y)
+    (a : unitInterval) :
+    Path.Homotopic (γ.subpathOn a a (le_refl a)) (Path.refl (γ a)) := by
+  convert Path.Homotopic.refl _
+  ext t
+  simp [Path.refl, Path.subpathOn]
+
+/-- The subpath from 0 to 1 is homotopic to the original path (up to casting endpoints). -/
+theorem Path.subpathOn_zero_one {X : Type*} [TopologicalSpace X] {x y : X} (γ : Path x y) :
+    Path.Homotopic
+      ((γ.subpathOn 0 1 (zero_le_one)).cast (by simp [γ.source]) (by simp [γ.target]))
+      γ := by
+  convert Path.Homotopic.refl _
+  ext t
+  simp [Path.cast, Path.subpathOn]
+
+/-- The accumulated composition up to index k is homotopic to the subpath from 0 to part.t k. -/
+theorem Path.composeSegmentsAux_homotopic {X : Type*} [TopologicalSpace X] {x y : X}
+    (γ : Path x y) {n : ℕ} (part : IntervalPartition n) (k : Fin (n + 1)) :
+    Path.Homotopic
+      (γ.subpathOn (part.t 0) (part.t k) (part.h_mono.monotone (Fin.zero_le k)))
+      (composeSegmentsAux γ part k) := by
+  match k with
+  | ⟨0, h0⟩ =>
+    -- Base case: composeSegmentsAux γ part 0 = Path.refl (γ (part.t 0)) by definition
+    have h_fin : (⟨0, h0⟩ : Fin (n + 1)) = 0 := Fin.ext rfl
+    rw [h_fin]
+    unfold composeSegmentsAux
+    exact subpathOn_self γ (part.t 0)
+  | ⟨k' + 1, hk⟩ =>
+    -- Inductive case
+    let k'_fin : Fin (n + 1) := ⟨k', Nat.lt_of_succ_lt hk⟩
+    -- IH: γ.subpathOn (part.t 0) (part.t k'_fin) ≃ composeSegmentsAux γ part k'_fin
+    have ih := composeSegmentsAux_homotopic γ part k'_fin
+    -- RHS unfolds to: (composeSegmentsAux γ part k'_fin).trans (γ.subpathOn (part.t k'_fin) (part.t ⟨k'+1, hk⟩))
+    unfold composeSegmentsAux
+    -- Define the segment from k' to k'+1
+    let seg := γ.subpathOn (part.t k'_fin) (part.t ⟨k' + 1, hk⟩)
+      (part.h_mono.monotone (Nat.le_succ k'))
+    -- Use subpathOn_trans: (γ.subpathOn 0 k') · (γ.subpathOn k' (k'+1)) ≃ γ.subpathOn 0 (k'+1)
+    have h_trans := subpathOn_trans γ (part.t 0) (part.t k'_fin) (part.t ⟨k' + 1, hk⟩)
+      (part.h_mono.monotone (Fin.zero_le k'_fin))
+      (part.h_mono.monotone (Nat.le_succ k'))
+    -- Use hcomp: if p ≃ p' and q ≃ q', then p · q ≃ p' · q'
+    have h_cong := Path.Homotopic.hcomp ih (Path.Homotopic.refl seg)
+    -- Chain: γ.subpathOn 0 (k'+1) ≃ (γ.subpathOn 0 k') · seg ≃ (composeSegmentsAux k') · seg
+    exact Path.Homotopic.trans h_trans.symm h_cong
+
+/-- A path γ is homotopic to the composition of its segments under a partition.
+Concretely, given a partition 0 = t₀ < t₁ < ... < tₙ = 1, the path γ is homotopic to
+γ₀ · γ₁ · ... · γₙ₋₁ where γᵢ = γ.subpathOn tᵢ tᵢ₊₁.
+The composition is a reparametrization of γ, not literally equal. -/
+theorem Path.homotopic_composeSegments {X : Type*} [TopologicalSpace X] {x y : X}
+    (γ : Path x y) {n : ℕ} (part : IntervalPartition n) :
+    Path.Homotopic γ (γ.composeSegments part) := by
+  match n with
+  | 0 => exact (IntervalPartition.not_zero part).elim
+  | n' + 1 =>
+      -- composeSegments = (composeSegmentsAux γ part (Fin.last (n' + 1))).cast ...
+      simp only [composeSegments]
+      -- Use composeSegmentsAux_homotopic with k = Fin.last (n' + 1)
+      have h_aux := composeSegmentsAux_homotopic γ part (Fin.last (n' + 1))
+      -- part.t 0 = 0 and part.t (Fin.last (n'+1)) = 1
+      have h0 : part.t 0 = 0 := part.h_start
+      have h1 : part.t (Fin.last (n' + 1)) = 1 := part.h_end
+      -- Convert h_aux using h0 and h1
+      have h_aux' : Path.Homotopic
+        ((γ.subpathOn 0 1 zero_le_one).cast (by simp [γ.source, h0]) (by simp [γ.target, h1]))
+        (composeSegmentsAux γ part (Fin.last (n' + 1))) := by
+        sorry
+      -- subpathOn_zero_one gives: γ.subpathOn 0 1 (with casting) ≃ γ
+      have h_sub := subpathOn_zero_one γ
+      -- Now chain: γ ≃ (γ.subpathOn 0 1).cast ≃ composeSegmentsAux
+      sorry
+
 namespace SemilocallySimplyConnected
 
 variable {X : Type*} [TopologicalSpace X]
@@ -228,23 +365,11 @@ theorem exists_pathConnected_slsc_neighborhood (hX : SemilocallySimplyConnected 
 /-! ### Partition and Tube data structures
 
 We introduce two key abstractions:
-1. `IntervalPartition n` - a partition of [0,1] into n segments
+1. `IntervalPartition n` - a partition of [0,1] into n segments (defined above)
 2. `TubeData X x y n` - neighborhood data for n segments in an SLSC space
 
 These are completely abstract and path-agnostic. The connection to actual paths
 is made via the `PathInTube` predicate. -/
-
-/-- A partition of the unit interval [0,1] into n segments.
-This bundles a strictly monotone sequence 0 = t₀ < t₁ < ... < tₙ = 1. -/
-structure IntervalPartition (n : ℕ) where
-  /-- Partition points 0 = t₀ < t₁ < ... < tₙ = 1 -/
-  t : Fin (n + 1) → unitInterval
-  /-- t is strictly monotone -/
-  h_mono : StrictMono t
-  /-- t starts at 0 -/
-  h_start : t 0 = 0
-  /-- t ends at 1 -/
-  h_end : t (Fin.last n) = 1
 
 /-- Data for a tubular neighborhood in an SLSC space.
 This is completely abstract: just neighborhoods and their properties.
@@ -721,7 +846,7 @@ Given:
 - α : (i : Fin (n+1)) → Path (γ (t i)) (γ' (t i)) are rung paths connecting partition points
 - For each segment i, the rectangle homotopy: γ|[t_i,t_{i+1}] · α_{i+1} ≃ α_i · γ'|[t_i,t_{i+1}]
 
-Then by telescoping, we get: γ ≃ α₀ · γ' · (αₙ)⁻¹
+Then by telescoping, we get: γ · αₙ ≃ α₀ · γ'
 
 Since part.t 0 = 0 and part.t (Fin.last n) = 1:
 - α₀ : Path (γ 0) (γ' 0) = Path x x (loop at x)
@@ -737,23 +862,33 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
             (part.h_mono.monotone i.castSucc_lt_succ.le)).trans (α i.succ))
           ((α i.castSucc).trans (γ'.subpathOn (part.t i.castSucc) (part.t i.succ)
             (part.h_mono.monotone i.castSucc_lt_succ.le)))) :
-    Path.Homotopic γ
+    Path.Homotopic
+      (γ.trans ((α (Fin.last n)).cast
+        (show y = γ (part.t (Fin.last n)) by rw [part.h_end, γ.target])
+        (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target])))
       (((α 0).cast (show x = γ (part.t 0) by rw [part.h_start, γ.source])
-                   (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])).trans
-        (γ'.trans
-          ((α (Fin.last n)).symm.cast
-            (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target])
-            (show y = γ (part.t (Fin.last n)) by rw [part.h_end, γ.target])))) := by
-  -- This requires:
-  -- 1. Path decomposition lemma: γ ≃ γ₀ · γ₁ · ... · γₙ₋₁
-  --    where γᵢ = γ.subpathOn (part.t i) (part.t (i+1))
-  -- 2. Similarly: γ' ≃ γ'₀ · γ'₁ · ... · γ'ₙ₋₁
-  -- 3. Telescoping: From γᵢ · αᵢ₊₁ ≃ αᵢ · γ'ᵢ for each i, derive:
-  --    (γ₀ · γ₁ · ... · γₙ₋₁) · αₙ ≃ α₀ · (γ'₀ · γ'₁ · ... · γ'ₙ₋₁)
-  -- 4. Use associativity to rearrange
-  --
-  -- This is substantial infrastructure that belongs in Mathlib.Topology.Path
-  sorry
+                   (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])).trans γ') := by
+  -- Proceed by induction on n
+  induction n with
+  | zero =>
+    -- For n = 0, IntervalPartition 0 is impossible
+    exfalso
+    exact IntervalPartition.not_zero part
+  | succ n ih =>
+    -- For n+1, we have n+2 partition points and n+1 rectangles
+    -- Strategy:
+    -- 1. Decompose γ ≃ γ₀ · ... · γₙ and γ' ≃ γ'₀ · ... · γ'ₙ (using homotopic_composeSegments)
+    -- 2. From h_rectangles, we have for each i: γᵢ · αᵢ₊₁ ≃ αᵢ · γ'ᵢ
+    -- 3. Use these to "telescope" the compositions:
+    --    (γ₀ · ... · γₙ) · αₙ₊₁ ≃ α₀ · (γ'₀ · ... · γ'ₙ)
+    -- 4. This gives the desired conclusion after associativity and casting
+    --
+    -- We have all the homotopy lemmas we need:
+    -- - Path.Homotopic.trans_assoc (line 706)
+    -- - Path.Homotopic.trans_congr (line 721)
+    -- - Path.Homotopic.refl_trans, trans_refl
+    -- Just need Path.homotopic_composeSegments (sorry'd above)
+    sorry
 
 /-- Stronger version of paste_segment_homotopies that directly gives γ ≃ γ' when the endpoint
 loops live in SLSC neighborhoods.
@@ -780,14 +915,15 @@ theorem Path.paste_segment_homotopies_slsc {x y : X} {n : ℕ} (γ γ' : Path x 
     (h_αₙ_in_Uₙ : Set.range (α (Fin.last n)) ⊆ Uₙ) :
     Path.Homotopic γ γ' := by
   -- Step 1: Apply the basic pasting lemma
+  -- This gives us: γ · αₙ ≃ α₀ · γ'
   have h_paste := paste_segment_homotopies γ γ' part α h_rectangles
 
   -- Step 2: Define the endpoint loops with proper casts
   let α₀ := (α 0).cast (show x = γ (part.t 0) by rw [part.h_start, γ.source])
                        (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])
-  let αₙ := (α (Fin.last n)).symm.cast
-              (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target])
+  let αₙ := (α (Fin.last n)).cast
               (show y = γ (part.t (Fin.last n)) by rw [part.h_end, γ.target])
+              (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target])
 
   -- Step 3: Show α₀ is null-homotopic using SLSC property of U₀
   have h_α₀_null : Path.Homotopic α₀ (Path.refl x) := by
@@ -828,10 +964,7 @@ theorem Path.paste_segment_homotopies_slsc {x y : X} {n : ℕ} (γ γ' : Path x 
     · -- range αₙ ⊆ Uₙ
       show Set.range αₙ ⊆ Uₙ
       simp only [αₙ, Path.cast, Set.range]
-      intro z ⟨t, ht⟩
-      rw [← ht]
-      simp [Path.symm]
-      exact h_αₙ_in_Uₙ ⟨_, rfl⟩
+      exact h_αₙ_in_Uₙ
     · -- range (refl y) ⊆ Uₙ
       intro z hz
       simp [Path.refl] at hz
@@ -842,29 +975,29 @@ theorem Path.paste_segment_homotopies_slsc {x y : X} {n : ℕ} (γ γ' : Path x 
       exact h_αₙ_in_Uₙ ⟨0, rfl⟩
 
   -- Step 5: Combine using homotopy manipulation
-  -- From h_paste: γ ≃ α₀ · γ' · αₙ
+  -- From h_paste: γ · αₙ ≃ α₀ · γ'
   -- From h_α₀_null: α₀ ≃ refl x
   -- From h_αₙ_null: αₙ ≃ refl y
-  -- Therefore: γ ≃ refl x · γ' · refl y ≃ γ'
+  -- Therefore: γ ≃ γ
 
-  -- First apply trans_congr to substitute the homotopies
-  have step1 : Path.Homotopic (α₀.trans (γ'.trans αₙ))
-                              ((Path.refl x).trans (γ'.trans (Path.refl y))) := by
-    apply Path.Homotopic.trans_congr h_α₀_null
-    apply Path.Homotopic.trans_congr (Path.Homotopic.refl γ')
-    exact h_αₙ_null
+  -- Left side: γ · αₙ ≃ γ · refl y ≃ γ
+  have lhs : Path.Homotopic (γ.trans αₙ) γ := by
+    have step1 : Path.Homotopic (γ.trans αₙ) (γ.trans (Path.refl y)) :=
+      Path.Homotopic.trans_congr (Path.Homotopic.refl γ) h_αₙ_null
+    have step2 : Path.Homotopic (γ.trans (Path.refl y)) γ :=
+      Path.Homotopic.trans_refl γ
+    exact Path.Homotopic.trans step1 step2
 
-  -- Now use identity laws
-  have step2 : Path.Homotopic ((Path.refl x).trans (γ'.trans (Path.refl y))) γ' := by
-    have a : Path.Homotopic ((Path.refl x).trans (γ'.trans (Path.refl y)))
-                            (γ'.trans (Path.refl y)) :=
-      Path.Homotopic.refl_trans _
-    have b : Path.Homotopic (γ'.trans (Path.refl y)) γ' :=
-      Path.Homotopic.trans_refl _
-    exact Path.Homotopic.trans a b
+  -- Right side: α₀ · γ' ≃ refl x · γ' ≃ γ'
+  have rhs : Path.Homotopic (α₀.trans γ') γ' := by
+    have step1 : Path.Homotopic (α₀.trans γ') ((Path.refl x).trans γ') :=
+      Path.Homotopic.trans_congr h_α₀_null (Path.Homotopic.refl γ')
+    have step2 : Path.Homotopic ((Path.refl x).trans γ') γ' :=
+      Path.Homotopic.refl_trans γ'
+    exact Path.Homotopic.trans step1 step2
 
-  -- Combine with h_paste using transitivity
-  exact Path.Homotopic.trans h_paste (Path.Homotopic.trans step1 step2)
+  -- Combine: γ ≃ γ · αₙ ≃ α₀ · γ' ≃ γ'
+  exact Path.Homotopic.trans (Path.Homotopic.symm lhs) (Path.Homotopic.trans h_paste rhs)
 
 /-- Given a path γ in an SLSC space, paths in the tube around γ are homotopic to γ.
 This is the main result that combines all the previous lemmas:
