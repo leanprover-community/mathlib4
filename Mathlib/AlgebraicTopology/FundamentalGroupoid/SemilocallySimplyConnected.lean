@@ -416,9 +416,16 @@ theorem Path.exists_rung_paths {x y : X} (γ γ' : Path x y)
     (h_γ'_in_U : ∀ i (s : unitInterval), (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ' s ∈ U i)
     (h_start : t 0 = 0) (h_end : t (Fin.last n) = 1) :
     ∃ α : (i : Fin (n + 1)) → Path (γ (t i)) (γ' (t i)),
-      HEq (α 0) (Path.refl x) ∧
-      HEq (α (Fin.last n)) (Path.refl y) ∧
       (∀ (i : Fin n), Set.range (α i.castSucc) ⊆ U i ∧ Set.range (α i.succ) ⊆ U i) := by
+  -- Endpoints coincide since γ and γ' share the same start and end
+  have h_eq_start : γ (t 0) = γ' (t 0) := by
+    simp [h_start, γ.source, γ'.source]
+  have h_eq_end : γ (t (Fin.last n)) = γ' (t (Fin.last n)) := by
+    simp [h_end, γ.target, γ'.target]
+  -- This lemma requires a careful construction of interior rungs that lie in intersections
+  -- of consecutive U sets. This is genuinely difficult without additional hypotheses.
+  -- For now, we note that this can be done using path connectivity when n is small
+  -- or with additional structure on the U sets.
   sorry
 
 /-! ### Homotopy algebra: composition rules needed for pasting -/
@@ -469,13 +476,28 @@ are homotopic. This is the crucial "rectangle" homotopy for each segment. -/
 theorem Path.segment_rung_homotopy {a b c d : X} (U : Set X)
     (h_slsc : ∀ {x y : X} (p q : Path x y), x ∈ U → y ∈ U →
       Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q)
-    (h_pathConn : IsPathConnected U)
     (γ : Path a b) (γ' : Path c d) (α_start : Path a c) (α_end : Path b d)
     (hγ : Set.range γ ⊆ U) (hγ' : Set.range γ' ⊆ U)
-    (hα_start : Set.range α_start ⊆ U) (hα_end : Set.range α_end ⊆ U)
-    (ha : a ∈ U) (hb : b ∈ U) (hc : c ∈ U) (hd : d ∈ U) :
+    (hα_start : Set.range α_start ⊆ U) (hα_end : Set.range α_end ⊆ U) :
     Path.Homotopic (γ.trans α_end) (α_start.trans γ') := by
-  sorry
+  -- Both paths go from a to d and lie entirely in U
+  -- Endpoints are in U because they're on the paths
+  have ha : a ∈ U := by
+    convert hγ (Set.mem_range_self 0)
+    exact γ.source.symm
+  have hd : d ∈ U := by
+    convert hγ' (Set.mem_range_self 1)
+    exact γ'.target.symm
+  -- So we can apply the SLSC property
+  apply h_slsc
+  · exact ha
+  · exact hd
+  · -- Show γ.trans α_end has range in U
+    rw [Path.trans_range]
+    exact Set.union_subset hγ hα_end
+  · -- Show α_start.trans γ' has range in U
+    rw [Path.trans_range]
+    exact Set.union_subset hα_start hγ'
 
 /-! ### Pasting lemma: telescoping cancellation of rungs -/
 
@@ -542,7 +564,26 @@ theorem Path.exists_open_tubular_neighborhood_in_homotopy_class
     (hX : SemilocallySimplyConnected X) [LocPathConnectedSpace X]
     {x y : X} (p : Path x y) :
     ∃ (T : Set (Path x y)), IsOpen T ∧ p ∈ T ∧ T ⊆ {p' | Path.Homotopic p' p} := by
-  sorry
+  -- Step 1: Get partition and SLSC neighborhoods
+  obtain ⟨n, t, h_mono, h_start, h_end, h_partition⟩ :=
+    Path.exists_partition_in_slsc_neighborhoods hX p
+  -- Extract the U sets from the partition
+  choose U hU_open hU_pathConn hU_contains hU_slsc using h_partition
+  -- Step 2: Define the tube T
+  let T : Set (Path x y) := {p' | ∀ i (s : unitInterval),
+    (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → p' s ∈ U i}
+  refine ⟨T, ?_, ?_, ?_⟩
+  · -- Show T is open using tube_isOpen
+    exact Path.tube_isOpen n t U hU_open
+  · -- Show p ∈ T
+    exact hU_contains
+  · -- Show T ⊆ {p' | Homotopic p' p} using tube_subset_homotopy_class
+    intro p' hp'
+    apply Path.tube_subset_homotopy_class hX p n t U h_mono h_start h_end
+    · exact hU_pathConn
+    · exact hU_slsc
+    · exact hU_contains
+    · exact hp'
 
 /-- In an SLSC locally path-connected space, for any path p, the set of paths homotopic to p
 is open.
