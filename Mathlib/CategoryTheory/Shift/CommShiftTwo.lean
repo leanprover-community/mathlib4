@@ -290,7 +290,7 @@ noncomputable def iso₁ (m : M) :
     isoWhiskerLeft G (h.shiftIso 0 m m (zero_add m)))
 
 @[reassoc]
-lemma iso₁_hom_app (X₁ : C₁) (X₂ : C₂) (m : M) :
+lemma iso₁_hom_app_app (X₁ : C₁) (X₂ : C₂) (m : M) :
     ((iso₁ h G m).hom.app X₁).app X₂ =
       G.map (Prod.mkHom ((shiftFunctorZero C₁ M).inv.app X₁) (𝟙 _)) ≫
         (G.commShiftIso ((0 : M), m)).hom.app (X₁, X₂) ≫
@@ -300,23 +300,90 @@ lemma iso₁_hom_app (X₁ : C₁) (X₂ : C₂) (m : M) :
 noncomputable instance (X₁ : C₁) :
     ((h.curry G).obj X₁).CommShift M where
   iso m := (iso₁ h G m).app X₁
-  zero := sorry
+  zero := by
+    ext X₂
+    simp only [curry_obj_obj_obj, Functor.comp_obj, Functor.prod_obj, Functor.id_obj, Iso.app_hom,
+      iso₁_hom_app_app, shiftFunctor_prod, Functor.CommShift.isoZero_hom_app, curry_obj_obj_map]
+    change _ ≫ (G.commShiftIso (0 : M × M)).hom.app (X₁, X₂) ≫ _ = _
+    rw [G.commShiftIso_zero, Functor.CommShift.isoZero_hom_app,
+      Category.assoc, shiftFunctorZero_inv_app, Category.assoc, Iso.inv_hom_id_app,
+      Category.comp_id, ← G.map_comp_assoc]
+    congr 2
+    aesop
   add := sorry
 
-lemma commShift_curry_obj_app (X₁ : C₁) (m : M) :
-    ((h.curry G).obj X₁).commShiftIso m = (iso₁ h G m).app X₁ := rfl
+lemma commShift_curry_obj_hom_app (X₁ : C₁) (X₂ : C₂) (m : M) :
+    (((h.curry G).obj X₁).commShiftIso m).hom.app X₂ = ((iso₁ h G m).app X₁).hom.app X₂ := rfl
 
-attribute [local simp] commShift_curry_obj_app iso₁_hom_app
+attribute [local simp] commShift_curry_obj_hom_app
 
 instance {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) :
     NatTrans.CommShift ((h.curry G).map f) M where
   shift_comm m := by
+    ext X₂
+    have h₁ := (G.commShiftIso ((0 : M), m)).hom.naturality (Prod.mkHom f (𝟙 X₂))
+    have h₂ := (h.shiftIso 0 m m (zero_add m)).hom.naturality (G.map (Prod.mkHom f (𝟙 X₂)))
+    dsimp at h₁ h₂ ⊢
+    simp only [iso₁_hom_app_app, Functor.id_obj, Functor.comp_obj, shiftFunctor_prod,
+      Category.assoc]
+    rw [← h₂, ← reassoc_of% h₁, ← G.map_comp_assoc, ← G.map_comp_assoc]
+    congr 2
+    ext
+    · simp [← NatTrans.naturality]
+    · simp
+
+noncomputable def iso₂ (m : M) :
+    curry.obj (Functor.prod (shiftFunctor C₁ m) (𝟭 _)  ⋙ G) ≅
+    curry.obj (G ⋙ shiftFunctor D m) :=
+  curry.mapIso (isoWhiskerRight (NatIso.prod  (Iso.refl _) (shiftFunctorZero C₂ M).symm) _ ≪≫
+    G.commShiftIso (m, (0 : M)) ≪≫
+    isoWhiskerLeft G (h.shiftIso m 0 m (add_zero m)))
+
+@[reassoc]
+lemma iso₂_hom_app_app (X₁ : C₁) (X₂ : C₂) (m : M) :
+    ((iso₂ h G m).hom.app X₁).app X₂ =
+      G.map (Prod.mkHom (𝟙 _) ((shiftFunctorZero C₂ M).inv.app X₂)) ≫
+        (G.commShiftIso (m, (0 : M))).hom.app (X₁, X₂) ≫
+          (h.shiftIso m 0 m (add_zero m)).hom.app _ := by
+  simp [iso₂, NatTrans.prod]
+
+noncomputable instance (X₂ : C₂) : ((h.curry G).flip.obj X₂).CommShift M where
+  iso m := ((flipFunctor _ _ _).mapIso (iso₂ h G m)).app X₂
+  zero := by
+    ext X₁
+    simp only [flipFunctor_obj, Functor.flip_obj_obj, curry_obj_obj_obj, Functor.comp_obj,
+      Functor.prod_obj, Functor.id_obj, Iso.app_hom, Functor.mapIso_hom, flipFunctor_map_app_app,
+      iso₂_hom_app_app, shiftFunctor_prod, Functor.CommShift.isoZero_hom_app, Functor.flip_obj_map,
+      curry_obj_map_app]
+    change _ ≫ (G.commShiftIso (0 : M × M)).hom.app (X₁, X₂) ≫ _ = _
+    rw [G.commShiftIso_zero, Functor.CommShift.isoZero_hom_app,
+      Category.assoc, shiftFunctorZero_inv_app, Category.assoc, Iso.inv_hom_id_app,
+      Category.comp_id, ← G.map_comp_assoc]
+    congr 2
+    aesop
+  add := by
     sorry
 
-instance (X₂ : C₂) : ((h.curry G).flip.obj X₂).CommShift M := sorry
+lemma commShift_curry_flip_obj_hom_app (X₁ : C₁) (X₂ : C₂) (m : M) :
+    (((h.curry G).flip.obj X₂).commShiftIso m).hom.app X₁ =
+      ((iso₂ h G m).hom.app X₁).app X₂ := rfl
+
+attribute [local simp] commShift_curry_flip_obj_hom_app
 
 instance {X₂ Y₂ : C₂} (f : X₂ ⟶ Y₂) :
-    NatTrans.CommShift ((h.curry G).flip.map f) M := sorry
+    NatTrans.CommShift ((h.curry G).flip.map f) M where
+  shift_comm m := by
+    ext X₁
+    dsimp
+    have h₁ := (G.commShiftIso (m, (0 : M))).hom.naturality (Prod.mkHom (𝟙 X₁) f)
+    have h₂ := (h.shiftIso m 0 m (add_zero m)).hom.naturality (G.map (Prod.mkHom (𝟙 X₁) f))
+    simp only [iso₂_hom_app_app, Functor.id_obj, Functor.comp_obj, shiftFunctor_prod,
+      Category.assoc]
+    rw [← h₂, ← reassoc_of% h₁, ← G.map_comp_assoc, ← G.map_comp_assoc]
+    congr 2
+    ext
+    · simp
+    · simp [← NatTrans.naturality]
 
 end commShift₂Curry
 
