@@ -716,7 +716,7 @@ variable {f : M → N} (g : M' → N') {q : M} {q' : M'}
 lemma writtenInExtChartAt_sumInl_eventuallyEq_id :
     (writtenInExtChartAt I I q (@Sum.inl M M')) =ᶠ[𝓝[Set.range I] (extChartAt I q q)] id := by
     have hmem : I.symm ⁻¹'
-        (chartAt H q).target ∩ Set.range I ∈ 𝓝[Set.range I] (extChartAt I q) q := by
+        (chartAt H q).target ∩ Set.range I ∈ 𝓝[Set.range I] (extChartAt I q q) := by
       rw [← I.image_eq (chartAt H q).target]
       exact (chartAt H q).extend_image_target_mem_nhds (mem_chart_source H q)
     filter_upwards [hmem] with y hy
@@ -728,7 +728,7 @@ lemma writtenInExtChartAt_sumInl_eventuallyEq_id :
 lemma writtenInExtChartAt_sumInr_eventuallyEq_id :
     (writtenInExtChartAt I I q' (@Sum.inr M M')) =ᶠ[𝓝[Set.range I] (extChartAt I q' q')] id := by
     have hmem : I.symm ⁻¹'
-        (chartAt H q').target ∩ Set.range I ∈ 𝓝[Set.range I] (extChartAt I q') q' := by
+        (chartAt H q').target ∩ Set.range I ∈ 𝓝[Set.range I] (extChartAt I q' q') := by
       rw [← I.image_eq (chartAt H q').target]
       exact (chartAt H q').extend_image_target_mem_nhds (mem_chart_source H q')
     filter_upwards [hmem] with y hy
@@ -740,12 +740,11 @@ lemma writtenInExtChartAt_sumInr_eventuallyEq_id :
 theorem hasMFDerivWithinAt_inl :
     HasMFDerivWithinAt I I (@Sum.inl M M') s q (ContinuousLinearMap.id 𝕜 (TangentSpace I q)) := by
   refine ⟨by fun_prop, ?_⟩
-  set U := (extChartAt I q).symm ⁻¹' s ∩ Set.range I
-  set x₀ := (extChartAt I q) q
-  have : (writtenInExtChartAt I I q (@Sum.inl M M')) =ᶠ[𝓝[U] x₀] id :=
+  have : (writtenInExtChartAt I I q (@Sum.inl M M'))
+      =ᶠ[𝓝[(extChartAt I q).symm ⁻¹' s ∩ Set.range I] (extChartAt I q q)] id :=
     writtenInExtChartAt_sumInl_eventuallyEq_id.filter_mono (nhdsWithin_mono _ (fun _y hy ↦ hy.2))
-  exact (hasFDerivWithinAt_id x₀ _).congr_of_eventuallyEq this
-    (by simp [writtenInExtChartAt, extChartAt, x₀])
+  exact (hasFDerivWithinAt_id (extChartAt I q q) _).congr_of_eventuallyEq this
+    (by simp [writtenInExtChartAt, extChartAt])
 
 theorem hasMFDerivAt_inl :
     HasMFDerivAt I I (@Sum.inl M M') q (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
@@ -754,12 +753,11 @@ theorem hasMFDerivAt_inl :
 theorem hasMFDerivWithinAt_inr {t : Set M'} :
     HasMFDerivWithinAt I I (@Sum.inr M M') t q' (ContinuousLinearMap.id 𝕜 (TangentSpace I q')) := by
   refine ⟨by fun_prop, ?_⟩
-  set U := (extChartAt I q').symm ⁻¹' t ∩ Set.range I
-  set x₀ := (extChartAt I q') q'
-  have : (writtenInExtChartAt I I q' (@Sum.inr M M')) =ᶠ[𝓝[U] x₀] id :=
+  have : (writtenInExtChartAt I I q' (@Sum.inr M M'))
+      =ᶠ[𝓝[(extChartAt I q').symm ⁻¹' t ∩ Set.range I] (extChartAt I q' q')] id :=
     writtenInExtChartAt_sumInr_eventuallyEq_id.filter_mono (nhdsWithin_mono _ (fun _y hy ↦ hy.2))
-  exact (hasFDerivWithinAt_id x₀ _).congr_of_eventuallyEq this
-    (by simp [writtenInExtChartAt, extChartAt, x₀])
+  exact (hasFDerivWithinAt_id (extChartAt I q' q') _).congr_of_eventuallyEq this
+    (by simp [writtenInExtChartAt, extChartAt])
 
 theorem hasMFDerivAt_inr :
     HasMFDerivAt I I (@Sum.inr M M') q' (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
