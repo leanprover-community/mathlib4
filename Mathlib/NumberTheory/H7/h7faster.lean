@@ -5014,8 +5014,7 @@ lemma S_eq_SR_on_circle :
 
 
 
-def c₉ : ℝ := Real.exp
-  (2*h7.m * |1 + ‖h7.β‖| * |Real.log ‖h7.α‖| * (↑h7.m : ℝ))
+def c₉ : ℝ := Real.exp (2*h7.m * |1 + ‖h7.β‖| * |Real.log ‖h7.α‖| * (↑h7.m : ℝ))
 
 lemma c9_nonneg : 0 ≤ h7.c₉ := sorry
 
@@ -5052,7 +5051,6 @@ lemma q_frac : ((↑q + ↑(h7.r q hq0 h2mq)) / ↑q : ℝ ) =
 lemma bound_circle : ((1 + ↑(h7.r q hq0 h2mq) / ↑q : ℝ))
     ≤ ↑(h7.r q hq0 h2mq : ℝ) + (↑q : ℝ) := by
 
-
   calc _ = ((↑q + ↑(h7.r q hq0 h2mq)) / ↑q : ℝ) := ?_
        _ ≤ ((2*h7.m* (h7.n q) + ↑(h7.r q hq0 h2mq)) / q : ℝ) := ?_
        _ ≤ ((2*h7.m* ↑(h7.r q hq0 h2mq) + ↑(h7.r q hq0 h2mq)) / q : ℝ) := ?_
@@ -5075,7 +5073,6 @@ lemma bound_circle : ((1 + ↑(h7.r q hq0 h2mq) / ↑q : ℝ))
 lemma etcff : (|(h7.r q hq0 h2mq : ℝ)| *
   |1 + (h7.r q hq0 h2mq : ℝ) / ↑q|) ≤ (h7.r q hq0 h2mq + q : ℝ) := by {
   sorry
-
   }
 
 include hz in
@@ -5121,9 +5118,7 @@ lemma abs_Rb : norm ((h7.R q hq0 h2mq) z) ≤
     · apply Complex.norm_exp_le_exp_norm
     · simp only [norm_nonneg]
     · apply mul_nonneg
-      · simp only [Real.rpow_natCast]
-        apply pow_nonneg
-        apply h7.zero_leq_c₄
+      · simp only [Real.rpow_natCast]; apply pow_nonneg; apply h7.zero_leq_c₄
       · positivity
   · apply sum_le_sum
     intros i hi
@@ -5133,11 +5128,7 @@ lemma abs_Rb : norm ((h7.R q hq0 h2mq) z) ≤
       apply Preorder.le_refl _
     · unfold ρ
       rw [← q_frac]
-
-
-
-      simp only [nsmul_eq_mul, norm_mul,
-        Real.exp_le_exp]
+      simp only [nsmul_eq_mul, norm_mul, Real.exp_le_exp]
       --rw [Complex.norm_mul]
       --rw [Complex.norm_mul]
       calc
@@ -5149,11 +5140,11 @@ lemma abs_Rb : norm ((h7.R q hq0 h2mq) z) ≤
 
            _ = (‖(q : ℤ)‖ * ((1 + ‖h7.β‖))) * ‖Complex.log h7.α‖ * ‖z‖ := ?_
 
-           _ ≤ ‖(q : ℤ)‖ * ‖1 + ‖h7.β‖‖ * ‖Complex.log h7.α‖ * ‖(↑h7.m : ℝ)‖ *
-              ‖ (q : ℝ) * (1 + ↑(h7.r q hq0 h2mq : ℝ) / (q : ℝ))‖ := ?_
+           _ ≤ ‖(q : ℤ)‖ * ‖1 + ‖h7.β‖‖ * ‖Real.log ‖h7.α‖‖ * ‖(↑h7.m : ℝ)‖ *
+               ‖ (q : ℝ) * (1 + ↑(h7.r q hq0 h2mq : ℝ) / (q : ℝ))‖ := ?_
 
-           _ ≤ ‖(q : ℤ)‖ * ‖1 + ‖h7.β‖‖ * ‖Complex.log h7.α‖ * ‖(↑h7.m : ℝ)‖ *
-              ‖(q : ℤ)‖ * ‖(1 + ↑(h7.r q hq0 h2mq : ℝ) / (q : ℝ))‖ := by {
+           _ ≤ ‖(q : ℤ)‖ * ‖1 + ‖h7.β‖‖ * ‖Real.log ‖h7.α‖‖ * ‖(↑h7.m : ℝ)‖ *
+               ‖(q : ℤ)‖ * ‖(1 + ↑(h7.r q hq0 h2mq : ℝ) / (q : ℝ))‖ := by {
                 simp only [mul_assoc]
                 simp_all
               }
@@ -5197,7 +5188,6 @@ lemma abs_Rb : norm ((h7.R q hq0 h2mq) z) ≤
             · simp only [Int.norm_natCast, Nat.cast_nonneg]
             · simp only [norm_nonneg]
           · simp only [norm_nonneg]
-
       · apply mul_le_mul
         · apply mul_le_mul
           · refine add_le_add ?_ ?_
@@ -5222,20 +5212,17 @@ lemma abs_Rb : norm ((h7.R q hq0 h2mq) z) ≤
         · apply mul_le_mul
           · exact le_abs_self (1 + ‖h7.β‖)
           · apply mul_le_mul
-            · simp only [le_refl]
-              rw [le_iff_lt_or_eq]
-              right
+            ·
+              -- rw [le_iff_lt_or_eq]
+              -- right
               --rw [← Complex.log_re]
               have h1 := Complex.log_ofReal_re (‖h7.α‖)
               have h2 := Complex.log_re (h7.α)
               --rw [← h2] at h1
-
               have h3:= Complex.ofReal_log (x:= ‖h7.α‖) (by positivity)
-              sorry
               --rw [← h2] at h3
               --rw [← h2]
-
-
+              sorry
             · have := h7.norm_hz q hq0 h2mq hz
               trans
               apply this
@@ -5244,8 +5231,7 @@ lemma abs_Rb : norm ((h7.R q hq0 h2mq) z) ≤
                 · simp only [Real.norm_eq_abs, norm_mul]
                   nth_rw 1 [← one_mul (a := |1 + (h7.r q hq0 h2mq : ℝ) / (q : ℝ)|)]
                   apply mul_le_mul
-                  · simp only [Nat.abs_cast, Nat.one_le_cast]
-                    exact hq0
+                  · simp only [Nat.abs_cast, Nat.one_le_cast]; exact hq0
                   · simp only [le_refl]
                   · positivity
                   · positivity
@@ -5264,10 +5250,7 @@ lemma abs_Rb : norm ((h7.R q hq0 h2mq) z) ≤
         exact h7.zero_leq_c₄
       · apply Real.rpow_nonneg
         simp only [Nat.cast_nonneg]
-
-  ·
-    simp only [sum_const, card_univ,
-    Fintype.card_fin, nsmul_eq_mul, Nat.cast_mul]
+  · simp only [sum_const, card_univ, Fintype.card_fin, nsmul_eq_mul, Nat.cast_mul]
     apply mul_le_mul
     · apply Preorder.le_refl
     · apply mul_le_mul
@@ -5294,56 +5277,67 @@ lemma abs_Rb : norm ((h7.R q hq0 h2mq) z) ≤
               · simp only [Nat.ofNat_pos]
               · simp only [add_le_add_iff_right, Nat.cast_le]
                 exact n_leq_r h7 q hq0 h2mq
-        · apply Real.rpow_nonneg
-          simp only [Nat.cast_nonneg]
-        · apply Real.rpow_nonneg
-          exact zero_leq_c₄ h7
+        · apply Real.rpow_nonneg; simp only [Nat.cast_nonneg]
+        · apply Real.rpow_nonneg; exact zero_leq_c₄ h7
       · rw [norm_mul, Real.norm_eq_abs] at *--nth_rw 2 [Real.exp_mul]
         rw [Real.rpow_def_of_pos (x:= h7.c₉)]
-        · simp only [Real.exp_le_exp]
-          calc _ =  ↑q * (|1 + ‖h7.β‖| * |Real.log ‖h7.α‖| * ↑h7.m) *
-                    |(q : ℝ) * (1 + ↑(h7.r q hq0 h2mq) / ↑q)| := ?_
-               _ ≤ (2 * ↑h7.m * |(h7.n q : ℝ)|) *
+        ·
+          calc _ =  Real.exp (↑q * (|1 + ‖h7.β‖| * |Real.log ‖h7.α‖| * ↑h7.m) *
+                    |(q : ℝ) * (1 + ↑(h7.r q hq0 h2mq) / ↑q)|) := ?_
+               _ ≤ Real.exp ((2 * ↑h7.m ^ (h7.n q : ℝ)) *
                    (|1 + ‖h7.β‖| * |Real.log ‖h7.α‖| * ↑h7.m)
-                     * |(q : ℝ) * (1 + ↑(h7.r q hq0 h2mq) / ↑q)| := ?_
-               _ = 2 * ↑h7.m * |1 + ‖h7.β‖| * |Real.log ‖h7.α‖|
-                      * ↑h7.m * (|(h7.n q : ℝ)| *
-                      (|(q : ℝ) * (1 + ↑(h7.r q hq0 h2mq) / ↑q)|)) := ?_
-               _ ≤ (2 * ↑h7.m * |1 + ‖h7.β‖| * |Real.log ‖h7.α‖|
-                      * ↑h7.m) * (|(h7.r q hq0 h2mq : ℝ)| *
-                       |(q : ℝ) * (1 + ↑(h7.r q hq0 h2mq) / ↑q)|) := ?_
+                     * |(q : ℝ) * (1 + ↑(h7.r q hq0 h2mq) / ↑q)|) := ?_
+              --  _ = Real.exp (2 * ↑h7.m * |1 + ‖h7.β‖| * |Real.log ‖h7.α‖|
+              --         * (↑h7.m ^ ((h7.n q : ℝ)) *
+              --         (|(q : ℝ) * (1 + ↑(h7.r q hq0 h2mq) / ↑q)|))) := ?_
+               _ ≤ Real.exp ((2 * (↑h7.m^(|(h7.r q hq0 h2mq : ℝ)|)) * |1 + ‖h7.β‖| * |Real.log ‖h7.α‖|
+                      * (↑h7.m) *
+                       |(q : ℝ) * (1 + ↑(h7.r q hq0 h2mq) / ↑q)|)) := ?_
               --  _ ≤ (2 * ↑h7.m * |1 + ‖h7.β‖| * |Real.log ‖h7.α‖| * ↑h7.m)
               --         * (↑(h7.r q hq0 h2mq) + ↑q) := ?_
-               _ ≤  Real.log h7.c₉ * (↑(h7.r q hq0 h2mq) + ↑q) := ?_
+               _ ≤ Real.exp (Real.log h7.c₉ * (↑(h7.r q hq0 h2mq) + ↑q)) := ?_
           · simp only [mul_assoc]
             sorry
-
-          · apply mul_le_mul
-            · apply mul_le_mul
-              · norm_cast
-                exact q_le_two_mn h7 q h2mq
-              · simp only [le_refl]
-              · positivity
-              · positivity
-            · simp only [le_refl]
-            · positivity
-            · positivity
-          · ring_nf
-          · simp only [← mul_assoc]
+          · simp only [Real.exp_le_exp]
             apply mul_le_mul
             · apply mul_le_mul
+              · norm_cast
+                sorry
+                --exact q_le_two_mn h7 q h2mq
               · simp only [le_refl]
-              · simp only [Nat.abs_cast, Nat.cast_le]
-                exact n_leq_r h7 q hq0 h2mq
               · positivity
               · positivity
             · simp only [le_refl]
             · positivity
             · positivity
-          · rw [← abs_mul]
+          --· ring_nf
+          · simp only [← mul_assoc]
+            simp only [Real.exp_le_exp]
+            apply mul_le_mul
+            · apply mul_le_mul
+              · apply mul_le_mul
+                · apply mul_le_mul
+                  · sorry
+                  · sorry
+                  · sorry
+                  · sorry
+                · sorry
+                · sorry
+                · sorry
+              · simp only [Nat.cast_le]
+                simp only [le_refl]
+                --exact n_leq_r h7 q hq0 h2mq
+              · positivity
+              · positivity
+            · simp only [le_refl]
+            · positivity
+            · positivity
+          · simp only [Real.exp_le_exp]
+            --rw [← abs_mul]
             unfold c₉
             simp only [Real.log_exp]
-            have : |((h7.r q hq0 h2mq) + q : ℝ)| = (↑(h7.r q hq0 h2mq) + ↑q) := by {
+            have : |((h7.r q hq0 h2mq) + q : ℝ)| =
+             (↑(h7.r q hq0 h2mq) + ↑q) := by {
               simp only [abs_eq_self]
               positivity}
             rw [← this]
@@ -5358,9 +5352,26 @@ lemma abs_Rb : norm ((h7.R q hq0 h2mq) z) ≤
                   · simp only [le_refl]
                   · apply mul_le_mul
                     · simp only [le_refl]
-                    · have := h7.etcff q hq0 h2mq
-                      rw [← abs_mul] at this
-                      norm_cast at *
+                    · have : (q : ℝ) * (1 + (h7.r q hq0 h2mq : ℝ) / q) =
+                       (((q : ℝ) + (h7.r q hq0 h2mq : ℝ))) := by {
+                        ring_nf
+                        simp only [mul_assoc]
+                        nth_rw 2 [mul_comm]
+                        simp only [← mul_assoc]
+                        simp only [add_right_inj]
+                        rw [mul_inv_cancel₀]
+                        simp only [one_mul]
+                        simp only [ne_eq, Nat.cast_eq_zero]
+                        rw [← ne_eq]
+                        exact Nat.ne_zero_of_lt hq0
+                       }
+                      rw [this]
+
+
+
+                      -- have := h7.etcff q hq0 h2mq
+                      -- rw [← abs_mul] at this
+                      -- norm_cast at *
                     · positivity
                     · positivity
                   · positivity
@@ -5371,14 +5382,12 @@ lemma abs_Rb : norm ((h7.R q hq0 h2mq) z) ≤
               · positivity
             · positivity
             · positivity
-        · unfold c₉
-          apply Real.exp_pos
+        · unfold c₉; apply Real.exp_pos
       · positivity
       · sorry
     · simp only [Real.rpow_natCast, norm_mul, Real.norm_eq_abs]
       sorry
     · positivity
-
 
 
 #exit
