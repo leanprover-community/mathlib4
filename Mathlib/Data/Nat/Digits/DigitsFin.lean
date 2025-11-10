@@ -12,7 +12,7 @@ import Mathlib.Data.Nat.Digits.Lemmas
 This file provides a basic API for extracting the first `l` digits of a natural number `n` in a
 given base `b` as a function `Fin l → ℕ`.
 
-This is useful for computations with natural numbers of bounded length. For example, we provide a
+This is useful for computations with natural numbers of bounded size. For example, we provide a
 proof that the natural numbers `< b ^ l` are in bijection with the functions
 `Fin l → Finset.range b`, see `Nat.digitsFin_bijOn`. See also `Nat.sum_digits_sum_eq` for an
 application.
@@ -159,8 +159,8 @@ Formula for the sum of the sum of digits in base `b` of all natural integers `< 
 theorem sum_digits_sum_eq (hb : 1 < b) :
     ∑ x ∈ Finset.range (b ^ l), (b.digits x).sum = l * b ^ (l - 1) * (b * (b - 1) / 2) := by
   rw [Finset.sum_nbij (b.digitsFin l) (by exact b.digitsFin_mapsTo l hb)
-    (Nat.digitsFin_injOn l hb) (Nat.digitsFin_surjOn l hb)
-    (fun x hx ↦ (Nat.digitsFin_sum l x hb (List.mem_range.mp hx)).symm)]
+    (digitsFin_injOn l hb) (Nat.digitsFin_surjOn l hb)
+    (fun x hx ↦ (digitsFin_sum l x hb (mem_range.mp hx)).symm)]
   rw [Finset.sum_comm]
   simp_rw +contextual [fun i ↦ Finset.sum_comp
     (s := Fintype.piFinset fun x : Fin l ↦ Finset.range b) (f := fun x ↦ x) (g := fun x ↦ x i),
