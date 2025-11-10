@@ -95,4 +95,13 @@ def runTacticCode (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (code : S
   ctx.runTactic i goal fun goal =>
     Meta.withWarningAsError <| Lean.Elab.runTactic' (ctx := termCtx) (s := termState) goal code
 
+/-- Run tactic code, given by a piece of syntax, in the context of an infotree node. -/
+def runTacticCodeWithTypes (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (code : Syntax) :
+    CommandElabM (List (MVarId × Expr)) := do
+  let termCtx ← liftTermElabM read
+  let termState ← liftTermElabM get
+  ctx.runTactic i goal fun goal => do
+    let goals ← Lean.Elab.runTactic' (ctx := termCtx) (s := termState) goal code
+    goals.mapM fun g ↦ do pure (g, ← g.getType')
+
 end Lean.Elab.ContextInfo
