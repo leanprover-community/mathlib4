@@ -316,7 +316,7 @@ theorem inertiaDeg_bot [Nontrivial R] [IsDomain S] [Algebra.IsIntegral R S]
     [hP : P.LiesOver (⊥ : Ideal R)] :
     (⊥ : Ideal R).inertiaDeg P = finrank R S := by
   rw [inertiaDeg, dif_pos (over_def P (⊥ : Ideal R)).symm]
-  replace hP : P = ⊥ := eq_bot_of_liesOver_bot P (h := hP)
+  replace hP : P = ⊥ := eq_bot_of_liesOver_bot _ P (h := hP)
   rw [Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot R).symm
     ((quotEquivOfEq hP).trans (RingEquiv.quotientBot S)).symm]
   rfl
