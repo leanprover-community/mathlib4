@@ -414,7 +414,48 @@ theorem TubeData.isOpen {x y : X} {n : ℕ}
         obtain ⟨j, hj_pos, hj_last⟩ := h_interior
         use j
         simp [interior_pts, hj_pos, hj_last]
-      sorry
+      -- We'll iterate over interior points and show each gives an open set
+      -- Build a function that for each j ∈ interior_pts gives the set {γ' | γ'(t j) ∈ V[j]}
+      set f : Fin (n + 1) → Set (Path x y) := fun j =>
+        if h : j ∈ interior_pts
+        then
+          let hj_pos : 0 < j := by simp [interior_pts] at h; exact h.1
+          let hj_last : j < Fin.last n := by simp [interior_pts] at h; exact h.2
+          {γ' : Path x y | γ' (part.t j) ∈ T.V j hj_pos hj_last}
+        else Set.univ
+      -- Show the set equals the bounded intersection
+      have set_eq : {γ' : Path x y |
+          ∀ j hj_pos hj_last, γ' (part.t j) ∈ T.V j hj_pos hj_last} =
+        ⋂ j ∈ interior_pts, f j := by
+        ext γ'
+        simp only [Set.mem_setOf_eq, Set.mem_iInter]
+        constructor
+        · intro h j hj_mem
+          simp only [f, hj_mem, dif_pos]
+          simp only [interior_pts, Finset.mem_filter, Finset.mem_univ, true_and] at hj_mem
+          exact h j hj_mem.1 hj_mem.2
+        · intro h j hj_pos hj_last
+          have hj_mem : j ∈ interior_pts := by
+            simp only [interior_pts, Finset.mem_filter, Finset.mem_univ, true_and]
+            exact ⟨hj_pos, hj_last⟩
+          specialize h j hj_mem
+          simp only [f, hj_mem, dif_pos, Set.mem_setOf_eq] at h
+          exact h
+      rw [set_eq]
+      -- Apply finite intersection for finsets
+      apply isOpen_biInter_finset
+      intro j hj_mem
+      -- Unfold the definition of f at this particular j
+      simp only [f, hj_mem, dif_pos]
+      -- Extract the proofs
+      have hj_pos : 0 < j := by simp [interior_pts] at hj_mem; exact hj_mem.1
+      have hj_last : j < Fin.last n := by simp [interior_pts] at hj_mem; exact hj_mem.2
+      -- Show {γ' | γ'(part.t j) ∈ V[j]} is open
+      change IsOpen ((fun γ' : Path x y => γ' (part.t j)) ⁻¹' (T.V j hj_pos hj_last))
+      apply IsOpen.preimage _ (T.h_V_open j hj_pos hj_last)
+      -- Evaluation is continuous: coercion then evaluation
+      change Continuous fun γ' : Path x y => (γ' : C(unitInterval, X)) (part.t j)
+      exact (continuous_eval_const (part.t j)).comp continuous_induced_dom
     · -- Case: no interior points (n ≤ 1), condition is trivially true
       have : {γ' : Path x y |
           ∀ j hj_pos hj_last, γ' (part.t j) ∈ T.V j hj_pos hj_last} = Set.univ := by
