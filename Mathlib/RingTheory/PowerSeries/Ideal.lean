@@ -40,6 +40,9 @@ polynomials. On the other hand our proof has the advantage of giving explicitly 
 generators, and it will be used to prove that, for a domain `R`, we have
 `IsPrincipalIdealRing R → UniqueFactorizationMonoid R⟦X⟧`.
 
+## TODO
+Prove noetherianity of `MvPowerSeries` in finitely many variables.
+
 -/
 
 variable {R : Type*}
