@@ -310,7 +310,26 @@ noncomputable instance (X₁ : C₁) :
       Category.comp_id, ← G.map_comp_assoc]
     congr 2
     aesop
-  add := sorry
+  add m n := by
+    ext X₂
+    dsimp
+    simp only [iso₁_hom_app_app, Functor.CommShift.isoAdd_hom_app,
+      G.commShiftIso_add' (show ((0 : M), m) + (0, n) = (0, m + n) by aesop),
+      shiftFunctorAdd'_inv_app _ _ _ _ (add_zero 0) _ _ _ rfl _ _ _ (zero_add m)
+      (zero_add n) (zero_add (m + n)), Functor.id_obj, Functor.comp_obj, shiftFunctor_prod,
+      Functor.CommShift.isoAdd'_hom_app, Functor.prod_obj, shiftFunctorAdd'_prod, NatIso.prod_hom,
+      h.z_zero₁, inv_one, Units.val_one, End.one_def, NatTrans.id_app, Category.comp_id,
+      NatTrans.naturality_assoc, Category.assoc, Iso.inv_hom_id_app, curry_obj_obj_obj, ←
+      shiftFunctorAdd'_eq_shiftFunctorAdd, curry_obj_obj_map, Iso.app_hom,
+      Functor.map_comp]
+    rw [← NatTrans.naturality_1_assoc (G.commShiftIso ((0 : M), n)).hom
+      (Iso.prod ((shiftFunctorZero C₁ M).symm.app X₁) (Iso.refl (X₂⟦m⟧)))]
+    dsimp
+    simp only [← G.map_comp_assoc, NatTrans.naturality_assoc]
+    congr 2
+    ext
+    · simp [shiftFunctorAdd'_zero_add_hom_app, ← Functor.map_comp]
+    · simp
 
 lemma commShift_curry_obj_hom_app (X₁ : C₁) (X₂ : C₂) (m : M) :
     (((h.curry G).obj X₁).commShiftIso m).hom.app X₂ = ((iso₁ h G m).app X₁).hom.app X₂ := rfl
@@ -361,7 +380,7 @@ noncomputable instance (X₂ : C₂) : ((h.curry G).flip.obj X₂).CommShift M w
       Category.comp_id, ← G.map_comp_assoc]
     congr 2
     aesop
-  add := by
+  add m n := by
     sorry
 
 lemma commShift_curry_flip_obj_hom_app (X₁ : C₁) (X₂ : C₂) (m : M) :
