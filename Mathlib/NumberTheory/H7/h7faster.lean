@@ -3954,9 +3954,7 @@ lemma exists_R'_at_l'_plus_one (l' : Fin (h7.m))  :
             exact H2
   · exact hA
 
-
-def R'U (l' : Fin (h7.m)) : ℂ → ℂ := (exists_R'_at_l'_plus_one
-  h7 q hq0 h2mq l').choose
+def R'U (l' : Fin (h7.m)) : ℂ → ℂ := (exists_R'_at_l'_plus_one h7 q hq0 h2mq l').choose
 
 def U (l' : Fin (h7.m)) : Set ℂ :=
   (exists_R'_at_l'_plus_one h7 q hq0 h2mq l').choose_spec.choose
@@ -4806,13 +4804,21 @@ lemma S_eq_SR_on_circle :
   · rename_i H1
     simp only [zpow_neg, zpow_natCast]
     simp only [mem_sphere_iff_norm, sub_zero] at hz
-    rw [← Real.norm_of_nonneg (r:= ↑h7.m * (1 + ↑(h7.r q hq0 h2mq) / ↑q))] at hz
+    rw [← Real.norm_of_nonneg
+      (r := ↑h7.m * (1 + ↑(h7.r q hq0 h2mq) / ↑q))] at hz
     rw [Real.norm_eq_abs] at hz
     · split
       · rename_i H2
         unfold SRl0
+        have := R'prop h7 q hq0 h2mq ( h7.l₀' q hq0 h2mq)
+        simp only at this
+        unfold R'
+        obtain ⟨h1,h2,h3,h5⟩ := this
+        split
+        · sorry
+        · sorry
+      · unfold SRl
         sorry
-      · sorry
     · sorry
   · simp only [zpow_neg, zpow_natCast]
   }
