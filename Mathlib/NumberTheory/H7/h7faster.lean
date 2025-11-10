@@ -5369,6 +5369,7 @@ lemma abs_Rb : norm ((h7.R q hq0 h2mq) z) ≤
 
 
 
+
                       -- have := h7.etcff q hq0 h2mq
                       -- rw [← abs_mul] at this
                       -- norm_cast at *
@@ -5388,9 +5389,6 @@ lemma abs_Rb : norm ((h7.R q hq0 h2mq) z) ≤
     · simp only [Real.rpow_natCast, norm_mul, Real.norm_eq_abs]
       sorry
     · positivity
-
-
-#exit
 
 def c₁₀ : ℝ := (2*h7.m* h7.c₄* h7.c₉* h7.c₉^(2*h7.m : ℝ))
 
@@ -5463,31 +5461,51 @@ lemma abs_R :(q * q) * ((h7.c₄ ^ (h7.r q hq0 h2mq : ℝ) *
               · simp only [Nat.cast_pos]
                 exact r_qt_0 h7 q hq0 h2mq
             · positivity
-            · sorry
-          · sorry
-          · sorry
-          · sorry
-        · sorry
-        · sorry
-      · sorry
+            · apply Real.rpow_nonneg
+              apply Real.rpow_nonneg
+              · exact c9_nonneg h7
+          · apply mul_nonneg
+            · apply Real.rpow_nonneg
+              · exact c9_nonneg h7
+            · apply mul_nonneg
+              · simp only [Nat.cast_nonneg]
+              · apply Real.rpow_nonneg
+                · simp only [Nat.cast_nonneg]
+          · apply Real.rpow_nonneg
+            · exact c9_nonneg h7
+          · unfold c₉
+            apply?
+        --· sorry
+        · apply Real.rpow_nonneg
+          · exact zero_leq_c₄ h7
+      · apply mul_nonneg
+        · apply Real.rpow_nonneg
+          · exact zero_leq_c₄ h7
+        · apply mul_nonneg
+          · apply mul_nonneg
+            · simp only [Nat.cast_nonneg]
+            · apply Real.rpow_nonneg
+              · simp only [Nat.cast_nonneg]
+          · apply Real.rpow_nonneg
+            · exact c9_nonneg h7
       · positivity
       · positivity
-      · sorry
-      · sorry
-      · sorry
-      · sorry
-      · sorry
+      · exact zero_leq_c₄ h7
+      · apply mul_nonneg
+        · positivity
+        · exact zero_leq_c₄ h7
+      · exact c9_nonneg h7
+      · apply mul_nonneg
+        · apply mul_nonneg
+          ·  positivity
+          · exact zero_leq_c₄ h7
+        · exact c9_nonneg h7
+      · apply Real.rpow_nonneg
+        exact c9_nonneg h7
 
 include hz in
 lemma abs_Ra : norm ((h7.R q hq0 h2mq) z) ≤ (h7.c₁₀)^ (h7.r q hq0 h2mq : ℝ) *
        (h7.r q hq0 h2mq : ℝ)^(1/2*((h7.r q hq0 h2mq)+3 : ℝ)) := by sorry
-
-
-
-
-
-
-
 
 #exit
 
