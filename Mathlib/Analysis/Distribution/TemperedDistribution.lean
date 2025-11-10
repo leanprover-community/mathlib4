@@ -5,7 +5,6 @@ Authors: Moritz Doll
 -/
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 import Mathlib.Analysis.Distribution.FourierSchwartz
---import Mathlib.Analysis.LocallyConvex.WeakOperatorTopology
 import Mathlib.Analysis.LocallyConvex.PointwiseConvergence
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 import Mathlib.MeasureTheory.Function.Holder
@@ -15,7 +14,8 @@ import Mathlib.MeasureTheory.Function.Holder
 
 ## Main definitions
 
-* `TemperedDistribution 𝕜 E F V`: The space `𝓢(E, F) →L[𝕜] V` with the weak operator topology
+* `TemperedDistribution 𝕜 E F V`: The space `𝓢(E, F) →L[𝕜] V` equipped with the pointwise
+convergence topology.
 * `TemperedDistribution.derivCLM`: The one-dimensional distributional derivative
 * `TemperedDistribution.pderivCLM`: Partial distributional derivatives
 * `SchwartzMap.toTemperedDistributionCLM`: The canonical embedding of `𝓢(E, F)` into
@@ -375,7 +375,7 @@ variable [NormedSpace ℝ E] [NormedSpace ℝ D]
 variable (V W) in
 def mkCLM (A : (𝓢(E, F) →L[𝕜] V) →ₗ[𝕜] (𝓢(D, G) →L[𝕜] W))
   (hbound : ∀ (f : 𝓢(D, G)), ∃ (s : Finset 𝓢(E, F)) (C : ℝ≥0),
-  ∀ (B : 𝓢(E, F) →L[𝕜] V), ∃ (g : 𝓢(E, F)) (b : V →L[𝕜] 𝕜) (_hb : g ∈ s),
+  ∀ (B : 𝓢(E, F) →L[𝕜] V), ∃ (g : 𝓢(E, F)) (_hb : g ∈ s),
   ‖(A B) f‖ ≤ C • ‖B g‖) : 𝓢'(𝕜, E, F, V) →L[𝕜] 𝓢'(𝕜, D, G, W) where
   __ := (toUniformConvergenceCLM _ _ _).toLinearMap.comp
     (A.comp (toUniformConvergenceCLM _ _ _).symm.toLinearMap)
@@ -383,13 +383,13 @@ def mkCLM (A : (𝓢(E, F) →L[𝕜] V) →ₗ[𝕜] (𝓢(D, G) →L[𝕜] W))
     apply Seminorm.continuous_from_bounded PointwiseConvergenceCLM.withSeminorms
       PointwiseConvergenceCLM.withSeminorms
     intro f
-    rcases hbound f with ⟨s, C, h⟩
+    obtain ⟨s, C, h⟩ := hbound f
     use s, C
     rw [← Seminorm.finset_sup_smul]
     intro B
-    rcases h ((toUniformConvergenceCLM _ _ _).symm B) with ⟨g, b, hb, h'⟩
-    refine le_trans ?_ (Seminorm.le_finset_sup_apply hb)
-    simpa using h'
+    obtain ⟨g, h₁, h₂⟩ := h ((toUniformConvergenceCLM _ _ _).symm B)
+    refine le_trans ?_ (Seminorm.le_finset_sup_apply h₁)
+    exact h₂
 
 variable (V) in
 def mkCompCLM (A : 𝓢(D, G) →L[𝕜] 𝓢(E, F)) : 𝓢'(𝕜, E, F, V) →L[𝕜] 𝓢'(𝕜, D, G, V) :=
