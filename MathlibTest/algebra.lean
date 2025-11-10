@@ -4,6 +4,8 @@ axiom sorryAlgebraTest {P : Prop} : P
 
 example (x : ℚ) (n : ℕ) : n • x + x = (n: ℤ) • x + x := by
   match_scalars_alg
+  /- TODO: run norm_cast on all new goals. -/
+  · norm_cast
 
 example (x : ℚ) (n : ℕ) : n • x + x = (n: ℤ) • x + x := by
   algebra
@@ -21,6 +23,18 @@ example (x : ℚ) (n : ℕ) : n • x + x = (n : ℤ) • x + x := by
   We keep the test to document this behaviour. -/
   guard_target = (1 + n) • x = (1 + ↑n : ℤ) • x
   exact sorryAlgebraTest
+
+/- Test handling of Nat.cast. -/
+example (x : ℚ) (n : ℕ) : n • x + x = n * x + x := by
+  match_scalars_alg
+
+/- Test handling of Int.cast. -/
+example (x : ℚ) (n : ℤ) : n • x + x = n * x + x := by
+  match_scalars_alg
+
+example (x : ℚ) (n : ℕ) : n • x + x = (n : ℤ) * x + x := by
+  match_scalars_alg
+  norm_cast
 
 
 example (x : ℚ) (a : ℤ) : algebraMap ℤ ℚ a * x = a • x := by

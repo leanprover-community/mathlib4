@@ -790,10 +790,32 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
 
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
 
+theorem Nat.cast_eq_algebraMap (A : Type*) [CommSemiring A] (n : ℕ) :
+    Nat.cast n = algebraMap ℕ A n := rfl
+
+theorem Nat.algebraMap_eq_cast (A : Type*) [CommSemiring A] (n : ℕ) :
+    algebraMap ℕ A n = Nat.cast n := rfl
+
+theorem Int.cast_eq_algebraMap (A : Type*) [CommRing A] (n : ℤ) :
+    Int.cast n = algebraMap ℤ A n := rfl
+
+theorem Int.algebraMap_eq_cast (A : Type*) [CommRing A] (n : ℤ) :
+    algebraMap ℤ A n = Int.cast n := rfl
+
+/-- Remove some nonstandard spellings of `algebraMap` such as `Nat.cast` -/
+def preprocess (mvarId : MVarId) : MetaM MVarId := do
+  -- collect the available `push_cast` lemmas
+  let thms : SimpTheorems := {}
+  let thms ← [``Nat.cast_eq_algebraMap, ``Int.cast_eq_algebraMap].foldlM (·.addConst ·) thms
+  let ctx ← Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[thms])
+  let (some r, _) ← simpTarget mvarId ctx (simprocs := #[]) |
+    throwError "internal error in polynomial tactic: preprocessing should not close goals"
+  return r
+
 /-- If `e` has type `Type u` for some level `u`, return `u` and `e : Q(Type u)`. -/
 def inferLevelQ (e : Expr) : MetaM (Σ u : Lean.Level, Q(Type u)) := do
-  let .sort u ← whnf (← inferType e) | throwError "not a type{indentExpr e}"
-  let some v := (← instantiateLevelMVars u).dec | throwError "not a Type{indentExpr e}"
+  let .sort u ← whnf (← inferType e) | throwError m!"not a Type {indentExpr e}"
+  let some v := (← instantiateLevelMVars u).dec | throwError m!"not a Type {indentExpr e}"
   return ⟨v, e⟩
 
 /-- Clean up the normal form into a more human-friendly format. This does everything
@@ -803,7 +825,8 @@ def inferLevelQ (e : Expr) : MetaM (Σ u : Lean.Level, Q(Type u)) := do
 def cleanupSMul (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
   let thms : SimpTheorems := {}
   let thms ← [``add_zero, ``add_assoc_rev, ``_root_.mul_one, ``mul_assoc_rev, ``_root_.pow_one,
-    ``mul_neg, ``add_neg, ``one_smul, ``mul_smul_comm].foldlM (·.addConst ·) thms
+    ``mul_neg, ``add_neg, ``one_smul, ``mul_smul_comm, ``Nat.algebraMap_eq_cast,
+    ``Int.algebraMap_eq_cast].foldlM (·.addConst ·) thms
   let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_neg,
       ``nnrat_rawCast, ``rat_rawCast_neg].foldlM (·.addConst · (post := false)) thms
   let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
@@ -840,29 +863,6 @@ def cleanup (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
     let r ← cleanupSMul cfg r
     let r ← cleanupConsts cfg r
     return r
-
-
-/-- Normalizes both sides of an equality goal in an algebra. Used by the `algebra` tactic. -/
-def normalize (goal : MVarId) {u v : Lean.Level} (R : Q(Type u)) (A : Q(Type v)) :
-    AtomM MVarId := do
-  let some (A', e₁, e₂) :=
-    (← whnfR <|← instantiateMVars <|← goal.getType).eq?
-    | throwError "algebra failed: not an equality"
-  guard (←isDefEq A A')
-  have sA : Q(CommSemiring $A) := ← synthInstanceQ q(CommSemiring $A)
-  have sR : Q(CommSemiring $R) := ← synthInstanceQ q(CommSemiring $R)
-  have sAlg : Q(Algebra $R $A) := ← synthInstanceQ q(Algebra $R $A)
-
-  have e₁ : Q($A) := e₁
-  have e₂ : Q($A) := e₂
-  let cr ← Algebra.mkCache sR
-  let ca ← Algebra.mkCache sA
-  let (⟨a, _exa, pa⟩ : Result (ExSum sAlg) e₁) ← eval sAlg cr ca e₁
-  let (⟨b, _exb, pb⟩ : Result (ExSum sAlg) e₂) ← eval sAlg cr ca e₂
-
-  let g' ← mkFreshExprMVarQ q($a = $b)
-  goal.assign q(($pa ▸ $pb ▸ $g') : $e₁ = $e₂)
-  return g'.mvarId!
 
 /-- Collect all scalar rings from scalar multiplications and `algebraMap` applications in the
 expression. -/
@@ -980,14 +980,16 @@ def evalExprInfer (e : Expr) : AtomM Simp.Result := do
 
 
 /-- Attempt to normalize all expressions in an algebra over some fixed base ring. -/
-elab (name := algebraNFWith) "algebra_nf" tk:"!"? " with " R:term loc:(location)?  : tactic => do
-  let mut cfg := {}
-  let ⟨_u, R⟩ ← inferLevelQ (← elabTerm R none)
-  if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
-  let loc := (loc.map expandLocation).getD (.targets #[] true)
-  let s ← IO.mkRef {}
-  let m := AtomM.recurse s cfg.toConfig (evalExpr R) (cleanup cfg)
-  transformAtLocation (m ·) "algebra_nf" loc cfg.failIfUnchanged false
+elab (name := algebraNFWith) "algebra_nf" tk:"!"? " with " R:term loc:(location)?  : tactic =>
+  withMainContext do
+    liftMetaTactic' preprocess
+    let mut cfg := {}
+    let ⟨_u, R⟩ ← inferLevelQ (← elabTerm R none)
+    if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
+    let loc := (loc.map expandLocation).getD (.targets #[] true)
+    let s ← IO.mkRef {}
+    let m := AtomM.recurse s cfg.toConfig (evalExpr R) (cleanup cfg)
+    transformAtLocation (m ·) "algebra_nf" loc cfg.failIfUnchanged false
 
 /-- Attempt to normalize all expressions in algebras over commutative rings.
 
@@ -995,18 +997,20 @@ The tactic attempts to infer the base ring from the expression being normalized,
 different rings on different subexpressions. This makes the normal form unpredictable.
 
 Use `algebra_nf with` instead. -/
-elab (name := algebraNF) "algebra_nf" tk:"!"? loc:(location)?  : tactic => do
-  let suggestion : Tactic.TryThis.Suggestion := {
-    suggestion := ← `(tactic| algebra_nf with _)
-    postInfo? := "\n\n 'algebra_nf' without specifying the base ring is unstable. \
-    Use `algebra_nf with` instead." }
-  Meta.Tactic.TryThis.addSuggestion (← getRef) suggestion (origSpan? := ← getRef)
-  let mut cfg := {}
-  if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
-  let loc := (loc.map expandLocation).getD (.targets #[] true)
-  let s ← IO.mkRef {}
-  let m := AtomM.recurse s cfg.toConfig (evalExprInfer) (cleanup cfg)
-  transformAtLocation (m ·) "algebra_nf" loc cfg.failIfUnchanged false
+elab (name := algebraNF) "algebra_nf" tk:"!"? loc:(location)?  : tactic =>
+  withMainContext do
+    liftMetaTactic' preprocess
+    let suggestion : Tactic.TryThis.Suggestion := {
+      suggestion := ← `(tactic| algebra_nf with _)
+      postInfo? := "\n\n 'algebra_nf' without specifying the base ring is unstable. \
+      Use `algebra_nf with` instead." }
+    Meta.Tactic.TryThis.addSuggestion (← getRef) suggestion (origSpan? := ← getRef)
+    let mut cfg := {}
+    if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
+    let loc := (loc.map expandLocation).getD (.targets #[] true)
+    let s ← IO.mkRef {}
+    let m := AtomM.recurse s cfg.toConfig (evalExprInfer) (cleanup cfg)
+    transformAtLocation (m ·) "algebra_nf" loc cfg.failIfUnchanged false
 
 /-- Frontend of `algebra`: attempt to close a goal `g`, assuming it is an equation of semirings. -/
 def proveEq (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) : AtomM Unit := do
@@ -1052,6 +1056,7 @@ present in the expressions.
  -/
 elab (name := algebra) "algebra":tactic =>
   withMainContext do
+    liftMetaTactic' preprocess
     let g ← getMainGoal
     AtomM.run .default (proveEq none g)
 
@@ -1060,6 +1065,7 @@ goal as linear combinations of A-atoms over some semiring R, and close the goal 
 expressions are the same. The R-coefficients are put into ring normal form. -/
 elab (name := algebraWith) "algebra" " with " R:term : tactic =>
   withMainContext do
+    liftMetaTactic' preprocess
     let ⟨u, R⟩ ← inferLevelQ (← elabTerm R none)
     let g ← getMainGoal
     AtomM.run .default (proveEq (some ⟨u, R⟩) g)
@@ -1204,9 +1210,11 @@ where
 /-- Given a goal which is an equality in a commutative R-algebra A, parse the LHS and RHS of the
 goal as linear combinations of A-atoms over some semiring R, and reduce the goal to the respective
 equalities of the R-coefficients of each atom. The R-coefficients are put into ring normal form. -/
-elab (name := matchScalarsAlgWith) "match_scalars_alg" " with " R:term :tactic => withMainContext do
-  let ⟨u, R⟩ ← inferLevelQ (← elabTerm R none)
-  Tactic.liftMetaTactic (matchScalarsAux <| .some ⟨u, R⟩)
+elab (name := matchScalarsAlgWith) "match_scalars_alg" " with " R:term :tactic =>
+  withMainContext do
+    liftMetaTactic' preprocess
+    let ⟨u, R⟩ ← inferLevelQ (← elabTerm R none)
+    Tactic.liftMetaTactic (matchScalarsAux <| .some ⟨u, R⟩)
 
 /-- Given a goal which is an equality in a commutative R-algebra A, parse the LHS and RHS of the
 goal as linear combinations of A-atoms over some semiring R, and reduce the goal to the respective
@@ -1216,6 +1224,8 @@ The scalar ring R is inferred automatically by looking for scalar multiplication
 present in the expressions.
 -/
 elab (name := matchScalarsAlg) "match_scalars_alg" :tactic =>
-  Tactic.liftMetaTactic (matchScalarsAux .none)
+  withMainContext do
+    liftMetaTactic' preprocess
+    Tactic.liftMetaTactic (matchScalarsAux .none)
 
 end Mathlib.Tactic.Algebra
