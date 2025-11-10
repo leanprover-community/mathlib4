@@ -13,8 +13,8 @@ import Mathlib.Tactic.CategoryTheory.Coherence
 # Universal property of localized monoidal categories
 
 This file proves that, given a monoidal localization functor `L : C ⥤ D`, and a functor
-`F : D ⥤ E` to a monoidal category, such that `L ⋙ F` is monoidal, then `F` is monoidal. See
-`CategoryTheory.Localization.Monoidal.functorMonoidalOfComp`.
+`F : D ⥤ E` to a monoidal category, such that `F` lifts along `L` to a monoidal functor `G`,
+then `F` is monoidal. See `CategoryTheory.Localization.Monoidal.functorMonoidalOfComp`.
 -/
 
 universe u
@@ -42,7 +42,8 @@ instance lifting₂CurriedTensorPost :
     curriedTensorPostFunctor.mapIso (Lifting.iso L W G F)
 
 /--
-The natural isomorphism of bifunctors `F - ⊗ F - ≅ F (- ⊗ -)`, given that `L ⋙ F` is monoidal.
+The natural isomorphism of bifunctors `F - ⊗ F - ≅ F (- ⊗ -)`, given that `F` lifts along `L`
+to a monoidal functor `G`, where `L` is a monoidal localization functor.
 -/
 noncomputable def curriedTensorPreIsoPost : curriedTensorPre F ≅ curriedTensorPost F :=
   lift₂NatIso L L W W (curriedTensorPre G) (curriedTensorPost G) _ _
@@ -75,7 +76,8 @@ lemma curriedTensorPreIsoPost_hom_app_app' {X₁ X₂ : C} {Y₁ Y₂ : D}
     Category.comp_id]
 
 /--
-Monoidal structure on `F`, given that `L ⋙ F` is monoidal, where `L` is a localization functor.
+Monoidal structure on `F`, given that `F` lifts along `L` to a monoidal functor `G`,
+where `L` is a monoidal localization functor.
 -/
 @[simps!]
 noncomputable def functorCoreMonoidalOfComp : F.CoreMonoidal := by
@@ -116,7 +118,8 @@ noncomputable def functorCoreMonoidalOfComp : F.CoreMonoidal := by
       whisker_exchange_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc, ← map_comp]
 
 /--
-Monoidal structure on `F`, given that `L ⋙ F` is monoidal, where `L` is a localization functor.
+Monoidal structure on `F`, given that `F` lifts along `L` to a monoidal functor `G`,
+where `L` is a monoidal localization functor.
 -/
 noncomputable def functorMonoidalOfComp : F.Monoidal :=
   (functorCoreMonoidalOfComp L W F G).toMonoidal
@@ -124,8 +127,8 @@ noncomputable def functorMonoidalOfComp : F.Monoidal :=
 @[reassoc]
 lemma functorMonoidalOfComp_ε : letI := functorMonoidalOfComp L W F G
     letI e := Lifting.iso L W G F
-    ε F = ε G ≫ e.inv.app _ ≫ F.map (η L) := by
-  simp [Functor.CoreMonoidal.toLaxMonoidal_ε]
+    ε F = ε G ≫ e.inv.app _ ≫ F.map (η L) :=
+  rfl
 
 @[reassoc]
 lemma functorMonoidalOfComp_μ (X Y : C) : letI := functorMonoidalOfComp L W F G
@@ -134,7 +137,12 @@ lemma functorMonoidalOfComp_μ (X Y : C) : letI := functorMonoidalOfComp L W F G
         F.map (δ L _ _) := by
   simp [Functor.CoreMonoidal.toLaxMonoidal_μ, curriedTensorPreIsoPost_hom_app_app]
 
-instance natTrans_isMonoidal :
+/--
+When `F` is given the monoidal structure `functorMonoidalOfComp` that is obtained by lifting along
+a monoidal localization functor `L`, then the lifting isomorphism is a monoidal natural
+transformation.
+-/
+instance lifting_isMonoidal :
     letI : F.Monoidal := functorMonoidalOfComp L W F G
     (Lifting.iso L W G F).hom.IsMonoidal := by
   letI : F.Monoidal := functorMonoidalOfComp L W F G
