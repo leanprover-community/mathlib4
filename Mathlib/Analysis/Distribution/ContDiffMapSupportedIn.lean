@@ -400,18 +400,18 @@ instance : LocallyConvexSpace ℝ 𝓓^{n}_{K}(E, F) :=
   LocallyConvexSpace.iInf fun _ ↦ LocallyConvexSpace.induced _
 
 variable (n) in
-/-- `structureMapL 𝕜 n i` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to its
+/-- `structureMap 𝕜 n i` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to its
 `i`-th iterated derivative as an element of `E →ᵇ (E [×i]→L[ℝ] F)`.
 This only makes mathematical sense if `i ≤ n`, otherwise we define it as the zero map.
 
 We call these "structure maps" because they define the topology on `𝓓^{n}_{K}(E, F)`. -/
-noncomputable def structureMapL (i : ℕ) :
+noncomputable def structureMap (i : ℕ) :
     𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ (E [×i]→L[ℝ] F) where
   toLinearMap := structureMapₗ 𝕜 n i
   cont := continuous_iInf_dom continuous_induced_dom
 
 lemma continuous_iff_comp {X} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
-    Continuous φ ↔ ∀ i, Continuous (structureMapL ℝ n i ∘ φ) := by
+    Continuous φ ↔ ∀ i, Continuous (structureMap ℝ n i ∘ φ) := by
   simp_rw [continuous_iInf_rng, continuous_induced_rng]
   rfl
 
