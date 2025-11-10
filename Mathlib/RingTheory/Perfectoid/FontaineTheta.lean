@@ -242,6 +242,12 @@ lemma IsHausdorff.map [IsHausdorff J M] : IsHausdorff I M := by
       apply Ideal.pow_right_mono (I := I.map (algebraMap R S)) hIJ n this
     · trivial
   · exact h n
+
+variable [Fact ¬IsUnit (p : O)]
+
+theorem foo : Function.Surjective (Perfection.coeff (ModP O p) p 0) := sorry
+    -- O/p perfect -> Pretilt coeff 0 surjective
+
 end
 
 variable [Fact ¬IsUnit (p : O)] [IsAdicComplete (span {(p : O)}) O]
