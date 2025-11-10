@@ -37,7 +37,7 @@ consisting of contractible sets.
 
 * Define contractible components and prove they are open in strongly locally contractible spaces
 * Add examples: convex sets, real vector spaces, star-shaped sets
-* Quotients and products of strongly locally contractible spaces
+* Products of strongly locally contractible spaces
 
 ## Notes
 
