@@ -43,7 +43,7 @@ lemma support_prod_subset (s : Finset ι) (f : ι → κ → M₀) :
 
 @[simp] lemma _root_.Set.indicator_pi_one_apply (s : Finset ι) (t : ∀ i, Set (α i)) (f : ∀ i, α i) :
     ((s : Set ι).pi t).indicator 1 f = ∏ i ∈ s, (t i).indicator (M := M₀) 1 (f i) := by
-  simp [Set.indicator, prod_boole]; congr
+  classical simp [Set.indicator, prod_boole]
 
 variable [Nontrivial M₀] [NoZeroDivisors M₀]
 
