@@ -208,8 +208,8 @@ end conjugate
 lemma _root_.Matrix.IsHermitian.posSemidef_iff_eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : IsHermitian A) : PosSemidef A ↔ 0 ≤ hA.eigenvalues := by
   conv_lhs => rw [hA.spectral_theorem]
-  simp [IsUnit.posSemidef_star_right_conjugate_iff (U := (hA.eigenvectorUnitary : Matrix n n 𝕜))
-      (Unitary.toUnits hA.eigenvectorUnitary).isUnit, posSemidef_diagonal_iff, Pi.le_def]
+  simp [IsUnit.posSemidef_star_right_conjugate_iff Unitary.coe_isUnit,
+    posSemidef_diagonal_iff, Pi.le_def]
 
 /-- The eigenvalues of a positive semi-definite matrix are non-negative -/
 lemma eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
@@ -504,8 +504,7 @@ open Matrix in
 lemma _root_.Matrix.IsHermitian.posDef_iff_eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : A.IsHermitian) : A.PosDef ↔ ∀ i, 0 < hA.eigenvalues i := by
   conv_lhs => rw [hA.spectral_theorem]
-  simp [IsUnit.posDef_star_right_conjugate_iff (U := (hA.eigenvectorUnitary : Matrix n n 𝕜))
-    (Unitary.toUnits hA.eigenvectorUnitary).isUnit]
+  simp [IsUnit.posDef_star_right_conjugate_iff Unitary.coe_isUnit]
 
 /-- The eigenvalues of a positive definite matrix are positive. -/
 lemma eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
