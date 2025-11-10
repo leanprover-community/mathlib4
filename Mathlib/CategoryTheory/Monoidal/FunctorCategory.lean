@@ -23,10 +23,12 @@ open CategoryTheory
 
 open CategoryTheory.MonoidalCategory
 
-namespace CategoryTheory.Monoidal
+namespace CategoryTheory
 
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
+
+namespace Monoidal
 
 namespace FunctorCategory
 
@@ -210,10 +212,12 @@ instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategor
     [MonoidalCategory E] (L : D ⥤ E) [L.Monoidal] :
     ((Functor.whiskeringRight C D E).obj L).Monoidal where
 
-instance (E : Type*) [Category E] [MonoidalCategory E] (F : C ⥤ D) :
-    ((Functor.whiskeringLeft _ _ E).obj F).Monoidal := Functor.CoreMonoidal.toMonoidal {
-  εIso := Iso.refl _
-  μIso _ _ := Iso.refl _ }
+end Monoidal
+
+@[simps!]
+instance Functor.Monoidal.whiskeringLeft (E : Type*) [Category E] [MonoidalCategory E] (F : C ⥤ D) :
+    ((whiskeringLeft _ _ E).obj F).Monoidal :=
+  CoreMonoidal.toMonoidal { εIso := Iso.refl _, μIso _ _ := Iso.refl _ }
 
 instance (E : Type*) [Category E] [MonoidalCategory E] (e : C ≌ D) :
     (e.congrLeft (E := E)).functor.Monoidal :=
@@ -238,4 +242,4 @@ instance (E : Type*) [Category E] [MonoidalCategory E] (e : C ≌ D) :
     change 𝟙 _ = _ ≫ (𝟙 _) ≫ _
     simp [Equivalence.congrLeft, ← Functor.map_comp]
 
-end CategoryTheory.Monoidal
+end CategoryTheory

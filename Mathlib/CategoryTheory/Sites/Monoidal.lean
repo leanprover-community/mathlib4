@@ -107,11 +107,19 @@ end Presheaf
 
 namespace GrothendieckTopology
 
+namespace W
+
+variable (J A) in
+lemma transport_isMonoidal {D : Type u₂} [Category.{v₂} D] (K : GrothendieckTopology D)
+    (G : D ⥤ C) [G.IsCoverDense J] [G.Full] [G.IsContinuous K J]
+    [(G.sheafPushforwardContinuous A K J).EssSurj] [(K.W (A := A)).IsMonoidal] :
+    (J.W (A := A)).IsMonoidal := by
+  rw [← J.W_inverseImage_whiskeringLeft K G]
+  infer_instance
+
 variable [MonoidalClosed A]
   [∀ (F₁ F₂ : Cᵒᵖ ⥤ A), HasFunctorEnrichedHom A F₁ F₂]
   [∀ (F₁ F₂ : Cᵒᵖ ⥤ A), HasEnrichedHom A F₁ F₂]
-
-namespace W
 
 open MonoidalClosed.FunctorCategory
 
@@ -143,13 +151,6 @@ end GrothendieckTopology
 namespace Sheaf
 
 variable (J A)
-
-lemma isMonoidal_transport {D : Type u₂} [Category.{v₂} D] (K : GrothendieckTopology D)
-    (G : D ⥤ C) [G.IsCoverDense J] [G.Full] [G.IsContinuous K J]
-    [(G.sheafPushforwardContinuous A K J).EssSurj] [(K.W (A := A)).IsMonoidal] :
-    (J.W (A := A)).IsMonoidal := by
-  rw [← J.W_inverseImage_whiskeringLeft K G]
-  infer_instance
 
 /-- The monoidal category structure on `Sheaf J A` that is obtained
 by localization of the monoidal category structure on the category
