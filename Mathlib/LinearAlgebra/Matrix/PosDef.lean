@@ -43,7 +43,7 @@ variable [Fintype m] [Fintype n]
 variable [Ring R] [PartialOrder R] [StarRing R]
 variable [CommRing R'] [PartialOrder R'] [StarRing R']
 variable [RCLike 𝕜]
-open scoped Matrix
+open Matrix
 
 /-!
 ## Positive semidefinite matrices
@@ -193,7 +193,6 @@ theorem _root_.Matrix.IsUnit.posSemidef_star_left_conjugate_iff (hU : IsUnit U) 
   rwa [← star_eq_conjTranspose, ← mul_assoc, ← mul_assoc, ← star_mul, mul_assoc, star_star,
     Units.mul_inv, mul_one, star_one, one_mul] at this
 
-open Matrix in
 /-- For an invertible matrix `U`, `U * x * star U` is positive semi-definite iff `x` is.
 This works on any ⋆-ring with a partial order.
 
@@ -208,8 +207,7 @@ end conjugate
 lemma _root_.Matrix.IsHermitian.posSemidef_iff_eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : IsHermitian A) : PosSemidef A ↔ 0 ≤ hA.eigenvalues := by
   conv_lhs => rw [hA.spectral_theorem]
-  simp [IsUnit.posSemidef_star_right_conjugate_iff Unitary.coe_isUnit,
-    posSemidef_diagonal_iff, Pi.le_def]
+  simp [Unitary.coe_isUnit.posSemidef_star_right_conjugate_iff, posSemidef_diagonal_iff, Pi.le_def]
 
 /-- The eigenvalues of a positive semi-definite matrix are non-negative -/
 lemma eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
@@ -486,7 +484,6 @@ theorem _root_.Matrix.IsUnit.posDef_star_left_conjugate_iff (hU : IsUnit U) :
   rwa [← star_eq_conjTranspose, ← mul_assoc, ← mul_assoc, ← star_mul, mul_assoc, star_star,
     Units.mul_inv, mul_one, star_one, one_mul] at this
 
-open Matrix in
 /-- For an invertible matrix `U`, `U * x * star U` is positive definite iff `x` is.
 This works on any ⋆-ring with a partial order.
 
@@ -499,12 +496,11 @@ theorem _root_.Matrix.IsUnit.posDef_star_right_conjugate_iff (hU : IsUnit U) :
 
 end conjugate
 
-open Matrix in
 /-- A Hermitian matrix is positive-definite if and only if its eigenvalues are positive. -/
 lemma _root_.Matrix.IsHermitian.posDef_iff_eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : A.IsHermitian) : A.PosDef ↔ ∀ i, 0 < hA.eigenvalues i := by
   conv_lhs => rw [hA.spectral_theorem]
-  simp [IsUnit.posDef_star_right_conjugate_iff Unitary.coe_isUnit]
+  simp [Unitary.coe_isUnit.posDef_star_right_conjugate_iff]
 
 /-- The eigenvalues of a positive definite matrix are positive. -/
 lemma eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
