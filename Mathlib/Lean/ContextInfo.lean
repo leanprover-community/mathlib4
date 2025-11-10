@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 
 import Mathlib.Lean.Elab.Tactic.Meta
+import Mathlib.Lean.Meta.WarningAsError
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header
@@ -17,13 +18,6 @@ in the context of an infotree node.
 
 open Lean Elab Term Command Linter
 
-def Lean.Meta.withWarningAsError {α : Type} (m : MetaM α) : MetaM α := do
-  let a ← m
-  let msgs := (← getThe Core.State).messages.unreported
-  if msgs.isEmpty then
-    return a
-  else
-    throwError "{msgs.size} unreported messages"
 namespace Lean.Elab.ContextInfo
 
 variable {α}

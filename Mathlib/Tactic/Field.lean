@@ -96,7 +96,6 @@ register_option linter.tacticAnalysis.fieldSimpToField : Bool := {
   defValue := true
 }
 
--- this linter has an undiagnosed bug on `field_simp at ***`
 @[tacticAnalysis linter.tacticAnalysis.fieldSimpToField,
   inherit_doc linter.tacticAnalysis.fieldSimpToField]
 def fieldSimpToField : TacticAnalysis.Config :=
