@@ -281,6 +281,7 @@ theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.sp
   rw [v.intValuation_if_neg hr, ← hv, Associates.count_self, Int.ofNat_one]
   apply v.associates_irreducible
 
+@[simp]
 theorem intValuation_eq_one_iff {R : Type*} [CommRing R] [IsDedekindDomain R]
     {v : HeightOneSpectrum R} {x : R} : v.intValuation x = 1 ↔ x ∉ v.asIdeal := by
   refine ⟨fun h ↦ by simp [← (intValuation_lt_one_iff_mem _ _).not, h], fun h ↦ ?_⟩
@@ -338,7 +339,7 @@ variable (K) in
 open scoped algebraMap in
 /-- The `v` adic valuation of `a / b ∈ K` is `≤ 1` if and only if `b ∉ v`, provided that `a` and
 `b` are coprime at `v`. -/
-theorem valuation_le_one_iff (a : R) {b : R} (hb : b ≠ 0)
+theorem valuation_div_le_one_iff (a : R) {b : R} (hb : b ≠ 0)
     (h : b ∈ v.asIdeal → a ∉ v.asIdeal) :
     v.valuation K (a / b) ≤ 1 ↔ b ∉ v.asIdeal := by
   refine ⟨fun hv ↦ ?_, fun hb ↦ by
@@ -663,29 +664,13 @@ namespace Rat
 
 open IsDedekindDomain.HeightOneSpectrum
 
-variable {R : Type*} [CommRing R] [IsDedekindDomain R]
+variable {R : Type*} [CommRing R] [IsDedekindDomain R] [Algebra R ℚ] [IsFractionRing R ℚ]
 
-theorem num_not_mem_ideal_of_den_mem [Nonempty (R ≃+* ℤ)] {𝔭 : Ideal R} (hp : Prime 𝔭) (x : ℚ)
-    (hden : ↑x.den ∈ 𝔭) : ↑x.num ∉ 𝔭 := by
-  let f := Classical.arbitrary (R ≃+* ℤ)
-  obtain ⟨p, h𝔭⟩ := IsPrincipalIdealRing.principal (Ideal.map f 𝔭) |>.map_ringHom f.symm
-  rw [Ideal.map_symm, Ideal.comap_map_of_bijective _ f.bijective, Ideal.submodule_span_eq] at h𝔭
-  simp_rw [h𝔭, Ideal.mem_span_singleton] at hden ⊢
-  have : IsPrincipalIdealRing R := IsPrincipalIdealRing.of_surjective _ f.symm.surjective
-  have := isRelPrime_iff_isCoprime.2 <| Nat.Coprime.cast (R := R) x.reduced
-  contrapose! this
-  simp only [IsRelPrime, not_forall]
-  refine ⟨p, ?_, hden, (Ideal.prime_span_singleton_iff.1 <| h𝔭 ▸ hp).not_unit⟩
-  rcases lt_or_ge x.num 0 with (h₀ | h₀)
-  · simpa [abs_eq_neg_self.2 (le_of_lt h₀)]
-  · simpa [abs_eq_self.2 h₀]
-
-theorem valuation_le_one_iff_den [Algebra R ℚ] [IsFractionRing R ℚ] [Nonempty (R ≃+* ℤ)]
-    (𝔭 : HeightOneSpectrum R) (x : ℚ) :
+theorem valuation_le_one_iff_den (𝔭 : HeightOneSpectrum R) (x : ℚ) :
     𝔭.valuation ℚ x ≤ 1 ↔ ↑x.den ∉ 𝔭.asIdeal := by
-  let f := Classical.arbitrary (R ≃+* ℤ)
-  have : (x.den : R) ≠ 0 := fun h ↦ by simpa using congrArg f h
-  simp [← 𝔭.valuation_le_one_iff ℚ x.num this (x.num_not_mem_ideal_of_den_mem 𝔭.prime),
-    x.num_div_den]
+  have : CharZero R := ⟨.of_comp (f := algebraMap R ℚ) (by simpa using Nat.cast_injective)⟩
+  have : (x.den : R) ≠ 0 := by simp
+  simp [x.num_div_den, ← 𝔭.valuation_div_le_one_iff ℚ x.num this
+    (Ideal.IsPrime.notMem_of_isCoprime_of_mem (mod_cast x.isCoprime_num_den.symm.intCast))]
 
 end Rat
