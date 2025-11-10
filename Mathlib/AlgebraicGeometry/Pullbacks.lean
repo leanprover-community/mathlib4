@@ -772,7 +772,7 @@ lemma μ_pullback_left_fst_fst (X Y : Over S) :
   rfl
 
 lemma μ_pullback_left_fst_snd (X Y : Over S) :
-    LaxMonoidal.μ (Over.pullback f) X Y).left ≫
+    (LaxMonoidal.μ (Over.pullback f) X Y).left ≫
       pullback.fst _ _ ≫ pullback.snd _ _ = pullback.snd _ _ ≫ pullback.fst _ _ := by
   rw [Monoidal.μ_of_cartesianMonoidalCategory,
     ← cancel_epi (prodComparisonIso (Over.pullback f) X Y).hom.left,
