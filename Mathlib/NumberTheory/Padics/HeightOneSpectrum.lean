@@ -9,6 +9,9 @@ open IsDedekindDomain
 
 open scoped NumberField WithZero
 
+-- TODO : Remove Nonempty (R ≃+* ℤ) assumption? Need that IsFractionRing R ℚ + IsDedekindDomain R
+-- implies R is a PID or at least that Module.Free ℤ R of dimension one holds and use absNorm
+
 noncomputable
 def IsDedekindDomain.HeightOneSpectrum.natGenerator {R : Type*} [CommRing R]
     [h : Nonempty (R ≃+* ℤ)] (v : HeightOneSpectrum R) : ℕ :=
@@ -94,24 +97,6 @@ noncomputable def adicCompletionIntegers.padicIntUniformEquiv {R : Type*} [CommR
 
 universe u v
 
--- TODO : move
-@[simps!]
-def _root_.RingEquiv.restrict {R : Type u} {S : Type v} [NonAssocSemiring R] [NonAssocSemiring S]
-    {σR : Type*} {σS : Type*} [SetLike σR R] [SetLike σS S] [SubsemiringClass σR R]
-    [SubsemiringClass σS S] (f : R ≃+* S) (s' : σR) (s : σS) (h : ∀ x, x ∈ s' ↔ f x ∈ s) :
-    s' ≃+* s where
-  __ := RingHom.restrict f _ _ fun _ ↦ (h _).1
-  invFun := RingHom.restrict f.symm _ _ fun y hy ↦ by
-    obtain ⟨x, rfl⟩ := f.surjective y; simp [(h _).2 hy]
-  left_inv y := by simp [← Subtype.val_inj]
-  right_inv x := by simp [← Subtype.val_inj]
-
--- TODO : move
-open scoped Valued in
-noncomputable def _root_.PadicInt.withValIntegersRingEquiv {p : ℕ} [Fact p.Prime] :
-    𝒪[(Rat.padicValuation p).Completion] ≃+* ℤ_[p] :=
-  Padic.withValRingEquiv.restrict _ (PadicInt.subring p) fun _ ↦
-    (Padic.withValUniformEquiv_norm_le_one_iff _).symm
 
 noncomputable def adicCompletionIntegers.padicIntRingEquiv {R : Type*} [CommRing R]
     [IsDedekindDomain R] [Algebra R ℚ] [IsFractionRing R ℚ] [Nonempty (R ≃+* ℤ)]
