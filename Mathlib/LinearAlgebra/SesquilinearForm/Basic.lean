@@ -938,7 +938,8 @@ lemma apply_mul_apply_lt_iff_linearIndependent [NoZeroSMulDivisors R M]
     (B x y) * (B y x) < (B x x) * (B y y) ↔ LinearIndependent R ![x, y] := by
   have hle : ∀ z, 0 ≤ B z z := by
     intro z
-    by_cases hz : z = 0; simp [hz]
+    by_cases hz : z = 0
+    · simp [hz]
     exact le_of_lt (hp z hz)
   constructor
   · contrapose!
