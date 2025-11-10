@@ -365,8 +365,7 @@ theorem toTemperedDistribution_holder_eq (g : BoundedContinuousFunction H ℂ)
     (hg : Function.HasTemperateGrowth (g : H → ℂ)) :
     (((ContinuousLinearMap.lsmul ℂ ℂ).holder 2 (g.memLp_top.toLp _) f) : 𝓢'(ℂ, H, E →L[ℂ] V, V)) =
     (_root_.smulLeftCLM _ V (g : H → ℂ)) (f : 𝓢'(ℂ, H, E →L[ℂ] V, V)) := by
-  ext u y
-  congr 1
+  ext u
   simp
   apply integral_congr_ae
   filter_upwards [(ContinuousLinearMap.lsmul ℂ ℂ).coeFn_holder (r := 2) (g.memLp_top.toLp _) f,

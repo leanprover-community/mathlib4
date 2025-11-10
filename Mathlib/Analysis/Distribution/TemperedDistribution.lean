@@ -5,7 +5,8 @@ Authors: Moritz Doll
 -/
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 import Mathlib.Analysis.Distribution.FourierSchwartz
-import Mathlib.Analysis.LocallyConvex.WeakOperatorTopology
+--import Mathlib.Analysis.LocallyConvex.WeakOperatorTopology
+import Mathlib.Analysis.LocallyConvex.PointwiseConvergence
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 import Mathlib.MeasureTheory.Function.Holder
 
@@ -53,7 +54,7 @@ section definition
 variable [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace 𝕜 V] [NormedSpace 𝕜 F]
 variable (𝕜 E F V)
 
-abbrev TemperedDistribution := 𝓢(E, F) →WOT[𝕜] V
+abbrev TemperedDistribution := 𝓢(E, F) →Lₚₜ[𝕜] V
 
 scoped[SchwartzMap] notation "𝓢'(" 𝕜 ", " E ", " F ", " V ")" => TemperedDistribution 𝕜 E F V
 
@@ -66,7 +67,7 @@ variable [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace 𝕜 V] [NormedSpa
 variable (𝕜 F) in
 /-- The Dirac delta distribution -/
 def delta' (x : E) : 𝓢'(𝕜, E, F, F) :=
-  ContinuousLinearMap.toWOT 𝕜 𝓢(E, F) F
+  toPointwiseConvergenceCLM 𝕜 _ _ F
     ((BoundedContinuousFunction.evalCLM 𝕜 x).comp (toBoundedContinuousFunctionCLM 𝕜 E F))
 
 @[simp]
@@ -117,7 +118,7 @@ def pairingCLM (g : 𝓢(E, F →L[𝕜] V)) : 𝓢(E, F) →L[𝕜] 𝓢(E, V) 
   (fun _ _ _ => by simp)
   (fun _ _ _ => by simp)
   (fun f => by
-    convert ((ContinuousLinearMap.restrictScalarsL _ F _ ℝ ℝ).contDiff.fun_comp
+    convert ((restrictScalarsL _ F _ ℝ ℝ).contDiff.fun_comp
       (g.smooth ⊤)).clm_apply (f.smooth ⊤)
     simp)
   (by
@@ -171,7 +172,7 @@ variable [BorelSpace E] [SecondCountableTopology E]
 
 variable (𝕜 F μ) in
 def MeasureTheory.Measure.toTemperedDistribution : 𝓢'(𝕜, E, F, F) :=
-  (toWOT _ _ _) (integralCLM 𝕜 μ)
+  toPointwiseConvergenceCLM _ _ _ _ (integralCLM 𝕜 μ)
 
 variable (𝕜) in
 @[simp]
@@ -191,12 +192,13 @@ variable [NormedSpace ℝ V]
 
 variable (𝕜 V) in
 def toTemperedDistribution (f : E → F) : 𝓢'(𝕜, E, F →L[𝕜] V, V) :=
-    (ContinuousLinearMap.toWOT _ _ _) ((integralCLM 𝕜 μ) ∘L (bilinLeftCLM (.id 𝕜 _) f))
+    toPointwiseConvergenceCLM _ _ _ _
+      ((integralCLM 𝕜 μ) ∘L (bilinLeftCLM (.id 𝕜 _) f))
 
 @[simp]
 theorem toTemperedDistribution_apply {f : E → F} (hf : f.HasTemperateGrowth) (g : 𝓢(E, F →L[𝕜] V)) :
     toTemperedDistribution 𝕜 V (μ := μ) f g = ∫ (x : E), (g x) (f x) ∂μ := by
-  simp [toTemperedDistribution, ContinuousLinearMap.toWOT_apply, hf]
+  simp [toTemperedDistribution, (integralCLM 𝕜 _).comp_apply, bilinLeftCLM_apply _ hf]
 
 end Function.HasTemperateGrowth
 
@@ -225,7 +227,7 @@ This is a helper definition with unnecessary parameters. -/
 def toTemperedDistribution_aux (p q : ℝ≥0∞) (hp : Fact (1 ≤ p)) (hq : Fact (1 ≤ q))
     (hpq : ENNReal.HolderConjugate p q) (f : Lp F p μ) :
     𝓢'(𝕜, E, F →L[𝕜] V, V) :=
-  (ContinuousLinearMap.toWOT _ _ _)
+  toPointwiseConvergenceCLM _ _ _ _
     (((ContinuousLinearMap.id 𝕜 (F →L[𝕜] V)).flip.lpPairing μ p q f) ∘L (toLpCLM 𝕜 (F →L[𝕜] V) q μ))
 
 variable (𝕜 V) in
@@ -239,7 +241,7 @@ theorem toTemperedDistribution_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f :
     (g : 𝓢(E, F →L[𝕜] V)) :
     (toTemperedDistribution 𝕜 V f) g = ∫ (x : E), ((g.toLp (1 - p⁻¹)⁻¹ μ) x) (f x) ∂μ := by
   unfold Lp.toTemperedDistribution Lp.toTemperedDistribution_aux
-  simp [toWOT_apply, lpPairing_eq_integral]
+  simp [comp_apply _, lpPairing_eq_integral]
 
 instance instCoeDep {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :
     CoeDep (Lp F p μ) f 𝓢'(𝕜, E, F →L[𝕜] V, V) where
@@ -260,15 +262,14 @@ def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [μ.HasTemperate
   map_add' f g := by
     ext x
     unfold Lp.toTemperedDistribution Lp.toTemperedDistribution_aux
-    simp only [map_add, add_comp, ContinuousLinearMapWOT.add_apply]
+    simp only [map_add, add_comp]
   map_smul' a f := by
     ext x
     unfold Lp.toTemperedDistribution Lp.toTemperedDistribution_aux
     simp
   cont := by
-    apply ContinuousLinearMapWOT.continuous_of_dual_apply_continuous
-    intro g y
-    apply y.cont.comp
+    apply PointwiseConvergenceCLM.continuous_of_continuous_eval
+    intro g
     set q := (1 - p⁻¹)⁻¹
     have hq : Fact (1 ≤ q) := by simp [q, fact_iff]
     have hpq : ENNReal.HolderConjugate p q := p.inv_one_sub_inv'
@@ -296,7 +297,7 @@ theorem injective_toTemperedDistributionCLM {p : ℝ≥0∞} [hp : Fact (1 ≤ p
       filter_upwards [coeFn_toLp (hg1.toSchwartzMap hg2) (1 - p⁻¹)⁻¹ μ] with x hgg
       simp [hgg]
     have hf_applied : (toTemperedDistributionCLM 𝕜 F F μ p) f (hg1.toSchwartzMap hg2) = 0 := by
-      rw [hf, ContinuousLinearMapWOT.zero_apply]
+      simp [hf]
     simpa [integral_congr_ae this] using hf_applied
 
 end MeasureTheory.Lp
@@ -315,19 +316,19 @@ variable [MeasurableSpace E] [BorelSpace E]
 variable (𝕜 E F V) in
 def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
     𝓢(E, F) →L[𝕜] 𝓢'(𝕜, E, F →L[𝕜] V, V) where
-  toFun f := (toWOT _ _ _) ((integralCLM 𝕜 μ) ∘L (pairingLM f))
+  toFun f := toPointwiseConvergenceCLM _ _ _ _ ((integralCLM 𝕜 μ) ∘L (pairingLM f))
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
   cont := by
-    apply ContinuousLinearMapWOT.continuous_of_dual_apply_continuous
-    intro g y
-    exact y.cont.comp ((integralCLM 𝕜 μ).cont.comp (pairingCLM g).cont)
+    apply PointwiseConvergenceCLM.continuous_of_continuous_eval
+    intro g
+    exact (integralCLM 𝕜 μ).cont.comp (pairingCLM g).cont
 
 @[simp]
 theorem toTemperedDistributionCLM_apply_apply (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] (f : 𝓢(E, F)) (g : 𝓢(E, F →L[𝕜] V)) :
     toTemperedDistributionCLM 𝕜 E F V μ f g = ∫ (x : E), (g x) (f x) ∂μ := by
-  simp [toTemperedDistributionCLM, ContinuousLinearMap.toWOT_apply]
+  simp [toTemperedDistributionCLM, comp_apply _]
 
 end MeasurableSpace
 
@@ -356,8 +357,7 @@ variable [NormedSpace 𝕜 F] [NormedSpace ℝ F] [CompleteSpace V]
 @[simp]
 theorem eq_embeddings (f : 𝓢(E, F)) : ((f.toLp 2 μ) : 𝓢'(𝕜, E, F →L[𝕜] V, V)) =
     SchwartzMap.toTemperedDistributionCLM 𝕜 E F V μ f := by
-  ext g y
-  congr 1
+  ext g
   simp only [Lp.toTemperedDistribution_apply, toTemperedDistributionCLM_apply_apply]
   apply integral_congr_ae
   filter_upwards [f.coeFn_toLp 2 μ, g.coeFn_toLp (1 - 2⁻¹)⁻¹ μ] with x hf hg
@@ -374,21 +374,21 @@ variable [NormedSpace ℝ E] [NormedSpace ℝ D]
 
 variable (V W) in
 def mkCLM (A : (𝓢(E, F) →L[𝕜] V) →ₗ[𝕜] (𝓢(D, G) →L[𝕜] W))
-  (hbound : ∀ (f : 𝓢(D, G)) (a : W →L[𝕜] 𝕜), ∃ (s : Finset (𝓢(E, F) × (V →L[𝕜] 𝕜))) (C : ℝ≥0),
-  ∀ (B : 𝓢(E, F) →L[𝕜] V), ∃ (g : 𝓢(E, F)) (b : V →L[𝕜] 𝕜) (_hb : (g, b) ∈ s),
-  ‖a ((A B) f)‖ ≤ C • ‖b (B g)‖) : 𝓢'(𝕜, E, F, V) →L[𝕜] 𝓢'(𝕜, D, G, W) where
-  __ := (toWOT _ _ _).toLinearMap.comp (A.comp (toWOT _ _ _).symm.toLinearMap)
+  (hbound : ∀ (f : 𝓢(D, G)), ∃ (s : Finset 𝓢(E, F)) (C : ℝ≥0),
+  ∀ (B : 𝓢(E, F) →L[𝕜] V), ∃ (g : 𝓢(E, F)) (b : V →L[𝕜] 𝕜) (_hb : g ∈ s),
+  ‖(A B) f‖ ≤ C • ‖B g‖) : 𝓢'(𝕜, E, F, V) →L[𝕜] 𝓢'(𝕜, D, G, W) where
+  __ := (toUniformConvergenceCLM _ _ _).toLinearMap.comp
+    (A.comp (toUniformConvergenceCLM _ _ _).symm.toLinearMap)
   cont := by
-    apply Seminorm.continuous_from_bounded ContinuousLinearMapWOT.withSeminorms
-      ContinuousLinearMapWOT.withSeminorms
-    intro (f, a)
-    rcases hbound f a with ⟨s, C, h⟩
+    apply Seminorm.continuous_from_bounded PointwiseConvergenceCLM.withSeminorms
+      PointwiseConvergenceCLM.withSeminorms
+    intro f
+    rcases hbound f with ⟨s, C, h⟩
     use s, C
     rw [← Seminorm.finset_sup_smul]
     intro B
-    rcases h ((toWOT _ _ _).symm B) with ⟨g, b, hb, h'⟩
+    rcases h ((toUniformConvergenceCLM _ _ _).symm B) with ⟨g, b, hb, h'⟩
     refine le_trans ?_ (Seminorm.le_finset_sup_apply hb)
-    unfold ContinuousLinearMapWOT.seminormFamily
     simpa using h'
 
 variable (V) in
@@ -396,8 +396,8 @@ def mkCompCLM (A : 𝓢(D, G) →L[𝕜] 𝓢(E, F)) : 𝓢'(𝕜, E, F, V) →L
     mkCLM V V
       {toFun f := f ∘L A, map_add' f g := by simp, map_smul' := by simp}
       (by
-        intro f a
-        use {(A f, a)}, 1
+        intro f
+        use {A f}, 1
         simp)
 
 @[simp]
@@ -406,12 +406,12 @@ theorem mkCompCLM_apply_apply (A : 𝓢(D, G) →L[𝕜] 𝓢(E, F)) (f : 𝓢'(
 
 theorem mkCompCLM_comp (A B : 𝓢(E, F) →L[𝕜] 𝓢(E, F)) :
     (mkCompCLM V A) ∘L (mkCompCLM V B) = mkCompCLM V (B ∘L A) := by
-  ext f g y
+  ext f g
   simp only [coe_comp', Function.comp_apply, mkCompCLM_apply_apply]
 
 @[simp]
 theorem mkCompCLM_id : (mkCompCLM V (.id 𝕜 𝓢(E, F))) = .id _ _ := by
-  ext f g y
+  ext f g
   simp only [mkCompCLM_apply_apply, coe_id', id_eq]
 
 end Construction
@@ -448,8 +448,7 @@ theorem smulLeftCLM_apply_apply (g : D → 𝕜) (f : 𝓢'(𝕜, D, E, V)) (f' 
 theorem mul_smulLeftCLM {g₁ g₂ : D → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
     (hg₂ : g₂.HasTemperateGrowth) :
     smulLeftCLM E V g₂ ∘L smulLeftCLM E V g₁ = smulLeftCLM E V (g₁ * g₂) := by
-  ext f f' y
-  congr 1
+  ext f f'
   have := DFunLike.congr_fun (smulLeftCLM_mul hg₁ hg₂ (𝕜 := 𝕜) (E := E)) f'
   simp only [coe_comp', Function.comp_apply] at this
   simp [this]
@@ -460,7 +459,7 @@ variable [MeasurableSpace D] [BorelSpace D] [SecondCountableTopology D] {μ : Me
 theorem smulLeftCLM_toTemperedDistributionCLM_eq {g : D → 𝕜} (hg : g.HasTemperateGrowth)
     (f : 𝓢(D, E)) : smulLeftCLM (E →L[𝕜] V) V g (toTemperedDistributionCLM 𝕜 D E V μ f) =
     toTemperedDistributionCLM 𝕜 D E V μ (SchwartzMap.smulLeftCLM 𝕜 E g f) := by
-  ext f' y
+  ext f'
   simp [hg]
 
 end Multiplication
@@ -485,7 +484,7 @@ variable [NormedSpace ℝ V]
 /-- The distributional derivative and the classical derivative coincide on `𝓢(ℝ, F)`. -/
 theorem derivCLM_toTemperedDistributionCLM_eq (f : 𝓢(ℝ, F)) :
     derivCLM V (f : 𝓢'(𝕜, ℝ, F →L[𝕜] V, V)) = f.deriv := by
-  ext g y
+  ext g
   simp [integral_clm_comp_deriv_right_eq_neg_left, integral_neg]
 
 end deriv
@@ -568,7 +567,6 @@ variable [CompleteSpace E] [CompleteSpace V]
 theorem fourierTransformCLM_toTemperedDistributionCLM_eq (f : 𝓢(H, E)) :
     𝓕 (f : 𝓢'(ℂ, H, E →L[ℂ] V, V)) = 𝓕 f := by
   ext g
-  congr 1
   simp only [fourierTransform_apply, toTemperedDistributionCLM_apply_apply,
     SchwartzMap.fourierTransform_apply]
   exact integral_bilin_fourierIntegral_eq_flip g f (.id ℂ _)
@@ -581,7 +579,7 @@ theorem fourierTransformInv_toTemperedDistributionCLM_eq (f : 𝓢(H, E)) :
   rw [this]
 
 example : 𝓕 (delta' 𝕜 E (0 : H)) = volume.toTemperedDistribution 𝕜 E := by
-  ext f x
+  ext f
   simp [SchwartzMap.fourierTransform_apply, Real.fourierIntegral_eq]
 
 end TemperedDistribution
