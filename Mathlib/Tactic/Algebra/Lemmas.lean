@@ -44,10 +44,6 @@ theorem isInt_negOfNat_eq {a : A} {lit : ℕ} (h : IsInt a (Int.negOfNat lit)) :
     a = (Int.rawCast (Int.negOfNat lit) + 0 : R) • (1 : A) + 0 := by
   simp [h.out, ← Algebra.algebraMap_eq_smul_one]
 
-/- evalCast -/
-theorem isNat_zero_eq {a : A} (h : IsNat a 0) : a = 0 := by
-  have := h.out
-  simp [this]
 
 /- eval -/
 theorem eval_neg {a a' b : A} (ha : a = a') (hb : -a' = b) :
@@ -84,6 +80,11 @@ theorem isRat_eq_rawCast {a : A} {n d : ℕ} (h : IsRat a (.negOfNat n) d) :
 end field
 
 variable {R A : Type*} [sR : CommSemiring R] [sA : CommSemiring A] [sAlg : Algebra R A]
+
+/- evalCast -/
+theorem isNat_zero_eq {a : A} (h : IsNat a 0) : a = 0 := by
+  have := h.out
+  simp [this]
 
 /- evalAddOverlap -/
 theorem smul_add_left_zero {r s : R} (h : r + s = 0) :
