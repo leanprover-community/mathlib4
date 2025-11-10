@@ -63,6 +63,8 @@ lemma RingHom.FaithfullyFlat.codescendsAlong_surjective :
   rw [faithfullyFlat_algebraMap_iff] at h
   exact h.surjective_of_tensorProduct H
 
+universe u
+
 lemma RingHom.FaithfullyFlat.codescendsAlong_bijective :
     CodescendsAlong (fun f ↦ Function.Bijective f) FaithfullyFlat :=
-  .and codescendsAlong_injective codescendsAlong_surjective
+  CodescendsAlong.and codescendsAlong_injective codescendsAlong_surjective
