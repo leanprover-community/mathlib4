@@ -225,6 +225,8 @@ theorem le_one_of_extendedHomₐ_le_one (hI : extendedHomₐ L B I ≤ 1) : I �
 theorem extendedHomₐ_le_one_iff : extendedHomₐ L B I ≤ 1 ↔ I ≤ 1 :=
   ⟨fun h ↦ le_one_of_extendedHomₐ_le_one L B h, fun a ↦ extended_le_one_of_le_one L _ I a⟩
 
+section IsDedekindDomain
+
 variable [IsDedekindDomain A] [IsDedekindDomain B]
 
 theorem one_le_extendedHomₐ_iff (hI : I ≠ 0) : 1 ≤ extendedHomₐ L B I ↔ 1 ≤ I := by
@@ -246,14 +248,7 @@ theorem extendedHomₐ_injective :
   rwa [← mul_inv_eq_one₀ ((extendedHomₐ_eq_zero_iff _ _).not.mpr hJ), ← map_inv₀, ← map_mul,
     extendedHomₐ_eq_one_iff _ _ (mul_ne_zero hI (inv_ne_zero hJ)), mul_inv_eq_one₀ hJ] at h
 
-theorem _root_.Ideal.map_algebraMap_injective :
-    Function.Injective (fun I : Ideal A ↦ I.map (algebraMap A B)) := by
-  let _ : Algebra (FractionRing A) (FractionRing B) := FractionRing.liftAlgebra A (FractionRing B)
-  intro _ _ _
-  rwa [← coeIdeal_inj (K := FractionRing A),
-    ← (extendedHomₐ_injective A (FractionRing A) (FractionRing B) B).eq_iff,
-    extendedHom_apply, extendedHom_apply, extended_coeIdeal_eq_map, extended_coeIdeal_eq_map,
-    coeIdeal_inj]
+end IsDedekindDomain
 
 end Algebra
 
