@@ -9,6 +9,7 @@ import Mathlib.Topology.Homotopy.Path
 import Mathlib.Topology.Order
 import Mathlib.Topology.Defs.Induced
 import Mathlib.Topology.Connected.LocPathConnected
+import Mathlib.Topology.UnitInterval
 
 /-!
 # Semilocally simply connected spaces
@@ -191,7 +192,21 @@ theorem Path.exists_partition_in_cover
       StrictMono t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
       (∀ i : Fin n, ∃ j : ι,
         ∀ s : unitInterval, (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ s ∈ U j) := by
-  sorry
+  -- Pull back the cover along γ to get an open cover of unitInterval
+  let V : ι → Set unitInterval := fun i => γ ⁻¹' (U i)
+  have hV_open : ∀ i, IsOpen (V i) := fun i => (hU_open i).preimage γ.continuous
+  have hV_cover : (Set.univ : Set unitInterval) ⊆ ⋃ i, V i := by
+    intro s _
+    obtain ⟨i, hi⟩ := Set.mem_iUnion.mp (hU_cover (Set.mem_range_self s))
+    exact Set.mem_iUnion.mpr ⟨i, hi⟩
+  obtain ⟨n, t, ht_strict, ht0, htn, ht_cover⟩ :=
+    exists_strictMono_Icc_subset_open_cover_unitInterval hV_open hV_cover
+  refine ⟨n, t, ht_strict, ht0, htn, ?_⟩
+  -- Each segment is in some U j
+  intro i
+  obtain ⟨j, hj⟩ := ht_cover i
+  refine ⟨j, fun s hs => ?_⟩
+  exact hj ⟨hs.1, hs.2⟩
 
 /-- Generic Lebesgue partition lemma for paths, neighborhood version: If every point on a path
 has a neighborhood with property P, then there exists a partition such that each segment lies
