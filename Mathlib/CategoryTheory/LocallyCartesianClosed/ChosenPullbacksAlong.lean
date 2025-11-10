@@ -13,18 +13,19 @@ import Mathlib.CategoryTheory.Adjunction.Unique
 
 ## Main declarations
 
-- `ChosenPullbackAlong` : For a morphism `f : Y ⟶ X` in `C`, the type class `ChosenPullbackAlong f`
-provides the data of a pullback functor `Over X ⥤ Over Y` as a right adjoint to `Over.map f`.
+- `ChosenPullbacksAlong` : For a morphism `f : Y ⟶ X` in `C`, the type class
+  `ChosenPullbacksAlong f` provides the data of a pullback functor `Over X ⥤ Over Y`
+  as a right adjoint to `Over.map f`.
 
 ## Main results
 
-- We prove that `ChosenPullbackAlong` has good closure properties, e.g., isos have chosen pullbacks,
+- We prove that `ChosenPullbacksAlong` has good closure properties: isos have chosen pullbacks,
   and composition of morphisms with chosen pullbacks have chosen pullbacks.
 
--  We prove that chosen pullbacks yields usual pullbacks: `Over.ChosenPullbackAlong.isPullback`
+-  We prove that chosen pullbacks yields usual pullbacks: `Over.ChosenPullbacksAlong.isPullback`
   proves that for morphisms `f` and `g` with the same codomain, the object
-  `Over.ChosenPullbackAlong.pullbackObj f g` together with morphisms
-  `Over.ChosenPullbackAlong.fst f g` and `Over.ChosenPullbackAlong.snd f g` form a pullback square
+  `Over.ChosenPullbacksAlong.pullbackObj f g` together with morphisms
+  `Over.ChosenPullbacksAlong.fst f g` and `Over.ChosenPullbacksAlong.snd f g` form a pullback square
   over `f` and `g`.
 
 - We prove that in cartesian monoidal categories, morphisms to the terminal tensor unit and
@@ -46,7 +47,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 
 /-- A functorial choice of pullbacks along a morphism `f : Y ⟶ X` in `C` given by a functor
 `Over X ⥤ Over Y` which is a right adjoint to the functor `Over.map f`. -/
-class ChosenPullbackAlong {Y X : C} (f : Y ⟶ X) where
+class ChosenPullbacksAlong {Y X : C} (f : Y ⟶ X) where
   /-- The pullback functor along `f`. -/
   pullback : Over X ⥤ Over Y
   /-- The adjunction between `Over.map f` and `pullback f`. -/
@@ -54,31 +55,31 @@ class ChosenPullbackAlong {Y X : C} (f : Y ⟶ X) where
 
 variable (C) in
 /-- A category has chosen pullbacks if every morphism has a chosen pullback. -/
-abbrev ChosenPullbacks := Π {X Y : C} (f : Y ⟶ X), ChosenPullbackAlong f
+abbrev ChosenPullbacks := Π {X Y : C} (f : Y ⟶ X), ChosenPullbacksAlong f
 
-namespace ChosenPullbackAlong
+namespace ChosenPullbacksAlong
 
-/-- Relating the existing noncomputable `HasPullbacksAlong` typeclass to `ChosenPullbackAlong`. -/
+/-- Relating the existing noncomputable `HasPullbacksAlong` typeclass to `ChosenPullbacksAlong`. -/
 @[simps]
 noncomputable def ofHasPullbacksAlong {Y X : C} (f : Y ⟶ X) [HasPullbacksAlong f] :
-    ChosenPullbackAlong f where
+    ChosenPullbacksAlong f where
   pullback := Over.pullback f
   mapPullbackAdj := Over.mapPullbackAdj f
 
 /-- The identity morphism has a functorial choice of pullbacks. -/
 @[simps]
-def id (X : C) : ChosenPullbackAlong (𝟙 X) where
+def id (X : C) : ChosenPullbacksAlong (𝟙 X) where
   pullback := 𝟭 _
   mapPullbackAdj := (Adjunction.id).ofNatIsoLeft (Over.mapId _).symm
 
-attribute [local instance] ChosenPullbackAlong.id in
+attribute [local instance] ChosenPullbacksAlong.id in
 /-- The chosen pullback functor of the identity morphism is naturally isomorphic to the
 identity functor. -/
 def pullbackId (X : C) : pullback (𝟙 X) ≅ 𝟭 (Over X) := Iso.refl _
 
 /-- Every isomorphism has a functorial choice of pullbacks. -/
 @[simps]
-def iso {Y X : C} (f : Y ≅ X) : ChosenPullbackAlong f.hom where
+def iso {Y X : C} (f : Y ≅ X) : ChosenPullbacksAlong f.hom where
   pullback.obj Z := Over.mk (Z.hom ≫ f.inv)
   pullback.map {Y Z} g := Over.homMk (g.left)
   mapPullbackAdj.unit.app T := Over.homMk (𝟙 T.left)
@@ -86,21 +87,21 @@ def iso {Y X : C} (f : Y ≅ X) : ChosenPullbackAlong f.hom where
 
 /-- The inverse of an isomorphism has a functorial choice of pullbacks. -/
 @[simps!]
-def isoInv {Y X : C} (f : Y ≅ X) : ChosenPullbackAlong f.inv := iso f.symm
+def isoInv {Y X : C} (f : Y ≅ X) : ChosenPullbacksAlong f.inv := iso f.symm
 
 /-- The composition of morphisms with chosen pullbacks has a chosen pullback. -/
 @[simps]
 def comp {Z Y X : C} (f : Y ⟶ X) (g : Z ⟶ Y)
-    [ChosenPullbackAlong f] [ChosenPullbackAlong g] : ChosenPullbackAlong (g ≫ f) where
+    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] : ChosenPullbacksAlong (g ≫ f) where
   pullback := pullback f ⋙ pullback g
   mapPullbackAdj := ((mapPullbackAdj g).comp (mapPullbackAdj f)).ofNatIsoLeft
     (Over.mapComp g f).symm
 
-attribute [local instance] ChosenPullbackAlong.comp in
+attribute [local instance] ChosenPullbacksAlong.comp in
 /-- The chosen pullback functor of a composition of morphisms is naturally isomorphic to
 the composition of the chosen pullback functors. -/
 def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [ChosenPullbackAlong f] [ChosenPullbackAlong g] :
+    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] :
     pullback (f ≫ g) ≅ pullback g ⋙ pullback f :=
   Iso.refl _
 
@@ -108,7 +109,7 @@ def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
 choice of pullbacks. -/
 @[simps]
 def cartesianMonoidalCategoryToUnit [CartesianMonoidalCategory C] {X : C} (f : X ⟶ 𝟙_ C) :
-    ChosenPullbackAlong f where
+    ChosenPullbacksAlong f where
   pullback.obj Y := Over.mk (snd Y.left X)
   pullback.map {Y Z} g := Over.homMk (g.left ▷ X)
   mapPullbackAdj.unit.app T := Over.homMk (lift (𝟙 _) (T.hom))
@@ -118,7 +119,7 @@ def cartesianMonoidalCategoryToUnit [CartesianMonoidalCategory C] {X : C} (f : X
 of pullbacks. -/
 @[simps]
 def cartesianMonoidalCategoryFst [CartesianMonoidalCategory C] (X Y : C) :
-    ChosenPullbackAlong (fst X Y : X ⊗ Y ⟶ X) where
+    ChosenPullbacksAlong (fst X Y : X ⊗ Y ⟶ X) where
   pullback.obj Z := Over.mk (Z.hom ▷ Y)
   pullback.map g := Over.homMk (g.left ▷ Y)
   mapPullbackAdj.unit.app T := Over.homMk (lift (𝟙 _) (T.hom ≫ snd _ _))
@@ -128,15 +129,15 @@ def cartesianMonoidalCategoryFst [CartesianMonoidalCategory C] (X Y : C) :
 of pullbacks. -/
 @[simps]
 def cartesianMonoidalCategorySnd [CartesianMonoidalCategory C] (X Y : C) :
-    ChosenPullbackAlong (snd X Y : X ⊗ Y ⟶ Y) where
+    ChosenPullbacksAlong (snd X Y : X ⊗ Y ⟶ Y) where
   pullback.obj Z := Over.mk (X ◁ Z.hom)
   pullback.map g := Over.homMk (X ◁ g.left)
   mapPullbackAdj.unit.app T := Over.homMk (lift (T.hom ≫ fst _ _) (𝟙 _))
   mapPullbackAdj.counit.app U := Over.homMk (snd _ _)
 
-section PullbackFromChosenPullbackAlongs
+section PullbackFromChosenPullbacksAlongs
 
-variable {Y Z X : C} (f : Y ⟶ X) (g : Z ⟶ X) [ChosenPullbackAlong g]
+variable {Y Z X : C} (f : Y ⟶ X) (g : Z ⟶ X) [ChosenPullbacksAlong g]
 
 /-- The underlying object of the chosen pullback along `g` of `f`. -/
 abbrev pullbackObj := ((pullback g).obj (Over.mk f)).left
@@ -221,7 +222,7 @@ if the morphisms `g'` and `g` both have chosen pullbacks, then we get an induced
 `f' : Y' ⟶ X'` along `g'` to the chosen pullback of `f : Y ⟶ X` along `g`.
 Here `comm₁` and `comm₂` are the commutativity conditions of the squares in the diagram above.
 -/
-def pullbackMap {Y' Z' X' : C} (f' : Y' ⟶ X') (g' : Z' ⟶ X') [ChosenPullbackAlong g']
+def pullbackMap {Y' Z' X' : C} (f' : Y' ⟶ X') (g' : Z' ⟶ X') [ChosenPullbacksAlong g']
     (γ₁ : Y' ⟶ Y) (γ₂ : Z' ⟶ Z) (γ₃ : X' ⟶ X)
     (comm₁ : f' ≫ γ₃ = γ₁ ≫ f := by cat_disch) (comm₂ : g' ≫ γ₃ = γ₂ ≫ g := by cat_disch) :
     pullbackObj f' g' ⟶ pullbackObj f g :=
@@ -231,13 +232,13 @@ def pullbackMap {Y' Z' X' : C} (f' : Y' ⟶ X') (g' : Z' ⟶ X') [ChosenPullback
 variable {f g}
 
 @[reassoc (attr := simp)]
-theorem pullbackMap_fst {Y' Z' X' : C} {f' : Y' ⟶ X'} {g' : Z' ⟶ X'} [ChosenPullbackAlong g']
+theorem pullbackMap_fst {Y' Z' X' : C} {f' : Y' ⟶ X'} {g' : Z' ⟶ X'} [ChosenPullbacksAlong g']
     {γ₁ : Y' ⟶ Y} {γ₂ : Z' ⟶ Z} {γ₃ : X' ⟶ X} (comm₁ comm₂ := by cat_disch) :
     pullbackMap f g f' g' γ₁ γ₂ γ₃ comm₁ comm₂ ≫ fst f g = fst f' g' ≫ γ₁ := by
   simp only [pullbackMap, lift_fst]
 
 @[reassoc (attr := simp)]
-theorem pullbackMap_snd {Y' Z' X' : C} {f' : Y' ⟶ X'} {g' : Z' ⟶ X'} [ChosenPullbackAlong g']
+theorem pullbackMap_snd {Y' Z' X' : C} {f' : Y' ⟶ X'} {g' : Z' ⟶ X'} [ChosenPullbacksAlong g']
     {γ₁ : Y' ⟶ Y} {γ₂ : Z' ⟶ Z} {γ₃ : X' ⟶ X} (comm₁ comm₂ := by cat_disch) :
     pullbackMap f g f' g' γ₁ γ₂ γ₃ comm₁ comm₂ ≫ snd f g = snd f' g' ≫ γ₂ := by
   simp only [pullbackMap, lift_snd]
@@ -249,7 +250,7 @@ theorem pullbackMap_id : pullbackMap f g f g (𝟙 Y) (𝟙 Z) (𝟙 X) = 𝟙 _
 @[reassoc (attr := simp)]
 theorem pullbackMap_comp {Y' Z' X' Y'' Z'' X'' : C}
     {f' : Y' ⟶ X'} {g' : Z' ⟶ X'} {f'' : Y'' ⟶ X''} {g'' : Z'' ⟶ X''}
-    [ChosenPullbackAlong g'] [ChosenPullbackAlong g'']
+    [ChosenPullbacksAlong g'] [ChosenPullbacksAlong g'']
     {γ₁ : Y' ⟶ Y} {γ₂ : Z' ⟶ Z} {γ₃ : X' ⟶ X}
     {δ₁ : Y'' ⟶ Y'} {δ₂ : Z'' ⟶ Z'} {δ₃ : X'' ⟶ X'}
     (comm₁ comm₂ comm₁' comm₂' := by cat_disch) :
@@ -270,8 +271,8 @@ theorem isPullback : IsPullback (fst f g) (snd f g) f g where
       (by simp) (by simp) (by cat_disch)⟩
 
 attribute [local simp] condition in
-/-- If `g` has a chosen pullback, then `Over.ChosenPullbackAlong.fst f g` has a chosen pullback. -/
-def chosenPullbackAlongOfFst : ChosenPullbackAlong (fst f g) where
+/-- If `g` has a chosen pullback, then `Over.ChosenPullbacksAlong.fst f g` has a chosen pullback. -/
+def ChosenPullbacksAlongOfFst : ChosenPullbacksAlong (fst f g) where
   pullback.obj W := Over.mk (pullbackMap _ _ _ _ W.hom (𝟙 _) (𝟙 _))
   pullback.map {W' W} k := Over.homMk (lift (fst _ g ≫ k.left) (snd _ g)) _
   mapPullbackAdj.unit.app Q := Over.homMk (lift (𝟙 _) (Q.hom ≫ snd _ _))
@@ -282,16 +283,16 @@ instance hasPullbackAlong : HasPullbacksAlong g := fun f => (isPullback f g).has
 instance hasPullbacks [ChosenPullbacks C] : HasPullbacks C :=
   hasPullbacks_of_hasLimit_cospan _
 
-/-- The computable `ChosenPullbackAlong.pullback g` is naturally isomorphic to the noncomputable
+/-- The computable `ChosenPullbacksAlong.pullback g` is naturally isomorphic to the noncomputable
 `Over.pullback g`. -/
-noncomputable def pullbackIsoOverPullback : ChosenPullbackAlong.pullback g ≅ Over.pullback g :=
-  (ChosenPullbackAlong.mapPullbackAdj g).rightAdjointUniq (Over.mapPullbackAdj g)
+noncomputable def pullbackIsoOverPullback : ChosenPullbacksAlong.pullback g ≅ Over.pullback g :=
+  (ChosenPullbacksAlong.mapPullbackAdj g).rightAdjointUniq (Over.mapPullbackAdj g)
 
 @[reassoc (attr := simp)]
 theorem pullbackIsoOverPullback_hom_app_comp_fst (T : Over X) :
     ((pullbackIsoOverPullback g).hom.app T).left ≫ pullback.fst _ _ = fst _ _ := by
   simpa using (Over.forget _).congr_map
-    ((ChosenPullbackAlong.mapPullbackAdj g).rightAdjointUniq_hom_app_counit
+    ((ChosenPullbacksAlong.mapPullbackAdj g).rightAdjointUniq_hom_app_counit
       (Over.mapPullbackAdj g) T)
 
 @[reassoc (attr := simp)]
@@ -309,8 +310,8 @@ theorem pullbackIsoOverPullback_inv_app_comp_snd (T : Over X) :
     ((pullbackIsoOverPullback g).inv.app T).left ≫ snd _ _ = pullback.snd _ _ :=
   Over.w ((pullbackIsoOverPullback g).inv.app T)
 
-end PullbackFromChosenPullbackAlongs
+end PullbackFromChosenPullbacksAlongs
 
-end ChosenPullbackAlong
+end ChosenPullbacksAlong
 
 end CategoryTheory
