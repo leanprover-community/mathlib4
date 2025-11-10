@@ -82,6 +82,8 @@ class TestFunctionClass (B : Type*)
 
 open TestFunctionClass
 
+namespace TestFunctionClass
+
 instance (B : Type*)
     {E : outParam <| Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
     (F : outParam <| Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
@@ -98,6 +100,8 @@ instance (B : Type*)
     rcases (map_continuous f).bounded_above_of_compact_support (map_hasCompactSupport f) with
       ⟨C, hC⟩
     exact map_bounded (BoundedContinuousFunction.ofNormedAddCommGroup f (map_continuous f) C hC)
+
+end TestFunctionClass
 
 namespace TestFunction
 
