@@ -878,7 +878,7 @@ lemma pullbackSpecIso_hom_base (R S T : Type u) [CommRing R] [CommRing S] [CommR
 @[reassoc (attr := simp)]
 lemma pullbackSpecIso_hom_fst' (R S T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra R S]
     [Algebra R T] :
-    (pullbackSpecIso R S T).hom ≫ Spec.map (CommRingCat.ofHom (algebraMap S _)) = 
+    (pullbackSpecIso R S T).hom ≫ Spec.map (CommRingCat.ofHom (algebraMap S _)) =
       pullback.fst _ _ := by
   simp [Algebra.TensorProduct.algebraMap_def]
 
