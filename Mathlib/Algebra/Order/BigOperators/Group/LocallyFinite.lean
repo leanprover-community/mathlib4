@@ -166,6 +166,22 @@ lemma prod_prod_Ioi_mul_eq_prod_prod_off_diag (f : α → α → M) :
 
 end LinearOrder
 
+--TODO generalize?
+lemma _root_.Finset.Nat.Iio_add_one {n : ℕ} : Finset.Iio (n + 1) = Finset.Iic n := by
+  ext; simp [Nat.lt_add_one_iff]
+lemma _root_.Set.Nat.Iio_add_one {n : ℕ} : Set.Iio (n + 1) = Set.Iic n := by
+  ext; simp [Nat.lt_add_one_iff]
+
+lemma sup_Iic' {α β}
+    -- TODO review assumptions
+    [LinearOrder α] [LocallyFiniteOrderBot α] [OrderBot α]
+    [SemilatticeSup β] [OrderBot β]
+    {a : α} (ha : (Iic a).Nonempty)
+    {s : α → β} (hs : Monotone s) :
+    (Iic a).sup s = s a := by
+ rw [← Function.comp_id s, ← comp_sup_eq_sup_comp_of_nonempty hs ha,
+    sup_Iic, Function.comp_id]
+
 /-- Given a sequence of finite sets `s₀ ⊆ s₁ ⊆ s₂ ⋯`, the product of `gᵢ` over `i ∈ sₙ` is equal
 to `∏_{i ∈ s₀} gᵢ` * `∏_{j < n, i ∈ sⱼ₊₁ \ sⱼ} gᵢ`. -/
 @[to_additive /-- Given a sequence of finite sets `s₀ ⊆ s₁ ⊆ s₂ ⋯`, the sum of `gᵢ` over `i ∈ sₙ` is
@@ -178,7 +194,6 @@ lemma prod_eq_prod_range_sdiff
     prod_disjiUnion, Nat.bot_eq_zero, ← Nat.range_succ_eq_Icc_zero, prod_range_succ', mul_comm]
   congrm (∏ x ∈ ?_, g x) * ∏ k ∈ range n, ∏ x ∈ s (k + 1) \ ?_, g x
   · simp
-  · change (Iic k).sup (s ∘ id) = s k
-    rw [← comp_sup_eq_sup_comp_of_nonempty hs nonempty_Iic, sup_Iic]
+  · rw [Nat.Iio_add_one, sup_Iic' nonempty_Iic hs]
 
 end Finset
