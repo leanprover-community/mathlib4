@@ -273,7 +273,6 @@ def _root_.LinearMap.compDer : Derivation R A M →ₗ[A] Derivation R A N where
   map_add' D₁ D₂ := by ext; exact LinearMap.map_add _ _ _
   map_smul' r D := by ext; dsimp; simp only [_root_.map_smul]
 
-
 @[simp]
 theorem coe_to_linearMap_comp : (f.compDer D : A →ₗ[R] N) = (f : M →ₗ[R] N).comp (D : A →ₗ[R] M) :=
   rfl
