@@ -23,20 +23,6 @@ then `MVPolynomial.quadratic n R` is irreducible.
 
 -/
 
--- TODO: exists? move elsewhere.
-/-- The equivalence between a type and the `Option` type
-of the type deprived of one given element. -/
-noncomputable def equiv_option {n : Type*} [DecidableEq n] (i : n) :
-    n ≃ Option {x : n // x ≠ i} where
-  toFun x := if hx : x = i then none else some ⟨x, hx⟩
-  invFun y := Option.elim y i (fun x ↦ ↑x)
-  left_inv x := by
-    by_cases hx : x = i <;> simp [hx]
-  right_inv y :=  by
-    cases y with
-    | none => simp
-    | some x => simp [x.prop]
-
 namespace MvPolynomial
 
 open scoped Polynomial
@@ -127,23 +113,20 @@ theorem irreducible_sum_X_mul_Y (h : Nontrivial n) :
   rw [← MulEquiv.irreducible_iff e, this]
   obtain ⟨i, j, hij⟩ := h
   set S := MvPolynomial { x // x ≠ i } (MvPolynomial n R)
-  let f : MvPolynomial n (MvPolynomial n R) ≃ₐ[R] S[X] :=
-    ((renameEquiv (MvPolynomial n R) (equiv_option i)).trans
-      (MvPolynomial.optionEquivLeft _ _)).restrictScalars R
+  set f : MvPolynomial n (MvPolynomial n R) ≃ₐ[R] S[X] :=
+    ((renameEquiv (MvPolynomial n R) (Equiv.optionSubtypeNe i).symm).trans
+      (MvPolynomial.optionEquivLeft _ _)).restrictScalars R with hf
   have hfXi : f (MvPolynomial.X i) = Polynomial.X := by
-    simp only [f]
-    rw [AlgEquiv.restrictScalars_apply]
-    simp [equiv_option, optionEquivLeft_apply]
+    rw [hf, AlgEquiv.restrictScalars_apply]
+    simp [optionEquivLeft_apply]
   have hfX (x : {x : n // x ≠ i}) : f (MvPolynomial.X x) =
       Polynomial.C (MvPolynomial.X x) := by
-    simp only [f]
-    rw [AlgEquiv.restrictScalars_apply]
-    simp [equiv_option, optionEquivLeft_apply, dif_neg x.prop]
+    rw [hf, AlgEquiv.restrictScalars_apply]
+    simp [optionEquivLeft_apply, dif_neg x.prop]
   have hfCX (x : n) : f (MvPolynomial.C (MvPolynomial.X x)) =
       Polynomial.C (MvPolynomial.C (MvPolynomial.X x)) := by
-    simp only [f]
-    rw [AlgEquiv.restrictScalars_apply]
-    simp [equiv_option, optionEquivLeft_apply]
+    rw [hf, AlgEquiv.restrictScalars_apply]
+    simp [optionEquivLeft_apply]
   rw [← MulEquiv.irreducible_iff f]
   let a : S := C (MvPolynomial.X (R := R) i)
   let b : S := ∑ x : { x : n // x ≠ i},
