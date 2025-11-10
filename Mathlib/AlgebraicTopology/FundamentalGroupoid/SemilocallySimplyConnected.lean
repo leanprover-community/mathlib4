@@ -744,6 +744,15 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
           ((α (Fin.last n)).symm.cast
             (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target])
             (show y = γ (part.t (Fin.last n)) by rw [part.h_end, γ.target])))) := by
+  -- This requires:
+  -- 1. Path decomposition lemma: γ ≃ γ₀ · γ₁ · ... · γₙ₋₁
+  --    where γᵢ = γ.subpathOn (part.t i) (part.t (i+1))
+  -- 2. Similarly: γ' ≃ γ'₀ · γ'₁ · ... · γ'ₙ₋₁
+  -- 3. Telescoping: From γᵢ · αᵢ₊₁ ≃ αᵢ · γ'ᵢ for each i, derive:
+  --    (γ₀ · γ₁ · ... · γₙ₋₁) · αₙ ≃ α₀ · (γ'₀ · γ'₁ · ... · γ'ₙ₋₁)
+  -- 4. Use associativity to rearrange
+  --
+  -- This is substantial infrastructure that belongs in Mathlib.Topology.Path
   sorry
 
 /-- Stronger version of paste_segment_homotopies that directly gives γ ≃ γ' when the endpoint
@@ -782,25 +791,87 @@ theorem Path.paste_segment_homotopies_slsc {x y : X} {n : ℕ} (γ γ' : Path x 
 
   -- Step 3: Show α₀ is null-homotopic using SLSC property of U₀
   have h_α₀_null : Path.Homotopic α₀ (Path.refl x) := by
-    sorry -- Apply h_U₀_slsc: both α₀ and refl x are loops at x with range in U₀
+    apply h_U₀_slsc
+    · -- x ∈ U₀
+      have : (α 0) 0 = x := by simp [(α 0).source, part.h_start, γ.source]
+      rw [← this]
+      exact h_α₀_in_U₀ ⟨0, rfl⟩
+    · -- x ∈ U₀ (same proof)
+      have : (α 0) 0 = x := by simp [(α 0).source, part.h_start, γ.source]
+      rw [← this]
+      exact h_α₀_in_U₀ ⟨0, rfl⟩
+    · -- range α₀ ⊆ U₀
+      show Set.range α₀ ⊆ U₀
+      simp only [α₀, Path.cast, Set.range]
+      exact h_α₀_in_U₀
+    · -- range (refl x) ⊆ U₀
+      intro z hz
+      simp [Path.refl] at hz
+      rw [← hz]
+      have : (α 0) 0 = x := by simp [(α 0).source, part.h_start, γ.source]
+      rw [← this]
+      exact h_α₀_in_U₀ ⟨0, rfl⟩
 
   -- Step 4: Show αₙ is null-homotopic using SLSC property of Uₙ
   have h_αₙ_null : Path.Homotopic αₙ (Path.refl y) := by
-    sorry -- Apply h_Uₙ_slsc: both αₙ and refl y are loops at y with range in Uₙ
+    apply h_Uₙ_slsc
+    · -- y ∈ Uₙ
+      have : (α (Fin.last n)) 0 = y := by
+        simp [(α (Fin.last n)).source, part.h_end]
+      rw [← this]
+      exact h_αₙ_in_Uₙ ⟨0, rfl⟩
+    · -- y ∈ Uₙ (same proof)
+      have : (α (Fin.last n)) 0 = y := by
+        simp [(α (Fin.last n)).source, part.h_end]
+      rw [← this]
+      exact h_αₙ_in_Uₙ ⟨0, rfl⟩
+    · -- range αₙ ⊆ Uₙ
+      show Set.range αₙ ⊆ Uₙ
+      simp only [αₙ, Path.cast, Set.range]
+      intro z ⟨t, ht⟩
+      rw [← ht]
+      simp [Path.symm]
+      exact h_αₙ_in_Uₙ ⟨_, rfl⟩
+    · -- range (refl y) ⊆ Uₙ
+      intro z hz
+      simp [Path.refl] at hz
+      rw [← hz]
+      have : (α (Fin.last n)) 0 = y := by
+        simp [(α (Fin.last n)).source, part.h_end]
+      rw [← this]
+      exact h_αₙ_in_Uₙ ⟨0, rfl⟩
 
   -- Step 5: Combine using homotopy manipulation
   -- From h_paste: γ ≃ α₀ · γ' · αₙ
   -- From h_α₀_null: α₀ ≃ refl x
   -- From h_αₙ_null: αₙ ≃ refl y
   -- Therefore: γ ≃ refl x · γ' · refl y ≃ γ'
-  sorry -- Requires: applying trans_congr repeatedly, then using refl_trans and trans_refl
+
+  -- First apply trans_congr to substitute the homotopies
+  have step1 : Path.Homotopic (α₀.trans (γ'.trans αₙ))
+                              ((Path.refl x).trans (γ'.trans (Path.refl y))) := by
+    apply Path.Homotopic.trans_congr h_α₀_null
+    apply Path.Homotopic.trans_congr (Path.Homotopic.refl γ')
+    exact h_αₙ_null
+
+  -- Now use identity laws
+  have step2 : Path.Homotopic ((Path.refl x).trans (γ'.trans (Path.refl y))) γ' := by
+    have a : Path.Homotopic ((Path.refl x).trans (γ'.trans (Path.refl y)))
+                            (γ'.trans (Path.refl y)) :=
+      Path.Homotopic.refl_trans _
+    have b : Path.Homotopic (γ'.trans (Path.refl y)) γ' :=
+      Path.Homotopic.trans_refl _
+    exact Path.Homotopic.trans a b
+
+  -- Combine with h_paste using transitivity
+  exact Path.Homotopic.trans h_paste (Path.Homotopic.trans step1 step2)
 
 /-- Given a path γ in an SLSC space, paths in the tube around γ are homotopic to γ.
 This is the main result that combines all the previous lemmas:
 1. Construct rung paths α_i using path-connectedness of V neighborhoods
 2. For each segment, apply segment_rung_homotopy to get γ_i·α_{i+1} ≃ α_i·γ'_i
 3. Use paste_segment_homotopies to get γ ≃ γ' by telescoping cancellation -/
-theorem Path.tube_subset_homotopy_class (hX : SemilocallySimplyConnected X) {x y : X} {n : ℕ}
+theorem Path.tube_subset_homotopy_class {x y : X} {n : ℕ}
     (γ : Path x y) (part : IntervalPartition n) (T : TubeData X x y n)
     (hγ : PathInTube γ part T)
     (γ' : Path x y) (hγ' : PathInTube γ' part T) :
@@ -833,12 +904,23 @@ theorem Path.tube_subset_homotopy_class (hX : SemilocallySimplyConnected X) {x y
   -- Step 3: Apply the stronger pasting lemma that uses SLSC to handle endpoint loops
   -- We need to identify which neighborhoods contain the endpoint rungs
 
-  -- First, handle the case where n = 0 separately (single segment, no interior points)
+  -- First, handle the case where n = 0 separately
   cases n with
   | zero =>
-    -- When n = 0, there are no segments, so this case is vacuous
-    -- Actually, we need n ≥ 1 for this theorem to make sense
-    sorry
+    -- When n = 0, there are no segments (Fin 0 is empty), so the tube structure is degenerate
+    -- In this case, we need a different argument. Since PathInTube requires staying in U segments,
+    -- and there are no segments, this case may be vacuous or require γ = γ'.
+    -- For now, we note that the partition has only one point (0 = 1), which is contradictory.
+    -- This suggests n = 0 shouldn't occur in practice, or needs special handling.
+    exfalso
+    -- The partition has points t : Fin 1 → I with t 0 = 0 and t 0 = 1
+    have h0 : part.t 0 = 0 := part.h_start
+    have h1 : part.t (Fin.last 0) = 1 := part.h_end
+    have : Fin.last 0 = 0 := rfl
+    rw [this] at h1
+    rw [h0] at h1
+    -- Now h1 : 0 = 1 in unitInterval, which is false
+    exact zero_ne_one h1
   | succ n' =>
     -- Now n = n' + 1, so we have at least one segment
     -- α 0 has range in V 0, and V 0 ⊆ U 0 (left endpoint of segment 0)
@@ -896,7 +978,7 @@ theorem Path.exists_open_tubular_neighborhood_in_homotopy_class
     exact hp_in_tube
   · -- Show T ⊆ {p' | Homotopic p' p} using tube_subset_homotopy_class
     intro p' hp'
-    apply Path.tube_subset_homotopy_class hX p part T_data
+    apply Path.tube_subset_homotopy_class p part T_data
     · exact hp_in_tube
     · exact hp'
 
