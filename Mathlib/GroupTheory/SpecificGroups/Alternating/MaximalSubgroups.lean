@@ -67,28 +67,28 @@ theorem stabilizer.isPreprimitive (s : Set α) (hs : (sᶜ : Set α).Nontrivial)
       then ofSubtype g
       else ofSubtype g * ofSubtype k
     use! g'
-    rw [mem_alternatingGroup]
-    rcases Int.units_eq_one_or (sign g) with hsg | hsg <;>
-    · simp only [g', if_true, hminus_one_ne_one, if_false, sign_ofSubtype,
-      sign_mul, mul_neg, mul_one, neg_neg, hsg, hk_sign]
-    rw [mem_stabilizer_iff, Submonoid.mk_smul]
-    rcases Int.units_eq_one_or (sign g) with hsg | hsg
-    · simp only [g', hsg, if_true]
-      exact ofSubtype_mem_stabilizer g
-    · simp only [g', hsg, hminus_one_ne_one, if_false, mul_smul, hks]
-      exact ofSubtype_mem_stabilizer g
-    dsimp only [id_eq, ite_true, ite_false, eq_mpr_eq_cast, cast_eq, φ]
-    rcases Int.units_eq_one_or (sign g) with hsg | hsg
-    · simp only [g', hsg, if_true]
-      ext x
-      simp
-    · simp only [g', hsg, hminus_one_ne_one, if_false]
-      ext x
-      simp only [toPerm_apply, SMul.smul_stabilizer_def]
-      simp only [Subgroup.mk_smul, Perm.smul_def, coe_mul, Function.comp_apply]
-      rw [ofSubtype_apply_of_not_mem k _]
-      exact ofSubtype_apply_coe g x
-      rw [notMem_compl_iff]; exact x.prop
+    · rw [mem_alternatingGroup]
+      rcases Int.units_eq_one_or (sign g) with hsg | hsg <;>
+      · simp only [g', if_true, hminus_one_ne_one, if_false, sign_ofSubtype,
+        sign_mul, mul_neg, mul_one, neg_neg, hsg, hk_sign]
+    · rw [mem_stabilizer_iff, Submonoid.mk_smul]
+      rcases Int.units_eq_one_or (sign g) with hsg | hsg
+      · simp only [g', hsg, if_true]
+        exact ofSubtype_mem_stabilizer g
+      · simp only [g', hsg, hminus_one_ne_one, if_false, mul_smul, hks]
+        exact ofSubtype_mem_stabilizer g
+    · dsimp only [id_eq, ite_true, ite_false, eq_mpr_eq_cast, cast_eq, φ]
+      rcases Int.units_eq_one_or (sign g) with hsg | hsg
+      · simp only [g', hsg, if_true]
+        ext x
+        simp
+      · simp only [g', hsg, hminus_one_ne_one, if_false]
+        ext x
+        simp only [toPerm_apply, SMul.smul_stabilizer_def]
+        simp only [Subgroup.mk_smul, Perm.smul_def, coe_mul, Function.comp_apply]
+        rw [ofSubtype_apply_of_not_mem k _]
+        · exact ofSubtype_apply_coe g x
+        · rw [notMem_compl_iff]; exact x.prop
   -- ∃ k : equiv.perm (sᶜ : set α), equiv.perm.sign k = -1,
   obtain ⟨a, ha, b, hb, hab⟩ := hs
   use Equiv.swap ⟨a, ha⟩ ⟨b, hb⟩
@@ -102,12 +102,12 @@ theorem stabilizer.isPreprimitive' (s : Set α) (hsc : sᶜ.Nontrivial)
   have _ := stabilizer.isPreprimitive s hsc
   let φ : stabilizer (alternatingGroup α) s → stabilizer G s := fun g => by
     use! (g : alternatingGroup α)
-    apply hG
-    rw [Subgroup.mem_inf]
-    constructor
-    · let h := g.prop; rw [mem_stabilizer_iff] at h ⊢; exact h
-    · exact SetLike.coe_mem _
-    exact g.prop
+    · apply hG
+      rw [Subgroup.mem_inf]
+      constructor
+      · let h := g.prop; rw [mem_stabilizer_iff] at h ⊢; exact h
+      · exact SetLike.coe_mem _
+    · exact g.prop
   let f : s →ₑ[φ] s :=
     { toFun := id
       map_smul' := fun ⟨⟨m, hm'⟩, hm⟩ ⟨a, ha⟩ => rfl }
@@ -367,7 +367,7 @@ theorem isPreprimitive_of_stabilizer_lt
   -- Step 2 : A block contained in `sᶜ` is a subsingleton
   have hB_not_le_sc (B : Set α) (hB : IsBlock G B) (hBsc : B ⊆ sᶜ) :
       B.Subsingleton := by
-    rw [← Subtype.image_preimage_of_val hBsc]
+    rw [← inter_eq_self_of_subset_right hBsc, ← Subtype.image_preimage_val]
     apply Subsingleton.image
     suffices IsTrivialBlock (Subtype.val ⁻¹' B : Set (sᶜ : Set α)) by
       apply Or.resolve_right this
@@ -392,7 +392,7 @@ theorem isPreprimitive_of_stabilizer_lt
       B.Subsingleton := by
     suffices IsTrivialBlock (Subtype.val ⁻¹' B : Set s) by
       rcases this with hB' | hB'
-      · rw [← Subtype.image_preimage_of_val hBs]
+      · rw [← inter_eq_self_of_subset_right hBs, ← Subtype.image_preimage_val]
         apply hB'.image
       · have hBs' : B = s := by
           apply antisymm hBs
@@ -452,7 +452,7 @@ theorem isPreprimitive_of_stabilizer_lt
         rw [← hk a ha']
         exact smul_mem_smul_set ha
       -- ↑k ∈ G
-      apply le_trans (le_of_lt hG); exact inf_le_left
+      apply le_trans (le_of_lt hG) inf_le_left
       rw [Subgroup.mem_inf]
       refine ⟨?_, k.prop⟩
       suffices hk' : k ∈ stabilizer (alternatingGroup α) s by
