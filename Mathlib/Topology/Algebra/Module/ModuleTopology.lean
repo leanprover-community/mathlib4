@@ -205,7 +205,7 @@ variable {A : Type*} [AddCommMonoid A] [Module R A] [τA : TopologicalSpace A] [
 variable {B : Type*} [AddCommMonoid B] [Module R B] [τB : TopologicalSpace B]
 variable {B' : Type*} [AddCommMonoid B'] [Module S B'] [τB' : TopologicalSpace B']
 
-/-- If `A` and `B` are modules, homeomorphic via a semi-linear homeomorphism, and if
+/-- If `A` and `B` are modules, homeomorphic via a semilinear homeomorphism, and if
 `A` has the module topology, then so does `B`. -/
 protected theorem isoₛₗ (hσ : Continuous σ) (hσ' : Continuous σ') (e : A ≃SL[σ] B') :
     IsModuleTopology S B' where
@@ -231,7 +231,7 @@ protected theorem isoₛₗ (hσ : Continuous σ) (hσ' : Continuous σ') (e : A
 
 /-- If `A` and `B` are `R`-modules, homeomorphic via an `R`-linear homeomorphism, and if
 `A` has the module topology, then so does `B`.
-See `IsModuleTopology.isoₛₗ` for the generalization to a semi-linear homeomorphism. -/
+See `IsModuleTopology.isoₛₗ` for the generalization to a semilinear homeomorphism. -/
 protected theorem iso (e : A ≃L[R] B) : IsModuleTopology R B :=
   IsModuleTopology.isoₛₗ continuous_id continuous_id e
 
@@ -293,25 +293,44 @@ end MulOpposite
 
 section function
 
-variable {R : Type*} [τR : TopologicalSpace R] [Semiring R]
+variable {R S : Type*} [τR : TopologicalSpace R] [τS : TopologicalSpace S] [Semiring R] [Semiring S]
 variable {A : Type*} [AddCommMonoid A] [Module R A] [aA : TopologicalSpace A] [IsModuleTopology R A]
 variable {B : Type*} [AddCommMonoid B] [Module R B] [aB : TopologicalSpace B]
     [ContinuousAdd B] [ContinuousSMul R B]
+variable {B' : Type*} [AddCommMonoid B'] [Module S B'] [aB' : TopologicalSpace B']
+    [ContinuousAdd B'] [ContinuousSMul S B']
 
-/-- Every `R`-linear map between two topological `R`-modules, where the source has the module
+/-- Every semilinear map between two topological modules, where the source has the module
 topology, is continuous. -/
-@[fun_prop, continuity]
-theorem continuous_of_distribMulActionHom (φ : A →+[R] B) : Continuous φ := by
+-- `fun_prop` can't use this; e.g. `continuous_of_distribMulActionHom` is not proved by `fun_prop`
+@[continuity]
+theorem continuous_of_distribMulActionHomₑ {σ : R →* S} (hσ : Continuous σ) (φ : A →ₑ+[σ] B') :
+    Continuous φ := by
   -- the proof: We know that `+ : B × B → B` and `• : R × B → B` are continuous for the module
   -- topology on `B`, and two earlier theorems (`continuousSMul_induced` and
   -- `continuousAdd_induced`) say that hence `+` and `•` on `A` are continuous if `A`
   -- is given the topology induced from `φ`. Hence the module topology is finer than
   -- the induced topology, and so the function is continuous.
   rw [eq_moduleTopology R A, continuous_iff_le_induced]
-  exact sInf_le <| ⟨continuousSMul_induced (φ.toMulActionHom),
-    continuousAdd_induced φ.toAddMonoidHom⟩
+  exact sInf_le <| ⟨continuousSMul_inducedₛₗ φ hσ, continuousAdd_induced φ⟩
 
-@[fun_prop, continuity]
+/-- Every `R`-linear map between two topological `R`-modules, where the source has the module
+topology, is continuous. -/
+@[fun_prop]
+theorem continuous_of_distribMulActionHom (φ : A →+[R] B) : Continuous φ :=
+  continuous_of_distribMulActionHomₑ continuous_id φ
+
+/-- Every semilinear map between two topological modules, where the source has the module
+topology, is continuous. -/
+-- `fun_prop` can't use this; e.g. `continuous_of_linearMap` is not proved by `fun_prop`
+@[continuity]
+theorem continuous_of_linearMapₛₗ {σ : R →+* S} (hσ : Continuous σ) (φ : A →ₛₗ[σ] B') :
+    Continuous φ :=
+  continuous_of_distribMulActionHomₑ hσ φ.toDistribMulActionHom
+
+/-- Every `R`-linear map between two topological `R`-modules, where the source has the module
+topology, is continuous. -/
+@[fun_prop]
 theorem continuous_of_linearMap (φ : A →ₗ[R] B) : Continuous φ :=
   continuous_of_distribMulActionHom φ.toDistribMulActionHom
 
@@ -346,35 +365,36 @@ end function
 
 section surjection
 
-variable {R : Type*} [τR : TopologicalSpace R] [Ring R]
+variable {R S : Type*} [τR : TopologicalSpace R] [τS : TopologicalSpace S] [Ring R] [Ring S]
 variable {A : Type*} [AddCommGroup A] [Module R A] [TopologicalSpace A] [IsModuleTopology R A]
 variable {B : Type*} [AddCommGroup B] [Module R B]
+variable {B' : Type*} [AddCommGroup B'] [Module S B']
 
 open Topology in
-/-- A linear surjection between modules with the module topology is a quotient map.
-Equivalently, the pushforward of the module topology along a surjective linear map is
+/-- A semilinear surjection between modules with the module topology is a quotient map.
+Equivalently, the pushforward of the module topology along a surjective semilinear map is
 again the module topology. -/
-theorem isQuotientMap_of_surjective [τB : TopologicalSpace B] [IsModuleTopology R B]
-    {φ : A →ₗ[R] B} (hφ : Function.Surjective φ) :
+theorem isQuotientMap_of_surjectiveₛₗ [τB : TopologicalSpace B'] [IsModuleTopology S B']
+    {σ : R →+* S} (hσ : IsOpenQuotientMap σ) (φ : A →ₛₗ[σ] B') (hφ : Function.Surjective φ) :
     IsQuotientMap φ where
   surjective := hφ
   eq_coinduced := by
     -- We need to prove that the topology on B is coinduced from that on A.
     -- First tell the typeclass inference system that A and B are topological groups.
-    haveI := topologicalAddGroup R A
-    haveI := topologicalAddGroup R B
+    haveI := IsModuleTopology.toContinuousAdd R A
+    haveI := IsModuleTopology.toContinuousAdd S B'
     -- Because φ is linear, it's continuous for the module topologies (by a previous result).
-    have this : Continuous φ := continuous_of_linearMap φ
+    have this : Continuous φ := continuous_of_linearMapₛₗ hσ.continuous φ
     -- So the coinduced topology is finer than the module topology on B.
     rw [continuous_iff_coinduced_le] at this
     -- So STP the module topology on B is ≤ the topology coinduced from A
     refine le_antisymm ?_ this
-    rw [eq_moduleTopology R B]
+    rw [eq_moduleTopology S B']
     -- Now let's remove B's topology from the typeclass system
     clear! τB
     -- and replace it with the coinduced topology (which will be the same, but that's what we're
     -- trying to prove). This means we don't have to fight with the typeclass system.
-    letI : TopologicalSpace B := .coinduced φ inferInstance
+    letI : TopologicalSpace B' := .coinduced φ inferInstance
     -- With this new topology on `B`, φ is a quotient map by definition,
     -- and hence an open quotient map by a result in the library.
     have hφo : IsOpenQuotientMap φ := AddMonoidHom.isOpenQuotientMap_of_isQuotientMap ⟨hφ, rfl⟩
@@ -383,23 +403,23 @@ theorem isQuotientMap_of_surjective [τB : TopologicalSpace B] [IsModuleTopology
     -- and scalar multiplication continuous, so it suffices to prove
     -- that the coinduced topology on B has these properties.
     refine sInf_le ⟨?_, ?_⟩
-    · -- In this branch, we prove that `• : R × B → B` is continuous for the coinduced topology.
+    · -- In this branch, we prove that `• : S × B → B` is continuous for the coinduced topology.
       apply ContinuousSMul.mk
       -- We know that `• : R × A → A` is continuous, by assumption.
       obtain ⟨hA⟩ : ContinuousSMul R A := inferInstance
       /- By linearity of φ, this diagram commutes:
         R × A --(•)--> A
           |            |
-          |id × φ      |φ
+          |σ × φ      |φ
           |            |
          \/            \/
-        R × B --(•)--> B
+        S × B --(•)--> B
       -/
-      have hφ2 : (fun p ↦ p.1 • p.2 : R × B → B) ∘ (Prod.map id φ) =
+      have hφ2 : (fun p ↦ p.1 • p.2 : S × B' → B') ∘ (Prod.map σ φ) =
         φ ∘ (fun p ↦ p.1 • p.2 : R × A → A) := by ext; simp
-      -- Furthermore, the identity from R to R is an open quotient map as is `φ`,
-      -- so the product `id × φ` is an open quotient map, by a result in the library.
-      have hoq : IsOpenQuotientMap (_ : R × A → R × B) := IsOpenQuotientMap.prodMap .id hφo
+      -- Furthermore, `σ` is an open quotient map as is `φ`,
+      -- so the product `σ × φ` is an open quotient map, by a result in the library.
+      have hoq : IsOpenQuotientMap (_ : R × A → S × B') := IsOpenQuotientMap.prodMap hσ hφo
       -- This is the left map in the diagram. So by a standard fact about open quotient maps,
       -- to prove that the bottom map is continuous, it suffices to prove
       -- that the diagonal map is continuous.
@@ -419,36 +439,63 @@ theorem isQuotientMap_of_surjective [τB : TopologicalSpace B] [IsModuleTopology
       -/
       apply ContinuousAdd.mk
       obtain ⟨hA⟩ := IsModuleTopology.toContinuousAdd R A
-      have hφ2 : (fun p ↦ p.1 + p.2 : B × B → B) ∘ (Prod.map φ φ) =
+      have hφ2 : (fun p ↦ p.1 + p.2 : B' × B' → B') ∘ (Prod.map φ φ) =
         φ ∘ (fun p ↦ p.1 + p.2 : A × A → A) := by ext; simp
       rw [← (IsOpenQuotientMap.prodMap hφo hφo).continuous_comp_iff, hφ2]
       exact Continuous.comp hφo.continuous hA
+
+open Topology in
+/-- A linear surjection between modules with the module topology is a quotient map.
+Equivalently, the pushforward of the module topology along a surjective linear map is
+again the module topology. -/
+theorem isQuotientMap_of_surjective [τB : TopologicalSpace B] [IsModuleTopology R B]
+    {φ : A →ₗ[R] B} (hφ : Function.Surjective φ) : IsQuotientMap φ :=
+  isQuotientMap_of_surjectiveₛₗ .id φ hφ
+
+/-- A semilinear surjection between modules with the module topology is an open quotient map. -/
+theorem isOpenQuotientMap_of_surjectiveₛₗ [TopologicalSpace B'] [IsModuleTopology S B']
+    {σ : R →+* S} (hσ : IsOpenQuotientMap σ) (φ : A →ₛₗ[σ] B') (hφ : Function.Surjective φ) :
+    IsOpenQuotientMap φ :=
+  have := toContinuousAdd R A
+  AddMonoidHom.isOpenQuotientMap_of_isQuotientMap <| isQuotientMap_of_surjectiveₛₗ hσ φ hφ
 
 /-- A linear surjection between modules with the module topology is an open quotient map. -/
 theorem isOpenQuotientMap_of_surjective [TopologicalSpace B] [IsModuleTopology R B]
     {φ : A →ₗ[R] B} (hφ : Function.Surjective φ) :
     IsOpenQuotientMap φ :=
-  have := toContinuousAdd R A
-  AddMonoidHom.isOpenQuotientMap_of_isQuotientMap <| isQuotientMap_of_surjective hφ
+  isOpenQuotientMap_of_surjectiveₛₗ .id φ hφ
+
+omit [IsModuleTopology R A] in
+/-- A semilinear surjection to a module with the module topology is open. -/
+theorem isOpenMap_of_surjectiveₛₗ [TopologicalSpace B'] [IsModuleTopology S B']
+    [ContinuousAdd A] [ContinuousSMul R A]
+    {σ : R →+* S} (hσ : IsOpenQuotientMap σ) (φ : A →ₛₗ[σ] B') (hφ : Function.Surjective φ) :
+    IsOpenMap φ := by
+  have hOpenMap :=
+    letI : TopologicalSpace A := moduleTopology R A
+    have : IsModuleTopology R A := ⟨rfl⟩
+    isOpenQuotientMap_of_surjectiveₛₗ hσ φ hφ |>.isOpenMap
+  intro U hU
+  exact hOpenMap U <| moduleTopology_le R A U hU
 
 omit [IsModuleTopology R A] in
 /-- A linear surjection to a module with the module topology is open. -/
 theorem isOpenMap_of_surjective [TopologicalSpace B] [IsModuleTopology R B]
     [ContinuousAdd A] [ContinuousSMul R A] {φ : A →ₗ[R] B} (hφ : Function.Surjective φ) :
-    IsOpenMap φ := by
-  have hOpenMap :=
-    letI : TopologicalSpace A := moduleTopology R A
-    have : IsModuleTopology R A := ⟨rfl⟩
-    isOpenQuotientMap_of_surjective hφ |>.isOpenMap
-  intro U hU
-  exact hOpenMap U <| moduleTopology_le R A U hU
+    IsOpenMap φ :=
+  isOpenMap_of_surjectiveₛₗ .id φ hφ
+
+lemma _root_.ModuleTopology.eq_coinduced_of_surjectiveₛₗ
+    {σ : R →+* S} (hσ : IsOpenQuotientMap σ) (φ : A →ₛₗ[σ] B') (hφ : Function.Surjective φ) :
+    moduleTopology S B' = TopologicalSpace.coinduced φ inferInstance := by
+  letI : TopologicalSpace B' := moduleTopology S B'
+  haveI : IsModuleTopology S B' := ⟨rfl⟩
+  exact (isQuotientMap_of_surjectiveₛₗ hσ φ hφ).eq_coinduced
 
 lemma _root_.ModuleTopology.eq_coinduced_of_surjective
     {φ : A →ₗ[R] B} (hφ : Function.Surjective φ) :
-    moduleTopology R B = TopologicalSpace.coinduced φ inferInstance := by
-  letI : TopologicalSpace B := moduleTopology R B
-  haveI : IsModuleTopology R B := ⟨rfl⟩
-  exact (isQuotientMap_of_surjective hφ).eq_coinduced
+    moduleTopology R B = TopologicalSpace.coinduced φ inferInstance :=
+  ModuleTopology.eq_coinduced_of_surjectiveₛₗ .id φ hφ
 
 instance instQuot (S : Submodule R A) : IsModuleTopology R (A ⧸ S) := by
   constructor
