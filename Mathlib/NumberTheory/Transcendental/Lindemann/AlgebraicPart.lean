@@ -219,7 +219,7 @@ theorem linearIndependent_range_aux (F : Type*) {K G S : Type*}
     [AddCommMonoid G] [Semiring S] [NoZeroDivisors K[G]]
     (f : K[G] →+* S)
     (x : K[G]) (x0 : x ≠ 0) (hfx : f x = 0) :
-    ∃ (y : F[G]), y ≠ 0 ∧ f (y.mapRangeAlgHom (algebraMap F K).toNatAlgHom) = 0 := by
+    ∃ (y : F[G]), y ≠ 0 ∧ f (y.mapRangeAlgHom _ (algebraMap F K).toNatAlgHom) = 0 := by
   classical
   let y := ∏ f : K ≃ₐ[F] K, x.mapRangeAlgAut f
   have hy : ∀ f : K ≃ₐ[F] K, y.mapRangeAlgAut f = y := by
@@ -240,13 +240,12 @@ theorem linearIndependent_range_aux (F : Type*) {K G S : Type*}
     intro i; dsimp [IntermediateField.fixedField, FixedPoints.intermediateField]
     rintro ⟨f, hf⟩; rw [Subgroup.smul_def, Subgroup.coe_mk]
     replace hy : y.mapRangeAlgAut f i = y i := by rw [hy f]
-    rwa [AddMonoidAlgebra.mapRangeAlgAut_apply, AddMonoidAlgebra.mapRangeAlgEquiv_apply,
-      Finsupp.mapRange_apply] at hy
+    simpa using hy
   obtain ⟨y', hy'⟩ :
-      y ∈ Set.range (AddMonoidAlgebra.mapRangeAlgHom (algebraMap F K).toNatAlgHom) := by
+      y ∈ Set.range (AddMonoidAlgebra.mapRangeAlgHom _ (algebraMap F K).toNatAlgHom) := by
     simp [((IsGalois.tfae (F := F) (E := K)).out 0 1).mp (by infer_instance),
       IntermediateField.mem_bot] at y_mem
-    rwa [AddMonoidAlgebra.mapRangeAlgHom_apply, Finsupp.range_mapRange]
+    rwa [AddMonoidAlgebra.coe_mapRangeAlgHom, Finsupp.range_mapRange]
   rw [← hy'] at y0 y_mem hfy
   rw [map_ne_zero_iff _
     (by simpa using Finsupp.mapRange_injective _ _ (algebraMap F K).injective)] at y0
