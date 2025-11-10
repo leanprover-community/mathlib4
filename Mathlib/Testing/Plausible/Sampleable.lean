@@ -43,7 +43,7 @@ meta instance Rat.Arbitrary : Arbitrary Rat where
     let n ← choose Nat 0 (← getSize) (Nat.zero_le _)
     return Rat.divInt d n
 
-instance Rat.sampleableExt : SampleableExt Rat := by infer_instance
+meta instance Rat.sampleableExt : SampleableExt Rat := by infer_instance
 
 
 meta instance PNat.Arbitrary : Arbitrary PNat where
@@ -51,7 +51,7 @@ meta instance PNat.Arbitrary : Arbitrary PNat where
     let n ← chooseNat
     return Nat.succPNat n
 
-instance PNat.sampleableExt : SampleableExt PNat := by infer_instance
+meta instance PNat.sampleableExt : SampleableExt PNat := by infer_instance
 
 end Samplers
 
