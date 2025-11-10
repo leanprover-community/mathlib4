@@ -207,7 +207,7 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
       integral_one, sub_zero]
     rw [integral_cos_mul_complex (mul_ne_zero two_ne_zero hz), Complex.ofReal_zero,
       mul_zero, Complex.sin_zero, zero_div, sub_zero,
-      (by push_cast; field_simp : 2 * z * ↑(π / 2) = π * z)]
+      (by push_cast; ring : 2 * z * ↑(π / 2) = π * z)]
     simp [field]
   | succ n hn =>
     rw [hn, Finset.prod_range_succ]
