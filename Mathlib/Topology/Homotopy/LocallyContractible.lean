@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.Topology.Homotopy.Contractible
 import Mathlib.Topology.Connected.LocPathConnected
+import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Locally contractible spaces
@@ -23,18 +24,23 @@ is locally contractible, in that each point has a basis of contractible neighbor
 * `LocallyContractibleSpace.of_bases`: a helper to construct locally contractible spaces from a
   neighborhood basis
 * `contractible_subset_basis`: basis of contractible neighborhoods contained in an open set
-* `IsOpenEmbedding.locallyContractibleSpace`: open embeddings preserve local contractibility (sorry)
+* `IsOpenEmbedding.locallyContractibleSpace`: open embeddings preserve local contractibility
 * `IsOpen.locallyContractibleSpace`: open subsets of locally contractible spaces are locally
   contractible
 
 ## TODO
 
-* Prove `IsOpenEmbedding.locallyContractibleSpace` without sorry (needs lemma relating
-  contractibility under homeomorphisms of subspaces)
 * Define contractible components and prove they are open in locally contractible spaces
-* Show that contractible neighborhoods can be required to be open
 * Add examples: convex sets, real vector spaces, manifolds
 * Quotients and products of locally contractible spaces
+
+## Notes
+
+The definition used here (neighborhood basis of contractible sets) is sometimes called "strongly
+locally contractible" to distinguish it from the weaker notion where inclusions are merely
+null-homotopic. The Borsuk-Mazurkiewicz counterexample (1934) shows these are not equivalent.
+Furthermore, requiring neighborhoods to be open may give a strictly stronger condition, as taking
+subsets can destroy contractibility.
 -/
 
 noncomputable section
@@ -54,6 +60,8 @@ class LocallyContractibleSpace (X : Type*) [TopologicalSpace X] : Prop where
 
 export LocallyContractibleSpace (contractible_basis)
 
+/-- A helper to construct a locally contractible space from a neighborhood basis where each
+basis element is contractible. -/
 theorem LocallyContractibleSpace.of_bases {p : X → ι → Prop} {s : X → ι → Set X}
     (h : ∀ x, (𝓝 x).HasBasis (p x) (s x)) (h' : ∀ x i, p x i → ContractibleSpace (s x i)) :
     LocallyContractibleSpace X where
@@ -65,7 +73,8 @@ theorem LocallyContractibleSpace.of_bases {p : X → ι → Prop} {s : X → ι 
 
 variable [LocallyContractibleSpace X]
 
-/-- Contractible neighborhoods form a basis, so path-connected neighborhoods also form a basis. -/
+/-- In a locally contractible space, for any open set U containing x, there is a basis of
+contractible neighborhoods of x contained in U. -/
 theorem contractible_subset_basis {U : Set X} (h : IsOpen U) (hx : x ∈ U) :
     (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ ContractibleSpace s ∧ s ⊆ U) id :=
   (contractible_basis x).hasBasis_self_subset (IsOpen.mem_nhds h hx)
@@ -86,17 +95,19 @@ instance (priority := 100) instLocPathConnectedSpace : LocPathConnectedSpace X :
   intro ⟨s, hs, hst⟩
   exact mem_of_superset hs.1 hst
 
+/-- Open embeddings preserve local contractibility: if `X` is locally contractible and
+`e : Y → X` is an open embedding, then `Y` is locally contractible. -/
 theorem Topology.IsOpenEmbedding.locallyContractibleSpace {e : Y → X} (he : IsOpenEmbedding e) :
     LocallyContractibleSpace Y := by
   have (y : Y) :
       (𝓝 y).HasBasis (fun s ↦ s ∈ 𝓝 (e y) ∧ ContractibleSpace s ∧ s ⊆ range e) (e ⁻¹' ·) :=
     he.basis_nhds <| contractible_subset_basis he.isOpen_range (mem_range_self _)
   refine .of_bases this fun y s ⟨_, hs, hse⟩ ↦ ?_
-  -- The restriction of `e` to `e ⁻¹' s` gives a homeomorphism onto `s`
-  -- since `e` is an open embedding and `s ⊆ range e`.
-  -- Therefore contractibility is preserved.
-  sorry
+  -- Use the homeomorphism to transfer contractibility
+  let h := he.toIsEmbedding.homeomorphOfSubsetRange hse
+  exact h.contractibleSpace_iff.mpr hs
 
+/-- Open subsets of locally contractible spaces are locally contractible. -/
 theorem IsOpen.locallyContractibleSpace {U : Set X} (h : IsOpen U) :
     LocallyContractibleSpace U :=
   h.isOpenEmbedding_subtypeVal.locallyContractibleSpace
