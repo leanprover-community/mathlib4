@@ -65,7 +65,7 @@ lemma Submodule.eq_factor_of_eq_factor_succ {p : ℕ → Submodule R M}
 
 lemma Ideal.Quotient.eq_factor_of_eq_factor_succ {I : ℕ → Ideal R} [∀ n, (I n).IsTwoSided]
     (hI : Antitone I) (x : (n : ℕ) → R ⧸ (I n)) (h : ∀ m, x m = factor (hI m.le_succ) (x (m + 1)))
-    (m n : ℕ) (g : m ≤ n) : x m = factor (hI g) (x n) :=
+    {m n : ℕ} (g : m ≤ n) : x m = factor (hI g) (x n) :=
   Submodule.eq_factor_of_eq_factor_succ hI x h m n g
 
 lemma Ideal.map_mk_comap_factor [J.IsTwoSided] [K.IsTwoSided] (hIJ : J ≤ I) (hJK : K ≤ J) :
