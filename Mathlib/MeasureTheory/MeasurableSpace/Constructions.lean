@@ -499,7 +499,6 @@ lemma measurable_from_prod_countable_right [Countable α] [MeasurableSingletonCl
   measurable_from_prod_countable_right' hf (by simp +contextual)
 
 /-- A piecewise function on countably many pieces is measurable if all the data is measurable. -/
-@[measurability]
 theorem Measurable.find {_ : MeasurableSpace α} {f : ℕ → α → β} {p : ℕ → α → Prop}
     [∀ n, DecidablePred (p n)] (hf : ∀ n, Measurable (f n)) (hp : ∀ n, MeasurableSet { x | p n x })
     (h : ∀ x, ∃ n, p n x) : Measurable fun x => f (Nat.find (h x)) x :=
@@ -568,16 +567,15 @@ theorem measurable_pi_iff {g : α → ∀ a, X a} : Measurable g ↔ ∀ a, Meas
   simp_rw [measurable_iff_comap_le, MeasurableSpace.pi, MeasurableSpace.comap_iSup,
     MeasurableSpace.comap_comp, Function.comp_def, iSup_le_iff]
 
-@[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
+@[fun_prop]
 theorem measurable_pi_apply (a : δ) : Measurable fun f : ∀ a, X a => f a :=
   measurable_pi_iff.1 measurable_id a
 
-@[aesop safe 100 apply (rule_sets := [Measurable])]
 theorem Measurable.eval {a : δ} {g : α → ∀ a, X a} (hg : Measurable g) :
     Measurable fun x => g x a :=
   (measurable_pi_apply a).comp hg
 
-@[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
+@[fun_prop]
 theorem measurable_pi_lambda (f : α → ∀ a, X a) (hf : ∀ a, Measurable fun c => f c a) :
     Measurable f :=
   measurable_pi_iff.mpr hf
@@ -893,7 +891,7 @@ instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonCl
 
 lemma measurable_set_iff : Measurable g ↔ ∀ a, Measurable fun x ↦ a ∈ g x := measurable_pi_iff
 
-@[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
+@[fun_prop]
 lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s := measurable_pi_apply _
 
 @[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
@@ -944,7 +942,6 @@ lemma measurable_curry : Measurable (@curry ι κ X) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
 -- This cannot be tagged with `fun_prop` because `fun_prop` can see through `Function.uncurry`.
-@[measurability]
 lemma measurable_uncurry : Measurable (@uncurry ι κ X) := by fun_prop
 
 @[fun_prop, measurability]
