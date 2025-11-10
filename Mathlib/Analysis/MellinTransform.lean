@@ -27,7 +27,7 @@ open MeasureTheory Set Filter Asymptotics TopologicalSpace
 
 open Real
 
-open Complex hiding exp log abs_of_nonneg
+open Complex hiding exp log
 
 open scoped Topology
 

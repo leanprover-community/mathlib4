@@ -20,7 +20,7 @@ satisfy the type invariants.
 ## Main definitions
 
 * `Ordnode.Valid`: The validity predicate for an `Ordnode` subtree.
-* `Ordset α`: A well formed set of values of type `α`.
+* `Ordset α`: A well-formed set of values of type `α`.
 
 ## Implementation notes
 
@@ -149,18 +149,18 @@ theorem Valid'.node3R {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
   hl.node' (hm.node' hr H2) H1
 
 theorem Valid'.node4L_lemma₁ {a b c d : ℕ} (lr₂ : 3 * (b + c + 1 + d) ≤ 16 * a + 9)
-    (mr₂ : b + c + 1 ≤ 3 * d) (mm₁ : b ≤ 3 * c) : b < 3 * a + 1 := by omega
+    (mr₂ : b + c + 1 ≤ 3 * d) (mm₁ : b ≤ 3 * c) : b < 3 * a + 1 := by cutsat
 
-theorem Valid'.node4L_lemma₂ {b c d : ℕ} (mr₂ : b + c + 1 ≤ 3 * d) : c ≤ 3 * d := by omega
+theorem Valid'.node4L_lemma₂ {b c d : ℕ} (mr₂ : b + c + 1 ≤ 3 * d) : c ≤ 3 * d := by cutsat
 
 theorem Valid'.node4L_lemma₃ {b c d : ℕ} (mr₁ : 2 * d ≤ b + c + 1) (mm₁ : b ≤ 3 * c) :
-    d ≤ 3 * c := by omega
+    d ≤ 3 * c := by cutsat
 
 theorem Valid'.node4L_lemma₄ {a b c d : ℕ} (lr₁ : 3 * a ≤ b + c + 1 + d) (mr₂ : b + c + 1 ≤ 3 * d)
-    (mm₁ : b ≤ 3 * c) : a + b + 1 ≤ 3 * (c + d + 1) := by omega
+    (mm₁ : b ≤ 3 * c) : a + b + 1 ≤ 3 * (c + d + 1) := by cutsat
 
 theorem Valid'.node4L_lemma₅ {a b c d : ℕ} (lr₂ : 3 * (b + c + 1 + d) ≤ 16 * a + 9)
-    (mr₁ : 2 * d ≤ b + c + 1) (mm₂ : c ≤ 3 * b) : c + d + 1 ≤ 3 * (a + b + 1) := by omega
+    (mr₁ : 2 * d ≤ b + c + 1) (mm₂ : c ≤ 3 * b) : c + d + 1 ≤ 3 * (a + b + 1) := by cutsat
 
 theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hm : Valid' x m y)
     (hr : Valid' (↑y) r o₂) (Hm : 0 < size m)
@@ -178,7 +178,7 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
   rcases H with (⟨l0, m1, r0⟩ | ⟨l0, mr₁, lr₁, lr₂, mr₂⟩)
   · rw [hm.2.size_eq, Nat.succ_inj, add_eq_zero] at m1
     rw [l0, m1.1, m1.2]; revert r0; rcases size r with (_ | _ | _) <;>
-      [decide; decide; (intro r0; unfold BalancedSz delta; omega)]
+      [decide; decide; (intro r0; unfold BalancedSz delta; cutsat)]
   · rcases Nat.eq_zero_or_pos (size r) with r0 | r0
     · rw [r0] at mr₂; cases not_le_of_gt Hm mr₂
     rw [hm.2.size_eq] at lr₁ lr₂ mr₁ mr₂
@@ -208,7 +208,7 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
     · refine (mul_le_mul_iff_right₀ (by decide)).1 (le_trans this ?_)
       rw [two_mul, Nat.succ_le_iff]
       refine add_lt_add_of_lt_of_le ?_ mm₂
-      simpa using (mul_lt_mul_right ml0).2 (by decide : 1 < 3)
+      simpa using mul_lt_mul_of_pos_right (by decide : 1 < 3) ml0
     · exact Nat.le_of_lt_succ (Valid'.node4L_lemma₁ lr₂ mr₂ mm₁)
     · exact Valid'.node4L_lemma₂ mr₂
     · exact Valid'.node4L_lemma₃ mr₁ mm₁
@@ -216,16 +216,16 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
     · exact Valid'.node4L_lemma₅ lr₂ mr₁ mm₂
 
 theorem Valid'.rotateL_lemma₁ {a b c : ℕ} (H2 : 3 * a ≤ b + c) (hb₂ : c ≤ 3 * b) : a ≤ 3 * b := by
-  omega
+  cutsat
 
 theorem Valid'.rotateL_lemma₂ {a b c : ℕ} (H3 : 2 * (b + c) ≤ 9 * a + 3) (h : b < 2 * c) :
-    b < 3 * a + 1 := by omega
+    b < 3 * a + 1 := by cutsat
 
 theorem Valid'.rotateL_lemma₃ {a b c : ℕ} (H2 : 3 * a ≤ b + c) (h : b < 2 * c) : a + b < 3 * c := by
-  omega
+  cutsat
 
 theorem Valid'.rotateL_lemma₄ {a b : ℕ} (H3 : 2 * b ≤ 9 * a + 3) : 3 * b ≤ 16 * a + 9 := by
-  omega
+  cutsat
 
 theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Valid' x r o₂)
     (H1 : ¬size l + size r ≤ 1) (H2 : delta * size l < size r)
@@ -237,13 +237,13 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
     H3.imp (@Nat.le_of_add_le_add_right _ 2 _) Nat.le_of_succ_le_succ
   have H3_0 (l0 : size l = 0) : size rl + size rr ≤ 2 := by omega
   have H3p : size l > 0 → 2 * (size rl + size rr) ≤ 9 * size l + 3 := fun l0 : 1 ≤ size l =>
-    (or_iff_left_of_imp <| by omega).1 H3
+    (or_iff_left_of_imp <| by cutsat).1 H3
   have ablem : ∀ {a b : ℕ}, 1 ≤ a → a + b ≤ 2 → b ≤ 1 := by omega
   have hlp : size l > 0 → ¬size rl + size rr ≤ 1 := fun l0 hb =>
     absurd (le_trans (le_trans (Nat.mul_le_mul_left _ l0) H2) hb) (by decide)
   rw [Ordnode.rotateL_node]; split_ifs with h
   · have rr0 : size rr > 0 :=
-      (mul_lt_mul_left (by decide)).1 (lt_of_le_of_lt (Nat.zero_le _) h : ratio * 0 < _)
+      (mul_lt_mul_iff_right₀ (by decide)).1 (lt_of_le_of_lt (Nat.zero_le _) h : ratio * 0 < _)
     suffices BalancedSz (size l) (size rl) ∧ BalancedSz (size l + size rl + 1) (size rr) by
       exact hl.node3L hr.left hr.right this.1 this.2
     rcases Nat.eq_zero_or_pos (size l) with l0 | l0
@@ -305,7 +305,7 @@ theorem Valid'.balance'_aux {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (h
 theorem Valid'.balance'_lemma {α l l' r r'} (H1 : BalancedSz l' r')
     (H2 : Nat.dist (@size α l) l' ≤ 1 ∧ size r = r' ∨ Nat.dist (size r) r' ≤ 1 ∧ size l = l') :
     2 * @size α r ≤ 9 * size l + 5 ∨ size r ≤ 3 := by
-  suffices @size α r ≤ 3 * (size l + 1) by omega
+  suffices @size α r ≤ 3 * (size l + 1) by cutsat
   rcases H2 with (⟨hl, rfl⟩ | ⟨hr, rfl⟩) <;> rcases H1 with (h | ⟨_, h₂⟩)
   · exact le_trans (Nat.le_add_left _ _) (le_trans h (Nat.le_add_left _ _))
   · exact
@@ -313,7 +313,7 @@ theorem Valid'.balance'_lemma {α l l' r r'} (H1 : BalancedSz l' r')
         (Nat.mul_le_mul_left _ <| le_trans (Nat.dist_tri_right _ _) (Nat.add_le_add_left hl _))
   · exact
       le_trans (Nat.dist_tri_left' _ _)
-        (le_trans (add_le_add hr (le_trans (Nat.le_add_left _ _) h)) (by omega))
+        (le_trans (add_le_add hr (le_trans (Nat.le_add_left _ _) h)) (by cutsat))
   · rw [Nat.mul_succ]
     exact le_trans (Nat.dist_tri_right' _ _) (add_le_add h₂ (le_trans hr (by decide)))
 
@@ -339,7 +339,7 @@ theorem Valid'.balanceL_aux {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (h
   · rw [r0]; exact Nat.zero_le _
   rcases Nat.eq_zero_or_pos (size l) with l0 | l0
   · rw [l0]; exact le_trans (Nat.mul_le_mul_left _ (H₁ l0)) (by decide)
-  replace H₂ : _ ≤ 3 * _ := H₂ l0 r0; omega
+  replace H₂ : _ ≤ 3 * _ := H₂ l0 r0; cutsat
 
 theorem Valid'.balanceL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Valid' x r o₂)
     (H : (∃ l', Raised l' (size l) ∧ BalancedSz l' (size r)) ∨
@@ -430,7 +430,7 @@ theorem Valid'.glue {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Vali
   Valid'.glue_aux (hl.trans_right hr.1) (hr.trans_left hl.1) (hl.1.to_sep hr.1)
 
 theorem Valid'.merge_lemma {a b c : ℕ} (h₁ : 3 * a < b + c + 1) (h₂ : b ≤ 3 * c) :
-    2 * (a + b) ≤ 9 * c + 5 := by omega
+    2 * (a + b) ≤ 9 * c + 5 := by cutsat
 
 theorem Valid'.merge_aux₁ {o₁ o₂ ls ll lx lr rs rl rx rr t}
     (hl : Valid' o₁ (@Ordnode.node α ls ll lx lr) o₂) (hr : Valid' o₁ (.node rs rl rx rr) o₂)
@@ -438,7 +438,7 @@ theorem Valid'.merge_aux₁ {o₁ o₂ ls ll lx lr rs rl rx rr t}
     Valid' o₁ (.balanceL t rx rr) o₂ ∧ size (.balanceL t rx rr) = ls + rs := by
   rw [hl.2.1] at e
   rw [hl.2.1, hr.2.1, delta] at h
-  rcases hr.3.1 with (H | ⟨hr₁, hr₂⟩); · omega
+  rcases hr.3.1 with (H | ⟨hr₁, hr₂⟩); · cutsat
   suffices H₂ : _ by
     suffices H₁ : _ by
       refine ⟨Valid'.balanceL_aux v hr.right H₁ H₂ ?_, ?_⟩
@@ -447,7 +447,7 @@ theorem Valid'.merge_aux₁ {o₁ o₂ ls ll lx lr rs rl rx rr t}
           size_balance' v.2 hr.2.2.2, e, hl.2.1, hr.2.1]
         abel
     · rw [e, add_right_comm]; rintro ⟨⟩
-  intro _ _; rw [e]; unfold delta at hr₂ ⊢; omega
+  intro _ _; rw [e]; unfold delta at hr₂ ⊢; cutsat
 
 theorem Valid'.merge_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o₁ r o₂)
     (sep : l.All fun x => r.All fun y => x < y) :
@@ -718,8 +718,7 @@ instance mem.decidable (x : α) (s : Ordset α) : Decidable (x ∈ s) :=
   instDecidableEqBool _ _
 
 theorem pos_size_of_mem {x : α} {t : Ordset α} (h_mem : x ∈ t) : 0 < size t := by
-  simp? [Membership.mem, mem] at h_mem says
-    simp only [Membership.mem, mem, Bool.decide_eq_true] at h_mem
+  simp only [Membership.mem, mem, Bool.decide_eq_true] at h_mem
   apply Ordnode.pos_size_of_mem t.property.sz h_mem
 
 end

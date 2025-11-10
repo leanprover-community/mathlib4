@@ -108,8 +108,6 @@ instance isAlgebraic_sum [L.IsAlgebraic] [L'.IsAlgebraic] : IsAlgebraic (L.sum L
 theorem card_empty : Language.empty.card = 0 := by simp only [card, mk_sum, mk_sigma, mk_eq_zero,
   sum_const, mk_eq_aleph0, lift_id', mul_zero, add_zero]
 
-@[deprecated (since := "2025-02-05")] alias empty_card := card_empty
-
 instance isEmpty_empty : IsEmpty Language.empty.Symbols := by
   simp only [Language.Symbols, isEmpty_sum, isEmpty_sigma]
   exact ⟨fun _ => inferInstance, fun _ => inferInstance⟩
@@ -758,11 +756,6 @@ theorem relMap_sumInl {n : ℕ} (R : L₁.Relations n) :
 theorem relMap_sumInr {n : ℕ} (R : L₂.Relations n) :
     @RelMap (L₁.sum L₂) S _ n (Sum.inr R) = RelMap R :=
   rfl
-
-@[deprecated (since := "2025-02-21")] alias funMap_sum_inl := funMap_sumInl
-@[deprecated (since := "2025-02-21")] alias funMap_sum_inr := funMap_sumInr
-@[deprecated (since := "2025-02-21")] alias relMap_sum_inl := relMap_sumInl
-@[deprecated (since := "2025-02-21")] alias relMap_sum_inr := relMap_sumInr
 
 
 end SumStructure

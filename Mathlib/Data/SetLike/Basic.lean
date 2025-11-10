@@ -171,7 +171,7 @@ theorem mem_coe {x : B} : x ∈ (p : Set B) ↔ x ∈ p :=
 
 @[simp, norm_cast]
 theorem coe_eq_coe {x y : p} : (x : B) = y ↔ x = y :=
-  Subtype.ext_iff_val.symm
+  Subtype.ext_iff.symm
 
 @[simp]
 theorem coe_mem (x : p) : (x : B) ∈ p :=
@@ -242,5 +242,12 @@ lemma mem_of_subsingleton {A F} [Subsingleton A] [SetLike F A] (S : F) [h : None
     a ∈ S := by
   obtain ⟨s, hs⟩ := nonempty_subtype.mp h
   simpa [Subsingleton.elim a s]
+
+/-- If `s` is a proper element of a `SetLike` structure (i.e., `s ≠ ⊤`) and the top element
+coerces to the universal set, then there exists an element not in `s`. -/
+lemma exists_not_mem_of_ne_top [PartialOrder A] [OrderTop A] (s : A) (hs : s ≠ ⊤)
+    (h_top : ((⊤ : A) : Set B) = Set.univ := by simp) :
+    ∃ b : B, b ∉ s := by
+  simpa [-SetLike.coe_set_eq, SetLike.ext'_iff, h_top, Set.ne_univ_iff_exists_notMem] using hs
 
 end SetLike

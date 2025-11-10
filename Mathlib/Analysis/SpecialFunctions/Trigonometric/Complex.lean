@@ -158,10 +158,9 @@ theorem tan_sub' {x y : ℂ}
   tan_sub (Or.inl h)
 
 theorem tan_two_mul {z : ℂ} : tan (2 * z) = (2 : ℂ) * tan z / ((1 : ℂ) - tan z ^ 2) := by
-  by_cases h : ∀ k : ℤ, z ≠ (2 * k + 1) * π / 2
+  by_cases! h : ∀ k : ℤ, z ≠ (2 * k + 1) * π / 2
   · rw [two_mul, two_mul, sq, tan_add (Or.inl ⟨h, h⟩)]
-  · rw [not_forall_not] at h
-    rw [two_mul, two_mul, sq, tan_add (Or.inr ⟨h, h⟩)]
+  · rw [two_mul, two_mul, sq, tan_add (Or.inr ⟨h, h⟩)]
 
 theorem tan_add_mul_I {x y : ℂ}
     (h :
@@ -191,9 +190,7 @@ theorem continuous_tan : Continuous fun x : {x | cos x ≠ 0} => tan x :=
 theorem cos_eq_iff_quadratic {z w : ℂ} :
     cos z = w ↔ exp (z * I) ^ 2 - 2 * w * exp (z * I) + 1 = 0 := by
   rw [← sub_eq_zero]
-  simp [field, cos, exp_neg]
-  refine Eq.congr ?_ rfl
-  ring
+  simpa [field, cos, exp_neg] using Eq.congr (by ring) rfl
 
 theorem cos_surjective : Function.Surjective cos := by
   intro x

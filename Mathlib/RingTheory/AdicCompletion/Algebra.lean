@@ -3,8 +3,8 @@ Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
-import Mathlib.Algebra.Module.Torsion
 import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.Module.Torsion.Basic
 import Mathlib.RingTheory.AdicCompletion.Basic
 
 /-!
@@ -15,8 +15,8 @@ completion of any module is a module over the adic completion of the ring.
 
 ## Implementation details
 
-We do not make a separate adic completion type in algebra case, to not duplicate all module
-theoretic results on adic completions. This choice does cause some trouble though,
+We do not make a separate adic completion type in algebra case, to not duplicate all
+module-theoretic results on adic completions. This choice does cause some trouble though,
 since `I ^ n • ⊤` is not defeq to `I ^ n`. We try to work around most of the trouble by
 providing as much API as possible.
 

@@ -92,6 +92,9 @@ protected alias ⟨_, _root_.Odd.natAbs⟩ := natAbs_odd
 lemma four_dvd_add_or_sub_of_odd {a b : ℤ} (ha : Odd a) (hb : Odd b) :
     4 ∣ a + b ∨ 4 ∣ a - b := by grind
 
+lemma two_dvd_mul_add_one (k : ℤ) : 2 ∣ k * (k + 1) :=
+  even_iff_two_dvd.mp (even_mul_succ_self k)
+
 lemma two_mul_ediv_two_add_one_of_odd : Odd n → 2 * (n / 2) + 1 = n := by grind
 
 lemma ediv_two_mul_two_add_one_of_odd : Odd n → n / 2 * 2 + 1 = n := by grind

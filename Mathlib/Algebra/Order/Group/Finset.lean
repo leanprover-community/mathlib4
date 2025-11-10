@@ -32,7 +32,7 @@ lemma toFinset_eq_singleton_iff (s : Multiset α) (a : α) :
     s.toFinset = {a} ↔ card s ≠ 0 ∧ s = card s • {a} := by
   refine ⟨fun H ↦ ⟨fun h ↦ ?_, ext' fun x ↦ ?_⟩, fun H ↦ ?_⟩
   · rw [card_eq_zero.1 h, toFinset_zero] at H
-    exact Finset.singleton_ne_empty _ H.symm
+    exact Finset.empty_ne_singleton _ H
   · rw [count_nsmul, count_singleton]
     by_cases hx : x = a
     · simp_rw [hx, ite_true, mul_one, count_eq_card]
@@ -54,8 +54,7 @@ variable {ι κ M G : Type*}
 
 lemma fold_max_add [LinearOrder M] [Add M] [AddRightMono M] (s : Finset ι) (a : WithBot M)
     (f : ι → M) : s.fold max ⊥ (fun i ↦ ↑(f i) + a) = s.fold max ⊥ ((↑) ∘ f) + a := by
-  classical
-    induction' s using Finset.induction_on with a s _ ih <;> simp [*, max_add_add_right]
+  classical induction s using Finset.induction_on <;> simp [*, max_add_add_right]
 
 @[to_additive nsmul_inf']
 lemma inf'_pow [LinearOrder M] [Monoid M] [MulLeftMono M] [MulRightMono M] (s : Finset ι)
@@ -92,7 +91,7 @@ lemma sup'_add' (s : Finset ι) (f : ι → M) (a : M) (hs : s.Nonempty) :
   · apply add_le_of_le_tsub_right_of_le
     · exact Finset.le_sup'_of_le _ hs.choose_spec le_add_self
     · exact Finset.sup'_le _ _ fun i hi ↦ le_tsub_of_add_le_right (Finset.le_sup' (f · + a) hi)
-  · exact Finset.sup'_le _ _ fun i hi ↦ add_le_add_right (Finset.le_sup' _ hi) _
+  · exact Finset.sup'_le _ _ fun i hi ↦ by grw [← Finset.le_sup' _ hi]
 
 /-- Also see `Finset.add_sup'` that works for ordered groups. -/
 lemma add_sup'' (hs : s.Nonempty) (f : ι → M) (a : M) :

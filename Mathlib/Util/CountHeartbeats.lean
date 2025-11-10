@@ -36,7 +36,8 @@ def runTacForHeartbeats (tac : TSyntax `Lean.Parser.Tactic.tacticSeq) (revert : 
     TacticM Nat := do
   let start ← IO.getNumHeartbeats
   let s ← saveState
-  evalTactic tac
+  withOptions (fun opts => opts.set ``Elab.async false) do
+    evalTactic tac
   if revert then restoreState s
   return (← IO.getNumHeartbeats) - start
 
@@ -133,14 +134,6 @@ elab "#count_heartbeats " approx:(&"approximately ")? "in" ppLine cmd:command : 
         Lean.Meta.Tactic.TryThis.addSuggestion (← getRef)
           (← set_option hygiene false in `(command| set_option maxHeartbeats $m in $cmd))
 
-/-- `count_heartbeats` is deprecated in favour of `#count_heartbeats` since "2025-01-12" -/
-elab "count_heartbeats" : tactic =>
-  logWarning "`count_heartbeats` has been renamed to `#count_heartbeats`"
-
-/-- `count_heartbeats` is deprecated in favour of `#count_heartbeats` since "2025-01-12" -/
-elab "count_heartbeats" : command =>
-  logWarning "`count_heartbeats` has been renamed to `#count_heartbeats`"
-
 set_option linter.style.maxHeartbeats false in
 /--
 Guard the minimal number of heartbeats used in the enclosed command.
@@ -165,7 +158,7 @@ elab "guard_min_heartbeats " approx:(&"approximately ")? n:(num)? "in" ppLine cm
            | none => max
   let start ← IO.getNumHeartbeats
   try
-    elabCommand (← `(command| set_option maxHeartbeats 0 in $cmd))
+    elabCommand (← `(command| set_option Elab.async false in set_option maxHeartbeats 0 in $cmd))
   finally
     let finish ← IO.getNumHeartbeats
     let elapsed := (finish - start) / 1000
@@ -210,7 +203,7 @@ end CountHeartbeats
 end Mathlib
 
 /-!
-#  The "countHeartbeats" linter
+# The "countHeartbeats" linter
 
 The "countHeartbeats" linter counts the heartbeats of every declaration.
 -/

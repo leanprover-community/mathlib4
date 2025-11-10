@@ -258,6 +258,12 @@ theorem pow_dvd_pow_iff [IsDomain R] [IsIntegrallyClosed R]
   refine ⟨k, IsFractionRing.injective R K ?_⟩
   rw [map_mul, hk, mul_div_cancel₀ _ ha]
 
+@[simp]
+theorem _root_.Associated.pow_iff [IsDomain R] [IsIntegrallyClosed R] {n : ℕ} (hn : n ≠ 0)
+    {a b : R} :
+    Associated (a ^ n) (b ^ n) ↔ Associated a b := by
+  simp_rw [← dvd_dvd_iff_associated, pow_dvd_pow_iff hn]
+
 variable (R)
 
 /-- This is almost a duplicate of `IsIntegrallyClosedIn.integralClosure_eq_bot`,

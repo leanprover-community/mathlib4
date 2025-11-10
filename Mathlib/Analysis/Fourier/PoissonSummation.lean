@@ -34,7 +34,7 @@ open Function hiding comp_apply
 
 open Set hiding restrict_apply
 
-open Complex hiding abs_of_nonneg
+open Complex
 
 open Real
 

@@ -15,7 +15,7 @@ import Mathlib.Tactic.TryThis
 
 Defines a category, as a type class parametrised by the type of objects.
 
-## Notations
+## Notation
 
 Introduces notations in the `CategoryTheory` scope
 * `X ⟶ Y` for the morphism spaces (type as `\hom`),
@@ -30,7 +30,7 @@ local notation:80 g " ⊚ " f:80 => CategoryTheory.CategoryStruct.comp f g    --
 -/
 
 
-library_note "CategoryTheory universes"
+library_note2 «category theory universes»
 /--
 The typeclass `Category C` describes morphisms associated to objects of type `C : Type u`.
 
@@ -355,6 +355,18 @@ theorem epi_of_epi {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Epi (f ≫ g)] : Epi
 theorem epi_of_epi_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Epi h]
     (w : f ≫ g = h) : Epi g := by
   subst h; exact epi_of_epi f g
+
+/-- `f : X ⟶ Y` is a monomorphism iff for all `Z`, composition of morphisms `Z ⟶ X` with `f`
+is injective. -/
+lemma mono_iff_forall_injective {X Y : C} (f : X ⟶ Y) :
+    Mono f ↔ ∀ Z, (fun g : Z ⟶ X ↦ g ≫ f).Injective :=
+  ⟨fun _ _ _ _ hg ↦ (cancel_mono f).1 hg, fun h ↦ ⟨fun _ _ hg ↦ h _ hg⟩⟩
+
+/-- `f : X ⟶ Y` is an epimorphism iff for all `Z`, composition of morphisms `Y ⟶ Z` with `f`
+is injective. -/
+lemma epi_iff_forall_injective {X Y : C} (f : X ⟶ Y) :
+    Epi f ↔ ∀ Z, (fun g : Y ⟶ Z ↦ f ≫ g).Injective :=
+  ⟨fun _ _ _ _ hg ↦ (cancel_epi f).1 hg, fun h ↦ ⟨fun _ _ hg ↦ h _ hg⟩⟩
 
 section
 

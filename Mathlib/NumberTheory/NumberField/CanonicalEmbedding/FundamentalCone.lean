@@ -335,7 +335,7 @@ def intNorm (a : integerSet K) : ℕ := (Algebra.norm ℤ (preimageOfMemIntegerS
 @[simp]
 theorem intNorm_coe (a : integerSet K) :
     (intNorm a : ℝ) = mixedEmbedding.norm (a : mixedSpace K) := by
-  rw [intNorm, Int.cast_natAbs, ← Rat.cast_intCast, Int.cast_abs, Algebra.coe_norm_int,
+  rw [intNorm, Nat.cast_natAbs, ← Rat.cast_intCast, Int.cast_abs, Algebra.coe_norm_int,
     ← norm_eq_norm, mixedEmbedding_preimageOfMemIntegerSet]
 
 /-- The norm `intNorm` lifts to a function on `integerSet K` modulo `torsion K`. -/
@@ -391,11 +391,10 @@ def integerSetQuotEquivAssociates :
   Equiv.ofBijective
     (Quotient.lift (integerSetToAssociates K)
       fun _ _ h ↦ ((integerSetToAssociates_eq_iff _ _).mpr h).symm)
-    ⟨by convert Setoid.ker_lift_injective (integerSetToAssociates K)
-        all_goals
-        · ext a b
-          rw [Setoid.ker_def, eq_comm, integerSetToAssociates_eq_iff b a,
-            MulAction.orbitRel_apply, MulAction.mem_orbit_iff],
+    ⟨Setoid.lift_injective_iff_ker_eq_of_le _ |>.mpr <| by
+        ext a b
+        rw [Setoid.ker_def, eq_comm, integerSetToAssociates_eq_iff b a,
+          MulAction.orbitRel_apply, MulAction.mem_orbit_iff],
         (Quot.surjective_lift _).mpr (integerSetToAssociates_surjective K)⟩
 
 @[simp]
@@ -508,8 +507,8 @@ def idealSetEquiv : idealSet K J ≃
     {a : integerSet K | (preimageOfMemIntegerSet a : 𝓞 K) ∈ (J : Set (𝓞 K))} :=
   Equiv.ofBijective (fun a ↦ ⟨idealSetMap K J a, preimage_of_IdealSetMap K J a⟩)
     ⟨fun _ _ h ↦ (by
-        simp_rw [Subtype.ext_iff_val, idealSetMap_apply] at h
-        rwa [Subtype.ext_iff_val]),
+        simp_rw [Subtype.ext_iff, idealSetMap_apply] at h
+        rwa [Subtype.ext_iff]),
     fun ⟨a, ha₂⟩ ↦ ⟨⟨a.val, mem_idealSet.mpr ⟨a.prop.1,
         ⟨preimageOfMemIntegerSet a, ha₂, mixedEmbedding_preimageOfMemIntegerSet a⟩⟩⟩, rfl⟩⟩
 

@@ -24,7 +24,7 @@ Abbreviations are also provided for `SheafedSpace`, `LocallyRingedSpace` and `Sc
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.isoRestrict`: The source of an
   open immersion is isomorphic to the restriction of the target onto the image.
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.lift`: Any morphism whose range is
-  contained in an open immersion factors though the open immersion.
+  contained in an open immersion factors through the open immersion.
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.toSheafedSpace`: If `f : X ⟶ Y` is an
   open immersion of presheafed spaces, and `Y` is a sheafed space, then `X` is also a sheafed
   space. The morphism as morphisms of sheafed spaces is given by `toSheafedSpaceHom`.
@@ -46,7 +46,7 @@ Abbreviations are also provided for `SheafedSpace`, `LocallyRingedSpace` and `Sc
   immersion, then the pullback `(f, g)` exists (and the forgetful functor to `TopCat` preserves it).
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullbackSndOfLeft`: Open immersions
   are stable under pullbacks.
-* `AlgebraicGeometry.SheafedSpace.IsOpenImmersion.of_stalk_iso` An (topological) open embedding
+* `AlgebraicGeometry.SheafedSpace.IsOpenImmersion.of_stalk_iso`: An (topological) open embedding
   between two sheafed spaces is an open immersion if all the stalk maps are isomorphisms.
 
 -/

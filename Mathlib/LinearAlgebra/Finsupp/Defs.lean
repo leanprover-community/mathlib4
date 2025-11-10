@@ -11,7 +11,7 @@ import Mathlib.Data.Finsupp.SMul
 # Properties of the module `α →₀ M`
 
 Given an `R`-module `M`, the `R`-module structure on `α →₀ M` is defined in
-`Data.Finsupp.Basic`.
+`Mathlib/Data/Finsupp/SMul.lean`.
 
 In this file we define `LinearMap` versions of various maps:
 
@@ -145,6 +145,9 @@ def lmapDomain (f : α → α') : (α →₀ M) →ₗ[R] α' →₀ M where
 @[simp]
 theorem lmapDomain_apply (f : α → α') (l : α →₀ M) :
     (lmapDomain M R f : (α →₀ M) →ₗ[R] α' →₀ M) l = mapDomain f l :=
+  rfl
+
+lemma coe_lmapDomain (f : α → α') : ⇑(lmapDomain M R f) = Finsupp.mapDomain f :=
   rfl
 
 @[simp]

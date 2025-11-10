@@ -17,7 +17,7 @@ about simple and semisimple Lie algebras.
 
 * `LieAlgebra.IsSemisimple.instHasTrivialRadical`: A semisimple Lie algebra has trivial radical.
 * `LieAlgebra.IsSemisimple.instBooleanAlgebra`:
-  The lattice of ideals in a semisimple Lie algebra is a boolean algebra.
+  The lattice of ideals in a semisimple Lie algebra is a Boolean algebra.
   In particular, this implies that the lattice of ideals is atomistic:
   every ideal is a direct sum of atoms (simple ideals) in a unique way.
 * `LieAlgebra.hasTrivialRadical_iff_no_solvable_ideals`

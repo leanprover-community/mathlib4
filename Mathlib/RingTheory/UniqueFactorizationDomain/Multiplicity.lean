@@ -60,7 +60,9 @@ theorem le_emultiplicity_iff_replicate_le_normalizedFactors {a b : R} {n : ℕ} 
     ↑n ≤ emultiplicity a b ↔ replicate n (normalize a) ≤ normalizedFactors b := by
   rw [← pow_dvd_iff_le_emultiplicity]
   revert b
-  induction' n with n ih; · simp
+  induction n with
+  | zero => simp
+  | succ n ih => ?_
   intro b hb
   constructor
   · rintro ⟨c, rfl⟩

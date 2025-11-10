@@ -169,7 +169,8 @@ lemma isVonNBounded_iff_tendsto_smallSets_nhds {𝕜 E : Type*} [NormedDivisionR
     IsVonNBounded 𝕜 S ↔ Tendsto (· • S : 𝕜 → Set E) (𝓝 0) (𝓝 0).smallSets := by
   rw [tendsto_smallSets_iff]
   refine forall₂_congr fun V hV ↦ ?_
-  simp only [absorbs_iff_eventually_nhds_zero (mem_of_mem_nhds hV), mapsTo', image_smul]
+  simp only [absorbs_iff_eventually_nhds_zero (mem_of_mem_nhds hV), mapsTo_iff_image_subset,
+    image_smul]
 
 alias ⟨IsVonNBounded.tendsto_smallSets_nhds, _⟩ := isVonNBounded_iff_tendsto_smallSets_nhds
 
@@ -504,3 +505,29 @@ theorem isBounded_iff_subset_smul_closedBall {s : Set E} :
 end NormedSpace
 
 end VonNBornologyEqMetric
+
+section QuasiCompleteSpace
+
+/-- A locally convex space is quasi-complete if every closed and von Neumann bounded set is
+complete. -/
+class QuasiCompleteSpace (𝕜 : Type*) (E : Type*) [Zero E] [UniformSpace E] [SeminormedRing 𝕜]
+    [SMul 𝕜 E] : Prop where
+  /-- A locally convex space is quasi-complete if every closed and von Neumann bounded set is
+  complete. -/
+  quasiComplete : ∀ ⦃s : Set E⦄, Bornology.IsVonNBounded 𝕜 s → IsClosed s → IsComplete s
+
+variable {𝕜 : Type*} {E : Type*} [Zero E] [UniformSpace E] [SeminormedRing 𝕜] [SMul 𝕜 E]
+
+/-- A complete space is quasi-complete with respect to any scalar ring. -/
+instance [CompleteSpace E] : QuasiCompleteSpace 𝕜 E where
+  quasiComplete _ _ := IsClosed.isComplete
+
+/-- [Bourbaki, *Topological Vector Spaces*, III §1.6][bourbaki1987] -/
+theorem isCompact_closure_of_totallyBounded_quasiComplete {E : Type*} {𝕜 : Type*} [NormedField 𝕜]
+    [AddCommGroup E] [Module 𝕜 E] [UniformSpace E] [IsUniformAddGroup E] [ContinuousSMul 𝕜 E]
+    [QuasiCompleteSpace 𝕜 E] {s : Set E} (hs : TotallyBounded s) : IsCompact (closure s) :=
+  hs.closure.isCompact_of_isComplete
+    (QuasiCompleteSpace.quasiComplete (TotallyBounded.isVonNBounded 𝕜 (TotallyBounded.closure hs))
+    isClosed_closure)
+
+end QuasiCompleteSpace

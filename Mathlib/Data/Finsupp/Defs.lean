@@ -46,7 +46,7 @@ non-pointwise multiplication.
 * `Finsupp.embDomain`: Maps the domain of a `Finsupp` by an embedding.
 * `Finsupp.zipWith`: Postcomposition of two `Finsupp`s with a function `f` such that `f 0 0 = 0`.
 
-## Notations
+## Notation
 
 This file adds `α →₀ M` as a global notation for `Finsupp α M`.
 
@@ -264,6 +264,10 @@ noncomputable def ofSupportFinite (f : α → M) (hf : (Function.support f).Fini
 theorem ofSupportFinite_coe {f : α → M} {hf : (Function.support f).Finite} :
     (ofSupportFinite f hf : α → M) = f :=
   rfl
+
+theorem ofSupportFinite_support {f : α → M} (hf : f.support.Finite) :
+    (ofSupportFinite f hf).support = hf.toFinset := by
+  ext; simp [ofSupportFinite_coe]
 
 instance instCanLift : CanLift (α → M) (α →₀ M) (⇑) fun f => (Function.support f).Finite where
   prf f hf := ⟨ofSupportFinite f hf, rfl⟩

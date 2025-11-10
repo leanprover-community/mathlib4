@@ -12,7 +12,7 @@ import Mathlib.RingTheory.Localization.Module
 /-!
 # ℤ-lattices
 
-Let `E` be a finite dimensional vector space over a `NormedLinearOrderedField` `K` with a solid
+Let `E` be a finite-dimensional vector space over a `NormedLinearOrderedField` `K` with a solid
 norm that is also a `FloorRing`, e.g. `ℝ`. A (full) `ℤ`-lattice `L` of `E` is a discrete
 subgroup of `E` such that `L` spans `E` over `K`.
 
@@ -508,18 +508,21 @@ instance instModuleFinite_of_discrete_submodule {E : Type*} [NormedAddCommGroup 
 theorem ZLattice.module_free [IsZLattice K L] : Module.Free ℤ L := by
   have : Module.Finite ℤ L := module_finite K L
   have : Module ℚ E := Module.compHom E (algebraMap ℚ K)
+  have : IsAddTorsionFree E := .of_module_rat _
   infer_instance
 
 instance instModuleFree_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] :
     Module.Free ℤ L := by
   have : Module ℚ E := Module.compHom E (algebraMap ℚ ℝ)
+  have : IsAddTorsionFree E := .of_module_rat _
   infer_instance
 
 theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
   classical
   have : Module.Finite ℤ L := module_finite K L
   have : Module ℚ E := Module.compHom E (algebraMap ℚ K)
+  have : IsAddTorsionFree E := .of_module_rat _
   let b₀ := Module.Free.chooseBasis ℤ L
   -- Let `b` be a `ℤ`-basis of `L` formed of vectors of `E`
   let b := Subtype.val ∘ b₀
@@ -736,9 +739,9 @@ def ZLattice.comap_equiv (e : F ≃ₗ[K] E) :
   LinearEquiv.ofBijective
     ((e.symm.toLinearMap.restrictScalars ℤ).restrict
       (fun _ h ↦ by simpa [← SetLike.mem_coe] using h))
-    ⟨fun _ _ h ↦ Subtype.ext_iff_val.mpr (e.symm.injective (congr_arg Subtype.val h)),
+    ⟨fun _ _ h ↦ Subtype.ext_iff.mpr (e.symm.injective (congr_arg Subtype.val h)),
     fun ⟨x, hx⟩ ↦ ⟨⟨e x, by rwa [← SetLike.mem_coe, ZLattice.coe_comap] at hx⟩,
-      by simp [Subtype.ext_iff_val]⟩⟩
+      by simp [Subtype.ext_iff]⟩⟩
 
 @[simp]
 theorem ZLattice.comap_equiv_apply (e : F ≃ₗ[K] E) (x : L) :
