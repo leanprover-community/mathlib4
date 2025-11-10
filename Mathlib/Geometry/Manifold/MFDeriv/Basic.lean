@@ -496,9 +496,9 @@ theorem MDifferentiable.continuous (h : MDifferentiable I I' f) : Continuous f :
 /-! ### Deriving continuity from differentiability on manifolds -/
 
 theorem writtenInExtChartAt_comp (h : ContinuousWithinAt f s x) :
-    {y | writtenInExtChartAt I I'' x (g ∘ f) y =
-          (writtenInExtChartAt I' I'' (f x) g ∘ writtenInExtChartAt I I' x f) y} ∈
-      𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] (extChartAt I x) x := by
+    writtenInExtChartAt I I'' x (g ∘ f)
+      =ᶠ[𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] (extChartAt I x x)]
+      (writtenInExtChartAt I' I'' (f x) g ∘ writtenInExtChartAt I I' x f) := by
   apply
     @Filter.mem_of_superset _ _ (f ∘ (extChartAt I x).symm ⁻¹' (extChartAt I' (f x)).source) _
       (extChartAt_preimage_mem_nhdsWithin
