@@ -136,13 +136,19 @@ theorem supportDim_quotSMulTop_succ_eq_supportDim {x : R} (reg : IsSMulRegular M
     (hx : x ∈ maximalIdeal R) : supportDim R (QuotSMulTop x M) + 1 = supportDim R M :=
   supportDim_quotSMulTop_succ_eq_supportDim_mem_jacobson reg ((maximalIdeal_le_jacobson _) hx)
 
+lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim {x : R}
+    (reg : IsSMulRegular R x) (hx : x ∈ maximalIdeal R) :
+    ringKrullDim (R ⧸ span {x}) + 1 = ringKrullDim R :=
+  ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim_of_mem_jacobson reg <| by
+    rwa [ringJacobson_eq_maximalIdeal R]
+
 open nonZeroDivisors in
 @[stacks 00KW]
-lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim {x : R}
-    (reg : x ∈ R⁰) (hx : x ∈ maximalIdeal R) : ringKrullDim (R ⧸ span {x}) + 1 = ringKrullDim R :=
-  ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim_of_mem_jacobson
-    (Module.Flat.isSMulRegular_of_nonZeroDivisors reg) <| by
-    rwa [ringJacobson_eq_maximalIdeal R]
+lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim_of_mem_nonZeroDivisors
+    {x : R} (reg : x ∈ R⁰) (hx : x ∈ maximalIdeal R) :
+    ringKrullDim (R ⧸ span {x}) + 1 = ringKrullDim R :=
+  ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim
+    (Module.Flat.isSMulRegular_of_nonZeroDivisors reg) hx
 
 /-- If `M` is a finite module over a Noetherian local ring `R`, `r₁, …, rₙ` is an
   `M`-sequence, then `dim M/(r₁, …, rₙ)M + n = dim M`. -/
