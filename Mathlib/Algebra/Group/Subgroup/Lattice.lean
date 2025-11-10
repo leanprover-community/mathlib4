@@ -604,7 +604,7 @@ theorem mem_sup' : x ∈ s ⊔ t ↔ ∃ (y : s) (z : t), (y : C) * z = x :=
   mem_sup.trans <| by simp only [SetLike.exists, exists_prop]
 
 @[to_additive]
-theorem mem_sup_of_normal {G : Type*} [Group G] {s t : Subgroup G} [ht : t.Normal] {x : G} :
+theorem mem_sup_of_normal {s t : Subgroup G} [ht : t.Normal] {x : G} :
     x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x := by
   constructor
   · intro hx; rw [sup_eq_closure] at hx
