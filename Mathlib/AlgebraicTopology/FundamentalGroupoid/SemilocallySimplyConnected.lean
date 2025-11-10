@@ -45,6 +45,27 @@ def SemilocallySimplyConnected (X : Type*) [TopologicalSpace X] : Prop :=
     ∀ (base : U),
       (FundamentalGroup.map (⟨Subtype.val, continuous_subtype_val⟩ : C(U, X)) base).range = ⊥
 
+/-! ### Path restriction to subintervals -/
+
+/-- Extract a subpath from γ on the interval [a, b] ⊆ [0, 1].
+This is γ reparametrized via the affine map t ↦ a + t(b - a). -/
+def Path.subpathOn {X : Type*} [TopologicalSpace X] {x y : X} (γ : Path x y)
+    (a b : unitInterval) (hab : a ≤ b) : Path (γ a) (γ b) where
+  toFun t := γ ⟨(a : ℝ) + t * ((b : ℝ) - a), by
+    constructor
+    · apply add_nonneg a.2.1
+      apply mul_nonneg t.2.1
+      linarith [show (a : ℝ) ≤ b from hab]
+    · calc (a : ℝ) + t * ((b : ℝ) - a)
+          ≤ a + 1 * ((b : ℝ) - a) := by
+            apply add_le_add_left
+            apply mul_le_mul_of_nonneg_right t.2.2
+            linarith [show (a : ℝ) ≤ b from hab]
+        _ = b := by ring
+        _ ≤ 1 := b.2.2⟩
+  source' := by simp
+  target' := by simp
+
 namespace SemilocallySimplyConnected
 
 variable {X : Type*} [TopologicalSpace X]
@@ -267,6 +288,28 @@ structure PathInTube {X : Type*} [TopologicalSpace X] {x y : X} {n : ℕ}
     (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → γ s ∈ T.U i
   /-- γ passes through the point neighborhoods V[j] at ALL partition points -/
   passes_through_V : ∀ j, γ (part.t j) ∈ T.V j
+
+/-- If γ is in a tube, then its subpath on segment i has range in U[i]. -/
+lemma PathInTube.subpathOn_range_subset {X : Type*} [TopologicalSpace X] {x y : X} {n : ℕ}
+    {γ : Path x y} {part : IntervalPartition n} {T : TubeData X x y n}
+    (hγ : PathInTube γ part T) (i : Fin n) :
+    Set.range (γ.subpathOn (part.t i.castSucc) (part.t i.succ)
+      (part.h_mono.monotone i.castSucc_lt_succ.le)) ⊆ T.U i := by
+  intro z hz
+  obtain ⟨t, rfl⟩ := hz
+  apply hγ.stays_in_U i
+  have h_mono : (part.t i.castSucc : ℝ) ≤ part.t i.succ :=
+    part.h_mono.monotone i.castSucc_lt_succ.le
+  constructor
+  · apply le_add_of_nonneg_right
+    apply mul_nonneg t.2.1
+    linarith
+  · calc (part.t i.castSucc : ℝ) + t * (part.t i.succ - part.t i.castSucc)
+        ≤ part.t i.castSucc + 1 * (part.t i.succ - part.t i.castSucc) := by
+          apply add_le_add_left
+          apply mul_le_mul_of_nonneg_right t.2.2
+          linarith
+      _ = part.t i.succ := by ring
 
 /-- Convert TubeData with partition to the set of paths in the tube -/
 def TubeData.toSet {X : Type*} [TopologicalSpace X] {x y : X} {n : ℕ}
@@ -629,6 +672,14 @@ theorem Path.Homotopic.trans_refl {x y : X} (p : Path x y) :
     Path.Homotopic (p.trans (Path.refl y)) p :=
   ⟨Path.Homotopy.transRefl p⟩
 
+/-- If p ≃ p' and q ≃ q', then p.trans q ≃ p'.trans q'. -/
+theorem Path.Homotopic.trans_congr {x y z : X} {p p' : Path x y} {q q' : Path y z}
+    (hp : Path.Homotopic p p') (hq : Path.Homotopic q q') :
+    Path.Homotopic (p.trans q) (p'.trans q') := by
+  obtain ⟨F⟩ := hp
+  obtain ⟨G⟩ := hq
+  exact ⟨Path.Homotopy.hcomp F G⟩
+
 /-! ### Single segment homotopy: the key step in the ladder construction -/
 
 /-- For a single segment i, the path γ_i · α_{i+1} (along γ then down the next rung) is
@@ -663,32 +714,86 @@ theorem Path.segment_rung_homotopy {a b c d : X} (U : Set X)
 
 /-! ### Pasting lemma: telescoping cancellation of rungs -/
 
-/-- The pasting lemma for segment homotopies. Given:
-- γ and γ' are paths that can be broken into n segments via partition points t
+/-- The pasting lemma for segment homotopies. Works directly with path restrictions.
+
+Given:
+- γ and γ' are paths from x to y with a partition
 - α : (i : Fin (n+1)) → Path (γ (t i)) (γ' (t i)) are rung paths connecting partition points
-- For each segment i, we have the rectangle homotopy: γᵢ · αᵢ₊₁ ≃ αᵢ · γ'ᵢ
+- For each segment i, the rectangle homotopy: γ|[t_i,t_{i+1}] · α_{i+1} ≃ α_i · γ'|[t_i,t_{i+1}]
 
-Then by telescoping cancellation:
-γ ≃ α₀ · γ' · αₙ⁻¹
+Then by telescoping, we get: γ ≃ α₀ · γ' · (αₙ)⁻¹
 
-Since α₀ and αₙ are constant paths (γ and γ' share endpoints), this gives γ ≃ γ'.
+Since part.t 0 = 0 and part.t (Fin.last n) = 1:
+- α₀ : Path (γ 0) (γ' 0) = Path x x (loop at x)
+- αₙ : Path (γ 1) (γ' 1) = Path y y (loop at y)
 
-This is proved by induction on n, using the homotopy algebra lemmas. -/
+When the endpoint loops are null-homotopic, we get γ ≃ γ'. -/
 theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
     (part : IntervalPartition n)
-    (γ_seg : (i : Fin n) → Path (γ (part.t i.castSucc)) (γ (part.t i.succ)))
-    (γ'_seg : (i : Fin n) → Path (γ' (part.t i.castSucc)) (γ' (part.t i.succ)))
     (α : (i : Fin (n + 1)) → Path (γ (part.t i)) (γ' (part.t i)))
-    (h_γ_seg : ∀ i s, s ∈ Set.Icc (part.t i.castSucc) (part.t i.succ) →
-      γ s = (γ_seg i).extend s)
-    (h_γ'_seg : ∀ i s, s ∈ Set.Icc (part.t i.castSucc) (part.t i.succ) →
-      γ' s = (γ'_seg i).extend s)
-    (h_α₀ : HEq (α 0) (Path.refl x))
-    (h_αₙ : HEq (α (Fin.last n)) (Path.refl y))
     (h_rectangles : ∀ (i : Fin n),
-        Path.Homotopic ((γ_seg i).trans (α i.succ)) ((α i.castSucc).trans (γ'_seg i))) :
-    Path.Homotopic γ γ' := by
+        Path.Homotopic
+          ((γ.subpathOn (part.t i.castSucc) (part.t i.succ)
+            (part.h_mono.monotone i.castSucc_lt_succ.le)).trans (α i.succ))
+          ((α i.castSucc).trans (γ'.subpathOn (part.t i.castSucc) (part.t i.succ)
+            (part.h_mono.monotone i.castSucc_lt_succ.le)))) :
+    Path.Homotopic γ
+      (((α 0).cast (show x = γ (part.t 0) by rw [part.h_start, γ.source])
+                   (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])).trans
+        (γ'.trans
+          ((α (Fin.last n)).symm.cast
+            (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target])
+            (show y = γ (part.t (Fin.last n)) by rw [part.h_end, γ.target])))) := by
   sorry
+
+/-- Stronger version of paste_segment_homotopies that directly gives γ ≃ γ' when the endpoint
+loops live in SLSC neighborhoods.
+
+Given the same rectangle homotopies, plus:
+- U₀ is an SLSC neighborhood containing the range of α 0
+- Uₙ₋₁ is an SLSC neighborhood containing the range of α (Fin.last n)
+
+Then the endpoint loops are null-homotopic, and we get γ ≃ γ' directly. -/
+theorem Path.paste_segment_homotopies_slsc {x y : X} {n : ℕ} (γ γ' : Path x y)
+    (part : IntervalPartition n)
+    (α : (i : Fin (n + 1)) → Path (γ (part.t i)) (γ' (part.t i)))
+    (h_rectangles : ∀ (i : Fin n),
+        Path.Homotopic
+          ((γ.subpathOn (part.t i.castSucc) (part.t i.succ)
+            (part.h_mono.monotone i.castSucc_lt_succ.le)).trans (α i.succ))
+          ((α i.castSucc).trans (γ'.subpathOn (part.t i.castSucc) (part.t i.succ)
+            (part.h_mono.monotone i.castSucc_lt_succ.le))))
+    (U₀ : Set X) (h_U₀_slsc : ∀ {a b : X} (p q : Path a b), a ∈ U₀ → b ∈ U₀ →
+      Set.range p ⊆ U₀ → Set.range q ⊆ U₀ → Path.Homotopic p q)
+    (h_α₀_in_U₀ : Set.range (α 0) ⊆ U₀)
+    (Uₙ : Set X) (h_Uₙ_slsc : ∀ {a b : X} (p q : Path a b), a ∈ Uₙ → b ∈ Uₙ →
+      Set.range p ⊆ Uₙ → Set.range q ⊆ Uₙ → Path.Homotopic p q)
+    (h_αₙ_in_Uₙ : Set.range (α (Fin.last n)) ⊆ Uₙ) :
+    Path.Homotopic γ γ' := by
+  -- Step 1: Apply the basic pasting lemma
+  have h_paste := paste_segment_homotopies γ γ' part α h_rectangles
+
+  -- Step 2: Define the endpoint loops with proper casts
+  let α₀ := (α 0).cast (show x = γ (part.t 0) by rw [part.h_start, γ.source])
+                       (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])
+  let αₙ := (α (Fin.last n)).symm.cast
+              (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target])
+              (show y = γ (part.t (Fin.last n)) by rw [part.h_end, γ.target])
+
+  -- Step 3: Show α₀ is null-homotopic using SLSC property of U₀
+  have h_α₀_null : Path.Homotopic α₀ (Path.refl x) := by
+    sorry -- Apply h_U₀_slsc: both α₀ and refl x are loops at x with range in U₀
+
+  -- Step 4: Show αₙ is null-homotopic using SLSC property of Uₙ
+  have h_αₙ_null : Path.Homotopic αₙ (Path.refl y) := by
+    sorry -- Apply h_Uₙ_slsc: both αₙ and refl y are loops at y with range in Uₙ
+
+  -- Step 5: Combine using homotopy manipulation
+  -- From h_paste: γ ≃ α₀ · γ' · αₙ
+  -- From h_α₀_null: α₀ ≃ refl x
+  -- From h_αₙ_null: αₙ ≃ refl y
+  -- Therefore: γ ≃ refl x · γ' · refl y ≃ γ'
+  sorry -- Requires: applying trans_congr repeatedly, then using refl_trans and trans_refl
 
 /-- Given a path γ in an SLSC space, paths in the tube around γ are homotopic to γ.
 This is the main result that combines all the previous lemmas:
@@ -700,11 +805,72 @@ theorem Path.tube_subset_homotopy_class (hX : SemilocallySimplyConnected X) {x y
     (hγ : PathInTube γ part T)
     (γ' : Path x y) (hγ' : PathInTube γ' part T) :
     Path.Homotopic γ' γ := by
-  sorry
+  -- Step 1: Construct rungs connecting partition points
+  obtain ⟨α, hα_ranges⟩ := Path.exists_rung_paths γ γ' part T hγ hγ'
+
+  -- Step 2: For each segment i, prove the rectangle homotopy using segment_rung_homotopy
+  -- The subpaths γ|[t_i, t_{i+1}] and γ'|[t_i, t_{i+1}] both lie in U_i
+  -- The rungs α_i and α_{i+1} also lie in U_i
+  -- By SLSC property of U_i, we get: γ_i · α_{i+1} ≃ α_i · γ'_i
+  have h_rectangles : ∀ (i : Fin n),
+      Path.Homotopic
+        ((γ.subpathOn (part.t i.castSucc) (part.t i.succ)
+          (part.h_mono.monotone i.castSucc_lt_succ.le)).trans (α i.succ))
+        ((α i.castSucc).trans (γ'.subpathOn (part.t i.castSucc) (part.t i.succ)
+          (part.h_mono.monotone i.castSucc_lt_succ.le))) := by
+    intro i
+    apply segment_rung_homotopy (T.U i)
+      (fun p q hp_a hp_d hp_range hq_range => T.h_U_slsc i hp_a hp_d p q hp_range hq_range)
+    · -- γ.subpathOn has range in U_i
+      exact hγ.subpathOn_range_subset i
+    · -- γ'.subpathOn has range in U_i
+      exact hγ'.subpathOn_range_subset i
+    · -- α i.castSucc has range in U_i
+      exact (hα_ranges i).1
+    · -- α i.succ has range in U_i
+      exact (hα_ranges i).2
+
+  -- Step 3: Apply the stronger pasting lemma that uses SLSC to handle endpoint loops
+  -- We need to identify which neighborhoods contain the endpoint rungs
+
+  -- First, handle the case where n = 0 separately (single segment, no interior points)
+  cases n with
+  | zero =>
+    -- When n = 0, there are no segments, so this case is vacuous
+    -- Actually, we need n ≥ 1 for this theorem to make sense
+    sorry
+  | succ n' =>
+    -- Now n = n' + 1, so we have at least one segment
+    -- α 0 has range in V 0, and V 0 ⊆ U 0 (left endpoint of segment 0)
+    -- α (Fin.last n) has range in V (Fin.last n), and V (Fin.last n) ⊆ U n'
+    -- (right endpoint of last segment)
+
+    -- For α 0: it has range in V 0 ⊆ U 0
+    let i_first : Fin (n' + 1) := ⟨0, Nat.zero_lt_succ n'⟩
+    have h_α₀_range : Set.range (α 0) ⊆ T.U i_first := by
+      have h1 : i_first.castSucc = 0 := rfl
+      rw [← h1]
+      exact (hα_ranges i_first).1
+
+    -- For α (Fin.last (n' + 1)): it has range in V (Fin.last (n' + 1)) ⊆ U n'
+    let i_last : Fin (n' + 1) := ⟨n', Nat.lt_succ_self n'⟩
+    have h_αₙ_range : Set.range (α (Fin.last (n' + 1))) ⊆ T.U i_last := by
+      have h1 : i_last.succ = Fin.last (n' + 1) := rfl
+      rw [← h1]
+      exact (hα_ranges i_last).2
+
+    -- Now apply the stronger pasting lemma and use symmetry
+    apply Path.Homotopic.symm
+    refine paste_segment_homotopies_slsc γ γ' part α h_rectangles
+      (T.U i_first)
+      (fun p q hp_a hp_d hp_range hq_range => T.h_U_slsc i_first hp_a hp_d p q hp_range hq_range)
+      h_α₀_range
+      (T.U i_last)
+      (fun p q hp_a hp_d hp_range hq_range => T.h_U_slsc i_last hp_a hp_d p q hp_range hq_range)
+      h_αₙ_range
 
 /-- In an SLSC locally path-connected space, every path p has an open tubular neighborhood
-contained in its homotopy class. This is THE KEY LEMMA that bridges the local SLSC property
-to the global result that homotopy classes are open.
+contained in its homotopy class.
 
 **Proof outline:**
 1. Apply `exists_partition_in_slsc_neighborhoods` to get partition t and SLSC neighborhoods U
@@ -767,8 +933,7 @@ theorem Path.isOpen_setOf_homotopic (hX : SemilocallySimplyConnected X)
   exact hp'q.trans hq
 
 /-- In a semilocally simply connected, locally path-connected space, the quotient of paths by
-homotopy has discrete topology. This is a key step in proving that semilocally simply connected
-spaces admit universal covers.
+homotopy has discrete topology.
 
 **Proof:** By `isOpen_setOf_homotopic`, every homotopy class H(p) = {p' | Homotopic p' p} is
 open in Path x y. Under the quotient map π : Path x y → Path.Homotopic.Quotient x y, the
