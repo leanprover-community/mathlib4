@@ -258,10 +258,13 @@ structure TubeData (X : Type*) [TopologicalSpace X] (x y : X) (n : ℕ) where
 This means:
 1. γ stays in the segment neighborhoods U[i] on each interval [t[i], t[i+1]]
 2. γ passes through the overlap neighborhoods V[j] at interior partition points -/
-def PathInTube {X : Type*} [TopologicalSpace X] {x y : X} {n : ℕ}
-    (γ : Path x y) (part : IntervalPartition n) (T : TubeData X x y n) : Prop :=
-  (∀ i (s : unitInterval), (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → γ s ∈ T.U i) ∧
-  (∀ j hj_pos hj_last, γ (part.t j) ∈ T.V j hj_pos hj_last)
+structure PathInTube {X : Type*} [TopologicalSpace X] {x y : X} {n : ℕ}
+    (γ : Path x y) (part : IntervalPartition n) (T : TubeData X x y n) : Prop where
+  /-- γ stays in the segment neighborhoods U[i] on each interval [t[i], t[i+1]] -/
+  stays_in_U : ∀ i (s : unitInterval),
+    (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → γ s ∈ T.U i
+  /-- γ passes through the overlap neighborhoods V[j] at interior partition points -/
+  passes_through_V : ∀ j hj_pos hj_last, γ (part.t j) ∈ T.V j hj_pos hj_last
 
 /-- Convert TubeData with partition to the set of paths in the tube -/
 def TubeData.toSet {X : Type*} [TopologicalSpace X] {x y : X} {n : ℕ}
@@ -346,11 +349,8 @@ theorem Path.exists_partition_in_slsc_neighborhoods (hX : SemilocallySimplyConne
     h_V_subset_next := hV_subset_next
   }
   -- Prove PathInTube
-  refine ⟨n, part, T, ?_, ?_⟩
-  · -- γ stays in segment neighborhoods
-    exact hU_contains
-  · -- γ passes through overlap neighborhoods
-    exact hγ_in_V
+  refine ⟨n, part, T, ?_⟩
+  exact { stays_in_U := hU_contains, passes_through_V := hγ_in_V }
 
 /-- Given a partition and tube data, the set of paths in the tube is open in the path space.
 This follows from the compact-open topology: it's a finite intersection of:
@@ -365,7 +365,12 @@ theorem TubeData.isOpen {x y : X} {n : ℕ}
       (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → γ' s ∈ T.U i} ∩
     {γ' : Path x y | ∀ j hj_pos hj_last, γ' (part.t j) ∈ T.V j hj_pos hj_last} := by
     ext γ'
-    simp only [TubeData.toSet, PathInTube, Set.mem_setOf_eq, Set.mem_inter_iff]
+    simp only [TubeData.toSet, Set.mem_setOf_eq, Set.mem_inter_iff]
+    constructor
+    · intro h
+      exact ⟨h.stays_in_U, h.passes_through_V⟩
+    · intro ⟨h1, h2⟩
+      exact ⟨h1, h2⟩
   rw [this]
   apply IsOpen.inter
   -- First part: paths staying in U[i] on each segment
