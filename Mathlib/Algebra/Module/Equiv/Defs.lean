@@ -546,11 +546,11 @@ protected theorem injective : Function.Injective e :=
 protected theorem surjective : Function.Surjective e :=
   e.toEquiv.surjective
 
-protected theorem image_eq_preimage (s : Set M) : e '' s = e.symm ⁻¹' s :=
-  e.toEquiv.image_eq_preimage s
+protected theorem image_eq_preimage_symm (s : Set M) : e '' s = e.symm ⁻¹' s :=
+  e.toEquiv.image_eq_preimage_symm s
 
 protected theorem image_symm_eq_preimage (s : Set M₂) : e.symm '' s = e ⁻¹' s :=
-  e.toEquiv.symm.image_eq_preimage s
+  e.toEquiv.symm.image_eq_preimage_symm s
 
 end
 
