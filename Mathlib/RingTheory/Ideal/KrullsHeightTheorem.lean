@@ -327,8 +327,8 @@ lemma Ideal.height_le_height_add_of_liesOver [IsNoetherianRing S] (p : Ideal R) 
     refine Set.SurjOn.mono subset_rfl hsP'sub fun x hx ↦ ?_
     obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective x
     rw [SetLike.mem_coe, Ideal.mem_quotient_iff_mem] at hx
-    use y, hx
-    rw [Ideal.map_le_iff_le_comap, Ideal.LiesOver.over (p := p) (P := P)]
+    · use y, hx
+    · rw [Ideal.map_le_iff_le_comap, Ideal.LiesOver.over (p := p) (P := P)]
   obtain ⟨o, ho, hinj, himgo⟩ := s'.exists_subset_injOn_image_eq_of_surjOn (P : Set S) this
   let t : Finset S := Finset.image (algebraMap R S) s ∪ o
   suffices h : P.height ≤ t.card by
