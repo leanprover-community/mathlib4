@@ -5,7 +5,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Batteries.Data.List.Perm
 import Mathlib.Logic.Relation
-import Mathlib.Order.RelClasses
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.InsertIdx
 
