@@ -96,7 +96,7 @@ theorem nodup_offDiag : l.offDiag.Nodup ↔ l.Nodup := by
   · simp_rw [pairwise_iff_get, Disjoint, mem_map, get_enum]
     rintro i j hlt _ ⟨a, -, rfl⟩ ⟨b, -, hab⟩
     simp [h.get_inj_iff, Fin.cast, Fin.val_inj, hlt.ne'] at hab
-      
+
 
 protected alias ⟨Nodup.of_offDiag, Nodup.offDiag⟩ := nodup_offDiag
 
