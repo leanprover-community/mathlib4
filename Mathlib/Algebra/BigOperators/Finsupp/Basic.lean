@@ -81,6 +81,10 @@ theorem prod_comm (f : α →₀ M) (g : β →₀ M') (h : α → M → β → 
       g.prod fun x' v' => f.prod fun x v => h x v x' v' :=
   Finset.prod_comm
 
+@[to_additive]
+theorem prod_finsetProd_comm {s : Finset β} (f : α →₀ M) (h : α → M → β → N) :
+    (f.prod fun a m => ∏ b ∈ s, h a m b) = ∏ b ∈ s, f.prod fun a m => h a m b := Finset.prod_comm
+
 @[to_additive (attr := simp)]
 theorem prod_ite_eq [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M → N) :
     (f.prod fun x v => ite (a = x) (b x v) 1) = ite (a ∈ f.support) (b a (f a)) 1 := by
@@ -233,6 +237,14 @@ theorem prod_neg_index [SubtractionMonoid G] [CommMonoid M] {g : α →₀ G} {h
 theorem finset_sum_apply [AddCommMonoid N] (S : Finset ι) (f : ι → α →₀ N) (a : α) :
     (∑ i ∈ S, f i) a = ∑ i ∈ S, f i a :=
   map_sum (applyAddHom a) _ _
+
+
+
+
+
+
+
+
 
 @[simp]
 theorem sum_apply [Zero M] [AddCommMonoid N] {f : α →₀ M} {g : α → M → β →₀ N} {a₂ : β} :
