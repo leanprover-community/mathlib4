@@ -34,7 +34,7 @@ namespace LightCondensed
 variable (R : Type u) [CommRing R]
 
 instance : (coherentTopology LightProfinite.{u}).W (A := ModuleCat.{u} R) |>.IsMonoidal :=
-  isMonoidal_transport _ _
+  GrothendieckTopology.W.transport_isMonoidal _ _
     ((equivSmallModel.{u} LightProfinite.{u}).inverse.inducedTopology
       (coherentTopology LightProfinite.{u}))
     (equivSmallModel.{u} LightProfinite.{u}).inverse
