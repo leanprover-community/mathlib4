@@ -216,7 +216,7 @@ end Monoidal
 
 @[simps!]
 instance Functor.Monoidal.whiskeringLeft (E : Type*) [Category E] [MonoidalCategory E] (F : C ⥤ D) :
-    ((Functor.whiskeringLeft _ _ E).obj F).Monoidal := Functor.CoreMonoidal.toMonoidal {
+    ((whiskeringLeft _ _ E).obj F).Monoidal := CoreMonoidal.toMonoidal {
   εIso := Iso.refl _
   μIso _ _ := Iso.refl _ }
 
