@@ -65,7 +65,7 @@ noncomputable def ofHasPullbacksAlong {Y X : C} (f : Y ⟶ X) [HasPullbacksAlong
   pullback := Over.pullback f
   mapPullbackAdj := Over.mapPullbackAdj f
 
-/-- The identity morphism has a chosen pullback. -/
+/-- The identity morphism has a functorial choice of pullbacks. -/
 @[simps]
 def id (X : C) : ChosenPullbackAlong (𝟙 X) where
   pullback := 𝟭 _
@@ -76,7 +76,7 @@ attribute [local instance] ChosenPullbackAlong.id in
 identity functor. -/
 def pullbackId (X : C) : pullback (𝟙 X) ≅ 𝟭 (Over X) := Iso.refl _
 
-/-- Every isomorphism has a chosen pullback. -/
+/-- Every isomorphism has a functorial choice of pullbacks. -/
 @[simps]
 def iso {Y X : C} (f : Y ≅ X) : ChosenPullbackAlong f.hom where
   pullback.obj Z := Over.mk (Z.hom ≫ f.inv)
@@ -84,7 +84,7 @@ def iso {Y X : C} (f : Y ≅ X) : ChosenPullbackAlong f.hom where
   mapPullbackAdj.unit.app T := Over.homMk (𝟙 T.left)
   mapPullbackAdj.counit.app U := Over.homMk (𝟙 _)
 
-/-- The inverse of an isomorphism has a chosen pullback. -/
+/-- The inverse of an isomorphism has a functorial choice of pullbacks. -/
 @[simps!]
 def isoInv {Y X : C} (f : Y ≅ X) : ChosenPullbackAlong f.inv := iso f.symm
 
@@ -104,8 +104,8 @@ def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
     pullback (f ≫ g) ≅ pullback g ⋙ pullback f :=
   Iso.refl _
 
-/-- In cartesian monoidal categories, any morphism to the terminal tensor unit has a chosen
-pullback. -/
+/-- In cartesian monoidal categories, any morphism to the terminal tensor unit has a functorial
+choice of pullbacks. -/
 @[simps]
 def cartesianMonoidalCategoryToUnit [CartesianMonoidalCategory C] {X : C} (f : X ⟶ 𝟙_ C) :
     ChosenPullbackAlong f where
@@ -114,7 +114,8 @@ def cartesianMonoidalCategoryToUnit [CartesianMonoidalCategory C] {X : C} (f : X
   mapPullbackAdj.unit.app T := Over.homMk (lift (𝟙 _) (T.hom))
   mapPullbackAdj.counit.app U := Over.homMk (fst _ _)
 
-/-- In cartesian monoidal categories, the first product projections `fst` have chosen pullbacks. -/
+/-- In cartesian monoidal categories, the first product projections `fst` have a functorial choice
+of pullbacks. -/
 @[simps]
 def cartesianMonoidalCategoryFst [CartesianMonoidalCategory C] (X Y : C) :
     ChosenPullbackAlong (fst X Y : X ⊗ Y ⟶ X) where
@@ -123,7 +124,8 @@ def cartesianMonoidalCategoryFst [CartesianMonoidalCategory C] (X Y : C) :
   mapPullbackAdj.unit.app T := Over.homMk (lift (𝟙 _) (T.hom ≫ snd _ _))
   mapPullbackAdj.counit.app U := Over.homMk (fst _ _)
 
-/-- In cartesian monoidal categories, the second product projections `snd` have chosen pullbacks. -/
+/-- In cartesian monoidal categories, the second product projections `snd` have a functorial choice
+of pullbacks. -/
 @[simps]
 def cartesianMonoidalCategorySnd [CartesianMonoidalCategory C] (X Y : C) :
     ChosenPullbackAlong (snd X Y : X ⊗ Y ⟶ Y) where
