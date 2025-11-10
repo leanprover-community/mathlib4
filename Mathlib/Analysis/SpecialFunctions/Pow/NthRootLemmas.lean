@@ -59,36 +59,122 @@ theorem pow_nthRoot_le_iff : nthRoot n a ^ n ≤ a ↔ n ≠ 0 ∨ a ≠ 0 := by
 
 alias ⟨_, pow_nthRoot_le⟩ := pow_nthRoot_le_iff
 
+
+lemma binom_pow_ge_first_two_terms (u v : ℤ) (hu : u ≥ 0) (huv : u + v > 0) :
+  (u + v) ^ (n + 1) ≥ u ^ (n + 1) + (n + 1) * u ^ n * v := by
+    induction n;
+    case zero =>
+      simp
+    case succ n ih =>
+    calc
+    (u + v) ^ (n + 2)
+      = (u + v) ^ (n + 1) * (u + v) := by rw [pow_succ]
+    _ ≥ (u ^ (n + 1) + (n + 1) * u ^ n * v) * (u + v) := by exact (Int.mul_le_mul_right huv).mpr ih
+    _ = u ^ (n + 2) + (n + 2) * u ^ (n + 1) * v + (n + 1) * u ^ n * v ^ 2 := by ring
+    _ ≥ u ^ (n + 2) + (n + 2) * u ^ (n + 1) * v := by {
+      simp
+      apply Int.mul_nonneg
+      · simp [hu]
+      exact sq_nonneg v
+    }
+
+private theorem nthRoot.lt_pow_go_succ_aux0 (hb : b ≠ 0) :
+  a ≤ ( (a ^ (n + 1) / b ^ n) + n * b) / (n + 1) := by
+
+    if haa : a = 0 then
+      rw [haa]
+      simp
+    else
+      have ha : a > 0 := by
+        rw [gt_iff_lt]
+        apply Nat.zero_lt_of_ne_zero
+        exact haa
+      have b_pow_pos: 0 < (b : Int) ^ n:= by {
+        apply pow_pos
+        rw [Nat.cast_pos]
+        exact Nat.zero_lt_of_ne_zero hb
+      }
+
+      have hk : ((b : Int) + ((a - b) : Int)) ^ (n + 1) ≥ b ^ (n + 1) + (n + 1) * b ^ n * (a - b) := by {
+        apply binom_pow_ge_first_two_terms
+        · simp
+        · simp [ha]
+      }
+
+      have hj : a = ((b : Int) + ((a - b : Int))) := by {
+        simp
+      }
+
+      rw [← hj, ge_iff_le] at hk
+      have hl : (a : Int) ^ (n + 1) + n * b ^ (n + 1) ≥ (n + 1) * b ^ n * a := by {
+        calc a ^ (n + 1) + n * b ^ (n + 1)
+          = (a : Int) ^ (n + 1) + n * b ^ (n + 1) := by {
+            norm_cast
+          }
+        _ ≥ b ^ (n + 1) + (n + 1) * b ^ n * (a - b) + n * b ^ (n + 1) := by {
+            linarith only [hk]
+          }
+        _ = (n + 1) * b ^ n * a := by {
+            ring
+          }
+      }
+      norm_cast at hl
+      have hq := @Nat.div_le_div_right ((n+1)*b^n *a) (a ^ (n + 1) + n * b ^ (n+1)) (b ^ n) hl
+      nth_rw 1 [Nat.mul_comm] at hq
+      rw [← mul_assoc] at hq
+      rw [Nat.add_div_of_dvd_left _] at hq
+      nth_rw 2 [Nat.pow_add] at hq
+      nth_rw 4 [Nat.mul_comm] at hq
+      rw [← Nat.mul_assoc] at hq
+      rw [Nat.mul_div_cancel _ (pow_pos (zero_lt_of_ne_zero hb) n)] at hq
+      rw [Nat.mul_div_cancel _ (pow_pos (zero_lt_of_ne_zero hb) n)] at hq
+      rw [pow_one] at hq
+      calc a = a * (n + 1) / (n + 1) := by rw [Nat.mul_div_cancel _ (add_one_pos n)]
+      _ ≤ (a ^ (n + 1) / b ^ n + n * b) / (n + 1) := by {
+        exact Nat.div_le_div_right hq
+      };
+      rw [pow_succ]
+      ring_nf
+      rw [mul_assoc, mul_comm, mul_assoc]
+      exact dvd_mul_right (b ^ n) _
+
+def largest_power (n a : ℕ) : ℕ :=
+  Nat.findGreatest (fun k => k^(n+1) <= a) a
+
+def largest_power_add_one_ge (n a : ℕ) :
+    a < (largest_power n a + 1)^(n + 1) := by
+  set c := largest_power n a with hc
+  have h := (Nat.findGreatest_eq_iff.mp hc)
+  have h2 := h.2.2
+  specialize h2 (lt_add_one (largest_power n a))
+
+
+
+
+
+def largest_power_le (n a : ℕ) :
+  largest_power n a^(n+1) <= a  := by
+  sorry
+
+
 /--
 An auxiliary lemma saying that if `b ≠ 0`,
 then `(a / b ^ n + n * b) / (n + 1) + 1` is a strict upper estimate on `√[n + 1] a`.
-
-Currently, the proof relies on the weighted AM-GM inequality,
-which increases the dependency closure of this file by a lot.
-
-A PR proving this inequality by more elementary means is very welcome.
 -/
 theorem nthRoot.lt_pow_go_succ_aux (hb : b ≠ 0) :
-    a < ((a / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by
-  rcases Nat.eq_zero_or_pos n with rfl | hn; · simp
-  rw [← Nat.add_mul_div_left a, Nat.div_div_eq_div_mul] <;> try positivity
-  rify
-  calc
-    (a : ℝ) = ((a / b ^ n) ^ (1 / (n + 1) : ℝ) * b ^ (n / (n + 1) : ℝ)) ^ (n + 1) := by
-      rw [mul_pow, ← Real.rpow_mul_natCast, ← Real.rpow_mul_natCast] <;> try positivity
-      simp (disch := positivity) [div_mul_cancel₀]
-    _ ≤ ((1 / (n + 1)) * (a / b ^ n) + (n / (n + 1)) * b) ^ (n + 1) := by
-      gcongr
-      apply Real.geom_mean_le_arith_mean2_weighted <;> try positivity
-      simp [field, add_comm]
-    _ = ((a + b ^ n * (n * b)) / (b ^ n * (n + 1))) ^ (n + 1) := by
-      congr 1
-      field
-    _ < _ := by
-      gcongr ?_ ^ _
-      convert lt_floor_add_one (R := ℝ) _ using 1
-      norm_cast
-      rw [Nat.floor_div_natCast, Nat.floor_natCast]
+     a < ((a / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by
+  set c := largest_power n a with hc
+  have hc1 := largest_power_le n a
+  have hc2 := largest_power_add_one_ge n a
+  rw [← hc] at hc1 hc2
+  calc a < (c + 1)^(n + 1) := hc2
+  _ ≤ ((c ^ (n + 1) / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by {
+    gcongr
+    exact nthRoot.lt_pow_go_succ_aux0 hb
+  }
+  _ ≤ ((a / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by {
+    gcongr
+  }
 
 private theorem nthRoot.lt_pow_go_succ (hlt : a < (guess + 1) ^ (n + 2)) :
     a < (go n a fuel guess + 1) ^ (n + 2) := by
