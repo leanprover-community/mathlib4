@@ -61,7 +61,7 @@ variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 
 /-- The canonical morphism `unit S ⟶ (pushforward.{u} φ).obj (unit R)`
 of sheaves of modules corresponding to a continuous map between ringed sites. -/
-def unitToPushforwardObjUnit : unit S ⟶ (pushforward.{u} φ).obj (unit R) where
+noncomputable def unitToPushforwardObjUnit : unit S ⟶ (pushforward.{u} φ).obj (unit R) where
   val.app X := ModuleCat.homMk ((forget₂ RingCat AddCommGrpCat).map (φ.val.app X)) (fun r ↦ by
     ext m
     exact ((φ.val.app X).hom.map_mul _ _).symm)
