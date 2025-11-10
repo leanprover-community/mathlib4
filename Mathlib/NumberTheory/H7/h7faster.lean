@@ -5149,14 +5149,14 @@ lemma abs_Rb : norm ((h7.R q hq0 h2mq) z) ≤
 
            _ = (‖(q : ℤ)‖ * ((1 + ‖h7.β‖))) * ‖Complex.log h7.α‖ * ‖z‖ := ?_
 
-           _ ≤ ‖(q : ℤ)‖ * ‖1 + ‖h7.β‖‖ * ‖Real.log ‖h7.α‖‖ * ‖(↑h7.m : ℝ)‖ *
+           _ ≤ ‖(q : ℤ)‖ * ‖1 + ‖h7.β‖‖ * ‖Complex.log h7.α‖ * ‖(↑h7.m : ℝ)‖ *
               ‖ (q : ℝ) * (1 + ↑(h7.r q hq0 h2mq : ℝ) / (q : ℝ))‖ := ?_
 
-           _ ≤ ‖(q : ℤ)‖ * ‖1 + ‖h7.β‖‖ * ‖Real.log ‖h7.α‖‖ * ‖(↑h7.m : ℝ)‖ *
+           _ ≤ ‖(q : ℤ)‖ * ‖1 + ‖h7.β‖‖ * ‖Complex.log h7.α‖ * ‖(↑h7.m : ℝ)‖ *
               ‖(q : ℤ)‖ * ‖(1 + ↑(h7.r q hq0 h2mq : ℝ) / (q : ℝ))‖ := by {
-                sorry
+                simp only [mul_assoc]
+                simp_all
               }
-
       · apply mul_le_mul
         · apply mul_le_mul
           · apply norm_add_le
@@ -5222,7 +5222,20 @@ lemma abs_Rb : norm ((h7.R q hq0 h2mq) z) ≤
         · apply mul_le_mul
           · exact le_abs_self (1 + ‖h7.β‖)
           · apply mul_le_mul
-            · sorry
+            · simp only [le_refl]
+              rw [le_iff_lt_or_eq]
+              right
+              --rw [← Complex.log_re]
+              have h1 := Complex.log_ofReal_re (‖h7.α‖)
+              have h2 := Complex.log_re (h7.α)
+              --rw [← h2] at h1
+
+              have h3:= Complex.ofReal_log (x:= ‖h7.α‖) (by positivity)
+              sorry
+              --rw [← h2] at h3
+              --rw [← h2]
+
+
             · have := h7.norm_hz q hq0 h2mq hz
               trans
               apply this
