@@ -299,8 +299,8 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
                 else Sum.inr
                   (v.headI.succ :: v.tail.headI.pred :: x.headI :: v.tail.tail.tail))))
             (a :: b :: Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) a :: v.val.tail) by
-        erw [Part.eq_some_iff.2 (this 0 n (zero_add n))]
-        simp only [List.headI, Part.bind_some, List.tail_cons]
+        have := Part.eq_some_iff.mpr (this _ _ (zero_add _))
+        simp_all
       intro a b e
       induction b generalizing a with
       | zero =>
