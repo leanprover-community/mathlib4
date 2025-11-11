@@ -291,12 +291,14 @@ lemma comp_div (f : G →* H) (g h : M →* G) : f.comp (g / h) = f.comp g / f.c
 
 end InvDiv
 
+@[to_additive]
 lemma _root_.isMulCommutative_of_injective {G H : Type*} [Mul G] [Mul H]
     (F : Type*) [FunLike F G H] [MulHomClass F G H] (f : F)
     (hf : Function.Injective f) [hH : IsMulCommutative H] :
     IsMulCommutative G :=
   ⟨⟨fun x y ↦ hf (by simpa [map_mul] using hH.is_comm.comm _ _)⟩⟩
 
+@[to_additive]
 lemma _root_.isMulCommutative_of_surjective {G H : Type*} [Mul G] [Mul H]
     (F : Type*) [FunLike F G H] [MulHomClass F G H] (f : F)
     (hf : Function.Surjective f) [hG : IsMulCommutative G] :
