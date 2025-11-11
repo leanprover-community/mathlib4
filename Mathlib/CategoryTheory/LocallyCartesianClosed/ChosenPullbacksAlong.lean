@@ -31,10 +31,6 @@ import Mathlib.CategoryTheory.Adjunction.Unique
 - We prove that in cartesian monoidal categories, morphisms to the terminal tensor unit and
   the product projections have chosen pullbacks.
 
-- We prove that the slices of a category with chosen pullbacks is cartesian monoidal: In fact,
-  `cartesianMonoidalCategoryOver` provides a computable instance of
-  `CartesianMonoidalCategory (Over X)` for any object `X : C` when `C` has chosen pullbacks.
-
 -/
 
 universe v₁ v₂ u₁ u₂
