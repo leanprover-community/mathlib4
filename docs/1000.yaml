@@ -965,6 +965,9 @@ Q858978:
 
 Q859122:
   title: Cauchy–Hadamard theorem
+  decl: FormalMultilinearSeries.radius_inv_eq_limsup
+  authors: Yury Kudryashov
+  date: 2020
 
 Q865665:
   title: Birkhoff's theorem (relativity)
