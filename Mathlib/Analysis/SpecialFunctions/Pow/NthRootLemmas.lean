@@ -73,12 +73,22 @@ lemma binom_pow_ge_first_two_terms (n : ℕ) (u v : ℤ) (hu : u ≥ 0) (huv : u
     _ ≥ (u ^ (n + 1) + (n + 1) * u ^ n * v) * (u + v) := by exact (Int.mul_le_mul_right huv).mpr ih
     _ = u ^ (n + 2) + (n + 2) * u ^ (n + 1) * v + (n + 1) * u ^ n * v ^ 2 := by ring1
     _ ≥ u ^ (n + 2) + (n + 2) * u ^ (n + 1) * v := by {
-      simp
+
+    have hh : ((n : ℤ) + 1) * u ^ n * v ^ 2 ≥ 0 := by {
       apply Int.mul_nonneg
-      · simp [hu]
+      · apply Int.mul_nonneg
+        · apply add_nonneg
+          · norm_cast
+            exact Nat.zero_le _
+          exact zero_le_one
+        apply pow_nonneg hu
       exact sq_nonneg v
     }
+    set w :=  (u : ℤ) ^ (n + 2) + (n +2) * u ^ (n + 1) * v with hw
+    nth_rw 2 [← add_zero w]
+    exact add_le_add_left hh w
   }
+}
 
 private theorem nthRoot.lt_pow_go_succ_aux0 (hb : b ≠ 0) :
   a ≤ ( (a ^ (n + 1) / b ^ n) + n * b) / (n + 1) := by {
