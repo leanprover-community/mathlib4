@@ -359,7 +359,7 @@ theorem norm_integral_le_of_le_const {c : ℝ}
   simpa only [integral_const] using norm_integral_le_of_norm_le hc μ (integrable_const c)
 
 /-!
-# Henstock-Sacks inequality and integrability on subboxes
+### Henstock-Sacks inequality and integrability on subboxes
 
 Henstock-Sacks inequality for Henstock-Kurzweil integral says the following. Let `f` be a function
 integrable on a box `I`; let `r : ℝⁿ → (0, ∞)` be a function such that for any tagged partition of

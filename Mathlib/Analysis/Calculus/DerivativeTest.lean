@@ -9,16 +9,14 @@ import Mathlib.Order.Interval.Set.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Ordered
 
 /-!
-# The First-Derivative Test
+# The First- and Second-Derivative Tests
 
 We prove the first-derivative test from calculus, in the strong form given on [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#First-derivative_test).
 
 The test is proved over the real numbers ℝ
 using `monotoneOn_of_deriv_nonneg` from `Mathlib/Analysis/Calculus/Deriv/MeanValue.lean`.
 
-# The Second-Derivative Test
-
-We prove the Second-Derivative Test using the First-Derivative Test.
+We prove the second-derivative test using the first-derivative test.
 Source: [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#Proof_of_the_second-derivative_test).
 
 ## Main results
@@ -43,7 +41,7 @@ Source: [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#Proof_of_the_s
 
 ## Tags
 
-derivative test, calculus
+derivative test, first-derivative test, second-derivative test, calculus
 -/
 
 
