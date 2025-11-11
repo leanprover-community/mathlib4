@@ -18,7 +18,7 @@ ring homomorphism.
 
 Note that this also means that dot notation (i.e. `f.range` for a linear map `f`) does not work.
 
-## Notations
+## Notation
 
 * We continue to use the notations `M →ₛₗ[σ] M₂` and `M →ₗ[R] M₂` for the type of semilinear
   (resp. linear) maps from `M` to `M₂` over the ring homomorphism `σ` (resp. over the ring `R`).
@@ -362,6 +362,11 @@ def mapIic (p : Submodule R M) :
     (p : Submodule R M) (q : Submodule R p) :
     (p.mapIic q : Submodule R M) = q.map p.subtype :=
   rfl
+
+lemma codisjoint_map [RingHomSurjective τ₁₂] {f : F} (hf : Function.Surjective f)
+    {p q : Submodule R M} (hpq : Codisjoint p q) : Codisjoint (p.map f) (q.map f) := by
+  rw [codisjoint_iff, ← Submodule.map_sup, codisjoint_iff.mp hpq, map_top,
+    LinearMap.range_eq_top_of_surjective f hf]
 
 end AddCommMonoid
 

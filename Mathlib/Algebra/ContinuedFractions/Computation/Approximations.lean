@@ -177,8 +177,8 @@ theorem GenContFract.of_isSimpContFract :
   of_partNum_eq_one nth_partNum_eq
 
 /-- Creates the simple continued fraction of a value. -/
-nonrec def SimpContFract.of : SimpContFract K :=
-  ⟨of v, GenContFract.of_isSimpContFract v⟩
+def SimpContFract.of : SimpContFract K :=
+  ⟨GenContFract.of v, GenContFract.of_isSimpContFract v⟩
 
 theorem SimpContFract.of_isContFract :
     (SimpContFract.of v).IsContFract := fun _ _ nth_partDen_eq =>
@@ -402,7 +402,6 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
     simp [nextConts, contsAux_recurrence s_nth_eq pred_conts_eq conts_eq, gp_a_eq_one,
       pred_conts_eq.symm, conts_eq.symm, add_comm]
   let den := conts.b * (pred_conts.b + gp.b * conts.b)
-  suffices |v - g.convs n| ≤ 1 / den by rw [nextConts_b_eq]; congr 1
   obtain ⟨ifp_succ_n, succ_nth_stream_eq, ifp_succ_n_b_eq_gp_b⟩ :
       ∃ ifp_succ_n, IntFractPair.stream v (n + 1) = some ifp_succ_n ∧ (ifp_succ_n.b : K) = gp.b :=
     IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some s_nth_eq

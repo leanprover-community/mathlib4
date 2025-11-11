@@ -140,7 +140,7 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     simp [disj, card_image_of_injective _ Subtype.coe_injective, Nat.add_sub_cancel_left]
   rw [this, hus]
   refine (Nat.sub_le_sub_right (ht _) _).trans ?_
-  rw [← card_sdiff]
+  rw [← card_sdiff_of_subset]
   · gcongr
     intro t
     simp only [mem_biUnion, mem_sdiff, not_exists, mem_image, and_imp, mem_union,
@@ -220,10 +220,9 @@ theorem hall_hard_inductive (ht : ∀ s : Finset ι, #s ≤ #(s.biUnion t)) :
         ∃ f : ι' → α, Function.Injective f ∧ ∀ x, f x ∈ t' x := by
       intro ι' _ _ hι' ht'
       exact ih _ (Nat.lt_succ_of_le hι') ht' _ rfl
-    by_cases h : ∀ s : Finset ι, s.Nonempty → s ≠ univ → #s < #(s.biUnion t)
+    by_cases! h : ∀ s : Finset ι, s.Nonempty → s ≠ univ → #s < #(s.biUnion t)
     · refine hall_hard_inductive_step_A hn ht (@fun ι' => ih' ι') h
-    · push_neg at h
-      rcases h with ⟨s, sne, snu, sle⟩
+    · rcases h with ⟨s, sne, snu, sle⟩
       exact hall_hard_inductive_step_B hn ht (@fun ι' => ih' ι')
         s sne snu (Nat.le_antisymm (ht _) sle)
 

@@ -58,9 +58,8 @@ lemma PreValuationRing.cond {A : Type u} [Mul A] [PreValuationRing A] (a b : A) 
 of elements `a b : A`, either `a` divides `b` or vice versa. -/
 class ValuationRing (A : Type u) [CommRing A] [IsDomain A] : Prop extends PreValuationRing A
 
--- Porting note: this lemma is needed since infer kinds are unsupported in Lean 4
-lemma ValuationRing.cond {A : Type u} [Mul A] [PreValuationRing A] (a b : A) :
-    ∃ c : A, a * c = b ∨ b * c = a := PreValuationRing.cond _ _
+/-- An abbreviation for `PreValuationRing.cond` which should save some writing. -/
+alias ValuationRing.cond := PreValuationRing.cond
 
 namespace ValuationRing
 
@@ -141,8 +140,6 @@ protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
     field_simp
     simp only [← RingHom.map_mul]; congr 1; linear_combination h
 
--- Porting note: it is much faster to split the instance `LinearOrderedCommGroupWithZero`
--- into two parts
 noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
   le_refl := by rintro ⟨⟩; use 1; rw [one_smul]
   le_trans := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨e, rfl⟩ ⟨f, rfl⟩; use e * f; rw [mul_smul]
@@ -271,9 +268,8 @@ instance (priority := 100) isLocalRing : IsLocalRing A :=
 
 instance le_total_ideal : IsTotal (Ideal A) LE.le := by
   constructor; intro α β
-  by_cases h : α ≤ β; · exact Or.inl h
-  rw [SetLike.le_def, not_forall] at h
-  push_neg at h
+  by_cases! h : ∀ x : A, x ∈ α → x ∈ β
+  · exact Or.inl h
   obtain ⟨a, h₁, h₂⟩ := h
   right
   intro b hb

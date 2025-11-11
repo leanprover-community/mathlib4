@@ -193,7 +193,7 @@ theorem exists_isOpen_singleton_of_isOpen_finite [T0Space X] {s : Set X} (hfin :
     exact ⟨x, hts.1 hxt, hxo⟩
   · -- Porting note: was `rcases minimal_nonempty_open_eq_singleton ho hne _ with ⟨x, hx⟩`
     --               https://github.com/leanprover-community/batteries/issues/116
-    rsuffices ⟨x, hx⟩ : ∃ x, s.toSet = {x}
+    rsuffices ⟨x, hx⟩ : ∃ x, (s : Set X) = {x}
     · exact ⟨x, hx.symm ▸ rfl, hx ▸ ho⟩
     refine minimal_nonempty_open_eq_singleton ho hne ?_
     refine fun t hts htne hto => of_not_not fun hts' => ht ?_
@@ -293,6 +293,9 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
     R0Space (∀ i, X i) where
   specializes_symmetric _ _ h := specializes_pi.2 fun i ↦ (specializes_pi.1 h i).symm
 
+lemma R0Space.closure_singleton (x : X) : closure {x} = (𝓝 x).ker := by
+  ext; simp [ker_nhds_eq_specializes, ← specializes_iff_mem_closure, specializes_comm]
+
 /-- In an R₀ space, the closure of a singleton is a compact set. -/
 theorem isCompact_closure_singleton : IsCompact (closure {x}) := by
   refine isCompact_of_finite_subcover fun U hUo hxU ↦ ?_
@@ -310,8 +313,8 @@ variable (X) in
 Its cobounded filter is `Filter.coclosedCompact`.
 See also `Bornology.inCompact` the bornology of sets contained in a compact set. -/
 def Bornology.relativelyCompact : Bornology X where
-  cobounded' := Filter.coclosedCompact X
-  le_cofinite' := Filter.coclosedCompact_le_cofinite
+  cobounded := Filter.coclosedCompact X
+  le_cofinite := Filter.coclosedCompact_le_cofinite
 
 theorem Bornology.relativelyCompact.isBounded_iff {s : Set X} :
     @Bornology.IsBounded _ (Bornology.relativelyCompact X) s ↔ IsCompact (closure s) :=
@@ -1016,10 +1019,10 @@ protected theorem R1Space.sInf {X : Type*} {T : Set (TopologicalSpace X)}
   let _ := sInf T
   refine ⟨fun x y ↦ ?_⟩
   simp only [Specializes, nhds_sInf]
-  rcases em (∃ t ∈ T, Disjoint (@nhds X t x) (@nhds X t y)) with ⟨t, htT, htd⟩ | hTd
-  · exact .inr <| htd.mono (iInf₂_le t htT) (iInf₂_le t htT)
-  · push_neg at hTd
-    exact .inl <| iInf₂_mono fun t ht ↦ ((hT t ht).1 x y).resolve_right (hTd t ht)
+  by_cases! hTd : ∃ t ∈ T, Disjoint (@nhds X t x) (@nhds X t y)
+  · rcases hTd with ⟨t, htT, htd⟩
+    exact .inr <| htd.mono (iInf₂_le t htT) (iInf₂_le t htT)
+  · exact .inl <| iInf₂_mono fun t ht ↦ ((hT t ht).1 x y).resolve_right (hTd t ht)
 
 protected theorem R1Space.iInf {ι X : Type*} {t : ι → TopologicalSpace X}
     (ht : ∀ i, @R1Space X (t i)) : @R1Space X (iInf t) :=

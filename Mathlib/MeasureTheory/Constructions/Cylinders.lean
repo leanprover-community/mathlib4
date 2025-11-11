@@ -122,9 +122,7 @@ theorem comap_eval_le_generateFrom_squareCylinders_singleton
       convert ht
       simp only [cast_heq]
     · simp only [hji, not_false_iff, dif_neg, MeasurableSet.univ]
-  · simp only [eq_mpr_eq_cast, ← h]
-    ext1 x
-    simp only [Function.eval, cast_eq, dite_eq_ite, ite_true, mem_preimage]
+  · grind
 
 /-- The square cylinders formed from measurable sets generate the product σ-algebra. -/
 theorem generateFrom_squareCylinders [∀ i, MeasurableSpace (α i)] :
@@ -404,17 +402,16 @@ lemma measurable_cylinderEvents_iff {g : α → ∀ i, X i} :
   simp_rw [measurable_iff_comap_le, cylinderEvents, MeasurableSpace.comap_iSup,
     MeasurableSpace.comap_comp, Function.comp_def, iSup_le_iff]
 
-@[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
+@[fun_prop]
 lemma measurable_cylinderEvent_apply (hi : i ∈ Δ) :
     Measurable[cylinderEvents Δ] fun f : ∀ i, X i => f i :=
   measurable_cylinderEvents_iff.1 measurable_id hi
 
-@[aesop safe 100 apply (rule_sets := [Measurable])]
 lemma Measurable.eval_cylinderEvents {g : α → ∀ i, X i} (hi : i ∈ Δ)
     (hg : @Measurable _ _ _ (cylinderEvents Δ) g) : Measurable fun a ↦ g a i :=
   (measurable_cylinderEvent_apply hi).comp hg
 
-@[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
+@[fun_prop]
 lemma measurable_cylinderEvents_lambda (f : α → ∀ i, X i) (hf : ∀ i, Measurable fun a ↦ f a i) :
     Measurable f :=
   measurable_pi_iff.mpr hf

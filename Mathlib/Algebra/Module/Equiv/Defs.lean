@@ -525,10 +525,16 @@ theorem symm_mk (f h₁ h₂ h₃ h₄) :
         invFun := e } :=
   rfl
 
-@[simp]
+/-- For a more powerful version, see `coe_symm_mk'`. -/
 theorem coe_symm_mk [Module R M] [Module R M₂]
     {to_fun inv_fun map_add map_smul left_inv right_inv} :
     ⇑(⟨⟨⟨to_fun, map_add⟩, map_smul⟩, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun :=
+  rfl
+
+@[simp]
+theorem coe_symm_mk' [Module R M] [Module R M₂]
+    {f inv_fun left_inv right_inv} :
+    ⇑(⟨f, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun :=
   rfl
 
 protected theorem bijective : Function.Bijective e :=
@@ -540,11 +546,11 @@ protected theorem injective : Function.Injective e :=
 protected theorem surjective : Function.Surjective e :=
   e.toEquiv.surjective
 
-protected theorem image_eq_preimage (s : Set M) : e '' s = e.symm ⁻¹' s :=
-  e.toEquiv.image_eq_preimage s
+protected theorem image_eq_preimage_symm (s : Set M) : e '' s = e.symm ⁻¹' s :=
+  e.toEquiv.image_eq_preimage_symm s
 
 protected theorem image_symm_eq_preimage (s : Set M₂) : e.symm '' s = e ⁻¹' s :=
-  e.toEquiv.symm.image_eq_preimage s
+  e.toEquiv.symm.image_eq_preimage_symm s
 
 end
 

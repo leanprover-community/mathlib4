@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Nat.Init
+import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Nontrivial.Defs
+import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Util.AssertExists
@@ -108,8 +110,6 @@ lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S �
   set_induction_bounded hb h_ind (zero_le n)
 
 /-! ### `mod`, `dvd` -/
-
-@[deprecated (since := "2025-04-01")] alias dvd_sub' := dvd_sub
 
 /-- `dvd` is injective in the left argument -/
 lemma dvd_left_injective : Function.Injective ((· ∣ ·) : ℕ → ℕ → Prop) := fun _ _ h =>

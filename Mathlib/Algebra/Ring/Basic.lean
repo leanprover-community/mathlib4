@@ -14,11 +14,11 @@ import Mathlib.Tactic.TFAE
 # Semirings and rings
 
 This file gives lemmas about semirings, rings and domains.
-This is analogous to `Algebra.Group.Basic`,
+This is analogous to `Mathlib/Algebra/Group/Basic.lean`,
 the difference being that the former is about `+` and `*` separately, while
 the present file is about their interaction.
 
-For the definitions of semirings and rings see `Algebra.Ring.Defs`.
+For the definitions of semirings and rings see `Mathlib/Algebra/Ring/Defs.lean`.
 -/
 
 assert_not_exists Nat.cast_sub
@@ -35,7 +35,7 @@ def mulLeft [Distrib R] (r : R) : AddHom R R where
   toFun := (r * ·)
   map_add' := mul_add r
 
-/-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
+/-- Right multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
 @[simps -fullyApplied]
 def mulRight [Distrib R] (r : R) : AddHom R R where
   toFun a := a * r
@@ -279,8 +279,7 @@ lemma div_neg_eq_neg_div (a b : R) : b / -a = -(b / a) :=
 lemma neg_div (a b : R) : -b / a = -(b / a) := by
   rw [neg_eq_neg_one_mul, mul_div_assoc, ← neg_eq_neg_one_mul]
 
-@[field_simps]
-lemma neg_div' (a b : R) : -(b / a) = -b / a := by simp [neg_div]
+lemma neg_div' (a b : R) : -(b / a) = -b / a := by rw [neg_div]
 
 @[simp]
 lemma neg_div_neg_eq (a b : R) : -a / -b = a / b := by rw [div_neg_eq_neg_div, neg_div, neg_neg]
@@ -288,6 +287,8 @@ lemma neg_div_neg_eq (a b : R) : -a / -b = a / b := by rw [div_neg_eq_neg_div, n
 lemma neg_inv : -a⁻¹ = (-a)⁻¹ := by rw [inv_eq_one_div, inv_eq_one_div, div_neg_eq_neg_div]
 
 lemma div_neg (a : R) : a / -b = -(a / b) := by rw [← div_neg_eq_neg_div]
+
+lemma div_neg_eq_neg_div' (a : R) : a / -b = -a / b := neg_div b a ▸ div_neg _
 
 @[simp]
 lemma inv_neg : (-a)⁻¹ = -a⁻¹ := by rw [neg_inv]

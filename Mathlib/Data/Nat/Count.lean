@@ -33,9 +33,8 @@ variable [DecidablePred p]
 def count (n : ℕ) : ℕ :=
   (List.range n).countP p
 
-@[simp]
-theorem count_zero : count p 0 = 0 := by
-  rw [count, List.range_zero, List.countP, List.countP.go]
+@[simp, grind =]
+theorem count_zero : count p 0 = 0 := by simp [count]
 
 /-- A fintype instance for the set relevant to `Nat.count`. Locally an instance in scope `count` -/
 def CountSet.fintype (n : ℕ) : Fintype { i // i < n ∧ p i } :=
@@ -61,23 +60,19 @@ theorem count_le {n : ℕ} : count p n ≤ n := by
   rw [count_eq_card_filter_range]
   exact (card_filter_le _ _).trans_eq (card_range _)
 
+@[grind =]
 theorem count_succ (n : ℕ) : count p (n + 1) = count p n + if p n then 1 else 0 := by
-  split_ifs with h <;> simp [count, List.range_succ, h]
+  grind [count, List.range_succ]
 
 @[mono]
 theorem count_monotone : Monotone (count p) :=
-  monotone_nat_of_le_succ fun n ↦ by by_cases h : p n <;> simp [count_succ, h]
+  monotone_nat_of_le_succ (by grind)
 
 theorem count_add (a b : ℕ) : count p (a + b) = count p a + count (fun k ↦ p (a + k)) b := by
   have : Disjoint {x ∈ range a | p x} {x ∈ (range b).map <| addLeftEmbedding a | p x} := by
-    apply disjoint_filter_filter
-    rw [Finset.disjoint_left]
-    simp_rw [mem_map, mem_range, addLeftEmbedding_apply]
-    rintro x hx ⟨c, _, rfl⟩
-    exact (Nat.le_add_right _ _).not_gt hx
+    grind [Finset.disjoint_left]
   simp_rw [count_eq_card_filter_range, range_add, filter_union, card_union_of_disjoint this,
-    filter_map, addLeftEmbedding, card_map]
-  rfl
+    filter_map, addLeftEmbedding, card_map, Function.Embedding.coeFn_mk, Function.comp_def]
 
 theorem count_add' (a b : ℕ) : count p (a + b) = count (fun k ↦ p (k + b)) a + count p b := by
   rw [add_comm, count_add, add_comm]
@@ -92,14 +87,11 @@ theorem count_succ' (n : ℕ) :
 variable {p}
 
 @[simp]
-theorem count_lt_count_succ_iff {n : ℕ} : count p n < count p (n + 1) ↔ p n := by
-  by_cases h : p n <;> simp [count_succ, h]
+theorem count_lt_count_succ_iff {n : ℕ} : count p n < count p (n + 1) ↔ p n := by grind
 
-theorem count_succ_eq_succ_count_iff {n : ℕ} : count p (n + 1) = count p n + 1 ↔ p n := by
-  by_cases h : p n <;> simp [h, count_succ]
+theorem count_succ_eq_succ_count_iff {n : ℕ} : count p (n + 1) = count p n + 1 ↔ p n := by grind
 
-theorem count_succ_eq_count_iff {n : ℕ} : count p (n + 1) = count p n ↔ ¬p n := by
-  by_cases h : p n <;> simp [h, count_succ]
+theorem count_succ_eq_count_iff {n : ℕ} : count p (n + 1) = count p n ↔ ¬p n := by grind
 
 alias ⟨_, count_succ_eq_succ_count⟩ := count_succ_eq_succ_count_iff
 
@@ -114,7 +106,7 @@ theorem count_strict_mono {m n : ℕ} (hm : p m) (hmn : m < n) : count p m < cou
 theorem count_injective {m n : ℕ} (hm : p m) (hn : p n) (heq : count p m = count p n) : m = n := by
   by_contra! h : m ≠ n
   wlog hmn : m < n
-  · exact this hn hm heq.symm h.symm (h.lt_or_gt.resolve_left hmn)
+  · exact this hn hm heq.symm h.symm (by grind)
   · simpa [heq] using count_strict_mono hm hmn
 
 theorem count_le_card (hp : (setOf p).Finite) (n : ℕ) : count p n ≤ #hp.toFinset := by
@@ -148,14 +140,14 @@ lemma exists_of_count_lt_count {a b : ℕ} (h : a.count p < b.count p) : ∃ x �
   rw [add_assoc, count_add, Nat.lt_add_right_iff_pos] at h
   obtain ⟨t, ht, hp⟩ := count_ne_iff_exists.mp h.ne'
   simp_rw [Set.mem_Ico]
-  exact ⟨a + t, ⟨le_add_right _ _, by rwa [add_assoc _ k, Nat.add_lt_add_iff_left]⟩, hp⟩
+  exact ⟨a + t, by grind⟩
 
 variable {q : ℕ → Prop}
 variable [DecidablePred q]
 
-theorem count_mono_left {n : ℕ} (hpq : ∀ k, p k → q k) : count p n ≤ count q n := by
-  simp only [count_eq_card_filter_range]
-  exact card_le_card ((range n).monotone_filter_right hpq)
+@[gcongr]
+theorem count_mono_left {n : ℕ} (hpq : ∀ k < n, p k → q k) : count p n ≤ count q n :=
+  List.countP_mono_left <| by simpa
 
 end Count
 

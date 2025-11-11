@@ -15,7 +15,7 @@ import Mathlib.Tactic.TryThis
 
 Defines a category, as a type class parametrised by the type of objects.
 
-## Notations
+## Notation
 
 Introduces notations in the `CategoryTheory` scope
 * `X ⟶ Y` for the morphism spaces (type as `\hom`),
@@ -30,7 +30,7 @@ local notation:80 g " ⊚ " f:80 => CategoryTheory.CategoryStruct.comp f g    --
 -/
 
 
-library_note "CategoryTheory universes"
+library_note2 «category theory universes»
 /--
 The typeclass `Category C` describes morphisms associated to objects of type `C : Type u`.
 
