@@ -414,7 +414,7 @@ theorem map_surjective_of_mkQ_comp_surjective {f : M →ₗ[R] N}
       Submodule.Quotient.mk (f (x n)) = eval I _ n y by
     obtain ⟨x, hx⟩ := h
     use AdicCompletion.mk I M ⟨x, fun h ↦
-        eq_factor_of_eq_factor_succ (fun _ _ ↦ pow_smul_top_le I M) _ (fun n ↦ (hx n).1) _ _ h⟩
+        eq_factor_of_eq_factor_succ (fun _ _ ↦ pow_smul_top_le I M) _ (fun n ↦ (hx n).1) h⟩
     ext n
     simp [hx n]
   let x : (n : ℕ) → {m : M // Submodule.Quotient.mk (f m) = eval I _ n y} := fun n ↦ by
