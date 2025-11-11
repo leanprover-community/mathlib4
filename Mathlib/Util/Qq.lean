@@ -19,8 +19,7 @@ namespace Qq
 
 /-- If `e` has type `Sort u` for some level `u`, return `u` and `e : Q(Sort u)`. -/
 def getLevelQ (e : Expr) : MetaM (Σ u : Lean.Level, Q(Sort u)) := do
-  let .sort u ← whnf (← inferType e) | throwError "not a type{indentExpr e}"
-  return ⟨u, e⟩
+  return ⟨← getLevel e, e⟩
 
 /-- If `e` has type `Type u` for some level `u`, return `u` and `e : Q(Type u)`. -/
 def getLevelQ' (e : Expr) : MetaM (Σ u : Lean.Level, Q(Type u)) := do
