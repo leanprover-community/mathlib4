@@ -280,7 +280,6 @@ theorem exp_add_of_commute_of_mem_ball [CharZero 𝕂] {x y : 𝔸} (hxy : Commu
   refine tsum_congr fun n => Finset.sum_congr rfl fun kl hkl => ?_
   rw [← Nat.cast_smul_eq_nsmul 𝕂, smul_smul, smul_mul_smul_comm, ← Finset.mem_antidiagonal.mp hkl,
     Nat.cast_add_choose, Finset.mem_antidiagonal.mp hkl]
-  congr 1
   field_simp [n.factorial_ne_zero]
 
 /-- `NormedSpace.exp 𝕂 x` has explicit two-sided inverse `NormedSpace.exp 𝕂 (-x)`. -/
@@ -468,7 +467,7 @@ theorem _root_.Ring.inverse_exp (x : 𝔸) : Ring.inverse (exp 𝕂 x) = exp �
 
 theorem exp_mem_unitary_of_mem_skewAdjoint [StarRing 𝔸] [ContinuousStar 𝔸] {x : 𝔸}
     (h : x ∈ skewAdjoint 𝔸) : exp 𝕂 x ∈ unitary 𝔸 := by
-  rw [unitary.mem_iff, star_exp, skewAdjoint.mem_iff.mp h, ←
+  rw [Unitary.mem_iff, star_exp, skewAdjoint.mem_iff.mp h, ←
     exp_add_of_commute (Commute.refl x).neg_left, ← exp_add_of_commute (Commute.refl x).neg_right,
     neg_add_cancel, add_neg_cancel, exp_zero, and_self_iff]
 
