@@ -5,6 +5,7 @@ Authors: Thomas R. Murrills
 -/
 import Mathlib.Init
 import Mathlib.Data.String.Defs
+import Mathlib.Tactic.Lemma
 import Batteries
 
 /-!
@@ -144,6 +145,23 @@ def getTermInfoForConst? (t : InfoTree) (decl : Name) : Option TermInfo :=
 /-- Get the syntax for the first occurrence of `decl` as the expression of some `TermInfo`. -/
 def getConstRef? (t : InfoTree) (decl : Name) : Option Syntax :=
   t.getTermInfoForConst? decl |>.map (·.stx)
+
+open Lean.Parser.Command in
+def getDeclSigRefByIdRange? (idRef : Syntax) : Syntax → TSyntax ``declSig
+  | `(Parser.Command.theorem| theorem $id$[.{$_}]? $sig:declSig $_:declVal)
+  | `(«lemma»| lemma $id$[.{$_}]? $sig:declSig $_:declVal) =>
+    if
+
+def withDeclSigRef {m : Type → Type} [Monad m] [MonadRef m] {α} (cmd : Syntax)
+    (t : InfoTree) (decl : Name) (x : m α) : m α := do
+  let some ref := getConstRef? t decl | x
+  let sigRef? := cmd.findSome? fun
+      | `(Parser.Command.theorem| theorem $id$[.{$_}]? $sig:declSig $_:declVal)
+      | `(«lemma»| lemma $id$[.{$_}]? $sig:declSig $_:declVal) =>
+        if id.rangeEq ref then sig else none
+      | _ => none
+  withRef ref <| withRef? sigRef? x
+
 
 /-
 # Next up:
