@@ -463,7 +463,7 @@ variable (E F n K)
 
 /-- The seminorms on the space `𝓓^{n}_{K}(E, F)` given by sup norm on the `i`-th derivative. -/
 protected noncomputable def seminorm (i : ℕ) : Seminorm 𝕜 𝓓^{n}_{K}(E, F) :=
-  (normSeminorm 𝕜 (E →ᵇ (E [×i]→L[ℝ] F))).comp (structureMapₗ 𝕜 n i)
+  (normSeminorm 𝕜 (E →ᵇ (E [×i]→L[ℝ] F))).comp (structureMapLM 𝕜 n i)
 
 /-- The seminorms on the space `𝓓^{n}_{K}(E, F)` given by sup of the
 `ContDiffMapSupportedIn.seminorm k`for `k ≤ i`. -/
@@ -474,7 +474,7 @@ protected theorem withSeminorms :
     WithSeminorms (ContDiffMapSupportedIn.seminorm 𝕜 E F n K) := by
   let p : SeminormFamily 𝕜 𝓓^{n}_{K}(E, F) ((_ : ℕ) × Fin 1) :=
     SeminormFamily.sigma fun i ↦ fun _ ↦
-      (normSeminorm 𝕜 (E →ᵇ (E [×i]→L[ℝ] F))).comp (structureMapₗ 𝕜 n i)
+      (normSeminorm 𝕜 (E →ᵇ (E [×i]→L[ℝ] F))).comp (structureMapLM 𝕜 n i)
   have : WithSeminorms p :=
     withSeminorms_iInf fun i ↦ LinearMap.withSeminorms_induced (norm_withSeminorms _ _) _
   exact this.congr_equiv (Equiv.sigmaUnique _ _).symm
@@ -488,14 +488,14 @@ variable {E F n K}
 @[simp]
 protected theorem seminorm_apply (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
     ContDiffMapSupportedIn.seminorm 𝕜 E F n K i f =
-      ‖(iteratedFDerivWithOrderₗ 𝕜 n 0 i f : E →ᵇ (E [×i]→L[ℝ] F))‖ :=
+      ‖(iteratedFDerivWithOrderLM 𝕜 n 0 i f : E →ᵇ (E [×i]→L[ℝ] F))‖ :=
   rfl
 
 protected theorem seminorm_eq_bot {i : ℕ} (hin : n < i) :
     ContDiffMapSupportedIn.seminorm 𝕜 E F n K i = ⊥ := by
   ext f
   rw [ContDiffMapSupportedIn.seminorm_apply,
-      iteratedFDerivWithOrderₗ_apply_of_gt 𝕜 (by simpa)]
+      iteratedFDerivWithOrderLM_apply_of_gt 𝕜 (by simpa)]
   exact norm_zero
 
 theorem norm_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
@@ -505,8 +505,8 @@ theorem norm_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
 /-- The inclusion of the space  `𝓓^{n}_{K}(E, F)` into the space `E →ᵇ F` of bounded continuous
 functions as a continuous `𝕜`-linear map. -/
 noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ F :=
-  { toLinearMap := toBoundedContinuousFunctionₗ 𝕜
-    cont := show Continuous (toBoundedContinuousFunctionₗ 𝕜) by
+  { toLinearMap := toBoundedContinuousFunctionLM 𝕜
+    cont := show Continuous (toBoundedContinuousFunctionLM 𝕜) by
       refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
         (norm_withSeminorms 𝕜 _) _ (fun _ ↦ ⟨{0}, 1, fun f ↦ ?_⟩)
       simp [norm_toBoundedContinuousFunction ℝ f] }
