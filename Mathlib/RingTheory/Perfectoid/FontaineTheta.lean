@@ -196,64 +196,10 @@ theorem fontaineTheta_teichmuller (x : O^♭) : fontaineTheta (teichmuller p x) 
 
 end WittVector
 
--- this is a lemma from #20431 by Andrew Yang
-section
-
-variable {R S : Type*} [CommRing R] [CommRing S] {I : Ideal R} {J : Ideal S}
-
-variable (M : Type*) [AddCommGroup M] [Module R M] [Module S M]
-
-lemma SModEq.of_toAddSubgroup_le {U : Submodule R M} {V : Submodule S M}
-    (h : U.toAddSubgroup ≤ V.toAddSubgroup) {x y : M} (hxy : x ≡ y [SMOD U]) : x ≡ y [SMOD V] := by
-  simp only [SModEq, Submodule.Quotient.eq] at hxy ⊢
-  exact h hxy
-
--- `Mathlib.Algebra.Module.Submodule.Basic` after `Submodule.toAddSubgroup_mono`
-@[simp]
-theorem Submodule.toAddSubgroup_toAddSubmonoid {R : Type*} {M : Type*} [Ring R]
-    [AddCommGroup M] {module_M : Module R M}
-    (p : Submodule R M) : p.toAddSubgroup.toAddSubmonoid = p.toAddSubmonoid :=
-  rfl
--- -- `Mathlib.Algebra.Group.Submonoid.Pointwise` after `AddSubmonoid.smul_iSup`
--- theorem foo {R S A: Type} [AddMonoid A] [CommSemiring R] [Semiring S] [DistribSMul R A]
--- [DistribSMul S A] [Algebra R S] [IsScalarTower R S A] (hIJ : I.map f ≤ J)
--- (p : AddSubmonoid M) :
--- I.toAddSubmonoid • p ≤ J • p := sorry
-
--- Note: after #20431 this lemma should be moved to the file `RingTheory.AdicCompletion.Mono`,
--- after `IsHausdorff.mono`
-variable [Algebra R S] [IsScalarTower R S M] (hIJ : I.map (algebraMap R S) ≤ J)
-
-include hIJ in
-lemma IsHausdorff.map [IsHausdorff J M] : IsHausdorff I M := by
-  refine ⟨fun x h ↦ IsHausdorff.haus ‹_› x fun n ↦ ?_⟩ -- fun n ↦ ((h n).of_toAddSubgroup_le ?_)
-  apply SModEq.of_toAddSubgroup_le
-      (U := (I ^ n • ⊤ : Submodule R M)) (V := (J ^ n • ⊤ : Submodule S M))
-  · -- show (I ^ n • ⊤ : Submodule R M).toAddSubmonoid ≤ (J ^ n • ⊤ : Submodule S M).toAddSubmonoid
-    rw [← AddSubgroup.toAddSubmonoid_le]
-    simp only [Submodule.toAddSubgroup_toAddSubmonoid, Submodule.smul_toAddSubmonoid,
-      Submodule.top_toAddSubmonoid]
-    rw [AddSubmonoid.smul_le]
-    intro r hr m _
-    rw [← algebraMap_smul S r m]
-    apply AddSubmonoid.smul_mem_smul
-    · have := Ideal.mem_map_of_mem (algebraMap R S) hr
-      simp only [Ideal.map_pow] at this
-      apply Ideal.pow_right_mono (I := I.map (algebraMap R S)) hIJ n this
-    · trivial
-  · exact h n
-
-variable [Fact ¬IsUnit (p : O)]
-
-theorem foo : Function.Surjective (Perfection.coeff (ModP O p) p 0) := sorry
-    -- O/p perfect -> Pretilt coeff 0 surjective
-
-end
-
 variable [Fact ¬IsUnit (p : O)] [IsAdicComplete (span {(p : O)}) O]
-    [PerfectRing (O ⧸ span {(p : O)}) p]
 
-theorem surjective_fontaineTheta : Function.Surjective (fontaineTheta : 𝕎 (O^♭) → O) := by
+theorem surjective_fontaineTheta (hF : Function.Surjective (frobenius (ModP O p) p)) :
+    Function.Surjective (fontaineTheta : 𝕎 (O^♭) → O) := by
   have : Ideal.map fontaineTheta (span {(p : 𝕎 (O^♭))}) = span {(p : O)} := by
     simp [map_span]
   have _ : IsHausdorff ((span {(p : 𝕎 (O^♭))}).map fontaineTheta) O := by
@@ -270,13 +216,5 @@ theorem surjective_fontaineTheta : Function.Surjective (fontaineTheta : 𝕎 (O^
     simp [mk_fontaineTheta]
   rw [this]
   apply Function.Surjective.comp
-  · -- show Function.Surjective (fun x ↦ Perfection.coeff (ModP O p) _ 0 x)
-    -- O/p perfect -> Pretilt coeff 0 surjective
-    sorry
-  · -- all Witt.coeff 0 surj
-    intro x
-    use WittVector.mk p (fun n ↦
-      match n with
-        | 0 => x
-        | _ => 0)
-    simp
+  · exact Perfection.coeff_surjective hF 0
+  · exact WittVector.coeff_surjective 0
