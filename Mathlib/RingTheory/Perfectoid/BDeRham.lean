@@ -38,7 +38,7 @@ take a perfectoid field as the input.
 * [Scholze, *p-adic Hodge theory for rigid-analytic varieties*](scholze2013adic)
 
 ## Tags
-De Rham representation, period rings
+Period rings, p-adic Hodge theory
 -/
 
 universe u
@@ -58,7 +58,7 @@ The Fontaine's θ map inverting `p`. Note that if `p = 0` in `O`, then this is t
 -/
 def fontaineThetaInvertP :
     Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭)) →+* Localization.Away (p : O) :=
-  Localization.awayLift ((algebraMap O _).comp fontaineTheta) (p : 𝕎 (O^♭))
+  Localization.awayLift ((algebraMap O _).comp (fontaineTheta O p)) (p : 𝕎 (O^♭))
       (by simpa using IsLocalization.Away.algebraMap_isUnit (p : O))
 
 /--
