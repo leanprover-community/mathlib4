@@ -144,6 +144,9 @@ theorem domRestrict_apply (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) (
     f.domRestrict p x = f x :=
   rfl
 
+lemma coe_domRestrict (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
+    ⇑(f.domRestrict p) = Set.restrict p f := rfl
+
 /-- A linear map `f : M₂ → M` whose values lie in a submodule `p ⊆ M` can be restricted to a
 linear map M₂ → p.
 

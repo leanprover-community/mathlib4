@@ -84,6 +84,11 @@ instance instFunLike [TopologicalSpace F] (𝔖 : Set (Set E)) :
     FunLike (UniformConvergenceCLM σ F 𝔖) E F :=
   ContinuousLinearMap.funLike
 
+@[ext]
+theorem ext [TopologicalSpace F] {𝔖 : Set (Set E)} {f g : UniformConvergenceCLM σ F 𝔖}
+    (h : ∀ x, f x = g x) : f = g :=
+  DFunLike.ext f g h
+
 instance instContinuousSemilinearMapClass [TopologicalSpace F] (𝔖 : Set (Set E)) :
     ContinuousSemilinearMapClass (UniformConvergenceCLM σ F 𝔖) σ E F :=
   ContinuousLinearMap.continuousSemilinearMapClass

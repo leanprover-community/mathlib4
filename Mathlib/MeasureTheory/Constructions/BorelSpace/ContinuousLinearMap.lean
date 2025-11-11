@@ -51,7 +51,6 @@ theorem measurable_apply [MeasurableSpace F] [BorelSpace F] (x : E) :
     Measurable fun f : E →L[𝕜] F => f x :=
   (apply 𝕜 F x).continuous.measurable
 
-@[measurability]
 theorem measurable_apply' [MeasurableSpace E] [OpensMeasurableSpace E] [MeasurableSpace F]
     [BorelSpace F] : Measurable fun (x : E) (f : E →L[𝕜] F) => f x :=
   measurable_pi_lambda _ fun f => f.measurable

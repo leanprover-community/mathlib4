@@ -70,7 +70,8 @@ typically different from `log r - log ‖z‖ = log r`. The summand `(D 0) * log
 producing cleaner formulas when the logarithmic counting function is used in the main theorems of
 Value Distribution Theory.  We refer the reader to page 164 of [Lang: Introduction to Complex
 Hyperbolic Spaces](https://link.springer.com/book/10.1007/978-1-4757-1945-1) for more details, and
-to the lemma `countingFunction_finsum_eq_finsum_add` for a formal statement.
+to the lemma `countingFunction_finsum_eq_finsum_add` in
+`Mathlib/Analysis/Complex/JensenFormula.lean` for a formal statement.
 -/
 noncomputable def logCounting {E : Type*} [NormedAddCommGroup E] [ProperSpace E] :
     locallyFinsuppWithin (univ : Set E) ℤ →+ (ℝ → ℝ) where
@@ -94,29 +95,6 @@ noncomputable def logCounting {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
         by_contra
         simp_all
     · ring
-
-/--
-Alternate presentation of the finsum that appears in the definition of the counting function.
--/
-lemma countingFunction_finsum_eq_finsum_add {c : ℂ} {R : ℝ} {D : ℂ → ℤ} (hR : R ≠ 0)
-    (hD : D.support.Finite) :
-    ∑ᶠ u, D u * (log R - log ‖c - u‖) = ∑ᶠ u, D u * log (R * ‖c - u‖⁻¹) + D c * log R := by
-  by_cases h : c ∈ D.support
-  · have {g : ℂ → ℝ} : (fun u ↦ D u * g u).support ⊆ hD.toFinset :=
-      fun x ↦ by simp +contextual
-    simp only [finsum_eq_sum_of_support_subset _ this,
-      Finset.sum_eq_sum_diff_singleton_add ((Set.Finite.mem_toFinset hD).mpr h), sub_self,
-      norm_zero, log_zero, sub_zero, inv_zero, mul_zero, add_zero, add_left_inj]
-    refine Finset.sum_congr rfl fun x hx ↦ ?_
-    simp only [Finset.mem_sdiff, Finset.notMem_singleton] at hx
-    rw [log_mul hR (inv_ne_zero (norm_ne_zero_iff.mpr (sub_eq_zero.not.2 hx.2.symm))), log_inv]
-    ring
-  · simp_all only [mem_support, Decidable.not_not, Int.cast_zero, zero_mul, add_zero]
-    refine finsum_congr fun x ↦ ?_
-    by_cases h₁ : c = x
-    · simp_all
-    · rw [log_mul hR (inv_ne_zero (norm_ne_zero_iff.mpr (sub_eq_zero.not.2 h₁))), log_inv]
-      ring
 
 /--
 Evaluation of the logarithmic counting function at zero yields zero.

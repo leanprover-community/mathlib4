@@ -363,6 +363,11 @@ def mapIic (p : Submodule R M) :
     (p.mapIic q : Submodule R M) = q.map p.subtype :=
   rfl
 
+lemma codisjoint_map [RingHomSurjective τ₁₂] {f : F} (hf : Function.Surjective f)
+    {p q : Submodule R M} (hpq : Codisjoint p q) : Codisjoint (p.map f) (q.map f) := by
+  rw [codisjoint_iff, ← Submodule.map_sup, codisjoint_iff.mp hpq, map_top,
+    LinearMap.range_eq_top_of_surjective f hf]
+
 end AddCommMonoid
 
 end Submodule

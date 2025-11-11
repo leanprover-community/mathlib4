@@ -81,6 +81,10 @@ theorem prod_comm (f : α →₀ M) (g : β →₀ M') (h : α → M → β → 
       g.prod fun x' v' => f.prod fun x v => h x v x' v' :=
   Finset.prod_comm
 
+@[to_additive]
+theorem prod_finsetProd_comm {s : Finset β} (f : α →₀ M) (h : α → M → β → N) :
+    (f.prod fun a m => ∏ b ∈ s, h a m b) = ∏ b ∈ s, f.prod fun a m => h a m b := Finset.prod_comm
+
 @[to_additive (attr := simp)]
 theorem prod_ite_eq [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M → N) :
     (f.prod fun x v => ite (a = x) (b x v) 1) = ite (a ∈ f.support) (b a (f a)) 1 := by
@@ -402,6 +406,12 @@ theorem univ_sum_single_apply' [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
   simp_rw [single, coe_mk]
   classical rw [Finset.sum_pi_single]
   simp
+
+lemma sum_single_add_single (f₁ f₂ : ι) (g₁ g₂ : A) (F : ι → A → B) (H : f₁ ≠ f₂)
+    (HF : ∀ f, F f 0 = 0) :
+    sum (single f₁ g₁ + single f₂ g₂) F = F f₁ g₁ + F f₂ g₂ := by
+  classical
+  simp [sum_of_support_subset _ support_single_add_single_subset, single_apply, H, HF, H.symm]
 
 theorem equivFunOnFinite_symm_eq_sum [Fintype α] [AddCommMonoid M] (f : α → M) :
     equivFunOnFinite.symm f = ∑ a, single a (f a) :=

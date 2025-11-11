@@ -230,6 +230,9 @@ built in for `push Not`, so that it can preserve binder names, and so that `¬ (
 transformed to either `p → ¬ q` (the default) or `¬ p ∨ ¬ q`. To get `¬ p ∨ ¬ q`, use
 `set_option push_neg.use_distrib true`.
 
+Tactics that introduce a negation usually have a version that automatically calls `push_neg` on
+that negation. These include `by_cases!`, `contrapose!` and `by_contra!`.
+
 Another example: given a hypothesis
 ```lean
 h : ¬ ∀ ε > 0, ∃ δ > 0, ∀ x, |x - x₀| ≤ δ → |f x - y₀| ≤ ε

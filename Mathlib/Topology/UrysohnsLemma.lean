@@ -303,7 +303,7 @@ theorem continuous_lim (c : CU P) : Continuous c.lim := by
       grw [dist_midpoint_midpoint_le, dist_midpoint_midpoint_le, dist_self, zero_add]
       set r := (3 / 4 : ℝ) ^ n
       calc _ ≤ (r / 2 + r) / 2 := by gcongr
-        _ = _ := by field
+        _ = _ := by ring
 
 end CU
 

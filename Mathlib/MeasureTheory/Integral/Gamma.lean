@@ -33,7 +33,7 @@ theorem integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 0 < p) (hq : -1 < q) :
       ring_nf
     _ = (1 / p) * Gamma ((q + 1) / p) := by
       rw [Gamma_eq_integral (div_pos (neg_lt_iff_pos_add.mp hq) hp)]
-      simp_rw [show 1 / p - 1 + q / p = (q + 1) / p - 1 by field, ← integral_const_mul,
+      simp_rw [show 1 / p - 1 + q / p = (q + 1) / p - 1 by ring, ← integral_const_mul,
         ← mul_assoc]
 
 theorem integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 0 < p) (hq : -1 < q) (hb : 0 < b) :
