@@ -9,7 +9,7 @@ import Mathlib.Tactic.Push
 /-! # Contrapose
 
 The `contrapose` tactic transforms the goal into its contrapositive when that goal is an
-implication or an if and only if.
+implication or an iff. It also avoids creating double negations if there already is a negation.
 
 * `contrapose` turns a goal `P → Q` into `¬ Q → ¬ P` and a goal `P ↔ Q` into `¬ P ↔ ¬ Q`
 * `contrapose!` runs `contrapose` and then pushes negations inside `P` and `Q` using `push_neg`
@@ -20,20 +20,21 @@ implication or an if and only if.
 -/
 namespace Mathlib.Tactic.Contrapose
 
-/-- An option to turn off the `contrapose` feature of contraposing `↔` relations.
+/-- An option to turn off the feature that `contrapose` contraposes `↔` goals.
 This may be useful for teaching. -/
 register_option contrapose.iff : Bool := {
   defValue := true
   descr := "contrapose a goal `a ↔ b` into the goal `¬ a ↔ ¬ b`"
 }
 
+-- `contrapose₃`, `contrapose₄` and `contrapose_iff₄` don't depend on any axioms
 lemma contrapose₁ {p q : Prop} : (¬ q → ¬ p) → (p → q) := fun h hp ↦ by_contra fun h' ↦ h h' hp
 lemma contrapose₂ {p q : Prop} : (¬ q → p) → (¬ p → q) := fun h hp ↦ by_contra fun h' ↦ hp (h h')
-lemma contrapose₃ {p q : Prop} : (q → ¬ p) → (p → ¬ q) := fun h hp hq ↦ h hq hp
+lemma contrapose₃ {p q : Prop} : (q → ¬ p) → (p → ¬ q) := Imp.swap.mp
 lemma contrapose₄ {p q : Prop} : (q → p) → (¬ p → ¬ q) := mt
 
 lemma contrapose_iff₁ {p q : Prop} : (¬ p ↔ ¬ q) → (p ↔ q) := not_iff_not.mp
-lemma contrapose_iff₂ {p q : Prop} : (p ↔ ¬ q) → (¬ p ↔ q) := (not_iff_comm.trans Iff.comm).mpr
+lemma contrapose_iff₂ {p q : Prop} : (p ↔ ¬ q) → (¬ p ↔ q) := (iff_not_comm.trans Iff.comm).mp
 lemma contrapose_iff₃ {p q : Prop} : (¬ p ↔ q) → (p ↔ ¬ q) := (not_iff_comm.trans Iff.comm).mp
 lemma contrapose_iff₄ {p q : Prop} : (p ↔ q) → (¬ p ↔ ¬ q) := fun ⟨h₁, h₂⟩ ↦ ⟨mt h₂, mt h₁⟩
 
