@@ -291,6 +291,20 @@ lemma comp_div (f : G →* H) (g h : M →* G) : f.comp (g / h) = f.comp g / f.c
 
 end InvDiv
 
+lemma isMulCommutative_of_injective {G H : Type*} [Mul G] [Mul H]
+    (F : Type*) [FunLike F G H] [MulHomClass F G H] (f : F)
+    (hf : Function.Injective f) [hH : IsMulCommutative H] :
+    IsMulCommutative G :=
+  ⟨⟨fun x y ↦ hf (by simpa [map_mul] using hH.is_comm.comm _ _)⟩⟩
+
+lemma isMulCommutative_of_surjective {G H : Type*} [Mul G] [Mul H]
+    (F : Type*) [FunLike F G H] [MulHomClass F G H] (f : F)
+    (hf : Function.Surjective f) [hG : IsMulCommutative G] :
+    IsMulCommutative H := ⟨⟨fun x y ↦ by
+  rcases hf x with ⟨a, rfl⟩
+  rcases hf y with ⟨b, rfl⟩
+  simp [← map_mul, hG.is_comm.comm a b]⟩⟩
+
 /-- If `H` is commutative and `G →* H` is injective, then `G` is commutative. -/
 def commGroupOfInjective [Group G] [CommGroup H] (f : G →* H) (hf : Function.Injective f) :
     CommGroup G :=
