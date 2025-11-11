@@ -36,7 +36,7 @@ open NNReal
 
 variable {𝕜 𝕜₂ E F G : Type*}
 
-/-! # General constructions -/
+/-! ## General constructions -/
 
 section SeminormedAddCommGroup
 

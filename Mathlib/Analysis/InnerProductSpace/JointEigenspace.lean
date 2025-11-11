@@ -14,7 +14,7 @@ import Mathlib.Analysis.InnerProductSpace.Semisimple
 This file collects various decomposition results for joint eigenspaces of commuting
 symmetric operators on a finite-dimensional inner product space.
 
-# Main Result
+## Main Result
 
 * `LinearMap.IsSymmetric.directSum_isInternal_of_commute` establishes that in finite dimensions
   if `{A B : E →ₗ[𝕜] E}`, then `IsSymmetric A`, `IsSymmetric B` and `Commute A B` imply that
