@@ -259,29 +259,35 @@ protected theorem bounded_iteratedFDeriv (f : 𝓓^{n}_{K}(E, F)) {i : ℕ} (hi 
     (f.hasCompactSupport.iteratedFDeriv i)
 
 /-- Inclusion of `𝓓^{n}_{K}(E, F)` into the space `E →ᵇ F` of bounded continuous maps
-as a `𝕜`-linear map. -/
-noncomputable def toBoundedContinuousFunctionₗ : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ F where
+as a `𝕜`-linear map.
+
+This is subsumed by `toBoundedContinuousFunctionCLM` (not yet in Mathlib), which also bundles the
+continuity. -/
+noncomputable def toBoundedContinuousFunctionLM : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ F where
   toFun f := f
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
 @[simp]
-lemma toBoundedContinuousFunctionₗ_apply (f : 𝓓^{n}_{K}(E, F)) :
-    toBoundedContinuousFunctionₗ 𝕜 f = f :=
+lemma toBoundedContinuousFunctionLM_apply (f : 𝓓^{n}_{K}(E, F)) :
+    toBoundedContinuousFunctionLM 𝕜 f = f :=
   rfl
 
 variable (n k) in
-/-- `iteratedFDerivWithOrderₗ 𝕜 n k i` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
+/-- `iteratedFDerivWithOrderLM 𝕜 n k i` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
 its `i`-th iterated derivative as an element of `𝓓^{k}_{K}(E, E [×i]→L[ℝ] F)`.
 This only makes mathematical sense if `k + i ≤ n`, otherwise we define it as the zero map.
 
-See `iteratedFDerivₗ` for the very common case where everything is infinitely differentiable. -/
-noncomputable def iteratedFDerivWithOrderₗ (i : ℕ) :
+See `iteratedFDerivLM` for the very common case where everything is infinitely differentiable.
+
+This is subsumed by `iteratedFDerivWithOrderCLM` (not yet in Mathlib), which also bundles the
+continuity. -/
+noncomputable def iteratedFDerivWithOrderLM (i : ℕ) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{k}_{K}(E, E [×i]→L[ℝ] F) where
   /-
   Note: it is tempting to define this as some linear map if `k + i ≤ n`,
   and the zero map otherwise. However, we would lose the definitional equality between
-  `iteratedFDerivWithOrderₗ 𝕜 n k i f` and `iteratedFDerivWithOrderₗ ℝ n k i f`.
+  `iteratedFDerivWithOrderLM 𝕜 n k i f` and `iteratedFDerivWithOrderLM ℝ n k i f`.
 
   This is caused by the fact that the equality `f (if p then x else y) = if p then f x else f y`
   is not definitional.
@@ -306,25 +312,28 @@ noncomputable def iteratedFDerivWithOrderₗ (i : ℕ) :
     · simp
 
 @[simp]
-lemma iteratedFDerivWithOrderₗ_apply {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
-    iteratedFDerivWithOrderₗ 𝕜 n k i f = if k + i ≤ n then iteratedFDeriv ℝ i f else 0 := by
-  rw [ContDiffMapSupportedIn.iteratedFDerivWithOrderₗ]
+lemma iteratedFDerivWithOrderLM_apply {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
+    iteratedFDerivWithOrderLM 𝕜 n k i f = if k + i ≤ n then iteratedFDeriv ℝ i f else 0 := by
+  rw [ContDiffMapSupportedIn.iteratedFDerivWithOrderLM]
   split_ifs <;> rfl
 
-lemma iteratedFDerivWithOrderₗ_apply_of_le {i : ℕ} (hin : k + i ≤ n) (f : 𝓓^{n}_{K}(E, F)) :
-    iteratedFDerivWithOrderₗ 𝕜 n k i f = iteratedFDeriv ℝ i f := by
+lemma iteratedFDerivWithOrderLM_apply_of_le {i : ℕ} (hin : k + i ≤ n) (f : 𝓓^{n}_{K}(E, F)) :
+    iteratedFDerivWithOrderLM 𝕜 n k i f = iteratedFDeriv ℝ i f := by
   simp [hin]
 
-lemma iteratedFDerivWithOrderₗ_apply_of_gt {i : ℕ} (hin : ¬ (k + i ≤ n)) (f : 𝓓^{n}_{K}(E, F)) :
-    iteratedFDerivWithOrderₗ 𝕜 n k i f = 0 := by
+lemma iteratedFDerivWithOrderLM_apply_of_gt {i : ℕ} (hin : ¬ (k + i ≤ n)) (f : 𝓓^{n}_{K}(E, F)) :
+    iteratedFDerivWithOrderLM 𝕜 n k i f = 0 := by
   ext : 1
   simp [hin]
 
-/-- `iteratedFDerivₗ 𝕜 i` is the `𝕜`-linear-map sending `f : 𝓓_{K}(E, F)` to
+/-- `iteratedFDerivLM 𝕜 i` is the `𝕜`-linear-map sending `f : 𝓓_{K}(E, F)` to
 its `i`-th iterated derivative as an element of `𝓓_{K}(E, E [×i]→L[ℝ] F)`.
 
-See also `iteratedFDerivWithOrderₗ` if you need more control on the regularities. -/
-noncomputable def iteratedFDerivₗ (i : ℕ) :
+See also `iteratedFDerivWithOrderLM` if you need more control on the regularities.
+
+This is subsumed by `iteratedFDerivCLM` (not yet in Mathlib), which also bundles the
+continuity. -/
+noncomputable def iteratedFDerivLM (i : ℕ) :
     𝓓_{K}(E, F) →ₗ[𝕜] 𝓓_{K}(E, E [×i]→L[ℝ] F) where
   toFun f := .of_support_subset
     (f.contDiff.iteratedFDeriv_right le_rfl)
@@ -339,51 +348,54 @@ noncomputable def iteratedFDerivₗ (i : ℕ) :
     simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi).contDiffAt]
 
 @[simp]
-lemma iteratedFDerivₗ_apply {i : ℕ} (f : 𝓓_{K}(E, F)) :
-    iteratedFDerivₗ 𝕜 i f = iteratedFDeriv ℝ i f :=
+lemma iteratedFDerivLM_apply {i : ℕ} (f : 𝓓_{K}(E, F)) :
+    iteratedFDerivLM 𝕜 i f = iteratedFDeriv ℝ i f :=
   rfl
 
-lemma iteratedFDerivₗ_eq_withOrder (i : ℕ) :
-    (iteratedFDerivₗ 𝕜 i : 𝓓_{K}(E, F) → _) = iteratedFDerivWithOrderₗ 𝕜 ⊤ ⊤ i :=
+lemma iteratedFDerivLM_eq_withOrder (i : ℕ) :
+    (iteratedFDerivLM 𝕜 i : 𝓓_{K}(E, F) → _) = iteratedFDerivWithOrderLM 𝕜 ⊤ ⊤ i :=
   rfl
 
 variable (n) in
-/-- `structureMapₗ 𝕜 n i` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to its
+/-- `structureMapLM 𝕜 n i` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to its
 `i`-th iterated derivative as an element of `E →ᵇ (E [×i]→L[ℝ] F)`. In other words, it
-is the composition of `toBoundedContinuousFunctionₗ 𝕜` and `iteratedFDerivWithOrderₗ 𝕜 n 0 i`.
+is the composition of `toBoundedContinuousFunctionLM 𝕜` and `iteratedFDerivWithOrderLM 𝕜 n 0 i`.
 This only makes mathematical sense if `i ≤ n`, otherwise we define it as the zero map.
 
-We call these "structure maps" because they define the topology on `𝓓^{n}_{K}(E, F)`. -/
-noncomputable def structureMapₗ (i : ℕ) :
-    𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F) :=
-  toBoundedContinuousFunctionₗ 𝕜 ∘ₗ iteratedFDerivWithOrderₗ 𝕜 n 0 i
+We call these "structure maps" because they define the topology on `𝓓^{n}_{K}(E, F)`.
 
-lemma structureMapₗ_eq {i : ℕ} :
-    (structureMapₗ 𝕜 ⊤ i : 𝓓_{K}(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F)) =
-      (toBoundedContinuousFunctionₗ 𝕜 : 𝓓_{K}(E, E [×i]→L[ℝ] F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F)) ∘ₗ
-      (iteratedFDerivₗ 𝕜 i : 𝓓_{K}(E, F) →ₗ[𝕜] 𝓓_{K}(E, E [×i]→L[ℝ] F)) :=
+This is subsumed by `structureMapCLM`, which also bundles the
+continuity. -/
+noncomputable def structureMapLM (i : ℕ) :
+    𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F) :=
+  toBoundedContinuousFunctionLM 𝕜 ∘ₗ iteratedFDerivWithOrderLM 𝕜 n 0 i
+
+lemma structureMapLM_eq {i : ℕ} :
+    (structureMapLM 𝕜 ⊤ i : 𝓓_{K}(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F)) =
+      (toBoundedContinuousFunctionLM 𝕜 : 𝓓_{K}(E, E [×i]→L[ℝ] F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F)) ∘ₗ
+      (iteratedFDerivLM 𝕜 i : 𝓓_{K}(E, F) →ₗ[𝕜] 𝓓_{K}(E, E [×i]→L[ℝ] F)) :=
   rfl
 
-lemma structureMapₗ_apply_withOrder {i : ℕ} {f : 𝓓^{n}_{K}(E, F)} :
-    structureMapₗ 𝕜 n i f = if i ≤ n then iteratedFDeriv ℝ i f else 0 := by
-  split_ifs with hi <;> simp [structureMapₗ, hi]
+lemma structureMapLM_apply_withOrder {i : ℕ} {f : 𝓓^{n}_{K}(E, F)} :
+    structureMapLM 𝕜 n i f = if i ≤ n then iteratedFDeriv ℝ i f else 0 := by
+  split_ifs with hi <;> simp [structureMapLM, hi]
 
-lemma structureMapₗ_apply {i : ℕ} {f : 𝓓_{K}(E, F)} :
-    structureMapₗ 𝕜 ⊤ i f = iteratedFDeriv ℝ i f := by
-  rw [structureMapₗ_eq]
+lemma structureMapLM_apply {i : ℕ} {f : 𝓓_{K}(E, F)} :
+    structureMapLM 𝕜 ⊤ i f = iteratedFDeriv ℝ i f := by
+  rw [structureMapLM_eq]
   rfl
 
 section Topology
 
 noncomputable instance topologicalSpace : TopologicalSpace 𝓓^{n}_{K}(E, F) :=
-  ⨅ (i : ℕ), induced (structureMapₗ ℝ n i) inferInstance
+  ⨅ (i : ℕ), induced (structureMapLM ℝ n i) inferInstance
 
 noncomputable instance uniformSpace : UniformSpace 𝓓^{n}_{K}(E, F) := .replaceTopology
-  (⨅ (i : ℕ), UniformSpace.comap (structureMapₗ ℝ n i) inferInstance)
+  (⨅ (i : ℕ), UniformSpace.comap (structureMapLM ℝ n i) inferInstance)
   toTopologicalSpace_iInf.symm
 
 protected theorem uniformSpace_eq_iInf : (uniformSpace : UniformSpace 𝓓^{n}_{K}(E, F)) =
-    ⨅ (i : ℕ), UniformSpace.comap (structureMapₗ ℝ n i)
+    ⨅ (i : ℕ), UniformSpace.comap (structureMapLM ℝ n i)
       inferInstance :=
   UniformSpace.replaceTopology_eq _ toTopologicalSpace_iInf.symm
 
@@ -394,44 +406,58 @@ instance : IsUniformAddGroup 𝓓^{n}_{K}(E, F) := by
 
 instance : ContinuousSMul 𝕜 𝓓^{n}_{K}(E, F) := by
   refine continuousSMul_iInf
-    (fun i ↦ continuousSMul_induced (structureMapₗ 𝕜 n i))
+    (fun i ↦ continuousSMul_induced (structureMapLM 𝕜 n i))
 
 instance : LocallyConvexSpace ℝ 𝓓^{n}_{K}(E, F) :=
   LocallyConvexSpace.iInf fun _ ↦ LocallyConvexSpace.induced _
 
 variable (n) in
-/-- `structureMap 𝕜 n i` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to its
+/-- `structureMapCLM 𝕜 n i` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to its
 `i`-th iterated derivative as an element of `E →ᵇ (E [×i]→L[ℝ] F)`.
 This only makes mathematical sense if `i ≤ n`, otherwise we define it as the zero map.
 
 We call these "structure maps" because they define the topology on `𝓓^{n}_{K}(E, F)`. -/
 noncomputable def structureMapCLM (i : ℕ) :
     𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ (E [×i]→L[ℝ] F) where
-  toLinearMap := structureMapₗ 𝕜 n i
+  toLinearMap := structureMapLM 𝕜 n i
   cont := continuous_iInf_dom continuous_induced_dom
 
-lemma continuous_iff_comp {X} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
+lemma structureMapCLM_apply_withOrder {i : ℕ} {f : 𝓓^{n}_{K}(E, F)} :
+    structureMapCLM 𝕜 n i f = if i ≤ n then iteratedFDeriv ℝ i f else 0 := by
+  simp [structureMapCLM, structureMapLM_apply_withOrder]
+
+lemma structureMapCLM_apply {i : ℕ} {f : 𝓓_{K}(E, F)} :
+    structureMapCLM 𝕜 ⊤ i f = iteratedFDeriv ℝ i f := by
+  simp [structureMapCLM, structureMapLM_apply]
+
+/-- The **universal property** of the topology on `𝓓^{n}_{K}(E, F)`: a map to `𝓓^{n}_{K}(E, F)`
+is continuous if and only if its composition with each structure map
+`structureMapCLM ℝ n i : 𝓓^{n}_{K}(E, F) → (E →ᵇ (E [×i]→L[ℝ] F))` is continuous.
+
+Since `structureMapCLM ℝ n i` is zero whenever `i > n`, it suffices to check it for `i ≤ n`,
+as proven by `continuous_iff_comp_with_order`. -/
+-- Note: if needed, we could allow an extra parameter `𝕜` in case the use wants to use
+-- `structureMapCLM 𝕜 n i`.
+theorem continuous_iff_comp {X} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
     Continuous φ ↔ ∀ i, Continuous (structureMapCLM ℝ n i ∘ φ) := by
   simp_rw [continuous_iInf_rng, continuous_induced_rng]
   rfl
 
-protected theorem continuous_iff_comp_of_le {X : Type*} [TopologicalSpace X]
-    (φ : X → 𝓓^{n}_{K}(E, F)) :
-    Continuous φ ↔ ∀ (i : ℕ) (_ : ↑i ≤ n), Continuous (structureMapCLM ℝ n i ∘ φ) := by
+/-- The **universal property** of the topology on `𝓓^{n}_{K}(E, F)`: a map to `𝓓^{n}_{K}(E, F)`
+is continuous if and only if its composition with the structure map
+`structureMapCLM ℝ n i : 𝓓^{n}_{K}(E, F) → (E →ᵇ (E [×i]→L[ℝ] F))` is continuous for each `i ≤ n`.
+Since `structureMapCLM ℝ n i` is zero whenever `i > n`, it suffices to check it for `i ≤ n`,
+as proven by `continuous_iff_comp_of_le`. -/
+-- Note: if needed, we could allow an extra parameter `𝕜` in case the use wants to use
+-- `structureMapCLM 𝕜 n i`.
+theorem continuous_iff_comp_withOrder {X : Type*} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
+    Continuous φ ↔ ∀ (i : ℕ), i ≤ n → Continuous (structureMapCLM ℝ n i ∘ φ) := by
   rw [continuous_iff_comp]
   congrm (∀ i, ?_)
   by_cases hin : i ≤ n <;> simp only [hin, true_imp_iff, false_imp_iff, iff_true]
   refine continuous_zero.congr fun x ↦ ?_
   ext t : 1
-  simp [hin, structureMapCLM, structureMapₗ_apply_withOrder]
-
-lemma structureMapCLM_apply_withOrder {i : ℕ} {f : 𝓓^{n}_{K}(E, F)} :
-    structureMapCLM 𝕜 n i f = if i ≤ n then iteratedFDeriv ℝ i f else 0 := by
-  simp [structureMapCLM, structureMapₗ_apply_withOrder]
-
-lemma structureMapCLM_apply {i : ℕ} {f : 𝓓_{K}(E, F)} :
-    structureMapCLM 𝕜 ⊤ i f = iteratedFDeriv ℝ i f := by
-  simp [structureMapCLM, structureMapₗ_apply]
+  simp [hin, structureMapCLM_apply_withOrder]
 
 variable (E F n K)
 
