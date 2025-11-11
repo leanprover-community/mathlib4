@@ -430,11 +430,6 @@ theorem map_surjective_of_mkQ_comp_surjective {f : M →ₗ[R] N}
   exact ⟨fun n ↦ (x n).val, fun n ↦ ⟨(Classical.choose_spec (exists_smodEq_pow_smul_top_and_mkQ_eq
       h (y' := eval I _ (n + 1) y) (by simp) (x n).2)).1, (x n).property⟩⟩
 
-theorem map_surjective {f : M →ₗ[R] N} (h : Function.Surjective f) :
-    Function.Surjective (map I f) := by
-  apply map_surjective_of_mkQ_comp_surjective
-  simpa using (Function.Surjective.comp (mkQ_surjective _) h)
-
 end AdicCompletion
 
 open AdicCompletion Submodule
