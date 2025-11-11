@@ -598,7 +598,9 @@ jobs:
             [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).
 
             Errors from script:
+            ```
             ${{ steps.pr-title-check.outputs.errors }}
+            ```
 
             <details>
             <summary>Details on the required title format</summary>
