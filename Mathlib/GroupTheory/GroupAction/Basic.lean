@@ -393,14 +393,13 @@ theorem smul_fixedPoints_le_fixedPoints_of_normal
     {H : Subgroup G} [hH : H.Normal]
     (g : G) :
     g • (fixedPoints H α) ⊆ fixedPoints H α := by
-  rintro x ⟨a, ha, rfl⟩
-  refine mem_fixedPoints.mpr (fun h ↦ ?_)
+  rintro _ ⟨a, ha, rfl⟩
+  rw [mem_fixedPoints] at ha ⊢
+  intro h
   change (h : G) • g • a = g • a
   refine inv_smul_eq_iff.mp ?_
   rw [← mul_smul, ← mul_smul]
-  change (⟨g⁻¹ * ↑h * g,
-    hH.conj_mem' _ (SetLike.coe_mem h) _⟩ : H) • a = a
-  apply mem_fixedPoints.mp ha
+  exact ha (⟨_, hH.conj_mem' _ (SetLike.coe_mem h) _⟩ : H)
 
 end MulAction
 
