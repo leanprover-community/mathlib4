@@ -14,7 +14,7 @@ We provide an alternative formulation of the sheaf condition in terms of unique 
 
 We work with sheaves valued in a concrete category `C` admitting all limits, whose forgetful
 functor `C ⥤ Type` preserves limits and reflects isomorphisms. The usual categories of algebraic
-structures, such as `MonCat`, `AddCommGrp`, `RingCat`, `CommRingCat` etc. are all examples of
+structures, such as `MonCat`, `AddCommGrpCat`, `RingCat`, `CommRingCat` etc. are all examples of
 this kind of category.
 
 A presheaf `F : Presheaf C X` satisfies the sheaf condition if and only if, for every
