@@ -138,6 +138,8 @@ theorem _root_.IsUnit.mem_unitary_iff_mul_star_self {u : R} (hu : IsUnit u) :
 alias ⟨_, _root_.IsUnit.mem_unitary_of_star_mul_self⟩ := IsUnit.mem_unitary_iff_star_mul_self
 alias ⟨_, _root_.IsUnit.mem_unitary_of_mul_star_self⟩ := IsUnit.mem_unitary_iff_mul_star_self
 
+theorem isUnit_coe {U : unitary R} : IsUnit (U : R) := (Unitary.toUnits _).isUnit
+
 /-- For unitary `U` in a star-monoid `R`, `x * U = y * U` if and only if `x = y`
 for all `x` and `y` in `R`. -/
 protected theorem mul_left_inj {x y : R} (U : unitary R) :
