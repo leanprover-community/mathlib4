@@ -383,17 +383,22 @@ checks if the constant is one of: `DecidableEq`, `DecidableLE`, `DecidableLT`, `
 
 Runs `cleanupAnnotations` on `type` and `forallE` bodies, and ignores metadata in applications.
 -/
-@[inline] partial def isAppOrForallOfDecidable (type : Expr) : Bool :=
+@[inline] partial def isAppOrForallOfConstP (p : Name → Bool) (type : Expr) : Bool :=
     match type.cleanupAnnotations.getAppFn' with
-    | .const n _ =>
-      n == ``DecidableEq   ||
-      n == ``DecidableLE   ||
-      n == ``DecidableLT   ||
-      n == ``DecidableRel  ||
-      n == ``DecidablePred ||
-      n == ``Decidable
-    | .forallE _ _ body _ => isAppOrForallOfDecidable body
+    | .const n _ => p n
+    | .forallE _ _ body _ => isAppOrForallOfConstP p body
     | _ => false
+
+@[inline] def isDecidableVariant (n : Name) : Bool :=
+  n == ``DecidableEq   ||
+  n == ``DecidableLE   ||
+  n == ``DecidableLT   ||
+  n == ``DecidableRel  ||
+  n == ``DecidablePred ||
+  n == ``Decidable
+
+@[inline] partial def isAppOrForallOfConst (declName : Name) (type : Expr) : Bool :=
+  isAppOrForallOfConstP (· == declName) type
 
 /--
 The `unusedDecidable` linter checks if a theorem's hypotheses include `Decidable*` instances which
