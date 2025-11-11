@@ -68,73 +68,132 @@ theorem map_exact (hf : Function.Injective f) (hfg : Function.Exact f g) :
 
 end H0
 
-variable (G : Type u) [Monoid G] (A : Type*) [AddGroup A] [DistribMulAction G A]
-
-def Z1 := { f : G → A // ∀ g h : G, f (g * h) = f g + g • f h}
+def Z1 (A : Type*) [AddGroup A] [DistribMulAction G A] :=
+  { f : G → A // ∀ g h : G, f (g * h) = f g + g • f h}
 
 namespace Z1
+
+variable {G} {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
+  [DistribMulAction G A] [DistribMulAction G B] [DistribMulAction G C]
+  (f : A →+[G] B) (g : B →+[G] C)
 
 instance zero : Zero (Z1 G A) := ⟨⟨0, fun g h => by simp⟩⟩
 instance inhabited : Inhabited (Z1 G A) := ⟨0⟩
 
 instance coeFun : CoeFun (Z1 G A) (fun _ ↦ G → A) := ⟨fun f ↦ f.val⟩
 
-@[simp]
-lemma zero_apply (g : G) : (0 : Z1 G A) g = 0 := rfl
+variable (G A) in
+@[simp] lemma zero_apply (g : G) : (0 : Z1 G A) g = 0 := rfl
 
-variable {G A} in
-def cohomologous (f g : Z1 G A) : Prop :=
+variable (G A) in
+@[simp] lemma zero_coe : (0 : Z1 G A) = (0 : G → A) := rfl
+
+def cohomologous (f g : G → A) : Prop :=
   ∃ a : A, ∀ h : G, g h = - a + f h + (h • a)
 
+lemma cohomologous.refl (f : G → A) : Z1.cohomologous f f := ⟨0, fun h ↦ by simp⟩
+
+lemma cohomologous.symm {f g : G → A} (h : Z1.cohomologous f g) : Z1.cohomologous g f := by
+  obtain ⟨a, ha⟩ := h
+  exact ⟨-a, fun h ↦ by simp [← add_assoc, ha h]⟩
+
+lemma cohomologous.trans {f g h : G → A} (hfg : Z1.cohomologous f g) (hgh : Z1.cohomologous g h) :
+    Z1.cohomologous f h := by
+  obtain ⟨a, ha⟩ := hfg
+  obtain ⟨b, hb⟩ := hgh
+  exact ⟨a + b, fun h ↦ by simp [← add_assoc, ha h, hb h]⟩
+
+variable (G A) in @[simps]
 instance setoid : Setoid (Z1 G A) where
-  r := cohomologous
+  r x y := cohomologous x y
   iseqv := {
-    refl := fun f ↦ ⟨0, fun h ↦ by simp⟩,
-    symm := fun ⟨a, ha⟩ ↦ ⟨-a, fun h ↦ by simp [← add_assoc, ha h]⟩,
-    trans := fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ ⟨a + b, fun h ↦ by simp [← add_assoc, ha h, hb h]⟩
+    refl f := cohomologous.refl f,
+    symm h := h.symm,
+    trans h h' := h.trans h'
   }
+
+@[simp]
+theorem equiv_iff_cohomologous (f : Z1 G A) (g : Z1 G A) : f ≈ g ↔ Z1.cohomologous f g := Iff.rfl
+
+theorem mem_of_cohomologous (f : G → A) (f' : Z1 G A) (hfg : Z1.cohomologous f f') :
+    ∀ g h : G, f (g * h) = f g + g • f h := by
+  obtain ⟨a, ha⟩ := hfg.symm
+  simp [ha, f'.2, add_assoc, mul_smul]
+
+def map : Z1 G A → Z1 G B := fun z ↦ ⟨f ∘ z, fun g h => by simp [z.prop, map_smul]⟩
+
+@[simp] lemma map_zero : Z1.map f 0 = 0 := Subtype.ext <| funext fun _ ↦ (by simp [Z1.map])
+
+@[simp] lemma map_zero_apply (x : Z1 G A) : Z1.map (0 : A →+[G] B) x = 0 := by
+  apply Subtype.ext
+  simp [Z1.map]
+
+@[simp] lemma map_apply (z : Z1 G A) (x : G) : (Z1.map f z) x = f (z x) := rfl
+
+lemma map_cohomologous (z1 z2 : Z1 G A) (h : z1 ≈ z2) : Z1.map f z1 ≈ Z1.map f z2 := by
+  obtain ⟨a, ha⟩ := h
+  simp only [equiv_iff_cohomologous, cohomologous, map_apply]
+  exact ⟨f a, fun h ↦ by simp [ha, map_smul]⟩
 
 end Z1
 
-def H1 := Quotient (Z1.setoid G A)
-
-instance : Zero (H1 G A) := ⟨⟦0⟧⟩
-instance : Inhabited (H1 G A) := ⟨0⟩
+def H1 (A : Type*) [AddGroup A] [DistribMulAction G A] := Quotient (Z1.setoid G A)
 
 namespace H1
-
-lemma zero_def : (0 : H1 G A) = ⟦0⟧ := rfl
 
 variable {G} {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
   [DistribMulAction G A] [DistribMulAction G B] [DistribMulAction G C]
   (f : A →+[G] B) (g : B →+[G] C)
 
+instance : Zero (H1 G A) := ⟨⟦0⟧⟩
+instance : Inhabited (H1 G A) := ⟨0⟩
+
+variable (G A) in
+lemma zero_def : (0 : H1 G A) = ⟦0⟧ := rfl
+
 def map : H1 G A → H1 G B :=
-  Quotient.map (fun z : Z1 G A => ⟨f ∘ z, fun g h => by simp [z.prop, map_smul]⟩)
-    (fun z1 z2 ⟨a, ha⟩ => ⟨f a, fun h => by simp [ha, map_smul]⟩)
+  Quotient.map (Z1.map f) (Z1.map_cohomologous f)
 
 variable (G A) in
 theorem map_id : H1.map (.id _) = @id (H1 G A) := funext fun a ↦ by
-  induction a using Quotient.ind
+  induction a using Quotient.inductionOn with | h a =>
   refine Quotient.eq.mpr ⟨0, fun _ ↦ by simp⟩
+
+@[simp]
+theorem map_eq (x : Z1 G A) : H1.map f ⟦x⟧ = ⟦Z1.map f x⟧ := by simp [H1.map]
 
 @[simp]
 theorem map_zero : H1.map f 0 = 0 := by
   simp only [H1.map, zero_def, Quotient.map_mk]
   exact congrArg _ <| Subtype.ext (funext fun x ↦ f.map_zero)
 
-theorem map_comp : H1.map (g.comp f) = (H1.map g).comp (H1.map f) :=
-  funext fun a ↦ by induction a using Quotient.ind with | _ => rfl
+@[simp]
+theorem zero_map_apply (x : H1 G A) : H1.map (0 : A →+[G] B) x = 0 := by
+  induction x using Quotient.inductionOn with | h a =>
+  simp only [map, Quotient.map_mk, zero_def]
+  rfl
 
-theorem map_exact (hf : Function.Injective f) (hfg : Function.Exact f g) :
-    Function.Exact (H1.map f) (H1.map g) := by
+theorem map_comp : H1.map (g.comp f) = (H1.map g).comp (H1.map f) :=
+  funext fun a ↦ by induction a using Quotient.inductionOn with | _ => rfl
+
+theorem map_comp_apply (x : H1 G A) : H1.map (g.comp f) x = (H1.map g) ((H1.map f) x) :=
+  congr($(H1.map_comp f g) x)
+
+theorem map_exact (hf : Function.Injective f) (hfg : Function.Exact f g)
+    (hg : Function.Surjective g) : Function.Exact (H1.map f) (H1.map g) := by
   refine fun y ↦ ⟨fun h ↦ ?_, fun ⟨x, hx⟩ ↦ hx ▸ ?_⟩
-  · induction y using Quotient.ind
+  · induction y using Quotient.inductionOn with | h b =>
     obtain ⟨x, hx⟩ := Quotient.eq_iff_equiv.mp h
-    sorry
-  · induction x using Quotient.ind
-    simp only [H1.map, Quotient.map_mk, ← Function.comp_assoc, hfg.comp_eq_zero, Pi.zero_comp]
-    congr
+    obtain ⟨x, rfl⟩ := hg x
+    simp [← map_smul, ← map_neg, ← map_add] at hx
+    choose a ha using fun (h : G) ↦ (hfg _).mp (hx h).symm
+    refine ⟨Quotient.mk _ (⟨a, fun g h ↦ hf ?_⟩ : Z1 G A), Quotient.eq.mpr ?_⟩
+    · simp only [map_add, map_smul]
+      exact b.mem_of_cohomologous (f ∘ a) (.symm ⟨x, ha⟩) g h
+    · simp only [Z1.setoid_r]
+      exact .symm ⟨x, by simpa using ha⟩
+
+  · rw [← map_comp_apply, ((g.comp f).ext (g := 0) hfg.apply_apply_eq_zero), zero_map_apply]
 
 end H1
 
@@ -178,7 +237,7 @@ theorem exact_H0_map_δ₀₁ : Function.Exact (H0.map g) (δ₀₁ hf hg hfg) :
 theorem exact_δ₀₁_H1_map : Function.Exact (δ₀₁ hf hg hfg) (H1.map f) := by
   refine fun y ↦ ⟨fun h ↦ ?_, fun ⟨x, hx⟩ ↦ hx ▸ Quotient.eq_iff_equiv.mpr
     ⟨- (hg x).choose, fun h ↦ by simp⟩⟩
-  induction y using Quotient.ind
+  induction y using Quotient.inductionOn
   simp only [H1.map, Quotient.map_mk] at h
   obtain ⟨x, hx⟩ := Quotient.eq_iff_equiv.mp h
   refine ⟨⟨g (-x), fun h ↦ (add_neg_eq_zero.mp ?_).symm⟩, (δ₀₁_eq_of_map hf hg hfg _ _ rfl).trans
@@ -196,8 +255,6 @@ variable {G : Type u} [Group G] {k : Type u} [CommRing k] {A : Rep k G}
   {B C : Type*} [AddGroup B] [AddGroup C] [DistribMulAction G B] [DistribMulAction G C]
   {f : A →+[G] B} {g : B →+[G] C} (hf : Function.Injective f) (hg : Function.Surjective g)
   (hfg : Function.Exact f g) (hA : f.toAddMonoidHom.range ≤ AddSubgroup.center B)
-
-attribute [local simp] Equiv.apply_ofInjective_symm
 
 noncomputable def δ₁₂_aux (b : G → B) (c : Z1 G C) (hbc : ∀ (x : G), c x = g (b x)) :
     LinearMap.ker (ModuleCat.Hom.hom (d₂₃ A)) := by
@@ -271,14 +328,18 @@ variable {G : Type u} [Group G] {k : Type u} [CommRing k] (A : Rep k G)
 
 open CategoryTheory
 
+/-- `H0 G A` and `A.ρ.invariants` are in fact defEq. -/
 noncomputable def H0Iso : groupCohomology.H0 A ≃+ H0 G A :=
   (groupCohomology.H0Iso A).toLinearEquiv.toAddEquiv
 
 theorem H0Iso_map {A B : Rep k G} (f : A ⟶ B) :
     (H0Iso B).toAddMonoidHom.comp (groupCohomology.map (.id G) f 0).hom =
       (H0.map f).comp (H0Iso A).toAddMonoidHom := by
-  -- #check groupCohomology.map_id_comp_H0Iso_hom
-  sorry
+  ext x
+  conv_lhs =>
+    change (ConcreteCategory.hom (map (MonoidHom.id G) f 0 ≫ (groupCohomology.H0Iso B).hom)) x
+  rw [congr($(groupCohomology.map_id_comp_H0Iso_hom f) x)]
+  rfl
 
 def CocycleToZ1 (f : groupCohomology.cocycles₁ A) : Z1 G A := ⟨f.val, fun x y => Eq.symm (by
   rw [← sub_eq_zero, add_sub_right_comm, sub_add_comm]
@@ -307,7 +368,8 @@ theorem δ₀₁_H0Iso_eq_H1Iso_δ :
     (H1Iso X.X₁) ∘ (groupCohomology.δ hX 0 1 rfl) := sorry
 
 theorem δ₁₂_H1Iso_eq_δ :
-    (δ₁₂ (f := (X.f : X.X₁ →+[G] X.X₂)) (g := X.g) sorry sorry sorry sorry) ∘ (H1Iso X.X₃) =
+    (δ₁₂ (f := (X.f : X.X₁ →+[G] X.X₂)) (g := X.g)
+      sorry sorry sorry (le_of_le_of_eq le_top AddCommGroup.center_eq_top.symm)) ∘ (H1Iso X.X₃) =
     (groupCohomology.δ hX 1 2 rfl) := sorry
 
 end compatibility
