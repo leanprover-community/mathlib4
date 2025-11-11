@@ -66,7 +66,7 @@ theorem mem_closure_of_mem (hx : x ∈ s) : x ∈ closure s :=
 theorem closure_le {I} : closure s ≤ I ↔ s ⊆ I :=
   SubMulAction.closure_le
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem closure_mono (h : s ⊆ t) : closure s ≤ closure t :=
   SubMulAction.closure_mono h
 
@@ -80,7 +80,7 @@ theorem coe_closure [Semigroup M] {s : Set M} :
     { carrier := s ∪ univ * s
       smul_mem' x y := by
         rintro (hy | ⟨y, -, z, hz, rfl⟩)
-        · exact Or.inr (mul_mem_mul (mem_univ _) hy)
+        · exact .inr <| mul_mem_mul (mem_univ _) hy
         · simpa [← mul_assoc] using Or.inr (mul_mem_mul (mem_univ _) hz) }
   suffices closure s = I by rw [this]; rfl
   refine (closure_le.2 fun x => Or.inl).antisymm fun x hx => hx.elim mem_closure_of_mem ?_
