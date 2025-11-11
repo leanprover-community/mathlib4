@@ -305,8 +305,7 @@ namespace Simplex
 variable {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
 /-- The interior of a simplex is the set of points that can be expressed as an affine combination
-of the vertices with weights strictly between 0 and 1. This is equivalent to the intrinsic
-interior of the convex hull of the vertices. -/
+of the vertices with weights in a set `I`. -/
 protected def setInterior (I : Set k) {n : ℕ} (s : Simplex k P n) : Set P :=
   {p | ∃ w : Fin (n + 1) → k,
     (∑ i, w i = 1) ∧ (∀ i, w i ∈ I) ∧ Finset.univ.affineCombination k s.points w = p}
@@ -355,6 +354,27 @@ lemma affineCombination_mem_closedInterior_iff {n : ℕ} {s : Simplex k P n} {w 
 lemma interior_subset_closedInterior {n : ℕ} (s : Simplex k P n) :
     s.interior ⊆ s.closedInterior :=
   fun _ ⟨w, hw, hw01, hww⟩ ↦ ⟨w, hw, fun i ↦ ⟨(hw01 i).1.le, (hw01 i).2.le⟩, hww⟩
+
+lemma point_notMem_interior {n : ℕ} (s : Simplex k P n) (i : Fin (n + 1)) :
+    s.points i ∉ s.interior := by
+  rw [← Finset.univ.affineCombination_affineCombinationSingleWeights k s.points
+    (Finset.mem_univ i), affineCombination_mem_interior_iff
+      (sum_affineCombinationSingleWeights _ _ (Finset.mem_univ i)), not_forall]
+  exact ⟨i, by simp⟩
+
+lemma point_mem_closedInterior [ZeroLEOneClass k] {n : ℕ} (s : Simplex k P n) (i : Fin (n + 1)) :
+    s.points i ∈ s.closedInterior := by
+  rw [← Finset.univ.affineCombination_affineCombinationSingleWeights k s.points
+    (Finset.mem_univ i), affineCombination_mem_closedInterior_iff
+      (sum_affineCombinationSingleWeights _ _ (Finset.mem_univ i))]
+  intro j
+  by_cases hj : j = i <;> simp [hj]
+
+lemma interior_ssubset_closedInterior [ZeroLEOneClass k] {n : ℕ} (s : Simplex k P n) :
+    s.interior ⊂ s.closedInterior := by
+  rw [Set.ssubset_iff_exists]
+  exact ⟨s.interior_subset_closedInterior, s.points 0, s.point_mem_closedInterior 0,
+    s.point_notMem_interior 0⟩
 
 lemma closedInterior_subset_affineSpan {n : ℕ} {s : Simplex k P n} :
     s.closedInterior ⊆ affineSpan k (Set.range s.points) := by
