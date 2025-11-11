@@ -167,6 +167,51 @@ theorem invOf_add_mul_mul [Invertible (A + U * C * V)] :
 
 end Woodbury
 
+section BinomialInverseTheorem
+
+variable [Fintype m] [DecidableEq m] [Ring α]
+    (A : Matrix n n α) (U : Matrix n m α) (C : Matrix m m α) (V : Matrix m n α)
+    [Invertible A] [Invertible (C + C * V * ⅟A * U * C)]
+
+lemma add_mul_mul_mul_invOf_eq_one :
+    (A + U * C * V) * (⅟A - ⅟A * U * C * ⅟(C + C * V * ⅟A * U * C) * C * V * ⅟A) = 1 := by
+  simp only [Matrix.mul_sub, Matrix.add_mul, mul_invOf_self']
+  rw [add_sub_assoc, add_eq_left, sub_eq_zero]
+  simp only [← Matrix.mul_assoc, mul_invOf_self', Matrix.one_mul]
+  simp only [← Matrix.add_mul]
+  congr
+  -- Matrix.mul_invOf_eq_iff_eq_mul_right is missing
+  conv_lhs => rw [← Matrix.mul_invOf_cancel_right U (C + C * V * ⅟A * U * C)]
+  apply congr_arg₂ _ _ rfl
+  simp only [Matrix.add_mul, Matrix.mul_add, Matrix.mul_assoc]
+
+lemma add_mul_mul_mul_invOf_eq_one' :
+    (⅟A - ⅟A * U * C * ⅟(C + C * V * ⅟A * U * C) * C * V * ⅟A) * (A + U * C * V) = 1 := by
+  simp only [Matrix.mul_add, Matrix.sub_mul, invOf_mul_self']
+  rw [sub_add, sub_eq_self, sub_eq_zero]
+  simp only [Matrix.mul_assoc, ← Matrix.mul_sub]
+  congr
+  rw [eq_sub_iff_add_eq, ← Matrix.mul_add]
+  -- Matrix.invOf_mul_eq_iff_eq_mul_left is missing
+  conv_rhs => rw [← Matrix.invOf_mul_cancel_left (C + C * V * ⅟A * U * C) V]
+  apply congr_arg₂ _ rfl
+  simp only [Matrix.add_mul, invOf_mul_self', Matrix.mul_one, add_right_inj]
+  simp only [Matrix.mul_assoc]
+
+/-- If matrices `A` and `C + C *V * A⁻¹ * U * C` are invertible, then so is `A + U * C * V`. -/
+def invertibleAddMulMul' : Invertible (A + U * C * V) where
+  invOf := ⅟A - ⅟A * U * C * ⅟(C + C * V * ⅟A * U * C) * C * V * ⅟A
+  invOf_mul_self := add_mul_mul_mul_invOf_eq_one' A U C V
+  mul_invOf_self := add_mul_mul_mul_invOf_eq_one A U C V
+
+/-- The **Woodbury Identity** (`⅟` version). -/
+theorem invOf_add_mul_mul' [Invertible (A + U * C * V)] :
+    ⅟(A + U * C * V) = ⅟A - ⅟A * U * C * ⅟(C + C * V * ⅟A * U * C) * C * V * ⅟A := by
+  letI := invertibleAddMulMul' A U C V
+  convert (rfl : ⅟(A + U * C * V) = _)
+
+end BinomialInverseTheorem
+
 end Ring
 
 end Matrix
