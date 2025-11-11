@@ -155,4 +155,34 @@ theorem wellQuasiOrderedLE_iff_wellFoundedLT : WellQuasiOrderedLE α ↔ WellFou
   rw [wellQuasiOrderedLE_iff, and_iff_left_iff_imp]
   exact fun _ s hs ↦ hs.subsingleton.finite
 
+instance [h : WellFoundedLT α] : WellQuasiOrderedLE α :=
+  wellQuasiOrderedLE_iff_wellFoundedLT.mpr h
+
 end LinearOrder
+
+namespace Pi
+
+/-- A version of **Dickson's lemma**: the Pi type `∀ i : ι, α i` is well-quasi-ordered when `ι` is
+finite and each `σ i` is well-quasi-ordered. See `Pi.isPWO` for `Set.IsPWO` version.
+This includes the classical case of Dickson's lemma that `ℕ ^ n` is a well partial order.
+Some generalizations would be possible based on this proof, to consider the case of any relation
+instead of `≤`. -/
+instance wellQuasiOrderedLE {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)]
+    [h : ∀ i, WellQuasiOrderedLE (α i)] [Finite ι] : WellQuasiOrderedLE (∀ i, α i) := by
+  cases nonempty_fintype ι
+  suffices ∀ (s : Finset ι) (f : ℕ → ∀ s, α s),
+    ∃ g : ℕ ↪o ℕ, ∀ ⦃a b : ℕ⦄, a ≤ b → ∀ x, x ∈ s → (f ∘ g) a x ≤ (f ∘ g) b x by
+    rw [wellQuasiOrderedLE_def, wellQuasiOrdered_iff_exists_monotone_subseq]
+    intro f
+    simpa only [Finset.mem_univ, true_imp_iff] using this Finset.univ f
+  refine Finset.cons_induction ?_ ?_
+  · intro f
+    exists RelEmbedding.refl (· ≤ ·)
+    simp only [IsEmpty.forall_iff, imp_true_iff, Finset.notMem_empty]
+  · intro x s hx ih f
+    obtain ⟨g, hg⟩ := (h x).1.exists_monotone_subseq (f · x)
+    obtain ⟨g', hg'⟩ := ih (f ∘ g)
+    refine ⟨g'.trans g, fun a b hab => (Finset.forall_mem_cons _ _).2 ?_⟩
+    exact ⟨hg _ _ (OrderHomClass.mono g' hab), hg' hab⟩
+
+end Pi

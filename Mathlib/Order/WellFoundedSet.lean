@@ -885,32 +885,11 @@ theorem ProdLex_iff [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)} :
 
 end Set.PartiallyWellOrderedOn
 
-/-- A version of **Dickson's lemma** any subset of functions `Π s : σ, α s` is partially well
-ordered, when `σ` is a `Fintype` and each `α s` is a linear well order.
-This includes the classical case of Dickson's lemma that `ℕ ^ n` is a well partial order.
-Some generalizations would be possible based on this proof, to include cases where the target is
-partially well-ordered, and also to consider the case of `Set.PartiallyWellOrderedOn` instead of
-`Set.IsPWO`. -/
-theorem Pi.isPWO {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellOrder (α i) (· < ·)]
-    [Finite ι] (s : Set (∀ i, α i)) : s.IsPWO := by
-  cases nonempty_fintype ι
-  suffices ∀ (s : Finset ι) (f : ℕ → ∀ s, α s),
-    ∃ g : ℕ ↪o ℕ, ∀ ⦃a b : ℕ⦄, a ≤ b → ∀ x, x ∈ s → (f ∘ g) a x ≤ (f ∘ g) b x by
-    refine isPWO_iff_exists_monotone_subseq.2 fun f _ => ?_
-    simpa only [Finset.mem_univ, true_imp_iff] using this Finset.univ f
-  refine Finset.cons_induction ?_ ?_
-  · intro f
-    exists RelEmbedding.refl (· ≤ ·)
-    simp only [IsEmpty.forall_iff, imp_true_iff, Finset.notMem_empty]
-  · intro x s hx ih f
-    obtain ⟨g, hg⟩ := (IsPWO.of_linearOrder univ).exists_monotone_subseq (f := (f · x)) mem_univ
-    obtain ⟨g', hg'⟩ := ih (f ∘ g)
-    refine ⟨g'.trans g, fun a b hab => (Finset.forall_mem_cons _ _).2 ?_⟩
-    exact ⟨hg (OrderHomClass.mono g' hab), hg' hab⟩
-
-instance Pi.wellQuasiOrderedLE {α : ι → Type*} [∀ i, LinearOrder (α i)]
-    [∀ i, WellFoundedLT (α i)] [Finite ι] : WellQuasiOrderedLE (∀ i, α i) :=
-  isPWO_univ_iff.mp (Pi.isPWO _)
+/-- A version of **Dickson's lemma**. See `Pi.wellQuasiOrderedLE` for `WellQuasiOrderedLE`
+version. -/
+theorem Pi.isPWO {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, WellQuasiOrderedLE (α i)] [Finite ι]
+    (s : Set (∀ i, α i)) : s.IsPWO :=
+  isPWO_of_wellQuasiOrderedLE s
 
 section ProdLex
 variable {rα : α → α → Prop} {rβ : β → β → Prop} {f : γ → α} {g : γ → β} {s : Set γ}
