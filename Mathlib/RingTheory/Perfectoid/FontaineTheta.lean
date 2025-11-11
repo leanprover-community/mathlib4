@@ -202,12 +202,12 @@ variable [Fact ¬IsUnit (p : O)] [IsAdicComplete (span {(p : O)}) O]
 
 theorem surjective_fontaineTheta (hF : Function.Surjective (frobenius (ModP O p) p)) :
     Function.Surjective (fontaineTheta O p) := by
-  have : Ideal.map fontaineTheta (span {(p : 𝕎 (O^♭))}) = span {(p : O)} := by
+  have : Ideal.map (fontaineTheta O p) (span {(p : 𝕎 (O^♭))}) = span {(p : O)} := by
     simp [map_span]
-  have _ : IsHausdorff ((span {(p : 𝕎 (O^♭))}).map fontaineTheta) O := by
+  have _ : IsHausdorff ((span {(p : 𝕎 (O^♭))}).map (fontaineTheta O p)) O := by
     rw [this]
     infer_instance
-  apply surjective_of_mk_map_comp_surjective fontaineTheta (I := span {(p : 𝕎 (O^♭))})
+  apply surjective_of_mk_map_comp_surjective (fontaineTheta O p) (I := span {(p : 𝕎 (O^♭))})
   simp only [RingHom.coe_comp]
   suffices h : Function.Surjective (Ideal.Quotient.mk (span {(p : O)}) ∘
       (fontaineTheta O p)) by
