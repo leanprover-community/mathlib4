@@ -33,15 +33,6 @@ Given two oplax functors `F` and `G`, we define:
   instance in the `Oplax.OplaxTrans` namespace, so you need to run `open scoped Oplax.OplaxTrans`
   to access it.
 
-## Note
-
-The category structure in
-
-
-## TODO
-* Once lax transformations between oplax functors are defined, we should also define
-  modifications between lax transformations.
-
 -/
 
 namespace CategoryTheory.Oplax
