@@ -141,7 +141,8 @@ private theorem nthRoot.lt_pow_go_succ_aux0 (hb : b ≠ 0) :
       exact dvd_mul_right (b ^ n) _
 }
 
-def nthRoot.always_exists (n a : ℕ) : ∃ c, c ^ (n + 1) ≤ a ∧ a < (c + 1) ^ (n + 1) := by {
+private theorem nthRoot.always_exists (n a : ℕ) :
+ ∃ c, c ^ (n + 1) ≤ a ∧ a < (c + 1) ^ (n + 1) := by {
   induction a
   case zero =>
     use 0
