@@ -139,7 +139,8 @@ variable {Y Z X : C} (f : Y ⟶ X) (g : Z ⟶ X) [ChosenPullbacksAlong g]
 abbrev pullbackObj : C := ((pullback g).obj (Over.mk f)).left
 
 /-- A morphism in `Over X` from the chosen pullback along `g` of `f` to `Over.mk f`. -/
-abbrev fst' := (mapPullbackAdj g).counit.app (Over.mk f)
+abbrev fst' : ((Over.map g).obj <| (pullback g).obj <| Over.mk f) ⟶ Over.mk f :=
+  (mapPullbackAdj g).counit.app <| Over.mk f
 
 /-- The first projection from the chosen pullback along `g` of `f` to the domain of `f`. -/
 abbrev fst : pullbackObj f g ⟶ Y := fst' f g |>.left
