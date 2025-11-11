@@ -270,7 +270,7 @@ lemma rnDeriv_posterior_symm (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
       (κ†μ).rnDeriv (Kernel.const _ μ) x ω = κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) ω x := by
   rw [Measure.ae_ae_comm]
   · exact rnDeriv_posterior h_ac
-  · exact measurableSet_eq_fun' (by fun_prop) (by fun_prop)
+  · measurability
 
 /-- If `κ ω ≪ κ ∘ₘ μ` for `μ`-almost every `ω`, then for `κ ∘ₘ μ`-almost every `x`,
 `κ†μ x = μ.withDensity (fun ω ↦ κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) ω x)`.
