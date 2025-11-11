@@ -60,8 +60,8 @@ theorem pow_nthRoot_le_iff : nthRoot n a ^ n ≤ a ↔ n ≠ 0 ∨ a ≠ 0 := by
 alias ⟨_, pow_nthRoot_le⟩ := pow_nthRoot_le_iff
 
 
-lemma binom_pow_ge_first_two_terms (u v : ℤ) (hu : u ≥ 0) (huv : u + v > 0) :
-  (u + v) ^ (n + 1) ≥ u ^ (n + 1) + (n + 1) * u ^ n * v := by
+lemma binom_pow_ge_first_two_terms (n : ℕ) (u v : ℤ) (hu : u ≥ 0) (huv : u + v > 0) :
+  (u + v) ^ (n + 1) ≥ u ^ (n + 1) + (n + 1) * u ^ n * v := by {
     induction n;
     case zero =>
       simp
@@ -77,9 +77,10 @@ lemma binom_pow_ge_first_two_terms (u v : ℤ) (hu : u ≥ 0) (huv : u + v > 0) 
       · simp [hu]
       exact sq_nonneg v
     }
+  }
 
 private theorem nthRoot.lt_pow_go_succ_aux0 (hb : b ≠ 0) :
-  a ≤ ( (a ^ (n + 1) / b ^ n) + n * b) / (n + 1) := by
+  a ≤ ( (a ^ (n + 1) / b ^ n) + n * b) / (n + 1) := by {
 
     if haa : a = 0 then
       rw [haa]
@@ -137,24 +138,47 @@ private theorem nthRoot.lt_pow_go_succ_aux0 (hb : b ≠ 0) :
       ring_nf
       rw [mul_assoc, mul_comm, mul_assoc]
       exact dvd_mul_right (b ^ n) _
+}
 
-def largest_power (n a : ℕ) : ℕ :=
-  Nat.findGreatest (fun k => k^(n+1) <= a) a
+def nthRoot.always_exists (n a : ℕ) : ∃ c, c ^ (n + 1) ≤ a ∧ a < (c + 1) ^ (n + 1) := by {
+  induction a
+  case zero =>
+    use 0
+    simp
+  case succ a ih =>
+    rcases ih with ⟨c, hc1, hc2⟩
+    by_cases h : a + 1 < (c + 1) ^ (n + 1)
+    · use c
+      exact ⟨(le_trans hc1 (Nat.le_add_right a 1)), h⟩
+    · use c + 1
+      push_neg at h
+      rw [add_assoc, one_add_one_eq_two]
+      suffices kh: (c + 1) ^ (n + 1) + 1 ≤ (c + 2) ^ (n + 1) by {
+        exact ⟨h, lt_of_le_of_lt' kh (add_lt_add_right hc2 1)⟩
+      }
+      rw [← ge_iff_le]
+      have hz : (c + 2) ^ (n + 1) ≥ (c + 1) ^ (n + 1) + 1 := by {
+        calc (c + 2) ^ (n + 1)
+          = (c + 1 + 1) ^ (n + 1) := by rw [add_assoc, one_add_one_eq_two]
+        _ ≥ (c + 1) ^ (n + 1) + (n + 1) * (c + 1) ^ n * 1 := by {
+            have j₁ := binom_pow_ge_first_two_terms n ((c : ℤ) + 1) 1
+            norm_cast at j₁
+            apply j₁
+            · simp
+            simp
+          }
+        _ ≥ (c + 1) ^ (n + 1) + 1 := by {
+            simp
+            rw [← one_mul 1]
+            apply Nat.mul_le_mul
+            · simp
+            apply Nat.one_le_pow
+            simp
+          }
+      }
+      exact_mod_cast hz
+}
 
-def largest_power_add_one_ge (n a : ℕ) :
-    a < (largest_power n a + 1)^(n + 1) := by
-  set c := largest_power n a with hc
-  have h := (Nat.findGreatest_eq_iff.mp hc)
-  have h2 := h.2.2
-  specialize h2 (lt_add_one (largest_power n a))
-
-
-
-
-
-def largest_power_le (n a : ℕ) :
-  largest_power n a^(n+1) <= a  := by
-  sorry
 
 
 /--
@@ -162,11 +186,8 @@ An auxiliary lemma saying that if `b ≠ 0`,
 then `(a / b ^ n + n * b) / (n + 1) + 1` is a strict upper estimate on `√[n + 1] a`.
 -/
 theorem nthRoot.lt_pow_go_succ_aux (hb : b ≠ 0) :
-     a < ((a / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by
-  set c := largest_power n a with hc
-  have hc1 := largest_power_le n a
-  have hc2 := largest_power_add_one_ge n a
-  rw [← hc] at hc1 hc2
+     a < ((a / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by {
+  have ⟨c, hc1, hc2⟩ := nthRoot.always_exists n a
   calc a < (c + 1)^(n + 1) := hc2
   _ ≤ ((c ^ (n + 1) / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by {
     gcongr
@@ -175,6 +196,7 @@ theorem nthRoot.lt_pow_go_succ_aux (hb : b ≠ 0) :
   _ ≤ ((a / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by {
     gcongr
   }
+}
 
 private theorem nthRoot.lt_pow_go_succ (hlt : a < (guess + 1) ^ (n + 2)) :
     a < (go n a fuel guess + 1) ^ (n + 2) := by
