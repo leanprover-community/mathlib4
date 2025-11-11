@@ -26,7 +26,7 @@ condition.
   `f : a ⟶ b`.
 * `Lax.StrongTrans F G`: Strong transformations between lax functors `F` and `G`.
 
-Using these, we define two `CategoryStruct` (scoped) instances on `LaxFunctor B C`, one in the
+Using these, we define two `CategoryStruct` (scoped) instances on `B ⥤ᴸ C`, one in the
 `Lax.LaxTrans` namespace and one in the `Lax.StrongTrans` namespace. The arrows in these
 CategoryStruct's are given by lax transformations and strong transformations respectively.
 
@@ -59,7 +59,7 @@ variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory
 These 2-morphisms satisfies the naturality condition, and preserve the identities and
 the compositions modulo some adjustments of domains and codomains of 2-morphisms.
 -/
-structure LaxTrans (F G : LaxFunctor B C) where
+structure LaxTrans (F G : B ⥤ᴸ C) where
   /-- The component 1-morphisms of an lax transformation. -/
   app (a : B) : F.obj a ⟶ G.obj a
   /-- The 2-morphisms underlying the lax naturality constraint. -/
@@ -85,7 +85,7 @@ attribute [reassoc (attr := simp)] LaxTrans.naturality_naturality LaxTrans.natur
 
 namespace LaxTrans
 
-variable {F G H : LaxFunctor B C} (η : LaxTrans F G) (θ : LaxTrans G H)
+variable {F G H : B ⥤ᴸ C} (η : LaxTrans F G) (θ : LaxTrans G H)
 
 variable (F) in
 /-- The identity lax transformation. -/
@@ -169,10 +169,10 @@ def vComp (η : LaxTrans F G) (θ : LaxTrans G H) : LaxTrans F H where
   naturality_id := vComp_naturality_id η θ
   naturality_comp := vComp_naturality_comp η θ
 
-/-- `CategoryStruct` on `LaxFunctor B C` where the (1-)morphisms are given by lax
+/-- `CategoryStruct` on `B ⥤ᴸ C` where the (1-)morphisms are given by lax
 transformations. -/
 @[simps! id_app id_naturality comp_app comp_naturality]
-scoped instance : CategoryStruct (LaxFunctor B C) where
+scoped instance : CategoryStruct (B ⥤ᴸ C) where
   Hom := LaxTrans
   id := LaxTrans.id
   comp := LaxTrans.vComp
@@ -189,7 +189,7 @@ More precisely, it consists of the following:
 * These 2-isomorphisms satisfy the naturality condition, and preserve the identities and the
   compositions modulo some adjustments of domains and codomains of 2-morphisms.
 -/
-structure StrongTrans (F G : LaxFunctor B C) where
+structure StrongTrans (F G : B ⥤ᴸ C) where
   app (a : B) : F.obj a ⟶ G.obj a
   naturality {a b : B} (f : a ⟶ b) : app a ≫ G.map f ≅ F.map f ≫ app b
   naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
@@ -216,7 +216,7 @@ attribute [reassoc (attr := simp)] StrongTrans.naturality_naturality
 /-- A structure on an lax transformation that promotes it to a strong transformation.
 
 See `Pseudofunctor.StrongTrans.mkOfLax`. -/
-structure LaxTrans.StrongCore {F G : LaxFunctor B C} (η : F ⟶ G) where
+structure LaxTrans.StrongCore {F G : B ⥤ᴸ C} (η : F ⟶ G) where
   /-- The underlying 2-isomorphisms of the naturality constraint. -/
   naturality {a b : B} (f : a ⟶ b) : η.app a ≫ G.map f ≅ F.map f ≫ η.app b
   /-- The 2-isomorphisms agree with the underlying 2-morphism of the lax transformation. -/
@@ -228,25 +228,25 @@ namespace StrongTrans
 
 /-- The underlying lax natural transformation of a strong natural transformation. -/
 @[simps]
-def toLax {F G : LaxFunctor B C} (η : StrongTrans F G) : LaxTrans F G where
+def toLax {F G : B ⥤ᴸ C} (η : StrongTrans F G) : LaxTrans F G where
   app := η.app
   naturality f := (η.naturality f).hom
 
 /-- Construct a strong natural transformation from an lax natural transformation whose
 naturality 2-morphism is an isomorphism. -/
-def mkOfLax {F G : LaxFunctor B C} (η : LaxTrans F G) (η' : LaxTrans.StrongCore η) :
+def mkOfLax {F G : B ⥤ᴸ C} (η : LaxTrans F G) (η' : LaxTrans.StrongCore η) :
     StrongTrans F G where
   app := η.app
   naturality := η'.naturality
 
 /-- Construct a strong natural transformation from an lax natural transformation whose
 naturality 2-morphism is an isomorphism. -/
-noncomputable def mkOfLax' {F G : LaxFunctor B C} (η : LaxTrans F G)
+noncomputable def mkOfLax' {F G : B ⥤ᴸ C} (η : LaxTrans F G)
     [∀ a b (f : a ⟶ b), IsIso (η.naturality f)] : StrongTrans F G where
   app := η.app
   naturality _ := asIso (η.naturality _)
 
-variable (F : LaxFunctor B C)
+variable (F : B ⥤ᴸ C)
 
 /-- The identity strong natural transformation. -/
 @[simps!]
@@ -260,7 +260,7 @@ lemma id.toLax : (id F).toLax = LaxTrans.id F :=
 instance : Inhabited (StrongTrans F F) :=
   ⟨id F⟩
 
-variable {F} {G H : LaxFunctor B C} (η : StrongTrans F G) (θ : StrongTrans G H)
+variable {F} {G H : B ⥤ᴸ C} (η : StrongTrans F G) (θ : StrongTrans G H)
 
 /-- Vertical composition of strong natural transformations. -/
 @[simps!]
@@ -270,10 +270,10 @@ def vComp : StrongTrans F H :=
         (α_ _ _ _) ≪≫ whiskerLeftIso (η.app a) (θ.naturality f) ≪≫ (α_ _ _ _).symm ≪≫
         whiskerRightIso (η.naturality f) (θ.app b) ≪≫ (α_ _ _ _) }
 
-/-- `CategoryStruct` on `LaxFunctor B C` where the (1-)morphisms are given by strong
+/-- `CategoryStruct` on `B ⥤ᴸ C` where the (1-)morphisms are given by strong
 transformations. -/
 @[simps! id_app id_naturality comp_app comp_naturality]
-scoped instance categoryStruct : CategoryStruct (LaxFunctor B C) where
+scoped instance categoryStruct : CategoryStruct (B ⥤ᴸ C) where
   Hom := StrongTrans
   id := StrongTrans.id
   comp := StrongTrans.vComp
