@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.Matrix.PosDef
 This file proves that eigenvalues of positive (semi)definite matrices are (nonnegative) positive.
 -/
 
-open WithLp
+open WithLp Matrix
 open scoped ComplexOrder
 
 namespace Matrix
