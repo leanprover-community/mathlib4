@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luigi Massacci
 -/
 
-import Mathlib.Analysis.Calculus.ContDiff.Defs
+import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
 /-!
@@ -125,10 +125,9 @@ theorem toFun_eq_coe {f : 𝓓^{n}(Ω, F)} : f.toFun = (f : E → F) :=
   rfl
 
 /-- See note [custom simps projection]. -/
-def Simps.apply (f : 𝓓^{n}(Ω, F)) : E →F  := f
+def Simps.coe (f : 𝓓^{n}(Ω, F)) : E → F := f
 
--- this must come after the coe_to_fun definition
-initialize_simps_projections TestFunction (toFun → apply)
+initialize_simps_projections TestFunction (toFun → coe, as_prefix coe)
 
 @[ext]
 theorem ext {f g : 𝓓^{n}(Ω, F)} (h : ∀ a, f a = g a) : f = g :=
@@ -152,5 +151,68 @@ theorem copy_eq (f : 𝓓^{n}(Ω, F)) (f' : E → F) (h : f' = f) : f.copy f' h 
 @[simp]
 theorem coe_toBoundedContinuousFunction (f : 𝓓^{n}(Ω, F)) :
    (f : BoundedContinuousFunction E F)  = (f : E → F) := rfl
+
+section AddCommGroup
+
+@[simps -fullyApplied]
+instance : Zero 𝓓^{n}(Ω, F) where
+  zero := ⟨0, contDiff_zero_fun, .zero, by simp only [tsupport_zero, empty_subset]⟩
+
+@[simps -fullyApplied]
+instance : Add 𝓓^{n}(Ω, F) where
+  add f g := ⟨f + g, f.contDiff.add g.contDiff, f.hasCompactSupport.add g.hasCompactSupport,
+    tsupport_add.trans <| union_subset f.tsupport_subset g.tsupport_subset⟩
+
+@[simps -fullyApplied]
+instance : Neg 𝓓^{n}(Ω, F) where
+  neg f := ⟨-f, f.contDiff.neg, f.hasCompactSupport.neg, tsupport_neg⟩
+
+instance instSub : Sub 𝓓^{n}(E, F) where
+  sub f g := TestFunction.mk (f - g) (f.contDiff.sub g.contDiff) (f.compact_supp.sub g.compact_supp)
+
+instance instSMul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+   SMul R 𝓓^{n}(E, F) where
+  smul c f := TestFunction.mk (c • (f : E → F)) (f.contDiff.const_smul c)  f.compact_supp.smul_left
+
+@[simp]
+lemma coe_smul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
+    (c : R) (f : 𝓓^{n}(E, F)) : (c • f : 𝓓^{n}(E, F)) = c • (f : E → F) :=
+  rfl
+
+@[simp]
+lemma smul_apply {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
+    (c : R) (f : 𝓓^{n}(E, F)) (x : E) : (c • f) x = c • (f x) :=
+  rfl
+
+instance : AddCommGroup 𝓓^{n}(E, F) :=
+  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
+
+variable (E F K n)
+
+/-- Coercion as an additive homomorphism. -/
+def coeHom : 𝓓^{n}(E, F) →+ E → F where
+  toFun f := f
+  map_zero' := coe_zero
+  map_add' _ _ := rfl
+
+variable {E F}
+
+theorem coe_coeHom : (coeHom E F n : 𝓓^{n}(E, F) → E → F) = DFunLike.coe :=
+  rfl
+
+theorem coeHom_injective : Function.Injective (coeHom E F n) := by
+  rw [coe_coeHom]
+  exact DFunLike.coe_injective
+
+end AddCommGroup
+
+section Module
+
+instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+    Module R 𝓓^{n}(E, F) :=
+  (coeHom_injective n).module R (coeHom E F n) fun _ _ => rfl
+
+end Module
 
 end TestFunction

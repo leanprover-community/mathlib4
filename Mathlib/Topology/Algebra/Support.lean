@@ -56,6 +56,14 @@ theorem isClosed_mulTSupport (f : X → α) : IsClosed (mulTSupport f) :=
 theorem mulTSupport_eq_empty_iff {f : X → α} : mulTSupport f = ∅ ↔ f = 1 := by
   rw [mulTSupport, closure_empty_iff, mulSupport_eq_empty_iff]
 
+@[to_additive (attr := simp)]
+theorem mulTSupport_one : mulTSupport (1 : X → α) = ∅ := by
+  rw [mulTSupport, mulSupport_one, closure_empty]
+
+@[to_additive (attr := simp)]
+theorem mulTSupport_fun_one : mulTSupport (fun _ : X ↦ 1) = ∅ := by
+  rw [mulTSupport, mulSupport_fun_one, closure_empty]
+
 @[to_additive]
 theorem image_eq_one_of_notMem_mulTSupport {f : X → α} {x : X} (hx : x ∉ mulTSupport f) : f x = 1 :=
   mulSupport_subset_iff'.mp (subset_mulTSupport f) x hx
