@@ -125,10 +125,9 @@ theorem toFun_eq_coe {f : 𝓓^{n}(Ω, F)} : f.toFun = (f : E → F) :=
   rfl
 
 /-- See note [custom simps projection]. -/
-def Simps.apply (f : 𝓓^{n}(Ω, F)) : E →F  := f
+def Simps.coe (f : 𝓓^{n}(Ω, F)) : E → F := f
 
--- this must come after the coe_to_fun definition
-initialize_simps_projections TestFunction (toFun → apply)
+initialize_simps_projections TestFunction (toFun → coe, as_prefix coe)
 
 @[ext]
 theorem ext {f g : 𝓓^{n}(Ω, F)} (h : ∀ a, f a = g a) : f = g :=
