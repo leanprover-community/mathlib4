@@ -78,6 +78,7 @@ def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
         pure none
     let (newMVars, binderInfos, hrelType) ←
       withReducible <| forallMetaTelescopeReducing hrelType maxMVars?
+    let hrelType := hrelType.cleanupAnnotations
 
     -- If we can use the normal `rewrite` tactic, we default to using that.
     if (hrelType.isAppOfArity ``Iff 2 || hrelType.isAppOfArity ``Eq 3) && config.useRewrite then
