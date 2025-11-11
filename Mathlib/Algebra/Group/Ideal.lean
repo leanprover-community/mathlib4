@@ -12,7 +12,7 @@ import Mathlib.Order.WellFoundedSet
 
 This file defines (left) semigroup ideals (also called monoid ideals sometimes), which are sets `s`
 in a semigroup such that `a * b ∈ s` whenever `b ∈ s`. Note that semigroup ideals are different from
-ring ideals, which must also be additive submonoids of the ring.
+ring ideals, where a ring ideal must also be an additive submonoid of the ring.
 
 ## Main definitions
 
