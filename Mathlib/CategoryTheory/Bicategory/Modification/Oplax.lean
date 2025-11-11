@@ -141,6 +141,8 @@ def isoMk (app : ∀ a, η.app a ≅ θ.app a)
       naturality := fun {a b} f => by
         simpa using _ ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ _ }
 
+@[deprecated (since := "2025-11-11")] alias ModificationIso.ofComponents := isoMk
+
 end OplaxTrans
 
 namespace StrongTrans
@@ -255,6 +257,9 @@ def isoMk (app : ∀ a, η.app a ≅ θ.app a)
     { app a := (app a).inv
       naturality {a b} f := by
         simpa using _ ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ _ }
+
+@[deprecated (since := "2025-11-11")] alias ModificationIso.ofComponents := isoMk
+
 
 end StrongTrans
 
