@@ -205,7 +205,7 @@ def delabCheckingCanonical : DelabM (Bool × Term) := do
   let instD ← delab
   let inst ← getExpr
   let type ← inferType inst
-  -- if there is no synthesized instance, still return `false` 
+  -- if there is no synthesized instance, still return `false`
   -- (because `inst` is still non-canonical)
   let .some synthInst ← Meta.trySynthInstance type | return (false, instD)
   return (← Meta.isDefEq inst synthInst, instD)
