@@ -198,28 +198,31 @@ scoped[Topology] notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "
 namespace TopologicalSpace
 open Topology Lean Meta PrettyPrinter.Delaborator SubExpr
 
-/-- Fails iff argument #`space` has a `TopologicalSpace` instance registered and
-that instance is defeq to argument #`inst`. -/
-def assertNonCanonical (space inst : ℕ) : DelabM Unit := do
-  let α ← withNaryArg space getExpr
-  let .some synthInst ← Meta.trySynthInstance (← Meta.mkAppM ``TopologicalSpace #[α]) | return ()
-  let inst ← withNaryArg inst getExpr
-  if ← Meta.isDefEq inst synthInst then failure
+/-- When the delab reader is pointed at an expression for an instance, returns `(true, t)`
+**iff** instance synthesis succeeds and produces a defeq instance; otherwise returns `(false, t)`.
+-/
+def delabCheckingCanonical : DelabM (Bool × Term) := do
+  let instD ← delab
+  let inst ← getExpr
+  let type ← inferType inst
+  -- if there is no synthesized instance, still return `false` 
+  -- (because `inst` is still non-canonical)
+  let .some synthInst ← Meta.trySynthInstance type | return (false, instD)
+  return (← Meta.isDefEq inst synthInst, instD)
 
 /-- Delaborate unary notation referring to non-standard topologies. -/
 def delabUnary (mkStx : Term → DelabM Term) : Delab :=
   withOverApp 2 <| whenPPOption Lean.getPPNotation do
-    assertNonCanonical 0 1 -- fall through to normal delab if canonical
-    let instD ← withNaryArg 1 delab
+    let (false, instD) ← withNaryArg 1 delabCheckingCanonical | failure
     mkStx instD
 
 /-- Delaborate binary notation referring to non-standard topologies. -/
 def delabBinary (mkStx : Term → Term → DelabM Term) : Delab :=
   withOverApp 4 <| whenPPOption Lean.getPPNotation do
     -- fall through to normal delab if both canonical
-    assertNonCanonical 0 2 <|> assertNonCanonical 1 3
-    let instDα ← withNaryArg 2 delab
-    let instDβ ← withNaryArg 3 delab
+    let (canonα?, instDα) ← withNaryArg 2 delabCheckingCanonical
+    let (canonβ?, instDβ) ← withNaryArg 3 delabCheckingCanonical
+    if canonα? && canonβ? then failure
     mkStx instDα instDβ
 
 /-- Delaborator for `IsOpen[_]`. -/
