@@ -186,7 +186,7 @@ private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι
     ext j
     by_cases hj : j = i
     · rw [hj, mapDomain_apply (Function.injective_of_subsingleton _), single_eq_same]
-    · rw [mapDomain_notin_range, single_eq_of_ne (Ne.symm hj)]
+    · rw [mapDomain_notin_range, single_eq_of_ne hj]
       simp [Set.range_const, Set.mem_singleton_iff, hj]
 
 variable [Finite σ]
@@ -253,9 +253,8 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
     ∃ s : σ → R, (∀ i, s i ∈ S i) ∧ eval s f ≠ 0 := by
   let _ : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   classical
-  by_contra Heval
+  by_contra! Heval
   apply ht
-  push_neg at Heval
   obtain ⟨h, hh, hf⟩ := combinatorial_nullstellensatz_exists_linearCombination S
     (fun i ↦ by rw [← Finset.card_pos]; exact Nat.zero_lt_of_lt (htS i)) f Heval
   rw [hf]

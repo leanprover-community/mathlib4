@@ -14,15 +14,11 @@ This file defines the canonical power basis on `Algebra.adjoin R {x}`,
 where `x` is an integral element over `R`.
 -/
 
+open Module Polynomial PowerBasis
 
 variable {K S : Type*} [Field K] [CommRing S] [Algebra K S]
 
 namespace Algebra
-
-
-open Polynomial
-open PowerBasis
-
 
 /-- The elements `1, x, ..., x ^ (d - 1)` for a basis for the `K`-module `K[x]`,
 where `d` is the degree of the minimal polynomial of `x`. -/
@@ -58,18 +54,30 @@ noncomputable def adjoin.powerBasis {x : S} (hx : IsIntegral K x) :
   basis := adjoin.powerBasisAux hx
   basis_eq_pow i := by rw [adjoin.powerBasisAux, Basis.mk_apply]
 
+/--
+If `x` generates `S` over `K` and is integral over `K`, then it defines a power basis.
+See `PowerBasis.ofAdjoinEqTop'` for a version over a more general base ring.
+-/
+noncomputable def _root_.PowerBasis.ofAdjoinEqTop {x : S} (hx : IsIntegral K x)
+    (hx' : adjoin K {x} = ⊤) : PowerBasis K S :=
+  (adjoin.powerBasis hx).map ((Subalgebra.equivOfEq _ _ hx').trans Subalgebra.topEquiv)
+
+@[simp]
+theorem _root_.PowerBasis.ofAdjoinEqTop_gen {x : S} (hx : IsIntegral K x)
+    (hx' : adjoin K {x} = ⊤) : (PowerBasis.ofAdjoinEqTop hx hx').gen = x := rfl
+
+@[simp]
+theorem _root_.PowerBasis.ofAdjoinEqTop_dim {x : S} (hx : IsIntegral K x)
+    (hx' : adjoin K {x} = ⊤) :
+    (PowerBasis.ofAdjoinEqTop hx hx').dim = (minpoly K x).natDegree := rfl
+
+@[deprecated "Use in combination with `PowerBasis.adjoin_eq_top_of_gen_mem_adjoin` to recover the \
+  deprecated definition" (since := "2025-09-29")] alias PowerBasis.ofGenMemAdjoin :=
+  PowerBasis.ofAdjoinEqTop
+
 end Algebra
 
 open Algebra
-
-/-- The power basis given by `x` if `B.gen ∈ adjoin K {x}`. See `PowerBasis.ofGenMemAdjoin'`
-for a version over a more general base ring. -/
-@[simps!]
-noncomputable def PowerBasis.ofGenMemAdjoin {x : S} (B : PowerBasis K S) (hint : IsIntegral K x)
-    (hx : B.gen ∈ adjoin K ({x} : Set S)) : PowerBasis K S :=
-  (Algebra.adjoin.powerBasis hint).map <|
-    (Subalgebra.equivOfEq _ _ <| PowerBasis.adjoin_eq_top_of_gen_mem_adjoin hx).trans
-      Subalgebra.topEquiv
 
 section IsIntegral
 

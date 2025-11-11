@@ -107,12 +107,12 @@ section Subadditive
 include PU msU in
 theorem extend_iUnion_le_tsum_nat' (s : ℕ → Set α) :
     extend m (⋃ i, s i) ≤ ∑' i, extend m (s i) := by
-  by_cases h : ∀ i, P (s i)
+  by_cases! h : ∀ i, P (s i)
   · rw [extend_eq _ (PU h), congr_arg tsum _]
     · apply msU h
     funext i
     apply extend_eq _ (h i)
-  · obtain ⟨i, hi⟩ := not_forall.1 h
+  · obtain ⟨i, hi⟩ := h
     exact le_trans (le_iInf fun h => hi.elim h) (ENNReal.le_tsum i)
 
 end Subadditive
@@ -188,7 +188,7 @@ theorem inducedOuterMeasure_eq_iInf (s : Set α) :
   apply le_antisymm
   · simp only [le_iInf_iff]
     intro t ht hs
-    refine le_trans (measure_mono hs) ?_
+    grw [hs]
     exact le_of_eq (inducedOuterMeasure_eq' _ msU m_mono _)
   · refine le_iInf ?_
     intro f

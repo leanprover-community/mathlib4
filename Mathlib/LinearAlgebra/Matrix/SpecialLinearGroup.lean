@@ -25,7 +25,7 @@ the group structure on `SpecialLinearGroup n R` and the embedding into the gener
 ## Notation
 
 For `m : ℕ`, we introduce the notation `SL(m,R)` for the special linear group on the fintype
-`n = Fin m`, in the locale `MatrixGroups`.
+`n = Fin m`, in the scope `MatrixGroups`.
 
 ## Implementation notes
 The inverse operation in the `SpecialLinearGroup` is defined to be the adjugate
@@ -272,7 +272,7 @@ def center_equiv_rootsOfUnity' (i : n) :
     simpa [← hr, Submonoid.smul_def, Units.smul_def] using smul_one_eq_diagonal r
   right_inv a := by
     obtain ⟨⟨a, _⟩, ha⟩ := a
-    exact SetCoe.ext <| Units.eq_iff.mp <| by simp
+    exact SetCoe.ext <| Units.ext <| by simp
   map_mul' A B := by
     dsimp
     ext
@@ -452,11 +452,11 @@ This element acts naturally on the Euclidean plane as a rotation about the origi
 This element also acts naturally on the hyperbolic plane as rotation about `i` by `π`. It
 represents the Mobiüs transformation `z ↦ -1/z` and is an involutive elliptic isometry. -/
 def S : SL(2, ℤ) :=
-  ⟨!![0, -1; 1, 0], by norm_num [Matrix.det_fin_two_of]⟩
+  ⟨!![0, -1; 1, 0], by simp [Matrix.det_fin_two_of]⟩
 
 /-- The matrix `T = [[1, 1], [0, 1]]` as an element of `SL(2, ℤ)`. -/
 def T : SL(2, ℤ) :=
-  ⟨!![1, 1; 0, 1], by norm_num [Matrix.det_fin_two_of]⟩
+  ⟨!![1, 1; 0, 1], by simp [Matrix.det_fin_two_of]⟩
 
 theorem coe_S : ↑S = !![0, -1; 1, 0] :=
   rfl

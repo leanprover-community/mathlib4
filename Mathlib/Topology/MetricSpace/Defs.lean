@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
@@ -46,7 +46,7 @@ Any metric space is a T1 topological space and a uniform space (see `Topological
 `UniformSpace`), where the topology and uniformity come from the metric.
 
 We make the uniformity/topology part of the data instead of deriving it from the metric.
-This eg ensures that we do not get a diamond when doing
+This e.g. ensures that we do not get a diamond when doing
 `[MetricSpace α] [MetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.
 See Note [forgetful inheritance]. -/

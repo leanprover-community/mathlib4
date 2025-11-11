@@ -129,8 +129,6 @@ theorem fderivWithin_comp {g : F → G} {t : Set F} (hg : DifferentiableWithinAt
     fderivWithin 𝕜 (g ∘ f) s x = (fderivWithin 𝕜 g t (f x)).comp (fderivWithin 𝕜 f s x) :=
   (hg.hasFDerivWithinAt.comp x hf.hasFDerivWithinAt h).fderivWithin hxs
 
-@[deprecated (since := "2024-10-31")] alias fderivWithin.comp := fderivWithin_comp
-
 theorem fderivWithin_comp_of_eq {g : F → G} {t : Set F} {y : F}
     (hg : DifferentiableWithinAt 𝕜 g t y) (hf : DifferentiableWithinAt 𝕜 f s x) (h : MapsTo f s t)
     (hxs : UniqueDiffWithinAt 𝕜 s x) (hy : f x = y) :
@@ -173,13 +171,9 @@ theorem fderivWithin_comp₃ {g' : G → G'} {g : F → G} {t : Set F} {u : Set 
   exact (hg'.hasFDerivWithinAt.comp x (hg.hasFDerivWithinAt.comp x hf.hasFDerivWithinAt h2f) <|
     h2g.comp h2f).fderivWithin hxs
 
-@[deprecated (since := "2024-10-31")] alias fderivWithin.comp₃ := fderivWithin_comp₃
-
 theorem fderiv_comp {g : F → G} (hg : DifferentiableAt 𝕜 g (f x)) (hf : DifferentiableAt 𝕜 f x) :
     fderiv 𝕜 (g ∘ f) x = (fderiv 𝕜 g (f x)).comp (fderiv 𝕜 f x) :=
   (hg.hasFDerivAt.comp x hf.hasFDerivAt).fderiv
-
-@[deprecated (since := "2024-10-31")] alias fderiv.comp := fderiv_comp
 
 /-- A variant for the derivative of a composition, written without `∘`. -/
 theorem fderiv_comp' {g : F → G} (hg : DifferentiableAt 𝕜 g (f x)) (hf : DifferentiableAt 𝕜 f x) :
@@ -190,8 +184,6 @@ theorem fderiv_comp_fderivWithin {g : F → G} (hg : DifferentiableAt 𝕜 g (f 
     (hf : DifferentiableWithinAt 𝕜 f s x) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (g ∘ f) s x = (fderiv 𝕜 g (f x)).comp (fderivWithin 𝕜 f s x) :=
   (hg.hasFDerivAt.comp_hasFDerivWithinAt x hf.hasFDerivWithinAt).fderivWithin hxs
-
-@[deprecated (since := "2024-10-31")] alias fderiv.comp_fderivWithin := fderiv_comp_fderivWithin
 
 @[fun_prop]
 theorem DifferentiableOn.fun_comp {g : F → G} {t : Set F} (hg : DifferentiableOn 𝕜 g t)

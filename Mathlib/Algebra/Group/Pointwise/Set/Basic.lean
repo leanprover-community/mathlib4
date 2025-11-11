@@ -36,9 +36,9 @@ Appropriate definitions and results are also transported to the additive theory 
   `(fun h ↦ h * g) ⁻¹' s`, `(fun h ↦ g * h) ⁻¹' s`, `(fun h ↦ h * g⁻¹) ⁻¹' s`,
   `(fun h ↦ g⁻¹ * h) ⁻¹' s`, `s * t`, `s⁻¹`, `(1 : Set _)` (and similarly for additive variants).
   Expressions equal to one of these will be simplified.
-* We put all instances in the locale `Pointwise`, so that these instances are not available by
+* We put all instances in the scope `Pointwise`, so that these instances are not available by
   default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
-  since we expect the locale to be open whenever the instances are actually used (and making the
+  since we expect the scope to be open whenever the instances are actually used (and making the
   instances reducible changes the behavior of `simp`.
 
 ## Tags
@@ -47,9 +47,9 @@ set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
 
-assert_not_exists Set.iUnion MulAction MonoidWithZero OrderedAddCommMonoid
+assert_not_exists Set.iUnion MulAction MonoidWithZero IsOrderedMonoid
 
-library_note "pointwise nat action"/--
+library_note2 «pointwise nat action» /--
 Pointwise monoids (`Set`, `Finset`, `Filter`) have derived pointwise actions of the form
 `SMul α β → SMul α (Set β)`. When `α` is `ℕ` or `ℤ`, this action conflicts with the
 nat or int action coming from `Set β` being a `Monoid` or `DivInvMonoid`. For example,
@@ -73,8 +73,8 @@ section One
 
 variable [One α] {s : Set α} {a : α}
 
-/-- The set `1 : Set α` is defined as `{1}` in locale `Pointwise`. -/
-@[to_additive "The set `0 : Set α` is defined as `{0}` in locale `Pointwise`."]
+/-- The set `1 : Set α` is defined as `{1}` in scope `Pointwise`. -/
+@[to_additive /-- The set `0 : Set α` is defined as `{0}` in scope `Pointwise`. -/]
 protected def one : One (Set α) :=
   ⟨{1}⟩
 
@@ -117,7 +117,7 @@ theorem Nonempty.subset_one_iff (h : s.Nonempty) : s ⊆ 1 ↔ s = 1 :=
   h.subset_singleton_iff
 
 /-- The singleton operation as a `OneHom`. -/
-@[to_additive "The singleton operation as a `ZeroHom`."]
+@[to_additive /-- The singleton operation as a `ZeroHom`. -/]
 def singletonOneHom : OneHom α (Set α) where
   toFun := singleton; map_one' := singleton_one
 
@@ -130,9 +130,6 @@ theorem coe_singletonOneHom : (singletonOneHom : α → Set α) = singleton :=
 @[to_additive (attr := simp) zero_prod_zero]
 lemma one_prod_one [One β] : (1 ×ˢ 1 : Set (α × β)) = 1 := by ext; simp [Prod.ext_iff]
 
-@[deprecated (since := "2025-03-11")]
-alias zero_sum_zero := zero_prod_zero
-
 end One
 
 /-! ### Set negation/inversion -/
@@ -140,11 +137,11 @@ end One
 
 section Inv
 
-/-- The pointwise inversion of set `s⁻¹` is defined as `{x | x⁻¹ ∈ s}` in locale `Pointwise`. It is
+/-- The pointwise inversion of set `s⁻¹` is defined as `{x | x⁻¹ ∈ s}` in scope `Pointwise`. It is
 equal to `{x⁻¹ | x ∈ s}`, see `Set.image_inv_eq_inv`. -/
 @[to_additive
-      "The pointwise negation of set `-s` is defined as `{x | -x ∈ s}` in locale `Pointwise`.
-      It is equal to `{-x | x ∈ s}`, see `Set.image_neg_eq_neg`."]
+      /-- The pointwise negation of set `-s` is defined as `{x | -x ∈ s}` in scope `Pointwise`.
+      It is equal to `{-x | x ∈ s}`, see `Set.image_neg_eq_neg`. -/]
 protected def inv [Inv α] : Inv (Set α) :=
   ⟨preimage Inv.inv⟩
 
@@ -155,6 +152,10 @@ open Pointwise
 section Inv
 
 variable {ι : Sort*} [Inv α] {s t : Set α} {a : α}
+
+@[to_additive (attr := simp)]
+theorem inv_setOf (p : α → Prop) : {x | p x}⁻¹ = {x | p x⁻¹} :=
+  rfl
 
 @[to_additive (attr := simp)]
 theorem mem_inv : a ∈ s⁻¹ ↔ a⁻¹ ∈ s :=
@@ -187,9 +188,6 @@ theorem compl_inv : sᶜ⁻¹ = s⁻¹ᶜ :=
 @[to_additive (attr := simp) neg_prod]
 lemma inv_prod [Inv β] (s : Set α) (t : Set β) : (s ×ˢ t)⁻¹ = s⁻¹ ×ˢ t⁻¹ := rfl
 
-@[deprecated (since := "2025-03-11")]
-alias neg_sum := neg_prod
-
 end Inv
 
 section InvolutiveInv
@@ -217,7 +215,6 @@ theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := by
 
 @[to_additive (attr := simp)]
 instance involutiveInv : InvolutiveInv (Set α) where
-  inv := Inv.inv
   inv_inv s := by simp only [← inv_preimage, preimage_preimage, inv_inv, preimage_id']
 
 @[to_additive (attr := simp)]
@@ -260,10 +257,10 @@ section Mul
 variable {ι : Sort*} {κ : ι → Sort*} [Mul α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
 /-- The pointwise multiplication of sets `s * t` and `t` is defined as `{x * y | x ∈ s, y ∈ t}` in
-locale `Pointwise`. -/
+scope `Pointwise`. -/
 @[to_additive
-      "The pointwise addition of sets `s + t` is defined as `{x + y | x ∈ s, y ∈ t}` in locale
-      `Pointwise`."]
+      /-- The pointwise addition of sets `s + t` is defined as `{x + y | x ∈ s, y ∈ t}` in locale
+      `Pointwise`. -/]
 protected def mul : Mul (Set α) :=
   ⟨image2 (· * ·)⟩
 
@@ -329,11 +326,11 @@ theorem singleton_mul_singleton : ({a} : Set α) * {b} = {a * b} :=
 theorem mul_subset_mul : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ * s₂ ⊆ t₁ * t₂ :=
   image2_subset
 
-@[to_additive (attr := gcongr)]
+@[to_additive]
 theorem mul_subset_mul_left : t₁ ⊆ t₂ → s * t₁ ⊆ s * t₂ :=
   image2_subset_left
 
-@[to_additive (attr := gcongr)]
+@[to_additive]
 theorem mul_subset_mul_right : s₁ ⊆ s₂ → s₁ * t ⊆ s₂ * t :=
   image2_subset_right
 
@@ -369,7 +366,7 @@ theorem union_mul_inter_subset_union : (s₁ ∪ s₂) * (t₁ ∩ t₂) ⊆ s�
   image2_union_inter_subset_union
 
 /-- The singleton operation as a `MulHom`. -/
-@[to_additive "The singleton operation as an `AddHom`."]
+@[to_additive /-- The singleton operation as an `AddHom`. -/]
 def singletonMulHom : α →ₙ* Set α where
   toFun := singleton
   map_mul' _ _ := singleton_mul_singleton.symm
@@ -390,10 +387,7 @@ theorem image_op_mul : op '' (s * t) = op '' t * op '' s :=
 
 @[to_additive (attr := simp) prod_add_prod_comm]
 lemma prod_mul_prod_comm [Mul β] (s₁ s₂ : Set α) (t₁ t₂ : Set β) :
-   (s₁ ×ˢ t₁) * (s₂ ×ˢ t₂) = (s₁ * s₂) ×ˢ (t₁ * t₂) := by ext; simp [mem_mul]; aesop
-
-@[deprecated (since := "2025-03-11")]
-alias sum_add_sum_comm := prod_add_prod_comm
+    (s₁ ×ˢ t₁) * (s₂ ×ˢ t₂) = (s₁ * s₂) ×ˢ (t₁ * t₂) := by ext; simp [mem_mul]; aesop
 
 end Mul
 
@@ -407,8 +401,8 @@ variable {ι : Sort*} {κ : ι → Sort*} [Div α] {s s₁ s₂ t t₁ t₂ u : 
 /-- The pointwise division of sets `s / t` is defined as `{x / y | x ∈ s, y ∈ t}` in locale
 `Pointwise`. -/
 @[to_additive
-      "The pointwise subtraction of sets `s - t` is defined as `{x - y | x ∈ s, y ∈ t}` in locale
-      `Pointwise`."]
+      /-- The pointwise subtraction of sets `s - t` is defined as `{x - y | x ∈ s, y ∈ t}` in locale
+      `Pointwise`. -/]
 protected def div : Div (Set α) :=
   ⟨image2 (· / ·)⟩
 
@@ -474,11 +468,11 @@ theorem singleton_div_singleton : ({a} : Set α) / {b} = {a / b} :=
 theorem div_subset_div : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ / s₂ ⊆ t₁ / t₂ :=
   image2_subset
 
-@[to_additive (attr := gcongr)]
+@[to_additive]
 theorem div_subset_div_left : t₁ ⊆ t₂ → s / t₁ ⊆ s / t₂ :=
   image2_subset_left
 
-@[to_additive (attr := gcongr)]
+@[to_additive]
 theorem div_subset_div_right : s₁ ⊆ s₂ → s₁ / t ⊆ s₂ / t :=
   image2_subset_right
 
@@ -537,7 +531,7 @@ protected def ZPow [One α] [Mul α] [Inv α] : Pow (Set α) ℤ :=
 scoped[Pointwise] attribute [instance] Set.NSMul Set.NPow Set.ZSMul Set.ZPow
 
 /-- `Set α` is a `Semigroup` under pointwise operations if `α` is. -/
-@[to_additive "`Set α` is an `AddSemigroup` under pointwise operations if `α` is."]
+@[to_additive /-- `Set α` is an `AddSemigroup` under pointwise operations if `α` is. -/]
 protected def semigroup [Semigroup α] : Semigroup (Set α) :=
   { Set.mul with mul_assoc := fun _ _ _ => image2_assoc mul_assoc }
 
@@ -546,7 +540,7 @@ section CommSemigroup
 variable [CommSemigroup α] {s t : Set α}
 
 /-- `Set α` is a `CommSemigroup` under pointwise operations if `α` is. -/
-@[to_additive "`Set α` is an `AddCommSemigroup` under pointwise operations if `α` is."]
+@[to_additive /-- `Set α` is an `AddCommSemigroup` under pointwise operations if `α` is. -/]
 protected def commSemigroup : CommSemigroup (Set α) :=
   { Set.semigroup with mul_comm := fun _ _ => image2_comm mul_comm }
 
@@ -565,7 +559,7 @@ section MulOneClass
 variable [MulOneClass α]
 
 /-- `Set α` is a `MulOneClass` under pointwise operations if `α` is. -/
-@[to_additive "`Set α` is an `AddZeroClass` under pointwise operations if `α` is."]
+@[to_additive /-- `Set α` is an `AddZeroClass` under pointwise operations if `α` is. -/]
 protected def mulOneClass : MulOneClass (Set α) :=
   { Set.one, Set.mul with
     mul_one := image2_right_identity mul_one
@@ -585,7 +579,7 @@ theorem subset_mul_right {s : Set α} (t : Set α) (hs : (1 : α) ∈ s) : t ⊆
   ⟨1, hs, x, hx, one_mul _⟩
 
 /-- The singleton operation as a `MonoidHom`. -/
-@[to_additive "The singleton operation as an `AddMonoidHom`."]
+@[to_additive /-- The singleton operation as an `AddMonoidHom`. -/]
 def singletonMonoidHom : α →* Set α :=
   { singletonMulHom, singletonOneHom with }
 
@@ -604,7 +598,7 @@ section Monoid
 variable [Monoid α] {s t : Set α} {a : α} {m n : ℕ}
 
 /-- `Set α` is a `Monoid` under pointwise operations if `α` is. -/
-@[to_additive "`Set α` is an `AddMonoid` under pointwise operations if `α` is."]
+@[to_additive /-- `Set α` is an `AddMonoid` under pointwise operations if `α` is. -/]
 protected def monoid : Monoid (Set α) :=
   { Set.semigroup, Set.mulOneClass, @Set.NPow α _ _ with }
 
@@ -620,7 +614,7 @@ protected lemma pow_right_monotone (hs : 1 ∈ s) : Monotone (s ^ ·) :=
 @[to_additive (attr := gcongr)]
 lemma pow_subset_pow_left (hst : s ⊆ t) : s ^ n ⊆ t ^ n := pow_left_mono _ hst
 
-@[to_additive (attr := gcongr)]
+@[to_additive]
 lemma pow_subset_pow_right (hs : 1 ∈ s) (hmn : m ≤ n) : s ^ m ⊆ s ^ n :=
   Set.pow_right_monotone hs hmn
 
@@ -631,11 +625,6 @@ lemma pow_subset_pow (hst : s ⊆ t) (ht : 1 ∈ t) (hmn : m ≤ n) : s ^ m ⊆ 
 @[to_additive]
 lemma subset_pow (hs : 1 ∈ s) (hn : n ≠ 0) : s ⊆ s ^ n := by
   simpa using pow_subset_pow_right hs <| Nat.one_le_iff_ne_zero.2 hn
-
-@[deprecated (since := "2024-11-19")] alias pow_subset_pow_of_one_mem := pow_subset_pow_right
-
-@[deprecated (since := "2024-11-19")]
-alias nsmul_subset_nsmul_of_zero_mem := nsmul_subset_nsmul_right
 
 @[to_additive]
 lemma pow_subset_pow_mul_of_sq_subset_mul (hst : s ^ 2 ⊆ t * s) (hn : n ≠ 0) :
@@ -699,8 +688,6 @@ lemma prod_pow [Monoid β] (s : Set α) (t : Set β) : ∀ n, (s ×ˢ t) ^ n = (
   | 0 => by simp
   | n + 1 => by simp [pow_succ, prod_pow _ _ n]
 
-@[deprecated (since := "2025-02-17")] alias sum_nsmul := nsmul_prod
-
 end Monoid
 
 section IsLeftCancelMul
@@ -738,7 +725,7 @@ lemma Nontrivial.pow (hs : s.Nontrivial) : ∀ {n}, n ≠ 0 → (s ^ n).Nontrivi
 end CancelMonoid
 
 /-- `Set α` is a `CommMonoid` under pointwise operations if `α` is. -/
-@[to_additive "`Set α` is an `AddCommMonoid` under pointwise operations if `α` is."]
+@[to_additive /-- `Set α` is an `AddCommMonoid` under pointwise operations if `α` is. -/]
 protected def commMonoid [CommMonoid α] : CommMonoid (Set α) :=
   { Set.monoid, Set.commSemigroup with }
 
@@ -766,7 +753,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
 
 /-- `Set α` is a division monoid under pointwise operations if `α` is. -/
 @[to_additive
-    "`Set α` is a subtraction monoid under pointwise operations if `α` is."]
+    /-- `Set α` is a subtraction monoid under pointwise operations if `α` is. -/]
 protected def divisionMonoid : DivisionMonoid (Set α) :=
   { Set.monoid, Set.involutiveInv, Set.div, @Set.ZPow α _ _ _ with
     mul_inv_rev := fun s t => by
@@ -826,7 +813,7 @@ end DivisionMonoid
 
 /-- `Set α` is a commutative division monoid under pointwise operations if `α` is. -/
 @[to_additive subtractionCommMonoid
-      "`Set α` is a commutative subtraction monoid under pointwise operations if `α` is."]
+      /-- `Set α` is a commutative subtraction monoid under pointwise operations if `α` is. -/]
 protected def divisionCommMonoid [DivisionCommMonoid α] :
     DivisionCommMonoid (Set α) :=
   { Set.divisionMonoid, Set.commSemigroup with }

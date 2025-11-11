@@ -37,7 +37,7 @@ The definitions that use `MeasureTheory.Measure.map`
 imply that the left (resp., right) multiplication is `AEMeasurable`.
 -/
 
-assert_not_exists Basis
+assert_not_exists Module.Basis
 
 namespace MeasureTheory
 

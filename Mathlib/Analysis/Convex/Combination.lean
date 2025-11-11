@@ -23,6 +23,7 @@ mathematical arguments go: one doesn't change weights, but merely adds some. Thi
 lemmas unconditional on the sum of the weights being `1`.
 -/
 
+assert_not_exists Cardinal
 
 open Set Function Pointwise
 
@@ -62,7 +63,7 @@ theorem Finset.centerMass_insert [DecidableEq ι] (ha : i ∉ t) (hw : ∑ j ∈
 theorem Finset.centerMass_singleton (hw : w i ≠ 0) : ({i} : Finset ι).centerMass w z = z i := by
   rw [centerMass, sum_singleton, sum_singleton]
   match_scalars
-  field_simp
+  field
 
 @[simp] lemma Finset.centerMass_neg_left : t.centerMass (-w) z = t.centerMass w z := by
   simp [centerMass, inv_neg]
@@ -126,7 +127,7 @@ theorem Finset.centerMass_filter_ne_zero [∀ i, Decidable (w i ≠ 0)] :
 
 namespace Finset
 
-variable [LinearOrder R] [IsStrictOrderedRing R] [IsOrderedAddMonoid α] [OrderedSMul R α]
+variable [LinearOrder R] [IsOrderedAddMonoid α] [PosSMulMono R α]
 
 theorem centerMass_le_sup {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ : ∀ i ∈ s, 0 ≤ w i)
     (hw₁ : 0 < ∑ i ∈ s, w i) :
@@ -148,32 +149,33 @@ lemma Finset.centerMass_of_sum_add_sum_eq_zero {s t : Finset ι}
     s.centerMass w z = t.centerMass w z := by
   simp [centerMass, eq_neg_of_add_eq_zero_right hw, eq_neg_of_add_eq_zero_left hz]
 
-variable [LinearOrder R] [IsStrictOrderedRing R] [IsOrderedAddMonoid α] [OrderedSMul R α]
+variable [LinearOrder R] [IsStrictOrderedRing R] [IsOrderedAddMonoid α] [PosSMulMono R α]
 
 /-- The center of mass of a finite subset of a convex set belongs to the set
 provided that all weights are non-negative, and the total weight is positive. -/
 theorem Convex.centerMass_mem (hs : Convex R s) :
     (∀ i ∈ t, 0 ≤ w i) → (0 < ∑ i ∈ t, w i) → (∀ i ∈ t, z i ∈ s) → t.centerMass w z ∈ s := by
   classical
-  induction' t using Finset.induction with i t hi ht
-  · simp
-  intro h₀ hpos hmem
-  have zi : z i ∈ s := hmem _ (mem_insert_self _ _)
-  have hs₀ : ∀ j ∈ t, 0 ≤ w j := fun j hj => h₀ j <| mem_insert_of_mem hj
-  rw [sum_insert hi] at hpos
-  by_cases hsum_t : ∑ j ∈ t, w j = 0
-  · have ws : ∀ j ∈ t, w j = 0 := (sum_eq_zero_iff_of_nonneg hs₀).1 hsum_t
-    have wz : ∑ j ∈ t, w j • z j = 0 := sum_eq_zero fun i hi => by simp [ws i hi]
-    simp only [centerMass, sum_insert hi, wz, hsum_t, add_zero]
-    simp only [hsum_t, add_zero] at hpos
-    rw [← mul_smul, inv_mul_cancel₀ (ne_of_gt hpos), one_smul]
-    exact zi
-  · rw [Finset.centerMass_insert _ _ _ hi hsum_t]
-    refine convex_iff_div.1 hs zi (ht hs₀ ?_ ?_) ?_ (sum_nonneg hs₀) hpos
-    · exact lt_of_le_of_ne (sum_nonneg hs₀) (Ne.symm hsum_t)
-    · intro j hj
-      exact hmem j (mem_insert_of_mem hj)
-    · exact h₀ _ (mem_insert_self _ _)
+  induction t using Finset.induction with
+  | empty => simp
+  | insert i t hi ht =>
+    intro h₀ hpos hmem
+    have zi : z i ∈ s := hmem _ (mem_insert_self _ _)
+    have hs₀ : ∀ j ∈ t, 0 ≤ w j := fun j hj => h₀ j <| mem_insert_of_mem hj
+    rw [sum_insert hi] at hpos
+    by_cases hsum_t : ∑ j ∈ t, w j = 0
+    · have ws : ∀ j ∈ t, w j = 0 := (sum_eq_zero_iff_of_nonneg hs₀).1 hsum_t
+      have wz : ∑ j ∈ t, w j • z j = 0 := sum_eq_zero fun i hi => by simp [ws i hi]
+      simp only [centerMass, sum_insert hi, wz, hsum_t, add_zero]
+      simp only [hsum_t, add_zero] at hpos
+      rw [← mul_smul, inv_mul_cancel₀ (ne_of_gt hpos), one_smul]
+      exact zi
+    · rw [Finset.centerMass_insert _ _ _ hi hsum_t]
+      refine convex_iff_div.1 hs zi (ht hs₀ ?_ ?_) ?_ (sum_nonneg hs₀) hpos
+      · exact lt_of_le_of_ne (sum_nonneg hs₀) (Ne.symm hsum_t)
+      · intro j hj
+        exact hmem j (mem_insert_of_mem hj)
+      · exact h₀ _ (mem_insert_self _ _)
 
 theorem Convex.sum_mem (hs : Convex R s) (h₀ : ∀ i ∈ t, 0 ≤ w i) (h₁ : ∑ i ∈ t, w i = 1)
     (hz : ∀ i ∈ t, z i ∈ s) : (∑ i ∈ t, w i • z i) ∈ s := by
@@ -208,9 +210,7 @@ theorem convex_iff_sum_mem : Convex R s ↔ ∀ (t : Finset E) (w : E → R),
     exact hy
   · convert h {x, y} (fun z => if z = y then b else a) _ _ _
     · simp only [sum_pair h_cases, if_neg h_cases, if_pos trivial]
-    · intro i _
-      simp only
-      split_ifs <;> assumption
+    · grind
     · simp only [sum_pair h_cases, if_neg h_cases, if_pos trivial, hab]
     · intro i hi
       simp only [Finset.mem_singleton, Finset.mem_insert] at hi
@@ -457,45 +457,6 @@ theorem convexHull_multiset_sum (s : Multiset (Set E)) :
 theorem convexHull_sum {ι} (s : Finset ι) (t : ι → Set E) :
     convexHull R (∑ i ∈ s, t i) = ∑ i ∈ s, convexHull R (t i) :=
   map_sum (convexHullAddMonoidHom R E) _ _
-
-/-! ### `stdSimplex` -/
-
-
-variable (ι) [Fintype ι] {f : ι → R}
-
-/-- `stdSimplex 𝕜 ι` is the convex hull of the canonical basis in `ι → 𝕜`. -/
-theorem convexHull_basis_eq_stdSimplex [DecidableEq ι] :
-    convexHull R (range fun i j : ι => if i = j then (1 : R) else 0) = stdSimplex R ι := by
-  refine Subset.antisymm (convexHull_min ?_ (convex_stdSimplex R ι)) ?_
-  · rintro _ ⟨i, rfl⟩
-    exact ite_eq_mem_stdSimplex R i
-  · rintro w ⟨hw₀, hw₁⟩
-    rw [pi_eq_sum_univ w, ← Finset.univ.centerMass_eq_of_sum_1 _ hw₁]
-    exact Finset.univ.centerMass_mem_convexHull (fun i _ => hw₀ i) (hw₁.symm ▸ zero_lt_one)
-      fun i _ => mem_range_self i
-
-variable {ι}
-
-/-- The convex hull of a finite set is the image of the standard simplex in `s → ℝ`
-under the linear map sending each function `w` to `∑ x ∈ s, w x • x`.
-
-Since we have no sums over finite sets, we use sum over `@Finset.univ _ hs.fintype`.
-The map is defined in terms of operations on `(s → ℝ) →ₗ[ℝ] ℝ` so that later we will not need
-to prove that this map is linear. -/
-theorem Set.Finite.convexHull_eq_image {s : Set E} (hs : s.Finite) : convexHull R s =
-    haveI := hs.fintype
-    (⇑(∑ x : s, (@LinearMap.proj R s _ (fun _ => R) _ _ x).smulRight x.1)) '' stdSimplex R s := by
-  classical
-  letI := hs.fintype
-  rw [← convexHull_basis_eq_stdSimplex, LinearMap.image_convexHull, ← Set.range_comp]
-  apply congr_arg
-  simp_rw [Function.comp_def]
-  convert Subtype.range_coe.symm
-  simp [LinearMap.sum_apply, ite_smul, Finset.mem_univ]
-
-/-- All values of a function `f ∈ stdSimplex 𝕜 ι` belong to `[0, 1]`. -/
-theorem mem_Icc_of_mem_stdSimplex (hf : f ∈ stdSimplex R ι) (x) : f x ∈ Icc (0 : R) 1 :=
-  ⟨hf.1 x, hf.2 ▸ Finset.single_le_sum (fun y _ => hf.1 y) (Finset.mem_univ x)⟩
 
 /-- The convex hull of an affine basis is the intersection of the half-spaces defined by the
 corresponding barycentric coordinates. -/

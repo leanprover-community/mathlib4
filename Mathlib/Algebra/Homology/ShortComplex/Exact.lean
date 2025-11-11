@@ -389,13 +389,13 @@ lemma exact_iff_epi_kernel_lift [S.HasHomology] [HasKernel S.g] :
     S.Exact ↔ Epi (kernel.lift S.g S.f S.zero) := by
   rw [exact_iff_epi_toCycles]
   apply (MorphismProperty.epimorphisms C).arrow_mk_iso_iff
-  exact Arrow.isoMk (Iso.refl _) S.cyclesIsoKernel (by aesop_cat)
+  exact Arrow.isoMk (Iso.refl _) S.cyclesIsoKernel (by cat_disch)
 
 lemma exact_iff_mono_cokernel_desc [S.HasHomology] [HasCokernel S.f] :
     S.Exact ↔ Mono (cokernel.desc S.f S.g S.zero) := by
   rw [exact_iff_mono_fromOpcycles]
   refine (MorphismProperty.monomorphisms C).arrow_mk_iso_iff (Iso.symm ?_)
-  exact Arrow.isoMk S.opcyclesIsoCokernel.symm (Iso.refl _) (by aesop_cat)
+  exact Arrow.isoMk S.opcyclesIsoCokernel.symm (Iso.refl _) (by cat_disch)
 
 lemma QuasiIso.exact_iff {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     [S₁.HasHomology] [S₂.HasHomology] [QuasiIso φ] : S₁.Exact ↔ S₂.Exact := by
@@ -473,11 +473,11 @@ structure Splitting (S : ShortComplex C) where
   /-- a section of `S.g` -/
   s : S.X₃ ⟶ S.X₂
   /-- the condition that `r` is a retraction of `S.f` -/
-  f_r : S.f ≫ r = 𝟙 _ := by aesop_cat
+  f_r : S.f ≫ r = 𝟙 _ := by cat_disch
   /-- the condition that `s` is a section of `S.g` -/
-  s_g : s ≫ S.g = 𝟙 _ := by aesop_cat
+  s_g : s ≫ S.g = 𝟙 _ := by cat_disch
   /-- the compatibility between the given section and retraction -/
-  id : r ≫ S.f + S.g ≫ s = 𝟙 _ := by aesop_cat
+  id : r ≫ S.f + S.g ≫ s = 𝟙 _ := by cat_disch
 
 namespace Splitting
 
@@ -882,7 +882,6 @@ noncomputable def Exact.descToInjective
 lemma Exact.comp_descToInjective
     (hS : S.Exact) {J : C} (f : S.X₂ ⟶ J) [Injective J] (hf : S.f ≫ f = 0) :
     S.g ≫ hS.descToInjective f hf = f := by
-  have := hS.mono_fromOpcycles
   dsimp [descToInjective]
   simp only [← p_fromOpcycles, assoc, Injective.comp_factorThru, p_descOpcycles]
 
@@ -898,7 +897,6 @@ noncomputable def Exact.liftFromProjective
 lemma Exact.liftFromProjective_comp
     (hS : S.Exact) {P : C} (f : P ⟶ S.X₂) [Projective P] (hf : f ≫ S.g = 0) :
     hS.liftFromProjective f hf ≫ S.f = f := by
-  have := hS.epi_toCycles
   dsimp [liftFromProjective]
   rw [← toCycles_i, Projective.factorThru_comp_assoc, liftCycles_i]
 

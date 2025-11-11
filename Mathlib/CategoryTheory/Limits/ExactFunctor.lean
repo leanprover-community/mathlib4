@@ -232,10 +232,10 @@ def LeftExactFunctor.whiskeringLeft : (C ⥤ₗ D) ⥤ (D ⥤ₗ E) ⥤ (C ⥤�
       naturality := fun _ _ f => ((Functor.whiskeringLeft C D E).map η).naturality f }
   map_id X := by
     rw [ObjectProperty.FullSubcategory.id_def]
-    aesop_cat
+    cat_disch
   map_comp f g := by
     rw [ObjectProperty.FullSubcategory.comp_def]
-    aesop_cat
+    cat_disch
 
 /-- Whiskering a left exact functor by a left exact functor yields a left exact functor. -/
 @[simps! obj_obj obj_map map_app_app]
@@ -256,10 +256,10 @@ def RightExactFunctor.whiskeringLeft : (C ⥤ᵣ D) ⥤ (D ⥤ᵣ E) ⥤ (C ⥤�
       naturality := fun _ _ f => ((Functor.whiskeringLeft C D E).map η).naturality f }
   map_id X := by
     rw [ObjectProperty.FullSubcategory.id_def]
-    aesop_cat
+    cat_disch
   map_comp f g := by
     rw [ObjectProperty.FullSubcategory.comp_def]
-    aesop_cat
+    cat_disch
 
 /-- Whiskering a right exact functor by a right exact functor yields a right exact functor. -/
 @[simps! obj_obj obj_map map_app_app]
@@ -281,10 +281,10 @@ def ExactFunctor.whiskeringLeft : (C ⥤ₑ D) ⥤ (D ⥤ₑ E) ⥤ (C ⥤ₑ E)
       naturality := fun _ _ f => ((Functor.whiskeringLeft C D E).map η).naturality f }
   map_id X := by
     rw [ObjectProperty.FullSubcategory.id_def]
-    aesop_cat
+    cat_disch
   map_comp f g := by
     rw [ObjectProperty.FullSubcategory.comp_def]
-    aesop_cat
+    cat_disch
 
 /-- Whiskering an exact functor by an exact functor yields an exact functor. -/
 @[simps! obj_obj obj_map map_app_app]

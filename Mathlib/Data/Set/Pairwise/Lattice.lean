@@ -22,7 +22,8 @@ variable {f : ι → α} {s : Set α}
 
 namespace Set
 
-theorem pairwise_iUnion {f : κ → Set α} (h : Directed (· ⊆ ·) f) :
+-- TODO: fix naming inconsistency with the iUnion₂ theorems below.
+theorem pairwise_iUnion {f : κ → Set α} (hd : Directed (· ⊆ ·) f) :
     (⋃ n, f n).Pairwise r ↔ ∀ n, (f n).Pairwise r := by
   constructor
   · intro H n
@@ -30,12 +31,24 @@ theorem pairwise_iUnion {f : κ → Set α} (h : Directed (· ⊆ ·) f) :
   · intro H i hi j hj hij
     rcases mem_iUnion.1 hi with ⟨m, hm⟩
     rcases mem_iUnion.1 hj with ⟨n, hn⟩
-    rcases h m n with ⟨p, mp, np⟩
+    rcases hd m n with ⟨p, mp, np⟩
     exact H p (mp hm) (np hn) hij
 
-theorem pairwise_sUnion {r : α → α → Prop} {s : Set (Set α)} (h : DirectedOn (· ⊆ ·) s) :
+-- TODO: harmonize explicitness of `r`
+theorem pairwise_iUnion₂ {s : Set (Set α)} (hd : DirectedOn (· ⊆ ·) s)
+    (r : α → α → Prop) (h : ∀ a ∈ s, a.Pairwise r) : (⋃ a ∈ s, a).Pairwise r := by
+  simp only [Set.Pairwise, mem_iUnion, exists_prop, forall_exists_index, and_imp]
+  intro x S hS hx y T hT hy hne
+  obtain ⟨U, hU, hSU, hTU⟩ := hd S hS T hT
+  exact h U hU (hSU hx) (hTU hy) hne
+
+theorem pairwise_iUnion₂_iff {s : Set (Set α)} (hd : DirectedOn (· ⊆ ·) s) :
+    (⋃ a ∈ s, a).Pairwise r ↔ ∀ a ∈ s, a.Pairwise r :=
+  ⟨fun h a ha ↦ h.mono <| subset_iUnion₂_of_subset a ha (by rfl), pairwise_iUnion₂ hd _⟩
+
+theorem pairwise_sUnion {r : α → α → Prop} {s : Set (Set α)} (hd : DirectedOn (· ⊆ ·) s) :
     (⋃₀ s).Pairwise r ↔ ∀ a ∈ s, Set.Pairwise a r := by
-  rw [sUnion_eq_iUnion, pairwise_iUnion h.directed_val, SetCoe.forall]
+  rw [sUnion_eq_iUnion, pairwise_iUnion hd.directed_val, SetCoe.forall]
 
 end Set
 
@@ -125,6 +138,18 @@ noncomputable def biUnionEqSigmaOfDisjoint {s : Set ι} {f : ι → Set α} (h :
     (⋃ i ∈ s, f i) ≃ Σ i : s, f i :=
   (Equiv.setCongr (biUnion_eq_iUnion _ _)).trans <|
     unionEqSigmaOfDisjoint fun ⟨_i, hi⟩ ⟨_j, hj⟩ ne => h hi hj fun eq => ne <| Subtype.eq eq
+
+@[simp]
+lemma coe_biUnionEqSigmaOfDisjoint_symm_apply {α ι : Type*} {s : Set ι}
+    {f : ι → Set α} (h : s.PairwiseDisjoint f) (x : (i : s) × f i) :
+    ((Set.biUnionEqSigmaOfDisjoint h).symm x : α) = x.2 := by
+  rfl
+
+@[simp]
+lemma coe_snd_biUnionEqSigmaOfDisjoint {α ι : Type*} {s : Set ι}
+    {f : ι → Set α} (h : s.PairwiseDisjoint f) (x : ⋃ i ∈ s, f i) :
+    ((Set.biUnionEqSigmaOfDisjoint h x).snd : α) = x := by
+  simp [biUnionEqSigmaOfDisjoint]
 
 end Set
 

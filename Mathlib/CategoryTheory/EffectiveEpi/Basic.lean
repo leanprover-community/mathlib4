@@ -110,7 +110,7 @@ structure EffectiveEpiFamilyStruct {B : C} {α : Type*}
   `X ⟶ W`...
   -/
   desc : ∀ {W} (e : (a : α) → (X a ⟶ W)),
-          (∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
+      (∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
       g₁ ≫ π _ = g₂ ≫ π _ → g₁ ≫ e _ = g₂ ≫ e _) → (B ⟶ W)
   /-- ...factorizing the components of `e` through the components of `π`... -/
   fac : ∀ {W} (e : (a : α) → (X a ⟶ W))

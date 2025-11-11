@@ -82,7 +82,7 @@ structure Hom₂ (α β : a ⟶ b) where
   τl : α.l ⟶ β.l
   /-- the morphism in the opposite direction between right adjoints -/
   τr : β.r ⟶ α.r
-  conjugateEquiv_τl : conjugateEquiv β.adj α.adj τl = τr := by aesop_cat
+  conjugateEquiv_τl : conjugateEquiv β.adj α.adj τl = τr := by cat_disch
 
 lemma Hom₂.conjugateEquiv_symm_τr {α β : a ⟶ b} (p : Hom₂ α β) :
     (conjugateEquiv β.adj α.adj).symm p.τr = p.τl := by
@@ -177,7 +177,7 @@ instance : Bicategory (Adj B) where
 
 /-- The forget pseudofunctor from `Adj B` to `B`. -/
 @[simps]
-def forget₁ : Pseudofunctor (Adj B) B where
+def forget₁ : Adj B ⥤ᵖ B where
   obj a := a.obj
   map x := x.l
   map₂ α := α.τl

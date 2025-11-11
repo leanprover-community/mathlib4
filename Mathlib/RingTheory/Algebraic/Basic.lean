@@ -34,7 +34,6 @@ variable {R}
 
 theorem IsAlgebraic.nontrivial {a : A} (h : IsAlgebraic R a) : Nontrivial R := by
   contrapose! h
-  rw [not_nontrivial_iff_subsingleton] at h
   apply is_transcendental_of_subsingleton
 
 variable (R A)
@@ -362,13 +361,13 @@ theorem IsAlgebraic.of_pow {r : A} {n : ℕ} (hn : 0 < n) (ht : IsAlgebraic R (r
 theorem Transcendental.pow {r : A} (ht : Transcendental R r) {n : ℕ} (hn : 0 < n) :
     Transcendental R (r ^ n) := fun ht' ↦ ht <| ht'.of_pow hn
 
-lemma IsAlgebraic.invOf {x : S} [Invertible x] (h : IsAlgebraic R x) : IsAlgebraic R (⅟ x) := by
+lemma IsAlgebraic.invOf {x : S} [Invertible x] (h : IsAlgebraic R x) : IsAlgebraic R (⅟x) := by
   obtain ⟨p, hp, hp'⟩ := h
   refine ⟨p.reverse, by simpa using hp, ?_⟩
   rwa [Polynomial.aeval_def, Polynomial.eval₂_reverse_eq_zero_iff, ← Polynomial.aeval_def]
 
 lemma IsAlgebraic.invOf_iff {x : S} [Invertible x] :
-    IsAlgebraic R (⅟ x) ↔ IsAlgebraic R x :=
+    IsAlgebraic R (⅟x) ↔ IsAlgebraic R x :=
   ⟨IsAlgebraic.invOf, IsAlgebraic.invOf⟩
 
 lemma IsAlgebraic.inv_iff {K} [Field K] [Algebra R K] {x : K} :
@@ -401,9 +400,6 @@ theorem IsAlgebraic.extendScalars (hinj : Function.Injective (algebraMap R S)) {
   ⟨p.map (algebraMap _ _), by
     rwa [Ne, ← degree_eq_bot, degree_map_eq_of_injective hinj, degree_eq_bot], by simpa⟩
 
-@[deprecated (since := "2024-11-18")]
-alias IsAlgebraic.tower_top_of_injective := IsAlgebraic.extendScalars
-
 /-- A special case of `IsAlgebraic.extendScalars`. This is extracted as a theorem
   because in some cases `IsAlgebraic.extendScalars` will just runs out of memory. -/
 theorem IsAlgebraic.tower_top_of_subalgebra_le
@@ -418,9 +414,6 @@ theorem IsAlgebraic.tower_top_of_subalgebra_le
 theorem Transcendental.restrictScalars (hinj : Function.Injective (algebraMap R S)) {x : A}
     (h : Transcendental S x) : Transcendental R x := fun H ↦ h (H.extendScalars hinj)
 
-@[deprecated (since := "2024-11-18")]
-alias Transcendental.of_tower_top_of_injective := Transcendental.restrictScalars
-
 /-- A special case of `Transcendental.restrictScalars`. This is extracted as a theorem
   because in some cases `Transcendental.restrictScalars` will just runs out of memory. -/
 theorem Transcendental.of_tower_top_of_subalgebra_le
@@ -433,9 +426,6 @@ theorem Transcendental.of_tower_top_of_subalgebra_le
 theorem Algebra.IsAlgebraic.extendScalars (hinj : Function.Injective (algebraMap R S))
     [Algebra.IsAlgebraic R A] : Algebra.IsAlgebraic S A :=
   ⟨fun _ ↦ (Algebra.IsAlgebraic.isAlgebraic _).extendScalars hinj⟩
-
-@[deprecated (since := "2024-11-18")]
-alias Algebra.IsAlgebraic.tower_top_of_injective := Algebra.IsAlgebraic.extendScalars
 
 theorem Algebra.IsAlgebraic.tower_bot_of_injective [Algebra.IsAlgebraic R A]
     (hinj : Function.Injective (algebraMap S A)) :
@@ -543,7 +533,7 @@ theorem IsAlgebraic.exists_nonzero_coeff_and_aeval_eq_zero
   obtain ⟨q, hpq, hq⟩ := exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp0 0
   simp only [C_0, sub_zero, X_pow_mul, X_dvd_iff] at hpq hq
   rw [hpq, map_mul, aeval_X_pow] at hp
-  exact ⟨q, hq, (nonZeroDivisors S).pow_mem hs (rootMultiplicity 0 p) (aeval s q) hp⟩
+  exact ⟨q, hq, (S⁰.pow_mem hs (rootMultiplicity 0 p)).2 (aeval s q) hp⟩
 
 theorem IsAlgebraic.exists_nonzero_eq_adjoin_mul {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ S⁰) :
     ∃ᵉ (t ∈ Algebra.adjoin R {s}) (r ≠ (0 : R)), s * t = algebraMap R S r := by
@@ -628,10 +618,8 @@ theorem Subalgebra.inv_mem_of_root_of_coeff_zero_ne_zero {x : A} {p : K[X]}
     rw [this]
     exact A.smul_mem (aeval x _).2 _
   have : aeval (x : L) p = 0 := by rw [Subalgebra.aeval_coe, aeval_eq, Subalgebra.coe_zero]
-  -- Porting note: this was a long sequence of `rw`.
-  rw [inv_eq_of_root_of_coeff_zero_ne_zero this coeff_zero_ne, div_eq_inv_mul, Algebra.smul_def]
-  simp only [aeval_coe]
-  rw [map_inv₀, map_neg, inv_neg, neg_mul]
+  rw [inv_eq_of_root_of_coeff_zero_ne_zero this coeff_zero_ne, div_eq_inv_mul, Algebra.smul_def,
+    aeval_coe, map_inv₀, map_neg, inv_neg, neg_mul]
 
 theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : IsAlgebraic K (x : L)) :
     (x⁻¹ : L) ∈ A := by

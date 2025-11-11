@@ -53,8 +53,8 @@ local notation "𝒢" => Functor.op G ⋙ Functor.op (toOver yoneda (colimit F))
 variable {K : Type v} [SmallCategory K] (H : K ⥤ Over (colimit F))
 
 /-- (implementation) Pulling out a colimit out of a hom functor is one half of the key lemma. Note
-    that all of the heavy lifting actually happens in `CostructuredArrow.toOverCompYonedaColimit`
-    and `yonedaYonedaColimit`. -/
+that all of the heavy lifting actually happens in `CostructuredArrow.toOverCompYonedaColimit`
+and `yonedaYonedaColimit`. -/
 noncomputable def compYonedaColimitIsoColimitCompYoneda :
     𝒢 ⋙ yoneda.obj (colimit H) ≅ colimit (H ⋙ yoneda ⋙ (whiskeringLeft _ _ _).obj 𝒢) := calc
   𝒢 ⋙ yoneda.obj (colimit H) ≅ 𝒢 ⋙ colimit (H ⋙ yoneda) :=
@@ -118,16 +118,17 @@ theorem isFiltered [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
   -- is non-empty.
   obtain ⟨k, hk⟩ : ∃ k, Nonempty (limit (G.op ⋙ (CostructuredArrow.toOver yoneda (colimit F)).op ⋙
       yoneda.obj ((CostructuredArrow.toOver yoneda (colimit F)).obj <|
-        (pre P.F yoneda (colimit F)).obj <| (map (colimit.ι F i)).obj <| mk _))) :=
+        (CostructuredArrow.pre P.F yoneda (colimit F)).obj <|
+          (map (colimit.ι F i)).obj <| mk _))) :=
     exists_nonempty_limit_obj_of_isColimit F G _ hc _ (Iso.refl _) hi
   have htO : (CostructuredArrow.toOver yoneda (colimit F)).FullyFaithful := .ofFullyFaithful _
   -- Since the inclusion `y : CostructuredArrow yoneda (colimit F) ⥤ Over (colimit F)` is fully
   -- faithful, `lim_j Hom_{Over (colimit F)}(yGj, yHk) ≅`
   --   `lim_j Hom_{CostructuredArrow yoneda (colimit F)}(Gj, Hk)` and so `Hk` is the object we're
   -- looking for.
-  let q := htO.homNatIsoMaxRight
+  let q := fun X => isoWhiskerLeft _ (uliftYonedaIsoYoneda.symm.app _) ≪≫ htO.homNatIso X
   obtain ⟨t'⟩ := Nonempty.map (limMap (isoWhiskerLeft G.op (q _)).hom) hk
-  exact ⟨_, ⟨((preservesLimitIso uliftFunctor.{u, v} _).inv t').down⟩⟩
+  exact ⟨_, ⟨((preservesLimitIso uliftFunctor.{max u v, v} _).inv t').down⟩⟩
 
 end IndizationClosedUnderFilteredColimitsAux
 

@@ -158,7 +158,7 @@ instance hasForgetToAddCommMonCat : HasForget₂ SemiRingCat AddCommMonCat where
     { obj := fun R ↦ AddCommMonCat.of R
       map := fun f ↦ AddCommMonCat.ofHom f.hom.toAddMonoidHom }
 
-/-- Ring equivalence are isomorphisms in category of semirings -/
+/-- Ring equivalences are isomorphisms in category of semirings -/
 @[simps]
 def _root_.RingEquiv.toSemiRingCatIso {R S : Type u} [Semiring R] [Semiring S] (e : R ≃+* S) :
     of R ≅ of S where
@@ -315,12 +315,12 @@ def fullyFaithfulForget₂ToSemiRingCat :
 instance : (forget₂ RingCat SemiRingCat).Full :=
   fullyFaithfulForget₂ToSemiRingCat.full
 
-instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrp where
+instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrpCat where
   forget₂ :=
-    { obj := fun R ↦ AddCommGrp.of R
-      map := fun f ↦ AddCommGrp.ofHom f.hom.toAddMonoidHom }
+    { obj := fun R ↦ AddCommGrpCat.of R
+      map := fun f ↦ AddCommGrpCat.ofHom f.hom.toAddMonoidHom }
 
-/-- Ring equivalence are isomorphisms in category of semirings -/
+/-- Ring equivalences are isomorphisms in category of rings -/
 @[simps]
 def _root_.RingEquiv.toRingCatIso {R S : Type u} [Ring R] [Ring S] (e : R ≃+* S) :
     of R ≅ of S where
@@ -420,7 +420,7 @@ lemma hom_ext {R S : CommSemiRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f =
 
 @[simp]
 lemma hom_ofHom {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {R S : CommSemiRingCat} (f : R ⟶ S) :
@@ -480,7 +480,7 @@ instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat where
     { obj := fun R ↦ CommMonCat.of R
       map := fun f ↦ CommMonCat.ofHom f.hom.toMonoidHom }
 
-/-- Ring equivalence are isomorphisms in category of semirings -/
+/-- Ring equivalences are isomorphisms in category of commutative semirings -/
 @[simps]
 def _root_.RingEquiv.toCommSemiRingCatIso
     {R S : Type u} [CommSemiring R] [CommSemiring S] (e : R ≃+* S) :
@@ -580,8 +580,7 @@ lemma hom_ext {R S : CommRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {R S : CommRingCat} (f : R ⟶ S) :
@@ -656,7 +655,7 @@ instance : HasForget₂ CommRingCat CommMonCat where
   forget₂ := { obj M := .of M, map f := CommMonCat.ofHom f.hom }
   forget_comp := rfl
 
-/-- Ring equivalence are isomorphisms in category of semirings -/
+/-- Ring equivalences are isomorphisms in category of commutative rings -/
 @[simps]
 def _root_.RingEquiv.toCommRingCatIso
     {R S : Type u} [CommRing R] [CommRing S] (e : R ≃+* S) :
@@ -692,16 +691,16 @@ def commRingCatIsoToRingEquiv {R S : CommRingCat.{u}} (e : R ≅ S) : R ≃+* S 
   RingEquiv.ofHomInv e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
 
 @[simp] lemma semiRingCatIsoToRingEquiv_toRingHom {R S : SemiRingCat.{u}} (e : R ≅ S) :
-  (e.semiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    (e.semiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 @[simp] lemma ringCatIsoToRingEquiv_toRingHom {R S : RingCat.{u}} (e : R ≅ S) :
-  (e.ringCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    (e.ringCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 @[simp] lemma commSemiRingCatIsoToRingEquiv_toRingHom {R S : CommSemiRingCat.{u}} (e : R ≅ S) :
-  (e.commSemiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    (e.commSemiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 @[simp] lemma commRingCatIsoToRingEquiv_toRingHom {R S : CommRingCat.{u}} (e : R ≅ S) :
-  (e.commRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    (e.commRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 end CategoryTheory.Iso
 

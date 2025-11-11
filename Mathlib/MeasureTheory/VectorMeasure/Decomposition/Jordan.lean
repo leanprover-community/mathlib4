@@ -427,17 +427,17 @@ private theorem toJordanDecomposition_smul_real_nonneg (s : SignedMeasure α) (r
 
 theorem toJordanDecomposition_smul_real (s : SignedMeasure α) (r : ℝ) :
     (r • s).toJordanDecomposition = r • s.toJordanDecomposition := by
-  by_cases hr : 0 ≤ r
+  by_cases! hr : 0 ≤ r
   · exact toJordanDecomposition_smul_real_nonneg s r hr
   · ext1
-    · rw [real_smul_posPart_neg _ _ (not_le.1 hr),
+    · rw [real_smul_posPart_neg _ _ hr,
         show r • s = -(-r • s) by rw [neg_smul, neg_neg], toJordanDecomposition_neg, neg_posPart,
         toJordanDecomposition_smul_real_nonneg, ← smul_negPart, real_smul_nonneg]
-      all_goals exact Left.nonneg_neg_iff.2 (le_of_lt (not_le.1 hr))
-    · rw [real_smul_negPart_neg _ _ (not_le.1 hr),
+      all_goals exact Left.nonneg_neg_iff.2 hr.le
+    · rw [real_smul_negPart_neg _ _ hr,
         show r • s = -(-r • s) by rw [neg_smul, neg_neg], toJordanDecomposition_neg, neg_negPart,
         toJordanDecomposition_smul_real_nonneg, ← smul_posPart, real_smul_nonneg]
-      all_goals exact Left.nonneg_neg_iff.2 (le_of_lt (not_le.1 hr))
+      all_goals exact Left.nonneg_neg_iff.2 hr.le
 
 theorem toJordanDecomposition_eq {s : SignedMeasure α} {j : JordanDecomposition α}
     (h : s = j.toSignedMeasure) : s.toJordanDecomposition = j := by
@@ -459,7 +459,7 @@ theorem null_of_totalVariation_zero (s : SignedMeasure α) {i : Set α}
   rw [← toSignedMeasure_toJordanDecomposition s, toSignedMeasure, VectorMeasure.coe_sub,
     Pi.sub_apply, Measure.toSignedMeasure_apply, Measure.toSignedMeasure_apply]
   by_cases hi : MeasurableSet i
-  · rw [if_pos hi, if_pos hi]; simp [hs.1, hs.2, measureReal_def]
+  · simp [hs.1, hs.2, measureReal_def]
   · simp [if_neg hi]
 
 theorem absolutelyContinuous_ennreal_iff (s : SignedMeasure α) (μ : VectorMeasure α ℝ≥0∞) :

@@ -316,7 +316,7 @@ theorem Cofix.mk_dest {α : TypeVec n} (x : Cofix F α) : Cofix.mk (Cofix.dest x
     rw [Cofix.dest_corec]
   rw [← comp_map, ← appendFun_comp, id_comp]
   rw [← comp_map, ← appendFun_comp, id_comp, ← Cofix.mk]
-  congr
+  congr 1
   apply congrArg
   funext x
   apply Quot.sound
@@ -369,8 +369,7 @@ theorem liftR_map_last [lawful : LawfulMvFunctor F]
     dsimp [b]
     apply eq_of_drop_last_eq
     · dsimp
-      simp only [prod_map_id, dropFun_prod, dropFun_appendFun, dropFun_diag, TypeVec.id_comp,
-        dropFun_toSubtype]
+      simp only [prod_map_id, TypeVec.id_comp]
       erw [toSubtype_of_subtype_assoc, TypeVec.id_comp]
       clear liftR_map_last q lawful F x R f g hh h b c
       ext (i x) : 2
@@ -499,7 +498,7 @@ theorem Cofix.dest_corec' {α : TypeVec.{u} n} {β : Type u}
     dsimp [Function.comp_def]
     intros
     exact ⟨_, rfl, rfl⟩
-  · congr with y
+  · congr 1 with y
     erw [appendFun_id_id]
     simp [MvFunctor.id_map, Sum.elim]
 

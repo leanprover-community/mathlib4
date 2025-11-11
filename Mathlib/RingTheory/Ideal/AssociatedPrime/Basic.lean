@@ -21,9 +21,9 @@ We provide the definition and related lemmas about associated primes of modules.
 - `associatedPrimes`: The set of associated primes of a module.
 
 ## Main results
-- `exists_le_isAssociatedPrime_of_isNoetherianRing`: In a noetherian ring, any `ann(x)` is
+- `exists_le_isAssociatedPrime_of_isNoetherianRing`: In a Noetherian ring, any `ann(x)` is
   contained in an associated prime for `x ≠ 0`.
-- `associatedPrimes.eq_singleton_of_isPrimary`: In a noetherian ring, `I.radical` is the only
+- `associatedPrimes.eq_singleton_of_isPrimary`: In a Noetherian ring, `I.radical` is the only
   associated prime of `R ⧸ I` when `I` is primary.
 
 ## TODO
@@ -119,7 +119,7 @@ contained in the union of those of `M` and `M''`. -/
 theorem subset_union_of_exact (hf : Function.Injective f) (hfg : Function.Exact f g) :
     associatedPrimes R M' ⊆ associatedPrimes R M ∪ associatedPrimes R M'' := by
   rintro p ⟨_, x, hx⟩
-  by_cases h : ∃ a ∈ p.primeCompl, ∃ y : M, f y = a • x
+  by_cases! h : ∃ a ∈ p.primeCompl, ∃ y : M, f y = a • x
   · obtain ⟨a, ha, y, h⟩ := h
     left
     refine ⟨‹_›, y, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
@@ -133,8 +133,7 @@ theorem subset_union_of_exact (hf : Function.Injective f) (hfg : Function.Exact 
         ← LinearMap.mem_ker, ← hx] at hb
       contrapose! hb
       exact p.primeCompl.mul_mem hb ha
-  · push_neg at h
-    right
+  · right
     refine ⟨‹_›, g x, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
     · rw [hx] at hb
       rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply] at hb ⊢
@@ -181,6 +180,11 @@ theorem biUnion_associatedPrimes_eq_zero_divisors [IsNoetherianRing R] :
   · intro r ⟨x, h, h'⟩
     obtain ⟨P, hP, hx⟩ := exists_le_isAssociatedPrime_of_isNoetherianRing R x h
     exact Set.mem_biUnion hP (hx h')
+
+theorem biUnion_associatedPrimes_eq_compl_nonZeroDivisors [IsNoetherianRing R] :
+    ⋃ p ∈ associatedPrimes R R, p = (nonZeroDivisors R : Set R)ᶜ :=
+  (biUnion_associatedPrimes_eq_zero_divisors R R).trans <| by
+    ext; simp [← nonZeroDivisorsLeft_eq_nonZeroDivisors, and_comm]
 
 variable {R M}
 

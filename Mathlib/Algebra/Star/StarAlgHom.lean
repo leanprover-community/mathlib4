@@ -7,8 +7,6 @@ import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Star.Prod
-import Mathlib.Algebra.Star.Pi
 import Mathlib.Algebra.Star.StarRingHom
 
 /-!
@@ -109,10 +107,6 @@ instance : NonUnitalAlgHomClass (A →⋆ₙₐ[R] B) R A B where
 
 instance : StarHomClass (A →⋆ₙₐ[R] B) A B where
   map_star f := f.map_star'
-
--- Porting note: in mathlib3 we didn't need the `Simps.apply` hint.
-/-- See Note [custom simps projection] -/
-def Simps.apply (f : A →⋆ₙₐ[R] B) : A → B := f
 
 initialize_simps_projections NonUnitalStarAlgHom
   (toFun → apply)
@@ -343,10 +337,6 @@ protected theorem coe_coe {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
     [StarHomClass F A B] (f : F) :
     ⇑(f : A →⋆ₐ[R] B) = f :=
   rfl
-
--- Porting note: in mathlib3 we didn't need the `Simps.apply` hint.
-/-- See Note [custom simps projection] -/
-def Simps.apply (f : A →⋆ₐ[R] B) : A → B := f
 
 initialize_simps_projections StarAlgHom (toFun → apply)
 
@@ -626,8 +616,6 @@ end StarAlgHom
 
 /-! ### Star algebra equivalences -/
 
--- Porting note: changed order of arguments to work around
--- [https://github.com/leanprover-community/mathlib4/issues/2505]
 /-- A *⋆-algebra* equivalence is an equivalence preserving addition, multiplication, scalar
 multiplication and the star operation, which allows for considering both unital and non-unital
 equivalences with a single structure. Currently, `AlgEquiv` requires unital algebras, which is
@@ -741,7 +729,6 @@ instance : Inhabited (A ≃⋆ₐ[R] A) :=
 theorem coe_refl : ⇑(refl : A ≃⋆ₐ[R] A) = id :=
   rfl
 
--- Porting note: changed proof a bit by using `EquivLike` to avoid lots of coercions
 /-- The inverse of a star algebra isomorphism is a star algebra isomorphism. -/
 @[symm]
 nonrec def symm (e : A ≃⋆ₐ[R] B) : B ≃⋆ₐ[R] A :=
@@ -753,17 +740,12 @@ nonrec def symm (e : A ≃⋆ₐ[R] B) : B ≃⋆ₐ[R] A :=
       simpa only [apply_inv_apply, inv_apply_apply] using
         congr_arg (inv e) (map_smul e r (inv e b)).symm }
 
--- Porting note: in mathlib3 we didn't need the `Simps.apply` hint.
-/-- See Note [custom simps projection] -/
-def Simps.apply (e : A ≃⋆ₐ[R] B) : A → B := e
-
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : A ≃⋆ₐ[R] B) : B → A :=
   e.symm
 
 initialize_simps_projections StarAlgEquiv (toFun → apply, invFun → symm_apply)
 
--- Porting note: use `EquivLike.inv` instead of `invFun`
 @[simp]
 theorem invFun_eq_symm {e : A ≃⋆ₐ[R] B} : EquivLike.inv e = e.symm :=
   rfl
@@ -797,13 +779,14 @@ theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅ h₆) :
 theorem refl_symm : (StarAlgEquiv.refl : A ≃⋆ₐ[R] A).symm = StarAlgEquiv.refl :=
   rfl
 
--- should be a `simp` lemma, but causes a linter timeout
-theorem to_ringEquiv_symm (f : A ≃⋆ₐ[R] B) : (f : A ≃+* B).symm = f.symm :=
-  rfl
 
 @[simp]
-theorem symm_to_ringEquiv (e : A ≃⋆ₐ[R] B) : (e.symm : B ≃+* A) = (e : A ≃+* B).symm :=
+theorem toRingEquiv_symm (e : A ≃⋆ₐ[R] B) : (e.symm : B ≃+* A) = (e : A ≃+* B).symm :=
   rfl
+
+@[deprecated "← toRingEquiv_symm" (since := "2025-08-25")]
+theorem to_ringEquiv_symm (f : A ≃⋆ₐ[R] B) : (f : A ≃+* B).symm = f.symm := rfl
+@[deprecated (since := "2025-08-25")] alias symm_to_ringEquiv := toRingEquiv_symm
 
 /-- Transitivity of `StarAlgEquiv`. -/
 @[trans]
@@ -843,6 +826,61 @@ theorem leftInverse_symm (e : A ≃⋆ₐ[R] B) : Function.LeftInverse e.symm e 
 
 theorem rightInverse_symm (e : A ≃⋆ₐ[R] B) : Function.RightInverse e.symm e :=
   e.right_inv
+
+section AlgEquiv
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+  [Algebra R A] [Algebra R B] [Star A] [Star B]
+
+/-- Interpret a ⋆-algebra equivalence as an algebra equivalence. -/
+def toAlgEquiv (f : A ≃⋆ₐ[R] B) : A ≃ₐ[R] B where
+  toRingEquiv := f.toRingEquiv
+  commutes' r := by simp_rw [Algebra.algebraMap_eq_smul_one', map_smul']; simp
+
+@[simp]
+theorem toAlgEquiv_symm (f : A ≃⋆ₐ[R] B) : f.symm.toAlgEquiv = f.toAlgEquiv.symm := rfl
+
+@[simp]
+theorem coe_toAlgEquiv (f : A ≃⋆ₐ[R] B) : ⇑f.toAlgEquiv = ⇑f := rfl
+
+@[simp]
+theorem coe_symm_toAlgEquiv (f : A ≃⋆ₐ[R] B) : ⇑f.toAlgEquiv.symm = ⇑f.symm := rfl
+
+@[simp]
+theorem toAlgEquiv_trans {C : Type*} [Semiring C] [Algebra R C] [Star C] (f : A ≃⋆ₐ[R] B)
+    (g : B ≃⋆ₐ[R] C) : (f.trans g).toAlgEquiv = f.toAlgEquiv.trans g.toAlgEquiv := rfl
+
+theorem toAlgEquiv_injective : Function.Injective (toAlgEquiv (R:=R) (A:=A) (B:=B)) :=
+  fun _ _  h => ext <| AlgEquiv.congr_fun h
+
+@[simp]
+theorem toAlgEquiv_refl : (refl : A ≃⋆ₐ[R] A).toAlgEquiv = AlgEquiv.refl := rfl
+
+/-- Upgrade an algebra equivalence to a ⋆-algebra equivalence given that it preserves the
+`star` operation. -/
+def ofAlgEquiv (f : A ≃ₐ[R] B) (map_star : ∀ x, f (star x) = star (f x)) :
+    A ≃⋆ₐ[R] B where
+  toRingEquiv := f.toRingEquiv
+  map_smul' := f.toLinearEquiv.map_smul
+  map_star' := map_star
+
+@[simp]
+theorem ofAlgEquiv_apply (f : A ≃ₐ[R] B) (map_star : ∀ x, f (star x) = star (f x)) (x : A) :
+    ofAlgEquiv f map_star x = f x := rfl
+
+@[simp]
+theorem ofAlgEquiv_symm (f : A ≃ₐ[R] B) (map_star : ∀ x, f (star x) = star (f x)) :
+    (ofAlgEquiv f map_star).symm = ofAlgEquiv f.symm (ofAlgEquiv f map_star).symm.map_star' :=
+  rfl
+
+@[simp]
+theorem toAlgEquiv_ofAlgEquiv (f : A ≃ₐ[R] B) (map_star : ∀ x, f (star x) = star (f x)) :
+    (ofAlgEquiv f map_star).toAlgEquiv = f := rfl
+
+@[simp]
+theorem ofAlgEquiv_toAlgEquiv (f : A ≃⋆ₐ[R] B) (map_star) :
+    ofAlgEquiv f.toAlgEquiv map_star = f := rfl
+
+end AlgEquiv
 
 end Basic
 
@@ -886,5 +924,30 @@ theorem ofBijective_apply {f : F} (hf : Function.Bijective f) (a : A) :
   rfl
 
 end Bijective
+
+section Group
+variable {S R : Type*} [Mul R] [Add R] [Star R] [SMul S R]
+
+@[simps -isSimp one mul]
+instance aut : Group (R ≃⋆ₐ[S] R) where
+  one := refl
+  mul a b := b.trans a
+  one_mul _ := rfl
+  mul_one _ := rfl
+  mul_assoc _ _ _ := rfl
+  inv f := f.symm
+  inv_mul_cancel f := ext <| symm_apply_apply f
+
+@[simp] theorem mul_apply (f g : R ≃⋆ₐ[S] R) (x : R) : (f * g) x = f (g x) := rfl
+
+@[simp] theorem one_apply (x : R) : (1 : R ≃⋆ₐ[S] R) x = x := rfl
+
+theorem aut_inv (f : R ≃⋆ₐ[S] R) : f⁻¹ = f.symm := rfl
+
+@[simp] theorem coe_pow (f : R ≃⋆ₐ[S] R) (n : ℕ) :
+    ⇑(f ^ n) = (⇑f)^[n] :=
+  hom_coe_pow _ (funext one_apply) (fun f g ↦ funext <| mul_apply f g) _ _
+
+end Group
 
 end StarAlgEquiv

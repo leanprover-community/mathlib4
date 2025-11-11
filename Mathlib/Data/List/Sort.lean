@@ -3,6 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
+import Batteries.Data.List.Pairwise
 import Batteries.Data.List.Perm
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Nodup
@@ -570,7 +571,7 @@ theorem Sublist.orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs)
       unfold orderedInsert
       cases hs <;> split_ifs with hr
       · exact .cons₂ _ <| .cons _ ‹a :: as <+ bs›
-      · have ih := orderedInsert_sublist x ‹a :: as <+ bs›  hb.of_cons
+      · have ih := orderedInsert_sublist x ‹a :: as <+ bs› hb.of_cons
         simp only [hr, orderedInsert, ite_true] at ih
         exact .trans ih <| .cons _ (.refl _)
       · have hba := pairwise_cons.mp hb |>.left _ (mem_of_cons_sublist ‹a :: as <+ bs›)

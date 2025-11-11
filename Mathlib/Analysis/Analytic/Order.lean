@@ -49,7 +49,7 @@ noncomputable def analyticOrderAt (f : 𝕜 → E) (z₀ : 𝕜) : ℕ∞ :=
 
 The order is defined to be `0` if `f` is identically zero on a neighbourhood of `z₀`,
 and is otherwise the unique `n` such that `f` can locally be written as `f z = (z - z₀) ^ n • g z`,
-where `g` is analyticand does not vanish at `z₀`. See `AnalyticAt.analyticOrderAt_eq_top` and
+where `g` is analytic and does not vanish at `z₀`. See `AnalyticAt.analyticOrderAt_eq_top` and
 `AnalyticAt.analyticOrderAt_eq_natCast` for these equivalences.
 
 If `f` isn't analytic at `z₀`, then `analyticOrderNatAt f z₀` returns a junk value of `0`. -/
@@ -115,9 +115,6 @@ lemma AnalyticAt.analyticOrderAt_ne_top (hf : AnalyticAt 𝕜 f z₀) :
 @[deprecated (since := "2025-05-03")]
 alias AnalyticAt.order_ne_top_iff := AnalyticAt.analyticOrderAt_ne_top
 
-@[deprecated (since := "2025-02-03")]
-alias AnalyticAt.order_neq_top_iff := AnalyticAt.analyticOrderAt_ne_top
-
 lemma analyticOrderAt_eq_zero : analyticOrderAt f z₀ = 0 ↔ ¬ AnalyticAt 𝕜 f z₀ ∨ f z₀ ≠ 0 := by
   by_cases hf : AnalyticAt 𝕜 f z₀
   · rw [← ENat.coe_zero, hf.analyticOrderAt_eq_natCast]
@@ -176,7 +173,7 @@ lemma natCast_le_analyticOrderAt (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
           hfh.filter_mono nhdsWithin_le_nhds] with z hz hf' hf''
         rw [← inv_smul_eq_iff₀ (pow_ne_zero _ <| sub_ne_zero_of_ne hz), hf'', smul_comm,
           ← mul_smul] at hf'
-        rw [pow_sub₀ _ (sub_ne_zero_of_ne hz) (by omega), ← hf']
+        rw [pow_sub₀ _ (sub_ne_zero_of_ne hz) (by cutsat), ← hf']
 
 @[deprecated (since := "2025-05-03")] alias natCast_le_order_iff := natCast_le_analyticOrderAt
 
@@ -242,7 +239,7 @@ lemma analyticOrderAt_add_of_ne (hfg : analyticOrderAt f z₀ ≠ analyticOrderA
 alias AnalyticAt.order_add_of_order_ne_order := analyticOrderAt_add_of_ne
 
 lemma analyticOrderAt_smul_eq_top_of_left {f : 𝕜 → 𝕜} (hf : analyticOrderAt f z₀ = ⊤) :
-   analyticOrderAt (f • g) z₀ = ⊤ := by
+     analyticOrderAt (f • g) z₀ = ⊤ := by
   rw [analyticOrderAt_eq_top, eventually_nhds_iff] at *
   obtain ⟨t, h₁t, h₂t, h₃t⟩ := hf
   exact ⟨t, fun y hy ↦ by simp [h₁t y hy], h₂t, h₃t⟩
@@ -371,14 +368,7 @@ theorem isClopen_setOf_analyticOrderAt_eq_top (hf : AnalyticOnNhd 𝕜 f U) :
     simp only [isOpen_induced h₂t', mem_preimage, h₃t', and_self, and_true]
     intro w hw
     simp only [mem_setOf_eq]
-    -- Trivial case: w = z
-    by_cases h₁w : w = z
-    · rw [h₁w]
-      tauto
-    -- Nontrivial case: w ≠ z
-    use t' \ {z.1}, fun y h₁y ↦ h₁t' y h₁y.1, h₂t'.sdiff isClosed_singleton
-    apply (mem_diff w).1
-    exact ⟨hw, mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
+    grind
 
 /-- On a connected set, there exists a point where a meromorphic function `f` has finite order iff
 `f` has finite order at every point. -/

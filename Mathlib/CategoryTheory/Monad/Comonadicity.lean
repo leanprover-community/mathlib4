@@ -22,7 +22,7 @@ comonadicity theorem:
 * `F` creates `F`-split coequalizers, see
   `CategoryTheory.Monad.comonadicOfCreatesFSplitEqualizers`
   (The converse of this is also shown, see
-   `CategoryTheory.Monad.createsFSplitEqualizersOfComonadic`)
+  `CategoryTheory.Monad.createsFSplitEqualizersOfComonadic`)
 * `C` has and `F` preserves `F`-split equalizers, and `F` reflects isomorphisms, see
   `CategoryTheory.Monad.comonadicOfHasPreservesFSplitEqualizersOfReflectsIsomorphisms`
 * `C` has and `F` preserves coreflexive equalizers, and `F` reflects isomorphisms, see
@@ -247,8 +247,7 @@ instance {A B} (f g : A ⟶ B) [F.IsCosplitPair f g] [PreservesLimitOfIsCosplitP
     PreservesLimit (parallelPair f g) F := PreservesLimitOfIsCosplitPair.out f g
 
 instance [PreservesLimitOfIsCosplitPair F] : ∀ (A : Coalgebra adj.toComonad),
-   PreservesLimit (parallelPair (G.map A.a)
-      (NatTrans.app adj.unit (G.obj A.A))) F :=
+    PreservesLimit (parallelPair (G.map A.a) (NatTrans.app adj.unit (G.obj A.A))) F :=
   fun _ => PreservesLimitOfIsCosplitPair.out _ _
 
 /-- Dual to `Monad.ReflectsColimitOfIsSplitPair`. -/
@@ -287,7 +286,7 @@ def comonadicOfHasPreservesReflectsFSplitEqualizers [HasEqualizerOfIsCosplitPair
       intro Y
       rw [comparisonAdjunction_unit_app]
       change IsIso (IsLimit.conePointUniqueUpToIso _ ?_).inv
-      infer_instance
+      · infer_instance
       apply @unitEqualizerOfCoreflectsEqualizer _ _ _ _ _ _ _ _ ?_
       letI _ :
         F.IsCosplitPair (G.map (F.map (adj.unit.app Y)))
@@ -347,7 +346,7 @@ class PreservesLimitOfIsCoreflexivePair (F : C ⥤ D) where
   out : ∀ ⦃A B⦄ (f g : A ⟶ B) [IsCoreflexivePair f g], PreservesLimit (parallelPair f g) F
 
 instance {A B} (f g : A ⟶ B) [IsCoreflexivePair f g] [PreservesLimitOfIsCoreflexivePair F] :
-  PreservesLimit (parallelPair f g) F := PreservesLimitOfIsCoreflexivePair.out f g
+    PreservesLimit (parallelPair f g) F := PreservesLimitOfIsCoreflexivePair.out f g
 
 instance [PreservesLimitOfIsCoreflexivePair F] : ∀ X : Coalgebra adj.toComonad,
     PreservesLimit (parallelPair (G.map X.a)
@@ -376,7 +375,7 @@ def comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms :
       intro Y
       rw [comparisonAdjunction_unit_app]
       change IsIso (IsLimit.conePointUniqueUpToIso _ ?_).inv
-      infer_instance
+      · infer_instance
       have : IsCoreflexivePair (G.map (F.map (adj.unit.app Y)))
           (adj.unit.app (G.obj (F.obj Y))) := by
         apply IsCoreflexivePair.mk' (G.map (adj.counit.app _)) _ _

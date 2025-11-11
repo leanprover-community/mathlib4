@@ -22,7 +22,7 @@ finite sets, finset
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
-assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice OrderedCommMonoid
+assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice IsOrderedMonoid
 
 open Multiset Subtype Function
 
@@ -46,11 +46,11 @@ def attach (s : Finset α) : Finset { x // x ∈ s } :=
 theorem attach_val (s : Finset α) : s.attach.1 = s.1.attach :=
   rfl
 
-@[simp]
+@[simp, grind ←]
 theorem mem_attach (s : Finset α) : ∀ x, x ∈ s.attach :=
   Multiset.mem_attach _
 
 @[simp, norm_cast]
-theorem coe_attach (s : Finset α) : s.attach.toSet = Set.univ := by ext; simp
+theorem coe_attach (s : Finset α) : (s.attach : Set s) = Set.univ := by ext; simp
 
 end Finset

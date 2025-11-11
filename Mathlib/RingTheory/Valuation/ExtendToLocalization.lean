@@ -39,12 +39,12 @@ noncomputable def Valuation.extendToLocalization : Valuation B Γ :=
       convert_to f.lift h (f.mk' (a + b) s) ≤ max (f.lift h _) (f.lift h _)
       · refine congr_arg (f.lift h) (IsLocalization.eq_mk'_iff_mul_eq.2 ?_)
         rw [add_mul, map_add]
-        rw [← IsLocalization.toLocalizationMap_toMap_apply S B, f.mk'_spec, f.mk'_spec,
-          IsLocalization.toLocalizationMap_toMap_apply,
-          IsLocalization.toLocalizationMap_toMap_apply]
+        rw [← IsLocalization.toLocalizationMap_apply S B, f.mk'_spec, f.mk'_spec,
+          IsLocalization.toLocalizationMap_apply,
+          IsLocalization.toLocalizationMap_apply]
       iterate 3 rw [f.lift_mk']
-      rw [max_mul_mul_right]
-      apply mul_le_mul_right' (v.map_add a b) }
+      dsimp
+      grw [max_mul_mul_right, v.map_add a b] }
 
 @[simp]
 theorem Valuation.extendToLocalization_mk' (x : A) (y : S) :

@@ -110,7 +110,7 @@ noncomputable def limitCone : Cone F where
 @[ext]
 lemma limitCone_pt_ext {x y : (limitCone F).pt}
     (w : (equivShrink F.sections).symm x = (equivShrink F.sections).symm y) : x = y := by
-  aesop
+  simp_all
 
 /-- (internal implementation) the fact that the proposed limit cone is the limit -/
 @[simps]
@@ -209,7 +209,6 @@ noncomputable def limNatIsoSectionsFunctor :
   NatIso.ofComponents (fun _ ↦ (limitEquivSections _).toIso)
     fun f ↦ funext fun x ↦ Subtype.ext <| funext fun _ ↦ congrFun (limMap_π f _) x
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11182): removed @[ext]
 /-- Construct a term of `limit F : Type u` from a family of terms `x : Π j, F.obj j`
 which are "coherent": `∀ (j j') (f : j ⟶ j'), F.map f (x j) = x j'`.
 -/
@@ -242,34 +241,33 @@ theorem limit_ext_iff' (F : J ⥤ Type v) (x y : limit F) :
 -- TODO: are there other limits lemmas that should have `_apply` versions?
 -- Can we generate these like with `@[reassoc]`?
 -- PROJECT: prove these for any concrete category where the forgetful functor preserves limits?
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] was removed because the linter said it was useless
---@[simp]
 variable {F} in
+@[simp]
 theorem Limit.w_apply {j j' : J} {x : limit F} (f : j ⟶ j') :
     F.map f (limit.π F j x) = limit.π F j' x :=
   congr_fun (limit.w F f) x
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] was removed because the linter said it was useless
+@[simp]
 theorem Limit.lift_π_apply (s : Cone F) (j : J) (x : s.pt) :
     limit.π F j (limit.lift F s x) = s.π.app j x :=
   congr_fun (limit.lift_π s j) x
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] was removed because the linter said it was useless
+@[simp]
 theorem Limit.map_π_apply {F G : J ⥤ Type u} [HasLimit F] [HasLimit G] (α : F ⟶ G) (j : J)
     (x : limit F) : limit.π G j (limMap α x) = α.app j (limit.π F j x) :=
   congr_fun (limMap_π α j) x
 
-@[simp]
+-- Not `@[simp]` since `lift_w_apply` proves it.
 theorem Limit.w_apply' {F : J ⥤ Type v} {j j' : J} {x : limit F} (f : j ⟶ j') :
     F.map f (limit.π F j x) = limit.π F j' x :=
   congr_fun (limit.w F f) x
 
-@[simp]
+-- Not `@[simp]` since `lift_π_apply` proves it.
 theorem Limit.lift_π_apply' (F : J ⥤ Type v) (s : Cone F) (j : J) (x : s.pt) :
     limit.π F j (limit.lift F s x) = s.π.app j x :=
   congr_fun (limit.lift_π s j) x
 
-@[simp]
+-- Not `@[simp]` since `map_π_apply` proves it.
 theorem Limit.map_π_apply' {F G : J ⥤ Type v} (α : F ⟶ G) (j : J) (x : limit F) :
     limit.π G j (limMap α x) = α.app j (limit.π F j x) :=
   congr_fun (limMap_π α j) x
@@ -284,10 +282,10 @@ section instances
 example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max w v) := inferInstance
 example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max v w) := inferInstance
 
-example : HasLimitsOfSize.{0, 0, v, v+1} (Type v) := inferInstance
-example : HasLimitsOfSize.{v, v, v, v+1} (Type v) := inferInstance
+example : HasLimitsOfSize.{0, 0, v, v + 1} (Type v) := inferInstance
+example : HasLimitsOfSize.{v, v, v, v + 1} (Type v) := inferInstance
 
-example [UnivLE.{v, u}] : HasLimitsOfSize.{v, v, u, u+1} (Type u) := inferInstance
+example [UnivLE.{v, u}] : HasLimitsOfSize.{v, v, u, u + 1} (Type u) := inferInstance
 
 end instances
 

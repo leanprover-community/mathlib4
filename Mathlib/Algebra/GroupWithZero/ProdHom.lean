@@ -142,12 +142,12 @@ lemma inl_injective [DecidablePred fun x : G₀ ↦ x = 0] :
 lemma inr_injective [DecidablePred fun x : H₀ ↦ x = 0] :
     Function.Injective (inr G₀ H₀) :=
   Function.HasLeftInverse.injective ⟨snd .., fun _ ↦ by simp⟩
-lemma fst_surjective [DecidablePred fun x : G₀ ↦ x = 0] :
-    Function.Surjective (fst G₀ H₀) :=
-  Function.HasRightInverse.surjective ⟨inl .., fun _ ↦ by simp⟩
-lemma snd_surjective [DecidablePred fun x : H₀ ↦ x = 0] :
-    Function.Surjective (snd G₀ H₀) :=
-  Function.HasRightInverse.surjective ⟨inr .., fun _ ↦ by simp⟩
+lemma fst_surjective : Function.Surjective (fst G₀ H₀) := by
+  classical
+  exact Function.HasRightInverse.surjective ⟨inl .., fun _ ↦ by simp⟩
+lemma snd_surjective : Function.Surjective (snd G₀ H₀) := by
+  classical
+  exact Function.HasRightInverse.surjective ⟨inr .., fun _ ↦ by simp⟩
 
 variable [DecidablePred fun x : G₀ ↦ x = 0] [DecidablePred fun x : H₀ ↦ x = 0]
 

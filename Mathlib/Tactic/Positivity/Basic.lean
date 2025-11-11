@@ -90,13 +90,13 @@ variable {R : Type*} [LinearOrder R] {a b c : R}
 private lemma le_min_of_lt_of_le (ha : a < b) (hb : a ≤ c) : a ≤ min b c := le_min ha.le hb
 private lemma le_min_of_le_of_lt (ha : a ≤ b) (hb : a < c) : a ≤ min b c := le_min ha hb.le
 private lemma min_ne (ha : a ≠ c) (hb : b ≠ c) : min a b ≠ c := by
-  rw [min_def]; split_ifs <;> assumption
+  grind
 
 private lemma min_ne_of_ne_of_lt (ha : a ≠ c) (hb : c < b) : min a b ≠ c := min_ne ha hb.ne'
 private lemma min_ne_of_lt_of_ne (ha : c < a) (hb : b ≠ c) : min a b ≠ c := min_ne ha.ne' hb
 
 private lemma max_ne (ha : a ≠ c) (hb : b ≠ c) : max a b ≠ c := by
-  rw [max_def]; split_ifs <;> assumption
+  grind
 
 end LinearOrder
 
@@ -443,6 +443,82 @@ def evalAscFactorial : PositivityExt where eval {u α} _ _ e := do
     pure (.positive q(Nat.ascFactorial_pos $n $k))
   | _, _, _ => throwError "failed to match Nat.ascFactorial"
 
+/-- Extension for `Nat.gcd`.
+Uses positivity of the left term, if available, then tries the right term.
+
+The implementation relies on the fact that `Positivity.core` on `ℕ` never returns `nonzero`. -/
+@[positivity Nat.gcd _ _]
+def evalNatGCD : PositivityExt where eval {u α} z p e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(Nat.gcd $a $b) =>
+    assertInstancesCommute
+    match ← core z p a with
+    | .positive pa => return .positive q(Nat.gcd_pos_of_pos_left $b $pa)
+    | _ =>
+      match ← core z p b with
+      | .positive pb => return .positive q(Nat.gcd_pos_of_pos_right $a $pb)
+      | _ => failure
+  | _, _, _ => throwError "not Nat.gcd"
+
+/-- Extension for `Nat.lcm`. -/
+@[positivity Nat.lcm _ _]
+def evalNatLCM : PositivityExt where eval {u α} z p e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(Nat.lcm $a $b) =>
+    assertInstancesCommute
+    match ← core z p a with
+    | .positive pa =>
+      match ← core z p b with
+      | .positive pb =>
+        return .positive q(Nat.lcm_pos $pa $pb)
+      | _ => failure
+    | _ => failure
+  | _, _, _ => throwError "not Nat.lcm"
+
+/-- Extension for `Nat.sqrt`. -/
+@[positivity Nat.sqrt _]
+def evalNatSqrt : PositivityExt where eval {u α} z p e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(Nat.sqrt $n) =>
+    assumeInstancesCommute
+    match ← core z p n with
+    | .positive pa => return .positive q(Nat.sqrt_pos.mpr $pa)
+    | _ => failure
+  | _, _, _ => throwError "not Nat.sqrt"
+
+/-- Extension for `Int.gcd`.
+Uses positivity of the left term, if available, then tries the right term. -/
+@[positivity Int.gcd _ _]
+def evalIntGCD : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(Int.gcd $a $b) =>
+    let z ← synthInstanceQ (q(Zero ℤ) : Q(Type))
+    let p ← synthInstanceQ (q(PartialOrder ℤ) : Q(Type))
+    assertInstancesCommute
+    match (← catchNone (core z p a)).toNonzero with
+    | some na => return .positive q(Int.gcd_pos_of_ne_zero_left $b $na)
+    | none =>
+      match (← core z p b).toNonzero with
+      | some nb => return .positive q(Int.gcd_pos_of_ne_zero_right $a $nb)
+      | none => failure
+  | _, _, _ => throwError "not Int.gcd"
+
+/-- Extension for `Int.lcm`. -/
+@[positivity Int.lcm _ _]
+def evalIntLCM : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(Int.lcm $a $b) =>
+    let z ← synthInstanceQ (q(Zero ℤ) : Q(Type))
+    let p ← synthInstanceQ (q(PartialOrder ℤ) : Q(Type))
+    assertInstancesCommute
+    match (← core z p a).toNonzero with
+    | some na =>
+      match (← core z p b).toNonzero with
+      | some nb => return .positive q(Int.lcm_pos $na $nb)
+      | _ => failure
+    | _ => failure
+  | _, _, _ => throwError "not Int.lcm"
+
 section NNRat
 open NNRat
 
@@ -512,7 +588,7 @@ def evalRatDen : PositivityExt where eval {u α} _ _ e := do
     pure <| .positive q(den_pos $a)
   | _, _ => throwError "not Rat.num"
 
-/-- Extension for `posPart`. `a⁺` is always nonegative, and positive if `a` is. -/
+/-- Extension for `posPart`. `a⁺` is always nonnegative, and positive if `a` is. -/
 @[positivity _⁺]
 def evalPosPart : PositivityExt where eval {u α} zα pα e := do
   match e with
@@ -521,13 +597,14 @@ def evalPosPart : PositivityExt where eval {u α} zα pα e := do
     let _instαgrp ← synthInstanceQ q(AddGroup $α)
     assertInstancesCommute
     -- FIXME: There seems to be a bug in `Positivity.core` that makes it fail (instead of returning
-    -- `.none`) here sometimes. See eg the first test for `posPart`. This is why we need `catchNone`
+    -- `.none`) here sometimes. See e.g. the first test for `posPart`. This is why we need
+    -- `catchNone`
     match ← catchNone (core zα pα a) with
     | .positive pf => return .positive q(posPart_pos $pf)
     | _ => return .nonnegative q(posPart_nonneg $a)
   | _ => throwError "not `posPart`"
 
-/-- Extension for `negPart`. `a⁻` is always nonegative. -/
+/-- Extension for `negPart`. `a⁻` is always nonnegative. -/
 @[positivity _⁻]
 def evalNegPart : PositivityExt where eval {u α} _ _ e := do
   match e with

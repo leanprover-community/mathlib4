@@ -168,10 +168,10 @@ def comapEq {β γ : Type w} {f g : β → γ} (h : f = g) : comap C f ≅ comap
   inv := { app := fun X b => eqToHom (by dsimp; simp only [h]) }
 
 theorem comapEq_symm {β γ : Type w} {f g : β → γ} (h : f = g) :
-    comapEq C h.symm = (comapEq C h).symm := by aesop_cat
+    comapEq C h.symm = (comapEq C h).symm := by cat_disch
 
 theorem comapEq_trans {β γ : Type w} {f g h : β → γ} (k : f = g) (l : g = h) :
-    comapEq C (k.trans l) = comapEq C k ≪≫ comapEq C l := by aesop_cat
+    comapEq C (k.trans l) = comapEq C k ≪≫ comapEq C l := by cat_disch
 
 theorem eqToHom_apply {β : Type w} {X Y : β → C} (h : X = Y) (b : β) :
     (eqToHom h : X ⟶ Y) b = eqToHom (by rw [h]) := by
@@ -195,7 +195,7 @@ end
 instance hasShift {β : Type*} [AddCommGroup β] (s : β) : HasShift (GradedObjectWithShift s C) ℤ :=
   hasShiftMk _ _
     { F := fun n => comap C fun b : β => b + n • s
-      zero := comapEq C (by aesop_cat) ≪≫ Pi.comapId β fun _ => C
+      zero := comapEq C (by cat_disch) ≪≫ Pi.comapId β fun _ => C
       add := fun m n => comapEq C (by ext; dsimp; rw [add_comm m n, add_zsmul, add_assoc]) ≪≫
           (Pi.comapComp _ _ _).symm }
 
@@ -210,8 +210,8 @@ theorem shiftFunctor_map_apply {β : Type*} [AddCommGroup β] (s : β)
     (shiftFunctor (GradedObjectWithShift s C) n).map f t = f (t + n • s) :=
   rfl
 
-instance [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) :
-  Zero (X ⟶ Y) := ⟨fun _ => 0⟩
+instance [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) : Zero (X ⟶ Y) :=
+  ⟨fun _ => 0⟩
 
 @[simp]
 theorem zero_apply [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) (b : β) :
@@ -228,7 +228,7 @@ open ZeroObject
 instance hasZeroObject [HasZeroObject C] [HasZeroMorphisms C] (β : Type w) :
     HasZeroObject.{max w v} (GradedObject β C) := by
   refine ⟨⟨fun _ => 0, fun X => ⟨⟨⟨fun b => 0⟩, fun f => ?_⟩⟩, fun X =>
-    ⟨⟨⟨fun b => 0⟩, fun f => ?_⟩⟩⟩⟩ <;> aesop_cat
+    ⟨⟨⟨fun b => 0⟩, fun f => ?_⟩⟩⟩⟩ <;> cat_disch
 
 end
 
@@ -265,7 +265,8 @@ instance : (total β C).Faithful where
     ext i
     replace w := Sigma.ι (fun i : β => X i) i ≫= w
     erw [colimit.ι_map, colimit.ι_map] at w
-    simp? at * says simp only [Discrete.functor_obj_eq_as, Discrete.natTrans_app] at *
+    replace w : f i ≫ colimit.ι (Discrete.functor Y) ⟨i⟩ =
+      g i ≫ colimit.ι (Discrete.functor Y) ⟨i⟩ := by simpa
     exact Mono.right_cancellation _ _ w
 
 end GradedObject
@@ -407,12 +408,12 @@ lemma congr_mapMap (φ₁ φ₂ : X ⟶ Y) (h : φ₁ = φ₂) : mapMap φ₁ p 
 variable (X)
 
 @[simp]
-lemma mapMap_id : mapMap (𝟙 X) p = 𝟙 _ := by aesop_cat
+lemma mapMap_id : mapMap (𝟙 X) p = 𝟙 _ := by cat_disch
 
 variable {X Z}
 
 @[simp, reassoc]
-lemma mapMap_comp [Z.HasMap p] : mapMap (φ ≫ ψ) p = mapMap φ p ≫ mapMap ψ p := by aesop_cat
+lemma mapMap_comp [Z.HasMap p] : mapMap (φ ≫ ψ) p = mapMap φ p ≫ mapMap ψ p := by cat_disch
 
 /-- The isomorphism of `J`-graded objects `X.mapObj p ≅ Y.mapObj p` induced by an
 isomorphism `X ≅ Y` of graded objects and a map `p : I → J`. -/
