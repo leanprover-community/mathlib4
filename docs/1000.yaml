@@ -1701,6 +1701,9 @@ Q1547975:
 
 Q1551745:
   title: Binomial inverse theorem
+  decl: Matrix.invOf_add_mul_mul'
+  authors: Antoine Chambert-Loir
+  date: 2025-11-11
 
 Q1555342:
   title: Reeh–Schlieder theorem
