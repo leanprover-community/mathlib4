@@ -16,13 +16,9 @@ We only need `O` to be `p`-adically complete.
 
 ## Main definitions
 * `fontaineTheta` : Fontaine's θ map, which is a ring homomorphism from `𝕎(O^♭)` to `O`.
-* `BDeRhamPlus` : The period ring `B_{dR}^+`.
-
-## Main theorems
-* `fontaineTheta_surjective` : Fontaine's θ map is surjective.
 
 ## Tags
-Fontaine's theta map, period rings, perfectoid theory, p-adic Hodge theory
+Fontaine's theta map, perfectoid theory, p-adic Hodge theory
 -/
 
 universe u
