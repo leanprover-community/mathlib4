@@ -198,4 +198,9 @@ lemma InvariantForm.apply_weylGroup_smul {B : P.InvariantForm} (g : P.weylGroup)
     intro x y
     rw [← Submonoid.mk_mul_mk _ _ _ hg₁ hg₂, mul_smul, mul_smul, hg₁', hg₂']
 
+@[simp]
+lemma InvariantForm.apply_weylGroup_coe_mul {B : P.InvariantForm} (g : P.weylGroup) (x y : M) :
+    B.form ((g : P.Aut) • x) ((g : P.Aut) • y) = B.form x y :=
+  apply_weylGroup_smul _ g x y
+
 end RootPairing
