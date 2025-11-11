@@ -18,6 +18,10 @@ We only need `O` to be `p`-adically complete.
 ## Main definitions
 * `fontaineTheta` : Fontaine's θ map, which is a ring homomorphism from `𝕎(O^♭)` to `O`.
 
+## Main Theorems
+* `fontaineTheta_teichmuller` : `θ([x])` is the untilt of `x`.
+* `fontaineTheta_surjective` : Fontaine's θ map is surjective.
+
 ## Tags
 Fontaine's theta map, perfectoid theory, p-adic Hodge theory
 -/
@@ -197,7 +201,7 @@ end WittVector
 variable [Fact ¬IsUnit (p : O)] [IsAdicComplete (span {(p : O)}) O]
 
 theorem surjective_fontaineTheta (hF : Function.Surjective (frobenius (ModP O p) p)) :
-    Function.Surjective (fontaineTheta : 𝕎 (O^♭) → O) := by
+    Function.Surjective (fontaineTheta O p) := by
   have : Ideal.map fontaineTheta (span {(p : 𝕎 (O^♭))}) = span {(p : O)} := by
     simp [map_span]
   have _ : IsHausdorff ((span {(p : 𝕎 (O^♭))}).map fontaineTheta) O := by
@@ -206,9 +210,9 @@ theorem surjective_fontaineTheta (hF : Function.Surjective (frobenius (ModP O p)
   apply surjective_of_mk_map_comp_surjective fontaineTheta (I := span {(p : 𝕎 (O^♭))})
   simp only [RingHom.coe_comp]
   suffices h : Function.Surjective (Ideal.Quotient.mk (span {(p : O)}) ∘
-      (fontaineTheta : 𝕎 (O^♭) → O)) by
+      (fontaineTheta O p)) by
     convert h
-  have : ((Ideal.Quotient.mk (span {(p : O)})) ∘ (fontaineTheta : 𝕎 (O^♭) → O)) = (fun x ↦
+  have : (Ideal.Quotient.mk (span {(p : O)})) ∘ (fontaineTheta O p) = (fun x ↦
       Perfection.coeff (ModP O p) _ 0 x) ∘ fun (x : 𝕎 (O^♭)) ↦ (x.coeff 0) := by
     ext
     simp [mk_fontaineTheta]
