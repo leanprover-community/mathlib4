@@ -203,7 +203,7 @@ theorem posSemidef_submatrix_equiv {M : Matrix n n R} (e : m ≃ n) :
 /-- The conjugate transpose of a matrix multiplied by the matrix is positive semidefinite -/
 theorem posSemidef_conjTranspose_mul_self [StarOrderedRing R] (A : Matrix m n R) :
     PosSemidef (Aᴴ * A) := by
-  refine ⟨isHermitian_transpose_mul_self _, fun x => ?_⟩
+  refine ⟨isHermitian_conjTranspose_mul_self _, fun x => ?_⟩
   rw [← mulVec_mulVec, dotProduct_mulVec, vecMul_conjTranspose, star_star]
   exact Finset.sum_nonneg fun i _ => star_mul_self_nonneg _
 
@@ -235,7 +235,7 @@ theorem trace_mul_conjTranspose_self_eq_zero_iff {A : Matrix m n R} :
 end trace
 
 lemma eigenvalues_conjTranspose_mul_self_nonneg (A : Matrix m n 𝕜) [DecidableEq n] (i : n) :
-    0 ≤ (isHermitian_transpose_mul_self A).eigenvalues i :=
+    0 ≤ (isHermitian_conjTranspose_mul_self A).eigenvalues i :=
   (posSemidef_conjTranspose_mul_self _).eigenvalues_nonneg _
 
 lemma eigenvalues_self_mul_conjTranspose_nonneg (A : Matrix m n 𝕜) [DecidableEq m] (i : m) :
