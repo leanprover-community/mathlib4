@@ -29,7 +29,7 @@ variable {R V : Type*} [CommSemiring R] [AddCommMonoid V] [Module R V]
 
 /-- The transvection associated with a linear form `f` and a vector `v`.
 
-NB. It is only a transvection when `f v = 0` -/
+NB. It is only a transvection when `f v = 0`. See also `Module.preReflection`. -/
 def transvection (f : Module.Dual R V) (v : V) : V →ₗ[R] V where
   toFun x := x + f x • v
   map_add' x y := by simp only [map_add]; module
