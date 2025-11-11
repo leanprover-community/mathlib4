@@ -1,8 +1,23 @@
+/-
+Copyright (c) 2025 Nikolas Tapia. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Nikolas Tapia
+-/
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 import Mathlib.RingTheory.HopfAlgebra.Basic
 import Mathlib.Algebra.Algebra.Bilinear
+
+/-!
+# Hopf algebra structure on `TensorAlgebra R M`
+
+In this file we implement the natura Hopf algebra structure on `TensorAlgebra R M`.
+The comultiplication is the unique algebra map satisfying `comul ((ι R) x) = (ι R) x ⊗ 1 + 1 ⊗ (ι R)
+x` for all `x : M`.
+`algebraMapInv` acts as the counit, and the antipode is the unique algebra map `antipode :
+TensorAlgebra R M → (TensorAlgebra R M)ᵐᵒᵖ` induced by `fun x => op -(ι R) x`.
+-/
 
 namespace TensorAlgebra
 open scoped TensorProduct
@@ -25,6 +40,7 @@ def comul : T[M] →ₐ[R] T[M] ⊗[R] T[M] := lift R (comul' R)
 /-- Antipode in `TensorAlgebra R M` as an algebra map. -/
 def antipode : T[M] →ₗ[R] T[M] := (MulOpposite.opLinearEquiv R).symm.comp
   (lift R ((MulOpposite.opLinearEquiv R).comp (-(ι R)))).toLinearMap
+def antipode : T[M] →ₗ[R] T[M] := (MulOpposite.opLinearEquiv R).symm.comp (lift R ((MulOpposite.opLinearEquiv R).comp (-(ι R)))).toLinearMap
 
 @[simp]
 lemma comul_apply' (x : M) : comul' R x = ι R x ⊗ₜ[R] ↑1 + ↑1 ⊗ₜ[R] ι R x := by
