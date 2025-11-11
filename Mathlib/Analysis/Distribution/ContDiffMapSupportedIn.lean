@@ -32,20 +32,22 @@ larger space of test functions.
 
 - `ContDiffMapSupportedIn E F n K`: the type of bundled `n`-times continuously differentiable
   functions `E → F` which vanish outside of `K`.
-- `ContDiffMapSupportedIn.iteratedFDerivWithOrderₗ`: wrapper, as a `𝕜`-linear map, for
+- `ContDiffMapSupportedIn.iteratedFDerivWithOrderLM`: wrapper, as a `𝕜`-linear map, for
   `iteratedFDeriv` from `ContDiffMapSupportedIn E F n K` to
   `ContDiffMapSupportedIn E (E [×i]→L[ℝ] F) k K`.
-- `ContDiffMapSupportedIn.iteratedFDerivₗ`: specialization of the above, giving a `𝕜`-linear map
+- `ContDiffMapSupportedIn.iteratedFDerivLM`: specialization of the above, giving a `𝕜`-linear map
   from `ContDiffMapSupportedIn E F ⊤ K` to `ContDiffMapSupportedIn E (E [×i]→L[ℝ] F) ⊤ K`.
+- `ContDiffMapSupportedIn.topologicalSpace`, `ContDiffMapSupportedIn.uniformSpace`: the topology
+  and uniform structures on `𝓓^{n}_{K}(E, F)`, given by uniform convergence of the functions and
+  all its derivatives up to order `n`.
 
 ## Main statements
 
-TODO:
-- `ContDiffMapSupportedIn.instIsUniformAddGroup` and
-  `ContDiffMapSupportedIn.instLocallyConvexSpace`: `ContDiffMapSupportedIn` is a locally convex
+- `ContDiffMapSupportedIn.isTopologicalAddGroup`, `ContDiffMapSupportedIn.continuousSMul` and
+  `ContDiffMapSupportedIn.instLocallyConvexSpace`: `𝓓^{n}_{K}(E, F)` is a locally convex
   topological vector space.
 
-## Notation
+## Notation ₗ
 
 - `𝓓^{n}_{K}(E, F)`:  the space of `n`-times continuously differentiable functions `E → F`
   which vanish outside of `K`.
@@ -59,7 +61,7 @@ TODO:
 * Since the most common case is by far the smooth case, we often reserve the "expected" name
   of a result/definition to this case, and add `WithOrder` to the declaration taking care of
   all regularities.
-* In `iteratedFDerivWithOrderₗ`, we define the `i`-th iterated differentiation operator as
+* In `iteratedFDerivWithOrderLM`, we define the `i`-th iterated differentiation operator as
   a map from `𝓓^{n}_{K}` to `𝓓^{k}_{K}` without imposing relations on `n`, `k` and `i`. Of course
   this is defined as `0` if `k + i > n`. This creates some verbosity as all of these variables are
   explicit, but it allows the most flexibility while avoiding DTT hell.
@@ -395,20 +397,23 @@ noncomputable instance uniformSpace : UniformSpace 𝓓^{n}_{K}(E, F) := .replac
   toTopologicalSpace_iInf.symm
 
 protected theorem uniformSpace_eq_iInf : (uniformSpace : UniformSpace 𝓓^{n}_{K}(E, F)) =
-    ⨅ (i : ℕ), UniformSpace.comap (structureMapLM ℝ n i)
-      inferInstance :=
+    ⨅ (i : ℕ), UniformSpace.comap (structureMapLM ℝ n i) inferInstance :=
   UniformSpace.replaceTopology_eq _ toTopologicalSpace_iInf.symm
 
-instance : IsUniformAddGroup 𝓓^{n}_{K}(E, F) := by
+instance isTopologicalAddGroup : IsTopologicalAddGroup 𝓓^{n}_{K}(E, F) := by
+  refine topologicalAddGroup_iInf (fun i ↦ ?_)
+  exact topologicalAddGroup_induced _
+
+instance isUniformAddGroup : IsUniformAddGroup 𝓓^{n}_{K}(E, F) := by
   rw [ContDiffMapSupportedIn.uniformSpace_eq_iInf]
   refine isUniformAddGroup_iInf (fun i ↦ ?_)
   exact IsUniformAddGroup.comap _
 
-instance : ContinuousSMul 𝕜 𝓓^{n}_{K}(E, F) := by
+instance continuousSMul : ContinuousSMul 𝕜 𝓓^{n}_{K}(E, F) := by
   refine continuousSMul_iInf
     (fun i ↦ continuousSMul_induced (structureMapLM 𝕜 n i))
 
-instance : LocallyConvexSpace ℝ 𝓓^{n}_{K}(E, F) :=
+instance locallyConvexSpace : LocallyConvexSpace ℝ 𝓓^{n}_{K}(E, F) :=
   LocallyConvexSpace.iInf fun _ ↦ LocallyConvexSpace.induced _
 
 variable (n) in
