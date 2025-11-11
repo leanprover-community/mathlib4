@@ -456,26 +456,20 @@ lemma morphismProperty_eq_top [L.IsLocalization W] (P : MorphismProperty D) [P.R
     [P.IsMultiplicative] (h₁ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), P (L.map f))
     (h₂ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (hf : W f), P (isoOfHom L W f hf).inv) :
     P = ⊤ := by
-  let P' : MorphismProperty W.Localization :=
-    P.inverseImage (Construction.lift L Functor.IsLocalization.inverts)
-  have hP' : P' = ⊤ := by
-    apply Construction.morphismProperty_eq_top
-    · intros
-      simp only [MorphismProperty.inverseImage_iff, Construction.lift_obj, ← Functor.comp_map,
-        Functor.congr_hom (Construction.fac L Functor.IsLocalization.inverts), Functor.comp_obj,
-        eqToHom_refl, Category.comp_id, Category.id_comp, h₁, P']
-    · intro X Y w hw
-      simp only [P', MorphismProperty.inverseImage_iff]
-      convert h₂ w hw
-      convert Functor.map_inv (Construction.lift L Functor.IsLocalization.inverts)
-        (Construction.wIso w hw).hom
-      · simp
-      · have : (Construction.wIso w hw).hom = W.Q.map w := rfl
-        simp only [this, ← Functor.comp_map,
-          Functor.congr_hom (Construction.fac L Functor.IsLocalization.inverts)]
-        simp [isoOfHom]
-  have : P'.map _ = P := MorphismProperty.map_inverseImage_eq_of_isEquivalence ..
-  simp [← this, hP']
+  let e := compUniqFunctor W.Q L W
+  have hP : P.inverseImage (uniq W.Q L W).functor = ⊤ :=
+    Construction.morphismProperty_eq_top _
+      (fun _ _ f ↦ (P.arrow_mk_iso_iff
+        (((Functor.mapArrowFunctor _ _).mapIso e).app (Arrow.mk f))).2 (h₁ f))
+      (fun X Y f hf ↦ by
+        refine (P.arrow_mk_iso_iff (Arrow.isoMk (e.app _) (e.app _) ?_)).2 (h₂ f hf)
+        dsimp
+        rw [Construction.wInv_eq_isoOfHom_inv, ← cancel_mono (isoOfHom L W f hf).hom,
+          assoc, assoc, Iso.inv_hom_id, comp_id, isoOfHom_hom, ← NatTrans.naturality,
+          Functor.comp_map, ← Functor.map_comp_assoc,
+          isoOfHom_inv_hom_id, map_id, id_comp])
+  rw [← P.map_inverseImage_eq_of_isEquivalence (uniq W.Q L W).functor, hP,
+    MorphismProperty.map_top_eq_top_of_essSurj_of_full]
 
 lemma isGroupoid [L.IsLocalization ⊤] :
     IsGroupoid D := by
