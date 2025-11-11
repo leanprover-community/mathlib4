@@ -243,10 +243,7 @@ lemma Ideal.mul_iInf (I : Ideal A) {ι : Type*} [Nonempty ι] (J : ι → Ideal 
   refine (le_iInf fun i ↦ Ideal.mul_mono_right (iInf_le _ _)).antisymm ?_
   have H : ⨅ i, I * J i ≤ I := (iInf_le _ (Nonempty.some ‹_›)).trans Ideal.mul_le_right
   obtain ⟨K, hK⟩ := Ideal.dvd_iff_le.mpr H
-  rw [hK]
-  refine mul_le_mul_left' ?_ I
-  rw [le_iInf_iff]
-  intro i
+  grw [hK, le_iInf (a := K) fun i ↦ ?_]
   rw [← mul_le_mul_iff_of_pos_left (a := I), ← hK]
   · exact iInf_le _ _
   · exact bot_lt_iff_ne_bot.mpr hI
@@ -1011,6 +1008,16 @@ theorem coe_primesOverFinset : primesOverFinset p B = primesOver p B := by
     (fun ⟨hPp, h⟩ => ⟨hPp, ⟨hpm.eq_of_le (comap_ne_top _ hPp.ne_top) (le_comap_of_map_le h)⟩⟩)
     (fun ⟨hPp, h⟩ => ⟨hPp, map_le_of_le_comap h.1.le⟩)
 
+include hpb in
+theorem mem_primesOverFinset_iff {P : Ideal B} : P ∈ primesOverFinset p B ↔ P ∈ primesOver p B := by
+  rw [← Finset.mem_coe, coe_primesOverFinset hpb]
+
+variable {R} (A) in
+theorem IsLocalRing.primesOverFinset_eq [IsLocalRing A] [IsDedekindDomain A]
+    [Algebra R A] [FaithfulSMul R A] [Module.Finite R A] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
+    primesOverFinset p A = {IsLocalRing.maximalIdeal A} := by
+  rw [← Finset.coe_eq_singleton, coe_primesOverFinset hp0, IsLocalRing.primesOver_eq A hp0]
+
 namespace IsDedekindDomain.HeightOneSpectrum
 
 /--
@@ -1046,7 +1053,7 @@ theorem primesOver_finite : (primesOver p B).Finite := by
 noncomputable instance : Fintype (p.primesOver B) := Set.Finite.fintype (primesOver_finite p B)
 
 theorem primesOver_ncard_ne_zero : (primesOver p B).ncard ≠ 0 := by
-  rcases exists_ideal_liesOver_maximal_of_isIntegral p B with ⟨P, hPm, hp⟩
+  rcases exists_maximal_ideal_liesOver_of_isIntegral (S := B) p with ⟨P, hPm, hp⟩
   exact Set.ncard_ne_zero_of_mem ⟨hPm.isPrime, hp⟩ (primesOver_finite p B)
 
 theorem one_le_primesOver_ncard : 1 ≤ (primesOver p B).ncard :=
