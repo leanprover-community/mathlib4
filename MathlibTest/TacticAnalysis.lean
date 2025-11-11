@@ -1,5 +1,6 @@
 import Mathlib.Tactic.TacticAnalysis.Declarations
 import Mathlib.Tactic.AdaptationNote
+import Lean.PremiseSelection
 
 section terminalReplacement
 
@@ -37,6 +38,19 @@ example : x = z := by
   rw [xy]
   rw [yz]
 
+-- Definitions using `where` clauses did not get picked up by the framework,
+-- since apparently their syntax bounds do not match the original.
+structure Fact (p : Prop) : Prop where
+  out : p
+/--
+warning: Try this: rw [xy, yz]
+-/
+#guard_msgs in
+example : Fact (x = z) where
+  out := by
+    rw [xy]
+    rw [yz]
+
 end rwMerge
 
 section mergeWithGrind
@@ -58,6 +72,20 @@ example : 1 + 1 = 2 := by
 example : 1 + 1 = 2 := by
   #adaptation_note /-- -/
   grind
+
+set_option linter.unusedTactic false
+
+/-- warning: 'skip; grind' can be replaced with 'grind' -/
+#guard_msgs in
+example : 0 = 0 := by
+  intros
+  intros
+  intros
+  intros
+  skip
+  grind
+
+set_option linter.unusedTactic true
 
 end mergeWithGrind
 
@@ -138,3 +166,53 @@ example : ∀ a b : Unit, a = b := by
   rfl
 
 end introMerge
+
+section tryAtEachStep
+
+section
+set_option linter.tacticAnalysis.tryAtEachStepGrind true
+
+/-- info: `rfl` can be replaced with `grind` -/
+#guard_msgs in
+example : 1 + 1 = 2 := by
+  rfl
+
+/--
+info: `skip` can be replaced with `grind`
+---
+info: `rfl` can be replaced with `grind`
+---
+warning: 'skip' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : 1 + 1 = 2 := by
+  skip
+  rfl
+
+end
+
+section
+
+def P (_ : Nat) := True
+theorem p : P 37 := trivial
+
+set_premise_selector fun _ _ => pure #[{ name := `p, score := 1.0 }]
+
+-- FIXME: remove this one `grind +premises` lands.
+macro_rules | `(tactic| grind +premises) => `(tactic| grind [p])
+
+example : P 37 := by
+  grind +premises
+
+set_option linter.tacticAnalysis.tryAtEachStepGrindPremises true
+
+/-- info: `trivial` can be replaced with `grind +premises✝` -/
+#guard_msgs in
+example : P 37 := by
+  trivial
+
+end
+
+end tryAtEachStep

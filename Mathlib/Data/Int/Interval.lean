@@ -125,26 +125,6 @@ theorem Icc_eq_pair : Finset.Icc a (a + 1) = {a, a + 1} := by
   simp
   omega
 
-@[deprecated Fintype.card_Icc (since := "2025-03-28")]
-theorem card_fintype_Icc : Fintype.card (Set.Icc a b) = (b + 1 - a).toNat := by
-  simp
-
-@[deprecated Fintype.card_Ico (since := "2025-03-28")]
-theorem card_fintype_Ico : Fintype.card (Set.Ico a b) = (b - a).toNat := by
-  simp
-
-@[deprecated Fintype.card_Ioc (since := "2025-03-28")]
-theorem card_fintype_Ioc : Fintype.card (Set.Ioc a b) = (b - a).toNat := by
-  simp
-
-@[deprecated Fintype.card_Ioo (since := "2025-03-28")]
-theorem card_fintype_Ioo : Fintype.card (Set.Ioo a b) = (b - a - 1).toNat := by
-  simp
-
-@[deprecated Fintype.card_uIcc (since := "2025-03-28")]
-theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a).natAbs + 1 := by
-  simp
-
 theorem card_fintype_Icc_of_le (h : a ≤ b + 1) : (Fintype.card (Set.Icc a b) : ℤ) = b + 1 - a := by
   simp [h]
 

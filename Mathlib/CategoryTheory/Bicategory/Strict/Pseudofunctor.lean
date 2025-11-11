@@ -163,6 +163,13 @@ lemma mapComp'₀₂₃_inv (hf : f₀₂ ≫ f₂₃ = f) :
   rw [← cancel_epi (F.mapComp' f₀₂ f₂₃ f).hom, Iso.hom_inv_id]
   simp [mapComp'₀₂₃_hom _ _ _ _ _ _ f h₀₂ h₁₃ hf]
 
+@[to_app (attr := reassoc)]
+lemma mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom (hf : f₀₂ ≫ f₂₃ = f) :
+    (F.mapComp' f₀₂ f₂₃ f).inv ≫ (F.mapComp' f₀₁ f₁₃ f).hom =
+      (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).hom ▷ F.map f₂₃ ≫ (α_ _ _ _).hom ≫
+      F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).inv := by
+  simp [mapComp'₀₂₃_inv _ _ _ _ _ _ _ h₀₂ h₁₃ hf]
+
 end associativity
 
 section CommSq

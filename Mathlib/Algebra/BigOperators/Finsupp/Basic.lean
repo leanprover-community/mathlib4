@@ -163,9 +163,6 @@ theorem _root_.SubmonoidClass.finsuppProd_mem {S : Type*} [SetLike S N] [Submono
     (s : S) (f : α →₀ M) (g : α → M → N) (h : ∀ c, f c ≠ 0 → g c (f c) ∈ s) : f.prod g ∈ s :=
   prod_mem fun _i hi => h _ (Finsupp.mem_support_iff.mp hi)
 
-@[deprecated (since := "2025-04-06")]
-alias _root_.SubmonoidClass.finsupp_prod_mem := _root_.SubmonoidClass.finsuppProd_mem
-
 @[to_additive]
 theorem prod_congr {f : α →₀ M} {g1 g2 : α → M → N} (h : ∀ x ∈ f.support, g1 x (f x) = g2 x (f x)) :
     f.prod g1 = f.prod g2 :=
@@ -200,27 +197,15 @@ theorem map_finsuppProd [Zero M] [CommMonoid N] [CommMonoid P] {H : Type*}
     (h : H) (f : α →₀ M) (g : α → M → N) : h (f.prod g) = f.prod fun a b => h (g a b) :=
   map_prod h _ _
 
-@[deprecated (since := "2025-04-06")] alias map_finsupp_prod := map_finsuppProd
-@[deprecated (since := "2025-04-06")] alias map_finsupp_sum := map_finsuppSum
-
 @[to_additive]
 theorem MonoidHom.coe_finsuppProd [Zero β] [MulOneClass N] [CommMonoid P] (f : α →₀ β)
     (g : α → β → N →* P) : ⇑(f.prod g) = f.prod fun i fi => ⇑(g i fi) :=
   MonoidHom.coe_finset_prod _ _
 
-@[deprecated (since := "2025-04-06")] alias MonoidHom.coe_finsupp_prod := MonoidHom.coe_finsuppProd
-@[deprecated (since := "2025-04-06")]
-alias AddMonoidHom.coe_finsupp_sum := AddMonoidHom.coe_finsuppSum
-
 @[to_additive (attr := simp)]
 theorem MonoidHom.finsuppProd_apply [Zero β] [MulOneClass N] [CommMonoid P] (f : α →₀ β)
     (g : α → β → N →* P) (x : N) : f.prod g x = f.prod fun i fi => g i fi x :=
   MonoidHom.finset_prod_apply _ _ _
-
-@[deprecated (since := "2025-04-06")]
-alias MonoidHom.finsupp_prod_apply := MonoidHom.finsuppProd_apply
-@[deprecated (since := "2025-04-06")]
-alias AddMonoidHom.finsupp_sum_apply := AddMonoidHom.finsuppSum_apply
 
 namespace Finsupp
 
@@ -244,10 +229,6 @@ theorem single_sum [Zero M] [AddCommMonoid N] (s : ι →₀ M) (f : ι → M �
 theorem prod_neg_index [SubtractionMonoid G] [CommMonoid M] {g : α →₀ G} {h : α → G → M}
     (h0 : ∀ a, h a 0 = 1) : (-g).prod h = g.prod fun a b => h a (-b) :=
   prod_mapRange_index h0
-
-end Finsupp
-
-namespace Finsupp
 
 theorem finset_sum_apply [AddCommMonoid N] (S : Finset ι) (f : ι → α →₀ N) (a : α) :
     (∑ i ∈ S, f i) a = ∑ i ∈ S, f i a :=
@@ -285,6 +266,23 @@ theorem support_finset_sum [DecidableEq β] [AddCommMonoid M] {s : Finset α} {f
 @[simp]
 theorem sum_zero [Zero M] [AddCommMonoid N] {f : α →₀ M} : (f.sum fun _ _ => (0 : N)) = 0 :=
   Finset.sum_const_zero
+
+theorem sum_eq_one_iff (d : α →₀ ℕ) : sum d (fun _ n ↦ n) = 1 ↔ ∃ a, d = single a 1 := by
+  classical
+  refine ⟨fun h1 ↦ ?_, ?_⟩
+  · have hd0 : d ≠ 0 := (by simp [·] at h1)
+    obtain ⟨a, ha⟩ := ne_iff.mp hd0
+    obtain ⟨hda, hda'⟩ : d a = 1 ∧ ∀ i ≠ a, d i = 0 := by
+      rw [← add_sum_erase' _ a _ (fun _ ↦ rfl), Nat.add_eq_one_iff, or_iff_not_imp_left] at h1
+      simp_all +contextual [sum, support_erase, sum_eq_zero_iff, mem_erase, erase_ne]
+    use a
+    ext b
+    by_cases hb : b = a
+    · rw [hb, single_eq_same, hda]
+    · simpa only [single_eq_of_ne hb] using hda' b hb
+  · rintro ⟨a, rfl⟩
+    rw [sum_eq_single a ?_ (fun _ ↦ rfl), single_eq_same]
+    exact fun _ _ hba ↦ single_eq_of_ne hba
 
 @[to_additive (attr := simp)]
 theorem prod_mul [Zero M] [CommMonoid N] {f : α →₀ M} {h₁ h₂ : α → M → N} :
