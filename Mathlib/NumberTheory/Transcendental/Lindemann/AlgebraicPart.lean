@@ -248,7 +248,8 @@ theorem linearIndependent_range_aux (F : Type*) {K G S : Type*}
     rwa [AddMonoidAlgebra.coe_mapRangeAlgHom, Finsupp.range_mapRange]
   rw [← hy'] at y0 y_mem hfy
   rw [map_ne_zero_iff _
-    (by simpa using Finsupp.mapRange_injective _ _ (algebraMap F K).injective)] at y0
+    (by simpa [AddMonoidAlgebra.coe_mapRangeAlgHom] using
+      Finsupp.mapRange_injective _ _ (algebraMap F K).injective)] at y0
   exact ⟨y', y0, hfy⟩
 
 theorem linearIndependent_exp_aux2_1 {F K S : Type*}
