@@ -187,7 +187,9 @@ def invertibleAddMulMul : Invertible (A + U * C * V) where
   invOf_mul_self := add_mul_mul_invOf_mul_eq_one' _ _ _ _
   mul_invOf_self := add_mul_mul_invOf_mul_eq_one _ _ _ _
 
-/-- The **Woodbury Identity** (`⅟` version). -/
+/-- The **Woodbury Identity** (`⅟` version).
+
+See `Matrix.invOf_add_mul_mul'` for the binomial inverse theorem. -/
 theorem invOf_add_mul_mul [Invertible (A + U * C * V)] :
     ⅟(A + U * C * V) = ⅟A - ⅟A * U * ⅟(⅟C + V * ⅟A * U) * V * ⅟A := by
   letI := invertibleAddMulMul A U C V
@@ -222,7 +224,7 @@ lemma add_mul_mul_mul_invOf_eq_one' :
   simp only [Matrix.add_mul, invOf_mul_self', Matrix.mul_one, add_right_inj]
   simp only [Matrix.mul_assoc]
 
-/-- If matrices `A` and `C + C *V * A⁻¹ * U * C` are invertible, then so is `A + U * C * V`. -/
+/-- If matrices `A` and `C + C * V * A⁻¹ * U * C` are invertible, then so is `A + U * C * V`. -/
 def invertibleAddMulMul' : Invertible (A + U * C * V) where
   invOf := ⅟A - ⅟A * U * C * ⅟(C + C * V * ⅟A * U * C) * C * V * ⅟A
   invOf_mul_self := add_mul_mul_mul_invOf_eq_one' A U C V
