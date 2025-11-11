@@ -3,10 +3,12 @@ Copyright (c) 2025 Concordance Inc. dba Harmonic. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Floor.Semifield
 import Mathlib.Data.Nat.NthRoot.Defs
 import Mathlib.Data.Nat.ModEq
-import Mathlib.Tactic.Rify
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Positivity.Core
+import Mathlib.Tactic.Ring.Basic
+import Mathlib.Tactic.Zify
 
 /-!
 # Lemmas about `Nat.nthRoot`
