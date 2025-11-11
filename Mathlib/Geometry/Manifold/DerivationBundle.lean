@@ -109,8 +109,8 @@ namespace Derivation
 variable {I}
 
 /-- The evaluation at a point as a linear map. -/
-def evalAt (x : M) : Derivation 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯ →ₗ[𝕜] PointDerivation I x :=
-  (ContMDiffFunction.evalAt I x).compDer.restrictScalars 𝕜
+def evalAt (x : M) : Derivation 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯ →ₗ[C^∞⟮I, M; 𝕜⟯⟨x⟩]
+  PointDerivation I x := (ContMDiffFunction.evalAt I x).compDer
 
 theorem evalAt_apply (x : M) : evalAt x X f = (X f) x :=
   rfl
