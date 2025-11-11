@@ -379,6 +379,32 @@ protected theorem PartiallyWellOrderedOn.prod {t : Set β} (hs : PartiallyWellOr
   obtain ⟨m, n, hlt, hle⟩ := ht.exists_lt fun n => (hf _).2
   exact ⟨g₁ m, g₁ n, g₁.strictMono hlt, h₁ _ _ hlt.le, hle⟩
 
+/-- A version of **Dickson's lemma** on finite product of well-quasi-ordered sets. See
+`WellQuasiOrdered.pi` when the type `α i` is well-quasi-ordered. -/
+protected theorem PartiallyWellOrderedOn.pi {α : ι → Type*} [Finite ι] {r : ∀ i, α i → α i → Prop}
+    [∀ i, IsPreorder (α i) (r i)] {s : ∀ i, Set (α i)}
+    (hs : ∀ i, PartiallyWellOrderedOn (s i) (r i)) :
+    PartiallyWellOrderedOn (Set.univ.pi s) fun a b : ∀ i, α i => ∀ i, r i (a i) (b i) := by
+  haveI := Fintype.ofFinite ι
+  haveI : IsPreorder (∀ i, α i) (fun a b : ∀ i, α i => ∀ i, r i (a i) (b i)) :=
+    { refl a i := refl (a i)
+      trans a b c hab hbc i := _root_.trans (hab i) (hbc i) }
+  suffices ∀ (t : Finset ι), ∀ (f : ℕ → ∀ i, α i), (∀ n i, f n i ∈ s i) →
+    ∃ g : ℕ ↪o ℕ, ∀ ⦃a b : ℕ⦄, a ≤ b → ∀ i, i ∈ t → r i ((f ∘ g) a i) ((f ∘ g) b i) by
+    rw [partiallyWellOrderedOn_iff_exists_monotone_subseq]
+    intro f hf
+    simp only [mem_pi, mem_univ, forall_const] at hf
+    simpa only [Finset.mem_univ, true_imp_iff] using this Finset.univ f hf
+  refine Finset.cons_induction ?_ ?_
+  · intro f hf
+    exists RelEmbedding.refl (· ≤ ·)
+    simp only [IsEmpty.forall_iff, imp_true_iff, Finset.notMem_empty]
+  · intro i t hi ih f hf
+    obtain ⟨g, hg⟩ := (hs i).exists_monotone_subseq (hf · i)
+    obtain ⟨g', hg'⟩ := ih (f ∘ g) (hf <| g ·)
+    refine ⟨g'.trans g, fun a b hab => (Finset.forall_mem_cons _ _).2 ?_⟩
+    exact ⟨hg _ _ (OrderHomClass.mono g' hab), hg' hab⟩
+
 theorem PartiallyWellOrderedOn.wellFoundedOn (h : s.PartiallyWellOrderedOn r) :
     s.WellFoundedOn fun a b => r a b ∧ ¬ r b a :=
   h.wellFounded
@@ -885,11 +911,11 @@ theorem ProdLex_iff [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)} :
 
 end Set.PartiallyWellOrderedOn
 
-/-- A version of **Dickson's lemma**. See `Pi.wellQuasiOrderedLE` for `WellQuasiOrderedLE`
-version. -/
-theorem Pi.isPWO {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, WellQuasiOrderedLE (α i)] [Finite ι]
-    (s : Set (∀ i, α i)) : s.IsPWO :=
-  isPWO_of_wellQuasiOrderedLE s
+/-- A version of **Dickson's lemma** on finite product of well-quasi-ordered sets.
+See `Pi.wellQuasiOrderedLE` when the type `α i` is `WellQuasiOrderedLE`. -/
+theorem Pi.isPWO {α : ι → Type*} [Finite ι] [∀ i, Preorder (α i)] {s : ∀ i, Set (α i)}
+    (hs : ∀ i, (s i).IsPWO) : (Set.univ.pi s).IsPWO :=
+  PartiallyWellOrderedOn.pi hs
 
 section ProdLex
 variable {rα : α → α → Prop} {rβ : β → β → Prop} {f : γ → α} {g : γ → β} {s : Set γ}
