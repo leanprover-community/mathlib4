@@ -15,6 +15,7 @@ import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs
 import Mathlib.RingTheory.Finiteness.Cardinality
 import Mathlib.RingTheory.Localization.Module
+
 /-!
 # Semilinear sets are closed under intersection, set difference and complement
 
