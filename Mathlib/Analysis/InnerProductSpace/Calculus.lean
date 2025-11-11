@@ -197,6 +197,13 @@ theorem hasStrictFDerivAt_norm_sq (x : F) :
   ext y
   simp [two_smul, real_inner_comm]
 
+@[simp]
+theorem fderiv_norm_sq_apply (x : F) : fderiv ℝ (fun (x : F) ↦ ‖x‖ ^ 2) x = 2 • innerSL ℝ x :=
+  (hasStrictFDerivAt_norm_sq x).hasFDerivAt.fderiv
+
+theorem fderiv_norm_sq : fderiv ℝ (fun (x : F) ↦ ‖x‖ ^ 2) = 2 • (innerSL ℝ (E := F)) := by
+  ext1; simp
+
 theorem HasFDerivAt.norm_sq {f : G → F} {f' : G →L[ℝ] F} (hf : HasFDerivAt f f' x) :
     HasFDerivAt (‖f ·‖ ^ 2) (2 • (innerSL ℝ (f x)).comp f') x :=
   (hasStrictFDerivAt_norm_sq _).hasFDerivAt.comp x hf
