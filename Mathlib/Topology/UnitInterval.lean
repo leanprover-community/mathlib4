@@ -297,21 +297,21 @@ Form a convex linear combination of two points in a closed interval.
 This should be removed once a general theory of convex spaces is available in Mathlib.
 -/
 def convexCombo {a b : ℝ} (x y : Icc a b) (t : unitInterval) : Icc a b :=
-  ⟨t * x + (1 - t) * y, by
+  ⟨(1 - t) * x + t * y, by
     constructor
     · nlinarith [x.2.1, y.2.1, t.2.1, t.2.2]
     · nlinarith [x.2.2, y.2.2, t.2.1, t.2.2]⟩
 
 @[simp, grind =]
 theorem coe_convexCombo {a b : ℝ} (x y : Icc a b) (t : unitInterval) :
-  (convexCombo x y t : ℝ) = t * x + (1 - t) * y := rfl
+  (convexCombo x y t : ℝ) = (1 - t) * x + t * y := rfl
 
 @[simp, grind =]
-theorem convexCombo_zero {a b : ℝ} (x y : Icc a b) : convexCombo x y 0 = y := by
+theorem convexCombo_zero {a b : ℝ} (x y : Icc a b) : convexCombo x y 0 = x := by
   simp [convexCombo]
 
 @[simp, grind =]
-theorem convexCombo_one {a b : ℝ} (x y : Icc a b) : convexCombo x y 1 = x := by
+theorem convexCombo_one {a b : ℝ} (x y : Icc a b) : convexCombo x y 1 = y := by
   simp [convexCombo]
 
 @[simp, grind =]
@@ -320,8 +320,7 @@ theorem convexCombo_symm {a b : ℝ} (x y : Icc a b) (t : unitInterval) :
   simp [convexCombo]
   abel
 
-abbrev convexCombo_assoc_coeff₁ (s t : unitInterval) : unitInterval := s * t
-abbrev convexCombo_assoc_coeff₂ (s t : unitInterval) : unitInterval :=
+abbrev convexCombo_assoc_coeff₁ (s t : unitInterval) : unitInterval :=
   ⟨s * (1 - t) / (1 - s * t),
     by
       apply div_nonneg
@@ -331,12 +330,13 @@ abbrev convexCombo_assoc_coeff₂ (s t : unitInterval) : unitInterval :=
       apply div_le_one_of_le₀
       · nlinarith [s.2.2]
       · nlinarith [s.2.2, t.2.2, t.2.1]⟩
+abbrev convexCombo_assoc_coeff₂ (s t : unitInterval) : unitInterval := s * t
 
 theorem convexCombo_assoc {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
-    convexCombo (convexCombo x y t) z s =
-      convexCombo x (convexCombo y z (convexCombo_assoc_coeff₂ s t))
-        (convexCombo_assoc_coeff₁ s t) := by
-  simp only [convexCombo, coe_mul]
+    convexCombo x (convexCombo y z t) s =
+      convexCombo (convexCombo x y (convexCombo_assoc_coeff₁ s t)) z
+        (convexCombo_assoc_coeff₂ s t) := by
+  simp [convexCombo, coe_mul]
   by_cases hs : (s : ℝ) = 1
   · simp only [hs]
     by_cases ht : (t : ℝ) = 1
