@@ -24,7 +24,7 @@ variable {m n 𝕜 : Type*} [Fintype m] [Fintype n] [RCLike 𝕜]
 lemma IsHermitian.posSemidef_iff_eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : IsHermitian A) : PosSemidef A ↔ 0 ≤ hA.eigenvalues := by
   conv_lhs => rw [hA.spectral_theorem]
-  simp [coe_isUnit.posSemidef_star_right_conjugate_iff, posSemidef_diagonal_iff, Pi.le_def]
+  simp [isUnit_coe.posSemidef_star_right_conjugate_iff, posSemidef_diagonal_iff, Pi.le_def]
 
 @[deprecated (since := "2025-08-17")] alias ⟨_, IsHermitian.posSemidef_of_eigenvalues_nonneg⟩ :=
   IsHermitian.posSemidef_iff_eigenvalues_nonneg
@@ -64,7 +64,7 @@ lemma eigenvalues_self_mul_conjTranspose_nonneg (A : Matrix m n 𝕜) [Decidable
 lemma IsHermitian.posDef_iff_eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : A.IsHermitian) : A.PosDef ↔ ∀ i, 0 < hA.eigenvalues i := by
   conv_lhs => rw [hA.spectral_theorem]
-  simp [coe_isUnit.posDef_star_right_conjugate_iff]
+  simp [isUnit_coe.posDef_star_right_conjugate_iff]
 
 namespace PosDef
 
