@@ -485,22 +485,32 @@ protected theorem withSeminorms' :
 
 variable {E F n K}
 
-@[simp]
-protected theorem seminorm_apply (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
+-- TODO: Once we have `iteratedFDerivWithOrderLM`, maybe we should restate this lemma
+-- in terms of these? Same for the lemma below.
+-- TODO: Should this be `@[simp]` instead of the one below? I don't want `simp` to
+-- force `WithOrder` variants on people, but maybe this is not a good argument.
+protected theorem seminorm_apply_withOrder (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
     ContDiffMapSupportedIn.seminorm 𝕜 E F n K i f =
       ‖(iteratedFDerivWithOrderLM 𝕜 n 0 i f : E →ᵇ (E [×i]→L[ℝ] F))‖ :=
   rfl
 
-protected theorem seminorm_eq_bot {i : ℕ} (hin : n < i) :
+@[simp]
+protected theorem seminorm_apply (i : ℕ) (f : 𝓓^{⊤}_{K}(E, F)) :
+    ContDiffMapSupportedIn.seminorm 𝕜 E F ⊤ K i f =
+      ‖(iteratedFDerivLM 𝕜 i f : E →ᵇ (E [×i]→L[ℝ] F))‖ :=
+  rfl
+
+protected theorem seminorm_eq_bot_of_gt {i : ℕ} (hin : n < i) :
     ContDiffMapSupportedIn.seminorm 𝕜 E F n K i = ⊥ := by
   ext f
-  rw [ContDiffMapSupportedIn.seminorm_apply,
+  rw [ContDiffMapSupportedIn.seminorm_apply_withOrder,
       iteratedFDerivWithOrderLM_apply_of_gt 𝕜 (by simpa)]
   exact norm_zero
 
 theorem norm_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
     ‖(f : E →ᵇ F)‖ = ContDiffMapSupportedIn.seminorm 𝕜 E F n K 0 f := by
-  simp [BoundedContinuousFunction.norm_eq_iSup_norm]
+  simp [BoundedContinuousFunction.norm_eq_iSup_norm,
+    ContDiffMapSupportedIn.seminorm_apply_withOrder]
 
 /-- The inclusion of the space  `𝓓^{n}_{K}(E, F)` into the space `E →ᵇ F` of bounded continuous
 functions as a continuous `𝕜`-linear map. -/
@@ -509,7 +519,8 @@ noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}_{K}(E, F) →L[𝕜]
     cont := show Continuous (toBoundedContinuousFunctionLM 𝕜) by
       refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
         (norm_withSeminorms 𝕜 _) _ (fun _ ↦ ⟨{0}, 1, fun f ↦ ?_⟩)
-      simp [norm_toBoundedContinuousFunction ℝ f] }
+      simp [norm_toBoundedContinuousFunction ℝ f,
+        ContDiffMapSupportedIn.seminorm_apply_withOrder] }
 
 end Topology
 
