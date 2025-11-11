@@ -197,9 +197,11 @@ def elabDischarger (stx : TSyntax ``discharger) : TacticM Simp.Discharge :=
 
 /-- The configuration options for the `push` tactic. -/
 structure Config where
-  /-- If true (default false), rewrite `¬ (p ∧ q)` into `¬ p ∨ ¬ q` instead of `p → ¬ q`.
+  /-- If `true` (default `false`), rewrite `¬ (p ∧ q)` into `¬ p ∨ ¬ q` instead of `p → ¬ q`.
   This is equivalent to using `set_option push_neg.use_distrib true`. -/
   distrib : Bool := false
+  /-- If `true` (default: `true`), then calls to `push` will fail if they do not make progress. -/
+  failIfUnchanged : Bool := true
 
 /-- Function elaborating `Push.Config`. -/
 declare_config_elab elabPushConfig Config
@@ -228,7 +230,7 @@ elab (name := push) "push" cfg:optConfig disch?:(discharger)? head:(ppSpace colG
   let head ← elabHead head
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   (if cfg.distrib then withOptions (·.setBool `push_neg.use_distrib true) else id) <|
-    transformAtLocation (pushCore head · disch?) "push" loc (failIfUnchanged := true) false
+    transformAtLocation (pushCore head · disch?) "push" loc cfg.failIfUnchanged
 
 /--
 Push negations into the conclusion or a hypothesis.
@@ -295,6 +297,8 @@ elab "push" cfg:optConfig disch?:(discharger)? head:(ppSpace colGt term) : conv 
   let disch? ← disch?.mapM elabDischarger
   let head ← elabHead head
   (if cfg.distrib then withOptions (·.setBool `push_neg.use_distrib true) else id) <|
+    -- TODO: this doesn't throw an error when it does nothing.
+    -- Note that conv-mode `simp` has the same problem.
     Conv.applySimpResult (← pushCore head (← instantiateMVars (← Conv.getLhs)) disch?)
 
 @[inherit_doc push_neg]

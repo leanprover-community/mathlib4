@@ -45,10 +45,10 @@ macro_rules
   | `(tactic| by_contra! $cfg _%$under $[: $ty]?) =>
     `(tactic| by_contra! $cfg $(mkIdentFrom under `this):ident $[: $ty]?)
   | `(tactic| by_contra! $cfg $e:ident) =>
-    `(tactic| (by_contra $e:ident; try push_neg $cfg at $e:ident))
+    `(tactic| by_contra $e:ident; push_neg $[$(getConfigItems cfg)]* -failIfUnchanged at $e:ident)
   | `(tactic| by_contra! $cfg $e:ident : $y) => `(tactic|
        (by_contra! $cfg h
         -- if the below `exact` call fails then this tactic should fail with the message
         -- tactic failed: <goal type> and <type of h> are not definitionally equal
-        have $e:ident : $y := by { (try push_neg $cfg); exact h }
+        have $e:ident : $y := by { push_neg $[$(getConfigItems cfg)]* -failIfUnchanged; exact h }
         clear h))

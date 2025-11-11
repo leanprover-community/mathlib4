@@ -43,7 +43,8 @@ Usage matches `contrapose`
 syntax (name := contrapose!)
   "contrapose!" optConfig (ppSpace colGt ident (" with " ident)?)? : tactic
 macro_rules
-  | `(tactic| contrapose! $cfg) => `(tactic| (contrapose; try push_neg $cfg))
+  | `(tactic| contrapose! $cfg) =>
+    `(tactic| (contrapose; push_neg $[$(getConfigItems cfg)]* -failIfUnchanged))
   | `(tactic| contrapose! $cfg:optConfig $e) =>
     `(tactic| (revert $e:ident; contrapose! $cfg; intro $e:ident))
   | `(tactic| contrapose! $cfg:optConfig $e with $e') =>

@@ -18,7 +18,7 @@ open Lean.Parser.Tactic
 
 /--
 `by_cases! h : p` runs the `by_cases h : p` tactic, followed by
-`try push_neg at h` in the second subgoal. For example,
+`push_neg at h` in the second subgoal. For example,
 - `by_cases! h : a < b` creates one goal with hypothesis `h : a < b` and
   another with `h : b ≤ a`.
 - `by_cases! h : a ≠ b` creates one goal with hypothesis `h : a ≠ b` and
@@ -29,6 +29,7 @@ syntax (name := byCases!) "by_cases! " optConfig (atomic(ident " : "))? term : t
 macro_rules
   | `(tactic| by_cases! $cfg:optConfig $e) => `(tactic| by_cases! $cfg h : $e)
   | `(tactic| by_cases! $cfg:optConfig $h : $e) =>
-    `(tactic| by_cases $h : $e; try on_goal 2 => push_neg $cfg at $h:ident)
+    `(tactic| by_cases $h : $e;
+      on_goal 2 => push_neg $[$(getConfigItems cfg)]* -failIfUnchanged at $h:ident)
 
 end Mathlib.Tactic.ByCases
