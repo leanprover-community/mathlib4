@@ -5,7 +5,8 @@ Authors: Mario Carneiro, Kim Morrison
 -/
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.TryThis
-import Mathlib.Util.AtomM
+import Mathlib.Util.AtLocation
+import Mathlib.Util.AtomM.Recurse
 
 /-!
 # The `abel` tactic
@@ -15,7 +16,7 @@ Evaluate expressions in the language of additive, commutative monoids and groups
 -/
 
 -- TODO: assert_not_exists NonUnitalNonAssociativeSemiring
-assert_not_exists OrderedAddCommMonoid TopologicalSpace PseudoMetricSpace
+assert_not_exists IsOrderedMonoid TopologicalSpace PseudoMetricSpace
 
 namespace Mathlib.Tactic.Abel
 open Lean Elab Meta Tactic Qq
@@ -186,7 +187,7 @@ theorem term_add_termg {α} [AddCommGroup α] (n₁ x a₁ n₂ a₂ n' a')
   exact add_add_add_comm (n₁ • x) a₁ (n₂ • x) a₂
 
 theorem zero_term {α} [AddCommMonoid α] (x a) : @term α _ 0 x a = a := by
-  simp [term, zero_nsmul, one_nsmul]
+  simp [term, zero_nsmul]
 
 theorem zero_termg {α} [AddCommGroup α] (x a) : @termg α _ 0 x a = a := by
   simp [termg, zero_zsmul]
@@ -361,7 +362,7 @@ partial def eval (e : Expr) : M (NormalExpr × Expr) := do
     let (e₂', p₂) ← eval e₂
     let (e', p') ← evalAdd e₁' e₂'
     return (e', ← iapp ``subst_into_add #[e₁, e₂, e₁', e₂', e', p₁, p₂, p'])
-  | (``HSub.hSub, #[_, _, _ ,_, e₁, e₂]) => do
+  | (``HSub.hSub, #[_, _, _, _, e₁, e₂]) => do
     let e₂' ← mkAppM ``Neg.neg #[e₂]
     let e ← mkAppM ``HAdd.hAdd #[e₁, e₂']
     let (e', p) ← eval e
@@ -396,6 +397,29 @@ partial def eval (e : Expr) : M (NormalExpr × Expr) := do
     else
       evalAtom e
   | _ => evalAtom e
+
+/-- Determine whether `e` will be handled as an atom by the `abel` tactic. The `match` in this
+function should be preserved to be parallel in case-matching to that in the
+`Mathlib.Tactic.Abel.eval` metaprogram. -/
+def isAtom (e : Expr) : Bool :=
+  match e.getAppFnArgs with
+  | (``HAdd.hAdd, #[_, _, _, _, _, _])
+  | (``HSub.hSub, #[_, _, _, _, _, _])
+  | (``Neg.neg, #[_, _, _])
+  | (``AddMonoid.nsmul, #[_, _, _, _])
+  | (``SubNegMonoid.zsmul, #[_, _, _, _])
+  | (``SMul.smul, #[.const ``Int _, _, _, _, _])
+  | (``SMul.smul, #[.const ``Nat _, _, _, _, _])
+  | (``HSMul.hSMul, #[.const ``Int _, _, _, _, _, _])
+  | (``HSMul.hSMul, #[.const ``Nat _, _, _, _, _, _])
+  | (``smul, #[_, _, _, _])
+  | (``smulg, #[_, _, _, _]) => false
+  /- The `OfNat.ofNat` and `Zero.zero` cases are deliberately omitted here: these two cases are not
+  strictly atoms for `abel`, but they are atom-like in that their handling by
+  `Mathlib.Tactic.Abel.eval` contains no recursive call. -/
+  -- | (``OfNat.ofNat, #[_, .lit (.natVal 0), _])
+  -- | (``Zero.zero, #[_, _])
+  | _ => true
 
 @[tactic_alt abel]
 elab (name := abel1) "abel1" tk:"!"? : tactic => withMainContext do
@@ -434,91 +458,41 @@ inductive AbelMode where
   | raw
 
 /-- Configuration for `abel_nf`. -/
-structure AbelNF.Config where
-  /-- the reducibility setting to use when comparing atoms for defeq -/
-  red := TransparencyMode.reducible
-  /-- if true, local let variables can be unfolded -/
-  zetaDelta := false
-  /-- if true, atoms inside ring expressions will be reduced recursively -/
-  recursive := true
+structure AbelNF.Config extends AtomM.Recurse.Config where
   /-- The normalization style. -/
   mode := AbelMode.term
 
 /-- Function elaborating `AbelNF.Config`. -/
 declare_config_elab elabAbelNFConfig AbelNF.Config
 
-/--
-The core of `abel_nf`, which rewrites the expression `e` into `abel` normal form.
-
-* `s`: a reference to the mutable state of `abel`, for persisting across calls.
-  This ensures that atom ordering is used consistently.
-* `cfg`: the configuration options
-* `e`: the expression to rewrite
--/
-partial def abelNFCore
-    (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (e : Expr) : MetaM Simp.Result := do
-  let simp ← match cfg.mode with
-  | .raw => pure pure
+/-- A cleanup routine, which simplifies expressions in `abel` normal form to a more human-friendly
+format. -/
+def cleanup (cfg : AbelNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
+  match cfg.mode with
+  | .raw => pure r
   | .term =>
     let thms := [``term_eq, ``termg_eq, ``add_zero, ``one_nsmul, ``one_zsmul, ``zsmul_zero]
     let ctx ← Simp.mkContext (config := { zetaDelta := cfg.zetaDelta })
       (simpTheorems := #[← thms.foldlM (·.addConst ·) {}])
       (congrTheorems := ← getSimpCongrTheorems)
-    pure fun r' : Simp.Result ↦ do
-      r'.mkEqTrans (← Simp.main r'.expr ctx (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
-  let ctx ← Simp.mkContext (config := { zetaDelta := cfg.zetaDelta, singlePass := true })
-    (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
-    (congrTheorems := ← getSimpCongrTheorems)
-  let rec
-    /-- The recursive case of `abelNF`.
-    * `root`: true when the function is called directly from `abelNFCore`
-      and false when called by `evalAtom` in recursive mode.
-    * `parent`: The input expression to simplify. In `pre` we make use of both `parent` and `e`
-      to determine if we are at the top level in order to prevent a loop
-      `go -> eval -> evalAtom -> go` which makes no progress.
-    -/
-    go root parent :=
-      let pre : Simp.Simproc := fun e =>
-        try
-          guard <| root || parent != e -- recursion guard
-          let e ← withReducible <| whnf e
-          guard e.isApp -- all interesting group expressions are applications
-          let (a, pa) ← eval e (← mkContext e) { red := cfg.red, evalAtom } s
-          guard !a.isAtom
-          let r ← liftMetaM <| simp { expr := a, proof? := pa }
-          if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
-          pure (.done r)
-        catch _ => pure <| .continue
-      let post : Simp.Simproc := Simp.postDefault #[]
-      (·.1) <$> Simp.main parent ctx (methods := { pre, post }),
-    /-- The `evalAtom` implementation passed to `eval` calls `go` if `cfg.recursive` is true,
-    and does nothing otherwise. -/
-    evalAtom := if cfg.recursive then go false else fun e ↦ pure { expr := e }
-  withConfig ({ · with zetaDelta := cfg.zetaDelta }) <| go true e
+    pure <| ←
+      r.mkEqTrans (← Simp.main r.expr ctx (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
+
+/--
+Evaluate an expression into its `abel` normal form.
+
+This is a variant of `Mathlib.Tactic.Abel.eval`, the main driver of the `abel` tactic.
+It differs in
+* outputting a `Simp.Result`, rather than a `NormalExpr × Expr`;
+* throwing an error if the expression `e` is an atom for the `abel` tactic.
+-/
+def evalExpr (e : Expr) : AtomM Simp.Result := do
+  let e ← withReducible <| whnf e
+  guard !(isAtom e)
+  let (a, pa) ← eval e (← mkContext e)
+  return { expr := a, proof? := pa }
 
 open Parser.Tactic
-/-- Use `abel_nf` to rewrite the main goal. -/
-def abelNFTarget (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) : TacticM Unit := withMainContext do
-  let goal ← getMainGoal
-  let tgt ← withReducible goal.getType'
-  let r ← abelNFCore s cfg tgt
-  if r.expr.isConstOf ``True then
-    goal.assign (← mkOfEqTrue (← r.getProof))
-    replaceMainGoal []
-  else
-    if r.expr == tgt then throwError "abel_nf made no progress"
-    replaceMainGoal [← applySimpResultToTarget goal tgt r]
-
-/-- Use `abel_nf` to rewrite hypothesis `h`. -/
-def abelNFLocalDecl (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (fvarId : FVarId) :
-    TacticM Unit := withMainContext do
-  let tgt ← instantiateMVars (← fvarId.getType)
-  let goal ← getMainGoal
-  let myres ← abelNFCore s cfg tgt
-  if myres.expr == tgt then throwError "abel_nf made no progress"
-  match ← applySimpResultToLocalDecl goal fvarId myres false with
-  | none => replaceMainGoal []
-  | some (_, newGoal) => replaceMainGoal [newGoal]
 
 @[tactic_alt abel]
 elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic => do
@@ -526,8 +500,8 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
   if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
-  withLocation loc (abelNFLocalDecl s cfg) (abelNFTarget s cfg)
-    fun _ ↦ throwError "abel_nf made no progress"
+  let m := AtomM.recurse s cfg.toConfig evalExpr (cleanup cfg)
+  transformAtLocation (m ·) "abel_nf" loc (failIfUnchanged := true) false
 
 @[tactic_alt abel]
 macro "abel_nf!" cfg:optConfig loc:(location)? : tactic =>
@@ -542,7 +516,9 @@ def elabAbelNFConv : Tactic := fun stx ↦ match stx with
   | `(conv| abel_nf $[!%$tk]? $cfg:optConfig) => withMainContext do
     let mut cfg ← elabAbelNFConfig cfg
     if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
-    Conv.applySimpResult (← abelNFCore (← IO.mkRef {}) cfg (← instantiateMVars (← Conv.getLhs)))
+    let s ← IO.mkRef {}
+    Conv.applySimpResult
+      (← AtomM.recurse s cfg.toConfig evalExpr (cleanup cfg) (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 
 @[inherit_doc abel]

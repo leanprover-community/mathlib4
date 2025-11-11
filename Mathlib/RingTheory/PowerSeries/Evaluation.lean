@@ -96,7 +96,7 @@ theorem HasEval.map (hφ : Continuous φ) {a : R} (ha : HasEval a) :
   simp only [hasEval_iff] at ha ⊢
   exact ha.map hφ
 
-protected theorem HasEval.X:
+protected theorem HasEval.X :
     HasEval (X : R⟦X⟧) := by
   rw [hasEval_iff]
   exact MvPowerSeries.HasEval.X
@@ -139,7 +139,7 @@ theorem eval₂_coe (f : Polynomial R) : eval₂ φ a f = f.eval₂ φ a := by
 
 @[simp]
 theorem eval₂_C (r : R) :
-    eval₂ φ a (C R r) = φ r := by
+    eval₂ φ a (C r) = φ r := by
   rw [← Polynomial.coe_C, eval₂_coe, Polynomial.eval₂_C]
 
 @[simp]
@@ -174,7 +174,7 @@ theorem continuous_eval₂ (hφ : Continuous φ) (ha : HasEval a) :
   (uniformContinuous_eval₂ hφ ha).continuous
 
 theorem hasSum_eval₂ (hφ : Continuous φ) (ha : HasEval a) (f : PowerSeries R) :
-    HasSum (fun (d : ℕ) ↦ φ (coeff R d f) * a ^ d) (f.eval₂ φ a) := by
+    HasSum (fun (d : ℕ) ↦ φ (coeff d f) * a ^ d) (f.eval₂ φ a) := by
   have := MvPowerSeries.hasSum_eval₂ hφ (hasEval ha) f
   simp only [PowerSeries.eval₂]
   rw [← (Finsupp.single_injective ()).hasSum_iff] at this
@@ -184,7 +184,7 @@ theorem hasSum_eval₂ (hφ : Continuous φ) (ha : HasEval a) (f : PowerSeries R
 
 theorem eval₂_eq_tsum (hφ : Continuous φ) (ha : HasEval a) (f : PowerSeries R) :
     PowerSeries.eval₂ φ a f =
-      ∑' d : ℕ, φ (coeff R d f) * a ^ d :=
+      ∑' d : ℕ, φ (coeff d f) * a ^ d :=
   (hasSum_eval₂ hφ ha f).tsum_eq.symm
 
 theorem eval₂_unique (hφ : Continuous φ) (ha : HasEval a)
@@ -233,12 +233,12 @@ theorem aeval_unique {ε : PowerSeries R →ₐ[R] S} (hε : Continuous ε) :
   MvPowerSeries.aeval_unique hε
 
 theorem hasSum_aeval (ha : HasEval a) (f : PowerSeries R) :
-    HasSum (fun d ↦ coeff R d f • a ^ d) (f.aeval ha) := by
+    HasSum (fun d ↦ coeff d f • a ^ d) (f.aeval ha) := by
   simp_rw [coe_aeval, ← algebraMap_smul (R := R) S, smul_eq_mul]
   exact hasSum_eval₂ (continuous_algebraMap R S) ha f
 
 theorem aeval_eq_sum (ha : HasEval a) (f : PowerSeries R) :
-    aeval ha f = tsum fun d ↦ coeff R d f • a ^ d :=
+    aeval ha f = tsum fun d ↦ coeff d f • a ^ d :=
   (hasSum_aeval ha f).tsum_eq.symm
 
 theorem comp_aeval (ha : HasEval a)

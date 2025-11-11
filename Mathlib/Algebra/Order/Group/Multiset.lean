@@ -39,10 +39,12 @@ instance instAddCancelCommMonoid : AddCancelCommMonoid (Multiset α) where
   nsmul := nsmulRec
 
 lemma mem_of_mem_nsmul {a : α} {s : Multiset α} {n : ℕ} (h : a ∈ n • s) : a ∈ s := by
-  induction' n with n ih
-  · rw [zero_nsmul] at h
+  induction n with
+  | zero =>
+    rw [zero_nsmul] at h
     exact absurd h (notMem_zero _)
-  · rw [succ_nsmul, mem_add] at h
+  | succ n ih =>
+    rw [succ_nsmul, mem_add] at h
     exact h.elim ih id
 
 @[simp]
@@ -154,7 +156,7 @@ end
 
 lemma Nodup.le_nsmul_iff_le {s t : Multiset α} {n : ℕ} (h : s.Nodup) (hn : n ≠ 0) :
     s ≤ n • t ↔ s ≤ t := by
-  classical simp [← h.le_dedup_iff_le, Iff.comm, ← h.le_dedup_iff_le, hn]
+  classical simp [← h.le_dedup_iff_le, hn]
 
 /-! ### Multiplicity of an element -/
 
@@ -178,17 +180,17 @@ end
 @[ext]
 lemma addHom_ext [AddZeroClass β] ⦃f g : Multiset α →+ β⦄ (h : ∀ x, f {x} = g {x}) : f = g := by
   ext s
-  induction' s using Multiset.induction_on with a s ih
-  · simp only [_root_.map_zero]
-  · simp only [← singleton_add, _root_.map_add, ih, h]
+  induction s using Multiset.induction_on with
+  | empty => simp only [_root_.map_zero]
+  | cons a s ih => simp only [← singleton_add, _root_.map_add, ih, h]
 
 theorem le_smul_dedup [DecidableEq α] (s : Multiset α) : ∃ n : ℕ, s ≤ n • dedup s :=
   ⟨(s.map fun a => count a s).fold max 0,
     le_iff_count.2 fun a => by
       rw [count_nsmul]; by_cases h : a ∈ s
-      · refine le_trans ?_ (Nat.mul_le_mul_left _ <| count_pos.2 <| mem_dedup.2 h)
+      · grw [← one_le_count_iff_mem.2 <| mem_dedup.2 h]
         have : count a s ≤ fold max 0 (map (fun a => count a s) (a ::ₘ erase s a)) := by
-          simp [le_max_left]
+          simp
         rw [cons_erase h] at this
         simpa [mul_succ] using this
       · simp [count_eq_zero.2 h, Nat.zero_le]⟩

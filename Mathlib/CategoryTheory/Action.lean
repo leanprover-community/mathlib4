@@ -13,7 +13,7 @@ import Mathlib.GroupTheory.SemidirectProduct
 # Actions as functors and as categories
 
 From a multiplicative action M ↻ X, we can construct a functor from M to the category of
-types, mapping the single object of M to X and an element `m : M` to map `X → X` given by
+types, mapping the single object of M to X and an element `m : M` to the map `X → X` given by
 multiplication by `m`.
   This functor induces a category structure on X -- a special case of the category of elements.
 A morphism `x ⟶ y` in this category is simply a scalar `m : M` such that `m • x = y`. In the case
@@ -159,17 +159,13 @@ protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort*
   cases inv_smul_eq_iff.mpr h.symm
   rfl
 
--- Porting note: added to ease the proof of `uncurry`
-lemma cases' ⦃a' b' : ActionCategory G X⦄ (f : a' ⟶ b') :
-    ∃ (a b : X) (g : G) (ha : a' = a) (hb : b' = b) (hg : a = g⁻¹ • b),
-      f = eqToHom (by rw [ha, hg]) ≫ homOfPair b g ≫ eqToHom (by rw [hb]) := by
-  revert a' b' f
-  exact ActionCategory.cases (fun t g => ⟨g⁻¹ • t, t, g, rfl, rfl, rfl, by simp⟩)
+@[deprecated (since := "2025-08-21")]
+alias cases' := ActionCategory.cases
 
 variable {H : Type*} [Group H]
 
 /-- Given `G` acting on `X`, a functor from the corresponding action groupoid to a group `H`
-    can be curried to a group homomorphism `G →* (X → H) ⋊ G`. -/
+can be curried to a group homomorphism `G →* (X → H) ⋊ G`. -/
 @[simps]
 def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAutArrow] G :=
   have F_map_eq : ∀ {a b} {f : a ⟶ b}, F.map f = (F.map (homOfPair b.back f.val) : H) := by
@@ -190,7 +186,7 @@ def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAut
       rfl }
 
 /-- Given `G` acting on `X`, a group homomorphism `φ : G →* (X → H) ⋊ G` can be uncurried to
-    a functor from the action groupoid to `H`, provided that `φ g = (_, g)` for all `g`. -/
+a functor from the action groupoid to `H`, provided that `φ g = (_, g)` for all `g`. -/
 @[simps]
 def uncurry (F : G →* (X → H) ⋊[mulAutArrow] G) (sane : ∀ g, (F g).right = g) :
     ActionCategory G X ⥤ SingleObj H where
@@ -201,15 +197,8 @@ def uncurry (F : G →* (X → H) ⋊[mulAutArrow] G) (sane : ∀ g, (F g).right
     rw [F.map_one]
     rfl
   map_comp f g := by
-    -- Porting note: I was not able to use `ActionCategory.cases` here,
-    -- but `ActionCategory.cases'` seems as good; the original proof was:
-    -- intro x y z f g; revert y z g
-    -- refine' action_category.cases _
-    -- simp [single_obj.comp_as_mul, sane]
-    obtain ⟨_, z, γ₁, rfl, rfl, rfl, rfl⟩ := ActionCategory.cases' g
-    obtain ⟨_, y, γ₂, rfl, hy, rfl, rfl⟩ := ActionCategory.cases' f
-    obtain rfl : y = γ₁⁻¹ • z := congr_arg Sigma.snd hy.symm
-    simp [sane]
+    cases g using ActionCategory.cases
+    simp [SingleObj.comp_as_mul, sane]
     rfl
 
 end Group

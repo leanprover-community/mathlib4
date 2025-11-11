@@ -100,6 +100,12 @@ a context with the stronger assumption that `f'` is continuous, one can use
 `ContinuousOn.intervalIntegrable` or `ContinuousOn.integrableOn_Icc` or
 `ContinuousOn.integrableOn_uIcc`.
 
+Versions of FTC-2 under the simpler assumption that the function is `C^1` are given in the
+file `Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff`.
+
+Applications to integration by parts are in the file
+`Mathlib.MeasureTheory.Integral.IntegrationByParts`.
+
 ### `intervalIntegral.FTCFilter` class
 
 As explained above, many theorems in this file rely on the typeclass
@@ -175,7 +181,7 @@ respectively.  Then
   o(‖∫ x in ua..va, (1:ℝ) ∂μ‖ + ‖∫ x in ub..vb, (1:ℝ) ∂μ‖)`
 as `ua` and `va` tend to `la` while `ub` and `vb` tend to `lb`.
 
-This theorem is formulated with integral of constants instead of measures in the right hand sides
+This theorem is formulated with integral of constants instead of measures in the right-hand sides
 for two reasons: first, this way we avoid `min`/`max` in the statements; second, often it is
 possible to write better `simp` lemmas for these integrals, see `integral_const` and
 `integral_const_of_cdf`.
@@ -585,7 +591,7 @@ theorem integral_hasStrictFDerivAt_of_tendsto_ae (hf : IntervalIntegrable f volu
       (continuous_snd.snd.tendsto ((a, b), (a, b)))
       (continuous_fst.snd.tendsto ((a, b), (a, b)))
   refine .of_isLittleO <| (this.congr_left ?_).trans_isBigO ?_
-  · intro x; simp [sub_smul]
+  · simp [sub_smul]
   · exact isBigO_fst_prod.norm_left.add isBigO_snd_prod.norm_left
 
 /-- **Fundamental theorem of calculus-1**, strict differentiability in both endpoints.
@@ -629,7 +635,7 @@ theorem integral_hasStrictDerivAt_of_tendsto_ae_left (hf : IntervalIntegrable f 
     (hmeas : StronglyMeasurableAtFilter f (𝓝 a)) (ha : Tendsto f (𝓝 a ⊓ ae volume) (𝓝 c)) :
     HasStrictDerivAt (fun u => ∫ x in u..b, f x) (-c) a := by
   simpa only [← integral_symm] using
-    (integral_hasStrictDerivAt_of_tendsto_ae_right hf.symm hmeas ha).neg
+    (integral_hasStrictDerivAt_of_tendsto_ae_right hf.symm hmeas ha).fun_neg
 
 /-- **Fundamental theorem of calculus-1**, strict differentiability in the left endpoint.
 
@@ -638,7 +644,7 @@ derivative `-f a` at `a` in the sense of strict differentiability. -/
 theorem integral_hasStrictDerivAt_left (hf : IntervalIntegrable f volume a b)
     (hmeas : StronglyMeasurableAtFilter f (𝓝 a)) (ha : ContinuousAt f a) :
     HasStrictDerivAt (fun u => ∫ x in u..b, f x) (-f a) a := by
-  simpa only [← integral_symm] using (integral_hasStrictDerivAt_right hf.symm hmeas ha).neg
+  simpa only [← integral_symm] using (integral_hasStrictDerivAt_right hf.symm hmeas ha).fun_neg
 
 /-- **Fundamental theorem of calculus-1**, strict differentiability in the right endpoint.
 
@@ -789,7 +795,7 @@ theorem integral_hasFDerivWithinAt_of_tendsto_ae (hf : IntervalIntegrable f volu
       (tendsto_const_pure.mono_right FTCFilter.pure_le : Tendsto _ _ (𝓝[s] a)) tendsto_fst
       (tendsto_const_pure.mono_right FTCFilter.pure_le : Tendsto _ _ (𝓝[t] b)) tendsto_snd
   refine .of_isLittleO <| (this.congr_left ?_).trans_isBigO ?_
-  · intro x; simp [sub_smul]
+  · simp [sub_smul]
   · exact isBigO_fst_prod.norm_left.add isBigO_snd_prod.norm_left
 
 /-- Let `f` be a measurable function integrable on `a..b`. The function `(u, v) ↦ ∫ x in u..v, f x`
@@ -919,11 +925,15 @@ theorem derivWithin_integral_left (hf : IntervalIntegrable f volume a b) {s t : 
   (integral_hasDerivWithinAt_left hf hmeas ha).derivWithin hs
 
 /-- The integral of a continuous function is differentiable on a real set `s`. -/
-theorem differentiableOn_integral_of_continuous {s : Set ℝ}
-    (hintg : ∀ x ∈ s, IntervalIntegrable f volume a x) (hcont : Continuous f) :
-    DifferentiableOn ℝ (fun u => ∫ x in a..u, f x) s := fun y hy =>
-  (integral_hasDerivAt_right (hintg y hy) hcont.aestronglyMeasurable.stronglyMeasurableAtFilter
-        hcont.continuousAt).differentiableAt.differentiableWithinAt
+theorem differentiable_integral_of_continuous (hcont : Continuous f) :
+    Differentiable ℝ (fun u => ∫ x in a..u, f x) := fun _ ↦
+  (integral_hasDerivAt_right (hcont.intervalIntegrable _ _)
+    hcont.aestronglyMeasurable.stronglyMeasurableAtFilter hcont.continuousAt).differentiableAt
+
+/-- The integral of a continuous function is differentiable on a real set `s`. -/
+theorem differentiableOn_integral_of_continuous {s : Set ℝ} (hcont : Continuous f) :
+    DifferentiableOn ℝ (fun u => ∫ x in a..u, f x) s :=
+  (differentiable_integral_of_continuous hcont).differentiableOn
 
 end FTC1
 
@@ -941,8 +951,8 @@ a real-valued function `g`, it suffices to show that `g b - g a ≤ (∫ x in a.
 positive `ε`. To prove this, choose a lower-semicontinuous function `G'` with `g' < G'` and with
 integral close to that of `g'` (its existence is guaranteed by the Vitali-Carathéodory theorem).
 It satisfies `g t - g a ≤ ∫ x in a..t, G' x` for all `t ∈ [a, b]`: this inequality holds at `a`,
-and if it holds at `t` then it holds for `u` close to `t` on its right, as the left hand side
-increases by `g u - g t ∼ (u -t) g' t`, while the right hand side increases by
+and if it holds at `t` then it holds for `u` close to `t` on its right, as the left-hand side
+increases by `g u - g t ∼ (u -t) g' t`, while the right-hand side increases by
 `∫ x in t..u, G' x` which is roughly at least `∫ x in t..u, G' t = (u - t) G' t`, by lower
 semicontinuity. As  `g' t < G' t`, this gives the conclusion. One can therefore push progressively
 this inequality to the right until the point `b`, where it gives the desired conclusion.
@@ -994,7 +1004,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
       calc
         (u - t) * y = ∫ _ in Icc t u, y := by
           simp only [MeasureTheory.integral_const, MeasurableSet.univ, measureReal_restrict_apply,
-            univ_inter, hu.left.le, Real.volume_real_Icc_of_le, smul_eq_mul, s]
+            univ_inter, hu.left.le, Real.volume_real_Icc_of_le, smul_eq_mul]
         _ ≤ ∫ w in t..u, (G' w).toReal := by
           rw [intervalIntegral.integral_of_le hu.1.le, ← integral_Icc_eq_integral_Ioc]
           apply setIntegral_mono_ae_restrict
@@ -1106,7 +1116,7 @@ theorem integral_eq_sub_of_hasDeriv_right_of_le (hab : a ≤ b) (hcont : Continu
   rw [← g.intervalIntegral_comp_comm f'int, g.map_sub]
   exact integral_eq_sub_of_hasDeriv_right_of_le_real hab (g.continuous.comp_continuousOn hcont)
     (fun x hx => g.hasFDerivAt.comp_hasDerivWithinAt x (hderiv x hx))
-    (g.integrable_comp ((intervalIntegrable_iff_integrableOn_Icc_of_le hab).1 f'int))
+    (g.integrable_comp ((intervalIntegrable_iff_integrableOn_Icc_of_le hab enorm_ne_top).1 f'int))
 
 /-- Fundamental theorem of calculus-2: If `f : ℝ → E` is continuous on `[a, b]` and
   has a right derivative at `f' x` for all `x` in `[a, b)`, and `f'` is integrable on `[a, b]` then
@@ -1156,7 +1166,9 @@ theorem integral_eq_sub_of_hasDerivAt_of_tendsto (hab : a < b) {fa fb}
   simpa [F, hab.ne, hab.ne'] using integral_eq_sub_of_hasDerivAt_of_le hab.le hcont Fderiv hint
 
 /-- Fundamental theorem of calculus-2: If `f : ℝ → E` is differentiable at every `x` in `[a, b]` and
-  its derivative is integrable on `[a, b]`, then `∫ y in a..b, deriv f y` equals `f b - f a`. -/
+its derivative is integrable on `[a, b]`, then `∫ y in a..b, deriv f y` equals `f b - f a`.
+
+See also `integral_deriv_of_contDiffOn_Icc` for a similar theorem assuming that `f` is `C^1`. -/
 theorem integral_deriv_eq_sub (hderiv : ∀ x ∈ [[a, b]], DifferentiableAt ℝ f x)
     (hint : IntervalIntegrable (deriv f) volume a b) : ∫ y in a..b, deriv f y = f b - f a :=
   integral_eq_sub_of_hasDerivAt (fun x hx => (hderiv x hx).hasDerivAt) hint
@@ -1236,7 +1248,7 @@ theorem intervalIntegrable_deriv_of_nonneg (hcont : ContinuousOn g (uIcc a b))
     (hderiv : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt g (g' x) x)
     (hpos : ∀ x ∈ Ioo (min a b) (max a b), 0 ≤ g' x) : IntervalIntegrable g' volume a b := by
   rcases le_total a b with hab | hab
-  · simp only [uIcc_of_le, min_eq_left, max_eq_right, hab, IntervalIntegrable, hab,
+  · simp only [uIcc_of_le, min_eq_left, max_eq_right, IntervalIntegrable, hab,
       Ioc_eq_empty_of_le, integrableOn_empty, and_true] at hcont hderiv hpos ⊢
     exact integrableOn_deriv_of_nonneg hcont hderiv hpos
   · simp only [uIcc_of_ge, min_eq_right, max_eq_left, hab, IntervalIntegrable, Ioc_eq_empty_of_le,

@@ -52,7 +52,7 @@ This file does not import `MeasureTheory.MeasurableSpace.Basic`, but only `Measu
 measure, almost everywhere, measure space
 -/
 
-assert_not_exists Basis
+assert_not_exists Module.Basis
 
 noncomputable section
 
@@ -123,7 +123,7 @@ def ofMeasurable (m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞) (m0 : m �
   { toOuterMeasure := inducedOuterMeasure m _ m0
     m_iUnion := fun f hf hd =>
       show inducedOuterMeasure m _ m0 (iUnion f) = ∑' i, inducedOuterMeasure m _ m0 (f i) by
-        rw [inducedOuterMeasure_eq m0 mU, mU hf hd]
+        rw [inducedOuterMeasure_eq m0 mU (MeasurableSet.iUnion hf), mU hf hd]
         congr; funext n; rw [inducedOuterMeasure_eq m0 mU]
     trim_le := le_inducedOuterMeasure.2 fun s hs ↦ by
       rw [OuterMeasure.trim_eq _ hs, inducedOuterMeasure_eq m0 mU hs] }
@@ -146,6 +146,8 @@ theorem ext_iff' : μ₁ = μ₂ ↔ ∀ s, μ₁ s = μ₂ s :=
 
 theorem outerMeasure_le_iff {m : OuterMeasure α} : m ≤ μ.1 ↔ ∀ s, MeasurableSet s → m s ≤ μ s := by
   simpa only [μ.trimmed] using OuterMeasure.le_trim_iff (m₂ := μ.1)
+
+lemma mono_null ⦃s t : Set α⦄ (h : s ⊆ t) (ht : μ t = 0) : μ s = 0 := measure_mono_null h ht
 
 end Measure
 
@@ -224,6 +226,11 @@ theorem measure_biUnion_lt_top {s : Set β} {f : β → Set α} (hs : s.Finite)
     rw [Finite.mem_toFinset]
   · simpa only [ENNReal.sum_lt_top, Finite.mem_toFinset]
 
+@[aesop (rule_sets := [finiteness]) safe apply]
+theorem measure_biUnion_ne_top {s : Set β} {f : β → Set α} (hs : s.Finite)
+    (hfin : ∀ i ∈ s, μ (f i) ≠ ∞) : μ (⋃ i ∈ s, f i) ≠ ∞ :=
+  (measure_biUnion_lt_top hs (fun i hi ↦ Ne.lt_top (hfin i hi ·))).ne
+
 theorem measure_union_lt_top (hs : μ s < ∞) (ht : μ t < ∞) : μ (s ∪ t) < ∞ :=
   (measure_union_le s t).trans_lt (ENNReal.add_lt_top.mpr ⟨hs, ht⟩)
 
@@ -233,12 +240,14 @@ theorem measure_union_lt_top_iff : μ (s ∪ t) < ∞ ↔ μ s < ∞ ∧ μ t < 
   · exact (measure_mono Set.subset_union_left).trans_lt h
   · exact (measure_mono Set.subset_union_right).trans_lt h
 
+@[aesop (rule_sets := [finiteness]) safe apply]
 theorem measure_union_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s ∪ t) ≠ ∞ :=
   (measure_union_lt_top hs.lt_top ht.lt_top).ne
 
 open scoped symmDiff in
+@[aesop (rule_sets := [finiteness]) unsafe 95% apply]
 theorem measure_symmDiff_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s ∆ t) ≠ ∞ :=
-  ne_top_of_le_ne_top (measure_union_ne_top hs ht) <| measure_mono symmDiff_subset_union
+  ne_top_of_le_ne_top (by finiteness) <| measure_mono symmDiff_subset_union
 
 @[simp]
 theorem measure_union_eq_top_iff : μ (s ∪ t) = ∞ ↔ μ s = ∞ ∨ μ t = ∞ :=
@@ -255,11 +264,19 @@ theorem measure_lt_top_of_subset (hst : t ⊆ s) (hs : μ s ≠ ∞) : μ t < �
 theorem measure_ne_top_of_subset (h : t ⊆ s) (ht : μ s ≠ ∞) : μ t ≠ ∞ :=
   (measure_lt_top_of_subset h ht).ne
 
-theorem measure_inter_lt_top_of_left_ne_top (hs_finite : μ s ≠ ∞) : μ (s ∩ t) < ∞ :=
-  measure_lt_top_of_subset inter_subset_left hs_finite
+@[aesop (rule_sets := [finiteness]) unsafe apply]
+theorem measure_inter_ne_top_of_left_ne_top (hs_finite : μ s ≠ ∞) : μ (s ∩ t) ≠ ∞ :=
+  measure_ne_top_of_subset inter_subset_left hs_finite
 
-theorem measure_inter_lt_top_of_right_ne_top (ht_finite : μ t ≠ ∞) : μ (s ∩ t) < ∞ :=
-  measure_lt_top_of_subset inter_subset_right ht_finite
+theorem measure_inter_lt_top_of_left_ne_top (hs_finite : μ s ≠ ∞) : μ (s ∩ t) < ∞ := by
+  finiteness
+
+@[aesop (rule_sets := [finiteness]) unsafe apply]
+theorem measure_inter_ne_top_of_right_ne_top (ht_finite : μ t ≠ ∞) : μ (s ∩ t) ≠ ∞ :=
+  measure_ne_top_of_subset inter_subset_right ht_finite
+
+theorem measure_inter_lt_top_of_right_ne_top (ht_finite : μ t ≠ ∞) : μ (s ∩ t) < ∞ := by
+  finiteness
 
 theorem measure_inter_null_of_null_right (S : Set α) {T : Set α} (h : μ T = 0) : μ (S ∩ T) = 0 :=
   measure_mono_null inter_subset_right h
@@ -419,11 +436,11 @@ theorem aemeasurable_congr (h : f =ᵐ[μ] g) : AEMeasurable f μ ↔ AEMeasurab
 theorem aemeasurable_const {b : β} : AEMeasurable (fun _a : α => b) μ :=
   measurable_const.aemeasurable
 
-@[measurability]
+@[fun_prop, measurability]
 theorem aemeasurable_id : AEMeasurable id μ :=
   measurable_id.aemeasurable
 
-@[measurability]
+@[fun_prop, measurability]
 theorem aemeasurable_id' : AEMeasurable (fun x => x) μ :=
   measurable_id.aemeasurable
 
@@ -436,14 +453,20 @@ theorem Measurable.comp_aemeasurable' [MeasurableSpace δ] {f : α → δ} {g : 
     (hg : Measurable g) (hf : AEMeasurable f μ) : AEMeasurable (fun x ↦ g (f x)) μ :=
   Measurable.comp_aemeasurable hg hf
 
-variable {δ : Type*} [Countable δ] {X : δ → Type*} {mX : ∀ a, MeasurableSpace (X a)}
+variable {δ : Type*} {X : δ → Type*} {mX : ∀ a, MeasurableSpace (X a)}
+
+@[measurability]
+protected theorem AEMeasurable.eval {g : α → Π a, X a} (hg : AEMeasurable g μ) (a : δ) :
+    AEMeasurable (fun x ↦ g x a) μ := by
+  use fun x ↦ hg.mk g x a, hg.measurable_mk.eval
+  exact hg.ae_eq_mk.mono fun _ h ↦ congrFun h _
+
+variable [Countable δ]
 
 theorem aemeasurable_pi_iff {g : α → Π a, X a} :
     AEMeasurable g μ ↔ ∀ a, AEMeasurable (fun x ↦ g x a) μ := by
   constructor
-  · intro hg a
-    use fun x ↦ hg.mk g x a, hg.measurable_mk.eval
-    exact hg.ae_eq_mk.mono fun _ h ↦ congrFun h _
+  · exact AEMeasurable.eval
   · intro h
     use fun x a ↦ (h a).mk _ x, measurable_pi_lambda _ fun a ↦ (h a).measurable_mk
     exact (eventually_countable_forall.mpr fun a ↦ (h a).ae_eq_mk).mono fun _ h ↦ funext h

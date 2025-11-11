@@ -20,7 +20,7 @@ groups, we use the same structure `RingHom a β`, a.k.a. `α →+* β`, for both
 * `RingHom`: (Semi)ring homomorphisms. Monoid homomorphisms which are also additive monoid
   homomorphism.
 
-## Notations
+## Notation
 
 * `→ₙ+*`: Non-unital (semi)ring homs
 * `→+*`: (Semi)ring homs
@@ -41,7 +41,7 @@ groups, we use the same structure `RingHom a β`, a.k.a. `α →+* β`, for both
 `RingHom`, `SemiringHom`
 -/
 
-assert_not_exists Function.Injective.mulZeroClass semigroupDvd Units.map Set.range
+assert_not_exists Function.Injective.mulZeroClass semigroupDvd Units.map
 
 open Function
 
@@ -253,7 +253,6 @@ instance : MonoidWithZero (α →ₙ+* α) where
   mul_one := comp_id
   one_mul := id_comp
   mul_assoc _ _ _ := comp_assoc _ _ _
-  zero := 0
   mul_zero := comp_zero
   zero_mul := zero_comp
 

@@ -19,7 +19,7 @@ The proximity function is a logarithmically weighted measure quantifying how wel
 function `f` approximates the constant function `a` on the circle of radius `R` in the complex
 plane.  The definition ensures that large values correspond to good approximation.
 
-See Section~VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] or Section~1.1 of
+See Section VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] or Section 1.1 of
 [Noguchi-Winkelmann, *Nevanlinna Theory in Several Complex Variables and Diophantine
 Approximation*][MR3156076] for a detailed discussion.
 -/
@@ -74,7 +74,7 @@ lemma proximity_top : proximity f ⊤ = circleAverage (log⁺ ‖f ·‖) 0 := b
   simp [proximity]
 
 /-!
-## Elementary Properties of the Counting Function
+## Elementary Properties of the Proximity Function
 -/
 
 /--
@@ -101,10 +101,9 @@ theorem proximity_sub_proximity_inv_eq_circleAverage {f : ℂ → ℂ} (h₁f : 
   ext R
   simp only [proximity, ↓reduceDIte, Pi.inv_apply, norm_inv, Pi.sub_apply]
   rw [← circleAverage_sub]
-  · simp_rw [← posLog_sub_posLog_inv]
-    rfl
+  · simp_rw [← posLog_sub_posLog_inv, Pi.sub_def]
   · apply circleIntegrable_posLog_norm_meromorphicOn (h₁f.mono_set (by tauto))
   · simp_rw [← norm_inv]
-    apply circleIntegrable_posLog_norm_meromorphicOn  (h₁f.inv.mono_set (by tauto))
+    apply circleIntegrable_posLog_norm_meromorphicOn (h₁f.inv.mono_set (by tauto))
 
 end ValueDistribution
