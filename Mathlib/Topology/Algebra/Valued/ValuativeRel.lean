@@ -36,14 +36,10 @@ theorem hasBasis_nhds_iff [TopologicalSpace R] :
   · constructor
     simp [h]
 
-/-- A version mentioning subtraction. -/
-lemma mem_nhds_iff' [TopologicalSpace R] [IsValuativeTopology R] {s : Set R} {x : R} :
-    s ∈ 𝓝 x ↔
-    ∃ γ : (ValueGroupWithZero R)ˣ, { z | v (z - x) < γ } ⊆ s := by
-  simp [(hasBasis_nhds_iff.mp _ _).mem_iff]
-
-@[deprecated (since := "2025-08-01")]
-alias _root_.ValuativeTopology.mem_nhds := mem_nhds_iff'
+theorem hasBasis_nhds [TopologicalSpace R] [IsValuativeTopology R] (x : R) :
+    (𝓝 x).HasBasis (fun _ => True)
+      fun γ : (ValueGroupWithZero R)ˣ => { z | v (z - x) < γ } :=
+  hasBasis_nhds_iff.mp ‹_› _
 
 section
 
@@ -75,7 +71,7 @@ lemma _root_.isValuativeTopology_iff_subgroups_basis_topology_eq [t : Topologica
     IsValuativeTopology R ↔ (valuation R).subgroups_basis.topology = t := by
   let := (valuation R).subgroups_basis
   refine ⟨fun _ ↦ ext_nhds fun x ↦ Filter.ext fun s ↦ ?_, ?_⟩
-  · rw [(this.hasBasis_nhds _).mem_iff, mem_nhds_iff']; simp_rw [true_and]; rfl
+  · rw [(this.hasBasis_nhds _).mem_iff, (hasBasis_nhds _).mem_iff]; simp_rw [true_and]; rfl
   · rintro rfl
     exact .of_subgroups_basis
 
@@ -113,11 +109,6 @@ lemma v_eq_valuation {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
     [IsUniformAddGroup R] [IsValuativeTopology R] :
     Valued.v = valuation R := rfl
 
-theorem hasBasis_nhds (x : R) :
-    (𝓝 x).HasBasis (fun _ => True)
-      fun γ : (ValueGroupWithZero R)ˣ => { z | v (z - x) < γ } := by
-  simp [Filter.hasBasis_iff, mem_nhds_iff']
-
 /-- A variant of `hasBasis_nhds` where `· ≠ 0` is unbundled. -/
 lemma hasBasis_nhds' (x : R) :
     (𝓝 x).HasBasis (· ≠ 0) ({ y | v (y - x) < · }) :=
@@ -152,8 +143,7 @@ theorem isOpen_ball (r : ValueGroupWithZero R) :
   rcases eq_or_ne r 0 with rfl | hr
   · simp
   · intro x hx
-    rw [mem_nhds_iff']
-    simp only [setOf_subset_setOf]
+    simp only [(hasBasis_nhds _).mem_iff, setOf_subset_setOf, true_and]
     exact ⟨Units.mk0 _ hr,
       fun y hy => (sub_add_cancel y x).symm ▸ ((v).map_add _ x).trans_lt (max_lt hy hx)⟩
 
@@ -181,8 +171,7 @@ lemma isOpen_closedBall {r : ValueGroupWithZero R} (hr : r ≠ 0) :
     IsOpen {x | v x ≤ r} := by
   rw [isOpen_iff_mem_nhds]
   intro x hx
-  rw [mem_nhds_iff']
-  simp only [setOf_subset_setOf]
+  simp only [(hasBasis_nhds _).mem_iff, true_and]
   exact ⟨Units.mk0 _ hr, fun y hy => (sub_add_cancel y x).symm ▸
     le_trans ((v).map_add _ _) (max_le (le_of_lt hy) hx)⟩
 
@@ -194,7 +183,7 @@ theorem isClosed_closedBall (r : ValueGroupWithZero R) :
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro x hx
   simp only [mem_compl_iff, mem_setOf_eq, not_le] at hx
-  rw [mem_nhds_iff']
+  simp only [(hasBasis_nhds _).mem_iff, true_and]
   have hx' : v x ≠ 0 := ne_of_gt <| lt_of_le_of_lt zero_le' <| hx
   exact ⟨Units.mk0 _ hx', fun y hy hy' => ne_of_lt hy <| Valuation.map_sub_swap v x y ▸
       (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' hx)⟩
