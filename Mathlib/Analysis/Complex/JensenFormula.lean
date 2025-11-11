@@ -3,7 +3,6 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Complex.ValueDistribution.CountingFunction
 import Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage
 
 /-!
@@ -24,9 +23,10 @@ poles of `g` within the ball.
 open Filter MeromorphicAt MeromorphicOn Metric Real
 
 /-!
-## Circle Averages
+## Preparatory Material
 
-In preparation to the proof of Jensen's formula, compute several circle averages.
+In preparation to the proof of Jensen's formula, compute several circle averages and reformulate
+some of the terms that appear in the formula and its proof.
 -/
 
 /--
@@ -74,6 +74,31 @@ lemma AnalyticOnNhd.circleAverage_log_norm_of_ne_zero {R : ℝ} {c : ℂ} {g : �
     (h₁g : AnalyticOnNhd ℂ g (closedBall c |R|)) (h₂g : ∀ u ∈ closedBall c |R|, g u ≠ 0) :
     circleAverage (Real.log ‖g ·‖) c R = Real.log ‖g c‖ :=
   HarmonicOnNhd.circleAverage_eq (fun x hx ↦ (h₁g x hx).harmonicAt_log_norm (h₂g x hx))
+
+/--
+Reformulation of a finsum that appears in Jensen's formula and in the definition of the counting
+function of Value Distribution Theory, as discussed in
+`Mathlib/Analysis/Complex/ValueDistribution/CountingFunction.lean`.
+-/
+lemma countingFunction_finsum_eq_finsum_add {c : ℂ} {R : ℝ} {D : ℂ → ℤ} (hR : R ≠ 0)
+    (hD : D.support.Finite) :
+    ∑ᶠ u, D u * (log R - log ‖c - u‖) = ∑ᶠ u, D u * log (R * ‖c - u‖⁻¹) + D c * log R := by
+  by_cases h : c ∈ D.support
+  · have {g : ℂ → ℝ} : (fun u ↦ D u * g u).support ⊆ hD.toFinset :=
+      fun x ↦ by simp +contextual
+    simp only [finsum_eq_sum_of_support_subset _ this,
+      Finset.sum_eq_sum_diff_singleton_add ((Set.Finite.mem_toFinset hD).mpr h), sub_self,
+      norm_zero, log_zero, sub_zero, inv_zero, mul_zero, add_zero, add_left_inj]
+    refine Finset.sum_congr rfl fun x hx ↦ ?_
+    simp only [Finset.mem_sdiff, Finset.notMem_singleton] at hx
+    rw [log_mul hR (inv_ne_zero (norm_ne_zero_iff.mpr (sub_eq_zero.not.2 hx.2.symm))), log_inv]
+    ring
+  · simp_all only [Function.mem_support, Decidable.not_not, Int.cast_zero, zero_mul, add_zero]
+    refine finsum_congr fun x ↦ ?_
+    by_cases h₁ : c = x
+    · simp_all
+    · rw [log_mul hR (inv_ne_zero (norm_ne_zero_iff.mpr (sub_eq_zero.not.2 h₁))), log_inv]
+      ring
 
 /-!
 ## Jensen's Formula
@@ -127,7 +152,7 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
       repeat apply h₃f.subset (fun _ ↦ (by simp_all))
     _ = ∑ᶠ u, divisor f CB u * log (R * ‖c - u‖⁻¹) + divisor f CB c * log R
       + log ‖meromorphicTrailingCoeffAt f c‖ := by
-      rw [Function.locallyFinsuppWithin.countingFunction_finsum_eq_finsum_add hR h₃f]
+      rw [countingFunction_finsum_eq_finsum_add hR h₃f]
   · -- Trivial case: `f` vanishes on a codiscrete set
     have h₂f : ¬∀ (u : ↑(closedBall c |R|)), meromorphicOrderAt f ↑u ≠ ⊤ := by aesop
     rw [← h₁f.exists_meromorphicOrderAt_ne_top_iff_forall
