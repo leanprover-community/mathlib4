@@ -378,7 +378,7 @@ theorem sub_convs_eq {ifp : IntFractPair K}
         · exact Or.inr not_terminatedAt_pred_n
       fib_le_of_contsAux_b this
     have zero_lt_B : 0 < B := B_ineq.trans_lt' <| cast_pos.2 <| fib_pos.2 n.succ_pos
-    have : 0 ≤ pB := (cast_nonneg _).trans pB_ineq
+    have : 0 ≤ pB := (Nat.cast_nonneg _).trans pB_ineq
     have : 0 < ifp.fr :=
       ifp_fr_ne_zero.lt_of_le' <| IntFractPair.nth_stream_fr_nonneg stream_nth_eq
     have : pB + ifp.fr⁻¹ * B ≠ 0 := by positivity
