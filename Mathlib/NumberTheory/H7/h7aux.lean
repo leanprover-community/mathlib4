@@ -274,6 +274,7 @@ lemma foo'' {w : ℕ} (s : Fin w) : 1 ≤ s.val + 1 := by {
 
 lemma bar' {w : ℕ} (s : Fin w) : s + 1 ≤ w := s.isLt
 
+
 lemma fin_n_plus_1_le_n_plus1 {w} (s : Fin w) : s + 1 ≤ w + 1 := by
   simp only [add_le_add_iff_right, Fin.is_le']
 
