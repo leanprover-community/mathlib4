@@ -353,7 +353,7 @@ theorem xor_one_of_even {n : ℕ} (h : Even n) : n ^^^ 1 = n + 1 := by
     simp [HXor.hXor, instXorOp, xor, bitwise, even_iff.mp h, ← mul_two, div_two_mul_two_of_even h]
 
 @[simp]
-theorem xor_one_of_odd {n : ℕ} (h : ¬Even n) : n ^^^ 1 = n - 1 := by
+theorem xor_one_of_not_even {n : ℕ} (h : ¬Even n) : n ^^^ 1 = n - 1 := by
   cases n with
   | zero =>
     exact (h <| even_iff.mpr rfl).elim
