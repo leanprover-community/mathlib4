@@ -6,6 +6,7 @@ Authors: Judith Ludwig, Christian Merten
 import Mathlib.RingTheory.AdicCompletion.Basic
 import Mathlib.RingTheory.AdicCompletion.Algebra
 import Mathlib.Algebra.DirectSum.Basic
+import Mathlib.LinearAlgebra.SModEq.Pointwise
 
 /-!
 # Functoriality of adic completions
