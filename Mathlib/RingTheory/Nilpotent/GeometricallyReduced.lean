@@ -21,7 +21,7 @@ if the tensor product `AlgebraicClosure k ⊗[k] A` is reduced.
 ## References
 - See [https://stacks.math.columbia.edu/tag/05DS] for some theory of geometrically reduced algebras.
   Note that their definition differs from the one here, we still need a proof that these are
-  equivalent.
+  equivalent (see TODO).
 
 ## TODO
 - Prove that if `A` is a geometrically reduced `k`-algebra, then for every field extension `K` of
@@ -63,7 +63,7 @@ theorem isReduced_of_isGeometricallyReduced [IsGeometricallyReduced k A] : IsRed
     (Algebra.TensorProduct.includeRight_injective <| FaithfulSMul.algebraMap_injective _ _)
 
 /-- If all finitely generated subalgebras of `A` are geometrically reduced, then `A` is
-  geometrically reduced. The result is in https://stacks.math.columbia.edu/tag/030T -/
+  geometrically reduced. -/
 @[stacks 030T]
 theorem IsGeometricallyReduced.of_forall_fg
     (h : ∀ B : Subalgebra k A, B.FG → IsGeometricallyReduced k B) :

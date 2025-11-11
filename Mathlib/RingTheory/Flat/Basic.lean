@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.Finiteness.Small
 import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.TensorProduct.Finite
-import Mathlib.RingTheory.Adjoin.FGBasechange
+import Mathlib.RingTheory.Adjoin.FGBaseChange
 
 /-!
 # Flat modules
@@ -595,9 +595,8 @@ theorem IsReduced.tensorProduct_of_flat_of_forall_fg {R C A : Type*}
   obtain ⟨x, hx⟩ := exists_isNilpotent_of_not_isReduced h_contra
   obtain ⟨D, hD⟩ := exists_fg_and_mem_baseChange x
   have h_inj : Function.Injective
-      (Algebra.TensorProduct.map (AlgHom.id C C ) D.val) := by
-    apply Module.Flat.lTensor_preserves_injective_linearMap
-    exact (AlgHom.injective_codRestrict D.val D Subtype.property).mp fun ⦃a₁ a₂⦄ a ↦ a
+      (Algebra.TensorProduct.map (AlgHom.id C C ) D.val) :=
+    Module.Flat.lTensor_preserves_injective_linearMap _ Subtype.val_injective
   obtain ⟨z, rfl⟩ := hD.2
   have h_notReduced : ¬IsReduced (C ⊗[R] D) := by
     simp_rw [isReduced_iff, not_forall]

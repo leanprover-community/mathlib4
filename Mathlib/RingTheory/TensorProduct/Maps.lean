@@ -789,3 +789,9 @@ a subalgebra of `B ⊗[R] A` -/
 def Subalgebra.baseChange {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     (B : Type*) [CommSemiring B] [Algebra R B] (C : Subalgebra R A) : Subalgebra B (B ⊗[R] A) :=
   AlgHom.range (Algebra.TensorProduct.map (AlgHom.id B B) C.val)
+
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [CommSemiring B] [Algebra R A] [Algebra R B]
+variable {C : Subalgebra R A}
+
+lemma Subalgebra.tmul_mem_baseChange {x : A} (hx : x ∈ C) (b : B) : b ⊗ₜ[R] x ∈ C.baseChange B :=
+  (AlgHom.mem_range _).mp ⟨(b ⊗ₜ[R] ⟨x, hx⟩), rfl⟩

@@ -5565,7 +5565,7 @@ import Mathlib.RingTheory.AdicCompletion.Topology
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Adjoin.Dimension
 import Mathlib.RingTheory.Adjoin.FG
-import Mathlib.RingTheory.Adjoin.FGBasechange
+import Mathlib.RingTheory.Adjoin.FGBaseChange
 import Mathlib.RingTheory.Adjoin.Field
 import Mathlib.RingTheory.Adjoin.Polynomial
 import Mathlib.RingTheory.Adjoin.PowerBasis
