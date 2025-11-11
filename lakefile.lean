@@ -165,9 +165,12 @@ post_update pkg do
     let toolchainVersion := match toolchainContent.trim.splitOn ":" with
       | [_, version] => version
       | _ => toolchainContent.trim  -- fallback to full content if format is unexpected
+    -- Lean.versionString does not start with a `v`, while the `lean-toolchain` file is flexible.
+    let toolchainVersion := toolchainVersion.stripPrefix "v"
     if Lean.versionString ≠ toolchainVersion then
-      IO.println s!"Not running `lake exe cache get` yet, \
-        as the `lake` version does not match the toolchain version in the project.\n\
+      IO.println s!"Not running `lake exe cache get` yet, as \
+        the `lake` version ({Lean.versionString}) does not match \
+        the toolchain version ({toolchainVersion}) in the project.\n\
         You should run `lake exe cache get` manually."
       return
     let exeFile ← runBuild cache.fetch
@@ -181,3 +184,11 @@ post_update pkg do
       IO.Process.setCurrentDir cwd
     if exitCode ≠ 0 then
       error s!"{pkg.name}: failed to fetch cache"
+#eval Lean.versionString
+#eval do
+  let toolchainFile := "lean-toolchain"
+  let toolchainContent ← IO.FS.readFile toolchainFile
+  let toolchainVersion := match toolchainContent.trim.splitOn ":" with
+    | [_, version] => version
+    | _ => toolchainContent.trim
+  return toolchainVersion
