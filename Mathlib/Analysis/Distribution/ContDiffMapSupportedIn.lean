@@ -32,10 +32,10 @@ larger space of test functions.
 
 - `ContDiffMapSupportedIn E F n K`: the type of bundled `n`-times continuously differentiable
   functions `E → F` which vanish outside of `K`.
-- `ContDiffMapSupportedIn.iteratedFDerivWithOrderₗ`: wrapper, as a `𝕜`-linear map, for
+- `ContDiffMapSupportedIn.iteratedFDerivWithOrderLM`: wrapper, as a `𝕜`-linear map, for
   `iteratedFDeriv` from `ContDiffMapSupportedIn E F n K` to
   `ContDiffMapSupportedIn E (E [×i]→L[ℝ] F) k K`.
-- `ContDiffMapSupportedIn.iteratedFDerivₗ`: specialization of the above, giving a `𝕜`-linear map
+- `ContDiffMapSupportedIn.iteratedFDerivLM`: specialization of the above, giving a `𝕜`-linear map
   from `ContDiffMapSupportedIn E F ⊤ K` to `ContDiffMapSupportedIn E (E [×i]→L[ℝ] F) ⊤ K`.
 
 ## Main statements
@@ -45,7 +45,7 @@ TODO:
   `ContDiffMapSupportedIn.instLocallyConvexSpace`: `ContDiffMapSupportedIn` is a locally convex
   topological vector space.
 
-## Notation
+## Notation ₗ
 
 - `𝓓^{n}_{K}(E, F)`:  the space of `n`-times continuously differentiable functions `E → F`
   which vanish outside of `K`.
@@ -59,7 +59,7 @@ TODO:
 * Since the most common case is by far the smooth case, we often reserve the "expected" name
   of a result/definition to this case, and add `WithOrder` to the declaration taking care of
   all regularities.
-* In `iteratedFDerivWithOrderₗ`, we define the `i`-th iterated differentiation operator as
+* In `iteratedFDerivWithOrderLM`, we define the `i`-th iterated differentiation operator as
   a map from `𝓓^{n}_{K}` to `𝓓^{k}_{K}` without imposing relations on `n`, `k` and `i`. Of course
   this is defined as `0` if `k + i > n`. This creates some verbosity as all of these variables are
   explicit, but it allows the most flexibility while avoiding DTT hell.
