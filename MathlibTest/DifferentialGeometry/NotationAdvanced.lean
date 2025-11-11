@@ -304,6 +304,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: M
 [Elab.DiffGeo.MDiff] ❌️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
       `E'' →SL[id'] E'''` is not the set of units of a normed algebra
+[Elab.DiffGeo.MDiff] ❌️ Complex unit circle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[id'] E'''` is not the complex unit circle
 [Elab.DiffGeo.MDiff] ❌️ Sphere
   [Elab.DiffGeo.MDiff] Failed with error:
       `E'' →SL[id'] E'''` is not a coercion of a set to a type
@@ -498,6 +501,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: ↑(Set.Icc x y)
 [Elab.DiffGeo.MDiff] ❌️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Set.Icc x y)` is not the set of units of a normed algebra
+[Elab.DiffGeo.MDiff] ❌️ Complex unit circle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↑(Set.Icc x y)` is not the complex unit circle
 [Elab.DiffGeo.MDiff] ❌️ Sphere
   [Elab.DiffGeo.MDiff] Failed with error:
       `Set.Icc x y` is not a sphere in a real normed space
@@ -661,6 +667,30 @@ variable {g : ℍ → M} in
 #check MDiffAt k y
 
 end UpperHalfPlane
+
+section Circle
+
+-- Make a new real manifold N with model J.
+-- TODO: change this line to modify M and E instead (thus testing if everything
+-- still works in the presence of two instances over different fields).
+variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℝ E''] {J : ModelWithCorners ℝ E'' H}
+  {N : Type} [TopologicalSpace N] [ChartedSpace H N] [IsManifold J 2 N]
+
+variable {g : Circle → N} {h : E'' → Circle} {k : Circle → ℝ} {y : Circle}
+
+/-- info: ContMDiff (𝓡 1) J 2 g : Prop -/
+#guard_msgs in
+#check CMDiff 2 g
+
+/-- info: MDifferentiableAt 𝓘(ℝ, E'') (𝓡 1) h : E'' → Prop -/
+#guard_msgs in
+#check MDiffAt h
+
+/-- info: MDifferentiableAt (𝓡 1) 𝓘(ℝ, ℝ) k y : Prop -/
+#guard_msgs in
+#check MDiffAt k y
+
+end Circle
 
 section units
 
