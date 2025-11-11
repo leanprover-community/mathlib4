@@ -217,9 +217,7 @@ theorem baseChange_map [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S)
   dsimp only [Over.pullback_obj_left, Over.pullback_map_left]
   convert baseChange_map' f (g.w.symm) H <;> simp
 
-local instance {S X Y : C} {f : X ⟶ S} [HasPullbacksAlong f] {g : Y ⟶ S} :
-    HasPullback f g := hasPullback_symmetry g f
-
+attribute [local instance] hasPullback_symmetry_of_hasPullbacksAlong in
 theorem pullback_map
     [IsStableUnderBaseChange P] [P.IsStableUnderComposition] {S X X' Y Y' : C} {f : X ⟶ S}
     [HasPullbacksAlong f] {g : Y ⟶ S} {f' : X' ⟶ S} {g' : Y' ⟶ S} {i₁ : X ⟶ X'}
