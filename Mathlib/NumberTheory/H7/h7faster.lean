@@ -2685,7 +2685,7 @@ lemma house_geq_1 : 1 ≤ house (h7.c1ρ q hq0 h2mq : h7.K) := by
   rw [← ne_eq]
   exact c1rho_neq_0 h7 q hq0 h2mq
 
-#check norm_le_house_norm
+--#check norm_le_house_norm
 
 lemma eq5zero : 1 ≤ norm
     (Algebra.norm ℚ ((algebraMap (𝓞 h7.K) h7.K) (h7.c1ρ q hq0 h2mq))) := by
@@ -4781,6 +4781,7 @@ lemma hcauchy :
 -- for the application
 -- one of R1 is R'
 
+-- (hz : z ∈ Metric.sphere 0 (h7.m * (1 + (h7.r q hq0 h2mq : ℝ) / (q : ℝ))))
 --#check sys_coe_bar
 def sys_coeff_foo_S : ρᵣ h7 q hq0 h2mq =
   Complex.log (h7.α) ^ (-(h7.r q hq0 h2mq : ℤ)) *
@@ -4839,7 +4840,6 @@ def sys_coeff_foo_S : ρᵣ h7 q hq0 h2mq =
   · rename_i H
     unfold SRl
     sorry
-
 }
 
 lemma S_eq_SR_on_circle :
@@ -4863,8 +4863,7 @@ lemma S_eq_SR_on_circle :
         unfold R'
         obtain ⟨h1,h2,h3,h5⟩ := this
         split
-        ·
-          have := h3 (↑↑(h7.l₀' q hq0 h2mq) + 1) h2
+        · have := h3 (↑↑(h7.l₀' q hq0 h2mq) + 1) h2
           sorry
         · sorry
       · unfold SRl
@@ -5494,18 +5493,18 @@ lemma abs_Ra : norm ((h7.R q hq0 h2mq) z) ≤ (h7.c₁₀)^ (h7.r q hq0 h2mq : �
   apply abs_R
   exact hz}
 
-#check Finset.univ.erase
-#check Finset.prod_range_add_one_eq_factorial
+-- #check Finset.univ.erase
+-- #check Finset.prod_range_add_one_eq_factorial
 
 lemma prod_dist_le'' (m l₀ : ℕ) (hl : l₀ < m) :
     ∏ k ∈ (Finset.range m \ { l₀ }), k = ∏ k ∈ ((Finset.range m).erase l₀), k  := by
   congr
   exact sdiff_singleton_eq_erase l₀ (Finset.range m)
 
-#check Finset.prod_sdiff
+-- #check Finset.prod_sdiff
 
 lemma prod_sdiff_example (m l₀ : ℕ) (hl : l₀ < m) :
-  (∏ k in range m \ {l₀}, k) * ∏ k in {l₀}, k = ∏ k in range m, k := by
+  (∏ k ∈ range m \ { l₀ }, k) *∏ k ∈ { l₀ }, k = ∏ k ∈ range m, k := by
   have hsubset : {l₀} ⊆ Finset.range m := by simp [hl]
   exact prod_sdiff hsubset
 
@@ -5523,9 +5522,7 @@ lemma div_prod   :
     }
     sorry
   · rw [mul_comm]
-  · simp only [Fin.is_lt]
-}
-
+  · simp only [Fin.is_lt]}
 
 include hz in
 lemma norm_sub_l0_lower_bound_on_sphere :
