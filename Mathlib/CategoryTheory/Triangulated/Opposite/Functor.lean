@@ -181,7 +181,7 @@ noncomputable def mapTriangleOpCompTriangleOpEquivalenceFunctor :
       (triangleOpEquivalence C).functor ⋙ F.op.mapTriangle :=
   NatIso.ofComponents
     (fun T ↦ F.mapTriangleOpCompTriangleOpEquivalenceFunctorApp T.unop)
-    (fun _ ↦ by ext <;> dsimp <;> simp only [id_comp, comp_id])
+    (by intros; ext <;> dsimp <;> simp only [id_comp, comp_id])
 
 /--
 If `F : C ⥤ D` commutes with shifts, this is the 2-commutative square of categories
