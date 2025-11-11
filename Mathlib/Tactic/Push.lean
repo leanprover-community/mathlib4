@@ -197,7 +197,7 @@ def elabDischarger (stx : TSyntax ``discharger) : TacticM Simp.Discharge :=
 
 /-- The configuration options for the `push` tactic. -/
 structure Config where
-  /-- if `disrtib := true`, then rewrite `¬ (p ∧ q)` into `¬ p ∨ ¬ q` instead of `p → ¬ q`.
+  /-- If true (default false), rewrite `¬ (p ∧ q)` into `¬ p ∨ ¬ q` instead of `p → ¬ q`.
   This is equivalent to using `set_option push_neg.use_distrib true`. -/
   distrib : Bool := false
 
