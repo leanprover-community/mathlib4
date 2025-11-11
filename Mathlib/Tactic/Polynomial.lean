@@ -122,7 +122,7 @@ elab (name := polynomial) "polynomial":tactic =>
       β ← Polynomial.inferBase α
     catch _ =>
       throwError "polynomial failed: not an equality of (mv)polynomials"
-    AtomM.run .default (Algebra.proveEq (some (← inferLevelQ β)) g)
+    AtomM.run .default (Algebra.proveEq (some (← getLevelQ' β)) g)
 
 /-- Prove equality of polynomials by normalizing both sides and equating matching coefficients as
 side goals.
@@ -145,7 +145,7 @@ elab (name := matchCoeffients) "match_coefficients" :tactic =>
     try
       β ← inferBase α
     catch _ => throwError "match_coefficients failed: not an equality of (mv)polynomials"
-    let goals ← matchScalarsAux (some (← inferLevelQ β)) (← preprocess g)
+    let goals ← matchScalarsAux (some (← getLevelQ' β)) (← preprocess g)
     /- TODO: What if the base ring is `Polynomial _`? We would have rewritten `C` into `_ • 1` and
     should really turn it back to `C`. Maybe we just rung the polynomial cleanup routine instead?-/
     goals.mapM (applySimp (RingNF.cleanup {}))
@@ -157,7 +157,7 @@ def evalExprPoly (e : Expr) : AtomM Simp.Result := do
   try R ← inferBase α
   --TODO : better error message that explains that the tactic can be extended?
   catch _ => throwError "not a polynomial"
-  let ⟨_, R'⟩ ← inferLevelQ R
+  let ⟨_, R'⟩ ← getLevelQ' R
   Algebra.evalExpr R' e
 
 /- We need `mul_one` even though `algebra` already has it, because `a • 1` -> `C a * 1` introduces

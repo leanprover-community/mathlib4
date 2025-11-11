@@ -813,7 +813,7 @@ def preprocess (mvarId : MVarId) : MetaM MVarId := do
   return r
 
 /-- If `e` has type `Type u` for some level `u`, return `u` and `e : Q(Type u)`. -/
-def inferLevelQ (e : Expr) : MetaM (Σ u : Lean.Level, Q(Type u)) := do
+def getLevelQ' (e : Expr) : MetaM (Σ u : Lean.Level, Q(Type u)) := do
   let .sort u ← whnf (← inferType e) | throwError m!"not a Type {indentExpr e}"
   let some v := (← instantiateLevelMVars u).dec | throwError m!"not a Type {indentExpr e}"
   return ⟨v, e⟩
@@ -869,12 +869,12 @@ expression. -/
 partial def collectScalarRings (e : Expr) : MetaM (List (Σ u : Lean.Level, Q(Type u))) := do
   match_expr e with
   | SMul.smul R _ _ _ a =>
-    return [←inferLevelQ R] ++ (← collectScalarRings a)
+    return [←getLevelQ' R] ++ (← collectScalarRings a)
   | DFunLike.coe _ _R _A _inst φ _ =>
       match_expr φ with
-      | algebraMap R _ _ _ _ => return [← inferLevelQ R]
+      | algebraMap R _ _ _ _ => return [← getLevelQ' R]
       | _ => return []
-  | HSMul.hSMul R _ _ _ _ a => return [←inferLevelQ R] ++ (← collectScalarRings a)
+  | HSMul.hSMul R _ _ _ _ a => return [←getLevelQ' R] ++ (← collectScalarRings a)
   | Eq _ a b => return (← collectScalarRings a) ++ (← collectScalarRings b)
   | HAdd.hAdd _ _ _ _ a b => return (← collectScalarRings a) ++ (← collectScalarRings b)
   | Add.add _ _ _ a b => return (← collectScalarRings a) ++ (← collectScalarRings b)
@@ -984,7 +984,7 @@ elab (name := algebraNFWith) "algebra_nf" tk:"!"? " with " R:term loc:(location)
   withMainContext do
     liftMetaTactic' preprocess
     let mut cfg := {}
-    let ⟨_u, R⟩ ← inferLevelQ (← elabTerm R none)
+    let ⟨_u, R⟩ ← getLevelQ' (← elabTerm R none)
     if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
     let loc := (loc.map expandLocation).getD (.targets #[] true)
     let s ← IO.mkRef {}
@@ -1066,7 +1066,7 @@ expressions are the same. The R-coefficients are put into ring normal form. -/
 elab (name := algebraWith) "algebra" " with " R:term : tactic =>
   withMainContext do
     liftMetaTactic' preprocess
-    let ⟨u, R⟩ ← inferLevelQ (← elabTerm R none)
+    let ⟨u, R⟩ ← getLevelQ' (← elabTerm R none)
     let g ← getMainGoal
     AtomM.run .default (proveEq (some ⟨u, R⟩) g)
 
@@ -1213,7 +1213,7 @@ equalities of the R-coefficients of each atom. The R-coefficients are put into r
 elab (name := matchScalarsAlgWith) "match_scalars_alg" " with " R:term :tactic =>
   withMainContext do
     liftMetaTactic' preprocess
-    let ⟨u, R⟩ ← inferLevelQ (← elabTerm R none)
+    let ⟨u, R⟩ ← getLevelQ' (← elabTerm R none)
     Tactic.liftMetaTactic (matchScalarsAux <| .some ⟨u, R⟩)
 
 /-- Given a goal which is an equality in a commutative R-algebra A, parse the LHS and RHS of the
