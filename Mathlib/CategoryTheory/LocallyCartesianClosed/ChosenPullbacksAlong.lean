@@ -22,18 +22,14 @@ import Mathlib.CategoryTheory.Adjunction.Unique
 - We prove that `ChosenPullbacksAlong` has good closure properties: isos have chosen pullbacks,
   and composition of morphisms with chosen pullbacks have chosen pullbacks.
 
--  We prove that chosen pullbacks yields usual pullbacks: `Over.ChosenPullbacksAlong.isPullback`
+-  We prove that chosen pullbacks yields usual pullbacks: `ChosenPullbacksAlong.isPullback`
   proves that for morphisms `f` and `g` with the same codomain, the object
-  `Over.ChosenPullbacksAlong.pullbackObj f g` together with morphisms
-  `Over.ChosenPullbacksAlong.fst f g` and `Over.ChosenPullbacksAlong.snd f g` form a pullback square
+  `ChosenPullbacksAlong.pullbackObj f g` together with morphisms
+  `ChosenPullbacksAlong.fst f g` and `ChosenPullbacksAlong.snd f g` form a pullback square
   over `f` and `g`.
 
 - We prove that in cartesian monoidal categories, morphisms to the terminal tensor unit and
   the product projections have chosen pullbacks.
-
-- We prove that the slices of a category with chosen pullbacks is cartesian monoidal: In fact,
-  `cartesianMonoidalCategoryOver` provides a computable instance of
-  `CartesianMonoidalCategory (Over X)` for any object `X : C` when `C` has chosen pullbacks.
 
 -/
 
@@ -140,10 +136,11 @@ section PullbackFromChosenPullbacksAlongs
 variable {Y Z X : C} (f : Y ⟶ X) (g : Z ⟶ X) [ChosenPullbacksAlong g]
 
 /-- The underlying object of the chosen pullback along `g` of `f`. -/
-abbrev pullbackObj := ((pullback g).obj (Over.mk f)).left
+abbrev pullbackObj : C := ((pullback g).obj (Over.mk f)).left
 
 /-- A morphism in `Over X` from the chosen pullback along `g` of `f` to `Over.mk f`. -/
-abbrev fst' := (mapPullbackAdj g).counit.app (Over.mk f)
+abbrev fst' : (Over.map g).obj ((pullback g).obj (Over.mk f)) ⟶ Over.mk f :=
+  (mapPullbackAdj g).counit.app <| Over.mk f
 
 /-- The first projection from the chosen pullback along `g` of `f` to the domain of `f`. -/
 abbrev fst : pullbackObj f g ⟶ Y := fst' f g |>.left
@@ -194,7 +191,7 @@ theorem lift_fst : lift a b h ≫ fst f g = a := by
   let adj := mapPullbackAdj g
   let a' : (Over.map g).obj (Over.mk b) ⟶ Over.mk f := Over.homMk a h
   have : (Over.map g).map (adj.homEquiv (.mk b) (.mk f) (Over.homMk a)) ≫ fst' f g = a' := by
-    simp only [Functor.id_obj, ← Adjunction.homEquiv_counit, Equiv.symm_apply_apply, adj, a']
+    simp only [← Adjunction.homEquiv_counit, Equiv.symm_apply_apply, adj, a']
   exact congr_arg CommaMorphism.left this
 
 @[reassoc (attr := simp)]
@@ -272,7 +269,7 @@ theorem isPullback : IsPullback (fst f g) (snd f g) f g where
 
 attribute [local simp] condition in
 /-- If `g` has a chosen pullback, then `Over.ChosenPullbacksAlong.fst f g` has a chosen pullback. -/
-def ChosenPullbacksAlongOfFst : ChosenPullbacksAlong (fst f g) where
+def chosenPullbacksAlongFst : ChosenPullbacksAlong (fst f g) where
   pullback.obj W := Over.mk (pullbackMap _ _ _ _ W.hom (𝟙 _) (𝟙 _))
   pullback.map {W' W} k := Over.homMk (lift (fst _ g ≫ k.left) (snd _ g)) _
   mapPullbackAdj.unit.app Q := Over.homMk (lift (𝟙 _) (Q.hom ≫ snd _ _))
