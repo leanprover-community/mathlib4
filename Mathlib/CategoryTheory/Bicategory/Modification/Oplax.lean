@@ -260,7 +260,6 @@ def isoMk (app : ∀ a, η.app a ≅ θ.app a)
 
 @[deprecated (since := "2025-11-11")] alias ModificationIso.ofComponents := isoMk
 
-
 end StrongTrans
 
 end CategoryTheory.Oplax
