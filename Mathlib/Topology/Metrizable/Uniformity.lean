@@ -45,8 +45,7 @@ metrizable space, uniform space
 
 
 open Set Function Metric List Filter
-
-open NNReal Filter Uniformity
+open scoped NNReal SetRel Uniformity
 
 variable {X : Type*}
 
@@ -124,7 +123,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
   rcases eq_or_ne (d x y) 0 with hd₀ | hd₀
   · simp only [hd₀, zero_le]
   rsuffices ⟨z, z', hxz, hzz', hz'y⟩ : ∃ z z' : X, d x z ≤ L.sum ∧ d z z' ≤ L.sum ∧ d z' y ≤ L.sum
-  · exact (hd x z z' y).trans (mul_le_mul_left' (max_le hxz (max_le hzz' hz'y)) _)
+  · grw [hd x z z' y, max_le hxz (max_le hzz' hz'y)]
   set s : Set ℕ := { m : ℕ | 2 * (take m L).sum ≤ L.sum }
   have hs₀ : 0 ∈ s := by simp [s]
   have hsne : s.Nonempty := ⟨0, hs₀⟩
@@ -135,10 +134,10 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       intro hLm
       rw [mem_setOf_eq, take_of_length_le hLm, two_mul, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
           sum_eq_zero_iff, ← forall_iff_forall_mem, forall_zipWith,
-          ← chain_append_singleton_iff_forall₂]
+          ← isChain_cons_append_singleton_iff_forall₂]
           at hm <;>
         [skip; simp]
-      exact hd₀ (hm.rel (mem_append.2 <| Or.inr <| mem_singleton_self _))
+      exact hd₀ (hm.rel_cons (mem_append.2 <| Or.inr <| mem_singleton_self _))
     have hs_bdd : BddAbove s := ⟨length l, hs_ub⟩
     exact ⟨sSup s, csSup_le hsne hs_ub, ⟨Nat.sSup_mem hsne hs_bdd, fun k => le_csSup hs_bdd⟩⟩
   have hM_lt : M < length L := by rwa [hL_len, Nat.lt_succ_iff]
@@ -147,7 +146,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
   refine ⟨(x::l)[M], (l ++ [y])[M], ?_, ?_, ?_⟩
   · cases M with
     | zero =>
-      simp [dist_self, List.get]
+      simp [dist_self]
     | succ M =>
       rw [Nat.succ_le_iff] at hMl
       have hMl' : length (take M l) = M := length_take.trans (min_eq_left hMl.le)
@@ -157,14 +156,14 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
         ← Option.coe_def, Option.toList_some, take_append_of_le_length hMl.le, getElem_cons_succ]
   · exact single_le_sum (fun x _ => zero_le x) _ (mem_iff_get.2 ⟨⟨M, hM_lt⟩, getElem_zipWith⟩)
   · rcases hMl.eq_or_lt with (rfl | hMl)
-    · simp only [getElem_append_right le_rfl, sub_self, getElem_singleton, dist_self, zero_le]
+    · simp only [getElem_append_right le_rfl, getElem_singleton, dist_self, zero_le]
     rw [getElem_append_left hMl]
     have hlen : length (drop (M + 1) l) = length l - (M + 1) := length_drop
     have hlen_lt : length l - (M + 1) < length l := Nat.sub_lt_of_pos_le M.succ_pos hMl
     refine (ihn _ hlen_lt _ y _ hlen).trans ?_
     rw [cons_getElem_drop_succ]
     have hMs' : L.sum ≤ 2 * (L.take (M + 1)).sum :=
-      not_lt.1 fun h => (hMs.2 h.le).not_lt M.lt_succ_self
+      not_lt.1 fun h => (hMs.2 h.le).not_gt M.lt_succ_self
     rw [← sum_take_add_sum_drop L (M + 1), two_mul, add_le_add_iff_left, ← add_le_add_iff_right,
       sum_take_add_sum_drop, ← two_mul] at hMs'
     convert hMs'
@@ -178,7 +177,7 @@ end PseudoMetricSpace
 protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X]
     [IsCountablyGenerated (𝓤 X)] : ∃ I : PseudoMetricSpace X, I.toUniformSpace = ‹_› := by
   classical
-  /- Choose a fast decreasing antitone basis `U : ℕ → set (X × X)` of the uniformity filter `𝓤 X`.
+  /- Choose a fast decreasing antitone basis `U : ℕ → SetRel X X` of the uniformity filter `𝓤 X`.
     Define `d x y : ℝ≥0` to be `(1 / 2) ^ n`, where `n` is the minimal index of `U n` that
     separates `x` and `y`: `(x, y) ∉ U n`, or `0` if `x` is not separated from `y`. This function
     satisfies the assumptions of `PseudoMetricSpace.ofPreNNDist` and
@@ -187,8 +186,8 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     `d` and `dist` are equal. Since the former uniformity is equal to `𝓤 X`, the latter is equal to
     `𝓤 X` as well. -/
   obtain ⟨U, hU_symm, hU_comp, hB⟩ :
-    ∃ U : ℕ → Set (X × X),
-      (∀ n, IsSymmetricRel (U n)) ∧
+    ∃ U : ℕ → SetRel X X,
+      (∀ n, (U n).IsSymm) ∧
         (∀ ⦃m n⦄, m < n → U n ○ (U n ○ U n) ⊆ U m) ∧ (𝓤 X).HasAntitoneBasis U := by
     rcases UniformSpace.has_seq_basis X with ⟨V, hB, hV_symm⟩
     rcases hB.subbasis_with_rel fun m =>
@@ -202,12 +201,9 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     refine Iff.trans ?_ hB.inseparable_iff_uniformity.symm
     simp only [d, true_imp_iff]
     split_ifs with h
-    · rw [← not_forall] at h
-      simp [h, pow_eq_zero_iff']
+    · simp [h, pow_eq_zero_iff']
     · simpa only [not_exists, Classical.not_not, eq_self_iff_true, true_iff] using h
-  have hd_symm : ∀ x y, d x y = d y x := by
-    intro x y
-    simp only [d, @IsSymmetricRel.mk_mem_comm _ _ (hU_symm _) x y]
+  have hd_symm x y : d x y = d y x := by simp only [d, (U _).comm]
   have hr : (1 / 2 : ℝ≥0) ∈ Ioo (0 : ℝ≥0) 1 := ⟨half_pos one_pos, NNReal.half_lt_self one_ne_zero⟩
   letI I := PseudoMetricSpace.ofPreNNDist d (fun x => hd₀.2 rfl) hd_symm
   have hdist_le : ∀ x y, dist x y ≤ d x y := PseudoMetricSpace.dist_ofPreNNDist_le _ _ _
@@ -215,10 +211,10 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     intro x y n
     dsimp only [d]
     split_ifs with h
-    · rw [(pow_right_strictAnti₀ hr.1 hr.2).le_iff_le, Nat.find_le_iff]
+    · rw [(pow_right_strictAnti₀ hr.1 hr.2).le_iff_ge, Nat.find_le_iff]
       exact ⟨fun ⟨m, hmn, hm⟩ hn => hm (hB.antitone hmn hn), fun h => ⟨n, le_rfl, h⟩⟩
     · push_neg at h
-      simp only [h, not_true, (pow_pos hr.1 _).not_le]
+      simp only [h, not_true, (pow_pos hr.1 _).not_ge]
   have hd_le : ∀ x y, ↑(d x y) ≤ 2 * dist x y := by
     refine PseudoMetricSpace.le_two_mul_dist_ofPreNNDist _ _ _ fun x₁ x₂ x₃ x₄ => ?_
     by_cases H : ∃ n, (x₁, x₄) ∉ U n

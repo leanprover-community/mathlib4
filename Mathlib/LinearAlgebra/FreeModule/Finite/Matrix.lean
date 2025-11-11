@@ -3,9 +3,8 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.LinearAlgebra.Dimension.LinearMap
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.LinearAlgebra.Dimension.Finite
 
 /-!
 # Finite and free modules using matrices
@@ -52,7 +51,7 @@ theorem Module.rank_linearMap :
   rw [(linearMapEquivFun R S M N).rank_eq, rank_fun_eq_lift_mul,
     ← finrank_eq_card_chooseBasisIndex, ← finrank_eq_rank R, lift_natCast]
 
-/-- The finrank of `M →ₗ[R] N` as an `S`-module is `(finrank R M) * (finrank S N)`. -/
+/-- The `finrank` of `M →ₗ[R] N` as an `S`-module is `(finrank R M) * (finrank S N)`. -/
 theorem Module.finrank_linearMap :
     finrank S (M →ₗ[R] N) = finrank R M * finrank S N := by
   simp_rw [finrank, rank_linearMap, toNat_mul, toNat_lift]
@@ -84,8 +83,6 @@ theorem cardinalMk_algHom_le_rank : #(M →ₐ[K] L) ≤ lift.{v} (Module.rank K
   · have := Module.nontrivial K L
     rw [lift_id, Module.rank_linearMap_self]
 
-@[deprecated (since := "2024-11-10")] alias cardinal_mk_algHom_le_rank := cardinalMk_algHom_le_rank
-
 @[stacks 09HS]
 theorem card_algHom_le_finrank : Nat.card (M →ₐ[K] L) ≤ finrank K M := by
   convert toNat_le_toNat (cardinalMk_algHom_le_rank K M L) ?_
@@ -106,11 +103,3 @@ instance Module.Free.addMonoidHom [Module.Free ℤ N] : Module.Free ℤ (M →+ 
   Module.Free.of_equiv (addMonoidHomLequivInt ℤ).symm
 
 end Integer
-
-theorem Matrix.rank_vecMulVec {K m n : Type u} [CommRing K] [Fintype n]
-    [DecidableEq n] (w : m → K) (v : n → K) : (Matrix.vecMulVec w v).toLin'.rank ≤ 1 := by
-  nontriviality K
-  rw [Matrix.vecMulVec_eq (Fin 1), Matrix.toLin'_mul]
-  refine le_trans (LinearMap.rank_comp_le_left _ _) ?_
-  refine (LinearMap.rank_le_domain _).trans_eq ?_
-  rw [rank_fun', Fintype.card_ofSubsingleton, Nat.cast_one]

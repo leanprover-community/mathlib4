@@ -8,6 +8,7 @@ import Mathlib.Algebra.MvPolynomial.Degrees
 import Mathlib.Algebra.MvPolynomial.Rename
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
+import Mathlib.Data.Finsupp.Option
 import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
@@ -66,7 +67,7 @@ def pUnitAlgEquiv : MvPolynomial PUnit R ≃ₐ[R] R[X] where
   left_inv := by
     let f : R[X] →+* MvPolynomial PUnit R := Polynomial.eval₂RingHom MvPolynomial.C (X PUnit.unit)
     let g : MvPolynomial PUnit R →+* R[X] := eval₂Hom Polynomial.C fun _ => Polynomial.X
-    show ∀ p, f.comp g p = p
+    change ∀ p, f.comp g p = p
     apply is_id
     · ext a
       dsimp [f, g]
@@ -153,7 +154,7 @@ section Eval
 variable {R S : Type*} [CommSemiring R] [CommSemiring S]
 
 theorem eval₂_pUnitAlgEquiv_symm {f : Polynomial R} {φ : R →+* S} {a : Unit → S} :
-    ((MvPolynomial.pUnitAlgEquiv R).symm f : MvPolynomial Unit R).eval₂ φ a  =
+    ((MvPolynomial.pUnitAlgEquiv R).symm f : MvPolynomial Unit R).eval₂ φ a =
       f.eval₂ φ (a ()) := by
   simp only [MvPolynomial.pUnitAlgEquiv_symm_apply]
   induction f using Polynomial.induction_on' with
@@ -161,7 +162,7 @@ theorem eval₂_pUnitAlgEquiv_symm {f : Polynomial R} {φ : R →+* S} {a : Unit
   | monomial n r => simp
 
 theorem eval₂_const_pUnitAlgEquiv_symm {f : Polynomial R} {φ : R →+* S} {a : S} :
-    ((MvPolynomial.pUnitAlgEquiv R).symm f : MvPolynomial Unit R).eval₂ φ (fun _ ↦ a)  =
+    ((MvPolynomial.pUnitAlgEquiv R).symm f : MvPolynomial Unit R).eval₂ φ (fun _ ↦ a) =
       f.eval₂ φ a := by
   rw [eval₂_pUnitAlgEquiv_symm]
 
@@ -365,20 +366,17 @@ theorem optionEquivLeft_monomial (m : Option S₁ →₀ ℕ) (r : R) :
   · rw [MvPolynomial.monomial_eq, ← Polynomial.C_mul_X_pow_eq_monomial]
     simp only [Polynomial.algebraMap_apply, algebraMap_eq, Option.elim_none, Option.elim_some,
       map_mul, mul_assoc]
-    apply congr_arg₂ _ rfl
     simp only [mul_comm, map_finsuppProd, map_pow]
-  · intros; simp
+  · simp
   · intros; rw [pow_add]
 
 /-- The coefficient of `n.some` in the `n none`-th coefficient of `optionEquivLeft R S₁ f`
 equals the coefficient of `n` in `f` -/
 theorem optionEquivLeft_coeff_coeff (n : Option S₁ →₀ ℕ) (f : MvPolynomial (Option S₁) R) :
-    coeff n.some (Polynomial.coeff (optionEquivLeft R S₁ f) (n none)) =
-      coeff n f := by
-  induction' f using MvPolynomial.induction_on' with j r p q hp hq generalizing n
-  swap
-  · simp only [map_add, Polynomial.coeff_add, coeff_add, hp, hq]
-  · rw [optionEquivLeft_monomial]
+    coeff n.some (Polynomial.coeff (optionEquivLeft R S₁ f) (n none)) = coeff n f := by
+  induction f using MvPolynomial.induction_on' generalizing n with
+  | monomial j r =>
+    rw [optionEquivLeft_monomial]
     classical
     simp only [Polynomial.coeff_monomial, MvPolynomial.coeff_monomial, apply_ite]
     simp only [coeff_zero]
@@ -390,6 +388,7 @@ theorem optionEquivLeft_coeff_coeff (n : Option S₁ →₀ ℕ) (f : MvPolynomi
       apply False.elim (hj _)
       simp only [Finsupp.ext_iff, Option.forall, hj_none, true_and]
       simpa only [Finsupp.ext_iff] using hj_some
+  | add p q hp hq => simp only [map_add, Polynomial.coeff_add, coeff_add, hp, hq]
 
 theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Option S₁) R) :
     eval (fun x ↦ Option.elim x y s) f =
@@ -400,7 +399,7 @@ theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Op
       commutes' := fun r => by
         convert Polynomial.map_C (eval s)
         exact (eval_C _).symm }
-  show
+  change
     aeval (fun x ↦ Option.elim x y s) f =
       (Polynomial.aeval y).comp (φ.comp (optionEquivLeft _ _).toAlgHom) f
   congr 2
@@ -420,14 +419,14 @@ lemma natDegree_optionEquivLeft (p : MvPolynomial (Option S₁) R) :
     ext σ
     trans p.coeff (σ.embDomain .some + .single .none N)
     · simpa using optionEquivLeft_coeff_coeff R S₁ (σ.embDomain .some + .single .none N) p
-    simp only [coeff_zero, ← not_mem_support_iff]
+    simp only [coeff_zero, ← notMem_support_iff]
     intro H
     simpa using (degreeOf_lt_iff ((zero_le _).trans_lt hN)).mp hN _ H
   · rw [degreeOf_le_iff]
     intro σ hσ
     refine Polynomial.le_natDegree_of_ne_zero fun H ↦ ?_
     have := optionEquivLeft_coeff_coeff R S₁ σ p
-    rw [H, coeff_zero, eq_comm, ← not_mem_support_iff] at this
+    rw [H, coeff_zero, eq_comm, ← notMem_support_iff] at this
     exact this hσ
 
 lemma totalDegree_coeff_optionEquivLeft_add_le
@@ -451,7 +450,7 @@ lemma totalDegree_coeff_optionEquivLeft_le
   rw [totalDegree, Finset.sup_le_iff]
   intro σ hσ
   refine le_trans ?_ (Finset.le_sup (b := σ.embDomain .some + .single .none i) ?_)
-  · simp [Finsupp.sum_add_index, Finsupp.sum_embDomain, add_comm i]
+  · simp [Finsupp.sum_add_index, Finsupp.sum_embDomain]
   · simpa [mem_support_iff, ← optionEquivLeft_coeff_coeff R S₁] using hσ
 
 end
@@ -467,7 +466,7 @@ def optionEquivRight : MvPolynomial (Option S₁) R ≃ₐ[R] MvPolynomial S₁ 
       ext : 2 <;>
         simp only [MvPolynomial.algebraMap_eq, Option.elim, AlgHom.coe_comp, AlgHom.id_comp,
           IsScalarTower.coe_toAlgHom', comp_apply, aevalTower_C, Polynomial.aeval_X, aeval_X,
-          Option.elim', aevalTower_X, AlgHom.coe_id, id, eq_self_iff_true, imp_true_iff])
+          aevalTower_X, AlgHom.coe_id, id])
     (by
       ext ⟨i⟩ : 2 <;>
         simp only [Option.elim, AlgHom.coe_comp, comp_apply, aeval_X, aevalTower_C,
@@ -541,7 +540,7 @@ theorem finSuccEquiv_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fin (
     · simp only [hjmi, if_false]
       obtain hij | rfl := ne_or_eq i (j 0)
       · simp only [hij, if_false, coeff_zero]
-      simp only [eq_self_iff_true, if_true]
+      simp only [if_true]
       have hmj : m ≠ j.tail := by
         rintro rfl
         rw [cons_tail] at hjmi
@@ -558,19 +557,17 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
       commutes' := fun r => by
         convert Polynomial.map_C (eval s)
         exact (eval_C _).symm }
-  show
+  change
     aeval (Fin.cons y s : Fin (n + 1) → R) f =
       (Polynomial.aeval y).comp (φ.comp (finSuccEquiv R n).toAlgHom) f
   congr 2
   apply MvPolynomial.algHom_ext
   rw [Fin.forall_iff_succ]
   simp only [φ, aeval_X, Fin.cons_zero, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp,
-    Polynomial.coe_aeval_eq_eval, Polynomial.map_C, AlgHom.coe_mk, RingHom.toFun_eq_coe,
+    Polynomial.coe_aeval_eq_eval, Polynomial.map_C, AlgHom.coe_mk,
     Polynomial.coe_mapRingHom, comp_apply, finSuccEquiv_apply, eval₂Hom_X',
     Fin.cases_zero, Polynomial.map_X, Polynomial.eval_X, Fin.cons_succ,
-    Fin.cases_succ, eval_X, Polynomial.eval_C,
-    RingHom.coe_mk, MonoidHom.coe_coe, AlgHom.coe_coe, implies_true, and_self,
-    RingHom.toMonoidHom_eq_coe]
+    Fin.cases_succ, eval_X, Polynomial.eval_C, AlgHom.coe_coe, implies_true, and_self]
 
 theorem coeff_eval_eq_eval_coeff (s' : S₁ → R) (f : Polynomial (MvPolynomial S₁ R))
     (i : ℕ) : Polynomial.coeff (Polynomial.map (eval s') f) i = eval s' (Polynomial.coeff f i) := by
@@ -598,7 +595,7 @@ lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (
   have ⟨σ, hσ1, hσ2⟩ := Finset.exists_mem_eq_sup (support _) hf'_sup
                           (fun s => Finsupp.sum s fun _ e => e)
   -- Then cons i σ is a monomial index of p with total degree equal to the desired bound
-  let σ' : Fin (n+1) →₀ ℕ := cons i σ
+  let σ' : Fin (n + 1) →₀ ℕ := cons i σ
   convert le_totalDegree (s := σ') _
   · rw [totalDegree, hσ2, sum_cons, add_comm]
   · rw [← support_coeff_finSuccEquiv]
@@ -617,8 +614,6 @@ theorem support_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
     refine ⟨tail m, ?_⟩
     rwa [← coeff, zero_apply, ← mem_support_iff, support_coeff_finSuccEquiv, cons_tail]
 
-@[deprecated (since := "2024-11-05")] alias finSuccEquiv_support := support_finSuccEquiv
-
 theorem mem_support_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {x} :
     x ∈ (finSuccEquiv R n f).support ↔ x ∈ (fun m : Fin (n + 1) →₀ _ ↦ m 0) '' f.support := by
   simpa using congr(x ∈ $(support_finSuccEquiv f))
@@ -632,15 +627,11 @@ theorem image_support_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} 
     ext
     rw [mem_support_iff, finSuccEquiv_coeff_coeff, Ne]
   constructor
-  · rintro ⟨m', ⟨h, hm'⟩⟩
-    simp only [← hm']
-    exact ⟨h, by rw [cons_zero]⟩
+  · grind [cons_zero]
   · intro h
     use tail m
     rw [← h.2, cons_tail]
     simp [h.1]
-
-@[deprecated (since := "2024-11-05")] alias finSuccEquiv_support' := image_support_finSuccEquiv
 
 lemma mem_image_support_coeff_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} {x} :
     x ∈ Finsupp.cons i '' ((finSuccEquiv R n f).coeff i).support ↔
@@ -663,7 +654,6 @@ theorem degree_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} (h : f ≠ 0) :
   -- TODO: these should be lemmas
   have h₀ : ∀ {α β : Type _} (f : α → β), (fun x => x) ∘ f = f := fun f => rfl
   have h₁ : ∀ {α β : Type _} (f : α → β), f ∘ (fun x => x) = f := fun f => rfl
-
   have h' : ((finSuccEquiv R n f).support.sup fun x => x) = degreeOf 0 f := by
     rw [degreeOf_eq_sup, support_finSuccEquiv, Finset.sup_image, h₀]
   rw [Polynomial.degree, ← h', Nat.cast_withBot,
@@ -703,7 +693,7 @@ lemma finSuccEquiv_rename_finSuccEquiv (e : σ ≃ Fin n) (φ : MvPolynomial (Op
     exact DFunLike.congr_fun this φ
   apply ringHom_ext
   · simp [Polynomial.algebraMap_apply, algebraMap_eq, finSuccEquiv_apply, optionEquivLeft_apply]
-  · rintro (i|i) <;> simp [finSuccEquiv_apply, optionEquivLeft_apply]
+  · rintro (i | i) <;> simp [finSuccEquiv_apply, optionEquivLeft_apply]
 
 end
 

@@ -133,7 +133,7 @@ def seminormFromConst : RingSeminorm R where
     intro n
     have h_add : f ((x + y) * c ^ n) ≤ f (x * c ^ n) + f (y * c ^ n) := by
       simp only [add_mul, map_add_le_add f _ _]
-    simp only [seminormFromConst_seq, div_add_div_same]
+    simp only [seminormFromConst_seq, ← add_div]
     gcongr
   neg' x := by
     apply tendsto_nhds_unique_of_eventuallyEq (seminormFromConst_isLimit hf1 hc hpm (-x))
@@ -146,7 +146,7 @@ def seminormFromConst : RingSeminorm R where
         (𝓝 (seminormFromConst' hf1 hc hpm (x * y))) := by
       apply (seminormFromConst_isLimit hf1 hc hpm (x * y)).comp
         (tendsto_atTop_atTop_of_monotone (fun _ _ hnm ↦ by
-          simp only [mul_le_mul_left, Nat.succ_pos', hnm]) _)
+          simp only [mul_le_mul_iff_right₀, Nat.succ_pos', hnm]) _)
       · rintro n; use n; omega
     refine le_of_tendsto_of_tendsto' hlim ((seminormFromConst_isLimit hf1 hc hpm x).mul
       (seminormFromConst_isLimit hf1 hc hpm y)) (fun n ↦ ?_)
@@ -233,7 +233,7 @@ theorem seminormFromConst_apply_c : seminormFromConst' hf1 hc hpm c = f c :=
     have hseq : seminormFromConst_seq c f c = fun _n ↦ f c := by
       ext n
       simp only [seminormFromConst_seq]
-      rw [mul_comm, ← pow_succ, hpm _ le_add_self, pow_succ, mul_comm,  mul_div_assoc,
+      rw [mul_comm, ← pow_succ, hpm _ le_add_self, pow_succ, mul_comm, mul_div_assoc,
         div_self (pow_ne_zero n hc), mul_one]
     rw [hseq]
     exact tendsto_const_nhds
@@ -247,7 +247,7 @@ theorem seminormFromConst_const_mul (x : R) :
   have hlim : Tendsto (fun n ↦ seminormFromConst_seq c f x (n + 1)) atTop
       (𝓝 (seminormFromConst' hf1 hc hpm x)) := by
     apply (seminormFromConst_isLimit hf1 hc hpm x).comp
-      (tendsto_atTop_atTop_of_monotone (fun _ _ hnm ↦ add_le_add_right hnm 1) _)
+      (tendsto_atTop_atTop_of_monotone add_left_mono _)
     rintro n; use n; omega
   rw [seminormFromConst_apply_c hf1 hc hpm]
   apply tendsto_nhds_unique (seminormFromConst_isLimit hf1 hc hpm (c * x))

@@ -13,7 +13,7 @@ The type class `ContinuousSqrt` gives a sufficient condition on `R` to make `C(�
 and `C(α, R)₀` into a `StarOrderedRing` for any topological space `α`, thereby providing a means
 by which we can ensure `C(α, R)` has this property. This condition is satisfied
 by `ℝ≥0`, `ℝ`, and `ℂ`, and the instances can be found in the file
-`Mathlib.Topology.ContinuousMap.ContinuousSqrt`.
+`Mathlib/Topology/ContinuousMap/ContinuousSqrt.lean`.
 
 ## Implementation notes
 
@@ -80,8 +80,8 @@ instance instStarOrderedRing {R : Type*}
         StarOrderedRing.le_iff]
       rintro ⟨p, hp_mem, hp⟩
       induction hp_mem using AddSubmonoid.closure_induction_left generalizing f g with
-      | one => exact ⟨0, zero_mem _, by ext x; congrm($(hp) x)⟩
-      | mul_left s s_mem p p_mem hp' =>
+      | zero => exact ⟨0, zero_mem _, by ext x; congrm($(hp) x)⟩
+      | add_left s s_mem p p_mem hp' =>
         obtain ⟨s, rfl⟩ := s_mem
         simp only at *
         have h₀ : (star s * s + p) 0 = 0 := by simpa using congr($(hp) 0).symm
@@ -99,8 +99,8 @@ instance instStarOrderedRing {R : Type*}
       | mem s s_mem =>
         obtain ⟨s, rfl⟩ := s_mem
         exact fun x ↦ le_add_of_nonneg_right (star_mul_self_nonneg (s x))
-      | one => simp
-      | mul g₁ g₂ _ _ h₁ h₂ => calc
+      | zero => simp
+      | add g₁ g₂ _ _ h₁ h₂ => calc
           f ≤ f + g₁ := h₁ f
           _ ≤ (f + g₁) + g₂ := h₂ (f + g₁)
           _ = f + (g₁ + g₂) := add_assoc _ _ _

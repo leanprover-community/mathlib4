@@ -14,23 +14,23 @@ as the greatest fixpoint of a polynomial functor.
 
 ## Main definitions
 
- * `M.mk`     - constructor
- * `M.dest`   - destructor
- * `M.corec`  - corecursor: useful for formulating infinite, productive computations
- * `M.bisim`  - bisimulation: proof technique to show the equality of infinite objects
+* `M.mk`     - constructor
+* `M.dest`   - destructor
+* `M.corec`  - corecursor: useful for formulating infinite, productive computations
+* `M.bisim`  - bisimulation: proof technique to show the equality of infinite objects
 
 ## Implementation notes
 
 Dual view of M-types:
 
- * `mp`: polynomial functor
- * `M`: greatest fixed point of a polynomial functor
+* `mp`: polynomial functor
+* `M`: greatest fixed point of a polynomial functor
 
 Specifically, we define the polynomial functor `mp` as:
 
- * A := a possibly infinite tree-like structure without information in the nodes
- * B := given the tree-like structure `t`, `B t` is a valid path
-   from the root of `t` to any given node.
+* A := a possibly infinite tree-like structure without information in the nodes
+* B := given the tree-like structure `t`, `B t` is a valid path
+  from the root of `t` to any given node.
 
 As a result `mp α` is made of a dataless tree and a function from
 its valid paths to values of `α`
@@ -40,13 +40,13 @@ that `A` is a possibly infinite tree.
 
 ## Reference
 
- * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
-   [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
+* Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
+  [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
 
 
 
-universe u
+universe u v
 
 open MvFunctor
 
@@ -80,7 +80,7 @@ instance M.Path.inhabited (x : P.last.M) {i} [Inhabited (P.drop.B x.head i)] :
       (PFunctor.M.casesOn' x
         (r := fun _ => PFunctor.M.dest x = ⟨a, f⟩)
         <| by
-        intros; simp [a, PFunctor.M.dest_mk, PFunctor.M.children_mk]; rfl)
+        intros; simp [a]; rfl)
       _ default⟩
 
 /-- Polynomial functor of the M-type of `P`. `A` is a data-less
@@ -103,7 +103,7 @@ instance inhabitedM {α : TypeVec _} [I : Inhabited P.A] [∀ i : Fin2 n, Inhabi
 
 /-- construct through corecursion the shape of an M-type
 without its contents -/
-def M.corecShape {β : Type u} (g₀ : β → P.A) (g₂ : ∀ b : β, P.last.B (g₀ b) → β) :
+def M.corecShape {β : Type v} (g₀ : β → P.A) (g₂ : ∀ b : β, P.last.B (g₀ b) → β) :
     β → P.last.M :=
   PFunctor.M.corec fun b => ⟨g₀ b, g₂ b⟩
 
@@ -115,7 +115,7 @@ def castLastB {a a' : P.A} (h : a = a') : P.last.B a → P.last.B a' := fun b =>
 
 /-- Using corecursion, construct the contents of an M-type -/
 def M.corecContents {α : TypeVec.{u} n}
-    {β : Type u}
+    {β : Type v}
     (g₀ : β → P.A)
     (g₁ : ∀ b : β, P.drop.B (g₀ b) ⟹ α)
     (g₂ : ∀ b : β, P.last.B (g₀ b) → β)
@@ -141,7 +141,7 @@ def M.corecContents {α : TypeVec.{u} n}
     M.corecContents g₀ g₁ g₂ (f j) (g₂ b (P.castLastB h₀ j)) h₁ i c
 
 /-- Corecursor for M-type of `P` -/
-def M.corec' {α : TypeVec n} {β : Type u} (g₀ : β → P.A) (g₁ : ∀ b : β, P.drop.B (g₀ b) ⟹ α)
+def M.corec' {α : TypeVec n} {β : Type v} (g₀ : β → P.A) (g₁ : ∀ b : β, P.drop.B (g₀ b) ⟹ α)
     (g₂ : ∀ b : β, P.last.B (g₀ b) → β) : β → P.M α := fun b =>
   ⟨M.corecShape P g₀ g₂ b, M.corecContents P g₀ g₁ g₂ _ _ rfl⟩
 
@@ -182,7 +182,7 @@ theorem M.dest_eq_dest' {α : TypeVec n} {x : P.last.M} {a : P.A}
     M.dest P ⟨x, f'⟩ = M.dest' P h f' :=
   M.dest'_eq_dest' _ _ _ _
 
-theorem M.dest_corec' {α : TypeVec.{u} n} {β : Type u} (g₀ : β → P.A)
+theorem M.dest_corec' {α : TypeVec.{u} n} {β : Type v} (g₀ : β → P.A)
     (g₁ : ∀ b : β, P.drop.B (g₀ b) ⟹ α) (g₂ : ∀ b : β, P.last.B (g₀ b) → β) (x : β) :
     M.dest P (M.corec' P g₀ g₁ g₂ x) = ⟨g₀ x, splitFun (g₁ x) (M.corec' P g₀ g₁ g₂ ∘ g₂ x)⟩ :=
   rfl
@@ -250,16 +250,14 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   introv Hr
   specialize h _ _ Hr
   clear Hr
-
   revert h
   rcases M.dest P x with ⟨ax, fx⟩
   rcases M.dest P y with ⟨ay, fy⟩
   intro h
-
   rw [map_eq, map_eq] at h
   injection h with h₀ h₁
   subst ay
-  simp? at h₁ says simp only [heq_eq_eq] at h₁
+  simp only [heq_eq_eq] at h₁
   have Hdrop : dropFun fx = dropFun fy := by
     replace h₁ := congr_arg dropFun h₁
     simpa using h₁

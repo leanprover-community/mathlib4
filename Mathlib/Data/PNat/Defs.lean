@@ -87,9 +87,9 @@ namespace PNat
 open Nat
 
 /-- We now define a long list of structures on ℕ+ induced by
- similar structures on ℕ. Most of these behave in a completely
- obvious way, but there are a few things to be said about
- subtraction, division and powers.
+similar structures on ℕ. Most of these behave in a completely
+obvious way, but there are a few things to be said about
+subtraction, division and powers.
 -/
 theorem mk_le_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) ≤ ⟨k, hk⟩ ↔ n ≤ k := by simp
 
@@ -133,7 +133,7 @@ theorem one_le (n : ℕ+) : (1 : ℕ+) ≤ n :=
 
 @[simp]
 theorem not_lt_one (n : ℕ+) : ¬n < 1 :=
-  not_lt_of_le n.one_le
+  not_lt_of_ge n.one_le
 
 instance : Inhabited ℕ+ :=
   ⟨1⟩

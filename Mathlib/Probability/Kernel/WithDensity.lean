@@ -70,7 +70,7 @@ nonrec lemma withDensity_congr_ae (κ : Kernel α β) [IsSFiniteKernel κ] {f g 
     (hfg : ∀ a, f a =ᵐ[κ a] g a) :
     withDensity κ f = withDensity κ g := by
   ext a
-  rw [Kernel.withDensity_apply _ hf,Kernel.withDensity_apply _ hg, withDensity_congr_ae (hfg a)]
+  rw [Kernel.withDensity_apply _ hf, Kernel.withDensity_apply _ hg, withDensity_congr_ae (hfg a)]
 
 nonrec lemma withDensity_absolutelyContinuous [IsSFiniteKernel κ]
     (f : α → β → ℝ≥0∞) (a : α) :
@@ -179,14 +179,13 @@ is finite. -/
 theorem isFiniteKernel_withDensity_of_bounded (κ : Kernel α β) [IsFiniteKernel κ] {B : ℝ≥0∞}
     (hB_top : B ≠ ∞) (hf_B : ∀ a b, f a b ≤ B) : IsFiniteKernel (withDensity κ f) := by
   by_cases hf : Measurable (Function.uncurry f)
-  · exact ⟨⟨B * IsFiniteKernel.bound κ, ENNReal.mul_lt_top hB_top.lt_top
-      (IsFiniteKernel.bound_lt_top κ), fun a => by
+  · exact ⟨⟨B * κ.bound, ENNReal.mul_lt_top hB_top.lt_top κ.bound_lt_top, fun a => by
         rw [Kernel.withDensity_apply' κ hf a Set.univ]
         calc
           ∫⁻ b in Set.univ, f a b ∂κ a ≤ ∫⁻ _ in Set.univ, B ∂κ a := lintegral_mono (hf_B a)
           _ = B * κ a Set.univ := by
             simp only [Measure.restrict_univ, MeasureTheory.lintegral_const]
-          _ ≤ B * IsFiniteKernel.bound κ := mul_le_mul_left' (measure_le_bound κ a Set.univ) _⟩⟩
+          _ ≤ B * κ.bound := by grw [measure_le_bound]⟩⟩
   · rw [withDensity_of_not_measurable _ hf]
     infer_instance
 
@@ -220,18 +219,18 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFin
       refine fun a => Pi.summable.mpr fun b => ?_
       suffices ∀ n, n ∉ Finset.range ⌈(f a b).toReal⌉₊ → fs n a b = 0 from
         summable_of_ne_finset_zero this
-      intro n hn_not_mem
-      rw [Finset.mem_range, not_lt] at hn_not_mem
-      exact h_zero a b n hn_not_mem
+      intro n hn_notMem
+      rw [Finset.mem_range, not_lt] at hn_notMem
+      exact h_zero a b n hn_notMem
     ext a b : 2
     rw [tsum_apply (Pi.summable.mpr h_sum_a), tsum_apply (h_sum_a a),
       ENNReal.tsum_eq_liminf_sum_nat]
-    have h_finset_sum : ∀ n, ∑ i ∈ Finset.range n, fs i a b = min (f a b) n := by
-      intro n
-      induction' n with n hn
-      · simp
-      rw [Finset.sum_range_succ, hn]
-      simp [fs]
+    have h_finset_sum : ∀ n, ∑ i ∈ Finset.range n, fs i a b = min (f a b) n := fun n ↦ by
+      induction n with
+      | zero => simp
+      | succ n hn =>
+        rw [Finset.sum_range_succ, hn]
+        simp [fs]
     simp_rw [h_finset_sum]
     refine (Filter.Tendsto.liminf_eq ?_).symm
     refine Filter.Tendsto.congr' ?_ tendsto_const_nhds
@@ -240,7 +239,7 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFin
   rw [hf_eq_tsum, withDensity_tsum _ fun n : ℕ => _]
   swap; · fun_prop
   refine isSFiniteKernel_sum (hκs := fun n => ?_)
-  suffices IsFiniteKernel (withDensity κ (fs n)) by haveI := this; infer_instance
+  suffices IsFiniteKernel (withDensity κ (fs n)) by infer_instance
   refine isFiniteKernel_withDensity_of_bounded _ (ENNReal.coe_ne_top : ↑n + 1 ≠ ∞) fun a b => ?_
   -- After https://github.com/leanprover/lean4/pull/2734, we need to do beta reduction before `norm_cast`
   beta_reduce

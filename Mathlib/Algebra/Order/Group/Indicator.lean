@@ -45,7 +45,7 @@ lemma mulSupport_min [LinearOrder M] (f g : α → M) :
 @[to_additive]
 lemma mulSupport_iSup [ConditionallyCompleteLattice M] [Nonempty ι] (f : ι → α → M) :
     mulSupport (fun x ↦ ⨆ i, f i x) ⊆ ⋃ i, mulSupport (f i) := by
-  simp only [mulSupport_subset_iff', mem_iUnion, not_exists, nmem_mulSupport]
+  simp only [mulSupport_subset_iff', mem_iUnion, not_exists, notMem_mulSupport]
   intro x hx
   simp only [hx, ciSup_const]
 
@@ -160,7 +160,7 @@ lemma mulIndicator_iUnion_apply (h1 : (⊥ : M) = 1) (s : ι → Set α) (f : α
     refine le_antisymm ?_ (iSup_le fun i ↦ mulIndicator_le_self' (fun x _ ↦ h1 ▸ bot_le) x)
     rcases hx with ⟨i, hi⟩
     exact le_iSup_of_le i (ge_of_eq <| mulIndicator_of_mem hi _)
-  · rw [mulIndicator_of_not_mem hx]
+  · rw [mulIndicator_of_notMem hx]
     simp only [mem_iUnion, not_exists] at hx
     simp [hx, ← h1]
 
@@ -170,15 +170,12 @@ variable [Nonempty ι]
 lemma mulIndicator_iInter_apply (h1 : (⊥ : M) = 1) (s : ι → Set α) (f : α → M) (x : α) :
     mulIndicator (⋂ i, s i) f x = ⨅ i, mulIndicator (s i) f x := by
   by_cases hx : x ∈ ⋂ i, s i
-  · rw [mulIndicator_of_mem hx]
-    rw [mem_iInter] at hx
-    refine le_antisymm ?_ (by simp only [mulIndicator_of_mem (hx _), ciInf_const, le_refl])
-    exact le_iInf (fun j ↦ by simp only [mulIndicator_of_mem (hx j), le_refl])
-  · rw [mulIndicator_of_not_mem hx]
-    simp only [mem_iInter, not_exists, not_forall] at hx
+  · simp_all
+  · rw [mulIndicator_of_notMem hx]
+    simp only [mem_iInter, not_forall] at hx
     rcases hx with ⟨j, hj⟩
     refine le_antisymm (by simp only [← h1, le_iInf_iff, bot_le, forall_const]) ?_
-    simpa [mulIndicator_of_not_mem hj] using (iInf_le (fun i ↦ (s i).mulIndicator f) j) x
+    simpa [mulIndicator_of_notMem hj] using (iInf_le (fun i ↦ (s i).mulIndicator f) j) x
 
 @[to_additive]
 lemma iSup_mulIndicator {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {f : ι → α → M}
@@ -194,7 +191,7 @@ lemma iSup_mulIndicator {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {
     obtain ⟨k, hik, hjk⟩ := exists_ge_ge i j
     refine le_iSup_of_le k <| (hf hjk _).trans_eq ?_
     rw [mulIndicator_of_mem (hs hik hi)]
-  · rw [mulIndicator_of_not_mem ha, ← h1]
+  · rw [mulIndicator_of_notMem ha, ← h1]
     exact bot_le
 
 end CompleteLattice

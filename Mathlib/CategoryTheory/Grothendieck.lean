@@ -52,6 +52,8 @@ universe w u v u₁ v₁ u₂ v₂
 
 namespace CategoryTheory
 
+open Functor
+
 variable {C : Type u} [Category.{v} C]
 variable {D : Type u₁} [Category.{v₁} D]
 variable (F : C ⥤ Cat.{v₂, u₂})
@@ -89,7 +91,7 @@ theorem ext {X Y : Grothendieck F} (f g : Hom X Y) (w_base : f.base = g.base)
   cases f; cases g
   congr
   dsimp at w_base
-  aesop_cat
+  cat_disch
 
 /-- The identity morphism in the Grothendieck category.
 -/
@@ -122,14 +124,14 @@ instance : Category (Grothendieck F) where
   id_comp f := by ext <;> simp [comp, id]
   assoc f g h := by
     ext
-    · simp [comp, id]
+    · simp [comp]
     · dsimp [comp, id]
       rw [← NatIso.naturality_2 (eqToIso (F.map_comp _ _)) f.fiber]
       simp
 
 @[simp]
 theorem id_base (X : Grothendieck F) :
-    Hom.base (𝟙 X) = 𝟙 X.base := by
+    Hom.base (𝟙 X) = 𝟙 X.base :=
   rfl
 
 @[simp]
@@ -151,7 +153,6 @@ theorem comp_fiber {X Y Z : Grothendieck F} (f : X ⟶ Y) (g : Y ⟶ Z) :
 theorem congr {X Y : Grothendieck F} {f g : X ⟶ Y} (h : f = g) :
     f.fiber = eqToHom (by subst h; rfl) ≫ g.fiber := by
   subst h
-  dsimp
   simp
 
 @[simp]
@@ -243,7 +244,7 @@ def map (α : F ⟶ G) : Grothendieck F ⥤ Grothendieck G where
   map_comp {X Y Z} f g := by
     dsimp
     congr 1
-    simp only [comp_fiber f g, ← Category.assoc, Functor.map_comp, eqToHom_map]
+    simp only [← Category.assoc, Functor.map_comp, eqToHom_map]
     congr 1
     simp only [Cat.eqToHom_app, Cat.comp_obj, eqToHom_trans, eqToHom_map, Category.assoc,
       ← Cat.comp_map]
@@ -311,7 +312,7 @@ def compAsSmallFunctorEquivalenceFunctor :
 
 /-- Taking the Grothendieck construction on `F ⋙ asSmallFunctor`, where
 `asSmallFunctor : Cat ⥤ Cat` is the functor which turns each category into a small category of a
-(potentiall) larger universe, is equivalent to the Grothendieck construction on `F` itself. -/
+(potentially) larger universe, is equivalent to the Grothendieck construction on `F` itself. -/
 @[simps]
 def compAsSmallFunctorEquivalence :
     Grothendieck (F ⋙ Cat.asSmallFunctor.{w}) ≌ Grothendieck F where
@@ -346,7 +347,7 @@ def mapWhiskerRightAsSmallFunctor (α : F ⟶ G) :
           eqToHom_map, id_fiber, Category.assoc, eqToHom_trans_assoc,
           compAsSmallFunctorEquivalenceInverse_map_fiber,
           compAsSmallFunctorEquivalenceFunctor_map_fiber, eqToHom_comp_iff, comp_eqToHom_iff]
-        simp only [eqToHom_trans_assoc, Category.assoc, conj_eqToHom_iff_heq']
+        simp only [conj_eqToHom_iff_heq']
         rw [G.map_id]
         simp )
 
@@ -408,7 +409,6 @@ def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
         rfl)
   functor_unitIso_comp := by
     rintro ⟨_, ⟨⟩⟩
-    dsimp
     simp
     rfl
 
@@ -446,11 +446,11 @@ def preInv (G : D ≌ C) : Grothendieck F ⥤ Grothendieck (G.functor ⋙ F) :=
   map (whiskerRight G.counitInv F) ⋙ Grothendieck.pre (G.functor ⋙ F) G.inverse
 
 variable {F} in
-lemma pre_comp_map (G: D ⥤ C) {H : C ⥤ Cat} (α : F ⟶ H) :
+lemma pre_comp_map (G : D ⥤ C) {H : C ⥤ Cat} (α : F ⟶ H) :
     pre F G ⋙ map α = map (whiskerLeft G α) ⋙ pre H G := rfl
 
 variable {F} in
-lemma pre_comp_map_assoc (G: D ⥤ C) {H : C ⥤ Cat} (α : F ⟶ H) {E : Type*} [Category E]
+lemma pre_comp_map_assoc (G : D ⥤ C) {H : C ⥤ Cat} (α : F ⟶ H) {E : Type*} [Category E]
     (K : Grothendieck H ⥤ E) : pre F G ⋙ map α ⋙ K= map (whiskerLeft G α) ⋙ pre H G ⋙ K := rfl
 
 variable {E : Type*} [Category E] in
@@ -488,7 +488,7 @@ def preEquivalence (G : D ≌ C) : Grothendieck (G.functor ⋙ F) ≌ Grothendie
   counitIso := preNatIso F G.counitIso.symm |>.symm
   functor_unitIso_comp := by
     intro X
-    simp only [preInv, Grothendieck.preUnitIso, eq_mpr_eq_cast, cast_eq, pre_id, id_eq,
+    simp only [preInv, Grothendieck.preUnitIso, pre_id,
       Iso.trans_hom, eqToIso.hom, eqToHom_app, eqToHom_refl, isoWhiskerLeft_hom, NatTrans.comp_app]
     fapply Grothendieck.ext <;> simp [preNatIso, transportIso]
 

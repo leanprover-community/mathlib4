@@ -16,7 +16,7 @@ then we can turn an `R`-submodule into an `S`-submodule by forgetting the action
 this restriction of scalars for submodules.
 
 ## Main definitions:
- * `Submodule.restrictScalars`: regard an `R`-submodule as an `S`-submodule if `S` acts on `R`
+* `Submodule.restrictScalars`: regard an `R`-submodule as an `S`-submodule if `S` acts on `R`
 
 -/
 
@@ -107,5 +107,10 @@ def restrictScalarsLatticeHom : CompleteLatticeHom (Submodule R M) (Submodule S 
   toFun := restrictScalars S
   map_sInf' s := by ext; simp
   map_sSup' s := by rw [← toAddSubmonoid_inj, toAddSubmonoid_sSup, ← Set.image_comp]; simp
+
+@[simp]
+lemma toIntSubmodule_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    (N : Submodule R M) :
+    N.toAddSubgroup.toIntSubmodule = N.restrictScalars ℤ := rfl
 
 end Submodule

@@ -112,9 +112,11 @@ axiom It : Prop
 #guard_msgs in
 abbrev dec1 : Decidable It := isTrue sorry
 
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
 def dec2 : Decidable It := isTrue sorry
 
-/-- info: @Dec.mk It (@isTrue It dec1._proof_6) : Dec It -/
+/-- info: @Dec.mk It (@isTrue It dec1._proof_1) : Dec It -/
 #guard_msgs in
 set_option pp.explicit true in
 #check fast_instance% { dec := dec1 : Dec It }

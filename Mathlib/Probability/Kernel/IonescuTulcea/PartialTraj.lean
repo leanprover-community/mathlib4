@@ -31,7 +31,7 @@ This however is not straightforward.
 Consider `n : ℕ`. We cannot write `(κ n) ⊗ₖ (κ (n + 1))` directly, we need to first
 introduce an equivalence to see `κ (n + 1)` as a kernel with codomain
 `(Π i : Iic n, X i) × X (n + 1)`, and we get a `Kernel (Π i : Iic n, X i) (X (n + 1) × (X (n + 2))`.
-However we want to do multiple compostion at ones, i.e. write
+However we want to do multiple composition at ones, i.e. write
 `(κ n) ⊗ₖ ... ⊗ₖ (κ m)` for `n < m`. This requires even more equivalences to make sense of, and at
 the end of the day we get kernels which still cannot be composed together.
 
@@ -97,7 +97,7 @@ noncomputable def partialTraj (a b : ℕ) : Kernel (Π i : Iic a, X i) (Π i : I
   if h : b ≤ a then deterministic (frestrictLe₂ h) (measurable_frestrictLe₂ h)
   else @Nat.leRec a (fun b _ ↦ Kernel (Π i : Iic a, X i) (Π i : Iic b, X i)) Kernel.id
     (fun k _ κ_k ↦ ((Kernel.id ×ₖ ((κ k).map (piSingleton k))) ∘ₖ κ_k).map (IicProdIoc k (k + 1)))
-    b (Nat.le_of_not_le h)
+    b (Nat.le_of_not_ge h)
 
 section Basic
 
@@ -126,10 +126,10 @@ lemma partialTraj_le_def (hab : a ≤ b) : partialTraj κ a b =
 lemma partialTraj_succ_of_le (hab : a ≤ b) : partialTraj κ a (b + 1) =
     ((Kernel.id ×ₖ ((κ b).map (piSingleton b))) ∘ₖ partialTraj κ a b).map
     (IicProdIoc b (b + 1)) := by
-  rw [partialTraj, dif_neg (by omega)]
+  rw [partialTraj, dif_neg (by cutsat)]
   induction b, hab using Nat.le_induction with
   | base => simp
-  | succ k hak hk => rw [Nat.leRec_succ, ← partialTraj_le_def]; omega
+  | succ k hak hk => rw [Nat.leRec_succ, ← partialTraj_le_def]; cutsat
 
 instance (a b : ℕ) : IsSFiniteKernel (partialTraj κ a b) := by
   obtain hab | hba := le_total a b
@@ -220,7 +220,7 @@ lemma partialTraj_eq_prod [∀ n, IsSFiniteKernel (κ n)] (a b : ℕ) :
       ext x i
       simp only [IicProdIoc_def, MeasurableEquiv.IicProdIoc, MeasurableEquiv.coe_mk,
         Equiv.coe_fn_mk, Function.comp_apply, Prod.map_fst, Prod.map_snd, id_eq,
-        Nat.succ_eq_add_one, Equiv.prodAssoc_apply, Prod.map_apply, IocProdIoc]
+        Nat.succ_eq_add_one, IocProdIoc]
       split_ifs <;> try rfl
       omega
     nth_rw 1 [← partialTraj_comp_partialTraj h k.le_succ, hk, partialTraj_succ_self, comp_map,
@@ -239,7 +239,7 @@ variable [∀ n, IsMarkovKernel (κ n)]
 
 lemma partialTraj_succ_map_frestrictLe₂ (a b : ℕ) :
     (partialTraj κ a (b + 1)).map (frestrictLe₂ b.le_succ) = partialTraj κ a b := by
-  obtain hab | hba := le_or_lt a b
+  obtain hab | hba := le_or_gt a b
   · have := IsMarkovKernel.map (κ b) (piSingleton b).measurable
     rw [partialTraj_succ_eq_comp hab, map_comp, partialTraj_succ_self, ← map_comp_right,
       frestrictLe₂_comp_IicProdIoc, ← fst_eq, fst_prod, id_comp]
@@ -315,10 +315,10 @@ lemma lmarginalPartialTraj_eq_lintegral_map [∀ n, IsSFiniteKernel (κ n)] {f :
       ∂(partialTraj κ a b).map (restrict₂ Ioc_subset_Iic_self) (frestrictLe a x₀) := by
   nth_rw 1 [lmarginalPartialTraj, partialTraj_eq_prod, lintegral_map, lintegral_id_prod]
   · congrm ∫⁻ _, f (fun i ↦ ?_) ∂_
-    simp only [updateFinset, mem_Iic, IicProdIoc_def, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk,
-      frestrictLe_apply, restrict₂, mem_Ioc]
+    simp only [updateFinset, mem_Iic, IicProdIoc_def,
+      frestrictLe_apply, mem_Ioc]
     split_ifs <;> try rfl
-    all_goals omega
+    all_goals cutsat
   all_goals fun_prop
 
 /-- Integrating `f` against `partialTraj κ a (a + 1)` is the same as integrating against `κ a`. -/
@@ -331,7 +331,7 @@ lemma lmarginalPartialTraj_succ [∀ n, IsSFiniteKernel (κ n)] (a : ℕ)
     simp only [updateFinset, mem_Iic, IicProdIoc_def, frestrictLe_apply, piSingleton,
       MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, update]
     split_ifs with h1 h2 h3 <;> try rfl
-    all_goals omega
+    all_goals cutsat
   all_goals fun_prop
 
 @[measurability, fun_prop]
@@ -345,7 +345,7 @@ lemma measurable_lmarginalPartialTraj (a b : ℕ) {f : (Π n, X n) → ℝ≥0�
   refine Measurable.lintegral_kernel_prod_left' <| hf.comp ?_
   simp only [updateFinset, measurable_pi_iff]
   intro i
-  by_cases h : i ∈ Iic b <;> simp [h] <;> fun_prop
+  by_cases h : i ∈ Iic b <;> simp only [h, ↓reduceDIte] <;> fun_prop
 
 /-- Integrating `f` against `partialTraj κ a b` and then against `partialTraj κ b c` is the same
 as integrating `f` against `partialTraj κ a c`. -/
@@ -383,7 +383,7 @@ theorem lmarginalPartialTraj_of_le [∀ n, IsMarkovKernel (κ n)] (c : ℕ) {f :
   · refine @IsMarkovKernel.isProbabilityMeasure _ _ _ _ _ ?_ _
     exact IsMarkovKernel.map _ (by fun_prop)
   · simp_all only [coe_Iic, Set.mem_Iic, Function.updateFinset, mem_Ioc, dite_eq_right_iff]
-    omega
+    cutsat
 
 /-- If `f` only depends on the variables uo to rank `a`, integrating beyond rank `a` is the same
 as integrating up to rank `a`. -/
@@ -391,7 +391,7 @@ theorem lmarginalPartialTraj_const_right [∀ n, IsMarkovKernel (κ n)] {d : ℕ
     (mf : Measurable f) (hf : DependsOn f (Iic a)) (hac : a ≤ c) (had : a ≤ d) :
     lmarginalPartialTraj κ b c f = lmarginalPartialTraj κ b d f := by
   wlog hcd : c ≤ d generalizing c d
-  · rw [this had hac (le_of_not_le hcd)]
+  · rw [this had hac (le_of_not_ge hcd)]
   obtain hbc | hcb := le_total b c
   · rw [← lmarginalPartialTraj_self hbc hcd mf, hf.lmarginalPartialTraj_of_le d mf hac]
   · rw [hf.lmarginalPartialTraj_of_le c mf (hac.trans hcb),

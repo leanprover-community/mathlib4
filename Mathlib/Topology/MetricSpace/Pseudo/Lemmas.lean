@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
@@ -52,8 +52,6 @@ variable {x y z : α} {ε ε₁ ε₂ : ℝ} {s : Set α}
 lemma isClosed_closedBall : IsClosed (closedBall x ε) :=
   isClosed_le (continuous_id.dist continuous_const) continuous_const
 
-@[deprecated (since := "2025-02-11")] alias isClosed_ball := isClosed_closedBall
-
 lemma isClosed_sphere : IsClosed (sphere x ε) :=
   isClosed_eq (continuous_id.dist continuous_const) continuous_const
 
@@ -98,7 +96,7 @@ theorem biInter_gt_closedBall (x : α) (r : ℝ) : ⋂ r' > r, closedBall x r' =
 
 theorem biInter_gt_ball (x : α) (r : ℝ) : ⋂ r' > r, ball x r' = closedBall x r := by
   ext
-  simp [forall_lt_iff_le']
+  simp [forall_gt_iff_le]
 
 theorem biUnion_lt_ball (x : α) (r : ℝ) : ⋃ r' < r, ball x r' = ball x r := by
   ext

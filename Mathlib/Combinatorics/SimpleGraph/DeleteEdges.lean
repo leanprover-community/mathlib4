@@ -6,6 +6,7 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Combinatorics.SimpleGraph.Maps
+import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # Edge deletion
@@ -46,7 +47,7 @@ instance [DecidableRel G.Adj] [DecidablePred (· ∈ s)] [DecidableEq V] :
     DecidableRel (G.deleteEdges s).Adj :=
   inferInstanceAs <| DecidableRel (G \ fromEdgeSet s).Adj
 
-@[simp] lemma deleteEdges_adj : (G.deleteEdges s).Adj v w ↔ G.Adj v w ∧ ¬s(v, w) ∈ s :=
+@[simp] lemma deleteEdges_adj : (G.deleteEdges s).Adj v w ↔ G.Adj v w ∧ s(v, w) ∉ s :=
   and_congr_right fun h ↦ (and_iff_left h.ne).not
 
 @[simp] lemma deleteEdges_edgeSet (G G' : SimpleGraph V) : G.deleteEdges G'.edgeSet = G \ G' := by
@@ -122,11 +123,14 @@ theorem support_deleteIncidenceSet_subset (G : SimpleGraph V) (x : V) :
 
 /-- If the vertex `x` is not in the set `s`, then the induced subgraph in `G.deleteIncidenceSet x`
 by `s` is equal to the induced subgraph in `G` by `s`. -/
-theorem induce_deleteIncidenceSet_of_not_mem (G : SimpleGraph V) {s : Set V} {x : V} (h : x ∉ s) :
+theorem induce_deleteIncidenceSet_of_notMem (G : SimpleGraph V) {s : Set V} {x : V} (h : x ∉ s) :
     (G.deleteIncidenceSet x).induce s = G.induce s := by
   ext v₁ v₂
   simp_rw [comap_adj, Function.Embedding.coe_subtype, deleteIncidenceSet_adj, and_iff_left_iff_imp]
-  exact fun _ ↦ ⟨v₁.prop.ne_of_not_mem h, v₂.prop.ne_of_not_mem h⟩
+  exact fun _ ↦ ⟨v₁.prop.ne_of_notMem h, v₂.prop.ne_of_notMem h⟩
+
+@[deprecated (since := "2025-05-23")]
+alias induce_deleteIncidenceSet_of_not_mem := induce_deleteIncidenceSet_of_notMem
 
 variable [Fintype V] [DecidableEq V]
 
@@ -138,9 +142,9 @@ instance {G : SimpleGraph V} [DecidableRel G.Adj] {x : V} :
 subgraph of the vertices `{x}ᶜ`. -/
 theorem card_edgeFinset_induce_compl_singleton (G : SimpleGraph V) [DecidableRel G.Adj] (x : V) :
     #(G.induce {x}ᶜ).edgeFinset = #(G.deleteIncidenceSet x).edgeFinset := by
-  have h_not_mem : x ∉ ({x}ᶜ : Set V) := Set.not_mem_compl_iff.mpr (Set.mem_singleton x)
+  have h_notMem : x ∉ ({x}ᶜ : Set V) := Set.notMem_compl_iff.mpr (Set.mem_singleton x)
   simp_rw [Set.toFinset_card,
-    ← G.induce_deleteIncidenceSet_of_not_mem h_not_mem, ← Set.toFinset_card]
+    ← G.induce_deleteIncidenceSet_of_notMem h_notMem, ← Set.toFinset_card]
   apply card_edgeFinset_induce_of_support_subset
   trans G.support \ {x}
   · exact support_deleteIncidenceSet_subset G x
@@ -158,7 +162,7 @@ theorem edgeFinset_deleteIncidenceSet_eq_sdiff (G : SimpleGraph V) [DecidableRel
 set of the simple graph `G`. -/
 theorem card_edgeFinset_deleteIncidenceSet (G : SimpleGraph V) [DecidableRel G.Adj] (x : V) :
     #(G.deleteIncidenceSet x).edgeFinset = #G.edgeFinset - G.degree x := by
-  simp_rw [← card_incidenceFinset_eq_degree, ← card_sdiff (G.incidenceFinset_subset x),
+  simp_rw [← card_incidenceFinset_eq_degree, ← card_sdiff_of_subset (G.incidenceFinset_subset x),
     edgeFinset_deleteIncidenceSet_eq_sdiff]
 
 /-- Deleting the incident set of the vertex `x` is equivalent to filtering the edges of the simple
@@ -179,7 +183,8 @@ theorem card_support_deleteIncidenceSet
     (G : SimpleGraph V) [DecidableRel G.Adj] {x : V} (hx : x ∈ G.support) :
     card (G.deleteIncidenceSet x).support ≤ card G.support - 1 := by
   rw [← Set.singleton_subset_iff, ← Set.toFinset_subset_toFinset] at hx
-  simp_rw [← Set.card_singleton x, ← Set.toFinset_card, ← card_sdiff hx, ← Set.toFinset_diff]
+  simp_rw [← Set.card_singleton x, ← Set.toFinset_card, ← card_sdiff_of_subset hx,
+    ← Set.toFinset_diff]
   apply card_le_card
   rw [Set.toFinset_subset_toFinset]
   exact G.support_deleteIncidenceSet_subset x
@@ -204,17 +209,20 @@ theorem deleteFar_iff [Fintype (Sym2 V)] :
   classical
   refine ⟨fun h H _ hHG hH ↦ ?_, fun h s hs hG ↦ ?_⟩
   · have := h (sdiff_subset (t := H.edgeFinset))
-    simp only [deleteEdges_sdiff_eq_of_le hHG, edgeFinset_mono hHG, card_sdiff,
+    simp only [deleteEdges_sdiff_eq_of_le hHG, edgeFinset_mono hHG, card_sdiff_of_subset,
       card_le_card, coe_sdiff, coe_edgeFinset, Nat.cast_sub] at this
     exact this hH
   · classical
-    simpa [card_sdiff hs, edgeFinset_deleteEdges, -Set.toFinset_card, Nat.cast_sub,
+    simpa [card_sdiff_of_subset hs, edgeFinset_deleteEdges, -Set.toFinset_card, Nat.cast_sub,
       card_le_card hs] using h (G.deleteEdges_le s) hG
 
 alias ⟨DeleteFar.le_card_sub_card, _⟩ := deleteFar_iff
 
 theorem DeleteFar.mono (h : G.DeleteFar p r₂) (hr : r₁ ≤ r₂) : G.DeleteFar p r₁ := fun _ hs hG =>
   hr.trans <| h hs hG
+
+lemma DeleteFar.le_card_edgeFinset (h : G.DeleteFar p r) (hp : p ⊥) : r ≤ #G.edgeFinset :=
+  h subset_rfl (by simpa)
 
 end DeleteFar
 

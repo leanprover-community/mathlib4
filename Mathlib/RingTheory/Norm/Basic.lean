@@ -7,8 +7,6 @@ import Mathlib.RingTheory.Norm.Defs
 import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.FieldTheory.Galois.Basic
 
 /-!
 # Norm for (finite) ring extensions
@@ -33,7 +31,7 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 
 ## References
 
- * https://en.wikipedia.org/wiki/Field_norm
+* https://en.wikipedia.org/wiki/Field_norm
 
 -/
 
@@ -74,7 +72,7 @@ theorem PowerBasis.norm_gen_eq_prod_roots [Algebra R F] (pb : PowerBasis R S)
   have := minpoly.monic pb.isIntegral_gen
   rw [PowerBasis.norm_gen_eq_coeff_zero_minpoly, ← pb.natDegree_minpoly, RingHom.map_mul,
     ← coeff_map,
-    prod_roots_eq_coeff_zero_of_monic_of_splits (this.map _) ((splits_id_iff_splits _).2 hf),
+    coeff_zero_eq_prod_roots_of_monic_of_splits (this.map _) ((splits_id_iff_splits _).2 hf),
     this.natDegree_map, map_pow, ← mul_assoc, ← mul_pow]
   simp only [map_neg, map_one, neg_mul, neg_neg, one_pow, one_mul]
 
@@ -129,19 +127,6 @@ end EqZeroIff
 
 open IntermediateField
 
-variable (K) in
-theorem norm_eq_norm_adjoin [FiniteDimensional K L] [Algebra.IsSeparable K L] (x : L) :
-    norm K x = norm K (AdjoinSimple.gen K x) ^ finrank K⟮x⟯ L := by
-  letI := Algebra.isSeparable_tower_top_of_isSeparable K K⟮x⟯ L
-  let pbL := Field.powerBasisOfFiniteOfSeparable K⟮x⟯ L
-  let pbx := IntermediateField.adjoin.powerBasis (Algebra.IsSeparable.isIntegral K x)
-  rw [← AdjoinSimple.algebraMap_gen K x, norm_eq_matrix_det (pbx.basis.smulTower pbL.basis) _,
-    smulTower_leftMulMatrix_algebraMap, det_blockDiagonal, AdjoinSimple.algebraMap_gen,
-    norm_eq_matrix_det pbx.basis]
-  simp only [Finset.card_fin, Finset.prod_const]
-  congr
-  rw [← PowerBasis.finrank]
-
 section IntermediateField
 
 theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_one {x : L} (hx : ¬IsIntegral K x) :
@@ -182,15 +167,9 @@ theorem norm_eq_prod_embeddings_gen [Algebra R F] (pb : PowerBasis R S)
     (fun σ => σ pb.gen) (fun x => x) ?_]
   · rw [Finset.prod_mem_multiset, Finset.prod_eq_multiset_prod, Multiset.toFinset_val,
       Multiset.dedup_eq_self.mpr, Multiset.map_id]
-    · exact nodup_roots hfx.map
+    · exact nodup_roots (.map hfx)
     · intro x; rfl
   · intro σ; simp only [PowerBasis.liftEquiv'_apply_coe]
-
-theorem norm_eq_prod_roots [Algebra.IsSeparable K L] [FiniteDimensional K L] {x : L}
-    (hF : (minpoly K x).Splits (algebraMap K F)) :
-    algebraMap K F (norm K x) =
-      ((minpoly K x).aroots F).prod ^ finrank K⟮x⟯ L := by
-  rw [norm_eq_norm_adjoin K x, map_pow, IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots _ hF]
 
 theorem prod_embeddings_eq_finrank_pow [Algebra L F] [IsScalarTower K L F] [IsAlgClosed E]
     [Algebra.IsSeparable K F] [FiniteDimensional K F] (pb : PowerBasis K L) :
@@ -210,41 +189,6 @@ theorem prod_embeddings_eq_finrank_pow [Algebra L F] [IsScalarTower K L F] [IsAl
   · intro σ
     simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.restrictDomain, AlgHom.comp_apply,
       IsScalarTower.coe_toAlgHom']
-
-variable (K)
-
-/-- For `L/K` a finite separable extension of fields and `E` an algebraically closed extension
-of `K`, the norm (down to `K`) of an element `x` of `L` is equal to the product of the images
-of `x` over all the `K`-embeddings `σ` of `L` into `E`. -/
-theorem norm_eq_prod_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L] [IsAlgClosed E]
-    (x : L) : algebraMap K E (norm K x) = ∏ σ : L →ₐ[K] E, σ x := by
-  have hx := Algebra.IsSeparable.isIntegral K x
-  rw [norm_eq_norm_adjoin K x, RingHom.map_pow, ← adjoin.powerBasis_gen hx,
-    norm_eq_prod_embeddings_gen E (adjoin.powerBasis hx) (IsAlgClosed.splits_codomain _)]
-  · exact (prod_embeddings_eq_finrank_pow L (L := K⟮x⟯) E (adjoin.powerBasis hx)).symm
-  · haveI := Algebra.isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
-    exact Algebra.IsSeparable.isSeparable K _
-
-theorem norm_eq_prod_automorphisms [FiniteDimensional K L] [IsGalois K L] (x : L) :
-    algebraMap K L (norm K x) = ∏ σ : L ≃ₐ[K] L, σ x := by
-  apply FaithfulSMul.algebraMap_injective L (AlgebraicClosure L)
-  rw [map_prod (algebraMap L (AlgebraicClosure L))]
-  rw [← Fintype.prod_equiv (Normal.algHomEquivAut K (AlgebraicClosure L) L)]
-  · rw [← norm_eq_prod_embeddings _ _ x, ← IsScalarTower.algebraMap_apply]
-  · intro σ
-    simp only [Normal.algHomEquivAut, AlgHom.restrictNormal', Equiv.coe_fn_mk,
-      AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, id.map_eq_id, RingHom.id_apply]
-
-theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [Algebra.IsSeparable K L]
-    [FiniteDimensional K L] {x : L} (hx : IsIntegral R x) : IsIntegral R (norm K x) := by
-  have hx' : IsIntegral K x := hx.tower_top
-  rw [← isIntegral_algebraMap_iff (algebraMap K (AlgebraicClosure L)).injective, norm_eq_prod_roots]
-  · refine (IsIntegral.multiset_prod fun y hy => ?_).pow _
-    rw [mem_roots_map (minpoly.ne_zero hx')] at hy
-    use minpoly R x, minpoly.monic hx
-    rw [← aeval_def] at hy ⊢
-    exact minpoly.aeval_of_isScalarTower R x y hy
-  · apply IsAlgClosed.splits_codomain
 
 lemma norm_eq_of_algEquiv [Ring T] [Algebra R T] (e : S ≃ₐ[R] T) (x) :
     Algebra.norm R (e x) = Algebra.norm R x := by
@@ -277,7 +221,7 @@ lemma norm_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [Ring
   · let e' : B₁ ≃ₐ[A₁] B₂ := { e₂ with commutes' := fun _ ↦ rfl }
     rw [← Algebra.norm_eq_of_ringEquiv e₁ he, ← Algebra.norm_eq_of_algEquiv e']
     simp [e']
-  intros c x
+  intro c x
   apply e₂.symm.injective
   simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_mul,
     RingEquiv.symm_apply_apply, commutes]

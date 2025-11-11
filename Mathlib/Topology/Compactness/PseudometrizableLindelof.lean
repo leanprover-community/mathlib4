@@ -10,7 +10,7 @@ import Mathlib.Topology.Compactness.Lindelof
 /-!
 # Second-countability of pseudometrizable Lindelöf spaces
 
-Factored out from `Mathlib.Topology.Compactness.Lindelof`
+Factored out from `Mathlib/Topology/Compactness/Lindelof.lean`
 to avoid circular dependencies.
 -/
 

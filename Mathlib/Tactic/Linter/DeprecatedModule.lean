@@ -7,7 +7,7 @@ import Std.Time.Format
 import Mathlib.Init
 
 /-!
-#  The `deprecated.module` linter
+# The `deprecated.module` linter
 
 The `deprecated.module` linter emits a warning when a file that has been renamed or split
 is imported.
@@ -25,7 +25,7 @@ This triggers the `deprecated.module` linter to notify every file with `import A
 to instead import the *direct imports* of `A`, that is `B, ..., Z`.
 -/
 
-open Lean Elab Command
+open Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
@@ -63,10 +63,10 @@ current module name and the array of its direct imports.
 It ignores the `Init` import, since this is a special module that is expected to be imported
 by all files.
 
-It also ignores the `Mathlib.Tactic.Linter.DeprecatedModule` import (namely, the current file),
+It also ignores the `Mathlib/Tactic/Linter/DeprecatedModule.lean` import (namely, the current file),
 since there is no need to import this module.
 -/
-def addModuleDeprecation {m : Type → Type} [Monad m] [MonadEnv m] [MonadQuotation m]
+def addModuleDeprecation {m : Type → Type} [Monad m] [MonadEnv m]
     (msg? : Option String) : m Unit := do
   let modName ← getMainModule
   modifyEnv (deprecatedModuleExt.addEntry ·
@@ -81,7 +81,7 @@ This means that any file that directly imports `A` will get a notification on th
 suggesting to instead import the *direct imports* of `A`.
 -/
 elab (name := deprecated_modules)
-    "deprecated_module " msg?:(str)? "(" &"since " ":= " date:str ")" : command => do
+    "deprecated_module " msg?:(str ppSpace)? "(" &"since " ":= " date:str ")" : command => do
   if let .error _parsedDate := Std.Time.PlainDate.fromLeanDateString date.getString then
     throwError "Invalid date: the expected format is \"{← Std.Time.PlainDate.now}\""
   addModuleDeprecation <| msg?.map (·.getString)
@@ -126,7 +126,7 @@ initialize IsLaterCommand : IO.Ref Bool ← IO.mkRef false
 
 @[inherit_doc Mathlib.Linter.linter.deprecated.module]
 def deprecated.moduleLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.deprecated.module (← getOptions) do
+  unless getLinterValue linter.deprecated.module (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
@@ -143,7 +143,7 @@ def deprecated.moduleLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if stx.isOfKind ``Linter.deprecated_modules then return
   let fm ← getFileMap
   let (importStx, _) ←
-    Parser.parseHeader { input := fm.source, fileName := ← getFileName, fileMap := fm }
+    Parser.parseHeader { inputString := fm.source, fileName := ← getFileName, fileMap := fm }
   let modulesWithNames := (getImportIds importStx).map fun i ↦ (i, i.getId)
   for (i, preferred, msg?) in deprecations do
     for (nmStx, _) in modulesWithNames.filter (·.2 == i) do

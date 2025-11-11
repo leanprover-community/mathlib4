@@ -33,12 +33,15 @@ namespace List
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by simp) i) := by
   simp; congr
 
-@[deprecated (since := "2025-02-15")] alias get?_ofFn := List.getElem?_ofFn
-
 @[simp]
 theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
     map g (ofFn f) = ofFn (g ∘ f) :=
   ext_get (by simp) fun i h h' => by simp
+
+/-- Useful if `rw [← map_ofFn]` complains that `g ∘ f` is not the same as `fun i => g (f i)`. -/
+theorem ofFn_comp' {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
+    ofFn (fun i => g (f i)) = map g (ofFn f) :=
+  (map_ofFn f g).symm
 
 @[congr]
 theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
@@ -48,26 +51,17 @@ theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
 
 theorem ofFn_succ' {n} (f : Fin (succ n) → α) :
     ofFn f = (ofFn fun i => f (Fin.castSucc i)).concat (f (Fin.last _)) := by
-  induction' n with n IH
-  · rw [ofFn_zero, concat_nil, ofFn_succ, ofFn_zero]
-    rfl
-  · rw [ofFn_succ, IH, ofFn_succ, concat_cons, Fin.castSucc_zero]
-    congr
-
-/-- Note this matches the convention of `List.ofFn_succ'`, putting the `Fin m` elements first. -/
-theorem ofFn_add {m n} (f : Fin (m + n) → α) :
-    List.ofFn f =
-      (List.ofFn fun i => f (Fin.castAdd n i)) ++ List.ofFn fun j => f (Fin.natAdd m j) := by
-  induction' n with n IH
-  · rw [ofFn_zero, append_nil, Fin.castAdd_zero, Fin.cast_refl]
-    rfl
-  · rw [ofFn_succ', ofFn_succ', IH, append_concat]
-    rfl
+  induction n with
+  | zero => rw [ofFn_zero, concat_nil, ofFn_succ, ofFn_zero, Fin.last_zero]
+  | succ n IH =>
+    rw [ofFn_succ, IH, ofFn_succ, concat_cons, Fin.castSucc_zero, Fin.succ_last]
+    simp only [succ_eq_add_one, Fin.castSucc_succ]
 
 @[simp]
 theorem ofFn_fin_append {m n} (a : Fin m → α) (b : Fin n → α) :
     List.ofFn (Fin.append a b) = List.ofFn a ++ List.ofFn b := by
-  simp_rw [ofFn_add, Fin.append_left, Fin.append_right]
+  simp_rw [ofFn_add]
+  simp [Fin.append_left', Fin.append_right]
 
 /-- This breaks a list of `m*n` items into `m` groups each containing `n` elements. -/
 theorem ofFn_mul {m n} (f : Fin (m * n) → α) :
@@ -76,10 +70,11 @@ theorem ofFn_mul {m n} (f : Fin (m * n) → α) :
       ↑i * n + j < (i + 1) * n :=
         (Nat.add_lt_add_left j.prop _).trans_eq (by rw [Nat.add_mul, Nat.one_mul])
       _ ≤ _ := Nat.mul_le_mul_right _ i.prop⟩) := by
-  induction' m with m IH
-  · simp [ofFn_zero, Nat.zero_mul, ofFn_zero, flatten]
-  · simp_rw [ofFn_succ', succ_mul]
-    simp [flatten_concat, ofFn_add, IH]
+  induction m with
+  | zero => simp [ofFn_zero, Nat.zero_mul, ofFn_zero]
+  | succ m IH =>
+    simp_rw [ofFn_succ', succ_mul]
+    simp [ofFn_add, IH]
     rfl
 
 /-- This breaks a list of `m*n` items into `n` groups each containing `m` elements. -/
@@ -113,9 +108,7 @@ theorem ofFn_getElem_eq_map {β : Type*} (l : List α) (f : α → β) :
 
 -- Note there is a now another `mem_ofFn` defined in Lean, with an existential on the RHS,
 -- which is marked as a simp lemma.
-theorem mem_ofFn' {n} (f : Fin n → α) (a : α) : a ∈ ofFn f ↔ a ∈ Set.range f := by
-  simp only [mem_iff_get, Set.mem_range, get_ofFn]
-  exact ⟨fun ⟨i, hi⟩ => ⟨Fin.cast (by simp) i, hi⟩, fun ⟨i, hi⟩ => ⟨Fin.cast (by simp) i, hi⟩⟩
+theorem mem_ofFn' {n} (f : Fin n → α) (a : α) : a ∈ ofFn f ↔ a ∈ Set.range f := by grind
 
 theorem forall_mem_ofFn_iff {n : ℕ} {f : Fin n → α} {P : α → Prop} :
     (∀ i ∈ ofFn f, P i) ↔ ∀ j : Fin n, P (f j) := by simp
@@ -123,7 +116,7 @@ theorem forall_mem_ofFn_iff {n : ℕ} {f : Fin n → α} {P : α → Prop} :
 @[simp]
 theorem ofFn_const : ∀ (n : ℕ) (c : α), (ofFn fun _ : Fin n => c) = replicate n c
   | 0, c => by rw [ofFn_zero, replicate_zero]
-  | n+1, c => by rw [replicate, ← ofFn_const n]; simp
+  | n + 1, c => by rw [replicate, ← ofFn_const n]; simp
 
 @[simp]
 theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
@@ -135,23 +128,12 @@ theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
 theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
     (ofFn f).Pairwise R ↔ ∀ ⦃i j⦄, i < j → R (f i) (f j) := by
   simp only [pairwise_iff_getElem, length_ofFn, List.getElem_ofFn,
-    (Fin.rightInverse_cast length_ofFn).surjective.forall, Fin.forall_iff, Fin.cast_mk,
+    Fin.forall_iff,
     Fin.mk_lt_mk, forall_comm (α := (_ : Prop)) (β := ℕ)]
 
 lemma getLast_ofFn_succ {n : ℕ} (f : Fin n.succ → α) :
     (ofFn f).getLast (mt ofFn_eq_nil_iff.1 (Nat.succ_ne_zero _)) = f (Fin.last _) :=
   getLast_ofFn _
-
-@[deprecated getLast_ofFn (since := "2024-11-06")]
-theorem last_ofFn {n : ℕ} (f : Fin n → α) (h : ofFn f ≠ [])
-    (hn : n - 1 < n := Nat.pred_lt <| ofFn_eq_nil_iff.not.mp h) :
-    getLast (ofFn f) h = f ⟨n - 1, hn⟩ := by simp [getLast_eq_getElem]
-
-@[deprecated getLast_ofFn_succ (since := "2024-11-06")]
-theorem last_ofFn_succ {n : ℕ} (f : Fin n.succ → α)
-    (h : ofFn f ≠ [] := mt ofFn_eq_nil_iff.mp (Nat.succ_ne_zero _)) :
-    getLast (ofFn f) h = f (Fin.last _) :=
-  getLast_ofFn_succ _
 
 lemma ofFn_cons {n} (a : α) (f : Fin n → α) : ofFn (Fin.cons a f) = a :: ofFn f := by
   rw [ofFn_succ]
@@ -164,7 +146,7 @@ lemma find?_ofFn_eq_some {n} {f : Fin n → α} {p : α → Bool} {b : α} :
       ⟨hpb, ⟨⟨i, length_ofFn (f := f) ▸ hi⟩, by simpa using hfb, fun j hj ↦ by simpa using h j hj⟩⟩,
     fun ⟨hpb, i, hfb, h⟩ ↦
       ⟨hpb, ⟨i, (length_ofFn (f := f)).symm ▸ i.isLt, by simpa using hfb,
-        fun j hj ↦ by simpa using h ⟨j, by omega⟩ (by simpa using hj)⟩⟩⟩
+        fun j hj ↦ by simpa using h ⟨j, by cutsat⟩ (by simpa using hj)⟩⟩⟩
 
 lemma find?_ofFn_eq_some_of_injective {n} {f : Fin n → α} {p : α → Bool} {i : Fin n}
     (h : Function.Injective f) :
@@ -173,7 +155,7 @@ lemma find?_ofFn_eq_some_of_injective {n} {f : Fin n → α} {p : α → Bool} {
 
 /-- Lists are equivalent to the sigma type of tuples of a given length. -/
 @[simps]
-def equivSigmaTuple : List α ≃ Σn, Fin n → α where
+def equivSigmaTuple : List α ≃ Σ n, Fin n → α where
   toFun l := ⟨l.length, l.get⟩
   invFun f := List.ofFn f.2
   left_inv := List.ofFn_get
@@ -203,7 +185,7 @@ theorem forall_iff_forall_tuple {P : List α → Prop} :
 
 /-- `Fin.sigma_eq_iff_eq_comp_cast` may be useful to work with the RHS of this expression. -/
 theorem ofFn_inj' {m n : ℕ} {f : Fin m → α} {g : Fin n → α} :
-    ofFn f = ofFn g ↔ (⟨m, f⟩ : Σn, Fin n → α) = ⟨n, g⟩ :=
+    ofFn f = ofFn g ↔ (⟨m, f⟩ : Σ n, Fin n → α) = ⟨n, g⟩ :=
   Iff.symm <| equivSigmaTuple.symm.injective.eq_iff.symm
 
 /-- Note we can only state this when the two functions are indexed by defeq `n`. -/

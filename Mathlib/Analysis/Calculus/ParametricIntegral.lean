@@ -6,7 +6,7 @@ Authors: Patrick Massot
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
+import Mathlib.Analysis.LocallyConvex.SeparatingDual
 
 /-!
 # Derivatives of integrals depending on parameters
@@ -39,8 +39,8 @@ variable.
   controlled by a positive number `ε`.
 
 * `hasFDerivAt_integral_of_dominated_of_fderiv_le`: this version assumes `fun x ↦ F x a` has
-   derivative `F' x a` for `x` near `x₀` and `F' x` is bounded by an integrable function independent
-   from `x` near `x₀`.
+  derivative `F' x a` for `x` near `x₀` and `F' x` is bounded by an integrable function independent
+  from `x` near `x₀`.
 
 `hasDerivAt_integral_of_dominated_loc_of_lip` and
 `hasDerivAt_integral_of_dominated_loc_of_deriv_le` are versions of the above two results that

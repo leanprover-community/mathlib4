@@ -21,7 +21,7 @@ biproducts, and if `F` preserves binary biproducts, then `F` is additive.
 
 We also define the category of bundled additive functors.
 
-# Implementation details
+## Implementation details
 
 `Functor.Additive` is a `Prop`-valued class, defined by saying that for every two objects `X` and
 `Y`, the map `F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)` is a morphism of abelian groups.
@@ -38,7 +38,7 @@ namespace CategoryTheory
 class Functor.Additive {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
   (F : C ⥤ D) : Prop where
   /-- the addition of two morphisms is mapped to the sum of their images -/
-  map_add : ∀ {X Y : C} {f g : X ⟶ Y}, F.map (f + g) = F.map f + F.map g := by aesop_cat
+  map_add : ∀ {X Y : C} {f g : X ⟶ Y}, F.map (f + g) = F.map f + F.map g := by cat_disch
 
 section Preadditive
 
@@ -161,6 +161,14 @@ instance (priority := 100) preservesFiniteBiproductsOfAdditive [Additive F] :
           ⟨isBilimitOfTotal _ (by
             simp_rw [F.mapBicone_π, F.mapBicone_ι, ← F.map_comp]
             erw [← F.map_sum, ← F.map_id, IsBilimit.total hb])⟩ } }
+
+instance (priority := 100) preservesFiniteCoproductsOfAdditive [Additive F] :
+    PreservesFiniteCoproducts F where
+  preserves _ := preservesCoproductsOfShape_of_preservesBiproductsOfShape F
+
+instance (priority := 100) preservesFiniteProductsOfAdditive [Additive F] :
+    PreservesFiniteProducts F where
+  preserves _ := preservesProductsOfShape_of_preservesBiproductsOfShape F
 
 theorem additive_of_preservesBinaryBiproducts [HasBinaryBiproducts C] [PreservesZeroMorphisms F]
     [PreservesBinaryBiproducts F] : Additive F where

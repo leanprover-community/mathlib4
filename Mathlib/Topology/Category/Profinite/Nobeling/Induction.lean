@@ -12,7 +12,7 @@ import Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit
 # Nöbeling's theorem
 
 This file proves Nöbeling's theorem. For the overall proof outline see
-`Mathlib.Topology.Category.Profinite.Nobeling.Basic`.
+`Mathlib/Topology/Category/Profinite/Nobeling/Basic.lean`.
 
 ## Main result
 
@@ -24,7 +24,7 @@ This file proves Nöbeling's theorem. For the overall proof outline see
 - [scholze2019condensed], Theorem 5.4.
 -/
 
-open Topology
+open Module Topology
 
 universe u
 
@@ -60,7 +60,7 @@ theorem GoodProducts.P0 : P I 0 := fun _ C _ hsC ↦ by
   · subst C
     exact linearIndependentSingleton
 
-theorem GoodProducts.Plimit (o : Ordinal) (ho : Ordinal.IsLimit o) :
+theorem GoodProducts.Plimit (o : Ordinal) (ho : Order.IsSuccLimit o) :
     (∀ (o' : Ordinal), o' < o → P I o') → P I o := by
   intro h hho C hC hsC
   rw [linearIndependent_iff_union_smaller C ho hsC, linearIndependent_subtype_iff]
@@ -141,9 +141,6 @@ theorem Nobeling.isClosedEmbedding : IsClosedEmbedding (Nobeling.ι S) := by
     dsimp +unfoldPartialApp [ι] at h
     rw [← congr_fun h ⟨C, hC⟩]
     exact decide_eq_true hh.1
-
-@[deprecated (since := "2024-10-26")]
-alias Nobeling.embedding := Nobeling.isClosedEmbedding
 
 end Profinite
 
