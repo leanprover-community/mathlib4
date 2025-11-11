@@ -9,8 +9,7 @@ import Mathlib.Init
 /-!
 # Checker for well-formed title and labels
 This script checks if a PR title matches
-[mathlib's commit conventions](https://leanprover-community.github.io/contribute/commit.html),
-and if the PR has any contradictory labels.
+[mathlib's commit conventions](https://leanprover-community.github.io/contribute/commit.html).
 Not all checks from the commit conventions are implemented: for instance, no effort is made to
 verify whether the title or body are written in present imperative tense.
 -/
