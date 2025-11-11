@@ -119,8 +119,10 @@ noncomputable def Path.composeSegments {X : Type*} [TopologicalSpace X] {x y : X
 theorem Path.subpathOn_trans_aux₁ {X : Type*} [TopologicalSpace X] {x y : X} (γ : Path x y)
     (a b : unitInterval) (hab : a ≤ b) :
     Path.Homotopic
-      ((γ.subpathOn a ((a + b) / 2) hab).trans (γ.subpathOn ((a + b) / 2) c hbc))
-      (γ.subpathOn a c (hab.trans hbc)) := by
+      ((γ.subpathOn a (Set.Icc.convexCombo a b unitInterval.half) sorry).trans
+        (γ.subpathOn (Set.Icc.convexCombo a b unitInterval.half) b sorry))
+      (γ.subpathOn a b hab) := by
+  sorry
 
 /-- A subpath from a to b composed with a subpath from b to c is homotopic to
 the subpath from a to c.
