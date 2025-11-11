@@ -136,7 +136,7 @@ section PullbackFromChosenPullbacksAlongs
 variable {Y Z X : C} (f : Y ⟶ X) (g : Z ⟶ X) [ChosenPullbacksAlong g]
 
 /-- The underlying object of the chosen pullback along `g` of `f`. -/
-abbrev pullbackObj := ((pullback g).obj (Over.mk f)).left
+abbrev pullbackObj : C := ((pullback g).obj (Over.mk f)).left
 
 /-- A morphism in `Over X` from the chosen pullback along `g` of `f` to `Over.mk f`. -/
 abbrev fst' := (mapPullbackAdj g).counit.app (Over.mk f)
