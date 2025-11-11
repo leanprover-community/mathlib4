@@ -59,7 +59,7 @@ theorem norm_cexp_neg_mul_sq_add_mul_I' (hb : b.re ≠ 0) (c T : ℝ) :
   have :
     b.re * T ^ 2 - 2 * b.im * c * T - b.re * c ^ 2 =
       b.re * (T - b.im * c / b.re) ^ 2 - c ^ 2 * (b.im ^ 2 / b.re + b.re) := by
-    field_simp; ring
+    field
   rw [norm_cexp_neg_mul_sq_add_mul_I, this]
 
 theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤ T) :
@@ -184,8 +184,7 @@ theorem _root_.integral_cexp_quadratic (hb : b.re < 0) (c d : ℂ) :
       cexp (- -b * (x + c / (2 * b)) ^ 2) * cexp (d - c ^ 2 / (4 * b)) := by
     simp_rw [← Complex.exp_add]
     congr 1
-    field_simp
-    ring_nf
+    field
   simp_rw [h, MeasureTheory.integral_mul_const]
   rw [← re_add_im (c / (2 * b))]
   simp_rw [← add_assoc, ← ofReal_add]
@@ -256,15 +255,13 @@ theorem integrable_cexp_neg_mul_sum_add {ι : Type*} [Fintype ι] (hb : 0 < b.re
 
 theorem integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ℂ) (w : EuclideanSpace ℝ ι) :
-    Integrable (fun (v : EuclideanSpace ℝ ι) ↦ cexp (-b * ‖v‖ ^ 2 + c * ⟪w, v⟫)) := by
-  have := EuclideanSpace.volume_preserving_measurableEquiv ι
-  rw [← MeasurePreserving.integrable_comp_emb this.symm (MeasurableEquiv.measurableEmbedding _)]
+    Integrable (fun (v : EuclideanSpace ℝ ι) ↦ cexp (- b * ‖v‖^2 + c * ⟪w, v⟫)) := by
+  rw [← (PiLp.volume_preserving_toLp ι).integrable_comp_emb
+    (MeasurableEquiv.toLp 2 _).measurableEmbedding]
   simp only [neg_mul, Function.comp_def]
   convert integrable_cexp_neg_mul_sum_add hb (fun i ↦ c * w i) using 3 with v
-  simp only [EuclideanSpace.measurableEquiv, MeasurableEquiv.symm_mk, MeasurableEquiv.coe_mk,
-    EuclideanSpace.norm_eq, Real.norm_eq_abs, sq_abs, PiLp.inner_apply,
-    RCLike.inner_apply, conj_trivial, ofReal_sum, ofReal_mul, Finset.mul_sum, neg_mul,
-    Finset.sum_neg_distrib, mul_assoc]
+  simp only [EuclideanSpace.norm_eq, norm_eq_abs, sq_abs, PiLp.inner_apply, RCLike.inner_apply,
+  conj_trivial, ofReal_sum, ofReal_mul, Finset.mul_sum, neg_mul, Finset.sum_neg_distrib, mul_assoc]
   norm_cast
   rw [sq_sqrt]
   · simp [Finset.mul_sum, mul_comm]
@@ -301,19 +298,18 @@ theorem integral_cexp_neg_mul_sum_add {ι : Type*} [Fintype ι] (hb : 0 < b.re) 
 
 theorem integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ℂ) (w : EuclideanSpace ℝ ι) :
-    ∫ v : EuclideanSpace ℝ ι, cexp (-b * ‖v‖ ^ 2 + c * ⟪w, v⟫) =
-      (π / b) ^ (Fintype.card ι / 2 : ℂ) * cexp (c ^ 2 * ‖w‖ ^ 2 / (4 * b)) := by
-  have := (EuclideanSpace.volume_preserving_measurableEquiv ι).symm
-  rw [← this.integral_comp (MeasurableEquiv.measurableEmbedding _)]
+    ∫ v : EuclideanSpace ℝ ι, cexp (- b * ‖v‖^2 + c * ⟪w, v⟫) =
+      (π / b) ^ (Fintype.card ι / 2 : ℂ) * cexp (c ^ 2 * ‖w‖^2 / (4 * b)) := by
+  rw [← (PiLp.volume_preserving_toLp ι).integral_comp
+    (MeasurableEquiv.toLp 2 _).measurableEmbedding]
   simp only [neg_mul]
   convert integral_cexp_neg_mul_sum_add hb (fun i ↦ c * w i) using 5 with _x y
-  · simp only [EuclideanSpace.coe_measurableEquiv_symm, EuclideanSpace.norm_eq, PiLp.toLp_apply,
-      Real.norm_eq_abs, sq_abs, neg_mul, neg_inj, mul_eq_mul_left_iff]
+  · simp only [EuclideanSpace.norm_eq, norm_eq_abs, sq_abs, neg_mul, neg_inj, mul_eq_mul_left_iff]
     norm_cast
     left
     rw [sq_sqrt]
     exact Finset.sum_nonneg (fun i _hi ↦ by positivity)
-  · simp [PiLp.inner_apply, EuclideanSpace.measurableEquiv, Finset.mul_sum, mul_assoc]
+  · simp [PiLp.inner_apply, Finset.mul_sum, mul_assoc]
     simp_rw [mul_comm]
   · simp only [EuclideanSpace.norm_eq, Real.norm_eq_abs, sq_abs, mul_pow, ← Finset.mul_sum]
     congr

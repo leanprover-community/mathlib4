@@ -163,9 +163,6 @@ theorem _root_.SubmonoidClass.finsuppProd_mem {S : Type*} [SetLike S N] [Submono
     (s : S) (f : α →₀ M) (g : α → M → N) (h : ∀ c, f c ≠ 0 → g c (f c) ∈ s) : f.prod g ∈ s :=
   prod_mem fun _i hi => h _ (Finsupp.mem_support_iff.mp hi)
 
-@[deprecated (since := "2025-04-06")]
-alias _root_.SubmonoidClass.finsupp_prod_mem := _root_.SubmonoidClass.finsuppProd_mem
-
 @[to_additive]
 theorem prod_congr {f : α →₀ M} {g1 g2 : α → M → N} (h : ∀ x ∈ f.support, g1 x (f x) = g2 x (f x)) :
     f.prod g1 = f.prod g2 :=
@@ -200,27 +197,15 @@ theorem map_finsuppProd [Zero M] [CommMonoid N] [CommMonoid P] {H : Type*}
     (h : H) (f : α →₀ M) (g : α → M → N) : h (f.prod g) = f.prod fun a b => h (g a b) :=
   map_prod h _ _
 
-@[deprecated (since := "2025-04-06")] alias map_finsupp_prod := map_finsuppProd
-@[deprecated (since := "2025-04-06")] alias map_finsupp_sum := map_finsuppSum
-
 @[to_additive]
 theorem MonoidHom.coe_finsuppProd [Zero β] [MulOneClass N] [CommMonoid P] (f : α →₀ β)
     (g : α → β → N →* P) : ⇑(f.prod g) = f.prod fun i fi => ⇑(g i fi) :=
   MonoidHom.coe_finset_prod _ _
 
-@[deprecated (since := "2025-04-06")] alias MonoidHom.coe_finsupp_prod := MonoidHom.coe_finsuppProd
-@[deprecated (since := "2025-04-06")]
-alias AddMonoidHom.coe_finsupp_sum := AddMonoidHom.coe_finsuppSum
-
 @[to_additive (attr := simp)]
 theorem MonoidHom.finsuppProd_apply [Zero β] [MulOneClass N] [CommMonoid P] (f : α →₀ β)
     (g : α → β → N →* P) (x : N) : f.prod g x = f.prod fun i fi => g i fi x :=
   MonoidHom.finset_prod_apply _ _ _
-
-@[deprecated (since := "2025-04-06")]
-alias MonoidHom.finsupp_prod_apply := MonoidHom.finsuppProd_apply
-@[deprecated (since := "2025-04-06")]
-alias AddMonoidHom.finsupp_sum_apply := AddMonoidHom.finsuppSum_apply
 
 namespace Finsupp
 
@@ -418,12 +403,17 @@ theorem univ_sum_single_apply' [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
   classical rw [Finset.sum_pi_single]
   simp
 
-
 theorem equivFunOnFinite_symm_eq_sum [Fintype α] [AddCommMonoid M] (f : α → M) :
-    equivFunOnFinite.symm f = ∑ a, Finsupp.single a (f a) := by
-  rw [← univ_sum_single (equivFunOnFinite.symm f)]
-  ext
-  simp
+    equivFunOnFinite.symm f = ∑ a, single a (f a) :=
+  (univ_sum_single _).symm
+
+theorem coe_univ_sum_single [Fintype α] [AddCommMonoid M] (f : α → M) :
+    ⇑(∑ a : α, single a (f a)) = f :=
+  congrArg _ (equivFunOnFinite_symm_eq_sum f).symm
+
+theorem equivFunOnFinite_symm_sum [Fintype α] [AddCommMonoid M] (f : α → M) :
+    ((equivFunOnFinite.symm f).sum fun _ n ↦ n) = ∑ a, f a := by
+  rw [equivFunOnFinite_symm_eq_sum, sum_fintype _ _ fun _ ↦ rfl, coe_univ_sum_single]
 
 theorem liftAddHom_apply_single [AddZeroClass M] [AddCommMonoid N] (f : α → M →+ N) (a : α)
     (b : M) : (liftAddHom (α := α) (M := M) (N := N)) f (single a b) = f a b :=
