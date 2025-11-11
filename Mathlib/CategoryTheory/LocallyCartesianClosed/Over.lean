@@ -3,7 +3,7 @@ Copyright (c) 2025 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullback
+import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
 
 /-!
 # Cartesian monoidal structure on slices induced by chosen pullbacks
@@ -41,7 +41,7 @@ namespace CategoryTheory
 
 open Category Limits CartesianMonoidalCategory MonoidalCategory
 
-namespace ChosenPullback
+namespace ChosenPullbacksAlong
 
 variable {C : Type u₁} [Category.{v₁} C]
 
@@ -49,32 +49,32 @@ section
 
 variable {X : C} (Y Z : Over X)
 
-/-- The canonical pullback cone constructed from `ChosenPullback.isPullback.`
+/-- The canonical pullback cone constructed from `ChosenPullbacksAlong.isPullback.`
 Note: The source of noncomputability is the non-constructive implementation of `IsPullback.isLimit`.
-Otherwise, `ChosenPullback.isPullback` is constructive.
+Otherwise, `ChosenPullbacksAlong.isPullback` is constructive.
 -/
-def isLimitPullbackCone [ChosenPullback Z.hom] :
+def isLimitPullbackCone [ChosenPullbacksAlong Z.hom] :
     IsLimit (isPullback Y.hom Z.hom |>.cone) :=
   PullbackCone.IsLimit.mk condition (fun s ↦ lift s.fst s.snd s.condition)
     (by cat_disch) (by cat_disch) (by cat_disch)
 
 /-- The binary fan provided by `fst'` and `snd'`. -/
-def binaryFan [ChosenPullback Z.hom] : BinaryFan Y Z :=
+def binaryFan [ChosenPullbacksAlong Z.hom] : BinaryFan Y Z :=
   BinaryFan.mk (P:= Over.mk (Y := pullbackObj Y.hom Z.hom) (snd Y.hom Z.hom ≫ Z.hom))
     (fst' Y.hom Z.hom) (snd' Y.hom Z.hom)
 
 @[simp]
-theorem binaryFan_pt [ChosenPullback Z.hom] :
+theorem binaryFan_pt [ChosenPullbacksAlong Z.hom] :
     (binaryFan Y Z).pt = Over.mk (Y:= pullbackObj Y.hom Z.hom) (snd Y.hom Z.hom ≫ Z.hom) := by
   rfl
 
 @[simp]
-theorem binaryFan_pt_hom [ChosenPullback Z.hom] :
+theorem binaryFan_pt_hom [ChosenPullbacksAlong Z.hom] :
     (binaryFan Y Z).pt.hom = snd Y.hom Z.hom ≫ Z.hom := by
   rfl
 
 /-- The binary fan provided by `fst'` and `snd'` is a binary product in `Over X`. -/
-def binaryFanIsBinaryProduct [ChosenPullback Z.hom] :
+def binaryFanIsBinaryProduct [ChosenPullbacksAlong Z.hom] :
     IsLimit (binaryFan Y Z) :=
   BinaryFan.IsLimit.mk (binaryFan Y Z)
     (fun u v => Over.homMk (lift (u.left) (v.left) (by rw [Over.w u, Over.w v])) (by simp))
@@ -98,11 +98,11 @@ instance cartesianMonoidalCategoryOver [ChosenPullbacks C] (X : C) :
       fun Y m ↦ Over.OverMorphism.ext (by simpa using m.w)⟩
     (fun Y Z ↦ ⟨ _ , binaryFanIsBinaryProduct Y Z⟩)
 
-end ChosenPullback
+end ChosenPullbacksAlong
 
 section ToOver
 
-open ChosenPullback
+open ChosenPullbacksAlong
 
 variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory C]
 
@@ -132,11 +132,11 @@ def equivToOverUnit : Over (𝟙_ C) ≌ C :=
     (NatIso.ofComponents fun X => Over.isoMk (Iso.refl _))
     (NatIso.ofComponents fun X => Iso.refl _)
 
-attribute [local instance] ChosenPullback.cartesianMonoidalCategoryToUnit
+attribute [local instance] ChosenPullbacksAlong.cartesianMonoidalCategoryToUnit
 
 variable {C}
 
-/-- The isomorphism of functors `toOverUnit C ⋙ ChosenPullback.pullback (toUnit X)` and
+/-- The isomorphism of functors `toOverUnit C ⋙ ChosenPullbacksAlong.pullback (toUnit X)` and
 `toOver X`. -/
 def toOverUnitPullback (X : C) :
     toOverUnit C ⋙ pullback (toUnit X) ≅ toOver X :=
@@ -159,7 +159,7 @@ def toOverIsoToOverUnit : toOver (𝟙_ C) ≅ toOverUnit C  :=
 
 /-- A natural isomorphism between the functors `toOver Y` and `toOver X ⋙ pullback f`
 for any morphism `f : X ⟶ Y`. -/
-def toOverPullbackIsoToOver {X Y : C} (f : Y ⟶ X) [ChosenPullback f] :
+def toOverPullbackIsoToOver {X Y : C} (f : Y ⟶ X) [ChosenPullbacksAlong f] :
     toOver X ⋙ pullback f ≅ toOver Y :=
   conjugateIsoEquiv ((mapPullbackAdj f).comp (forgetAdjToOver X))
     (forgetAdjToOver Y) (Over.mapForget f)
@@ -174,15 +174,17 @@ def toOverIteratedSliceForwardIsoPullback [ChosenPullbacks C] {X Y : C} (f : Y �
 
 section
 
+open ChosenPullbacksAlong
+
 variable {X : C} {Y : C}
 
-example : ChosenPullback.pullbackObj (toUnit X) (toUnit Y) = X ⊗ Y := by rfl
+example : pullbackObj (toUnit X) (toUnit Y) = X ⊗ Y := by rfl
 
-example : ChosenPullback.snd (toUnit X) (toUnit Y) = CartesianMonoidalCategory.snd X Y := rfl
+example : snd (toUnit X) (toUnit Y) = CartesianMonoidalCategory.snd X Y := rfl
 
-example : (toOver Y).obj X = Over.mk (ChosenPullback.snd (toUnit X) (toUnit Y)) := by rfl
+example : (toOver Y).obj X = Over.mk (snd (toUnit X) (toUnit Y)) := by rfl
 
-example : ((toOver Y).obj X).hom = CartesianMonoidalCategory.snd X Y := by rfl
+example : snd X Y = ((toOver Y).obj X).hom := by rfl
 
 end
 
