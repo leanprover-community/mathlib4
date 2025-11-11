@@ -2691,6 +2691,7 @@ lemma eq5zero : 1 ≤ norm
     (Algebra.norm ℚ ((algebraMap (𝓞 h7.K) h7.K) (h7.c1ρ q hq0 h2mq))) := by
   --rw [this]
   have := norm_le_house_norm ((algebraMap (𝓞 h7.K) h7.K) (h7.c1ρ q hq0 h2mq))
+  sorry
   -- have := abs_norm_eq_prod_embeddings_norm
   --   ((algebraMap (𝓞 h7.K) h7.K) (h7.c1ρ q hq0 h2mq))
   -- rw [etc (σ0 := ((h7.σ)).toRatAlgHom)] at this
@@ -2700,48 +2701,53 @@ lemma eq5zero : 1 ≤ norm
 
   --have := exists_conjugate_abs_gt_one (h7.c1rho_neq_0 q hq0 h2mq)
 
-
   -- have := @Algebra.norm_algebraMap ℚ _ h7.K _ _ (h7.cρ q hq0 h2mq)
   -- simp only [map_intCast] at this
   -- rw [this]
   -- simp only [norm_pow, Int.norm_cast_rat, ge_iff_le]
 
-  have h2 : 0 < ‖(Algebra.norm ℚ) (ρᵣ h7 q hq0 h2mq)‖ := by {
-    rw [norm_pos_iff]
-    rw [← rho_eq_ρᵣ]
-    have := abs_norm_eq_prod_embeddings_norm ( α := rho h7 q hq0 h2mq)
-    --have Hnorm_neq_0 := norm_ne_zero_iff
-    have := ρᵣ_nonzero h7 q hq0 h2mq
-    rw [← rho_eq_ρᵣ] at this
-    --simp only [ne_eq, norm_eq_zero,
-    -- Algebra.norm_eq_zero_iff] at Hnorm_neq_0
-    intros H
-    apply this
-    simp only [map_eq_zero]
-    apply_fun h7.σ
-    · apply_fun (Algebra.norm ℚ)
-      · simp only [map_zero]
-        rw [H]
-        sorry
-      · sorry
-    · exact RingHom.injective h7.σ
-    }
-  sorry
+  -- have h2 : 0 < ‖(Algebra.norm ℚ) (ρᵣ h7 q hq0 h2mq)‖ := by {
+  --   rw [← rho_eq_ρᵣ]
+  --   unfold rho
+  --   rw [norm_pos_iff]
+  --   intros H
+  --   --have := h7.norm_Algebra_norm_rho_nonzero q hq0 h2mq
+  --   --rw [Algebra.norm_eq_zero_iff] at H
+  --   --simp only [map_sum, map_mul, nsmul_eq_mul, map_pow, map_add, map_natCast] at H
+  --   sorry
+  --   -- --rw [norm_pos_iff]
+
+  --   -- have := abs_norm_eq_prod_embeddings_norm ( α := rho h7 q hq0 h2mq)
+  --   -- --have Hnorm_neq_0 := norm_ne_zero_iff
+  --   -- have := ρᵣ_nonzero h7 q hq0 h2mq
+  --   -- rw [← rho_eq_ρᵣ] at this
+  --   -- --simp only [ne_eq, norm_eq_zero,
+  --   -- -- Algebra.norm_eq_zero_iff] at Hnorm_neq_0
+  --   -- intros H
+  --   -- apply this
+  --   -- simp only [map_eq_zero]
+  --   -- apply_fun h7.σ
+  --   -- · apply_fun (Algebra.norm ℚ)
+  --   --   · simp only [map_zero]
+  --   --     rw [H]
+  --   --     sorry
+  --   --   · sorry
+  --   -- · exact RingHom.injective h7.σ
+  --   }
 
   -- calc 1 ≤ ‖h7.cρ q hq0 h2mq‖ ^ Module.finrank ℚ h7.K := h7.h1 q hq0 h2mq
   --      _ ≤ ‖h7.cρ q hq0 h2mq‖ ^ Module.finrank ℚ h7.K *
   --        ‖(Algebra.norm ℚ) (rho h7 q hq0 h2mq)‖ := ?_
   -- · nth_rw 1 [← mul_one (‖h7.cρ q hq0 h2mq‖ ^ Module.finrank ℚ h7.K)]
   --   rw [mul_le_mul_left]
-  --   · unfold rho
-  --     sorry
+  --   · sorry
   --   · have := h7.h1 q hq0 h2mq
   --     rw [le_iff_eq_or_lt] at this
   --     cases' this with h1 h2
   --     · rw [← h1]
   --       simp only [zero_lt_one]
   --     · sorry
-  --       }
+
 
 def c₅ : ℝ := ((abs (h7.c₁) + 1) ^ (((↑(h7.h) * (1+4 * h7.m^2)))))
 
@@ -3958,8 +3964,8 @@ lemma exists_R'_at_l'_plus_one (l' : Fin (h7.m))  :
     · constructor
       · intros z hz
         unfold R'
-        have : (z - (l' + 1)) ^ (h7.r q hq0 h2mq : ℕ) * (z - (l' + 1)) ^ (o - h7.r q hq0 h2mq) =
-           (z - (l' + 1)) ^ (o) := by {
+        have : (z - (l' + 1)) ^ (h7.r q hq0 h2mq : ℕ) *
+           (z - (l' + 1)) ^ (o - h7.r q hq0 h2mq) = (z - (l' + 1)) ^ (o) := by {
             rw [← pow_add]
             rw [sub_eq_add_neg]
             congr
@@ -3978,7 +3984,8 @@ lemma exists_R'_at_l'_plus_one (l' : Fin (h7.m))  :
           refine fun_mul ?_ ?_
           · apply Differentiable.analyticAt
             · apply Differentiable.fun_pow
-              · simp only [differentiable_fun_id, differentiable_const, Differentiable.fun_sub]
+              · simp only [differentiable_fun_id,
+                 differentiable_const, Differentiable.fun_sub]
           · sorry
         · unfold R'
           by_contra H
@@ -5987,15 +5994,28 @@ lemma use5 : (h7.r q hq0 h2mq)^(((h7.r q hq0 h2mq) - 3 * (h7.h)) / 2) <
     (h7.c₁₅) ^ (h7.r q hq0 h2mq) := by
   have eq5 := eq5 h7 q hq0 h2mq
   have eq5inv: norm ((Algebra.norm ℚ) (h7.rho q hq0 h2mq)) ⁻¹
-   < h7.c₅ ^ ((h7.r q hq0 h2mq)) := by {
+        < h7.c₅ ^ ((h7.r q hq0 h2mq)) := by {
     simp only [zpow_neg, zpow_natCast] at eq5
     rw [← inv_lt_inv₀] at eq5
-    simp only [inv_inv] at eq5
-    · sorry
-    · sorry
+    · simp only [norm_inv]
+      simp only [inv_inv] at eq5
+      exact eq5
+    · simp only [norm_pos_iff, ne_eq, Algebra.norm_eq_zero_iff]
+      intros H
+      apply_fun h7.σ at H
+      apply ρᵣ_nonzero h7 q hq0 h2mq
+      rw [rho_eq_ρᵣ] at H
+      simpa [H]
     · simp only [inv_pos]
-      sorry
+      unfold c₅
+      apply pow_pos
+      apply pow_pos
+      simp only [Int.cast_abs]
+      refine add_pos_of_nonneg_of_pos ?_ ?_
+      · simp only [abs_nonneg]
+      · simp only [zero_lt_one]
    }
+
   have Hpow : ↑(h7.r q hq0 h2mq : ℝ) ^ ((h7.r q hq0 h2mq - 3 * h7.h) / 2) =
   (↑(h7.r q hq0 h2mq : ℝ) ^ (-(h7.r q hq0 h2mq : ℤ) / 2 + 3 * ↑h7.h / 2))⁻¹ := sorry
 
