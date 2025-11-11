@@ -563,7 +563,7 @@ theorem translationNumber_eq_of_tendsto₀ {τ' : ℝ}
     (h : Tendsto (fun n : ℕ => f^[n] 0 / n) atTop (𝓝 τ')) : τ f = τ' :=
   f.translationNumber_eq_of_tendsto_aux <| by
     simpa [Function.comp_def, transnumAuxSeq_def, coe_pow] using
-      h.comp (Nat.tendsto_pow_atTop_atTop_of_one_lt one_lt_two)
+      h.comp (tendsto_pow_atTop_atTop_of_one_lt one_lt_two)
 
 theorem translationNumber_eq_of_tendsto₀' {τ' : ℝ}
     (h : Tendsto (fun n : ℕ => f^[n + 1] 0 / (n + 1)) atTop (𝓝 τ')) : τ f = τ' :=
