@@ -100,7 +100,7 @@ lemma scaleAEvalRoots_eq_aevalMultiset (q : S[X]) (p : symmetricSubalgebra σ R)
         Multiset.card (q.map (algebraMap S A)).roots = (q.map (algebraMap S A)).natDegree := by
       rw [hroots, Polynomial.natDegree_map_eq_of_injective inj]
     rw [Polynomial.coeff_eq_esymm_roots_of_card hroots',
-      Polynomial.natDegree_map_eq_of_injective inj, Polynomial.leadingCoeff_map' inj,
+      Polynomial.natDegree_map_eq_of_injective inj, Polynomial.leadingCoeff_map_of_injective inj,
       ← mul_assoc, mul_left_comm, ← mul_assoc, ← mul_assoc, mul_assoc _ _ (_ ^ _),
       pow_add q.leadingCoeff, mul_comm _ (_ ^ 1), pow_one, map_mul]
     swap
