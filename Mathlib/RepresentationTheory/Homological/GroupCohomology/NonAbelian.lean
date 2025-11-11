@@ -185,7 +185,7 @@ theorem map_exact (hf : Function.Injective f) (hfg : Function.Exact f g)
   · induction y using Quotient.inductionOn with | h b =>
     obtain ⟨x, hx⟩ := Quotient.eq_iff_equiv.mp h
     obtain ⟨x, rfl⟩ := hg x
-    simp [← map_smul, ← map_neg, ← map_add] at hx
+    simp only [Z1.zero_apply, ← map_neg, Z1.map_apply, ← map_add, ← map_smul] at hx
     choose a ha using fun (h : G) ↦ (hfg _).mp (hx h).symm
     refine ⟨Quotient.mk _ (⟨a, fun g h ↦ hf ?_⟩ : Z1 G A), Quotient.eq.mpr ?_⟩
     · simp only [map_add, map_smul]
