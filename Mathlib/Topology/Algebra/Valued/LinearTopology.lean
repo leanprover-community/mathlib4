@@ -20,10 +20,10 @@ import Mathlib.Topology.Algebra.Valued.ValuedField
 open Valued Filter Topology
 
 -- TODO: find a better home for this
-lemma IsLinearTopology.isFractionRing {R K : Type*} [CommRing R] [rTop : TopologicalSpace R]
+lemma IsLinearTopology.of_isOpenEmbedding {R K : Type*} [CommRing R] [rTop : TopologicalSpace R]
     [ContinuousAdd R] [hl : IsLinearTopology R R]
     [CommRing K] [kTop : TopologicalSpace K] [ContinuousAdd K] -- inferrable from ContinuousAdd R?
-    [Algebra R K] [IsFractionRing R K]  (h : IsOpenEmbedding (algebraMap R K)) :
+    [Algebra R K] (h : IsOpenEmbedding (algebraMap R K)) :
     IsLinearTopology R K := by
   have ht : rTop = kTop.induced (algebraMap R K) := h.isInducing.eq_induced
   rw [isLinearTopology_iff_hasBasis_open_submodule] at hl ⊢
@@ -66,4 +66,4 @@ instance IsLinearTopology.of_valued' :
 
 instance IsLinearTopology.of_valued :
     IsLinearTopology 𝒪[K] K :=
-  .isFractionRing (isOpenEmbedding_algebraMap_integer _)
+  .of_isOpenEmbedding (isOpenEmbedding_algebraMap_integer _)
