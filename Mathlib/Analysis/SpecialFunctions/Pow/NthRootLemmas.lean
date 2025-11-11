@@ -127,16 +127,16 @@ private theorem nthRoot.lt_pow_go_succ_aux0 (hb : b ≠ 0) :
       nth_rw 1 [Nat.mul_comm] at hq
       rw [← mul_assoc] at hq
       rw [Nat.add_div_of_dvd_left _] at hq
-      nth_rw 2 [Nat.pow_add] at hq
-      nth_rw 4 [Nat.mul_comm] at hq
-      rw [← Nat.mul_assoc] at hq
-      rw [Nat.mul_div_cancel _ (pow_pos (zero_lt_of_ne_zero hb) n)] at hq
-      rw [Nat.mul_div_cancel _ (pow_pos (zero_lt_of_ne_zero hb) n)] at hq
-      rw [pow_one] at hq
-      calc a = a * (n + 1) / (n + 1) := by rw [Nat.mul_div_cancel _ (add_one_pos n)]
-      _ ≤ (a ^ (n + 1) / b ^ n + n * b) / (n + 1) := by {
-        exact Nat.div_le_div_right hq
-      };
+      · nth_rw 2 [Nat.pow_add] at hq
+        nth_rw 4 [Nat.mul_comm] at hq
+        rw [← Nat.mul_assoc] at hq
+        rw [Nat.mul_div_cancel _ (pow_pos (zero_lt_of_ne_zero hb) n)] at hq
+        rw [Nat.mul_div_cancel _ (pow_pos (zero_lt_of_ne_zero hb) n)] at hq
+        rw [pow_one] at hq
+        calc a = a * (n + 1) / (n + 1) := by rw [Nat.mul_div_cancel _ (add_one_pos n)]
+        _ ≤ (a ^ (n + 1) / b ^ n + n * b) / (n + 1) := by {
+          exact Nat.div_le_div_right hq
+        }
       rw [pow_succ, mul_comm, mul_assoc]
       exact dvd_mul_right (b ^ n) _
 }
