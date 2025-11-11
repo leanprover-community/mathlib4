@@ -151,6 +151,18 @@ theorem frobeniusEquiv_symm_comp_frobenius :
   ext; simp
 
 @[simp]
+theorem coe_frobenius_comp_coe_frobeniusEquiv_symm :
+    ⇑(frobenius R p) ∘ ⇑(frobeniusEquiv R p).symm = id := by
+  ext
+  simp
+
+@[simp]
+theorem coe_frobeniusEquiv_symm_comp_coe_frobenius :
+    ⇑(frobeniusEquiv R p).symm ∘ ⇑(frobenius R p) = id := by
+  ext
+  simp
+
+@[simp]
 theorem frobeniusEquiv_symm_pow_p (x : R) : ((frobeniusEquiv R p).symm x) ^ p = x :=
   frobenius_apply_frobeniusEquiv_symm R p x
 
