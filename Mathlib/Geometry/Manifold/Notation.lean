@@ -291,6 +291,7 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
   if let some m ← tryStrategy m!"EuclideanSpace"   fromEuclideanSpace then return m
   if let some m ← tryStrategy m!"UpperHalfPlane"   fromUpperHalfPlane then return m
   if let some m ← tryStrategy m!"Units of algebra" fromUnitsOfAlgebra then return m
+  if let some m ← tryStrategy m!"Complex unit circle" fromCircle      then return m
   if let some m ← tryStrategy m!"Sphere"           fromSphere         then return m
   if let some m ← tryStrategy m!"NormedField"      fromNormedField    then return m
   throwError "Could not find a model with corners for `{e}`"
@@ -495,6 +496,13 @@ where
             throwError "{α}` is a space of continuous `{k}`-linear maps, but with domain `{V}` and \
               co-domain `{W}` being not definitionally equal"
     | _ => throwError "`{e}` is not the set of units of a normed algebra"
+  /-- Attempt to find a model with corners on the complex unit circle -/
+  fromCircle : TermElabM Expr := do
+    -- We don't use `match_expr` to avoid importing `Circle`.
+    if (← instantiateMVars e).cleanupAnnotations.isConstOf `Circle then
+      let r ← Term.exprToSyntax (mkConst `Real)
+      Term.elabTerm (← `(𝓘($r))) none
+    else throwError "`{e}` is not the complex unit circle"
   /-- Attempt to find a model with corners on a metric sphere in a real normed space -/
   fromSphere : TermElabM Expr := do
     let some e := (← instantiateMVars e).cleanupAnnotations.coeTypeSet?
