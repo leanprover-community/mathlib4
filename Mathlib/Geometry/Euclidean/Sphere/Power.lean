@@ -8,6 +8,7 @@ module
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 public import Mathlib.Geometry.Euclidean.Sphere.Basic
 public import Mathlib.Geometry.Euclidean.Sphere.Tangent
+import Mathlib.Geometry.Euclidean.Angle.Sphere
 
 /-!
 # Power of a point (intersecting chords and secants)
@@ -222,6 +223,23 @@ theorem dist_sq_eq_mul_dist_of_tangent_and_secant {a b t p : P} {s : Sphere P}
   rw [mul_dist_eq_power_of_radius_le_dist_center hr hp ha hb radius_le_dist,
     Sphere.power, h_tangent.dist_sq_eq_of_mem (left_mem_affineSpan_pair ℝ p t)]
   ring
+
+/-- The power of a point with respect to a sphere equals the square of its tangent length. -/
+theorem power_eq_dist_sq_of_IsTangentAt {s : Sphere P} {t p : P}
+    (h_tangent : s.IsTangentAt t (line[ℝ, p, t])) :
+    s.power p = dist p t ^ 2 := by
+  rw [Sphere.power, h_tangent.dist_sq_eq_of_mem (left_mem_affineSpan_pair ℝ p t)]
+  ring_nf
+
+/-- A line through a point is tangent to a sphere if and only if the squared tangent length
+equals the power of the point with respect to the sphere. -/
+theorem IsTangentAt_of_dist_sq_eq_power {t p : P} {s : Sphere P} (ht : t ∈ s)
+    (h_dist_eq : dist p t ^ 2 = s.power p) :
+    s.IsTangentAt t (line[ℝ, p, t]) := by
+  rw [Set.pair_comm, IsTangentAt_iff_angle_eq_pi_div_two ht,
+      ← dist_sq_eq_dist_sq_add_dist_sq_iff_angle_eq_pi_div_two]
+  simp only [sq, power, mem_sphere.mp ht, dist_comm s.center t] at h_dist_eq ⊢
+  linarith
 
 end Sphere
 
