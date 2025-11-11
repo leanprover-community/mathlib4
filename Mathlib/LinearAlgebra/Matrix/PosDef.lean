@@ -230,7 +230,7 @@ variable [DecidableEq n] {U x : Matrix n n R}
 /-- For an invertible matrix `U`, `star U * x * U` is positive semi-definite iff `x` is.
 This works on any ⋆-ring with a partial order.
 See `IsUnit.star_left_conjugate_nonneg_iff` for a similar statement for star-ordered rings. -/
-theorem _root_.Matrix.IsUnit.posSemidef_star_left_conjugate_iff (hU : IsUnit U) :
+theorem IsUnit.posSemidef_star_left_conjugate_iff (hU : IsUnit U) :
     PosSemidef (star U * x * U) ↔ x.PosSemidef := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.conjTranspose_mul_mul_same _⟩
   lift U to (Matrix n n R)ˣ using hU
@@ -241,7 +241,7 @@ theorem _root_.Matrix.IsUnit.posSemidef_star_left_conjugate_iff (hU : IsUnit U) 
 /-- For an invertible matrix `U`, `U * x * star U` is positive semi-definite iff `x` is.
 This works on any ⋆-ring with a partial order.
 See `IsUnit.star_right_conjugate_nonneg_iff` for a similar statement for star-ordered rings. -/
-theorem _root_.Matrix.IsUnit.posSemidef_star_right_conjugate_iff (hU : IsUnit U) :
+theorem IsUnit.posSemidef_star_right_conjugate_iff (hU : IsUnit U) :
     PosSemidef (U * x * star U) ↔ x.PosSemidef := by
   simpa using hU.star.posSemidef_star_left_conjugate_iff
 
@@ -415,33 +415,6 @@ theorem conjTranspose {M : Matrix n n R} (hM : M.PosDef) : Mᴴ.PosDef := hM.1.s
 theorem _root_.Matrix.posDef_conjTranspose_iff {M : Matrix n n R} : Mᴴ.PosDef ↔ M.PosDef :=
   ⟨(by simpa using ·.conjTranspose), .conjTranspose⟩
 
-section conjugate
-variable [DecidableEq n] {x U : Matrix n n R}
-
-/-- For an invertible matrix `U`, `star U * x * U` is positive definite iff `x` is.
-This works on any ⋆-ring with a partial order.
-See `IsUnit.isStrictlyPositive_star_left_conjugate_iff'` for a similar statement for star-ordered
-rings. For matrices, positive definiteness is equivalent to strict positivity when the underlying
-field is `ℝ` or `ℂ` (see `Matrix.isStrictlyPositive_iff_posDef`). -/
-theorem _root_.Matrix.IsUnit.posDef_star_left_conjugate_iff (hU : IsUnit U) :
-    PosDef (star U * x * U) ↔ x.PosDef := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h.conjTranspose_mul_mul_same <| mulVec_injective_of_isUnit hU⟩
-  lift U to (Matrix n n R)ˣ using hU
-  have := h.conjTranspose_mul_mul_same (mulVec_injective_of_isUnit (Units.isUnit U⁻¹))
-  rwa [← star_eq_conjTranspose, ← mul_assoc, ← mul_assoc, ← star_mul, mul_assoc,
-    Units.mul_inv, mul_one, star_one, one_mul] at this
-
-/-- For an invertible matrix `U`, `U * x * star U` is positive definite iff `x` is.
-This works on any ⋆-ring with a partial order.
-See `IsUnit.isStrictlyPositive_star_right_conjugate_iff` for a similar statement for star-ordered
-rings. For matrices, positive definiteness is equivalent to strict positivity when the underlying
-field is `ℝ` or `ℂ` (see `Matrix.isStrictlyPositive_iff_posDef`). -/
-theorem _root_.Matrix.IsUnit.posDef_star_right_conjugate_iff (hU : IsUnit U) :
-    PosDef (U * x * star U) ↔ x.PosDef := by
-  simpa using hU.star.posDef_star_left_conjugate_iff
-
-end conjugate
-
 theorem of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
     (hMq : M.toQuadraticMap'.PosDef) : M.PosDef := by
   refine ⟨hM, fun x hx => ?_⟩
@@ -487,6 +460,33 @@ theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n K} :
     Matrix.inv_inv_of_invertible M ▸ h.inv, (·.inv)⟩
 
 end Field
+
+section conjugate
+variable [DecidableEq n] {x U : Matrix n n R}
+
+/-- For an invertible matrix `U`, `star U * x * U` is positive definite iff `x` is.
+This works on any ⋆-ring with a partial order.
+See `IsUnit.isStrictlyPositive_star_left_conjugate_iff'` for a similar statement for star-ordered
+rings. For matrices, positive definiteness is equivalent to strict positivity when the underlying
+field is `ℝ` or `ℂ` (see `Matrix.isStrictlyPositive_iff_posDef`). -/
+theorem _root_.Matrix.IsUnit.posDef_star_left_conjugate_iff (hU : IsUnit U) :
+    PosDef (star U * x * U) ↔ x.PosDef := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.conjTranspose_mul_mul_same <| mulVec_injective_of_isUnit hU⟩
+  lift U to (Matrix n n R)ˣ using hU
+  have := h.conjTranspose_mul_mul_same (mulVec_injective_of_isUnit (Units.isUnit U⁻¹))
+  rwa [← star_eq_conjTranspose, ← mul_assoc, ← mul_assoc, ← star_mul, mul_assoc,
+    Units.mul_inv, mul_one, star_one, one_mul] at this
+
+/-- For an invertible matrix `U`, `U * x * star U` is positive definite iff `x` is.
+This works on any ⋆-ring with a partial order.
+See `IsUnit.isStrictlyPositive_star_right_conjugate_iff` for a similar statement for star-ordered
+rings. For matrices, positive definiteness is equivalent to strict positivity when the underlying
+field is `ℝ` or `ℂ` (see `Matrix.isStrictlyPositive_iff_posDef`). -/
+theorem _root_.Matrix.IsUnit.posDef_star_right_conjugate_iff (hU : IsUnit U) :
+    PosDef (U * x * star U) ↔ x.PosDef := by
+  simpa using hU.star.posDef_star_left_conjugate_iff
+
+end conjugate
 
 section SchurComplement
 
