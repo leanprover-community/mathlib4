@@ -314,6 +314,7 @@ theorem domCongr_refl : domCongr k A (.refl G) = .refl :=
 @[to_additive (attr := simp)]
 theorem domCongr_symm (e : G ≃* H) : (domCongr k A e).symm = domCongr k A e.symm := rfl
 
+/-- `MonoidAlgebra.domCongr` as a `MonoidHom` from `MulAut`. -/
 @[simps]
 def domCongrAut : MulAut G →* MonoidAlgebra A G ≃ₐ[k] MonoidAlgebra A G where
   toFun := MonoidAlgebra.domCongr k A
@@ -390,6 +391,7 @@ noncomputable def mapRangeAlgEquiv (f : A ≃ₐ[R] B) :
   left_inv _ := by aesop
   right_inv _ := by aesop
 
+/-- `MonoidAlgebra.mapRangeAlgEquiv` as a `MonoidHom` from `R ≃ₐ[k] R`. -/
 @[simps]
 def mapRangeAlgAut {k R G} [CommSemiring k] [Semiring R] [Algebra k R] [Monoid G] :
     (R ≃ₐ[k] R) →* MonoidAlgebra R G ≃ₐ[k] MonoidAlgebra R G where
@@ -561,6 +563,7 @@ end lift
 variable (k A)
 variable [CommSemiring k] [AddMonoid G] [AddMonoid H] [Semiring A] [Algebra k A]
 
+/-- `AddMonoidAlgebra.domCongr` as a, `AddMonoidHom` from `AddAut`. -/
 @[simps]
 def domCongrAut : AddAut G →* A[G] ≃ₐ[k] A[G] where
   toFun := AddMonoidAlgebra.domCongr k A
@@ -576,6 +579,7 @@ theorem lift_mapRangeAlgHom_algebraMap {R S G A}
   | zero => simp
   | single_add a b f _ _ ih => simp [ih]
 
+/-- `AddMonoidAlgebra.mapRangeAlgEquiv` as an `AddMonoidHom` from `R ≃ₐ[k] R`. -/
 @[simps]
 def mapRangeAlgAut {k R G} [CommSemiring k] [Semiring R] [Algebra k R] [AddMonoid G] :
     (R ≃ₐ[k] R) →* R[G] ≃ₐ[k] R[G] where
