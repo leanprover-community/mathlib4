@@ -56,13 +56,40 @@ example (p q r : Prop) (h : ¬ q ∧ ¬ r → ¬ p) : p → q ∨ r := by
   fail_if_success (contrapose; exact h)
   contrapose!; exact h
 
+/--
+error: Tactic `contrapose` failed: the goal `p` is not of the form `_ → _` or `_ ↔ _`
+
+p : Prop
+h : p
+⊢ p
+-/
+#guard_msgs in
 example (p : Prop) (h : p) : p := by
-  fail_if_success contrapose
+  contrapose
   exact h
 
+/--
+error: Tactic `contrapose` failed: hypothesis `p` is not a proposition
+
+p q : Type
+h : p → q
+⊢ p → q
+-/
+#guard_msgs in
 example (p q : Type) (h : p → q) : p → q := by
-  fail_if_success { contrapose }
+  contrapose
   exact h
+
+/--
+error: Tactic `contrapose` failed: the goal `∀ (h : p), q h` is a dependent arrow
+
+p : Prop
+q : p → Prop
+⊢ ∀ (h : p), q h
+-/
+#guard_msgs in
+example (p : Prop) (q : p → Prop) : (h : p) → q h := by
+  contrapose
 
 /-! test contraposing `↔` -/
 

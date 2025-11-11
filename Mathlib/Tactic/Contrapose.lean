@@ -52,7 +52,8 @@ open Lean Meta Elab.Tactic
 
 elab_rules : tactic
 | `(tactic| contrapose) => liftMetaTactic fun g => do
-  match ← g.getType' with
+  let target ← g.getType'
+  match target with
   | mkApp2 (.const ``Iff _) p q =>
     if ← contrapose.iff.getM then
       match p.not?, q.not? with
@@ -65,14 +66,18 @@ elab_rules : tactic
         To enable it, use `set_option contrapose.iff true`."
   | .forallE _ p q _ =>
     if q.hasLooseBVars then
-      throwTacticEx `contrapose g m!"conclusion {q} has loose bound variables"
+      throwTacticEx `contrapose g m!"the goal `{target}` is a dependent arrow"
+    unless ← Meta.isProp p do
+      throwTacticEx `contrapose g m!"hypothesis `{p}` is not a proposition"
+    unless ← Meta.isProp q do
+      throwTacticEx `contrapose g m!"conclusion `{q}` is not a proposition"
     match p.not?, q.not? with
     | none, none => g.apply (mkApp2 (.const ``contrapose₁ []) p q)
     | some p, none => g.apply (mkApp2 (.const ``contrapose₂ []) p q)
     | none, some q => g.apply (mkApp2 (.const ``contrapose₃ []) p q)
     | some p, some q => g.apply (mkApp2 (.const ``contrapose₄ []) p q)
-  | e =>
-    throwTacticEx `contrapose g m!"{e} is not of the form `_ → _` or `_ ↔ _`"
+  | _ =>
+    throwTacticEx `contrapose g m!"the goal `{target}` is not of the form `_ → _` or `_ ↔ _`"
 
 /--
 Transforms the goal into its contrapositive and pushes negations in the resulting goal.
