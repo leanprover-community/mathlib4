@@ -157,8 +157,8 @@ theorem total {s : CompositionSeries X} {x y : X} (hx : x ∈ s) (hy : y ∈ s) 
   rw [s.strictMono.le_iff_le, s.strictMono.le_iff_le]
   exact le_total i j
 
-theorem toList_sorted (s : CompositionSeries X) : s.toList.Sorted (· < ·) :=
-  List.pairwise_iff_get.2 fun i j h => by
+theorem toList_sorted (s : CompositionSeries X) : s.toList.SortedLT :=
+  List.sortedLT_iff_get.2 fun i j h => by
     dsimp only [RelSeries.toList]
     rw [List.get_ofFn, List.get_ofFn]
     exact s.strictMono h
@@ -170,12 +170,12 @@ theorem toList_nodup (s : CompositionSeries X) : s.toList.Nodup :=
 @[ext]
 theorem ext {s₁ s₂ : CompositionSeries X} (h : ∀ x, x ∈ s₁ ↔ x ∈ s₂) : s₁ = s₂ :=
   toList_injective <|
-    List.eq_of_perm_of_sorted
+    List.Perm.eq_of_pairwise
       (by
         classical
         exact List.perm_of_nodup_nodup_toFinset_eq s₁.toList_nodup s₂.toList_nodup
           (Finset.ext <| by simpa only [List.mem_toFinset, RelSeries.mem_toList]))
-      s₁.toList_sorted s₂.toList_sorted
+      s₁.toList_sorted.pairwise s₂.toList_sorted.pairwise
 
 @[simp]
 theorem le_last {s : CompositionSeries X} (i : Fin (s.length + 1)) : s i ≤ s.last :=

@@ -112,6 +112,9 @@ alias tail := IsAdmissible.of_cons
 lemma cons {m a L} (hL : IsAdmissible (m + 1) L) (ha : a ≤ m)
     (ha' : (_ : 0 < L.length) → a < L[0]) : IsAdmissible m (a :: L) := by cases L <;> grind
 
+theorem sortedLT {m L} (hL : IsAdmissible m L) : L.SortedLT :=
+  hL.isChain.sortedLT
+
 theorem pairwise {m L} (hL : IsAdmissible m L) : L.Pairwise (· < ·) :=
   hL.isChain.pairwise
 
