@@ -154,6 +154,7 @@ Both of these files should tend to zero over time;
 please do not add new entries to these files. PRs removing (the need for) entries are welcome.
 
 **API surrounding CI**
+- `check_title_labels.lean` is used to check whether a PR title follows our [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).
 - `parse_lake_manifest_changes.py` compares two versions of `lake-manifest.json` to report
   dependency changes in Zulip notifications. Used by the `update_dependencies_zulip.yml` workflow
   to show which dependencies were updated, added, or removed, with links to GitHub diffs.

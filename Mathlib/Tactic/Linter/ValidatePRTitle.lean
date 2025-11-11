@@ -8,7 +8,8 @@ import Mathlib.Init
 
 /-!
 # Checker for well-formed title and labels
-This script checks if a PR title matches mathlib's commit conventions,
+This script checks if a PR title matches
+[mathlib's commit conventions](https://leanprover-community.github.io/contribute/commit.html),
 and if the PR has any contradictory labels.
 Not all checks from the commit conventions are implemented: for instance, no effort is made to
 verify whether the title or body are written in present imperative tense.
@@ -23,7 +24,7 @@ def splitAtPos (s : String) (pos : String.Pos) : String × String :=
 
 /--
 Check if `title` matches the mathlib conventions for PR titles
-(documented at https://leanprover-community.github.io/contribute/commit.html).
+(documented at <https://leanprover-community.github.io/contribute/commit.html>).
 
 Not all checks are implemented: for instance, no effort is made to verify if the title or body
 are written in present imperative tense.

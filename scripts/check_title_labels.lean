@@ -10,7 +10,8 @@ import Mathlib.Tactic.Linter.ValidatePRTitle
 /-!
 # Checker for well-formed title and labels
 
-This script checks if a PR title matches some of mathlib's commit conventions.
+This script checks if a PR title matches some of
+[mathlib's commit conventions](https://leanprover-community.github.io/contribute/commit.html).
 Currently, we only verify very basic checks: this could be made stricter in the future.
 
 -/
@@ -36,7 +37,8 @@ open Cli in
 /-- Setting up command line options and help text for `lake exe check-title-labels`. -/
 def checkTitleLabels : Cmd := `[Cli|
   «check-title-labels» VIA checkTitleLabelsCLI; ["0.0.1"]
-  "Check that a PR title matches the formatting requirements.
+  "Check that a PR title matches the formatting requirements at
+  <https://leanprover-community.github.io/contribute/commit.html>.
   If this PR is a feature PR, also verify that it has a topic label,
   and that there are no contradictory labels.
 
