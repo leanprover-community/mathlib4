@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 import Mathlib.Data.Nat.NthRoot.Defs
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Zify
 
