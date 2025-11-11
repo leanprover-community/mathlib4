@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
 import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
+import Mathlib.CategoryTheory.Monoidal.Functor
 
 /-!
 # Cartesian monoidal structure on slices induced by chosen pullbacks
@@ -39,13 +40,15 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Category Limits CartesianMonoidalCategory MonoidalCategory
+open Category CartesianMonoidalCategory MonoidalCategory
 
 namespace ChosenPullbacksAlong
 
 variable {C : Type u₁} [Category.{v₁} C]
 
 section
+
+open Limits
 
 variable {X : C} (Y Z : Over X)
 
@@ -60,7 +63,7 @@ def isLimitPullbackCone [ChosenPullbacksAlong Z.hom] :
 
 /-- The binary fan provided by `fst'` and `snd'`. -/
 def binaryFan [ChosenPullbacksAlong Z.hom] : BinaryFan Y Z :=
-  BinaryFan.mk (P:= Over.mk (Y := pullbackObj Y.hom Z.hom) (snd Y.hom Z.hom ≫ Z.hom))
+  BinaryFan.mk (P:= (pullback Z.hom ⋙ Over.map Z.hom).obj (Over.mk Y.hom))
     (fst' Y.hom Z.hom) (snd' Y.hom Z.hom)
 
 @[simp]
@@ -94,9 +97,134 @@ chosen pullbacks. Contrast this with the noncomputable instance provided by
 instance cartesianMonoidalCategoryOver [ChosenPullbacks C] (X : C) :
     CartesianMonoidalCategory (Over X) :=
   ofChosenFiniteProducts (C:= Over X)
-    ⟨asEmptyCone (Over.mk (𝟙 X)) , IsTerminal.ofUniqueHom (fun Y ↦ Over.homMk Y.hom)
+    ⟨Limits.asEmptyCone (Over.mk (𝟙 X)), Limits.IsTerminal.ofUniqueHom (fun Y ↦ Over.homMk Y.hom)
       fun Y m ↦ Over.OverMorphism.ext (by simpa using m.w)⟩
     (fun Y Z ↦ ⟨ _ , binaryFanIsBinaryProduct Y Z⟩)
+
+section
+
+open MonoidalCategory
+
+variable [ChosenPullbacks C] {X : C}
+
+@[ext]
+lemma tensorObj_ext {A : C} {Y Z : Over X} (f₁ f₂ : A ⟶ (Y ⊗ Z).left)
+    (e₁ : f₁ ≫ fst Y.hom Z.hom = f₂ ≫ fst Y.hom Z.hom)
+    (e₂ : f₁ ≫ snd Y.hom Z.hom = f₂ ≫ snd Y.hom Z.hom) : f₁ = f₂ :=
+  hom_ext Y.hom Z.hom e₁ e₂
+
+@[simp]
+lemma tensorObj_left (Y Z : Over X) : (Y ⊗ Z).left = pullbackObj Y.hom Z.hom := rfl
+
+@[simp]
+lemma tensorObj_hom (Y Z : Over X) : (Y ⊗ Z).hom = snd Y.hom Z.hom ≫ Z.hom := rfl
+
+@[simp]
+lemma tensorUnit_left : (𝟙_ (Over X)).left = X := rfl
+
+@[simp]
+lemma tensorUnit_hom : (𝟙_ (Over X)).hom = 𝟙 X := rfl
+
+@[simp]
+lemma lift_left {W Y Z : Over X} (f : W ⟶ Y) (g : W ⟶ Z) :
+    (CartesianMonoidalCategory.lift f g).left = lift f.left g.left (f.w.trans g.w.symm) := rfl
+
+@[simp]
+lemma toUnit_left {Z : Over X} : (toUnit Z).left = Z.hom := rfl
+
+@[simp]
+lemma leftUnitor_hom_left (Z : Over X) :
+    (λ_ Z).hom.left = snd _ Z.hom := rfl
+
+@[reassoc (attr := simp)]
+lemma leftUnitor_inv_fst' (Z : Over X) :
+    (λ_ Z).inv ≫ fst' (𝟙 X) Z.hom = Over.homMk Z.hom :=
+  leftUnitor_inv_fst _
+
+@[reassoc (attr := simp)]
+lemma leftUnitor_inv_left_fst (Z : Over X) :
+    (λ_ Z).inv.left ≫ fst (𝟙 X) Z.hom = Z.hom := by
+  simpa only [Over.homMk_left] using congr_arg CommaMorphism.left (leftUnitor_inv_fst' Z)
+
+@[reassoc (attr := simp)]
+lemma leftUnitor_inv_left_snd' (Y : Over X) :
+    (λ_ Y).inv ≫ snd' (𝟙 X) Y.hom = Over.homMk (𝟙 Y.left) :=
+  leftUnitor_inv_snd _
+
+@[reassoc (attr := simp)]
+lemma leftUnitor_inv_left_snd (Y : Over X) :
+    (λ_ Y).inv.left ≫ snd (𝟙 X) Y.hom = 𝟙 Y.left := by
+  simpa only [Over.homMk_left] using congr_arg CommaMorphism.left (leftUnitor_inv_left_snd' Y)
+
+@[reassoc (attr := simp)]
+lemma rightUnitor_hom_left_fst (Y : Over X) :
+    (ρ_ Y).hom.left ≫ pullback.fst _ (𝟙 X) = pullback.fst _ (𝟙 X) := by
+  simpa only [Over.homMk_left] using congr_arg CommaMorphism.left (rightUnitor_hom_left_fst' Y)
+
+@[simp]
+lemma rightUnitor_hom_left (Y : Over X) :
+    (ρ_ Y).hom.left = pullback.fst _ (𝟙 X) := rfl
+
+@[reassoc (attr := simp)]
+lemma rightUnitor_inv_left_fst (Y : Over X) :
+    (ρ_ Y).inv.left ≫ pullback.fst _ (𝟙 X) = 𝟙 _ :=
+  limit.lift_π _ _
+
+@[reassoc (attr := simp)]
+lemma rightUnitor_inv_left_snd (Y : Over X) :
+    (ρ_ Y).inv.left ≫ pullback.snd _ (𝟙 X) = Y.hom :=
+  limit.lift_π _ _
+
+lemma whiskerLeft_left {R S T : Over X} (f : S ⟶ T) :
+    (R ◁ f).left = pullback.map _ _ _ _ (𝟙 _) f.left (𝟙 _) (by simp) (by simp) := rfl
+
+@[reassoc (attr := simp)]
+lemma whiskerLeft_left_fst {R S T : Over X} (f : S ⟶ T) :
+    (R ◁ f).left ≫ pullback.fst _ _ = pullback.fst _ _ :=
+  (limit.lift_π _ _).trans (Category.comp_id _)
+
+@[reassoc (attr := simp)]
+lemma whiskerLeft_left_snd {R S T : Over X} (f : S ⟶ T) :
+    (R ◁ f).left ≫ pullback.snd _ _ = pullback.snd _ _ ≫ f.left :=
+  limit.lift_π _ _
+
+lemma whiskerRight_left {R S T : Over X} (f : S ⟶ T) :
+    (f ▷ R).left = pullback.map _ _ _ _ f.left (𝟙 _) (𝟙 _) (by simp) (by simp) := rfl
+
+@[reassoc (attr := simp)]
+lemma whiskerRight_left_fst {R S T : Over X} (f : S ⟶ T) :
+    (f ▷ R).left ≫ pullback.fst _ _ = pullback.fst _ _ ≫ f.left :=
+  limit.lift_π _ _
+
+@[reassoc (attr := simp)]
+lemma whiskerRight_left_snd {R S T : Over X} (f : S ⟶ T) :
+    (f ▷ R).left ≫ pullback.snd _ _ = pullback.snd _ _ :=
+  (limit.lift_π _ _).trans (Category.comp_id _)
+
+lemma tensorHom_left {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
+    (f ⊗ₘ g).left = pullback.map _ _ _ _ f.left g.left (𝟙 _) (by simp) (by simp) := rfl
+
+@[reassoc (attr := simp)]
+lemma tensorHom_left_fst {S U : C} {R T : Over X} (fS : S ⟶ X) (fU : U ⟶ X)
+    (f : R ⟶ mk fS) (g : T ⟶ mk fU) :
+    (f ⊗ₘ g).left ≫ pullback.fst fS fU = pullback.fst R.hom T.hom ≫ f.left :=
+  limit.lift_π _ _
+
+@[reassoc (attr := simp)]
+lemma tensorHom_left_snd {S U : C} {R T : Over X} (fS : S ⟶ X) (fU : U ⟶ X)
+    (f : R ⟶ mk fS) (g : T ⟶ mk fU) :
+    (f ⊗ₘ g).left ≫ pullback.snd fS fU = pullback.snd R.hom T.hom ≫ g.left :=
+  limit.lift_π _ _
+
+@[simp]
+lemma braiding_hom_left {R S : Over X} :
+    (β_ R S).hom.left = (pullbackSymmetry _ _).hom := rfl
+
+@[simp]
+lemma braiding_inv_left {R S : Over X} :
+    (β_ R S).inv.left = (pullbackSymmetry _ _).hom := rfl
+
+end
 
 end ChosenPullbacksAlong
 
@@ -164,6 +292,7 @@ def toOverPullbackIsoToOver {X Y : C} (f : Y ⟶ X) [ChosenPullbacksAlong f] :
   conjugateIsoEquiv ((mapPullbackAdj f).comp (forgetAdjToOver X))
     (forgetAdjToOver Y) (Over.mapForget f)
 
+omit [CartesianMonoidalCategory C] in
 /-- The functor `pullback f : Over X ⥤ Over Y` is naturally isomorphic to
 `toOver : Over X ⥤ Over (Over.mk f)` post-composed with the
 iterated slice equivlanece `Over (Over.mk f) ⥤ Over Y`. -/
@@ -189,5 +318,46 @@ example : snd X Y = ((toOver Y).obj X).hom := by rfl
 end
 
 end ToOver
+
+section MonoidalFunctor
+
+open ChosenPullbacksAlong
+
+variable {C : Type u₁} [Category.{v₁} C] [ChosenPullbacks C]
+
+#check Over.pullbackId
+
+def ChosenPullbacksAlong.ofId {X Y : C} (f : Y ⟶ X)  : (pullback f).obj (𝟙_ _)≅ (𝟙_ _) := by
+  let l := (mapPullbackAdj f).homEquiv (𝟙_ _) (𝟙_ _) (Over.homMk f (by simp [Over.id_hom] ))
+
+
+
+
+/-- The pullback functors `Over X ⥤ Over Y` are monoidal functors. -/
+def monoidal {X Y : C} (f : Y ⟶ X) : (pullback f).Monoidal where
+  ε := _--(Iso.refl _).hom
+  μ := _
+  μ_natural_left := _
+  μ_natural_right := _
+  associativity := _
+  left_unitality := _
+  right_unitality := _
+  η := _
+  δ := _
+  δ_natural_left := _
+  δ_natural_right := _
+  oplax_associativity := _
+  oplax_left_unitality := _
+  oplax_right_unitality := _
+  ε_η := _
+  η_ε := _
+  μ_δ := _
+  δ_μ := _
+
+
+end MonoidalFunctor
+
+
+
 
 end CategoryTheory
