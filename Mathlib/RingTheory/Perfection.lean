@@ -106,19 +106,24 @@ variable {R p}
 @[simp]
 theorem coeff_mk (f : ℕ → R) (hf) (n : ℕ) : coeff R p n ⟨f, hf⟩ = f n := rfl
 
+@[simp]
 theorem coeff_pthRoot (f : Ring.Perfection R p) (n : ℕ) :
     coeff R p n (pthRoot R p f) = coeff R p (n + 1) f := rfl
 
+@[simp]
 theorem coeff_pow_p (f : Ring.Perfection R p) (n : ℕ) :
     coeff R p (n + 1) (f ^ p) = coeff R p n f := by rw [RingHom.map_pow]; exact f.2 n
 
+@[simp]
 theorem coeff_pow_p' (f : Ring.Perfection R p) (n : ℕ) : coeff R p (n + 1) f ^ p = coeff R p n f :=
   f.2 n
 
+@[simp]
 theorem coeff_frobenius (f : Ring.Perfection R p) (n : ℕ) :
     coeff R p (n + 1) (frobenius _ p f) = coeff R p n f := by apply coeff_pow_p f n
 
 -- `coeff_pow_p f n` also works but is slow!
+@[simp]
 theorem coeff_iterate_frobenius (f : Ring.Perfection R p) (n m : ℕ) :
     coeff R p (n + m) ((frobenius _ p)^[m] f) = coeff R p n f :=
   Nat.recOn m rfl fun m ih => by
@@ -128,10 +133,12 @@ theorem coeff_iterate_frobenius' (f : Ring.Perfection R p) (n m : ℕ) (hmn : m 
     coeff R p n ((frobenius _ p)^[m] f) = coeff R p (n - m) f :=
   Eq.symm <| (coeff_iterate_frobenius _ _ m).symm.trans <| (tsub_add_cancel_of_le hmn).symm ▸ rfl
 
+@[simp]
 theorem pthRoot_frobenius : (pthRoot R p).comp (frobenius _ p) = RingHom.id _ :=
   RingHom.ext fun x =>
     ext fun n => by rw [RingHom.comp_apply, RingHom.id_apply, coeff_pthRoot, coeff_frobenius]
 
+@[simp]
 theorem frobenius_pthRoot : (frobenius _ p).comp (pthRoot R p) = RingHom.id _ :=
   RingHom.ext fun x =>
     ext fun n => by
@@ -149,13 +156,30 @@ theorem coeff_ne_zero_of_le {f : Ring.Perfection R p} {m n : ℕ} (hfm : coeff R
   let ⟨k, hk⟩ := Nat.exists_eq_add_of_le hmn
   hk.symm ▸ coeff_add_ne_zero hfm k
 
-variable (R p)
-
+variable (R p) in
 instance perfectRing : PerfectRing (Ring.Perfection R p) p where
   bijective_frobenius := Function.bijective_iff_has_inverse.mpr
     ⟨pthRoot R p,
      DFunLike.congr_fun <| @frobenius_pthRoot R _ p _ _,
      DFunLike.congr_fun <| @pthRoot_frobenius R _ p _ _⟩
+
+@[simp]
+theorem coeff_frobeniusEquiv_symm (f : Ring.Perfection R p) (n : ℕ) :
+    Perfection.coeff R p n ((frobeniusEquiv (Ring.Perfection R p) p).symm f) =
+    Perfection.coeff R p (n + 1) f := by
+  nth_rw 2 [← frobenius_apply_frobeniusEquiv_symm _ p f]
+  rw [coeff_frobenius]
+
+@[simp]
+theorem coeff_iterate_frobeniusEquiv_symm (f : Ring.Perfection R p) (n m : ℕ) :
+    Perfection.coeff _ p n ((frobeniusEquiv _ p).symm ^[m] f) =
+    Perfection.coeff _ p (n + m) f := by
+  induction m generalizing f n with
+  | zero => simp
+  | succ m ih =>
+    simp [ih, ← add_assoc]
+
+variable (R p)
 
 /-- Given rings `R` and `S` of characteristic `p`, with `R` being perfect,
 any homomorphism `R →+* S` can be lifted to a homomorphism `R →+* Perfection S p`. -/
@@ -323,7 +347,7 @@ section ModP
 variable (O : Type u₂) [CommRing O] (p : ℕ)
 
 /-- `O/(p)` for `O`, ring of integers of `K`. -/
-def ModP :=
+abbrev ModP :=
   O ⧸ (Ideal.span {(p : O)} : Ideal O)
 
 namespace ModP
@@ -455,6 +479,37 @@ instance : CommRing (PreTilt O p) :=
 
 instance : CharP (PreTilt O p) p :=
   Perfection.charP (ModP O p) p
+
+instance : PerfectRing (PreTilt O p) p :=
+  Perfection.perfectRing (ModP O p) p
+
+section coeff
+
+@[simp]
+theorem coeff_frobenius (n : ℕ) (x : PreTilt O p) :
+    ((Perfection.coeff (ModP O p) p (n + 1)) (((frobenius (PreTilt O p) p)) x)) =
+    ((Perfection.coeff (ModP O p) p n) x):= by
+  simp [PreTilt]
+
+@[simp]
+theorem coeff_frobenius_pow (m n : ℕ) (x : PreTilt O p) :
+    ((Perfection.coeff (ModP O p) p (m + n)) (((frobenius (PreTilt O p) p) ^[n]) x)) =
+    ((Perfection.coeff (ModP O p) p m) x):= by
+  simp [PreTilt]
+
+@[simp]
+theorem coeff_frobeniusEquiv_symm (n : ℕ) (x : PreTilt O p) :
+    ((Perfection.coeff (ModP O p) p n) (((frobeniusEquiv (PreTilt O p) p).symm) x)) =
+    ((Perfection.coeff (ModP O p) p (n + 1)) x):= by
+  simp [PreTilt]
+
+@[simp]
+theorem coeff_iterate_frobeniusEquiv_symm (m n : ℕ) (x : PreTilt O p) :
+    ((Perfection.coeff (ModP O p) p m) (((frobeniusEquiv (PreTilt O p) p).symm ^[n]) x)) =
+    ((Perfection.coeff (ModP O p) p (m + n)) x):= by
+  simp [PreTilt]
+
+end coeff
 
 section Classical
 

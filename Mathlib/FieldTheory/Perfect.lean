@@ -151,6 +151,18 @@ theorem frobeniusEquiv_symm_comp_frobenius :
   ext; simp
 
 @[simp]
+theorem coe_frobenius_comp_coe_frobeniusEquiv_symm :
+    ⇑(frobenius R p) ∘ ⇑(frobeniusEquiv R p).symm = id := by
+  ext
+  simp
+
+@[simp]
+theorem coe_frobeniusEquiv_symm_comp_coe_frobenius :
+    ⇑(frobeniusEquiv R p).symm ∘ ⇑(frobenius R p) = id := by
+  ext
+  simp
+
+@[simp]
 theorem frobeniusEquiv_symm_pow_p (x : R) : ((frobeniusEquiv R p).symm x) ^ p = x :=
   frobenius_apply_frobeniusEquiv_symm R p x
 
@@ -160,6 +172,43 @@ theorem iterate_frobeniusEquiv_symm_pow_p_pow (x : R) (n : ℕ) :
   induction n generalizing x with
   | zero => simp
   | succ n ih => simp [pow_succ, pow_mul, ih]
+
+section commute
+
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] (p : ℕ)
+    [ExpChar R p] [PerfectRing R p] [ExpChar S p] [PerfectRing S p]
+
+/--
+The `(frobeniusEquiv R p).symm` version of `MonoidHom.map_frobenius`.
+`(frobeniusEquiv R p).symm` commute with any monoid homomorphisms.
+-/
+theorem MonoidHom.map_frobeniusEquiv_symm (f : R →* S) (x : R) :
+    f ((frobeniusEquiv R p).symm x) = (frobeniusEquiv S p).symm (f x) := by
+  apply_fun (frobeniusEquiv S p)
+  simp [← MonoidHom.map_frobenius]
+
+theorem RingHom.map_frobeniusEquiv_symm (f : R →+* S) (x : R) :
+    f ((frobeniusEquiv R p).symm x) = (frobeniusEquiv S p).symm (f x) := by
+  apply_fun (frobeniusEquiv S p)
+  simp [← RingHom.map_frobenius]
+
+theorem MonoidHom.map_iterate_frobeniusEquiv_symm (f : R →* S) (n : ℕ) (x : R) :
+    f (((frobeniusEquiv R p).symm ^[n]) x) = ((frobeniusEquiv S p).symm ^[n]) (f x) := by
+  apply_fun (frobeniusEquiv S p)^[n]
+  · simp only [coe_frobeniusEquiv, ← map_iterate_frobenius]
+    · rw [← Function.comp_apply (f := (⇑(frobenius R p))^[n]),
+          ← Function.comp_apply (f := (⇑(frobenius S p))^[n]),
+          ← Function.Commute.comp_iterate, ← Function.Commute.comp_iterate]
+      · simp
+      all_goals rw [← coe_frobeniusEquiv]; simp [Function.Commute, Function.Semiconj]
+  apply Function.Injective.iterate
+  simp
+
+theorem RingHom.map_iterate_frobeniusEquiv_symm (f : R →+* S) (n : ℕ) (x : R) :
+    f (((frobeniusEquiv R p).symm ^[n]) x) = ((frobeniusEquiv S p).symm ^[n]) (f x) :=
+  MonoidHom.map_iterate_frobeniusEquiv_symm p (f.toMonoidHom) n x
+
+end commute
 
 theorem injective_pow_p {x y : R} (h : x ^ p = y ^ p) : x = y := (frobeniusEquiv R p).injective h
 
