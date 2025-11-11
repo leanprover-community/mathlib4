@@ -234,23 +234,49 @@ def multicospan : WalkingMulticospan J ⥤ C where
   map_comp := by
     rintro (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) <;> cat_disch
 
+/-- The induced map `∏ᶜ I.left ⟶ ∏ᶜ I.right` via `I.fst` for limiting fans. -/
+def fstPiMapOfIsLimit (c : Fan I.left) {d : Fan I.right} (hd : IsLimit d) : c.pt ⟶ d.pt :=
+  Fan.IsLimit.desc hd fun i ↦ c.proj _ ≫ I.fst i
+
+/-- The induced map `∏ᶜ I.left ⟶ ∏ᶜ I.right` via `I.snd` for limiting fans. -/
+def sndPiMapOfIsLimit (c : Fan I.left) {d : Fan I.right} (hd : IsLimit d) : c.pt ⟶ d.pt :=
+  Fan.IsLimit.desc hd fun i ↦ c.proj _ ≫ I.snd i
+
+@[reassoc (attr := simp)]
+lemma fstPiMapOfIsLimit_proj (c : Fan I.left) {d : Fan I.right} (hd : IsLimit d) (i) :
+    fstPiMapOfIsLimit I c hd ≫ d.proj i = c.proj _ ≫ I.fst i := by
+  simp [fstPiMapOfIsLimit]
+
+@[reassoc (attr := simp)]
+lemma sndPiMapOfIsLimit_proj (c : Fan I.left) {d : Fan I.right} (hd : IsLimit d) (i) :
+    sndPiMapOfIsLimit I c hd ≫ d.proj i = c.proj _ ≫ I.snd i := by
+  simp [sndPiMapOfIsLimit]
+
+/-- Taking the multiequalizer over the multicospan index is equivalent to taking the equalizer over
+the two morphisms `∏ᶜ I.left ⇉ ∏ᶜ I.right`. This is the diagram of the latter for limiting fans.
+-/
+@[simps!]
+protected noncomputable def parallelPairDiagramOfIsLimit
+    (c : Fan I.left) {d : Fan I.right} (hd : IsLimit d) : WalkingParallelPair ⥤ C :=
+  parallelPair (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd)
+
 variable [HasProduct I.left] [HasProduct I.right]
 
 /-- The induced map `∏ᶜ I.left ⟶ ∏ᶜ I.right` via `I.fst`. -/
 noncomputable def fstPiMap : ∏ᶜ I.left ⟶ ∏ᶜ I.right :=
-  Pi.lift fun b => Pi.π I.left (J.fst b) ≫ I.fst b
+  I.fstPiMapOfIsLimit _ <| limit.isLimit (Discrete.functor I.right)
 
 /-- The induced map `∏ᶜ I.left ⟶ ∏ᶜ I.right` via `I.snd`. -/
 noncomputable def sndPiMap : ∏ᶜ I.left ⟶ ∏ᶜ I.right :=
-  Pi.lift fun b => Pi.π I.left (J.snd b) ≫ I.snd b
+  I.sndPiMapOfIsLimit _ <| limit.isLimit (Discrete.functor I.right)
 
 @[reassoc (attr := simp)]
-theorem fstPiMap_π (b) : I.fstPiMap ≫ Pi.π I.right b = Pi.π I.left _ ≫ I.fst b := by
-  simp [fstPiMap]
+theorem fstPiMap_π (b) : I.fstPiMap ≫ Pi.π I.right b = Pi.π I.left _ ≫ I.fst b :=
+  fstPiMapOfIsLimit_proj ..
 
 @[reassoc (attr := simp)]
-theorem sndPiMap_π (b) : I.sndPiMap ≫ Pi.π I.right b = Pi.π I.left _ ≫ I.snd b := by
-  simp [sndPiMap]
+theorem sndPiMap_π (b) : I.sndPiMap ≫ Pi.π I.right b = Pi.π I.left _ ≫ I.snd b :=
+  sndPiMapOfIsLimit_proj ..
 
 /-- Taking the multiequalizer over the multicospan index is equivalent to taking the equalizer over
 the two morphisms `∏ᶜ I.left ⇉ ∏ᶜ I.right`. This is the diagram of the latter.
@@ -426,63 +452,68 @@ lemma IsLimit.fac (hK : IsLimit K) {T : C} (k : ∀ a, T ⟶ I.left a)
   hK.fac _ _
 
 variable (K)
-
-variable [HasProduct I.left] [HasProduct I.right]
+variable {c : Fan I.left} (hc : IsLimit c) {d : Fan I.right} (hd : IsLimit d)
 
 @[reassoc (attr := simp)]
-theorem pi_condition : Pi.lift K.ι ≫ I.fstPiMap = Pi.lift K.ι ≫ I.sndPiMap := by
-  ext
+theorem pi_condition_of_isLimit :
+    Fan.IsLimit.desc hc K.ι ≫ I.fstPiMapOfIsLimit c hd =
+      Fan.IsLimit.desc hc K.ι ≫ I.sndPiMapOfIsLimit c hd := by
+  apply Fan.IsLimit.hom_ext hd
   simp
 
 /-- Given a multifork, we may obtain a fork over `∏ᶜ I.left ⇉ ∏ᶜ I.right`. -/
 @[simps pt]
-noncomputable def toPiFork (K : Multifork I) : Fork I.fstPiMap I.sndPiMap where
+def toPiForkOfIsLimit (K : Multifork I) :
+    Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd) where
   pt := K.pt
-  π :=
-    { app := fun x =>
-        match x with
-        | WalkingParallelPair.zero => Pi.lift K.ι
-        | WalkingParallelPair.one => Pi.lift K.ι ≫ I.fstPiMap
-      naturality := by
-        rintro (_ | _) (_ | _) (_ | _ | _) <;>
-          dsimp <;>
-          simp only [Category.id_comp, Functor.map_id, parallelPair_obj_zero, Category.comp_id,
-            pi_condition, parallelPair_obj_one] }
+  π.app x := match x with
+    | WalkingParallelPair.zero => Fan.IsLimit.desc hc K.ι
+    | WalkingParallelPair.one => Fan.IsLimit.desc hc K.ι ≫ I.fstPiMapOfIsLimit c hd
+  π.naturality := by
+    rintro (_ | _) (_ | _) (_ | _ | _) <;>
+      dsimp <;>
+      simp only [Category.id_comp, Functor.map_id, parallelPair_obj_zero, Category.comp_id,
+        pi_condition_of_isLimit, parallelPair_obj_one]
 
 @[simp]
-theorem toPiFork_π_app_zero : K.toPiFork.ι = Pi.lift K.ι :=
+theorem toPiForkOfIsLimit_π_app_zero :
+    (K.toPiForkOfIsLimit hc hd).ι = Fan.IsLimit.desc hc K.ι :=
   rfl
 
 @[simp]
-theorem toPiFork_π_app_one : K.toPiFork.π.app WalkingParallelPair.one = Pi.lift K.ι ≫ I.fstPiMap :=
+theorem toPiForkOfIsLimit_π_app_one :
+    (K.toPiForkOfIsLimit hc hd).π.app WalkingParallelPair.one =
+      Fan.IsLimit.desc hc K.ι ≫ I.fstPiMapOfIsLimit c hd  :=
   rfl
 
-variable (I)
-
+variable {hd} in
 /-- Given a fork over `∏ᶜ I.left ⇉ ∏ᶜ I.right`, we may obtain a multifork. -/
 @[simps pt]
-noncomputable def ofPiFork (c : Fork I.fstPiMap I.sndPiMap) : Multifork I where
-  pt := c.pt
-  π :=
-    { app := fun x =>
-        match x with
-        | WalkingMulticospan.left _ => c.ι ≫ Pi.π _ _
-        | WalkingMulticospan.right _ => c.ι ≫ I.fstPiMap ≫ Pi.π _ _
-      naturality := by
-        rintro (_ | _) (_ | _) (_ | _ | _)
-        · simp
-        · simp
-        · dsimp; rw [c.condition_assoc]; simp
-        · simp }
+def ofPiForkOfIsLimit
+    (a : Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd)) :
+    Multifork I where
+  pt := a.pt
+  π.app x :=
+    match x with
+    | WalkingMulticospan.left _ => a.ι ≫ c.proj _
+    | WalkingMulticospan.right _ => a.ι ≫ I.fstPiMapOfIsLimit c hd ≫ d.proj _
+  π.naturality := by
+    rintro (_ | _) (_ | _) (_ | _ | _)
+    · simp
+    · simp
+    · dsimp; rw [a.condition_assoc]; simp
+    · simp
 
 @[simp]
-theorem ofPiFork_π_app_left (c : Fork I.fstPiMap I.sndPiMap) (a) :
-    (ofPiFork I c).ι a = c.ι ≫ Pi.π _ _ :=
+theorem ofPiForkOfIsLimit_ι (a : Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd)) (i) :
+    (ofPiForkOfIsLimit a).ι i = a.ι ≫ c.proj _ :=
   rfl
 
 @[simp]
-theorem ofPiFork_π_app_right (c : Fork I.fstPiMap I.sndPiMap) (a) :
-    (ofPiFork I c).π.app (WalkingMulticospan.right a) = c.ι ≫ I.fstPiMap ≫ Pi.π _ _ :=
+theorem ofPiForkOfIsLimit_π_app_right
+    (a : Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd)) (i) :
+    (ofPiForkOfIsLimit a).π.app (WalkingMulticospan.right i) =
+      a.ι ≫ I.fstPiMapOfIsLimit c hd ≫ d.proj _ :=
   rfl
 
 end Multifork
@@ -490,28 +521,31 @@ end Multifork
 namespace MulticospanIndex
 
 variable {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C)
-    [HasProduct I.left] [HasProduct I.right]
+variable {c : Fan I.left} (hc : IsLimit c) {d : Fan I.right} (hd : IsLimit d)
 
 /-- `Multifork.toPiFork` as a functor. -/
 @[simps]
-noncomputable def toPiForkFunctor : Multifork I ⥤ Fork I.fstPiMap I.sndPiMap where
-  obj := Multifork.toPiFork
+def toPiForkFunctor :
+    Multifork I ⥤ Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd) where
+  obj := Multifork.toPiForkOfIsLimit hc hd
   map {K₁ K₂} f :=
     { hom := f.hom
       w := by
         rintro (_ | _)
-        · apply limit.hom_ext
+        · apply Fan.IsLimit.hom_ext hc
           simp
-        · apply limit.hom_ext
+        · apply Fan.IsLimit.hom_ext hd
           intro j
-          simp only [Multifork.toPiFork_π_app_one, Multifork.pi_condition, Category.assoc]
-          dsimp [sndPiMap]
+          simp only [Multifork.toPiForkOfIsLimit_π_app_one, Multifork.pi_condition_of_isLimit,
+            Category.assoc]
+          dsimp [MulticospanIndex.sndPiMapOfIsLimit, Fan.proj, Fan.IsLimit.desc]
           simp }
 
 /-- `Multifork.ofPiFork` as a functor. -/
 @[simps]
-noncomputable def ofPiForkFunctor : Fork I.fstPiMap I.sndPiMap ⥤ Multifork I where
-  obj := Multifork.ofPiFork I
+def ofPiForkFunctor :
+    Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd) ⥤ Multifork I where
+  obj := Multifork.ofPiForkOfIsLimit
   map {K₁ K₂} f :=
     { hom := f.hom
       w := by rintro (_ | _) <;> simp }
@@ -521,15 +555,27 @@ It then follows from `CategoryTheory.IsLimit.ofPreservesConeTerminal` (or `refle
 preserves and reflects limit cones.
 -/
 @[simps]
-noncomputable def multiforkEquivPiFork : Multifork I ≌ Fork I.fstPiMap I.sndPiMap where
-  functor := toPiForkFunctor I
-  inverse := ofPiForkFunctor I
+def multiforkEquivPiForkOfIsLimit :
+    Multifork I ≌ Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd) where
+  functor := toPiForkFunctor I hc hd
+  inverse := ofPiForkFunctor I hd
   unitIso :=
     NatIso.ofComponents fun K =>
       Cones.ext (Iso.refl _) (by
         rintro (_ | _) <;> simp)
   counitIso :=
-    NatIso.ofComponents fun K => Fork.ext (Iso.refl _)
+    NatIso.ofComponents (fun K =>
+      Fork.ext (Iso.refl _) <| Fan.IsLimit.hom_ext hc _ _ (by simp))
+
+variable [HasProduct I.left] [HasProduct I.right]
+
+/-- The category of multiforks is equivalent to the category of forks over `∏ᶜ I.left ⇉ ∏ᶜ I.right`.
+It then follows from `CategoryTheory.IsLimit.ofPreservesConeTerminal` (or `reflects`) that it
+preserves and reflects limit cones.
+-/
+@[simps!]
+noncomputable def multiforkEquivPiFork : Multifork I ≌ Fork I.fstPiMap I.sndPiMap :=
+  multiforkEquivPiForkOfIsLimit I (limit.isLimit _) (limit.isLimit _)
 
 end MulticospanIndex
 
@@ -818,7 +864,9 @@ def ιPi : multiequalizer I ⟶ ∏ᶜ I.left :=
 @[reassoc (attr := simp)]
 theorem ιPi_π (a) : ιPi I ≫ Pi.π I.left a = ι I a := by
   rw [ιPi, Category.assoc, ← Iso.eq_inv_comp, isoEqualizer]
-  simp
+  simp only [limit.isoLimitCone_inv_π, MulticospanIndex.multiforkEquivPiFork_inverse_obj_pt,
+    limit.cone_x, MulticospanIndex.multiforkEquivPiFork_inverse_obj_π_app]
+  rfl
 
 instance : Mono (ιPi I) := mono_comp _ _
 
