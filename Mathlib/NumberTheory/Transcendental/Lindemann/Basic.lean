@@ -7,8 +7,8 @@ import Mathlib.Analysis.Complex.IsIntegral
 import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.NumberTheory.Transcendental.Lindemann.AlgebraicPart
 import Mathlib.NumberTheory.Transcendental.Lindemann.AnalyticalPart
-import Mathlib.NumberTheory.Transcendental.Lindemann.SumAEvalARoots
 import Mathlib.RingTheory.AlgebraicIndependent.Defs
+import Mathlib.RingTheory.MvPolynomial.Symmetric.Eval
 import Mathlib.Topology.Algebra.Order.Floor
 
 /-!

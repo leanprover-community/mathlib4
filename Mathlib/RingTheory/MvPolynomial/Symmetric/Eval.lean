@@ -7,36 +7,42 @@ import Mathlib.RingTheory.MvPolynomial.Symmetric.FundamentalTheorem
 import Mathlib.RingTheory.Polynomial.Vieta
 
 /-!
-TODO
+# Evaluating symmetric polynomials
+
+## Main declarations
+
+* `sum_map_aroots_aeval_mem_range_algebraMap`: Given `k` a multiple of `p.leadingCoeff` and
+  `e ≥ q.natDegree`, `k ^ e • ∑ i ∈ p.aroots A, q.aeval i` lies in the base ring.
+* `MvPolynomial.symmetricSubalgebra.aevalMultiset` evaluates a symmetric polynomial at the elements
+  of a multiset.
+* `MvPolynomial.symmetricSubalgebra.sumPolynomial` maps `X` to `∑ i, X i`.
+
+These are used in the proof of Lindemann-Weierstrass.
 -/
 
+open Finset
 open scoped Polynomial
-
-namespace MvPolynomial
 
 variable {σ τ R S A : Type*}
 
+namespace MvPolynomial.symmetricSubalgebra
+
 section CommSemiring
 
-namespace symmetricSubalgebra
-
-variable (σ R)
 variable [Fintype σ] [Fintype τ] [CommRing R] [CommSemiring S] [Algebra R S]
 
-/-- `aevalMultiset` evaluates a symmetric polynomial at the elements of s. -/
+variable (σ R) in
+/-- `aevalMultiset` evaluates a symmetric polynomial at the elements of `s`. -/
 noncomputable
-def aevalMultiset (m : Multiset S) :
-    symmetricSubalgebra σ R →ₐ[R] S :=
+def aevalMultiset (m : Multiset S) : symmetricSubalgebra σ R →ₐ[R] S :=
   (aeval (fun i : Fin (Fintype.card σ) ↦ m.esymm (i + 1))).comp
     (esymmAlgEquiv (σ := σ) R rfl).symm
 
-variable {σ R}
-
-lemma aevalMultiset_apply (m : Multiset S) (p : symmetricSubalgebra σ R) :
+theorem aevalMultiset_apply (m : Multiset S) (p : symmetricSubalgebra σ R) :
     aevalMultiset σ R m p =
       aeval (fun i : Fin _ ↦ m.esymm (i + 1)) ((esymmAlgEquiv σ R rfl).symm p) := rfl
 
-lemma aevalMultiset_esymm (m : Multiset S) (i : Fin (Fintype.card σ)) :
+theorem aevalMultiset_esymm (m : Multiset S) (i : Fin (Fintype.card σ)) :
     aevalMultiset σ R m ⟨esymm σ R (i + 1), esymm_isSymmetric σ R _⟩ = m.esymm (i + 1) := by
   simp [aevalMultiset_apply, esymmAlgEquiv_symm_apply]
 
@@ -58,33 +64,33 @@ theorem aevalMultiset_map_of_card_eq (f : τ → S) (p : symmetricSubalgebra σ 
   refine (congr_arg Finset.val (Finset.map_univ_equiv (Fintype.equivOfCardEq h)).symm).trans ?_
   rw [Finset.map_val, Equiv.coe_toEmbedding]
 
-end symmetricSubalgebra
-
 end CommSemiring
 
 section CommRing
+
 variable [Fintype σ] [Fintype τ] [CommRing R] [CommRing S] [Algebra R S]
   [CommRing A] [IsDomain A] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
 
-namespace symmetricSubalgebra
+variable (σ R) in
+private noncomputable
+def scaleAEvalRoots (q : S[X]) : symmetricSubalgebra σ R →ₐ[R] S :=
+  letI f1 := (aeval (fun i : Fin (Fintype.card σ) ↦ q.leadingCoeff ^ (i : ℕ) * (-1) ^ (i + 1 : ℕ) *
+    q.coeff (q.natDegree - (i + 1))))
+  letI f2 := (esymmAlgEquiv (σ := σ) R rfl).symm
+  f1.comp f2
 
-variable (σ R)
-
-noncomputable
-def scaleAEvalRoots (q : S[X]) :
-    symmetricSubalgebra σ R →ₐ[R] S :=
-  (aeval (fun i : Fin (Fintype.card σ) ↦ q.leadingCoeff ^ (i : ℕ) * (-1) ^ (i + 1 : ℕ) *
-    q.coeff (q.natDegree - (i + 1)))).comp (esymmAlgEquiv (σ := σ) R rfl).symm
-
-variable {σ R}
-
-lemma scaleAEvalRoots_apply (q : S[X]) (p : symmetricSubalgebra σ R) :
+private theorem scaleAEvalRoots_apply {q : S[X]} {p : symmetricSubalgebra σ R} :
     scaleAEvalRoots σ R q p =
       aeval (fun i : Fin _ ↦ q.leadingCoeff ^ (i : ℕ) * (-1) ^ (↑i + 1 : ℕ) *
         q.coeff (q.natDegree - (i + 1))) ((esymmAlgEquiv σ R rfl).symm p) :=
   rfl
 
-lemma scaleAEvalRoots_eq_aevalMultiset (q : S[X]) (p : symmetricSubalgebra σ R)
+private theorem scaleAEvalRoots_esymm {q : S[X]} {i : Fin (Fintype.card σ)} :
+    scaleAEvalRoots σ R q ⟨esymm σ R (i + 1), esymm_isSymmetric σ R _⟩ =
+      q.leadingCoeff ^ (i : ℕ) * (-1) ^ (i + 1 : ℕ) * q.coeff (q.natDegree - (i + 1)) := by
+  simp [scaleAEvalRoots_apply, esymmAlgEquiv_symm_apply]
+
+private theorem scaleAEvalRoots_eq_aevalMultiset {q : S[X]} {p : symmetricSubalgebra σ R}
     (inj : Function.Injective (algebraMap S A)) (h : Fintype.card σ ≤ q.natDegree)
     (hroots : Multiset.card (q.map (algebraMap S A)).roots = q.natDegree) :
     algebraMap S A (scaleAEvalRoots σ R q p) =
@@ -108,27 +114,24 @@ lemma scaleAEvalRoots_eq_aevalMultiset (q : S[X]) (p : symmetricSubalgebra σ R)
       exact tsub_le_self
     have h : ↑i + 1 ≤ Polynomial.natDegree q := Nat.add_one_le_iff.mpr (i.2.trans_le h)
     congr 1
-    · rw [mul_right_eq_self₀, map_pow, map_neg, map_one,
-        tsub_tsub_cancel_of_le h, ← mul_pow,
-        neg_one_mul, neg_neg, one_pow, eq_self_iff_true, true_or]; trivial
+    · simp_rw [mul_right_eq_self₀, map_pow, map_neg, map_one, tsub_tsub_cancel_of_le h, ← mul_pow,
+        neg_one_mul, neg_neg, one_pow, true_or]
     · rw [tsub_tsub_cancel_of_le h]
   · simp_rw [← Algebra.smul_def, Multiset.pow_smul_esymm, ← aevalMultiset_apply]
 
-variable (σ)
-
+variable (σ) in
+/-- `sumPolynomial σ p` is the map sending `X` to `∑ i, X i`. -/
 noncomputable
 def sumPolynomial (p : R[X]) : symmetricSubalgebra σ R :=
   ⟨∑ i, Polynomial.aeval (X i) p, fun e ↦ by
     simp_rw [map_sum, rename, ← Polynomial.aeval_algHom_apply, aeval_X, (· ∘ ·)]
     rw [← Equiv.sum_comp e (fun i ↦ Polynomial.aeval (X i) p)]⟩
 
-lemma coe_sumPolynomial (p : R[X]) :
+theorem coe_sumPolynomial (p : R[X]) :
     (sumPolynomial σ p : MvPolynomial σ R) = ∑ i, Polynomial.aeval (X i) p := rfl
 
-variable {σ}
-
-lemma aevalMultiset_sumPolynomial
-    (m : Multiset S) (p : R[X]) (hm : Multiset.card m = Fintype.card σ) :
+theorem aevalMultiset_sumPolynomial
+    {m : Multiset S} {p : R[X]} (hm : Multiset.card m = Fintype.card σ) :
     aevalMultiset σ R m (sumPolynomial σ p) = (m.map (fun x ↦ Polynomial.aeval x p)).sum := by
   have eq_univ_map : m = Finset.univ.val.map (fun i : Fin m.toList.length ↦ m.toList.get i) := by
     have toFinset_finRange : ∀ n, (List.finRange n).toFinset = Finset.univ :=
@@ -150,13 +153,43 @@ lemma aevalMultiset_sumPolynomial
   generalize_proofs h
   trans ∑ x : Fin m.toList.length, (Polynomial.aeval (m.toList.get x)) p
   · rw [← Equiv.sum_comp (Fintype.equivOfCardEq h)]
-  · rw [Finset.sum]
-    apply congr_arg
-    conv_rhs => rw [eq_univ_map, Multiset.map_map]
-    simp only [Function.comp_apply]
-
-end symmetricSubalgebra
+  · rw [Finset.sum_eq_multiset_sum]
+    conv_rhs => rw [eq_univ_map, Multiset.map_map, Function.comp_def]
 
 end CommRing
 
-end MvPolynomial
+end MvPolynomial.symmetricSubalgebra
+
+namespace Polynomial
+
+/-- Given `k` a multiple of `p.leadingCoeff` and `e ≥ q.natDegree`,
+`k ^ e • ∑ i ∈ p.aroots A, q.aeval i` lies in the base ring. -/
+theorem sum_map_aroots_aeval_mem_range_algebraMap {R A : Type*}
+    [CommRing R] [CommRing A] [IsDomain A] [Algebra R A]
+    (p : R[X]) (k : R) (e : ℕ) (q : R[X]) (hk : p.leadingCoeff ∣ k) (he : q.natDegree ≤ e)
+    (inj : Function.Injective (algebraMap R A))
+    (card_aroots : (p.aroots A).card = p.natDegree) :
+    k ^ e • ((p.aroots A).map (q.aeval ·)).sum ∈ Set.range (algebraMap R A) := by
+  obtain ⟨k', rfl⟩ := hk; let k := p.leadingCoeff * k'
+  have :
+    (fun x : A => k ^ e • q.aeval x) =
+      (fun x => aeval x (∑ i ∈ range (e + 1), monomial i (k' ^ i * k ^ (e - i) * q.coeff i))) ∘
+        fun x => p.leadingCoeff • x := by
+    funext x; rw [Function.comp_apply]
+    simp_rw [map_sum, aeval_eq_sum_range' (Nat.lt_add_one_iff.mpr he), aeval_monomial, smul_sum]
+    refine sum_congr rfl fun i hi => ?_
+    rw [← Algebra.smul_def, smul_pow, smul_smul, smul_smul, mul_comm (_ * _) (_ ^ _), ← mul_assoc,
+      ← mul_assoc, ← mul_pow, ← pow_add,
+      add_tsub_cancel_of_le (Nat.lt_add_one_iff.mp (mem_range.mp hi))]
+  rw [Multiset.smul_sum, Multiset.map_map, Function.comp_def, this,
+    ← Multiset.map_map _ fun x => p.leadingCoeff • x]
+  have h1 : ((p.aroots A).map fun x => p.leadingCoeff • x).card =
+      Fintype.card (Fin (p.aroots A).card) := by
+    rw [Multiset.card_map, Fintype.card_fin]
+  have h2 : Fintype.card (Fin (p.aroots A).card) ≤ p.natDegree := by
+    rw [Fintype.card_fin]; exact (card_roots' _).trans natDegree_map_le
+  rw [← MvPolynomial.symmetricSubalgebra.aevalMultiset_sumPolynomial h1,
+    ← MvPolynomial.symmetricSubalgebra.scaleAEvalRoots_eq_aevalMultiset inj h2 card_aroots]
+  exact Set.mem_range_self _
+
+end Polynomial
