@@ -474,6 +474,30 @@ noncomputable instance commShift₂Curry : (h.curry G).CommShift₂ h where
 
 end
 
+section
+
+variable (G : C₁ × C₂ ⥤ h.Category) [G.CommShift (M × M)]
+
+abbrev uncurryCurryIso : h.uncurry (h.curry G) ≅ G := currying.counitIso.app G
+
+open commShiftUncurry in
+instance : NatTrans.CommShift (h.uncurryCurryIso G).hom (M × M) where
+  shift_comm := by
+    rintro ⟨m, n⟩
+    ext ⟨X₁, X₂⟩
+    conv_lhs => dsimp [Functor.commShiftIso, Functor.CommShift.iso, commShiftUncurry,
+      Functor.CommShift.mkProd]
+    simp [iso₁_hom_app, iso₂_hom_app, commShift_curry_obj_hom_app,
+      commShift_curry_flip_obj_hom_app, commShift₂Curry.iso₁_hom_app_app,
+      commShift₂Curry.iso₂_hom_app_app,
+      G.commShiftIso_add' (show (m, 0) + (0, n) = (m, n) by aesop)]
+    simp only [← Functor.map_comp_assoc, Category.assoc]
+    congr 4
+    · aesop
+    · simp [prod_comp, ← prod_id]
+
+end
+
 noncomputable def int
     {D : Type*} [Category D] [Preadditive D] [HasShift D ℤ]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] :
