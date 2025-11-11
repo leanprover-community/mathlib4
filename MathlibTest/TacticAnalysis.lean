@@ -15,6 +15,26 @@ example : 1 + 1 = 2 := by
 
 end omega
 
+@[tacticAnalysis linter.tacticAnalysis.dummy]
+def foo : Mathlib.TacticAnalysis.Config :=
+  Mathlib.TacticAnalysis.terminalReplacement "simp" "simp only" ``Lean.Parser.Tactic.simp
+    (fun _ _ _ => `(tactic| simp only))
+    (reportSuccess := true) (reportFailure := true)
+
+/--
+warning: `simp only` left unsolved goals where `simp` succeeded.
+Original tactic:
+  simp
+Replacement tactic:
+  simp only
+Unsolved goals:
+  [⊢ (List.map (fun x => x + 1) [1, 2, 3]).sum = 9 ]
+-/
+#guard_msgs in
+set_option linter.tacticAnalysis.dummy true in
+example : List.sum ([1,2,3].map fun x ↦ x + 1) = 9 := by
+  simp
+
 end terminalReplacement
 
 section rwMerge
