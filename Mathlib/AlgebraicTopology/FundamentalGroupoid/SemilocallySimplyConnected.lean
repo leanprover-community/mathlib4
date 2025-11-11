@@ -412,6 +412,12 @@ theorem Path.subpathOn_trans {X : Type*} [TopologicalSpace X] {x y : X} (γ : Pa
 
     case hcont =>
       -- Prove continuity of H(s,t) = γ(φ(s,t))
+      -- Strategy: γ is continuous, so we need to prove φ is continuous
+      -- φ is defined piecewise using continuous_if_le
+      -- Continuity of H(s,t) = γ(φ(s,t))
+      -- φ is continuous as a piecewise function by continuous_if_le
+      -- The branches are continuous rational functions (away from poles)
+      -- and they agree on the boundary t = p(s)
       sorry
 
     case hzero =>
@@ -1372,6 +1378,10 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
 
       -- The proof involves chaining: γ · α₁ ≃ (γ|[0,1]) · α₁ ≃ α₀ · (γ'|[0,1]) ≃ α₀ · γ'
       -- using h_γ, rect, and h_γ' with appropriate casting
+
+      -- This is a complex casting/homotopy manipulation problem
+      -- The structure is correct but the details involve careful path casting
+      -- Leaving as sorry for now as it's primarily a technical path algebra issue
       sorry
     | succ n' =>
       -- General case: n' + 2 segments
