@@ -314,12 +314,18 @@ theorem domCongr_refl : domCongr k A (.refl G) = .refl :=
 @[to_additive (attr := simp)]
 theorem domCongr_symm (e : G ≃* H) : (domCongr k A e).symm = domCongr k A e.symm := rfl
 
+@[to_additive (attr := simp)]
+theorem trans_domCongr_domCongr {I : Type*} [Monoid I] (e : G ≃* H) (f : H ≃* I) :
+    (domCongr k A e).trans (domCongr k A f) = domCongr k A (e.trans f) := by
+  ext
+  simp
+
 /-- `MonoidAlgebra.domCongr` as a `MonoidHom` from `MulAut`. -/
 @[simps]
 def domCongrAut : MulAut G →* MonoidAlgebra A G ≃ₐ[k] MonoidAlgebra A G where
   toFun := MonoidAlgebra.domCongr k A
-  map_one' := by ext; simp [MulAut.one_def]
-  map_mul' _ _ := by ext; simp [MulAut.mul_def]
+  map_one' := by rw [MulAut.one_def, AlgEquiv.aut_one, domCongr_refl]
+  map_mul' _ _ := by rw [MulAut.mul_def, AlgEquiv.aut_mul, trans_domCongr_domCongr]
 
 end lift
 
@@ -563,7 +569,7 @@ end lift
 variable (k A)
 variable [CommSemiring k] [AddMonoid G] [AddMonoid H] [Semiring A] [Algebra k A]
 
-/-- `AddMonoidAlgebra.domCongr` as a, `AddMonoidHom` from `AddAut`. -/
+/-- `AddMonoidAlgebra.domCongr` as an `AddMonoidHom` from `AddAut`. -/
 @[simps]
 def domCongrAut : AddAut G →* A[G] ≃ₐ[k] A[G] where
   toFun := AddMonoidAlgebra.domCongr k A

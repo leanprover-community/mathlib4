@@ -26,13 +26,12 @@ section mapDomainFixed
 variable {F R K : Type*} [Field F] [CommSemiring R] [Algebra F R] [Field K] [Algebra F K]
 
 variable (F R K) in
+/-- The subalgebra of the `x : R[X]` fixed by `AddMonoidAlgebra.domCongrAut f` for all `f`. -/
 def mapDomainFixed : Subalgebra R R[K] where
   carrier := {x | ∀ f : K ≃ₐ[F] K, x.domCongrAut F R f = x}
   mul_mem' {a b} ha hb f := by rw [map_mul, ha, hb]
   add_mem' {a b} ha hb f := by rw [map_add, ha, hb]
-  algebraMap_mem' r f := by
-    dsimp [AddMonoidAlgebra.domCongrAut]
-    rw [AddMonoidAlgebra.domCongr_single, map_zero]
+  algebraMap_mem' r f := by simp
 
 theorem mem_mapDomainFixed_iff {x : R[K]} :
     x ∈ mapDomainFixed F R K ↔ ∀ i j, i ∈ MulAction.orbit (K ≃ₐ[F] K) j → x i = x j := by
@@ -41,12 +40,16 @@ theorem mem_mapDomainFixed_iff {x : R[K]} :
   refine ⟨fun h i j hij => ?_, fun h f => ?_⟩
   · obtain ⟨f, rfl⟩ := hij
     rw [AlgEquiv.smul_def, ← DFunLike.congr_fun (h f) (f j)]
-    change x (f.symm (f j)) = _; rw [AlgEquiv.symm_apply_apply]
-  · ext i; change x (f.symm i) = x i
+    simp
+  · ext i
+    simp only [Finsupp.equivMapDomain_apply, AddEquiv.coe_toEquiv_symm, AddEquiv.symm_mk,
+      AlgEquiv.toEquiv_eq_coe, AlgEquiv.symm_toEquiv_eq_symm, AddEquiv.coe_mk, EquivLike.coe_coe]
     refine (h i (f.symm i) ⟨f, ?_⟩).symm
     rw [AlgEquiv.smul_def, AlgEquiv.apply_symm_apply]
 
 variable (F R K) in
+/-- The equivalence between `mapDomainFixed F R K` and the `f : R[X]` with
+`Setoid.ker f ≥ MulAction.orbitRel (K ≃ₐ[F] K) K`. -/
 def mapDomainFixedEquivSubtype :
     mapDomainFixed F R K ≃ { f : R[K] // MulAction.orbitRel (K ≃ₐ[F] K) K ≤ Setoid.ker f } where
   toFun f := ⟨f, mem_mapDomainFixed_iff.mp f.2⟩
@@ -59,7 +62,7 @@ variable [FiniteDimensional F K] [Normal F K]
 
 open Classical in
 variable (F R K) in
-def toFinsuppAux : mapDomainFixed F R K ≃ (ConjRootClass F K →₀ R) := by
+private def toFinsuppAux : mapDomainFixed F R K ≃ (ConjRootClass F K →₀ R) := by
   refine (mapDomainFixedEquivSubtype F R K).trans
     { toFun := fun f ↦
        Quotient.liftFinsupp (s := IsConjRoot.setoid _ _) (f : R[K]) (by
@@ -79,29 +82,30 @@ def toFinsuppAux : mapDomainFixed F R K ≃ (ConjRootClass F K →₀ R) := by
   · refine fun f => Finsupp.ext fun x => Quotient.inductionOn' x fun i => rfl
 
 @[simp]
-theorem toFinsuppAux_apply_apply_mk (f : mapDomainFixed F R K) (i : K) :
+private theorem toFinsuppAux_apply_apply_mk (f : mapDomainFixed F R K) (i : K) :
     toFinsuppAux F R K f (ConjRootClass.mk F i) = (f : R[K]) i :=
   rfl
 
 variable (F R K) in
+/-- `mapDomainFixed F R K` is isomorphic to the finitely supported functions from
+`ConjRootClass F K` into `R`. -/
 def toFinsupp : mapDomainFixed F R K ≃ₗ[R] ConjRootClass F K →₀ R where
   __ := toFinsuppAux F R K
   toFun := toFinsuppAux F R K
   invFun := (toFinsuppAux F R K).symm
-  map_add' := fun x y => by
+  map_add' x y := by
     ext i
     induction i
     simp_rw [Finsupp.coe_add, Pi.add_apply, toFinsuppAux_apply_apply_mk, AddMemClass.coe_add,
       (Finsupp.add_apply)]
-  map_smul' := fun r x => by
+  map_smul' r x := by
     ext i
     induction i
-    simp_rw [Finsupp.coe_smul, toFinsuppAux_apply_apply_mk]
-    simp only [SetLike.val_smul, RingHom.id_apply]
-    rw [Finsupp.coe_smul, Pi.smul_apply]
-    rw [Pi.smul_apply]
-    rw [toFinsuppAux_apply_apply_mk]
+    simp_rw [Finsupp.coe_smul, toFinsuppAux_apply_apply_mk, SetLike.val_smul, RingHom.id_apply,
+      (Finsupp.coe_smul), Pi.smul_apply, toFinsuppAux_apply_apply_mk]
 
+/-- The coercion from `mapDomainFixed F R K` into the finitely supported functions from
+`ConjRootClass F K` into `R`. -/
 @[coe]
 def coe : mapDomainFixed F R K → ConjRootClass F K →₀ R := toFinsupp F R K
 
@@ -151,6 +155,7 @@ theorem mk_apply_zero_eq (f : R[K]) (hf : f ∈ mapDomainFixed F R K) :
   rfl
 
 open Classical in
+/-- The element of `mapDomainFixed F R K` given by `a` on `x` and `0` elsewhere. -/
 def single (x : ConjRootClass F K) (a : R) :
     mapDomainFixed F R K :=
   ⟨Finsupp.indicator x.carrier.toFinset fun _ _ => a, by
