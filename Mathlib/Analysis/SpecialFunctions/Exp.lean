@@ -145,12 +145,11 @@ end ComplexContinuousExpComp
 
 namespace Real
 
-@[continuity]
-theorem continuous_exp : Continuous exp :=
-  Complex.continuous_re.comp Complex.continuous_ofReal.cexp
+@[continuity, fun_prop]
+theorem continuous_exp : Continuous exp := by
+  unfold Real.exp; fun_prop
 
-theorem continuousOn_exp {s : Set ℝ} : ContinuousOn exp s :=
-  continuous_exp.continuousOn
+theorem continuousOn_exp {s : Set ℝ} : ContinuousOn exp s := by fun_prop
 
 lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
     (fun x ↦ exp x - ∑ i ∈ Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
@@ -181,6 +180,7 @@ nonrec
 theorem ContinuousWithinAt.rexp (h : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun y ↦ exp (f y)) s x :=
   h.rexp
+
 @[fun_prop]
 nonrec
 theorem ContinuousAt.rexp (h : ContinuousAt f x) : ContinuousAt (fun y ↦ exp (f y)) x :=
@@ -348,6 +348,7 @@ theorem tendsto_exp_comp_nhds_zero {f : α → ℝ} :
     Tendsto (fun x => exp (f x)) l (𝓝 0) ↔ Tendsto f l atBot := by
   simp_rw [← comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero]
 
+@[fun_prop]
 theorem isOpenEmbedding_exp : IsOpenEmbedding exp :=
   isOpen_Ioi.isOpenEmbedding_subtypeVal.comp expOrderIso.toHomeomorph.isOpenEmbedding
 
