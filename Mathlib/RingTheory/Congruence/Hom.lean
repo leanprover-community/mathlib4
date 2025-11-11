@@ -463,7 +463,7 @@ noncomputable def quotientKerEquivRangeₐ (f : M →ₐ[R] P) :
 /-- The **second isomorphism theorem for algebras**. -/
 noncomputable def comapQuotientEquivRangeₐ (f : N →ₐ[R] M) :
     (comap c f).Quotient ≃ₐ[R] AlgHom.range ((c.mkₐ _).comp f) :=
-  (RingCon.congrₐ R comap_eq).trans <| quotientKerEquivRangeₐ ((c.mk'ₐ _).comp f)
+  (RingCon.congrₐ R comap_eq).trans <| quotientKerEquivRangeₐ ((c.mkₐ _).comp f)
 
 /-- The **third isomorphism theorem for algebras**. -/
 def quotientQuotientEquivQuotientₐ (c d : RingCon M) (h : c ≤ d) :
