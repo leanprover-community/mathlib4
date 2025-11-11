@@ -185,8 +185,8 @@ instance [h : WellFoundedLT α] : WellQuasiOrderedLE α :=
 
 end LinearOrder
 
-/-- A version of **Dickson's lemma**. See `Pi.isPWO` for the finite product of well-quasi-ordered
-sets. -/
+/-- A version of **Dickson's lemma**. See `Set.IsPWO.pi` for the finite product of
+well-quasi-ordered sets. -/
 instance Pi.wellQuasiOrderedLE {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)]
     [h : ∀ i, WellQuasiOrderedLE (α i)] [Finite ι] : WellQuasiOrderedLE (∀ i, α i) :=
   ⟨WellQuasiOrdered.pi fun i => (h i).wqo⟩
