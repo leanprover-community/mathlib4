@@ -48,6 +48,34 @@ protected theorem invOf_mul_cancel_right (A : Matrix m n α) (B : Matrix n n α)
 protected theorem mul_invOf_cancel_right (A : Matrix m n α) (B : Matrix n n α) [Invertible B] :
     A * B * ⅟B = A := by rw [Matrix.mul_assoc, mul_invOf_self, Matrix.mul_one]
 
+/-- A copy oy of `invOf_mul_eq_iff_eq_mul_left` for rectangular matrices. -/
+protected theorem invOf_mul_eq_iff_eq_mul_left
+    {A B : Matrix n m α} {C : Matrix n n α} [Invertible C] :
+    ⅟C * A = B ↔ A = C * B := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [← h, Matrix.mul_invOf_cancel_left]
+  · rw [h, Matrix.invOf_mul_cancel_left]
+
+/-- A copy oy of `mul_left_eq_iff_eq_invOf_mul` for rectangular matrices. -/
+protected theorem mul_left_eq_iff_eq_invOf_mul
+    {A B : Matrix n m α} {C : Matrix n n α} [Invertible C] :
+    C * A = B ↔ A = ⅟C * B := by
+  rw [eq_comm, ← Matrix.invOf_mul_eq_iff_eq_mul_left, eq_comm]
+
+/-- A copy oy of `mul_invOf_eq_iff_eq_mul_right` for rectangular matrices. -/
+protected theorem mul_invOf_eq_iff_eq_mul_right
+    {A B : Matrix m n α} {C : Matrix n n α} [Invertible C] :
+    A * ⅟C = B ↔ A = B * C := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [← h, Matrix.invOf_mul_cancel_right]
+  · rw [h, Matrix.mul_invOf_cancel_right]
+
+/-- A copy oy of `mul_right_eq_iff_eq_mul_invOf` for rectangular matrices. -/
+protected theorem mul_right_eq_iff_eq_mul_invOf
+    {A B : Matrix m n α} {C : Matrix n n α} [Invertible C] :
+    A * C = B ↔ A = B * ⅟C := by
+  rw [eq_comm, ← Matrix.mul_invOf_eq_iff_eq_mul_right, eq_comm]
+
 section ConjTranspose
 variable [StarRing α] (A : Matrix n n α)
 
@@ -180,9 +208,7 @@ lemma add_mul_mul_mul_invOf_eq_one :
   simp only [← Matrix.mul_assoc, mul_invOf_self', Matrix.one_mul]
   simp only [← Matrix.add_mul]
   congr
-  -- Matrix.mul_invOf_eq_iff_eq_mul_right is missing
-  conv_lhs => rw [← Matrix.mul_invOf_cancel_right U (C + C * V * ⅟A * U * C)]
-  apply congr_arg₂ _ _ rfl
+  rw [← Matrix.mul_right_eq_iff_eq_mul_invOf]
   simp only [Matrix.add_mul, Matrix.mul_add, Matrix.mul_assoc]
 
 lemma add_mul_mul_mul_invOf_eq_one' :
@@ -192,9 +218,7 @@ lemma add_mul_mul_mul_invOf_eq_one' :
   simp only [Matrix.mul_assoc, ← Matrix.mul_sub]
   congr
   rw [eq_sub_iff_add_eq, ← Matrix.mul_add]
-  -- Matrix.invOf_mul_eq_iff_eq_mul_left is missing
-  conv_rhs => rw [← Matrix.invOf_mul_cancel_left (C + C * V * ⅟A * U * C) V]
-  apply congr_arg₂ _ rfl
+  rw [Matrix.invOf_mul_eq_iff_eq_mul_left]
   simp only [Matrix.add_mul, invOf_mul_self', Matrix.mul_one, add_right_inj]
   simp only [Matrix.mul_assoc]
 
