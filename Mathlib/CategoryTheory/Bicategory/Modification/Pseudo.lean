@@ -48,8 +48,7 @@ structure Modification where
   /-- The underlying family of 2-morphism. -/
   app (a : B) : η.app a ⟶ θ.app a
   /-- The naturality condition. -/
-  naturality :
-    ∀ {a b : B} (f : a ⟶ b),
+  naturality {a b : B} (f : a ⟶ b) :
       F.map f ◁ app b ≫ (θ.naturality f).hom =
         (η.naturality f).hom ≫ app a ▷ G.map f := by cat_disch
 
@@ -115,7 +114,6 @@ instance : Inhabited (Modification η η) :=
 @[simps]
 def vcomp {ι : F ⟶ G} (Γ : Modification η θ) (Δ : Modification θ ι) : Modification η ι where
   app a := Γ.app a ≫ Δ.app a
-
 
 end Modification
 
