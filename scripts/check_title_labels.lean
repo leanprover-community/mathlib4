@@ -38,7 +38,9 @@ def checkTitleLabels : Cmd := `[Cli|
   «check-title-labels» VIA checkTitleLabelsCLI; ["0.0.1"]
   "Check that a PR title matches the formatting requirements.
   If this PR is a feature PR, also verify that it has a topic label,
-  and that there are no contradictory labels."
+  and that there are no contradictory labels.
+
+  If the inpupt title does not pass validation, output a list of errors."
 
   FLAGS:
     "labels" : Array String; "list of label names of this PR\
