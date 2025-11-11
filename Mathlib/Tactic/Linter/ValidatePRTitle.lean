@@ -16,9 +16,9 @@ verify whether the title or body are written in present imperative tense.
 
 /-- Split a string in two, at a given position. Assumes `pos` is valid. -/
 -- TODO: this should be added to batteries, as a version of `splitOn`
-def splitAtPos (s : String) (pos : String.Pos) : String × String :=
-  let before := s.extract 0 pos
-  let after := s.extract (s.next pos) s.endPos
+def splitAtPos (s : String) (pos : String.Pos.Raw) : String × String :=
+  let before := String.Pos.Raw.extract s 0 pos
+  let after := String.Pos.Raw.extract s (String.Pos.Raw.next s pos) s.endPos
   (before, after)
 
 /--
