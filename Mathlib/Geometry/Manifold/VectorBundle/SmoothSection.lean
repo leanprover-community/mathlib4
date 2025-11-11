@@ -7,6 +7,7 @@ import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
 import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Geometry.Manifold.VectorBundle.Basic
+import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # `C^n` sections
@@ -45,10 +46,8 @@ variable {I F n V}
 
 variable {f : M → 𝕜} {a : 𝕜} {s t : Π x : M, V x} {u : Set M} {x₀ : M}
 
-lemma ContMDiffWithinAt.add_section
-    (hs : ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u x₀)
-    (ht : ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t x)) u x₀) :
-    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x ((s + t) x)) u x₀ := by
+lemma ContMDiffWithinAt.add_section (hs : CMDiffAt[u] n (T% s) x₀) (ht : CMDiffAt[u] n (T% t) x₀) :
+    CMDiffAt[u] n (T% (s + t)) x₀ := by
   rw [contMDiffWithinAt_section] at hs ht ⊢
   set e := trivializationAt F V x₀
   refine (hs.add ht).congr_of_eventuallyEq ?_ ?_
@@ -59,28 +58,21 @@ lemma ContMDiffWithinAt.add_section
       apply (e.linear 𝕜 hx).1
   · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).1
 
-lemma ContMDiffAt.add_section
-    (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀)
-    (ht : ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t x)) x₀) :
-    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x ((s + t) x)) x₀ := by
+lemma ContMDiffAt.add_section (hs : CMDiffAt n (T% s) x₀) (ht : CMDiffAt n (T% t) x₀) :
+    CMDiffAt n (T% (s + t)) x₀ := by
   rw [← contMDiffWithinAt_univ] at hs ⊢
   exact hs.add_section ht
 
-lemma ContMDiffOn.add_section
-    (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u)
-    (ht : ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t x)) u) :
-    ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x ((s + t) x)) u :=
+lemma ContMDiffOn.add_section (hs : CMDiff[u] n (T% s)) (ht : CMDiff[u] n (T% t)) :
+    CMDiff[u] n (T% (s + t)) :=
   fun x₀ hx₀ ↦ (hs x₀ hx₀).add_section (ht x₀ hx₀)
 
-lemma ContMDiff.add_section
-    (hs : ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)))
-    (ht : ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t x))) :
-    ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x ((s + t) x)) :=
+lemma ContMDiff.add_section (hs : CMDiff n (T% s)) (ht : CMDiff n (T% t)) :
+    CMDiff n (T% (s + t)) :=
   fun x₀ ↦ (hs x₀).add_section (ht x₀)
 
 lemma ContMDiffWithinAt.neg_section
-    (hs : ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u x₀) :
-    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (-s x)) u x₀ := by
+    (hs : CMDiffAt[u] n (T% s) x₀) : CMDiffAt[u] n (T% (-s)) x₀ := by
   rw [contMDiffWithinAt_section] at hs ⊢
   set e := trivializationAt F V x₀
   refine hs.neg.congr_of_eventuallyEq ?_ ?_
@@ -91,51 +83,35 @@ lemma ContMDiffWithinAt.neg_section
       apply (e.linear 𝕜 hx).map_neg
   · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).map_neg
 
-lemma ContMDiffAt.neg_section
-    (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀) :
-    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (-s x)) x₀ := by
+lemma ContMDiffAt.neg_section (hs : CMDiffAt n (T% s) x₀) : CMDiffAt n (T% (-s)) x₀ := by
   rw [← contMDiffWithinAt_univ] at hs ⊢
   exact hs.neg_section
 
-lemma ContMDiffOn.neg_section
-    (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u) :
-    ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (-s x)) u :=
+lemma ContMDiffOn.neg_section (hs : CMDiff[u] n (T% s)) : CMDiff[u] n (T% (-s)) :=
   fun x₀ hx₀ ↦ (hs x₀ hx₀).neg_section
 
-lemma ContMDiff.neg_section
-    (hs : ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x))) :
-    ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (-s x)) :=
+lemma ContMDiff.neg_section (hs : CMDiff n (T% s)) : CMDiff n (T% (-s)) :=
   fun x₀ ↦ (hs x₀).neg_section
 
-lemma ContMDiffWithinAt.sub_section
-    (hs : ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u x₀)
-    (ht : ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t x)) u x₀) :
-    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x ((s - t) x)) u x₀ := by
+lemma ContMDiffWithinAt.sub_section (hs : CMDiffAt[u] n (T% s) x₀) (ht : CMDiffAt[u] n (T% t) x₀) :
+    CMDiffAt[u] n (T% (s - t)) x₀ := by
   rw [sub_eq_add_neg]
   exact hs.add_section ht.neg_section
 
-lemma ContMDiffAt.sub_section
-    (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀)
-    (ht : ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t x)) x₀) :
-    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x ((s - t) x)) x₀ := by
+lemma ContMDiffAt.sub_section (hs : CMDiffAt n (T% s) x₀) (ht : CMDiffAt n (T% t) x₀) :
+    CMDiffAt n (T% (s - t)) x₀ := by
   rw [sub_eq_add_neg]
   apply hs.add_section ht.neg_section
 
-lemma ContMDiffOn.sub_section
-    (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u)
-    (ht : ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t x)) u) :
-    ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x ((s - t) x)) u :=
+lemma ContMDiffOn.sub_section (hs : CMDiff[u] n (T% s)) (ht : CMDiff[u] n (T% t)) :
+    CMDiff[u] n (T% (s - t)) :=
   fun x₀ hx₀ ↦ (hs x₀ hx₀).sub_section (ht x₀ hx₀)
 
-lemma ContMDiff.sub_section
-    (hs : ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)))
-    (ht : ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t x))) :
-    ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x ((s - t) x)) :=
+lemma ContMDiff.sub_section (hs : CMDiff n (T% s)) (ht : CMDiff n (T% t)) : CMDiff n (T% (s - t)) :=
   fun x₀ ↦ (hs x₀).sub_section (ht x₀)
 
-lemma ContMDiffWithinAt.smul_section (hf : ContMDiffWithinAt I 𝓘(𝕜) n f u x₀)
-    (hs : ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u x₀) :
-    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (f x • s x)) u x₀ := by
+lemma ContMDiffWithinAt.smul_section (hf : CMDiffAt[u] n f x₀) (hs : CMDiffAt[u] n (T% s) x₀) :
+    CMDiffAt[u] n (T% (f • s)) x₀ := by
   rw [contMDiffWithinAt_section] at hs ⊢
   set e := trivializationAt F V x₀
   refine (hf.smul hs).congr_of_eventuallyEq ?_ ?_
@@ -146,49 +122,36 @@ lemma ContMDiffWithinAt.smul_section (hf : ContMDiffWithinAt I 𝓘(𝕜) n f u 
       apply (e.linear 𝕜 hx).2
   · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).2
 
-lemma ContMDiffAt.smul_section (hf : ContMDiffAt I 𝓘(𝕜) n f x₀)
-    (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀) :
-    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (f x • s x)) x₀ := by
+lemma ContMDiffAt.smul_section (hf : CMDiffAt n f x₀) (hs : CMDiffAt n (T% s) x₀) :
+    CMDiffAt n (T% (f • s)) x₀ := by
   rw [← contMDiffWithinAt_univ] at hs ⊢
   exact .smul_section hf hs
 
-lemma ContMDiffOn.smul_section (hf : ContMDiffOn I 𝓘(𝕜) n f u)
-    (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u) :
-    ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (f x • s x)) u :=
+lemma ContMDiffOn.smul_section (hf : CMDiff[u] n f) (hs : CMDiff[u] n (T% s)) :
+    CMDiff[u] n (T% (f • s)) :=
   fun x₀ hx₀ ↦ (hf x₀ hx₀).smul_section (hs x₀ hx₀)
 
-lemma ContMDiff.smul_section (hf : ContMDiff I 𝓘(𝕜) n f)
-    (hs : ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x))) :
-    ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (f x • s x)) :=
+lemma ContMDiff.smul_section (hf : CMDiff n f) (hs : CMDiff n (T% s)) : CMDiff n (T% (f • s)) :=
   fun x₀ ↦ (hf x₀).smul_section (hs x₀)
 
 lemma ContMDiffWithinAt.const_smul_section
-    (hs : ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u x₀) :
-    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (a • s x)) u x₀ :=
+    (hs : CMDiffAt[u] n (T% s) x₀) : CMDiffAt[u] n (T% (a • s)) x₀ :=
   contMDiffWithinAt_const.smul_section hs
 
-lemma ContMDiffAt.const_smul_section
-    (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀) :
-    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (a • s x)) x₀ :=
+lemma ContMDiffAt.const_smul_section (hs : CMDiffAt n (T% s) x₀) : CMDiffAt n (T% (a • s)) x₀ :=
   contMDiffAt_const.smul_section hs
 
-lemma ContMDiffOn.const_smul_section
-    (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u) :
-    ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (a • s x)) u :=
+lemma ContMDiffOn.const_smul_section (hs : CMDiff[u] n (T% s)) : CMDiff[u] n (T% (a • s)) :=
   contMDiffOn_const.smul_section hs
 
-lemma ContMDiff.const_smul_section
-    (hs : ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x))) :
-    ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (a • s x)) :=
+lemma ContMDiff.const_smul_section (hs : CMDiff n (T% s)) : CMDiff n (T% (a • s)) :=
   fun x₀ ↦ (hs x₀).const_smul_section
 
 variable {ι : Type*} {t : ι → (x : M) → V x}
 
 lemma ContMDiffWithinAt.sum_section {s : Finset ι}
-    (hs : ∀ i ∈ s,
-      ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) u x₀) :
-    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n
-      (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) u x₀ := by
+    (hs : ∀ i ∈ s, CMDiffAt[u] n (T% (t i ·)) x₀) :
+    CMDiffAt[u] n (T% (fun x ↦ (∑ i ∈ s, (t i x)))) x₀ := by
   classical
   induction s using Finset.induction_on with
   | empty =>
@@ -198,30 +161,28 @@ lemma ContMDiffWithinAt.sum_section {s : Finset ι}
     apply (hs _ (s.mem_insert_self i)).add_section
     exact h fun i a ↦ hs _ (s.mem_insert_of_mem a)
 
-lemma ContMDiffAt.sum_section {s : Finset ι} {x₀ : M}
-    (hs : ∀ i ∈ s, ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) x₀) :
-    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) x₀ := by
+lemma ContMDiffAt.sum_section {s : Finset ι}
+    (hs : ∀ i ∈ s, CMDiffAt n (T% (t i ·)) x₀) :
+    CMDiffAt n (T% (fun x ↦ (∑ i ∈ s, (t i x)))) x₀ := by
   simp_rw [← contMDiffWithinAt_univ] at hs ⊢
   exact .sum_section hs
 
 lemma ContMDiffOn.sum_section {s : Finset ι}
-    (hs : ∀ i ∈ s, ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) u) :
-    ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) u :=
+    (hs : ∀ i ∈ s, CMDiff[u] n (T% (t i ·))) :
+    CMDiff[u] n (T% (fun x ↦ (∑ i ∈ s, (t i x)))) :=
   fun x₀ hx₀ ↦ .sum_section fun i hi ↦ hs i hi x₀ hx₀
 
-lemma ContMDiff.sum_section {s : Finset ι}
-    (hs : ∀ i ∈ s, ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x))) :
-    ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) :=
+lemma ContMDiff.sum_section {s : Finset ι} (hs : ∀ i ∈ s, CMDiff n (T% (t i ·))) :
+    CMDiff n (T% (fun x ↦ (∑ i ∈ s, (t i x)))) :=
   fun x₀ ↦ .sum_section fun i hi ↦ (hs i hi) x₀
 
 /-- The scalar product `ψ • s` of a `C^k` function `ψ : M → 𝕜` and a section `s` of a vector
 bundle `V → M` is `C^k` once `s` is `C^k` on an open set containing `tsupport ψ`.
 
 This is a vector bundle analogue of `contMDiff_of_tsupport`. -/
-lemma ContMDiffOn.smul_section_of_tsupport {s : Π (x : M), V x} {ψ : M → 𝕜}
-    (hψ : ContMDiffOn I 𝓘(𝕜) n ψ u) (ht : IsOpen u) (ht' : tsupport ψ ⊆ u)
-    (hs : ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u) :
-    ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (ψ x • s x)) := by
+lemma ContMDiffOn.smul_section_of_tsupport {s : Π (x : M), V x} {ψ : M → 𝕜} (hψ : CMDiff[u] n ψ)
+    (ht : IsOpen u) (ht' : tsupport ψ ⊆ u) (hs : CMDiff[u] n (T% s)) :
+    CMDiff n (T% (ψ • s)) := by
   apply contMDiff_of_contMDiffOn_union_of_isOpen (hψ.smul_section hs) ?_ ?_ ht
       (isOpen_compl_iff.mpr <| isClosed_tsupport ψ)
   · apply ((contMDiff_zeroSection _ _).contMDiffOn (s := (tsupport ψ)ᶜ)).congr
@@ -233,16 +194,15 @@ lemma ContMDiffOn.smul_section_of_tsupport {s : Π (x : M), V x} {ψ : M → �
 Version at a point within a set. -/
 lemma ContMDiffWithinAt.sum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
-    (ht' : ∀ i, ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) u x₀) :
-    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) u x₀ := by
+    (ht' : ∀ i, CMDiffAt[u] n (T% (t i ·)) x₀) :
+    CMDiffAt[u] n (T% (fun x ↦ ∑' i, (t i x))) x₀ := by
   obtain ⟨u', hu', hfin⟩ := ht x₀
   -- All sections `t i` but a finite set `s` vanish near `x₀`: choose a neighbourhood `u` of `x₀`
   -- and a finite set `s` of sections which don't vanish.
   let s := {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ u').Nonempty}
   have := hfin.fintype
-  have : ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n
-      (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) (u ∩ u') x₀ :=
-    ContMDiffWithinAt.sum_section fun i hi ↦ ((ht' i).mono Set.inter_subset_left)
+  have : CMDiffAt[u ∩ u'] n (T% (fun x ↦ (∑ i ∈ s, (t i x)))) x₀ :=
+    .sum_section fun i hi ↦ ((ht' i).mono Set.inter_subset_left)
   apply (contMDiffWithinAt_inter hu').mp
   apply this.congr fun y hy ↦ ?_
   · rw [TotalSpace.mk_inj, tsum_eq_sum']
@@ -266,29 +226,29 @@ lemma ContMDiffWithinAt.sum_section_of_locallyFinite
 
 /-- The sum of a locally finite collection of sections is `C^k` at `x` iff each section is. -/
 lemma ContMDiffAt.sum_section_of_locallyFinite (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
-    (ht' : ∀ i, ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) x₀) :
-    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) x₀ := by
+    (ht' : ∀ i, CMDiffAt n (T% (t i ·)) x₀) :
+    CMDiffAt n (T% (fun x ↦ (∑' i, (t i x)))) x₀ := by
   simp_rw [← contMDiffWithinAt_univ] at ht' ⊢
   exact .sum_section_of_locallyFinite ht ht'
 
 /-- The sum of a locally finite collection of sections is `C^k` on a set `u` iff each section is. -/
 lemma ContMDiffOn.sum_section_of_locallyFinite (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
-    (ht' : ∀ i, ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) u) :
-    ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) u :=
+    (ht' : ∀ i, CMDiff[u] n (T% (t i ·))) :
+    CMDiff[u] n (T% (fun x ↦ ∑' i, (t i x))) :=
   fun x hx ↦ .sum_section_of_locallyFinite ht (ht' · x hx)
 
 /-- The sum of a locally finite collection of sections is `C^k` iff each section is. -/
 lemma ContMDiff.sum_section_of_locallyFinite (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
-    (ht' : ∀ i, ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x))) :
-    ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) :=
+    (ht' : ∀ i, CMDiff n (T% (t i ·))) :
+    CMDiff n (T% (fun x ↦ ∑' i, (t i x))) :=
   fun x ↦ .sum_section_of_locallyFinite ht fun i ↦ ht' i x
 
 -- Future: the next four lemmas can presumably be generalised, but some hypotheses on the supports
 -- of the sections `t i` are necessary.
 lemma ContMDiffWithinAt.finsum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
-    (ht' : ∀ i, ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) u x₀) :
-    ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) u x₀ := by
+    (ht' : ∀ i, CMDiffAt[u] n (T% (t i ·)) x₀) :
+    CMDiffAt[u] n (T% (fun x ↦ ∑ᶠ i, t i x)) x₀ := by
   apply (ContMDiffWithinAt.sum_section_of_locallyFinite ht ht').congr' (t := Set.univ)
       (fun y hy ↦ ?_) (by grind) trivial
   rw [← tsum_eq_finsum (L := SummationFilter.unconditional ι)]
@@ -302,21 +262,21 @@ lemma ContMDiffWithinAt.finsum_section_of_locallyFinite
 
 lemma ContMDiffAt.finsum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
-    (ht' : ∀ i, ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) x₀) :
-    ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) x₀ := by
+    (ht' : ∀ i, CMDiffAt n (T% (t i ·)) x₀) :
+    CMDiffAt n (T% (fun x ↦ ∑ᶠ i, t i x)) x₀ := by
   simp_rw [← contMDiffWithinAt_univ] at ht' ⊢
-  exact ContMDiffWithinAt.finsum_section_of_locallyFinite ht ht'
+  exact .finsum_section_of_locallyFinite ht ht'
 
 lemma ContMDiffOn.finsum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
-    (ht' : ∀ i, ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) u) :
-    ContMDiffOn I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) u :=
-  fun x hx ↦ ContMDiffWithinAt.finsum_section_of_locallyFinite ht fun i ↦ ht' i x hx
+    (ht' : ∀ i, CMDiff[u] n (T% (t i ·))) :
+    CMDiff[u] n (T% (fun x ↦ ∑ᶠ i, t i x)) :=
+  fun x hx ↦ .finsum_section_of_locallyFinite ht fun i ↦ ht' i x hx
 
 lemma ContMDiff.finsum_section_of_locallyFinite (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
-    (ht' : ∀ i, ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x))) :
-    ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) :=
-  fun x ↦ ContMDiffAt.finsum_section_of_locallyFinite ht fun i ↦ ht' i x
+    (ht' : ∀ i, CMDiff n (T% (t i ·))) :
+    CMDiff n (T% (fun x ↦ ∑ᶠ i, t i x)) :=
+  fun x ↦ .finsum_section_of_locallyFinite ht fun i ↦ ht' i x
 
 end operations
 
@@ -326,8 +286,7 @@ structure ContMDiffSection where
   /-- the underlying function of this section -/
   protected toFun : ∀ x, V x
   /-- proof that this section is `C^n` -/
-  protected contMDiff_toFun : ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x ↦
-    TotalSpace.mk' F x (toFun x)
+  protected contMDiff_toFun : CMDiff n (T% toFun)
 
 @[inherit_doc] scoped[Manifold] notation "Cₛ^" n "⟮" I "; " F ", " V "⟯" => ContMDiffSection I F n V
 
@@ -342,13 +301,9 @@ instance : DFunLike Cₛ^n⟮I; F, V⟯ M V where
 variable {s t : Cₛ^n⟮I; F, V⟯}
 
 @[simp]
-theorem coeFn_mk (s : ∀ x, V x)
-    (hs : ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x => TotalSpace.mk x (s x)) :
-    (mk s hs : ∀ x, V x) = s :=
-  rfl
+theorem coeFn_mk (s : ∀ x, V x) (hs : CMDiff n (T% s)) : (mk s hs : ∀ x, V x) = s := rfl
 
-protected theorem contMDiff (s : Cₛ^n⟮I; F, V⟯) :
-    ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x => TotalSpace.mk' F x (s x : V x) :=
+protected theorem contMDiff (s : Cₛ^n⟮I; F, V⟯) : CMDiff n (T% (fun x => s x)) :=
   s.contMDiff_toFun
 
 theorem coe_inj ⦃s t : Cₛ^n⟮I; F, V⟯⦄ (h : (s : ∀ x, V x) = t) : s = t :=
@@ -439,16 +394,13 @@ instance instModule : Module 𝕜 Cₛ^n⟮I; F, V⟯ :=
 
 end
 
-protected theorem mdifferentiable' (s : Cₛ^n⟮I; F, V⟯) (hn : 1 ≤ n) :
-    MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x => TotalSpace.mk' F x (s x : V x) :=
+protected theorem mdifferentiable' (s : Cₛ^n⟮I; F, V⟯) (hn : 1 ≤ n) : MDiff (T% (fun x ↦ s x)) :=
   s.contMDiff.mdifferentiable hn
 
-protected theorem mdifferentiable (s : Cₛ^∞⟮I; F, V⟯) :
-    MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x => TotalSpace.mk' F x (s x : V x) :=
+protected theorem mdifferentiable (s : Cₛ^∞⟮I; F, V⟯) : MDiff (T% (fun x ↦ s x)) :=
   s.contMDiff.mdifferentiable (mod_cast le_top)
 
-protected theorem mdifferentiableAt (s : Cₛ^∞⟮I; F, V⟯) {x} :
-    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x => TotalSpace.mk' F x (s x : V x)) x :=
+protected theorem mdifferentiableAt (s : Cₛ^∞⟮I; F, V⟯) {x} : MDiffAt (T% (fun x ↦ s x)) x :=
   s.mdifferentiable x
 
 end ContMDiffSection
