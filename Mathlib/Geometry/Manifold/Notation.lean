@@ -125,14 +125,11 @@ space. This handles the cases of
 - turning a bare function `E → E'` into a section of the trivial bundle `Bundle.Trivial E E'`
 
 This searches the local context for suitable hypotheses for the above cases by matching
-on the expression structure, avoiding `isDefEq`. Therefore, it is (hopefully) fast enough to always
-run.
+on the expression structure, avoiding `isDefEq`. Therefore, it should be fast enough to always run.
+This process can be traced with `set_option Elab.DiffGeo.TotalSpaceMk true`.
 
 All applications of `e` in the resulting expression are beta-reduced.
-
 If none of the handled cases apply, we simply return `e` (after beta-reducing).
-
-Behavior can be traced with `set_option Elab.DiffGeo.TotalSpaceMk true`.
 
 This function is used for implementing the `T%` elaborator.
 -/
@@ -196,10 +193,8 @@ function to a non-dependent function into the total space. This handles the case
 - turning a bare function `E → E'` into a section of the trivial bundle `Bundle.Trivial E E'`
 
 This elaborator searches the local context for suitable hypotheses for the above cases by matching
-on the expression structure, avoiding `isDefEq`. Therefore, it is (hopefully) fast enough to always
-run.
-
-Behavior can be traced with `set_option Elab.DiffGeo.TotalSpaceMk true`.
+on the expression structure, avoiding `isDefEq`. Therefore, it should be fast enough to always run.
+The search can be traced with `set_option Elab.DiffGeo.TotalSpaceMk true`.
 -/
 scoped elab:max "T% " t:term : term => do
   totalSpaceMk (← Term.elabTerm t none)
