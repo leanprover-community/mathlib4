@@ -8,7 +8,7 @@ import Mathlib.Data.Set.Lattice
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 
 /-!
-# Finitely generated `SubMulAction` and `SubAddAction`
+# Closure and finiteness of `SubMulAction` and `SubAddAction`
 -/
 
 namespace SubMulAction
