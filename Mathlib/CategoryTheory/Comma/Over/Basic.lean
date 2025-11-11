@@ -326,6 +326,11 @@ def iteratedSliceBackward : Over f.left ⥤ Over f where
   obj g := mk (homMk g.hom : mk (g.hom ≫ f.hom) ⟶ f)
   map α := homMk (homMk α.left (w_assoc α f.hom)) (OverMorphism.ext (w α))
 
+@[simp]
+theorem iteratedSliceBackward_forget (f : Over X) :
+    iteratedSliceBackward f ⋙ Over.forget f = Over.map f.hom :=
+  rfl
+
 /-- Given f : Y ⟶ X, we have an equivalence between (T/X)/f and T/Y -/
 @[simps]
 def iteratedSliceEquiv : Over f ≌ Over f.left where
