@@ -76,11 +76,11 @@ theorem teichmuller_mul_pow_coeff_of_ne (x : R)
     {m n : ℕ} (h : m ≠ n) : (teichmuller p x * p ^ n).coeff m = 0 := by
   cases Nat.lt_or_lt_of_ne h with
   | inl h =>
-     exact WittVector.mul_pow_charP_coeff_zero (teichmuller p x) h
+    exact WittVector.mul_pow_charP_coeff_zero (teichmuller p x) h
   | inr h =>
     rw [← Nat.sub_add_cancel h.le, WittVector.mul_pow_charP_coeff_succ (teichmuller p x),
-        WittVector.teichmuller_coeff_pos p x (m - n) (Nat.zero_lt_sub_of_lt h), zero_pow]
-    simp [Prime.ne_zero <| Nat.Prime.prime Fact.out]
+      WittVector.teichmuller_coeff_pos p x (m - n) (Nat.zero_lt_sub_of_lt h), zero_pow]
+    simp [Nat.Prime.ne_zero Fact.out]
 
 variable [PerfectRing R p]
 
@@ -105,8 +105,8 @@ theorem dvd_sub_sum_teichmuller_iterateFrobeniusEquiv_coeff (x : 𝕎 R) (n : �
   · refine fun n ↦ ⟨fun ⟨a, _, ha⟩ ⟨b, _, hb⟩ ↦ ?_⟩
     ext
     dsimp only [ne_eq, Set.mem_setOf_eq]
-    rw [← of_not_not ((teichmuller_mul_pow_coeff_of_ne _).mt ha)]
-    exact of_not_not ((teichmuller_mul_pow_coeff_of_ne _).mt hb)
+    rw [← Not.imp_symm (teichmuller_mul_pow_coeff_of_ne _) ha]
+    exact Not.imp_symm (teichmuller_mul_pow_coeff_of_ne _) hb
 
 /--
 Given a ring `S` such that `p` is nilpotent in `S`

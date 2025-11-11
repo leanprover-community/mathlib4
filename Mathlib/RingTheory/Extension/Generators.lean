@@ -287,6 +287,15 @@ def naive (s : MvPolynomial σ R ⧸ I → MvPolynomial σ R :=
 
 end
 
+lemma finiteType {α : Type*} [Finite α] (P : Generators R S α) : FiniteType R S :=
+  .of_surjective (IsScalarTower.toAlgHom R P.Ring S) P.algebraMap_surjective
+
+lemma _root_.Algebra.FiniteType.iff_exists_generators :
+    FiniteType R S ↔ ∃ (n : ℕ), Nonempty (Generators R S (Fin n)) := by
+  refine ⟨fun h ↦ ?_, fun ⟨n, ⟨P⟩⟩ ↦ P.finiteType⟩
+  obtain ⟨n, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp h
+  exact ⟨n, ⟨.ofSurjective (fun i ↦ f (X i)) <| by rwa [aeval_unique f] at hf⟩⟩
+
 end Construction
 
 variable {R' S' ι' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S'] (P' : Generators R' S' ι')
@@ -661,6 +670,11 @@ lemma ker_comp_eq_sup (Q : Generators S T ι') (P : Generators R S ι) :
   rw [Generators.ker_eq_ker_aeval_val, RingHom.mem_ker,
     ← algebraMap_self_apply (MvPolynomial.aeval _ x)]
   rw [← Generators.Hom.algebraMap_toAlgHom (Q.ofComp P), hx, map_zero]
+
+lemma toAlgHom_ofComp_localizationAway (g : S) [IsLocalization.Away g T] :
+    ((localizationAway T g).ofComp P).toAlgHom
+      (rename Sum.inr (P.σ g) * X (Sum.inl ()) - 1) = C g * X () - 1 := by
+  simp [Generators.Hom.toAlgHom, Generators.ofComp, aeval_rename]
 
 end Hom
 

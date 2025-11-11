@@ -12,16 +12,16 @@ import Mathlib.Topology.Algebra.Group.Basic
 
 Given a topological group `G`, one can naturally build two uniform structures
 (the "left" and "right" ones) on `G` inducing its topology.
-This file defines typeclasses for groups equipped with either of these uniform strucure, as well
+This file defines typeclasses for groups equipped with either of these uniform strucures, as well
 as a separate typeclass for the (very common) case where the given uniform structure
 coincides with **both** the left and right uniform structures.
 
 ## Main declarations
 
-* `IsRightUniformGroup` and `IsRightUniformAddGroup`: Multiplicative and topological additive groups
+* `IsRightUniformGroup` and `IsRightUniformAddGroup`: Multiplicative and additive topological groups
   endowed with the associated right uniform structure. This means that two points `x` and `y`
   are close precisely when `y * x⁻¹` is close to `1` / `y + (-x)` close to `0`.
-* `IsLeftUniformGroup` and `IsLeftUniformAddGroup`: Multiplicative and topological additive groups
+* `IsLeftUniformGroup` and `IsLeftUniformAddGroup`: Multiplicative and additive topological groups
   endowed with the associated left uniform structure. This means that two points `x` and `y`
   are close precisely when `x⁻¹ * y` is close to `1` / `(-x) + y` close to `0`.
 * `IsUniformGroup` and `IsUniformAddGroup`: Multiplicative and additive uniform groups,
@@ -957,7 +957,7 @@ theorem Filter.Tendsto.conj_nhds_one {ι : Type*} {l : Filter ι} {x : ι → β
   -- `exact` works but is quite slow...
   convert tendsto_conj_nhds_one.comp this
 
-instance (priority := 10) IsUniformGroup.of_left_right : IsUniformGroup β where
+theorem IsUniformGroup.of_left_right : IsUniformGroup β where
   uniformContinuous_div := by
     let φ : (β × β) × (β × β) → β := fun ⟨⟨x₁, x₂⟩, ⟨y₁, y₂⟩⟩ ↦ x₂ * y₂⁻¹ * y₁ * x₁⁻¹
     let ψ : (β × β) × (β × β) → β := fun ⟨⟨x₁, x₂⟩, ⟨y₁, y₂⟩⟩ ↦ (x₁⁻¹ * x₂) * (y₂⁻¹ * y₁)
@@ -977,6 +977,10 @@ instance (priority := 10) IsUniformGroup.of_left_right : IsUniformGroup β where
       · rw [uniformity_eq_comap_inv_mul_nhds_one_swapped]
         exact tendsto_comap.comp tendsto_snd
     exact φ_ψ_conj ▸ ψ_tendsto.conj_nhds_one g
+
+theorem isUniformGroup_iff_left_right {γ : Type*} [Group γ] [UniformSpace γ] :
+    IsUniformGroup γ ↔ IsLeftUniformGroup γ ∧ IsRightUniformGroup γ :=
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ .of_left_right⟩
 
 theorem eventually_forall_conj_nhds_one {p : α → Prop}
     (hp : ∀ᶠ x in 𝓝 1, p x) :
