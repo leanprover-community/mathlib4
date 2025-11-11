@@ -39,6 +39,8 @@ def insert (d : RefinedDiscrTree α) (key : Key) (entry : LazyEntry × α) : Ref
 /--
 Structure for quickly initializing a lazy discrimination tree with a large number
 of elements using concurrent functions for generating entries.
+
+This preliminary structure is converted to a `RefinedDiscrTree` via `toRefinedDiscrTree`.
 -/
 structure PreDiscrTree (α : Type) where
   /-- Maps keys to index in tries array. -/
@@ -59,16 +61,16 @@ private def modifyAt (d : PreDiscrTree α) (k : Key)
   | some i =>
     { root, tries := tries.modify i f }
 
-/-- Add an entry to the pre-discrimination tree. -/
+/-- Add an entry to the `PreDiscrTree`. -/
 def push (d : PreDiscrTree α) (k : Key) (e : LazyEntry × α) : PreDiscrTree α :=
   d.modifyAt k (·.push e)
 
-/-- Convert a pre-discrimination tree to a `RefinedDiscrTree`. -/
+/-- Convert a `PreDiscrTree` to a `RefinedDiscrTree`. -/
 def toRefinedDiscrTree (d : PreDiscrTree α) : RefinedDiscrTree α :=
   let { root, tries } := d
   { root, tries := tries.map fun pending => .node #[] none {} {} pending }
 
-/-- Merge two pre-discrimination trees. -/
+/-- Merge two `PreDiscrTree`s. -/
 def append (x y : PreDiscrTree α) : PreDiscrTree α :=
   let (x, y, f) :=
     if x.root.size ≥ y.root.size then
@@ -149,7 +151,7 @@ Note: It is expensive to create two new `IO.Ref`s for every `MetaM` operation,
 
 
 /--
-Contains the pre-discrimination tree and any errors occurring during initialization of
+Contains a `PreDiscrTree` and any errors occurring during initialization of
 the library search tree.
 -/
 private structure InitResults (α : Type) where
