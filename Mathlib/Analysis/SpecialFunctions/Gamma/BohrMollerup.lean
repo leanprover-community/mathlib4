@@ -358,21 +358,19 @@ theorem Gamma_strictMonoOn_Ici : StrictMonoOn Gamma (Ici 2) := by
 
 theorem exists_isMinOn_Gamma_Ioi : ∃ x ∈ Ioo 1 2, IsMinOn Gamma (Ioi 0) x := by
   have ⟨x, hx, hmin⟩ := isCompact_Icc.exists_isMinOn (Set.nonempty_Icc.mpr one_le_two) <|
-    differentiableOn_Gamma_Ioi.continuousOn.mono (Icc_subset_Ioi_iff one_le_two |>.mpr zero_lt_one)
+    differentiableOn_Gamma_Ioi.continuousOn.mono <| Icc_subset_Ioi_iff one_le_two |>.mpr zero_lt_one
   obtain hx | hx | hx := Set.eq_endpoints_or_mem_Ioo_of_mem_Icc hx
   · have := Gamma_one ▸ Gamma_three_div_two_lt_one
-    have := hx ▸ isMinOn_iff.mp hmin (3 / 2) (by norm_num)
-    cutsat
+    grind [isMinOn_iff]
   · have := Gamma_two ▸ Gamma_three_div_two_lt_one
-    have := hx ▸ isMinOn_iff.mp hmin (3 / 2) (by norm_num)
-    cutsat
+    grind [isMinOn_iff]
   refine ⟨x, hx, isMinOn_iff.mpr fun y hy ↦ ?_⟩
   by_cases hy₁ : y < 1
-  · exact le_trans (isMinOn_iff.mp hmin _ <| left_mem_Icc.mpr one_le_two)
-      (Gamma_strictAntiOn_Ioc ⟨hy, hy₁.le⟩ (right_mem_Ioc.mpr zero_lt_one) hy₁ |>.le)
+  · exact le_trans (isMinOn_iff.mp hmin _ <| left_mem_Icc.mpr one_le_two) <|
+      Gamma_strictAntiOn_Ioc ⟨hy, hy₁.le⟩ (right_mem_Ioc.mpr zero_lt_one) hy₁ |>.le
   by_cases hy₂ : 2 < y
-  · exact le_trans (isMinOn_iff.mp hmin _ <| right_mem_Icc.mpr one_le_two)
-      (Gamma_strictMonoOn_Ici left_mem_Ici hy₂.le hy₂ |>.le)
+  · exact le_trans (isMinOn_iff.mp hmin _ <| right_mem_Icc.mpr one_le_two) <|
+      Gamma_strictMonoOn_Ici left_mem_Ici hy₂.le hy₂ |>.le
   exact isMinOn_iff.mp hmin _ ⟨not_lt.mp hy₁, not_lt.mp hy₂⟩
 
 end StrictMono
