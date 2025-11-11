@@ -280,24 +280,17 @@ theorem ConvexOn.strict_mono_of_lt (hf : ConvexOn 𝕜 s f) {x y : 𝕜} (hx : x
 `x < y` in `s`, then `f` is strictly antitone on `s ∩ (∞, x]`. -/
 theorem ConvexOn.strict_anti_of_lt (hf : ConvexOn 𝕜 s f) {x y : 𝕜} (hy : y ∈ s) (hxy : x < y)
     (hxy' : f y < f x) : StrictAntiOn f (s ∩ .Iic x) := by
-  have := (hf.comp_affineMap (-.id ..)).strict_mono_of_lt (neg_neg y |>.symm ▸ hy : - - y ∈ s)
-    (neg_lt_neg hxy) ((neg_neg y).symm ▸ (neg_neg x).symm ▸ hxy' :)
-  convert StrictMonoOn.comp_strictAntiOn this (strictMonoOn_id (s := s ∩ .Iic x) |>.neg) fun z hz ↦
-    ⟨(neg_neg z |>.symm ▸ hz.left :),
-      (Set.neg_Iic x ▸ Set.neg_mem_neg.mpr hz.right : -z ∈ .Ici (-x))⟩
-  ext
-  simp
+  have := hf.comp_affineMap (-.id ..) |>.strict_mono_of_lt (by simpa) (neg_lt_neg hxy) (by simpa)
+  simpa [Function.comp_def] using this.comp_strictAntiOn strictMonoOn_id.neg fun _ _ ↦ by simpa
 
 /-- If `f` is concave on a set `s` in a linearly ordered field, and `f x < f y` for two points
 `x < y` in `s`, then `f` is strictly monotone on `s ∩ (∞, x]`. -/
 theorem ConcaveOn.strict_mono_of_lt (hf : ConcaveOn 𝕜 s f) {x y : 𝕜} (hy : y ∈ s) (hxy : x < y)
     (hxy' : f x < f y) : StrictMonoOn f (s ∩ .Iic x) := by
-  convert (neg_convexOn_iff.mpr hf |>.strict_anti_of_lt hy hxy <| neg_lt_neg hxy').neg using 1
-  simp
+  simpa using (neg_convexOn_iff.mpr hf |>.strict_anti_of_lt hy hxy <| neg_lt_neg hxy').neg
 
 /-- If `f` is concave on a set `s` in a linearly ordered field, and `f y < f x` for two points
 `x < y` in `s`, then `f` is strictly antitone on `s ∩ [y, ∞)`. -/
 theorem ConcaveOn.strict_anti_of_lt (hf : ConcaveOn 𝕜 s f) {x y : 𝕜} (hx : x ∈ s) (hxy : x < y)
     (hxy' : f y < f x) : StrictAntiOn f (s ∩ .Ici y) := by
-  convert (neg_convexOn_iff.mpr hf |>.strict_mono_of_lt hx hxy <| neg_lt_neg hxy').neg using 1
-  simp
+  simpa using (neg_convexOn_iff.mpr hf |>.strict_mono_of_lt hx hxy <| neg_lt_neg hxy').neg
