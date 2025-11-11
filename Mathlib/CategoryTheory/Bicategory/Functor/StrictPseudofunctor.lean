@@ -1,4 +1,3 @@
-
 /-
 Copyright (c) 2025 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -40,7 +39,7 @@ pseudofunctor `F` from `B` to `C` such that `mapId` and `mapComp` are given by `
 @[kerodon 008H]
 structure StrictPseudofunctor extends StrictlyUnitaryPseudofunctor B C where
   map_comp : ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c), map (f ≫ g) = map f ≫ map g := by
-    cat_rfl
+    rfl_cat
   mapComp_eq_eqToIso : ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c),
     mapComp f g = eqToIso (map_comp f g) := by cat_disch
 
@@ -52,9 +51,9 @@ since it does not include the compatibility conditoins on the associator
 and unitors. However, when the underlying bicategories are strict, a
 `StrictPseudofunctorPreCore` does induce a `StrictPseudofunctor`. -/
 structure StrictPseudofunctorPreCore extends PrelaxFunctor B C where
-  map_id (X : B) : map (𝟙 X) = 𝟙 (obj X) := by cat_rfl
+  map_id (X : B) : map (𝟙 X) = 𝟙 (obj X) := by rfl_cat
   map_comp : ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c), map (f ≫ g) = map f ≫ map g := by
-    cat_rfl
+    rfl_cat
   map₂_whisker_left :
     ∀ {a b c : B} (f : a ⟶ b) {g g' : b ⟶ c} (η : g ⟶ g'),
       map₂ (f ◁ η) = eqToHom (map_comp f g) ≫
