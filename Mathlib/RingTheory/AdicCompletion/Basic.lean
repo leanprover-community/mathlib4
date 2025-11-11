@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Judith Ludwig, Christian Merten, Jiedong Jiang
 -/
 import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.LinearAlgebra.SModEq.Basic
+import Mathlib.LinearAlgebra.SModEq.Pointwise
 import Mathlib.RingTheory.Ideal.Quotient.PowTransition
 import Mathlib.RingTheory.Jacobson.Ideal
 
