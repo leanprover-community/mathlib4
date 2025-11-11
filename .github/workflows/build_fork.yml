@@ -579,9 +579,11 @@ jobs:
           else
             exit_code="$?"
             # Escape and set the output for use in subsequent steps
-            echo "errors<<EOF" >> "$GITHUB_OUTPUT"
-            echo "$output" >> "$GITHUB_OUTPUT"
-            echo "EOF" >> "$GITHUB_OUTPUT"
+            {
+              echo "errors<<EOF"
+              echo "$output"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
             exit "$exit_code"
           fi
 
@@ -592,19 +594,20 @@ jobs:
           header: 'PR Title Check'
           message: |
             ### 🚨 PR Title Needs Formatting
-            Please update the title to match our [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).
+            Please update the title to match our
+            [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).
 
             Errors from script:
-            ${{ steps.pr-title-check.outputs.message }}
+            ${{ steps.pr-title-check.outputs.errors }}
 
             <details>
             <summary>Details on the required title format</summary>
 
             The title should fit the following format:
             ```
-            <type>(<optional-scope>): <subject>
+            <kind>(<optional-scope>): <subject>
             ```
-            `<type>` is:
+            `<kind>` is:
 
             - `feat` (feature)
             - `fix` (bug fix)
@@ -627,9 +630,9 @@ jobs:
 
             `<subject>` has the following constraints:
 
-            - use imperative, present tense: "change" not "changed" nor "changes"
             - do not capitalize the first letter
             - no dot(.) at the end
+            - use imperative, present tense: "change" not "changed" nor "changes"
             </details>
 
       - name: Add comment that PR title is fixed
@@ -641,7 +644,9 @@ jobs:
           only_update: true
           message: |
             ### ✅ PR Title Formatted Correctly
-            The title of this PR has been updated to match our [commit style conventions](https://leanprover-community.github.io/contribute/commit.html). Thank you!
+            The title of this PR has been updated to match our
+            [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).
+            Thank you!
 
       - name: generate our import graph
         run: |
