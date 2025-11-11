@@ -362,32 +362,26 @@ theorem xor_one_of_odd {n : ℕ} (h : ¬Even n) : n ^^^ 1 = n - 1 := by
     grind
 
 /-- The xor of the numbers from 0 to n can be easily calculated using `n mod 4`. -/
-theorem xor_range (n : ℕ) : List.foldl (· ^^^ ·) 0 (.range (n + 1)) =
+theorem xor_range (n : ℕ) : (List.range (n + 1)).foldl (· ^^^ ·) 0 =
     match Fin.ofNat 4 n with | 0 => n | 1 => 1 | 2 => n + 1 | 3 => 0 := by
   induction n with
   | zero => simp
-  | succ n h =>
-    rw [List.range_succ, List.foldl_append, h]
+  | succ n ih =>
+    nth_rw 3 [← show Fin.ofNat 4 1 = (1 : ℕ) from Fin.val_ofNat ..]
+    rw [List.range_succ, List.foldl_append, ih, ← Fin.ofNat_add, List.foldl_cons, List.foldl_nil]
     match h : Fin.ofNat 4 n with
     | 0 =>
-      nth_rw 4 [← show Fin.ofNat 4 1 = (1 : ℕ) from Fin.val_ofNat ..]
-      rw [← Fin.ofNat_add, h, List.foldl_cons, List.foldl_nil, Fin.zero_add,
-        ← xor_one_of_even <| even_iff.mpr ?_, xor_xor_cancel_left]
+      rw [Fin.zero_add, ← xor_one_of_even <| even_iff.mpr ?_, xor_xor_cancel_left]
       rw [← @mod_mod_of_dvd _ 4 _ <| by simp, ← Fin.val_ofNat 4, h]
       rfl
     | 1 =>
-      nth_rw 4 [← show Fin.ofNat 4 1 = (1 : ℕ) from Fin.val_ofNat ..]
-      rw [← Fin.ofNat_add, h, List.foldl_cons, List.foldl_nil, Nat.xor_comm]
+      rw [Nat.xor_comm]
       refine xor_one_of_even <| even_iff.mpr ?_
       rw [add_mod, ← @mod_mod_of_dvd _ 4 n <| by simp, ← Fin.val_ofNat 4, h]
       rfl
     | 2 =>
-      nth_rw 4 [← show Fin.ofNat 4 1 = (1 : ℕ) from Fin.val_ofNat ..]
-      rw [← Fin.ofNat_add, h, List.foldl_cons, List.foldl_nil]
       apply Nat.xor_self
     | 3 =>
-      nth_rw 4 [← show Fin.ofNat 4 1 = (1 : ℕ) from Fin.val_ofNat ..]
-      rw [← Fin.ofNat_add, h, List.foldl_cons, List.foldl_nil]
       apply zero_xor
 
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
