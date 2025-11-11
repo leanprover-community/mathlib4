@@ -359,7 +359,6 @@ theorem lowerSemicontinuousWithinAt_iff_le_liminf {f : α → γ} :
   · intro h; unfold LowerSemicontinuousWithinAt at h
     by_contra! hf
     obtain ⟨z, ltz, y, ylt, h₁⟩ := hf.exists_disjoint_Iio_Ioi
-    specialize h y ylt
     exact ltz.not_ge
       (le_liminf_of_le (by isBoundedDefault) ((h y ylt).mono fun _ h₂ =>
         le_of_not_gt fun h₃ => (h₁ _ h₃ _ h₂).false))
