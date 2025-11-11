@@ -500,8 +500,10 @@ where
   fromCircle : TermElabM Expr := do
     -- We don't use `match_expr` to avoid importing `Circle`.
     if (← instantiateMVars e).cleanupAnnotations.isConstOf `Circle then
-      let r ← Term.exprToSyntax (mkConst `Real)
-      Term.elabTerm (← `(𝓘($r))) none
+      -- We have not imported `EuclideanSpace` yet, so build an expression by hand.
+      let r ← Term.exprToSyntax q(ℝ)
+      let eE ← Term.exprToSyntax <| ← mkAppM `EuclideanSpace #[q(ℝ), q(Fin 1)]
+      Term.elabTerm (← ``(𝓘($r, $eE))) none
     else throwError "`{e}` is not the complex unit circle"
   /-- Attempt to find a model with corners on a metric sphere in a real normed space -/
   fromSphere : TermElabM Expr := do
