@@ -32,6 +32,8 @@ order on matrices on `ℝ` or `ℂ`.
 * `Matrix.PosDef.isUnit`: A positive definite matrix in a field is invertible.
 -/
 
+open WithLp
+
 open scoped ComplexOrder
 
 namespace Matrix
@@ -57,7 +59,7 @@ protected theorem PosSemidef.diagonal [StarOrderedRing R] [DecidableEq n] {d : n
   ⟨isHermitian_diagonal_of_self_adjoint _ <| funext fun i => IsSelfAdjoint.of_nonneg (h i),
     fun x => by
       refine Fintype.sum_nonneg fun i => ?_
-      simpa only [mulVec_diagonal, ← mul_assoc] using conjugate_nonneg (h i) _⟩
+      simpa only [mulVec_diagonal, ← mul_assoc] using star_left_conjugate_nonneg (h i) _⟩
 
 /-- A diagonal matrix is positive semidefinite iff its diagonal entries are nonnegative. -/
 lemma posSemidef_diagonal_iff [StarOrderedRing R] [DecidableEq n] {d : n → R} :
@@ -201,7 +203,7 @@ theorem posSemidef_submatrix_equiv {M : Matrix n n R} (e : m ≃ n) :
 /-- The conjugate transpose of a matrix multiplied by the matrix is positive semidefinite -/
 theorem posSemidef_conjTranspose_mul_self [StarOrderedRing R] (A : Matrix m n R) :
     PosSemidef (Aᴴ * A) := by
-  refine ⟨isHermitian_transpose_mul_self _, fun x => ?_⟩
+  refine ⟨isHermitian_conjTranspose_mul_self _, fun x => ?_⟩
   rw [← mulVec_mulVec, dotProduct_mulVec, vecMul_conjTranspose, star_star]
   exact Finset.sum_nonneg fun i _ => star_mul_self_nonneg _
 
@@ -233,7 +235,7 @@ theorem trace_mul_conjTranspose_self_eq_zero_iff {A : Matrix m n R} :
 end trace
 
 lemma eigenvalues_conjTranspose_mul_self_nonneg (A : Matrix m n 𝕜) [DecidableEq n] (i : n) :
-    0 ≤ (isHermitian_transpose_mul_self A).eigenvalues i :=
+    0 ≤ (isHermitian_conjTranspose_mul_self A).eigenvalues i :=
   (posSemidef_conjTranspose_mul_self _).eigenvalues_nonneg _
 
 lemma eigenvalues_self_mul_conjTranspose_nonneg (A : Matrix m n 𝕜) [DecidableEq m] (i : m) :
@@ -266,8 +268,8 @@ variable [DecidableEq n] {U x : Matrix n n R}
 /-- For an invertible matrix `U`, `star U * x * U` is positive semi-definite iff `x` is.
 This works on any ⋆-ring with a partial order.
 
-See `IsUnit.conjugate_nonneg_iff'` for a similar statement for star-ordered rings. -/
-theorem IsUnit.posSemidef_conjugate_iff' (hU : IsUnit U) :
+See `IsUnit.star_left_conjugate_nonneg_iff` for a similar statement for star-ordered rings. -/
+theorem IsUnit.posSemidef_star_left_conjugate_iff (hU : IsUnit U) :
     PosSemidef (star U * x * U) ↔ x.PosSemidef := by
   simp_rw [PosSemidef, isHermitian_iff_isSelfAdjoint, hU.isSelfAdjoint_conjugate_iff',
     and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec, star_eq_conjTranspose, ← star_mulVec,
@@ -279,9 +281,10 @@ open Matrix in
 /-- For an invertible matrix `U`, `U * x * star U` is positive semi-definite iff `x` is.
 This works on any ⋆-ring with a partial order.
 
-See `IsUnit.conjugate_nonneg_iff` for a similar statement for star-ordered rings. -/
-theorem IsUnit.posSemidef_conjugate_iff (hU : IsUnit U) :
-    PosSemidef (U * x * star U) ↔ x.PosSemidef := by simpa using hU.star.posSemidef_conjugate_iff'
+See `IsUnit.star_right_conjugate_nonneg_iff` for a similar statement for star-ordered rings. -/
+theorem IsUnit.posSemidef_star_right_conjugate_iff (hU : IsUnit U) :
+    PosSemidef (U * x * star U) ↔ x.PosSemidef := by
+  simpa using hU.star.posSemidef_star_left_conjugate_iff
 
 end conjugate
 
@@ -338,8 +341,8 @@ protected theorem diagonal [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R
       refine Fintype.sum_pos ?_
       simp_rw [mulVec_diagonal, ← mul_assoc, Pi.lt_def]
       obtain ⟨i, hi⟩ := Function.ne_iff.mp hx
-      exact ⟨fun i => conjugate_nonneg (h i).le _,
-        i, conjugate_pos (h _) (isRegular_of_ne_zero hi)⟩⟩
+      exact ⟨fun i => star_left_conjugate_nonneg (h i).le _,
+        i, star_left_conjugate_pos (h _) (isRegular_of_ne_zero hi)⟩⟩
 
 @[simp]
 theorem _root_.Matrix.posDef_diagonal_iff
@@ -467,11 +470,12 @@ theorem toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) :
     toLinearMap₂'_apply']
   apply hM.2 x hx
 
-/-- The eigenvalues of a positive definite matrix are positive -/
+/-- The eigenvalues of a positive definite matrix are positive. -/
 lemma eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : Matrix.PosDef A) (i : n) : 0 < hA.1.eigenvalues i := by
   simp only [hA.1.eigenvalues_eq]
-  exact hA.re_dotProduct_pos <| hA.1.eigenvectorBasis.orthonormal.ne_zero i
+  exact hA.re_dotProduct_pos <| (ofLp_eq_zero 2).ne.2 <|
+    hA.1.eigenvectorBasis.orthonormal.ne_zero i
 
 /-- A Hermitian matrix is positive-definite if and only if its eigenvalues are positive. -/
 lemma _root_.Matrix.IsHermitian.posDef_iff_eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
@@ -524,10 +528,10 @@ variable [DecidableEq n] {x U : Matrix n n R}
 /-- For an invertible matrix `U`, `star U * x * U` is positive definite iff `x` is.
 This works on any ⋆-ring with a partial order.
 
-See `IsUnit.isStrictlyPositive_conjugate_iff'` for a similar statement for star-ordered rings.
-For matrices, positive definiteness is equivalent to strict positivity when the underlying field is
-`ℝ` or `ℂ` (see `Matrix.isStrictlyPositive_iff_posDef`). -/
-theorem _root_.Matrix.IsUnit.posDef_conjugate_iff' (hU : IsUnit U) :
+See `IsUnit.isStrictlyPositive_star_left_conjugate_iff'` for a similar statement for star-ordered
+rings. For matrices, positive definiteness is equivalent to strict positivity when the underlying
+field is `ℝ` or `ℂ` (see `Matrix.isStrictlyPositive_iff_posDef`). -/
+theorem _root_.Matrix.IsUnit.posDef_star_left_conjugate_iff (hU : IsUnit U) :
     PosDef (star U * x * U) ↔ x.PosDef := by
   simp_rw [PosDef, isHermitian_iff_isSelfAdjoint, hU.isSelfAdjoint_conjugate_iff',
     and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec, star_eq_conjTranspose, ← star_mulVec,
@@ -541,12 +545,12 @@ open Matrix in
 /-- For an invertible matrix `U`, `U * x * star U` is positive definite iff `x` is.
 This works on any ⋆-ring with a partial order.
 
-See `IsUnit.isStrictlyPositive_conjugate_iff` for a similar statement for star-ordered rings.
-For matrices, positive definiteness is equivalent to strict positivity when the underlying field is
-`ℝ` or `ℂ` (see `Matrix.isStrictlyPositive_iff_posDef`). -/
-theorem _root_.Matrix.IsUnit.posDef_conjugate_iff (hU : IsUnit U) :
+See `IsUnit.isStrictlyPositive_star_right_conjugate_iff` for a similar statement for star-ordered
+rings. For matrices, positive definiteness is equivalent to strict positivity when the underlying
+field is `ℝ` or `ℂ` (see `Matrix.isStrictlyPositive_iff_posDef`). -/
+theorem _root_.Matrix.IsUnit.posDef_star_right_conjugate_iff (hU : IsUnit U) :
     PosDef (U * x * star U) ↔ x.PosDef := by
-  simpa using hU.star.posDef_conjugate_iff'
+  simpa using hU.star.posDef_star_left_conjugate_iff
 
 end conjugate
 

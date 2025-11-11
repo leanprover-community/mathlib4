@@ -18,19 +18,17 @@ import Mathlib.RingTheory.Etale.Basic
 
 -/
 
-universe u v
-
 namespace Algebra.FormallyEtale
 
-variable {R : Type (max u v)} {I : Type u} (A : I → Type (max u v))
+variable {R : Type*} {I : Type*} (A : I → Type*)
 variable [CommRing R] [∀ i, CommRing (A i)] [∀ i, Algebra R (A i)]
 
 theorem pi_iff [Finite I] :
     FormallyEtale R (Π i, A i) ↔ ∀ i, FormallyEtale R (A i) := by
-  simp_rw [FormallyEtale.iff_unramified_and_smooth, forall_and]
+  simp_rw [FormallyEtale.iff_formallyUnramified_and_formallySmooth, forall_and]
   rw [FormallyUnramified.pi_iff A, FormallySmooth.pi_iff A]
 
 instance [Finite I] [∀ i, FormallyEtale R (A i)] : FormallyEtale R (Π i, A i) :=
-  .of_unramified_and_smooth
+  .of_formallyUnramified_and_formallySmooth
 
 end Algebra.FormallyEtale

@@ -902,18 +902,6 @@ structure Config where
 /-- Function elaborating `Config` -/
 declare_command_config_elab elabSimpsConfig Config
 
-/-- A common configuration for `@[simps]`: generate equalities between functions instead equalities
-between fully applied Expressions. Replaced by `@[simps -fullyApplied]`. -/
-@[deprecated "use `-fullyApplied` instead" (since := "2025-03-10")]
-def Config.asFn : Simps.Config where
-  fullyApplied := false
-
-/-- A common configuration for `@[simps]`: don't tag the generated lemmas with `@[simp]`.
-Replaced by `@[simps -isSimp]`. -/
-@[deprecated "use `-isSimp` instead" (since := "2025-03-10")]
-def Config.lemmasOnly : Config where
-  isSimp := false
-
 /-- `instantiateLambdasOrApps es e` instantiates lambdas in `e` by expressions from `es`.
 If the length of `es` is larger than the number of lambdas in `e`,
 then the term is applied to the remaining terms.
