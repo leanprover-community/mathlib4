@@ -364,7 +364,7 @@ This only makes mathematical sense if `i ≤ n`, otherwise we define it as the z
 
 We call these "structure maps" because they define the topology on `𝓓^{n}_{K}(E, F)`.
 
-This is subsumed by `structureMapCLM` (not yet in Mathlib), which also bundles the
+This is subsumed by `structureMapCLM`, which also bundles the
 continuity. -/
 noncomputable def structureMapLM (i : ℕ) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F) :=
