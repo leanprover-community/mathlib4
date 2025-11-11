@@ -151,6 +151,17 @@ theorem sbtw_comm {x y z : P} : Sbtw R x y z ↔ Sbtw R z y x := by
 
 alias ⟨Sbtw.symm, _⟩ := sbtw_comm
 
+theorem sbtw_expand {a b c d : P}
+    (h₁ : Sbtw R a b c) (h₂ : Sbtw R b c d) :
+    Sbtw R a b d := by
+  rw[← angle_eq_pi_iff_sbtw]
+  rw[← angle_eq_pi_iff_sbtw] at h₁
+  have h_angle : ∠ a b c = ∠ a b d := by
+    apply angle_eq_of_sbtw
+    exact h₂
+  rw[← h_angle]
+  exact h₁
+
 end OrderedRing
 
 lemma AffineSubspace.mem_of_wbtw {s : AffineSubspace R P} {x y z : P} (hxyz : Wbtw R x y z)
