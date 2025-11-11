@@ -368,7 +368,7 @@ open RightAdjointCommShift in
 Given an adjunction `F ⊣ G` and a `CommShift` structure on `F`, this constructs
 the unique compatible `CommShift` structure on `G`.
 -/
-@[simps]
+@[simps -isSimp]
 noncomputable def rightAdjointCommShift [F.CommShift A] : G.CommShift A where
   commShiftIso a := iso adj a
   commShiftIso_zero := by
@@ -452,7 +452,7 @@ open LeftAdjointCommShift in
 Given an adjunction `F ⊣ G` and a `CommShift` structure on `G`, this constructs
 the unique compatible `CommShift` structure on `F`.
 -/
-@[simps]
+@[simps -isSimp]
 noncomputable def leftAdjointCommShift [G.CommShift A] : F.CommShift A where
   commShiftIso a := iso adj a
   commShiftIso_zero := by

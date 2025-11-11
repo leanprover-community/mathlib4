@@ -165,35 +165,12 @@ namespace Functor
 If `F : C ⥤ D` commutes with shifts, this expresses the compatibility of `F.mapTriangle`
 with the equivalences `Pretriangulated.triangleOpEquivalence` on `C` and `D`.
 -/
+@[simps!]
 noncomputable def mapTriangleOpCompTriangleOpEquivalenceFunctorApp (T : Triangle C) :
     (triangleOpEquivalence D).functor.obj (op (F.mapTriangle.obj T)) ≅
       F.op.mapTriangle.obj ((triangleOpEquivalence C).functor.obj (op T)) :=
-  Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
-    (by
-      dsimp only [triangleOpEquivalence_functor, mapTriangle_obj, TriangleOpEquivalence.functor_obj,
-        Triangle.mk_obj₃, Triangle.mk_obj₂, Triangle.mk_obj₁, Triangle.mk_mor₂, Triangle.mk_mor₁,
-        opShiftFunctorEquivalence_inverse, opShiftFunctorEquivalence_functor, comp_obj, op_obj,
-        Triangle.mk_mor₃, op_comp, op_map, Quiver.Hom.unop_op, unop_comp, Iso.refl_hom]
-      simp) (by
-      dsimp only [triangleOpEquivalence_functor, mapTriangle_obj, TriangleOpEquivalence.functor_obj,
-        Triangle.mk_obj₃, Triangle.mk_obj₂, Triangle.mk_obj₁, Triangle.mk_mor₂, Triangle.mk_mor₁,
-        opShiftFunctorEquivalence_inverse, opShiftFunctorEquivalence_functor, comp_obj, op_obj,
-        Triangle.mk_mor₃, op_comp, op_map, Quiver.Hom.unop_op, unop_comp, Iso.refl_hom]
-      simp) (by
-      dsimp only [triangleOpEquivalence_functor, mapTriangle_obj, TriangleOpEquivalence.functor_obj,
-        Triangle.mk_obj₃, Triangle.mk_obj₂, Triangle.mk_obj₁, Triangle.mk_mor₂, Triangle.mk_mor₁,
-        opShiftFunctorEquivalence_inverse, opShiftFunctorEquivalence_functor, comp_obj, op_obj,
-        Triangle.mk_mor₃, op_comp, op_map, Quiver.Hom.unop_op, unop_comp, Iso.refl_hom]
-      simp only [map_comp, shift_map_op, map_id, comp_id, op_comp, op_unop,
-        map_opShiftFunctorEquivalence_counitIso_inv_app_unop,
-        opShiftFunctorEquivalence_inverse, opShiftFunctorEquivalence_functor,
-        Quiver.Hom.op_unop, assoc, id_comp])
-
-attribute [simps! hom_hom₁ hom_hom₂ hom_hom₃]
-  mapTriangleOpCompTriangleOpEquivalenceFunctorApp
-
-attribute [simps! inv_hom₁ inv_hom₂ inv_hom₃]
-  mapTriangleOpCompTriangleOpEquivalenceFunctorApp
+  Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp)
+      (by simp [shift_map_op, map_opShiftFunctorEquivalence_counitIso_inv_app_unop])
 
 /--
 If `F : C ⥤ D` commutes with shifts, this expresses the compatibility of `F.mapTriangle`
@@ -204,25 +181,7 @@ noncomputable def mapTriangleOpCompTriangleOpEquivalenceFunctor :
       (triangleOpEquivalence C).functor ⋙ F.op.mapTriangle :=
   NatIso.ofComponents
     (fun T ↦ F.mapTriangleOpCompTriangleOpEquivalenceFunctorApp T.unop)
-    (fun _ ↦ by
-      /- `cat_disch` would succeed here, but would be extremely slow -/
-      ext
-      all_goals
-      · dsimp only [comp_obj, triangleOpEquivalence_functor, op_obj, mapTriangle_obj,
-          TriangleOpEquivalence.functor_obj, Triangle.mk_obj₃, Triangle.mk_obj₂,
-          Triangle.mk_obj₁, Triangle.mk_mor₂, Triangle.mk_mor₁,
-          opShiftFunctorEquivalence_inverse, opShiftFunctorEquivalence_functor,
-          Triangle.mk_mor₃, op_comp, op_map, Quiver.Hom.unop_op, unop_comp,
-          triangleCategory_comp, comp_map, TriangleMorphism.comp_hom₁,
-          TriangleMorphism.comp_hom₂, TriangleMorphism.comp_hom₃,
-          TriangleOpEquivalence.functor_map_hom₁,
-          TriangleOpEquivalence.functor_map_hom₂,
-          TriangleOpEquivalence.functor_map_hom₃,
-          mapTriangle_map_hom₁, mapTriangle_map_hom₂, mapTriangle_map_hom₃,
-          mapTriangleOpCompTriangleOpEquivalenceFunctorApp_hom_hom₁,
-          mapTriangleOpCompTriangleOpEquivalenceFunctorApp_hom_hom₂,
-          mapTriangleOpCompTriangleOpEquivalenceFunctorApp_hom_hom₃]
-        simp only [id_comp, comp_id])
+    (fun _ ↦ by ext <;> dsimp <;> simp only [id_comp, comp_id])
 
 /--
 If `F : C ⥤ D` commutes with shifts, this is the 2-commutative square of categories
