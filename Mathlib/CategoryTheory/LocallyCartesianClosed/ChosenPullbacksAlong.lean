@@ -22,10 +22,10 @@ import Mathlib.CategoryTheory.Adjunction.Unique
 - We prove that `ChosenPullbacksAlong` has good closure properties: isos have chosen pullbacks,
   and composition of morphisms with chosen pullbacks have chosen pullbacks.
 
--  We prove that chosen pullbacks yields usual pullbacks: `Over.ChosenPullbacksAlong.isPullback`
+-  We prove that chosen pullbacks yields usual pullbacks: `ChosenPullbacksAlong.isPullback`
   proves that for morphisms `f` and `g` with the same codomain, the object
-  `Over.ChosenPullbacksAlong.pullbackObj f g` together with morphisms
-  `Over.ChosenPullbacksAlong.fst f g` and `Over.ChosenPullbacksAlong.snd f g` form a pullback square
+  `ChosenPullbacksAlong.pullbackObj f g` together with morphisms
+  `ChosenPullbacksAlong.fst f g` and `ChosenPullbacksAlong.snd f g` form a pullback square
   over `f` and `g`.
 
 - We prove that in cartesian monoidal categories, morphisms to the terminal tensor unit and
