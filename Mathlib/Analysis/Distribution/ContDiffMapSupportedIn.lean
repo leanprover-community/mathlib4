@@ -485,7 +485,7 @@ protected theorem withSeminorms' :
 
 variable {E F n K}
 
--- TODO: Once we have `iteratedFDerivWithOrderLM`, maybe we should restate this lemma
+-- TODO: Once we have `iteratedFDerivWithOrderCLM`, maybe we should restate this lemma
 -- in terms of these? Same for the lemma below.
 -- TODO: Should this be `@[simp]` instead of the one below? I don't want `simp` to
 -- force `WithOrder` variants on people, but maybe this is not a good argument.
