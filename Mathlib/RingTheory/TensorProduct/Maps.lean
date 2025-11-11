@@ -794,4 +794,4 @@ variable {R A B : Type*} [CommSemiring R] [Semiring A] [CommSemiring B] [Algebra
 variable {C : Subalgebra R A}
 
 lemma Subalgebra.tmul_mem_baseChange {x : A} (hx : x ∈ C) (b : B) : b ⊗ₜ[R] x ∈ C.baseChange B :=
-  (AlgHom.mem_range _).mp ⟨(b ⊗ₜ[R] ⟨x, hx⟩), rfl⟩
+  ⟨(b ⊗ₜ[R] ⟨x, hx⟩), rfl⟩
