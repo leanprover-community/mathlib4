@@ -70,7 +70,7 @@ typically different from `log r - log ‖z‖ = log r`. The summand `(D 0) * log
 producing cleaner formulas when the logarithmic counting function is used in the main theorems of
 Value Distribution Theory.  We refer the reader to page 164 of [Lang: Introduction to Complex
 Hyperbolic Spaces](https://link.springer.com/book/10.1007/978-1-4757-1945-1) for more details, and
-to the lemma `countingFunction_finsum_eq_finsum_add` in `Mathlib/Analysis/Complex/JensenFormula` for
+to the lemma `countingFunction_finsum_eq_finsum_add` in `Mathlib/Analysis/Complex/JensenFormula.lean` for
 a formal statement.
 -/
 noncomputable def logCounting {E : Type*} [NormedAddCommGroup E] [ProperSpace E] :
