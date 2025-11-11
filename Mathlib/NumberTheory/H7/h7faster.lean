@@ -19,11 +19,50 @@ set_option linter.unusedVariables false
 set_option linter.style.longLine false
 set_option linter.style.cases false
 
+/-!
+# Hilbert's Seventh Problem (Gelfond–Schneider Theorem)
+The goal of this file is to formalize a proof of the **Gelfond–Schneider Theorem**, which solves
+Hilbert’s Seventh Problem: namely, that for algebraic numbers `α ≠ 0, 1` and irrational algebraic
+`β`, the number `α ^ β` is transcendental.
+
+## Main results
+* `gelfondSchneider`: If `α` and `β` are algebraic, `α ≠ 0`, `α ≠ 1`, and `β` is irrational, then
+  `α ^ β` is transcendental.
+
+## Implementation details
+We follow the proof in Keng’s *Introduction to Number Theory*, Chapter 9, Section 5.
+
+The structure of the proof is as follows:
+
+* The argument proceeds by **contradiction**, assuming `a ^ b` is algebraic, and constructing a
+  sequence of algebraic numbers that violate Liouville’s inequality for algebraic numbers.
+* The core of the proof is an **auxiliary function lemma**, where we construct a nonzero integer
+  linear combination of exponential functions that vanishes to high order at several algebraic
+  points.
+
+This is a version of **Siegel’s lemma** applied to the exponential case.
+* Using estimates on the size of the coefficients and derivatives of `f`, one shows that both
+`f(0)` and `f(b log a)` must be small, yet not zero, contradicting the transcendence bounds
+for algebraic numbers.
+* The analytic bounds on the derivatives of `f` rely on standard estimates for the exponential
+function, while the algebraic part depends on **Liouville-type inequalities** and the
+algebraic independence of exponential values.
+
+Conceptually, the theorem connects transcendence theory, Diophantine approximation, and the
+arithmetic of exponential functions, forming one of the cornerstones of modern transcendental
+number theory.
+
+## References
+Loo-Keng Hua, Introduction to Number Theory, Springer, 1982. Chapter XII (§13).
+A. O. Gelfond (1934), *Sur le septième Problème de Hilbert
+T. Schneider (1934), *Transzendenzuntersuchungen periodischer Funktionen*
+Lang, S. Introduction to Transcendental Numbers, Springer (1966)
+-/
+
 open BigOperators Module.Free Fintype NumberField Embeddings FiniteDimensional
   Matrix Set Polynomial Finset IntermediateField Complex AnalyticAt
 
 noncomputable section
-
 /--
 This structure encapsulates all the foundational data and hypotheses for the proof.
 -/
@@ -4996,33 +5035,6 @@ lemma S_eq_SR_on_circle :
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def c₉ : ℝ := Real.exp (|1 + ‖h7.β‖| * |Real.log ‖h7.α‖| * (↑h7.m : ℝ))
 
 lemma c9_pos : 0 < h7.c₉ := by {
@@ -6002,7 +6014,7 @@ lemma use5 : (h7.r q hq0 h2mq)^(((h7.r q hq0 h2mq) - 3 * (h7.h)) / 2) <
       apply_fun h7.σ at H
       apply ρᵣ_nonzero h7 q hq0 h2mq
       rw [rho_eq_ρᵣ] at H
-      simpa [H]
+      simp only [H, map_zero]
     · simp only [inv_pos]
       unfold c₅
       apply pow_pos
@@ -6049,20 +6061,28 @@ lemma use5 : (h7.r q hq0 h2mq)^(((h7.r q hq0 h2mq) - 3 * (h7.h)) / 2) <
     -- simp only [c₁₅]
     -- rw [mul_comm]
 
-#exit
+
 --include hα hβ α β σ hq0 h2mq hd hirr htriv K σ h2mq t q in
-theorem hilbert7 (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgebraic ℚ β)
+theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgebraic ℚ β)
   (htriv : α ≠ 0 ∧ α ≠ 1) (hirr : ∀ i j : ℤ, β ≠ i / j) :
     Transcendental ℚ (α ^ β) := fun hγ => by
 
   obtain ⟨K, hK, hNK, σ, hd, α', β', γ', habc⟩ :=
     getElemsInNF α β (α^β) hα hβ hγ
 
-  let q : ℕ := 5
+  let q : ℕ := sorry
 
-  have hq0 : 0 < q := Nat.zero_lt_succ 4
+  have hq0 : 0 < q := sorry
+  have h7 : GelfondSchneiderSetup  := by {
+    exact GelfondSchneiderSetup.mk α β K σ α' β' γ' hirr htriv hα hβ habc hd
+  }
+  haveI : DecidableEq (h7.K →+* ℂ) := by {
+    exact h7.hd
+  }
+  have h2mq : 2 * h7.m ∣ q ^ 2 := sorry
 
-  --have use5 := use5 α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+  have use5 := use5 h7 q hq0 h2mq
+  have hnr : h7.n q ≤ h7.r q hq0 h2mq := by {exact n_leq_r h7 q hq0 h2mq}
 
   --simp only at use5
 
