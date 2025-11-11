@@ -35,7 +35,7 @@ lemma contrapose₄ {p q : Prop} : (q → p) → (¬ p → ¬ q) := mt
 lemma contrapose_iff₁ {p q : Prop} : (¬ p ↔ ¬ q) → (p ↔ q) := not_iff_not.mp
 lemma contrapose_iff₂ {p q : Prop} : (p ↔ ¬ q) → (¬ p ↔ q) := (not_iff_comm.trans Iff.comm).mpr
 lemma contrapose_iff₃ {p q : Prop} : (¬ p ↔ q) → (p ↔ ¬ q) := (not_iff_comm.trans Iff.comm).mp
-lemma contrapose_iff₄ {p q : Prop} : (p ↔ q) → (¬ p ↔ ¬ q) := not_iff_not.mpr
+lemma contrapose_iff₄ {p q : Prop} : (p ↔ q) → (¬ p ↔ ¬ q) := fun ⟨h₁, h₂⟩ ↦ ⟨mt h₂, mt h₁⟩
 
 /--
 Transforms the goal into its contrapositive.
