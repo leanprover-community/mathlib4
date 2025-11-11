@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Floor.Semifield
-import Mathlib.Analysis.MeanInequalities
 import Mathlib.Data.Nat.NthRoot.Defs
+import Mathlib.Data.Nat.ModEq
 import Mathlib.Tactic.Rify
 
 /-!
@@ -70,7 +70,7 @@ lemma binom_pow_ge_first_two_terms (n : ℕ) (u v : ℤ) (hu : u ≥ 0) (huv : u
     (u + v) ^ (n + 2)
       = (u + v) ^ (n + 1) * (u + v) := by rw [pow_succ]
     _ ≥ (u ^ (n + 1) + (n + 1) * u ^ n * v) * (u + v) := by exact (Int.mul_le_mul_right huv).mpr ih
-    _ = u ^ (n + 2) + (n + 2) * u ^ (n + 1) * v + (n + 1) * u ^ n * v ^ 2 := by ring
+    _ = u ^ (n + 2) + (n + 2) * u ^ (n + 1) * v + (n + 1) * u ^ n * v ^ 2 := by ring1
     _ ≥ u ^ (n + 2) + (n + 2) * u ^ (n + 1) * v := by {
       simp
       apply Int.mul_nonneg
@@ -84,7 +84,8 @@ private theorem nthRoot.lt_pow_go_succ_aux0 (hb : b ≠ 0) :
 
     if haa : a = 0 then
       rw [haa]
-      simp
+      exact Nat.zero_le _
+
     else
       have ha : a > 0 := by
         rw [gt_iff_lt]
@@ -96,14 +97,16 @@ private theorem nthRoot.lt_pow_go_succ_aux0 (hb : b ≠ 0) :
         exact Nat.zero_lt_of_ne_zero hb
       }
 
-      have hk : ((b : Int) + ((a - b) : Int)) ^ (n + 1) ≥ b ^ (n + 1) + (n + 1) * b ^ n * (a - b) := by {
+      have hk : ((b : Int) + ((a - b) : Int)) ^ (n + 1)
+        ≥ b ^ (n + 1) + (n + 1) * b ^ n * (a - b) := by {
         apply binom_pow_ge_first_two_terms
-        · simp
-        · simp [ha]
+        · exact Nat.cast_nonneg b
+        · rw [add_comm, sub_add_comm, sub_self, zero_add]
+          exact_mod_cast ha
       }
 
       have hj : a = ((b : Int) + ((a - b : Int))) := by {
-        simp
+        rw [add_comm, sub_add_comm, sub_self, zero_add]
       }
 
       rw [← hj, ge_iff_le] at hk
@@ -116,7 +119,7 @@ private theorem nthRoot.lt_pow_go_succ_aux0 (hb : b ≠ 0) :
             linarith only [hk]
           }
         _ = (n + 1) * b ^ n * a := by {
-            ring
+            ring1
           }
       }
       norm_cast at hl
@@ -134,9 +137,7 @@ private theorem nthRoot.lt_pow_go_succ_aux0 (hb : b ≠ 0) :
       _ ≤ (a ^ (n + 1) / b ^ n + n * b) / (n + 1) := by {
         exact Nat.div_le_div_right hq
       };
-      rw [pow_succ]
-      ring_nf
-      rw [mul_assoc, mul_comm, mul_assoc]
+      rw [pow_succ, mul_comm, mul_assoc]
       exact dvd_mul_right (b ^ n) _
 }
 
@@ -144,7 +145,13 @@ def nthRoot.always_exists (n a : ℕ) : ∃ c, c ^ (n + 1) ≤ a ∧ a < (c + 1)
   induction a
   case zero =>
     use 0
-    simp
+    exact ⟨by {
+      have ha := (Nat.zero_pow (add_one_pos n))
+      rw [ha]
+    }, by {
+      rw [zero_add, one_pow]
+      exact one_pos
+    }⟩
   case succ a ih =>
     rcases ih with ⟨c, hc1, hc2⟩
     by_cases h : a + 1 < (c + 1) ^ (n + 1)
@@ -164,22 +171,27 @@ def nthRoot.always_exists (n a : ℕ) : ∃ c, c ^ (n + 1) ≤ a ∧ a < (c + 1)
             have j₁ := binom_pow_ge_first_two_terms n ((c : ℤ) + 1) 1
             norm_cast at j₁
             apply j₁
-            · simp
-            simp
+            · exact Nat.cast_nonneg (c + 1)
+            apply add_pos_iff_pos_or_pos.mpr
+            right
+            exact zero_lt_one
           }
         _ ≥ (c + 1) ^ (n + 1) + 1 := by {
-            simp
-            rw [← one_mul 1]
+            apply add_le_add_left
+            rw [mul_one]
+            nth_rw 1 [← one_mul 1]
             apply Nat.mul_le_mul
-            · simp
+            · nth_rw 1 [← zero_add 1]
+              apply add_le_add_right
+              exact Nat.zero_le _
             apply Nat.one_le_pow
-            simp
+            apply add_pos_iff_pos_or_pos.mpr
+            right
+            exact zero_lt_one
           }
       }
       exact_mod_cast hz
 }
-
-
 
 /--
 An auxiliary lemma saying that if `b ≠ 0`,
