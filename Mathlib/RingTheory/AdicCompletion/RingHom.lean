@@ -220,7 +220,7 @@ theorem factorPow_comp_eq_of_factorPow_comp_succ_eq'
     {m n : ℕ} (hle : m ≤ n) : (factorPow I (ha.monotone hle)).comp (f n) = f m := by
   ext x
   symm
-  refine Submodule.eq_factor_of_eq_factor_succ ?_ (fun n ↦ f n x) ?_ m n hle
+  refine Submodule.eq_factor_of_eq_factor_succ ?_ (fun n ↦ f n x) ?_ hle
   · exact fun _ _ le ↦ Ideal.pow_le_pow_right (ha.monotone le)
   · intro s
     simp only [RingHom.ext_iff] at hf
@@ -260,7 +260,7 @@ theorem ofAlgEquiv_comp_liftRingHom :
 
 @[simp]
 theorem mk_liftRingHom {n : ℕ} (x : R) :
-    (Ideal.Quotient.mk _ (liftRingHom I ha f hf x)) = f n x := by
+    Ideal.Quotient.mk _ (liftRingHom I ha f hf x) = f n x := by
   simp [liftRingHom, IsAdicComplete.liftRingHom, extendRingHom_eq ha f hf]
 
 @[simp]

@@ -717,7 +717,7 @@ Instead of providing all `M →ₗ[R] N ⧸ (I ^ n • ⊤)`, one can just provi
 -/
 def extend (n : ℕ) :
     M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N) :=
-  (factorPow I N (ha.id_le n)) ∘ₗ f n
+  factorPow I N (ha.id_le n) ∘ₗ f n
 
 variable (hf : ∀ {m}, factorPow I N (ha.monotone m.le_succ) ∘ₗ (f (m + 1)) = f m)
 
@@ -726,7 +726,7 @@ theorem factorPow_comp_eq_of_factorPow_comp_succ_eq
     {m n : ℕ} (hle : m ≤ n) : factorPow I N (ha.monotone hle) ∘ₗ f n = f m := by
   ext x
   symm
-  refine Submodule.eq_factor_of_eq_factor_succ ?_ (fun n ↦ f n x) ?_ m n hle
+  refine Submodule.eq_factor_of_eq_factor_succ ?_ (fun n ↦ f n x) ?_ hle
   · exact fun _ _ le ↦ smul_mono_left (Ideal.pow_le_pow_right (ha.monotone le))
   · intro s
     simp only [LinearMap.ext_iff] at hf
@@ -759,7 +759,7 @@ theorem of_lift (x : M) :
   IsAdicComplete.of_lift I (extend ha f) (factorPow_comp_extend ha f hf) x
 
 theorem of_comp_lift :
-    (of I N) ∘ₗ (lift I ha f hf) =
+    of I N ∘ₗ lift I ha f hf =
       AdicCompletion.lift I (extend ha f) (factorPow_comp_extend ha f hf) :=
   IsAdicComplete.of_comp_lift I (extend ha f) (factorPow_comp_extend ha f hf)
 

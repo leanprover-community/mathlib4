@@ -17,13 +17,9 @@ We only need `O` to be `p`-adically complete.
 
 ## Main definitions
 * `fontaineTheta` : Fontaine's θ map, which is a ring homomorphism from `𝕎(O^♭)` to `O`.
-* `BDeRhamPlus` : The period ring `B_{dR}^+`.
-
-## Main theorems
-* `fontaineTheta_surjective` : Fontaine's θ map is surjective.
 
 ## Tags
-Fontaine's theta map, period rings, perfectoid theory, p-adic Hodge theory
+Fontaine's theta map, perfectoid theory, p-adic Hodge theory
 -/
 
 universe u
@@ -156,6 +152,7 @@ theorem factorPowSucc_fontaineThetaModPPow_eq (n : ℕ) (x : 𝕎 (O^♭)) :
 
 open IsAdicComplete
 
+variable (O p) in
 /--
 The Fontaine's θ map from `𝕎(O^♭)` to `O`.
 It is the limit of the ring maps `fontaineThetaModPPow n` from `𝕎(O^♭)` `O/p^(n+1)`.
@@ -164,12 +161,13 @@ def fontaineTheta : 𝕎 (O^♭) →+* O :=
   Order.succ_strictMono.liftRingHom (span {(p : O)}) _ (factorPowSucc_comp_fontaineThetaModPPow _)
 
 theorem mk_pow_fontaineTheta (n : ℕ) (x : 𝕎 (O^♭)) :
-    Ideal.Quotient.mk (span {(p : O)} ^ (n + 1)) (fontaineTheta x) = fontaineThetaModPPow O p n x :=
+    Ideal.Quotient.mk (span {(p : O)} ^ (n + 1)) (fontaineTheta O p x) =
+    fontaineThetaModPPow O p n x :=
   Order.succ_strictMono.mk_liftRingHom (span {(p : O)}) _
       (factorPowSucc_comp_fontaineThetaModPPow _) x
 
 theorem mk_fontaineTheta (x : 𝕎 (O^♭)) :
-    Ideal.Quotient.mk (span {(p : O)}) (fontaineTheta x) =
+    Ideal.Quotient.mk (span {(p : O)}) (fontaineTheta O p x) =
     Perfection.coeff (ModP O p) _ 0 (x.coeff 0) := by
   have := mk_pow_fontaineTheta 0 x
   simp only [Nat.reduceAdd] at this
@@ -186,7 +184,7 @@ theorem mk_fontaineTheta (x : 𝕎 (O^♭)) :
   rfl
 
 @[simp]
-theorem fontaineTheta_teichmuller (x : O^♭) : fontaineTheta (teichmuller p x) = x.untilt := by
+theorem fontaineTheta_teichmuller (x : O^♭) : fontaineTheta O p (teichmuller p x) = x.untilt := by
   rw [IsHausdorff.eq_iff_smodEq (I := span {(p : O)})]
   simp only [smul_eq_mul, mul_top]
   intro n

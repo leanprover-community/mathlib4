@@ -27,7 +27,7 @@ of `ℂ_p`, they coincide with the classical de Rham period rings.
 1. Extend the θ map to \(\mathbb{B}_dR^+\)
 2. Show that \(\mathbb{B}_dR^+\) is a discrete valuation ring.
 3. Show that ker θ is principal when the base ring is
-integral perfectoid and define \(\mathbb{B}_dR\).
+integral perfectoid.
 
 Currently, the period ring `BDeRhamPlus` takes the ring of integers `O` as the input.
 After the perfectoid theory is developed, we can modify it to
@@ -38,7 +38,7 @@ take a perfectoid field as the input.
 * [Scholze, *p-adic Hodge theory for rigid-analytic varieties*](scholze2013adic)
 
 ## Tags
-De Rham representation, period rings
+Period rings, p-adic Hodge theory
 -/
 
 universe u
@@ -58,7 +58,7 @@ The Fontaine's θ map inverting `p`. Note that if `p = 0` in `O`, then this is t
 -/
 def fontaineThetaInvertP :
     Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭)) →+* Localization.Away (p : O) :=
-  Localization.awayLift ((algebraMap O _).comp fontaineTheta) (p : 𝕎 (O^♭))
+  Localization.awayLift ((algebraMap O _).comp (fontaineTheta O p)) (p : 𝕎 (O^♭))
       (by simpa using IsLocalization.Away.algebraMap_isUnit (p : O))
 
 /--
@@ -78,7 +78,8 @@ instance : CommRing (BDeRhamPlus O p) := AdicCompletion.instCommRing _
 /--
 The de Rham period ring \(\mathbb{B}_dR\) for general perfectoid ring.
 It is defined as \(\mathbb{B}_dR^+\) inverting the generators of the ideal `ker θ`.
-Mathematically, this is equivalent to inverting *a* generator of the ideal `ker θ`.
+Mathematically, this is equivalent to inverting *a* generator of the ideal `ker θ`
+after we show that it is principal.
 When \(O = \mathcal{O}_{\mathbb{C}_p}\), it coincides
 with the classical de Rham period ring.
 Note that if `p = 0` in `O`, then this definition is the zero ring.
