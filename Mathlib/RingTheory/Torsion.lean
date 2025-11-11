@@ -19,9 +19,8 @@ lemma CommGroup.mem_torsion_iff_exists_mem_rootsOfUnity {x : Mˣ} :
 
 lemma rootsOfUnity_le_torsion (k : ℕ) [NeZero k] :
     rootsOfUnity k M ≤ CommGroup.torsion Mˣ := by
-  intro
   have : k ≠ 0 := NeZero.out
-  grind [CommGroup.mem_torsion_iff_exists_mem_rootsOfUnity]
+  grind [SetLike.le_def, CommGroup.mem_torsion_iff_exists_mem_rootsOfUnity]
 
 lemma IsPrimitiveRoot.mem_torsion {ζ : Mˣ} {n : ℕ} (hζ : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
     ζ ∈ CommGroup.torsion Mˣ :=
@@ -32,13 +31,8 @@ lemma CommGroup.torsion_eq_biSup_rootsOfUnity :
   refine le_antisymm ?_ ?_
   · intro x hx
     rw [CommGroup.mem_torsion] at hx
-    -- without `(i := ...)`, timeout at `isDefEq`
-    rw [Subgroup.mem_biSup_of_directedOn (i := orderOf x) (orderOf_ne_zero_iff.mpr hx)]
-    · use orderOf x
-      simp [hx]
-    · intro a ha b hb
-      use a.lcm b
-      simp_all [Function.onFun, rootsOfUnity_le_of_dvd, Nat.dvd_lcm_left, Nat.dvd_lcm_right]
+    apply Subgroup.mem_biSup_of_mem (i := orderOf x) (orderOf_ne_zero_iff.mpr hx)
+    simp
   · simp only [iSup_le_iff]
     intro n hn
     have : NeZero n := ⟨hn⟩
@@ -46,19 +40,20 @@ lemma CommGroup.torsion_eq_biSup_rootsOfUnity :
 
 variable {R : Type*} [CommRing R] [IsDomain R]
 
-lemma CommGroup.torsion_eq_rootsOfUnity_finite_card {R : Type*} [CommRing R] [IsDomain R]
-    [Finite (CommGroup.torsion Rˣ)] :
-    CommGroup.torsion Rˣ = rootsOfUnity (Nat.card (CommGroup.torsion Rˣ)) R := by
-  have hc : IsCyclic (CommGroup.torsion Rˣ) :=
+instance [Finite (CommGroup.torsion Rˣ)] : IsCyclic (CommGroup.torsion Rˣ) :=
     isCyclic_of_subgroup_isDomain ((Units.coeHom R).comp (CommGroup.torsion Rˣ).subtype)
       (Units.val_injective.comp Subtype.val_injective)
+
+lemma CommGroup.torsion_eq_rootsOfUnity_natCard_of_finite {R : Type*} [CommRing R] [IsDomain R]
+    [Finite (CommGroup.torsion Rˣ)] :
+    CommGroup.torsion Rˣ = rootsOfUnity (Nat.card (CommGroup.torsion Rˣ)) R := by
   generalize h : Nat.card (CommGroup.torsion Rˣ) = n
   have : NeZero (Nat.card (CommGroup.torsion Rˣ)) :=
     ⟨Nat.card_ne_zero.mpr ⟨inferInstance, inferInstance⟩⟩
   have : NeZero n := ⟨by simp_all [NeZero.out]⟩
   refine le_antisymm ?_ ?_
   · obtain ⟨ζ, hζ⟩ : ∃ ζ : Rˣ, IsPrimitiveRoot ζ n := by
-      obtain ⟨ζ, hζ⟩ := hc.exists_ofOrder_eq_natCard
+      obtain ⟨ζ, hζ⟩ := IsCyclic.exists_ofOrder_eq_natCard (α := CommGroup.torsion Rˣ)
       rw [h, ← IsPrimitiveRoot.iff_orderOf, ← IsPrimitiveRoot.coe_submonoidClass_iff] at hζ
       exact ⟨ζ, hζ⟩
     intro x

@@ -254,14 +254,14 @@ instance rootsOfUnity.fintype : Fintype (rootsOfUnity k R) := by
 instance rootsOfUnity.isCyclic : IsCyclic (rootsOfUnity k R) :=
   isCyclic_of_subgroup_isDomain ((Units.coeHom R).comp (rootsOfUnity k R).subtype) coe_injective
 
+@[simp]
 lemma exponent_rootsOfUnity :
     Monoid.exponent (rootsOfUnity k R) = Fintype.card (rootsOfUnity k R) := by
   rw [IsCyclic.exponent_eq_card, Nat.card_eq_fintype_card]
 
 lemma card_rootsOfUnity_dvd : Fintype.card (rootsOfUnity k R) ∣ k := by
   rw [← exponent_rootsOfUnity, Monoid.exponent_dvd]
-  rintro ⟨_, _⟩
-  simpa [orderOf_dvd_iff_pow_eq_one]
+  simp [orderOf_dvd_iff_pow_eq_one, ← mem_rootsOfUnity]
 
 lemma rootsOfUnity_congr_of_eq_card {n : ℕ} (h : Fintype.card (rootsOfUnity k R) = n) :
     rootsOfUnity k R = rootsOfUnity n R := by

@@ -233,18 +233,11 @@ theorem pow_of_dvd (h : IsPrimitiveRoot ζ k) {p : ℕ} (hp : p ≠ 0) (hdiv : p
   rw [← orderOf_pow_of_dvd hp hdiv]
   exact IsPrimitiveRoot.orderOf _
 
-lemma div_of_dvd {n m : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n) (h : m ∣ n) :
+lemma pow_div_of_dvd {n m : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n) (h : m ∣ n) :
     IsPrimitiveRoot (ζ ^ (n / m)) m := by
-  have hm0 : 0 < m := by
-    rw [Nat.pos_iff_ne_zero]
-    rintro rfl
-    simp only [zero_dvd_iff] at h
-    exact NeZero.out h
-  obtain ⟨k, rfl⟩ := id h
-  have hk0 : 0 < k := by
-    rw [Nat.pos_iff_ne_zero]
-    rintro rfl
-    simp_all
+  have hm0 : 0 < m := Nat.pos_of_dvd_of_pos h n.pos_of_neZero
+  obtain ⟨k, rfl⟩ := h
+  have hk0 : 0 < k := Nat.pos_of_dvd_of_pos (dvd_mul_left k m) (NeZero.pos _)
   simpa [hm0, hk0] using hζ.pow_of_dvd hk0.ne' (dvd_mul_left _ _)
 
 protected theorem mem_rootsOfUnity {ζ : Mˣ} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
@@ -663,11 +656,11 @@ lemma _root_.card_rootsOfUnity_eq_self_iff_forall_dvd_card_eq_self {n : ℕ} [Ne
     Nat.card (rootsOfUnity n R) = n ↔ ∀ m, m ∣ n → Nat.card (rootsOfUnity m R) = m := by
   constructor
   · intro h m hm
-    have hm0 : m ≠ 0 := by rintro rfl; simp [NeZero.out] at hm
-    have : NeZero m := ⟨hm0⟩
+    have hm0 : 0 < m := Nat.pos_of_dvd_of_pos hm n.pos_of_neZero
+    have : NeZero m := ⟨hm0.ne'⟩
     rw [Nat.card_eq_fintype_card, card_rootsOfUnity_eq_iff_exists_isPrimitiveRoot] at h ⊢
     obtain ⟨ζ, hζ⟩ := h
-    exact ⟨_, hζ.div_of_dvd hm⟩
+    exact ⟨_, hζ.pow_div_of_dvd hm⟩
   · intro h
     exact h n (dvd_refl n)
 
