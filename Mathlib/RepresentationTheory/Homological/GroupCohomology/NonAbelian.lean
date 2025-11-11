@@ -192,7 +192,6 @@ theorem map_exact (hf : Function.Injective f) (hfg : Function.Exact f g)
       exact b.mem_of_cohomologous (f ∘ a) (.symm ⟨x, ha⟩) g h
     · simp only [Z1.setoid_r]
       exact .symm ⟨x, by simpa using ha⟩
-
   · rw [← map_comp_apply, ((g.comp f).ext (g := 0) hfg.apply_apply_eq_zero), zero_map_apply]
 
 end H1
