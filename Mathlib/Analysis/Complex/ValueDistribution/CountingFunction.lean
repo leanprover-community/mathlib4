@@ -47,14 +47,23 @@ open MeromorphicOn Metric Real Set
 
 namespace Function.locallyFinsuppWithin
 
+variable {E : Type*} [NormedAddCommGroup E]
+
 /--
 Shorthand notation for the restriction of a function with locally finite support within `Set.univ`
 to the closed unit ball of radius `r`.
 -/
-noncomputable def toClosedBall {E : Type*} [NormedAddCommGroup E] (r : ℝ) :
+noncomputable def toClosedBall (r : ℝ) :
     locallyFinsuppWithin (univ : Set E) ℤ →+ locallyFinsuppWithin (closedBall (0 : E) |r|) ℤ := by
   apply restrictMonoidHom
   tauto
+
+@[simp]
+lemma toClosedBall_eval_within {r : ℝ} {z : E} (f : locallyFinsuppWithin (univ : Set E) ℤ)
+  (ha : z ∈ closedBall 0 |r|) :
+    toClosedBall r f z = f z := by
+  unfold toClosedBall
+  simp_all [restrict_apply]
 
 /-!
 ## The Logarithmic Counting Function of a Function with Locally Finite Support
@@ -103,6 +112,42 @@ Evaluation of the logarithmic counting function at zero yields zero.
     (D : locallyFinsuppWithin (univ : Set E) ℤ) :
     logCounting D 0 = 0 := by
   simp [logCounting]
+
+/--
+For `1 ≤ r`, the counting function is non-negative.
+-/
+theorem logCounting_nonneg {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
+    {f : locallyFinsuppWithin (univ : Set E) ℤ} {r : ℝ} (h : 0 ≤ f) (hr : 1 ≤ r) :
+    0 ≤ logCounting f r := by
+  have h₃r : 0 < r := by linarith
+  suffices ∀ z, 0 ≤ (((toClosedBall r) f) z) * log (r * ‖z‖⁻¹) from
+    add_nonneg (finsum_nonneg this) <| mul_nonneg (by simpa using h 0) (log_nonneg hr)
+  intro a
+  by_cases h₁a : a = 0
+  · simp_all
+  by_cases h₂a : a ∈ closedBall 0 |r|
+  · refine mul_nonneg ?_ <| log_nonneg ?_
+    · simpa [h₂a] using h a
+    · simpa [mul_comm r, one_le_inv_mul₀ (norm_pos_iff.mpr h₁a), abs_of_pos h₃r] using h₂a
+  · simp [apply_eq_zero_of_notMem ((toClosedBall r) _) h₂a]
+
+/--
+For `1 ≤ r`, the counting function respects the `≤` relation.
+-/
+theorem logCounting_le {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
+    {f₁ f₂ : locallyFinsuppWithin (univ : Set E) ℤ} {r : ℝ} (h : f₁ ≤ f₂) (hr : 1 ≤ r) :
+    logCounting f₁ r ≤ logCounting f₂ r := by
+  rw [← sub_nonneg] at h ⊢
+  simpa using logCounting_nonneg h hr
+
+/--
+The counting function respects the `≤` relation asymptotically.
+-/
+theorem logCounting_eventually_le {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
+    {f₁ f₂ : locallyFinsuppWithin (univ : Set E) ℤ} (h : f₁ ≤ f₂) :
+    logCounting f₁ ≤ᶠ[Filter.atTop] logCounting f₂ := by
+  filter_upwards [Filter.eventually_ge_atTop 1]
+  exact fun _ hr ↦ logCounting_le h hr
 
 end Function.locallyFinsuppWithin
 
@@ -211,5 +256,71 @@ function counting poles.
 @[simp] theorem logCounting_sub_const (hf : MeromorphicOn f univ) :
     logCounting (f - fun _ ↦ a₀) ⊤ = logCounting f ⊤ := by
   simpa [sub_eq_add_neg] using logCounting_add_const hf
+
+/-!
+## Behaviour under Arithmetic Operations
+-/
+
+/--
+For `1 ≤ r`, the counting function counting zeros of `f * g` is less than or equal to the sum of the
+counting functions counting zeros of `f` and `g`, respectively.
+
+Note: The statement proven here is found at the top of page 169 of [Lang: Introduction to Complex
+Hyperbolic Spaces](https://link.springer.com/book/10.1007/978-1-4757-1945-1) where it is written as
+an inequality between functions. This could be interpreted as claiming that the inequality holds for
+ALL values of `r`, which is not true. For a counterexample, take `f₁ : z → z` and `f₂ : z → z⁻¹`.
+Then,
+
+- `logCounting f₁ 0 = log`
+- `logCounting f₂ 0 = 0`
+- `logCounting (f₁ * f₂) 0 = 0`
+
+But `log r` is negative for small `r`.
+-/
+theorem logCounting_zero_mul_le {f₁ f₂ : 𝕜 → 𝕜} {r : ℝ} (hr : 1 ≤ r)
+    (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
+    (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
+    logCounting (f₁ * f₂) 0 r ≤ (logCounting f₁ 0 + logCounting f₂ 0) r := by
+  simp only [logCounting, WithTop.zero_ne_top, reduceDIte, WithTop.untop₀_zero, sub_zero]
+  rw [divisor_mul h₁f₁ h₁f₂ (fun z _ ↦ h₂f₁ z) (fun z _ ↦ h₂f₂ z),
+    ← Function.locallyFinsuppWithin.logCounting.map_add]
+  apply Function.locallyFinsuppWithin.logCounting_le _ hr
+  apply Function.locallyFinsuppWithin.posPart_add
+
+/--
+Asymptotically, the counting function counting zeros of `f * g` is less than or equal to the sum of
+the counting functions counting zeros of `f` and `g`, respectively.
+-/
+theorem logCounting_zero_mul_eventually_le {f₁ f₂ : 𝕜 → 𝕜}
+    (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
+    (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
+    logCounting (f₁ * f₂) 0 ≤ᶠ[Filter.atTop] logCounting f₁ 0 + logCounting f₂ 0 := by
+  filter_upwards [Filter.eventually_ge_atTop 1]
+  exact fun _ hr ↦ logCounting_zero_mul_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂
+
+/--
+For `1 ≤ r`, the counting function counting poles of `f * g` is less than or equal to the sum of the
+counting functions counting poles of `f` and `g`, respectively.
+-/
+theorem logCounting_top_mul_le {f₁ f₂ : 𝕜 → 𝕜} {r : ℝ} (hr : 1 ≤ r)
+    (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
+    (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
+    logCounting (f₁ * f₂) ⊤ r ≤ (logCounting f₁ ⊤ + logCounting f₂ ⊤) r := by
+  simp only [logCounting, reduceDIte]
+  rw [divisor_mul h₁f₁ h₁f₂ (fun z _ ↦ h₂f₁ z) (fun z _ ↦ h₂f₂ z),
+    ← Function.locallyFinsuppWithin.logCounting.map_add]
+  apply Function.locallyFinsuppWithin.logCounting_le _ hr
+  apply Function.locallyFinsuppWithin.negPart_add
+
+/--
+Asymptotically, the counting function counting zeros of `f * g` is less than or equal to the sum of
+the counting functions counting zeros of `f` and `g`, respectively.
+-/
+theorem logCounting_top_mul_eventually_le {f₁ f₂ : 𝕜 → 𝕜}
+    (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
+    (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
+    logCounting (f₁ * f₂) ⊤ ≤ᶠ[Filter.atTop] logCounting f₁ ⊤ + logCounting f₂ ⊤ := by
+  filter_upwards [Filter.eventually_ge_atTop 1]
+  exact fun _ hr ↦ logCounting_top_mul_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂
 
 end ValueDistribution
