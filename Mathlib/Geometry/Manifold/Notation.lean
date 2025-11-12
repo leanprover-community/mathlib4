@@ -873,11 +873,11 @@ Can these be kept in sync? Well, that's hopefully not too necessary.
 -/
 
 /-- Try to find a `ModelWithCorners` for a given base field, model normed space and model
-topological space, using information from the local context (and my global database?). -/
+topological space, using information from the local context and a few hard-coded rules. -/
 -- FIXME: do we need to handle baseInfo again? perhaps not, let's try without!
 def findModelForFunpropInner (field model top : Expr) :
     TermElabM <| Option (Expr × NormedSpaceInfo) := do
-  -- trace[Elab.DiffGeo.FunPropM] "Trying to solve a goal `ModelWithCorners {field} {model} {top}`"
+  trace[Elab.DiffGeo.FunPropM] "Trying to solve a goal `ModelWithCorners {field} {model} {top}`"
   if let some m ← tryStrategy m!"Assumption"       fromAssumption     then return some (m, none)
   if let some m ← tryStrategy m!"Normed space"     fromNormedSpace    then return some (m, none)
   -- TODO: implement the remaining strategies, and then the inner to outer part!
@@ -910,7 +910,7 @@ where
       throwError "{model} is a normed space, but {top} is not defeq to it"
 
 def findModelForFunprop (field model top : Expr) : TermElabM Expr := do
-  -- TODO update!trace[Elab.DiffGeo.MDiff] "Finding a model with corners for: `{e}`"
+  trace[Elab.DiffGeo.FunPropM] "Searching for some `ModelWithCorners {field} {model} {top}`"
   let some (u, _) := ← go field model top
     | throwError "Could not find a `ModelWithCorners {field} {model} {top}`"
   return u
@@ -919,6 +919,26 @@ where
     -- At first, try finding a model on the space itself.
     if let some (m, r) ← findModelForFunpropInner field model top then return some (m, r)
     throwError ""
+
+def findModelForFunprop22 (_g : MVarId) : MetaM <| Option MVarId := do
+  -- check that the goal has the form `ModelWithCorners k E H
+  -- if so, extract k E and H and run findModelForfunProp22 on it.
+  throwError "TODO: the find_model tactic is currently a stub!"
+
+elab (name := findModelTac) "find_model" : tactic => withMainContext do
+  liftMetaTactic1 findModelForFunprop22
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
+  [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type*} [TopologicalSpace H']
+  {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+
+example : True := by
+  have : ModelWithCorners 𝕜 E H := by
+    sorry -- find_model
+  trivial
 
 section trace
 
@@ -947,5 +967,11 @@ Trace class for the `MDiff` elaborator and friends, which infer a model with cor
 (resp. codomain) of the map in question.
 -/
 initialize registerTraceClass `Elab.DiffGeo.MDiff (inherited := true)
+
+/--
+Trace class for the using `fun_prop` on manifolds, for trying to solve goals of the form
+`ModelWithCorners 𝕜 E H` using local hypotheses and a few hard-coded rules.
+-/
+initialize registerTraceClass `Elab.DiffGeo.FunPropM (inherited := true)
 
 end trace
