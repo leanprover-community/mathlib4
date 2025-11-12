@@ -19,6 +19,11 @@ universe u v w
 
 /--
 The notation typeclass for the Fourier transform.
+
+While the Fourier transform is a linear operator, the notation is for the function `E → F` without
+any additional properties. This makes it possible to use the notation for functions where
+integrability is an issue.
+Moreover, including a scalar multiplication causes problems for inferring the notation type class.
 -/
 class FourierTransform (E : Type u) (F : outParam (Type v)) where
   /-- `𝓕 f` is the Fourier transform of `f`. The meaning of this notation is type-dependent. -/
@@ -26,6 +31,11 @@ class FourierTransform (E : Type u) (F : outParam (Type v)) where
 
 /--
 The notation typeclass for the inverse Fourier transform.
+
+While the inverse Fourier transform is a linear operator, the notation is for the function `E → F`
+without any additional properties. This makes it possible to use the notation for functions where
+integrability is an issue.
+Moreover, including a scalar multiplication causes problems for inferring the notation type class.
 -/
 class FourierTransformInv (E : Type u) (F : outParam (Type v)) where
   /-- `𝓕⁻ f` is the inverse Fourier transform of `f`. The meaning of this notation is
