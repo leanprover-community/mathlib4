@@ -25,7 +25,7 @@ import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 * `WithSeminorms.toLocallyConvexSpace`: A space equipped with a family of seminorms is locally
   convex.
-* `WithSeminorms.firstCountable`: A space is first countable if it's topology is induced by a
+* `WithSeminorms.firstCountable`: A space is first countable if its topology is induced by a
   countable family of seminorms.
 
 ## Continuity of semilinear maps
@@ -136,11 +136,11 @@ theorem basisSets_smul_right (v : E) (U : Set E) (hU : U ∈ p.basisSets) :
   rcases p.basisSets_iff.mp hU with ⟨s, r, hr, hU⟩
   rw [hU, Filter.eventually_iff]
   simp_rw [(s.sup p).mem_ball_zero, map_smul_eq_mul]
-  by_cases h : 0 < (s.sup p) v
+  by_cases! h : 0 < (s.sup p) v
   · simp_rw [(lt_div_iff₀ h).symm]
     rw [← _root_.ball_zero_eq]
     exact Metric.ball_mem_nhds 0 (div_pos hr h)
-  simp_rw [le_antisymm (not_lt.mp h) (apply_nonneg _ v), mul_zero, hr]
+  simp_rw [le_antisymm h (apply_nonneg _ v), mul_zero, hr]
   exact IsOpen.mem_nhds isOpen_univ (mem_univ 0)
 
 theorem basisSets_smul (U) (hU : U ∈ p.basisSets) :

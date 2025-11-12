@@ -354,3 +354,8 @@ def Config.ofComplex (config : ComplexConfig) : Config where
 end ComplexConfig
 
 end Mathlib.TacticAnalysis
+
+/-- A dummy option for testing the tactic analysis framework -/
+register_option linter.tacticAnalysis.dummy : Bool := {
+  defValue := false
+}
