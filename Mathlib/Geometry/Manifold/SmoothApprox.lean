@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Patrick Massot
 -/
 
+import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.PartitionOfUnity
 
 /-!
@@ -77,7 +78,7 @@ variable {f : M → F} {ε : M → ℝ}
 
 theorem Continuous.exists_contMDiff_approx_and_eqOn (n : ℕ∞)
     (f_cont : Continuous f) (ε_cont : Continuous ε) (ε_pos : ∀ x, 0 < ε x)
-    {S U : Set M} (hS : IsClosed S) (hU : U ∈ 𝓝ˢ S) (hfU : ContMDiffOn I 𝓘(ℝ, F) n f U) :
+    {S U : Set M} (hS : IsClosed S) (hU : U ∈ 𝓝ˢ S) (hfU : CMDiff[U] n f) :
     ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯,
       (∀ x, dist (g x) (f x) < ε x) ∧ EqOn g f S ∧ support g ⊆ support f := by
   have dist_f_f : ∀ x, dist (f x) (f x) < ε x := by simpa only [dist_self] using ε_pos
