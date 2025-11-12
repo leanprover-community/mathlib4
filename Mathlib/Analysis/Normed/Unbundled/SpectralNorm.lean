@@ -926,7 +926,7 @@ theorem spectralNorm_pow_natDegree_eq_prod_roots (x : L) {E : Type*} [Field E] [
     trans (mapAlg K E (minpoly K x)).natDegree
     · rw [mapAlg_eq_map, natDegree_map]
     · rw [eq_comm, ← factors_iff_card_roots]
-      exact IsSplittingField.IsScalarTower.factors (K := L) E (minpoly K x)
+      exact IsSplittingField.IsScalarTower.splits (K := L) E (minpoly K x)
   rw [map_multiset_prod, ← Multiset.prod_replicate]
   apply congr_arg
   ext r

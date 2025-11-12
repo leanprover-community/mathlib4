@@ -237,7 +237,7 @@ lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
 
 theorem trace_eq_sum_eigenvalues [DecidableEq n] (hA : A.IsHermitian) :
     A.trace = ∑ i, (hA.eigenvalues i : 𝕜) := by
-  simp [trace_eq_sum_roots_charpoly_of_factors hA.factors_charpoly,
+  simp [trace_eq_sum_roots_charpoly_of_splits hA.splits_charpoly,
     hA.roots_charpoly_eq_eigenvalues]
 
 end IsHermitian

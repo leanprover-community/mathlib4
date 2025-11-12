@@ -67,7 +67,7 @@ theorem X_pow_sub_C_eq_prod'
     {n : ℕ} {ζ : K} (hζ : IsPrimitiveRoot ζ n) {α a : K} (hn : 0 < n) (e : α ^ n = a) :
     (X ^ n - C a) = ∏ i ∈ Finset.range n, (X - C (ζ ^ i * α)) := by
   rw [Factors.eq_prod_roots_of_monic (monic_X_pow_sub_C _ (Nat.pos_iff_ne_zero.mp hn))
-    (X_pow_sub_C_factors_of_isPrimitiveRoot hζ e), ← nthRoots, hζ.nthRoots_eq e, Multiset.map_map]
+    (X_pow_sub_C_splits_of_isPrimitiveRoot hζ e), ← nthRoots, hζ.nthRoots_eq e, Multiset.map_map]
   rfl
 
 lemma X_pow_sub_C_eq_prod {R : Type*} [CommRing R] [IsDomain R]
@@ -520,7 +520,7 @@ lemma isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top
       Polynomial.map_X]
     have ⟨_, hζ⟩ := hK
     rw [mem_primitiveRoots finrank_pos] at hζ
-    exact X_pow_sub_C_factors_of_isPrimitiveRoot
+    exact X_pow_sub_C_splits_of_isPrimitiveRoot
       (hζ.map_of_injective (algebraMap K _).injective) ha
   · rw [eq_top_iff, ← IntermediateField.top_toSubalgebra, ← hα,
       IntermediateField.adjoin_simple_toSubalgebra_of_integral (IsIntegral.of_finite K α)]
