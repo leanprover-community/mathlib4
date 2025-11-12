@@ -366,14 +366,16 @@ theorem _root_.IsFractional.div_of_nonzero {I J : Submodule R₁ K} :
     convert hI _ (hb _ (Submodule.smul_mem _ aJ mem_J)) using 1
     rw [← hy', mul_comm b, ← Algebra.smul_def, mul_smul]
 
-theorem fractional_div_of_nonzero {I J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
+theorem isFractional_div_of_ne_zero {I J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
     IsFractional R₁⁰ (I / J : Submodule R₁ K) :=
   I.isFractional.div_of_nonzero J.isFractional fun H =>
     h <| coeToSubmodule_injective <| H.trans coe_zero.symm
 
+@[deprecated (since := "2025-09-14")] alias fractional_div_of_nonzero := isFractional_div_of_ne_zero
+
 open Classical in
 noncomputable instance : Div (FractionalIdeal R₁⁰ K) :=
-  ⟨fun I J => if h : J = 0 then 0 else ⟨I / J, fractional_div_of_nonzero h⟩⟩
+  ⟨fun I J => if h : J = 0 then 0 else ⟨I / J, isFractional_div_of_ne_zero h⟩⟩
 
 variable {I J : FractionalIdeal R₁⁰ K}
 
@@ -381,19 +383,23 @@ variable {I J : FractionalIdeal R₁⁰ K}
 theorem div_zero {I : FractionalIdeal R₁⁰ K} : I / 0 = 0 :=
   dif_pos rfl
 
-theorem div_nonzero {I J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
-    I / J = ⟨I / J, fractional_div_of_nonzero h⟩ :=
+theorem div_of_ne_zero {I J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
+    I / J = ⟨I / J, isFractional_div_of_ne_zero h⟩ :=
   dif_neg h
+
+@[deprecated (since := "2025-09-14")] alias div_nonzero := div_of_ne_zero
 
 @[simp]
 theorem coe_div {I J : FractionalIdeal R₁⁰ K} (hJ : J ≠ 0) :
     (↑(I / J) : Submodule R₁ K) = ↑I / (↑J : Submodule R₁ K) :=
   congr_arg _ (dif_neg hJ)
 
-theorem mem_div_iff_of_nonzero {I J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) {x} :
+theorem mem_div_iff_of_ne_zero {I J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) {x} :
     x ∈ I / J ↔ ∀ y ∈ J, x * y ∈ I := by
-  rw [div_nonzero h]
+  rw [div_of_ne_zero h]
   exact Submodule.mem_div_iff_forall_mul_mem
+
+@[deprecated (since := "2025-09-14")] alias mem_div_iff_of_nonzero := mem_div_iff_of_ne_zero
 
 theorem mul_one_div_le_one {I : FractionalIdeal R₁⁰ K} : I * (1 / I) ≤ 1 := by
   by_cases hI : I = 0
@@ -410,19 +416,21 @@ theorem le_self_mul_one_div {I : FractionalIdeal R₁⁰ K} (hI : I ≤ (1 : Fra
     rw [← coe_le_coe, coe_one] at hI
     exact Submodule.le_self_mul_one_div hI
 
-theorem le_div_iff_of_nonzero {I J J' : FractionalIdeal R₁⁰ K} (hJ' : J' ≠ 0) :
+theorem le_div_iff_of_ne_zero {I J J' : FractionalIdeal R₁⁰ K} (hJ' : J' ≠ 0) :
     I ≤ J / J' ↔ ∀ x ∈ I, ∀ y ∈ J', x * y ∈ J :=
-  ⟨fun h _ hx => (mem_div_iff_of_nonzero hJ').mp (h hx), fun h x hx =>
-    (mem_div_iff_of_nonzero hJ').mpr (h x hx)⟩
+  ⟨fun h _ hx => (mem_div_iff_of_ne_zero hJ').mp (h hx), fun h x hx =>
+    (mem_div_iff_of_ne_zero hJ').mpr (h x hx)⟩
+
+@[deprecated (since := "2025-09-14")] alias le_div_iff_of_nonzero := le_div_iff_of_ne_zero
 
 theorem le_div_iff_mul_le {I J J' : FractionalIdeal R₁⁰ K} (hJ' : J' ≠ 0) :
     I ≤ J / J' ↔ I * J' ≤ J := by
-  rw [div_nonzero hJ', ← coe_le_coe (I := I * J') (J := J), coe_mul]
+  rw [div_of_ne_zero hJ', ← coe_le_coe (I := I * J') (J := J), coe_mul]
   exact Submodule.le_div_iff_mul_le
 
 @[simp]
 theorem div_one {I : FractionalIdeal R₁⁰ K} : I / 1 = I := by
-  rw [div_nonzero (one_ne_zero' (FractionalIdeal R₁⁰ K))]
+  rw [div_of_ne_zero (one_ne_zero' (FractionalIdeal R₁⁰ K))]
   ext
   constructor <;> intro h
   · simpa using mem_div_iff_forall_mul_mem.mp h 1 ((algebraMap R₁ K).map_one ▸ coe_mem_one R₁⁰ 1)
@@ -440,10 +448,10 @@ theorem eq_one_div_of_mul_eq_one_right (I J : FractionalIdeal R₁⁰ K) (h : I 
   · apply mul_le.mpr _
     intro x hx y hy
     rw [mul_comm]
-    exact (mem_div_iff_of_nonzero hI).mp hy x hx
+    exact (mem_div_iff_of_ne_zero hI).mp hy x hx
   rw [← h]
-  apply mul_left_mono I
-  apply (le_div_iff_of_nonzero hI).mpr _
+  gcongr
+  apply (le_div_iff_of_ne_zero hI).mpr _
   intro y hy x hx
   rw [mul_comm]
   exact mul_mem_mul hy hx
@@ -458,7 +466,7 @@ protected theorem map_div (I J : FractionalIdeal R₁⁰ K) (h : K ≃ₐ[R₁] 
     (I / J).map (h : K →ₐ[R₁] K') = I.map h / J.map h := by
   by_cases H : J = 0
   · rw [H, div_zero, FractionalIdeal.map_zero, div_zero]
-  · simp [← coeToSubmodule_inj, div_nonzero H, div_nonzero (map_ne_zero _ H)]
+  · simp [← coeToSubmodule_inj, div_of_ne_zero H, div_of_ne_zero (map_ne_zero _ H)]
 
 theorem map_one_div (I : FractionalIdeal R₁⁰ K) (h : K ≃ₐ[R₁] K') :
     (1 / I).map (h : K →ₐ[R₁] K') = 1 / I.map h := by

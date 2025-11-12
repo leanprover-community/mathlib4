@@ -342,18 +342,14 @@ lemma inv_le_dual :
 lemma dual_inv_le :
     (dual A K I)⁻¹ ≤ I := by
   by_cases hI : I = 0; · simp [hI]
-  convert mul_right_mono ((dual A K I)⁻¹)
-    (mul_left_mono I (inv_le_dual A K I)) using 1
-  · simp only [mul_inv_cancel₀ hI, one_mul]
-  · simp only [mul_inv_cancel₀ (dual_ne_zero A K (hI := hI)), mul_assoc, mul_one]
+  rw [inv_le_comm₀ (by simpa [pos_iff_ne_zero]) (by simpa [pos_iff_ne_zero])]
+  exact inv_le_dual ..
 
 lemma dual_eq_mul_inv :
     dual A K I = dual A K 1 * I⁻¹ := by
   by_cases hI : I = 0; · simp [hI]
   apply le_antisymm
-  · suffices dual A K I * I ≤ dual A K 1 by
-      convert mul_right_mono I⁻¹ this using 1; simp only [mul_inv_cancel₀ hI, mul_one, mul_assoc]
-    rw [← le_dual_iff A K hI]
+  · rw [le_mul_inv_iff₀ (pos_iff_ne_zero.2 hI), ← le_dual_iff A K hI]
   rw [le_dual_iff A K hI, mul_assoc, inv_mul_cancel₀ hI, mul_one]
 
 variable {I}
@@ -717,10 +713,10 @@ lemma pow_sub_one_dvd_differentIdeal_aux
       Submodule.map_le_iff_le_comap]
     intro x hx
     rw [Submodule.restrictScalars_mem, FractionalIdeal.mem_coe,
-      FractionalIdeal.mem_div_iff_of_nonzero (by simpa using hp')] at hx
+      FractionalIdeal.mem_div_iff_of_ne_zero (by simpa using hp')] at hx
     rw [Submodule.mem_comap, LinearMap.coe_restrictScalars, ← FractionalIdeal.coe_one,
       ← div_self (G₀ := FractionalIdeal A⁰ K) (a := p) (by simpa using hp),
-      FractionalIdeal.mem_coe, FractionalIdeal.mem_div_iff_of_nonzero (by simpa using hp)]
+      FractionalIdeal.mem_coe, FractionalIdeal.mem_div_iff_of_ne_zero (by simpa using hp)]
     simp only [FractionalIdeal.mem_coeIdeal, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂] at hx
     intro y hy'
@@ -875,10 +871,10 @@ lemma dvd_differentIdeal_of_not_isSeparable
       Submodule.map_le_iff_le_comap]
     intro x hx
     rw [Submodule.restrictScalars_mem, FractionalIdeal.mem_coe,
-      FractionalIdeal.mem_div_iff_of_nonzero (by simpa using hp')] at hx
+      FractionalIdeal.mem_div_iff_of_ne_zero (by simpa using hp')] at hx
     rw [Submodule.mem_comap, LinearMap.coe_restrictScalars, ← FractionalIdeal.coe_one,
       ← div_self (G₀ := FractionalIdeal A⁰ K) (a := p) (by simpa using hp),
-      FractionalIdeal.mem_coe, FractionalIdeal.mem_div_iff_of_nonzero (by simpa using hp)]
+      FractionalIdeal.mem_coe, FractionalIdeal.mem_div_iff_of_ne_zero (by simpa using hp)]
     simp only [FractionalIdeal.mem_coeIdeal, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂] at hx
     intro y hy'
