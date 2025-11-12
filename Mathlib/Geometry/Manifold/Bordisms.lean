@@ -480,7 +480,7 @@ def unorientedBordismRelation.{u, v} (X : Type u_1) [TopologicalSpace X] (k : Wi
     (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] (J : ModelWithCorners ℝ E' H') :
     SingularManifold.{u} X k I → SingularManifold.{v} X k I → Prop :=
   -- XXX: shall we demand a relation between I and J here? for the equivalence, we need to!
-  fun s t ↦ ∃ _φ : UnorientedBordism k s t J, True
+  fun s t ↦ Nonempty (UnorientedBordism k s t J)
 
 namespace unorientedBordismRelation
 
@@ -489,26 +489,25 @@ variable {J : ModelWithCorners ℝ E' H'} {s t u : SingularManifold X k I}
 omit [FiniteDimensional ℝ E']
 
 @[symm]
-lemma symm (h : unorientedBordismRelation X k I J s t) : unorientedBordismRelation X k I J t s := by
-  choose φ _ using h
-  use UnorientedBordism.symm φ
+lemma symm (h : unorientedBordismRelation X k I J s t) : unorientedBordismRelation X k I J t s :=
+  ⟨(Classical.choice h).symm⟩
 
 @[trans]
 lemma trans (h : finrank ℝ E' = finrank ℝ E + 1)
     (hst : unorientedBordismRelation X k I J s t) (htu : unorientedBordismRelation X k I J t u) :
     unorientedBordismRelation X k I J s u := by
-    choose φ _ using hst
-    choose ψ _ using htu
-    use φ.trans ψ (by simp [h])
+  obtain ⟨φ⟩ := hst
+  obtain ⟨ψ⟩ := htu
+  exact ⟨φ.trans ψ (by simp [h])⟩
 
 end unorientedBordismRelation
 
 -- TODO: does this hold for general models J, as opposed to just I.prod 𝓡∂ 1?
 variable (X k I) in
 lemma uBordismRelation.{u} :
-  Equivalence (unorientedBordismRelation.{_, u, u} X k I (I.prod (𝓡∂ 1))) := by
+    Equivalence (unorientedBordismRelation.{_, u, u} X k I (I.prod (𝓡∂ 1))) := by
   apply Equivalence.mk
-  · intro s; use UnorientedBordism.refl s
+  · exact fun s ↦ ⟨UnorientedBordism.refl s⟩
   · intro s t h
     exact h.symm
   · intro s t u hst htu
@@ -540,11 +539,8 @@ def empty.{u} : uBordismClass X k I :=
 private lemma aux.{u} {a₁ b₁ a₂ b₂ : SingularManifold.{u} X k I}
     (h : unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) a₁ a₂)
     (h' : unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) b₁ b₂) :
-    unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) (a₁.sum b₁) (a₂.sum b₂) := by
-  simp only [unorientedBordismRelation]
-  choose φ _ using h
-  choose ψ _ using h'
-  use φ.sum ψ
+    unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) (a₁.sum b₁) (a₂.sum b₂) :=
+  ⟨(Classical.choice h).sum (Classical.choice h')⟩
 
 /-- The group operation on unoriented bordism classes: lifting the sum of singular manifolds
 to bordism classes, i.e. lifting `SingularNManifold.sum` to `unorientedBordismSetoid` -/
@@ -564,9 +560,6 @@ instance : Neg (uBordismClass X k I) where
 instance : Add (uBordismClass X k I) where
   add := sum
 
-lemma foo {α : Type*} (a : α) : ∃ _ : α, True := by use a
-
-
 variable (X k I J) in
 private def unorientedBordismGroup_aux.{u} : AddGroup (uBordismClass.{_, _, _, u} X k I) := by
   apply AddGroup.ofLeftAxioms
@@ -576,7 +569,7 @@ private def unorientedBordismGroup_aux.{u} : AddGroup (uBordismClass.{_, _, _, u
     apply Quotient.sound
     symm
     -- TODO: which direction do I want?
-    use UnorientedBordism.sumAssoc Φ Ψ Δ
+    exact ⟨UnorientedBordism.sumAssoc Φ Ψ Δ⟩
   · apply Quotient.ind; intro S
     apply Quotient.sound
     -- TODO: want UnorientedBordism.emptySum also, because I need this here
@@ -588,7 +581,7 @@ private def unorientedBordismGroup_aux.{u} : AddGroup (uBordismClass.{_, _, _, u
     have : IsEmpty PEmpty := by exact J
     haveI : ChartedSpace H PEmpty.{u + 1} := ChartedSpace.empty _ _
     have aux := UnorientedBordism.sum_self S (M := PEmpty)
-    apply foo
+    refine ⟨?_⟩
     -- apply aux does not quite work...
     sorry
 
@@ -598,7 +591,7 @@ instance instAddCommGroup : AddCommGroup (uBordismClass X k I) where
     apply Quotient.ind; intro Φ
     apply Quotient.ind; intro Ψ
     apply Quotient.sound
-    use UnorientedBordism.sumComm
+    exact ⟨UnorientedBordism.sumComm⟩
 
 section functor
 
@@ -612,9 +605,8 @@ variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalS
 /-- If `s` and `t` are cobordant, so are `s.map hf` and `t.map hf`. -/
 lemma map_aux (hf : Continuous f) {s t : SingularManifold X k I}
     (h : unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) s t) :
-    unorientedBordismRelation Y k I (I.prod (𝓡∂ 1)) (s.map hf) (t.map hf) := by
-  choose φ _ using h
-  use φ.map hf
+    unorientedBordismRelation Y k I (I.prod (𝓡∂ 1)) (s.map hf) (t.map hf) :=
+  ⟨(Classical.choice h).map hf⟩
 
 /-- Map an unoriented bordism class under a continuous map -/
 def map (hf : Continuous f) : (uBordismClass X k I) → (uBordismClass Y k I) :=
@@ -627,7 +619,7 @@ lemma mk_map (hf : Continuous f) {s : SingularManifold X k I} :
 theorem map_id (Φ : uBordismClass X k I) : Φ.map continuous_id = Φ := by
   set φ := Φ.out with φ_eq
   rw [← Φ.out_eq, mk_map, Quotient.eq, ← φ_eq]
-  use (UnorientedBordism.refl φ).copy_map_fst (Diffeomorph.refl I _ k) (by dsimp)
+  exact ⟨(UnorientedBordism.refl φ).copy_map_fst (Diffeomorph.refl I _ k) (by dsimp)⟩
 
 theorem map_id' : uBordismClass.map (k := k) (I := I) (@continuous_id X _) = id := by
   ext Φ
@@ -637,14 +629,13 @@ theorem map_comp (hf : Continuous f) (hg : Continuous g) (Φ : uBordismClass X k
     (Φ.map hf).map hg = Φ.map (hg.comp hf) := by
   set φ := Φ.out with φ_eq
   rw [← Φ.out_eq, mk_map, ← φ_eq, mk_map, mk_map, Quotient.eq]
-  dsimp only
-  use ((UnorientedBordism.refl φ).map (hg.comp hf)).copy_map_fst
-    (Diffeomorph.refl I _ k) (by dsimp [Function.comp_assoc])
+  exact ⟨((UnorientedBordism.refl φ).map (hg.comp hf)).copy_map_fst
+    (Diffeomorph.refl I _ k) (by dsimp [Function.comp_assoc])⟩
 
 theorem map_comp' (hf : Continuous f) (hg : Continuous g) :
     (fun s : uBordismClass X k I ↦ (s.map hf).map hg) = uBordismClass.map (hg.comp hf) := by
   ext Φ
-  apply map_comp hf hg
+  exact map_comp hf hg ..
 
 end functor
 
