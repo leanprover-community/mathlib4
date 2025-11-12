@@ -50,7 +50,8 @@ def IsCover (ε : ℝ≥0) (s N : Set X) : Prop := SetRel.IsCover {(x, y) | edis
 protected nonrec lemma IsCover.nonempty (hsN : IsCover ε s N) (hs : s.Nonempty) : N.Nonempty :=
   hsN.nonempty hs
 
-@[simp] lemma IsCover.self (ε : ℝ≥0) (s : Set X) : IsCover ε s s := fun a ha ↦ ⟨a, ha, by simp⟩
+@[simp] lemma IsCover.refl (ε : ℝ≥0) (s : Set X) : IsCover ε s s := fun a ha ↦ ⟨a, ha, by simp⟩
+lemma IsCover.rfl {ε : ℝ≥0} {s : Set X} : IsCover ε s s := refl ε s
 
 nonrec lemma IsCover.mono (hN : N₁ ⊆ N₂) (h₁ : IsCover ε s N₁) : IsCover ε s N₂ := h₁.mono hN
 
@@ -59,7 +60,7 @@ nonrec lemma IsCover.anti (hst : s ⊆ t) (ht : IsCover ε t N) : IsCover ε s N
 lemma IsCover.mono_radius (hεδ : ε ≤ δ) (hε : IsCover ε s N) : IsCover δ s N :=
   hε.mono_entourage fun xy hxy ↦ by dsimp at *; exact le_trans hxy <| mod_cast hεδ
 
-lemma isCover_singleton_of_ediam_le (hA : EMetric.diam s ≤ ε) (hx : x ∈ s) :
+lemma IsCover.singleton_of_ediam_le (hA : EMetric.diam s ≤ ε) (hx : x ∈ s) :
     IsCover ε s ({x} : Set X) :=
   fun _ h_mem ↦ ⟨x, by simp, (EMetric.edist_le_diam_of_mem h_mem hx).trans hA⟩
 
@@ -75,7 +76,7 @@ nonrec lemma IsCover.of_maximal_isSeparated (hN : Maximal (fun N ↦ N ⊆ s ∧
   .of_maximal_isSeparated <| by simpa [isSeparated_iff_setRelIsSeparated] using hN
 
 /-- A totally bounded set has finite `ε`-covers for all `ε > 0`. -/
-lemma _root_.TotallyBounded.exists_finite_isCover (hs : TotallyBounded s) (hε : ε ≠ 0) :
+lemma exists_finite_isCover_of_totallyBounded (hε : ε ≠ 0) (hs : TotallyBounded s) :
     ∃ N ⊆ s, N.Finite ∧ IsCover ε s N := by
   rw [EMetric.totallyBounded_iff'] at hs
   obtain ⟨N, hNA, hN_finite, hN⟩ := hs ε (mod_cast hε.bot_lt)
@@ -89,12 +90,12 @@ lemma _root_.TotallyBounded.exists_finite_isCover (hs : TotallyBounded s) (hε :
 /-- A relatively compact set admits a finite cover. -/
 lemma exists_finite_isCover_of_isCompact_closure (hε : ε ≠ 0) (hs : IsCompact (closure s)) :
     ∃ N ⊆ s, N.Finite ∧ IsCover ε s N :=
-  (hs.totallyBounded.subset subset_closure).exists_finite_isCover hε
+  exists_finite_isCover_of_totallyBounded hε (hs.totallyBounded.subset subset_closure)
 
 /-- A compact set admits a finite cover. -/
 lemma exists_finite_isCover_of_isCompact (hε : ε ≠ 0) (hs : IsCompact s) :
     ∃ N ⊆ s, N.Finite ∧ IsCover ε s N :=
-  hs.totallyBounded.exists_finite_isCover hε
+  exists_finite_isCover_of_totallyBounded hε hs.totallyBounded
 
 end PseudoEMetricSpace
 
