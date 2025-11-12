@@ -75,7 +75,7 @@ theorem isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠
     nth_rw 1 [this]
     rw [LinearMap.coe_restrictScalars]
     simp only [map.coe_coe, map.map_smul, norm_smul, norm_inv, norm_norm]
-    field_simp
+    field
   · ext1
     simp [minor₁]
 

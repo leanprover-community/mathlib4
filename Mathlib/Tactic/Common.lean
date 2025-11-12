@@ -16,6 +16,8 @@ import ImportGraph.Imports
 import Batteries.Tactic.Basic
 import Batteries.Tactic.Case
 import Batteries.Tactic.HelpCmd
+import Batteries.Tactic.Alias
+import Batteries.Tactic.GeneralizeProofs
 
 -- Import syntax for leansearch
 import LeanSearchClient
@@ -30,6 +32,7 @@ import Mathlib.Tactic.ApplyCongr
 import Mathlib.Tactic.ApplyAt
 import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.Basic
+import Mathlib.Tactic.ByCases
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Check
@@ -55,7 +58,6 @@ import Mathlib.Tactic.Find
 import Mathlib.Tactic.FunProp
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.GRewrite
-import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.HigherOrder

@@ -35,7 +35,7 @@ We use the following type variables in this file:
 /-- Applying a continuous alternating map to a vector is continuous
 in the pair (map, vector).
 
-Continuity in in the vector holds by definition
+Continuity in the vector holds by definition
 and continuity in the map holds if both the domain and the codomain are topological vector spaces.
 However, continuity in the pair (map, vector) needs the domain to be a locally bounded TVS.
 We have no typeclass for a locally bounded TVS,
@@ -308,6 +308,18 @@ variable (𝕜 E)
 
 @[simp] theorem nnnorm_constOfIsEmpty [IsEmpty ι] (x : F) : ‖constOfIsEmpty 𝕜 E ι x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_constOfIsEmpty _ _ _
+
+variable (ι F) in
+/-- `constOfIsEmpty` as a linear isometry equivalence. -/
+@[simps]
+def constOfIsEmptyLIE [IsEmpty ι] : F ≃ₗᵢ[𝕜] (E [⋀^ι]→L[𝕜] F) where
+  toFun := constOfIsEmpty _ _ _
+  invFun f := f 0
+  left_inv x := by simp
+  right_inv f := by ext x; simp [Subsingleton.allEq x 0]
+  map_add' f g := rfl
+  map_smul' c f := rfl
+  norm_map' := norm_constOfIsEmpty _ _
 
 end
 

@@ -44,7 +44,7 @@ See the documentation of `to_additive.attr` for more information.
 -- assert_not_exists AddCommMonoidWithOne
 assert_not_exists MonoidWithZero
 assert_not_exists MulAction
-assert_not_exists OrderedCommMonoid
+assert_not_exists IsOrderedMonoid
 
 variable {ι κ M N G α : Type*}
 
@@ -75,7 +75,7 @@ theorem prod_val [CommMonoid M] (s : Finset M) : s.1.prod = s.prod id := by
 
 end Finset
 
-library_note "operator precedence of big operators"/--
+library_note2 «operator precedence of big operators» /--
 There is no established mathematical convention
 for the operator precedence of big operators like `∏` and `∑`.
 We will have to make a choice.
@@ -170,9 +170,9 @@ def bigOpBindersProd (processed : Array (Term × Term)) : MacroM Term := do
 
 These support destructuring, for example `∑ ⟨x, y⟩ ∈ s ×ˢ t, f x y`.
 
-Notation: `"∑" bigOpBinders* ("with" (ident ":")? term)? "," term` -/
+Notation: `"∑" bigOpBinders* (" with" (ident ":")? term)? "," term` -/
 syntax (name := bigsum)
-  "∑ " bigOpBinders ("with " atomic(binderIdent " : ")? term)? ", " term:67 : term
+  "∑ " bigOpBinders (" with " atomic(binderIdent " : ")? term)? ", " term:67 : term
 
 /--
 - `∏ x, f x` is notation for `Finset.prod Finset.univ f`. It is the product of `f x`,
@@ -385,9 +385,6 @@ section ToList
 @[to_additive (attr := simp, grind =)]
 theorem prod_map_toList (s : Finset ι) (f : ι → M) : (s.toList.map f).prod = s.prod f := by
   rw [Finset.prod, ← Multiset.prod_coe, ← Multiset.map_coe, Finset.coe_toList]
-
-@[deprecated (since := "2025-04-09")] alias prod_to_list := prod_map_toList
-@[deprecated (since := "2025-04-09")] alias sum_to_list := sum_map_toList
 
 @[to_additive (attr := simp, grind =)]
 theorem prod_toList {M : Type*} [CommMonoid M] (s : Finset M) :
