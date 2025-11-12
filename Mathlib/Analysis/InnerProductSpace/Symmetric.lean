@@ -271,7 +271,7 @@ theorem _root_.Submodule.IsCompl.projection_isSymmetric_iff
   refine ⟨fun h u hu v hv => ?_, fun h x y => ?_⟩
   · rw [← Subtype.coe_mk u hu, ← Subtype.coe_mk v hv,
       ← Submodule.linearProjOfIsCompl_apply_left hUV ⟨u, hu⟩, ← U.subtype_apply, ← comp_apply,
-      ← h, comp_apply, linearProjOfIsCompl_apply_right hUV ⟨v, hv⟩,
+      ← h, comp_apply, Submodule.linearProjOfIsCompl_apply_right hUV ⟨v, hv⟩,
       map_zero, inner_zero_left]
   · nth_rw 2 [← hUV.projection_add_projection_eq_self x]
     nth_rw 1 [← hUV.projection_add_projection_eq_self y]
@@ -319,6 +319,15 @@ theorem IsSymmetricProjection.ext_iff {S T : E →ₗ[𝕜] E}
   simp [h]
 
 alias ⟨_, IsSymmetricProjection.ext⟩ := IsSymmetricProjection.ext_iff
+
+open LinearMap in
+theorem IsSymmetricProjection.sub_of_range_le_range {p q : E →ₗ[𝕜] E}
+    (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) (hqp : range p ≤ range q) :
+    (q - p).IsSymmetricProjection := by
+  rw [← hq.isIdempotentElem.comp_eq_right_iff] at hqp
+  refine ⟨hp.isIdempotentElem.sub hq.isIdempotentElem (LinearMap.ext fun x => ext_inner_left 𝕜
+    fun y => ?_) hqp, hq.isSymmetric.sub hp.isSymmetric⟩
+  simp_rw [Module.End.mul_apply, ← hp.isSymmetric _, ← hq.isSymmetric _, ← comp_apply, hqp]
 
 end LinearMap
 

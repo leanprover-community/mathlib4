@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Monoidal.Mon_
 
 A monad "is just" a monoid in the category of endofunctors.
 
-# Definitions/Theorems
+## Definitions/Theorems
 
 1. `toMon` associates a monoid object in `C ⥤ C` to any monad on `C`.
 2. `monadToMon` is the functorial version of `toMon`.
