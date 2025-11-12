@@ -18,9 +18,7 @@ with the `polynomial` tactic suite.
 -/
 namespace Mathlib.Tactic.Polynomial
 
-open Lean
-open Lean.Meta Lean.Elab Term
-
+open Lean Lean.Meta Lean.Elab Term
 
 /-- Attribute for identifying `polynomial` preprocessing extensions. These serve the purpose of
 removing any definitions specific to polynomials that `algebra` can't handle.
