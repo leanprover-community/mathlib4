@@ -245,7 +245,6 @@ instance : Zero (T₁ ⟶ T₂) where
 @[simp] lemma Triangle.zero_hom₂ : (0 : T₁ ⟶ T₂).hom₂ = 0 := rfl
 @[simp] lemma Triangle.zero_hom₃ : (0 : T₁ ⟶ T₂).hom₃ = 0 := rfl
 
-@[simps]
 instance : Add (T₁ ⟶ T₂) where
   add f g :=
     { hom₁ := f.hom₁ + g.hom₁
@@ -256,7 +255,6 @@ instance : Add (T₁ ⟶ T₂) where
 @[simp] lemma Triangle.add_hom₂ (f g : T₁ ⟶ T₂) : (f + g).hom₂ = f.hom₂ + g.hom₂ := rfl
 @[simp] lemma Triangle.add_hom₃ (f g : T₁ ⟶ T₂) : (f + g).hom₃ = f.hom₃ + g.hom₃ := rfl
 
-@[simps]
 instance : Neg (T₁ ⟶ T₂) where
   neg f :=
     { hom₁ := -f.hom₁
@@ -267,7 +265,6 @@ instance : Neg (T₁ ⟶ T₂) where
 @[simp] lemma Triangle.neg_hom₂ (f : T₁ ⟶ T₂) : (-f).hom₂ = -f.hom₂ := rfl
 @[simp] lemma Triangle.neg_hom₃ (f : T₁ ⟶ T₂) : (-f).hom₃ = -f.hom₃ := rfl
 
-@[simps]
 instance : Sub (T₁ ⟶ T₂) where
   sub f g :=
     { hom₁ := f.hom₁ - g.hom₁
@@ -283,7 +280,6 @@ section
 variable {R : Type*} [Semiring R] [Linear R C]
   [∀ (n : ℤ), Functor.Linear R (shiftFunctor C n)]
 
-@[simps!]
 instance :
     SMul R (T₁ ⟶ T₂) where
   smul n f :=
