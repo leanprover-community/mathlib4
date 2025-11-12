@@ -37,11 +37,6 @@ example (p q : Prop) (h : ¬q → p) : ¬p → q := by
   guard_target = ¬q → p
   exact h
 
-example {α : Type} (a b : α) (p : Prop) (h : a = b → p) : ¬p → a ≠ b := by
-  contrapose
-  guard_target = a = b → p
-  exact h
-
 example (p q : Prop) (h : q → p) : ¬p → ¬q := by
   contrapose!
   guard_target = q → p
@@ -135,3 +130,25 @@ h : p ↔ q
 #guard_msgs in
 example (p q : Prop) (h : p ↔ q) : ¬p ↔ ¬q := by
   contrapose
+
+/-! Test that we unfold reducible, but not semireducible definitions -/
+
+example {α : Type} (a b : α) (p : Prop) (h : a = b → p) : ¬p → a ≠ b := by
+  contrapose
+  guard_target = a = b → p
+  exact h
+
+abbrev MyImp' (p q : Prop) := p → q
+def MyImp := MyImp'
+abbrev MyNot' (p : Prop) := ¬p
+def MyNot := MyNot'
+
+example (p q : Prop) (h : ¬q → ¬p) : MyImp p q := by
+  fail_if_success contrapose
+  unfold MyImp
+  contrapose
+
+example (p q : Prop) (h : q → ¬p) : p → MyNot q := by
+  fail_if_success (contrapose; exact h)
+  unfold MyNot
+  contrapose; exact h

@@ -52,13 +52,13 @@ macro_rules
 open Lean Meta Elab.Tactic
 
 elab_rules : tactic
-| `(tactic| contrapose) => liftMetaTactic fun g => do
+| `(tactic| contrapose) => liftMetaTactic fun g => withReducible do
   let target ← g.getType'
   match target with
   | mkApp2 (.const ``Iff _) p q =>
     if ← contrapose.negate_iff.getM then
-      -- we use `whnfR`, so that `a ≠ b` is recognized as a negation
-      match (← whnfR p).not?, (← whnfR q).not? with
+      -- we use reducible `whnf`, so that `a ≠ b` is recognized as a negation
+      match (← whnf p).not?, (← whnf q).not? with
       | none, none => g.apply (mkApp2 (.const ``contrapose_iff₁ []) p q)
       | some p, none => g.apply (mkApp2 (.const ``contrapose_iff₂ []) p q)
       | none, some q => g.apply (mkApp2 (.const ``contrapose_iff₃ []) p q)
@@ -73,7 +73,7 @@ elab_rules : tactic
       throwTacticEx `contrapose g m!"hypothesis `{p}` is not a proposition"
     unless ← Meta.isProp q do
       throwTacticEx `contrapose g m!"conclusion `{q}` is not a proposition"
-    match (← whnfR p).not?, (← whnfR q).not? with
+    match (← whnf p).not?, (← whnf q).not? with
     | none, none => g.apply (mkApp2 (.const ``contrapose₁ []) p q)
     | some p, none => g.apply (mkApp2 (.const ``contrapose₂ []) p q)
     | none, some q => g.apply (mkApp2 (.const ``contrapose₃ []) p q)
