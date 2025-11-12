@@ -1160,15 +1160,15 @@ def elabToAdditive (stx : Syntax) : CoreM Config :=
       | _ => throwUnsupportedSyntax
     return {
       trace := !stx[1].isNone
-      tgt := (tgt.map (·.getId)).getD Name.anonymous
+      tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
       doc, attrs, reorder, relevantArg?, dontTranslate, existing, self
-      ref := (tgt.map (·.raw)).getD stx[0] }
+      ref := match tgt with | some tgt => tgt.raw | none => stx[0] }
   | _ => throwUnsupportedSyntax
 
 mutual
 /-- Apply attributes to the multiplicative and additive declarations. -/
 partial def applyAttributes (b : BundledExts) (stx : Syntax) (rawAttrs : Array Syntax)
-    (thisAttr src tgt : Name) (argInfo : ArgInfo) : TermElabM (Array Name) := do
+    (src tgt : Name) (argInfo : ArgInfo) : TermElabM (Array Name) := do
   -- we only copy the `instance` attribute, since `@[to_additive] instance` is nice to allow
   copyInstanceAttribute src tgt
   -- Warn users if the multiplicative version has an attribute
@@ -1179,29 +1179,29 @@ partial def applyAttributes (b : BundledExts) (stx : Syntax) (rawAttrs : Array S
       -- Note: we're not bothering to print the correct attribute arguments.
       Linter.logLintIf linter.existingAttributeWarning stx m!"\
         The source declaration {src} was given the simp-attribute(s) {appliedAttrs} before \
-        calling @[{thisAttr}].\nThe preferred method is to use something like \
-        `@[{thisAttr} (attr := {appliedAttrs})]`\nto apply the attribute to both \
+        calling @[{b.attrName}].\nThe preferred method is to use something like \
+        `@[{b.attrName} (attr := {appliedAttrs})]`\nto apply the attribute to both \
         {src} and the target declaration {tgt}."
     warnAttr stx Lean.Meta.Ext.extExtension
-      (fun b n => (b.tree.values.any fun t => t.declName = n)) thisAttr `ext src tgt
-    warnAttr stx Lean.Meta.Rfl.reflExt (·.values.contains ·) thisAttr `refl src tgt
-    warnAttr stx Lean.Meta.Symm.symmExt (·.values.contains ·) thisAttr `symm src tgt
-    warnAttr stx Batteries.Tactic.transExt (·.values.contains ·) thisAttr `trans src tgt
-    warnAttr stx Lean.Meta.coeExt (·.contains ·) thisAttr `coe src tgt
-    warnParametricAttr stx Lean.Linter.deprecatedAttr thisAttr `deprecated src tgt
+      (fun b n => (b.tree.values.any fun t => t.declName = n)) b.attrName `ext src tgt
+    warnAttr stx Lean.Meta.Rfl.reflExt (·.values.contains ·) b.attrName `refl src tgt
+    warnAttr stx Lean.Meta.Symm.symmExt (·.values.contains ·) b.attrName `symm src tgt
+    warnAttr stx Batteries.Tactic.transExt (·.values.contains ·) b.attrName `trans src tgt
+    warnAttr stx Lean.Meta.coeExt (·.contains ·) b.attrName `coe src tgt
+    warnParametricAttr stx Lean.Linter.deprecatedAttr b.attrName `deprecated src tgt
     -- the next line also warns for `@[to_additive, simps]`, because of the application times
-    warnParametricAttr stx simpsAttr thisAttr `simps src tgt
-    warnAttrCore stx Term.elabAsElim.hasTag thisAttr `elab_as_elim src tgt
+    warnParametricAttr stx simpsAttr b.attrName `simps src tgt
+    warnAttrCore stx Term.elabAsElim.hasTag b.attrName `elab_as_elim src tgt
   -- add attributes
   -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
   -- `simps` and `to_additive`.
   let attrs ← elabAttrs rawAttrs
-  let (additiveAttrs, attrs) := attrs.partition (·.name == thisAttr)
+  let (additiveAttrs, attrs) := attrs.partition (·.name == b.attrName)
   let nestedDecls ←
     match h : additiveAttrs.size with
       | 0 => pure #[]
       | 1 => addToAdditiveAttr b tgt (← elabToAdditive additiveAttrs[0].stx) additiveAttrs[0].kind
-      | _ => throwError "cannot apply {thisAttr} multiple times."
+      | _ => throwError "cannot apply {b.attrName} multiple times."
   let allDecls := #[src, tgt] ++ nestedDecls
   if attrs.size > 0 then
     trace[to_additive_detail] "Applying attributes {attrs.map (·.stx)} to {allDecls}"
@@ -1248,7 +1248,7 @@ partial def copyMetaData (b : BundledExts) (cfg : Config) (src tgt : Name) (argI
     additivizeLemmas b #[src, tgt] argInfo "equation lemmas" fun nm ↦
       (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm)
   MetaM.run' <| Elab.Term.TermElabM.run' <|
-    (applyAttributes b cfg.ref cfg.attrs b.attrName src tgt) argInfo
+    (applyAttributes b cfg.ref cfg.attrs src tgt) argInfo
 
 /--
 Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
