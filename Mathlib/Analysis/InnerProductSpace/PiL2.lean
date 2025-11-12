@@ -446,8 +446,6 @@ protected theorem coe_toBasis_repr (b : OrthonormalBasis ι 𝕜 E) :
 protected theorem coe_toBasis_repr_apply (b : OrthonormalBasis ι 𝕜 E) (x : E) (i : ι) :
     b.toBasis.repr x i = b.repr x i := by
   rw [← Basis.equivFun_apply, OrthonormalBasis.coe_toBasis_repr]
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [LinearIsometryEquiv.coe_toLinearEquiv]
   rfl
 
 protected theorem sum_repr (b : OrthonormalBasis ι 𝕜 E) (x : E) : ∑ i, b.repr x i • b i = x := by
