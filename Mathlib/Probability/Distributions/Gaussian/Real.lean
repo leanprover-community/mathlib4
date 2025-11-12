@@ -524,6 +524,10 @@ its variance parameter `v`. -/
 lemma variance_id_gaussianReal : Var[id; gaussianReal μ v] = v :=
   variance_fun_id_gaussianReal
 
+lemma eq_gaussianReal_integral_variance {P : Measure ℝ} (h : P = gaussianReal μ v) :
+    P = gaussianReal P[id] Var[id; P].toNNReal := by
+  simp [h]
+
 /-- All the moments of a real Gaussian distribution are finite. That is, the identity is in Lp for
 all finite `p`. -/
 lemma memLp_id_gaussianReal (p : ℝ≥0) : MemLp id p (gaussianReal μ v) :=
