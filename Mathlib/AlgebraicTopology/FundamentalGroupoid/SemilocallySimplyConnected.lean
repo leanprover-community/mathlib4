@@ -57,15 +57,22 @@ structure IntervalPartition (n : ℕ) where
   /-- t ends at 1 -/
   h_end : t (Fin.last n) = 1
 
+namespace IntervalPartition
+
+attribute [simp, grind =] h_start h_end
+
 /-- IntervalPartition 0 is impossible because it requires a single point
 to be both 0 and 1. -/
-lemma IntervalPartition.not_zero (part : IntervalPartition 0) : False := by
+@[simp]
+lemma not_zero (part : IntervalPartition 0) : False := by
   have h0 : part.t 0 = 0 := part.h_start
   have h1 : part.t (Fin.last 0) = 1 := part.h_end
   have : Fin.last 0 = 0 := rfl
   rw [this] at h1
   rw [h0] at h1
   exact zero_ne_one h1
+
+end IntervalPartition
 
 /-- Helper to compose segments indexed by Fin n.
 For k, this returns the composition γ₀ · γ₁ · ... · γₖ₋₁ where
@@ -768,6 +775,16 @@ theorem Path.Homotopic.trans_congr {x y z : X} {p p' : Path x y} {q q' : Path y 
   obtain ⟨G⟩ := hq
   exact ⟨Path.Homotopy.hcomp F G⟩
 
+/-- Variant of `trans_congr` where the midpoints are merely equal. -/
+theorem Path.Homotopic.trans_congr' {x y y' z : X}
+    {p : Path x y} {q : Path y z} {p' : Path x y'} {q' : Path y' z}
+    (h : y = y')
+    (hp : Path.Homotopic p (p'.cast rfl h)) (hq : Path.Homotopic q (q'.cast h rfl)) :
+    Path.Homotopic (p.trans q) (p'.trans q') := by
+  obtain ⟨F⟩ := hp
+  obtain ⟨G⟩ := hq
+  exact ⟨Path.Homotopy.hcomp F G⟩
+
 /-! ### Single segment homotopy: the key step in the ladder construction -/
 
 /-- For a single segment i, the path γ_i · α_{i+1} (along γ then down the next rung) is
@@ -844,123 +861,20 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
   have h_base : Path.Homotopic (γ_aux 0)
       (((α 0).cast (show x = γ (part.t 0) by rw [part.h_start, γ.source])
                    (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])).trans γ') := by
-    -- Unfold γ_aux 0
-    -- γ_aux 0 = ((γ|[0,0]) · α_0 · (γ'|[0,n])).cast
-    -- Note: γ|[0,0] ≃ refl (γ 0) = refl x
-    -- And: γ'|[0,n] = γ'|[0,1] = γ' (since part.t (Fin.last n) = 1)
-
-    -- First show: γ|[0,0] ≃ refl x
-    have h_γ_refl : Path.Homotopic
-      (γ.subpathOn (part.t 0) (part.t 0) (part.h_mono.monotone (Fin.zero_le 0)))
-      (Path.refl (γ (part.t 0))) := by
-      exact Path.subpathOn_self γ (part.t 0)
-
-    -- Now show: γ'|[0,n] ≃ γ' (since part.t 0 = 0 and part.t (Fin.last n) = 1)
-    -- We'll use the fact that part.t 0 = 0 and part.t (Fin.last n) = 1
-    have h_γ'_full : Path.Homotopic
-      ((γ'.subpathOn (part.t 0) (part.t (Fin.last n))
-        (part.h_mono.monotone (Fin.zero_le (Fin.last n)))).cast
-        (by rw [part.h_start, γ'.source])
-        (by rw [part.h_end, γ'.target]))
-      γ' := by
-      -- Use convert to handle the dependent type rewrites
-      convert Path.subpathOn_zero_one γ'
-      · exact part.h_start
-      · exact part.h_end
-
-    -- Now combine to show γ_aux 0 ≃ α_0 · γ'
-    -- γ_aux 0 = ((γ|[0,0]) · α_0 · (γ'|[0,n])).cast
-    -- Using h_γ_refl and h_γ'_full, this simplifies to (refl · α_0 · γ').cast ≃ α_0 · γ'
-
-    -- Use h_γ_refl and reflTrans to show (refl · α_0) ≃ α_0
-    have h_refl_alpha : Path.Homotopic
-      ((Path.refl (γ (part.t 0))).trans (α 0))
-      (α 0) := by
-      exact ⟨Path.Homotopy.reflTrans (α 0)⟩
-
-    -- Compose with γ'|[0,n] on the right
-    have h_with_gamma' : Path.Homotopic
-      (((Path.refl (γ (part.t 0))).trans (α 0)).trans
-        (γ'.subpathOn (part.t 0) (part.t (Fin.last n))
-          (part.h_mono.monotone (Fin.zero_le (Fin.last n)))))
-      (((α 0).trans (γ'.subpathOn (part.t 0) (part.t (Fin.last n))
-          (part.h_mono.monotone (Fin.zero_le (Fin.last n)))))) := by
-      apply Path.Homotopic.hcomp h_refl_alpha (Path.Homotopic.refl _)
-
-    -- Now use h_γ_refl on the left to replace (refl · α_0) with (γ|[0,0] · α_0)
-    have h_with_subpath : Path.Homotopic
-      ((γ.subpathOn (part.t 0) (part.t 0) (part.h_mono.monotone (Fin.zero_le 0))).trans
-        ((α 0).trans (γ'.subpathOn (part.t 0) (part.t (Fin.last n))
-          (part.h_mono.monotone (Fin.zero_le (Fin.last n))))))
-      (((Path.refl (γ (part.t 0))).trans (α 0)).trans
-        (γ'.subpathOn (part.t 0) (part.t (Fin.last n))
-          (part.h_mono.monotone (Fin.zero_le (Fin.last n))))) := by
-      -- TODO: fix associativity issue with hcomp
-      sorry
-
-    -- Combine with h_with_gamma'
-    have h_combined := h_with_subpath.trans h_with_gamma'
-
-    -- Now we need to relate the LHS of γ_aux 0, which is ((γ|[0,0] · α_0) · γ'|[0,n]),
-    -- with what we have in h_combined, which starts with (γ|[0,0] · (α_0 · γ'|[0,n]))
-
-    -- Use trans_assoc to rearrange
-    have h_assoc : Path.Homotopic
-      (((γ.subpathOn (part.t 0) (part.t 0) (part.h_mono.monotone (Fin.zero_le 0))).trans
-          (α 0)).trans
-        (γ'.subpathOn (part.t 0) (part.t (Fin.last n))
-          (part.h_mono.monotone (Fin.zero_le (Fin.last n)))))
-      ((γ.subpathOn (part.t 0) (part.t 0) (part.h_mono.monotone (Fin.zero_le 0))).trans
-        ((α 0).trans (γ'.subpathOn (part.t 0) (part.t (Fin.last n))
-          (part.h_mono.monotone (Fin.zero_le (Fin.last n)))))) := by
-      exact Path.Homotopic.trans_assoc _ _ _
-
-    -- Chain h_assoc with h_combined
-    have h_to_alpha : Path.Homotopic
-      (((γ.subpathOn (part.t 0) (part.t 0) (part.h_mono.monotone (Fin.zero_le 0))).trans
-          (α 0)).trans
-        (γ'.subpathOn (part.t 0) (part.t (Fin.last n))
-          (part.h_mono.monotone (Fin.zero_le (Fin.last n)))))
-      ((α 0).trans (γ'.subpathOn (part.t 0) (part.t (Fin.last n))
-          (part.h_mono.monotone (Fin.zero_le (Fin.last n))))) := by
-      exact h_assoc.trans h_combined
-
-    -- Now build the final proof
-    -- LHS: γ_aux 0 = (((γ|[0,0] · α_0) · γ'|[0,n])).cast
-    -- RHS: ((α_0).cast).trans γ'
-    -- We've shown: (((γ|[0,0] · α_0) · γ'|[0,n])) ≃ (α_0 · γ'|[0,n])
-
-    -- Chain: h_to_alpha then use h_γ'_full
-    have h_step1 : Path.Homotopic
-      (((γ.subpathOn (part.t 0) (part.t 0) (part.h_mono.monotone (Fin.zero_le 0))).trans
-          (α 0)).trans
-        (γ'.subpathOn (part.t 0) (part.t (Fin.last n))
-          (part.h_mono.monotone (Fin.zero_le (Fin.last n)))))
-      ((α 0).trans ((γ'.subpathOn (part.t 0) (part.t (Fin.last n))
-          (part.h_mono.monotone (Fin.zero_le (Fin.last n)))).cast
-        (by rw [part.h_start, γ'.source])
-        (by rw [part.h_end, γ'.target]))) := by
-      apply h_to_alpha.trans
-      apply Path.Homotopic.hcomp (Path.Homotopic.refl _)
-      apply Path.Homotopic.symm
-      constructor
-      exact Path.Homotopy.refl _
-
-    -- Now use h_γ'_full to replace (γ'|[0,n]).cast with γ'
-    -- This requires handling casts carefully
-    have h_step2 : Path.Homotopic
-      ((α 0).trans ((γ'.subpathOn (part.t 0) (part.t (Fin.last n))
-          (part.h_mono.monotone (Fin.zero_le (Fin.last n)))).cast
-        (by rw [part.h_start, γ'.source])
-        (by rw [part.h_end, γ'.target])))
-      (((α 0).cast (by rw [part.h_start, γ.source])
-          (by rw [part.h_start, γ'.source])).trans γ') := by
-      sorry
-
-    -- Chain everything together
-    -- γ_aux 0 has an outer cast which preserves homotopy
-    -- TODO: The cast on α_0 in the RHS doesn't match, need to fix type unification
+    apply Path.Homotopic.Quotient.exact
+    dsimp [γ_aux]
+    simp
     sorry
+    -- -- I think this simp lemma should go the other way: casts move inwards.
+    -- simp only [← Path.trans_cast]
+    -- apply Homotopic.trans_congr' (by simp)
+    -- · apply Path.Homotopic.trans
+    --   · apply Homotopic.trans_congr
+    --     · sorry
+    --     · apply Path.Homotopic.refl
+    --     · sorry
+    --   · sorry
+    -- · sorry
 
   -- Final case: γ_aux (Fin.last n) ≃ γ · α_n
   -- At i=n, γ|[0,1] is all of γ, and γ'|[1,1] is constant, so this simplifies to γ · α_n
