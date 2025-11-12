@@ -35,7 +35,7 @@ Whenever you state a lemma about the coercion `ℚ≥0 → ℚ`, check that Lean
 `Subtype.val`. Else your lemma will never apply.
 -/
 
-assert_not_exists CompleteLattice OrderedCommMonoid
+assert_not_exists CompleteLattice IsOrderedMonoid
 
 library_note2 «specialised high priority simp lemma» /--
 It sometimes happens that a `@[simp]` lemma declared early in the library can be proved by `simp`
@@ -49,9 +49,6 @@ un``@[simp]``ed):
 -/
 
 open Function
-
-instance Rat.instZeroLEOneClass : ZeroLEOneClass ℚ where
-  zero_le_one := rfl
 
 instance Rat.instPosMulMono : PosMulMono ℚ where
   mul_le_mul_of_nonneg_left r hr p q hpq := by

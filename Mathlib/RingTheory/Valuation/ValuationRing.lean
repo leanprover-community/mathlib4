@@ -255,22 +255,19 @@ section
 variable (A : Type u) [CommRing A] [Nontrivial A] [PreValuationRing A]
 
 instance (priority := 100) isLocalRing : IsLocalRing A :=
-  IsLocalRing.of_isUnit_or_isUnit_one_sub_self
-    (by
-      intro a
-      obtain ⟨c, h | h⟩ := PreValuationRing.cond a (1 - a)
-      · left
-        apply isUnit_of_mul_eq_one _ (c + 1)
-        simp [mul_add, h]
-      · right
-        apply isUnit_of_mul_eq_one _ (c + 1)
-        simp [mul_add, h])
+  IsLocalRing.of_isUnit_or_isUnit_one_sub_self fun a ↦ by
+    obtain ⟨c, h | h⟩ := PreValuationRing.cond a (1 - a)
+    · left
+      refine .of_mul_eq_one (c + 1) ?_
+      simp [mul_add, h]
+    · right
+      refine .of_mul_eq_one (c + 1) ?_
+      simp [mul_add, h]
 
 instance le_total_ideal : IsTotal (Ideal A) LE.le := by
   constructor; intro α β
-  by_cases h : α ≤ β; · exact Or.inl h
-  rw [SetLike.le_def, not_forall] at h
-  push_neg at h
+  by_cases! h : ∀ x : A, x ∈ α → x ∈ β
+  · exact Or.inl h
   obtain ⟨a, h₁, h₂⟩ := h
   right
   intro b hb
