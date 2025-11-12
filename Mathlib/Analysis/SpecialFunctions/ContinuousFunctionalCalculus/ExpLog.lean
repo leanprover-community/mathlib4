@@ -66,7 +66,7 @@ lemma exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
   conv_rhs => rw [← cfc_id 𝕜 a ha, cfc_apply id a ha]
   have h := (cfcHom_isClosedEmbedding (R := 𝕜) (show p a from ha)).continuous
   have _ : ContinuousOn exp (spectrum 𝕜 a) := exp_continuous.continuousOn
-  have : Algebra ℚ A := RestrictScalars.algebra ℚ 𝕜 A
+  let +nondep : Algebra ℚ A := RestrictScalars.algebra ℚ 𝕜 A
   simp_rw [← map_exp _ h, cfc_apply exp a ha]
   congr 1
   ext
