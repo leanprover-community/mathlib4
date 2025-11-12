@@ -295,7 +295,7 @@ omit [∀ (n : ℤ), (shiftFunctor C n).Additive]
 
 end
 
-instance instAddCommGroupTriangleHom : AddCommGroup (T₁ ⟶ T₂) where
+instance instAddCommGroupTriangleMorphism : AddCommGroup (T₁ ⟶ T₂) where
   zero_add f := by ext <;> apply zero_add
   add_assoc f g h := by ext <;> apply add_assoc
   add_zero f := by ext <;> apply add_zero
