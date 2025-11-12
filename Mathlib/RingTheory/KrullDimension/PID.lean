@@ -5,7 +5,6 @@ Authors: Jingting Wang
 -/
 import Mathlib.RingTheory.Ideal.Height
 import Mathlib.RingTheory.KrullDimension.Zero
-import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # The Krull dimension of a principal ideal domain
