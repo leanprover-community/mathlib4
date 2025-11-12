@@ -600,14 +600,14 @@ def equivDomain (f : Γ ≃o Γ') : HahnSeries Γ R ≃ HahnSeries Γ' R where
       (x.isPWO_support.image_of_monotone f.monotone).mono fun b hb => by
         contrapose! hb
         rw [Function.mem_support]
-        rwa [OrderIso.image_eq_preimage, Set.mem_preimage] at hb }
+        rwa [OrderIso.image_eq_preimage_symm, Set.mem_preimage] at hb }
   invFun x :=
   { coeff g := x.coeff (f g)
     isPWO_support' :=
       (x.isPWO_support.image_of_monotone f.symm.monotone).mono fun b hb => by
         contrapose! hb
         rw [Function.mem_support]
-        rwa [OrderIso.image_eq_preimage, Set.mem_preimage] at hb }
+        rwa [OrderIso.image_eq_preimage_symm, Set.mem_preimage] at hb }
   left_inv x := by simp
   right_inv x := by simp
 

@@ -220,11 +220,6 @@ variable [LieRing N] [LieAlgebra R N] [LieRing M] [LieAlgebra R M] (E : Extensio
     (hE : E.IsCentral) {s : M →ₗ[R] E.L}
     (hs : Function.LeftInverse E.proj s) (p : E.L →ₗ[R] N)
 
-include hs in
-omit [LieRingModule M N] [LieModule R M N] [LieModule.IsTrivial M N] in
-lemma section_lie_sub_mem_ker (x y : M) : ⁅s x, s y⁆ - s ⁅x, y⁆ ∈ LieHom.ker E.proj := by
-  rw [LieHom.mem_ker, map_sub, sub_eq_zero, LieHom.map_lie, hs, hs, hs]
-
 /-- An auxiliary function for defining the 2-cocycle attached to a section. -/
 @[simps]
 def twoCocycleOfSplittingAux : M →ₗ[R] M →ₗ[R] E.proj.ker where
@@ -239,18 +234,17 @@ include E hE hs in
 /-- Construct a cocycle from a module-split central extension. -/
 def twoCocycleOfSplitting : twoCocycle R M N where
   val := {
-    val := (E.twoCocycleOfSplittingAux hs).compr₂ (E.projInclEquiv ≪≫ₗ E.sectLeft).toLinearMap
+    val := (E.twoCocycleOfSplittingAux hs).compr₂ (E.toKer).symm
     property _ := by
       simp only [LinearMap.compr₂_apply]
-      refine (map_eq_zero_iff (E.projInclEquiv ≪≫ₗ E.sectLeft)
-        (LinearEquiv.injective (E.projInclEquiv ≪≫ₗ E.sectLeft))).mpr (Subtype.eq ?_)
+      refine (map_eq_zero_iff E.toKer.symm E.toKer.symm.injective).mpr (Subtype.eq ?_)
       simp }
   property := by
     ext x y z
     simp only [d₂₃_apply, ← twoCochain_val_apply, LinearMap.compr₂_apply, LinearEquiv.coe_coe,
       trivial_lie_zero, sub_self, add_zero, zero_sub, LinearMap.zero_apply]
     rw [← map_neg, ← map_add, ← map_sub]
-    refine (LinearEquiv.map_eq_zero_iff (E.projInclEquiv ≪≫ₗ E.sectLeft)).mpr ?_
+    refine (E.toKer.symm.map_eq_zero_iff E.toKer.symm.injective).mpr ?_
     simp only [twoCocycleOfSplittingAux, LinearMap.coe_mk, AddHom.coe_mk, lie_lie, map_sub]
     refine Subtype.eq ?_
     simp only [AddSubgroupClass.coe_sub, LieSubmodule.coe_add, NegMemClass.coe_neg, neg_sub,
@@ -272,16 +266,15 @@ def twoCocycleOfSplitting : twoCocycle R M N where
 
 lemma twoCocycleOfSplitting_apply_apply (a b : M) :
     (E.twoCocycleOfSplitting hE hs).val a b =
-      (E.projInclEquiv ≪≫ₗ E.sectLeft).toLinearMap
-        ⟨⁅s a, s b⁆ - s ⁅a,b⁆, E.section_lie_sub_mem_ker hs a b⟩ := by
+      E.toKer.symm ⟨⁅s a, s b⁆ - s ⁅a,b⁆, E.section_lie_sub_mem_ker hs a b⟩ := by
   rfl
 
 @[simp]
 lemma incl_twoCocycleOfSplitting_apply (a b : M) :
     E.incl ((E.twoCocycleOfSplitting hE hs).val a b) = ⁅s a, s b⁆ - s ⁅a, b⁆ := by
-  simp only [twoCocycleOfSplitting_apply_apply, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
-    incl_sectLeft]
-  rfl
+  have : E.incl ((E.twoCocycleOfSplitting hE hs).val a b) =
+    E.toKer ((E.twoCocycleOfSplitting hE hs).val a b) := by rfl
+  rw [this, twoCocycleOfSplitting_apply_apply, LieEquiv.apply_symm_apply]
 
 @[simp]
 lemma twoCocycleOfSplitting_ofTwoCocycle (h : IsLieAbelian N) (c : twoCocycle R M N) :
@@ -324,9 +317,7 @@ lemma coboundary_of_two_splitting {s₁ s₂ : M →ₗ[R] E.L}
     oneCochain_of_two_splitting_apply, trivial_lie_zero, sub_self, zero_sub, sub_neg_eq_add]
   rw [twoCochain_val_apply, twoCocycleOfSplitting_apply_apply, twoCochain_val_apply,
     twoCocycleOfSplitting_apply_apply]
-  simp only [LinearEquiv.coe_coe, LinearEquiv.trans_apply]
-  rw [← map_add, ← map_add, EquivLike.apply_eq_iff_eq, EquivLike.apply_eq_iff_eq,
-    AddMemClass.mk_add_mk]
+  rw [← map_add, EquivLike.apply_eq_iff_eq, AddMemClass.mk_add_mk]
   exact Subtype.mk_eq_mk.mpr (by simp [E.bracket_eq_of_two_splitting hE hs₁ hs₂])
 
 omit [LieRingModule M N] [LieModule R M N] [LieModule.IsTrivial M N] in
