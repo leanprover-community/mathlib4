@@ -6,7 +6,6 @@ Authors: Chris Birkbeck
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Analysis.Complex.SummableUniformlyOn
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
-import Mathlib.Data.Int.Star
 import Mathlib.NumberTheory.LSeries.Dirichlet
 import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
