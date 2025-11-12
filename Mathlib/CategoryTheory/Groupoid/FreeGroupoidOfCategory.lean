@@ -109,6 +109,15 @@ theorem lift_spec (φ : C ⥤ G) : of C ⋙ lift φ = φ :=
         (lift φ).toPrefunctor = φ.toPrefunctor
     simp [lift, Quotient.lift_spec, Quiver.FreeGroupoid.lift_spec])
 
+@[simp]
+lemma lift_obj_mk {E : Type u₂} [Groupoid.{v₂} E] (φ : C ⥤ E) (X : C) :
+    (lift φ).obj (mk X) = φ.obj X := rfl
+
+@[simp]
+lemma lift_map_mk {E : Type u₂} [Groupoid.{v₂} E] (φ : C ⥤ E) {X Y : C} (f : X ⟶ Y) :
+    (lift φ).map (homMk f) = φ.map f := by
+  simpa using Functor.congr_hom (lift_spec φ) f
+
 theorem lift_unique (φ : C ⥤ G) (Φ : FreeGroupoid C ⥤ G) (hΦ : of C ⋙ Φ = φ) :
     Φ = lift φ := by
   apply Quotient.lift_unique
@@ -202,15 +211,6 @@ lemma map_obj_mk (φ : C ⥤ D) (X : C) : (map φ).obj (mk X) = mk (φ.obj X) :=
 @[simp]
 lemma map_map_homMk (φ : C ⥤ D) {X Y : C} (f : X ⟶ Y) :
     (map φ).map (homMk f) = homMk (φ.map f) := rfl
-
-@[simp]
-lemma lift_obj_mk {E : Type u₂} [Groupoid.{v₂} E] (φ : C ⥤ E) (X : C) :
-    (lift φ).obj (mk X) = φ.obj X := rfl
-
-@[simp]
-lemma lift_map_mk {E : Type u₂} [Groupoid.{v₂} E] (φ : C ⥤ E) {X Y : C} (f : X ⟶ Y) :
-    (lift φ).map (homMk f) = φ.map f := by
-  simpa using Functor.congr_hom (lift_spec φ) f
 
 variable {E : Type u₂} [Groupoid.{v₂} E]
 
