@@ -14,7 +14,7 @@ Let `C` be an abelian category with enough injectives. We show that
 any morphism `f : K ⟶ L` between bounded below cochain complexes in `C`
 can be factored as `i ≫ p` where `i : K ⟶ L'` is a monomorphism (with
 `L'` bounded below) and `p : L' ⟶ L` a quasi-isomorphism that is an epimorphism
-with a degreewise injective kernel. (This is part of the factorization axion CM5
+with a degreewise injective kernel. (This is part of the factorization axiom CM5
 for a model category structure on bounded below cochain complexes (TODO @joelriou).)
 
 -/
