@@ -83,12 +83,11 @@ instance : Mono (i f) := HomologicalComplex.mono_of_mono_f (i f) inferInstance
 @[reassoc (attr := simp)]
 lemma fac : i f ≫ p K L = f := by simp [i]
 
-variable (K L)
-
 instance (n : ℤ) : Injective ((mappingCone (𝟙 (I K))).X n) :=
   Injective.of_iso (HomologicalComplex.homotopyCofiber.XIsoBiprod (𝟙 (I K)) n (n + 1) rfl).symm
     inferInstance
 
+variable (K L) in
 lemma degreewiseEpiWithInjectiveKernel_p :
     degreewiseEpiWithInjectiveKernel (p K L) := by
   intro n
@@ -99,6 +98,7 @@ lemma degreewiseEpiWithInjectiveKernel_p :
     (biprod.inr :_ ⟶ (mappingCone (𝟙 (I K))) ⊞ L).f n, ?_, ?_, ?_⟩⟩⟩
   all_goals simp [← HomologicalComplex.comp_f, ← HomologicalComplex.add_f_apply]
 
+variable (K L) in
 /-- The second projection `p K L : mappingCone (𝟙 (I K)) ⊞ L ⟶ L` is a homotopy equivalence. -/
 noncomputable def homotopyEquiv : HomotopyEquiv (mappingCone (𝟙 (I K)) ⊞ L) L where
   hom := p K L
