@@ -307,6 +307,7 @@ theorem antitone_continuousOn {f : α → β} : Antitone (ContinuousOn f) := fun
 ## Relation between `ContinuousAt` and `ContinuousWithinAt`
 -/
 
+@[fun_prop]
 theorem ContinuousAt.continuousWithinAt (h : ContinuousAt f x) :
     ContinuousWithinAt f s x :=
   ContinuousWithinAt.mono ((continuousWithinAt_univ f x).2 h) (subset_univ _)
@@ -335,6 +336,7 @@ theorem Continuous.continuousOn (h : Continuous f) : ContinuousOn f s := by
   rw [← continuousOn_univ] at h
   exact h.mono (subset_univ _)
 
+@[fun_prop]
 theorem Continuous.continuousWithinAt (h : Continuous f) :
     ContinuousWithinAt f s x :=
   h.continuousAt.continuousWithinAt
