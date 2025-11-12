@@ -283,10 +283,6 @@ theorem rootOfSplits'_eq_rootOfSplits {f : K[X]} (hf : f.Splits i) (hfd) :
     rootOfSplits' i hf hfd = rootOfSplits i hf (f.degree_map i ▸ hfd) :=
   rfl
 
-theorem roots_map {f : R[X]} {S : Type*} [CommRing S] [IsDomain S] (i : R →+* S) (hf : f.Factors) :
-    (f.map i).roots = f.roots.map i :=
-  (roots_map_of_injective_of_card_eq_natDegree i.injective hf.natDegree_eq_card_roots.symm).symm
-
 theorem map_rootOfSplits {f : K[X]} (hf : f.Splits i) (hfd) :
     f.eval₂ i (rootOfSplits i hf hfd) = 0 :=
   map_rootOfSplits' i hf (ne_of_eq_of_ne (degree_map f i) hfd)
@@ -298,6 +294,10 @@ theorem natDegree_eq_card_roots {p : K[X]} {i : K →+* L} (hsplit : Splits i p)
 theorem degree_eq_card_roots {p : K[X]} {i : K →+* L} (p_ne_zero : p ≠ 0) (hsplit : Splits i p) :
     p.degree = Multiset.card (p.map i).roots := by
   rw [degree_eq_natDegree p_ne_zero, natDegree_eq_card_roots hsplit]
+
+theorem roots_map {f : R[X]} {S : Type*} [CommRing S] [IsDomain S] (i : R →+* S) (hf : f.Factors) :
+    (f.map i).roots = f.roots.map i :=
+  (roots_map_of_injective_of_card_eq_natDegree i.injective hf.natDegree_eq_card_roots.symm).symm
 
 theorem Splits.mem_subfield_of_isRoot (F : Subfield K) {f : F[X]} (hnz : f ≠ 0)
     (hf : Factors f) {x : K} (hx : (f.map F.subtype).IsRoot x) :
