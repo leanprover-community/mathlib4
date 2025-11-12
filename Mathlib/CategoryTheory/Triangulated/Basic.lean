@@ -6,6 +6,7 @@ Authors: Luke Kershaw
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.CategoryTheory.Shift.Basic
 
 /-!
@@ -229,6 +230,112 @@ lemma Triangle.eqToHom_hom₂ {A B : Triangle C} (h : A = B) :
     (eqToHom h).hom₂ = eqToHom (by subst h; rfl) := by subst h; rfl
 lemma Triangle.eqToHom_hom₃ {A B : Triangle C} (h : A = B) :
     (eqToHom h).hom₃ = eqToHom (by subst h; rfl) := by subst h; rfl
+
+section Preadditive
+
+variable [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
+
+instance : Zero (T₁ ⟶ T₂) where
+  zero :=
+    { hom₁ := 0
+      hom₂ := 0
+      hom₃ := 0 }
+
+@[simp] lemma Triangle.zero_hom₁ : (0 : T₁ ⟶ T₂).hom₁ = 0 := rfl
+@[simp] lemma Triangle.zero_hom₂ : (0 : T₁ ⟶ T₂).hom₂ = 0 := rfl
+@[simp] lemma Triangle.zero_hom₃ : (0 : T₁ ⟶ T₂).hom₃ = 0 := rfl
+
+@[simps]
+instance : Add (T₁ ⟶ T₂) where
+  add f g :=
+    { hom₁ := f.hom₁ + g.hom₁
+      hom₂ := f.hom₂ + g.hom₂
+      hom₃ := f.hom₃ + g.hom₃ }
+
+@[simp] lemma Triangle.add_hom₁ (f g : T₁ ⟶ T₂) : (f + g).hom₁ = f.hom₁ + g.hom₁ := rfl
+@[simp] lemma Triangle.add_hom₂ (f g : T₁ ⟶ T₂) : (f + g).hom₂ = f.hom₂ + g.hom₂ := rfl
+@[simp] lemma Triangle.add_hom₃ (f g : T₁ ⟶ T₂) : (f + g).hom₃ = f.hom₃ + g.hom₃ := rfl
+
+@[simps]
+instance : Neg (T₁ ⟶ T₂) where
+  neg f :=
+    { hom₁ := -f.hom₁
+      hom₂ := -f.hom₂
+      hom₃ := -f.hom₃ }
+
+@[simp] lemma Triangle.neg_hom₁ (f : T₁ ⟶ T₂) : (-f).hom₁ = -f.hom₁ := rfl
+@[simp] lemma Triangle.neg_hom₂ (f : T₁ ⟶ T₂) : (-f).hom₂ = -f.hom₂ := rfl
+@[simp] lemma Triangle.neg_hom₃ (f : T₁ ⟶ T₂) : (-f).hom₃ = -f.hom₃ := rfl
+
+@[simps]
+instance : Sub (T₁ ⟶ T₂) where
+  sub f g :=
+    { hom₁ := f.hom₁ - g.hom₁
+      hom₂ := f.hom₂ - g.hom₂
+      hom₃ := f.hom₃ - g.hom₃ }
+
+@[simp] lemma Triangle.sub_hom₁ (f g : T₁ ⟶ T₂) : (f - g).hom₁ = f.hom₁ - g.hom₁ := rfl
+@[simp] lemma Triangle.sub_hom₂ (f g : T₁ ⟶ T₂) : (f - g).hom₂ = f.hom₂ - g.hom₂ := rfl
+@[simp] lemma Triangle.sub_hom₃ (f g : T₁ ⟶ T₂) : (f - g).hom₃ = f.hom₃ - g.hom₃ := rfl
+
+section
+
+variable {R : Type*} [Semiring R] [Linear R C]
+  [∀ (n : ℤ), Functor.Linear R (shiftFunctor C n)]
+
+@[simps!]
+instance :
+    SMul R (T₁ ⟶ T₂) where
+  smul n f :=
+    { hom₁ := n • f.hom₁
+      hom₂ := n • f.hom₂
+      hom₃ := n • f.hom₃ }
+
+omit [∀ (n : ℤ), (shiftFunctor C n).Additive]
+
+@[simp] lemma Triangle.smul_hom₁ (n : R) (f : T₁ ⟶ T₂) : (n • f).hom₁ = n • f.hom₁ := rfl
+@[simp] lemma Triangle.smul_hom₂ (n : R) (f : T₁ ⟶ T₂) : (n • f).hom₂ = n • f.hom₂ := rfl
+@[simp] lemma Triangle.smul_hom₃ (n : R) (f : T₁ ⟶ T₂) : (n • f).hom₃ = n • f.hom₃ := rfl
+
+end
+
+instance instAddCommGroupTriangleHom : AddCommGroup (T₁ ⟶ T₂) where
+  zero_add f := by ext <;> apply zero_add
+  add_assoc f g h := by ext <;> apply add_assoc
+  add_zero f := by ext <;> apply add_zero
+  add_comm f g := by ext <;> apply add_comm
+  neg_add_cancel f := by ext <;> apply neg_add_cancel
+  sub_eq_add_neg f g := by ext <;> apply sub_eq_add_neg
+  nsmul n f := n • f
+  nsmul_zero f := by cat_disch
+  nsmul_succ n f := by ext <;> apply AddMonoid.nsmul_succ
+  zsmul n f := n • f
+  zsmul_zero' := by cat_disch
+  zsmul_succ' n f := by ext <;> apply SubNegMonoid.zsmul_succ'
+  zsmul_neg' n f := by ext <;> apply SubNegMonoid.zsmul_neg'
+
+instance instPreadditiveTriangle : Preadditive (Triangle C) where
+
+end Preadditive
+
+section Linear
+
+variable [Preadditive C] {R : Type*} [Semiring R] [Linear R C]
+  [∀ (n : ℤ), (shiftFunctor C n).Additive]
+  [∀ (n : ℤ), Functor.Linear R (shiftFunctor C n)]
+
+attribute [local simp] mul_smul add_smul in
+instance : Module R (T₁ ⟶ T₂) where
+  one_smul := by aesop
+  mul_smul := by aesop
+  smul_zero := by aesop
+  smul_add := by aesop
+  add_smul := by aesop
+  zero_smul := by aesop
+
+instance : Linear R (Triangle C) where
+
+end Linear
 
 /-- The obvious triangle `X₁ ⟶ X₁ ⊞ X₂ ⟶ X₂ ⟶ X₁⟦1⟧`. -/
 @[simps!]
