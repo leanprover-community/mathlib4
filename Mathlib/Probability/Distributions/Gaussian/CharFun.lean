@@ -191,9 +191,4 @@ protected lemma IsGaussian.ext_iff {ν : Measure E} [IsGaussian μ] [IsGaussian 
 
 end InnerProductSpace
 
-lemma IsGaussian.eq_gaussianReal (μ : Measure ℝ) [IsGaussian μ] :
-    μ = gaussianReal μ[id] Var[id; μ].toNNReal := by
-  nth_rw 1 [← Measure.map_id (μ := μ), ← coe_id' (R₁ := ℝ), map_eq_gaussianReal]
-  rfl
-
 end ProbabilityTheory
