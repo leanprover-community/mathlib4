@@ -514,6 +514,11 @@ theorem coeff_zero_eq_prod_roots_of_monic_of_splits {P : K[X]} (hmo : P.Monic)
     (hP : P.Factors) : coeff P 0 = (-1) ^ P.natDegree * P.roots.prod := by
   simp [hmo, coeff_zero_eq_leadingCoeff_mul_prod_roots_of_splits hP]
 
+theorem nextCoeff_eq_neg_sum_roots_mul_leadingCoeff_of_splits {P : K[X]} (hP : P.Factors) :
+    P.nextCoeff = -P.leadingCoeff * P.roots.sum := by
+  nth_rw 1 [hP.eq_prod_roots]
+  simp [Multiset.sum_map_neg', monic_X_sub_C, Monic.nextCoeff_multiset_prod]
+
 /-- If `P` is a monic polynomial that splits, then `P.nextCoeff` equals the negative of the sum
 of the roots. -/
 theorem nextCoeff_eq_neg_sum_roots_of_monic_of_splits {P : K[X]} (hmo : P.Monic)
@@ -521,9 +526,11 @@ theorem nextCoeff_eq_neg_sum_roots_of_monic_of_splits {P : K[X]} (hmo : P.Monic)
   nth_rw 1 [hP.eq_prod_roots_of_monic hmo]
   simp [Multiset.sum_map_neg', monic_X_sub_C, Monic.nextCoeff_multiset_prod]
 
-theorem coeff_zero_eq_leadingCoeff_mul_prod_roots_of_splits {P : K[X]} (hP : P.Splits <| .id K) :
-    P.coeff 0 = (-1) ^ P.natDegree * P.leadingCoeff * P.roots.prod := by
-  simp [hmo, nextCoeff_eq_neg_sum_roots_mul_leadingCoeff_of_splits hP]
+@[deprecated (since := "2025-10-08")]
+alias prod_roots_eq_coeff_zero_of_monic_of_splits := coeff_zero_eq_prod_roots_of_monic_of_splits
+
+@[deprecated (since := "2025-10-08")]
+alias sum_roots_eq_nextCoeff_of_monic_of_split := nextCoeff_eq_neg_sum_roots_of_monic_of_splits
 
 end Splits
 
