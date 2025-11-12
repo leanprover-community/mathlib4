@@ -109,13 +109,14 @@ theorem ncard_primesOver_of_prime_pow :
     (primesOver 𝒑 (𝓞 K)).ncard = 1 := by
   have : IsGalois ℚ K := isGalois {p ^ (k + 1)} ℚ K
   have : 𝒑 ≠ ⊥ := by simpa using hp.out.ne_zero
-  have h_main := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn this (𝓞 K) ℚ K
+  have h_main := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn this (𝓞 K) (K ≃ₐ[ℚ] K)
   have hζ := hK.zeta_spec
   have := liesOver_span_zeta_sub_one p k hζ
-  rwa [ramificationIdxIn_eq_ramificationIdx 𝒑 (span {hζ.toInteger - 1}) ℚ K,
-    inertiaDegIn_eq_inertiaDeg 𝒑 (span {hζ.toInteger - 1}) ℚ K, inertiaDeg_span_zeta_sub_one,
+  rwa [ramificationIdxIn_eq_ramificationIdx 𝒑 (span {hζ.toInteger - 1}) (K ≃ₐ[ℚ] K),
+    inertiaDegIn_eq_inertiaDeg 𝒑 (span {hζ.toInteger - 1}) (K ≃ₐ[ℚ] K),
+    inertiaDeg_span_zeta_sub_one,
     ramificationIdx_span_zeta_sub_one, mul_one, ← Nat.totient_prime_pow_succ hp.out,
-    ← finrank _ K, Nat.mul_eq_right] at h_main
+    ← finrank _ K, IsGaloisGroup.card_eq_finrank (K ≃ₐ[ℚ] K) ℚ K, Nat.mul_eq_right] at h_main
   exact Module.finrank_pos.ne'
 
 theorem eq_span_zeta_sub_one_of_liesOver (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver 𝒑] :
