@@ -79,7 +79,7 @@ lemma rectangle_eq_convexHull (z w : ℂ) :
     Rectangle z w = convexHull ℝ {z, z.re + w.im * I, w.re + z.im * I, w} := by
   simp_rw [Rectangle, ← segment_eq_uIcc, ← convexHull_pair, ← convexHull_reProdIm,
     ← preimage_equivRealProd_prod, insert_prod, singleton_prod, image_pair, insert_union,
-    ← insert_eq, preimage_equiv_eq_image_symm, image_insert_eq, image_singleton,
+    ← insert_eq, ← Equiv.image_symm_eq_preimage, image_insert_eq, image_singleton,
     equivRealProd_symm_apply, re_add_im]
 
 /-- If opposite corners of a rectangle are contained in a convex set, the whole rectangle is. -/

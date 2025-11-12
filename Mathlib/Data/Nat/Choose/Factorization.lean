@@ -243,9 +243,9 @@ theorem factorization_factorial_eq_zero_of_lt (h : n < p) : (factorial n).factor
       Pi.add_apply, hn (lt_of_succ_lt h), add_zero, factorization_eq_zero_of_lt h]
 
 theorem factorization_choose_eq_zero_of_lt (h : n < p) : (choose n k).factorization p = 0 := by
-  by_cases hnk : n < k; · simp [choose_eq_zero_of_lt hnk]
-  rw [choose_eq_factorial_div_factorial (le_of_not_gt hnk),
-    factorization_div (factorial_mul_factorial_dvd_factorial (le_of_not_gt hnk)), Finsupp.coe_tsub,
+  by_cases! hnk : n < k; · simp [choose_eq_zero_of_lt hnk]
+  rw [choose_eq_factorial_div_factorial hnk,
+    factorization_div (factorial_mul_factorial_dvd_factorial hnk), Finsupp.coe_tsub,
     Pi.sub_apply, factorization_factorial_eq_zero_of_lt h, zero_tsub]
 
 /-- If a prime `p` has positive multiplicity in the `n`th central binomial coefficient,
