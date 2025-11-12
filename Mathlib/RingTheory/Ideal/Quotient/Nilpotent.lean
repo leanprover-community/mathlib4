@@ -70,4 +70,4 @@ theorem IsNilpotent.isUnit_quotient_mk_iff {R : Type*} [CommRing R] {I : Ideal R
     have : x * (y * (2 - x * y)) = 1 := by
       rw [eq_comm, ← sub_eq_zero, ← this]
       ring
-    exact isUnit_of_mul_eq_one _ _ this
+    exact .of_mul_eq_one _ this
