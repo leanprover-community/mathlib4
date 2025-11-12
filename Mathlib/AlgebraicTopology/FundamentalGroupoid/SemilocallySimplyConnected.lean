@@ -831,71 +831,7 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
         (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target])))
       (((α 0).cast (show x = γ (part.t 0) by rw [part.h_start, γ.source])
                    (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])).trans γ') := by
-  -- Proceed by induction on n
-  induction n with
-  | zero =>
-    -- For n = 0, IntervalPartition 0 is impossible
-    exfalso
-    exact IntervalPartition.not_zero part
-  | succ n ih =>
-    -- In this branch, the IntervalPartition parameter is (n+1)
-    -- So we have n+2 partition points and n+1 segments
-
-    -- For n=0: one segment, direct proof using the single rectangle
-    -- For n≥1: telescoping using IH
-
-    cases n with
-    | zero =>
-      -- Base case: IntervalPartition 1, one segment [0,1]
-      -- Rectangle 0: (γ|[0,1] · α₁) ≃ (α₀ · γ'|[0,1])
-      -- Need: (γ · α₁) ≃ (α₀ · γ')
-
-      have rect := h_rectangles 0
-
-      -- Simplify the indices: castSucc 0 = 0, succ 0 = 1
-      simp only [Fin.castSucc_zero, Fin.succ_zero_eq_one] at rect
-
-      -- Show that Fin.last 1 = 1
-      have h_last : Fin.last (0 + 1) = 1 := rfl
-
-      -- Show that part.t 0 = 0 and part.t 1 = 1
-      have h0 : part.t 0 = 0 := part.h_start
-      have h1 : part.t 1 = 1 := part.h_end
-
-      -- Use subpathOn_zero_one for γ and γ'
-      have h_γ := Path.subpathOn_zero_one γ
-      have h_γ' := Path.subpathOn_zero_one γ'
-
-      -- The rectangle gives us the relation between subpaths
-      -- rect: (γ.subpathOn (part.t 0) (part.t 1) ...).trans (α 1) ≃ (α 0).trans (γ'.subpathOn (part.t 0) (part.t 1) ...)
-
-      -- Cast α paths using h0 and h1
-      let α_1_cast := (α 1).cast (by rw [h1, γ.target]) (by rw [h1, γ'.target])
-      let α_0_cast := (α 0).cast (by rw [h0, γ.source]) (by rw [h0, γ'.source])
-
-      -- The proof involves chaining: γ · α₁ ≃ (γ|[0,1]) · α₁ ≃ α₀ · (γ'|[0,1]) ≃ α₀ · γ'
-      -- using h_γ, rect, and h_γ' with appropriate casting
-
-      -- This is a complex casting/homotopy manipulation problem
-      -- The structure is correct but the details involve careful path casting
-      -- Leaving as sorry for now as it's primarily a technical path algebra issue
-      sorry
-    | succ n' =>
-      -- General case: n' + 2 segments
-      -- The telescoping proof works as follows:
-      --
-      -- γ · α_{n'+2}
-      -- ≃ (γ_0 · ... · γ_{n'+1}) · α_{n'+2}           [decompose γ]
-      -- ≃ (γ_0 · ... · γ_{n'}) · (γ_{n'+1} · α_{n'+2})  [assoc]
-      -- ≃ (γ_0 · ... · γ_{n'}) · (α_{n'+1} · γ'_{n'+1}) [rectangle n'+1]
-      -- ≃ ((γ_0 · ... · γ_{n'}) · α_{n'+1}) · γ'_{n'+1} [assoc]
-      -- Now we need to show: (γ_0 · ... · γ_{n'}) · α_{n'+1} ≃ α_0 · (γ'_0 · ... · γ'_{n'})
-      -- This doesn't immediately match the IH structure
-      --
-      -- Alternative: Direct construction of the telescoping chain
-      -- For each segment i from n'+1 down to 0, apply the rectangle
-
-      sorry
+  sorry
 
 /-- Stronger version of paste_segment_homotopies that directly gives γ ≃ γ' when the endpoint
 loops live in SLSC neighborhoods.
