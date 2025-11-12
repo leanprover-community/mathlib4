@@ -5452,6 +5452,7 @@ import Mathlib.Probability.Distributions.Uniform
 import Mathlib.Probability.HasLaw
 import Mathlib.Probability.HasLawExists
 import Mathlib.Probability.IdentDistrib
+import Mathlib.Probability.IdentDistribIndep
 import Mathlib.Probability.Independence.Basic
 import Mathlib.Probability.Independence.BoundedContinuousFunction
 import Mathlib.Probability.Independence.CharacteristicFunction
