@@ -23,7 +23,7 @@ universe v u
 
 namespace CategoryTheory
 
-open Category Limits Pretriangulated ZeroObject Preadditive
+open Limits Pretriangulated
 
 variable {C : Type u} [Category.{v} C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
