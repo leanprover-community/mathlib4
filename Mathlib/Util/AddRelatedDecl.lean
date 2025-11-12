@@ -31,7 +31,7 @@ Arguments:
 * `suffix : String` will be appended to `src` to form the name of the new declaration.
 * `ref : Syntax` is the syntax where the user requested the related declaration.
 * `construct value levels : MetaM (Expr × List Name)`
-  given the original declaration as an expression, and its universe variables,
+  given an `Expr.const` referring to the original declaration, and its universe variables,
   should construct the value of the new declaration,
   along with the names of its universe variables.
 * `attrs` is the attributes that should be applied to both the new and the original declaration,
