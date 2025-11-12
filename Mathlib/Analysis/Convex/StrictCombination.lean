@@ -61,9 +61,11 @@ lemma StrictConvex.centerMass_mem_interior {s : Set V} {t : Finset ι} {w : ι �
           · grind
           · exfalso
             obtain ⟨i'', hi'', hwi''⟩ : ∃ i'' ∈ t, w i'' ≠ 0 := by grind
-            have hijt' : ∀ j'', j'' ∈ t → z j'' ≠ z i'' → w j'' = 0 := by grind
+            have hijt' : ∀ j'', j'' ∈ t → w j'' ≠ 0 → z j'' = Function.const _ (z i'') j'' := by
+              grind
             have hi : i = i' ∨ i = j' := by grind
-            have hzi'' : t.centerMass w z = z i'' := centerMass_const hsum_t hijt'
+            have hzi'' : t.centerMass w z = z i'' := by
+              rw [t.centerMass_congr_fun hijt', t.centerMass_const hsum_t]
             grind
         · exact strictConvex_iff_div.1 hs zi
             (hs.convex.centerMass_mem hs₀ (lt_of_le_of_ne (sum_nonneg hs₀) (Ne.symm hsum_t))
