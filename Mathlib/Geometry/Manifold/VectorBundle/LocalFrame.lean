@@ -420,7 +420,7 @@ lemma eq_sum_localFrame_coeff_smul [Fintype ι] (hx : x' ∈ e.baseSet) :
 variable (e b) in
 /-- A local frame locally spans the space of sections for `V`: for each local trivialisation `e`
   of `V` around `x`, we have `s = ∑ i, (b.localFrame_coeff e i s) • b.localFrame e i` -/
-lemma localFrame_eventually_eq_sum_coeff_smul [Fintype ι] (hxe : x ∈ e.baseSet) :
+lemma eventually_eq_localFrame_sum_coeff_smul [Fintype ι] (hxe : x ∈ e.baseSet) :
     ∀ᶠ x' in 𝓝 x, s x' = ∑ i, (e.localFrame_coeff I b i s x') • e.localFrame b i x' :=
   eventually_nhds_iff.mpr ⟨e.baseSet, fun _ ↦ e.eq_sum_localFrame_coeff_smul, e.open_baseSet, hxe⟩
 
