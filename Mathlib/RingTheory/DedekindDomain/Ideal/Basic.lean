@@ -359,11 +359,6 @@ instance : PosMulReflectLE (FractionalIdeal A⁰ K) where
 instance : MulPosReflectLE (FractionalIdeal A⁰ K) where
   elim I J K hJK := by simpa [I.2.ne'] using mul_left_mono (a := I.1⁻¹) hJK
 
-/-- Nonzero fractional ideals in a Dedekind domain are units.
-
-This is also available as `_root_.mul_inv_cancel`, using the
-`Semifield` instance defined below.
--/
 @[deprecated mul_inv_cancel₀ (since := "2025-09-14")]
 protected theorem mul_inv_cancel {I : FractionalIdeal A⁰ K} (hne : I ≠ 0) : I * I⁻¹ = 1 :=
   mul_inv_cancel₀ hne
