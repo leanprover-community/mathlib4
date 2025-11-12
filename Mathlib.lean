@@ -561,6 +561,7 @@ import Mathlib.Algebra.Homology.Embedding.TruncLE
 import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
 import Mathlib.Algebra.Homology.ExactSequence
 import Mathlib.Algebra.Homology.Factorizations.Basic
+import Mathlib.Algebra.Homology.Factorizations.CM5b
 import Mathlib.Algebra.Homology.Functor
 import Mathlib.Algebra.Homology.GrothendieckAbelian
 import Mathlib.Algebra.Homology.HasNoLoop

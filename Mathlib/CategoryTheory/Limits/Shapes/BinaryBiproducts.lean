@@ -690,6 +690,20 @@ instance coprod.map_mono {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
     (biprod.isoCoprod _ _).hom by simp]
   infer_instance
 
+@[simp]
+lemma biprod.is_zero_iff (X Y : C) [HasBinaryBiproduct X Y] :
+    IsZero (biprod X Y) ↔ IsZero X ∧ IsZero Y := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · simp only [IsZero.iff_id_eq_zero]
+    constructor
+    · rw [← cancel_mono (biprod.inl : _ ⟶ X ⊞ Y)]
+      apply h.eq_of_tgt
+    · rw [← cancel_mono (biprod.inr : _ ⟶ X ⊞ Y)]
+      apply h.eq_of_tgt
+  · rintro ⟨hA, hB⟩
+    rw [IsZero.iff_id_eq_zero]
+    exact biprod.hom_ext _ _ (hA.eq_of_tgt _ _) (hB.eq_of_tgt _ _)
+
 section BiprodKernel
 
 section BinaryBicone
