@@ -20,9 +20,9 @@ implication or an iff. It also avoids creating double negations if there already
 -/
 namespace Mathlib.Tactic.Contrapose
 
-/-- An option to turn off the feature that `contrapose` contraposes `↔` goals.
+/-- An option to turn off the feature that `contrapose` negates both sides of `↔` goals.
 This may be useful for teaching. -/
-register_option contrapose.iff : Bool := {
+register_option contrapose.negate_iff : Bool := {
   defValue := true
   descr := "contrapose a goal `a ↔ b` into the goal `¬ a ↔ ¬ b`"
 }
@@ -56,7 +56,7 @@ elab_rules : tactic
   let target ← g.getType'
   match target with
   | mkApp2 (.const ``Iff _) p q =>
-    if ← contrapose.iff.getM then
+    if ← contrapose.negate_iff.getM then
       match p.cleanupAnnotations.not?, q.cleanupAnnotations.not? with
       | none, none => g.apply (mkApp2 (.const ``contrapose_iff₁ []) p q)
       | some p, none => g.apply (mkApp2 (.const ``contrapose_iff₂ []) p q)
@@ -64,7 +64,7 @@ elab_rules : tactic
       | some p, some q => g.apply (mkApp2 (.const ``contrapose_iff₄ []) p q)
     else
       throwTacticEx `contrapose g "contraposing `↔` relations has been disabled.\n\
-        To enable it, use `set_option contrapose.iff true`."
+        To enable it, use `set_option contrapose.negate_iff true`."
   | .forallE _ p q _ =>
     if q.hasLooseBVars then
       throwTacticEx `contrapose g m!"the goal `{target}` is a dependent arrow"

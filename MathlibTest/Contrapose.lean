@@ -118,10 +118,10 @@ example (p q r : Prop) (h : ¬p ↔ ¬q ∧ ¬r) : p ↔ q ∨ r := by
   guard_target = ¬p ↔ ¬q ∧ ¬r
   exact h
 
-set_option contrapose.iff false in
+set_option contrapose.negate_iff false in
 /--
 error: Tactic `contrapose` failed: contraposing `↔` relations has been disabled.
-To enable it, use `set_option contrapose.iff true`.
+To enable it, use `set_option contrapose.negate_iff true`.
 
 p q : Prop
 h : p ↔ q
