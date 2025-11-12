@@ -156,6 +156,7 @@ theorem map_injective {f : α → β} (hf : Continuous f) (hf' : Function.Inject
 theorem map_singleton {f : α → β} (hf : Continuous f) (x : α) : Compacts.map f hf {x} = {f x} :=
   Compacts.ext Set.image_singleton
 
+@[simp]
 theorem map_injective_iff {f : α → β} (hf : Continuous f) :
     Function.Injective (Compacts.map f hf) ↔ Function.Injective f := by
   refine ⟨fun h => .of_comp (f := ({·} : β → Compacts β)) ?_, map_injective hf⟩
