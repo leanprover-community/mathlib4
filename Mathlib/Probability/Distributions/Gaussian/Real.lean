@@ -344,39 +344,56 @@ lemma gaussianReal_map_const_sub (y : ℝ) :
   rw [this, ← Measure.map_map (by fun_prop) (by fun_prop), gaussianReal_map_neg,
     gaussianReal_map_const_add, add_comm]
 
-variable {Ω : Type} [MeasureSpace Ω]
+variable {Ω : Type} {mΩ : MeasurableSpace Ω} {P : Measure Ω} {X : Ω → ℝ}
 
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `X + y`
 has Gaussian law with mean `μ + y` and variance `v`. -/
-lemma gaussianReal_add_const {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v) (y : ℝ) :
-    Measure.map (fun ω ↦ X ω + y) ℙ = gaussianReal (μ + y) v := by
-  have hXm : AEMeasurable X := aemeasurable_of_map_neZero (by rw [hX]; infer_instance)
-  change Measure.map ((fun ω ↦ ω + y) ∘ X) ℙ = gaussianReal (μ + y) v
+lemma gaussianReal_add_const (hX : P.map X = gaussianReal μ v) (y : ℝ) :
+    P.map (fun ω ↦ X ω + y) = gaussianReal (μ + y) v := by
+  have hXm : AEMeasurable X P := aemeasurable_of_map_neZero (by rw [hX]; infer_instance)
+  change P.map ((fun ω ↦ ω + y) ∘ X) = gaussianReal (μ + y) v
   rw [← AEMeasurable.map_map_of_aemeasurable (measurable_id'.add_const _).aemeasurable hXm, hX,
     gaussianReal_map_add_const y]
 
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `y + X`
 has Gaussian law with mean `μ + y` and variance `v`. -/
-lemma gaussianReal_const_add {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v) (y : ℝ) :
-    Measure.map (fun ω ↦ y + X ω) ℙ = gaussianReal (μ + y) v := by
+lemma gaussianReal_const_add (hX : P.map X = gaussianReal μ v) (y : ℝ) :
+    P.map (fun ω ↦ y + X ω) = gaussianReal (μ + y) v := by
   simp_rw [add_comm y]
   exact gaussianReal_add_const hX y
 
+/-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `X - y`
+has Gaussian law with mean `μ - y` and variance `v`. -/
+lemma gaussianReal_sub_const (hX : P.map X = gaussianReal μ v) (y : ℝ) :
+    P.map (fun ω ↦ X ω - y) = gaussianReal (μ - y) v := by
+  simpa [sub_eq_add_neg] using gaussianReal_add_const hX (-y)
+
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `c * X`
 has Gaussian law with mean `c * μ` and variance `c^2 * v`. -/
-lemma gaussianReal_const_mul {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v) (c : ℝ) :
-    Measure.map (fun ω ↦ c * X ω) ℙ = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) := by
-  have hXm : AEMeasurable X := aemeasurable_of_map_neZero (by rw [hX]; infer_instance)
-  change Measure.map ((fun ω ↦ c * ω) ∘ X) ℙ = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v)
+lemma gaussianReal_const_mul (hX : P.map X = gaussianReal μ v) (c : ℝ) :
+    P.map (fun ω ↦ c * X ω) = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) := by
+  have hXm : AEMeasurable X P := aemeasurable_of_map_neZero (by rw [hX]; infer_instance)
+  change P.map ((fun ω ↦ c * ω) ∘ X) = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v)
   rw [← AEMeasurable.map_map_of_aemeasurable (measurable_id'.const_mul c).aemeasurable hXm, hX]
   exact gaussianReal_map_const_mul c
 
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `X * c`
 has Gaussian law with mean `c * μ` and variance `c^2 * v`. -/
-lemma gaussianReal_mul_const {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v) (c : ℝ) :
-    Measure.map (fun ω ↦ X ω * c) ℙ = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) := by
+lemma gaussianReal_mul_const (hX : P.map X = gaussianReal μ v) (c : ℝ) :
+    P.map (fun ω ↦ X ω * c) = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) := by
   simp_rw [mul_comm _ c]
   exact gaussianReal_const_mul hX c
+
+lemma gaussianReal_neg (hX : P.map X = gaussianReal μ v) : P.map (-X) = gaussianReal (-μ) v := by
+  simpa using gaussianReal_const_mul hX (-1)
+
+/-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `y - X`
+has Gaussian law with mean `y - μ` and variance `v`. -/
+lemma gaussianReal_const_sub (hX : P.map X = gaussianReal μ v) (y : ℝ) :
+    P.map (fun ω ↦ y - X ω) = gaussianReal (y - μ) v := by
+  have h := gaussianReal_const_add (gaussianReal_neg hX) y
+  rw [add_comm _ y] at h
+  simpa [sub_eq_add_neg] using h
 
 end Transformations
 
