@@ -1,6 +1,4 @@
 /-
-Commented out as it broke after String API changes in nightly-2025-11-12.
-/-
 Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
@@ -551,7 +549,7 @@ but not the reification theorem. Returns:
   * `proof`: A proof of `ctx.proof []`
 -/
 def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr × Expr) := do
-  let Parsec.ParseResult.success _ (nvars, arr) := Parser.parseDimacs cnf.mkIterator
+  let Parsec.ParseResult.success _ (nvars, arr) := Parser.parseDimacs ⟨_, cnf.startValidPos⟩
     | throwError "parse CNF failed"
   if arr.isEmpty then throwError "empty CNF"
   let ctx' := buildConj arr 0 arr.size
@@ -565,7 +563,7 @@ def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr �
     safety      := DefinitionSafety.safe
   }
   let ctx := mkConst ctxName
-  let Parsec.ParseResult.success _ steps := Parser.parseLRAT lrat.mkIterator
+  let Parsec.ParseResult.success _ steps := Parser.parseLRAT ⟨_, lrat.startValidPos⟩
     | throwError "parse LRAT failed"
   let proof ← buildProof arr ctx ctx' steps
   let declName ← mkAuxDeclName (name ++ `proof)
@@ -682,4 +680,3 @@ example : ∀ (a b : Prop), (¬a ∧ ¬b ∨ a ∧ ¬b) ∨ ¬a ∧ b ∨ a ∧ 
 end Sat
 
 end Mathlib.Tactic
--/
