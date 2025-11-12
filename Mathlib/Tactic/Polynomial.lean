@@ -42,7 +42,7 @@ section extension
 end extension
 
 /-- Infer base ring for `Polynomial R` -/
-@[infer_polynomial_base Polynomial _]
+@[infer_polynomial_base]
 def polynomialInferBase : PolynomialExt where
   infer := fun e ↦ do
   match_expr e with
@@ -50,7 +50,7 @@ def polynomialInferBase : PolynomialExt where
   | _ => failure
 
 /-- Infer base ring for `MvPolynomial _ R` -/
-@[infer_polynomial_base MvPolynomial _ _]
+@[infer_polynomial_base]
 def mvPolynomialInferBaseImpl : PolynomialExt where
   infer := fun e ↦ do
   match_expr e with

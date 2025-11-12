@@ -40,7 +40,7 @@ initialize polynomialPostExt : SimpExtension ←
 
 /-- Attribute for identifying `polynomial` extensions. Used to tag procedures that infer the base
 ring of polynomial-like types. -/
-syntax (name := inferPolyBaseAttr) "infer_polynomial_base " term,+ : attr
+syntax (name := inferPolyBaseAttr) "infer_polynomial_base" : attr
 
 /-- An extension for `polynomial`. -/
 structure PolynomialExt where
@@ -53,23 +53,17 @@ def mkPolynomialExt (n : Name) : ImportM PolynomialExt := do
   let { env, opts, .. } ← read
   IO.ofExcept <| unsafe env.evalConstCheck PolynomialExt opts ``PolynomialExt n
 
-/-- Each `polynomial` extension is labelled with a collection of patterns
-which determine the expressions to which it should be applied. -/
-abbrev Entry := Array (Array DiscrTree.Key) × Name
 
 /-- Environment extensions for `polynomial` declarations -/
-initialize polynomialExt : PersistentEnvExtension Entry (Entry × PolynomialExt)
-    (List Entry × DiscrTree PolynomialExt) ←
-  -- we only need this to deduplicate entries in the DiscrTree
-  have : BEq PolynomialExt := ⟨fun _ _ => false⟩
-  let insert kss v dt := kss.foldl (fun dt ks => dt.insertCore ks v) dt
+initialize polynomialExt : PersistentEnvExtension Name (Name × PolynomialExt)
+    (List Name × List (Name × PolynomialExt)) ←
   registerPersistentEnvExtension {
     mkInitial := pure ([], {})
     addImportedFn := fun s => do
-      let dt ← s.foldlM (init := {}) fun dt s => s.foldlM (init := dt) fun dt (kss, n) => do
-        pure (insert kss (← mkPolynomialExt n) dt)
+      let dt ← s.foldlM (init := {}) fun dt s => s.foldlM (init := dt) fun dt n => do
+        return (n, ← mkPolynomialExt n) :: dt
       pure ([], dt)
-    addEntryFn := fun (entries, s) ((kss, n), ext) => ((kss, n) :: entries, insert kss ext s)
+    addEntryFn := fun (entries, s) (n, ext) => (n :: entries, (n, ext) :: s)
     exportEntriesFn := fun s => s.1.reverse.toArray
   }
 
@@ -78,29 +72,22 @@ initialize registerBuiltinAttribute {
   descr := "adds a polynomial extension that infers the base ring of a polynomial-like type"
   applicationTime := .afterCompilation
   add := fun declName stx kind => match stx with
-    | `(attr| infer_polynomial_base $es,*) => do
+    | `(attr| infer_polynomial_base) => do
       unless kind == AttributeKind.global do
-        throwError "invalid attribute 'infer_polynomial_base', must be global"
+        throwError "invalid attribute infer_polynomial_base', must be global"
       let env ← getEnv
       unless (env.getModuleIdxFor? declName).isNone do
         throwError "invalid attribute 'infer_polynomial_base', declaration is in an imported module"
       if (IR.getSorryDep env declName).isSome then return -- ignore in progress definitions
       let ext ← mkPolynomialExt declName
-      let keys ← MetaM.run' <| es.getElems.mapM fun stx => do
-        let e ← TermElabM.run' <| withSaveInfoContext <| withAutoBoundImplicit <|
-          withReader ({ · with ignoreTCFailures := true }) do
-            let e ← elabTerm stx none
-            let (_, _, e) ← lambdaMetaTelescope (← mkLambdaFVars (← getLCtx).getFVars e)
-            return e
-        DiscrTree.mkPath e
-      setEnv <| polynomialExt.addEntry env ((keys, declName), ext)
+      setEnv <| polynomialExt.addEntry env (declName, ext)
     | _ => throwUnsupportedSyntax
 }
 
 /-- Infer the base ring of `Polynomial`-like types that are registered using the `polynomial`
 environment extensions. Includes e.g. `Polynomial` and `MvPolynomial`. -/
 def inferBase (e : Expr) : MetaM Expr := do
-  for ext in ← (polynomialExt.getState (← getEnv)).2.getMatch e do
+  for ⟨_, ext⟩ in (polynomialExt.getState (← getEnv)).2 do
     try
       return ← ext.infer e
     catch _ =>
