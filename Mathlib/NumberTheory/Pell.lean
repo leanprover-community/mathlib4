@@ -320,10 +320,10 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ∃ x y : ℤ, x ^ 2 - d * y ^ 2 = 1 ∧ y ≠ 0 := by
   let ξ : ℝ := √d
   have hξ : Irrational ξ := by
-    refine irrational_nrt_of_notint_nrt 2 d (sq_sqrt <| Int.cast_nonneg.mpr h₀.le) ?_ two_pos
+    refine irrational_nrt_of_notint_nrt 2 d (sq_sqrt <| Int.cast_nonneg h₀.le) ?_ two_pos
     rintro ⟨x, hx⟩
     refine hd ⟨x, @Int.cast_injective ℝ _ _ d (x * x) ?_⟩
-    rw [← sq_sqrt <| Int.cast_nonneg.mpr h₀.le, Int.cast_mul, ← hx, sq]
+    rw [← sq_sqrt <| Int.cast_nonneg h₀.le, Int.cast_mul, ← hx, sq]
   obtain ⟨M, hM₁⟩ := exists_int_gt (2 * |ξ| + 1)
   have hM : {q : ℚ | |q.1 ^ 2 - d * (q.2 : ℤ) ^ 2| < M}.Infinite := by
     refine Infinite.mono (fun q h => ?_) (infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational hξ)
