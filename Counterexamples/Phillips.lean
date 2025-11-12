@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.Normed.Module.HahnBanach
 import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.Topology.ContinuousMap.Bounded.Star
 
 /-!
 # A counterexample on Pettis integrability

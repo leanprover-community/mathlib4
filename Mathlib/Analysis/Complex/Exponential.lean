@@ -6,7 +6,6 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Analysis.Complex.Norm
 import Mathlib.Algebra.Order.CauSeq.BigOperators
-import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Data.Complex.BigOperators
 import Mathlib.Data.Nat.Choose.Sum
 

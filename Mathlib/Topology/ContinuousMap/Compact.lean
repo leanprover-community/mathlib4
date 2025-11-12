@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Topology.ContinuousMap.Bounded.Star
-import Mathlib.Topology.ContinuousMap.Star
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Sets.Compacts

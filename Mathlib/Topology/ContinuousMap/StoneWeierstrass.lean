@@ -5,7 +5,6 @@ Authors: Kim Morrison, Heather Macbeth
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Topology.Algebra.Star.Real
 import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
 import Mathlib.Topology.ContinuousMap.ContinuousMapZero
