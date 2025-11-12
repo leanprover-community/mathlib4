@@ -119,6 +119,10 @@ class WellQuasiOrderedLE (α : Type*) [LE α] where
 theorem wellQuasiOrdered_le [LE α] [h : WellQuasiOrderedLE α] : @WellQuasiOrdered α (· ≤ ·) :=
   h.wqo
 
+theorem OrderIso.wellQuasiOrderedLE_iff {α β} [LE α] [LE β] (f : α ≃o β) :
+    WellQuasiOrderedLE α ↔ WellQuasiOrderedLE β := by
+  simpa [wellQuasiOrderedLE_def] using f.wellQuasiOrdered_iff
+
 section Preorder
 variable [Preorder α]
 
