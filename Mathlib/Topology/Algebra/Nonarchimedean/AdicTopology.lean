@@ -232,7 +232,7 @@ instance (priority := 100) : NonarchimedeanRing R :=
   RingSubgroupsBasis.nonarchimedean _
 
 instance (priority := 100) : UniformSpace R :=
-  IsTopologicalAddGroup.toUniformSpace R
+  IsTopologicalAddGroup.rightUniformSpace R
 
 instance (priority := 100) : IsUniformAddGroup R :=
   isUniformAddGroup_of_addCommGroup
