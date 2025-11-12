@@ -226,6 +226,7 @@ theorem coeff_iterate_frobenius' (f : Perfection R p) (n m : ℕ) (hmn : m ≤ n
 theorem pthRoot_frobenius : (pthRoot R p).comp (frobenius _ p) = RingHom.id _ := by
   ext; simp [pthRoot, frobenius]
 
+@[simp]
 theorem frobenius_pthRoot : (frobenius _ p).comp (pthRoot R p) = RingHom.id _ :=
   pthRoot_frobenius
 
@@ -430,7 +431,7 @@ section ModP
 variable (O : Type u₂) [CommRing O] (p : ℕ)
 
 /-- `O/(p)` for `O`, ring of integers of `K`. -/
-def ModP :=
+abbrev ModP :=
   O ⧸ (Ideal.span {(p : O)} : Ideal O)
 deriving CommRing
 
@@ -560,6 +561,37 @@ instance : CommRing (PreTilt O p) :=
 
 instance : CharP (PreTilt O p) p :=
   Perfection.charP (ModP O p) p
+
+instance : PerfectRing (PreTilt O p) p :=
+  Perfection.perfectRing (ModP O p) p
+
+section coeff
+
+@[simp]
+theorem coeff_frobenius (n : ℕ) (x : PreTilt O p) :
+    ((Perfection.coeff (ModP O p) p (n + 1)) (((frobenius (PreTilt O p) p)) x)) =
+    ((Perfection.coeff (ModP O p) p n) x):= by
+  simp [PreTilt]
+
+@[simp]
+theorem coeff_frobenius_pow (m n : ℕ) (x : PreTilt O p) :
+    ((Perfection.coeff (ModP O p) p (m + n)) (((frobenius (PreTilt O p) p) ^[n]) x)) =
+    ((Perfection.coeff (ModP O p) p m) x):= by
+  simp [PreTilt]
+
+@[simp]
+theorem coeff_frobeniusEquiv_symm (n : ℕ) (x : PreTilt O p) :
+    ((Perfection.coeff (ModP O p) p n) (((frobeniusEquiv (PreTilt O p) p).symm) x)) =
+    ((Perfection.coeff (ModP O p) p (n + 1)) x):= by
+  simp [PreTilt]
+
+@[simp]
+theorem coeff_iterate_frobeniusEquiv_symm (m n : ℕ) (x : PreTilt O p) :
+    ((Perfection.coeff (ModP O p) p m) (((frobeniusEquiv (PreTilt O p) p).symm ^[n]) x)) =
+    ((Perfection.coeff (ModP O p) p (m + n)) x):= by
+  simp [PreTilt]
+
+end coeff
 
 section Classical
 
