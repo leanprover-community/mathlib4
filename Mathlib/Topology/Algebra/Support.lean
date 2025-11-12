@@ -144,16 +144,6 @@ theorem tsupport_smul_subset_right {M α} [Zero α] [SMulZeroClass M α]
 
 end Operations
 
-@[to_additive (attr := simp)]
-theorem mulTSupport_fun_inv [TopologicalSpace X] [DivisionMonoid α] {f : X → α} :
-    (mulTSupport fun x ↦ (f x)⁻¹) = mulTSupport f := by
-  rw [mulTSupport, mulTSupport, mulSupport_fun_inv]
-
-@[to_additive (attr := simp)]
-theorem mulTSupport_inv [TopologicalSpace X] [DivisionMonoid α] {f : X → α} :
-    (mulTSupport f⁻¹) = mulTSupport f := by
-  rw [mulTSupport, mulTSupport, mulSupport_inv]
-
 section
 
 variable [TopologicalSpace α]
