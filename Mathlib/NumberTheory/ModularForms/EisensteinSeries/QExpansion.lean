@@ -27,7 +27,7 @@ The proof relies of the identity
 `∑' n : ℤ, 1 / (z + n) ^ (k + 1) = ((-2πi)^(k+1) / k!) ∑' n : ℕ, n^k q^n` which comes from
 differentiating the expansion of `π cot(πz)` in terms of exponentials. Since our Eisenstein series
 are defined as sums over coprime integer pairs, we also need to relate these to sums over all pairs
-of integers, which is done in ` tsum_eisSummand_eq_riemannZeta_mul_eisensteinSeries`. This then
+of integers, which is done in `tsum_eisSummand_eq_riemannZeta_mul_eisensteinSeries`. This then
 gives the q-expansion with a Riemann zeta factor, which we simplify using the formula for
 `ζ(k)` in terms of Bernoulli numbers to get the final result.
 
