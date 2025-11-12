@@ -856,6 +856,70 @@ scoped elab:max "HasMFDerivAt%" ppSpace
 
 end Manifold
 
+open Manifold.Elab
+
+/-!
+### Supporting fun_prop for manifolds
+
+The `find_model` tactic solves goals of the form `I? : ModelWithCorners 𝕜 E H`.
+This is similar to the code above, but in fact different as this problem is simpler:
+- most of the time, we expect to find such a hypothesis in the local context
+- if `H` and `E` are equal, we infer `modelWithCornersSelf`
+- if `E` is a Euclidean space/half-space/quadrant, we infer ...
+- if `E` is a normed space over 𝕜, we infer 𝓘(𝕜, E)
+- we need to support products again, but no opens nor disjoint unions
+
+Can these be kept in sync? Well, that's hopefully not too necessary.
+-/
+
+/-- Try to find a `ModelWithCorners` for a given base field, model normed space and model
+topological space, using information from the local context (and my global database?). -/
+-- FIXME: do we need to handle baseInfo again? perhaps not, let's try without!
+def findModelForFunpropInner (field model top : Expr) :
+    TermElabM <| Option (Expr × NormedSpaceInfo) := do
+  -- trace[Elab.DiffGeo.FunPropM] "Trying to solve a goal `ModelWithCorners {field} {model} {top}`"
+  if let some m ← tryStrategy m!"Assumption"       fromAssumption     then return some (m, none)
+  if let some m ← tryStrategy m!"Normed space"     fromNormedSpace    then return some (m, none)
+  -- TODO: implement the remaining strategies, and then the inner to outer part!
+  return none
+where
+  fromAssumption : TermElabM Expr := do
+    let some m ← findSomeLocalHyp? fun fvar type ↦ do
+        match_expr type with
+        | ModelWithCorners k _ E _ _ H _ => do
+          if (← withReducible (pureIsDefEq k field)) && (← withReducible (pureIsDefEq E model)) &&
+            (← withReducible (pureIsDefEq H top)) then
+            return some fvar
+          else return none
+        | _ => return none
+      | throwError "Couldn't find a `ModelWithCorners {field} {model} {top}` in the local context."
+    return m
+  fromNormedSpace : TermElabM Expr := do
+    let some (inst, K) ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
+        match_expr type with
+        | NormedSpace K E _ _ =>
+          if (← withReducible (pureIsDefEq K field)) && (← withReducible (pureIsDefEq E model)) then
+            return some (inst, K)
+          else return none
+        | _ => return none
+      | throwError "Couldn't find a `NormedSpace` structure on `{model}` among local instances."
+    trace[Elab.DiffGeo.MDiff] "`{model}` is a normed space over the field `{K}`"
+    if ← withReducible (pureIsDefEq model top) then
+      mkAppOptM ``modelWithCornersSelf #[K, none, model, none, inst] -- omit (K, model)) for now
+    else
+      throwError "{model} is a normed space, but {top} is not defeq to it"
+
+def findModelForFunprop (field model top : Expr) : TermElabM Expr := do
+  -- TODO update!trace[Elab.DiffGeo.MDiff] "Finding a model with corners for: `{e}`"
+  let some (u, _) := ← go field model top
+    | throwError "Could not find a `ModelWithCorners {field} {model} {top}`"
+  return u
+where
+  go (field model top : Expr) : TermElabM <| Option (Expr × NormedSpaceInfo) := do
+    -- At first, try finding a model on the space itself.
+    if let some (m, r) ← findModelForFunpropInner field model top then return some (m, r)
+    throwError ""
+
 section trace
 
 /-!
