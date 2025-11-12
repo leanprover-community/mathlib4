@@ -127,9 +127,9 @@ def getDecls (t : InfoTree) : List Name :=
 --     | return []
 --   return decls
 
-partial def findSome? {α} (f : ContextInfo → Info → PersistentArray InfoTree → Option α) :
-    InfoTree → Option α :=
-  go none
+partial def findSome? {α} (f : ContextInfo → Info → PersistentArray InfoTree → Option α)
+    (t : InfoTree) (ctx? : Option ContextInfo := none) : Option α :=
+  go ctx? t
 where go ctx?
   | context ctx t => go (ctx.mergeIntoOuter? ctx?) t
   | node i ts =>
@@ -305,23 +305,63 @@ def _root_.Lean.Name.unusedInstancesMsg (declName : Name)
   {"is".withPlural "are" unusedInstanceBinders.size} not used in the remainder of the type."
 
 
-def getLCtxOfDecl? (t : InfoTree) (decl : Name) : Option LocalContext :=
-  t.findSome? fun ctx i ch =>
+def _root_.Lean.Elab.InfoTree.onFirstNode {α} (t : InfoTree)
+    (f : ContextInfo → Info → PersistentArray InfoTree → α) (ctx? : Option ContextInfo := none) :
+    Option α :=
+  t.findSome? (ctx? := ctx?) fun ctx i ch => some (f ctx i ch)
+
+/-- Finds the local context of the body of `decl` by looking for the the child of the first
+`Elab.Term.BodyInfo` in the infotree `t`, and getting the local context of the `TacticInfo` or
+`TermInfo` present there.
+
+Returns `none` if no `BodyInfo` node with `parentDecl?` `decl` is found; returns `.undef` if it is
+found, but the `InfoTree` or the `Info`s therein have an unexpected structure. -/
+def getLCtxOfDeclBody? (t : InfoTree) (decl : Name) (ctx? : Option ContextInfo := none) :
+    LOption LocalContext :=
+  -- Return `Option (Option LocalContext)`, with failures:
+  -- `none` ↦ `LOption.none`: declaration not found
+  -- `some none` ↦ `LOption.undef`: unexpected infotree structure
+  let lctx?? := t.findSome? (ctx? := ctx?) fun ctx i ch =>
     match i with
-    | .ofCustomInfo i => do
-      guard <| i.value.typeName == ``Lean.Elab.Term.BodyInfo && ctx.parentDecl? == some decl
-      let body ← ch[0]?
-      let rec go ctx? : InfoTree → Option LocalContext
-        | .context ctx'? t => go (ctx'?.mergeIntoOuter? ctx?) t
-        | .node i _ => match i with
-          | .ofTermInfo ti => ti.lctx
-          | .ofTacticInfo ti => match ti.goalsBefore with
-            | [mvarId] => ti.mctxBefore.getDecl mvarId |>.lctx
-            | _ => none
-          | _ => none
-        | .hole _ => none
-      go ctx body
+    | .ofCustomInfo i =>
+      if i.value.typeName == ``Lean.Elab.Term.BodyInfo && ctx.parentDecl? == some decl then
+        if let some body := ch[0]? then
+          body.onFirstNode (ctx? := ctx) fun _ i _ =>
+            match i with
+            | .ofTermInfo ti => some ti.lctx
+            | .ofTacticInfo ti => match ti.goalsBefore with
+              | [mvarId] => some (ti.mctxBefore.getDecl mvarId).lctx
+              | _ => none -- Not exactly one goal at body (Wrapped in `some` by `onFirstNode`)
+            | _ => none -- Unexpected child of body (Wrapped in `some` by `onFirstNode`)
+          else some none -- No body node
+      else none
     | _ => none
+  match lctx?? with
+  | none => .none
+  | some none => .undef
+  | some (some lctx) => .some lctx
+
+partial def _root_.Lean.Elab.InfoTree.forIn.{u₁,u₂} {m : Type u₁ → Type u₂}
+    {β : Type u₁} [Monad m] (x : InfoTree) (b : β)
+    (f : (ContextInfo × Info × PersistentArray InfoTree) → β → m (ForInStep β)) : m β := do
+  match ← go none b x with
+  | .yield b | .done b => return b
+where
+  go ctx? b : InfoTree → m (ForInStep β)
+  | .context ctx t => go (ctx.mergeIntoOuter? ctx?) b t
+  | .node i ch => do
+      let bstep ← match ctx? with
+        | none => pure <| ForInStep.yield b
+        | some ctx => f (ctx, i, ch) b
+      match bstep with
+      | .yield b => ch.forIn (init := bstep) (go <| i.updateContext? ctx?)
+      | bstep@(.done _) => pure <| .done b
+  | .hole _ => pure bstep
+
+universe u₁ u₂ in
+instance {m : Type u₁ → Type u₂} [Monad m] :
+    ForIn m InfoTree (ContextInfo × Info × PersistentArray InfoTree) where
+  forIn := InfoTree.forIn
 
 /--
 Gathers instance hypotheses in the type of `decl` that are unused in the remainder of the type and
