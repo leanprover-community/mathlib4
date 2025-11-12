@@ -78,7 +78,7 @@ theorem coe_closure [Semigroup M] {s : Set M} :
       smul_mem' x y := by
         rintro (hy | ⟨y, -, z, hz, rfl⟩)
         · exact .inr <| mul_mem_mul (mem_univ _) hy
-        · simpa [← mul_assoc] using Or.inr (mul_mem_mul (mem_univ _) hz) }
+        · simpa [← mul_assoc] using .inr <| mul_mem_mul (mem_univ _) hz }
   suffices closure s = I by rw [this]; rfl
   refine (closure_le.2 fun x => Or.inl).antisymm fun x hx => hx.elim mem_closure_of_mem ?_
   rintro ⟨y, -, z, hz, rfl⟩
