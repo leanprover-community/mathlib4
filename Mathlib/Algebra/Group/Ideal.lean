@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dexin Zhang
 -/
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.GroupTheory.GroupAction.SubMulAction.FinitelyGenerated
+import Mathlib.GroupTheory.GroupAction.SubMulAction.Closure
 import Mathlib.Order.WellFoundedSet
 
 /-!
