@@ -69,13 +69,8 @@ theorem cons_get_drop_succ {l : List α} {n} :
   (drop_eq_getElem_cons n.2).symm
 
 lemma drop_length_sub_one {l : List α} (h : l ≠ []) : l.drop (l.length - 1) = [l.getLast h] := by
-  induction l with
-  | nil => aesop
-  | cons a l ih =>
-    by_cases hl : l = []
-    · simp_all
-    rw [length_cons, Nat.add_one_sub_one, List.drop_length_cons hl a]
-    simp [getLast_cons, hl]
+  ext
+  grind
 
 section TakeI
 
