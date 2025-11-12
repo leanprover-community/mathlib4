@@ -29,6 +29,7 @@ variable (ρ) in
 /-- A subrepresentation of `G` of the `A`-module `W` is a submodule of `W` which is stable under the `G`-action.
 -/
 structure Subrepresentation where
+  /-- A subrepresentation is a submodule. -/
   toSubmodule : Submodule A W
   apply_mem_toSubmodule (g : G) ⦃v : W⦄ : v ∈ toSubmodule → ρ g v ∈ toSubmodule
 
