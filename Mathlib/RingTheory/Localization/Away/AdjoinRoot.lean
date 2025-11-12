@@ -23,7 +23,7 @@ noncomputable def Localization.awayEquivAdjoin (r : R) : Away r ≃ₐ[R] Adjoin
   AlgEquiv.ofAlgHom
     { awayLift _ r _ with
       commutes' :=
-        IsLocalization.Away.lift_eq r (isUnit_of_mul_eq_one _ _ <| root_isInv r) }
+        IsLocalization.Away.lift_eq r (.of_mul_eq_one _ <| root_isInv r) }
     (liftAlgHom _ (Algebra.ofId _ _) (IsLocalization.Away.invSelf r) <| show aeval _ _ = _ by simp)
     (Subsingleton.elim _ _)
     (Subsingleton.elim (h := IsLocalization.algHom_subsingleton (Submonoid.powers r)) _ _)

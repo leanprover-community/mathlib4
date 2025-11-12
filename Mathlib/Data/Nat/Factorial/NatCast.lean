@@ -76,7 +76,7 @@ lemma natCast_of_isNilpotent_of_coprime (h : p.Coprime n) :
   obtain ⟨m, hm⟩ := hp
   suffices ∃ a b : A, p ^ m * a + n * b = 1 by
     obtain ⟨a, b, h⟩ := this
-    apply isUnit_of_mul_eq_one (n : A) b
+    refine .of_mul_eq_one b ?_
     simpa [hm] using h
   refine ⟨(p ^ m).gcdA n, (p ^ m).gcdB n, ?_⟩
   norm_cast

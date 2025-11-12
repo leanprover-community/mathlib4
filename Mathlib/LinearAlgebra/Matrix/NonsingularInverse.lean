@@ -414,7 +414,7 @@ theorem det_nonsing_inv : A⁻¹.det = Ring.inverse A.det := by
   · rw [Ring.inverse_non_unit _ h, nonsing_inv_apply_not_isUnit _ h, det_zero ‹_›]
 
 theorem isUnit_nonsing_inv_det (h : IsUnit A.det) : IsUnit A⁻¹.det :=
-  isUnit_of_mul_eq_one _ _ (A.det_nonsing_inv_mul_det h)
+  .of_mul_eq_one _ (A.det_nonsing_inv_mul_det h)
 
 @[simp]
 theorem nonsing_inv_nonsing_inv (h : IsUnit A.det) : A⁻¹⁻¹ = A :=

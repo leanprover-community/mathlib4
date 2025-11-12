@@ -50,12 +50,12 @@ theorem isCoprime_comm : IsCoprime x y ↔ IsCoprime y x :=
   ⟨IsCoprime.symm, IsCoprime.symm⟩
 
 theorem isCoprime_self : IsCoprime x x ↔ IsUnit x :=
-  ⟨fun ⟨a, b, h⟩ => isUnit_of_mul_eq_one x (a + b) <| by rwa [mul_comm, add_mul], fun h =>
+  ⟨fun ⟨a, b, h⟩ => .of_mul_eq_one (a + b) <| by rwa [mul_comm, add_mul], fun h =>
     let ⟨b, hb⟩ := isUnit_iff_exists_inv'.1 h
     ⟨b, 0, by rwa [zero_mul, add_zero]⟩⟩
 
 theorem isCoprime_zero_left : IsCoprime 0 x ↔ IsUnit x :=
-  ⟨fun ⟨a, b, H⟩ => isUnit_of_mul_eq_one x b <| by rwa [mul_zero, zero_add, mul_comm] at H, fun H =>
+  ⟨fun ⟨a, b, H⟩ => .of_mul_eq_one b <| by rwa [mul_zero, zero_add, mul_comm] at H, fun H =>
     let ⟨b, hb⟩ := isUnit_iff_exists_inv'.1 H
     ⟨1, b, by rwa [one_mul, zero_add]⟩⟩
 

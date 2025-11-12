@@ -273,8 +273,8 @@ lemma irreducible_of_monic (hp : p.Monic) (hp1 : p ≠ 1) :
     ⟨fun h f g hf hg hp => (h.2 hp.symm).imp hf.eq_one_of_isUnit hg.eq_one_of_isUnit, fun h =>
       ⟨hp1 ∘ hp.eq_one_of_isUnit, fun f g hfg =>
         (h (g * C f.leadingCoeff) (f * C g.leadingCoeff) ?_ ?_ ?_).symm.imp
-          (isUnit_of_mul_eq_one f _)
-          (isUnit_of_mul_eq_one g _)⟩⟩
+          (.of_mul_eq_one _)
+          (.of_mul_eq_one _)⟩⟩
   · rwa [Monic, leadingCoeff_mul, leadingCoeff_C, ← leadingCoeff_mul, mul_comm, ← hfg, ← Monic]
   · rwa [Monic, leadingCoeff_mul, leadingCoeff_C, ← leadingCoeff_mul, ← hfg, ← Monic]
   · rw [mul_mul_mul_comm, ← C_mul, ← leadingCoeff_mul, ← hfg, hp.leadingCoeff, C_1, mul_one,
