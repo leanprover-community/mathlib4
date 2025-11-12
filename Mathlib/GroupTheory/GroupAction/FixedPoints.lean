@@ -7,12 +7,14 @@ import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Dynamics.PeriodicPts.Defs
 import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
 # Properties of `fixedPoints` and `fixedBy`
 
 This module contains some useful properties of `MulAction.fixedPoints` and `MulAction.fixedBy`
-that don't directly belong to `Mathlib/GroupTheory/GroupAction/Basic.lean`.
+that don't directly belong to `Mathlib/GroupTheory/GroupAction/Basic.lean`,
+as well as their interaction with MulActionHom.
 
 ## Main theorems
 
@@ -263,3 +265,33 @@ theorem not_commute_of_disjoint_movedBy_preimage {g h : G} (ne_one : g ≠ 1)
 end Faithful
 
 end MulAction
+
+namespace MulActionHom
+
+/-- `MulActionHom` maps `fixedPoints` to `fixedPoints`. -/
+@[to_additive]
+lemma map_mem_fixedPoints
+    {G : Type*} [Monoid G] 
+    {A : Type*} [MulAction G A] {B : Type*} [MulAction G B]
+    (f : A →[G] B) {H : Submonoid G}
+    {a : A} (ha : a ∈ MulAction.fixedPoints H A) :
+    f a ∈ MulAction.fixedPoints H B := by
+  intro h
+  change (h : G) • f a = f a
+  rw [← f.map_smul h a]
+  change f (h • a) = f a
+  simp [ha h]
+
+/-- `MulActionHom` maps `fixedBy` to `fixedBy`. -/
+@[to_additive]
+lemma map_mem_fixedBy
+    {G : Type*} [Monoid G]
+    {A : Type*} [MulAction G A] {B : Type*} [MulAction G B]
+    (f : A →[G] B) {g : G}
+    {a : A} (ha : a ∈ MulAction.fixedBy A g) :
+    f a ∈ MulAction.fixedBy B g := by
+  change (g : G) • f a = f a
+  rw [← f.map_smul g a]
+  exact congr_arg f ha
+
+end MulActionHom
