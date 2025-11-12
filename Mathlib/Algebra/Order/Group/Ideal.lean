@@ -54,8 +54,7 @@ instance : WellFoundedGT (SemigroupIdeal M) := by
   have hs : ∀ x ∈ s, ∃ i, x ∈ f i := by
     intro x hx
     apply subset_closure (s := (s : Set M)) at hx
-    rw [SetLike.mem_coe, ← hI] at hx
-    exact SubMulAction.mem_iSup.1 hx
+    simpa [← hI] using hx
   choose! g hg using hs
   exists s.sup g
   intro n hn
