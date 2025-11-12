@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Operations
+import Mathlib.Algebra.Star.TensorProduct
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
@@ -283,6 +284,9 @@ instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
       rw [algebraMap_eq_smul_one, ← smul_tmul', smul_mul_assoc, ← one_def, one_mul]
     algebraMap := TensorProduct.includeLeftRingHom.comp (algebraMap S A) }
 
+lemma algebraMap_def [SMulCommClass R S A] :
+    algebraMap S (A ⊗[R] B) = includeLeftRingHom.comp (algebraMap S A) := rfl
+
 example : (Semiring.toNatAlgebra : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra := rfl
 
 -- This is for the `undergrad.yaml` list.
@@ -475,6 +479,10 @@ abbrev rightAlgebra : Algebra B (A ⊗[R] B) :=
     simp [mul_comm]
 
 attribute [local instance] TensorProduct.rightAlgebra
+
+lemma algebraMap_eq_includeRight :
+    letI := rightAlgebra (R := R) (A := A) (B := B)
+    algebraMap B (A ⊗[R] B) = includeRight (R := R) (A := A) (B := B) := rfl
 
 instance right_isScalarTower : IsScalarTower R B (A ⊗[R] B) :=
   IsScalarTower.of_algebraMap_eq fun r => (Algebra.TensorProduct.includeRight.commutes r).symm
@@ -702,3 +710,19 @@ lemma LinearMap.mulLeft_tmul (a : A) (b : B) :
 lemma LinearMap.mulRight_tmul (a : A) (b : B) :
     mulRight R (a ⊗ₜ[R] b) = map (mulRight R a) (mulRight R b) := by
   ext; simp
+
+namespace TensorProduct
+variable [StarRing R] [StarRing A] [StarRing B] [StarModule R A] [StarModule R B]
+
+noncomputable instance : StarMul (A ⊗[R] B) where
+  star_mul x y :=
+    x.induction_on (by simp) (fun _ _ ↦
+      y.induction_on (by simp)
+        fun _ _ ↦ by simp
+      fun _ _ h₁ h₂ ↦ by simp [add_mul, mul_add, h₁, h₂])
+    fun _ _ h₁ h₂ ↦ by simp [add_mul, mul_add, h₁, h₂]
+
+noncomputable instance : StarRing (A ⊗[R] B) where
+  star_add := by simp
+
+end TensorProduct
