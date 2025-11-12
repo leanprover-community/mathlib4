@@ -18,7 +18,7 @@ universe v' v u
 
 namespace CategoryTheory.GrothendieckTopology
 
-open Opposite Functor
+open Opposite
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C) [Subcanonical J]
 
@@ -119,7 +119,7 @@ theorem uliftYonedaEquiv_apply {X : C} {F : Sheaf J (Type (max v v'))}
 @[simp]
 theorem uliftYonedaEquiv_symm_app_apply {X : C} {F : Sheaf J (Type (max v v'))}
     (x : F.val.obj (op X)) (Y : Cᵒᵖ) (f : Y.unop ⟶ X) :
-      (J.uliftYonedaEquiv.symm x).val.app Y ⟨f⟩ = F.val.map f.op x :=
+    (J.uliftYonedaEquiv.symm x).val.app Y ⟨f⟩ = F.val.map f.op x :=
   rfl
 
 @[deprecated (since := "2025-11-10")] alias yonedaULiftEquiv_symm_app_apply :=
@@ -141,7 +141,7 @@ general than `uliftYonedaEquiv_naturality`, but `uliftYonedaEquiv_naturality` is
 preferable because it can avoid the "motive is not type correct" error. -/
 lemma uliftYonedaEquiv_naturality' {X Y : Cᵒᵖ} {F : Sheaf J (Type (max v v'))}
     (f : J.uliftYoneda.obj (unop X) ⟶ F) (g : X ⟶ Y) :
-      F.val.map g (J.uliftYonedaEquiv f) = J.uliftYonedaEquiv (J.uliftYoneda.map g.unop ≫ f) :=
+    F.val.map g (J.uliftYonedaEquiv f) = J.uliftYonedaEquiv (J.uliftYoneda.map g.unop ≫ f) :=
   J.uliftYonedaEquiv_naturality _ _
 
 @[deprecated (since := "2025-11-10")] alias yonedaULiftEquiv_naturality' :=
