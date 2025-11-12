@@ -23,6 +23,10 @@ for even `k` with `3 ≤ k` Eisenstein series can we written as
 the `(k-1)`-th powers of the divisors of `n`. We need `k` to be even so that the Eisenstein series
 are non-zero and we require `k ≥ 3` so that the series converges absolutely.
 
+The proof relies of the identity
+`∑' n : ℤ, 1 / (z + n) ^ (k + 1) = ((-2πi)^(k+1) / k!) ∑' n : ℕ, n^k q^n` which comes from
+differentiating the expansion of `π cot(πz)` in terms of exponentials.
+
 -/
 
 open Set Metric TopologicalSpace Function Filter Complex ArithmeticFunction
