@@ -71,6 +71,9 @@ theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
   refine ⟨⟨mk x, 0, ?_⟩⟩
   simpa using notMem_s
 
+theorem nontrivial_of_ne_top (h : p ≠ ⊤) : Nontrivial (M ⧸ p) :=
+  nontrivial_of_lt_top p h.lt_top
+
 end Quotient
 
 instance QuotientBot.infinite [Infinite M] : Infinite (M ⧸ (⊥ : Submodule R M)) :=

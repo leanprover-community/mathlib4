@@ -5,8 +5,9 @@ Authors: Mario Carneiro
 -/
 import Lean.Elab.Tactic.Induction
 import Batteries.Tactic.OpenPrivate
-import Mathlib.Lean.Expr.Basic
 import Batteries.Data.List.Basic
+import Batteries.Lean.Expr
+import Mathlib.Init
 
 /-!
 # Backward compatible implementation of lean 3 `cases` tactic
