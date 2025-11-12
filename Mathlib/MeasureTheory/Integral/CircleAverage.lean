@@ -91,7 +91,7 @@ theorem circleAverage_eq_circleIntegral {F : Type*} [NormedAddCommGroup F] [Norm
   _ = (2 * π * I)⁻¹ • ∫ θ in 0..2 * π, I • f (circleMap c R θ) := by
     rw [intervalIntegral.integral_smul, mul_inv_rev, smul_smul]
     match_scalars
-    field_simp
+    field
   _ = (2 * π * I)⁻¹ • (∮ z in C(c, R), (z - c)⁻¹ • f z) := by
     unfold circleIntegral
     congr with θ
@@ -123,9 +123,9 @@ lemma circleAverage_eq_integral_add (η : ℝ) :
 /-- Circle averages do not change when replacing the radius by its absolute value. -/
 @[simp] theorem circleAverage_abs_radius :
     circleAverage f c |R| = circleAverage f c R := by
-  by_cases hR : 0 ≤ R
+  by_cases! hR : 0 ≤ R
   · rw [abs_of_nonneg hR]
-  · rw [abs_of_neg (not_le.1 hR), circleAverage_neg_radius]
+  · rw [abs_of_neg hR, circleAverage_neg_radius]
 
 /-- If two functions agree outside of a discrete set in the circle, then their averages agree. -/
 theorem circleAverage_congr_codiscreteWithin
@@ -201,6 +201,17 @@ theorem circleAverage_const_on_circle [CompleteSpace E] {a : E}
 /-!
 ## Inequalities
 -/
+
+/--
+Circle averages respect the `≤` relation.
+-/
+@[gcongr]
+theorem circleAverage_mono {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → ℝ} (hf₁ : CircleIntegrable f₁ c R)
+    (hf₂ : CircleIntegrable f₂ c R) (h : ∀ x ∈ Metric.sphere c |R|, f₁ x ≤ f₂ x) :
+    circleAverage f₁ c R ≤ circleAverage f₂ c R := by
+  apply (mul_le_mul_iff_of_pos_left (by simp [pi_pos])).2
+  apply intervalIntegral.integral_mono_on_of_le_Ioo (le_of_lt two_pi_pos) hf₁ hf₂
+  exact fun x _ ↦ by simp [h (circleMap c R x)]
 
 /--
 If `f x` is smaller than `a` on for every point of the circle, then the circle average of `f` is

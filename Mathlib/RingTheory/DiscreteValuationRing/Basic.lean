@@ -29,7 +29,7 @@ Let R be an integral domain, assumed to be a principal ideal ring and a local ri
 
 ### Definitions
 
-* `addVal R : AddValuation R PartENat` : the additive valuation on a DVR.
+* `addVal R : AddValuation R ℕ∞` : the additive valuation on a DVR.
 * `toEuclideanDomain R : EuclideanDomain R` : a non-canonical structure of Euclidean domain on a
   DVR, where `x % y = 0` if `y ∣ x` and `x % y = x` otherwise. The GCD algorithm terminates in two
   steps.
@@ -377,7 +377,7 @@ theorem unit_mul_pow_congr_unit {ϖ : R} (hirr : Irreducible ϖ) (u v : Rˣ) (m 
   rcases h with h | h
   · rw [sub_eq_zero] at h
     exact mod_cast h
-  · apply (hirr.ne_zero (pow_eq_zero h)).elim
+  · apply (hirr.ne_zero (eq_zero_of_pow_eq_zero h)).elim
 
 /-!
 ## The additive valuation on a DVR

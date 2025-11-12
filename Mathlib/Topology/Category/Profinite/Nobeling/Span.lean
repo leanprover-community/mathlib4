@@ -163,9 +163,6 @@ theorem GoodProducts.finsuppSum_mem_span_eval {a : I} {as : List I}
   refine ⟨⟨a :: m.val, ha.cons_of_le m.prop hmas⟩, ⟨List.cons_le_cons a hmas, ?_⟩⟩
   simp only [Products.eval, List.map, List.prod_cons]
 
-@[deprecated (since := "2025-04-06")]
-alias GoodProducts.finsupp_sum_mem_span_eval := GoodProducts.finsuppSum_mem_span_eval
-
 /-- If `s` is a finite subset of `I`, then the good products span. -/
 theorem GoodProducts.spanFin [WellFoundedLT I] :
     ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (· ∈ s)))) := by
@@ -188,7 +185,7 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
   | cons a as ih =>
     rw [List.map_cons, List.prod_cons]
     intro ha
-    specialize ih (by rw [List.isChain_cons'] at ha; exact ha.2)
+    specialize ih (by rw [List.isChain_cons] at ha; exact ha.2)
     rw [Finsupp.mem_span_image_iff_linearCombination] at ih
     simp only [Finsupp.mem_supported, Finsupp.linearCombination_apply] at ih
     obtain ⟨c, hc, hc'⟩ := ih

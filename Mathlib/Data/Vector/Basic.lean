@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 import Mathlib.Data.Vector.Defs
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.OfFn
-import Mathlib.Data.List.Scan
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
 import Mathlib.Algebra.BigOperators.Group.List.Basic
@@ -677,7 +676,10 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) :
     ∀ x : Vector α n, x.traverse ((pure : _ → Id _) ∘ f) = pure (map f x) := by
-  rintro ⟨x, rfl⟩; simp!; induction x <;> simp! [*, functor_norm]; rfl
+  rintro ⟨x, rfl⟩
+  simp!
+  induction x <;> simp! [*, functor_norm]
+  rfl
 
 variable [LawfulApplicative F] (η : ApplicativeTransformation F G)
 

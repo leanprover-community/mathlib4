@@ -185,10 +185,9 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
   · suffices ∃ j, IsEmpty (F.obj j) by
       refine this.imp fun j hj => ?_
       refine ⟨⟨hj.elim, fun A => ?_⟩, ?_⟩
-      · suffices (fun a ↦ IsEmpty.elim hj a) ⁻¹' A = ∅ by
-          rw [this]
-          exact isOpen_empty
-        exact @Set.eq_empty_of_isEmpty _ hj _
+      · convert isOpen_empty
+        ext x
+        exact hj.elim x
       · ext x
         exact hj.elim' (C.π.app j x)
     by_contra! h
