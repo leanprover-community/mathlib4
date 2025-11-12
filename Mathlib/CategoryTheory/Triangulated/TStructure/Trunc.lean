@@ -88,7 +88,7 @@ lemma triangle_iso_exists (a b : ℤ) (h : a < b) (T T' : Triangle C)
         (by cat_disch) }, hhom⟩
 
 namespace TruncAux
-/-! The definitions in the namespace `TStucture.TruncAux` are part of the
+/-! The definitions in the namespace `TStructure.TruncAux` are part of the
 implementation of the truncation functors `truncLT`, `truncGE` and the
 distinguished triangles they fit in. -/
 
