@@ -125,6 +125,13 @@ instance : Singleton α (Compacts α) where
 theorem mem_singleton (x y : α) : x ∈ ({y} : Compacts α) ↔ x = y :=
   Iff.rfl
 
+theorem singleton_injective : Function.Injective ({·} : α → Compacts α) :=
+  .of_comp (f := SetLike.coe) Set.singleton_injective
+
+@[simp]
+theorem singleton_inj {x y : α} : ({x} : Compacts α) = {y} ↔ x = y :=
+  singleton_injective.eq_iff
+
 /-- The image of a compact set under a continuous function. -/
 protected def map (f : α → β) (hf : Continuous f) (K : Compacts α) : Compacts β :=
   ⟨f '' K.1, K.2.image hf⟩
@@ -274,6 +281,13 @@ theorem toCompacts_singleton (x : α) : toCompacts {x} = {x} :=
 @[simp]
 theorem toCloseds_singleton [T2Space α] (x : α) : toCloseds {x} = Closeds.singleton x :=
   rfl
+
+theorem singleton_injective : Function.Injective ({·} : α → NonemptyCompacts α) :=
+  .of_comp (f := SetLike.coe) Set.singleton_injective
+
+@[simp]
+theorem singleton_inj {x y : α} : ({x} : NonemptyCompacts α) = {y} ↔ x = y :=
+  singleton_injective.eq_iff
 
 /-- In an inhabited space, the type of nonempty compact subsets is also inhabited, with
 default element the singleton set containing the default element. -/
