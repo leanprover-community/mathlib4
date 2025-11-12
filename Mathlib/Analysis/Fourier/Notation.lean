@@ -3,7 +3,7 @@ Copyright (c) 2025 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.Algebra.Module.Equiv.Defs
 
 /-! # Type classes for the Fourier transform
 
@@ -39,9 +39,9 @@ namespace FourierTransform
 
 end FourierTransform
 
-section add
+section Module
 
-open FourierTransform
+open scoped FourierTransform
 
 /-- A `FourierModule` is a function space on which the Fourier transform is a linear map. -/
 class FourierModule (R : Type*) (E : Type*) (F : outParam (Type*)) [Add E] [Add F] [SMul R E]
@@ -63,7 +63,11 @@ attribute [simp] FourierInvModule.fourierInv_smul
 
 variable {R E F : Type*} [Semiring R] [AddCommMonoid E] [AddCommMonoid F] [Module R E] [Module R F]
 
-variable (R E F) [FourierModule R E F] in
+section fourierₗ
+
+variable [FourierModule R E F]
+
+variable (R E F) in
 /-- The Fourier transform as a linear map. -/
 def fourierₗ : E →ₗ[R] F where
   toFun := 𝓕
@@ -71,10 +75,19 @@ def fourierₗ : E →ₗ[R] F where
   map_smul' := FourierModule.fourier_smul
 
 @[simp]
-lemma FourierTransform.fourier_zero [FourierModule R E F] : 𝓕 (0 : E) = 0 :=
+lemma fourierₗ_apply (f : E) : fourierₗ R E F f = 𝓕 f := rfl
+
+@[simp]
+lemma FourierTransform.fourier_zero : 𝓕 (0 : E) = 0 :=
   (fourierₗ R E F).map_zero
 
-variable (R E F) [FourierInvModule R E F] in
+end fourierₗ
+
+section fourierInvₗ
+
+variable [FourierInvModule R E F]
+
+variable (R E F) in
 /-- The inverse Fourier transform as a linear map. -/
 def fourierInvₗ : E →ₗ[R] F where
   toFun := 𝓕⁻
@@ -82,24 +95,46 @@ def fourierInvₗ : E →ₗ[R] F where
   map_smul' := FourierInvModule.fourierInv_smul
 
 @[simp]
-lemma FourierTransform.fourierInv_zero [FourierInvModule R E F] : 𝓕⁻ (0 : E) = 0 :=
+lemma fourierInvₗ_apply (f : E) : fourierInvₗ R E F f = 𝓕⁻ f := rfl
+
+@[simp]
+lemma FourierTransformInv.fourierInv_zero : 𝓕⁻ (0 : E) = 0 :=
   (fourierInvₗ R E F).map_zero
 
-end add
+end fourierInvₗ
 
-section pair
+end Module
+
+section Pair
 
 open FourierTransform
 
 /-- A `FourierPair` is a pair of spaces `E` and `F` such that `𝓕⁻ ∘ 𝓕 = id` on `E`. -/
-class FourierPair (E F : Type*) extends FourierTransform E F, FourierTransformInv F E where
+class FourierPair (E F : Type*) [FourierTransform E F] [FourierTransformInv F E] where
   inv_fourier : ∀ (f : E), 𝓕⁻ (𝓕 f) = f
 
 /-- A `FourierPairInv` is a pair of spaces `E` and `F` such that `𝓕 ∘ 𝓕⁻ = id` on `F`. -/
-class FourierPairInv (E F : Type*) extends FourierTransform E F, FourierTransformInv F E where
+class FourierPairInv (E F : Type*) [FourierTransform E F] [FourierTransformInv F E] where
   fourier_inv : ∀ (f : F), 𝓕 (𝓕⁻ f) = f
 
 attribute [simp] FourierPair.inv_fourier
 attribute [simp] FourierPairInv.fourier_inv
 
-end pair
+variable {R E F : Type*} [Semiring R] [AddCommMonoid E] [AddCommMonoid F] [Module R E] [Module R F]
+  [FourierModule R E F] [FourierInvModule R F E] [FourierPair E F] [FourierPairInv E F]
+
+variable (R E F) in
+/-- The Fourier transform as a linear equivalence. -/
+def fourierEquiv : E ≃ₗ[R] F where
+  __ := fourierₗ R E F
+  invFun := 𝓕⁻
+  left_inv := FourierPair.inv_fourier
+  right_inv := FourierPairInv.fourier_inv
+
+@[simp]
+lemma fourierEquiv_apply (f : E) : fourierEquiv R E F f = 𝓕 f := rfl
+
+@[simp]
+lemma fourierEquiv_symm_apply (f : F) : (fourierEquiv R E F).symm f = 𝓕⁻ f := rfl
+
+end Pair
