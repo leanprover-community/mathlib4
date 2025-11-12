@@ -15,12 +15,12 @@ prove how it transforms under the slash action.
 
 -/
 
-open UpperHalfPlane hiding I
+open UpperHalfPlane hiding I σ
 
 open ModularForm EisensteinSeries  TopologicalSpace  intervalIntegral
   Metric Filter Function Complex MatrixGroups Finset ArithmeticFunction Set SummationFilter
 
-open scoped Interval Real Topology BigOperators Nat
+open scoped Interval Real Topology BigOperators Nat ArithmeticFunction.sigma
 
 noncomputable section
 
@@ -46,7 +46,12 @@ private lemma G2_partial_sum_eq (z : ℍ) (N : ℕ) : ∑ m ∈ Icc (-N : ℤ) N
     simp_rw [H a, ← tsum_mul_left, ← tsum_neg,ofReal_mul, ofReal_ofNat, mul_pow, I_sq, neg_mul,
       one_mul, Nat.cast_add, Nat.cast_one, mul_neg, ofReal_pow, ← exp_nsmul, nsmul_eq_mul,
       Nat.cast_mul]
-    exact tsum_congr fun b ↦ by grind [exp_add]
+    apply tsum_congr
+    intro b
+    ring_nf
+    simp only [exp_add, neg_inj, mul_eq_mul_right_iff, OfNat.ofNat_ne_zero, or_false]
+    grind
+
 
 private lemma aux_G2_tendsto (z : ℍ) : Tendsto (fun N ↦ ∑ m ∈ range N, -8 * π ^ 2 *
     ∑' (n : ℕ+), n * cexp (2 * π * I * z) ^ ((m + 1) * n : ℕ)) atTop
@@ -74,8 +79,8 @@ lemma G2_cauchySeq (z : ℍ) : CauchySeq (fun N : ℕ ↦ ∑ m ∈ Icc (-N : �
   apply Tendsto.cauchySeq (x := -8 * π ^ 2 * ∑' (n : ℕ+), (σ 1 n) * cexp (2 * π * I * z) ^ (n : ℕ))
   simpa using aux_G2_tendsto z
 
-lemma Summable_symCondInt_G2 (z : ℍ) : Summable (fun m ↦ e2Summand m z) symCondInt := by
-  simpa [Summable, HasSum, symmetricConditional_eq_map_Icc_nat] using
+lemma Summable_symCondInt_G2 (z : ℍ) : Summable (fun m ↦ e2Summand m z) (symmetricIcc ℤ ) := by
+  simpa only [Summable, HasSum, symmetricIcc_eq_map_Icc_nat] using
     cauchySeq_tendsto_of_complete (G2_cauchySeq z)
 
 /-Do we want this not to be private? I made it more general in case we want it elsewhere. If so we
@@ -90,35 +95,43 @@ private lemma tendsto_zero_of_cauchySeq_sum_Icc {F : Type*} [NormedRing F] [Norm
   obtain ⟨N, hN⟩ := (Hg (2 * ε) (by positivity))
   refine ⟨N + 1, fun n hn ↦ ?_⟩
   have H2 := (H n.natAbs (n -1).natAbs N (by omega) (by omega))
-  rw [sum_Icc_add_endpoints f (by omega)] at H2
+  have H22 := sum_Icc_succ_eq_add_endpoints f (N := n.natAbs - 1)
+  have H3: ((n.natAbs - 1 : ℕ)  : ℤ) = n - 1 := by
+    omega
+  rw [H3] at H22
+  simp only [Nat.cast_natAbs, Int.cast_abs, Int.cast_eq, Int.cast_sub, Int.cast_one, sub_add_cancel,
+    neg_sub, gt_iff_lt] at *
   have h1 : |n| = n := by
     rw [abs_eq_self]
     omega
   have h2 : |n - 1| = n - 1 := by
     rw [abs_eq_self, Int.sub_nonneg]
     omega
+  rw [h1, h2, H22] at H2
   have := norm_smul (2 : ℤ) (f n)
-  simp only [Nat.cast_natAbs, h1, Int.cast_eq, (hs n), (two_mul (f n)).symm, neg_sub, h2,
-    Int.cast_sub, Int.cast_one, dist_add_self_left, zsmul_eq_mul, Int.cast_ofNat] at *
+  simp only [(hs n), (two_mul (f n)).symm, neg_sub, dist_add_self_left, h1, h2, zsmul_eq_mul,
+    Int.cast_ofNat, gt_iff_lt] at *
   simpa [this, Int.norm_eq_abs] using lt_of_le_of_lt (le_trans H2 (le_abs_self (g N)))
     (hN N (by rfl))
 
 private lemma tendsto_zero_of_even_summable_symmetriConditional {F : Type*} [NormedRing F]
-    [NormSMulClass ℤ F] {f : ℤ → F} (hs : f.Even) (hc : Summable f symCondInt) :
+    [NormSMulClass ℤ F] {f : ℤ → F} (hs : f.Even) (hc : Summable f (symmetricIcc ℤ)) :
     Tendsto f atTop (𝓝 0) := by
   apply tendsto_zero_of_cauchySeq_sum_Icc ?_ hs
   have H := hc.hasSum
   rw [HasSum] at H
-  apply Filter.Tendsto.cauchySeq (x := ∑'[symCondInt] (b : ℤ), f b)
-  simpa [symmetricConditional_eq_map_Icc_nat] using H
+  apply Filter.Tendsto.cauchySeq (x := ∑'[symmetricIcc ℤ] (b : ℤ), f b)
+  rw [symmetricIcc_eq_map_Icc_nat] at H
+  exact H
 
-lemma Summable_IccFilter_G2_Ico (z : ℍ) : Summable (fun m : ℤ ↦ e2Summand m z) (IcoFilter ℤ) := by
-  apply summable_IcoFilter_of_multiplible_symmetricConditional (Summable_symCondInt_G2 z)
+lemma Summable_IccFilter_G2_Ico (z : ℍ) :
+    Summable (fun m : ℤ ↦ e2Summand m z) (symmetricIco ℤ) := by
+  apply summable_symmetricIco_of_multiplible_symmetricIcc (Summable_symCondInt_G2 z)
   have h0 := tendsto_zero_of_cauchySeq_sum_Icc (G2_cauchySeq z) (e2Summand_even z)
   simpa using (Filter.Tendsto.neg h0).comp tendsto_natCast_atTop_atTop
 
-lemma G2_eq_tsum_IcoFilter (z : ℍ) : G2 z = ∑'[IcoFilter ℤ] m, e2Summand m z := by
-  rw [G2, tsum_symmetricConditional_eq_tsum_IcoFilter (Summable_symCondInt_G2 z) ?_]
+lemma G2_eq_tsum_IcoFilter (z : ℍ) : G2 z = ∑'[symmetricIco ℤ] m, e2Summand m z := by
+  rw [G2, tsum_symmetricIcc_eq_tsum_symmetricIco (Summable_symCondInt_G2 z) ?_]
   have h0 := tendsto_zero_of_cauchySeq_sum_Icc (G2_cauchySeq z) (e2Summand_even z)
   simpa using (Filter.Tendsto.neg h0).comp tendsto_natCast_atTop_atTop
 
@@ -126,13 +139,13 @@ lemma G2_Ico_cauchySeq (z : ℍ) : CauchySeq fun N : ℕ ↦ ∑ m ∈ Ico (-N :
   apply Filter.Tendsto.cauchySeq (x := G2 z)
   obtain ⟨a, ha⟩ := Summable_IccFilter_G2_Ico z
   rw [G2_eq_tsum_IcoFilter z, (Summable.hasSum_iff (Summable_IccFilter_G2_Ico z)).mp ha]
-  simp only [IcoFilter, ← Nat.map_cast_int_atTop, Filter.map_map, HasSum, tendsto_map'_iff] at *
+  simp only [symmetricIco, ← Nat.map_cast_int_atTop, Filter.map_map, HasSum, tendsto_map'_iff] at *
   apply ha.congr (by simp)
 
 lemma G2_q_exp (z : ℍ) : G2 z =
     (2 * riemannZeta 2) - 8 * π ^ 2 * ∑' n : ℕ+, σ 1 n * cexp (2 * π * I * z) ^ (n : ℕ) := by
   apply HasSum.tsum_eq
-  simp only [sub_eq_add_neg, HasSum, symmetricConditional_eq_map_Icc_nat, tendsto_map'_iff]
+  simp only [sub_eq_add_neg, HasSum, symmetricIcc_eq_map_Icc_nat, tendsto_map'_iff]
   conv =>
     enter [1, N]
     simp [G2_partial_sum_eq z N]
