@@ -232,7 +232,7 @@ end Centered
 
 section Covariance
 
-variable [NormedSpace ℝ E] [BorelSpace E] [IsFiniteMeasure μ]
+variable [NormedSpace ℝ E] [BorelSpace E]
 
 open Classical in
 /-- Continuous bilinear form with value `∫ x, (L₁ x - μ[L₁]) * (L₂ x - μ[L₂]) ∂μ` on `(L₁, L₂)`
@@ -249,7 +249,28 @@ lemma covarianceBilinDual_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : Stron
   refine fun h_Lp ↦ h ?_
   have : (id : E → E) = fun x ↦ x - ∫ x, x ∂μ + ∫ x, x ∂μ := by ext; simp
   rw [this]
-  exact h_Lp.add (memLp_const _)
+  apply h_Lp.add
+  simp at h_Lp
+  by_cases hx : ∫ (x : E), x ∂μ = 0
+  · simp [hx]
+  have I : Integrable id μ := by
+    contrapose! hx
+    exact integral_undef hx
+  replace I := I.norm
+  have W := h_Lp.integrable_norm_pow (by norm_num)
+  apply (integrable_norm_rpow_iff _ _ _).1
+  · apply (I.add W).mono (by fun_prop)
+    filter_upwards [] with x
+    simp
+    sorry
+  · fun_prop
+  · norm_num
+  · norm_num
+
+
+
+
+#exit
 
 @[simp]
 lemma covarianceBilinDual_zero : covarianceBilinDual (0 : Measure E) = 0 := by
