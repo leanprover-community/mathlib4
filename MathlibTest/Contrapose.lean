@@ -37,6 +37,11 @@ example (p q : Prop) (h : ¬q → p) : ¬p → q := by
   guard_target = ¬q → p
   exact h
 
+example {α : Type} (a b : α) (p : Prop) (h : a = b → p) : ¬p → a ≠ b := by
+  contrapose
+  guard_target = a = b → p
+  exact h
+
 example (p q : Prop) (h : q → p) : ¬p → ¬q := by
   contrapose!
   guard_target = q → p
