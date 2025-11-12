@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Jens Wagemaker
 -/
 import Mathlib.Algebra.Divisibility.Hom
 import Mathlib.Algebra.Group.Irreducible.Lemmas
+import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.GroupWithZero.Equiv
 import Mathlib.Algebra.Prime.Defs
 import Mathlib.Order.Monotone.Defs

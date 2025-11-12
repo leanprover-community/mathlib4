@@ -204,6 +204,7 @@ theorem _root_.Fintype.prod_eq_prod_compl_mul [DecidableEq ι] [Fintype ι] (a :
     ∏ i, f i = (∏ i ∈ {a}ᶜ, f i) * f a :=
   prod_eq_prod_diff_singleton_mul (mem_univ a) f
 
+@[to_additive]
 theorem dvd_prod_of_mem (f : ι → M) {a : ι} {s : Finset ι} (ha : a ∈ s) : f a ∣ ∏ i ∈ s, f i := by
   classical
     rw [Finset.prod_eq_mul_prod_diff_singleton ha]
