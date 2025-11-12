@@ -534,7 +534,7 @@ section FixedPoints
 variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
 
 /-- The set of fixed points of a normal subgroup is stable under the group action. -/
-@[to_additive]
+@[to_additive /-- The set of fixed points of a normal subgroup is stable under the group action. -/]
 def fixedPointsSubMulOfNormal {H : Subgroup G} [hH : H.Normal]
     : SubMulAction G α where
   carrier := MulAction.fixedPoints H α
