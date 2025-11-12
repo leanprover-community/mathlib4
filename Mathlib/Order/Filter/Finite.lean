@@ -270,6 +270,22 @@ theorem eventually_all_finite {ι} {I : Set ι} (hI : I.Finite) {l} {p : ι → 
     (∀ᶠ x in l, ∀ i ∈ I, p i x) ↔ ∀ i ∈ I, ∀ᶠ x in l, p i x := by
   simpa only [Filter.Eventually, setOf_forall] using biInter_mem hI
 
+@[simp]
+theorem frequently_exists {ι : Sort*} [Finite ι] {l} {p : ι → α → Prop} :
+    (∃ᶠ x in l, ∃ i, p i x) ↔ ∃ i, ∃ᶠ x in l, p i x := by
+  simp_rw [
+    ← not_forall_not, not_frequently, ← eventually_all,
+    ← not_exists, ← Filter.not_frequently, not_not
+  ]
+
+@[simp]
+theorem frequently_exists_finite {ι} {I : Set ι} (hI : I.Finite) {l} {p : ι → α → Prop} :
+    (∃ᶠ x in l, ∃ i ∈ I, p i x) ↔ ∃ i ∈ I, ∃ᶠ x in l, p i x := by
+  simp_rw [
+    ← not_forall_not, not_and, not_frequently, ← eventually_all_finite hI,
+    ← not_exists, exists_prop, ← Filter.not_frequently, not_not
+  ]
+
 protected alias _root_.Set.Finite.eventually_all := eventually_all_finite
 
 @[simp] theorem eventually_all_finset {ι} (I : Finset ι) {l} {p : ι → α → Prop} :
