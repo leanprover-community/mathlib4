@@ -39,13 +39,17 @@ namespace MeasureTheory
 
 variable {Ω β ι : Type*} {m : MeasurableSpace Ω}
 
+section Basic
+
+variable [Preorder ι] [InfSet ι] {u : ι → Ω → β}
+
 open scoped Classical in
 /-- Hitting time: given a stochastic process `u` and a set `s`, `hittingBtwn u s n m` is
 the first time `u` is in `s` after time `n` and before time `m` (if `u` does not hit `s`
 after time `n` and before `m` then the hitting time is simply `m`).
 
 The hitting time is a stopping time if the process is adapted and discrete. -/
-noncomputable def hittingBtwn [Preorder ι] [InfSet ι] (u : ι → Ω → β)
+noncomputable def hittingBtwn (u : ι → Ω → β)
     (s : Set β) (n m : ι) : Ω → ι :=
   fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s
     then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m
@@ -56,12 +60,12 @@ open scoped Classical in
 /-- Hitting time: given a stochastic process `u` and a set `s`, `hittingAfter u s n` is
 the first time `u` is in `s` after time `n` (if `u` does not hit `s` after time `n` then the
 hitting time is `⊤`). -/
-noncomputable def hittingAfter [Preorder ι] [InfSet ι] (u : ι → Ω → β) (s : Set β) (n : ι) :
+noncomputable def hittingAfter (u : ι → Ω → β) (s : Set β) (n : ι) :
     Ω → WithTop ι :=
   fun x ↦ if ∃ j, n ≤ j ∧ u j x ∈ s then (sInf {i : ι | n ≤ i ∧ u i x ∈ s} : ι) else ⊤
 
 open scoped Classical in
-theorem hittingBtwn_def [Preorder ι] [InfSet ι] (u : ι → Ω → β) (s : Set β) (n m : ι) :
+theorem hittingBtwn_def (u : ι → Ω → β) (s : Set β) (n m : ι) :
     hittingBtwn u s n m =
     fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m :=
   rfl
@@ -69,10 +73,41 @@ theorem hittingBtwn_def [Preorder ι] [InfSet ι] (u : ι → Ω → β) (s : Se
 @[deprecated (since := "2025-10-25")] alias hitting_def := hittingBtwn_def
 
 open scoped Classical in
-lemma hittingAfter_def [Preorder ι] [InfSet ι] (u : ι → Ω → β) (s : Set β) (n : ι) :
+lemma hittingAfter_def (u : ι → Ω → β) (s : Set β) (n : ι) :
     hittingAfter u s n =
     fun x => if ∃ j, n ≤ j ∧ u j x ∈ s
       then ((sInf {i : ι | n ≤ i ∧ u i x ∈ s} : ι) : WithTop ι) else ⊤ := rfl
+
+@[simp]
+lemma hittingBtwn_empty (n m : ι) : hittingBtwn u ∅ n m = fun _ ↦ m := by ext; simp [hittingBtwn]
+
+@[simp]
+lemma hittingAfter_empty (n : ι) : hittingAfter u ∅ n = fun _ ↦ ⊤ := by ext; simp [hittingAfter]
+
+@[simp]
+lemma hittingBtwn_univ {ι : Type*} [ConditionallyCompleteLattice ι] {u : ι → Ω → β} (n m : ι)
+    [Decidable (n ≤ m)] :
+    hittingBtwn u .univ n m = fun _ ↦ if n ≤ m then n else m := by
+  ext ω
+  classical
+  simp only [hittingBtwn_def, Set.mem_Icc, Set.mem_univ, and_true, Set.setOf_true, Set.inter_univ]
+  by_cases hnm : n ≤ m
+  · simp only [hnm, csInf_Icc, ↓reduceIte, ite_eq_left_iff, not_exists, not_and]
+    exact fun h ↦ absurd hnm (h n le_rfl)
+  · simp [hnm]
+    intro k hnk hkm
+    exact absurd (hnk.trans hkm) hnm
+
+@[simp]
+lemma hittingAfter_univ {ι : Type*} [ConditionallyCompleteLattice ι] {u : ι → Ω → β} (n : ι) :
+    hittingAfter u .univ n = fun _ ↦ (n : WithTop ι) := by
+  ext ω
+  classical
+  simp only [hittingAfter_def, Set.mem_univ, and_true]
+  rw [if_pos ⟨n, le_rfl⟩]
+  exact_mod_cast csInf_Ici
+
+end Basic
 
 section Inequalities
 
@@ -301,8 +336,44 @@ theorem hittingBtwn_eq_hittingBtwn_of_exists {m₁ m₂ : ι} (h : m₁ ≤ m₂
 @[deprecated (since := "2025-10-25")] alias hitting_eq_hitting_of_exists :=
   hittingBtwn_eq_hittingBtwn_of_exists
 
-theorem hittingBtwn_mono {m₁ m₂ : ι} (hm : m₁ ≤ m₂) :
-    hittingBtwn u s n m₁ ω ≤ hittingBtwn u s n m₂ ω := by
+/-- `hittingBtwn` is antitone with respect to the set. -/
+lemma hittingBtwn_anti (u : ι → Ω → β) (n m : ι) : Antitone (hittingBtwn u · n m) := by
+  intro E F hEF ω
+  simp only [hittingBtwn_def]
+  split_ifs with hF hE hE
+  · gcongr
+    exacts [⟨n, by
+      simp only [mem_lowerBounds, Set.mem_inter_iff, Set.mem_Icc, Set.mem_setOf_eq, and_imp];
+        grind⟩,
+      hE, hEF]
+  · obtain ⟨t, ht⟩ := hF
+    exact csInf_le_of_le ⟨n, by simp [mem_lowerBounds]; grind⟩ ht ht.1.2
+  · obtain ⟨t, ht⟩ := hE
+    exact absurd ⟨t, ht.1, hEF ht.2⟩ hF
+  · simp
+
+/-- `hittingAfter` is antitone with respect to the set. -/
+lemma hittingAfter_anti (u : ι → Ω → β) (n : ι) : Antitone (hittingAfter u · n) := by
+  intro E F hEF ω
+  simp only [hittingAfter_def]
+  split_ifs with hF hE hE
+  · norm_cast
+    gcongr
+    exacts [⟨n, by simp only [mem_lowerBounds, Set.mem_setOf_eq, and_imp]; grind⟩, hE, hEF]
+  · simp
+  · obtain ⟨t, ht⟩ := hE
+    exact absurd ⟨t, ht.1, hEF ht.2⟩ hF
+  · simp
+
+lemma hittingBtwn_apply_anti (u : ι → Ω → β) (n m : ι) (ω : Ω) :
+    Antitone (hittingBtwn u · n m ω) := fun _ _ hEF ↦ hittingBtwn_anti u n m hEF ω
+
+lemma hittingAfter_apply_anti (u : ι → Ω → β) (n : ι) (ω : Ω) :
+    Antitone (hittingAfter u · n ω) := fun _ _ hst ↦ hittingAfter_anti u n hst ω
+
+/-- `hittingBtwn` is monotone with respect to the maximal time. -/
+theorem hittingBtwn_mono_right : Monotone (hittingBtwn u s n · ω) := by
+  intro m₁ m₂ hm
   by_cases h : ∃ j ∈ Set.Icc n m₁, u j ω ∈ s
   · exact (hittingBtwn_eq_hittingBtwn_of_exists hm h).le
   · simp_rw [hittingBtwn, if_neg h]
@@ -314,7 +385,43 @@ theorem hittingBtwn_mono {m₁ m₂ : ι} (hm : m₁ ≤ m₂) :
       exact h ⟨i, ⟨hi₁.1.1, hi₂.le⟩, hi₁.2⟩
     · exact hm
 
-@[deprecated (since := "2025-10-25")] alias hitting_mono := hittingBtwn_mono
+@[deprecated (since := "2025-10-25")] alias hitting_mono := hittingBtwn_mono_right
+@[deprecated (since := "2025-11-12")] alias hittingBtwn_mono := hittingBtwn_mono_right
+
+/-- `hittingBtwn` is monotone with respect to the minimal time. -/
+lemma hittingBtwn_mono_left (u : ι → Ω → β) (s : Set β) (m : ι) :
+    Monotone (hittingBtwn u s · m) := by
+  intro n n' hnn' ω
+  simp only [hittingBtwn]
+  split_ifs with h_n h_n' h_n'
+  · gcongr
+    exacts [⟨n, by
+      simp only [mem_lowerBounds, Set.mem_inter_iff, Set.mem_Icc, Set.mem_setOf_eq, and_imp];
+        grind⟩, h_n']
+  · obtain ⟨t, ht⟩ := h_n
+    exact csInf_le_of_le ⟨n, by simp [mem_lowerBounds]; grind⟩ ht ht.1.2
+  · have ⟨t, ht⟩ := h_n'
+    exact absurd ⟨t, ⟨hnn'.trans ht.1.1, ht.1.2⟩, ht.2⟩ h_n
+  · simp
+
+/-- `hittingAfter` is monotone with respect to the minimal time. -/
+lemma hittingAfter_mono (u : ι → Ω → β) (s : Set β) : Monotone (hittingAfter u s) := by
+  intro n m hnm ω
+  simp only [hittingAfter]
+  split_ifs with h_n h_m h_m
+  · norm_cast
+    gcongr
+    exacts [⟨n, by simp only [mem_lowerBounds, Set.mem_setOf_eq, and_imp]; grind⟩, h_m]
+  · simp
+  · have ⟨t, ht⟩ := h_m
+    exact absurd ⟨t, hnm.trans ht.1, ht.2⟩ h_n
+  · simp
+
+lemma hittingBtwn_apply_mono (u : ι → Ω → β) (s : Set β) (m : ι) :
+    Monotone (hittingBtwn u s · m ω) := fun _ _ hnn' ↦ hittingBtwn_mono_left u s m hnn' ω
+
+lemma hittingAfter_apply_mono (u : ι → Ω → β) (s : Set β) (ω : Ω) :
+    Monotone (hittingAfter u s · ω) := fun _ _ hnm ↦ hittingAfter_mono u s hnm ω
 
 end Inequalities
 
