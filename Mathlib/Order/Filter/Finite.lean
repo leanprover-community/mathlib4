@@ -258,7 +258,7 @@ theorem iInf_principal_finite {ι : Type w} {s : Set ι} (hs : s.Finite) (f : ι
 
 end Lattice
 
-/-! ### Eventually -/
+/-! ### Eventually and Frequently -/
 
 @[simp]
 theorem eventually_all {ι : Sort*} [Finite ι] {l} {p : ι → α → Prop} :
@@ -270,22 +270,6 @@ theorem eventually_all_finite {ι} {I : Set ι} (hI : I.Finite) {l} {p : ι → 
     (∀ᶠ x in l, ∀ i ∈ I, p i x) ↔ ∀ i ∈ I, ∀ᶠ x in l, p i x := by
   simpa only [Filter.Eventually, setOf_forall] using biInter_mem hI
 
-@[simp]
-theorem frequently_exists {ι : Sort*} [Finite ι] {l} {p : ι → α → Prop} :
-    (∃ᶠ x in l, ∃ i, p i x) ↔ ∃ i, ∃ᶠ x in l, p i x := by
-  simp_rw [
-    ← not_forall_not, not_frequently, ← eventually_all,
-    ← not_exists, ← Filter.not_frequently, not_not
-  ]
-
-@[simp]
-theorem frequently_exists_finite {ι} {I : Set ι} (hI : I.Finite) {l} {p : ι → α → Prop} :
-    (∃ᶠ x in l, ∃ i ∈ I, p i x) ↔ ∃ i ∈ I, ∃ᶠ x in l, p i x := by
-  simp_rw [
-    ← not_forall_not, not_and, not_frequently, ← eventually_all_finite hI,
-    ← not_exists, exists_prop, ← Filter.not_frequently, not_not
-  ]
-
 protected alias _root_.Set.Finite.eventually_all := eventually_all_finite
 
 @[simp] theorem eventually_all_finset {ι} (I : Finset ι) {l} {p : ι → α → Prop} :
@@ -293,6 +277,26 @@ protected alias _root_.Set.Finite.eventually_all := eventually_all_finite
   I.finite_toSet.eventually_all
 
 protected alias _root_.Finset.eventually_all := eventually_all_finset
+
+@[simp]
+theorem frequently_exists {ι : Sort*} [Finite ι] {l} {p : ι → α → Prop} :
+    (∃ᶠ x in l, ∃ i, p i x) ↔ ∃ i, ∃ᶠ x in l, p i x := by
+  rw [← not_iff_not]
+  simp
+
+@[simp]
+theorem frequently_exists_finite {ι} {I : Set ι} (hI : I.Finite) {l} {p : ι → α → Prop} :
+    (∃ᶠ x in l, ∃ i ∈ I, p i x) ↔ ∃ i ∈ I, ∃ᶠ x in l, p i x := by
+  rw [← not_iff_not]
+  simp [hI]
+
+protected alias _root_.Set.Finite.frequently_exists := frequently_exists_finite
+
+@[simp] theorem frequently_exists_finset {ι} (I : Finset ι) {l} {p : ι → α → Prop} :
+    (∃ᶠ x in l, ∃ i ∈ I, p i x) ↔ ∃ i ∈ I, ∃ᶠ x in l, p i x :=
+  I.finite_toSet.frequently_exists
+
+protected alias _root_.Finset.frequently_exists := frequently_exists_finset
 
 lemma eventually_subset_of_finite {ι : Type*} {f : Filter ι} {s : ι → Set α} {t : Set α}
     (ht : t.Finite) (hs : ∀ a ∈ t, ∀ᶠ i in f, a ∈ s i) : ∀ᶠ i in f, t ⊆ s i := by
