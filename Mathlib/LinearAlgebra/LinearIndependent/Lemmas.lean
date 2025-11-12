@@ -480,6 +480,19 @@ lemma LinearMap.bijective_of_linearIndependent_of_span_eq_top {N : Type*} [AddCo
   rw [Set.range_comp, ← Submodule.map_span, hv, Submodule.map_top] at hsp
   rwa [← range_eq_top]
 
+/-- Version of `LinearIndepOn.insert` that works when the scalars are not a field. -/
+lemma LinearIndepOn.insert' {s : Set ι} {i : ι} (hs : LinearIndepOn R v s)
+    (hx : ∀ r : R, r • v i ∈ Submodule.span R (v '' s) → r = 0) :
+    LinearIndepOn R v (insert i s) := by
+  rw [← Set.union_singleton]
+  refine hs.union (.singleton' fun r hr ↦ hx _ <| by simp [hr]) ?_
+  simp +contextual [disjoint_span_singleton'', hx]
+
+/-- Version of `LinearIndepOn.id_insert` that works when the scalars are not a field. -/
+lemma LinearIndepOn.id_insert' {s : Set M} {x : M} (hs : LinearIndepOn R id s)
+    (hx : ∀ r : R, r • x ∈ Submodule.span R s → r = 0) : LinearIndepOn R id (insert x s) :=
+  hs.insert' <| by simpa
+
 end Module
 
 /-!
@@ -512,7 +525,7 @@ protected theorem LinearIndepOn.insert {s : Set ι} {x : ι} (hs : LinearIndepOn
     (hx : v x ∉ span K (v '' s)) : LinearIndepOn K v (insert x s) := by
   rw [← union_singleton]
   have x0 : v x ≠ 0 := fun h => hx (h ▸ zero_mem _)
-  apply hs.union (LinearIndepOn.singleton _ x0)
+  apply hs.union (LinearIndepOn.singleton x0)
   rwa [image_singleton, disjoint_span_singleton' x0]
 
 protected theorem LinearIndepOn.id_insert (hs : LinearIndepOn K id s) (hx : x ∉ span K s) :
@@ -589,9 +602,8 @@ theorem LinearIndepOn.notMem_span_iff_id {s : Set V} {a : V} (h : LinearIndepOn 
 alias LinearIndepOn.not_mem_span_iff_id := LinearIndepOn.notMem_span_iff_id
 
 theorem linearIndepOn_id_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x ≠ y) :
-    LinearIndepOn K id {x, y} :=
-  pair_comm y x ▸ (LinearIndepOn.id_singleton K hx).id_insert (x := y) <|
-    mt mem_span_singleton.1 <| not_exists.2 hy
+    LinearIndepOn K id {x, y} := by
+  rw [pair_comm]; exact .id_insert (.singleton hx) <| by simpa [mem_span_singleton]
 
 /-- `LinearIndepOn.pair_iff` is a version that works over arbitrary rings. -/
 theorem linearIndepOn_pair_iff {i j : ι} (v : ι → V) (hij : i ≠ j) (hi : v i ≠ 0) :
