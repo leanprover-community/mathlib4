@@ -63,7 +63,7 @@ lemma characteristic_sub_characteristic_eq_proximity_sub_proximity (h : Meromorp
   simp [← Pi.sub_def, characteristic, logCounting_sub_const h]
 
 /--
-For natural numbers `n`, the counting function counting zeros of `f ^ n` equals `n` times the
+For natural numbers `n`, the characteristic function counting zeros of `f ^ n` equals `n` times the
 counting function counting zeros of `f`.
 -/
 @[simp]
@@ -72,7 +72,7 @@ theorem characteristic_pow_zero {f : ℂ → ℂ} {n : ℕ} (hf : MeromorphicOn 
   simp_all [characteristic]
 
 /--
-For natural numbers `n`, the counting function counting poles of `f ^ n` equals `n` times the
+For natural numbers `n`, the characteristic function counting poles of `f ^ n` equals `n` times the
 counting function counting poles of `f`.
 -/
 @[simp]
