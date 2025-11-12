@@ -155,7 +155,7 @@ theorem goldenRatio_irrational : Irrational φ := by
   have := this.ratCast_add 1
   convert this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
   simp
-  field
+  ring
 
 @[deprecated (since := "2025-08-23")] alias _root_.gold_irrational := goldenRatio_irrational
 
@@ -165,7 +165,7 @@ theorem goldenConj_irrational : Irrational ψ := by
   have := this.ratCast_sub 1
   convert this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
   simp
-  field
+  ring
 
 @[deprecated (since := "2025-08-23")] alias _root_.goldConj_irrational := goldenConj_irrational
 
