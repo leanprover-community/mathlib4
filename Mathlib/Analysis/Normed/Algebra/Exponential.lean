@@ -104,9 +104,8 @@ theorem expSeries_eq_ofScalars : expSeries 𝕂 𝔸 = ofScalars 𝔸 fun n ↦ 
 variable {𝕂 𝔸}
 
 open scoped Classical in
-/-- `NormedSpace.exp : 𝔸 → 𝔸` is the exponential map determined by the action of `𝕂` on `𝔸`.
-
-It is defined as the sum of the `FormalMultilinearSeries` `expSeries 𝕂 𝔸`.
+/-- `NormedSpace.exp : 𝔸 → 𝔸` is the exponential map. It is defined as the sum of the
+`FormalMultilinearSeries` `expSeries ℚ 𝔸`.
 
 Note that when `𝔸 = Matrix n n 𝕂`, this is the **Matrix Exponential**; see
 [`MatrixExponential`](./Mathlib/Analysis/Normed/Algebra/MatrixExponential) for lemmas
@@ -300,7 +299,7 @@ theorem hasFPowerSeriesAt_exp_zero_of_radius_pos [CharZero 𝕂] (h : 0 < (expSe
 
 theorem continuousOn_exp [CharZero 𝕂] :
     ContinuousOn (exp : 𝔸 → 𝔸) (EMetric.ball 0 (expSeries 𝕂 𝔸).radius) := by
-  have := @FormalMultilinearSeries.continuousOn _ _ _ _ _ _ _ _ (expSeries 𝕂 𝔸)
+  have := FormalMultilinearSeries.continuousOn (p := expSeries 𝕂 𝔸)
   simpa only [exp_eq_expSeries_sum 𝕂, expSeries_sum_eq_rat] using this
 
 theorem analyticAt_exp_of_mem_ball [CharZero 𝕂] (x : 𝔸)
@@ -651,8 +650,10 @@ theorem expSeries_eq_expSeries (n : ℕ) (x : 𝔸) :
 
 /-- A version of `Complex.ofReal_exp` for `NormedSpace.exp` instead of `Complex.exp` -/
 @[simp, norm_cast]
-theorem of_real_exp_ℝ_ℝ (r : ℝ) : ↑(exp r) = exp (r : ℂ) :=
+theorem ofReal_exp_ℝ_ℝ (r : ℝ) : ↑(exp r) = exp (r : ℂ) :=
   map_exp (algebraMap ℝ ℂ) (continuous_algebraMap _ _) r
+
+@[deprecated (since := "2025-11-13")] alias of_real_exp_ℝ_ℝ := ofReal_exp_ℝ_ℝ
 
 end ScalarTower
 

@@ -150,7 +150,7 @@ variable [StarModule ℂ A]
 /-- Any element of the spectrum of a selfadjoint is real. -/
 theorem IsSelfAdjoint.mem_spectrum_eq_re {a : A} (ha : IsSelfAdjoint a) {z : ℂ}
     (hz : z ∈ spectrum ℂ a) : z = z.re := by
-  have : NormedAlgebra ℚ A := .restrictScalars ℚ ℂ A
+  let +nondep : NormedAlgebra ℚ A := .restrictScalars ℚ ℂ A
   have hu := exp_mem_unitary_of_mem_skewAdjoint (ha.smul_mem_skewAdjoint conj_I)
   let Iu := Units.mk0 I I_ne_zero
   have : NormedSpace.exp (I • z) ∈ spectrum ℂ (NormedSpace.exp (I • a)) := by

@@ -101,7 +101,7 @@ theorem exp_of_re_eq_zero (q : Quaternion ℝ) (hq : q.re = 0) :
 /-- The closed form for the quaternion exponential on arbitrary quaternions. -/
 theorem exp_eq (q : Quaternion ℝ) :
     exp q = exp q.re • (↑(Real.cos ‖q.im‖) + (Real.sin ‖q.im‖ / ‖q.im‖) • q.im) := by
-  have : NormedAlgebra ℚ ℍ := .restrictScalars ℚ ℝ ℍ
+  let +nondep : NormedAlgebra ℚ ℍ := .restrictScalars ℚ ℝ ℍ
   rw [← exp_of_re_eq_zero q.im q.re_im, ← coe_mul_eq_smul, ← exp_coe, ← exp_add_of_commute,
     re_add_im]
   exact Algebra.commutes q.re (_ : ℍ[ℝ])
