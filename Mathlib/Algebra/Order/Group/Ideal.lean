@@ -50,11 +50,11 @@ satisfy the ascending chain condition. -/]
 instance : WellFoundedGT (SemigroupIdeal M) := by
   rw [wellFoundedGT_iff_monotone_chain_condition]
   intro f
-  rcases fg_iff.1 (fg_of_wellQuasiOrderedLE (⨆ i, f i)) with ⟨s, hI'⟩
+  rcases fg_iff.1 (fg_of_wellQuasiOrderedLE (⨆ i, f i)) with ⟨s, hI⟩
   have hs : ∀ x ∈ s, ∃ i, x ∈ f i := by
     intro x hx
     apply subset_closure (s := (s : Set M)) at hx
-    rw [SetLike.mem_coe, ← hI'] at hx
+    rw [SetLike.mem_coe, ← hI] at hx
     exact SubMulAction.mem_iSup.1 hx
   choose! g hg using hs
   exists s.sup g
@@ -62,7 +62,7 @@ instance : WellFoundedGT (SemigroupIdeal M) := by
   apply (f.mono hn).antisymm
   apply (le_iSup f n).trans
   intro x hx
-  rw [SetLike.mem_coe, hI', mem_closure''] at hx
+  rw [SetLike.mem_coe, hI, mem_closure''] at hx
   rcases hx with ⟨y, z, hz, rfl⟩
   exact SemigroupIdeal.mul_mem _ _ (f.mono (Finset.le_sup hz) (hg _ hz))
 
