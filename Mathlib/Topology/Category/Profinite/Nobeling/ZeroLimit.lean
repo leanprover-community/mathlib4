@@ -91,9 +91,8 @@ instance (α : Type*) [TopologicalSpace α] : IsAddTorsionFree (LocallyConstant 
   LocallyConstant.coe_injective.isAddTorsionFree LocallyConstant.coeFnAddMonoidHom
 
 theorem GoodProducts.linearIndependentSingleton {I} [LinearOrder I] :
-    LinearIndependent ℤ (eval ({fun _ ↦ false} : Set (I → Bool))) := by
-  refine linearIndependent_unique (eval ({fun _ ↦ false} : Set (I → Bool))) ?_
-  simp [eval, Products.eval, Products.nil, default]
+    LinearIndependent ℤ (eval ({fun _ ↦ false} : Set (I → Bool))) :=
+  .of_subsingleton default <| by simp [eval, Products.eval, Products.nil, default]
 
 end Zero
 
