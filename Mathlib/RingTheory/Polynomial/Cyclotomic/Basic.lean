@@ -132,22 +132,16 @@ section Field
 variable {K : Type*} [Field K]
 
 /-- `cyclotomic' n K` splits. -/
-theorem cyclotomic'_factors (n : ℕ) : Factors (cyclotomic' n K) := by
+theorem cyclotomic'_splits (n : ℕ) : Factors (cyclotomic' n K) := by
   apply Factors.prod
   intro z _
   exact Factors.X_sub_C z
 
-@[deprecated (since := "2025-10-24")]
-alias cyclotomic'_splits := cyclotomic'_factors
-
 /-- If there is a primitive `n`-th root of unity in `K`, then `X ^ n - 1` splits. -/
-theorem X_pow_sub_one_factors {ζ : K} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
+theorem X_pow_sub_one_splits {ζ : K} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     Factors (X ^ n - C (1 : K)) := by
   rw [factors_iff_card_roots, ← nthRoots, IsPrimitiveRoot.card_nthRoots_one h,
     natDegree_X_pow_sub_C]
-
-@[deprecated (since := "2025-10-24")]
-alias X_pow_sub_one_splits := X_pow_sub_one_factors
 
 /-- If there is a primitive `n`-th root of unity in `K`, then
 `∏ i ∈ Nat.divisors n, cyclotomic' i K = X ^ n - 1`. -/

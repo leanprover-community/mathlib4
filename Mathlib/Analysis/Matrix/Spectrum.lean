@@ -180,11 +180,8 @@ lemma eigenvalues_eq_eigenvalues_iff :
   · suffices hA.eigenvalues₀ = hB.eigenvalues₀ by unfold eigenvalues; rw [this]
     simp_rw [← List.ofFn_inj, ← sort_roots_charpoly_eq_eigenvalues₀, h]
 
-theorem factors_charpoly (hA : A.IsHermitian) : A.charpoly.Factors :=
+theorem splits_charpoly (hA : A.IsHermitian) : A.charpoly.Factors :=
   Polynomial.factors_iff_card_roots.mpr (by simp [hA.roots_charpoly_eq_eigenvalues])
-
-@[deprecated (since := "2025-10-24")]
-alias splits_charpoly := factors_charpoly
 
 /-- The determinant of a Hermitian matrix is the product of its eigenvalues. -/
 theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by

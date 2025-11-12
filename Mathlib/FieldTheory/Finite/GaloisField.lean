@@ -129,7 +129,7 @@ theorem card (h : n ≠ 0) : Nat.card (GaloisField p n) = p ^ n := by
   rw [Nat.card_eq_fintype_card, Module.card_fintype b, ← Module.finrank_eq_card_basis b,
     ZMod.card, finrank p h]
 
-theorem factors_zmod_X_pow_sub_X : Factors (X ^ p - X : (ZMod p)[X]) := by
+theorem splits_zmod_X_pow_sub_X : Factors (X ^ p - X : (ZMod p)[X]) := by
   have hp : 1 < p := h_prime.out.one_lt
   have h1 : roots (X ^ p - X : (ZMod p)[X]) = Finset.univ.val := by
     convert FiniteField.roots_X_pow_card_sub_X (ZMod p)
@@ -138,9 +138,6 @@ theorem factors_zmod_X_pow_sub_X : Factors (X ^ p - X : (ZMod p)[X]) := by
   -- We discharge the `p = 0` separately, to avoid typeclass issues on `ZMod p`.
   cases p; cases hp
   rw [factors_iff_card_roots, h1, ← Finset.card_def, Finset.card_univ, h2, ZMod.card]
-
-@[deprecated (since := "2025-10-24")]
-alias splits_zmod_X_pow_sub_X := factors_zmod_X_pow_sub_X
 
 /-- A Galois field with exponent 1 is equivalent to `ZMod` -/
 def equivZmodP : GaloisField p 1 ≃ₐ[ZMod p] ZMod p :=

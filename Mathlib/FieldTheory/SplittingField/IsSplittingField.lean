@@ -66,7 +66,7 @@ instance map (f : F[X]) [IsSplittingField F L f] : IsSplittingField K L (f.map <
         eq_top_iff, ← adjoin_rootSet L f, Algebra.adjoin_le_iff]
       exact fun x hx => @Algebra.subset_adjoin K _ _ _ _ _ _ hx⟩
 
-theorem factors_iff (f : K[X]) [IsSplittingField K L f] :
+theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
     Factors f ↔ (⊤ : Subalgebra K L) = ⊥ :=
   ⟨fun h => by
     rw [eq_bot_iff, ← adjoin_rootSet L f, rootSet, aroots, roots_map (algebraMap K L) h,
@@ -83,16 +83,10 @@ theorem factors_iff (f : K[X]) [IsSplittingField K L f] :
         RingEquiv.toRingHom_trans, ← map_map]
       apply (splits L f).map⟩
 
-@[deprecated (since := "2025-10-24")]
-alias splits_iff := factors_iff
-
-theorem IsScalarTower.factors (f : F[X]) [IsSplittingField K L (mapAlg F K f)] :
+theorem IsScalarTower.splits (f : F[X]) [IsSplittingField K L (mapAlg F K f)] :
     Factors (mapAlg F L f) := by
   rw [mapAlg_comp K L f, mapAlg_eq_map]
   apply IsSplittingField.splits
-
-@[deprecated (since := "2025-10-24")]
-alias IsScalarTower.splits := IsScalarTower.factors
 
 theorem mul (f g : F[X]) (hf : f ≠ 0) (hg : g ≠ 0) [IsSplittingField F K f]
     [IsSplittingField K L (g.map <| algebraMap F K)] : IsSplittingField F L (f * g) :=
@@ -117,7 +111,7 @@ def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
   if hf0 : f = 0 then
     (Algebra.ofId K F).comp <|
       (Algebra.botEquiv K L : (⊥ : Subalgebra K L) →ₐ[K] K).comp <| by
-        rw [← (factors_iff L f).1 (show f.Factors from hf0.symm ▸ Factors.zero)]
+        rw [← (splits_iff L f).1 (show f.Factors from hf0.symm ▸ Factors.zero)]
         exact Algebra.toTop
   else AlgHom.comp (by
     rw [← adjoin_rootSet L f]

@@ -51,7 +51,7 @@ open Polynomial IntermediateField AdjoinRoot
 
 section Splits
 
-theorem X_pow_sub_C_factors_of_isPrimitiveRoot
+theorem X_pow_sub_C_splits_of_isPrimitiveRoot
     {n : ℕ} {ζ : K} (hζ : IsPrimitiveRoot ζ n) {α a : K} (e : α ^ n = a) :
     (X ^ n - C a).Factors := by
   cases n.eq_zero_or_pos with
@@ -60,9 +60,6 @@ theorem X_pow_sub_C_factors_of_isPrimitiveRoot
     exact Factors.C _
   | inr hn =>
     rw [factors_iff_card_roots, ← nthRoots, hζ.card_nthRoots, natDegree_X_pow_sub_C, if_pos ⟨α, e⟩]
-
-@[deprecated (since := "2025-10-24")]
-alias X_pow_sub_C_splits_of_isPrimitiveRoot := X_pow_sub_C_factors_of_isPrimitiveRoot
 
 -- make this private, as we only use it to prove a strictly more general version
 private
@@ -307,7 +304,7 @@ lemma isSplittingField_AdjoinRoot_X_pow_sub_C :
       Polynomial.map_X]
     have ⟨_, hζ⟩ := hζ
     rw [mem_primitiveRoots (Nat.pos_of_ne_zero <| ne_zero_of_irreducible_X_pow_sub_C H)] at hζ
-    exact X_pow_sub_C_factors_of_isPrimitiveRoot (hζ.map_of_injective (algebraMap K _).injective)
+    exact X_pow_sub_C_splits_of_isPrimitiveRoot (hζ.map_of_injective (algebraMap K _).injective)
       (root_X_pow_sub_C_pow n a)
   · rw [eq_top_iff, ← AdjoinRoot.adjoinRoot_eq_top]
     apply Algebra.adjoin_mono
