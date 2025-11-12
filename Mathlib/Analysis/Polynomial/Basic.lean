@@ -10,7 +10,7 @@ import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 /-!
 # Limits related to polynomial and rational functions
 
-This file proves basic facts about limits of polynomial and rationals functions.
+This file proves basic facts about limits of polynomial and rational functions.
 The main result is `Polynomial.isEquivalent_atTop_lead`, which states that for
 any polynomial `P` of degree `n` with leading coefficient `a`, the corresponding
 polynomial function is equivalent to `a * x^n` as `x` goes to +∞.
@@ -197,10 +197,9 @@ theorem div_tendsto_atBot_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 
 
 theorem abs_div_tendsto_atTop_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0) :
     Tendsto (fun x => |eval x P / eval x Q|) atTop atTop := by
-  by_cases h : 0 ≤ P.leadingCoeff / Q.leadingCoeff
+  by_cases! h : 0 ≤ P.leadingCoeff / Q.leadingCoeff
   · exact tendsto_abs_atTop_atTop.comp (P.div_tendsto_atTop_of_degree_gt Q hdeg hQ h)
-  · push_neg at h
-    exact tendsto_abs_atBot_atTop.comp (P.div_tendsto_atBot_of_degree_gt Q hdeg hQ h.le)
+  · exact tendsto_abs_atBot_atTop.comp (P.div_tendsto_atBot_of_degree_gt Q hdeg hQ h.le)
 
 end PolynomialDivAtTop
 
