@@ -113,15 +113,15 @@ open FourierTransform
 class FourierPair (E F : Type*) [FourierTransform E F] [FourierTransformInv F E] where
   inv_fourier : ∀ (f : E), 𝓕⁻ (𝓕 f) = f
 
-/-- A `FourierPairInv` is a pair of spaces `E` and `F` such that `𝓕 ∘ 𝓕⁻ = id` on `F`. -/
-class FourierPairInv (E F : Type*) [FourierTransform E F] [FourierTransformInv F E] where
-  fourier_inv : ∀ (f : F), 𝓕 (𝓕⁻ f) = f
+/-- A `FourierPairInv` is a pair of spaces `E` and `F` such that `𝓕 ∘ 𝓕⁻ = id` on `E`. -/
+class FourierPairInv (E F : Type*) [FourierTransform F E] [FourierTransformInv E F] where
+  fourier_inv : ∀ (f : E), 𝓕 (𝓕⁻ f) = f
 
 attribute [simp] FourierPair.inv_fourier
 attribute [simp] FourierPairInv.fourier_inv
 
 variable {R E F : Type*} [Semiring R] [AddCommMonoid E] [AddCommMonoid F] [Module R E] [Module R F]
-  [FourierModule R E F] [FourierInvModule R F E] [FourierPair E F] [FourierPairInv E F]
+  [FourierModule R E F] [FourierInvModule R F E] [FourierPair E F] [FourierPairInv F E]
 
 variable (R E F) in
 /-- The Fourier transform as a linear equivalence. -/
