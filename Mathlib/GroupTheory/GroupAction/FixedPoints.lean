@@ -271,7 +271,7 @@ namespace MulActionHom
 /-- `MulActionHom` maps `fixedPoints` to `fixedPoints`. -/
 @[to_additive]
 lemma map_mem_fixedPoints
-    {G : Type*} [Monoid G] 
+    {G : Type*} [Monoid G]
     {A : Type*} [MulAction G A] {B : Type*} [MulAction G B]
     (f : A →[G] B) {H : Submonoid G}
     {a : A} (ha : a ∈ MulAction.fixedPoints H A) :
