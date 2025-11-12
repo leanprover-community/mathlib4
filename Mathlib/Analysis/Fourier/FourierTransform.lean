@@ -420,6 +420,12 @@ instance FourierTransform : FourierTransform (V → E) (V → E) where
 instance FourierTransformInv : FourierTransformInv (V → E) (V → E) where
   fourierTransformInv f w := VectorFourier.fourierIntegral 𝐞 volume (-innerₗ V) f w
 
+@[deprecated (since := "2025-11-12")]
+alias fourierIntegral := FourierTransform.fourierTransform
+
+@[deprecated (since := "2025-11-12")]
+alias fourierIntegralInv := FourierTransform.fourierTransformInv
+
 lemma fourierIntegral_eq (f : V → E) (w : V) :
     𝓕 f w = ∫ v, 𝐞 (-⟪v, w⟫) • f v := rfl
 
