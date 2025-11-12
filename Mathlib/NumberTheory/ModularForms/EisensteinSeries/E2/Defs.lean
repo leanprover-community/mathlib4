@@ -7,7 +7,7 @@ import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.NumberTheory.LSeries.RiemannZeta
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
-import Mathlib.NumberTheory.IntervalSums
+import Mathlib.Topology.Algebra.InfiniteSum.ConditionalInt
 
 /-!
 # Eisenstein Series E2
