@@ -15,6 +15,26 @@ example : 1 + 1 = 2 := by
 
 end omega
 
+@[tacticAnalysis linter.tacticAnalysis.dummy]
+def foo : Mathlib.TacticAnalysis.Config :=
+  Mathlib.TacticAnalysis.terminalReplacement "simp" "simp only" ``Lean.Parser.Tactic.simp
+    (fun _ _ _ => `(tactic| simp only))
+    (reportSuccess := true) (reportFailure := true)
+
+/--
+warning: `simp only` left unsolved goals where `simp` succeeded.
+Original tactic:
+  simp
+Replacement tactic:
+  simp only
+Unsolved goals:
+  [⊢ (List.map (fun x => x + 1) [1, 2, 3]).sum = 9 ]
+-/
+#guard_msgs in
+set_option linter.tacticAnalysis.dummy true in
+example : List.sum ([1,2,3].map fun x ↦ x + 1) = 9 := by
+  simp
+
 end terminalReplacement
 
 section rwMerge
@@ -50,6 +70,30 @@ example : Fact (x = z) where
   out := by
     rw [xy]
     rw [yz]
+
+universe u
+
+def a : PUnit.{u} := ⟨⟩
+def b : PUnit.{u} := ⟨⟩
+def c : PUnit.{u} := ⟨⟩
+theorem ab : a = b := rfl
+theorem bc : b = c := rfl
+
+/--
+warning: Try this: rw [ab.{u}, bc.{u}]
+-/
+#guard_msgs in
+example : a.{u} = c := by
+  rw [ab.{u}]
+  rw [bc.{u}]
+
+theorem xyz (h : x = z → y = z) : x = y := by rw [h yz]; rfl
+
+-- The next example tripped up `rwMerge` because `rw [xyz fun h => ?_, ← h, xy]` gives
+-- an unknown identifier `h`.
+example : x = y := by
+  rw [xyz fun h => ?_]
+  rw [← h, xy]
 
 end rwMerge
 
