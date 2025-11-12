@@ -124,39 +124,14 @@ theorem Path.subpathOn_trans_aux₁ {X : Type*} [TopologicalSpace X] {x y : X} (
       (γ.subpathOn (Set.Icc.convexCombo a b unitInterval.half) b
       (Set.Icc.convexCombo_le hab _))) =
     (γ.subpathOn a b hab) := by
-  ext t
-  simp [Path.trans, Path.subpathOn]
-  split_ifs with h
-  · -- case: t ≤ 1/2
-    simp [Path.extend, Set.IccExtend]
-    congr 1
-    ext
-    simp [Set.projIcc]
-    -- Now prove: max 0 (min 1 (2 * t)) * ((1 - 1/2) * a + 1/2 * b - a) = t * (b - a)
-    -- Since t ≤ 1/2, we have 2*t ≤ 1 and 2*t ≥ 0, so max 0 (min 1 (2*t)) = 2*t
-    have ht_nonneg : 0 ≤ (t : ℝ) := t.2.1
-    have ht_double : 2 * (t : ℝ) ≤ 1 := by linarith
-    simp only [min_eq_right ht_double, max_eq_right (by linarith : 0 ≤ 2 * (t : ℝ))]
-    -- Now: 2 * t * ((1 - 1/2) * a + 1/2 * b - a) = t * (b - a)
-    simp only [unitInterval.half]
-    norm_num
-    ring
-  · -- case: t > 1/2 (i.e., ¬t ≤ 1/2)
-    simp [Path.extend, Set.IccExtend]
-    congr 1
-    ext
-    simp [Set.projIcc]
-    -- Now: (1 - 1/2)*a + 1/2*b + max 0 (min 1 (2*t - 1)) * (b - ((1 - 1/2)*a + 1/2*b))
-    --      = a + t*(b - a)
-    -- Since t > 1/2, we have 2*t - 1 > 0 and 2*t - 1 ≤ 1,
-    -- so max 0 (min 1 (2*t - 1)) = 2*t - 1
-    have ht_lower : (1/2 : ℝ) < (t : ℝ) := by linarith
-    have ht_upper : (t : ℝ) ≤ 1 := t.2.2
-    simp only [unitInterval.half]
-    norm_num
-    rw [min_eq_right (by linarith : 2 * (t : ℝ) - 1 ≤ 1)]
-    rw [max_eq_right (by linarith : 0 ≤ 2 * (t : ℝ) - 1)]
-    ring
+  ext t; simp [Path.trans, Path.subpathOn, Path.extend, Set.IccExtend, Set.projIcc]
+  split_ifs with h <;> (congr 1; ext; simp [unitInterval.half]; norm_num)
+  · have := t.2.1; have := t.2.2
+    rw [min_eq_right (by linarith : 2 * (t : ℝ) ≤ 1),
+        max_eq_right (by linarith : 0 ≤ 2 * (t : ℝ))]; ring
+  · have := t.2.1; have := t.2.2
+    rw [min_eq_right (by linarith : 2 * (t : ℝ) - 1 ≤ 1),
+        max_eq_right (by linarith : 0 ≤ 2 * (t : ℝ) - 1)]; ring
 
 /--
 Splitting a sub-path into pieces and rejoining them is independent, up to hopotopy,
