@@ -396,12 +396,11 @@ lemma structureMapLM_eq {i : ℕ} :
 
 lemma structureMapLM_apply_withOrder {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
     structureMapLM 𝕜 n i f = if i ≤ n then iteratedFDeriv ℝ i f else 0 := by
-  split_ifs with hi <;> simp [structureMapLM, hi]
+  simp [structureMapLM]
 
 lemma structureMapLM_apply {i : ℕ} (f : 𝓓_{K}(E, F)) :
     structureMapLM 𝕜 ⊤ i f = iteratedFDeriv ℝ i f := by
-  rw [structureMapLM_eq]
-  rfl
+  simp [structureMapLM_eq]
 
 lemma structureMapLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NontriviallyNormedField 𝕜']
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
