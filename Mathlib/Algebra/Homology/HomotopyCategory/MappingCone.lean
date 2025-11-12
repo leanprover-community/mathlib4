@@ -59,7 +59,7 @@ open HomComplex
 lemma isZero_X_iff (i : ℤ) :
     IsZero ((mappingCone φ).X i) ↔ IsZero (F.X (i + 1)) ∧ IsZero (G.X i) := by
   have := HasHomotopyCofiber.hasBinaryBiproduct φ i (i + 1) rfl
-  rw [← biprod.is_zero_iff]
+  rw [← biprod_isZero_iff]
   exact (homotopyCofiber.XIsoBiprod φ i (i + 1) rfl).isZero_iff
 
 /-- The left inclusion in the mapping cone, as a cochain of degree `-1`. -/

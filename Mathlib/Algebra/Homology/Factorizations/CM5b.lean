@@ -118,8 +118,10 @@ instance quasiIso_p : QuasiIso (p K L) := (homotopyEquiv K L).quasiIso_hom
 end cm5b
 
 lemma cm5b (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] :
-    ∃ (L' : CochainComplex C ℤ) (_hL' : L'.IsStrictlyGE n) (i : K ⟶ L') (p : L' ⟶ L)
-      (_hi : Mono i) (_hp : degreewiseEpiWithInjectiveKernel p) (_hp' : QuasiIso p), i ≫ p = f :=
+    ∃ (L' : CochainComplex C ℤ) (_hL' : L'.IsStrictlyGE n)
+      (i : K ⟶ L') (p : L' ⟶ L) (_hi : Mono i)
+      (_hp : degreewiseEpiWithInjectiveKernel p) (_hp' : QuasiIso p),
+      i ≫ p = f :=
   ⟨_ , by infer_instance, cm5b.i f, cm5b.p K L, inferInstance,
     cm5b.degreewiseEpiWithInjectiveKernel_p K L, inferInstance, by simp⟩
 
