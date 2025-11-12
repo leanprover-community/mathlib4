@@ -679,11 +679,17 @@ theorem GaussSum_mul_GaussSum_neg [P.LiesOver 𝒑] (a : ℤ) (ha : ¬ ↑(p ^ f
   · rw [card_quot p f P]
   · rwa [ne_eq, ← orderOf_dvd_iff_zpow_eq_one, Omega_orderOf, Int.dvd_neg]
 
-theorem GaussSum_pow_sub_one_sub [P.LiesOver 𝒑] (a : ℤ) :
-    GaussSum p f P L hζ ((p ^ f - 1 : ℕ) - a) = GaussSum p f P L hζ (-a) := by
+-- theorem GaussSum_pow_sub_one_sub [P.LiesOver 𝒑] (a : ℤ) :
+--     GaussSum p f P L hζ ((p ^ f - 1 : ℕ) - a) = GaussSum p f P L hζ (-a) := by
+--   unfold GaussSum
+--   rw [neg_sub, neg_neg, zpow_sub, zpow_natCast,
+--     orderOf_dvd_iff_pow_eq_one.mp (dvd_of_eq <| Omega_orderOf p f P L), inv_one, mul_one]
+
+theorem GaussSum_sub_eq_self_of_dvd [P.LiesOver 𝒑] (k : ℤ) (a : ℤ) (hk : ↑(p ^ f - 1) ∣ k) :
+    GaussSum p f P L hζ (k - a) = GaussSum p f P L hζ (-a) := by
   unfold GaussSum
-  rw [neg_sub, neg_neg, zpow_sub, zpow_natCast,
-    orderOf_dvd_iff_pow_eq_one.mp (dvd_of_eq <| Omega_orderOf p f P L), inv_one, mul_one]
+  rw [← Omega_orderOf p f P L] at hk
+  rw [neg_sub, neg_neg, zpow_sub, orderOf_dvd_iff_zpow_eq_one.mp hk, inv_one, mul_one]
 
 abbrev Jac [P.LiesOver 𝒑] (a b : ℤ) : 𝓞 L := jacobiSum (Omega p f P L ^ (-a)) (Omega p f P L ^ (-b))
 
@@ -828,20 +834,17 @@ theorem GSV_eq_one_of_dvd [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) (h : ↑
     · exact inertiaDeg_pos 𝒑 P
   · rw [if_neg h, Valuation.map_neg, Valuation.map_one]
 
--- theorem GSV₀_eq_zero_of_dvd [P.LiesOver 𝒑] [𝓟.LiesOver P] (a : ℤ) (h : ↑(p ^ f - 1 : ℕ) ∣ a) :
---     GSV₀ f P 𝓟 hζ a = 0 := by
---   rw [GSV₀_eq_GSV_log, GSV_eq_one_of_dvd _ _ _ _ _ _ _ h, WithZero.log_one]
-
 theorem GSV_zero [𝓟.LiesOver P] [P.LiesOver 𝒑] : GSV f P 𝓟 hζ 0 = 1 := by
   apply GSV_eq_one_of_dvd
   exact Int.dvd_zero _
 
-variable {f p P L 𝓟 hζ} in
-theorem GSV_nonneg [𝓟.LiesOver P] [P.LiesOver 𝒑] {a : ℤ} :
+theorem GSV_nonneg [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) :
     0 ≤ GSV f P 𝓟 hζ a := WithZero.zero_le _
 
-variable {f p P L 𝓟 hζ} in
-theorem GSV_le_one [𝓟.LiesOver P] [P.LiesOver 𝒑] {a : ℤ} :
+theorem GSV_pos [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) (ha : ¬ ↑(p ^ f - 1 : ℕ) ∣ a) :
+    0 < GSV f P 𝓟 hζ a := intValuation_pos _ <| GaussSum_ne_zero p f P L hζ a ha
+
+theorem GSV_le_one [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) :
     GSV f P 𝓟 hζ a ≤ 1 := intValuation_le_one _ _
 
 /-- s(α + β) ≤ s(α) + s(β) -/
@@ -851,7 +854,7 @@ theorem GSV_mul_GSV_le [𝓟.LiesOver P] [P.LiesOver 𝒑] (a b : ℤ) :
   · rw [GSV_eq_one_of_dvd p f P L 𝓟 hζ (a + b) h, ← Valuation.map_mul]
     exact intValuation_le_one _ _
   · rw [← Valuation.map_mul, GaussSum_mul_gaussSum p f P L hζ h, Valuation.map_mul]
-    exact mul_le_of_le_one_right GSV_nonneg (intValuation_le_one _ _)
+    exact mul_le_of_le_one_right (GSV_nonneg _ _ _ _ _ _ _) (intValuation_le_one _ _)
 
 /-- s(p * α) = s(α) -/
 theorem GSV_p_mul [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) :
@@ -901,7 +904,6 @@ theorem ramificationIdx_eq_sub_one' [NeZero P] [𝓟.LiesOver P] [P.LiesOver �
     exact map_comap_le
 
 theorem Val_Jac_eq_pow [NeZero 𝓟] [𝓟.LiesOver P] [P.LiesOver 𝒑] (a b : ℤ) :
-    --(h : ¬ ↑(p ^ f - 1 : ℕ) ∣ a + b) :
     ∃ k, k ≤ 1 ∧ Val L 𝓟 (Jac p f P L a b) = k ^ (p - 1) := by
   have : NeZero P := ⟨ne_bot_of_liesOver_of_ne_bot (p := 𝒑) (by simpa using hp.out.ne_zero) _⟩
   obtain ⟨α, hα⟩ := Jac_exists_eq_algebraMap p f P L 𝓟 a b
@@ -910,15 +912,6 @@ theorem Val_Jac_eq_pow [NeZero 𝓟] [𝓟.LiesOver P] [P.LiesOver 𝒑] (a b : 
   let w : HeightOneSpectrum (𝓞 L) := ⟨𝓟, IsMaximal.isPrime inferInstance, NeZero.ne _⟩
   rw [hα, Val, intValuation_algebraMap v w, ramificationIdx_eq_sub_one' p f]
   exact Ideal.IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver _ v.ne_bot
-
-theorem GSV_add_eq_GSV_mul_GSV_mul_pow [𝓟.LiesOver P] [P.LiesOver 𝒑] (a b : ℤ)
-    (h : ¬ ↑(p ^ f - 1 : ℕ) ∣ a + b) :
-    ∃ k, k ≤ 1 ∧ GSV f P 𝓟 hζ (a + b) * k ^ (p - 1) = GSV f P 𝓟 hζ a * GSV f P 𝓟 hζ b := by
-  have : NeZero P := ⟨ne_bot_of_liesOver_of_ne_bot (p := 𝒑) (by simpa using hp.out.ne_zero) _⟩
-  have : NeZero 𝓟 := ⟨ne_bot_of_liesOver_of_ne_bot (NeZero.ne P) _⟩
-  obtain ⟨k, hk₀, hk₁, hk₂⟩ := Val_Jac_eq_pow p f P L 𝓟 a b
-  rw [← Valuation.map_mul, GaussSum_mul_gaussSum p f P L hζ h, Valuation.map_mul, hk₂]
-  exact ⟨k, hk₁, rfl⟩
 
 open IntermediateField in
 omit [NeZero (p ^ f - 1)] in
@@ -970,23 +963,46 @@ theorem val_𝓟_p [𝓟.LiesOver 𝒑] :
     ramificationIdx_eq_sub_one p f L, Nat.cast_sub NeZero.one_le]
   rfl
 
-theorem GSV_mul_GSV_sub_self' [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) (ha : ¬ ↑(p ^ f - 1) ∣ a) :
-    GSV f P 𝓟 hζ a * GSV f P 𝓟 hζ ((p ^ f - 1 : ℕ) - a) = WithZero.exp (-(p - 1 : ℤ) * f) := by
+theorem GSV_mul_GSV_sub_self' [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) (k : ℤ)
+    (ha : ¬ ↑(p ^ f - 1) ∣ a) (hk : ↑(p ^ f - 1) ∣ k) :
+    GSV f P 𝓟 hζ a * GSV f P 𝓟 hζ (k - a) = WithZero.exp (-(p - 1 : ℤ) * f) := by
   classical
   have : 𝓟.LiesOver 𝒑 := LiesOver.trans 𝓟 P 𝒑
   have : NeZero 𝓟 := ⟨ne_bot_of_liesOver_of_ne_bot (p := 𝒑) (by simpa using hp.out.ne_zero) _⟩
   unfold GSV
-  rw [← Valuation.map_mul, GaussSum_pow_sub_one_sub, GaussSum_mul_GaussSum_neg _ _ _ _ _ _ ha,
-    Valuation.map_mul, ← Units.coe_neg_one, Val_Omega_zpow, one_mul, Nat.cast_pow,
-    Valuation.map_pow, val_𝓟_p p f, ← WithZero.exp_nsmul, Int.nsmul_eq_mul, mul_comm]
+  rw [← Valuation.map_mul, GaussSum_sub_eq_self_of_dvd p f _ _ _ _ _ hk,
+    GaussSum_mul_GaussSum_neg _ _ _ _ _ _ ha, Valuation.map_mul, ← Units.coe_neg_one,
+    Val_Omega_zpow, one_mul, Nat.cast_pow, Valuation.map_pow, val_𝓟_p p f, ← WithZero.exp_nsmul,
+    Int.nsmul_eq_mul, mul_comm]
 
-theorem GSV_mul_GSV_sub_self [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) :
-    GSV f P 𝓟 hζ a * GSV f P 𝓟 hζ ((p ^ f - 1 : ℕ) - a) =
+theorem GSV_mul_GSV_sub_self [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) (k : ℤ)
+    (hk : ↑(p ^ f - 1) ∣ k) :
+    GSV f P 𝓟 hζ a * GSV f P 𝓟 hζ (k - a) =
       if ↑(p ^ f - 1) ∣ a then 1 else WithZero.exp (-(p - 1 : ℤ) * f) := by
   split_ifs with h
   · rw [GSV_eq_one_of_dvd _ _ _ _ _ _ _ h, GSV_eq_one_of_dvd, mul_one]
-    exact dvd_sub_self_left.mpr h
-  · exact GSV_mul_GSV_sub_self' _ _ _ _ _ _ _ h
+    exact Int.dvd_sub hk h
+  · exact GSV_mul_GSV_sub_self' _ _ _ _ _ _ _ _ h hk
+
+theorem GSV_add_eq_GSV_mul_GSV_mul_pow [𝓟.LiesOver P] [P.LiesOver 𝒑] (a b : ℤ) :
+    ∃ k, k ≤ 1 ∧ GSV f P 𝓟 hζ (a + b) * k ^ (p - 1) = GSV f P 𝓟 hζ a * GSV f P 𝓟 hζ b := by
+  by_cases h : ↑(p ^ f - 1) ∣ a + b
+  · rw [GSV_eq_one_of_dvd p f P L 𝓟 hζ _ h]
+    obtain ⟨m, hm⟩ := h
+    rw [← eq_sub_iff_add_eq'] at hm
+    simp_rw [hm, GSV_mul_GSV_sub_self _ _ _ _ _ _ _ _ (Int.dvd_mul_right _ m), one_mul]
+    split_ifs
+    · exact ⟨1, le_rfl, one_pow _⟩
+    · refine ⟨WithZero.exp (-f), ?_, ?_⟩
+      · rw [← WithZero.exp_zero, WithZero.exp_le_exp, Int.neg_nonpos_iff]
+        exact Int.natCast_nonneg f
+      · rw [← WithZero.exp_nsmul, Int.nsmul_eq_mul, Nat.cast_sub hp.out.one_le, Nat.cast_one,
+          mul_neg, neg_mul]
+  have : NeZero P := ⟨ne_bot_of_liesOver_of_ne_bot (p := 𝒑) (by simpa using hp.out.ne_zero) _⟩
+  have : NeZero 𝓟 := ⟨ne_bot_of_liesOver_of_ne_bot (NeZero.ne P) _⟩
+  obtain ⟨k, hk₁, hk₂⟩ := Val_Jac_eq_pow p f P L 𝓟 a b
+  rw [← Valuation.map_mul, GaussSum_mul_gaussSum p f P L hζ h, Valuation.map_mul, hk₂]
+  exact ⟨k, hk₁, rfl⟩
 
 theorem prod_GSV [𝓟.LiesOver P] [P.LiesOver 𝒑] :
     ∏ a ∈ Finset.range (p ^ f - 1).succ, GSV f P 𝓟 hζ a =
@@ -995,8 +1011,7 @@ theorem prod_GSV [𝓟.LiesOver P] [P.LiesOver 𝒑] :
   nth_rewrite 2 [← Equiv.prod_comp Fin.revPerm]
   rw [← Finset.prod_mul_distrib]
   simp_rw [Fin.revPerm_apply, Fin.val_rev, Nat.reduceSubDiff, Nat.cast_sub (Fin.is_le _),
-    GSV_mul_GSV_sub_self]
-
+    GSV_mul_GSV_sub_self _ _ _ _ _ _ _ _ dvd_rfl]
   rw [Fin.prod_univ_eq_prod_range (fun x ↦ (if ↑(p ^ f - 1) ∣ (x : ℤ) then 1 else
     WithZero.exp (-(p - 1 : ℤ) * f))) (p ^ f - 1).succ, Finset.prod_range_succ,
     ← Finset.mul_prod_erase _ _ (a := 0) (Finset.mem_range.mpr (NeZero.pos _)),
@@ -1085,114 +1100,87 @@ theorem not_dvd_of_le (a : ℕ) (ha₀ : 0 < a) (ha₂ : a ≤ p ^ f - 2) :
   have := (Nat.le_of_dvd ha₀ h).trans ha₂
   grind
 
-theorem exists_GSV_eq_mul_pow [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) (a : ℕ)
-    (ha : a ≤ p ^ f - 2) :
+theorem exists_GSV_eq_mul_pow [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) (a : ℕ) :
     ∃ k, k ≤ 1 ∧ GSV f P 𝓟 hζ a * k ^ (p - 1) = WithZero.exp (-a : ℤ) := by
   induction a with
   | zero => exact ⟨1, le_rfl, by simp [GSV_zero]⟩
   | succ n hn =>
-      obtain ⟨s, hs₀, hs₁⟩ := hn <| (Nat.le_add_right n 1).trans ha
-      obtain ⟨k, hk₀, hk₁⟩ := GSV_add_eq_GSV_mul_GSV_mul_pow p f P L 𝓟 hζ n 1 (by
-        rw [← Nat.cast_add_one, Int.natCast_dvd_natCast]
-        exact not_dvd_of_le _ _ _ (Nat.zero_lt_succ n) ha)
-      refine ⟨k * s, ?_, ?_⟩
-      · exact Left.mul_le_one hk₀ hs₀
-      · rw [mul_pow, ← mul_assoc, Nat.cast_add_one, hk₁, GSV_one_eq _ _ _ _ _ _ h, neg_add,
-          WithZero.exp_add, ← hs₁, mul_right_comm]
+      obtain ⟨s, hs₀, hs₁⟩ := hn
+      obtain ⟨k, hk₀, hk₁⟩ := GSV_add_eq_GSV_mul_GSV_mul_pow p f P L 𝓟 hζ n 1
+      refine ⟨k * s, Left.mul_le_one hk₀ hs₀, ?_⟩
+      rw [mul_pow, ← mul_assoc, Nat.cast_add_one, hk₁, GSV_one_eq _ _ _ _ _ _ h, neg_add,
+        WithZero.exp_add, ← hs₁, mul_right_comm]
 
-example [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) (a : ℕ) (ha : a < p - 1) :
-    GSV f P 𝓟 hζ a = WithZero.exp (- a : ℤ) := by
-  obtain ⟨k, hk₀, hk₁⟩ := exists_GSV_eq_mul_pow p f P L 𝓟 hζ h a sorry
+-- Check if this proof cannot be simplified by proceeding as in the next one
+theorem GSV_eq_of_lt [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) (a : ℕ) (ha : a < p - 1) :
+    GSV f P 𝓟 hζ a = WithZero.exp (-a : ℤ) := by
+  obtain ⟨k, hk₁, hk₂⟩ := exists_GSV_eq_mul_pow p f P L 𝓟 hζ h a
   by_cases ha' : a = 0
   · rw [ha', CharP.cast_eq_zero, neg_zero, WithZero.exp_zero, GSV_zero]
-  have : k ≠ 0 := by
+  have hk₀ : k ≠ 0 := by
     intro h
-    rw [h, zero_pow, mul_zero] at hk₁
-    exact WithZero.exp_ne_zero.symm hk₁
-    sorry
-  suffices k = 1 by rw [← hk₁, this, one_pow, mul_one]
-  refine le_antisymm hk₀ ?_
-  rw [← WithZero.log_le_log one_ne_zero, WithZero.log_one]
-  have t₀ := GSV_le_one (f := f) (p := p) (P := P) (𝓟 := 𝓟) (hζ := hζ) (a := a)
-  have t₂ := mul_le_mul_right' t₀ (k ^ (p - 1))
-  rw [hk₁, one_mul] at t₂
-  have : k = WithZero.exp k.log := sorry
-  rw [this, ← WithZero.exp_nsmul, WithZero.exp_le_exp, neg_le] at t₂
-  have := lt_of_le_of_lt t₂ <| Nat.cast_lt.mpr ha
-  rwa [neg_lt, Int.nsmul_eq_mul, mul_comm, ← Int.ediv_lt_iff_lt_mul, Int.neg_ediv_self] at this
-  sorry
-  sorry
-  sorry
+    rw [h, zero_pow (Nat.sub_ne_zero_iff_lt.mpr hp.out.one_lt), mul_zero] at hk₂
+    exact WithZero.exp_ne_zero.symm hk₂
+  have hp₀ : (0 : ℤ) < ↑(p - 1) := Nat.cast_pos.mpr <| Nat.sub_pos_iff_lt.mpr hp.out.one_lt
+  suffices k = 1 by rw [← hk₂, this, one_pow, mul_one]
+  refine le_antisymm hk₁ ?_
+  have : WithZero.exp (-↑(p - 1)) < k ^ (p - 1) := by
+    refine lt_of_lt_of_le (WithZero.exp_lt_exp.mpr <| neg_lt_neg <| Nat.cast_lt.mpr ha) ?_
+    have := mul_le_mul_right' (GSV_le_one p f P L 𝓟 hζ a) (k ^ (p - 1))
+    rwa [one_mul, hk₂] at this
+  rwa [← WithZero.exp_log hk₀, ← WithZero.exp_nsmul, WithZero.exp_lt_exp, Int.nsmul_eq_mul,
+    mul_comm, ← Int.ediv_lt_iff_lt_mul hp₀, Int.neg_ediv_self _ hp₀.ne', ← Int.add_one_le_iff,
+    neg_add_cancel, ← WithZero.exp_le_exp, WithZero.exp_zero, WithZero.exp_log hk₀] at this
 
+theorem GSV_p_sub_one_eq_of_le [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) (h' : 2 ≤ f) :
+    GSV f P 𝓟 hζ ↑(p - 1) = WithZero.exp (-↑(p - 1)) := by
+  obtain ⟨k, hk₁, hk₂⟩ := exists_GSV_eq_mul_pow p f P L 𝓟 hζ h (p - 1)
+  have hk₀ : k ≠ 0 := by
+    intro h
+    rw [h, zero_pow (Nat.sub_ne_zero_iff_lt.mpr hp.out.one_lt), mul_zero] at hk₂
+    exact WithZero.exp_ne_zero.symm hk₂
+  suffices k.log = 0 by
+    rw [← hk₂, ← WithZero.exp_log hk₀, this, WithZero.exp_zero, one_pow, mul_one]
+  have h₁ : 0 < p - 1 := Nat.sub_pos_iff_lt.mpr hp.out.one_lt
+  have h₂ : p - 1 ≠ 0 := h₁.ne'
+  have h₃ : ¬ p ^ f - 1 ∣ p - 1 := by
+    refine not_dvd_of_le _ _ _ h₁ ?_
+    rw [Nat.le_sub_iff_add_le' (Nat.one_lt_pow (NeZero.ne f) hp.out.one_lt), Nat.add_comm,
+        tsub_add_eq_add_tsub (hp.out.one_le)]
+    exact lt_self_pow₀ hp.out.one_lt h'
+  have h₄ : 0 < GSV f P 𝓟 hζ ↑(p - 1) := GSV_pos _ _ _ _ _ _ _ <| Int.natCast_dvd_natCast.not.mpr h₃
+  have hb₀ := mul_le_mul_right' (GSV_le_one p f P L 𝓟 hζ ↑(p - 1)) (k ^ (p - 1))
+  rw [hk₂, one_mul, ← WithZero.le_log_iff_exp_le (pow_ne_zero (p - 1) hk₀), WithZero.log_pow,
+    Int.nsmul_eq_mul, ← Int.ediv_le_iff_of_dvd_of_pos (Int.natCast_pos.mpr h₁)
+    (by rw [Int.dvd_neg]), Int.neg_ediv_self _ (Int.ofNat_ne_zero.mpr h₂)] at hb₀
+  have hb₁ := le_GSV p f P L 𝓟 hζ h (p - 1)
+  rw [← hk₂, mul_le_iff_le_one_right h₄, pow_le_one_iff h₂, ← WithZero.exp_zero,
+    ← WithZero.log_le_iff_le_exp hk₀] at hb₁
+  interval_cases h : k.log
+  · rw [← WithZero.exp_log hk₀, h, ← WithZero.exp_nsmul, Int.nsmul_eq_mul, mul_neg,
+      mul_one, mul_eq_right₀ WithZero.exp_ne_zero] at hk₂
+    have := GSV_lt_one p f P L 𝓟 hζ ↑(p - 1) (Int.natCast_dvd_natCast.not.mpr h₃)
+    grind
+  · rfl
 
-example [𝓟.LiesOver P] [P.LiesOver 𝒑] (L : List ℕ) (hL₁ : ∀ x ∈ L, x < p) :
-    WithZero.exp ( -L.sum : ℤ) ≤ GSV f P 𝓟 hζ (Nat.ofDigits p L) := by
+theorem sum_le_GSV_ofDigits [𝓟.LiesOver P] [P.LiesOver 𝒑] (L : List ℕ) (h : p ^ f ≠ 2) :
+    WithZero.exp (-L.sum : ℤ) ≤ GSV f P 𝓟 hζ ↑(Nat.ofDigits p L) := by
   induction L with
   | nil => simp [Nat.ofDigits, GSV_zero]
-  | cons head tail ih =>
-      sorry
+  | cons d n ih =>
+      rw [List.sum_cons, Nat.cast_add, neg_add, WithZero.exp_add, Nat.ofDigits_cons,
+        Nat.cast_add, Nat.cast_mul]
+      refine le_trans ?_ <| GSV_mul_GSV_le p f P L 𝓟 hζ d _
+      rw [GSV_p_mul]
+      exact mul_le_mul' (le_GSV p f P L 𝓟 hζ h d) ih
 
-theorem toto [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℕ) (ha : a ≤ p ^ f - 2) :
-    WithZero.exp ((Nat.digits p a).sum : ℤ) ≤ GSV f P 𝓟 hζ a := by
+theorem sum_digits_le_GSV [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) (a : ℕ) :
+    WithZero.exp (-(Nat.digits p a).sum : ℤ) ≤ GSV f P 𝓟 hζ a := by
+  convert sum_le_GSV_ofDigits p f P L 𝓟 hζ _ h
+  exact (Nat.ofDigits_digits p a).symm
 
-
-
-  have : a = (a % p) + p * (a / p) := (Nat.mod_add_div a p).symm
-
-
-  rw [Nat.digits_of_two_le_of_pos]
-  simp
-  nth_rewrite 3 [this]
-  rw [Nat.cast_add]
-  have := GSV_mul_GSV_le p f P L 𝓟 hζ (a % p) (p * (a / p))
-  refine le_trans ?_ this
-  gcongr
-
-
-
-
-
-
-
-
-
-
-example [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) (a : ℕ) (ha : a ≤ p - 2) :
-    GSV f P 𝓟 hζ a = WithZero.exp (- a : ℤ) := by
-  induction a with
-  | zero => simp [GSV_zero]
-  | succ n hn =>
-      rw [Nat.cast_add_one]
-      obtain ⟨k, hk₀, hk₁⟩ := GSV_add_eq_GSV_mul_GSV_mul_pow p f P L 𝓟 hζ n 1 sorry
-      suffices k = 1 by
-        rw [hk₁, hn, GSV_one_eq, this, neg_add]
-        simp
-        exact h
-        linarith
-      have := le_GSV p f P L 𝓟 hζ h (n + 1)
-
-      rw [Nat.cast_add_one, hk₁, hn, GSV_one_eq, neg_add] at this
-      simp at this
-      rw [← WithZero.exp_zero] at hk₀ this
-      rw [← WithZero.le_log_iff_exp_le] at hk₀ this
-      simp at hk₀ this
-
-
-example [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℕ) (ha : a ≤ p ^ f - 2) :
-    Multiplicative.ofAdd ((Nat.digits p a).sum : ℤ) ≤ GSV f P 𝓟 hζ a := by
-  have : a = (a % p) + p * (a / p) := (Nat.mod_add_div a p).symm
-
-  rw [Nat.digits_of_two_le_of_pos]
-  simp
-  nth_rewrite 3 [this]
-  rw [Nat.cast_add]
-  have := GSV_mul_GSV_le p f P L 𝓟 hζ (a % p) (p * (a / p))
-  refine le_trans ?_ this
-  gcongr
-
-
-
-
+example :
+    ∑ a ∈ Finset.range (p ^ f - 1), (Nat.digits p a).sum = (p - 1) * f * p ^ f / 2 := by
   sorry
 
 end GaussSums
