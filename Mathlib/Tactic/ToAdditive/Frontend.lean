@@ -376,10 +376,10 @@ initialize changeNumeralAttr : NameMapExtension (List Nat) ←
       pure <| arg.map (·.1.isNatLit?.get!.pred) |>.toList
     | _, _ => throwUnsupportedSyntax }
 
-/-- `BundledExts` is a structure that holds all environment extensions related to a
+/-- `TranslateData` is a structure that holds all environment extensions related to a
 `to_additive`-like attribute. This allows us to use the `to_additive` machinery for other
 attributes, such as `to_dual`. -/
-structure BundledExts : Type where
+structure TranslateData : Type where
   ignoreArgsAttr : NameMapExtension (List Nat)
   /-- `reorderAttr` stores the declarations that need their arguments reordered when translating.
   This is specified using the `(reorder := ...)` syntax. -/
@@ -397,38 +397,38 @@ structure BundledExts : Type where
   isDual : Bool
   /-- `guessName` tries to guess how a lemma name should be translated. -/
   guessName : String → String
-attribute [inherit_doc to_additive_ignore_args] BundledExts.ignoreArgsAttr
-attribute [inherit_doc to_additive_relevant_arg] BundledExts.relevantArgAttr
-attribute [inherit_doc to_additive_dont_translate] BundledExts.dontTranslateAttr
+attribute [inherit_doc to_additive_ignore_args] TranslateData.ignoreArgsAttr
+attribute [inherit_doc to_additive_relevant_arg] TranslateData.relevantArgAttr
+attribute [inherit_doc to_additive_dont_translate] TranslateData.dontTranslateAttr
 
 /-- Get the multiplicative → additive translation for the given name. -/
-def findTranslation? (env : Environment) (b : BundledExts) : Name → Option Name :=
-  (b.translations.getState env).find?
+def findTranslation? (env : Environment) (t : TranslateData) : Name → Option Name :=
+  (t.translations.getState env).find?
 
 /-- Get the multiplicative → additive translation for the given name,
 falling back to translating a prefix of the name if the full name can't be translated.
 This allows translating automatically generated declarations such as `IsRegular.casesOn`. -/
-def findPrefixTranslation (env : Environment) (nm : Name) (b : BundledExts) : Name :=
-  nm.mapPrefix (findTranslation? env b)
+def findPrefixTranslation (env : Environment) (nm : Name) (t : TranslateData) : Name :=
+  nm.mapPrefix (findTranslation? env t)
 
 /-- Add a (multiplicative → additive) name translation to the translations map. -/
-def insertTranslation (b : BundledExts) (src tgt : Name) (failIfExists := true) : CoreM Unit := do
-  if let some tgt' := findTranslation? (← getEnv) b src then
+def insertTranslation (t : TranslateData) (src tgt : Name) (failIfExists := true) : CoreM Unit := do
+  if let some tgt' := findTranslation? (← getEnv) t src then
     if failIfExists then
       throwError "The translation {src} ↦ {tgt'} already exists"
     else
       trace[to_additive] "The translation {src} ↦ {tgt'} already exists"
       return
-  modifyEnv (b.translations.addEntry · (src, tgt))
+  modifyEnv (t.translations.addEntry · (src, tgt))
   trace[to_additive] "Added translation {src} ↦ {tgt}"
-  if b.isDual && src != tgt then
-    if let some src' := findTranslation? (← getEnv) b tgt then
+  if t.isDual && src != tgt then
+    if let some src' := findTranslation? (← getEnv) t tgt then
       if failIfExists then
         throwError "The translation {tgt} ↦ {src'} already exists"
       else
         trace[to_additive] "The translation {tgt} ↦ {src'} already exists"
         return
-    modifyEnv (b.translations.addEntry · (tgt, src))
+    modifyEnv (t.translations.addEntry · (tgt, src))
     trace[to_additive] "Also added translation {tgt} ↦ {src}"
 
 /-- `ArgInfo` stores information about how a constant should be translated. -/
@@ -439,15 +439,15 @@ structure ArgInfo where
   relevantArg : Nat := 0
 
 /-- Add a name translation to the translations map and add the `argInfo` information to `src`. -/
-def insertTranslationAndInfo (b : BundledExts) (src tgt : Name) (argInfo : ArgInfo)
+def insertTranslationAndInfo (t : TranslateData) (src tgt : Name) (argInfo : ArgInfo)
     (failIfExists := true) : CoreM Unit := do
-  insertTranslation b src tgt failIfExists
+  insertTranslation t src tgt failIfExists
   if argInfo.reorder != [] then
     trace[to_additive] "@[to_additive] will reorder the arguments of {tgt} by {argInfo.reorder}."
-    b.reorderAttr.add src argInfo.reorder
+    t.reorderAttr.add src argInfo.reorder
   if argInfo.relevantArg != 0 then
     trace[to_additive_detail] "Setting relevant_arg for {src} to be {argInfo.relevantArg}."
-    b.relevantArgAttr.add src argInfo.relevantArg
+    t.relevantArgAttr.add src argInfo.relevantArg
 
 /-- `Config` is the type of the arguments that can be provided to `to_additive`. -/
 structure Config : Type where
@@ -498,9 +498,9 @@ def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
 /-- `e.expand` eta-expands all expressions that have as head a constant `n` in `reorder`.
 They are expanded until they are applied to one more argument than the maximum in `reorder.find n`.
 It also expands all kernel projections that have as head a constant `n` in `reorder`. -/
-def expand (b : BundledExts) (e : Expr) : MetaM Expr := do
+def expand (t : TranslateData) (e : Expr) : MetaM Expr := do
   let env ← getEnv
-  let reorderFn : Name → List (List ℕ) := fun nm ↦ (b.reorderAttr.find? env nm |>.getD [])
+  let reorderFn : Name → List (List ℕ) := fun nm ↦ (t.reorderAttr.find? env nm |>.getD [])
   let e₂ ← Lean.Meta.transform (input := e) (skipConstInApp := true)
     (post := fun e => return .done e) fun e ↦
     e.withApp fun f args ↦ do
@@ -510,7 +510,7 @@ def expand (b : BundledExts) (e : Expr) : MetaM Expr := do
       let some projName := info.getProjFn? i | unreachable!
       -- if `projName` is explicitly tagged with `@[to_additive]`,
       -- replace `f` with the application `projName s` and then visit `projName s args` again.
-      if findTranslation? env b projName |>.isNone then
+      if findTranslation? env t projName |>.isNone then
         return .continue
       return .visit <| (← whnfD (← inferType s)).withApp fun sf sargs ↦
         mkAppN (mkApp (mkAppN (.const projName sf.constLevels!) sargs) s) args
@@ -543,12 +543,12 @@ cache constant expressions, so that's why the `if`s in the implementation are in
 
 Note that this function is still called many times by `applyReplacementFun`
 and we're not remembering the cache between these calls. -/
-unsafe def additiveTestUnsafe (env : Environment) (b : BundledExts) (e : Expr)
+unsafe def additiveTestUnsafe (env : Environment) (t : TranslateData) (e : Expr)
     (dontTranslate : Array FVarId) : Option (Name ⊕ FVarId) :=
   let rec visit (e : Expr) (inApp := false) : OptionT (StateM (PtrSet Expr)) (Name ⊕ FVarId) := do
     if e.isConst then
-      if (b.dontTranslateAttr.find? env e.constName).isNone &&
-        (inApp || (findTranslation? env b e.constName).isSome) then
+      if (t.dontTranslateAttr.find? env e.constName).isNone &&
+        (inApp || (findTranslation? env t e.constName).isSome) then
         failure
       else
         return .inl e.constName
@@ -561,7 +561,7 @@ unsafe def additiveTestUnsafe (env : Environment) (b : BundledExts) (e : Expr)
           -- make sure that we don't treat `(fun x => α) (n + 1)` as a type that depends on `Nat`
           guard !x.isConstantApplication
           if let some n := e.getAppFn.constName? then
-            if let some l := b.ignoreArgsAttr.find? env n then
+            if let some l := t.ignoreArgsAttr.find? env n then
               if e.getAppNumArgs + 1 ∈ l then
                 failure
           visit a
@@ -581,9 +581,9 @@ constants if `additiveTest` applied to their relevant argument returns `true`.
 This means we will replace expression applied to e.g. `α` or `α × β`, but not when applied to
 e.g. `ℕ` or `ℝ × α`.
 We ignore all arguments specified by the `ignore` `NameMap`. -/
-def additiveTest (env : Environment) (b : BundledExts) (e : Expr)
+def additiveTest (env : Environment) (t : TranslateData) (e : Expr)
     (dontTranslate : Array FVarId := #[]) : Option (Name ⊕ FVarId) :=
-  unsafe additiveTestUnsafe env b e dontTranslate
+  unsafe additiveTestUnsafe env t e dontTranslate
 
 /-- Swap the first two elements of a list -/
 def _root_.List.swapFirstTwo {α : Type _} : List α → List α
@@ -608,9 +608,9 @@ is tested, instead of the first argument.
 It will also reorder arguments of certain functions, using `reorderFn`:
 e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorderFn g = some [1]`.
 -/
-def applyReplacementFun (b : BundledExts) (e : Expr) (dontTranslate : Array FVarId := #[]) :
+def applyReplacementFun (t : TranslateData) (e : Expr) (dontTranslate : Array FVarId := #[]) :
     MetaM Expr := do
-  let e' := aux (← getEnv) (← getBoolOption `trace.to_additive_detail) (← expand b e)
+  let e' := aux (← getEnv) (← getBoolOption `trace.to_additive_detail) (← expand t e)
   -- Make sure any new reserved names in the expr are realized; this needs to be done outside of
   -- `aux` as it is monadic.
   e'.forEach fun
@@ -621,14 +621,14 @@ def applyReplacementFun (b : BundledExts) (e : Expr) (dontTranslate : Array FVar
   return e'
 where /-- Implementation of `applyReplacementFun`. -/
   aux (env : Environment) (trace : Bool) : Expr → Expr :=
-  let reorderFn : Name → List (List ℕ) := fun nm ↦ (b.reorderAttr.find? env nm |>.getD [])
-  let relevantArg : Name → ℕ := fun nm ↦ (b.relevantArgAttr.find? env nm).getD 0
+  let reorderFn : Name → List (List ℕ) := fun nm ↦ (t.reorderAttr.find? env nm |>.getD [])
+  let relevantArg : Name → ℕ := fun nm ↦ (t.relevantArgAttr.find? env nm).getD 0
   Lean.Expr.replaceRec fun r e ↦ Id.run do
     if trace then
       dbg_trace s!"replacing at {e}"
     match e with
     | .const n₀ ls₀ => do
-      let n₁ := findPrefixTranslation env n₀ b
+      let n₁ := findPrefixTranslation env n₀ t
       let ls₁ : List Level := if 0 ∈ (reorderFn n₀).flatten then ls₀.swapFirstTwo else ls₀
       if trace then
         if n₀ != n₁ then
@@ -648,7 +648,7 @@ where /-- Implementation of `applyReplacementFun`. -/
       /- Test if the head should not be replaced. -/
       let relevantArgId := relevantArg nm
       if h : relevantArgId < gAllArgs.size then
-        if let some fxd := additiveTest env b gAllArgs[relevantArgId] dontTranslate then
+        if let some fxd := additiveTest env t gAllArgs[relevantArgId] dontTranslate then
           if trace then
             match fxd with
             | .inl fxd => dbg_trace s!"The application of {nm} contains the fixed type \
@@ -668,7 +668,7 @@ where /-- Implementation of `applyReplacementFun`. -/
       /- Do not replace numerals in specific types. -/
       if let some changedArgNrs := changeNumeralAttr.find? env nm then
         let firstArg := gAllArgs[0]!
-        if additiveTest env b firstArg dontTranslate |>.isNone then
+        if additiveTest env t firstArg dontTranslate |>.isNone then
           if trace then
             dbg_trace s!"applyReplacementFun: We change the numerals in this expression. \
               However, we will still recurse into all the non-numeral arguments."
@@ -682,7 +682,7 @@ where /-- Implementation of `applyReplacementFun`. -/
               arg
       return mkAppN gf (← gAllArgs.mapM r)
     | .proj n₀ idx e => do
-      let n₁ := findPrefixTranslation env n₀ b
+      let n₁ := findPrefixTranslation env n₀ t
       if trace then
         dbg_trace s!"applyReplacementFun: in projection {e}.{idx} of type {n₀}, \
           replace type with {n₁}"
@@ -690,9 +690,9 @@ where /-- Implementation of `applyReplacementFun`. -/
     | _ => return none
 
 /-- Rename binder names in pi type. -/
-def renameBinderNames (b : BundledExts) (src : Expr) : Expr :=
+def renameBinderNames (t : TranslateData) (src : Expr) : Expr :=
   src.mapForallBinderNames fun
-    | .str p s => .str p (b.guessName s)
+    | .str p s => .str p (t.guessName s)
     | n => n
 
 /-- Reorder pi-binders. See doc of `reorderAttr` for the interpretation of the argument -/
@@ -724,37 +724,37 @@ def reorderLambda (reorder : List (List Nat)) (src : Expr) : MetaM Expr := do
 
 /-- Run `applyReplacementFun` on an expression `∀ x₁ .. xₙ, e`,
 making sure not to translate type-classes on `xᵢ` if `i` is in `dontTranslate`. -/
-def applyReplacementForall (b : BundledExts) (dontTranslate : List Nat) (e : Expr) :
+def applyReplacementForall (t : TranslateData) (dontTranslate : List Nat) (e : Expr) :
     MetaM Expr := do
   if let some maxDont := dontTranslate.max? then
     forallBoundedTelescope e (some (maxDont + 1)) fun xs e => do
       let xs := xs.map (·.fvarId!)
       let dontTranslate := dontTranslate.filterMap (xs[·]?) |>.toArray
-      let mut e ← applyReplacementFun b e dontTranslate
+      let mut e ← applyReplacementFun t e dontTranslate
       for x in xs.reverse do
         let decl ← x.getDecl
-        let xType ← applyReplacementFun b decl.type dontTranslate
+        let xType ← applyReplacementFun t decl.type dontTranslate
         e := .forallE decl.userName xType (e.abstract #[.fvar x]) decl.binderInfo
       return e
   else
-    applyReplacementFun b e #[]
+    applyReplacementFun t e #[]
 
 /-- Run `applyReplacementFun` on an expression `fun x₁ .. xₙ ↦ e`,
 making sure not to translate type-classes on `xᵢ` if `i` is in `dontTranslate`. -/
-def applyReplacementLambda (b : BundledExts) (dontTranslate : List Nat) (e : Expr) :
+def applyReplacementLambda (t : TranslateData) (dontTranslate : List Nat) (e : Expr) :
     MetaM Expr := do
   if let some maxDont := dontTranslate.max? then
     lambdaBoundedTelescope e (maxDont + 1) fun xs e => do
       let xs := xs.map (·.fvarId!)
       let dontTranslate := dontTranslate.filterMap (xs[·]?) |>.toArray
-      let mut e ← applyReplacementFun b e dontTranslate
+      let mut e ← applyReplacementFun t e dontTranslate
       for x in xs.reverse do
         let decl ← x.getDecl
-        let xType ← applyReplacementFun b decl.type dontTranslate
+        let xType ← applyReplacementFun t decl.type dontTranslate
         e := .lam decl.userName xType (e.abstract #[.fvar x]) decl.binderInfo
       return e
   else
-    applyReplacementFun b e #[]
+    applyReplacementFun t e #[]
 
 /-- Unfold auxlemmas in the type and value. -/
 def declUnfoldAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
@@ -783,19 +783,19 @@ def getDontTranslates (given : List Ident) (type : Expr) : MetaM (List Nat) := d
       return (xs.idxOf? fvarId).get!
 
 /-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
-def updateDecl (b : BundledExts) (tgt : Name) (srcDecl : ConstantInfo)
+def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     (reorder : List (List Nat)) (dont : List Ident) : MetaM ConstantInfo := do
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.flatten then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
   let dont ← getDontTranslates dont srcDecl.type
-  decl := decl.updateType <| ← reorderForall reorder <| ← applyReplacementForall b dont <|
-    renameBinderNames b decl.type
+  decl := decl.updateType <| ← reorderForall reorder <| ← applyReplacementForall t dont <|
+    renameBinderNames t decl.type
   if let some v := decl.value? then
-    decl := decl.updateValue <| ← reorderLambda reorder <| ← applyReplacementLambda b dont v
+    decl := decl.updateValue <| ← reorderLambda reorder <| ← applyReplacementLambda t dont v
   else if let .opaqueInfo info := decl then -- not covered by `value?`
     decl := .opaqueInfo { info with
-      value := ← reorderLambda reorder <| ← applyReplacementLambda b dont info.value }
+      value := ← reorderLambda reorder <| ← applyReplacementLambda t dont info.value }
   return decl
 
 /-- Abstracts the nested proofs in the value of `decl` if it is a def. -/
@@ -807,13 +807,13 @@ def declAbstractNestedProofs (decl : ConstantInfo) : MetaM ConstantInfo := do
     return decl
 
 /-- Find the target name of `pre` and all created auxiliary declarations. -/
-def findTargetName (env : Environment) (b : BundledExts) (src pre tgt_pre : Name) : CoreM Name :=
+def findTargetName (env : Environment) (t : TranslateData) (src pre tgt_pre : Name) : CoreM Name :=
   /- This covers auxiliary declarations like `match_i` and `proof_i`. -/
   if let some post := pre.isPrefixOf? src then
     return tgt_pre ++ post
   /- This covers equation lemmas (for other declarations). -/
   else if let some post := privateToUserName? src then
-    match findTranslation? env b post.getPrefix with
+    match findTranslation? env t post.getPrefix with
     -- this is an equation lemma for a declaration without `to_additive`. We will skip this.
     | none => return src
     -- this is an equation lemma for a declaration with `to_additive`. We will additivize this.
@@ -822,7 +822,7 @@ def findTargetName (env : Environment) (b : BundledExts) (src pre tgt_pre : Name
   else if src.hasMacroScopes then
     mkFreshUserName src.eraseMacroScopes
   else
-    throwError "internal @[{b.attrName}] error."
+    throwError "internal @[{t.attrName}] error."
 
 /-- Returns a `NameSet` of all auxiliary constants in `e` that might have been generated
 when adding `pre` to the environment.
@@ -849,21 +849,21 @@ using the transforms dictionary.
 
 `pre` is the declaration that got the `@[to_additive]` attribute and `tgt_pre` is the target of this
 declaration. -/
-partial def transformDeclAux (b : BundledExts) (cfg : Config) (pre tgt_pre : Name) :
+partial def transformDeclAux (t : TranslateData) (cfg : Config) (pre tgt_pre : Name) :
     Name → CoreM Unit := fun src ↦ do
   let env ← getEnv
   trace[to_additive_detail] "visiting {src}"
   -- if we have already translated this declaration, we do nothing.
-  if (findTranslation? env b src).isSome && src != pre then
+  if (findTranslation? env t src).isSome && src != pre then
       return
   -- if this declaration is not `pre` and not an internal declaration, we return an error,
   -- since we should have already translated this declaration.
   if src != pre && !src.isInternalDetail then
     throwError "The declaration {pre} depends on the declaration {src} which is in the namespace \
-      {pre}, but does not have the `@[{b.attrName}]` attribute. This is not supported.\n\
+      {pre}, but does not have the `@[{t.attrName}]` attribute. This is not supported.\n\
       Workaround: move {src} to a different namespace."
   -- we find the additive name of `src`
-  let tgt ← findTargetName env b src pre tgt_pre
+  let tgt ← findTargetName env t src pre tgt_pre
   -- we skip if we already transformed this declaration before.
   if env.contains tgt then
     if tgt == src then
@@ -877,23 +877,23 @@ partial def transformDeclAux (b : BundledExts) (cfg : Config) (pre tgt_pre : Nam
   let srcDecl ← MetaM.run' do declUnfoldAuxLemmas srcDecl
   -- we then transform all auxiliary declarations generated when elaborating `pre`
   for n in findAuxDecls srcDecl.type pre do
-    transformDeclAux b cfg pre tgt_pre n
+    transformDeclAux t cfg pre tgt_pre n
   if let some value := srcDecl.value? then
     for n in findAuxDecls value pre do
-      transformDeclAux b cfg pre tgt_pre n
+      transformDeclAux t cfg pre tgt_pre n
   if let .opaqueInfo {value, ..} := srcDecl then
     for n in findAuxDecls value pre do
-      transformDeclAux b cfg pre tgt_pre n
+      transformDeclAux t cfg pre tgt_pre n
   -- if the auxiliary declaration doesn't have prefix `pre`, then we have to add this declaration
   -- to the translation dictionary, since otherwise we cannot find the additive name.
   if !pre.isPrefixOf src then
-    insertTranslation b src tgt
+    insertTranslation t src tgt
   -- now transform the source declaration
   let trgDecl : ConstantInfo ← MetaM.run' <|
     if src == pre then
-      updateDecl b tgt srcDecl cfg.reorder cfg.dontTranslate
+      updateDecl t tgt srcDecl cfg.reorder cfg.dontTranslate
     else
-      updateDecl b tgt srcDecl [] []
+      updateDecl t tgt srcDecl [] []
   let value ← match trgDecl with
     | .thmInfo { value, .. } | .defnInfo { value, .. } | .opaqueInfo { value, .. } => pure value
     | _ => throwError "Expected {tgt} to have a value."
@@ -903,7 +903,7 @@ partial def transformDeclAux (b : BundledExts) (cfg : Config) (pre tgt_pre : Nam
     -- and emit a more helpful error message if it fails
     MetaM.run' <| check value
   catch
-    | Exception.error _ msg => throwError "@[{b.attrName}] failed. \
+    | Exception.error _ msg => throwError "@[{t.attrName}] failed. \
       The translated value is not type correct. For help, see the docstring \
       of `to_additive.attr`, section `Troubleshooting`. \
       Failed to add declaration\n{tgt}:\n{msg}"
@@ -986,16 +986,16 @@ def warnParametricAttr {β : Type} [Inhabited β] (stx : Syntax) (attr : Paramet
 and adds translations between the generated lemmas (the output of `t`).
 `names` must be non-empty. -/
 def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT CoreM m]
-    (b : BundledExts) (names : Array Name) (argInfo : ArgInfo) (desc : String)
-    (t : Name → m (Array Name)) : m Unit := do
-  let auxLemmas ← names.mapM t
+    (t : TranslateData) (names : Array Name) (argInfo : ArgInfo) (desc : String)
+    (runAttr : Name → m (Array Name)) : m Unit := do
+  let auxLemmas ← names.mapM runAttr
   let nLemmas := auxLemmas[0]!.size
   for (nm, lemmas) in names.zip auxLemmas do
     unless lemmas.size == nLemmas do
       throwError "{names[0]!} and {nm} do not generate the same number of {desc}."
   for (srcLemmas, tgtLemmas) in auxLemmas.zip <| auxLemmas.eraseIdx! 0 do
     for (srcLemma, tgtLemma) in srcLemmas.zip tgtLemmas do
-      insertTranslationAndInfo b srcLemma tgtLemma argInfo
+      insertTranslationAndInfo t srcLemma tgtLemma argInfo
 
 /--
 Find the argument of `nm` that appears in the first multiplicative (type-class) argument.
@@ -1004,15 +1004,15 @@ E.g. `Prod.instGroup` returns 1, and `Pi.instOne` returns 2.
 Note: we only consider the relevant argument (`(relevant_arg := ...)`) of each type-class.
 E.g. `[Pow A N]` is a multiplicative type-class on `A`, not on `N`.
 -/
-def findMultiplicativeArg (b : BundledExts) (nm : Name) : MetaM Nat := do
+def findMultiplicativeArg (t : TranslateData) (nm : Name) : MetaM Nat := do
   forallTelescopeReducing (← getConstInfo nm).type fun xs ty ↦ do
     let env ← getEnv
     -- check if `tgt` has a multiplicative type argument, and if so,
     -- find the index of a type from `xs` appearing in there
     let multArg? (tgt : Expr) : Option Nat := do
       let c ← tgt.getAppFn.constName?
-      guard (findTranslation? env b c).isSome
-      let relevantArg := (b.relevantArgAttr.find? env c).getD 0
+      guard (findTranslation? env t c).isSome
+      let relevantArg := (t.relevantArgAttr.find? env c).getD 0
       let arg ← tgt.getArg? relevantArg
       xs.findIdx? (arg.containsFVar ·.fvarId!)
     -- run the above check on all hypotheses and on the conclusion
@@ -1023,27 +1023,27 @@ def findMultiplicativeArg (b : BundledExts) (nm : Name) : MetaM Nat := do
     return arg.getD 0
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
-def targetName (b : BundledExts) (cfg : Config) (src : Name) : CoreM Name := do
+def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := do
   if cfg.self then
     if cfg.tgt != .anonymous then
-      logWarning m!"`{b.attrName} self` ignores the provided name {cfg.tgt}"
+      logWarning m!"`{t.attrName} self` ignores the provided name {cfg.tgt}"
     return src
-  let .str pre s := src | throwError "{b.attrName}: can't transport {src}"
+  let .str pre s := src | throwError "{t.attrName}: can't transport {src}"
   trace[to_additive_detail] "The name {s} splits as {s.splitCase}"
-  let tgt_auto := b.guessName s
+  let tgt_auto := t.guessName s
   let depth := cfg.tgt.getNumParts
-  let pre := findPrefixTranslation (← getEnv) pre b
+  let pre := findPrefixTranslation (← getEnv) pre t
   let (pre1, pre2) := pre.splitAt (depth - 1)
   let res := if cfg.tgt == .anonymous then pre.str tgt_auto else pre1 ++ cfg.tgt
   if res == src then
-    throwError "{b.attrName}: the generated translated name equals the original name '{src}'.\n\
-    If this is intentional, use the `@[{b.attrName} self]` syntax.\n\
+    throwError "{t.attrName}: the generated translated name equals the original name '{src}'.\n\
+    If this is intentional, use the `@[{t.attrName} self]` syntax.\n\
     Otherwise, check that your declaration name is correct \
     (if your declaration is an instance, try naming it)\n\
-    or provide an additivised name using the `@[{b.attrName} my_add_name]` syntax."
+    or provide an additivised name using the `@[{t.attrName} my_add_name]` syntax."
   if cfg.tgt == pre2.str tgt_auto && !cfg.allowAutoName then
     Linter.logLintIf linter.toAdditiveGenerateName cfg.ref m!"\
-      `{b.attrName}` correctly autogenerated target name for {src}.\n\
+      `{t.attrName}` correctly autogenerated target name for {src}.\n\
       You may remove the explicit argument {cfg.tgt}."
   if cfg.tgt != .anonymous then
     trace[to_additive_detail] "The automatically generated name would be {pre.str tgt_auto}"
@@ -1051,7 +1051,7 @@ def targetName (b : BundledExts) (cfg : Config) (src : Name) : CoreM Name := do
 
 /-- if `f src = #[a_1, ..., a_n]` and `f tgt = #[b_1, ... b_n]` then `proceedFieldsAux src tgt f`
 will insert translations from `a_i` to `b_i`. -/
-def proceedFieldsAux (b : BundledExts) (src tgt : Name) (argInfo : ArgInfo)
+def proceedFieldsAux (t : TranslateData) (src tgt : Name) (argInfo : ArgInfo)
     (f : Name → Array Name) : CoreM Unit := do
   let srcFields := f src
   let tgtFields := f tgt
@@ -1059,13 +1059,13 @@ def proceedFieldsAux (b : BundledExts) (src tgt : Name) (argInfo : ArgInfo)
     throwError "Failed to map fields of {src}, {tgt} with {srcFields} ↦ {tgtFields}.\n \
       Lengths do not match."
   for srcField in srcFields, tgtField in tgtFields do
-    insertTranslationAndInfo b srcField tgtField argInfo
+    insertTranslationAndInfo t srcField tgtField argInfo
 
 /-- Add the structure fields of `src` to the translations dictionary
 so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
-def proceedFields (b : BundledExts) (src tgt : Name) (argInfo : ArgInfo) : CoreM Unit := do
+def proceedFields (t : TranslateData) (src tgt : Name) (argInfo : ArgInfo) : CoreM Unit := do
   let env ← getEnv
-  let aux := proceedFieldsAux b src tgt argInfo
+  let aux := proceedFieldsAux t src tgt argInfo
   -- add translations for the structure fields
   aux fun declName ↦
     if isStructure env declName then
@@ -1167,7 +1167,7 @@ def elabToAdditive (stx : Syntax) : CoreM Config :=
 
 mutual
 /-- Apply attributes to the multiplicative and additive declarations. -/
-partial def applyAttributes (b : BundledExts) (stx : Syntax) (rawAttrs : Array Syntax)
+partial def applyAttributes (t : TranslateData) (stx : Syntax) (rawAttrs : Array Syntax)
     (src tgt : Name) (argInfo : ArgInfo) : TermElabM (Array Name) := do
   -- we only copy the `instance` attribute, since `@[to_additive] instance` is nice to allow
   copyInstanceAttribute src tgt
@@ -1179,36 +1179,36 @@ partial def applyAttributes (b : BundledExts) (stx : Syntax) (rawAttrs : Array S
       -- Note: we're not bothering to print the correct attribute arguments.
       Linter.logLintIf linter.existingAttributeWarning stx m!"\
         The source declaration {src} was given the simp-attribute(s) {appliedAttrs} before \
-        calling @[{b.attrName}].\nThe preferred method is to use something like \
-        `@[{b.attrName} (attr := {appliedAttrs})]`\nto apply the attribute to both \
+        calling @[{t.attrName}].\nThe preferred method is to use something like \
+        `@[{t.attrName} (attr := {appliedAttrs})]`\nto apply the attribute to both \
         {src} and the target declaration {tgt}."
     warnAttr stx Lean.Meta.Ext.extExtension
-      (fun b n => (b.tree.values.any fun t => t.declName = n)) b.attrName `ext src tgt
-    warnAttr stx Lean.Meta.Rfl.reflExt (·.values.contains ·) b.attrName `refl src tgt
-    warnAttr stx Lean.Meta.Symm.symmExt (·.values.contains ·) b.attrName `symm src tgt
-    warnAttr stx Batteries.Tactic.transExt (·.values.contains ·) b.attrName `trans src tgt
-    warnAttr stx Lean.Meta.coeExt (·.contains ·) b.attrName `coe src tgt
-    warnParametricAttr stx Lean.Linter.deprecatedAttr b.attrName `deprecated src tgt
+      (fun b n => (b.tree.values.any fun t => t.declName = n)) t.attrName `ext src tgt
+    warnAttr stx Lean.Meta.Rfl.reflExt (·.values.contains ·) t.attrName `refl src tgt
+    warnAttr stx Lean.Meta.Symm.symmExt (·.values.contains ·) t.attrName `symm src tgt
+    warnAttr stx Batteries.Tactic.transExt (·.values.contains ·) t.attrName `trans src tgt
+    warnAttr stx Lean.Meta.coeExt (·.contains ·) t.attrName `coe src tgt
+    warnParametricAttr stx Lean.Linter.deprecatedAttr t.attrName `deprecated src tgt
     -- the next line also warns for `@[to_additive, simps]`, because of the application times
-    warnParametricAttr stx simpsAttr b.attrName `simps src tgt
-    warnAttrCore stx Term.elabAsElim.hasTag b.attrName `elab_as_elim src tgt
+    warnParametricAttr stx simpsAttr t.attrName `simps src tgt
+    warnAttrCore stx Term.elabAsElim.hasTag t.attrName `elab_as_elim src tgt
   -- add attributes
   -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
   -- `simps` and `to_additive`.
   let attrs ← elabAttrs rawAttrs
-  let (additiveAttrs, attrs) := attrs.partition (·.name == b.attrName)
+  let (additiveAttrs, attrs) := attrs.partition (·.name == t.attrName)
   let nestedDecls ←
     match h : additiveAttrs.size with
       | 0 => pure #[]
-      | 1 => addToAdditiveAttr b tgt (← elabToAdditive additiveAttrs[0].stx) additiveAttrs[0].kind
-      | _ => throwError "cannot apply {b.attrName} multiple times."
+      | 1 => addToAdditiveAttr t tgt (← elabToAdditive additiveAttrs[0].stx) additiveAttrs[0].kind
+      | _ => throwError "cannot apply {t.attrName} multiple times."
   let allDecls := #[src, tgt] ++ nestedDecls
   if attrs.size > 0 then
     trace[to_additive_detail] "Applying attributes {attrs.map (·.stx)} to {allDecls}"
   for attr in attrs do
     withRef attr.stx do withLogging do
     if attr.name == `simps then
-      additivizeLemmas b allDecls argInfo "simps lemmas" (simpsTacFromSyntax · attr.stx)
+      additivizeLemmas t allDecls argInfo "simps lemmas" (simpsTacFromSyntax · attr.stx)
       return
     let env ← getEnv
     match getAttributeImpl env attr.name with
@@ -1234,41 +1234,41 @@ partial def applyAttributes (b : BundledExts) (stx : Syntax) (rawAttrs : Array S
 /--
 Copies equation lemmas and attributes from `src` to `tgt`
 -/
-partial def copyMetaData (b : BundledExts) (cfg : Config) (src tgt : Name) (argInfo : ArgInfo) :
+partial def copyMetaData (t : TranslateData) (cfg : Config) (src tgt : Name) (argInfo : ArgInfo) :
     CoreM (Array Name) := do
   if let some eqns := eqnsAttribute.find? (← getEnv) src then
     unless (eqnsAttribute.find? (← getEnv) tgt).isSome do
       for eqn in eqns do
-        _ ← addToAdditiveAttr b eqn cfg
-      eqnsAttribute.add tgt (eqns.map (findTranslation? (← getEnv) b · |>.get!))
+        _ ← addToAdditiveAttr t eqn cfg
+      eqnsAttribute.add tgt (eqns.map (findTranslation? (← getEnv) t · |>.get!))
   else
     /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
     definitions. If we don't do that, the equation lemma for `src` might be generated later
     when doing a `rw`, but it won't be generated for `tgt`. -/
-    additivizeLemmas b #[src, tgt] argInfo "equation lemmas" fun nm ↦
+    additivizeLemmas t #[src, tgt] argInfo "equation lemmas" fun nm ↦
       (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm)
   MetaM.run' <| Elab.Term.TermElabM.run' <|
-    (applyAttributes b cfg.ref cfg.attrs src tgt) argInfo
+    (applyAttributes t cfg.ref cfg.attrs src tgt) argInfo
 
 /--
 Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
 the body using the `translations` dictionary.
 This is used to implement `@[to_additive]`.
 -/
-partial def transformDecl (b : BundledExts) (cfg : Config) (src tgt : Name)
+partial def transformDecl (t : TranslateData) (cfg : Config) (src tgt : Name)
     (argInfo : ArgInfo := {}) : CoreM (Array Name) := do
-  transformDeclAux b cfg src tgt src
-  copyMetaData b cfg src tgt argInfo
+  transformDeclAux t cfg src tgt src
+  copyMetaData t cfg src tgt argInfo
 
 /-- Verify that the type of given `srcDecl` translates to that of `tgtDecl`. -/
-partial def checkExistingType (b : BundledExts) (src tgt : Name) (reorder : List (List Nat))
+partial def checkExistingType (t : TranslateData) (src tgt : Name) (reorder : List (List Nat))
     (dont : List Ident) : MetaM Unit := do
   let mut srcDecl ← getConstInfo src
   let tgtDecl ← getConstInfo tgt
   if 0 ∈ reorder.flatten then
     srcDecl := srcDecl.updateLevelParams srcDecl.levelParams.swapFirstTwo
   unless srcDecl.levelParams.length == tgtDecl.levelParams.length do
-    throwError "`{b.attrName}` validation failed:\n  expected {srcDecl.levelParams.length} \
+    throwError "`{t.attrName}` validation failed:\n  expected {srcDecl.levelParams.length} \
       universe levels, but '{tgt}' has {tgtDecl.levelParams.length} universe levels"
   -- instantiate both types with the same universes. `instantiateLevelParams` applies some
   -- normalization, so we have to apply it to both types.
@@ -1277,55 +1277,55 @@ partial def checkExistingType (b : BundledExts) (src tgt : Name) (reorder : List
   let tgtType := tgtDecl.type.instantiateLevelParams
     tgtDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
   let dont ← getDontTranslates dont type
-  let type  ← reorderForall reorder <| ← applyReplacementForall b dont <| ← unfoldAuxLemmas type
+  let type  ← reorderForall reorder <| ← applyReplacementForall t dont <| ← unfoldAuxLemmas type
   -- `instantiateLevelParams` normalizes universes, so we have to normalize both expressions
   unless ← withReducible <| isDefEq type tgtType do
-    throwError "`{b.attrName}` validation failed: expected{indentExpr type}\nbut '{tgt}' has \
+    throwError "`{t.attrName}` validation failed: expected{indentExpr type}\nbut '{tgt}' has \
       type{indentExpr tgtType}"
 
 /-- `addToAdditiveAttr src cfg` adds a `@[to_additive]` attribute to `src` with configuration `cfg`.
 See the attribute implementation for more details.
 It returns an array with names of additive declarations (usually 1, but more if there are nested
 `to_additive` calls. -/
-partial def addToAdditiveAttr (b : BundledExts) (src : Name) (cfg : Config)
+partial def addToAdditiveAttr (t : TranslateData) (src : Name) (cfg : Config)
     (kind := AttributeKind.global) : AttrM (Array Name) := do
   if (kind != AttributeKind.global) then
-    throwError "`{b.attrName}` can only be used as a global attribute"
+    throwError "`{t.attrName}` can only be used as a global attribute"
   withOptions (· |>.updateBool `trace.to_additive (cfg.trace || ·)) <| do
-  if let some tgt := findTranslation? (← getEnv) b src then
+  if let some tgt := findTranslation? (← getEnv) t src then
     -- we allow `to_additive (reorder := ...)` or `to_additive (relevant_arg := ...)` syntax
     -- for updating this information on constants that are already tagged
     -- for example, this is necessary for `HPow.hPow`
     if cfg.reorder != [] then
-      modifyEnv (b.reorderAttr.addEntry · (src, cfg.reorder))
+      modifyEnv (t.reorderAttr.addEntry · (src, cfg.reorder))
       return #[tgt]
     if let some relevantArg := cfg.relevantArg? then
-      modifyEnv (b.relevantArgAttr.addEntry · (src, relevantArg))
+      modifyEnv (t.relevantArgAttr.addEntry · (src, relevantArg))
       return #[tgt]
-  let tgt ← targetName b cfg src
+  let tgt ← targetName t cfg src
   let alreadyExists := (← getEnv).contains tgt
   if cfg.existing != alreadyExists && !(← isInductive src) && !cfg.self then
     Linter.logLintIf linter.toAdditiveExisting cfg.ref <|
       if alreadyExists then
         m!"The translated declaration already exists. Please specify this explicitly using \
-           `@[{b.attrName} existing]`."
+           `@[{t.attrName} existing]`."
       else
         "The additive declaration doesn't exist. Please remove the option `existing`."
   if alreadyExists then
-    MetaM.run' <| checkExistingType b src tgt cfg.reorder cfg.dontTranslate
-  let relevantArg ← cfg.relevantArg?.getDM <| MetaM.run' <| findMultiplicativeArg b src
+    MetaM.run' <| checkExistingType t src tgt cfg.reorder cfg.dontTranslate
+  let relevantArg ← cfg.relevantArg?.getDM <| MetaM.run' <| findMultiplicativeArg t src
   let argInfo := { reorder := cfg.reorder, relevantArg }
-  insertTranslationAndInfo b src tgt argInfo alreadyExists
+  insertTranslationAndInfo t src tgt argInfo alreadyExists
   let nestedNames ←
     if alreadyExists then
       -- since `tgt` already exists, we just need to copy metadata and
       -- add translations `src.x ↦ tgt.x'` for any subfields.
       trace[to_additive_detail] "declaration {tgt} already exists."
-      proceedFields b src tgt argInfo
-      copyMetaData b cfg src tgt argInfo
+      proceedFields t src tgt argInfo
+      copyMetaData t cfg src tgt argInfo
     else
       -- tgt doesn't exist, so let's make it
-      transformDecl b cfg src tgt argInfo
+      transformDecl t cfg src tgt argInfo
   -- add pop-up information when mousing over `additive_name` of `@[to_additive additive_name]`
   -- (the information will be over the attribute of no additive name is given)
   pushInfoLeaf <| .ofTermInfo {
@@ -1381,7 +1381,7 @@ initialize dontTranslateAttr : NameMapExtension Unit ←
 initialize translations : NameMapExtension Name ← registerNameMapExtension _
 
 /-- The bundle of environment extensions for `to_additive` -/
-def toAdditiveBundle : BundledExts where
+def toAdditiveBundle : TranslateData where
   ignoreArgsAttr := ignoreArgsAttr
   reorderAttr := reorderAttr
   relevantArgAttr := relevantArgAttr
