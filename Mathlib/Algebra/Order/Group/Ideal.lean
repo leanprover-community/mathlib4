@@ -12,6 +12,10 @@ import Mathlib.Order.WellFoundedSet
 
 This file proves that in a canonically ordered and well-quasi-ordered monoid, any semigroup ideal is
 finitely generated, and the semigroup ideals satisfy the ascending chain condition.
+
+## References
+
+* [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
 -/
 
 namespace SemigroupIdeal
