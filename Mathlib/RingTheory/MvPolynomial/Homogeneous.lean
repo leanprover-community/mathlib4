@@ -47,11 +47,28 @@ def IsHomogeneous [CommSemiring R] (φ : MvPolynomial σ R) (n : ℕ) :=
 
 variable [CommSemiring R]
 
+/-- The `degrees` of a polynomial `p` is a special case of the `weightedTotalDegree` of `p` where
+  the weights are singletons containing each variable. -/
+theorem weightedTotalDegree_multisetSingle [DecidableEq σ] (p : MvPolynomial σ R) :
+    weightedTotalDegree (fun i => {i}) p = degrees p := by
+  rw [degrees_def]; rfl
+
+/-- The `totalDegree` of a polynomial `p` is a special case of the `weightedTotalDegree` of `p`
+  where all of the weights are `1`. -/
 theorem weightedTotalDegree_one (φ : MvPolynomial σ R) :
     weightedTotalDegree (1 : σ → ℕ) φ = φ.totalDegree := by
   simp only [totalDegree, weightedTotalDegree, weight, LinearMap.toAddMonoidHom_coe,
     linearCombination, Pi.one_apply, Finsupp.coe_lsum, LinearMap.coe_smulRight, LinearMap.id_coe,
     id, Algebra.id.smul_eq_mul, mul_one]
+
+/-- The `degreeOf` a variable `i` for a polynomial `p` is a special case of the
+  `weightedTotalDegree` of `p` where `i` has the only nonzero weight and that weight is `1`. -/
+theorem weightedTotalDegree_piSingle [DecidableEq σ] (i : σ) (p : MvPolynomial σ R) :
+    weightedTotalDegree (Pi.single i 1) p = degreeOf i p := by
+  simp only [weightedTotalDegree, weight, linearCombination, Pi.single_apply, degreeOf, degrees,
+    Multiset.count_finset_sup]
+  congr; ext d
+  by_cases h : d i = 0 <;> simp [h]
 
 theorem weightedTotalDegree_rename_of_injective {σ τ : Type*} {e : σ → τ}
     {w : τ → ℕ} {P : MvPolynomial σ R} (he : Function.Injective e) :
