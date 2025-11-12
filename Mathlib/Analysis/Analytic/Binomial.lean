@@ -54,7 +54,7 @@ theorem binomialSeries_apply {𝕂 : Type u} [Field 𝕂] [CharZero 𝕂] (𝔸 
 
 theorem binomialSeries_eq_ordinaryHypergeometricSeries {𝕂 : Type u} [Field 𝕂] [CharZero 𝕂]
     {𝔸 : Type v} [Ring 𝔸] [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸] [IsTopologicalRing 𝔸] {a b : 𝕂}
-    (h : ∀ (k : ℕ), (k : 𝕂) ≠ -b) :
+    (h : ∀ (k : ℕ), (k : 𝕂) ≠ -b) : -- TODO Set.range
     binomialSeries 𝔸 a =
     (ordinaryHypergeometricSeries 𝔸 (-a) b b).compContinuousLinearMap (-(.id _ _)) := by
   simp only [binomialSeries, ordinaryHypergeometricSeries,
@@ -86,7 +86,7 @@ theorem binomialSeries_radius_eq_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type 
 theorem binomialSeries_radius_ge_one {𝕂 : Type*} [RCLike 𝕂] {𝔸 : Type*} [NormedDivisionRing 𝔸]
     [NormedAlgebra 𝕂 𝔸] {a : 𝕂} :
     1 ≤ (binomialSeries 𝔸 a).radius := by
-  by_cases ha : ∀ (k : ℕ), a ≠ k
+  by_cases ha : ∀ (k : ℕ), a ≠ k-- TODO Set.range
   · rw [binomialSeries_radius_eq_one ha]
   · push_neg at ha
     rcases ha with ⟨k, rfl⟩
