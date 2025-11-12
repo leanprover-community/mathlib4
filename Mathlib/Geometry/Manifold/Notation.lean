@@ -567,10 +567,10 @@ where
         -- then the sphere is m-1-dimensional, and modelEuclideanSpace m-1 is our model.
         let some nE ← factFinder E
           | throwError "Found no fact `finrank ℝ {E} = n + 1` in the local context"
-        -- Lean warns about an unused variable here, why?
-        let _nT : Term ← Term.exprToSyntax nE
-        let iTerm : Term ← `(modelWithCornersSelf ℝ (EuclideanSpace ℝ (Fin _nT)))
-        Term.elabTerm iTerm none
+        -- We have not imported `EuclideanSpace` yet, so build an expression by hand.
+        let r ← Term.exprToSyntax q(ℝ)
+        let eE ← Term.exprToSyntax <| ← mkAppM `EuclideanSpace #[q(ℝ), q(Fin $nE)]
+        Term.elabTerm (← ``(𝓘($r, $eE))) none
       else throwError "found no real normed space instance on `{α}`"
     | _ => throwError "`{e}` is not a sphere in a real normed space"
   /-- Attempt to find a model with corners from a normed field.
