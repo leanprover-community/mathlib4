@@ -428,10 +428,7 @@ variable (e b) in
 /-- The representation of `s` in a local frame at `x` only depends on `s` at `x`. -/
 lemma localFrame_coeff_congr {i : ι} (hss' : s x = s' x) :
     e.localFrame_coeff I b i s x = e.localFrame_coeff I b i s' x := by
-  by_cases hxe : x ∈ e.baseSet
-  · simp [localFrame_coeff, hxe]
-    congr
-  · simp [localFrame_coeff, hxe]
+  by_cases hxe : x ∈ e.baseSet <;> aesop
 
 variable (e b) in
 lemma localFrame_coeff_apply_zero_at (hs : s x = 0) (i : ι) : e.localFrame_coeff I b i s x = 0 := by
