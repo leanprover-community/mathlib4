@@ -41,7 +41,7 @@ lemma triangle_map_ext (a b : ℤ) (hab : a ≤ b) {T T' : Triangle C} (f₁ f�
     (hT : T ∈ distTriang C) (hT' : T' ∈ distTriang C)
     (h₀ : t.IsLE T.obj₁ a) (h₁ : t.IsGE T'.obj₃ b)
     (H : f₁.hom₂ = f₂.hom₂ := by cat_disch) : f₁ = f₂ := by
-  suffices ∀ (f : T ⟶ T') (_ : f.hom₂ = 0), f = 0 by rw [← sub_eq_zero]; cat_disch
+  suffices ∀ (f : T ⟶ T'), f.hom₂ = 0 → f = 0 by rw [← sub_eq_zero]; cat_disch
   intro f hf
   ext
   · obtain ⟨g, hg⟩ := Triangle.coyoneda_exact₂ _ (inv_rot_of_distTriang _ hT')
@@ -123,7 +123,7 @@ instance triangle_obj₃_isGE :
 variable {X} {Y : C} (φ : X ⟶ Y)
 
 /-- Version of `TStructure.triangle_map_ext` that is specialized for the auxiliary
-definitions `TruncAux.triangle`. -/
+definition `TruncAux.triangle`. -/
 @[ext]
 lemma triangle_map_ext' (f₁ f₂ : triangle t n X ⟶ triangle t n Y)
     (H : f₁.hom₂ = f₂.hom₂ := by cat_disch) : f₁ = f₂ :=
