@@ -176,30 +176,28 @@ lemma HolderOnWith.mono_right' {C C' s : ℝ≥0} {t : Set X} (hf : HolderOnWith
     PseudoEMetricSpace.boundedSpace_toPseudoMetricSpace fun x y : t ↦ ht x.2 y.2
   exact MemHolder.mono ⟨C, hf⟩ hs
 
-lemma HolderWith.HolderWith_of_le_of_le {X Y : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
-    {f : X → Y} {C₁ C₂ r s t : ℝ≥0} (hf₁ : HolderWith C₁ r f) (hf₂ : HolderWith C₂ t f)
+/-- If a function is `r`-Hölder and `t`-Hölder, then it is `s`-Hölder for `r ≤ s ≤ t`. -/
+lemma HolderWith.holderWith_of_le_of_le {C₁ C₂ s t : ℝ≥0}
+    (hf₁ : HolderWith C₁ r f) (hf₂ : HolderWith C₂ t f)
     (hrs : r ≤ s) (hst : s ≤ t) : HolderWith (max C₁ C₂) s f := by
   intro x y
   obtain h | h := le_total (edist x y) 1
   · grw [hf₂ x y]
-    refine mul_le_mul ?_ ?_ ?_ ?_
-    · gcongr
-      exact le_max_right _ _
-    · exact ENNReal.rpow_le_rpow_of_exponent_ge h (by norm_cast)
-    all_goals simp
+    refine mul_le_mul ?_ (rpow_le_rpow_of_exponent_ge h (by norm_cast)) (by simp) (by simp)
+    gcongr
+    exact le_max_right _ _
   · grw [hf₁ x y]
-    refine mul_le_mul ?_ ?_ ?_ ?_
-    · gcongr
-      exact le_max_left _ _
-    · exact ENNReal.rpow_le_rpow_of_exponent_le h (by norm_cast)
-    all_goals simp
+    refine mul_le_mul ?_ (rpow_le_rpow_of_exponent_le h (by norm_cast)) (by simp) (by simp)
+    gcongr
+    exact le_max_left _ _
 
-lemma HolderOnWith.holderOnWith_of_le_of_le {X Y : Type*} [PseudoEMetricSpace X]
-    [PseudoEMetricSpace Y] {f : X → Y} {C₁ C₂ r s t : ℝ≥0} {u : Set X}
+/-- If a function is locally `r`-Hölder and locally `t`-Hölder,
+then it is locally `s`-Hölder for `r ≤ s ≤ t`. -/
+lemma HolderOnWith.holderOnWith_of_le_of_le {C₁ C₂ s t : ℝ≥0} {u : Set X}
     (hf₁ : HolderOnWith C₁ r f u) (hf₂ : HolderOnWith C₂ t f u)
     (hrs : r ≤ s) (hst : s ≤ t) : HolderOnWith (max C₁ C₂) s f u := by
   simp_rw [← HolderWith.restrict_iff] at *
-  exact hf₁.HolderWith_of_le_of_le hf₂ hrs hst
+  exact hf₁.holderWith_of_le_of_le hf₂ hrs hst
 
 end Monotonicity
 
