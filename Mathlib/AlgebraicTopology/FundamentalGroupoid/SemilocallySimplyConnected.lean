@@ -862,7 +862,46 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
 
   -- Chain all homotopies together
   -- γ · α_n ≃ γ_aux n ≃ γ_aux (n-1) ≃ ... ≃ γ_aux 0 ≃ α_0 · γ'
-  sorry
+
+  -- First, build a chain from γ_aux (Fin.last n) down to γ_aux 0 using h_step
+  -- Helper: chain from γ_aux k down to γ_aux 0
+  have h_chain : ∀ (k : ℕ) (hk : k < n + 1), Path.Homotopic (γ_aux ⟨k, hk⟩) (γ_aux 0) := by
+    intro k
+    induction k with
+    | zero =>
+      intro hk
+      exact Path.Homotopic.refl _
+    | succ k ih =>
+      intro hk
+      -- γ_aux ⟨k+1, hk⟩ ≃ γ_aux ⟨k, _⟩ ≃ γ_aux 0
+      -- First step: use h_step to go from k+1 to k
+      have hk' : k < n + 1 := Nat.lt_of_succ_lt hk
+      have step_down : Path.Homotopic (γ_aux ⟨k + 1, hk⟩) (γ_aux ⟨k, hk'⟩) := by
+        -- h_step gives us: ∀ i : Fin n, γ_aux i.succ ≃ γ_aux i.castSucc
+        -- We need to show ⟨k+1, hk⟩ = i.succ and ⟨k, hk'⟩ = i.castSucc for some i : Fin n
+        have hk_n : k < n := Nat.lt_of_succ_lt_succ hk
+        let i : Fin n := ⟨k, hk_n⟩
+        have h_succ : i.succ = ⟨k + 1, hk⟩ := by
+          ext
+          rfl
+        have h_cast : i.castSucc = ⟨k, hk'⟩ := by
+          ext
+          rfl
+        rw [← h_succ, ← h_cast]
+        exact h_step i
+      -- Second step: use induction hypothesis to go from k to 0
+      exact step_down.trans (ih hk')
+
+  -- Apply the chain to go from Fin.last n to 0
+  have h_last_to_zero : Path.Homotopic (γ_aux (Fin.last n)) (γ_aux 0) := by
+    have : (Fin.last n : Fin (n+1)) = ⟨n, Nat.lt_succ_self n⟩ := by
+      ext
+      rfl
+    rw [this]
+    exact h_chain n (Nat.lt_succ_self n)
+
+  -- Now combine everything: γ · α_n ≃ γ_aux n ≃ γ_aux 0 ≃ α_0 · γ'
+  exact h_final.symm.trans (h_last_to_zero.trans h_base)
 
 /-- Stronger version of paste_segment_homotopies that directly gives γ ≃ γ' when the endpoint
 loops live in SLSC neighborhoods.
