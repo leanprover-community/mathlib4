@@ -190,6 +190,36 @@ theorem inertiaDegIn_ne_zero {p : Ideal A} [p.IsMaximal] [NoZeroSMulDivisors A B
   rw [inertiaDegIn_eq_inertiaDeg p P G]
   exact inertiaDeg_ne_zero _ _
 
+section tower
+
+variable {C : Type*} [CommRing C] [IsDomain C] [Algebra A C] [Algebra B C] [Module.Finite B C]
+  [NoZeroSMulDivisors B C] [IsScalarTower A B C]
+  (H₀ : Type*) [Group H₀] [Finite H₀] [MulSemiringAction H₀ C] [IsGaloisGroup H₀ A C]
+  (H₁ : Type*) [Group H₁] [Finite H₁] [MulSemiringAction H₁ C] [IsGaloisGroup H₁ B C]
+
+include G H₀ H₁ in
+theorem inertiaDegIn_mul_inertiaDegIn [p.IsMaximal] [P.IsMaximal] :
+    p.inertiaDegIn B * P.inertiaDegIn C = p.inertiaDegIn C := by
+  obtain ⟨⟨Q, _, _⟩⟩ := P.nonempty_primesOver (S := C)
+  have : Q.LiesOver p := LiesOver.trans Q P p
+  rw [inertiaDegIn_eq_inertiaDeg p P G, inertiaDegIn_eq_inertiaDeg p Q H₀,
+    inertiaDegIn_eq_inertiaDeg P Q H₁, inertiaDeg_algebra_tower p P Q]
+
+variable {p} in
+include G H₀ H₁ in
+theorem ramificationIdxIn_mul_ramificationIdxInIn [IsDedekindDomain B] [IsDedekindDomain C]
+    (hp : map (algebraMap A C) p ≠ ⊥)
+    (hP : map (algebraMap B C) P ≠ ⊥) :
+    p.ramificationIdxIn B * P.ramificationIdxIn C = p.ramificationIdxIn C := by
+  obtain ⟨⟨Q, _, hQ⟩⟩ := P.nonempty_primesOver (S := C)
+  have : Q.LiesOver p := LiesOver.trans Q P p
+  rw [ramificationIdxIn_eq_ramificationIdx p P G, ramificationIdxIn_eq_ramificationIdx p Q H₀,
+    ramificationIdxIn_eq_ramificationIdx P Q H₁, ramificationIdx_algebra_tower hP hp]
+  convert map_comap_le
+  exact (liesOver_iff Q P).mp hQ
+
+end tower
+
 end RamificationInertia
 
 section fundamental_identity
@@ -219,6 +249,38 @@ theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn :
   rw [← Finset.mem_coe, coe_primesOverFinset hpb B] at hp
   obtain ⟨_, _⟩ := hp
   rw [ramificationIdxIn_eq_ramificationIdx p P G, inertiaDegIn_eq_inertiaDeg p P G]
+
+section tower
+
+variable {B} (P : Ideal B) [P.IsMaximal] {C : Type*} [CommRing C] [IsDomain C]
+  [IsIntegrallyClosed C] [Algebra A C] [Algebra B C] [Module.Finite A C]
+  [Module.Finite B C] [NoZeroSMulDivisors B C]
+  [IsScalarTower A B C] [IsDedekindDomain C] [NoZeroSMulDivisors A B] [NoZeroSMulDivisors A C]
+  (H₀ : Type*) [Group H₀] [Finite H₀] [MulSemiringAction H₀ C] [IsGaloisGroup H₀ A C]
+  (H₁ : Type*) [Group H₁] [Finite H₁] [MulSemiringAction H₁ C] [IsGaloisGroup H₁ B C]
+
+include G H₀ H₁ in
+theorem ncard_primesOver_mul_ncard_primesOver [P.LiesOver p]
+    (hp : p ≠ ⊥) :
+    (p.primesOver B).ncard * (P.primesOver C).ncard = (p.primesOver C).ncard := by
+  have : p.ramificationIdxIn C * p.inertiaDegIn C ≠ 0 :=
+    mul_ne_zero (ramificationIdxIn_ne_zero H₀ hp) (inertiaDegIn_ne_zero H₀)
+  have hP : P ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp P
+  rw [← Nat.mul_left_inj this, ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp C H₀]
+  calc
+    _ = ((p.primesOver B).ncard *  (p.ramificationIdxIn B * p.inertiaDegIn B)) *
+        ((P.primesOver C).ncard * (P.ramificationIdxIn C * P.inertiaDegIn C)) := by
+      rw [← inertiaDegIn_mul_inertiaDegIn p P G H₀ H₁,
+        ← ramificationIdxIn_mul_ramificationIdxInIn (p := p) (P := P) G H₀ H₁]
+      · ring
+      · exact map_ne_bot_of_ne_bot hp
+      · exact map_ne_bot_of_ne_bot hP
+    _ = Nat.card H₀ := by
+      rw [ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp B G,
+        ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hP C H₁]
+      sorry
+
+end tower
 
 end fundamental_identity
 

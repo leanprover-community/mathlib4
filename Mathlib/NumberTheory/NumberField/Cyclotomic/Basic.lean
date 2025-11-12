@@ -752,10 +752,10 @@ theorem natAbs_absdiscr [hn : NeZero n] [hK : IsCyclotomicExtension {n} ℚ K] :
       rw [Int.isCoprime_iff_nat_coprime, hK₁, hK₂]
       exact natAbs_absdiscr_aux₃ h
     have h_dsj : ℚ⟮ζ ^ n₂⟯.LinearDisjoint ℚ⟮ζ ^ n₁⟯ :=
-      linearDisjoint_of_isGalois_isCoprime_discr _ _ h_cpr
+      linearDisjoint_of_isGalois_isCoprime_discr _ _ _ h_cpr
     have h_div₁ := natAbs_absdiscr_aux₂ n₁
     have h_div₂ := natAbs_absdiscr_aux₂ n₂
-    rw [discr_eq_discr_pow_mul_discr_pow K ℚ⟮ζ ^ n₂⟯ ℚ⟮ζ ^ n₁⟯ h_dsj h_top
+    rw [natAbs_discr_eq_natAbs_discr_pow_mul_natAbs_discr_pow K ℚ⟮ζ ^ n₂⟯ ℚ⟮ζ ^ n₁⟯ h_dsj h_top
       (isCoprime_differentIdeal_of_isCoprime_discr _ h_cpr), hK₁, hK₂,
       finrank n₁ ℚ⟮ζ ^ n₂⟯, finrank n₂ ℚ⟮ζ ^ n₁⟯, Nat.div_pow h_div₁, Nat.div_pow h_div₂,
       ← Nat.mul_div_mul_comm (pow_dvd_pow_of_dvd h_div₁ n₂.totient)
