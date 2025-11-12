@@ -372,7 +372,8 @@ lemma hittingAfter_apply_anti (u : ι → Ω → β) (n : ι) (ω : Ω) :
     Antitone (hittingAfter u · n ω) := fun _ _ hst ↦ hittingAfter_anti u n hst ω
 
 /-- `hittingBtwn` is monotone with respect to the maximal time. -/
-theorem hittingBtwn_mono_right : Monotone (hittingBtwn u s n · ω) := by
+theorem hittingBtwn_mono_right (u : ι → Ω → β) (s : Set β) (n : ι) :
+    Monotone (hittingBtwn u s n · ω) := by
   intro m₁ m₂ hm
   by_cases h : ∃ j ∈ Set.Icc n m₁, u j ω ∈ s
   · exact (hittingBtwn_eq_hittingBtwn_of_exists hm h).le
@@ -417,10 +418,10 @@ lemma hittingAfter_mono (u : ι → Ω → β) (s : Set β) : Monotone (hittingA
     exact absurd ⟨t, hnm.trans ht.1, ht.2⟩ h_n
   · simp
 
-lemma hittingBtwn_apply_mono_right (u : ι → Ω → β) (s : Set β) (n : ι) :
-    Monotone (hittingBtwn u s n · ω) := fun _ _ hnn' ↦ hittingBtwn_mono_right hnn'
+lemma hittingBtwn_apply_mono_right (u : ι → Ω → β) (s : Set β) (n : ι) (ω : Ω) :
+    Monotone (hittingBtwn u s n · ω) := fun _ _ hnn' ↦ hittingBtwn_mono_right u s n hnn'
 
-lemma hittingBtwn_apply_mono_left (u : ι → Ω → β) (s : Set β) (m : ι) :
+lemma hittingBtwn_apply_mono_left (u : ι → Ω → β) (s : Set β) (m : ι) (ω : Ω) :
     Monotone (hittingBtwn u s · m ω) := fun _ _ hnn' ↦ hittingBtwn_mono_left u s m hnn' ω
 
 lemma hittingAfter_apply_mono (u : ι → Ω → β) (s : Set β) (ω : Ω) :
