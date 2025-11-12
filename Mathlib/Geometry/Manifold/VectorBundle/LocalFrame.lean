@@ -113,7 +113,6 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
   [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)]
   [∀ x : M, TopologicalSpace (V x)]
-  -- `V` a fibre bundle/vector bundle over `F` (the latter is needed only in some later sections)
   [FiberBundle F V]
 
 noncomputable section
@@ -334,12 +333,12 @@ end IsLocalFrame
 namespace Trivialization
 
 variable [VectorBundle 𝕜 F V] [ContMDiffVectorBundle n F V I] {ι : Type*} {x : M}
+  (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
+  (b : Basis ι 𝕜 F)
 
 /-- Given a compatible local trivialisation `e` of `V` and a basis `b` of the model fiber `F`,
 return the corresponding basis of `V x`. -/
-noncomputable def basisAt
-    (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
-    (b : Basis ι 𝕜 F) (hx : x ∈ e.baseSet) : Basis ι 𝕜 (V x) :=
+def basisAt (hx : x ∈ e.baseSet) : Basis ι 𝕜 (V x) :=
   b.map (e.linearEquivAt (R := 𝕜) x hx).symm
 
 open scoped Classical in
@@ -347,11 +346,8 @@ open scoped Classical in
 `b` of the model fiber `F`. Use `e.localFrame b i` to access the `i`-th section in that frame.
 
 If `x` is outside of `e.baseSet`, this returns the junk value 0. -/
-noncomputable def localFrame
-    (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
-    (b : Basis ι 𝕜 F) : ι → (x : M) → V x := fun i x ↦
-  -- idea: take the vector `b i` and apply the trivialisation `e` to it.
-  if hx : x ∈ e.baseSet then e.basisAt b hx i else 0
+def localFrame : ι → (x : M) → V x :=
+  fun i x ↦ if hx : x ∈ e.baseSet then e.basisAt b hx i else 0
 
 /-- Each local frame `{sᵢ} ∈ Γ(E)` of a `C^k` vector bundle, defined by a local trivialisation `e`,
 is `C^k` on `e.baseSet`. -/
@@ -405,13 +401,11 @@ variable (I) in
 /-- Coefficients of a section `s` of `V` w.r.t. the local frame `b.localFrame e i`.
 
 If x is outside of `e.baseSet`, this returns the junk value 0. -/
-noncomputable def localFrame_coeff
-    (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
-    (b : Basis ι 𝕜 F) (i : ι) : (Π x : M, V x) →ₗ[𝕜] M → 𝕜 :=
+def localFrame_coeff (i : ι) : (Π x : M, V x) →ₗ[𝕜] M → 𝕜 :=
   (e.localFrame_isLocalFrameOn_baseSet I 1 b).coeff i
 
-variable {e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)} [MemTrivializationAtlas e]
-  {b : Basis ι 𝕜 F} {x x' : M}
+variable {e b}
+variable {x x' : M}
 
 variable (e b) in
 @[simp]
