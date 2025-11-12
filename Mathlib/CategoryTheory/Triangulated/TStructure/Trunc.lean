@@ -145,7 +145,7 @@ noncomputable def triangleMap : triangle t n X ⟶ triangle t n Y :=
 
 /-- Given a t-structure `t` on `C` and `n : ℤ`, this is the
 functorial (distinguished) triangle `obj₁ ⟶ X ⟶ obj₃ ⟶ obj₁⟦1⟧` for any `X : C`,
-with `obj₁` is `< n` and `obj₃` is `≥ n`.
+where `obj₁` is `< n` and `obj₃` is `≥ n`.
 (This should not be used directly: use `triangleLTGE` instead.) -/
 @[simps]
 noncomputable def triangleFunctor : C ⥤ Triangle C where
