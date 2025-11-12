@@ -144,9 +144,8 @@ yields `["Neg", "HAdd", "LE", "Conjugate₂", "VAdd", "_", "ne", "_", "top"]`.
 -/
 def applyNameDict : List String → List String
   | x :: s =>
-    let y := nameDict.get? x.toLower
-    let z := match y with
-      | some y' => decapitalizeFirstLike x y'
+    let z := match nameDict.get? x.toLower with
+      | some y => decapitalizeFirstLike x y
       | none => [x]
     z ++ applyNameDict s
   | [] => []
