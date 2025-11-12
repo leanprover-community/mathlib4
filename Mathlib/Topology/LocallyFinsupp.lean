@@ -348,7 +348,7 @@ The positive part of a sum is less than or equal to the sum of the positive part
 -/
 theorem posPart_add (f₁ f₂ : Function.locallyFinsuppWithin U Y) :
     (f₁ + f₂)⁺ ≤ f₁⁺ + f₂⁺ := by
-  rw [instPosPart, Function.locallyFinsuppWithin.le_def]
+  repeat rw [posPart_def]
   intro x
   simp only [Function.locallyFinsuppWithin.max_apply, Function.locallyFinsuppWithin.coe_add,
     Pi.add_apply, Function.locallyFinsuppWithin.coe_zero, Pi.zero_apply, sup_le_iff]
@@ -361,7 +361,7 @@ The negative part of a sum is less than or equal to the sum of the negative part
 -/
 theorem negPart_add (f₁ f₂ : Function.locallyFinsuppWithin U Y) :
     (f₁ + f₂)⁻ ≤ f₁⁻ + f₂⁻ := by
-  rw [instNegPart, Function.locallyFinsuppWithin.le_def]
+  repeat rw [negPart_def]
   intro x
   simp only [neg_add_rev, Function.locallyFinsuppWithin.max_apply,
     Function.locallyFinsuppWithin.coe_add, Function.locallyFinsuppWithin.coe_neg, Pi.add_apply,
