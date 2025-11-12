@@ -116,7 +116,7 @@ theorem QuasiconvexOn.antitone_comp (hg : Antitone g) (hf : QuasiconvexOn 𝕜 s
 theorem QuasiconcaveOn.monotone_comp (hg : Monotone g) (hf : QuasiconcaveOn 𝕜 s f) :
   QuasiconcaveOn 𝕜 s (g ∘ f) := by
   apply QuasiconvexOn.monotone_comp (β := βᵒᵈ) (γ := γᵒᵈ) (f := f) _ hf
-  rw [← monotone_dual_iff] ; exact hg
+  rw [← monotone_dual_iff]; exact hg
 
 theorem QuasiconcaveOn.antitone_comp (hg : Antitone g) (hf : QuasiconcaveOn 𝕜 s f) :
   QuasiconvexOn 𝕜 s (g ∘ f) := by
