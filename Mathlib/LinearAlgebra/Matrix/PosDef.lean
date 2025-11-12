@@ -634,18 +634,13 @@ noncomputable abbrev PosDef.normedAddCommGroup (M : Matrix n n 𝕜) (hM : M.Pos
       by_contra! h
       simpa [hx, lt_irrefl, dotProduct_comm] using hM.re_dotProduct_pos h }
 
-/-- A positive semi-definite matrix `M` induces a pre-inner product space given by
-`⟪x, y⟫ = xᴴMy`. -/
+/-- A positive semi-definite matrix `M` induces an inner product `⟪x, y⟫ = xᴴMy`. -/
 def PosSemidef.innerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
     @InnerProductSpace 𝕜 (n → 𝕜) _ hM.seminormedAddCommGroup :=
   InnerProductSpace.ofCore _
 
-/-- A positive definite matrix `M` induces an inner product space given by `⟪x, y⟫ = xᴴMy`. -/
-def PosDef.innerProductSpace (M : Matrix n n 𝕜) (hM : M.PosDef) :
-    @InnerProductSpace 𝕜 (n → 𝕜) _ hM.normedAddCommGroup.toSeminormedAddCommGroup :=
-  hM.posSemidef.innerProductSpace
-
 @[deprecated (since := "2025-10-26")] alias NormedAddCommGroup.ofMatrix := PosDef.normedAddCommGroup
-@[deprecated (since := "2025-10-26")] alias InnerProductSpace.ofMatrix := PosDef.innerProductSpace
+@[deprecated (since := "2025-10-26")] alias InnerProductSpace.ofMatrix :=
+  PosSemidef.innerProductSpace
 
 end Matrix
