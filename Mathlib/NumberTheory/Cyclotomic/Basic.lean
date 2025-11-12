@@ -492,7 +492,7 @@ theorem splits_X_pow_sub_one [H : IsCyclotomicExtension S K L] (hS : n ∈ S) :
   rw [Splits, Polynomial.map_sub, Polynomial.map_one, Polynomial.map_pow,
     Polynomial.map_X]
   obtain ⟨z, hz⟩ := ((isCyclotomicExtension_iff _ _ _).1 H).1 hS (NeZero.ne _)
-  exact X_pow_sub_one_factors hz
+  exact X_pow_sub_one_splits hz
 
 /-- A cyclotomic extension splits `cyclotomic n K` if `n ∈ S`. -/
 theorem splits_cyclotomic [IsCyclotomicExtension S K L] (hS : n ∈ S) :
