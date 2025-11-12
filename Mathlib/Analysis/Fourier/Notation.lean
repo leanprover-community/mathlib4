@@ -44,8 +44,10 @@ class FourierTransformInv (E : Type u) (F : outParam (Type v)) where
 
 namespace FourierTransform
 
-@[inherit_doc] scoped notation "𝓕" => FourierTransform.fourierTransform
-@[inherit_doc] scoped notation "𝓕⁻" => FourierTransformInv.fourierTransformInv
+export FourierTransformInv (fourierTransformInv)
+
+@[inherit_doc] scoped notation "𝓕" => fourierTransform
+@[inherit_doc] scoped notation "𝓕⁻" => fourierTransformInv
 
 end FourierTransform
 
@@ -59,15 +61,19 @@ class FourierModule (R : Type*) (E : Type*) (F : outParam (Type*)) [Add E] [Add 
   fourier_add : ∀ (f g : E), 𝓕 (f + g) = 𝓕 f + 𝓕 g
   fourier_smul : ∀ (r : R) (f : E), 𝓕 (r • f) = r • 𝓕 f
 
-attribute [simp] FourierModule.fourier_add
-attribute [simp] FourierModule.fourier_smul
-
 /-- A `FourierInvModule` is a function space on which the Fourier transform is a linear map. -/
 class FourierInvModule (R : Type*) (E : Type*) (F : outParam (Type*)) [Add E] [Add F] [SMul R E]
     [SMul R F] extends FourierTransformInv E F where
   fourierInv_add : ∀ (f g : E), 𝓕⁻ (f + g) = 𝓕⁻ f + 𝓕⁻ g
   fourierInv_smul : ∀ (r : R) (f : E), 𝓕⁻ (r • f) = r • 𝓕⁻ f
 
+namespace FourierTransform
+
+export FourierModule (fourier_add fourier_smul)
+export FourierInvModule (fourierInv_add fourierInv_smul)
+
+attribute [simp] fourier_add
+attribute [simp] fourier_smul
 attribute [simp] FourierInvModule.fourierInv_add
 attribute [simp] FourierInvModule.fourierInv_smul
 
@@ -81,14 +87,14 @@ variable (R E F) in
 /-- The Fourier transform as a linear map. -/
 def fourierₗ : E →ₗ[R] F where
   toFun := 𝓕
-  map_add' := FourierModule.fourier_add
-  map_smul' := FourierModule.fourier_smul
+  map_add' := fourier_add
+  map_smul' := fourier_smul
 
 @[simp]
 lemma fourierₗ_apply (f : E) : fourierₗ R E F f = 𝓕 f := rfl
 
 @[simp]
-lemma FourierTransform.fourier_zero : 𝓕 (0 : E) = 0 :=
+lemma fourier_zero : 𝓕 (0 : E) = 0 :=
   (fourierₗ R E F).map_zero
 
 end fourierₗ
@@ -101,17 +107,19 @@ variable (R E F) in
 /-- The inverse Fourier transform as a linear map. -/
 def fourierInvₗ : E →ₗ[R] F where
   toFun := 𝓕⁻
-  map_add' := FourierInvModule.fourierInv_add
-  map_smul' := FourierInvModule.fourierInv_smul
+  map_add' := fourierInv_add
+  map_smul' := fourierInv_smul
 
 @[simp]
 lemma fourierInvₗ_apply (f : E) : fourierInvₗ R E F f = 𝓕⁻ f := rfl
 
 @[simp]
-lemma FourierTransformInv.fourierInv_zero : 𝓕⁻ (0 : E) = 0 :=
+lemma fourierInv_zero : 𝓕⁻ (0 : E) = 0 :=
   (fourierInvₗ R E F).map_zero
 
 end fourierInvₗ
+
+end FourierTransform
 
 end Module
 
@@ -123,28 +131,35 @@ open FourierTransform
 class FourierPair (E F : Type*) [FourierTransform E F] [FourierTransformInv F E] where
   inv_fourier : ∀ (f : E), 𝓕⁻ (𝓕 f) = f
 
-/-- A `FourierPairInv` is a pair of spaces `E` and `F` such that `𝓕 ∘ 𝓕⁻ = id` on `E`. -/
-class FourierPairInv (E F : Type*) [FourierTransform F E] [FourierTransformInv E F] where
+/-- A `FourierInvPair` is a pair of spaces `E` and `F` such that `𝓕 ∘ 𝓕⁻ = id` on `E`. -/
+class FourierInvPair (E F : Type*) [FourierTransform F E] [FourierTransformInv E F] where
   fourier_inv : ∀ (f : E), 𝓕 (𝓕⁻ f) = f
 
-attribute [simp] FourierPair.inv_fourier
-attribute [simp] FourierPairInv.fourier_inv
+namespace FourierTransform
+
+export FourierPair (inv_fourier)
+export FourierInvPair (fourier_inv)
+
+attribute [simp] inv_fourier
+attribute [simp] fourier_inv
 
 variable {R E F : Type*} [Semiring R] [AddCommMonoid E] [AddCommMonoid F] [Module R E] [Module R F]
-  [FourierModule R E F] [FourierInvModule R F E] [FourierPair E F] [FourierPairInv F E]
+  [FourierModule R E F] [FourierInvModule R F E] [FourierPair E F] [FourierInvPair F E]
 
 variable (R E F) in
 /-- The Fourier transform as a linear equivalence. -/
 def fourierEquiv : E ≃ₗ[R] F where
   __ := fourierₗ R E F
   invFun := 𝓕⁻
-  left_inv := FourierPair.inv_fourier
-  right_inv := FourierPairInv.fourier_inv
+  left_inv := inv_fourier
+  right_inv := fourier_inv
 
 @[simp]
 lemma fourierEquiv_apply (f : E) : fourierEquiv R E F f = 𝓕 f := rfl
 
 @[simp]
 lemma fourierEquiv_symm_apply (f : F) : (fourierEquiv R E F).symm f = 𝓕⁻ f := rfl
+
+end FourierTransform
 
 end Pair
