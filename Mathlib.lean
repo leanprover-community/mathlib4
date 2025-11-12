@@ -2681,6 +2681,7 @@ import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Over
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.Center
+import Mathlib.CategoryTheory.Monoidal.Cocartesian.Basic
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 import Mathlib.CategoryTheory.Monoidal.CommComon_
 import Mathlib.CategoryTheory.Monoidal.CommGrp_
