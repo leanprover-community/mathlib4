@@ -66,38 +66,35 @@ theorem ext {σ τ : p.Gal} (h : ∀ x ∈ p.rootSet p.SplittingField, σ x = τ
   rwa [eq_top_iff, ← SplittingField.adjoin_rootSet, Algebra.adjoin_le_iff]
 
 /-- If `p` splits in `F` then the `p.gal` is trivial. -/
-def uniqueGalOfFactors (h : p.Factors) : Unique p.Gal where
+def uniqueGalOfSplits (h : p.Factors) : Unique p.Gal where
   default := 1
   uniq f :=
     AlgEquiv.ext fun x => by
       obtain ⟨y, rfl⟩ :=
         Algebra.mem_bot.mp
-          ((SetLike.ext_iff.mp ((IsSplittingField.factors_iff _ p).mp h) x).mp Algebra.mem_top)
+          ((SetLike.ext_iff.mp ((IsSplittingField.splits_iff _ p).mp h) x).mp Algebra.mem_top)
       rw [AlgEquiv.commutes, AlgEquiv.commutes]
 
-@[deprecated (since := "2025-10-24")]
-noncomputable alias uniqueGalOfSplits := uniqueGalOfFactors
-
 instance [h : Fact p.Factors] : Unique p.Gal :=
-  uniqueGalOfFactors _ h.1
+  uniqueGalOfSplits _ h.1
 
 instance uniqueGalZero : Unique (0 : F[X]).Gal :=
-  uniqueGalOfFactors _ Factors.zero
+  uniqueGalOfSplits _ Factors.zero
 
 instance uniqueGalOne : Unique (1 : F[X]).Gal :=
-  uniqueGalOfFactors _ Factors.one
+  uniqueGalOfSplits _ Factors.one
 
 instance uniqueGalC (x : F) : Unique (C x).Gal :=
-  uniqueGalOfFactors _ (Factors.C _)
+  uniqueGalOfSplits _ (Factors.C _)
 
 instance uniqueGalX : Unique (X : F[X]).Gal :=
-  uniqueGalOfFactors _ Factors.X
+  uniqueGalOfSplits _ Factors.X
 
 instance uniqueGalXSubC (x : F) : Unique (X - C x).Gal :=
-  uniqueGalOfFactors _ (Factors.X_sub_C _)
+  uniqueGalOfSplits _ (Factors.X_sub_C _)
 
 instance uniqueGalXPow (n : ℕ) : Unique (X ^ n : F[X]).Gal :=
-  uniqueGalOfFactors _ (Factors.X_pow _)
+  uniqueGalOfSplits _ (Factors.X_pow _)
 
 instance [h : Fact (p.Splits (algebraMap F E))] : Algebra p.SplittingField E :=
   (IsSplittingField.lift p.SplittingField p h.1).toRingHom.toAlgebra
