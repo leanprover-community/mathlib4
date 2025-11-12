@@ -98,8 +98,12 @@ instance finiteDimensional_pi' {ι : Type*} [Finite ι] (M : ι → Type*) [∀ 
 variable {K V}
 
 /-- If a vector space has a finite basis, then it is finite-dimensional. -/
-theorem of_fintype_basis {ι : Type w} [Finite ι] (h : Basis ι K V) : FiniteDimensional K V :=
+theorem _root_.Module.Basis.finiteDimensional_of_finite {ι : Type w} [Finite ι] (h : Basis ι K V) :
+    FiniteDimensional K V :=
   Module.Finite.of_basis h
+
+@[deprecated (since := "2025-11-12")]
+alias of_fintype_basis := Module.Basis.finiteDimensional_of_finite
 
 /-- If a vector space is `FiniteDimensional`, all bases are indexed by a finite type -/
 noncomputable def fintypeBasisIndex {ι : Type*} [FiniteDimensional K V] (b : Basis ι K V) :
@@ -116,7 +120,7 @@ finite-dimensional. -/
 theorem of_finite_basis {ι : Type w} {s : Set ι} (h : Basis s K V) (hs : Set.Finite s) :
     FiniteDimensional K V :=
   haveI := hs.fintype
-  of_fintype_basis h
+  h.finiteDimensional_of_finite
 
 /-- A subspace of a finite-dimensional space is also finite-dimensional.
 
