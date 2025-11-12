@@ -3,9 +3,7 @@ Copyright (c) 2025 Dexin Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dexin Zhang
 -/
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Closure
-import Mathlib.Order.WellFoundedSet
 
 /-!
 # Semigroup ideals
@@ -14,11 +12,6 @@ This file defines (left) semigroup ideals (also called monoid ideals sometimes),
 in a semigroup such that `a * b ∈ s` whenever `b ∈ s`. Note that semigroup ideals are different from
 ring ideals (`Ideal` in Mathlib): a ring ideal is a semigroup ideal that is also an additive
 submonoid of the ring.
-
-## Main results
-
-In a canonically ordered and well-quasi-ordered monoid, any semigroup ideal is finitely generated,
-and the semigroup ideals satisfy the ascending chain condition.
 
 ## References
 
@@ -127,54 +120,5 @@ def FG [Mul M] (I : SemigroupIdeal M) :=
 @[to_additive]
 theorem fg_iff [Mul M] {I : SemigroupIdeal M} : I.FG ↔ ∃ (s : Finset M), I = closure s :=
   SubMulAction.fg_iff
-
-section WellQuasiOrderedLE
-
-variable [CommMonoid M] [PartialOrder M] [WellQuasiOrderedLE M] [CanonicallyOrderedMul M]
-
-/-- In a canonically ordered and well-quasi-ordered monoid, any semigroup ideal is finitely
-generated. -/
-@[to_additive /-- In a canonically ordered and well-quasi-ordered additive monoid, any semigroup
-ideal is finitely generated. -/]
-theorem fg_of_wellQuasiOrderedLE (I : SemigroupIdeal M) : I.FG := by
-  have hpwo := isPWO_of_wellQuasiOrderedLE { x | x ∈ I }
-  refine ⟨_, (setOf_minimal_antichain _).finite_of_partiallyWellOrderedOn
-    (hpwo.mono (setOf_minimal_subset _)), ?_⟩
-  ext x
-  simp only [mem_closure'', SetLike.setOf_mem_eq, SetLike.mem_coe, mem_setOf_eq]
-  constructor
-  · intro hx
-    rcases hpwo.exists_le_minimal hx with ⟨z, hz, hz'⟩
-    rw [le_iff_exists_mul'] at hz
-    rcases hz with ⟨y, rfl⟩
-    exact ⟨y, z, hz', rfl⟩
-  · rintro ⟨y, z, hz, rfl⟩
-    apply SubMulAction.smul_mem
-    exact hz.1
-
-/-- In a canonically ordered and well-quasi-ordered monoid, the semigroup ideals satisfy the
-ascending chain condition. -/
-@[to_additive /-- A canonically ordered and well-quasi-ordered additive monoid, the semigroup ideals
-satisfy the ascending chain condition. -/]
-instance : WellFoundedGT (SemigroupIdeal M) := by
-  rw [wellFoundedGT_iff_monotone_chain_condition]
-  intro f
-  rcases fg_iff.1 (fg_of_wellQuasiOrderedLE (⨆ i, f i)) with ⟨s, hI'⟩
-  have hs : ∀ x ∈ s, ∃ i, x ∈ f i := by
-    intro x hx
-    apply subset_closure (s := (s : Set M)) at hx
-    rw [SetLike.mem_coe, ← hI'] at hx
-    exact SubMulAction.mem_iSup.1 hx
-  choose! g hg using hs
-  exists s.sup g
-  intro n hn
-  apply (f.mono hn).antisymm
-  apply (le_iSup f n).trans
-  intro x hx
-  rw [SetLike.mem_coe, hI', mem_closure''] at hx
-  rcases hx with ⟨y, z, hz, rfl⟩
-  exact SemigroupIdeal.mul_mem _ _ (f.mono (Finset.le_sup hz) (hg _ hz))
-
-end WellQuasiOrderedLE
 
 end SemigroupIdeal

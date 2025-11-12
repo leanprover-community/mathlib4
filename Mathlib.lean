@@ -866,6 +866,7 @@ import Mathlib.Algebra.Order.Group.DenselyOrdered
 import Mathlib.Algebra.Order.Group.End
 import Mathlib.Algebra.Order.Group.Equiv
 import Mathlib.Algebra.Order.Group.Finset
+import Mathlib.Algebra.Order.Group.Ideal
 import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Algebra.Order.Group.InjSurj
 import Mathlib.Algebra.Order.Group.Instances
