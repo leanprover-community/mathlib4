@@ -426,6 +426,9 @@ run_cmd
   checkGuessName "instCoeOneHom" "instCoeZeroHom"
   checkGuessName "invFun_eq_symm" "invFun_eq_symm"
   checkGuessName "MulEquiv.symmInvFun" "AddEquiv.symmInvFun"
+  checkGuessName "IsScalarTower" "VAddAssocClass"
+  checkGuessName "isScalarTower" "vaddAssocClass"
+  checkGuessName "eventuallyLE_one_mul_atBot" "eventuallyLE_zero_add_atBot"
 
 end guessName
 

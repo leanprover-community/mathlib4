@@ -28,6 +28,7 @@ See the docstring of `ToAdditive.to_additive` for more information
 open Lean Meta Elab Command Std
 
 namespace ToAdditive
+open ToAdditive -- currently needed to enable projection notation
 
 /-- An attribute that tells `@[to_additive]` that certain arguments of this definition are not
 involved when using `@[to_additive]`.
