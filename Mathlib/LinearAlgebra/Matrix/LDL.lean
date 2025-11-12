@@ -56,7 +56,7 @@ theorem LDL.lowerInv_eq_gramSchmidtBasis :
           (@gramSchmidtBasis 𝕜 (n → 𝕜) _ hS.transpose.normedAddCommGroup
             hS.transpose.posSemidef.innerProductSpace n _ _ _ (Pi.basisFun 𝕜 n)))ᵀ := by
   letI := hS.transpose.normedAddCommGroup
-  letI := hS.transpose.innerProductSpace
+  letI := hS.transpose.posSemidef.innerProductSpace
   ext i j
   rw [LDL.lowerInv, Basis.coePiBasisFun.toMatrix_eq_transpose, coe_gramSchmidtBasis]
   rfl
@@ -83,8 +83,7 @@ noncomputable def LDL.diag : Matrix n n 𝕜 :=
   Matrix.diagonal (LDL.diagEntries hS)
 
 theorem LDL.lowerInv_triangular {i j : n} (hij : i < j) : LDL.lowerInv hS i j = 0 := by
-  rw [←
-    @gramSchmidt_triangular 𝕜 (n → 𝕜) _ hS.transpose.normedAddCommGroup
+  rw [← @gramSchmidt_triangular 𝕜 (n → 𝕜) _ hS.transpose.normedAddCommGroup
       hS.transpose.posSemidef.innerProductSpace n _ _ _ i j hij (Pi.basisFun 𝕜 n),
     Pi.basisFun_repr, LDL.lowerInv]
 
