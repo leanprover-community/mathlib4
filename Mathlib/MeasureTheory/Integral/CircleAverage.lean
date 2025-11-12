@@ -272,6 +272,12 @@ theorem circleAverage_add (hf₁ : CircleIntegrable f₁ c R) (hf₂ : CircleInt
   congr
   apply intervalIntegral.integral_add hf₁ hf₂
 
+/-- Circle averages commute with addition. -/
+theorem circleAverage_add_fun {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → E} (hf₁ : CircleIntegrable f₁ c R)
+  (hf₂ : CircleIntegrable f₂ c R) :
+    circleAverage (fun z ↦ f₁ z + f₂ z) c R = circleAverage f₁ c R + circleAverage f₂ c R :=
+  circleAverage_add hf₁ hf₂
+
 /-- Circle averages commute with sums. -/
 theorem circleAverage_sum {ι : Type*} {s : Finset ι} {f : ι → ℂ → E}
     (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
