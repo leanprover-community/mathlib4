@@ -138,6 +138,9 @@ theorem MDifferentiableWithinAt.mdifferentiableAt (h : MDifferentiableWithinAt I
 theorem MDifferentiableOn.mono (h : MDifferentiableOn I I' f t) (st : s ⊆ t) :
     MDifferentiableOn I I' f s := fun x hx => (h x (st hx)).mono st
 
+@[simp]
+theorem mdifferentiableOn_empty : MDifferentiableOn I I' f ∅ := fun _x hx ↦ hx.elim
+
 theorem mdifferentiableOn_univ : MDifferentiableOn I I' f univ ↔ MDifferentiable I I' f := by
   simp only [MDifferentiableOn, mdifferentiableWithinAt_univ, mfld_simps]; rfl
 
