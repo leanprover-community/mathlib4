@@ -11,7 +11,7 @@ import Mathlib.Analysis.Normed.Field.Basic
 # Cauchy's bound on polynomial roots.
 
 The bound is given by `Polynomial.cauchyBound`, which for `a_n x^n + a_(n-1) x^(n - 1) + ⋯ + a_0` is
-is `1 + max_(0 ≤ i < n) a_i / a_n`.
+`1 + max_(0 ≤ i < n) a_i / a_n`.
 
 The theorem that this gives a bound to polynomial roots is `Polynomial.IsRoot.norm_lt_cauchyBound`.
 -/
