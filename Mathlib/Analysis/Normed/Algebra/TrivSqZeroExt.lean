@@ -307,8 +307,7 @@ end Normed
 section
 
 variable [NormedRing R] [NormedAddCommGroup M]
-variable [NormedAlgebra ℚ R] [NormedSpace ℚ M] [Algebra ℚ R] [Module ℚ M]
-variable [Module R M] [Module Rᵐᵒᵖ M]
+variable [NormedAlgebra ℚ R] [NormedSpace ℚ M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [CompleteSpace R] [CompleteSpace M]
 

@@ -31,8 +31,9 @@ open Complex
 over ℂ. -/
 @[simps]
 noncomputable def selfAdjoint.expUnitary (a : selfAdjoint A) : unitary A :=
-  have : NormedAlgebra ℚ A := .restrictScalars ℚ ℂ A
-  ⟨exp ((I • a.val) : A), exp_mem_unitary_of_mem_skewAdjoint (a.prop.smul_mem_skewAdjoint conj_I)⟩
+  ⟨exp ((I • a.val) : A),
+      have : NormedAlgebra ℚ A := .restrictScalars ℚ ℂ A
+      exp_mem_unitary_of_mem_skewAdjoint (a.prop.smul_mem_skewAdjoint conj_I)⟩
 
 open selfAdjoint
 
