@@ -61,8 +61,8 @@ theorem inner_eq_zero_symm {x y : E} : ⟪x, y⟫ = 0 ↔ ⟪y, x⟫ = 0 := by
 instance {ι : Sort*} (v : ι → E) : IsSymm ι fun i j => ⟪v i, v j⟫ = 0 where
   symm _ _ := inner_eq_zero_symm.1
 
-@[simp]
-theorem inner_self_im (x : E) : im ⟪x, x⟫ = 0 := by rw [← @ofReal_inj 𝕜, im_eq_conj_sub]; simp
+theorem inner_self_im (x : E) : im ⟪x, x⟫ = 0 := by
+  rw [← @ofReal_inj 𝕜, im_eq_conj_sub]; simp
 
 theorem inner_add_left (x y z : E) : ⟪x + y, z⟫ = ⟪x, z⟫ + ⟪y, z⟫ :=
   InnerProductSpace.add_left _ _ _
@@ -183,7 +183,6 @@ theorem inner_self_nonneg {x : E} : 0 ≤ re ⟪x, x⟫ :=
 theorem real_inner_self_nonneg {x : F} : 0 ≤ ⟪x, x⟫_ℝ :=
   @inner_self_nonneg ℝ F _ _ _ x
 
-@[simp]
 theorem inner_self_ofReal_re (x : E) : (re ⟪x, x⟫ : 𝕜) = ⟪x, x⟫ :=
   ((RCLike.is_real_TFAE (⟪x, x⟫ : 𝕜)).out 2 3).2 (inner_self_im (𝕜 := 𝕜) x)
 
@@ -291,7 +290,6 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 export InnerProductSpace (norm_sq_eq_re_inner)
 
-@[simp]
 theorem inner_self_eq_zero {x : E} : ⟪x, x⟫ = 0 ↔ x = 0 := by
   rw [inner_self_eq_norm_sq_to_K, sq_eq_zero_iff, ofReal_eq_zero, norm_eq_zero]
 
@@ -318,7 +316,6 @@ variable {𝕜}
 theorem re_inner_self_nonpos {x : E} : re ⟪x, x⟫ ≤ 0 ↔ x = 0 := by
   rw [← norm_sq_eq_re_inner, (sq_nonneg _).ge_iff_eq', sq_eq_zero_iff, norm_eq_zero]
 
-@[simp]
 lemma re_inner_self_pos {x : E} : 0 < re ⟪x, x⟫ ↔ x ≠ 0 := by
   simp [sq_pos_iff]
 
@@ -797,7 +794,6 @@ theorem inner_eq_one_iff_of_norm_one {x y : E} (hx : ‖x‖ = 1) (hy : ‖y‖ 
     ⟪x, y⟫ = 1 ↔ x = y := by
   convert inner_eq_norm_mul_iff (𝕜 := 𝕜) (E := E) using 2 <;> simp [hx, hy]
 
-@[simp]
 theorem inner_self_eq_one_of_norm_one {x : E} (hx : ‖x‖ = 1) : ⟪x, x⟫_𝕜 = 1 :=
   (inner_eq_one_iff_of_norm_one hx hx).mpr rfl
 

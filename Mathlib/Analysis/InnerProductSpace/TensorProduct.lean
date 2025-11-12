@@ -139,8 +139,7 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (E ⊗[𝕜] F) := .ofCo
 
 @[simp] theorem norm_tmul (x : E) (y : F) :
     ‖x ⊗ₜ[𝕜] y‖ = ‖x‖ * ‖y‖ := by
-  simp [-inner_self_eq_norm_sq_to_K, norm_eq_sqrt_re_inner (𝕜 := 𝕜),
-        Real.sqrt_mul inner_self_nonneg]
+  simp only [norm_eq_sqrt_re_inner (𝕜 := 𝕜), inner_tmul]; simp
 
 @[simp] theorem nnnorm_tmul (x : E) (y : F) :
     ‖x ⊗ₜ[𝕜] y‖₊ = ‖x‖₊ * ‖y‖₊ := by simp [← NNReal.coe_inj]
