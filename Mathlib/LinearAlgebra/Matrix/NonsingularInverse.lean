@@ -260,12 +260,12 @@ theorem inv_mul_cancel_right_of_invertible (B : Matrix m n α) [Invertible A] : 
 theorem inv_mul_cancel_left_of_invertible (B : Matrix n m α) [Invertible A] : A⁻¹ * (A * B) = B :=
   nonsing_inv_mul_cancel_left A B (isUnit_det_of_invertible A)
 
-theorem inv_mul_eq_iff_eq_mul_of_invertible (A B C : Matrix n n α) [Invertible A] :
+theorem inv_mul_eq_iff_eq_mul_of_invertible (A : Matrix n n α) [Invertible A] (B C : Matrix n m α) :
     A⁻¹ * B = C ↔ B = A * C :=
   ⟨fun h => by rw [← h, mul_inv_cancel_left_of_invertible],
    fun h => by rw [h, inv_mul_cancel_left_of_invertible]⟩
 
-theorem mul_inv_eq_iff_eq_mul_of_invertible (A B C : Matrix n n α) [Invertible A] :
+theorem mul_inv_eq_iff_eq_mul_of_invertible (A : Matrix n n α) [Invertible A] (B C : Matrix m n α) :
     B * A⁻¹ = C ↔ B = C * A :=
   ⟨fun h => by rw [← h, inv_mul_cancel_right_of_invertible],
    fun h => by rw [h, mul_inv_cancel_right_of_invertible]⟩
@@ -588,7 +588,9 @@ section Woodbury
 variable [Fintype m] [DecidableEq m]
 variable (A : Matrix n n α) (U : Matrix n m α) (C : Matrix m m α) (V : Matrix m n α)
 
-/-- The **Woodbury Identity** (`⁻¹` version). -/
+/-- The **Woodbury Identity** (`⁻¹` version).
+
+See ``add_mul_mul_inv_eq_sub'` for the binomial inverse theorem. -/
 theorem add_mul_mul_inv_eq_sub (hA : IsUnit A) (hC : IsUnit C) (hAC : IsUnit (C⁻¹ + V * A⁻¹ * U)) :
     (A + U * C * V)⁻¹ = A⁻¹ - A⁻¹ * U * (C⁻¹ + V * A⁻¹ * U)⁻¹ * V * A⁻¹ := by
   obtain ⟨_⟩ := hA.nonempty_invertible
@@ -598,6 +600,16 @@ theorem add_mul_mul_inv_eq_sub (hA : IsUnit A) (hC : IsUnit C) (hAC : IsUnit (C�
   letI := invertibleAddMulMul A U C V
   simp only [← invOf_eq_nonsing_inv]
   apply invOf_add_mul_mul
+
+/-- The **binomial inverse theorem** (variant of the Woodbury identity). -/
+theorem add_mul_mul_inv_eq_sub' (hA : IsUnit A) (h : IsUnit (C + C * V * A⁻¹ * U * C)) :
+    (A + U * C * V)⁻¹ = A⁻¹ - A⁻¹ * U * C * (C + C * V * A⁻¹ * U * C)⁻¹ * C * V * A⁻¹ := by
+  obtain ⟨_⟩ := hA.nonempty_invertible
+  obtain ⟨ih⟩ := h.nonempty_invertible
+  simp only [← invOf_eq_nonsing_inv] at ih
+  letI := invertibleAddMulMul' A U C V
+  simp only [← invOf_eq_nonsing_inv]
+  apply invOf_add_mul_mul'
 
 end Woodbury
 
