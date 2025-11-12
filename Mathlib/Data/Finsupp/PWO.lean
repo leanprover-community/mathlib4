@@ -27,7 +27,7 @@ Dickson, order, partial well order
 well-quasi-ordered.
 This version uses finsupps on a finite type as it is intended for use with `MVPowerSeries`.
 -/
-instance Finsupp.wellQuasiOrderedLE {α σ : Type*} [Zero α] [Preorder α] [h : WellQuasiOrderedLE α]
+instance Finsupp.wellQuasiOrderedLE {α σ : Type*} [Zero α] [Preorder α] [WellQuasiOrderedLE α]
     [Finite σ] : WellQuasiOrderedLE (σ →₀ α) :=
   orderIsoFunOnFinite.wellQuasiOrderedLE_iff.2 inferInstance
 
