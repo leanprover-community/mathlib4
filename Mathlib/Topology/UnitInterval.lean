@@ -405,6 +405,11 @@ theorem eq_convexCombo {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y �
   · field_simp
     ring_nf
 
+theorem continuous_convexCombo {a b : ℝ} :
+    Continuous (fun (p : Icc a b × Icc a b × unitInterval) => convexCombo p.1 p.2.1 p.2.2) := by
+  apply Continuous.subtype_mk
+  fun_prop
+
 end Set.Icc
 
 open scoped unitInterval
