@@ -909,21 +909,29 @@ where
     else
       throwError "{model} is a normed space, but {top} is not defeq to it"
 
-def findModelForFunprop (field model top : Expr) : TermElabM Expr := do
+def findModelForFunprop (field model top : Expr) : TermElabM <| Option Expr := do
   trace[Elab.DiffGeo.FunPropM] "Searching for some `ModelWithCorners {field} {model} {top}`"
-  let some (u, _) := ← go field model top
-    | throwError "Could not find a `ModelWithCorners {field} {model} {top}`"
-  return u
+  match ← go field model top with
+  | some (u, _) => return u
+  | _ => return none--throwError "Could not find a `ModelWithCorners {field} {model} {top}`"
+  --return u
 where
   go (field model top : Expr) : TermElabM <| Option (Expr × NormedSpaceInfo) := do
     -- At first, try finding a model on the space itself.
     if let some (m, r) ← findModelForFunpropInner field model top then return some (m, r)
     throwError ""
 
-def findModelForFunprop22 (_g : MVarId) : MetaM <| Option MVarId := do
-  -- check that the goal has the form `ModelWithCorners k E H
-  -- if so, extract k E and H and run findModelForfunProp22 on it.
-  throwError "TODO: the find_model tactic is currently a stub!"
+def findModelForFunpropScifi (_field _model _top : Expr) : MetaM <| Option Expr := do
+  throwError "TODO: need to lower my find_model code to MetaM"
+  -- the individual strategies seem fine, but `tryStrategy` does not work as-is in MetaM
+
+def findModelForFunprop22 (g : MVarId) : MetaM <| Option MVarId := do
+  match_expr (← withReducible g.getType') with
+  | ModelWithCorners k _ E _ _ H _ =>
+    match ← findModelForFunpropScifi k E H with
+    | some _e => throwError "TODO: need to turn an expression into an mvarId"
+    | none => throwError "Could not find a `ModelWithCorners {k} {E} {H}`"
+  | _ => throwError "Goal is not of the form `ModelWithCorners 𝕜 E H"
 
 elab (name := findModelTac) "find_model" : tactic => withMainContext do
   liftMetaTactic1 findModelForFunprop22
@@ -937,6 +945,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} {E :
 
 example : True := by
   have : ModelWithCorners 𝕜 E H := by
+    sorry -- find_model
+  have : True := by
     sorry -- find_model
   trivial
 
