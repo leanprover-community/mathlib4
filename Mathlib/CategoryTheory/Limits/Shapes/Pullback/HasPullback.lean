@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackCone
 `HasPullback f g` and `pullback f g` provides API for `HasLimit` and `limit` in the case of
 pullbacks.
 
-# Main definitions
+## Main definitions
 
 * `HasPullback f g`: this is an abbreviation for `HasLimit (cospan f g)`, and is a typeclass used to
   express the fact that a given pair of morphisms has a pullback.
@@ -45,7 +45,7 @@ pullback.snd f g                       f
       Z ---pushout.inr f g---> pushout f g
 ```
 
-# Main results & API
+## Main results & API
 * The following API is available for using the universal property of `pullback f g`:
   `lift`, `lift_fst`, `lift_snd`, `lift'`, `hom_ext` (for uniqueness).
 
