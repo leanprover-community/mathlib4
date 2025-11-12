@@ -40,7 +40,6 @@ def comul : T[M] →ₐ[R] T[M] ⊗[R] T[M] := lift R (comul' R)
 /-- Antipode in `TensorAlgebra R M` as an algebra map. -/
 def antipode : T[M] →ₗ[R] T[M] := (MulOpposite.opLinearEquiv R).symm.comp
   (lift R ((MulOpposite.opLinearEquiv R).comp (-(ι R)))).toLinearMap
-def antipode : T[M] →ₗ[R] T[M] := (MulOpposite.opLinearEquiv R).symm.comp (lift R ((MulOpposite.opLinearEquiv R).comp (-(ι R)))).toLinearMap
 
 @[simp]
 lemma comul_apply' (x : M) : comul' R x = ι R x ⊗ₜ[R] ↑1 + ↑1 ⊗ₜ[R] ι R x := by
