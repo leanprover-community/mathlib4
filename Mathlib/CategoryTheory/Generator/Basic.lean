@@ -7,6 +7,8 @@ import Mathlib.CategoryTheory.Limits.EssentiallySmall
 import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
 import Mathlib.CategoryTheory.Subobject.Lattice
 import Mathlib.CategoryTheory.ObjectProperty.Small
+import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
+import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 
 /-!
@@ -55,7 +57,7 @@ See the files `CategoryTheory.Generator.Presheaf` and `CategoryTheory.Generator.
 -/
 
 
-universe w v₁ v₂ u₁ u₂
+universe w' w v₁ v₂ u₁ u₂
 
 open CategoryTheory.Limits Opposite
 
@@ -307,6 +309,20 @@ lemma IsCoseparating.mk_of_exists_mono
   rw [← cancel_mono j]
   exact Fan.IsLimit.hom_ext hc _ _
     (fun i ↦ by simpa using h _ (hs i) (j ≫ c.proj i))
+
+lemma IsSeparating.mk_of_exists_colimitsOfShape
+    (hP : ∀ (X : C), ∃ (J : Type w) (_ : Category.{w'} J), P.colimitsOfShape J X) :
+    P.IsSeparating := by
+  intro X Y f g h
+  obtain ⟨J, _, ⟨p⟩⟩ := hP X
+  exact p.isColimit.hom_ext (fun j ↦ h _ (p.prop_diag_obj _) _)
+
+lemma IsCoseparating.mk_of_exists_limitsOfShape
+    (hP : ∀ (X : C), ∃ (J : Type w) (_ : Category.{w'} J), P.limitsOfShape J X) :
+    P.IsCoseparating := by
+  intro X Y f g h
+  obtain ⟨J, _, ⟨p⟩⟩ := hP Y
+  exact p.isLimit.hom_ext (fun j ↦ h _ (p.prop_diag_obj _) _)
 
 variable (P)
 

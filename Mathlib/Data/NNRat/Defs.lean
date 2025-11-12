@@ -50,9 +50,6 @@ un``@[simp]``ed):
 
 open Function
 
-instance Rat.instZeroLEOneClass : ZeroLEOneClass ℚ where
-  zero_le_one := rfl
-
 instance Rat.instPosMulMono : PosMulMono ℚ where
   mul_le_mul_of_nonneg_left r hr p q hpq := by
     simpa [mul_sub, sub_nonneg] using Rat.mul_nonneg hr (sub_nonneg.2 hpq)
