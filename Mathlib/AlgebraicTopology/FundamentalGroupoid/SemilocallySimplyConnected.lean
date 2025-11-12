@@ -116,6 +116,30 @@ noncomputable def Path.composeSegments {X : Type*} [TopologicalSpace X] {x y : X
         (by rw [part.h_start, γ.source])
         (by rw [part.h_end, γ.target])
 
+-- Continuity theorems for convexCombo
+
+namespace Set.Icc
+
+theorem continuous_convexCombo_param {a b : ℝ} (x y : Icc a b) :
+    Continuous (fun t : unitInterval => convexCombo x y t) := by
+  refine Continuous.subtype_mk ?_ _
+  continuity
+
+theorem continuous_convexCombo {a b : ℝ} :
+    Continuous (fun (p : Icc a b × Icc a b × unitInterval) => convexCombo p.1 p.2.1 p.2.2) := by
+  refine Continuous.subtype_mk ?_ _
+  apply Continuous.add
+  · apply Continuous.mul
+    · apply Continuous.sub
+      · exact continuous_const
+      · exact continuous_subtype_val.comp (continuous_snd.comp continuous_snd)
+    · exact continuous_subtype_val.comp continuous_fst
+  · apply Continuous.mul
+    · exact continuous_subtype_val.comp (continuous_snd.comp continuous_snd)
+    · exact continuous_subtype_val.comp (continuous_fst.comp continuous_snd)
+
+end Set.Icc
+
 /-- Splitting a sub-path in halves rejoining them gives the original path. -/
 theorem Path.subpathOn_trans_aux₁ {X : Type*} [TopologicalSpace X] {x y : X} (γ : Path x y)
     (a b : unitInterval) (hab : a ≤ b) :
@@ -134,7 +158,7 @@ theorem Path.subpathOn_trans_aux₁ {X : Type*} [TopologicalSpace X] {x y : X} (
         max_eq_right (by linarith : 0 ≤ 2 * (t : ℝ) - 1)]; ring
 
 /--
-Splitting a sub-path into pieces and rejoining them is independent, up to hopotopy,
+Splitting a sub-path into pieces and rejoining them is independent, up to homotopy,
 of the splitting point.
 -/
 theorem Path.subpathOn_trans_aux₂ {X : Type*} [TopologicalSpace X] {x y : X} (γ : Path x y)
@@ -144,7 +168,33 @@ theorem Path.subpathOn_trans_aux₂ {X : Type*} [TopologicalSpace X] {x y : X} (
         (γ.subpathOn (Set.Icc.convexCombo a b s) b (Set.Icc.convexCombo_le hab _)))
       ((γ.subpathOn a (Set.Icc.convexCombo a b t) (Set.Icc.le_convexCombo hab _)).trans
         (γ.subpathOn (Set.Icc.convexCombo a b t) b (Set.Icc.convexCombo_le hab _))) := by
-  sorry
+  open Set.Icc in
+  -- Construct explicit homotopy: at parameter u, split at convexCombo(a, b, convexCombo(s, t, u))
+  refine ⟨{
+    toFun := fun ⟨u, v⟩ =>
+      ((γ.subpathOn a (convexCombo a b (convexCombo s t u)) (le_convexCombo hab _)).trans
+        (γ.subpathOn (convexCombo a b (convexCombo s t u)) b (convexCombo_le hab _))) v
+    continuous_toFun := by
+      sorry
+    map_zero_left := by
+      intro v
+      simp [Path.trans_apply]
+      -- Need: convexCombo s t 0 = s, but dependent types make direct rewriting hard
+      sorry
+    map_one_left := by
+      intro v
+      simp
+      -- Need: convexCombo s t 1 = t
+      sorry
+    prop' := by
+      -- Need: endpoints stay fixed at γ(a) and γ(b)
+      intro u x hx
+      simp at hx
+      rcases hx with rfl | rfl
+      · simp [Path.trans]
+      · simp [Path.trans]
+        sorry
+  }⟩
 
 /--
 A subpath from a to b composed with a subpath from b to c is homotopic to
