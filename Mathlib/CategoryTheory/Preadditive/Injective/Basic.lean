@@ -192,7 +192,7 @@ section EnoughInjectives
 
 variable [EnoughInjectives C]
 
-/-- If `C` has enough injectives, we may choose a injective presentation of `X : C`
+/-- If `C` has enough injectives, we may choose an injective presentation of `X : C`
 which is given by a zero object when `X` is a zero object. -/
 lemma exists_presentation (X : C) : ∃ (p : InjectivePresentation X), IsZero X → IsZero p.J := by
   by_cases h : IsZero X
