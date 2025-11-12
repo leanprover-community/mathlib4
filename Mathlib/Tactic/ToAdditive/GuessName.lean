@@ -73,7 +73,7 @@ partial def String.decapitalizeSeq (s : String) (i : String.Pos.Raw := 0) : Stri
 /-- If `r` starts with an upper-case letter, return `s`, otherwise return `s` with the
 initial sequence of upper-case letters lower-cased. -/
 def decapitalizeLike (r : String) (s : String) :=
-  if String.Pos.Raw.get r {} |>.isUpper then s else s.decapitalizeSeq
+  if String.Pos.Raw.get r 0 |>.isUpper then s else s.decapitalizeSeq
 
 /-- Decapitalize the first element of a list if `s` starts with a lower-case letter.
 Note that we need to decapitalize multiple characters in some cases,
@@ -220,7 +220,7 @@ def fixAbbreviationAux : List String → List String → String
     the abbreviation dictionary. This is necessary to correctly translate something like
     `fixAbbreviation ["eventually", "LE", "_", "one"]` to `"eventuallyLE_one"`, since otherwise the
     substring `LE_zero` gets replaced by `Nonpos`. -/
-    if pre == "_" && (t.get 0).isUpper then
+    if pre == "_" && (String.Pos.Raw.get t 0).isUpper then
       s[0]! ++ fixAbbreviationAux (s.drop 1 ++ l) []
     else match abbreviationDict.get? t.decapitalizeSeq with
     | some post => decapitalizeLike t post ++ fixAbbreviationAux l []
