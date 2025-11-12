@@ -159,9 +159,8 @@ theorem Polynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] :
       have eq' (n : ℕ) : (algebraMap R (Localization.AtPrime q)) (Polynomial.coeff x n) =
         (algebraMap R (Localization.AtPrime q)) (Polynomial.coeff y n) := by
         simp only [algebraMap_def, coe_mapRingHom, S] at eq
-        have : coeff (map (algebraMap R (Localization.AtPrime q)) x) n =
-          coeff (map (algebraMap R (Localization.AtPrime q)) y) n := by rw [eq]
-        simpa
+        rw [← Polynomial.coeff_map, ← Polynomial.coeff_map, eq]
+        --simp `failed to synthesize FaithfulSMul R (Localization.AtPrime q)`
       let g : ℕ → q.primeCompl := fun n ↦ Classical.choose (IsLocalization.exists_of_eq (eq' n))
       have g_spec (n : ℕ) := Classical.choose_spec
         (IsLocalization.exists_of_eq (M := q.primeCompl) (eq' n))
