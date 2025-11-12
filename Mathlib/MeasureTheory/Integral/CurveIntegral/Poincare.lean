@@ -3,15 +3,13 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Symmetric
-import Mathlib.MeasureTheory.Integral.DivergenceTheorem
-import Mathlib.MeasureTheory.Integral.CurveIntegral.Basic
-import Mathlib.Topology.Homotopy.Affine
-import Mathlib.Topology.Homotopy.Path
-import Mathlib.Analysis.Calculus.Deriv.Shift
 import Mathlib.Analysis.Calculus.Deriv.Prod
-import Mathlib.Analysis.Calculus.TangentCone.Prod
 import Mathlib.Analysis.Calculus.DiffContOnCl
+import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+import Mathlib.Analysis.Calculus.TangentCone.Prod
+import Mathlib.MeasureTheory.Integral.CurveIntegral.Basic
+import Mathlib.MeasureTheory.Integral.DivergenceTheorem
+import Mathlib.Topology.Homotopy.Affine
 
 /-!
 # Poincaré lemma for 1-forms
@@ -37,7 +35,6 @@ open AffineMap Filter Function MeasureTheory Set
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 
 namespace ContinuousMap.Homotopy
 
@@ -376,5 +373,23 @@ theorem exists_forall_hasFDerivAt_of_fderiv_symmetric (hs : Convex ℝ s) (hso :
     rw [fderivWithin_eq_fderiv, hdω a ha]
     exacts [hso.uniqueDiffOn a ha, hω.differentiableAt (hso.mem_nhds ha)]
   exact ⟨f, fun a ha ↦ (hf a ha).hasFDerivAt (hso.mem_nhds ha)⟩
+
+end Convex
+
+namespace Convex
+
+variable [CompleteSpace E] {f : 𝕜 → E} {s : Set 𝕜}
+
+/-- If `f : 𝕜 → E`, `𝕜 = ℝ` or `𝕜 = ℂ`, is differentiable on a convex set `s`,
+then it admits a primitive. -/
+theorem exists_forall_hasDerivWithinAt (hs : Convex ℝ s) (hf : DifferentiableOn 𝕜 f s) :
+    ∃ g : 𝕜 → E, ∀ a ∈ s, HasDerivWithinAt g (f a) s a := by
+  letI : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
+  apply hs.exists_forall_hasFDerivWithinAt_of_hasFDerivWithinAt_symmetric
+  · intro a ha
+    exact (ContinuousLinearMap.smulRightL 𝕜 𝕜 E 1).hasFDerivAt
+      |>.comp_hasDerivWithinAt a (hf a ha).hasDerivWithinAt |>.restrictScalars ℝ
+  · rintro a ha x - y -
+    simpa using smul_comm ..
 
 end Convex
