@@ -100,7 +100,7 @@ theorem inv_mul_eq_one {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) : I⁻¹ * I 
   (mul_comm _ _).trans (h.mul_inv_eq_one hI)
 
 protected theorem isUnit {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) : IsUnit I :=
-  isUnit_of_mul_eq_one _ _ (h.mul_inv_eq_one hI)
+  .of_mul_eq_one _ (h.mul_inv_eq_one hI)
 
 theorem isNoetherianRing : IsNoetherianRing A := by
   refine isNoetherianRing_iff.mpr ⟨fun I : Ideal A => ?_⟩
