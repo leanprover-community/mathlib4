@@ -11,6 +11,10 @@ import Mathlib.Tactic.ToAdditive.Frontend
 The implementation of the `to_dual` attribute is in `Tactic.ToAdditive.Frontend`.
 See the docstring of `ToDual.to_dual` for more information.
 
+Known limitations:
+- Reordering arguments of arguments is not yet supported.
+  This usually comes up in constructors of structures. e.g. `Pow.mk` or `OrderTop.mk`
+
 -/
 
 open Lean Meta Elab Command Std ToAdditive

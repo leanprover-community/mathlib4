@@ -13,9 +13,13 @@ import Mathlib.Tactic.ToAdditive.ToDual
 attribute [to_dual self (reorder := 3 4)] LE.le LT.lt GE.ge GT.gt
 
 /-
-Because `DecidableLT` is defined as `∀ a b : α, Decidable (a < b)`, its dual is
-`∀ a b : α, Decidable (b < a)`. So to translate `DecidableLT`, we define `DecidableLT'` to be
-its dual. `DecidableLT'` is not definitionally the same as `DecidableLT`, but for type class search
+`DecidableLT` is defined as `∀ a b : α, Decidable (a < b)`, which is dual to
+`∀ a b : α, Decidable (b < a)`. Translations given by `to_dual` need to satisfy the
+property that if `e₁` is defEq to `e₂`, then the dual of `e₁` needs to be defEq to
+the dual of `e₂`. Hence, the translation of `DecidableLT` needs to be defEq to
+`∀ a b : α, Decidable (b < a)`. So, we define `DecidableLT'` to be this.
+
+`DecidableLT'` is not definitionally the same as `DecidableLT`, but for type class search
 the two are identical. So although this is a bit annoying, it is not a big problem.
 -/
 attribute [to_dual DecidableLT' /-- `DecidableLT'` is equivalent to `DecidableLT`.
