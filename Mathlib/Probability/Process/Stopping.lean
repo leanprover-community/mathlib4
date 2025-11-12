@@ -734,6 +734,9 @@ variable {u : ι → Ω → β} {τ σ : Ω → WithTop ι}
 theorem stoppedProcess_eq_stoppedValue :
     stoppedProcess u τ = fun i : ι => stoppedValue u fun ω => min i (τ ω) := rfl
 
+theorem stoppedProcess_eq_stoppedValue_apply (i : ι) (ω : Ω) :
+    stoppedProcess u τ i ω = stoppedValue u (fun ω ↦ min i (τ ω)) ω := rfl
+
 theorem stoppedValue_stoppedProcess :
     stoppedValue (stoppedProcess u τ) σ =
       fun ω ↦ if σ ω ≠ ⊤ then stoppedValue u (fun ω ↦ min (σ ω) (τ ω)) ω
@@ -803,9 +806,6 @@ theorem stoppedProcess_stoppedProcess_of_le_right (h : σ ≤ τ) :
 theorem stoppedProcess_stoppedProcess_of_le_left (h : τ ≤ σ) :
     stoppedProcess (stoppedProcess u τ) σ = stoppedProcess u τ := by
   rw [stoppedProcess_stoppedProcess, inf_of_le_right h]
-
-theorem stoppedProcess_eq_stoppedValue_apply (i : ι) (ω : Ω) :
-    stoppedProcess u τ i ω = stoppedValue u (fun ω ↦ min i (τ ω)) ω := rfl
 
 section ProgMeasurable
 
