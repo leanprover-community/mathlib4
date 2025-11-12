@@ -510,7 +510,7 @@ We use this variant because the latter is often a different field with an auto-g
 private def dropPrefixIfNotNumber? (s : String) (pre : String) : Option Substring := do
   let ret ← s.dropPrefix? pre
   -- flag is true when the remaining part is nonempty and starts with a digit.
-  let flag := ret.toString.data.head?.elim false Char.isDigit
+  let flag := ret.toString.toList.head?.elim false Char.isDigit
   if flag then none else some ret
 
 /-- A variant of `String.isPrefixOf` that does not consider `toFoo` to be a prefix to `toFoo_1`. -/
@@ -523,7 +523,7 @@ private def splitOnNotNumber (s delim : String) : List String :=
       | [] => []
       | (x :: xs) =>
         -- flag is true when this segment is nonempty and starts with a digit.
-        let flag := x.data.head?.elim false Char.isDigit
+        let flag := x.toList.head?.elim false Char.isDigit
         if flag then
           process xs (tail ++ delim ++ x)
         else
@@ -901,18 +901,6 @@ structure Config where
 
 /-- Function elaborating `Config` -/
 declare_command_config_elab elabSimpsConfig Config
-
-/-- A common configuration for `@[simps]`: generate equalities between functions instead equalities
-between fully applied Expressions. Replaced by `@[simps -fullyApplied]`. -/
-@[deprecated "use `-fullyApplied` instead" (since := "2025-03-10")]
-def Config.asFn : Simps.Config where
-  fullyApplied := false
-
-/-- A common configuration for `@[simps]`: don't tag the generated lemmas with `@[simp]`.
-Replaced by `@[simps -isSimp]`. -/
-@[deprecated "use `-isSimp` instead" (since := "2025-03-10")]
-def Config.lemmasOnly : Config where
-  isSimp := false
 
 /-- `instantiateLambdasOrApps es e` instantiates lambdas in `e` by expressions from `es`.
 If the length of `es` is larger than the number of lambdas in `e`,

@@ -438,7 +438,7 @@ def isComplEquivProj : { q // IsCompl p q } ≃ { f : E →ₗ[R] p // ∀ x : p
   toFun q := ⟨linearProjOfIsCompl p q q.2, linearProjOfIsCompl_apply_left q.2⟩
   invFun f := ⟨ker (f : E →ₗ[R] p), isCompl_of_proj f.2⟩
   left_inv := fun ⟨q, hq⟩ => by simp only [linearProjOfIsCompl_ker]
-  right_inv := fun ⟨f, hf⟩ => Subtype.eq <| f.linearProjOfIsCompl_of_proj hf
+  right_inv := fun ⟨f, hf⟩ => Subtype.ext <| f.linearProjOfIsCompl_of_proj hf
 
 @[simp]
 theorem coe_isComplEquivProj_apply (q : { q // IsCompl p q }) :

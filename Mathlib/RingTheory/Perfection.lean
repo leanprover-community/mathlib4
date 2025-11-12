@@ -43,7 +43,7 @@ def Ring.perfectionSubsemiring (R : Type u₁) [CommSemiring R] (p : ℕ) [hp : 
     [CharP R p] : Subsemiring (ℕ → R) :=
   { Monoid.perfection R p with
     zero_mem' := fun _ ↦ zero_pow hp.1.ne_zero
-    add_mem' := fun hf hg n => (frobenius_add R p _ _).trans <| congr_arg₂ _ (hf n) (hg n) }
+    add_mem' := fun hf hg n => (map_add (frobenius R p) _ _).trans <| congr_arg₂ _ (hf n) (hg n) }
 
 /-- The perfection of a ring `R` with characteristic `p`, as a subring,
 defined to be the projective limit of `R` using the Frobenius maps `R → R`
@@ -89,7 +89,7 @@ variable {R p}
 
 @[ext]
 theorem ext {f g : Ring.Perfection R p} (h : ∀ n, coeff R p n f = coeff R p n g) : f = g :=
-  Subtype.eq <| funext h
+  Subtype.ext <| funext h
 
 variable (R p)
 
@@ -189,10 +189,10 @@ variable {R} {S : Type u₂} [CommSemiring S] [CharP S p]
 @[simps]
 def map (φ : R →+* S) : Ring.Perfection R p →+* Ring.Perfection S p where
   toFun f := ⟨fun n => φ (coeff R p n f), fun n => by rw [← φ.map_pow, coeff_pow_p']⟩
-  map_one' := Subtype.eq <| funext fun _ => φ.map_one
-  map_mul' _ _ := Subtype.eq <| funext fun _ => φ.map_mul _ _
-  map_zero' := Subtype.eq <| funext fun _ => φ.map_zero
-  map_add' _ _ := Subtype.eq <| funext fun _ => φ.map_add _ _
+  map_one' := Subtype.ext <| funext fun _ => φ.map_one
+  map_mul' _ _ := Subtype.ext <| funext fun _ => φ.map_mul _ _
+  map_zero' := Subtype.ext <| funext fun _ => φ.map_zero
+  map_add' _ _ := Subtype.ext <| funext fun _ => φ.map_add _ _
 
 theorem coeff_map (φ : R →+* S) (f : Ring.Perfection R p) (n : ℕ) :
     coeff S p n (map p φ f) = φ (coeff R p n f) := rfl
@@ -215,7 +215,6 @@ variable {R : Type u₁} [CommSemiring R] [CharP R p]
 variable {P : Type u₃} [CommSemiring P] [CharP P p] [PerfectRing P p]
 
 /-- Create a `PerfectionMap` from an isomorphism to the perfection. -/
-@[simps]
 theorem mk' {f : P →+* R} (g : P ≃+* Ring.Perfection R p) (hfg : Perfection.lift p P R f = g) :
     PerfectionMap p f :=
   { injective := fun x y hxy =>

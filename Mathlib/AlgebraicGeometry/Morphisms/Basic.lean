@@ -161,7 +161,7 @@ theorem iff_of_openCover (𝒰 : Y.OpenCover) :
   ⟨fun H _ ↦ of_isPullback (.of_hasPullback _ _) H, of_openCover _⟩
 
 lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : ι → Y.Opens)
-    (H : Set.range f.base ⊆ (⨆ i, U i : Y.Opens)) (hf : ∀ i, P (f ∣_ U i)) : P f := by
+    (H : Set.range f ⊆ (⨆ i, U i : Y.Opens)) (hf : ∀ i, P (f ∣_ U i)) : P f := by
   let g : X ⟶ (⨆ i, U i : Y.Opens) := IsOpenImmersion.lift (Scheme.Opens.ι _) f (by simpa using H)
   rw [← IsOpenImmersion.lift_fac (⨆ i, U i).ι f (by simpa using H)]
   apply MorphismProperty.RespectsRight.postcomp (Q := @IsOpenImmersion) _ inferInstance
@@ -179,6 +179,18 @@ lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : 
   dsimp
   rw [Scheme.Hom.image_iSup, Scheme.Hom.image_top_eq_opensRange, Scheme.Opens.opensRange_ι]
   simp [Scheme.Hom.image_preimage_eq_opensRange_inf, le_iSup U]
+
+lemma of_forall_source_exists_preimage
+    [P.RespectsRight IsOpenImmersion] [P.HasOfPostcompProperty IsOpenImmersion]
+    (f : X ⟶ Y) (hX : ∀ x, ∃ (U : Y.Opens), f x ∈ U ∧ P ((f ⁻¹ᵁ U).ι ≫ f)) :
+    P f := by
+  choose U h₁ h₂ using hX
+  apply IsZariskiLocalAtTarget.of_range_subset_iSup U
+  · rintro y ⟨x, rfl⟩
+    simp only [Opens.coe_iSup, Set.mem_iUnion, SetLike.mem_coe]
+    exact ⟨x, h₁ x⟩
+  · intro x
+    exact P.of_postcomp (f ∣_ U x) (U x).ι (inferInstanceAs <| IsOpenImmersion _) (by simp [h₂])
 
 end IsZariskiLocalAtTarget
 

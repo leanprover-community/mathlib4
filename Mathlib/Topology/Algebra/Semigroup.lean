@@ -82,7 +82,7 @@ theorem exists_idempotent_in_compact_subsemigroup {M} [Semigroup M] [Topological
   let M' := { m // m ∈ s }
   letI : Semigroup M' :=
     { mul := fun p q => ⟨p.1 * q.1, s_add _ p.2 _ q.2⟩
-      mul_assoc := fun p q r => Subtype.eq (mul_assoc _ _ _) }
+      mul_assoc := fun p q r => Subtype.ext (mul_assoc _ _ _) }
   haveI : CompactSpace M' := isCompact_iff_compactSpace.mp s_compact
   haveI : Nonempty M' := nonempty_subtype.mpr snemp
   have : ∀ p : M', Continuous (· * p) := fun p =>

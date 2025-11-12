@@ -23,12 +23,12 @@ namespace Int
 /-- `div2 n = n/2` -/
 def div2 : ℤ → ℤ
   | (n : ℕ) => n.div2
-  | -[n +1] => negSucc n.div2
+  | -[n+1] => negSucc n.div2
 
 /-- `bodd n` returns `true` if `n` is odd -/
 def bodd : ℤ → Bool
   | (n : ℕ) => n.bodd
-  | -[n +1] => not (n.bodd)
+  | -[n+1] => not (n.bodd)
 
 /-- `bit b` appends the digit `b` to the binary representation of
   its integer input. -/
@@ -37,50 +37,50 @@ def bit (b : Bool) : ℤ → ℤ :=
 
 /-- `Int.natBitwise` is an auxiliary definition for `Int.bitwise`. -/
 def natBitwise (f : Bool → Bool → Bool) (m n : ℕ) : ℤ :=
-  cond (f false false) -[ Nat.bitwise (fun x y => not (f x y)) m n +1] (Nat.bitwise f m n)
+  cond (f false false) -[Nat.bitwise (fun x y => not (f x y)) m n+1] (Nat.bitwise f m n)
 
 /-- `Int.bitwise` applies the function `f` to pairs of bits in the same position in
   the binary representations of its inputs. -/
 def bitwise (f : Bool → Bool → Bool) : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => natBitwise f m n
-  | (m : ℕ), -[n +1] => natBitwise (fun x y => f x (not y)) m n
-  | -[m +1], (n : ℕ) => natBitwise (fun x y => f (not x) y) m n
-  | -[m +1], -[n +1] => natBitwise (fun x y => f (not x) (not y)) m n
+  | (m : ℕ), -[n+1] => natBitwise (fun x y => f x (not y)) m n
+  | -[m+1], (n : ℕ) => natBitwise (fun x y => f (not x) y) m n
+  | -[m+1], -[n+1] => natBitwise (fun x y => f (not x) (not y)) m n
 
 /-- `lnot` flips all the bits in the binary representation of its input -/
 def lnot : ℤ → ℤ
-  | (m : ℕ) => -[m +1]
-  | -[m +1] => m
+  | (m : ℕ) => -[m+1]
+  | -[m+1] => m
 
 /-- `lor` takes two integers and returns their bitwise `or` -/
 def lor : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => m ||| n
-  | (m : ℕ), -[n +1] => -[Nat.ldiff n m +1]
-  | -[m +1], (n : ℕ) => -[Nat.ldiff m n +1]
-  | -[m +1], -[n +1] => -[m &&& n +1]
+  | (m : ℕ), -[n+1] => -[Nat.ldiff n m+1]
+  | -[m+1], (n : ℕ) => -[Nat.ldiff m n+1]
+  | -[m+1], -[n+1] => -[m &&& n+1]
 
 /-- `land` takes two integers and returns their bitwise `and` -/
 def land : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => m &&& n
-  | (m : ℕ), -[n +1] => Nat.ldiff m n
-  | -[m +1], (n : ℕ) => Nat.ldiff n m
-  | -[m +1], -[n +1] => -[m ||| n +1]
+  | (m : ℕ), -[n+1] => Nat.ldiff m n
+  | -[m+1], (n : ℕ) => Nat.ldiff n m
+  | -[m+1], -[n+1] => -[m ||| n+1]
 
 /-- `ldiff a b` performs bitwise set difference. For each corresponding
   pair of bits taken as Booleans, say `aᵢ` and `bᵢ`, it applies the
   Boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
 def ldiff : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => Nat.ldiff m n
-  | (m : ℕ), -[n +1] => m &&& n
-  | -[m +1], (n : ℕ) => -[m ||| n +1]
-  | -[m +1], -[n +1] => Nat.ldiff n m
+  | (m : ℕ), -[n+1] => m &&& n
+  | -[m+1], (n : ℕ) => -[m ||| n+1]
+  | -[m+1], -[n+1] => Nat.ldiff n m
 
 /-- `xor` computes the bitwise `xor` of two natural numbers -/
 protected def xor : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => (m ^^^ n)
-  | (m : ℕ), -[n +1] => -[(m ^^^ n) +1]
-  | -[m +1], (n : ℕ) => -[(m ^^^ n) +1]
-  | -[m +1], -[n +1] => (m ^^^ n)
+  | (m : ℕ), -[n+1] => -[(m ^^^ n)+1]
+  | -[m+1], (n : ℕ) => -[(m ^^^ n)+1]
+  | -[m+1], -[n+1] => (m ^^^ n)
 
 /-- `m <<< n` produces an integer whose binary representation
   is obtained by left-shifting the binary representation of `m` by `n` places -/
@@ -133,14 +133,14 @@ theorem bodd_neg (n : ℤ) : bodd (-n) = bodd n := by
 theorem bodd_add (m n : ℤ) : bodd (m + n) = xor (bodd m) (bodd n) := by
   rcases m with m | m <;>
   rcases n with n | n <;>
-  simp only [ofNat_eq_coe, ofNat_add_negSucc, negSucc_add_ofNat,
+  simp only [ofNat_eq_natCast, ofNat_add_negSucc, negSucc_add_ofNat,
              negSucc_add_negSucc, bodd_subNatNat, ← Nat.cast_add] <;>
   simp [bodd, Bool.xor_comm]
 
 @[simp]
 theorem bodd_mul (m n : ℤ) : bodd (m * n) = (bodd m && bodd n) := by
   rcases m with m | m <;> rcases n with n | n <;>
-  simp only [ofNat_eq_coe, ofNat_mul_negSucc, negSucc_mul_ofNat, ofNat_mul_ofNat,
+  simp only [ofNat_eq_natCast, ofNat_mul_negSucc, negSucc_mul_ofNat, ofNat_mul_ofNat,
              negSucc_mul_negSucc] <;>
   simp only [negSucc_eq, ← Int.natCast_succ, bodd_neg, bodd_coe, Nat.bodd_mul]
 
@@ -270,7 +270,7 @@ theorem bitwise_xor : bitwise xor = Int.xor := by
 theorem bitwise_bit (f : Bool → Bool → Bool) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   rcases m with m | m <;> rcases n with n | n <;>
-  simp [bitwise, ofNat_eq_coe, bit_coe_nat, natBitwise, Bool.not_false,
+  simp [bitwise, ofNat_eq_natCast, bit_coe_nat, natBitwise, Bool.not_false,
     bit_negSucc]
   · by_cases h : f false false <;> simp +decide [h]
   · by_cases h : f false true <;> simp +decide [h]
@@ -341,9 +341,6 @@ theorem shiftLeft_natCast (m n : ℕ) : (m : ℤ) <<< (n : ℤ) = ↑(m <<< n) :
 
 @[simp]
 theorem shiftRight_natCast (m n : ℕ) : (m : ℤ) >>> (n : ℤ) = m >>> n := by cases n <;> rfl
-
-@[deprecated (since := "2025-03-10")] alias shiftLeft_coe_nat := shiftLeft_natCast
-@[deprecated (since := "2025-03-10")] alias shiftRight_coe_nat := shiftRight_natCast
 
 @[simp]
 theorem shiftLeft_negSucc (m n : ℕ) : -[m+1] <<< (n : ℤ) = -[Nat.shiftLeft' true m n+1] :=

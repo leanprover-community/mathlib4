@@ -85,7 +85,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
       _ ∣ (a + ↑p * b) ^ i - (a ^ (i - 1) * (↑p * b) * ↑i + a ^ i) := by
         simp only [sq_dvd_add_pow_sub_sub (↑p * b) a i, ← sub_sub]
   simp_rw [← mem_span_singleton, ← Ideal.Quotient.eq] at *
-  let s : R := (p : R)^2
+  let s : R := (p : R) ^ 2
   calc
     (Ideal.Quotient.mk (span {s})) (∑ i ∈ range p, (a + (p : R) * b) ^ i * a ^ (p - 1 - i)) =
         ∑ i ∈ Finset.range p,
@@ -200,7 +200,7 @@ theorem Int.emultiplicity_pow_sub_pow {x y : ℤ} (hxy : ↑p ∣ x - y) (hx : �
   rw [emultiplicity_pow_sub_pow_of_prime hp,
     emultiplicity_pow_prime_pow_sub_pow_prime_pow hp hp1 hxy hx, h.emultiplicity_eq_multiplicity]
   · rw [← geom_sum₂_mul]
-    exact dvd_mul_of_dvd_right hxy _
+    exact dvd_mul_of_dvd_right hxy
   · exact fun h => hx (hp.dvd_of_dvd_pow h)
   · rw [Int.natCast_dvd_natCast]
     rintro ⟨c, rfl⟩
@@ -329,7 +329,7 @@ theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 
       Int.sq_mod_four_eq_one_of_odd hy]
     · simp
     · simp only [← Int.not_even_iff_odd, even_iff_two_dvd, hx, not_false_iff]
-  rw [Int.two_pow_sub_pow' d hxy4 _, sq_sub_sq, ← Int.ofNat_mul_out,
+  rw [Int.two_pow_sub_pow' d hxy4 _, sq_sub_sq, ← Int.ofNat_mul_ofNat,
     emultiplicity_mul Int.prime_two, emultiplicity_mul Int.prime_two]
   · suffices emultiplicity (2 : ℤ) ↑(2 : ℕ) = 1 by rw [this, add_comm 1, ← add_assoc]
     norm_cast

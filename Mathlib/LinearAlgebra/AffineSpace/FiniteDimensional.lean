@@ -372,6 +372,15 @@ instance finiteDimensional_vectorSpan_insert_set (s : Set P) [FiniteDimensional 
   rw [← direction_affineSpan, ← affineSpan_insert_affineSpan, direction_affineSpan]
   exact finiteDimensional_vectorSpan_insert (affineSpan k s) p
 
+/-- The direction of the affine span of adding a point to a set with a set with finite-dimensional
+direction of the `affineSpan` is finite-dimensional. -/
+instance finiteDimensional_direction_affineSpan_insert_set (s : Set P)
+    [FiniteDimensional k (affineSpan k s).direction] (p : P) :
+    FiniteDimensional k (affineSpan k (insert p s)).direction := by
+  haveI : FiniteDimensional k (vectorSpan k s) := (direction_affineSpan k s) ▸ inferInstance
+  rw [direction_affineSpan]
+  infer_instance
+
 /-- A set of points is collinear if their `vectorSpan` has dimension
 at most `1`. -/
 def Collinear (s : Set P) : Prop :=

@@ -246,7 +246,7 @@ lemma optionSubtypeNe_symm_of_ne (hba : b ≠ a) : (optionSubtypeNe a).symm b = 
 open Sum
 
 /-- `Option α` is equivalent to `α ⊕ PUnit` -/
-def optionEquivSumPUnit.{v, w} (α : Type w) : Option α ≃ α ⊕ PUnit.{v+1} :=
+def optionEquivSumPUnit.{v, w} (α : Type w) : Option α ≃ α ⊕ PUnit.{v + 1} :=
   ⟨fun o => o.elim (inr PUnit.unit) inl, fun s => s.elim some fun _ => none,
     fun o => by cases o <;> rfl,
     fun s => by rcases s with (_ | ⟨⟨⟩⟩) <;> rfl⟩
@@ -276,7 +276,7 @@ theorem optionEquivSumPUnit_symm_inr {α} (a) : (optionEquivSumPUnit α).symm (S
 def optionIsSomeEquiv (α) : { x : Option α // x.isSome } ≃ α where
   toFun o := Option.get _ o.2
   invFun x := ⟨some x, rfl⟩
-  left_inv _ := Subtype.eq <| Option.some_get _
+  left_inv _ := Subtype.ext <| Option.some_get _
   right_inv _ := Option.get_some _ _
 
 end Equiv

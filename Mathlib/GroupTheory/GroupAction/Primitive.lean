@@ -197,9 +197,6 @@ theorem IsPreprimitive.mk' (Hnt : fixedPoints G X ≠ ⊤)
   obtain ⟨_, ha⟩ := Hnt
   exact .of_isTrivialBlock_of_notMem_fixedPoints ha fun {B} _ ↦ H
 
-@[deprecated (since := "2025-03-03")] alias _root_.AddAction.mk' := AddAction.IsPreprimitive.mk'
-@[to_additive existing, deprecated (since := "2025-03-03")] alias mk' := IsPreprimitive.mk'
-
 section EquivariantMap
 
 variable {M : Type*} [Group M] {α : Type*} [MulAction M α]
@@ -330,13 +327,13 @@ variable {φ : G → H} {f : X →ₑ[φ] Y}
 /-- The codomain of an equivariant map of large image is preprimitive if the domain is. -/]
 theorem of_card_lt [Finite Y] [IsPretransitive H Y] [IsPreprimitive G X]
     (hf' : Nat.card Y < 2 * (Set.range f).ncard) :
-    IsPreprimitive H Y :=  by
+    IsPreprimitive H Y := by
   refine ⟨fun {B} hB ↦ ?_⟩
   rcases B.eq_empty_or_nonempty with hB' | hB'; · simp [IsTrivialBlock, hB']
   rw [IsTrivialBlock, or_iff_not_imp_right]
   intro hB_ne_top
   -- we need Set.Subsingleton B ↔ Set.ncard B ≤ 1
-  suffices Set.ncard B < 2 by simpa [Nat.lt_succ] using this
+  suffices Set.ncard B < 2 by simpa [Nat.lt_succ_iff] using this
   -- We reduce to proving that (Set.range f).ncard ≤ (orbit N B).ncard
   apply lt_of_mul_lt_mul_right (lt_of_le_of_lt _ hf') (zero_le _)
   simp only [← hB.ncard_block_mul_ncard_orbit_eq hB']

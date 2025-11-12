@@ -79,9 +79,6 @@ private lemma mul_assoc : ∀ (a b c : SignType), (a * b) * c = a * (b * c) := b
 /- We can define a `Field` instance on `SignType`, but it's not mathematically sensible,
 so we only define the `CommGroupWithZero`. -/
 instance : CommGroupWithZero SignType where
-  zero := 0
-  one := 1
-  mul := (· * ·)
   inv := id
   mul_zero a := by cases a <;> rfl
   zero_mul a := by cases a <;> rfl
@@ -330,6 +327,12 @@ theorem sign_nonpos_iff : sign a ≤ 0 ↔ a ≤ 0 := by
   · simp [h, h.not_ge]
   · simp [← h]
   · simp [h, h.le]
+
+lemma sign_eq_sign_or_eq_neg {b : α} (ha : a ≠ 0) (hb : b ≠ 0) :
+    sign a = sign b ∨ sign a = -sign b := by
+  rcases trichotomy (sign a) with hsa | hsa | hsa <;>
+    rcases trichotomy (sign b) with hsb | hsb | hsb <;>
+    simp_all
 
 end LinearOrder
 

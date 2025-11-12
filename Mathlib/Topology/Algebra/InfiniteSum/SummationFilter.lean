@@ -57,7 +57,7 @@ section support
 def support (L : SummationFilter β) : Set β := {b | ∀ᶠ s in L.filter, b ∈ s}
 
 lemma support_eq_limsInf (L : SummationFilter β) :
-    support L = limsInf (L.filter.map Finset.toSet) := by
+    support L = limsInf (L.filter.map (↑)) := by
   refine eq_of_forall_ge_iff fun c ↦ ?_
   simpa [support, limsInf, setOf_subset] using
     ⟨fun hL b hb x hx ↦ hL x <| hb.mp <| .of_forall fun c hc ↦ hc hx,
@@ -241,7 +241,7 @@ lemma conditional_filter_eq_map_Ici {γ} [PartialOrder γ] [LocallyFiniteOrder �
 /-- Conditional summation over `ℕ` is given by limits of sums over `Finset.range n` as `n → ∞`. -/
 @[simp high + 1] -- want this to be prioritized over `conditional_filter_eq_map_Ici`
 lemma conditional_filter_eq_map_range : (conditional ℕ).filter = atTop.map Finset.range := by
-  have (n : ℕ) : Finset.Iic n = Finset.range (n + 1) := by ext x; simp [Nat.lt_succ]
+  have (n : ℕ) : Finset.Iic n = Finset.range (n + 1) := by ext x; simp [Nat.lt_succ_iff]
   simp only [conditional_filter_eq_map_Iic, funext this]
   apply le_antisymm <;>
       rw [← Tendsto] <;>

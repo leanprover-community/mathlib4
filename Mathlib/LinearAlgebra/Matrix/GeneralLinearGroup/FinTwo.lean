@@ -76,8 +76,7 @@ lemma sub_scalar_sq_eq_discr [NeZero (2 : K)] :
   fin_cases i <;>
   fin_cases j <;>
   · simp [Matrix.mul_apply]
-    field_simp
-    ring
+    field
 
 @[deprecated (since := "2025-10-20")] alias sub_scalar_sq_eq_disc := sub_scalar_sq_eq_discr
 
@@ -120,7 +119,7 @@ variable {R : Type*} [CommRing R] [Nontrivial R] [Preorder R]
 /-- A `2 × 2` matrix is *hyperbolic* if its discriminant is strictly positive. -/
 def IsHyperbolic : Prop := 0 < m.discr
 
-/-- A `2 × 2` matrix is *elliptic* if its  discriminant is strictly negative. -/
+/-- A `2 × 2` matrix is *elliptic* if its discriminant is strictly negative. -/
 def IsElliptic : Prop := m.discr < 0
 
 variable {m}

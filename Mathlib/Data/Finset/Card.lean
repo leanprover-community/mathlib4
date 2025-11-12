@@ -322,7 +322,7 @@ theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i,
     _ = n := card_range n
   apply card_image_of_injective
   intro ⟨i, hi⟩ ⟨j, hj⟩ eq
-  exact Subtype.eq <| f_inj i j (mem_range.1 hi) (mem_range.1 hj) eq
+  exact Subtype.ext <| f_inj i j (mem_range.1 hi) (mem_range.1 hj) eq
 
 variable {t : Finset β}
 
@@ -413,7 +413,7 @@ lemma card_le_card_of_injOn (f : α → β) (hf : Set.MapsTo f s t) (f_inj : (s 
   classical
   calc
     #s = #(s.image f) := (card_image_of_injOn f_inj).symm
-    _  ≤ #t           := card_le_card <| image_subset_iff.2 hf
+    _ ≤ #t := card_le_card <| image_subset_iff.2 hf
 
 lemma card_le_card_of_injective {f : s → t} (hf : f.Injective) : #s ≤ #t := by
   rcases s.eq_empty_or_nonempty with rfl | ⟨a₀, ha₀⟩
@@ -445,6 +445,16 @@ theorem exists_ne_map_eq_of_card_lt_of_maps_to (hc : #t < #s) {f : α → β}
   intro x hx y hy
   contrapose
   exact hz x hx y hy
+
+/-- a special case of `Finset.exists_ne_map_eq_of_card_lt_of_maps_to` where `t` is `s.image f` -/
+theorem exists_ne_map_eq_of_card_image_lt [DecidableEq β] {f : α → β} (hc : #(s.image f) < #s) :
+    ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y :=
+  exists_ne_map_eq_of_card_lt_of_maps_to hc (coe_image (β := β) ▸ Set.mapsTo_image f s)
+
+/-- a variant of `Finset.exists_ne_map_eq_of_card_image_lt` using `Set.InjOn` -/
+theorem not_injOn_of_card_image_lt [DecidableEq β] {f : α → β} (hc : #(s.image f) < #s) :
+    ¬ Set.InjOn f s :=
+  mt card_image_of_injOn hc.ne
 
 /--
 See also `Finset.card_le_card_of_injOn`, which is a more general version of this lemma.

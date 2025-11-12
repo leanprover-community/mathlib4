@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum.Eq
-import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Ring.Cast
@@ -118,7 +117,7 @@ theorem isRat_le_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
     have hb : 0 ≤ ⅟(db : α) := invOf_nonneg.mpr <| Nat.cast_nonneg db
     have h := (mul_le_mul_of_nonneg_left · hb) <| mul_le_mul_of_nonneg_right h ha
     rw [← mul_assoc, Int.commute_cast] at h
-    simp only [Int.ofNat_eq_coe, Int.mul_def, Int.cast_mul, Int.cast_natCast,
+    simp only [Int.ofNat_eq_natCast, Int.mul_def, Int.cast_mul, Int.cast_natCast,
       mul_invOf_cancel_right'] at h
     rwa [Int.commute_cast] at h
 

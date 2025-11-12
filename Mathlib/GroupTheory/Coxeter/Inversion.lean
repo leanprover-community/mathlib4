@@ -53,9 +53,9 @@ variable {B : Type*}
 variable {W : Type*} [Group W]
 variable {M : CoxeterMatrix B} (cs : CoxeterSystem M W)
 
-local prefix:100 "s" => cs.simple
-local prefix:100 "π" => cs.wordProd
-local prefix:100 "ℓ" => cs.length
+local prefix:100 "s " => cs.simple
+local prefix:100 "π " => cs.wordProd
+local prefix:100 "ℓ " => cs.length
 
 /-- `t : W` is a *reflection* of the Coxeter system `cs` if it is of the form
 $w s_i w^{-1}$, where $w \in W$ and $s_i$ is a simple reflection. -/
@@ -184,8 +184,8 @@ $$s_{i_\ell}\cdots s_{i_1}\cdots s_{i_\ell}, \ldots,
 -/
 def rightInvSeq (ω : List B) : List W :=
   match ω with
-  | []          => []
-  | i :: ω      => (π ω)⁻¹ * (s i) * (π ω) :: rightInvSeq ω
+  | [] => []
+  | i :: ω => (π ω)⁻¹ * (s i) * (π ω) :: rightInvSeq ω
 
 /-- The left inversion sequence of `ω`. The left inversion sequence of a word
 $s_{i_1} \cdots s_{i_\ell}$ is the sequence
@@ -194,11 +194,11 @@ $$s_{i_1}, s_{i_1}s_{i_2}s_{i_1}, s_{i_1}s_{i_2}s_{i_3}s_{i_2}s_{i_1}, \ldots,
 -/
 def leftInvSeq (ω : List B) : List W :=
   match ω with
-  | []          => []
-  | i :: ω      => s i :: List.map (MulAut.conj (s i)) (leftInvSeq ω)
+  | [] => []
+  | i :: ω => s i :: List.map (MulAut.conj (s i)) (leftInvSeq ω)
 
-local prefix:100 "ris" => cs.rightInvSeq
-local prefix:100 "lis" => cs.leftInvSeq
+local prefix:100 "ris " => cs.rightInvSeq
+local prefix:100 "lis " => cs.leftInvSeq
 
 @[simp] theorem rightInvSeq_nil : ris [] = [] := rfl
 
@@ -346,7 +346,7 @@ theorem wordProd_mul_getD_rightInvSeq (ω : List B) (j : ℕ) :
     π ω * ((ris ω).getD j 1) = π (ω.eraseIdx j) := by
   rw [getD_rightInvSeq, eraseIdx_eq_take_drop_succ]
   nth_rw 1 [← take_append_drop (j + 1) ω]
-  rw [take_succ]
+  rw [take_add_one]
   obtain lt | le := lt_or_ge j ω.length
   · simp only [getElem?_eq_getElem lt, wordProd_append, mul_assoc]
     simp
@@ -357,7 +357,7 @@ theorem getD_leftInvSeq_mul_wordProd (ω : List B) (j : ℕ) :
     ((lis ω).getD j 1) * π ω = π (ω.eraseIdx j) := by
   rw [getD_leftInvSeq, eraseIdx_eq_take_drop_succ]
   nth_rw 4 [← take_append_drop (j + 1) ω]
-  rw [take_succ]
+  rw [take_add_one]
   obtain lt | le := lt_or_ge j ω.length
   · simp only [getElem?_eq_getElem lt, wordProd_append, mul_assoc]
     simp
@@ -373,9 +373,9 @@ theorem isRightInversion_of_mem_rightInvSeq {ω : List B} (hω : cs.IsReduced ω
     rw [cs.length_rightInvSeq] at hj
     calc
       ℓ (π (ω.eraseIdx j))
-      _ ≤ (ω.eraseIdx j).length   := cs.length_wordProd_le _
-      _ < ω.length                := by rw [← List.length_eraseIdx_add_one hj]; exact lt_add_one _
-      _ = ℓ (π ω)                 := hω.symm
+      _ ≤ (ω.eraseIdx j).length := cs.length_wordProd_le _
+      _ < ω.length := by rw [← List.length_eraseIdx_add_one hj]; exact lt_add_one _
+      _ = ℓ (π ω) := hω.symm
 
 theorem isLeftInversion_of_mem_leftInvSeq {ω : List B} (hω : cs.IsReduced ω) {t : W}
     (ht : t ∈ lis ω) : cs.IsLeftInversion (π ω) t := by
@@ -386,9 +386,9 @@ theorem isLeftInversion_of_mem_leftInvSeq {ω : List B} (hω : cs.IsReduced ω) 
     rw [cs.length_leftInvSeq] at hj
     calc
       ℓ (π (ω.eraseIdx j))
-      _ ≤ (ω.eraseIdx j).length   := cs.length_wordProd_le _
-      _ < ω.length                := by rw [← List.length_eraseIdx_add_one hj]; exact lt_add_one _
-      _ = ℓ (π ω)                 := hω.symm
+      _ ≤ (ω.eraseIdx j).length := cs.length_wordProd_le _
+      _ < ω.length := by rw [← List.length_eraseIdx_add_one hj]; exact lt_add_one _
+      _ = ℓ (π ω) := hω.symm
 
 theorem prod_rightInvSeq (ω : List B) : prod (ris ω) = (π ω)⁻¹ := by
   induction ω with
@@ -399,11 +399,11 @@ theorem prod_leftInvSeq (ω : List B) : prod (lis ω) = (π ω)⁻¹ := by
   simp only [leftInvSeq_eq_reverse_rightInvSeq_reverse, prod_reverse_noncomm, inv_inj]
   have : List.map (fun x ↦ x⁻¹) (ris ω.reverse) = ris ω.reverse := calc
     List.map (fun x ↦ x⁻¹) (ris ω.reverse)
-    _ = List.map id (ris ω.reverse)             := by
+    _ = List.map id (ris ω.reverse) := by
         apply List.map_congr_left
         intro t ht
         exact (cs.isReflection_of_mem_rightInvSeq _ ht).inv
-    _ = ris ω.reverse                           := map_id _
+    _ = ris ω.reverse := map_id _
   rw [this]
   nth_rw 2 [← reverse_reverse ω]
   rw [wordProd_reverse]
@@ -419,7 +419,7 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
   rw [← getD_eq_getElem _ 1, ← getD_eq_getElem _ 1] at dup
   set! t := (ris ω).getD j 1 with h₁
   set! t' := (ris (ω.eraseIdx j)).getD (j' - 1) 1 with h₂
-  have h₃ : t' = (ris ω).getD j' 1                    := by
+  have h₃ : t' = (ris ω).getD j' 1 := by
     rw [h₂, cs.getD_rightInvSeq, cs.getD_rightInvSeq,
       (Nat.sub_add_cancel (by cutsat) : j' - 1 + 1 = j'), eraseIdx_eq_take_drop_succ,
       drop_append, drop_of_length_le (by simp [j_lt_j'.le]), length_take, drop_drop,
@@ -429,19 +429,19 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
     show (List.take j ω ++ List.drop (j + 1) ω)[j' - 1]? = ω[j']?
     rw [getElem?_append_right (by simp [Nat.le_sub_one_of_lt j_lt_j']), getElem?_drop]
     grind
-  have h₄ : t * t' = 1                                := by
+  have h₄ : t * t' = 1 := by
     rw [h₁, h₃, dup]
     exact cs.getD_rightInvSeq_mul_self _ _
   have h₅ := calc
-    π ω   = π ω * t * t'                              := by rw [mul_assoc, h₄]; group
-    _     = (π (ω.eraseIdx j)) * t'                   :=
+    π ω = π ω * t * t' := by rw [mul_assoc, h₄]; group
+    _ = (π (ω.eraseIdx j)) * t' :=
         congrArg (· * t') (cs.wordProd_mul_getD_rightInvSeq _ _)
-    _     = π ((ω.eraseIdx j).eraseIdx (j' - 1))      :=
+    _ = π ((ω.eraseIdx j).eraseIdx (j' - 1)) :=
         cs.wordProd_mul_getD_rightInvSeq _ _
   have h₆ := calc
-    ω.length = ℓ (π ω)                                    := rω.symm
-    _        = ℓ (π ((ω.eraseIdx j).eraseIdx (j' - 1)))   := congrArg cs.length h₅
-    _        ≤ ((ω.eraseIdx j).eraseIdx (j' - 1)).length  := cs.length_wordProd_le _
+    ω.length = ℓ (π ω) := rω.symm
+    _ = ℓ (π ((ω.eraseIdx j).eraseIdx (j' - 1))) := congrArg cs.length h₅
+    _ ≤ ((ω.eraseIdx j).eraseIdx (j' - 1)).length := cs.length_wordProd_le _
   grind
 
 theorem IsReduced.nodup_leftInvSeq {ω : List B} (rω : cs.IsReduced ω) : List.Nodup (lis ω) := by

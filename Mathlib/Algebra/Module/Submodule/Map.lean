@@ -453,7 +453,7 @@ theorem map_comap_subtype : map p.subtype (comap p.subtype p') = p ⊓ p' :=
   ext fun x => ⟨by rintro ⟨⟨_, h₁⟩, h₂, rfl⟩; exact ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨⟨_, h₁⟩, h₂, rfl⟩⟩
 
 theorem eq_zero_of_bot_submodule : ∀ b : (⊥ : Submodule R M), b = 0
-  | ⟨b', hb⟩ => Subtype.eq <| show b' = 0 from (mem_bot R).1 hb
+  | ⟨b', hb⟩ => Subtype.ext <| show b' = 0 from (mem_bot R).1 hb
 
 /-- The infimum of a family of invariant submodule of an endomorphism is also an invariant
 submodule. -/

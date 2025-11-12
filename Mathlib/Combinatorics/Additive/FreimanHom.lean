@@ -359,12 +359,6 @@ lemma IsMulFreimanHom.prodMap (h₁ : IsMulFreimanHom n A₁ B₁ f₁) (h₂ : 
       (by simpa) h.1, h₂.map_prod_eq_map_prod (by simpa [@forall_swap α₁] using hsA.2)
       (by simpa [@forall_swap α₁] using htA.2) (by simpa) (by simpa) h.2⟩
 
-@[deprecated (since := "2025-03-11")]
-alias IsAddFreimanHom.sum := IsAddFreimanHom.prodMap
-
-@[to_additive existing, deprecated (since := "2025-03-11")]
-alias IsMulFreimanHom.prod := IsMulFreimanHom.prodMap
-
 @[to_additive prodMap]
 lemma IsMulFreimanIso.prodMap (h₁ : IsMulFreimanIso n A₁ B₁ f₁) (h₂ : IsMulFreimanIso n A₂ B₂ f₂) :
     IsMulFreimanIso n (A₁ ×ˢ A₂) (B₁ ×ˢ B₂) (Prod.map f₁ f₂) where
@@ -377,12 +371,6 @@ lemma IsMulFreimanIso.prodMap (h₁ : IsMulFreimanIso n A₁ B₁ f₁) (h₂ : 
       h₁.map_prod_eq_map_prod (by simpa using hsA.1) (by simpa using htA.1) (by simpa) (by simpa),
       h₂.map_prod_eq_map_prod (by simpa [@forall_swap α₁] using hsA.2)
         (by simpa [@forall_swap α₁] using htA.2) (by simpa) (by simpa)]
-
-@[deprecated (since := "2025-03-11")]
-alias IsAddFreimanIso.sum := IsAddFreimanIso.prodMap
-
-@[to_additive existing, deprecated (since := "2025-03-11")]
-alias IsMulFreimanIso.prod := IsMulFreimanIso.prodMap
 
 end Prod
 
@@ -424,7 +412,7 @@ lemma isAddFreimanIso_Iio (hm : m ≠ 0) (hkmn : m * k ≤ n) :
   · simp [← bot_eq_zero]
   have hkmn' : m * k ≤ n := (Nat.mul_le_mul_left _ k.le_succ).trans hkmn
   convert isAddFreimanIso_Iic hm hkmn' using 1 <;> ext x
-  · simp [lt_iff_val_lt_val, le_iff_val_le_val, -val_fin_le, -val_fin_lt, Nat.mod_eq_of_lt,
+  · simp [lt_def, le_iff_val_le_val, -val_fin_le, -val_fin_lt, Nat.mod_eq_of_lt,
       aux hm hkmn']
     simp_rw [← Nat.cast_add_one]
     rw [Fin.val_cast_of_lt (aux hm hkmn), Nat.lt_succ_iff]

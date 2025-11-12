@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
 # Saturated subgroups
@@ -39,7 +38,7 @@ theorem saturated_iff_zpow {H : Subgroup G} :
   · intro hH n g hgn
     cases n with
     | ofNat n =>
-      simp only [Int.natCast_eq_zero, Int.ofNat_eq_coe, zpow_natCast] at hgn ⊢
+      simp only [Int.natCast_eq_zero, Int.ofNat_eq_natCast, zpow_natCast] at hgn ⊢
       exact hH hgn
     | negSucc n =>
       suffices g ^ (n + 1) ∈ H by
@@ -55,9 +54,7 @@ end Subgroup
 
 namespace AddSubgroup
 
-theorem ker_saturated {A₁ A₂ : Type*} [AddGroup A₁] [AddMonoid A₂] [NoZeroSMulDivisors ℕ A₂]
-    (f : A₁ →+ A₂) : f.ker.Saturated := by
-  intro n g hg
-  simpa only [f.mem_ker, nsmul_eq_smul, f.map_nsmul, smul_eq_zero] using hg
+theorem ker_saturated {A₁ A₂ : Type*} [AddGroup A₁] [AddMonoid A₂] [IsAddTorsionFree A₂]
+    (f : A₁ →+ A₂) : f.ker.Saturated := by simp +contextual [Saturated, or_imp]
 
 end AddSubgroup

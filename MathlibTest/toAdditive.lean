@@ -431,7 +431,7 @@ end guessName
 
 end Test
 
-run_cmd Elab.Command.liftCoreM <| ToAdditive.insertTranslation `localize `add_localize
+run_meta ToAdditive.insertTranslation `localize `add_localize
 
 @[to_additive] def localize.r := Nat
 @[to_additive add_localize] def localize := Nat
