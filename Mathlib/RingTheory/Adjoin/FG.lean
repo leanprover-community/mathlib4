@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.MvPolynomial.Eval
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
