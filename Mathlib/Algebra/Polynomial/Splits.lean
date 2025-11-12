@@ -295,15 +295,12 @@ theorem degree_eq_card_roots {p : K[X]} {i : K →+* L} (p_ne_zero : p ≠ 0) (h
     p.degree = Multiset.card (p.map i).roots := by
   rw [degree_eq_natDegree p_ne_zero, natDegree_eq_card_roots hsplit]
 
-theorem Factors.mem_subfield_of_isRoot (F : Subfield K) {f : F[X]} (hnz : f ≠ 0)
+theorem Splits.mem_subfield_of_isRoot (F : Subfield K) {f : F[X]} (hnz : f ≠ 0)
     (hf : Factors f) {x : K} (hx : (f.map F.subtype).IsRoot x) :
     x ∈ F := by
   obtain ⟨x, _, rfl⟩ := Multiset.mem_map.mp
     (roots_map F.subtype hf ▸ mem_roots'.mpr ⟨Polynomial.map_ne_zero hnz, hx⟩)
   exact x.2
-
-@[deprecated (since := "2025-10-24")]
-alias Splits.mem_subfield_of_isRoot := Factors.mem_subfield_of_isRoot
 
 theorem image_rootSet [Algebra R K] [Algebra R L] {p : R[X]} (h : p.Splits (algebraMap R K))
     (f : K →ₐ[R] L) : f '' p.rootSet K = p.rootSet L := by
@@ -451,8 +448,10 @@ theorem splits_of_isScalarTower {f : R[X]} [Algebra K L] [IsScalarTower R K L]
     (h : Splits (algebraMap R K) f) : Splits (algebraMap R L) f :=
   splits_of_algHom h (IsScalarTower.toAlgHom R K L)
 
-@[deprecated (since := "2025-10-24")]
-alias splits_iff_card_roots := factors_iff_card_roots
+/-- A polynomial splits if and only if it has as many roots as its degree. -/
+theorem splits_iff_card_roots {p : K[X]} :
+    Splits (RingHom.id K) p ↔ Multiset.card p.roots = p.natDegree := by
+  rw [Splits, map_id, factors_iff_card_roots]
 
 theorem eval₂_derivative_of_splits [DecidableEq L] {P : K[X]} {f : K →+* L} (hP : P.Splits f)
     (x : L) :
@@ -468,18 +467,15 @@ theorem aeval_derivative_of_splits [Algebra K L] [DecidableEq L] {P : K[X]}
       ((P.aroots L).map fun a ↦ (((P.aroots L).erase a).map (r - ·)).prod).sum :=
   eval₂_derivative_of_splits hP r
 
-theorem eval_derivative_of_factors [DecidableEq K] {P : K[X]} (hP : P.Factors) (r : K) :
+theorem eval_derivative_of_splits [DecidableEq K] {P : K[X]} (hP : P.Factors) (r : K) :
     eval r P.derivative = P.leadingCoeff *
       (P.roots.map fun a ↦ ((P.roots.erase a).map (r - ·)).prod).sum := by
   simpa using eval₂_derivative_of_splits (hP.map (RingHom.id K)) r
 
-@[deprecated (since := "2025-10-24")]
-alias eval_derivative_of_splits := eval_derivative_of_factors
-
 /-- Let `P` be a monic polynomial over `K` that splits over `L`. Let `r : L` be a root of `P`.
 Then $P'(r) = \prod_{a}(r-a)$, where the product in the RHS is taken over all roots of `P` in `L`,
 with the multiplicity of `r` reduced by one. -/
-theorem aeval_root_derivative_of_factors [Algebra K L] [DecidableEq L] {P : K[X]} (hmo : P.Monic)
+theorem aeval_root_derivative_of_splits [Algebra K L] [DecidableEq L] {P : K[X]} (hmo : P.Monic)
     (hP : P.Splits (algebraMap K L)) {r : L} (hr : r ∈ P.aroots L) :
     aeval r (Polynomial.derivative P) = (((P.aroots L).erase r).map fun a => r - a).prod := by
   replace hmo := hmo.map (algebraMap K L)
@@ -487,63 +483,47 @@ theorem aeval_root_derivative_of_factors [Algebra K L] [DecidableEq L] {P : K[X]
   nth_rw 1 [hP.eq_prod_roots_of_monic hmo]
   rw [eval_multiset_prod_X_sub_C_derivative hr]
 
-@[deprecated (since := "2025-10-24")]
-alias aeval_root_derivative_of_splits := aeval_root_derivative_of_factors
-
-theorem eval_derivative_eq_eval_mul_sum_of_factors {p : K[X]} {x : K}
+theorem eval_derivative_eq_eval_mul_sum_of_splits {p : K[X]} {x : K}
     (h : p.Factors) (hx : p.eval x ≠ 0) :
     p.derivative.eval x = p.eval x * (p.roots.map fun z ↦ 1 / (x - z)).sum := by
   classical
   suffices p.roots.map (fun z ↦ p.leadingCoeff * ((p.roots.erase z).map (fun w ↦ x - w) ).prod) =
       p.roots.map fun i ↦ p.leadingCoeff * ((x - i)⁻¹ * (p.roots.map (fun z ↦ x - z)).prod) by
     nth_rw 2 [Factors.eq_prod_roots h]
-    simp [eval_derivative_of_factors h, ← Multiset.sum_map_mul_left, this, eval_multiset_prod,
+    simp [eval_derivative_of_splits h, ← Multiset.sum_map_mul_left, this, eval_multiset_prod,
       mul_comm, mul_left_comm]
   refine Multiset.map_congr rfl fun z hz ↦ ?_
   rw [← Multiset.prod_map_erase hz, inv_mul_cancel_left₀]
   aesop (add simp sub_eq_zero)
 
-@[deprecated (since := "2025-10-24")]
-alias eval_derivative_eq_eval_mul_sum_of_splits := eval_derivative_eq_eval_mul_sum_of_factors
-
-theorem eval_derivative_div_eval_of_ne_zero_of_factors {p : K[X]} {x : K}
+theorem eval_derivative_div_eval_of_ne_zero_of_splits {p : K[X]} {x : K}
     (h : p.Factors) (hx : p.eval x ≠ 0) :
     p.derivative.eval x / p.eval x = (p.roots.map fun z ↦ 1 / (x - z)).sum := by
-  rw [eval_derivative_eq_eval_mul_sum_of_factors h hx]
+  rw [eval_derivative_eq_eval_mul_sum_of_splits h hx]
   exact mul_div_cancel_left₀ _ hx
 
-@[deprecated (since := "2025-10-24")]
-alias eval_derivative_div_eval_of_ne_zero_of_splits :=
-  eval_derivative_div_eval_of_ne_zero_of_factors
+theorem coeff_zero_eq_leadingCoeff_mul_prod_roots_of_splits {P : K[X]} (hP : P.Factors) :
+    P.coeff 0 = (-1) ^ P.natDegree * P.leadingCoeff * P.roots.prod := by
+  nth_rw 1 [hP.eq_prod_roots]
+  simp only [coeff_zero_eq_eval_zero, eval_mul, eval_C, eval_multiset_prod, Function.comp_apply,
+    Multiset.map_map, eval_sub, eval_X, zero_sub, Multiset.prod_map_neg]
+  grind [factors_iff_card_roots]
 
 /-- If `P` is a monic polynomial that splits, then `coeff P 0` equals the product of the roots. -/
-theorem coeff_zero_eq_prod_roots_of_monic_of_factors {P : K[X]} (hmo : P.Monic)
+theorem coeff_zero_eq_prod_roots_of_monic_of_splits {P : K[X]} (hmo : P.Monic)
     (hP : P.Factors) : coeff P 0 = (-1) ^ P.natDegree * P.roots.prod := by
   simp [hmo, coeff_zero_eq_leadingCoeff_mul_prod_roots_of_splits hP]
 
-@[deprecated (since := "2025-10-24")]
-alias coeff_zero_eq_prod_roots_of_monic_of_splits := coeff_zero_eq_prod_roots_of_monic_of_factors
-
 /-- If `P` is a monic polynomial that splits, then `P.nextCoeff` equals the negative of the sum
 of the roots. -/
-theorem nextCoeff_eq_neg_sum_roots_of_monic_of_factors {P : K[X]} (hmo : P.Monic)
+theorem nextCoeff_eq_neg_sum_roots_of_monic_of_splits {P : K[X]} (hmo : P.Monic)
     (hP : P.Factors) : P.nextCoeff = -P.roots.sum := by
-  nth_rw 1 [eq_prod_roots_of_splits_id hP]
+  nth_rw 1 [hP.eq_prod_roots_of_monic hmo]
   simp [Multiset.sum_map_neg', monic_X_sub_C, Monic.nextCoeff_multiset_prod]
 
 theorem coeff_zero_eq_leadingCoeff_mul_prod_roots_of_splits {P : K[X]} (hP : P.Splits <| .id K) :
     P.coeff 0 = (-1) ^ P.natDegree * P.leadingCoeff * P.roots.prod := by
   simp [hmo, nextCoeff_eq_neg_sum_roots_mul_leadingCoeff_of_splits hP]
-
-@[deprecated (since := "2025-10-24")]
-alias nextCoeff_eq_neg_sum_roots_of_monic_of_splits :=
-  nextCoeff_eq_neg_sum_roots_of_monic_of_factors
-
-@[deprecated (since := "2025-10-08")]
-alias prod_roots_eq_coeff_zero_of_monic_of_splits := coeff_zero_eq_prod_roots_of_monic_of_factors
-
-@[deprecated (since := "2025-10-08")]
-alias sum_roots_eq_nextCoeff_of_monic_of_split := nextCoeff_eq_neg_sum_roots_of_monic_of_factors
 
 end Splits
 
