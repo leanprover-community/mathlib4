@@ -1040,7 +1040,7 @@ theorem HasFTaylorSeriesUpTo.contDiff {n : ℕ∞} {f' : E → FormalMultilinear
     (hf : HasFTaylorSeriesUpTo n f f') : ContDiff 𝕜 n f :=
   ⟨f', hf⟩
 
-@[simp] theorem contDiffOn_empty : ContDiffOn 𝕜 n f ∅ := fun _x hx ↦ hx.elim
+@[simp, fun_prop] theorem contDiffOn_empty : ContDiffOn 𝕜 n f ∅ := fun _x hx ↦ hx.elim
 
 theorem contDiffOn_univ : ContDiffOn 𝕜 n f univ ↔ ContDiff 𝕜 n f := by
   match n with
