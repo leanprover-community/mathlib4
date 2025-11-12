@@ -295,8 +295,7 @@ theorem degree_eq_card_roots {p : K[X]} {i : K →+* L} (p_ne_zero : p ≠ 0) (h
     p.degree = Multiset.card (p.map i).roots := by
   rw [degree_eq_natDegree p_ne_zero, natDegree_eq_card_roots hsplit]
 
-theorem roots_map {f : R[X]} {S : Type*} [CommRing S] [IsDomain S] (i : R →+* S) (hf : f.Factors) :
-    (f.map i).roots = f.roots.map i :=
+theorem roots_map {f : K[X]} (hf : f.Factors) : (f.map i).roots = f.roots.map i :=
   (roots_map_of_injective_of_card_eq_natDegree i.injective hf.natDegree_eq_card_roots.symm).symm
 
 theorem Splits.mem_subfield_of_isRoot (F : Subfield K) {f : F[X]} (hnz : f ≠ 0)
