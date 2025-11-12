@@ -185,7 +185,7 @@ theorem splits_charpoly (hA : A.IsHermitian) : A.charpoly.Factors :=
 
 /-- The determinant of a Hermitian matrix is the product of its eigenvalues. -/
 theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
-  simp [det_eq_prod_roots_charpoly_of_factors hA.factors_charpoly,
+  simp [det_eq_prod_roots_charpoly_of_splits hA.splits_charpoly,
     hA.roots_charpoly_eq_eigenvalues]
 
 /-- rank of a Hermitian matrix is the rank of after diagonalization by the eigenvector unitary -/
