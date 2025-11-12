@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Geometry.Euclidean.Projection
-import Mathlib.Analysis.NormedSpace.Normalize
+import Mathlib.Analysis.Normed.Module.Normalize
 
 /-!
 # Signed distance to an affine subspace in a Euclidean space.

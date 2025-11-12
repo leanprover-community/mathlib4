@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Algebra.Central.Defs
 import Mathlib.Analysis.LocallyConvex.SeparatingDual
-import Mathlib.Analysis.NormedSpace.Multilinear.Basic
+import Mathlib.Analysis.Normed.Module.Multilinear.Basic
 import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-! # Completeness of spaces of linear and multilinear maps

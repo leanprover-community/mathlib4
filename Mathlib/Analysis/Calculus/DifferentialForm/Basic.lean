@@ -3,7 +3,7 @@ Copyright (c) 2025 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Sam Lindauer
 -/
-import Mathlib.Analysis.NormedSpace.Alternating.Uncurry.Fin
+import Mathlib.Analysis.Normed.Module.Alternating.Uncurry.Fin
 import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 
