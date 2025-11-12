@@ -831,6 +831,37 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
         (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target])))
       (((α 0).cast (show x = γ (part.t 0) by rw [part.h_start, γ.source])
                    (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])).trans γ') := by
+  -- Define intermediate paths: γ_aux i follows γ up to t_i, crosses via α_i, then follows γ'
+  let γ_aux : (i : Fin (n + 1)) → Path x y := fun i =>
+    (((γ.subpathOn (part.t 0) (part.t i) (part.h_mono.monotone (Fin.zero_le i))).trans (α i)).trans
+      (γ'.subpathOn (part.t i) (part.t (Fin.last n))
+        (part.h_mono.monotone (Fin.le_last i)))).cast
+      (by rw [part.h_start, γ.source])
+      (by rw [part.h_end, γ'.target])
+
+  -- Base case: γ_aux 0 ≃ α_0 · γ'
+  -- At i=0, γ|[0,0] is constant, and γ'|[0,1] is all of γ', so this simplifies to α_0 · γ'
+  have h_base : Path.Homotopic (γ_aux 0)
+      (((α 0).cast (show x = γ (part.t 0) by rw [part.h_start, γ.source])
+                   (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])).trans γ') := by
+    sorry
+
+  -- Final case: γ_aux (Fin.last n) ≃ γ · α_n
+  -- At i=n, γ|[0,1] is all of γ, and γ'|[1,1] is constant, so this simplifies to γ · α_n
+  have h_final : Path.Homotopic (γ_aux (Fin.last n))
+      (γ.trans ((α (Fin.last n)).cast
+        (show y = γ (part.t (Fin.last n)) by rw [part.h_end, γ.target])
+        (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target]))) := by
+    sorry
+
+  -- Consecutive paths are homotopic: γ_aux i.succ ≃ γ_aux i.castSucc
+  -- This follows from decomposing using subpathOn_trans and applying h_rectangles i
+  have h_step : ∀ (i : Fin n), Path.Homotopic (γ_aux i.succ) (γ_aux i.castSucc) := by
+    intro i
+    sorry
+
+  -- Chain all homotopies together
+  -- γ · α_n ≃ γ_aux n ≃ γ_aux (n-1) ≃ ... ≃ γ_aux 0 ≃ α_0 · γ'
   sorry
 
 /-- Stronger version of paste_segment_homotopies that directly gives γ ≃ γ' when the endpoint
