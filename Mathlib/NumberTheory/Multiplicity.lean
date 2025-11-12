@@ -3,9 +3,7 @@ Copyright (c) 2022 Tian Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tian Chen, Mantas Bakšys
 -/
-import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.Algebra.Ring.Int.Parity
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Prime.Int
 import Mathlib.NumberTheory.Padics.PadicVal.Defs

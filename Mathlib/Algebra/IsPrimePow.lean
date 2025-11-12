@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Order.Nat
-import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.Nat.Log
 import Mathlib.Data.Nat.Prime.Pow
 

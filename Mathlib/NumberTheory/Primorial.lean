@@ -5,10 +5,8 @@ Authors: Patrick Stevens, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Associated
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Choose.Dvd
-import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # Primorial
