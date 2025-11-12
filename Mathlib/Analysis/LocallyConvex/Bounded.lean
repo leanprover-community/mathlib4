@@ -403,7 +403,7 @@ variable (𝕜) in
 theorem Filter.Tendsto.isVonNBounded_range [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
     {f : ℕ → E} {x : E} (hf : Tendsto f atTop (𝓝 x)) : Bornology.IsVonNBounded 𝕜 (range f) :=
-  letI := IsTopologicalAddGroup.toUniformSpace E
+  letI := IsTopologicalAddGroup.rightUniformSpace E
   haveI := isUniformAddGroup_of_addCommGroup (G := E)
   hf.cauchySeq.totallyBounded_range.isVonNBounded 𝕜
 
