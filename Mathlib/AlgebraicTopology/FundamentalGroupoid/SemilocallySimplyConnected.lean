@@ -844,6 +844,122 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
   have h_base : Path.Homotopic (γ_aux 0)
       (((α 0).cast (show x = γ (part.t 0) by rw [part.h_start, γ.source])
                    (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])).trans γ') := by
+    -- Unfold γ_aux 0
+    -- γ_aux 0 = ((γ|[0,0]) · α_0 · (γ'|[0,n])).cast
+    -- Note: γ|[0,0] ≃ refl (γ 0) = refl x
+    -- And: γ'|[0,n] = γ'|[0,1] = γ' (since part.t (Fin.last n) = 1)
+
+    -- First show: γ|[0,0] ≃ refl x
+    have h_γ_refl : Path.Homotopic
+      (γ.subpathOn (part.t 0) (part.t 0) (part.h_mono.monotone (Fin.zero_le 0)))
+      (Path.refl (γ (part.t 0))) := by
+      exact Path.subpathOn_self γ (part.t 0)
+
+    -- Now show: γ'|[0,n] ≃ γ' (since part.t 0 = 0 and part.t (Fin.last n) = 1)
+    -- We'll use the fact that part.t 0 = 0 and part.t (Fin.last n) = 1
+    have h_γ'_full : Path.Homotopic
+      ((γ'.subpathOn (part.t 0) (part.t (Fin.last n))
+        (part.h_mono.monotone (Fin.zero_le (Fin.last n)))).cast
+        (by rw [part.h_start, γ'.source])
+        (by rw [part.h_end, γ'.target]))
+      γ' := by
+      -- Use convert to handle the dependent type rewrites
+      convert Path.subpathOn_zero_one γ'
+      · exact part.h_start
+      · exact part.h_end
+
+    -- Now combine to show γ_aux 0 ≃ α_0 · γ'
+    -- γ_aux 0 = ((γ|[0,0]) · α_0 · (γ'|[0,n])).cast
+    -- Using h_γ_refl and h_γ'_full, this simplifies to (refl · α_0 · γ').cast ≃ α_0 · γ'
+
+    -- Use h_γ_refl and reflTrans to show (refl · α_0) ≃ α_0
+    have h_refl_alpha : Path.Homotopic
+      ((Path.refl (γ (part.t 0))).trans (α 0))
+      (α 0) := by
+      exact ⟨Path.Homotopy.reflTrans (α 0)⟩
+
+    -- Compose with γ'|[0,n] on the right
+    have h_with_gamma' : Path.Homotopic
+      (((Path.refl (γ (part.t 0))).trans (α 0)).trans
+        (γ'.subpathOn (part.t 0) (part.t (Fin.last n))
+          (part.h_mono.monotone (Fin.zero_le (Fin.last n)))))
+      (((α 0).trans (γ'.subpathOn (part.t 0) (part.t (Fin.last n))
+          (part.h_mono.monotone (Fin.zero_le (Fin.last n)))))) := by
+      apply Path.Homotopic.hcomp h_refl_alpha (Path.Homotopic.refl _)
+
+    -- Now use h_γ_refl on the left to replace (refl · α_0) with (γ|[0,0] · α_0)
+    have h_with_subpath : Path.Homotopic
+      ((γ.subpathOn (part.t 0) (part.t 0) (part.h_mono.monotone (Fin.zero_le 0))).trans
+        ((α 0).trans (γ'.subpathOn (part.t 0) (part.t (Fin.last n))
+          (part.h_mono.monotone (Fin.zero_le (Fin.last n))))))
+      (((Path.refl (γ (part.t 0))).trans (α 0)).trans
+        (γ'.subpathOn (part.t 0) (part.t (Fin.last n))
+          (part.h_mono.monotone (Fin.zero_le (Fin.last n))))) := by
+      -- TODO: fix associativity issue with hcomp
+      sorry
+
+    -- Combine with h_with_gamma'
+    have h_combined := h_with_subpath.trans h_with_gamma'
+
+    -- Now we need to relate the LHS of γ_aux 0, which is ((γ|[0,0] · α_0) · γ'|[0,n]),
+    -- with what we have in h_combined, which starts with (γ|[0,0] · (α_0 · γ'|[0,n]))
+
+    -- Use trans_assoc to rearrange
+    have h_assoc : Path.Homotopic
+      (((γ.subpathOn (part.t 0) (part.t 0) (part.h_mono.monotone (Fin.zero_le 0))).trans
+          (α 0)).trans
+        (γ'.subpathOn (part.t 0) (part.t (Fin.last n))
+          (part.h_mono.monotone (Fin.zero_le (Fin.last n)))))
+      ((γ.subpathOn (part.t 0) (part.t 0) (part.h_mono.monotone (Fin.zero_le 0))).trans
+        ((α 0).trans (γ'.subpathOn (part.t 0) (part.t (Fin.last n))
+          (part.h_mono.monotone (Fin.zero_le (Fin.last n)))))) := by
+      exact Path.Homotopic.trans_assoc _ _ _
+
+    -- Chain h_assoc with h_combined
+    have h_to_alpha : Path.Homotopic
+      (((γ.subpathOn (part.t 0) (part.t 0) (part.h_mono.monotone (Fin.zero_le 0))).trans
+          (α 0)).trans
+        (γ'.subpathOn (part.t 0) (part.t (Fin.last n))
+          (part.h_mono.monotone (Fin.zero_le (Fin.last n)))))
+      ((α 0).trans (γ'.subpathOn (part.t 0) (part.t (Fin.last n))
+          (part.h_mono.monotone (Fin.zero_le (Fin.last n))))) := by
+      exact h_assoc.trans h_combined
+
+    -- Now build the final proof
+    -- LHS: γ_aux 0 = (((γ|[0,0] · α_0) · γ'|[0,n])).cast
+    -- RHS: ((α_0).cast).trans γ'
+    -- We've shown: (((γ|[0,0] · α_0) · γ'|[0,n])) ≃ (α_0 · γ'|[0,n])
+
+    -- Chain: h_to_alpha then use h_γ'_full
+    have h_step1 : Path.Homotopic
+      (((γ.subpathOn (part.t 0) (part.t 0) (part.h_mono.monotone (Fin.zero_le 0))).trans
+          (α 0)).trans
+        (γ'.subpathOn (part.t 0) (part.t (Fin.last n))
+          (part.h_mono.monotone (Fin.zero_le (Fin.last n)))))
+      ((α 0).trans ((γ'.subpathOn (part.t 0) (part.t (Fin.last n))
+          (part.h_mono.monotone (Fin.zero_le (Fin.last n)))).cast
+        (by rw [part.h_start, γ'.source])
+        (by rw [part.h_end, γ'.target]))) := by
+      apply h_to_alpha.trans
+      apply Path.Homotopic.hcomp (Path.Homotopic.refl _)
+      apply Path.Homotopic.symm
+      constructor
+      exact Path.Homotopy.refl _
+
+    -- Now use h_γ'_full to replace (γ'|[0,n]).cast with γ'
+    -- This requires handling casts carefully
+    have h_step2 : Path.Homotopic
+      ((α 0).trans ((γ'.subpathOn (part.t 0) (part.t (Fin.last n))
+          (part.h_mono.monotone (Fin.zero_le (Fin.last n)))).cast
+        (by rw [part.h_start, γ'.source])
+        (by rw [part.h_end, γ'.target])))
+      (((α 0).cast (by rw [part.h_start, γ.source])
+          (by rw [part.h_start, γ'.source])).trans γ') := by
+      sorry
+
+    -- Chain everything together
+    -- γ_aux 0 has an outer cast which preserves homotopy
+    -- TODO: The cast on α_0 in the RHS doesn't match, need to fix type unification
     sorry
 
   -- Final case: γ_aux (Fin.last n) ≃ γ · α_n
@@ -852,13 +968,220 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
       (γ.trans ((α (Fin.last n)).cast
         (show y = γ (part.t (Fin.last n)) by rw [part.h_end, γ.target])
         (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target]))) := by
+    -- γ_aux (Fin.last n) = ((γ|[0,n]) · α_n · (γ'|[n,n])).cast
+    -- Show γ|[0,n] ≃ γ and γ'|[n,n] ≃ refl
+
+    -- First show: γ|[0,n] ≃ γ (since part.t 0 = 0 and part.t (Fin.last n) = 1)
+    have h_γ_full : Path.Homotopic
+      ((γ.subpathOn (part.t 0) (part.t (Fin.last n))
+        (part.h_mono.monotone (Fin.zero_le (Fin.last n)))).cast
+        (by rw [part.h_start, γ.source])
+        (by rw [part.h_end, γ.target]))
+      γ := by
+      convert Path.subpathOn_zero_one γ
+      · exact part.h_start
+      · exact part.h_end
+
+    -- Show γ'|[n,n] ≃ refl y
+    have h_γ'_refl : Path.Homotopic
+      (γ'.subpathOn (part.t (Fin.last n)) (part.t (Fin.last n))
+        (part.h_mono.monotone (le_refl _)))
+      (Path.refl (γ' (part.t (Fin.last n)))) := by
+      exact Path.subpathOn_self γ' (part.t (Fin.last n))
+
+    -- Combine using associativity and trans_refl
+    -- We need to show the inner parts (before cast) are homotopic
+    -- LHS: (γ|[0,n]) · α_n · (γ'|[n,n])
+    -- RHS: γ · α_n (after dealing with casts)
+
+    -- First rearrange with associativity: ((a · b) · c) ≃ (a · (b · c))
+    have h_assoc1 : Path.Homotopic
+      (((γ.subpathOn (part.t 0) (part.t (Fin.last n))
+        (part.h_mono.monotone (Fin.zero_le (Fin.last n)))).trans (α (Fin.last n))).trans
+        (γ'.subpathOn (part.t (Fin.last n)) (part.t (Fin.last n))
+          (part.h_mono.monotone (le_refl _))))
+      ((γ.subpathOn (part.t 0) (part.t (Fin.last n))
+        (part.h_mono.monotone (Fin.zero_le (Fin.last n)))).trans
+        ((α (Fin.last n)).trans (γ'.subpathOn (part.t (Fin.last n)) (part.t (Fin.last n))
+          (part.h_mono.monotone (le_refl _))))) := by
+      exact Path.Homotopic.trans_assoc _ _ _
+
+    -- Apply h_γ'_refl on the right
+    have h_with_refl : Path.Homotopic
+      ((γ.subpathOn (part.t 0) (part.t (Fin.last n))
+        (part.h_mono.monotone (Fin.zero_le (Fin.last n)))).trans
+        ((α (Fin.last n)).trans (γ'.subpathOn (part.t (Fin.last n)) (part.t (Fin.last n))
+          (part.h_mono.monotone (le_refl _)))))
+      ((γ.subpathOn (part.t 0) (part.t (Fin.last n))
+        (part.h_mono.monotone (Fin.zero_le (Fin.last n)))).trans
+        ((α (Fin.last n)).trans (Path.refl (γ' (part.t (Fin.last n)))))) := by
+      apply Path.Homotopic.hcomp (Path.Homotopic.refl _)
+      apply Path.Homotopic.hcomp (Path.Homotopic.refl _) h_γ'_refl
+
+    -- Combine the steps so far
+    have h_combined := h_assoc1.trans h_with_refl
+
+    -- The main insight: we need to unfold γ_aux (Fin.last n) and match terms
+    -- γ_aux (Fin.last n) has the exact structure we've been simplifying
+    -- Just need to apply the cast at the outer level and use our homotopies
+
+    -- For now, use the homotopies we've built up but acknowledge
+    -- the final step needs more careful cast manipulation
     sorry
 
   -- Consecutive paths are homotopic: γ_aux i.succ ≃ γ_aux i.castSucc
   -- This follows from decomposing using subpathOn_trans and applying h_rectangles i
   have h_step : ∀ (i : Fin n), Path.Homotopic (γ_aux i.succ) (γ_aux i.castSucc) := by
     intro i
-    sorry
+    -- γ_aux i.succ = ((γ|[0, i+1]) · α_{i+1} · (γ'|[i+1, n])).cast
+    -- γ_aux i.castSucc = ((γ|[0, i]) · α_i · (γ'|[i, n])).cast
+
+    -- Step 1: Decompose γ|[0, i+1] = γ|[0, i] · γ|[i, i+1]
+    have h_γ_decomp : Path.Homotopic
+      (γ.subpathOn (part.t 0) (part.t i.succ) (part.h_mono.monotone (Fin.zero_le i.succ)))
+      ((γ.subpathOn (part.t 0) (part.t i.castSucc)
+          (part.h_mono.monotone (Fin.zero_le i.castSucc))).trans
+        (γ.subpathOn (part.t i.castSucc) (part.t i.succ)
+          (part.h_mono.monotone i.castSucc_lt_succ.le))) := by
+      exact (Path.subpathOn_trans γ (part.t 0) (part.t i.castSucc) (part.t i.succ)
+        (part.h_mono.monotone (Fin.zero_le i.castSucc))
+        (part.h_mono.monotone i.castSucc_lt_succ.le)).symm
+
+    -- Step 2: Decompose γ'|[i, n] = γ'|[i, i+1] · γ'|[i+1, n]
+    have h_γ'_decomp : Path.Homotopic
+      (γ'.subpathOn (part.t i.castSucc) (part.t (Fin.last n))
+        (part.h_mono.monotone (Fin.le_last i.castSucc)))
+      ((γ'.subpathOn (part.t i.castSucc) (part.t i.succ)
+          (part.h_mono.monotone i.castSucc_lt_succ.le)).trans
+        (γ'.subpathOn (part.t i.succ) (part.t (Fin.last n))
+          (part.h_mono.monotone (Fin.le_last i.succ)))) := by
+      exact (Path.subpathOn_trans γ' (part.t i.castSucc) (part.t i.succ) (part.t (Fin.last n))
+        (part.h_mono.monotone i.castSucc_lt_succ.le)
+        (part.h_mono.monotone (Fin.le_last i.succ))).symm
+
+    -- Step 3: Use the rectangle homotopy h_rectangles i
+    -- It says: (γ|[i, i+1]) · α_{i+1} ≃ α_i · (γ'|[i, i+1])
+    have h_rect := h_rectangles i
+
+    -- Now build up the homotopy step by step
+    -- We'll show the inner parts (before cast) are homotopic, then cast preserves it
+
+    -- Let's denote:
+    let γ_0_i := γ.subpathOn (part.t 0) (part.t i.castSucc)
+      (part.h_mono.monotone (Fin.zero_le i.castSucc))
+    let γ_i_succ := γ.subpathOn (part.t i.castSucc) (part.t i.succ)
+      (part.h_mono.monotone i.castSucc_lt_succ.le)
+    let γ'_succ_n := γ'.subpathOn (part.t i.succ) (part.t (Fin.last n))
+      (part.h_mono.monotone (Fin.le_last i.succ))
+    let γ'_i_succ := γ'.subpathOn (part.t i.castSucc) (part.t i.succ)
+      (part.h_mono.monotone i.castSucc_lt_succ.le)
+    let γ'_i_n := γ'.subpathOn (part.t i.castSucc) (part.t (Fin.last n))
+      (part.h_mono.monotone (Fin.le_last i.castSucc))
+
+    -- Build the chain of homotopies for the inner parts (without cast):
+    -- (γ|[0,i+1]) · α_{i+1} · γ'|[i+1,n]
+    have step1 : Path.Homotopic
+      ((γ.subpathOn (part.t 0) (part.t i.succ)
+          (part.h_mono.monotone (Fin.zero_le i.succ))).trans
+        ((α i.succ).trans γ'_succ_n))
+      ((γ_0_i.trans γ_i_succ).trans ((α i.succ).trans γ'_succ_n)) := by
+      apply Path.Homotopic.hcomp h_γ_decomp (Path.Homotopic.refl _)
+
+    -- Rearrange with associativity: ((a·b)·(c·d)) ≃ (a·((b·c)·d))
+    have step2 : Path.Homotopic
+      ((γ_0_i.trans γ_i_succ).trans ((α i.succ).trans γ'_succ_n))
+      (γ_0_i.trans ((γ_i_succ.trans (α i.succ)).trans γ'_succ_n)) := by
+      -- First get:
+      -- (γ_0_i·γ_i_succ)·((α i.succ)·γ'_succ_n) ≃ γ_0_i·(γ_i_succ·((α i.succ)·γ'_succ_n))
+      have h1 := Path.Homotopic.trans_assoc γ_0_i γ_i_succ ((α i.succ).trans γ'_succ_n)
+      -- Then get: γ_i_succ·((α i.succ)·γ'_succ_n) ≃ (γ_i_succ·(α i.succ))·γ'_succ_n
+      have h2 := (Path.Homotopic.trans_assoc γ_i_succ (α i.succ) γ'_succ_n).symm
+      -- Compose with hcomp
+      exact h1.trans (Path.Homotopic.hcomp (Path.Homotopic.refl _) h2)
+
+    -- Apply rectangle homotopy in the middle: (γ|[i,i+1]·α_{i+1}) ≃ (α_i·γ'|[i,i+1])
+    have step3 : Path.Homotopic
+      (γ_0_i.trans ((γ_i_succ.trans (α i.succ)).trans γ'_succ_n))
+      (γ_0_i.trans (((α i.castSucc).trans γ'_i_succ).trans γ'_succ_n)) := by
+      apply Path.Homotopic.hcomp (Path.Homotopic.refl _)
+      apply Path.Homotopic.hcomp h_rect (Path.Homotopic.refl _)
+
+    -- Rearrange with associativity: a·((b·c)·d) ≃ a·(b·(c·d))
+    have step4 : Path.Homotopic
+      (γ_0_i.trans (((α i.castSucc).trans γ'_i_succ).trans γ'_succ_n))
+      (γ_0_i.trans ((α i.castSucc).trans (γ'_i_succ.trans γ'_succ_n))) := by
+      apply Path.Homotopic.hcomp (Path.Homotopic.refl _)
+      exact Path.Homotopic.trans_assoc (α i.castSucc) γ'_i_succ γ'_succ_n
+
+    -- Recombine γ'|[i,i+1]·γ'|[i+1,n] = γ'|[i,n]
+    have step5 : Path.Homotopic
+      (γ_0_i.trans ((α i.castSucc).trans (γ'_i_succ.trans γ'_succ_n)))
+      (γ_0_i.trans ((α i.castSucc).trans γ'_i_n)) := by
+      apply Path.Homotopic.hcomp (Path.Homotopic.refl _)
+      apply Path.Homotopic.hcomp (Path.Homotopic.refl _) h_γ'_decomp.symm
+
+    -- Chain everything together for the inner parts
+    have h_inner : Path.Homotopic
+      ((γ.subpathOn (part.t 0) (part.t i.succ) (part.h_mono.monotone (Fin.zero_le i.succ))).trans
+        ((α i.succ).trans γ'_succ_n))
+      (γ_0_i.trans ((α i.castSucc).trans γ'_i_n)) :=
+      step1.trans (step2.trans (step3.trans (step4.trans step5)))
+
+    -- Now show that h_inner matches the structure of γ_aux i.succ and γ_aux i.castSucc
+    -- Both are just these compositions with the same cast
+    -- Need to unfold γ_aux and match up the pieces
+    have h_succ_unfold : γ_aux i.succ =
+      (((γ.subpathOn (part.t 0) (part.t i.succ) (part.h_mono.monotone (Fin.zero_le i.succ))).trans
+        (α i.succ)).trans
+        (γ'.subpathOn (part.t i.succ) (part.t (Fin.last n))
+          (part.h_mono.monotone (Fin.le_last i.succ)))).cast
+        (by rw [part.h_start, γ.source]) (by rw [part.h_end, γ'.target]) := rfl
+
+    have h_castSucc_unfold : γ_aux i.castSucc =
+      (((γ.subpathOn (part.t 0) (part.t i.castSucc)
+          (part.h_mono.monotone (Fin.zero_le i.castSucc))).trans
+        (α i.castSucc)).trans
+        (γ'.subpathOn (part.t i.castSucc) (part.t (Fin.last n))
+          (part.h_mono.monotone (Fin.le_last i.castSucc)))).cast
+        (by rw [part.h_start, γ.source]) (by rw [part.h_end, γ'.target]) := rfl
+
+    -- The inner parts form the LHS and RHS with associativity adjustments
+    have h_succ_inner : Path.Homotopic
+      (((γ.subpathOn (part.t 0) (part.t i.succ) (part.h_mono.monotone (Fin.zero_le i.succ))).trans
+        (α i.succ)).trans γ'_succ_n)
+      ((γ_0_i.trans (α i.castSucc)).trans γ'_i_n) := by
+      -- Need to rearrange LHS using trans_assoc to match h_inner's LHS
+      have h_lhs : Path.Homotopic
+        (((γ.subpathOn (part.t 0) (part.t i.succ) (part.h_mono.monotone (Fin.zero_le i.succ))).trans
+          (α i.succ)).trans γ'_succ_n)
+        ((γ.subpathOn (part.t 0) (part.t i.succ) (part.h_mono.monotone (Fin.zero_le i.succ))).trans
+          ((α i.succ).trans γ'_succ_n)) :=
+        Path.Homotopic.trans_assoc _ _ _
+      -- And rearrange RHS using trans_assoc to match h_inner's RHS
+      have h_rhs : Path.Homotopic
+        (γ_0_i.trans ((α i.castSucc).trans γ'_i_n))
+        ((γ_0_i.trans (α i.castSucc)).trans γ'_i_n) :=
+        (Path.Homotopic.trans_assoc _ _ _).symm
+      exact h_lhs.trans (h_inner.trans h_rhs)
+
+    -- Now show the full paths are homotopic (cast preserves homotopy)
+    -- Use the fact that cast preserves homotopy
+    have h_cast : Path.Homotopic
+      ((((γ.subpathOn (part.t 0) (part.t i.succ) (part.h_mono.monotone (Fin.zero_le i.succ))).trans
+        (α i.succ)).trans (γ'.subpathOn (part.t i.succ) (part.t (Fin.last n))
+          (part.h_mono.monotone (Fin.le_last i.succ)))).cast
+        (by rw [part.h_start, γ.source]) (by rw [part.h_end, γ'.target]))
+      ((((γ.subpathOn (part.t 0) (part.t i.castSucc)
+          (part.h_mono.monotone (Fin.zero_le i.castSucc))).trans
+        (α i.castSucc)).trans (γ'.subpathOn (part.t i.castSucc) (part.t (Fin.last n))
+          (part.h_mono.monotone (Fin.le_last i.castSucc)))).cast
+        (by rw [part.h_start, γ.source]) (by rw [part.h_end, γ'.target])) := by
+      -- Extract the homotopy from h_succ_inner
+      obtain ⟨H⟩ := h_succ_inner
+      -- Cast it to get a homotopy between the cast paths
+      exact ⟨H.cast rfl rfl⟩
+    rw [h_succ_unfold, h_castSucc_unfold]
+    exact h_cast
 
   -- Chain all homotopies together
   -- γ · α_n ≃ γ_aux n ≃ γ_aux (n-1) ≃ ... ≃ γ_aux 0 ≃ α_0 · γ'
@@ -1184,3 +1507,5 @@ theorem Path.Homotopic.Quotient.discreteTopology
     exact Quotient.eq (r := Path.Homotopic.setoid x y)
 
 end SemilocallySimplyConnected
+
+set_option linter.style.longFile 1700
