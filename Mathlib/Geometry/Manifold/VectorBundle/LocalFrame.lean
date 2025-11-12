@@ -519,25 +519,9 @@ lemma contMDiffAt_iff_localFrame_coeff (hx : x' ∈ e.baseSet) :
 coefficients `b.localFrame_coeff e i s` in a local frame near `x` is -/
 lemma contMDiffOn_iff_localFrame_coeff (ht : IsOpen t) (ht' : t ⊆ e.baseSet) :
     CMDiff[t] k (T% s) ↔ ∀ i, CMDiff[t] k (e.localFrame_coeff I b i s) := by
-  by_cases h: Nonempty e.baseSet; swap
-  · -- Future: can the push tactic golf this? Can by_cases! help here?
-    have : e.baseSet = ∅ := Set.not_nonempty_iff_eq_empty'.mp h
-    have : t = ∅ := by grind
-    rw [this]
-    exact iff_of_true (fun x hx ↦ hx.elim) (fun i x hx ↦ hx.elim)
-  obtain ⟨x, hx⟩ := h
-  have := (e.localFrame_isLocalFrameOn_baseSet I k b).fintype_of_finiteDimensional hx
-  refine ⟨fun h i ↦ contMDiffOn_localFrame_coeff b ht ht' h i, fun hi ↦ ?_⟩
-  -- TODO: golf this using the lemmas above
-  -- intro x hx
-  -- let aux := (e.localFrame_isLocalFrameOn_baseSet I k b).contMDiffAt_of_coeff (t := s) (x := x)
-  have this (i) : CMDiff[t] k (T% ((e.localFrame_coeff I b i) s • e.localFrame b i)) :=
-    (hi i).smul_section ((e.contMDiffOn_localFrame_baseSet k b i).mono ht')
-  let rhs := fun x' ↦ ∑ i, (e.localFrame_coeff I b i) s x' • e.localFrame b i x'
-  have almost : CMDiff[t] k (T% rhs) := .sum_section fun i _ ↦ this i
-  apply almost.congr
-  intro y hy
-  simpa using e.localFrame_coeff_sum_eq (ht' hy)
+  refine ⟨fun h i ↦ contMDiffOn_localFrame_coeff b ht ht' h _, fun h x hx ↦ ?_⟩
+  exact (contMDiffAt_iff_localFrame_coeff b (ht' hx)).mpr
+    (fun i ↦ (h i x hx).contMDiffAt (ht.mem_nhds hx)) |>.contMDiffWithinAt
 
 /-- A section `s` of `V` is `C^k` on a trivialisation domain `e.baseSet` iff each of its
 coefficients `b.localFrame_coeff e i s` in a local frame near `x` is -/
