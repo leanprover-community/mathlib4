@@ -86,6 +86,10 @@ instance instFourierTransform : FourierTransform 𝓢(V, E) 𝓢(V, E) where
 
 theorem fourierTransform_apply (f : 𝓢(V, E)) (x : V) : 𝓕 f x = 𝓕 (f : V → E) x := rfl
 
+instance instFourierModule : FourierModule 𝕜 𝓢(V, E) 𝓢(V, E) where
+  fourier_add := (fourierTransformCLM 𝕜).map_add
+  fourier_smul := (fourierTransformCLM 𝕜).map_smul
+
 @[simp]
 theorem fourierTransformCLM_apply (f : 𝓢(V, E)) :
     fourierTransformCLM 𝕜 f = 𝓕 f := rfl
@@ -97,6 +101,10 @@ instance instFourierTransformInv : FourierTransformInv 𝓢(V, E) 𝓢(V, E) whe
 lemma fourierTransformInv_apply (f : 𝓢(V, E)) (x : V) :
     𝓕⁻ f x = 𝓕⁻ (f : V → E) x :=
   (fourierIntegralInv_eq_fourierIntegral_neg f x).symm
+
+instance instFourierInvModule : FourierInvModule 𝕜 𝓢(V, E) 𝓢(V, E) where
+  fourierInv_add := ContinuousLinearMap.map_add _
+  fourierInv_smul := ContinuousLinearMap.map_smul _
 
 variable [CompleteSpace E]
 
@@ -119,10 +127,8 @@ instance instFourierInvPair : FourierInvPair 𝓢(V, E) 𝓢(V, E) where
 /-- The Fourier transform on a real inner product space, as a continuous linear equiv on the
 Schwartz space. -/
 def fourierTransformCLE : 𝓢(V, E) ≃L[𝕜] 𝓢(V, E) where
-  __ := fourierTransformCLM 𝕜
-  invFun := 𝓕⁻
-  left_inv := FourierPair.inv_fourier
-  right_inv := by intro; ext; simp
+  __ := FourierTransform.fourierEquiv 𝕜 𝓢(V, E) 𝓢(V, E)
+  continuous_toFun := (fourierTransformCLM 𝕜).continuous
   continuous_invFun := ContinuousLinearMap.continuous _
 
 @[simp]
@@ -174,25 +180,25 @@ variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteS
 
 /-- Plancherel's theorem for Schwartz functions. -/
 theorem integral_inner_fourier_fourier (f g : 𝓢(V, H)) :
-    ∫ ξ, ⟪𝓕 (f : V → H) ξ, 𝓕 (g : V → H) ξ⟫ = ∫ x, ⟪f x, g x⟫ :=
+    ∫ ξ, ⟪𝓕 f ξ, 𝓕 g ξ⟫ = ∫ x, ⟪f x, g x⟫ :=
   integral_sesq_fourier_fourier f g (innerSL ℂ)
 
 theorem integral_norm_sq_fourier (f : 𝓢(V, H)) :
-    ∫ ξ, ‖𝓕 (f : V → H) ξ‖^2 = ∫ x, ‖f x‖^2 := by
+    ∫ ξ, ‖𝓕 f ξ‖^2 = ∫ x, ‖f x‖^2 := by
   apply Complex.ofRealLI.injective
   simp only [← LinearIsometry.integral_comp_comm]
   convert integral_inner_fourier_fourier f f <;>
   simp [inner_self_eq_norm_sq_to_K]
 
-theorem inner_fourierTransformCLM_toL2_eq (f : 𝓢(V, H)) :
-    ⟪(fourierTransformCLM ℂ f).toLp 2, (fourierTransformCLM ℂ f).toLp 2⟫ =
+theorem inner_fourier_toL2_eq (f : 𝓢(V, H)) :
+    ⟪(𝓕 f).toLp 2, (𝓕 f).toLp 2⟫ =
     ⟪f.toLp 2, f.toLp 2⟫ := by
   simp only [inner_toL2_toL2_eq]
   exact integral_sesq_fourier_fourier f f (innerSL ℂ)
 
-theorem norm_fourierTransformCLM_toL2_eq (f : 𝓢(V, H)) :
-    ‖(fourierTransformCLM ℂ f).toLp 2‖ = ‖f.toLp 2‖ := by
-  simp_rw [norm_eq_sqrt_re_inner (𝕜 := ℂ), inner_fourierTransformCLM_toL2_eq]
+theorem norm_fourier_toL2_eq (f : 𝓢(V, H)) :
+    ‖(𝓕 f).toLp 2‖ = ‖f.toLp 2‖ := by
+  simp_rw [norm_eq_sqrt_re_inner (𝕜 := ℂ), inner_fourier_toL2_eq]
 
 end L2
 
