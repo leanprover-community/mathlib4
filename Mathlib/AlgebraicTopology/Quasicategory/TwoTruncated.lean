@@ -1,11 +1,43 @@
+/-
+Copyright (c) 2025 Julian Komaromy. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Julian Komaromy
+-/
 import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.CompStructTruncated
+
+/-!
+# 2-truncated quasicategories and homotopy relations
+
+We define 2-truncated quasicategories `Quasicategory₂` by three horn-filling properties
+and the left and right homotopy relations `HomotopicL` and `HomotopicR` on the edges in a
+2-truncated simplicial set.
+
+We prove that for 2-truncated quasicategories, both homotopy relations are equivalence
+relations, and that the left and right homotopy relations coincide.
+
+## Implementation notes
+
+Throughout this file, we make use of `Edge` and `CompStruct` to conveniently deal with
+edges and triangles in a 2-truncated simplicial set.
+-/
 
 open CategoryTheory SimplicialObject.Truncated
 
 namespace SSet.Truncated
 open Edge CompStruct
 
+/--
+A 2-truncated quasicategory is a 2-truncated simplicial set with the properties:
+* (2, 1)-filling: given two consecutive `Edge`s `e₀₁` and `e₁₂`, there exists a `CompStruct`
+  with (0, 1)-edge `e₀₁` and (0, 2)-edge `e₁₂`.
+* (3, 1)-filling: given three `CompStruct`s `f₃`, `f₀` and `f₂` which form a (3, 1)-horn,
+  there exists a fourth `CompStruct` such that the four faces form the boundary
+  ∂Δ[3] of a 3-simplex.
+* (3, 2)-filling: given three `CompStruct`s `f₃`, `f₀` and `f₁` which form a (3, 2)-horn,
+  there exists a fourth `CompStruct` such that the four faces form the boundary
+  ∂Δ[3] of a 3-simplex.
+-/
 class Quasicategory₂ (X : Truncated 2) where
   fill21 {x₀ x₁ x₂ : X _⦋0⦌₂}
       (e₀₁ : Edge x₀ x₁) (e₁₂ : Edge x₁ x₂) :
@@ -26,7 +58,7 @@ class Quasicategory₂ (X : Truncated 2) where
       Nonempty (CompStruct e₀₁ e₁₃ e₀₃)
 
 /--
-Two edges `f` and `g` are left homotopic if there is a 2-simplex with
+Two edges `f` and `g` are left homotopic if there is a `CompStruct` with
 (0, 1)-edge `f`, (1, 2)-edge `id` and (0, 2)-edge `g`. We use `Nonempty` to
 have a `Prop` valued `HomotopicL`.
 -/
@@ -34,22 +66,20 @@ abbrev HomotopicL {X : Truncated 2} {x y : X _⦋0⦌₂} (f g : Edge x y) :=
   Nonempty (CompStruct f (id y) g)
 
 /--
-Two edges `f` and `g` are right homotopic if there is a 2-simplex with
+Two edges `f` and `g` are right homotopic if there is a `CompStruct` with
 (0, 1)-edge `id`, (1, 2)-edge `f`, and (0, 2)-edge `g`. We use `Nonempty` to
 have a `Prop` valued `HomotopicR`.
 -/
 abbrev HomotopicR {X : Truncated 2} {x y : X _⦋0⦌₂} (f g : Edge x y) :=
   Nonempty (CompStruct (id x) f g)
 
-
-section left_homotopy_eqrel
+section homotopy_eqrel
 variable {X : Truncated 2} [Quasicategory₂ X]
 
 /--
 Left homotopy relation is reflexive
 -/
-def HomotopicL.refl {x y : X _⦋0⦌₂} {f : Edge x y} : HomotopicL f f
-  := ⟨compId f⟩
+def HomotopicL.refl {x y : X _⦋0⦌₂} {f : Edge x y} : HomotopicL f f := ⟨compId f⟩
 
 /--
 Left homotopy relation is symmetric
@@ -66,11 +96,6 @@ def HomotopicL.trans {x y : X _⦋0⦌₂} {f g h : Edge x y} (hfg : HomotopicL 
   rcases hfg with ⟨hfg⟩
   rcases hgh with ⟨hgh⟩
   exact Quasicategory₂.fill32 hfg (idComp (id y)) hgh
-
-end left_homotopy_eqrel
-
-section right_homotopy_eqrel
-variable {X : Truncated 2} [Quasicategory₂ X]
 
 /--
 Right homotopy relation is reflexive
@@ -93,6 +118,15 @@ def HomotopicR.trans {x y : X _⦋0⦌₂} {f g h : Edge x y} (hfg : HomotopicR 
   rcases hgh with ⟨hgh⟩
   exact Quasicategory₂.fill31 (idComp (id x)) hfg hgh
 
-end right_homotopy_eqrel
+end homotopy_eqrel
+
+/--
+The right and left homotopy relations coincide
+-/
+theorem left_homotopic_iff_right_homotopic {X : Truncated 2} [Quasicategory₂ X]
+    {x y : X _⦋0⦌₂} {f g : Edge x y} : HomotopicL f g ↔ HomotopicR f g := by
+  constructor
+  · rintro ⟨lhfg⟩; exact Quasicategory₂.fill32 (idComp f) (compId f) lhfg
+  · rintro ⟨rhfg⟩; exact Quasicategory₂.fill31 (idComp f) (compId f) rhfg
 
 end SSet.Truncated
