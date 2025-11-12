@@ -279,6 +279,9 @@ def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Option <| Expr × 
         throwError "Coefficients `{k}` and `{S}` of `{e}` are not reducibly definitionally equal"
     | _ => return none
 
+/-- TODO: add documentation! -/
+abbrev NormedSpaceInfo := Option (Expr × Expr)
+
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance. This supports the following cases:
 - the model with corners on the total space of a vector bundle
@@ -315,7 +318,7 @@ This implementation is not maximally robust yet.
 -- TODO: better error messages when all strategies fail
 -- TODO: consider lowering monad to `MetaM`
 def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
-    TermElabM <| Option <| Expr × Option (Expr × Expr) := do
+    TermElabM <| Option <| Expr × NormedSpaceInfo := do
   -- trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
   if let some m ← tryStrategy m!"TotalSpace"       fromTotalSpace     then return some (m, none)
   if let some m ← tryStrategy m!"TangentBundle"    fromTangentBundle  then return some (m, none)
@@ -655,7 +658,7 @@ partial def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : Te
   return u
 where
   go (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
-      TermElabM <| Option <| Expr × Option (Expr × Expr) := do
+      TermElabM <| Option (Expr × NormedSpaceInfo) := do
     -- At first, try finding a model on the space itself.
     if let some (m, r) ← findModelInner e baseInfo then return some (m, r)
     -- Otherwise, we recurse into the expression,
