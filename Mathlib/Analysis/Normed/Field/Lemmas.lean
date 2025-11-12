@@ -102,7 +102,7 @@ instance (priority := 100) NormedDivisionRing.to_continuousInv₀ : ContinuousIn
       ‖e⁻¹ - r⁻¹‖ = ‖r‖⁻¹ * ‖r - e‖ * ‖e‖⁻¹ := by
         rw [← norm_inv, ← norm_inv, ← norm_mul, ← norm_mul, mul_sub, sub_mul,
           mul_assoc _ e, inv_mul_cancel₀ r0, mul_inv_cancel₀ e0, one_mul, mul_one]
-      _ = ‖r - e‖ / ‖r‖ / ‖e‖ := by field_simp
+      _ = ‖r - e‖ / ‖r‖ / ‖e‖ := by field
       _ ≤ ‖r - e‖ / ‖r‖ / ε := by gcongr
   refine squeeze_zero' (Eventually.of_forall fun _ => norm_nonneg _) this ?_
   refine (((continuous_const.sub continuous_id).norm.div_const _).div_const _).tendsto' _ _ ?_
@@ -115,9 +115,6 @@ instance (priority := 100) NormedDivisionRing.to_continuousInv₀ : ContinuousIn
 /-- A normed division ring is a topological division ring. -/
 instance (priority := 100) NormedDivisionRing.to_isTopologicalDivisionRing :
     IsTopologicalDivisionRing α where
-
-@[deprecated (since := "2025-03-25")] alias NormedDivisionRing.to_topologicalDivisionRing :=
-  NormedDivisionRing.to_isTopologicalDivisionRing
 
 lemma NormedField.tendsto_norm_inv_nhdsNE_zero_atTop : Tendsto (fun x : α ↦ ‖x⁻¹‖) (𝓝[≠] 0) atTop :=
   (tendsto_inv_nhdsGT_zero.comp tendsto_norm_nhdsNE_zero).congr fun x ↦ (norm_inv x).symm
