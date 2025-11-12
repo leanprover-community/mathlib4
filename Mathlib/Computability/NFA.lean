@@ -572,7 +572,7 @@ theorem isRegular_reverse_iff {L : Language α} : L.reverse.IsRegular ↔ L.IsRe
   ⟨.of_reverse, .reverse⟩
 
 /-- Regular languages are closed under concatenation. -/
-theorem IsRegular.concat {L1 L2 : Language α}
+theorem IsRegular.mul {L1 L2 : Language α}
   (h1 : L1.IsRegular) (h2 : L2.IsRegular) : (L1 * L2).IsRegular :=
   have ⟨σ1, _, M1, hM1⟩ := h1
   have ⟨σ2, _, M2, hM2⟩ := h2
