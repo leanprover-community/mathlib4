@@ -9,7 +9,7 @@ import Mathlib.AlgebraicTopology.SimplicialSet.CompStructTruncated
 /-!
 # 2-truncated quasicategories and homotopy relations
 
-We define 2-truncated quasicategories `Quasicategory₂` by three horn-filling properties
+We define 2-truncated quasicategories `Quasicategory₂` by three horn-filling properties,
 and the left and right homotopy relations `HomotopicL` and `HomotopicR` on the edges in a
 2-truncated simplicial set.
 
@@ -120,15 +120,29 @@ lemma HomotopicR.trans [Quasicategory₂ X] {x y : X _⦋0⦌₂} {f g h : Edge 
   rcases hgh with ⟨hgh⟩
   exact Quasicategory₂.fill31 (idComp (id x)) hfg hgh
 
-end homotopy_eqrel
+/--
+In a 2-truncated quasicategory, left homotopy implies right homotopy
+-/
+lemma HomotopicL.homotopicR [Quasicategory₂ X] {x y : X _⦋0⦌₂} {f g : Edge x y}
+    (h : HomotopicL f g) : HomotopicR f g := by
+  rcases h with ⟨h⟩
+  exact Quasicategory₂.fill32 (idComp f) (compId f) h
 
 /--
-The right and left homotopy relations coincide
+In a 2-truncated quasicategory, right homotopy implies left homotopy
 -/
-theorem left_homotopic_iff_right_homotopic {X : Truncated 2} [Quasicategory₂ X]
-    {x y : X _⦋0⦌₂} {f g : Edge x y} : HomotopicL f g ↔ HomotopicR f g := by
-  constructor
-  · rintro ⟨lhfg⟩; exact Quasicategory₂.fill32 (idComp f) (compId f) lhfg
-  · rintro ⟨rhfg⟩; exact Quasicategory₂.fill31 (idComp f) (compId f) rhfg
+lemma HomotopicR.homotopicL [Quasicategory₂ X] {x y : X _⦋0⦌₂} {f g : Edge x y}
+    (h : HomotopicR f g) : HomotopicL f g := by
+  rcases h with ⟨h⟩
+  exact Quasicategory₂.fill31 (idComp f) (compId f) h
+
+/--
+In a 2-truncated quasicategory, the right and left homotopy relations coincide
+-/
+theorem homotopicL_iff_homotopicR [Quasicategory₂ X] {x y : X _⦋0⦌₂} {f g : Edge x y} :
+    HomotopicL f g ↔ HomotopicR f g :=
+  ⟨HomotopicL.homotopicR, HomotopicR.homotopicL⟩
+
+end homotopy_eqrel
 
 end SSet.Truncated
