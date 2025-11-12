@@ -49,7 +49,7 @@ lemma comul_apply' (x : M) : comul' R x = ι R x ⊗ₜ[R] ↑1 + ↑1 ⊗ₜ[R]
 
 @[simp]
 lemma counit_ι_apply (x : M) : (ε R) ((ι R) x) = 0 := by
-  unfold ε 
+  unfold ε
   rw [algebraMapInv]
   simp
 
@@ -82,7 +82,7 @@ lemma antipode_one (r : R) : antipode R (algebraMap R T[M] r) = algebraMap R T[M
   unfold antipode
   simp
 
-theorem coassoc : (Algebra.TensorProduct.assoc R R T[M] T[M] T[M]).toAlgHom.comp 
+theorem coassoc : (Algebra.TensorProduct.assoc R R T[M] T[M] T[M]).toAlgHom.comp
     ((Algebra.TensorProduct.map (comul R) (AlgHom.id R T[M])).comp (comul R)) =
     (Algebra.TensorProduct.map (AlgHom.id R T[M]) (comul R)).comp (comul R) := by
   unfold comul comul'
