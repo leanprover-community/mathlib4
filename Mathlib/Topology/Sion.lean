@@ -676,4 +676,3 @@ theorem exists_isSaddlePointOn :
 end Real
 
 end Sion
-
