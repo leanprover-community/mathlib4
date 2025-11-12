@@ -66,6 +66,22 @@ def Path.subpathOn {X : Type*} [TopologicalSpace X] {x y : X} (γ : Path x y)
   source' := by simp
   target' := by simp
 
+@[simp]
+theorem Path.subpathOn_apply {X : Type*} [TopologicalSpace X] {x y : X} (γ : Path x y)
+    (a b : unitInterval) (hab : a ≤ b) (t : unitInterval) :
+    (γ.subpathOn a b hab) t = γ ⟨(a : ℝ) + t * ((b : ℝ) - a), by
+      constructor
+      · apply add_nonneg a.2.1
+        apply mul_nonneg t.2.1
+        linarith [show (a : ℝ) ≤ b from hab]
+      · calc (a : ℝ) + t * ((b : ℝ) - a)
+            ≤ a + 1 * ((b : ℝ) - a) := by
+              apply add_le_add_left
+              apply mul_le_mul_of_nonneg_right t.2.2
+              linarith [show (a : ℝ) ≤ b from hab]
+          _ = b := by ring
+          _ ≤ 1 := b.2.2⟩ := rfl
+
 /-- A partition of the unit interval [0,1] into n segments.
 This bundles a strictly monotone sequence 0 = t₀ < t₁ < ... < tₙ = 1. -/
 structure IntervalPartition (n : ℕ) where
@@ -123,20 +139,12 @@ namespace Set.Icc
 theorem continuous_convexCombo_param {a b : ℝ} (x y : Icc a b) :
     Continuous (fun t : unitInterval => convexCombo x y t) := by
   refine Continuous.subtype_mk ?_ _
-  continuity
+  fun_prop
 
 theorem continuous_convexCombo {a b : ℝ} :
     Continuous (fun (p : Icc a b × Icc a b × unitInterval) => convexCombo p.1 p.2.1 p.2.2) := by
-  refine Continuous.subtype_mk ?_ _
-  apply Continuous.add
-  · apply Continuous.mul
-    · apply Continuous.sub
-      · exact continuous_const
-      · exact continuous_subtype_val.comp (continuous_snd.comp continuous_snd)
-    · exact continuous_subtype_val.comp continuous_fst
-  · apply Continuous.mul
-    · exact continuous_subtype_val.comp (continuous_snd.comp continuous_snd)
-    · exact continuous_subtype_val.comp (continuous_fst.comp continuous_snd)
+  apply Continuous.subtype_mk
+  fun_prop
 
 end Set.Icc
 
@@ -157,6 +165,7 @@ theorem Path.subpathOn_trans_aux₁ {X : Type*} [TopologicalSpace X] {x y : X} (
     rw [min_eq_right (by linarith : 2 * (t : ℝ) - 1 ≤ 1),
         max_eq_right (by linarith : 0 ≤ 2 * (t : ℝ) - 1)]; ring
 
+open Set.Icc in
 /--
 Splitting a sub-path into pieces and rejoining them is independent, up to homotopy,
 of the splitting point.
@@ -164,36 +173,26 @@ of the splitting point.
 theorem Path.subpathOn_trans_aux₂ {X : Type*} [TopologicalSpace X] {x y : X} (γ : Path x y)
     (a b : unitInterval) (hab : a ≤ b) (s t : unitInterval) :
     Path.Homotopic
-      ((γ.subpathOn a (Set.Icc.convexCombo a b s) (Set.Icc.le_convexCombo hab _)).trans
-        (γ.subpathOn (Set.Icc.convexCombo a b s) b (Set.Icc.convexCombo_le hab _)))
-      ((γ.subpathOn a (Set.Icc.convexCombo a b t) (Set.Icc.le_convexCombo hab _)).trans
-        (γ.subpathOn (Set.Icc.convexCombo a b t) b (Set.Icc.convexCombo_le hab _))) := by
-  open Set.Icc in
+      ((γ.subpathOn a (convexCombo a b s) (le_convexCombo hab _)).trans
+        (γ.subpathOn (convexCombo a b s) b (convexCombo_le hab _)))
+      ((γ.subpathOn a (convexCombo a b t) (le_convexCombo hab _)).trans
+        (γ.subpathOn (convexCombo a b t) b (convexCombo_le hab _))) := by
   -- Construct explicit homotopy: at parameter u, split at convexCombo(a, b, convexCombo(s, t, u))
   refine ⟨{
     toFun := fun ⟨u, v⟩ =>
       ((γ.subpathOn a (convexCombo a b (convexCombo s t u)) (le_convexCombo hab _)).trans
         (γ.subpathOn (convexCombo a b (convexCombo s t u)) b (convexCombo_le hab _))) v
     continuous_toFun := by
-      sorry
-    map_zero_left := by
-      intro v
-      simp [Path.trans_apply]
-      -- Need: convexCombo s t 0 = s, but dependent types make direct rewriting hard
-      sorry
-    map_one_left := by
-      intro v
-      simp
-      -- Need: convexCombo s t 1 = t
-      sorry
-    prop' := by
-      -- Need: endpoints stay fixed at γ(a) and γ(b)
-      intro u x hx
-      simp at hx
+      simp only [trans_apply, one_div, subpathOn_apply, coe_convexCombo]
+      simp only [← extend_extends, dite_eq_ite]
+      apply continuous_if_le (hfg := by grind) <;> fun_prop
+    map_zero_left v := by simp [Path.trans_apply]
+    map_one_left v := by simp [Path.trans_apply]
+    prop' u x hx := by
       rcases hx with rfl | rfl
       · simp [Path.trans]
       · simp [Path.trans]
-        sorry
+        norm_num
   }⟩
 
 /--
