@@ -13,9 +13,9 @@ import Mathlib.Data.Finsupp.Fin
 This file contains theorems relevant to big operators on finitely supported functions over `Fin`.
 -/
 
-namespace Finsupp
-
 variable {M N : Type*}
+
+namespace Finsupp
 
 lemma sum_cons [AddCommMonoid M] (n : ℕ) (σ : Fin n →₀ M) (i : M) :
     (sum (cons i σ) fun _ e ↦ e) = i + sum σ (fun _ e ↦ e) := by
@@ -38,25 +38,16 @@ end Finsupp
 
 section Fin2
 
-variable (X : Type*) [Zero X]
-
+variable (M) in
 /-- The space of finitely supported functions `Fin 2 →₀ α` is equivalent to `α × α`.
 See also `finTwoArrowEquiv`. -/
-@[simps -fullyApplied]
-noncomputable def finTwoArrowEquiv' : (Fin 2 →₀ X) ≃ (X × X) where
-  toFun x     := (x 0, x 1)
-  invFun x    := Finsupp.ofSupportFinite ![x.1, x.2] (Set.toFinite _)
-  left_inv x  := by
-    simp only [Fin.isValue, Finsupp.ext_iff, Fin.forall_fin_two]
-    exact ⟨rfl, rfl⟩
-  right_inv x := rfl
+@[simps! apply symm_apply]
+noncomputable def finTwoArrowEquiv' [Zero M] : (Fin 2 →₀ M) ≃ M × M :=
+  Finsupp.equivFunOnFinite.trans (finTwoArrowEquiv M)
 
-theorem finTwoArrowEquiv'_sum_eq {d : ℕ × ℕ} :
-    (((finTwoArrowEquiv' ℕ).symm d).sum fun _ n ↦ n) = d.1 + d.2 := by
-  simp [Finsupp.sum, finTwoArrowEquiv'_symm_apply, Finsupp.ofSupportFinite_coe]
-  rw [Finset.sum_subset (Finset.subset_univ _)
-    (fun _ _ h ↦ by simpa [Finsupp.ofSupportFinite_coe] using h)]
-  simp [Fin.sum_univ_two, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
-    Matrix.cons_val_fin_one]
+theorem finTwoArrowEquiv'_sum_eq {d : M × M} [AddCommMonoid M] :
+    (((finTwoArrowEquiv' M).symm d).sum fun _ n ↦ n) = d.1 + d.2 := by
+  apply (Finsupp.equivFunOnFinite_symm_sum _).trans
+  simp
 
 end Fin2

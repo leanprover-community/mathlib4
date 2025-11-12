@@ -471,6 +471,11 @@ end MeasurableSpace
 def Measurable [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Prop :=
   ∀ ⦃t : Set β⦄, MeasurableSet t → MeasurableSet (f ⁻¹' t)
 
+add_aesop_rules safe tactic
+  (rule_sets := [Measurable])
+  (index := [target @Measurable ..])
+  (by fun_prop (disch := measurability))
+
 namespace MeasureTheory
 
 set_option quotPrecheck false in
@@ -495,8 +500,7 @@ protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace 
     Measurable (g ∘ f) :=
   fun _ h => hf (hg h)
 
--- This is needed due to reducibility issues with the `measurability` tactic.
-@[fun_prop, aesop safe 50 (rule_sets := [Measurable])]
+@[fun_prop]
 protected theorem Measurable.comp' {_ : MeasurableSpace α} {_ : MeasurableSpace β}
     {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
     Measurable (fun x => g (f x)) := Measurable.comp hg hf

@@ -26,7 +26,7 @@ The file does not contain any lemmas except for
 * axioms of typeclasses restated in the root namespace;
 * lemmas required for instances.
 
-For basic lemmas about these classes see `Algebra.Group.Basic`.
+For basic lemmas about these classes see `Mathlib/Algebra/Group/Basic.lean`.
 
 We register the following instances:
 
@@ -51,20 +51,6 @@ variable {G : Type*}
 section Mul
 
 variable [Mul G]
-
-/-- `leftMul g` denotes left multiplication by `g` -/
-@[to_additive /-- `leftAdd g` denotes left addition by `g` -/]
-def leftMul : G → G → G := fun g : G ↦ fun x : G ↦ g * x
-
-/-- `rightMul g` denotes right multiplication by `g` -/
-@[to_additive /-- `rightAdd g` denotes right addition by `g` -/]
-def rightMul : G → G → G := fun g : G ↦ fun x : G ↦ x * g
-
-attribute [deprecated HMul.hMul "Use (g * ·) instead" (since := "2025-04-08")] leftMul
-attribute [deprecated HAdd.hAdd "Use (g + ·) instead" (since := "2025-04-08")] leftAdd
-
-attribute [deprecated HMul.hMul "Use (· * g) instead" (since := "2025-04-08")] rightMul
-attribute [deprecated HAdd.hAdd "Use (· + g) instead" (since := "2025-04-08")] rightAdd
 
 /-- A mixin for left cancellative multiplication. -/
 @[mk_iff] class IsLeftCancelMul (G : Type u) [Mul G] : Prop where
@@ -228,10 +214,16 @@ attribute [to_additive] CommSemigroup
 
 section CommMagma
 
-variable [CommMagma G]
+variable [CommMagma G] {a : G}
 
 @[to_additive]
 theorem mul_comm : ∀ a b : G, a * b = b * a := CommMagma.mul_comm
+
+@[simp] lemma isLeftRegular_iff_isRegular : IsLeftRegular a ↔ IsRegular a := by
+  simp [isRegular_iff, IsLeftRegular, IsRightRegular, mul_comm]
+
+@[simp] lemma isRightRegular_iff_isRegular : IsRightRegular a ↔ IsRegular a := by
+  simp [isRegular_iff, IsLeftRegular, IsRightRegular, mul_comm]
 
 /-- Any `CommMagma G` that satisfies `IsRightCancelMul G` also satisfies `IsLeftCancelMul G`. -/
 @[to_additive AddCommMagma.IsRightCancelAdd.toIsLeftCancelAdd /-- Any `AddCommMagma G` that

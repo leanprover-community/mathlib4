@@ -193,6 +193,7 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
     α i - α j ∈ Φ := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   have : Module.IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
+  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
   by_cases hli : LinearIndependent R ![α i, α j]
   · -- The case where the two roots are linearly independent
     suffices P.pairingIn ℤ i j = 1 ∨ P.pairingIn ℤ j i = 1 by
@@ -313,10 +314,9 @@ lemma exists_apply_eq_or [Nonempty ι] : ∃ i j, ∀ k,
     B.form (α k) (α k) = B.form (α i) (α i) ∨
     B.form (α k) (α k) = B.form (α j) (α j) := by
   obtain ⟨i⟩ := inferInstanceAs (Nonempty ι)
-  by_cases h : (∀ j, B.form (α j) (α j) = B.form (α i) (α i))
+  by_cases! h : (∀ j, B.form (α j) (α j) = B.form (α i) (α i))
   · refine ⟨i, i, fun j ↦ by simp [h j]⟩
-  · push_neg at h
-    obtain ⟨j, hji_ne⟩ := h
+  · obtain ⟨j, hji_ne⟩ := h
     refine ⟨i, j, fun k ↦ ?_⟩
     by_contra! hk
     obtain ⟨hki_ne, hkj_ne⟩ := hk
@@ -347,11 +347,10 @@ lemma forall_pairing_eq_swap_or [P.IsReduced] [P.IsIrreducible] :
             P.pairing j i = 3 * P.pairing i j) := by
   have : Fintype ι := Fintype.ofFinite ι
   have B := (P.posRootForm ℤ).toInvariantForm
-  by_cases h : ∀ i j, B.form (α i) (α i) = B.form (α j) (α j)
+  by_cases! h : ∀ i j, B.form (α i) (α i) = B.form (α j) (α j)
   · refine Or.inl fun i j ↦ Or.inl ?_
     have := B.pairing_mul_eq_pairing_mul_swap j i
     rwa [h i j, mul_left_inj' (B.ne_zero j)] at this
-  push_neg at h
   obtain ⟨i, j, hij⟩ := h
   have key := B.apply_eq_or_of_apply_ne hij
   set li := B.form (α i) (α i)
