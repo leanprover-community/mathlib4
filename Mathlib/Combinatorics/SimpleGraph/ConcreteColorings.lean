@@ -3,6 +3,7 @@ Copyright (c) 2023 Iván Renison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Iván Renison
 -/
+import Mathlib.Combinatorics.SimpleGraph.Bipartite
 import Mathlib.Combinatorics.SimpleGraph.Circulant
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
@@ -24,13 +25,17 @@ assert_not_exists Field
 
 namespace SimpleGraph
 
-theorem two_le_chromaticNumber_of_adj {α} {G : SimpleGraph α} {u v : α} (hadj : G.Adj u v) :
-    2 ≤ G.chromaticNumber := by
-  refine le_of_not_gt ?_
-  intro h
-  have hc : G.Colorable 1 := chromaticNumber_le_iff_colorable.mp (Order.le_of_lt_add_one h)
-  let c : G.Coloring (Fin 1) := hc.some
-  exact c.valid hadj (Subsingleton.elim (c u) (c v))
+theorem chromaticNumber_le_two_iff_isBipartite {V : Type*} {G : SimpleGraph V} :
+    G.chromaticNumber ≤ 2 ↔ G.IsBipartite :=
+  chromaticNumber_le_iff_colorable
+
+theorem chromaticNumber_eq_two_iff {V : Type*} {G : SimpleGraph V} :
+    G.chromaticNumber = 2 ↔ G.IsBipartite ∧ G ≠ ⊥ :=
+  ⟨fun h ↦ ⟨chromaticNumber_le_two_iff_isBipartite.mp (by simp [h]),
+            two_le_chromaticNumber_iff_ne_bot.mp (by simp [h])⟩,
+   fun ⟨h₁, h₂⟩ ↦ ENat.eq_of_forall_natCast_le_iff fun _ ↦
+      ⟨fun h ↦ h.trans <| chromaticNumber_le_two_iff_isBipartite.mpr h₁,
+       fun h ↦ h.trans <| two_le_chromaticNumber_iff_ne_bot.mpr h₂⟩⟩
 
 /-- Bicoloring of a path graph -/
 def pathGraph.bicoloring (n : ℕ) :
