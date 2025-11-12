@@ -82,7 +82,7 @@ theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
 
 noncomputable instance : NormedDivisionRing ℍ where
   dist_eq _ _ := rfl
-  norm_mul _ _ := by simp [norm_eq_sqrt_real_inner, inner_self]
+  norm_mul _ _ := by simp [-inner_self_eq_norm_sq_to_K, norm_eq_sqrt_real_inner, inner_self]
 
 noncomputable instance : NormedAlgebra ℝ ℍ where
   norm_smul_le := norm_smul_le

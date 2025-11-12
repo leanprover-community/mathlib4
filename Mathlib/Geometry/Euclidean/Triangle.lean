@@ -74,7 +74,7 @@ theorem sin_angle_mul_norm_eq_sin_angle_mul_norm (x y : V) :
     simp [field, mul_assoc, sin_angle_mul_norm_mul_norm]
   rw [h_sin x y hx hy, h_sin y (x - y) hy (sub_ne_zero_of_ne hxy)]
   have hsub : x - y ≠ 0 := sub_ne_zero_of_ne hxy
-  simp [field, inner_sub_left, inner_sub_right, real_inner_comm x y]
+  simp [-inner_self_eq_norm_sq_to_K, field, inner_sub_left, inner_sub_right, real_inner_comm x y]
   ring_nf
 
 /-- A variant of the law of sines, (two given sides are nonzero), vector angle form. -/
