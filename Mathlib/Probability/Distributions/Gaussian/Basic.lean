@@ -145,6 +145,7 @@ end charFunDual
 
 section charFun
 
+open InnerProductSpace
 open scoped RealInnerProductSpace
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [MeasurableSpace E]
@@ -154,12 +155,9 @@ lemma isGaussian_iff_charFun_eq [IsFiniteMeasure μ] :
     IsGaussian μ ↔
     ∀ t, charFun μ t = exp (μ[fun x ↦ ⟪t, x⟫] * I - Var[fun x ↦ ⟪t, x⟫; μ] / 2) := by
   rw [isGaussian_iff_charFunDual_eq]
-  constructor
-  · intro h t
-    convert h (InnerProductSpace.toDualMap ℝ E t)
-    exact charFun_eq_charFunDual_toDualMap t
-  · intro h L
-    simpa using h ((InnerProductSpace.toDual ℝ E).symm L)
+  refine ⟨fun h t ↦ ?_, fun h L ↦ by simpa using h ((toDual ℝ E).symm L)⟩
+  convert h (toDualMap ℝ E t)
+  exact charFun_eq_charFunDual_toDualMap t
 
 lemma IsGaussian.charFun_eq [IsGaussian μ] (t : E) :
     charFun μ t = exp (μ[fun x ↦ ⟪t, x⟫] * I - Var[fun x ↦ ⟪t, x⟫; μ] / 2) := by
