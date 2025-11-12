@@ -351,10 +351,7 @@ def localFrame : ι → (x : M) → V x :=
 
 /-- Each local frame `{sᵢ} ∈ Γ(E)` of a `C^k` vector bundle, defined by a local trivialisation `e`,
 is `C^k` on `e.baseSet`. -/
-lemma contMDiffOn_localFrame_baseSet
-    (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
-    (b : Basis ι 𝕜 F) (i : ι) :
-    CMDiff[e.baseSet] n (T% (e.localFrame b i)) := by
+lemma contMDiffOn_localFrame_baseSet (i : ι) : CMDiff[e.baseSet] n (T% (e.localFrame b i)) := by
   rw [e.contMDiffOn_section_baseSet_iff]
   apply (contMDiffOn_const (c := b i)).congr
   intro y hy
@@ -362,9 +359,7 @@ lemma contMDiffOn_localFrame_baseSet
 
 variable (I) in
 /-- `b.localFrame e i` is indeed a local frame on `e.baseSet` -/
-lemma localFrame_isLocalFrameOn_baseSet
-    (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
-    (b : Basis ι 𝕜 F) : IsLocalFrameOn I F n (e.localFrame b) e.baseSet where
+lemma localFrame_isLocalFrameOn_baseSet : IsLocalFrameOn I F n (e.localFrame b) e.baseSet where
   contMDiffOn i := e.contMDiffOn_localFrame_baseSet _ b i
   linearIndependent := by
     intro x hx
@@ -375,23 +370,16 @@ lemma localFrame_isLocalFrameOn_baseSet
     convert (e.basisAt b hx).span_eq.ge
     simp [localFrame, hx, basisAt]
 
-lemma _root_.contMDiffAt_localFrame_of_mem
-    (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
-    (b : Basis ι 𝕜 F) (i : ι) (hx : x ∈ e.baseSet) :
+lemma _root_.contMDiffAt_localFrame_of_mem (i : ι) (hx : x ∈ e.baseSet) :
     CMDiffAt n (T% (e.localFrame b i)) x :=
   (e.localFrame_isLocalFrameOn_baseSet I n b).contMDiffAt e.open_baseSet hx _
 
 @[simp]
-lemma localFrame_apply_of_mem_baseSet
-    (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
-    (b : Basis ι 𝕜 F) {i : ι} (hx : x ∈ e.baseSet) :
+lemma localFrame_apply_of_mem_baseSet {i : ι} (hx : x ∈ e.baseSet) :
     e.localFrame b i x = e.basisAt b hx i := by
   simp [localFrame, hx]
 
-lemma localFrame_apply_of_notMem
-    (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
-    (b : Basis ι 𝕜 F) {i : ι} (hx : x ∉ e.baseSet) :
-    e.localFrame b i x = 0 := by
+lemma localFrame_apply_of_notMem {i : ι} (hx : x ∉ e.baseSet) : e.localFrame b i x = 0 := by
   simp [localFrame, hx]
 
 variable [ContMDiffVectorBundle 1 F V I]
