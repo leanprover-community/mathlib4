@@ -74,24 +74,25 @@ abbrev HomotopicR {X : Truncated 2} {x y : X _⦋0⦌₂} (f g : Edge x y) :=
   Nonempty (CompStruct (id x) f g)
 
 section homotopy_eqrel
-variable {X : Truncated 2} [Quasicategory₂ X]
+variable {X : Truncated 2}
 
 /--
 Left homotopy relation is reflexive
 -/
-def HomotopicL.refl {x y : X _⦋0⦌₂} {f : Edge x y} : HomotopicL f f := ⟨compId f⟩
+lemma HomotopicL.refl {x y : X _⦋0⦌₂} {f : Edge x y} : HomotopicL f f := ⟨compId f⟩
 
 /--
 Left homotopy relation is symmetric
 -/
-def HomotopicL.symm {x y : X _⦋0⦌₂} {f g : Edge x y} (hfg : HomotopicL f g) : HomotopicL g f := by
+lemma HomotopicL.symm [Quasicategory₂ X] {x y : X _⦋0⦌₂} {f g : Edge x y} (hfg : HomotopicL f g) :
+    HomotopicL g f := by
   rcases hfg with ⟨hfg⟩
   exact Quasicategory₂.fill31 hfg (idComp (id y)) (compId f)
 
 /--
 Left homotopy relation is transitive
 -/
-def HomotopicL.trans {x y : X _⦋0⦌₂} {f g h : Edge x y} (hfg : HomotopicL f g)
+lemma HomotopicL.trans [Quasicategory₂ X] {x y : X _⦋0⦌₂} {f g h : Edge x y} (hfg : HomotopicL f g)
     (hgh : HomotopicL g h) : HomotopicL f h := by
   rcases hfg with ⟨hfg⟩
   rcases hgh with ⟨hgh⟩
@@ -100,19 +101,20 @@ def HomotopicL.trans {x y : X _⦋0⦌₂} {f g h : Edge x y} (hfg : HomotopicL 
 /--
 Right homotopy relation is reflexive
 -/
-def HomotopicR.refl {x y : X _⦋0⦌₂} {f : Edge x y} : HomotopicR f f := ⟨idComp f⟩
+lemma HomotopicR.refl {x y : X _⦋0⦌₂} {f : Edge x y} : HomotopicR f f := ⟨idComp f⟩
 
 /--
 Right homotopy relation is symmetric
 -/
-def HomotopicR.symm {x y : X _⦋0⦌₂} {f g : Edge x y} (hfg : HomotopicR f g) : HomotopicR g f := by
+lemma HomotopicR.symm [Quasicategory₂ X] {x y : X _⦋0⦌₂} {f g : Edge x y} (hfg : HomotopicR f g) :
+    HomotopicR g f := by
   rcases hfg with ⟨hfg⟩
   exact Quasicategory₂.fill32 (idComp (id x)) hfg (idComp f)
 
 /--
 Right homotopy relation is transitive
 -/
-def HomotopicR.trans {x y : X _⦋0⦌₂} {f g h : Edge x y} (hfg : HomotopicR f g)
+lemma HomotopicR.trans [Quasicategory₂ X] {x y : X _⦋0⦌₂} {f g h : Edge x y} (hfg : HomotopicR f g)
     (hgh : HomotopicR g h) : HomotopicR f h := by
   rcases hfg with ⟨hfg⟩
   rcases hgh with ⟨hgh⟩
