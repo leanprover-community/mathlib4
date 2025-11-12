@@ -191,7 +191,6 @@ theorem C_subset_or'
     (hfy : ∀ y ∈ Y, LowerSemicontinuousOn (fun x : E => f x y) X)
     (hfy' : ∀ y ∈ Y, QuasiconvexOn ℝ X fun x => f x y)
     [TopologicalSpace F] [AddCommGroup F] [Module ℝ F]
-    [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
     (cY : Convex ℝ Y)
     (hfx' : ∀ x ∈ X, QuasiconcaveOn ℝ Y fun y => f x y)
     (a : E) (b : β) (y y' : Y)
