@@ -8,20 +8,22 @@ import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
-# Tensor product of cones
+# Tensor products of cones
 
-The ordering of the tensor product of ordered modules is not uniquely defined by the
-tensor product of modules. Orderings can be expressed as (salient pointed) cones
-(representing the nonnegative elements). Therefore, equivalently to the above, the definition
-of the tensor product of convex cones is not uniquely specified by the tensor product of
-modules. "Sufficiently nice" candidates for tensor products of cones are bounded by
-the minimal tensor product and the maximal tensor product. These are the analogues
-of the injective and projective tensor products in the theory of operator algebras.
+Given ordered modules `M` and `N`, there are in general several distinct possible
+orderings of the tensor product module `M ⊗ N`. Since the ordering of an ordered module
+can be represented by its cone of nonnegative elements, there are consequently several
+distinct ways to construct a cone in `M ⊗ N` from cones in `M` and `N`. Such constructions
+are referred to as tensor products of cones.
 
-We define the minimal and maximal tensor products of two pointed cones:
+"Sufficiently nice" candidates for tensor products of cones are bounded by the minimal
+and maximal tensor products. These products coincide in special cases but are generally
+distinct.
 
-* `minTensorProduct C₁ C₂`: all conical combinations of elementary tensor products x ⊗ₜ y
-  of cone elements x and y.
+We define the minimal and maximal tensor products of pointed cones:
+
+* `minTensorProduct C₁ C₂`: all conical combinations of elementary tensor products
+  `x ⊗ₜ y` with `x ∈ C₁` and `y ∈ C₂`.
 * `maxTensorProduct C₁ C₂`: the dual cone of the minimal tensor product of the dual cones.
 
 ## Main results
@@ -50,7 +52,7 @@ variable {H : Type*} [AddCommGroup H] [Module R H]
 namespace PointedCone
 
 /-- The minimal tensor product of two cones is given by all conical combinations of elementary
-tensor products x ⊗ₜ y of cone elements x and y. -/
+tensor products `x ⊗ₜ y` with `x ∈ C₁` and `y ∈ C₂`. -/
 noncomputable def minTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCone R H) :
     PointedCone R (G ⊗[R] H) :=
   .span R (.image2 (· ⊗ₜ[R] ·) C₁ C₂)
