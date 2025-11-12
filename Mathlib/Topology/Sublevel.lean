@@ -8,10 +8,6 @@ import Mathlib.Topology.Semicontinuous
 
 /-! # Sublevel sets
 
-* `IsCompact.elim_finite_subfamily_closedOn`, if a finite
-  family of closed sets doesn't meet a compact set,
-  then a finite sub-family already doesn't meet that compact set.
-
 * `Set.LeSublevel f b`, the sublevel set of a function `f`, `{ x | f x ≤ b }`
 
 * `Set.LeSublevelOn A f b`, the sublevel set of on `A`, `{ x ∈ A | f x ≤ b }`
