@@ -241,36 +241,59 @@ noncomputable
 def covarianceBilinDual (μ : Measure E) : StrongDual ℝ E →L[ℝ] StrongDual ℝ E →L[ℝ] ℝ :=
   uncenteredCovarianceBilinDual (μ.map (fun x ↦ x - ∫ x, x ∂μ))
 
-@[simp]
-lemma covarianceBilinDual_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
-    covarianceBilinDual μ L₁ L₂ = 0 := by
-  rw [covarianceBilinDual, uncenteredCovarianceBilinDual_of_not_memLp]
-  rw [(measurableEmbedding_subRight _).memLp_map_measure_iff]
-  refine fun h_Lp ↦ h ?_
+omit [BorelSpace E] in
+lemma _root_.MemLp.of_self_sub_integral (h_Lp : MemLp (fun x ↦ x - ∫ y, y ∂μ) 2 μ) :
+    MemLp id 2 μ := by
   have : (id : E → E) = fun x ↦ x - ∫ x, x ∂μ + ∫ x, x ∂μ := by ext; simp
   rw [this]
   apply h_Lp.add
-  simp at h_Lp
-  by_cases hx : ∫ (x : E), x ∂μ = 0
+  set c := ∫ x, x ∂μ
+  /- We need to check that the constant `c = ∫ x, x ∂μ` is in `L^2`. Note that we don't assume
+  that `μ` is finite, so this requires an argument. If the constant is zero, it's obvious.
+  If it's nonzero, this means that `x` is integrable for `μ` (as otherwise the integral would be
+  `0` by our choice of junk value), so `‖x‖ ^ (1/2)` is in `L^2`.
+  The constant `c` is controlled by `2 ‖x - c‖` close to `0` (say when `‖x‖ ≤ ‖c‖ / 2`)
+  and by a multiple of `‖x‖ ^ (1/2)` away from `0`. Those two functions
+  are in `L^2` by assumptions, so the constant `c` also is. -/
+  by_cases hx : c = 0
   · simp [hx]
-  have I : Integrable id μ := by
+  apply (integrable_norm_rpow_iff (by fun_prop) (by norm_num) (by norm_num)).1
+  have I : Integrable (fun (x : E) ↦ ‖x‖) μ := by
+    apply Integrable.norm
     contrapose! hx
     exact integral_undef hx
-  replace I := I.norm
-  have W := h_Lp.integrable_norm_pow (by norm_num)
-  apply (integrable_norm_rpow_iff _ _ _).1
-  · apply (I.add W).mono (by fun_prop)
-    filter_upwards [] with x
-    simp
-    sorry
-  · fun_prop
-  · norm_num
-  · norm_num
+  have := h_Lp.integrable_norm_pow (by norm_num)
+  apply (((I.const_mul (‖c‖)).add this).const_mul 4).mono' (by fun_prop)
+  filter_upwards [] with y
+  simp only [ENNReal.toReal_ofNat, Real.rpow_ofNat, norm_pow, norm_norm, Pi.add_apply, mul_add]
+  rcases le_total ‖y‖ (‖c‖ / 2)
+  · have : ‖c‖ ≤ ‖y‖ + ‖y - c‖ := Eq.trans_le (by abel_nf) (norm_sub_le y (y - c))
+    calc ‖c‖ ^ 2
+    _ ≤ (2 * ‖y - c‖) ^ 2 := pow_le_pow_left₀ (by positivity) (by linarith) 2
+    _ = 4 * 0 + 4 * ‖y - c‖ ^ 2 := by ring
+    _ ≤ 4 * (‖c‖ * ‖y‖) + 4 * ‖y - c‖ ^ 2 := by gcongr; positivity
+  · calc ‖c‖ ^ 2
+    _ = 1 * (‖c‖ * ‖c‖) + 0 * ‖y - c‖ ^ 2 := by ring
+    _ ≤ 2 * (‖c‖ * (2 * ‖y‖)) + 4 * ‖y - c‖ ^ 2 := by
+      gcongr
+      · norm_num
+      · linarith
+      · norm_num
+    _ = 4 * (‖c‖ * ‖y‖) + 4 * ‖y - c‖ ^ 2 := by ring
 
+lemma covarianceBilinDual_of_not_memLp' (h : ¬ MemLp (fun x ↦ x - ∫ y, y ∂μ) 2 μ)
+    (L₁ L₂ : StrongDual ℝ E) :
+    covarianceBilinDual μ L₁ L₂ = 0 := by
+  rw [covarianceBilinDual, uncenteredCovarianceBilinDual_of_not_memLp]
+  rw [(measurableEmbedding_subRight _).memLp_map_measure_iff]
+  exact h
 
-
-
-#exit
+@[simp]
+lemma covarianceBilinDual_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
+    covarianceBilinDual μ L₁ L₂ = 0 := by
+  apply covarianceBilinDual_of_not_memLp'
+  contrapose! h
+  exact MemLp.of_self_sub_integral h
 
 @[simp]
 lemma covarianceBilinDual_zero : covarianceBilinDual (0 : Measure E) = 0 := by
@@ -278,11 +301,11 @@ lemma covarianceBilinDual_zero : covarianceBilinDual (0 : Measure E) = 0 := by
 
 lemma covarianceBilinDual_comm (L₁ L₂ : StrongDual ℝ E) :
     covarianceBilinDual μ L₁ L₂ = covarianceBilinDual μ L₂ L₁ := by
-  by_cases h : MemLp id 2 μ
+  by_cases h : MemLp (fun x ↦ x - ∫ y, y ∂μ) 2 μ
   · have h' : MemLp id 2 (Measure.map (fun x ↦ x - ∫ (x : E), x ∂μ) μ) :=
-      (measurableEmbedding_subRight _).memLp_map_measure_iff.mpr <| h.sub (memLp_const _)
+      (measurableEmbedding_subRight _).memLp_map_measure_iff.mpr <| h
     simp_rw [covarianceBilinDual, uncenteredCovarianceBilinDual_apply h', mul_comm (L₁ _)]
-  · simp [h]
+  · simp [h, covarianceBilinDual_of_not_memLp']
 
 @[simp]
 lemma covarianceBilinDual_self_nonneg (L : StrongDual ℝ E) : 0 ≤ covarianceBilinDual μ L L := by
@@ -292,7 +315,7 @@ lemma covarianceBilinDual_self_nonneg (L : StrongDual ℝ E) : 0 ≤ covarianceB
     exact real_inner_self_nonneg
   · simp [h]
 
-variable [CompleteSpace E]
+variable [CompleteSpace E] [IsFiniteMeasure μ]
 
 lemma covarianceBilinDual_apply (h : MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
     covarianceBilinDual μ L₁ L₂ = ∫ x, (L₁ x - μ[L₁]) * (L₂ x - μ[L₂]) ∂μ := by
