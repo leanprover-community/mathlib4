@@ -51,6 +51,9 @@ protected theorem mul_mem (I : SemigroupIdeal M) (x : M) {y : M} : y ∈ I → x
 def closure (s : Set M) : SemigroupIdeal M :=
   SubMulAction.closure M s
 
+@[simp]
+theorem subMulActionClosure_eq : SubMulAction.closure M s = closure s := rfl
+
 @[to_additive]
 theorem mem_closure : x ∈ closure s ↔ ∀ p : SemigroupIdeal M, s ⊆ p → x ∈ p :=
   SubMulAction.mem_closure
