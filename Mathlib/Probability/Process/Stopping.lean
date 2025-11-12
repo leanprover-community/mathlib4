@@ -729,10 +729,12 @@ noncomputable
 def stoppedProcess (u : ι → Ω → β) (τ : Ω → WithTop ι) : ι → Ω → β :=
   fun i ω => u (min (i : WithTop ι) (τ ω)).untopA ω
 
-theorem stoppedProcess_eq_stoppedValue {u : ι → Ω → β} {τ : Ω → WithTop ι} :
+variable {u : ι → Ω → β} {τ σ : Ω → WithTop ι}
+
+theorem stoppedProcess_eq_stoppedValue :
     stoppedProcess u τ = fun i : ι => stoppedValue u fun ω => min i (τ ω) := rfl
 
-theorem stoppedValue_stoppedProcess {u : ι → Ω → β} {τ σ : Ω → WithTop ι} :
+theorem stoppedValue_stoppedProcess :
     stoppedValue (stoppedProcess u τ) σ =
       fun ω ↦ if σ ω ≠ ⊤ then stoppedValue u (fun ω ↦ min (σ ω) (τ ω)) ω
       else stoppedValue u (fun ω ↦ min (Classical.arbitrary ι) (τ ω)) ω := by
@@ -740,21 +742,75 @@ theorem stoppedValue_stoppedProcess {u : ι → Ω → β} {τ σ : Ω → WithT
   simp only [stoppedValue, stoppedProcess, ne_eq, ite_not]
   cases σ ω <;> cases τ ω <;> simp
 
-theorem stoppedValue_stoppedProcess_ae_eq {u : ι → Ω → β} {τ σ : Ω → WithTop ι} {μ : Measure Ω}
+theorem stoppedValue_stoppedProcess_ae_eq {μ : Measure Ω}
     (hσ : ∀ᵐ ω ∂μ, σ ω ≠ ⊤) :
     stoppedValue (stoppedProcess u τ) σ =ᵐ[μ] stoppedValue u (fun ω ↦ min (σ ω) (τ ω)) := by
   filter_upwards [hσ] with ω hσ using by simp [stoppedValue_stoppedProcess, hσ]
 
-theorem stoppedProcess_eq_of_le {u : ι → Ω → β} {τ : Ω → WithTop ι} {i : ι} {ω : Ω} (h : i ≤ τ ω) :
+theorem stoppedProcess_eq_of_le {i : ι} {ω : Ω} (h : i ≤ τ ω) :
     stoppedProcess u τ i ω = u i ω := by simp [stoppedProcess, min_eq_left h]
 
-theorem stoppedProcess_eq_of_ge {u : ι → Ω → β} {τ : Ω → WithTop ι} {i : ι} {ω : Ω} (h : τ ω ≤ i) :
+theorem stoppedProcess_eq_of_ge {i : ι} {ω : Ω} (h : τ ω ≤ i) :
     stoppedProcess u τ i ω = u (τ ω).untopA ω := by simp [stoppedProcess, min_eq_right h]
+
+lemma stoppedProcess_indicator_comm [Zero β] {s : Set Ω} (i : ι) :
+    stoppedProcess (fun i ↦ s.indicator (u i)) τ i = s.indicator (stoppedProcess u τ i) := by
+  ext ω
+  rw [Set.indicator]
+  split_ifs with hω
+  · rw [stoppedProcess, Set.indicator_of_mem hω, stoppedProcess]
+  · rw [stoppedProcess, Set.indicator_of_notMem hω]
+
+lemma stoppedProcess_indicator_comm' [Zero β] {s : Set Ω} :
+    stoppedProcess (fun i ↦ s.indicator (u i)) τ = fun i ↦ s.indicator (stoppedProcess u τ i) := by
+  ext i ω
+  rw [stoppedProcess_indicator_comm]
+
+theorem stoppedValue_stoppedProcess_apply {ω : Ω} (hω : σ ω ≠ ⊤) :
+    stoppedValue (stoppedProcess u τ) σ ω = stoppedValue u (fun ω ↦ min (σ ω) (τ ω)) ω := by
+  simp only [stoppedValue_stoppedProcess, ne_eq, hω, not_false_eq_true, reduceIte]
+
+@[simp]
+theorem stoppedProcess_stoppedProcess :
+    stoppedProcess (stoppedProcess u τ) σ = stoppedProcess u (σ ⊓ τ) := by
+  ext i ω
+  rw [stoppedProcess, stoppedProcess, stoppedProcess]
+  by_cases hτ : τ ω = ⊤
+  · simp only [hτ, le_top, inf_of_le_left, WithTop.untopD_coe, Pi.inf_apply]
+  by_cases hσ : σ ω = ⊤
+  · simp only [hσ, le_top, inf_of_le_left, WithTop.untopD_coe, Pi.inf_apply, inf_of_le_right]
+  by_cases hστ : σ ω ≤ τ ω
+  · rw [min_eq_left, WithTop.untopA_eq_untop (lt_of_le_of_lt ((min_le_right _ _).trans hστ) <|
+        WithTop.lt_top_iff_ne_top.2 hτ).ne, WithTop.coe_untop]
+    · simp only [Pi.inf_apply, hστ, inf_of_le_left]
+    · refine le_trans ?_ hστ
+      rw [WithTop.untopA_eq_untop (lt_of_le_of_lt ((min_le_right _ _).trans hστ) <|
+        WithTop.lt_top_iff_ne_top.2 hτ).ne, WithTop.coe_untop]
+      exact min_le_right _ _
+  · nth_rewrite 2 [WithTop.untopA_eq_untop ]
+    · rw [WithTop.coe_untop, min_assoc]
+      rfl
+    · exact (lt_of_le_of_lt (min_le_right _ _) <| WithTop.lt_top_iff_ne_top.2 hσ).ne
+
+theorem stoppedProcess_stoppedProcess' :
+    stoppedProcess (stoppedProcess u τ) σ = stoppedProcess u (fun ω ↦ min (σ ω) (τ ω)) := by
+  simp; rfl
+
+theorem stoppedProcess_stoppedProcess_of_le_right (h : σ ≤ τ) :
+    stoppedProcess (stoppedProcess u τ) σ = stoppedProcess u σ := by
+  rw [stoppedProcess_stoppedProcess, inf_of_le_left h]
+
+theorem stoppedProcess_stoppedProcess_of_le_left (h : τ ≤ σ) :
+    stoppedProcess (stoppedProcess u τ) σ = stoppedProcess u τ := by
+  rw [stoppedProcess_stoppedProcess, inf_of_le_right h]
+
+theorem stoppedProcess_eq_stoppedValue_apply (i : ι) (ω : Ω) :
+    stoppedProcess u τ i ω = stoppedValue u (fun ω ↦ min i (τ ω)) ω := rfl
 
 section ProgMeasurable
 
 variable [MeasurableSpace ι] [TopologicalSpace ι] [OrderTopology ι] [SecondCountableTopology ι]
-  [BorelSpace ι] [TopologicalSpace β] {u : ι → Ω → β} {τ : Ω → WithTop ι} {f : Filtration ι m}
+  [BorelSpace ι] [TopologicalSpace β] {f : Filtration ι m}
 
 theorem progMeasurable_min_stopping_time [PseudoMetrizableSpace ι] (hτ : IsStoppingTime f τ) :
     ProgMeasurable f fun i ω ↦ (min (i : WithTop ι) (τ ω)).untopA := by
