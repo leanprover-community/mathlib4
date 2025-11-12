@@ -57,7 +57,7 @@ theorem mulTSupport_eq_empty_iff {f : X → α} : mulTSupport f = ∅ ↔ f = 1 
   rw [mulTSupport, closure_empty_iff, mulSupport_eq_empty_iff]
 
 @[to_additive (attr := simp)]
-theorem mulTSupport_fun_one : mulTSupport (fun _ : X ↦ 1) = ∅ := by
+theorem mulTSupport_fun_one : mulTSupport (fun _ ↦ 1 : X → α) = ∅ := by
   rw [mulTSupport, mulSupport_fun_one, closure_empty]
 
 @[to_additive (attr := simp)]
