@@ -42,6 +42,9 @@ This file proves results about bipartite simple graphs, including several double
   See `SimpleGraph.sum_degrees_eq_twice_card_edges` for the general version, and
   `SimpleGraph.isBipartiteWith_sum_degrees_eq_card_edges'` for the version from the "right".
 
+* `SimpleGraph.between`; the simple graph `G.between s t` is the subgraph of `G` containing edges
+  that connect a vertex in the set `s` to a vertex in the set `t`.
+
 ## Implementation notes
 
 For the formulation of double-counting arguments where a bipartite graph is considered as a
@@ -283,5 +286,88 @@ theorem isBipartite_iff_exists_isBipartiteWith :
   ⟨IsBipartite.exists_isBipartiteWith, fun ⟨_, _, h⟩ ↦ h.isBipartite⟩
 
 end IsBipartite
+
+section Between
+
+/-- The subgraph of `G` containing edges that connect a vertex in the set `s` to a vertex in the
+set `t`. -/
+def between (s t : Set V) (G : SimpleGraph V) : SimpleGraph V where
+  Adj v w := G.Adj v w ∧ (v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s)
+  symm v w := by tauto
+
+lemma between_adj : (G.between s t).Adj v w ↔ G.Adj v w ∧ (v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s) := by rfl
+
+lemma between_le : G.between s t ≤ G := fun _ _ h ↦ h.1
+
+lemma between_comm : G.between s t = G.between t s := by simp [between, or_comm]
+
+instance [DecidableRel G.Adj] [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)] :
+    DecidableRel (G.between s t).Adj :=
+  inferInstanceAs (DecidableRel fun v w ↦ G.Adj v w ∧ (v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s))
+
+/-- `G.between s t` is bipartite if the sets `s` and `t` are disjoint. -/
+theorem between_isBipartiteWith (h : Disjoint s t) : (G.between s t).IsBipartiteWith s t where
+  disjoint := h
+  mem_of_adj _ _ h := h.2
+
+/-- `G.between s t` is bipartite if the sets `s` and `t` are disjoint. -/
+theorem between_isBipartite (h : Disjoint s t) : (G.between s t).IsBipartite :=
+  (between_isBipartiteWith h).isBipartite
+
+/-- The neighbor set of `v ∈ s` in `G.between s sᶜ` excludes the vertices in `s` adjacent to `v`
+in `G`. -/
+lemma neighborSet_subset_between_union (hv : v ∈ s) :
+    G.neighborSet v ⊆ (G.between s sᶜ).neighborSet v ∪ s := by
+  intro w hadj
+  rw [neighborSet, Set.mem_union, Set.mem_setOf, between_adj]
+  by_cases hw : w ∈ s
+  · exact Or.inr hw
+  · exact Or.inl ⟨hadj, Or.inl ⟨hv, hw⟩⟩
+
+/-- The neighbor set of `w ∈ sᶜ` in `G.between s sᶜ` excludes the vertices in `sᶜ` adjacent to `w`
+in `G`. -/
+lemma neighborSet_subset_between_union_compl (hw : w ∈ sᶜ) :
+    G.neighborSet w ⊆ (G.between s sᶜ).neighborSet w ∪ sᶜ := by
+  intro v hadj
+  rw [neighborSet, Set.mem_union, Set.mem_setOf, between_adj]
+  by_cases hv : v ∈ s
+  · exact Or.inl ⟨hadj, Or.inr ⟨hw, hv⟩⟩
+  · exact Or.inr hv
+
+variable [DecidableEq V] [Fintype V] {s t : Finset V} [DecidableRel G.Adj]
+
+/-- The neighbor finset of `v ∈ s` in `G.between s sᶜ` excludes the vertices in `s` adjacent to `v`
+in `G`. -/
+lemma neighborFinset_subset_between_union (hv : v ∈ s) :
+    G.neighborFinset v ⊆ (G.between s sᶜ).neighborFinset v ∪ s := by
+  simpa [neighborFinset_def] using neighborSet_subset_between_union hv
+
+/-- The degree of `v ∈ s` in `G` is at most the degree in `G.between s sᶜ` plus the excluded
+vertices from `s`. -/
+theorem degree_le_between_add (hv : v ∈ s) :
+    G.degree v ≤ (G.between s sᶜ).degree v + s.card := by
+  have h_bipartite : (G.between s sᶜ).IsBipartiteWith s ↑(sᶜ) := by
+    simpa using between_isBipartiteWith disjoint_compl_right
+  simp_rw [← card_neighborFinset_eq_degree,
+    ← card_union_of_disjoint (isBipartiteWith_neighborFinset_disjoint h_bipartite hv)]
+  exact card_le_card (neighborFinset_subset_between_union hv)
+
+/-- The neighbor finset of `w ∈ sᶜ` in `G.between s sᶜ` excludes the vertices in `sᶜ` adjacent to
+`w` in `G`. -/
+lemma neighborFinset_subset_between_union_compl (hw : w ∈ sᶜ) :
+    G.neighborFinset w ⊆ (G.between s sᶜ).neighborFinset w ∪ sᶜ := by
+  simpa [neighborFinset_def] using G.neighborSet_subset_between_union_compl (by simpa using hw)
+
+/-- The degree of `w ∈ sᶜ` in `G` is at most the degree in `G.between s sᶜ` plus the excluded
+vertices from `sᶜ`. -/
+theorem degree_le_between_add_compl (hw : w ∈ sᶜ) :
+    G.degree w ≤ (G.between s sᶜ).degree w + sᶜ.card := by
+  have h_bipartite : (G.between s sᶜ).IsBipartiteWith s ↑(sᶜ) := by
+    simpa using between_isBipartiteWith disjoint_compl_right
+  simp_rw [← card_neighborFinset_eq_degree,
+    ← card_union_of_disjoint (isBipartiteWith_neighborFinset_disjoint' h_bipartite hw)]
+  exact card_le_card (neighborFinset_subset_between_union_compl hw)
+
+end Between
 
 end SimpleGraph
