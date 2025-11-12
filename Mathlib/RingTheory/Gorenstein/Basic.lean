@@ -837,6 +837,7 @@ open associatedPrimes in
 lemma supportDim_le_injectiveDimension (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M] :
     supportDim R M ≤ injectiveDimension M := by
   obtain ⟨q, hq⟩ : ∃ q : LTSeries (Module.support R M), q.length = supportDim R M := by
+    let _ : Nonempty (support R M) := Set.Nonempty.to_subtype nonempty_support_of_nontrivial
     have (n : ℕ) : (n : WithBot ℕ∞) = (n : ℕ∞) := rfl
     simp only [this, supportDim, Order.krullDim_eq_iSup_length, WithBot.coe_inj]
     apply ENat.exists_eq_iSup_of_lt_top
