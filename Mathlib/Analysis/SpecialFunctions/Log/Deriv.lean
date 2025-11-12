@@ -253,13 +253,13 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 /--
-Compute the derivative of the difference between `1/2 * log ((1+x)/(1-x))` and its
+Compute the derivative of the difference between $\frac{1}{2} * \log(\frac{1+x}{1-x})$ and its
 Taylor series at `0` up to order `n`. This is an auxiliary lemma for
 `sum_range_sub_log_div_le` and `sum_range_le_log_div`.
 Note that thanks to the geometric series, the derivative has a particularly simple form, and means
 that it is more convenient to avoid Taylor's theorem.
 -/
-private lemma sum_range_sub_log_div_le_aux {y : ℝ} (n : ℕ) (hy₁ : -1 < y) (hy₂ : y < 1) :
+lemma sum_range_sub_log_div_le_aux {y : ℝ} (n : ℕ) (hy₁ : -1 < y) (hy₂ : y < 1) :
     HasDerivAt
       (fun x ↦ 1 / 2 * log ((1 + x) / (1 - x)) - (∑ i ∈ range n, x ^ (2 * i + 1) / (2 * i + 1)))
       ((y ^ 2) ^ n / (1 - y ^ 2)) y := by
@@ -275,7 +275,7 @@ private lemma sum_range_sub_log_div_le_aux {y : ℝ} (n : ℕ) (hy₁ : -1 < y) 
   simp [this, field, geom_sum_eq hy₃, hy₄, sub_ne_zero_of_ne, hy₃.symm]
   ring
 
-/-- A lemma estimating the difference between `1/2 * log ((1+x)/(1+x))` and its
+/-- A lemma estimating the difference between $\frac{1}{2} * \log(\frac{1+x}{1-x})$ and its
 Taylor series at `0`, where the bound tends to `0`. This bound is particularly useful for explicit
 estimates of logarithms.
 
@@ -297,10 +297,10 @@ lemma sum_range_sub_log_div_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
   have B : ∀ y ∈ Set.Icc (-|x|) |x|, ‖F' y‖ ≤ |x| ^ (2 * n) / (1 - x ^ 2) := fun y hy ↦ by
     have : y ^ 2 ≤ x ^ 2 := sq_le_sq.2 (abs_le.2 hy)
     calc
-    ‖F' y‖ = (y ^ 2) ^ n / |1 - y ^ 2| := by simp [F']
-    _ = (y ^ 2) ^ n / (1 - y ^ 2) := by rw [abs_of_pos (by simpa [abs_lt] using hI hy)]
-    _ ≤ (x ^ 2) ^ n / (1 - x ^ 2) := by gcongr ?_ ^ n / (1 - ?_); simpa [abs_lt] using h
-    _ ≤ |x| ^ (2 * n) / (1 - x ^ 2) := by simp [pow_mul]
+      ‖F' y‖ = (y ^ 2) ^ n / |1 - y ^ 2| := by simp [F']
+      _ = (y ^ 2) ^ n / (1 - y ^ 2) := by rw [abs_of_pos (by simpa [abs_lt] using hI hy)]
+      _ ≤ (x ^ 2) ^ n / (1 - x ^ 2) := by gcongr ?_ ^ n / (1 - ?_); simpa [abs_lt] using h
+      _ ≤ |x| ^ (2 * n) / (1 - x ^ 2) := by simp [pow_mul]
   -- third step: apply the mean value inequality
   have C : ‖F x - F 0‖ ≤ |x| ^ (2 * n) / (1 - x^2) * ‖x - 0‖ :=
     (convex_Icc (-|x|) |x|).norm_image_sub_le_of_norm_hasDerivWithin_le
@@ -310,9 +310,9 @@ lemma sum_range_sub_log_div_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
   simpa [F, pow_succ, div_mul_eq_mul_div] using C
 
 /--
-For `0 ≤ x < 1`, the partial sums of the series expansion of `1/2 * log ((1+x)/(1-x))` at `0`
-form a lower bound for it. This shows that the absolute value in `sum_range_sub_log_div_le` can be
-dropped, and gives explicit lower bounds for logarithms.
+For `0 ≤ x < 1`, the partial sums of the series expansion of $\frac{1}{2} * \log(\frac{1+x}{1-x})$
+at `0` form a lower bound for it. This shows that the absolute value in `sum_range_sub_log_div_le`
+can be dropped, and gives explicit lower bounds for logarithms.
 -/
 lemma sum_range_le_log_div {x : ℝ} (h₀ : 0 ≤ x) (h : x < 1) (n : ℕ) :
     ∑ i ∈ range n, x ^ (2 * i + 1) / (2 * i + 1) ≤ 1 / 2 * log ((1 + x) / (1 - x)) := by
@@ -335,6 +335,13 @@ lemma sum_range_le_log_div {x : ℝ} (h₀ : 0 ≤ x) (h : x < 1) (n : ℕ) :
     0 ≤ 1 - x ^ 2 := by simp [abs_of_nonneg h₀, h.le]
     _ ≤ 1 - y ^ 2 := sub_le_sub_left (pow_le_pow_left₀ hy.1.le hy.2.le 2) 1
   positivity
+
+lemma log_div_le_sum_range_add {x : ℝ} (h₀ : 0 ≤ x) (h : x < 1) (n : ℕ) :
+    1 / 2 * log ((1 + x) / (1 - x)) ≤
+      (∑ i ∈ range n, x ^ (2 * i + 1) / (2 * i + 1)) + x ^ (2 * n + 1) / (1 - x ^ 2) := by
+  have h₁ := sum_range_sub_log_div_le (by rwa [abs_of_nonneg h₀]) n
+  rwa [abs_of_nonneg (sub_nonneg_of_le (sum_range_le_log_div h₀ h n)), abs_of_nonneg h₀,
+    sub_le_iff_le_add'] at h₁
 
 /-- Power series expansion of the logarithm around `1`. -/
 theorem hasSum_pow_div_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
