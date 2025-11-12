@@ -97,6 +97,7 @@ theorem monotone_C {u v : β} (y : Y) (h : u ≤ v) :
   fun _ hxu ↦ le_trans hxu h
 
 variable (X Y f) in
+/-- The set of parameters `z` in the segment `[y, y']` such that `f b z ≤ f b' y`. -/
 def J [AddCommGroup F] [Module ℝ F]
     (b b' : β) (y y' : Y) : Set (segment ℝ y.val y'.val) :=
     {z | C X f b z ⊆ C X f b' y}
@@ -664,11 +665,6 @@ variable [TopologicalSpace F] [AddCommGroup F] [Module ℝ F]
   (cY : Convex ℝ Y) (ne_Y : Y.Nonempty) (kY : IsCompact Y)
   (hfx : ∀ x ∈ X, UpperSemicontinuousOn (fun y : F => f x y) Y)
   (hfx' : ∀ x ∈ X, QuasiconcaveOn ℝ Y fun y => f x y)
-
-def EReal.orderEmbedding : ℝ ↪o EReal where
-  toFun := Real.toEReal
-  inj' := EReal.coe_injective
-  map_rel_iff' {x y} := by simp
 
 include ne_X ne_Y cX cY kX kY hfx hfx' hfy hfy' in
 /-- The minimax theorem, in the saddle point form -/

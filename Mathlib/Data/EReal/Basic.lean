@@ -93,6 +93,14 @@ protected theorem coe_ne_coe_iff {x y : ℝ} : (x : EReal) ≠ (y : EReal) ↔ x
 @[simp, norm_cast]
 protected theorem coe_natCast {n : ℕ} : ((n : ℝ) : EReal) = n := rfl
 
+/-- The order embedding of `ℝ` into `EReal`. -/
+def orderEmbedding : ℝ ↪o EReal where
+  toFun := Real.toEReal
+  inj' := EReal.coe_injective
+  map_rel_iff' {x y} := by simp
+
+theorem coe_orderEmbedding : ⇑orderEmbedding = Real.toEReal := rfl
+
 /-- The canonical map from nonnegative extended reals to extended reals. -/
 @[coe] def _root_.ENNReal.toEReal : ℝ≥0∞ → EReal
   | ⊤ => ⊤
