@@ -528,3 +528,30 @@ lemma orbitRel_nonZero_iff (x y : { v : M // v ≠ 0 }) :
   ⟨by rintro ⟨a, rfl⟩; exact ⟨a, by simp⟩, by intro ⟨a, ha⟩; exact ⟨a, by ext; simpa⟩⟩
 
 end Units
+
+section Normal
+
+variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
+
+/-- The set of fixed points of a normal subgroup is stable under the group action. -/
+@[to_additive]
+def fixedPointsSubMulOfNormal {H : Subgroup G} [hH : H.Normal]
+    : SubMulAction G α where
+  carrier := MulAction.fixedPoints H α
+  smul_mem' := by
+    intro g a ha h
+    change (h : G) • g • a = g • a
+    rw [← inv_smul_eq_iff, ← mul_smul, ← mul_smul]
+    exact ha (⟨_, hH.conj_mem' _ (SetLike.coe_mem h) _⟩ : H)
+
+instance {H : Subgroup G} [hH : H.Normal] :
+    MulAction G (MulAction.fixedPoints H α) :=
+  SubMulAction.mulAction' fixedPointsSubMulOfNormal
+
+@[simp]
+lemma smul_fixedPoints_coe_of_normal {H : Subgroup G} [hH : H.Normal]
+    (g : G) (a : MulAction.fixedPoints H α) :
+    (g • a).val = g • a.val :=
+  rfl
+
+end Normal

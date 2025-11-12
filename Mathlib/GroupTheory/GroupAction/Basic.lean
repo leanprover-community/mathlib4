@@ -387,18 +387,6 @@ theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
       simp only [Set.smul_mem_smul_set_iff, hx]
     · simp only [smul_inv_smul]
 
-/-- The set of fixed points of a normal subgroup is stable under the group action. -/
-@[to_additive]
-theorem smul_fixedPoints_le_fixedPoints_of_normal
-    {H : Subgroup G} [hH : H.Normal]
-    (g : G) :
-    g • (fixedPoints H α) ⊆ fixedPoints H α := by
-  rintro _ ⟨a, ha, rfl⟩
-  intro h
-  change (h : G) • g • a = g • a
-  rw [← inv_smul_eq_iff, ← mul_smul, ← mul_smul]
-  exact ha (⟨_, hH.conj_mem' _ (SetLike.coe_mem h) _⟩ : H)
-
 end MulAction
 
 section
