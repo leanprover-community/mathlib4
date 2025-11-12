@@ -203,6 +203,17 @@ theorem circleAverage_const_on_circle [CompleteSpace E] {a : E}
 -/
 
 /--
+Circle averages respect the `≤` relation.
+-/
+@[gcongr]
+theorem circleAverage_mono {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → ℝ} (hf₁ : CircleIntegrable f₁ c R)
+    (hf₂ : CircleIntegrable f₂ c R) (h : ∀ x ∈ Metric.sphere c |R|, f₁ x ≤ f₂ x) :
+    circleAverage f₁ c R ≤ circleAverage f₂ c R := by
+  apply (mul_le_mul_iff_of_pos_left (by simp [pi_pos])).2
+  apply intervalIntegral.integral_mono_on_of_le_Ioo (le_of_lt two_pi_pos) hf₁ hf₂
+  exact fun x _ ↦ by simp [h (circleMap c R x)]
+
+/--
 If `f x` is smaller than `a` on for every point of the circle, then the circle average of `f` is
 smaller than `a`.
 -/
