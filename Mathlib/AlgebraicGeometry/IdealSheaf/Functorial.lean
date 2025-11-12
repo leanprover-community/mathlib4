@@ -134,7 +134,7 @@ lemma map_bot (f : X ⟶ Y) : map ⊥ f = f.ker := by
 @[simp]
 lemma comap_top (f : X ⟶ Y) : comap ⊤ f = ⊤ := by
   rw [comap, Hom.ker_eq_top_iff_isEmpty]
-  exact Function.isEmpty (pullback.snd f _).base
+  exact Function.isEmpty (pullback.snd f _)
 
 @[simp]
 lemma map_comp (I : X.IdealSheafData) (f : X ⟶ Y) (g : Y ⟶ Z) :
@@ -156,20 +156,20 @@ lemma _root_.AlgebraicGeometry.Scheme.Hom.ker_comp
     (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).ker = f.ker.map g := (map_ker f g).symm
 
 lemma map_vanishingIdeal {X Y : Scheme} (f : X ⟶ Y) (Z : TopologicalSpace.Closeds X) :
-    (vanishingIdeal Z).map f = vanishingIdeal (.closure (f.base '' Z)) := by
+    (vanishingIdeal Z).map f = vanishingIdeal (.closure (f '' Z)) := by
   apply le_antisymm
   · rw [map, ← le_support_iff_le_vanishingIdeal, TopologicalSpace.Closeds.closure_le]
     refine .trans ?_ (Hom.range_subset_ker_support _)
-    rw [Scheme.comp_base, TopCat.coe_comp, Set.range_comp,
+    rw [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp,
       range_subschemeι, coe_support_vanishingIdeal]
   · simp [le_map_iff_comap_le, ← le_support_iff_le_vanishingIdeal, ← Set.image_subset_iff,
       subset_closure, ← SetLike.coe_subset_coe]
 
 @[simp]
 lemma support_map (I : X.IdealSheafData) (f : X ⟶ Y) [QuasiCompact f] :
-    (I.map f).support = .closure (f.base '' I.support) := by
+    (I.map f).support = .closure (f '' I.support) := by
   ext1
-  rw [map, Scheme.Hom.support_ker, Scheme.comp_base, TopCat.coe_comp,
+  rw [map, Scheme.Hom.support_ker, Scheme.Hom.comp_base, TopCat.coe_comp,
     Set.range_comp, range_subschemeι, TopologicalSpace.Closeds.coe_closure]
 
 lemma ideal_map (I : X.IdealSheafData) (f : X ⟶ Y) [QuasiCompact f] (U : Y.affineOpens)

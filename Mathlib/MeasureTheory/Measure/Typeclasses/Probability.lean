@@ -39,8 +39,6 @@ lemma measureReal_le_one {μ : Measure α} [IsZeroOrProbabilityMeasure μ] {s : 
     μ.real s ≤ 1 :=
   ENNReal.toReal_le_of_le_ofReal zero_le_one (ENNReal.ofReal_one.symm ▸ prob_le_one)
 
-@[deprecated (since := "2025-04-19")] alias toReal_prob_le_one := measureReal_le_one
-
 @[simp]
 theorem one_le_prob_iff {μ : Measure α} [IsZeroOrProbabilityMeasure μ] : 1 ≤ μ s ↔ μ s = 1 :=
   ⟨fun h => le_antisymm prob_le_one h, fun h => h ▸ le_refl _⟩
@@ -85,6 +83,14 @@ theorem prob_add_prob_compl [IsProbabilityMeasure μ] (h : MeasurableSet s) : μ
 instance isProbabilityMeasureSMul [IsFiniteMeasure μ] [NeZero μ] :
     IsProbabilityMeasure ((μ univ)⁻¹ • μ) :=
   ⟨ENNReal.inv_mul_cancel (NeZero.ne (μ univ)) (measure_ne_top _ _)⟩
+
+instance isProbabilityMeasure_dite {p : Prop} [Decidable p] {μ : p → Measure α}
+    {ν : ¬ p → Measure α} [∀ h, IsProbabilityMeasure (μ h)] [∀ h, IsProbabilityMeasure (ν h)] :
+    IsProbabilityMeasure (dite p μ ν) := by split <;> infer_instance
+
+instance isProbabilityMeasure_ite {p : Prop} [Decidable p] {μ ν : Measure α}
+    [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
+    IsProbabilityMeasure (ite p μ ν) := by split <;> infer_instance
 
 variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
 

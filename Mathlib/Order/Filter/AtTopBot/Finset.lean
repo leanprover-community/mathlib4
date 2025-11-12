@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.Algebra.Order.Ring.Cast
 import Mathlib.Data.Finset.Order
-import Mathlib.Data.Int.Interval
 import Mathlib.Order.Filter.AtTopBot.Basic
 import Mathlib.Order.Filter.Finite
 

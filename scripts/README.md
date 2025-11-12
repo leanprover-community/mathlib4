@@ -82,6 +82,8 @@ to learn about it as well!
 **CI workflow**
 - `lake-build-with-retry.sh`
   Runs `lake build` on a target until `lake build --no-build` succeeds. Used in the main build workflows.
+- `lake-build-wrapper.py`
+  A wrapper script for `lake build` which collapses normal build into log groups and saves a build summary JSON file. See file for usage.
 - `mk_all.lean`
   run via `lake exe mk_all`, regenerates the import-only files
   `Mathlib.lean`, `Mathlib/Tactic.lean`, `Archive.lean` and `Counterexamples.lean`
@@ -123,6 +125,8 @@ to learn about it as well!
   and attempts to merge the branch `lean-pr-testing-NNNN` into `master`.
   It will resolve conflicts in `lean-toolchain`, `lakefile.lean`, and `lake-manifest.json`.
   If there are more conflicts, it will bail.
+- `zulip_build_report.sh` is used to analyse the output from building the nightly-testing-green
+  branch with additional linting enabled, and posts a summary of its findings on zulip.
 
 **Managing downstream repos**
 - `downstream_repos.yml` contains basic information about significant downstream repositories.
