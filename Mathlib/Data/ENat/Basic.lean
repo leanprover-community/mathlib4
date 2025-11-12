@@ -48,9 +48,6 @@ deriving instance Zero, CommSemiring, Nontrivial,
   NoZeroDivisors
   for ENat
 
--- In `Mathlib.Data.Nat.PartENat` proofs timed out when we included `deriving AddCommMonoidWithOne`,
--- and it seems to work without.
-
 namespace ENat
 
 variable {a b c m n : ℕ∞}

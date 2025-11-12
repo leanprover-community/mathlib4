@@ -12,7 +12,7 @@ import Mathlib.Tactic.NormNum
 # Natural numbers with infinity
 
 The natural numbers and an extra `top` element `⊤`. This implementation uses `Part ℕ` as an
-implementation. Use `ℕ∞` instead unless you care about computability.
+implementation. This version is deprecated, use `ℕ∞` instead.
 
 ## Main definitions
 

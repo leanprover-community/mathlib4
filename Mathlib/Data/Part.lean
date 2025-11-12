@@ -17,9 +17,7 @@ a proof of the domain.
 for some `a : α`, while the domain of `o : Part α` doesn't have to be decidable. That means you can
 translate back and forth between a partial value with a decidable domain and an option, and
 `Option α` and `Part α` are classically equivalent. In general, `Part α` is bigger than `Option α`.
-In current mathlib, `Part ℕ`, aka `PartENat`, is used to move decidability of the order to
-decidability of `PartENat.find` (which is the smallest natural satisfying a predicate, or `∞` if
-there's none).
+
 ## Main declarations
 `Option`-like declarations:
 * `Part.none`: The partial value whose domain is `False`.

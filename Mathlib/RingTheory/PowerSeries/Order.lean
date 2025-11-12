@@ -45,7 +45,7 @@ theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff n φ ≠ 0) ↔ �
   push_neg
   simp
 
-/-- The order of a formal power series `φ` is the greatest `n : PartENat`
+/-- The order of a formal power series `φ` is the greatest `n : ℕ∞`
 such that `X^n` divides `φ`. The order is `⊤` if and only if `φ = 0`. -/
 def order (φ : R⟦X⟧) : ℕ∞ :=
   letI := Classical.decEq R
