@@ -263,15 +263,14 @@ as a `𝕜`-linear map.
 
 This is subsumed by `toBoundedContinuousFunctionCLM` (not yet in Mathlib), which also bundles the
 continuity. -/
+@[simps -fullyApplied]
 noncomputable def toBoundedContinuousFunctionLM : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ F where
   toFun f := f
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-@[simp]
-lemma toBoundedContinuousFunctionLM_apply (f : 𝓓^{n}_{K}(E, F)) :
-    toBoundedContinuousFunctionLM 𝕜 f = f :=
-  rfl
+-- Workaround for simps' automatic name generation: manually specifying names is not supported yet.
+alias toBoundedContinuousFunctionLM_apply := toBoundedContinuousFunctionLM_apply_apply
 
 lemma toBoundedContinuousFunctionLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
