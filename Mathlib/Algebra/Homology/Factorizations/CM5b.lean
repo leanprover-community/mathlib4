@@ -52,7 +52,7 @@ instance (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] :
   intro i hi
   refine IsZero.of_iso ?_ ((HomologicalComplex.eval C (ComplexShape.up ℤ) i).mapBiprod _ _)
   dsimp
-  simp only [biprod_isZero_iff, mappingCone.isZero_X_iff]
+  simp only [biprod_isZero_iff, mappingCone.isZero_X_iff, I_X]
   refine ⟨⟨?_, ?_⟩, L.isZero_of_isStrictlyGE n i hi⟩
   all_goals exact (I K).isZero_of_isStrictlyGE (n + 1) _
 
