@@ -214,7 +214,7 @@
 53:
   title  : Pi is Transcendental
   decl   : transcendental_pi
-  author : Yuyang Zhao
+  authors: Yuyang Zhao
 54:
   title  : Königsberg Bridges Problem
   decl   : Konigsberg.not_isEulerian
@@ -226,7 +226,7 @@
 56:
   title  : The Hermite-Lindemann Transcendence Theorem
   decl   : linearIndependent_exp
-  author : Yuyang Zhao
+  authors: Yuyang Zhao
 57:
   title  : Heron’s Formula
   decl   : Theorems100.heron
