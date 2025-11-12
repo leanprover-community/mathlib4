@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Yury Kudryashov
 -/
 import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Order.Interval.Set.LinearOrder
+import Mathlib.Order.MinMax
 
 /-!
 # Extra lemmas about intervals
