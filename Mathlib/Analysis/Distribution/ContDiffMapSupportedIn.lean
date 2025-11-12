@@ -317,11 +317,11 @@ lemma iteratedFDerivWithOrderLM_apply {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
   rw [ContDiffMapSupportedIn.iteratedFDerivWithOrderLM]
   split_ifs <;> rfl
 
-lemma iteratedFDerivWithOrderLM_apply_of_le {i : ℕ} (hin : k + i ≤ n) (f : 𝓓^{n}_{K}(E, F)) :
+lemma iteratedFDerivWithOrderLM_apply_of_le {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) (hin : k + i ≤ n) :
     iteratedFDerivWithOrderLM 𝕜 n k i f = iteratedFDeriv ℝ i f := by
   simp [hin]
 
-lemma iteratedFDerivWithOrderLM_apply_of_gt {i : ℕ} (hin : ¬ (k + i ≤ n)) (f : 𝓓^{n}_{K}(E, F)) :
+lemma iteratedFDerivWithOrderLM_apply_of_gt {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) (hin : ¬ (k + i ≤ n)) :
     iteratedFDerivWithOrderLM 𝕜 n k i f = 0 := by
   ext : 1
   simp [hin]
@@ -352,8 +352,11 @@ lemma iteratedFDerivLM_apply {i : ℕ} (f : 𝓓_{K}(E, F)) :
     iteratedFDerivLM 𝕜 i f = iteratedFDeriv ℝ i f :=
   rfl
 
+/-- Note: this turns out to be a definitional equality thanks to decidablity of the order
+on `ℕ∞`. This means we could have *defined* `iteratedFDerivLM` this way, but we avoid it
+to make sure that `if`s won't appear in the smooth case. -/
 lemma iteratedFDerivLM_eq_withOrder (i : ℕ) :
-    (iteratedFDerivLM 𝕜 i : 𝓓_{K}(E, F) → _) = iteratedFDerivWithOrderLM 𝕜 ⊤ ⊤ i :=
+    (iteratedFDerivLM 𝕜 i : 𝓓_{K}(E, F) →ₗ[𝕜] _) = iteratedFDerivWithOrderLM 𝕜 ⊤ ⊤ i :=
   rfl
 
 variable (n) in
@@ -376,11 +379,11 @@ lemma structureMapLM_eq {i : ℕ} :
       (iteratedFDerivLM 𝕜 i : 𝓓_{K}(E, F) →ₗ[𝕜] 𝓓_{K}(E, E [×i]→L[ℝ] F)) :=
   rfl
 
-lemma structureMapLM_apply_withOrder {i : ℕ} {f : 𝓓^{n}_{K}(E, F)} :
+lemma structureMapLM_apply_withOrder {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
     structureMapLM 𝕜 n i f = if i ≤ n then iteratedFDeriv ℝ i f else 0 := by
   split_ifs with hi <;> simp [structureMapLM, hi]
 
-lemma structureMapLM_apply {i : ℕ} {f : 𝓓_{K}(E, F)} :
+lemma structureMapLM_apply {i : ℕ} (f : 𝓓_{K}(E, F)) :
     structureMapLM 𝕜 ⊤ i f = iteratedFDeriv ℝ i f := by
   rw [structureMapLM_eq]
   rfl
