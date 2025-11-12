@@ -32,7 +32,7 @@ that all these points of view are equivalent, with the following lemmas
   is `Fin` (in `Mathlib/LinearAlgebra/Dimension/Free.lean`)
 - `fintypeBasisIndex` states that a finite-dimensional
   vector space has a finite basis
-- `of_fintype_basis` states that the existence of a basis indexed by a
+- `Module.Basis.finiteDimensional_of_finite` states that the existence of a basis indexed by a
   finite type implies finite-dimensionality
 - `of_finite_basis` states that the existence of a basis indexed by a
   finite set implies finite-dimensionality
@@ -66,7 +66,7 @@ universe u v v' w
 open Cardinal Module Submodule
 
 /-- `FiniteDimensional` vector spaces are defined to be finite modules.
-Use `FiniteDimensional.of_fintype_basis` to prove finite dimension from another definition. -/
+Use `Module.Basis.finiteDimensional_of_finite` to prove finite dimension from another definition. -/
 abbrev FiniteDimensional (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V] :=
   Module.Finite K V
 
