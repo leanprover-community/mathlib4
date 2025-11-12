@@ -64,16 +64,16 @@ partial def String.splitCase (s : String) (i₀ : Pos.Raw := 0) (r : List String
 
 /-- Replaces characters in `s` by lower-casing the first characters until a non-upper-case character
 is found. -/
-partial def String.decapitalizeSeq (s : String) (i : String.Pos := 0) : String :=
-  if i.atEnd s || !(s.get i).isUpper then
+partial def String.decapitalizeSeq (s : String) (i : String.Pos.Raw := 0) : String :=
+  if i.atEnd s || !(i.get s).isUpper then
     s
   else
-    decapitalizeSeq (s.set i (s.get i).toLower) <| i.next s
+    decapitalizeSeq (i.set s (i.get s).toLower) <| i.next s
 
 /-- If `r` starts with an upper-case letter, return `s`, otherwise return `s` with the
 initial sequence of upper-case letters lower-cased. -/
 def decapitalizeLike (r : String) (s : String) :=
-  if r.get 0 |>.isUpper then s else s.decapitalizeSeq
+  if String.Pos.Raw.get r {} |>.isUpper then s else s.decapitalizeSeq
 
 /-- Decapitalize the first element of a list if `s` starts with a lower-case letter.
 Note that we need to decapitalize multiple characters in some cases,
