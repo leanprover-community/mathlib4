@@ -785,6 +785,19 @@ theorem Path.Homotopic.trans_congr' {x y y' z : X}
   obtain ⟨G⟩ := hq
   exact ⟨Path.Homotopy.hcomp F G⟩
 
+-- rename
+theorem Path.Homotopic.move_cast
+    {x y x' y' : X} {p : Path x y} {q : Path x' y'} (h₀ : x' = x) (h₁ : y' = y)
+    (h : Path.Homotopic p (q.cast h₀.symm h₁.symm)) :
+    Path.Homotopic (p.cast h₀ h₁) q := by
+  sorry
+
+-- rename
+theorem Path.Homotopic.of_eq {x y : X} {p q : Path x y} (h : p = q) :
+    Path.Homotopic p q := by
+  subst_vars
+  exact Path.Homotopic.refl _
+
 /-! ### Single segment homotopy: the key step in the ladder construction -/
 
 /-- For a single segment i, the path γ_i · α_{i+1} (along γ then down the next rung) is
@@ -861,20 +874,31 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
   have h_base : Path.Homotopic (γ_aux 0)
       (((α 0).cast (show x = γ (part.t 0) by rw [part.h_start, γ.source])
                    (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])).trans γ') := by
-    apply Path.Homotopic.Quotient.exact
+    -- I would really like to apply `Quotient.exact` here,
+    -- and work with equality rather than `Homotopic`,
+    -- so `simp` would then be able to do most of this work.
+    -- However the API for `Path.Homotopic.Quotient` has not been set up properly.
+    -- We need to define a `Path.Homotopic.Quotient.mk` which is the normal form.
+    -- Otherwise the simp lemma `_root_.Quotient.eq'` will unfold equalities back into relations.
     dsimp [γ_aux]
-    simp
-    sorry
-    -- -- I think this simp lemma should go the other way: casts move inwards.
-    -- simp only [← Path.trans_cast]
-    -- apply Homotopic.trans_congr' (by simp)
-    -- · apply Path.Homotopic.trans
-    --   · apply Homotopic.trans_congr
-    --     · sorry
-    --     · apply Path.Homotopic.refl
-    --     · sorry
-    --   · sorry
-    -- · sorry
+    -- I think this simp lemma should go the other way: casts move inwards.
+    simp only [← Path.trans_cast]
+    apply Homotopic.trans_congr' (by simp)
+    · apply Path.Homotopic.trans
+      · apply Homotopic.trans_congr
+        · -- TODO: define `Path.of_eq` with appropriate lemmas
+          apply Path.Homotopic.trans (p₁ := (Path.refl x).cast rfl (by simp))
+          · apply Path.Homotopic.move_cast
+            apply Path.Homotopic.trans (p₁ := Path.refl _)
+            · apply Path.subpathOn_self
+            · apply Path.Homotopic.of_eq
+              simp
+          · sorry
+        · apply Path.Homotopic.refl
+        · sorry
+      · sorry
+    · apply Path.Homotopic.move_cast
+      sorry
 
   -- Final case: γ_aux (Fin.last n) ≃ γ · α_n
   -- At i=n, γ|[0,1] is all of γ, and γ'|[1,1] is constant, so this simplifies to γ · α_n
@@ -882,65 +906,6 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
       (γ.trans ((α (Fin.last n)).cast
         (show y = γ (part.t (Fin.last n)) by rw [part.h_end, γ.target])
         (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target]))) := by
-    -- γ_aux (Fin.last n) = ((γ|[0,n]) · α_n · (γ'|[n,n])).cast
-    -- Show γ|[0,n] ≃ γ and γ'|[n,n] ≃ refl
-
-    -- First show: γ|[0,n] ≃ γ (since part.t 0 = 0 and part.t (Fin.last n) = 1)
-    have h_γ_full : Path.Homotopic
-      ((γ.subpathOn (part.t 0) (part.t (Fin.last n))
-        (part.h_mono.monotone (Fin.zero_le (Fin.last n)))).cast
-        (by rw [part.h_start, γ.source])
-        (by rw [part.h_end, γ.target]))
-      γ := by
-      convert Path.subpathOn_zero_one γ
-      · exact part.h_start
-      · exact part.h_end
-
-    -- Show γ'|[n,n] ≃ refl y
-    have h_γ'_refl : Path.Homotopic
-      (γ'.subpathOn (part.t (Fin.last n)) (part.t (Fin.last n))
-        (part.h_mono.monotone (le_refl _)))
-      (Path.refl (γ' (part.t (Fin.last n)))) := by
-      exact Path.subpathOn_self γ' (part.t (Fin.last n))
-
-    -- Combine using associativity and trans_refl
-    -- We need to show the inner parts (before cast) are homotopic
-    -- LHS: (γ|[0,n]) · α_n · (γ'|[n,n])
-    -- RHS: γ · α_n (after dealing with casts)
-
-    -- First rearrange with associativity: ((a · b) · c) ≃ (a · (b · c))
-    have h_assoc1 : Path.Homotopic
-      (((γ.subpathOn (part.t 0) (part.t (Fin.last n))
-        (part.h_mono.monotone (Fin.zero_le (Fin.last n)))).trans (α (Fin.last n))).trans
-        (γ'.subpathOn (part.t (Fin.last n)) (part.t (Fin.last n))
-          (part.h_mono.monotone (le_refl _))))
-      ((γ.subpathOn (part.t 0) (part.t (Fin.last n))
-        (part.h_mono.monotone (Fin.zero_le (Fin.last n)))).trans
-        ((α (Fin.last n)).trans (γ'.subpathOn (part.t (Fin.last n)) (part.t (Fin.last n))
-          (part.h_mono.monotone (le_refl _))))) := by
-      exact Path.Homotopic.trans_assoc _ _ _
-
-    -- Apply h_γ'_refl on the right
-    have h_with_refl : Path.Homotopic
-      ((γ.subpathOn (part.t 0) (part.t (Fin.last n))
-        (part.h_mono.monotone (Fin.zero_le (Fin.last n)))).trans
-        ((α (Fin.last n)).trans (γ'.subpathOn (part.t (Fin.last n)) (part.t (Fin.last n))
-          (part.h_mono.monotone (le_refl _)))))
-      ((γ.subpathOn (part.t 0) (part.t (Fin.last n))
-        (part.h_mono.monotone (Fin.zero_le (Fin.last n)))).trans
-        ((α (Fin.last n)).trans (Path.refl (γ' (part.t (Fin.last n)))))) := by
-      apply Path.Homotopic.hcomp (Path.Homotopic.refl _)
-      apply Path.Homotopic.hcomp (Path.Homotopic.refl _) h_γ'_refl
-
-    -- Combine the steps so far
-    have h_combined := h_assoc1.trans h_with_refl
-
-    -- The main insight: we need to unfold γ_aux (Fin.last n) and match terms
-    -- γ_aux (Fin.last n) has the exact structure we've been simplifying
-    -- Just need to apply the cast at the outer level and use our homotopies
-
-    -- For now, use the homotopies we've built up but acknowledge
-    -- the final step needs more careful cast manipulation
     sorry
 
   -- Consecutive paths are homotopic: γ_aux i.succ ≃ γ_aux i.castSucc
