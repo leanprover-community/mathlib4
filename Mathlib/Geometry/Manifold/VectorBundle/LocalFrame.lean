@@ -460,13 +460,12 @@ proven in `OrthonormalFrame.lean`).
 variable [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
   {e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)} [MemTrivializationAtlas e]
   {ι : Type*} (b : Basis ι 𝕜 F) {s : Π x : M, V x} {t : Set M} {k : WithTop ℕ∞} {x x' : M}
-variable [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+variable [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] [ContMDiffVectorBundle k F V I]
 
 -- TODO: can this be proven more generally, for any local frame?
 /-- If `s` is `C^k` at `x`, so is its coefficient `b.localFrame_coeff e i` in the local frame
 near `x` induced by `e` and `b` -/
-lemma contMDiffAt_localFrame_coeff (hxe : x ∈ e.baseSet) [ContMDiffVectorBundle k F V I]
-    (hs : CMDiffAt k (T% s) x) (i : ι) :
+lemma contMDiffAt_localFrame_coeff (hxe : x ∈ e.baseSet) (hs : CMDiffAt k (T% s) x) (i : ι) :
     CMDiffAt k (e.localFrame_coeff I b i s) x := by
   -- This boils down to computing the frame coefficients in a local trivialisation.
   classical
@@ -497,21 +496,20 @@ lemma contMDiffAt_localFrame_coeff (hxe : x ∈ e.baseSet) [ContMDiffVectorBundl
 
 /-- If `s` is `C^k` on `t ⊆ e.baseSet`, so is its coefficient `b.localFrame_coeff e i`
 in the local frame induced by `e` -/
-lemma contMDiffOn_localFrame_coeff [ContMDiffVectorBundle k F V I]
-    (ht : IsOpen t) (ht' : t ⊆ e.baseSet)
+lemma contMDiffOn_localFrame_coeff (ht : IsOpen t) (ht' : t ⊆ e.baseSet)
     (hs : CMDiff[t] k (T% s)) (i : ι) : CMDiff[t] k (e.localFrame_coeff I b i s) :=
   fun _ hx ↦ (contMDiffAt_localFrame_coeff b (ht' hx)
     (hs.contMDiffAt (ht.mem_nhds hx)) i).contMDiffWithinAt
 
 /-- If `s` is `C^k` on `e.baseSet`, so is its coefficient `b.localFrame_coeff e i`
 in the local frame induced by `e` -/
-lemma contMDiffOn_baseSet_localFrame_coeff [ContMDiffVectorBundle k F V I]
-    (hs : CMDiff[e.baseSet] k (T% s)) (i : ι) : CMDiff[e.baseSet] k (e.localFrame_coeff I b i s) :=
+lemma contMDiffOn_baseSet_localFrame_coeff (hs : CMDiff[e.baseSet] k (T% s)) (i : ι) :
+    CMDiff[e.baseSet] k (e.localFrame_coeff I b i s) :=
   contMDiffOn_localFrame_coeff b e.open_baseSet (subset_refl _) hs _
 
 /-- A section `s` of `V` is `C^k` at `x ∈ e.baseSet` iff each of its
 coefficients `b.localFrame_coeff e i s` in a local frame near `x` is -/
-lemma contMDiffAt_iff_localFrame_coeff [ContMDiffVectorBundle k F V I] (hx : x' ∈ e.baseSet) :
+lemma contMDiffAt_iff_localFrame_coeff (hx : x' ∈ e.baseSet) :
     CMDiffAt k (T% s) x' ↔ ∀ i, CMDiffAt k (e.localFrame_coeff I b i s) x' :=
   ⟨fun h i ↦ contMDiffAt_localFrame_coeff b hx h i,
     fun hi ↦ (e.localFrame_isLocalFrameOn_baseSet I k b).contMDiffAt_of_coeff hi
@@ -519,7 +517,7 @@ lemma contMDiffAt_iff_localFrame_coeff [ContMDiffVectorBundle k F V I] (hx : x' 
 
 /-- A section `s` of `V` is `C^k` on `t ⊆ e.baseSet` iff each of its
 coefficients `b.localFrame_coeff e i s` in a local frame near `x` is -/
-lemma contMDiffOn_iff_localFrame_coeff [ContMDiffVectorBundle k F V I] (ht : IsOpen t) (ht' : t ⊆ e.baseSet) :
+lemma contMDiffOn_iff_localFrame_coeff (ht : IsOpen t) (ht' : t ⊆ e.baseSet) :
     CMDiff[t] k (T% s) ↔ ∀ i, CMDiff[t] k (e.localFrame_coeff I b i s) := by
   by_cases h: Nonempty e.baseSet; swap
   · -- Future: can the push tactic golf this? Can by_cases! help here?
@@ -543,7 +541,7 @@ lemma contMDiffOn_iff_localFrame_coeff [ContMDiffVectorBundle k F V I] (ht : IsO
 
 /-- A section `s` of `V` is `C^k` on a trivialisation domain `e.baseSet` iff each of its
 coefficients `b.localFrame_coeff e i s` in a local frame near `x` is -/
-lemma contMDiffOn_baseSet_iff_localFrame_coeff [ContMDiffVectorBundle k F V I] :
+lemma contMDiffOn_baseSet_iff_localFrame_coeff :
     CMDiff[e.baseSet] k (T% s) ↔ ∀ i, CMDiff[e.baseSet] k (e.localFrame_coeff I b i s) := by
   rw [contMDiffOn_iff_localFrame_coeff b e.open_baseSet (subset_refl _)]
 
