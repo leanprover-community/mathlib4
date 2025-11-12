@@ -256,9 +256,7 @@ then `t` is `C^n` on `u`. -/
 lemma contMDiffOn_of_coeff [FiniteDimensional 𝕜 F] (h : ∀ i, CMDiff[u] n (hs.coeff i t)) :
     CMDiff[u] n (T% t) := by
   by_cases hU : Nonempty u; swap
-  · rw [Set.not_nonempty_iff_eq_empty'.mp hU]
-    -- missing lemma: ContMDiffOn ∅
-    exact fun x hx ↦ hx.elim
+  · simp [Set.not_nonempty_iff_eq_empty'.mp hU] -- future: could push replace the additional lemma?
   obtain ⟨x, hx⟩ := hU
   have := fintype_of_finiteDimensional hs hx
   have this (i) : CMDiff[u] n (T% (hs.coeff i t • s i)) :=
@@ -293,12 +291,11 @@ variable (hs : IsLocalFrameOn I F 1 s u)
 w.r.t. `s i`, then `t` is differentiable on `u`. -/
 lemma mdifferentiableOn_of_coeff [FiniteDimensional 𝕜 F] (h : ∀ i, MDiff[u] (hs.coeff i t)) :
     MDiff[u] (T% t) := by
-  by_cases hU : Nonempty u; swap
-  · -- TODO: why does hu disappear from the local context here?
-    rw [Set.not_nonempty_iff_eq_empty'.mp hU]
-    -- missing lemma: MDifferentiableOn ∅
-    exact fun x hx ↦ hx.elim
-  obtain ⟨x, hx⟩ := hU
+  by_cases hu : Nonempty u; swap
+  · -- future: could push replace the additional lemma?
+    -- TODO: why does `push_neg at hU` make `hU disappear from the local context?
+    simp [Set.not_nonempty_iff_eq_empty'.mp hu]
+  obtain ⟨x, hx⟩ := hu
   have := fintype_of_finiteDimensional hs hx
   have this (i) : MDiff[u] (T% (hs.coeff i t • s i)) :=
     (h i).smul_section ((hs.contMDiffOn i).mdifferentiableOn le_rfl)
