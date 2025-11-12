@@ -85,7 +85,7 @@ theorem Continuous.exists_contMDiff_approx_and_eqOn (n : ℕ∞)
   suffices ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x by
     rcases this with ⟨g, hg⟩
     exact ⟨g, fun x ↦ (hg x).1, fun x ↦ (hg x).2.1, fun x ↦ mt (hg x).2.2⟩
-  have t_conv : ∀ x, Convex ℝ (t x) := fun x ↦ (convex_ball (f x) (ε x)).inter <|
+  have t_conv (x) : Convex ℝ (t x) := (convex_ball (f x) (ε x)).inter <|
     (convex_singleton _).setOf_const_imp.inter (convex_singleton _).setOf_const_imp
   apply exists_contMDiffOn_forall_mem_convex_of_local I t_conv
   intro x
@@ -128,8 +128,7 @@ theorem Continuous.exists_contDiff_approx_and_eqOn (n : ℕ∞)
 
 theorem Continuous.exists_contDiff_approx
     (f_cont : Continuous f) (ε_cont : Continuous ε) (ε_pos : ∀ x, 0 < ε x) :
-    ∃ g : E → F, ContDiff ℝ ∞ g ∧
-      (∀ x, dist (g x) (f x) < ε x) ∧ support g ⊆ support f := by
+    ∃ g : E → F, ContDiff ℝ ∞ g ∧ (∀ x, dist (g x) (f x) < ε x) ∧ support g ⊆ support f := by
   obtain ⟨g, g_contDiff, g_approx, -, g_supp⟩ := f_cont.exists_contDiff_approx_and_eqOn ⊤
     ε_cont ε_pos isClosed_empty mem_nhdsSet_empty contDiffOn_empty
   exact ⟨g, g_contDiff, g_approx, g_supp⟩
