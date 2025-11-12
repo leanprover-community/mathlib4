@@ -108,7 +108,7 @@ instance instFourierPair : FourierPair 𝓢(V, E) 𝓢(V, E) where
     rw [← fourierIntegralInv_eq_fourierIntegral_neg, Continuous.fourier_inversion f.continuous
       f.integrable (fourierTransformCLM 𝕜 f).integrable]
 
-instance instFourierPairInv : FourierPairInv 𝓢(V, E) 𝓢(V, E) where
+instance instFourierInvPair : FourierInvPair 𝓢(V, E) 𝓢(V, E) where
   fourier_inv := by
     intro f
     ext x
@@ -174,11 +174,11 @@ variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteS
 
 /-- Plancherel's theorem for Schwartz functions. -/
 theorem integral_inner_fourier_fourier (f g : 𝓢(V, H)) :
-    ∫ ξ, ⟪𝓕 f ξ, 𝓕 g ξ⟫ = ∫ x, ⟪f x, g x⟫ :=
+    ∫ ξ, ⟪𝓕 (f : V → H) ξ, 𝓕 (g : V → H) ξ⟫ = ∫ x, ⟪f x, g x⟫ :=
   integral_sesq_fourier_fourier f g (innerSL ℂ)
 
 theorem integral_norm_sq_fourier (f : 𝓢(V, H)) :
-    ∫ ξ, ‖𝓕 f ξ‖^2 = ∫ x, ‖f x‖^2 := by
+    ∫ ξ, ‖𝓕 (f : V → H) ξ‖^2 = ∫ x, ‖f x‖^2 := by
   apply Complex.ofRealLI.injective
   simp only [← LinearIsometry.integral_comp_comm]
   convert integral_inner_fourier_fourier f f <;>
