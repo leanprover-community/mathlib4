@@ -271,7 +271,7 @@ theorem ContinuousOn.isSeparable_image [TopologicalSpace β] {f : α → β} {s 
 
 section BoundedSpace
 
-/-- If a pseudoemetric space has bounded distance, then it is bounded as a metric space. -/
+/-- If a pseudoemetric space has bounded distance, then it is bounded as a pseudometric space. -/
 lemma PseudoEMetricSpace.boundedSpace_toPseudoMetricSpace [PseudoEMetricSpace β]
     {C : ℝ≥0} (hβ : ∀ a b : β, edist a b ≤ C) :
     letI : PseudoMetricSpace β := PseudoEMetricSpace.toPseudoMetricSpace
