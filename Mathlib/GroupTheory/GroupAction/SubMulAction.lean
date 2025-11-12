@@ -529,7 +529,7 @@ lemma orbitRel_nonZero_iff (x y : { v : M // v ≠ 0 }) :
 
 end Units
 
-section Normal
+section FixedPoints
 
 variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
 
@@ -554,4 +554,4 @@ lemma smul_fixedPoints_coe_of_normal {H : Subgroup G} [hH : H.Normal]
     (g • a).val = g • a.val :=
   rfl
 
-end Normal
+end FixedPoints
