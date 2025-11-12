@@ -591,21 +591,24 @@ end Normed
 section RealNormed
 variable [NormedAddCommGroup G] [NormedSpace ℝ G]
 
-/-- In a real vector space, a convex set with nonempty interior is a set of unique
-differentiability at every point of its closure. -/
-theorem uniqueDiffWithinAt_convex {s : Set G} (conv : Convex ℝ s) (hs : (interior s).Nonempty)
-    {x : G} (hx : x ∈ closure s) : UniqueDiffWithinAt ℝ s x := by
+theorem Convex.span_tangentConeAt {s : Set G} (conv : Convex ℝ s) (hs : (interior s).Nonempty)
+    {x : G} (hx : x ∈ closure s) : Submodule.span ℝ (tangentConeAt ℝ s x) = ⊤ := by
   rcases hs with ⟨y, hy⟩
   suffices y - x ∈ interior (tangentConeAt ℝ s x) by
-    refine ⟨Dense.of_closure ?_, hx⟩
-    simp [(Submodule.span ℝ (tangentConeAt ℝ s x)).eq_top_of_nonempty_interior'
-        ⟨y - x, interior_mono Submodule.subset_span this⟩]
+    apply (Submodule.span ℝ (tangentConeAt ℝ s x)).eq_top_of_nonempty_interior'
+    exact ⟨y - x, interior_mono Submodule.subset_span this⟩
   rw [mem_interior_iff_mem_nhds]
   replace hy : interior s ∈ 𝓝 y := IsOpen.mem_nhds isOpen_interior hy
   apply mem_of_superset ((isOpenMap_sub_right x).image_mem_nhds hy)
   rintro _ ⟨z, zs, rfl⟩
   refine mem_tangentConeAt_of_openSegment_subset (Subset.trans ?_ interior_subset)
   exact conv.openSegment_closure_interior_subset_interior hx zs
+
+/-- In a real vector space, a convex set with nonempty interior is a set of unique
+differentiability at every point of its closure. -/
+theorem uniqueDiffWithinAt_convex {s : Set G} (conv : Convex ℝ s) (hs : (interior s).Nonempty)
+    {x : G} (hx : x ∈ closure s) : UniqueDiffWithinAt ℝ s x := by
+  simp [uniqueDiffWithinAt_iff, conv.span_tangentConeAt hs hx, hx]
 
 /-- In a real vector space, a convex set with nonempty interior is a set of unique
 differentiability. -/

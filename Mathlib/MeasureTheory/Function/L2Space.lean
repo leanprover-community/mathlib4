@@ -27,7 +27,7 @@ noncomputable section
 
 open TopologicalSpace MeasureTheory MeasureTheory.Lp Filter
 
-open scoped NNReal ENNReal MeasureTheory
+open scoped NNReal ENNReal MeasureTheory InnerProductSpace
 
 namespace MeasureTheory
 
@@ -195,7 +195,7 @@ end InnerProductSpace
 
 section IndicatorConstLp
 
-variable (𝕜) {s : Set α}
+variable (𝕜) {s t : Set α}
 
 /-- The inner product in `L2` of the indicator of a set `indicatorConstLp 2 hs hμs c` and `f` is
 equal to the integral of the inner product over `s`: `∫ x in s, ⟪c, f x⟫ ∂μ`. -/
@@ -240,6 +240,31 @@ a real or complex function `f` is equal to the integral of `f` over `s`. -/
 theorem inner_indicatorConstLp_one (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (f : Lp 𝕜 2 μ) :
     ⟪indicatorConstLp 2 hs hμs (1 : 𝕜), f⟫ = ∫ x in s, f x ∂μ := by
   rw [L2.inner_indicatorConstLp_eq_inner_setIntegral 𝕜 hs hμs (1 : 𝕜) f]; simp
+
+/-- The inner product in `L2` of two `indicatorConstLp`s, i.e. functions which are constant `a : E`
+and `b : E` on measurable `s t : Set α` with finite measure, respectively, is `⟪a, b⟫` times the
+measure of `s ∩ t`. -/
+lemma inner_indicatorConstLp_indicatorConstLp [CompleteSpace E]
+    (hs : MeasurableSet s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞ := by finiteness)
+    (hμt : μ t ≠ ∞ := by finiteness) (a b : E) :
+    ⟪indicatorConstLp 2 hs hμs a, indicatorConstLp 2 ht hμt b⟫ = μ.real (s ∩ t) • ⟪a, b⟫ := by
+  let : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
+  rw [inner_indicatorConstLp_eq_inner_setIntegral, setIntegral_indicatorConstLp hs,
+    inner_smul_right_eq_smul, Set.inter_comm]
+
+/-- The inner product in `L2` of indicators of two sets with finite measure
+is the measure of the intersection. -/
+lemma inner_indicatorConstLp_one_indicatorConstLp_one
+    (hs : MeasurableSet s) (ht : MeasurableSet t)
+    (hμs : μ s ≠ ∞ := by finiteness) (hμt : μ t ≠ ∞ := by finiteness) :
+    ⟪indicatorConstLp 2 hs hμs (1 : 𝕜), indicatorConstLp 2 ht hμt (1 : 𝕜)⟫ = μ.real (s ∩ t) := by
+  simp [inner_indicatorConstLp_indicatorConstLp, RCLike.ofReal_alg]
+
+lemma real_inner_indicatorConstLp_one_indicatorConstLp_one
+    (hs : MeasurableSet s) (ht : MeasurableSet t)
+    (hμs : μ s ≠ ∞ := by finiteness) (hμt : μ t ≠ ∞ := by finiteness) :
+    ⟪indicatorConstLp 2 hs hμs (1 : ℝ), indicatorConstLp 2 ht hμt (1 : ℝ)⟫_ℝ = μ.real (s ∩ t) := by
+  simp [inner_indicatorConstLp_indicatorConstLp]
 
 end IndicatorConstLp
 

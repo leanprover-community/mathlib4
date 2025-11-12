@@ -35,8 +35,8 @@ def IrreducibleCloseds.map {f : X → Y} (hf1 : Continuous f) (hf2 : IsClosedMap
     (c : IrreducibleCloseds X) :
     IrreducibleCloseds Y where
   carrier := f '' c
-  is_irreducible' := c.is_irreducible'.image f hf1.continuousOn
-  is_closed' := hf2 c c.is_closed'
+  isIrreducible' := c.isIrreducible.image f hf1.continuousOn
+  isClosed' := hf2 c c.isClosed
 
 /--
 Taking images under a closed embedding is strictly monotone on the preorder of irreducible closeds.

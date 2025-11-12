@@ -1,4 +1,5 @@
 import Mathlib.Tactic.TacticAnalysis.Declarations
+import Mathlib.Tactic.AdaptationNote
 
 section terminalReplacement
 
@@ -53,6 +54,11 @@ example : 1 + 1 = 2 := by
   have : 1 + 1 < 3 := by omega
   grind
 
+-- `#adaptation_note` is ignored
+example : 1 + 1 = 2 := by
+  #adaptation_note /-- -/
+  grind
+
 end mergeWithGrind
 
 section replaceWithGrind
@@ -87,6 +93,16 @@ example {α : Type u} (f : α → Type max u v) : 1 = 1 := by
   let T : Type max u v := Sigma f
   have : 1 + 1 = 2 := rfl -- Extra line to ensure the linter picks it up.
   rfl
+
+-- Ensure the effects of `classical` are picked up. Otherwise we get an error like:
+-- failed to synthesize
+--   Decidable b
+theorem forall_imp_iff_exists_imp {α : Type} {p : α → Prop} {b : Prop} [ha : Nonempty α] :
+    (∀ x, p x) → b ↔ ∃ x, p x → b := by
+  classical
+  let ⟨a⟩ := ha
+  refine ⟨fun h ↦ Decidable.not_forall_not.1 fun h' ↦ ?_, fun ⟨x, hx⟩ h ↦ hx (h x)⟩
+  exact if hb : b then h' a fun _ ↦ hb else hb <| h fun x ↦ (Decidable.not_imp_iff_and_not.1 (h' x)).1
 
 end replaceWithGrind
 

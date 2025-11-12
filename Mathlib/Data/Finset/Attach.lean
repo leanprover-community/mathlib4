@@ -46,11 +46,11 @@ def attach (s : Finset α) : Finset { x // x ∈ s } :=
 theorem attach_val (s : Finset α) : s.attach.1 = s.1.attach :=
   rfl
 
-@[simp, grind]
+@[simp, grind ←]
 theorem mem_attach (s : Finset α) : ∀ x, x ∈ s.attach :=
   Multiset.mem_attach _
 
 @[simp, norm_cast]
-theorem coe_attach (s : Finset α) : s.attach.toSet = Set.univ := by ext; simp
+theorem coe_attach (s : Finset α) : (s.attach : Set s) = Set.univ := by ext; simp
 
 end Finset

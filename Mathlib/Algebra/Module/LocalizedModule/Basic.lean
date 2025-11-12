@@ -188,9 +188,7 @@ private theorem nsmul_succ' (n : ℕ) (x : LocalizedModule S M) : n.succ • x =
   LocalizedModule.induction_on (fun _ _ => rfl) x
 
 instance : AddCommMonoid (LocalizedModule S M) where
-  add := (· + ·)
   add_assoc := add_assoc'
-  zero := 0
   zero_add := zero_add'
   add_zero := add_zero'
   nsmul := (· • ·)
@@ -371,7 +369,6 @@ private theorem zero_smul_aux (p : LocalizedModule S M) : (0 : T) • p = 0 := b
     mk'_smul_mk, zero_smul, zero_mk]
 
 noncomputable instance isModule : Module T (LocalizedModule S M) where
-  smul := (· • ·)
   one_smul := one_smul_aux
   mul_smul := mul_smul_aux
   smul_add := smul_add_aux

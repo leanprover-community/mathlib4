@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Monoidal.Cartesian.CommMon_
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp_
 
 /-!
-# Yoneda embedding of `CommGrp_ C`
+# Yoneda embedding of `CommGrp C`
 -/
 
 assert_not_exists Field
@@ -24,16 +24,16 @@ class abbrev CommGrpObj := GrpObj X, IsCommMonObj X
 
 @[deprecated (since := "2025-09-13")] alias CommGrp_Class := CommGrpObj
 
-section CommGrp_
+section CommGrp
 
 variable (X) in
 /-- If `X` represents a presheaf of commutative groups, then `X` is a commutative group object. -/
-def CommGrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ CommGrp.{w})
+def CommGrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ CommGrpCat.{w})
     (α : (F ⋙ forget _).RepresentableBy X) : CommGrpObj X where
-  __ := GrpObj.ofRepresentableBy X (F ⋙ forget₂ CommGrp Grp) α
-  __ := IsCommMonObj.ofRepresentableBy X (F ⋙ forget₂ CommGrp CommMonCat) α
+  __ := GrpObj.ofRepresentableBy X (F ⋙ forget₂ CommGrpCat GrpCat) α
+  __ := IsCommMonObj.ofRepresentableBy X (F ⋙ forget₂ CommGrpCat CommMonCat) α
 
 @[deprecated (since := "2025-09-13")]
 alias CommGrp_Class.ofRepresentableBy := CommGrpObj.ofRepresentableBy
 
-end CommGrp_
+end CommGrp

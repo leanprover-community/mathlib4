@@ -1026,8 +1026,8 @@ theorem tensorTensorTensorComm_symm_tmul (m : A) (n : C) (p : B) (q : D) :
   rfl
 
 theorem tensorTensorTensorComm_symm :
-    (tensorTensorTensorComm R R' S T A B C D).symm = tensorTensorTensorComm R S R' T A C B D := by
-  ext; rfl
+    (tensorTensorTensorComm R R' S T A B C D).symm = tensorTensorTensorComm R S R' T A C B D :=
+  rfl
 
 theorem tensorTensorTensorComm_toLinearEquiv :
     (tensorTensorTensorComm R R' S T A B C D).toLinearEquiv =
@@ -1036,9 +1036,26 @@ theorem tensorTensorTensorComm_toLinearEquiv :
 @[simp]
 theorem toLinearEquiv_tensorTensorTensorComm :
     (tensorTensorTensorComm R R R R A B C D).toLinearEquiv =
-      _root_.TensorProduct.tensorTensorTensorComm R A B C D := by
-  apply LinearEquiv.toLinearMap_injective
-  ext; simp
+      _root_.TensorProduct.tensorTensorTensorComm R A B C D := rfl
+
+lemma map_bijective {f : A →ₐ[R] B} {g : C →ₐ[R] D}
+    (hf : Function.Bijective f) (hg : Function.Bijective g) :
+    Function.Bijective (map f g) :=
+  _root_.TensorProduct.map_bijective hf hg
+
+lemma includeLeft_bijective (h : Function.Bijective (algebraMap R B)) :
+    Function.Bijective (includeLeft : A →ₐ[S] A ⊗[R] B) := by
+  have : (includeLeft : A →ₐ[S] A ⊗[R] B).comp (TensorProduct.rid R S A).toAlgHom =
+      map (.id S A) (Algebra.ofId R B) := by ext; simp
+  rw [← Function.Bijective.of_comp_iff _ (TensorProduct.rid R S A).bijective]
+  convert_to Function.Bijective (map (.id R A) (Algebra.ofId R B))
+  · exact DFunLike.coe_fn_eq.mpr this
+  · exact Algebra.TensorProduct.map_bijective Function.bijective_id h
+
+lemma includeRight_bijective (h : Function.Bijective (algebraMap R A)) :
+    Function.Bijective (includeRight : B →ₐ[R] A ⊗[R] B) := by
+  rw [← Function.Bijective.of_comp_iff' (TensorProduct.comm R A B).bijective]
+  exact Algebra.TensorProduct.includeLeft_bijective (S := R) h
 
 end
 

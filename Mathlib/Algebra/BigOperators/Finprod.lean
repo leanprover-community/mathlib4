@@ -411,7 +411,7 @@ theorem finprod_cond_ne (f : α → M) (a : α) [DecidableEq α] (hf : (mulSuppo
 
 @[to_additive]
 theorem finprod_mem_eq_prod_of_inter_mulSupport_eq (f : α → M) {s : Set α} {t : Finset α}
-    (h : s ∩ mulSupport f = t.toSet ∩ mulSupport f) : ∏ᶠ i ∈ s, f i = ∏ i ∈ t, f i :=
+    (h : s ∩ mulSupport f = ↑t ∩ mulSupport f) : ∏ᶠ i ∈ s, f i = ∏ i ∈ t, f i :=
   finprod_cond_eq_prod_of_cond_iff _ <| by
     intro x hxf
     rw [← mem_mulSupport] at hxf
@@ -1050,21 +1050,89 @@ theorem prod_finprod_comm (s : Finset α) (f : α → β → M) (h : ∀ a ∈ s
     (∏ a ∈ s, ∏ᶠ b : β, f a b) = ∏ᶠ b : β, ∏ a ∈ s, f a b :=
   (finprod_prod_comm s (fun b a => f a b) h).symm
 
-theorem mul_finsum {R : Type*} [NonUnitalNonAssocSemiring R] (f : α → R) (r : R)
+/--
+For functions with finite support, multiplication commutes with finsums. See `mul_finsum` for a
+statement assuming that `R` has no zero divisors.
+-/
+theorem mul_finsum' {R : Type*} [NonUnitalNonAssocSemiring R] (f : α → R) (r : R)
     (h : (support f).Finite) : (r * ∑ᶠ a : α, f a) = ∑ᶠ a : α, r * f a :=
   (AddMonoidHom.mulLeft r).map_finsum h
 
-theorem mul_finsum_mem {R : Type*} [NonUnitalNonAssocSemiring R] {s : Set α} (f : α → R) (r : R)
+/--
+For finite sets, multiplication commutes with `finsum_mem`. See `mul_finsum_mem'` for a statement
+assuming finiteness of support.
+-/
+theorem mul_finsum_mem' {R : Type*} [NonUnitalNonAssocSemiring R] {s : Set α} (f : α → R) (r : R)
     (hs : s.Finite) : (r * ∑ᶠ a ∈ s, f a) = ∑ᶠ a ∈ s, r * f a :=
   (AddMonoidHom.mulLeft r).map_finsum_mem f hs
 
-theorem finsum_mul {R : Type*} [NonUnitalNonAssocSemiring R] (f : α → R) (r : R)
+/--
+For functions with finite support, multiplication commutes with finsums. See `finsum_mul` for a
+statement assuming that `R` has no zero divisors.
+-/
+theorem finsum_mul' {R : Type*} [NonUnitalNonAssocSemiring R] (f : α → R) (r : R)
     (h : (support f).Finite) : (∑ᶠ a : α, f a) * r = ∑ᶠ a : α, f a * r :=
   (AddMonoidHom.mulRight r).map_finsum h
 
-theorem finsum_mem_mul {R : Type*} [NonUnitalNonAssocSemiring R] {s : Set α} (f : α → R) (r : R)
+/--
+For finite sets, multiplication commutes with `finsum_mem`. See `finsum_mem_mul'` for a statement
+assuming finiteness of support.
+-/
+theorem finsum_mem_mul' {R : Type*} [NonUnitalNonAssocSemiring R] {s : Set α} (f : α → R) (r : R)
     (hs : s.Finite) : (∑ᶠ a ∈ s, f a) * r = ∑ᶠ a ∈ s, f a * r :=
   (AddMonoidHom.mulRight r).map_finsum_mem f hs
+
+open Classical in
+/--
+If `R` has no zero divisors, then multiplication commutes with finsums. See `mul_finsum'` for a
+statement assuming finiteness of support.
+-/
+theorem mul_finsum {R : Type*} [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] (f : α → R)
+    (r : R) :
+    (r * ∑ᶠ a : α, f a) = ∑ᶠ a : α, r * f a := by
+  by_cases hr : r = 0
+  · simp_all
+  by_cases h : f.support.Finite
+  · exact mul_finsum' f r h
+  simp [finsum_def, h, (by aesop : (r * f ·).support = f.support)]
+
+/--
+If `R` has no zero divisors, then multiplication commutes with `finsum_mem`. See `mul_finsum_mem'`
+for a statement assuming finiteness of support.
+-/
+theorem mul_finsum_mem {R : Type*} [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] {s : Set α}
+    (f : α → R) (r : R) :
+    (r * ∑ᶠ a ∈ s, f a) = ∑ᶠ a ∈ s, r * f a := by
+  rw [mul_finsum]
+  congr
+  ext a
+  by_cases h : a ∈ s <;> simp_all
+
+open Classical in
+/--
+If `R` has no zero divisors, then multiplication commutes with finsums. See `finsum_mul'` for a
+statement assuming finiteness of support.
+-/
+theorem finsum_mul {R : Type*} [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] (f : α → R)
+    (r : R) :
+    (∑ᶠ a : α, f a) * r = ∑ᶠ a : α, f a * r := by
+  by_cases hr : r = 0
+  · simp_all
+  by_cases h : f.support.Finite
+  · exact finsum_mul' f r h
+  simp [finsum_def, h, (by aesop : (f · * r).support = f.support)]
+
+/--
+If `R` has no zero divisors, then multiplication commutes with `finsum_mem`. See `finsum_mem_mul'`
+for a statement assuming finiteness of support.
+-/
+theorem finsum_mem_mul {R : Type*} [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] {s : Set α}
+    (f : α → R) (r : R) :
+    (∑ᶠ a ∈ s, f a) * r = ∑ᶠ a ∈ s, f a * r := by
+  rw [finsum_mul]
+  congr
+  ext a
+  by_cases h : a ∈ s <;> simp_all
 
 @[to_additive (attr := simp)]
 lemma finprod_apply {α ι : Type*} {f : ι → α → N} (hf : (mulSupport f).Finite) (a : α) :

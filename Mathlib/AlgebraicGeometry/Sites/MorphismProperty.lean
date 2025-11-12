@@ -49,7 +49,7 @@ lemma IsJointlySurjectivePreserving.exists_preimage_snd_triplet_of_prop
   haveI : HasPullback g f := hasPullback_symmetry f g
   obtain ⟨a, ha⟩ := exists_preimage_fst_triplet_of_prop hf y x h.symm
   use (pullbackSymmetry f g).inv.base a
-  rwa [← Scheme.comp_base_apply, pullbackSymmetry_inv_comp_snd]
+  rwa [← Scheme.Hom.comp_apply, pullbackSymmetry_inv_comp_snd]
 
 instance : IsJointlySurjectivePreserving @IsOpenImmersion where
   exists_preimage_fst_triplet_of_prop {X Y S f g} _ hg x y h := by
@@ -97,6 +97,10 @@ instance [IsJointlySurjectivePreserving P] [P.IsStableUnderBaseChange] :
     obtain ⟨w, hw⟩ := IsJointlySurjectivePreserving.exists_preimage_fst_triplet_of_prop (hf.2 i)
       (f := g) x y hy.symm
     use i, (H i).isoPullback.inv.base w
-    simpa [← Scheme.comp_base_apply]
+    simpa [← Scheme.Hom.comp_apply]
+
+/-- The Zariski precoverage on the category of schemes is the precoverage defined by
+jointly surjective families of open immersions. -/
+abbrev zariskiPrecoverage : Precoverage Scheme.{u} := precoverage @IsOpenImmersion
 
 end AlgebraicGeometry.Scheme

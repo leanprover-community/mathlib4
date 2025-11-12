@@ -21,7 +21,7 @@ one is concerned with the cardinalities of sets that may or may not be infinite.
 
 `Set.ncard` has a nicer codomain, but when using it, `Set.Finite` hypotheses are normally needed to
 make sure its values are meaningful.  More generally, `Set.ncard` is intended to be used over the
-obvious alternative `Finset.card` when finiteness is 'propositional' rather than  'structural'.
+obvious alternative `Finset.card` when finiteness is 'propositional' rather than 'structural'.
 When working with sets that are finite by virtue of their definition, then `Finset.card` probably
 makes more sense. One setting where `Set.ncard` works nicely is in a type `α` with `[Finite α]`,
 where every set is automatically finite. In this setting, we use default arguments and a simple
@@ -1082,7 +1082,8 @@ theorem exists_subset_or_subset_of_two_mul_lt_ncard {n : ℕ} (hst : 2 * n < (s 
 
 lemma _root_.Finset.exists_not_mem_of_card_lt_enatCard {s : Finset α} (hs : s.card < ENat.card α) :
     ∃ a, a ∉ s := by
-  contrapose! hs; simp [← Set.encard_coe_eq_coe_finsetCard, Set.eq_univ_of_forall (s := s.toSet) hs]
+  contrapose! hs
+  simp [← Set.encard_coe_eq_coe_finsetCard, Set.eq_univ_of_forall (α := α) (s := s) hs]
 
 /-! ### Explicit description of a set from its cardinality -/
 

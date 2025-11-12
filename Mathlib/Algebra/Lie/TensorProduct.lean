@@ -47,7 +47,7 @@ def hasBracketAux (x : L) : Module.End R (M ⊗[R] N) :=
 instance lieRingModule : LieRingModule L (M ⊗[R] N) where
   bracket x := hasBracketAux x
   add_lie x y t := by
-    simp only [hasBracketAux, LinearMap.lTensor_add, LinearMap.rTensor_add, LieHom.map_add,
+    simp only [hasBracketAux, LinearMap.lTensor_add, LinearMap.rTensor_add, map_add,
       LinearMap.add_apply]
     abel
   lie_add _ := LinearMap.map_add _
@@ -67,7 +67,7 @@ instance lieModule : LieModule R L (M ⊗[R] N) where
   smul_lie c x t := by
     change hasBracketAux (c • x) _ = c • hasBracketAux _ _
     simp only [hasBracketAux, smul_add, LinearMap.rTensor_smul, LinearMap.smul_apply,
-      LinearMap.lTensor_smul, LieHom.map_smul, LinearMap.add_apply]
+      LinearMap.lTensor_smul, map_smul, LinearMap.add_apply]
   lie_smul c _ := LinearMap.map_smul _ c
 
 @[simp]

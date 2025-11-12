@@ -55,7 +55,7 @@ lemma Subgroup.mem_closure_singleton_iff_existsUnique_zpow {G : Type*}
   · exact fun h ↦ h.exists
 
 lemma Int.addEquiv_eq_refl_or_neg (e : ℤ ≃+ ℤ) : e = .refl _ ∨ e = .neg _ := by
-  suffices e 1 = 1 ∨ - e 1 = 1 by simpa [AddEquiv.ext_int_iff, neg_eq_iff_eq_neg]
+  suffices e 1 = 1 ∨ -e 1 = 1 by simpa [AddEquiv.ext_int_iff, neg_eq_iff_eq_neg]
   have he : ¬IsOfFinAddOrder (e 1) :=
     not_isOfFinAddOrder_of_isAddTorsionFree ((AddEquiv.map_ne_zero_iff e).mpr Int.one_ne_zero)
   rw [← AddSubgroup.zmultiples_eq_zmultiples_iff he]
@@ -223,7 +223,7 @@ noncomputable def LinearOrderedCommGroup.multiplicative_int_orderMonoidIso_of_is
     {x : G} (h : IsLeast {y : G | 1 < y} x) : G ≃*o Multiplicative ℤ := by
   have : IsLeast {y : Additive G | 0 < y} (.ofMul x) := h
   let f' := LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos (G := Additive G) this
-  exact ⟨AddEquiv.toMultiplicative' f', by simp⟩
+  exact f'.toMultiplicativeRight
 
 /-- Any locally finite linear additive group is archimedean. -/
 lemma Archimedean.of_locallyFiniteOrder {G : Type*} [AddCommGroup G] [LinearOrder G]
@@ -278,21 +278,18 @@ variable (G) in
 to the multiplicative integers, or is densely ordered. -/
 lemma LinearOrderedCommGroup.discrete_or_denselyOrdered :
     Nonempty (G ≃*o Multiplicative ℤ) ∨ DenselyOrdered G := by
-  refine (LinearOrderedAddCommGroup.discrete_or_denselyOrdered (Additive G)).imp ?_ id
-  rintro ⟨f, hf⟩
-  exact ⟨AddEquiv.toMultiplicative' f, hf⟩
+  rw [← OrderAddMonoidIso.toMultiplicativeRight.nonempty_congr]
+  exact LinearOrderedAddCommGroup.discrete_or_denselyOrdered (Additive G)
 
 variable (G) in
 /-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
 to the multiplicative integers, or is densely ordered, exclusively. -/
 lemma LinearOrderedCommGroup.discrete_iff_not_denselyOrdered :
     Nonempty (G ≃*o Multiplicative ℤ) ↔ ¬ DenselyOrdered G := by
-  let e : G ≃o Additive G := OrderIso.refl G
-  rw [denselyOrdered_iff_of_orderIsoClass e,
-    ← LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered (Additive G)]
-  refine Nonempty.congr ?_ ?_ <;> intro f
-  · exact ⟨MulEquiv.toAdditive' f, by simp⟩
-  · exact ⟨MulEquiv.toAdditive'.symm f, by simp⟩
+  let e : G ≃o Additive G := .refl G
+  rw [← OrderAddMonoidIso.toMultiplicativeRight.nonempty_congr,
+    LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered,
+    denselyOrdered_iff_of_orderIsoClass e]
 
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
 either isomorphic (and order-isomorphic) to `ℤᵐ⁰`, or is densely ordered. -/
@@ -380,10 +377,8 @@ lemma LinearOrderedCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete
     Set.WellFoundedOn {x : G | g ≤ x} (· < ·) ↔ Nonempty (G ≃*o Multiplicative ℤ) := by
   let e : G ≃o Additive G := OrderIso.refl G
   suffices Set.WellFoundedOn {x : G | g ≤ x} (· < ·) ↔ Set.WellFoundedOn {x | e g ≤ x} (· < ·) by
-    rw [this, LinearOrderedAddCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete]
-    refine Nonempty.congr (fun f ↦ ?_) (fun f ↦ ?_)
-    · exact ⟨AddEquiv.toMultiplicative' f, by simp⟩
-    · exact ⟨MulEquiv.toAdditive' f, by simp⟩
+    rw [this, LinearOrderedAddCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete,
+      OrderAddMonoidIso.toMultiplicativeRight.nonempty_congr]
   refine ⟨fun h ↦ (h.mapsTo e.symm fun _ ↦ e.le_symm_apply.mpr).mono' ?_,
     fun h ↦ (h.mapsTo e fun _ ↦ ?_).mono' ?_⟩ <;>
   simp [Function.onFun]

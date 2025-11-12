@@ -36,11 +36,11 @@ open String in
 
 E.g. `#eval "InvHMulLEConjugate₂SMul_ne_top".splitCase` yields
 `["Inv", "HMul", "LE", "Conjugate₂", "SMul", "_", "ne", "_", "top"]`. -/
-partial def String.splitCase (s : String) (i₀ : Pos := 0) (r : List String := []) :
+partial def String.splitCase (s : String) (i₀ : Pos.Raw := 0) (r : List String := []) :
     List String := Id.run do
   -- We test if we need to split between `i₀` and `i₁`.
-  let i₁ := s.next i₀
-  if s.atEnd i₁ then
+  let i₁ := i₀.next s
+  if i₁.atEnd s then
     -- If `i₀` is the last position, return the list.
     let r := s::r
     return r.reverse
@@ -49,24 +49,26 @@ partial def String.splitCase (s : String) (i₀ : Pos := 0) (r : List String := 
   * We split after a name in `endCapitalNames`;
   * We split after a lower-case letter that is followed by an upper-case letter
     (unless it is part of a name in `endCapitalNames`). -/
-  if s.get i₀ == '_' || s.get i₁ == '_' then
-    return splitCase (s.extract i₁ s.endPos) 0 <| (s.extract 0 i₁)::r
-  if (s.get i₁).isUpper then
-    if let some strs := endCapitalNames[s.extract 0 i₁]? then
+  if i₀.get s == '_' || i₁.get s == '_' then
+    return splitCase (String.Pos.Raw.extract s i₁ s.endPos) 0 <| (String.Pos.Raw.extract s 0 i₁)::r
+  if (i₁.get s).isUpper then
+    if let some strs := endCapitalNames[String.Pos.Raw.extract s 0 i₁]? then
       if let some (pref, newS) := strs.findSome?
-        fun x : String ↦ (s.extract i₁ s.endPos).dropPrefix? x |>.map (x, ·.toString) then
-        return splitCase newS 0 <| (s.extract 0 i₁ ++ pref)::r
-    if !(s.get i₀).isUpper then
-      return splitCase (s.extract i₁ s.endPos) 0 <| (s.extract 0 i₁)::r
+        fun x : String ↦ (String.Pos.Raw.extract s i₁ s.endPos).dropPrefix? x
+          |>.map (x, ·.toString) then
+        return splitCase newS 0 <| (String.Pos.Raw.extract s 0 i₁ ++ pref)::r
+    if !(i₀.get s).isUpper then
+      return splitCase (String.Pos.Raw.extract s i₁ s.endPos) 0 <|
+        (String.Pos.Raw.extract s 0 i₁)::r
   return splitCase s i₁ r
 
 /-- Replaces characters in `s` by lower-casing the first characters until a non-upper-case character
 is found. -/
 partial def String.decapitalizeSeq (s : String) (i : String.Pos := 0) : String :=
-  if s.atEnd i || !(s.get i).isUpper then
+  if i.atEnd s || !(s.get i).isUpper then
     s
   else
-    decapitalizeSeq (s.set i (s.get i).toLower) <| s.next i
+    decapitalizeSeq (s.set i (s.get i).toLower) <| i.next s
 
 
 /-- If `r` starts with an upper-case letter, return `s`, otherwise return `s` with the

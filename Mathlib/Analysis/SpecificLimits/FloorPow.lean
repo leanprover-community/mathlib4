@@ -280,8 +280,7 @@ theorem sum_div_nat_floor_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c :
   calc
     (∑ i ∈ range N with j < ⌊c ^ i⌋₊, (1 : ℝ) / (⌊c ^ i⌋₊ : ℝ) ^ 2) ≤
         ∑ i ∈ range N with j < c ^ i, (1 : ℝ) / (⌊c ^ i⌋₊ : ℝ) ^ 2 := by
-      gcongr
-      exact fun k hk ↦ hk.trans_le <| Nat.floor_le (by positivity)
+      gcongr with k hk; exact Nat.floor_le (by positivity)
     _ ≤ ∑ i ∈ range N with j < c ^ i, (1 - c⁻¹)⁻¹ ^ 2 * ((1 : ℝ) / (c ^ i) ^ 2) := by
       gcongr with i
       rw [mul_div_assoc', mul_one, div_le_div_iff₀]; rotate_left

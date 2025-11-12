@@ -7,6 +7,7 @@ import Batteries.Tactic.Alias
 import Mathlib.Data.Int.Notation
 import Mathlib.Tactic.TypeStar
 import Mathlib.Util.AssertExists
+import Mathlib.Tactic.Push.Attr
 
 /-!
 # Cast of integers to function types
@@ -30,6 +31,7 @@ instance instIntCast : IntCast (∀ i, π i) where intCast n _ := n
 theorem intCast_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
   rfl
 
+@[push ←]
 theorem intCast_def (n : ℤ) : (n : ∀ i, π i) = fun _ => ↑n :=
   rfl
 

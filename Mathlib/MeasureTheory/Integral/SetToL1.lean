@@ -971,8 +971,7 @@ theorem setToFun_congr_measure_of_add_left {μ' : Measure α}
     setToFun (μ + μ') T hT_add f = setToFun μ' T hT f := by
   refine setToFun_congr_measure_of_integrable 1 one_ne_top ?_ hT_add hT f hf
   rw [one_smul]
-  nth_rw 1 [← zero_add μ']
-  exact add_le_add_right bot_le μ'
+  exact Measure.le_add_left le_rfl
 
 theorem setToFun_top_smul_measure (hT : DominatedFinMeasAdditive (∞ • μ) T C) (f : α → E) :
     setToFun (∞ • μ) T hT f = 0 := by
