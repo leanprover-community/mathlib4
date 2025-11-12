@@ -21,12 +21,8 @@ Namely, we show that a closed 1-form on a convex subset of a normed space is exa
 
 We also prove that the integrals of a closed 1-form
 along 2 curves that are joined by a `C²`-smooth homotopy are equal.
- In the future, this will allow us to prove Poincaré lemma for simply connected open sets
+In the future, this will allow us to prove Poincaré lemma for simply connected open sets
 and, more generally, for simply connected locally convex sets.
-
-## Main statements
-
-TODO
 
 ## Implementation notes
 
@@ -61,6 +57,8 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
     (hcontdiff : ContDiffOn ℝ 2
       (fun xy : ℝ × ℝ ↦ Set.IccExtend zero_le_one (φ.extend xy.1) xy.2) (Icc 0 1)) :
     ∫ᶜ x in γ₁, ω x + ∫ᶜ x in φ.evalAt 1, ω x = ∫ᶜ x in γ₂, ω x + ∫ᶜ x in φ.evalAt 0, ω x := by
+  -- The overall plan of the proof is to pullback the 1-form to the unit square along the homotopy,
+  -- prove that it's a closed 1-form, then apply the divergence theorem.
   -- Let `U` be the interior of the unit square
   set U : Set (ℝ × ℝ) := Ioo 0 1 ×ˢ Ioo 0 1 with hU
   have hinterior : interior (Icc 0 1) = U := by
@@ -220,6 +218,10 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
       apply integrableOn_zero
   simp [integral_congr_ae hf'g']
 
+/-- The curve integral of a closed 1-form along the boundary of the image of a unit square
+under a smooth map is zero.
+
+This theorem is stated in terms of a $$C^2$$ homotopy between two paths. -/
 theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_countable
     {ω : E → E →L[𝕜] F} {dω : E → E →L[ℝ] E →L[𝕜] F}
     (φ : (γ₁ : C(I, E)).Homotopy γ₂)
@@ -241,6 +243,10 @@ theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_countable
     (fun a ha b hb hs ↦ e.hasFDerivAt.comp_hasFDerivWithinAt _ (hω a ha b hb hs))
     (e.continuous.comp_continuousOn hωc) hdω_symm hcontdiff
 
+/-- The curve integral of a closed 1-form along the boundary of the image of a unit square
+under a smooth map is zero.
+
+This theorem is stated in terms of a $$C^2$$ homotopy between two paths. -/
 theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt
     {ω : E → E →L[𝕜] F} {dω : E → E →L[ℝ] E →L[𝕜] F}
     (φ : (γ₁ : C(I, E)).Homotopy γ₂)
@@ -255,6 +261,10 @@ theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt
     hφt (fun a ha b hb _ ↦ hω _ <| hφt a ha b hb) hωc
     (fun a ha b hb _ ↦ hdω_symm _ <| hφt a ha b hb) hcontdiff
 
+/-- The curve integral of a closed 1-form along the boundary of the image of a unit square
+under a smooth map is zero.
+
+This theorem is stated in terms of a $$C^2$$ homotopy between two paths. -/
 theorem curveIntegral_add_curveIntegral_eq_of_diffContOnCl
     {ω : E → E →L[𝕜] F} (φ : (γ₁ : C(I, E)).Homotopy γ₂)
     (hφt : ∀ a ∈ Ioo 0 1, ∀ b ∈ Ioo 0 1, φ (a, b) ∈ t)
@@ -275,6 +285,10 @@ namespace Convex
 variable [NormedSpace ℝ E] [NormedSpace ℝ F]
   {a b c : E} {s : Set E} {ω : E → E →L[𝕜] F} {dω : E → E →L[ℝ] E →L[𝕜] F}
 
+/-- If `ω` is a closed `1`-form on a convex set,
+then `∫ᶜ x in Path.segment a b, ω x + ∫ᶜ x in Path.segment b c, ω x = ∫ᶜ x in Path.segment a c, ω x`
+for all `a b c ∈ s`.
+-/
 theorem curveIntegral_segment_add_eq_of_hasFDerivWithinAt_symmetric (hs : Convex ℝ s)
     (hω : ∀ x ∈ s, HasFDerivWithinAt ω (dω x) s x)
     (hdω : ∀ a ∈ s, ∀ x ∈ tangentConeAt ℝ s a, ∀ y ∈ tangentConeAt ℝ s a, dω a x y = dω a y x)
@@ -314,6 +328,10 @@ theorem curveIntegral_segment_add_eq_of_hasFDerivWithinAt_symmetric (hs : Convex
 
 variable [CompleteSpace F]
 
+/-- If `ω` is a closed `1`-form on a convex set `s`,
+then the function given by `F b = ∫ᶜ x in Path.segment a b, ω x` is a primitive of `ω` on `s`,
+i.e., `dF = ω`.
+-/
 theorem hasFDerivWithinAt_curveIntegral_segment_of_hasFDerivWithinAt_symmetric (hs : Convex ℝ s)
     (hω : ∀ x ∈ s, HasFDerivWithinAt ω (dω x) s x)
     (hdω : ∀ a ∈ s, ∀ x ∈ tangentConeAt ℝ s a, ∀ y ∈ tangentConeAt ℝ s a, dω a x y = dω a y x)
@@ -326,6 +344,8 @@ theorem hasFDerivWithinAt_curveIntegral_segment_of_hasFDerivWithinAt_symmetric (
   refine HasFDerivWithinAt.curveIntegral_segment_source hs ?_ hb
   exact fun x hx ↦ (hω x hx).continuousWithinAt
 
+/-- If `ω` is a closed `1`-form on a convex set `s`, then it admits a primitive,
+a version stated in terms of `HasFDerivWithinAt`. -/
 theorem exists_forall_hasFDerivWithinAt_of_hasFDerivWithinAt_symmetric
     (hs : Convex ℝ s) (hω : ∀ x ∈ s, HasFDerivWithinAt ω (dω x) s x)
     (hdω : ∀ a ∈ s, ∀ x ∈ tangentConeAt ℝ s a, ∀ y ∈ tangentConeAt ℝ s a, dω a x y = dω a y x) :
@@ -336,6 +356,8 @@ theorem exists_forall_hasFDerivWithinAt_of_hasFDerivWithinAt_symmetric
     intro b hb
     exact hs.hasFDerivWithinAt_curveIntegral_segment_of_hasFDerivWithinAt_symmetric hω hdω ha hb
 
+/-- If `ω` is a closed `1`-form on a convex set `s`, then it admits a primitive,
+a version stated in terms of `fderivWithin`. -/
 theorem exists_forall_hasFDerivWithinAt_of_fderivWithin_symmetric
     (hs : Convex ℝ s) (hω : DifferentiableOn ℝ ω s)
     (hdω : ∀ a ∈ s, ∀ x ∈ tangentConeAt ℝ s a, ∀ y ∈ tangentConeAt ℝ s a,
@@ -344,7 +366,8 @@ theorem exists_forall_hasFDerivWithinAt_of_fderivWithin_symmetric
   hs.exists_forall_hasFDerivWithinAt_of_hasFDerivWithinAt_symmetric
     (fun a ha ↦ (hω a ha).hasFDerivWithinAt) hdω
 
--- TODO: we don't need convexity for this
+/-- If `ω` is a closed `1`-form on an open convex set `s`, then it admits a primitive,
+a version stated in terms of `fderiv`. -/
 theorem exists_forall_hasFDerivAt_of_fderiv_symmetric (hs : Convex ℝ s) (hso : IsOpen s)
     (hω : DifferentiableOn ℝ ω s) (hdω : ∀ a ∈ s, ∀ x y, fderiv ℝ ω a x y = fderiv ℝ ω a y x) :
     ∃ f, ∀ a ∈ s, HasFDerivAt f (ω a) a := by
