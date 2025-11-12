@@ -480,6 +480,7 @@ lemma LinearMap.bijective_of_linearIndependent_of_span_eq_top {N : Type*} [AddCo
   rw [Set.range_comp, ← Submodule.map_span, hv, Submodule.map_top] at hsp
   rwa [← range_eq_top]
 
+/-- Version of `LinearIndepOn.insert` that works when the scalars are not a field. -/
 lemma LinearIndepOn.insert' {s : Set ι} {i : ι} (hs : LinearIndepOn R v s)
     (hx : ∀ r : R, r • v i ∈ Submodule.span R (v '' s) → r = 0) :
     LinearIndepOn R v (insert i s) := by
@@ -487,6 +488,7 @@ lemma LinearIndepOn.insert' {s : Set ι} {i : ι} (hs : LinearIndepOn R v s)
   refine hs.union (.singleton' fun r hr ↦ hx _ <| by simp [hr]) ?_
   simp +contextual [disjoint_span_singleton'', hx]
 
+/-- Version of `LinearIndepOn.id_insert` that works when the scalars are not a field. -/
 lemma LinearIndepOn.id_insert' {s : Set M} {x : M} (hs : LinearIndepOn R id s)
     (hx : ∀ r : R, r • x ∈ Submodule.span R s → r = 0) : LinearIndepOn R id (insert x s) :=
   hs.insert' <| by simpa

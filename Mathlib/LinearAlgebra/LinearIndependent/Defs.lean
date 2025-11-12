@@ -856,12 +856,14 @@ theorem linearIndependent_iff_eq_zero_of_smul_mem_span :
         simp [hij]
       · simp [hl]⟩
 
+/-- Version of `LinearIndependent.of_subsingleton` that works for the zero ring. -/
 lemma LinearIndependent.of_subsingleton' [Subsingleton ι] (i : ι)
     (hi : ∀ r : R, r • v i = 0 → r = 0) : LinearIndependent R v := by
   let := uniqueOfSubsingleton i
   simpa [linearIndependent_iff, Finsupp.linearCombination_unique, Finsupp.ext_iff,
     Unique.forall_iff] using fun _ ↦ hi _
 
+/-- Version of `LinearIndepOn.singleton` that works for the zero ring. -/
 @[simp]
 lemma LinearIndepOn.singleton' (hi : ∀ r : R, r • v i = 0 → r = 0) : LinearIndepOn R v {i} :=
   LinearIndependent.of_subsingleton' ⟨i, rfl⟩ hi

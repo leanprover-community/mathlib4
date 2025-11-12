@@ -589,6 +589,7 @@ theorem map_strict_mono_of_ker_inf_eq {f : F} (hab : p < p')
     (q : LinearMap.ker f ⊓ p = LinearMap.ker f ⊓ p') : Submodule.map f p < Submodule.map f p' :=
   map_strict_mono_or_ker_sup_lt_ker_sup f hab |>.resolve_right q.not_lt
 
+/-- Version of `disjoint_span_singleton` that works when the scalars are not a field. -/
 lemma disjoint_span_singleton'' {s : Submodule R M} {x : M} :
     Disjoint s (R ∙ x) ↔ ∀ r : R, r • x ∈ s → r • x = 0 := by
   rw [disjoint_comm]; simp +contextual [disjoint_def, mem_span_singleton]
