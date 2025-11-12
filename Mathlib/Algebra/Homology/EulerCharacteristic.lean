@@ -8,6 +8,7 @@ import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.CategoryTheory.GradedObject
 import Mathlib.LinearAlgebra.Dimension.Finrank
 
 /-!
@@ -17,9 +18,14 @@ The Euler characteristic is defined using the `ComplexShape.EulerCharSigns` type
 which provides the alternating signs for each index. This allows the definition to work
 uniformly for chain complexes, cochain complexes, and complexes with other index types.
 
+The core definitions work on graded objects, with the homological complex versions
+defined as abbreviations that apply the graded object versions to `C.X` and `C.homology`.
+
 ## Main definitions
 
 * `ComplexShape.EulerCharSigns`: Typeclass providing alternating signs for Euler characteristic
+* `GradedObject.eulerChar`: The Euler characteristic of a graded object over a finite set
+* `GradedObject.eulerCharTsum`: The Euler characteristic of a graded object as an infinite sum
 * `HomologicalComplex.eulerChar`: The Euler characteristic over a finite set of indices
 * `HomologicalComplex.eulerCharTsum`: The Euler characteristic as an infinite sum
 * `HomologicalComplex.homologyEulerChar`: The homological Euler characteristic over a
@@ -29,6 +35,8 @@ uniformly for chain complexes, cochain complexes, and complexes with other index
 
 ## Main results
 
+* `GradedObject.eulerCharTsum_eq_eulerChar`: The infinite sum equals the finite sum
+  when the graded object vanishes outside the finite set
 * `HomologicalComplex.eulerCharTsum_eq_eulerChar`: The infinite sum equals the finite sum
   when the complex vanishes outside the finite set
 * `HomologicalComplex.homologyEulerCharTsum_eq_homologyEulerChar`: The infinite homological
@@ -80,71 +88,84 @@ instance eulerCharSignsDownNat : (down ℕ).EulerCharSigns where
 
 end ComplexShape
 
-open ComplexShape
+open ComplexShape CategoryTheory
 
-variable {R : Type*} [Ring R] {ι : Type*} {c : ComplexShape ι}
+variable {R : Type*} [Ring R] {ι : Type*}
 
-namespace HomologicalComplex
+namespace GradedObject
 
-section FiniteSum
+variable (c : ComplexShape ι) [c.EulerCharSigns]
 
-/-- The Euler characteristic of a homological complex over a finite set of indices.
+/-- The Euler characteristic of a graded object over a finite set of indices.
 The sign at each index is determined by the `ComplexShape.EulerCharSigns` instance. -/
-noncomputable def eulerChar [c.EulerCharSigns] (C : HomologicalComplex (ModuleCat R) c)
+noncomputable def eulerChar (X : CategoryTheory.GradedObject ι (ModuleCat R))
     (indices : Finset ι) : ℤ :=
-  ∑ i ∈ indices, (c.χ i : ℤ) * Module.finrank R (C.X i)
-
-/-- The homological Euler characteristic over a finite set of indices.
-This is the Euler characteristic computed from the homology groups rather than
-the original complex. -/
-noncomputable def homologyEulerChar [c.EulerCharSigns]
-    (C : HomologicalComplex (ModuleCat R) c) [∀ i : ι, C.HasHomology i]
-    (indices : Finset ι) : ℤ :=
-  ∑ i ∈ indices, (c.χ i : ℤ) * Module.finrank R (C.homology i)
-
-end FiniteSum
-
-section InfiniteSum
+  ∑ i ∈ indices, (c.χ i : ℤ) * Module.finrank R (X i)
 
 variable [Fintype ι]
 
 /-- The Euler characteristic as an infinite sum over all indices.
 This requires the index type to be finite. -/
-noncomputable def eulerCharTsum [c.EulerCharSigns]
-    (C : HomologicalComplex (ModuleCat R) c) : ℤ :=
-  ∑ i : ι, (c.χ i : ℤ) * Module.finrank R (C.X i)
+noncomputable def eulerCharTsum (X : CategoryTheory.GradedObject ι (ModuleCat R)) : ℤ :=
+  ∑ i : ι, (c.χ i : ℤ) * Module.finrank R (X i)
 
-/-- The homological Euler characteristic as an infinite sum. -/
-noncomputable def homologyEulerCharTsum [c.EulerCharSigns]
-    (C : HomologicalComplex (ModuleCat R) c) [∀ i : ι, C.HasHomology i] : ℤ :=
-  ∑ i : ι, (c.χ i : ℤ) * Module.finrank R (C.homology i)
-
-/-- If a complex vanishes outside a finite set, the infinite Euler characteristic
+/-- If a graded object vanishes outside a finite set, the infinite Euler characteristic
 equals the finite one. -/
-theorem eulerCharTsum_eq_eulerChar [c.EulerCharSigns]
-    (C : HomologicalComplex (ModuleCat R) c)
+theorem eulerCharTsum_eq_eulerChar (X : CategoryTheory.GradedObject ι (ModuleCat R))
     (indices : Finset ι)
-    (h_zero : ∀ i ∉ indices, Module.finrank R (C.X i) = 0) :
-    eulerCharTsum C = eulerChar C indices := by
+    (h_zero : ∀ i ∉ indices, Module.finrank R (X i) = 0) :
+    eulerCharTsum c X = eulerChar c X indices := by
   simp only [eulerCharTsum, eulerChar]
   symm
   apply Finset.sum_subset (Finset.subset_univ indices)
   intro i _ hi
   simp [h_zero i hi]
 
+end GradedObject
+
+namespace HomologicalComplex
+
+variable {c : ComplexShape ι} [c.EulerCharSigns]
+
+/-- The Euler characteristic of a homological complex over a finite set of indices.
+The sign at each index is determined by the `ComplexShape.EulerCharSigns` instance. -/
+noncomputable abbrev eulerChar (C : HomologicalComplex (ModuleCat R) c)
+    (indices : Finset ι) : ℤ :=
+  GradedObject.eulerChar c C.X indices
+
+/-- The homological Euler characteristic over a finite set of indices.
+This is the Euler characteristic computed from the homology groups rather than
+the original complex. -/
+noncomputable abbrev homologyEulerChar (C : HomologicalComplex (ModuleCat R) c)
+    [∀ i : ι, C.HasHomology i] (indices : Finset ι) : ℤ :=
+  GradedObject.eulerChar c (fun i => C.homology i) indices
+
+variable [Fintype ι]
+
+/-- The Euler characteristic as an infinite sum over all indices.
+This requires the index type to be finite. -/
+noncomputable abbrev eulerCharTsum (C : HomologicalComplex (ModuleCat R) c) : ℤ :=
+  GradedObject.eulerCharTsum c C.X
+
+/-- The homological Euler characteristic as an infinite sum. -/
+noncomputable abbrev homologyEulerCharTsum (C : HomologicalComplex (ModuleCat R) c)
+    [∀ i : ι, C.HasHomology i] : ℤ :=
+  GradedObject.eulerCharTsum c (fun i => C.homology i)
+
+/-- If a complex vanishes outside a finite set, the infinite Euler characteristic
+equals the finite one. -/
+theorem eulerCharTsum_eq_eulerChar (C : HomologicalComplex (ModuleCat R) c)
+    (indices : Finset ι)
+    (h_zero : ∀ i ∉ indices, Module.finrank R (C.X i) = 0) :
+    eulerCharTsum C = eulerChar C indices :=
+  GradedObject.eulerCharTsum_eq_eulerChar c C.X indices h_zero
+
 /-- If homology vanishes outside a finite set, the infinite homological Euler
 characteristic equals the finite one. -/
-theorem homologyEulerCharTsum_eq_homologyEulerChar [c.EulerCharSigns]
-    (C : HomologicalComplex (ModuleCat R) c) [∀ i : ι, C.HasHomology i]
-    (indices : Finset ι)
+theorem homologyEulerCharTsum_eq_homologyEulerChar (C : HomologicalComplex (ModuleCat R) c)
+    [∀ i : ι, C.HasHomology i] (indices : Finset ι)
     (h_zero : ∀ i ∉ indices, Module.finrank R (C.homology i) = 0) :
-    homologyEulerCharTsum C = homologyEulerChar C indices := by
-  simp only [homologyEulerCharTsum, homologyEulerChar]
-  symm
-  apply Finset.sum_subset (Finset.subset_univ indices)
-  intro i _ hi
-  simp [h_zero i hi]
-
-end InfiniteSum
+    homologyEulerCharTsum C = homologyEulerChar C indices :=
+  GradedObject.eulerCharTsum_eq_eulerChar c (fun i => C.homology i) indices h_zero
 
 end HomologicalComplex
