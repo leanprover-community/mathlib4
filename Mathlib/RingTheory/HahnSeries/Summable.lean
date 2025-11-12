@@ -756,7 +756,7 @@ theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1)
   · have hrx : (single oinv) r * x = 1 := by
       rw [eq_of_sub_eq_zero hy, single_mul_single, hxo, hr, single_zero_one]
     simp only [hrx, sub_self, orderTop_zero, WithTop.top_pos]
-  · have hr' : IsRegular r := IsUnit.isRegular <| isUnit_of_mul_eq_one r x.leadingCoeff hr
+  · have hr' : IsRegular r := IsUnit.isRegular <| .of_mul_eq_one x.leadingCoeff hr
     have hy' : 0 < (single oinv r * y).order := by
       rw [(order_single_mul_of_isRegular hr' hy)]
       refine pos_of_lt_add_right (a := x.order) ?_
@@ -772,7 +772,7 @@ theorem isUnit_of_isUnit_leadingCoeff_AddUnitOrder {x : HahnSeries Γ R} (hx : I
   rw [h] at iu
   have h' := SummableFamily.one_sub_self_mul_hsum_powers (unit_aux x iu _ hxo.addUnit.neg_add)
   rw [sub_sub_cancel] at h'
-  exact isUnit_of_mul_isUnit_right (isUnit_of_mul_eq_one _ _ h')
+  exact isUnit_of_mul_isUnit_right (.of_mul_eq_one _ h')
 
 end CommRing
 
@@ -784,7 +784,7 @@ theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.leadingCoeff) 
   constructor
   · rintro ⟨⟨u, i, ui, iu⟩, rfl⟩
     refine
-      isUnit_of_mul_eq_one (u.leadingCoeff) (i.leadingCoeff)
+      .of_mul_eq_one (i.leadingCoeff)
         ((coeff_mul_order_add_order u i).symm.trans ?_)
     rw [ui, coeff_one, if_pos]
     rw [← order_mul (left_ne_zero_of_mul_eq_one ui) (right_ne_zero_of_mul_eq_one ui), ui, order_one]
@@ -794,7 +794,7 @@ theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.leadingCoeff) 
     have h :=
       SummableFamily.one_sub_self_mul_hsum_powers (unit_aux x iu _ (neg_add_cancel x.order))
     rw [sub_sub_cancel] at h
-    exact isUnit_of_mul_isUnit_right (isUnit_of_mul_eq_one _ _ h)
+    exact isUnit_of_mul_isUnit_right (.of_mul_eq_one _ h)
 
 end IsDomain
 

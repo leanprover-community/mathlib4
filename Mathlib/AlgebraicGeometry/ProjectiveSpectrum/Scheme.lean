@@ -720,7 +720,7 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
   constructor
   · rintro ⟨y, hy⟩
     obtain ⟨y, rfl⟩ := HomogeneousLocalization.mk_surjective y
-    refine isUnit_of_mul_eq_one _
+    refine .of_mul_eq_one
       (.mk ⟨y.deg, y.den, y.num, (mk_mem_toSpec_base_apply _ _ _).not.mp hy⟩) <| val_injective _ ?_
     simp only [RingHom.algebraMap_toAlgebra, map_mk, RingHom.id_apply, val_mul, val_mk, mk_eq_mk',
       val_one, IsLocalization.mk'_mul_mk'_eq_one']

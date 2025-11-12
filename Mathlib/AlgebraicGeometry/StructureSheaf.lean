@@ -414,7 +414,7 @@ theorem toOpen_Γgerm_apply (x : PrimeSpectrum.Top R) (f : R) :
   rfl
 
 theorem isUnit_to_basicOpen_self (f : R) : IsUnit (toOpen R (PrimeSpectrum.basicOpen f) f) :=
-  isUnit_of_mul_eq_one _ (const R 1 f (PrimeSpectrum.basicOpen f) fun _ => id) <| by
+  .of_mul_eq_one (const R 1 f (PrimeSpectrum.basicOpen f) fun _ => id) <| by
     rw [toOpen_eq_const, const_mul_rev]
 
 theorem isUnit_toStalk (x : PrimeSpectrum.Top R) (f : x.asIdeal.primeCompl) :

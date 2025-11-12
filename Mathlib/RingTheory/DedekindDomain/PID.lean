@@ -178,7 +178,7 @@ theorem IsPrincipalIdealRing.of_finite_maximals [IsDedekindDomain R]
     obtain rfl | hI := eq_or_ne I ⊥
     · exact bot_isPrincipal
     apply Ideal.IsPrincipal.of_finite_maximals_of_isUnit h
-    exact isUnit_of_mul_eq_one _ _ (FractionalIdeal.coe_ideal_mul_inv I hI)⟩
+    exact .of_mul_eq_one _ (FractionalIdeal.coe_ideal_mul_inv I hI)⟩
 
 /-- A Dedekind domain is a PID if its set of primes is finite. -/
 theorem IsPrincipalIdealRing.of_finite_primes [IsDedekindDomain R]
