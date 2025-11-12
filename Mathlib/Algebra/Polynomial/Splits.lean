@@ -519,10 +519,7 @@ alias eval_derivative_div_eval_of_ne_zero_of_splits :=
 /-- If `P` is a monic polynomial that splits, then `coeff P 0` equals the product of the roots. -/
 theorem coeff_zero_eq_prod_roots_of_monic_of_factors {P : K[X]} (hmo : P.Monic)
     (hP : P.Factors) : coeff P 0 = (-1) ^ P.natDegree * P.roots.prod := by
-  nth_rw 1 [hP.eq_prod_roots_of_monic hmo]
-  rw [coeff_zero_eq_eval_zero, eval_multiset_prod, Multiset.map_map]
-  simp_rw [Function.comp_apply, eval_sub, eval_X, zero_sub, eval_C]
-  simp only [hP.natDegree_eq_card_roots, Multiset.prod_map_neg]
+  simp [hmo, coeff_zero_eq_leadingCoeff_mul_prod_roots_of_splits hP]
 
 @[deprecated (since := "2025-10-24")]
 alias coeff_zero_eq_prod_roots_of_monic_of_splits := coeff_zero_eq_prod_roots_of_monic_of_factors
@@ -531,10 +528,12 @@ alias coeff_zero_eq_prod_roots_of_monic_of_splits := coeff_zero_eq_prod_roots_of
 of the roots. -/
 theorem nextCoeff_eq_neg_sum_roots_of_monic_of_factors {P : K[X]} (hmo : P.Monic)
     (hP : P.Factors) : P.nextCoeff = -P.roots.sum := by
-  nth_rw 1 [hP.eq_prod_roots_of_monic hmo]
-  rw [Monic.nextCoeff_multiset_prod _ _ fun a ha => _]
-  · simp_rw [nextCoeff_X_sub_C, Multiset.sum_map_neg']
-  · simp only [monic_X_sub_C, implies_true]
+  nth_rw 1 [eq_prod_roots_of_splits_id hP]
+  simp [Multiset.sum_map_neg', monic_X_sub_C, Monic.nextCoeff_multiset_prod]
+
+theorem coeff_zero_eq_leadingCoeff_mul_prod_roots_of_splits {P : K[X]} (hP : P.Splits <| .id K) :
+    P.coeff 0 = (-1) ^ P.natDegree * P.leadingCoeff * P.roots.prod := by
+  simp [hmo, nextCoeff_eq_neg_sum_roots_mul_leadingCoeff_of_splits hP]
 
 @[deprecated (since := "2025-10-24")]
 alias nextCoeff_eq_neg_sum_roots_of_monic_of_splits :=

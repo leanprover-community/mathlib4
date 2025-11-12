@@ -85,9 +85,9 @@ theorem PowerBasis.trace_gen_eq_nextCoeff_minpoly [Nontrivial S] (pb : PowerBasi
 theorem PowerBasis.trace_gen_eq_sum_roots [Nontrivial S] (pb : PowerBasis K S)
     (hf : (minpoly K pb.gen).Splits (algebraMap K F)) :
     algebraMap K F (trace K S pb.gen) = ((minpoly K pb.gen).aroots F).sum := by
-  rw [PowerBasis.trace_gen_eq_nextCoeff_minpoly, RingHom.map_neg, ←
-    nextCoeff_map (algebraMap K F).injective, nextCoeff_eq_neg_sum_roots_of_monic_of_factors
-      ((minpoly.monic (PowerBasis.isIntegral_gen _)).map _) hf,
+  rw [PowerBasis.trace_gen_eq_nextCoeff_minpoly, RingHom.map_neg,
+    ← nextCoeff_map_eq, nextCoeff_eq_neg_sum_roots_of_monic_of_splits
+      ((minpoly.monic (PowerBasis.isIntegral_gen _)).map _) ((splits_id_iff_splits _).2 hf),
     neg_neg]
 
 namespace IntermediateField.AdjoinSimple
@@ -479,7 +479,7 @@ theorem det_traceForm_ne_zero [Algebra.IsSeparable K L] [Fintype ι] [DecidableE
   swap; · apply Basis.toMatrix_mul_toMatrix_flip
   refine
     mul_ne_zero
-      (isUnit_of_mul_eq_one _ ((b.toMatrix pb.basis)ᵀ * b.toMatrix pb.basis).det ?_).ne_zero ?_
+      (IsUnit.of_mul_eq_one ((b.toMatrix pb.basis)ᵀ * b.toMatrix pb.basis).det ?_).ne_zero ?_
   · calc
       (pb.basis.toMatrix b * (pb.basis.toMatrix b)ᵀ).det *
             ((b.toMatrix pb.basis)ᵀ * b.toMatrix pb.basis).det =

@@ -501,8 +501,6 @@ theorem count_finsuppProd (exps : HeightOneSpectrum R →₀ ℤ) :
       exps.mem_support_iff, ne_eq, ite_not, ite_eq_right_iff, @eq_comm ℤ 0, imp_self]
   · exact fun v hv ↦ zpow_ne_zero _ (coeIdeal_ne_zero.mpr v.ne_bot)
 
-@[deprecated (since := "2025-04-06")] alias count_finsupp_prod := count_finsuppProd
-
 /-- If `exps` is finitely supported, then `val_v(∏_w w^{exps w}) = exps v`. -/
 theorem count_finprod (exps : HeightOneSpectrum R → ℤ)
     (h_exps : ∀ᶠ v : HeightOneSpectrum R in Filter.cofinite, exps v = 0) :
@@ -717,8 +715,6 @@ lemma divMod_zero_of_not_le {a b c : FractionalIdeal R⁰ K} (hac : ¬ a ≤ c) 
     c.divMod b a = 0 := by
   simp [divMod, hac]
 
-set_option maxHeartbeats 210000 in
--- changed for new compiler
 /-- Let `I J I' J'` be nonzero fractional ideals in a Dedekind domain with `J ≤ I` and `J' ≤ I'`.
 If `I/J = I'/J'` in the group of fractional ideals (i.e. `I * J' = I' * J`),
 then `I/J ≃ I'/J'` as quotient `R`-modules. -/
