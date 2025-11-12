@@ -19,8 +19,7 @@ for a model category structure on bounded below cochain complexes (TODO @joelrio
 
 -/
 
-open CategoryTheory Limits Category Preadditive ZeroObject Abelian
-
+open CategoryTheory Limits Abelian
 
 namespace CochainComplex
 
