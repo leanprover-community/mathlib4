@@ -284,7 +284,8 @@ section union
 
 variable {σ1 σ2 : Type v}
 
-/-- DFAs are closed under union. -/
+/-- DFAs are closed under union. We denote union of DFAs `M1` and `M2` via `M1 + M2`, corresponding
+to `Language` and regular expression union. -/
 @[simps]
 def union (M1 : DFA α σ1) (M2 : DFA α σ2) : DFA α (σ1 × σ2) where
   step (s : σ1 × σ2) (a : α) : σ1 × σ2 := (M1.step s.1 a, M2.step s.2 a)
@@ -377,14 +378,14 @@ theorem IsRegular_compl_iff {T : Type u} {L : Language T} : Lᶜ.IsRegular ↔ L
   ⟨.from_compl, .compl⟩
 
 /-- Regular languages are closed under union. -/
-theorem IsRegular_union {T : Type u} {L1 L2 : Language T} (h1 : L1.IsRegular) (h2 : L2.IsRegular) :
+theorem IsRegular.add {T : Type u} {L1 L2 : Language T} (h1 : L1.IsRegular) (h2 : L2.IsRegular) :
     (L1 + L2).IsRegular :=
   have ⟨σ1, _, M1, hM1⟩ := h1
   have ⟨σ2, _, M2, hM2⟩ := h2
   ⟨σ1 × σ2, inferInstance, M1 + M2, by rw [DFA.accepts_union, hM1, hM2]⟩
 
 /-- Regular languages are closed under intersection. -/
-theorem IsRegular_inter {T : Type u} {L1 L2 : Language T} (h1 : L1.IsRegular) (h2 : L2.IsRegular) :
+theorem IsRegular.inf {T : Type u} {L1 L2 : Language T} (h1 : L1.IsRegular) (h2 : L2.IsRegular) :
     (L1 ⊓ L2).IsRegular :=
   have ⟨σ1, _, M1, hM1⟩ := h1
   have ⟨σ2, _, M2, hM2⟩ := h2
