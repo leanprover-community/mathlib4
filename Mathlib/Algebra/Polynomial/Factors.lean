@@ -284,10 +284,6 @@ section Field
 
 variable [Field R]
 
-theorem roots_map {f : R[X]} {S : Type*} [CommRing S] [IsDomain S] (i : R →+* S) (hf : f.Factors) :
-    (f.map i).roots = f.roots.map i :=
-  (roots_map_of_injective_of_card_eq_natDegree i.injective hf.natDegree_eq_card_roots.symm).symm
-
 open UniqueFactorizationMonoid in
 -- Todo: Remove or fix name once `Splits` is gone.
 theorem factors_iff_splits {f : R[X]} :

@@ -283,6 +283,10 @@ theorem rootOfSplits'_eq_rootOfSplits {f : K[X]} (hf : f.Splits i) (hfd) :
     rootOfSplits' i hf hfd = rootOfSplits i hf (f.degree_map i ▸ hfd) :=
   rfl
 
+theorem roots_map {f : R[X]} {S : Type*} [CommRing S] [IsDomain S] (i : R →+* S) (hf : f.Factors) :
+    (f.map i).roots = f.roots.map i :=
+  (roots_map_of_injective_of_card_eq_natDegree i.injective hf.natDegree_eq_card_roots.symm).symm
+
 theorem map_rootOfSplits {f : K[X]} (hf : f.Splits i) (hfd) :
     f.eval₂ i (rootOfSplits i hf hfd) = 0 :=
   map_rootOfSplits' i hf (ne_of_eq_of_ne (degree_map f i) hfd)
