@@ -18,7 +18,7 @@ The Euler characteristic is defined using the `ComplexShape.EulerCharSigns` type
 which provides the alternating signs for each index. This allows the definition to work
 uniformly for chain complexes, cochain complexes, and complexes with other index types.
 
-The core definitions work on graded objects, with the homological complex versions
+The definitions work on graded objects, with the homological complex versions
 defined as abbreviations that apply the graded object versions to `C.X` and `C.homology`.
 
 ## Main definitions
