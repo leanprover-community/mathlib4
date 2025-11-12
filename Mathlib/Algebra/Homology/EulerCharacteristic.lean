@@ -25,6 +25,7 @@ defined as abbreviations that apply the graded object versions to `C.X` and `C.h
 
 * `ComplexShape.EulerCharSigns`: Typeclass providing alternating signs for Euler characteristic
 * `GradedObject.eulerChar`: The Euler characteristic of a graded object over a finite set
+* `GradedObject.finrankSupport`: The support of a graded object (indices with nonzero rank)
 * `GradedObject.eulerCharTsum`: The Euler characteristic of a graded object as an infinite sum
 * `HomologicalComplex.eulerChar`: The Euler characteristic over a finite set of indices
 * `HomologicalComplex.eulerCharTsum`: The Euler characteristic as an infinite sum
