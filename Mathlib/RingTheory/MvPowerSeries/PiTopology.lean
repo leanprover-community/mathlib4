@@ -200,12 +200,12 @@ theorem variables_tendsto_zero [Semiring R] :
   classical
   simp only [tendsto_iff_coeff_tendsto, ← coeff_apply, coeff_X, coeff_zero]
   refine fun d ↦ tendsto_nhds_of_eventually_eq ?_
-  by_cases h : ∃ i, d = Finsupp.single i 1
+  by_cases! h : ∃ i, d = Finsupp.single i 1
   · obtain ⟨i, hi⟩ := h
     filter_upwards [eventually_cofinite_ne i] with j hj
     simp [hi, Finsupp.single_eq_single_iff, hj.symm]
   · simpa only [ite_eq_right_iff] using
-      Eventually.of_forall fun x h' ↦ (not_exists.mp h x h').elim
+      Eventually.of_forall fun x h' ↦ (h x h').elim
 
 theorem isTopologicallyNilpotent_of_constantCoeff_isNilpotent [CommSemiring R]
     {f : MvPowerSeries σ R} (hf : IsNilpotent (constantCoeff f)) :
@@ -289,6 +289,31 @@ theorem summable_of_tendsto_weightedOrder_atTop_nhds_top {w : σ → ℕ}
 theorem summable_of_tendsto_order_atTop_nhds_top
     (h : Tendsto (fun i ↦ (f i).order) atTop (𝓝 ⊤)) : Summable f :=
   summable_of_tendsto_weightedOrder_atTop_nhds_top h
+
+/-- The geometric series converges if the constant term is zero. -/
+theorem summable_pow_of_constantCoeff_eq_zero {f : MvPowerSeries σ R}
+    (h : f.constantCoeff = 0) : Summable (f ^ ·) := by
+  apply summable_of_tendsto_order_atTop_nhds_top
+  simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, Filter.eventually_atTop]
+  refine fun n ↦ ⟨n + 1, fun m hm ↦ lt_of_lt_of_le ?_ (le_order_pow _)⟩
+  refine (ENat.coe_lt_coe.mpr (Nat.add_one_le_iff.mp hm.le)).trans_le ?_
+  simpa [nsmul_eq_mul] using ENat.self_le_mul_right m (order_ne_zero_iff_constCoeff_eq_zero.mpr h)
+
+section GeomSeries
+variable {R : Type*} [TopologicalSpace R] [Ring R] [IsTopologicalRing R] [T2Space R]
+variable {f : MvPowerSeries σ R}
+
+/-- Formula for geometric series. -/
+theorem tsum_pow_mul_one_sub_of_constantCoeff_eq_zero (h : f.constantCoeff = 0) :
+    (∑' (i : ℕ), f ^ i) * (1 - f) = 1 :=
+  (summable_pow_of_constantCoeff_eq_zero h).tsum_pow_mul_one_sub
+
+/-- Formula for geometric series. -/
+theorem one_sub_mul_tsum_pow_of_constantCoeff_eq_zero (h : f.constantCoeff = 0) :
+    (1 - f) * ∑' (i : ℕ), f ^ i = 1 :=
+  (summable_pow_of_constantCoeff_eq_zero h).one_sub_mul_tsum_pow
+
+end GeomSeries
 
 end Sum
 

@@ -33,6 +33,7 @@ lemma supportDim_eq_bot_of_subsingleton [Subsingleton M] : supportDim R M = ⊥ 
   simpa [supportDim, support_eq_empty_iff]
 
 lemma supportDim_ne_bot_of_nontrivial [Nontrivial M] : supportDim R M ≠ ⊥ := by
+  have : Nonempty (Module.support R M) := nonempty_support_of_nontrivial.to_subtype
   simp [supportDim]
 
 lemma supportDim_eq_bot_iff_subsingleton : supportDim R M = ⊥ ↔ Subsingleton M := by

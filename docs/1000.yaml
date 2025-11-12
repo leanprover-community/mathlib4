@@ -965,6 +965,9 @@ Q858978:
 
 Q859122:
   title: Cauchy–Hadamard theorem
+  decl: FormalMultilinearSeries.radius_inv_eq_limsup
+  authors: Yury Kudryashov
+  date: 2020
 
 Q865665:
   title: Birkhoff's theorem (relativity)
@@ -1701,6 +1704,9 @@ Q1547975:
 
 Q1551745:
   title: Binomial inverse theorem
+  decl: Matrix.invOf_add_mul_mul'
+  authors: Antoine Chambert-Loir
+  date: 2025-11-11
 
 Q1555342:
   title: Reeh–Schlieder theorem
@@ -1997,6 +2003,13 @@ Q2226650:
 
 Q2226677:
   title: Gelfand–Mazur theorem
+  decls:
+    - NormedRing.algEquivComplexOfComplete
+    - NormedAlgebra.Complex.algEquivOfNormMul
+    - NormedAlgebra.Real.nonempty_algEquiv_or
+  authors: Jireh Loreaux, Michael Stoll
+  date: 2021, 2025
+  comment: "The first two are over the complex numbers (with different assumptions), the third is over the real numbers."
 
 Q2226682:
   title: Gelfand–Naimark theorem
