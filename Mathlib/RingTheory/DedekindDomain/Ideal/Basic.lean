@@ -225,12 +225,12 @@ theorem exists_multiset_prod_cons_le_and_prod_not_le [IsDedekindDomain A] (hNF :
       exact hZP0
 
 namespace FractionalIdeal
-variable [IsDedekindDomain A]
+variable [IsDedekindDomain A] {I : Ideal A}
 
 open Ideal
 
-lemma not_inv_le_one_of_ne_bot {I : Ideal A}
-    (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) : ¬(I⁻¹ : FractionalIdeal A⁰ K) ≤ 1 := by
+lemma not_inv_le_one_of_ne_bot (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
+    ¬(I⁻¹ : FractionalIdeal A⁰ K) ≤ 1 := by
   have hNF : ¬IsField A := fun h ↦ letI := h.toField; (eq_bot_or_eq_top I).elim hI0 hI1
   wlog hM : I.IsMaximal generalizing I
   · rcases I.exists_le_maximal hI1 with ⟨M, hmax, hIM⟩
@@ -270,8 +270,8 @@ lemma not_inv_le_one_of_ne_bot {I : Ideal A}
     have := Ideal.mem_span_singleton'.mpr ⟨x', IsFractionRing.injective A K h₂_abs⟩
     contradiction
 
-theorem mul_inv_cancel_of_le_one {I : Ideal A} (hI0 : I ≠ ⊥)
-    (hI : (I * (I : FractionalIdeal A⁰ K)⁻¹)⁻¹ ≤ 1) : I * (I : FractionalIdeal A⁰ K)⁻¹ = 1 := by
+theorem mul_inv_cancel_of_le_one (hI0 : I ≠ ⊥) (hI : (I * (I : FractionalIdeal A⁰ K)⁻¹)⁻¹ ≤ 1) :
+    I * (I : FractionalIdeal A⁰ K)⁻¹ = 1 := by
   -- We'll show a contradiction with `exists_notMem_one_of_ne_bot`:
   -- `J⁻¹ = (I * I⁻¹)⁻¹` cannot have an element `x ∉ 1`, so it must equal `1`.
   obtain ⟨J, hJ⟩ : ∃ J : Ideal A, (J : FractionalIdeal A⁰ K) = I * (I : FractionalIdeal A⁰ K)⁻¹ :=
@@ -323,8 +323,10 @@ theorem coe_ideal_mul_inv (I : Ideal A) (hI0 : I ≠ ⊥) : I * (I : FractionalI
   | zero => rw [pow_zero]; exact one_mem_inv_coe_ideal hI0
   | succ i ih => rw [pow_succ']; exact x_mul_mem _ ih
 
-noncomputable instance instCommGroupWithZero : CommGroupWithZero (FractionalIdeal A⁰ K) :=
-  IsDedekindDomainInv.commGroupWithZero fun I hI ↦ by
+noncomputable instance semifield : Semifield (FractionalIdeal A⁰ K) where
+  __ := coeIdeal_injective.nontrivial
+  __ : CommSemiring (FractionalIdeal A⁰ K) := inferInstance
+  __ := IsDedekindDomainInv.commGroupWithZero fun I hI ↦ by
     obtain ⟨a, J, ha, hJ⟩ := exists_eq_spanSingleton_mul (K := FractionRing A) I
     suffices h₂ : I * (spanSingleton A⁰ (algebraMap _ _ a) * (J : FractionalIdeal A⁰ _)⁻¹) = 1 by
       rw [mul_inv_cancel_iff]
@@ -334,6 +336,19 @@ noncomputable instance instCommGroupWithZero : CommGroupWithZero (FractionalIdea
       spanSingleton_mul_spanSingleton, inv_mul_cancel₀, spanSingleton_one]
     · exact mt ((injective_iff_map_eq_zero (algebraMap A _)).mp (IsFractionRing.injective A _) _) ha
     · exact coeIdeal_ne_zero.mp (right_ne_zero_of_mul hI)
+  nnqsmul := _
+
+#adaptation_note /-- 2025-03-29 for https://github.com/leanprover/lean4/issues/7717 had to add `mul_left_cancel_of_ne_zero` field.
+TODO(kmill) There is trouble calculating the type of the `IsLeftCancelMulZero` parent. -/
+/-- Fractional ideals have cancellative multiplication in a Dedekind domain.
+
+Although this instance is a direct consequence of the instance
+`FractionalIdeal.semifield`, we define this instance to provide
+a computable alternative.
+-/
+instance cancelCommMonoidWithZero : CancelCommMonoidWithZero (FractionalIdeal A⁰ K) where
+  __ : CommSemiring (FractionalIdeal A⁰ K) := inferInstance
+  mul_left_cancel_of_ne_zero h _ _ := mul_left_cancel₀ h
 
 instance : PosMulStrictMono (FractionalIdeal A⁰ K) := PosMulMono.toPosMulStrictMono
 instance : MulPosStrictMono (FractionalIdeal A⁰ K) := MulPosMono.toMulPosStrictMono
@@ -394,22 +409,7 @@ section IsDedekindDomain
 variable {R A}
 variable [IsDedekindDomain A] [Algebra A K] [IsFractionRing A K]
 
-open FractionalIdeal
-
-open Ideal
-
-#adaptation_note /-- 2025-03-29 for https://github.com/leanprover/lean4/issues/7717 had to add `mul_left_cancel_of_ne_zero` field.
-TODO(kmill) There is trouble calculating the type of the `IsLeftCancelMulZero` parent. -/
-/-- Fractional ideals have cancellative multiplication in a Dedekind domain.
-
-Although this instance is a direct consequence of the instance
-`FractionalIdeal.semifield`, we define this instance to provide
-a computable alternative.
--/
-instance FractionalIdeal.cancelCommMonoidWithZero :
-    CancelCommMonoidWithZero (FractionalIdeal A⁰ K) where
-  __ : CommSemiring (FractionalIdeal A⁰ K) := inferInstance
-  mul_left_cancel_of_ne_zero h _ _ := mul_left_cancel₀ h
+open FractionalIdeal Ideal
 
 noncomputable instance Ideal.cancelCommMonoidWithZero : CancelCommMonoidWithZero (Ideal A) :=
   { Function.Injective.cancelCommMonoidWithZero (coeIdealHom A⁰ (FractionRing A)) coeIdeal_injective
