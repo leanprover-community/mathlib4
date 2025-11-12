@@ -273,6 +273,11 @@ lemma toBoundedContinuousFunctionLM_apply (f : 𝓓^{n}_{K}(E, F)) :
     toBoundedContinuousFunctionLM 𝕜 f = f :=
   rfl
 
+lemma toBoundedContinuousFunctionLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+    [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (toBoundedContinuousFunctionLM 𝕜 : 𝓓^{n}_{K}(E, F) → _) = toBoundedContinuousFunctionLM 𝕜' :=
+  rfl
+
 variable (n k) in
 /-- `iteratedFDerivWithOrderLM 𝕜 n k i` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
 its `i`-th iterated derivative as an element of `𝓓^{k}_{K}(E, E [×i]→L[ℝ] F)`.
@@ -326,6 +331,12 @@ lemma iteratedFDerivWithOrderLM_apply_of_gt {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) (
   ext : 1
   simp [hin]
 
+lemma iteratedFDerivWithOrderLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+    [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (iteratedFDerivWithOrderLM 𝕜 n k i : 𝓓^{n}_{K}(E, F) → _)
+      = iteratedFDerivWithOrderLM 𝕜' n k i :=
+  rfl
+
 /-- `iteratedFDerivLM 𝕜 i` is the `𝕜`-linear-map sending `f : 𝓓_{K}(E, F)` to
 its `i`-th iterated derivative as an element of `𝓓_{K}(E, E [×i]→L[ℝ] F)`.
 
@@ -359,6 +370,11 @@ lemma iteratedFDerivLM_eq_withOrder (i : ℕ) :
     (iteratedFDerivLM 𝕜 i : 𝓓_{K}(E, F) →ₗ[𝕜] _) = iteratedFDerivWithOrderLM 𝕜 ⊤ ⊤ i :=
   rfl
 
+lemma iteratedFDerivLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+    [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (iteratedFDerivLM 𝕜 i : 𝓓_{K}(E, F) → _) = iteratedFDerivLM 𝕜' i :=
+  rfl
+
 variable (n) in
 /-- `structureMapLM 𝕜 n i` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to its
 `i`-th iterated derivative as an element of `E →ᵇ (E [×i]→L[ℝ] F)`. In other words, it
@@ -386,6 +402,11 @@ lemma structureMapLM_apply_withOrder {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
 lemma structureMapLM_apply {i : ℕ} (f : 𝓓_{K}(E, F)) :
     structureMapLM 𝕜 ⊤ i f = iteratedFDeriv ℝ i f := by
   rw [structureMapLM_eq]
+  rfl
+
+lemma structureMapLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+    [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (structureMapLM 𝕜 n i : 𝓓^{n}_{K}(E, F) → _) = structureMapLM 𝕜' n i :=
   rfl
 
 end ContDiffMapSupportedIn
