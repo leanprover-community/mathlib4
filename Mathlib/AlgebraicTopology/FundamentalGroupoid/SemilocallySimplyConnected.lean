@@ -116,33 +116,37 @@ noncomputable def Path.composeSegments {X : Type*} [TopologicalSpace X] {x y : X
         (by rw [part.h_start, γ.source])
         (by rw [part.h_end, γ.target])
 
+/-- Splitting a sub-path in halves rejoining them gives the original path. -/
 theorem Path.subpathOn_trans_aux₁ {X : Type*} [TopologicalSpace X] {x y : X} (γ : Path x y)
     (a b : unitInterval) (hab : a ≤ b) :
-    Path.Homotopic
-      ((γ.subpathOn a (Set.Icc.convexCombo a b unitInterval.half) sorry).trans
-        (γ.subpathOn (Set.Icc.convexCombo a b unitInterval.half) b sorry))
-      (γ.subpathOn a b hab) := by
+    ((γ.subpathOn a (Set.Icc.convexCombo a b unitInterval.half) sorry).trans
+      (γ.subpathOn (Set.Icc.convexCombo a b unitInterval.half) b sorry)) =
+    (γ.subpathOn a b hab) := by
   sorry
 
-/-- A subpath from a to b composed with a subpath from b to c is homotopic to
-the subpath from a to c.
+/--
+Splitting a sub-path into pieces and rejoining them is independent, up to hopotopy,
+of the splitting point.
+-/
+theorem Path.subpathOn_trans_aux₂ {X : Type*} [TopologicalSpace X] {x y : X} (γ : Path x y)
+    (a b : unitInterval) (hab : a ≤ b) (s t : unitInterval) :
+    Path.Homotopic
+      ((γ.subpathOn a (Set.Icc.convexCombo a b s) sorry).trans
+        (γ.subpathOn (Set.Icc.convexCombo a b s) b sorry))
+      ((γ.subpathOn a (Set.Icc.convexCombo a b t) sorry).trans
+        (γ.subpathOn (Set.Icc.convexCombo a b t) b sorry)) := by
+  sorry
 
-This requires constructing an explicit reparametrization homotopy H: I × I → X where:
-- H(0, t) = concat path: goes a→b at 2x speed for t∈[0,1/2], then b→c at 2x for t∈[1/2,1]
-- H(1, t) = the direct path: goes a→c at uniform speed
-- H(s, t) interpolates smoothly between these two parametrizations
+/--
+A subpath from a to b composed with a subpath from b to c is homotopic to
+the subpath from a to c.
 -/
 theorem Path.subpathOn_trans {X : Type*} [TopologicalSpace X] {x y : X} (γ : Path x y)
     (a b c : unitInterval) (hab : a ≤ b) (hbc : b ≤ c) :
     Path.Homotopic
       ((γ.subpathOn a b hab).trans (γ.subpathOn b c hbc))
       (γ.subpathOn a c (hab.trans hbc)) := by
-  -- We will prove this using two auxiliary lemmas:
-  -- 1. The special case `b = (a + c) / 2`, where the paths are actually equal.
-  -- 2. Them prove the lemma that
-  --   Path.Homotopic
-        ((γ.subpathOn a b hab).trans (γ.subpathOn b c hbc))
-        ((γ.subpathOn a b hab).trans (γ.subpathOn b c hbc))
+  -- This is am easy combination of `eq_convexCombo` and the two auxiliary lemmas above.
   sorry
 
 /-- A subpath from a point to itself is homotopic to the constant path. -/
