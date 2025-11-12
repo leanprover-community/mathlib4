@@ -26,7 +26,8 @@ variable {W : Type*} [AddCommMonoid W] [Module A W]
 variable {ρ : Representation A G W}
 
 variable (ρ) in
-/-- A subrepresentation of `G` of the `A`-module `W` is a submodule of `W` which is stable under the `G`-action.
+/-- A subrepresentation of `G` of the `A`-module `W` is a submodule of `W`
+which is stable under the `G`-action.
 -/
 structure Subrepresentation where
   /-- A subrepresentation is a submodule. -/
