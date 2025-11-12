@@ -30,7 +30,7 @@ f(x, ⬝) is concave, f(⬝, y) is convex.
 As a particular case, one get the von Neumann theorem where
 f is bilinear and E, F are finite dimensional.
 
-We follow the proof of Komiya (1988).
+We follow the proof of [Komiya-1988][Komiya (1988)].
 
 ## Remark on implementation
   * The essential part of the proof holds for a function
@@ -49,14 +49,14 @@ Explicit the classical particular cases (in particular, von Neumann)
 
 ## References
 
-- Neumann, John von (1928). « Zur Theorie der Gesellschaftsspiele ».
-Mathematische Annalen 100 (1): 295‑320.  https://doi.org/10.1007/BF01448847.
+- [vonNeumann-1928][Neumann, John von (1928).
+  ”Zur Theorie der Gesellschaftsspiele”. *Mathematische Annalen* 100 (1): 295‑320]
 
-- Sion, Maurice (1958). « On general minimax theorems ».
-Pacific Journal of Mathematics 8 (1): 171‑76.
+- [Sion-1958][Sion, Maurice (1958).
+  ”On general minimax theorems”. *Pacific Journal of Mathematics* 8 (1): 171‑76.]
 
-- Komiya, Hidetoshi (1988). « Elementary Proof for Sion’s Minimax Theorem ».
-Kodai Mathematical Journal 11 (1). https://doi.org/10.2996/kmj/1138038812.
+- [Komiya-1988][Komiya, Hidetoshi (1988).
+  “Elementary Proof for Sion’s Minimax Theorem”. *Kodai Mathematical Journal* 11 (1).]
 
 -/
 
