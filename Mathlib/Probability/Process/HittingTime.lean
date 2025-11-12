@@ -417,7 +417,10 @@ lemma hittingAfter_mono (u : ι → Ω → β) (s : Set β) : Monotone (hittingA
     exact absurd ⟨t, hnm.trans ht.1, ht.2⟩ h_n
   · simp
 
-lemma hittingBtwn_apply_mono (u : ι → Ω → β) (s : Set β) (m : ι) :
+lemma hittingBtwn_apply_mono_right (u : ι → Ω → β) (s : Set β) (n : ι) :
+    Monotone (hittingBtwn u s n · ω) := fun _ _ hnn' ↦ hittingBtwn_mono_right hnn'
+
+lemma hittingBtwn_apply_mono_left (u : ι → Ω → β) (s : Set β) (m : ι) :
     Monotone (hittingBtwn u s · m ω) := fun _ _ hnn' ↦ hittingBtwn_mono_left u s m hnn' ω
 
 lemma hittingAfter_apply_mono (u : ι → Ω → β) (s : Set β) (ω : Ω) :
