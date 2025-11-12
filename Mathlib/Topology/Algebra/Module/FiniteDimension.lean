@@ -203,7 +203,7 @@ variable [CompleteSpace 𝕜]
 `continuous_equivFun_basis` which gives the same result without universe restrictions. -/
 private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype ι]
     (ξ : Basis ι 𝕜 E) : Continuous ξ.equivFun := by
-  letI : UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
+  letI : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
   letI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   suffices ∀ n, Fintype.card ι = n → Continuous ξ.equivFun by exact this _ rfl
   intro n hn
@@ -528,7 +528,7 @@ variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
 theorem Submodule.closed_of_finiteDimensional
     [T2Space E] (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
     IsClosed (s : Set E) :=
-  letI := IsTopologicalAddGroup.toUniformSpace E
+  letI := IsTopologicalAddGroup.rightUniformSpace E
   haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   s.complete_of_finiteDimensional.isClosed
 
