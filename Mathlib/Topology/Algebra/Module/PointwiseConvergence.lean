@@ -76,7 +76,7 @@ protected theorem hasBasis_nhds_zero :
 
 variable (σ E F) in
 protected theorem isEmbedding_coeFn : IsEmbedding ((↑) : (E →SLₚₜ[σ] F) → (E → F)) :=
-  let _: UniformSpace F := IsTopologicalAddGroup.toUniformSpace F
+  let _: UniformSpace F := IsTopologicalAddGroup.rightUniformSpace F
   have _ : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
   (UniformOnFun.isEmbedding_toFun_finite E F).comp (UniformConvergenceCLM.isEmbedding_coeFn σ F _)
 
