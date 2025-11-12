@@ -119,8 +119,10 @@ noncomputable def Path.composeSegments {X : Type*} [TopologicalSpace X] {x y : X
 /-- Splitting a sub-path in halves rejoining them gives the original path. -/
 theorem Path.subpathOn_trans_aux₁ {X : Type*} [TopologicalSpace X] {x y : X} (γ : Path x y)
     (a b : unitInterval) (hab : a ≤ b) :
-    ((γ.subpathOn a (Set.Icc.convexCombo a b unitInterval.half) sorry).trans
-      (γ.subpathOn (Set.Icc.convexCombo a b unitInterval.half) b sorry)) =
+    ((γ.subpathOn a (Set.Icc.convexCombo a b unitInterval.half)
+      (Set.Icc.le_convexCombo hab _)).trans
+      (γ.subpathOn (Set.Icc.convexCombo a b unitInterval.half) b
+      (Set.Icc.convexCombo_le hab _))) =
     (γ.subpathOn a b hab) := by
   sorry
 
@@ -131,10 +133,10 @@ of the splitting point.
 theorem Path.subpathOn_trans_aux₂ {X : Type*} [TopologicalSpace X] {x y : X} (γ : Path x y)
     (a b : unitInterval) (hab : a ≤ b) (s t : unitInterval) :
     Path.Homotopic
-      ((γ.subpathOn a (Set.Icc.convexCombo a b s) sorry).trans
-        (γ.subpathOn (Set.Icc.convexCombo a b s) b sorry))
-      ((γ.subpathOn a (Set.Icc.convexCombo a b t) sorry).trans
-        (γ.subpathOn (Set.Icc.convexCombo a b t) b sorry)) := by
+      ((γ.subpathOn a (Set.Icc.convexCombo a b s) (Set.Icc.le_convexCombo hab _)).trans
+        (γ.subpathOn (Set.Icc.convexCombo a b s) b (Set.Icc.convexCombo_le hab _)))
+      ((γ.subpathOn a (Set.Icc.convexCombo a b t) (Set.Icc.le_convexCombo hab _)).trans
+        (γ.subpathOn (Set.Icc.convexCombo a b t) b (Set.Icc.convexCombo_le hab _))) := by
   sorry
 
 /--
@@ -146,8 +148,17 @@ theorem Path.subpathOn_trans {X : Type*} [TopologicalSpace X] {x y : X} (γ : Pa
     Path.Homotopic
       ((γ.subpathOn a b hab).trans (γ.subpathOn b c hbc))
       (γ.subpathOn a c (hab.trans hbc)) := by
-  -- This is am easy combination of `eq_convexCombo` and the two auxiliary lemmas above.
-  sorry
+  -- This is an easy combination of `eq_convexCombo` and the two auxiliary lemmas above.
+  suffices ∀ s : unitInterval,
+    Path.Homotopic
+      ((γ.subpathOn a (Set.Icc.convexCombo a c s) (Set.Icc.le_convexCombo (hab.trans hbc) _)).trans
+        (γ.subpathOn (Set.Icc.convexCombo a c s) c (Set.Icc.convexCombo_le (hab.trans hbc) _)))
+      (γ.subpathOn a c (hab.trans hbc)) by
+    have hb := Set.Icc.eq_convexCombo hab hbc
+    convert this ?_ <;> exact hb
+  intro s
+  rw [← Path.subpathOn_trans_aux₁ γ a c]
+  apply Path.subpathOn_trans_aux₂ γ a c (hab.trans hbc) s
 
 /-- A subpath from a point to itself is homotopic to the constant path. -/
 theorem Path.subpathOn_self {X : Type*} [TopologicalSpace X] {x y : X} (γ : Path x y)

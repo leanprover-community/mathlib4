@@ -323,6 +323,22 @@ theorem convexCombo_symm {a b : ℝ} (x y : Icc a b) (t : unitInterval) :
   simp [convexCombo]
   abel
 
+@[grind .]
+theorem le_convexCombo {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterval) :
+    x ≤ convexCombo x y t := by
+  change (x : ℝ) ≤ _
+  change (x : ℝ) ≤ _ at h
+  simp [convexCombo]
+  nlinarith [t.2.1, t.2.2]
+
+@[grind .]
+theorem convexCombo_le {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterval) :
+    convexCombo x y t ≤ y := by
+  change _ ≤ (y : ℝ)
+  change (x : ℝ) ≤ _ at h
+  simp [convexCombo]
+  nlinarith [t.2.1, t.2.2]
+
 abbrev convexCombo_assoc_coeff₁ (s t : unitInterval) : unitInterval :=
   ⟨s * (1 - t) / (1 - s * t),
     by
