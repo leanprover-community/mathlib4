@@ -45,7 +45,7 @@ TODO:
   `ContDiffMapSupportedIn.instLocallyConvexSpace`: `ContDiffMapSupportedIn` is a locally convex
   topological vector space.
 
-## Notation ₗ
+## Notation
 
 - `𝓓^{n}_{K}(E, F)`:  the space of `n`-times continuously differentiable functions `E → F`
   which vanish outside of `K`.
@@ -57,8 +57,8 @@ TODO:
 * The technical choice of spelling `EqOn f 0 Kᶜ` in the definition, as opposed to `tsupport f ⊆ K`
   is to make rewriting `f x` to `0` easier when `x ∉ K`.
 * Since the most common case is by far the smooth case, we often reserve the "expected" name
-  of a result/definition to this case, and add `WithOrder` to the declaration taking care of
-  all regularities.
+  of a result/definition to this case, and add `WithOrder` to the declaration applying to
+  any regularity.
 * In `iteratedFDerivWithOrderLM`, we define the `i`-th iterated differentiation operator as
   a map from `𝓓^{n}_{K}` to `𝓓^{k}_{K}` without imposing relations on `n`, `k` and `i`. Of course
   this is defined as `0` if `k + i > n`. This creates some verbosity as all of these variables are
@@ -295,8 +295,8 @@ noncomputable def iteratedFDerivWithOrderLM (i : ℕ) :
   toFun f :=
     if hi : k + i ≤ n then
       .of_support_subset
-      (f.contDiff.iteratedFDeriv_right <| by exact_mod_cast hi)
-      ((support_iteratedFDeriv_subset i).trans f.tsupport_subset)
+        (f.contDiff.iteratedFDeriv_right <| by exact_mod_cast hi)
+        ((support_iteratedFDeriv_subset i).trans f.tsupport_subset)
     else 0
   map_add' f g := by
     split_ifs with hi
