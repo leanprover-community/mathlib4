@@ -57,12 +57,12 @@ theorem mulTSupport_eq_empty_iff {f : X → α} : mulTSupport f = ∅ ↔ f = 1 
   rw [mulTSupport, closure_empty_iff, mulSupport_eq_empty_iff]
 
 @[to_additive (attr := simp)]
-theorem mulTSupport_one : mulTSupport (1 : X → α) = ∅ := by
-  rw [mulTSupport, mulSupport_one, closure_empty]
-
-@[to_additive (attr := simp)]
 theorem mulTSupport_fun_one : mulTSupport (fun _ : X ↦ 1) = ∅ := by
   rw [mulTSupport, mulSupport_fun_one, closure_empty]
+
+@[to_additive (attr := simp)]
+theorem mulTSupport_one : mulTSupport (1 : X → α) = ∅ := by
+  rw [mulTSupport, mulSupport_one, closure_empty]
 
 @[to_additive]
 theorem image_eq_one_of_notMem_mulTSupport {f : X → α} {x : X} (hx : x ∉ mulTSupport f) : f x = 1 :=
@@ -108,6 +108,16 @@ theorem mulTSupport_mul [TopologicalSpace X] [MulOneClass α] {f g : X → α} :
   closure_minimal
     ((mulSupport_mul f g).trans (union_subset_union (subset_mulTSupport _) (subset_mulTSupport _)))
     (isClosed_closure.union isClosed_closure)
+
+@[to_additive (attr := simp)]
+theorem mulTSupport_fun_inv [TopologicalSpace X] [DivisionMonoid α] {f : X → α} :
+    (mulTSupport fun x ↦ (f x)⁻¹) = mulTSupport f := by
+  rw [mulTSupport, mulTSupport, mulSupport_fun_inv]
+
+@[to_additive (attr := simp)]
+theorem mulTSupport_inv [TopologicalSpace X] [DivisionMonoid α] {f : X → α} :
+    (mulTSupport f⁻¹) = mulTSupport f := by
+  rw [mulTSupport, mulTSupport, mulSupport_inv]
 
 section
 
@@ -331,7 +341,7 @@ theorem HasCompactMulSupport.mul (hf : HasCompactMulSupport f) (hf' : HasCompact
 @[to_additive, simp]
 protected lemma HasCompactMulSupport.one {α β : Type*} [TopologicalSpace α] [One β] :
     HasCompactMulSupport (1 : α → β) := by
-  simp [HasCompactMulSupport, mulTSupport]
+  simp [HasCompactMulSupport]
 
 end Monoid
 
