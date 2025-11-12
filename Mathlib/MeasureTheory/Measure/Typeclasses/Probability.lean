@@ -84,6 +84,14 @@ instance isProbabilityMeasureSMul [IsFiniteMeasure μ] [NeZero μ] :
     IsProbabilityMeasure ((μ univ)⁻¹ • μ) :=
   ⟨ENNReal.inv_mul_cancel (NeZero.ne (μ univ)) (measure_ne_top _ _)⟩
 
+instance isProbabilityMeasure_dite {p : Prop} [Decidable p] {μ : p → Measure α}
+    {ν : ¬ p → Measure α} [∀ h, IsProbabilityMeasure (μ h)] [∀ h, IsProbabilityMeasure (ν h)] :
+    IsProbabilityMeasure (dite p μ ν) := by split <;> infer_instance
+
+instance isProbabilityMeasure_ite {p : Prop} [Decidable p] {μ ν : Measure α}
+    [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
+    IsProbabilityMeasure (ite p μ ν) := by split <;> infer_instance
+
 variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
 
 theorem Measure.isProbabilityMeasure_map {f : α → β} (hf : AEMeasurable f μ) :
