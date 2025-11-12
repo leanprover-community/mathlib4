@@ -1301,5 +1301,4 @@ instance ZMod.instSubsingletonModule (n : ℕ) (M : Type*) [AddCommMonoid M] :
   · exact inferInstanceAs (Subsingleton (Module ℤ M))
   refine ⟨fun m1 m2 ↦ Module.ext' _ _ fun r m ↦ ?_⟩
   obtain ⟨r, rfl⟩ := ZMod.natCast_zmod_surjective r
-  conv_lhs => exact letI := m1; Nat.cast_smul_eq_nsmul _ r m
-  conv_rhs => exact Nat.cast_smul_eq_nsmul _ r m
+  rw [(letI := m1; Nat.cast_smul_eq_nsmul _ r m), Nat.cast_smul_eq_nsmul _ r m]
