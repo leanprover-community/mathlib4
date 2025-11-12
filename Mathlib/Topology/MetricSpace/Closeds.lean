@@ -24,15 +24,13 @@ always finite in this context.
 
 noncomputable section
 
-universe u
-
 open Set Function TopologicalSpace Filter Topology ENNReal
 
 namespace EMetric
 
 section
 
-variable {α : Type u} [EMetricSpace α] {s : Set α}
+variable {α β : Type*} [EMetricSpace α] [EMetricSpace β] {s : Set α}
 
 /-- In emetric spaces, the Hausdorff edistance defines an emetric space structure
 on the type of closed subsets -/
@@ -224,6 +222,10 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
 theorem Closeds.isometry_singleton : Isometry (Closeds.singleton (α := α)) :=
   fun _ _ => hausdorffEdist_singleton
 
+theorem Closeds.lipschitz_sup :
+    LipschitzWith 1 fun p : Closeds α × Closeds α => p.1 ⊔ p.2 :=
+  .of_edist_le fun _ _ => hausdorffEdist_union_le
+
 namespace NonemptyCompacts
 
 /-- In an emetric space, the type of non-empty compact subsets is an emetric space,
@@ -389,6 +391,14 @@ instance secondCountableTopology [SecondCountableTopology α] :
 theorem isometry_singleton : Isometry ({·} : α → NonemptyCompacts α) :=
   fun _ _ => hausdorffEdist_singleton
 
+theorem lipschitz_sup :
+    LipschitzWith 1 fun p : NonemptyCompacts α × NonemptyCompacts α => p.1 ⊔ p.2 :=
+  .of_edist_le fun _ _ => hausdorffEdist_union_le
+
+theorem lipschitz_prod :
+    LipschitzWith 1 fun p : NonemptyCompacts α × NonemptyCompacts β => p.1.prod p.2 :=
+  .of_edist_le fun _ _ => hausdorffEdist_prod_le
+
 end NonemptyCompacts
 
 end
@@ -401,7 +411,7 @@ namespace Metric
 
 section
 
-variable {α : Type u} [MetricSpace α]
+variable {α : Type*} [MetricSpace α]
 
 /-- `NonemptyCompacts α` inherits a metric space structure, as the Hausdorff
 edistance between two such sets is finite. -/
