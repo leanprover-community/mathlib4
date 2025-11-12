@@ -341,7 +341,7 @@ example (h : b ≈ a) : f a ≤ f b := by
 
 end AntiSymmRelTest
 
--- test that we use `Expr.clearupAnnotations`
+-- Test that `grw` works even in the presence of metadata.
 example (a b : Nat) (h : Nat → no_index (a ≤ b)) : a ≤ b := by
   grw [h]
   exact 0
