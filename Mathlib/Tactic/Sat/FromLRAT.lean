@@ -1,4 +1,6 @@
 /-
+Commented out as it broke after String API changes in nightly-2025-11-12.
+/-
 Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
@@ -680,3 +682,4 @@ example : ∀ (a b : Prop), (¬a ∧ ¬b ∨ a ∧ ¬b) ∨ ¬a ∧ b ∨ a ∧ 
 end Sat
 
 end Mathlib.Tactic
+-/
