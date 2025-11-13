@@ -780,13 +780,10 @@ theorem stoppedProcess_stoppedProcess :
   by_cases hσ : σ ω = ⊤
   · simp [hσ]
   by_cases hστ : σ ω ≤ τ ω
-  · rw [min_eq_left, WithTop.untopA_eq_untop (lt_of_le_of_lt ((min_le_right _ _).trans hστ) <|
-        WithTop.lt_top_iff_ne_top.2 hτ).ne, WithTop.coe_untop]
+  · rw [min_eq_left, WithTop.untopA_eq_untop WithTop.coe_ne_top]
     · simp [hστ]
     · refine le_trans ?_ hστ
-      rw [WithTop.untopA_eq_untop (lt_of_le_of_lt ((min_le_right _ _).trans hστ) <|
-        WithTop.lt_top_iff_ne_top.2 hτ).ne, WithTop.coe_untop]
-      exact min_le_right _ _
+      simp [WithTop.untopA_eq_untop]
   · nth_rewrite 2 [WithTop.untopA_eq_untop]
     · rw [WithTop.coe_untop, min_assoc]
       rfl
