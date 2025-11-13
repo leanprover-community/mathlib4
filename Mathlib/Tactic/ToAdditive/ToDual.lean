@@ -80,10 +80,10 @@ Use the `(attr := ...)` syntax to apply attributes to both the original and the 
 @[to_dual (attr := simp)] lemma min_self (a : α) : min a a = a := sorry
 ```
  -/
-syntax (name := to_dual) "to_dual" "?"? attrRest : attr
+syntax (name := to_dual) "to_dual" "?"? attrArgs : attr
 
 @[inherit_doc to_dual]
-macro "to_dual?" rest:attrRest : attr => `(attr| to_dual ? $rest)
+macro "to_dual?" rest:attrArgs : attr => `(attr| to_dual ? $rest)
 
 @[inherit_doc to_dual_ignore_args]
 initialize ignoreArgsAttr : NameMapExtension (List Nat) ←

@@ -228,10 +228,10 @@ In this case `to_additive` adds all structure fields to its mapping.
 
 As a safety check, in the first case `to_additive` double checks
 that the new name differs from the original one. -/
-syntax (name := to_additive) "to_additive" "?"? attrRest : attr
+syntax (name := to_additive) "to_additive" "?"? attrArgs : attr
 
 @[inherit_doc to_additive]
-macro "to_additive?" rest:attrRest : attr => `(attr| to_additive ? $rest)
+macro "to_additive?" rest:attrArgs : attr => `(attr| to_additive ? $rest)
 
 
 @[inherit_doc to_additive_ignore_args]

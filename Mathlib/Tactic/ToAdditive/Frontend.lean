@@ -80,11 +80,11 @@ syntax bracketedOption := "(" attrOption <|> reorderOption <|>
   relevantArgOption <|> dontTranslateOption ")"
 /-- A hint for where to find the translated declaration (`existing` or `self`) -/
 syntax existingNameHint := (ppSpace (&"existing" <|> &"self"))?
-syntax attrRest :=
+syntax attrArgs :=
   existingNameHint (ppSpace bracketedOption)* (ppSpace ident)? (ppSpace (str <|> docComment))?
 
 -- We omit a doc-string on these syntaxes to instead show the `to_additive` or `to_dual` doc-string
-attribute [nolint docBlame] attrRest bracketedOption
+attribute [nolint docBlame] attrArgs bracketedOption
 
 /-- An attribute that stores all the declarations that deal with numeric literals on variable types.
 
@@ -852,10 +852,13 @@ def proceedFields (t : TranslateData) (src tgt : Name) (argInfo : ArgInfo) : Cor
     | some (ConstantInfo.inductInfo { ctors, .. }) => ctors.toArray
     | _ => #[]
 
-/-- Elaboration of the configuration options for a translation attribute. -/
+/-- Elaboration of the configuration options for a translation attribute. It is assumed that
+- `stx[0]` is the attribute (e.g. `to_additive`)
+- `stx[1]` is the optional tracing `?`
+- `stx[2]` is the remaining `attrArgs` -/
 def elabTranslationAttr (stx : Syntax) : CoreM Config :=
   match stx[2] with
-  | `(attrRest| $existing? $[$opts:bracketedOption]* $[$tgt]? $[$doc]?) => do
+  | `(attrArgs| $existing? $[$opts:bracketedOption]* $[$tgt]? $[$doc]?) => do
     let mut attrs := #[]
     let mut reorder := []
     let mut relevantArg? := none
