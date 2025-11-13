@@ -93,7 +93,7 @@ instance IsWellOrderContinuous.restriction_setIci
       dsimp only [f]
       by_cases! h : j' ≤ j
       · refine ⟨⟨⟨j, le_refl j⟩, ?_⟩, h⟩
-        by_contra!
+        by_contra
         simp only [Set.mem_Iio, not_lt] at this
         apply hm.1
         rintro ⟨k, hk⟩ hkm

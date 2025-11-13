@@ -391,7 +391,7 @@ theorem mk_prod {ι : Type*} [LinearOrder ι] {s : Finset ι} (hnonempty : s.Non
     have hminmem : s.min' hs ∈ (Finset.cons i s hi) :=
       Finset.mem_cons_of_mem (Finset.min'_mem _ _)
     have hne : mk (a i) ≠ mk (a (s.min' hs)) := by
-      by_contra!
+      by_contra
       obtain eq := hmono.injOn (by simp) hminmem this
       rw [eq] at hi
       exact hi (Finset.min'_mem _ hs)

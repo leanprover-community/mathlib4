@@ -251,7 +251,7 @@ lemma notMem_range_embeddingUpIntLE_iff (n : ℤ) :
     (∀ (i : ℕ), (embeddingUpIntLE p).f i ≠ n) ↔ p < n := by
   constructor
   · intro h
-    by_contra!
+    by_contra
     exact h (p - n).natAbs (by simp; cutsat)
   · intros
     dsimp
@@ -264,7 +264,7 @@ lemma notMem_range_embeddingUpIntGE_iff (n : ℤ) :
     (∀ (i : ℕ), (embeddingUpIntGE p).f i ≠ n) ↔ n < p := by
   constructor
   · intro h
-    by_contra!
+    by_contra
     exact h (n - p).natAbs (by simp; cutsat)
   · intros
     dsimp
