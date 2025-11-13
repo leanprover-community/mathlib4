@@ -121,7 +121,9 @@ example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) :
 ```
 The `rel` tactic is finishing-only: it fails if any main or side goals are not resolved.
 
-## Patterns
+## Implementation notes
+
+### Patterns
 
 When you provide a pattern, such as in `gcongr x ^ 2 * ?_ + 5`, this is elaborated with a metadata
 annotation at each `?_` hole. This is then unified with the LHS of the relation in the goal.
@@ -401,7 +403,7 @@ def containsHoleAnnotation (e : Expr) : Bool :=
 
 /-- (Internal for `gcongr`)
 Elaborates to an expression satisfying `hasHoleAnnotation`. -/
-syntax (name := gcongrHoleExpand) "gcongrHole%" term : term
+scoped syntax (name := gcongrHoleExpand) "gcongrHole%" term : term
 
 @[term_elab gcongrHoleExpand, inherit_doc gcongrHoleExpand]
 def elabCHoleExpand : Term.TermElab := fun stx expectedType? => do
@@ -492,7 +494,7 @@ partial def _root_.Lean.MVarId.gcongr
     if success then
       return (true, names, #[])
   -- If we have reached the depth limit, return the unsolved goal
-  let depth + 1 := depth | return (false, names, #[g])
+  let depth + 1 := depth | return (false, names, #[g]) -- we know that there is no mdata to remove
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let rel ← withReducible g.getType'
   let some (relName, lhs, rhs) := getRel rel | throwTacticEx `gcongr g m!"{rel} is not a relation"
@@ -506,6 +508,7 @@ partial def _root_.Lean.MVarId.gcongr
       if ← mainGoalDischarger g then
         return (true, names, #[])
       else
+        -- clear the mdata from the goal
         let g ← g.replaceTargetDefEq (updateRel rel mdataExpr.mdataExpr! mdataLhs)
         return (false, names, #[g])
     -- If there are no annotations at all, we close the goal with `rfl`. Otherwise,
@@ -556,7 +559,7 @@ partial def _root_.Lean.MVarId.gcongr
       let (names2, _vs, mvarId) ← mvarId.introsWithBinderIdents names (maxIntros? := numHyps)
       -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal with (if available) the
       -- appropriate template
-      let mdataLhs?' := mdataLhs?.map fun b => if isContra then !b else b
+      let mdataLhs?' := mdataLhs?.map (· != isContra)
       let (_, names2, subgoals2) ← mvarId.gcongr mdataLhs?' names2 depth mainGoalDischarger
         sideGoalDischarger
       (names, subgoals) := (names2, subgoals ++ subgoals2)
