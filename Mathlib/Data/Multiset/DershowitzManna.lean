@@ -51,7 +51,7 @@ lemma IsDershowitzMannaLT.trans :
     IsDershowitzMannaLT M N → IsDershowitzMannaLT N P → IsDershowitzMannaLT M P := by
   classical
   rintro ⟨X₁, Y₁, Z₁, -, rfl, rfl, hYZ₁⟩ ⟨X₂, Y₂, Z₂, hZ₂, hXZXY, rfl, hYZ₂⟩
-  rw [add_comm X₁,add_comm X₂] at hXZXY
+  rw [add_comm X₁, add_comm X₂] at hXZXY
   refine ⟨X₁ ∩ X₂, Y₁ + (Y₂ - Z₁), Z₂ + (Z₁ - Y₂), ?_, ?_, ?_, ?_⟩
   · simpa [-not_and, not_and_or] using .inl hZ₂
   · rwa [← add_assoc, add_right_comm, inter_add_sub_of_add_eq_add]
@@ -149,7 +149,7 @@ private lemma transGen_oneStep_of_isDershowitzMannaLT :
 private lemma isDershowitzMannaLT_of_transGen_oneStep (hMN : TransGen OneStep M N) :
     IsDershowitzMannaLT M N :=
   hMN.trans_induction_on (by rintro _ _ ⟨X, Y, a, rfl, rfl, hYa⟩; exact ⟨X, Y, {a}, by simpa⟩)
-    fun  _ _ ↦ .trans
+    fun _ _ ↦ .trans
 
 /-- `TransGen OneStep` and `IsDershowitzMannaLT` are equivalent. -/
 private lemma transGen_oneStep_eq_isDershowitzMannaLT :

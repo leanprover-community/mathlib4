@@ -115,12 +115,12 @@ variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A]
 matrices, operators on a Hilbert space, elements of a C⋆-algebra, etc. -/
 noncomputable def log (a : A) : A := cfc Real.log a
 
-@[simp, grind]
+@[simp, grind =>]
 protected lemma _root_.IsSelfAdjoint.log {a : A} : IsSelfAdjoint (log a) := cfc_predicate _ a
 
-@[simp, grind] lemma log_zero : log (0 : A) = 0 := by simp [log]
+@[simp, grind =] lemma log_zero : log (0 : A) = 0 := by simp [log]
 
-@[simp, grind] lemma log_one : log (1 : A) = 0 := by simp [log]
+@[simp, grind =] lemma log_one : log (1 : A) = 0 := by simp [log]
 
 @[simp, grind =]
 lemma log_algebraMap {r : ℝ} : log (algebraMap ℝ A r) = algebraMap ℝ A (Real.log r) := by
@@ -139,9 +139,6 @@ lemma log_smul {r : ℝ} (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0) (hr
 lemma log_smul' [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A] {r : ℝ} (a : A)
     (hr : 0 < r) (ha : IsStrictlyPositive a := by cfc_tac) :
     log (r • a) = algebraMap ℝ A (Real.log r) + log a := by
-  have ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0 := by
-    rw [StarOrderedRing.isStrictlyPositive_iff_spectrum_pos (R := ℝ) a] at ha
-    grind
   grind [log_smul]
 
 lemma log_pow (n : ℕ) (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0)
@@ -155,9 +152,6 @@ lemma log_pow (n : ℕ) (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0)
 lemma log_pow' [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A] (n : ℕ) (a : A)
     (ha : IsStrictlyPositive a := by cfc_tac) :
     log (a ^ n) = n • log a := by
-  have ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0 := by
-    rw [StarOrderedRing.isStrictlyPositive_iff_spectrum_pos (R := ℝ) a] at ha
-    grind
   grind [log_pow]
 
 open NormedSpace in
@@ -171,9 +165,7 @@ open NormedSpace in
 @[grind =]
 lemma exp_log [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A] (a : A)
     (ha : IsStrictlyPositive a := by cfc_tac) : exp ℝ (log a) = a := by
-  have ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0 := by
-    rw [StarOrderedRing.isStrictlyPositive_iff_spectrum_pos (R := ℝ) a] at ha
-    grind
+  have ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0 := by grind
   rw [← real_exp_eq_normedSpace_exp .log, log, ← cfc_comp' Real.exp Real.log a (by fun_prop)]
   conv_rhs => rw [← cfc_id (R := ℝ) a]
   refine cfc_congr fun x hx => ?_
