@@ -6,7 +6,7 @@ open Lean Elab Translate
 @[inherit_doc TranslateData.ignoreArgsAttr]
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" (ppSpace num)* : attr
 
-@[inherit_doc toAdditiveRelevantOption]
+@[inherit_doc relevantArgOption]
 syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg " num : attr
 
 @[inherit_doc TranslateData.dontTranslateAttr]
@@ -228,10 +228,10 @@ In this case `to_additive` adds all structure fields to its mapping.
 
 As a safety check, in the first case `to_additive` double checks
 that the new name differs from the original one. -/
-syntax (name := to_additive) "to_additive" "?"? toAdditiveRest : attr
+syntax (name := to_additive) "to_additive" "?"? attrRest : attr
 
 @[inherit_doc to_additive]
-macro "to_additive?" rest:toAdditiveRest : attr => `(attr| to_additive ? $rest)
+macro "to_additive?" rest:attrRest : attr => `(attr| to_additive ? $rest)
 
 
 @[inherit_doc to_additive_ignore_args]
@@ -250,6 +250,11 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
 applying `@[to_additive]`. It is applied using the `to_additive (reorder := ...)` syntax. -/
 initialize reorderAttr : NameMapExtension (List (List Nat)) ←
   registerNameMapExtension _
+
+/-- Linter to check that the `relevant_arg` attribute is not given manually -/
+register_option linter.toAdditiveRelevantArg : Bool := {
+  defValue := true
+  descr := "Linter to check that the `relevant_arg` attribute is not given manually." }
 
 @[inherit_doc to_additive_relevant_arg]
 initialize relevantArgAttr : NameMapExtension Nat ←
@@ -386,7 +391,7 @@ initialize registerBuiltinAttribute {
     name := `to_additive
     descr := "Transport multiplicative to additive"
     add := fun src stx kind ↦ discard do
-      addToAdditiveAttr toAdditiveBundle src (← elabToAdditive stx) kind
+      addTranslationAttr toAdditiveBundle src (← elabTranslationAttr stx) kind
     -- we (presumably) need to run after compilation to properly add the `simp` attribute
     applicationTime := .afterCompilation
   }

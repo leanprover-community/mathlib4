@@ -28,7 +28,7 @@ open Lean Meta Elab Command Std Translate
 @[inherit_doc TranslateData.ignoreArgsAttr]
 syntax (name := to_dual_ignore_args) "to_dual_ignore_args" (ppSpace num)* : attr
 
-@[inherit_doc toAdditiveRelevantOption]
+@[inherit_doc relevantArgOption]
 syntax (name := to_dual_relevant_arg) "to_dual_relevant_arg " num : attr
 
 @[inherit_doc TranslateData.dontTranslateAttr]
@@ -80,10 +80,10 @@ Use the `(attr := ...)` syntax to apply attributes to both the original and the 
 @[to_dual (attr := simp)] lemma min_self (a : α) : min a a = a := sorry
 ```
  -/
-syntax (name := to_dual) "to_dual" "?"? toAdditiveRest : attr
+syntax (name := to_dual) "to_dual" "?"? attrRest : attr
 
 @[inherit_doc to_dual]
-macro "to_dual?" rest:toAdditiveRest : attr => `(attr| to_dual ? $rest)
+macro "to_dual?" rest:attrRest : attr => `(attr| to_dual ? $rest)
 
 @[inherit_doc to_dual_ignore_args]
 initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
@@ -192,7 +192,7 @@ initialize registerBuiltinAttribute {
     name := `to_dual
     descr := "Transport to dual"
     add := fun src stx kind ↦ discard do
-      addToAdditiveAttr toDualBundle src (← elabToAdditive stx) kind
+      addTranslationAttr toDualBundle src (← elabTranslationAttr stx) kind
     applicationTime := .afterCompilation
   }
 

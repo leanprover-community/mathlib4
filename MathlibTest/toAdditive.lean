@@ -2,7 +2,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Lean.Exception
 import Mathlib.Tactic.ReduceModChar.Ext
 import Qq.MetaM
-open Qq Lean Meta Elab Command ToAdditive
+open Qq Lean Meta Elab Command Mathlib Tactic Translate ToAdditive
 
 set_option autoImplicit true
 -- work in a namespace so that it doesn't matter if names clash
@@ -165,7 +165,7 @@ run_cmd do
   let decl := c |>.updateName `Test.barr6 |>.updateType t |>.updateValue e |>.toDeclaration!
   liftCoreM <| addAndCompile decl
   -- test that we cannot transport a declaration to itself
-  successIfFail <| liftCoreM <| addToAdditiveAttr toAdditiveBundle `bar11_works { ref := ← getRef }
+  successIfFail <| liftCoreM <| addTranslationAttr toAdditiveBundle `bar11_works { ref := ← getRef }
 
 /- Test on inductive types -/
 inductive AddInd : ℕ → Prop where
@@ -236,9 +236,9 @@ instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One <| f i] : One (
   ⟨fun _ => 1⟩
 
 run_cmd do
-  let n ← liftCoreM <| MetaM.run' <| findMultiplicativeArg toAdditiveBundle `Test.pi.has_one
+  let n ← liftCoreM <| MetaM.run' <| findRelevantArg toAdditiveBundle `Test.pi.has_one
   if n != 1 then throwError "{n} != 1"
-  let n ← liftCoreM <| MetaM.run' <| findMultiplicativeArg toAdditiveBundle `Test.foo_mul
+  let n ← liftCoreM <| MetaM.run' <| findRelevantArg toAdditiveBundle `Test.foo_mul
   if n != 4 then throwError "{n} != 4"
 
 end
@@ -363,7 +363,7 @@ run_cmd do
   let stx ← `(Semigroup MonoidEnd)
   liftTermElabM do
     let e ← Term.elabTerm stx none
-    guard <| additiveTest (← getEnv) toAdditiveBundle e == some (.inl `Test.MonoidEnd)
+    guard <| shouldTranslate (← getEnv) toAdditiveBundle e == some (.inl `Test.MonoidEnd)
 
 
 @[to_additive instSemiGroupAddMonoidEnd]
@@ -384,7 +384,8 @@ Some arbitrary tests to check whether additive names are guessed correctly.
 section guessName
 
 def checkGuessName (s t : String) : Elab.Command.CommandElabM Unit :=
-  unless (guessName nameDict fixAbbreviation s) == t do throwError "failed: {guessName nameDict fixAbbreviation s} != {t}"
+  unless (GuessName.guessName { nameDict, abbreviationDict } s) == t do
+    throwError "failed: {GuessName.guessName { nameDict, abbreviationDict } s} != {t}"
 
 run_cmd
   checkGuessName "HMul_Eq_LEOne_Conj₂MulLT'" "HAdd_Eq_Nonpos_Conj₂AddLT'"
@@ -466,7 +467,7 @@ section
 error: to_additive: the generated translated name equals the original name 'foo'.
 If this is intentional, use the `@[to_additive self]` syntax.
 Otherwise, check that your declaration name is correct (if your declaration is an instance, try naming it)
-or provide an additivised name using the `@[to_additive my_add_name]` syntax.
+or provide a translated name using the `@[to_additive my_add_name]` syntax.
 ---
 warning: declaration uses 'sorry'
 -/
@@ -760,7 +761,7 @@ instance : Mul (MonoidAlgebra' Nat G) where
 
 -- Unfortunately, `relevant_arg` information isn't passed to `*.casesOn`:
 /--
-error: @[to_additive] failed. The translated value is not type correct. For help, see the docstring of `to_additive.attr`, section `Troubleshooting`. Failed to add declaration
+error: @[to_additive] failed. The translated value is not type correct. For help, see the docstring of `to_additive`, section `Troubleshooting`. Failed to add declaration
 instAddAddMonoidAlgebra'Nat_1.match_1:
 Application type mismatch: The argument
   fun x => motive x x✝
