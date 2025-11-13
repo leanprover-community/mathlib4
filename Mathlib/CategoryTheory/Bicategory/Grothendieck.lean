@@ -204,7 +204,7 @@ end
 
 /-- The natural isomorphism witnessing the pseudo-functoriality of `Grothendieck.map`. -/
 def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β :=
-  NatIso.ofComponents (fun _ ↦ eqToIso (by aesop_cat)) (fun f ↦ by
+  NatIso.ofComponents (fun _ ↦ eqToIso (by cat_disch)) (fun f ↦ by
     dsimp
     simp only [comp_id, id_comp]
     ext <;> simp)
