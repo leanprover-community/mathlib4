@@ -519,9 +519,7 @@ def toLinearMap₁₂ (L : E →SL[σ₁₃] F →SL[σ₂₃] G) : E →ₛₗ[
 
 lemma toLinearMap₁₂_injective :
     (toLinearMap₁₂ (E := E) (F := F) (G := G) (σ₁₃ := σ₁₃) (σ₂₃ := σ₂₃)).Injective := by
-  intro x y hxy
-  ext
-  simp [← toLinearMap₁₂_apply, hxy]
+  simp [Function.Injective, LinearMap.ext_iff, ← ContinuousLinearMap.ext_iff]
 
 lemma toLinearMap₁₂_inj (L₁ L₂ : E →SL[σ₁₃] F →SL[σ₂₃] G) :
     L₁.toLinearMap₁₂ = L₂.toLinearMap₁₂ ↔ L₁ = L₂ :=
