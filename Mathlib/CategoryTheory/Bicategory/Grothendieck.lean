@@ -195,7 +195,7 @@ variable (F)
 
 /-- The natural isomorphism witnessing the pseudo-unity constraint of `Grothendieck.map`. -/
 def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) :=
-  NatIso.ofComponents (fun _ ↦ eqToIso (by aesop_cat))
+  NatIso.ofComponents (fun _ ↦ eqToIso (by cat_disch))
 
 lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ F) :=
   Functor.ext_of_iso (mapIdIso F) (fun x ↦ by simp [map]) (fun x ↦ by simp [mapIdIso])
