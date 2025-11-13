@@ -242,8 +242,8 @@ def covarianceBilinDual (μ : Measure E) : StrongDual ℝ E →L[ℝ] StrongDual
   uncenteredCovarianceBilinDual (μ.map (fun x ↦ x - ∫ x, x ∂μ))
 
 omit [BorelSpace E] in
-lemma _root_.MemLp.of_self_sub_integral (h_Lp : MemLp (fun x ↦ x - ∫ y, y ∂μ) 2 μ) :
-    MemLp id 2 μ := by
+lemma _root_.MeasureTheory.memLp_id_of_self_sub_integral
+    (h_Lp : MemLp (fun x ↦ x - ∫ y, y ∂μ) 2 μ) : MemLp id 2 μ := by
   have : (id : E → E) = fun x ↦ x - ∫ x, x ∂μ + ∫ x, x ∂μ := by ext; simp
   rw [this]
   apply h_Lp.add
@@ -293,7 +293,7 @@ lemma covarianceBilinDual_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : Stron
     covarianceBilinDual μ L₁ L₂ = 0 := by
   apply covarianceBilinDual_of_not_memLp'
   contrapose! h
-  exact MemLp.of_self_sub_integral h
+  exact memLp_id_of_self_sub_integral h
 
 @[simp]
 lemma covarianceBilinDual_zero : covarianceBilinDual (0 : Measure E) = 0 := by
