@@ -310,7 +310,7 @@ cache constant expressions, so that's why the `if`s in the implementation are in
 
 Note that this function is still called many times by `applyReplacementFun`
 and we're not remembering the cache between these calls. -/
-unsafe def shouldTranslateUnsafe (env : Environment) (t : TranslateData) (e : Expr)
+unsafe private def shouldTranslateUnsafe (env : Environment) (t : TranslateData) (e : Expr)
     (dontTranslate : Array FVarId) : Option (Name ⊕ FVarId) :=
   let rec visit (e : Expr) (inApp := false) : OptionT (StateM (PtrSet Expr)) (Name ⊕ FVarId) := do
     if e.isConst then
