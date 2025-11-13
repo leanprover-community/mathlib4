@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.Topology.StoneCech
+import Mathlib.Topology.Compactification.StoneCech
 import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
@@ -41,7 +41,7 @@ instance projective_ultrafilter (X : Type u) : Projective (of <| Ultrafilter X) 
     have hh : Continuous h := continuous_ultrafilter_extend _
     use CompHausLike.ofHom _ ⟨h, hh⟩
     apply ConcreteCategory.coe_ext
-    simp only [h, ContinuousMap.coe_mk, coe_comp]
+    simp only [h]
     convert denseRange_pure.equalizer (g.hom.continuous.comp hh) f.hom.continuous _
     have : g.hom ∘ g' = id := hg'.comp_eq_id
     rw [comp_assoc, ultrafilter_extend_extends, ← comp_assoc, this, id_comp]

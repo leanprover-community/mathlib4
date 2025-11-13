@@ -24,10 +24,10 @@ theorem pentagon_hom_hom_inv_inv_hom (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (
       (α_ f g h).inv ▷ i ≫ (α_ (f ≫ g) h i).hom :=
   eq_of_inv_eq_inv (by simp)
 
-example {a b c d e : Cat} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) (X : ↑a) :
-    (α_ f (g ≫ h) i).hom.app X ≫ (α_ g h i).hom.app (f.obj X) ≫ (α_ f g (h ≫ i)).inv.app X =
-      i.map ((α_ f g h).inv.app X) ≫ (α_ (f ≫ g) h i).hom.app X :=
-  pentagon_hom_hom_inv_inv_hom_app f g h i X
+example {a b c d e : Cat} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) (X : a) : True := by
+  have hyp := pentagon_hom_hom_inv_inv_hom_app f g h i X
+  guard_hyp hyp : 𝟙 (i.obj (h.obj (g.obj (f.obj X)))) = i.map (𝟙 (h.obj (g.obj (f.obj X))))
+  trivial
 
 @[to_app]
 theorem testThm {C : Type*} [Bicategory C] (F : PrelaxFunctor B C) {a b : B} {f g : a ⟶ b}

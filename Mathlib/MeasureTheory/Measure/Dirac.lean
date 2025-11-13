@@ -85,7 +85,7 @@ theorem map_dirac {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f
 @[simp]
 lemma map_const (μ : Measure α) (c : β) : μ.map (fun _ ↦ c) = (μ Set.univ) • dirac c := by
   ext s hs
-  simp only [aemeasurable_const, measurable_const, Measure.coe_smul, Pi.smul_apply,
+  simp only [Measure.coe_smul, Pi.smul_apply,
     dirac_apply' _ hs, smul_eq_mul]
   classical
   rw [Measure.map_apply measurable_const hs, Set.preimage_const]
@@ -104,7 +104,7 @@ theorem restrict_singleton (μ : Measure α) (a : α) : μ.restrict {a} = μ {a}
 
 /-- Two measures on a countable space are equal if they agree on singletons. -/
 theorem ext_of_singleton [Countable α] {μ ν : Measure α} (h : ∀ a, μ {a} = ν {a}) : μ = ν :=
-  ext_of_sUnion_eq_univ (countable_range singleton) (by aesop) (by aesop)
+  ext_of_sUnion_eq_univ (countable_range singleton) (by aesop) (by simp_all)
 
 /-- Two measures on a countable space are equal if and only if they agree on singletons. -/
 theorem ext_iff_singleton [Countable α] {μ ν : Measure α} : μ = ν ↔ ∀ a, μ {a} = ν {a} :=
@@ -131,6 +131,45 @@ theorem map_eq_sum [Countable β] [MeasurableSingletonClass β] (μ : Measure α
 theorem sum_smul_dirac [Countable α] [MeasurableSingletonClass α] (μ : Measure α) :
     (sum fun a => μ {a} • dirac a) = μ := by simpa using (map_eq_sum μ id measurable_id).symm
 
+/-- A measure on a countable type is a sum of Dirac measures.
+If `α` has measurable singletons, `sum_smul_dirac` gives a simpler sum. -/
+lemma exists_sum_smul_dirac [Countable α] (μ : Measure α) :
+    ∃ s : Set α, μ = Measure.sum (fun x : s ↦ μ (measurableAtom x) • dirac (x : α)) := by
+  let measurableAtoms := measurableAtom '' (Set.univ : Set α)
+  have h_nonempty (s : measurableAtoms) : Set.Nonempty s.1 := by
+    obtain ⟨y, _, hy⟩ := s.2
+    rw [← hy]
+    exact ⟨y, mem_measurableAtom_self y⟩
+  let points : measurableAtoms → α := fun s ↦ (h_nonempty s).some
+  have h_points_mem (s : measurableAtoms) : points s ∈ s.1 := (h_nonempty s).some_mem
+  refine ⟨Set.range points, ext_of_measurableAtoms fun x ↦ ?_⟩
+  rw [sum_apply _ (MeasurableSet.measurableAtom_of_countable x)]
+  simp only [Measure.smul_apply, smul_eq_mul]
+  simp_rw [dirac_apply' _ (MeasurableSet.measurableAtom_of_countable x)]
+  rw [tsum_eq_single ⟨points ⟨measurableAtom x, by simp [measurableAtoms]⟩, by simp⟩]
+  · rw [indicator_of_mem]
+    · simp only [Pi.one_apply, mul_one]
+      congr 1
+      refine (measurableAtom_eq_of_mem ?_).symm
+      convert h_points_mem _
+      simp
+    · convert h_points_mem _
+      simp
+  · simp only [ne_eq, mul_eq_zero, indicator_apply_eq_zero, Pi.one_apply, one_ne_zero, imp_false,
+      Subtype.forall, Set.mem_range, Subtype.exists, Subtype.mk.injEq, forall_exists_index]
+    refine fun y s hs hsy hyx ↦ .inr fun hyx' ↦ hyx ?_
+    rw [← hsy]
+    congr
+    have h1 : measurableAtom y = measurableAtom x := measurableAtom_eq_of_mem hyx'
+    have h2 : measurableAtom y = s := by
+      specialize h_points_mem ⟨s, hs⟩
+      obtain ⟨z, _, hz⟩ := hs
+      simp only at h_points_mem
+      rw [← hz, ← hsy]
+      refine measurableAtom_eq_of_mem ?_
+      convert h_points_mem
+    rw [← h2, h1]
+
 /-- Given that `α` is a countable, measurable space with all singleton sets measurable,
 write the measure of a set `s` as the sum of the measure of `{x}` for all `x ∈ s`. -/
 theorem tsum_indicator_apply_singleton [Countable α] [MeasurableSingletonClass α] (μ : Measure α)
@@ -148,7 +187,7 @@ end Measure
 open Measure
 
 theorem mem_ae_dirac_iff {a : α} (hs : MeasurableSet s) : s ∈ ae (dirac a) ↔ a ∈ s := by
-  by_cases a ∈ s <;> simp [mem_ae_iff, dirac_apply', hs.compl, indicator_apply, *]
+  by_cases a ∈ s <;> simp [mem_ae_iff, dirac_apply', hs.compl, *]
 
 theorem ae_dirac_iff {a : α} {p : α → Prop} (hp : MeasurableSet { x | p x }) :
     (∀ᵐ x ∂dirac a, p x) ↔ p a :=
@@ -173,6 +212,9 @@ lemma aemeasurable_dirac [MeasurableSingletonClass α] {a : α} {f : α → β} 
 
 instance Measure.dirac.isProbabilityMeasure {x : α} : IsProbabilityMeasure (dirac x) :=
   ⟨dirac_apply_of_mem <| mem_univ x⟩
+
+instance [hα : Nonempty α] : Nonempty {μ : Measure α // IsProbabilityMeasure μ} :=
+  ⟨Measure.dirac hα.some, inferInstance⟩
 
 /-! Extra instances to short-circuit type class resolution -/
 
@@ -225,7 +267,7 @@ lemma dirac_eq_dirac_iff_forall_mem_iff_mem {x y : α} :
     by_cases x_in_A : x ∈ A
     · simp only [Measure.dirac_apply' _ A_mble, x_in_A, indicator_of_mem, Pi.one_apply,
                  (h A A_mble).mp x_in_A]
-    · have y_notin_A : y ∉ A := by simp_all only [false_iff, not_false_eq_true]
+    · have y_notin_A : y ∉ A := by simp_all only [not_false_eq_true]
       simp only [Measure.dirac_apply' _ A_mble, x_in_A, y_notin_A,
                  not_false_eq_true, indicator_of_notMem]
 

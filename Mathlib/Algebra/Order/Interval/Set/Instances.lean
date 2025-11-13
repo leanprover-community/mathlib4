@@ -282,7 +282,7 @@ instance instCancelMonoid {R : Type*} [Ring R] [PartialOrder R] [IsStrictOrdered
   { Set.Ioc.instMonoid with
     mul_left_cancel := fun a _ _ h =>
       Subtype.ext <| mul_left_cancel₀ a.prop.1.ne' <| (congr_arg Subtype.val h :)
-    mul_right_cancel := fun _ b _ h =>
+    mul_right_cancel := fun b _ _ h =>
       Subtype.ext <| mul_right_cancel₀ b.prop.1.ne' <| (congr_arg Subtype.val h :) }
 
 instance instCancelCommMonoid {R : Type*} [CommRing R] [PartialOrder R] [IsStrictOrderedRing R]
@@ -323,9 +323,7 @@ instance instCommSemigroup {R : Type*} [CommSemiring R] [PartialOrder R] [IsStri
 variable {β : Type*} [Ring β] [PartialOrder β] [IsOrderedRing β]
 
 theorem one_sub_mem {t : β} (ht : t ∈ Ioo (0 : β) 1) : 1 - t ∈ Ioo (0 : β) 1 := by
-  rw [mem_Ioo] at *
-  refine ⟨sub_pos.2 ht.2, ?_⟩
-  exact lt_of_le_of_ne ((sub_le_self_iff 1).2 ht.1.le) (mt sub_eq_self.mp ht.1.ne')
+  simp_all only [mem_Ioo, sub_pos, sub_lt_self_iff, and_self]
 
 theorem mem_iff_one_sub_mem {t : β} : t ∈ Ioo (0 : β) 1 ↔ 1 - t ∈ Ioo (0 : β) 1 :=
   ⟨one_sub_mem, fun h => sub_sub_cancel 1 t ▸ one_sub_mem h⟩

@@ -32,7 +32,7 @@ abbrev etaleTopology : GrothendieckTopology Scheme.{u} :=
   etalePretopology.toGrothendieck
 
 lemma zariskiTopology_le_etaleTopology : zariskiTopology ≤ etaleTopology := by
-  apply grothendieckTopology_le_grothendieckTopology
+  apply grothendieckTopology_monotone
   intro X Y f hf
   infer_instance
 

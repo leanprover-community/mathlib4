@@ -10,7 +10,7 @@ import Mathlib.Order.SuccPred.Archimedean
 /-!
 # Monotonicity on intervals
 
-In this file we prove that `Set.Ici` etc are monotone/antitone functions. We also prove some lemmas
+In this file we prove that `Set.Ici` etc. are monotone/antitone functions. We also prove some lemmas
 about functions monotone on intervals in `SuccOrder`s.
 -/
 
@@ -201,9 +201,9 @@ theorem StrictMonoOn.Iic_id_le [SuccOrder α] [IsSuccArchimedean α] [OrderBot �
     exact ih (hφ.mono <| Iic_subset_Iic.2 (le_succ _)) _ hm
   obtain rfl | h := le_succ_iff_eq_or_le.1 hm
   · specialize ih (StrictMonoOn.mono hφ fun x hx => le_trans hx (le_succ _)) k le_rfl
-    refine le_trans (succ_mono ih) (succ_le_of_lt (hφ (le_succ _) le_rfl ?_))
-    rw [lt_succ_iff_eq_or_lt_of_not_isMax hk]
-    exact Or.inl rfl
+    nth_grw 1 [ih]
+    refine succ_le_of_lt (hφ (le_succ _) le_rfl ?_)
+    exact lt_succ_of_not_isMax hk
   · exact ih (StrictMonoOn.mono hφ fun x hx => le_trans hx (le_succ _)) _ h
 
 theorem StrictMonoOn.Ici_le_id [PredOrder α] [IsPredArchimedean α] [OrderTop α] {n : α} {φ : α → α}

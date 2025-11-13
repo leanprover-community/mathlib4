@@ -44,14 +44,15 @@ theorem card_filter_univ_succ (p : Fin (n + 1) → Prop) [DecidablePred p] :
   rw [Fin.univ_succ, filter_cons, apply_ite Finset.card, card_cons, filter_map, card_map]; rfl
 
 theorem card_filter_univ_succ' (p : Fin (n + 1) → Prop) [DecidablePred p] :
-    #{x | p x} = ite (p 0) 1 0 + #{x | p (.succ x)}:= by
+    #{x | p x} = ite (p 0) 1 0 + #{x | p (.succ x)} := by
   rw [card_filter_univ_succ]; split_ifs <;> simp [add_comm]
 
 theorem card_filter_univ_eq_vector_get_eq_count [DecidableEq α] (a : α) (v : List.Vector α n) :
     #{i | v.get i = a} = v.toList.count a := by
-  induction' v with n x xs hxs
-  · simp
-  · simp_rw [card_filter_univ_succ', Vector.get_cons_zero, Vector.toList_cons, Vector.get_cons_succ,
+  induction v with
+  | nil => simp
+  | @cons n x xs hxs =>
+    simp_rw [card_filter_univ_succ', Vector.get_cons_zero, Vector.toList_cons, Vector.get_cons_succ,
       hxs, List.count_cons, add_comm (ite (x = a) 1 0), beq_iff_eq]
 
 end Fin

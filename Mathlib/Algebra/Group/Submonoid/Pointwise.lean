@@ -44,10 +44,9 @@ variable [Monoid M] [AddMonoid A]
 lemma coe_mul_coe [SetLike S M] [SubmonoidClass S M] (H : S) : H * H = (H : Set M) := by
   aesop (add simp mem_mul)
 
-set_option linter.unusedVariables false in
 @[to_additive (attr := simp)]
 lemma coe_set_pow [SetLike S M] [SubmonoidClass S M] :
-    ∀ {n} (hn : n ≠ 0) (H : S), (H ^ n : Set M) = H
+    ∀ {n} (_ : n ≠ 0) (H : S), (H ^ n : Set M) = H
   | 1, _, H => by simp
   | n + 2, _, H => by rw [pow_succ, coe_set_pow n.succ_ne_zero, coe_mul_coe]
 
@@ -68,10 +67,7 @@ theorem mul_subset_closure (hs : s ⊆ u) (ht : t ⊆ u) : s * t ⊆ Submonoid.c
 
 @[to_additive]
 theorem coe_mul_self_eq (s : Submonoid M) : (s : Set M) * s = s := by
-  ext x
-  refine ⟨?_, fun h => ⟨x, h, 1, s.one_mem, mul_one x⟩⟩
-  rintro ⟨a, ha, b, hb, rfl⟩
-  exact s.mul_mem ha hb
+  simp
 
 @[to_additive]
 theorem closure_mul_le (S T : Set M) : closure (S * T) ≤ closure S ⊔ closure T :=
@@ -102,11 +98,17 @@ theorem sup_eq_closure_mul (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) 
     ((closure_mul_le _ _).trans <| by rw [closure_eq, closure_eq])
 
 @[to_additive]
+theorem coe_sup {N : Type*} [CommMonoid N] (H K : Submonoid N) :
+    ↑(H ⊔ K) = (H * K : Set N) := by
+  ext x
+  simp [mem_sup, Set.mem_mul]
+
+@[to_additive]
 theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [IsScalarTower M N N]
     (r : M) (s : Set N) {x : N} (hx : x ∈ closure s) : ∃ n : ℕ, r ^ n • x ∈ closure (r • s) := by
   induction hx using closure_induction with
   | mem x hx => exact ⟨1, subset_closure ⟨_, hx, by rw [pow_one]⟩⟩
-  | one => exact ⟨0, by simpa using one_mem _⟩
+  | one => exact ⟨0, by simp⟩
   | mul x y _ _ hx hy =>
     obtain ⟨⟨nx, hx⟩, ⟨ny, hy⟩⟩ := And.intro hx hy
     use ny + nx
@@ -116,7 +118,7 @@ theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [Is
 variable [Group G]
 
 /-- The submonoid with every element inverted. -/
-@[to_additive "The additive submonoid with every element negated."]
+@[to_additive /-- The additive submonoid with every element negated. -/]
 protected def inv : Inv (Submonoid G) where
   inv S :=
     { carrier := (S : Set G)⁻¹
@@ -134,7 +136,7 @@ theorem mem_inv {g : G} {S : Submonoid G} : g ∈ S⁻¹ ↔ g⁻¹ ∈ S :=
   Iff.rfl
 
 /-- Inversion is involutive on submonoids. -/
-@[to_additive "Inversion is involutive on additive submonoids."]
+@[to_additive /-- Inversion is involutive on additive submonoids. -/]
 def involutiveInv : InvolutiveInv (Submonoid G) :=
   SetLike.coe_injective.involutiveInv _ fun _ => rfl
 
@@ -149,7 +151,8 @@ theorem inv_le (S T : Submonoid G) : S⁻¹ ≤ T ↔ S ≤ T⁻¹ :=
   SetLike.coe_subset_coe.symm.trans Set.inv_subset
 
 /-- Pointwise inversion of submonoids as an order isomorphism. -/
-@[to_additive (attr := simps!) "Pointwise negation of additive submonoids as an order isomorphism"]
+@[to_additive (attr := simps!)
+/-- Pointwise negation of additive submonoids as an order isomorphism -/]
 def invOrderIso : Submonoid G ≃o Submonoid G where
   toEquiv := Equiv.inv _
   map_rel_iff' := inv_le_inv _ _
@@ -213,7 +216,7 @@ protected def pointwiseMulAction : MulAction α (Submonoid M) where
 
 scoped[Pointwise] attribute [instance] Submonoid.pointwiseMulAction
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_pointwise_smul (a : α) (S : Submonoid M) : ↑(a • S) = a • (S : Set M) :=
   rfl
 
@@ -221,7 +224,7 @@ theorem smul_mem_pointwise_smul (m : M) (a : α) (S : Submonoid M) : m ∈ S →
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set M))
 
 instance : CovariantClass α (Submonoid M) HSMul.hSMul LE.le :=
-  ⟨fun _ _ => image_subset _⟩
+  ⟨fun _ _ => image_mono⟩
 
 theorem mem_smul_pointwise_iff_exists (m : M) (a : α) (S : Submonoid M) :
     m ∈ a • S ↔ ∃ s : M, s ∈ S ∧ a • s = m :=

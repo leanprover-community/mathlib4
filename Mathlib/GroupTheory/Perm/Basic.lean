@@ -17,8 +17,9 @@ This file proves miscellaneous lemmas about `Equiv.Perm`.
 
 Most of the content of this file was moved to `Algebra.Group.End` in
 https://github.com/leanprover-community/mathlib4/pull/22141.
-It would be good to merge the remaining lemmas with other files, eg `GroupTheory.Perm.ViaEmbedding`
-looks like it could benefit from such a treatment (splitting into the algebra and non-algebra parts)
+It would be good to merge the remaining lemmas with other files, e.g.
+`GroupTheory.Perm.ViaEmbedding` looks like it could benefit from such a treatment (splitting into
+the algebra and non-algebra parts).
 -/
 
 
@@ -30,10 +31,10 @@ variable {α : Type u} {β : Type v}
 
 namespace Perm
 
-@[simp] lemma image_inv (f : Perm α) (s : Set α) : ↑f⁻¹ '' s = f ⁻¹' s := f⁻¹.image_eq_preimage _
+@[simp] lemma image_inv (f : Perm α) (s : Set α) : ↑f⁻¹ '' s = f ⁻¹' s := f.image_symm_eq_preimage _
 
 @[simp] lemma preimage_inv (f : Perm α) (s : Set α) : ↑f⁻¹ ⁻¹' s = f '' s :=
-  (f.image_eq_preimage _).symm
+  (f.image_eq_preimage_symm _).symm
 
 end Perm
 

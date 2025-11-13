@@ -6,7 +6,7 @@ Authors: Joël Riou
 
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Types.Basic
 import Mathlib.Order.SuccPred.Limit
 
 /-!
@@ -35,8 +35,7 @@ open Opposite
 
 namespace Functor
 
-variable {J : Type u} [LinearOrder J] [SuccOrder J]
-   (F : Jᵒᵖ ⥤ Type v)
+variable {J : Type u} [LinearOrder J] [SuccOrder J] (F : Jᵒᵖ ⥤ Type v)
 
 /-- Given a functor `F : Jᵒᵖ ⥤ Type v` where `J` is a well-ordered type, this data
 allows to construct a section of `F` from an element in `F.obj (op ⊥)`,
@@ -58,6 +57,22 @@ structure WellOrderInductionData where
         F.map (homOfLE hi.le).op (lift j hj x) = x.val (op ⟨i, hi⟩)
 
 namespace WellOrderInductionData
+
+variable {F} in
+/-- Given a functor `F : Jᵒᵖ ⥤ Type v` where `J` is a well-ordered type,
+this is a constructor for `F.WellOrderInductionData` which does not take
+data as inputs but proofs of the existence of certain elements. -/
+noncomputable def ofExists
+    (h₁ : ∀ (j : J) (_ : ¬IsMax j), Function.Surjective (F.map (homOfLE (Order.le_succ j)).op))
+    (h₂ : ∀ (j : J) (_ : Order.IsSuccLimit j)
+      (x : ((OrderHom.Subtype.val (· ∈ Set.Iio j)).monotone.functor.op ⋙ F).sections),
+      ∃ (y : F.obj (op j)), ∀ (i : J) (hi : i < j),
+        F.map (homOfLE hi.le).op y = x.val (op ⟨i, hi⟩)) :
+    F.WellOrderInductionData where
+  succ j hj x := (h₁ j hj x).choose
+  map_succ j hj x := (h₁ j hj x).choose_spec
+  lift j hj x := (h₂ j hj x).choose
+  map_lift j hj x := (h₂ j hj x).choose_spec
 
 variable {F} (d : F.WellOrderInductionData) [OrderBot J]
 
@@ -191,7 +206,7 @@ def succ {j : J} (e : d.Extension val₀ j) (hj : ¬IsMax j) :
 
 variable [WellFoundedLT J]
 
-/-- When `j` is a limit element, this is the exntesion to `d.Extension val₀ j`
+/-- When `j` is a limit element, this is the extension to `d.Extension val₀ j`
 of a family of elements in `d.Extension val₀ i` for all `i < j`. -/
 def limit (j : J) (hj : Order.IsSuccLimit j)
     (e : ∀ (i : J) (_ : i < j), d.Extension val₀ i) :

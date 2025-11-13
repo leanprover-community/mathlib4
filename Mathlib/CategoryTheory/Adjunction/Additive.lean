@@ -102,9 +102,9 @@ Note that `F` is additive if and only if `G` is, by `Adjunction.right_adjoint_ad
 `Adjunction.left_adjoint_additive`.
 -/
 def compPreadditiveYonedaIso :
-    G ⋙ preadditiveYoneda ⋙ (whiskeringRight _ _ _).obj AddCommGrp.uliftFunctor.{max v₁ v₂} ≅
+    G ⋙ preadditiveYoneda ⋙ (whiskeringRight _ _ _).obj AddCommGrpCat.uliftFunctor.{max v₁ v₂} ≅
       preadditiveYoneda ⋙ (whiskeringLeft _ _ _).obj F.op ⋙
-        (whiskeringRight _ _ _).obj AddCommGrp.uliftFunctor.{max v₁ v₂} :=
+        (whiskeringRight _ _ _).obj AddCommGrpCat.uliftFunctor.{max v₁ v₂} :=
   NatIso.ofComponents
     (fun Y ↦ NatIso.ofComponents
       (fun X ↦ (AddEquiv.ulift.trans ((adj.homAddEquiv (unop X) Y).symm.trans

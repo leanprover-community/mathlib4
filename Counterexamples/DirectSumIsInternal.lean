@@ -80,7 +80,7 @@ theorem withSign.not_injective :
     replace h := DFunLike.congr_fun h 1
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [DFinsupp.zero_apply, DFinsupp.add_apply, DFinsupp.single_eq_same,
-      DFinsupp.single_eq_of_ne UnitsInt.one_ne_neg_one.symm, add_zero, Subtype.ext_iff,
+      DFinsupp.single_eq_of_ne UnitsInt.one_ne_neg_one, add_zero, Subtype.ext_iff,
       Submodule.coe_zero] at h
     apply zero_ne_one h.symm
   apply hinj.ne this

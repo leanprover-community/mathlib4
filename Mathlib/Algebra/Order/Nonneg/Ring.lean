@@ -42,23 +42,21 @@ namespace Nonneg
 
 instance isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] :
     IsOrderedAddMonoid { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.isOrderedAddMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
+  Function.Injective.isOrderedAddMonoid Subtype.val Nonneg.coe_add .rfl
 
 instance isOrderedCancelAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] :
     IsOrderedCancelAddMonoid { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.isOrderedCancelAddMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
+  Function.Injective.isOrderedCancelAddMonoid _ Nonneg.coe_add .rfl
 
 instance isOrderedRing [Semiring α] [PartialOrder α] [IsOrderedRing α] :
     IsOrderedRing { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.isOrderedRing _ Nonneg.coe_zero Nonneg.coe_one
-    (fun _ _ => rfl) (fun _ _=> rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ => rfl
+  Function.Injective.isOrderedRing Subtype.val Nonneg.coe_zero Nonneg.coe_one Nonneg.coe_add
+    Nonneg.coe_mul .rfl
 
 instance isStrictOrderedRing [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] :
     IsStrictOrderedRing { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.isStrictOrderedRing _ Nonneg.coe_zero Nonneg.coe_one
-    (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+  Function.Injective.isStrictOrderedRing Subtype.val Nonneg.coe_zero Nonneg.coe_one Nonneg.coe_add
+    Nonneg.coe_mul .rfl .rfl
 
 instance existsAddOfLE [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α] :
     ExistsAddOfLE { x : α // 0 ≤ x } :=
@@ -73,16 +71,24 @@ instance nontrivial [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] :
     Nontrivial { x : α // 0 ≤ x } :=
   ⟨⟨0, 1, fun h => zero_ne_one (congr_arg Subtype.val h)⟩⟩
 
+instance [Nontrivial α] [AddGroup α] [LinearOrder α] [AddLeftMono α] :
+    Nontrivial { x : α // 0 ≤ x } := by
+  have ⟨a, ha⟩ := exists_ne (0 : α)
+  obtain lt | lt := ha.lt_or_gt
+  · exact ⟨0, ⟨-a, neg_nonneg.mpr lt.le⟩, Subtype.coe_ne_coe.mp (neg_ne_zero.mpr ha).symm⟩
+  · exact ⟨0, ⟨a, lt.le⟩, Subtype.coe_ne_coe.mp ha.symm⟩
+
 instance linearOrderedCommMonoidWithZero [CommSemiring α] [LinearOrder α] [IsStrictOrderedRing α] :
     LinearOrderedCommMonoidWithZero { x : α // 0 ≤ x } :=
   { Nonneg.commSemiring, Nonneg.isOrderedRing with
     mul_le_mul_left := fun _ _ h c ↦ mul_le_mul_of_nonneg_left h c.prop }
 
 instance canonicallyOrderedAdd [Ring α] [PartialOrder α] [IsOrderedRing α] :
-    CanonicallyOrderedAdd { x : α // 0 ≤ x } :=
-  { le_self_add := fun _ b => le_add_of_nonneg_right b.2
-    exists_add_of_le := fun {a b} h =>
-      ⟨⟨b - a, sub_nonneg_of_le h⟩, Subtype.ext (add_sub_cancel _ _).symm⟩ }
+    CanonicallyOrderedAdd { x : α // 0 ≤ x } where
+  le_add_self _ b := le_add_of_nonneg_left b.2
+  le_self_add _ b := le_add_of_nonneg_right b.2
+  exists_add_of_le := fun {a b} h =>
+    ⟨⟨b - a, sub_nonneg_of_le h⟩, Subtype.ext (add_sub_cancel _ _).symm⟩
 
 instance noZeroDivisors [Semiring α] [PartialOrder α] [IsOrderedRing α] [NoZeroDivisors α] :
     NoZeroDivisors { x : α // 0 ≤ x } :=
@@ -94,7 +100,6 @@ instance orderedSub [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
     OrderedSub { x : α // 0 ≤ x } :=
   ⟨by
     rintro ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩
-    simp only [sub_le_iff_le_add, Subtype.mk_le_mk, mk_sub_mk, mk_add_mk, toNonneg_le,
-      Subtype.coe_mk]⟩
+    simp only [sub_le_iff_le_add, Subtype.mk_le_mk, mk_sub_mk, mk_add_mk, toNonneg_le]⟩
 
 end Nonneg

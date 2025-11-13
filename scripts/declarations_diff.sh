@@ -2,7 +2,7 @@
 
  : <<'BASH_DOC_MODULE'
 
-#  The `declarations_diff` script
+# The `declarations_diff` script
 
 The `declarations_diff` script is a text-based script that attempts to find which declarations
 have been removed and which declarations have been added in the current PR with respect to `master`.
@@ -61,11 +61,13 @@ full_output=$(if [ -n "${2:-}" ]; then
 else
   git diff origin/master...HEAD
 fi |
-  ## the first sed "splits" `[+-]alias ⟨d1, d2⟩ := d` into
-  ## `[+-]alias d1 := d` and `[+-]alias d2 := d`
-  sed 's=^\([+-]\)alias ⟨\([^,]*\), *\([^⟩]*\)⟩\(.*\)=\1alias \2\4\n\1alias \3\4=' |
   ## purge `@[...]`, to attempt to catch declaration names
   sed 's=@\[[^]]*\] ==; s=noncomputable ==; s=nonrec ==; s=protected ==' |
+  ## this sed "splits" `[+-]alias ⟨d1, d2⟩ := d` into
+  ## `[+-]alias d1 := d` and `[+-]alias d2 := d`
+  sed 's=^\([+-]\)alias ⟨\([^,]*\), *\([^⟩]*\)⟩\(.*\)=\1alias \2\4\n\1alias \3\4=' |
+  ## deal with `alias _`, leftover from `alias ⟨d, _⟩ = e` and `alias ⟨_, d⟩ = e`
+  sed 's=^\([+-]\)alias _\(.*\)==' |
   ## extract lines that begin with '[+-]' followed by the input `theorem`, `lemma`,...
   ## and then a space in the `git diff`
   awk -v regex="^[+-]${begs} " 'BEGIN{ paired=0; added=0; removed=0 }

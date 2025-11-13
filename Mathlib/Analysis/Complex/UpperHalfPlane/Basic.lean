@@ -204,4 +204,16 @@ theorem vadd_im : (x +ᵥ z).im = z.im :=
 
 end RealAddAction
 
+section upperHalfPlaneSet
+
+/-- The upper half plane as a subset of `ℂ`. This is convenient for taking derivatives of functions
+on the upper half plane. -/
+abbrev upperHalfPlaneSet := {z : ℂ | 0 < z.im}
+
+local notation "ℍₒ" => upperHalfPlaneSet
+
+lemma isOpen_upperHalfPlaneSet : IsOpen ℍₒ := isOpen_lt continuous_const Complex.continuous_im
+
+end upperHalfPlaneSet
+
 end UpperHalfPlane

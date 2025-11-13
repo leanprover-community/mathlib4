@@ -5,7 +5,6 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Init
 import Batteries.Util.ExtendedBinder
-import Lean.Elab.Term
 
 /-!
 # Sets
@@ -59,6 +58,8 @@ instance : Membership α (Set α) :=
 theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
   funext (fun x ↦ propext (h x))
 
+attribute [local ext] ext in
+attribute [grind ext] ext
 
 /-- The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.
 
@@ -160,12 +161,12 @@ Note that if the type ascription is left out and `p` can be interpreted as an ex
 then the extended binder interpretation will be used.  For example, `{ n + 1 | n < 3 }` will
 be interpreted as `{ x : Nat | ∃ n < 3, n + 1 = x }` rather than using pattern matching.
 -/
-macro (name := macroPattSetBuilder) (priority := low-1)
+macro (name := macroPattSetBuilder) (priority := low - 1)
   "{" pat:term " : " t:term " | " p:term "}" : term =>
   `({ x : $t | match x with | $pat => $p })
 
 @[inherit_doc macroPattSetBuilder]
-macro (priority := low-1) "{" pat:term " | " p:term "}" : term =>
+macro (priority := low - 1) "{" pat:term " | " p:term "}" : term =>
   `({ x | match x with | $pat => $p })
 
 /-- Pretty printing for set-builder notation with pattern matching. -/
@@ -238,7 +239,7 @@ instance : SDiff (Set α) := ⟨Set.diff⟩
 /-- `𝒫 s` is the set of all subsets of `s`. -/
 def powerset (s : Set α) : Set (Set α) := {t | t ⊆ s}
 
-@[inherit_doc] prefix:100 "𝒫" => powerset
+@[inherit_doc] prefix:100 "𝒫 " => powerset
 
 universe v in
 /-- The image of `s : Set α` by `f : α → β`, written `f '' s`, is the set of `b : β` such that

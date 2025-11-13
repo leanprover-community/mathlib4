@@ -38,7 +38,6 @@ open Finsupp IsFractionRing IsLocalization Polynomial
 theorem scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero {p : A[X]} {r : A} {s : M}
     (hr : aeval (mk' S r s) p = 0) : aeval (algebraMap A S r) (scaleRoots p s) = 0 := by
   convert scaleRoots_eval₂_eq_zero (algebraMap A S) hr
-  -- Porting note: added
   funext
   rw [aeval_def, mk'_spec' _ r s]
 
@@ -95,14 +94,14 @@ theorem den_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) :
   rw [← coeff_scaleRoots_natDegree]
   apply dvd_term_of_isRoot_of_dvd_terms _ (num_isRoot_scaleRoots_of_aeval_eq_zero hr)
   intro j hj
-  by_cases h : j < p.natDegree
+  by_cases! h : j < p.natDegree
   · rw [coeff_scaleRoots]
     refine (dvd_mul_of_dvd_right ?_ _).mul_right _
     convert pow_dvd_pow (den A r : A) (Nat.succ_le_iff.mpr (lt_tsub_iff_left.mpr _))
     · exact (pow_one _).symm
     simpa using h
   rw [← natDegree_scaleRoots p (den A r)] at *
-  rw [coeff_eq_zero_of_natDegree_lt (lt_of_le_of_ne (le_of_not_gt h) hj.symm),
+  rw [coeff_eq_zero_of_natDegree_lt (lt_of_le_of_ne h hj.symm),
     zero_mul]
   exact dvd_zero _
 

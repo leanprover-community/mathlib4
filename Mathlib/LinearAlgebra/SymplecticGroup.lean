@@ -169,7 +169,7 @@ theorem inv_left_mul_aux (hA : A ∈ symplecticGroup l R) : -(J l R * Aᵀ * J l
 
 theorem coe_inv' (A : symplecticGroup l R) : (↑A⁻¹ : Matrix (l ⊕ l) (l ⊕ l) R) = (↑A)⁻¹ := by
   refine (coe_inv A).trans (inv_eq_left_inv ?_).symm
-  simp [inv_left_mul_aux, coe_inv]
+  simp [inv_left_mul_aux]
 
 theorem inv_eq_symplectic_inv (A : Matrix (l ⊕ l) (l ⊕ l) R) (hA : A ∈ symplecticGroup l R) :
     A⁻¹ = (-J l R) * Aᵀ * J l R :=

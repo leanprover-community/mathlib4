@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
 import Mathlib.CategoryTheory.Limits.Comma
+import Mathlib.CategoryTheory.MorphismProperty.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.Order.Interval.Set.InitialSeg
@@ -48,7 +49,7 @@ file `SmallObject.TransfiniteIteration`.
 
 The map `Φ.toSucc X : X ⟶ Φ.succ X` does not have to be natural
 (and it is not in certain applications). Then, two isomorphic
-objects `X` and `Y` may have non isomorphic successors. This is
+objects `X` and `Y` may have non-isomorphic successors. This is
 the reason why we make an extensive use of equalities in
 `C` and in `Arrow C` in the definitions.
 
@@ -132,7 +133,7 @@ induces a successor structure on `C ⥤ C`. -/
 @[simps]
 def ofNatTrans {F : C ⥤ C} (ε : 𝟭 C ⟶ F) : SuccStruct (C ⥤ C) where
   succ G := G ⋙ F
-  toSucc G := whiskerLeft G ε
+  toSucc G := Functor.whiskerLeft G ε
   X₀ := 𝟭 C
 
 variable (Φ : SuccStruct C)

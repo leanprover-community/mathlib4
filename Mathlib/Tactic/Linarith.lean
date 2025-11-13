@@ -11,4 +11,4 @@ import Mathlib.Tactic.Hint
 We register `linarith` with the `hint` tactic.
 -/
 
-register_hint linarith
+register_hint (priority := 100) linarith

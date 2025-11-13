@@ -82,10 +82,9 @@ elab mods:declModifiers "irreducible_def" n_id:declId n_def:(irredDefLemma)?
       { scopes with name := scopes.name.appendAfter "_def" }
   let `(Parser.Command.declModifiersF|
       $[$doc:docComment]? $[@[$attrs,*]]?
-      $[$vis]? $[$nc:noncomputable]? $[$uns:unsafe]?) := mods
+      $[$vis]? $[$prot:protected]? $[$nc:noncomputable]? $[$uns:unsafe]?) := mods
     | throwError "unsupported modifiers {format mods}"
   let attrs := attrs.getD {}
-  let prot := vis.filter (· matches `(Parser.Command.visibility| protected))
   let priv := vis.filter (· matches `(Parser.Command.visibility| private))
   elabCommand <|<- `(stop_at_first_error
     $[$nc:noncomputable]? $[$uns]? def definition$[.{$us,*}]? $declSig:optDeclSig $val

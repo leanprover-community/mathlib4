@@ -26,7 +26,7 @@ by a sequence of simple functions.
   approximations `MeasureTheory.SimpleFunc.approxOn f hf s y₀ h₀ n`, evaluated at `x`,
   tends to `f x` as `n` tends to `∞`.
 
-## Notations
+## Notation
 
 * `α →ₛ β` (local notation): the type of simple functions `α → β`.
 -/
@@ -141,8 +141,7 @@ lemma approxOn_range_nonneg [Zero α] [Preorder α] {f : β → α}
     exact hf x
   exact fun _ ↦ this <| approxOn_mem ..
 
-@[simp, nolint simpNF] -- Porting note: LHS doesn't simplify.
--- It seems the side conditions `hf` and `hg` are not applied by `simpNF`.
+@[simp]
 theorem approxOn_comp {γ : Type*} [MeasurableSpace γ] {f : β → α} (hf : Measurable f) {g : γ → β}
     (hg : Measurable g) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s) [SeparableSpace s] (n : ℕ) :
     approxOn (f ∘ g) (hf.comp hg) s y₀ h₀ n = (approxOn f hf s y₀ h₀ n).comp g hg :=
@@ -177,7 +176,7 @@ theorem edist_approxOn_y0_le {f : β → α} (hf : Measurable f) {s : Set α} {y
     edist y₀ (approxOn f hf s y₀ h₀ n x) ≤
         edist y₀ (f x) + edist (approxOn f hf s y₀ h₀ n x) (f x) :=
       edist_triangle_right _ _ _
-    _ ≤ edist y₀ (f x) + edist y₀ (f x) := add_le_add_left (edist_approxOn_le hf h₀ x n) _
+    _ ≤ edist y₀ (f x) + edist y₀ (f x) := by grw [edist_approxOn_le hf h₀ x n]
 
 end SimpleFunc
 
@@ -231,7 +230,7 @@ lemma HasCompactSupport.exists_simpleFunc_approx_of_prod [PseudoMetricSpace α]
       contrapose! H
       rw [← Function.mem_support] at H
       exact fs (subset_tsupport _ H)
-    simp [SimpleFunc.piecewise_apply, H, ite_false, this, hε]
+    simp [SimpleFunc.piecewise_apply, H, this, hε]
 
 /-- A continuous function with compact support on a product space is measurable for the product
 sigma-algebra. The subtlety is that we do not assume that the spaces are separable, so the

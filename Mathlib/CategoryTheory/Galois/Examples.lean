@@ -79,7 +79,7 @@ instance [Finite G] : HasColimitsOfShape (SingleObj G) FintypeCat.{w} := by
   exact Limits.hasColimitsOfShape_of_equivalence e.toSingleObjEquiv.symm
 
 noncomputable instance : PreservesFiniteLimits (forget (Action FintypeCat G)) := by
-  show PreservesFiniteLimits (Action.forget FintypeCat _ ⋙ FintypeCat.incl)
+  change PreservesFiniteLimits (Action.forget FintypeCat _ ⋙ FintypeCat.incl)
   apply comp_preservesFiniteLimits
 
 /-- The category of finite `G`-sets is a `PreGaloisCategory`. -/
@@ -120,7 +120,7 @@ theorem Action.pretransitive_of_isConnected (X : Action FintypeCat G)
     have : IsIso i := by
       apply IsConnected.noTrivialComponent T' i
       apply (not_initial_iff_fiber_nonempty (Action.forget _ _) T').mpr
-      exact Set.Nonempty.coe_sort (MulAction.orbit_nonempty x)
+      exact Set.Nonempty.coe_sort (MulAction.nonempty_orbit x)
     have hb : Function.Bijective i.hom := by
       apply (ConcreteCategory.isIso_iff_bijective i.hom).mp
       exact map_isIso (forget₂ _ FintypeCat) i
@@ -144,7 +144,7 @@ theorem Action.isConnected_of_transitive (X : FintypeCat) [MulAction G X]
       · letI x : X := i.hom y
         obtain ⟨σ, hσ⟩ := MulAction.exists_smul_eq G x x'
         use σ • y
-        show (Y.ρ σ ≫ i.hom) y = x'
+        change (Y.ρ σ ≫ i.hom) y = x'
         rw [i.comm, FintypeCat.comp_apply]
         exact hσ
     apply isIso_of_reflects_iso i (Action.forget _ _)

@@ -24,10 +24,12 @@ variable {M : Type*} [CommMonoidWithZero M]
 theorem Prime.dvd_prod_iff {p : M} {L : List M} (pp : Prime p) : p ∣ L.prod ↔ ∃ a ∈ L, p ∣ a := by
   constructor
   · intro h
-    induction' L with L_hd L_tl L_ih
-    · rw [prod_nil] at h
+    induction L with
+    | nil =>
+      rw [prod_nil] at h
       exact absurd h pp.not_dvd_one
-    · rw [prod_cons] at h
+    | cons L_hd L_tl L_ih =>
+      rw [prod_cons] at h
       rcases pp.dvd_or_dvd h with hd | hd
       · exact ⟨L_hd, mem_cons_self, hd⟩
       · obtain ⟨x, hx1, hx2⟩ := L_ih hd

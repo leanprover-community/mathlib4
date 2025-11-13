@@ -77,7 +77,7 @@ theorem descFOne_zero_comm {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y)
 def descFSucc {Y Z : C} (I : InjectiveResolution Y) (J : InjectiveResolution Z) (n : ℕ)
     (g : J.cocomplex.X n ⟶ I.cocomplex.X n) (g' : J.cocomplex.X (n + 1) ⟶ I.cocomplex.X (n + 1))
     (w : J.cocomplex.d n (n + 1) ≫ g' = g ≫ I.cocomplex.d n (n + 1)) :
-    Σ'g'' : J.cocomplex.X (n + 2) ⟶ I.cocomplex.X (n + 2),
+    Σ' g'' : J.cocomplex.X (n + 2) ⟶ I.cocomplex.X (n + 2),
       J.cocomplex.d (n + 1) (n + 2) ≫ g'' = g' ≫ I.cocomplex.d (n + 1) (n + 2) :=
   ⟨(J.exact_succ n).descToInjective
     (g' ≫ I.cocomplex.d (n + 1) (n + 2)) (by simp [reassoc_of% w]),
@@ -148,7 +148,7 @@ lemma comp_descHomotopyZeroSucc {Y Z : C} {I : InjectiveResolution Y} {J : Injec
     (w : f.f (n + 1) = I.cocomplex.d (n + 1) (n + 2) ≫ g' + g ≫ J.cocomplex.d n (n + 1)) :
     I.cocomplex.d (n+2) (n+3) ≫ descHomotopyZeroSucc f n g g' w =
       f.f (n + 2) - g' ≫ J.cocomplex.d _ _ :=
-  (I.exact_succ (n+1)).comp_descToInjective  _ _
+  (I.exact_succ (n + 1)).comp_descToInjective  _ _
 
 /-- Any descent of the zero morphism is homotopic to zero. -/
 def descHomotopyZero {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolution Z}
@@ -263,9 +263,6 @@ theorem exact_f_d {X Y : C} (f : X ⟶ Y) :
     { τ₁ := 𝟙 _
       τ₂ := 𝟙 _
       τ₃ := Injective.ι _  }
-  have : Epi α.τ₁ := by dsimp; infer_instance
-  have : IsIso α.τ₂ := by dsimp; infer_instance
-  have : Mono α.τ₃ := by dsimp; infer_instance
   rw [← ShortComplex.exact_iff_of_epi_of_isIso_of_mono α]
   apply ShortComplex.exact_of_g_is_cokernel
   apply cokernelIsCokernel
@@ -307,8 +304,8 @@ lemma ofCocomplex_exactAt_succ (n : ℕ) :
   match n with
   | 0 => apply exact_f_d ((CochainComplex.mkAux _ _ _
       (d (Injective.ι Z)) (d (d (Injective.ι Z))) _ _ 0).f)
-  | n+1 => apply exact_f_d ((CochainComplex.mkAux _ _ _
-      (d (Injective.ι Z)) (d (d (Injective.ι Z))) _ _ (n+1)).f)
+  | n + 1 => apply exact_f_d ((CochainComplex.mkAux _ _ _
+      (d (Injective.ι Z)) (d (d (Injective.ι Z))) _ _ (n + 1)).f)
 
 instance (n : ℕ) : Injective ((ofCocomplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Injective.injective_under

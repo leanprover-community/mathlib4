@@ -19,7 +19,7 @@ underlying set of a simplex.
 ## Main declarations
 
 * `SimplicialComplex 𝕜 E`: A simplicial complex in the `𝕜`-module `E`.
-* `SimplicialComplex.vertices`: The zero dimensional faces of a simplicial complex.
+* `SimplicialComplex.vertices`: The zero-dimensional faces of a simplicial complex.
 * `SimplicialComplex.facets`: The maximal faces of a simplicial complex.
 
 ## Notation
@@ -77,15 +77,16 @@ variable {K : SimplicialComplex 𝕜 E} {s t : Finset E} {x : E}
 instance : Membership (Finset E) (SimplicialComplex 𝕜 E) :=
   ⟨fun K s => s ∈ K.faces⟩
 
+lemma nonempty_of_mem_faces (hs : s ∈ K.faces) : s.Nonempty := by
+  rw [Finset.nonempty_iff_ne_empty]; rintro rfl; exact K.empty_notMem hs
+
 /-- The underlying space of a simplicial complex is the union of its faces. -/
 def space (K : SimplicialComplex 𝕜 E) : Set E :=
   ⋃ s ∈ K.faces, convexHull 𝕜 (s : Set E)
 
--- Porting note: Expanded `∃ s ∈ K.faces` to get the type to match more closely with Lean 3
 theorem mem_space_iff : x ∈ K.space ↔ ∃ s ∈ K.faces, x ∈ convexHull 𝕜 (s : Set E) := by
   simp [space]
 
--- Porting note: Original proof was `:= subset_biUnion_of_mem hs`
 theorem convexHull_subset_space (hs : s ∈ K.faces) : convexHull 𝕜 ↑s ⊆ K.space := by
   convert subset_biUnion_of_mem hs
   rfl
@@ -139,7 +140,7 @@ def ofSubcomplex (K : SimplicialComplex 𝕜 E) (faces : Set (Finset E)) (subset
 /-! ### Vertices -/
 
 
-/-- The vertices of a simplicial complex are its zero dimensional faces. -/
+/-- The vertices of a simplicial complex are its zero-dimensional faces. -/
 def vertices (K : SimplicialComplex 𝕜 E) : Set E :=
   { x | {x} ∈ K.faces }
 

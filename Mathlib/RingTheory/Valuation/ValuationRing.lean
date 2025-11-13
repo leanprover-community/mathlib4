@@ -8,6 +8,7 @@ import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
 import Mathlib.RingTheory.Valuation.Integers
+import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.FieldSimp
 
 /-!
@@ -57,9 +58,8 @@ lemma PreValuationRing.cond {A : Type u} [Mul A] [PreValuationRing A] (a b : A) 
 of elements `a b : A`, either `a` divides `b` or vice versa. -/
 class ValuationRing (A : Type u) [CommRing A] [IsDomain A] : Prop extends PreValuationRing A
 
--- Porting note: this lemma is needed since infer kinds are unsupported in Lean 4
-lemma ValuationRing.cond {A : Type u} [Mul A] [PreValuationRing A] (a b : A) :
-    ∃ c : A, a * c = b ∨ b * c = a := PreValuationRing.cond _ _
+/-- An abbreviation for `PreValuationRing.cond` which should save some writing. -/
+alias ValuationRing.cond := PreValuationRing.cond
 
 namespace ValuationRing
 
@@ -99,7 +99,7 @@ instance : Mul (ValueGroup A K) :=
         apply Quotient.sound'
         dsimp
         use c * d
-        simp only [mul_smul, Algebra.smul_def, Units.smul_def, RingHom.map_mul, Units.val_mul]
+        simp only [mul_smul, Algebra.smul_def, Units.smul_def]
         ring)
 
 instance : Inv (ValueGroup A K) :=
@@ -133,15 +133,13 @@ protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
     use c
     rw [Algebra.smul_def]
     field_simp
-    simp only [← RingHom.map_mul, ← h]; congr 1; ring
+    simp only [← RingHom.map_mul]; congr 1; linear_combination h
   · left
     use c
     rw [Algebra.smul_def]
     field_simp
-    simp only [← RingHom.map_mul, ← h]; congr 1; ring
+    simp only [← RingHom.map_mul]; congr 1; linear_combination h
 
--- Porting note: it is much faster to split the instance `LinearOrderedCommGroupWithZero`
--- into two parts
 noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
   le_refl := by rintro ⟨⟩; use 1; rw [one_smul]
   le_trans := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨e, rfl⟩ ⟨f, rfl⟩; use e * f; rw [mul_smul]
@@ -174,7 +172,7 @@ instance commGroupWithZero :
       rintro ⟨a⟩ ha
       apply Quotient.sound'
       use 1
-      simp only [one_smul, ne_eq]
+      simp only [one_smul]
       apply (mul_inv_cancel₀ _).symm
       contrapose ha
       simp only [Classical.not_not] at ha ⊢
@@ -208,14 +206,14 @@ noncomputable def valuation : Valuation K (ValueGroup A K) where
       use c + 1
       rw [Algebra.smul_def]
       field_simp
-      simp only [← RingHom.map_mul, ← RingHom.map_add, ← (algebraMap A K).map_one, ← h]
-      congr 1; ring
+      simp only [← RingHom.map_mul, ← RingHom.map_add]
+      congr 1; linear_combination h
     · apply le_trans _ (le_max_right _ _)
       use c + 1
       rw [Algebra.smul_def]
       field_simp
-      simp only [← RingHom.map_mul, ← RingHom.map_add, ← (algebraMap A K).map_one, ← h]
-      congr 1; ring
+      simp only [← RingHom.map_mul, ← RingHom.map_add]
+      congr 1; linear_combination h
 
 theorem mem_integer_iff (x : K) : x ∈ (valuation A K).integer ↔ ∃ a : A, algebraMap A K a = x := by
   constructor
@@ -257,22 +255,19 @@ section
 variable (A : Type u) [CommRing A] [Nontrivial A] [PreValuationRing A]
 
 instance (priority := 100) isLocalRing : IsLocalRing A :=
-  IsLocalRing.of_isUnit_or_isUnit_one_sub_self
-    (by
-      intro a
-      obtain ⟨c, h | h⟩ := PreValuationRing.cond a (1 - a)
-      · left
-        apply isUnit_of_mul_eq_one _ (c + 1)
-        simp [mul_add, h]
-      · right
-        apply isUnit_of_mul_eq_one _ (c + 1)
-        simp [mul_add, h])
+  IsLocalRing.of_isUnit_or_isUnit_one_sub_self fun a ↦ by
+    obtain ⟨c, h | h⟩ := PreValuationRing.cond a (1 - a)
+    · left
+      refine .of_mul_eq_one (c + 1) ?_
+      simp [mul_add, h]
+    · right
+      refine .of_mul_eq_one (c + 1) ?_
+      simp [mul_add, h]
 
 instance le_total_ideal : IsTotal (Ideal A) LE.le := by
   constructor; intro α β
-  by_cases h : α ≤ β; · exact Or.inl h
-  rw [SetLike.le_def, not_forall] at h
-  push_neg at h
+  by_cases! h : ∀ x : A, x ∈ α → x ∈ β
+  · exact Or.inl h
   obtain ⟨a, h₁, h₂⟩ := h
   right
   intro b hb
@@ -427,12 +422,43 @@ theorem _root_.Function.Surjective.valuationRing {R S : Type*} [NonAssocSemiring
 
 section
 
-variable {𝒪 : Type u} {K : Type v} {Γ : Type w} [CommRing 𝒪] [IsDomain 𝒪] [Field K] [Algebra 𝒪 K]
+variable {𝒪 : Type u} {K : Type v} {Γ : Type w} [CommRing 𝒪] [Field K] [Algebra 𝒪 K]
   [LinearOrderedCommGroupWithZero Γ]
+
+lemma _root_.isFractionRing_of_exists_eq_algebraMap_or_inv_eq_algebraMap_of_injective
+    (h : ∀ (x : K), ∃ a : 𝒪, x = algebraMap 𝒪 K a ∨ x⁻¹ = algebraMap 𝒪 K a)
+    (hinj : Function.Injective (algebraMap 𝒪 K)) :
+    IsFractionRing 𝒪 K := by
+  have : IsDomain 𝒪 := hinj.isDomain
+  constructor
+  · intro a
+    simpa using hinj.ne_iff.mpr (nonZeroDivisors.ne_zero a.2)
+  · intro x
+    obtain ⟨a, ha⟩ := h x
+    by_cases h0 : a = 0
+    · refine ⟨⟨0, 1⟩, by simpa [h0, eq_comm] using ha⟩
+    · have : algebraMap 𝒪 K a ≠ 0 := by simpa using hinj.ne_iff.mpr h0
+      rw [inv_eq_iff_eq_inv, ← one_div, eq_div_iff this] at ha
+      cases ha with
+      | inl ha => exact ⟨⟨a, 1⟩, by simpa⟩
+      | inr ha => exact ⟨⟨1, ⟨a, mem_nonZeroDivisors_of_ne_zero h0⟩⟩, by simpa using ha⟩
+  · intro _ _ hab
+    exact ⟨1, by simp only [OneMemClass.coe_one, hinj hab, one_mul]⟩
+
+lemma _root_.Valuation.Integers.isFractionRing {v : Valuation K Γ} (hv : v.Integers 𝒪) :
+    IsFractionRing 𝒪 K :=
+  isFractionRing_of_exists_eq_algebraMap_or_inv_eq_algebraMap_of_injective
+    hv.eq_algebraMap_or_inv_eq_algebraMap hv.hom_inj
+
+instance instIsFractionRingInteger (v : Valuation K Γ) : IsFractionRing v.integer K :=
+  (Valuation.integer.integers v).isFractionRing
 
 /-- If `𝒪` satisfies `v.integers 𝒪` where `v` is a valuation on a field, then `𝒪`
 is a valuation ring. -/
-theorem of_integers (v : Valuation K Γ) (hh : v.Integers 𝒪) : ValuationRing 𝒪 := by
+theorem of_integers (v : Valuation K Γ) (hh : v.Integers 𝒪) :
+    haveI := hh.hom_inj.isDomain
+    ValuationRing 𝒪 := by
+  haveI := hh.hom_inj.isDomain
   suffices PreValuationRing 𝒪 from .mk
   constructor
   intro a b
@@ -445,32 +471,14 @@ theorem of_integers (v : Valuation K Γ) (hh : v.Integers 𝒪) : ValuationRing 
 instance instValuationRingInteger (v : Valuation K Γ) : ValuationRing v.integer :=
   of_integers (v := v) (Valuation.integer.integers v)
 
-theorem isFractionRing_iff [ValuationRing 𝒪] :
+theorem isFractionRing_iff [IsDomain 𝒪] [ValuationRing 𝒪] :
     IsFractionRing 𝒪 K ↔
       (∀ (x : K), ∃ a : 𝒪, x = algebraMap 𝒪 K a ∨ x⁻¹ = algebraMap 𝒪 K a) ∧
         Function.Injective (algebraMap 𝒪 K) := by
   refine ⟨fun h ↦ ⟨fun x ↦ ?_, IsFractionRing.injective _ _⟩, fun h ↦ ?_⟩
   · obtain (⟨a, e⟩ | ⟨a, e⟩) := isInteger_or_isInteger 𝒪 x
     exacts [⟨a, .inl e.symm⟩, ⟨a, .inr e.symm⟩]
-  · constructor
-    · intro a
-      simpa using h.2.ne_iff.mpr (nonZeroDivisors.ne_zero a.2)
-    · intro x
-      obtain ⟨a, ha⟩ := h.1 x
-      by_cases h0 : a = 0
-      · exact ⟨⟨0, 1⟩, by simpa [h0] using ha⟩
-      · have : algebraMap 𝒪 K a ≠ 0 := by simpa using h.2.ne_iff.mpr h0
-        rw [inv_eq_iff_eq_inv, ← one_div, eq_div_iff this] at ha
-        cases ha with
-        | inl ha => exact ⟨⟨a, 1⟩, by simpa⟩
-        | inr ha => exact ⟨⟨1, ⟨a, mem_nonZeroDivisors_of_ne_zero h0⟩⟩, by simpa using ha⟩
-    · intro _ _ hab
-      exact ⟨1, by simp only [OneMemClass.coe_one, h.2 hab, one_mul]⟩
-
-instance instIsFractionRingInteger (v : Valuation K Γ) : IsFractionRing v.integer K :=
-  ValuationRing.isFractionRing_iff.mpr
-    ⟨Valuation.Integers.eq_algebraMap_or_inv_eq_algebraMap (Valuation.integer.integers v),
-    Subtype.coe_injective⟩
+  · exact isFractionRing_of_exists_eq_algebraMap_or_inv_eq_algebraMap_of_injective h.1 h.2
 
 end
 

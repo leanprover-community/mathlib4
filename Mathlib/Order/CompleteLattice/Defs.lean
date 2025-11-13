@@ -157,16 +157,14 @@ instance {α : Type*} [CompleteSemilatticeSup α] : CompleteSemilatticeInf αᵒ
 
 /-- A complete lattice is a bounded lattice which has suprema and infima for every subset. -/
 class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α,
-  CompleteSemilatticeInf α, Top α, Bot α where
-  /-- Any element is less than the top one. -/
-  protected le_top : ∀ x : α, x ≤ ⊤
-  /-- Any element is more than the bottom one. -/
-  protected bot_le : ∀ x : α, ⊥ ≤ x
+    CompleteSemilatticeInf α, BoundedOrder α
 
--- see Note [lower instance priority]
-instance (priority := 100) CompleteLattice.toBoundedOrder [CompleteLattice α] :
-    BoundedOrder α :=
-  { ‹CompleteLattice α› with }
+-- Shortcut instance to ensure that the path
+-- `CompleteLattice α → CompletePartialOrder α → PartialOrder α` isn't taken,
+-- as it tricks `#min_imports` into believing `Order.CompletePartialOrder` is a necessary import.
+-- See note [lower instance priority]
+instance (priority := 100) CompleteLattice.toPartialOrder' [CompleteLattice α] : PartialOrder α :=
+  inferInstance
 
 /-- Create a `CompleteLattice` from a `PartialOrder` and `InfSet`
 that returns the greatest lower bound of a set. Usually this constructor provides

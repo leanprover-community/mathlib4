@@ -39,7 +39,15 @@ namespace ProbabilityTheory
 /-- A measure is Gaussian if its map by every continuous linear form is a real Gaussian measure. -/
 class IsGaussian {E : Type*} [TopologicalSpace E] [AddCommMonoid E] [Module ℝ E]
     {mE : MeasurableSpace E} (μ : Measure E) : Prop where
-  map_eq_gaussianReal (L : E →L[ℝ] ℝ) : μ.map L = gaussianReal (μ[L]) (Var[L; μ]).toNNReal
+  map_eq_gaussianReal (L : StrongDual ℝ E) : μ.map L = gaussianReal (μ[L]) (Var[L; μ]).toNNReal
+
+/-- A Gaussian measure is a probability measure. -/
+instance IsGaussian.toIsProbabilityMeasure {E : Type*} [TopologicalSpace E] [AddCommMonoid E]
+    [Module ℝ E] {mE : MeasurableSpace E} (μ : Measure E) [IsGaussian μ] :
+    IsProbabilityMeasure μ where
+  measure_univ := by
+    have : μ.map (0 : StrongDual ℝ E) Set.univ = 1 := by simp [IsGaussian.map_eq_gaussianReal]
+    simpa [Measure.map_apply (by fun_prop : Measurable (0 : StrongDual ℝ E)) .univ] using this
 
 /-- A real Gaussian measure is Gaussian. -/
 instance isGaussian_gaussianReal (m : ℝ) (v : ℝ≥0) : IsGaussian (gaussianReal m v) where
@@ -61,13 +69,7 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpa
 instance {x : E} : IsGaussian (Measure.dirac x) where
   map_eq_gaussianReal L := by rw [Measure.map_dirac (by fun_prop)]; simp
 
-/-- A Gaussian measure is a probability measure. -/
-instance : IsProbabilityMeasure μ where
-  measure_univ := by
-    have : μ.map (0 : Dual ℝ E) Set.univ = 1 := by simp [IsGaussian.map_eq_gaussianReal]
-    simpa [Measure.map_apply (by fun_prop : Measurable (0 : Dual ℝ E)) .univ] using this
-
-lemma IsGaussian.memLp_dual (μ : Measure E) [IsGaussian μ] (L : Dual ℝ E)
+lemma IsGaussian.memLp_dual (μ : Measure E) [IsGaussian μ] (L : StrongDual ℝ E)
     (p : ℝ≥0∞) (hp : p ≠ ∞) :
     MemLp L p μ := by
   suffices MemLp (id ∘ L) p μ from this
@@ -76,7 +78,7 @@ lemma IsGaussian.memLp_dual (μ : Measure E) [IsGaussian μ] (L : Dual ℝ E)
   simp [hp]
 
 @[fun_prop]
-lemma IsGaussian.integrable_dual (μ : Measure E) [IsGaussian μ] (L : Dual ℝ E) :
+lemma IsGaussian.integrable_dual (μ : Measure E) [IsGaussian μ] (L : StrongDual ℝ E) :
     Integrable L μ := by
   rw [← memLp_one_iff_integrable]
   exact IsGaussian.memLp_dual μ L 1 (by simp)
@@ -109,7 +111,7 @@ section charFunDual
 
 /-- The characteristic function of a Gaussian measure `μ` has value
 `exp (μ[L] * I - Var[L; μ] / 2)` at `L : Dual ℝ E`. -/
-lemma IsGaussian.charFunDual_eq (L : Dual ℝ E) :
+lemma IsGaussian.charFunDual_eq (L : StrongDual ℝ E) :
     charFunDual μ L = exp (μ[L] * I - Var[L; μ] / 2) := by
   calc charFunDual μ L
   _ = charFun (μ.map L) 1 := by rw [charFunDual_eq_charFun_map_one]
@@ -126,7 +128,7 @@ lemma IsGaussian.charFunDual_eq (L : Dual ℝ E) :
 /-- A finite measure is Gaussian iff its characteristic function has value
 `exp (μ[L] * I - Var[L; μ] / 2)` for every `L : Dual ℝ E`. -/
 theorem isGaussian_iff_charFunDual_eq {μ : Measure E} [IsFiniteMeasure μ] :
-    IsGaussian μ ↔ ∀ L : Dual ℝ E, charFunDual μ L = exp (μ[L] * I - Var[L; μ] / 2) := by
+    IsGaussian μ ↔ ∀ L : StrongDual ℝ E, charFunDual μ L = exp (μ[L] * I - Var[L; μ] / 2) := by
   refine ⟨fun h ↦ h.charFunDual_eq, fun h ↦ ⟨fun L ↦ Measure.ext_of_charFun ?_⟩⟩
   ext u
   rw [charFun_map_eq_charFunDual_smul L u, h (u • L), charFun_gaussianReal]
@@ -159,7 +161,7 @@ instance (c : E) : IsGaussian (μ.map (fun x ↦ x + c)) := by
   have hL_comp : L ∘ (fun x ↦ x + c) = fun x ↦ L x + L c := by ext; simp
   rw [variance_map (by fun_prop) (by fun_prop), integral_map (by fun_prop) (by fun_prop),
     hL_comp, variance_add_const (by fun_prop), integral_complex_ofReal, integral_complex_ofReal]
-  simp only [map_add, ofReal_add]
+  simp only [map_add]
   rw [integral_add (by fun_prop) (by fun_prop)]
   congr
   simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul, ofReal_add]
@@ -176,8 +178,26 @@ instance : IsGaussian (μ.map (fun x ↦ -x)) := by
 instance (c : E) : IsGaussian (μ.map (fun x ↦ c - x)) := by
   simp_rw [sub_eq_add_neg]
   suffices IsGaussian ((μ.map (fun x ↦ -x)).map (fun x ↦ c + x)) by
-    rw [Measure.map_map (by fun_prop) (by fun_prop)] at this
-    convert this using 1
+    rwa [Measure.map_map (by fun_prop) (by fun_prop), Function.comp_def] at this
   infer_instance
+
+/-- A product of Gaussian distributions is Gaussian. -/
+instance [SecondCountableTopologyEither E F] {ν : Measure F} [IsGaussian ν] :
+    IsGaussian (μ.prod ν) := by
+  refine isGaussian_of_charFunDual_eq fun L ↦ ?_
+  rw [charFunDual_prod, IsGaussian.charFunDual_eq, IsGaussian.charFunDual_eq, ← Complex.exp_add]
+  congr
+  let (eq := hL₁) L₁ := L.comp (.inl ℝ E F)
+  let (eq := hL₂) L₂ := L.comp (.inr ℝ E F)
+  rw [← hL₁, ← hL₂, sub_add_sub_comm, ← add_mul]
+  congr
+  · simp_rw [integral_complex_ofReal]
+    rw [integral_continuousLinearMap_prod' (IsGaussian.integrable_dual μ (L.comp (.inl ℝ E F)))
+      (IsGaussian.integrable_dual ν (L.comp (.inr ℝ E F)))]
+    norm_cast
+  · field_simp
+    rw [variance_dual_prod' (IsGaussian.memLp_dual μ (L.comp (.inl ℝ E F)) 2 (by simp))
+      (IsGaussian.memLp_dual ν (L.comp (.inr ℝ E F)) 2 (by simp))]
+    norm_cast
 
 end ProbabilityTheory

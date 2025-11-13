@@ -51,7 +51,7 @@ theorem bounded_below (coercive : IsCoercive B) : ∃ C, 0 < C ∧ ∀ v, C * �
   refine ⟨C, C_ge_0, ?_⟩
   intro v
   by_cases h : 0 < ‖v‖
-  · refine (mul_le_mul_right h).mp ?_
+  · refine (mul_le_mul_iff_left₀ h).mp ?_
     calc
       C * ‖v‖ * ‖v‖ ≤ B v v := coercivity v
       _ = ⟪B♯ v, v⟫_ℝ := (continuousLinearMapOfBilin_apply B v v).symm

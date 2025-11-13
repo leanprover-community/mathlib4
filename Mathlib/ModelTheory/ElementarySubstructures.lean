@@ -74,15 +74,12 @@ def subtype (S : L.ElementarySubstructure M) : S ↪ₑ[L] M where
 theorem subtype_apply {S : L.ElementarySubstructure M} {x : S} : subtype S x = x :=
   rfl
 
-theorem subtype_injective (S : L.ElementarySubstructure M): Function.Injective (subtype S) :=
+theorem subtype_injective (S : L.ElementarySubstructure M) : Function.Injective (subtype S) :=
   Subtype.coe_injective
 
 @[simp]
 theorem coe_subtype (S : L.ElementarySubstructure M) : ⇑S.subtype = Subtype.val :=
   rfl
-
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
 
 /-- The substructure `M` of the structure `M` is elementary. -/
 instance instTop : Top (L.ElementarySubstructure M) :=

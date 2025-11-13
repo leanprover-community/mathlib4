@@ -31,27 +31,10 @@ example {R : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
   rw [← IsSelfAdjoint.of_nonneg (mul_nonneg hy hx), star_mul, IsSelfAdjoint.of_nonneg hx,
     IsSelfAdjoint.of_nonneg hy]
 
-/- This will be implied by the instance below, we only prove it to avoid duplicating the
-argument in the instance below for `mul_le_mul_of_nonneg_right`. -/
-private lemma mul_le_mul_of_nonneg_left {R : Type*} [NonUnitalCommSemiring R] [PartialOrder R]
-    [StarRing R] [StarOrderedRing R] {a b c : R} (hab : a ≤ b) (hc : 0 ≤ c) : c * a ≤ c * b := by
-  rw [StarOrderedRing.nonneg_iff] at hc
-  induction hc using AddSubmonoid.closure_induction with
-  | mem _ h =>
-    obtain ⟨x, rfl⟩ := h
-    simp_rw [mul_assoc, mul_comm x, ← mul_assoc]
-    exact conjugate_le_conjugate hab x
-  | one => simp
-  | mul x hx y hy =>
-    simp only [← nonneg_iff, add_mul] at hx hy ⊢
-    apply add_le_add <;> aesop
-
 /-- A commutative star-ordered semiring is an ordered semiring. -/
 instance toIsOrderedRing (R : Type*) [CommSemiring R] [PartialOrder R]
     [StarRing R] [StarOrderedRing R] : IsOrderedRing R where
-  add_le_add_left _ _ := add_le_add_left
-  zero_le_one := zero_le_one
-  mul_le_mul_of_nonneg_left _ _ _ := mul_le_mul_of_nonneg_left
-  mul_le_mul_of_nonneg_right a b c := by simpa only [mul_comm _ c] using mul_le_mul_of_nonneg_left
+  mul_le_mul_of_nonneg_left _a ha _b _c hbc := smul_le_smul_of_nonneg_left hbc ha
+  mul_le_mul_of_nonneg_right _a ha _b _c hbc := smul_le_smul_of_nonneg_right hbc ha
 
 end StarOrderedRing

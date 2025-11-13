@@ -74,7 +74,7 @@ instance : Inhabited (AddContent C) :=
     empty' := by simp
     sUnion' := by simp }⟩
 
-instance : DFunLike (AddContent C) (Set α) (fun _ ↦ ℝ≥0∞) where
+instance : FunLike (AddContent C) (Set α) ℝ≥0∞ where
   coe m s := m.toFun s
   coe_injective' m m' _ := by
     cases m
@@ -191,8 +191,7 @@ lemma addContent_sUnion_le_sum {m : AddContent C} (hC : IsSetSemiring C)
     simp only [disjiUnion_eq_biUnion, coe_biUnion, mem_coe]
     exact (Exists.choose_spec (hC.disjointOfUnion_props h_ss)).2.2.2.2.2
   rw [h3, addContent_sUnion h1 h2, sum_disjiUnion]
-  · apply sum_le_sum
-    intro x hx
+  · gcongr with x hx
     refine sum_addContent_le_of_subset hC (hC.disjointOfUnion_subset h_ss hx)
       (hC.pairwiseDisjoint_disjointOfUnion_of_mem h_ss hx) (h_ss hx)
       (fun _ s ↦ hC.subset_of_mem_disjointOfUnion h_ss hx s)
@@ -229,7 +228,7 @@ theorem addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le {m : AddCo
     (hf_disj : Pairwise (Disjoint on f)) :
     m (⋃ i, f i) = ∑' i, m (f i) := by
   refine le_antisymm (m_subadd f hf hf_Union hf_disj) ?_
-  refine  ENNReal.summable.tsum_le_of_sum_le fun I ↦ ?_
+  refine ENNReal.summable.tsum_le_of_sum_le fun I ↦ ?_
   classical
   rw [← Finset.sum_image_of_disjoint addContent_empty (hf_disj.pairwiseDisjoint _)]
   refine sum_addContent_le_of_subset hC (I := I.image f) ?_ ?_ hf_Union ?_
@@ -313,6 +312,22 @@ lemma addContent_biUnion_le {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     simp only [Finset.mem_insert, forall_eq_or_imp] at hs
     refine (addContent_union_le hC hs.1 (hC.biUnion_mem S hs.2)).trans ?_
     exact add_le_add le_rfl (h hs.2)
+
+lemma addContent_biUnion_eq {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
+    {S : Finset ι} (hs : ∀ n ∈ S, s n ∈ C) (hS : (S : Set ι).PairwiseDisjoint s) :
+    m (⋃ i ∈ S, s i) = ∑ i ∈ S, m (s i) := by
+  classical
+  induction S using Finset.induction with
+  | empty => simp
+  | insert i S hiS h =>
+    rw [Finset.sum_insert hiS]
+    simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]
+    simp only [Finset.mem_insert, forall_eq_or_imp] at hs
+    simp only [Finset.coe_insert, Set.pairwiseDisjoint_insert] at hS
+    rw [← h hs.2 hS.1]
+    refine addContent_union hC hs.1 (hC.biUnion_mem S hs.2) ?_
+    rw [disjoint_iUnion₂_right]
+    exact fun j hjS ↦ hS.2 j hjS (ne_of_mem_of_not_mem hjS hiS).symm
 
 lemma le_addContent_diff (m : AddContent C) (hC : IsSetRing C) (hs : s ∈ C) (ht : t ∈ C) :
     m s - m t ≤ m (s \ t) := by

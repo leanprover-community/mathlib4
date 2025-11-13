@@ -108,7 +108,7 @@ theorem integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable
     ∫ x, B (f x) (g' x) ∂μ = - ∫ x, B (f' x) (g x) ∂μ := by
   by_cases hW : CompleteSpace W; swap
   · simp [integral, hW]
-  rcases eq_or_ne v 0 with rfl|hv
+  rcases eq_or_ne v 0 with rfl | hv
   · have Hf' x : f' x = 0 := by
       simpa [(hasLineDerivAt_zero (f := f) (x := x)).lineDeriv] using (hf x).lineDeriv.symm
     have Hg' x : g' x = 0 := by

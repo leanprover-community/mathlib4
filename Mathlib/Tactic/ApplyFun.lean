@@ -12,12 +12,13 @@ import Mathlib.Order.Hom.Basic
 
 Apply a function to an equality or inequality in either a local hypothesis or the goal.
 
-## Porting notes
-When the `mono` tactic has been ported we can attempt to automatically discharge `Monotone f` goals.
+## Future work
+
+Using the `mono` tactic, we can attempt to automatically discharge `Monotone f` goals.
 -/
 
 namespace Mathlib.Tactic
-open Lean Parser Tactic Elab Tactic Meta
+open Lean Parser Elab Tactic Meta
 
 initialize registerTraceClass `apply_fun
 
@@ -201,7 +202,7 @@ open Function
 
 example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective <| g ∘ f) :
     Injective f := by
-  intros x x' h
+  intro x x' h
   apply_fun g at h
   exact H h
 ```

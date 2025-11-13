@@ -45,7 +45,7 @@ theorem factorial_mul_shiftedLegendre_eq (n : ℕ) : (n ! : ℤ[X]) * (shiftedLe
   calc
   _ = derivative^[n] (((X : ℤ[X]) - X ^ 2) ^ n) := by
     rw [← mul_pow, mul_one_sub, ← pow_two]
-  _ = derivative^[n] (∑ m ∈ range (n + 1), n.choose m • (- 1) ^ m * X ^ (n + m)) := by
+  _ = derivative^[n] (∑ m ∈ range (n + 1), n.choose m • (-1) ^ m * X ^ (n + m)) := by
     congr
     rw [sub_eq_add_neg, add_comm, add_pow]
     congr! 1 with m hm
@@ -58,7 +58,7 @@ theorem factorial_mul_shiftedLegendre_eq (n : ℕ) : (n ! : ℤ[X]) * (shiftedLe
     congr! 1 with x _
     rw [show (n.choose x • (-1) ^ x : ℤ[X]) = C (n.choose x • (-1) ^ x) by simp,
       iterate_derivative_C_mul, iterate_derivative_X_pow_eq_smul,
-      descFactorial_eq_div (by omega), show n + x - n = x by omega]
+      descFactorial_eq_div (by cutsat), show n + x - n = x by cutsat]
     simp only [Int.reduceNeg, nsmul_eq_mul, eq_intCast, Int.cast_mul, Int.cast_natCast,
       Int.cast_pow, Int.cast_neg, Int.cast_one, zsmul_eq_mul]
     ring

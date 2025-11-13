@@ -35,7 +35,7 @@ open scoped nonZeroDivisors
 variable {R : Type u} [CommRing R] (r s : R) (p q : R[X]) (f : RatFunc R)
 
 theorem taylor_mem_nonZeroDivisors (hp : p ∈ R[X]⁰) : taylor r p ∈ R[X]⁰ := by
-  rw [mem_nonZeroDivisors_iff]
+  rw [mem_nonZeroDivisors_iff_right]
   intro x hx
   have : x = taylor (r - r) x := by simp
   rwa [this, sub_eq_add_neg, ← taylor_taylor, ← taylor_mul,

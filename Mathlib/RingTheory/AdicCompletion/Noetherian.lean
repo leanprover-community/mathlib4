@@ -7,7 +7,7 @@ import Mathlib.RingTheory.AdicCompletion.Basic
 import Mathlib.RingTheory.Filtration
 
 /-!
-# Hausdorff-ness for noetherian rings
+# Hausdorff-ness for Noetherian rings
 -/
 
 open IsLocalRing

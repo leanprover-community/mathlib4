@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wanyi He, Huanyu Zheng
 -/
 import Mathlib.Algebra.CharP.Algebra
-import Mathlib.Algebra.Module.Torsion
+import Mathlib.Algebra.Module.Torsion.Basic
+
 /-!
 # Characteristic of the ring of linear Maps
 
@@ -17,7 +18,7 @@ The characteristic of the ring of linear maps is determined by its base ring.
   the characteristic of `R` is equal to the characteristic of the `R`-linear
   endomorphisms of `M` when `M` contains a non-torsion element `x`.
 
-## Notations
+## Notation
 
 - `R` is a commutative semiring
 - `M` is a `R`-module

@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Limits.Types.Yoneda
 /-!
 # Filtered categories and limits
 
-In this file , we show that `C` is filtered if and only if for every functor `F : J ⥤ C` from a
+In this file, we show that `C` is filtered if and only if for every functor `F : J ⥤ C` from a
 finite category there is some `X : C` such that `lim Hom(F·, X)` is nonempty.
 
 Furthermore, we define the type classes `HasCofilteredLimitsOfSize` and `HasFilteredColimitsOfSize`.
@@ -108,9 +108,9 @@ lemma hasCofilteredLimitsOfSize_of_univLE [UnivLE.{w, w₂}] [UnivLE.{w', w₂'}
     HasCofilteredLimitsOfSize.{w', w} C where
   HasLimitsOfShape J :=
     haveI := IsCofiltered.of_equivalence ((ShrinkHoms.equivalence.{w₂'} J).trans <|
-      Shrink.equivalence.{w₂} (ShrinkHoms.{w} J))
+      Shrink.equivalence.{w₂, w₂'} (ShrinkHoms.{w} J))
     hasLimitsOfShape_of_equivalence ((ShrinkHoms.equivalence.{w₂'} J).trans <|
-      Shrink.equivalence.{w₂} (ShrinkHoms.{w} J)).symm
+      Shrink.equivalence.{w₂, w₂'} (ShrinkHoms.{w} J)).symm
 
 lemma hasCofilteredLimitsOfSize_shrink [HasCofilteredLimitsOfSize.{max w' w₂', max w w₂} C] :
     HasCofilteredLimitsOfSize.{w', w} C :=
@@ -121,9 +121,9 @@ lemma hasFilteredColimitsOfSize_of_univLE [UnivLE.{w, w₂}] [UnivLE.{w', w₂'}
     HasFilteredColimitsOfSize.{w', w} C where
   HasColimitsOfShape J :=
     haveI := IsFiltered.of_equivalence ((ShrinkHoms.equivalence.{w₂'} J).trans <|
-      Shrink.equivalence.{w₂} (ShrinkHoms.{w} J))
+      Shrink.equivalence.{w₂, w₂'} (ShrinkHoms.{w} J))
     hasColimitsOfShape_of_equivalence ((ShrinkHoms.equivalence.{w₂'} J).trans <|
-      Shrink.equivalence.{w₂} (ShrinkHoms.{w} J)).symm
+      Shrink.equivalence.{w₂, w₂'} (ShrinkHoms.{w} J)).symm
 
 lemma hasFilteredColimitsOfSize_shrink [HasFilteredColimitsOfSize.{max w' w₂', max w w₂} C] :
     HasFilteredColimitsOfSize.{w', w} C :=

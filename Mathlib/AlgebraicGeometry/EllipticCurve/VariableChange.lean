@@ -170,59 +170,47 @@ instance : MulAction (VariableChange R) (WeierstrassCurve R) where
           - C.r * C.t * C.u⁻¹ ^ 6 * ↑C'.u⁻¹ * (C'.s * 2 + W.a₁) * pow_mul_pow_eq_one 5 C'.u.inv_mul
           + C.u⁻¹ ^ 6 * (C.r ^ 3 - C.t ^ 2) * pow_mul_pow_eq_one 6 C'.u.inv_mul
 
-@[simp]
 lemma variableChange_a₁ : (C • W).a₁ = C.u⁻¹ * (W.a₁ + 2 * C.s) := rfl
 
-@[simp]
 lemma variableChange_a₂ : (C • W).a₂ = C.u⁻¹ ^ 2 * (W.a₂ - C.s * W.a₁ + 3 * C.r - C.s ^ 2) := rfl
 
-@[simp]
 lemma variableChange_a₃ : (C • W).a₃ = C.u⁻¹ ^ 3 * (W.a₃ + C.r * W.a₁ + 2 * C.t) := rfl
 
-@[simp]
 lemma variableChange_a₄ : (C • W).a₄ =
     C.u⁻¹ ^ 4 * (W.a₄ - C.s * W.a₃ + 2 * C.r * W.a₂ - (C.t + C.r * C.s) * W.a₁ + 3 * C.r ^ 2
       - 2 * C.s * C.t) := rfl
 
-@[simp]
 lemma variableChange_a₆ : (C • W).a₆ =
     C.u⁻¹ ^ 6 * (W.a₆ + C.r * W.a₄ + C.r ^ 2 * W.a₂ + C.r ^ 3 - C.t * W.a₃ - C.t ^ 2
       - C.r * C.t * W.a₁) := rfl
 
-@[simp]
 lemma variableChange_b₂ : (C • W).b₂ = C.u⁻¹ ^ 2 * (W.b₂ + 12 * C.r) := by
   simp only [b₂, variableChange_a₁, variableChange_a₂]
   ring1
 
-@[simp]
 lemma variableChange_b₄ : (C • W).b₄ = C.u⁻¹ ^ 4 * (W.b₄ + C.r * W.b₂ + 6 * C.r ^ 2) := by
   simp only [b₂, b₄, variableChange_a₁, variableChange_a₃, variableChange_a₄]
   ring1
 
-@[simp]
 lemma variableChange_b₆ : (C • W).b₆ =
     C.u⁻¹ ^ 6 * (W.b₆ + 2 * C.r * W.b₄ + C.r ^ 2 * W.b₂ + 4 * C.r ^ 3) := by
   simp only [b₂, b₄, b₆, variableChange_a₃, variableChange_a₆]
   ring1
 
-@[simp]
 lemma variableChange_b₈ : (C • W).b₈ = C.u⁻¹ ^ 8 *
     (W.b₈ + 3 * C.r * W.b₆ + 3 * C.r ^ 2 * W.b₄ + C.r ^ 3 * W.b₂ + 3 * C.r ^ 4) := by
   simp only [b₂, b₄, b₆, b₈, variableChange_a₁, variableChange_a₂, variableChange_a₃,
     variableChange_a₄, variableChange_a₆]
   ring1
 
-@[simp]
 lemma variableChange_c₄ : (C • W).c₄ = C.u⁻¹ ^ 4 * W.c₄ := by
   simp only [c₄, variableChange_b₂, variableChange_b₄]
   ring1
 
-@[simp]
 lemma variableChange_c₆ : (C • W).c₆ = C.u⁻¹ ^ 6 * W.c₆ := by
   simp only [c₆, variableChange_b₂, variableChange_b₄, variableChange_b₆]
   ring1
 
-@[simp]
 lemma variableChange_Δ : (C • W).Δ = C.u⁻¹ ^ 12 * W.Δ := by
   simp only [b₂, b₄, b₆, b₈, Δ, variableChange_a₁, variableChange_a₂, variableChange_a₃,
     variableChange_a₄, variableChange_a₆]
@@ -235,7 +223,6 @@ instance : (C • W).IsElliptic := by
   exact (C.u⁻¹.isUnit.pow 12).mul W.isUnit_Δ
 
 set_option linter.docPrime false in
-@[simp]
 lemma variableChange_Δ' : (C • W).Δ' = C.u⁻¹ ^ 12 * W.Δ' := by
   simp_rw [Units.ext_iff, Units.val_mul, coe_Δ', variableChange_Δ, Units.val_pow_eq_pow_val]
 
@@ -306,13 +293,13 @@ def mapHom : VariableChange R →* VariableChange A where
     ext <;> simp only [map_one, Units.val_one, map_zero]
   map_mul' C C' := by
     simp only [mul_def, map]
-    ext <;> map_simp <;> simp only [Units.coe_map, Units.coe_map_inv, MonoidHom.coe_coe]
+    ext <;> map_simp <;> simp only [Units.coe_map, MonoidHom.coe_coe]
 
 end VariableChange
 
 lemma map_variableChange (C : VariableChange R) : (C.map φ) • (W.map φ) = (C • W).map φ := by
   simp only [map, variableChange_def, VariableChange.map]
-  ext <;> map_simp <;> simp only [Units.coe_map, Units.coe_map_inv, MonoidHom.coe_coe]
+  ext <;> map_simp <;> simp only [Units.coe_map_inv, MonoidHom.coe_coe]
 
 end BaseChange
 

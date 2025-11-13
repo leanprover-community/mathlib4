@@ -47,7 +47,7 @@ theorem embeddingOfSubset_coe : embeddingOfSubset x a n = dist a (x n) - dist (x
 theorem embeddingOfSubset_dist_le (a b : α) :
     dist (embeddingOfSubset x a) (embeddingOfSubset x b) ≤ dist a b := by
   refine lp.norm_le_of_forall_le dist_nonneg fun n => ?_
-  simp only [lp.coeFn_sub, Pi.sub_apply, embeddingOfSubset_coe, Real.dist_eq]
+  simp only [lp.coeFn_sub, Pi.sub_apply, embeddingOfSubset_coe]
   convert abs_dist_sub_le a b (x n) using 2
   ring
 
@@ -64,8 +64,7 @@ theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSub
     calc
       dist a b ≤ dist a (x n) + dist (x n) b := dist_triangle _ _ _
       _ = 2 * dist a (x n) + (dist b (x n) - dist a (x n)) := by simp [dist_comm]; ring
-      _ ≤ 2 * dist a (x n) + |dist b (x n) - dist a (x n)| := by
-        apply_rules [add_le_add_left, le_abs_self]
+      _ ≤ 2 * dist a (x n) + |dist b (x n) - dist a (x n)| := by grw [← le_abs_self]
       _ ≤ 2 * (e / 2) + |embeddingOfSubset x b n - embeddingOfSubset x a n| := by
         rw [C]
         gcongr

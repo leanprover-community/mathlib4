@@ -79,7 +79,25 @@ lemma isCardinalAccessible_of_natIso [F.IsCardinalAccessible κ] : G.IsCardinalA
 
 end
 
+section
+
+variable (F : C ⥤ D)
+
+/-- A functor is accessible relative to a universe `w` if
+it is `κ`-accessible for some regular `κ : Cardinal.{w}`. -/
+@[pp_with_univ]
+class IsAccessible : Prop where
+  exists_cardinal : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular), IsCardinalAccessible F κ
+
+lemma isAccessible_of_isCardinalAccessible (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [IsCardinalAccessible F κ] : IsAccessible.{w} F where
+  exists_cardinal := ⟨κ, inferInstance, inferInstance⟩
+
+end
+
 end Functor
+
+section
 
 variable (X : C) (Y : C) (e : X ≅ Y) (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
@@ -109,8 +127,6 @@ include e in
 variable {X Y} in
 lemma isCardinalPresentable_of_iso [IsCardinalPresentable X κ] : IsCardinalPresentable Y κ :=
   Functor.isCardinalAccessible_of_natIso (coyoneda.mapIso e.symm.op) κ
-
-section
 
 lemma isCardinalPresentable_of_equivalence
     {C' : Type u₃} [Category.{v₃} C'] [IsCardinalPresentable X κ] (e : C ≌ C') :
@@ -152,6 +168,22 @@ end
 
 section
 
+variable (X : C)
+
+/-- An object of a category is presentable relative to a universe `w`
+if it is `κ`-presentable for some regular `κ : Cardinal.{w}`. -/
+@[pp_with_univ]
+abbrev IsPresentable (X : C) : Prop :=
+  Functor.IsAccessible.{w} (coyoneda.obj (op X))
+
+lemma isPresentable_of_isCardinalPresentable (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [IsCardinalPresentable X κ] : IsPresentable.{w} X where
+  exists_cardinal := ⟨κ, inferInstance, inferInstance⟩
+
+end
+
+section
+
 variable (C) (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
 /-- A category has `κ`-filtered colimits if it has colimits of shape `J`
@@ -159,8 +191,6 @@ for any `κ`-filtered category `J`. -/
 class HasCardinalFilteredColimits : Prop where
   hasColimitsOfShape (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
     HasColimitsOfShape J C := by intros; infer_instance
-
-attribute [instance] HasCardinalFilteredColimits.hasColimitsOfShape
 
 instance [HasColimitsOfSize.{w, w} C] : HasCardinalFilteredColimits.{w} C κ where
 

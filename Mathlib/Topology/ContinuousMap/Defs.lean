@@ -3,6 +3,7 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Yury Kudryashov
 -/
+import Mathlib.Data.FunLike.Basic
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.Lift
 import Mathlib.Topology.Defs.Basic
@@ -97,6 +98,14 @@ protected theorem coe_apply {F : Type*} [FunLike F X Y] [ContinuousMapClass F X 
     (f : C(X, Y)) x = f x :=
   rfl
 
+/-- Coercion to a `ContinuousMap` is injective.
+
+The unprimed version `ContinuousMap.coe_injective`
+is used for the coercion from `C(X, Y)` to `X → Y`. -/
+protected theorem coe_injective' {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] :
+    Injective (toContinuousMap : F → C(X, Y)) :=
+  .of_comp (f := DFunLike.coe) DFunLike.coe_injective
+
 @[ext]
 theorem ext {f g : C(X, Y)} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext _ _ h
@@ -132,5 +141,8 @@ theorem coe_injective : Function.Injective (DFunLike.coe : C(X, Y) → (X → Y)
 @[simp]
 theorem coe_mk (f : X → Y) (h : Continuous f) : ⇑(⟨f, h⟩ : C(X, Y)) = f :=
   rfl
+
+instance [Subsingleton Y] : Subsingleton C(X, Y) := DFunLike.subsingleton_cod
+instance [IsEmpty X] : Subsingleton C(X, Y) := DFunLike.subsingleton_dom
 
 end ContinuousMap

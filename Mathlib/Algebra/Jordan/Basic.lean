@@ -174,7 +174,7 @@ private theorem aux0 {a b c : A} : ⁅L (a + b + c), L ((a + b + c) * (a + b + c
   iterate 10 rw [map_add]
   rw [mul_comm b a, mul_comm c a, mul_comm c b]
   iterate 3 rw [two_smul]
-  simp only [lie_add, add_lie, commute_lmul_lmul_sq, zero_add, add_zero]
+  simp only [lie_add, add_lie]
   abel
 
 private theorem aux1 {a b c : A} :
@@ -217,10 +217,9 @@ private theorem aux3 {a b c : A} :
     =
     2 • ⁅L a, L (b * c)⁆ + 2 • ⁅L b, L (c * a)⁆ + 2 • ⁅L c, L (a * b)⁆ := by
   rw [add_eq_right]
-  -- Porting note: was `nth_rw` instead of `conv_lhs`
-  conv_lhs => enter [1, 1, 2, 2, 2]; rw [mul_comm a b]
-  conv_lhs => enter [1, 2, 2, 2, 1]; rw [mul_comm c a]
-  conv_lhs => enter [   2, 2, 2, 2]; rw [mul_comm b c]
+  nth_rw 2 [mul_comm a b]
+  nth_rw 1 [mul_comm c a]
+  nth_rw 2 [mul_comm b c]
   iterate 3 rw [two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add]
   iterate 2 rw [← lie_skew (L (a * a)), ← lie_skew (L (b * b)), ← lie_skew (L (c * c))]
   abel

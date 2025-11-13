@@ -103,7 +103,7 @@ def Lean.MVarId.subsingleton (g : MVarId) (insts : Array (Term × AbstractMVarsR
 namespace Mathlib.Tactic
 
 /--
-The `subsingleton` tactic tries to prove a goal of the form `x = y` or `HEq x y`
+The `subsingleton` tactic tries to prove a goal of the form `x = y` or `x ≍ y`
 using the fact that the types involved are *subsingletons*
 (a type with exactly zero or one terms).
 To a first approximation, it does `apply Subsingleton.elim`.

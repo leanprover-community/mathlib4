@@ -90,12 +90,12 @@ instance : (toOpensFunctor X).IsLocallyFull (Opens.grothendieckTopology X) where
 
 instance : (toOpensFunctor X).IsCoverDense (Opens.grothendieckTopology X) where
   is_cover := by
-    intros U x hx
-    obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := (isBasis_affine_open X).exists_subset_of_mem_open hx U.2
+    intro U x hx
+    obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open hx U.2
     exact ⟨V, homOfLE hVU, ⟨⟨V, hV⟩, 𝟙 _, homOfLE hVU, rfl⟩, hxV⟩
 
 variable (X) in
-/-- The grothendieck topology on `X.AffineZariskiSite` induced from the topology on `X.Opens`.
+/-- The Grothendieck topology on `X.AffineZariskiSite` induced from the topology on `X.Opens`.
 Also see `mem_grothendieckTopology_iff_sectionsOfPresieve`. -/
 def grothendieckTopology : GrothendieckTopology X.AffineZariskiSite :=
   (toOpensFunctor X).inducedTopology (Opens.grothendieckTopology X)
@@ -161,7 +161,7 @@ lemma generate_presieveOfSections
 lemma generate_presieveOfSections_mem_grothendieckTopology
     {U : X.AffineZariskiSite} {s : Set Γ(X, U.toOpens)} :
     Sieve.generate (presieveOfSections U s) ∈ grothendieckTopology X U ↔ Ideal.span s = ⊤ := by
-  rw [← U.2.self_le_basicOpen_union_iff, mem_grothendieckTopology, SetLike.le_def]
+  rw [← U.2.self_le_iSup_basicOpen_iff, mem_grothendieckTopology, SetLike.le_def]
   refine forall₂_congr fun x hx ↦ ?_
   simp only [exists_and_left, TopologicalSpace.Opens.iSup_mk,
     TopologicalSpace.Opens.carrier_eq_coe, Set.iUnion_coe_set, TopologicalSpace.Opens.mem_mk,

@@ -37,14 +37,13 @@ theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄
     m₁ = m₂ := by
   have : m₁.toMulOneClass = m₂.toMulOneClass := MulOneClass.ext h_mul
   have h₁ : m₁.one = m₂.one := congr_arg (·.one) this
-  let f : @MonoidHom M M m₁.toMulOneClass m₂.toMulOneClass :=
+  let f : @MonoidHom M M m₁.toMulOne m₂.toMulOne :=
     @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
       (fun x y => congr_fun (congr_fun h_mul x) y)
   have : m₁.npow = m₂.npow := by
     ext n x
     exact @MonoidHom.map_pow M M m₁ m₂ f x n
   rcases m₁ with @⟨@⟨⟨_⟩⟩, ⟨_⟩⟩
-  rcases m₂ with @⟨@⟨⟨_⟩⟩, ⟨_⟩⟩
   congr
 
 @[to_additive]
@@ -98,9 +97,7 @@ theorem CancelMonoid.ext {M : Type*} ⦃m₁ m₂ : CancelMonoid M⦄
 theorem CancelCommMonoid.toCommMonoid_injective {M : Type u} :
     Function.Injective (@CancelCommMonoid.toCommMonoid M) := by
   rintro @⟨@⟨@⟨⟩⟩⟩ @⟨@⟨@⟨⟩⟩⟩ h
-  congr <;> {
-    injection h with h'
-    injection h' }
+  grind
 
 @[to_additive (attr := ext)]
 theorem CancelCommMonoid.ext {M : Type*} ⦃m₁ m₂ : CancelCommMonoid M⦄
@@ -114,10 +111,9 @@ theorem DivInvMonoid.ext {M : Type*} ⦃m₁ m₂ : DivInvMonoid M⦄
     (h_inv : (letI := m₁; Inv.inv : M → M) = (letI := m₂; Inv.inv : M → M)) : m₁ = m₂ := by
   have h_mon := Monoid.ext h_mul
   have h₁ : m₁.one = m₂.one := congr_arg (·.one) h_mon
-  let f : @MonoidHom M M m₁.toMulOneClass m₂.toMulOneClass :=
+  let f : @MonoidHom M M m₁.toMulOne m₂.toMulOne :=
     @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
       (fun x y => congr_fun (congr_fun h_mul x) y)
-  have : m₁.npow = m₂.npow := congr_arg (·.npow) h_mon
   have : m₁.zpow = m₂.zpow := by
     ext m x
     exact @MonoidHom.map_zpow' M M m₁ m₂ f (congr_fun h_inv) x m
@@ -126,7 +122,6 @@ theorem DivInvMonoid.ext {M : Type*} ⦃m₁ m₂ : DivInvMonoid M⦄
     exact @map_div' _ _
       (F := @MonoidHom _ _ (_) _) _ (id _) _ inferInstance f (congr_fun h_inv) a b
   rcases m₁ with @⟨_, ⟨_⟩, ⟨_⟩⟩
-  rcases m₂ with @⟨_, ⟨_⟩, ⟨_⟩⟩
   congr
 
 @[to_additive]
@@ -138,7 +133,7 @@ theorem Group.ext {G : Type*} ⦃g₁ g₂ : Group G⦄
     (h_mul : (letI := g₁; HMul.hMul : G → G → G) = (letI := g₂; HMul.hMul : G → G → G)) :
     g₁ = g₂ := by
   have h₁ : g₁.one = g₂.one := congr_arg (·.one) (Monoid.ext h_mul)
-  let f : @MonoidHom G G g₁.toMulOneClass g₂.toMulOneClass :=
+  let f : @MonoidHom G G g₁.toMulOne g₂.toMulOne :=
     @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
       (fun x y => congr_fun (congr_fun h_mul x) y)
   exact

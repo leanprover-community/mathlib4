@@ -289,7 +289,7 @@ structure Atom where
   deriving Inhabited
 
 /-- `Mor₂` expressions defined below will have the `isoLift? : Option IsoLift` field.
-For `η : Mor₂` such that `η.isoLift? = .some isoLift`, we have the following data:
+For `η : Mor₂` such that `η.isoLift? = some isoLift`, we have the following data:
 - `isoLift.e`: an expression for a 2-isomorphism `η'`, given as a `Mor₂Iso` term,
 - `isoLift.eq`: a lean expression for the proof that `η'.hom = η`.
 -/

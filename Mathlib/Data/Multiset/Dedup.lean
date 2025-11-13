@@ -74,7 +74,7 @@ alias ⟨_, Nodup.dedup⟩ := dedup_eq_self
 
 theorem count_dedup (m : Multiset α) (a : α) : m.dedup.count a = if a ∈ m then 1 else 0 :=
   Quot.induction_on m fun _ => by
-    simp only [quot_mk_to_coe'', coe_dedup, mem_coe, List.mem_dedup, coe_nodup, coe_count]
+    simp only [quot_mk_to_coe'', coe_dedup, mem_coe, coe_count]
     apply List.count_dedup _ _
 
 @[simp]

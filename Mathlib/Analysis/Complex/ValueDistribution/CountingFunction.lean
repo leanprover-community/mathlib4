@@ -15,9 +15,11 @@ of the three main functions used in Value Distribution Theory.
 
 The counting function of a meromorphic function `f` is a logarithmically weighted measure of the
 number of times the function `f` takes a given value `a` within the disk `∣z∣ ≤ r`, counting
-multiplicities.  See Section~VI.1 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677]
-or Section~1.1 of [Noguchi-Winkelmann, *Nevanlinna Theory in Several Complex Variables and
-Diophantine Approximation*][MR3156076] for a detailed discussion.
+multiplicities.
+
+See Section VI.1 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] or Section 1.1 of
+[Noguchi-Winkelmann, *Nevanlinna Theory in Several Complex Variables and Diophantine
+Approximation*][MR3156076] for a detailed discussion.
 
 ## Implementation Notes
 
@@ -34,7 +36,6 @@ Diophantine Approximation*][MR3156076] for a detailed discussion.
 - For `𝕜 = ℂ`, add the integral presentation of the logarithmic counting function
 - Discuss the counting function for rational functions, add a forward reference to the upcoming
   converse, formulated in terms of the Nevanlinna height.
-- Counting function of powers.
 -/
 
 open MeromorphicOn Metric Real Set
@@ -45,14 +46,23 @@ open MeromorphicOn Metric Real Set
 
 namespace Function.locallyFinsuppWithin
 
+variable {E : Type*} [NormedAddCommGroup E]
+
 /--
 Shorthand notation for the restriction of a function with locally finite support within `Set.univ`
 to the closed unit ball of radius `r`.
 -/
-noncomputable def toClosedBall {E : Type*} [NormedAddCommGroup E] (r : ℝ) :
+noncomputable def toClosedBall (r : ℝ) :
     locallyFinsuppWithin (univ : Set E) ℤ →+ locallyFinsuppWithin (closedBall (0 : E) |r|) ℤ := by
   apply restrictMonoidHom
   tauto
+
+@[simp]
+lemma toClosedBall_eval_within {r : ℝ} {z : E} (f : locallyFinsuppWithin (univ : Set E) ℤ)
+  (ha : z ∈ closedBall 0 |r|) :
+    toClosedBall r f z = f z := by
+  unfold toClosedBall
+  simp_all [restrict_apply]
 
 /-!
 ## The Logarithmic Counting Function of a Function with Locally Finite Support
@@ -65,17 +75,18 @@ a logarithmically weighted measure of values that `D` takes within the disk `∣
 
 Implementation Note: In case where `z = 0`, the term `log (r * ‖z‖⁻¹)` evaluates to zero, which is
 typically different from `log r - log ‖z‖ = log r`. The summand `(D 0) * log r` compensates this,
-producing cleaner formulas when the logarithmic counting function is used in the main theorms of
+producing cleaner formulas when the logarithmic counting function is used in the main theorems of
 Value Distribution Theory.  We refer the reader to page 164 of [Lang: Introduction to Complex
 Hyperbolic Spaces](https://link.springer.com/book/10.1007/978-1-4757-1945-1) for more details, and
-to the lemma `countingFunction_finsum_eq_finsum_add` for a formal statement.
+to the lemma `countingFunction_finsum_eq_finsum_add` in
+`Mathlib/Analysis/Complex/JensenFormula.lean` for a formal statement.
 -/
 noncomputable def logCounting {E : Type*} [NormedAddCommGroup E] [ProperSpace E] :
     locallyFinsuppWithin (univ : Set E) ℤ →+ (ℝ → ℝ) where
   toFun D := fun r ↦ ∑ᶠ z, D.toClosedBall r z * log (r * ‖z‖⁻¹) + (D 0) * log r
   map_zero' := by aesop
   map_add' D₁ D₂ := by
-    simp only [Set.top_eq_univ, map_add, coe_add, Pi.add_apply, Int.cast_add]
+    simp only [map_add, coe_add, Pi.add_apply, Int.cast_add]
     ext r
     have {A B C D : ℝ} : A + B + (C + D) = A + C + (B + D) := by ring
     rw [Pi.add_apply, this]
@@ -94,33 +105,48 @@ noncomputable def logCounting {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
     · ring
 
 /--
-Alternate presentation of the finsum that appears in the definition of the counting function.
--/
-lemma countingFunction_finsum_eq_finsum_add {R : ℝ} {D : ℂ → ℤ} (hR : R ≠ 0)
-    (hD : D.support.Finite) :
-    ∑ᶠ u, D u * (log R - log ‖u‖) = ∑ᶠ u, D u * log (R * ‖u‖⁻¹) + D 0 * log R := by
-  by_cases h : 0 ∈ D.support
-  · have {g : ℂ → ℝ} : (fun u ↦ D u * g u).support ⊆ hD.toFinset := fun x ↦ by
-      simp +contextual
-    simp only [finsum_eq_sum_of_support_subset _ this,
-      Finset.sum_eq_sum_diff_singleton_add ((Set.Finite.mem_toFinset hD).mpr h), norm_zero,
-      log_zero, sub_zero, inv_zero, mul_zero, add_zero, add_left_inj]
-    refine Finset.sum_congr rfl fun x hx ↦ ?_
-    simp only [Finset.mem_sdiff, Finset.notMem_singleton] at hx
-    simp [log_mul hR (inv_ne_zero (norm_ne_zero_iff.mpr hx.2)), sub_eq_add_neg]
-  · simp_all only [mem_support, Decidable.not_not, Int.cast_zero, zero_mul, add_zero]
-    refine finsum_congr fun x ↦ ?_
-    by_cases h₁ : x = 0
-    · simp_all
-    · simp [log_mul hR (inv_ne_zero (norm_ne_zero_iff.mpr h₁)), sub_eq_add_neg]
-
-/--
 Evaluation of the logarithmic counting function at zero yields zero.
 -/
 @[simp] lemma logCounting_eval_zero {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
     (D : locallyFinsuppWithin (univ : Set E) ℤ) :
     logCounting D 0 = 0 := by
   simp [logCounting]
+
+/--
+For `1 ≤ r`, the counting function is non-negative.
+-/
+theorem logCounting_nonneg {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
+    {f : locallyFinsuppWithin (univ : Set E) ℤ} {r : ℝ} (h : 0 ≤ f) (hr : 1 ≤ r) :
+    0 ≤ logCounting f r := by
+  have h₃r : 0 < r := by linarith
+  suffices ∀ z, 0 ≤ (((toClosedBall r) f) z) * log (r * ‖z‖⁻¹) from
+    add_nonneg (finsum_nonneg this) <| mul_nonneg (by simpa using h 0) (log_nonneg hr)
+  intro a
+  by_cases h₁a : a = 0
+  · simp_all
+  by_cases h₂a : a ∈ closedBall 0 |r|
+  · refine mul_nonneg ?_ <| log_nonneg ?_
+    · simpa [h₂a] using h a
+    · simpa [mul_comm r, one_le_inv_mul₀ (norm_pos_iff.mpr h₁a), abs_of_pos h₃r] using h₂a
+  · simp [apply_eq_zero_of_notMem ((toClosedBall r) _) h₂a]
+
+/--
+For `1 ≤ r`, the counting function respects the `≤` relation.
+-/
+theorem logCounting_le {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
+    {f₁ f₂ : locallyFinsuppWithin (univ : Set E) ℤ} {r : ℝ} (h : f₁ ≤ f₂) (hr : 1 ≤ r) :
+    logCounting f₁ r ≤ logCounting f₂ r := by
+  rw [← sub_nonneg] at h ⊢
+  simpa using logCounting_nonneg h hr
+
+/--
+The counting function respects the `≤` relation asymptotically.
+-/
+theorem logCounting_eventually_le {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
+    {f₁ f₂ : locallyFinsuppWithin (univ : Set E) ℤ} (h : f₁ ≤ f₂) :
+    logCounting f₁ ≤ᶠ[Filter.atTop] logCounting f₂ := by
+  filter_upwards [Filter.eventually_ge_atTop 1]
+  exact fun _ hr ↦ logCounting_le h hr
 
 end Function.locallyFinsuppWithin
 
@@ -229,5 +255,87 @@ function counting poles.
 @[simp] theorem logCounting_sub_const (hf : MeromorphicOn f univ) :
     logCounting (f - fun _ ↦ a₀) ⊤ = logCounting f ⊤ := by
   simpa [sub_eq_add_neg] using logCounting_add_const hf
+
+/-!
+## Behaviour under Arithmetic Operations
+-/
+
+/--
+For `1 ≤ r`, the counting function counting zeros of `f * g` is less than or equal to the sum of the
+counting functions counting zeros of `f` and `g`, respectively.
+
+Note: The statement proven here is found at the top of page 169 of [Lang: Introduction to Complex
+Hyperbolic Spaces](https://link.springer.com/book/10.1007/978-1-4757-1945-1) where it is written as
+an inequality between functions. This could be interpreted as claiming that the inequality holds for
+ALL values of `r`, which is not true. For a counterexample, take `f₁ : z → z` and `f₂ : z → z⁻¹`.
+Then,
+
+- `logCounting f₁ 0 = log`
+- `logCounting f₂ 0 = 0`
+- `logCounting (f₁ * f₂) 0 = 0`
+
+But `log r` is negative for small `r`.
+-/
+theorem logCounting_zero_mul_le {f₁ f₂ : 𝕜 → 𝕜} {r : ℝ} (hr : 1 ≤ r)
+    (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
+    (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
+    logCounting (f₁ * f₂) 0 r ≤ (logCounting f₁ 0 + logCounting f₂ 0) r := by
+  simp only [logCounting, WithTop.zero_ne_top, reduceDIte, WithTop.untop₀_zero, sub_zero]
+  rw [divisor_mul h₁f₁ h₁f₂ (fun z _ ↦ h₂f₁ z) (fun z _ ↦ h₂f₂ z),
+    ← Function.locallyFinsuppWithin.logCounting.map_add]
+  apply Function.locallyFinsuppWithin.logCounting_le _ hr
+  apply Function.locallyFinsuppWithin.posPart_add
+
+/--
+Asymptotically, the counting function counting zeros of `f * g` is less than or equal to the sum of
+the counting functions counting zeros of `f` and `g`, respectively.
+-/
+theorem logCounting_zero_mul_eventually_le {f₁ f₂ : 𝕜 → 𝕜}
+    (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
+    (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
+    logCounting (f₁ * f₂) 0 ≤ᶠ[Filter.atTop] logCounting f₁ 0 + logCounting f₂ 0 := by
+  filter_upwards [Filter.eventually_ge_atTop 1]
+  exact fun _ hr ↦ logCounting_zero_mul_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂
+
+/--
+For `1 ≤ r`, the counting function counting poles of `f * g` is less than or equal to the sum of the
+counting functions counting poles of `f` and `g`, respectively.
+-/
+theorem logCounting_top_mul_le {f₁ f₂ : 𝕜 → 𝕜} {r : ℝ} (hr : 1 ≤ r)
+    (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
+    (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
+    logCounting (f₁ * f₂) ⊤ r ≤ (logCounting f₁ ⊤ + logCounting f₂ ⊤) r := by
+  simp only [logCounting, reduceDIte]
+  rw [divisor_mul h₁f₁ h₁f₂ (fun z _ ↦ h₂f₁ z) (fun z _ ↦ h₂f₂ z),
+    ← Function.locallyFinsuppWithin.logCounting.map_add]
+  apply Function.locallyFinsuppWithin.logCounting_le _ hr
+  apply Function.locallyFinsuppWithin.negPart_add
+
+/--
+Asymptotically, the counting function counting zeros of `f * g` is less than or equal to the sum of
+the counting functions counting zeros of `f` and `g`, respectively.
+-/
+theorem logCounting_top_mul_eventually_le {f₁ f₂ : 𝕜 → 𝕜}
+    (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
+    (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
+    logCounting (f₁ * f₂) ⊤ ≤ᶠ[Filter.atTop] logCounting f₁ ⊤ + logCounting f₂ ⊤ := by
+  filter_upwards [Filter.eventually_ge_atTop 1]
+  exact fun _ hr ↦ logCounting_top_mul_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂
+
+/--
+For natural numbers `n`, the counting function counting zeros of `f ^ n` equals `n` times the
+counting function counting zeros of `f`.
+-/
+@[simp] theorem logCounting_pow_zero {f : 𝕜 → 𝕜} {n : ℕ} (hf : MeromorphicOn f Set.univ) :
+    logCounting (f ^ n) 0 = n • logCounting f 0 := by
+  simp [logCounting, divisor_fun_pow hf n]
+
+/--
+For natural numbers `n`, the counting function counting poles of `f ^ n` equals `n` times the
+counting function counting poles of `f`.
+-/
+@[simp] theorem logCounting_pow_top {f : 𝕜 → 𝕜} {n : ℕ} (hf : MeromorphicOn f Set.univ) :
+    logCounting (f ^ n) ⊤ = n • logCounting f ⊤ := by
+  simp [logCounting, divisor_pow hf n]
 
 end ValueDistribution

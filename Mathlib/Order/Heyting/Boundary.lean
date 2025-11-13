@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.BooleanAlgebra
+import Mathlib.Order.BooleanAlgebra.Basic
 import Mathlib.Tactic.Common
 
 /-!
@@ -19,7 +19,7 @@ boundary.
 
 ## Notation
 
-`∂ a` is notation for `Coheyting.boundary a` in locale `Heyting`.
+`∂ a` is notation for `Coheyting.boundary a` in scope `Heyting`.
 -/
 
 assert_not_exists RelIso
@@ -31,7 +31,7 @@ namespace Coheyting
 variable [CoheytingAlgebra α] {a b : α}
 
 /-- The boundary of an element of a co-Heyting algebra is the intersection of its Heyting negation
-with itself. Note that this is always `⊥` for a boolean algebra. -/
+with itself. Note that this is always `⊥` for a Boolean algebra. -/
 def boundary (a : α) : α :=
   a ⊓ ￢a
 

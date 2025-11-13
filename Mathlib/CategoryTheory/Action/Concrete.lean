@@ -30,12 +30,12 @@ variable {G : Type u} [Group G] {A : Action (Type u) G}
 @[simp]
 theorem ρ_inv_self_apply (g : G) (x : A.V) :
     A.ρ g⁻¹ (A.ρ g x) = x :=
-  show (A.ρ g⁻¹ * A.ρ g) x = x by simp [← map_mul, Function.End.one_def]
+  show (A.ρ g⁻¹ * A.ρ g) x = x by simp [← map_mul]
 
 @[simp]
 theorem ρ_self_inv_apply (g : G) (x : A.V) :
     A.ρ g (A.ρ g⁻¹ x) = x :=
-  show (A.ρ g * A.ρ g⁻¹) x = x by simp [← map_mul, Function.End.one_def]
+  show (A.ρ g * A.ρ g⁻¹) x = x by simp [← map_mul]
 
 end
 
@@ -123,22 +123,22 @@ def toEndHom [N.Normal] : G →* End (G ⧸ₐ N) where
       simpa [mul_assoc] using Subgroup.Normal.conj_mem ‹_› _ (QuotientGroup.leftRel_apply.mp h) _
     comm := fun (g : G) ↦ by
       ext (x : G ⧸ N)
-      induction' x using Quotient.inductionOn with x
+      induction x using Quotient.inductionOn with | _ x
       simp only [FintypeCat.comp_apply, Action.FintypeCat.ofMulAction_apply, Quotient.lift_mk]
-      show Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) _ (⟦g • x⟧) = _
+      change Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) _ (⟦g • x⟧) = _
       simp only [smul_eq_mul, Quotient.lift_mk, mul_assoc]
       rfl
   }
   map_one' := by
     apply Action.hom_ext
     ext (x : G ⧸ N)
-    induction' x using Quotient.inductionOn with x
+    induction x using Quotient.inductionOn
     simp
   map_mul' σ τ := by
     apply Action.hom_ext
     ext (x : G ⧸ N)
-    induction' x using Quotient.inductionOn with x
-    show ⟦x * (σ * τ)⁻¹⟧ = ⟦x * τ⁻¹ * σ⁻¹⟧
+    induction x using Quotient.inductionOn with | _ x
+    change ⟦x * (σ * τ)⁻¹⟧ = ⟦x * τ⁻¹ * σ⁻¹⟧
     rw [mul_inv_rev, mul_assoc]
 
 @[simp]
@@ -148,7 +148,7 @@ variable {N} in
 lemma toEndHom_trivial_of_mem [N.Normal] {n : G} (hn : n ∈ N) : toEndHom N n = 𝟙 (G ⧸ₐ N) := by
   apply Action.hom_ext
   ext (x : G ⧸ N)
-  induction' x using Quotient.inductionOn with μ
+  induction x using Quotient.inductionOn
   exact Quotient.sound ((QuotientGroup.leftRel_apply).mpr <| by simpa)
 
 /-- If `H` and `N` are subgroups of a group `G` with `N` normal, there is a canonical
@@ -169,7 +169,7 @@ def quotientToQuotientOfLE [Fintype (G ⧸ H)] (h : N ≤ H) : (G ⧸ₐ N) ⟶ 
     (QuotientGroup.leftRel_apply).mpr (h <| (QuotientGroup.leftRel_apply).mp hab)
   comm g := by
     ext (x : G ⧸ N)
-    induction' x using Quotient.inductionOn with μ
+    induction x using Quotient.inductionOn
     rfl
 
 @[simp]
@@ -190,10 +190,10 @@ instance instMulAction {G : Type*} [Monoid G] (X : Action V G) :
     MulAction G (ToType X) where
   smul g x := ConcreteCategory.hom (X.ρ g) x
   one_smul x := by
-    show ConcreteCategory.hom (X.ρ 1) x = x
+    change ConcreteCategory.hom (X.ρ 1) x = x
     simp
   mul_smul g h x := by
-    show ConcreteCategory.hom (X.ρ (g * h)) x =
+    change ConcreteCategory.hom (X.ρ (g * h)) x =
       ConcreteCategory.hom (X.ρ g) ((ConcreteCategory.hom (X.ρ h)) x)
     simp
 

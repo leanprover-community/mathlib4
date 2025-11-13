@@ -49,6 +49,6 @@ instance Prj.mvqpf : MvQPF (Prj i) where
   abs := @Prj.abs _ i
   repr := @Prj.repr _ i
   abs_repr := by intros; rfl
-  abs_map := by intros α β f P; cases P; rfl
+  abs_map := by intro α β f P; cases P; rfl
 
 end MvQPF

@@ -15,7 +15,7 @@ We define the pullback and pushforward of ideal sheaves in this file.
 - `AlgebraicGeometry.Scheme.IdealSheafData.comap`: The pullback of an ideal sheaf.
 - `AlgebraicGeometry.Scheme.IdealSheafData.map`: The pushforward of an ideal sheaf.
 - `AlgebraicGeometry.Scheme.IdealSheafData.map_gc`:
-  The galois connection between pullback and pushforward.
+  The Galois connection between pullback and pushforward.
 
 -/
 
@@ -72,6 +72,24 @@ lemma support_comap (I : Y.IdealSheafData) (f : X ⟶ Y) :
   rw [comap, Scheme.Hom.support_ker, Pullback.range_fst, range_subschemeι,
     TopologicalSpace.Closeds.coe_preimage, (I.support.isClosed.preimage f.continuous).closure_eq]
 
+lemma ker_fst_of_isClosedImmersion (i : Z ⟶ Y) (f : X ⟶ Y) [IsClosedImmersion i] :
+    (pullback.fst f i).ker = i.ker.comap f := by
+  delta IdealSheafData.comap
+  rw [← Hom.ker_comp_of_isIso (pullback.map f i f i.imageι (𝟙 _) (i.toImage) (𝟙 _)
+    (by simp) (by simp)), pullback.lift_fst, Category.comp_id]
+
+/-- To show that the pullback of the closed immersion `iX` along `f` is the closed immersion
+`iY`, it suffices to check that the preimage of `ker iY` under `f` is `ker iX`. -/
+lemma _root_.AlgebraicGeometry.isPullback_of_isClosedImmersion
+    {ZX ZY X Y : Scheme} (iX : ZX ⟶ X) (iY : ZY ⟶ Y) (Zf : ZX ⟶ ZY) (f : X ⟶ Y)
+    [IsClosedImmersion iX] [IsClosedImmersion iY]
+    (h : iX ≫ f = Zf ≫ iY) (h' : iY.ker.comap f = iX.ker) : IsPullback iX Zf f iY := by
+  suffices IsIso (pullback.lift _ _ h) by
+    simpa using (IsPullback.of_vert_isIso (show CommSq iX (pullback.lift iX Zf h)
+      (𝟙 X) (pullback.fst _ _) from ⟨by simp⟩)).paste_vert (IsPullback.of_hasPullback f iY)
+  refine IsClosedImmersion.isIso_of_ker_eq iX (pullback.fst f iY) _ (by simp) ?_
+  rw [ker_fst_of_isClosedImmersion, h']
+
 /-- The pushforward of an ideal sheaf. -/
 def map (I : X.IdealSheafData) (f : X ⟶ Y) : Y.IdealSheafData :=
   (I.subschemeι ≫ f).ker
@@ -93,9 +111,10 @@ section gc
 
 variable (I I₁ I₂ : X.IdealSheafData) (J J₁ J₂ : Y.IdealSheafData) (f : X ⟶ Y)
 
-/-- Pushforward and pullback of ideal sheaves forms a galois connection. -/
+/-- Pushforward and pullback of ideal sheaves forms a Galois connection. -/
 lemma map_gc : GaloisConnection (comap · f) (map · f) := fun _ _ ↦ le_map_iff_comap_le.symm
 
+set_option linter.style.commandStart false
 lemma map_mono          : Monotone (map · f)                          := (map_gc f).monotone_u
 lemma comap_mono        : Monotone (comap · f)                        := (map_gc f).monotone_l
 lemma le_map_comap      : J ≤ (J.comap f).map f                       := (map_gc f).le_u_l J
@@ -104,6 +123,7 @@ lemma comap_map_le      : (I.map f).comap f ≤ I                       := (map_
 @[simp] lemma comap_bot : comap ⊥ f = ⊥                               := (map_gc f).l_bot
 @[simp] lemma map_inf   : map (I₁ ⊓ I₂) f = map I₁ f ⊓ map I₂ f       := (map_gc f).u_inf
 @[simp] lemma comap_sup : comap (J₁ ⊔ J₂) f = comap J₁ f ⊔ comap J₂ f := (map_gc f).l_sup
+set_option linter.style.commandStart true
 
 end gc
 
@@ -114,7 +134,7 @@ lemma map_bot (f : X ⟶ Y) : map ⊥ f = f.ker := by
 @[simp]
 lemma comap_top (f : X ⟶ Y) : comap ⊤ f = ⊤ := by
   rw [comap, Hom.ker_eq_top_iff_isEmpty]
-  exact Function.isEmpty (pullback.snd f _).base
+  exact Function.isEmpty (pullback.snd f _)
 
 @[simp]
 lemma map_comp (I : X.IdealSheafData) (f : X ⟶ Y) (g : Y ⟶ Z) :
@@ -136,20 +156,20 @@ lemma _root_.AlgebraicGeometry.Scheme.Hom.ker_comp
     (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).ker = f.ker.map g := (map_ker f g).symm
 
 lemma map_vanishingIdeal {X Y : Scheme} (f : X ⟶ Y) (Z : TopologicalSpace.Closeds X) :
-    (vanishingIdeal Z).map f = vanishingIdeal (.closure (f.base '' Z)) := by
+    (vanishingIdeal Z).map f = vanishingIdeal (.closure (f '' Z)) := by
   apply le_antisymm
   · rw [map, ← le_support_iff_le_vanishingIdeal, TopologicalSpace.Closeds.closure_le]
     refine .trans ?_ (Hom.range_subset_ker_support _)
-    rw [Scheme.comp_base, TopCat.coe_comp, Set.range_comp,
+    rw [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp,
       range_subschemeι, coe_support_vanishingIdeal]
   · simp [le_map_iff_comap_le, ← le_support_iff_le_vanishingIdeal, ← Set.image_subset_iff,
       subset_closure, ← SetLike.coe_subset_coe]
 
 @[simp]
 lemma support_map (I : X.IdealSheafData) (f : X ⟶ Y) [QuasiCompact f] :
-    (I.map f).support = .closure (f.base '' I.support) := by
+    (I.map f).support = .closure (f '' I.support) := by
   ext1
-  rw [map, Scheme.Hom.support_ker, Scheme.comp_base, TopCat.coe_comp,
+  rw [map, Scheme.Hom.support_ker, Scheme.Hom.comp_base, TopCat.coe_comp,
     Set.range_comp, range_subschemeι, TopologicalSpace.Closeds.coe_closure]
 
 lemma ideal_map (I : X.IdealSheafData) (f : X ⟶ Y) [QuasiCompact f] (U : Y.affineOpens)

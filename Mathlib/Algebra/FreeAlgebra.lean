@@ -512,8 +512,8 @@ theorem ι_ne_algebraMap [Nontrivial R] (x : X) (r : R) : ι R x ≠ algebraMap 
   let f1 : FreeAlgebra R X →ₐ[R] R := lift R 1
   have hf0 : f0 (ι R x) = 0 := lift_ι_apply _ _
   have hf1 : f1 (ι R x) = 1 := lift_ι_apply _ _
-  rw [h, f0.commutes, Algebra.id.map_eq_self] at hf0
-  rw [h, f1.commutes, Algebra.id.map_eq_self] at hf1
+  rw [h, f0.commutes, Algebra.algebraMap_self_apply] at hf0
+  rw [h, f1.commutes, Algebra.algebraMap_self_apply] at hf1
   exact zero_ne_one (hf0.symm.trans hf1)
 
 @[simp]

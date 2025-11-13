@@ -5,6 +5,7 @@ Authors: Salvatore Mercuri
 -/
 import Mathlib.Analysis.Normed.Module.Completion
 import Mathlib.Analysis.Normed.Ring.WithAbs
+import Mathlib.FieldTheory.Separable
 
 /-!
 # WithAbs for fields
@@ -25,8 +26,20 @@ namespace WithAbs
 
 section more_instances
 
-instance normedField [Field R] (v : AbsoluteValue R ℝ) : NormedField (WithAbs v) :=
+variable {R' : Type*} [Field R] [Field R']
+
+instance instField (v : AbsoluteValue R S) : Field (WithAbs v) := ‹Field R›
+
+instance normedField (v : AbsoluteValue R ℝ) : NormedField (WithAbs v) :=
   v.toNormedField
+
+instance [Module R R'] [FiniteDimensional R R'] (v : AbsoluteValue R S) :
+    FiniteDimensional (WithAbs v) R' :=
+  ‹FiniteDimensional R R'›
+
+instance [Algebra R R'] [Algebra.IsSeparable R R'] (v : AbsoluteValue R S) :
+    Algebra.IsSeparable (WithAbs v) R' :=
+  ‹Algebra.IsSeparable R R'›
 
 end more_instances
 
@@ -43,7 +56,7 @@ theorem isometry_of_comp (h : ∀ x, ‖f x‖ = v x) : Isometry f :=
   Isometry.of_dist_eq <| fun x y => by simp only [‹NormedField L›.dist_eq, ← f.map_sub, h]; rfl
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
-the pseudo metric space associated to the absolute value is the same as the pseudo metric space
+the pseudometric space associated to the absolute value is the same as the pseudometric space
 induced by `f`. -/
 theorem pseudoMetricSpace_induced_of_comp (h : ∀ x, ‖f x‖ = v x) :
     PseudoMetricSpace.induced f inferInstance = (normedField v).toPseudoMetricSpace := by
@@ -71,8 +84,6 @@ variable {K : Type*} [Field K] (v : AbsoluteValue K ℝ)
 
 /-- The completion of a field with respect to a real absolute value. -/
 abbrev Completion := UniformSpace.Completion (WithAbs v)
-
-@[deprecated (since := "2024-12-01")] alias completion := Completion
 
 namespace Completion
 

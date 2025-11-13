@@ -5,8 +5,6 @@ Authors: Aaron Anderson
 -/
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.NumberTheory.LucasLehmer
-import Mathlib.Algebra.GeomSum
-import Mathlib.RingTheory.Multiplicity
 import Mathlib.Tactic.NormNum.Prime
 
 /-!
@@ -33,6 +31,9 @@ namespace Nat
 
 open ArithmeticFunction Finset
 
+-- access notation `σ`
+open scoped sigma
+
 theorem sigma_two_pow_eq_mersenne_succ (k : ℕ) : σ 1 (2 ^ k) = mersenne (k + 1) := by
   simp_rw [sigma_one_apply, mersenne, ← one_add_one_eq_two, ← geom_sum_mul_add 1 (k + 1)]
   norm_num
@@ -44,7 +45,7 @@ theorem perfect_two_pow_mul_mersenne_of_prime (k : ℕ) (pr : (mersenne (k + 1))
     mul_comm,
     isMultiplicative_sigma.map_mul_of_coprime ((Odd.coprime_two_right (by simp)).pow_right _),
     sigma_two_pow_eq_mersenne_succ]
-  · simp [pr, Nat.prime_two, sigma_one_apply]
+  · simp [pr, sigma_one_apply]
   · positivity
 
 theorem ne_zero_of_prime_mersenne (k : ℕ) (pr : (mersenne (k + 1)).Prime) : k ≠ 0 := by

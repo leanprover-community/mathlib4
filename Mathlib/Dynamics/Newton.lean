@@ -7,7 +7,6 @@ import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Identities
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Polynomial.Nilpotent
-import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
 # Newton-Raphson method
@@ -64,7 +63,7 @@ theorem isNilpotent_iterate_newtonMap_sub_of_isNilpotent (h : IsNilpotent <| aev
   | zero => simp
   | succ n ih =>
     rw [iterate_succ', comp_apply, newtonMap_apply, sub_right_comm]
-    refine (Commute.all _ _).isNilpotent_sub ih <| (Commute.all _ _).isNilpotent_mul_right ?_
+    refine (Commute.all _ _).isNilpotent_sub ih <| (Commute.all _ _).isNilpotent_mul_left ?_
     simpa using Commute.isNilpotent_add (Commute.all _ _)
       (isNilpotent_aeval_sub_of_isNilpotent_sub P ih) h
 
@@ -123,9 +122,6 @@ theorem existsUnique_nilpotent_sub_and_aeval_eq_zero
       isUnit_aeval_of_isUnit_aeval_of_isNilpotent_sub h' hr₁
     rw [← sub_sub_sub_cancel_right r₂ r₁ x]
     refine IsNilpotent.isUnit_add_left_of_commute ?_ this (Commute.all _ _)
-    exact (Commute.all _ _).isNilpotent_mul_right <| (Commute.all _ _).isNilpotent_sub hr₂ hr₁
-
-@[deprecated (since := "2024-12-17")]
-alias exists_unique_nilpotent_sub_and_aeval_eq_zero := existsUnique_nilpotent_sub_and_aeval_eq_zero
+    exact (Commute.all _ _).isNilpotent_mul_left <| (Commute.all _ _).isNilpotent_sub hr₂ hr₁
 
 end Polynomial

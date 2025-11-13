@@ -74,7 +74,7 @@ theorem aeval_continuousMap_apply (g : R[X]) (f : C(α, R)) (x : α) :
   · intro p q hp hq
     simp [hp, hq]
   · intro n a
-    simp [Pi.pow_apply]
+    simp
 
 end
 
@@ -177,16 +177,14 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
     · ext x
       simp only [q, neg_mul, RingHom.map_neg, RingHom.map_mul, AlgHom.coe_toRingHom,
         Polynomial.eval_X, Polynomial.eval_neg, Polynomial.eval_C, Polynomial.eval_smul,
-        smul_eq_mul, Polynomial.eval_mul, Polynomial.eval_add, Polynomial.coe_aeval_eq_eval,
+        smul_eq_mul, Polynomial.eval_mul, Polynomial.eval_add,
         Polynomial.eval_comp, Polynomial.toContinuousMapOnAlgHom_apply,
         Polynomial.toContinuousMapOn_apply, Polynomial.toContinuousMap_apply]
       convert w ⟨_, _⟩
       · ext
-        simp only [iccHomeoI_symm_apply_coe, Subtype.coe_mk]
+        simp only [iccHomeoI_symm_apply_coe]
         replace h : b - a ≠ 0 := sub_ne_zero_of_ne h.ne.symm
-        simp only [mul_add]
-        field_simp
-        ring
+        field
       · change _ + _ ∈ I
         rw [mul_comm (b - a)⁻¹, ← neg_mul, ← add_mul, ← sub_eq_add_neg]
         have w₁ : 0 < (b - a)⁻¹ := inv_pos.mpr (sub_pos.mpr h)

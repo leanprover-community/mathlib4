@@ -42,10 +42,7 @@ theorem take_one {α : Fin (n + 1) → Sort*} (v : (i : Fin (n + 1)) → α i) :
 
 @[simp]
 theorem take_eq_init {α : Fin (n + 1) → Sort*} (v : (i : Fin (n + 1)) → α i) :
-    take n n.le_succ v = init v := by
-  ext i
-  simp only [Nat.succ_eq_add_one, take, init]
-  congr
+    take n n.le_succ v = init v := rfl
 
 @[simp]
 theorem take_eq_self (v : (i : Fin n) → α i) : take n (le_refl n) v = v := by
@@ -54,17 +51,11 @@ theorem take_eq_self (v : (i : Fin n) → α i) : take n (le_refl n) v = v := by
 
 @[simp]
 theorem take_take {m n' : ℕ} (h : m ≤ n') (h' : n' ≤ n) (v : (i : Fin n) → α i) :
-    take m h (take n' h' v) = take m (Nat.le_trans h h') v := by
-  ext i
-  simp only [take]
-  congr
+    take m h (take n' h' v) = take m (Nat.le_trans h h') v := rfl
 
 @[simp]
 theorem take_init {α : Fin (n + 1) → Sort*} (m : ℕ) (h : m ≤ n) (v : (i : Fin (n + 1)) → α i) :
-    take m h (init v) = take m (Nat.le_succ_of_le h) v := by
-  ext i
-  simp only [take, init]
-  congr
+    take m h (init v) = take m (Nat.le_succ_of_le h) v := rfl
 
 theorem take_repeat {α : Type*} {n' : ℕ} (m : ℕ) (h : m ≤ n) (a : Fin n' → α) :
     take (m * n') (Nat.mul_le_mul_right n' h) (Fin.repeat n a) = Fin.repeat m a := by
@@ -82,8 +73,8 @@ theorem take_succ_eq_snoc (m : ℕ) (h : m < n) (v : (i : Fin n) → α i) :
     simp [take, snoc, castLE]
   | succ m _ =>
     induction i using reverseInduction with
-    | last => simp [take, snoc, castLT]; congr
-    | cast i _ => simp [snoc_cast_add]
+    | last => simp [take, snoc]; congr
+    | cast i _ => simp
 
 /-- `take` commutes with `update` for indices in the range of `take`. -/
 @[simp]

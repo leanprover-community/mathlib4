@@ -29,5 +29,5 @@ instance SubmonoidClass.instMulArchimedean {M S : Type*} [SetLike S M]
     [SubmonoidClass S M] [MulArchimedean M] (H : S) : MulArchimedean H := by
   constructor
   rintro x _
-  simp only [← Subtype.coe_lt_coe, OneMemClass.coe_one, SubmonoidClass.mk_pow, Subtype.mk_le_mk]
+  simp only [← Subtype.coe_lt_coe, OneMemClass.coe_one]
   exact MulArchimedean.arch x.val

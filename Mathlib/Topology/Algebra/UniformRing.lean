@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Algebra.Ring.TransferInstance
 import Mathlib.Topology.Algebra.GroupCompletion
 import Mathlib.Topology.Algebra.Ring.Ideal
 import Mathlib.Topology.Algebra.IsUniformGroup.Basic
@@ -12,8 +13,8 @@ import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 /-!
 # Completion of topological rings:
 
-This files endows the completion of a topological ring with a ring structure.
-More precisely the instance `UniformSpace.Completion.ring` builds a ring structure
+This file endows the completion of a topological ring with a ring structure.
+More precisely, the instance `UniformSpace.Completion.ring` builds a ring structure
 on the completion of a ring endowed with a compatible uniform structure in the sense of
 `IsUniformAddGroup`. There is also a commutative version when the original ring is commutative.
 Moreover, if a topological ring is an algebra over a commutative semiring, then so is its
@@ -28,7 +29,7 @@ the main constructions deal with continuous ring morphisms.
 
 * `UniformSpace.Completion.extensionHom`: extends a continuous ring morphism from `R`
   to a complete separated group `S` to `Completion R`.
-* `UniformSpace.Completion.mapRingHom` : promotes a continuous ring morphism
+* `UniformSpace.Completion.mapRingHom`: promotes a continuous ring morphism
   from `R` to `S` into a continuous ring morphism from `Completion R` to `Completion S`.
 
 TODO: Generalise the results here from the concrete `Completion` to any `AbstractCompletion`.
@@ -54,6 +55,9 @@ instance mul : Mul (Completion α) :=
 theorem coe_one : ((1 : α) : Completion α) = 1 :=
   rfl
 
+@[simp] lemma coe_eq_one_iff [T0Space α] {x : α} : (x : Completion α) = 1 ↔ x = 1 :=
+  Completion.coe_inj
+
 end one_and_mul
 
 variable {α : Type*} [Ring α] [UniformSpace α] [IsTopologicalRing α]
@@ -71,15 +75,6 @@ instance : ContinuousMul (Completion α) where
     have : Continuous fun p : α × α => m p.1 p.2 := (continuous_coe α).comp continuous_mul
     have di : IsDenseInducing (toCompl : α → Completion α) := isDenseInducing_coe
     exact (di.extend_Z_bilin di this :)
-
-@[deprecated _root_.continuous_mul (since := "2024-12-21")]
-protected theorem continuous_mul : Continuous fun p : Completion α × Completion α => p.1 * p.2 :=
-  _root_.continuous_mul
-
-@[deprecated _root_.Continuous.mul (since := "2024-12-21")]
-protected theorem Continuous.mul {β : Type*} [TopologicalSpace β] {f g : β → Completion α}
-    (hf : Continuous f) (hg : Continuous g) : Continuous fun b => f b * g b :=
-  hf.mul hg
 
 instance ring : Ring (Completion α) :=
   { AddMonoidWithOne.unary, (inferInstanceAs (AddCommGroup (Completion α))),
@@ -177,6 +172,15 @@ instance topologicalRing : IsTopologicalRing (Completion α) where
 /-- The completion map as a ring morphism. -/
 def mapRingHom (hf : Continuous f) : Completion α →+* Completion β :=
   extensionHom (coeRingHom.comp f) (continuous_coeRingHom.comp hf)
+
+theorem mapRingHom_apply {x : UniformSpace.Completion α} :
+    UniformSpace.Completion.mapRingHom f hf x = UniformSpace.Completion.map f x := rfl
+
+variable {f}
+
+theorem mapRingHom_coe (hf : UniformContinuous f) (a : α) :
+    mapRingHom f hf.continuous a = f a := by
+  rw [mapRingHom_apply, map_coe hf]
 
 section Algebra
 

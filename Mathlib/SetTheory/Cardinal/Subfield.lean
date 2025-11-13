@@ -79,12 +79,8 @@ lemma cardinalMk_closure_le_max : #(closure s) ≤ max #s ℵ₀ :=
     · fin_cases n <;> (dsimp only [id_eq]; infer_instance)
     infer_instance
 
-@[deprecated (since := "2024-11-10")] alias cardinal_mk_closure_le_max := cardinalMk_closure_le_max
-
 lemma cardinalMk_closure [Infinite s] : #(closure s) = #s :=
   ((cardinalMk_closure_le_max s).trans_eq <| max_eq_left <| aleph0_le_mk s).antisymm
     (mk_le_mk_of_subset subset_closure)
-
-@[deprecated (since := "2024-11-10")] alias cardinal_mk_closure := cardinalMk_closure
 
 end Subfield

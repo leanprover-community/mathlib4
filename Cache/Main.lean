@@ -52,9 +52,9 @@ Valid arguments are:
 def curlArgs : List String :=
   ["get", "get!", "get-", "put", "put!", "put-unpacked", "commit", "commit!"]
 
-/-- Commands which (potentially) call `leantar` for decompressing downloaded files -/
+/-- Commands which (potentially) call `leantar` for compressing or decompressing files -/
 def leanTarArgs : List String :=
-  ["get", "get!", "pack", "pack!", "unpack", "lookup"]
+  ["get", "get!", "put", "put!", "put-unpacked", "pack", "pack!", "unpack", "lookup"]
 
 /-- Parses an optional `--repo` option. -/
 def parseRepo (args : List String) : IO (Option String × List String) := do
@@ -68,10 +68,6 @@ def parseRepo (args : List String) : IO (Option String × List String) := do
 
 open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
-  if Lean.versionString == "4.8.0-rc1" && Lean.githash == "b470eb522bfd68ca96938c23f6a1bce79da8a99f" then do
-    println "Unfortunately, you have a broken Lean v4.8.0-rc1 installation."
-    println "Please run `elan toolchain uninstall leanprover/lean4:v4.8.0-rc1` and try again."
-    Process.exit 1
   if args.isEmpty then
     println help
     Process.exit 0

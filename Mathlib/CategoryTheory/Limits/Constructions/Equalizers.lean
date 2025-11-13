@@ -59,9 +59,7 @@ abbrev equalizerCone (F : WalkingParallelPair ⥤ C) : Cone F :=
 
 /-- Show the equalizing cone is a limit -/
 def equalizerConeIsLimit (F : WalkingParallelPair ⥤ C) : IsLimit (equalizerCone F) where
-  lift := by
-    intro c; apply pullback.lift (c.π.app _) (c.π.app _)
-    ext <;> simp
+  lift c := pullback.lift (c.π.app _) (c.π.app _)
   fac := by rintro c (_ | _) <;> simp
   uniq := by
     intro c _ J
@@ -150,9 +148,7 @@ abbrev coequalizerCocone (F : WalkingParallelPair ⥤ C) : Cocone F :=
 
 /-- Show the equalizing cocone is a colimit -/
 def coequalizerCoconeIsColimit (F : WalkingParallelPair ⥤ C) : IsColimit (coequalizerCocone F) where
-  desc := by
-    intro c; apply pushout.desc (c.ι.app _) (c.ι.app _)
-    ext <;> simp
+  desc c := pushout.desc (c.ι.app _) (c.ι.app _)
   fac := by rintro c (_ | _) <;> simp
   uniq := by
     intro c m J
@@ -192,9 +188,9 @@ lemma preservesCoequalizers_of_preservesPushouts_and_binaryCoproducts [HasBinary
           · exact c.ι.app WalkingParallelPair.one
           apply (mapIsColimitOfPreservesOfIsColimit G _ _ (coprodIsCoprod _ _)).hom_ext
           rintro (_ | _)
-          · simp only [BinaryCofan.ι_app_left, BinaryCofan.mk_inl, Category.assoc, ←
+          · simp only [BinaryCofan.ι_app_left, BinaryCofan.mk_inl, ←
               G.map_comp_assoc, coprod.inl_desc]
-          · simp only [BinaryCofan.ι_app_right, BinaryCofan.mk_inr, Category.assoc, ←
+          · simp only [BinaryCofan.ι_app_right, BinaryCofan.mk_inr, ←
               G.map_comp_assoc, coprod.inr_desc]
             exact
               (c.ι.naturality WalkingParallelPairHom.left).trans

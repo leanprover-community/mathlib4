@@ -109,9 +109,6 @@ theorem exists_linearIndepOn_of_lt_rank [StrongRankCondition R]
     rwa [linearIndepOn_iff_image (hsec'.symm ▸ injective_id).injOn.image_of_comp,
       ← image_comp, hsec', image_id]
 
-@[deprecated (since := "2025-02-17")] alias
-    exists_linearIndependent_of_lt_rank := exists_linearIndepOn_of_lt_rank
-
 /-- Given a family of `n` linearly independent vectors in a space of dimension `> n`, one may extend
 the family by another vector while retaining linear independence. -/
 theorem exists_linearIndependent_cons_of_lt_rank [StrongRankCondition R] {n : ℕ} {v : Fin n → M}
@@ -140,7 +137,7 @@ independent of the first one. -/
 theorem exists_linearIndependent_pair_of_one_lt_rank [StrongRankCondition R]
     [NoZeroSMulDivisors R M] (h : 1 < Module.rank R M) {x : M} (hx : x ≠ 0) :
     ∃ y, LinearIndependent R ![x, y] := by
-  obtain ⟨y, hy⟩ := exists_linearIndependent_snoc_of_lt_rank (linearIndependent_unique ![x] hx) h
+  obtain ⟨y, hy⟩ := exists_linearIndependent_snoc_of_lt_rank (.of_subsingleton (v := ![x]) 0 hx) h
   have : Fin.snoc ![x] y = ![x, y] := by simp [Fin.snoc, ← List.ofFn_inj]
   rw [this] at hy
   exact ⟨y, hy⟩

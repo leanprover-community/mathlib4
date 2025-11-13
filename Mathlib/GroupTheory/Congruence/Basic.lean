@@ -44,25 +44,25 @@ variable [Mul M] [Mul N] [Mul P] (c : Con M)
 variable {c}
 
 /-- Given types with multiplications `M, N`, the product of two congruence relations `c` on `M` and
-    `d` on `N`: `(x₁, x₂), (y₁, y₂) ∈ M × N` are related by `c.prod d` iff `x₁` is related to `y₁`
-    by `c` and `x₂` is related to `y₂` by `d`. -/
-@[to_additive prod "Given types with additions `M, N`, the product of two congruence relations
+`d` on `N`: `(x₁, x₂), (y₁, y₂) ∈ M × N` are related by `c.prod d` iff `x₁` is related to `y₁`
+by `c` and `x₂` is related to `y₂` by `d`. -/
+@[to_additive prod /-- Given types with additions `M, N`, the product of two congruence relations
 `c` on `M` and `d` on `N`: `(x₁, x₂), (y₁, y₂) ∈ M × N` are related by `c.prod d` iff `x₁`
-is related to `y₁` by `c` and `x₂` is related to `y₂` by `d`."]
+is related to `y₁` by `c` and `x₂` is related to `y₂` by `d`. -/]
 protected def prod (c : Con M) (d : Con N) : Con (M × N) :=
   { c.toSetoid.prod d.toSetoid with
     mul' := fun h1 h2 => ⟨c.mul h1.1 h2.1, d.mul h1.2 h2.2⟩ }
 
 /-- The product of an indexed collection of congruence relations. -/
-@[to_additive "The product of an indexed collection of additive congruence relations."]
+@[to_additive /-- The product of an indexed collection of additive congruence relations. -/]
 def pi {ι : Type*} {f : ι → Type*} [∀ i, Mul (f i)] (C : ∀ i, Con (f i)) : Con (∀ i, f i) :=
   { @piSetoid _ _ fun i => (C i).toSetoid with
     mul' := fun h1 h2 i => (C i).mul (h1 i) (h2 i) }
 
 /-- Makes an isomorphism of quotients by two congruence relations, given that the relations are
-    equal. -/
-@[to_additive "Makes an additive isomorphism of quotients by two additive congruence relations,
-given that the relations are equal."]
+equal. -/
+@[to_additive /-- Makes an additive isomorphism of quotients by two additive congruence relations,
+given that the relations are equal. -/]
 protected def congr {c d : Con M} (h : c = d) : c.Quotient ≃* d.Quotient :=
   { Quotient.congr (Equiv.refl M) <| by apply Con.ext_iff.mp h with
     map_mul' := fun x y => by rcases x with ⟨⟩; rcases y with ⟨⟩; rfl }
@@ -127,8 +127,8 @@ section MulOneClass
 variable [MulOneClass M] [MulOneClass N] [MulOneClass P] (c : Con M)
 
 /-- The submonoid of `M × M` defined by a congruence relation on a monoid `M`. -/
-@[to_additive (attr := coe) "The `AddSubmonoid` of `M × M` defined by an additive congruence
-relation on an `AddMonoid` `M`."]
+@[to_additive (attr := coe) /-- The `AddSubmonoid` of `M × M` defined by an additive congruence
+relation on an `AddMonoid` `M`. -/]
 protected def submonoid : Submonoid (M × M) where
   carrier := { x | c x.1 x.2 }
   one_mem' := c.iseqv.1 1
@@ -137,19 +137,19 @@ protected def submonoid : Submonoid (M × M) where
 variable {c}
 
 /-- The congruence relation on a monoid `M` from a submonoid of `M × M` for which membership
-    is an equivalence relation. -/
-@[to_additive "The additive congruence relation on an `AddMonoid` `M` from
-an `AddSubmonoid` of `M × M` for which membership is an equivalence relation."]
+is an equivalence relation. -/
+@[to_additive /-- The additive congruence relation on an `AddMonoid` `M` from
+an `AddSubmonoid` of `M × M` for which membership is an equivalence relation. -/]
 def ofSubmonoid (N : Submonoid (M × M)) (H : Equivalence fun x y => (x, y) ∈ N) : Con M where
   r x y := (x, y) ∈ N
   iseqv := H
   mul' := N.mul_mem
 
 /-- Coercion from a congruence relation `c` on a monoid `M` to the submonoid of `M × M` whose
-    elements are `(x, y)` such that `x` is related to `y` by `c`. -/
-@[to_additive "Coercion from a congruence relation `c` on an `AddMonoid` `M`
+elements are `(x, y)` such that `x` is related to `y` by `c`. -/
+@[to_additive /-- Coercion from a congruence relation `c` on an `AddMonoid` `M`
 to the `AddSubmonoid` of `M × M` whose elements are `(x, y)` such that `x`
-is related to `y` by `c`."]
+is related to `y` by `c`. -/]
 instance toSubmonoid : Coe (Con M) (Submonoid (M × M)) :=
   ⟨fun c => c.submonoid⟩
 
@@ -168,32 +168,32 @@ theorem le_iff {c d : Con M} : c ≤ d ↔ (c : Submonoid (M × M)) ≤ d :=
 variable (x y : M)
 
 @[to_additive (attr := simp)]
--- Porting note: removed dot notation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): removed dot notation
 theorem mrange_mk' : MonoidHom.mrange c.mk' = ⊤ :=
   MonoidHom.mrange_eq_top.2 mk'_surjective
 
 variable {f : M →* P}
 
 /-- Given a congruence relation `c` on a monoid and a homomorphism `f` constant on `c`'s
-    equivalence classes, `f` has the same image as the homomorphism that `f` induces on the
-    quotient. -/
-@[to_additive "Given an additive congruence relation `c` on an `AddMonoid` and a homomorphism `f`
+equivalence classes, `f` has the same image as the homomorphism that `f` induces on the
+quotient. -/
+@[to_additive /-- Given an additive congruence relation `c` on an `AddMonoid` and a homomorphism `f`
 constant on `c`'s equivalence classes, `f` has the same image as the homomorphism that `f` induces
-on the quotient."]
+on the quotient. -/]
 theorem lift_range (H : c ≤ ker f) : MonoidHom.mrange (c.lift f H) = MonoidHom.mrange f :=
   Submonoid.ext fun x => ⟨by rintro ⟨⟨y⟩, hy⟩; exact ⟨y, hy⟩, fun ⟨y, hy⟩ => ⟨↑y, hy⟩⟩
 
 /-- Given a monoid homomorphism `f`, the induced homomorphism on the quotient by `f`'s kernel has
-    the same image as `f`. -/
-@[to_additive (attr := simp) "Given an `AddMonoid` homomorphism `f`, the induced homomorphism
-on the quotient by `f`'s kernel has the same image as `f`."]
+the same image as `f`. -/
+@[to_additive (attr := simp) /-- Given an `AddMonoid` homomorphism `f`, the induced homomorphism
+on the quotient by `f`'s kernel has the same image as `f`. -/]
 theorem kerLift_range_eq : MonoidHom.mrange (kerLift f) = MonoidHom.mrange f :=
   lift_range fun _ _ => id
 
 variable (c)
 
 /-- The **first isomorphism theorem for monoids**. -/
-@[to_additive "The first isomorphism theorem for `AddMonoid`s."]
+@[to_additive /-- The first isomorphism theorem for `AddMonoid`s. -/]
 noncomputable def quotientKerEquivRange (f : M →* P) : (ker f).Quotient ≃* MonoidHom.mrange f :=
   { Equiv.ofBijective
         ((@MulEquiv.toMonoidHom (MonoidHom.mrange (kerLift f)) _ _ _ <|
@@ -208,8 +208,8 @@ noncomputable def quotientKerEquivRange (f : M →* P) : (ker f).Quotient ≃* M
 
 /-- The first isomorphism theorem for monoids in the case of a homomorphism with right inverse. -/
 @[to_additive (attr := simps)
-  "The first isomorphism theorem for `AddMonoid`s in the case of a homomorphism
-  with right inverse."]
+  /-- The first isomorphism theorem for `AddMonoid`s in the case of a homomorphism
+  with right inverse. -/]
 def quotientKerEquivOfRightInverse (f : M →* P) (g : P → M) (hf : Function.RightInverse g f) :
     (ker f).Quotient ≃* P :=
   { kerLift f with
@@ -222,18 +222,17 @@ def quotientKerEquivOfRightInverse (f : M →* P) (g : P → M) (hf : Function.R
 
 For a `computable` version, see `Con.quotientKerEquivOfRightInverse`.
 -/
-@[to_additive "The first isomorphism theorem for `AddMonoid`s in the case of a surjective
+@[to_additive /-- The first isomorphism theorem for `AddMonoid`s in the case of a surjective
 homomorphism.
 
-For a `computable` version, see `AddCon.quotientKerEquivOfRightInverse`.
-"]
+For a `computable` version, see `AddCon.quotientKerEquivOfRightInverse`. -/]
 noncomputable def quotientKerEquivOfSurjective (f : M →* P) (hf : Surjective f) :
     (ker f).Quotient ≃* P :=
   quotientKerEquivOfRightInverse _ _ hf.hasRightInverse.choose_spec
 
 /-- If e : M →* N is surjective then (c.comap e).Quotient ≃* c.Quotient with c : Con N -/
-@[to_additive "If e : M →* N is surjective then (c.comap e).Quotient ≃* c.Quotient with c :
-AddCon N"]
+@[to_additive /-- If e : M →* N is surjective then (c.comap e).Quotient ≃* c.Quotient with c :
+AddCon N -/]
 noncomputable def comapQuotientEquivOfSurj (c : Con M) (f : N →* M) (hf : Function.Surjective f) :
     (Con.comap f f.map_mul c).Quotient ≃* c.Quotient :=
   (Con.congr Con.comap_eq).trans <| Con.quotientKerEquivOfSurjective (c.mk'.comp f) <|
@@ -249,21 +248,21 @@ lemma comapQuotientEquivOfSurj_symm_mk (c : Con M) {f : N →* M} (hf) (x : N) :
   (MulEquiv.symm_apply_eq (c.comapQuotientEquivOfSurj f hf)).mpr rfl
 
 /-- This version infers the surjectivity of the function from a MulEquiv function -/
-@[to_additive (attr := simp) "This version infers the surjectivity of the function from a
-MulEquiv function"]
+@[to_additive (attr := simp) /-- This version infers the surjectivity of the function from a
+MulEquiv function -/]
 lemma comapQuotientEquivOfSurj_symm_mk' (c : Con M) (f : N ≃* M) (x : N) :
     ((@MulEquiv.symm (Con.Quotient (comap ⇑f _ c)) _ _ _
       (comapQuotientEquivOfSurj c (f : N →* M) f.surjective)) ⟦f x⟧) = ↑x :=
   (MulEquiv.symm_apply_eq (@comapQuotientEquivOfSurj M N _ _ c f _)).mpr rfl
 
 /-- The **second isomorphism theorem for monoids**. -/
-@[to_additive "The second isomorphism theorem for `AddMonoid`s."]
+@[to_additive /-- The second isomorphism theorem for `AddMonoid`s. -/]
 noncomputable def comapQuotientEquiv (f : N →* M) :
     (comap f f.map_mul c).Quotient ≃* MonoidHom.mrange (c.mk'.comp f) :=
   (Con.congr comap_eq).trans <| quotientKerEquivRange <| c.mk'.comp f
 
 /-- The **third isomorphism theorem for monoids**. -/
-@[to_additive "The third isomorphism theorem for `AddMonoid`s."]
+@[to_additive /-- The third isomorphism theorem for `AddMonoid`s. -/]
 def quotientQuotientEquivQuotient (c d : Con M) (h : c ≤ d) :
     (ker (c.map d h)).Quotient ≃* d.Quotient :=
   { Setoid.quotientQuotientEquivQuotient c.toSetoid d.toSetoid h with

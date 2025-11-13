@@ -32,8 +32,8 @@ attribute [local instance] preservesFiniteLimits_op
 theorem preadditiveCoyonedaObj_map_surjective {G : C} [Projective G] (hG : IsSeparator G) {X : C}
     (p : G ⟶ X) [Epi p] {Y : C} :
     Function.Surjective ((preadditiveCoyonedaObj G).map : (X ⟶ Y) → _) := by
-  rw [← Functor.coe_mapAddHom, ← AddCommGrp.hom_ofHom (preadditiveCoyonedaObj G).mapAddHom,
-    ← AddCommGrp.epi_iff_surjective]
+  rw [← Functor.coe_mapAddHom, ← AddCommGrpCat.hom_ofHom (preadditiveCoyonedaObj G).mapAddHom,
+    ← AddCommGrpCat.epi_iff_surjective]
   let cm : ShortComplex C := ⟨kernel.ι p, p, by simp⟩
   have exact : cm.Exact := ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel _)
   have mono : Mono cm.op.f := by dsimp [cm]; infer_instance
@@ -43,9 +43,9 @@ theorem preadditiveCoyonedaObj_map_surjective {G : C} [Projective G] (hG : IsSep
   · exact exact.op.map_of_mono_of_preservesKernel _ mono inferInstance
   · simp only [ShortComplex.map_f]
     infer_instance
-  · suffices φ.map.Surjective by simpa [AddCommGrp.epi_iff_surjective, Functor.coe_mapAddHom]
-    exact fun f => ⟨f (𝟙 G), by aesop_cat⟩
-  · simp [AddCommGrp.mono_iff_injective, Functor.coe_mapAddHom, Functor.map_injective]
+  · suffices φ.map.Surjective by simpa [AddCommGrpCat.epi_iff_surjective, Functor.coe_mapAddHom]
+    exact fun f => ⟨f (𝟙 G), by cat_disch⟩
+  · simp [AddCommGrpCat.mono_iff_injective, Functor.coe_mapAddHom, Functor.map_injective]
 
 end
 

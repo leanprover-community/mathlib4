@@ -18,8 +18,8 @@ This isomorphism follows from the fact that `rightExtensionInclusion X 2` is a r
 extension. In fact, we show that when `X` is `StrictSegal` then
 `(rightExtensionInclusion X n).IsPointwiseRightKanExtension` holds.
 
-As an example, `SimplicialObject.IsCoskeletal (nerve C) 2` shows that that nerves of categories
-are 2-coskeletal.
+As an example, `SimplicialObject.IsCoskeletal (nerve C) 2` shows that nerves of categories are
+2-coskeletal.
 -/
 
 
@@ -92,8 +92,8 @@ lemma fac_aux₁ {n : ℕ}
 lemma fac_aux₂ {n : ℕ}
     (s : Cone (proj (op ⦋n⦌) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
     (x : s.pt) (i j : ℕ) (hij : i ≤ j) (hj : j ≤ n) :
-    X.map (mkOfLe ⟨i, by omega⟩ ⟨j, by omega⟩ hij).op (lift sx s x) =
-      s.π.app (strArrowMk₂ (mkOfLe ⟨i, by omega⟩ ⟨j, by omega⟩ hij)) x := by
+    X.map (mkOfLe ⟨i, by cutsat⟩ ⟨j, by cutsat⟩ hij).op (lift sx s x) =
+      s.π.app (strArrowMk₂ (mkOfLe ⟨i, by cutsat⟩ ⟨j, by cutsat⟩ hij)) x := by
   obtain ⟨k, hk⟩ := Nat.le.dest hij
   revert i j
   induction k with
@@ -119,12 +119,12 @@ lemma fac_aux₂ {n : ℕ}
       congr
   | succ k hk =>
       intro i j hij hj hik
-      let α := strArrowMk₂ (mkOfLeComp (n := n) ⟨i, by omega⟩ ⟨i + k, by omega⟩
-          ⟨j, by omega⟩ (by simp) (by simp only [Fin.mk_le_mk]; omega))
-      let α₀ := strArrowMk₂ (mkOfLe (n := n) ⟨i + k, by omega⟩ ⟨j, by omega⟩
-        (by simp only [Fin.mk_le_mk]; omega))
-      let α₁ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by omega⟩ ⟨j, by omega⟩ hij)
-      let α₂ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by omega⟩ ⟨i + k, by omega⟩ (by simp))
+      let α := strArrowMk₂ (mkOfLeComp (n := n) ⟨i, by cutsat⟩ ⟨i + k, by cutsat⟩
+          ⟨j, by cutsat⟩ (by simp) (by simp only [Fin.mk_le_mk]; cutsat))
+      let α₀ := strArrowMk₂ (mkOfLe (n := n) ⟨i + k, by cutsat⟩ ⟨j, by cutsat⟩
+        (by simp only [Fin.mk_le_mk]; cutsat))
+      let α₁ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by cutsat⟩ ⟨j, by cutsat⟩ hij)
+      let α₂ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by cutsat⟩ ⟨i + k, by cutsat⟩ (by simp))
       let β₀ : α ⟶ α₀ := StructuredArrow.homMk ((mkOfSucc 1).op) (Quiver.Hom.unop_inj
         (by ext x; fin_cases x <;> rfl))
       let β₁ : α ⟶ α₁ := StructuredArrow.homMk ((δ 1).op) (Quiver.Hom.unop_inj
@@ -135,7 +135,7 @@ lemma fac_aux₂ {n : ℕ}
         subst hik
         exact fac_aux₁ _ _ _ _ hj
       have h₂ : X.map α₂.hom (lift sx s x) = s.π.app α₂ x :=
-        hk i (i + k) (by simp) (by omega) rfl
+        hk i (i + k) (by simp) (by cutsat) rfl
       change X.map α₁.hom (lift sx s x) = s.π.app α₁ x
       have : X.map α.hom (lift sx s x) = s.π.app α x := by
         apply sx.spineInjective
@@ -165,7 +165,7 @@ lemma fac_aux₃ {n : ℕ}
   obtain ⟨i, j, hij, rfl⟩ : ∃ i j hij, φ = mkOfLe i j hij :=
     ⟨φ.toOrderHom 0, φ.toOrderHom 1, φ.toOrderHom.monotone (by decide),
       Hom.ext_one_left _ _ rfl rfl⟩
-  exact fac_aux₂ _ _ _ _ _ _ (by omega)
+  exact fac_aux₂ _ _ _ _ _ _ (by cutsat)
 
 end isPointwiseRightKanExtensionAt
 
@@ -179,7 +179,7 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
   fac s j := by
     ext x
     obtain ⟨⟨i, hi⟩, ⟨f :  _ ⟶ _⟩, rfl⟩ := j.mk_surjective
-    obtain ⟨i, rfl⟩ : ∃ j, SimplexCategory.mk j = i := ⟨_, i.mk_len⟩
+    obtain ⟨i, rfl⟩ : ∃ j, ⦋j⦌ = i := ⟨_, i.mk_len⟩
     dsimp at hi ⊢
     apply sx.spineInjective
     dsimp

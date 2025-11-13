@@ -261,7 +261,7 @@ def topologyOfClosureOperator (c : ∀ X : C, ClosureOperator (Sieve X))
     rw [Set.mem_setOf_eq] at hS
     rw [Set.mem_setOf_eq, ← (c X).idempotent, eq_top_iff, ← hS]
     apply (c X).monotone fun Y f hf => _
-    intros Y f hf
+    intro Y f hf
     rw [Sieve.mem_iff_pullback_eq_top, ← hc]
     apply hR hf
 

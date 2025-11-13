@@ -33,9 +33,11 @@ protected def Ideal.closure (I : Ideal R) : Ideal R :=
 theorem Ideal.coe_closure (I : Ideal R) : (I.closure : Set R) = closure I :=
   rfl
 
--- Porting note: removed `@[simp]` because we make the instance argument explicit since otherwise
--- it causes timeouts as `simp` tries and fails to generated an `IsClosed` instance.
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/!4.234852.20heartbeats.20of.20the.20linter
+/--
+This is not `@[simp]` since otherwise it causes timeouts downstream as `simp` tries and fails to
+generate an `IsClosed` instance.
+https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/!4.234852.20heartbeats.20of.20the.20linter
+-/
 theorem Ideal.closure_eq_of_isClosed (I : Ideal R) (hI : IsClosed (I : Set R)) : I.closure = I :=
   SetLike.ext' hI.closure_eq
 
@@ -61,9 +63,6 @@ theorem QuotientRing.isOpenQuotientMap_mk : IsOpenQuotientMap (mk N) :=
 
 theorem QuotientRing.isQuotientMap_coe_coe : IsQuotientMap fun p : R × R => (mk N p.1, mk N p.2) :=
   ((isOpenQuotientMap_mk N).prodMap (isOpenQuotientMap_mk N)).isQuotientMap
-
-@[deprecated (since := "2024-10-22")]
-alias QuotientRing.quotientMap_coe_coe := QuotientRing.isQuotientMap_coe_coe
 
 instance topologicalRing_quotient : IsTopologicalRing (R ⧸ N) where
   __ := QuotientAddGroup.instIsTopologicalAddGroup _

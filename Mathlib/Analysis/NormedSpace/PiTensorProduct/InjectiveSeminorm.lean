@@ -212,7 +212,8 @@ theorem injectiveSeminorm_le_projectiveSeminorm :
     existsi PUnit, inferInstance, inferInstance
     ext x
     simp only [Seminorm.zero_apply, Seminorm.comp_apply, coe_normSeminorm]
-    rw [Subsingleton.elim (toDualContinuousMultilinearMap PUnit x) 0, norm_zero]
+    rw [Subsingleton.elim (toDualContinuousMultilinearMap PUnit.{(max (max uE uι) u𝕜) + 1} x) 0,
+      norm_zero]
   · intro p hp
     simp only [Set.mem_setOf_eq] at hp
     obtain ⟨G, _, _, h⟩ := hp
@@ -297,11 +298,7 @@ theorem tprodL_coe : (tprodL 𝕜).toMultilinearMap = tprod 𝕜 (s := E) := by
 @[simp]
 theorem liftIsometry_symm_apply (l : (⨂[𝕜] i, E i) →L[𝕜] F) :
     (liftIsometry 𝕜 E F).symm l = l.compContinuousMultilinearMap (tprodL 𝕜) := by
-  ext m
-  change (liftEquiv 𝕜 E F).symm l m = _
-  simp only [liftEquiv_symm_apply, lift_symm, MultilinearMap.coe_mkContinuous,
-    LinearMap.compMultilinearMap_apply, ContinuousLinearMap.coe_coe,
-    ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply, tprodL_toFun]
+  rfl
 
 @[simp]
 theorem liftIsometry_tprodL :
@@ -337,12 +334,7 @@ theorem mapL_coe : (mapL f).toLinearMap = map (fun i ↦ (f i).toLinearMap) := b
 
 @[simp]
 theorem mapL_apply (x : ⨂[𝕜] i, E i) : mapL f x = map (fun i ↦ (f i).toLinearMap) x := by
-  induction x using PiTensorProduct.induction_on with
-  | smul_tprod =>
-    simp only [mapL, map_smul, liftIsometry_apply_apply, lift.tprod,
-    ContinuousMultilinearMap.coe_coe, ContinuousMultilinearMap.compContinuousLinearMap_apply,
-    tprodL_toFun, map_tprod, ContinuousLinearMap.coe_coe]
-  | add _ _ hx hy => simp only [map_add, hx, hy]
+  rfl
 
 /-- Given submodules `pᵢ ⊆ Eᵢ`, this is the natural map: `⨂[𝕜] i, pᵢ → ⨂[𝕜] i, Eᵢ`.
 This is the continuous version of `PiTensorProduct.mapIncl`.
@@ -390,7 +382,7 @@ noncomputable def mapLMonoidHom : (Π i, E i →L[𝕜] E i) →* ((⨂[𝕜] i,
 
 @[simp]
 protected theorem mapL_pow (f : Π i, E i →L[𝕜] E i) (n : ℕ) :
-    mapL (f ^ n) = mapL f ^ n := MonoidHom.map_pow mapLMonoidHom _ _
+    mapL (f ^ n) = mapL f ^ n := MonoidHom.map_pow mapLMonoidHom f n
 
 -- We redeclare `ι` here, and later dependent arguments,
 -- to avoid the `[Fintype ι]` assumption present throughout the rest of the file.
@@ -404,9 +396,7 @@ private theorem mapL_add_smul_aux {ι : Type uι}
       update (fun j ↦ (f j).toLinearMap) i u.toLinearMap := by
   symm
   rw [update_eq_iff]
-  constructor
-  · simp only [update_self]
-  · exact fun _ h ↦ by simp only [ne_eq, h, not_false_eq_true, update_of_ne]
+  grind [Function.update_of_ne, Function.update_self]
 
 open Function in
 protected theorem mapL_add [DecidableEq ι] (i : ι) (u v : E i →L[𝕜] E' i) :

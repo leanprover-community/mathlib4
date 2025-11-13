@@ -63,8 +63,6 @@ lemma ι_mapBifunctorAssociator_hom (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j
       (mapBifunctorAssociator associator ρ₁₂ ρ₂₃ X₁ X₂ X₃).hom j =
         ((associator.hom.app (X₁ i₁)).app (X₂ i₂)).app (X₃ i₃) ≫
           ιMapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h := by
-  have := H₁₂.hasMap
-  have := H₂₃.hasMap
   dsimp [mapBifunctorAssociator]
   rw [ι_mapBifunctorComp₁₂MapObjIso_inv_assoc, ιMapTrifunctorMapObj,
     ι_mapMap_assoc, mapTrifunctorMapNatTrans_app_app_app]

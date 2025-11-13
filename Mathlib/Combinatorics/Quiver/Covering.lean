@@ -187,7 +187,6 @@ theorem Prefunctor.pathStar_injective (hφ : ∀ u, Injective (φ.star u)) (u : 
     rcases p₂ with - | ⟨p₂, e₂⟩
     · intro; rfl -- Porting note: goal not present in lean3.
     · intro h
-      -- Porting note: added `Sigma.mk.inj_iff`
       simp only [mapPath_cons, Sigma.mk.inj_iff] at h
       exfalso
       obtain ⟨h, h'⟩ := h
@@ -226,7 +225,7 @@ theorem Prefunctor.pathStar_surjective (hφ : ∀ u, Surjective (φ.star u)) (u 
   induction p with
   | nil =>
     use ⟨u, Path.nil⟩
-    simp only [Prefunctor.mapPath_nil, eq_self_iff_true, heq_iff_eq, and_self_iff]
+    simp only [Prefunctor.mapPath_nil]
   | cons p' ev ih =>
     obtain ⟨⟨u', q'⟩, h⟩ := ih
     simp only at h
@@ -238,7 +237,7 @@ theorem Prefunctor.pathStar_surjective (hφ : ∀ u, Surjective (φ.star u)) (u 
     simp only [heq_eq_eq] at k
     subst k
     use ⟨_, q'.cons eu⟩
-    simp only [Prefunctor.mapPath_cons, eq_self_iff_true, heq_iff_eq, and_self_iff]
+    simp only [Prefunctor.mapPath_cons]
 
 theorem Prefunctor.pathStar_bijective (hφ : ∀ u, Bijective (φ.star u)) (u : U) :
     Bijective (φ.pathStar u) :=
@@ -263,8 +262,8 @@ This map is induced by `Quiver.reverse`. -/
 def Quiver.starEquivCostar (u : U) : Quiver.Star u ≃ Quiver.Costar u where
   toFun e := ⟨e.1, reverse e.2⟩
   invFun e := ⟨e.1, reverse e.2⟩
-  left_inv e := by simp [Sigma.ext_iff]
-  right_inv e := by simp [Sigma.ext_iff]
+  left_inv e := by simp
+  right_inv e := by simp
 
 @[simp]
 theorem Quiver.starEquivCostar_apply {u v : U} (e : u ⟶ v) :

@@ -40,7 +40,7 @@ lemma map_mul_natCast {α : Type*} [NonAssocSemiring α] (A B : Matrix n n ℕ) 
     map (A * B) ((↑) : ℕ → α) = map A (↑) * map B (↑) :=
   Matrix.map_mul (f := Nat.castRingHom α)
 
-lemma map_mul_intCast {α : Type*} [NonAssocRing α]  (A B : Matrix n n ℤ) :
+lemma map_mul_intCast {α : Type*} [NonAssocRing α] (A B : Matrix n n ℤ) :
     map (A * B) ((↑) : ℤ → α) = map A (↑) * map B (↑) :=
   Matrix.map_mul (f := Int.castRingHom α)
 
@@ -89,7 +89,7 @@ lemma den_neg (A : Matrix m n ℚ) : (-A).den = A.den :=
 @[simp]
 lemma num_neg (A : Matrix m n ℚ) : (-A).num = -A.num := by
   ext
-  simp [Matrix.num, map_neg]
+  simp [Matrix.num]
 
 @[simp] lemma den_transpose (A : Matrix m n ℚ) : (Aᵀ).den = A.den :=
   eq_of_forall_dvd fun _ ↦ by simpa [den_dvd_iff] using forall_comm

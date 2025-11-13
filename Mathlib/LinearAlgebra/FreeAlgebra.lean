@@ -18,6 +18,7 @@ This file provides a `FreeMonoid X` basis on the `FreeAlgebra R X`, and uses it 
 dimension of the algebra is the cardinality of `List X`
 -/
 
+open Module
 
 universe u v
 

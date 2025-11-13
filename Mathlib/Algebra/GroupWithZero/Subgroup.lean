@@ -65,7 +65,7 @@ lemma pointwise_smul_def (S : AddSubgroup A) :
     a • S = S.map (DistribMulAction.toAddMonoidEnd _ _ a) :=
   rfl
 
-@[simp]
+@[simp, norm_cast]
 lemma coe_pointwise_smul (a : M) (S : AddSubgroup A) : ↑(a • S) = a • (S : Set A) :=
   rfl
 

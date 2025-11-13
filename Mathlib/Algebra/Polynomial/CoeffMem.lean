@@ -31,17 +31,19 @@ lemma coeff_divModByMonicAux_mem_span_pow_mul_span : ∀ (p q : S[X]) (hq : q.Mo
   | p, q, hq, i => by
     rw [divModByMonicAux]
     have H₀ (i) : p.coeff i ∈ spanCoeffs(q) ^ deg(p) * spanCoeffs(p) := by
-      refine Submodule.mul_le_mul_left (pow_le_pow_left' le_sup_left _) ?_
-      simp only [one_pow, one_mul]
-      exact SetLike.le_def.mp le_sup_right (subset_span (mem_range_self i))
+      refine SetLike.le_def.mp ?_ <| subset_span <| mem_range_self i
+      calc
+        span R coeffs(p)
+        _ = 1 ^ deg(p) * span R coeffs(p) := by simp
+        _ ≤ spanCoeffs(q) ^ deg(p) * spanCoeffs(p) := by gcongr; exacts [le_sup_left, le_sup_right]
     split_ifs with hpq; swap
     · simpa using H₀ _
     simp only [coeff_add, coeff_C_mul, coeff_X_pow]
     generalize hr : (p - q * (C p.leadingCoeff * X ^ (deg(p) - deg(q)))) = r
     by_cases hr' : r = 0
     · simp only [mul_ite, mul_one, mul_zero, hr', divModByMonicAux, degree_zero, le_bot_iff,
-        degree_eq_bot, ne_eq, not_true_eq_false, and_false, ↓reduceDIte,
-        Prod.fst_zero, coeff_zero, add_zero, Prod.snd_zero, Submodule.zero_mem, and_true]
+        degree_eq_bot, ne_eq, not_true_eq_false, and_false, ↓reduceDIte, coeff_zero, add_zero,
+        Submodule.zero_mem, and_true]
       split_ifs
       exacts [H₀ _, zero_mem _]
     have H : span R coeffs(r) ≤ span R coeffs(p) ⊔ span R coeffs(q) * span R coeffs(p) := by

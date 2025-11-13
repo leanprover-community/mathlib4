@@ -64,7 +64,7 @@ open Function
 namespace LinearOrderedAddCommGroup
 
 instance instNeg [AddCommGroup α] : Neg (WithTop α) where
-  neg := Option.map fun a : α => -a
+  neg := WithTop.map fun a : α => -a
 
 /-- If `α` has subtraction, we can extend the subtraction to `WithTop α`, by
 setting `x - ⊤ = ⊤` and `⊤ - x = ⊤`. This definition is only registered as an instance on linearly
@@ -104,10 +104,10 @@ lemma sub_eq_top_iff {a b : WithTop α} : a - b = ⊤ ↔ (a = ⊤ ∨ b = ⊤) 
 
 instance [LinearOrder α] [IsOrderedAddMonoid α] : LinearOrderedAddCommGroupWithTop (WithTop α) where
   __ := WithTop.linearOrderedAddCommMonoidWithTop
-  __ := Option.nontrivial
+  __ := WithTop.nontrivial
   sub_eq_add_neg a b := by
     cases a <;> cases b <;> simp [← coe_sub, ← coe_neg, sub_eq_add_neg]
-  neg_top := Option.map_none _
+  neg_top := WithTop.map_top _
   zsmul := zsmulRec
   add_neg_cancel := by
     rintro (a | a) ha

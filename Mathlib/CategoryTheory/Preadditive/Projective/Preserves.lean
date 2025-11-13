@@ -56,7 +56,6 @@ theorem Functor.preservesEpimorphisms_of_adjunction_of_preservesProjectiveObject
     G.PreservesEpimorphisms where
   preserves {X Y} f _ := by
     suffices ∃ h, h ≫ G.map f = Projective.π (G.obj Y) from epi_of_epi_fac this.choose_spec
-    have : Projective (F.obj (Projective.over (G.obj Y))) := F.projective_obj _
     refine ⟨adj.unit.app (Projective.over (G.obj Y)) ≫
       G.map (Projective.factorThru (F.map (Projective.π _) ≫ adj.counit.app Y) f), ?_⟩
     rw [Category.assoc, ← Functor.map_comp]

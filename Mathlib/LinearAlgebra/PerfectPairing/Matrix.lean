@@ -22,12 +22,16 @@ namespace Matrix
 variable {R n : Type*} [CommRing R] [Fintype n] [DecidableEq n]
   (A : Matrix n n R) (h : Invertible A)
 
+set_option linter.deprecated false in
 /-- We may regard an invertible matrix as a perfect pairing. -/
+@[deprecated "No replacement" (since := "2025-08-16")]
 def toPerfectPairing :
     PerfectPairing R (n → R) (n → R) :=
   ((A.toLinearEquiv' h).trans (dotProductEquiv R n)).toPerfectPairing
 
-@[simp] lemma toPerfectPairing_apply_apply (v w : n → R) :
+set_option linter.deprecated false in
+@[deprecated "No replacement" (since := "2025-08-16")]
+lemma toPerfectPairing_apply_apply (v w : n → R) :
     A.toPerfectPairing h v w = A *ᵥ v ⬝ᵥ w :=
   rfl
 

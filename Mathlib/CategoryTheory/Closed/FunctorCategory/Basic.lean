@@ -68,7 +68,7 @@ noncomputable def homEquiv : (F₁ ⊗ F₂ ⟶ F₃) ≃ (F₂ ⟶ functorEnric
           ← enrichedOrdinaryCategorySelf_eHomWhiskerLeft]
         let α : Under.mk (𝟙 j) ⟶ (Under.map φ).obj (Under.mk (𝟙 j')) := Under.homMk φ
         exact (enrichedHom_condition C (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₃) α).symm }
-  left_inv f := by aesop_cat
+  left_inv f := by cat_disch
   right_inv g := by
     ext j
     dsimp

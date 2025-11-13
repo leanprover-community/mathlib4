@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Products.Basic
-import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 The hom functor, sending `(X, Y)` to the type `X ⟶ Y`.

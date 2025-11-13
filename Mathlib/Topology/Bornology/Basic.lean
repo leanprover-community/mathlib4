@@ -45,27 +45,13 @@ variable {ι α β : Type*}
 Such spaces are equivalently specified by their bounded sets, see `Bornology.ofBounded`
 and `Bornology.ext_iff_isBounded` -/
 class Bornology (α : Type*) where
-  /-- The filter of cobounded sets in a bornology. This is a field of the structure, but one
-  should always prefer `Bornology.cobounded` because it makes the `α` argument explicit. -/
-  cobounded' : Filter α
-  /-- The cobounded filter in a bornology is smaller than the cofinite filter. This is a field of
-  the structure, but one should always prefer `Bornology.le_cofinite` because it makes the `α`
-  argument explicit. -/
-  le_cofinite' : cobounded' ≤ cofinite
+  /-- The filter of cobounded sets in a bornology. -/
+  cobounded (α) : Filter α
+  /-- The cobounded filter in a bornology is smaller than the cofinite filter. -/
+  le_cofinite (α) : cobounded ≤ cofinite
 
-/- porting note: Because Lean 4 doesn't accept the `[]` syntax to make arguments of structure
-fields explicit, we have to define these separately, prove the `ext` lemmas manually, and
-initialize new `simps` projections. -/
-
-/-- The filter of cobounded sets in a bornology. -/
-def Bornology.cobounded (α : Type*) [Bornology α] : Filter α := Bornology.cobounded'
-
-alias Bornology.Simps.cobounded := Bornology.cobounded
-
-lemma Bornology.le_cofinite (α : Type*) [Bornology α] : cobounded α ≤ cofinite :=
-Bornology.le_cofinite'
-
-initialize_simps_projections Bornology (cobounded' → cobounded)
+@[deprecated (since := "2025-09-06")] alias Bornology.cobounded' := Bornology.cobounded
+@[deprecated (since := "2025-09-06")] alias Bornology.le_cofinite' := Bornology.le_cofinite
 
 @[ext]
 lemma Bornology.ext (t t' : Bornology α)
@@ -83,8 +69,8 @@ def Bornology.ofBounded {α : Type*} (B : Set (Set α))
     (subset_mem : ∀ s₁ ∈ B, ∀ s₂ ⊆ s₁, s₂ ∈ B)
     (union_mem : ∀ s₁ ∈ B, ∀ s₂ ∈ B, s₁ ∪ s₂ ∈ B)
     (singleton_mem : ∀ x, {x} ∈ B) : Bornology α where
-  cobounded' := comk (· ∈ B) empty_mem subset_mem union_mem
-  le_cofinite' := by simpa [le_cofinite_iff_compl_singleton_mem]
+  cobounded := comk (· ∈ B) empty_mem subset_mem union_mem
+  le_cofinite := by simpa [le_cofinite_iff_compl_singleton_mem]
 
 /-- A constructor for bornologies by specifying the bounded sets,
 and showing that they satisfy the appropriate conditions. -/
@@ -194,7 +180,7 @@ theorem comap_cobounded_le_iff [Bornology β] {f : α → β} :
       ⟨(f '' tᶜ)ᶜ, h <| IsCobounded.compl ht, compl_subset_comm.1 <| subset_preimage_image _ _⟩⟩
   obtain ⟨t, ht, hts⟩ := h hs.compl
   rw [subset_compl_comm, ← preimage_compl] at hts
-  exact (IsCobounded.compl ht).subset ((image_subset f hts).trans <| image_preimage_subset _ _)
+  exact (IsCobounded.compl ht).subset ((image_mono hts).trans <| image_preimage_subset _ _)
 
 end
 
@@ -276,8 +262,8 @@ instance : Bornology PUnit :=
 
 /-- The cofinite filter as a bornology -/
 abbrev Bornology.cofinite : Bornology α where
-  cobounded' := Filter.cofinite
-  le_cofinite' := le_rfl
+  cobounded := Filter.cofinite
+  le_cofinite := le_rfl
 
 /-- A space with a `Bornology` is a **bounded space** if `Set.univ : Set α` is bounded. -/
 class BoundedSpace (α : Type*) [Bornology α] : Prop where

@@ -64,8 +64,6 @@ theorem trans [Flat R S] [Flat S M] : Flat R M := by
   iterate 2 apply Flat.lTensor_preserves_injective_linearMap
   exact Subtype.val_injective
 
-@[deprecated (since := "2024-11-03")] alias comp := trans
-
 end Composition
 
 section BaseChange

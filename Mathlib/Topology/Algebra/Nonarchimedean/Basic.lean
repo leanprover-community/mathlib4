@@ -68,34 +68,32 @@ theorem nonarchimedean_of_emb (f : G →* H) (emb : IsOpenEmbedding f) : Nonarch
       let ⟨V, hV⟩ := is_nonarchimedean (f ⁻¹' U) h₁
       ⟨{ Subgroup.map f V with isOpen' := emb.isOpenMap _ V.isOpen }, Set.image_subset_iff.2 hV⟩ }
 
-/-- An open neighborhood of the identity in the cartesian product of two nonarchimedean groups
-contains the cartesian product of an open neighborhood in each group. -/
-@[to_additive NonarchimedeanAddGroup.prod_subset "An open neighborhood of the identity in
-the cartesian product of two nonarchimedean groups contains the cartesian product of
-an open neighborhood in each group."]
+/-- An open neighborhood of the identity in the Cartesian product of two nonarchimedean groups
+contains the Cartesian product of an open neighborhood in each group. -/
+@[to_additive NonarchimedeanAddGroup.prod_subset /-- An open neighborhood of the identity in
+the Cartesian product of two nonarchimedean groups contains the Cartesian product of
+an open neighborhood in each group. -/]
 theorem prod_subset {U} (hU : U ∈ 𝓝 (1 : G × K)) :
     ∃ (V : OpenSubgroup G) (W : OpenSubgroup K), (V : Set G) ×ˢ (W : Set K) ⊆ U := by
   rw [nhds_prod_eq, Filter.mem_prod_iff] at hU
   rcases hU with ⟨U₁, hU₁, U₂, hU₂, h⟩
   obtain ⟨V, hV⟩ := is_nonarchimedean _ hU₁
   obtain ⟨W, hW⟩ := is_nonarchimedean _ hU₂
-  use V; use W
-  rw [Set.prod_subset_iff]
-  intro x hX y hY
-  exact Set.Subset.trans (Set.prod_mono hV hW) h (Set.mem_sep hX hY)
+  use V
+  grind
 
-/-- An open neighborhood of the identity in the cartesian square of a nonarchimedean group
-contains the cartesian square of an open neighborhood in the group. -/
-@[to_additive NonarchimedeanAddGroup.prod_self_subset "An open neighborhood of the identity in
-the cartesian square of a nonarchimedean group contains the cartesian square of
-an open neighborhood in the group."]
+/-- An open neighborhood of the identity in the Cartesian square of a nonarchimedean group
+contains the Cartesian square of an open neighborhood in the group. -/
+@[to_additive NonarchimedeanAddGroup.prod_self_subset /-- An open neighborhood of the identity in
+the Cartesian square of a nonarchimedean group contains the Cartesian square of
+an open neighborhood in the group. -/]
 theorem prod_self_subset {U} (hU : U ∈ 𝓝 (1 : G × G)) :
     ∃ V : OpenSubgroup G, (V : Set G) ×ˢ (V : Set G) ⊆ U :=
   let ⟨V, W, h⟩ := prod_subset hU
   ⟨V ⊓ W, by refine Set.Subset.trans (Set.prod_mono ?_ ?_) ‹_› <;> simp⟩
 
-/-- The cartesian product of two nonarchimedean groups is nonarchimedean. -/
-@[to_additive "The cartesian product of two nonarchimedean groups is nonarchimedean."]
+/-- The Cartesian product of two nonarchimedean groups is nonarchimedean. -/
+@[to_additive /-- The Cartesian product of two nonarchimedean groups is nonarchimedean. -/]
 instance Prod.instNonarchimedeanGroup : NonarchimedeanGroup (G × K) where
   is_nonarchimedean _ hU :=
     let ⟨V, W, h⟩ := prod_subset hU
@@ -111,7 +109,7 @@ variable {R S : Type*}
 variable [Ring R] [TopologicalSpace R] [NonarchimedeanRing R]
 variable [Ring S] [TopologicalSpace S] [NonarchimedeanRing S]
 
-/-- The cartesian product of two nonarchimedean rings is nonarchimedean. -/
+/-- The Cartesian product of two nonarchimedean rings is nonarchimedean. -/
 instance : NonarchimedeanRing (R × S) where
   is_nonarchimedean := NonarchimedeanAddGroup.is_nonarchimedean
 
