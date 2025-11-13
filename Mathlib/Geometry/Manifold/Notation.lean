@@ -879,14 +879,14 @@ topological space, using information from the local context and a few hard-coded
 def findModelForFunpropInner (field model top : Expr) :
     TermElabM <| Option (Expr × NormedSpaceInfo) := do
   trace[Elab.DiffGeo.FunPropM] "Trying to solve a goal `ModelWithCorners {field} {model} {top}`"
-  if let some m ← tryStrategy m!"Assumption"    fromAssumption'   then
+  if let some m ← tryStrategy m!"Assumption"    fromAssumption   then
     return some (m, none)
-  if let some m ← tryStrategy m!"Normed space"  fromNormedSpace'  then
+  if let some m ← tryStrategy m!"Normed space"  fromNormedSpace  then
     return some (m, none)
   -- TODO: implement the remaining strategies, and then the inner to outer part!
   return none
 where
-  fromAssumption' : TermElabM Expr := do
+  fromAssumption : TermElabM Expr := do
     let some m ← findSomeLocalHyp? fun fvar type ↦ do
         match_expr type with
         | ModelWithCorners k _ E _ _ H _ => do
@@ -897,7 +897,7 @@ where
         | _ => return none
       | throwError "Couldn't find a `ModelWithCorners {field} {model} {top}` in the local context."
     return m
-  fromNormedSpace' : TermElabM Expr := do
+  fromNormedSpace : TermElabM Expr := do
     let some (inst, K) ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
         match_expr type with
         | NormedSpace K E _ _ =>
