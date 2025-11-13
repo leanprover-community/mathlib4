@@ -3,10 +3,7 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Algebra.Group.Basic
-
--- import Mathlib.Data.Rat.Init
-import Mathlib.Tactic.Widget.InteractiveUnfold
+import Mathlib
 
 /-!
 The `unfold?` tactic is used interactively, so it is tricky to test directly.
@@ -38,7 +35,7 @@ info: Unfolds for 42:
 · Rat.ofInt ↑42
 -/
 #guard_msgs in
-#unfold? (42 : Rat)
+#unfold? (42 : ℚ)
 
 /--
 info: Unfolds for 1 + 1:
