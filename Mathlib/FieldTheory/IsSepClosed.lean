@@ -78,7 +78,7 @@ See also `IsSepClosed.splits_domain` for the case where `k` is separably closed.
 -/
 theorem IsSepClosed.splits_codomain [IsSepClosed K] {f : k →+* K}
     (p : k[X]) (h : p.Separable) : (Polynomial.map f p).Splits := by
-  convert IsSepClosed.splits_of_separable (p.map f) (Separable.map h); simp [splits_map_iff]
+  convert IsSepClosed.splits_of_separable (p.map f) (Separable.map h); simp
 
 /-- Every separable polynomial splits in the field extension `f : k →+* K` if `k` is
 separably closed.
