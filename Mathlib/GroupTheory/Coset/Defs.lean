@@ -46,7 +46,7 @@ open scoped Pointwise
 variable {α : Type*}
 
 /- Ensure that `@[to_additive]` uses the right namespace. -/
-run_meta ToAdditive.insertTranslation `QuotientGroup `QuotientAddGroup
+insert_to_additive_translation QuotientGroup QuotientAddGroup
 
 namespace QuotientGroup
 

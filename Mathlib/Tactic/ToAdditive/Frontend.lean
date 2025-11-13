@@ -1,7 +1,8 @@
 /-
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
+Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster, Bryan Gin-ge Chen,
+Jovan Gerbscheid
 -/
 import Batteries.Tactic.Trans
 import Lean.Compiler.NoncomputableAttr
@@ -19,69 +20,39 @@ import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.ToAdditive.GuessName
 
 /-!
-# The `@[to_additive]` attribute.
+# The translation attribute.
 
-Implementation of the `to_additive` attribute.
-See the docstring of `ToAdditive.to_additive` for more information
+Implementation of the translation attribute. This is used for `@[to_additive]` and `@[to_dual]`.
+See the docstring of `to_additive` for more information
 -/
 
 open Lean Meta Elab Command Std
 
-namespace ToAdditive
-open ToAdditive -- currently needed to enable projection notation
+namespace Mathlib.Tactic.Translate
+open Translate -- currently needed to enable projection notation
 
-/-- An attribute that tells `@[to_additive]` that certain arguments of this definition are not
-involved when using `@[to_additive]`.
-This helps the heuristic of `@[to_additive]` by also transforming definitions if `ℕ` or another
-fixed type occurs as one of these arguments. -/
-syntax (name := to_additive_ignore_args) "to_additive_ignore_args" (ppSpace num)* : attr
-
-/-- This attribute is deprecated. Use `to_additive (relevant_arg := ...)` instead. -/
-syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg " num : attr
-
-/-- An attribute that stores all the declarations that deal with numeric literals on variable types.
-
-Numeral literals occur in expressions without type information, so in order to decide whether `1`
-needs to be changed to `0`, the context around the numeral is relevant.
-Most numerals will be in an `OfNat.ofNat` application, though tactics can add numeral literals
-inside arbitrary functions. By default we assume that we do not change numerals, unless it is
-in a function application with the `to_additive_change_numeral` attribute.
-
-`@[to_additive_change_numeral n₁ ...]` should be added to all functions that take one or more
-numerals as argument that should be changed if `additiveTest` succeeds on the first argument,
-i.e. when the numeral is only translated if the first argument is a variable
-(or consists of variables).
-The arguments `n₁ ...` are the positions of the numeral arguments (starting counting from 1). -/
-syntax (name := to_additive_change_numeral) "to_additive_change_numeral" (ppSpace num)* : attr
-
-/-- The `to_additive_dont_translate` attribute, used to specify types that should be translated by
-`to_additive`, but its operations should remain multiplicative.
-
-Usage notes:
-* Apply this together with the `to_additive` attribute.
-* The name generation of `to_additive` is not aware that the operations on this type should not be
-  translated, so you generally have to specify the name itself, if the name should remain
-  multiplicative.
--/
-syntax (name := to_additive_dont_translate) "to_additive_dont_translate" : attr
-
-/-- An `attr := ...` option for `to_additive`. -/
-syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
+/-- `(attr := ...)` applies the given attributes to the original and the translated declaration.
+In the case of `to_additive`, we may want to apply it multiple times,
+(such as in `a ^ n` -> `n • a` -> `n +ᵥ a`). In this case, you should use the syntax
+`to_additive (attr := some_other_attr, to_additive)`, which will apply `some_other_attr` to all
+three generated declarations.
+ -/
+syntax attrOption := &"attr" " := " Parser.Term.attrInstance,*
 /--
-`reorder := ...` reorders the arguments/hypotheses in the generated declaration.
+`(reorder := ...)` reorders the arguments/hypotheses in the generated declaration.
 It uses cycle notation. For example `(reorder := 1 2, 5 6)` swaps the first two
 arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
 the fifth argument before the third argument. This is used in `to_dual` to swap the arguments in
 `≤`, `<` and `⟶`. It is also used in `to_additive` to translate from `^` to `•`.
 -/
-syntax toAdditiveReorderOption := &"reorder" " := " (num+),+
+syntax reorderOption := &"reorder" " := " (num+),+
 /--
-the `relevant_arg := ...` option tells which argument is a type where this declaration uses the
-multiplicative structure. This is inferred automatically using the function `findMultiplicativeArg`,
+the `(relevant_arg := ...)` option tells which argument to look at to determine whether to
+translate this constant. This is inferred automatically using the function `findRelevantArg`,
 but it can also be overwritten using this syntax.
 
-If there are multiple arguments with a multiplicative structure, we typically tag the first one.
-If this argument contains a fixed type, this declaration will not be additivized.
+If there are multiple possible arguments, we typically tag the first one.
+If this argument contains a fixed type, this declaration will not be translated.
 See the Heuristics section of the `to_additive` doc-string for more details.
 
 If a declaration is not tagged, it is presumed that the first argument is relevant.
@@ -90,406 +61,195 @@ To indicate that there is no relevant argument, set it to a number that is out o
 i.e. larger than the number of arguments, e.g. `(relevant_arg := 100)`.
 
 Implementation note: we only allow exactly 1 relevant argument, even though some declarations
-(like `Prod.instGroup`) have multiple arguments with a multiplicative structure on it.
-The reason is that whether we additivize a declaration is an all-or-nothing decision, and
-we will not be able to additivize declarations that (e.g.) talk about multiplication on `ℕ × α`
+(like `Prod.instGroup`) have multiple relevant argument.
+The reason is that whether we translate a declaration is an all-or-nothing decision, and
+we will not be able to translate declarations that (e.g.) talk about multiplication on `ℕ × α`
 anyway.
 -/
-syntax toAdditiveRelevantOption := &"relevant_arg" " := " num
+syntax relevantArgOption := &"relevant_arg" " := " num
 /--
-`dont_translate := ...` takes a list of type variables (separated by spaces) that should not be
+`(dont_translate := ...)` takes a list of type variables (separated by spaces) that should not be
 considered for translation. For example in
 ```
 lemma foo {α β : Type} [Group α] [Group β] (a : α) (b : β) : a * a⁻¹ = 1 ↔ b * b⁻¹ = 1
 ```
-we can choose to only additivize `α` by writing `to_additive (dont_translate := β)`.
+we can choose to only translate `α` by writing `to_additive (dont_translate := β)`.
 -/
-syntax toAdditiveDontTranslateOption := &"dont_translate" " := " ident+
-/-- Options to `to_additive`. -/
-syntax toAdditiveOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption <|>
-  toAdditiveRelevantOption <|> toAdditiveDontTranslateOption ")"
-/-- An `existing` or `self` name hint for `to_additive`. -/
-syntax toAdditiveNameHint := (ppSpace (&"existing" <|> &"self"))?
-/-- Remaining arguments of `to_additive`. -/
-syntax toAdditiveRest :=
-  toAdditiveNameHint (ppSpace toAdditiveOption)* (ppSpace ident)? (ppSpace (str <|> docComment))?
+syntax dontTranslateOption := &"dont_translate" " := " ident+
+syntax bracketedOption := "(" attrOption <|> reorderOption <|>
+  relevantArgOption <|> dontTranslateOption ")"
+/-- A hint for where to find the translated declaration (`existing` or `self`) -/
+syntax existingNameHint := (ppSpace (&"existing" <|> &"self"))?
+syntax attrArgs :=
+  existingNameHint (ppSpace bracketedOption)* (ppSpace ident)? (ppSpace (str <|> docComment))?
 
-/-- The attribute `to_additive` can be used to automatically transport theorems
-and definitions (but not inductive types and structures) from a multiplicative
-theory to an additive theory.
+-- We omit a doc-string on these syntaxes to instead show the `to_additive` or `to_dual` doc-string
+attribute [nolint docBlame] attrArgs bracketedOption
 
-To use this attribute, just write:
+/-- An attribute that stores all the declarations that deal with numeric literals on variable types.
 
-```
-@[to_additive]
-theorem mul_comm' {α} [CommSemigroup α] (x y : α) : x * y = y * x := mul_comm x y
-```
+Numeral literals occur in expressions without type information, so in order to decide whether `1`
+needs to be changed to `0`, the context around the numeral is relevant.
+Most numerals will be in an `OfNat.ofNat` application, though tactics can add numeral literals
+inside arbitrary functions. By default we assume that we do not change numerals, unless it is
+in a function application with the `translate_change_numeral` attribute.
 
-This code will generate a theorem named `add_comm'`. It is also
-possible to manually specify the name of the new declaration:
+`@[translate_change_numeral n₁ ...]` should be added to all functions that take one or more
+numerals as argument that should be changed if `shouldTranslate` succeeds on the first argument,
+i.e. when the numeral is only translated if the first argument is a variable
+(or consists of variables).
+The arguments `n₁ ...` are the positions of the numeral arguments (starting counting from 1). -/
+syntax (name := translate_change_numeral) "translate_change_numeral" (ppSpace num)* : attr
 
-```
-@[to_additive add_foo]
-theorem foo := sorry
-```
+initialize registerTraceClass `translate
+initialize registerTraceClass `translate_detail
 
-An existing documentation string will _not_ be automatically used, so if the theorem or definition
-has a doc string, a doc string for the additive version should be passed explicitly to
-`to_additive`.
-
-```
-/-- Multiplication is commutative -/
-@[to_additive /-- Addition is commutative -/]
-theorem mul_comm' {α} [CommSemigroup α] (x y : α) : x * y = y * x := CommSemigroup.mul_comm
-```
-
-The transport tries to do the right thing in most cases using several
-heuristics described below.  However, in some cases it fails, and
-requires manual intervention.
-
-Use the `to_additive existing` syntax to use an existing additive declaration, instead of
-automatically generating it.
-
-Use the `(reorder := ...)` syntax to reorder the arguments in the generated additive declaration.
-This is specified using cycle notation. For example `(reorder := 1 2, 5 6)` swaps the first two
-arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
-the fifth argument before the third argument. This is mostly useful to translate declarations using
-`Pow` to those using `SMul`.
-
-Use the `(attr := ...)` syntax to apply attributes to both the multiplicative and the additive
-version:
-
-```
-@[to_additive (attr := simp)] lemma mul_one' {G : Type*} [Group G] (x : G) : x * 1 = x := mul_one x
-```
-
-For `simps` this also ensures that some generated lemmas are added to the additive dictionary.
-`@[to_additive (attr := to_additive)]` is a special case, where the `to_additive`
-attribute is added to the generated lemma only, to additivize it again.
-This is useful for lemmas about `Pow` to generate both lemmas about `SMul` and `VAdd`. Example:
-```
-@[to_additive (attr := to_additive VAdd_lemma, simp) SMul_lemma]
-lemma Pow_lemma ... :=
-```
-In the above example, the `simp` is added to all 3 lemmas. All other options to `to_additive`
-(like the generated name or `(reorder := ...)`) are not passed down,
-and can be given manually to each individual `to_additive` call.
-
-## Implementation notes
-
-The transport process generally works by taking all the names of
-identifiers appearing in the name, type, and body of a declaration and
-creating a new declaration by mapping those names to additive versions
-using a simple string-based dictionary and also using all declarations
-that have previously been labeled with `to_additive`. The dictionary is `ToAdditive.nameDict`
-and can be found in the `Tactic.ToAdditive.GuessName` file. If you introduce a new name which
-should be translated by `to_additive` you should add the translation to this dictionary.
-
-In the `mul_comm'` example above, `to_additive` maps:
-* `mul_comm'` to `add_comm'`,
-* `CommSemigroup` to `AddCommSemigroup`,
-* `x * y` to `x + y` and `y * x` to `y + x`, and
-* `CommSemigroup.mul_comm'` to `AddCommSemigroup.add_comm'`.
-
-### Heuristics
-
-`to_additive` uses heuristics to determine whether a particular identifier has to be
-mapped to its additive version. The basic heuristic is
-
-* Only map an identifier to its additive version if its first argument doesn't
-  contain any unapplied identifiers.
-
-Examples:
-* `@Mul.mul Nat n m` (i.e. `(n * m : Nat)`) will not change to `+`, since its
-  first argument is `Nat`, an identifier not applied to any arguments.
-* `@Mul.mul (α × β) x y` will change to `+`. It's first argument contains only the identifier
-  `Prod`, but this is applied to arguments, `α` and `β`.
-* `@Mul.mul (α × Int) x y` will not change to `+`, since its first argument contains `Int`.
-
-The reasoning behind the heuristic is that the first argument is the type which is "additivized",
-and this usually doesn't make sense if this is on a fixed type.
-
-There are some exceptions to this heuristic:
-
-* Identifiers that have the `@[to_additive]` attribute are ignored.
-  For example, multiplication in `↥Semigroup` is replaced by addition in `↥AddSemigroup`.
-  You can turn this behavior off by *also* adding the `@[to_additive_dont_translate]` attribute.
-* If an identifier `d` has attribute `@[to_additive (relevant_arg := n)]` then the argument
-  in position `n` is checked for a fixed type, instead of checking the first argument.
-  `@[to_additive]` will automatically add the attribute `(relevant_arg := n)` to a
-  declaration when the first argument has no multiplicative type-class, but argument `n` does.
-* If an identifier has attribute `@[to_additive_ignore_args n1 n2 ...]` then all the arguments in
-  positions `n1`, `n2`, ... will not be checked for unapplied identifiers (start counting from 1).
-  For example, `ContMDiffMap` has attribute `@[to_additive_ignore_args 21]`, which means
-  that its 21st argument `(n : WithTop ℕ)` can contain `ℕ`
-  (usually in the form `Top.top ℕ ...`) and still be additivized.
-  So `@Mul.mul (C^∞⟮I, N; I', G⟯) _ f g` will be additivized.
-
-### Troubleshooting
-
-If `@[to_additive]` fails because the additive declaration raises a type mismatch, there are
-various things you can try.
-The first thing to do is to figure out what `@[to_additive]` did wrong by looking at the type
-mismatch error.
-
-* Option 1: The most common case is that it didn't additivize a declaration that should be
-  additivized. This happened because the heuristic applied, and the first argument contains a
-  fixed type, like `ℕ` or `ℝ`. However, the heuristic misfires on some other declarations.
-  Solutions:
-  * First figure out what the fixed type is in the first argument of the declaration that didn't
-    get additivized. Note that this fixed type can occur in implicit arguments. If manually finding
-    it is hard, you can run `set_option trace.to_additive_detail true` and search the output for the
-    fragment "contains the fixed type" to find what the fixed type is.
-  * If the fixed type has an additive counterpart (like `↥Semigroup`), give it the `@[to_additive]`
-    attribute.
-  * If the fixed type has nothing to do with algebraic operations (like `TopCat`), add the attribute
-    `@[to_additive self]` to the fixed type `Foo`.
-  * If the fixed type occurs inside the `k`-th argument of a declaration `d`, and the
-    `k`-th argument is not connected to the multiplicative structure on `d`, consider adding
-    attribute `[to_additive_ignore_args k]` to `d`.
-    Example: `ContMDiffMap` ignores the argument `(n : WithTop ℕ)`
-  * If none of the arguments have a multiplicative structure, then the heuristic should not apply at
-    all. This can be achieved by setting `relevant_arg` out of bounds, e.g. `(relevant_arg := 100)`.
-* Option 2: It additivized a declaration `d` that should remain multiplicative. Solution:
-  * Make sure the first argument of `d` is a type with a multiplicative structure. If not, can you
-    reorder the (implicit) arguments of `d` so that the first argument becomes a type with a
-    multiplicative structure (and not some indexing type)?
-    The reason is that `@[to_additive]` doesn't additivize declarations if their first argument
-    contains fixed types like `ℕ` or `ℝ`. See section Heuristics.
-    If the first argument is not the argument with a multiplicative type-class, `@[to_additive]`
-    should have automatically added the attribute `(relevant_arg := ...)` to the declaration.
-    You can test this by running the following (where `d` is the full name of the declaration):
-    ```
-      open Lean in run_cmd logInfo m!"{ToAdditive.relevantArgAttr.find? (← getEnv) `d}"
-    ```
-    The expected output is `n` where the `n`-th (0-indexed) argument of `d` is a type (family)
-    with a multiplicative structure on it. `none` means `0`.
-    If you get a different output (or a failure), you could add the attribute
-    `@[to_additive (relevant_arg := n)]` manually, where `n` is an (1-indexed) argument with a
-    multiplicative structure.
-* Option 3: Arguments / universe levels are incorrectly ordered in the additive version.
-  This likely only happens when the multiplicative declaration involves `pow`/`^`. Solutions:
-  * Ensure that the order of arguments of all relevant declarations are the same for the
-    multiplicative and additive version. This might mean that arguments have an "unnatural" order
-    (e.g. `Monoid.npow n x` corresponds to `x ^ n`, but it is convenient that `Monoid.npow` has this
-    argument order, since it matches `AddMonoid.nsmul n x`.
-  * If this is not possible, add `(reorder := ...)` argument to `to_additive`.
-
-If neither of these solutions work, and `to_additive` is unable to automatically generate the
-additive version of a declaration, manually write and prove the additive version.
-Often the proof of a lemma/theorem can just be the multiplicative version of the lemma applied to
-`multiplicative G`.
-Afterwards, apply the attribute manually:
-
-```
-attribute [to_additive foo_add_bar] foo_bar
-```
-
-This will allow future uses of `to_additive` to recognize that
-`foo_bar` should be replaced with `foo_add_bar`.
-
-### Handling of hidden definitions
-
-Before transporting the “main” declaration `src`, `to_additive` first
-scans its type and value for names starting with `src`, and transports
-them. This includes auxiliary definitions like `src._match_1`
-
-In addition to transporting the “main” declaration, `to_additive` transports
-its equational lemmas and tags them as equational lemmas for the new declaration.
-
-### Structure fields and constructors
-
-If `src` is a structure, then the additive version has to be already written manually.
-In this case `to_additive` adds all structure fields to its mapping.
-
-### Name generation
-
-* If `@[to_additive]` is called without a `name` argument, then the
-  new name is autogenerated.  First, it takes the longest prefix of
-  the source name that is already known to `to_additive`, and replaces
-  this prefix with its additive counterpart. Second, it takes the last
-  part of the name (i.e., after the last dot), and replaces common
-  name parts (“mul”, “one”, “inv”, “prod”) with their additive versions.
-
-* You can add a namespace translation using the following command:
-  ```
-  run_meta ToAdditive.insertTranslation `QuotientGroup `QuotientAddGroup
-  ```
-  Later uses of `@[to_additive]` on declarations in the `QuotientGroup`
-  namespace will be created in the `QuotientAddGroup` namespace.
-  This is not necessary if there is already a declaration with name `QuotientGroup`.
-
-* If `@[to_additive]` is called with a `name` argument `new_name`
-  /without a dot/, then `to_additive` updates the prefix as described
-  above, then replaces the last part of the name with `new_name`.
-
-* If `@[to_additive]` is called with a `name` argument
-  `NewNamespace.new_name` /with a dot/, then `to_additive` uses this
-  new name as is.
-
-As a safety check, in the first case `to_additive` double checks
-that the new name differs from the original one. -/
-syntax (name := to_additive) "to_additive" "?"? toAdditiveRest : attr
-
-@[inherit_doc to_additive]
-macro "to_additive?" rest:toAdditiveRest : attr => `(attr| to_additive ? $rest)
-
-initialize registerTraceClass `to_additive
-initialize registerTraceClass `to_additive_detail
-
-/-- Linter, mostly used by `@[to_additive]`, that checks that the source declaration doesn't have
-certain attributes -/
+/-- Linter, mostly used by translate attributes, that checks that the source declaration doesn't
+have certain attributes -/
 register_option linter.existingAttributeWarning : Bool := {
   defValue := true
-  descr := "Linter, mostly used by `@[to_additive]`, that checks that the source declaration \
+  descr := "Linter, mostly used by translate attributes, that checks that the source declaration \
     doesn't have certain attributes" }
 
-/-- Linter to check that the `to_additive` attribute is not given manually -/
-register_option linter.toAdditiveGenerateName : Bool := {
+/-- Linter used by translate attributes that checks if the given declaration name is
+    equal to the automatically generated name -/
+register_option linter.translateGenerateName : Bool := {
   defValue := true
-  descr := "Linter used by `@[to_additive]` that checks if `@[to_additive]` automatically \
-    generates the user-given name" }
+  descr := "Linter used by translate attributes that checks if the given declaration name is \
+    equal to the automatically generated name" }
 
-/-- Linter to check whether the user correctly specified that the additive declaration already
+/-- Linter to check whether the user correctly specified that the translated declaration already
 exists -/
-register_option linter.toAdditiveExisting : Bool := {
+register_option linter.translateExisting : Bool := {
   defValue := true
-  descr := "Linter used by `@[to_additive]` that checks whether the user correctly specified that
-    the additive declaration already exists" }
+  descr := "Linter used by translate attributes that checks whether the user correctly specified
+    that the translated declaration already exists" }
 
-/-- Linter to check that the `relevant_arg` attribute is not given manually -/
-register_option linter.toAdditiveRelevantArg : Bool := {
-  defValue := true
-  descr := "Linter to check that the `relevant_arg` attribute is not given manually." }
-
-
-@[inherit_doc to_additive_ignore_args]
-initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
-  registerNameMapAttribute {
-    name  := `to_additive_ignore_args
-    descr :=
-      "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized."
-    add   := fun _ stx ↦ do
-        let ids ← match stx with
-          | `(attr| to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
-          | _ => throwUnsupportedSyntax
-        return ids.toList }
-
-/-- An extension that stores all the declarations that need their arguments reordered when
-applying `@[to_additive]`. It is applied using the `to_additive (reorder := ...)` syntax. -/
-initialize reorderAttr : NameMapExtension (List (List Nat)) ←
-  registerNameMapExtension _
-
-@[inherit_doc to_additive_relevant_arg]
-initialize relevantArgAttr : NameMapExtension Nat ←
-  registerNameMapAttribute {
-    name := `to_additive_relevant_arg
-    descr := "Auxiliary attribute for `to_additive` stating \
-      which arguments are the types with a multiplicative structure."
-    add := fun
-    | _, stx@`(attr| to_additive_relevant_arg $id) => do
-      Linter.logLintIf linter.toAdditiveRelevantArg stx
-        m!"This attribute is deprecated. Use `@[to_additive (relevant_arg := ...)]` instead."
-      pure <| id.getNat.pred
-    | _, _ => throwUnsupportedSyntax }
-
-@[inherit_doc to_additive_dont_translate]
-initialize dontTranslateAttr : NameMapExtension Unit ←
-  registerNameMapAttribute {
-    name := `to_additive_dont_translate
-    descr := "Auxiliary attribute for `to_additive` stating \
-      that the operations on this type should not be translated."
-    add := fun
-    | _, `(attr| to_additive_dont_translate) => return
-    | _, _ => throwUnsupportedSyntax }
-
-@[inherit_doc to_additive_change_numeral]
+@[inherit_doc translate_change_numeral]
 initialize changeNumeralAttr : NameMapExtension (List Nat) ←
   registerNameMapAttribute {
-    name := `to_additive_change_numeral
+    name := `translate_change_numeral
     descr :=
       "Auxiliary attribute for `to_additive` that stores functions that have numerals as argument."
     add := fun
-    | _, `(attr| to_additive_change_numeral $[$arg]*) =>
+    | _, `(attr| translate_change_numeral $[$arg]*) =>
       pure <| arg.map (·.1.isNatLit?.get!.pred) |>.toList
     | _, _ => throwUnsupportedSyntax }
 
-/-- Maps multiplicative names to their additive counterparts. -/
-initialize translations : NameMapExtension Name ← registerNameMapExtension _
+/-- `TranslateData` is a structure that holds all data required for a translation attribute. -/
+structure TranslateData : Type where
+  /-- An attribute that tells that certain arguments of this definition are not
+  involved when translating.
+  This helps the translation heuristic by also transforming definitions if `ℕ` or another
+  fixed type occurs as one of these arguments. -/
+  ignoreArgsAttr : NameMapExtension (List Nat)
+  /-- `reorderAttr` stores the declarations that need their arguments reordered when translating.
+  This is specified using the `(reorder := ...)` syntax. -/
+  reorderAttr : NameMapExtension (List <| List Nat)
+  relevantArgAttr : NameMapExtension Nat
+  /-- The global `dont_translate` attribute specifies that operations on the given type
+  should not be translated. This can be either for types that are translated,
+  such as `MonoidAlgebra` -> `AddMonoidAlgebra`, or for fixed types, such as `Fin n`/`ZMod n`.
 
-/-- Get the multiplicative → additive translation for the given name. -/
-def findTranslation? (env : Environment) : Name → Option Name :=
-  (ToAdditive.translations.getState env).find?
+  Note: The name generation is not aware that the operations on this type should not be translated,
+    so you generally have to specify a name manually, if some part should not be translated.
+  -/
+  dontTranslateAttr : NameMapExtension Unit
+  /-- `translations` stores all of the constants that have been tagged with this attribute,
+  and maps them to their translation. -/
+  translations : NameMapExtension Name
+  /-- The name of the attribute, for example `to_additive` or `to_dual`. -/
+  attrName : Name
+  /-- If `changeNumeral := true`, then try to translate the number `1` to `0`. -/
+  changeNumeral : Bool
+  /-- When `isDual := true`, every translation `A → B` will also give a translation `B → A`. -/
+  isDual : Bool
+  guessNameData : GuessName.GuessNameData
 
-/-- Get the multiplicative → additive translation for the given name,
+attribute [inherit_doc relevantArgOption] TranslateData.relevantArgAttr
+attribute [inherit_doc GuessName.GuessNameData] TranslateData.guessNameData
+
+/-- Get the translation for the given name. -/
+def findTranslation? (env : Environment) (t : TranslateData) : Name → Option Name :=
+  (t.translations.getState env).find?
+
+/-- Get the translation for the given name,
 falling back to translating a prefix of the name if the full name can't be translated.
 This allows translating automatically generated declarations such as `IsRegular.casesOn`. -/
-def findPrefixTranslation (env : Environment) (nm : Name) : Name :=
-  nm.mapPrefix (findTranslation? env)
+def findPrefixTranslation (env : Environment) (nm : Name) (t : TranslateData) : Name :=
+  nm.mapPrefix (findTranslation? env t)
 
-/-- Add a (multiplicative → additive) name translation to the translations map. -/
-def insertTranslation (src tgt : Name) (failIfExists := true) : CoreM Unit := do
-  if let some tgt' := findTranslation? (← getEnv) src then
+/-- Add a name translation to the translations map. -/
+def insertTranslation (t : TranslateData) (src tgt : Name) (failIfExists := true) : CoreM Unit := do
+  if let some tgt' := findTranslation? (← getEnv) t src then
     if failIfExists then
       throwError "The translation {src} ↦ {tgt'} already exists"
     else
-      trace[to_additive] "The translation {src} ↦ {tgt'} already exists"
+      trace[translate] "The translation {src} ↦ {tgt'} already exists"
       return
-  modifyEnv (ToAdditive.translations.addEntry · (src, tgt))
-  trace[to_additive] "Added translation {src} ↦ {tgt}"
+  modifyEnv (t.translations.addEntry · (src, tgt))
+  trace[translate] "Added translation {src} ↦ {tgt}"
+  -- For an attribute like `to_dual`, we also insert the reverse direction of the translation
+  if t.isDual && src != tgt then
+    if let some src' := findTranslation? (← getEnv) t tgt then
+      if failIfExists then
+        throwError "The translation {tgt} ↦ {src'} already exists"
+      else
+        trace[translate] "The translation {tgt} ↦ {src'} already exists"
+        return
+    modifyEnv (t.translations.addEntry · (tgt, src))
+    trace[translate] "Also added translation {tgt} ↦ {src}"
 
 /-- `ArgInfo` stores information about how a constant should be translated. -/
 structure ArgInfo where
-  /-- The arguments that should be reordered by `to_additive`, using cycle notation. -/
+  /-- The arguments that should be reordered when translating, using cycle notation. -/
   reorder : List (List Nat) := []
   /-- The argument used to determine whether this constant should be translated. -/
   relevantArg : Nat := 0
 
 /-- Add a name translation to the translations map and add the `argInfo` information to `src`. -/
-def insertTranslationAndInfo (src tgt : Name) (argInfo : ArgInfo) (failIfExists := true) :
-    CoreM Unit := do
-  insertTranslation src tgt failIfExists
+def insertTranslationAndInfo (t : TranslateData) (src tgt : Name) (argInfo : ArgInfo)
+    (failIfExists := true) : CoreM Unit := do
+  insertTranslation t src tgt failIfExists
   if argInfo.reorder != [] then
-    trace[to_additive] "@[to_additive] will reorder the arguments of {tgt} by {argInfo.reorder}."
-    reorderAttr.add src argInfo.reorder
+    trace[translate] "@[{t.attrName}] will reorder the arguments of {tgt} by {argInfo.reorder}."
+    t.reorderAttr.add src argInfo.reorder
   if argInfo.relevantArg != 0 then
-    trace[to_additive_detail] "Setting relevant_arg for {src} to be {argInfo.relevantArg}."
-    relevantArgAttr.add src argInfo.relevantArg
+    trace[translate_detail] "Setting relevant_arg for {src} to be {argInfo.relevantArg}."
+    t.relevantArgAttr.add src argInfo.relevantArg
 
 /-- `Config` is the type of the arguments that can be provided to `to_additive`. -/
 structure Config : Type where
-  /-- View the trace of the to_additive procedure.
-  Equivalent to `set_option trace.to_additive true`. -/
+  /-- View the trace of the translation procedure.
+  Equivalent to `set_option trace.translate true`. -/
   trace : Bool := false
-  /-- The name of the target (the additive declaration). -/
+  /-- The given name of the target. -/
   tgt : Name := Name.anonymous
   /-- An optional doc string. -/
   doc : Option String := none
   /-- If `allowAutoName` is `false` (default) then
-  `@[to_additive]` will check whether the given name can be auto-generated. -/
+  we check whether the given name can be auto-generated. -/
   allowAutoName : Bool := false
-  /-- The arguments that should be reordered by `to_additive`, using cycle notation. -/
+  /-- The arguments that should be reordered when translating, using cycle notation. -/
   reorder : List (List Nat) := []
   /-- The argument used to determine whether this constant should be translated. -/
   relevantArg? : Option Nat := none
-  /-- The attributes which we want to give to both the multiplicative and additive versions.
+  /-- The attributes which we want to give to the original and translated declaration.
   For `simps` this will also add generated lemmas to the translation dictionary. -/
   attrs : Array Syntax := #[]
-  /-- A list of type variables that should not be translated by `to_additive`. -/
+  /-- A list of type variables that should not be translated. -/
   dontTranslate : List Ident := []
-  /-- The `Syntax` element corresponding to the original multiplicative declaration
-  (or the `to_additive` attribute if it is added later),
-  which we need for adding definition ranges. -/
+  /-- The `Syntax` element corresponding to the translation attribute,
+  which we need for adding definition ranges, and for logging messages. -/
   ref : Syntax
-  /-- An optional flag stating that the additive declaration already exists.
-  If this flag is wrong about whether the additive declaration exists, `to_additive` will
-  raise a linter error.
+  /-- An optional flag stating that the translated declaration already exists.
+  If this flag is wrong about whether the translated declaration exists, we raise a linter error.
   Note: the linter will never raise an error for inductive types and structures. -/
   existing : Bool := false
   /-- An optional flag stating that the target of the translation is the target itself.
   This can be used to reorder arguments, such as in
   `attribute [to_dual self (reorder := 3 4)] LE.le`.
-  It can also be used to give a hint to `additiveTest`, such as in
+  It can also be used to give a hint to `shouldTranslate`, such as in
   `attribute [to_additive self] Unit`.
   If `self := true`, we should also have `existing := true`. -/
   self : Bool := false
@@ -505,9 +265,9 @@ def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
 /-- `e.expand` eta-expands all expressions that have as head a constant `n` in `reorder`.
 They are expanded until they are applied to one more argument than the maximum in `reorder.find n`.
 It also expands all kernel projections that have as head a constant `n` in `reorder`. -/
-def expand (e : Expr) : MetaM Expr := do
+def expand (t : TranslateData) (e : Expr) : MetaM Expr := do
   let env ← getEnv
-  let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
+  let reorderFn : Name → List (List ℕ) := fun nm ↦ (t.reorderAttr.find? env nm |>.getD [])
   let e₂ ← Lean.Meta.transform (input := e) (skipConstInApp := true)
     (post := fun e => return .done e) fun e ↦
     e.withApp fun f args ↦ do
@@ -515,9 +275,9 @@ def expand (e : Expr) : MetaM Expr := do
     | .proj n i s =>
       let some info := getStructureInfo? (← getEnv) n | return .continue -- e.g. if `n` is `Exists`
       let some projName := info.getProjFn? i | unreachable!
-      -- if `projName` is explicitly tagged with `@[to_additive]`,
-      -- replace `f` with the application `projName s` and then visit `projName s args` again.
-      if findTranslation? env projName |>.isNone then
+      -- if `projName` has a translation, replace `f` with the application `projName s`
+      -- and then visit `projName s args` again.
+      if findTranslation? env t projName |>.isNone then
         return .continue
       return .visit <| (← whnfD (← inferType s)).withApp fun sf sargs ↦
         mkAppN (mkApp (mkAppN (.const projName sf.constLevels!) sargs) s) args
@@ -533,14 +293,14 @@ def expand (e : Expr) : MetaM Expr := do
         -- in this case, we need to reorder arguments that are not yet
         -- applied, so first η-expand the function.
         let e' ← etaExpandN (needed_n - args.size) e
-        trace[to_additive_detail] "expanded {e} to {e'}"
+        trace[translate_detail] "expanded {e} to {e'}"
         return .continue e'
     | _ => return .continue
   if e != e₂ then
-    trace[to_additive_detail] "expand:\nBefore: {e}\nAfter: {e₂}"
+    trace[translate_detail] "expand:\nBefore: {e}\nAfter: {e₂}"
   return e₂
 
-/-- Implementation function for `additiveTest`.
+/-- Implementation function for `shouldTranslate`.
 Failure means that in that subexpression there is no constant that blocks `e` from being translated.
 We cache previous applications of the function, using an expression cache using ptr equality
 to avoid visiting the same subexpression many times. Note that we only need to cache the
@@ -550,12 +310,12 @@ cache constant expressions, so that's why the `if`s in the implementation are in
 
 Note that this function is still called many times by `applyReplacementFun`
 and we're not remembering the cache between these calls. -/
-unsafe def additiveTestUnsafe (env : Environment) (e : Expr) (dontTranslate : Array FVarId) :
-    Option (Name ⊕ FVarId) :=
+private unsafe def shouldTranslateUnsafe (env : Environment) (t : TranslateData) (e : Expr)
+    (dontTranslate : Array FVarId) : Option (Name ⊕ FVarId) :=
   let rec visit (e : Expr) (inApp := false) : OptionT (StateM (PtrSet Expr)) (Name ⊕ FVarId) := do
     if e.isConst then
-      if (dontTranslateAttr.find? env e.constName).isNone &&
-        (inApp || (findTranslation? env e.constName).isSome) then
+      if (t.dontTranslateAttr.find? env e.constName).isNone &&
+        (inApp || (findTranslation? env t e.constName).isSome) then
         failure
       else
         return .inl e.constName
@@ -568,7 +328,7 @@ unsafe def additiveTestUnsafe (env : Environment) (e : Expr) (dontTranslate : Ar
           -- make sure that we don't treat `(fun x => α) (n + 1)` as a type that depends on `Nat`
           guard !x.isConstantApplication
           if let some n := e.getAppFn.constName? then
-            if let some l := ignoreArgsAttr.find? env n then
+            if let some l := t.ignoreArgsAttr.find? env n then
               if e.getAppNumArgs + 1 ∈ l then
                 failure
           visit a
@@ -581,19 +341,19 @@ unsafe def additiveTestUnsafe (env : Environment) (e : Expr) (dontTranslate : Ar
     | _                  => failure
   Id.run <| (visit e).run' mkPtrSet
 
-/-- `additiveTest e` tests whether the expression `e` contains a constant
+/-- `shouldTranslate e` tests whether the expression `e` contains a constant
 `nm` that is not applied to any arguments, and such that `translations.find?[nm] = none`.
-This is used in `@[to_additive]` for deciding which subexpressions to transform: we only transform
-constants if `additiveTest` applied to their relevant argument returns `true`.
+This is used for deciding which subexpressions to translate: we only translate
+constants if `shouldTranslate` applied to their relevant argument returns `true`.
 This means we will replace expression applied to e.g. `α` or `α × β`, but not when applied to
 e.g. `ℕ` or `ℝ × α`.
 We ignore all arguments specified by the `ignore` `NameMap`. -/
-def additiveTest (env : Environment) (e : Expr) (dontTranslate : Array FVarId := #[]) :
-    Option (Name ⊕ FVarId) :=
-  unsafe additiveTestUnsafe env e dontTranslate
+def shouldTranslate (env : Environment) (t : TranslateData) (e : Expr)
+    (dontTranslate : Array FVarId := #[]) : Option (Name ⊕ FVarId) :=
+  unsafe shouldTranslateUnsafe env t e dontTranslate
 
 /-- Swap the first two elements of a list -/
-def _root_.List.swapFirstTwo {α : Type _} : List α → List α
+def List.swapFirstTwo {α : Type*} : List α → List α
   | []      => []
   | [x]     => [x]
   | x::y::l => y::x::l
@@ -605,7 +365,7 @@ def changeNumeral : Expr → Expr
   | e                => e
 
 /--
-`applyReplacementFun e` replaces the expression `e` with its additive counterpart.
+`applyReplacementFun e` replaces the expression `e` with its tranlsation.
 It translates each identifier (inductive type, defined function etc) in an expression, unless
 * The identifier occurs in an application with first argument `arg`; and
 * `test arg` is false.
@@ -615,8 +375,9 @@ is tested, instead of the first argument.
 It will also reorder arguments of certain functions, using `reorderFn`:
 e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorderFn g = some [1]`.
 -/
-def applyReplacementFun (e : Expr) (dontTranslate : Array FVarId := #[]) : MetaM Expr := do
-  let e' := aux (← getEnv) (← getBoolOption `trace.to_additive_detail) (← expand e)
+def applyReplacementFun (t : TranslateData) (e : Expr) (dontTranslate : Array FVarId := #[]) :
+    MetaM Expr := do
+  let e' := aux (← getEnv) (← getBoolOption `trace.translate_detail) (← expand t e)
   -- Make sure any new reserved names in the expr are realized; this needs to be done outside of
   -- `aux` as it is monadic.
   e'.forEach fun
@@ -627,14 +388,14 @@ def applyReplacementFun (e : Expr) (dontTranslate : Array FVarId := #[]) : MetaM
   return e'
 where /-- Implementation of `applyReplacementFun`. -/
   aux (env : Environment) (trace : Bool) : Expr → Expr :=
-  let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
-  let relevantArg : Name → ℕ := fun nm ↦ (relevantArgAttr.find? env nm).getD 0
+  let reorderFn : Name → List (List ℕ) := fun nm ↦ (t.reorderAttr.find? env nm |>.getD [])
+  let relevantArg : Name → ℕ := fun nm ↦ (t.relevantArgAttr.find? env nm).getD 0
   Lean.Expr.replaceRec fun r e ↦ Id.run do
     if trace then
       dbg_trace s!"replacing at {e}"
     match e with
     | .const n₀ ls₀ => do
-      let n₁ := findPrefixTranslation env n₀
+      let n₁ := findPrefixTranslation env n₀ t
       let ls₁ : List Level := if 0 ∈ (reorderFn n₀).flatten then ls₀.swapFirstTwo else ls₀
       if trace then
         if n₀ != n₁ then
@@ -654,7 +415,7 @@ where /-- Implementation of `applyReplacementFun`. -/
       /- Test if the head should not be replaced. -/
       let relevantArgId := relevantArg nm
       if h : relevantArgId < gAllArgs.size then
-        if let some fxd := additiveTest env gAllArgs[relevantArgId] dontTranslate then
+        if let some fxd := shouldTranslate env t gAllArgs[relevantArgId] dontTranslate then
           if trace then
             match fxd with
             | .inl fxd => dbg_trace s!"The application of {nm} contains the fixed type \
@@ -674,7 +435,7 @@ where /-- Implementation of `applyReplacementFun`. -/
       /- Do not replace numerals in specific types. -/
       if let some changedArgNrs := changeNumeralAttr.find? env nm then
         let firstArg := gAllArgs[0]!
-        if additiveTest env firstArg dontTranslate |>.isNone then
+        if shouldTranslate env t firstArg dontTranslate |>.isNone then
           if trace then
             dbg_trace s!"applyReplacementFun: We change the numerals in this expression. \
               However, we will still recurse into all the non-numeral arguments."
@@ -688,7 +449,7 @@ where /-- Implementation of `applyReplacementFun`. -/
               arg
       return mkAppN gf (← gAllArgs.mapM r)
     | .proj n₀ idx e => do
-      let n₁ := findPrefixTranslation env n₀
+      let n₁ := findPrefixTranslation env n₀ t
       if trace then
         dbg_trace s!"applyReplacementFun: in projection {e}.{idx} of type {n₀}, \
           replace type with {n₁}"
@@ -696,9 +457,9 @@ where /-- Implementation of `applyReplacementFun`. -/
     | _ => return none
 
 /-- Rename binder names in pi type. -/
-def renameBinderNames (src : Expr) : Expr :=
+def renameBinderNames (t : TranslateData) (src : Expr) : Expr :=
   src.mapForallBinderNames fun
-    | .str p s => .str p (guessName s)
+    | .str p s => .str p (GuessName.guessName t.guessNameData s)
     | n => n
 
 /-- Reorder pi-binders. See doc of `reorderAttr` for the interpretation of the argument -/
@@ -730,46 +491,46 @@ def reorderLambda (reorder : List (List Nat)) (src : Expr) : MetaM Expr := do
 
 /-- Run `applyReplacementFun` on an expression `∀ x₁ .. xₙ, e`,
 making sure not to translate type-classes on `xᵢ` if `i` is in `dontTranslate`. -/
-def applyReplacementForall (dontTranslate : List Nat) (e : Expr) :
+def applyReplacementForall (t : TranslateData) (dontTranslate : List Nat) (e : Expr) :
     MetaM Expr := do
   if let some maxDont := dontTranslate.max? then
     forallBoundedTelescope e (some (maxDont + 1)) fun xs e => do
       let xs := xs.map (·.fvarId!)
       let dontTranslate := dontTranslate.filterMap (xs[·]?) |>.toArray
-      let mut e ← applyReplacementFun e dontTranslate
+      let mut e ← applyReplacementFun t e dontTranslate
       for x in xs.reverse do
         let decl ← x.getDecl
-        let xType ← applyReplacementFun decl.type dontTranslate
+        let xType ← applyReplacementFun t decl.type dontTranslate
         e := .forallE decl.userName xType (e.abstract #[.fvar x]) decl.binderInfo
       return e
   else
-    applyReplacementFun e #[]
+    applyReplacementFun t e #[]
 
 /-- Run `applyReplacementFun` on an expression `fun x₁ .. xₙ ↦ e`,
 making sure not to translate type-classes on `xᵢ` if `i` is in `dontTranslate`. -/
-def applyReplacementLambda (dontTranslate : List Nat) (e : Expr) :
+def applyReplacementLambda (t : TranslateData) (dontTranslate : List Nat) (e : Expr) :
     MetaM Expr := do
   if let some maxDont := dontTranslate.max? then
     lambdaBoundedTelescope e (maxDont + 1) fun xs e => do
       let xs := xs.map (·.fvarId!)
       let dontTranslate := dontTranslate.filterMap (xs[·]?) |>.toArray
-      let mut e ← applyReplacementFun e dontTranslate
+      let mut e ← applyReplacementFun t e dontTranslate
       for x in xs.reverse do
         let decl ← x.getDecl
-        let xType ← applyReplacementFun decl.type dontTranslate
+        let xType ← applyReplacementFun t decl.type dontTranslate
         e := .lam decl.userName xType (e.abstract #[.fvar x]) decl.binderInfo
       return e
   else
-    applyReplacementFun e #[]
+    applyReplacementFun t e #[]
 
 /-- Unfold auxlemmas in the type and value. -/
 def declUnfoldAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
   let mut decl := decl
   decl := decl.updateType <| ← unfoldAuxLemmas decl.type
   if let some v := decl.value? then
-    trace[to_additive] "value before unfold:{indentExpr v}"
+    trace[translate] "value before unfold:{indentExpr v}"
     decl := decl.updateValue <| ← unfoldAuxLemmas v
-    trace[to_additive] "value after unfold:{indentExpr decl.value!}"
+    trace[translate] "value after unfold:{indentExpr decl.value!}"
   else if let .opaqueInfo info := decl then -- not covered by `value?`
     decl := .opaqueInfo { info with value := ← unfoldAuxLemmas info.value }
   return decl
@@ -789,19 +550,19 @@ def getDontTranslates (given : List Ident) (type : Expr) : MetaM (List Nat) := d
       return (xs.idxOf? fvarId).get!
 
 /-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
-def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat))
-    (dont : List Ident) : MetaM ConstantInfo := do
+def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
+    (reorder : List (List Nat)) (dont : List Ident) : MetaM ConstantInfo := do
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.flatten then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
   let dont ← getDontTranslates dont srcDecl.type
-  decl := decl.updateType <| ← reorderForall reorder <| ← applyReplacementForall dont <|
-    renameBinderNames decl.type
+  decl := decl.updateType <| ← reorderForall reorder <| ← applyReplacementForall t dont <|
+    renameBinderNames t decl.type
   if let some v := decl.value? then
-    decl := decl.updateValue <| ← reorderLambda reorder <| ← applyReplacementLambda dont v
+    decl := decl.updateValue <| ← reorderLambda reorder <| ← applyReplacementLambda t dont v
   else if let .opaqueInfo info := decl then -- not covered by `value?`
     decl := .opaqueInfo { info with
-      value := ← reorderLambda reorder <| ← applyReplacementLambda dont info.value }
+      value := ← reorderLambda reorder <| ← applyReplacementLambda t dont info.value }
   return decl
 
 /-- Abstracts the nested proofs in the value of `decl` if it is a def. -/
@@ -813,30 +574,30 @@ def declAbstractNestedProofs (decl : ConstantInfo) : MetaM ConstantInfo := do
     return decl
 
 /-- Find the target name of `pre` and all created auxiliary declarations. -/
-def findTargetName (env : Environment) (src pre tgt_pre : Name) : CoreM Name :=
+def findTargetName (env : Environment) (t : TranslateData) (src pre tgt_pre : Name) : CoreM Name :=
   /- This covers auxiliary declarations like `match_i` and `proof_i`. -/
   if let some post := pre.isPrefixOf? src then
     return tgt_pre ++ post
   /- This covers equation lemmas (for other declarations). -/
   else if let some post := privateToUserName? src then
-    match findTranslation? env post.getPrefix with
-    -- this is an equation lemma for a declaration without `to_additive`. We will skip this.
+    match findTranslation? env t post.getPrefix with
+    -- this is an equation lemma for a declaration without a translation. We will skip this.
     | none => return src
-    -- this is an equation lemma for a declaration with `to_additive`. We will additivize this.
+    -- this is an equation lemma for a declaration with a translation. We will translate this.
     -- Note: if this errors we could do this instead by calling `getEqnsFor?`
     | some addName => return src.updatePrefix <| mkPrivateName env addName
   else if src.hasMacroScopes then
     mkFreshUserName src.eraseMacroScopes
   else
-    throwError "internal @[to_additive] error."
+    throwError "internal @[{t.attrName}] error."
 
 /-- Returns a `NameSet` of all auxiliary constants in `e` that might have been generated
 when adding `pre` to the environment.
 Examples include `pre.match_5` and
 `_private.Mathlib.MyFile.someOtherNamespace.someOtherDeclaration._eq_2`.
 The last two examples may or may not have been generated by this declaration.
-The last example may or may not be the equation lemma of a declaration with the `@[to_additive]`
-attribute. We will only translate it if it has the `@[to_additive]` attribute.
+The last example may or may not be the equation lemma of a declaration with a translation attribute.
+We will only translate it if it has a translation attribute.
 
 Note that this function would return `proof_nnn` aux lemmas if
 we hadn't unfolded them in `declUnfoldAuxLemmas`.
@@ -853,65 +614,65 @@ using the transforms dictionary.
 
 `replace_all`, `trace`, `ignore` and `reorder` are configuration options.
 
-`pre` is the declaration that got the `@[to_additive]` attribute and `tgt_pre` is the target of this
+`pre` is the declaration that got the translation attribute and `tgt_pre` is the target of this
 declaration. -/
-partial def transformDeclAux
-    (cfg : Config) (pre tgt_pre : Name) : Name → CoreM Unit := fun src ↦ do
+partial def transformDeclAux (t : TranslateData) (cfg : Config) (pre tgt_pre : Name) :
+    Name → CoreM Unit := fun src ↦ do
   let env ← getEnv
-  trace[to_additive_detail] "visiting {src}"
+  trace[translate_detail] "visiting {src}"
   -- if we have already translated this declaration, we do nothing.
-  if (findTranslation? env src).isSome && src != pre then
+  if (findTranslation? env t src).isSome && src != pre then
       return
   -- if this declaration is not `pre` and not an internal declaration, we return an error,
   -- since we should have already translated this declaration.
   if src != pre && !src.isInternalDetail then
     throwError "The declaration {pre} depends on the declaration {src} which is in the namespace \
-      {pre}, but does not have the `@[to_additive]` attribute. This is not supported.\n\
+      {pre}, but does not have the `@[{t.attrName}]` attribute. This is not supported.\n\
       Workaround: move {src} to a different namespace."
-  -- we find the additive name of `src`
-  let tgt ← findTargetName env src pre tgt_pre
+  -- we find, or guess, the translated name of `src`
+  let tgt ← findTargetName env t src pre tgt_pre
   -- we skip if we already transformed this declaration before.
   if env.contains tgt then
     if tgt == src then
-      -- Note: this can happen for equation lemmas of declarations without `@[to_additive]`.
-      trace[to_additive_detail] "Auxiliary declaration {src} will be translated to itself."
+      -- Note: this can happen for equation lemmas of declarations without a translation.
+      trace[translate_detail] "Auxiliary declaration {src} will be translated to itself."
     else
-      trace[to_additive_detail] "Already visited {tgt} as translation of {src}."
+      trace[translate_detail] "Already visited {tgt} as translation of {src}."
     return
   let srcDecl ← getConstInfo src
-  -- we first unfold all auxlemmas, since they are not always able to be additivized on their own
+  -- we first unfold all auxlemmas, since they are not always able to be translated on their own
   let srcDecl ← MetaM.run' do declUnfoldAuxLemmas srcDecl
   -- we then transform all auxiliary declarations generated when elaborating `pre`
   for n in findAuxDecls srcDecl.type pre do
-    transformDeclAux cfg pre tgt_pre n
+    transformDeclAux t cfg pre tgt_pre n
   if let some value := srcDecl.value? then
     for n in findAuxDecls value pre do
-      transformDeclAux cfg pre tgt_pre n
+      transformDeclAux t cfg pre tgt_pre n
   if let .opaqueInfo {value, ..} := srcDecl then
     for n in findAuxDecls value pre do
-      transformDeclAux cfg pre tgt_pre n
+      transformDeclAux t cfg pre tgt_pre n
   -- if the auxiliary declaration doesn't have prefix `pre`, then we have to add this declaration
-  -- to the translation dictionary, since otherwise we cannot find the additive name.
+  -- to the translation dictionary, since otherwise we cannot translate the name.
   if !pre.isPrefixOf src then
-    insertTranslation src tgt
+    insertTranslation t src tgt
   -- now transform the source declaration
   let trgDecl : ConstantInfo ← MetaM.run' <|
     if src == pre then
-      updateDecl tgt srcDecl cfg.reorder cfg.dontTranslate
+      updateDecl t tgt srcDecl cfg.reorder cfg.dontTranslate
     else
-      updateDecl tgt srcDecl [] []
+      updateDecl t tgt srcDecl [] []
   let value ← match trgDecl with
     | .thmInfo { value, .. } | .defnInfo { value, .. } | .opaqueInfo { value, .. } => pure value
     | _ => throwError "Expected {tgt} to have a value."
-  trace[to_additive] "generating\n{tgt} : {trgDecl.type} :=\n  {value}"
+  trace[translate] "generating\n{tgt} : {trgDecl.type} :=\n  {value}"
   try
     -- make sure that the type is correct,
     -- and emit a more helpful error message if it fails
     MetaM.run' <| check value
   catch
-    | Exception.error _ msg => throwError "@[to_additive] failed. \
+    | Exception.error _ msg => throwError "@[{t.attrName}] failed. \
       The translated value is not type correct. For help, see the docstring \
-      of `to_additive.attr`, section `Troubleshooting`. \
+      of `to_additive`, section `Troubleshooting`. \
       Failed to add declaration\n{tgt}:\n{msg}"
     | _ => panic! "unreachable"
   -- "Refold" all the aux lemmas that we unfolded.
@@ -923,7 +684,7 @@ partial def transformDeclAux
   Note that `noncomputable section` does not explicitly mark noncomputable definitions as
   `noncomputable`, but simply abstains from logging compilation errors.
 
-  This is not a perfect solution, as ideally `to_additive` *should* complain when `src` should
+  This is not a perfect solution, as ideally we *should* complain when `src` should
   produce executable code but fails to do so (e.g. outside of `noncomputable section`). However,
   the `messages` and `infoState` are reset before this runs, so we cannot check for compilation
   errors on `src`. The scope set by `noncomputable` section lives in the `CommandElabM` state
@@ -961,10 +722,10 @@ partial def transformDeclAux
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if let some prio ← getInstancePriority? src then
     let attr_kind := (← getInstanceAttrKind? src).getD .global
-    trace[to_additive_detail] "Making {tgt} an instance with priority {prio}."
+    trace[translate_detail] "Making {tgt} an instance with priority {prio}."
     addInstance tgt attr_kind prio |>.run'
 
-/-- Warn the user when the multiplicative declaration has an attribute. -/
+/-- Warn the user when the declaration has an attribute. -/
 def warnAttrCore (stx : Syntax) (f : Environment → Name → Bool)
     (thisAttr attrName src tgt : Name) : CoreM Unit := do
   if f (← getEnv) src then
@@ -978,100 +739,100 @@ def warnAttrCore (stx : Syntax) (f : Environment → Name → Bool)
           declaration."
       else ""
 
-/-- Warn the user when the multiplicative declaration has a simple scoped attribute. -/
+/-- Warn the user when the declaration has a simple scoped attribute. -/
 def warnAttr {α β : Type} [Inhabited β] (stx : Syntax) (attr : SimpleScopedEnvExtension α β)
     (f : β → Name → Bool) (thisAttr attrName src tgt : Name) : CoreM Unit :=
   warnAttrCore stx (f <| attr.getState ·) thisAttr attrName src tgt
 
-/-- Warn the user when the multiplicative declaration has a parametric attribute. -/
+/-- Warn the user when the declaration has a parametric attribute. -/
 def warnParametricAttr {β : Type} [Inhabited β] (stx : Syntax) (attr : ParametricAttribute β)
     (thisAttr attrName src tgt : Name) : CoreM Unit :=
   warnAttrCore stx (attr.getParam? · · |>.isSome) thisAttr attrName src tgt
 
-/-- `additivizeLemmas names argInfo desc t` runs `t` on all elements of `names`
+/-- `translateLemmas names argInfo desc t` runs `t` on all elements of `names`
 and adds translations between the generated lemmas (the output of `t`).
 `names` must be non-empty. -/
-def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT CoreM m]
-    (names : Array Name) (argInfo : ArgInfo) (desc : String) (t : Name → m (Array Name)) :
-    m Unit := do
-  let auxLemmas ← names.mapM t
+def translateLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT CoreM m]
+    (t : TranslateData) (names : Array Name) (argInfo : ArgInfo) (desc : String)
+    (runAttr : Name → m (Array Name)) : m Unit := do
+  let auxLemmas ← names.mapM runAttr
   let nLemmas := auxLemmas[0]!.size
   for (nm, lemmas) in names.zip auxLemmas do
     unless lemmas.size == nLemmas do
       throwError "{names[0]!} and {nm} do not generate the same number of {desc}."
   for (srcLemmas, tgtLemmas) in auxLemmas.zip <| auxLemmas.eraseIdx! 0 do
     for (srcLemma, tgtLemma) in srcLemmas.zip tgtLemmas do
-      insertTranslationAndInfo srcLemma tgtLemma argInfo
+      insertTranslationAndInfo t srcLemma tgtLemma argInfo
 
 /--
-Find the argument of `nm` that appears in the first multiplicative (type-class) argument.
-Returns 1 if there are no types with a multiplicative class as arguments.
+Find the argument of `nm` that appears in the first translatable (type-class) argument.
+Returns 1 if there are no types with a translatable class as arguments.
 E.g. `Prod.instGroup` returns 1, and `Pi.instOne` returns 2.
 Note: we only consider the relevant argument (`(relevant_arg := ...)`) of each type-class.
-E.g. `[Pow A N]` is a multiplicative type-class on `A`, not on `N`.
+E.g. `[Pow A N]` is a translatable type-class on `A`, not on `N`.
 -/
-def findMultiplicativeArg (nm : Name) : MetaM Nat := do
+def findRelevantArg (t : TranslateData) (nm : Name) : MetaM Nat := do
   forallTelescopeReducing (← getConstInfo nm).type fun xs ty ↦ do
     let env ← getEnv
-    -- check if `tgt` has a multiplicative type argument, and if so,
+    -- check if `tgt` has a translatable type argument, and if so,
     -- find the index of a type from `xs` appearing in there
-    let multArg? (tgt : Expr) : Option Nat := do
+    let relevantArg? (tgt : Expr) : Option Nat := do
       let c ← tgt.getAppFn.constName?
-      guard (findTranslation? env c).isSome
-      let relevantArg := (relevantArgAttr.find? env c).getD 0
+      guard (findTranslation? env t c).isSome
+      let relevantArg := (t.relevantArgAttr.find? env c).getD 0
       let arg ← tgt.getArg? relevantArg
       xs.findIdx? (arg.containsFVar ·.fvarId!)
     -- run the above check on all hypotheses and on the conclusion
     let arg ← OptionT.run <| xs.firstM fun x ↦ OptionT.mk do
-        forallTelescope (← inferType x) fun _ys tgt ↦ return multArg? tgt
-    let arg := arg <|> multArg? ty
-    trace[to_additive_detail] "findMultiplicativeArg: {arg}"
+        forallTelescope (← inferType x) fun _ys tgt ↦ return relevantArg? tgt
+    let arg := arg <|> relevantArg? ty
+    trace[translate_detail] "findRelevantArg: {arg}"
     return arg.getD 0
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
-def targetName (cfg : Config) (src : Name) : CoreM Name := do
+def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := do
   if cfg.self then
     if cfg.tgt != .anonymous then
-      throwError m!"`to_additive self` ignores the provided name {cfg.tgt}"
+      logWarning m!"`{t.attrName} self` ignores the provided name {cfg.tgt}"
     return src
-  let .str pre s := src | throwError "to_additive: can't transport {src}"
-  trace[to_additive_detail] "The name {s} splits as {s.splitCase}"
-  let tgt_auto := guessName s
+  let .str pre s := src | throwError "{t.attrName}: can't transport {src}"
+  trace[translate_detail] "The name {s} splits as {open GuessName in s.splitCase}"
+  let tgt_auto := GuessName.guessName t.guessNameData s
   let depth := cfg.tgt.getNumParts
-  let pre := findPrefixTranslation (← getEnv) pre
+  let pre := findPrefixTranslation (← getEnv) pre t
   let (pre1, pre2) := pre.splitAt (depth - 1)
   let res := if cfg.tgt == .anonymous then pre.str tgt_auto else pre1 ++ cfg.tgt
   if res == src then
-    throwError "to_additive: the generated additivised name equals the original name '{src}', \
-    meaning that no part of the name was additivised.\n\
-    If this is intentional, use the `@[to_additive self]` syntax.\n\
+    throwError "{t.attrName}: the generated translated name equals the original name '{src}'.\n\
+    If this is intentional, use the `@[{t.attrName} self]` syntax.\n\
     Otherwise, check that your declaration name is correct \
     (if your declaration is an instance, try naming it)\n\
-    or provide an additivised name using the `@[to_additive my_add_name]` syntax."
+    or provide a translated name using the `@[{t.attrName} my_add_name]` syntax."
   if cfg.tgt == pre2.str tgt_auto && !cfg.allowAutoName then
-    Linter.logLintIf linter.toAdditiveGenerateName cfg.ref m!"\
-      to_additive correctly autogenerated target name for {src}.\n\
+    Linter.logLintIf linter.translateGenerateName cfg.ref m!"\
+      `{t.attrName}` correctly autogenerated target name for {src}.\n\
       You may remove the explicit argument {cfg.tgt}."
   if cfg.tgt != .anonymous then
-    trace[to_additive_detail] "The automatically generated name would be {pre.str tgt_auto}"
+    trace[translate_detail] "The automatically generated name would be {pre.str tgt_auto}"
   return res
 
 /-- if `f src = #[a_1, ..., a_n]` and `f tgt = #[b_1, ... b_n]` then `proceedFieldsAux src tgt f`
 will insert translations from `a_i` to `b_i`. -/
-def proceedFieldsAux (src tgt : Name) (argInfo : ArgInfo) (f : Name → Array Name) : CoreM Unit := do
+def proceedFieldsAux (t : TranslateData) (src tgt : Name) (argInfo : ArgInfo)
+    (f : Name → Array Name) : CoreM Unit := do
   let srcFields := f src
   let tgtFields := f tgt
   if srcFields.size != tgtFields.size then
     throwError "Failed to map fields of {src}, {tgt} with {srcFields} ↦ {tgtFields}.\n \
       Lengths do not match."
   for srcField in srcFields, tgtField in tgtFields do
-    insertTranslationAndInfo srcField tgtField argInfo
+    insertTranslationAndInfo t srcField tgtField argInfo
 
 /-- Add the structure fields of `src` to the translations dictionary
-so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
-def proceedFields (src tgt : Name) (argInfo : ArgInfo) : CoreM Unit := do
+so that they will be translated correctly. -/
+def proceedFields (t : TranslateData) (src tgt : Name) (argInfo : ArgInfo) : CoreM Unit := do
   let env ← getEnv
-  let aux := proceedFieldsAux src tgt argInfo
+  let aux := proceedFieldsAux t src tgt argInfo
   -- add translations for the structure fields
   aux fun declName ↦
     if isStructure env declName then
@@ -1091,19 +852,22 @@ def proceedFields (src tgt : Name) (argInfo : ArgInfo) : CoreM Unit := do
     | some (ConstantInfo.inductInfo { ctors, .. }) => ctors.toArray
     | _ => #[]
 
-/-- Elaboration of the configuration options for `to_additive`. -/
-def elabToAdditive : Syntax → CoreM Config
-  | `(attr| to_additive%$tk $[?%$trace]? $existing?
-      $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
+/-- Elaboration of the configuration options for a translation attribute. It is assumed that
+- `stx[0]` is the attribute (e.g. `to_additive`)
+- `stx[1]` is the optional tracing `?`
+- `stx[2]` is the remaining `attrArgs` -/
+def elabTranslationAttr (stx : Syntax) : CoreM Config :=
+  match stx[2] with
+  | `(attrArgs| $existing? $[$opts:bracketedOption]* $[$tgt]? $[$doc]?) => do
     let mut attrs := #[]
     let mut reorder := []
     let mut relevantArg? := none
     let mut dontTranslate := []
     for opt in opts do
       match opt with
-      | `(toAdditiveOption| (attr := $[$stxs],*)) =>
+      | `(bracketedOption| (attr := $[$stxs],*)) =>
         attrs := attrs ++ stxs
-      | `(toAdditiveOption| (reorder := $[$[$reorders:num]*],*)) =>
+      | `(bracketedOption| (reorder := $[$[$reorders:num]*],*)) =>
         for cycle in reorders do
           if h : cycle.size = 1 then
             throwErrorAt cycle[0] "\
@@ -1116,23 +880,23 @@ def elabToAdditive : Syntax → CoreM Config
             | 0 => throwErrorAt n "invalid position `{n}`, positions are counted starting from 1."
             | n+1 => pure n
           reorder := cycle :: reorder
-      | `(toAdditiveOption| (relevant_arg := $n)) =>
+      | `(bracketedOption| (relevant_arg := $n)) =>
         if let some arg := relevantArg? then
           throwErrorAt opt "cannot specify `relevant_arg` multiple times"
         else
           relevantArg? := n.getNat.pred
-      | `(toAdditiveOption| (dont_translate := $[$types:ident]*)) =>
+      | `(bracketedOption| (dont_translate := $[$types:ident]*)) =>
         dontTranslate := dontTranslate ++ types.toList
       | _ => throwUnsupportedSyntax
     let (existing, self) := match existing? with
-      | `(toAdditiveNameHint| existing) => (true, false)
-      | `(toAdditiveNameHint| self) => (true, true)
+      | `(existingNameHint| existing) => (true, false)
+      | `(existingNameHint| self) => (true, true)
       | _ => (false, false)
     if self && !attrs.isEmpty then
       throwError "invalid `(attr := ...)` after `self`, \
         as there is only one declaration for the attributes.\n\
         Instead, you can write the attributes in the usual way."
-    trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
+    trace[translate_detail] "attributes: {attrs}; reorder arguments: {reorder}"
     let doc ← doc.mapM fun
       | `(str|$doc:str) => open Linter in do
         -- Deprecate `str` docstring syntax (since := "2025-08-12")
@@ -1164,21 +928,19 @@ def elabToAdditive : Syntax → CoreM Config
         return (← getDocStringText doc).removeLeadingSpaces
       | _ => throwUnsupportedSyntax
     return {
-      trace := trace.isSome
+      trace := !stx[1].isNone
       tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
-      doc
-      allowAutoName := false
-      attrs, reorder, relevantArg?, dontTranslate, existing, self
-      ref := (tgt.map (·.raw)).getD tk }
+      doc, attrs, reorder, relevantArg?, dontTranslate, existing, self
+      ref := match tgt with | some tgt => tgt.raw | none => stx[0] }
   | _ => throwUnsupportedSyntax
 
 mutual
-/-- Apply attributes to the multiplicative and additive declarations. -/
-partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr src tgt : Name)
-    (argInfo : ArgInfo) : TermElabM (Array Name) := do
-  -- we only copy the `instance` attribute, since `@[to_additive] instance` is nice to allow
+/-- Apply attributes to the original and translated declarations. -/
+partial def applyAttributes (t : TranslateData) (stx : Syntax) (rawAttrs : Array Syntax)
+    (src tgt : Name) (argInfo : ArgInfo) : TermElabM (Array Name) := do
+  -- we only copy the `instance` attribute, since it is nice to directly tag `instance` declarations
   copyInstanceAttribute src tgt
-  -- Warn users if the multiplicative version has an attribute
+  -- Warn users if the original declaration has an attributee
   if src != tgt && linter.existingAttributeWarning.get (← getOptions) then
     let appliedAttrs ← getAllSimpAttrs src
     if appliedAttrs.size > 0 then
@@ -1186,36 +948,38 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
       -- Note: we're not bothering to print the correct attribute arguments.
       Linter.logLintIf linter.existingAttributeWarning stx m!"\
         The source declaration {src} was given the simp-attribute(s) {appliedAttrs} before \
-        calling @[{thisAttr}].\nThe preferred method is to use something like \
-        `@[{thisAttr} (attr := {appliedAttrs})]`\nto apply the attribute to both \
+        calling @[{t.attrName}].\nThe preferred method is to use something like \
+        `@[{t.attrName} (attr := {appliedAttrs})]`\nto apply the attribute to both \
         {src} and the target declaration {tgt}."
     warnAttr stx Lean.Meta.Ext.extExtension
-      (fun b n => (b.tree.values.any fun t => t.declName = n)) thisAttr `ext src tgt
-    warnAttr stx Lean.Meta.Rfl.reflExt (·.values.contains ·) thisAttr `refl src tgt
-    warnAttr stx Lean.Meta.Symm.symmExt (·.values.contains ·) thisAttr `symm src tgt
-    warnAttr stx Batteries.Tactic.transExt (·.values.contains ·) thisAttr `trans src tgt
-    warnAttr stx Lean.Meta.coeExt (·.contains ·) thisAttr `coe src tgt
-    warnParametricAttr stx Lean.Linter.deprecatedAttr thisAttr `deprecated src tgt
+      (fun b n => (b.tree.values.any fun t => t.declName = n)) t.attrName `ext src tgt
+    warnAttr stx Lean.Meta.Rfl.reflExt (·.values.contains ·) t.attrName `refl src tgt
+    warnAttr stx Lean.Meta.Symm.symmExt (·.values.contains ·) t.attrName `symm src tgt
+    warnAttr stx Batteries.Tactic.transExt (·.values.contains ·) t.attrName `trans src tgt
+    warnAttr stx Lean.Meta.coeExt (·.contains ·) t.attrName `coe src tgt
+    warnParametricAttr stx Lean.Linter.deprecatedAttr t.attrName `deprecated src tgt
     -- the next line also warns for `@[to_additive, simps]`, because of the application times
-    warnParametricAttr stx simpsAttr thisAttr `simps src tgt
-    warnAttrCore stx Term.elabAsElim.hasTag thisAttr `elab_as_elim src tgt
+    warnParametricAttr stx simpsAttr t.attrName `simps src tgt
+    warnAttrCore stx Term.elabAsElim.hasTag t.attrName `elab_as_elim src tgt
   -- add attributes
   -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
   -- `simps` and `to_additive`.
   let attrs ← elabAttrs rawAttrs
-  let (additiveAttrs, attrs) := attrs.partition (·.name == `to_additive)
+  let (additiveAttrs, attrs) := attrs.partition (·.name == t.attrName)
   let nestedDecls ←
-    match additiveAttrs.size with
-      | 0 => pure #[]
-      | 1 => addToAdditiveAttr tgt (← elabToAdditive additiveAttrs[0]!.stx) additiveAttrs[0]!.kind
-      | _ => throwError "cannot apply {thisAttr} multiple times."
+    match h : additiveAttrs.size with
+    | 0 => pure #[]
+    | 1 =>
+      let cfg ← elabTranslationAttr additiveAttrs[0].stx
+      addTranslationAttr t tgt cfg additiveAttrs[0].kind
+    | _ => throwError "cannot apply {t.attrName} multiple times."
   let allDecls := #[src, tgt] ++ nestedDecls
   if attrs.size > 0 then
-    trace[to_additive_detail] "Applying attributes {attrs.map (·.stx)} to {allDecls}"
+    trace[translate_detail] "Applying attributes {attrs.map (·.stx)} to {allDecls}"
   for attr in attrs do
     withRef attr.stx do withLogging do
     if attr.name == `simps then
-      additivizeLemmas allDecls argInfo "simps lemmas" (simpsTacFromSyntax · attr.stx)
+      translateLemmas t allDecls argInfo "simps lemmas" (simpsTacFromSyntax · attr.stx)
       return
     let env ← getEnv
     match getAttributeImpl env attr.name with
@@ -1241,41 +1005,41 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
 /--
 Copies equation lemmas and attributes from `src` to `tgt`
 -/
-partial def copyMetaData (cfg : Config) (src tgt : Name) (argInfo : ArgInfo) :
+partial def copyMetaData (t : TranslateData) (cfg : Config) (src tgt : Name) (argInfo : ArgInfo) :
     CoreM (Array Name) := do
   if let some eqns := eqnsAttribute.find? (← getEnv) src then
     unless (eqnsAttribute.find? (← getEnv) tgt).isSome do
-      for eqn in eqns do _ ← addToAdditiveAttr eqn cfg
-      eqnsAttribute.add tgt (eqns.map (findTranslation? (← getEnv) · |>.get!))
+      for eqn in eqns do
+        _ ← addTranslationAttr t eqn cfg
+      eqnsAttribute.add tgt (eqns.map (findTranslation? (← getEnv) t · |>.get!))
   else
     /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
     definitions. If we don't do that, the equation lemma for `src` might be generated later
     when doing a `rw`, but it won't be generated for `tgt`. -/
-    additivizeLemmas #[src, tgt] argInfo "equation lemmas" fun nm ↦
+    translateLemmas t #[src, tgt] argInfo "equation lemmas" fun nm ↦
       (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm)
   MetaM.run' <| Elab.Term.TermElabM.run' <|
-    applyAttributes cfg.ref cfg.attrs `to_additive src tgt argInfo
+    (applyAttributes t cfg.ref cfg.attrs src tgt) argInfo
 
 /--
 Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
 the body using the `translations` dictionary.
-This is used to implement `@[to_additive]`.
 -/
-partial def transformDecl (cfg : Config) (src tgt : Name) (argInfo : ArgInfo := {}) :
-    CoreM (Array Name) := do
-  transformDeclAux cfg src tgt src
-  copyMetaData cfg src tgt argInfo
+partial def transformDecl (t : TranslateData) (cfg : Config) (src tgt : Name)
+    (argInfo : ArgInfo := {}) : CoreM (Array Name) := do
+  transformDeclAux t cfg src tgt src
+  copyMetaData t cfg src tgt argInfo
 
 /-- Verify that the type of given `srcDecl` translates to that of `tgtDecl`. -/
-partial def checkExistingType (src tgt : Name) (reorder : List (List Nat)) (dont : List Ident) :
-    MetaM Unit := do
+partial def checkExistingType (t : TranslateData) (src tgt : Name) (reorder : List (List Nat))
+    (dont : List Ident) : MetaM Unit := do
   let mut srcDecl ← getConstInfo src
   let tgtDecl ← getConstInfo tgt
   if 0 ∈ reorder.flatten then
     srcDecl := srcDecl.updateLevelParams srcDecl.levelParams.swapFirstTwo
   unless srcDecl.levelParams.length == tgtDecl.levelParams.length do
-    throwError "`to_additive` validation failed:\n  expected {srcDecl.levelParams.length} universe \
-      levels, but '{tgt}' has {tgtDecl.levelParams.length} universe levels"
+    throwError "`{t.attrName}` validation failed:\n  expected {srcDecl.levelParams.length} \
+      universe levels, but '{tgt}' has {tgtDecl.levelParams.length} universe levels"
   -- instantiate both types with the same universes. `instantiateLevelParams` applies some
   -- normalization, so we have to apply it to both types.
   let type := srcDecl.type.instantiateLevelParams
@@ -1283,57 +1047,57 @@ partial def checkExistingType (src tgt : Name) (reorder : List (List Nat)) (dont
   let tgtType := tgtDecl.type.instantiateLevelParams
     tgtDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
   let dont ← getDontTranslates dont type
-  let type  ← reorderForall reorder <| ← applyReplacementForall dont <| ← unfoldAuxLemmas type
+  let type  ← reorderForall reorder <| ← applyReplacementForall t dont <| ← unfoldAuxLemmas type
   -- `instantiateLevelParams` normalizes universes, so we have to normalize both expressions
   unless ← withReducible <| isDefEq type tgtType do
-    throwError "`to_additive` validation failed: expected{indentExpr type}\nbut '{tgt}' has \
+    throwError "`{t.attrName}` validation failed: expected{indentExpr type}\nbut '{tgt}' has \
       type{indentExpr tgtType}"
 
-/-- `addToAdditiveAttr src cfg` adds a `@[to_additive]` attribute to `src` with configuration `cfg`.
+/-- `addTranslationAttr src cfg` adds a translation attribute to `src` with configuration `cfg`.
 See the attribute implementation for more details.
-It returns an array with names of additive declarations (usually 1, but more if there are nested
-`to_additive` calls. -/
-partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind.global) :
-    AttrM (Array Name) := do
+It returns an array with names of translated declarations (usually 1, but more if there are nested
+`to_additive` calls). -/
+partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
+    (kind := AttributeKind.global) : AttrM (Array Name) := do
   if (kind != AttributeKind.global) then
-    throwError "`to_additive` can only be used as a global attribute"
-  withOptions (· |>.updateBool `trace.to_additive (cfg.trace || ·)) <| do
-  if let some tgt := findTranslation? (← getEnv) src then
-    -- we allow `to_additive (reorder := ...)` or `to_additive (relevant_arg := ...)` syntax
+    throwError "`{t.attrName}` can only be used as a global attribute"
+  withOptions (· |>.updateBool `trace.translate (cfg.trace || ·)) <| do
+  if let some tgt := findTranslation? (← getEnv) t src then
+    -- we allow `(reorder := ...)` or `(relevant_arg := ...)` syntax
     -- for updating this information on constants that are already tagged
     -- for example, this is necessary for `HPow.hPow`
     if cfg.reorder != [] then
-      modifyEnv (reorderAttr.addEntry · (src, cfg.reorder))
+      modifyEnv (t.reorderAttr.addEntry · (src, cfg.reorder))
       return #[tgt]
     if let some relevantArg := cfg.relevantArg? then
-      modifyEnv (relevantArgAttr.addEntry · (src, relevantArg))
+      modifyEnv (t.relevantArgAttr.addEntry · (src, relevantArg))
       return #[tgt]
-  let tgt ← targetName cfg src
+  let tgt ← targetName t cfg src
   let alreadyExists := (← getEnv).contains tgt
-  if cfg.existing != alreadyExists && !(← isInductive src) then
-    Linter.logLintIf linter.toAdditiveExisting cfg.ref <|
+  if cfg.existing != alreadyExists && !(← isInductive src) && !cfg.self then
+    Linter.logLintIf linter.translateExisting cfg.ref <|
       if alreadyExists then
-        m!"The additive declaration already exists. Please specify this explicitly using \
-           `@[to_additive existing]`."
+        m!"The translated declaration already exists. Please specify this explicitly using \
+           `@[{t.attrName} existing]`."
       else
-        "The additive declaration doesn't exist. Please remove the option `existing`."
+        "The translated declaration doesn't exist. Please remove the option `existing`."
   if alreadyExists then
-    MetaM.run' <| checkExistingType src tgt cfg.reorder cfg.dontTranslate
-  let relevantArg ← cfg.relevantArg?.getDM <| MetaM.run' <| findMultiplicativeArg src
+    MetaM.run' <| checkExistingType t src tgt cfg.reorder cfg.dontTranslate
+  let relevantArg ← cfg.relevantArg?.getDM <| MetaM.run' <| findRelevantArg t src
   let argInfo := { reorder := cfg.reorder, relevantArg }
-  insertTranslationAndInfo src tgt argInfo alreadyExists
+  insertTranslationAndInfo t src tgt argInfo alreadyExists
   let nestedNames ←
     if alreadyExists then
       -- since `tgt` already exists, we just need to copy metadata and
       -- add translations `src.x ↦ tgt.x'` for any subfields.
-      trace[to_additive_detail] "declaration {tgt} already exists."
-      proceedFields src tgt argInfo
-      copyMetaData cfg src tgt argInfo
+      trace[translate_detail] "declaration {tgt} already exists."
+      proceedFields t src tgt argInfo
+      copyMetaData t cfg src tgt argInfo
     else
       -- tgt doesn't exist, so let's make it
-      transformDecl cfg src tgt argInfo
-  -- add pop-up information when mousing over `additive_name` of `@[to_additive additive_name]`
-  -- (the information will be over the attribute of no additive name is given)
+      transformDecl t cfg src tgt argInfo
+  -- add pop-up information when mousing over the given translated name
+  -- (the information will be over the attribute if no translated name is given)
   pushInfoLeaf <| .ofTermInfo {
     elaborator := .anonymous, lctx := {}, expectedType? := none, isBinder := !alreadyExists,
     stx := cfg.ref, expr := ← mkConstWithLevelParams tgt }
@@ -1343,12 +1107,4 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
 
 end
 
-initialize registerBuiltinAttribute {
-    name := `to_additive
-    descr := "Transport multiplicative to additive"
-    add := fun src stx kind ↦ do _ ← addToAdditiveAttr src (← elabToAdditive stx) kind
-    -- we (presumably) need to run after compilation to properly add the `simp` attribute
-    applicationTime := .afterCompilation
-  }
-
-end ToAdditive
+end Mathlib.Tactic.Translate
