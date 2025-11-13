@@ -872,24 +872,18 @@ This is similar to the code above, but in fact different as this problem is simp
 Can these be kept in sync? Well, that's hopefully not too necessary.
 -/
 
--- TODO: add a version of tryStrategy in MetaM, and use it instead!
-
 /-- Try to find a `ModelWithCorners` for a given base field, model normed space and model
 topological space, using information from the local context and a few hard-coded rules. -/
 -- FIXME: do we need to handle baseInfo again? perhaps not, let's try without!
 def findModelForFunpropInner (field model top : Expr) :
-    MetaM <| Option (Expr × NormedSpaceInfo) := do
+    TermElabM <| Option (Expr × NormedSpaceInfo) := do
   trace[Elab.DiffGeo.FunPropM] "Trying to solve a goal `ModelWithCorners {field} {model} {top}`"
-  -- TODO: use tryStrategy in MetaM instead!
-  -- then also make fromNormedSpace and fromAssumption not return an option any more?
-  if let some m := ← fromAssumption then return some (m, none)
-  if let some m := ← fromNormedSpace then return some (m, none)
-  --if let some m ← tryStrategy m!"Assumption"       fromAssumption     then return some (m, none)
-  --if let some m ← tryStrategy m!"Normed space"     fromNormedSpace    then return some (m, none)
+  if let some m ← tryStrategy m!"Assumption"       fromAssumption     then return some (m, none)
+  if let some m ← tryStrategy m!"Normed space"     fromNormedSpace    then return some (m, none)
   -- TODO: implement the remaining strategies, and then the inner to outer part!
   return none
 where
-  fromAssumption : MetaM <| Option Expr := do
+  fromAssumption : MetaM <| Expr := do
     let some m ← findSomeLocalHyp? fun fvar type ↦ do
         match_expr type with
         | ModelWithCorners k _ E _ _ H _ => do
@@ -898,11 +892,9 @@ where
             return some fvar
           else return none
         | _ => return none
-      | trace[Elab.DiffGeo.FunPropM]
-          "Couldn't find a `ModelWithCorners {field} {model} {top}` in the local context."
-        return none
+      | throwError "Couldn't find a `ModelWithCorners {field} {model} {top}` in the local context."
     return m
-  fromNormedSpace : MetaM <| Option Expr := do
+  fromNormedSpace : MetaM <| Expr := do
     let some (inst, K) ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
         match_expr type with
         | NormedSpace K E _ _ =>
@@ -915,10 +907,9 @@ where
     if ← withReducible (pureIsDefEq model top) then
       mkAppOptM ``modelWithCornersSelf #[K, none, model, none, inst] -- omit (K, model)) for now
     else
-      trace[Elab.DiffGeo.FunPropM] "{model} is a normed space, but {top} is not defeq to it"
-      return none
+      throwError "{model} is a normed space, but {top} is not defeq to it"
 
-def findModelForFunprop (field model top : Expr) : MetaM <| Option Expr := do
+def findModelForFunprop (field model top : Expr) : TermElabM <| Option Expr := do
   trace[Elab.DiffGeo.FunPropM] "Searching for some `ModelWithCorners {field} {model} {top}`"
   match ← go field model top with
   | some (u, _) => return u
@@ -926,40 +917,38 @@ def findModelForFunprop (field model top : Expr) : MetaM <| Option Expr := do
     trace[Elab.DiffGeo.FunPropM] "Could not find a `ModelWithCorners {field} {model} {top}`"
     return none
 where
-  go (field model top : Expr) : MetaM <| Option (Expr × NormedSpaceInfo) := do
+  go (field model top : Expr) : TermElabM <| Option (Expr × NormedSpaceInfo) := do
     -- At first, try finding a model on the space itself.
     if let some (m, r) ← findModelForFunpropInner field model top then return some (m, r)
     throwError ""
 
 /-- The main entry point of the `find_model` tactic: connects the workhose definition
 `findModelForFunProp` with the tactic world. -/
-def findModelForFunprop22 (g : MVarId) : MetaM Unit := do
+def findModelForFunprop22 (g : MVarId) : TermElabM Unit := do
   trace[Elab.DiffGeo.FunPropM] "metavariable has type {← g.getType'}"
   match_expr (← withReducible g.getType') with
   | ModelWithCorners k _ E _ _ H _ =>
     match ← findModelForFunprop k E H with
-    | some e =>
-      -- TODO: is this the way? how to do this correctly?
-      g.assign e
+    -- TODO: is this the way? how to do this correctly?
+    | some e => g.assign e
     | none => throwError "Could not find a `ModelWithCorners {k} {E} {H}`"
   | _ => throwError "Goal is not of the form `ModelWithCorners 𝕜 E H"
 
 elab (name := findModelTac) "find_model" : tactic => withMainContext do
-  withMainContext do
-    findModelForFunprop22 ((← getMainGoal))
-    replaceMainGoal []
-    pure ()
+  -- Note: we manually inline `liftMetaFinishingTactic` to allow `findModelForFunprop22` to use
+  -- the `TermElabM` monad (and `tryStrategy`), as this is more ergonomic.
+  findModelForFunprop22 ((← getMainGoal))
+  replaceMainGoal []
 
 open Command in
 def findModelCmd (goal : TSyntax `term) : CommandElabM Unit := do
   withoutModifyingEnv <| do
     runTermElabM <| fun _vars => do
-      -- TODO: does this ball of duct tape do what I want it to? it might not!
+      -- TODO: does this do what I want it to?
       let eE ← Term.elabTerm goal none
       let m ← mkFreshExprMVar eE
-      let mi := m.mvarId!
       -- TODO: how to surface error messages from the inner loop here?
-      findModelForFunprop22 mi
+      findModelForFunprop22 m.mvarId!
 
 -- I'd like a #find_model command which tries to synthesise such a goal, and fails otherwise
 -- XXX: inline `findModelCmd` later, once everything is cleaned up?
