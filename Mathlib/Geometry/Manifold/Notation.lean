@@ -201,7 +201,7 @@ scoped elab:max "T% " t:term : term => do
 namespace Elab
 
 /-- Try a strategy `x : TermElabM` which either successfully produces some `Expr × α` or fails. On
-failure in `x`, exceptions are caught, traced (using `traceName`),
+failure in `x`, exceptions are caught, traced (using `Elab.DiffGeo.MDiff`),
 and `none` is successfully returned.
 
 We run `x` with `errToSorry == false` to convert elaboration errors into
@@ -210,20 +210,20 @@ be caught.
 
 Trace messages produced during the execution of `x` are wrapped in a collapsible trace node titled
 with `strategyDescr` and an indicator of success. -/
-private def tryStrategy' (α) (strategyDescr : MessageData) (x : TermElabM (Expr × α))
-    (traceName : Name := `Elab.DiffGeo.MDiff) : TermElabM (Option (Expr × α)) := do
+private def tryStrategy' (α) (strategyDescr : MessageData) (x : TermElabM (Expr × α)) :
+    TermElabM (Option (Expr × α)) := do
   let s ← saveState
   try
-    withTraceNode traceName (fun e => pure m!"{e.emoji} {strategyDescr}") do
+    withTraceNode `Elab.DiffGeo.MDiff (fun e => pure m!"{e.emoji} {strategyDescr}") do
       let e ←
         try
           Term.withoutErrToSorry <| Term.withSynthesize x
         /- Catch the exception so that we can trace it, then throw it again to inform
         `withTraceNode` of the result. -/
         catch ex =>
-          trace[traceName] "Failed with error:\n{ex.toMessageData}"
+          trace[Elab.DiffGeo.MDiff] "Failed with error:\n{ex.toMessageData}"
           throw ex
-      trace[traceName] "Found model: `{e.1}`"
+      trace[Elab.DiffGeo.MDiff] "Found model: `{e.1}`"
       return e
   catch _ =>
     -- Restore infotrees to prevent any stale hovers, code actions, etc.
@@ -232,8 +232,9 @@ private def tryStrategy' (α) (strategyDescr : MessageData) (x : TermElabM (Expr
     return none
 
 -- TODO: deduplicate with tryStrategy', somehow!
+-- TODO: can we make the trace class configurable? passing a name does not seem to work...
 /-- Try a strategy `x : TermElabM` which either successfully produces some `Expr` or fails. On
-failure in `x`, exceptions are caught, traced (using `traceName`), and `none` is
+failure in `x`, exceptions are caught, traced (using `Elab.DiffGeo.MDiff`), and `none` is
 successfully returned.
 
 We run `x` with `errToSorry == false` to convert elaboration errors into
@@ -242,20 +243,20 @@ be caught.
 
 Trace messages produced during the execution of `x` are wrapped in a collapsible trace node titled
 with `strategyDescr` and an indicator of success. -/
-private def tryStrategy (strategyDescr : MessageData) (x : TermElabM Expr)
-    (traceName : Name := `Elab.DiffGeo.MDiff) : TermElabM (Option Expr) := do
+private def tryStrategy (strategyDescr : MessageData) (x : TermElabM Expr) :
+    TermElabM (Option Expr) := do
   let s ← saveState
   try
-    withTraceNode traceName (fun e => pure m!"{e.emoji} {strategyDescr}") do
+    withTraceNode `Elab.DiffGeo.MDiff (fun e => pure m!"{e.emoji} {strategyDescr}") do
       let e ←
         try
           Term.withoutErrToSorry <| Term.withSynthesize x
         /- Catch the exception so that we can trace it, then throw it again to inform
         `withTraceNode` of the result. -/
         catch ex =>
-          trace[traceName] "Failed with error:\n{ex.toMessageData}"
+          trace[Elab.DiffGeo.MDiff] "Failed with error:\n{ex.toMessageData}"
           throw ex
-      trace[traceName] "Found model: `{e}`"
+      trace[Elab.DiffGeo.MDiff] "Found model: `{e}`"
       return e
   catch _ =>
     -- Restore infotrees to prevent any stale hovers, code actions, etc.
@@ -877,11 +878,10 @@ topological space, using information from the local context and a few hard-coded
 -- FIXME: do we need to handle baseInfo again? perhaps not, let's try without!
 def findModelForFunpropInner (field model top : Expr) :
     TermElabM <| Option (Expr × NormedSpaceInfo) := do
-  let traceName := `Elab.DiffGeo.FunPropM
   trace[Elab.DiffGeo.FunPropM] "Trying to solve a goal `ModelWithCorners {field} {model} {top}`"
-  if let some m ← tryStrategy m!"Assumption"    fromAssumption'  traceName then
+  if let some m ← tryStrategy m!"Assumption"    fromAssumption'   then
     return some (m, none)
-  if let some m ← tryStrategy m!"Normed space"  fromNormedSpace' traceName then
+  if let some m ← tryStrategy m!"Normed space"  fromNormedSpace'  then
     return some (m, none)
   -- TODO: implement the remaining strategies, and then the inner to outer part!
   return none
@@ -906,7 +906,7 @@ where
           else return none
         | _ => return none
       | throwError "Couldn't find a `NormedSpace` structure on `{model}` among local instances."
-    trace[traceName] "`{model}` is a normed space over the field `{K}`"
+    trace[Elab.DiffGeo.FunPropM] "`{model}` is a normed space over the field `{K}`"
     if ← withReducible (pureIsDefEq model top) then
       mkAppOptM ``modelWithCornersSelf #[K, none, model, none, inst] -- omit (K, model)) for now
     else
