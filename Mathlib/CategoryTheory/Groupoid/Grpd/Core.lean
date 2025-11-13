@@ -83,7 +83,6 @@ lemma adjunction_unit_app_obj (X : G) :
     (adjunction.unit.app (Grpd.of G)).obj X = ⟨X⟩ :=
   rfl
 
-@[simp]
 lemma adjunction_unit_app_map {X Y : G} (f : X ⟶ Y) :
     (adjunction.unit.app (Grpd.of G)).map f = (functorToCore _).map f :=
   rfl
