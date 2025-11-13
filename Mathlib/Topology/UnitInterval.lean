@@ -339,6 +339,10 @@ theorem convexCombo_le {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterv
   simp [convexCombo]
   nlinarith [t.2.1, t.2.2]
 
+/--
+Helper definition for `convexCombo_assoc`, giving one of the coefficients appearing
+when we reassociate a convex combination.
+-/
 abbrev convexCombo_assoc_coeff₁ (s t : unitInterval) : unitInterval :=
   ⟨s * (1 - t) / (1 - s * t),
     by
@@ -349,6 +353,11 @@ abbrev convexCombo_assoc_coeff₁ (s t : unitInterval) : unitInterval :=
       apply div_le_one_of_le₀
       · nlinarith [s.2.2]
       · nlinarith [s.2.2, t.2.2, t.2.1]⟩
+
+/--
+Helper definition for `convexCombo_assoc`, giving one of the coefficients appearing
+when we reassociate a convex combination.
+-/
 abbrev convexCombo_assoc_coeff₂ (s t : unitInterval) : unitInterval := s * t
 
 theorem convexCombo_assoc {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
