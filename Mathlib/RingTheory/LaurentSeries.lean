@@ -404,8 +404,6 @@ theorem algebraMap_apply_div :
       algebraMap F[X] F⸨X⸩ p / algebraMap _ _ q := by
   simp only [map_div₀, IsScalarTower.algebraMap_apply F[X] (RatFunc F) F⸨X⸩]
 
-instance : IsScalarTower F[X] (RatFunc F) F⸨X⸩ := .of_algHom (coeAlgHom F)
-
 end RatFunc
 
 section AdicValuation
