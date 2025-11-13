@@ -902,7 +902,7 @@ theorem coe_toNNReal_le (x : ℝ) : (toNNReal x : ℝ) ≤ |x| :=
 
 theorem cast_natAbs_eq_nnabs_cast (n : ℤ) : (n.natAbs : ℝ≥0) = nnabs n := by
   ext
-  rw [NNReal.coe_natCast, Int.cast_natAbs, Real.coe_nnabs, Int.cast_abs]
+  rw [NNReal.coe_natCast, Nat.cast_natAbs, Real.coe_nnabs, Int.cast_abs]
 
 /-- Every real number nonnegative or nonpositive, phrased using `ℝ≥0`. -/
 lemma nnreal_dichotomy (r : ℝ) : ∃ x : ℝ≥0, r = x ∨ r = -x := by

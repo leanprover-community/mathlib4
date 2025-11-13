@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 -/
 import Mathlib.Data.Set.Image
 import Mathlib.Data.SProd
+import Mathlib.Data.Sum.Basic
 
 /-!
 # Sets in product and pi types
@@ -796,11 +797,7 @@ theorem subset_pi_iff {s'} : s' ⊆ pi s t ↔ ∀ i ∈ s, s' ⊆ (· i) ⁻¹'
   grind
 
 theorem update_mem_pi_iff [DecidableEq ι] {a : ∀ i, α i} {i : ι} {b : α i} :
-    update a i b ∈ pi s t ↔ a ∈ pi (s \ {i}) t ∧ (i ∈ s → b ∈ t i) := by
-  constructor
-  · grind [update_self, update_of_ne]
-  · rintro h j
-    cases eq_or_ne i j <;> grind [update_self, update_of_ne]
+    update a i b ∈ pi s t ↔ a ∈ pi (s \ {i}) t ∧ (i ∈ s → b ∈ t i) := by grind
 
 theorem update_mem_pi_iff_of_mem [DecidableEq ι] {a : ∀ i, α i} {i : ι} {b : α i}
     (ha : a ∈ pi s t) : update a i b ∈ pi s t ↔ i ∈ s → b ∈ t i := by
