@@ -368,7 +368,7 @@ lemma incenter_mem_interior : s.incenter ∈ s.interior := by
   obtain ⟨j, hj⟩ := exists_ne i
   rw [← Finset.sum_add_sum_compl {j, i}, Finset.sum_pair hj] at h
   revert h
-  apply LT.lt.ne'
+  apply ne_of_gt
   nth_rw 2 [add_comm]
   grw [hp]
   rw [add_assoc, lt_add_iff_pos_right]
