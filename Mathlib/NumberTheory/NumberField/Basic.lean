@@ -415,7 +415,7 @@ noncomputable def ringOfIntegersEquiv : 𝓞 ℚ ≃+* ℤ :=
   RingOfIntegers.equiv ℤ
 
 @[simp]
-theorem ringOfIntegersEquiv.apply_coe (z : 𝓞 ℚ) :
+theorem ringOfIntegersEquiv_apply_coe (z : 𝓞 ℚ) :
     (Rat.ringOfIntegersEquiv z : ℚ) = algebraMap (𝓞 ℚ) ℚ z := by
   obtain ⟨z, rfl⟩ := Rat.ringOfIntegersEquiv.symm.surjective z
   simp
