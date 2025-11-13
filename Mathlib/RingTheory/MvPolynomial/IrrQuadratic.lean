@@ -77,14 +77,14 @@ theorem dvd_X_iff_exists [Nontrivial R]
       rw [h01.1] at hq
       replace hq := congr_arg (fun f ↦ coeff (Finsupp.single i 1) f) hq
       simp only [coeff_X, coeff_C_mul] at hq
-      exact isUnit_of_mul_eq_one _ _ hq.symm
+      exact IsUnit.of_mul_eq_one _ hq.symm
     · rw [totalDegree_eq_zero_iff_eq_C] at h10
       have : IsUnit (coeff 0 q) := by
         replace hq := congr_arg (fun f ↦ coeff (Finsupp.single i 1) f) hq
         simp only at hq
         rw [h10.2, mul_comm] at hq
         simp only [coeff_X, coeff_C_mul] at hq
-        exact isUnit_of_mul_eq_one _ _ hq.symm
+        exact IsUnit.of_mul_eq_one _ hq.symm
       set u := this.unit
       have h : q = C (u : R) := by rw [h10.2]; simp [u]
       refine ⟨(u⁻¹ : Rˣ), Units.isUnit _, ?_⟩
