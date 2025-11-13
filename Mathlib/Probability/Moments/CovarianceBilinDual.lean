@@ -242,44 +242,58 @@ def covarianceBilinDual (μ : Measure E) : StrongDual ℝ E →L[ℝ] StrongDual
   uncenteredCovarianceBilinDual (μ.map (fun x ↦ x - ∫ x, x ∂μ))
 
 omit [BorelSpace E] in
-lemma _root_.MeasureTheory.memLp_id_of_self_sub_integral
-    (h_Lp : MemLp (fun x ↦ x - ∫ y, y ∂μ) 2 μ) : MemLp id 2 μ := by
+lemma _root_.MeasureTheory.memLp_id_of_self_sub_integral {p : ℝ≥0∞}
+    (h_Lp : MemLp (fun x ↦ x - ∫ y, y ∂μ) p μ) : MemLp id p μ := by
   have : (id : E → E) = fun x ↦ x - ∫ x, x ∂μ + ∫ x, x ∂μ := by ext; simp
   rw [this]
   apply h_Lp.add
   set c := ∫ x, x ∂μ
-  /- We need to check that the constant `c = ∫ x, x ∂μ` is in `L^2`. Note that we don't assume
+  /- We need to check that the constant `c = ∫ x, x ∂μ` is in `L^p`. Note that we don't assume
   that `μ` is finite, so this requires an argument. If the constant is zero, it's obvious.
   If it's nonzero, this means that `x` is integrable for `μ` (as otherwise the integral would be
-  `0` by our choice of junk value), so `‖x‖ ^ (1/2)` is in `L^2`.
+  `0` by our choice of junk value), so `‖x‖ ^ (1/p)` is in `L^p`.
   The constant `c` is controlled by `2 ‖x - c‖` close to `0` (say when `‖x‖ ≤ ‖c‖ / 2`)
-  and by a multiple of `‖x‖ ^ (1/2)` away from `0`. Those two functions
-  are in `L^2` by assumptions, so the constant `c` also is. -/
+  and by a multiple of `‖x‖ ^ (1/p)` away from `0`. Those two functions
+  are in `L^p` by assumptions, so the constant `c` also is. -/
   by_cases hx : c = 0
   · simp [hx]
-  apply (integrable_norm_rpow_iff (by fun_prop) (by norm_num) (by norm_num)).1
+  rcases eq_or_ne p 0 with rfl | hp0
+  · simp [aestronglyMeasurable_const]
+  rcases eq_or_ne p ∞ with rfl | hptop
+  · exact memLp_top_const c
+  apply (integrable_norm_rpow_iff (by fun_prop) hp0 hptop).1
   have I : Integrable (fun (x : E) ↦ ‖x‖) μ := by
     apply Integrable.norm
     contrapose! hx
     exact integral_undef hx
-  have := h_Lp.integrable_norm_pow (by norm_num)
-  apply (((I.const_mul (‖c‖)).add this).const_mul 4).mono' (by fun_prop)
+  have := (h_Lp.integrable_norm_rpow hp0 hptop).const_mul (2 ^ p.toReal)
+  apply (((I.const_mul (2 * ‖c‖ ^ (p.toReal - 1))).add this)).mono' (by fun_prop)
   filter_upwards [] with y
-  simp only [ENNReal.toReal_ofNat, Real.rpow_ofNat, norm_pow, norm_norm, Pi.add_apply, mul_add]
+  lift p to ℝ≥0 using hptop
+  simp only [ENNReal.coe_toReal, Real.norm_eq_abs, Pi.add_apply]
+  rw [abs_of_nonneg (by positivity)]
   rcases le_total ‖y‖ (‖c‖ / 2)
   · have : ‖c‖ ≤ ‖y‖ + ‖y - c‖ := Eq.trans_le (by abel_nf) (norm_sub_le y (y - c))
-    calc ‖c‖ ^ 2
-    _ ≤ (2 * ‖y - c‖) ^ 2 := pow_le_pow_left₀ (by positivity) (by linarith) 2
-    _ = 4 * 0 + 4 * ‖y - c‖ ^ 2 := by ring
-    _ ≤ 4 * (‖c‖ * ‖y‖) + 4 * ‖y - c‖ ^ 2 := by gcongr; positivity
-  · calc ‖c‖ ^ 2
-    _ = 1 * (‖c‖ * ‖c‖) + 0 * ‖y - c‖ ^ 2 := by ring
-    _ ≤ 2 * (‖c‖ * (2 * ‖y‖)) + 4 * ‖y - c‖ ^ 2 := by
+    calc ‖c‖ ^ (p : ℝ)
+    _ ≤ (2 * ‖y - c‖) ^ (p : ℝ) :=
+      Real.rpow_le_rpow (by positivity) (by linarith) (by positivity)
+    _ = 0 + 2 ^ (p : ℝ) * ‖y - c‖ ^ (p : ℝ) := by
+      rw [Real.mul_rpow (by simp) (by positivity)]
+      ring
+    _ ≤ 2 * ‖c‖ ^ (p - 1 : ℝ) * ‖y‖ + 2 ^ (p : ℝ) * ‖y - c‖ ^ (p : ℝ) := by
       gcongr
-      · norm_num
-      · linarith
-      · norm_num
-    _ = 4 * (‖c‖ * ‖y‖) + 4 * ‖y - c‖ ^ 2 := by ring
+      positivity
+  · have : 0 ≤ ‖c‖ := by positivity
+    rcases eq_or_lt_of_le this with hc | hc
+    · simp only [← hc]
+      rw [Real.zero_rpow (by simpa using hp0)]
+      positivity
+    calc ‖c‖ ^ (p : ℝ )
+    _ = ‖c‖ ^ ((p - 1) + 1 : ℝ) := by abel_nf
+    _ = ‖c‖ ^ (p - 1 : ℝ) * ‖c‖ := by rw [Real.rpow_add hc, Real.rpow_one]
+    _ ≤ ‖c‖ ^ (p - 1 : ℝ) * (2 * ‖y‖) := by gcongr; linarith
+    _ = 2 * ‖c‖ ^ (p - 1 : ℝ) * ‖y‖ + 0 := by ring
+    _ ≤ 2 * ‖c‖ ^ (p - 1 : ℝ) * ‖y‖ + 2 ^ (p : ℝ) * ‖y - c‖ ^ (p : ℝ) := by gcongr; positivity
 
 lemma covarianceBilinDual_of_not_memLp' (h : ¬ MemLp (fun x ↦ x - ∫ y, y ∂μ) 2 μ)
     (L₁ L₂ : StrongDual ℝ E) :
