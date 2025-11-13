@@ -157,11 +157,13 @@ section PartialOrder
 
 variable [PartialOrder α] [OrderClosedTopology α] [SecondCountableTopology α] {a b : α}
 
-@[measurability]
 theorem measurableSet_le' : MeasurableSet { p : α × α | p.1 ≤ p.2 } :=
   OrderClosedTopology.isClosed_le'.measurableSet
 
-@[measurability]
+@[fun_prop]
+theorem measurable_le : Measurable fun p : α × α => p.1 ≤ p.2 :=
+  measurableSet_setOf.mp measurableSet_le'
+
 theorem measurableSet_le {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
     MeasurableSet { a | f a ≤ g a } :=
   hf.prodMk hg measurableSet_le'
@@ -219,11 +221,13 @@ instance nhdsWithin_Iio_isMeasurablyGenerated : (𝓝[Iio b] a).IsMeasurablyGene
 instance nhdsWithin_uIcc_isMeasurablyGenerated : IsMeasurablyGenerated (𝓝[[[a, b]]] x) :=
   nhdsWithin_Icc_isMeasurablyGenerated
 
-@[measurability]
 theorem measurableSet_lt' [SecondCountableTopology α] : MeasurableSet { p : α × α | p.1 < p.2 } :=
   (isOpen_lt continuous_fst continuous_snd).measurableSet
 
-@[measurability]
+@[fun_prop]
+theorem measurable_lt [SecondCountableTopology α] : Measurable fun p : α × α => p.1 < p.2 :=
+  measurableSet_setOf.mp measurableSet_lt'
+
 theorem measurableSet_lt [SecondCountableTopology α] {f g : δ → α} (hf : Measurable f)
     (hg : Measurable g) : MeasurableSet { a | f a < g a } :=
   hf.prodMk hg measurableSet_lt'
