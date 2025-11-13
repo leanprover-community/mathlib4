@@ -47,35 +47,6 @@ def SemilocallySimplyConnected (X : Type*) [TopologicalSpace X] : Prop :=
     ∀ (base : U),
       (FundamentalGroup.map (⟨Subtype.val, continuous_subtype_val⟩ : C(U, X)) base).range = ⊥
 
-/-- A partition of the unit interval [0,1] into n segments.
-This bundles a strictly monotone sequence 0 = t₀ < t₁ < ... < tₙ = 1. -/
-structure IntervalPartition (n : ℕ) where
-  /-- Partition points 0 = t₀ < t₁ < ... < tₙ = 1 -/
-  t : Fin (n + 1) → unitInterval
-  /-- t is strictly monotone -/
-  h_mono : StrictMono t
-  /-- t starts at 0 -/
-  h_start : t 0 = 0
-  /-- t ends at 1 -/
-  h_end : t (Fin.last n) = 1
-
-namespace IntervalPartition
-
-attribute [simp, grind =] h_start h_end
-
-/-- IntervalPartition 0 is impossible because it requires a single point
-to be both 0 and 1. -/
-@[simp]
-lemma not_zero (part : IntervalPartition 0) : False := by
-  have h0 : part.t 0 = 0 := part.h_start
-  have h1 : part.t (Fin.last 0) = 1 := part.h_end
-  have : Fin.last 0 = 0 := rfl
-  rw [this] at h1
-  rw [h0] at h1
-  exact zero_ne_one h1
-
-end IntervalPartition
-
 namespace SemilocallySimplyConnected
 
 variable {X : Type*} [TopologicalSpace X]
@@ -146,19 +117,16 @@ theorem Path.homotopic_of_loops_nullhomotopic_in_neighborhood {x y : X} (U : Set
     obtain ⟨t, rfl⟩ := hz
     simp only [Path.trans_apply]
     split_ifs <;> [exact hp (Set.mem_range_self _); exact hq (Set.mem_range_self _)]
-  -- Pass to quotient: use that p · (q⁻¹ · q) = (p · q⁻¹) · q and simplify
+  -- Move to quotient and work there
+  replace h_loop := Path.Homotopic.Quotient.eq.mpr h_loop
+  simp at h_loop
   apply Path.Homotopic.Quotient.exact
-  show Path.Homotopic.Quotient.mk p = Path.Homotopic.Quotient.mk q
-  calc Path.Homotopic.Quotient.mk p
-      = (Path.Homotopic.Quotient.mk p).trans
-          ((Path.Homotopic.Quotient.mk q).symm.trans (Path.Homotopic.Quotient.mk q)) := by simp
-    _ = ((Path.Homotopic.Quotient.mk p).trans (Path.Homotopic.Quotient.mk q).symm).trans
-          (Path.Homotopic.Quotient.mk q) := by simp
-    _ = (Path.Homotopic.Quotient.mk (p.trans q.symm)).trans (Path.Homotopic.Quotient.mk q) := by
-          simp [← Path.Homotopic.Quotient.mk_trans, ← Path.Homotopic.Quotient.mk_symm]
-    _ = (Path.Homotopic.Quotient.mk (Path.refl x)).trans (Path.Homotopic.Quotient.mk q) := by
-          rw [Path.Homotopic.Quotient.eq.mpr h_loop]
-    _ = Path.Homotopic.Quotient.mk q := by simp
+  generalize Path.Homotopic.Quotient.mk p = p' at h_loop ⊢
+  generalize Path.Homotopic.Quotient.mk q = q' at h_loop ⊢
+  calc p' = p'.trans (q'.symm.trans q') := by simp
+    _ = (p'.trans q'.symm).trans q' := by simp
+    _ = (Path.Homotopic.Quotient.refl x).trans q' := by rw [h_loop]
+    _ = q' := by simp
 
 /-- In an SLSC space, every point has an open neighborhood U such that for any two points
 in U, there is a unique (up to homotopy) path between them.
@@ -205,6 +173,37 @@ theorem exists_pathConnected_slsc_neighborhood (hX : SemilocallySimplyConnected 
   · exact Set.Subset.trans hq hW_subset
 
 /-! ### Tube data structures -/
+
+/-- A partition of the unit interval [0,1] into n segments.
+This bundles a strictly monotone sequence 0 = t₀ < t₁ < ... < tₙ = 1. -/
+-- If this proves more generally useful, we should move it to `UnitInterval.lean`
+-- and providfe further API (e.g. compositions, induction principles, ...)
+structure IntervalPartition (n : ℕ) where
+  /-- Partition points 0 = t₀ < t₁ < ... < tₙ = 1 -/
+  t : Fin (n + 1) → unitInterval
+  /-- t is strictly monotone -/
+  h_mono : StrictMono t
+  /-- t starts at 0 -/
+  h_start : t 0 = 0
+  /-- t ends at 1 -/
+  h_end : t (Fin.last n) = 1
+
+namespace IntervalPartition
+
+attribute [simp, grind =] h_start h_end
+
+/-- IntervalPartition 0 is impossible because it requires a single point
+to be both 0 and 1. -/
+@[simp]
+lemma not_zero (part : IntervalPartition 0) : False := by
+  have h0 : part.t 0 = 0 := part.h_start
+  have h1 : part.t (Fin.last 0) = 1 := part.h_end
+  have : Fin.last 0 = 0 := rfl
+  rw [this] at h1
+  rw [h0] at h1
+  exact zero_ne_one h1
+
+end IntervalPartition
 
 /-- Data for a tubular neighborhood in an SLSC space.
 This is completely abstract: just neighborhoods and their properties.
