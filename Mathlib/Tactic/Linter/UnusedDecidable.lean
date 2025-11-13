@@ -7,6 +7,15 @@ import Mathlib.Init
 import Mathlib.Data.String.Defs
 import Mathlib.Tactic.Lemma
 import Batteries
+import Qq
+
+/-! efeg -/
+
+open Qq Lean Meta
+
+run_meta do
+  let e := q(∀ (x : Nat), let i := String; ∀ (y : i), y.length = x)
+  forallBoundedTelescope e (some 2) fun fvars body => logInfo m!"{fvars}\n{body}"
 
 /-!
 # Unused `Decidable*` hypotheses linter
@@ -54,10 +63,10 @@ open Lean Meta Elab Command Linter
 /-
 # Plan
 
-- provide combinator which takes in
-2. `p : Expr → Bool` → (`hypTypes : Array Expr` → `m Unit`) → `m Unit`
+## v1
+- Logs on the signature if possible.
+- provides restricted combinator.
 -
-
 -/
 
 partial def Lean.Syntax.findSomeAux {α} (p : Syntax → Option α) : Syntax → Option α
@@ -74,12 +83,12 @@ such that
 -  `p Aᵢ` is `true`
 - `Aᵢ₊₁ → ⋯ → X` does not depend on `xᵢ`. (It's in this sense that `xᵢ : Aᵢ` is "unused".)
 
-Note that the argument to `p` may have loose bvars.
+Note that the argument to `p` may have loose bvars. This is a performance optimization.
 
 This function runs `cleanupAnnotations` on each expression before examining it.
 
-For performance, we test dependence via   loose bound variables instead of creating intermediate
-telescopes.
+We see through `let`s, and do not increment the index when doing so. This behavior is compatible
+with `forallBoundedTelescope`.
 -/
 private partial def Lean.Expr.getUnusedForallInstanceBinderIdxsWhere (p : Expr → Bool) (e : Expr) :
     Array Nat :=
@@ -92,10 +101,12 @@ where
         acc.push current
       else
         acc
+    /- See through `letE`, and just as in the interpretation of a bound provided to
+    `forallBoundedTelescope`, do not increment the number of binders we've counted. -/
+    | .letE _ _ _ body _ => go body current acc
     | _ => acc
 
 namespace Lean.Elab.InfoTree
-
 
 /--
 Get the `parentDecl`s of every elaborated body. This includes `let rec`/`where`
@@ -223,13 +234,23 @@ def isDecidableVariant (type : Expr) : Bool :=
     n == ``DecidablePred ||
     n == ``Decidable
 
+class Foo : Prop where
+  x : 0 = 0
+
+instance : Foo := ⟨rfl⟩
+
+run_cmd do
+  let some info := (← getEnv).findAsync? ``instFoo | throwError "aa"
+  logInfo m!"{info.kind matches .thm}"
+
+
+
 /--
 The `unusedDecidable` linter checks if a theorem's hypotheses include `Decidable*` instances which
 are not used in the remainder of the type. If so, it suggests removing the instances and using
 `classical` in the theorem's proof instead.
 
-This linter fires on any declaration whose type is a `Prop`. It does not, however, fire on
-subordinate `where` or `let rec` declarations.
+This linter fires on any declaration whose type is a `Prop`.
 -/
 register_option linter.unusedDecidable : Bool := {
   defValue := false
@@ -255,23 +276,6 @@ def _root_.Lean.Environment.findTheoremAsync? (env : Environment) (decl : Name) 
 def _root_.Lean.Elab.InfoTree.getTheorems (t : InfoTree) (env : Environment) : List ConstantVal :=
   t.getDecls.filterMap env.findTheoremAsync?
 
-def _root_.Lean.Elab.InfoTree.getTheoremsWhere (t : InfoTree) (env : Environment)
-    (p : Name → Bool) : List ConstantVal :=
-  t.getDecls.filterMap fun decl => if p decl then env.findTheoremAsync? decl else none
-
-def onTheorems (x : ConstantVal → InfoTree → CommandElabM Unit) : CommandElabM Unit := do
-  for t in ← getInfoTrees do
-    let decls := t.getTheorems (← getEnv)
-    for decl in decls do
-      x decl t
-
-def onTheoremsWhere (p : Name → Bool) (x : ConstantVal → InfoTree → CommandElabM Unit) :
-    CommandElabM Unit := do
-  for t in ← getInfoTrees do
-    let decls := t.getTheoremsWhere (← getEnv) p
-    for decl in decls do
-      x decl t
-
 
 -- def _root_.Lean.Elab.InfoTree.getTheorems (t : InfoTree) (env : Environment) : List ConstantVal :=
 --   t.getDecls.filterMap fun decl => do
@@ -279,9 +283,16 @@ def onTheoremsWhere (p : Name → Bool) (x : ConstantVal → InfoTree → Comman
 --     if info.kind matches .thm then info.toConstantVal else none
 
 
+
+
 structure Parameter where
+  /- TODO: include syntax references to the binders here, and use the "real" fvars created during
+  elaboration if possible -/
+  /-- The free variable of the parameter created in a telescope for logging. -/
   fvar? : Option Expr
+  /-- The type of the parameter created in a telescope for logging. -/
   type? : Option Expr
+  /-- The index of the parameter among the `forall` binders in the type (starting at 1). -/
   idx : Nat
 
 instance : ToMessageData Parameter where
@@ -343,9 +354,8 @@ def getLCtxOfDeclBody? (t : InfoTree) (decl : Name) (ctx? : Option ContextInfo :
 
 partial def _root_.Lean.Elab.InfoTree.forIn.{u₁,u₂} {m : Type u₁ → Type u₂}
     {β : Type u₁} [Monad m] (x : InfoTree) (b : β)
-    (f : (ContextInfo × Info × PersistentArray InfoTree) → β → m (ForInStep β)) : m β := do
-  match ← go none b x with
-  | .yield b | .done b => return b
+    (f : (ContextInfo × Info × PersistentArray InfoTree) → β → m (ForInStep β)) : m β :=
+  return (← go none b x).run
 where
   go ctx? b : InfoTree → m (ForInStep β)
   | .context ctx t => go (ctx.mergeIntoOuter? ctx?) b t
@@ -354,9 +364,16 @@ where
         | none => pure <| ForInStep.yield b
         | some ctx => f (ctx, i, ch) b
       match bstep with
-      | .yield b => ch.forIn (init := bstep) (go <| i.updateContext? ctx?)
-      | bstep@(.done _) => pure <| .done b
-  | .hole _ => pure bstep
+      | .yield b => do
+        let ctx? := i.updateContext? ctx?
+        let mut b := b
+        for t in ch do
+          match ← go ctx? b t with
+          | .yield b' => b := b'
+          | bdone@(.done _) => return bdone
+        return .yield b
+      | bdone@(.done _) => pure bdone
+  | .hole _ => pure <| .yield b
 
 universe u₁ u₂ in
 instance {m : Type u₁ → Type u₂} [Monad m] :
@@ -374,7 +391,7 @@ Note that `p` is non-monadic, and may encounter loose bvars in its argument. Thi
 optimization. However, the `Parameter`s are created in a telescope, and their fields will *not*
 have loose bound variables.
 -/
-def _root_.Lean.Elab.InfoTree.onUnusedInstancesWhere (t : InfoTree) (decl : ConstantVal)
+def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
     (p : Expr → Bool) (logOnUnused : Array Parameter → TermElabM Unit) : CommandElabM Unit := do
   let unusedInstances := decl.type.getUnusedForallInstanceBinderIdxsWhere p
   if let some maxIdx := unusedInstances.back? then liftTermElabM do
@@ -384,29 +401,70 @@ def _root_.Lean.Elab.InfoTree.onUnusedInstancesWhere (t : InfoTree) (decl : Cons
           return {
               fvar? := fvars[idx]?
               type? := ← fvars[idx]?.mapM (inferType ·)
-              idx
+              idx := idx + 1
             }
         logOnUnused unusedInstances
 
-def _root_.Lean.Syntax.logUnusedInstancesInTheoremsWhere (cmd : Syntax) (linter : Lean.Option Bool)
-    (onlyOnNames : Name → Bool) (onlyOnInstanceTypes : Expr → Bool) (msg : MessageData) :
+/-- Finds theorems whose bodies were elaborated in the current infotrees and whose (full)
+declaration names satisfy `nameFilter`. Checks their type to see if it contains instance hypotheses
+that (1) are unused in the remainder of the type (2) have types which satisfy `instanceTypeFilter`.
+(Note: `instanceTypeFilter` is non-monadic, and may encounter bound variables in its argument. This
+is a performance optimization. `isAppOrForallOfConstP` may be useful in detecting constant
+applications and types of the form `∀ (...), bar ..` here.)
+
+If any such parameters are found in the type of a theorem `foo`, we create a telescope in which the
+types and free variables of the unused parameters are available as
+`unusedParams : Array Parameter := #[p₁, p₂, ..., pₙ]`, as well as the theorem `thm : ConstantVal`
+and current infotree `t`, and run `log t thm unusedParams`.
+
+The ambient ref during `log t thm unusedParams` is the location of the type signature of the
+theorem `thm`, if it can be found; else, we use the location of the theorem's name; else, we use
+the whole command.
+
+A simple pattern is therefore
+```
+fun _ thm unusedParams => do
+  logLint linter.fooLinter (← getRef) m!"\
+    {thm.name.unusedInstancesMsg unusedParams}\n\
+    <extra caption>"
+```
+which logs
+
+> \`{foo}\` has the hypothes[is/es] {p₁}, {p₂}, ..., and {pₙ} which [is/are] not used in the
+  remainder of the type.
+>
+> \<extra caption\>
+>
+> This linter can be disabled with \`set_option {linter.fooLinter.name} false\`
+
+pluralizing as appropriate.
+-/
+def _root_.Lean.Syntax.logUnusedInstancesInTheoremsWhere (cmd : Syntax)
+    (declFilter : ConstantVal → Bool) (instanceTypeFilter : Expr → Bool)
+    (log : InfoTree → ConstantVal → Array Parameter → TermElabM Unit) :
     CommandElabM Unit := do
   for t in ← getInfoTrees do
-    let thms := t.getTheoremsWhere (← getEnv) onlyOnNames
+    let thms := t.getTheorems (← getEnv) |>.filter declFilter
     for thm in thms do
-      t.onUnusedInstancesWhere thm onlyOnInstanceTypes fun unusedDecidables _ _ =>
+      thm.onUnusedInstancesWhere instanceTypeFilter fun unusedParams =>
         t.withDeclSigRef cmd thm.name do
-          logLint linter (← getRef)
-            m!"{thm.name.unusedInstancesMsg unusedDecidables}\n{msg}"
+          log t thm unusedParams
 
-/-- The linter for unused `Decidable*` hypotheses in proposition declarations. -/
+/-- Detects `Decidable*` instance hypotheses in the types of theorems which are not used in the
+remainder of the type, and suggests replacing them with a use of `classical` in the proof or
+`open scoped Classical in` at the term level. -/
 def unusedDecidable : Linter where
   run := withSetOptionIn fun cmd => do
     unless getLinterValue linter.unusedDecidable (← getLinterOptions) do
       return
-    cmd.logUnusedInstancesInTheoremsWhere linter.unusedDecidable
-      (!(`Decidable).isPrefixOf ·) isDecidableVariant
-      m!"Consider removing these hypotheses and using `classical` in the proof instead."
+    cmd.logUnusedInstancesInTheoremsWhere
+      (!(`Decidable).isPrefixOf ·.name)
+      isDecidableVariant
+      fun _ thm unusedParams => do
+        logLint linter.unusedDecidable (← getRef) m!"\
+          {thm.name.unusedInstancesMsg unusedParams}\n\
+          Consider removing these hypotheses and using `classical` in the proof instead. For terms,
+          consider using `open Scoped classical in` at the term level (not the command level)."
 
 initialize addLinter unusedDecidable
 
