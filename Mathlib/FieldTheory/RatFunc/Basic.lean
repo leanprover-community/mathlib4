@@ -74,7 +74,6 @@ variable [Monoid R] [DistribMulAction R K[X]]
 variable [IsScalarTower R K[X] K[X]]
 
 theorem mk_smul (c : R) (p q : K[X]) : RatFunc.mk (c • p) q = c • RatFunc.mk p q := by
-  letI : SMulZeroClass R (FractionRing K[X]) := inferInstance
   by_cases hq : q = 0
   · rw [hq, mk_zero, mk_zero, smul_zero]
   · rw [mk_eq_localization_mk _ hq, mk_eq_localization_mk _ hq, ← Localization.smul_mk]
@@ -431,23 +430,9 @@ variable (R L : Type*) [CommRing R] [Field L] [IsDomain R] [Algebra R[X] L] [Fai
 /-- `FractionRing.liftAlgebra` specialized to `RatFunc R`.
 
 This is a scoped instance because it creates a diamond when `L = RatFunc R`. -/
-scoped instance liftAlgebra : Algebra (RatFunc R) L :=
-  RingHom.toAlgebra (IsFractionRing.lift (FaithfulSMul.algebraMap_injective R[X] _))
-
-/-- `FractionRing.isScalarTower_liftAlgebra` specialized to `RatFunc R`. -/
-instance isScalarTower_liftAlgebra :
-    IsScalarTower R[X] (RatFunc R) L :=
-  IsScalarTower.of_algebraMap_eq fun x =>
-    (IsFractionRing.lift_algebraMap (FaithfulSMul.algebraMap_injective R[X] L) x).symm
+scoped instance liftAlgebra : Algebra (RatFunc R) L := FractionRing.liftAlgebra ..
 
 attribute [local instance] Polynomial.algebra
-
-/-- `FractionRing.instFaithfulSMul` specialized to `RatFunc R`. -/
-instance faithfulSMul (K E : Type*) [Field K] [Field E] [Algebra K E]
-    [FaithfulSMul K E] : FaithfulSMul K[X] (RatFunc E) :=
-  (faithfulSMul_iff_algebraMap_injective ..).mpr <|
-    (IsFractionRing.injective E[X] _).comp
-      (Polynomial.map_injective _ <| FaithfulSMul.algebraMap_injective K E)
 
 section rank
 
@@ -455,9 +440,8 @@ attribute [local instance] Polynomial.algebra
 
 variable (k K : Type*) [Field k] [Field K] [Algebra k K] [Algebra.IsAlgebraic k K]
 
-theorem rank_ratFunc_ratFunc : Module.rank (RatFunc k) (RatFunc K) = Module.rank k K := by
-  rw [Algebra.IsAlgebraic.rank_of_isFractionRing k[X] (RatFunc k) K[X] (RatFunc K),
-    rank_polynomial_polynomial]
+theorem rank_ratFunc_ratFunc : Module.rank (RatFunc k) (RatFunc K) = Module.rank k K :=
+  Algebra.IsAlgebraic.rank_fractionRing_polynomial
 
 theorem finrank_ratFunc_ratFunc : Module.finrank (RatFunc k) (RatFunc K) = Module.finrank k K := by
   by_cases hf : Module.Finite (RatFunc k) (RatFunc K)
@@ -473,19 +457,6 @@ end rank
 end lift
 
 section IsScalarTower
-
-/-- Let `RatFunc A / A[X] / R / R₀` be a tower. If `A[X] / R / R₀` is a scalar tower
-then so is `RatFunc A / R / R₀`. -/
-instance (R₀ R A : Type*) [CommSemiring R₀] [CommSemiring R] [CommRing A] [IsDomain A]
-    [Algebra R₀ A[X]] [SMul R₀ R] [Algebra R A[X]] [IsScalarTower R₀ R A[X]] :
-    IsScalarTower R₀ R (RatFunc A) := IsScalarTower.to₁₂₄ _ _ A[X] _
-
-/-- Let `K / RatFunc A / A[X] / R` be a tower. If `K / A[X] / R` is a scalar tower
-then so is `K / RatFunc A / R`. -/
-instance (R A K : Type*) [CommRing A] [IsDomain A] [Field K] [Algebra A[X] K]
-    [FaithfulSMul A[X] K] [CommSemiring R] [Algebra R A[X]] [SMul R K] [IsScalarTower R A[X] K] :
-    IsScalarTower R (RatFunc A) K :=
-  IsScalarTower.to₁₃₄ _ A[X] _ _
 
 /-- Let `K / k / RatFunc A / A[X]` be a tower. If `K / k / A[X]` is a scalar tower
 then so is `K / k / RatFunc A`. -/
