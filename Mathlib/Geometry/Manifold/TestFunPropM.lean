@@ -40,22 +40,32 @@ variable (I : ModelWithCorners 𝕜 (E × E) (H × E)) in
 variable (I := I.prod I) in
 #find_model ModelWithCorners 𝕜 (E × E) (ModelProd H H)
 
--- TODO: yield descriptive error messages!
-/-- error: -/
+-- TODO: why are the error messages being swallowed?
+
+set_option trace.Elab.DiffGeo.FunPropM true in
+/--
+error: ⏎
+---
+trace: [Elab.DiffGeo.FunPropM] metavariable has type ModelWithCorners 𝕜 E H'
+[Elab.DiffGeo.FunPropM] Searching for some `ModelWithCorners 𝕜 E H'`
+[Elab.DiffGeo.FunPropM] Trying to solve a goal `ModelWithCorners 𝕜 E H'`
+[Elab.DiffGeo.FunPropM] `E` is a normed space over the field `𝕜`
+-/
 #guard_msgs in
 #find_model ModelWithCorners 𝕜 E H'
 
+#exit
 
 -- Normed fields: TODO implement this!
-/-- error: Couldn't find a `NormedSpace` structure on `𝕜` among local instances. -/
+/-- error: -/
 #guard_msgs in
 #find_model ModelWithCorners 𝕜 𝕜 𝕜
 
-/-- error: Couldn't find a `NormedSpace` structure on `ℝ` among local instances. -/
+/-- error: -/
 #guard_msgs in
 #find_model ModelWithCorners ℝ ℝ ℝ
 
-/-- error: Couldn't find a `NormedSpace` structure on `ℂ` among local instances. -/
+/-- error: -/
 #guard_msgs in
 #find_model ModelWithCorners ℂ ℂ ℂ
 
