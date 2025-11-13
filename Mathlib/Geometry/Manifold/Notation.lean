@@ -878,8 +878,10 @@ topological space, using information from the local context and a few hard-coded
 def findModelForFunpropInner (field model top : Expr) :
     TermElabM <| Option (Expr × NormedSpaceInfo) := do
   trace[Elab.DiffGeo.FunPropM] "Trying to solve a goal `ModelWithCorners {field} {model} {top}`"
-  if let some m ← tryStrategy m!"Assumption"       fromAssumption'     then return some (m, none)
-  if let some m ← tryStrategy m!"Normed space"     fromNormedSpace'    then return some (m, none)
+  if let some m ← tryStrategy m!"Assumption"    fromAssumption'  `Elab.DiffGeo.FunPropM then
+    return some (m, none)
+  if let some m ← tryStrategy m!"Normed space"  fromNormedSpace' `Elab.DiffGeo.FunPropM then
+    return some (m, none)
   -- TODO: implement the remaining strategies, and then the inner to outer part!
   return none
 where
@@ -983,7 +985,7 @@ Trace class for the `MDiff` elaborator and friends, which infer a model with cor
 initialize registerTraceClass `Elab.DiffGeo.MDiff (inherited := true)
 
 /--
-Trace class for the using `fun_prop` on manifolds, for trying to solve goals of the form
+Trace class for the use `fun_prop` on manifolds, for trying to solve goals of the form
 `ModelWithCorners 𝕜 E H` using local hypotheses and a few hard-coded rules.
 -/
 initialize registerTraceClass `Elab.DiffGeo.FunPropM (inherited := true)
