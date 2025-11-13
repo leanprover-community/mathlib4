@@ -45,7 +45,7 @@ macro_rules
   | `(tactic| by_contra! $cfg _%$under $[: $ty]?) =>
     `(tactic| by_contra! $cfg $(mkIdentFrom under `this):ident $[: $ty]?)
   | `(tactic| by_contra! $cfg $e:ident) =>
-    `(tactic| by_contra $e:ident; push_neg $[$(getConfigItems cfg)]* -failIfUnchanged at $e:ident)
+    `(tactic| by_contra $e:ident; push_neg $[$(getConfigItems cfg)]* +failIfUnchanged at $e:ident)
   | `(tactic| by_contra! $cfg $e:ident : $y) => `(tactic|
        (by_contra! $cfg h
         -- if the below `exact` call fails then this tactic should fail with the message
