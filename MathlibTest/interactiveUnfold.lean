@@ -3,7 +3,10 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib
+import Mathlib.Algebra.Group.Basic
+
+-- import Mathlib.Data.Rat.Init
+import Mathlib.Tactic.Widget.InteractiveUnfold
 
 /-!
 The `unfold?` tactic is used interactively, so it is tricky to test directly.
@@ -35,7 +38,7 @@ info: Unfolds for 42:
 · Rat.ofInt ↑42
 -/
 #guard_msgs in
-#unfold? (42 : ℚ)
+#unfold? (42 : Rat)
 
 /--
 info: Unfolds for 1 + 1:
@@ -111,3 +114,9 @@ info: Unfolds for fun x => id x:
 -/
 #guard_msgs in
 #unfold? fun x => id x
+
+-- We don't want to get the suggestion `inst✝.toMulOneClass.toMul.1 a a` because it isn't useful:
+variable {α : Type} [Group α] (a : α) in
+/-- info: No unfolds found for a * a -/
+#guard_msgs in
+#unfold? a * a
