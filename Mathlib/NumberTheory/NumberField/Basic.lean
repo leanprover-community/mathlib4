@@ -420,7 +420,7 @@ theorem ringOfIntegersEquiv_apply_coe (z : 𝓞 ℚ) :
   obtain ⟨z, rfl⟩ := Rat.ringOfIntegersEquiv.symm.surjective z
   simp
 
-theorem ringOfIntegersEquiv.symm_apply_coe (x : ℤ) :
+theorem ringOfIntegersEquiv_symm_apply_coe (x : ℤ) :
     (ringOfIntegersEquiv.symm x : ℚ) = ↑x :=
   eq_intCast ringOfIntegersEquiv.symm _ ▸ rfl
 
