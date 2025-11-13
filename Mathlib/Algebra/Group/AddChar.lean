@@ -28,7 +28,7 @@ We also include some constructions specific to the case when `A = R` is a ring; 
 For more refined results of a number-theoretic nature (primitive characters, Gauss sums, etc)
 see `Mathlib/NumberTheory/LegendreSymbol/AddCharacter.lean`.
 
-# Implementation notes
+## Implementation notes
 
 Due to their role as the dual of an additive group, additive characters must themselves be an
 additive group. This contrasts to their pointwise operations which make them a multiplicative group.

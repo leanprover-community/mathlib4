@@ -45,7 +45,7 @@ the most common usage. In the opposite direction, the implication
 ```
 holds -- note the `Co*ntra*` assumption on the `(≤)`-relation.
 
-# Formalization notes
+## Formalization notes
 
 We stick to the convention of using `Function.swap (*)` (or `Function.swap (+)`), for the
 typeclass assumptions, since `Function.swap` is slightly better behaved than `flip`.
