@@ -25,9 +25,7 @@ set.
 -/
 
 
-universe u_1 u_2
-variable {𝕜 : Type u_1} {E : Type u_2} [NontriviallyNormedField 𝕜]
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 lemma MeromorphicAt.slope {f : 𝕜 → E} {a c : 𝕜}
     (analytic : AnalyticAt 𝕜 f c) : MeromorphicAt (slope f a) c :=
