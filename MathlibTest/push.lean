@@ -12,15 +12,15 @@ variable {p q r : Prop}
 
 /-- info: (q ∧ (p ∨ q)) ∧ r ∧ (p ∨ r) -/
 #guard_msgs in
-#push Or => False ∧ p ∨ q ∧ r
+#push _ ∨ _ => False ∧ p ∨ q ∧ r
 
 /-- info: (p ∨ q) ∧ (p ∨ r) -/
 #guard_msgs in
-#push Or => (p ∨ q) ∧ (p ∨ r)
+#push _ ∨ _ => (p ∨ q) ∧ (p ∨ r)
 
 /-- info: (p ∧ q ∨ q) ∨ p ∧ r ∨ r -/
 #guard_msgs in
-#push And => (p ∨ True) ∧ (q ∨ r)
+#push _ ∧ _ => (p ∨ True) ∧ (q ∨ r)
 
 example {r : ℕ → Prop} : ∀ n : ℕ, p ∨ r n ∧ q ∧ n = 1 := by
   push ∀ n, _
@@ -38,7 +38,7 @@ example {r : ℕ → Prop} : ∃ n : ℕ, p ∨ r n ∨ q ∧ n = 1 := by
 
 /-- info: p ∨ ∃ x, q ∧ x = 1 -/
 #guard_msgs in
-#pull Exists => p ∨ q ∧ ∃ n : ℕ, n = 1
+#pull ∃ _, _ => p ∨ q ∧ ∃ n : ℕ, n = 1
 
 /--
 info: DiscrTree branch for Or:
