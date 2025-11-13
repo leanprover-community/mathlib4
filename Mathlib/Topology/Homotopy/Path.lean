@@ -272,22 +272,54 @@ attribute [local instance] Homotopic.setoid
 instance : Inhabited (Homotopic.Quotient () ()) :=
   ⟨Quotient.mk' <| Path.refl ()⟩
 
+namespace Quotient
+
+def mk (p : Path x₀ x₁) : Path.Homotopic.Quotient x₀ x₁ :=
+  _root_.Quotient.mk' p
+
+/-- `Path.Homotopic.Quotient.mk` is the simp normal form. -/
+@[simp] theorem mk'_eq_mk (p : Path x₀ x₁) : Quotient.mk' p = mk p := rfl
+@[simp] theorem mk''_eq_mk (p : Path x₀ x₁) : Quotient.mk'' p = mk p := rfl
+
+theorem exact {p q : Path x₀ x₁} (h : Quotient.mk p = Quotient.mk q) :
+    Homotopic p q := by
+  exact _root_.Quotient.exact h
+
+theorem eq {p q : Path x₀ x₁} : mk p = mk q ↔ Homotopic p q :=
+  _root_.Quotient.eq
+
 /-- The composition of path homotopy classes. This is `Path.trans` descended to the quotient. -/
-def Quotient.comp (P₀ : Path.Homotopic.Quotient x₀ x₁) (P₁ : Path.Homotopic.Quotient x₁ x₂) :
+def trans (P₀ : Path.Homotopic.Quotient x₀ x₁) (P₁ : Path.Homotopic.Quotient x₁ x₂) :
     Path.Homotopic.Quotient x₀ x₂ :=
   Quotient.map₂ Path.trans (fun (_ : Path x₀ x₁) _ hp (_ : Path x₁ x₂) _ hq => hcomp hp hq) P₀ P₁
 
-theorem comp_lift (P₀ : Path x₀ x₁) (P₁ : Path x₁ x₂) : ⟦P₀.trans P₁⟧ = Quotient.comp ⟦P₀⟧ ⟦P₁⟧ :=
+@[deprecated (since := "2025-11-13")]
+noncomputable alias _root_.Path.Homotopic.comp := Quotient.trans
+
+theorem mk_trans (P₀ : Path x₀ x₁) (P₁ : Path x₁ x₂) :
+    mk (P₀.trans P₁) = Quotient.trans (mk P₀) (mk P₁) :=
   rfl
+
+@[deprecated (since := "2025-11-13")]
+noncomputable alias _root_.Path.Homotopic.comp_lift := Quotient.mk_trans
 
 /-- The image of a path homotopy class `P₀` under a map `f`.
 This is `Path.map` descended to the quotient. -/
-def Quotient.mapFn (P₀ : Path.Homotopic.Quotient x₀ x₁) (f : C(X, Y)) :
+def map (P₀ : Path.Homotopic.Quotient x₀ x₁) (f : C(X, Y)) :
     Path.Homotopic.Quotient (f x₀) (f x₁) :=
-  Quotient.map (fun q : Path x₀ x₁ => q.map f.continuous) (fun _ _ h => Path.Homotopic.map h f) P₀
+  _root_.Quotient.map
+    (fun q : Path x₀ x₁ => q.map f.continuous) (fun _ _ h => Path.Homotopic.map h f) P₀
 
-theorem map_lift (P₀ : Path x₀ x₁) (f : C(X, Y)) : ⟦P₀.map f.continuous⟧ = Quotient.mapFn ⟦P₀⟧ f :=
+@[deprecated (since := "2025-11-13")]
+noncomputable alias _root_.Path.Homotopic.mapFn := Quotient.map
+
+theorem mk_map (P₀ : Path x₀ x₁) (f : C(X, Y)) : mk (P₀.map f.continuous) = map (mk P₀) f :=
   rfl
+
+@[deprecated (since := "2025-11-13")]
+noncomputable alias _root_.Path.Homotopic.map_lift := Quotient.mk_map
+
+end Quotient
 
 -- Porting note: we didn't previously need the `α := ...` and `β := ...` hints.
 theorem hpath_hext {p₁ : Path x₀ x₁} {p₂ : Path x₂ x₃} (hp : ∀ t, p₁ t = p₂ t) :
