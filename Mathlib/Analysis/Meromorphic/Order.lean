@@ -509,20 +509,35 @@ theorem meromorphicOrderAt_inv {f : 𝕜 → 𝕜} :
 alias MeromorphicAt.order_inv := meromorphicOrderAt_inv
 
 /--
+Adding a locally vanishing function does not change the order.
+-/
+@[simp]
+theorem meromorphicOrderAt_add_top_left
+    {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₁ : meromorphicOrderAt f₁ x = ⊤) :
+    meromorphicOrderAt (f₁ + f₂) x = meromorphicOrderAt f₂ x := by
+  rw [meromorphicOrderAt_congr]
+  filter_upwards [meromorphicOrderAt_eq_top_iff.1 hf₁] with z hz
+  simp_all
+
+/--
+Adding a locally vanishing function does not change the order.
+-/
+@[simp]
+theorem meromorphicOrderAt_add_top_right
+    {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₂ : meromorphicOrderAt f₂ x = ⊤) :
+    meromorphicOrderAt (f₁ + f₂) x = meromorphicOrderAt f₁ x := by
+  rw [add_comm, meromorphicOrderAt_add_top_left hf₂]
+
+/--
 The order of a sum is at least the minimum of the orders of the summands.
 -/
 theorem meromorphicOrderAt_add (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x) :
     min (meromorphicOrderAt f₁ x) (meromorphicOrderAt f₂ x) ≤ meromorphicOrderAt (f₁ + f₂) x := by
   -- Handle the trivial cases where one of the orders equals ⊤
   by_cases h₂f₁ : meromorphicOrderAt f₁ x = ⊤
-  · rw [h₂f₁, min_top_left, meromorphicOrderAt_congr]
-    filter_upwards [meromorphicOrderAt_eq_top_iff.1 h₂f₁]
-    simp
+  · simp_all
   by_cases h₂f₂ : meromorphicOrderAt f₂ x = ⊤
-  · simp only [h₂f₂, le_top, inf_of_le_left]
-    rw [meromorphicOrderAt_congr]
-    filter_upwards [meromorphicOrderAt_eq_top_iff.1 h₂f₂]
-    simp
+  · simp_all
   -- General case
   lift meromorphicOrderAt f₁ x to ℤ using h₂f₁ with n₁ hn₁
   lift meromorphicOrderAt f₂ x to ℤ using h₂f₂ with n₂ hn₂
@@ -559,9 +574,7 @@ lemma meromorphicOrderAt_add_eq_left_of_lt (hf₂ : MeromorphicAt f₂ x)
     simp [this, hf₁]
   -- Trivial case: f₂ vanishes identically around z₀
   by_cases h₁f₂ : meromorphicOrderAt f₂ x = ⊤
-  · rw [meromorphicOrderAt_congr]
-    filter_upwards [meromorphicOrderAt_eq_top_iff.1 h₁f₂]
-    simp
+  · simp_all
   -- General case
   lift meromorphicOrderAt f₂ x to ℤ using h₁f₂ with n₂ hn₂
   lift meromorphicOrderAt f₁ x to ℤ using h.ne_top with n₁ hn₁
