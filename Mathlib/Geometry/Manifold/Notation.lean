@@ -201,8 +201,8 @@ scoped elab:max "T% " t:term : term => do
 namespace Elab
 
 /-- Try a strategy `x : TermElabM` which either successfully produces some `Expr × α` or fails. On
-failure in `x`, exceptions are caught, traced (`trace.Elab.DiffGeo.MDiff`), and `none` is
-successfully returned.
+failure in `x`, exceptions are caught, traced (using `traceName`),
+and `none` is successfully returned.
 
 We run `x` with `errToSorry == false` to convert elaboration errors into
 exceptions, and under `withSynthesize` in order to force typeclass synthesis errors to appear and
@@ -210,11 +210,11 @@ be caught.
 
 Trace messages produced during the execution of `x` are wrapped in a collapsible trace node titled
 with `strategyDescr` and an indicator of success. -/
-private def tryStrategy' (α) (strategyDescr : MessageData) (x : TermElabM (Expr × α)) :
-    TermElabM (Option (Expr × α)) := do
+private def tryStrategy' (α) (strategyDescr : MessageData) (x : TermElabM (Expr × α))
+    (traceName : Name := `Elab.DiffGeo.MDiff) : TermElabM (Option (Expr × α)) := do
   let s ← saveState
   try
-    withTraceNode `Elab.DiffGeo.MDiff (fun e => pure m!"{e.emoji} {strategyDescr}") do
+    withTraceNode traceName (fun e => pure m!"{e.emoji} {strategyDescr}") do
       let e ←
         try
           Term.withoutErrToSorry <| Term.withSynthesize x
@@ -233,7 +233,7 @@ private def tryStrategy' (α) (strategyDescr : MessageData) (x : TermElabM (Expr
 
 -- TODO: deduplicate with tryStrategy', somehow!
 /-- Try a strategy `x : TermElabM` which either successfully produces some `Expr` or fails. On
-failure in `x`, exceptions are caught, traced (`trace.Elab.DiffGeo.MDiff`), and `none` is
+failure in `x`, exceptions are caught, traced (using `traceName`), and `none` is
 successfully returned.
 
 We run `x` with `errToSorry == false` to convert elaboration errors into
@@ -242,11 +242,11 @@ be caught.
 
 Trace messages produced during the execution of `x` are wrapped in a collapsible trace node titled
 with `strategyDescr` and an indicator of success. -/
-private def tryStrategy (strategyDescr : MessageData) (x : TermElabM Expr) :
-    TermElabM (Option Expr) := do
+private def tryStrategy (strategyDescr : MessageData) (x : TermElabM Expr)
+    (traceName : Name := `Elab.DiffGeo.MDiff) : TermElabM (Option Expr) := do
   let s ← saveState
   try
-    withTraceNode `Elab.DiffGeo.MDiff (fun e => pure m!"{e.emoji} {strategyDescr}") do
+    withTraceNode traceName (fun e => pure m!"{e.emoji} {strategyDescr}") do
       let e ←
         try
           Term.withoutErrToSorry <| Term.withSynthesize x
