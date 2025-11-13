@@ -114,17 +114,14 @@ instance instFourierPair : FourierPair 𝓢(V, E) 𝓢(V, E) where
   inv_fourier := by
     intro f
     ext x
-    change 𝓕 (𝓕 (f : V → E)) (-x) = f x
-    rw [← fourierIntegralInv_eq_fourierIntegral_neg, Continuous.fourier_inversion f.continuous
-      f.integrable (fourierTransformCLM 𝕜 f).integrable]
+    rw [fourierInv_coe, fourier_coe, f.continuous.fourier_inversion f.integrable (𝓕 f).integrable]
 
 instance instFourierInvPair : FourierInvPair 𝓢(V, E) 𝓢(V, E) where
   fourier_inv := by
     intro f
     ext x
-    change 𝓕 ((fun x ↦ (𝓕 (f : V → E)) (-x)) : V → E) x = f x
-    simp_rw [← fourierIntegralInv_eq_fourierIntegral_neg, Continuous.fourier_inversion_inv
-      f.continuous f.integrable (fourierTransformCLM 𝕜 f).integrable]
+    rw [fourier_coe, fourierInv_coe, f.continuous.fourier_inversion_inv f.integrable
+      (𝓕 f).integrable]
 
 @[deprecated (since := "2025-11-13")]
 alias fourier_inversion := FourierTransform.inv_fourier
