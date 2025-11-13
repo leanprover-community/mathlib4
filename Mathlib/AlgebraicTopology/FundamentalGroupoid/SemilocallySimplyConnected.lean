@@ -880,9 +880,11 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
     -- However the API for `Path.Homotopic.Quotient` has not been set up properly.
     -- We need to define a `Path.Homotopic.Quotient.mk` which is the normal form.
     -- Otherwise the simp lemma `_root_.Quotient.eq'` will unfold equalities back into relations.
+    apply Path.Homotopic.Quotient.exact
     dsimp [γ_aux]
+    simp
     -- I think this simp lemma should go the other way: casts move inwards.
-    simp only [← Path.trans_cast]
+    simp only [Path.cast_trans]
     apply Homotopic.trans_congr' (by simp)
     · apply Path.Homotopic.trans
       · apply Homotopic.trans_congr

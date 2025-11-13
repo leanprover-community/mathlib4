@@ -560,9 +560,10 @@ theorem subpathOn_self {x y : X} (p : Path x y) (a : unitInterval) :
   exact Path.subpathOn_self p a
 
 @[simp]
-theorem subpathOn_zero_one {x y : X} (p : Path x y) :
-    (mk (p.subpathOn 0 1 zero_le_one)).cast (by simp [p.source]) (by simp [p.target]) =
-      mk p := by
+theorem subpathOn_zero_one {x y : X} (p : Path x y) (s t : unitInterval)
+    (hs : s = 0) (ht : t = 1) :
+    mk (p.subpathOn s t (by grind [zero_le_one])) =
+      (mk p).cast (by grind) (by grind) := by
   simp only [← mk_cast, eq]
   exact Path.subpathOn_zero_one p
 

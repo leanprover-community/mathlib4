@@ -206,6 +206,18 @@ theorem trans_refl (p : Path x₀ x₁) :
     (p.trans (Path.refl x₁)).Homotopic p :=
   ⟨Homotopy.transRefl p⟩
 
+theorem refl_cast_trans {x₀ x₀' x₁ x₂ : X} (p : Path x₁ x₂) (hx : x₀' = x₀) (hy : x₁ = x₀) :
+    (((Path.refl x₀).cast hx hy).trans p).Homotopic (p.cast (hx.trans hy.symm) rfl) := by
+  subst hx
+  subst hy
+  simpa using refl_trans _
+
+theorem trans_refl_cast {x₀ x₁ x₁' x₂ : X} (p : Path x₀ x₁) (hx : x₁ = x₂) (hy : x₁' = x₂) :
+    (p.trans ((Path.refl x₂).cast hx hy)).Homotopic (p.cast rfl (hy.trans hx.symm)) := by
+  subst hx
+  subst hy
+  simpa using trans_refl _
+
 theorem trans_symm (p : Path x₀ x₁) :
     (p.trans p.symm).Homotopic (Path.refl x₀) :=
   ⟨(Homotopy.reflTransSymm p).symm⟩
@@ -233,6 +245,22 @@ theorem trans_refl (γ : Homotopic.Quotient x₀ x₁) :
   induction γ using Quotient.ind with | mk γ =>
   simp only [← mk_trans, ← mk_refl, eq]
   exact Homotopic.trans_refl γ
+
+@[simp, grind =]
+theorem refl_cast_trans {x₀ x₀' x₁ x₂ : X} (p : Homotopic.Quotient x₁ x₂)
+    (hx : x₀' = x₀) (hy : x₁ = x₀) :
+    trans ((refl x₀).cast hx hy) p = p.cast (hx.trans hy.symm) rfl := by
+  induction p using Quotient.ind with | mk p =>
+  simp only [← mk_trans, ← mk_refl, ← mk_cast, eq]
+  exact Homotopic.refl_cast_trans p hx hy
+
+@[simp, grind =]
+theorem trans_refl_cast {x₀ x₁ x₁' x₂ : X} (p : Homotopic.Quotient x₀ x₁)
+    (hx : x₁ = x₂) (hy : x₁' = x₂) :
+    trans p ((refl x₂).cast hx hy) = p.cast rfl (hy.trans hx.symm) := by
+  induction p using Quotient.ind with | mk p =>
+  simp only [← mk_trans, ← mk_refl, ← mk_cast, eq]
+  exact Homotopic.trans_refl_cast p hx hy
 
 @[simp, grind =]
 theorem trans_symm (γ : Homotopic.Quotient x₀ x₁) :

@@ -87,11 +87,11 @@ variable (γ : Path x y)
 protected theorem continuous : Continuous γ :=
   γ.continuous_toFun
 
-@[simp]
+@[simp, grind =]
 protected theorem source : γ 0 = x :=
   γ.source'
 
-@[simp]
+@[simp, grind =]
 protected theorem target : γ 1 = y :=
   γ.target'
 
