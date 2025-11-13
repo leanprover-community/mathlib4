@@ -190,7 +190,7 @@ theorem C_subset_or'
     [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
     (hfy : ∀ y ∈ Y, LowerSemicontinuousOn (fun x : E => f x y) X)
     (hfy' : ∀ y ∈ Y, QuasiconvexOn ℝ X fun x => f x y)
-    [TopologicalSpace F] [AddCommGroup F] [Module ℝ F]
+    [AddCommGroup F] [Module ℝ F]
     (cY : Convex ℝ Y)
     (hfx' : ∀ x ∈ X, QuasiconcaveOn ℝ Y fun y => f x y)
     (a : E) (b : β) (y y' : Y)
@@ -212,14 +212,12 @@ variable [TopologicalSpace E] [AddCommGroup E] [Module ℝ E]
     (hfy' : ∀ y ∈ Y, QuasiconvexOn ℝ X fun x => f x y)
 
 variable [TopologicalSpace F] [AddCommGroup F] [Module ℝ F]
-    [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
     (cY : Convex ℝ Y) (kY : IsCompact Y)
     (hfx : ∀ x ∈ X, UpperSemicontinuousOn (fun y : F => f x y) Y)
     (hfx' : ∀ x ∈ X, QuasiconcaveOn ℝ Y fun y => f x y)
 
 -- private
 include ne_X kX hfx hfx' cY hfy hfy' in
-omit [IsTopologicalAddGroup F] [ContinuousSMul ℝ F] in
 theorem isClosed_J
     (a : E) (b b' : β) (y y' : Y)
     (ha : ∀ x ∈ X, f a y ⊔ f a y' ≤ f x y ⊔ f x y')
@@ -282,9 +280,11 @@ theorem isClosed_J
   exact ⟨hz, ⟨le_of_lt hzt', hz'⟩⟩
 
 variable [DenselyOrdered β]
+variable [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
 
 include ne_X kX hfx hfx' cY hfy hfy' in
-theorem exists_lt_iInf_of_lt_iInf_of_sup {y1 : F} (hy1 : y1 ∈ Y) {y2 : F} (hy2 : y2 ∈ Y) {t : β}
+theorem exists_lt_iInf_of_lt_iInf_of_sup
+    {y1 : F} (hy1 : y1 ∈ Y) {y2 : F} (hy2 : y2 ∈ Y) {t : β}
     (ht : ∀ x ∈ X, t < f x y1 ⊔ f x y2) :
     ∃ y0 ∈ Y, ∀ x ∈ X, t < f x y0 := by
   by_contra hinfi_le
