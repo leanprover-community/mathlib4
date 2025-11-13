@@ -239,6 +239,9 @@ theorem refl (p : Path x₀ x₁) : p.Homotopic p :=
 theorem symm ⦃p₀ p₁ : Path x₀ x₁⦄ (h : p₀.Homotopic p₁) : p₁.Homotopic p₀ :=
   h.map Homotopy.symm
 
+theorem symm₂ {p q : Path x₀ x₁} (h : p.Homotopic q) : p.symm.Homotopic q.symm :=
+  h.map Homotopy.symm₂
+
 @[trans]
 theorem trans ⦃p₀ p₁ p₂ : Path x₀ x₁⦄ (h₀ : p₀.Homotopic p₁) (h₁ : p₁.Homotopic p₂) :
     p₀.Homotopic p₂ :=
@@ -295,6 +298,22 @@ constructed with `Quotient.mk`.
 protected theorem ind {x y : X} {motive : Homotopic.Quotient x y → Prop} :
     (mk : (a : Path x y) → motive (Quotient.mk a)) → (q : Homotopic.Quotient x y) → motive q :=
   Quot.ind
+
+/-- The constant path homotopy class at a point. This is `Path.refl` descended to the quotient. -/
+def refl (x : X) : Path.Homotopic.Quotient x x :=
+  mk (Path.refl x)
+
+@[simp, grind =]
+theorem mk_refl (x : X) : mk (Path.refl x) = refl x :=
+  rfl
+
+/-- The reverse of a path homotopy class. This is `Path.symm` descended to the quotient. -/
+def symm (P : Path.Homotopic.Quotient x₀ x₁) : Path.Homotopic.Quotient x₁ x₀ :=
+  _root_.Quotient.map Path.symm (fun _ _ h => Homotopic.symm₂ h) P
+
+@[simp, grind =]
+theorem mk_symm (P : Path x₀ x₁) : mk P.symm = symm (mk P) :=
+  rfl
 
 /-- The composition of path homotopy classes. This is `Path.trans` descended to the quotient. -/
 def trans (P₀ : Path.Homotopic.Quotient x₀ x₁) (P₁ : Path.Homotopic.Quotient x₁ x₂) :

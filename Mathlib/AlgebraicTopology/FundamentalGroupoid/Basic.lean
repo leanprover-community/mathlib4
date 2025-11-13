@@ -198,11 +198,55 @@ end Homotopy
 
 namespace Homotopic
 
+theorem refl_trans (p : Path x₀ x₁) :
+    ((Path.refl x₀).trans p).Homotopic p :=
+  ⟨Homotopy.reflTrans p⟩
+
+theorem trans_refl (p : Path x₀ x₁) :
+    (p.trans (Path.refl x₁)).Homotopic p :=
+  ⟨Homotopy.transRefl p⟩
+
+theorem trans_symm (p : Path x₀ x₁) :
+    (p.trans p.symm).Homotopic (Path.refl x₀) :=
+  ⟨(Homotopy.reflTransSymm p).symm⟩
+
+theorem symm_trans (p : Path x₀ x₁) :
+    (p.symm.trans p).Homotopic (Path.refl x₁) :=
+  ⟨(Homotopy.reflSymmTrans p).symm⟩
+
 theorem trans_assoc {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :
     ((p.trans q).trans r).Homotopic (p.trans (q.trans r)) :=
   ⟨Homotopy.transAssoc p q r⟩
 
 namespace Quotient
+
+@[simp, grind =]
+theorem refl_trans (γ : Homotopic.Quotient x₀ x₁) :
+    trans (refl x₀) γ = γ := by
+  induction γ using Quotient.ind with | mk γ =>
+  simp only [← mk_trans, ← mk_refl, eq]
+  exact Homotopic.refl_trans γ
+
+@[simp, grind =]
+theorem trans_refl (γ : Homotopic.Quotient x₀ x₁) :
+    trans γ (refl x₁) = γ := by
+  induction γ using Quotient.ind with | mk γ =>
+  simp only [← mk_trans, ← mk_refl, eq]
+  exact Homotopic.trans_refl γ
+
+@[simp, grind =]
+theorem trans_symm (γ : Homotopic.Quotient x₀ x₁) :
+    trans γ (symm γ) = refl x₀ := by
+  induction γ using Quotient.ind with | mk γ =>
+  simp only [← mk_trans, ← mk_symm, ← mk_refl, eq]
+  exact Homotopic.trans_symm γ
+
+@[simp, grind =]
+theorem symm_trans (γ : Homotopic.Quotient x₀ x₁) :
+    trans (symm γ) γ = refl x₁ := by
+  induction γ using Quotient.ind with | mk γ =>
+  simp only [← mk_trans, ← mk_symm, ← mk_refl, eq]
+  exact Homotopic.symm_trans γ
 
 @[simp, grind _=_]
 theorem trans_assoc {x₀ x₁ x₂ x₃ : X}
