@@ -162,9 +162,9 @@ theorem algebraMap_succ (n : ℕ) (f : K[X]) :
 
 protected theorem splits (n : ℕ) :
     ∀ {K : Type u} [Field K],
-      ∀ (f : K[X]) (_hfn : f.natDegree = n), Splits (Polynomial.map (algebraMap K <| SplittingFieldAux n f) f) :=
+      ∀ (f : K[X]) (_hfn : f.natDegree = n), Splits (f.map (algebraMap K <| SplittingFieldAux n f)) :=
   Nat.recOn (motive := fun n => ∀ {K : Type u} [Field K],
-      ∀ (f : K[X]) (_hfn : f.natDegree = n), Splits (Polynomial.map (algebraMap K <| SplittingFieldAux n f) f)) n
+      ∀ (f : K[X]) (_hfn : f.natDegree = n), Splits (f.map (algebraMap K <| SplittingFieldAux n f))) n
     (fun {_} _ _ hf =>
       splits_of_degree_le_one _
         (le_trans degree_le_natDegree <| hf.symm ▸ WithBot.coe_le_coe.2 zero_le_one))
@@ -264,10 +264,10 @@ instance _root_.Polynomial.IsSplittingField.splittingField (f : K[X]) :
   IsSplittingField.of_algEquiv _ f (algEquivSplittingFieldAux f).symm
 
 @[stacks 09HU "Splitting part"]
-protected theorem splits : Splits (Polynomial.map (algebraMap K (SplittingField f)) f) :=
+protected theorem splits : Splits (f.map (algebraMap K (SplittingField f))) :=
   IsSplittingField.splits f.SplittingField f
 
-variable [Algebra K L] (hb : Splits (Polynomial.map (algebraMap K L) f))
+variable [Algebra K L] (hb : Splits (f.map (algebraMap K L)))
 
 /-- Embeds the splitting field into any other field that splits the polynomial. -/
 def lift : SplittingField f →ₐ[K] L :=

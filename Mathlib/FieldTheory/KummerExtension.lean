@@ -53,7 +53,7 @@ section Splits
 
 theorem X_pow_sub_C_splits_of_isPrimitiveRoot
     {n : ℕ} {ζ : K} (hζ : IsPrimitiveRoot ζ n) {α a : K} (e : α ^ n = a) :
-    (Polynomial.map (RingHom.id _) (X ^ n - C a)).Splits := by
+    ((X ^ n - C a).map (RingHom.id _)).Splits := by
   cases n.eq_zero_or_pos with
   | inl hn =>
     rw [hn, pow_zero, ← C.map_one, ← map_sub]

@@ -66,7 +66,7 @@ theorem PowerBasis.norm_gen_eq_coeff_zero_minpoly (pb : PowerBasis R S) :
 /-- Given `pb : PowerBasis R S`, then the norm of `pb.gen` is
 `((minpoly R pb.gen).aroots F).prod`. -/
 theorem PowerBasis.norm_gen_eq_prod_roots [Algebra R F] (pb : PowerBasis R S)
-    (hf : (Polynomial.map (algebraMap R F) (minpoly R pb.gen)).Splits) :
+    (hf : ((minpoly R pb.gen).map (algebraMap R F)).Splits) :
     algebraMap R F (norm R pb.gen) = ((minpoly R pb.gen).aroots F).prod := by
   haveI := Module.nontrivial R F
   have := minpoly.monic pb.isIntegral_gen
@@ -139,7 +139,7 @@ theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_one {x : L} (hx : ¬Is
   · exact IntermediateField.subset_adjoin K _ (Set.mem_singleton x)
 
 theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots (x : L)
-    (hf : (Polynomial.map (algebraMap K F) (minpoly K x)).Splits) :
+    (hf : ((minpoly K x).map (algebraMap K F)).Splits) :
     (algebraMap K F) (norm K (AdjoinSimple.gen K x)) =
       ((minpoly K x).aroots F).prod := by
   have injKxL := (algebraMap K⟮x⟯ L).injective
@@ -158,7 +158,7 @@ open IntermediateField IntermediateField.AdjoinSimple Polynomial
 variable (F) (E : Type*) [Field E] [Algebra K E]
 
 theorem norm_eq_prod_embeddings_gen [Algebra R F] (pb : PowerBasis R S)
-    (hE : (Polynomial.map (algebraMap R F) (minpoly R pb.gen)).Splits) (hfx : IsSeparable R pb.gen) :
+    (hE : ((minpoly R pb.gen).map (algebraMap R F)).Splits) (hfx : IsSeparable R pb.gen) :
     algebraMap R F (norm R pb.gen) =
       (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).prod fun σ => σ pb.gen := by
   letI := Classical.decEq F
