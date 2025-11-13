@@ -335,7 +335,7 @@ theorem condExp_condExp_of_le {m₁ m₂ m₀ : MeasurableSpace α} {μ : Measur
   rw [setIntegral_condExp (hm₁₂.trans hm₂) integrable_condExp hs]
   rw [setIntegral_condExp (hm₁₂.trans hm₂) hf hs, setIntegral_condExp hm₂ hf (hm₁₂ s hs)]
 
-/-- Conditional expectation commutes with continuous linear functionals. -/
+/-- Conditional expectation commutes with continuous linear maps. -/
 theorem _root_.ContinuousLinearMap.comp_condExp_comm {F : Type*} [NormedAddCommGroup F] [CompleteSpace F]
     [NormedSpace ℝ F] (hf_int : Integrable f μ) (T : E →L[ℝ] F) :
     T ∘ μ[f|m] =ᵐ[μ] μ[T ∘ f|m] := by
