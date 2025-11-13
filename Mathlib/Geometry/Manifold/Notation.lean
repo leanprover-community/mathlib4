@@ -931,33 +931,37 @@ where
     if let some (m, r) ← findModelForFunpropInner field model top then return some (m, r)
     throwError ""
 
-def findModelForFunprop22 (g : MVarId) : MetaM <| Option MVarId := do
+/-- The main entry point of the `find_model` tactic: connects the workhose definition
+`findModelForFunProp` with the tactic world. -/
+def findModelForFunprop22 (g : MVarId) : MetaM Unit := do
+  trace[Elab.DiffGeo.FunPropM] "metavariable has type {← g.getType'}"
   match_expr (← withReducible g.getType') with
   | ModelWithCorners k _ E _ _ H _ =>
     match ← findModelForFunprop k E H with
     | some e =>
       -- TODO: is this the way? how to do this correctly?
       g.assign e
-      return g
     | none => throwError "Could not find a `ModelWithCorners {k} {E} {H}`"
   | _ => throwError "Goal is not of the form `ModelWithCorners 𝕜 E H"
 
 elab (name := findModelTac) "find_model" : tactic => withMainContext do
-  liftMetaTactic1 findModelForFunprop22
+  liftMetaFinishingTactic findModelForFunprop22
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
-  [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type*} [TopologicalSpace H']
-  {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+-- I'd like a #find_model command which tries to synthesise such a goal, and fails otherwise
 
-example : True := by
-  have : ModelWithCorners 𝕜 E H := by
-    find_model
-  have : True := by
-    find_model
-  trivial
+open Command in
+def findModelCmd (goal : TSyntax `term) : CommandElabM Unit := do
+  withoutModifyingEnv <| do
+    runTermElabM <| fun _vars => do
+      -- TODO: does this ball of duct tape do what I want it to? it might not!
+      let eE ← Term.elabTerm goal none
+      let m ← mkFreshExprMVar eE
+      let mi := m.mvarId!
+      -- TODO: how to surface error messages from the inner loop here?
+      findModelForFunprop22 mi
+
+-- XXX: inline `findModelCmd` later, once everything is cleaned up?
+elab (name := findModelCommand) "#find_model " goal:term : command => do findModelCmd goal
 
 section trace
 
