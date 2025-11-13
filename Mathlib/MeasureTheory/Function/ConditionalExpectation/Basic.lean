@@ -336,8 +336,8 @@ theorem condExp_condExp_of_le {m₁ m₂ m₀ : MeasurableSpace α} {μ : Measur
   rw [setIntegral_condExp (hm₁₂.trans hm₂) hf hs, setIntegral_condExp hm₂ hf (hm₁₂ s hs)]
 
 /-- Conditional expectation commutes with continuous linear maps. -/
-theorem _root_.ContinuousLinearMap.comp_condExp_comm {F : Type*} [NormedAddCommGroup F] [CompleteSpace F]
-    [NormedSpace ℝ F] (hf_int : Integrable f μ) (T : E →L[ℝ] F) :
+theorem _root_.ContinuousLinearMap.comp_condExp_comm {F : Type*} [NormedAddCommGroup F]
+    [CompleteSpace F] [NormedSpace ℝ F] (hf_int : Integrable f μ) (T : E →L[ℝ] F) :
     T ∘ μ[f|m] =ᵐ[μ] μ[T ∘ f|m] := by
   by_cases hm : m ≤ m₀
   · by_cases hμ : SigmaFinite (μ.trim hm)
@@ -353,21 +353,18 @@ theorem _root_.ContinuousLinearMap.comp_condExp_comm {F : Type*} [NormedAddCommG
     · simp [condExp_of_not_sigmaFinite hm hμ]
   · simp [condExp_of_not_le hm]
 
-section RCLike
-
-open RCLike in
 /-- Conditional expectation commutes with affine functions. Note that `IsFiniteMeasure μ` is a
 necessary assumption because we want constant functions to be integrable. -/
-theorem condExp_comm_affine [Module 𝕜 E] [ContinuousSMul 𝕜 E] [IsFiniteMeasure μ]
-    (hm : m ≤ m₀) (hf_int : Integrable f μ) (T : E →L[𝕜] 𝕜) (a : ℝ) :
-    (fun x ↦ re (T (μ[f|m] x)) + a) =ᵐ[μ] μ[fun y ↦ re (T (f y)) + a|m] := by
-  let g := @reCLM 𝕜 inferInstance
-  let h := T.restrictScalars ℝ
-  have reTf_int : Integrable ((re ∘ T) ∘ f) μ := (g.comp h).integrable_comp hf_int
-  have hp : (fun x ↦ re (T (μ[f|m] x)) + a) =ᵐ[μ] μ[(re ∘ T) ∘ f|m] + μ[(fun y ↦ a)|m] := by
-      filter_upwards [condExp_comm_continuousLinearMap hf_int (g.comp h)] with b hb
+theorem condExp_comm_affine {F : Type*} [NormedAddCommGroup F] [CompleteSpace F]
+    [NormedSpace ℝ F] [IsFiniteMeasure μ] (hm : m ≤ m₀) (hf_int : Integrable f μ)
+    (T : E →L[ℝ] F) (a : F) : (fun x ↦ T (μ[f|m] x) + a) =ᵐ[μ] μ[fun y ↦ T (f y) + a|m] := by
+  have Tf_int : Integrable (T ∘ f) μ := T.integrable_comp hf_int
+  have hp : (fun x ↦ T (μ[f|m] x) + a) =ᵐ[μ] μ[T ∘ f|m] + μ[(fun y ↦ a)|m] := by
+      filter_upwards [T.comp_condExp_comm hf_int] with b hb
       simpa [condExp_const hm a]
-  exact hp.trans (condExp_add reTf_int (integrable_const a) m).symm
+  exact hp.trans (condExp_add Tf_int (integrable_const a) m).symm
+
+section RCLike
 
 variable [InnerProductSpace 𝕜 E]
 
