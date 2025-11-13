@@ -63,7 +63,7 @@ lemma toClosedBall_eval_within {r : ℝ} {z : E} (f : locallyFinsuppWithin (univ
   simp_all [restrict_apply]
 
 @[simp]
-lemma toClosedBall_divisor {r : ℝ} {f : ℂ → ℂ} (h : MeromorphicOn f ⊤) :
+lemma toClosedBall_divisor {r : ℝ} {f : ℂ → ℂ} (h : MeromorphicOn f univ) :
     (divisor f (closedBall 0 |r|)) = (locallyFinsuppWithin.toClosedBall r) (divisor f univ) := by
   simp_all [locallyFinsuppWithin.toClosedBall]
 
