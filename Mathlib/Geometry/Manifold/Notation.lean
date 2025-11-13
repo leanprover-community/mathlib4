@@ -898,19 +898,23 @@ where
       | throwError "Couldn't find a `ModelWithCorners {field} {model} {top}` in the local context."
     return m
   fromNormedSpace : TermElabM Expr := do
-    let some (inst, K) ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
+    if !(← withReducible (pureIsDefEq model top)) then
+      throwError "`{model}` is a normed space, but `{top}` is not defeq to it"
+    if let some (K, inst) ← fromNormedSpace.fromAssumption field model then
+      mkAppOptM ``modelWithCornersSelf #[K, none, model, none, inst] -- omit (K, model)) for now
+    else
+    throwError "Couldn't find a `NormedSpace` structure on `{model}` among local instances."
+  fromNormedSpace.fromAssumption (field space : Expr) : TermElabM <| Option (Expr × Expr) := do
+    let some (K, inst) ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
         match_expr type with
         | NormedSpace K E _ _ =>
-          if (← withReducible (pureIsDefEq K field)) && (← withReducible (pureIsDefEq E model)) then
-            return some (inst, K)
+          if (← withReducible (pureIsDefEq K field)) && (← withReducible (pureIsDefEq E space)) then
+            return some (K, inst)
           else return none
         | _ => return none
       | throwError "Couldn't find a `NormedSpace` structure on `{model}` among local instances."
     trace[Elab.DiffGeo.FunPropM] "`{model}` is a normed space over the field `{K}`"
-    if ← withReducible (pureIsDefEq model top) then
-      mkAppOptM ``modelWithCornersSelf #[K, none, model, none, inst] -- omit (K, model)) for now
-    else
-      throwError "`{model}` is a normed space, but `{top}` is not defeq to it"
+    return some (K, inst)
 
 def findModelForFunprop (field model top : Expr) : TermElabM <| Option Expr := do
   trace[Elab.DiffGeo.FunPropM] "Searching for some `ModelWithCorners {field} {model} {top}`"
