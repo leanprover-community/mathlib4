@@ -900,6 +900,17 @@ where
   fromNormedSpace : TermElabM Expr := do
     if !(← withReducible (pureIsDefEq model top)) then
       throwError "`{model}` is a normed space, but `{top}` is not defeq to it"
+    -- Check for a space of continuous linear maps.
+    -- We omit a check if E or F are normed spaces over k: the only model with corners,
+    -- if existing, is this one.
+    -- Actually, that's probably bad... hm! Do this recursively instead?????????
+    if (← isCLMReduciblyDefeqCoefficients model).isSome then
+      let eK : Term ← Term.exprToSyntax field
+      let eT : Term ← Term.exprToSyntax model
+      Term.elabTerm (← ``(𝓘($eK, $eT))) none
+    else
+    -- Check for a normed space in the assumptions.
+
     if let some (K, inst) ← fromNormedSpace.fromAssumption field model then
       mkAppOptM ``modelWithCornersSelf #[K, none, model, none, inst] -- omit (K, model)) for now
     else
