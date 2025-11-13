@@ -27,10 +27,10 @@ We show that right adjoints are examples of final functors, while
 left adjoints are examples of initial functors.
 
 For final functors, we prove that the following three statements are equivalent:
-1. `F : C ⥤ D` is final.
-2. Every functor `G : D ⥤ E` has a colimit if and only if `F ⋙ G` does,
-   and these colimits are isomorphic via `colimit.pre G F`.
-3. `colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit`.
+1.  `F : C ⥤ D` is final.
+2.  Every functor `G : D ⥤ E` has a colimit if and only if `F ⋙ G` does,
+    and these colimits are isomorphic via `colimit.pre G F`.
+3.  `colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit`.
 
 Starting at 1. we show (in `coconesEquiv`) that
 the categories of cocones over `G : D ⥤ E` and over `F ⋙ G` are equivalent.

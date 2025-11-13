@@ -18,10 +18,10 @@ we can generalize localizations to commutative monoids.
 We characterize the localization of a commutative monoid `M` at a submonoid `S` up to
 isomorphism; that is, a commutative monoid `N` is the localization of `M` at `S` iff we can find a
 monoid homomorphism `f : M →* N` satisfying 3 properties:
-1. For all `y ∈ S`, `f y` is a unit;
-2. For all `z : N`, there exists `(x, y) : M × S` such that `z * f y = f x`;
-3. For all `x, y : M` such that `f x = f y`, there exists `c ∈ S` such that `x * c = y * c`.
-   (The converse is a consequence of 1.)
+1.  For all `y ∈ S`, `f y` is a unit;
+2.  For all `z : N`, there exists `(x, y) : M × S` such that `z * f y = f x`;
+3.  For all `x, y : M` such that `f x = f y`, there exists `c ∈ S` such that `x * c = y * c`.
+    (The converse is a consequence of 1.)
 
 Given such a localization map `f : M →* N`, we can define the surjection
 `Submonoid.LocalizationMap.mk'` sending `(x, y) : M × S` to `f x * (f y)⁻¹`, and

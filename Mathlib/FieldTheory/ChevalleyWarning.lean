@@ -14,16 +14,16 @@ and `q` is notation for the cardinality of `K`.
 
 ## Main results
 
-1. Let `f` be a multivariate polynomial in finitely many variables (`X s`, `s : σ`)
-   such that the total degree of `f` is less than `(q-1)` times the cardinality of `σ`.
-   Then the evaluation of `f` on all points of `σ → K` (aka `K^σ`) sums to `0`.
-   (`sum_eval_eq_zero`)
-2. The Chevalley–Warning theorem (`char_dvd_card_solutions_of_sum_lt`).
-   Let `f i` be a finite family of multivariate polynomials
-   in finitely many variables (`X s`, `s : σ`) such that
-   the sum of the total degrees of the `f i` is less than the cardinality of `σ`.
-   Then the number of common solutions of the `f i`
-   is divisible by the characteristic of `K`.
+1.  Let `f` be a multivariate polynomial in finitely many variables (`X s`, `s : σ`)
+    such that the total degree of `f` is less than `(q-1)` times the cardinality of `σ`.
+    Then the evaluation of `f` on all points of `σ → K` (aka `K^σ`) sums to `0`.
+    (`sum_eval_eq_zero`)
+2.  The Chevalley–Warning theorem (`char_dvd_card_solutions_of_sum_lt`).
+    Let `f i` be a finite family of multivariate polynomials
+    in finitely many variables (`X s`, `s : σ`) such that
+    the sum of the total degrees of the `f i` is less than the cardinality of `σ`.
+    Then the number of common solutions of the `f i`
+    is divisible by the characteristic of `K`.
 
 ## Notation
 
