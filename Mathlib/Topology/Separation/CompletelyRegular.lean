@@ -39,7 +39,7 @@ This file defines `CompletelyRegularSpace` and `T35Space`.
 
 The present definition `CompletelyRegularSpace` is a slight modification of the one given in
 [russell1974]. There it's assumed that any point `x ∈ Kᶜ` is separated from the closed set `K` by a
-continuous *real* valued function `f` (as opposed to `f` being unit-interval-valued). This can be
+continuous *real*-valued function `f` (as opposed to `f` being unit-interval-valued). This can be
 converted to the present definition by replacing a real-valued `f` by `h ∘ g ∘ f`, with
 `g : x ↦ max(x, 0)` and `h : x ↦ min(x, 1)`. Some sources (e.g. [russell1974]) also assume that a
 completely regular space is T₁. Here a completely regular space that is also T₁ is called a T₃.₅
@@ -176,7 +176,7 @@ lemma isInducing_stoneCechUnit [CompletelyRegularSpace X] :
     refine ⟨stoneCechExtend hf ⁻¹' {1}ᶜ, ?_,
       isOpen_compl_singleton.preimage (continuous_stoneCechExtend hf), hfU⟩
     rw [mem_preimage, stoneCechExtend_stoneCechUnit, efx, mem_compl_iff, mem_singleton_iff]
-    norm_num
+    simp
 
 lemma isDenseInducing_stoneCechUnit [CompletelyRegularSpace X] :
     IsDenseInducing (stoneCechUnit : X → StoneCech X) where
@@ -238,9 +238,6 @@ lemma separatesPoints_continuous_of_t35Space [T35Space X] :
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
   exact ⟨fun x ↦ f x, continuous_subtype_val.comp f_cont, by simp_all⟩
 
-@[deprecated (since := "2025-04-13")]
-alias separatesPoints_continuous_of_completelyRegularSpace := separatesPoints_continuous_of_t35Space
-
 lemma separatesPoints_continuous_of_t35Space_Icc [T35Space X] :
     SeparatesPoints {f : X → I | Continuous f} := by
   intro x y x_ne_y
@@ -248,19 +245,12 @@ lemma separatesPoints_continuous_of_t35Space_Icc [T35Space X] :
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
   exact ⟨f, f_cont, by simp_all⟩
 
-@[deprecated (since := "2025-04-13")]
-alias separatesPoints_continuous_of_completelyRegularSpace_Icc :=
-  separatesPoints_continuous_of_t35Space_Icc
-
 lemma injective_stoneCechUnit_of_t35Space [T35Space X] :
     Function.Injective (stoneCechUnit : X → StoneCech X) := by
   intro a b hab
   contrapose hab
   obtain ⟨f, fc, fab⟩ := separatesPoints_continuous_of_t35Space_Icc hab
   exact fun q ↦ fab (eq_if_stoneCechUnit_eq fc q)
-
-@[deprecated (since := "2025-04-13")]
-alias injective_stoneCechUnit_of_completelyRegularSpace := injective_stoneCechUnit_of_t35Space
 
 lemma isEmbedding_stoneCechUnit [T35Space X] :
     IsEmbedding (stoneCechUnit : X → StoneCech X) where

@@ -222,7 +222,7 @@ theorem Orthonormal.orthonormal_of_forall_eq_or_eq_neg {v w : ι → E} (hv : Or
       neg_eq_zero] using hv
 
 /- The material that follows, culminating in the existence of a maximal orthonormal subset, is
-adapted from the corresponding development of the theory of linearly independents sets.  See
+adapted from the corresponding development of the theory of linearly independent sets. See
 `exists_linearIndependent` in particular. -/
 variable (𝕜 E)
 
@@ -276,7 +276,7 @@ theorem coe_basisOfOrthonormalOfCardEqFinrank [Fintype ι] [Nonempty ι] {v : ι
 theorem Orthonormal.ne_zero {v : ι → E} (hv : Orthonormal 𝕜 v) (i : ι) : v i ≠ 0 := by
   refine ne_of_apply_ne norm ?_
   rw [hv.1 i, norm_zero]
-  norm_num
+  simp
 
 end OrthonormalSets_Seminormed
 

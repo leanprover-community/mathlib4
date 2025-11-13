@@ -272,6 +272,8 @@ namespace LinearMap
 
 open Submodule
 
+section
+
 /-- Projection to the image of an injection along a complement.
 
 This has an advantage over `Submodule.linearProjOfIsCompl` in that it allows the user better
@@ -281,16 +283,27 @@ def linearProjOfIsCompl {F : Type*} [AddCommGroup F] [Module R F]
     (h : IsCompl (LinearMap.range i) q) : E →ₗ[R] F :=
   (LinearEquiv.ofInjective i hi).symm ∘ₗ (LinearMap.range i).linearProjOfIsCompl q h
 
+variable {F : Type*} [AddCommGroup F] [Module R F] (i : F →ₗ[R] E) (hi : Function.Injective i)
+    (h : IsCompl (LinearMap.range i) q)
+
 @[simp]
-theorem linearProjOfIsCompl_apply_left {F : Type*} [AddCommGroup F] [Module R F]
-    (i : F →ₗ[R] E) (hi : Function.Injective i)
-    (h : IsCompl (LinearMap.range i) q) (x : F) :
-    linearProjOfIsCompl q i hi h (i x) = x := by
-  let ix : LinearMap.range i := ⟨i x, mem_range_self i x⟩
-  change linearProjOfIsCompl q i hi h ix = x
-  rw [linearProjOfIsCompl, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-    LinearEquiv.symm_apply_eq, Submodule.linearProjOfIsCompl_apply_left, Subtype.ext_iff,
-    LinearEquiv.ofInjective_apply]
+theorem linearProjOfIsCompl_apply_left (x : F) : linearProjOfIsCompl q i hi h (i x) = x := by
+  obtain ⟨ix, rfl⟩ := (LinearEquiv.ofInjective i hi).symm.surjective x
+  simp [linearProjOfIsCompl]
+
+lemma linearProjOfIsCompl_apply_right' (x : E) (hx : x ∈ q) :
+    linearProjOfIsCompl q i hi h x = 0 := by
+  simpa [LinearMap.linearProjOfIsCompl]
+
+@[simp]
+lemma linearProjOfIsCompl_apply_right (x : q) : linearProjOfIsCompl q i hi h x = 0 := by
+  simp [LinearMap.linearProjOfIsCompl]
+
+@[simp]
+lemma ker_linearProjOfIsCompl : ker (linearProjOfIsCompl q i hi h) = q := by
+  simp [LinearMap.linearProjOfIsCompl]
+
+end
 
 /-- Given linear maps `φ` and `ψ` from complement submodules, `LinearMap.ofIsCompl` is
 the induced linear map over the entire module. -/
@@ -523,7 +536,7 @@ theorem codRestrict_ker {f : M →ₗ[S] M} (h : IsProj m f) : ker h.codRestrict
   f.ker_codRestrict m _
 
 theorem isCompl {f : E →ₗ[R] E} (h : IsProj p f) : IsCompl p (ker f) := by
-  rw [← codRestrict_ker]
+  rw [← codRestrict_ker h]
   exact isCompl_of_proj h.codRestrict_apply_cod
 
 theorem eq_conj_prod_map' {f : E →ₗ[R] E} (h : IsProj p f) :

@@ -54,9 +54,9 @@ theorem smulAddHom_apply : smulAddHom R M r x = r • x :=
 
 variable {x}
 
-lemma IsAddUnit.smul_left [Monoid S] [DistribMulAction S M] (hx : IsAddUnit x) (s : S) :
+lemma IsAddUnit.smul_left [DistribSMul S M] (hx : IsAddUnit x) (s : S) :
     IsAddUnit (s • x) :=
-  hx.map (DistribMulAction.toAddMonoidHom M s)
+  hx.map (DistribSMul.toAddMonoidHom M s)
 
 variable {r} (x)
 

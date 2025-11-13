@@ -189,6 +189,10 @@ instance [NoZeroSMulDivisors S T] : NoZeroSMulDivisors Sₚ Tₚ :=
     algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _ <|
       Ideal.primeCompl_le_nonZeroDivisors P
 
+instance [Algebra.IsIntegral R S] : Algebra.IsIntegral Rₚ Sₚ :=
+  Algebra.isIntegral_def.mpr <| (algebraMap_eq_map_map_submonoid P.primeCompl S Rₚ Sₚ ▸
+    isIntegral_localization : (algebraMap Rₚ Sₚ).IsIntegral)
+
 variable [NoZeroSMulDivisors R T]
 
 instance : IsScalarTower Rₚ Sₚ Tₚ := by
@@ -203,4 +207,4 @@ instance [NoZeroSMulDivisors S T] [Algebra.IsSeparable L F] :
     Algebra.IsSeparable (FractionRing Sₚ) (FractionRing Tₚ) := by
   refine FractionRing.isSeparable_of_isLocalization T Sₚ Tₚ (M := P') ?_
   apply algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul
-  exact fun _ h ↦  mem_nonZeroDivisors_of_ne_zero <| ne_of_mem_of_not_mem h <| by simp
+  exact fun _ h ↦ mem_nonZeroDivisors_of_ne_zero <| ne_of_mem_of_not_mem h <| by simp

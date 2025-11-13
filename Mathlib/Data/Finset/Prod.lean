@@ -291,7 +291,7 @@ theorem diag_card : (diag s).card = s.card := by
 
 @[simp]
 theorem offDiag_card : (offDiag s).card = s.card * s.card - s.card :=
-  suffices (diag s).card + (offDiag s).card = s.card * s.card by rw [s.diag_card] at this; omega
+  suffices (diag s).card + (offDiag s).card = s.card * s.card by rw [s.diag_card] at this; cutsat
   by rw [← card_product, diag, offDiag]
      conv_rhs => rw [← filter_card_add_filter_neg_card_eq_card (fun a => a.1 = a.2)]
 

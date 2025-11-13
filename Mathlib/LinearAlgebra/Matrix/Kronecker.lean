@@ -32,7 +32,7 @@ This defines the [Kronecker product](https://en.wikipedia.org/wiki/Kronecker_pro
 * `Matrix.kroneckerTMul`: An alias of `kroneckerMap (⊗ₜ)`. Prefer using the notation.
 * `Matrix.kroneckerTMulBilinear`: `Matrix.kroneckerTMul` is bilinear
 
-## Notations
+## Notation
 
 These require `open Kronecker`:
 
@@ -521,6 +521,11 @@ theorem kroneckerTMul_assoc' (A : Matrix l m α) (B : Matrix n p β) (C : Matrix
 theorem trace_kroneckerTMul [Fintype m] [Fintype n] (A : Matrix m m α) (B : Matrix n n β) :
     trace (A ⊗ₖₜ[R] B) = trace A ⊗ₜ[R] trace B :=
   trace_kroneckerMapBilinear (TensorProduct.mk R α β) _ _
+
+theorem conjTranspose_kroneckerTMul [StarRing R] [StarAddMonoid α] [StarAddMonoid β]
+    [StarModule R α] [StarModule R β] (x : Matrix l m α) (y : Matrix n p β) :
+    (x ⊗ₖₜ[R] y)ᴴ = xᴴ ⊗ₖₜ[R] yᴴ := by
+  ext; simp
 
 end Module
 

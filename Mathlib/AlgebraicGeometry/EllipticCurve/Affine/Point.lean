@@ -48,7 +48,7 @@ This file defines the group law on nonsingular points `W⟮F⟯` in affine coord
 * `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular points `W⟮F⟯` in affine
   coordinates forms an abelian group under addition.
 
-## Notations
+## Notation
 
 * `W⟮K⟯`: the group of nonsingular points on `W` base changed to `K`.
 
@@ -85,10 +85,12 @@ namespace Affine
 
 /-! ## The affine coordinate ring -/
 
+variable (W') in
 /-- The affine coordinate ring `R[W] := R[X, Y] / ⟨W(X, Y)⟩` of a Weierstrass curve `W`. -/
 abbrev CoordinateRing : Type r :=
   AdjoinRoot W'.polynomial
 
+variable (W') in
 /-- The function field `R(W) := Frac(R[W])` of a Weierstrass curve `W`. -/
 abbrev FunctionField : Type r :=
   FractionRing W'.CoordinateRing
@@ -301,6 +303,7 @@ lemma XYIdeal_neg_mul {x y : F} (h : W.Nonsingular x y) :
     AdjoinRoot.mk_eq_mk.mpr ⟨1, Y_rw⟩, map_mul, span_insert, ← span_singleton_mul_span_singleton,
     ← Ideal.mul_sup, ← span_insert]
   convert mul_top (_ : Ideal W.CoordinateRing) using 2
+  on_goal 2 => infer_instance
   simp_rw [← Set.image_singleton (f := mk W), ← Set.image_insert_eq, ← map_span]
   convert map_top (R := F[X][Y]) (mk W) using 1
   apply congr_arg
@@ -407,7 +410,7 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
     (Algebra.norm R[X] <| p • 1 + q • mk W' Y).degree = max (2 • p.degree) (2 • q.degree + 3) := by
   have hdp : (p ^ 2).degree = 2 • p.degree := degree_pow p 2
   have hdpq : (p * q * (C W'.a₁ * X + C W'.a₃)).degree ≤ p.degree + q.degree + 1 := by
-    simpa only [degree_mul] using add_le_add_left degree_linear_le (p.degree + q.degree)
+    grw [degree_mul, degree_mul, degree_linear_le]
   have hdq :
       (q ^ 2 * (X ^ 3 + C W'.a₂ * X ^ 2 + C W'.a₄ * X + C W'.a₆)).degree = 2 • q.degree + 3 := by
     rw [degree_mul, degree_pow, ← one_mul <| X ^ 3, ← C_1, degree_cubic <| one_ne_zero' R]
@@ -522,8 +525,9 @@ variable [DecidableEq F]
 instance : Add W.Point :=
   ⟨add⟩
 
-instance : AddZeroClass W.Point :=
-  ⟨by rintro (_ | _) <;> rfl, by rintro (_ | _) <;> rfl⟩
+instance : AddZeroClass W.Point where
+  zero_add := by rintro (_ | _) <;> rfl
+  add_zero := by rintro (_ | _) <;> rfl
 
 lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
   rfl

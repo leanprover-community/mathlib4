@@ -15,7 +15,7 @@ This file defines bundled isomorphisms of `R`-algebras.
 
 * `AlgEquiv R A B`: the type of `R`-algebra isomorphisms between `A` and `B`.
 
-## Notations
+## Notation
 
 * `A ≃ₐ[R] B` : `R`-algebra equivalence from `A` to `B`.
 -/
@@ -817,3 +817,25 @@ def ULift.algEquiv {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Alge
     ULift.{w} A ≃ₐ[R] A where
   __ := ULift.ringEquiv
   commutes' _ := rfl
+
+/-- If an `R`-algebra `A` is isomorphic to `R` as `R`-module, then the canonical map `R → A` is an
+equivalence of `R`-algebras.
+
+Note that if `e : R ≃ₗ[R] A` is the linear equivalence, then this is not the same as the equivalence
+of algebras provided here unless `e 1 = 1`. -/
+@[simps] def LinearEquiv.algEquivOfRing
+    {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
+    (e : R ≃ₗ[R] A) : R ≃ₐ[R] A where
+  __ := Algebra.ofId R A
+  invFun x := e.symm (e 1 * x)
+  left_inv x := calc
+    e.symm (e 1 * (algebraMap R A) x)
+      = e.symm (x • e 1) := by rw [Algebra.smul_def, mul_comm]
+    _ = x := by rw [map_smul, e.symm_apply_apply, smul_eq_mul, mul_one]
+  right_inv x := calc
+    (algebraMap R A) (e.symm (e 1 * x))
+      = (algebraMap R A) (e.symm (e 1 * x)) * e (e.symm 1 • 1) := by
+          rw [smul_eq_mul, mul_one, e.apply_symm_apply, mul_one]
+    _ = x := by rw [map_smul, Algebra.smul_def, mul_left_comm, ← Algebra.smul_def _ (e 1),
+          ← map_smul, smul_eq_mul, mul_one, e.apply_symm_apply, ← mul_assoc, ← Algebra.smul_def,
+          ← map_smul, smul_eq_mul, mul_one, e.apply_symm_apply, one_mul]

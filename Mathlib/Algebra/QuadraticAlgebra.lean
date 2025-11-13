@@ -89,6 +89,10 @@ instance : Zero (QuadraticAlgebra R a b) := ⟨⟨0, 0⟩⟩
 @[simp, norm_cast]
 theorem coe_zero : ((0 : R) : QuadraticAlgebra R a b) = 0 := rfl
 
+@[simp]
+theorem coe_eq_zero_iff {r : R} : (r : QuadraticAlgebra R a b) = 0 ↔ r = 0 := by
+  rw [← coe_zero, coe_inj]
+
 instance : Inhabited (QuadraticAlgebra R a b) := ⟨0⟩
 
 section One
@@ -102,6 +106,10 @@ instance : One (QuadraticAlgebra R a b) := ⟨⟨1, 0⟩⟩
 
 @[simp, norm_cast]
 theorem coe_one : ((1 : R) : QuadraticAlgebra R a b) = 1 := rfl
+
+@[simp]
+theorem coe_eq_one_iff {r : R} : (r : QuadraticAlgebra R a b) = 1 ↔ r = 1 := by
+  rw [← coe_one, coe_inj]
 
 end One
 
@@ -221,7 +229,7 @@ section MulAction
 
 instance [Monoid S] [MulAction S R] : MulAction S (QuadraticAlgebra R a b) where
   one_smul _ := by ext <;> simp
-  mul_smul _ _ _ := by ext <;> simp[mul_smul]
+  mul_smul _ _ _ := by ext <;> simp [mul_smul]
 
 end MulAction
 
@@ -242,7 +250,7 @@ instance [AddCommMonoid R] : AddCommMonoid (QuadraticAlgebra R a b) := fast_inst
   refine (equivProd a b).injective.addCommMonoid _ rfl ?_ ?_ <;> intros <;> rfl
 
 instance [Semiring S] [AddCommMonoid R] [Module S R] : Module S (QuadraticAlgebra R a b) where
-  add_smul r s x := by ext <;> simp[add_smul]
+  add_smul r s x := by ext <;> simp [add_smul]
   zero_smul x := by ext <;> simp
 
 instance [AddGroup R] : AddGroup (QuadraticAlgebra R a b) := fast_instance% by
@@ -322,6 +330,11 @@ variable [NonAssocSemiring R]
 instance instNonAssocSemiring : NonAssocSemiring (QuadraticAlgebra R a b) where
   one_mul _ := by ext <;> simp
   mul_one _ := by ext <;> simp
+
+@[simp]
+theorem nsmul_mk (n : ℕ) (x y : R) :
+    (n : QuadraticAlgebra R a b) * ⟨x, y⟩ = ⟨n * x, n * y⟩ := by
+  ext <;> simp
 
 end NonAssocSemiring
 
@@ -418,11 +431,40 @@ theorem coe_algebraMap : ⇑(algebraMap R (QuadraticAlgebra R a b)) = coe := rfl
 theorem smul_coe (r1 r2 : R) :
     r1 • (r2 : QuadraticAlgebra R a b) = ↑(r1 * r2) := by rw [coe_mul, coe_mul_eq_smul]
 
+theorem coe_dvd_iff {r : R} {z : QuadraticAlgebra R a b} :
+    (r : QuadraticAlgebra R a b) ∣ z ↔ r ∣ z.re ∧ r ∣ z.im := by
+  constructor
+  · rintro ⟨x, rfl⟩
+    simp [dvd_mul_right]
+  · rintro ⟨⟨r, hr⟩, ⟨i, hi⟩⟩
+    use ⟨r, i⟩
+    simp [QuadraticAlgebra.ext_iff, hr, hi]
+
+@[simp, norm_cast]
+theorem coe_dvd_iff_dvd {z w : R} :
+    (z : QuadraticAlgebra R a b) ∣ w ↔ z ∣ w := by
+  rw [coe_dvd_iff]
+  constructor
+  · rintro ⟨hx, -⟩
+    simpa using hx
+  · simp
+
 end CommSemiring
 
 section CommRing
 
-instance instCommRing [CommRing R] : CommRing (QuadraticAlgebra R a b) where
+variable [CommRing R]
+
+instance instCommRing : CommRing (QuadraticAlgebra R a b) where
+
+instance [CharZero R] : CharZero (QuadraticAlgebra R a b) where
+  cast_injective m n := by
+    simp [QuadraticAlgebra.ext_iff]
+
+@[simp]
+theorem zsmul_val (n : ℤ) (x y : R) :
+    (n : QuadraticAlgebra R a b) * ⟨x, y⟩ = ⟨n * x, n * y⟩ := by
+  ext <;> simp
 
 end CommRing
 

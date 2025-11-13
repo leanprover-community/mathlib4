@@ -471,7 +471,7 @@ theorem map_leftUnitor (X : C) :
 
 @[reassoc]
 theorem map_leftUnitor_inv (X : C) :
-    F.map (λ_ X).inv = (λ_ (F.obj X)).inv ≫ ε F ▷ F.obj X ≫ μ F (𝟙_ C) X  := by simp
+    F.map (λ_ X).inv = (λ_ (F.obj X)).inv ≫ ε F ▷ F.obj X ≫ μ F (𝟙_ C) X := by simp
 
 @[reassoc]
 theorem map_rightUnitor (X : C) :
@@ -479,7 +479,7 @@ theorem map_rightUnitor (X : C) :
 
 @[reassoc]
 theorem map_rightUnitor_inv (X : C) :
-    F.map (ρ_ X).inv = (ρ_ (F.obj X)).inv ≫ F.obj X ◁ ε F  ≫ μ F X (𝟙_ C):= by simp
+    F.map (ρ_ X).inv = (ρ_ (F.obj X)).inv ≫ F.obj X ◁ ε F ≫ μ F X (𝟙_ C) := by simp
 
 @[simp] lemma inv_η : CategoryTheory.inv (η F) = ε F := by
   rw [← εIso_hom, ← Iso.comp_inv_eq_id, εIso_inv, IsIso.inv_hom_id]
@@ -788,12 +788,12 @@ instance OplaxMonoidal.prod' : (prod' F G).OplaxMonoidal :=
   inferInstanceAs (diag C ⋙ prod F G).OplaxMonoidal
 
 @[simp] lemma prod'_η_fst : (η (prod' F G)).1 = η F := by
-  change F.map (𝟙 _)  ≫ _ = _
+  change F.map (𝟙 _) ≫ _ = _
   rw [Functor.map_id, Category.id_comp]
   rfl
 
 @[simp] lemma prod'_η_snd : (η (prod' F G)).2 = η G := by
-  change G.map (𝟙 _)  ≫ _ = _
+  change G.map (𝟙 _) ≫ _ = _
   rw [Functor.map_id, Category.id_comp]
   rfl
 
@@ -937,8 +937,7 @@ lemma unit_app_tensor_comp_map_δ (X Y : C) :
     adj.unit.app (X ⊗ Y) ≫ G.map (δ F X Y) = (adj.unit.app X ⊗ₘ adj.unit.app Y) ≫ μ G _ _ := by
   rw [IsMonoidal.leftAdjoint_μ (adj := adj), homEquiv_unit]
   dsimp
-  simp only [← adj.unit_naturality_assoc, ← Functor.map_comp, ← δ_natural_assoc,
-    ← tensor_comp, left_triangle_components, tensorHom_id, id_whiskerRight, comp_id]
+  simp [← adj.unit_naturality_assoc, ← Functor.map_comp, ← δ_natural_assoc]
 
 @[reassoc]
 lemma map_ε_comp_counit_app_unit : F.map (ε G) ≫ adj.counit.app (𝟙_ D) = η F := by
@@ -968,7 +967,8 @@ instance isMonoidal_comp {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G')
     dsimp only [comp_obj, comp_μ, id_obj, comp_δ]
     rw [Equiv.symm_apply_apply]
     dsimp [homEquiv]
-    rw [comp_counit_app, comp_counit_app, comp_counit_app, assoc, tensor_comp, δ_natural_assoc]
+    rw [comp_counit_app, comp_counit_app, comp_counit_app, assoc, ← tensorHom_comp_tensorHom,
+      δ_natural_assoc]
     dsimp
     rw [← adj'.map_μ_comp_counit_app_tensor, ← map_comp_assoc, ← map_comp_assoc,
       ← map_comp_assoc, ← adj.map_μ_comp_counit_app_tensor, assoc,
@@ -1088,11 +1088,8 @@ lemma counitInv_app_comp_functor_map_η_inverse :
 lemma counitInv_app_tensor_comp_functor_map_δ_inverse (X Y : C) :
     e.counitInv.app (e.functor.obj X ⊗ e.functor.obj Y) ≫
       e.functor.map (δ e.inverse (e.functor.obj X) (e.functor.obj Y)) =
-      μ e.functor X Y ≫ e.functor.map (e.unitIso.hom.app X ⊗ₘ e.unitIso.hom.app Y) := by
-  rw [← cancel_epi (δ e.functor _ _), Monoidal.δ_μ_assoc]
-  apply e.inverse.map_injective
-  simp [← cancel_epi (e.unitIso.hom.app (X ⊗ Y)), Functor.map_comp,
-    unitIso_hom_app_tensor_comp_inverse_map_δ_functor_assoc]
+      μ e.functor X Y ≫ e.functor.map (e.unitIso.hom.app X ⊗ₘ e.unitIso.hom.app Y) :=
+  counitIso_inv_app_tensor_comp_functor_map_δ_inverse e X Y
 
 @[reassoc (attr := simp)]
 lemma ε_comp_map_ε : ε e.inverse ≫ e.inverse.map (ε e.functor) = e.unit.app (𝟙_ C) :=
@@ -1119,10 +1116,8 @@ instance isMonoidal_symm [e.inverse.Monoidal] [e.IsMonoidal] :
   leftAdjoint_μ X Y := by
     simp only [toAdjunction, Adjunction.homEquiv_unit]
     dsimp [symm]
-    rw [map_comp, counitIso_inv_app_tensor_comp_functor_map_δ_inverse_assoc,
-      ← Functor.map_comp, ← tensor_comp, Iso.hom_inv_id_app, Iso.hom_inv_id_app]
-    dsimp
-    rw [tensorHom_id, id_whiskerRight, map_id, comp_id]
+    rw [map_comp, counitIso_inv_app_tensor_comp_functor_map_δ_inverse_assoc]
+    simp [← map_comp]
 
 section
 
@@ -1164,5 +1159,78 @@ def of (F : C ⥤ D) [F.LaxMonoidal] : LaxMonoidalFunctor C D where
   toFunctor := F
 
 end LaxMonoidalFunctor
+
+namespace Functor.Monoidal
+
+variable {C D}
+
+/--
+Auxiliary definition for `Functor.Monoidal.transport`
+-/
+@[simps!]
+def coreMonoidalTransport {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) : G.CoreMonoidal where
+  εIso := εIso F ≪≫ i.app _
+  μIso X Y := tensorIso (i.symm.app _) (i.symm.app _) ≪≫ μIso F X Y ≪≫ i.app _
+  μIso_hom_natural_left _ _ := by simp [NatTrans.whiskerRight_app_tensor_app_assoc]
+  μIso_hom_natural_right _ _ := by simp [NatTrans.whiskerLeft_app_tensor_app_assoc]
+  associativity X Y Z := by
+    simp only [Iso.trans_hom, tensorIso_hom, Iso.app_hom, Iso.symm_hom, μIso_hom, comp_whiskerRight,
+      Category.assoc, MonoidalCategory.whiskerLeft_comp]
+    rw [← i.hom.naturality, map_associator_assoc, Functor.OplaxMonoidal.associativity_assoc,
+      whiskerLeft_δ_μ_assoc, δ_μ_assoc]
+    simp only [← Category.assoc]
+    congr 1
+    slice_lhs 3 4 =>
+      rw [← tensorHom_id, tensorHom_comp_tensorHom]
+      simp only [Iso.hom_inv_id_app, Category.id_comp, id_tensorHom]
+    simp only [Category.assoc]
+    rw [← whisker_exchange_assoc]
+    simp only [tensor_whiskerLeft, Functor.LaxMonoidal.associativity, Category.assoc,
+      Iso.inv_hom_id_assoc]
+    rw [← tensorHom_id, associator_naturality_assoc]
+    simp [← id_tensorHom, -tensorHom_id]
+  left_unitality X := by
+    simp only [Iso.trans_hom, εIso_hom, Iso.app_hom, ← tensorHom_id, tensorIso_hom, Iso.symm_hom,
+      μIso_hom, Category.assoc, tensorHom_comp_tensorHom_assoc, Iso.hom_inv_id_app,
+      Category.comp_id, Category.id_comp]
+    rw [← i.hom.naturality, ← Category.comp_id (i.inv.app X),
+      ← Category.id_comp (Functor.LaxMonoidal.ε F), ← tensorHom_comp_tensorHom]
+    simp
+  right_unitality X := by
+    simp only [Iso.trans_hom, εIso_hom, Iso.app_hom, ← id_tensorHom, tensorIso_hom, Iso.symm_hom,
+      μIso_hom, Category.assoc, tensorHom_comp_tensorHom_assoc, Category.id_comp,
+      Iso.hom_inv_id_app, Category.comp_id]
+    rw [← i.hom.naturality, ← Category.comp_id (i.inv.app X),
+      ← Category.id_comp (Functor.LaxMonoidal.ε F), ← tensorHom_comp_tensorHom]
+    simp
+
+/--
+Transport the structure of a monoidal functor along a natural isomorphism of functors.
+-/
+def transport {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) : G.Monoidal :=
+  (coreMonoidalTransport i).toMonoidal
+
+@[reassoc]
+lemma transport_ε {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) : letI := transport i
+    LaxMonoidal.ε G = LaxMonoidal.ε F ≫ i.hom.app (𝟙_ C) :=
+  rfl
+
+@[reassoc]
+lemma transport_η {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) : letI := transport i
+    OplaxMonoidal.η G = i.inv.app (𝟙_ C) ≫ OplaxMonoidal.η F :=
+  rfl
+
+@[reassoc]
+lemma transport_μ {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) (X Y : C) : letI := transport i
+    LaxMonoidal.μ G X Y = (i.inv.app X ⊗ₘ i.inv.app Y) ≫ LaxMonoidal.μ F X Y ≫ i.hom.app (X ⊗ Y) :=
+  rfl
+
+@[reassoc]
+lemma transport_δ {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) (X Y : C) : letI := transport i
+    OplaxMonoidal.δ G X Y =
+      i.inv.app (X ⊗ Y) ≫ OplaxMonoidal.δ F X Y ≫ (i.hom.app X ⊗ₘ i.hom.app Y) :=
+  coreMonoidalTransport_μIso_inv _ _ _
+
+end Functor.Monoidal
 
 end CategoryTheory

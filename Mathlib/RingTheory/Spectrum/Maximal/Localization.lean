@@ -138,7 +138,7 @@ variable {R}
 theorem finite_of_toPiLocalization_pi_surjective
     (h : Function.Surjective (toPiLocalization (Π i, R i))) :
     Finite ι := by
-  contrapose h; rw [not_finite_iff_infinite] at h
+  contrapose! h
   exact toPiLocalization_not_surjective_of_infinite _
 
 end Pi
@@ -251,7 +251,7 @@ variable {R}
 theorem finite_of_toPiLocalization_pi_surjective
     (h : Function.Surjective (toPiLocalization (Π i, R i))) :
     Finite ι := by
-  contrapose h; rw [not_finite_iff_infinite] at h
+  contrapose! h
   exact toPiLocalization_not_surjective_of_infinite _
 
 end Pi
