@@ -35,6 +35,8 @@ structure AtomM.Context where
 structure AtomM.State where
   /-- The list of atoms-up-to-defeq encountered thus far, used for atom sorting. -/
   atoms : Array Expr := #[]
+  /-- A cache that can be used to store proofs about atoms. -/
+  cache : Std.HashMap String (Std.HashMap Nat Expr) := ∅
 
 /-- The monad that `ring` works in. This is only used for collecting atoms. -/
 abbrev AtomM := ReaderT AtomM.Context <| StateRefT AtomM.State MetaM
@@ -57,7 +59,6 @@ def isDefEqSafe (a b : Expr) : MetaM Bool :=
 atom (which will be defeq at the specified transparency, but not necessarily syntactically equal).
 If the atomic expression has *not* already been encountered, store it in the list of atoms, and
 return the new index (and the stored form of the atom, which will be itself).
-
 In a normalizing tactic, the expression returned by `addAtom` should be considered the normal form.
 -/
 def AtomM.addAtom (e : Expr) : AtomM (Nat × Expr) := do
@@ -81,5 +82,14 @@ def AtomM.addAtomQ {u : Level} {α : Q(Type u)} (e : Q($α)) :
     AtomM (Nat × {e' : Q($α) // $e =Q $e'}) := do
   let (n, e') ← AtomM.addAtom e
   return (n, ⟨e', ⟨⟩⟩)
+
+abbrev CacheAtomM (σ : Type) := StateRefT σ AtomM
+
+def CacheAtomM.get (σ : Type) : CacheAtomM σ σ := StateRefT'.get
+
+def CacheAtomM.set {σ : Type} (s : σ) : CacheAtomM σ Unit := StateRefT'.set s
+
+def CacheAtomM.modifyGet {σ : Type} {α : Type} (f : σ → α × σ) : CacheAtomM σ α :=
+  StateRefT'.modifyGet f
 
 end Mathlib.Tactic
