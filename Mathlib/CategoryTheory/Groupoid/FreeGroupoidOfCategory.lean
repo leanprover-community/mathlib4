@@ -114,7 +114,7 @@ lemma lift_obj_mk {E : Type u₂} [Groupoid.{v₂} E] (φ : C ⥤ E) (X : C) :
     (lift φ).obj (mk X) = φ.obj X := rfl
 
 @[simp]
-lemma lift_map_mk {E : Type u₂} [Groupoid.{v₂} E] (φ : C ⥤ E) {X Y : C} (f : X ⟶ Y) :
+lemma lift_map_homMk {E : Type u₂} [Groupoid.{v₂} E] (φ : C ⥤ E) {X Y : C} (f : X ⟶ Y) :
     (lift φ).map (homMk f) = φ.map f := by
   simpa using Functor.congr_hom (lift_spec φ) f
 
@@ -214,20 +214,20 @@ lemma map_map_homMk (φ : C ⥤ D) {X Y : C} (f : X ⟶ Y) :
 
 variable {E : Type u₂} [Groupoid.{v₂} E]
 
-lemma map_lift (F : C ⥤ D) (G : D ⥤ E) : map F ⋙ lift G = lift (F ⋙ G) := by
+lemma map_comp_lift (F : C ⥤ D) (G : D ⥤ E) : map F ⋙ lift G = lift (F ⋙ G) := by
   apply lift_unique
   rw [← Functor.assoc, of_comp_map, Functor.assoc, lift_spec G]
 
 /-- The operation `lift` is natural. -/
-def mapLift (F : C ⥤ D) (G : D ⥤ E) : map F ⋙ lift G ≅ lift (F ⋙ G) :=
+def mapCompLift (F : C ⥤ D) (G : D ⥤ E) : map F ⋙ lift G ≅ lift (F ⋙ G) :=
   liftNatIso _ _ (Iso.refl _)
 
 @[simp]
-lemma mapLift_hom_app (F : C ⥤ D) (G : D ⥤ E) (X) : (mapLift F G).hom.app X = 𝟙 _ :=
+lemma mapCompLift_hom_app (F : C ⥤ D) (G : D ⥤ E) (X) : (mapCompLift F G).hom.app X = 𝟙 _ :=
   liftNatIso_hom_app ..
 
 @[simp]
-lemma mapLift_inv_app (F : C ⥤ D) (G : D ⥤ E) (X) : (mapLift F G).inv.app X = 𝟙 _ :=
+lemma mapCompLift_inv_app (F : C ⥤ D) (G : D ⥤ E) (X) : (mapCompLift F G).inv.app X = 𝟙 _ :=
   liftNatIso_inv_app ..
 
 end Functoriality
@@ -258,8 +258,38 @@ def free : Cat.{u, u} ⥤ Grpd.{u, u} where
 def freeForgetAdjunction : free ⊣ Grpd.forgetToCat :=
   Adjunction.mkOfHomEquiv
     { homEquiv _ _ := FreeGroupoid.functorEquiv
-      homEquiv_naturality_left_symm _ _ := (FreeGroupoid.map_lift _ _).symm
+      homEquiv_naturality_left_symm _ _ := (FreeGroupoid.map_comp_lift _ _).symm
       homEquiv_naturality_right _ _ := rfl }
+
+@[simp]
+lemma freeForgetAdjunction_homEquiv_apply (C : Cat) (D : Grpd) (F : FreeGroupoid C ⥤ D) :
+    freeForgetAdjunction.homEquiv C D F = FreeGroupoid.of C ⋙ F :=
+  rfl
+
+@[simp]
+lemma freeForgetAdjunction_homEquiv_symm_apply (C : Cat) (D : Grpd) (F : C ⥤ D) :
+    (freeForgetAdjunction.homEquiv C D).symm F = FreeGroupoid.lift F := by
+  simp [freeForgetAdjunction, functorEquiv]
+
+@[simp]
+lemma freeForgetAdjunction_unit_app_obj (C : Cat) (X : C) :
+    (freeForgetAdjunction.unit.app C).obj X = mk X :=
+  rfl
+
+@[simp]
+lemma freeForgetAdjunction_unit_app_map (C : Cat) {X Y : C} (f : X ⟶ Y) :
+    (freeForgetAdjunction.unit.app C).map f = homMk f :=
+  rfl
+
+@[simp]
+lemma freeForgetAdjunction_counit_app_obj_mk (G : Grpd) (X : G) :
+    (freeForgetAdjunction.counit.app G).obj (.mk X) = X :=
+  rfl
+
+@[simp]
+lemma freeForgetAdjunction_counit_app_map_homMk (G : Grpd) {X Y : G} (f : X ⟶ Y) :
+    (freeForgetAdjunction.counit.app G).map (homMk f) = f := by
+  simp [freeForgetAdjunction, functorEquiv]
 
 instance : Reflective Grpd.forgetToCat where
   L := free
