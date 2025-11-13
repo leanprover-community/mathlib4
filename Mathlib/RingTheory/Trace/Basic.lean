@@ -479,7 +479,7 @@ theorem det_traceForm_ne_zero [Algebra.IsSeparable K L] [Fintype ι] [DecidableE
   swap; · apply Basis.toMatrix_mul_toMatrix_flip
   refine
     mul_ne_zero
-      (isUnit_of_mul_eq_one _ ((b.toMatrix pb.basis)ᵀ * b.toMatrix pb.basis).det ?_).ne_zero ?_
+      (IsUnit.of_mul_eq_one ((b.toMatrix pb.basis)ᵀ * b.toMatrix pb.basis).det ?_).ne_zero ?_
   · calc
       (pb.basis.toMatrix b * (pb.basis.toMatrix b)ᵀ).det *
             ((b.toMatrix pb.basis)ᵀ * b.toMatrix pb.basis).det =

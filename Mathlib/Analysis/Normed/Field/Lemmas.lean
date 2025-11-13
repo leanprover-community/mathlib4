@@ -102,7 +102,7 @@ instance (priority := 100) NormedDivisionRing.to_continuousInv₀ : ContinuousIn
       ‖e⁻¹ - r⁻¹‖ = ‖r‖⁻¹ * ‖r - e‖ * ‖e‖⁻¹ := by
         rw [← norm_inv, ← norm_inv, ← norm_mul, ← norm_mul, mul_sub, sub_mul,
           mul_assoc _ e, inv_mul_cancel₀ r0, mul_inv_cancel₀ e0, one_mul, mul_one]
-      _ = ‖r - e‖ / ‖r‖ / ‖e‖ := by field
+      _ = ‖r - e‖ / ‖r‖ / ‖e‖ := by ring
       _ ≤ ‖r - e‖ / ‖r‖ / ε := by gcongr
   refine squeeze_zero' (Eventually.of_forall fun _ => norm_nonneg _) this ?_
   refine (((continuous_const.sub continuous_id).norm.div_const _).div_const _).tendsto' _ _ ?_
