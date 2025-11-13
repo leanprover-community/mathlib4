@@ -179,16 +179,6 @@ theorem tan_eq {z : ℂ}
     tan z = (tan z.re + tanh z.im * I) / (1 - tan z.re * tanh z.im * I) := by
   convert tan_add_mul_I h; exact (re_add_im z).symm
 
-lemma one_add_tan_sq_mul_cos_sq_eq_one {x : ℂ} (h : cos x ≠ 0) :
-    (1 + tan x ^ 2) * cos x ^ 2 = 1 := by
-  conv_rhs => rw [← sin_sq_add_cos_sq x, ← tan_mul_cos h]
-  ring
-
-lemma div_one_add_tan_sq_eq_mul_cos_sq {x y : ℂ} (h : cos x ≠ 0) :
-    y / (1 + tan x ^ 2) = y * cos x ^ 2 := by
-  rw [← mul_div_mul_right _ _ (pow_ne_zero 2 h), one_add_tan_sq_mul_cos_sq_eq_one h]
-  simp
-
 /-- `tan x` takes the junk value `0` when `cos x = 0` -/
 lemma tan_eq_zero_of_cos_eq_zero {x} (h : cos x = 0) : tan x = 0 := by
   obtain ⟨k, hxk⟩ := cos_eq_zero_iff.mp h
@@ -200,7 +190,8 @@ theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq (x : ℂ) (h : cos x ≠
     cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) := by
   conv_lhs => rw [show x = 2 * (x / 2) by group, cos_two_mul']
   have : cos (x / 2) ≠ 0 := by grind [cos_ne_zero_iff, cos_eq_neg_one_iff]
-  rw [div_one_add_tan_sq_eq_mul_cos_sq this, ← tan_mul_cos this]
+  rw [div_eq_mul_inv (1 - tan (x / 2) ^ 2) (1 + tan (x / 2) ^ 2), inv_one_add_tan_sq this,
+    ← tan_mul_cos this]
   ring
 
 /-- `tan (x / 2)` takes the junk value `0` when `sin x = 0` so this always holds. -/
@@ -209,7 +200,8 @@ theorem sin_eq_two_mul_tan_half_div_one_add_tan_half_sq (x : ℂ) :
   conv_lhs => rw [show x = 2 * (x / 2) by group, sin_two_mul]
   by_cases h : cos (x / 2) = 0
   · simp [h, tan_eq_zero_of_cos_eq_zero]
-  · rw [div_one_add_tan_sq_eq_mul_cos_sq h, ← tan_mul_cos h]
+  · rw [div_eq_mul_inv (2 * tan (x / 2)) (1 + tan (x / 2) ^ 2), inv_one_add_tan_sq h,
+      ← tan_mul_cos h]
     group
 
 theorem tan_eq_one_sub_tan_half_sq_div_one_add_tan_half_sq (x : ℂ) :
@@ -294,14 +286,6 @@ theorem tan_eq_zero_iff' {θ : ℝ} (hθ : cos θ ≠ 0) : tan θ = 0 ↔ ∃ k 
 
 theorem tan_ne_zero_iff {θ : ℝ} : tan θ ≠ 0 ↔ ∀ k : ℤ, k * π / 2 ≠ θ :=
   mod_cast @Complex.tan_ne_zero_iff θ
-
-lemma one_add_tan_sq_mul_cos_sq_eq_one {x : ℝ} (h : cos x ≠ 0) :
-    (1 + tan x ^ 2) * cos x ^ 2 = 1 :=
-  mod_cast @Complex.one_add_tan_sq_mul_cos_sq_eq_one x (mod_cast h)
-
-lemma div_one_add_tan_sq_eq_mul_cos_sq {x y : ℝ} (h : cos x ≠ 0) :
-    y / (1 + tan x ^ 2) = y * cos x ^ 2 :=
-  mod_cast @Complex.div_one_add_tan_sq_eq_mul_cos_sq x y (mod_cast h)
 
 /-- `tan x` takes the junk value `0` when `cos x = 0` -/
 lemma tan_eq_zero_of_cos_eq_zero {x} (h : cos x = 0) : tan x = 0 :=
