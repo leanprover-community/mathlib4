@@ -2,7 +2,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Lean.Exception
 import Mathlib.Tactic.ReduceModChar.Ext
 import Qq.MetaM
-open Qq Lean Meta Elab Command ToAdditive
+open Qq Lean Meta Elab Command Mathlib Tactic Translate ToAdditive
 
 set_option autoImplicit true
 -- work in a namespace so that it doesn't matter if names clash
@@ -160,12 +160,12 @@ run_cmd liftCoreM <| MetaM.run' <| do
 /- test the eta-expansion applied on `foo6`. -/
 run_cmd do
   let c ← getConstInfo `Test.foo6
-  let e : Expr ← liftCoreM <| MetaM.run' <| expand c.value!
-  let t ← liftCoreM <| MetaM.run' <| expand c.type
+  let e : Expr ← liftCoreM <| MetaM.run' <| expand ToAdditive.data c.value!
+  let t ← liftCoreM <| MetaM.run' <| expand ToAdditive.data c.type
   let decl := c |>.updateName `Test.barr6 |>.updateType t |>.updateValue e |>.toDeclaration!
   liftCoreM <| addAndCompile decl
   -- test that we cannot transport a declaration to itself
-  successIfFail <| liftCoreM <| addToAdditiveAttr `bar11_works { ref := ← getRef }
+  successIfFail <| liftCoreM <| addTranslationAttr ToAdditive.data `bar11_works { ref := ← getRef }
 
 /- Test on inductive types -/
 inductive AddInd : ℕ → Prop where
@@ -178,9 +178,9 @@ inductive MulInd : ℕ → Prop where
   | one : MulInd 1
 
 run_cmd do
-  unless findTranslation? (← getEnv) `Test.MulInd.one == some `Test.AddInd.zero do throwError "1"
-  unless findTranslation? (← getEnv) `Test.MulInd.basic == some `Test.AddInd.basic do throwError "2"
-  unless findTranslation? (← getEnv) `Test.MulInd == some `Test.AddInd do throwError "3"
+  unless findTranslation? (← getEnv) ToAdditive.data `Test.MulInd.one == some `Test.AddInd.zero do throwError "1"
+  unless findTranslation? (← getEnv) ToAdditive.data `Test.MulInd.basic == some `Test.AddInd.basic do throwError "2"
+  unless findTranslation? (← getEnv) ToAdditive.data `Test.MulInd == some `Test.AddInd do throwError "3"
 
 @[to_additive addFixedNumeralTest]
 def fixedNumeralTest {α} [One α] :=
@@ -216,7 +216,7 @@ def mul_foo {α} [Monoid α] (a : α) : ℕ → α
 
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute
 run_cmd liftCoreM <| successIfFail <|
-    transformDecl { ref := ← getRef} `Test.some_def `Test.add_some_def
+    transformDecl ToAdditive.data { ref := ← getRef} `Test.some_def `Test.add_some_def
 
 
 attribute [to_additive some_other_name] some_def.in_namespace
@@ -236,9 +236,9 @@ instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One <| f i] : One (
   ⟨fun _ => 1⟩
 
 run_cmd do
-  let n ← liftCoreM <| MetaM.run' <| findMultiplicativeArg `Test.pi.has_one
+  let n ← liftCoreM <| MetaM.run' <| findRelevantArg ToAdditive.data `Test.pi.has_one
   if n != 1 then throwError "{n} != 1"
-  let n ← liftCoreM <| MetaM.run' <| findMultiplicativeArg `Test.foo_mul
+  let n ← liftCoreM <| MetaM.run' <| findRelevantArg ToAdditive.data `Test.foo_mul
   if n != 4 then throwError "{n} != 4"
 
 end
@@ -347,7 +347,7 @@ def Ones : ℕ → Q(Nat)
 -- #time
 run_cmd do
   let e : Expr := Ones 300
-  let _ ← liftCoreM <| MetaM.run' <| applyReplacementFun e
+  let _ ← liftCoreM <| MetaM.run' <| applyReplacementFun ToAdditive.data e
 
 -- testing `isConstantApplication`
 run_cmd do
@@ -363,7 +363,7 @@ run_cmd do
   let stx ← `(Semigroup MonoidEnd)
   liftTermElabM do
     let e ← Term.elabTerm stx none
-    guard <| additiveTest (← getEnv) e == some (.inl `Test.MonoidEnd)
+    guard <| shouldTranslate (← getEnv) ToAdditive.data e == some (.inl `Test.MonoidEnd)
 
 
 @[to_additive instSemiGroupAddMonoidEnd]
@@ -384,7 +384,8 @@ Some arbitrary tests to check whether additive names are guessed correctly.
 section guessName
 
 def checkGuessName (s t : String) : Elab.Command.CommandElabM Unit :=
-  unless guessName s == t do throwError "failed: {guessName s} != {t}"
+  unless (GuessName.guessName { nameDict, abbreviationDict } s) == t do
+    throwError "failed: {GuessName.guessName { nameDict, abbreviationDict } s} != {t}"
 
 run_cmd
   checkGuessName "HMul_Eq_LEOne_Conj₂MulLT'" "HAdd_Eq_Nonpos_Conj₂AddLT'"
@@ -434,16 +435,16 @@ end guessName
 
 end Test
 
-run_meta ToAdditive.insertTranslation `localize `add_localize
+insert_to_additive_translation localize add_localize
 
 @[to_additive] def localize.r := Nat
 @[to_additive add_localize] def localize := Nat
 @[to_additive] def localize.s := Nat
 
 run_cmd do
-  unless findTranslation? (← getEnv) `localize.r == some `add_localize.r do throwError "1"
-  unless findTranslation? (← getEnv) `localize   == some `add_localize   do throwError "2"
-  unless findTranslation? (← getEnv) `localize.s == some `add_localize.s do throwError "3"
+  unless findTranslation? (← getEnv) ToAdditive.data `localize.r == some `add_localize.r do throwError "1"
+  unless findTranslation? (← getEnv) ToAdditive.data `localize   == some `add_localize   do throwError "2"
+  unless findTranslation? (← getEnv) ToAdditive.data `localize.s == some `add_localize.s do throwError "3"
 
 /--
 warning: The source declaration one_eq_one was given the simp-attribute(s) simp, reduce_mod_char before calling @[to_additive].
@@ -463,10 +464,10 @@ section
 -- Test the error message for a name that cannot be additivised.
 
 /--
-error: to_additive: the generated additivised name equals the original name 'foo', meaning that no part of the name was additivised.
+error: to_additive: the generated translated name equals the original name 'foo'.
 If this is intentional, use the `@[to_additive self]` syntax.
 Otherwise, check that your declaration name is correct (if your declaration is an instance, try naming it)
-or provide an additivised name using the `@[to_additive my_add_name]` syntax.
+or provide a translated name using the `@[to_additive my_add_name]` syntax.
 ---
 warning: declaration uses 'sorry'
 -/
@@ -760,7 +761,7 @@ instance : Mul (MonoidAlgebra' Nat G) where
 
 -- Unfortunately, `relevant_arg` information isn't passed to `*.casesOn`:
 /--
-error: @[to_additive] failed. The translated value is not type correct. For help, see the docstring of `to_additive.attr`, section `Troubleshooting`. Failed to add declaration
+error: @[to_additive] failed. The translated value is not type correct. For help, see the docstring of `to_additive`, section `Troubleshooting`. Failed to add declaration
 instAddAddMonoidAlgebra'Nat_1.match_1:
 Application type mismatch: The argument
   fun x => motive x x✝

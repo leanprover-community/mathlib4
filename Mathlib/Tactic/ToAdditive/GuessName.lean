@@ -8,13 +8,34 @@ import Std.Data.TreeMap.Basic
 import Mathlib.Data.String.Defs
 
 /-!
-# Name generation APIs for `to_additive`
+# Name generation APIs for `to_additive`-like attributes
 -/
 
 open Std
 
-namespace ToAdditive
-open ToAdditive -- currently needed to enable projection notation
+namespace Mathlib.Tactic.GuessName
+open GuessName -- currently needed to enable projection notation
+
+/-- The data that is required to guess the name of a translation. -/
+structure GuessNameData where
+  /--
+  Dictionary used by `guessName` to autogenerate names.
+  This only transforms single name components, unlike `abbreviationDict`.
+
+  Note: `guessName` capitalizes the output according to the capitalization of the input.
+  In order for this to work, the input should always start with a lower case letter, and the output
+  should always start with an upper case letter.
+  -/
+  nameDict : Std.HashMap String (List String)
+  /--
+  We need to fix a few abbreviations after applying `nameDict`, i.e. replacing `ZeroLE` by `Nonneg`.
+  This dictionary contains these fixes.
+  The input should contain entries that is in `lowerCamelCase` (e.g. `ltzero`; the initial sequence
+  of capital letters should be lower-cased) and the output should be in `UpperCamelCase`
+  (e.g. `LTZero`).
+  When applying the dictionary, we lower-case the output if the input was also given in lower-case.
+  -/
+  abbreviationDict : Std.HashMap String String
 
 /-- A set of strings of names that end in a capital letter.
 * If the string contains a lowercase letter, the string should be split between the first occurrence
@@ -83,57 +104,6 @@ def decapitalizeFirstLike (s : String) : List String → List String
   | [] => []
 
 /--
-Dictionary used by `guessName` to autogenerate names.
-This only transforms single name components, unlike `abbreviationDict`.
-
-Note: `guessName` capitalizes the output according to the capitalization of the input.
-In order for this to work, the input should always start with a lower case letter, and the output
-should always start with an upper case letter.
--/
-def nameDict : Std.HashMap String (List String) := .ofList [
-  ("one", ["Zero"]),
-  ("mul", ["Add"]),
-  ("smul", ["VAdd"]),
-  ("inv", ["Neg"]),
-  ("div", ["Sub"]),
-  ("prod", ["Sum"]),
-  ("hmul", ["HAdd"]),
-  ("hsmul", ["HVAdd"]),
-  ("hdiv", ["HSub"]),
-  ("hpow", ["HSMul"]),
-  ("finprod", ["Finsum"]),
-  ("tprod", ["TSum"]),
-  ("pow", ["NSMul"]),
-  ("npow", ["NSMul"]),
-  ("zpow", ["ZSMul"]),
-  ("mabs", ["Abs"]),
-  ("monoid", ["Add", "Monoid"]),
-  ("submonoid", ["Add", "Submonoid"]),
-  ("group", ["Add", "Group"]),
-  ("subgroup", ["Add", "Subgroup"]),
-  ("semigroup", ["Add", "Semigroup"]),
-  ("magma", ["Add", "Magma"]),
-  ("haar", ["Add", "Haar"]),
-  ("prehaar", ["Add", "Prehaar"]),
-  ("unit", ["Add", "Unit"]),
-  ("units", ["Add", "Units"]),
-  ("cyclic", ["Add", "Cyclic"]),
-  ("semigrp", ["Add", "Semigrp"]),
-  ("grp", ["Add", "Grp"]),
-  ("commute", ["Add", "Commute"]),
-  ("semiconj", ["Add", "Semiconj"]),
-  ("rootable", ["Divisible"]),
-  ("zpowers", ["ZMultiples"]),
-  ("powers", ["Multiples"]),
-  ("multipliable", ["Summable"]),
-  ("gpfree", ["APFree"]),
-  ("quantale", ["Add", "Quantale"]),
-  ("square", ["Even"]),
-  ("mconv", ["Conv"]),
-  ("irreducible", ["Add", "Irreducible"]),
-  ("mlconvolution", ["LConvolution"])]
-
-/--
 Apply the `nameDict` and decapitalize the output like the input.
 
 E.g.
@@ -142,76 +112,20 @@ E.g.
 ```
 yields `["Neg", "HAdd", "LE", "Conjugate₂", "VAdd", "_", "ne", "_", "top"]`.
 -/
-def applyNameDict : List String → List String
+def applyNameDict (g : GuessNameData) : List String → List String
   | x :: s =>
-    let z := match nameDict.get? x.toLower with
+    let z := match g.nameDict.get? x.toLower with
       | some y => decapitalizeFirstLike x y
       | none => [x]
-    z ++ applyNameDict s
+    z ++ applyNameDict g s
   | [] => []
-
-/--
-We need to fix a few abbreviations after applying `nameDict`, i.e. replacing `ZeroLE` by `Nonneg`.
-This dictionary contains these fixes.
-The input should contain entries that is in `lowerCamelCase` (e.g. `ltzero`; the initial sequence
-of capital letters should be lower-cased) and the output should be in `UpperCamelCase`
-(e.g. `LTZero`).
-When applying the dictionary, we lower-case the output if the input was also given in lower-case.
--/
-def abbreviationDict : Std.HashMap String String := .ofList [
-  ("isCancelAdd", "IsCancelAdd"),
-  ("isLeftCancelAdd", "IsLeftCancelAdd"),
-  ("isRightCancelAdd", "IsRightCancelAdd"),
-  ("cancelAdd", "AddCancel"),
-  ("leftCancelAdd", "AddLeftCancel"),
-  ("rightCancelAdd", "AddRightCancel"),
-  ("cancelCommAdd", "AddCancelComm"),
-  ("commAdd", "AddComm"),
-  ("zero_le", "Nonneg"),
-  ("zeroLE", "Nonneg"),
-  ("zero_lt", "Pos"),
-  ("zeroLT", "Pos"),
-  ("lezero", "Nonpos"),
-  ("le_zero", "Nonpos"),
-  ("ltzero", "Neg"),
-  ("lt_zero", "Neg"),
-  ("addSingle", "Single"),
-  ("add_single", "Single"),
-  ("addSupport", "Support"),
-  ("add_support", "Support"),
-  ("addTSupport", "TSupport"),
-  ("add_tsupport", "TSupport"),
-  ("addIndicator", "Indicator"),
-  ("add_indicator", "Indicator"),
-  ("isEven", "Even"),
-  -- "Regular" is well-used in mathlib with various meanings (e.g. in
-  -- measure theory) and a direct translation
-  -- "regular" --> "addRegular" in `nameDict` above seems error-prone.
-  ("isRegular", "IsAddRegular"),
-  ("isLeftRegular", "IsAddLeftRegular"),
-  ("isRightRegular", "IsAddRightRegular"),
-  ("hasFundamentalDomain", "HasAddFundamentalDomain"),
-  ("quotientMeasure", "AddQuotientMeasure"),
-  ("negFun", "InvFun"),
-  ("uniqueProds", "UniqueSums"),
-  ("orderOf", "AddOrderOf"),
-  ("zeroLePart", "PosPart"),
-  ("leZeroPart", "NegPart"),
-  ("isScalarTower", "VAddAssocClass"),
-  ("isOfFinOrder", "IsOfFinAddOrder"),
-  ("isCentralScalar", "IsCentralVAdd"),
-  ("function_addSemiconj", "Function_semiconj"),
-  ("function_addCommute", "Function_commute"),
-  ("divisionAddMonoid", "SubtractionMonoid"),
-  ("subNegZeroAddMonoid", "SubNegZeroMonoid"),
-  ("modularCharacter", "AddModularCharacter")]
 
 /-- Helper for `fixAbbreviation`.
 Note: this function has a quadratic number of recursive calls, but is not a performance
 bottleneck. -/
-def fixAbbreviationAux : List String → List String → String
+def fixAbbreviationAux (g : GuessNameData) : List String → List String → String
   | [], []     => ""
-  | [], x::s   => x ++ fixAbbreviationAux s []
+  | [], x::s   => x ++ fixAbbreviationAux g s []
   | pre::l, s' =>
     let s := s' ++ [pre]
     let t := String.join s
@@ -220,10 +134,10 @@ def fixAbbreviationAux : List String → List String → String
     `fixAbbreviation ["eventually", "LE", "_", "one"]` to `"eventuallyLE_one"`, since otherwise the
     substring `LE_zero` gets replaced by `Nonpos`. -/
     if pre == "_" && (String.Pos.Raw.get t 0).isUpper then
-      s[0]! ++ fixAbbreviationAux (s.drop 1 ++ l) []
-    else match abbreviationDict.get? t.decapitalizeSeq with
-    | some post => decapitalizeLike t post ++ fixAbbreviationAux l []
-    | none      => fixAbbreviationAux l s
+      s[0]! ++ fixAbbreviationAux g (s.drop 1 ++ l) []
+    else match g.abbreviationDict.get? t.decapitalizeSeq with
+    | some post => decapitalizeLike t post ++ fixAbbreviationAux g l []
+    | none      => fixAbbreviationAux g l s
   termination_by l s => (l.length + s.length, l.length)
   decreasing_by all_goals grind
 
@@ -239,8 +153,8 @@ gives the preliminary translation `["Add", "Support"]`. Subsequently
 ```
 "fixes" this translation and returns `Support`.
 -/
-def fixAbbreviation (l : List String) : String :=
-  fixAbbreviationAux l []
+def fixAbbreviation (g : GuessNameData) (l : List String) : String :=
+  fixAbbreviationAux g l []
 
 /--
 Autogenerate additive name.
@@ -249,11 +163,11 @@ This runs in several steps:
 2) Apply word-by-word translation rules.
 3) Fix up abbreviations that are not word-by-word translations, like "addComm" or "Nonneg".
 -/
-def guessName : String → String :=
+def guessName (g : GuessNameData) : String → String :=
   String.mapTokens '\'' <|
   fun s =>
-    fixAbbreviation <|
-    applyNameDict <|
+    fixAbbreviation g <|
+    applyNameDict g <|
     s.splitCase
 
-end ToAdditive
+end Mathlib.Tactic.GuessName
