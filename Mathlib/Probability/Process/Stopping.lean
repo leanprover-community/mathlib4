@@ -745,6 +745,10 @@ theorem stoppedValue_stoppedProcess :
   simp only [stoppedValue, stoppedProcess, ne_eq, ite_not]
   cases σ ω <;> cases τ ω <;> simp
 
+theorem stoppedValue_stoppedProcess_apply {ω : Ω} (hω : σ ω ≠ ⊤) :
+    stoppedValue (stoppedProcess u τ) σ ω = stoppedValue u (fun ω ↦ min (σ ω) (τ ω)) ω := by
+  simp only [stoppedValue_stoppedProcess, ne_eq, hω, not_false_eq_true, reduceIte]
+
 theorem stoppedValue_stoppedProcess_ae_eq {μ : Measure Ω}
     (hσ : ∀ᵐ ω ∂μ, σ ω ≠ ⊤) :
     stoppedValue (stoppedProcess u τ) σ =ᵐ[μ] stoppedValue u (fun ω ↦ min (σ ω) (τ ω)) := by
@@ -765,10 +769,6 @@ lemma stoppedProcess_indicator_comm' [Zero β] {s : Set Ω} :
     stoppedProcess (fun i ↦ s.indicator (u i)) τ = fun i ↦ s.indicator (stoppedProcess u τ i) := by
   ext i ω
   rw [stoppedProcess_indicator_comm]
-
-theorem stoppedValue_stoppedProcess_apply {ω : Ω} (hω : σ ω ≠ ⊤) :
-    stoppedValue (stoppedProcess u τ) σ ω = stoppedValue u (fun ω ↦ min (σ ω) (τ ω)) ω := by
-  simp only [stoppedValue_stoppedProcess, ne_eq, hω, not_false_eq_true, reduceIte]
 
 @[simp]
 theorem stoppedProcess_stoppedProcess :
