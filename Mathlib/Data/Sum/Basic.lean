@@ -248,7 +248,7 @@ theorem elim_injective {γ : Sort*} {f : α → γ} {g : β → γ} :
 
 @[simp]
 theorem map_injective {f : α → γ} {g : β → δ} :
-    Injective (Sum.map f g) ↔ Injective f ∧ Injective g  where
+    Injective (Sum.map f g) ↔ Injective f ∧ Injective g where
   mp h := ⟨.of_comp <| h.comp inl_injective, .of_comp <| h.comp inr_injective⟩
   mpr | ⟨hf, hg⟩ => hf.sumMap hg
 

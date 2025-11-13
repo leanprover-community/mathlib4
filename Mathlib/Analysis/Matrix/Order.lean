@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+import Mathlib.Analysis.Matrix.PosDef
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 import Mathlib.LinearAlgebra.Matrix.HermitianFunctionalCalculus
-import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-!
 # The partial order on matrices
@@ -227,6 +227,30 @@ theorem PosDef.commute_iff {A B : Matrix n n 𝕜} (hA : A.PosDef) (hB : B.PosDe
 @[deprecated IsStrictlyPositive.sqrt (since := "2025-09-26")]
 lemma PosDef.posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
     PosDef (CFC.sqrt M) := hM.isStrictlyPositive.sqrt.posDef
+
+section kronecker
+variable {m : Type*} [Fintype m]
+
+open scoped Kronecker
+
+/-- The kronecker product of two positive semi-definite matrices is positive semi-definite. -/
+theorem PosSemidef.kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
+    (hx : x.PosSemidef) (hy : y.PosSemidef) : (x ⊗ₖ y).PosSemidef := by
+  classical
+  obtain ⟨a, rfl⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp hx.nonneg
+  obtain ⟨b, rfl⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp hy.nonneg
+  simpa [mul_kronecker_mul, ← conjTranspose_kronecker, star_eq_conjTranspose] using
+    posSemidef_conjTranspose_mul_self _
+
+open Matrix in
+/-- The kronecker of two positive definite matrices is positive definite. -/
+theorem PosDef.kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
+    (hx : x.PosDef) (hy : y.PosDef) : (x ⊗ₖ y).PosDef := by
+  classical
+  exact hx.posSemidef.kronecker hy.posSemidef |>.posDef_iff_isUnit.mpr <|
+    hx.isUnit.kronecker hy.isUnit
+
+end kronecker
 
 /--
 A matrix is positive definite if and only if it has the form `Bᴴ * B` for some invertible `B`.

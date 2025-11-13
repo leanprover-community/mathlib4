@@ -193,12 +193,10 @@ def liftIoc (f : 𝕜 → B) : AddCircle p → B :=
 variable {p a}
 
 theorem equivIco_coe_eq {x : 𝕜} (hx : x ∈ Ico a (a + p)) : (equivIco p a) x = ⟨x, hx⟩ := by
-  rw [Equiv.apply_eq_iff_eq_symm_apply]
-  rfl
+  rw [Equiv.apply_eq_iff_eq_symm_apply, equivIco, QuotientAddGroup.equivIcoMod_symm_apply]
 
 theorem equivIoc_coe_eq {x : 𝕜} (hx : x ∈ Ioc a (a + p)) : (equivIoc p a) x = ⟨x, hx⟩ := by
-  rw [Equiv.apply_eq_iff_eq_symm_apply]
-  rfl
+  rw [Equiv.apply_eq_iff_eq_symm_apply, equivIoc, QuotientAddGroup.equivIocMod_symm_apply]
 
 theorem coe_eq_coe_iff_of_mem_Ico {x y : 𝕜} (hx : x ∈ Ico a (a + p)) (hy : y ∈ Ico a (a + p)) :
     (x : AddCircle p) = y ↔ x = y := by
@@ -535,9 +533,6 @@ theorem card_addOrderOf_eq_totient {n : ℕ} :
 theorem finite_setOf_addOrderOf_eq {n : ℕ} (hn : 0 < n) :
     {u : AddCircle p | addOrderOf u = n}.Finite :=
   finite_coe_iff.mp <| Nat.finite_of_card_ne_zero <| by simp [hn.ne']
-
-@[deprecated (since := "2025-03-26")]
-alias finite_setOf_add_order_eq := finite_setOf_addOrderOf_eq
 
 theorem finite_torsion {n : ℕ} (hn : 0 < n) :
     { u : AddCircle p | n • u = 0 }.Finite := by
