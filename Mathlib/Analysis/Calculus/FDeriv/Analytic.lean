@@ -604,7 +604,7 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
   simp_rw [domDomCongr_apply, compContinuousLinearMap_apply, ContinuousLinearMap.proj_apply,
     Function.update_apply, (Equiv.injective _).eq_iff, ite_apply]
   congr
-  grind [Function.update_self, Function.update_of_ne]
+  grind
 
 protected theorem hasStrictFDerivAt [DecidableEq ι] : HasStrictFDerivAt f (f.linearDeriv x) x := by
   rw [← changeOrigin_toFormalMultilinearSeries]

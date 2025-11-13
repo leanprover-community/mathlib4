@@ -62,7 +62,6 @@ lemma f_eq {i' : ι'} {i : ι} (hi : e.f i = i') :
     f φ i' = (K.restrictionXIso e hi).inv ≫ φ.f i ≫ (L.extendXIso e hi).inv := by
   have hi' : ∃ k, e.f k = i' := ⟨i, hi⟩
   have : hi'.choose = i := e.injective_f (by rw [hi'.choose_spec, hi])
-  dsimp [f]
   grind [f]
 
 @[reassoc (attr := simp)]
