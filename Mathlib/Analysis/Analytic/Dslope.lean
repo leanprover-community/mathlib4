@@ -30,17 +30,17 @@ variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] 
 lemma MeromorphicAt.slope {f : 𝕜 → E} {a c : 𝕜}
     (hf : MeromorphicAt f c) : MeromorphicAt (slope f a) c :=
   ((id c).sub (const a c)).inv.smul (hf.sub (const (f a) c)) 
- 
+
 lemma MeromorphicAt.dslope {f : 𝕜 → E} {a c : 𝕜}
     (hf : MeromorphicAt f c) : MeromorphicAt (dslope f a) c := by
   classical exact hf.slope.update a (deriv f a)
- 
+
 lemma ContinuousAt.dslope {f : 𝕜 → E} {a c : 𝕜}
     (hf : DifferentiableAt 𝕜 f c) : ContinuousAt (dslope f a) c := by
   by_cases h : c = a
-  · rwa [← h, continuousAt_dslope_same] 
-  · rw [continuousAt_dslope_of_ne h]; exact hf.continuousAt 
- 
+  · rwa [← h, continuousAt_dslope_same]
+  · rw [continuousAt_dslope_of_ne h]; exact hf.continuousAt
+
 theorem AnalyticAt.dslope {f : 𝕜 → E} {a c : 𝕜}
     (hf : AnalyticAt 𝕜 f c) : AnalyticAt 𝕜 (dslope f a) c :=
  (MeromorphicAt.dslope hf.meromorphicAt).analyticAt (ContinuousAt.dslope hf.differentiableAt)
@@ -48,4 +48,3 @@ theorem AnalyticAt.dslope {f : 𝕜 → E} {a c : 𝕜}
 theorem AnalyticOnNhd.dslope {f : 𝕜 → E} {s : Set 𝕜} {a : 𝕜}
     (hf : AnalyticOnNhd 𝕜 f s) : AnalyticOnNhd 𝕜 (dslope f a) s :=
   fun x hx => (hf x hx).dslope
-
