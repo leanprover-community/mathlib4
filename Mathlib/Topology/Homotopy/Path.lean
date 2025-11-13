@@ -315,6 +315,29 @@ def symm (P : Path.Homotopic.Quotient x₀ x₁) : Path.Homotopic.Quotient x₁ 
 theorem mk_symm (P : Path x₀ x₁) : mk P.symm = symm (mk P) :=
   rfl
 
+/-- Cast a path homotopy class using equalities of endpoints. -/
+def cast {x y : X} (γ : Homotopic.Quotient x y) {x' y'} (hx : x' = x) (hy : y' = y) :
+    Homotopic.Quotient x' y' :=
+  _root_.Quotient.map (fun p => p.cast hx hy)
+    (fun _ _ h => Nonempty.map (fun F => F.cast (by simp) (by simp)) h) γ
+
+@[simp, grind =]
+theorem mk_cast {x y : X} (P : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) :
+    mk (P.cast hx hy) = (mk P).cast hx hy :=
+  rfl
+
+@[simp, grind =]
+theorem cast_rfl_rfl {x y : X} (γ : Homotopic.Quotient x y) : γ.cast rfl rfl = γ := by
+  induction γ using Quotient.ind with | mk γ =>
+  rfl
+
+@[simp, grind =]
+theorem cast_cast {x y : X} (γ : Homotopic.Quotient x y) {x' y'} (hx : x' = x) (hy : y' = y)
+    {x'' y''} (hx' : x'' = x') (hy' : y'' = y') :
+    (γ.cast hx hy).cast hx' hy' = γ.cast (hx'.trans hx) (hy'.trans hy) := by
+  induction γ using Quotient.ind with | mk γ =>
+  rfl
+
 /-- The composition of path homotopy classes. This is `Path.trans` descended to the quotient. -/
 def trans (P₀ : Path.Homotopic.Quotient x₀ x₁) (P₁ : Path.Homotopic.Quotient x₁ x₂) :
     Path.Homotopic.Quotient x₀ x₂ :=
