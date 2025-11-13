@@ -196,7 +196,8 @@ def getCongrAppFnArgs (e : Expr) : Option (Name × Array Expr) :=
       some (`_Implies, #[d, b])
   | e => e.withApp fun f args => f.constName?.map (·, args)
 
-/-- If `e` is of the form `r a b`, return `(r, a, b)`. -/
+/-- If `e` is of the form `r a b`, return `(r, a, b)`.
+Note: we assume that `e` does not have an `Expr.mdata` annotation. -/
 def getRel (e : Expr) : Option (Name × Expr × Expr) :=
   match e with
   | .app (.app rel lhs) rhs => rel.getAppFn.constName?.map (·, lhs, rhs)
