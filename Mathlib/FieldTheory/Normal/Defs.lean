@@ -39,12 +39,14 @@ theorem Normal.isIntegral (_ : Normal F K) (x : K) : IsIntegral F x :=
 theorem Normal.splits (_ : Normal F K) (x : K) : Splits ((minpoly F x).map (algebraMap F K)) :=
   Normal.splits' x
 
-theorem normal_iff : Normal F K ↔ ∀ x : K, IsIntegral F x ∧ Splits ((minpoly F x).map (algebraMap F K)) :=
+theorem normal_iff :
+    Normal F K ↔ ∀ x : K, IsIntegral F x ∧ Splits ((minpoly F x).map (algebraMap F K)) :=
   ⟨fun h x => ⟨h.isIntegral x, h.splits x⟩, fun h =>
     { isAlgebraic := fun x => (h x).1.isAlgebraic
       splits' := fun x => (h x).2 }⟩
 
-theorem Normal.out : Normal F K → ∀ x : K, IsIntegral F x ∧ Splits ((minpoly F x).map (algebraMap F K)) :=
+theorem Normal.out :
+    Normal F K → ∀ x : K, IsIntegral F x ∧ Splits ((minpoly F x).map (algebraMap F K)) :=
   normal_iff.1
 
 variable (F K)

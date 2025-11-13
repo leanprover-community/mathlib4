@@ -274,7 +274,8 @@ theorem exists_algHom_of_adjoin_splits' (hS : adjoin L S = ⊤) :
   have ⟨φ, hφ⟩ := exists_algHom_adjoin_of_splits' f hK
   ⟨φ.comp (((equivOfEq hS).trans topEquiv).symm.toAlgHom.restrictScalars F), hφ⟩
 
-theorem exists_algHom_of_splits' (hK : ∀ s : E, IsIntegral L s ∧ ((minpoly L s).map f.toRingHom).Splits) :
+theorem exists_algHom_of_splits'
+    (hK : ∀ s : E, IsIntegral L s ∧ ((minpoly L s).map f.toRingHom).Splits) :
     ∃ φ : E →ₐ[F] K, φ.restrictDomain L = f :=
   exists_algHom_of_adjoin_splits' f (fun x _ ↦ hK x) (adjoin_univ L E)
 

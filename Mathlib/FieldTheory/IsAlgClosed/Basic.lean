@@ -294,7 +294,8 @@ instance IsAlgClosed.instIsAlgClosure (F : Type*) [Field F] [IsAlgClosed F] : Is
 
 theorem IsAlgClosure.of_splits {R K} [CommRing R] [IsDomain R] [Field K] [Algebra R K]
     [Algebra.IsIntegral R K] [NoZeroSMulDivisors R K]
-    (h : ∀ p : R[X], p.Monic → Irreducible p → (p.map (algebraMap R K)).Splits) : IsAlgClosure R K where
+    (h : ∀ p : R[X], p.Monic → Irreducible p → (p.map (algebraMap R K)).Splits) :
+    IsAlgClosure R K where
   isAlgebraic := inferInstance
   isAlgClosed := .of_exists_root _ fun _p _ p_irred ↦
     have ⟨g, monic, irred, dvd⟩ := p_irred.exists_dvd_monic_irreducible_of_isIntegral (K := R)

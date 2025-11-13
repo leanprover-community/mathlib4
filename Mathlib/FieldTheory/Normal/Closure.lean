@@ -204,8 +204,8 @@ open Cardinal in
   We construct an explicit injective function from an arbitrary `K →ₐ[F] L'` into `K →ₐ[F] L`,
   using an embedding of `normalClosure F K L'` into `L`. -/
 noncomputable def Algebra.IsAlgebraic.algHomEmbeddingOfSplits [Algebra.IsAlgebraic F K]
-    (h : ∀ x : K, ((minpoly F x).map (algebraMap F L)).Splits) (L' : Type*) [Field L'] [Algebra F L'] :
-    (K →ₐ[F] L') ↪ (K →ₐ[F] L) :=
+    (h : ∀ x : K, ((minpoly F x).map (algebraMap F L)).Splits) (L' : Type*) [Field L']
+    [Algebra F L'] : (K →ₐ[F] L') ↪ (K →ₐ[F] L) :=
   let φ : ↑(⨆ x : K, IntermediateField.adjoin F ((minpoly F x).rootSet L')) →ₐ[F] L :=
     Nonempty.some <| by
       rw [← gc.l_iSup]

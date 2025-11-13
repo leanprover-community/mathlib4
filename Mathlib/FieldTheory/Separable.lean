@@ -471,7 +471,8 @@ theorem nodup_aroots_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)
   rw [nodup_roots_iff_of_splits (map_ne_zero hf) h, separable_map]
 
 theorem card_rootSet_eq_natDegree_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)
-    (h : (f.map (algebraMap F K)).Splits) : Fintype.card (f.rootSet K) = f.natDegree ↔ f.Separable := by
+    (h : (f.map (algebraMap F K)).Splits) :
+    Fintype.card (f.rootSet K) = f.natDegree ↔ f.Separable := by
   classical
   simp_rw [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe, natDegree_eq_card_roots h,
     Multiset.toFinset_card_eq_card_iff_nodup, nodup_aroots_iff_of_splits hf h]
@@ -479,8 +480,8 @@ theorem card_rootSet_eq_natDegree_iff_of_splits [Algebra F K] {f : F[X]} (hf : f
 variable {i : F →+* K}
 
 theorem eq_X_sub_C_of_separable_of_root_eq {x : F} {h : F[X]} (h_sep : h.Separable)
-    (h_root : h.eval x = 0) (h_splits : Splits (h.map i)) (h_roots : ∀ y ∈ (h.map i).roots, y = i x) :
-    h = C (leadingCoeff h) * (X - C x) := by
+    (h_root : h.eval x = 0) (h_splits : Splits (h.map i))
+    (h_roots : ∀ y ∈ (h.map i).roots, y = i x) : h = C (leadingCoeff h) * (X - C x) := by
   have h_ne_zero : h ≠ 0 := by
     rintro rfl
     exact not_separable_zero h_sep
@@ -496,7 +497,8 @@ theorem eq_X_sub_C_of_separable_of_root_eq {x : F} {h : F[X]} (h_sep : h.Separab
       · exact nodup_roots (Separable.map h_sep)
     · exact h_roots
 
-theorem exists_finset_of_splits (i : F →+* K) {f : F[X]} (sep : Separable f) (sp : Splits (f.map i)) :
+theorem exists_finset_of_splits (i : F →+* K) {f : F[X]} (sep : Separable f)
+    (sp : Splits (f.map i)) :
     ∃ s : Finset K, f.map i = C (i f.leadingCoeff) * s.prod fun a : K => X - C a := by
   classical
   obtain ⟨s, h⟩ := (splits_iff_exists_multiset _).1 sp

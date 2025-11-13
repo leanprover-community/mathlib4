@@ -140,7 +140,8 @@ theorem mapRoots_bijective [h : Fact ((p.map (algebraMap F E)).Splits)] :
     exact ⟨⟨x, (@Multiset.mem_toFinset _ (Classical.decEq _) _ _).mpr hx1⟩, Subtype.ext hx2⟩
 
 /-- The bijection between `rootSet p p.SplittingField` and `rootSet p E`. -/
-def rootsEquivRoots [Fact ((p.map (algebraMap F E)).Splits)] : rootSet p p.SplittingField ≃ rootSet p E :=
+def rootsEquivRoots [Fact ((p.map (algebraMap F E)).Splits)] :
+    rootSet p p.SplittingField ≃ rootSet p E :=
   Equiv.ofBijective (mapRoots p E) (mapRoots_bijective p E)
 
 instance galActionAux : MulAction p.Gal (rootSet p p.SplittingField) where
@@ -187,8 +188,8 @@ variable (p E)
 def galActionHom [Fact ((p.map (algebraMap F E)).Splits)] : p.Gal →* Equiv.Perm (rootSet p E) :=
   MulAction.toPermHom _ _
 
-theorem galActionHom_restrict [Fact ((p.map (algebraMap F E)).Splits)] (ϕ : Gal(E/F)) (x : rootSet p E) :
-    ↑(galActionHom p E (restrict p E ϕ) x) = ϕ x :=
+theorem galActionHom_restrict [Fact ((p.map (algebraMap F E)).Splits)] (ϕ : Gal(E/F))
+    (x : rootSet p E) : ↑(galActionHom p E (restrict p E ϕ) x) = ϕ x :=
   restrict_smul ϕ x
 
 /-- `gal p` embeds as a subgroup of permutations of the roots of `p` in `E`. -/

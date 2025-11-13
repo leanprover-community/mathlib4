@@ -58,8 +58,8 @@ variable {k}
 
 /-- If a monic polynomial `f : k[X]` splits in `K`,
 then it has as many roots (counting multiplicity) as its degree. -/
-def finEquivRoots {K} [Field K] [DecidableEq K] {i : k →+* K} {f : Monics k} (hf : (f.1.map i).Splits) :
-    Fin f.1.natDegree ≃ (f.1.map i).roots.toEnumFinset :=
+def finEquivRoots {K} [Field K] [DecidableEq K] {i : k →+* K} {f : Monics k}
+    (hf : (f.1.map i).Splits) : Fin f.1.natDegree ≃ (f.1.map i).roots.toEnumFinset :=
   .symm <| Finset.equivFinOfCardEq <| by
     rwa [← splits_id_iff_splits, splits_iff_card_roots,
       ← Multiset.card_toEnumFinset, f.2.natDegree_map] at hf
