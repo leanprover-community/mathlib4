@@ -12,14 +12,24 @@ import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 # Irreducibility of quadratic polynomials
 
 * `MvPolynomial.sum_X_mul_Y n R` is the polynomial
-$\sum_{i=1}^n X_i Y_i$ of $R[X_1\dots,X_n,Y_1,\dots,Y_n]$.
-It is constructed as an object of `MvPolynomial (n ⊕ n) R`,
-where `n` is a finite type,
-the first component of `n ⊕ n` represents the `X` indeterminates,
-and the second component represents the `Y` indeterminates.
+  $\sum_{i=1}^n X_i Y_i$ of $R[X_1\dots,X_n,Y_1,\dots,Y_n]$.
+  It is constructed as an object of `MvPolynomial (n ⊕ n) R`,
+  where `n` is a finite type,
+  the first component of `n ⊕ n` represents the `X` indeterminates,
+  and the second component represents the `Y` indeterminates.
 
 * `MvPolynomial.irreducible_sum_X_mul_Y` : if `n` is nontrivial and `R` is a domain,
-then `MVPolynomial.quadratic n R` is irreducible.
+  then `MVPolynomial.quadratic n R` is irreducible.
+
+## TODO
+
+* Prove, over a field, that a polynomial of degree at most 2 whose quadratic
+  part has rank at least 3 is irreducible.
+
+* Cases of ranks 1 and 2 can be treated as well, but the answer depends
+  on the terms of degree 0 and 1.
+  Eg, $X^2-Y$ is irreducible, but $X^2$, $X^2-1$, $X^2-Y^2$, $X^2-Y$ are not.
+  And $X^2+Y^2$ is irreducible over the reals but not over the complex numbers.
 
 -/
 
