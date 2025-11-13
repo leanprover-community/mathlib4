@@ -133,10 +133,10 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
         newStr := newStr.push ch'
         pos := pos + ch
         if ch.utf8Size != ch'.utf8Size then
-          aligns := aligns.push (newStr.endPos, pos)
+          aligns := aligns.push (newStr.rawEndPos, pos)
       newStr := newStr.push ' '
       if stopWs.1 - stopTk.1 != 1 then
-        aligns := aligns.push (newStr.endPos, stopWs)
+        aligns := aligns.push (newStr.rawEndPos, stopWs)
     let ictx := mkInputContext newStr "<superscript>"
     let s' := p.run ictx c.toParserModuleContext c.tokens (mkParserState newStr)
     let rec /-- Applies the alignment mapping to a position. -/
@@ -216,7 +216,7 @@ def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p
   let st ← get
   let transformed : Except String _ := st.stack.mapM (·.mapStringsM fun s => do
     let some s := s.toList.mapM (m.toSpecial.insert ' ' ' ').get? | .error s
-    .ok s.asString)
+    .ok (String.ofList s))
   match transformed with
   | .error err =>
     -- TODO: this only appears if the caller explicitly calls the pretty-printer

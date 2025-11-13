@@ -67,7 +67,7 @@ register_option linter.unusedTactic : Bool := {
 namespace UnusedTactic
 
 /-- The monad for collecting the ranges of the syntaxes that do not modify any goal. -/
-abbrev M := StateRefT (Std.HashMap String.Range Syntax) IO
+abbrev M := StateRefT (Std.HashMap Lean.Syntax.Range Syntax) IO
 
 -- Tactics that are expected to not change the state but should also not be flagged by the
 -- unused tactic linter.
@@ -195,8 +195,8 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
     eraseUsedTacticsList exceptions trees
   let (_, map) ← go.run {}
   let unused := map.toArray
-  let key (r : String.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))
-  let mut last : String.Range := ⟨0, 0⟩
+  let key (r : Lean.Syntax.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))
+  let mut last : Lean.Syntax.Range := ⟨0, 0⟩
   for (r, stx) in let _ := @lexOrd; let _ := @ltOfOrd.{0}; unused.qsort (key ·.1 < key ·.1) do
     if stx.getKind ∈ [``Batteries.Tactic.unreachable, ``Batteries.Tactic.unreachableConv] then
       continue

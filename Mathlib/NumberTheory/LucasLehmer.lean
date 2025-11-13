@@ -700,7 +700,7 @@ lemma testTrueHelper (p : ℕ) (hp : Nat.blt 1 p = true) (h : sModNatTR (2 ^ p -
 lemma testFalseHelper (p : ℕ) (hp : Nat.blt 1 p = true)
     (h : Nat.ble 1 (sModNatTR (2 ^ p - 1) (p - 2))) : ¬ LucasLehmerTest p := by
   rw [Nat.blt_eq] at hp
-  rw [Nat.ble_eq, Nat.succ_le, Nat.pos_iff_ne_zero] at h
+  rw [Nat.ble_eq, Nat.succ_le_iff, Nat.pos_iff_ne_zero] at h
   rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp, ← sModNat_eq_sMod p _ hp,
     ← sModNatTR_eq_sModNat]
   simpa using h
