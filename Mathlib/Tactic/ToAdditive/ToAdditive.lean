@@ -375,7 +375,7 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("modularCharacter", "AddModularCharacter")]
 
 /-- The bundle of environment extensions for `to_additive` -/
-def toAdditiveBundle : TranslateData where
+def data : TranslateData where
   ignoreArgsAttr := ignoreArgsAttr
   reorderAttr := reorderAttr
   relevantArgAttr := relevantArgAttr
@@ -390,12 +390,12 @@ initialize registerBuiltinAttribute {
     name := `to_additive
     descr := "Transport multiplicative to additive"
     add := fun src stx kind ↦ discard do
-      addTranslationAttr toAdditiveBundle src (← elabTranslationAttr stx) kind
+      addTranslationAttr data src (← elabTranslationAttr stx) kind
     -- we (presumably) need to run after compilation to properly add the `simp` attribute
     applicationTime := .afterCompilation
   }
 
 elab "insert_to_additive_translation" src:ident tgt:ident : command => do
-  Command.liftCoreM <| insertTranslation toAdditiveBundle src.getId tgt.getId
+  Command.liftCoreM <| insertTranslation data src.getId tgt.getId
 
 end Mathlib.Tactic.ToAdditive

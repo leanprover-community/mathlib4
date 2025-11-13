@@ -177,7 +177,7 @@ def nameDict : Std.HashMap String (List String) := .ofList [
 def abbreviationDict : Std.HashMap String String := .ofList []
 
 /-- The bundle of environment extensions for `to_dual` -/
-def toDualBundle : TranslateData where
+def data : TranslateData where
   ignoreArgsAttr := ignoreArgsAttr
   reorderAttr := reorderAttr
   relevantArgAttr := relevantArgAttr
@@ -192,7 +192,7 @@ initialize registerBuiltinAttribute {
     name := `to_dual
     descr := "Transport to dual"
     add := fun src stx kind ↦ discard do
-      addTranslationAttr toDualBundle src (← elabTranslationAttr stx) kind
+      addTranslationAttr data src (← elabTranslationAttr stx) kind
     applicationTime := .afterCompilation
   }
 
