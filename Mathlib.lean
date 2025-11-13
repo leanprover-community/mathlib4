@@ -2969,6 +2969,7 @@ import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 import Mathlib.CategoryTheory.Triangulated.Opposite.Triangle
 import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 import Mathlib.CategoryTheory.Triangulated.Rotate
+import Mathlib.CategoryTheory.Triangulated.SpectralObject
 import Mathlib.CategoryTheory.Triangulated.Subcategory
 import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
