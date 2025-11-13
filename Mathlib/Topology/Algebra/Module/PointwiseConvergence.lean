@@ -61,6 +61,9 @@ notation:25 E " →Lₚₜ[" R "] " F => PointwiseConvergenceCLM (RingHom.id R) 
 
 namespace PointwiseConvergenceCLM
 
+instance [T2Space F] : T2Space (E →SLₚₜ[σ] F) :=
+  UniformConvergenceCLM.t2Space _ _ _ Set.sUnion_finite_eq_univ
+
 protected theorem hasBasis_nhds_zero_of_basis
     {ι : Type*} {p : ι → Prop} {b : ι → Set F} (h : (𝓝 0 : Filter F).HasBasis p b) :
     (𝓝 (0 : E →SLₚₜ[σ] F)).HasBasis (fun Si : Set E × ι => Finite Si.1 ∧ p Si.2)
