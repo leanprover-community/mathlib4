@@ -564,6 +564,7 @@ theorem subpathOn_zero_one {x y : X} (p : Path x y) (s t : unitInterval)
     (hs : s = 0) (ht : t = 1) :
     mk (p.subpathOn s t (by grind [zero_le_one])) =
       (mk p).cast (by grind) (by grind) := by
+  subst hs ht
   simp only [← mk_cast, eq]
   exact Path.subpathOn_zero_one p
 

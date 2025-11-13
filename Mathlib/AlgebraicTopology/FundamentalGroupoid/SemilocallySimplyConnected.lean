@@ -786,13 +786,6 @@ theorem Path.Homotopic.trans_congr' {x y y' z : X}
   exact ⟨Path.Homotopy.hcomp F G⟩
 
 -- rename
-theorem Path.Homotopic.move_cast
-    {x y x' y' : X} {p : Path x y} {q : Path x' y'} (h₀ : x' = x) (h₁ : y' = y)
-    (h : Path.Homotopic p (q.cast h₀.symm h₁.symm)) :
-    Path.Homotopic (p.cast h₀ h₁) q := by
-  sorry
-
--- rename
 theorem Path.Homotopic.of_eq {x y : X} {p q : Path x y} (h : p = q) :
     Path.Homotopic p q := by
   subst_vars
@@ -874,33 +867,9 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
   have h_base : Path.Homotopic (γ_aux 0)
       (((α 0).cast (show x = γ (part.t 0) by rw [part.h_start, γ.source])
                    (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])).trans γ') := by
-    -- I would really like to apply `Quotient.exact` here,
-    -- and work with equality rather than `Homotopic`,
-    -- so `simp` would then be able to do most of this work.
-    -- However the API for `Path.Homotopic.Quotient` has not been set up properly.
-    -- We need to define a `Path.Homotopic.Quotient.mk` which is the normal form.
-    -- Otherwise the simp lemma `_root_.Quotient.eq'` will unfold equalities back into relations.
     apply Path.Homotopic.Quotient.exact
     dsimp [γ_aux]
     simp
-    -- I think this simp lemma should go the other way: casts move inwards.
-    simp only [Path.cast_trans]
-    apply Homotopic.trans_congr' (by simp)
-    · apply Path.Homotopic.trans
-      · apply Homotopic.trans_congr
-        · -- TODO: define `Path.of_eq` with appropriate lemmas
-          apply Path.Homotopic.trans (p₁ := (Path.refl x).cast rfl (by simp))
-          · apply Path.Homotopic.move_cast
-            apply Path.Homotopic.trans (p₁ := Path.refl _)
-            · apply Path.subpathOn_self
-            · apply Path.Homotopic.of_eq
-              simp
-          · sorry
-        · apply Path.Homotopic.refl
-        · sorry
-      · sorry
-    · apply Path.Homotopic.move_cast
-      sorry
 
   -- Final case: γ_aux (Fin.last n) ≃ γ · α_n
   -- At i=n, γ|[0,1] is all of γ, and γ'|[1,1] is constant, so this simplifies to γ · α_n
@@ -908,7 +877,9 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
       (γ.trans ((α (Fin.last n)).cast
         (show y = γ (part.t (Fin.last n)) by rw [part.h_end, γ.target])
         (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target]))) := by
-    sorry
+    apply Path.Homotopic.Quotient.exact
+    dsimp [γ_aux]
+    simp
 
   -- Consecutive paths are homotopic: γ_aux i.succ ≃ γ_aux i.castSucc
   -- This follows from decomposing using subpathOn_trans and applying h_rectangles i
@@ -1388,5 +1359,3 @@ theorem Path.Homotopic.Quotient.discreteTopology
     exact Quotient.eq (r := Path.Homotopic.setoid x y)
 
 end SemilocallySimplyConnected
-
-set_option linter.style.longFile 1700
