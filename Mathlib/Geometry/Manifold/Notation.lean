@@ -945,9 +945,10 @@ def findModelForFunprop22 (g : MVarId) : MetaM Unit := do
   | _ => throwError "Goal is not of the form `ModelWithCorners 𝕜 E H"
 
 elab (name := findModelTac) "find_model" : tactic => withMainContext do
-  liftMetaFinishingTactic findModelForFunprop22
-
--- I'd like a #find_model command which tries to synthesise such a goal, and fails otherwise
+  withMainContext do
+    findModelForFunprop22 ((← getMainGoal))
+    replaceMainGoal []
+    pure ()
 
 open Command in
 def findModelCmd (goal : TSyntax `term) : CommandElabM Unit := do
@@ -960,6 +961,7 @@ def findModelCmd (goal : TSyntax `term) : CommandElabM Unit := do
       -- TODO: how to surface error messages from the inner loop here?
       findModelForFunprop22 mi
 
+-- I'd like a #find_model command which tries to synthesise such a goal, and fails otherwise
 -- XXX: inline `findModelCmd` later, once everything is cleaned up?
 elab (name := findModelCommand) "#find_model " goal:term : command => do findModelCmd goal
 
