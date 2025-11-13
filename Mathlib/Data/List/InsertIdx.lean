@@ -67,9 +67,8 @@ theorem insertIdx_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} {
     (hl : ∀ x ∈ l, p x) (ha : p a) :
     (l.pmap f hl).insertIdx n (f a ha) = (l.insertIdx n a).pmap f
       (fun _ h ↦ (eq_or_mem_of_mem_insertIdx h).elim (fun heq ↦ heq ▸ ha) (hl _)) := by
-  induction n generalizing l with
-  | zero => cases l <;> simp
-  | succ n ihn => cases l <;> simp_all
+  ext
+  grind
 
 theorem map_insertIdx (f : α → β) (l : List α) (n : ℕ) (a : α) :
     (l.insertIdx n a).map f = (l.map f).insertIdx n (f a) := by
