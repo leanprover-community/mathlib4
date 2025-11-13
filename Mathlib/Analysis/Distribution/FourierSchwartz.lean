@@ -84,10 +84,10 @@ def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
 instance instFourierTransform : FourierTransform 𝓢(V, E) 𝓢(V, E) where
   fourierTransform f := fourierTransformCLM ℂ f
 
-theorem fourierTransform_apply (f : 𝓢(V, E)) (x : V) : 𝓕 f x = 𝓕 (f : V → E) x := rfl
+lemma fourier_coe (f : 𝓢(V, E)) : 𝓕 f = 𝓕 (f : V → E) := rfl
 
 instance instFourierModule : FourierModule 𝕜 𝓢(V, E) 𝓢(V, E) where
-  fourier_add := (fourierTransformCLM 𝕜).map_add
+  fourier_add := ContinuousLinearMap.map_add _
   fourier_smul := (fourierTransformCLM 𝕜).map_smul
 
 @[simp]
@@ -95,16 +95,18 @@ theorem fourierTransformCLM_apply (f : 𝓢(V, E)) :
     fourierTransformCLM 𝕜 f = 𝓕 f := rfl
 
 instance instFourierTransformInv : FourierTransformInv 𝓢(V, E) 𝓢(V, E) where
-  fourierTransformInv := (compCLMOfContinuousLinearEquiv 𝕜 (LinearIsometryEquiv.neg ℝ (E := V)))
-      ∘L (fourierTransformCLM 𝕜)
+  fourierTransformInv := (compCLMOfContinuousLinearEquiv ℂ (LinearIsometryEquiv.neg ℝ (E := V)))
+      ∘L (fourierTransformCLM ℂ)
 
-lemma fourierTransformInv_apply (f : 𝓢(V, E)) (x : V) :
-    𝓕⁻ f x = 𝓕⁻ (f : V → E) x :=
-  (fourierIntegralInv_eq_fourierIntegral_neg f x).symm
+lemma fourierInv_coe (f : 𝓢(V, E)) :
+    𝓕⁻ f = 𝓕⁻ (f : V → E) := by
+  ext x
+  exact (fourierIntegralInv_eq_fourierIntegral_neg f x).symm
 
 instance instFourierInvModule : FourierInvModule 𝕜 𝓢(V, E) 𝓢(V, E) where
   fourierInv_add := ContinuousLinearMap.map_add _
-  fourierInv_smul := ContinuousLinearMap.map_smul _
+  fourierInv_smul := ((compCLMOfContinuousLinearEquiv 𝕜 (D := V) (E := V) (F := E)
+    (LinearIsometryEquiv.neg ℝ (E := V))) ∘L (fourierTransformCLM 𝕜)).map_smul
 
 variable [CompleteSpace E]
 
@@ -123,6 +125,12 @@ instance instFourierInvPair : FourierInvPair 𝓢(V, E) 𝓢(V, E) where
     change 𝓕 ((fun x ↦ (𝓕 (f : V → E)) (-x)) : V → E) x = f x
     simp_rw [← fourierIntegralInv_eq_fourierIntegral_neg, Continuous.fourier_inversion_inv
       f.continuous f.integrable (fourierTransformCLM 𝕜 f).integrable]
+
+@[deprecated (since := "2025-11-13")]
+alias fourier_inversion := FourierTransform.inv_fourier
+
+@[deprecated (since := "2025-11-13")]
+alias fourier_inversion_inv := FourierTransform.fourier_inv
 
 /-- The Fourier transform on a real inner product space, as a continuous linear equiv on the
 Schwartz space. -/
@@ -161,8 +169,7 @@ theorem integral_sesq_fourierIntegral_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : 
     (L := (innerₗ V)) continuous_fourierChar continuous_inner f.integrable g.integrable
   rw [flip_innerₗ] at this
   convert this
-  ext
-  apply fourierTransformInv_apply
+  apply fourierInv_coe
 
 /-- Plancherel's theorem for Schwartz functions.
 
@@ -196,9 +203,15 @@ theorem inner_fourier_toL2_eq (f : 𝓢(V, H)) :
   simp only [inner_toL2_toL2_eq]
   exact integral_sesq_fourier_fourier f f (innerSL ℂ)
 
+@[deprecated (since := "2025-11-13")]
+alias inner_fourierTransformCLM_toL2_eq := inner_fourier_toL2_eq
+
 theorem norm_fourier_toL2_eq (f : 𝓢(V, H)) :
     ‖(𝓕 f).toLp 2‖ = ‖f.toLp 2‖ := by
   simp_rw [norm_eq_sqrt_re_inner (𝕜 := ℂ), inner_fourier_toL2_eq]
+
+@[deprecated (since := "2025-11-13")]
+alias norm_fourierTransformCLM_toL2_eq := norm_fourier_toL2_eq
 
 end L2
 
