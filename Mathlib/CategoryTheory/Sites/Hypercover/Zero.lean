@@ -100,8 +100,8 @@ lemma presieve₀_pullback₁ (f : S ⟶ T) (E : PreZeroHypercover.{w} T) [∀ i
 
 /-- If `{Uᵢ}` covers `X`, this is the pre-`0`-hypercover of `X ×[Z] Y` given by `{Uᵢ ×[Z] Y}`. -/
 @[simps]
-noncomputable def pullbackCoverOfLeft {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
-    (E : PreZeroHypercover X) [∀ i, HasPullback (E.f i ≫ f) g] :
+noncomputable def pullbackCoverOfLeft {X : C} (E : PreZeroHypercover X) {Y Z : C}
+    (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] [∀ i, HasPullback (E.f i ≫ f) g] :
     PreZeroHypercover (pullback f g) where
   I₀ := E.I₀
   X i := pullback (E.f i ≫ f) g
@@ -109,8 +109,8 @@ noncomputable def pullbackCoverOfLeft {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [H
 
 /-- If `{Uᵢ}` covers `Y`, this is the pre-`0`-hypercover of `X ×[Z] Y` given by `{X ×[Z] Uᵢ}`. -/
 @[simps]
-noncomputable def pullbackCoverOfRight {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
-    (E : PreZeroHypercover.{w} Y) [∀ i, HasPullback f (E.f i ≫ g)] :
+noncomputable def pullbackCoverOfRight {Y : C} (E : PreZeroHypercover.{w} Y) {X Z : C}
+    (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] [∀ i, HasPullback f (E.f i ≫ g)] :
     PreZeroHypercover.{w} (pullback f g) where
   I₀ := E.I₀
   X i := pullback f (E.f i ≫ g)
@@ -410,6 +410,32 @@ def interLift (f : G.Hom E) (g : G.Hom F) :
 
 end
 
+/-- If `{Uᵢ}` covers `X`, the pre-`0`-hypercover `{Uᵢ ×[Z] Y}` of `X ×[Z] Y` is isomorphic
+to the pullback of `{Uᵢ}` along the first projection. -/
+noncomputable
+def pullbackCoverOfLeftIsoPullback₁ {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
+    (E : PreZeroHypercover X) [∀ i, HasPullback (pullback.fst f g) (E.f i)]
+    [∀ i, HasPullback (E.f i) (pullback.fst f g)] :
+    E.pullbackCoverOfLeft f g ≅ pullback₁ (pullback.fst f g) E := by
+  refine PreZeroHypercover.isoMk (.refl _) ?_ ?_
+  · intro i
+    exact (pullbackRightPullbackFstIso _ _ _).symm ≪≫ pullbackSymmetry _ _
+  · intro i
+    apply pullback.hom_ext <;> simp
+
+/-- If `{Uᵢ}` covers `Y`, the pre-`0`-hypercover `{X ×[Z] Uᵢ}` of `X ×[Z] Y` is isomorphic
+to the pullback of `{Uᵢ}` along the second projection. -/
+noncomputable
+def pullbackCoverOfRightIsoPullback₂ {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
+    (E : PreZeroHypercover Y) [∀ (i : E.I₀), HasPullback (E.f i) (pullback.snd f g)]
+    [∀ i, HasPullback (pullback.snd f g) (E.f i)] :
+    E.pullbackCoverOfRight f g ≅ pullback₂ (pullback.snd f g) E := by
+  refine PreZeroHypercover.isoMk (.refl _) ?_ ?_
+  · intro i
+    exact (pullbackLeftPullbackSndIso _ _ _).symm ≪≫ (pullbackSymmetry _ _).symm
+  · intro i
+    apply pullback.hom_ext <;> simp [pullback.condition]
+
 end PreZeroHypercover
 
 /-- The pre-`0`-hypercover associated to a presieve `R`. It is indexed by the morphisms in `R`. -/
@@ -504,9 +530,7 @@ lemma Precoverage.RespectsIso.of_forall_exists_iso [J.RespectsIso] {S : C} {R T 
     · match i with
       | .inl i => dsimp [E, F]; symm; exact eR _ _
       | .inr i => dsimp [E, F]; apply eT
-    · match i with
-      | .inl i => simp [E, F]
-      | .inr i => simp [E, F]
+    · cases i <;> simp [E, F]
   have hER : E.presieve₀ = R := by
     refine le_antisymm ?_ fun Y g hg ↦ .mk (Sum.inl (⟨⟨Y, g⟩, hg⟩ : R.uncurry))
     rintro - - ⟨i⟩
@@ -784,14 +808,8 @@ noncomputable def pullbackCoverOfLeft (E : J.ZeroHypercover X) (f : X ⟶ Z) (g 
     [HasPullback f g] [∀ i, HasPullback (E.f i) (pullback.fst f g)] :
     J.ZeroHypercover (pullback f g) where
   __ := E.toPreZeroHypercover.pullbackCoverOfLeft f g
-  mem₀ := by
-    apply (E.pullback₁ (pullback.fst f g)).presieve₀_mem_of_iso
-    · refine PreZeroHypercover.isoMk ?_ ?_ ?_
-      · exact Equiv.refl _
-      · intro i
-        exact pullbackSymmetry _ _ ≪≫ pullbackRightPullbackFstIso _ _ _
-      · intro i
-        apply pullback.hom_ext <;> simp [pullback.condition]
+  mem₀ := (E.pullback₁ (pullback.fst f g)).presieve₀_mem_of_iso
+    (E.pullbackCoverOfLeftIsoPullback₁ _ _).symm
 
 /-- If `{Uᵢ}` covers `Y`, this is the `0`-hypercover of `X ×[Z] Y` given by `{X ×[Z] Uᵢ}`. -/
 @[simps toPreZeroHypercover]
@@ -799,14 +817,8 @@ noncomputable def pullbackCoverOfRight (E : J.ZeroHypercover Y) (f : X ⟶ Z) (g
     [HasPullback f g] [∀ i, HasPullback (E.f i) (pullback.snd f g)] :
     J.ZeroHypercover (pullback f g) where
   __ := E.toPreZeroHypercover.pullbackCoverOfRight f g
-  mem₀ := by
-    apply (E.pullback₂ (pullback.snd f g)).presieve₀_mem_of_iso
-    · refine PreZeroHypercover.isoMk ?_ ?_ ?_
-      · exact Equiv.refl _
-      · intro i
-        exact pullbackSymmetry _ _ ≪≫ pullbackLeftPullbackSndIso _ _ _
-      · intro i
-        apply pullback.hom_ext <;> simp [pullback.condition]
+  mem₀ := (E.pullback₂ (pullback.snd f g)).presieve₀_mem_of_iso
+    (E.pullbackCoverOfRightIsoPullback₂ _ _).symm
 
 end ZeroHypercover
 
