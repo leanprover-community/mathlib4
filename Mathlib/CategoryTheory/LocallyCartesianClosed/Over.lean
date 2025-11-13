@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
 import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
-import Mathlib.CategoryTheory.Monoidal.Functor
 
 /-!
 # Cartesian monoidal structure on slices induced by chosen pullbacks
@@ -34,15 +33,22 @@ import Mathlib.CategoryTheory.Monoidal.Functor
   `Over (Over.mk f) ⥤ Over Y`. Note that the functor `toOver (Over.mk f)` exists by the result
   `cartesianMonoidalCategoryOver`.
 
+### TODO
+
+- Show that the functors `pullback f` are monoidal with respect to
+  the cartesian monoidal structures on slices.
+
 -/
 
 universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Category CartesianMonoidalCategory MonoidalCategory
+open Category
 
 namespace ChosenPullbacksAlong
+
+open CartesianMonoidalCategory MonoidalCategory
 
 variable {C : Type u₁} [Category.{v₁} C]
 
@@ -101,7 +107,7 @@ instance cartesianMonoidalCategoryOver [ChosenPullbacks C] (X : C) :
       fun Y m ↦ Over.OverMorphism.ext (by simpa using m.w)⟩
     (fun Y Z ↦ ⟨ _ , binaryFanIsBinaryProduct Y Z⟩)
 
-section
+namespace Over
 
 open MonoidalCategory
 
@@ -116,21 +122,102 @@ lemma tensorObj_ext {A : C} {Y Z : Over X} (f₁ f₂ : A ⟶ (Y ⊗ Z).left)
 @[simp]
 lemma tensorObj_left (Y Z : Over X) : (Y ⊗ Z).left = pullbackObj Y.hom Z.hom := rfl
 
-@[simp]
+-- @[simp]
 lemma tensorObj_hom (Y Z : Over X) : (Y ⊗ Z).hom = snd Y.hom Z.hom ≫ Z.hom := rfl
 
 @[simp]
 lemma tensorUnit_left : (𝟙_ (Over X)).left = X := rfl
 
-@[simp]
+--@[simp]
 lemma tensorUnit_hom : (𝟙_ (Over X)).hom = 𝟙 X := rfl
+
+lemma fst_eq_fst' {Y Z : Over X} :
+    CartesianMonoidalCategory.fst Y Z = fst' Y.hom Z.hom :=
+  rfl
+
+lemma snd_eq_snd' {Y Z : Over X} :
+    CartesianMonoidalCategory.snd Y Z = snd' Y.hom Z.hom :=
+  rfl
 
 @[simp]
 lemma lift_left {W Y Z : Over X} (f : W ⟶ Y) (g : W ⟶ Z) :
-    (CartesianMonoidalCategory.lift f g).left = lift f.left g.left (f.w.trans g.w.symm) := rfl
+    (CartesianMonoidalCategory.lift f g).left = lift f.left g.left := rfl
 
 @[simp]
 lemma toUnit_left {Z : Over X} : (toUnit Z).left = Z.hom := rfl
+
+lemma associator_hom_fst' (R S T : Over X) :
+    (α_ R S T).hom ≫ fst' R.hom (S ⊗ T).hom = fst' (R ⊗ S).hom T.hom ≫ fst' R.hom S.hom :=
+  associator_hom_fst _ _ _
+
+@[reassoc (attr := simp)]
+lemma associator_hom_left_fst (R S T : Over X) :
+    (α_ R S T).hom.left ≫ fst R.hom (S ⊗ T).hom = fst (R ⊗ S).hom T.hom ≫ fst R.hom S.hom := by
+  simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (associator_hom_fst' R S T)
+
+@[reassoc (attr := simp)]
+lemma associator_hom_snd'_fst' (R S T : Over X) :
+    (α_ R S T).hom ≫ snd' R.hom (S ⊗ T).hom ≫ fst' S.hom T.hom =
+      fst' (R ⊗ S).hom T.hom ≫ snd' R.hom S.hom :=
+  associator_hom_snd_fst _ _ _
+
+@[reassoc (attr := simp)]
+lemma associator_hom_left_snd_fst (R S T : Over X) :
+    (α_ R S T).hom.left ≫ snd R.hom (S ⊗ T).hom ≫ fst S.hom T.hom =
+      fst (R ⊗ S).hom T.hom ≫ snd R.hom S.hom := by
+  simpa only using congr_arg CommaMorphism.left (associator_hom_snd'_fst' R S T)
+
+@[reassoc (attr := simp)]
+lemma associator_hom_snd'_snd' (R S T : Over X) :
+    (α_ R S T).hom ≫ snd' R.hom (S ⊗ T).hom ≫ snd' S.hom T.hom =
+      snd' (R ⊗ S).hom T.hom :=
+  associator_hom_snd_snd _ _ _
+
+@[reassoc (attr := simp)]
+lemma associator_hom_left_snd_snd (R S T : Over X) :
+    (α_ R S T).hom.left ≫ snd R.hom (S ⊗ T).hom ≫ snd S.hom T.hom =
+      snd (R ⊗ S).hom T.hom := by
+  simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (associator_hom_snd'_snd' R S T)
+
+@[reassoc (attr := simp)]
+lemma associator_inv_fst'_fst' (R S T : Over X) :
+    (α_ R S T).inv ≫ fst' (R ⊗ S).hom T.hom ≫ fst' R.hom S.hom =
+      fst' R.hom (S ⊗ T).hom :=
+  associator_inv_fst_fst _ _ _
+
+@[reassoc (attr := simp)]
+lemma associator_inv_left_fst_fst (R S T : Over X) :
+    (α_ R S T).inv.left ≫ fst (R ⊗ S).hom T.hom ≫ fst R.hom S.hom = fst R.hom (S ⊗ T).hom := by
+  simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (associator_inv_fst'_fst' R S T)
+
+@[reassoc (attr := simp)]
+lemma associator_inv_fst'_snd' (R S T : Over X) :
+    (α_ R S T).inv ≫ fst' (R ⊗ S).hom T.hom ≫ snd' R.hom S.hom =
+      snd' R.hom (S ⊗ T).hom ≫ fst' S.hom T.hom :=
+  associator_inv_fst_snd _ _ _
+
+@[reassoc (attr := simp)]
+lemma associator_inv_left_fst_snd (R S T : Over X) :
+    (α_ R S T).inv.left ≫ fst (R ⊗ S).hom T.hom ≫ snd R.hom S.hom =
+      snd R.hom (S ⊗ T).hom ≫ fst S.hom T.hom := by
+  simpa only [snd_eq_snd', fst_eq_fst']
+    using congr_arg CommaMorphism.left (associator_inv_fst'_snd' R S T)
+
+@[reassoc (attr := simp)]
+lemma associator_inv_snd' (R S T : Over X) :
+    (α_ R S T).inv ≫ snd' (R ⊗ S).hom T.hom =
+      snd' R.hom (S ⊗ T).hom ≫ snd' S.hom T.hom :=
+  associator_inv_snd _ _ _
+
+@[reassoc (attr := simp)]
+lemma associator_inv_left_snd (R S T : Over X) :
+    (α_ R S T).inv.left ≫ snd (R ⊗ S).hom T.hom =
+      snd R.hom (S ⊗ T).hom ≫ snd S.hom T.hom := by
+  simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (associator_inv_snd' R S T)
+
+@[simp]
+lemma leftUnitor_hom (Z : Over X) :
+    (λ_ Z).hom = snd' _ Z.hom := rfl
 
 @[simp]
 lemma leftUnitor_hom_left (Z : Over X) :
@@ -156,81 +243,115 @@ lemma leftUnitor_inv_left_snd (Y : Over X) :
     (λ_ Y).inv.left ≫ snd (𝟙 X) Y.hom = 𝟙 Y.left := by
   simpa only [Over.homMk_left] using congr_arg CommaMorphism.left (leftUnitor_inv_left_snd' Y)
 
-@[reassoc (attr := simp)]
-lemma rightUnitor_hom_left_fst (Y : Over X) :
-    (ρ_ Y).hom.left ≫ pullback.fst _ (𝟙 X) = pullback.fst _ (𝟙 X) := by
-  simpa only [Over.homMk_left] using congr_arg CommaMorphism.left (rightUnitor_hom_left_fst' Y)
+lemma rightUnitor_hom (Y : Over X) :
+    (ρ_ Y).hom = fst' _ (𝟙 X) := rfl
 
 @[simp]
 lemma rightUnitor_hom_left (Y : Over X) :
-    (ρ_ Y).hom.left = pullback.fst _ (𝟙 X) := rfl
+    (ρ_ Y).hom.left = fst _ (𝟙 X) := rfl
+
+@[reassoc (attr := simp)]
+lemma rightUnitor_inv_fst' (Y : Over X) :
+    (ρ_ Y).inv ≫ fst' Y.hom (𝟙 X) = Over.homMk (𝟙 Y.left) :=
+  rightUnitor_inv_fst _
 
 @[reassoc (attr := simp)]
 lemma rightUnitor_inv_left_fst (Y : Over X) :
-    (ρ_ Y).inv.left ≫ pullback.fst _ (𝟙 X) = 𝟙 _ :=
-  limit.lift_π _ _
+    (ρ_ Y).inv.left ≫ fst Y.hom (𝟙 X) = 𝟙 Y.left := by
+  simpa only [Over.homMk_left] using congr_arg CommaMorphism.left (rightUnitor_inv_fst' Y)
+
+@[reassoc (attr := simp)]
+lemma rightUnitor_inv_snd' (Y : Over X) :
+    (ρ_ Y).inv ≫ snd' Y.hom (𝟙 X) = Over.homMk Y.hom :=
+  rightUnitor_inv_snd _
 
 @[reassoc (attr := simp)]
 lemma rightUnitor_inv_left_snd (Y : Over X) :
-    (ρ_ Y).inv.left ≫ pullback.snd _ (𝟙 X) = Y.hom :=
-  limit.lift_π _ _
+    (ρ_ Y).inv.left ≫ snd Y.hom (𝟙 X) = Y.hom := by
+  simpa only [Over.homMk_left] using congr_arg CommaMorphism.left (rightUnitor_inv_snd' Y)
 
 lemma whiskerLeft_left {R S T : Over X} (f : S ⟶ T) :
-    (R ◁ f).left = pullback.map _ _ _ _ (𝟙 _) f.left (𝟙 _) (by simp) (by simp) := rfl
+    (R ◁ f).left = pullbackMap R.hom T.hom R.hom S.hom (𝟙 _) f.left (𝟙 _) := by
+  simp only [pullbackMap]
+  rfl
+
+@[reassoc (attr := simp)]
+lemma whiskerLeft_fst' (R : Over X) {S T : Over X} (f : S ⟶ T) :
+    (R ◁ f) ≫ fst' R.hom T.hom = fst' R.hom S.hom :=
+  whiskerLeft_fst _ _
 
 @[reassoc (attr := simp)]
 lemma whiskerLeft_left_fst {R S T : Over X} (f : S ⟶ T) :
-    (R ◁ f).left ≫ pullback.fst _ _ = pullback.fst _ _ :=
-  (limit.lift_π _ _).trans (Category.comp_id _)
+    (R ◁ f).left ≫ fst R.hom T.hom = fst R.hom S.hom := by
+  simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (whiskerLeft_fst' R f)
+
+@[reassoc (attr := simp)]
+lemma whiskerLeft_snd' (R : Over X) {S T : Over X} (f : S ⟶ T) :
+    (R ◁ f) ≫ snd' R.hom T.hom = snd' R.hom S.hom ≫ f :=
+  whiskerLeft_snd _ _
 
 @[reassoc (attr := simp)]
 lemma whiskerLeft_left_snd {R S T : Over X} (f : S ⟶ T) :
-    (R ◁ f).left ≫ pullback.snd _ _ = pullback.snd _ _ ≫ f.left :=
-  limit.lift_π _ _
+    (R ◁ f).left ≫ snd R.hom T.hom = snd R.hom S.hom ≫ f.left := by
+  simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (whiskerLeft_snd' R f)
 
 lemma whiskerRight_left {R S T : Over X} (f : S ⟶ T) :
-    (f ▷ R).left = pullback.map _ _ _ _ f.left (𝟙 _) (𝟙 _) (by simp) (by simp) := rfl
+    (f ▷ R).left = pullbackMap T.hom R.hom S.hom R.hom f.left (𝟙 _) (𝟙 _) := by
+  simp only [pullbackMap]
+  rfl
+
+@[reassoc (attr := simp)]
+lemma whiskerRight_fst' {S T : Over X} (f : S ⟶ T) (R : Over X) :
+    (f ▷ R) ≫ fst' T.hom R.hom = fst' S.hom R.hom ≫ f :=
+  whiskerRight_fst _ _
 
 @[reassoc (attr := simp)]
 lemma whiskerRight_left_fst {R S T : Over X} (f : S ⟶ T) :
-    (f ▷ R).left ≫ pullback.fst _ _ = pullback.fst _ _ ≫ f.left :=
-  limit.lift_π _ _
+    (f ▷ R).left ≫ fst T.hom R.hom = fst S.hom R.hom ≫ f.left := by
+  simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (whiskerRight_fst' f R)
+
+@[reassoc (attr := simp)]
+lemma whiskerRight_snd' {S T : Over X} (f : S ⟶ T) (R : Over X) :
+    (f ▷ R) ≫ snd' T.hom R.hom = snd' S.hom R.hom :=
+  whiskerRight_snd _ _
 
 @[reassoc (attr := simp)]
 lemma whiskerRight_left_snd {R S T : Over X} (f : S ⟶ T) :
-    (f ▷ R).left ≫ pullback.snd _ _ = pullback.snd _ _ :=
-  (limit.lift_π _ _).trans (Category.comp_id _)
+    (f ▷ R).left ≫ snd T.hom R.hom = snd S.hom R.hom := by
+  simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (whiskerRight_snd' f R)
 
 lemma tensorHom_left {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
-    (f ⊗ₘ g).left = pullback.map _ _ _ _ f.left g.left (𝟙 _) (by simp) (by simp) := rfl
+    (f ⊗ₘ g).left = pullbackMap S.hom U.hom R.hom T.hom f.left g.left (𝟙 _) := by
+  simp only [pullbackMap]
+  rfl
 
 @[reassoc (attr := simp)]
-lemma tensorHom_left_fst {S U : C} {R T : Over X} (fS : S ⟶ X) (fU : U ⟶ X)
-    (f : R ⟶ mk fS) (g : T ⟶ mk fU) :
-    (f ⊗ₘ g).left ≫ pullback.fst fS fU = pullback.fst R.hom T.hom ≫ f.left :=
-  limit.lift_π _ _
+lemma tensorHom_fst' {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
+    (f ⊗ₘ g) ≫ fst' S.hom U.hom = fst' R.hom T.hom ≫ f :=
+  tensorHom_fst _ _
 
 @[reassoc (attr := simp)]
-lemma tensorHom_left_snd {S U : C} {R T : Over X} (fS : S ⟶ X) (fU : U ⟶ X)
-    (f : R ⟶ mk fS) (g : T ⟶ mk fU) :
-    (f ⊗ₘ g).left ≫ pullback.snd fS fU = pullback.snd R.hom T.hom ≫ g.left :=
-  limit.lift_π _ _
+lemma tensorHom_left_fst {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
+    (f ⊗ₘ g).left ≫ fst S.hom U.hom = fst R.hom T.hom ≫ f.left := by
+  simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (tensorHom_fst' f g)
 
-@[simp]
-lemma braiding_hom_left {R S : Over X} :
-    (β_ R S).hom.left = (pullbackSymmetry _ _).hom := rfl
+@[reassoc (attr := simp)]
+lemma tensorHom_snd' {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
+    (f ⊗ₘ g) ≫ snd' S.hom U.hom = snd' R.hom T.hom ≫ g :=
+  tensorHom_snd _ _
 
-@[simp]
-lemma braiding_inv_left {R S : Over X} :
-    (β_ R S).inv.left = (pullbackSymmetry _ _).hom := rfl
+@[reassoc (attr := simp)]
+lemma tensorHom_left_snd {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
+    (f ⊗ₘ g).left ≫ snd S.hom U.hom = snd R.hom T.hom ≫ g.left := by
+  simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (tensorHom_snd' f g)
 
-end
+end Over
 
 end ChosenPullbacksAlong
 
 section ToOver
 
-open ChosenPullbacksAlong
+open ChosenPullbacksAlong CartesianMonoidalCategory MonoidalCategory
 
 variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory C]
 
@@ -301,63 +422,6 @@ def toOverIteratedSliceForwardIsoPullback [ChosenPullbacks C] {X Y : C} (f : Y �
   conjugateIsoEquiv ((Over.mk f).iteratedSliceEquiv.symm.toAdjunction.comp (forgetAdjToOver _))
   (mapPullbackAdj f) (eqToIso (Over.iteratedSliceBackward_forget (Over.mk f)))
 
-section
-
-open ChosenPullbacksAlong
-
-variable {X : C} {Y : C}
-
-example : pullbackObj (toUnit X) (toUnit Y) = X ⊗ Y := by rfl
-
-example : snd (toUnit X) (toUnit Y) = CartesianMonoidalCategory.snd X Y := rfl
-
-example : (toOver Y).obj X = Over.mk (snd (toUnit X) (toUnit Y)) := by rfl
-
-example : snd X Y = ((toOver Y).obj X).hom := by rfl
-
-end
-
 end ToOver
-
-section MonoidalFunctor
-
-open ChosenPullbacksAlong
-
-variable {C : Type u₁} [Category.{v₁} C] [ChosenPullbacks C]
-
-#check Over.pullbackId
-
-def ChosenPullbacksAlong.ofId {X Y : C} (f : Y ⟶ X)  : (pullback f).obj (𝟙_ _)≅ (𝟙_ _) := by
-  let l := (mapPullbackAdj f).homEquiv (𝟙_ _) (𝟙_ _) (Over.homMk f (by simp [Over.id_hom] ))
-
-
-
-
-/-- The pullback functors `Over X ⥤ Over Y` are monoidal functors. -/
-def monoidal {X Y : C} (f : Y ⟶ X) : (pullback f).Monoidal where
-  ε := _--(Iso.refl _).hom
-  μ := _
-  μ_natural_left := _
-  μ_natural_right := _
-  associativity := _
-  left_unitality := _
-  right_unitality := _
-  η := _
-  δ := _
-  δ_natural_left := _
-  δ_natural_right := _
-  oplax_associativity := _
-  oplax_left_unitality := _
-  oplax_right_unitality := _
-  ε_η := _
-  η_ε := _
-  μ_δ := _
-  δ_μ := _
-
-
-end MonoidalFunctor
-
-
-
 
 end CategoryTheory
