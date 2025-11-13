@@ -415,4 +415,3 @@ elab "insert_to_additive_translation" src:ident tgt:ident : command => do
   Command.liftCoreM <| insertTranslation data src.getId tgt.getId
 
 end Mathlib.Tactic.ToAdditive
-#lint
