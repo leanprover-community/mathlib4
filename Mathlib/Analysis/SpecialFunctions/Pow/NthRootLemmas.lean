@@ -62,165 +62,100 @@ alias ⟨_, pow_nthRoot_le⟩ := pow_nthRoot_le_iff
 
 
 lemma binom_pow_ge_first_two_terms (n : ℕ) (u v : ℤ) (hu : u ≥ 0) (huv : u + v > 0) :
-  (u + v) ^ (n + 1) ≥ u ^ (n + 1) + (n + 1) * u ^ n * v := by {
-    induction n;
-    case zero =>
-      simp
-    case succ n ih =>
-    calc
-    (u + v) ^ (n + 2)
-      = (u + v) ^ (n + 1) * (u + v) := by rw [pow_succ]
-    _ ≥ (u ^ (n + 1) + (n + 1) * u ^ n * v) * (u + v) := by exact (Int.mul_le_mul_right huv).mpr ih
-    _ = u ^ (n + 2) + (n + 2) * u ^ (n + 1) * v + (n + 1) * u ^ n * v ^ 2 := by ring1
-    _ ≥ u ^ (n + 2) + (n + 2) * u ^ (n + 1) * v := by {
-
-    have hh : ((n : ℤ) + 1) * u ^ n * v ^ 2 ≥ 0 := by {
-      apply Int.mul_nonneg
-      · apply Int.mul_nonneg
-        · apply add_nonneg
-          · norm_cast
-            exact Nat.zero_le _
-          exact zero_le_one
-        apply pow_nonneg hu
-      exact sq_nonneg v
-    }
+    (u + v) ^ (n + 1) ≥ u ^ (n + 1) + (n + 1) * u ^ n * v := by
+  induction n;
+  case zero =>
+    simp
+  case succ n ih =>
+  calc
+  (u + v) ^ (n + 2)
+    = (u + v) ^ (n + 1) * (u + v) := by rw [pow_succ]
+  _ ≥ (u ^ (n + 1) + (n + 1) * u ^ n * v) * (u + v) := by gcongr
+  _ = u ^ (n + 2) + (n + 2) * u ^ (n + 1) * v + (n + 1) * u ^ n * v ^ 2 := by ring1
+  _ ≥ u ^ (n + 2) + (n + 2) * u ^ (n + 1) * v := by
+    have hh : ((n : ℤ) + 1) * u ^ n * v ^ 2 ≥ 0 := by positivity
     set w :=  (u : ℤ) ^ (n + 2) + (n +2) * u ^ (n + 1) * v with hw
     nth_rw 2 [← add_zero w]
     exact add_le_add_left hh w
-  }
-}
+
 
 private theorem nthRoot.lt_pow_go_succ_aux0 (hb : b ≠ 0) :
-  a ≤ ( (a ^ (n + 1) / b ^ n) + n * b) / (n + 1) := by {
+    a ≤ ( (a ^ (n + 1) / b ^ n) + n * b) / (n + 1) := by
 
-    if haa : a = 0 then
-      rw [haa]
-      exact Nat.zero_le _
+  rcases a.eq_zero_or_pos with rfl | ha
+  · exact Nat.zero_le _
 
-    else
-      have ha : a > 0 := by
-        rw [gt_iff_lt]
-        apply Nat.zero_lt_of_ne_zero
-        exact haa
-      have b_pow_pos: 0 < (b : Int) ^ n:= by {
-        apply pow_pos
-        rw [Nat.cast_pos]
-        exact Nat.zero_lt_of_ne_zero hb
-      }
+  have b_pow_pos: 0 < (b : Int) ^ n:= by positivity
 
-      have hk : ((b : Int) + ((a - b) : Int)) ^ (n + 1)
-        ≥ b ^ (n + 1) + (n + 1) * b ^ n * (a - b) := by {
-        apply binom_pow_ge_first_two_terms
-        · exact Nat.cast_nonneg b
-        · rw [add_comm, sub_add_comm, sub_self, zero_add]
-          exact_mod_cast ha
-      }
+  have hk : ((b : Int) + ((a - b) : Int)) ^ (n + 1)
+    ≥ b ^ (n + 1) + (n + 1) * b ^ n * (a - b) := by
+    apply binom_pow_ge_first_two_terms
+    · exact Nat.cast_nonneg b
+    · rw [add_comm, sub_add_comm, sub_self, zero_add]
+      exact_mod_cast ha
 
-      have hj : a = ((b : Int) + ((a - b : Int))) := by {
-        rw [add_comm, sub_add_comm, sub_self, zero_add]
-      }
+  have hj : a = ((b : Int) + ((a - b : Int))) := by
+    rw [add_comm, sub_add_comm, sub_self, zero_add]
 
-      rw [← hj, ge_iff_le] at hk
-      have hl : (a : Int) ^ (n + 1) + n * b ^ (n + 1) ≥ (n + 1) * b ^ n * a := by {
-        calc a ^ (n + 1) + n * b ^ (n + 1)
-          = (a : Int) ^ (n + 1) + n * b ^ (n + 1) := by {
-            norm_cast
-          }
-        _ ≥ b ^ (n + 1) + (n + 1) * b ^ n * (a - b) + n * b ^ (n + 1) := by {
-            linarith only [hk]
-          }
-        _ = (n + 1) * b ^ n * a := by {
-            ring1
-          }
-      }
-      norm_cast at hl
-      have hq := @Nat.div_le_div_right ((n+1)*b^n *a) (a ^ (n + 1) + n * b ^ (n+1)) (b ^ n) hl
-      nth_rw 1 [Nat.mul_comm] at hq
-      rw [← mul_assoc] at hq
-      rw [Nat.add_div_of_dvd_left _] at hq
-      · nth_rw 2 [Nat.pow_add] at hq
-        nth_rw 4 [Nat.mul_comm] at hq
-        rw [← Nat.mul_assoc] at hq
-        rw [Nat.mul_div_cancel _ (pow_pos (zero_lt_of_ne_zero hb) n)] at hq
-        rw [Nat.mul_div_cancel _ (pow_pos (zero_lt_of_ne_zero hb) n)] at hq
-        rw [pow_one] at hq
-        calc a = a * (n + 1) / (n + 1) := by rw [Nat.mul_div_cancel _ (add_one_pos n)]
-        _ ≤ (a ^ (n + 1) / b ^ n + n * b) / (n + 1) := by {
-          exact Nat.div_le_div_right hq
-        }
-      rw [pow_succ, mul_comm, mul_assoc]
-      exact dvd_mul_right (b ^ n) _
-}
+  rw [← hj, ge_iff_le] at hk
+  have hl : (a : Int) ^ (n + 1) + n * b ^ (n + 1) ≥ (n + 1) * b ^ n * a := by
+    calc a ^ (n + 1) + n * b ^ (n + 1)
+      = (a : Int) ^ (n + 1) + n * b ^ (n + 1) := by norm_cast
+    _ ≥ b ^ (n + 1) + (n + 1) * b ^ n * (a - b) + n * b ^ (n + 1) := by linarith only [hk]
+    _ = (n + 1) * b ^ n * a := by ring1
+  norm_cast at hl
+  have hq := @Nat.div_le_div_right ((n+1)*b^n *a) (a ^ (n + 1) + n * b ^ (n+1)) (b ^ n) hl
+  nth_rw 1 [Nat.mul_comm] at hq
+  rw [← mul_assoc] at hq
+  rw [Nat.add_div_of_dvd_left _] at hq
+  · nth_rw 2 [Nat.pow_add] at hq
+    nth_rw 4 [Nat.mul_comm] at hq
+    rw [← Nat.mul_assoc] at hq
+    rw [Nat.mul_div_cancel _ (pow_pos (zero_lt_of_ne_zero hb) n)] at hq
+    rw [Nat.mul_div_cancel _ (pow_pos (zero_lt_of_ne_zero hb) n)] at hq
+    rw [pow_one] at hq
+    calc a = a * (n + 1) / (n + 1) := by rw [Nat.mul_div_cancel _ (add_one_pos n)]
+    _ ≤ (a ^ (n + 1) / b ^ n + n * b) / (n + 1) := by exact Nat.div_le_div_right hq
+  rw [pow_succ, mul_comm, mul_assoc]
+  exact dvd_mul_right (b ^ n) _
 
 private theorem nthRoot.always_exists (n a : ℕ) :
- ∃ c, c ^ (n + 1) ≤ a ∧ a < (c + 1) ^ (n + 1) := by {
-  induction a
-  case zero =>
-    use 0
-    exact ⟨by {
-      have ha := (Nat.zero_pow (add_one_pos n))
-      rw [ha]
-    }, by {
-      rw [zero_add, one_pow]
-      exact one_pos
-    }⟩
-  case succ a ih =>
-    rcases ih with ⟨c, hc1, hc2⟩
-    by_cases h : a + 1 < (c + 1) ^ (n + 1)
-    · use c
-      exact ⟨(le_trans hc1 (Nat.le_add_right a 1)), h⟩
-    · use c + 1
-      push_neg at h
-      rw [add_assoc, one_add_one_eq_two]
-      suffices kh: (c + 1) ^ (n + 1) + 1 ≤ (c + 2) ^ (n + 1) by {
-        exact ⟨h, lt_of_le_of_lt' kh (add_lt_add_right hc2 1)⟩
-      }
-      rw [← ge_iff_le]
-      have hz : (c + 2) ^ (n + 1) ≥ (c + 1) ^ (n + 1) + 1 := by {
-        calc (c + 2) ^ (n + 1)
-          = (c + 1 + 1) ^ (n + 1) := by rw [add_assoc, one_add_one_eq_two]
-        _ ≥ (c + 1) ^ (n + 1) + (n + 1) * (c + 1) ^ n * 1 := by {
-            have j₁ := binom_pow_ge_first_two_terms n ((c : ℤ) + 1) 1
-            norm_cast at j₁
-            apply j₁
-            · exact Nat.cast_nonneg (c + 1)
-            apply add_pos_iff_pos_or_pos.mpr
-            right
-            exact zero_lt_one
-          }
-        _ ≥ (c + 1) ^ (n + 1) + 1 := by {
-            apply add_le_add_left
-            rw [mul_one]
-            nth_rw 1 [← one_mul 1]
-            apply Nat.mul_le_mul
-            · nth_rw 1 [← zero_add 1]
-              apply add_le_add_right
-              exact Nat.zero_le _
-            apply Nat.one_le_pow
-            apply add_pos_iff_pos_or_pos.mpr
-            right
-            exact zero_lt_one
-          }
-      }
-      exact_mod_cast hz
-}
+    ∃ c, c ^ (n + 1) ≤ a ∧ a < (c + 1) ^ (n + 1) := by
+  have H : ∃ c, a < (c + 1) ^ (n + 1) := by
+    use a
+    apply Nat.le_self_pow
+    positivity
+  set c := Nat.find H with hc
+  use c
+  exact ⟨by
+    rcases c.eq_zero_or_pos with h₀ | hpos
+    · rw [h₀, zero_pow]
+      · exact Nat.zero_le _
+      positivity
+    calc
+      c ^ (n + 1) = (c - 1 + 1) ^ (n + 1) := by
+                  congr
+                  simp
+                _ ≤ a := by
+                  rw [← Nat.not_gt_eq _ _]
+                  apply Nat.find_min H
+                  rw [← hc]
+                  exact sub_one_lt_of_lt hpos
+    , Nat.find_spec H⟩
 
 /--
 An auxiliary lemma saying that if `b ≠ 0`,
 then `(a / b ^ n + n * b) / (n + 1) + 1` is a strict upper estimate on `√[n + 1] a`.
 -/
 theorem nthRoot.lt_pow_go_succ_aux (hb : b ≠ 0) :
-     a < ((a / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by {
+     a < ((a / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by
   have ⟨c, hc1, hc2⟩ := nthRoot.always_exists n a
   calc a < (c + 1)^(n + 1) := hc2
-  _ ≤ ((c ^ (n + 1) / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by {
+  _ ≤ ((c ^ (n + 1) / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by
     gcongr
     exact nthRoot.lt_pow_go_succ_aux0 hb
-  }
-  _ ≤ ((a / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by {
+  _ ≤ ((a / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by
     gcongr
-  }
-}
 
 private theorem nthRoot.lt_pow_go_succ (hlt : a < (guess + 1) ^ (n + 2)) :
     a < (go n a fuel guess + 1) ^ (n + 2) := by
