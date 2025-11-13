@@ -543,4 +543,29 @@ theorem subpathOn_zero_one (γ : Path x y) :
   ext t
   simp [Path.cast, Path.subpathOn]
 
+namespace Homotopic.Quotient
+
+@[simp]
+theorem subpathOn_trans {x y : X} (p : Path x y)
+    (a b c : unitInterval) (hab : a ≤ b) (hbc : b ≤ c) :
+    trans (mk (p.subpathOn a b hab)) (mk (p.subpathOn b c hbc)) =
+      mk (p.subpathOn a c (hab.trans hbc)) := by
+  simp only [← mk_trans, eq]
+  exact Path.subpathOn_trans p a b c hab hbc
+
+@[simp]
+theorem subpathOn_self {x y : X} (p : Path x y) (a : unitInterval) :
+    mk (p.subpathOn a a (le_refl a)) = refl (p a) := by
+  simp only [← mk_refl, eq]
+  exact Path.subpathOn_self p a
+
+@[simp]
+theorem subpathOn_zero_one {x y : X} (p : Path x y) :
+    (mk (p.subpathOn 0 1 zero_le_one)).cast (by simp [p.source]) (by simp [p.target]) =
+      mk p := by
+  simp only [← mk_cast, eq]
+  exact Path.subpathOn_zero_one p
+
+end Homotopic.Quotient
+
 end Path
