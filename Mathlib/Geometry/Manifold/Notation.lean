@@ -857,7 +857,7 @@ scoped elab:max "HasMFDerivAt%" ppSpace
 
 end Manifold
 
-open Manifold.Elab
+open Manifold Elab
 
 /-!
 ### Supporting fun_prop for manifolds
@@ -904,6 +904,8 @@ where
     -- for `E →L[𝕜] F` to type-check in the first place, both `E` and `F` must have been normed
     -- spaces over `𝕜`.
     if (← isCLMReduciblyDefeqCoefficients model).isSome then
+      trace[Elab.DiffGeo.FunProp] "`{model}` is a space of continuous linear maps"
+      -- XXX: check K and the model are defeq?
       let eK : Term ← Term.exprToSyntax field
       let eT : Term ← Term.exprToSyntax model
       Term.elabTerm (← ``(𝓘($eK, $eT))) none
@@ -942,7 +944,6 @@ where
 /-- The main entry point of the `find_model` tactic: connects the workhose definition
 `findModelForFunProp` with the tactic world. -/
 def findModelForFunprop22 (g : MVarId) : TermElabM Unit := do
-  trace[Elab.DiffGeo.FunPropM] "metavariable has type {← g.getType'}"
   match_expr (← withReducible g.getType') with
   | ModelWithCorners k _ E _ _ H _ =>
     match ← findModelForFunprop k E H with
