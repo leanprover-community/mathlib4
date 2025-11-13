@@ -46,10 +46,10 @@ theorem ContinuousEval.of_continuous_forget {F' : Type*} [FunLike F' X Y] [Topol
   continuous_eval := by simpa only [← hf] using hc.fst'.eval continuous_snd
 
 instance (priority := 100) ContinuousEval.toContinuousMapClass : ContinuousMapClass F X Y where
-  map_continuous _ := continuous_const.eval continuous_id
+  map_continuous _ := by fun_prop
 
 instance (priority := 100) ContinuousEval.toContinuousEvalConst : ContinuousEvalConst F X Y where
-  continuous_eval_const _ := continuous_id.eval continuous_const
+  continuous_eval_const _ := by fun_prop
 
 protected theorem Filter.Tendsto.eval {α : Type*} {l : Filter α} {f : α → F} {f₀ : F}
     {g : α → X} {x₀ : X} (hf : Tendsto f l (𝓝 f₀)) (hg : Tendsto g l (𝓝 x₀)) :

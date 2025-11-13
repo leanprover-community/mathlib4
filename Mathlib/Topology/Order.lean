@@ -446,7 +446,7 @@ theorem induced_compose {tγ : TopologicalSpace γ} {f : α → β} {g : β → 
         fun ⟨s, hs, h⟩ => ⟨preimage g s, ⟨s, hs, rfl⟩, h ▸ rfl⟩⟩
 
 theorem induced_const [t : TopologicalSpace α] {x : α} : (t.induced fun _ : β => x) = ⊤ :=
-  le_antisymm le_top (@continuous_const β α ⊤ t x).le_induced
+  le_antisymm le_top (@Continuous.const β α ⊤ t x).le_induced
 
 theorem coinduced_id [t : TopologicalSpace α] : t.coinduced id = t :=
   TopologicalSpace.ext rfl

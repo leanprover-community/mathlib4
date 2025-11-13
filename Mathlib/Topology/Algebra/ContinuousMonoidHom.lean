@@ -164,7 +164,7 @@ variable (A B C D E)
 /-- The trivial continuous homomorphism. -/
 @[to_additive (attr := simps!) /-- The trivial continuous homomorphism. -/]
 instance : One (A →ₜ* B) where
-  one := ⟨1, continuous_const⟩
+  one := ⟨1, .const⟩
 
 @[to_additive (attr := simp)]
 lemma coe_one : ⇑(1 : A →ₜ* B) = 1 :=

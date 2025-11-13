@@ -24,7 +24,7 @@ lemma continuous_mulIndicator (hs : ∀ a ∈ frontier s, f a = 1) (hf : Continu
 @[to_additive]
 protected lemma Continuous.mulIndicator (hs : ∀ a ∈ frontier s, f a = 1) (hf : Continuous f) :
     Continuous (mulIndicator s f) := by
-  classical exact hf.piecewise hs continuous_const
+  classical exact hf.piecewise hs .const
 
 @[to_additive]
 theorem ContinuousOn.continuousAt_mulIndicator (hf : ContinuousOn f (interior s)) {x : α}
@@ -35,7 +35,7 @@ theorem ContinuousOn.continuousAt_mulIndicator (hf : ContinuousOn f (interior s)
   · have hs : interior s ∈ 𝓝 x := mem_interior_iff_mem_nhds.mp (by rwa [interior_interior])
     exact ContinuousAt.congr (hf.continuousAt hs) <| Filter.eventuallyEq_iff_exists_mem.mpr
       ⟨interior s, hs, Set.eqOn_mulIndicator.symm.mono interior_subset⟩
-  · exact ContinuousAt.congr continuousAt_const <| Filter.eventuallyEq_iff_exists_mem.mpr
+  · exact ContinuousAt.congr .const <| Filter.eventuallyEq_iff_exists_mem.mpr
       ⟨sᶜ, mem_interior_iff_mem_nhds.mp h, Set.eqOn_mulIndicator'.symm⟩
 
 @[to_additive]

@@ -694,11 +694,11 @@ theorem Continuous.sumElim {f : X → Z} {g : Y → Z} (hf : Continuous f) (hg :
 
 @[continuity, fun_prop]
 theorem continuous_isLeft : Continuous (isLeft : X ⊕ Y → Bool) :=
-  continuous_sum_dom.2 ⟨continuous_const, continuous_const⟩
+  continuous_sum_dom.2 ⟨.const, .const⟩
 
 @[continuity, fun_prop]
 theorem continuous_isRight : Continuous (isRight : X ⊕ Y → Bool) :=
-  continuous_sum_dom.2 ⟨continuous_const, continuous_const⟩
+  continuous_sum_dom.2 ⟨.const, .const⟩
 
 @[continuity, fun_prop]
 theorem continuous_inl : Continuous (@inl X Y) := ⟨fun _ => And.left⟩
