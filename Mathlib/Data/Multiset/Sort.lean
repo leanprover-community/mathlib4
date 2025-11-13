@@ -49,7 +49,7 @@ theorem sort_sorted : Sorted r (sort s r) :=
 theorem sort_eq : ↑(sort s r) = s :=
   Quot.inductionOn s fun _ => Quot.sound <| mergeSort_perm _ _
 
-@[simp, push]
+@[simp]
 theorem sort_zero : sort 0 r = [] :=
   List.mergeSort_nil
 
@@ -77,7 +77,7 @@ section
 variable {a : α} {s : Multiset α}
 variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r]
 
-@[simp]
+@[simp, push]
 theorem mem_sort : a ∈ sort s r ↔ a ∈ s := by rw [← mem_coe, sort_eq]
 
 @[simp]
