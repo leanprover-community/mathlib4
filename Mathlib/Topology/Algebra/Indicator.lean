@@ -19,7 +19,7 @@ variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : α →
 @[to_additive]
 lemma continuous_mulIndicator (hs : ∀ a ∈ frontier s, f a = 1) (hf : ContinuousOn f (closure s)) :
     Continuous (mulIndicator s f) := by
-  classical exact continuous_piecewise hs hf continuousOn_const
+  classical exact continuous_piecewise hs hf ContinuousOn.const
 
 @[to_additive]
 protected lemma Continuous.mulIndicator (hs : ∀ a ∈ frontier s, f a = 1) (hf : Continuous f) :

@@ -760,7 +760,7 @@ theorem eq_zero_on_right_half_plane_of_superexponential_decay (hd : DiffContOnCl
   -- Due to continuity, it suffices to prove the equality on the open right half-plane.
   suffices ∀ z : ℂ, 0 < z.re → f z = 0 by
     simpa only [closure_setOf_lt_re] using
-      EqOn.of_subset_closure this hd.continuousOn continuousOn_const subset_closure Subset.rfl
+      EqOn.of_subset_closure this hd.continuousOn ContinuousOn.const subset_closure Subset.rfl
   -- Consider $g_n(z)=e^{nz}f(z)$.
   set g : ℕ → ℂ → E := fun (n : ℕ) (z : ℂ) => exp z ^ n • f z
   have hg : ∀ n z, ‖g n z‖ = expR z.re ^ n * ‖f z‖ := fun n z ↦ by

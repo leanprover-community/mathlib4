@@ -219,8 +219,8 @@ def expMap_single (w : InfinitePlace K) : OpenPartialHomeomorph ℝ ℝ where
   map_target' _ _ := trivial
   left_inv' _ _ := by simp only [Real.log_exp, mul_inv_cancel_left₀ mult_coe_ne_zero]
   right_inv' _ h := by simp only [inv_mul_cancel_left₀ mult_coe_ne_zero, Real.exp_log h]
-  continuousOn_toFun := (continuousOn_const.mul continuousOn_id).rexp
-  continuousOn_invFun := continuousOn_const.mul (Real.continuousOn_log.mono (by aesop))
+  continuousOn_toFun := (ContinuousOn.const.mul continuousOn_id).rexp
+  continuousOn_invFun := ContinuousOn.const.mul (Real.continuousOn_log.mono (by aesop))
 
 /--
 The derivative of `expMap_single`, see `hasDerivAt_expMap_single`.

@@ -131,7 +131,7 @@ theorem Continuous.const_cpow {b : ℂ} (hf : Continuous f) (h : b ≠ 0 ∨ ∀
 
 theorem ContinuousOn.cpow_const {b : ℂ} (hf : ContinuousOn f s)
     (h : ∀ a : α, a ∈ s → f a ∈ slitPlane) : ContinuousOn (fun x => f x ^ b) s :=
-  hf.cpow continuousOn_const h
+  hf.cpow ContinuousOn.const h
 
 @[fun_prop]
 lemma continuous_const_cpow (z : ℂ) [NeZero z] : Continuous fun s : ℂ ↦ z ^ s :=

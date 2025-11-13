@@ -308,13 +308,13 @@ lemma continuousOn_LFunctionResidueClassAux' :
       {s | s = 1 ∨ ∀ χ : DirichletCharacter ℂ q, LFunction χ s ≠ 0} := by
   rw [show LFunctionResidueClassAux a = fun s ↦ _ from rfl]
   simp only [LFunctionResidueClassAux, sub_eq_add_neg]
-  refine continuousOn_const.mul <| ContinuousOn.add ?_ ?_
+  refine ContinuousOn.const.mul <| ContinuousOn.add ?_ ?_
   · refine (continuousOn_neg_logDeriv_LFunctionTrivChar₁ q).mono fun s hs ↦ ?_
     have := LFunction_ne_zero_of_one_le_re (1 : DirichletCharacter ℂ q) (s := s)
     simp only [ne_eq, Set.mem_setOf_eq] at hs
     tauto
   · simp only [← Finset.sum_neg_distrib, mul_div_assoc, ← mul_neg, ← neg_div]
-    refine continuousOn_finset_sum _ fun χ hχ ↦ continuousOn_const.mul ?_
+    refine continuousOn_finset_sum _ fun χ hχ ↦ ContinuousOn.const.mul ?_
     replace hχ : χ ≠ 1 := by simpa only [ne_eq, Finset.mem_compl, Finset.mem_singleton] using hχ
     refine (continuousOn_neg_logDeriv_LFunction_of_nontriv hχ).mono fun s hs ↦ ?_
     simp only [ne_eq, Set.mem_setOf_eq] at hs

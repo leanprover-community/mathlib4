@@ -542,7 +542,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
   /- First get rid of the case where the space is not locally compact. Then `g` vanishes everywhere
   and the conclusion is trivial. -/
   by_cases! H : ∀ p ∈ s, ∀ x, g p x = 0
-  · apply (continuousOn_const (c := 0)).congr
+  · apply (ContinuousOn.const (c := 0)).congr
     rintro ⟨p, x⟩ ⟨hp, -⟩
     apply integral_eq_zero_of_ae (Eventually.of_forall (fun y ↦ ?_))
     simp [H p hp _]

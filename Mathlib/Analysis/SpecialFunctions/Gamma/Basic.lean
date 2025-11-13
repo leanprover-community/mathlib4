@@ -166,7 +166,7 @@ private theorem Gamma_integrand_deriv_integrable_B {s : ℂ} (hs : 0 < s.re) {Y 
       (fun x => s * ((-x).exp * x ^ (s - 1)) : ℝ → ℂ) := by ext1; ring
   rw [this, intervalIntegrable_iff_integrableOn_Ioc_of_le hY]
   constructor
-  · refine (continuousOn_const.mul ?_).aestronglyMeasurable measurableSet_Ioc
+  · refine (ContinuousOn.const.mul ?_).aestronglyMeasurable measurableSet_Ioc
     apply (continuous_ofReal.comp continuous_neg.rexp).continuousOn.mul
     apply continuousOn_of_forall_continuousAt
     intro x hx

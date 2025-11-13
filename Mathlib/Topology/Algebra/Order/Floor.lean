@@ -80,11 +80,11 @@ variable [TopologicalSpace α]
 
 theorem continuousOn_floor (n : ℤ) :
     ContinuousOn (fun x => floor x : α → α) (Ico n (n + 1) : Set α) :=
-  (continuousOn_congr <| floor_eq_on_Ico' n).mpr continuousOn_const
+  (continuousOn_congr <| floor_eq_on_Ico' n).mpr ContinuousOn.const
 
 theorem continuousOn_ceil [IsStrictOrderedRing α] (n : ℤ) :
     ContinuousOn (fun x => ceil x : α → α) (Ioc (n - 1) n : Set α) :=
-  (continuousOn_congr <| ceil_eq_on_Ioc' n).mpr continuousOn_const
+  (continuousOn_congr <| ceil_eq_on_Ioc' n).mpr ContinuousOn.const
 
 section OrderClosedTopology
 

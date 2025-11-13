@@ -593,7 +593,7 @@ theorem continuous_const_section (v : F)
   · exact A
   · apply continuousAt_id.prodMk
     simp only [mfld_simps]
-    have : ContinuousOn (fun _ : B => v) (Z.baseSet (Z.indexAt x)) := continuousOn_const
+    have : ContinuousOn (fun _ : B => v) (Z.baseSet (Z.indexAt x)) := ContinuousOn.const
     refine (this.congr fun y hy ↦ ?_).continuousAt A
     exact h _ _ _ ⟨mem_baseSet_at _ _, hy⟩
 

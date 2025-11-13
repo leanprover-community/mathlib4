@@ -710,7 +710,7 @@ theorem continuousOn_apply {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSp
 -/
 
 @[fun_prop]
-theorem continuousOn_const {s : Set α} {c : β} : ContinuousOn (fun _ => c) s :=
+theorem ContinuousOn.const {s : Set α} {c : β} : ContinuousOn (fun _ => c) s :=
   continuous_const.continuousOn
 
 theorem continuousWithinAt_const {b : β} {s : Set α} {x : α} :

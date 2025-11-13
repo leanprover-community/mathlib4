@@ -603,7 +603,7 @@ lemma of_time_independent
     (hm : L * max (tmax - t₀) (t₀ - tmin) ≤ a - r) :
     (IsPicardLindelof (fun _ ↦ f) t₀ x₀ a r L K) where
   lipschitzOnWith := fun _ _ ↦ hl
-  continuousOn := fun _ _ ↦ continuousOn_const
+  continuousOn := fun _ _ ↦ ContinuousOn.const
   norm_le := fun _ _ ↦ hb
   mul_max_le := hm
 

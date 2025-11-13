@@ -161,7 +161,7 @@ protected theorem isClosed [OrderClosedTopology 𝕜] {A B : Set E} (hAB : IsExp
   obtain rfl | hB := B.eq_empty_or_nonempty
   · simp
   obtain ⟨l, a, rfl⟩ := hAB.eq_inter_halfSpace' hB
-  exact hA.isClosed_le continuousOn_const l.continuous.continuousOn
+  exact hA.isClosed_le ContinuousOn.const l.continuous.continuousOn
 
 protected theorem isCompact [OrderClosedTopology 𝕜] [T2Space E] {A B : Set E}
     (hAB : IsExposed 𝕜 A B) (hA : IsCompact A) : IsCompact B :=
