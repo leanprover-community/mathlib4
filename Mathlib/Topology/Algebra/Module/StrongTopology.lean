@@ -35,8 +35,8 @@ sets).
 * `ContinuousLinearMap.topologicalSpace` is the topology of bounded convergence. This is
   declared as an instance.
 * `CompactConvergenceCLM` is an abbreviation for
-`UniformConvergenceCLM σ F {(S : Set E) | IsCompact S}` with notation `E →SL_c[σ] F`, denoting
-the topology of compact convergence on continuous linear maps.
+  `UniformConvergenceCLM σ F {(S : Set E) | IsCompact S}` with notation `E →SL_c[σ] F`, denoting
+  the topology of compact convergence on continuous linear maps.
 
 ## Main statements
 
