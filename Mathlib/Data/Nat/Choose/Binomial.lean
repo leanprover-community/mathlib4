@@ -44,7 +44,8 @@ theorem binom_eq_factorial_div_factorial (a b : ℕ) : binom a b =
 
 theorem binom_eq_multinomial (a b : ℕ) :
     binom a b = Nat.multinomial (Finset.univ) ![a, b] := by
-  simp [multinomial_univ_two, choose_eq_factorial_div_factorial]
+  simp [multinomial_univ_two]
+  simp [choose_eq_factorial_div_factorial]
 
 section PositivityExtension
 
