@@ -678,7 +678,7 @@ theorem coeff_pow [DecidableEq σ] (f : MvPowerSeries σ R) {n : ℕ} (d : σ �
     rw [this, coeff_prod]
   rw [Finset.prod_const, card_range]
 
-theorem monmial_pow (m : σ →₀ ℕ) (a : R) (n : ℕ) :
+theorem monomial_pow (m : σ →₀ ℕ) (a : R) (n : ℕ) :
     (monomial m a) ^ n = monomial (n • m) (a ^ n) := by
   rw [Finset.pow_eq_prod_const, prod_monomial, ← Finset.nsmul_eq_sum_const,
     ← Finset.pow_eq_prod_const]
