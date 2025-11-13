@@ -192,5 +192,5 @@ theorem IntermediateField.adjoin_rootSet_isSplittingField (hp : (Polynomial.map 
   isSplittingField_iff.mpr ⟨splits_of_splits hp fun _ hx ↦ subset_adjoin K (p.rootSet L) hx, rfl⟩
 
 theorem Polynomial.isSplittingField_C (a : K) : Polynomial.IsSplittingField K K (C a) where
-  splits' := by simp
+  splits' := by simp only [splits_C]
   adjoin_rootSet' := by simp
