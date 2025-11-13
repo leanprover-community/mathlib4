@@ -200,11 +200,15 @@ structure Config where
   /-- If `true` (default `false`), rewrite `¬ (p ∧ q)` into `¬ p ∨ ¬ q` instead of `p → ¬ q`.
   This is equivalent to using `set_option push_neg.use_distrib true`. -/
   distrib : Bool := false
-  /-- If `true` (default: `true`), then calls to `push` will fail if they do not make progress. -/
-  failIfUnchanged : Bool := true
 
 /-- Function elaborating `Push.Config`. -/
 declare_config_elab elabPushConfig Config
+
+def pushTactic (head : Head) (disch? : Option Simp.Discharge) (loc : Location) (cfg : Config)
+    (failIfUnchanged : Bool := true) :
+    TacticM Unit := do
+  (if cfg.distrib then withOptions (·.setBool `push_neg.use_distrib true) else id) <|
+    transformAtLocation (pushCore head · disch?) "push" loc failIfUnchanged
 
 /--
 `push` pushes the given constant away from the head of the expression. For example
@@ -225,12 +229,9 @@ To push a constant at a hypothesis, use the `push ... at h` or `push ... at *` s
 -/
 elab (name := push) "push" cfg:optConfig disch?:(discharger)? head:(ppSpace colGt term)
     loc:(location)? : tactic => do
-  let cfg ← elabPushConfig cfg
   let disch? ← disch?.mapM elabDischarger
-  let head ← elabHead head
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  (if cfg.distrib then withOptions (·.setBool `push_neg.use_distrib true) else id) <|
-    transformAtLocation (pushCore head · disch?) "push" loc cfg.failIfUnchanged
+  pushTactic (← elabHead head) disch? loc (← elabPushConfig cfg)
 
 /--
 Push negations into the conclusion or a hypothesis.
