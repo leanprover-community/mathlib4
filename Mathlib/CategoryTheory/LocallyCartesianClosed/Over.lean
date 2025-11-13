@@ -100,7 +100,7 @@ end
 chosen pullbacks. Contrast this with the noncomputable instance provided by
 `CategoryTheory.Over.cartesianMonoidalCategory`.
 -/
-instance cartesianMonoidalCategoryOver [ChosenPullbacks C] (X : C) :
+def cartesianMonoidalCategoryOver [ChosenPullbacks C] (X : C) :
     CartesianMonoidalCategory (Over X) :=
   ofChosenFiniteProducts (C:= Over X)
     ⟨Limits.asEmptyCone (Over.mk (𝟙 X)), Limits.IsTerminal.ofUniqueHom (fun Y ↦ Over.homMk Y.hom)
@@ -112,6 +112,8 @@ namespace Over
 open MonoidalCategory
 
 variable [ChosenPullbacks C] {X : C}
+
+attribute [local instance] cartesianMonoidalCategoryOver
 
 @[ext]
 lemma tensorObj_ext {A : C} {Y Z : Over X} (f₁ f₂ : A ⟶ (Y ⊗ Z).left)
@@ -376,10 +378,17 @@ def toOverUnit : C ⥤ Over (𝟙_ C) where
   map f := Over.homMk f
 
 /-- The slice category over the terminal unit object is equivalent to the original category. -/
-def equivToOverUnit : Over (𝟙_ C) ≌ C :=
-  CategoryTheory.Equivalence.mk (Over.forget _) (toOverUnit C)
-    (NatIso.ofComponents fun X => Over.isoMk (Iso.refl _))
-    (NatIso.ofComponents fun X => Iso.refl _)
+def equivToOverUnit : Over (𝟙_ C) ≌ C where
+  functor := Over.forget _
+  inverse := toOverUnit _
+  unitIso := NatIso.ofComponents fun X => Over.isoMk (Iso.refl _)
+  counitIso := NatIso.ofComponents fun X => Iso.refl _
+
+
+
+  -- CategoryTheory.Equivalence.mk (Over.forget _) (toOverUnit C)
+  --   (NatIso.ofComponents fun X => Over.isoMk (Iso.refl _))
+  --   (NatIso.ofComponents fun X => Iso.refl _)
 
 attribute [local instance] ChosenPullbacksAlong.cartesianMonoidalCategoryToUnit
 
@@ -412,6 +421,8 @@ def toOverPullbackIsoToOver {X Y : C} (f : Y ⟶ X) [ChosenPullbacksAlong f] :
     toOver X ⋙ pullback f ≅ toOver Y :=
   conjugateIsoEquiv ((mapPullbackAdj f).comp (forgetAdjToOver X))
     (forgetAdjToOver Y) (Over.mapForget f)
+
+attribute [local instance] cartesianMonoidalCategoryOver
 
 omit [CartesianMonoidalCategory C] in
 /-- The functor `pullback f : Over X ⥤ Over Y` is naturally isomorphic to
